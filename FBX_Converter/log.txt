@@ -1,0 +1,9 @@
+1. Static Only   2. Anim Only   3. All
+1
+Static Models : Start Converting...
+Converting... SM_ENV_KNVLLG03_VideoScreen_A.mo.fbx
+Read File Succssefully
+Static Models : Convert Success!
+
+1 Static Models
+are Successfully Converted as hyuntramesh!!
