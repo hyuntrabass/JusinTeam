@@ -10,7 +10,7 @@
 #include "Layer.h"
 
 CImGui_Manager::CImGui_Manager(_dev pDevice, _context pContext)
-	:m_pDevice(pDevice)
+	: m_pDevice(pDevice)
 	, m_pContext(pContext)
 	, m_pGameInstance(CGameInstance::Get_Instance())
 {
@@ -47,7 +47,6 @@ HRESULT CImGui_Manager::Render()
 {
 	bool bDemo = true;
 	ImGui::ShowDemoWindow(&bDemo);
-
 
 	ImGuiMenu();
 

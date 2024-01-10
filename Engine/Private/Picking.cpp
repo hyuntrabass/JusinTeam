@@ -9,6 +9,8 @@ CPicking::CPicking(_dev pDevice, _context pContext, HWND hWnd, _uint iWinSizeX, 
 	, m_iWinSizeY(iWinSizeY)
 	, m_pGameInstance(CGameInstance::Get_Instance())
 {
+	Safe_AddRef(m_pDevice);
+	Safe_AddRef(m_pContext);
 	Safe_AddRef(m_pGameInstance);
 }
 
@@ -69,7 +71,6 @@ _bool CPicking::Picking_InWorld(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _In
 	}
 }
 
-<<<<<<< HEAD
 _float4 CPicking::PickingDepth(_float x, _float y)
 {
 	ID3D11Texture2D* pTexture = nullptr;
@@ -150,10 +151,8 @@ HRESULT CPicking::Ready_Texture2D()
 	return E_NOTIMPL;
 }
 
-_bool CPicking::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float4* pPickPos)
-=======
+
 _bool CPicking::Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _Inout_ _vec4* pPickPos)
->>>>>>> master
 {
 	_float fDist{};
 	_vector vRayPos{ XMLoadFloat4(&m_vRayPos_Local) };

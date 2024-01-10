@@ -81,19 +81,13 @@ public: // PipeLine
 	void Set_Transform(TransformType eState, const _mat& TransformMatrix);
 
 public: // Picking
-<<<<<<< HEAD
-	void TransformRay_ToLocal(_fmatrix WorldMatrix);
-	_bool Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float3* pPickPos);
-	_bool Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float4* pPickPos);
-	_bool Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _gvector vNormal, _Inout_ _float4* pPickPos);
-	_float4 PickingDepth(_float x, _float y);
-=======
-	void TransformRay_ToLocal(_mat WorldMatrix);
 
+	void TransformRay_ToLocal(_mat WorldMatrix);
 	_bool Picking_InWorld(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _Inout_ _vec3* pPickPos);
 	_bool Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _Inout_ _vec4* pPickPos);
 	_bool Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _vec4 vNormal, _Inout_ _vec4* pPickPos);
->>>>>>> master
+	_float4 PickingDepth(_float x, _float y);
+
 
 public: // Font
 	HRESULT Add_Font(const wstring& strFontTag, const wstring& strFilePath);

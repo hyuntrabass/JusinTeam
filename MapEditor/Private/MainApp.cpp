@@ -278,6 +278,7 @@ CMainApp* CMainApp::Create()
 
 void CMainApp::Free()
 {
+	Safe_Release(m_pImGui_Manager);
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);
@@ -290,6 +291,5 @@ void CMainApp::Free()
 		MSG_BOX("Heap currupted");
 	}
 
-	Safe_Release(m_pImGui_Manager);
 
 }

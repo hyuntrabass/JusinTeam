@@ -15,11 +15,11 @@ public:
 public:
 	void TransformRay_ToLocal(_fmatrix WorldMatrix);
 
-	_float4 PickingDepth(_float x, _float y);
-	HRESULT Ready_Texture2D();
-	_bool Picking_InWorld(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _Inout_ _vec3* pPickPos);
+	_bool Picking_InWorld(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _Inout_ _vec3 * pPickPos);
 	_bool Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _Inout_ _vec4* pPickPos);
 	_bool Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _vec4 vNormal, _Inout_ _vec4* pPickPos);
+	_float4 PickingDepth(_float x, _float y);
+	HRESULT Ready_Texture2D();
 
 private:
 	_dev m_pDevice{ nullptr };
