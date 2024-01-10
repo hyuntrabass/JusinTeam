@@ -52,6 +52,11 @@ const _uint& CModel::Get_NumMeshes() const
 	return m_iNumMeshes;
 }
 
+const _uint& CModel::Get_NumAnim() const
+{
+	return m_iNumAnimations;
+}
+
 const _bool& CModel::IsAnimationFinished(_uint iAnimIndex) const
 {
 	return m_Animations[iAnimIndex]->IsFinished();

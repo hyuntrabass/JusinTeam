@@ -47,7 +47,7 @@ void CBone::Update_CombinedMatrix(const vector<CBone*>& Bones)
 		return;
 	}
 	
-	XMStoreFloat4x4(&m_CombindTransformationMatrix, XMLoadFloat4x4(&m_TransformationMatrix) * XMLoadFloat4x4(Bones[m_iParentIndex]->Get_CombinedMatrix()));
+	m_CombindTransformationMatrix = m_TransformationMatrix * *Bones[m_iParentIndex]->Get_CombinedMatrix();
 }
 
 CBone* CBone::Create(ifstream& ModelFile)
