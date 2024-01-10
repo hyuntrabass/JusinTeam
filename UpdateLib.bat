@@ -7,3 +7,5 @@ xcopy /y	.\Engine\Bin\Engine.dll		.\Client\Bin\
 xcopy /y	.\Engine\Bin\Engine.dll		.\MapEditor\Bin\
 xcopy /y	.\Engine\Bin\ShaderFiles\*.*		.\Client\Bin\ShaderFiles\
 xcopy /y	.\Engine\Bin\ShaderFiles\*.*		.\MapEditor\Bin\ShaderFiles\
+xcopy /y	.\Engine\Bin\Engine.dll		.\AnimTool\Bin\
+xcopy /y	.\Engine\Bin\ShaderFiles\*.*		.\AnimTool\Bin\ShaderFiles\
