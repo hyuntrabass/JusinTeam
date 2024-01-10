@@ -11,18 +11,18 @@ private:
 
 public:
 	const _char* Get_BoneName() const;
-	const _float44* Get_CombinedMatrix() const;
-	const _float44& Get_Transformation() const;
+	const _mat* Get_CombinedMatrix() const;
+	const _mat& Get_Transformation() const;
 
-	void Set_Transformation(_fmatrix TransformationMatrix);
+	void Set_Transformation(_mat TransformationMatrix);
 
 private:
 	HRESULT Init(ifstream& ModelFile);
 
 private:
 	_char m_szName[MAX_PATH]{};
-	_float44 m_TransformationMatrix{};
-	_float44 m_CombindTransformationMatrix{};
+	_mat m_TransformationMatrix{};
+	_mat m_CombindTransformationMatrix{};
 
 	_int m_iParentIndex{};
 

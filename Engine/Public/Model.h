@@ -34,7 +34,7 @@ public:
 	const _bool& IsAnimationFinished(_uint iAnimIndex) const;
 	const _uint& Get_CurrentAnimationIndex() const;
 	const _float& Get_CurrentAnimPos() const;
-	const _float44* Get_BoneMatrix(const _char* pBoneName) const;
+	const _mat* Get_BoneMatrix(const _char* pBoneName) const;
 	_matrix Get_PivotMatrix();
 
 	void Set_Animation(ANIM_DESC Animation_Desc);
@@ -51,7 +51,7 @@ public:
 
 	HRESULT Render(_uint iMeshIndex);
 
-	_bool Intersect_RayModel(_fmatrix WorldMatrix, _float4* pPickPos);
+	_bool Intersect_RayModel(_fmatrix WorldMatrix, _vec4* pPickPos);
 
 private:
 	_uint m_iNumMeshes{};
@@ -65,7 +65,7 @@ private:
 	_uint m_iNumAnimations{};
 	vector<class CAnimation*> m_Animations{};
 
-	_float44 m_PivotMatrix{};
+	_mat m_PivotMatrix{};
 
 	_uint m_iNumFaceMeshes{};
 	_uint m_iNumHeadMeshes{};

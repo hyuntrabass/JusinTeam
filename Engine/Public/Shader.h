@@ -20,8 +20,8 @@ public:
 	HRESULT Bind_ShaderResourceView(const _char* pVariableName, ID3D11ShaderResourceView* pSRV);
 	HRESULT Bind_ShaderResourceViewArray(const _char* pVariableName, ID3D11ShaderResourceView** pSRVs, _uint iNumTextures);
 
-	HRESULT Bind_Matrix(const _char* pVariableName, const _float44& Matrix);
-	HRESULT Bind_Matrices(const _char* pVariableName, const _float44* pMatrices, _uint iNumMatrices);
+	HRESULT Bind_Matrix(const _char* pVariableName, const _mat& Matrix);
+	HRESULT Bind_Matrices(const _char* pVariableName, const _mat* pMatrices, _uint iNumMatrices);
 
 	HRESULT Bind_RawValue(const _char* pVariableName, const void* pData, _uint iDataSize);
 

@@ -4,37 +4,37 @@ CPipeLine::CPipeLine()
 {
 }
 
-_float4 CPipeLine::Get_CameraPos() const
+_vec4 CPipeLine::Get_CameraPos() const
 {
 	return m_vCameraPos;
 }
 
-_float4 CPipeLine::Get_CameraLook() const
+_vec4 CPipeLine::Get_CameraLook() const
 {
 	return m_vCameraLook;
 }
 
-_float44 CPipeLine::Get_Transform_Float4x4(TransformType eState) const
+_mat CPipeLine::Get_Transform_vec4x4(TransformType eState) const
 {
 	return m_TransformMatrix[ToIndex(eState)];
 }
 
-_float44 CPipeLine::Get_Transform_Inversed_Float4x4(TransformType eState) const
+_mat CPipeLine::Get_Transform_Inversed_vec4x4(TransformType eState) const
 {
 	return m_TransformMatrix_Inversed[ToIndex(eState)];
 }
 
-_matrix CPipeLine::Get_Transform(TransformType eState) const
+_mat CPipeLine::Get_Transform(TransformType eState) const
 {
 	return XMLoadFloat4x4(&m_TransformMatrix[ToIndex(eState)]);
 }
 
-_matrix CPipeLine::Get_Transform_Inversed(TransformType eState) const
+_mat CPipeLine::Get_Transform_Inversed(TransformType eState) const
 {
 	return XMLoadFloat4x4(&m_TransformMatrix_Inversed[ToIndex(eState)]);
 }
 
-void CPipeLine::Set_Transform(TransformType eState, const _float44& TransformMatrix)
+void CPipeLine::Set_Transform(TransformType eState, const _mat& TransformMatrix)
 {
 	m_TransformMatrix[ToIndex(eState)] = TransformMatrix;
 }
@@ -59,10 +59,10 @@ void CPipeLine::Tick()
 {
 	for (size_t i = 0; i < ToIndex(TransformType::End); i++)
 	{
-		XMStoreFloat4x4(&m_TransformMatrix_Inversed[i], XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_TransformMatrix[i])));
+		m_TransformMatrix_Inversed[i] = m_TransformMatrix[i].Invert();
 	}
-	m_vCameraPos = _float4(&m_TransformMatrix_Inversed[ToIndex(TransformType::View)]._41);
-	m_vCameraLook = _float4(&m_TransformMatrix_Inversed[ToIndex(TransformType::View)]._31);
+	m_vCameraPos = _vec4(m_TransformMatrix_Inversed[ToIndex(TransformType::View)].Translation(), 1.f);
+	m_vCameraLook = _vec4(m_TransformMatrix_Inversed[ToIndex(TransformType::View)].Backward());
 }
 
 CPipeLine* CPipeLine::Create()

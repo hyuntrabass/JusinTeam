@@ -58,11 +58,13 @@ HRESULT CCollider::Init(void* pArg)
 		m_pBounder_Origin = new BoundingBox(*reinterpret_cast<BoundingBox*>(m_pBounder));
 		break;
 	case Engine::ColliderType::OBB:
+	{
 		_float4 vRotation{};
 		XMStoreFloat4(&vRotation, XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&Desc.vRadians)));
 		m_pBounder = new BoundingOrientedBox(Desc.vCenter, Desc.vExtents, vRotation);
 		m_pBounder_Origin = new BoundingOrientedBox(*reinterpret_cast<BoundingOrientedBox*>(m_pBounder));
 		break;
+	}
 	case Engine::ColliderType::Sphere:
 		m_pBounder = new BoundingSphere(Desc.vCenter, Desc.fRadius);
 		m_pBounder_Origin = new BoundingSphere(*reinterpret_cast<BoundingSphere*>(m_pBounder));
