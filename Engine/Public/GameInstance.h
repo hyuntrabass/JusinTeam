@@ -85,10 +85,10 @@ public: // PipeLine
 
 public: // Picking
 	void TransformRay_ToLocal(_fmatrix WorldMatrix);
-
 	_bool Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float3* pPickPos);
 	_bool Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float4* pPickPos);
 	_bool Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _gvector vNormal, _Inout_ _float4* pPickPos);
+	_float4 PickingDepth(_float x, _float y);
 
 public: // Font
 	HRESULT Add_Font(const wstring& strFontTag, const wstring& strFilePath);
@@ -129,6 +129,8 @@ public: // RenderTarget
 	HRESULT Begin_MRT(const wstring& strMRTTag, ID3D11DepthStencilView* pDepthStencillView = nullptr);
 	HRESULT End_MRT();
 	HRESULT Bind_ShaderResourceView(class CShader* pShader, const _char* pVariableName, const wstring& strTargetTag);
+	ID3D11Texture2D* Get_Texture2D(const wstring& strTargetTag);
+
 #ifdef _DEBUGTEST
 public:
 	HRESULT Ready_Debug_RT(const wstring& strTargetTag, _float2 vPos, _float2 vSize);

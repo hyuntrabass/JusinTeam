@@ -11,6 +11,7 @@ private:
 
 public:
 	ID3D11RenderTargetView* Get_RenderTargetView();
+	ID3D11Texture2D* Get_Texture2D();
 
 public:
 	HRESULT Init(_uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor);

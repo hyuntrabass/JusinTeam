@@ -1,8 +1,10 @@
 #include "Picking.h"
 #include "GameInstance.h"
 
-CPicking::CPicking(HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)
-	: m_hWnd(hWnd)
+CPicking::CPicking(_dev pDevice, _context pContext, HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)
+	:m_pDevice(pDevice)
+	, m_pContext(pContext)
+	, m_hWnd(hWnd)
 	, m_iWinSizeX(iWinSizeX)
 	, m_iWinSizeY(iWinSizeY)
 	, m_pGameInstance(CGameInstance::Get_Instance())
@@ -67,6 +69,86 @@ _bool CPicking::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPo
 	}
 }
 
+_float4 CPicking::PickingDepth(_float x, _float y)
+{
+	ID3D11Texture2D* pTexture = nullptr;
+
+	pTexture = m_pGameInstance->Get_Texture2D(L"Target_Depth");
+
+	if (nullptr == pTexture) {
+		MSG_BOX("Get Target_Depth FAILED");
+		return _float4(0.f, 0.f, 0.f, 0.f);
+	}
+
+	D3D11_BOX m_Box;
+	m_Box.left = x;
+	m_Box.top = y;
+	m_Box.right = x + 1;
+	m_Box.bottom = y + 1;
+	m_Box.front = 0;
+	m_Box.back = 1;
+
+	m_pContext->CopySubresourceRegion(m_pTexture, 0, 0, 0, 0, pTexture, 0, &m_Box);
+
+	D3D11_MAPPED_SUBRESOURCE MappedResource = {};
+
+	if (FAILED(m_pContext->Map(m_pTexture, 0, D3D11_MAP_READ, 0, &MappedResource)))
+		return _float4(0.f, 0.f, 0.f, 0.f);
+
+
+	if (nullptr == MappedResource.pData) {
+		m_pContext->Unmap(m_pTexture, 0);
+		return _float4(0.f, 0.f, 0.f, 0.f);
+
+	}
+
+	_float4 PickPos = ((_float4*)MappedResource.pData)[0];
+
+	m_pContext->Unmap(m_pTexture, 0);
+
+	_float fX = (_float(x) / m_iWinSizeX) * 2.f - 1.f;
+	_float fY = (_float(y) / m_iWinSizeY) * -2.f + 1.f;
+
+	_vector vWorldPos = XMVectorSet(fX, fY, PickPos.x, 1.f);
+
+	vWorldPos = vWorldPos * PickPos.y * m_pGameInstance->Get_CameraNF().y;
+
+	vWorldPos = XMVector4Transform(vWorldPos, m_pGameInstance->Get_Transform_Inversed(TransformType::Proj));
+
+	vWorldPos = XMVector4Transform(vWorldPos, m_pGameInstance->Get_Transform_Inversed(TransformType::View));
+
+	_float4 WorldPos = {};
+
+	XMStoreFloat4(&WorldPos, vWorldPos);
+
+	return WorldPos;
+}
+
+HRESULT CPicking::Ready_Texture2D()
+{
+	D3D11_TEXTURE2D_DESC Desc{};
+	Desc.Width = 1;
+	Desc.Height = 1;
+	Desc.MipLevels = 1;
+	Desc.ArraySize = 1;
+	Desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+
+	Desc.SampleDesc.Quality = 0;
+	Desc.SampleDesc.Count = 1;
+
+	Desc.Usage = D3D11_USAGE_STAGING;
+	Desc.BindFlags = 0;
+	Desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
+	Desc.MiscFlags = 0;
+
+	if (FAILED(m_pDevice->CreateTexture2D(&Desc, nullptr, &m_pTexture)))
+	{
+		return E_FAIL;
+	}
+
+	return E_NOTIMPL;
+}
+
 _bool CPicking::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float4* pPickPos)
 {
 	_float fDist{};
@@ -104,12 +186,15 @@ _bool CPicking::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPo
 	}
 }
 
-CPicking* CPicking::Create(HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)
+CPicking* CPicking::Create(_dev pDevice, _context pContext, HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)
 {
-	return new CPicking(hWnd, iWinSizeX, iWinSizeY);
+	return new CPicking(pDevice, pContext, hWnd, iWinSizeX, iWinSizeY);
 }
 
 void CPicking::Free()
 {
 	Safe_Release(m_pGameInstance);
+	Safe_Release(m_pDevice);
+	Safe_Release(m_pContext);
+	Safe_Release(m_pTexture);
 }
