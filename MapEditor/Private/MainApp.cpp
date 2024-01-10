@@ -23,6 +23,8 @@ HRESULT CMainApp::Init()
 		return E_FAIL;
 	}
 
+
+
 	srand(static_cast<_uint>(time(nullptr)));
 //#ifdef _DEBUGTEST
 //#ifdef UNICODE
@@ -35,17 +37,17 @@ HRESULT CMainApp::Init()
 	RECT rc = {};
 	GetClientRect(g_hWnd, &rc);
 
-	GRAPHIC_DESC GraphicDesc;
+	GRAPHIC_DESC        GraphicDesc;
 	ZeroMemory(&GraphicDesc, sizeof GraphicDesc);
-
 
 	GraphicDesc.hWnd = g_hWnd;
 	GraphicDesc.hInst = g_hInst;
-	GraphicDesc.iWinSizeX = g_iWinSizeX;
-	GraphicDesc.iWinSizeY = g_iWinSizeY;
-	GraphicDesc.isWindowed = TRUE;
+	GraphicDesc.isWindowed =true;
+	GraphicDesc.iWinSizeX = rc.right - rc.left;
+	GraphicDesc.iWinSizeY = rc.bottom - rc.top;
 
-	m_pGameInstance->Init_Engine(LEVEL_END, GraphicDesc, &m_pDevice, &m_pContext);
+	if (FAILED(m_pGameInstance->Init_Engine(LEVEL_END, GraphicDesc, &m_pDevice, &m_pContext)))
+		return E_FAIL;
 	
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
