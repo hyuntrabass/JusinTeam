@@ -145,7 +145,7 @@ void CGameInstance::Clear(_uint iLevelIndex)
 	m_pComponent_Manager->Clear(iLevelIndex);
 }
 
-HRESULT CGameInstance::Clear_BackBuffer_View(_float4 vClearColor)
+HRESULT CGameInstance::Clear_BackBuffer_View(_vec4 vClearColor)
 {
 	if (!m_pGraphic_Device)
 	{
@@ -475,7 +475,7 @@ HRESULT CGameInstance::Bind_Light_ViewProjMatrix(_uint iLevelIndex, const wstrin
 	return m_pLight_Manager->Bind_ViewProjMatrix(iLevelIndex, strLightTag, pShader, pViewVariableName, pProjVariableName);
 }
 
-_float4 CGameInstance::Get_CameraPos() const
+_vec4 CGameInstance::Get_CameraPos() const
 {
 	if (!m_pPipeLine)
 	{
@@ -485,7 +485,7 @@ _float4 CGameInstance::Get_CameraPos() const
 	return m_pPipeLine->Get_CameraPos();
 }
 
-_float4 CGameInstance::Get_CameraLook() const
+_vec4 CGameInstance::Get_CameraLook() const
 {
 	if (!m_pPipeLine)
 	{
@@ -493,26 +493,6 @@ _float4 CGameInstance::Get_CameraLook() const
 	}
 
 	return m_pPipeLine->Get_CameraLook();
-}
-
-_float44 CGameInstance::Get_Transform_Float4x4(TransformType eState) const
-{
-	if (!m_pPipeLine)
-	{
-		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
-	}
-
-	return m_pPipeLine->Get_Transform_Float4x4(eState);
-}
-
-_float44 CGameInstance::Get_Transform_Inversed_Float4x4(TransformType eState) const
-{
-	if (!m_pPipeLine)
-	{
-		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
-	}
-
-	return m_pPipeLine->Get_Transform_Inversed_Float4x4(eState);
 }
 
 _matrix CGameInstance::Get_Transform(TransformType eState) const
@@ -535,7 +515,7 @@ _matrix CGameInstance::Get_Transform_Inversed(TransformType eState) const
 	return m_pPipeLine->Get_Transform_Inversed(eState);
 }
 
-void CGameInstance::Set_Transform(TransformType eState, const _float44& TransformMatrix)
+void CGameInstance::Set_Transform(TransformType eState, const _mat& TransformMatrix)
 {
 	if (!m_pPipeLine)
 	{
@@ -545,17 +525,7 @@ void CGameInstance::Set_Transform(TransformType eState, const _float44& Transfor
 	m_pPipeLine->Set_Transform(eState, TransformMatrix);
 }
 
-void CGameInstance::Set_Transform(TransformType eState, _fmatrix TransformMatrix)
-{
-	if (!m_pPipeLine)
-	{
-		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
-	}
-
-	m_pPipeLine->Set_Transform(eState, TransformMatrix);
-}
-
-void CGameInstance::TransformRay_ToLocal(_fmatrix WorldMatrix)
+void CGameInstance::TransformRay_ToLocal(_mat WorldMatrix)
 {
 	if (!m_pPicking)
 	{
@@ -565,7 +535,7 @@ void CGameInstance::TransformRay_ToLocal(_fmatrix WorldMatrix)
 	return m_pPicking->TransformRay_ToLocal(WorldMatrix);
 }
 
-_bool CGameInstance::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _float3* pPickPos)
+_bool CGameInstance::Picking_InWorld(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _vec3* pPickPos)
 {
 	if (!m_pPicking)
 	{
@@ -575,7 +545,7 @@ _bool CGameInstance::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvecto
 	return m_pPicking->Picking_InWorld(vPoint1, vPoint2, vPoint3, pPickPos);
 }
 
-_bool CGameInstance::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _float4* pPickPos)
+_bool CGameInstance::Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _vec4* pPickPos)
 {
 	if (!m_pPicking)
 	{
@@ -585,7 +555,7 @@ _bool CGameInstance::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvecto
 	return m_pPicking->Picking_InLocal(vPoint1, vPoint2, vPoint3, pPickPos);
 }
 
-_bool CGameInstance::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _gvector vNormal, _float4* pPickPos)
+_bool CGameInstance::Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _vec4 vNormal, _vec4* pPickPos)
 {
 	if (!m_pPicking)
 	{
@@ -615,7 +585,7 @@ HRESULT CGameInstance::Add_Font(const wstring& strFontTag, const wstring& strFil
 	return m_pFont_Manager->Add_Font(strFontTag, strFilePath);
 }
 
-HRESULT CGameInstance::Render_Text(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale, _fvector vColor, _float fRotation)
+HRESULT CGameInstance::Render_Text(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale, _vec4 vColor, _float fRotation)
 {
 	if (!m_pFont_Manager)
 	{
@@ -625,7 +595,7 @@ HRESULT CGameInstance::Render_Text(const wstring& strFontTag, const wstring& str
 	return m_pFont_Manager->Render(strFontTag, strText, vPosition, fScale, vColor, fRotation);
 }
 
-_bool CGameInstance::IsIn_Fov_World(_fvector vPos, _float fRange)
+_bool CGameInstance::IsIn_Fov_World(_vec4 vPos, _float fRange)
 {
 	if (!m_pFrustum)
 	{
@@ -635,7 +605,7 @@ _bool CGameInstance::IsIn_Fov_World(_fvector vPos, _float fRange)
 	return m_pFrustum->IsIn_Fov_World(vPos, fRange);
 }
 
-void CGameInstance::Transform_ToLocalSpace(_fmatrix vWorldInversed)
+void CGameInstance::Transform_ToLocalSpace(_mat vWorldInversed)
 {
 	if (!m_pFrustum)
 	{
@@ -645,7 +615,7 @@ void CGameInstance::Transform_ToLocalSpace(_fmatrix vWorldInversed)
 	m_pFrustum->Transform_ToLocalSpace(vWorldInversed);
 }
 
-_bool CGameInstance::IsIn_Fov_Local(_fvector vPos, _float fRange)
+_bool CGameInstance::IsIn_Fov_Local(_vec4 vPos, _float fRange)
 {
 	if (!m_pFrustum)
 	{
@@ -764,7 +734,7 @@ PxRigidStatic* CGameInstance::Cook_StaticMesh(_uint iNumVertices, void* pVertice
 	return m_pPhysX_Manager->Cook_StaticMesh(iNumVertices, pVertices, iNumIndices, pIndices);
 }
 
-_bool CGameInstance::Raycast(_float3 vOrigin, _float3 vDir, _float fDist, PxRaycastBuffer& Buffer)
+_bool CGameInstance::Raycast(_vec3 vOrigin, _vec3 vDir, _float fDist, PxRaycastBuffer& Buffer)
 {
 	if (!m_pPhysX_Manager)
 	{
@@ -774,17 +744,7 @@ _bool CGameInstance::Raycast(_float3 vOrigin, _float3 vDir, _float fDist, PxRayc
 	return m_pPhysX_Manager->Raycast(vOrigin, vDir, fDist, Buffer);
 }
 
-_bool CGameInstance::Raycast(_float4 vOrigin, _float4 vDir, _float fDist, PxRaycastBuffer& Buffer)
-{
-	if (!m_pPhysX_Manager)
-	{
-		MSG_BOX("FATAL ERROR : m_pPhysX_Manager is NULL");
-	}
-
-	return m_pPhysX_Manager->Raycast(vOrigin, vDir, fDist, Buffer);
-}
-
-_bool CGameInstance::Raycast(_fvector vOrigin, _fvector vDir, _float fDist, PxRaycastBuffer& Buffer)
+_bool CGameInstance::Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer)
 {
 	if (!m_pPhysX_Manager)
 	{
@@ -819,7 +779,7 @@ HRESULT CGameInstance::Render_PhysX()
 #endif // _MapEditor
 #endif // _DEBUG
 
-HRESULT CGameInstance::Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor)
+HRESULT CGameInstance::Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _vec4& vColor)
 {
 	if (!m_pRenderTarget_Manager)
 	{

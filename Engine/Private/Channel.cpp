@@ -43,9 +43,9 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 
 	KEYFRAME LastKeyFrame = m_KeyFrames.back();
 
-	_vector vScaling{};
-	_vector vRotation{};
-	_vector vPosition{};
+	_vec4 vScaling{};
+	_vec4 vRotation{};
+	_vec4 vPosition{};
 
 	if (isAnimChanged)
 	{
@@ -54,16 +54,16 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 		{
 			m_PrevTransformation = Bones[m_iBoneIndex]->Get_Transformation();
 		}
-		_matrix PrevTransformation = XMLoadFloat4x4(&m_PrevTransformation);
-		_vector vSrcScaling{}, vDstScaling{};
-		_vector vSrcRotation{}, vDstRotation{};
-		_vector vSrcPotition{}, vDstPosition{};
+		_mat PrevTransformation = XMLoadFloat4x4(&m_PrevTransformation);
+		_vec4 vSrcScaling{}, vDstScaling{};
+		_vec4 vSrcRotation{}, vDstRotation{};
+		_vec4 vSrcPotition{}, vDstPosition{};
 		_float fRatio = fCurrentAnimPos / fInterpolationTime;
 
-		vSrcScaling.m128_f32[0] = XMVector4Length(PrevTransformation.r[0]).m128_f32[0];
-		vSrcScaling.m128_f32[1] = XMVector4Length(PrevTransformation.r[1]).m128_f32[0];
-		vSrcScaling.m128_f32[2] = XMVector4Length(PrevTransformation.r[2]).m128_f32[0];
-		vSrcScaling.m128_f32[3] = 0.f;
+		vSrcScaling.x = _vec4(&PrevTransformation._11).Length();
+		vSrcScaling.y = _vec4(&PrevTransformation._11).Length();
+		vSrcScaling.z = _vec4(&PrevTransformation._11).Length();
+		vSrcScaling.w = 0.f;
 		vDstScaling = XMLoadFloat4(&m_KeyFrames[0].vScaling);
 		vScaling = XMVectorLerp(vSrcScaling, vDstScaling, fRatio);
 
@@ -71,8 +71,8 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 		vDstRotation = XMLoadFloat4(&m_KeyFrames[0].vRotation);
 		vRotation = XMQuaternionSlerp(vSrcRotation, vDstRotation, fRatio);
 
-		vSrcPotition = PrevTransformation.r[3];
-		vDstPosition = XMLoadFloat4(&m_KeyFrames[0].vPosition);
+		vSrcPotition = _vec4(&PrevTransformation._41);
+		vDstPosition = m_KeyFrames[0].vPosition;
 		vPosition = XMVectorLerp(vSrcPotition, vDstPosition, fRatio);
 		
 		if (fCurrentAnimPos >= fInterpolationTime)
@@ -97,9 +97,9 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 
 		_float fRatio = (fCurrentAnimPos - m_KeyFrames[m_iCurrentKeyFrame].fTime) / (m_KeyFrames[m_iCurrentKeyFrame + 1].fTime - m_KeyFrames[m_iCurrentKeyFrame].fTime);
 
-		_vector vSrcScaling{}, vDstScaling{};
-		_vector vSrcRotation{}, vDstRotation{};
-		_vector vSrcPotition{}, vDstPosition{};
+		_vec4 vSrcScaling{}, vDstScaling{};
+		_vec4 vSrcRotation{}, vDstRotation{};
+		_vec4 vSrcPotition{}, vDstPosition{};
 
 		vSrcScaling = XMLoadFloat4(&m_KeyFrames[m_iCurrentKeyFrame].vScaling);
 		vDstScaling = XMLoadFloat4(&m_KeyFrames[m_iCurrentKeyFrame + 1].vScaling);
@@ -114,7 +114,7 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 		vPosition = XMVectorLerp(vSrcPotition, vDstPosition, fRatio);
 	}
 	
-	_matrix Transformation = XMMatrixAffineTransformation(vScaling, XMVectorSet(0.f, 0.f, 0.f, 1.f), vRotation, vPosition);
+	_mat Transformation = XMMatrixAffineTransformation(vScaling, XMVectorSet(0.f, 0.f, 0.f, 1.f), vRotation, vPosition);
 
 	Bones[m_iBoneIndex]->Set_Transformation(Transformation);
 }

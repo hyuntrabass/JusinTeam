@@ -52,6 +52,11 @@ const _uint& CModel::Get_NumMeshes() const
 	return m_iNumMeshes;
 }
 
+const _uint& CModel::Get_NumAnim() const
+{
+	return m_iNumAnimations;
+}
+
 const _bool& CModel::IsAnimationFinished(_uint iAnimIndex) const
 {
 	return m_Animations[iAnimIndex]->IsFinished();
@@ -67,7 +72,7 @@ const _float& CModel::Get_CurrentAnimPos() const
 	return m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos();
 }
 
-const _float44* CModel::Get_BoneMatrix(const _char* pBoneName) const
+const _mat* CModel::Get_BoneMatrix(const _char* pBoneName) const
 {
 	auto iter = find_if(m_Bones.begin(), m_Bones.end(), [&pBoneName](CBone* pBone) 
 	{
@@ -229,7 +234,7 @@ HRESULT CModel::Render(_uint iMeshIndex)
 	return S_OK;
 }
 
-_bool CModel::Intersect_RayModel(_fmatrix WorldMatrix, _float4* pPickPos)
+_bool CModel::Intersect_RayModel(_fmatrix WorldMatrix, _vec4* pPickPos)
 {
 	for (auto& pMesh : m_Meshes)
 	{

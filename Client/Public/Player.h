@@ -24,6 +24,7 @@ private:
 	CModel* m_pModelCom{ nullptr };
 
 private:
+	ANIM_DESC m_Animation{};
 	_float4 m_vPos{};
 	_float m_fGravity{};
 

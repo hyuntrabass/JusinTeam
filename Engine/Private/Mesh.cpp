@@ -23,7 +23,7 @@ CMesh::CMesh(const CMesh& rhs)
 	strcpy_s(m_szName, rhs.m_szName);
 }
 
-HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _fmatrix OffsetMatrix)
+HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _mat OffsetMatrix)
 {
 	m_eType = eType;
 	ModelFile.read(reinterpret_cast<_char*>(&m_iMatIndex), sizeof _uint);
@@ -114,11 +114,11 @@ HRESULT CMesh::Init(void* pArg)
 	return S_OK;
 }
 
-HRESULT CMesh::Bind_BoneMatrices(CShader* pShader, const vector<CBone*>& Bones, const _char* pVariableName, _fmatrix PivotMatrix)
+HRESULT CMesh::Bind_BoneMatrices(CShader* pShader, const vector<CBone*>& Bones, const _char* pVariableName, _mat PivotMatrix)
 {
 	for (size_t i = 0; i < m_iNumBones; i++)
 	{
-		XMStoreFloat4x4(&m_BoneMatrices[i], XMLoadFloat4x4(&m_OffsetMatrices[i]) * XMLoadFloat4x4(Bones[m_BoneIndices[i]]->Get_CombinedMatrix()) * PivotMatrix);
+		m_BoneMatrices[i] = m_OffsetMatrices[i] * *Bones[m_BoneIndices[i]]->Get_CombinedMatrix() * PivotMatrix;
 	}
 
 	if (FAILED(pShader->Bind_Matrices(pVariableName, m_BoneMatrices, m_iNumBones)))
@@ -130,7 +130,7 @@ HRESULT CMesh::Bind_BoneMatrices(CShader* pShader, const vector<CBone*>& Bones, 
 	return S_OK;
 }
 
-_bool CMesh::Intersect_RayMesh(_fmatrix WorldMatrix, _float4* pPickPos)
+_bool CMesh::Intersect_RayMesh(_mat WorldMatrix, _vec4* pPickPos)
 {
 	_uint Index[3]{};
 	_float3 vPickPos{};
@@ -143,7 +143,7 @@ _bool CMesh::Intersect_RayMesh(_fmatrix WorldMatrix, _float4* pPickPos)
 		Index[1] = (i * 3) + 1;
 		Index[2] = (i * 3) + 2;
 
-		_vector Vertices[3]
+		_vec4 Vertices[3]
 		{
 			XMLoadFloat3(&m_pVerticesPos[m_pIndices[Index[0]]]),
 			XMLoadFloat3(&m_pVerticesPos[m_pIndices[Index[1]]]),
@@ -154,7 +154,7 @@ _bool CMesh::Intersect_RayMesh(_fmatrix WorldMatrix, _float4* pPickPos)
 		//{
 		//	return false;
 		//}
-		_vector Normal = XMVector3Normalize(XMLoadFloat3(&m_pVerticesNor[m_pIndices[Index[0]]]) +
+		_vec4 Normal = XMVector3Normalize(XMLoadFloat3(&m_pVerticesNor[m_pIndices[Index[0]]]) +
 											XMLoadFloat3(&m_pVerticesNor[m_pIndices[Index[1]]]) +
 											XMLoadFloat3(&m_pVerticesNor[m_pIndices[Index[2]]]));
 
@@ -170,18 +170,18 @@ _bool CMesh::Intersect_RayMesh(_fmatrix WorldMatrix, _float4* pPickPos)
 	return false;
 }
 
-void CMesh::Apply_TransformToActor(_fmatrix WorldMatrix)
+void CMesh::Apply_TransformToActor(_mat WorldMatrix)
 {
 	if (not m_pActor)
 	{
 		return;
 	}
-	_vector vQuat = XMQuaternionRotationMatrix(WorldMatrix);
-	PxTransform Transform(VectorToPxVec3(WorldMatrix.r[3]), PxQuat(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]));
+	_vec4 vQuat = XMQuaternionRotationMatrix(WorldMatrix);
+	PxTransform Transform(VectorToPxVec3(_vec4(&WorldMatrix._31)), PxQuat(vQuat.x, vQuat.y, vQuat.z, vQuat.w));
 	m_pActor->setGlobalPose(Transform);
 }
 
-HRESULT CMesh::Ready_StaticMesh(ifstream& ModelFile, _fmatrix OffsetMatrix)
+HRESULT CMesh::Ready_StaticMesh(ifstream& ModelFile, _mat OffsetMatrix)
 {
 	m_iVertexStride = sizeof VTXSTATICMESH;
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
@@ -232,7 +232,7 @@ HRESULT CMesh::Ready_AnimMesh(ifstream& ModelFile)
 	{
 		MSG_BOX("Too Many Bones!");
 	}
-	m_BoneMatrices = new _float44[m_iNumBones];
+	m_BoneMatrices = new _mat[m_iNumBones];
 
 	m_iVertexStride = sizeof VTXANIMMESH;
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
@@ -261,7 +261,7 @@ HRESULT CMesh::Ready_AnimMesh(ifstream& ModelFile)
 
 		ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vBlendIndices), sizeof XMUINT4);
 
-		ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vBlendWeights), sizeof _float4);
+		ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vBlendWeights), sizeof _vec4);
 	}
 
 
@@ -276,9 +276,9 @@ HRESULT CMesh::Ready_AnimMesh(ifstream& ModelFile)
 
 	for (size_t i = 0; i < m_iNumBones; i++)
 	{
-		_float44 OffsetMatrix{};
+		_mat OffsetMatrix{};
 		_uint iBoneIndex{};
-		ModelFile.read(reinterpret_cast<_char*>(&OffsetMatrix), sizeof _float44);
+		ModelFile.read(reinterpret_cast<_char*>(&OffsetMatrix), sizeof _mat);
 		ModelFile.read(reinterpret_cast<_char*>(&iBoneIndex), sizeof _uint);
 
 		m_OffsetMatrices.push_back(OffsetMatrix);
@@ -288,7 +288,7 @@ HRESULT CMesh::Ready_AnimMesh(ifstream& ModelFile)
 	return S_OK;
 }
 
-CMesh* CMesh::Create(_dev pDevice, _context pContext, ModelType eType, ifstream& ModelFile, _fmatrix OffsetMatrix)
+CMesh* CMesh::Create(_dev pDevice, _context pContext, ModelType eType, ifstream& ModelFile, _mat OffsetMatrix)
 {
 	CMesh* pInstance = new CMesh(pDevice, pContext);
 
