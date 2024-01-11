@@ -1,30 +1,30 @@
-#include "BackGround.h"
+#include "Loading.h"
 #include "GameInstance.h"
 
-CBackGround::CBackGround(_dev pDevice, _context pContext)
+CLoading::CLoading(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
 }
 
-CBackGround::CBackGround(const CBackGround& rhs)
+CLoading::CLoading(const CLoading& rhs)
 	: COrthographicObject(rhs)
 {
 }
 
-HRESULT CBackGround::Init_Prototype()
+HRESULT CLoading::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CBackGround::Init(void* pArg)
+HRESULT CLoading::Init(void* pArg)
 {
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
 
-	m_pLogo = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Logo"));
-	if (not m_pLogo)
+	m_pHorse = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Loading_Horse"));
+	if (not m_pHorse)
 	{
 		return E_FAIL;
 	}
@@ -42,35 +42,22 @@ HRESULT CBackGround::Init(void* pArg)
 	return S_OK;
 }
 
-void CBackGround::Tick(_float fTimeDelta)
+void CLoading::Tick(_float fTimeDelta)
 {
-	/*
-	m_fAlpha += fTimeDelta * m_fDir;
-	if (m_fAlpha < 0.f)
-	{
-		m_fDir = 1.f;
-	}
+	m_fIndex += fTimeDelta * 0.2f;
+	if (m_fIndex >= 8.f)
+		m_fIndex = 0.f;
 
-	if (m_fAlpha >= 1.f)
-	{
-		m_fDuration += fTimeDelta;
-		if (m_fDuration >= 1.5f)
-		{
-			m_fDuration = 0.f;
-			m_fDir = -1.f;
-			m_fAlpha = 1.f;
-		}
-	}
-	*/
+	m_pHorse->Tick(fTimeDelta);
 }
 
-void CBackGround::Late_Tick(_float fTimeDelta)
+void CLoading::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
-	m_pLogo->Late_Tick(fTimeDelta);
+	m_pHorse->Late_Tick(fTimeDelta);
 }
 
-HRESULT CBackGround::Render()
+HRESULT CLoading::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
@@ -87,13 +74,15 @@ HRESULT CBackGround::Render()
 		return E_FAIL;
 	}
 
-	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("화면을 클릭해주세요"), _vec2((_float)g_iWinSizeX/2.f + 1.f, 600.f), 0.5f, _vec4(0.f, 0.f, 0.f, m_fAlpha));
-	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("화면을 클릭해주세요"), _vec2((_float)g_iWinSizeX/2.f, 600.f), 0.5f, _vec4(1.f, 1.f, 1.f, m_fAlpha));
+	/*
+	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("~!~!~!설명"), _vec2(200.f, 520.f), 0.5f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("~!~!~!설명"), _vec2(200.f, 520.f), 0.5f, _vec4(1.f, 1.f, 1.f, 1.f));
+	*/
 
 	return S_OK;
 }
 
-HRESULT CBackGround::Add_Components()
+HRESULT CLoading::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -110,7 +99,7 @@ HRESULT CBackGround::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_LOGO, TEXT("Prototype_Component_Texture_UI_Logo_Bg_DungeonResult"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_Bg_Dungeon"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -118,7 +107,7 @@ HRESULT CBackGround::Add_Components()
 	return S_OK;
 }
 
-HRESULT CBackGround::Bind_ShaderResources()
+HRESULT CLoading::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
 		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
@@ -131,7 +120,7 @@ HRESULT CBackGround::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", (_uint)m_fIndex)))
 	{
 		return E_FAIL;
 	}
@@ -139,37 +128,37 @@ HRESULT CBackGround::Bind_ShaderResources()
 	return S_OK;
 }
 
-CBackGround* CBackGround::Create(_dev pDevice, _context pContext)
+CLoading* CLoading::Create(_dev pDevice, _context pContext)
 {
-	CBackGround* pInstance = new CBackGround(pDevice, pContext);
+	CLoading* pInstance = new CLoading(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CBackGround");
+		MSG_BOX("Failed to Create : CLoading");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CBackGround::Clone(void* pArg)
+CGameObject* CLoading::Clone(void* pArg)
 {
-	CBackGround* pInstance = new CBackGround(*this);
+	CLoading* pInstance = new CLoading(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CBackGround");
+		MSG_BOX("Failed to Clone : CLoading");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CBackGround::Free()
+void CLoading::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pLogo);
+	Safe_Release(m_pHorse);
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

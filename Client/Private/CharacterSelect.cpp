@@ -1,83 +1,86 @@
-#include "BackGround.h"
+#include "CharacterSelect.h"
 #include "GameInstance.h"
 
-CBackGround::CBackGround(_dev pDevice, _context pContext)
+CCharacterSelect::CCharacterSelect(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
 }
 
-CBackGround::CBackGround(const CBackGround& rhs)
+CCharacterSelect::CCharacterSelect(const CCharacterSelect& rhs)
 	: COrthographicObject(rhs)
 {
 }
 
-HRESULT CBackGround::Init_Prototype()
+HRESULT CCharacterSelect::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CBackGround::Init(void* pArg)
+HRESULT CCharacterSelect::Init(void* pArg)
 {
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
 
-	m_pLogo = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Logo"));
-	if (not m_pLogo)
-	{
-		return E_FAIL;
-	}
-
-	m_fSizeX = g_iWinSizeX;
-	m_fSizeY = g_iWinSizeY;
+	m_fSizeX = 280.f;
+	m_fSizeY = 20.f;
 
 	m_fX = g_iWinSizeX >> 1;
-	m_fY = g_iWinSizeY >> 1;
+	m_fY = 80.f;
 
-	m_fDepth = 1.f;
+	m_fDepth = 0.5f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 	return S_OK;
 }
 
-void CBackGround::Tick(_float fTimeDelta)
+void CCharacterSelect::Tick(_float fTimeDelta)
 {
-	/*
-	m_fAlpha += fTimeDelta * m_fDir;
-	if (m_fAlpha < 0.f)
+	if (m_isActive)
 	{
-		m_fDir = 1.f;
-	}
-
-	if (m_fAlpha >= 1.f)
-	{
-		m_fDuration += fTimeDelta;
-		if (m_fDuration >= 1.5f)
+		switch (m_eState)
 		{
-			m_fDuration = 0.f;
-			m_fDir = -1.f;
-			m_fAlpha = 1.f;
+		case NONALPHA:
+		{
+			m_fAlpha += fTimeDelta;
+			if (m_fAlpha >= 1.f)
+			{
+				m_fAlpha = 1.f;
+				m_isActive = false;
+			}
+		}
+		break;
+		case ALPHA:
+		{
+			m_fAlpha -= fTimeDelta;
+			if (m_fAlpha <= 0.f)
+			{
+				m_fAlpha = 0.f;
+				m_isActive = false;
+			}
+		}
+		break;
+		default:
+			break;
 		}
 	}
-	*/
 }
 
-void CBackGround::Late_Tick(_float fTimeDelta)
+void CCharacterSelect::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
-	m_pLogo->Late_Tick(fTimeDelta);
 }
 
-HRESULT CBackGround::Render()
+HRESULT CCharacterSelect::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
+	if (FAILED(m_pShaderCom->Begin(VTPass_UI_Alpha)))
 	{
 		return E_FAIL;
 	}
@@ -87,13 +90,10 @@ HRESULT CBackGround::Render()
 		return E_FAIL;
 	}
 
-	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("화면을 클릭해주세요"), _vec2((_float)g_iWinSizeX/2.f + 1.f, 600.f), 0.5f, _vec4(0.f, 0.f, 0.f, m_fAlpha));
-	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("화면을 클릭해주세요"), _vec2((_float)g_iWinSizeX/2.f, 600.f), 0.5f, _vec4(1.f, 1.f, 1.f, m_fAlpha));
-
 	return S_OK;
 }
 
-HRESULT CBackGround::Add_Components()
+HRESULT CCharacterSelect::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -110,7 +110,7 @@ HRESULT CBackGround::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_LOGO, TEXT("Prototype_Component_Texture_UI_Logo_Bg_DungeonResult"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_SELECT, TEXT("Prototype_Component_Texture_UI_Select_Bg_PlayerSelectTitle"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -118,10 +118,15 @@ HRESULT CBackGround::Add_Components()
 	return S_OK;
 }
 
-HRESULT CBackGround::Bind_ShaderResources()
+HRESULT CCharacterSelect::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
 		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
+	{
+		return E_FAIL;
+	}
+	
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float))))
 	{
 		return E_FAIL;
 	}
@@ -139,37 +144,51 @@ HRESULT CBackGround::Bind_ShaderResources()
 	return S_OK;
 }
 
-CBackGround* CBackGround::Create(_dev pDevice, _context pContext)
+void CCharacterSelect::Set_Actice_Alpha(STATE eState)
 {
-	CBackGround* pInstance = new CBackGround(pDevice, pContext);
+	if (eState == NONALPHA)
+	{
+		m_fAlpha = 0.f;
+		m_isActive = true;
+	}
+	else if (eState == ALPHA)
+	{
+		m_fAlpha = 1.f;
+		m_isActive = true;
+	}
+	m_eState = eState;
+}
+
+CCharacterSelect* CCharacterSelect::Create(_dev pDevice, _context pContext)
+{
+	CCharacterSelect* pInstance = new CCharacterSelect(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CBackGround");
+		MSG_BOX("Failed to Create : CCharacterSelect");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CBackGround::Clone(void* pArg)
+CGameObject* CCharacterSelect::Clone(void* pArg)
 {
-	CBackGround* pInstance = new CBackGround(*this);
+	CCharacterSelect* pInstance = new CCharacterSelect(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CBackGround");
+		MSG_BOX("Failed to Clone : CCharacterSelect");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CBackGround::Free()
+void CCharacterSelect::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pLogo);
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

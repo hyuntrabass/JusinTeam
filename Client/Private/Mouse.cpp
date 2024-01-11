@@ -1,76 +1,63 @@
-#include "BackGround.h"
+#include "Mouse.h"
 #include "GameInstance.h"
 
-CBackGround::CBackGround(_dev pDevice, _context pContext)
+CMouse::CMouse(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
 }
 
-CBackGround::CBackGround(const CBackGround& rhs)
+CMouse::CMouse(const CMouse& rhs)
 	: COrthographicObject(rhs)
 {
 }
 
-HRESULT CBackGround::Init_Prototype()
+HRESULT CMouse::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CBackGround::Init(void* pArg)
+HRESULT CMouse::Init(void* pArg)
 {
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
 
-	m_pLogo = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Logo"));
-	if (not m_pLogo)
-	{
-		return E_FAIL;
-	}
 
-	m_fSizeX = g_iWinSizeX;
-	m_fSizeY = g_iWinSizeY;
+	m_fSizeX = 30.f;
+	m_fSizeY = 30.f;
 
 	m_fX = g_iWinSizeX >> 1;
 	m_fY = g_iWinSizeY >> 1;
 
-	m_fDepth = 1.f;
+	m_fDepth = 0.1f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+
+	ShowCursor(false);
 
 	return S_OK;
 }
 
-void CBackGround::Tick(_float fTimeDelta)
+void CMouse::Tick(_float fTimeDelta)
 {
-	/*
-	m_fAlpha += fTimeDelta * m_fDir;
-	if (m_fAlpha < 0.f)
-	{
-		m_fDir = 1.f;
-	}
+	POINT ptMouse;
+	GetCursorPos(&ptMouse);
+	ScreenToClient(g_hWnd, &ptMouse);
 
-	if (m_fAlpha >= 1.f)
-	{
-		m_fDuration += fTimeDelta;
-		if (m_fDuration >= 1.5f)
-		{
-			m_fDuration = 0.f;
-			m_fDir = -1.f;
-			m_fAlpha = 1.f;
-		}
-	}
-	*/
+	m_fX = ptMouse.x;
+	m_fY = ptMouse.y;
+
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
 
-void CBackGround::Late_Tick(_float fTimeDelta)
+void CMouse::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
-	m_pLogo->Late_Tick(fTimeDelta);
+
 }
 
-HRESULT CBackGround::Render()
+HRESULT CMouse::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
@@ -87,13 +74,10 @@ HRESULT CBackGround::Render()
 		return E_FAIL;
 	}
 
-	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("화면을 클릭해주세요"), _vec2((_float)g_iWinSizeX/2.f + 1.f, 600.f), 0.5f, _vec4(0.f, 0.f, 0.f, m_fAlpha));
-	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("화면을 클릭해주세요"), _vec2((_float)g_iWinSizeX/2.f, 600.f), 0.5f, _vec4(1.f, 1.f, 1.f, m_fAlpha));
-
 	return S_OK;
 }
 
-HRESULT CBackGround::Add_Components()
+HRESULT CMouse::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -110,7 +94,7 @@ HRESULT CBackGround::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_LOGO, TEXT("Prototype_Component_Texture_UI_Logo_Bg_DungeonResult"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Mouse"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -118,7 +102,7 @@ HRESULT CBackGround::Add_Components()
 	return S_OK;
 }
 
-HRESULT CBackGround::Bind_ShaderResources()
+HRESULT CMouse::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
 		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
@@ -139,37 +123,36 @@ HRESULT CBackGround::Bind_ShaderResources()
 	return S_OK;
 }
 
-CBackGround* CBackGround::Create(_dev pDevice, _context pContext)
+CMouse* CMouse::Create(_dev pDevice, _context pContext)
 {
-	CBackGround* pInstance = new CBackGround(pDevice, pContext);
+	CMouse* pInstance = new CMouse(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CBackGround");
+		MSG_BOX("Failed to Create : CMouse");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CBackGround::Clone(void* pArg)
+CGameObject* CMouse::Clone(void* pArg)
 {
-	CBackGround* pInstance = new CBackGround(*this);
+	CMouse* pInstance = new CMouse(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CBackGround");
+		MSG_BOX("Failed to Clone : CMouse");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CBackGround::Free()
+void CMouse::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pLogo);
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

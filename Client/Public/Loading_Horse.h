@@ -4,12 +4,12 @@
 
 BEGIN(Client)
 
-class CBackGround final : public COrthographicObject
+class CLoading_Horse final : public COrthographicObject
 {
 private:
-	CBackGround(_dev pDevice, _context pContext);
-	CBackGround(const CBackGround& rhs);
-	virtual ~CBackGround() = default;
+	CLoading_Horse(_dev pDevice, _context pContext);
+	CLoading_Horse(const CLoading_Horse& rhs);
+	virtual ~CLoading_Horse() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -29,13 +29,10 @@ private:
 	HRESULT Bind_ShaderResources();
 
 private:
-	_float				m_fDir{ 1.f };
-	_float				m_fAlpha{ 0.f };
-	_float				m_fDuration{ 0.f };
-	class CGameObject*	m_pLogo{ nullptr };
+	_float				m_fIndex{ 0.f };
 
 public:
-	static CBackGround* Create(_dev pDevice, _context pContext);
+	static CLoading_Horse* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

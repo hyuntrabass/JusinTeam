@@ -1,12 +1,12 @@
-#include "Level_Logo.h"
+#include "Level_Custom.h"
 #include "Level_Loading.h"
 
-CLevel_Logo::CLevel_Logo(_dev pDevice, _context pContext)
+CLevel_Custom::CLevel_Custom(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
 {
 }
 
-HRESULT CLevel_Logo::Init()
+HRESULT CLevel_Custom::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_LOGO);
 
@@ -18,7 +18,7 @@ HRESULT CLevel_Logo::Init()
 	return S_OK;
 }
 
-void CLevel_Logo::Tick(_float fTimeDelta)
+void CLevel_Custom::Tick(_float fTimeDelta)
 {
 	if (not m_hasBGMStarted and m_pGameInstance->Is_SoundManager_Ready())
 	{
@@ -28,7 +28,7 @@ void CLevel_Logo::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_RETURN))
 	{
-		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_SELECT))))
+		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_GAMEPLAY))))
 		{
 			return;
 		}
@@ -44,12 +44,12 @@ void CLevel_Logo::Tick(_float fTimeDelta)
 	}
 }
 
-HRESULT CLevel_Logo::Render()
+HRESULT CLevel_Custom::Render()
 {
 	return S_OK;
 }
 
-HRESULT CLevel_Logo::Ready_Logo()
+HRESULT CLevel_Custom::Ready_Logo()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_Logo"), TEXT("Prototype_GameObject_Background"))))
 	{
@@ -59,20 +59,20 @@ HRESULT CLevel_Logo::Ready_Logo()
 	return S_OK;
 }
 
-CLevel_Logo* CLevel_Logo::Create(_dev pDevice, _context pContext)
+CLevel_Custom* CLevel_Custom::Create(_dev pDevice, _context pContext)
 {
-	CLevel_Logo* pInstance = new CLevel_Logo(pDevice, pContext);
+	CLevel_Custom* pInstance = new CLevel_Custom(pDevice, pContext);
 
 	if (FAILED(pInstance->Init()))
 	{
-		MSG_BOX("Failed to create : CLevel_Logo");
+		MSG_BOX("Failed to create : CLevel_Custom");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CLevel_Logo::Free()
+void CLevel_Custom::Free()
 {
 	__super::Free();
 }

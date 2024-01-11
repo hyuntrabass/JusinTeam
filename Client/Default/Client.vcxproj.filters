@@ -40,20 +40,44 @@
     <Filter Include="02.GameObjects\03.Player">
       <UniqueIdentifier>{106eadb8-2a41-4bfc-b3a1-d09b0dc354bf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.UI\Logo_Background">
-      <UniqueIdentifier>{afe74668-4b64-4d74-8f1b-c26e1dc986d3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\01.Camera\Main">
       <UniqueIdentifier>{00fdc532-be83-4744-a507-ea72d90460ec}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\01.Camera\Debug">
       <UniqueIdentifier>{e97bce74-f494-4fe2-83eb-e9455c572c64}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Levels\01.GamePlay">
-      <UniqueIdentifier>{1784434f-f383-4b50-9bf3-b8df7da39f31}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\04. Monster">
       <UniqueIdentifier>{086d8fbf-1f82-4f80-bf2a-c9239899b420}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\Mouse">
+      <UniqueIdentifier>{89b430e3-9d5d-489f-9bcf-45fe6b71c06b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\03.GamePlay">
+      <UniqueIdentifier>{1784434f-f383-4b50-9bf3-b8df7da39f31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\01.Select">
+      <UniqueIdentifier>{7240830d-62e1-4b70-b39f-24e7112fa857}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\02.Custom">
+      <UniqueIdentifier>{fa58d2ea-b7ac-46c9-95ad-8624c60b8a80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\00.LogoLevel">
+      <UniqueIdentifier>{1678a295-7a89-4c8c-ad08-52ced059c67e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\00.LogoLevel\Logo_Background">
+      <UniqueIdentifier>{afe74668-4b64-4d74-8f1b-c26e1dc986d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\00.LogoLevel\Loading">
+      <UniqueIdentifier>{1c9f433d-dcee-4a97-a135-ed8a31442110}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\01.SelectLevel">
+      <UniqueIdentifier>{93abe20e-797d-4bcc-ad2b-25c32d710d72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\01.SelectLevel\ClassSelect">
+      <UniqueIdentifier>{e433917e-0435-4307-a9c2-4229c403b1c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\01.SelectLevel\CharacterSelect">
+      <UniqueIdentifier>{6f2639c5-1725-44f9-9096-e83c37bd1286}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\03.Player\BodyParts">
       <UniqueIdentifier>{0123b848-788d-47ef-ba20-76c36aaef511}</UniqueIdentifier>
@@ -93,14 +117,8 @@
     <ClInclude Include="..\Public\Loader.h">
       <Filter>01.Levels\99.Loading\Loader</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\LoaderIncludes.h">
-      <Filter>01.Levels\99.Loading\Loader</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Level_Logo.h">
       <Filter>01.Levels\00.Logo</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\BackGround.h">
-      <Filter>02.GameObjects\00.UI\Logo_Background</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Player.h">
       <Filter>02.GameObjects\03.Player</Filter>
@@ -112,10 +130,43 @@
       <Filter>02.GameObjects\01.Camera\Debug</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Level_GamePlay.h">
-      <Filter>01.Levels\01.GamePlay</Filter>
+      <Filter>01.Levels\03.GamePlay</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Monster.h">
       <Filter>02.GameObjects\04. Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Mouse.h">
+      <Filter>02.GameObjects\00.UI\Mouse</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\LoaderIncludes.h">
+      <Filter>01.Levels\99.Loading\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Custom.h">
+      <Filter>01.Levels\02.Custom</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Select.h">
+      <Filter>01.Levels\01.Select</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BackGround.h">
+      <Filter>02.GameObjects\00.UI\00.LogoLevel\Logo_Background</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Logo.h">
+      <Filter>02.GameObjects\00.UI\00.LogoLevel\Logo_Background</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Loading.h">
+      <Filter>02.GameObjects\00.UI\00.LogoLevel\Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Loading_Horse.h">
+      <Filter>02.GameObjects\00.UI\00.LogoLevel\Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Select.h">
+      <Filter>02.GameObjects\00.UI\01.SelectLevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CharacterSelect.h">
+      <Filter>02.GameObjects\00.UI\01.SelectLevel\CharacterSelect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TextButton.h">
+      <Filter>02.GameObjects\00.UI\01.SelectLevel\ClassSelect</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\BodyPart.h">
       <Filter>02.GameObjects\03.Player\BodyParts</Filter>
@@ -156,9 +207,6 @@
     <ClCompile Include="..\Private\Level_Logo.cpp">
       <Filter>01.Levels\00.Logo</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\BackGround.cpp">
-      <Filter>02.GameObjects\00.UI\Logo_Background</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\Player.cpp">
       <Filter>02.GameObjects\03.Player</Filter>
     </ClCompile>
@@ -169,10 +217,40 @@
       <Filter>02.GameObjects\01.Camera\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Level_GamePlay.cpp">
-      <Filter>01.Levels\01.GamePlay</Filter>
+      <Filter>01.Levels\03.GamePlay</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Monster.cpp">
       <Filter>02.GameObjects\04. Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Mouse.cpp">
+      <Filter>02.GameObjects\00.UI\Mouse</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Custom.cpp">
+      <Filter>01.Levels\02.Custom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Select.cpp">
+      <Filter>01.Levels\01.Select</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BackGround.cpp">
+      <Filter>02.GameObjects\00.UI\00.LogoLevel\Logo_Background</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Logo.cpp">
+      <Filter>02.GameObjects\00.UI\00.LogoLevel\Logo_Background</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Loading.cpp">
+      <Filter>02.GameObjects\00.UI\00.LogoLevel\Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Loading_Horse.cpp">
+      <Filter>02.GameObjects\00.UI\00.LogoLevel\Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Select.cpp">
+      <Filter>02.GameObjects\00.UI\01.SelectLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CharacterSelect.cpp">
+      <Filter>02.GameObjects\00.UI\01.SelectLevel\CharacterSelect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TextButton.cpp">
+      <Filter>02.GameObjects\00.UI\01.SelectLevel\ClassSelect</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\BodyPart.cpp">
       <Filter>02.GameObjects\03.Player\BodyParts</Filter>

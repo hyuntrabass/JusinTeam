@@ -4,12 +4,14 @@
 
 BEGIN(Client)
 
-class CBackGround final : public COrthographicObject
+class CCharacterSelect final : public COrthographicObject
 {
+public:
+	enum STATE { NONALPHA, ALPHA, STATE_END };
 private:
-	CBackGround(_dev pDevice, _context pContext);
-	CBackGround(const CBackGround& rhs);
-	virtual ~CBackGround() = default;
+	CCharacterSelect(_dev pDevice, _context pContext);
+	CCharacterSelect(const CCharacterSelect& rhs);
+	virtual ~CCharacterSelect() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -29,13 +31,19 @@ private:
 	HRESULT Bind_ShaderResources();
 
 private:
-	_float				m_fDir{ 1.f };
-	_float				m_fAlpha{ 0.f };
+	_bool				m_isActive{ false };
+
+	STATE				m_eState{ NONALPHA };
+
+
+	_float				m_fAlpha{ 1.f };
 	_float				m_fDuration{ 0.f };
-	class CGameObject*	m_pLogo{ nullptr };
 
 public:
-	static CBackGround* Create(_dev pDevice, _context pContext);
+	void Set_Actice_Alpha(STATE	eState);
+
+public:
+	static CCharacterSelect* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

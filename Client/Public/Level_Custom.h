@@ -4,11 +4,11 @@
 
 BEGIN(Client)
 
-class CLevel_Logo final : public CLevel
+class CLevel_Custom final : public CLevel
 {
 private:
-	CLevel_Logo(_dev pDevice, _context pContext);
-	virtual ~CLevel_Logo() = default;
+	CLevel_Custom(_dev pDevice, _context pContext);
+	virtual ~CLevel_Custom() = default;
 
 public:
 	virtual HRESULT Init() override;
@@ -22,7 +22,7 @@ private:
 	HRESULT Ready_Logo();
 
 public:
-	static CLevel_Logo* Create(_dev pDevice, _context pContext);
+	static CLevel_Custom* Create(_dev pDevice, _context pContext);
 	virtual void Free() override;
 };
 

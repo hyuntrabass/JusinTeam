@@ -1,15 +1,17 @@
 #pragma once
 #include "Client_Define.h"
 #include "OrthographicObject.h"
+#include "CharacterSelect.h"
+#include "TextButton.h"
 
 BEGIN(Client)
-
-class CBackGround final : public COrthographicObject
+class CCharacterSelect;
+class CSelect final : public CGameObject
 {
 private:
-	CBackGround(_dev pDevice, _context pContext);
-	CBackGround(const CBackGround& rhs);
-	virtual ~CBackGround() = default;
+	CSelect(_dev pDevice, _context pContext);
+	CSelect(const CSelect& rhs);
+	virtual ~CSelect() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -19,23 +21,19 @@ public:
 	virtual HRESULT Render() override;
 
 private:
-	CRenderer* m_pRendererCom{ nullptr };
-	CShader* m_pShaderCom{ nullptr };
-	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
-	CTexture* m_pTextureCom{ nullptr };
-
-private:
 	HRESULT Add_Components();
+	HRESULT Add_Parts();
 	HRESULT Bind_ShaderResources();
 
 private:
-	_float				m_fDir{ 1.f };
 	_float				m_fAlpha{ 0.f };
 	_float				m_fDuration{ 0.f };
-	class CGameObject*	m_pLogo{ nullptr };
+	CCharacterSelect*	m_pCharacterSelect{ nullptr };
+	CTextButton*		m_pClassButton{ nullptr };
+	CTextButton*		m_pSelectButton{ nullptr };
 
 public:
-	static CBackGround* Create(_dev pDevice, _context pContext);
+	static CSelect* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };
