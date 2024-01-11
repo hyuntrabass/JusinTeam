@@ -51,12 +51,12 @@ private:
     _int m_iManipulateType = 0;
     MANIPULATETYPE m_eManipulateType = { TYPE_STATE };
     _int m_iPickedObjectID = { -1 };
-    _float3 m_vPreScale = {};
-    _float4 m_vPreRight = {};
-    _float4 m_vPreUp = {};
-    _float4 m_vPreLook = {};
-    _float4 m_vPrePosition = {};
-    _float3 m_vCurrentScale = {};
+    _vec3 m_vPreScale = {};
+    _vec3 m_vPreRight = {};
+    _vec3 m_vPreUp = {};
+    _vec3 m_vPreLook = {};
+    _vec3 m_vPrePosition = {};
+    _vec3 m_vCurrentScale = {};
 
 public:
     static CImgui_Manager* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const GRAPHIC_DESC& GraphicDesc);

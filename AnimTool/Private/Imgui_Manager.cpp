@@ -243,27 +243,35 @@ HRESULT CImgui_Manager::ImGuiMenu()
 
 HRESULT CImgui_Manager::ImGuizmoMenu()
 {
-	_float44 ViewMatrix = m_pGameInstance->Get_Transform_Float4x4(TransformType::View);
-	_float44 ProjMatrix = m_pGameInstance->Get_Transform_Float4x4(TransformType::Proj);
+	_mat ViewMatrix = m_pGameInstance->Get_Transform(TransformType::View);
+	_mat ProjMatrix = m_pGameInstance->Get_Transform(TransformType::Proj);
 
 	if (m_pPlayer)
 	{
 		CTransform* pTargetTransform = (CTransform*)(m_pPlayer->Find_Component(TEXT("Component_Transform")));
 		if (pTargetTransform != nullptr)
 		{
-			_float44 TargetMatrix = pTargetTransform->Get_World_float4x4();
-			_matrix PreMatrix = pTargetTransform->Get_World_Matrix();
+			_mat TargetMatrix = pTargetTransform->Get_World_Matrix();
+			_mat PreMatrix = pTargetTransform->Get_World_Matrix();
 			ImGuizmo::Manipulate(&ViewMatrix.m[0][0], &ProjMatrix.m[0][0], m_eStateType, ImGuizmo::MODE::WORLD, &TargetMatrix.m[0][0]);
 			if (ImGuizmo::IsUsing())
 			{
 				if (m_eStateType == ImGuizmo::OPERATION::SCALE)
 				{
-					m_vCurrentScale = _float3(XMVectorGetX(XMVector3Length(XMLoadFloat4x4(&TargetMatrix).r[0])),
-						XMVectorGetX(XMVector3Length(XMLoadFloat4x4(&TargetMatrix).r[State::Up])),
-						XMVectorGetX(XMVector3Length(XMLoadFloat4x4(&TargetMatrix).r[State::Look])));
-					pTargetTransform->Set_State(State::Right, XMVector3Normalize(PreMatrix.r[State::Right]) * m_vCurrentScale.x);
-					pTargetTransform->Set_State(State::Up, XMVector3Normalize(PreMatrix.r[State::Up]) * m_vCurrentScale.y);
-					pTargetTransform->Set_State(State::Look, XMVector3Normalize(PreMatrix.r[State::Look]) * m_vCurrentScale.z);
+					m_vCurrentScale = _vec3(TargetMatrix.Right().Length(),
+						TargetMatrix.Up().Length(),
+						TargetMatrix.Backward().Length());
+
+					_vec3 Right = PreMatrix.Right();
+					Right.Normalize();
+					_vec3 Up = PreMatrix.Up();
+					Up.Normalize();
+					_vec3 Look = PreMatrix.Backward();
+					Look.Normalize();
+
+					pTargetTransform->Set_State(State::Right, Right * m_vCurrentScale.x);
+					pTargetTransform->Set_State(State::Up, Up * m_vCurrentScale.y);
+					pTargetTransform->Set_State(State::Look, Look * m_vCurrentScale.z);
 				}
 				else
 				{
