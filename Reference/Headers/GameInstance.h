@@ -88,6 +88,8 @@ public: // Picking
 	_bool Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _vec4 vNormal, _Inout_ _vec4* pPickPos);
 	_float4 PickingDepth(_float x, _float y);
 
+	_vec4 Compute_MousePicked_Terrain(_float44 matTerrainWorld, _float3* pVerticesPos, _uint iNumVerticesX, _uint iNumVerticesZ);
+	HRESULT Ready_Texture2D();
 
 public: // Font
 	HRESULT Add_Font(const wstring& strFontTag, const wstring& strFilePath);

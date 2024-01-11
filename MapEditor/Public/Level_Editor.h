@@ -19,7 +19,7 @@ private:
 	HRESULT Ready_Camera();
 	HRESULT Ready_Light();
 	HRESULT Ready_Player();
-	HRESULT Ready_Menu();
+	HRESULT Ready_Map();
 
 public:
 	static CLevel_Editor* Create(_dev pDevice, _context pContext);

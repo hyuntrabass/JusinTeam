@@ -61,6 +61,8 @@ HRESULT CMainApp::Init()
 		return E_FAIL;
 	}
 
+	m_pGameInstance->Ready_Texture2D();
+
 	if (FAILED(Ready_Prototype_For_Loading()))
 	{
 		return E_FAIL;
@@ -213,6 +215,10 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex_Trail"), CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Vtxtex_Trail.hlsl"), VTXTRAIL::Elements, VTXTRAIL::iNumElements))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"), CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 100,100))))
 	{
 		return E_FAIL;
 	}

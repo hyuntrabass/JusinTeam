@@ -17,6 +17,7 @@ vector g_vMtrlAmbient = vector(0.3f, 0.3f, 0.3f, 1.f);
 vector g_vMtrlSpecular = vector(0.7f, 1.0f, 0.7f, 1.f);
 
 vector g_vCamPos;
+float g_fCamFar;
 
 struct VS_IN
 {
@@ -31,6 +32,7 @@ struct VS_OUT
     vector vNor : Normal;
     float2 vTex : Texcoord0;
     vector vWorldPos : Texcoord1;
+    vector vProjPos : Texcoord2;
 };
 
 VS_OUT VS_Main(VS_IN Input)
@@ -46,7 +48,8 @@ VS_OUT VS_Main(VS_IN Input)
     Output.vNor = mul(vector(Input.vNor, 0.f), g_WorldMatrix);
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
-	
+    Output.vProjPos = Output.vPos;
+    
     return Output;
 }
 
@@ -56,11 +59,15 @@ struct PS_IN
     vector vNor : Normal;
     float2 vTex : Texcoord0;
     vector vWorldPos : Texcoord1;
+    vector vProjPos : Texcoord2;
 };
 
 struct PS_OUT
 {
-    vector vColor : SV_Target0;
+    //vector vColor : SV_Target0;
+    vector vDiffuse : SV_Target0;
+    vector vNormal : SV_Target1;
+    vector vDepth : SV_Target2;
 };
 
 PS_OUT PS_Main(PS_IN Input)
@@ -75,7 +82,9 @@ PS_OUT PS_Main(PS_IN Input)
     vector vLook = Input.vWorldPos - g_vCamPos;
     float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
 
-    Output.vColor = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular);
+    Output.vDiffuse = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular);
+    Output.vNormal = Input.vNor;
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
     
     return Output;
 }
@@ -102,8 +111,9 @@ PS_OUT PS_Main_Editor(PS_IN Input)
     vector vLook = Input.vWorldPos - g_vCamPos;
     float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
 
-    Output.vColor = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular) + vCursorDiffuse;
-    
+    Output.vDiffuse = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular) + vCursorDiffuse;
+    Output.vNormal = Input.vNor;
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
     return Output;
 }
 

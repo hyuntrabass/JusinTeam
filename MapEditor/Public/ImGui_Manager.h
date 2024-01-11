@@ -18,14 +18,15 @@ private:
 public:
 	HRESULT Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc);
 	void Tick(_float fTimeDelta);
-	void LateTick(_float fTimeDelta);
 	HRESULT Render();
 
 private:
 	HRESULT ImGuiMenu();
 	HRESULT ImGuizmoMenu();
 
+	void Create_Object(_uint iIndex);
 	const char* Search_Files();
+
 
 private:
 	ID3D11Device* m_pDevice{ nullptr };
@@ -36,7 +37,15 @@ private:
 	_uint m_iWinSizeY = { 0 };
 
 	POINT m_ptMouse = {};
-	_float4 m_vMousePos = { 0.f,0.f,0.f,1.f };
+	_float2 m_vMousePos = { 0.f,0.f };
+	_vec4 m_pTerrainPos = { 0.f, 0.f, 0.f, 0.f };
+
+private:
+	vector<const char*> Maps;
+	vector<const char*> Objects;
+	vector<const char*> Monsters;
+
+	_int m_iSelectIdx = { 0.f };
 
 public:
 	static CImGui_Manager* Create(_dev pDevice, _context pContext, const GRAPHIC_DESC& GraphicDesc);

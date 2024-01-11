@@ -23,7 +23,7 @@ HRESULT CVIBuffer_Terrain::Init_Prototype(_uint iNumVerticesX, _uint iNumVertice
 	m_ePrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 #pragma region Vertex Buffer
-	VTXNORTEX* pVertices = new VTXNORTEX[m_iNumVertices];
+	pVertices = new VTXNORTEX[m_iNumVertices];
 
 	for (_uint z = 0; z < iNumVerticesZ; z++)
 	{

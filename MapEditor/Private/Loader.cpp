@@ -116,12 +116,29 @@ HRESULT CLoader::Load_Editor()
 	m_strLoadingText = L"Editor : Loading Texture";
 #pragma region Texture
 
+	// Effect Textures
+	string strInputFilePath = "../Bin/Resources/Textures/Terrain/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_Terrain");
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+#pragma endregion
+
 #pragma region UI
 #pragma endregion
 
 #pragma region Effect
 	// Effect Textures
-	string strInputFilePath = "../Bin/Resources/Textures/Effect/";
+	strInputFilePath = "../Bin/Resources/Textures/Effect/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -225,6 +242,11 @@ HRESULT CLoader::Load_Editor()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Terrain"), CTerrain::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 
 #pragma endregion
 

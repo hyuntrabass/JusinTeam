@@ -574,7 +574,21 @@ _float4 CGameInstance::PickingDepth(_float x, _float y)
 
 	return m_pPicking->PickingDepth(x, y);
 }
+_vec4 CGameInstance::Compute_MousePicked_Terrain(_float44 matTerrainWorld, _float3* pVerticesPos, _uint iNumVerticesX, _uint iNumVerticesZ)
+{
+	if (nullptr == m_pPicking)
+		return _vec4(0.f, 0.f, 0.f, 0.f);
 
+	return m_pPicking->Compute_MousePicked_Terrain(matTerrainWorld, pVerticesPos, iNumVerticesX, iNumVerticesZ);
+}
+HRESULT CGameInstance::Ready_Texture2D()
+{
+	if (nullptr == m_pPicking)
+	{
+		return E_FAIL;
+	}
+		return m_pPicking->Ready_Texture2D();
+}
 HRESULT CGameInstance::Add_Font(const wstring& strFontTag, const wstring& strFilePath)
 {
 	if (!m_pFont_Manager)
