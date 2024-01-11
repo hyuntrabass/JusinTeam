@@ -25,6 +25,8 @@ HRESULT CPlayer::Init(void* pArg)
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = true;
 
+	m_pTransformCom->Set_Scale(_vec3(0.2f, 0.2f, 0.2f));
+
 	return S_OK;
 }
 

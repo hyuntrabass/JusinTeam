@@ -58,6 +58,15 @@
     <Filter Include="02.GameObjects\03.Player\BodyParts">
       <UniqueIdentifier>{0123b848-788d-47ef-ba20-76c36aaef511}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\04. Monster\Tutorial">
+      <UniqueIdentifier>{6312d092-7911-49b9-bf08-6d14a17144d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04. Monster\Tutorial\00. NPCvsMon">
+      <UniqueIdentifier>{a52be690-2c9f-4aff-bc7f-ad98394daf42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04. Monster\Tutorial\01. Void05">
+      <UniqueIdentifier>{ca2ecc51-8de3-4c19-8aae-baa40147a63b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -111,6 +120,12 @@
     <ClInclude Include="..\Public\BodyPart.h">
       <Filter>02.GameObjects\03.Player\BodyParts</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\NPCvsMon.h">
+      <Filter>02.GameObjects\04. Monster\Tutorial\00. NPCvsMon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Void05.h">
+      <Filter>02.GameObjects\04. Monster\Tutorial\01. Void05</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -161,6 +176,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\BodyPart.cpp">
       <Filter>02.GameObjects\03.Player\BodyParts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\8th_3D\3D_Framework\Client\Private\NPCvsMon.cpp">
+      <Filter>02.GameObjects\04. Monster\Tutorial\00. NPCvsMon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Void05.cpp">
+      <Filter>02.GameObjects\04. Monster\Tutorial\01. Void05</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

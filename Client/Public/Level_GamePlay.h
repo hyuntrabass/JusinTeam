@@ -20,6 +20,9 @@ private:
 	HRESULT Ready_Light();
 	HRESULT Ready_Player();
 
+	// Monster
+	HRESULT Ready_Void05();
+
 public:
 	static CLevel_GamePlay* Create(_dev pDevice, _context pContext);
 	virtual void Free() override;
