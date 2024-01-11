@@ -40,6 +40,7 @@ HRESULT CBodyPart::Init(void* pArg)
 void CBodyPart::Tick(_float fTimeDelta)
 {
 
+
 	if (m_iSelectedModelIndex > m_iNumVariations)
 	{
 		return;
@@ -201,16 +202,23 @@ const _float44* CBodyPart::Get_BoneMatrix(const _char* pBoneName)
 	return m_Models[m_iSelectedModelIndex]->Get_BoneMatrix(pBoneName);
 }
 
-void CBodyPart::Set_ModelIndex(_uint iIndex)
+//void CBodyPart::Set_ModelIndex(_uint iIndex)
+//{
+//	if (iIndex > m_iNumVariations)
+//	{
+//		m_iSelectedModelIndex = m_iNumVariations - 1;
+//	}
+//	else
+//	{
+//		m_iSelectedModelIndex = iIndex;
+//	}
+//}
+
+void CBodyPart::Reset_Model()
 {
-	if (iIndex > m_iNumVariations)
-	{
-		m_iSelectedModelIndex = m_iNumVariations - 1;
-	}
-	else
-	{
-		m_iSelectedModelIndex = iIndex;
-	}
+	m_Animation->bRestartAnimation = true;
+	m_Models[m_iSelectedModelIndex]->Set_Animation(*m_Animation);
+	m_Animation->bRestartAnimation = false;
 }
 
 HRESULT CBodyPart::Add_Components()
@@ -227,7 +235,7 @@ HRESULT CBodyPart::Add_Components()
 
 	for (size_t i = 0; i < m_Models.size(); i++)
 	{
-		wstring PrototypeTag = TEXT("Prototype_Model_") + to_wstring(m_eType) + L"_" + to_wstring(i);
+		wstring PrototypeTag = TEXT("Prototype_Model_") + to_wstring(m_eType) + L"" + to_wstring(i);
 		wstring ComTag = TEXT("Com_Model_") + to_wstring(i);
 
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, PrototypeTag, ComTag, reinterpret_cast<CComponent**>(&m_Models[i]))))
@@ -304,6 +312,8 @@ void CBodyPart::Free()
 		Safe_Release(pModel);
 	}
 	m_Models.clear();
+
+
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

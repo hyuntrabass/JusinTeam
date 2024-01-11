@@ -972,6 +972,7 @@ void CGameInstance::Set_HellHeight(const _float& fHeight)
 
 void CGameInstance::Clear_Managers()
 {
+	Safe_Release(m_pSound_Manager);
 	Safe_Release(m_pInput_Manager);
 	Safe_Release(m_pCollision_Manager);
 	Safe_Release(m_pObject_Manager);
@@ -983,7 +984,6 @@ void CGameInstance::Clear_Managers()
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pFrustum);
 	Safe_Release(m_pRenderTarget_Manager);
-	Safe_Release(m_pSound_Manager);
 	Safe_Release(m_pPhysX_Manager);
 }
 

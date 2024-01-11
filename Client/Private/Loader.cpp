@@ -149,6 +149,52 @@ HRESULT CLoader::Load_Logo()
 	}
 #pragma endregion
 
+
+	_uint iIndex{};
+	 strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/face/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_FACE) + L"" + to_wstring(iIndex++);
+			string strFilePath = entry.path().filename().string();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+	iIndex = 0;;
+	 strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/hair/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_HAIR) + L"" + to_wstring(iIndex++);
+			string strFilePath = entry.path().filename().string();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+	iIndex = 0;;
+	 strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/body/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_BODY) + L"" + to_wstring(iIndex++);
+			string strFilePath = entry.path().filename().string();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 #pragma endregion
 
 	m_strLoadingText = L"Logo : Loading Model";
@@ -193,10 +239,10 @@ HRESULT CLoader::Load_Logo()
 HRESULT CLoader::Load_GamePlay()
 {
 	m_strLoadingText = L"CreateCharacter : Loading Sounds";
-	if (FAILED(m_pGameInstance->Init_SoundManager(SCH_MAX)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Init_SoundManager(SCH_MAX)))
+	//{
+	//	return E_FAIL;
+	//}
 
 	m_strLoadingText = L"Logo : Loading Texture";
 #pragma region Texture
@@ -217,7 +263,7 @@ HRESULT CLoader::Load_GamePlay()
 		if (entry.is_regular_file())
 		{
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Player"), CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Player"), CModel::Create(m_pDevice, m_pContext, entry.path().string(),false,_mat::CreateScale(10.f)))))
 			{
 				return E_FAIL;
 			}
@@ -237,6 +283,11 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Main"), CCamera_Main::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Body_Parts"), CBodyPart::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

@@ -6,10 +6,10 @@ BEGIN(Client)
 
 enum PART_TYPE
 {
-	PT_HEAD,
+	PT_HAIR,
 	PT_FACE,
-	PT_UPPER_BODY,
-	PT_LOWER_BODY,
+	PT_HELMAT,
+	PT_BODY,
 	PT_END
 };
 
@@ -37,10 +37,15 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+public:
+	HRESULT Add_Parts();
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
+
+private:
+	vector<CGameObject*> m_vecParts{};
 
 private:
 	ANIM_DESC m_Animation{};

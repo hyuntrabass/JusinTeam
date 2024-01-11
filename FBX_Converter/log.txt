@@ -1,9 +1,71 @@
 1. Static Only   2. Anim Only   3. All
-1
-Static Models : Start Converting...
-Converting... SM_ENV_KNVLLG03_VideoScreen_A.mo.fbx
+2
+Animation Models : Start Converting...
+Converting... face0.fbx
 Read File Succssefully
-Static Models : Convert Success!
+Animation name list: 
+Take 001
+Converting... face1.fbx
+Read File Succssefully
+Animation name list: 
+Take 001
+Converting... face2.fbx
+Read File Succssefully
+Animation name list: 
+Take 001
+Converting... face3.fbx
+Read File Succssefully
+Animation name list: 
+Take 001
+Converting... face4.fbx
+Read File Succssefully
+Animation name list: 
+Take 001
+Converting... face5.fbx
+Read File Succssefully
+Animation name list: 
+Take 001
+Converting... face6.fbx
+Read File Succssefully
+Animation name list: 
+Take 001
+Converting... hair0.fbx
+Read File Succssefully
+Animation name list: 
+Take 001
+Converting... hair1.fbx
+Read File Succssefully
+Animation name list: 
+Take 001
+Converting... hair2.fbx
+Read File Succssefully
+Animation name list: 
+Take 001
+Converting... hair3.fbx
+Read File Succssefully
+Animation name list: 
+Take 001
+Converting... hair4.fbx
+Read File Succssefully
+Animation name list: 
+Take 001
+Converting... hair5.fbx
+Read File Succssefully
+Animation name list: 
+Take 001
+Converting... hair6.fbx
+Read File Succssefully
+Animation name list: 
+Take 001
+Converting... hair7.fbx
+Read File Succssefully
+Animation name list: 
+Take 001
+Converting... hair8.fbx
+Read File Succssefully
+Animation name list: 
+Take 001
+Animation Models : Convert Success!
 
-1 Static Models
+16 Animation Models
 are Successfully Converted as hyuntramesh!!

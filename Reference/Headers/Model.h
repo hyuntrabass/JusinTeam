@@ -13,19 +13,12 @@ enum class ModelType
 
 struct ANIM_DESC
 {
-	// 애님 인덱스
 	_uint iAnimIndex{};
-	// 루프인가
 	_bool isLoop{};
-	// 애님 스피드 비율 (1 = 정상 속도, 2 = 2배, 0.5 = 0.5배)
 	_float fAnimSpeedRatio{ 1.f };
-	// 선형 보간 스킵 할것인가
 	_bool bSkipInterpolation{};
-	// 선형 보간하는 시간
 	_float fInterpolationTime{ 0.2f };
-	// 얼마나 재생할지 비율 (1 = 끝까지 재생, 0.5 = 절반만 재생하고 끝남)
 	_float fDurationRatio{ 1.f };
-	// 처음부터 재생할지 (true로 두면 처음부터 재생함. Tick에서 true로 되어 있으면 계속 처음만 재생함)
 	_bool bRestartAnimation{ false };
 };
 

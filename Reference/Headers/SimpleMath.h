@@ -513,26 +513,47 @@ namespace DirectX
             Matrix operator- () const noexcept;
 
             // Properties
-            Vector3 Up() const noexcept { return Vector3(_21, _22, _23); }
-            void Up(const Vector3& v) noexcept { _21 = v.x; _22 = v.y; _23 = v.z; }
+            Vector4 Right() const noexcept { return Vector4(_11, _12, _13, _14); }
+            void Right(const Vector4& v) noexcept { _11 = v.x; _12 = v.y; _13 = v.z; }
 
-            Vector3 Down() const  noexcept { return Vector3(-_21, -_22, -_23); }
-            void Down(const Vector3& v) noexcept { _21 = -v.x; _22 = -v.y; _23 = -v.z; }
+            Vector4 Left() const noexcept { return Vector4(-_11, -_12, -_13, -_14); }
+            void Left(const Vector4& v) noexcept { _11 = -v.x; _12 = -v.y; _13 = -v.z; }
 
-            Vector3 Right() const noexcept { return Vector3(_11, _12, _13); }
-            void Right(const Vector3& v) noexcept { _11 = v.x; _12 = v.y; _13 = v.z; }
+            Vector4 Up() const noexcept { return Vector4(_21, _22, _23, _24); }
+            void Up(const Vector4& v) noexcept { _21 = v.x; _22 = v.y; _23 = v.z; }
 
-            Vector3 Left() const noexcept { return Vector3(-_11, -_12, -_13); }
-            void Left(const Vector3& v) noexcept { _11 = -v.x; _12 = -v.y; _13 = -v.z; }
+            Vector4 Down() const  noexcept { return Vector4(-_21, -_22, -_23, -_24); }
+            void Down(const Vector4& v) noexcept { _21 = -v.x; _22 = -v.y; _23 = -v.z; }
 
-            Vector3 Forward() const noexcept { return Vector3(-_31, -_32, -_33); }
-            void Forward(const Vector3& v) noexcept { _31 = -v.x; _32 = -v.y; _33 = -v.z; }
+            Vector4 Look() const noexcept { return Vector4(_31, _32, _33, _34); }
+            void Look(const Vector4& v) noexcept { _31 = v.x; _32 = v.y; _33 = v.z; }
 
-            Vector3 Backward() const noexcept { return Vector3(_31, _32, _33); }
-            void Backward(const Vector3& v) noexcept { _31 = v.x; _32 = v.y; _33 = v.z; }
+            Vector4 Backward() const noexcept { return Vector4(-_31, -_32, -_33, -_34); }
+            void Backward(const Vector4& v) noexcept { _31 = -v.x; _32 = -v.y; _33 = -v.z; }
 
-            Vector3 Translation() const  noexcept { return Vector3(_41, _42, _43); }
-            void Translation(const Vector3& v) noexcept { _41 = v.x; _42 = v.y; _43 = v.z; }
+            Vector4 Position() const  noexcept { return Vector4(_41, _42, _43, _44); }
+            void Position(const Vector4& v) noexcept { _41 = v.x; _42 = v.y; _43 = v.z; }
+
+            Vector3 Right_vec3() const noexcept { return Vector3(_11, _12, _13); }
+            void Right_vec3(const Vector3& v) noexcept { _11 = v.x; _12 = v.y; _13 = v.z; }
+
+            Vector3 Left_vec3() const noexcept { return Vector3(-_11, -_12, -_13); }
+            void Left_vec3(const Vector3& v) noexcept { _11 = -v.x; _12 = -v.y; _13 = -v.z; }
+
+            Vector3 Up_vec3() const noexcept { return Vector3(_21, _22, _23); }
+            void Up_vec3(const Vector3& v) noexcept { _21 = v.x; _22 = v.y; _23 = v.z; }
+
+            Vector3 Down_vec3() const  noexcept { return Vector3(-_21, -_22, -_23); }
+            void Down_vec3(const Vector3& v) noexcept { _21 = -v.x; _22 = -v.y; _23 = -v.z; }
+
+            Vector3 Look_vec3() const noexcept { return Vector3(-_31, -_32, -_33); }
+            void Look_vec3(const Vector3& v) noexcept { _31 = -v.x; _32 = -v.y; _33 = -v.z; }
+
+            Vector3 Backward_vec3() const noexcept { return Vector3(_31, _32, _33); }
+            void Backward_vec3(const Vector3& v) noexcept { _31 = v.x; _32 = v.y; _33 = v.z; }
+
+            Vector3 Position_vec3() const  noexcept { return Vector3(_41, _42, _43); }
+            void Position_vec3(const Vector3& v) noexcept { _41 = v.x; _42 = v.y; _43 = v.z; }
 
             // Matrix operations
             bool Decompose(Vector3& scale, Quaternion& rotation, Vector3& translation) noexcept;
