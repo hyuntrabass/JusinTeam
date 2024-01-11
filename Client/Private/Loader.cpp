@@ -93,6 +93,9 @@ HRESULT CLoader::Loading_LevelResources()
 	case Client::LEVEL_LOGO:
 		hr = Load_Logo();
 		break;
+	case Client::LEVEL_SELECT:
+		hr = Load_Select();
+		break;
 	case Client::LEVEL_GAMEPLAY:
 		hr = Load_GamePlay();
 		break;
@@ -130,11 +133,28 @@ HRESULT CLoader::Load_Logo()
 #pragma region Texture
 
 #pragma region UI
+
+	
+	string strInputFilePath = "../Bin/Resources/Textures/UI/Logo";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_UI_Logo_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_LOGO, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
 #pragma endregion
 
+	/*
 #pragma region Effect
 	// Effect Textures
-	string strInputFilePath = "../Bin/Resources/Textures/Effect/";
+	strInputFilePath = "../Bin/Resources/Textures/Effect/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -148,8 +168,7 @@ HRESULT CLoader::Load_Logo()
 		}
 	}
 #pragma endregion
-
-#pragma endregion
+*/
 
 	m_strLoadingText = L"Logo : Loading Model";
 #pragma region Model
@@ -181,10 +200,134 @@ HRESULT CLoader::Load_Logo()
 #pragma endregion
 
 	m_strLoadingText = L"Logo : Loading Prototype";
+
 #pragma region Prototype
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Background"), CBackGround::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Logo"), CLogo::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 #pragma endregion
 
 	m_strLoadingText = L"Logo : Loading Complete!";
+	m_isFinished = true;
+
+	return S_OK;
+}
+
+HRESULT CLoader::Load_Select()
+{
+	m_strLoadingText = L"Select : Loading Texture";
+#pragma region Texture
+
+#pragma region UI
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Component_Texture_UI_Select_Bg_PlayerSelectTitle"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Select/Bg_PlayerSelectTitle.png")))))
+	{
+		return E_FAIL;
+	}
+	/*
+	
+	string strInputFilePath = "../Bin/Resources/Textures/UI/Select";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_UI_Select_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}*/
+#pragma endregion
+
+	/*
+#pragma region Effect
+	// Effect Textures
+	strInputFilePath = "../Bin/Resources/Textures/Effect/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_Effect_") + entry.path().parent_path().stem().wstring() + TEXT("_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+#pragma endregion
+*/
+
+	m_strLoadingText = L"Select : Loading Model";
+#pragma region Model
+
+#pragma endregion
+
+	m_strLoadingText = L"Select : Loading Shader";
+#pragma region Shader
+#pragma endregion
+
+	m_strLoadingText = L"Select : Loading Prototype";
+
+#pragma region Prototype
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Select"), CSelect::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_CharacterSelect"), CCharacterSelect::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_TextButton"), CTextButton::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+
+#pragma endregion
+
+	m_strLoadingText = L"Select : Loading Complete!";
+	m_isFinished = true;
+
+	return S_OK;
+}
+
+HRESULT CLoader::Load_Custom()
+{
+	m_strLoadingText = L"Custom : Loading Texture";
+#pragma region Texture
+
+#pragma region UI
+
+#pragma endregion
+
+
+	m_strLoadingText = L"Custom : Loading Model";
+#pragma region Model
+
+#pragma endregion
+
+	m_strLoadingText = L"Custom : Loading Shader";
+#pragma region Shader
+#pragma endregion
+
+	m_strLoadingText = L"Custom : Loading Prototype";
+
+#pragma region Prototype
+	
+#pragma endregion
+
+	m_strLoadingText = L"Custom : Loading Complete!";
 	m_isFinished = true;
 
 	return S_OK;
@@ -235,11 +378,13 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
+	/*
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Main"), CCamera_Main::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
+	*/
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Player"), CPlayer::Create(m_pDevice, m_pContext))))
 	{

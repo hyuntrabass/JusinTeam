@@ -38,6 +38,8 @@ private:
 
 private:
 	HRESULT Load_Logo();
+	HRESULT Load_Select();
+	HRESULT Load_Custom();
 	HRESULT Load_GamePlay();
 
 public:

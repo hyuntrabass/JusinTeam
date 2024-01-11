@@ -20,6 +20,8 @@ namespace Client
 		LEVEL_STATIC,
 		LEVEL_LOADING,
 		LEVEL_LOGO,
+		LEVEL_SELECT,
+		LEVEL_CUSTOM,
 		LEVEL_GAMEPLAY,
 		LEVEL_END
 	};
@@ -151,6 +153,7 @@ namespace Client
 		VTPass_HP,
 		VTPass_Hit,
 		VTPass_Sprite,
+		VTPass_SpriteMaskColor,
 		VTPass_Hell,
 	};
 

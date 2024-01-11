@@ -18,6 +18,9 @@ public:
 private:
 	_bool m_hasBGMStarted{};
 
+private:
+	HRESULT Ready_Logo();
+
 public:
 	static CLevel_Logo* Create(_dev pDevice, _context pContext);
 	virtual void Free() override;
