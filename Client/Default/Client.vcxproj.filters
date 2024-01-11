@@ -52,6 +52,12 @@
     <Filter Include="01.Levels\01.GamePlay">
       <UniqueIdentifier>{1784434f-f383-4b50-9bf3-b8df7da39f31}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\04. Monster">
+      <UniqueIdentifier>{086d8fbf-1f82-4f80-bf2a-c9239899b420}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\03.Player\BodyParts">
+      <UniqueIdentifier>{0123b848-788d-47ef-ba20-76c36aaef511}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -99,6 +105,12 @@
     <ClInclude Include="..\Public\Level_GamePlay.h">
       <Filter>01.Levels\01.GamePlay</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Monster.h">
+      <Filter>02.GameObjects\04. Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BodyPart.h">
+      <Filter>02.GameObjects\03.Player\BodyParts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -143,6 +155,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Level_GamePlay.cpp">
       <Filter>01.Levels\01.GamePlay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Monster.cpp">
+      <Filter>02.GameObjects\04. Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BodyPart.cpp">
+      <Filter>02.GameObjects\03.Player\BodyParts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -4,6 +4,25 @@
 
 BEGIN(Client)
 
+enum PART_TYPE
+{
+	PT_HEAD,
+	PT_FACE,
+	PT_UPPER_BODY,
+	PT_LOWER_BODY,
+	PT_END
+};
+
+struct BODYPART_DESC
+{
+	PART_TYPE eType{};
+	_uint iNumVariations{};
+
+
+	ANIM_DESC* Animation{};
+	CTransform* pParentTransform{ nullptr };
+};
+
 class CPlayer final : public CGameObject
 {
 private:

@@ -4,6 +4,7 @@
 #include <stack>
 #include <Windows.h>
 #include <string>
+#include <list>
 
 #include <assimp\Importer.hpp>
 #include <assimp\scene.h>
