@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base.h"
+#include "GameInstance.h"
 #include "AnimTool_Define.h"
 
 BEGIN(Engine)
@@ -42,7 +43,8 @@ private:
     _uint m_iWinSizeY = { 0 };
 
 private:
-    class CPlayer* m_pPlayer = { nullptr };
+    class CPlayer* m_pPlayer = { nullptr }; 
+    ANIM_DESC m_AnimDesc{};
     POINT m_ptMouse = {};
     vector<const _char*> m_AnimationNames;
 
@@ -52,11 +54,11 @@ private:
     MANIPULATETYPE m_eManipulateType = { TYPE_STATE };
     _int m_iPickedObjectID = { -1 };
     _vec3 m_vPreScale = {};
-    _vec3 m_vPreRight = {};
-    _vec3 m_vPreUp = {};
-    _vec3 m_vPreLook = {};
-    _vec3 m_vPrePosition = {};
-    _vec3 m_vCurrentScale = {};
+    _vec4 m_vPreRight = {};
+    _vec4 m_vPreUp = {};
+    _vec4 m_vPreLook = {};
+    _vec4 m_vPrePosition = {};
+    _vec4 m_vCurrentScale = {};
 
 public:
     static CImgui_Manager* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const GRAPHIC_DESC& GraphicDesc);

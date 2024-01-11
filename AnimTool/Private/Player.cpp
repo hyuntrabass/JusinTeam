@@ -56,12 +56,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 		XMStoreFloat4(&m_vPos, vPos);
 	}
-	ANIM_DESC Anim{};
-	Anim.isLoop = false;
-	Anim.bSkipInterpolation = true;
-	Anim.fInterpolationTime = 0.2f;
-	m_pModelCom[m_iCurrentIndex]->Set_Animation(Anim);
-	m_pModelCom[m_iCurrentIndex]->Play_Animation(fTimeDelta);
+	m_pModelCom[m_iCurrentIndex]->Play_Animation(0.f);
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)
@@ -167,7 +162,6 @@ HRESULT CPlayer::Add_Components()
 		}
 	}
 
-
 	return S_OK;
 }
 
@@ -178,12 +172,12 @@ HRESULT CPlayer::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(TransformType::View))))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(TransformType::Proj))))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
 	{
 		return E_FAIL;
 	}
