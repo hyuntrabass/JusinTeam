@@ -11,7 +11,7 @@ private:
 
 public:
 	HRESULT Init(_uint iNumChannels);
-
+	void tick();
 public:
 	void Play_Sound(const wstring& strSoundTag, _uint eChannel, _float fVolume, _bool isLoop);
 	void PlayBGM(const wstring& strSoundTag, float fVolume);

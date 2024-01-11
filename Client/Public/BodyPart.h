@@ -26,8 +26,9 @@ public:
 	_float Get_CurrentAnimPos();
 	const _float44* Get_BoneMatrix(const _char* pBoneName);
 
-	void Set_ModelIndex(_uint iIndex);
-
+	//void Set_ModelIndex(_uint iIndex);
+	void Reset_Model();
+	void Set_ModelIndex() { m_iSelectedModelIndex++; }
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
@@ -36,10 +37,11 @@ private:
 private:
 	PART_TYPE m_eType{};
 	_uint m_iNumVariations{};
-	_uint m_iSelectedModelIndex{2};
+	_uint m_iSelectedModelIndex{0};
 	ANIM_DESC* m_Animation{};
 
 private:
+
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
