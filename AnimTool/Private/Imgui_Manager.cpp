@@ -201,8 +201,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			}
 		}
 
-		ImGui::SeparatorText("ANIMPOSITION");
-		const char* szDuration = "Duration";
+		ImGui::SeparatorText("ANIMATION");
 		_uint iCurrentModelIndex = m_pPlayer->Get_ModelIndex();
 		_tchar szComName[MAX_PATH] = TEXT("");
 		const wstring& strComName = TEXT("Com_Model%d");
@@ -233,17 +232,27 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				}
 			}
 
-			_float fCurrentAnimPos = pCurrentModel->Get_CurrentAnimPos();
+			_int iCurrentAnimPos = (_int)pCurrentModel->Get_CurrentAnimPos();
 			iter = pAnimations.begin();
 			for (_uint i = 0; i < iCurrentAnimation; i++)
 			{
 				++iter;
 			}
-			ImGui::SliderFloat(szDuration, &fCurrentAnimPos, 0.f, (*iter)->Get_Duration());
-			(*iter)->Set_CurrentAnimPos(fCurrentAnimPos);
+			ImGui::SliderInt("ANIMPOS", &iCurrentAnimPos, 0.f, (_int)(*iter)->Get_Duration());
+			(*iter)->Set_CurrentAnimPos((_float)iCurrentAnimPos);
+
+			ImGui::InputInt("AnimPos", &iCurrentAnimPos, 1);
+			if (iCurrentAnimPos > (_int)(*iter)->Get_Duration())
+			{
+				iCurrentAnimPos = (_int)(*iter)->Get_Duration();
+			}
+			else if (iCurrentAnimPos < 0)
+			{
+				iCurrentAnimPos = 0;
+			}
+			(*iter)->Set_CurrentAnimPos((_float)iCurrentAnimPos);
 		}
 
-		
 		ImGui::End();
 	}
 
