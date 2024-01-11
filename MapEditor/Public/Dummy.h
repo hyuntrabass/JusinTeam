@@ -1,11 +1,12 @@
 #pragma once
 #include "MapEditor_Define.h"
-#include "BlendObject.h"
+#include "GameObject.h"
 #include "ImGui_Manager.h"
 
 BEGIN(MapEditor)
 
-class CDummy final : public CBlendObject
+//class CDummy final : public CBlendObject
+class CDummy final : public CGameObject
 {
 private:
 	CDummy(_dev pDevice, _context pContext);

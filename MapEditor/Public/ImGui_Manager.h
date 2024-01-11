@@ -34,9 +34,10 @@ struct DummyInfo
 
 class CImGui_Manager final : public CBase
 {
+	DECLARE_SINGLETON(CImGui_Manager)
 
 private:
-	CImGui_Manager(_dev pDevice, _context pContext);
+	CImGui_Manager();
 	virtual ~CImGui_Manager() = default;
 
 public:
@@ -55,8 +56,8 @@ private:
 	HRESULT ImGuizmoMenu();
 
 	void Create_Dummy(const _int& iListIndex);
+	void Select(const _float4& vPos, CDummy* pDummy);
 	const char* Search_Files();
-
 
 private:
 	ID3D11Device* m_pDevice{ nullptr };
@@ -93,7 +94,7 @@ private:
 	_int m_iSelectIdx = {-1 };
 
 public:
-	static CImGui_Manager* Create(_dev pDevice, _context pContext, const GRAPHIC_DESC& GraphicDesc);
+	static CImGui_Manager* Create( const GRAPHIC_DESC& GraphicDesc);
 	virtual void Free() override;
 
 };

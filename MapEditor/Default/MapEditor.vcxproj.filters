@@ -46,15 +46,6 @@
     <Filter Include="02.GameObjects\01.Camera\Main">
       <UniqueIdentifier>{dc2fe401-0572-4995-b515-1034a0826de4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="98.ImGui">
-      <UniqueIdentifier>{0bab56f4-7b01-4cb0-9dc6-c9ad81fbcca5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="98.ImGui\ImGui_Manager">
-      <UniqueIdentifier>{67fbdbe7-fa8b-4117-8393-70b632abde0b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="98.ImGui\ImGui">
-      <UniqueIdentifier>{4b35f002-3227-4f99-a088-0a4b380d3f25}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\04.Monster">
       <UniqueIdentifier>{b0b0b97e-3284-403d-9f90-23123a04151f}</UniqueIdentifier>
     </Filter>
@@ -63,6 +54,15 @@
     </Filter>
     <Filter Include="02.GameObjects\06.Dummy">
       <UniqueIdentifier>{1d422567-eac4-4b76-b5d4-85fd2f25bbb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3.ImGui">
+      <UniqueIdentifier>{0bab56f4-7b01-4cb0-9dc6-c9ad81fbcca5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3.ImGui\ImGui_Manager">
+      <UniqueIdentifier>{67fbdbe7-fa8b-4117-8393-70b632abde0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3.ImGui\ImGui">
+      <UniqueIdentifier>{4b35f002-3227-4f99-a088-0a4b380d3f25}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -103,49 +103,49 @@
       <Filter>98.Default</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGui\ImSequencer.h">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGui\imstb_rectpack.h">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGui\imstb_textedit.h">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGui\imstb_truetype.h">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGui\ImZoomSlider.h">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGui\GraphEditor.h">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGui\imconfig.h">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGui\ImCurveEdit.h">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGui\ImGradient.h">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGui\imgui.h">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGui\imgui_impl_dx11.h">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGui\imgui_impl_win32.h">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGui\imgui_internal.h">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGui\ImGuizmo.h">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ImGui_Manager.h">
-      <Filter>98.ImGui\ImGui_Manager</Filter>
+      <Filter>3.ImGui\ImGui_Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Terrain.h">
       <Filter>02.GameObjects\02.Terrain</Filter>
@@ -186,43 +186,43 @@
       <Filter>98.Default</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGui\ImSequencer.cpp">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGui\GraphEditor.cpp">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGui\ImCurveEdit.cpp">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGui\ImGradient.cpp">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGui\imgui.cpp">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGui\imgui_demo.cpp">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGui\imgui_draw.cpp">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGui\imgui_impl_dx11.cpp">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGui\imgui_impl_win32.cpp">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGui\imgui_tables.cpp">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGui\imgui_widgets.cpp">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGui\ImGuizmo.cpp">
-      <Filter>98.ImGui\ImGui</Filter>
+      <Filter>3.ImGui\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ImGui_Manager.cpp">
-      <Filter>98.ImGui\ImGui_Manager</Filter>
+      <Filter>3.ImGui\ImGui_Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Terrain.cpp">
       <Filter>02.GameObjects\02.Terrain</Filter>

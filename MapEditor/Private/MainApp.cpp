@@ -52,7 +52,7 @@ HRESULT CMainApp::Init()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 
-	m_pImGui_Manager = CImGui_Manager::Create(m_pDevice, m_pContext, GraphicDesc);
+	m_pImGui_Manager = CImGui_Manager::Create( GraphicDesc);
 	if (m_pImGui_Manager == nullptr)
 		return E_FAIL;
 

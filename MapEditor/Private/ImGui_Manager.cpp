@@ -15,13 +15,12 @@
 #include "Monster.h"
 #include "Dummy.h"
 
-CImGui_Manager::CImGui_Manager(_dev pDevice, _context pContext)
-	: m_pDevice(pDevice)
-	, m_pContext(pContext)
-	, m_pGameInstance(CGameInstance::Get_Instance())
+IMPLEMENT_SINGLETON(CImGui_Manager)
+
+CImGui_Manager::CImGui_Manager()
+	: m_pGameInstance(CGameInstance::Get_Instance())
 {
-	Safe_AddRef(m_pDevice);
-	Safe_AddRef(m_pContext);
+
 	Safe_AddRef(m_pGameInstance);
 }
 
@@ -48,23 +47,26 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 	m_vMousePos.x = (_float)m_ptMouse.x;
 	m_vMousePos.y = (_float)m_ptMouse.y;
 
-	if (m_iSelectIdx == -1)
+	if (m_pGameInstance->Key_Pressing(DIK_LSHIFT) and m_pGameInstance->Mouse_Down(DIM_LBUTTON))
 	{
-		if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
+		if (m_iSelectIdx == -1)
 		{
-			m_pTerrainPos = m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y);
+			if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
+			{
+				m_pTerrainPos = m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y);
+			}
 		}
 	}
 
-	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON))
+	if (m_pGameInstance->Key_Pressing(DIK_LCONTROL) and m_pGameInstance->Mouse_Down(DIM_LBUTTON))
 	{
 		m_ComputeSelection = true;
 		m_fCamDist = -1.f;
 		if (m_pSelectedDummy)
 		{
-			m_pSelectedDummy->Select(false);
+			m_pSelectedDummy->Select(true);
 		}
-		m_pSelectedDummy = nullptr;
+		//m_pSelectedDummy = nullptr;
 	}
 	else
 	{
@@ -75,6 +77,10 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 	{
 		m_ComputePickPos = true;
 		m_fCamDist = -1.f;
+		if (m_pSelectedDummy)
+		{
+			m_pSelectedDummy->Select(false);
+		}
 
 	}
 	else
@@ -209,6 +215,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 
 			if (m_iSelectIdx != -1)
 			{
+				m_eItemType = ItemType::Objects;
 				Create_Dummy(Object_current_idx);
 				m_iSelectIdx = -1;
 			}
@@ -239,6 +246,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			}
 			if (m_iSelectIdx != -1)
 			{
+				m_eItemType = ItemType::Monster;
 				Create_Dummy(Monster_current_idx);
 				m_iSelectIdx = -1;
 			}
@@ -272,7 +280,10 @@ HRESULT CImGui_Manager::ImGuiMenu()
 
 HRESULT CImGui_Manager::ImGuizmoMenu()
 {
+	if (m_pSelectedDummy)
+	{
 
+	}
 	return S_OK;
 }
 
@@ -287,7 +298,7 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	DummyInfo Info{};
 
 	Info.ppDummy = &m_pSelectedDummy;
-	Info.vPos = m_vPos;
+	Info.vPos = m_pTerrainPos;
 	XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_vLook)));
 	Info.Prototype = L"Prototype_Model_";
 	Info.eType = m_eItemType;
@@ -321,7 +332,23 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	}
 }
 
+void CImGui_Manager::Select(const _float4& vPos, CDummy* pDummy)
+{
+	_vector vCamPos = XMLoadFloat4(&m_pGameInstance->Get_CameraPos());
+	_float fNewDist = XMVector4Length(vCamPos - XMLoadFloat4(&vPos)).m128_f32[0];
+	if (m_fCamDist < 0 || m_fCamDist > fNewDist)
+	{
+		m_fCamDist = fNewDist;
+		if (m_pSelectedDummy)
+		{
+			m_pSelectedDummy->Select(false);
+		}
+		m_pSelectedDummy = pDummy;
+		m_pSelectedDummy->Select(true);
 
+		m_pSelectedDummy->Get_State(m_vPos, m_vLook);
+	}
+}
 
 
 const char* CImGui_Manager::Search_Files()
@@ -373,9 +400,9 @@ const char* CImGui_Manager::Search_Files()
 
 
 
-CImGui_Manager* CImGui_Manager::Create(_dev pDevice, _context pContext, const GRAPHIC_DESC& GraphicDesc)
+CImGui_Manager* CImGui_Manager::Create(const GRAPHIC_DESC& GraphicDesc)
 {
-	CImGui_Manager* pInstance = new CImGui_Manager(pDevice, pContext);
+	CImGui_Manager* pInstance = new CImGui_Manager();
 
 	if (FAILED(pInstance->Initialize_Prototype(GraphicDesc)))
 	{
@@ -406,8 +433,7 @@ void CImGui_Manager::Free()
 	}
 	Monsters.clear();
 
-	Safe_Release(m_pDevice);
-	Safe_Release(m_pContext);
+	Safe_Release(m_pSelectedDummy);
 	Safe_Release(m_pGameInstance);
 
 	ImGui_ImplDX11_Shutdown();

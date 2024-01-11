@@ -1,12 +1,15 @@
 #include "Dummy.h"
 
 CDummy::CDummy(_dev pDevice, _context pContext)
-	: CBlendObject(pDevice, pContext)
+	: CGameObject(pDevice, pContext)
+
 {
 }
 
 CDummy::CDummy(const CDummy& rhs)
-	: CBlendObject(rhs)
+	: CGameObject(rhs)
+	, m_pImGui_Manager(CImGui_Manager::Get_Instance())
+
 {
 }
 
@@ -79,10 +82,10 @@ HRESULT CDummy::Init(void* pArg)
 
 void CDummy::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Get_CurrentLevelIndex() != m_Info.iStageIndex)
-	{
-		m_isDead = true;
-	}
+	//if (m_pGameInstance->Get_CurrentLevelIndex() != m_Info.iStageIndex)
+	//{
+	//	m_isDead = true;
+	//}
 
 	if (m_pImGui_Manager)
 	{
@@ -101,6 +104,7 @@ void CDummy::Tick(_float fTimeDelta)
 			{
 				m_pImGui_Manager->Select(vPickPos, this);
 			}
+
 		}
 	}
 
