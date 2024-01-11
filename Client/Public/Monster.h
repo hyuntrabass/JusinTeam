@@ -26,12 +26,17 @@ protected:
 
 protected:
 	wstring m_strModelTag = {};
+	ANIM_DESC m_Animation{};
 
 protected:
 	_uint m_iPassIndex = {};
 
+protected:
+	virtual HRESULT Add_Collider() = 0;
+	virtual void Update_Collider() = 0;
+
 public:
-	HRESULT Add_Component();
+	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:

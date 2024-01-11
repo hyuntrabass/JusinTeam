@@ -80,7 +80,7 @@ HRESULT CMainApp::Render()
 		m_iFrameCount = 0;
 	}
 
-	if (FAILED(m_pGameInstance->Clear_BackBuffer_View(_float4(0.f, 1.f, 0.f, 1.f))))
+	if (FAILED(m_pGameInstance->Clear_BackBuffer_View(_float4(0.f, 0.f, 1.f, 1.f))))
 	{
 		return E_FAIL;
 	}

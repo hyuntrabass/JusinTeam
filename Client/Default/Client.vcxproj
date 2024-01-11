@@ -159,13 +159,16 @@
     <ClInclude Include="..\Public\LoaderIncludes.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\Monster.h" />
+    <ClInclude Include="..\Public\NPCvsMon.h" />
     <ClInclude Include="..\public\Player.h" />
+    <ClInclude Include="..\Public\Void05.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\8th_3D\3D_Framework\Client\Private\NPCvsMon.cpp" />
     <ClCompile Include="..\Private\BackGround.cpp" />
     <ClCompile Include="..\Private\BodyPart.cpp" />
     <ClCompile Include="..\Private\Camera_Debug.cpp" />
@@ -177,6 +180,7 @@
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\Monster.cpp" />
     <ClCompile Include="..\private\Player.cpp" />
+    <ClCompile Include="..\Private\Void05.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>
   <ItemGroup>
