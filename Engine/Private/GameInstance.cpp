@@ -255,6 +255,33 @@ CComponent* CGameInstance::Get_Component(_uint iLevelIndex, const wstring& strLa
 	return m_pObject_Manager->Get_Component(iLevelIndex, strLayerTag, strComponentTag, iIndex);
 }
 
+CGameObject* CGameInstance::Find_Prototype(const wstring& strPrototypeTag)
+{
+	if (!m_pObject_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pObject_Manager is NULL");
+	}
+	return m_pObject_Manager->Find_Prototype(strPrototypeTag);
+}
+
+CLayer* CGameInstance::Find_Layer(_uint iLevelIndex, const wstring& strLayerTag)
+{
+	if (!m_pObject_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pObject_Manager is NULL");
+	}
+	return m_pObject_Manager->Find_Layer(iLevelIndex, strLayerTag);
+}
+
+_uint CGameInstance::Get_LayerSize(_uint iLevelIndex, const wstring& strLayerTag)
+{
+	if (!m_pObject_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pObject_Manager is NULL");
+	}
+	return m_pObject_Manager->Get_LayerSize(iLevelIndex, strLayerTag);
+}
+
 HRESULT CGameInstance::Add_Prototype_Component(_uint iLevelIndex, const wstring& strPrototype, CComponent* pPrototype)
 {
 	if (!m_pComponent_Manager)

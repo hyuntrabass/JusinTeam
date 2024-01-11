@@ -55,11 +55,14 @@
     <Filter Include="98.ImGui\ImGui">
       <UniqueIdentifier>{4b35f002-3227-4f99-a088-0a4b380d3f25}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\04. Monster">
+    <Filter Include="02.GameObjects\04.Monster">
       <UniqueIdentifier>{b0b0b97e-3284-403d-9f90-23123a04151f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\05. Objects">
+    <Filter Include="02.GameObjects\05.Objects">
       <UniqueIdentifier>{622db46e-a6f8-43c1-8320-b4900be6693b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\06.Dummy">
+      <UniqueIdentifier>{1d422567-eac4-4b76-b5d4-85fd2f25bbb0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -148,10 +151,13 @@
       <Filter>02.GameObjects\02.Terrain</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Monster.h">
-      <Filter>02.GameObjects\04. Monster</Filter>
+      <Filter>02.GameObjects\04.Monster</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Objects.h">
-      <Filter>02.GameObjects\05. Objects</Filter>
+      <Filter>02.GameObjects\05.Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Dummy.h">
+      <Filter>02.GameObjects\06.Dummy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -222,10 +228,13 @@
       <Filter>02.GameObjects\02.Terrain</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Monster.cpp">
-      <Filter>02.GameObjects\04. Monster</Filter>
+      <Filter>02.GameObjects\04.Monster</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Objects.cpp">
-      <Filter>02.GameObjects\05. Objects</Filter>
+      <Filter>02.GameObjects\05.Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Dummy.cpp">
+      <Filter>02.GameObjects\06.Dummy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

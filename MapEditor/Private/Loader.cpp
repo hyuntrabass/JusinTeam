@@ -188,7 +188,7 @@ HRESULT CLoader::Load_Editor()
 		if (entry.is_regular_file())
 		{
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Player"), CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sandman"), CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
 			{
 				return E_FAIL;
 			}
@@ -213,11 +213,7 @@ HRESULT CLoader::Load_Editor()
 #pragma region Texture
 
 #pragma region UI
-	//m_strLoadingText = L"Editor : Loading ImGui";
-	//if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Menu"), CMenu::Create(m_pDevice, m_pContext))))
-	//{
-	//	return E_FAIL;
-	//}
+
 #pragma endregion
 
 #pragma region Effect
@@ -247,7 +243,10 @@ HRESULT CLoader::Load_Editor()
 		return E_FAIL;
 	}
 
-
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Dummy"), CDummy::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 	m_strLoadingText = L"Editor : Loading Complete!";

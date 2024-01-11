@@ -95,10 +95,10 @@ HRESULT CLevel_Editor::Ready_Light()
 
 HRESULT CLevel_Editor::Ready_Player()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Prototype_GameObject_Player"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Prototype_GameObject_Player"))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	return S_OK;
 }

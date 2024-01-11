@@ -17,13 +17,13 @@ HRESULT CCamera_Main::Init_Prototype()
 
 HRESULT CCamera_Main::Init(void* pArg)
 {
-	m_pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-	if (not m_pPlayerTransform)
-	{
-		return E_FAIL;
-	}
-	Safe_AddRef(m_pPlayerTransform);
-	
+	//m_pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+	//if (not m_pPlayerTransform)
+	//{
+	//	return E_FAIL;
+	//}
+	//Safe_AddRef(m_pPlayerTransform);
+	//
 	if (not m_pTransformCom)
 	{
 		MSG_BOX("Can't Find Player!! : Camera Main");
@@ -155,5 +155,5 @@ void CCamera_Main::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pPlayerTransform);
+	//Safe_Release(m_pPlayerTransform);
 }

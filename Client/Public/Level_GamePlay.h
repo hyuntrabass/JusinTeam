@@ -19,6 +19,7 @@ private:
 	HRESULT Ready_Camera();
 	HRESULT Ready_Light();
 	HRESULT Ready_Player();
+	HRESULT Ready_Map();
 
 public:
 	static CLevel_GamePlay* Create(_dev pDevice, _context pContext);

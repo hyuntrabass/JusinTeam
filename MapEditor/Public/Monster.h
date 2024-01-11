@@ -18,6 +18,12 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+	/* Get / Set */
+	_bool Get_isCreate() { return m_isCreate; }
+	_bool Get_isSelected() { return m_isSelected; }
+	void Set_isCreate(_bool isCreate) { m_isCreate = isCreate; }
+	void Set_isSelected(_bool isSelected) { m_isSelected = isSelected; }
+
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
@@ -26,6 +32,8 @@ private:
 private:
 	_float4 m_vPos{};
 	_float m_fGravity{};
+	_bool m_isCreate{false};
+	_bool m_isSelected{false};
 
 private:
 	HRESULT Add_Components();

@@ -39,6 +39,10 @@ public: // Object Manager
 	HRESULT Add_Layer(_uint iLevelIndex, const wstring strLayerTag, const wstring& strPrototypeTag, void* pArg = nullptr);
 	CGameObject* Clone_Object(const wstring& strPrototypeTag, void* pArg = nullptr);
 	class CComponent* Get_Component(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strComponentTag, _uint iIndex = 0);
+	class CGameObject* Find_Prototype(const wstring& strPrototypeTag);
+	class CLayer* Find_Layer(_uint iLevelIndex, const wstring& strLayerTag);
+	_uint Get_LayerSize(_uint iLevelIndex, const wstring& strLayerTag);
+
 
 public: // Component Manager
 	HRESULT Add_Prototype_Component(_uint iLevelIndex, const wstring& strPrototype, class CComponent* pPrototype);

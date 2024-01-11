@@ -9,9 +9,11 @@
 #include "GameObject.h"
 #include "Layer.h"
 
+#include "GameObject.h"
+
 #include "Objects.h"
-#include "Map.h"
 #include "Monster.h"
+#include "Dummy.h"
 
 CImGui_Manager::CImGui_Manager(_dev pDevice, _context pContext)
 	: m_pDevice(pDevice)
@@ -46,15 +48,38 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 	m_vMousePos.x = (_float)m_ptMouse.x;
 	m_vMousePos.y = (_float)m_ptMouse.y;
 
+	if (m_iSelectIdx == -1)
+	{
+		if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
+		{
+			m_pTerrainPos = m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y);
+		}
+	}
+
 	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON))
 	{
-		if (m_iSelectIdx == -1)
+		m_ComputeSelection = true;
+		m_fCamDist = -1.f;
+		if (m_pSelectedDummy)
 		{
-			if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
-			{
-				m_pTerrainPos = m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y);
-			}
+			m_pSelectedDummy->Select(false);
 		}
+		m_pSelectedDummy = nullptr;
+	}
+	else
+	{
+		m_ComputeSelection = false;
+	}
+
+	if (m_pGameInstance->Mouse_Down(DIM_RBUTTON))
+	{
+		m_ComputePickPos = true;
+		m_fCamDist = -1.f;
+
+	}
+	else
+	{
+		m_ComputePickPos = false;
 	}
 
 }
@@ -77,6 +102,48 @@ HRESULT CImGui_Manager::Render()
 	return S_OK;
 }
 
+_bool CImGui_Manager::ComputePickPos()
+{
+	return m_ComputePickPos;
+}
+
+_bool CImGui_Manager::ComputeSelection()
+{
+	return m_ComputeSelection;
+}
+
+void CImGui_Manager::SetPos(const _float4& vPos, CDummy* pDummy)
+{
+	_vector vCamPos = XMLoadFloat4(&m_pGameInstance->Get_CameraPos());
+	_float fNewDist = XMVector4Length(vCamPos - XMLoadFloat4(&vPos)).m128_f32[0];
+	if (m_fCamDist < 0 || m_fCamDist > fNewDist)
+	{
+		m_vPos.x = vPos.x;
+		m_vPos.y = vPos.y;
+		m_vPos.z = vPos.z;
+		m_vPos.w = 1.f;
+
+		m_fCamDist = fNewDist;
+	}
+}
+
+void CImGui_Manager::Select(const _vec4& vPos, CDummy* pDummy)
+{
+	_vector vCamPos = XMLoadFloat4(&m_pGameInstance->Get_CameraPos());
+	_float fNewDist = XMVector4Length(vCamPos - XMLoadFloat4(&vPos)).m128_f32[0];
+	if (m_fCamDist < 0 || m_fCamDist > fNewDist)
+	{
+		m_fCamDist = fNewDist;
+		if (m_pSelectedDummy)
+		{
+			m_pSelectedDummy->Select(false);
+		}
+		m_pSelectedDummy = pDummy;
+		m_pSelectedDummy->Select(true);
+
+		m_pSelectedDummy->Get_State(m_vPos, m_vLook);
+	}
+}
 HRESULT CImGui_Manager::ImGuiMenu()
 {
 #pragma endregion
@@ -142,7 +209,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 
 			if (m_iSelectIdx != -1)
 			{
-				Create_Object(m_iSelectIdx);
+				Create_Dummy(Object_current_idx);
 				m_iSelectIdx = -1;
 			}
 
@@ -169,6 +236,11 @@ HRESULT CImGui_Manager::ImGuiMenu()
 						ImGui::SetItemDefaultFocus();
 				}
 				ImGui::EndListBox();
+			}
+			if (m_iSelectIdx != -1)
+			{
+				Create_Dummy(Monster_current_idx);
+				m_iSelectIdx = -1;
 			}
 			ImGui::EndTabItem();
 		}
@@ -204,17 +276,52 @@ HRESULT CImGui_Manager::ImGuizmoMenu()
 	return S_OK;
 }
 
-void CImGui_Manager::Create_Object(_uint iIndex)
+void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 {
+	if (m_pSelectedDummy)
+	{
+		m_pSelectedDummy->Select(false);
+		m_pSelectedDummy = nullptr;
+	}
 
-	return;
+	DummyInfo Info{};
+
+	Info.ppDummy = &m_pSelectedDummy;
+	Info.vPos = m_vPos;
+	XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_vLook)));
+	Info.Prototype = L"Prototype_Model_";
+	Info.eType = m_eItemType;
+	_tchar strUnicode[MAX_PATH]{};
+	switch (m_eItemType)
+	{
+	case ItemType::Objects:
+		MultiByteToWideChar(CP_ACP, 0, Objects[iListIndex], static_cast<int>(strlen(Objects[iListIndex])), strUnicode, static_cast<int>(strlen(Objects[iListIndex])));
+		break;
+	case ItemType::Monster:
+		MultiByteToWideChar(CP_ACP, 0, Monsters[iListIndex], static_cast<int>(strlen(Monsters[iListIndex])), strUnicode, static_cast<int>(strlen(Monsters[iListIndex])));
+		//Info.iTriggerNum = m_iTriggerNum;
+		break;
+	}
+	Info.Prototype += strUnicode;
+	//Info.iStageIndex = m_Curr_Stage;
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
+	{
+		MSG_BOX("Failed to Add Layer : Dummy");
+	}
+
+	switch (m_eItemType)
+	{
+	case MapEditor::ItemType::Objects:
+		m_ObjectsList.push_back(m_pSelectedDummy);
+		break;
+	case MapEditor::ItemType::Monster:
+		m_MonsterList.push_back(m_pSelectedDummy);
+		break;
+	}
 }
 
-void CImGui_Manager::Select_Object()
-{
-	
-	return;
-}
+
 
 
 const char* CImGui_Manager::Search_Files()
