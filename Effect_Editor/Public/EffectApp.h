@@ -25,12 +25,12 @@ private:
 	_context m_pContext{ nullptr };
 
 private:
-	class CImguiMgr* m_pImguiMgr{ nullptr };
+	class CImgui_Manager* m_pImguiMgr{ nullptr };
 	CGameInstance* m_pGameInstance{ nullptr };
 	CRenderer* m_pRenderer{ nullptr };
 	_float m_fTimeAcc{};
 	_uint m_iFrameCount{};
-	_uint m_iPropCount{};
+	vector<string> m_TextureList{};
 
 private:
 	HANDLE m_hThread{};

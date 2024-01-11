@@ -3,13 +3,18 @@
 
 #include "framework.h"
 #include "Effect_Editor.h"
+#include "EffectApp.h"
+#include "GameInstance.h"
 
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
-HINSTANCE hInst;                                // 현재 인스턴스입니다.
+HINSTANCE g_hInst;                                // 현재 인스턴스입니다.
+HWND g_hWnd;
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -26,6 +31,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: 여기에 코드를 입력합니다.
+    CEffectApp* pEffectApp{ nullptr };
 
     // 전역 문자열을 초기화합니다.
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -38,18 +44,65 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
 
+    pEffectApp = CEffectApp::Create();
+    if (not pEffectApp)
+    {
+        return FALSE;
+    }
+
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_EFFECTEDITOR));
 
     MSG msg;
 
-    // 기본 메시지 루프입니다:
-    while (GetMessage(&msg, nullptr, 0, 0))
+    CGameInstance* pGameInstance = CGameInstance::Get_Instance();
+    Safe_AddRef(pGameInstance);
+
+    if (FAILED(pGameInstance->Add_Timer(L"Timer_Default")))
     {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+        MSG_BOX("Failed to Add Timer : Default");
+        return E_FAIL;
+    }
+
+    if (FAILED(pGameInstance->Add_Timer(L"Timer_60")))
+    {
+        MSG_BOX("Failed to Add Timer : 60");
+        return E_FAIL;
+    }
+
+    _float fTimeAcc = 0.f;
+
+    // 기본 메시지 루프입니다:
+    while (true)
+    {
+        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
         {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
+            if (msg.message == WM_QUIT)
+            {
+                break;
+            }
+            if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+            {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
         }
+
+        fTimeAcc += pGameInstance->Compute_TimeDelta(L"Timer_Default");
+
+        if (fTimeAcc > 1.f / 60.f)
+        {
+            pEffectApp->Tick(pGameInstance->Compute_TimeDelta(L"Timer_60"));
+            pEffectApp->Render();
+
+            fTimeAcc = 0.f;
+        }
+    }
+
+    Safe_Release(pGameInstance);
+
+    if (Safe_Release(pEffectApp))
+    {
+        MSG_BOX("memory leaks : pMainApp");
     }
 
     return (int) msg.wParam;
@@ -95,10 +148,13 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-   hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
+   g_hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+   RECT rc = { 0, 0, g_iWinSizeX, g_iWinSizeY };
+
+   AdjustWindowRect(&rc, WS_OVERLAPPED, TRUE);
+
+   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
@@ -107,6 +163,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
+
+   g_hWnd = hWnd;
 
    return TRUE;
 }
@@ -123,6 +181,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
+        return true;
+
     switch (message)
     {
     case WM_COMMAND:
@@ -132,7 +193,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             switch (wmId)
             {
             case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+                DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
             case IDM_EXIT:
                 DestroyWindow(hWnd);

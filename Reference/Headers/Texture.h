@@ -15,6 +15,9 @@ public:
 	virtual HRESULT Init(void* pArg) override;
 
 public:
+	ID3D11ShaderResourceView* Get_SRV(_uint iTextureIndex = 0);
+
+public:
 	HRESULT Bind_ShaderResource(class CShader* pShader, const _char* pVariableName, _uint iTextureIndex = 0);
 	HRESULT Bind_ShaderResourceArray(class CShader* pShader, const _char* pVariableName);
 

@@ -108,7 +108,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_TOOL;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>../Public/;../../Reference/Headers/;../Public/Imgui/;../../Reference/Headers/PhysX/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -143,6 +143,16 @@
   <ItemGroup>
     <ClInclude Include="..\public\EffectApp.h" />
     <ClInclude Include="..\Public\Effect_Define.h" />
+    <ClInclude Include="..\Public\Imgui\imconfig.h" />
+    <ClInclude Include="..\Public\Imgui\imgui.h" />
+    <ClInclude Include="..\Public\Imgui\imgui_impl_dx11.h" />
+    <ClInclude Include="..\Public\Imgui\imgui_impl_win32.h" />
+    <ClInclude Include="..\Public\Imgui\imgui_internal.h" />
+    <ClInclude Include="..\Public\Imgui\imstb_rectpack.h" />
+    <ClInclude Include="..\Public\Imgui\imstb_textedit.h" />
+    <ClInclude Include="..\Public\Imgui\imstb_truetype.h" />
+    <ClInclude Include="..\public\Imgui_Manager.h" />
+    <ClInclude Include="..\Public\LoadingImg.h" />
     <ClInclude Include="Effect_Editor.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
@@ -150,6 +160,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\EffectApp.cpp" />
+    <ClCompile Include="..\private\Imgui_Manager.cpp" />
+    <ClCompile Include="..\Private\LoadingImg.cpp" />
+    <ClCompile Include="..\Public\Imgui\imgui.cpp" />
+    <ClCompile Include="..\Public\Imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\Public\Imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\Public\Imgui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\Public\Imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\Public\Imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\Public\Imgui\imgui_widgets.cpp" />
     <ClCompile Include="Effect_Editor.cpp" />
   </ItemGroup>
   <ItemGroup>
