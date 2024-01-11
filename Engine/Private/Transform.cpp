@@ -126,16 +126,16 @@ void CTransform::Set_State(State eState, _vec4 vState)
 	switch (eState)
 	{
 	case Engine::State::Right:
-		m_WorldMatrix.Right(_vec3(vState));
+		m_WorldMatrix.Right(vState);
 		break;
 	case Engine::State::Up:
-		m_WorldMatrix.Up(_vec3(vState));
+		m_WorldMatrix.Up(vState);
 		break;
 	case Engine::State::Look:
-		m_WorldMatrix.Backward(_vec3(vState));
+		m_WorldMatrix.Look(vState);
 		break;
 	case Engine::State::Pos:
-		m_WorldMatrix.Translation(_vec3(vState));
+		m_WorldMatrix.Position(vState);
 		break;
 	}
 }
