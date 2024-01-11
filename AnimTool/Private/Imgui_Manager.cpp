@@ -38,7 +38,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	GetCursorPos(&m_ptMouse);
 	ScreenToClient(m_hWnd, &m_ptMouse);
 
-	if (m_pPlayer != nullptr)
+	if (m_pPlayer)
 	{
 		m_pPlayer->Tick(fTimeDelta);
 	}
@@ -46,7 +46,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 void CImgui_Manager::Late_Tick(_float fTimeDelta)
 {
-	if (m_pPlayer != nullptr)
+	if (m_pPlayer)
 	{
 		m_pPlayer->Late_Tick(fTimeDelta);
 	}
@@ -54,7 +54,7 @@ void CImgui_Manager::Late_Tick(_float fTimeDelta)
 
 HRESULT CImgui_Manager::Render()
 {
-	if (m_pPlayer != nullptr)
+	if (m_pPlayer)
 	{
 		m_pPlayer->Render();
 	}
@@ -120,7 +120,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 
 	if (ImGui::Button("CREATE"))
 	{
-		if (m_pPlayer == nullptr)
+		if (not m_pPlayer)
 		{
 			m_pPlayer = (CPlayer*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Player"));
 		}
@@ -132,162 +132,138 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	ImGui::End();
 
 	//ImGuizmo
-	ImGui::Begin("OBJECT MENU");
-
-	ImGui::RadioButton("STATE", &m_iManipulateType, TYPE_STATE); ImGui::SameLine();
-	ImGui::RadioButton("RESET", &m_iManipulateType, TYPE_RESET);
-	m_eManipulateType = (MANIPULATETYPE)(m_iManipulateType);
-	/*if (ImGui::Button("SCALE"))
+	if (m_pPlayer)
 	{
-		if (m_eManipulateType == TYPE_STATE)
+		ImGui::Begin("OBJECT MENU");
+
+		ImGui::SeparatorText("ANIMPOSITION");
+		const char* szDuration = "Duration";
+		_uint iCurrentModelIndex = m_pPlayer->Get_ModelIndex();
+		_tchar szComName[MAX_PATH] = TEXT("");
+		const wstring& strComName = TEXT("Com_Model%d");
+		wsprintf(szComName, strComName.c_str(), iCurrentModelIndex);
+		wstring strFinalComName = szComName;
+		CModel* pCurrentModel = (CModel*)m_pPlayer->Find_Component(strFinalComName);
+		_float fCurrentAnimPos = pCurrentModel->Get_CurrentAnimPos();
+		ImGui::SliderFloat(szDuration, &fCurrentAnimPos, 0.f, 1.f);
+
+		ImGui::RadioButton("STATE", &m_iManipulateType, TYPE_STATE); ImGui::SameLine();
+		ImGui::RadioButton("RESET", &m_iManipulateType, TYPE_RESET);
+		m_eManipulateType = (MANIPULATETYPE)(m_iManipulateType);
+		if (ImGui::Button("SCALE"))
 		{
-			m_eStateType = ImGuizmo::OPERATION::SCALE;
-		}
-		else if (m_eManipulateType == TYPE_RESET)
-		{
-			CGameObject* pPickedObject = m_pGameInstance->Get_PickingObject(m_iPickedObjectID);
-			if (pPickedObject != nullptr)
+			if (m_eManipulateType == TYPE_STATE)
 			{
-				CTransform* pTargetTransform = Cast<CTransform*>(pPickedObject->Find_Component(TEXT("Component_Transform")));
+				m_eStateType = ImGuizmo::OPERATION::SCALE;
+			}
+			else if (m_eManipulateType == TYPE_RESET)
+			{
+				CTransform* pTargetTransform = (CTransform*)(m_pPlayer->Find_Component(TEXT("Component_Transform")));
 				pTargetTransform->Set_Scale(m_vPreScale);
 				m_vCurrentScale = m_vPreScale;
 			}
-		}
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("ROTATION"))
-	{
-		if (m_eManipulateType == TYPE_STATE)
-		{
-			m_eStateType = ImGuizmo::OPERATION::ROTATE;
-		}
-		else if (m_eManipulateType == TYPE_RESET)
-		{
-			CGameObject* pPickedObject = m_pGameInstance->Get_PickingObject(m_iPickedObjectID);
-			if (pPickedObject != nullptr)
+			ImGui::SameLine();
+			if (ImGui::Button("ROTATION"))
 			{
-				CTransform* pTargetTransform = Cast<CTransform*>(pPickedObject->Find_Component(TEXT("Component_Transform")));
-				pTargetTransform->Set_State(CTransform::STATE_RIGHT, XMVector3Normalize(XMLoadFloat4(&m_vPreRight)) * m_vCurrentScale.x);
-				pTargetTransform->Set_State(CTransform::STATE_UP, XMVector3Normalize(XMLoadFloat4(&m_vPreUp)) * m_vCurrentScale.y);
-				pTargetTransform->Set_State(CTransform::STATE_LOOK, XMVector3Normalize(XMLoadFloat4(&m_vPreLook)) * m_vCurrentScale.z);
-			}
-		}
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("POSITION"))
-	{
-		if (m_eManipulateType == TYPE_STATE)
-		{
-			m_eStateType = ImGuizmo::OPERATION::TRANSLATE;
-		}
-		else if (m_eManipulateType == TYPE_RESET)
-		{
-			CGameObject* pPickedObject = m_pGameInstance->Get_PickingObject(m_iPickedObjectID);
-			if (pPickedObject != nullptr)
-			{
-				CTransform* pTargetTransform = Cast<CTransform*>(pPickedObject->Find_Component(TEXT("Component_Transform")));
-				pTargetTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&m_vPrePosition));
-			}
-		}
-	}
-	if (m_eManipulateType == TYPE_RESET)
-	{
-		ImGui::SameLine();
-		if (ImGui::Button("ALL"))
-		{
-			CGameObject* pPickedObject = m_pGameInstance->Get_PickingObject(m_iPickedObjectID);
-			if (pPickedObject != nullptr)
-			{
-				CTransform* pTargetTransform = Cast<CTransform*>(pPickedObject->Find_Component(TEXT("Component_Transform")));
-				pTargetTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&m_vPreRight));
-				pTargetTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&m_vPreUp));
-				pTargetTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&m_vPreLook));
-				pTargetTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&m_vPrePosition));
-				m_vCurrentScale = m_vPreScale; 
-				_uint iLayerIndex = pPickedObject->Get_LayerIndex();
-				CModel* pTargetModel = (CModel*)m_pGameInstance->Get_Component(LEVEL_TOOL, pPickedObject->Get_LayerTag(), TEXT("Component_Model"), iLayerIndex);
-				pTargetModel->Set_Animation(0);
-			}
-		}
-	}
-
-	CGameObject* pPickedObject = m_pGameInstance->Get_PickingObject(m_iPickedObjectID);
-	if (pPickedObject != nullptr)
-	{
-		if (TEXT("Layer_Roof") == pPickedObject->Get_LayerTag())
-		{
-			CRoof* pRoof = (CRoof*)pPickedObject;
-			static float fHeight = 0.f;
-			CTransform* pTargetTransform = Cast<CTransform*>(pPickedObject->Find_Component(TEXT("Component_Transform")));
-			if (pTargetTransform != nullptr)
-			{
-				_vector vTargetPos = pTargetTransform->Get_State(CTransform::STATE_POSITION);
-				fHeight = XMVectorGetY(vTargetPos);
-				ImGui::InputFloat("HEIGHT", &fHeight, 1);
-				vTargetPos = XMVectorSetY(vTargetPos, fHeight);
-				pTargetTransform->Set_State(CTransform::STATE_POSITION, vTargetPos);
-			}
-		}
-	}
-
-	if (pPickedObject != nullptr)
-	{
-		_uint iLayerIndex = pPickedObject->Get_LayerIndex();
-		CModel* pTargetModel = (CModel*)m_pGameInstance->Get_Component(LEVEL_TOOL, pPickedObject->Get_LayerTag(), TEXT("Component_Model"), iLayerIndex);
-		if (pTargetModel != nullptr)
-		{
-			_uint iNumAnimations = pTargetModel->Get_NumAnimations();
-			vector<CAnimation*> pAnimations = pTargetModel->Get_Animations();
-
-			m_AnimationNames.clear();
-
-			auto& iter = pAnimations.begin();
-			for (size_t i = 0; i < iNumAnimations; i++)
-			{
-				m_AnimationNames.push_back((*iter)->Get_Name());
-				++iter;
-			}
-			static int iCurrentAnimation = 0;
-			if (m_AnimationNames.size() != 0)
-			{
-				iCurrentAnimation = pTargetModel->Get_CurrentAnimation();
-				if (ImGui::ListBox("ANIMATION", &iCurrentAnimation, m_AnimationNames.data(), m_AnimationNames.size()))
+				if (m_eManipulateType == TYPE_STATE)
 				{
-					pTargetModel->Set_Animation(iCurrentAnimation);
+					m_eStateType = ImGuizmo::OPERATION::ROTATE;
+				}
+				else if (m_eManipulateType == TYPE_RESET)
+				{
+					CTransform* pTargetTransform = (CTransform*)(m_pPlayer->Find_Component(TEXT("Component_Transform")));
+					pTargetTransform->Set_State(State::Right, XMVector3Normalize(XMLoadFloat4(&m_vPreRight)) * m_vCurrentScale.x);
+					pTargetTransform->Set_State(State::Up, XMVector3Normalize(XMLoadFloat4(&m_vPreUp)) * m_vCurrentScale.y);
+					pTargetTransform->Set_State(State::Look, XMVector3Normalize(XMLoadFloat4(&m_vPreLook)) * m_vCurrentScale.z);
 				}
 			}
-		}
-	}*/
+			ImGui::SameLine();
+			if (ImGui::Button("POSITION"))
+			{
+				if (m_eManipulateType == TYPE_STATE)
+				{
+					m_eStateType = ImGuizmo::OPERATION::TRANSLATE;
+				}
+				else if (m_eManipulateType == TYPE_RESET)
+				{
+					CTransform* pTargetTransform = (CTransform*)(m_pPlayer->Find_Component(TEXT("Component_Transform")));
+					pTargetTransform->Set_State(State::Pos, XMLoadFloat4(&m_vPrePosition));
+				}
+			}
+			if (m_eManipulateType == TYPE_RESET)
+			{
+				ImGui::SameLine();
+				if (ImGui::Button("ALL"))
+				{
+					CTransform* pTargetTransform = (CTransform*)(m_pPlayer->Find_Component(TEXT("Component_Transform")));
+					pTargetTransform->Set_State(State::Right, XMLoadFloat4(&m_vPreRight));
+					pTargetTransform->Set_State(State::Up, XMLoadFloat4(&m_vPreUp));
+					pTargetTransform->Set_State(State::Look, XMLoadFloat4(&m_vPreLook));
+					pTargetTransform->Set_State(State::Pos, XMLoadFloat4(&m_vPrePosition));
+					m_vCurrentScale = m_vPreScale;
+				}
+			}
 
-	ImGui::End();
+			_uint iCurrentModelIndex = m_pPlayer->Get_ModelIndex();
+			_tchar szComName[MAX_PATH] = TEXT("");
+			const wstring& strComName = TEXT("Com_Model%d");
+			wsprintf(szComName, strComName.c_str(), iCurrentModelIndex);
+			wstring strFinalComName = szComName;
+			CModel* pCurrentModel = (CModel*)m_pPlayer->Find_Component(strFinalComName);
+			if (pCurrentModel != nullptr)
+			{
+				_uint iNumAnimations = pCurrentModel->Get_NumAnimations();
+				vector<CAnimation*> pAnimations = pCurrentModel->Get_Animations();
+
+				m_AnimationNames.clear();
+
+				auto& iter = pAnimations.begin();
+				for (size_t i = 0; i < iNumAnimations; i++)
+				{
+					m_AnimationNames.push_back((*iter)->Get_Name());
+					++iter;
+				}
+				static int iCurrentAnimation = 0;
+				if (m_AnimationNames.size() != 0)
+				{
+					iCurrentAnimation = pCurrentModel->Get_CurrentAnimation();
+					if (ImGui::ListBox("ANIMATION", &iCurrentAnimation, m_AnimationNames.data(), m_AnimationNames.size()))
+					{
+						pCurrentModel->Set_Animation(iCurrentAnimation);
+					}
+				}
+			}
+
+			ImGui::End();
+		}
+	}
 
 	return S_OK;
 }
 
 HRESULT CImgui_Manager::ImGuizmoMenu()
 {
-	/*_float4x4 ViewMatrix = m_pGameInstance->Get_Transform_Float4x4(CPipeLine::D3DTS_VIEW);
-	_float4x4 ProjMatrix = m_pGameInstance->Get_Transform_Float4x4(CPipeLine::D3DTS_PROJECTION);
+	_float44 ViewMatrix = m_pGameInstance->Get_Transform_Float4x4(TransformType::View);
+	_float44 ProjMatrix = m_pGameInstance->Get_Transform_Float4x4(TransformType::Proj);
 
-	CGameObject* pPickedObject = m_pGameInstance->Get_PickingObject(m_iPickedObjectID);
-	if (pPickedObject != nullptr)
+	if (m_pPlayer)
 	{
-		CTransform* pTargetTransform = Cast<CTransform*>(pPickedObject->Find_Component(TEXT("Component_Transform")));
+		CTransform* pTargetTransform = (CTransform*)(m_pPlayer->Find_Component(TEXT("Component_Transform")));
 		if (pTargetTransform != nullptr)
 		{
-			_float4x4 TargetMatrix = pTargetTransform->Get_WorldFloat4x4();
-			_matrix PreMatrix = pTargetTransform->Get_WorldMatrix();
+			_float44 TargetMatrix = pTargetTransform->Get_World_float4x4();
+			_matrix PreMatrix = pTargetTransform->Get_World_Matrix();
 			ImGuizmo::Manipulate(&ViewMatrix.m[0][0], &ProjMatrix.m[0][0], m_eStateType, ImGuizmo::MODE::WORLD, &TargetMatrix.m[0][0]);
 			if (ImGuizmo::IsUsing())
 			{
 				if (m_eStateType == ImGuizmo::OPERATION::SCALE)
 				{
-					m_vCurrentScale = _float3(XMVectorGetX(XMVector3Length(XMLoadFloat4x4(&TargetMatrix).r[CTransform::STATE_RIGHT])),
-						XMVectorGetX(XMVector3Length(XMLoadFloat4x4(&TargetMatrix).r[CTransform::STATE_UP])),
-						XMVectorGetX(XMVector3Length(XMLoadFloat4x4(&TargetMatrix).r[CTransform::STATE_LOOK])));
-					pTargetTransform->Set_State(CTransform::STATE_RIGHT, XMVector3Normalize(PreMatrix.r[CTransform::STATE_RIGHT]) * m_vCurrentScale.x);
-					pTargetTransform->Set_State(CTransform::STATE_UP, XMVector3Normalize(PreMatrix.r[CTransform::STATE_UP]) * m_vCurrentScale.y);
-					pTargetTransform->Set_State(CTransform::STATE_LOOK, XMVector3Normalize(PreMatrix.r[CTransform::STATE_LOOK]) * m_vCurrentScale.z);
+					m_vCurrentScale = _float3(XMVectorGetX(XMVector3Length(XMLoadFloat4x4(&TargetMatrix).r[0])),
+						XMVectorGetX(XMVector3Length(XMLoadFloat4x4(&TargetMatrix).r[State::Up])),
+						XMVectorGetX(XMVector3Length(XMLoadFloat4x4(&TargetMatrix).r[State::Look])));
+					pTargetTransform->Set_State(State::Right, XMVector3Normalize(PreMatrix.r[State::Right]) * m_vCurrentScale.x);
+					pTargetTransform->Set_State(State::Up, XMVector3Normalize(PreMatrix.r[State::Up]) * m_vCurrentScale.y);
+					pTargetTransform->Set_State(State::Look, XMVector3Normalize(PreMatrix.r[State::Look]) * m_vCurrentScale.z);
 				}
 				else
 				{
@@ -295,7 +271,7 @@ HRESULT CImgui_Manager::ImGuizmoMenu()
 				}
 			}
 		}
-	}*/
+	}
 
 	return S_OK;
 }

@@ -16,6 +16,10 @@ public:
 		m_iCurrentIndex = iModelIndex;
 	}
 
+	_uint Get_ModelIndex() {
+		return m_iCurrentIndex;
+	}
+
 public:
 	virtual HRESULT Init_Prototype(_uint iNumModels);
 	virtual HRESULT Init(void* pArg) override;
