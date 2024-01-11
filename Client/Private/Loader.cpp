@@ -211,6 +211,18 @@ HRESULT CLoader::Load_GamePlay()
 
 	m_strLoadingText = L"Logo : Loading Model";
 #pragma region Model
+	string strInputFilePath = "../Bin/Resources/AnimMesh/Player/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Player"), CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 #pragma endregion
 
 	m_strLoadingText = L"Logo : Loading Shader";

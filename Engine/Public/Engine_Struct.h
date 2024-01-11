@@ -16,14 +16,14 @@ namespace Engine
 		enum TYPE { Directional, Point, End };
 
 		TYPE eType{End};
-		XMFLOAT4 vDirection{};
-		XMFLOAT4 vPosition{};
+		SimpleMath::Vector4 vDirection{};
+		SimpleMath::Vector4 vPosition{};
 		// Range, Constant, Linear, Quadratic
-		XMFLOAT4 vAttenuation{};
+		SimpleMath::Vector4 vAttenuation{};
 
-		XMFLOAT4 vDiffuse{};
-		XMFLOAT4 vAmbient{};
-		XMFLOAT4 vSpecular{};
+		SimpleMath::Vector4 vDiffuse{};
+		SimpleMath::Vector4 vAmbient{};
+		SimpleMath::Vector4 vSpecular{};
 	};
 
 	using Model_Material = struct tagMaterial
@@ -34,9 +34,9 @@ namespace Engine
 	using KEYFRAME = struct tagKeyFrame
 	{
 		float fTime{};
-		XMFLOAT4 vScaling{};
-		XMFLOAT4 vRotation{};
-		XMFLOAT4 vPosition{};
+		SimpleMath::Vector4 vScaling{};
+		SimpleMath::Vector4 vRotation{};
+		SimpleMath::Vector4 vPosition{};
 	};
 
 	using VTXPOSCOLOR = struct ENGINE_DLL tagVertex_Position_Color

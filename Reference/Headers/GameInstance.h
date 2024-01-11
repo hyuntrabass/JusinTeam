@@ -22,7 +22,7 @@ public:
 	void Clear(_uint iLevelIndex);
 
 public: // Graphic Device
-	HRESULT Clear_BackBuffer_View(_float4 vClearColor);
+	HRESULT Clear_BackBuffer_View(_vec4 vClearColor);
 	HRESULT Clear_DepthStencil_View();
 	HRESULT Present();
 
@@ -73,31 +73,28 @@ public: // Light Manager
 	HRESULT Bind_Light_ViewProjMatrix(_uint iLevelIndex, const wstring& strLightTag, class CShader* pShader, const _char* pViewVariableName, const _char* pProjVariableName);
 
 public: // PipeLine
-	_float4 Get_CameraPos() const;
-	_float4 Get_CameraLook() const;
-	_float44 Get_Transform_Float4x4(TransformType eState) const;
-	_float44 Get_Transform_Inversed_Float4x4(TransformType eState) const;
+	_vec4 Get_CameraPos() const;
+	_vec4 Get_CameraLook() const;
 	_matrix Get_Transform(TransformType eState) const;
 	_matrix Get_Transform_Inversed(TransformType eState) const;
 
-	void Set_Transform(TransformType eState, const _float44& TransformMatrix);
-	void Set_Transform(TransformType eState, _fmatrix TransformMatrix);
+	void Set_Transform(TransformType eState, const _mat& TransformMatrix);
 
 public: // Picking
-	void TransformRay_ToLocal(_fmatrix WorldMatrix);
+	void TransformRay_ToLocal(_mat WorldMatrix);
 
-	_bool Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float3* pPickPos);
-	_bool Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float4* pPickPos);
-	_bool Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _gvector vNormal, _Inout_ _float4* pPickPos);
+	_bool Picking_InWorld(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _Inout_ _vec3* pPickPos);
+	_bool Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _Inout_ _vec4* pPickPos);
+	_bool Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _vec4 vNormal, _Inout_ _vec4* pPickPos);
 
 public: // Font
 	HRESULT Add_Font(const wstring& strFontTag, const wstring& strFilePath);
-	HRESULT Render_Text(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale = 1.f, _fvector vColor = Colors::White, _float fRotation = 0.f);
+	HRESULT Render_Text(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale = 1.f, _vec4 vColor = _vec4(1.f), _float fRotation = 0.f);
 
 public: // Frustum
-	_bool IsIn_Fov_World(_fvector vPos, _float fRange = 0.f);
-	void Transform_ToLocalSpace(_fmatrix vWorldInversed);
-	_bool IsIn_Fov_Local(_fvector vPos, _float fRange = 0.f);
+	_bool IsIn_Fov_World(_vec4 vPos, _float fRange = 0.f);
+	void Transform_ToLocalSpace(_mat vWorldInversed);
+	_bool IsIn_Fov_Local(_vec4 vPos, _float fRange = 0.f);
 
 public: // Collision
 	HRESULT Register_CollisionObject(class CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer = false);
@@ -113,9 +110,8 @@ public: // PhysX
 	void Apply_PhysX(class CTransform* pTransform);
 	void Update_PhysX(class CTransform* pTransform);
 	PxRigidStatic* Cook_StaticMesh(_uint iNumVertices, void* pVertices, _uint iNumIndices, void* pIndices);
-	_bool Raycast(_float3 vOrigin, _float3 vDir, _float fDist, PxRaycastBuffer& Buffer);
-	_bool Raycast(_float4 vOrigin, _float4 vDir, _float fDist, PxRaycastBuffer& Buffer);
-	_bool Raycast(_fvector vOrigin, _fvector vDir, _float fDist, PxRaycastBuffer& Buffer);
+	_bool Raycast(_vec3 vOrigin, _vec3 vDir, _float fDist, PxRaycastBuffer& Buffer);
+	_bool Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer);
 	void PhysXTick(_float fTimeDelta);
 #ifdef _DEBUGTEST
 #ifndef _MapEditor
@@ -124,7 +120,7 @@ public: // PhysX
 #endif // _DEBUG
 
 public: // RenderTarget
-	HRESULT Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor);
+	HRESULT Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _vec4& vColor);
 	HRESULT Add_MRT(const wstring& strMRTTag, const wstring& strTargetTag);
 	HRESULT Begin_MRT(const wstring& strMRTTag, ID3D11DepthStencilView* pDepthStencillView = nullptr);
 	HRESULT End_MRT();

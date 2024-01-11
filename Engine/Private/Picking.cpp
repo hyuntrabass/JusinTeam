@@ -51,7 +51,7 @@ void CPicking::TransformRay_ToLocal(_fmatrix WorldMatrix)
 	XMStoreFloat4(&m_vRayDir_Local, XMVector4Normalize(XMVector4Transform(XMLoadFloat4(&m_vRayDir_World), InversedWorld)));
 }
 
-_bool CPicking::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float3* pPickPos)
+_bool CPicking::Picking_InWorld(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _Inout_ _vec3* pPickPos)
 {
 	_float fDist{};
 	_vector vRayPos{ XMLoadFloat4(&m_vRayPos_World) };
@@ -67,7 +67,7 @@ _bool CPicking::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPo
 	}
 }
 
-_bool CPicking::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float4* pPickPos)
+_bool CPicking::Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _Inout_ _vec4* pPickPos)
 {
 	_float fDist{};
 	_vector vRayPos{ XMLoadFloat4(&m_vRayPos_Local) };
@@ -83,7 +83,7 @@ _bool CPicking::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPo
 	}
 }
 
-_bool CPicking::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _gvector vNormal, _Inout_ _float4* pPickPos)
+_bool CPicking::Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _vec4 vNormal, _Inout_ _vec4* pPickPos)
 {
 	if (XMVector4Dot(vNormal, XMLoadFloat4(&m_vRayDir_Local)).m128_f32[0] > 0)
 	{

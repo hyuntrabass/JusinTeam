@@ -138,7 +138,7 @@ HRESULT CShader::Bind_ShaderResourceViewArray(const _char* pVariableName, ID3D11
     return pShaderResourceVariable->SetResourceArray(pSRVs, 0, iNumTextures);
 }
 
-HRESULT CShader::Bind_Matrix(const _char* pVariableName, const _float44& Matrix)
+HRESULT CShader::Bind_Matrix(const _char* pVariableName, const _mat& Matrix)
 {
     if (!m_pEffect)
     {
@@ -160,7 +160,7 @@ HRESULT CShader::Bind_Matrix(const _char* pVariableName, const _float44& Matrix)
     return pMatrixVariable->SetMatrix((_float*)&Matrix);
 }
 
-HRESULT CShader::Bind_Matrices(const _char* pVariableName, const _float44* pMatrices, _uint iNumMatrices)
+HRESULT CShader::Bind_Matrices(const _char* pVariableName, const _mat* pMatrices, _uint iNumMatrices)
 {
     if (!m_pEffect)
     {

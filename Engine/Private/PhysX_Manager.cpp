@@ -247,7 +247,7 @@ void CPhysX_Manager::Init_PhysX_Character(CTransform* pTransform, CollisionGroup
 
 void CPhysX_Manager::Init_PhysX_MoveableObject(CTransform* pTransform)
 {
-	_float44 World = pTransform->Get_World_float4x4();
+	_mat World = pTransform->Get_World_Matrix();
 	PxMat44 WorldMat = PxMat44(reinterpret_cast<_float*>(&World));
 	PxTransform Pose = PxTransform(WorldMat);
 
@@ -289,7 +289,7 @@ void CPhysX_Manager::Apply_PhysX(CTransform* pTransform)
 void CPhysX_Manager::Update_PhysX(CTransform* pTransform)
 {
 	auto iter = m_DynamicActors.find(pTransform);
-	_float44 World = pTransform->Get_World_float4x4();
+	_mat World = pTransform->Get_World_Matrix();
 	PxMat44 WorldMat = PxMat44(reinterpret_cast<_float*>(&World));
 	PxTransform Pose = PxTransform(WorldMat);
 
@@ -344,6 +344,26 @@ PxRigidStatic* CPhysX_Manager::Cook_StaticMesh(_uint iNumVertices, void* pVertic
 #endif // _DEBUG
 
 	return pActor;
+}
+
+_bool CPhysX_Manager::Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer)
+{
+	if (m_pScene->raycast(PxVec3(vOrigin.x, vOrigin.y, vOrigin.z), PxVec3(vDir.x, vDir.y, vDir.z), fDist, Buffer))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+_bool CPhysX_Manager::Raycast(_vec3 vOrigin, _vec3 vDir, _float fDist, PxRaycastBuffer& Buffer)
+{
+	if (m_pScene->raycast(PxVec3(vOrigin.x, vOrigin.y, vOrigin.z), PxVec3(vDir.x, vDir.y, vDir.z), fDist, Buffer))
+	{
+		return true;
+	}
+
+	return false;
 }
 
 _bool CPhysX_Manager::Raycast(_float3 vOrigin, _float3 vDir, _float fDist, PxRaycastBuffer& Buffer)

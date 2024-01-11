@@ -20,6 +20,7 @@
 #include <DirectXTK/VertexTypes.h>
 #include <DirectXTK/Effects.h>
 using namespace DirectX;
+#include <SimpleMath.h>
 
 #include <Xinput.h>
 
