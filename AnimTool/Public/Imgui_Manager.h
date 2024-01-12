@@ -31,8 +31,8 @@ public:
     HRESULT ImGuizmoMenu();
 
 private:
-    /* HRESULT SaveFile();
-     HRESULT LoadFile();*/
+    HRESULT SaveFile(const string& strModelName);
+    HRESULT LoadFile(const string& strModelName);
 
 private:
     ID3D11Device* m_pDevice = { nullptr };
