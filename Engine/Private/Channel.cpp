@@ -61,9 +61,9 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 		_vec4 vSrcPotition{}, vDstPosition{};
 		_float fRatio = fCurrentAnimPos / fInterpolationTime;
 
-		vSrcScaling.x = _vec4(&PrevTransformation._11).Length();
-		vSrcScaling.y = _vec4(&PrevTransformation._11).Length();
-		vSrcScaling.z = _vec4(&PrevTransformation._11).Length();
+		vSrcScaling.x = PrevTransformation.Right().Length();
+		vSrcScaling.y = PrevTransformation.Up().Length();
+		vSrcScaling.z = PrevTransformation.Look().Length();
 		vSrcScaling.w = 0.f;
 		vDstScaling = XMLoadFloat4(&m_KeyFrames[0].vScaling);
 		vScaling = XMVectorLerp(vSrcScaling, vDstScaling, fRatio);

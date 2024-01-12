@@ -179,7 +179,7 @@ HRESULT CLoader::Load_Tool()
 		return E_FAIL;
 	}
 	m_iNumPlayerModels++;
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_1"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/SandNinja/Mesh/Sandman.hyuntraanimmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_1"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Sandman/Mesh/Sandman.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
