@@ -52,6 +52,7 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
+
 	//if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LightDepth"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
 	//{
 	//	return E_FAIL;
@@ -124,6 +125,18 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
+	random_device RandomDevice;
+	mt19937_64 RandomNumber;
+	RandomNumber = mt19937_64(RandomDevice());
+
+	uniform_real_distribution<float> RandomX = uniform_real_distribution<float>(-1.f, 1.f);
+	uniform_real_distribution<float> RandomY = uniform_real_distribution<float>(-1.f, 1.f);
+	uniform_real_distribution<float> RandomZ = uniform_real_distribution<float>(-1.f, 1.f);
+
+	for (size_t i = 0; i < 16; i++)
+		m_vRandom[i] = _vec3(RandomX(RandomNumber), RandomY(RandomNumber), RandomZ(RandomNumber));
+
+
 #ifdef _DEBUGTEST
 	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Diffuse"), _float2(50.f, 50.f), _float2(100.f, 100.f))))
 	{
@@ -157,6 +170,8 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
+
+
 #endif // _DEBUG
 
 
@@ -475,6 +490,9 @@ HRESULT CRenderer::Render_LightAcc()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pShader->Bind_RawValue("g_vRandom", m_vRandom, sizeof(_vec3) * 16))) {
+		return E_FAIL;
+	}
 
 	if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrixInv", m_pGameInstance->Get_Transform_Inversed(TransformType::View))))
 	{
@@ -484,6 +502,7 @@ HRESULT CRenderer::Render_LightAcc()
 	{
 		return E_FAIL;
 	}
+
 
 	if (FAILED(m_pGameInstance->Render_Lights(m_pGameInstance->Get_CurrentLevelIndex(), m_pShader, m_pVIBuffer)))
 	{
@@ -854,6 +873,7 @@ HRESULT CRenderer::Render_Debug()
 	{
 		return E_FAIL;
 	}
+
 
 	return S_OK;
 }

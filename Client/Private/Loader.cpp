@@ -192,11 +192,6 @@ HRESULT CLoader::Load_Logo()
 
 HRESULT CLoader::Load_GamePlay()
 {
-	m_strLoadingText = L"CreateCharacter : Loading Sounds";
-	if (FAILED(m_pGameInstance->Init_SoundManager(SCH_MAX)))
-	{
-		return E_FAIL;
-	}
 
 	m_strLoadingText = L"Logo : Loading Texture";
 #pragma region Texture

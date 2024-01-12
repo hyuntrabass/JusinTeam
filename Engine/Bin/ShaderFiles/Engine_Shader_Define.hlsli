@@ -1,4 +1,7 @@
 
+
+float3 g_vRandom[16];
+
 // Sampler
 sampler PointSampler = sampler_state
 {

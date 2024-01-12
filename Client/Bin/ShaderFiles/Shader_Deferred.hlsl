@@ -261,44 +261,44 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     //    return Output;
     //}
     
-        float4 vWorldPos;
+    float4 vWorldPos;
     
-        vWorldPos.x = Input.vTexcoord.x * 2.f - 1.f;
-        vWorldPos.y = Input.vTexcoord.y * -2.f + 1.f;
-        vWorldPos.z = vDepthDesc.x;
-        vWorldPos.w = 1.f;
+    vWorldPos.x = Input.vTexcoord.x * 2.f - 1.f;
+    vWorldPos.y = Input.vTexcoord.y * -2.f + 1.f;
+    vWorldPos.z = vDepthDesc.x;
+    vWorldPos.w = 1.f;
     
-        vWorldPos = vWorldPos * fViewZ;
-        vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
-        vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    vWorldPos = vWorldPos * fViewZ;
+    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
+    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
     
-        if (vWorldPos.y < g_fHellStart)
-        {
-            float fHell = (vWorldPos.y + 15.f) / 35.f;
-            Output.vColor *= vector(fHell, fHell, fHell, 1.f);
-            vFogColor *= fHell;
-        }
-    
-        vWorldPos = mul(vWorldPos, g_LightViewMatrix);
-        vWorldPos = mul(vWorldPos, g_LightProjMatrix);
-    
-        float2 vLightDepthUV;
-        vLightDepthUV.x = vWorldPos.x / vWorldPos.w * 0.5f + 0.5f;
-        vLightDepthUV.y = vWorldPos.y / vWorldPos.w * -0.5f + 0.5f;
-    
-        vector vLightDepthDesc = g_LightDepthTexture.Sample(LinearClampSampler, vLightDepthUV);
-    
-        float fLightDepth = vLightDepthDesc.x * g_fLightFar;
-    
-        if (vWorldPos.w - 0.001f > fLightDepth)
-        {
-            Output.vColor.xyz = Output.vColor.xyz * 0.5f;
-        }
-
-        Output.vColor = fFogFactor * Output.vColor + (1.f - fFogFactor) * vFogColor;
-    
-        return Output;
+    if (vWorldPos.y < g_fHellStart)
+    {
+        float fHell = (vWorldPos.y + 15.f) / 35.f;
+        Output.vColor *= vector(fHell, fHell, fHell, 1.f);
+        vFogColor *= fHell;
     }
+    
+    vWorldPos = mul(vWorldPos, g_LightViewMatrix);
+    vWorldPos = mul(vWorldPos, g_LightProjMatrix);
+    
+    float2 vLightDepthUV;
+    vLightDepthUV.x = vWorldPos.x / vWorldPos.w * 0.5f + 0.5f;
+    vLightDepthUV.y = vWorldPos.y / vWorldPos.w * -0.5f + 0.5f;
+    
+    vector vLightDepthDesc = g_LightDepthTexture.Sample(LinearClampSampler, vLightDepthUV);
+    
+    float fLightDepth = vLightDepthDesc.x * g_fLightFar;
+    
+    if (vWorldPos.w - 0.001f > fLightDepth)
+    {
+        Output.vColor.xyz = Output.vColor.xyz * 0.5f;
+    }
+
+    Output.vColor = fFogFactor * Output.vColor + (1.f - fFogFactor) * vFogColor;
+    
+    return Output;
+}
 
 PS_OUT PS_Main_Blur(PS_IN Input)
 {
@@ -341,6 +341,56 @@ PS_OUT PS_Main_Blur(PS_IN Input)
     //Output.vColor = g_BlurTexture.Sample(LinearSampler, Input.vTexcoord);
     
     return Output;
+}
+
+PS_OUT PS_Main_SSAO(PS_IN Input)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vNormalDesc = g_NormalTexture.Sample(PointSampler, Input.vTexcoord);
+    vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
+    float fViewZ = vDepthDesc.y * g_vCamNF.y;
+    
+    vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
+    
+    float g_fRadius = 0.001f;
+    g_fRadius = g_fRadius / fViewZ;
+    int iColor = 0;
+    for (int i = 0; i < 16; ++i)
+    {
+        vector Random = normalize(vector(g_vRandom[i], 0.f));
+        vector Reflect = normalize(reflect(Random, vNormal)) * g_fRadius;
+        
+        float2 vRandomUV = Input.vTexcoord + Reflect.xy;
+        float fOccNorm = g_DepthTexture.Sample(PointSampler, vRandomUV).g * g_vCamNF.y;
+    
+        if (fOccNorm <= fViewZ + 0.0003f)
+            iColor++;
+    }
+    
+    float fLightAmient = 1.f - abs((iColor / 16.f) - 1.f);
+    
+    //float2 vec[4] = { float2(1.f, 0.f), float2(-1.f, 0.f), float2(0.f, 1.f), float2(0.f, -1.f) };
+    
+    //vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
+    //vector vNormalDesc = g_NormalTexture.Sample(PointSampler, Input.vTexcoord);
+    
+    //vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
+    //float fViewZ = vDepthDesc.y * g_vCamNF.y;
+    
+    //float g_fRadius = 0.001f;
+    //float rad = g_fRadius / fViewZ;
+    
+    //for (int i = 0; i < 4; ++i)
+    //{
+    //    float2 coord1 = reflect(vec[i], normalize(g_vRandom[i].xy)) * rad;
+    //    float2 coord2 = float2(coord1.x * 0.707 - coord1.y * 0.707, coord1.x * 0.707 + coord1.y * 0.707);
+
+        
+    //}
+    
+    
+    return Out;
 }
 
 technique11 DefaultTechnique
@@ -408,5 +458,18 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Blur();
+    }
+
+    pass SSAO
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_SSAO();
     }
 };
