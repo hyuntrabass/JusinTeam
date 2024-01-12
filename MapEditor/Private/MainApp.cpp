@@ -62,6 +62,7 @@ HRESULT CMainApp::Init()
 	}
 
 	m_pGameInstance->Ready_Texture2D();
+	m_pGameInstance->Ready_FastPicking();
 
 	if (FAILED(Ready_Prototype_For_Loading()))
 	{
@@ -92,9 +93,9 @@ void CMainApp::Tick(_float fTimeDelta)
 
 	m_fTimeAcc += fFinalTimeDelta;
 
+	m_pImGui_Manager->Tick(fTimeDelta);
 	m_pGameInstance->Tick_Engine(fFinalTimeDelta);
 
-	m_pImGui_Manager->Tick(fTimeDelta);
 }
 
 HRESULT CMainApp::Render()
@@ -110,11 +111,7 @@ HRESULT CMainApp::Render()
 		m_fTimeAcc = 0.f;
 		m_iFrameCount = 0;
 	}
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
 
-	ImGuizmo::BeginFrame();
 
 	if (FAILED(m_pImGui_Manager->Render()))
 	{
@@ -286,11 +283,11 @@ CMainApp* CMainApp::Create()
 
 void CMainApp::Free()
 {
-	Safe_Release(m_pImGui_Manager);
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
+	Safe_Release(m_pImGui_Manager);
 
 	CGameInstance::Release_Engine();
 
