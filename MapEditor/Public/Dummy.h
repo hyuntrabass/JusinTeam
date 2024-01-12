@@ -18,7 +18,12 @@ public:
 	void Modify(_fvector vPos, _fvector vLook);
 	
 	void Get_State(_float4& vPos, _float4& vLook);
+
+	void Set_Create() { m_isCreate = true; }
+	void Set_Dead() { m_isDead = true; }
+	_bool Get_Create() { return m_isCreate; }
 	
+	_int Get_ID() const {return m_iID;}
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -31,9 +36,9 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
+	//CImGui_Manager* m_pImGui_Manager{ nullptr };
 
 private:
-	CImGui_Manager* m_pImGui_Manager{ nullptr };
 
 	DummyInfo m_Info{};
 	_bool m_isSelected{};
@@ -42,6 +47,9 @@ private:
 	_bool m_isAnim{};
 	ANIM_DESC m_Animation{};
 
+	_int m_iID = 0;
+
+	_bool m_isCreate{false};
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

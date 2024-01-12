@@ -42,9 +42,6 @@
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\MapEditor_Define.h" />
-    <ClInclude Include="..\Public\Monster.h" />
-    <ClInclude Include="..\Public\Objects.h" />
-    <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MapEditor.h" />
@@ -72,9 +69,6 @@
     <ClCompile Include="..\Private\Level_Loading.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
-    <ClCompile Include="..\Private\Monster.cpp" />
-    <ClCompile Include="..\Private\Objects.cpp" />
-    <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="MapEditor.cpp" />
   </ItemGroup>
