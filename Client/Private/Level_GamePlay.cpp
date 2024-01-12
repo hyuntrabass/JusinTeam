@@ -35,6 +35,12 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
+	if (FAILED(Ready_Map()))
+	{
+		MSG_BOX("Failed to Ready Map");
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -101,6 +107,18 @@ HRESULT CLevel_GamePlay::Ready_Player()
 	{
 		return E_FAIL;
 	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Map()
+{
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"))))
+	{
+		return E_FAIL;
+	}
+
 
 	return S_OK;
 }

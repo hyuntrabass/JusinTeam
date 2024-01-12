@@ -90,7 +90,7 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 		return E_FAIL;
 	}
 
-	m_pPicking = CPicking::Create(GraphicDesc.hWnd, GraphicDesc.iWinSizeX, GraphicDesc.iWinSizeY);
+	m_pPicking = CPicking::Create(*ppDevice, *ppContext, GraphicDesc.hWnd, GraphicDesc.iWinSizeX, GraphicDesc.iWinSizeY);
 	if (!m_pPicking)
 	{
 		return E_FAIL;
@@ -253,6 +253,33 @@ CComponent* CGameInstance::Get_Component(_uint iLevelIndex, const wstring& strLa
 	}
 
 	return m_pObject_Manager->Get_Component(iLevelIndex, strLayerTag, strComponentTag, iIndex);
+}
+
+CGameObject* CGameInstance::Find_Prototype(const wstring& strPrototypeTag)
+{
+	if (!m_pObject_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pObject_Manager is NULL");
+	}
+	return m_pObject_Manager->Find_Prototype(strPrototypeTag);
+}
+
+CLayer* CGameInstance::Find_Layer(_uint iLevelIndex, const wstring& strLayerTag)
+{
+	if (!m_pObject_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pObject_Manager is NULL");
+	}
+	return m_pObject_Manager->Find_Layer(iLevelIndex, strLayerTag);
+}
+
+_uint CGameInstance::Get_LayerSize(_uint iLevelIndex, const wstring& strLayerTag)
+{
+	if (!m_pObject_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pObject_Manager is NULL");
+	}
+	return m_pObject_Manager->Get_LayerSize(iLevelIndex, strLayerTag);
 }
 
 HRESULT CGameInstance::Add_Prototype_Component(_uint iLevelIndex, const wstring& strPrototype, CComponent* pPrototype)
@@ -565,6 +592,30 @@ _bool CGameInstance::Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3
 	return m_pPicking->Picking_InLocal(vPoint1, vPoint2, vPoint3, vNormal, pPickPos);
 }
 
+_float4 CGameInstance::PickingDepth(_float x, _float y)
+{
+	if (!m_pPicking)
+	{
+		MSG_BOX("FATAL ERROR : m_pPicking is NULL");
+	}
+
+	return m_pPicking->PickingDepth(x, y);
+}
+_vec4 CGameInstance::Compute_MousePicked_Terrain(_float44 matTerrainWorld, _float3* pVerticesPos, _uint iNumVerticesX, _uint iNumVerticesZ)
+{
+	if (nullptr == m_pPicking)
+		return _vec4(0.f, 0.f, 0.f, 0.f);
+
+	return m_pPicking->Compute_MousePicked_Terrain(matTerrainWorld, pVerticesPos, iNumVerticesX, iNumVerticesZ);
+}
+HRESULT CGameInstance::Ready_Texture2D()
+{
+	if (nullptr == m_pPicking)
+	{
+		return E_FAIL;
+	}
+		return m_pPicking->Ready_Texture2D();
+}
 HRESULT CGameInstance::Add_Font(const wstring& strFontTag, const wstring& strFilePath)
 {
 	if (!m_pFont_Manager)
@@ -814,6 +865,16 @@ HRESULT CGameInstance::Bind_ShaderResourceView(CShader* pShader, const _char* pV
 	}
 
 	return m_pRenderTarget_Manager->Bind_ShaderResourceView(pShader, pVariableName, strTargetTag);
+}
+
+ID3D11Texture2D* CGameInstance::Get_Texture2D(const wstring& strTargetTag)
+{
+	if (!m_pRenderTarget_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pRenderTarget_Manager is NULL");
+	}
+
+	return m_pRenderTarget_Manager->Get_Texture2D(strTargetTag);
 }
 
 #ifdef _DEBUGTEST

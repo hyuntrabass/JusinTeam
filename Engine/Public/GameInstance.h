@@ -39,6 +39,10 @@ public: // Object Manager
 	HRESULT Add_Layer(_uint iLevelIndex, const wstring strLayerTag, const wstring& strPrototypeTag, void* pArg = nullptr);
 	CGameObject* Clone_Object(const wstring& strPrototypeTag, void* pArg = nullptr);
 	class CComponent* Get_Component(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strComponentTag, _uint iIndex = 0);
+	class CGameObject* Find_Prototype(const wstring& strPrototypeTag);
+	class CLayer* Find_Layer(_uint iLevelIndex, const wstring& strLayerTag);
+	_uint Get_LayerSize(_uint iLevelIndex, const wstring& strLayerTag);
+
 
 public: // Component Manager
 	HRESULT Add_Prototype_Component(_uint iLevelIndex, const wstring& strPrototype, class CComponent* pPrototype);
@@ -81,11 +85,15 @@ public: // PipeLine
 	void Set_Transform(TransformType eState, const _mat& TransformMatrix);
 
 public: // Picking
-	void TransformRay_ToLocal(_mat WorldMatrix);
 
+	void TransformRay_ToLocal(_mat WorldMatrix);
 	_bool Picking_InWorld(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _Inout_ _vec3* pPickPos);
 	_bool Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _Inout_ _vec4* pPickPos);
 	_bool Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _vec4 vNormal, _Inout_ _vec4* pPickPos);
+	_float4 PickingDepth(_float x, _float y);
+
+	_vec4 Compute_MousePicked_Terrain(_float44 matTerrainWorld, _float3* pVerticesPos, _uint iNumVerticesX, _uint iNumVerticesZ);
+	HRESULT Ready_Texture2D();
 
 public: // Font
 	HRESULT Add_Font(const wstring& strFontTag, const wstring& strFilePath);
@@ -125,6 +133,8 @@ public: // RenderTarget
 	HRESULT Begin_MRT(const wstring& strMRTTag, ID3D11DepthStencilView* pDepthStencillView = nullptr);
 	HRESULT End_MRT();
 	HRESULT Bind_ShaderResourceView(class CShader* pShader, const _char* pVariableName, const wstring& strTargetTag);
+	ID3D11Texture2D* Get_Texture2D(const wstring& strTargetTag);
+
 #ifdef _DEBUGTEST
 public:
 	HRESULT Ready_Debug_RT(const wstring& strTargetTag, _float2 vPos, _float2 vSize);

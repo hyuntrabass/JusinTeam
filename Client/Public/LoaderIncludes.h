@@ -12,6 +12,8 @@
 #include "TextButton.h"
 #include "CharacterSelect.h"
 
+#include "Camera_Debug.h"
+#include "Terrain.h"
 // Monster
 #include "NPCvsMon.h"
 #include "Void05.h"

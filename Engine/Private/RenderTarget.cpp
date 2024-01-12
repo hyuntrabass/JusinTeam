@@ -15,6 +15,11 @@ ID3D11RenderTargetView* CRenderTarget::Get_RenderTargetView()
     return m_pRenderTargetView;
 }
 
+ID3D11Texture2D* CRenderTarget::Get_Texture2D()
+{
+    return m_pTexture;
+}
+
 HRESULT CRenderTarget::Init(_uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor)
 {
     m_vClearColor = vColor;

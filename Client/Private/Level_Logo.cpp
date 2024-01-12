@@ -20,11 +20,11 @@ HRESULT CLevel_Logo::Init()
 
 void CLevel_Logo::Tick(_float fTimeDelta)
 {
-	if (not m_hasBGMStarted and m_pGameInstance->Is_SoundManager_Ready())
-	{
-		m_pGameInstance->PlayBGM(TEXT("Buzz"), 0.2f);
-		m_hasBGMStarted = true;
-	}
+	//if (not m_hasBGMStarted and m_pGameInstance->Is_SoundManager_Ready())
+	//{
+	//	m_pGameInstance->PlayBGM(TEXT("Buzz"), 0.2f);
+	//	m_hasBGMStarted = true;
+	//}
 
 	if (m_pGameInstance->Key_Down(DIK_RETURN))
 	{

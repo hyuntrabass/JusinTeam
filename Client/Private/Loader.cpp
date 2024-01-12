@@ -394,6 +394,25 @@ HRESULT CLoader::Load_GamePlay()
 #pragma region UI
 #pragma endregion
 
+#pragma region Terrain
+
+	// Terrain -> 테스트용도
+	string strInputFilePath = "../Bin/Resources/Textures/Terrain/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_Terrain");
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+#pragma endregion
+
+
 #pragma region Effect
 #pragma endregion
 
@@ -401,7 +420,7 @@ HRESULT CLoader::Load_GamePlay()
 
 	m_strLoadingText = L"Logo : Loading Model";
 #pragma region Model
-	string strInputFilePath = "../Bin/Resources/AnimMesh/Player/Mesh/";
+	strInputFilePath = "../Bin/Resources/AnimMesh/Player/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -457,6 +476,12 @@ HRESULT CLoader::Load_GamePlay()
 	//}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Void05"), CVoid05::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	// Terrain -> 테스트용도
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Terrain"), CTerrain::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
