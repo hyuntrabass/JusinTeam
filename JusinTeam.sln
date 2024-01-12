@@ -15,6 +15,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MapEditor", "MapEditor\Defa
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Effect_Editor", "Effect_Editor\Default\Effect_Editor.vcxproj", "{C1CA5BCF-1E18-496F-AF8D-D4348966D1D1}"
 >>>>>>> master
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AnimTool", "AnimTool\Default\AnimTool.vcxproj", "{4C825E50-D82E-4790-9B5D-5CE9C7C6D033}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -65,6 +67,14 @@ Global
 		{C1CA5BCF-1E18-496F-AF8D-D4348966D1D1}.Release|x64.Build.0 = Release|x64
 		{C1CA5BCF-1E18-496F-AF8D-D4348966D1D1}.Release|x86.ActiveCfg = Release|Win32
 		{C1CA5BCF-1E18-496F-AF8D-D4348966D1D1}.Release|x86.Build.0 = Release|Win32
+		{4C825E50-D82E-4790-9B5D-5CE9C7C6D033}.Debug|x64.ActiveCfg = Debug|x64
+		{4C825E50-D82E-4790-9B5D-5CE9C7C6D033}.Debug|x64.Build.0 = Debug|x64
+		{4C825E50-D82E-4790-9B5D-5CE9C7C6D033}.Debug|x86.ActiveCfg = Debug|Win32
+		{4C825E50-D82E-4790-9B5D-5CE9C7C6D033}.Debug|x86.Build.0 = Debug|Win32
+		{4C825E50-D82E-4790-9B5D-5CE9C7C6D033}.Release|x64.ActiveCfg = Release|x64
+		{4C825E50-D82E-4790-9B5D-5CE9C7C6D033}.Release|x64.Build.0 = Release|x64
+		{4C825E50-D82E-4790-9B5D-5CE9C7C6D033}.Release|x86.ActiveCfg = Release|Win32
+		{4C825E50-D82E-4790-9B5D-5CE9C7C6D033}.Release|x86.Build.0 = Release|Win32
 >>>>>>> master
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution

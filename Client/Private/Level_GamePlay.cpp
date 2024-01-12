@@ -28,6 +28,13 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
+	// Monster
+	if (FAILED(Ready_Void05()))
+	{
+		MSG_BOX("Failed to Ready Void05");
+		return E_FAIL;
+	}
+
 	if (FAILED(Ready_Map()))
 	{
 		MSG_BOX("Failed to Ready Map");
@@ -112,6 +119,16 @@ HRESULT CLevel_GamePlay::Ready_Map()
 		return E_FAIL;
 	}
 
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Void05()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void05"), TEXT("Prototype_GameObject_Void05"))))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }

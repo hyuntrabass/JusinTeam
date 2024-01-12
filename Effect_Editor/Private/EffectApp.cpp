@@ -1,5 +1,7 @@
 #include "EffectApp.h"
 #include "GameInstance.h"
+#include "Imgui_Manager.h"
+#include "LoadingImg.h"
 
 CEffectApp::CEffectApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -99,7 +101,7 @@ void CEffectApp::Tick(_float fTimeDelta)
 	{
 		if (!m_pImguiMgr)
 		{
-			//(m_pImguiMgr = CImguiMgr::Get_Instance())->Init(m_pDevice, m_pContext, m_MapList, m_MapCOLList, &m_PropList);
+			(m_pImguiMgr = CImgui_Manager::Get_Instance())->Init(m_pDevice, m_pContext, &m_TextureList);
 			Safe_AddRef(m_pImguiMgr);
 		}
 	}
@@ -111,7 +113,7 @@ void CEffectApp::Tick(_float fTimeDelta)
 		ImGui_ImplDX11_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
-		//m_pImguiMgr->Tick(fTimeDelta);
+		m_pImguiMgr->Tick(fTimeDelta);
 	}
 }
 
@@ -141,7 +143,7 @@ HRESULT CEffectApp::Render()
 
 	if (m_pImguiMgr)
 	{
-		//if (FAILED(m_pImguiMgr->Render()))
+		if (FAILED(m_pImguiMgr->Render()))
 		{
 			return E_FAIL;
 		}
@@ -207,7 +209,7 @@ HRESULT CEffectApp::Ready_Prototype_Component_For_Static()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex_Instancing"), CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxTex_Instancing.hlsl"), VTXPOINT_INSTANCING::Elements, VTXPOINT_INSTANCING::iNumElements))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex_Instancing"), CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxTex_Instancing.hlsl"), VTXPOINT_INSTANCING::Elements, VTXPOINT_INSTANCING::iNumElements))))
 	{
 		return E_FAIL;
 	}
@@ -248,31 +250,78 @@ void CEffectApp::Begin_Thread()
 HRESULT CEffectApp::Ready_Prototype_GameObject()
 {
 	string strInputFilePath = "../../Client/Bin/Resources/Textures/Effect/";
+	_uint iTextureNumber{};
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
 		{
-			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_Effect_") + entry.path().parent_path().stem().wstring() + TEXT("_") + entry.path().stem().wstring();
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_Effect_") + to_wstring(iTextureNumber++);
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
 			{
 				return E_FAIL;
 			}
+
+			m_TextureList.push_back(entry.path().stem().string());
 		}
 	}
+
+#pragma region Model
+	_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(90.f));
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/StaticMesh/Common/Mesh/SM_EFF_Sphere_02.mo.hyuntrastatmesh", false, Pivot))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sphere_HorizentalUV"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/StaticMesh/Common/Mesh/SM_EFF_Sphere_01.mo.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Ring_14"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/StaticMesh/Common/Mesh/SM_EFF_Ring_14.mo.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Circle"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/StaticMesh/Common/Mesh/SM_EFF_Circle_01.mo.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+#pragma endregion
+
+	m_bLoadComplete = true;
 
 	return S_OK;
 }
 
 void CEffectApp::End_Thread()
 {
+	LeaveCriticalSection(&m_Critical_Section);
 }
 
 CEffectApp* CEffectApp::Create()
 {
-	return nullptr;
+	CEffectApp* pInstance = new CEffectApp();
+
+	if (FAILED(pInstance->Init()))
+	{
+		MSG_BOX("Failed to Create : CEffectApp");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
 }
 
 void CEffectApp::Free()
 {
+	WaitForSingleObject(m_hThread, INFINITE);
+
+	DeleteCriticalSection(&m_Critical_Section);
+
+	CloseHandle(m_hThread);
+
+	Safe_Release(m_pImguiMgr);
+	CImgui_Manager::Destroy_Instance();
+	Safe_Release(m_pRenderer);
+	Safe_Release(m_pGameInstance);
+	Safe_Release(m_pDevice);
+	Safe_Release(m_pContext);
+	CGameInstance::Release_Engine();
 }

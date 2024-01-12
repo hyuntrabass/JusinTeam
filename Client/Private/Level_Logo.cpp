@@ -10,6 +10,11 @@ HRESULT CLevel_Logo::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_LOGO);
 
+	if (FAILED(Ready_Logo()))
+	{
+		MSG_BOX("Failed to Ready Logo");
+		return E_FAIL;
+	}
 	return S_OK;
 }
 
@@ -23,7 +28,7 @@ void CLevel_Logo::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_RETURN))
 	{
-		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_GAMEPLAY))))
+		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_SELECT))))
 		{
 			return;
 		}
@@ -41,6 +46,16 @@ void CLevel_Logo::Tick(_float fTimeDelta)
 
 HRESULT CLevel_Logo::Render()
 {
+	return S_OK;
+}
+
+HRESULT CLevel_Logo::Ready_Logo()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_Logo"), TEXT("Prototype_GameObject_Background"))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 

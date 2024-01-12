@@ -17,7 +17,7 @@ HRESULT CMonster::Init_Prototype()
 
 HRESULT CMonster::Init(void* pArg)
 {
-	if (FAILED(Add_Component()))
+	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
@@ -31,6 +31,7 @@ void CMonster::Tick(_float fTimeDelta)
 
 void CMonster::Late_Tick(_float fTimeDelta)
 {
+	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 }
 
@@ -81,7 +82,7 @@ HRESULT CMonster::Render()
     return S_OK;
 }
 
-HRESULT CMonster::Add_Component()
+HRESULT CMonster::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -93,7 +94,7 @@ HRESULT CMonster::Add_Component()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_strModelTag, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, m_strModelTag, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	{
 		return E_FAIL;
 	}

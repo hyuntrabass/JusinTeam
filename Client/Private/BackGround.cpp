@@ -23,6 +23,12 @@ HRESULT CBackGround::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	m_pLogo = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Logo"));
+	if (not m_pLogo)
+	{
+		return E_FAIL;
+	}
+
 	m_fSizeX = g_iWinSizeX;
 	m_fSizeY = g_iWinSizeY;
 
@@ -38,11 +44,30 @@ HRESULT CBackGround::Init(void* pArg)
 
 void CBackGround::Tick(_float fTimeDelta)
 {
+	/*
+	m_fAlpha += fTimeDelta * m_fDir;
+	if (m_fAlpha < 0.f)
+	{
+		m_fDir = 1.f;
+	}
+
+	if (m_fAlpha >= 1.f)
+	{
+		m_fDuration += fTimeDelta;
+		if (m_fDuration >= 1.5f)
+		{
+			m_fDuration = 0.f;
+			m_fDir = -1.f;
+			m_fAlpha = 1.f;
+		}
+	}
+	*/
 }
 
 void CBackGround::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Priority, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
+	m_pLogo->Late_Tick(fTimeDelta);
 }
 
 HRESULT CBackGround::Render()
@@ -61,6 +86,9 @@ HRESULT CBackGround::Render()
 	{
 		return E_FAIL;
 	}
+
+	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("화면을 클릭해주세요"), _vec2((_float)g_iWinSizeX/2.f + 1.f, 600.f), 0.5f, _vec4(0.f, 0.f, 0.f, m_fAlpha));
+	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("화면을 클릭해주세요"), _vec2((_float)g_iWinSizeX/2.f, 600.f), 0.5f, _vec4(1.f, 1.f, 1.f, m_fAlpha));
 
 	return S_OK;
 }
@@ -82,7 +110,7 @@ HRESULT CBackGround::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_LOGO, TEXT("Prototype_Component_Texture_BackGround"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_LOGO, TEXT("Prototype_Component_Texture_UI_Logo_Bg_DungeonResult"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -141,6 +169,7 @@ void CBackGround::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pLogo);
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
