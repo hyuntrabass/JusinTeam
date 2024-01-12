@@ -28,6 +28,12 @@ private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
+private:
+	_float				m_fDir{ 1.f };
+	_float				m_fAlpha{ 0.f };
+	_float				m_fDuration{ 0.f };
+	class CGameObject*	m_pLogo{ nullptr };
+
 public:
 	static CBackGround* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;

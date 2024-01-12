@@ -75,6 +75,7 @@ using namespace physx;
 #pragma comment(lib, "fmod_vc.lib")
 
 #ifdef _DEBUG
+#ifndef _TOOL
 
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -87,6 +88,7 @@ using namespace physx;
 
 #endif
 
+#endif
 #endif // _DEBUG
 
 namespace Engine

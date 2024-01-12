@@ -39,6 +39,10 @@ public: // Object Manager
 	HRESULT Add_Layer(_uint iLevelIndex, const wstring strLayerTag, const wstring& strPrototypeTag, void* pArg = nullptr);
 	CGameObject* Clone_Object(const wstring& strPrototypeTag, void* pArg = nullptr);
 	class CComponent* Get_Component(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strComponentTag, _uint iIndex = 0);
+	class CGameObject* Find_Prototype(const wstring& strPrototypeTag);
+	class CLayer* Find_Layer(_uint iLevelIndex, const wstring& strLayerTag);
+	_uint Get_LayerSize(_uint iLevelIndex, const wstring& strLayerTag);
+
 
 public: // Component Manager
 	HRESULT Add_Prototype_Component(_uint iLevelIndex, const wstring& strPrototype, class CComponent* pPrototype);
@@ -81,11 +85,15 @@ public: // PipeLine
 	void Set_Transform(TransformType eState, const _mat& TransformMatrix);
 
 public: // Picking
-	void TransformRay_ToLocal(_mat WorldMatrix);
 
+	void TransformRay_ToLocal(_mat WorldMatrix);
 	_bool Picking_InWorld(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _Inout_ _vec3* pPickPos);
 	_bool Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _Inout_ _vec4* pPickPos);
 	_bool Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _vec4 vNormal, _Inout_ _vec4* pPickPos);
+	_float4 PickingDepth(_float x, _float y);
+
+	_vec4 Compute_MousePicked_Terrain(_float44 matTerrainWorld, _float3* pVerticesPos, _uint iNumVerticesX, _uint iNumVerticesZ);
+	HRESULT Ready_Texture2D();
 
 public: // Font
 	HRESULT Add_Font(const wstring& strFontTag, const wstring& strFilePath);
@@ -125,6 +133,8 @@ public: // RenderTarget
 	HRESULT Begin_MRT(const wstring& strMRTTag, ID3D11DepthStencilView* pDepthStencillView = nullptr);
 	HRESULT End_MRT();
 	HRESULT Bind_ShaderResourceView(class CShader* pShader, const _char* pVariableName, const wstring& strTargetTag);
+	ID3D11Texture2D* Get_Texture2D(const wstring& strTargetTag);
+
 #ifdef _DEBUGTEST
 public:
 	HRESULT Ready_Debug_RT(const wstring& strTargetTag, _float2 vPos, _float2 vSize);
@@ -142,20 +152,34 @@ public: // Sound Manager
 	void SetChannelVolume(_uint iChannel, _float fVolume);
 
 public: // Get_Set
+	// 현재 카메라가 메인 카메라인지 디버그 카메라인지 반환함. client define에 이넘 있음.
 	const _uint& Get_CameraModeIndex() const;
+	// 카메라의 near와 far를 반환 함. x가 near, y가 far.
 	const _float2& Get_CameraNF() const;
+	// 현재 레벨을 반환함. client define에 이넘 있음.
 	const _uint& Get_CurrentLevelIndex() const;
+	// 시간 비율을 반환 함. 1이면 정상 속도, 0.5면 절반 속도로 슬로우.
 	const _float& Get_TimeRatio() const;
+	// 현재 안개의 near 에서 far를 반환 함.
 	const _float2& Get_FogNF() const;
+	// 카메라에서 쉐이킹 해야되는지 받는 함수.
 	const _bool& Get_ShakeCam() const;
+	// 지옥이 시작되는 높이를 반환 함. (일정 높이부터 내려갈 수록 어두워지는걸 hell이라고 해놨음.)
 	const _float& Get_HellHeight() const;
 
+	// 카메라 모드를 지정함. 카메라에서 말고는 쓰지 말것.
 	void Set_CameraModeIndex(const _uint& iIndex);
+	// 카메라의 near, far를 지정함. 이것도 카메라에서만 호출 할것.
 	void Set_CameraNF(const _float2& vCamNF);
+	// 현재 레벨을 지정함. 각 레벨의 Init()함수에 넣어주세요.
 	void Set_CurrentLevelIndex(const _uint& iIndex);
+	// 슬로우모션, 빨리감기를 실행시키는 함수. 몇배속인지 넣어준다.
 	void Set_TimeRatio(const _float fRatio);
+	// 안개의 정도를 조정할 때 씀. near부터 안개가 끼기 시작해서 far로 갈 수록 안개가 진해짐.
 	void Set_FogNF(const _float2& vFogNF);
+	// 카메라 쉐이크 기능. true 던지면 카메라가 한번 흔들림.
 	void Set_ShakeCam(const _bool& bShake);
+	// hell 높이를 지정한다.
 	void Set_HellHeight(const _float& fHeight);
 
 private:

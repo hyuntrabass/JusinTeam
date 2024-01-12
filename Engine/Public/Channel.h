@@ -21,6 +21,9 @@ private:
 	vector<KEYFRAME> m_KeyFrames{};
 	_uint m_iBoneIndex{};
 	_mat m_PrevTransformation{};
+	KEYFRAME m_DestKeyFrame = {};
+	_float m_fPreAnimPos = { 0.f };
+	_bool m_IsBack = { false };
 
 public:
 	static CChannel* Create(ifstream& ModelFile);

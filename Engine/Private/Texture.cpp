@@ -64,6 +64,11 @@ HRESULT CTexture::Init(void* pArg)
 	return S_OK;
 }
 
+ID3D11ShaderResourceView* CTexture::Get_SRV(_uint iTextureIndex)
+{
+	return m_SRVs[iTextureIndex];
+}
+
 HRESULT CTexture::Bind_ShaderResource(CShader* pShader, const _char* pVariableName, _uint iTextureIndex)
 {
 	if (iTextureIndex >= m_iNumTextures)

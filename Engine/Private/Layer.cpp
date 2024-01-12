@@ -33,6 +33,10 @@ HRESULT CLayer::Add_GameObejct(CGameObject* pGameObejct)
 
 	return S_OK;
 }
+_uint CLayer::Get_LayerSize()
+{
+	return (_uint)m_GameObjects.size();
+}
 
 void CLayer::Tick(_float fTimeDelta)
 {

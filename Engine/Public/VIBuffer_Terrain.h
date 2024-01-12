@@ -12,6 +12,10 @@ class ENGINE_DLL CVIBuffer_Terrain final : public CVIBuffer
 public:
 	virtual HRESULT Init_Prototype(_uint iNumVerticesX, _uint iNumVerticesZ);
 	virtual HRESULT Init(void* pArg) override;
+	VTXNORTEX* Get_Vertices() { return pVertices; }
+
+private:
+	VTXNORTEX* pVertices = { nullptr };
 
 public:
 	static CVIBuffer_Terrain* Create(_dev pDevice, _context pContext, _uint iNumVerticesX, _uint iNumVerticesZ);

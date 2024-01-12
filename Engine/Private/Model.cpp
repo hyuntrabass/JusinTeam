@@ -97,6 +97,11 @@ _matrix CModel::Get_PivotMatrix()
 	return XMLoadFloat4x4(&m_PivotMatrix);
 }
 
+vector<class CAnimation*>& CModel::Get_Animations()
+{
+	return m_Animations;
+}
+
 void CModel::Set_Animation(ANIM_DESC Animation_Desc)
 {
 	if (m_AnimDesc.iAnimIndex != Animation_Desc.iAnimIndex or

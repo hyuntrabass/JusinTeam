@@ -72,6 +72,16 @@ HRESULT CObject_Manager::Add_Layer(_uint iLevelIndex, const wstring strLayerTag,
 	return S_OK;
 }
 
+_uint CObject_Manager::Get_LayerSize(_uint iLevelIndex, const wstring& strLayerTag)
+{
+	CLayer* pLayer = Find_Layer(iLevelIndex, strLayerTag);
+
+	if (nullptr == pLayer)
+		return 0;
+
+	return pLayer->Get_LayerSize();
+}
+
 CGameObject* CObject_Manager::Clone_Object(const wstring& strPrototypeTag, void* pArg)
 {
 	CGameObject* pPrototype = Find_Prototype(strPrototypeTag);

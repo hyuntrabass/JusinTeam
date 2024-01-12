@@ -1,6 +1,10 @@
 #include "MainApp.h"
 #include "GameInstance.h"
 #include "Level_Loading.h"
+#include "Loading.h"
+#include "Loading_Horse.h"
+#include "Mouse.h"
+#include "Camera_Main.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -43,11 +47,18 @@ HRESULT CMainApp::Init()
 	{
 		return E_FAIL;
 	}
-
+	/* 마우스 생성 */
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Mouse"), TEXT("Prototype_GameObject_Mouse"))))
+	{
+		return E_FAIL;
+	}
 	if (FAILED(Open_Level(LEVEL_LOGO)))
 	{
 		return E_FAIL;
 	}
+
+
+
 
 	return S_OK;
 }
@@ -80,7 +91,7 @@ HRESULT CMainApp::Render()
 		m_iFrameCount = 0;
 	}
 
-	if (FAILED(m_pGameInstance->Clear_BackBuffer_View(_float4(0.f, 1.f, 0.f, 1.f))))
+	if (FAILED(m_pGameInstance->Clear_BackBuffer_View(_float4(0.f, 0.f, 1.f, 1.f))))
 	{
 		return E_FAIL;
 	}
@@ -146,6 +157,12 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"), CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 50, 50))))
+
+	{
+		return E_FAIL;
+	}
+
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex"), CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Vtxtex.hlsl"), VTXPOSTEX::Elements, VTXPOSTEX::iNumElements))))
 	{
@@ -198,12 +215,48 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 		return E_FAIL;
 	}
 
+	/* Mouse */
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Mouse"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Mouse/MouseCursor.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Mouse"), CMouse::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Main"), CCamera_Main::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 	return S_OK;
 }
 
 HRESULT CMainApp::Ready_Prototype_For_Loading()
 {
 #pragma region Textures
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_Bg_Dungeon"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Loading/Loading_Images/Bg_Dungeon (%d).dds"), 8))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_LH_Loading"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Loading/LH_Loading.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Loading_Horse"), CLoading_Horse::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Loading"), CLoading::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	// 
 	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_Screen"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Loading/LoadingScreen_%d.dds")))))
 	//{
 	//	return E_FAIL;

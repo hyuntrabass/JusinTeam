@@ -37,6 +37,7 @@ public:
 	const _float& Get_CurrentAnimPos() const;
 	const _mat* Get_BoneMatrix(const _char* pBoneName) const;
 	_matrix Get_PivotMatrix();
+	vector<class CAnimation*>& Get_Animations();
 
 	void Set_Animation(ANIM_DESC Animation_Desc);
 

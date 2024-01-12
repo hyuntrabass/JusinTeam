@@ -19,6 +19,9 @@ public:
 
 	HRESULT Bind_ShaderResourceView(class CShader* pShader, const _char* pVariableName, const wstring& strTargetTag);
 
+	ID3D11Texture2D* Get_Texture2D(const wstring& strTargetTag);
+
+
 #ifdef _DEBUGTEST
 public:
 	HRESULT Ready_Debug(const wstring& strTargetTag, _float2 vPos, _float2 vSize);

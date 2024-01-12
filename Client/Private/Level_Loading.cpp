@@ -1,7 +1,10 @@
 #include "Level_Loading.h"
 #include "Loader.h"
 #include "Level_Logo.h"
+#include "Level_Select.h"
 #include "Level_GamePlay.h"
+#include "Loading.h"
+#include "Loading_Horse.h"
 
 CLevel_Loading::CLevel_Loading(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -12,20 +15,12 @@ HRESULT CLevel_Loading::Init(LEVEL_ID eNextLevel)
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_LOADING);
 
-	//if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround_Loading"))))
-	//{
-	//	return E_FAIL;
-	//}
 
-	//if (FAILED(Ready_Layer_LoadingBar(TEXT("Layer_Bar_Loading"))))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOADING, TEXT("Layer_Loading"), TEXT("Prototype_GameObject_Loading"))))
+	{
+		return E_FAIL;
+	}
 
-	//if (FAILED(Ready_Layer_Icon(TEXT("Layer_Icon_Loading"))))
-	//{
-	//	return E_FAIL;
-	//}
 
 	m_eNextLevel = eNextLevel;
 
@@ -42,7 +37,7 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 {
 	m_pLoader->Show_LoadingText();
 
-	if (m_pLoader->isFinished()/* && m_pGameInstance->Key_Down(DIK_SPACE)*/)
+	if (m_pLoader->isFinished())// && m_pGameInstance->Key_Down(DIK_SPACE))
 	{
 		CLevel* pLevel = nullptr;
 
@@ -50,6 +45,9 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 		{
 		case Client::LEVEL_LOGO:
 			pLevel = CLevel_Logo::Create(m_pDevice, m_pContext);
+			break;
+		case Client::LEVEL_SELECT:
+			pLevel = CLevel_Select::Create(m_pDevice, m_pContext);
 			break;
 		case Client::LEVEL_GAMEPLAY:
 			pLevel = CLevel_GamePlay::Create(m_pDevice, m_pContext);
