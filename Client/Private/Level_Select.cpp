@@ -16,6 +16,13 @@ HRESULT CLevel_Select::Init()
 		MSG_BOX("Failed to Ready Select");
 		return E_FAIL;
 	}
+
+	if (FAILED(Ready_Map()))
+	{
+		MSG_BOX("Failed to Ready SelectMap");
+		return E_FAIL;
+	}
+
 	/*
 	셀렉트 커스텀용 카메라 만들어야할듯
 	if (FAILED(Ready_Camera()))
@@ -59,6 +66,38 @@ HRESULT CLevel_Select::Render()
 HRESULT CLevel_Select::Ready_Select()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select"), TEXT("Prototype_GameObject_Select"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Select::Ready_Model()
+{
+	ObjectInfo Info{};
+	Info.strPrototypeTag = TEXT("Prototype_Model_Select0");
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select_Model"), TEXT("Prototype_GameObject_Select_Model"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Select::Ready_Map()
+{
+	ObjectInfo Info{};
+	Info.strPrototypeTag = TEXT("Prototype_Model_Select0");
+	Info.vPos = _vec4(0, 0, 0, 1);
+	
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select_Model"), TEXT("Prototype_GameObject_Select_Model"),&Info)))
+	{
+		return E_FAIL;
+	}
+
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select_Map"), TEXT("Prototype_GameObject_Select_Map"))))
 	{
 		return E_FAIL;
 	}
