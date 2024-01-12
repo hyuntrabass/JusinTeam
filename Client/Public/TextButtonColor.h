@@ -4,15 +4,17 @@
 
 
 BEGIN(Client)
-class CTextButton final : public COrthographicObject
+class CTextButtonColor final : public COrthographicObject
 {
 public:
 	typedef struct tagTextButtonDesc
 	{
 		_float  fDepth{1.f};
+		_float  fAlpha{1.f};
+
 		_vec2	vSize;
 		_vec2	vPosition;
-		_vec4	vColor{ _vec4(1.f, 1.f, 1.f, 1.f) };
+		_vec4	vColor;
 
 		_float	fFontSize;
 		_vec2	vTextPosition;
@@ -20,14 +22,13 @@ public:
 		_vec4	vTextColor{ _vec4(1.f, 1.f, 1.f, 1.f) };
 
 		wstring strTexture;
-		wstring strMaskTexture;
 
 		LEVEL_ID eLevelID;
 	}TEXTBUTTON_DESC;
 private:
-	CTextButton(_dev pDevice, _context pContext);
-	CTextButton(const CTextButton& rhs);
-	virtual ~CTextButton() = default;
+	CTextButtonColor(_dev pDevice, _context pContext);
+	CTextButtonColor(const CTextButtonColor& rhs);
+	virtual ~CTextButtonColor() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -48,9 +49,11 @@ private:
 
 private:
 	_float				m_fDuration{ 0.f };
+	_float				m_fAlpha{ 1.f };
 
 	_vec2	m_vSize;
 	_vec2	m_vPosition;
+	_vec4	m_vColor;
 
 	_float	m_fFontSize;
 	_vec2	m_vTextPosition;
@@ -61,7 +64,7 @@ private:
 
 	LEVEL_ID m_eLevel;
 public:
-	static CTextButton* Create(_dev pDevice, _context pContext);
+	static CTextButtonColor* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

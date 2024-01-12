@@ -4,14 +4,18 @@
 
 BEGIN(Client)
 
-class CCharacterSelect final : public COrthographicObject
+class CSelectDesc final : public COrthographicObject
 {
 public:
-	enum STATE { NONALPHA, ALPHA, STATE_END };
+	enum CHARACTER { WARRIOR, SORCERESS, ROGUE, PRIEST, CHARACTER_END };
+	typedef struct tagSelectDesc
+	{
+		CHARACTER eCharacter;
+	}SELECT_DESC;
 private:
-	CCharacterSelect(_dev pDevice, _context pContext);
-	CCharacterSelect(const CCharacterSelect& rhs);
-	virtual ~CCharacterSelect() = default;
+	CSelectDesc(_dev pDevice, _context pContext);
+	CSelectDesc(const CSelectDesc& rhs);
+	virtual ~CSelectDesc() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -22,9 +26,6 @@ public:
 
 private:
 	CRenderer* m_pRendererCom{ nullptr };
-	CShader* m_pShaderCom{ nullptr };
-	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
-	CTexture* m_pTextureCom{ nullptr };
 
 private:
 	HRESULT Add_Components();
@@ -33,17 +34,10 @@ private:
 private:
 	_bool				m_isActive{ false };
 
-	STATE				m_eState{ NONALPHA };
-
-
-	_float				m_fAlpha{ 1.f };
-	_float				m_fDuration{ 0.f };
+	CHARACTER			m_eCharacter{ CHARACTER_END };
 
 public:
-	void Set_Active_Alpha(STATE	eState);
-
-public:
-	static CCharacterSelect* Create(_dev pDevice, _context pContext);
+	static CSelectDesc* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

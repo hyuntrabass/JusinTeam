@@ -11,7 +11,7 @@ private:
 
 public:
 	HRESULT Init(const wstring& strFilePath);
-	HRESULT Render(const wstring& strText, const _float2& vPosition, _float fScale = 1.f, _fvector vColor = Colors::White, _float fRotation = 0.f);
+	HRESULT Render(const wstring& strText, const _float2& vPosition, _float fScale = 1.f, _fvector vColor = Colors::White, _float fRotation = 0.f, _bool isFront = false);
 
 private:
 	_dev m_pDevice{ nullptr };

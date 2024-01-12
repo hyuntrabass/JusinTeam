@@ -1,8 +1,8 @@
 #pragma once
-#include "MapEditor_Define.h"
+#include "Client_Define.h"
 #include "Camera.h"
 
-BEGIN(MapEditor)
+BEGIN(Client)
 
 class CCamera_Custom final : public CCamera
 {
@@ -18,18 +18,8 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 
 private:
-	CTransform* m_pPlayerTransform{ nullptr };
-	_bool m_isMoveMode{ true };
-	_float m_fMouseSensor{ 0.08f };
-	_float m_fSpeed{ 10.f };
-	_float m_fPlayerDistance{ 4.f };
-	_float m_fShakeAcc{ 100.f };
-
-private:
-	_float m_fSceneTimer{};
-	_uint m_iSceneIndex{};
-	CUTSCENE* m_pScene{ nullptr };
-
+	void Camera_Default(_float fTimeDelta);
+	void Camera_Zoom(_float fTimeDelta);
 public:
 	static CCamera_Custom* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;

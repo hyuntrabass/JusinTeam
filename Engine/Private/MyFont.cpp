@@ -25,7 +25,7 @@ HRESULT CMyFont::Init(const wstring& strFilePath)
     return S_OK;
 }
 
-HRESULT CMyFont::Render(const wstring& strText, const _float2& vPosition, _float fScale, _fvector vColor, _float fRotation)
+HRESULT CMyFont::Render(const wstring& strText, const _float2& vPosition, _float fScale, _fvector vColor, _float fRotation, _bool isFront)
 {
     if (!m_pFont || !m_pBatch)
     {
@@ -36,9 +36,16 @@ HRESULT CMyFont::Render(const wstring& strText, const _float2& vPosition, _float
 
     m_pBatch->Begin();
     
-    _vector vTextSize = m_pFont->MeasureString(strText.c_str());
     _float2 vOrigin{};
-    XMStoreFloat2(&vOrigin, vTextSize / 2.f);
+    if (!isFront)
+    {
+        _vector vTextSize = m_pFont->MeasureString(strText.c_str());
+        XMStoreFloat2(&vOrigin, vTextSize / 2.f);
+    }
+    else
+    {
+        vOrigin = _float2(0.f, 0.f);
+    }
 
     m_pFont->DrawString(m_pBatch, strText.c_str(), vPosition, vColor, fRotation, vOrigin, fScale);
 

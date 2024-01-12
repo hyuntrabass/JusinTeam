@@ -1,27 +1,31 @@
-#include "TextButton.h"
+#include "TextButtonColor.h"
 #include "GameInstance.h"
 
-CTextButton::CTextButton(_dev pDevice, _context pContext)
+CTextButtonColor::CTextButtonColor(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
 }
 
-CTextButton::CTextButton(const CTextButton& rhs)
+CTextButtonColor::CTextButtonColor(const CTextButtonColor& rhs)
 	: COrthographicObject(rhs)
 {
 }
 
-HRESULT CTextButton::Init_Prototype()
+HRESULT CTextButtonColor::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CTextButton::Init(void* pArg)
+HRESULT CTextButtonColor::Init(void* pArg)
 {
 
+
 	m_fDepth = ((TEXTBUTTON_DESC*)pArg)->fDepth;
+	m_fAlpha = ((TEXTBUTTON_DESC*)pArg)->fAlpha;
+
 	m_vSize = ((TEXTBUTTON_DESC*)pArg)->vSize;
 	m_vPosition = ((TEXTBUTTON_DESC*)pArg)->vPosition;
+	m_vColor = ((TEXTBUTTON_DESC*)pArg)->vColor;
 
 	m_fFontSize = ((TEXTBUTTON_DESC*)pArg)->fFontSize;
 	m_vTextPosition = ((TEXTBUTTON_DESC*)pArg)->vTextPosition;
@@ -30,6 +34,7 @@ HRESULT CTextButton::Init(void* pArg)
 	m_eLevel = ((TEXTBUTTON_DESC*)pArg)->eLevelID;
 
 	m_strTexture = ((TEXTBUTTON_DESC*)pArg)->strTexture;
+
 
 	if (FAILED(Add_Components()))
 	{
@@ -48,24 +53,24 @@ HRESULT CTextButton::Init(void* pArg)
 	return S_OK;
 }
 
-void CTextButton::Tick(_float fTimeDelta)
+void CTextButtonColor::Tick(_float fTimeDelta)
 {
 }
 
-void CTextButton::Late_Tick(_float fTimeDelta)
+void CTextButtonColor::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 
 }
 
-HRESULT CTextButton::Render()
+HRESULT CTextButtonColor::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
+	if (FAILED(m_pShaderCom->Begin(VTPass_Mask_Color)))
 	{
 		return E_FAIL;
 	}
@@ -80,7 +85,7 @@ HRESULT CTextButton::Render()
 	return S_OK;
 }
 
-HRESULT CTextButton::Add_Components()
+HRESULT CTextButtonColor::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -108,7 +113,7 @@ HRESULT CTextButton::Add_Components()
 	return S_OK;
 }
 
-HRESULT CTextButton::Bind_ShaderResources()
+HRESULT CTextButtonColor::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
 		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
@@ -120,6 +125,18 @@ HRESULT CTextButton::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof(_vec4))))
+	{
+		return E_FAIL;
+	}
+	/*
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float))))
+	{
+		return E_FAIL;
+	}
+	*/
+
 	if (m_strTexture != TEXT(""))
 	{
 		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
@@ -132,33 +149,33 @@ HRESULT CTextButton::Bind_ShaderResources()
 	return S_OK;
 }
 
-CTextButton* CTextButton::Create(_dev pDevice, _context pContext)
+CTextButtonColor* CTextButtonColor::Create(_dev pDevice, _context pContext)
 {
-	CTextButton* pInstance = new CTextButton(pDevice, pContext);
+	CTextButtonColor* pInstance = new CTextButtonColor(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CTextButton");
+		MSG_BOX("Failed to Create : CTextButtonColor");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CTextButton::Clone(void* pArg)
+CGameObject* CTextButtonColor::Clone(void* pArg)
 {
-	CTextButton* pInstance = new CTextButton(*this);
+	CTextButtonColor* pInstance = new CTextButtonColor(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CTextButton");
+		MSG_BOX("Failed to Clone : CTextButtonColor");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CTextButton::Free()
+void CTextButtonColor::Free()
 {
 	__super::Free();
 

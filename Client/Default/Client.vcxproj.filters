@@ -73,9 +73,6 @@
     <Filter Include="02.GameObjects\00.UI\01.SelectLevel">
       <UniqueIdentifier>{93abe20e-797d-4bcc-ad2b-25c32d710d72}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.UI\01.SelectLevel\ClassSelect">
-      <UniqueIdentifier>{e433917e-0435-4307-a9c2-4229c403b1c9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\00.UI\01.SelectLevel\CharacterSelect">
       <UniqueIdentifier>{6f2639c5-1725-44f9-9096-e83c37bd1286}</UniqueIdentifier>
     </Filter>
@@ -90,6 +87,18 @@
     </Filter>
     <Filter Include="02.GameObjects\04. Monster\Tutorial\01. Void05">
       <UniqueIdentifier>{ca2ecc51-8de3-4c19-8aae-baa40147a63b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\TextButton">
+      <UniqueIdentifier>{e433917e-0435-4307-a9c2-4229c403b1c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\01.SelectLevel\SelectDesc">
+      <UniqueIdentifier>{7935ee7b-30e4-4d2e-a24a-01dc212f896a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\01.Camera\Select">
+      <UniqueIdentifier>{8d83bd06-503a-4299-90d9-bd4f9f6c1225}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\NameTag">
+      <UniqueIdentifier>{58d52e8e-1cbf-4e42-b53c-27b4eb35e680}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -166,7 +175,7 @@
       <Filter>02.GameObjects\00.UI\01.SelectLevel\CharacterSelect</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\TextButton.h">
-      <Filter>02.GameObjects\00.UI\01.SelectLevel\ClassSelect</Filter>
+      <Filter>02.GameObjects\00.UI\TextButton</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\BodyPart.h">
       <Filter>02.GameObjects\03.Player\BodyParts</Filter>
@@ -179,6 +188,18 @@
     </ClInclude>
     <ClInclude Include="..\Public\Void05.h">
       <Filter>02.GameObjects\04. Monster\Tutorial\01. Void05</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SelectDesc.h">
+      <Filter>02.GameObjects\00.UI\01.SelectLevel\SelectDesc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TextButtonColor.h">
+      <Filter>02.GameObjects\00.UI\TextButton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Custom.h">
+      <Filter>02.GameObjects\01.Camera\Select</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NameTag.h">
+      <Filter>02.GameObjects\00.UI\NameTag</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -253,7 +274,7 @@
       <Filter>02.GameObjects\00.UI\01.SelectLevel\CharacterSelect</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\TextButton.cpp">
-      <Filter>02.GameObjects\00.UI\01.SelectLevel\ClassSelect</Filter>
+      <Filter>02.GameObjects\00.UI\TextButton</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\BodyPart.cpp">
       <Filter>02.GameObjects\03.Player\BodyParts</Filter>
@@ -263,6 +284,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\Void05.cpp">
       <Filter>02.GameObjects\04. Monster\Tutorial\01. Void05</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SelectDesc.cpp">
+      <Filter>02.GameObjects\00.UI\01.SelectLevel\SelectDesc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TextButtonColor.cpp">
+      <Filter>02.GameObjects\00.UI\TextButton</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Custom.cpp">
+      <Filter>02.GameObjects\01.Camera\Select</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NameTag.cpp">
+      <Filter>02.GameObjects\00.UI\NameTag</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
