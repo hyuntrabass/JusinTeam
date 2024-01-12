@@ -17,6 +17,8 @@ public:
 
 private:
 	HRESULT Ready_Select();
+	HRESULT Ready_Model();
+	HRESULT Ready_Map();
 	HRESULT Ready_Camera();
 	HRESULT Ready_Light();
 
