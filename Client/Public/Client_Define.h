@@ -113,6 +113,7 @@ namespace Client
 		AnimPass_OutLine,
 		AnimPass_Shadow,
 		AnimPass_Dissolve,
+		AnimPass_Player
 	};
 
 	enum StaticMeshPass

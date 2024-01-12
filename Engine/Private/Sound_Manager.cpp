@@ -21,6 +21,7 @@ HRESULT CSound_Manager::Init(_uint iNumChannels)
 	return S_OK;
 }
 
+
 void CSound_Manager::Play_Sound(const wstring& strSoundTag, _uint iChannel, _float fVolume, _bool isLoop)
 {
 	FMOD::Sound* pSound = Find_Sound(strSoundTag);
@@ -138,6 +139,7 @@ CSound_Manager* CSound_Manager::Create(_uint iNumChannels)
 void CSound_Manager::Free()
 {
 	Safe_Delete_Array(m_pChannelArr);
+	
 	for (auto& Mypair : m_Sound)
 	{
 		Mypair.second->release();

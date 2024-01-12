@@ -61,8 +61,8 @@ void CPipeLine::Tick()
 	{
 		m_TransformMatrix_Inversed[i] = m_TransformMatrix[i].Invert();
 	}
-	m_vCameraPos = _vec4(m_TransformMatrix_Inversed[ToIndex(TransformType::View)].Translation(), 1.f);
-	m_vCameraLook = _vec4(m_TransformMatrix_Inversed[ToIndex(TransformType::View)].Backward());
+	m_vCameraPos = m_TransformMatrix_Inversed[ToIndex(TransformType::View)].Position(), 1.f;
+	m_vCameraLook = m_TransformMatrix_Inversed[ToIndex(TransformType::View)].Look();
 }
 
 CPipeLine* CPipeLine::Create()

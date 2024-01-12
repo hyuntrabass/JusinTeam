@@ -13,7 +13,7 @@ CAnimation::CAnimation(const CAnimation& rhs)
 	//, m_CurrentKeyFrames(rhs.m_CurrentKeyFrames)
 	//, m_PrevTransformations(rhs.m_PrevTransformations)
 {
-	//strcpy_s(m_szName, rhs.m_szName);
+	strcpy_s(m_szName, rhs.m_szName);
 	//for (auto& pChannel : m_Channels)
 	//{
 	//	Safe_AddRef(pChannel);
@@ -26,6 +26,11 @@ CAnimation::CAnimation(const CAnimation& rhs)
 	}
 }
 
+const _char* CAnimation::Get_Name() const
+{
+	return m_szName;
+}
+
 const _bool& CAnimation::IsFinished() const
 {
 	return m_isFinished;
@@ -36,10 +41,20 @@ const _float CAnimation::Get_CurrentAnimPos() const
 	return m_fCurrentAnimPos;
 }
 
+const _float CAnimation::Get_Duration() const
+{
+	return m_fDuration;
+}
+
 void CAnimation::ResetFinished()
 {
 	m_isFinished = false;
 	m_fCurrentAnimPos = {};
+}
+
+void CAnimation::Set_CurrentAnimPos(_float fCurrentAnimPos)
+{
+	m_fCurrentAnimPos = fCurrentAnimPos;
 }
 
 HRESULT CAnimation::Init(ifstream& ModelFile)
@@ -50,7 +65,7 @@ HRESULT CAnimation::Init(ifstream& ModelFile)
 	{
 		MSG_BOX("Name Is Too Long!");
 	}
-	ModelFile.read(m_szName, iNameSize);
+ 	ModelFile.read(m_szName, iNameSize);
 
 	ModelFile.read(reinterpret_cast<_char*>(&m_fDuration), sizeof _float);
 	ModelFile.read(reinterpret_cast<_char*>(&m_fTickPerSec), sizeof _float);

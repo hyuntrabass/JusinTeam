@@ -124,7 +124,10 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + vector(0.5f, 0.f, 0.f, 0.f) * g_bSelected;
-    
+    if (vMtrlDiffuse.a < 0.3f)
+    {
+        discard;
+    }
     float3 vNormal;
     if (g_HasNorTex)
     {
@@ -148,6 +151,40 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     return Output;
 }
 
+PS_OUT_DEFERRED PS_Main_Player(PS_IN Input)
+{
+    PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + vector(0.5f, 0.f, 0.f, 0.f) * g_bSelected;
+    
+    if (vMtrlDiffuse.a<0.3f)
+    {
+        discard;
+    }
+        
+    float3 vNormal;
+    
+    if (g_HasNorTex)
+    {
+        vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
+    
+        vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+        float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
+    
+        vNormal = mul(normalize(vNormal), WorldMatrix);
+    }
+    else
+    {
+        vNormal = Input.vNor.xyz;
+    }
+    
+    Output.vDiffuse = vMtrlDiffuse;
+    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    
+    return Output;
+}
 PS_OUT_DEFERRED PS_Main_OutLine(PS_IN Input)
 {
     PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
@@ -213,7 +250,7 @@ technique11 DefaultTechniqueShader_VtxNorTex
 {
     pass Default
     {
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -261,5 +298,18 @@ technique11 DefaultTechniqueShader_VtxNorTex
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Dissolve();
+    }
+
+    pass Player
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Player();
     }
 };

@@ -13,6 +13,7 @@ public:
 	HRESULT Init(_uint iNumLevels);
 	HRESULT Add_Prototype(const wstring& strPrototypeTag, class CGameObject* pPrototype);
 	HRESULT Add_Layer(_uint iLevelIndex, const wstring strLayerTag, const wstring& strPrototypeTag, void* pArg);
+	_uint Get_LayerSize(_uint iLevelIndex, const wstring& strLayerTag);
 	CGameObject* Clone_Object(const wstring& strPrototypeTag, void* pArg);
 	void Tick(_float fTimeDelta);
 	void Late_Tick(_float fTimeDelta);
@@ -29,7 +30,7 @@ private:
 	map<const wstring, class CGameObject*> m_Prototype;
 	_uint m_iNumLevels{0};
 
-private:
+public:
 	class CGameObject* Find_Prototype(const wstring& strPrototypeTag);
 	class CLayer* Find_Layer(_uint iLevelIndex, const wstring& strLayerTag);
 

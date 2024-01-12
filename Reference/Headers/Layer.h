@@ -17,6 +17,8 @@ public:
 	void Tick(_float fTimeDelta);
 	void Late_Tick(_float fTimeDelta);
 	void Release_DeadObjects();
+	_uint Get_LayerSize();
+
 
 private:
 	list<class CGameObject*> m_GameObjects{};

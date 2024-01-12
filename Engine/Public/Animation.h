@@ -3,7 +3,7 @@
 
 BEGIN(Engine)
 
-class CAnimation final : public CBase
+class ENGINE_DLL CAnimation final : public CBase
 {
 private:
 	CAnimation();
@@ -11,10 +11,13 @@ private:
 	virtual ~CAnimation() = default;
 	
 public:
+	const _char* Get_Name() const;
 	const _bool& IsFinished() const;
 	const _float Get_CurrentAnimPos() const;
+	const _float Get_Duration() const;
 
 	void ResetFinished();
+	void Set_CurrentAnimPos(_float fCurrentAnimPos);
 
 public:
 	HRESULT Init(ifstream& ModelFile);
