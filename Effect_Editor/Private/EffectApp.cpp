@@ -2,6 +2,9 @@
 #include "GameInstance.h"
 #include "Imgui_Manager.h"
 #include "LoadingImg.h"
+#include "Terrain.h"
+#include "Effect_Dummy.h"
+#include "Camera_Main.h"
 
 CEffectApp::CEffectApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -131,7 +134,7 @@ HRESULT CEffectApp::Render()
 		m_iFrameCount = 0;
 	}
 
-	m_pGameInstance->Clear_BackBuffer_View(_float4(0.7f, 0.7f, 0.f, 1.f));
+	m_pGameInstance->Clear_BackBuffer_View(_float4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Clear_DepthStencil_View();
 
 	m_pRenderer->Draw_RenderGroup();
@@ -173,7 +176,7 @@ HRESULT CEffectApp::Ready_Prototype_Component_For_Static()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"), CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 300, 300))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"), CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 10, 10))))
 	{
 		return E_FAIL;
 	}
@@ -213,6 +216,15 @@ HRESULT CEffectApp::Ready_Prototype_Component_For_Static()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, L"Prototype_Component_Texture_Terrain", CTexture::Create(m_pDevice, m_pContext, L"../../Client/Bin/Resources/Textures/Terrain/Tile1.dds"))))
+	{
+		return E_FAIL;
+	}
+
+#pragma region Prototype
+#pragma endregion
+
 
 	return S_OK;
 }
@@ -285,6 +297,20 @@ HRESULT CEffectApp::Ready_Prototype_GameObject()
 		return E_FAIL;
 	}
 #pragma endregion
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Terrain"), CTerrain::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Dummy"), CEffect_Dummy::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera"), CCamera_Main::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 
 	m_bLoadComplete = true;
 
