@@ -8,7 +8,7 @@ CLevel_Custom::CLevel_Custom(_dev pDevice, _context pContext)
 
 HRESULT CLevel_Custom::Init()
 {
-	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_LOGO);
+	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_CUSTOM);
 
 	if (FAILED(Ready_Logo()))
 	{
