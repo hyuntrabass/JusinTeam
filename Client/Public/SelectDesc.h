@@ -26,6 +26,9 @@ public:
 
 private:
 	CRenderer* m_pRendererCom{ nullptr };
+	CShader* m_pShaderCom{ nullptr };
+	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
+	CTexture* m_pTextureCom{ nullptr };
 
 private:
 	HRESULT Add_Components();
@@ -35,6 +38,7 @@ private:
 	_bool				m_isActive{ false };
 
 	CHARACTER			m_eCharacter{ CHARACTER_END };
+	wstring				m_strTexture;
 
 public:
 	static CSelectDesc* Create(_dev pDevice, _context pContext);
