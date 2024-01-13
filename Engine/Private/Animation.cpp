@@ -9,6 +9,8 @@ CAnimation::CAnimation(const CAnimation& rhs)
 	: m_fDuration(rhs.m_fDuration)
 	, m_fTickPerSec(rhs.m_fTickPerSec)
 	, m_iNumChannels(rhs.m_iNumChannels)
+	, m_iNumTriggers(rhs.m_iNumTriggers)
+	, m_Triggers(rhs.m_Triggers)
 	//, m_Channels(rhs.m_Channels)
 	//, m_CurrentKeyFrames(rhs.m_CurrentKeyFrames)
 	//, m_PrevTransformations(rhs.m_PrevTransformations)
@@ -202,4 +204,6 @@ void CAnimation::Free()
 		Safe_Release(pChannel);
 	}
 	m_Channels.clear();
+
+	m_Triggers.clear();
 }

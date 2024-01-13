@@ -13,12 +13,20 @@ BEGIN(AnimTool)
 class CImgui_Manager final : public CBase
 {
 public:
+    enum TYPE { TYPE_MONSTER, TYPE_PLAYER, TYPE_END };
+
+public:
     //ImGuizmo
     enum MANIPULATETYPE { TYPE_STATE, TYPE_RESET, MANIPULATE_TYPE_END };
 
 private:
     CImgui_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual ~CImgui_Manager() = default;
+
+public:
+    void CreateModel() {
+        m_IsCreateModel = true;
+    }
 
 public:
     HRESULT Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc);
@@ -47,6 +55,11 @@ private:
     ANIM_DESC m_AnimDesc{};
     POINT m_ptMouse = {};
     vector<const _char*> m_AnimationNames;
+    _int m_ePreType = { TYPE_MONSTER };
+    _int m_eType = { TYPE_MONSTER };
+    _char m_szCurrentModelTag[MAX_PATH] = "";
+    _uint m_iCurrentModelIndex = { 0 };
+    _bool m_IsCreateModel = { false };
 
     //ImGuizmo
     ImGuizmo::OPERATION m_eStateType = { ImGuizmo::OPERATION::TRANSLATE };

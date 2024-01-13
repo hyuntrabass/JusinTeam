@@ -1,0 +1,176 @@
+Parent = Material3'/Game/Character/Materials/Basic_Master_Mat.Basic_Master_Mat'
+ScalarParameterValues[10] =
+{
+    ScalarParameterValues[0] =
+    {
+        ParameterInfo = { Name=detail_cloth_int }
+        ParameterValue = 0.632824
+        ParameterName = None
+    }
+    ScalarParameterValues[1] =
+    {
+        ParameterInfo = { Name=detail_cloth_scale }
+        ParameterValue = 99.9898
+        ParameterName = None
+    }
+    ScalarParameterValues[2] =
+    {
+        ParameterInfo = { Name=detail_skin_int }
+        ParameterValue = 0.679441
+        ParameterName = None
+    }
+    ScalarParameterValues[3] =
+    {
+        ParameterInfo = { Name=detail_skin_scale }
+        ParameterValue = 16.7669
+        ParameterName = None
+    }
+    ScalarParameterValues[4] =
+    {
+        ParameterInfo = { Name=base_color_brightness }
+        ParameterValue = 1
+        ParameterName = None
+    }
+    ScalarParameterValues[5] =
+    {
+        ParameterInfo = { Name=Light_Vector_int }
+        ParameterValue = 0.2
+        ParameterName = None
+    }
+    ScalarParameterValues[6] =
+    {
+        ParameterInfo = { Name=Light_Vector_skin_level }
+        ParameterValue = 0.2
+        ParameterName = None
+    }
+    ScalarParameterValues[7] =
+    {
+        ParameterInfo = { Name=reflection_int }
+        ParameterValue = 0.958157
+        ParameterName = None
+    }
+    ScalarParameterValues[8] =
+    {
+        ParameterInfo = { Name=skin_Roughness_power }
+        ParameterValue = 1
+        ParameterName = None
+    }
+    ScalarParameterValues[9] =
+    {
+        ParameterInfo = { Name=RefractionDepthBias }
+        ParameterValue = 0
+        ParameterName = None
+    }
+}
+TextureParameterValues[3] =
+{
+    TextureParameterValues[0] =
+    {
+        ParameterInfo = { Name=base_color }
+        ParameterValue = Texture2D'/Game/Character/Mon/Asgard/Mon_Nott/Texture/Mon_Nott_01_col.Mon_Nott_01_col'
+        ParameterName = None
+    }
+    TextureParameterValues[1] =
+    {
+        ParameterInfo = { Name=mask_roug_metal }
+        ParameterValue = Texture2D'/Game/Character/Mon/Asgard/Mon_Nott/Texture/Mon_Nott_01_mask.Mon_Nott_01_mask'
+        ParameterName = None
+    }
+    TextureParameterValues[2] =
+    {
+        ParameterInfo = { Name=normal }
+        ParameterValue = Texture2D'/Game/Character/Mon/Asgard/Mon_Nott/Texture/Mon_Nott_01_nml.Mon_Nott_01_nml'
+        ParameterName = None
+    }
+}
+VectorParameterValues[3] =
+{
+    VectorParameterValues[0] =
+    {
+        ParameterInfo = { Name=fresnel_color }
+        ParameterValue = { R=0, G=0, B=0, A=0 }
+        ParameterName = None
+    }
+    VectorParameterValues[1] =
+    {
+        ParameterInfo = { Name=glow_col }
+        ParameterValue = { R=0.354167, G=0.121518, B=0.101454, A=1 }
+        ParameterName = None
+    }
+    VectorParameterValues[2] =
+    {
+        ParameterInfo = { Name=SS_in_col }
+        ParameterValue = { R=1, G=0.545602, B=0.485771, A=0 }
+        ParameterName = None
+    }
+}
+BasePropertyOverrides =
+{
+    bOverride_BlendMode = false
+    BlendMode = BLEND_Opaque (0)
+    bOverride_TwoSided = false
+    TwoSided = false
+    bOverride_OpacityMaskClipValue = false
+    OpacityMaskClipValue = 0.3333
+}
+StaticParameters =
+{
+    StaticSwitchParameters[0] = {}
+    StaticComponentMaskParameters[0] = {}
+    TerrainLayerWeightParameters[0] = {}
+    MaterialLayersParameters[0] = {}
+}
+RuntimeVirtualTextureParameterValues[0] = {}
+FontParameterValues[0] = {}
+FlattenedTexture = None
+MobileBaseTexture = None
+MobileNormalTexture = None
+bUseMobileSpecular = false
+MobileSpecularPower = 16
+MobileSpecularMask = MSM_Constant (0)
+MobileMaskTexture = None
+TextureStreamingData[7] =
+{
+    TextureStreamingData[0] =
+    {
+        SamplingScale = 1
+        UVChannelIndex = 0
+        TextureName = 8x8_col
+    }
+    TextureStreamingData[1] =
+    {
+        SamplingScale = 1
+        UVChannelIndex = 0
+        TextureName = 8x8_glw
+    }
+    TextureStreamingData[2] =
+    {
+        SamplingScale = 1
+        UVChannelIndex = 0
+        TextureName = 8x8_mask
+    }
+    TextureStreamingData[3] =
+    {
+        SamplingScale = 1
+        UVChannelIndex = 0
+        TextureName = 8x8_nml
+    }
+    TextureStreamingData[4] =
+    {
+        SamplingScale = 99.9375
+        UVChannelIndex = 0
+        TextureName = D_nml_cloth
+    }
+    TextureStreamingData[5] =
+    {
+        SamplingScale = 16.7656
+        UVChannelIndex = 0
+        TextureName = D_nml_skin
+    }
+    TextureStreamingData[6] =
+    {
+        SamplingScale = 2
+        UVChannelIndex = 0
+        TextureName = height_map_03
+    }
+}

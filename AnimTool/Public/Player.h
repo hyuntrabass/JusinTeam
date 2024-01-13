@@ -6,6 +6,9 @@ BEGIN(AnimTool)
 
 class CPlayer final : public CGameObject
 {
+public:
+	enum TYPE { TYPE_MONSTER, TYPE_PLAYER, TYPE_END };
+
 private:
 	CPlayer(_dev pDevice, _context pContext);
 	CPlayer(const CPlayer& rhs);
@@ -20,8 +23,16 @@ public:
 		return m_iCurrentIndex;
 	}
 
+	void Set_ModelType(TYPE eType) {
+		m_eType = eType;
+	}
+
+	TYPE Get_ModelType() {
+		return m_eType;
+	}
+
 public:
-	virtual HRESULT Init_Prototype(_uint iNumModels);
+	virtual HRESULT Init_Prototype(_uint iNumMonsterModels, _uint iNumPlayerModels);
 	virtual HRESULT Init(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
@@ -30,21 +41,26 @@ public:
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
-	CModel** m_pModelCom{ nullptr };
+	CModel** m_pMonsterModelCom{ nullptr };
+	CModel** m_pPlayerModelCom{ nullptr };
+	CModel* m_pModelCom{ nullptr };
 
 private:
 	_float4 m_vPos{};
 	_float m_fGravity{};
-	_uint m_iNumModels = { 0 };
-	wstring* m_pModelName = {};
+	_uint m_iNumMonsterModels = { 0 };
+	_uint m_iNumPlayerModels = { 0 };
+	wstring* m_pMonsterModelTag = {};
+	wstring* m_pPlayerModelTag = {};
 	_uint m_iCurrentIndex = { 0 };
+	TYPE m_eType = { TYPE_END };
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CPlayer* Create(_dev pDevice, _context pContext, _uint iNumModels);
+	static CPlayer* Create(_dev pDevice, _context pContext, _uint iNumMonsterModels, _uint iNumPlayerModels);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

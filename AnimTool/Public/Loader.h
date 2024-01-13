@@ -33,6 +33,7 @@ private:
 	_bool m_isFinished{ false };
 
 private:
+	_uint m_iNumMonsterModels = { 0 };
 	_uint m_iNumPlayerModels = { 0 };
 
 private:
