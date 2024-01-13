@@ -83,42 +83,80 @@ HRESULT CImgui_Manager::ImGuiMenu()
 #pragma endregion
 	ImGui::Begin("MENU");
 
-	ImGui::SeparatorText("SELECT");
+	ImGui::SeparatorText("SELECT"); 
+	
+	ImGui::RadioButton("MONSTER", &m_eType, TYPE_MONSTER); ImGui::SameLine();
+	ImGui::RadioButton("PLAYER", &m_eType, TYPE_PLAYER);
 
-	const char* szModelName[2] = { "Loser02", "Sandman" };
-	static const char* szCurrentModel = "Loser02";
-
-	if (ImGui::BeginCombo("LIST", szCurrentModel))
+	if (m_eType == TYPE_MONSTER)
 	{
-		for (size_t i = 0; i < IM_ARRAYSIZE(szModelName); i++)
+		const char* szModelTag[4] = { "Hirokin", "Nott","Skjaldmaer","Skjaldmaer_A" };
+		static const char* szCurrentModel = "Hirokin";
+		if (m_ePreType != m_eType)
 		{
-			_bool bSelectedModel = (szCurrentModel == szModelName[i]);
-			if (ImGui::Selectable(szModelName[i], bSelectedModel))
-			{
-				szCurrentModel = szModelName[i];
-				m_pPlayer->Set_ModelIndex(i);
-			}
+			m_ePreType = m_eType;
+			m_iCurrentModelIndex = 0;
+			szCurrentModel = "Hirokin";
 		}
-		ImGui::EndCombo();
+
+		if (ImGui::BeginCombo("LIST", szCurrentModel))
+		{
+			for (size_t i = 0; i < IM_ARRAYSIZE(szModelTag); i++)
+			{
+				_bool bSelectedModel = (szCurrentModel == szModelTag[i]);
+				if (ImGui::Selectable(szModelTag[i], bSelectedModel))
+				{
+					szCurrentModel = szModelTag[i];
+					strcpy_s(m_szCurrentModelTag, szCurrentModel);
+					m_iCurrentModelIndex = i;
+				}
+			}
+			ImGui::EndCombo();
+		}
+	}
+	else if (m_eType == TYPE_PLAYER)
+	{
+		const char* szModelTag[1] = { "Void05" };
+		static const char* szCurrentModel = "Void05";
+		if (m_ePreType != m_eType)
+		{
+			m_ePreType = m_eType;
+			m_iCurrentModelIndex = 0;
+			szCurrentModel = "Void05";
+		}
+
+		if (ImGui::BeginCombo("LIST", szCurrentModel))
+		{
+			for (size_t i = 0; i < IM_ARRAYSIZE(szModelTag); i++)
+			{
+				_bool bSelectedModel = (szCurrentModel == szModelTag[i]);
+				if (ImGui::Selectable(szModelTag[i], bSelectedModel))
+				{
+					szCurrentModel = szModelTag[i];
+					strcpy_s(m_szCurrentModelTag, szCurrentModel);
+					m_iCurrentModelIndex = i;
+				}
+			}
+			ImGui::EndCombo();
+		}
 	}
 
 	ImGui::SeparatorText("FILE");
 
 	if (ImGui::Button("SAVE"))
 	{
-		SaveFile(szCurrentModel);
+		SaveFile(m_szCurrentModelTag);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("LOAD"))
 	{
-		LoadFile(szCurrentModel);
+		LoadFile(m_szCurrentModelTag);
 	}
-
-	ImGui::SeparatorText("SELECTED OBJECT");
 
 #pragma region CreateObject
 
-	if (ImGui::Button("CREATE"))
+	//if (ImGui::Button("CREATE"))
+	if (m_IsCreateModel)
 	{
 		if (not m_pPlayer)
 		{
@@ -203,8 +241,16 @@ HRESULT CImgui_Manager::ImGuiMenu()
 
 		_uint iCurrentModelIndex = m_pPlayer->Get_ModelIndex();
 		_tchar szComName[MAX_PATH] = TEXT("");
-		const wstring& strComName = TEXT("Com_Model%d");
-		wsprintf(szComName, strComName.c_str(), iCurrentModelIndex);
+		const wstring& strMonsterComName = TEXT("Com_Model_Monster%d");
+		const wstring& strPlayerComName = TEXT("Com_Model_Player%d");
+		if (m_eType == TYPE_MONSTER)
+		{
+			wsprintf(szComName, strMonsterComName.c_str(), iCurrentModelIndex);
+		}
+		else if (m_eType == TYPE_PLAYER)
+		{ 
+			wsprintf(szComName, strPlayerComName.c_str(), iCurrentModelIndex);
+		}
 		wstring strFinalComName = szComName;
 		CModel* pCurrentModel = (CModel*)m_pPlayer->Find_Component(strFinalComName);
 		if (pCurrentModel != nullptr)
@@ -280,6 +326,12 @@ HRESULT CImgui_Manager::ImGuiMenu()
 		ImGui::End();
 	}
 
+	if (m_pPlayer)
+	{
+		m_pPlayer->Set_ModelType((CPlayer::TYPE)m_eType);
+		m_pPlayer->Set_ModelIndex(m_iCurrentModelIndex);
+	}
+
 	return S_OK;
 }
 
@@ -334,9 +386,19 @@ HRESULT CImgui_Manager::SaveFile(const string& strModelName)
 {
 	_char szFilePath[MAX_PATH] = "";
 	_char szDirectory[MAX_PATH] = "../../Client/Bin/Resources/AnimMesh/";
+	_char szModelType[MAX_PATH] = "";
+	if (m_eType == TYPE_MONSTER)
+	{
+		strcpy_s(szModelType, MAX_PATH, "Monster/");
+	}
+	else if (m_eType == TYPE_PLAYER)
+	{
+		strcpy_s(szModelType, MAX_PATH, "Player/");
+	}
 	_char szMesh[MAX_PATH] = "/Mesh/";
 	_char szExt[MAX_PATH] = ".animtrigger";
 	strcpy_s(szFilePath, MAX_PATH, szDirectory);
+	strcat_s(szFilePath, MAX_PATH, szModelType);
 	strcat_s(szFilePath, MAX_PATH, strModelName.c_str());
 	strcat_s(szFilePath, MAX_PATH, szMesh);
 	strcat_s(szFilePath, MAX_PATH, strModelName.c_str());
@@ -348,8 +410,16 @@ HRESULT CImgui_Manager::SaveFile(const string& strModelName)
 	{
 		_uint iCurrentModelIndex = m_pPlayer->Get_ModelIndex();
 		_tchar szComName[MAX_PATH] = TEXT("");
-		const wstring& strComName = TEXT("Com_Model%d");
-		wsprintf(szComName, strComName.c_str(), iCurrentModelIndex);
+		const wstring& strMonsterComName = TEXT("Com_Model_Monster%d");
+		const wstring& strPlayerComName = TEXT("Com_Model_Player%d");
+		if (m_eType == TYPE_MONSTER)
+		{
+			wsprintf(szComName, strMonsterComName.c_str(), iCurrentModelIndex);
+		}
+		else if (m_eType == TYPE_PLAYER)
+		{
+			wsprintf(szComName, strPlayerComName.c_str(), iCurrentModelIndex);
+		}
 		wstring strFinalComName = szComName;
 		CModel* pCurrentModel = (CModel*)m_pPlayer->Find_Component(strFinalComName);
 
@@ -385,9 +455,19 @@ HRESULT CImgui_Manager::LoadFile(const string& strModelName)
 {
 	_char szFilePath[MAX_PATH] = "";
 	_char szDirectory[MAX_PATH] = "../../Client/Bin/Resources/AnimMesh/";
+	_char szModelType[MAX_PATH] = "";
+	if (m_eType == TYPE_MONSTER)
+	{
+		strcpy_s(szModelType, MAX_PATH, "Monster/");
+	}
+	else if (m_eType == TYPE_PLAYER)
+	{
+		strcpy_s(szModelType, MAX_PATH, "Player/");
+	}
 	_char szMesh[MAX_PATH] = "/Mesh/";
 	_char szExt[MAX_PATH] = ".animtrigger";
 	strcpy_s(szFilePath, MAX_PATH, szDirectory);
+	strcat_s(szFilePath, MAX_PATH, szModelType);
 	strcat_s(szFilePath, MAX_PATH, strModelName.c_str());
 	strcat_s(szFilePath, MAX_PATH, szMesh);
 	strcat_s(szFilePath, MAX_PATH, strModelName.c_str());
@@ -398,9 +478,17 @@ HRESULT CImgui_Manager::LoadFile(const string& strModelName)
 	if (Filein.is_open())
 	{
 		_uint iCurrentModelIndex = m_pPlayer->Get_ModelIndex();
-		_tchar szComName[MAX_PATH] = TEXT("");
-		const wstring& strComName = TEXT("Com_Model%d");
-		wsprintf(szComName, strComName.c_str(), iCurrentModelIndex);
+		_tchar szComName[MAX_PATH] = TEXT(""); 
+		const wstring& strMonsterComName = TEXT("Com_Model_Monster%d");
+		const wstring& strPlayerComName = TEXT("Com_Model_Player%d");
+		if (m_eType == TYPE_MONSTER)
+		{
+			wsprintf(szComName, strMonsterComName.c_str(), iCurrentModelIndex);
+		}
+		else if (m_eType == TYPE_PLAYER)
+		{
+			wsprintf(szComName, strPlayerComName.c_str(), iCurrentModelIndex);
+		}
 		wstring strFinalComName = szComName;
 		CModel* pCurrentModel = (CModel*)m_pPlayer->Find_Component(strFinalComName);
 

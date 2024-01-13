@@ -29,7 +29,6 @@ private:
 	CRenderer* m_pRenderer{ nullptr };
 	_float m_fTimeAcc{};
 	_uint m_iFrameCount{};
-
 	class CImgui_Manager* m_pImgui_Manager{ nullptr };
 
 private:

@@ -1,1 +1,177 @@
 1. Static Only   2. Anim Only   3. All
+2
+Animation Models : Start Converting...
+Converting... Hirokin.fbx
+Read File Succssefully
+Animation name list: 
+Mon_Hirokin.ao|Attack01
+Mon_Hirokin.ao|Attack02
+Mon_Hirokin.ao|Attack03
+Mon_Hirokin.ao|Attack04
+Mon_Hirokin.ao|Attack04_end
+Mon_Hirokin.ao|Attack04_end_2
+Mon_Hirokin.ao|Attack04_loop
+Mon_Hirokin.ao|Attack04_loop_2
+Mon_Hirokin.ao|Attack04_start
+Mon_Hirokin.ao|Attack04_start_2
+Mon_Hirokin.ao|Attack05
+Mon_Hirokin.ao|Attack06
+Mon_Hirokin.ao|Attack06_A
+Mon_Hirokin.ao|Attack06_B
+Mon_Hirokin.ao|Attack06_B_2
+Mon_Hirokin.ao|Attack07
+Mon_Hirokin.ao|Attack07_A
+Mon_Hirokin.ao|Attack07_B
+Mon_Hirokin.ao|Attack08
+Mon_Hirokin.ao|Attack09
+Mon_Hirokin.ao|Die
+Mon_Hirokin.ao|Die.001
+Mon_Hirokin.ao|Die_A
+Mon_Hirokin.ao|Die_summon
+Mon_Hirokin.ao|Idle
+Mon_Hirokin.ao|Rage
+Mon_Hirokin.ao|Rage_2
+Mon_Hirokin.ao|Roar
+Mon_Hirokin.ao|Run
+Mon_Hirokin.ao|Spawn
+Mon_Hirokin.ao|Spawn_A
+Mon_Hirokin.ao|Spawn_B
+Mon_Hirokin.ao|Walk
+Converting... Nott.fbx
+Read File Succssefully
+Animation name list: 
+Mon_Nott.ao|attack00
+Mon_Nott.ao|Attack00_A
+Mon_Nott.ao|Attack00_B
+Mon_Nott.ao|Attack01
+Mon_Nott.ao|Attack01_A
+Mon_Nott.ao|Attack01_B
+Mon_Nott.ao|attack02
+Mon_Nott.ao|Attack02_A
+Mon_Nott.ao|Attack02_B
+Mon_Nott.ao|Attack03
+Mon_Nott.ao|Attack03_A_01
+Mon_Nott.ao|Attack03_A_02
+Mon_Nott.ao|Attack03_A_end
+Mon_Nott.ao|Attack03_A_loop
+Mon_Nott.ao|Attack03_A_start
+Mon_Nott.ao|Attack03_B_01
+Mon_Nott.ao|Attack03_B_02
+Mon_Nott.ao|Attack03_B_end
+Mon_Nott.ao|Attack03_B_loop
+Mon_Nott.ao|Attack03_B_start
+Mon_Nott.ao|Attack03_end
+Mon_Nott.ao|Attack03_loop
+Mon_Nott.ao|Attack03_start
+Mon_Nott.ao|attack04
+Mon_Nott.ao|Attack04_A
+Mon_Nott.ao|Attack04_B
+Mon_Nott.ao|attack05
+Mon_Nott.ao|Attack05_A
+Mon_Nott.ao|Attack05_B
+Mon_Nott.ao|attack06
+Mon_Nott.ao|Attack06_A
+Mon_Nott.ao|Attack06_B
+Mon_Nott.ao|attack07
+Mon_Nott.ao|Attack07_A
+Mon_Nott.ao|Attack07_B
+Mon_Nott.ao|attack08
+Mon_Nott.ao|Attack08_A
+Mon_Nott.ao|Attack08_B
+Mon_Nott.ao|attack09
+Mon_Nott.ao|Attack09_A
+Mon_Nott.ao|Attack09_B
+Mon_Nott.ao|attack_rage
+Mon_Nott.ao|Attack_rage_A
+Mon_Nott.ao|Attack_rage_B
+Mon_Nott.ao|Die
+Mon_Nott.ao|Die_A
+Mon_Nott.ao|idle
+Mon_Nott.ao|idle_A
+Mon_Nott.ao|Roar
+Mon_Nott.ao|Roar_A
+Mon_Nott.ao|Roar_B
+Mon_Nott.ao|Run
+Mon_Nott.ao|Run_A
+Mon_Nott.ao|Spawn
+Mon_Nott.ao|Spawn_A
+Mon_Nott.ao|Talk
+Mon_Nott.ao|Talk_A
+Mon_Nott.ao|Walk
+Mon_Nott.ao|Walk_A
+Converting... Skjaldmaer.fbx
+Read File Succssefully
+Animation name list: 
+Mon_Skjaldmaer.ao|Attack01
+Mon_Skjaldmaer.ao|Attack01_A
+Mon_Skjaldmaer.ao|Attack02
+Mon_Skjaldmaer.ao|Attack02_A
+Mon_Skjaldmaer.ao|Attack03
+Mon_Skjaldmaer.ao|Attack03_A
+Mon_Skjaldmaer.ao|Attack04
+Mon_Skjaldmaer.ao|Attack04_A
+Mon_Skjaldmaer.ao|Attack05
+Mon_Skjaldmaer.ao|Attack05_A
+Mon_Skjaldmaer.ao|Attack06
+Mon_Skjaldmaer.ao|Attack06_A
+Mon_Skjaldmaer.ao|Attack07
+Mon_Skjaldmaer.ao|Attack07_A
+Mon_Skjaldmaer.ao|Attack08
+Mon_Skjaldmaer.ao|Attack08_A
+Mon_Skjaldmaer.ao|Attack09
+Mon_Skjaldmaer.ao|Attack09_A
+Mon_Skjaldmaer.ao|Attack10
+Mon_Skjaldmaer.ao|Die
+Mon_Skjaldmaer.ao|Die_A
+Mon_Skjaldmaer.ao|Idle
+Mon_Skjaldmaer.ao|Idle_A
+Mon_Skjaldmaer.ao|Roar
+Mon_Skjaldmaer.ao|Roar_A
+Mon_Skjaldmaer.ao|Run
+Mon_Skjaldmaer.ao|Run_A
+Mon_Skjaldmaer.ao|Spawn
+Mon_Skjaldmaer.ao|Spawn_A
+Mon_Skjaldmaer.ao|Talk
+Mon_Skjaldmaer.ao|Talk_A
+Mon_Skjaldmaer.ao|Walk
+Mon_Skjaldmaer.ao|Walk_A
+Converting... Skjaldmaer_A.fbx
+Read File Succssefully
+Animation name list: 
+Mon_Skjaldmaer_A.ao|Attack01
+Mon_Skjaldmaer_A.ao|Attack01_A
+Mon_Skjaldmaer_A.ao|Attack02
+Mon_Skjaldmaer_A.ao|Attack02_A
+Mon_Skjaldmaer_A.ao|Attack03
+Mon_Skjaldmaer_A.ao|Attack03_A
+Mon_Skjaldmaer_A.ao|Attack04
+Mon_Skjaldmaer_A.ao|Attack04_A
+Mon_Skjaldmaer_A.ao|Attack05
+Mon_Skjaldmaer_A.ao|Attack05_A
+Mon_Skjaldmaer_A.ao|Attack06
+Mon_Skjaldmaer_A.ao|Attack06_A
+Mon_Skjaldmaer_A.ao|Attack07
+Mon_Skjaldmaer_A.ao|Attack07_A
+Mon_Skjaldmaer_A.ao|Attack08
+Mon_Skjaldmaer_A.ao|Attack08_A
+Mon_Skjaldmaer_A.ao|Attack09
+Mon_Skjaldmaer_A.ao|Attack09_A
+Mon_Skjaldmaer_A.ao|Attack10
+Mon_Skjaldmaer_A.ao|Die
+Mon_Skjaldmaer_A.ao|Die_A
+Mon_Skjaldmaer_A.ao|Idle
+Mon_Skjaldmaer_A.ao|Idle_A
+Mon_Skjaldmaer_A.ao|Roar
+Mon_Skjaldmaer_A.ao|Roar_A
+Mon_Skjaldmaer_A.ao|Run
+Mon_Skjaldmaer_A.ao|Run_A
+Mon_Skjaldmaer_A.ao|Spawn
+Mon_Skjaldmaer_A.ao|Spawn_A
+Mon_Skjaldmaer_A.ao|Talk
+Mon_Skjaldmaer_A.ao|Talk_A
+Mon_Skjaldmaer_A.ao|Walk
+Mon_Skjaldmaer_A.ao|Walk_A
+Animation Models : Convert Success!
+
+4 Animation Models
+are Successfully Converted as hyuntramesh!!

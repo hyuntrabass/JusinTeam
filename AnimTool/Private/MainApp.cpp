@@ -91,6 +91,11 @@ void CMainApp::Tick(_float fTimeDelta)
 	m_pImgui_Manager->Tick(fTimeDelta);
 
 	m_pImgui_Manager->Late_Tick(fTimeDelta);
+
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_TOOL)
+	{
+		m_pImgui_Manager->CreateModel();
+	}
 }
 
 HRESULT CMainApp::Render()
