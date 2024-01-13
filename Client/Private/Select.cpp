@@ -217,6 +217,7 @@ void CSelect::Set_SelectDesc(_uint iSelect)
 
 	CSelectDesc::SELECT_DESC SelectDesc = {};
 	SelectDesc.eCharacter = (CSelectDesc::CHARACTER)iSelect;
+
 	m_pSelectDesc = (CSelectDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_SelectDesc"), &SelectDesc);
 }
 

@@ -26,13 +26,13 @@ HRESULT CSelect_Map::Init(void* pArg)
 
     m_pTransformCom->Set_State(State::Pos, _vec4(0.f,0.f,0.f,1.f));
     //m_pTransformCom->LookAt(_vec4(0.f, 0.f, -1.0f, 0.f));
-
+   
     return S_OK;
 }
 
 void CSelect_Map::Tick(_float fTimeDelta)
 {
-  
+   
 }
 
 void CSelect_Map::Late_Tick(_float fTimeDelta)
@@ -51,6 +51,7 @@ HRESULT CSelect_Map::Render()
     {
         if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
         {
+            return E_FAIL;
         }
 
         _bool HasNorTex{};

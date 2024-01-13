@@ -32,6 +32,7 @@ private:
 
 private:
 	wstring m_strModelTag = {};
+	_float m_fScale{};
 
 public:
 	static CSelect_Map* Create(_dev pDevice, _context pContext);

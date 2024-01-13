@@ -349,9 +349,11 @@ HRESULT CLoader::Load_Select()
 
 	m_strLoadingText = L"Select : Loading Model";
 #pragma region Model
+	_mat PivotMat;
+	PivotMat = _mat::CreateScale(0.006) * _mat::CreateRotationX(XMConvertToRadians(90.f));
 
  	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Model_Select_Map"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Select_Map/Mesh/map.hyuntrastatmesh"))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Select_Map/Mesh/map.hyuntrastatmesh",false, PivotMat))))
 	{
 		return E_FAIL;
 	}
@@ -365,11 +367,41 @@ HRESULT CLoader::Load_Select()
 		{	
 			
 			wstring strPrototypeTag = TEXT("Prototype_Model_Select") + to_wstring(iIndex++);
+			if (iIndex == 4)
+			{
+				PivotMat = _mat::CreateScale(0.01f) * _mat::CreateRotationY(XMConvertToRadians(-20.f));
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, PivotMat))))
+				{
+					return E_FAIL;
+				}
+
+			}
+			else if (iIndex == 2)
+			{
+				PivotMat = _mat::CreateScale(0.01f) * _mat::CreateRotationY(XMConvertToRadians(30.f));
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, PivotMat))))
+				{
+					return E_FAIL;
+				}
+
+			}
+			else if (iIndex == 1)
+			{
+				PivotMat = _mat::CreateScale(0.01f) * _mat::CreateRotationY(XMConvertToRadians(90.f));
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, PivotMat))))
+				{
+					return E_FAIL;
+				}
+
+			}
+			else
+			{
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, _mat::CreateScale(0.01f)))))
 			{
 				return E_FAIL;
 			}
 
+			}
 		}
 	}
 #pragma endregion
@@ -420,6 +452,10 @@ HRESULT CLoader::Load_Select()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Debug"), CCamera_Debug::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Custom"), CCamera_Custom::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -531,10 +567,6 @@ HRESULT CLoader::Load_GamePlay()
 
 	m_strLoadingText = L"Logo : Loading Prototype";
 #pragma region Prototype
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Debug"), CCamera_Debug::Create(m_pDevice, m_pContext))))
-	{
-		return E_FAIL;
-	}
 	/*
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Main"), CCamera_Main::Create(m_pDevice, m_pContext))))
