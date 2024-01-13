@@ -178,6 +178,7 @@ void CSelect::Set_SelectDesc(_uint iSelect)
 
 	CSelectDesc::SELECT_DESC SelectDesc = {};
 	SelectDesc.eCharacter = (CSelectDesc::CHARACTER)iSelect;
+
 	m_pSelectDesc = (CSelectDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_SelectDesc"), &SelectDesc);
 }
 
@@ -214,5 +215,8 @@ void CSelect::Free()
 	Safe_Release(m_pSelectButton);
 	Safe_Release(m_pClassButton);
 	Safe_Release(m_pCharacterSelect);
+
+	if(m_pSelectDesc!=nullptr)
+	Safe_Release(m_pSelectDesc);
 
 }

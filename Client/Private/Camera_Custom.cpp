@@ -19,7 +19,7 @@ HRESULT CCamera_Custom::Init(void* pArg)
 {
 	if (not pArg)
 	{
-		MSG_BOX("null Arg : CCamera_Debug");
+		MSG_BOX("null Arg : CCamera_Custom");
 		return E_FAIL;
 	}
 
@@ -31,6 +31,7 @@ HRESULT CCamera_Custom::Init(void* pArg)
 	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
 	_vec4 vCamPos = { 0.f, 0.f, -1.f, 1.f };
 	m_pTransformCom->Set_State(State::Pos, vCamPos);
+	m_pTransformCom->LookAt(_vec4(0, 0, 0, 1));
 
 	return S_OK;
 }
@@ -40,6 +41,11 @@ void CCamera_Custom::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Get_CameraModeIndex() != CM_CUSTOM)
 	{
 		return;
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_P))
+	{
+		m_pGameInstance->Set_CameraModeIndex(CM_DEBUG);
 	}
 
 	CAMERA_STATE eState = (CAMERA_STATE)m_pGameInstance->Get_CameraState();
@@ -54,6 +60,9 @@ void CCamera_Custom::Tick(_float fTimeDelta)
 		break;
 
 	}
+
+	__super::Tick(fTimeDelta);
+
 }
 
 void CCamera_Custom::Late_Tick(_float fTimeDelta)
@@ -79,6 +88,7 @@ void CCamera_Custom::Camera_Zoom(_float fTimeDelta)
 	_vector vNewPos = XMVectorLerp(vCurrentPos, vTargetPos, lerpFactor);
 
 	m_pTransformCom->Set_State(State::Pos, vNewPos);
+
 }
 
 CCamera_Custom* CCamera_Custom::Create(_dev pDevice, _context pContext)
