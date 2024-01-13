@@ -16,6 +16,18 @@
     <Filter Include="97.Imgui\Imgui">
       <UniqueIdentifier>{09d4aaa2-7fb0-4059-90f1-ee5daa2e7674}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.Objects">
+      <UniqueIdentifier>{0f987cc4-0538-4fc0-ab3f-a963c95d2f18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.Objects\Dummy">
+      <UniqueIdentifier>{4775e5a6-f449-4e92-ac1d-d27a138d0179}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Camera">
+      <UniqueIdentifier>{d7d0ba50-f55b-4da1-b0fc-6d0fcfa7e182}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Terrain">
+      <UniqueIdentifier>{a6e94067-471e-4102-bff7-b78e0d179676}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -64,6 +76,15 @@
     <ClInclude Include="..\Public\Imgui\imgui.h">
       <Filter>97.Imgui\Imgui</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Effect_Dummy.h">
+      <Filter>02.Objects\Dummy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Main.h">
+      <Filter>01.Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Terrain.h">
+      <Filter>03.Terrain</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Effect_Editor.ico">
@@ -109,6 +130,15 @@
     </ClCompile>
     <ClCompile Include="..\Public\Imgui\imgui_draw.cpp">
       <Filter>97.Imgui\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Effect_Dummy.cpp">
+      <Filter>02.Objects\Dummy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Main.cpp">
+      <Filter>01.Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Terrain.cpp">
+      <Filter>03.Terrain</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

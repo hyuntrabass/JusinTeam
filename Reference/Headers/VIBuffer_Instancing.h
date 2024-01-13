@@ -8,11 +8,11 @@ class ENGINE_DLL CVIBuffer_Instancing abstract : public CVIBuffer
 public:
 	struct ParticleDesc
 	{
-		_float3 vMinPos{}, vMaxPos;
-		_float2 vSpeedRange{};
-		_float2 vLifeTime{};
-		_float2 vScaleRange{};
-		_float3 vMinDir{}, vMaxDir{};
+		_vec3 vMinPos{}, vMaxPos;
+		_vec2 vSpeedRange{};
+		_vec2 vLifeTime{};
+		_vec2 vScaleRange{};
+		_vec3 vMinDir{}, vMaxDir{};
 		_bool isLoop{};
 	};
 protected:
@@ -23,7 +23,7 @@ protected:
 public:
 	virtual HRESULT Init_Prototype() override;
 	virtual HRESULT Init(void* pArg) override;
-	virtual void Update(_float fTimeDelta, _int iNumUse = -1);
+	virtual void Update(_float fTimeDelta, _mat WorldMatrix, _int iNumUse = -1);
 	virtual HRESULT Render() override;
 
 protected:

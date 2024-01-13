@@ -11,5 +11,3 @@ xcopy /y	.\Engine\Bin\ShaderFiles\*.*		.\Client\Bin\ShaderFiles\
 xcopy /y	.\Engine\Bin\ShaderFiles\*.*		.\Effect_Editor\Bin\ShaderFiles\
 xcopy /y	.\Engine\Bin\ShaderFiles\*.*		.\AnimTool\Bin\ShaderFiles\
 xcopy /y	.\Engine\Bin\ShaderFiles\*.*		.\MapEditor\Bin\ShaderFiles\
-
-xcopy /y	.\Client\Bin\ShaderFiles\*.*		.\MapEditor\Bin\ShaderFiles\

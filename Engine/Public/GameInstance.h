@@ -91,13 +91,15 @@ public: // Picking
 	_bool Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _Inout_ _vec4* pPickPos);
 	_bool Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _vec4 vNormal, _Inout_ _vec4* pPickPos);
 	_float4 PickingDepth(_float x, _float y);
+	_int FastPicking(_uint x, _uint y);
 
 	_vec4 Compute_MousePicked_Terrain(_float44 matTerrainWorld, _float3* pVerticesPos, _uint iNumVerticesX, _uint iNumVerticesZ);
 	HRESULT Ready_Texture2D();
+	HRESULT Ready_FastPicking();
 
 public: // Font
 	HRESULT Add_Font(const wstring& strFontTag, const wstring& strFilePath);
-	HRESULT Render_Text(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale = 1.f, _vec4 vColor = _vec4(1.f), _float fRotation = 0.f);
+	HRESULT Render_Text(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale = 1.f, _vec4 vColor = _vec4(1.f), _float fRotation = 0.f, _bool isFront = false);
 
 public: // Frustum
 	_bool IsIn_Fov_World(_vec4 vPos, _float fRange = 0.f);
@@ -182,6 +184,12 @@ public: // Get_Set
 	// hell 높이를 지정한다.
 	void Set_HellHeight(const _float& fHeight);
 
+
+	void Set_CameraState(const _uint& iIndex);
+	void Set_CameraTargetPos(const _vec3& vPos);
+	const _uint& Get_CameraState()  const;
+	const _vec3& Get_CameraTargetPos() const;
+
 private:
 	class CGraphic_Device* m_pGraphic_Device{ nullptr };
 
@@ -203,6 +211,7 @@ private:
 	class CPhysX_Manager* m_pPhysX_Manager{ nullptr };
 
 private:
+	_uint m_iCameraState{};
 	_uint m_iCameraModeIndex{};
 	_uint m_iLevelIndex{};
 	_float m_fTimeRatio{ 1.f };
@@ -210,6 +219,7 @@ private:
 	_float2 m_vFogNF{ 2000.f, 2000.f };
 	_bool m_bShakeCamera{};
 	_float m_fHellHeight{};
+	_vec3 m_vTarget{};
 
 public:
 	static void Release_Engine();

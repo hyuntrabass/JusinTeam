@@ -601,6 +601,16 @@ _float4 CGameInstance::PickingDepth(_float x, _float y)
 
 	return m_pPicking->PickingDepth(x, y);
 }
+_int CGameInstance::FastPicking(_uint x, _uint y)
+{
+	if (!m_pPicking)
+	{
+		MSG_BOX("FATAL ERROR : m_pPicking is NULL");
+	}
+
+	return m_pPicking->FastPicking(x, y);
+}
+
 _vec4 CGameInstance::Compute_MousePicked_Terrain(_float44 matTerrainWorld, _float3* pVerticesPos, _uint iNumVerticesX, _uint iNumVerticesZ)
 {
 	if (nullptr == m_pPicking)
@@ -616,6 +626,14 @@ HRESULT CGameInstance::Ready_Texture2D()
 	}
 		return m_pPicking->Ready_Texture2D();
 }
+HRESULT CGameInstance::Ready_FastPicking()
+{
+	if (nullptr == m_pPicking)
+	{
+		return E_FAIL;
+	}
+	return m_pPicking->Ready_FastPicking();
+}
 HRESULT CGameInstance::Add_Font(const wstring& strFontTag, const wstring& strFilePath)
 {
 	if (!m_pFont_Manager)
@@ -626,14 +644,14 @@ HRESULT CGameInstance::Add_Font(const wstring& strFontTag, const wstring& strFil
 	return m_pFont_Manager->Add_Font(strFontTag, strFilePath);
 }
 
-HRESULT CGameInstance::Render_Text(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale, _vec4 vColor, _float fRotation)
+HRESULT CGameInstance::Render_Text(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale, _vec4 vColor, _float fRotation, _bool isFront)
 {
 	if (!m_pFont_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pFont_Manager is NULL");
 	}
 
-	return m_pFont_Manager->Render(strFontTag, strText, vPosition, fScale, vColor, fRotation);
+	return m_pFont_Manager->Render(strFontTag, strText, vPosition, fScale, vColor, fRotation, isFront);
 }
 
 _bool CGameInstance::IsIn_Fov_World(_vec4 vPos, _float fRange)
@@ -1029,6 +1047,26 @@ void CGameInstance::Set_ShakeCam(const _bool& bShake)
 void CGameInstance::Set_HellHeight(const _float& fHeight)
 {
 	m_fHellHeight = fHeight;
+}
+
+void CGameInstance::Set_CameraState(const _uint& iIndex)
+{
+	m_iCameraState = iIndex;
+}
+
+void CGameInstance::Set_CameraTargetPos(const _vec3& vPos)
+{
+	m_vTarget = vPos;
+}
+
+const _uint& CGameInstance::Get_CameraState() const
+{
+	return m_iCameraState;
+}
+
+const _vec3& CGameInstance::Get_CameraTargetPos() const
+{
+	return m_vTarget;
 }
 
 void CGameInstance::Clear_Managers()

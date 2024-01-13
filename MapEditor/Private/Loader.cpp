@@ -174,7 +174,7 @@ HRESULT CLoader::Load_Editor()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Wood"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Common/Mesh/SM_EFF_Tree_01.mo.hyuntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_SM_EFF_Tree_01.mo"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Common/Mesh/SM_EFF_Tree_01.mo.hyuntrastatmesh"))))
 	{
 		return E_FAIL;
 	}
@@ -234,16 +234,17 @@ HRESULT CLoader::Load_Editor()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Player"), CPlayer::Create(m_pDevice, m_pContext))))
-	{
-		return E_FAIL;
-	}
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Terrain"), CTerrain::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Dummy"), CDummy::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Map"), CDummy::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

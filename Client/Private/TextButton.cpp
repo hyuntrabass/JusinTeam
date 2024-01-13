@@ -18,10 +18,6 @@ HRESULT CTextButton::Init_Prototype()
 
 HRESULT CTextButton::Init(void* pArg)
 {
-	if (FAILED(Add_Components()))
-	{
-		return E_FAIL;
-	}
 
 	m_fDepth = ((TEXTBUTTON_DESC*)pArg)->fDepth;
 	m_vSize = ((TEXTBUTTON_DESC*)pArg)->vSize;
@@ -34,6 +30,12 @@ HRESULT CTextButton::Init(void* pArg)
 	m_eLevel = ((TEXTBUTTON_DESC*)pArg)->eLevelID;
 
 	m_strTexture = ((TEXTBUTTON_DESC*)pArg)->strTexture;
+
+	if (FAILED(Add_Components()))
+	{
+		return E_FAIL;
+	}
+
 
 	m_fSizeX = m_vSize.x;
 	m_fSizeY = m_vSize.y;
@@ -97,7 +99,7 @@ HRESULT CTextButton::Add_Components()
 
 	if (m_strTexture != TEXT(""))
 	{
-		if (FAILED(__super::Add_Component(m_eLevel, TEXT("Prototype_Component_Texture_UI_Logo_Bg_DungeonResult"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+		if (FAILED(__super::Add_Component(m_eLevel, m_strTexture, TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 		{
 			return E_FAIL;
 		}

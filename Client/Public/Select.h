@@ -3,9 +3,13 @@
 #include "OrthographicObject.h"
 #include "CharacterSelect.h"
 #include "TextButton.h"
+#include "SelectDesc.h"
+#include "TextButtonColor.h"
 
 BEGIN(Client)
+class CTextButton;
 class CCharacterSelect;
+class CTextButtonColor;
 class CSelect final : public CGameObject
 {
 private:
@@ -28,9 +32,13 @@ private:
 private:
 	_float				m_fAlpha{ 0.f };
 	_float				m_fDuration{ 0.f };
-	CCharacterSelect*	m_pCharacterSelect{ nullptr };
 	CTextButton*		m_pClassButton{ nullptr };
-	CTextButton*		m_pSelectButton{ nullptr };
+	CSelectDesc*		m_pSelectDesc{ nullptr };
+	CCharacterSelect*	m_pCharacterSelect{ nullptr };
+	CTextButtonColor*	m_pSelectButton{ nullptr };
+
+private:
+	void Set_SelectDesc(_uint iSelect);
 
 public:
 	static CSelect* Create(_dev pDevice, _context pContext);

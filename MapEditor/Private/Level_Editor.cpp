@@ -10,11 +10,6 @@ HRESULT CLevel_Editor::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_EDITOR);
 
-	if (FAILED(Ready_Player()))
-	{
-		MSG_BOX("Failed to Ready Player");
-		return E_FAIL;
-	}
 
 	if (FAILED(Ready_Map()))
 	{
@@ -93,15 +88,7 @@ HRESULT CLevel_Editor::Ready_Light()
 	return m_pGameInstance->Add_Light(LEVEL_EDITOR, TEXT("Light_Main"), LightDesc);
 }
 
-HRESULT CLevel_Editor::Ready_Player()
-{
-	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Prototype_GameObject_Player"))))
-	//{
-	//	return E_FAIL;
-	//}
 
-	return S_OK;
-}
 
 HRESULT CLevel_Editor::Ready_Map()
 {
