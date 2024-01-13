@@ -1,12 +1,11 @@
 #pragma once
 #include "MapEditor_Define.h"
-#include "GameObject.h"
+#include "BlendObject.h"
 #include "ImGui_Manager.h"
 
 BEGIN(MapEditor)
 
-//class CDummy final : public CBlendObject
-class CDummy final : public CGameObject
+class CDummy final : public CBlendObject
 {
 private:
 	CDummy(_dev pDevice, _context pContext);
@@ -18,6 +17,8 @@ public:
 	void Modify(_fvector vPos, _fvector vLook);
 	
 	void Get_State(_float4& vPos, _float4& vLook);
+	_bool Get_Selected() { return m_isSelected; }
+	DummyInfo Get_Info() { return m_Info; }
 
 	void Set_Create() { m_isCreate = true; }
 	void Set_Dead() { m_isDead = true; }
@@ -46,7 +47,7 @@ private:
 	_uint m_iOutLineShaderPass{};
 	_bool m_isAnim{};
 	ANIM_DESC m_Animation{};
-
+	
 	_int m_iID = 0;
 
 	_bool m_isCreate{false};

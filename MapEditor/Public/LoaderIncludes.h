@@ -5,3 +5,4 @@
 #include "Camera_Debug.h"
 #include "Terrain.h"
 #include "Dummy.h"
+#include "Map.h"
