@@ -139,7 +139,7 @@ HRESULT CTextButtonColor::Bind_ShaderResources()
 
 	if (m_strTexture != TEXT(""))
 	{
-		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
 		{
 			return E_FAIL;
 		}
