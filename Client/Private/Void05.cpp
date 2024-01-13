@@ -17,14 +17,9 @@ HRESULT CVoid05::Init_Prototype()
 
 HRESULT CVoid05::Init(void* pArg)
 {
-    m_strModelTag = TEXT("Prototype_Model_Void05");
+    m_strModelTag = TEXT("Prototype_Model_Rabbit");
 
     if (FAILED(__super::Add_Components()))
-    {
-        return E_FAIL;
-    }
-
-    if (FAILED(Add_Collider()))
     {
         return E_FAIL;
     }
@@ -40,71 +35,52 @@ HRESULT CVoid05::Init(void* pArg)
 
 void CVoid05::Tick(_float fTimeDelta)
 {
-    m_pModelCom->Set_Animation(m_Animation);
+    if (m_pGameInstance->Key_Down(DIK_RBRACKET))
+    {
+        m_Animation.iAnimIndex += 1;
+        if (m_Animation.iAnimIndex >= m_pModelCom->Get_NumAnim())
+        {
+            m_Animation.iAnimIndex -= 1;
+        }
+    }
+    if (m_pGameInstance->Key_Down(DIK_LBRACKET))
+    {
+        if (m_Animation.iAnimIndex != 0)
+        {
+            m_Animation.iAnimIndex -= 1;
+        }
+    }
 
-    Update_Collider();
+
+
+    m_pModelCom->Set_Animation(m_Animation);
 }
 
 void CVoid05::Late_Tick(_float fTimeDelta)
 {
     __super::Late_Tick(fTimeDelta);
-
-    m_pRendererCom->Add_DebugComponent(m_pRHColliderCom);
-    m_pRendererCom->Add_DebugComponent(m_pLHColliderCom);
 }
 
 HRESULT CVoid05::Render()
 {
     __super::Render();
 
+    wstring strTotalAnim = L"¾Ö´Ô °³¼ö : " + to_wstring(m_pModelCom->Get_NumAnim());
+    wstring strCurrAnim = L"ÇöÀç ¾Ö´Ô : " + to_wstring(m_Animation.iAnimIndex);
+
+    m_pGameInstance->Render_Text(L"Font_Dialogue", strTotalAnim, _vec2(100.f, 650.f), 0.5f, _vec4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Render_Text(L"Font_Dialogue", strCurrAnim, _vec2(100.f, 680.f), 0.5f, _vec4(1.f, 1.f, 1.f, 1.f));
+
     return S_OK;
-}
-
-void CVoid05::Change_State(_float fTimeDelta)
-{
-}
-
-void CVoid05::Control_State(_float fTimeDelta)
-{
 }
 
 HRESULT CVoid05::Add_Collider()
 {
-    // Com_Collider
-    Collider_Desc RCollDesc = {};
-    RCollDesc.eType = ColliderType::Sphere;
-    RCollDesc.fRadius = 0.2f;
-    RCollDesc.vCenter = _vec3(0.f, 0.f, 0.f);
-
-    if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-        TEXT("Com_RCollider_Sphere"), (CComponent**)&m_pRHColliderCom, &RCollDesc)))
-        return E_FAIL;
-
-    // Com_Collider
-    Collider_Desc LCollDesc = {};
-    LCollDesc.eType = ColliderType::Sphere;
-    LCollDesc.fRadius = 0.2f;
-    LCollDesc.vCenter = _vec3(0.f, 0.f, 0.f);
-
-    if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-        TEXT("Com_LCollider_Sphere"), (CComponent**)&m_pLHColliderCom, &LCollDesc)))
-        return E_FAIL;
-
     return S_OK;
 }
 
 void CVoid05::Update_Collider()
 {
-    _mat RightHandMatrix = *(m_pModelCom->Get_BoneMatrix("Bip001-R-Finger22"));
-    RightHandMatrix *= m_pTransformCom->Get_World_Matrix();
-
-    m_pRHColliderCom->Update(RightHandMatrix);
-
-    _mat LeftHandMatrix = *(m_pModelCom->Get_BoneMatrix("Bip001-L-Finger22"));
-    LeftHandMatrix *= m_pTransformCom->Get_World_Matrix();
-
-    m_pLHColliderCom->Update(LeftHandMatrix);
-
 }
 
 CVoid05* CVoid05::Create(_dev pDevice, _context pContext)
@@ -136,7 +112,4 @@ CGameObject* CVoid05::Clone(void* pArg)
 void CVoid05::Free()
 {
     __super::Free();
-
-    Safe_Release(m_pRHColliderCom);
-    Safe_Release(m_pLHColliderCom);
 }
