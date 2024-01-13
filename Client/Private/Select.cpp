@@ -1,5 +1,6 @@
 #include "Select.h"
 #include "GameInstance.h"
+#include "Level_Loading.h"
 
 CSelect::CSelect(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -35,16 +36,13 @@ HRESULT CSelect::Init(void* pArg)
 
 void CSelect::Tick(_float fTimeDelta)
 {
-
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
 
-	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON))
-	{
-		int i = 0;
-		
-		for (i = 0; i < 4; ++i)
+	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pSelectDesc == nullptr)
+	{		
+		for (int i = 0; i < 4; ++i)
 		{
 			RECT rcRect = {
 			  (LONG)((160.f + 320.f * i) - 320.f * 0.5f),
@@ -54,38 +52,61 @@ void CSelect::Tick(_float fTimeDelta)
 			};
 			if (PtInRect(&rcRect, ptMouse))
 			{
+				m_bShow = true;
 				m_pCharacterSelect->Set_Active_Alpha(CCharacterSelect::ALPHA);
 				Set_SelectDesc(i);
-				m_pGameInstance->Set_CameraState(CAMERA_STATE::CM_ZOOM);
-				/* 일단 
-				CTransform* pTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_SELECT, TEXT("Layer_Void05"),TEXT("Com_Transform"));
-				//이거 널인듯? 
-				_vec3 vTargetPos = pTransform->Get_State(State::Pos);
-				m_pGameInstance->Set_CameraTargetPos(vTargetPos);
-				*/
-
 				break;
 			}
 		}
-		if (i >= 4)
-		{
-			if (m_pSelectDesc)
-			{
-				Safe_Release(m_pSelectDesc);
-			}
-			m_pCharacterSelect->Set_Active_Alpha(CCharacterSelect::NONALPHA);
-		}
-
 	}
 
+	if (m_bShow && PtInRect(&m_pBackButton->Get_Rect(), ptMouse))
+	{
+		m_pBackButton->Set_Size(140.f, 22.f);
+	}
+	else
+	{
+		m_pBackButton->Set_Size(150.f, 30.f);
+	}
+	if (m_bShow && PtInRect(&m_pSelectButton->Get_Rect(), ptMouse))
+	{
+		m_pSelectButton->Set_Size(140.f, 22.f);
+	}
+	else
+	{
+		m_pSelectButton->Set_Size(150.f, 30.f);
+	}
 
+	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI) && m_bShow && PtInRect(&m_pSelectButton->Get_Rect(), ptMouse))
+	{
+		m_pGameInstance->Level_ShutDown(LEVEL_SELECT);
+	}
+
+	if (m_pGameInstance->Mouse_Down(DIM_RBUTTON, InputChannel::UI) && m_bShow && PtInRect(&m_pBackButton->Get_Rect(), ptMouse))
+	{
+		if (m_pSelectDesc)
+		{
+			m_pBackButton->Set_Size(150.f, 30.f);
+			Safe_Release(m_pSelectDesc);
+			m_bShow = false;
+			m_pCharacterSelect->Set_Active_Alpha(CCharacterSelect::NONALPHA);
+		}
+	}
 
 
 	m_pCharacterSelect->Tick(fTimeDelta);
 
-	if (m_pSelectDesc != nullptr)
+	if (m_pSelectDesc != nullptr && m_bShow)
 	{
-		m_pSelectButton->Tick(fTimeDelta);
+		m_pSelectDesc->Tick(fTimeDelta);
+		if (m_pSelectButton != nullptr)
+		{
+			m_pSelectButton->Tick(fTimeDelta);
+		}
+		if (m_pBackButton != nullptr)
+		{
+			m_pBackButton->Tick(fTimeDelta);
+		}
 	}
 }
 
@@ -93,10 +114,17 @@ void CSelect::Late_Tick(_float fTimeDelta)
 {
 	m_pCharacterSelect->Late_Tick(fTimeDelta);
 	m_pClassButton->Late_Tick(fTimeDelta);
-	if (m_pSelectDesc != nullptr)
+	if (m_pSelectDesc != nullptr && m_bShow)
 	{
 		m_pSelectDesc->Late_Tick(fTimeDelta);
-		m_pSelectButton->Late_Tick(fTimeDelta);
+		if (m_pSelectButton != nullptr)
+		{
+			m_pSelectButton->Late_Tick(fTimeDelta);
+		}
+		if (m_pBackButton != nullptr)
+		{
+			m_pBackButton->Late_Tick(fTimeDelta);
+		}
 	}
 }
 
@@ -126,7 +154,7 @@ HRESULT CSelect::Add_Parts()
 	ButtonDesc.fFontSize = 0.4f;
 	ButtonDesc.strText = TEXT("클래스 선택");
 	ButtonDesc.strTexture = TEXT("");
-	ButtonDesc.vPosition = _vec2(60.f, 60.f);
+	ButtonDesc.vPosition = _vec2(50.f, 15.f);
 	ButtonDesc.vSize = _vec2(20.f, 20.f);
 	ButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	ButtonDesc.vTextPosition = _vec2(20.f, 0.f);
@@ -141,19 +169,30 @@ HRESULT CSelect::Add_Parts()
 	CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
 	ColButtonDesc.eLevelID = LEVEL_SELECT;
 	ColButtonDesc.fDepth = 0.5f;
-	ColButtonDesc.fAlpha = 0.7f;
-	ColButtonDesc.fFontSize = 0.5f;
-	ColButtonDesc.vColor = _vec4(0.2f, 0.2f, 0.4f, 1.f);
+	ColButtonDesc.fAlpha = 0.8f;
+	ColButtonDesc.fFontSize = 0.35f;
+	ColButtonDesc.vColor = _vec4(0.2f, 0.2f, 0.2f, 0.5f);
 	ColButtonDesc.strText = TEXT("선택");
 	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Select_BG_BoxEfc_WhiteBlur");
-	ColButtonDesc.vPosition = _vec2(1100.f, 600.f);
-	ColButtonDesc.vSize = _vec2(160.f,40.f);
+	ColButtonDesc.vPosition = _vec2(1125.f, 670.f);
+	ColButtonDesc.vSize = _vec2(150.f,30.f);
 	ColButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	ColButtonDesc.vTextPosition = _vec2(0.f, 0.f);
 
 	
 	m_pSelectButton = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
 	if (not m_pSelectButton)
+	{
+		return E_FAIL;  
+	}
+
+	ColButtonDesc.strText = TEXT("뒤로 가기");
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Select_BG_BoxEfc_WhiteBlur");
+	ColButtonDesc.vPosition = _vec2(155.f, 670.f);
+
+	
+	m_pBackButton = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+	if (not m_pBackButton)
 	{
 		return E_FAIL;
 	}
@@ -211,8 +250,10 @@ void CSelect::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pSelectButton);
+	Safe_Release(m_pSelectDesc);
+	Safe_Release(m_pBackButton);
 	Safe_Release(m_pClassButton);
+	Safe_Release(m_pSelectButton);
 	Safe_Release(m_pCharacterSelect);
 
 }

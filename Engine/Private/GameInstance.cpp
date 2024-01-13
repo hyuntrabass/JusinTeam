@@ -1051,6 +1051,30 @@ const _vec3& CGameInstance::Get_CameraTargetPos() const
 	return m_vTarget;
 }
 
+void CGameInstance::Initialize_Level(_uint iLevelNum)
+{
+	m_vecLevelInvalid.reserve(iLevelNum);
+
+	for (_uint i = 0; i < iLevelNum; i++)
+	{
+		m_vecLevelInvalid.push_back(false);
+	}
+}
+
+void CGameInstance::Level_ShutDown(_uint iCurrentLevel)
+{
+	if (iCurrentLevel >= m_vecLevelInvalid.size() || iCurrentLevel < 0)
+		return;
+	m_vecLevelInvalid[iCurrentLevel] = true;
+}
+
+_bool CGameInstance::Is_Level_ShutDown(_uint iCurrentLevel)
+{
+	if (iCurrentLevel >= m_vecLevelInvalid.size() || iCurrentLevel < 0)
+		return false;
+	return m_vecLevelInvalid[iCurrentLevel];
+}
+
 void CGameInstance::Clear_Managers()
 {
 	Safe_Release(m_pSound_Manager);

@@ -36,7 +36,7 @@ private:
 
 private:
 	_bool				m_isActive{ false };
-
+	_float				m_fAlpha{ 0.f };
 	CHARACTER			m_eCharacter{ CHARACTER_END };
 	wstring				m_strTexture;
 

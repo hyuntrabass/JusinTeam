@@ -42,23 +42,29 @@ HRESULT CSelectDesc::Init(void* pArg)
 		return E_FAIL;
 	}
 	
-	m_fSizeX = 360.f;
-	m_fSizeY = 360.f;
+	m_fSizeX = 513.f;
+	m_fSizeY = 513.f;
 
-	m_fX = 180.f;
-	m_fY = 180.f;
+	m_fX = m_fSizeX / 2.f - 10.f;
+	m_fY = m_fSizeX / 2.f + 20.f;
 
 	m_fDepth = 0.5f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
-	
-	m_fDepth = 0.5f;
+
 	return S_OK;
 }
 
 void CSelectDesc::Tick(_float fTimeDelta)
 {
-	
+	if (m_fX < m_fSizeX / 2.f)
+	{
+		m_fX += fTimeDelta * 50.f;
+		__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+	}
+
+	m_fAlpha += fTimeDelta * 2.f;
+
 }
 
 void CSelectDesc::Late_Tick(_float fTimeDelta)
@@ -73,7 +79,7 @@ HRESULT CSelectDesc::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
+	if (FAILED(m_pShaderCom->Begin(VTPass_UI_Alpha)))
 	{
 		return E_FAIL;
 	}
@@ -128,7 +134,11 @@ HRESULT CSelectDesc::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
-
+	_float fAlpha = Lerp(0.f, 1.f, m_fAlpha);
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &fAlpha, sizeof(_float))))
+	{
+		return E_FAIL;
+	}
 	return S_OK;
 }
 

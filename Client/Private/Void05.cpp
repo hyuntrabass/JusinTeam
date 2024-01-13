@@ -49,8 +49,8 @@ void CVoid05::Late_Tick(_float fTimeDelta)
 {
     __super::Late_Tick(fTimeDelta);
 
-    m_pRendererCom->Add_DebugComponent(m_pRHColliderCom);
-    m_pRendererCom->Add_DebugComponent(m_pLHColliderCom);
+    //->Add_DebugComponent(m_pRHColliderCom);
+   // m_pRendererCom->Add_DebugComponent(m_pLHColliderCom);
 }
 
 HRESULT CVoid05::Render()

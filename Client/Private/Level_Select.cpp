@@ -43,9 +43,9 @@ HRESULT CLevel_Select::Init()
 void CLevel_Select::Tick(_float fTimeDelta)
 {
 
-	if (m_pGameInstance->Key_Down(DIK_RETURN))
+	if (m_pGameInstance->Is_Level_ShutDown(LEVEL_SELECT))
 	{
-		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_GAMEPLAY))))
+		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_CUSTOM))))
 		{
 			return;
 		}
