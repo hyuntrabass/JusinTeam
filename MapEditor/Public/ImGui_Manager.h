@@ -32,6 +32,7 @@ struct DummyInfo
 };
 
 
+
 class CImGui_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CImGui_Manager)
@@ -65,6 +66,9 @@ private:
 	void Mouse_Pos();
 	void FastPicking();
 
+	HRESULT Save_Monster();
+	HRESULT Load_Monster();
+
 private:
 
 	CGameInstance* m_pGameInstance{ nullptr };
@@ -95,8 +99,8 @@ private:
 	vector<const char*> Objects;
 	vector<const char*> Monsters;
 
-	list<class CDummy*> m_ObjectsList{};
-	list<class CDummy*> m_MonsterList{};
+	vector<class CDummy*> m_ObjectsList{};
+	vector<class CDummy*> m_MonsterList{};
 	map<int, class CDummy*>m_DummyList{};
 
 	class CDummy* m_pSelectedDummy{ nullptr };
