@@ -45,8 +45,8 @@ void CMouse::Tick(_float fTimeDelta)
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
 
-	m_fX = ptMouse.x;
-	m_fY = ptMouse.y;
+	m_fX = ptMouse.x + 3.f;
+	m_fY = ptMouse.y + 3.f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }

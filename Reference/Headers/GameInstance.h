@@ -190,6 +190,11 @@ public: // Get_Set
 	const _uint& Get_CameraState()  const;
 	const _vec3& Get_CameraTargetPos() const;
 
+public:
+	void Initialize_Level(_uint iLevelNum);
+	void Level_ShutDown(_uint iCurrentLevel);
+	_bool Is_Level_ShutDown(_uint iCurrentLevel);
+
 private:
 	class CGraphic_Device* m_pGraphic_Device{ nullptr };
 
@@ -220,6 +225,9 @@ private:
 	_bool m_bShakeCamera{};
 	_float m_fHellHeight{};
 	_vec3 m_vTarget{};
+
+private:
+	vector<_bool> m_vecLevelInvalid;
 
 public:
 	static void Release_Engine();

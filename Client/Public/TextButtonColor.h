@@ -63,6 +63,13 @@ private:
 	wstring m_strTexture;
 
 	LEVEL_ID m_eLevel;
+
+	RECT				m_rcRect{};
+
+public:
+	const RECT& Get_Rect() const { return m_rcRect; }
+	void Set_Size(_float fSizeX, _float fSizeY) { m_fSizeX = fSizeX; m_fSizeY = fSizeY; }
+
 public:
 	static CTextButtonColor* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;

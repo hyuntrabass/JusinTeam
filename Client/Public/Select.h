@@ -30,12 +30,15 @@ private:
 	HRESULT Bind_ShaderResources();
 
 private:
+	_bool				m_bShutDown{ false };
+	_bool				m_bShow{ false };
 	_float				m_fAlpha{ 0.f };
 	_float				m_fDuration{ 0.f };
 	CTextButton*		m_pClassButton{ nullptr };
 	CSelectDesc*		m_pSelectDesc{ nullptr };
 	CCharacterSelect*	m_pCharacterSelect{ nullptr };
 	CTextButtonColor*	m_pSelectButton{ nullptr };
+	CTextButtonColor*	m_pBackButton{ nullptr };
 
 private:
 	void Set_SelectDesc(_uint iSelect);
