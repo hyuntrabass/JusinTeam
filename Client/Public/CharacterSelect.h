@@ -40,7 +40,7 @@ private:
 	_float				m_fDuration{ 0.f };
 
 public:
-	void Set_Actice_Alpha(STATE	eState);
+	void Set_Active_Alpha(STATE	eState);
 
 public:
 	static CCharacterSelect* Create(_dev pDevice, _context pContext);

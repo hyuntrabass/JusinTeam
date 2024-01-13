@@ -30,7 +30,15 @@ namespace Client
 	{
 		CM_DEBUG,
 		CM_MAIN,
+		CM_SELECT, 
+		CM_CUSTOM,
 		CM_END
+	};
+	enum CAMERA_STATE
+	{
+		CM_DEFAULT,
+		CM_ZOOM,
+		CM_STATEEND
 	};
 
 	enum SoundChannel

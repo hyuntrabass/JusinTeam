@@ -33,7 +33,7 @@ HRESULT CFont_Manager::Add_Font(const wstring& strFontTag, const wstring& strFil
 	return S_OK;
 }
 
-HRESULT CFont_Manager::Render(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale, _fvector vColor, _float fRotation)
+HRESULT CFont_Manager::Render(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale, _fvector vColor, _float fRotation, _bool isFront)
 {
 	CMyFont* pFont = Find_Font(strFontTag);
 	if (!pFont)
@@ -41,7 +41,7 @@ HRESULT CFont_Manager::Render(const wstring& strFontTag, const wstring& strText,
 		return E_FAIL;
 	}
 
-	return pFont->Render(strText, vPosition, fScale, vColor, fRotation);
+	return pFont->Render(strText, vPosition, fScale, vColor, fRotation, isFront);
 }
 
 CMyFont* CFont_Manager::Find_Font(const wstring& strFontTag)
