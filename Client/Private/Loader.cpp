@@ -350,7 +350,7 @@ HRESULT CLoader::Load_Select()
 	m_strLoadingText = L"Select : Loading Model";
 #pragma region Model
 	_mat PivotMat;
-	PivotMat = _mat::CreateScale(0.006) * _mat::CreateRotationX(XMConvertToRadians(90.f));
+	PivotMat = _mat::CreateScale(0.006f) * _mat::CreateRotationX(XMConvertToRadians(90.f));
 
  	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Model_Select_Map"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Select_Map/Mesh/map.hyuntrastatmesh",false, PivotMat))))
@@ -539,19 +539,19 @@ HRESULT CLoader::Load_GamePlay()
 
 	m_strLoadingText = L"Logo : Loading Model";
 #pragma region Model
-	strInputFilePath = "../Bin/Resources/AnimMesh/Player/Mesh/";
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
-	{
-		if (entry.is_regular_file())
-		{
+	//strInputFilePath = "../Bin/Resources/AnimMesh/Player/Mesh/";
+	//for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	//{
+	//	if (entry.is_regular_file())
+	//	{
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Player"), CModel::Create(m_pDevice, m_pContext, entry.path().string()/*,false,_mat::CreateScale(10.f)*/))))
-			{
-				return E_FAIL;
-			}
+	//		if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Player"), CModel::Create(m_pDevice, m_pContext, entry.path().string()/*,false,_mat::CreateScale(10.f)*/))))
+	//		{
+	//			return E_FAIL;
+	//		}
 
-		}
-	}
+	//	}
+	//}
 
 #pragma region Monster
 
