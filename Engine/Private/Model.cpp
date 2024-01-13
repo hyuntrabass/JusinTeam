@@ -127,10 +127,13 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 {
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
 	ModelType eType{};
+	_char szDirectory[MAX_PATH]{};
+	_char szFileName[MAX_PATH]{};
+	_char szTriggerExt[MAX_PATH] = ".animtrigger";
 	_char szExt[MAX_PATH]{};
 	if (!isCOLMesh)
 	{
-		_splitpath_s(strFilePath.c_str(), nullptr, 0, nullptr, 0, nullptr, 0, szExt, MAX_PATH);
+		_splitpath_s(strFilePath.c_str(), nullptr, 0, szDirectory, MAX_PATH, szFileName, MAX_PATH, szExt, MAX_PATH);
 		if (!strcmp(szExt, ".hyuntraanimmesh"))
 		{
 			eType = ModelType::Anim;
@@ -174,8 +177,31 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 			}
 		}
 
-
 		ModelFile.close();
+
+		if (eType == ModelType::Anim)
+		{
+			_char szTriggerFilePath[MAX_PATH]{};
+			strcpy_s(szTriggerFilePath, MAX_PATH, szDirectory);
+			strcat_s(szTriggerFilePath, MAX_PATH, szFileName);
+			strcat_s(szTriggerFilePath, MAX_PATH, szTriggerExt);
+
+			ifstream TriggerFile(szTriggerFilePath, ios::binary);
+			if (TriggerFile.is_open())
+			{
+				_uint iAnimIndex = { 0 };
+				TriggerFile.read(reinterpret_cast<char*>(&iAnimIndex), sizeof _uint);
+				
+				_uint iNumTrigger = { 0 };
+				TriggerFile.read(reinterpret_cast<char*>(&iNumTrigger), sizeof _uint);
+				for (_uint i = 0; i < iNumTrigger; i++)
+				{
+					_float fTrigger = { 0.f };
+					TriggerFile.read(reinterpret_cast<char*>(&fTrigger), sizeof _float);
+					m_Animations[iAnimIndex]->Add_Trigger(fTrigger);
+				}
+			}
+		}
 	}
 	else
 	{

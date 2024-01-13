@@ -174,7 +174,7 @@ HRESULT CLoader::Load_Tool()
 	m_strLoadingText = L"Logo : Loading Model";
 #pragma region Model
 	//Monster
-	_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(90.f));
+	_matrix Pivot = XMMatrixScaling(0.02f, 0.02f, 0.02f);
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Monster_0"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Hirokin/Mesh/Hirokin.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
@@ -201,7 +201,22 @@ HRESULT CLoader::Load_Tool()
 	}
 	m_iNumMonsterModels++;
 	//Player
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Player_0"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Player/Void05/Mesh/Void05.hyuntraanimmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Player_0"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Player/Select_Priest/Mesh/Select_Priest.hyuntraanimmesh", false, Pivot))))
+	{
+		return E_FAIL;
+	}
+	m_iNumPlayerModels++;
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Player_1"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Player/Select_Rogue/Mesh/Select_Rogue.hyuntraanimmesh", false, Pivot))))
+	{
+		return E_FAIL;
+	}
+	m_iNumPlayerModels++;
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Player_2"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Player/Select_Sorceress/Mesh/Select_Sorceress.hyuntraanimmesh", false, Pivot))))
+	{
+		return E_FAIL;
+	}
+	m_iNumPlayerModels++;
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Player_3"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Player/Select_Warrior/Mesh/Select_Warrior.hyuntraanimmesh", false, Pivot))))
 	{
 		return E_FAIL;
 	}

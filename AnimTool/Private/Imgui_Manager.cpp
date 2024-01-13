@@ -90,7 +90,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 
 	if (m_eType == TYPE_MONSTER)
 	{
-		const char* szModelTag[4] = { "Hirokin", "Nott","Skjaldmaer","Skjaldmaer_A" };
+		const char* szModelTag[5] = { "Hirokin", "Nott","Skjaldmaer","Skjaldmaer_A","Void05" };
 		static const char* szCurrentModel = "Hirokin";
 		if (m_ePreType != m_eType)
 		{
@@ -116,13 +116,13 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	}
 	else if (m_eType == TYPE_PLAYER)
 	{
-		const char* szModelTag[1] = { "Void05" };
-		static const char* szCurrentModel = "Void05";
+		const char* szModelTag[4] = { "Select_Priest","Select_Rogue","Select_Sorceress","Select_Warrior" };
+		static const char* szCurrentModel = "Select_Priest";
 		if (m_ePreType != m_eType)
 		{
 			m_ePreType = m_eType;
 			m_iCurrentModelIndex = 0;
-			szCurrentModel = "Void05";
+			szCurrentModel = "Select_Priest";
 		}
 
 		if (ImGui::BeginCombo("LIST", szCurrentModel))
