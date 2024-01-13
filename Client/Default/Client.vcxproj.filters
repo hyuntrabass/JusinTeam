@@ -88,6 +88,15 @@
     <Filter Include="02.GameObjects\04. Monster\Tutorial\01. Void05">
       <UniqueIdentifier>{ca2ecc51-8de3-4c19-8aae-baa40147a63b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\05.Select_Object">
+      <UniqueIdentifier>{c8a8cb96-af60-446e-b50b-6dfbb4df6a4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05.Select_Object\Map">
+      <UniqueIdentifier>{756e4fd7-5145-4d4c-abcf-7018bf27395a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05.Select_Object\Model">
+      <UniqueIdentifier>{fcda4183-f684-44f5-8d3f-169f46e02502}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObjects\00.UI\TextButton">
       <UniqueIdentifier>{e433917e-0435-4307-a9c2-4229c403b1c9}</UniqueIdentifier>
     </Filter>
@@ -189,6 +198,12 @@
     <ClInclude Include="..\Public\Void05.h">
       <Filter>02.GameObjects\04. Monster\Tutorial\01. Void05</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Select_Model.h">
+      <Filter>02.GameObjects\05.Select_Object\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Select_Map.h">
+      <Filter>02.GameObjects\05.Select_Object\Map</Filter>
+    </ClInclude>
     <ClInclude Include="..\Public\SelectDesc.h">
       <Filter>02.GameObjects\00.UI\01.SelectLevel\SelectDesc</Filter>
     </ClInclude>
@@ -284,6 +299,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Void05.cpp">
       <Filter>02.GameObjects\04. Monster\Tutorial\01. Void05</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Select_Model.cpp">
+      <Filter>02.GameObjects\05.Select_Object\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Select_Map.cpp">
+      <Filter>02.GameObjects\05.Select_Object\Map</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\SelectDesc.cpp">
       <Filter>02.GameObjects\00.UI\01.SelectLevel\SelectDesc</Filter>

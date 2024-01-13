@@ -20,7 +20,9 @@ public:
 	_bool Picking_InLocal(_vec4 vPoint1, _vec4 vPoint2, _vec4 vPoint3, _vec4 vNormal, _Inout_ _vec4* pPickPos);
 	_vec4 Compute_MousePicked_Terrain(_float44 matTerrainWorld, _float3* pVerticesPos, _uint iNumVerticesX, _uint iNumVerticesZ);
 	_float4 PickingDepth(_float x, _float y);
+	_int FastPicking(_uint x, _uint y);
 	HRESULT Ready_Texture2D();
+	HRESULT Ready_FastPicking();
 
 private:
 	_dev m_pDevice{ nullptr };
@@ -35,6 +37,7 @@ private:
 	_vec4 m_vRayPos_Local{};
 	_vec4 m_vRayDir_Local{};
 	ID3D11Texture2D* m_pTexture{ nullptr };
+	ID3D11Texture2D* m_pFastTexture{ nullptr };
 
 public:
 	static CPicking* Create(_dev pDevice, _context pContext, HWND hWnd, _uint iWinSizeX, _uint iWinSizeY);

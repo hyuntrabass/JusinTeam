@@ -211,8 +211,12 @@ void CSelect::Free()
 {
 	__super::Free();
 
+	if (m_pSelectDesc)
+	{
+		Safe_Release(m_pSelectDesc);
+	}
+
 	Safe_Release(m_pSelectButton);
 	Safe_Release(m_pClassButton);
 	Safe_Release(m_pCharacterSelect);
-
 }

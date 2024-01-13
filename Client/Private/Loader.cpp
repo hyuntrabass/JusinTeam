@@ -333,6 +333,28 @@ HRESULT CLoader::Load_Select()
 	m_strLoadingText = L"Select : Loading Model";
 #pragma region Model
 
+ 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Model_Select_Map"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Select_Map/Mesh/map.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	string strInputFilePath{};
+	strInputFilePath = "../Bin/Resources/AnimMesh/Select_Model/Mesh/";
+	int iIndex{};
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{	
+			
+			wstring strPrototypeTag = TEXT("Prototype_Model_Select") + to_wstring(iIndex++);
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, _mat::CreateScale(0.01f)))))
+			{
+				return E_FAIL;
+			}
+
+		}
+	}
 #pragma endregion
 
 	m_strLoadingText = L"Select : Loading Shader";
@@ -371,6 +393,15 @@ HRESULT CLoader::Load_Select()
 		return E_FAIL;
 	}
 	*/
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Select_Model"), CSelect_Model::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Select_Map"), CSelect_Map::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Custom"), CCamera_Custom::Create(m_pDevice, m_pContext))))
 	{
