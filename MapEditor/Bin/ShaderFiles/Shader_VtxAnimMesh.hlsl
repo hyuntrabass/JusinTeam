@@ -14,6 +14,7 @@ float g_fDissolveRatio;
 
 bool g_HasNorTex;
 bool g_bSelected = false;
+int g_iID = 0;
 
 struct VS_IN
 {
@@ -117,6 +118,8 @@ struct PS_OUT_DEFERRED
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
+    int iID : SV_Target3;
+
 };
 
 PS_OUT_DEFERRED PS_Main(PS_IN Input)
@@ -147,7 +150,8 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    
+    Output.iID = g_iID;
+
     return Output;
 }
 
@@ -182,7 +186,8 @@ PS_OUT_DEFERRED PS_Main_Player(PS_IN Input)
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    
+    Output.iID = g_iID;
+
     return Output;
 }
 PS_OUT_DEFERRED PS_Main_OutLine(PS_IN Input)
@@ -198,7 +203,8 @@ PS_OUT_DEFERRED PS_Main_OutLine(PS_IN Input)
     
     Output.vDiffuse = vector(0.f, 0.f, 0.f, 1.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    
+    Output.iID = g_iID;
+
     return Output;
 }
 
@@ -242,7 +248,8 @@ PS_OUT_DEFERRED PS_Main_Dissolve(PS_IN Input)
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    
+    Output.iID = g_iID;
+
     return Output;
 }
 

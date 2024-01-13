@@ -126,6 +126,46 @@ _float4 CPicking::PickingDepth(_float x, _float y)
 	return WorldPos;
 }
 
+_int CPicking::FastPicking(_uint x, _uint y)
+{
+	ID3D11Texture2D* pTexture = nullptr;
+
+	pTexture = m_pGameInstance->Get_Texture2D(L"Target_ID");
+
+	if (nullptr == pTexture) {
+		MSG_BOX("Get Target_ID FAILED");
+		return 0;
+	}
+
+	D3D11_BOX m_Box;
+	m_Box.left = x;
+	m_Box.top = y;
+	m_Box.right = x + 1;
+	m_Box.bottom = y + 1;
+	m_Box.front = 0;
+	m_Box.back = 1;
+
+	m_pContext->CopySubresourceRegion(m_pFastTexture, 0, 0, 0, 0, pTexture, 0, &m_Box);
+
+	D3D11_MAPPED_SUBRESOURCE MappedResource = {};
+
+	if (FAILED(m_pContext->Map(m_pFastTexture, 0, D3D11_MAP_READ, 0, &MappedResource)))
+		return 0;
+
+
+	if (nullptr == MappedResource.pData) {
+		m_pContext->Unmap(m_pFastTexture, 0);
+		return 0;
+
+	}
+
+	_int PickPos = ((_int*)MappedResource.pData)[0];
+
+	m_pContext->Unmap(m_pTexture, 0);
+
+	return PickPos;
+}
+
 HRESULT CPicking::Ready_Texture2D()
 {
 	D3D11_TEXTURE2D_DESC Desc{};
@@ -148,7 +188,42 @@ HRESULT CPicking::Ready_Texture2D()
 		return E_FAIL;
 	}
 
-	return E_NOTIMPL;
+	return S_OK;
+}
+
+HRESULT CPicking::Ready_FastPicking()
+{
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_ID"), m_iWinSizeX, m_iWinSizeY, DXGI_FORMAT_R32_SINT, _float4(0.f,0.f,0.f,0.f))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_ID"))))
+	{
+		return E_FAIL;
+	}
+
+	D3D11_TEXTURE2D_DESC Desc{};
+	Desc.Width = 1;
+	Desc.Height = 1;
+	Desc.MipLevels = 1;
+	Desc.ArraySize = 1;
+	Desc.Format = DXGI_FORMAT_R32_SINT;
+
+	Desc.SampleDesc.Quality = 0;
+	Desc.SampleDesc.Count = 1;
+
+	Desc.Usage = D3D11_USAGE_STAGING;
+	Desc.BindFlags = 0;
+	Desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
+	Desc.MiscFlags = 0;
+
+	if (FAILED(m_pDevice->CreateTexture2D(&Desc, nullptr, &m_pFastTexture)))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
 }
 
 
@@ -260,4 +335,5 @@ void CPicking::Free()
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 	Safe_Release(m_pTexture);
+	Safe_Release(m_pFastTexture);
 }

@@ -601,6 +601,16 @@ _float4 CGameInstance::PickingDepth(_float x, _float y)
 
 	return m_pPicking->PickingDepth(x, y);
 }
+_int CGameInstance::FastPicking(_uint x, _uint y)
+{
+	if (!m_pPicking)
+	{
+		MSG_BOX("FATAL ERROR : m_pPicking is NULL");
+	}
+
+	return m_pPicking->FastPicking(x, y);
+}
+
 _vec4 CGameInstance::Compute_MousePicked_Terrain(_float44 matTerrainWorld, _float3* pVerticesPos, _uint iNumVerticesX, _uint iNumVerticesZ)
 {
 	if (nullptr == m_pPicking)
@@ -615,6 +625,14 @@ HRESULT CGameInstance::Ready_Texture2D()
 		return E_FAIL;
 	}
 		return m_pPicking->Ready_Texture2D();
+}
+HRESULT CGameInstance::Ready_FastPicking()
+{
+	if (nullptr == m_pPicking)
+	{
+		return E_FAIL;
+	}
+	return m_pPicking->Ready_FastPicking();
 }
 HRESULT CGameInstance::Add_Font(const wstring& strFontTag, const wstring& strFilePath)
 {

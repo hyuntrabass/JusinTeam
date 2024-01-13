@@ -255,5 +255,4 @@ void CSelect::Free()
 	Safe_Release(m_pClassButton);
 	Safe_Release(m_pSelectButton);
 	Safe_Release(m_pCharacterSelect);
-
 }

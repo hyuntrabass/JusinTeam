@@ -45,8 +45,6 @@ private:
 	HRESULT Add_Component();
 	HRESULT Bind_ShaderResources();
 
-public:
-	HRESULT Change_HeightMap(const wstring& strHeightMapFilePath, _uint iNumVerticesX, _uint iNumVerticesZ);
 
 public:
 	// 원형 객체를 생성할 때
