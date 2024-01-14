@@ -79,6 +79,9 @@ private:
 
 	ANIM_DESC m_AnimDesc{};
 
+	ID3D11Texture2D* m_pTexture{ nullptr };
+	ID3D11ShaderResourceView* m_pSRV{ nullptr };
+
 private:
 	HRESULT Read_Bones(ifstream& File);
 	HRESULT Read_Meshes(ifstream& File, const ModelType& eType, _fmatrix PivotMatrix);

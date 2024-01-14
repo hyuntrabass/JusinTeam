@@ -32,6 +32,17 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Object_Specular"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	{
+		return E_FAIL;
+	}
+
+	// 원명
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Velocity"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	{
+		return E_FAIL;
+	}
+	//
 	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Shade"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 1.f))))
 	{
 		return E_FAIL;
@@ -51,7 +62,15 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_SSAOTEST"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	{
+		return E_FAIL;
+	}
 
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_SSAOBlur"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	{
+		return E_FAIL;
+	}
 
 	//if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LightDepth"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
 	//{
@@ -77,6 +96,17 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Object_Specular"))))
+	{
+		return E_FAIL;
+	}
+
+	// 원명
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Velocity"))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Lights"), TEXT("Target_Shade"))))
 	{
 		return E_FAIL;
@@ -98,6 +128,15 @@ HRESULT CRenderer::Init_Prototype()
 	}
 
 	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_BlurTest"), TEXT("Target_BlurTest"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_SSAOTEST"), TEXT("Target_SSAOTEST"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_SSAOBlur"), TEXT("Target_SSAOBlur"))))
 	{
 		return E_FAIL;
 	}
@@ -133,7 +172,7 @@ HRESULT CRenderer::Init_Prototype()
 	uniform_real_distribution<float> RandomY = uniform_real_distribution<float>(-1.f, 1.f);
 	uniform_real_distribution<float> RandomZ = uniform_real_distribution<float>(-1.f, 1.f);
 
-	for (size_t i = 0; i < 16; i++)
+	for (size_t i = 0; i < 50; i++)
 		m_vRandom[i] = _vec3(RandomX(RandomNumber), RandomY(RandomNumber), RandomZ(RandomNumber));
 
 
@@ -170,8 +209,14 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
-
-
+	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_SSAOTEST"), _float2(ViewportDesc.Width - 150.f, 50.f), _float2(100.f, 100.f))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_SSAOBlur"), _float2(ViewportDesc.Width - 150.f, 150.f), _float2(100.f, 100.f))))
+	{
+		return E_FAIL;
+	}
 #endif // _DEBUG
 
 
@@ -469,6 +514,11 @@ HRESULT CRenderer::Render_LightAcc()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_ObjectSpecTexture", TEXT("Target_Object_Specular"))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pShader->Bind_RawValue("g_vCamPosition", &m_pGameInstance->Get_CameraPos(), sizeof _float4)))
 	{
 		return E_FAIL;
@@ -490,7 +540,7 @@ HRESULT CRenderer::Render_LightAcc()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pShader->Bind_RawValue("g_vRandom", m_vRandom, sizeof(_vec3) * 16))) {
+	if (FAILED(m_pShader->Bind_RawValue("g_vRandom", m_vRandom, sizeof(_vec3) * 50))) {
 		return E_FAIL;
 	}
 
@@ -505,6 +555,59 @@ HRESULT CRenderer::Render_LightAcc()
 
 
 	if (FAILED(m_pGameInstance->Render_Lights(m_pGameInstance->Get_CurrentLevelIndex(), m_pShader, m_pVIBuffer)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->End_MRT()))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_SSAOTEST"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_NormalTexture", TEXT("Target_Normal"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DepthTexture", TEXT("Target_Depth"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShader->Begin(5)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pVIBuffer->Render()))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->End_MRT()))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_SSAOBlur"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_SSAOTEST"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShader->Begin(DefPass_Blur)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pVIBuffer->Render()))
 	{
 		return E_FAIL;
 	}
@@ -543,6 +646,12 @@ HRESULT CRenderer::Render_Deferred()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_SSAOTexture", TEXT("Target_SSAOBlur"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_VelocityTexture", TEXT("Target_Velocity"))))
+		return E_FAIL;
 
 	_uint iNumViewPorts{ 1 };
 
@@ -874,7 +983,15 @@ HRESULT CRenderer::Render_Debug()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_SSAOTEST"), m_pShader, m_pVIBuffer)))
+	{
+		return E_FAIL;
+	}
 
+	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_SSAOBlur"), m_pShader, m_pVIBuffer)))
+	{
+		return E_FAIL;
+	}
 	return S_OK;
 }
 #endif // _DEBUG

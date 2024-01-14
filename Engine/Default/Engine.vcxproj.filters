@@ -160,6 +160,9 @@
     <Filter Include="01.Utility\08.Sound">
       <UniqueIdentifier>{36e3dac6-f318-41ea-b49a-2b79d1618caf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Components\VIBuffer\Terrain\VIBuffer_Terrain_Dynamic">
+      <UniqueIdentifier>{b2115fba-c7c5-46be-8241-8c00eb49b841}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -311,6 +314,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Collision_Manager.cpp">
       <Filter>01.Utility\03.Components\Collider\Collision_Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Terrain_Dynamic.cpp">
+      <Filter>01.Utility\03.Components\VIBuffer\Terrain\VIBuffer_Terrain_Dynamic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -472,6 +478,9 @@
     </ClInclude>
     <ClInclude Include="..\public\Collision_Manager.h">
       <Filter>01.Utility\03.Components\Collider\Collision_Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Terrain_Dynamic.h">
+      <Filter>01.Utility\03.Components\VIBuffer\Terrain\VIBuffer_Terrain_Dynamic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

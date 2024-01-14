@@ -91,6 +91,9 @@
     <Filter Include="02.GameObjects\04. Monster\Tutorial\01. Void05">
       <UniqueIdentifier>{ca2ecc51-8de3-4c19-8aae-baa40147a63b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\02.Terrain\Lake">
+      <UniqueIdentifier>{cf63ced1-74e6-4b14-b3a8-630d98997eb7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -180,6 +183,9 @@
     <ClInclude Include="..\Public\Void05.h">
       <Filter>02.GameObjects\04. Monster\Tutorial\01. Void05</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Lake.h">
+      <Filter>02.GameObjects\02.Terrain\Lake</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -264,6 +270,9 @@
     <ClCompile Include="..\Private\Void05.cpp">
       <Filter>02.GameObjects\04. Monster\Tutorial\01. Void05</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Lake.cpp">
+      <Filter>02.GameObjects\02.Terrain\Lake</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
@@ -291,6 +300,9 @@
       <Filter>97.Shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxCubeTex.hlsl">
+      <Filter>97.Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Water.hlsl">
       <Filter>97.Shaders</Filter>
     </FxCompile>
   </ItemGroup>

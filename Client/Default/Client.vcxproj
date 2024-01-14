@@ -152,6 +152,7 @@
     <ClInclude Include="..\Public\Camera_Debug.h" />
     <ClInclude Include="..\Public\Camera_Main.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
+    <ClInclude Include="..\Public\Lake.h" />
     <ClInclude Include="..\Public\TextButton.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Level_Custom.h" />
@@ -183,6 +184,7 @@
     <ClCompile Include="..\Private\Camera_Debug.cpp" />
     <ClCompile Include="..\Private\Camera_Main.cpp" />
     <ClCompile Include="..\Private\CharacterSelect.cpp" />
+    <ClCompile Include="..\Private\Lake.cpp" />
     <ClCompile Include="..\Private\TextButton.cpp" />
     <ClCompile Include="..\Private\Level_Custom.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
@@ -219,6 +221,16 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Instancing.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Trail.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Water.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -37,6 +37,7 @@ HRESULT CCamera::Init(void* pArg)
 
 void CCamera::Tick(_float fTimeDelta)
 {
+	m_pGameInstance->Set_OldViewMatrix(m_pGameInstance->Get_Transform(TransformType::View));
 	m_pGameInstance->Set_Transform(TransformType::View, m_pTransformCom->Get_World_Inverse());
 	m_pGameInstance->Set_Transform(TransformType::Proj, XMMatrixPerspectiveFovLH(m_fFovY, m_fAspect, m_fNear, m_fFar));
 }

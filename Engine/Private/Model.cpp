@@ -199,6 +199,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 	{
 		pBone->Update_CombinedMatrix(m_Bones);
 	}
+		
 }
 
 HRESULT CModel::Bind_BoneMatrices(_uint iMeshIndex, CShader* pShader, const _char* pVariableName)
@@ -252,6 +253,7 @@ _bool CModel::Intersect_RayModel(_fmatrix WorldMatrix, _vec4* pPickPos)
 
 	return false;
 }
+
 
 HRESULT CModel::Read_Bones(ifstream& File)
 {

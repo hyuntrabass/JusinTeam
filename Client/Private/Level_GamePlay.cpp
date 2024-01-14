@@ -41,6 +41,8 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
+	m_pGameInstance->Set_HellHeight(-5000.f);
+
 	return S_OK;
 }
 
@@ -97,6 +99,7 @@ HRESULT CLevel_GamePlay::Ready_Light()
 	LightDesc.vDirection = _float4(-1.f, -2.f, -1.f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	LightDesc.vSpecular = _vec4(1.f, 1.f, 1.f, 1.f);
 
 	return m_pGameInstance->Add_Light(LEVEL_GAMEPLAY, TEXT("Light_Main"), LightDesc);
 }

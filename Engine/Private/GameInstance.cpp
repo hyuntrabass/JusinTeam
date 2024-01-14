@@ -552,6 +552,36 @@ void CGameInstance::Set_Transform(TransformType eState, const _mat& TransformMat
 	m_pPipeLine->Set_Transform(eState, TransformMatrix);
 }
 
+void CGameInstance::Set_OldViewMatrix(const _mat& TransformMatrix)
+{
+	if (!m_pPipeLine)
+	{
+		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
+	}
+
+	m_pPipeLine->Set_OldViewMatrix(TransformMatrix);
+}
+
+_mat CGameInstance::Get_OldViewMatrix_vec4x4() const
+{
+	if (!m_pPipeLine)
+	{
+		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
+	}
+
+	return m_pPipeLine->Get_OldViewMatrix_vec4x4();
+}
+
+_matrix CGameInstance::Get_OldViewMatrix() const
+{
+	if (!m_pPipeLine)
+	{
+		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
+	}
+
+	return m_pPipeLine->Get_OldViewMatrix();
+}
+
 void CGameInstance::TransformRay_ToLocal(_mat WorldMatrix)
 {
 	if (!m_pPicking)

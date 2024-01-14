@@ -84,6 +84,11 @@ public: // PipeLine
 
 	void Set_Transform(TransformType eState, const _mat& TransformMatrix);
 
+	void Set_OldViewMatrix(const _mat& TransformMatrix);
+	_mat Get_OldViewMatrix_vec4x4() const;
+	_matrix Get_OldViewMatrix() const;
+
+
 public: // Picking
 
 	void TransformRay_ToLocal(_mat WorldMatrix);
@@ -152,20 +157,34 @@ public: // Sound Manager
 	void SetChannelVolume(_uint iChannel, _float fVolume);
 
 public: // Get_Set
+	// 현재 카메라가 메인 카메라인지 디버그 카메라인지 반환함. client define에 이넘 있음.
 	const _uint& Get_CameraModeIndex() const;
+	// 카메라의 near와 far를 반환 함. x가 near, y가 far.
 	const _float2& Get_CameraNF() const;
+	// 현재 레벨을 반환함. client define에 이넘 있음.
 	const _uint& Get_CurrentLevelIndex() const;
+	// 시간 비율을 반환 함. 1이면 정상 속도, 0.5면 절반 속도로 슬로우.
 	const _float& Get_TimeRatio() const;
+	// 현재 안개의 near 에서 far를 반환 함.
 	const _float2& Get_FogNF() const;
+	// 카메라에서 쉐이킹 해야되는지 받는 함수.
 	const _bool& Get_ShakeCam() const;
+	// 지옥이 시작되는 높이를 반환 함. (일정 높이부터 내려갈 수록 어두워지는걸 hell이라고 해놨음.)
 	const _float& Get_HellHeight() const;
 
+	// 카메라 모드를 지정함. 카메라에서 말고는 쓰지 말것.
 	void Set_CameraModeIndex(const _uint& iIndex);
+	// 카메라의 near, far를 지정함. 이것도 카메라에서만 호출 할것.
 	void Set_CameraNF(const _float2& vCamNF);
+	// 현재 레벨을 지정함. 각 레벨의 Init()함수에 넣어주세요.
 	void Set_CurrentLevelIndex(const _uint& iIndex);
+	// 슬로우모션, 빨리감기를 실행시키는 함수. 몇배속인지 넣어준다.
 	void Set_TimeRatio(const _float fRatio);
+	// 안개의 정도를 조정할 때 씀. near부터 안개가 끼기 시작해서 far로 갈 수록 안개가 진해짐.
 	void Set_FogNF(const _float2& vFogNF);
+	// 카메라 쉐이크 기능. true 던지면 카메라가 한번 흔들림.
 	void Set_ShakeCam(const _bool& bShake);
+	// hell 높이를 지정한다.
 	void Set_HellHeight(const _float& fHeight);
 
 private:

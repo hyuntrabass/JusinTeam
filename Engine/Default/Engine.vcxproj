@@ -144,6 +144,7 @@ call UpdateLib.bat</Command>
     <ClCompile Include="..\private\VIBuffer_PhysX.cpp" />
     <ClCompile Include="..\private\VIBuffer_Rect.cpp" />
     <ClCompile Include="..\private\VIBuffer_Terrain.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Terrain_Dynamic.cpp" />
     <ClCompile Include="..\private\VIBuffer_Trail.cpp" />
     <ClCompile Include="Engine_Function.cpp" />
   </ItemGroup>
@@ -200,6 +201,7 @@ call UpdateLib.bat</Command>
     <ClInclude Include="..\public\VIBuffer_PhysX.h" />
     <ClInclude Include="..\public\VIBuffer_Rect.h" />
     <ClInclude Include="..\public\VIBuffer_Terrain.h" />
+    <ClInclude Include="..\Public\VIBuffer_Terrain_Dynamic.h" />
     <ClInclude Include="..\public\VIBuffer_Trail.h" />
   </ItemGroup>
   <ItemGroup>

@@ -116,6 +116,16 @@ HRESULT CMesh::Init(void* pArg)
 
 HRESULT CMesh::Bind_BoneMatrices(CShader* pShader, const vector<CBone*>& Bones, const _char* pVariableName, _mat PivotMatrix)
 {
+	//D3D11_MAPPED_SUBRESOURCE TexData;
+	//m_pContext->Map(m_pTexture, 0, D3D11_MAP_WRITE_DISCARD, 0, &TexData);
+
+	//_mat* BonMatrices = (_mat*)TexData.pData;
+	//_uint i = 0;
+	//for (size_t i = 0; i < m_iNumBones; i++)
+	//	BonMatrices[i] = m_BoneMatrices[i];
+
+	//m_pContext->Unmap(m_pTexture, 0);
+
 	for (size_t i = 0; i < m_iNumBones; i++)
 	{
 		m_BoneMatrices[i] = m_OffsetMatrices[i] * *Bones[m_BoneIndices[i]]->Get_CombinedMatrix() * PivotMatrix;
@@ -179,6 +189,36 @@ void CMesh::Apply_TransformToActor(_mat WorldMatrix)
 	_vec4 vQuat = XMQuaternionRotationMatrix(WorldMatrix);
 	PxTransform Transform(VectorToPxVec3(_vec4(&WorldMatrix._31)), PxQuat(vQuat.x, vQuat.y, vQuat.z, vQuat.w));
 	m_pActor->setGlobalPose(Transform);
+}
+
+HRESULT CMesh::Ready_VTF()
+{
+	D3D11_TEXTURE2D_DESC VTF;
+	VTF.Width = 64;
+	VTF.Height = 64;
+	VTF.MipLevels = 1;
+	VTF.ArraySize = 1;
+	VTF.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	VTF.SampleDesc.Count = 1;
+	VTF.SampleDesc.Quality = 0;
+	VTF.Usage = D3D11_USAGE_DYNAMIC;
+	VTF.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	VTF.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
+	VTF.MiscFlags = 0;
+
+	if (FAILED(m_pDevice->CreateTexture2D(&VTF, nullptr, &m_pTexture)))
+		return E_FAIL;
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = VTF.Format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = 1;
+
+	if (FAILED(m_pDevice->CreateShaderResourceView(m_pTexture, &srvDesc, &m_pSRV)))
+		return E_FAIL;
+
+	return S_OK;
 }
 
 HRESULT CMesh::Ready_StaticMesh(ifstream& ModelFile, _mat OffsetMatrix)
