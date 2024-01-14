@@ -17,7 +17,7 @@ HRESULT CVoid05::Init_Prototype()
 
 HRESULT CVoid05::Init(void* pArg)
 {
-    m_strModelTag = TEXT("Prototype_Model_Rabbit");
+    m_strModelTag = TEXT("Prototype_Model_Void05");
 
     if (FAILED(__super::Add_Components()))
     {

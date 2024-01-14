@@ -23,4 +23,6 @@
 #include "NPCvsMon.h"
 #include "Void05.h"
 #include "Rabbit.h"
-#include "Penguin.h"
+#include "Goat.h"
+#include "Nastron03.h"
+#include "Thief04.h"
