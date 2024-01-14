@@ -1,71 +1,61 @@
 1. Static Only   2. Anim Only   3. All
-2
-Animation Models : Start Converting...
-Converting... face0.fbx
+1
+Static Models : Start Converting...
+Converting... Village_Bone01.fbx
 Read File Succssefully
-Animation name list: 
-Take 001
-Converting... face1.fbx
+Converting... Village_fence01.fbx
 Read File Succssefully
-Animation name list: 
-Take 001
-Converting... face2.fbx
+Converting... Village_fence02.fbx
 Read File Succssefully
-Animation name list: 
-Take 001
-Converting... face3.fbx
+Converting... Village_fence03.fbx
 Read File Succssefully
-Animation name list: 
-Take 001
-Converting... face4.fbx
+Converting... Village_fence04.fbx
 Read File Succssefully
-Animation name list: 
-Take 001
-Converting... face5.fbx
+Converting... Village_Flag.fbx
 Read File Succssefully
-Animation name list: 
-Take 001
-Converting... face6.fbx
+Converting... Village_Floor.fbx
 Read File Succssefully
-Animation name list: 
-Take 001
-Converting... hair0.fbx
+Converting... Village_MergedProp01.fbx
 Read File Succssefully
-Animation name list: 
-Take 001
-Converting... hair1.fbx
+Converting... Village_MergedProp02.fbx
 Read File Succssefully
-Animation name list: 
-Take 001
-Converting... hair2.fbx
+Converting... Village_MergedProp03.fbx
 Read File Succssefully
-Animation name list: 
-Take 001
-Converting... hair3.fbx
+Converting... Village_MergedProp04.fbx
 Read File Succssefully
-Animation name list: 
-Take 001
-Converting... hair4.fbx
+Converting... Village_MergedProp05.fbx
 Read File Succssefully
-Animation name list: 
-Take 001
-Converting... hair5.fbx
+Converting... Village_MergedProp06.fbx
 Read File Succssefully
-Animation name list: 
-Take 001
-Converting... hair6.fbx
+Converting... Village_MergedProp07.fbx
 Read File Succssefully
-Animation name list: 
-Take 001
-Converting... hair7.fbx
+Converting... Village_MergedProp08.fbx
 Read File Succssefully
-Animation name list: 
-Take 001
-Converting... hair8.fbx
+Converting... Village_MergedProp09.fbx
 Read File Succssefully
-Animation name list: 
-Take 001
-Animation Models : Convert Success!
+Converting... Village_Pot.fbx
+Read File Succssefully
+Converting... Village_StreetStone.fbx
+Read File Succssefully
+Converting... Village_Table_Chair.fbx
+Read File Succssefully
+Converting... Village_Vine01.fbx
+Read File Succssefully
+Converting... Village_Vine02.fbx
+Read File Succssefully
+Converting... Village_Wall01.fbx
+Read File Succssefully
+Converting... Village_Wall02.fbx
+Read File Succssefully
+Converting... Village_Wall03.fbx
+Read File Succssefully
+Converting... Village_Wall04.fbx
+Read File Succssefully
+Converting... Village_Wall05.fbx
+Read File Succssefully
+Converting... Village_Wall06.fbx
+Read File Succssefully
+Static Models : Convert Success!
 
-16 Animation Models
+27 Static Models
 are Successfully Converted as hyuntramesh!!

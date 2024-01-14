@@ -10,13 +10,6 @@ HRESULT CLevel_Editor::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_EDITOR);
 
-
-	if (FAILED(Ready_Map()))
-	{
-		MSG_BOX("Failed to Ready Menu");
-		return E_FAIL;
-	}
-
 	m_pGameInstance->Set_HellHeight(-2000.f);
 
 	if (FAILED(Ready_Camera()))
@@ -89,18 +82,6 @@ HRESULT CLevel_Editor::Ready_Light()
 }
 
 
-
-HRESULT CLevel_Editor::Ready_Map()
-{
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_EDITOR, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"))))
-	{
-		return E_FAIL;
-	}
-
-
-	return S_OK;
-}
 
 CLevel_Editor* CLevel_Editor::Create(_dev pDevice, _context pContext)
 {

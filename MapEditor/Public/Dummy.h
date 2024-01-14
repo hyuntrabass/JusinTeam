@@ -49,6 +49,7 @@ private:
 	ANIM_DESC m_Animation{};
 	
 	_int m_iID = 0;
+	_int m_iTrigger = 0;
 
 	_bool m_isCreate{false};
 private:
