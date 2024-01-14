@@ -162,8 +162,10 @@ namespace Client
 		VTPass_HP,
 		VTPass_Hit,
 		VTPass_Sprite,
+		VTPass_SpriteMaskTexture,
 		VTPass_SpriteMaskColor,
 		VTPass_Hell,
+		VTPass_End
 	};
 
 	enum InstancingPass
@@ -171,6 +173,7 @@ namespace Client
 		InstPass_Particle_TextureMask,
 		InstPass_Particle_Sprite,
 		InstPass_Particle_MaskColor,
+		InstPass_End,
 	};
 #pragma endregion
 

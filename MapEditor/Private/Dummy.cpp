@@ -4,13 +4,13 @@
 static _int iID = 1;
 
 CDummy::CDummy(_dev pDevice, _context pContext)
-	: CGameObject(pDevice, pContext)
+	: CBlendObject(pDevice, pContext)
 
 {
 }
 
 CDummy::CDummy(const CDummy& rhs)
-	: CGameObject(rhs)
+	: CBlendObject(rhs)
 	//, m_pImGui_Manager(CImGui_Manager::Get_Instance())
 {
 	//Safe_AddRef(m_pImGui_Manager);
@@ -47,7 +47,19 @@ HRESULT CDummy::Init(void* pArg)
 
 	m_Info = *(DummyInfo*)pArg;
 
-	if (m_Info.Prototype == L"Prototype_Model_Sandman" )
+	if (m_Info.Prototype == L"Prototype_Model_Barlog" ||
+		m_Info.Prototype == L"Prototype_Model_Furgoat" ||
+		m_Info.Prototype == L"Prototype_Model_GiantBoss" ||
+		m_Info.Prototype == L"Prototype_Model_Nastron02" ||
+		m_Info.Prototype == L"Prototype_Model_Nastron03" ||
+		m_Info.Prototype == L"Prototype_Model_Orc02" ||
+		m_Info.Prototype == L"Prototype_Model_Penguin" ||
+		m_Info.Prototype == L"Prototype_Model_Rabbit" ||
+		m_Info.Prototype == L"Prototype_Model_Thief04" ||
+		m_Info.Prototype == L"Prototype_Model_Trilobite" ||
+		m_Info.Prototype == L"Prototype_Model_TrilobiteA" ||
+		m_Info.Prototype == L"Prototype_Model_Void13" ||
+		m_Info.Prototype == L"Prototype_Model_VoidDragon")
 	{
 		m_isAnim = true;
 		m_Animation.isLoop = true;
@@ -68,11 +80,12 @@ HRESULT CDummy::Init(void* pArg)
 		m_Info.Prototype == L"Prototype_Model_Sphere_HorizentalUV" ||
 		m_Info.Prototype == L"Prototype_Model_Ring_14" ||
 		m_Info.Prototype == L"Prototype_Model_Circle" ||
-		m_Info.Prototype == L"Prototype_Model_SM_EFF_Tree_01.mo")
+		m_Info.Prototype == L"Prototype_Model_SM_EFF_Tree_01.mo" )
 	{
 		m_iShaderPass = StaticPass_AlphaTestMeshes;
 	}
 
+	
 	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_Info.vPos));
 	m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_Info.vLook));
 
@@ -101,7 +114,7 @@ void CDummy::Tick(_float fTimeDelta)
 	
 	if (m_isAnim)
 	{
-		if (m_pGameInstance->Key_Down(DIK_PRIOR))
+	/*	if (m_pGameInstance->Key_Down(DIK_PRIOR))
 		{
 			if (m_Animation.iAnimIndex < 51)
 			{
@@ -128,7 +141,7 @@ void CDummy::Tick(_float fTimeDelta)
 			m_Animation.bRestartAnimation = false;
 			m_Animation.bSkipInterpolation = false;
 			m_pModelCom->Set_Animation(m_Animation);
-		}
+		}*/
 
 		m_pModelCom->Play_Animation(fTimeDelta);
 	}
@@ -155,6 +168,7 @@ HRESULT CDummy::Render()
 	{
 		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
+			return E_FAIL;
 		}
 
 		_bool HasNorTex{};
@@ -184,6 +198,7 @@ HRESULT CDummy::Render()
 				return E_FAIL;
 			}
 		}
+
 
 		if (FAILED(m_pShaderCom->Begin(m_iOutLineShaderPass)))
 		{
@@ -270,13 +285,12 @@ HRESULT CDummy::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (m_Info.eType != ItemType::Map)
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_iID", &m_iID, sizeof(_int))))
 	{
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_iID", &m_iID, sizeof(_int))))
-		{
-			return E_FAIL;
-		}
+		return E_FAIL;
 	}
+	
 
 	if (m_Info.eType == ItemType::Trigger)
 	{

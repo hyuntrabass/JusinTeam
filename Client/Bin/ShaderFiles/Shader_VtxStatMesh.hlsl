@@ -57,7 +57,7 @@ VS_OUT VS_Main(VS_IN Input)
     matWVP = mul(matWV, g_ProjMatrix);
 	
     Output.vPos = mul(vector(Input.vPos, 1.f), matWVP);
-    Output.vNor = mul(vector(Input.vNor, 0.f), g_WorldMatrix);
+    Output.vNor = normalize(mul(vector(Input.vNor, 0.f), g_WorldMatrix));
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
     Output.vProjPos = Output.vPos;
@@ -86,7 +86,7 @@ VS_OUT VS_OutLine(VS_IN Input)
     vPos += normalize(vNor) * (fThickness + 0.5 * g_bSelected);
     
     Output.vPos = mul(vPos, matWVP);
-    Output.vNor = mul(vNor, g_WorldMatrix);
+    Output.vNor = normalize(mul(vNor, g_WorldMatrix));
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
     Output.vProjPos = Output.vPos;
@@ -138,7 +138,7 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     {
         vNormal = Input.vNor.xyz;
     }
-    
+
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);

@@ -41,6 +41,7 @@
     <ClInclude Include="..\Public\Level_Loading.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\MainApp.h" />
+    <ClInclude Include="..\Public\Map.h" />
     <ClInclude Include="..\Public\MapEditor_Define.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="framework.h" />
@@ -69,6 +70,7 @@
     <ClCompile Include="..\Private\Level_Loading.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
+    <ClCompile Include="..\Private\Map.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="MapEditor.cpp" />
   </ItemGroup>

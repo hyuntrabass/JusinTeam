@@ -28,13 +28,13 @@ private:
 	_dev m_pDevice{ nullptr };
 	_context m_pContext{ nullptr };
 	CGameInstance* m_pGameInstance{ nullptr };
-	CVIBuffer_Rect* m_pVIBuffer_Rect{ nullptr };
-	CVIBuffer_Instancing_Point* m_pVIBuffer_Instancing{ nullptr };
+	//CVIBuffer_Rect* m_pVIBuffer_Rect{ nullptr };
+	//CVIBuffer_Instancing_Point* m_pVIBuffer_Instancing{ nullptr };
 
 private:
 	class CEffect_Dummy* m_pEffect{ nullptr };
-	class CShader* m_pInstanceShader{ nullptr };
-	class CShader* m_pVtxTexShader{ nullptr };
+	//class CShader* m_pInstanceShader{ nullptr };
+	//class CShader* m_pVtxTexShader{ nullptr };
 	_int m_iCurrent_Type{};
 	_int m_iSelected_Texture{};
 	_int m_iSelected_MaskTexture{};

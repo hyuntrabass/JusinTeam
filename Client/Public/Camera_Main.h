@@ -17,6 +17,9 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 
+public:
+	void Camera_Zoom(_float fTimeDelta);
+
 private:
 	CTransform* m_pPlayerTransform{ nullptr };
 	_bool m_isMoveMode{ true };
@@ -29,7 +32,7 @@ private:
 	_float m_fSceneTimer{};
 	_uint m_iSceneIndex{};
 	CUTSCENE* m_pScene{ nullptr };
-
+	_bool m_bSelect{};
 public:
 	static CCamera_Main* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;

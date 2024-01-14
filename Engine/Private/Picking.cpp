@@ -161,7 +161,7 @@ _int CPicking::FastPicking(_uint x, _uint y)
 
 	_int PickPos = ((_int*)MappedResource.pData)[0];
 
-	m_pContext->Unmap(m_pTexture, 0);
+	m_pContext->Unmap(m_pFastTexture, 0);
 
 	return PickPos;
 }

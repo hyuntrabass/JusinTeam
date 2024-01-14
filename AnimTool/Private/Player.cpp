@@ -7,28 +7,41 @@ CPlayer::CPlayer(_dev pDevice, _context pContext)
 
 CPlayer::CPlayer(const CPlayer& rhs)
 	: CGameObject(rhs)
-	, m_iNumModels(rhs.m_iNumModels)
+	, m_iNumMonsterModels(rhs.m_iNumMonsterModels)
+	, m_iNumPlayerModels(rhs.m_iNumPlayerModels)
 {
 }
 
-HRESULT CPlayer::Init_Prototype(_uint iNumModels)
+HRESULT CPlayer::Init_Prototype(_uint iNumMonsterModels, _uint iNumPlayerModels)
 {
-	m_iNumModels = iNumModels;
+	m_iNumMonsterModels = iNumMonsterModels;
+	m_iNumPlayerModels = iNumPlayerModels;
 
 	return S_OK;
 }
 
 HRESULT CPlayer::Init(void* pArg)
 {
-	m_pModelCom = new CModel * [m_iNumModels];
-	m_pModelName = new wstring[m_iNumModels];
+	m_pMonsterModelCom = new CModel * [m_iNumMonsterModels];
+	m_pMonsterModelTag = new wstring[m_iNumMonsterModels];
 
-	for (_uint i = 0; i < m_iNumModels; i++)
+	for (_uint i = 0; i < m_iNumMonsterModels; i++)
 	{
 		_tchar szPrototypeTag[MAX_PATH] = TEXT("");
-		const wstring& strPrototypeTag = TEXT("Prototype_Model_%d");
+		const wstring& strPrototypeTag = TEXT("Prototype_Model_Monster_%d");
 		wsprintf(szPrototypeTag, strPrototypeTag.c_str(), i);
-		m_pModelName[i] = szPrototypeTag;
+		m_pMonsterModelTag[i] = szPrototypeTag;
+	}
+
+	m_pPlayerModelCom = new CModel * [m_iNumPlayerModels];
+	m_pPlayerModelTag = new wstring[m_iNumPlayerModels];
+
+	for (_uint i = 0; i < m_iNumPlayerModels; i++)
+	{
+		_tchar szPrototypeTag[MAX_PATH] = TEXT("");
+		const wstring& strPrototypeTag = TEXT("Prototype_Model_Player_%d");
+		wsprintf(szPrototypeTag, strPrototypeTag.c_str(), i);
+		m_pPlayerModelTag[i] = szPrototypeTag;
 	}
 
 	if (FAILED(Add_Components()))
@@ -56,7 +69,19 @@ void CPlayer::Tick(_float fTimeDelta)
 
 		XMStoreFloat4(&m_vPos, vPos);
 	}
-	m_pModelCom[m_iCurrentIndex]->Play_Animation(0.f);
+	if (m_eType == TYPE_MONSTER)
+	{
+		m_pModelCom = m_pMonsterModelCom[m_iCurrentIndex];
+	}
+	else if (m_eType == TYPE_PLAYER)
+	{
+		m_pModelCom = m_pPlayerModelCom[m_iCurrentIndex];
+	}
+
+	if (m_pModelCom)
+	{
+		m_pModelCom->Play_Animation(0.f);
+	}
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)
@@ -70,67 +95,45 @@ HRESULT CPlayer::Render()
 	{
 		return E_FAIL;
 	}
-	for (_uint i = 0; i < m_pModelCom[m_iCurrentIndex]->Get_NumMeshes(); i++)
+	if (m_pModelCom)
 	{
-		if (FAILED(m_pModelCom[m_iCurrentIndex]->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
 		{
-		}
+			if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+			{
+			}
 
-		_bool HasNorTex{};
-		if (FAILED(m_pModelCom[m_iCurrentIndex]->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-		{
-			HasNorTex = false;
-		}
-		else
-		{
-			HasNorTex = true;
-		}
+			_bool HasNorTex{};
+			if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+			{
+				HasNorTex = false;
+			}
+			else
+			{
+				HasNorTex = true;
+			}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
-
-		if (FAILED(m_pModelCom[m_iCurrentIndex]->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-		{
-			return E_FAIL;
-		}
-
-		//if (FAILED(m_pShaderCom->Begin(AnimPass_OutLine)))
-		//{
-		//    return E_FAIL;
-		//}
-
-		//if (FAILED(m_pModelCom->Render(i)))
-		//{
-		//    return E_FAIL;
-		//}
-
-		_uint iPassIndex{ AnimPass_Default };
-
-		/*if (m_eCurrState == State_Die)
-		{
-			iPassIndex = AnimPass_Dissolve;
-
-			if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof m_fDissolveRatio)))
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
 			{
 				return E_FAIL;
 			}
 
-			if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_NoiseTexture")))
+			if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
 			{
 				return E_FAIL;
 			}
-		}*/
 
-		if (FAILED(m_pShaderCom->Begin(iPassIndex)))
-		{
-			return E_FAIL;
-		}
+			_uint iPassIndex{ AnimPass_Default };
 
-		if (FAILED(m_pModelCom[m_iCurrentIndex]->Render(i)))
-		{
-			return E_FAIL;
+			if (FAILED(m_pShaderCom->Begin(iPassIndex)))
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pModelCom->Render(i)))
+			{
+				return E_FAIL;
+			}
 		}
 	}
 
@@ -149,14 +152,27 @@ HRESULT CPlayer::Add_Components()
 		return E_FAIL;
 	}
 
-	for (_uint i = 0; i < m_iNumModels; i++)
+	for (_uint i = 0; i < m_iNumMonsterModels; i++)
 	{
 		_tchar szComName[MAX_PATH] = TEXT("");
-		const wstring& strComName = TEXT("Com_Model%d");
+		const wstring& strComName = TEXT("Com_Model_Monster%d");
 		wsprintf(szComName, strComName.c_str(), i);
 		wstring strFinalComName = szComName;
 
-		if (FAILED(__super::Add_Component(LEVEL_TOOL, m_pModelName[i], strFinalComName, reinterpret_cast<CComponent**>(&m_pModelCom[i]))))
+		if (FAILED(__super::Add_Component(LEVEL_TOOL, m_pMonsterModelTag[i], strFinalComName, reinterpret_cast<CComponent**>(&m_pMonsterModelCom[i]))))
+		{
+			return E_FAIL;
+		}
+	}
+
+	for (_uint i = 0; i < m_iNumPlayerModels; i++)
+	{
+		_tchar szComName[MAX_PATH] = TEXT("");
+		const wstring& strComName = TEXT("Com_Model_Player%d");
+		wsprintf(szComName, strComName.c_str(), i);
+		wstring strFinalComName = szComName;
+
+		if (FAILED(__super::Add_Component(LEVEL_TOOL, m_pPlayerModelTag[i], strFinalComName, reinterpret_cast<CComponent**>(&m_pPlayerModelCom[i]))))
 		{
 			return E_FAIL;
 		}
@@ -190,11 +206,11 @@ HRESULT CPlayer::Bind_ShaderResources()
 	return S_OK;
 }
 
-CPlayer* CPlayer::Create(_dev pDevice, _context pContext, _uint iNumModels)
+CPlayer* CPlayer::Create(_dev pDevice, _context pContext, _uint iNumMonsterModels, _uint iNumPlayerModels)
 {
 	CPlayer* pInstance = new CPlayer(pDevice, pContext);
 
-	if (FAILED(pInstance->Init_Prototype(iNumModels)))
+	if (FAILED(pInstance->Init_Prototype(iNumMonsterModels, iNumPlayerModels)))
 	{
 		MSG_BOX("Failed to Create : CPlayer");
 		Safe_Release(pInstance);
@@ -220,11 +236,19 @@ void CPlayer::Free()
 {
 	__super::Free();
 
-	if (m_pModelCom)
+	if (m_pMonsterModelCom)
 	{
-		for (_uint i = 0; i < m_iNumModels; i++)
+		for (_uint i = 0; i < m_iNumMonsterModels; i++)
 		{
-			Safe_Release(m_pModelCom[i]);
+			Safe_Release(m_pMonsterModelCom[i]);
+		}
+	}
+
+	if (m_pPlayerModelCom)
+	{
+		for (_uint i = 0; i < m_iNumPlayerModels; i++)
+		{
+			Safe_Release(m_pPlayerModelCom[i]);
 		}
 	}
 
