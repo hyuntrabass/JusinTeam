@@ -115,12 +115,12 @@ void CCustom::Tick(_float fTimeDelta)
 			}
 		}
 	}
-	/*
-	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Editor) && PtInRect(&m_pSelectButton->Get_Rect(), ptMouse))
+	
+	if (m_pGameInstance->Mouse_Down(DIM_RBUTTON, InputChannel::Editor) && PtInRect(&m_pSelectButton->Get_Rect(), ptMouse))
 	{
 		m_pGameInstance->Level_ShutDown(LEVEL_CUSTOM);
 	}
-	*/
+	
 	
 	m_pSelectCustomEffect->Tick(fTimeDelta);
 	if (m_pSelectButton != nullptr)

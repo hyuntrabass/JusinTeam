@@ -66,7 +66,6 @@ private:
 private:
 	_float m_fIdleTime = {};
 
-private:
 	_uint m_iRoamingPattern = {};
 
 public:

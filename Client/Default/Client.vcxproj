@@ -154,9 +154,11 @@
     <ClInclude Include="..\Public\Camera_Debug.h" />
     <ClInclude Include="..\Public\Camera_Main.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
+    <ClInclude Include="..\Public\Goat.h" />
+    <ClInclude Include="..\Public\Nastron03.h" />
+    <ClInclude Include="..\Public\NPCvsMon.h" />
     <ClInclude Include="..\Public\Custom.h" />
     <ClInclude Include="..\Public\Effect_Dummy.h" />
-    <ClInclude Include="..\Public\Penguin.h" />
     <ClInclude Include="..\Public\Rabbit.h" />
     <ClInclude Include="..\Public\Select_Map.h" />
     <ClInclude Include="..\Public\Select_Model.h" />
@@ -179,10 +181,10 @@
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\Monster.h" />
     <ClInclude Include="..\Public\Mouse.h" />
-    <ClInclude Include="..\Public\NPCvsMon.h" />
     <ClInclude Include="..\public\Player.h" />
     <ClInclude Include="..\Public\Select.h" />
     <ClInclude Include="..\Public\TextButtonColor.h" />
+    <ClInclude Include="..\Public\Thief04.h" />
     <ClInclude Include="..\Public\Void05.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="Client.h" />
@@ -198,9 +200,11 @@
     <ClCompile Include="..\Private\Camera_Debug.cpp" />
     <ClCompile Include="..\Private\Camera_Main.cpp" />
     <ClCompile Include="..\Private\CharacterSelect.cpp" />
+    <ClCompile Include="..\Private\Goat.cpp" />
+    <ClCompile Include="..\Private\Nastron03.cpp" />
+    <ClCompile Include="..\Private\NPCvsMon.cpp" />
     <ClCompile Include="..\Private\Custom.cpp" />
     <ClCompile Include="..\Private\Effect_Dummy.cpp" />
-    <ClCompile Include="..\Private\Penguin.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />
     <ClCompile Include="..\Private\Select_Map.cpp" />
     <ClCompile Include="..\Private\Select_Model.cpp" />
@@ -224,6 +228,7 @@
     <ClCompile Include="..\private\Player.cpp" />
     <ClCompile Include="..\Private\Select.cpp" />
     <ClCompile Include="..\Private\TextButtonColor.cpp" />
+    <ClCompile Include="..\Private\Thief04.cpp" />
     <ClCompile Include="..\Private\Void05.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="Client.cpp" />

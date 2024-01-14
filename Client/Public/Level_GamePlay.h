@@ -24,7 +24,10 @@ private:
 	// Monster
 	HRESULT Ready_Void05();
 	HRESULT Ready_Rabbit();
-	HRESULT Ready_Penguin();
+	HRESULT Ready_Goat();
+	HRESULT Ready_Nastron03();
+	HRESULT Ready_NPCvsMon();
+	HRESULT Ready_Thief04();
 
 public:
 	static CLevel_GamePlay* Create(_dev pDevice, _context pContext);

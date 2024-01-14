@@ -15,7 +15,7 @@ struct ANIM_DESC
 {
 	_uint iAnimIndex{};
 	_bool isLoop{};
-	_float fAnimSpeedRatio{ 1.5f };
+	_float fAnimSpeedRatio{ 1.f };
 	_bool bSkipInterpolation{};
 	_float fInterpolationTime{ 0.2f };
 	_float fDurationRatio{ 1.f };

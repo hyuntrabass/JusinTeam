@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Client_Define.h"
-#include "GameObject.h"
+#include "Monster.h"
 
 BEGIN(Client)
 
-class CNPCvsMon final : public CGameObject
+class CNPCvsMon final : public CMonster
 {
 private:
 	CNPCvsMon(_dev pDevice, _context pContext);
@@ -14,28 +14,19 @@ private:
 
 public:
 	virtual HRESULT Init_Prototype() override;
-	virtual HRESULT Init(void* pArg) override;	
+	virtual HRESULT Init(void* pArg = nullptr) override;
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
-private:
-	CRenderer* m_pRendererCom{ nullptr };
-	CShader* m_pShaderCom{ nullptr };
-	CModel* m_pModelCom{ nullptr };
-
-private:
-	ANIM_DESC m_Animation{};
-
-private:
-	HRESULT Add_Components();
-	HRESULT Bind_ShaderResources();
+public:
+	virtual HRESULT Add_Collider() override;
+	virtual void Update_Collider() override;
 
 public:
 	static CNPCvsMon* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
-
 };
 
 END
