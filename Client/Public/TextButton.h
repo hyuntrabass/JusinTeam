@@ -65,7 +65,8 @@ private:
 
 public:
 	const RECT& Get_Rect() const { return m_rcRect; }
-
+	const _vec2& Get_Position() const { return m_vPosition; }
+	void Set_Position(_vec2 vPos);
 
 public:
 	static CTextButton* Create(_dev pDevice, _context pContext);

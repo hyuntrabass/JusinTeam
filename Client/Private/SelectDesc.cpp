@@ -30,10 +30,10 @@ HRESULT CSelectDesc::Init(void* pArg)
 		m_strTexture = TEXT("Prototype_Component_Texture_UI_Select_Soceress");
 		break;
 	case ROGUE:
-		m_strTexture = TEXT("Prototype_Component_Texture_UI_Select_Priest");
+		m_strTexture = TEXT("Prototype_Component_Texture_UI_Select_Rogue");
 		break;
 	case PRIEST:
-		m_strTexture = TEXT("Prototype_Component_Texture_UI_Select_Rogue");
+		m_strTexture = TEXT("Prototype_Component_Texture_UI_Select_Priest");
 		break;
 	}
 

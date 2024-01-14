@@ -34,8 +34,24 @@ HRESULT CSelect_Model::Init(void* pArg)
 
 void CSelect_Model::Tick(_float fTimeDelta)
 {
-    m_pModelCom->Set_Animation(m_Animation);
 
+    if (m_pModelCom->IsAnimationFinished(S_MOTION))
+    {
+        m_eCurAnimState = S_PICK_IDLE;
+        m_Animation.iAnimIndex = S_PICK_IDLE;
+        m_Animation.isLoop = true;
+        m_Animation.fAnimSpeedRatio = 1.5f;
+        m_Animation.bSkipInterpolation = true;
+    }
+    if (m_pModelCom->IsAnimationFinished(S_CANCEL))
+    {
+        m_Animation.iAnimIndex = S_IDLE;
+        m_Animation.isLoop = true;
+        m_Animation.fAnimSpeedRatio = 2.5f;
+        m_Animation.bSkipInterpolation = true;
+    }
+
+    m_pModelCom->Set_Animation(m_Animation);
 }
 
 void CSelect_Model::Late_Tick(_float fTimeDelta)
@@ -135,6 +151,34 @@ HRESULT CSelect_Model::Bind_ShaderResources()
     }
 
     return S_OK;
+}
+
+void CSelect_Model::Change_AnimState(SELECTMODEL_ANIM eAnim)
+{
+    m_eCurAnimState = eAnim;
+
+    switch (m_eCurAnimState)
+    {
+    case S_IDLE:
+        m_Animation.iAnimIndex = S_IDLE;
+        m_Animation.isLoop = true;
+        m_Animation.bSkipInterpolation = true;
+        break;
+    case S_MOTION:
+        m_Animation.iAnimIndex = S_MOTION;
+        m_Animation.isLoop = false;
+        m_Animation.fAnimSpeedRatio = 1.5f;
+        m_Animation.bRestartAnimation = false;
+        m_Animation.bSkipInterpolation = true;
+        break;
+    case S_CANCEL:
+        m_Animation.iAnimIndex = S_CANCEL;
+        m_Animation.isLoop = false;
+        m_Animation.fAnimSpeedRatio = 1.5f;
+        m_Animation.bSkipInterpolation = true;
+        break;
+
+    }
 }
 
 CSelect_Model* CSelect_Model::Create(_dev pDevice, _context pContext)

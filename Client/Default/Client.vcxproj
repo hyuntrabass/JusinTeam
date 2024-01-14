@@ -153,6 +153,7 @@
     <ClInclude Include="..\Public\Camera_Debug.h" />
     <ClInclude Include="..\Public\Camera_Main.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
+    <ClInclude Include="..\Public\Custom.h" />
     <ClInclude Include="..\Public\Effect_Dummy.h" />
     <ClInclude Include="..\Public\Penguin.h" />
     <ClInclude Include="..\Public\Rabbit.h" />
@@ -193,6 +194,7 @@
     <ClCompile Include="..\Private\Camera_Debug.cpp" />
     <ClCompile Include="..\Private\Camera_Main.cpp" />
     <ClCompile Include="..\Private\CharacterSelect.cpp" />
+    <ClCompile Include="..\Private\Custom.cpp" />
     <ClCompile Include="..\Private\Effect_Dummy.cpp" />
     <ClCompile Include="..\Private\Penguin.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />

@@ -1,25 +1,20 @@
 #pragma once
 #include "Client_Define.h"
 #include "OrthographicObject.h"
-#include "CharacterSelect.h"
 #include "TextButton.h"
-#include "SelectDesc.h"
 #include "TextButtonColor.h"
-#include "Select_Model.h"
 
 BEGIN(Client)
 class CTextButton;
-class CSelect_Model;
-class CCharacterSelect;
 class CTextButtonColor;
-class CSelect final : public CGameObject
+class CCustom final : public CGameObject
 {
 public:
-	enum SELECT_MODEL { SORCERESS, WARRIOR, ROGUE, PRIEST, MODEL_END };
+	enum CUSTOM_MENU { C_FACE, C_HAIR, C_END };
 private:
-	CSelect(_dev pDevice, _context pContext);
-	CSelect(const CSelect& rhs);
-	virtual ~CSelect() = default;
+	CCustom(_dev pDevice, _context pContext);
+	CCustom(const CCustom& rhs);
+	virtual ~CCustom() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -32,29 +27,34 @@ private:
 	HRESULT Add_Components();
 	HRESULT Add_Parts();
 	HRESULT Add_Models();
+	HRESULT Init_Menu();
 	HRESULT Bind_ShaderResources();
 
 private:
-	SELECT_MODEL		m_eCurModel{ MODEL_END };
-
 	_bool				m_isPrototype{ false };
 	_bool				m_bShow{ false };
 
 	_float				m_fAlpha{ 0.f };
 
+	CTextButton*		m_pCustomMenu[C_END];
+
+	_bool				m_isMenuClick[C_END];
+	_vec2				m_HairPos[9];
+	_vec2				m_FacePos[6];
+
+	CTextButton*		m_pFaceGroup{ nullptr };
+	CTextButton*		m_pHairGroup{ nullptr };
+	CTextButton*		m_pSelectCustomEffect{ nullptr };
+
 	CTextButton*		m_pClassButton{ nullptr };
-	CSelectDesc*		m_pSelectDesc{ nullptr };
-	CCharacterSelect*	m_pCharacterSelect{ nullptr };
-	CTextButtonColor*	m_pSelectButton{ nullptr };
-	CTextButtonColor*	m_pBackButton{ nullptr };
-	CSelect_Model*		m_pSelectModels[MODEL_END];
+	CTextButtonColor*	m_pSelectButton{ nullptr }; 
+	CTextButton*	m_pSelectMenuEffect{ nullptr };
 
 private:
-	void Set_SelectDesc(_uint iSelect);
 	void Set_CameraState(_uint iSelect);
 
 public:
-	static CSelect* Create(_dev pDevice, _context pContext);
+	static CCustom* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

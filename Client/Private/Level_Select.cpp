@@ -22,12 +22,13 @@ HRESULT CLevel_Select::Init()
 		MSG_BOX("Failed to Ready SelectMap");
 		return E_FAIL;
 	}
-
+	/*
 	if (FAILED(Ready_Model()))
 	{
 		MSG_BOX("Failed to Ready SelectModel");
 		return E_FAIL;
 	}
+	*/
 	/*
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void05"), TEXT("Prototype_GameObject_Void05"))))
 	{
@@ -64,7 +65,7 @@ void CLevel_Select::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Is_Level_ShutDown(LEVEL_SELECT))
 	{
-		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_GAMEPLAY))))
+		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_CUSTOM))))
 		{
 			return;
 		}

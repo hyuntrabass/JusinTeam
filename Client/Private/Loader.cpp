@@ -96,6 +96,9 @@ HRESULT CLoader::Loading_LevelResources()
 	case Client::LEVEL_SELECT:
 		hr = Load_Select();
 		break;
+	case Client::LEVEL_CUSTOM:
+		hr = Load_Custom();
+		break;
 	case Client::LEVEL_GAMEPLAY:
 		hr = Load_GamePlay();
 		break;
@@ -290,7 +293,7 @@ HRESULT CLoader::Load_Select()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Component_Texture_UI_Select_BG_BoxEfc_WhiteBlur"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Select/BG_BoxEfc_WhiteBlur.png")))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Select_BG_BoxEfc_WhiteBlur"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Select/BG_BoxEfc_WhiteBlur.png")))))
 	{
 		return E_FAIL;
 	}
@@ -436,12 +439,7 @@ HRESULT CLoader::Load_Select()
 	{
 		return E_FAIL;
 	}
-	/*
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Void05"), CVoid05::Create(m_pDevice, m_pContext))))
-	{
-		return E_FAIL;
-	}
-	*/
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Select_Model"), CSelect_Model::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -456,6 +454,7 @@ HRESULT CLoader::Load_Select()
 	{
 		return E_FAIL;
 	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Custom"), CCamera_Custom::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -474,7 +473,19 @@ HRESULT CLoader::Load_Custom()
 #pragma region Texture
 
 #pragma region UI
+	string strInputFilePath = "../Bin/Resources/Textures/UI/Custom";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_UI_Custom_") + entry.path().stem().wstring();
 
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_CUSTOM, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 #pragma endregion
 
 
@@ -490,7 +501,10 @@ HRESULT CLoader::Load_Custom()
 	m_strLoadingText = L"Custom : Loading Prototype";
 
 #pragma region Prototype
-	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Custom"), CCustom::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 	m_strLoadingText = L"Custom : Loading Complete!";
