@@ -7,7 +7,7 @@ BEGIN(Client)
 class CSelectDesc final : public COrthographicObject
 {
 public:
-	enum CHARACTER { WARRIOR, SORCERESS, ROGUE, PRIEST, CHARACTER_END };
+	enum CHARACTER { SORCERESS, WARRIOR, ROGUE, PRIEST, CHARACTER_END };
 	typedef struct tagSelectDesc
 	{
 		CHARACTER eCharacter;

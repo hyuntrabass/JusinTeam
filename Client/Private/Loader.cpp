@@ -436,12 +436,7 @@ HRESULT CLoader::Load_Select()
 	{
 		return E_FAIL;
 	}
-	/*
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Void05"), CVoid05::Create(m_pDevice, m_pContext))))
-	{
-		return E_FAIL;
-	}
-	*/
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Select_Model"), CSelect_Model::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -456,6 +451,7 @@ HRESULT CLoader::Load_Select()
 	{
 		return E_FAIL;
 	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Custom"), CCamera_Custom::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;

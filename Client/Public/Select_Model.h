@@ -7,7 +7,8 @@ BEGIN(Client)
 
 class CSelect_Model final : public CGameObject
 {
-
+public:
+	enum SELECTMODEL_ANIM { S_IDLE, S_MOTION, S_CANCEL, S_PICK_IDLE, S_END };
 
 private:
 	CSelect_Model(_dev pDevice, _context pContext);
@@ -31,8 +32,12 @@ private:
 	CModel* m_pModelCom = { nullptr };
 
 private:
+	SELECTMODEL_ANIM m_eCurAnimState{ S_IDLE };
 	wstring m_strModelTag = {};
 	ANIM_DESC m_Animation{};
+
+public:
+	void Change_AnimState(SELECTMODEL_ANIM eAnim);// { m_eCurAnimState = eAnim; }
 
 public:
 	static CSelect_Model* Create(_dev pDevice, _context pContext);
