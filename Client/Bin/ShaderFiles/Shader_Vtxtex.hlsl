@@ -8,6 +8,7 @@ texture2D g_SkillReadyTexture;
 texture2D g_TextureArray[12];
 int g_TexIndex;
 vector g_vColor;
+float g_fx;
 float g_fHpRatio;
 float g_fAlpha;
 int2 g_vNumSprite;
@@ -38,7 +39,22 @@ VS_OUT VS_Main(VS_IN Input)
 	
     return Output;
 }
-
+VS_OUT VS_Main_Mask(VS_IN Input)
+{
+    VS_OUT Output = (VS_OUT) 0;
+	
+    vector vPosition = mul(float4(Input.vPos, 1.f), g_WorldMatrix);
+    vPosition = mul(vPosition, g_ViewMatrix);
+    vPosition = mul(vPosition, g_ProjMatrix);
+	
+    float2 vTex = Input.vTex;
+    vTex.x += g_fx;
+    
+    Output.vPos = vPosition;
+    Output.vTex = vTex;
+	
+    return Output;
+}
 struct PS_IN
 {
     vector vPos : SV_Position;
@@ -248,6 +264,8 @@ PS_OUT PS_Main_Hell(PS_IN Input)
     return Output;
 }
 
+
+
 technique11 DefaultTechnique
 {
     pass UI
@@ -315,6 +333,18 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main();
     }
 
+    pass BackgroundMask
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main_Mask();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main();
+    }
     pass Mask_Texture
     {
         SetRasterizerState(RS_Default);

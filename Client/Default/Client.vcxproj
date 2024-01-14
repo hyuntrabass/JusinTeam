@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\BackGround.h" />
+    <ClInclude Include="..\Public\BackGround_Mask.h" />
     <ClInclude Include="..\Public\BodyPart.h" />
     <ClInclude Include="..\Public\Camera_Custom.h" />
     <ClInclude Include="..\Public\Camera_Debug.h" />
@@ -159,6 +160,8 @@
     <ClInclude Include="..\Public\Select_Model.h" />
     <ClInclude Include="..\Public\NameTag.h" />
     <ClInclude Include="..\Public\SelectDesc.h" />
+    <ClInclude Include="..\Public\Select_Npc.h" />
+    <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\TextButton.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Level_Custom.h" />
@@ -187,6 +190,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\BackGround.cpp" />
+    <ClCompile Include="..\Private\BackGround_Mask.cpp" />
     <ClCompile Include="..\Private\BodyPart.cpp" />
     <ClCompile Include="..\Private\Camera_Custom.cpp" />
     <ClCompile Include="..\Private\Camera_Debug.cpp" />
@@ -198,6 +202,8 @@
     <ClCompile Include="..\Private\Select_Model.cpp" />
     <ClCompile Include="..\Private\NameTag.cpp" />
     <ClCompile Include="..\Private\SelectDesc.cpp" />
+    <ClCompile Include="..\Private\Select_Npc.cpp" />
+    <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\TextButton.cpp" />
     <ClCompile Include="..\Private\Level_Custom.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
