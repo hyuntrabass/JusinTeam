@@ -19,6 +19,8 @@
 #include "Camera_Debug.h"
 #include "Terrain.h"
 
+#include "Effect_Dummy.h"
+
 // Monster
 #include "NPCvsMon.h"
 #include "Void05.h"

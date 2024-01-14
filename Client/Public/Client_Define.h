@@ -99,14 +99,6 @@ namespace Client
 		_float4 vLook{_float4(0.f, 0.f, 1.f, 0.f)};
 	};
 
-	struct EffectInfo
-	{
-		_float4 vColor{};
-		_float fScale{};
-		_float4 vPos{};
-		_uint iType{};
-	};
-
 	struct AttachmentInfo
 	{
 		CTransform* pParent{ nullptr };

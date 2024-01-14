@@ -1552,6 +1552,17 @@ inline void Vector4::Normalize(Vector4& result) const noexcept
     XMStoreFloat4(&result, X);
 }
 
+inline Vector4 Vector4::Get_Normalized() const noexcept
+{
+    using namespace DirectX;
+    XMVECTOR v1 = XMLoadFloat4(this);
+    XMVECTOR X = XMVector4Normalize(v1);
+    
+    Vector4 result;
+    XMStoreFloat4(&result, X);
+    return result;
+}
+
 inline void Vector4::Clamp(const Vector4& vmin, const Vector4& vmax) noexcept
 {
     using namespace DirectX;

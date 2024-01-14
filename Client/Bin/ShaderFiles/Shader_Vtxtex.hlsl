@@ -204,6 +204,9 @@ PS_OUT PS_Main_Sprite_MaskTexture(PS_IN Input)
     float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
     
     vector vMask = g_MaskTexture.Sample(LinearSampler, vUV);
+    vMask.r = max(vMask.r, vMask.g);
+    vMask.r = max(vMask.r, vMask.b);
+    
     if (vMask.r < 0.1f)
     {
         discard;
@@ -227,6 +230,9 @@ PS_OUT PS_Main_Sprite_MaskColor(PS_IN Input)
     float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
     
     vector vMask = g_MaskTexture.Sample(LinearSampler, vUV);
+    vMask.r = max(vMask.r, vMask.g);
+    vMask.r = max(vMask.r, vMask.b);
+    
     if (vMask.r < 0.1f)
     {
         discard;
