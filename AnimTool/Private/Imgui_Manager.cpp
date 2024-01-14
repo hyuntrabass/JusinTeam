@@ -90,7 +90,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 
 	if (m_eType == TYPE_MONSTER)
 	{
-		const char* szModelTag[5] = { "Hirokin", "Nott","Skjaldmaer","Skjaldmaer_A","Void05" };
+		const char* szModelTag[5] = { "Hirokin", "Nott","Skjaldmaer","Skjaldmaer_A","Goat" };
 		static const char* szCurrentModel = "Hirokin";
 		if (m_ePreType != m_eType)
 		{
@@ -273,6 +273,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				if (ImGui::ListBox("ANIMATION", &iCurrentAnimation, m_AnimationNames.data(), m_AnimationNames.size()))
 				{
 					m_AnimDesc.iAnimIndex = iCurrentAnimation;
+					m_AnimDesc.fInterpolationTime = 0.2f;
 					pCurrentModel->Set_Animation(m_AnimDesc);
 				}
 			}

@@ -195,7 +195,7 @@ HRESULT CLoader::Load_Tool()
 		return E_FAIL;
 	}
 	m_iNumMonsterModels++;
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Monster_4"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Void05/Mesh/Void05.hyuntraanimmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Monster_4"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Goat/Mesh/Goat.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}

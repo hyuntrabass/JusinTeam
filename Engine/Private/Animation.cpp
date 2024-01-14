@@ -1,5 +1,6 @@
 #include "Animation.h"
 #include "Channel.h"
+#include "Bone.h"
 
 CAnimation::CAnimation()
 {
@@ -84,6 +85,10 @@ void CAnimation::ResetFinished()
 {
 	m_isFinished = false;
 	m_fCurrentAnimPos = {};
+	for (auto& pChannel : m_Channels)
+	{
+		pChannel->Reset_CurrentKeyFrame();
+	}
 }
 
 void CAnimation::Set_CurrentAnimPos(_float fCurrentAnimPos)
@@ -135,6 +140,7 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 		{
 			m_fCurrentAnimPos = 0.f;
 			m_isInterpolating = true;
+			m_pPrevTransformation = new _mat[Bones.size()];
 		}
 		else
 		{
@@ -170,51 +176,92 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 		}
 	}
 
-	if (not m_isFinished || not isAnimChanged)
+	if (isAnimChanged)
+	{
+		Update_Lerp_TransformationMatrix(Bones, isAnimChanged, fInterpolationTime);
+	}
+	else if (not m_isFinished)
 	{
 		for (size_t i = 0; i < m_iNumChannels; i++)
 		{
 			m_Channels[i]->Update_TransformationMatrix(Bones, m_fCurrentAnimPos, isAnimChanged, fInterpolationTime);
 		}
 	}
-	else if (isAnimChanged)
-	{
-		Update_Lerp_TransformationMatrix();
-	}
 }
 
 void CAnimation::Update_Lerp_TransformationMatrix(const vector<class CBone*>& Bones, _bool& isAnimChanged, _float fInterpolationTime)
 {
-	m_iCurrentKeyFrame = 0;
-	if (m_PrevTransformation.m[3][3] == 0.f)
+	_vec4 vScaling{};
+	_vec4 vRotation{};
+	_vec4 vPosition{};
+
+	_uint iNumPrevTransformation{};
+
+	if (m_fCurrentAnimPos == 0.f)
 	{
-		m_PrevTransformation = Bones[m_iBoneIndex]->Get_Transformation();
+		for (auto& pBone : Bones)
+		{
+			m_pPrevTransformation[iNumPrevTransformation] = pBone->Get_Transformation();
+			++iNumPrevTransformation;/*
+			if (m_pPrevTransformation[iNumPrevTransformation].m[3][3] == 0.f)
+			{
+			}*/
+		}
+
+		iNumPrevTransformation = 0;
 	}
-	_mat PrevTransformation = XMLoadFloat4x4(&m_PrevTransformation);
-	_vec4 vSrcScaling{}, vDstScaling{};
-	_vec4 vSrcRotation{}, vDstRotation{};
-	_vec4 vSrcPotition{}, vDstPosition{};
-	_float fRatio = fCurrentAnimPos / fInterpolationTime;
 
-	vSrcScaling.x = PrevTransformation.Right().Length();
-	vSrcScaling.y = PrevTransformation.Up().Length();
-	vSrcScaling.z = PrevTransformation.Look().Length();
-	vSrcScaling.w = 0.f;
-	vDstScaling = XMLoadFloat4(&m_KeyFrames[0].vScaling);
-	vScaling = XMVectorLerp(vSrcScaling, vDstScaling, fRatio);
+	for (auto& pBone : Bones)
+	{
+		_mat PrevTransformation;
+		PrevTransformation = m_pPrevTransformation[iNumPrevTransformation];
+		const _char* szBoneName = pBone->Get_BoneName();
 
-	vSrcRotation = XMQuaternionRotationMatrix(PrevTransformation);
-	vDstRotation = XMLoadFloat4(&m_KeyFrames[0].vRotation);
-	vRotation = XMQuaternionSlerp(vSrcRotation, vDstRotation, fRatio);
+		_vec4 vSrcScaling{}, vDstScaling{};
+		_vec4 vSrcRotation{}, vDstRotation{};
+		_vec4 vSrcPotition{}, vDstPosition{};
+		_float fRatio = m_fCurrentAnimPos / fInterpolationTime;
 
-	vSrcPotition = _vec4(&PrevTransformation._41);
-	vDstPosition = m_KeyFrames[0].vPosition;
-	vPosition = XMVectorLerp(vSrcPotition, vDstPosition, fRatio);
+		vSrcScaling.x = PrevTransformation.Right().Length();
+		vSrcScaling.y = PrevTransformation.Up().Length();
+		vSrcScaling.z = PrevTransformation.Look().Length();
+		vSrcScaling.w = 0.f;
+		vSrcRotation = XMQuaternionRotationMatrix(PrevTransformation);
+		vSrcPotition = _vec4(&PrevTransformation._41);
 
-	if (fCurrentAnimPos >= fInterpolationTime)
+		KEYFRAME DestKeyFrame = {};
+
+		auto iter = find_if(m_Channels.begin(), m_Channels.end(), [&](CChannel* pChannel)->_bool {
+			if (0 == strcmp(pChannel->Get_ChannelName(), szBoneName))
+			{
+				DestKeyFrame = pChannel->Get_FirstKeyFrame();
+				return true;
+			}
+			DestKeyFrame.vScaling = vSrcScaling;
+			DestKeyFrame.vRotation = vSrcRotation;
+			DestKeyFrame.vPosition = vSrcPotition;
+			return false;
+			});
+
+		vDstScaling = XMLoadFloat4(&DestKeyFrame.vScaling);
+		vDstRotation = XMLoadFloat4(&DestKeyFrame.vRotation);
+		vDstPosition = XMLoadFloat4(&DestKeyFrame.vPosition);
+
+		vScaling = XMVectorLerp(vSrcScaling, vDstScaling, fRatio);
+		vRotation = XMQuaternionSlerp(vSrcRotation, vDstRotation, fRatio);
+		vPosition = XMVectorLerp(vSrcPotition, vDstPosition, fRatio);
+
+		_matrix TransformationMatrix = XMMatrixAffineTransformation(vScaling, XMVectorSet(0.f, 0.f, 0.f, 1.f), vRotation, vPosition);
+		
+		pBone->Set_Transformation(TransformationMatrix);
+
+		++iNumPrevTransformation;
+	}
+
+	if (m_fCurrentAnimPos >= fInterpolationTime)
 	{
 		isAnimChanged = false;
-		fCurrentAnimPos = 0.f;
+		m_fCurrentAnimPos = 0.f;
 	}
 }
 
