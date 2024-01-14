@@ -121,6 +121,9 @@
     <Filter Include="02.GameObjects\00.UI\01.SelectLevel\SelectDesc">
       <UniqueIdentifier>{7935ee7b-30e4-4d2e-a24a-01dc212f896a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.UI\02.Custom">
+      <UniqueIdentifier>{540b0107-db0e-4b8c-ad34-01867fef4ff0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -234,6 +237,9 @@
     <ClInclude Include="..\Public\Penguin.h">
       <Filter>02.GameObjects\04. Monster\Animal\01. Penguin</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Custom.h">
+      <Filter>02.GameObjects\00.UI\02.Custom</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -341,6 +347,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Penguin.cpp">
       <Filter>02.GameObjects\04. Monster\Animal\01. Penguin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Custom.cpp">
+      <Filter>02.GameObjects\00.UI\02.Custom</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

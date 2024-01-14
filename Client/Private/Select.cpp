@@ -187,7 +187,7 @@ HRESULT CSelect::Add_Parts()
 
 
 	CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
-	ColButtonDesc.eLevelID = LEVEL_SELECT;
+	ColButtonDesc.eLevelID = LEVEL_STATIC;
 	ColButtonDesc.fDepth = 0.5f;
 	ColButtonDesc.fAlpha = 0.8f;
 	ColButtonDesc.fFontSize = 0.35f;

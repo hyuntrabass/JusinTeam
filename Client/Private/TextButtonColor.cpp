@@ -91,7 +91,7 @@ HRESULT CTextButtonColor::Render()
 	m_pGameInstance->Render_Text(L"Font_UI", m_strText, _vec2(m_vPosition.x + m_vTextPosition.x + 0.1f, m_vPosition.y + m_vTextPosition.y), m_fFontSize, m_vTextColor);
 	m_pGameInstance->Render_Text(L"Font_UI", m_strText, _vec2(m_vPosition.x + m_vTextPosition.x - 0.1f, m_vPosition.y + m_vTextPosition.y), m_fFontSize, m_vTextColor);
 	m_pGameInstance->Render_Text(L"Font_UI", m_strText, _vec2(m_vPosition.x + m_vTextPosition.x, m_vPosition.y + m_vTextPosition.y + 0.1f), m_fFontSize, m_vTextColor);
-	m_pGameInstance->Render_Text(L"Font_UI", m_strText, _vec2(m_vPosition.x + m_vTextPosition.x, m_vPosition.y + m_vTextPosition.y - 0.1f), m_fFontSize, m_vTextColor);
+	m_pGameInstance->Render_Text(L"Font_UI", m_strText, _vec2(m_vPosition.x + m_vTextPosition.x, m_vPosition.y + m_vTextPosition.y - 1.f), m_fFontSize, m_vTextColor);
 	m_pGameInstance->Render_Text(L"Font_UI", m_strText, _vec2(m_vPosition.x + m_vTextPosition.x, m_vPosition.y + m_vTextPosition.y), m_fFontSize, m_vTextColor);
 
 	return S_OK;
@@ -159,6 +159,13 @@ HRESULT CTextButtonColor::Bind_ShaderResources()
 
 
 	return S_OK;
+}
+
+void CTextButtonColor::Set_Position(_vec2 vPos)
+{
+	m_fX = vPos.x;
+	m_fY = vPos.y;
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
 
 CTextButtonColor* CTextButtonColor::Create(_dev pDevice, _context pContext)

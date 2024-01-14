@@ -69,6 +69,8 @@ private:
 public:
 	const RECT& Get_Rect() const { return m_rcRect; }
 	void Set_Size(_float fSizeX, _float fSizeY) { m_fSizeX = fSizeX; m_fSizeY = fSizeY; }
+	const _vec2& Get_Position() const { return m_vPosition; }
+	void Set_Position(_vec2 vPos);
 
 public:
 	static CTextButtonColor* Create(_dev pDevice, _context pContext);
