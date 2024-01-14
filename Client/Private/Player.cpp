@@ -34,19 +34,12 @@ void CPlayer::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_K))
 	{
-		((CBodyPart*)m_vecParts[PT_HAIR])->Set_ModelIndex();
-		((CBodyPart*)m_vecParts[PT_HAIR])->Reset_Model();
-		((CBodyPart*)m_vecParts[PT_FACE])->Reset_Model();
-		((CBodyPart*)m_vecParts[2])->Reset_Model();
+		Change_Parts(PT_HAIR,1);
 	}
-
 
 	if (m_pGameInstance->Key_Down(DIK_L))
 	{
-		((CBodyPart*)m_vecParts[PT_FACE])->Set_ModelIndex();
-		((CBodyPart*)m_vecParts[PT_HAIR])->Reset_Model();
-		((CBodyPart*)m_vecParts[PT_FACE])->Reset_Model();
-		((CBodyPart*)m_vecParts[2])->Reset_Model();
+		Change_Parts(PT_FACE, 1);
 	}
 
 	for (int i = 0; i < m_vecParts.size(); i++)
@@ -108,6 +101,19 @@ HRESULT CPlayer::Add_Parts()
 	m_vecParts.push_back(pParts);
 
 	return S_OK;
+}
+
+void CPlayer::Change_Parts(PART_TYPE PartsType, _int ChangeIndex)
+{
+	((CBodyPart*)m_vecParts[PartsType])->Set_ModelIndex(ChangeIndex);
+	Reset_PartsAnim();
+}
+
+void CPlayer::Reset_PartsAnim()
+{
+	dynamic_cast<CBodyPart*>(m_vecParts[PT_HAIR])->Reset_Model();
+	dynamic_cast<CBodyPart*>(m_vecParts[PT_FACE])->Reset_Model();
+	dynamic_cast<CBodyPart*>(m_vecParts[PT_BODY])->Reset_Model();
 }
 
 HRESULT CPlayer::Add_Components()

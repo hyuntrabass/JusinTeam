@@ -95,15 +95,23 @@ namespace Client
 	struct ObjectInfo
 	{
 		wstring strPrototypeTag{};
-		_float4 vPos{_float4(0.f, 0.f, 0.f, 1.f)};
-		_float4 vLook{_float4(0.f, 0.f, 1.f, 0.f)};
+		_vec4 vPos{ _vec4(0.f, 0.f, 0.f, 1.f)};
+		_vec4 vLook{ _vec4(0.f, 0.f, 1.f, 0.f)};
 	};
+
+	struct UiInfo
+	{
+		_vec2 vPos{};
+		_vec2 vSize{};
+		wstring strTexture{};
+	};
+
 
 	struct AttachmentInfo
 	{
 		CTransform* pParent{ nullptr };
-		_float44* pSocket{ nullptr };
-		_float44 PivotMatrix{};
+		_mat* pSocket{ nullptr };
+		_mat PivotMatrix{};
 	};
 
 #pragma region Shader Passes
@@ -147,6 +155,7 @@ namespace Client
 		VTPass_UI_Color_Alpha,
 		VTPass_Button,
 		VTPass_Background,
+		VTPass_Background_Mask,
 		VTPass_Mask_Texture,
 		VTPass_Inv_Mask_Texture,
 		VTPass_Mask_Color,

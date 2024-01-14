@@ -9,6 +9,7 @@
 #include "Camera_Debug.h"
 #include "Camera_Debug.h"
 #include "Select_Model.h"
+#include "Select_Npc.h"
 
 #include "Custom.h"
 #include "SelectDesc.h"
@@ -19,6 +20,8 @@
 #include "Select_Map.h"
 #include "Camera_Debug.h"
 #include "Terrain.h"
+#include "Sky.h"
+#include "BackGround_Mask.h"
 
 #include "Effect_Dummy.h"
 

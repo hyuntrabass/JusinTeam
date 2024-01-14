@@ -1,0 +1,11 @@
+1. Static Only   2. Anim Only   3. All
+2
+Animation Models : Start Converting...
+Converting... npc vs mon.fbx
+Read File Succssefully
+Animation name list: 
+Take 001
+Animation Models : Convert Success!
+
+1 Animation Models
+are Successfully Converted as hyuntramesh!!
