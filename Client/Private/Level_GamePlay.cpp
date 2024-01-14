@@ -35,6 +35,18 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
+	if (FAILED(Ready_Rabbit()))
+	{
+		MSG_BOX("Failed to Ready Rabbit");
+		return E_FAIL;
+	}
+
+	if (FAILED(Ready_Penguin()))
+	{
+		MSG_BOX("Failed to Ready Penguin");
+		return E_FAIL;
+	}
+
 	if (FAILED(Ready_Map()))
 	{
 		MSG_BOX("Failed to Ready Map");
@@ -63,28 +75,6 @@ HRESULT CLevel_GamePlay::Ready_Camera()
 	{
 		return E_FAIL;
 	}
-
-	wstring strLayerTag = TEXT("Layer_Camera");
-
-	CCamera::Camera_Desc CamDesc;
-	CamDesc.vCameraPos = _float4(0.f, 5.f, -5.f, 1.f);
-	CamDesc.vFocusPos = _float4(0.f, 0.f, 0.f, 1.f);
-	CamDesc.fFovY = XMConvertToRadians(60.f);
-	CamDesc.fAspect = static_cast<_float>(g_iWinSizeX) / g_iWinSizeY;
-	CamDesc.fNear = 0.1f;
-	CamDesc.fFar = 1100.f;
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, strLayerTag, TEXT("Prototype_GameObject_Camera_Main"), &CamDesc)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, strLayerTag, TEXT("Prototype_GameObject_Camera_Debug"), &CamDesc)))
-	{
-		return E_FAIL;
-	}
-
-	m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
 
 	return S_OK;
 }
@@ -126,6 +116,26 @@ HRESULT CLevel_GamePlay::Ready_Map()
 HRESULT CLevel_GamePlay::Ready_Void05()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void05"), TEXT("Prototype_GameObject_Void05"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Rabbit()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Rabbit"), TEXT("Prototype_GameObject_Rabbit"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Penguin()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Penguin"), TEXT("Prototype_GameObject_Penguin"))))
 	{
 		return E_FAIL;
 	}

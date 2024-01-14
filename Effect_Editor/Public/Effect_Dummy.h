@@ -1,21 +1,19 @@
 #pragma once
 #include "Effect_Define.h"
 #include "BlendObject.h"
-
-enum class EffectType
-{
-	Particle,
-	Rect,
-	End
-};
+#include "Imgui_Manager.h"
 
 struct EffectInfo
 {
-	EffectType eType{};
+	_uint eType{};
+	_bool isSprite{};
 	CVIBuffer_Instancing::ParticleDesc PartiDesc{};
 	_uint iNumInstances{};
-	CShader** ppShader{ nullptr };
 	_float fLifeTime{};
+	_int iDiffTextureID{};
+	_int iMaskTextureID{};
+	_vec4 vColor{};
+	_uint iPassIndex{};
 };
 
 BEGIN(Effect)
@@ -37,12 +35,17 @@ public:
 private:
 	CVIBuffer_Instancing_Point* m_pParticle{ nullptr };
 	CVIBuffer_Rect* m_pRect{ nullptr };
+	CShader* m_pShaderCom{ nullptr };
+	CTexture* m_pMaskTextureCom{};
+	CTexture* m_pDiffTextureCom{};
+
+private:
 	EffectInfo m_Effect{};
 	_float m_fTimer{};
-	CShader** m_ppShaderCom{ nullptr };
 
 private:
 	HRESULT Add_Components();
+	HRESULT Bind_ShaderResources();
 
 public:
 	static CEffect_Dummy* Create(_dev pDevice, _context pContext);

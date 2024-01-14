@@ -277,7 +277,6 @@ HRESULT CEffectApp::Ready_Prototype_GameObject()
 			m_TextureList.push_back(entry.path().stem().string());
 		}
 	}
-
 #pragma region Model
 	_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(90.f));
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/StaticMesh/Common/Mesh/SM_EFF_Sphere_02.mo.hyuntrastatmesh", false, Pivot))))

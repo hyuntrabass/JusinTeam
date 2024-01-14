@@ -43,9 +43,6 @@
     <Filter Include="02.GameObjects\01.Camera\Main">
       <UniqueIdentifier>{dc2fe401-0572-4995-b515-1034a0826de4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\06.Dummy">
-      <UniqueIdentifier>{1d422567-eac4-4b76-b5d4-85fd2f25bbb0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03.ImGui">
       <UniqueIdentifier>{0bab56f4-7b01-4cb0-9dc6-c9ad81fbcca5}</UniqueIdentifier>
     </Filter>
@@ -54,6 +51,12 @@
     </Filter>
     <Filter Include="03.ImGui\ImGui">
       <UniqueIdentifier>{67fbdbe7-fa8b-4117-8393-70b632abde0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Map">
+      <UniqueIdentifier>{f75f0902-c959-40da-9489-38ba53db547e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\03.Dummy">
+      <UniqueIdentifier>{1d422567-eac4-4b76-b5d4-85fd2f25bbb0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -139,7 +142,10 @@
       <Filter>02.GameObjects\02.Terrain</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Dummy.h">
-      <Filter>02.GameObjects\06.Dummy</Filter>
+      <Filter>02.GameObjects\03.Dummy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Map.h">
+      <Filter>02.GameObjects\04.Map</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -207,7 +213,10 @@
       <Filter>02.GameObjects\02.Terrain</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Dummy.cpp">
-      <Filter>02.GameObjects\06.Dummy</Filter>
+      <Filter>02.GameObjects\03.Dummy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Map.cpp">
+      <Filter>02.GameObjects\04.Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

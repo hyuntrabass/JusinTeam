@@ -18,32 +18,53 @@ HRESULT CSelectDesc::Init_Prototype()
 
 HRESULT CSelectDesc::Init(void* pArg)
 {
+
+
+	m_eCharacter = ((SELECT_DESC*)pArg)->eCharacter;
+	switch (m_eCharacter)
+	{
+	case WARRIOR:
+		m_strTexture = TEXT("Prototype_Component_Texture_UI_Select_Warrior");
+		break;
+	case SORCERESS:
+		m_strTexture = TEXT("Prototype_Component_Texture_UI_Select_Soceress");
+		break;
+	case ROGUE:
+		m_strTexture = TEXT("Prototype_Component_Texture_UI_Select_Priest");
+		break;
+	case PRIEST:
+		m_strTexture = TEXT("Prototype_Component_Texture_UI_Select_Rogue");
+		break;
+	}
+
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
-
-	m_eCharacter = ((SELECT_DESC*)pArg)->eCharacter;
-
-	/*
 	
-	m_fSizeX = 280.f;
-	m_fSizeY = 20.f;
+	m_fSizeX = 513.f;
+	m_fSizeY = 513.f;
 
-	m_fX = g_iWinSizeX >> 1;
-	m_fY = 80.f;
+	m_fX = m_fSizeX / 2.f - 10.f;
+	m_fY = m_fSizeX / 2.f + 20.f;
 
 	m_fDepth = 0.5f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
-	*/	
-	m_fDepth = 0.5f;
+
 	return S_OK;
 }
 
 void CSelectDesc::Tick(_float fTimeDelta)
 {
-	
+	if (m_fX < m_fSizeX / 2.f)
+	{
+		m_fX += fTimeDelta * 50.f;
+		__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+	}
+
+	m_fAlpha += fTimeDelta * 2.f;
+
 }
 
 void CSelectDesc::Late_Tick(_float fTimeDelta)
@@ -53,41 +74,21 @@ void CSelectDesc::Late_Tick(_float fTimeDelta)
 
 HRESULT CSelectDesc::Render()
 {
-	_float fStartX = 20.f;
-
-	switch (m_eCharacter)
+	if (FAILED(Bind_ShaderResources()))
 	{
-	case WARRIOR:
-	{
-		m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("워리어"), _vec2(fStartX, 100.f), 0.5f, _vec4(1.f, 1.f, 1.f, 1.f), 0.f, true);
-		m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("| 정의의 선봉장"), _vec2(fStartX + 40.f, 100.f), 0.3f, _vec4(0.2f, 0.2f, 0.8f, 1.f), 0.f, true);
-		m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("높은 방어력과 체력을 바탕으로"), _vec2(fStartX, 180.f), 0.3f, _vec4(1.f, 1.f, 1.f, 1.f), 0.f, true);
-		m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("아군을 보호하며 적을 제어하는 클래스"), _vec2(fStartX, 200.f), 0.3f, _vec4(1.f, 1.f, 1.f, 1.f), 0.f, true);
-	}
-	break;
-	case SORCERESS:
-	{
-
-	}
-	break;
-	case ROGUE:
-	{
-
-	}
-	break;
-	case PRIEST:
-	{
-
-	}
-	break;
-
+		return E_FAIL;
 	}
 
-	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("난이도"), _vec2(fStartX, 260.f), 0.3f, _vec4(1.f, 1.f, 1.f, 1.f), 0.f, true);
-	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("공격력"), _vec2(fStartX, 300.f), 0.3f, _vec4(1.f, 1.f, 1.f, 1.f), 0.f, true);
-	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("방어력"), _vec2(fStartX, 320.f), 0.3f, _vec4(1.f, 1.f, 1.f, 1.f), 0.f, true);
-	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("아군 보호"), _vec2(fStartX, 340.f), 0.3f, _vec4(1.f, 1.f, 1.f, 1.f), 0.f, true);
-	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("적군 제어"), _vec2(fStartX, 360.f), 0.3f, _vec4(1.f, 1.f, 1.f, 1.f), 0.f, true);
+	if (FAILED(m_pShaderCom->Begin(VTPass_UI_Alpha)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pVIBufferCom->Render()))
+	{
+		return E_FAIL;
+	}
+
 
 	return S_OK;
 }
@@ -99,12 +100,45 @@ HRESULT CSelectDesc::Add_Components()
 		return E_FAIL;
 	}
 
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_SELECT, m_strTexture, TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	{
+		return E_FAIL;
+	}
 	return S_OK;
 }
 
 HRESULT CSelectDesc::Bind_ShaderResources()
 {
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
+		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
+	{
+		return E_FAIL;
+	}
 
+	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	{
+		return E_FAIL;
+	}
+	_float fAlpha = Lerp(0.f, 1.f, m_fAlpha);
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &fAlpha, sizeof(_float))))
+	{
+		return E_FAIL;
+	}
 	return S_OK;
 }
 
@@ -139,6 +173,9 @@ void CSelectDesc::Free()
 	__super::Free();
 
 
+	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);
+	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pVIBufferCom);
 
 }

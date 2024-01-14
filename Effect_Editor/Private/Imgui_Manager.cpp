@@ -71,7 +71,17 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 	}
 
-	InputFloat("Effect Life", &m_fEffectLifeTime);
+	static _bool hasLifeTime{};
+	Checkbox("Limited Life Time", &hasLifeTime);
+
+	if (hasLifeTime)
+	{
+		InputFloat("Effect Life", &m_fEffectLifeTime);
+	}
+	else
+	{
+		m_fEffectLifeTime = -1.f;
+	}
 
 	static _int iIsColor{};
 
@@ -79,6 +89,48 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	RadioButton("Texture", &iIsColor, 0); SameLine();
 	RadioButton("Color", &iIsColor, 1);
 	Checkbox("Mask", &m_hasMask);
+
+	static _int iPassIndex{};
+
+
+	const _char* szInstancingPasses[InstPass_End]
+	{
+		"InstPass_Particle_TextureMask",
+		"InstPass_Particle_Sprite",
+		"InstPass_Particle_MaskColor",
+	};
+
+	const _char* szVTPasses[VTPass_End]
+	{
+		"VTPass_UI",
+		"VTPass_UI_Alpha",
+		"VTPass_UI_Color_Alpha",
+		"VTPass_Button",
+		"VTPass_Background",
+		"VTPass_Mask_Texture",
+		"VTPass_Inv_Mask_Texture",
+		"VTPass_Mask_Color",
+		"VTPass_Mask_ColorAlpha",
+		"VTPass_HP",
+		"VTPass_Hit",
+		"VTPass_Sprite",
+		"VTPass_SpriteMaskTexture",
+		"VTPass_SpriteMaskColor",
+		"VTPass_Hell",
+	};
+
+	SeparatorText("Particle Information");
+
+	if (m_iCurrent_Type == ET_PARTICLE)
+	{
+		ListBox("Pass##1", &iPassIndex, szInstancingPasses, InstPass_End);
+	}
+	else
+	{
+		ListBox("Pass##2", &iPassIndex, szVTPasses, VTPass_End);
+	}
+
+	NewLine();
 
 	if (iIsColor == 0)
 	{
@@ -97,12 +149,16 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		SeparatorText("Mask Texture");
 		ListBox("Mask Texture", &m_iSelected_MaskTexture, m_pItemList_Texture, m_iNumTextures);
 		Image(reinterpret_cast<void*>(m_pTextures[m_iSelected_MaskTexture]->Get_SRV()), ImVec2(128.f, 128.f));
+		Info.iMaskTextureID = m_iSelected_MaskTexture;
+	}
+	else
+	{
+		Info.iMaskTextureID = -1;
 	}
 
 	if (m_iCurrent_Type == ET_PARTICLE)
 	{
 		SeparatorText("Particle Information");
-		Info.eType = EffectType::Particle;
 		static _bool isLoop{ true };
 		Checkbox("Loop", &isLoop);
 
@@ -167,13 +223,10 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		Info.PartiDesc.vLifeTime = m_ParticleInfo.vLifeTime;
 		Info.PartiDesc.vScaleRange = m_ParticleInfo.vScaleRange;
 		Info.PartiDesc.vSpeedRange = m_ParticleInfo.vSpeedRange;
-		Info.ppShader = &m_pInstanceShader;
 	}
 	else
 	{
 		SeparatorText("Rect Information");
-
-		Info.ppShader = &m_pVtxTexShader;
 	}
 
 	End();
@@ -182,9 +235,23 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	{
 		m_pEffect->Tick(fTimeDelta);
 	}
-	if (not m_pEffect or m_pEffect->isDead())
+	if (not m_pEffect or m_pEffect->isDead() or m_pGameInstance->Key_Down(DIK_RETURN) or m_pGameInstance->Key_Down(DIK_E))
 	{
 		Safe_Release(m_pEffect);
+
+		Info.eType = m_iCurrent_Type;
+		Info.iPassIndex = iPassIndex;
+		if (m_hasDiffTexture)
+		{
+			Info.iDiffTextureID = m_iSelected_Texture;
+		}
+		else
+		{
+			Info.iDiffTextureID = -1;
+			Info.vColor = m_vColor;
+		}
+
+
 		m_pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Info));
 	}
 }
@@ -238,18 +305,18 @@ HRESULT CImgui_Manager::Ready_Layers()
 		return E_FAIL;
 	}
 
-	CVIBuffer_Instancing::ParticleDesc Desc{};
-	m_pVtxTexShader = dynamic_cast<CShader*>(m_pGameInstance->Clone_Component(LEVEL_STATIC, L"Prototype_Component_Shader_VtxTex"));
-	if (not m_pVtxTexShader)
-	{
-		return E_FAIL;
-	}
+	//CVIBuffer_Instancing::ParticleDesc Desc{};
+	//m_pVtxTexShader = dynamic_cast<CShader*>(m_pGameInstance->Clone_Component(LEVEL_STATIC, L"Prototype_Component_Shader_VtxTex"));
+	//if (not m_pVtxTexShader)
+	//{
+	//	return E_FAIL;
+	//}
 
-	m_pInstanceShader = dynamic_cast<CShader*>(m_pGameInstance->Clone_Component(LEVEL_STATIC, L"Prototype_Component_Shader_VtxTex_Instancing"));
-	if (not m_pInstanceShader)
-	{
-		return E_FAIL;
-	}
+	//m_pInstanceShader = dynamic_cast<CShader*>(m_pGameInstance->Clone_Component(LEVEL_STATIC, L"Prototype_Component_Shader_VtxTex_Instancing"));
+	//if (not m_pInstanceShader)
+	//{
+	//	return E_FAIL;
+	//}
 
 	//m_pGameInstance->Clone_Component(LEVEL_STATIC, L"Prototype_Component_VIBuffer_Rect", &m_pVIBuffer_Rect);
 	//m_pGameInstance->Clone_Component(LEVEL_STATIC, L"Prototype_Component_VIBuffer_Instancing_Point", &m_pVIBuffer_Instancing);
@@ -265,53 +332,16 @@ HRESULT CImgui_Manager::Ready_Layers()
 
 HRESULT CImgui_Manager::Render_Effect()
 {
-	CShader* pShader{};
-	if (m_iShaderType == ET_PARTICLE)
-	{
-		pShader = m_pInstanceShader;
-	}
-	else
-	{
-		pShader = m_pVtxTexShader;
-	}
+	//CShader* pShader{};
+	//if (m_iShaderType == ET_PARTICLE)
+	//{
+	//	pShader = m_pInstanceShader;
+	//}
+	//else
+	//{
+	//	pShader = m_pVtxTexShader;
+	//}
 
-	if (m_hasMask)
-	{
-		if (FAILED(m_pTextures[m_iSelected_MaskTexture]->Bind_ShaderResource(pShader, "g_MaskTexture")))
-		{
-			return E_FAIL;
-		}
-	}
-
-	if (m_hasDiffTexture)
-	{
-		if (FAILED(m_pTextures[m_iSelected_Texture]->Bind_ShaderResource(pShader, "g_Texture")))
-		{
-			return E_FAIL;
-		}
-	}
-	else
-	{
-		if (FAILED(pShader->Bind_RawValue("g_vColor", &m_vColor, sizeof m_vColor)))
-		{
-			return E_FAIL;
-		}
-	}
-
-	if (FAILED(pShader->Bind_RawValue("g_CamPos", &m_pGameInstance->Get_CameraPos(), sizeof _vec4)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(pShader->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(pShader->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
-	{
-		return E_FAIL;
-	}
 
 	//pShader->Begin(InstancingPass::InstPass_Particle_MaskColor);
 
@@ -338,8 +368,8 @@ void CImgui_Manager::Free()
 	}
 	Safe_Delete_Array(m_pTextures);
 
-	Safe_Release(m_pInstanceShader);
-	Safe_Release(m_pVtxTexShader);
+	//Safe_Release(m_pInstanceShader);
+	//Safe_Release(m_pVtxTexShader);
 	Safe_Delete_Array(m_pItemList_Texture);
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);

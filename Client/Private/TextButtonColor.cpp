@@ -50,11 +50,19 @@ HRESULT CTextButtonColor::Init(void* pArg)
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
+	m_rcRect = {
+		  (LONG)(m_vPosition.x - m_fSizeX * 0.5f),
+		  (LONG)(m_vPosition.y - m_fSizeY * 0.5f),
+		  (LONG)(m_vPosition.x + m_fSizeX * 0.5f),
+		  (LONG)(m_vPosition.y + m_fSizeY * 0.5f)
+	};
+
 	return S_OK;
 }
 
 void CTextButtonColor::Tick(_float fTimeDelta)
 {
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
 
 void CTextButtonColor::Late_Tick(_float fTimeDelta)
@@ -80,7 +88,11 @@ HRESULT CTextButtonColor::Render()
 		return E_FAIL;
 	}
 
-	m_pGameInstance->Render_Text(L"Font_Dialogue", m_strText, _vec2(m_vPosition.x + m_vTextPosition.x, m_vPosition.y + m_vTextPosition.y), m_fFontSize, m_vTextColor);
+	m_pGameInstance->Render_Text(L"Font_UI", m_strText, _vec2(m_vPosition.x + m_vTextPosition.x + 0.1f, m_vPosition.y + m_vTextPosition.y), m_fFontSize, m_vTextColor);
+	m_pGameInstance->Render_Text(L"Font_UI", m_strText, _vec2(m_vPosition.x + m_vTextPosition.x - 0.1f, m_vPosition.y + m_vTextPosition.y), m_fFontSize, m_vTextColor);
+	m_pGameInstance->Render_Text(L"Font_UI", m_strText, _vec2(m_vPosition.x + m_vTextPosition.x, m_vPosition.y + m_vTextPosition.y + 0.1f), m_fFontSize, m_vTextColor);
+	m_pGameInstance->Render_Text(L"Font_UI", m_strText, _vec2(m_vPosition.x + m_vTextPosition.x, m_vPosition.y + m_vTextPosition.y - 0.1f), m_fFontSize, m_vTextColor);
+	m_pGameInstance->Render_Text(L"Font_UI", m_strText, _vec2(m_vPosition.x + m_vTextPosition.x, m_vPosition.y + m_vTextPosition.y), m_fFontSize, m_vTextColor);
 
 	return S_OK;
 }
@@ -139,7 +151,7 @@ HRESULT CTextButtonColor::Bind_ShaderResources()
 
 	if (m_strTexture != TEXT(""))
 	{
-		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
 		{
 			return E_FAIL;
 		}

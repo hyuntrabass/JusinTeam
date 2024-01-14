@@ -39,10 +39,6 @@ public:
 
 public:
 	HRESULT Add_Parts();
-private:
-	CRenderer* m_pRendererCom{ nullptr };
-	CShader* m_pShaderCom{ nullptr };
-	CModel* m_pModelCom{ nullptr };
 
 private:
 	vector<CGameObject*> m_vecParts{};
