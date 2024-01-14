@@ -116,13 +116,13 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	}
 	else if (m_eType == TYPE_PLAYER)
 	{
-		const char* szModelTag[4] = { "Select_Priest","Select_Rogue","Select_Sorceress","Select_Warrior" };
-		static const char* szCurrentModel = "Select_Priest";
+		const char* szModelTag[4] = { "Select_Rogue","Select_Sorceress","Select_Warrior","Select_Priest" };
+		static const char* szCurrentModel = "Select_Rogue";
 		if (m_ePreType != m_eType)
 		{
 			m_ePreType = m_eType;
 			m_iCurrentModelIndex = 0;
-			szCurrentModel = "Select_Priest";
+			szCurrentModel = "Select_Rogue";
 		}
 
 		if (ImGui::BeginCombo("LIST", szCurrentModel))
@@ -273,7 +273,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				if (ImGui::ListBox("ANIMATION", &iCurrentAnimation, m_AnimationNames.data(), m_AnimationNames.size()))
 				{
 					m_AnimDesc.iAnimIndex = iCurrentAnimation;
-					m_AnimDesc.fInterpolationTime = 0.2f;
 					pCurrentModel->Set_Animation(m_AnimDesc);
 				}
 			}

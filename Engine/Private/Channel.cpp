@@ -157,15 +157,25 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 
 		vSrcScaling = XMLoadFloat4(&m_KeyFrames[m_iCurrentKeyFrame].vScaling);
 		vDstScaling = XMLoadFloat4(&m_DestKeyFrame.vScaling);
-		vScaling = XMVectorLerp(vSrcScaling, vDstScaling, fRatio);
 
 		vSrcRotation = XMLoadFloat4(&m_KeyFrames[m_iCurrentKeyFrame].vRotation);
 		vDstRotation = XMLoadFloat4(&m_DestKeyFrame.vRotation);
-		vRotation = XMQuaternionSlerp(vSrcRotation, vDstRotation, fRatio);
 
 		vSrcPotition = XMLoadFloat4(&m_KeyFrames[m_iCurrentKeyFrame].vPosition);
 		vDstPosition = XMLoadFloat4(&m_DestKeyFrame.vPosition);
-		vPosition = XMVectorLerp(vSrcPotition, vDstPosition, fRatio);
+
+		if (m_IsBack)
+		{
+			vScaling = XMVectorLerp(vDstScaling, vSrcScaling, fRatio);
+			vRotation = XMQuaternionSlerp(vDstRotation, vSrcRotation, fRatio);
+			vPosition = XMVectorLerp(vDstPosition, vSrcPotition, fRatio);
+		}
+		else
+		{
+			vScaling = XMVectorLerp(vSrcScaling, vDstScaling, fRatio);
+			vRotation = XMQuaternionSlerp(vSrcRotation, vDstRotation, fRatio);
+			vPosition = XMVectorLerp(vSrcPotition, vDstPosition, fRatio);
+		}
 
 		/*m_PrevTransformation = {};
 		while (fCurrentAnimPos >= m_KeyFrames[m_iCurrentKeyFrame + 1].fTime)
