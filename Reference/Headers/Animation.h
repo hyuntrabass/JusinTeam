@@ -15,6 +15,10 @@ public:
 	const _bool& IsFinished() const;
 	const _float Get_CurrentAnimPos() const;
 	const _float Get_Duration() const;
+	const _uint Get_NumTrigger() const;
+	vector<_float>& Get_Triggers();
+	void Add_Trigger(_float fAnimPos);
+	void Reset_Trigger();
 
 	void ResetFinished();
 	void Set_CurrentAnimPos(_float fCurrentAnimPos);
@@ -37,6 +41,9 @@ private:
 
 	_bool m_isFinished{};
 	_bool m_isInterpolating{};
+
+	_uint m_iNumTriggers{};
+	vector<_float> m_Triggers;
 
 public:
 	static CAnimation* Create(ifstream& ModelFile);

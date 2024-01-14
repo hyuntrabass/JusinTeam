@@ -30,7 +30,15 @@ namespace Client
 	{
 		CM_DEBUG,
 		CM_MAIN,
+		CM_SELECT, 
+		CM_CUSTOM,
 		CM_END
+	};
+	enum CAMERA_STATE
+	{
+		CM_DEFAULT,
+		CM_ZOOM,
+		CM_STATEEND
 	};
 
 	enum SoundChannel
@@ -154,8 +162,10 @@ namespace Client
 		VTPass_HP,
 		VTPass_Hit,
 		VTPass_Sprite,
+		VTPass_SpriteMaskTexture,
 		VTPass_SpriteMaskColor,
 		VTPass_Hell,
+		VTPass_End
 	};
 
 	enum InstancingPass
@@ -163,6 +173,7 @@ namespace Client
 		InstPass_Particle_TextureMask,
 		InstPass_Particle_Sprite,
 		InstPass_Particle_MaskColor,
+		InstPass_End,
 	};
 #pragma endregion
 

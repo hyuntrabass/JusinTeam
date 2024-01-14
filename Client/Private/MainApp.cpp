@@ -57,7 +57,7 @@ HRESULT CMainApp::Init()
 		return E_FAIL;
 	}
 
-
+	m_pGameInstance->Initialize_Level(LEVEL_END);
 
 
 	return S_OK;
@@ -195,6 +195,7 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 	}
 
 	//MakeSpriteFont "HYÇìµå¶óÀÎM" /FontSize:30 /FastPack /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 138ex.spritefont
+	//MakeSpriteFont "³ª´®°íµñ ExtraBold" /FontSize:30 /FastPack /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 NanumBold.spritefont
 	if (FAILED(m_pGameInstance->Add_Font(L"Font_Malang", L"../../Client/Bin/Resources/Font/Naruto.spritefont")))
 	{
 		return E_FAIL;
@@ -206,6 +207,11 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Font(L"Font_Dialogue", L"../../Client/Bin/Resources/Font/NarutoDialogue.spritefont")))
+	{
+		return E_FAIL;
+	}
+	
+	if (FAILED(m_pGameInstance->Add_Font(L"Font_UI", L"../../Client/Bin/Resources/Font/NanumGothic.spritefont")))
 	{
 		return E_FAIL;
 	}

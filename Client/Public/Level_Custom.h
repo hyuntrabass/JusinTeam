@@ -18,8 +18,6 @@ public:
 private:
 	_bool m_hasBGMStarted{};
 
-private:
-	HRESULT Ready_Logo();
 
 public:
 	static CLevel_Custom* Create(_dev pDevice, _context pContext);

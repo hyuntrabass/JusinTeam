@@ -44,24 +44,10 @@ HRESULT CBackGround::Init(void* pArg)
 
 void CBackGround::Tick(_float fTimeDelta)
 {
-	/*
-	m_fAlpha += fTimeDelta * m_fDir;
-	if (m_fAlpha < 0.f)
-	{
-		m_fDir = 1.f;
-	}
+	
 
-	if (m_fAlpha >= 1.f)
-	{
-		m_fDuration += fTimeDelta;
-		if (m_fDuration >= 1.5f)
-		{
-			m_fDuration = 0.f;
-			m_fDir = -1.f;
-			m_fAlpha = 1.f;
-		}
-	}
-	*/
+	// += fTimeDelta * 2.f;
+	
 }
 
 void CBackGround::Late_Tick(_float fTimeDelta)

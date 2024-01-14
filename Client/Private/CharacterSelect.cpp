@@ -44,7 +44,7 @@ void CCharacterSelect::Tick(_float fTimeDelta)
 		{
 		case NONALPHA:
 		{
-			m_fAlpha += fTimeDelta;
+			m_fAlpha += fTimeDelta * 2.f;
 			if (m_fAlpha >= 1.f)
 			{
 				m_fAlpha = 1.f;
@@ -54,7 +54,7 @@ void CCharacterSelect::Tick(_float fTimeDelta)
 		break;
 		case ALPHA:
 		{
-			m_fAlpha -= fTimeDelta;
+			m_fAlpha -= fTimeDelta * 2.f;
 			if (m_fAlpha <= 0.f)
 			{
 				m_fAlpha = 0.f;
@@ -144,7 +144,7 @@ HRESULT CCharacterSelect::Bind_ShaderResources()
 	return S_OK;
 }
 
-void CCharacterSelect::Set_Actice_Alpha(STATE eState)
+void CCharacterSelect::Set_Active_Alpha(STATE eState)
 {
 	if (eState == NONALPHA)
 	{

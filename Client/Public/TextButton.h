@@ -12,6 +12,7 @@ public:
 		_float  fDepth{1.f};
 		_vec2	vSize;
 		_vec2	vPosition;
+		_vec4	vColor{ _vec4(1.f, 1.f, 1.f, 1.f) };
 
 		_float	fFontSize;
 		_vec2	vTextPosition;
@@ -19,6 +20,7 @@ public:
 		_vec4	vTextColor{ _vec4(1.f, 1.f, 1.f, 1.f) };
 
 		wstring strTexture;
+		wstring strMaskTexture;
 
 		LEVEL_ID eLevelID;
 	}TEXTBUTTON_DESC;
@@ -58,6 +60,13 @@ private:
 	wstring m_strTexture;
 
 	LEVEL_ID m_eLevel;
+
+	RECT				m_rcRect{};
+
+public:
+	const RECT& Get_Rect() const { return m_rcRect; }
+
+
 public:
 	static CTextButton* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;

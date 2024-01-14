@@ -23,6 +23,8 @@ private:
 
 	// Monster
 	HRESULT Ready_Void05();
+	HRESULT Ready_Rabbit();
+	HRESULT Ready_Penguin();
 
 public:
 	static CLevel_GamePlay* Create(_dev pDevice, _context pContext);

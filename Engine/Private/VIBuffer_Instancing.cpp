@@ -1,4 +1,5 @@
 #include "VIBuffer_Instancing.h"
+#include "GameInstance.h"
 
 CVIBuffer_Instancing::CVIBuffer_Instancing(_dev pDevice, _context pContext)
 	: CVIBuffer(pDevice, pContext)
@@ -25,7 +26,7 @@ HRESULT CVIBuffer_Instancing::Init(void* pArg)
 	return S_OK;
 }
 
-void CVIBuffer_Instancing::Update(_float fTimeDelta, _int iNumUse)
+void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNumUse)
 {
 	if (iNumUse == -1)
 	{
@@ -34,6 +35,8 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _int iNumUse)
 	D3D11_MAPPED_SUBRESOURCE SubResource{};
 
 	m_pContext->Map(m_pVBInstance, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
+
+	list<VTXINSTANCING> VertexList{};
 
 	for (size_t i = 0; i < m_iNumInstances; i++)
 	{
@@ -57,9 +60,25 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _int iNumUse)
 			}
 			else
 			{
-				pVertex->vPos = _float4(0.f, -100.f, 0.f, 1.f);
+				pVertex->vPos = _float4(0.f, -10000.f, 0.f, 1.f);
 			}
 		}
+		VertexList.push_back(*pVertex);
+	}
+
+	_vec4 vCamPos = CGameInstance::Get_Instance()->Get_CameraPos();
+
+	VertexList.sort([&WorldMatrix, &vCamPos](VTXINSTANCING pSrc, VTXINSTANCING pDst)
+	{
+		_float fSrcDist = (_vec4::Transform(_vec4(pSrc.vPos), WorldMatrix) - vCamPos).Length();
+		_float fDstDist = (_vec4::Transform(_vec4(pDst.vPos), WorldMatrix) - vCamPos).Length();
+		return fSrcDist > fDstDist;
+	});
+
+	for (size_t i = 0; i < iNumUse; i++)
+	{
+		reinterpret_cast<VTXINSTANCING*>(SubResource.pData)[i] = VertexList.front();
+		VertexList.pop_front();
 	}
 
 	m_pContext->Unmap(m_pVBInstance, 0);

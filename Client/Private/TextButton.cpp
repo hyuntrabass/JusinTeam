@@ -18,10 +18,6 @@ HRESULT CTextButton::Init_Prototype()
 
 HRESULT CTextButton::Init(void* pArg)
 {
-	if (FAILED(Add_Components()))
-	{
-		return E_FAIL;
-	}
 
 	m_fDepth = ((TEXTBUTTON_DESC*)pArg)->fDepth;
 	m_vSize = ((TEXTBUTTON_DESC*)pArg)->vSize;
@@ -35,19 +31,32 @@ HRESULT CTextButton::Init(void* pArg)
 
 	m_strTexture = ((TEXTBUTTON_DESC*)pArg)->strTexture;
 
+	if (FAILED(Add_Components()))
+	{
+		return E_FAIL;
+	}
+
+
 	m_fSizeX = m_vSize.x;
 	m_fSizeY = m_vSize.y;
 
 	m_fX = m_vPosition.x;
 	m_fY = m_vPosition.y;
 
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+
+	m_rcRect = {
+		  (LONG)(m_vPosition.x - m_fSizeX * 0.5f),
+		  (LONG)(m_vPosition.y - m_fSizeY * 0.5f),
+		  (LONG)(m_vPosition.x + m_fSizeX * 0.5f),
+		  (LONG)(m_vPosition.y + m_fSizeY * 0.5f)
+	};
 
 	return S_OK;
 }
 
 void CTextButton::Tick(_float fTimeDelta)
 {
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
 
 void CTextButton::Late_Tick(_float fTimeDelta)
@@ -73,7 +82,11 @@ HRESULT CTextButton::Render()
 		return E_FAIL;
 	}
 
-	m_pGameInstance->Render_Text(L"Font_Dialogue", m_strText, _vec2(m_vPosition.x + m_vTextPosition.x, m_vPosition.y + m_vTextPosition.y), m_fFontSize, m_vTextColor);
+	m_pGameInstance->Render_Text(L"Font_UI", m_strText, _vec2(m_vPosition.x + m_vTextPosition.x + 0.1f, m_vPosition.y + m_vTextPosition.y), m_fFontSize, m_vTextColor);
+	m_pGameInstance->Render_Text(L"Font_UI", m_strText, _vec2(m_vPosition.x + m_vTextPosition.x - 0.1f, m_vPosition.y + m_vTextPosition.y), m_fFontSize, m_vTextColor);
+	m_pGameInstance->Render_Text(L"Font_UI", m_strText, _vec2(m_vPosition.x + m_vTextPosition.x, m_vPosition.y + m_vTextPosition.y + 0.1f), m_fFontSize, m_vTextColor);
+	m_pGameInstance->Render_Text(L"Font_UI", m_strText, _vec2(m_vPosition.x + m_vTextPosition.x, m_vPosition.y + m_vTextPosition.y - 0.1f), m_fFontSize, m_vTextColor);
+	m_pGameInstance->Render_Text(L"Font_UI", m_strText, _vec2(m_vPosition.x + m_vTextPosition.x, m_vPosition.y + m_vTextPosition.y), m_fFontSize, m_vTextColor);
 
 	return S_OK;
 }
@@ -93,11 +106,11 @@ HRESULT CTextButton::Add_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom))))
 	{
 		return E_FAIL;
-	}
+	} 
 
 	if (m_strTexture != TEXT(""))
 	{
-		if (FAILED(__super::Add_Component(m_eLevel, TEXT("Prototype_Component_Texture_UI_Logo_Bg_DungeonResult"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+		if (FAILED(__super::Add_Component(m_eLevel, m_strTexture, TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 		{
 			return E_FAIL;
 		}

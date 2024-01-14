@@ -32,6 +32,7 @@ struct DummyInfo
 };
 
 
+
 class CImGui_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CImGui_Manager)
@@ -50,18 +51,26 @@ public:
 
 	void SetPos(const _float4& vPos, class CDummy* pDummy);
 	void Select(const _vec4& vPos, class CDummy* pDummy);
+	void SetDummy(class CDummy*);
 
+	_vec4 Get_MouseWorld() { return m_vMouseWorld; }
 private:
 	HRESULT ImGuiMenu();
 	HRESULT ImGuizmoMenu();
 
 	void Create_Dummy(const _int& iListIndex);
+	void Delete_Dummy();
 	void Select(const _float4& vPos, CDummy* pDummy);
 	const char* Search_Files();
 
+	void Mouse_Pos();
+	void FastPicking();
+
+	HRESULT Save_Monster();
+	HRESULT Load_Monster();
+
 private:
-	ID3D11Device* m_pDevice{ nullptr };
-	ID3D11DeviceContext* m_pContext{ nullptr };
+
 	CGameInstance* m_pGameInstance{ nullptr };
 	HWND m_hWnd;
 	_uint m_iWinSizeX{ 0 };
@@ -74,11 +83,15 @@ private:
 
 	_bool m_ComputePickPos{};
 	_bool m_ComputeSelection{};
+	_bool m_isCreate{ false };
 
 	_float4 m_vPos{ 0.f, 0.f, 0.f, 1.f };
 	_float4 m_vLook{ 0.f, 0.f, 1.f, 0.f };
-
 	ItemType m_eItemType{ ItemType::End };
+	_vec4 m_vMouseWorld{ 0.f,0.f,0.f,0.f };
+
+	_int DummyIndex{0};
+
 
 private:
 	// 파일의 이름 가져와서 저장
@@ -86,10 +99,15 @@ private:
 	vector<const char*> Objects;
 	vector<const char*> Monsters;
 
-	list<class CDummy*> m_ObjectsList{};
-	list<class CDummy*> m_MonsterList{};
+	vector<class CDummy*> m_ObjectsList{};
+	vector<class CDummy*> m_MonsterList{};
+	map<int, class CDummy*>m_DummyList{};
+
 	class CDummy* m_pSelectedDummy{ nullptr };
 
+	_mat	m_ObjectMatrix{};
+	_mat	m_ViewMatrix = {};
+	_mat	m_ProjMatrix = {};
 
 	_int m_iSelectIdx = {-1 };
 

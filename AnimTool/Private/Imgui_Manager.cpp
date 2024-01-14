@@ -83,42 +83,80 @@ HRESULT CImgui_Manager::ImGuiMenu()
 #pragma endregion
 	ImGui::Begin("MENU");
 
+	ImGui::SeparatorText("SELECT"); 
+	
+	ImGui::RadioButton("MONSTER", &m_eType, TYPE_MONSTER); ImGui::SameLine();
+	ImGui::RadioButton("PLAYER", &m_eType, TYPE_PLAYER);
+
+	if (m_eType == TYPE_MONSTER)
+	{
+		const char* szModelTag[5] = { "Hirokin", "Nott","Skjaldmaer","Skjaldmaer_A","Void05" };
+		static const char* szCurrentModel = "Hirokin";
+		if (m_ePreType != m_eType)
+		{
+			m_ePreType = m_eType;
+			m_iCurrentModelIndex = 0;
+			szCurrentModel = "Hirokin";
+		}
+
+		if (ImGui::BeginCombo("LIST", szCurrentModel))
+		{
+			for (size_t i = 0; i < IM_ARRAYSIZE(szModelTag); i++)
+			{
+				_bool bSelectedModel = (szCurrentModel == szModelTag[i]);
+				if (ImGui::Selectable(szModelTag[i], bSelectedModel))
+				{
+					szCurrentModel = szModelTag[i];
+					strcpy_s(m_szCurrentModelTag, szCurrentModel);
+					m_iCurrentModelIndex = i;
+				}
+			}
+			ImGui::EndCombo();
+		}
+	}
+	else if (m_eType == TYPE_PLAYER)
+	{
+		const char* szModelTag[4] = { "Select_Priest","Select_Rogue","Select_Sorceress","Select_Warrior" };
+		static const char* szCurrentModel = "Select_Priest";
+		if (m_ePreType != m_eType)
+		{
+			m_ePreType = m_eType;
+			m_iCurrentModelIndex = 0;
+			szCurrentModel = "Select_Priest";
+		}
+
+		if (ImGui::BeginCombo("LIST", szCurrentModel))
+		{
+			for (size_t i = 0; i < IM_ARRAYSIZE(szModelTag); i++)
+			{
+				_bool bSelectedModel = (szCurrentModel == szModelTag[i]);
+				if (ImGui::Selectable(szModelTag[i], bSelectedModel))
+				{
+					szCurrentModel = szModelTag[i];
+					strcpy_s(m_szCurrentModelTag, szCurrentModel);
+					m_iCurrentModelIndex = i;
+				}
+			}
+			ImGui::EndCombo();
+		}
+	}
+
 	ImGui::SeparatorText("FILE");
 
 	if (ImGui::Button("SAVE"))
 	{
-		//SaveFile();
+		SaveFile(m_szCurrentModelTag);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("LOAD"))
 	{
-		//LoadFile();
+		LoadFile(m_szCurrentModelTag);
 	}
-
-	ImGui::SeparatorText("SELECT");
-
-	const char* szModelName[2] = { "Loser02", "Sandman" };
-	static const char* szCurrentModel = "Loser02";
-
-	if (ImGui::BeginCombo("LIST", szCurrentModel))
-	{
-		for (size_t i = 0; i < IM_ARRAYSIZE(szModelName); i++)
-		{
-			_bool bSelectedModel = (szCurrentModel == szModelName[i]);
-			if (ImGui::Selectable(szModelName[i], bSelectedModel))
-			{
-				szCurrentModel = szModelName[i];
-				m_pPlayer->Set_ModelIndex(i);
-			}
-		}
-		ImGui::EndCombo();
-	}
-
-	ImGui::SeparatorText("SELECTED OBJECT");
 
 #pragma region CreateObject
 
-	if (ImGui::Button("CREATE"))
+	//if (ImGui::Button("CREATE"))
+	if (m_IsCreateModel)
 	{
 		if (not m_pPlayer)
 		{
@@ -201,11 +239,18 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			}
 		}
 
-		ImGui::SeparatorText("ANIMATION");
 		_uint iCurrentModelIndex = m_pPlayer->Get_ModelIndex();
 		_tchar szComName[MAX_PATH] = TEXT("");
-		const wstring& strComName = TEXT("Com_Model%d");
-		wsprintf(szComName, strComName.c_str(), iCurrentModelIndex);
+		const wstring& strMonsterComName = TEXT("Com_Model_Monster%d");
+		const wstring& strPlayerComName = TEXT("Com_Model_Player%d");
+		if (m_eType == TYPE_MONSTER)
+		{
+			wsprintf(szComName, strMonsterComName.c_str(), iCurrentModelIndex);
+		}
+		else if (m_eType == TYPE_PLAYER)
+		{ 
+			wsprintf(szComName, strPlayerComName.c_str(), iCurrentModelIndex);
+		}
 		wstring strFinalComName = szComName;
 		CModel* pCurrentModel = (CModel*)m_pPlayer->Find_Component(strFinalComName);
 		if (pCurrentModel != nullptr)
@@ -241,7 +286,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			ImGui::SliderInt("ANIMPOS", &iCurrentAnimPos, 0.f, (_int)(*iter)->Get_Duration());
 			(*iter)->Set_CurrentAnimPos((_float)iCurrentAnimPos);
 
-			ImGui::InputInt("AnimPos", &iCurrentAnimPos, 1);
+			ImGui::InputInt("ANIMP0S", &iCurrentAnimPos, 1);
 			if (iCurrentAnimPos > (_int)(*iter)->Get_Duration())
 			{
 				iCurrentAnimPos = (_int)(*iter)->Get_Duration();
@@ -251,9 +296,40 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				iCurrentAnimPos = 0;
 			}
 			(*iter)->Set_CurrentAnimPos((_float)iCurrentAnimPos);
+
+			if (ImGui::Button("ADD TRIGGER"))
+			{
+				(*iter)->Add_Trigger((*iter)->Get_CurrentAnimPos());
+			}
+			
+			vector<const _char*> TriggerTimes;
+			vector<_float> Triggers = (*iter)->Get_Triggers();
+			_tchar szTriggerTime[MAX_PATH] = TEXT("");
+			const wstring& strTriggerTime = TEXT("%d");
+			auto Trigger = Triggers.begin();
+			_char* szTrigger = { nullptr };
+			for (size_t i = 0; i < (*iter)->Get_NumTrigger(); i++)
+			{
+				szTrigger = new _char;
+				wsprintf(szTriggerTime, strTriggerTime.c_str(), (_int)(*Trigger));
+				WideCharToMultiByte(CP_ACP, 0, szTriggerTime, (_int)lstrlen(szTriggerTime), szTrigger, MAX_PATH, nullptr, nullptr);
+				TriggerTimes.push_back(szTrigger);
+				++Trigger;
+			}
+			ImGui::SameLine();
+			static int iTrigger = 0;
+			if (ImGui::ListBox("TRIGGER", &iTrigger, TriggerTimes.data(), TriggerTimes.size()))
+			{
+			}
 		}
 
 		ImGui::End();
+	}
+
+	if (m_pPlayer)
+	{
+		m_pPlayer->Set_ModelType((CPlayer::TYPE)m_eType);
+		m_pPlayer->Set_ModelIndex(m_iCurrentModelIndex);
 	}
 
 	return S_OK;
@@ -305,256 +381,147 @@ HRESULT CImgui_Manager::ImGuizmoMenu()
 	return S_OK;
 }
 
-//
-//HRESULT CImgui_Manager::SaveFile()
-//{
-//	OPENFILENAME OpenSaveFile;
-//	TCHAR FileName[MAX_PATH] = TEXT("Lumia.dat");
-//	static TCHAR FileFilter[] = TEXT("");
-//	
-//	memset(&OpenSaveFile, 0, sizeof(OPENFILENAME));
-//	OpenSaveFile.lStructSize = sizeof(OPENFILENAME);
-//	OpenSaveFile.hwndOwner = g_hWnd;
-//	OpenSaveFile.lpstrFilter = FileFilter;
-//	OpenSaveFile.lpstrFile = FileName;
-//	OpenSaveFile.nMaxFile = 256;
-//	OpenSaveFile.lpstrInitialDir = TEXT("..\\Bin\\Resources\\Models\\Map\\Lumia\\");
-//
-//	if (GetSaveFileName(&OpenSaveFile) != 0)
-//	{
-//		const TCHAR* pGetPath = OpenSaveFile.lpstrFile;
-//
-//		HANDLE hFile = CreateFile(pGetPath, GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
-//
-//		if (INVALID_HANDLE_VALUE == hFile)
-//			return E_FAIL;
-//
-//		DWORD dwByte = 0;
-//		TOOLOBJECT_DESC ObjectDesc = {};
-//		_uint iZero = { 0 };
-//
-//		CLayer* pRoofLayer = m_pGameInstance->Find_Layer(LEVEL_TOOL, TEXT("Layer_Roof"));
-//		if (pRoofLayer != nullptr)
-//		{
-//			_uint iNumRoofs = pRoofLayer->Get_ListSize();
-//			list<CGameObject*>* pRoofs = pRoofLayer->Get_ObjectList(); 
-//
-//			if (iNumRoofs != 0)
-//			{
-//				WriteFile(hFile, &iNumRoofs, sizeof _uint, &dwByte, nullptr);
-//				for (auto iter = (*pRoofs).begin(); iter != (*pRoofs).end(); ++iter)
-//				{
-//					CRoof* pRoof = Cast<CRoof*>(*iter);
-//					ObjectDesc = pRoof->Get_ObjectDesc();
-//					CTransform* pRoofTransform = (CTransform*)pRoof->Find_Component(TEXT("Component_Transform"));
-//
-//					WriteFile(hFile, reinterpret_cast<char*>(&pRoofTransform->Get_WorldFloat4x4().m[0]), sizeof _float4x4, &dwByte, nullptr);
-//
-//					_char szModelName[MAX_PATH] = "";
-//					WideCharToMultiByte(CP_ACP, 0, ObjectDesc.strModelName.c_str(), (_int)lstrlen(ObjectDesc.strModelName.c_str()), szModelName, MAX_PATH, nullptr, nullptr);
-//					WriteFile(hFile, reinterpret_cast<char*>(&szModelName), sizeof _char * MAX_PATH, &dwByte, nullptr);
-//				}
-//			}
-//		}
-//		else 
-//		{
-//			WriteFile(hFile, &iZero, sizeof _uint, &dwByte, nullptr);
-//		}
-//
-//		CLayer* pLIDailinLayer = m_pGameInstance->Find_Layer(LEVEL_TOOL, TEXT("Layer_LIDailin"));
-//		if (pLIDailinLayer != nullptr)
-//		{
-//			_uint iNumLIDailins = pLIDailinLayer->Get_ListSize();
-//			list<CGameObject*>* pLIDailins = pLIDailinLayer->Get_ObjectList();
-//			if (iNumLIDailins != 0)
-//			{
-//				ObjectDesc = {};
-//				WriteFile(hFile, &iNumLIDailins, sizeof _uint, &dwByte, nullptr);
-//				for (auto iter = (*pLIDailins).begin(); iter != (*pLIDailins).end(); ++iter)
-//				{
-//					CLIDailin* pLIDailin = Cast<CLIDailin*>(*iter);
-//					ObjectDesc = pLIDailin->Get_ObjectDesc();
-//					CTransform* pLIDailinTransform = (CTransform*)pLIDailin->Find_Component(TEXT("Component_Transform"));
-//
-//					WriteFile(hFile, reinterpret_cast<char*>(&pLIDailinTransform->Get_WorldFloat4x4().m[0]), sizeof _float4x4, &dwByte, nullptr);
-//				}
-//			}
-//		}
-//		else
-//		{
-//			WriteFile(hFile, &iZero, sizeof _uint, &dwByte, nullptr);
-//		}
-//
-//		CLayer* pMonster= m_pGameInstance->Find_Layer(LEVEL_TOOL, TEXT("Layer_Monster"));
-//		if (pMonster != nullptr)
-//		{
-//			_uint iNumMonsters = pMonster->Get_ListSize();
-//			list<CGameObject*>* pMonsters = pMonster->Get_ObjectList();
-//			if (iNumMonsters != 0)
-//			{
-//				ObjectDesc = {};
-//				WriteFile(hFile, &iNumMonsters, sizeof _uint, &dwByte, nullptr);
-//				for (auto iter = (*pMonsters).begin(); iter != (*pMonsters).end(); ++iter)
-//				{
-//					CMonster* pMonster = Cast<CMonster*>(*iter);
-//					ObjectDesc = pMonster->Get_ObjectDesc();
-//					CTransform* pMonsterTransform = (CTransform*)pMonster->Find_Component(TEXT("Component_Transform"));
-//
-//					WriteFile(hFile, reinterpret_cast<char*>(&pMonsterTransform->Get_WorldFloat4x4().m[0]), sizeof _float4x4, &dwByte, nullptr);
-//					_char szModelName[MAX_PATH] = "";
-//					WideCharToMultiByte(CP_ACP, 0, ObjectDesc.strModelName.c_str(), (_int)lstrlen(ObjectDesc.strModelName.c_str()), szModelName, MAX_PATH, nullptr, nullptr);
-//					WriteFile(hFile, reinterpret_cast<char*>(&szModelName), sizeof _char * MAX_PATH, &dwByte, nullptr);
-//					_char szPrototypeTag[MAX_PATH] = "";
-//					WideCharToMultiByte(CP_ACP, 0, ObjectDesc.strPrototypeTag.c_str(), (_int)lstrlen(ObjectDesc.strPrototypeTag.c_str()), szPrototypeTag, MAX_PATH, nullptr, nullptr);
-//					WriteFile(hFile, reinterpret_cast<char*>(&szPrototypeTag), sizeof _char * MAX_PATH, &dwByte, nullptr);
-//				}
-//			}
-//		}
-//		else
-//		{
-//			WriteFile(hFile, &iZero, sizeof _uint, &dwByte, nullptr);
-//		}
-//		
-//		CLayer* pWickline = m_pGameInstance->Find_Layer(LEVEL_TOOL, TEXT("Layer_Wickline"));
-//		if (pWickline != nullptr)
-//		{
-//			_uint iNumWicklines = pWickline->Get_ListSize();
-//			list<CGameObject*>* pWicklines = pWickline->Get_ObjectList();
-//			if (iNumWicklines != 0)
-//			{
-//				ObjectDesc = {};
-//				WriteFile(hFile, &iNumWicklines, sizeof _uint, &dwByte, nullptr);
-//				for (auto iter = (*pWicklines).begin(); iter != (*pWicklines).end(); ++iter)
-//				{
-//					CWickline* pWickline = Cast<CWickline*>(*iter);
-//					ObjectDesc = pWickline->Get_ObjectDesc();
-//					CTransform* pWicklineTransform = (CTransform*)pWickline->Find_Component(TEXT("Component_Transform"));
-//
-//					WriteFile(hFile, reinterpret_cast<char*>(&pWicklineTransform->Get_WorldFloat4x4().m[0]), sizeof _float4x4, &dwByte, nullptr);
-//				}
-//			}
-//		}
-//		else
-//		{
-//			WriteFile(hFile, &iZero, sizeof _uint, &dwByte, nullptr);
-//		}
-//
-//		MessageBox(g_hWnd, L"파일 저장 완료", L"파일 저장", MB_OK);
-//		CloseHandle(hFile);
-//	}
-//
-//	return S_OK;
-//}
-//
-//HRESULT CImgui_Manager::LoadFile()
-//{
-//	OPENFILENAME OpenLoadFile;
-//	TCHAR FileName[MAX_PATH] = TEXT("Lumia.dat");
-//	static TCHAR FileFilter[] = TEXT("");
-//
-//	memset(&OpenLoadFile, 0, sizeof(OPENFILENAME));
-//	OpenLoadFile.lStructSize = sizeof(OPENFILENAME);
-//	OpenLoadFile.hwndOwner = g_hWnd;
-//	OpenLoadFile.lpstrFilter = FileFilter;
-//	OpenLoadFile.lpstrFile = FileName;
-//	OpenLoadFile.nMaxFile = 256;
-//	OpenLoadFile.lpstrInitialDir = TEXT("..\\Bin\\Resources\\Models\\Map\\Lumia\\");
-//
-//	if (GetOpenFileName(&OpenLoadFile) != 0) {
-//
-//		const TCHAR* pGetPath = OpenLoadFile.lpstrFile;
-//
-//		HANDLE hFile = CreateFile(pGetPath, GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-//
-//		if (INVALID_HANDLE_VALUE == hFile)
-//			return E_FAIL;
-//
-//		DWORD dwByte = 0;
-//		TOOLOBJECT_DESC ObjectDesc = {};
-//
-//		_uint iNumRoofs = 0;
-//		ReadFile(hFile, &iNumRoofs, sizeof _uint, &dwByte, nullptr);
-//		for (_uint i = 0; i < iNumRoofs; ++i)
-//		{
-//			ReadFile(hFile, reinterpret_cast<char*>(&ObjectDesc.WorldMatrix.m[0]), sizeof _float4x4, &dwByte, nullptr);
-//
-//			_char szModelName[MAX_PATH] = "";
-//			ReadFile(hFile, reinterpret_cast<char*>(&szModelName), sizeof _char * MAX_PATH, &dwByte, nullptr);
-//			_tchar szWideName[MAX_PATH] = TEXT("");
-//			MultiByteToWideChar(CP_ACP, 0, szModelName, (_int)strlen(szModelName), szWideName, MAX_PATH);
-//			ObjectDesc.strModelName = szWideName;
-//
-//			if (FAILED(m_pGameInstance->Add_Layers(LEVEL_TOOL, TEXT("Prototype_Roof"), TEXT("Layer_Roof"), &ObjectDesc)))
-//			{
-//				MessageBox(g_hWnd, L"파일 로드 실패(지붕)", L"파일 로드", MB_OK);
-//				CloseHandle(hFile);
-//				return E_FAIL;
-//			}
-//		}
-//
-//		_uint iNumLIDailins = 0;
-//		ReadFile(hFile, &iNumLIDailins, sizeof _uint, &dwByte, nullptr);
-//		for (_uint i = 0; i < iNumLIDailins; ++i)
-//		{
-//			ObjectDesc = {};
-//			ReadFile(hFile, reinterpret_cast<char*>(&ObjectDesc.WorldMatrix.m[0]), sizeof _float4x4, &dwByte, nullptr);
-//
-//			if (FAILED(m_pGameInstance->Add_Layers(LEVEL_TOOL, TEXT("Prototype_LIDailin"), TEXT("Layer_LIDailin"), &ObjectDesc)))
-//			{
-//				MessageBox(g_hWnd, L"파일 로드 실패(리다이린)", L"파일 로드", MB_OK);
-//				CloseHandle(hFile);
-//				return E_FAIL;
-//			}
-//		}
-//
-//		_uint iNumMonsters = 0;
-//		ReadFile(hFile, &iNumMonsters, sizeof _uint, &dwByte, nullptr);
-//		for (_uint i = 0; i < iNumMonsters; ++i)
-//		{
-//			ObjectDesc = {};
-//			ReadFile(hFile, reinterpret_cast<char*>(&ObjectDesc.WorldMatrix.m[0]), sizeof _float4x4, &dwByte, nullptr);
-//
-//			_char szModelName[MAX_PATH] = "";
-//			ReadFile(hFile, reinterpret_cast<char*>(&szModelName), sizeof _char * MAX_PATH, &dwByte, nullptr);
-//			_tchar szWideModelName[MAX_PATH] = TEXT("");
-//			MultiByteToWideChar(CP_ACP, 0, szModelName, (_int)strlen(szModelName), szWideModelName, MAX_PATH);
-//			ObjectDesc.strModelName = szWideModelName;
-//
-//			_char szPrototypeTag[MAX_PATH] = "";
-//			ReadFile(hFile, reinterpret_cast<char*>(&szPrototypeTag), sizeof _char * MAX_PATH, &dwByte, nullptr);
-//			_tchar szWidePrototypeTag[MAX_PATH] = TEXT("");
-//			MultiByteToWideChar(CP_ACP, 0, szPrototypeTag, (_int)strlen(szPrototypeTag), szWidePrototypeTag, MAX_PATH);
-//			ObjectDesc.strPrototypeTag = szWidePrototypeTag;
-//
-//			if (FAILED(m_pGameInstance->Add_Layers(LEVEL_TOOL, TEXT("Prototype_Monster"), TEXT("Layer_Monster"), &ObjectDesc)))
-//			{
-//				MessageBox(g_hWnd, L"파일 로드 실패(몬스터)", L"파일 로드", MB_OK);
-//				CloseHandle(hFile);
-//				return E_FAIL;
-//			}
-//		}
-//
-//		_uint iNumWicklines = 0;
-//		ReadFile(hFile, &iNumWicklines, sizeof _uint, &dwByte, nullptr);
-//		for (_uint i = 0; i < iNumWicklines; ++i)
-//		{
-//			ObjectDesc = {};
-//			ReadFile(hFile, reinterpret_cast<char*>(&ObjectDesc.WorldMatrix.m[0]), sizeof _float4x4, &dwByte, nullptr);
-//
-//			if (FAILED(m_pGameInstance->Add_Layers(LEVEL_TOOL, TEXT("Prototype_Wickline"), TEXT("Layer_Wickline"), &ObjectDesc)))
-//			{
-//				MessageBox(g_hWnd, L"파일 로드 실패(위클라인)", L"파일 로드", MB_OK);
-//				CloseHandle(hFile);
-//				return E_FAIL;
-//			}
-//		}
-//
-//		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
-//		CloseHandle(hFile);
-//	}
-//
-//	return S_OK;
-//}
+
+HRESULT CImgui_Manager::SaveFile(const string& strModelName)
+{
+	_char szFilePath[MAX_PATH] = "";
+	_char szDirectory[MAX_PATH] = "../../Client/Bin/Resources/AnimMesh/";
+	_char szModelType[MAX_PATH] = "";
+	if (m_eType == TYPE_MONSTER)
+	{
+		strcpy_s(szModelType, MAX_PATH, "Monster/");
+	}
+	else if (m_eType == TYPE_PLAYER)
+	{
+		strcpy_s(szModelType, MAX_PATH, "Player/");
+	}
+	_char szMesh[MAX_PATH] = "/Mesh/";
+	_char szExt[MAX_PATH] = ".animtrigger";
+	strcpy_s(szFilePath, MAX_PATH, szDirectory);
+	strcat_s(szFilePath, MAX_PATH, szModelType);
+	strcat_s(szFilePath, MAX_PATH, strModelName.c_str());
+	strcat_s(szFilePath, MAX_PATH, szMesh);
+	strcat_s(szFilePath, MAX_PATH, strModelName.c_str());
+	strcat_s(szFilePath, MAX_PATH, szExt);
+
+	ofstream Fileout(szFilePath, ios::binary);
+
+	if (Fileout.is_open())
+	{
+		_uint iCurrentModelIndex = m_pPlayer->Get_ModelIndex();
+		_tchar szComName[MAX_PATH] = TEXT("");
+		const wstring& strMonsterComName = TEXT("Com_Model_Monster%d");
+		const wstring& strPlayerComName = TEXT("Com_Model_Player%d");
+		if (m_eType == TYPE_MONSTER)
+		{
+			wsprintf(szComName, strMonsterComName.c_str(), iCurrentModelIndex);
+		}
+		else if (m_eType == TYPE_PLAYER)
+		{
+			wsprintf(szComName, strPlayerComName.c_str(), iCurrentModelIndex);
+		}
+		wstring strFinalComName = szComName;
+		CModel* pCurrentModel = (CModel*)m_pPlayer->Find_Component(strFinalComName);
+
+		vector<CAnimation*> pAnimations = pCurrentModel->Get_Animations();
+		auto iter = pAnimations.begin();
+		for (_uint i = 0; i < pCurrentModel->Get_NumAnim(); i++)
+		{
+			if ((*iter)->Get_NumTrigger() != 0)
+			{
+				_uint iAnimIndex = i;
+				Fileout.write(reinterpret_cast<char*>(&iAnimIndex), sizeof _uint);
+				_uint iNumTrigger = (*iter)->Get_NumTrigger();
+				Fileout.write(reinterpret_cast<char*>(&iNumTrigger), sizeof _uint);
+				vector<_float> Triggers = (*iter)->Get_Triggers();
+				auto Triggeriter = Triggers.begin();
+				for (_uint i = 0; i < (*iter)->Get_NumTrigger(); i++)
+				{
+					_float fTrigger = (*Triggeriter);
+					Fileout.write(reinterpret_cast<char*>(&fTrigger), sizeof _float);
+					++Triggeriter;
+				}
+			}
+			++iter;
+		}
+
+		MessageBox(g_hWnd, L"파일 저장 완료", L"파일 저장", MB_OK);
+	}
+
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::LoadFile(const string& strModelName)
+{
+	_char szFilePath[MAX_PATH] = "";
+	_char szDirectory[MAX_PATH] = "../../Client/Bin/Resources/AnimMesh/";
+	_char szModelType[MAX_PATH] = "";
+	if (m_eType == TYPE_MONSTER)
+	{
+		strcpy_s(szModelType, MAX_PATH, "Monster/");
+	}
+	else if (m_eType == TYPE_PLAYER)
+	{
+		strcpy_s(szModelType, MAX_PATH, "Player/");
+	}
+	_char szMesh[MAX_PATH] = "/Mesh/";
+	_char szExt[MAX_PATH] = ".animtrigger";
+	strcpy_s(szFilePath, MAX_PATH, szDirectory);
+	strcat_s(szFilePath, MAX_PATH, szModelType);
+	strcat_s(szFilePath, MAX_PATH, strModelName.c_str());
+	strcat_s(szFilePath, MAX_PATH, szMesh);
+	strcat_s(szFilePath, MAX_PATH, strModelName.c_str());
+	strcat_s(szFilePath, MAX_PATH, szExt);
+
+	ifstream Filein(szFilePath, ios::binary);
+
+	if (Filein.is_open())
+	{
+		_uint iCurrentModelIndex = m_pPlayer->Get_ModelIndex();
+		_tchar szComName[MAX_PATH] = TEXT(""); 
+		const wstring& strMonsterComName = TEXT("Com_Model_Monster%d");
+		const wstring& strPlayerComName = TEXT("Com_Model_Player%d");
+		if (m_eType == TYPE_MONSTER)
+		{
+			wsprintf(szComName, strMonsterComName.c_str(), iCurrentModelIndex);
+		}
+		else if (m_eType == TYPE_PLAYER)
+		{
+			wsprintf(szComName, strPlayerComName.c_str(), iCurrentModelIndex);
+		}
+		wstring strFinalComName = szComName;
+		CModel* pCurrentModel = (CModel*)m_pPlayer->Find_Component(strFinalComName);
+
+		vector<CAnimation*> pAnimations = pCurrentModel->Get_Animations();
+		auto iter = pAnimations.begin();
+
+		for (_uint i = 0; i < pCurrentModel->Get_NumAnim(); i++)
+		{
+			(*iter)->Reset_Trigger();
+			++iter;
+		}
+
+		iter = pAnimations.begin();
+		_uint iAnimIndex = { 0 };
+		Filein.read(reinterpret_cast<char*>(&iAnimIndex), sizeof _uint);
+		for (_uint i = 0; i < iAnimIndex; i++)
+		{
+			++iter;
+		}
+		_uint iNumTrigger = { 0 };
+		Filein.read(reinterpret_cast<char*>(&iNumTrigger), sizeof _uint);
+		for (_uint i = 0; i < iNumTrigger; i++)
+		{
+			_float fTrigger = { 0.f };
+			Filein.read(reinterpret_cast<char*>(&fTrigger), sizeof _float);
+			(*iter)->Add_Trigger(fTrigger);
+		}
+
+		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
+	}
+
+	return S_OK;
+}
 
 CImgui_Manager* CImgui_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const GRAPHIC_DESC& GraphicDesc)
 {

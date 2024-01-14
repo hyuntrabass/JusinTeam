@@ -9,6 +9,8 @@ CAnimation::CAnimation(const CAnimation& rhs)
 	: m_fDuration(rhs.m_fDuration)
 	, m_fTickPerSec(rhs.m_fTickPerSec)
 	, m_iNumChannels(rhs.m_iNumChannels)
+	, m_iNumTriggers(rhs.m_iNumTriggers)
+	, m_Triggers(rhs.m_Triggers)
 	//, m_Channels(rhs.m_Channels)
 	//, m_CurrentKeyFrames(rhs.m_CurrentKeyFrames)
 	//, m_PrevTransformations(rhs.m_PrevTransformations)
@@ -44,6 +46,38 @@ const _float CAnimation::Get_CurrentAnimPos() const
 const _float CAnimation::Get_Duration() const
 {
 	return m_fDuration;
+}
+
+const _uint CAnimation::Get_NumTrigger() const
+{
+	return m_iNumTriggers;
+}
+
+vector<_float>& CAnimation::Get_Triggers()
+{
+	return m_Triggers;
+}
+
+void CAnimation::Add_Trigger(_float fAnimPos)
+{
+	auto	iter = find_if(m_Triggers.begin(), m_Triggers.end(), [&](_float fTrigger)->_bool {
+		if (fTrigger == fAnimPos)
+			return true; 
+
+		return false;
+		});
+
+	if (iter == m_Triggers.end())
+	{
+		m_Triggers.push_back(fAnimPos);
+		m_iNumTriggers++;
+	}
+}
+
+void CAnimation::Reset_Trigger()
+{
+	m_iNumTriggers = 0;
+	m_Triggers.clear();
 }
 
 void CAnimation::ResetFinished()
@@ -170,4 +204,6 @@ void CAnimation::Free()
 		Safe_Release(pChannel);
 	}
 	m_Channels.clear();
+
+	m_Triggers.clear();
 }

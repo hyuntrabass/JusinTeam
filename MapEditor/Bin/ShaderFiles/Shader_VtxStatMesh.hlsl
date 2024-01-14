@@ -3,7 +3,6 @@
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
-texture2D g_SpecTexture;
 texture2D g_MaskTexture;
 texture2D g_NoiseTexture;
 texture2D g_GradationTexture;
@@ -16,7 +15,6 @@ float g_fLightFar;
 float g_fDissolveRatio;
 
 bool g_HasNorTex;
-bool g_HasSpecTex;
 bool g_bSelected = false;
 
 vector g_vLightDir;
@@ -29,6 +27,8 @@ vector g_vMtrlAmbient = vector(0.3f, 0.3f, 0.3f, 1.f);
 vector g_vMtrlSpecular = vector(0.8f, 0.8f, 0.8f, 1.f);
 
 float2 g_vUVTransform;
+
+int g_iID = 0;
 
 struct VS_IN
 {
@@ -59,7 +59,7 @@ VS_OUT VS_Main(VS_IN Input)
     matWVP = mul(matWV, g_ProjMatrix);
 	
     Output.vPos = mul(vector(Input.vPos, 1.f), matWVP);
-    Output.vNor = mul(vector(Input.vNor, 0.f), g_WorldMatrix);
+    Output.vNor = normalize(mul(vector(Input.vNor, 0.f), g_WorldMatrix));
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
     Output.vProjPos = Output.vPos;
@@ -112,7 +112,7 @@ struct PS_OUT_DEFERRED
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
-    vector vSpecular : SV_Target3;
+    int iID : SV_Target3;
 };
 
 struct PS_OUT
@@ -142,16 +142,10 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
         vNormal = Input.vNor.xyz;
     }
     
-    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
-    if (g_HasSpecTex)
-    {
-        vSpecular = g_SpecTexture.Sample(LinearSampler, Input.vTex);
-    }
-    
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vSpecular = vSpecular;
+    Output.iID = g_iID;
     
     return Output;
 }
@@ -197,7 +191,8 @@ PS_OUT_DEFERRED PS_Main_AlphaTest(PS_IN Input)
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    
+    Output.iID = g_iID;
+
     return Output;
 }
 
@@ -214,6 +209,7 @@ PS_OUT_DEFERRED PS_OutLine(PS_IN Input)
     
     Output.vDiffuse = g_vColor;
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.iID = g_iID;
 
     return Output;
 }

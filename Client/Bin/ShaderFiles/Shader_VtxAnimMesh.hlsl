@@ -143,7 +143,7 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     
         float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
     
-        vNormal = mul(normalize(vNormal), WorldMatrix);
+        vNormal = mul(normalize(vNormal), WorldMatrix) * -1.f;
     }
     else
     {

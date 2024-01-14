@@ -88,8 +88,41 @@
     <Filter Include="02.GameObjects\04. Monster\Tutorial\00. NPCvsMon">
       <UniqueIdentifier>{a52be690-2c9f-4aff-bc7f-ad98394daf42}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\04. Monster\Tutorial\01. Void05">
+    <Filter Include="02.GameObjects\05.Select_Object">
+      <UniqueIdentifier>{c8a8cb96-af60-446e-b50b-6dfbb4df6a4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05.Select_Object\Map">
+      <UniqueIdentifier>{756e4fd7-5145-4d4c-abcf-7018bf27395a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05.Select_Object\Model">
+      <UniqueIdentifier>{fcda4183-f684-44f5-8d3f-169f46e02502}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\TextButton">
+      <UniqueIdentifier>{e433917e-0435-4307-a9c2-4229c403b1c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\01.Camera\Select">
+      <UniqueIdentifier>{8d83bd06-503a-4299-90d9-bd4f9f6c1225}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\NameTag">
+      <UniqueIdentifier>{58d52e8e-1cbf-4e42-b53c-27b4eb35e680}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04. Monster\Animal">
+      <UniqueIdentifier>{e04fddfc-56e3-43fc-bcdb-df696c495149}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04. Monster\Animal\00. Rabbit">
+      <UniqueIdentifier>{41289999-96b5-4029-b49f-121d4f6a037e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04. Monster\Animal\01. Penguin">
+      <UniqueIdentifier>{a9e451fb-a3ee-480c-8faf-6b921d953f09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04. Monster\Animal\02. Goat">
+      <UniqueIdentifier>{df494165-4640-4514-875f-e6d99309436d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04. Monster\Tutorial\ModelTest">
       <UniqueIdentifier>{ca2ecc51-8de3-4c19-8aae-baa40147a63b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\01.SelectLevel\SelectDesc">
+      <UniqueIdentifier>{7935ee7b-30e4-4d2e-a24a-01dc212f896a}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\02.Terrain\Lake">
       <UniqueIdentifier>{cf63ced1-74e6-4b14-b3a8-630d98997eb7}</UniqueIdentifier>
@@ -169,7 +202,7 @@
       <Filter>02.GameObjects\00.UI\01.SelectLevel\CharacterSelect</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\TextButton.h">
-      <Filter>02.GameObjects\00.UI\01.SelectLevel\ClassSelect</Filter>
+      <Filter>02.GameObjects\00.UI\TextButton</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\BodyPart.h">
       <Filter>02.GameObjects\03.Player\BodyParts</Filter>
@@ -181,7 +214,31 @@
       <Filter>02.GameObjects\04. Monster\Tutorial\00. NPCvsMon</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Void05.h">
-      <Filter>02.GameObjects\04. Monster\Tutorial\01. Void05</Filter>
+      <Filter>02.GameObjects\04. Monster\Tutorial\ModelTest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Select_Model.h">
+      <Filter>02.GameObjects\05.Select_Object\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Select_Map.h">
+      <Filter>02.GameObjects\05.Select_Object\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SelectDesc.h">
+      <Filter>02.GameObjects\00.UI\01.SelectLevel\SelectDesc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TextButtonColor.h">
+      <Filter>02.GameObjects\00.UI\TextButton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Custom.h">
+      <Filter>02.GameObjects\01.Camera\Select</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NameTag.h">
+      <Filter>02.GameObjects\00.UI\NameTag</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Rabbit.h">
+      <Filter>02.GameObjects\04. Monster\Animal\00. Rabbit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Penguin.h">
+      <Filter>02.GameObjects\04. Monster\Animal\01. Penguin</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Lake.h">
       <Filter>02.GameObjects\02.Terrain\Lake</Filter>
@@ -259,7 +316,7 @@
       <Filter>02.GameObjects\00.UI\01.SelectLevel\CharacterSelect</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\TextButton.cpp">
-      <Filter>02.GameObjects\00.UI\01.SelectLevel\ClassSelect</Filter>
+      <Filter>02.GameObjects\00.UI\TextButton</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\BodyPart.cpp">
       <Filter>02.GameObjects\03.Player\BodyParts</Filter>
@@ -268,7 +325,31 @@
       <Filter>02.GameObjects\02.Terrain</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Void05.cpp">
-      <Filter>02.GameObjects\04. Monster\Tutorial\01. Void05</Filter>
+      <Filter>02.GameObjects\04. Monster\Tutorial\ModelTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Select_Model.cpp">
+      <Filter>02.GameObjects\05.Select_Object\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Select_Map.cpp">
+      <Filter>02.GameObjects\05.Select_Object\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SelectDesc.cpp">
+      <Filter>02.GameObjects\00.UI\01.SelectLevel\SelectDesc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TextButtonColor.cpp">
+      <Filter>02.GameObjects\00.UI\TextButton</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Custom.cpp">
+      <Filter>02.GameObjects\01.Camera\Select</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NameTag.cpp">
+      <Filter>02.GameObjects\00.UI\NameTag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Rabbit.cpp">
+      <Filter>02.GameObjects\04. Monster\Animal\00. Rabbit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Penguin.cpp">
+      <Filter>02.GameObjects\04. Monster\Animal\01. Penguin</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Lake.cpp">
       <Filter>02.GameObjects\02.Terrain\Lake</Filter>
