@@ -48,7 +48,7 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 	_vec4 vRotation{};
 	_vec4 vPosition{};
 
-	if (isAnimChanged)
+	/*if (isAnimChanged)
 	{
 		m_iCurrentKeyFrame = 0;
 		if (m_PrevTransformation.m[3][3] == 0.f)
@@ -81,8 +81,8 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 			isAnimChanged = false;
 			fCurrentAnimPos = 0.f;
 		}
-	}
-	else if (fCurrentAnimPos >= LastKeyFrame.fTime)
+	}*/
+	if (fCurrentAnimPos >= LastKeyFrame.fTime)
 	{
 		vScaling = XMLoadFloat4(&LastKeyFrame.vScaling);
 		vRotation = XMLoadFloat4(&LastKeyFrame.vRotation);

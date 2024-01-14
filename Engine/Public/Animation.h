@@ -45,6 +45,9 @@ private:
 	_uint m_iNumTriggers{};
 	vector<_float> m_Triggers;
 
+private:
+	void Update_Lerp_TransformationMatrix(const vector<class CBone*>& Bones, _bool& isAnimChanged, _float fInterpolationTime);
+
 public:
 	static CAnimation* Create(ifstream& ModelFile);
 	CAnimation* Clone();

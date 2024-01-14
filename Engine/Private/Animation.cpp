@@ -170,12 +170,51 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 		}
 	}
 
-	if (not m_isFinished)
+	if (not m_isFinished || not isAnimChanged)
 	{
 		for (size_t i = 0; i < m_iNumChannels; i++)
 		{
 			m_Channels[i]->Update_TransformationMatrix(Bones, m_fCurrentAnimPos, isAnimChanged, fInterpolationTime);
 		}
+	}
+	else if (isAnimChanged)
+	{
+		Update_Lerp_TransformationMatrix();
+	}
+}
+
+void CAnimation::Update_Lerp_TransformationMatrix(const vector<class CBone*>& Bones, _bool& isAnimChanged, _float fInterpolationTime)
+{
+	m_iCurrentKeyFrame = 0;
+	if (m_PrevTransformation.m[3][3] == 0.f)
+	{
+		m_PrevTransformation = Bones[m_iBoneIndex]->Get_Transformation();
+	}
+	_mat PrevTransformation = XMLoadFloat4x4(&m_PrevTransformation);
+	_vec4 vSrcScaling{}, vDstScaling{};
+	_vec4 vSrcRotation{}, vDstRotation{};
+	_vec4 vSrcPotition{}, vDstPosition{};
+	_float fRatio = fCurrentAnimPos / fInterpolationTime;
+
+	vSrcScaling.x = PrevTransformation.Right().Length();
+	vSrcScaling.y = PrevTransformation.Up().Length();
+	vSrcScaling.z = PrevTransformation.Look().Length();
+	vSrcScaling.w = 0.f;
+	vDstScaling = XMLoadFloat4(&m_KeyFrames[0].vScaling);
+	vScaling = XMVectorLerp(vSrcScaling, vDstScaling, fRatio);
+
+	vSrcRotation = XMQuaternionRotationMatrix(PrevTransformation);
+	vDstRotation = XMLoadFloat4(&m_KeyFrames[0].vRotation);
+	vRotation = XMQuaternionSlerp(vSrcRotation, vDstRotation, fRatio);
+
+	vSrcPotition = _vec4(&PrevTransformation._41);
+	vDstPosition = m_KeyFrames[0].vPosition;
+	vPosition = XMVectorLerp(vSrcPotition, vDstPosition, fRatio);
+
+	if (fCurrentAnimPos >= fInterpolationTime)
+	{
+		isAnimChanged = false;
+		fCurrentAnimPos = 0.f;
 	}
 }
 
