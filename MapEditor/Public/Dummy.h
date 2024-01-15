@@ -37,7 +37,7 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
-	//CImGui_Manager* m_pImGui_Manager{ nullptr };
+	CImGui_Manager* m_pImGui_Manager{ nullptr };
 
 private:
 

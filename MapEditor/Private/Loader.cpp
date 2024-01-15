@@ -157,11 +157,40 @@ HRESULT CLoader::Load_Editor()
 
 	m_strLoadingText = L"Editor : Loading Object Model";
 #pragma region Model
-	_matrix Pivot = XMMatrixScaling(0.01f,0.01,0.01f);
+	_matrix Pivot = XMMatrixScaling(0.01f,0.01f,0.01f);
 	//_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(90.f));
 
 	// Object Model
 	strInputFilePath = "../Bin/Resources/StaticMesh/Village/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+	//Pivot = XMMatrixScaling(1.f, 1.f, 1.f);
+	// Map Model
+	strInputFilePath = "../Bin/Resources/StaticMesh/Map1/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+	strInputFilePath = "../Bin/Resources/StaticMesh/Map2/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())

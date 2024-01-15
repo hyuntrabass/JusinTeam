@@ -38,13 +38,13 @@ struct MapInfo
 	enum class ItemType eType {};
 	_uint iStageIndex{};
 	_uint iTriggerNum{};
-	_float4 vPos{};
+	_vec4 vPos{};
 	class CMap** ppMap{ nullptr };
 };
 
 struct TerrainInfo {
-	_uint m_iNumVerticesX{};
-	_uint m_iNumVerticesZ{};
+	_uint m_iNumVerticesX{1};
+	_uint m_iNumVerticesZ{1};
 	class CTerrain** ppTerrain{ nullptr };
 };
 
@@ -63,14 +63,18 @@ public:
 	HRESULT Render();
 
 	_vec4 Get_MouseWorld() { return m_vMouseWorld; }
+
+
 private:
 	HRESULT ImGuiMenu();
 	HRESULT ImGuiPos();
+	_int FindByName(char* SearchStr, vector<const char*> List);
 	HRESULT ImGuizmoMenu();
 
 	void Create_Dummy(const _int& iListIndex);
 	void Create_Map(const _int& iListIndex);
 	HRESULT Create_Terrain();
+	HRESULT Modify_Object();
 	
 	void Delete_Dummy();
 	void Delete_Map();
@@ -82,6 +86,17 @@ private:
 	void FastPicking();
 	void TerrainPicking();
 
+
+	// 데이터 파싱
+	// 맵
+	HRESULT Save_Map();
+	HRESULT Load_Map();
+
+	// 오브젝트
+	HRESULT Save_Object();
+	HRESULT Load_Object();
+
+	// 몬스터
 	HRESULT Save_Monster();
 	HRESULT Load_Monster();
 
@@ -91,11 +106,12 @@ private:
 	HWND m_hWnd;
 	_uint m_iWinSizeX{ 0 };
 	_uint m_iWinSizeY{ 0 };
+	float m_iCameraSpeed{ 0 };
 
 	POINT m_ptMouse = {};
 	_float2 m_vMousePos{ 0.f,0.f };
-	_vec4 m_PickingPos{ 0.f, 0.f, 0.f, 0.f };
-	_vec4 m_TerrainPos{ 0.f, 0.f, 0.f, 0.f };
+	_vec4 m_PickingPos{ 0.f, 0.f, 0.f, 1.f };
+	_vec4 m_TerrainPos{ 0.f, 0.f, 0.f, 1.f };
 	_float m_fCamDist{};
 	_int TerrainCount[1]{};
 
@@ -107,6 +123,7 @@ private:
 	_int DummyIndex{0};
 	_int MapIndex{0};
 	_bool m_isTerrain{false};
+
 
 private:
 	// 파일의 이름 가져와서 저장
@@ -127,6 +144,7 @@ private:
 	class CDummy* m_pSelectedDummy{ nullptr };
 	class CMap* m_pSelectMap{ nullptr };
 	class CTerrain* m_pTerrain{ nullptr };
+	char Serch_Name[MAX_PATH]{};
 
 	_mat	m_ObjectMatrix{};
 	_mat	m_MapMatrix{};
@@ -134,6 +152,7 @@ private:
 	_mat	m_ProjMatrix = {};
 
 	_int m_iSelectIdx = {-1 };
+	_bool m_iImGuizmoCheck = {false };
 
 public:
 	static CImGui_Manager* Create( const GRAPHIC_DESC& GraphicDesc);

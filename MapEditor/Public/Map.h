@@ -22,6 +22,7 @@ public:
 	void Select(const _bool& isSelected);
 	_bool Get_Selected() { return m_isSelected; }
 	_int Get_ID() const { return m_iID; }
+	MapInfo Get_Info() const { return m_Info; }
 	void Set_Dead() { m_isDead = true; }
 
 private:
@@ -29,6 +30,7 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
 
+	CImGui_Manager* m_pImGui_Manager{ nullptr };
 private:
 
 	MapInfo m_Info{};

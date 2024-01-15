@@ -2,10 +2,10 @@
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_Texture, g_MaskTexture, g_DissolveTexture;
-vector g_CamPos;
+vector g_vCamPos;
 vector g_vColor;
 int2 g_vNumSprite;
-int g_iIndex;
+uint g_iIndex;
 float g_fDissolveRatio;
 
 struct VS_IN
@@ -53,7 +53,7 @@ void GS_MAIN(point GS_IN Input[1], inout TriangleStream<GS_OUT> Triangles)
 {
     GS_OUT Output[4];
     
-    float3 vLook = (g_CamPos - Input[0].vPos).xyz;
+    float3 vLook = (g_vCamPos - Input[0].vPos).xyz;
     float3 vRight = normalize(cross(float3(0.f, 1.f, 0.f), vLook)) * Input[0].vPSize.x * 0.5f;
     float3 vUp = normalize(cross(vLook, vRight)) * Input[0].vPSize.y * 0.5f;
     

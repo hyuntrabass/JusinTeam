@@ -4,13 +4,14 @@ static _int iID = 1;
 
 CMap::CMap(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
-
 {
 }
 
 CMap::CMap(const CMap& rhs)
 	: CBlendObject(rhs)
+	, m_pImGui_Manager(CImGui_Manager::Get_Instance())
 {
+	Safe_AddRef(m_pImGui_Manager);
 	m_iID = iID++;
 }
 
@@ -24,11 +25,12 @@ HRESULT CMap::Init(void* pArg)
 {
 
 	m_Info = *(MapInfo*)pArg;
-
+	_vec3 MapPos = _vec3(m_Info.vPos.x, m_Info.vPos.y, m_Info.vPos.z);
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
+
 	if (m_Info.ppMap)
 	{
 		*m_Info.ppMap = this;
@@ -38,7 +40,7 @@ HRESULT CMap::Init(void* pArg)
 
 	m_iShaderPass = StaticPass_AlphaTestMeshes;
 	
-	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_Info.vPos));
+	m_pTransformCom->Set_Position(MapPos);
 
 	return S_OK;
 }
@@ -209,6 +211,7 @@ void CMap::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pImGui_Manager);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
