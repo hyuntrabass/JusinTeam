@@ -30,11 +30,11 @@ HRESULT CLevel_GamePlay::Init()
 	}
 
 	// Monster
-	//if (FAILED(Ready_Void05()))
-	//{
-	//	MSG_BOX("Failed to Ready Void05");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Void05()))
+	{
+		MSG_BOX("Failed to Ready Void05");
+		return E_FAIL;
+	}
 
 	// Monster Parse
 	//if (FAILED(Ready_Monster()))
@@ -143,10 +143,10 @@ HRESULT CLevel_GamePlay::Ready_Map()
 
 HRESULT CLevel_GamePlay::Ready_Void05()
 {
-	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void05"), TEXT("Prototype_GameObject_Void05"))))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void05"), TEXT("Prototype_GameObject_Void05"))))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -195,7 +195,7 @@ HRESULT CLevel_GamePlay::Ready_Monster()
 
 HRESULT CLevel_GamePlay::Ready_Rabbit()
 {
-	for (size_t i = 0; i < 5; i++)
+	for (size_t i = 0; i < 1; i++)
 	{
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Rabbit"), TEXT("Prototype_GameObject_Rabbit"))))
 		{
