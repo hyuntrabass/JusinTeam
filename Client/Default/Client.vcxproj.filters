@@ -88,9 +88,6 @@
     <Filter Include="02.GameObjects\00.UI\TextButton">
       <UniqueIdentifier>{e433917e-0435-4307-a9c2-4229c403b1c9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\01.Camera\Select">
-      <UniqueIdentifier>{8d83bd06-503a-4299-90d9-bd4f9f6c1225}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\00.UI\NameTag">
       <UniqueIdentifier>{58d52e8e-1cbf-4e42-b53c-27b4eb35e680}</UniqueIdentifier>
     </Filter>
@@ -234,9 +231,6 @@
     <ClInclude Include="..\Public\TextButtonColor.h">
       <Filter>02.GameObjects\00.UI\TextButton</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Camera_Custom.h">
-      <Filter>02.GameObjects\01.Camera\Select</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\NameTag.h">
       <Filter>02.GameObjects\00.UI\NameTag</Filter>
     </ClInclude>
@@ -357,9 +351,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\TextButtonColor.cpp">
       <Filter>02.GameObjects\00.UI\TextButton</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Camera_Custom.cpp">
-      <Filter>02.GameObjects\01.Camera\Select</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\NameTag.cpp">
       <Filter>02.GameObjects\00.UI\NameTag</Filter>

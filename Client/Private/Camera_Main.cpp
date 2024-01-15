@@ -58,10 +58,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_SELECT)
 	{
-		if (m_pGameInstance->Key_Down(DIK_P))
-		{
-			m_pGameInstance->Set_CameraModeIndex(CM_DEBUG);
-		}
+		
 
 		if (!m_bInitMode[CM_CUSTOM])
 		{
@@ -121,14 +118,15 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			break;
 		}
 	}
+	else if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_CUSTOM)
+	{
+		
+
+	}
 	else
 	{
 
-		if (m_pGameInstance->Key_Down(DIK_P))
-		{
-			m_pGameInstance->Set_CameraModeIndex(CM_DEBUG);
-		}
-
+		
 	
 
 		
@@ -199,6 +197,12 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 		m_fShakeAcc += fTimeDelta * 10.f;
 	}
+
+	if (m_pGameInstance->Key_Down(DIK_P))
+	{
+		m_pGameInstance->Set_CameraModeIndex(CM_DEBUG);
+	}
+
 	__super::Tick(fTimeDelta);
 }
 

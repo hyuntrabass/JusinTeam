@@ -32,15 +32,7 @@ HRESULT CPlayer::Init(void* pArg)
 
 void CPlayer::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_K))
-	{
-		Change_Parts(PT_HAIR,1);
-	}
-
-	if (m_pGameInstance->Key_Down(DIK_L))
-	{
-		Change_Parts(PT_FACE, 1);
-	}
+	Set_Key(fTimeDelta);
 
 	for (int i = 0; i < m_vecParts.size(); i++)
 	{
@@ -114,6 +106,49 @@ void CPlayer::Reset_PartsAnim()
 	dynamic_cast<CBodyPart*>(m_vecParts[PT_HAIR])->Reset_Model();
 	dynamic_cast<CBodyPart*>(m_vecParts[PT_FACE])->Reset_Model();
 	dynamic_cast<CBodyPart*>(m_vecParts[PT_BODY])->Reset_Model();
+}
+
+void CPlayer::Set_Key(_float fTimeDelta)
+{
+	if (m_pGameInstance->Key_Down(DIK_W))
+	{
+		m_pTransformCom->Go_Straight(fTimeDelta);
+	}
+
+	if (m_pGameInstance->Key_Pressing(DIK_S))
+	{
+		m_pTransformCom->Go_Backward(fTimeDelta);
+	}
+
+	if (m_pGameInstance->Key_Pressing(DIK_A))
+	{
+		m_pTransformCom->Go_Left(fTimeDelta);
+	}
+
+	if (m_pGameInstance->Key_Pressing(DIK_D))
+	{
+		m_pTransformCom->Go_Right(fTimeDelta);
+	}
+
+	if (m_pGameInstance->Key_Pressing(DIK_G))
+	{
+		Attack();
+	}
+}
+
+void CPlayer::Attack()
+{
+	switch (m_Current_Weapon)
+	{
+	case Client::WP_BOW:
+
+		break;
+	case Client::WP_SWORD:
+		
+		break;
+	default:
+		break;
+	}
 }
 
 HRESULT CPlayer::Add_Components()

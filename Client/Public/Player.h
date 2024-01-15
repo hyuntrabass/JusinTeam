@@ -13,6 +13,12 @@ enum PART_TYPE
 	PT_END
 };
 
+enum WEAPON_TYPE
+{
+	WP_BOW,
+	WP_SWORD,
+	WP_END
+};
 
 
 struct BODYPART_DESC
@@ -42,15 +48,23 @@ public:
 public:
 	HRESULT Add_Parts();
 
+public:
 	void Change_Parts(PART_TYPE PartsType,_int ChangeIndex);
 	void Reset_PartsAnim();
+	void Set_Key(_float fTimeDelta);
+	
+public:
+	void Attack();
+
 private:
 	vector<CGameObject*> m_vecParts{};
+	CGameObject* m_pWeapon{};
 
 private:
 	ANIM_DESC m_Animation{};
 	_float4 m_vPos{};
 	_float m_fGravity{};
+	WEAPON_TYPE m_Current_Weapon{WP_END};
 
 private:
 	HRESULT Add_Components();
