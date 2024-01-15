@@ -38,6 +38,7 @@ private:
 
 	_mat m_PivotMatrix = {};
 
+	PLAYANIM_DESC m_PlaySnimDesc;
 
 private:
 	// For_Animation
