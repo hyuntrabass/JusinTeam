@@ -158,11 +158,12 @@ HRESULT CLoader::Load_Logo()
 #pragma region Effect
 	// Effect Textures
 	strInputFilePath = "../Bin/Resources/Textures/Effect/";
+	_uint iTextureNumber{};
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
 		{
-			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_Effect_") + entry.path().parent_path().stem().wstring() + TEXT("_") + entry.path().stem().wstring();
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_Effect_") + to_wstring(iTextureNumber++);
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
 			{
@@ -263,7 +264,14 @@ HRESULT CLoader::Load_Logo()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_EffectDummy"), CEffect_Dummy::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 #pragma endregion
+
+	CEffect_Manager::Get_Instance()->Read_EffectFile();
 
 	m_strLoadingText = L"Logo : Loading Complete!";
 	m_isFinished = true;

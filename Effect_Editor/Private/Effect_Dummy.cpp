@@ -58,7 +58,7 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 
 	if (m_Effect.eType == Effect_Type::ET_PARTICLE)
 	{
-		m_pParticle->Update(fTimeDelta, m_pTransformCom->Get_World_Matrix(), m_Effect.iNumInstances);
+		m_pParticle->Update(fTimeDelta, m_pTransformCom->Get_World_Matrix(), m_Effect.iNumInstances, m_Effect.bApplyGravity, m_Effect.vGravityDir);
 		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
 	}
 	else

@@ -154,6 +154,7 @@
     <ClInclude Include="..\Public\Camera_Debug.h" />
     <ClInclude Include="..\Public\Camera_Main.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
+    <ClInclude Include="..\public\Effect_Manager.h" />
     <ClInclude Include="..\Public\Goat.h" />
     <ClInclude Include="..\Public\Nastron03.h" />
     <ClInclude Include="..\Public\NPCvsMon.h" />
@@ -201,6 +202,7 @@
     <ClCompile Include="..\Private\Camera_Debug.cpp" />
     <ClCompile Include="..\Private\Camera_Main.cpp" />
     <ClCompile Include="..\Private\CharacterSelect.cpp" />
+    <ClCompile Include="..\private\Effect_Manager.cpp" />
     <ClCompile Include="..\Private\Goat.cpp" />
     <ClCompile Include="..\Private\Nastron03.cpp" />
     <ClCompile Include="..\Private\NPCvsMon.cpp" />

@@ -170,7 +170,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main();
     }
 
-    pass Particle_Sprite_Color
+    pass Particle_Sprite_Color_Dissolve
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);

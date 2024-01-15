@@ -56,9 +56,18 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 
 	m_fTimer += fTimeDelta;
 
+	if (m_Effect.pPos)
+	{
+		m_pTransformCom->Set_Position(*m_Effect.pPos);
+	}
+	else
+	{
+		m_pTransformCom->Set_Position(m_Effect.vPos);
+	}
+
 	if (m_Effect.eType == Effect_Type::ET_PARTICLE)
 	{
-		m_pParticle->Update(fTimeDelta, m_pTransformCom->Get_World_Matrix(), m_Effect.iNumInstances);
+		m_pParticle->Update(fTimeDelta, m_pTransformCom->Get_World_Matrix(), m_Effect.iNumInstances, m_Effect.bApplyGravity, m_Effect.vGravityDir);
 		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
 	}
 	else
@@ -83,12 +92,13 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 
 		m_WorldMatrix.Position(vPos);
 	}
-
-	m_pRendererCom->Add_RenderGroup(RG_Blur, this);
 }
 
 void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 {
+	__super::Compute_CamDistance();
+	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
+	m_pRendererCom->Add_RenderGroup(RG_Blur, this);
 }
 
 HRESULT CEffect_Dummy::Render()

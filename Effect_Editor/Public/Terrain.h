@@ -25,6 +25,9 @@ private:
 	CVIBuffer_Terrain* m_pVIBufferCom = { nullptr };
 
 private:
+	_uint2 m_vTerrainSize{};
+
+private:
 	HRESULT Add_Component();
 	HRESULT Bind_ShaderResources();
 

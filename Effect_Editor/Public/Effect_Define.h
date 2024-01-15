@@ -65,6 +65,7 @@ namespace Effect
 		VTPass_UI_Color_Alpha,
 		VTPass_Button,
 		VTPass_Background,
+		VTPass_Background_Mask,
 		VTPass_Mask_Texture,
 		VTPass_Inv_Mask_Texture,
 		VTPass_Mask_Color,

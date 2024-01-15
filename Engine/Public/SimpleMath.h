@@ -240,6 +240,7 @@ namespace DirectX
 
             // Assignment operators
             Vector3& operator= (const XMVECTORF32& F) noexcept { x = F.f[0]; y = F.f[1]; z = F.f[2]; return *this; }
+            Vector3& operator= (const XMFLOAT4& F) noexcept { x = F.x; y = F.y; z = F.z; return *this; }
             Vector3& operator+= (const Vector3& V) noexcept;
             Vector3& operator-= (const Vector3& V) noexcept;
             Vector3& operator*= (const Vector3& V) noexcept;

@@ -35,6 +35,8 @@ private:
 	SELECTMODEL_ANIM m_eCurAnimState{ S_IDLE };
 	wstring m_strModelTag = {};
 	ANIM_DESC m_Animation{};
+	_vec3 m_vRHPos{};
+	class CEffect_Dummy* m_pEffect{ nullptr };
 
 public:
 	void Change_AnimState(SELECTMODEL_ANIM eAnim);// { m_eCurAnimState = eAnim; }

@@ -18,6 +18,14 @@ HRESULT CTerrain::Init_Prototype()
 
 HRESULT CTerrain::Init(void* pArg)
 {
+	if (not pArg)
+	{
+		MSG_BOX("No Argument");
+		return E_FAIL;
+	}
+
+	m_vTerrainSize = *reinterpret_cast<_uint2*>(pArg);
+
 	if (FAILED(Add_Component()))
 		return E_FAIL;
 
@@ -66,7 +74,7 @@ HRESULT CTerrain::Add_Component()
 		return E_FAIL;
 	}
 	// For.Com_VIBuffer
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom, &m_vTerrainSize)))
 	{
 		return E_FAIL;
 	}

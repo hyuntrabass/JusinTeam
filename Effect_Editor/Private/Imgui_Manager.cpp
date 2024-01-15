@@ -107,6 +107,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		"VTPass_UI_Color_Alpha",
 		"VTPass_Button",
 		"VTPass_Background",
+		"VTPass_Background_Mask",
 		"VTPass_Mask_Texture",
 		"VTPass_Inv_Mask_Texture",
 		"VTPass_Mask_Color",
@@ -200,6 +201,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	static _vec2 vSize{ 1.f, 1.f };
 	static _float fSizeforSprite{ 1.f };
 	static _vec2 vSizeDelta{};
+	static _bool bApplyGravity{};
+	static _vec3 vGravityDir{};
 
 	if (m_iCurrent_Type == ET_PARTICLE)
 	{
@@ -257,9 +260,18 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			m_ParticleInfo.vSpeedRange.x = m_ParticleInfo.vSpeedRange.y;
 		}
 
+		Checkbox("Gravity", &bApplyGravity);
+
+		if (bApplyGravity)
+		{
+			InputFloat3("Gravity Dir", reinterpret_cast<_float*>(&vGravityDir), "%.2f");
+		}
+
 		Info.iNumInstances = m_iNumInstance;
 		Info.PartiDesc = m_ParticleInfo;
 		Info.vSize = _vec2(1.f);
+		Info.bApplyGravity = bApplyGravity;
+		Info.vGravityDir = vGravityDir;
 	}
 	else
 	{
@@ -343,6 +355,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		{
 			m_ParticleInfo = Info.PartiDesc;
 			m_iNumInstance = Info.iNumInstances;
+			bApplyGravity = Info.bApplyGravity;
+			vGravityDir = Info.vGravityDir;
 		}
 		else
 		{
@@ -444,10 +458,11 @@ HRESULT CImgui_Manager::Ready_Layers()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"))))
-	{
-		return E_FAIL;
-	}
+	//_uint2 vTerrainSize{ 10, 10 };
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &vTerrainSize)))
+	//{
+	//	return E_FAIL;
+	//}
 
 	//CVIBuffer_Instancing::ParticleDesc Desc{};
 	//m_pVtxTexShader = dynamic_cast<CShader*>(m_pGameInstance->Clone_Component(LEVEL_STATIC, L"Prototype_Component_Shader_VtxTex"));
