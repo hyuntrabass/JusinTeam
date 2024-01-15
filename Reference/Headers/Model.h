@@ -23,6 +23,7 @@ private:
 	virtual ~CModel() = default;
 
 public:
+	const _char* Get_FilePath() const;
 	const _uint& Get_NumMeshes() const;
 	const _uint& Get_NumAnim() const;
 	const _bool& IsAnimationFinished(_uint iAnimIndex) const;
@@ -49,6 +50,7 @@ public:
 	_bool Intersect_RayModel(_fmatrix WorldMatrix, _vec4* pPickPos);
 
 private:
+	_char m_szFilePath[MAX_PATH] = "";
 	_uint m_iNumMeshes{};
 	vector<class CMesh*> m_Meshes{};
 

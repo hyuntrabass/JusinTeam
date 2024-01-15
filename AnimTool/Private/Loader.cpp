@@ -195,32 +195,32 @@ HRESULT CLoader::Load_Tool()
 		return E_FAIL;
 	}
 	m_iNumMonsterModels++;
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Monster_4"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Goat/Mesh/Goat.hyuntraanimmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Monster_4"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Goat/Mesh/FurGoat.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
 	m_iNumMonsterModels++;
 	//Player
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Player_0"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Player/Select_Rogue/Mesh/Select_Rogue.hyuntraanimmesh", false, Pivot))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Player_0"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Select_Model/Mesh/Select_Priest.hyuntraanimmesh", false, Pivot))))
 	{
 		return E_FAIL;
 	}
 	m_iNumPlayerModels++;
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Player_1"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Player/Select_Sorceress/Mesh/Select_Sorceress.hyuntraanimmesh", false, Pivot))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Player_1"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Select_Model/Mesh/Select_Rogue.hyuntraanimmesh", false, Pivot))))
 	{
 		return E_FAIL;
 	}
 	m_iNumPlayerModels++;
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Player_2"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Player/Select_Warrior/Mesh/Select_Warrior.hyuntraanimmesh", false, Pivot))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Player_2"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Select_Model/Mesh/Select_Warrior.hyuntraanimmesh", false, Pivot))))
 	{
 		return E_FAIL;
 	}
 	m_iNumPlayerModels++;
-	/*if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Player_3"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Player/Select_Priest/Mesh/Select_Priest.hyuntraanimmesh", false, Pivot))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Player_3"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Select_Model/Mesh/Select_Sorceress.hyuntraanimmesh", false, Pivot))))
 	{
 		return E_FAIL;
 	}
-	m_iNumPlayerModels++;*/
+	m_iNumPlayerModels++;
 #pragma endregion
 
 	m_strLoadingText = L"Logo : Loading Shader";

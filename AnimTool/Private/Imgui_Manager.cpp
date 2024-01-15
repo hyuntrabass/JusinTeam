@@ -40,6 +40,14 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 	if (m_pPlayer)
 	{
+		if (m_pGameInstance->Key_Down(DIK_X))
+		{
+			m_pPlayer->Set_TimeDelta(0.f);
+		}
+		else if(m_pGameInstance->Key_Down(DIK_C))
+		{
+			m_pPlayer->Set_TimeDelta(fTimeDelta);
+		}
 		m_pPlayer->Tick(fTimeDelta);
 	}
 }
@@ -107,7 +115,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				if (ImGui::Selectable(szModelTag[i], bSelectedModel))
 				{
 					szCurrentModel = szModelTag[i];
-					strcpy_s(m_szCurrentModelTag, szCurrentModel);
 					m_iCurrentModelIndex = i;
 				}
 			}
@@ -116,13 +123,13 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	}
 	else if (m_eType == TYPE_PLAYER)
 	{
-		const char* szModelTag[4] = { "Select_Rogue","Select_Sorceress","Select_Warrior","Select_Priest" };
-		static const char* szCurrentModel = "Select_Rogue";
+		const char* szModelTag[4] = { "Select_Priest","Select_Rogue","Select_Sorceress","Select_Warrior" };
+		static const char* szCurrentModel = "Select_Priest";
 		if (m_ePreType != m_eType)
 		{
 			m_ePreType = m_eType;
 			m_iCurrentModelIndex = 0;
-			szCurrentModel = "Select_Rogue";
+			szCurrentModel = "Select_Priest";
 		}
 
 		if (ImGui::BeginCombo("LIST", szCurrentModel))
@@ -133,7 +140,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				if (ImGui::Selectable(szModelTag[i], bSelectedModel))
 				{
 					szCurrentModel = szModelTag[i];
-					strcpy_s(m_szCurrentModelTag, szCurrentModel);
 					m_iCurrentModelIndex = i;
 				}
 			}
@@ -145,12 +151,12 @@ HRESULT CImgui_Manager::ImGuiMenu()
 
 	if (ImGui::Button("SAVE"))
 	{
-		SaveFile(m_szCurrentModelTag);
+		SaveFile();
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("LOAD"))
 	{
-		LoadFile(m_szCurrentModelTag);
+		LoadFile();
 	}
 
 #pragma region CreateObject
@@ -239,17 +245,16 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			}
 		}
 
-		_uint iCurrentModelIndex = m_pPlayer->Get_ModelIndex();
 		_tchar szComName[MAX_PATH] = TEXT("");
 		const wstring& strMonsterComName = TEXT("Com_Model_Monster%d");
 		const wstring& strPlayerComName = TEXT("Com_Model_Player%d");
 		if (m_eType == TYPE_MONSTER)
 		{
-			wsprintf(szComName, strMonsterComName.c_str(), iCurrentModelIndex);
+			wsprintf(szComName, strMonsterComName.c_str(), m_iCurrentModelIndex);
 		}
 		else if (m_eType == TYPE_PLAYER)
 		{ 
-			wsprintf(szComName, strPlayerComName.c_str(), iCurrentModelIndex);
+			wsprintf(szComName, strPlayerComName.c_str(), m_iCurrentModelIndex);
 		}
 		wstring strFinalComName = szComName;
 		CModel* pCurrentModel = (CModel*)m_pPlayer->Find_Component(strFinalComName);
@@ -273,6 +278,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				if (ImGui::ListBox("ANIMATION", &iCurrentAnimation, m_AnimationNames.data(), m_AnimationNames.size()))
 				{
 					m_AnimDesc.iAnimIndex = iCurrentAnimation;
+					m_AnimDesc.bSkipInterpolation = true;
 					pCurrentModel->Set_Animation(m_AnimDesc);
 				}
 			}
@@ -283,19 +289,24 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			{
 				++iter;
 			}
-			ImGui::SliderInt("ANIMPOS", &iCurrentAnimPos, 0.f, (_int)(*iter)->Get_Duration());
-			(*iter)->Set_CurrentAnimPos((_float)iCurrentAnimPos);
+			
+			if (ImGui::SliderInt("ANIMPOS", &iCurrentAnimPos, 0.f, (_int)(*iter)->Get_Duration()))
+			{
+				(*iter)->Set_CurrentAnimPos((_float)iCurrentAnimPos);
+			}
 
-			ImGui::InputInt("ANIMP0S", &iCurrentAnimPos, 1);
-			if (iCurrentAnimPos > (_int)(*iter)->Get_Duration())
+			if (ImGui::InputInt("ANIMP0S", &iCurrentAnimPos, 1))
 			{
-				iCurrentAnimPos = (_int)(*iter)->Get_Duration();
+				if (iCurrentAnimPos > (_int)(*iter)->Get_Duration())
+				{
+					iCurrentAnimPos = (_int)(*iter)->Get_Duration();
+				}
+				else if (iCurrentAnimPos < 0)
+				{
+					iCurrentAnimPos = 0;
+				}
+				(*iter)->Set_CurrentAnimPos((_float)iCurrentAnimPos);
 			}
-			else if (iCurrentAnimPos < 0)
-			{
-				iCurrentAnimPos = 0;
-			}
-			(*iter)->Set_CurrentAnimPos((_float)iCurrentAnimPos);
 
 			if (ImGui::Button("ADD TRIGGER"))
 			{
@@ -382,47 +393,36 @@ HRESULT CImgui_Manager::ImGuizmoMenu()
 }
 
 
-HRESULT CImgui_Manager::SaveFile(const string& strModelName)
+HRESULT CImgui_Manager::SaveFile()
 {
-	_char szFilePath[MAX_PATH] = "";
-	_char szDirectory[MAX_PATH] = "../../Client/Bin/Resources/AnimMesh/";
-	_char szModelType[MAX_PATH] = "";
+	_tchar szComName[MAX_PATH] = TEXT("");
+	const wstring& strMonsterComName = TEXT("Com_Model_Monster%d");
+	const wstring& strPlayerComName = TEXT("Com_Model_Player%d");
 	if (m_eType == TYPE_MONSTER)
 	{
-		strcpy_s(szModelType, MAX_PATH, "Monster/");
+		wsprintf(szComName, strMonsterComName.c_str(), m_iCurrentModelIndex);
 	}
 	else if (m_eType == TYPE_PLAYER)
 	{
-		strcpy_s(szModelType, MAX_PATH, "Player/");
+		wsprintf(szComName, strPlayerComName.c_str(), m_iCurrentModelIndex);
 	}
-	_char szMesh[MAX_PATH] = "/Mesh/";
+	wstring strFinalComName = szComName;
+	CModel* pCurrentModel = (CModel*)m_pPlayer->Find_Component(strFinalComName);
+
+	_char szFilePath[MAX_PATH] = "";
+	_char szDirectory[MAX_PATH] = "";
+	_char szFileName[MAX_PATH] = "";
+	_splitpath_s(pCurrentModel->Get_FilePath(), nullptr, 0, szDirectory, MAX_PATH, szFileName, MAX_PATH, nullptr, 0);
+
 	_char szExt[MAX_PATH] = ".animtrigger";
 	strcpy_s(szFilePath, MAX_PATH, szDirectory);
-	strcat_s(szFilePath, MAX_PATH, szModelType);
-	strcat_s(szFilePath, MAX_PATH, strModelName.c_str());
-	strcat_s(szFilePath, MAX_PATH, szMesh);
-	strcat_s(szFilePath, MAX_PATH, strModelName.c_str());
+	strcat_s(szFilePath, MAX_PATH, szFileName);
 	strcat_s(szFilePath, MAX_PATH, szExt);
 
 	ofstream Fileout(szFilePath, ios::binary);
 
 	if (Fileout.is_open())
 	{
-		_uint iCurrentModelIndex = m_pPlayer->Get_ModelIndex();
-		_tchar szComName[MAX_PATH] = TEXT("");
-		const wstring& strMonsterComName = TEXT("Com_Model_Monster%d");
-		const wstring& strPlayerComName = TEXT("Com_Model_Player%d");
-		if (m_eType == TYPE_MONSTER)
-		{
-			wsprintf(szComName, strMonsterComName.c_str(), iCurrentModelIndex);
-		}
-		else if (m_eType == TYPE_PLAYER)
-		{
-			wsprintf(szComName, strPlayerComName.c_str(), iCurrentModelIndex);
-		}
-		wstring strFinalComName = szComName;
-		CModel* pCurrentModel = (CModel*)m_pPlayer->Find_Component(strFinalComName);
-
 		vector<CAnimation*> pAnimations = pCurrentModel->Get_Animations();
 		auto iter = pAnimations.begin();
 		for (_uint i = 0; i < pCurrentModel->Get_NumAnim(); i++)
@@ -451,47 +451,36 @@ HRESULT CImgui_Manager::SaveFile(const string& strModelName)
 	return S_OK;
 }
 
-HRESULT CImgui_Manager::LoadFile(const string& strModelName)
+HRESULT CImgui_Manager::LoadFile()
 {
-	_char szFilePath[MAX_PATH] = "";
-	_char szDirectory[MAX_PATH] = "../../Client/Bin/Resources/AnimMesh/";
-	_char szModelType[MAX_PATH] = "";
+	_tchar szComName[MAX_PATH] = TEXT("");
+	const wstring& strMonsterComName = TEXT("Com_Model_Monster%d");
+	const wstring& strPlayerComName = TEXT("Com_Model_Player%d");
 	if (m_eType == TYPE_MONSTER)
 	{
-		strcpy_s(szModelType, MAX_PATH, "Monster/");
+		wsprintf(szComName, strMonsterComName.c_str(), m_iCurrentModelIndex);
 	}
 	else if (m_eType == TYPE_PLAYER)
 	{
-		strcpy_s(szModelType, MAX_PATH, "Player/");
+		wsprintf(szComName, strPlayerComName.c_str(), m_iCurrentModelIndex);
 	}
-	_char szMesh[MAX_PATH] = "/Mesh/";
+	wstring strFinalComName = szComName;
+	CModel* pCurrentModel = (CModel*)m_pPlayer->Find_Component(strFinalComName);
+
+	_char szFilePath[MAX_PATH] = "";
+	_char szDirectory[MAX_PATH] = "";
+	_char szFileName[MAX_PATH] = "";
+	_splitpath_s(pCurrentModel->Get_FilePath(), nullptr, 0, szDirectory, MAX_PATH, szFileName, MAX_PATH, nullptr, 0);
+
 	_char szExt[MAX_PATH] = ".animtrigger";
 	strcpy_s(szFilePath, MAX_PATH, szDirectory);
-	strcat_s(szFilePath, MAX_PATH, szModelType);
-	strcat_s(szFilePath, MAX_PATH, strModelName.c_str());
-	strcat_s(szFilePath, MAX_PATH, szMesh);
-	strcat_s(szFilePath, MAX_PATH, strModelName.c_str());
+	strcat_s(szFilePath, MAX_PATH, szFileName);
 	strcat_s(szFilePath, MAX_PATH, szExt);
 
 	ifstream Filein(szFilePath, ios::binary);
 
 	if (Filein.is_open())
 	{
-		_uint iCurrentModelIndex = m_pPlayer->Get_ModelIndex();
-		_tchar szComName[MAX_PATH] = TEXT(""); 
-		const wstring& strMonsterComName = TEXT("Com_Model_Monster%d");
-		const wstring& strPlayerComName = TEXT("Com_Model_Player%d");
-		if (m_eType == TYPE_MONSTER)
-		{
-			wsprintf(szComName, strMonsterComName.c_str(), iCurrentModelIndex);
-		}
-		else if (m_eType == TYPE_PLAYER)
-		{
-			wsprintf(szComName, strPlayerComName.c_str(), iCurrentModelIndex);
-		}
-		wstring strFinalComName = szComName;
-		CModel* pCurrentModel = (CModel*)m_pPlayer->Find_Component(strFinalComName);
-
 		vector<CAnimation*> pAnimations = pCurrentModel->Get_Animations();
 		auto iter = pAnimations.begin();
 
