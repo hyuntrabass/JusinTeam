@@ -45,6 +45,13 @@ CModel::CModel(const CModel& rhs)
 			Safe_AddRef(pTexture);
 		}
 	}
+
+	strcpy_s(m_szFilePath, MAX_PATH, rhs.m_szFilePath);
+}
+
+const _char* CModel::Get_FilePath() const
+{
+	return m_szFilePath;
 }
 
 const _uint& CModel::Get_NumMeshes() const
@@ -125,6 +132,7 @@ void CModel::Set_Animation(ANIM_DESC Animation_Desc)
 
 HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix)
 {
+	strcpy_s(m_szFilePath, MAX_PATH, strFilePath.c_str());
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
 	ModelType eType{};
 	_char szDirectory[MAX_PATH]{};
