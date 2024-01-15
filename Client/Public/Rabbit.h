@@ -29,6 +29,7 @@ public:
 	{
 		STATE_IDLE,
 		STATE_ROAM,
+		STATE_CHASE,
 		STATE_ATTACK,
 		STATE_DIE,
 		STATE_END
@@ -56,6 +57,8 @@ public:
 	void Change_State(_float fTimeDelta);
 	void Control_State(_float fTimeDelta);
 
+	void Attack(_float fTimeDelta);
+
 private:
 	CCollider* m_pColliderCom[COLL_END] = { nullptr };
 
@@ -67,6 +70,9 @@ private:
 	_float m_fIdleTime = {};
 
 	_uint m_iRoamingPattern = {};
+	_uint m_iAttackPattern = {};
+
+	_bool m_bSelectAttackPattern = { false };
 
 public:
 	virtual HRESULT Add_Collider() override;
