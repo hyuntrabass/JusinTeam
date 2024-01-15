@@ -81,6 +81,8 @@ HRESULT CLevel_Custom::Ready_UI()
 	{
 		return E_FAIL;
 	}
+
+	return S_OK;
 }
 
 HRESULT CLevel_Custom::Ready_Camera()

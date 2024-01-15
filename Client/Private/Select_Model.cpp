@@ -53,6 +53,7 @@ void CSelect_Model::Tick(_float fTimeDelta)
 				{
 					EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"FireTest");
 					Info.pPos = &m_vRHPos;
+					Info.vPosOffset = Info.vPosOffset + _vec3(0.f, 0.05f, 0.f);
 					m_pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
 
 					Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"FireInit");
