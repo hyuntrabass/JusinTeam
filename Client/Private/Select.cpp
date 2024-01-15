@@ -228,7 +228,7 @@ HRESULT CSelect::Add_Models()
 	Info.strPrototypeTag = TEXT("Prototype_Model_Select0");
 
 	_vec4 vPos;
-	vPos = _vec4(1.8, 0.07, -2.4, 1);//프리스트
+	vPos = _vec4(1.8f, 0.07f, -2.4f, 1.f);//프리스트
 	Info.vPos = vPos;
 	m_pSelectModels[3] = (CSelect_Model*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Select_Model"), &Info);
 	if (not m_pSelectModels[3])
@@ -237,7 +237,7 @@ HRESULT CSelect::Add_Models()
 	}
 
 
-	vPos = _vec4(0.7, 0.07, -1.2, 1);//로그
+	vPos = _vec4(0.7f, 0.07f, -1.2f, 1.f);//로그
 	Info.vPos = vPos;
 	Info.strPrototypeTag = TEXT("Prototype_Model_Select1");
 	m_pSelectModels[2] = (CSelect_Model*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Select_Model"), &Info);
@@ -246,7 +246,7 @@ HRESULT CSelect::Add_Models()
 		return E_FAIL;
 	}
 
-	vPos = _vec4(-2.2, 0.07, -2.7, 1);//소서리스
+	vPos = _vec4(-2.2f, 0.07f, -2.7f, 1.f);//소서리스
 	Info.vPos = vPos;
 	Info.strPrototypeTag = TEXT("Prototype_Model_Select2");
 	m_pSelectModels[0] = (CSelect_Model*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Select_Model"), &Info);
@@ -255,7 +255,7 @@ HRESULT CSelect::Add_Models()
 		return E_FAIL;
 	}
 
-	vPos = _vec4(-0.9, 0.07, -1.2, 1);//워리어
+	vPos = _vec4(-0.9f, 0.07f, -1.2f, 1.f);//워리어
 	Info.vPos = vPos;
 	Info.strPrototypeTag = TEXT("Prototype_Model_Select3");
 	m_pSelectModels[1] = (CSelect_Model*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Select_Model"), &Info);

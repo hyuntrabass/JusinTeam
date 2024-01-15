@@ -65,8 +65,8 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 		if (!m_bInitMode[CM_CUSTOM])
 		{
-			m_pTransformCom->Set_State(State::Pos, _vec4(-0.03993677, 1.398446296, -5.207254, 1));
-			m_pTransformCom->LookAt_Dir(_vec4(-0.049540625, -0.10697676, 0.993027, 0));
+			m_pTransformCom->Set_State(State::Pos, _vec4(-0.03993677f, 1.398446296f, -5.207254f, 1.f));
+			m_pTransformCom->LookAt_Dir(_vec4(-0.049540625f, -0.10697676f, 0.993027f, 0.f));
 
 			m_bInitMode[CM_CUSTOM] = true;
 			return;
@@ -78,14 +78,14 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		case CAMERA_STATE::CM_DEFAULT:
 		{
 			_vec4 vCurrentPos = m_pTransformCom->Get_State(State::Pos);
-			_vec4 vTargetPos = _vec4(-0.03993677, 1.398446296, -5.207254, 1);
+			_vec4 vTargetPos = _vec4(-0.03993677f, 1.398446296f, -5.207254f, 1.f);
 
 			_vec4 vNewPos = XMVectorLerp(vCurrentPos, vTargetPos, 0.1f);
 			m_pTransformCom->Set_State(State::Pos, vNewPos);
 
 
 			_vec4 vCurLook = m_pTransformCom->Get_State(State::Look);
-			_vec4 vTargetLook = _vec4(-0.049540625, -0.10697676, 0.993027, 0);
+			_vec4 vTargetLook = _vec4(-0.049540625f, -0.10697676f, 0.993027f, 0.f);
 
 			_vec4 vNewLook = XMVectorLerp(vCurLook, vTargetLook, 0.1f);
 			m_pTransformCom->LookAt_Dir(vNewLook);

@@ -3,13 +3,6 @@
 
 BEGIN(Engine)
 
-enum class ModelType
-{
-	Static,
-	Anim,
-	Collision,
-	End
-};
 
 struct ANIM_DESC
 {
@@ -78,6 +71,9 @@ private:
 	_bool m_isAnimChanged{};
 
 	ANIM_DESC m_AnimDesc{};
+
+	ID3D11Texture2D* m_pTexture{ nullptr };
+	ID3D11ShaderResourceView* m_pSRV{ nullptr };
 
 private:
 	HRESULT Read_Bones(ifstream& File);

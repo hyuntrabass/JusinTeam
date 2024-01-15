@@ -692,6 +692,8 @@ HRESULT CLoader::Load_GamePlay()
 
 #pragma endregion
 
+
+
 	m_strLoadingText = L"Logo : Loading Shader";
 #pragma region Shader
 #pragma endregion

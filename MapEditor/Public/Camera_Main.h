@@ -4,12 +4,12 @@
 
 BEGIN(MapEditor)
 
-class CCamera_Custom final : public CCamera
+class CCamera_Main final : public CCamera
 {
 private:
-	CCamera_Custom(_dev pDevice, _context pContext);
-	CCamera_Custom(const CCamera_Custom& rhs);
-	virtual ~CCamera_Custom() = default;
+	CCamera_Main(_dev pDevice, _context pContext);
+	CCamera_Main(const CCamera_Main& rhs);
+	virtual ~CCamera_Main() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -31,7 +31,7 @@ private:
 	CUTSCENE* m_pScene{ nullptr };
 
 public:
-	static CCamera_Custom* Create(_dev pDevice, _context pContext);
+	static CCamera_Main* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

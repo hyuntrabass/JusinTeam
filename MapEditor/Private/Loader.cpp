@@ -155,36 +155,29 @@ HRESULT CLoader::Load_Editor()
 
 #pragma endregion
 
-	m_strLoadingText = L"Editor : Loading Model";
+	m_strLoadingText = L"Editor : Loading Object Model";
 #pragma region Model
-	_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(90.f));
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Common/Mesh/SM_EFF_Sphere_02.mo.hyuntrastatmesh", false, Pivot))))
+	_matrix Pivot = XMMatrixScaling(0.01f,0.01,0.01f);
+	//_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(90.f));
+
+	// Object Model
+	strInputFilePath = "../Bin/Resources/StaticMesh/Village/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
-		return E_FAIL;
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
+			{
+				return E_FAIL;
+			}
+		}
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sphere_HorizentalUV"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Common/Mesh/SM_EFF_Sphere_01.mo.hyuntrastatmesh"))))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Ring_14"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Common/Mesh/SM_EFF_Ring_14.mo.hyuntrastatmesh"))))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Circle"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Common/Mesh/SM_EFF_Circle_01.mo.hyuntrastatmesh"))))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_SM_EFF_Tree_01.mo"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Common/Mesh/SM_EFF_Tree_01.mo.hyuntrastatmesh"))))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_test"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Common/Mesh/test.hyuntrastatmesh"))))
-	{
-		return E_FAIL;
-	}
+
 #pragma endregion
 
-	m_strLoadingText = L"Logo : Loading Model";
+	m_strLoadingText = L"Editor : Loading Monster Model";
 #pragma region Model
 	// Barlog
 	strInputFilePath = "../Bin/Resources/AnimMesh/Monster/Barlog/Mesh";
@@ -256,7 +249,7 @@ HRESULT CLoader::Load_Editor()
 		}
 	}
 
-	// 
+	// Orc02
 	strInputFilePath = "../Bin/Resources/AnimMesh/Monster/Orc02/Mesh";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -270,6 +263,7 @@ HRESULT CLoader::Load_Editor()
 		}
 	}
 
+	// Penguin
 	strInputFilePath = "../Bin/Resources/AnimMesh/Monster/Penguin/Mesh";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -283,6 +277,7 @@ HRESULT CLoader::Load_Editor()
 		}
 	}
 
+	// Rabbit
 	strInputFilePath = "../Bin/Resources/AnimMesh/Monster/Rabbit/Mesh";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -296,6 +291,7 @@ HRESULT CLoader::Load_Editor()
 		}
 	}
 
+	// Thief04
 	strInputFilePath = "../Bin/Resources/AnimMesh/Monster/Thief04/Mesh";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -309,6 +305,7 @@ HRESULT CLoader::Load_Editor()
 		}
 	}
 
+	// Trilobite
 	strInputFilePath = "../Bin/Resources/AnimMesh/Monster/Trilobite/Mesh";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -322,6 +319,7 @@ HRESULT CLoader::Load_Editor()
 		}
 	}
 
+	// TrilobiteA
 	strInputFilePath = "../Bin/Resources/AnimMesh/Monster/TrilobiteA/Mesh";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -335,6 +333,7 @@ HRESULT CLoader::Load_Editor()
 		}
 	}
 
+	// Void13
 	strInputFilePath = "../Bin/Resources/AnimMesh/Monster/Void13/Mesh";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -348,6 +347,7 @@ HRESULT CLoader::Load_Editor()
 		}
 	}
 
+	// VoidDragon
 	strInputFilePath = "../Bin/Resources/AnimMesh/Monster/VoidDragon/Mesh";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -360,7 +360,40 @@ HRESULT CLoader::Load_Editor()
 			}
 		}
 	}
+
+	// Void05
+	strInputFilePath = "../Bin/Resources/AnimMesh/Monster/Void05/Mesh";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void05"), CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 #pragma endregion
+
+#pragma region Map
+	//m_strLoadingText = L"Editor : Loading Map Model";
+
+	//strInputFilePath = "../Bin/Resources/StaticMesh/Common/Mesh";
+	//for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	//{
+	//	if (entry.is_regular_file())
+	//	{
+	//		if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_"), CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+	//		{
+	//			return E_FAIL;
+	//		}
+	//	}
+	//}
+#pragma endregion
+
+	
+
 	m_strLoadingText = L"Editor : Loading Shader";
 #pragma region Shader
 #pragma endregion
@@ -410,10 +443,10 @@ HRESULT CLoader::Load_Editor()
 		return E_FAIL;
 	}
 
-	//if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Map"), CDummy::Create(m_pDevice, m_pContext))))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Map"), CMap::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 	m_strLoadingText = L"Editor : Loading Complete!";

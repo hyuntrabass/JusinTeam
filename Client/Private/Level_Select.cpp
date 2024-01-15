@@ -113,13 +113,13 @@ HRESULT CLevel_Select::Ready_Model()
 	Info.strPrototypeTag = TEXT("Prototype_Model_Select0");
 
 	_vec4 vPos;
-	vPos = _vec4(1.8, 0.07, -2.4, 1);
+	vPos = _vec4(1.8f, 0.07f, -2.4f, 1.f);
 	Info.vPos = vPos;
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select_Model"), TEXT("Prototype_GameObject_Select_Model"), &Info)))
 	{
 		return E_FAIL;
 	}
-	vPos = _vec4(0.7, 0.07, -1.2, 1);
+	vPos = _vec4(0.7f, 0.07f, -1.2f, 1.f);
 	
 	Info.vPos = vPos;
 	Info.strPrototypeTag = TEXT("Prototype_Model_Select1");
@@ -128,7 +128,7 @@ HRESULT CLevel_Select::Ready_Model()
 		return E_FAIL;
 	}
 
-	vPos = _vec4(-2.2, 0.07, -2.7, 1);
+	vPos = _vec4(-2.2f, 0.07f, -2.7f, 1.f);
 	Info.vPos = vPos;
 	Info.strPrototypeTag = TEXT("Prototype_Model_Select2");
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select_Model"), TEXT("Prototype_GameObject_Select_Model"), &Info)))
@@ -136,7 +136,7 @@ HRESULT CLevel_Select::Ready_Model()
 		return E_FAIL;
 	}
 
-	vPos = _vec4(-0.9, 0.07,-1.2,1);
+	vPos = _vec4(-0.9f, 0.07f,-1.2f, 1.f);
 	Info.vPos = vPos;
 	Info.strPrototypeTag = TEXT("Prototype_Model_Select3");
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select_Model"), TEXT("Prototype_GameObject_Select_Model"), &Info)))
@@ -152,14 +152,14 @@ HRESULT CLevel_Select::Ready_Npc()
 	Info.strPrototypeTag = TEXT("Prototype_Model_Select_Npc0");
 
 	_vec4 vPos;
-	vPos = _vec4(-0.3, 0.07, 2.3, 1);
+	vPos = _vec4(-0.3f, 0.07f, 2.3f, 1.f);
 	Info.vPos = vPos;
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select_Npc"), TEXT("Prototype_GameObject_Select_Npc"), &Info)))
 	{
 		return E_FAIL;
 	}
 
-	vPos = _vec4(0.6, 0.07, 2.3, 1);
+	vPos = _vec4(0.6f, 0.07f, 2.3f, 1.f);
 
 	Info.vPos = vPos;
 	Info.strPrototypeTag = TEXT("Prototype_Model_Select_Npc2");
@@ -168,7 +168,7 @@ HRESULT CLevel_Select::Ready_Npc()
 		return E_FAIL;
 	}
 
-	vPos = _vec4(-2.2, 0.07, 1.2, 1);
+	vPos = _vec4(-2.2f, 0.07f, 1.2f, 1.f);
 	Info.vPos = vPos;
 	Info.strPrototypeTag = TEXT("Prototype_Model_Select_Npc1");
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select_Npc"), TEXT("Prototype_GameObject_Select_Npc"), &Info)))
@@ -176,7 +176,7 @@ HRESULT CLevel_Select::Ready_Npc()
 		return E_FAIL;
 	}
 
-	vPos = _vec4(1.6, -0.2,1.2, 1);
+	vPos = _vec4(1.6f, -0.2f, 1.2f, 1.f);
 	Info.vPos = vPos;
 	Info.strPrototypeTag = TEXT("Prototype_Model_Select_Npc3");
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select_Npc"), TEXT("Prototype_GameObject_Select_Npc"), &Info)))

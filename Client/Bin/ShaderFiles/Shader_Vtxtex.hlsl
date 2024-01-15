@@ -12,7 +12,7 @@ float g_fx;
 float g_fHpRatio;
 float g_fAlpha;
 int2 g_vNumSprite;
-int g_iIndex;
+uint g_iIndex;
 
 struct VS_IN
 {
@@ -90,7 +90,7 @@ PS_OUT PS_Main_Color_Alpha(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor.xyz = g_vColor;
+    Output.vColor.xyz = g_vColor.xyz;
     Output.vColor.a = g_fAlpha;
 
     return Output;

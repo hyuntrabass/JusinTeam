@@ -27,6 +27,9 @@ public:
 	void Set_Transform(TransformType eState, const _mat& TransformMatrix);
 	void Set_Transform(TransformType eState, _fmatrix TransformMatrix);
 
+	void Set_OldViewMatrix(const _mat& TransformMatrix);
+	_mat Get_OldViewMatrix_vec4x4() const;
+	_mat Get_OldViewMatrix() const;
 public:
 	HRESULT Init();
 	void Tick();
@@ -37,6 +40,7 @@ private:
 	_mat m_TransformMatrix[ToIndex(TransformType::End)]{};
 	_mat m_TransformMatrix_Inversed[ToIndex(TransformType::End)]{};
 
+	_mat m_OldViewMatrix{};
 public:
 	static CPipeLine* Create();
 	virtual void Free() override;

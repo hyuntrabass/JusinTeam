@@ -1,4 +1,7 @@
 
+
+float3 g_vRandom[50];
+
 // Sampler
 sampler PointSampler = sampler_state
 {
@@ -19,6 +22,14 @@ sampler LinearClampSampler = sampler_state
     Filter = MIN_MAG_MIP_LINEAR;
     AddressU = clamp;
     AddressV = clamp;
+};
+
+sampler WaterSampler = sampler_state
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = wrap;
+    AddressV = wrap;
+    AddressW = wrap;
 };
 
 // Rasterizer State
