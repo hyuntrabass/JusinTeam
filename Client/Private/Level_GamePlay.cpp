@@ -37,11 +37,11 @@ HRESULT CLevel_GamePlay::Init()
 	//}
 
 	// Monster Parse
-	if (FAILED(Ready_Monster()))
-	{
-		MSG_BOX("Failed to Ready Monster");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Monster()))
+	//{
+	//	MSG_BOX("Failed to Ready Monster");
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(Ready_Rabbit()))
 	{
@@ -78,6 +78,8 @@ HRESULT CLevel_GamePlay::Init()
 		MSG_BOX("Failed to Ready Map");
 		return E_FAIL;
 	}
+
+	m_pGameInstance->Set_HellHeight(-5000.f);
 
 	return S_OK;
 }
@@ -129,8 +131,8 @@ HRESULT CLevel_GamePlay::Ready_Player()
 
 HRESULT CLevel_GamePlay::Ready_Map()
 {
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"))))
+	_uint2 vTerrainSize{ 50, 50 };
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &vTerrainSize)))
 	{
 		return E_FAIL;
 	}

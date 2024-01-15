@@ -3,6 +3,14 @@
 
 namespace Engine
 {
+	enum class ModelType
+	{
+		Static,
+		Anim,
+		Collision,
+		End
+	};
+
 	using GRAPHIC_DESC = struct tagGraphic_Desc
 	{
 		HWND hWnd{};
@@ -37,6 +45,16 @@ namespace Engine
 		SimpleMath::Vector4 vScaling{};
 		SimpleMath::Vector4 vRotation{};
 		SimpleMath::Vector4 vPosition{};
+	};
+
+
+
+	using ANIMTIME_DESC = struct tagAnimTimeDesc {
+		float SwitchDuration = 0.2f;
+		float SwitchRatio = 0.f;
+		float SwitchTime = 0.f;
+		float fPadding = 0.f;
+
 	};
 
 	using VTXPOSCOLOR = struct ENGINE_DLL tagVertex_Position_Color

@@ -1,16 +1,17 @@
-#include "Model.h"
+#include "VTFModel.h"
+#include "Bone.h"
 #include "Mesh.h"
 #include "Texture.h"
-#include "Bone.h"
 #include "Animation.h"
 
-CModel::CModel(_dev pDevice, _context pContext)
+CVTFModel::CVTFModel(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
 {
 }
 
-CModel::CModel(const CModel& rhs)
+CVTFModel::CVTFModel(const CVTFModel& rhs)
 	: CComponent(rhs)
+	, m_eType(rhs.m_eType)
 	, m_iNumMeshes(rhs.m_iNumMeshes)
 	, m_iNumMaterials(rhs.m_iNumMaterials)
 	, m_Materials(rhs.m_Materials)
@@ -47,111 +48,36 @@ CModel::CModel(const CModel& rhs)
 	}
 }
 
-const _uint& CModel::Get_NumMeshes() const
-{
-	return m_iNumMeshes;
-}
-
-const _uint& CModel::Get_NumAnim() const
-{
-	return m_iNumAnimations;
-}
-
-const _bool& CModel::IsAnimationFinished(_uint iAnimIndex) const
-{
-	return m_Animations[iAnimIndex]->IsFinished();
-}
-
-const _uint& CModel::Get_CurrentAnimationIndex() const
-{
-	return m_AnimDesc.iAnimIndex;
-}
-
-const _float& CModel::Get_CurrentAnimPos() const
-{
-	return m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos();
-}
-
-const _mat* CModel::Get_BoneMatrix(const _char* pBoneName) const
-{
-	auto iter = find_if(m_Bones.begin(), m_Bones.end(), [&pBoneName](CBone* pBone) 
-	{
-		if (!strcmp(pBone->Get_BoneName(), pBoneName))
-		{
-			return true;
-		}
-		return false;
-	});
-
-	if (iter == m_Bones.end())
-	{
-		MSG_BOX("Can't Find Bone");
-		return nullptr;
-	}
-
-	return (*iter)->Get_CombinedMatrix();
-}
-
-_matrix CModel::Get_PivotMatrix()
-{
-	return XMLoadFloat4x4(&m_PivotMatrix);
-}
-
-vector<class CAnimation*>& CModel::Get_Animations()
-{
-	return m_Animations;
-}
-
-void CModel::Set_Animation(ANIM_DESC Animation_Desc)
-{
-	if (m_AnimDesc.iAnimIndex != Animation_Desc.iAnimIndex or
-		Animation_Desc.bRestartAnimation)
-	{
-		m_isAnimChanged = true;
-
-		for (auto& pAnim : m_Animations)
-		{
-			pAnim->ResetFinished();
-		}
-
-		if (m_AnimDesc.iAnimIndex >= m_iNumAnimations)
-		{
-			m_AnimDesc.iAnimIndex = m_iNumAnimations - 1;
-		}
-	}
-	
-	m_AnimDesc = Animation_Desc;
-}
-
-HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix)
+HRESULT CVTFModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix)
 {
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
-	ModelType eType{};
+
+	m_eType = ModelType::End;
+
 	_char szDirectory[MAX_PATH]{};
 	_char szFileName[MAX_PATH]{};
 	_char szTriggerExt[MAX_PATH] = ".animtrigger";
 	_char szExt[MAX_PATH]{};
-	if (!isCOLMesh)
-	{
+
+	if (false == isCOLMesh) {
 		_splitpath_s(strFilePath.c_str(), nullptr, 0, szDirectory, MAX_PATH, szFileName, MAX_PATH, szExt, MAX_PATH);
 		if (!strcmp(szExt, ".hyuntraanimmesh"))
 		{
-			eType = ModelType::Anim;
+			m_eType = ModelType::Anim;
 		}
 		else
 		{
-			eType = ModelType::Static;
+			m_eType = ModelType::Static;
 		}
 	}
-	else
-	{
-		eType = ModelType::Collision;
+	else {
+		m_eType = ModelType::Collision;
 	}
 
 	ifstream ModelFile(strFilePath.c_str(), ios::binary);
 	if (ModelFile.is_open())
 	{
-		if (eType == ModelType::Anim)
+		if (m_eType == ModelType::Anim)
 		{
 			if (FAILED(Read_Bones(ModelFile)))
 			{
@@ -159,17 +85,23 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 			}
 		}
 
-		if (FAILED(Read_Meshes(ModelFile, eType, PivotMatrix)))
+		if (FAILED(Read_Meshes(ModelFile, m_eType, PivotMatrix)))
 		{
 			return E_FAIL;
 		}
+
+		if (m_eType == ModelType::Anim) {
+			for (auto& pMesh : m_Meshes)
+				pMesh->Set_Bone_Offset(m_Bones);
+		}
+
 
 		if (FAILED(Read_Materials(ModelFile, strFilePath)))
 		{
 			return E_FAIL;
 		}
 
-		if (eType == ModelType::Anim)
+		if (m_eType == ModelType::Anim)
 		{
 			if (FAILED(Read_Animations(ModelFile)))
 			{
@@ -179,14 +111,9 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 
 		ModelFile.close();
 
-		if (eType == ModelType::Anim) {
 
-			for (auto& pMesh : m_Meshes) {
-				pMesh->Set_Bone_Offset(m_Bones);
-			}
-		}
 
-		if (eType == ModelType::Anim)
+		if (m_eType == ModelType::Anim)
 		{
 			_char szTriggerFilePath[MAX_PATH]{};
 			strcpy_s(szTriggerFilePath, MAX_PATH, szDirectory);
@@ -219,76 +146,21 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 	return S_OK;
 }
 
-HRESULT CModel::Init(void* pArg)
+HRESULT CVTFModel::Init(void* pArg)
 {
-	return S_OK;
-}
+	if (ModelType::Anim == m_eType) {
+		_uint iMax = 0;
+		for (auto& pAnimation : m_Animations)
+			iMax = max(iMax, pAnimation->Get_MaxFrame());
 
-void CModel::Play_Animation(_float fTimeDelta)
-{
-	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop, m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio);
-
-	for (auto& pBone : m_Bones)
-	{
-		pBone->Update_CombinedMatrix(m_Bones);
+		if (FAILED(CreateVTF(iMax)))
+			return E_FAIL;
 	}
-		
-}
-
-HRESULT CModel::Bind_BoneMatrices(_uint iMeshIndex, CShader* pShader, const _char* pVariableName)
-{
-	return m_Meshes[iMeshIndex]->Bind_BoneMatrices(pShader, m_Bones, pVariableName, XMLoadFloat4x4(&m_PivotMatrix));
-}
-
-HRESULT CModel::Bind_Material(CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType)
-{
-	_uint iMatIndex = m_Meshes[iMeshIndex]->Get_MatIndex();
-
-	if (iMatIndex >= m_iNumMaterials)
-	{
-		return E_FAIL;
-	}
-
-	CTexture* pMaterial = m_Materials[iMatIndex].pMaterials[ToIndex(eTextureType)];
-	if (!pMaterial)
-	{
-		return E_FAIL;
-	}
-
-	return pMaterial->Bind_ShaderResource(pShader, pVariableName);
-}
-
-void CModel::Apply_TransformToActor(_fmatrix WorldMatrix)
-{
-	for (auto& pMesh : m_Meshes)
-	{
-		pMesh->Apply_TransformToActor(WorldMatrix);
-	}
-}
-
-HRESULT CModel::Render(_uint iMeshIndex)
-{
-	m_Meshes[iMeshIndex]->Render();
 
 	return S_OK;
 }
 
-_bool CModel::Intersect_RayModel(_fmatrix WorldMatrix, _vec4* pPickPos)
-{
-	for (auto& pMesh : m_Meshes)
-	{
-		if (pMesh->Intersect_RayMesh(WorldMatrix, pPickPos))
-		{
-			XMStoreFloat4(pPickPos, XMVector4Transform(XMLoadFloat4(pPickPos), WorldMatrix));
-			return true;
-		}
-	}
-
-	return false;
-}
-
-
-HRESULT CModel::Read_Bones(ifstream& File)
+HRESULT CVTFModel::Read_Bones(ifstream& File)
 {
 	_uint iNumBones{};
 	File.read(reinterpret_cast<_char*>(&iNumBones), sizeof _uint);
@@ -307,7 +179,7 @@ HRESULT CModel::Read_Bones(ifstream& File)
 	return S_OK;
 }
 
-HRESULT CModel::Read_Meshes(ifstream& File, const ModelType& eType, _fmatrix PivotMatrix)
+HRESULT CVTFModel::Read_Meshes(ifstream& File, const ModelType& eType, _fmatrix PivotMatrix)
 {
 	File.read(reinterpret_cast<_char*>(&m_iNumMeshes), sizeof _uint);
 	m_Meshes.reserve(m_iNumMeshes);
@@ -326,7 +198,7 @@ HRESULT CModel::Read_Meshes(ifstream& File, const ModelType& eType, _fmatrix Piv
 	return S_OK;
 }
 
-HRESULT CModel::Read_Animations(ifstream& File)
+HRESULT CVTFModel::Read_Animations(ifstream& File)
 {
 	File.read(reinterpret_cast<_char*>(&m_iNumAnimations), sizeof _uint);
 
@@ -344,7 +216,7 @@ HRESULT CModel::Read_Animations(ifstream& File)
 	return S_OK;
 }
 
-HRESULT CModel::Read_Materials(ifstream& File, const string& strFilePath)
+HRESULT CVTFModel::Read_Materials(ifstream& File, const string& strFilePath)
 {
 	_char szMatFilePath[MAX_PATH]{};
 	_char szFullPath[MAX_PATH]{};
@@ -395,31 +267,117 @@ HRESULT CModel::Read_Materials(ifstream& File, const string& strFilePath)
 	return S_OK;
 }
 
-CModel* CModel::Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix)
+HRESULT CVTFModel::CreateVTF(_uint MaxFrame)
 {
-	CModel* pInstance = new CModel(pDevice, pContext);
+	vector<ANIMTRANS_ARRAY> AnimTransforms;
+	AnimTransforms.resize(m_iNumAnimations);
+
+	for (size_t i = 0; i < m_iNumAnimations; i++)
+	{
+		if (FAILED(CreateAnimationTransform(i, AnimTransforms)))
+			return E_FAIL;
+	}
+
+	D3D11_TEXTURE2D_DESC Desc = {};
+	Desc.Width = m_Bones.size() * 4;
+	Desc.Height = MaxFrame;
+	Desc.ArraySize = m_iNumAnimations;
+	Desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	Desc.Usage = D3D11_USAGE_IMMUTABLE;
+	Desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	Desc.MipLevels = 1;
+	Desc.SampleDesc.Count = 1;
+
+	const _uint BoneMatrixSize = m_Bones.size() * sizeof(_mat);
+	const _uint AnimationSize = BoneMatrixSize * MaxFrame;
+	void* AllAnimationPtr = malloc(AnimationSize * m_iNumAnimations);
+
+	for (size_t i = 0; i < m_iNumAnimations; i++)
+	{
+		_uint taehee = i * AnimationSize;
+
+		BYTE* AnimationPtr = reinterpret_cast<BYTE*>(AllAnimationPtr) + taehee;
+
+		for (size_t j = 0; j < MaxFrame; j++)
+		{
+			void* Ptr = AnimationPtr + j * BoneMatrixSize;
+			memcpy(Ptr, AnimTransforms[i].TransformArray[j].data(), BoneMatrixSize);
+		}
+	}
+
+	vector<D3D11_SUBRESOURCE_DATA> SubResourceData(m_iNumAnimations);
+
+	for (size_t i = 0; i < m_iNumAnimations; i++)
+	{
+		void* Ptr = reinterpret_cast<BYTE*>(AllAnimationPtr) + i * BoneMatrixSize;
+		SubResourceData[i].pSysMem = Ptr;
+		SubResourceData[i].SysMemPitch = BoneMatrixSize;
+		SubResourceData[i].SysMemSlicePitch = AnimationSize;
+	}
+
+	if (FAILED(m_pDevice->CreateTexture2D(&Desc, SubResourceData.data(), &m_pTexture)))
+		return E_FAIL;
+
+	free(AllAnimationPtr);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
+	SRVDesc.Format = Desc.Format;
+	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+	SRVDesc.Texture2DArray.MipLevels = 1;
+	SRVDesc.Texture2DArray.ArraySize = m_iNumAnimations;
+
+	if (FAILED(m_pDevice->CreateShaderResourceView(m_pTexture, &SRVDesc, &m_pSRV)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CVTFModel::CreateAnimationTransform(_uint iIndex, vector<ANIMTRANS_ARRAY>& AnimTransforms)
+{
+	CAnimation* pAnimation = m_Animations[iIndex];
+
+	for (size_t i = 0; i < pAnimation->Get_MaxFrame(); i++)
+	{
+		if (FAILED(pAnimation->Prepare_Animation(m_Bones, i)))
+			return E_FAIL;
+
+
+		for (size_t j = 0; j < m_Bones.size(); j++)
+		{
+			m_Bones[j]->Update_CombinedMatrix(m_Bones);
+
+			AnimTransforms[iIndex].TransformArray[i][j] = m_Bones[j]->Get_OffsetMatrix() * *(m_Bones[j]->Get_CombinedMatrix()) * m_PivotMatrix;
+		}
+	}
+
+	return S_OK;
+}
+
+CVTFModel* CVTFModel::Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix)
+{
+	CVTFModel* pInstance = new CVTFModel(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype(strFilePath, isCOLMesh, PivotMatrix)))
 	{
-		MSG_BOX("Failed to Create : CModel");
+		MSG_BOX("Failed to Create : CVTFModel");
 	}
 
 	return pInstance;
 }
 
-CComponent* CModel::Clone(void* pArg)
+CComponent* CVTFModel::Clone(void* pArg)
 {
-	CModel* pInstance = new CModel(*this);
+	CVTFModel* pInstance = new CVTFModel(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CModel");
+		MSG_BOX("Failed to Clone : CVTFModel");
 	}
 
 	return pInstance;
 }
 
-void CModel::Free()
+void CVTFModel::Free()
 {
 	__super::Free();
 
@@ -449,4 +407,7 @@ void CModel::Free()
 		}
 	}
 	m_Materials.clear();
+
+	Safe_Release(m_pTexture);
+	Safe_Release(m_pSRV);
 }

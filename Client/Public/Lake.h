@@ -5,19 +5,22 @@
 
 BEGIN(Client)
 
-// ui 형태로 그리는 직교투영을 통해서 그린다.
-
-class CTerrain final : public CGameObject
+class CLake final : public CGameObject
 {
 
 public:
-	enum TEXTURE { TYPE_DIFFUSE, TYPE_MASK, TYPE_BRUSH, TYPE_END };
-
-
+	typedef struct tagWaterDesc {
+		_vec3 vPos{};
+		_vec2 vSize{};
+		_float fReflectionScale = 0.f;
+		_float fRefractionScale = 0.f;
+		_float fWaterPos = 0.f;
+		_float fWaterSpeed = 0.f;
+	}WATER_DESC;
 private:
-	CTerrain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CTerrain(const CTerrain& rhs);
-	virtual ~CTerrain() = default;
+	CLake(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CLake(const CLake& rhs);
+	virtual ~CLake() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -29,30 +32,23 @@ public:
 private:
 	// 객체가 컴포넌트를 사용할 때 용이하게끔 멤버변수로 보관한다.
 	CRenderer* m_pRendererCom = { nullptr };
-	CTexture* m_pTextureCom[TYPE_END] = { nullptr };
+	CTexture* m_pTextureCom = { nullptr };
 	CShader* m_pShaderCom = { nullptr };
 	CVIBuffer_Terrain* m_pVIBufferCom = { nullptr };
 
 
 private:
-	_float				m_fIndex = { 0.f };
-	_float				m_fSizeX, m_fSizeY;
-	_float				m_fX, m_fY;
-	_float44			m_ViewMatrix, m_ProjMatrix;
-	_uint				m_iTextureNum = { 0 };
-	_uint2				m_vTerrainSize{};
+	_mat m_ReflectionViewMatrix{};
+
+	WATER_DESC m_Desc{};
 
 private:
 	HRESULT Add_Component();
 	HRESULT Bind_ShaderResources();
 
 public:
-	HRESULT Change_HeightMap(const wstring& strHeightMapFilePath, _uint iNumVerticesX, _uint iNumVerticesZ);
-
-public:
 	// 원형 객체를 생성할 때
-	static CTerrain* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-
+	static CLake* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	// 실사용객체를 생성할 때 : 원형객체가 호출하여 사본(실사용객체)을 리턴한다 
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;

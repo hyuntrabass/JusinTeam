@@ -52,6 +52,7 @@ using namespace physx;
 #pragma comment(lib, "Effects11.lib")
 #endif
 
+#include <array>
 #include <vector>
 #include <list>
 #include <map>

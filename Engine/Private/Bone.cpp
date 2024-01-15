@@ -19,6 +19,16 @@ const _mat& CBone::Get_Transformation() const
 	return m_TransformationMatrix;
 }
 
+const _mat& CBone::Get_OffsetMatrix() const
+{
+	return m_OffsetMatrix;
+}
+
+void CBone::Set_OffsetMatrix(_mat OffsetMatrix)
+{
+	m_OffsetMatrix = OffsetMatrix;
+}
+
 void CBone::Set_Transformation(_mat TransformationMatrix)
 {
 	m_TransformationMatrix = TransformationMatrix;

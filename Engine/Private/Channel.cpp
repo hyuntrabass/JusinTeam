@@ -207,6 +207,28 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 	Bones[m_iBoneIndex]->Set_Transformation(Transformation);
 }
 
+void CChannel::Prepare_Transformation(const vector<class CBone*>& Bones, _uint iKeyFrame)
+{
+	_vec4 vScale = _vec4(1.f, 1.f, 1.f, 1.f);
+	_vec4 vRotation = _vec4(0.f, 0.f, 0.f, 0.f);
+	_vec4 vPosition = _vec4(0.f, 0.f, 0.f, 1.f);
+
+	if (iKeyFrame < m_KeyFrames.size()) {
+		vScale = m_KeyFrames[iKeyFrame].vScaling;
+		vRotation = m_KeyFrames[iKeyFrame].vRotation;
+		vPosition = m_KeyFrames[iKeyFrame].vPosition;
+	}
+	else {
+		vScale = m_KeyFrames.back().vScaling;
+		vRotation = m_KeyFrames.back().vRotation;
+		vPosition = m_KeyFrames.back().vPosition;
+	}
+
+	_mat TransformationMatrix = XMMatrixAffineTransformation(vScale, _vec4(0.f, 0.f, 0.f, 1.f), vRotation, vPosition);
+
+	Bones[m_iBoneIndex]->Set_Transformation(TransformationMatrix);
+}
+
 CChannel* CChannel::Create(ifstream& ModelFile)
 {
 	CChannel* pInstance = new CChannel();

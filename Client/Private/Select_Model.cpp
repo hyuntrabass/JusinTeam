@@ -84,7 +84,22 @@ HRESULT CSelect_Model::Render()
             HasNorTex = true;
         }
 
+        _bool HasSpecTex{};
+        if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_SpecTexture", i, TextureType::Shininess)))
+        {
+            HasSpecTex = false;
+        }
+        else
+        {
+            HasSpecTex = true;
+        }
+
         if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+        {
+            return E_FAIL;
+        }
+
+        if (FAILED(m_pShaderCom->Bind_RawValue("g_HasSpecTex", &HasSpecTex, sizeof _bool)))
         {
             return E_FAIL;
         }

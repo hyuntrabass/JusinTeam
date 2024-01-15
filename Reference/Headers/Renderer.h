@@ -55,6 +55,9 @@ private:
 	//ID3D11DepthStencilView* m_pBlurDSV{ nullptr };
 
 private:
+	_vec3 m_vRandom[50]{};
+
+private:
 	HRESULT Ready_ShadowDSV();
 
 	HRESULT Render_Priority();
