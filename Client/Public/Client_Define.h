@@ -42,6 +42,15 @@ namespace Client
 		CM_STATEEND
 	};
 
+	enum PART_TYPE
+	{
+		PT_HAIR,
+		PT_FACE,
+		PT_BODY,
+		PT_HELMAT,
+		PT_END
+	};
+
 	enum SoundChannel
 	{
 		SCH_BGM,
@@ -122,7 +131,9 @@ namespace Client
 		AnimPass_OutLine,
 		AnimPass_Shadow,
 		AnimPass_Dissolve,
-		AnimPass_Player
+		AnimPass_Player, 
+		AnimPass_Test, 
+		AnimPass_LerpColor
 	};
 
 	enum StaticMeshPass

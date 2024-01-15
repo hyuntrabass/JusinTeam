@@ -187,6 +187,7 @@
     <ClInclude Include="..\Public\Select.h" />
     <ClInclude Include="..\Public\TextButtonColor.h" />
     <ClInclude Include="..\Public\Thief04.h" />
+    <ClInclude Include="..\Public\UI_Manager.h" />
     <ClInclude Include="..\Public\Void05.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="Client.h" />
@@ -233,6 +234,7 @@
     <ClCompile Include="..\Private\Select.cpp" />
     <ClCompile Include="..\Private\TextButtonColor.cpp" />
     <ClCompile Include="..\Private\Thief04.cpp" />
+    <ClCompile Include="..\Private\UI_Manager.cpp" />
     <ClCompile Include="..\Private\Void05.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="Client.cpp" />

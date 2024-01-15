@@ -42,7 +42,8 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
 	fTimeDelta /= m_pGameInstance->Get_TimeRatio();
 
-#ifdef _DEBUGTEST
+
+#ifdef _DEBUG
 	_vector Pos = m_pTransformCom->Get_State(State::Pos);
 	_vector Look = m_pTransformCom->Get_State(State::Look);
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), COORD());

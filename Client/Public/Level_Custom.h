@@ -18,6 +18,11 @@ public:
 private:
 	_bool m_hasBGMStarted{};
 
+private:
+	HRESULT Ready_Player();
+	HRESULT Ready_UI();
+	HRESULT Ready_Camera();
+	HRESULT Ready_Light();
 
 public:
 	static CLevel_Custom* Create(_dev pDevice, _context pContext);

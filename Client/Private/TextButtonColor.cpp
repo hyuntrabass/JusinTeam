@@ -161,6 +161,14 @@ HRESULT CTextButtonColor::Bind_ShaderResources()
 	return S_OK;
 }
 
+void CTextButtonColor::Set_Size(_float fSizeX, _float fSizeY, _float fFontSize)
+{
+	m_fSizeX = fSizeX; 
+	m_fSizeY = fSizeY; 
+	if (m_fFontSize != -1.f)
+		m_fFontSize = fFontSize;
+}
+
 void CTextButtonColor::Set_Position(_vec2 vPos)
 {
 	m_fX = vPos.x;

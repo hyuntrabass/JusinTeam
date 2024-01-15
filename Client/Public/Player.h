@@ -4,14 +4,6 @@
 
 BEGIN(Client)
 
-enum PART_TYPE
-{
-	PT_HAIR,
-	PT_FACE,
-	PT_BODY,
-	PT_HELMAT,
-	PT_END
-};
 
 
 
