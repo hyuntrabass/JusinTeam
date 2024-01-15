@@ -85,7 +85,7 @@ VS_OUT VS_OutLine(VS_IN Input)
     
     float fThickness = clamp(fDist / 300.f, 0.03f, 0.2f);
     
-    vPos += normalize(vNor) * (fThickness + 0.5 * g_bSelected);
+    vPos += normalize(vNor) * (fThickness);
     
     Output.vPos = mul(vPos, matWVP);
     Output.vNor = mul(vNor, g_WorldMatrix);
