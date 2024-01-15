@@ -98,13 +98,14 @@ HRESULT CImgui_Manager::ImGuiMenu()
 
 	if (m_eType == TYPE_MONSTER)
 	{
-		const char* szModelTag[5] = { "Hirokin", "Nott","Skjaldmaer","Skjaldmaer_A","Goat" };
-		static const char* szCurrentModel = "Hirokin";
+		const char* szModelTag[19] = { "Barlog","Furgoat","GiantBoss","Goat","Hirokin","Nastron02","Nastron03","Nott","NPCvsMon","Orc02","Penguin",
+		"Rabbit","Skjaldmaer","Skjaldmaer_A","Thief04","Trilobite","TrilobiteA","Void13","VoidDragon" };
+		static const char* szCurrentModel = "Barlog";
 		if (m_ePreType != m_eType)
 		{
 			m_ePreType = m_eType;
 			m_iCurrentModelIndex = 0;
-			szCurrentModel = "Hirokin";
+			szCurrentModel = "Barlog";
 		}
 
 		if (ImGui::BeginCombo("LIST", szCurrentModel))
