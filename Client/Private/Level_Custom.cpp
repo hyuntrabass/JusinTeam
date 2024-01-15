@@ -10,12 +10,20 @@ HRESULT CLevel_Custom::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_CUSTOM);
 
+
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CUSTOM, TEXT("Layer_Custom"), TEXT("Prototype_GameObject_Custom"))))
+	{
+		return E_FAIL;
+	}
+
+
 	return S_OK;
 }
 
 void CLevel_Custom::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_RETURN))
+	if (m_pGameInstance->Is_Level_ShutDown(LEVEL_CUSTOM))
 	{
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_GAMEPLAY))))
 		{
@@ -24,7 +32,6 @@ void CLevel_Custom::Tick(_float fTimeDelta)
 
 		return;
 	}
-
 	m_pGameInstance->Set_HellHeight(-2000.f);
 
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))

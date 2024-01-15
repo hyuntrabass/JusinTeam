@@ -3,19 +3,6 @@
 #include "BlendObject.h"
 #include "Imgui_Manager.h"
 
-struct EffectInfo
-{
-	_uint eType{};
-	_bool isSprite{};
-	CVIBuffer_Instancing::ParticleDesc PartiDesc{};
-	_uint iNumInstances{};
-	_float fLifeTime{};
-	_int iDiffTextureID{};
-	_int iMaskTextureID{};
-	_vec4 vColor{};
-	_uint iPassIndex{};
-};
-
 BEGIN(Effect)
 
 class CEffect_Dummy final : public CBlendObject
@@ -33,6 +20,7 @@ public:
 	virtual HRESULT Render() override;
 
 private:
+	CRenderer* m_pRendererCom{ nullptr };
 	CVIBuffer_Instancing_Point* m_pParticle{ nullptr };
 	CVIBuffer_Rect* m_pRect{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
@@ -41,7 +29,11 @@ private:
 
 private:
 	EffectInfo m_Effect{};
+	_mat m_WorldMatrix{};
 	_float m_fTimer{};
+	_float m_fSpriteTimer{};
+	_int m_iSpriteIndex{};
+	_vec2 m_vScaleAcc{ 1.f };
 
 private:
 	HRESULT Add_Components();

@@ -41,6 +41,7 @@ private:
 	_float m_fDuration{};
 	_float m_fTickPerSec{};
 	_float m_fCurrentAnimPos{};
+	_mat* m_pPrevTransformation{};
 	//vector<_uint> m_CurrentKeyFrames{};
 	//vector<_float4x4> m_PrevTransformations{};
 
@@ -54,6 +55,9 @@ private:
 	vector<_float> m_Triggers;
 
 	_uint m_iMaxFrame = 0;
+
+private:
+	void Update_Lerp_TransformationMatrix(const vector<class CBone*>& Bones, _bool& isAnimChanged, _float fInterpolationTime);
 
 public:
 	static CAnimation* Create(ifstream& ModelFile);

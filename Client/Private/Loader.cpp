@@ -96,6 +96,9 @@ HRESULT CLoader::Loading_LevelResources()
 	case Client::LEVEL_SELECT:
 		hr = Load_Select();
 		break;
+	case Client::LEVEL_CUSTOM:
+		hr = Load_Custom();
+		break;
 	case Client::LEVEL_GAMEPLAY:
 		hr = Load_GamePlay();
 		break;
@@ -176,14 +179,14 @@ HRESULT CLoader::Load_Logo()
 #pragma region Model
 	_uint iIndex{};
 	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/face/";
+	_mat PivotMat = _mat::CreateScale(0.4f) * _mat::CreateRotationX(XMConvertToRadians(-90.f)) * _mat::CreateRotationY(XMConvertToRadians(180.f));
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
 		{
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_FACE) + L"" + to_wstring(iIndex++);
 			string strFilePath = entry.path().filename().string();
-
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath,false, PivotMat))))
 			{
 				return E_FAIL;
 			}
@@ -197,8 +200,8 @@ HRESULT CLoader::Load_Logo()
 		{
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_HAIR) + L"" + to_wstring(iIndex++);
 			string strFilePath = entry.path().filename().string();
-
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
+			
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath,false, PivotMat))))
 			{
 				return E_FAIL;
 			}
@@ -212,8 +215,8 @@ HRESULT CLoader::Load_Logo()
 		{
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_BODY) + L"" + to_wstring(iIndex++);
 			string strFilePath = entry.path().filename().string();
-
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
+			
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath,false,PivotMat))))
 			{
 				return E_FAIL;
 			}
@@ -290,7 +293,7 @@ HRESULT CLoader::Load_Select()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Component_Texture_UI_Select_BG_BoxEfc_WhiteBlur"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Select/BG_BoxEfc_WhiteBlur.png")))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Select_BG_BoxEfc_WhiteBlur"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Select/BG_BoxEfc_WhiteBlur.png")))))
 	{
 		return E_FAIL;
 	}
@@ -358,6 +361,12 @@ HRESULT CLoader::Load_Select()
 		return E_FAIL;
 	}
 
+	/*if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sky"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Select_Map/Mesh/map.hyuntrastatmesh", false, PivotMat))))
+	{
+		return E_FAIL;
+	}*/
+
 	string strInputFilePath{};
 	strInputFilePath = "../Bin/Resources/AnimMesh/Select_Model/Mesh/";
 	int iIndex{};
@@ -383,7 +392,6 @@ HRESULT CLoader::Load_Select()
 				{
 					return E_FAIL;
 				}
-
 			}
 			else if (iIndex == 1)
 			{
@@ -402,6 +410,54 @@ HRESULT CLoader::Load_Select()
 			}
 
 			}
+		}
+	}
+
+	strInputFilePath = "../Bin/Resources/AnimMesh/Select_Npc/Mesh/";
+	iIndex = 0;
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+
+			wstring strPrototypeTag = TEXT("Prototype_Model_Select_Npc") + to_wstring(iIndex++);
+			if (iIndex == 2)
+			{
+				PivotMat = _mat::CreateScale(0.01f) * _mat::CreateRotationY(XMConvertToRadians(-40.f));
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, PivotMat))))
+				{
+					return E_FAIL;
+				}
+
+			}
+			else if (iIndex == 1)
+			{
+				PivotMat = _mat::CreateScale(0.01f) * _mat::CreateRotationY(XMConvertToRadians(-90.f));
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, PivotMat))))
+				{
+					return E_FAIL;
+				}
+
+			}
+			else if (iIndex == 3)
+			{
+				PivotMat = _mat::CreateScale(0.01f) * _mat::CreateRotationY(XMConvertToRadians(90.f));
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, PivotMat))))
+				{
+					return E_FAIL;
+				}
+
+			}
+			else
+			{ 
+				PivotMat = _mat::CreateScale(0.008f) * _mat::CreateRotationY(XMConvertToRadians(-150.f));
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, PivotMat))))
+				{
+					return E_FAIL;
+				}
+			}
+
+			
 		}
 	}
 #pragma endregion
@@ -432,16 +488,16 @@ HRESULT CLoader::Load_Select()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Select_Npc"), CSelect_Npc::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_SelectDesc"), CSelectDesc::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
-	/*
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Void05"), CVoid05::Create(m_pDevice, m_pContext))))
-	{
-		return E_FAIL;
-	}
-	*/
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Select_Model"), CSelect_Model::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -452,14 +508,33 @@ HRESULT CLoader::Load_Select()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Sky"), CSky::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Debug"), CCamera_Debug::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Custom"), CCamera_Custom::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
+
+	//나중에 옮길 예정
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_BackGround_Mask"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/BackGround/BackGround.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BackGround_Mask"), CBackGround_Mask::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
+
 #pragma endregion
 
 	m_strLoadingText = L"Select : Loading Complete!";
@@ -474,7 +549,19 @@ HRESULT CLoader::Load_Custom()
 #pragma region Texture
 
 #pragma region UI
+	string strInputFilePath = "../Bin/Resources/Textures/UI/Custom";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_UI_Custom_") + entry.path().stem().wstring();
 
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_CUSTOM, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 #pragma endregion
 
 
@@ -490,7 +577,10 @@ HRESULT CLoader::Load_Custom()
 	m_strLoadingText = L"Custom : Loading Prototype";
 
 #pragma region Prototype
-	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Custom"), CCustom::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 	m_strLoadingText = L"Custom : Loading Complete!";
@@ -554,12 +644,18 @@ HRESULT CLoader::Load_GamePlay()
 	//}
 
 #pragma region Monster
+	strInputFilePath = "../Bin/Resources/AnimMesh/Monster/0_ModelTest/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Void05"), CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
 
-	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Void05"), 
-	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Void05/Mesh/Void05.hyuntraanimmesh"))))
-	//{
-	//	return E_FAIL;
-	//}
+		}
+	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Rabbit"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Rabbit/Mesh/Rabbit.hyuntraanimmesh"))))
@@ -567,8 +663,27 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Penguin"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Penguin/Mesh/Penguin.hyuntraanimmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Goat"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Goat/Mesh/Furgoat.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Nastron03"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Nastron03/Mesh/Nastron03.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	_mat Pivot = _mat::CreateScale(0.01f) * _mat::CreateRotationX(XMConvertToRadians(-90.f));
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_NPCvsMon"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/NPCvsMon/Mesh/NPCvsMon.hyuntraanimmesh", false, Pivot))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Thief04"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Thief04/Mesh/Thief04.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
@@ -576,6 +691,8 @@ HRESULT CLoader::Load_GamePlay()
 #pragma endregion Monster
 
 #pragma endregion
+
+
 
 	m_strLoadingText = L"Logo : Loading Shader";
 #pragma region Shader
@@ -618,7 +735,22 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Penguin"), CPenguin::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Goat"), CGoat::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Nastron03"), CNastron03::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_NPCvsMon"), CNPCvsMon::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Thief04"), CThief04::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

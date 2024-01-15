@@ -10,6 +10,19 @@ private:
 	virtual ~CChannel() = default;
 
 public:
+	const _char* Get_ChannelName() const {
+		return m_szName;
+	}
+
+	KEYFRAME Get_FirstKeyFrame() const {
+		return m_KeyFrames.front();
+	}
+
+	void Reset_CurrentKeyFrame() {
+		m_iCurrentKeyFrame = 0;
+	}
+
+public:
 	HRESULT Init(ifstream& ModelFile);
 	void Update_TransformationMatrix(const vector<class CBone*>& Bones, _float& fCurrentAnimPos, _bool& isAnimChanged, _float fInterpolationTime);
 

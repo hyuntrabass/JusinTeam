@@ -8,10 +8,12 @@ enum PART_TYPE
 {
 	PT_HAIR,
 	PT_FACE,
-	PT_HELMAT,
 	PT_BODY,
+	PT_HELMAT,
 	PT_END
 };
+
+
 
 struct BODYPART_DESC
 {
@@ -40,6 +42,8 @@ public:
 public:
 	HRESULT Add_Parts();
 
+	void Change_Parts(PART_TYPE PartsType,_int ChangeIndex);
+	void Reset_PartsAnim();
 private:
 	vector<CGameObject*> m_vecParts{};
 

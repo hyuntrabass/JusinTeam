@@ -5,6 +5,12 @@
 
 BEGIN(Client)
 
+typedef struct MonsterInfo 
+{
+	wstring strMonsterPrototype{};
+	_mat	MonsterWorldMat{};
+}Info;
+
 class CMonster abstract : public CGameObject
 {
 protected:

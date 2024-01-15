@@ -190,10 +190,12 @@ public: // Get_Set
 	void Set_HellHeight(const _float& fHeight);
 
 
+	void Set_ZoomFactor(const _float fFactor);
 	void Set_CameraState(const _uint& iIndex);
-	void Set_CameraTargetPos(const _vec3& vPos);
+	void Set_CameraTargetPos(const _vec4& vPos);
 	const _uint& Get_CameraState()  const;
-	const _vec3& Get_CameraTargetPos() const;
+	const _vec4& Get_CameraTargetPos() const;
+	const _float& Get_ZoomFactor() const;
 
 public:
 	void Initialize_Level(_uint iLevelNum);
@@ -225,11 +227,12 @@ private:
 	_uint m_iCameraModeIndex{};
 	_uint m_iLevelIndex{};
 	_float m_fTimeRatio{ 1.f };
+	_float m_fZoomFactor{ 3.f };
 	_float2 m_vCameraNF{};
 	_float2 m_vFogNF{ 2000.f, 2000.f };
 	_bool m_bShakeCamera{};
 	_float m_fHellHeight{};
-	_vec3 m_vTarget{};
+	_vec4 m_vTarget{};
 
 private:
 	vector<_bool> m_vecLevelInvalid;

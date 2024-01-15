@@ -1,6 +1,7 @@
 #include "Imgui_Manager.h"
 #include "Camera.h"
 #include "Effect_Dummy.h"
+#include <commdlg.h>
 
 IMPLEMENT_SINGLETON(CImgui_Manager)
 
@@ -52,8 +53,6 @@ HRESULT CImgui_Manager::Init(_dev pDevice, _context pContext, vector<string>* pT
 	m_ParticleInfo.vMaxDir = _float3(0.f, 1.f, 0.f);
 	m_ParticleInfo.isLoop = true;
 
-	Load_Data();
-
 	return S_OK;
 }
 
@@ -77,21 +76,22 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	if (hasLifeTime)
 	{
 		InputFloat("Effect Life", &m_fEffectLifeTime);
+		Info.fLifeTime = m_fEffectLifeTime;
 	}
 	else
 	{
 		m_fEffectLifeTime = -1.f;
+		Info.fLifeTime = m_fEffectLifeTime;
 	}
 
-	static _int iIsColor{};
-
-	SeparatorText("Color");
-	RadioButton("Texture", &iIsColor, 0); SameLine();
-	RadioButton("Color", &iIsColor, 1);
-	Checkbox("Mask", &m_hasMask);
+	NewLine();
+	SeparatorText("Position Offset");
+	static _vec3 vPosOffset{};
+	InputFloat3("Offset", reinterpret_cast<_float*>(&vPosOffset), "%.2f");
+	Info.vPosOffset = vPosOffset;
+	NewLine();
 
 	static _int iPassIndex{};
-
 
 	const _char* szInstancingPasses[InstPass_End]
 	{
@@ -124,16 +124,47 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	if (m_iCurrent_Type == ET_PARTICLE)
 	{
 		ListBox("Pass##1", &iPassIndex, szInstancingPasses, InstPass_End);
+		if (iPassIndex >= InstPass_End)
+		{
+			iPassIndex = 0;
+		}
 	}
 	else
 	{
 		ListBox("Pass##2", &iPassIndex, szVTPasses, VTPass_End);
+		if (iPassIndex >= VTPass_End)
+		{
+			iPassIndex = 0;
+		}
 	}
+	Info.eType = m_iCurrent_Type;
+	Info.iPassIndex = iPassIndex;
 
 	NewLine();
 
+	static _int iIsColor{};
+
+	SeparatorText("Diffuse");
+	RadioButton("Texture", &iIsColor, 0); SameLine();
+	RadioButton("Color", &iIsColor, 1);
+	Checkbox("Mask", &m_hasMask);
+
+	static _bool isSprite{};
+	static _int2 vNumSprites{ 1, 1 };
+	static _float fSpriteDuration{ 1.f };
 	if (iIsColor == 0)
 	{
+		Checkbox("Sprite", &isSprite);
+		if (isSprite)
+		{
+			InputInt2("Number of Sprites", reinterpret_cast<_int*>(&vNumSprites));
+
+			InputFloat("Duration", &fSpriteDuration, 0.f, 0.f, "%.1f");
+
+			Info.isSprite = true;
+			Info.vNumSprites = vNumSprites;
+			Info.fSpriteDuration = fSpriteDuration;
+		}
 		ListBox("Texture", &m_iSelected_Texture, m_pItemList_Texture, m_iNumTextures);
 		Image(reinterpret_cast<void*>(m_pTextures[m_iSelected_Texture]->Get_SRV()), ImVec2(128.f, 128.f));
 		m_hasDiffTexture = true;
@@ -142,6 +173,16 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	{
 		ColorPicker4("Color", reinterpret_cast<_float*>(&m_vColor), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_DisplayRGB);
 		m_hasDiffTexture = false;
+	}
+
+	if (m_hasDiffTexture)
+	{
+		Info.iDiffTextureID = m_iSelected_Texture;
+	}
+	else
+	{
+		Info.iDiffTextureID = -1;
+		Info.vColor = m_vColor;
 	}
 
 	if (m_hasMask)
@@ -156,11 +197,14 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		Info.iMaskTextureID = -1;
 	}
 
+	static _vec2 vSize{ 1.f, 1.f };
+	static _float fSizeforSprite{ 1.f };
+	static _vec2 vSizeDelta{};
+
 	if (m_iCurrent_Type == ET_PARTICLE)
 	{
 		SeparatorText("Particle Information");
-		static _bool isLoop{ true };
-		Checkbox("Loop", &isLoop);
+		Checkbox("Loop", &m_ParticleInfo.isLoop);
 
 		InputInt("Instance Number", &m_iNumInstance);
 		m_iNumInstance = clamp(m_iNumInstance, 0, 100);
@@ -214,19 +258,117 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		}
 
 		Info.iNumInstances = m_iNumInstance;
-		Info.fLifeTime = m_fEffectLifeTime;
-		Info.PartiDesc.isLoop = isLoop;
-		Info.PartiDesc.vMinPos = m_ParticleInfo.vMinPos;
-		Info.PartiDesc.vMaxPos = m_ParticleInfo.vMaxPos;
-		Info.PartiDesc.vMinDir = m_ParticleInfo.vMinDir;
-		Info.PartiDesc.vMaxDir = m_ParticleInfo.vMaxDir;
-		Info.PartiDesc.vLifeTime = m_ParticleInfo.vLifeTime;
-		Info.PartiDesc.vScaleRange = m_ParticleInfo.vScaleRange;
-		Info.PartiDesc.vSpeedRange = m_ParticleInfo.vSpeedRange;
+		Info.PartiDesc = m_ParticleInfo;
+		Info.vSize = _vec2(1.f);
 	}
 	else
 	{
 		SeparatorText("Rect Information");
+
+		if (Info.isSprite)
+		{
+			InputFloat("Size##1", &fSizeforSprite);
+
+			Info.vSize.y = fSizeforSprite;
+			_float fSizeRatio = 1.f / (Info.vNumSprites.x / Info.vNumSprites.y);
+			Info.vSize.x = fSizeforSprite * fSizeRatio;
+		}
+		else
+		{
+			InputFloat2("Size##2", reinterpret_cast<_float*>(&vSize), "%.2f");
+			Info.vSize = vSize;
+		}
+
+		InputFloat2("Size Delta", reinterpret_cast<_float*>(&vSizeDelta), "%.2f");
+		Info.vSizeDelta = vSizeDelta;
+	}
+
+	if (Button("Export"))
+	{
+		Export_Data();
+	} SameLine();
+
+	if (Button("Load"))
+	{
+		EffectInfo Info = Load_Data();
+
+		Safe_Release(m_pEffect);
+		m_pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Info));
+		m_EffectInfo = Info;
+
+		m_iCurrent_Type = Info.eType;
+
+		if (Info.fLifeTime < 0)
+		{
+			hasLifeTime = false;
+			m_fEffectLifeTime = -1.f;
+		}
+		else
+		{
+			hasLifeTime = true;
+			m_fEffectLifeTime = Info.fLifeTime;
+		}
+
+		vPosOffset = Info.vPosOffset;
+
+		iPassIndex = Info.iPassIndex;
+
+		if (Info.iDiffTextureID < 0)
+		{
+			iIsColor = 1;
+			m_hasDiffTexture = false;
+			m_vColor = Info.vColor;
+		}
+		else
+		{
+			iIsColor = 0;
+			m_hasDiffTexture = true;
+			m_iSelected_Texture = Info.iDiffTextureID;
+			isSprite = Info.isSprite;
+			vNumSprites = Info.vNumSprites;
+			fSpriteDuration = Info.fSpriteDuration;
+		}
+
+		if (Info.iMaskTextureID < 0)
+		{
+			m_hasMask = false;
+		}
+		else
+		{
+			m_hasMask = true;
+			m_iSelected_MaskTexture = Info.iMaskTextureID;
+		}
+
+		if (Info.eType == ET_PARTICLE)
+		{
+			m_ParticleInfo = Info.PartiDesc;
+			m_iNumInstance = Info.iNumInstances;
+		}
+		else
+		{
+			if (Info.isSprite)
+			{
+				fSizeforSprite = Info.vSize.y;
+			}
+			vSize = Info.vSize;
+			vSizeDelta = Info.vSizeDelta;
+		}
+	}
+
+	if (Button("Add"))
+	{
+		CEffect_Dummy* pEffect{};
+		pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Load_Data()));
+		m_AddEffect.push_back(pEffect);
+	} SameLine();
+
+	if (Button("Clear Add"))
+	{
+		for (auto& pEffect : m_AddEffect)
+		{
+			Safe_Release(pEffect);
+		}
+		m_AddEffect.clear();
 	}
 
 	End();
@@ -235,24 +377,17 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	{
 		m_pEffect->Tick(fTimeDelta);
 	}
+
+	for (auto& pEffect : m_AddEffect)
+	{
+		pEffect->Tick(fTimeDelta);
+	}
+
 	if (not m_pEffect or m_pEffect->isDead() or m_pGameInstance->Key_Down(DIK_RETURN) or m_pGameInstance->Key_Down(DIK_E))
 	{
 		Safe_Release(m_pEffect);
-
-		Info.eType = m_iCurrent_Type;
-		Info.iPassIndex = iPassIndex;
-		if (m_hasDiffTexture)
-		{
-			Info.iDiffTextureID = m_iSelected_Texture;
-		}
-		else
-		{
-			Info.iDiffTextureID = -1;
-			Info.vColor = m_vColor;
-		}
-
-
 		m_pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Info));
+		m_EffectInfo = Info;
 	}
 }
 
@@ -260,11 +395,20 @@ HRESULT CImgui_Manager::Render()
 {
 	if (m_pEffect)
 	{
-		if (FAILED(Render_Effect()))
+		if (FAILED(m_pEffect->Render()))
 		{
 			return E_FAIL;
 		}
 	}
+
+	for (auto& pEffect : m_AddEffect)
+	{
+		if (FAILED(pEffect->Render()))
+		{
+			return E_FAIL;
+		}
+	}
+
 
 	ImGui::Render();
 
@@ -330,38 +474,81 @@ HRESULT CImgui_Manager::Ready_Layers()
 	return S_OK;
 }
 
-HRESULT CImgui_Manager::Render_Effect()
+EffectInfo CImgui_Manager::Load_Data()
 {
-	//CShader* pShader{};
-	//if (m_iShaderType == ET_PARTICLE)
-	//{
-	//	pShader = m_pInstanceShader;
-	//}
-	//else
-	//{
-	//	pShader = m_pVtxTexShader;
-	//}
+	EffectInfo Info{};
 
+	OPENFILENAME ofn;
+	TCHAR filePathName[MAX_PATH] = L"";
+	TCHAR lpstrFile[MAX_PATH] = L"Effect.effect";
+	static TCHAR filter[] = L"¿Ã∆Â∆Æ ∆ƒ¿œ(*.effect)\0*.effect\0";
 
-	//pShader->Begin(InstancingPass::InstPass_Particle_MaskColor);
+	memset(&ofn, 0, sizeof(OPENFILENAME));
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = g_hWnd;
+	ofn.lpstrFilter = filter;
+	ofn.lpstrFile = lpstrFile;
+	ofn.nMaxFile = 256;
+	ofn.lpstrInitialDir = L"..\\..\\Client\\Bin\\EffectData";
 
-	m_pEffect->Render();
+	if (GetOpenFileName(&ofn))
+	{
+		filesystem::path strFilePath = ofn.lpstrFile;
+		ifstream InFile(strFilePath.c_str(), ios::binary);
 
-	return S_OK;
-}
+		if (InFile.is_open())
+		{
+			InFile.read(reinterpret_cast<_char*>(&Info), sizeof EffectInfo);
 
-HRESULT CImgui_Manager::Load_Data()
-{
-	return S_OK;
+			InFile.close();
+		}
+	}
+
+	return Info;
 }
 
 HRESULT CImgui_Manager::Export_Data()
 {
+	OPENFILENAME ofn;
+	TCHAR filePathName[MAX_PATH] = L"";
+	TCHAR lpstrFile[MAX_PATH] = L"Effect.effect";
+	static TCHAR filter[] = L"¿Ã∆Â∆Æ ∆ƒ¿œ(*.effect)\0*.effect\0";
+
+	memset(&ofn, 0, sizeof(OPENFILENAME));
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = g_hWnd;
+	ofn.lpstrFilter = filter;
+	ofn.lpstrFile = lpstrFile;
+	ofn.nMaxFile = 256;
+	ofn.lpstrInitialDir = L"..\\..\\Client\\Bin\\EffectData";
+	ofn.Flags = OFN_OVERWRITEPROMPT;
+
+	if (GetSaveFileName(&ofn))
+	{
+		filesystem::path strFilePath = ofn.lpstrFile;
+		ofstream OutFile(strFilePath.c_str(), ios::binary);
+
+		if (OutFile.is_open())
+		{
+			OutFile.write(reinterpret_cast<const _char*>(&m_EffectInfo), sizeof EffectInfo);
+
+			OutFile.close();
+		}
+	}
+
 	return S_OK;
 }
 
 void CImgui_Manager::Free()
 {
+	for (auto& pEffect : m_AddEffect)
+	{
+		Safe_Release(pEffect);
+	}
+	m_AddEffect.clear();
+
+	Safe_Release(m_pEffect);
+
 	for (_int i = 0; i < m_iNumTextures; i++)
 	{
 		Safe_Release(m_pTextures[i]);

@@ -12,6 +12,25 @@ enum Effect_Type
 	ET_END
 };
 
+struct EffectInfo
+{
+	_uint eType{};
+	_bool isSprite{};
+	_int2 vNumSprites{};
+	_float fSpriteDuration{};
+	CVIBuffer_Instancing::ParticleDesc PartiDesc{};
+	_uint iNumInstances{};
+	_float fLifeTime{};
+	_int iDiffTextureID{};
+	_int iMaskTextureID{};
+	_vec4 vColor{};
+	_uint iPassIndex{};
+	_vec2 vSize{};
+	_vec3 vPos{};
+	_vec3 vPosOffset{};
+	_vec2 vSizeDelta{};
+};
+
 class CImgui_Manager : public CBase
 {
 	DECLARE_SINGLETON(CImgui_Manager)
@@ -33,6 +52,7 @@ private:
 
 private:
 	class CEffect_Dummy* m_pEffect{ nullptr };
+	list<class CEffect_Dummy*> m_AddEffect{};
 	//class CShader* m_pInstanceShader{ nullptr };
 	//class CShader* m_pVtxTexShader{ nullptr };
 	_int m_iCurrent_Type{};
@@ -49,12 +69,12 @@ private:
 	_bool m_hasMask{};
 	CVIBuffer_Instancing::ParticleDesc m_ParticleInfo{};
 
+	EffectInfo m_EffectInfo{};
+
 private:
 	HRESULT Ready_Layers();
 
-	HRESULT Render_Effect();
-
-	HRESULT Load_Data();
+	EffectInfo Load_Data();
 	HRESULT Export_Data();
 
 public:

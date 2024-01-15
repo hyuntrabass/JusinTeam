@@ -306,8 +306,8 @@ VS_BlurOUT VS_Test(VS_IN Input)
     vector vNewPos = mul(vPos, matWVP);
     vector vOldPos = mul(vPos, matOldWVP);
     
-    float3 vDir = vNewPos - vOldPos;
-    float3 vCalNor = mul(vNor.xyz, matWV);
+    float4 vDir = vNewPos - vOldPos;
+    float4 vCalNor = mul(vNor.xyz, matWV);
     
     float a = dot(normalize(vDir), normalize(vCalNor));
     

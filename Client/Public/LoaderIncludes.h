@@ -9,7 +9,9 @@
 #include "Camera_Debug.h"
 #include "Camera_Debug.h"
 #include "Select_Model.h"
+#include "Select_Npc.h"
 
+#include "Custom.h"
 #include "SelectDesc.h"
 #include "TextButton.h"
 #include "Camera_Custom.h"
@@ -18,9 +20,15 @@
 #include "Select_Map.h"
 #include "Camera_Debug.h"
 #include "Terrain.h"
+#include "Sky.h"
+#include "BackGround_Mask.h"
+
+#include "Effect_Dummy.h"
 
 // Monster
 #include "NPCvsMon.h"
 #include "Void05.h"
 #include "Rabbit.h"
-#include "Penguin.h"
+#include "Goat.h"
+#include "Nastron03.h"
+#include "Thief04.h"

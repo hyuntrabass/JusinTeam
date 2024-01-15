@@ -10,6 +10,15 @@ CLevel_Select::CLevel_Select(_dev pDevice, _context pContext)
 HRESULT CLevel_Select::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_SELECT);
+	UiInfo info{};
+	info.strTexture = TEXT("Prototype_Component_Texture_BackGround_Mask"); 
+	info.vPos = _vec2(640,360);
+	info.vSize = _vec2(1280, 720);
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Mask"), TEXT("Prototype_GameObject_BackGround_Mask"),&info)))
+	{
+		return E_FAIL;
+	}
 
 	if (FAILED(Ready_Select()))
 	{
@@ -22,12 +31,13 @@ HRESULT CLevel_Select::Init()
 		MSG_BOX("Failed to Ready SelectMap");
 		return E_FAIL;
 	}
-
+	/*
 	if (FAILED(Ready_Model()))
 	{
 		MSG_BOX("Failed to Ready SelectModel");
 		return E_FAIL;
 	}
+	*/
 	/*
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void05"), TEXT("Prototype_GameObject_Void05"))))
 	{
@@ -45,7 +55,11 @@ HRESULT CLevel_Select::Init()
 		MSG_BOX("Failed to Ready Light");
 		return E_FAIL;
 	}
-
+	if (FAILED(Ready_Npc()))
+	{
+		MSG_BOX("Failed to Ready Npc");
+		return E_FAIL;
+	}
 	/*
 	셀렉트 커스텀용 카메라 만들어야할듯
 	
@@ -64,7 +78,7 @@ void CLevel_Select::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Is_Level_ShutDown(LEVEL_SELECT))
 	{
-		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_GAMEPLAY))))
+		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_CUSTOM))))
 		{
 			return;
 		}
@@ -99,14 +113,14 @@ HRESULT CLevel_Select::Ready_Model()
 	Info.strPrototypeTag = TEXT("Prototype_Model_Select0");
 
 	_vec4 vPos;
-	vPos = _vec4(1.8, 0.07, -2.4, 1);
+	vPos = _vec4(1.8f, 0.07f, -2.4f, 1.f);
 	Info.vPos = vPos;
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select_Model"), TEXT("Prototype_GameObject_Select_Model"), &Info)))
 	{
 		return E_FAIL;
 	}
+	vPos = _vec4(0.7f, 0.07f, -1.2f, 1.f);
 	
-	vPos = _vec4(0.7, 0.07, -1.2, 1);
 	Info.vPos = vPos;
 	Info.strPrototypeTag = TEXT("Prototype_Model_Select1");
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select_Model"), TEXT("Prototype_GameObject_Select_Model"), &Info)))
@@ -114,7 +128,7 @@ HRESULT CLevel_Select::Ready_Model()
 		return E_FAIL;
 	}
 
-	vPos = _vec4(-2.2, 0.07, -2.7, 1);
+	vPos = _vec4(-2.2f, 0.07f, -2.7f, 1.f);
 	Info.vPos = vPos;
 	Info.strPrototypeTag = TEXT("Prototype_Model_Select2");
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select_Model"), TEXT("Prototype_GameObject_Select_Model"), &Info)))
@@ -122,10 +136,50 @@ HRESULT CLevel_Select::Ready_Model()
 		return E_FAIL;
 	}
 
-	vPos = _vec4(-0.9, 0.07,-1.2,1);
+	vPos = _vec4(-0.9f, 0.07f,-1.2f, 1.f);
 	Info.vPos = vPos;
 	Info.strPrototypeTag = TEXT("Prototype_Model_Select3");
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select_Model"), TEXT("Prototype_GameObject_Select_Model"), &Info)))
+	{
+		return E_FAIL;
+	}
+	return S_OK;
+}
+
+HRESULT CLevel_Select::Ready_Npc()
+{
+	ObjectInfo Info{};
+	Info.strPrototypeTag = TEXT("Prototype_Model_Select_Npc0");
+
+	_vec4 vPos;
+	vPos = _vec4(-0.3f, 0.07f, 2.3f, 1.f);
+	Info.vPos = vPos;
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select_Npc"), TEXT("Prototype_GameObject_Select_Npc"), &Info)))
+	{
+		return E_FAIL;
+	}
+
+	vPos = _vec4(0.6f, 0.07f, 2.3f, 1.f);
+
+	Info.vPos = vPos;
+	Info.strPrototypeTag = TEXT("Prototype_Model_Select_Npc2");
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select_Npc"), TEXT("Prototype_GameObject_Select_Npc"), &Info)))
+	{
+		return E_FAIL;
+	}
+
+	vPos = _vec4(-2.2f, 0.07f, 1.2f, 1.f);
+	Info.vPos = vPos;
+	Info.strPrototypeTag = TEXT("Prototype_Model_Select_Npc1");
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select_Npc"), TEXT("Prototype_GameObject_Select_Npc"), &Info)))
+	{
+		return E_FAIL;
+	}
+
+	vPos = _vec4(1.6f, -0.2f, 1.2f, 1.f);
+	Info.vPos = vPos;
+	Info.strPrototypeTag = TEXT("Prototype_Model_Select_Npc3");
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select_Npc"), TEXT("Prototype_GameObject_Select_Npc"), &Info)))
 	{
 		return E_FAIL;
 	}

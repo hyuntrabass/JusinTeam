@@ -243,6 +243,7 @@ HRESULT CMesh::Ready_StaticMesh(ifstream& ModelFile, _mat OffsetMatrix)
 
 HRESULT CMesh::Ready_AnimMesh(ifstream& ModelFile)
 {
+
 	ModelFile.read(reinterpret_cast<_char*>(&m_iNumBones), sizeof _uint);
 	if (m_iNumBones > 256)
 	{

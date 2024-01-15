@@ -92,16 +92,25 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                 DispatchMessage(&msg);
             }
         }
+        POINT mousePos;
+        GetCursorPos(&mousePos);
+        ScreenToClient(g_hWnd, &mousePos);
 
-        fTimeAcc += pGameInstance->Compute_TimeDelta(TEXT("Timer_Default"));
+        RECT clientRect;
+        GetClientRect(g_hWnd, &clientRect);
 
-        //if (true)
-        if (fTimeAcc > 1.f / 60.f)
+        if (PtInRect(&clientRect, mousePos))
         {
-            pMainApp->Tick(pGameInstance->Compute_TimeDelta(TEXT("Timer_60")));
-            pMainApp->Render();
+            fTimeAcc += pGameInstance->Compute_TimeDelta(TEXT("Timer_Default"));
 
-            fTimeAcc = 0.f;
+            //if (true)
+            if (fTimeAcc > 1.f / 60.f)
+            {
+                pMainApp->Tick(pGameInstance->Compute_TimeDelta(TEXT("Timer_60")));
+                pMainApp->Render();
+
+                fTimeAcc = 0.f;
+            }
         }
     }
 

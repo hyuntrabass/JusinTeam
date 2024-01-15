@@ -29,11 +29,14 @@ HRESULT CMainApp::Init()
 #endif // _DEBUG
 
 
+	RECT rc{};
+	GetClientRect(g_hWnd, &rc);
+
 	GRAPHIC_DESC GraphicDesc;
 	GraphicDesc.hWnd = g_hWnd;
 	GraphicDesc.hInst = g_hInst;
-	GraphicDesc.iWinSizeX = g_iWinSizeX;
-	GraphicDesc.iWinSizeY = g_iWinSizeY;
+	GraphicDesc.iWinSizeX = rc.right - rc.left;
+	GraphicDesc.iWinSizeY = rc.bottom - rc.top;
 	GraphicDesc.isWindowed = TRUE;
 
 	m_pGameInstance->Init_Engine(LEVEL_END, GraphicDesc, &m_pDevice, &m_pContext);
@@ -59,6 +62,7 @@ HRESULT CMainApp::Init()
 
 	m_pGameInstance->Initialize_Level(LEVEL_END);
 
+	srand((unsigned)time(NULL));
 
 	return S_OK;
 }
@@ -157,7 +161,8 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"), CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 50, 50))))
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"), CVIBuffer_Terrain::Create(m_pDevice, m_pContext))))
 
 	{
 		return E_FAIL;

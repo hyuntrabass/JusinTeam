@@ -1,6 +1,7 @@
 #include "Level_Loading.h"
 #include "Loader.h"
 #include "Level_Logo.h"
+#include "Level_Custom.h"
 #include "Level_Select.h"
 #include "Level_GamePlay.h"
 #include "Loading.h"
@@ -48,6 +49,9 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 			break;
 		case Client::LEVEL_SELECT:
 			pLevel = CLevel_Select::Create(m_pDevice, m_pContext);
+			break;
+		case Client::LEVEL_CUSTOM:
+			pLevel = CLevel_Custom::Create(m_pDevice, m_pContext);
 			break;
 		case Client::LEVEL_GAMEPLAY:
 			pLevel = CLevel_GamePlay::Create(m_pDevice, m_pContext);

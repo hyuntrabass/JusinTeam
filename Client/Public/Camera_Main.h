@@ -27,6 +27,7 @@ private:
 	_float m_fSpeed{ 10.f };
 	_float m_fPlayerDistance{ 4.f };
 	_float m_fShakeAcc{ 100.f };
+	_bool  m_bInitMode[CAMERA_MODE::CM_END];
 
 private:
 	_float m_fSceneTimer{};

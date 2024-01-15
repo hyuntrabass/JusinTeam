@@ -8,10 +8,11 @@ texture2D g_SkillReadyTexture;
 texture2D g_TextureArray[12];
 int g_TexIndex;
 vector g_vColor;
+float g_fx;
 float g_fHpRatio;
 float g_fAlpha;
 int2 g_vNumSprite;
-int g_iIndex;
+uint g_iIndex;
 
 struct VS_IN
 {
@@ -38,7 +39,22 @@ VS_OUT VS_Main(VS_IN Input)
 	
     return Output;
 }
-
+VS_OUT VS_Main_Mask(VS_IN Input)
+{
+    VS_OUT Output = (VS_OUT) 0;
+	
+    vector vPosition = mul(float4(Input.vPos, 1.f), g_WorldMatrix);
+    vPosition = mul(vPosition, g_ViewMatrix);
+    vPosition = mul(vPosition, g_ProjMatrix);
+	
+    float2 vTex = Input.vTex;
+    vTex.x += g_fx;
+    
+    Output.vPos = vPosition;
+    Output.vTex = vTex;
+	
+    return Output;
+}
 struct PS_IN
 {
     vector vPos : SV_Position;
@@ -74,7 +90,7 @@ PS_OUT PS_Main_Color_Alpha(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor.xyz = g_vColor;
+    Output.vColor.xyz = g_vColor.xyz;
     Output.vColor.a = g_fAlpha;
 
     return Output;
@@ -204,6 +220,9 @@ PS_OUT PS_Main_Sprite_MaskTexture(PS_IN Input)
     float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
     
     vector vMask = g_MaskTexture.Sample(LinearSampler, vUV);
+    vMask.r = max(vMask.r, vMask.g);
+    vMask.r = max(vMask.r, vMask.b);
+    
     if (vMask.r < 0.1f)
     {
         discard;
@@ -227,6 +246,9 @@ PS_OUT PS_Main_Sprite_MaskColor(PS_IN Input)
     float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
     
     vector vMask = g_MaskTexture.Sample(LinearSampler, vUV);
+    vMask.r = max(vMask.r, vMask.g);
+    vMask.r = max(vMask.r, vMask.b);
+    
     if (vMask.r < 0.1f)
     {
         discard;
@@ -247,6 +269,8 @@ PS_OUT PS_Main_Hell(PS_IN Input)
     
     return Output;
 }
+
+
 
 technique11 DefaultTechnique
 {
@@ -315,6 +339,18 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main();
     }
 
+    pass BackgroundMask
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main_Mask();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main();
+    }
     pass Mask_Texture
     {
         SetRasterizerState(RS_Default);

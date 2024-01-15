@@ -14,6 +14,7 @@ CSelect::CSelect(const CSelect& rhs)
 
 HRESULT CSelect::Init_Prototype()
 {
+	m_isPrototype = true;
 	return S_OK;
 }
 
@@ -25,6 +26,11 @@ HRESULT CSelect::Init(void* pArg)
 	}
 
 	if (FAILED(Add_Parts()))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(Add_Models()))
 	{
 		return E_FAIL;
 	}
@@ -41,8 +47,8 @@ void CSelect::Tick(_float fTimeDelta)
 	ScreenToClient(g_hWnd, &ptMouse);
 
 	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pSelectDesc == nullptr)
-	{		
-		for (int i = 0; i < 4; ++i)
+	{
+		for (_uint i = 0; i < 4; ++i)
 		{
 			RECT rcRect = {
 			  (LONG)((160.f + 320.f * i) - 320.f * 0.5f),
@@ -53,8 +59,10 @@ void CSelect::Tick(_float fTimeDelta)
 			if (PtInRect(&rcRect, ptMouse))
 			{
 				m_bShow = true;
+				m_eCurModel = (SELECT_MODEL)i;
 				m_pCharacterSelect->Set_Active_Alpha(CCharacterSelect::ALPHA);
 				Set_SelectDesc(i);
+				Set_CameraState(i);
 				break;
 			}
 		}
@@ -79,6 +87,7 @@ void CSelect::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI) && m_bShow && PtInRect(&m_pSelectButton->Get_Rect(), ptMouse))
 	{
+		m_pGameInstance->Set_CameraState(CM_DEFAULT);
 		m_pGameInstance->Level_ShutDown(LEVEL_SELECT);
 	}
 
@@ -86,6 +95,8 @@ void CSelect::Tick(_float fTimeDelta)
 	{
 		if (m_pSelectDesc)
 		{
+			m_pSelectModels[m_eCurModel]->Change_AnimState(CSelect_Model::S_CANCEL);
+			m_pGameInstance->Set_CameraState(CM_DEFAULT);
 			m_pBackButton->Set_Size(150.f, 30.f);
 			Safe_Release(m_pSelectDesc);
 			m_bShow = false;
@@ -108,6 +119,11 @@ void CSelect::Tick(_float fTimeDelta)
 			m_pBackButton->Tick(fTimeDelta);
 		}
 	}
+
+	for (_int i = 0; i < 4; i++)
+	{
+		m_pSelectModels[i]->Tick(fTimeDelta);
+	}
 }
 
 void CSelect::Late_Tick(_float fTimeDelta)
@@ -125,6 +141,10 @@ void CSelect::Late_Tick(_float fTimeDelta)
 		{
 			m_pBackButton->Late_Tick(fTimeDelta);
 		}
+	}
+	for (_int i = 0; i < 4; i++)
+	{
+		m_pSelectModels[i]->Late_Tick(fTimeDelta);
 	}
 }
 
@@ -167,7 +187,7 @@ HRESULT CSelect::Add_Parts()
 
 
 	CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
-	ColButtonDesc.eLevelID = LEVEL_SELECT;
+	ColButtonDesc.eLevelID = LEVEL_STATIC;
 	ColButtonDesc.fDepth = 0.5f;
 	ColButtonDesc.fAlpha = 0.8f;
 	ColButtonDesc.fFontSize = 0.35f;
@@ -202,6 +222,51 @@ HRESULT CSelect::Add_Parts()
 	return S_OK;
 }
 
+HRESULT CSelect::Add_Models()
+{
+	ObjectInfo Info{};
+	Info.strPrototypeTag = TEXT("Prototype_Model_Select0");
+
+	_vec4 vPos;
+	vPos = _vec4(1.8f, 0.07f, -2.4f, 1.f);//프리스트
+	Info.vPos = vPos;
+	m_pSelectModels[3] = (CSelect_Model*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Select_Model"), &Info);
+	if (not m_pSelectModels[3])
+	{
+		return E_FAIL;
+	}
+
+
+	vPos = _vec4(0.7f, 0.07f, -1.2f, 1.f);//로그
+	Info.vPos = vPos;
+	Info.strPrototypeTag = TEXT("Prototype_Model_Select1");
+	m_pSelectModels[2] = (CSelect_Model*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Select_Model"), &Info);
+	if (not m_pSelectModels[2])
+	{
+		return E_FAIL;
+	}
+
+	vPos = _vec4(-2.2f, 0.07f, -2.7f, 1.f);//소서리스
+	Info.vPos = vPos;
+	Info.strPrototypeTag = TEXT("Prototype_Model_Select2");
+	m_pSelectModels[0] = (CSelect_Model*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Select_Model"), &Info);
+	if (not m_pSelectModels[0])
+	{
+		return E_FAIL;
+	}
+
+	vPos = _vec4(-0.9f, 0.07f, -1.2f, 1.f);//워리어
+	Info.vPos = vPos;
+	Info.strPrototypeTag = TEXT("Prototype_Model_Select3");
+	m_pSelectModels[1] = (CSelect_Model*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Select_Model"), &Info);
+	if (not m_pSelectModels[1])
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
 HRESULT CSelect::Bind_ShaderResources()
 {
 
@@ -219,6 +284,34 @@ void CSelect::Set_SelectDesc(_uint iSelect)
 	SelectDesc.eCharacter = (CSelectDesc::CHARACTER)iSelect;
 
 	m_pSelectDesc = (CSelectDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_SelectDesc"), &SelectDesc);
+}
+
+void CSelect::Set_CameraState(_uint iSelect)
+{
+	m_pSelectModels[iSelect]->Change_AnimState(CSelect_Model::S_MOTION);
+	m_pGameInstance->Set_CameraState(CM_ZOOM);
+	_vec4 vTargetPos;
+
+	switch (iSelect)
+	{
+	case 0:
+		m_pGameInstance->Set_ZoomFactor(3.5f);
+		vTargetPos = _vec4(-0.3f, 0.f, 0.1f, 1.f);
+		break;
+	case 1:
+		m_pGameInstance->Set_ZoomFactor(3.5f);
+		vTargetPos = _vec4(-0.15f, 0.f, 0.2f, 1.f);
+		break;
+	case 2:
+		m_pGameInstance->Set_ZoomFactor(3.2f);
+		vTargetPos = _vec4(0.1f, 0.f, 0.2f, 1.f);
+		break;
+	case 3:
+		m_pGameInstance->Set_ZoomFactor(4.f);
+		vTargetPos = _vec4(0.17f, 0.f, 0.4f, 1.f);
+		break;
+	}
+	m_pGameInstance->Set_CameraTargetPos(vTargetPos);
 }
 
 CSelect* CSelect::Create(_dev pDevice, _context pContext)
@@ -250,6 +343,14 @@ CGameObject* CSelect::Clone(void* pArg)
 void CSelect::Free()
 {
 	__super::Free();
+
+	if (!m_isPrototype)
+	{
+		for (_int i = 0; i < 4; i++)
+		{
+			Safe_Release(m_pSelectModels[i]);
+		}
+	}
 
 	Safe_Release(m_pSelectDesc);
 	Safe_Release(m_pBackButton);

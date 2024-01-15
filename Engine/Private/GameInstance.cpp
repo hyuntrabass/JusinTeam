@@ -1079,12 +1079,17 @@ void CGameInstance::Set_HellHeight(const _float& fHeight)
 	m_fHellHeight = fHeight;
 }
 
+void CGameInstance::Set_ZoomFactor(const _float fFactor)
+{
+	m_fZoomFactor = fFactor;
+}
+
 void CGameInstance::Set_CameraState(const _uint& iIndex)
 {
 	m_iCameraState = iIndex;
 }
 
-void CGameInstance::Set_CameraTargetPos(const _vec3& vPos)
+void CGameInstance::Set_CameraTargetPos(const _vec4& vPos)
 {
 	m_vTarget = vPos;
 }
@@ -1094,9 +1099,14 @@ const _uint& CGameInstance::Get_CameraState() const
 	return m_iCameraState;
 }
 
-const _vec3& CGameInstance::Get_CameraTargetPos() const
+const _vec4& CGameInstance::Get_CameraTargetPos() const
 {
 	return m_vTarget;
+}
+
+const _float& CGameInstance::Get_ZoomFactor() const
+{
+	return m_fZoomFactor;
 }
 
 void CGameInstance::Initialize_Level(_uint iLevelNum)

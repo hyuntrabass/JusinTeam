@@ -29,6 +29,12 @@ HRESULT CCamera_Main::Init(void* pArg)
 	//	MSG_BOX("Can't Find Player!! : Camera Main");
 	//}
 
+	for (_int i = 0; i < CM_END; i++)
+	{
+		//카메라는 한번만 부르니까 각 모드 이닛용 ..
+		m_bInitMode[i] = false;
+	}
+
 	if (not pArg)
 	{
 		MSG_BOX("null Arg : CCamera_Debug");
@@ -57,10 +63,62 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			m_pGameInstance->Set_CameraModeIndex(CM_DEBUG);
 		}
 
-		if (!m_bSelect)
+		if (!m_bInitMode[CM_CUSTOM])
 		{
-			m_pTransformCom->Set_State(State::Pos, _vec4(-0.03993677, 1.398446296, -5.207254, 1));
-			m_pTransformCom->LookAt_Dir(_vec4(-0.049540625, -0.10697676, 0.993027, 0));
+			m_pTransformCom->Set_State(State::Pos, _vec4(-0.03993677f, 1.398446296f, -5.207254f, 1.f));
+			m_pTransformCom->LookAt_Dir(_vec4(-0.049540625f, -0.10697676f, 0.993027f, 0.f));
+
+			m_bInitMode[CM_CUSTOM] = true;
+			return;
+		}
+
+		CAMERA_STATE eState = (CAMERA_STATE)m_pGameInstance->Get_CameraState();
+		switch (eState)
+		{
+		case CAMERA_STATE::CM_DEFAULT:
+		{
+			_vec4 vCurrentPos = m_pTransformCom->Get_State(State::Pos);
+			_vec4 vTargetPos = _vec4(-0.03993677f, 1.398446296f, -5.207254f, 1.f);
+
+			_vec4 vNewPos = XMVectorLerp(vCurrentPos, vTargetPos, 0.1f);
+			m_pTransformCom->Set_State(State::Pos, vNewPos);
+
+
+			_vec4 vCurLook = m_pTransformCom->Get_State(State::Look);
+			_vec4 vTargetLook = _vec4(-0.049540625f, -0.10697676f, 0.993027f, 0.f);
+
+			_vec4 vNewLook = XMVectorLerp(vCurLook, vTargetLook, 0.1f);
+			m_pTransformCom->LookAt_Dir(vNewLook);
+			break;
+		}
+		case CAMERA_STATE::CM_ZOOM:
+		{
+			_vec4 vCurrentPos = m_pTransformCom->Get_State(State::Pos);
+
+			_float fLerpFactor = 0.1f;
+
+			_vec4 vTargetPos = m_pGameInstance->Get_CameraTargetPos();
+
+			_float fZoomFactor = m_pGameInstance->Get_ZoomFactor();
+			
+			//vTargetPos.x = vCurrentPos.x;
+			vTargetPos.y = vTargetPos.y + 1.5f;
+			vTargetPos.z = vTargetPos.z - fZoomFactor;
+
+			_vec4 vNewPos = XMVectorLerp(vCurrentPos, vTargetPos, fLerpFactor);
+			m_pTransformCom->Set_State(State::Pos, vNewPos);
+
+			_vec4 vCurLook = m_pTransformCom->Get_State(State::Look);
+			_vec4 vTargetLook = m_pGameInstance->Get_CameraTargetPos();
+			vTargetLook.y = 0.f;
+
+			_vec4 vNewLook = XMVectorLerp(vCurLook, vTargetLook, fLerpFactor);
+
+			m_pTransformCom->LookAt_Dir(vNewLook);
+			break;
+		}
+		default:
+			break;
 		}
 	}
 	else

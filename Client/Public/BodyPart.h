@@ -28,7 +28,8 @@ public:
 
 	//void Set_ModelIndex(_uint iIndex);
 	void Reset_Model();
-	void Set_ModelIndex() { m_iSelectedModelIndex++; }
+	void Set_ModelIndex(_int ModelIndex) { m_iSelectedModelIndex = ModelIndex;}
+	void Set_ModelIndex1() { m_iSelectedModelIndex--; }
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
