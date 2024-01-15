@@ -526,10 +526,7 @@ HRESULT CLoader::Load_Select()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Custom"), CCamera_Custom::Create(m_pDevice, m_pContext))))
-	{
-		return E_FAIL;
-	}
+
 
 	//나중에 옮길 예정
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_BackGround_Mask"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/BackGround/BackGround.png")))))

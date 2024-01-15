@@ -64,7 +64,9 @@ VS_OUT VS_Main(VS_IN Input)
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
     Output.vProjPos = Output.vPos;
-    
+    Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), g_WorldMatrix)).xyz;
+    Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
+	
     return Output;
 }
 
@@ -96,9 +98,7 @@ VS_OUT VS_Main_OutLine(VS_IN Input)
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
     Output.vProjPos = Output.vPos;
-    Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), g_WorldMatrix)).xyz;
-    Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
-	
+   
     return Output;
 }
 
@@ -307,7 +307,7 @@ VS_BlurOUT VS_Test(VS_IN Input)
     vector vOldPos = mul(vPos, matOldWVP);
     
     float4 vDir = vNewPos - vOldPos;
-    float4 vCalNor = mul(vNor.xyz, matWV);
+    float4 vCalNor = mul(vNor, matWV);
     
     float a = dot(normalize(vDir), normalize(vCalNor));
     

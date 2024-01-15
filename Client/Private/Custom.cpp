@@ -248,7 +248,7 @@ HRESULT CCustom::Add_Parts()
 
 	ButtonDesc.strText = TEXT("Çì¾î");
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Custom_Hair");
-	ButtonDesc.vPosition = _vec2(50.f, 220.f);
+	ButtonDesc.vPosition = _vec2(5.f, 220.f);
 
 	m_pCustomMenu[C_HAIR] = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
 	if (not m_pCustomMenu[C_HAIR])

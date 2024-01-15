@@ -150,7 +150,6 @@
     <ClInclude Include="..\Public\BackGround.h" />
     <ClInclude Include="..\Public\BackGround_Mask.h" />
     <ClInclude Include="..\Public\BodyPart.h" />
-    <ClInclude Include="..\Public\Camera_Custom.h" />
     <ClInclude Include="..\Public\Camera_Debug.h" />
     <ClInclude Include="..\Public\Camera_Main.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
@@ -199,7 +198,6 @@
     <ClCompile Include="..\Private\BackGround.cpp" />
     <ClCompile Include="..\Private\BackGround_Mask.cpp" />
     <ClCompile Include="..\Private\BodyPart.cpp" />
-    <ClCompile Include="..\Private\Camera_Custom.cpp" />
     <ClCompile Include="..\Private\Camera_Debug.cpp" />
     <ClCompile Include="..\Private\Camera_Main.cpp" />
     <ClCompile Include="..\Private\CharacterSelect.cpp" />
