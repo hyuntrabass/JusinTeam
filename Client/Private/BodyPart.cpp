@@ -1,4 +1,5 @@
 #include "BodyPart.h"
+#include "UI_Manager.h"
 
 CBodyPart::CBodyPart(_dev pDevice, _context pContext)
 	: CPartObject(pDevice, pContext)
@@ -93,6 +94,9 @@ HRESULT CBodyPart::Render()
 
 	for (_uint i = 0; i < m_Models[m_iSelectedModelIndex]->Get_NumMeshes(); i++)
 	{
+		if (m_iSelectedModelIndex == 8 && i < 3)
+			continue;
+
 		if (FAILED(m_Models[m_iSelectedModelIndex]->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
 		}
@@ -127,10 +131,22 @@ HRESULT CBodyPart::Render()
 		//	return E_FAIL;
 		//}
 
-		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+
+		if (m_eType == PT_HAIR)
 		{
-			return E_FAIL;
+			if (FAILED(m_pShaderCom->Begin(AnimPass_LerpColor)))
+			{
+				return E_FAIL;
+			}
 		}
+		else
+		{
+			if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+			{
+				return E_FAIL;
+			}
+		}
+
 
 		if (FAILED(m_Models[m_iSelectedModelIndex]->Render(i)))
 		{
@@ -275,6 +291,14 @@ HRESULT CBodyPart::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
+	if (m_eType == PT_HAIR)
+	{
+		_vec4 vColor = CUI_Manager::Get_Instance()->Get_HairColor();
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _vec4)))
+		{
+			return E_FAIL;
+		}
+	}
 	return S_OK;
 }
 

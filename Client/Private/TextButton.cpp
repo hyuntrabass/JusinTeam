@@ -160,6 +160,14 @@ void CTextButton::Set_Position(_vec2 vPos)
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
 
+void CTextButton::Set_Size(_float fSizeX, _float fSizeY, _float fFontSize)
+{
+	m_fSizeX = fSizeX;
+	m_fSizeY = fSizeY;
+	if (m_fFontSize != -1.f)
+		m_fFontSize = fFontSize;
+}
+
 CTextButton* CTextButton::Create(_dev pDevice, _context pContext)
 {
 	CTextButton* pInstance = new CTextButton(pDevice, pContext);

@@ -1,5 +1,7 @@
 #include "Player.h"
 #include "BodyPart.h"
+#include "UI_Manager.h"
+
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -26,21 +28,31 @@ HRESULT CPlayer::Init(void* pArg)
 	m_Animation.bSkipInterpolation = true;
 
 	Add_Parts();
-
 	return S_OK;
 }
 
 void CPlayer::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_K))
+
+	PART_TYPE eType = CUI_Manager::Get_Instance()->is_CustomPartChanged();
+	if (PART_TYPE::PT_END != eType)
 	{
-		Change_Parts(PT_HAIR,1);
+		m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), 0.f);
+		Change_Parts(eType, CUI_Manager::Get_Instance()->Get_CustomPart(eType));
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_L))
+	_float fMouseSensor = 0.1f;
+
+	if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON))
 	{
-		Change_Parts(PT_FACE, 1);
+		_long dwMouseMove;
+
+		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
+		{
+			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * dwMouseMove * -1.f * fMouseSensor);
+		}
 	}
+
 
 	for (int i = 0; i < m_vecParts.size(); i++)
 	{

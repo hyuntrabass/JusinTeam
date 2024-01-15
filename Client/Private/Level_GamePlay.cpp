@@ -10,12 +10,13 @@ CLevel_GamePlay::CLevel_GamePlay(_dev pDevice, _context pContext)
 HRESULT CLevel_GamePlay::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_GAMEPLAY);
-
+	/*
 	if (FAILED(Ready_Player()))
 	{
 		MSG_BOX("Failed to Ready Player");
 		return E_FAIL;
 	}
+	*/
 
 	if (FAILED(Ready_Camera()))
 	{

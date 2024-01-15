@@ -68,8 +68,9 @@ private:
 
 public:
 	const RECT& Get_Rect() const { return m_rcRect; }
-	void Set_Size(_float fSizeX, _float fSizeY) { m_fSizeX = fSizeX; m_fSizeY = fSizeY; }
+	void Set_Size(_float fSizeX, _float fSizeY, _float fFontSize = -1.f);
 	const _vec2& Get_Position() const { return m_vPosition; }
+	const _vec4& Get_Color() const { return m_vColor; }
 	void Set_Position(_vec2 vPos);
 
 public:
