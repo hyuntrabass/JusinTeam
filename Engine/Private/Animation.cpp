@@ -11,6 +11,7 @@ CAnimation::CAnimation(const CAnimation& rhs)
 	, m_iNumChannels(rhs.m_iNumChannels)
 	, m_iNumTriggers(rhs.m_iNumTriggers)
 	, m_Triggers(rhs.m_Triggers)
+	, m_iMaxFrame(rhs.m_iMaxFrame)
 	//, m_Channels(rhs.m_Channels)
 	//, m_CurrentKeyFrames(rhs.m_CurrentKeyFrames)
 	//, m_PrevTransformations(rhs.m_PrevTransformations)
@@ -117,6 +118,8 @@ HRESULT CAnimation::Init(ifstream& ModelFile)
 			return E_FAIL;
 		}
 		m_Channels.push_back(pChannel);
+
+		m_iMaxFrame = max(m_iMaxFrame, pChannel->Get_KeyFrames().size());
 	}
 
 	return S_OK;
@@ -177,6 +180,14 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 			m_Channels[i]->Update_TransformationMatrix(Bones, m_fCurrentAnimPos, isAnimChanged, fInterpolationTime);
 		}
 	}
+}
+
+HRESULT CAnimation::Prepare_Animation(const vector<class CBone*>& Bones, _uint iFrame)
+{
+	for (auto& pChannel : m_Channels)
+		pChannel->Prepare_Transformation(Bones, iFrame);
+
+	return S_OK;
 }
 
 CAnimation* CAnimation::Create(ifstream& ModelFile)

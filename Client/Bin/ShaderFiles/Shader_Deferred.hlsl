@@ -194,7 +194,7 @@ PS_OUT_Light PS_Main_Point(PS_IN Input)
     vector vReflect = normalize(reflect(normalize(vLightDir), vNormal));
     vector vLook = vWorldPos - g_vCamPosition;
     
-    Output.vSpecular = fAtt * (g_vLightSpecular * pow(saturate(dot(normalize(vLook) * -1.f, vReflect)), 30.f));
+    Output.vSpecular = fAtt * (vSpecDesc * g_vLightSpecular * pow(saturate(dot(normalize(vLook) * -1.f, vReflect)), 30.f));
     
     return Output;
 }

@@ -3,13 +3,6 @@
 
 BEGIN(Engine)
 
-enum class ModelType
-{
-	Static,
-	Anim,
-	Collision,
-	End
-};
 
 struct ANIM_DESC
 {

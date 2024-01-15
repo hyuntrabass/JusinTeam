@@ -191,34 +191,10 @@ void CMesh::Apply_TransformToActor(_mat WorldMatrix)
 	m_pActor->setGlobalPose(Transform);
 }
 
-HRESULT CMesh::Ready_VTF()
+void CMesh::Set_Bone_Offset(const vector<class CBone*>& Bones)
 {
-	D3D11_TEXTURE2D_DESC VTF;
-	VTF.Width = 64;
-	VTF.Height = 64;
-	VTF.MipLevels = 1;
-	VTF.ArraySize = 1;
-	VTF.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	VTF.SampleDesc.Count = 1;
-	VTF.SampleDesc.Quality = 0;
-	VTF.Usage = D3D11_USAGE_DYNAMIC;
-	VTF.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	VTF.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
-	VTF.MiscFlags = 0;
-
-	if (FAILED(m_pDevice->CreateTexture2D(&VTF, nullptr, &m_pTexture)))
-		return E_FAIL;
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.Format = VTF.Format;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = 1;
-
-	if (FAILED(m_pDevice->CreateShaderResourceView(m_pTexture, &srvDesc, &m_pSRV)))
-		return E_FAIL;
-
-	return S_OK;
+	for (size_t i = 0; i < m_iNumBones; i++)
+		Bones[m_BoneIndices[i]]->Set_OffsetMatrix(m_OffsetMatrices[i]);
 }
 
 HRESULT CMesh::Ready_StaticMesh(ifstream& ModelFile, _mat OffsetMatrix)

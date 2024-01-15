@@ -163,6 +163,9 @@
     <Filter Include="01.Utility\03.Components\VIBuffer\Terrain\VIBuffer_Terrain_Dynamic">
       <UniqueIdentifier>{b2115fba-c7c5-46be-8241-8c00eb49b841}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Components\VTFModel">
+      <UniqueIdentifier>{11b73b55-ac6b-447a-ae08-3f96ccbbd819}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -317,6 +320,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Terrain_Dynamic.cpp">
       <Filter>01.Utility\03.Components\VIBuffer\Terrain\VIBuffer_Terrain_Dynamic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VTFModel.cpp">
+      <Filter>01.Utility\03.Components\VTFModel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -481,6 +487,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Terrain_Dynamic.h">
       <Filter>01.Utility\03.Components\VIBuffer\Terrain\VIBuffer_Terrain_Dynamic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VTFModel.h">
+      <Filter>01.Utility\03.Components\VTFModel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

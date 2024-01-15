@@ -154,6 +154,8 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     if (g_HasSpecTex)
     {
         vSpecular = g_SpecTexture.Sample(LinearSampler, Input.vTex);
+        vSpecular = vector(vSpecular.b, vSpecular.b, vSpecular.b, vSpecular.a);
+
     }
     
     Output.vDiffuse = vMtrlDiffuse;

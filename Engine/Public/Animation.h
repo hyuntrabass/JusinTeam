@@ -23,9 +23,17 @@ public:
 	void ResetFinished();
 	void Set_CurrentAnimPos(_float fCurrentAnimPos);
 
+	// ¿ø¸í
+	const _uint Get_MaxFrame() const {
+		return m_iMaxFrame;
+	}
+
 public:
 	HRESULT Init(ifstream& ModelFile);
 	void Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio);
+
+	HRESULT Prepare_Animation(const vector<class CBone*>& Bones, _uint iFrame);
+
 
 private:
 	_char m_szName[MAX_PATH]{};
@@ -44,6 +52,8 @@ private:
 
 	_uint m_iNumTriggers{};
 	vector<_float> m_Triggers;
+
+	_uint m_iMaxFrame = 0;
 
 public:
 	static CAnimation* Create(ifstream& ModelFile);

@@ -23,7 +23,7 @@ public:
 	_bool Intersect_RayMesh(_mat WorldMatrix, _vec4* pPickPos);
 	void Apply_TransformToActor(_mat WorldMatrix);
 
-	HRESULT Ready_VTF();
+	void Set_Bone_Offset(const vector<class CBone*>& Bones);
 
 private:
 	_float3* m_pVerticesPos{ nullptr };
@@ -41,8 +41,6 @@ private:
 	PxRigidStatic* m_pActor{ nullptr };
 	ModelType m_eType{};
 
-	ID3D11Texture2D* m_pTexture{ nullptr };
-	ID3D11ShaderResourceView* m_pSRV{ nullptr };
 
 private:
 	HRESULT Ready_StaticMesh(ifstream& ModelFile, _mat OffsetMatrix);

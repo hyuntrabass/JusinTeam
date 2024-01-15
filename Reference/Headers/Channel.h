@@ -13,6 +13,12 @@ public:
 	HRESULT Init(ifstream& ModelFile);
 	void Update_TransformationMatrix(const vector<class CBone*>& Bones, _float& fCurrentAnimPos, _bool& isAnimChanged, _float fInterpolationTime);
 
+	void Prepare_Transformation(const vector<class CBone*>& Bones, _uint iKeyFrame);
+
+	const vector<KEYFRAME>& Get_KeyFrames() const {
+		return m_KeyFrames;
+	}
+
 private:
 	_char m_szName[MAX_PATH]{};
 
