@@ -41,9 +41,27 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_Penguin()))
+	if (FAILED(Ready_Goat()))
 	{
-		MSG_BOX("Failed to Ready Penguin");
+		MSG_BOX("Failed to Ready Goat");
+		return E_FAIL;
+	}
+
+	if (FAILED(Ready_Nastron03()))
+	{
+		MSG_BOX("Failed to Ready Nastron03");
+		return E_FAIL;
+	}
+
+	if (FAILED(Ready_NPCvsMon()))
+	{
+		MSG_BOX("Failed to Ready NPCvsMon");
+		return E_FAIL;
+	}
+
+	if (FAILED(Ready_Thief04()))
+	{
+		MSG_BOX("Failed to Ready Thief04");
 		return E_FAIL;
 	}
 
@@ -125,7 +143,33 @@ HRESULT CLevel_GamePlay::Ready_Void05()
 
 HRESULT CLevel_GamePlay::Ready_Rabbit()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Rabbit"), TEXT("Prototype_GameObject_Rabbit"))))
+	for (size_t i = 0; i < 5; i++)
+	{
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Rabbit"), TEXT("Prototype_GameObject_Rabbit"))))
+		{
+			return E_FAIL;
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Goat()
+{
+	for (size_t i = 0; i < 5; i++)
+	{
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Goat"), TEXT("Prototype_GameObject_Goat"))))
+		{
+			return E_FAIL;
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Nastron03()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Nastron03"), TEXT("Prototype_GameObject_Nastron03"))))
 	{
 		return E_FAIL;
 	}
@@ -133,9 +177,19 @@ HRESULT CLevel_GamePlay::Ready_Rabbit()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Penguin()
+HRESULT CLevel_GamePlay::Ready_NPCvsMon()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Penguin"), TEXT("Prototype_GameObject_Penguin"))))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPCvsMon"), TEXT("Prototype_GameObject_NPCvsMon"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Thief04()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Thief04"), TEXT("Prototype_GameObject_Thief04"))))
 	{
 		return E_FAIL;
 	}

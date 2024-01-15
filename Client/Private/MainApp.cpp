@@ -59,6 +59,7 @@ HRESULT CMainApp::Init()
 
 	m_pGameInstance->Initialize_Level(LEVEL_END);
 
+	srand((unsigned)time(NULL));
 
 	return S_OK;
 }

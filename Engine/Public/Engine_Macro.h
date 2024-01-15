@@ -53,6 +53,11 @@ unsigned long ClassName::Destroy_Instance()				\
 
 #define ModelFilePath ../Bin/Resources/StaticMesh/
 
+// 다른 객체의 위치를 얻어오는 메크로
+#define GET_TRANSFORM(LayerTag, LevelID)								\
+dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LevelID, TEXT(LayerTag), TEXT("Com_Transform"))); \
+
+
 static XMFLOAT4 LIGHT_RANGE_7 = XMFLOAT4(7.f, 1.0f, 0.7f, 1.8f);
 static XMFLOAT4 LIGHT_RANGE_13 = XMFLOAT4(13.f, 1.0f, 0.35f, 0.44f);
 static XMFLOAT4 LIGHT_RANGE_20 = XMFLOAT4(20.f, 1.0f, 0.22f, 0.20f);

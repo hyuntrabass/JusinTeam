@@ -29,18 +29,18 @@ HRESULT CRabbit::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(5.f, 0.f, 0.f, 1.f));
-	m_pTransformCom->Set_Speed(10.f);
+	//m_pTransformCom->Set_State(State::Pos, _vec4(5.f, 0.f, 0.f, 1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(rand() % 20, 0.f, rand() % 20, 1.f));
+	m_pTransformCom->Set_Speed(3.f);
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = true;
+	m_Animation.fAnimSpeedRatio = 1.5f;
 
 	m_eCurState = STATE_IDLE;
 
 	m_iHP = 1;
-
-	srand((unsigned)time(NULL));
 
 	return S_OK;
 }
@@ -76,11 +76,21 @@ HRESULT CRabbit::Render()
 
 void CRabbit::Change_State(_float fTimeDelta)
 {
-	if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex) == false && m_Animation.isLoop == false)
+	if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
 	{
-		return;
+		m_eCurState = STATE_IDLE;
 	}
 
+	//if (m_pModelCom->IsAnimationFinished(ROAR) ||
+	//	m_pModelCom->IsAnimationFinished(RUN) || m_pModelCom->IsAnimationFinished(STUN))
+	//{
+	//	m_eCurState = STATE_IDLE;
+	//}
+
+	//if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex) == false && m_Animation.isLoop == false)
+	//{
+	//	return;
+	//}
 
 	if (m_ePreState != m_eCurState)
 	{
@@ -92,13 +102,14 @@ void CRabbit::Change_State(_float fTimeDelta)
 			break;
 		case Client::CRabbit::STATE_ROAM:
 			m_iRoamingPattern = rand() % 3;
+			//m_iRoamingPattern = 1;
 
-			if (m_iRoamingPattern != 0)
+			if (m_iRoamingPattern == 1 && m_pModelCom->IsAnimationFinished(RUN) == false)
 			{
 				random_device rd;
-				_randNum RandNum;
-				_randFloat Random = _randFloat(0.f, 1.f);
-				m_pTransformCom->LookAt(_vec4(Random(RandNum), 0.f, Random(RandNum), 0.f));
+				_randNum RandNum(rd());
+				_randFloat Random = _randFloat(-1.f, 1.f);
+				m_pTransformCom->LookAt_Dir(_vec4(Random(RandNum), 0.f, Random(RandNum), 0.f));
 			}
 
 			break;
@@ -109,15 +120,19 @@ void CRabbit::Change_State(_float fTimeDelta)
 			m_Animation.isLoop = false;
 			break;
 		}
+
+		m_ePreState = m_eCurState;
+
 	}
 }
 
 void CRabbit::Control_State(_float fTimeDelta)
 {
-
 	switch (m_eCurState)
 	{
 	case Client::CRabbit::STATE_IDLE:
+
+		m_fIdleTime += fTimeDelta;
 
 		if (m_fIdleTime >= 2.f)
 		{
@@ -125,13 +140,8 @@ void CRabbit::Control_State(_float fTimeDelta)
 			m_fIdleTime = 0.f;
 		}
 
-		m_fIdleTime += fTimeDelta;
-
 		break;
 	case Client::CRabbit::STATE_ROAM:
-
-	{
-		_uint iRandom = rand() % 3;
 
 		switch (m_iRoamingPattern)
 		{
@@ -142,19 +152,13 @@ void CRabbit::Control_State(_float fTimeDelta)
 		case 1:
 			m_Animation.iAnimIndex = RUN;
 			m_Animation.isLoop = false;
+			m_pTransformCom->Go_Straight(fTimeDelta);
 			break;
 		case 2:
-			m_Animation.iAnimIndex = WALK;
+			m_Animation.iAnimIndex = STUN;
 			m_Animation.isLoop = false;
 			break;
 		}
-
-		if (m_pModelCom->Get_CurrentAnimationIndex() == RUN || m_pModelCom->Get_CurrentAnimationIndex() == WALK)
-		{
-			m_pTransformCom->Go_Straight(fTimeDelta);
-		}
-
-	}
 
 		break;
 	case Client::CRabbit::STATE_ATTACK:
@@ -163,11 +167,6 @@ void CRabbit::Control_State(_float fTimeDelta)
 		break;
 	}
 
-	if (m_pModelCom->IsAnimationFinished(ROAR) ||
-		m_pModelCom->IsAnimationFinished(RUN) || m_pModelCom->IsAnimationFinished(WALK))
-	{
-		m_eCurState = STATE_IDLE;
-	}
 
 }
 
