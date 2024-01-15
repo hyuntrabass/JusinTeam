@@ -23,22 +23,22 @@ HRESULT CMap::Init_Prototype()
 HRESULT CMap::Init(void* pArg)
 {
 
-	m_Info = *(DummyInfo*)pArg;
+	m_Info = *(MapInfo*)pArg;
 
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
-
-
-	if (m_Info.Prototype == L"Prototype_Model_Map1")
+	if (m_Info.ppMap)
 	{
-		m_iShaderPass = StaticPass_AlphaTestMeshes;
+		*m_Info.ppMap = this;
+		m_Info.ppMap = nullptr;
 	}
 
 
+	m_iShaderPass = StaticPass_AlphaTestMeshes;
+	
 	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_Info.vPos));
-	m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_Info.vLook));
 
 	return S_OK;
 }
@@ -87,6 +87,10 @@ HRESULT CMap::Render()
 			return E_FAIL;
 		}
 
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_bSelected", &m_isSelected, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
 
 		if (FAILED(m_pShaderCom->Begin(m_iOutLineShaderPass)))
 		{
@@ -162,9 +166,17 @@ HRESULT CMap::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
-
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_iID", &m_iID, sizeof(_int))))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
+}
+
+void CMap::Select(const _bool& isSelected)
+{
+	m_isSelected = isSelected;
 }
 
 CMap* CMap::Create(_dev pDevice, _context pContext)

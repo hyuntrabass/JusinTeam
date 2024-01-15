@@ -29,6 +29,8 @@ private:
 	HRESULT Ready_NPCvsMon();
 	HRESULT Ready_Thief04();
 
+	HRESULT Ready_Monster();
+
 public:
 	static CLevel_GamePlay* Create(_dev pDevice, _context pContext);
 	virtual void Free() override;

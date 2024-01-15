@@ -19,6 +19,10 @@ vector g_vMtrlSpecular = vector(0.7f, 1.0f, 0.7f, 1.f);
 vector g_vCamPos;
 float g_fCamFar;
 
+// ¿ø¸í
+matrix g_ReflectionViewMatrix;
+texture2D g_ReflectionTexture;
+
 struct VS_IN
 {
     float3 vPos : Position;
@@ -45,7 +49,7 @@ VS_OUT VS_Main(VS_IN Input)
     matWVP = mul(matWV, g_ProjMatrix);
 	
     Output.vPos = mul(vector(Input.vPos, 1.f), matWVP);
-    Output.vNor = mul(vector(Input.vNor, 0.f), g_WorldMatrix);
+    Output.vNor = normalize(mul(vector(Input.vNor, 0.f), g_WorldMatrix));
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
     Output.vProjPos = Output.vPos;
@@ -74,7 +78,7 @@ PS_OUT PS_Main(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    vector vMtrlDiffuse = g_Texture.Sample(LinearSampler, Input.vTex * 100.f);
+    vector vMtrlDiffuse = g_Texture.Sample(LinearSampler, Input.vTex);
     
     float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, Input.vNor));
     
@@ -144,4 +148,5 @@ technique11 DefaultTechniqueShader_VtxNorTex
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Editor();
     }
+
 };

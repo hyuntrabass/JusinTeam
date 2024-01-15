@@ -34,7 +34,7 @@ HRESULT CBackGround_Mask::Init(void* pArg)
 	m_fX = Ui_Info->vPos.x;
 	m_fY = Ui_Info->vPos.y;
 	
-	m_fDepth = 1.1;
+	m_fDepth = 1.1f;
 	return S_OK;
 }
 

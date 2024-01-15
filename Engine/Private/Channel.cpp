@@ -48,7 +48,7 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 	_vec4 vRotation{};
 	_vec4 vPosition{};
 
-	if (isAnimChanged)
+	/*if (isAnimChanged)
 	{
 		m_iCurrentKeyFrame = 0;
 		if (m_PrevTransformation.m[3][3] == 0.f)
@@ -82,7 +82,7 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 			fCurrentAnimPos = 0.f;
 		}
 	}
-	else if (fCurrentAnimPos >= LastKeyFrame.fTime)
+	else */if (fCurrentAnimPos >= LastKeyFrame.fTime)
 	{
 		vScaling = XMLoadFloat4(&LastKeyFrame.vScaling);
 		vRotation = XMLoadFloat4(&LastKeyFrame.vRotation);
@@ -157,15 +157,25 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 
 		vSrcScaling = XMLoadFloat4(&m_KeyFrames[m_iCurrentKeyFrame].vScaling);
 		vDstScaling = XMLoadFloat4(&m_DestKeyFrame.vScaling);
-		vScaling = XMVectorLerp(vSrcScaling, vDstScaling, fRatio);
 
 		vSrcRotation = XMLoadFloat4(&m_KeyFrames[m_iCurrentKeyFrame].vRotation);
 		vDstRotation = XMLoadFloat4(&m_DestKeyFrame.vRotation);
-		vRotation = XMQuaternionSlerp(vSrcRotation, vDstRotation, fRatio);
 
 		vSrcPotition = XMLoadFloat4(&m_KeyFrames[m_iCurrentKeyFrame].vPosition);
 		vDstPosition = XMLoadFloat4(&m_DestKeyFrame.vPosition);
-		vPosition = XMVectorLerp(vSrcPotition, vDstPosition, fRatio);
+
+		if (m_IsBack)
+		{
+			vScaling = XMVectorLerp(vDstScaling, vSrcScaling, fRatio);
+			vRotation = XMQuaternionSlerp(vDstRotation, vSrcRotation, fRatio);
+			vPosition = XMVectorLerp(vDstPosition, vSrcPotition, fRatio);
+		}
+		else
+		{
+			vScaling = XMVectorLerp(vSrcScaling, vDstScaling, fRatio);
+			vRotation = XMQuaternionSlerp(vSrcRotation, vDstRotation, fRatio);
+			vPosition = XMVectorLerp(vSrcPotition, vDstPosition, fRatio);
+		}
 
 		/*m_PrevTransformation = {};
 		while (fCurrentAnimPos >= m_KeyFrames[m_iCurrentKeyFrame + 1].fTime)
@@ -195,6 +205,28 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 	_mat Transformation = XMMatrixAffineTransformation(vScaling, XMVectorSet(0.f, 0.f, 0.f, 1.f), vRotation, vPosition);
 
 	Bones[m_iBoneIndex]->Set_Transformation(Transformation);
+}
+
+void CChannel::Prepare_Transformation(const vector<class CBone*>& Bones, _uint iKeyFrame)
+{
+	_vec4 vScale = _vec4(1.f, 1.f, 1.f, 1.f);
+	_vec4 vRotation = _vec4(0.f, 0.f, 0.f, 0.f);
+	_vec4 vPosition = _vec4(0.f, 0.f, 0.f, 1.f);
+
+	if (iKeyFrame < m_KeyFrames.size()) {
+		vScale = m_KeyFrames[iKeyFrame].vScaling;
+		vRotation = m_KeyFrames[iKeyFrame].vRotation;
+		vPosition = m_KeyFrames[iKeyFrame].vPosition;
+	}
+	else {
+		vScale = m_KeyFrames.back().vScaling;
+		vRotation = m_KeyFrames.back().vRotation;
+		vPosition = m_KeyFrames.back().vPosition;
+	}
+
+	_mat TransformationMatrix = XMMatrixAffineTransformation(vScale, _vec4(0.f, 0.f, 0.f, 1.f), vRotation, vPosition);
+
+	Bones[m_iBoneIndex]->Set_Transformation(TransformationMatrix);
 }
 
 CChannel* CChannel::Create(ifstream& ModelFile)

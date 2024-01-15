@@ -179,6 +179,13 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 
 		ModelFile.close();
 
+		if (eType == ModelType::Anim) {
+
+			for (auto& pMesh : m_Meshes) {
+				pMesh->Set_Bone_Offset(m_Bones);
+			}
+		}
+
 		if (eType == ModelType::Anim)
 		{
 			_char szTriggerFilePath[MAX_PATH]{};
@@ -225,6 +232,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 	{
 		pBone->Update_CombinedMatrix(m_Bones);
 	}
+		
 }
 
 HRESULT CModel::Bind_BoneMatrices(_uint iMeshIndex, CShader* pShader, const _char* pVariableName)
@@ -278,6 +286,7 @@ _bool CModel::Intersect_RayModel(_fmatrix WorldMatrix, _vec4* pPickPos)
 
 	return false;
 }
+
 
 HRESULT CModel::Read_Bones(ifstream& File)
 {

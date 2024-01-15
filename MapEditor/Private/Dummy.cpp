@@ -59,12 +59,16 @@ HRESULT CDummy::Init(void* pArg)
 		m_Info.Prototype == L"Prototype_Model_Trilobite" ||
 		m_Info.Prototype == L"Prototype_Model_TrilobiteA" ||
 		m_Info.Prototype == L"Prototype_Model_Void13" ||
-		m_Info.Prototype == L"Prototype_Model_VoidDragon")
+		m_Info.Prototype == L"Prototype_Model_VoidDragon" ||
+		m_Info.Prototype == L"Prototype_Model_Void05")
 	{
 		m_isAnim = true;
 		m_Animation.isLoop = true;
 	}
-
+	else
+	{
+		m_iShaderPass = StaticPass_AlphaTestMeshes;
+	}
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
@@ -76,16 +80,6 @@ HRESULT CDummy::Init(void* pArg)
 		m_Info.ppDummy = nullptr;
 	}
 
-	if (m_Info.Prototype == L"Prototype_Model_Sphere" ||
-		m_Info.Prototype == L"Prototype_Model_Sphere_HorizentalUV" ||
-		m_Info.Prototype == L"Prototype_Model_Ring_14" ||
-		m_Info.Prototype == L"Prototype_Model_Circle" ||
-		m_Info.Prototype == L"Prototype_Model_SM_EFF_Tree_01.mo" )
-	{
-		m_iShaderPass = StaticPass_AlphaTestMeshes;
-	}
-
-	
 	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_Info.vPos));
 	m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_Info.vLook));
 
@@ -94,23 +88,6 @@ HRESULT CDummy::Init(void* pArg)
 
 void CDummy::Tick(_float fTimeDelta)
 {
-	/*if (m_pImGui_Manager->ComputePickPos())
-	{
-		_vec4 vPickPos{};
-		if (m_pModelCom->Intersect_RayModel(m_pTransformCom->Get_World_Matrix(), &vPickPos))
-		{
-			m_pImGui_Manager->SetPos(vPickPos, this);
-		}
-	}
-	if (m_pImGui_Manager->ComputeSelection())
-	{
-		_vec4 vPickPos{};
-		if (m_pModelCom->Intersect_RayModel(m_pTransformCom->Get_World_Matrix(), &vPickPos))
-		{
-			m_pImGui_Manager->Select(vPickPos, this);
-		}
-
-	}*/
 	
 	if (m_isAnim)
 	{

@@ -3,6 +3,7 @@
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
+texture2D g_SpecTexture;
 texture2D g_MaskTexture;
 texture2D g_NoiseTexture;
 texture2D g_GradationTexture;
@@ -15,6 +16,7 @@ float g_fLightFar;
 float g_fDissolveRatio;
 
 bool g_HasNorTex;
+bool g_HasSpecTex;
 bool g_bSelected = false;
 
 vector g_vLightDir;
@@ -110,6 +112,7 @@ struct PS_OUT_DEFERRED
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
+    vector vSpecular : SV_Target3;
 };
 
 struct PS_OUT
@@ -138,10 +141,17 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     {
         vNormal = Input.vNor.xyz;
     }
-
+    
+    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
+    if (g_HasSpecTex)
+    {
+        vSpecular = g_SpecTexture.Sample(LinearSampler, Input.vTex);
+    }
+    
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vSpecular = vSpecular;
     
     return Output;
 }

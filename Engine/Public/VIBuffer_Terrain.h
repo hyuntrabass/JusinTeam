@@ -1,6 +1,11 @@
 #pragma once
 #include "VIBuffer.h"
 
+struct Info {
+	_uint iNumVerticesX{};
+	_uint iNumVerticesZ{};
+};
+
 BEGIN(Engine)
 
 class ENGINE_DLL CVIBuffer_Terrain final : public CVIBuffer
@@ -10,15 +15,27 @@ class ENGINE_DLL CVIBuffer_Terrain final : public CVIBuffer
 	virtual ~CVIBuffer_Terrain() = default;
 
 public:
-	virtual HRESULT Init_Prototype(_uint iNumVerticesX, _uint iNumVerticesZ);
+	virtual HRESULT Init_Prototype() override;
 	virtual HRESULT Init(void* pArg) override;
-	VTXNORTEX* Get_Vertices() { return pVertices; }
-
-private:
-	VTXNORTEX* pVertices = { nullptr };
 
 public:
-	static CVIBuffer_Terrain* Create(_dev pDevice, _context pContext, _uint iNumVerticesX, _uint iNumVerticesZ);
+	_uint Get_NumVerticesX() { return m_iNumVerticesX; }
+	_uint Get_NumVerticesZ() { return m_iNumVerticesZ; }
+
+private:
+	Info m_pTerrain{};
+
+private:
+	_bool	m_isClone;
+	_uint m_iNumVerticesX{ 0 };
+	_uint m_iNumVerticesZ{ 0 };
+public:
+	HRESULT ModifyTerrainVertexBuffer( _uint iNumVerticesX,  _uint iNumVerticesZ);
+	//HRESULT ModifyPos( _uint iNumVerticesX,  _uint iNumVerticesZ);
+
+
+public:
+	static CVIBuffer_Terrain* Create(_dev pDevice, _context pContext);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

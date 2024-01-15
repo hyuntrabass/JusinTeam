@@ -2,6 +2,7 @@
 
 #include "GameObject.h"
 #include "MapEditor_Define.h"
+#include "ImGui_Manager.h"
 
 BEGIN(MapEditor)
 
@@ -40,11 +41,11 @@ private:
 	_float				m_fX, m_fY;
 	_float44			m_ViewMatrix, m_ProjMatrix;
 	_uint				m_iTextureNum = { 0 };
+	TerrainInfo m_Info{};
 
 private:
 	HRESULT Add_Component();
 	HRESULT Bind_ShaderResources();
-
 
 public:
 	// 원형 객체를 생성할 때

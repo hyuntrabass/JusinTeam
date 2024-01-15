@@ -116,6 +116,16 @@ HRESULT CMesh::Init(void* pArg)
 
 HRESULT CMesh::Bind_BoneMatrices(CShader* pShader, const vector<CBone*>& Bones, const _char* pVariableName, _mat PivotMatrix)
 {
+	//D3D11_MAPPED_SUBRESOURCE TexData;
+	//m_pContext->Map(m_pTexture, 0, D3D11_MAP_WRITE_DISCARD, 0, &TexData);
+
+	//_mat* BonMatrices = (_mat*)TexData.pData;
+	//_uint i = 0;
+	//for (size_t i = 0; i < m_iNumBones; i++)
+	//	BonMatrices[i] = m_BoneMatrices[i];
+
+	//m_pContext->Unmap(m_pTexture, 0);
+
 	for (size_t i = 0; i < m_iNumBones; i++)
 	{
 		m_BoneMatrices[i] = m_OffsetMatrices[i] * *Bones[m_BoneIndices[i]]->Get_CombinedMatrix() * PivotMatrix;
@@ -179,6 +189,12 @@ void CMesh::Apply_TransformToActor(_mat WorldMatrix)
 	_vec4 vQuat = XMQuaternionRotationMatrix(WorldMatrix);
 	PxTransform Transform(VectorToPxVec3(_vec4(&WorldMatrix._31)), PxQuat(vQuat.x, vQuat.y, vQuat.z, vQuat.w));
 	m_pActor->setGlobalPose(Transform);
+}
+
+void CMesh::Set_Bone_Offset(const vector<class CBone*>& Bones)
+{
+	for (size_t i = 0; i < m_iNumBones; i++)
+		Bones[m_BoneIndices[i]]->Set_OffsetMatrix(m_OffsetMatrices[i]);
 }
 
 HRESULT CMesh::Ready_StaticMesh(ifstream& ModelFile, _mat OffsetMatrix)

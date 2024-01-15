@@ -68,7 +68,7 @@ HRESULT CMonster::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+		if (FAILED(m_pShaderCom->Begin(5)))
 		{
 			return E_FAIL;
 		}
@@ -120,6 +120,14 @@ HRESULT CMonster::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
+		return E_FAIL;
+
+	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
 	{
 		return E_FAIL;
 	}

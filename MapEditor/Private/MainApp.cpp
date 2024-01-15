@@ -8,7 +8,6 @@
 #include "MainApp.h"
 #include "GameInstance.h"
 #include "Level_Loading.h"
-#include "Menu.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -215,7 +214,7 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"), CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 100,100))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"), CVIBuffer_Terrain::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

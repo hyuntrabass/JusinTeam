@@ -5,7 +5,7 @@ texture2D g_Texture, g_MaskTexture, g_DissolveTexture;
 vector g_vCamPos;
 vector g_vColor;
 int2 g_vNumSprite;
-int g_iIndex;
+uint g_iIndex;
 float g_fDissolveRatio;
 
 struct VS_IN

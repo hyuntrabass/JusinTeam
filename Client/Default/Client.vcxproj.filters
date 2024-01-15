@@ -70,6 +70,9 @@
     <Filter Include="02.GameObjects\00.UI\01.SelectLevel">
       <UniqueIdentifier>{93abe20e-797d-4bcc-ad2b-25c32d710d72}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.UI\01.SelectLevel\ClassSelect">
+      <UniqueIdentifier>{e433917e-0435-4307-a9c2-4229c403b1c9}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObjects\00.UI\01.SelectLevel\CharacterSelect">
       <UniqueIdentifier>{6f2639c5-1725-44f9-9096-e83c37bd1286}</UniqueIdentifier>
     </Filter>
@@ -135,6 +138,9 @@
     </Filter>
     <Filter Include="03.Effect\Common_Effect">
       <UniqueIdentifier>{da867888-78e9-40d7-a33c-3c398eb5ed94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\02.Terrain\Lake">
+      <UniqueIdentifier>{cf63ced1-74e6-4b14-b3a8-630d98997eb7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -265,6 +271,9 @@
     <ClInclude Include="..\Public\Nastron03.h" />
     <ClInclude Include="..\Public\Thief04.h" />
     <ClInclude Include="..\Public\Void05.h" />
+    <ClInclude Include="..\Public\Lake.h">
+      <Filter>02.GameObjects\02.Terrain\Lake</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -387,6 +396,9 @@
     <ClCompile Include="..\Private\NPCvsMon.cpp" />
     <ClCompile Include="..\Private\Thief04.cpp" />
     <ClCompile Include="..\Private\Void05.cpp" />
+    <ClCompile Include="..\Private\Lake.cpp">
+      <Filter>02.GameObjects\02.Terrain\Lake</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
@@ -414,6 +426,9 @@
       <Filter>97.Shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxCubeTex.hlsl">
+      <Filter>97.Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Water.hlsl">
       <Filter>97.Shaders</Filter>
     </FxCompile>
   </ItemGroup>
