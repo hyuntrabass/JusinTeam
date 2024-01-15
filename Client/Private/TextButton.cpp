@@ -63,26 +63,31 @@ void CTextButton::Tick(_float fTimeDelta)
 
 void CTextButton::Late_Tick(_float fTimeDelta)
 {
+	wstring strTexture = m_strTexture;
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 
 }
 
 HRESULT CTextButton::Render()
 {
-	if (FAILED(Bind_ShaderResources()))
+	if (m_strTexture != TEXT(""))
 	{
-		return E_FAIL;
-	}
+		if (FAILED(Bind_ShaderResources()))
+		{
+			return E_FAIL;
+		}
 
-	if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
-	{
-		return E_FAIL;
-	}
+		if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
+		{
+			return E_FAIL;
+		}
 
-	if (FAILED(m_pVIBufferCom->Render()))
-	{
-		return E_FAIL;
+		if (FAILED(m_pVIBufferCom->Render()))
+		{
+			return E_FAIL;
+		}
 	}
+	
 
 	if (m_strText != TEXT(""))
 	{

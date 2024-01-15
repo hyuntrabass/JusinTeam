@@ -115,12 +115,14 @@ void CCustom::Tick(_float fTimeDelta)
 			}
 		}
 	}
-	
-	if (m_pGameInstance->Mouse_Down(DIM_RBUTTON, InputChannel::Editor) && PtInRect(&m_pSelectButton->Get_Rect(), ptMouse))
+	if (PtInRect(&m_pSelectButton->Get_Rect(), ptMouse))
 	{
-		m_pGameInstance->Level_ShutDown(LEVEL_CUSTOM);
+		if (m_pGameInstance->Mouse_Down(DIM_RBUTTON, InputChannel::Editor))
+		{
+			m_pGameInstance->Level_ShutDown(LEVEL_CUSTOM);
+		}
+		m_pSelectButton->Set_Size(140.f, 22.f);
 	}
-	
 	
 	m_pSelectCustomEffect->Tick(fTimeDelta);
 	if (m_pSelectButton != nullptr)
@@ -173,23 +175,27 @@ HRESULT CCustom::Add_Components()
 HRESULT CCustom::Add_Parts()
 {
 
-	CTextButton::TEXTBUTTON_DESC ButtonDesc = {};
-	ButtonDesc.eLevelID = LEVEL_CUSTOM;
-	ButtonDesc.fDepth = 0.5f;
-	ButtonDesc.fFontSize = 0.4f;
-	ButtonDesc.strText = TEXT("Ä¿½ºÅÍ¸¶ÀÌÂ¡");
-	ButtonDesc.strTexture = TEXT("");
-	ButtonDesc.vPosition = _vec2(50.f, 15.f);
-	ButtonDesc.vSize = _vec2(20.f, 20.f);
-	ButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	ButtonDesc.vTextPosition = _vec2(20.f, 0.f);
+	CTextButton::TEXTBUTTON_DESC Button = {};
+	Button.eLevelID = LEVEL_CUSTOM;
+	Button.fDepth = 0.5f;
+	Button.fFontSize = 0.4f;
+	Button.strText = TEXT("Ä¿½ºÅÍ¸¶ÀÌÂ¡");
+	Button.strTexture = TEXT("");
+	Button.vPosition = _vec2(50.f, 15.f);
+	Button.vSize = _vec2(20.f, 20.f);
+	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	Button.vTextPosition = _vec2(20.f, 0.f);
 	
-	m_pClassButton = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
+	m_pClassButton = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 	if (not m_pClassButton)
 	{
 		return E_FAIL;
 	}
 
+	CTextButton::TEXTBUTTON_DESC ButtonDesc = {};
+	ButtonDesc.eLevelID = LEVEL_CUSTOM;
+	ButtonDesc.fDepth = 0.5f;
+	ButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	ButtonDesc.strText = TEXT("¾ó±¼");
 	ButtonDesc.vTextPosition = _vec2(0.f, 40.f);
 	ButtonDesc.fFontSize = 0.3f;
@@ -237,7 +243,10 @@ HRESULT CCustom::Add_Parts()
 	ButtonDesc.vPosition = _vec2(-200.f, 15.f);
 	ButtonDesc.vSize = _vec2(79.f, 87.f); 
  	m_pSelectCustomEffect = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
-	
+	if (not m_pSelectCustomEffect)
+	{
+		return E_FAIL;
+	}
 	
 	ButtonDesc.strText = TEXT("");
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Custom_FadeBox");
