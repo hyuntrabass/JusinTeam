@@ -64,6 +64,8 @@ private:
 
 	_uint m_iMaxFrame = 0;
 
+	_bool m_hasCloned{};
+
 private:
 	void Update_Lerp_TransformationMatrix(const vector<class CBone*>& Bones, _bool& isAnimChanged, _float fInterpolationTime);
 

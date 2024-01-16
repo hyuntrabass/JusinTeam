@@ -16,6 +16,8 @@ CAnimation::CAnimation(const CAnimation& rhs)
 	//, m_Channels(rhs.m_Channels)
 	//, m_CurrentKeyFrames(rhs.m_CurrentKeyFrames)
 	//, m_PrevTransformations(rhs.m_PrevTransformations)
+	, m_pPrevTransformation(rhs.m_pPrevTransformation)
+	, m_hasCloned(true)
 {
 	strcpy_s(m_szName, rhs.m_szName);
 	//for (auto& pChannel : m_Channels)
@@ -311,5 +313,8 @@ void CAnimation::Free()
 
 	m_Triggers.clear();
 
-	Safe_Delete_Array(m_pPrevTransformation);
+	if (not m_hasCloned)
+	{
+		Safe_Delete_Array(m_pPrevTransformation);
+	}
 }
