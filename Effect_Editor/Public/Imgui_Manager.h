@@ -26,9 +26,12 @@ struct EffectInfo
 	_vec4 vColor{};
 	_uint iPassIndex{};
 	_vec2 vSize{};
-	_vec3 vPos{};
+	_vec3* pPos{};
 	_vec3 vPosOffset{};
 	_vec2 vSizeDelta{};
+	_bool bApplyGravity{};
+	_vec3 vGravityDir{};
+	_vec3 vPos{};
 };
 
 class CImgui_Manager : public CBase

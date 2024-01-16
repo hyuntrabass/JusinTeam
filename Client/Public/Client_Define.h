@@ -184,7 +184,7 @@ namespace Client
 	enum InstancingPass
 	{
 		InstPass_Particle_TextureMask,
-		InstPass_Particle_Sprite,
+		InstPass_Particle_Sprite_Dissolve,
 		InstPass_Particle_MaskColor,
 		InstPass_End,
 	};

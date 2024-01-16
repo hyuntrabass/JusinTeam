@@ -91,9 +91,6 @@
     <Filter Include="02.GameObjects\00.UI\TextButton">
       <UniqueIdentifier>{e433917e-0435-4307-a9c2-4229c403b1c9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\01.Camera\Select">
-      <UniqueIdentifier>{8d83bd06-503a-4299-90d9-bd4f9f6c1225}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\00.UI\NameTag">
       <UniqueIdentifier>{58d52e8e-1cbf-4e42-b53c-27b4eb35e680}</UniqueIdentifier>
     </Filter>
@@ -141,6 +138,18 @@
     </Filter>
     <Filter Include="02.GameObjects\02.Terrain\Lake">
       <UniqueIdentifier>{cf63ced1-74e6-4b14-b3a8-630d98997eb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Monster\Animal\01. Goat">
+      <UniqueIdentifier>{d0d28acf-3713-4135-868a-fc4a77b92557}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Monster\Nastron">
+      <UniqueIdentifier>{93e83a66-21a3-42c4-935a-c850c6c6e556}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Monster\Thief">
+      <UniqueIdentifier>{363b1ef8-0629-4888-ae4b-61cf858f86f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\01.Camera\Select">
+      <UniqueIdentifier>{8d83bd06-503a-4299-90d9-bd4f9f6c1225}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\00.UI\Manager">
       <UniqueIdentifier>{af6d411e-a06c-4009-b24b-072bf6a7d7b2}</UniqueIdentifier>
@@ -228,9 +237,6 @@
     <ClInclude Include="..\Public\Terrain.h">
       <Filter>02.GameObjects\02.Terrain</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\NPCvsMon.h">
-      <Filter>02.GameObjects\04.Monster\Tutorial\00. NPCvsMon</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Select_Model.h">
       <Filter>02.GameObjects\05.Select_Object\Model</Filter>
     </ClInclude>
@@ -242,9 +248,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\TextButtonColor.h">
       <Filter>02.GameObjects\00.UI\TextButton</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Camera_Custom.h">
-      <Filter>02.GameObjects\01.Camera\Select</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\NameTag.h">
       <Filter>02.GameObjects\00.UI\NameTag</Filter>
@@ -270,15 +273,29 @@
     <ClInclude Include="..\Public\Effect_Dummy.h">
       <Filter>03.Effect\Common_Effect</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Goat.h" />
-    <ClInclude Include="..\Public\Nastron03.h" />
-    <ClInclude Include="..\Public\Thief04.h" />
-    <ClInclude Include="..\Public\Void05.h" />
     <ClInclude Include="..\Public\Lake.h">
       <Filter>02.GameObjects\02.Terrain\Lake</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\NPCvsMon.h">
+      <Filter>02.GameObjects\04.Monster\Tutorial\00. NPCvsMon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Void05.h">
+      <Filter>02.GameObjects\04.Monster\Tutorial\ModelTest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Goat.h">
+      <Filter>02.GameObjects\04.Monster\Animal\01. Goat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Nastron03.h">
+      <Filter>02.GameObjects\04.Monster\Nastron</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Thief04.h">
+      <Filter>02.GameObjects\04.Monster\Thief</Filter>
+    </ClInclude>
     <ClInclude Include="..\Public\UI_Manager.h">
       <Filter>02.GameObjects\00.UI\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Effect_Manager.h">
+      <Filter>03.Effect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -373,9 +390,6 @@
     <ClCompile Include="..\Private\TextButtonColor.cpp">
       <Filter>02.GameObjects\00.UI\TextButton</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Camera_Custom.cpp">
-      <Filter>02.GameObjects\01.Camera\Select</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\NameTag.cpp">
       <Filter>02.GameObjects\00.UI\NameTag</Filter>
     </ClCompile>
@@ -397,16 +411,29 @@
     <ClCompile Include="..\Private\Effect_Dummy.cpp">
       <Filter>03.Effect\Common_Effect</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Goat.cpp" />
-    <ClCompile Include="..\Private\Nastron03.cpp" />
-    <ClCompile Include="..\Private\NPCvsMon.cpp" />
-    <ClCompile Include="..\Private\Thief04.cpp" />
-    <ClCompile Include="..\Private\Void05.cpp" />
     <ClCompile Include="..\Private\Lake.cpp">
       <Filter>02.GameObjects\02.Terrain\Lake</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\NPCvsMon.cpp">
+      <Filter>02.GameObjects\04.Monster\Tutorial\00. NPCvsMon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Void05.cpp">
+      <Filter>02.GameObjects\04.Monster\Tutorial\ModelTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Goat.cpp">
+      <Filter>02.GameObjects\04.Monster\Animal\01. Goat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Nastron03.cpp">
+      <Filter>02.GameObjects\04.Monster\Nastron</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Thief04.cpp">
+      <Filter>02.GameObjects\04.Monster\Thief</Filter>
+    </ClCompile>
     <ClCompile Include="..\Private\UI_Manager.cpp">
       <Filter>02.GameObjects\00.UI\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Effect_Manager.cpp">
+      <Filter>03.Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

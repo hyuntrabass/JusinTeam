@@ -40,6 +40,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), 0.f);
 		Change_Parts(eType, CUI_Manager::Get_Instance()->Get_CustomPart(eType));
 	}
+	Set_Key(fTimeDelta);
 
 	_float fMouseSensor = 0.1f;
 
@@ -126,6 +127,49 @@ void CPlayer::Reset_PartsAnim()
 	dynamic_cast<CBodyPart*>(m_vecParts[PT_HAIR])->Reset_Model();
 	dynamic_cast<CBodyPart*>(m_vecParts[PT_FACE])->Reset_Model();
 	dynamic_cast<CBodyPart*>(m_vecParts[PT_BODY])->Reset_Model();
+}
+
+void CPlayer::Set_Key(_float fTimeDelta)
+{
+	if (m_pGameInstance->Key_Down(DIK_W))
+	{
+		m_pTransformCom->Go_Straight(fTimeDelta);
+	}
+
+	if (m_pGameInstance->Key_Pressing(DIK_S))
+	{
+		m_pTransformCom->Go_Backward(fTimeDelta);
+	}
+
+	if (m_pGameInstance->Key_Pressing(DIK_A))
+	{
+		m_pTransformCom->Go_Left(fTimeDelta);
+	}
+
+	if (m_pGameInstance->Key_Pressing(DIK_D))
+	{
+		m_pTransformCom->Go_Right(fTimeDelta);
+	}
+
+	if (m_pGameInstance->Key_Pressing(DIK_G))
+	{
+		Attack();
+	}
+}
+
+void CPlayer::Attack()
+{
+	switch (m_Current_Weapon)
+	{
+	case Client::WP_BOW:
+
+		break;
+	case Client::WP_SWORD:
+		
+		break;
+	default:
+		break;
+	}
 }
 
 HRESULT CPlayer::Add_Components()

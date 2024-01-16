@@ -1,5 +1,5 @@
 #pragma once
-
+#include "SimpleMath.h"
 
 namespace Engine
 {
@@ -122,15 +122,15 @@ namespace Engine
 
 	using VTXINSTANCING = struct tagVertex_Instancing
 	{
-		XMFLOAT4 vRight{};
-		XMFLOAT4 vUp{};
-		XMFLOAT4 vLook{};
-		XMFLOAT4 vPos{};
+		SimpleMath::Vector4 vRight{};
+		SimpleMath::Vector4 vUp{};
+		SimpleMath::Vector4 vLook{};
+		SimpleMath::Vector4 vPos{};
 
 		float fSpeed{};
-		XMFLOAT2 vLifeTime{};
-		XMFLOAT4 vOriginPos{};
-		XMFLOAT4 vDirection{};
+		SimpleMath::Vector2 vLifeTime{};
+		SimpleMath::Vector4 vOriginPos{};
+		SimpleMath::Vector4 vDirection{};
 	};
 
 	using VTXPOINT = struct ENGINE_DLL tagVertex_Point

@@ -82,10 +82,10 @@ HRESULT CLake::Add_Component()
 	}
 
 	CVIBuffer_Terrain_Dynamic::VERTEX_DESC Desc;
-	Desc.iSize.x = m_Desc.vSize.x;
-	Desc.iSize.y = m_Desc.vSize.y;
-	Desc.iC.x = m_Desc.vSize.x;
-	Desc.iC.y = m_Desc.vSize.y;
+	Desc.iSize.x = static_cast<_uint>(m_Desc.vSize.x);
+	Desc.iSize.y = static_cast<_uint>(m_Desc.vSize.y);
+	Desc.iC.x = static_cast<_uint>(m_Desc.vSize.x);
+	Desc.iC.y = static_cast<_uint>(m_Desc.vSize.y);
 	// For.Com_VIBuffer
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain_Dynamic"), TEXT("Com_VIBuffer"),
 		(CComponent**)&m_pVIBufferCom, &Desc)))

@@ -132,10 +132,11 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		{
 			m_pTransformCom->Set_State(State::Pos, PxVec3ToVector(Buffer.block.position, 1.f));
 		}
+		*/
 
 		_vec4 vShakePos = m_pTransformCom->Get_State(State::Pos);
 		vShakePos += XMVectorSet(fShakeAmount, -fShakeAmount, 0.f, 0.f);
-		m_pTransformCom->Set_State(State::Pos, vShakePos);*/
+		m_pTransformCom->Set_State(State::Pos, vShakePos);
 
 		m_fShakeAcc += fTimeDelta * 10.f;
 	}
@@ -243,7 +244,7 @@ void CCamera_Main::Custom_Mode(_float fTimeDelta)
 	if (!m_bInitMode[CM_CUSTOM])
 	{
 		m_pTransformCom->Set_State(State::Pos, _vec4(-0.694085598f, 6.33564663f, 1.72800910f, 1.0f));
-		m_pTransformCom->LookAt_Dir(_vec4(0.256537676, -0.0349416211f, -0.965888619f, 0.f));
+		m_pTransformCom->LookAt_Dir(_vec4(0.256537676f, -0.0349416211f, -0.965888619f, 0.f));
 
 		m_bInitMode[CM_CUSTOM] = true;
 		return;

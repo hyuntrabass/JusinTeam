@@ -166,6 +166,9 @@
     <Filter Include="01.Utility\03.Components\VTFModel">
       <UniqueIdentifier>{11b73b55-ac6b-447a-ae08-3f96ccbbd819}</UniqueIdentifier>
     </Filter>
+    <Filter Include="99,Headers\SimpleMath">
+      <UniqueIdentifier>{a34cd6d3-7066-4048-970f-9c3d95d07a56}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -490,6 +493,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\VTFModel.h">
       <Filter>01.Utility\03.Components\VTFModel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SimpleMath.h">
+      <Filter>99,Headers\SimpleMath</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -39,8 +39,8 @@ public:
     HRESULT ImGuizmoMenu();
 
 private:
-    HRESULT SaveFile(const string& strModelName);
-    HRESULT LoadFile(const string& strModelName);
+    HRESULT SaveFile();
+    HRESULT LoadFile();
 
 private:
     ID3D11Device* m_pDevice = { nullptr };
@@ -57,7 +57,6 @@ private:
     vector<const _char*> m_AnimationNames;
     _int m_ePreType = { TYPE_MONSTER };
     _int m_eType = { TYPE_MONSTER };
-    _char m_szCurrentModelTag[MAX_PATH] = "";
     _uint m_iCurrentModelIndex = { 0 };
     _bool m_IsCreateModel = { false };
 
