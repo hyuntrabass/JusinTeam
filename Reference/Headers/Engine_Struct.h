@@ -90,6 +90,18 @@ namespace Engine
 
 	};
 
+	using TRIGGEREFFECT_DESC = struct tagTriggerEffectDesc {
+		TCHAR szEffectName[MAX_PATH];
+		int iBoneIndex = -1;
+		SimpleMath::Vector3 vPos{};
+	};
+
+	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {
+		TCHAR szSoundName[MAX_PATH];
+		int iChannel;
+		float fVolume;
+	};
+
 	using VTXPOSCOLOR = struct ENGINE_DLL tagVertex_Position_Color
 	{
 		XMFLOAT3 vPosition{};
