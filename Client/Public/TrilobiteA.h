@@ -5,43 +5,43 @@
 
 BEGIN(Client)
 
-class CGoat final : public CMonster
+class CTrilobiteA final : public CMonster
 {
 public:
-	enum GOAT_ANIM
+	enum TRILOBITE_A_ANIM
 	{
 		ATTACK01,
 		ATTACK02,
-		ATTACK03,
-		DIE,
-		HIT_ADD, // 고장
-		HIT_L, // 고장
-		HIT_R, // 고장
+		DIE01,
+		HIT_ADD,
+		HIT_L,
+		HIT_R,
 		IDLE,
-		INTERACTION01,
-		INTERACTION02,
 		KNOCKDOWN,
 		ROAR,
 		RUN,
-		STUN,
-		WALK,
+		STUN,//
+		TURN_L,//
+		TURN_R,
+		WALK,//
 		ANIM_END
 	};
 
-	enum GOAT_STATE
+	enum TRILOBITE_A_STATE
 	{
 		STATE_IDLE,
 		STATE_ROAM,
 		STATE_CHASE,
 		STATE_ATTACK,
+		STATE_HIT,
 		STATE_DIE,
 		STATE_END
 	};
 
 private:
-	CGoat(_dev pDevice, _context pContext);
-	CGoat(const CGoat& rhs);
-	virtual ~CGoat() = default;
+	CTrilobiteA(_dev pDevice, _context pContext);
+	CTrilobiteA(const CTrilobiteA& rhs);
+	virtual ~CTrilobiteA() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -61,14 +61,15 @@ private:
 	CCollider* m_pColliderCom = { nullptr };
 
 private:
-	GOAT_STATE m_ePreState = STATE_END;
-	GOAT_STATE m_eCurState = STATE_END;
+	TRILOBITE_A_STATE m_ePreState = STATE_END;
+	TRILOBITE_A_STATE m_eCurState = STATE_END;
 
 private:
 	_float m_fIdleTime = {};
 
 	_uint m_iRoamingPattern = {};
 	_uint m_iAttackPattern = {};
+	_uint m_iHitPattern = {};
 
 	_bool m_bSelectAttackPattern = { false };
 
@@ -81,7 +82,7 @@ public:
 	virtual void Update_Collider() override;
 
 public:
-	static CGoat* Create(_dev pDevice, _context pContext);
+	static CTrilobiteA* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

@@ -74,6 +74,20 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
+	if (FAILED(Ready_TrilobiteA()))
+	{
+		MSG_BOX("Failed to Ready TrilobiteA");
+		return E_FAIL;
+	}
+
+	//NPC
+	if (FAILED(Ready_Cat()))
+	{
+		MSG_BOX("Failed to Ready Cat");
+		return E_FAIL;
+	}
+
+
 	if (FAILED(Ready_Map()))
 	{
 		MSG_BOX("Failed to Ready Map");
@@ -152,6 +166,16 @@ HRESULT CLevel_GamePlay::Ready_Void05()
 	return S_OK;
 }
 
+HRESULT CLevel_GamePlay::Ready_Cat()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Cat"), TEXT("Prototype_GameObject_Cat"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
 HRESULT CLevel_GamePlay::Ready_Monster()
 {
 	MonsterInfo Info{};
@@ -209,7 +233,7 @@ HRESULT CLevel_GamePlay::Ready_Rabbit()
 
 HRESULT CLevel_GamePlay::Ready_Goat()
 {
-	for (size_t i = 0; i < 5; i++)
+	for (size_t i = 0; i < 1; i++)
 	{
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Goat"), TEXT("Prototype_GameObject_Goat"))))
 		{
@@ -243,6 +267,16 @@ HRESULT CLevel_GamePlay::Ready_NPCvsMon()
 HRESULT CLevel_GamePlay::Ready_Thief04()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Thief04"), TEXT("Prototype_GameObject_Thief04"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_TrilobiteA()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_TrilobiteA"), TEXT("Prototype_GameObject_TrilobiteA"))))
 	{
 		return E_FAIL;
 	}

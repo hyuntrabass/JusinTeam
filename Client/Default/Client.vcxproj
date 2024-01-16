@@ -152,10 +152,12 @@
     <ClInclude Include="..\Public\BodyPart.h" />
     <ClInclude Include="..\Public\Camera_Debug.h" />
     <ClInclude Include="..\Public\Camera_Main.h" />
+    <ClInclude Include="..\Public\Cat.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
     <ClInclude Include="..\public\Effect_Manager.h" />
     <ClInclude Include="..\Public\Goat.h" />
     <ClInclude Include="..\Public\Nastron03.h" />
+    <ClInclude Include="..\Public\NPC.h" />
     <ClInclude Include="..\Public\NPCvsMon.h" />
     <ClInclude Include="..\Public\Custom.h" />
     <ClInclude Include="..\Public\Effect_Dummy.h" />
@@ -186,6 +188,7 @@
     <ClInclude Include="..\Public\Select.h" />
     <ClInclude Include="..\Public\TextButtonColor.h" />
     <ClInclude Include="..\Public\Thief04.h" />
+    <ClInclude Include="..\Public\TrilobiteA.h" />
     <ClInclude Include="..\Public\UI_Manager.h" />
     <ClInclude Include="..\Public\Void05.h" />
     <ClInclude Include="..\Public\Terrain.h" />
@@ -200,10 +203,12 @@
     <ClCompile Include="..\Private\BodyPart.cpp" />
     <ClCompile Include="..\Private\Camera_Debug.cpp" />
     <ClCompile Include="..\Private\Camera_Main.cpp" />
+    <ClCompile Include="..\Private\Cat.cpp" />
     <ClCompile Include="..\Private\CharacterSelect.cpp" />
     <ClCompile Include="..\private\Effect_Manager.cpp" />
     <ClCompile Include="..\Private\Goat.cpp" />
     <ClCompile Include="..\Private\Nastron03.cpp" />
+    <ClCompile Include="..\Private\NPC.cpp" />
     <ClCompile Include="..\Private\NPCvsMon.cpp" />
     <ClCompile Include="..\Private\Custom.cpp" />
     <ClCompile Include="..\Private\Effect_Dummy.cpp" />
@@ -232,6 +237,7 @@
     <ClCompile Include="..\Private\Select.cpp" />
     <ClCompile Include="..\Private\TextButtonColor.cpp" />
     <ClCompile Include="..\Private\Thief04.cpp" />
+    <ClCompile Include="..\Private\TrilobiteA.cpp" />
     <ClCompile Include="..\Private\UI_Manager.cpp" />
     <ClCompile Include="..\Private\Void05.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />

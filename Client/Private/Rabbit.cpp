@@ -1,7 +1,7 @@
 #include "Rabbit.h"
 
-static const _float g_fChaseRange = 5.f;
-static const _float g_fAttackRange = 2.f;
+const _float CRabbit::g_fChaseRange = 5.f;
+const _float CRabbit::g_fAttackRange = 2.f;
 
 CRabbit::CRabbit(_dev pDevice, _context pContext)
 	: CMonster(pDevice, pContext)
@@ -38,7 +38,7 @@ HRESULT CRabbit::Init(void* pArg)
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
-	m_Animation.bSkipInterpolation = true;
+	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 1.5f;
 
 	m_eCurState = STATE_IDLE;
@@ -50,8 +50,8 @@ HRESULT CRabbit::Init(void* pArg)
 
 void CRabbit::Tick(_float fTimeDelta)
 {
-	Change_State(fTimeDelta);
-	Control_State(fTimeDelta);
+	Init_State(fTimeDelta);
+	Tick_State(fTimeDelta);
 
 	m_pModelCom->Set_Animation(m_Animation);
 
@@ -77,41 +77,11 @@ HRESULT CRabbit::Render()
 	return S_OK;
 }
 
-void CRabbit::Change_State(_float fTimeDelta)
+void CRabbit::Init_State(_float fTimeDelta)
 {
 	if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
 	{
 		m_eCurState = STATE_IDLE;
-	}
-
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Void05", LEVEL_GAMEPLAY);
-	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-
-	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
-
-	_float fDistance = (vPlayerPos - vPos).Length();
-
-	if (fDistance <= g_fChaseRange)
-	{
-		if (m_eCurState == STATE_ATTACK)
-		{
-			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02))
-			{
-				m_eCurState = STATE_CHASE;
-			}
-		}
-
-		else
-		{
-			m_eCurState = STATE_CHASE;
-
-		}
-	}
-
-	if (fDistance <= g_fAttackRange)
-	{
-		m_eCurState = STATE_ATTACK;
-		m_Animation.isLoop = true;
 	}
 
 	if (m_ePreState != m_eCurState)
@@ -137,12 +107,11 @@ void CRabbit::Change_State(_float fTimeDelta)
 		case Client::CRabbit::STATE_CHASE:
 			m_Animation.iAnimIndex = RUN;
 			m_Animation.isLoop = true;
-
 			break;
 		case Client::CRabbit::STATE_ATTACK:
 			break;
 		case Client::CRabbit::STATE_DIE:
-			m_Animation.iAnimIndex = IDLE;
+			m_Animation.iAnimIndex = DIE;
 			m_Animation.isLoop = false;
 			break;
 		}
@@ -152,14 +121,14 @@ void CRabbit::Change_State(_float fTimeDelta)
 	}
 }
 
-void CRabbit::Control_State(_float fTimeDelta)
+void CRabbit::Tick_State(_float fTimeDelta)
 {
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Void05", LEVEL_GAMEPLAY);
-	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+	Attack(fTimeDelta);
 
-	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
-
-	_float fDistance = (vPlayerPos - vPos).Length();
+	if (m_pGameInstance->Key_Down(DIK_R, InputChannel::GamePlay))
+	{
+		m_eCurState = STATE_DIE;
+	}
 
 	switch (m_eCurState)
 	{
@@ -195,6 +164,11 @@ void CRabbit::Control_State(_float fTimeDelta)
 
 		break;
 	case Client::CRabbit::STATE_CHASE:
+
+	{
+		_vec4 vPlayerPos = __super::Compute_PlayerPos();
+		_float fDistance = __super::Compute_PlayerDistance();
+
 		m_pTransformCom->LookAt(vPlayerPos);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 
@@ -202,11 +176,10 @@ void CRabbit::Control_State(_float fTimeDelta)
 		{
 			m_eCurState = STATE_IDLE;
 		}
+	}
 
 		break;
 	case Client::CRabbit::STATE_ATTACK:
-
-
 		if (!m_bSelectAttackPattern)
 		{
 			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02))
@@ -230,7 +203,6 @@ void CRabbit::Control_State(_float fTimeDelta)
 			break;
 		}
 		break;
-
 	case Client::CRabbit::STATE_DIE:
 		break;
 	}
@@ -240,6 +212,29 @@ void CRabbit::Control_State(_float fTimeDelta)
 
 void CRabbit::Attack(_float fTimeDelta)
 {
+	_float fDistance = __super::Compute_PlayerDistance();
+
+	if (fDistance <= g_fChaseRange)
+	{
+		if (m_eCurState == STATE_ATTACK)
+		{
+			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02))
+			{
+				m_eCurState = STATE_CHASE;
+			}
+		}
+
+		else
+		{
+			m_eCurState = STATE_CHASE;
+		}
+	}
+
+	if (fDistance <= g_fAttackRange)
+	{
+		m_eCurState = STATE_ATTACK;
+		m_Animation.isLoop = true;
+	}
 }
 
 HRESULT CRabbit::Add_Collider()

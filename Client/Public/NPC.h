@@ -5,18 +5,12 @@
 
 BEGIN(Client)
 
-typedef struct MonsterInfo 
-{
-	wstring strMonsterPrototype{};
-	_mat	MonsterWorldMat{};
-}Info;
-
-class CMonster abstract : public CGameObject
+class CNPC abstract : public CGameObject
 {
 protected:
-	CMonster(_dev pDevice, _context pContext);
-	CMonster(const CMonster& rhs);
-	virtual ~CMonster() = default;
+	CNPC(_dev pDevice, _context pContext);
+	CNPC(const CNPC& rhs);
+	virtual ~CNPC() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -25,9 +19,9 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
-public:
-	virtual _vec4 Compute_PlayerPos();
-	virtual _float Compute_PlayerDistance();
+//public:
+//	virtual _vec4 Compute_PlayerPos();
+//	virtual _float Compute_PlayerDistance();
 
 protected:
 	CShader* m_pShaderCom = { nullptr };
@@ -40,10 +34,6 @@ protected:
 
 protected:
 	_uint m_iPassIndex = {};
-
-protected:
-	virtual HRESULT Add_Collider() = 0;
-	virtual void Update_Collider() = 0;
 
 public:
 	HRESULT Add_Components();

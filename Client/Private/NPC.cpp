@@ -1,21 +1,21 @@
-#include "Monster.h"
+#include "NPC.h"
 
-CMonster::CMonster(_dev pDevice, _context pContext)
+CNPC::CNPC(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
 }
 
-CMonster::CMonster(const CMonster& rhs)
+CNPC::CNPC(const CNPC& rhs)
 	: CGameObject(rhs)
 {
 }
 
-HRESULT CMonster::Init_Prototype()
+HRESULT CNPC::Init_Prototype()
 {
     return S_OK;
 }
 
-HRESULT CMonster::Init(void* pArg)
+HRESULT CNPC::Init(void* pArg)
 {
 	if (FAILED(Add_Components()))
 	{
@@ -25,17 +25,17 @@ HRESULT CMonster::Init(void* pArg)
     return S_OK;
 }
 
-void CMonster::Tick(_float fTimeDelta)
+void CNPC::Tick(_float fTimeDelta)
 {
 }
 
-void CMonster::Late_Tick(_float fTimeDelta)
+void CNPC::Late_Tick(_float fTimeDelta)
 {
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 }
 
-HRESULT CMonster::Render()
+HRESULT CNPC::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
@@ -79,30 +79,10 @@ HRESULT CMonster::Render()
 		}
 	}
 
-    return S_OK;
+	return S_OK;
 }
 
-_vec4 CMonster::Compute_PlayerPos()
-{
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Void05", LEVEL_GAMEPLAY);
-	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-
-	return vPlayerPos;
-}
-
-_float CMonster::Compute_PlayerDistance()
-{
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Void05", LEVEL_GAMEPLAY);
-	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-
-	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
-
-	_float fDistance = (vPlayerPos - vPos).Length();
-
-	return fDistance;
-}
-
-HRESULT CMonster::Add_Components()
+HRESULT CNPC::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -119,10 +99,10 @@ HRESULT CMonster::Add_Components()
 		return E_FAIL;
 	}
 
-    return S_OK;
+	return S_OK;
 }
 
-HRESULT CMonster::Bind_ShaderResources()
+HRESULT CNPC::Bind_ShaderResources()
 {
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
@@ -155,7 +135,7 @@ HRESULT CMonster::Bind_ShaderResources()
 	return S_OK;
 }
 
-void CMonster::Free()
+void CNPC::Free()
 {
 	__super::Free();
 

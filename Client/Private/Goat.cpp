@@ -1,5 +1,8 @@
 #include "Goat.h"
 
+const _float CGoat::g_fChaseRange = 5.f;
+const _float CGoat::g_fAttackRange = 2.f;
+
 CGoat::CGoat(_dev pDevice, _context pContext)
 	: CMonster(pDevice, pContext)
 {
@@ -35,7 +38,7 @@ HRESULT CGoat::Init(void* pArg)
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
-	m_Animation.bSkipInterpolation = true;
+	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 1.5f;
 
 	m_eCurState = STATE_IDLE;
@@ -47,8 +50,8 @@ HRESULT CGoat::Init(void* pArg)
 
 void CGoat::Tick(_float fTimeDelta)
 {
-	Change_State(fTimeDelta);
-	Control_State(fTimeDelta);
+	Init_State(fTimeDelta);
+	Tick_State(fTimeDelta);
 
 	m_pModelCom->Set_Animation(m_Animation);
 
@@ -71,23 +74,12 @@ HRESULT CGoat::Render()
 	return S_OK;
 }
 
-void CGoat::Change_State(_float fTimeDelta)
+void CGoat::Init_State(_float fTimeDelta)
 {
 	if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
 	{
 		m_eCurState = STATE_IDLE;
 	}
-
-	//if (m_pModelCom->IsAnimationFinished(ROAR) ||
-	//	m_pModelCom->IsAnimationFinished(WALK) || m_pModelCom->IsAnimationFinished(STUN))
-	//{
-	//	m_eCurState = STATE_IDLE;
-	//}
-
-	//if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex) == false && m_Animation.isLoop == false)
-	//{
-	//	return;
-	//}
 
 	if (m_ePreState != m_eCurState)
 	{
@@ -96,10 +88,11 @@ void CGoat::Change_State(_float fTimeDelta)
 		case Client::CGoat::STATE_IDLE:
 			m_Animation.iAnimIndex = IDLE;
 			m_Animation.isLoop = true;
+			m_pTransformCom->Set_Speed(1.f);
 			break;
+
 		case Client::CGoat::STATE_ROAM:
 			m_iRoamingPattern = rand() % 3;
-			//m_iRoamingPattern = 1;
 
 			if (m_iRoamingPattern == 1 && m_pModelCom->IsAnimationFinished(WALK) == false)
 			{
@@ -108,10 +101,17 @@ void CGoat::Change_State(_float fTimeDelta)
 				_randFloat Random = _randFloat(-1.f, 1.f);
 				m_pTransformCom->LookAt_Dir(_vec4(Random(RandNum), 0.f, Random(RandNum), 0.f));
 			}
-
 			break;
+
+		case Client::CGoat::STATE_CHASE:
+			m_Animation.iAnimIndex = RUN;
+			m_Animation.isLoop = true;
+			m_pTransformCom->Set_Speed(3.f);
+			break;
+
 		case Client::CGoat::STATE_ATTACK:
 			break;
+
 		case Client::CGoat::STATE_DIE:
 			m_Animation.iAnimIndex = DIE;
 			m_Animation.isLoop = false;
@@ -123,8 +123,15 @@ void CGoat::Change_State(_float fTimeDelta)
 	}
 }
 
-void CGoat::Control_State(_float fTimeDelta)
+void CGoat::Tick_State(_float fTimeDelta)
 {
+	Attack(fTimeDelta);
+
+	if (m_pGameInstance->Key_Down(DIK_G, InputChannel::GamePlay))
+	{
+		m_eCurState = STATE_DIE;
+	}
+
 	switch (m_eCurState)
 	{
 	case Client::CGoat::STATE_IDLE:
@@ -136,8 +143,8 @@ void CGoat::Control_State(_float fTimeDelta)
 			m_eCurState = STATE_ROAM;
 			m_fIdleTime = 0.f;
 		}
-
 		break;
+
 	case Client::CGoat::STATE_ROAM:
 
 		switch (m_iRoamingPattern)
@@ -156,12 +163,85 @@ void CGoat::Control_State(_float fTimeDelta)
 			m_Animation.isLoop = false;
 			break;
 		}
+		break;
 
-		break;
+	case Client::CGoat::STATE_CHASE:
+	{
+		_vec4 vPlayerPos = __super::Compute_PlayerPos();
+		_float fDistance = __super::Compute_PlayerDistance();
+
+		m_pTransformCom->LookAt(vPlayerPos);
+		m_pTransformCom->Go_Straight(fTimeDelta);
+
+		if (fDistance > g_fChaseRange)
+		{
+			m_eCurState = STATE_IDLE;
+		}
+	}
+	break;
+
 	case Client::CGoat::STATE_ATTACK:
+
+		if (!m_bSelectAttackPattern)
+		{
+			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
+				m_pModelCom->IsAnimationFinished(ATTACK03))
+			{
+				m_iAttackPattern = rand() % 3;
+				m_bSelectAttackPattern = true;
+			}
+		}
+
+		switch (m_iAttackPattern)
+		{
+		case 0:
+			m_Animation.iAnimIndex = ATTACK01;
+			m_Animation.isLoop = false;
+			m_bSelectAttackPattern = false;
+			break;
+		case 1:
+			m_Animation.iAnimIndex = ATTACK02;
+			m_Animation.isLoop = false;
+			m_bSelectAttackPattern = false;
+			break;
+		case 2:
+			m_Animation.iAnimIndex = ATTACK03;
+			m_Animation.isLoop = false;
+			m_bSelectAttackPattern = false;
+			break;
+		}
 		break;
+
 	case Client::CGoat::STATE_DIE:
 		break;
+	}
+}
+
+void CGoat::Attack(_float fTimeDelta)
+{
+	_float fDistance = __super::Compute_PlayerDistance();
+
+	if (fDistance <= g_fChaseRange)
+	{
+		if (m_eCurState == STATE_ATTACK)
+		{
+			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
+				m_pModelCom->IsAnimationFinished(ATTACK03))
+			{
+				m_eCurState = STATE_CHASE;
+			}
+		}
+
+		else
+		{
+			m_eCurState = STATE_CHASE;
+		}
+	}
+
+	if (fDistance <= g_fAttackRange)
+	{
+		m_eCurState = STATE_ATTACK;
+		m_Animation.isLoop = true;
 	}
 }
 
