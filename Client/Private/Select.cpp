@@ -85,23 +85,26 @@ void CSelect::Tick(_float fTimeDelta)
 		m_pSelectButton->Set_Size(150.f, 30.f, 0.35f);
 	}
 
-	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI) && m_bShow && PtInRect(&m_pSelectButton->Get_Rect(), ptMouse))
+	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI) && m_bShow)
 	{
-		m_pGameInstance->Set_CameraState(CM_DEFAULT);
-		m_pGameInstance->Level_ShutDown(LEVEL_SELECT);
-	}
-
-	if (m_pGameInstance->Mouse_Down(DIM_RBUTTON, InputChannel::UI) && m_bShow && PtInRect(&m_pBackButton->Get_Rect(), ptMouse))
-	{
-		if (m_pSelectDesc)
+		if (PtInRect(&m_pSelectButton->Get_Rect(), ptMouse))
 		{
-			m_pSelectModels[m_eCurModel]->Change_AnimState(CSelect_Model::S_CANCEL);
 			m_pGameInstance->Set_CameraState(CM_DEFAULT);
-			m_pBackButton->Set_Size(150.f, 30.f, 0.35f);
-			Safe_Release(m_pSelectDesc);
-			m_bShow = false;
-			m_pCharacterSelect->Set_Active_Alpha(CCharacterSelect::NONALPHA);
+			m_pGameInstance->Level_ShutDown(LEVEL_SELECT);
 		}
+		if (PtInRect(&m_pBackButton->Get_Rect(), ptMouse))
+		{
+			if (m_pSelectDesc)
+			{
+				m_pSelectModels[m_eCurModel]->Change_AnimState(CSelect_Model::S_CANCEL);
+				m_pGameInstance->Set_CameraState(CM_DEFAULT);
+				m_pBackButton->Set_Size(150.f, 30.f, 0.35f);
+				Safe_Release(m_pSelectDesc);
+				m_bShow = false;
+				m_pCharacterSelect->Set_Active_Alpha(CCharacterSelect::NONALPHA);
+			}
+		}
+
 	}
 
 
@@ -128,6 +131,7 @@ void CSelect::Tick(_float fTimeDelta)
 
 void CSelect::Late_Tick(_float fTimeDelta)
 {
+	m_pTitleButton->Late_Tick(fTimeDelta);
 	m_pCharacterSelect->Late_Tick(fTimeDelta);
 	m_pClassButton->Late_Tick(fTimeDelta);
 	if (m_pSelectDesc != nullptr && m_bShow)
@@ -174,13 +178,23 @@ HRESULT CSelect::Add_Parts()
 	ButtonDesc.fFontSize = 0.4f;
 	ButtonDesc.strText = TEXT("클래스 선택");
 	ButtonDesc.strTexture = TEXT("");
-	ButtonDesc.vPosition = _vec2(50.f, 15.f);
+	ButtonDesc.vPosition = _vec2(65.f, 20.f);
 	ButtonDesc.vSize = _vec2(20.f, 20.f);
 	ButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	ButtonDesc.vTextPosition = _vec2(20.f, 0.f);
 	
 	m_pClassButton = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
 	if (not m_pClassButton)
+	{
+		return E_FAIL;
+	}
+	ButtonDesc.eLevelID = LEVEL_STATIC;
+	ButtonDesc.strText = TEXT("");
+	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Back");
+	ButtonDesc.vPosition = _vec2(20.f, 20.f);
+	ButtonDesc.vSize = _vec2(50.f, 50.f);	
+	m_pTitleButton = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
+	if (not m_pTitleButton)
 	{
 		return E_FAIL;
 	}
@@ -357,6 +371,7 @@ void CSelect::Free()
 	}
 
 	Safe_Release(m_pSelectDesc);
+	Safe_Release(m_pTitleButton);
 	Safe_Release(m_pBackButton);
 	Safe_Release(m_pClassButton);
 	Safe_Release(m_pSelectButton);

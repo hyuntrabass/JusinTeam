@@ -23,6 +23,10 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
 	CTexture* m_pTextureCom{ nullptr };
+	CTexture* m_pDissolveTextureCom{ nullptr };
+
+private:
+	_float	m_fTime{ 1.f };
 
 private:
 	HRESULT Add_Components();

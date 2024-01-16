@@ -1,63 +1,65 @@
-#include "BackGround.h"
+#include "Logo_Dust.h"
 #include "GameInstance.h"
 
-CBackGround::CBackGround(_dev pDevice, _context pContext)
+CLogo_Dust::CLogo_Dust(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
 }
 
-CBackGround::CBackGround(const CBackGround& rhs)
+CLogo_Dust::CLogo_Dust(const CLogo_Dust& rhs)
 	: COrthographicObject(rhs)
 {
 }
 
-HRESULT CBackGround::Init_Prototype()
+HRESULT CLogo_Dust::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CBackGround::Init(void* pArg)
+HRESULT CLogo_Dust::Init(void* pArg)
 {
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
 
-
 	m_fSizeX = g_iWinSizeX;
 	m_fSizeY = g_iWinSizeY;
 
 	m_fX = g_iWinSizeX >> 1;
-	m_fY = g_iWinSizeY >> 1;
+	m_fY = (g_iWinSizeY >> 1) - 200.f;
 
-	m_fDepth = 1.f;
+	m_fDepth = 0.7f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 	return S_OK;
 }
 
-void CBackGround::Tick(_float fTimeDelta)
+void CLogo_Dust::Tick(_float fTimeDelta)
 {
-	
 
-	// += fTimeDelta * 2.f;
-	
+
+	m_fU -= 0.2f * fTimeDelta;
+	if (m_fV >= 1.f)
+		m_fV = 0.f;
+	m_fV += 0.3f * fTimeDelta;
 }
 
-void CBackGround::Late_Tick(_float fTimeDelta)
+void CLogo_Dust::Late_Tick(_float fTimeDelta)
 {
+
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
-HRESULT CBackGround::Render()
+HRESULT CLogo_Dust::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
+	if (FAILED(m_pShaderCom->Begin(VTPass_Dust)))
 	{
 		return E_FAIL;
 	}
@@ -67,13 +69,29 @@ HRESULT CBackGround::Render()
 		return E_FAIL;
 	}
 
-	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("화면을 클릭해주세요"), _vec2((_float)g_iWinSizeX/2.f + 1.f, 600.f), 0.5f, _vec4(0.f, 0.f, 0.f, m_fAlpha));
-	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("화면을 클릭해주세요"), _vec2((_float)g_iWinSizeX/2.f, 600.f), 0.5f, _vec4(1.f, 1.f, 1.f, m_fAlpha));
+	_vec2 vUV{ m_fU * 0.5f, m_fV * 0.5f };
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fx", &vUV.x, sizeof _float)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fy", &vUV.y, sizeof _float)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pShaderCom->Begin(VTPass_Dust)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pVIBufferCom->Render()))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
 
-HRESULT CBackGround::Add_Components()
+HRESULT CLogo_Dust::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -90,7 +108,7 @@ HRESULT CBackGround::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_LOGO, TEXT("Prototype_Component_Texture_UI_Logo_Bg_DungeonResult"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_LOGO, TEXT("Prototype_Component_Texture_UI_Logo_Dust"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -98,7 +116,7 @@ HRESULT CBackGround::Add_Components()
 	return S_OK;
 }
 
-HRESULT CBackGround::Bind_ShaderResources()
+HRESULT CLogo_Dust::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
 		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
@@ -116,36 +134,44 @@ HRESULT CBackGround::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fx", &m_fU, sizeof _float)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fy", &m_fV, sizeof _float)))
+	{
+		return E_FAIL;
+	}
 	return S_OK;
 }
 
-CBackGround* CBackGround::Create(_dev pDevice, _context pContext)
+CLogo_Dust* CLogo_Dust::Create(_dev pDevice, _context pContext)
 {
-	CBackGround* pInstance = new CBackGround(pDevice, pContext);
+	CLogo_Dust* pInstance = new CLogo_Dust(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CBackGround");
+		MSG_BOX("Failed to Create : CLogo_Dust");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CBackGround::Clone(void* pArg)
+CGameObject* CLogo_Dust::Clone(void* pArg)
 {
-	CBackGround* pInstance = new CBackGround(*this);
+	CLogo_Dust* pInstance = new CLogo_Dust(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CBackGround");
+		MSG_BOX("Failed to Clone : CLogo_Dust");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CBackGround::Free()
+void CLogo_Dust::Free()
 {
 	__super::Free();
 

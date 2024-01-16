@@ -50,6 +50,7 @@ private:
 	CTextButton*		m_pHairGroup{ nullptr };
 	CTextButton*		m_pSelectCustomEffect{ nullptr };
 
+	CTextButton*		m_pTitleButton{ nullptr };
 	CTextButton*		m_pClassButton{ nullptr };
 	CTextButton*		m_pSelectMenuEffect{ nullptr };
 	CTextButton*		m_pSelectColorEffect{ nullptr };
@@ -58,6 +59,7 @@ private:
 
 private:
 	void Set_CameraState(_uint iSelect);
+	_bool Set_PickingRange(POINT& ptMouse);
 
 public:
 	static CCustom* Create(_dev pDevice, _context pContext);

@@ -53,21 +53,33 @@ void CCustom::Tick(_float fTimeDelta)
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
 
-	//싱글톤으로 매니저 만들면 현재 선택한거 이때 넘길때 ㅇ
+	CUI_Manager::Get_Instance()->Set_Picking_UI(false);
 
-	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && PtInRect(&m_pCustomMenu[C_FACE]->Get_Rect(), ptMouse))
+	if (Set_PickingRange(ptMouse))
 	{
-		m_isMenuClick[C_FACE] = true;
-		m_isMenuClick[C_HAIR] = false;
-		m_pSelectCustomEffect->Set_Position(m_vCurSelect[C_FACE]);
-		m_pSelectMenuEffect->Set_Position(_vec2(m_pCustomMenu[C_HAIR]->Get_Position().x, m_pCustomMenu[C_FACE]->Get_Position().y + 8.f));
+		CUI_Manager::Get_Instance()->Set_Picking_UI(true);
 	}
-	else if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI) && PtInRect(&m_pCustomMenu[C_HAIR]->Get_Rect(), ptMouse))
+
+	if (PtInRect(&m_pCustomMenu[C_FACE]->Get_Rect(), ptMouse))
 	{
-		m_isMenuClick[C_HAIR] = true;
-		m_isMenuClick[C_FACE] = false;
-		m_pSelectCustomEffect->Set_Position(m_vCurSelect[C_HAIR]);
-		m_pSelectMenuEffect->Set_Position(_vec2(m_pCustomMenu[C_HAIR]->Get_Position().x, m_pCustomMenu[C_HAIR]->Get_Position().y + 8.f));
+		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON))
+		{
+			m_isMenuClick[C_FACE] = true;
+			m_isMenuClick[C_HAIR] = false;
+			m_pSelectCustomEffect->Set_Position(m_vCurSelect[C_FACE]);
+			m_pSelectMenuEffect->Set_Position(_vec2(m_pCustomMenu[C_HAIR]->Get_Position().x, m_pCustomMenu[C_FACE]->Get_Position().y + 8.f));
+
+		}
+	}
+	if (PtInRect(&m_pCustomMenu[C_HAIR]->Get_Rect(), ptMouse))
+	{
+		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON))
+		{
+			m_isMenuClick[C_HAIR] = true;
+			m_isMenuClick[C_FACE] = false;
+			m_pSelectCustomEffect->Set_Position(m_vCurSelect[C_HAIR]);
+			m_pSelectMenuEffect->Set_Position(_vec2(m_pCustomMenu[C_HAIR]->Get_Position().x, m_pCustomMenu[C_HAIR]->Get_Position().y + 8.f));
+		}
 	}
 
 	if (m_isMenuClick[C_FACE])
@@ -86,6 +98,7 @@ void CCustom::Tick(_float fTimeDelta)
 				};
 				if (PtInRect(&rcRect, ptMouse))
 				{
+					CUI_Manager::Get_Instance()->Set_Picking_UI(true);
 					m_vCurSelect[C_FACE] = m_Face[i].first;
 					m_pSelectCustomEffect->Set_Position(m_Face[i].first);
 					CUI_Manager::Get_Instance()->Set_CustomPart(PART_TYPE::PT_FACE, m_Face[i].second);
@@ -113,6 +126,7 @@ void CCustom::Tick(_float fTimeDelta)
 				};
 				if (PtInRect(&rcRect, ptMouse))
 				{
+					CUI_Manager::Get_Instance()->Set_Picking_UI(true);
 					m_vCurSelect[C_HAIR] = m_Hair[i].first;
 					m_pSelectCustomEffect->Set_Position(m_Hair[i].first);
 					CUI_Manager::Get_Instance()->Set_CustomPart(PART_TYPE::PT_HAIR, m_Hair[i].second);
@@ -127,6 +141,7 @@ void CCustom::Tick(_float fTimeDelta)
 			{
 				if (PtInRect(&m_pColorButtons[i]->Get_Rect(), ptMouse))
 				{
+					CUI_Manager::Get_Instance()->Set_Picking_UI(true);
 					m_pSelectColorEffect->Set_Position(m_pColorButtons[i]->Get_Position());
 					if (i == 0)
 					{
@@ -166,6 +181,7 @@ void CCustom::Tick(_float fTimeDelta)
 
 void CCustom::Late_Tick(_float fTimeDelta)
 {
+	m_pTitleButton->Late_Tick(fTimeDelta);
 	m_pSelectMenuEffect->Late_Tick(fTimeDelta);
 	if (m_isMenuClick[C_FACE])
 	{
@@ -218,13 +234,25 @@ HRESULT CCustom::Add_Parts()
 	Button.fFontSize = 0.4f;
 	Button.strText = TEXT("커스터마이징");
 	Button.strTexture = TEXT("");
-	Button.vPosition = _vec2(50.f, 15.f);
+	Button.vPosition = _vec2(65.f, 20.f);
 	Button.vSize = _vec2(20.f, 20.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	Button.vTextPosition = _vec2(20.f, 0.f);
 	
 	m_pClassButton = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+
 	if (not m_pClassButton)
+	{
+		return E_FAIL;
+	}
+
+	Button.eLevelID = LEVEL_STATIC;
+	Button.strText = TEXT("");
+	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Back");
+	Button.vPosition = _vec2(20.f, 20.f);
+	Button.vSize = _vec2(50.f, 50.f);
+	m_pTitleButton = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+	if (not m_pTitleButton)
 	{
 		return E_FAIL;
 	}
@@ -248,7 +276,7 @@ HRESULT CCustom::Add_Parts()
 
 	ButtonDesc.strText = TEXT("헤어");
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Custom_Hair");
-	ButtonDesc.vPosition = _vec2(5.f, 220.f);
+	ButtonDesc.vPosition = _vec2(50.f, 220.f);
 
 	m_pCustomMenu[C_HAIR] = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
 	if (not m_pCustomMenu[C_HAIR])
@@ -391,11 +419,20 @@ HRESULT CCustom::Add_Parts()
 		return E_FAIL;
 	}
 
+	ColButtonDesc.vColor = _vec4(0.2f, 0.5f, 0.6f, 1.f);
+	ColButtonDesc.vPosition = _vec2(1010.f + ColButtonDesc.vSize.x / 2.f + ColButtonDesc.vSize.x * 4 + 10.f * 4, 420.f + ColButtonDesc.vSize.y / 2.f);
+
+	m_pColorButtons[4] = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+	if (not m_pColorButtons[4])
+	{
+		return E_FAIL;
+	}
+
 	for (_uint i = 0; i < 5; i++)
 	{
 		for (_uint j = 0; j < 2; j++)
 		{
-			if (i < 4 && j == 0)
+			if (i < 5 && j == 0)
 				continue;
 
 		
@@ -464,6 +501,39 @@ void CCustom::Set_CameraState(_uint iSelect)
 	m_pGameInstance->Set_ZoomFactor(3.5f);
 }
 
+_bool CCustom::Set_PickingRange(POINT& ptMouse)
+{
+	RECT rcRect = {};
+
+	_float2 vPosition = {80.f, 170.f};
+	_float2 fSize = {160.f, 300.f};
+	rcRect = {
+		  (LONG)(vPosition.x - fSize.x * 0.5f),
+		  (LONG)(vPosition.y - fSize.y * 0.5f),
+		  (LONG)(vPosition.x + fSize.x * 0.5f),
+		  (LONG)(vPosition.y + fSize.y * 0.5f)
+	};
+	if (PtInRect(&rcRect, ptMouse))
+	{
+		return true;
+	}
+
+	vPosition = {1130.f,  (_float)g_iWinSizeY/ 2.f };
+	fSize = {400.f, (_float)g_iWinSizeY };
+	rcRect = {
+		  (LONG)(vPosition.x - fSize.x * 0.5f),
+		  (LONG)(vPosition.y - fSize.y * 0.5f),
+		  (LONG)(vPosition.x + fSize.x * 0.5f),
+		  (LONG)(vPosition.y + fSize.y * 0.5f)
+	};
+	if (PtInRect(&rcRect, ptMouse))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 CCustom* CCustom::Create(_dev pDevice, _context pContext)
 {
 	CCustom* pInstance = new CCustom(pDevice, pContext);
@@ -517,6 +587,7 @@ void CCustom::Free()
 
 	Safe_Release(m_pFaceGroup);
 	Safe_Release(m_pHairGroup);
+	Safe_Release(m_pTitleButton);
 	Safe_Release(m_pSelectMenuEffect);
 	Safe_Release(m_pSelectColorEffect);
 	Safe_Release(m_pSelectCustomEffect);
