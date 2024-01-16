@@ -178,6 +178,9 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\JOBMARK">
       <UniqueIdentifier>{15f6b44f-7460-4190-917f-cd327a720c70}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\03.Player\Weapon">
+      <UniqueIdentifier>{713b4ec7-bd75-4f8c-a806-3b00cf5e713f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -337,7 +340,10 @@
     <ClInclude Include="..\Public\HpBar.h">
       <Filter>02.GameObjects\00.UI\GameUI\HP</Filter>
     </ClInclude>
-  </ItemGroup>
+      <ClInclude Include="..\Public\Weapon.h">
+      <Filter>02.GameObjects\03.Player\Weapon</Filter>
+    </ClInclude>
+</ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
       <Filter>98.Default</Filter>
@@ -492,6 +498,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\HPBar.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\HP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Weapon.cpp">
+      <Filter>02.GameObjects\03.Player\Weapon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

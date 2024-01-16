@@ -15,7 +15,7 @@
 #include "Camera_Debug.h"
 #include "Select_Model.h"
 #include "Select_Npc.h"
-
+#include "Weapon.h"
 #include "Custom.h"
 #include "SelectDesc.h"
 #include "TextButton.h"

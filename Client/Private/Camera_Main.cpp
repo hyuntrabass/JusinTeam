@@ -17,18 +17,6 @@ HRESULT CCamera_Main::Init_Prototype()
 
 HRESULT CCamera_Main::Init(void* pArg)
 {
-	//m_pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-	//if (not m_pPlayerTransform)
-	//{
-	//	return E_FAIL;
-	//}
-	//Safe_AddRef(m_pPlayerTransform);
-
-	//if (not m_pPlayerTransform)
-	//{
-	//	MSG_BOX("Can't Find Player!! : Camera Main");
-	//}
-
 	for (_int i = 0; i < CM_END; i++)
 	{
 		//카메라는 한번만 부르니까 각 모드 이닛용 ..
@@ -70,30 +58,30 @@ void CCamera_Main::Tick(_float fTimeDelta)
 	{
 		Custom_Mode(fTimeDelta);
 	}
-	else
+	else 
 	{
+		if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_GAMEPLAY)
+			return;
 
-		_long dwMouseMove;
-
-		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
+		if(m_pPlayerTransform == nullptr)
 		{
-			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
+			m_pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+			Safe_AddRef(m_pPlayerTransform);
 		}
 
-		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
+		if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON))
 		{
-			m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
-		}
+			_long dwMouseMove;
+				if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
+				{
+					m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
+				}
 
+			if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
+			{
+				m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
+			}
 
-		_float fRStickMove{};
-		if (fRStickMove = m_pGameInstance->Gamepad_RStick().x)
-		{
-			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta / m_pGameInstance->Get_TimeRatio() * fRStickMove);
-		}
-		if (fRStickMove = m_pGameInstance->Gamepad_RStick().y)
-		{
-			m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * -fRStickMove);
 		}
 
 		if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
@@ -115,16 +103,18 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 		_float fShakeAmount = sin(m_fShakeAcc * 15.f) * powf(0.5f, m_fShakeAcc) * 0.2f;
 		
-		/*m_pTransformCom->Set_State(State::Pos,
-			m_pPlayerTransform->Get_CenterPos()
+		m_pTransformCom->Set_State(State::Pos,
+			m_pPlayerTransform->Get_CenterPos() +_vec4(0,1.3,0,0)
 			- (m_pTransformCom->Get_State(State::Look) * m_fPlayerDistance)
-			+ (m_pTransformCom->Get_State(State::Up) * m_fPlayerDistance * 0.25f));*/
+			+ (m_pTransformCom->Get_State(State::Up) * m_fPlayerDistance * 0.25));
+		
 
-		/*_vec4 vLook = m_pTransformCom->Get_State(State::Look);
+		_vec4 vLook = m_pTransformCom->Get_State(State::Look);
 		PxRaycastBuffer Buffer{};
 		_vec4 vRayDir{};
 		_vec4 vMyPos = m_pTransformCom->Get_State(State::Pos);
 		_vec4 PlayerCenter = m_pPlayerTransform->Get_CenterPos();
+
 		vRayDir = vMyPos - PlayerCenter;
 		vRayDir.Normalize();
 		_float fDist = XMVectorGetX(XMVector3Length(vRayDir)) - 0.4f;
@@ -132,7 +122,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		{
 			m_pTransformCom->Set_State(State::Pos, PxVec3ToVector(Buffer.block.position, 1.f));
 		}
-		*/
+		
 
 		_vec4 vShakePos = m_pTransformCom->Get_State(State::Pos);
 		vShakePos += XMVectorSet(fShakeAmount, -fShakeAmount, 0.f, 0.f);

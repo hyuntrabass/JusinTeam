@@ -24,12 +24,11 @@ public:
 	_bool IsAnimationFinished(_uint iAnimIndex);
 	_uint Get_CurrentAnimationIndex();
 	_float Get_CurrentAnimPos();
-	const _float44* Get_BoneMatrix(const _char* pBoneName);
+	const _mat* Get_BoneMatrix(const _char* pBoneName);
 
 	//void Set_ModelIndex(_uint iIndex);
 	void Reset_Model();
 	void Set_ModelIndex(_int ModelIndex) { m_iSelectedModelIndex = ModelIndex;}
-	void Set_ModelIndex1() { m_iSelectedModelIndex--; }
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };

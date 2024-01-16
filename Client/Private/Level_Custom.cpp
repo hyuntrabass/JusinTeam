@@ -23,11 +23,7 @@ HRESULT CLevel_Custom::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_Camera()))
-	{
-		MSG_BOX("Failed to Ready Camera");
-		return E_FAIL;
-	}
+
 
 	if (FAILED(Ready_Light()))
 	{
@@ -89,15 +85,7 @@ HRESULT CLevel_Custom::Ready_UI()
 	return S_OK;
 }
 
-HRESULT CLevel_Custom::Ready_Camera()
-{
-	if (not m_pGameInstance)
-	{
-		return E_FAIL;
-	}
 
-	return S_OK;
-}
 
 HRESULT CLevel_Custom::Ready_Light()
 {
