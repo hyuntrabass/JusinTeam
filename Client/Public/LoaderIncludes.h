@@ -37,3 +37,7 @@
 #include "Goat.h"
 #include "Nastron03.h"
 #include "Thief04.h"
+#include "TrilobiteA.h"
+
+// NPC
+#include "Cat.h"

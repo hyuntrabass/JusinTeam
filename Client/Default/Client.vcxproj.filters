@@ -181,6 +181,21 @@
     <Filter Include="02.GameObjects\03.Player\Weapon">
       <UniqueIdentifier>{713b4ec7-bd75-4f8c-a806-3b00cf5e713f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\04.Monster\Trilobite">
+      <UniqueIdentifier>{27785576-20b7-4474-9ec8-afeb06ffa547}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. NPC">
+      <UniqueIdentifier>{897af39d-fd9a-46e6-b7f1-eb5be95ebd16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. NPC\Animal">
+      <UniqueIdentifier>{816f86d3-0f2e-4f81-bee2-c4bd4ec3a9c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. NPC\Animal\00. Cat">
+      <UniqueIdentifier>{1639c92f-96d1-468d-b986-29d1bdb3cd33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. NPC\Animal\01. Dog">
+      <UniqueIdentifier>{fab2bdab-a60d-4964-af03-a20ce2c83454}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -343,7 +358,16 @@
       <ClInclude Include="..\Public\Weapon.h">
       <Filter>02.GameObjects\03.Player\Weapon</Filter>
     </ClInclude>
-</ItemGroup>
+    <ClInclude Include="..\Public\TrilobiteA.h">
+      <Filter>02.GameObjects\04.Monster\Trilobite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NPC.h">
+      <Filter>02.GameObjects\07. NPC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Cat.h">
+      <Filter>02.GameObjects\07. NPC\Animal\00. Cat</Filter>
+    </ClInclude>
+  </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
       <Filter>98.Default</Filter>
@@ -501,6 +525,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Weapon.cpp">
       <Filter>02.GameObjects\03.Player\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TrilobiteA.cpp">
+      <Filter>02.GameObjects\04.Monster\Trilobite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NPC.cpp">
+      <Filter>02.GameObjects\07. NPC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Cat.cpp">
+      <Filter>02.GameObjects\07. NPC\Animal\00. Cat</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
