@@ -24,7 +24,7 @@ HRESULT CBodyPart::Init(void* pArg)
 	m_iNumVariations = Desc.iNumVariations;
 	m_Models.resize(m_iNumVariations, nullptr);
 	m_Animation = Desc.Animation;
-
+	m_iSelectedModelIndex = 0;
 	if (FAILED(__super::Init(Desc.pParentTransform)))
 	{
 		return E_FAIL;
@@ -213,7 +213,7 @@ _float CBodyPart::Get_CurrentAnimPos()
 	return m_Models[m_iSelectedModelIndex]->Get_CurrentAnimPos();
 }
 
-const _float44* CBodyPart::Get_BoneMatrix(const _char* pBoneName)
+const _mat* CBodyPart::Get_BoneMatrix(const _char* pBoneName)
 {
 	return m_Models[m_iSelectedModelIndex]->Get_BoneMatrix(pBoneName);
 }

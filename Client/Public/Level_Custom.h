@@ -21,7 +21,6 @@ private:
 private:
 	HRESULT Ready_Player();
 	HRESULT Ready_UI();
-	HRESULT Ready_Camera();
 	HRESULT Ready_Light();
 
 public:
