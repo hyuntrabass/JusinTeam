@@ -47,14 +47,24 @@ namespace Engine
 		SimpleMath::Vector4 vPosition{};
 	};
 
-
-
 	using ANIMTIME_DESC = struct tagAnimTimeDesc {
 		float SwitchDuration = 0.2f;
 		float SwitchRatio = 0.f;
 		float SwitchTime = 0.f;
 		float fPadding = 0.f;
 
+	};
+
+	using TRIGGEREFFECT_DESC = struct tagTriggerEffectDesc {
+		TCHAR szEffectName[MAX_PATH];
+		int iBoneIndex = -1;
+		SimpleMath::Vector3 vPos{};
+	};
+
+	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {
+		TCHAR szSoundName[MAX_PATH];
+		int iChannel;
+		float fVolume;
 	};
 
 	using VTXPOSCOLOR = struct ENGINE_DLL tagVertex_Position_Color

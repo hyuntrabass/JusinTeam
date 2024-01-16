@@ -255,9 +255,6 @@
     <ClInclude Include="..\Public\Rabbit.h">
       <Filter>02.GameObjects\04.Monster\Animal\00. Rabbit</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\NPCvsMon.h">
-      <Filter>02.GameObjects\04. Monster\Tutorial\00. NPCvsMon</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Select_Npc.h">
       <Filter>02.GameObjects\05.Select_Object\Npc</Filter>
     </ClInclude>
@@ -297,6 +294,7 @@
     <ClInclude Include="..\public\Effect_Manager.h">
       <Filter>03.Effect</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\NPCvsMon.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">

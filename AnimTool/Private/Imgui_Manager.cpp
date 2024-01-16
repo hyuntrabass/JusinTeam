@@ -98,14 +98,14 @@ HRESULT CImgui_Manager::ImGuiMenu()
 
 	if (m_eType == TYPE_MONSTER)
 	{
-		const char* szModelTag[19] = { "Barlog","Furgoat","GiantBoss","Goat","Hirokin","Nastron02","Nastron03","Nott","NPCvsMon","Orc02","Penguin",
+		const char* szModelTag[19] = { "Balrog","Furgoat","GiantBoss","Goat","Hirokin","Nastron02","Nastron03","Nott","NPCvsMon","Orc02","Penguin",
 		"Rabbit","Skjaldmaer","Skjaldmaer_A","Thief04","Trilobite","TrilobiteA","Void13","VoidDragon" };
-		static const char* szCurrentModel = "Barlog";
+		static const char* szCurrentModel = "Balrog";
 		if (m_ePreType != m_eType)
 		{
 			m_ePreType = m_eType;
 			m_iCurrentModelIndex = 0;
-			szCurrentModel = "Barlog";
+			szCurrentModel = "Balrog";
 		}
 
 		if (ImGui::BeginCombo("LIST", szCurrentModel))
@@ -158,6 +158,10 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	if (ImGui::Button("LOAD"))
 	{
 		LoadFile();
+	}
+	if (ImGui::Button("ADD_EFFECT"))
+	{
+
 	}
 
 #pragma region CreateObject
@@ -279,7 +283,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				if (ImGui::ListBox("ANIMATION", &iCurrentAnimation, m_AnimationNames.data(), m_AnimationNames.size()))
 				{
 					m_AnimDesc.iAnimIndex = iCurrentAnimation;
-					m_AnimDesc.bSkipInterpolation = true;
+					m_AnimDesc.bSkipInterpolation = false;
 					pCurrentModel->Set_Animation(m_AnimDesc);
 				}
 			}
@@ -319,7 +323,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			_tchar szTriggerTime[MAX_PATH] = TEXT("");
 			const wstring& strTriggerTime = TEXT("%d");
 			auto Trigger = Triggers.begin();
-			_char* szTrigger = { nullptr };
+			_char* szTrigger = nullptr;
 			for (size_t i = 0; i < (*iter)->Get_NumTrigger(); i++)
 			{
 				szTrigger = new _char;
@@ -534,6 +538,12 @@ void CImgui_Manager::Free()
 	Safe_Release(m_pGameInstance);
 
 	Safe_Release(m_pPlayer);
+
+	for (auto& pEffect : m_Effects)
+	{
+		Safe_Release(pEffect);
+	}
+	m_Effects.clear();
 
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();

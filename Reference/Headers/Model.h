@@ -32,6 +32,7 @@ public:
 	const _mat* Get_BoneMatrix(const _char* pBoneName) const;
 	_matrix Get_PivotMatrix();
 	vector<class CAnimation*>& Get_Animations();
+	class CAnimation* Get_Animation(_uint iAnimIndex);
 
 	void Set_Animation(ANIM_DESC Animation_Desc);
 
@@ -73,6 +74,8 @@ private:
 	_bool m_isAnimChanged{};
 
 	ANIM_DESC m_AnimDesc{};
+
+	_uint m_iCurrentTrigger = 0;
 
 	ID3D11Texture2D* m_pTexture{ nullptr };
 	ID3D11ShaderResourceView* m_pSRV{ nullptr };

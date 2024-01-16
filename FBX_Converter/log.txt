@@ -1,10 +1,31 @@
 1. Static Only   2. Anim Only   3. All
 2
 Animation Models : Start Converting...
-Converting... npc vs mon.fbx
+Converting... Balrog.fbx
 Read File Succssefully
 Animation name list: 
-Take 001
+Mon_Balrog.ao|Mon_Balrog_Att_01
+Mon_Balrog.ao|Mon_Balrog_Att_02
+Mon_Balrog.ao|Mon_Balrog_Att_03
+Mon_Balrog.ao|Mon_Balrog_Att_04
+Mon_Balrog.ao|Mon_Balrog_Att_05
+Mon_Balrog.ao|Mon_Balrog_Att_06
+Mon_Balrog.ao|Mon_Balrog_Att_07
+Mon_Balrog.ao|Mon_Balrog_Die
+Mon_Balrog.ao|Mon_Balrog_Idle
+Mon_Balrog.ao|Mon_Balrog_Rage
+Mon_Balrog.ao|Mon_Balrog_Roar
+Mon_Balrog.ao|Mon_Balrog_Run
+Mon_Balrog.ao|Mon_Balrog_Spawn
+Mon_Balrog.ao|Mon_Balrog_Walk
+Mon_Balrog.ao|W_Mon_Balrog_Att_01
+Mon_Balrog.ao|W_Mon_Balrog_Att_02
+Mon_Balrog.ao|W_Mon_Balrog_Att_03
+Mon_Balrog.ao|W_Mon_Balrog_Att_04
+Mon_Balrog.ao|W_Mon_Balrog_Att_05
+Mon_Balrog.ao|W_Mon_Balrog_Att_06
+Mon_Balrog.ao|W_Mon_Balrog_Att_07
+Mon_Balrog.ao|W_Mon_Balrog_Att_08
 Animation Models : Convert Success!
 
 1 Animation Models

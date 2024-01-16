@@ -167,6 +167,21 @@ HRESULT CLoader::Load_Tool()
 #pragma endregion
 
 #pragma region Effect
+	// Effect Textures
+	string strInputFilePath = "../../Client/Bin/Resources/Textures/Effect/";
+	_uint iTextureNumber{};
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_Effect_") + to_wstring(iTextureNumber++);
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 #pragma endregion
 
 #pragma endregion
@@ -175,7 +190,7 @@ HRESULT CLoader::Load_Tool()
 #pragma region Model
 	//Monster
 	_matrix Pivot = XMMatrixScaling(0.02f, 0.02f, 0.02f);
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Monster_0"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Barlog/Mesh/Barlog.hyuntraanimmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Monster_0"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Balrog/Mesh/Balrog.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
@@ -314,7 +329,14 @@ HRESULT CLoader::Load_Tool()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_EffectDummy"), CEffect_Dummy::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 #pragma endregion
+
+	CEffect_Manager::Get_Instance()->Read_EffectFile();
 
 	m_strLoadingText = L"Logo : Loading Complete!";
 	m_isFinished = true;
