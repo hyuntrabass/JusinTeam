@@ -51,7 +51,8 @@ private:
     _uint m_iWinSizeY = { 0 };
 
 private:
-    class CPlayer* m_pPlayer = { nullptr }; 
+    class CPlayer* m_pPlayer = { nullptr };
+    vector<class CEffect_Dummy*> m_Effects;
     ANIM_DESC m_AnimDesc{};
     POINT m_ptMouse = {};
     vector<const _char*> m_AnimationNames;

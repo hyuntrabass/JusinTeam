@@ -109,12 +109,18 @@ vector<class CAnimation*>& CModel::Get_Animations()
 	return m_Animations;
 }
 
+CAnimation* CModel::Get_Animation(_uint iAnimIndex)
+{
+	return m_Animations[iAnimIndex];
+}
+
 void CModel::Set_Animation(ANIM_DESC Animation_Desc)
 {
 	if (m_AnimDesc.iAnimIndex != Animation_Desc.iAnimIndex or
 		Animation_Desc.bRestartAnimation)
 	{
 		m_isAnimChanged = true;
+		m_iCurrentTrigger = 0;
 
 		for (auto& pAnim : m_Animations)
 		{
@@ -215,6 +221,8 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 					TriggerFile.read(reinterpret_cast<char*>(&fTrigger), sizeof _float);
 					m_Animations[iAnimIndex]->Add_Trigger(fTrigger);
 				}
+
+				TriggerFile.close();
 			}
 		}
 	}
@@ -234,7 +242,8 @@ HRESULT CModel::Init(void* pArg)
 
 void CModel::Play_Animation(_float fTimeDelta)
 {
-	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop, m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio);
+	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop,
+		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio, &m_iCurrentTrigger);
 
 	for (auto& pBone : m_Bones)
 	{
@@ -340,7 +349,7 @@ HRESULT CModel::Read_Animations(ifstream& File)
 
 	for (size_t i = 0; i < m_iNumAnimations; i++)
 	{
-		CAnimation* pAnimation = CAnimation::Create(File);
+		CAnimation* pAnimation = CAnimation::Create(File, m_Bones);
 		if (!pAnimation)
 		{
 			MSG_BOX("Failed to Read Animations!");

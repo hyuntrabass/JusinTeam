@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Animation.h"
 
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -80,6 +81,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if (m_pModelCom)
 	{
+		//m_fTimeDelta = fTimeDelta;
 		m_pModelCom->Play_Animation(m_fTimeDelta);
 	}
 }
