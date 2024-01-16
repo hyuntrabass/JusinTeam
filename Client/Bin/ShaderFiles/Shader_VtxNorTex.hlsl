@@ -121,6 +121,25 @@ PS_OUT PS_Main_Editor(PS_IN Input)
     return Output;
 }
 
+PS_OUT PS_Main_Effect(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_Texture.Sample(LinearSampler, Input.vTex * 3.f);
+    
+    float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, Input.vNor));
+    
+    vector vReflect = reflect(normalize(g_vLightDir), Input.vNor);
+    vector vLook = Input.vWorldPos - g_vCamPos;
+    float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
+
+    Output.vDiffuse = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular);
+    Output.vNormal = Input.vNor;
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    
+    return Output;
+}
+
 technique11 DefaultTechniqueShader_VtxNorTex
 {
     pass Terrain
@@ -147,6 +166,19 @@ technique11 DefaultTechniqueShader_VtxNorTex
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Editor();
+    }
+
+    pass Terrain_Effect
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Effect();
     }
 
 };

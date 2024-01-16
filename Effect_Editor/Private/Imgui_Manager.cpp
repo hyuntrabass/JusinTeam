@@ -13,7 +13,7 @@ CImgui_Manager::CImgui_Manager()
 	Safe_AddRef(m_pGameInstance);
 }
 
-HRESULT CImgui_Manager::Init(_dev pDevice, _context pContext, vector<string>* pTextureList)
+HRESULT CImgui_Manager::Init(_dev pDevice, _context pContext, vector<string>* pTextureList, vector<string>* pModelList)
 {
 	m_pDevice = pDevice;
 	m_pContext = pContext;
@@ -37,6 +37,15 @@ HRESULT CImgui_Manager::Init(_dev pDevice, _context pContext, vector<string>* pT
 	for (_int i = 0; i < m_iNumTextures; i++)
 	{
 		m_pItemList_Texture[i] = (*pTextureList)[i].c_str();
+	}
+
+	m_iNumModels = static_cast<_int>(pModelList->size());
+	m_pItemList_Model = new const _char * [m_iNumModels];
+	m_pModels = new CModel* [m_iNumModels];
+
+	for (_int i = 0; i < m_iNumModels; i++)
+	{
+		m_pItemList_Model[i] = (*pModelList)[i].c_str();
 	}
 
 	if (FAILED(Ready_Layers()))
@@ -63,7 +72,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	EffectInfo Info{};
 	Begin("Effect_Tool");
 
-	const _char* szType[2]{ "Particle", "Rect" };
+	const _char* szType[ET_END]{ "Particle", "Rect", "Mesh" };
 
 	if (Combo("Type", &m_iCurrent_Type, szType, IM_ARRAYSIZE(szType)))
 	{
@@ -98,6 +107,10 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		"InstPass_Particle_TextureMask",
 		"InstPass_Particle_Sprite",
 		"InstPass_Particle_MaskColor",
+		"InstPass_Particle_TextureMask_Dissolve",
+		"InstPass_Particle_Sprite_Dissolve",
+		"InstPass_Particle_MaskColor_Dissolve",
+
 	};
 
 	const _char* szVTPasses[VTPass_End]
@@ -118,6 +131,30 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		"VTPass_SpriteMaskTexture",
 		"VTPass_SpriteMaskColor",
 		"VTPass_Hell",
+		"VTPass_Mask_Texture_Dissolve",
+		"VTPass_Inv_Mask_Texture_Dissolve",
+		"VTPass_Mask_Color_Dissolve",
+		"VTPass_Sprite_Dissolve",
+		"VTPass_SpriteMaskTexture_Dissolve",
+		"VTPass_SpriteMaskColor_Dissolve",
+	};
+
+	const _char* szStatPasses[StaticPass_End]
+	{
+		"StaticPass_Default",
+		"StaticPass_NonLight",
+		"StaticPass_OutLine",
+		"StaticPass_AlphaTestMeshes",
+		"StaticPass_Sky",
+		"StaticPass_COLMesh",
+		"StaticPass_SingleColorFx",
+		"StaticPass_SingleColorDissolve",
+		"StaticPass_Fireball",
+		"StaticPass_MaskEffect",
+		"StaticPass_MaskDissolve",
+		"StaticPass_MaskEffectClamp",
+		"StaticPass_SingleColoredEffectFrontCull",
+		"StaticPass_Shadow",
 	};
 
 	SeparatorText("Particle Information");
@@ -130,7 +167,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			iPassIndex = 0;
 		}
 	}
-	else
+	else if (m_iCurrent_Type == ET_RECT)
 	{
 		ListBox("Pass##2", &iPassIndex, szVTPasses, VTPass_End);
 		if (iPassIndex >= VTPass_End)
@@ -138,17 +175,25 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			iPassIndex = 0;
 		}
 	}
-	Info.eType = m_iCurrent_Type;
+	else if (m_iCurrent_Type == ET_MESH)
+	{
+		ListBox("Pass##3", &iPassIndex, szStatPasses, StaticPass_End);
+		if (iPassIndex >= StaticPass_End)
+		{
+			iPassIndex = 0;
+		}
+	}
+	Info.iType = m_iCurrent_Type;
 	Info.iPassIndex = iPassIndex;
 
 	NewLine();
 
 	static _int iIsColor{};
+	static _bool hasDissolve{};
 
 	SeparatorText("Diffuse");
 	RadioButton("Texture", &iIsColor, 0); SameLine();
 	RadioButton("Color", &iIsColor, 1);
-	Checkbox("Mask", &m_hasMask);
 
 	static _bool isSprite{};
 	static _int2 vNumSprites{ 1, 1 };
@@ -166,6 +211,9 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			Info.vNumSprites = vNumSprites;
 			Info.fSpriteDuration = fSpriteDuration;
 		}
+		Separator();
+		NewLine();
+
 		ListBox("Texture", &m_iSelected_Texture, m_pItemList_Texture, m_iNumTextures);
 		Image(reinterpret_cast<void*>(m_pTextures[m_iSelected_Texture]->Get_SRV()), ImVec2(128.f, 128.f));
 		m_hasDiffTexture = true;
@@ -186,9 +234,12 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		Info.vColor = m_vColor;
 	}
 
+	Checkbox("Mask", &m_hasMask);
+
 	if (m_hasMask)
 	{
-		SeparatorText("Mask Texture");
+		SameLine();
+		SeparatorText("Texture");
 		ListBox("Mask Texture", &m_iSelected_MaskTexture, m_pItemList_Texture, m_iNumTextures);
 		Image(reinterpret_cast<void*>(m_pTextures[m_iSelected_MaskTexture]->Get_SRV()), ImVec2(128.f, 128.f));
 		Info.iMaskTextureID = m_iSelected_MaskTexture;
@@ -197,6 +248,36 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	{
 		Info.iMaskTextureID = -1;
 	}
+	Separator();
+	NewLine();
+
+	Checkbox("Dissolve", &hasDissolve);
+
+	static _int iSelectd_Dissolve{};
+	static _float fDissolveDuration{};
+	if (hasDissolve)
+	{
+		SameLine();
+		SeparatorText("Texture");
+		InputFloat("Dissove Duration", &fDissolveDuration);
+		Info.fDissolveDuration = fDissolveDuration;
+		if (iSelectd_Dissolve < 0)
+		{
+			iSelectd_Dissolve = 0;
+		}
+		ListBox("Dissolve Texture", &iSelectd_Dissolve, m_pItemList_Texture, m_iNumTextures);
+		Image(reinterpret_cast<void*>(m_pTextures[iSelectd_Dissolve]->Get_SRV()), ImVec2(128.f, 128.f));
+		Info.iDissolveTextureID = iSelectd_Dissolve;
+		m_EffectInfo.iDissolveTextureID = iSelectd_Dissolve;
+	}
+	else
+	{
+		iSelectd_Dissolve = -1;
+		Info.iDissolveTextureID = -1;
+		m_EffectInfo.iDissolveTextureID = iSelectd_Dissolve;
+	}
+	Separator();
+	NewLine();
 
 	static _vec2 vSize{ 1.f, 1.f };
 	static _float fSizeforSprite{ 1.f };
@@ -273,7 +354,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		Info.bApplyGravity = bApplyGravity;
 		Info.vGravityDir = vGravityDir;
 	}
-	else
+	else if (m_iCurrent_Type == ET_RECT)
 	{
 		SeparatorText("Rect Information");
 
@@ -294,6 +375,13 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		InputFloat2("Size Delta", reinterpret_cast<_float*>(&vSizeDelta), "%.2f");
 		Info.vSizeDelta = vSizeDelta;
 	}
+	else if (m_iCurrent_Type == ET_MESH)
+	{
+		SeparatorText("Mesh Information");
+
+		ListBox("Model", &m_iSelected_Model, m_pItemList_Model, m_iNumModels);
+		Info.iModelIndex = m_iSelected_Model;
+	}
 
 	if (Button("Export"))
 	{
@@ -308,7 +396,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		m_pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Info));
 		m_EffectInfo = Info;
 
-		m_iCurrent_Type = Info.eType;
+		m_iCurrent_Type = Info.iType;
 
 		if (Info.fLifeTime < 0)
 		{
@@ -351,7 +439,18 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			m_iSelected_MaskTexture = Info.iMaskTextureID;
 		}
 
-		if (Info.eType == ET_PARTICLE)
+		if (Info.iDissolveTextureID < 0)
+		{
+			hasDissolve = false;
+		}
+		else
+		{
+			hasDissolve = true;
+			iSelectd_Dissolve = Info.iDissolveTextureID;
+			fDissolveDuration = Info.fDissolveDuration;
+		}
+
+		if (Info.iType == ET_PARTICLE)
 		{
 			m_ParticleInfo = Info.PartiDesc;
 			m_iNumInstance = Info.iNumInstances;
@@ -402,6 +501,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		Safe_Release(m_pEffect);
 		m_pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Info));
 		m_EffectInfo = Info;
+		m_pEffect->Tick(0.f);
 	}
 }
 
@@ -458,11 +558,11 @@ HRESULT CImgui_Manager::Ready_Layers()
 		return E_FAIL;
 	}
 
-	//_uint2 vTerrainSize{ 10, 10 };
-	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &vTerrainSize)))
-	//{
-	//	return E_FAIL;
-	//}
+	_uint2 vTerrainSize{ 3, 3 };
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &vTerrainSize)))
+	{
+		return E_FAIL;
+	}
 
 	//CVIBuffer_Instancing::ParticleDesc Desc{};
 	//m_pVtxTexShader = dynamic_cast<CShader*>(m_pGameInstance->Clone_Component(LEVEL_STATIC, L"Prototype_Component_Shader_VtxTex"));
@@ -484,6 +584,12 @@ HRESULT CImgui_Manager::Ready_Layers()
 	{
 		wstring strPrototypeTag = L"Prototype_Component_Texture_Effect_" + to_wstring(i);
 		m_pTextures[i] = dynamic_cast<CTexture*>(m_pGameInstance->Clone_Component(LEVEL_STATIC, strPrototypeTag));
+	}
+
+	for (_int i = 0; i < m_iNumModels; i++)
+	{
+		wstring strPrototypeTag = L"Prototype_Model_" + to_wstring(i);
+		m_pModels[i] = dynamic_cast<CModel*>(m_pGameInstance->Clone_Component(LEVEL_STATIC, strPrototypeTag));
 	}
 
 	return S_OK;
@@ -569,6 +675,12 @@ void CImgui_Manager::Free()
 		Safe_Release(m_pTextures[i]);
 	}
 	Safe_Delete_Array(m_pTextures);
+
+	for (_int i = 0; i < m_iNumModels; i++)
+	{
+		Safe_Release(m_pModels[i]);
+	}
+	Safe_Delete_Array(m_pModels);
 
 	//Safe_Release(m_pInstanceShader);
 	//Safe_Release(m_pVtxTexShader);

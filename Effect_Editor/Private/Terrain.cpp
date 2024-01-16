@@ -31,19 +31,23 @@ HRESULT CTerrain::Init(void* pArg)
 
 	//m_pTransformCom->LookAt_Dir(_vec4(0.f, -1.f, 0.f, 0.f));
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(-5.f, -1.f, -5.f, 1.f));
 
 	return S_OK;
 }
 
 void CTerrain::Tick(_float fTimeDelta)
 {
+	m_pTransformCom->Set_State(State::Pos, _vec4(-1.f, -0.5f, -1.f, 1.f));
 
 }
 
 void CTerrain::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	if (m_pGameInstance->Key_Pressing(DIK_O))
+	{
+		return;
+	}
+	m_pRendererCom->Add_RenderGroup(RG_Priority, this);
 }
 
 HRESULT CTerrain::Render()
@@ -51,7 +55,7 @@ HRESULT CTerrain::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+	if (FAILED(m_pShaderCom->Begin(VNTPass_Terrain_Effect)))
 		return E_FAIL;
 
 	if (FAILED(m_pVIBufferCom->Render()))

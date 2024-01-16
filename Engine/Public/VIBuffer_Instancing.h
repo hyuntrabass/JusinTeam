@@ -5,16 +5,6 @@ BEGIN(Engine)
 
 class ENGINE_DLL CVIBuffer_Instancing abstract : public CVIBuffer
 {
-public:
-	struct ParticleDesc
-	{
-		_vec3 vMinPos{}, vMaxPos;
-		_vec2 vSpeedRange{};
-		_vec2 vLifeTime{};
-		_vec2 vScaleRange{};
-		_vec3 vMinDir{}, vMaxDir{};
-		_bool isLoop{};
-	};
 protected:
 	CVIBuffer_Instancing(_dev pDevice, _context pContext);
 	CVIBuffer_Instancing(const CVIBuffer_Instancing& rhs);

@@ -152,12 +152,14 @@ namespace Client
 		StaticPass_MaskEffectClamp,
 		StaticPass_SingleColoredEffectFrontCull,
 		StaticPass_Shadow,
+		StaticPass_End,
 	};
 
 	enum VNTPass
 	{
 		VNTPass_Terrain,
 		VNTPass_Terrain_Editor,
+		VNTPass_Terrain_Effect,
 	};
 
 	enum VTPass
@@ -178,14 +180,23 @@ namespace Client
 		VTPass_SpriteMaskTexture,
 		VTPass_SpriteMaskColor,
 		VTPass_Hell,
+		VTPass_Mask_Texture_Dissolve,
+		VTPass_Inv_Mask_Texture_Dissolve,
+		VTPass_Mask_Color_Dissolve,
+		VTPass_Sprite_Dissolve,
+		VTPass_SpriteMaskTexture_Dissolve,
+		VTPass_SpriteMaskColor_Dissolve,
 		VTPass_End
 	};
 
 	enum InstancingPass
 	{
 		InstPass_Particle_TextureMask,
-		InstPass_Particle_Sprite_Dissolve,
+		InstPass_Particle_Sprite,
 		InstPass_Particle_MaskColor,
+		InstPass_Particle_TextureMask_Dissolve,
+		InstPass_Particle_Sprite_Dissolve,
+		InstPass_Particle_MaskColor_Dissolve,
 		InstPass_End,
 	};
 #pragma endregion

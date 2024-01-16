@@ -47,7 +47,40 @@ namespace Engine
 		SimpleMath::Vector4 vPosition{};
 	};
 
+	struct ParticleDesc
+	{
+		SimpleMath::Vector3 vMinPos{}, vMaxPos;
+		SimpleMath::Vector2 vSpeedRange{};
+		SimpleMath::Vector2 vLifeTime{};
+		SimpleMath::Vector2 vScaleRange{};
+		SimpleMath::Vector3 vMinDir{}, vMaxDir{};
+		bool isLoop{};
+	};
 
+	struct EffectInfo
+	{
+		unsigned int iType{};
+		bool isSprite{};
+		XMINT2 vNumSprites{};
+		float fSpriteDuration{};
+		ParticleDesc PartiDesc{};
+		unsigned int iNumInstances{};
+		float fLifeTime{};
+		int iDiffTextureID{};
+		int iMaskTextureID{};
+		SimpleMath::Vector4 vColor{};
+		unsigned int iPassIndex{};
+		SimpleMath::Vector2 vSize{};
+		SimpleMath::Vector3* pPos{};
+		SimpleMath::Vector3 vPosOffset{};
+		SimpleMath::Vector2 vSizeDelta{};
+		bool bApplyGravity{};
+		SimpleMath::Vector3 vGravityDir{};
+		SimpleMath::Vector3 vPos{};
+		int iDissolveTextureID{};
+		float fDissolveDuration{};
+		unsigned int iModelIndex{};
+	};
 
 	using ANIMTIME_DESC = struct tagAnimTimeDesc {
 		float SwitchDuration = 0.2f;

@@ -66,14 +66,17 @@ void CSelect_Model::Tick(_float fTimeDelta)
 					Info.vSize = Info.vSize * 0.5f;
 					Info.iNumInstances = 50;
 					CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
+
+					LIGHT_DESC Light_Info{};
+					Light_Info.eType = LIGHT_DESC::Point;
+					Light_Info.vAttenuation = LIGHT_RANGE_13;
+					Light_Info.vDiffuse = _vec4(0.75f, 0.5f, 0.f, 1.f);
+					Light_Info.vPosition = _vec4(Info.vPos, 1.f);
+					m_pGameInstance->Add_Light(m_pGameInstance->Get_CurrentLevelIndex(), L"Light_Fire", Light_Info);
 				}
 			}
 		}
 
-		if (m_pModelCom->Get_CurrentAnimationIndex() == S_CANCEL)
-		{
-			Safe_Release(m_pEffect);
-		}
 	}
 
 	if (m_pModelCom->IsAnimationFinished(S_MOTION))
@@ -236,6 +239,19 @@ void CSelect_Model::Change_AnimState(SELECTMODEL_ANIM eAnim)
 		m_Animation.isLoop = false;
 		m_Animation.fAnimSpeedRatio = 1.5f;
 		m_Animation.bSkipInterpolation = true;
+
+		if (m_strModelTag == L"Prototype_Model_Select2")
+		{
+			Safe_Release(m_pEffect);
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"FireDiss");
+			Info.pPos = &m_vRHPos;
+			Info.vPosOffset = Info.vPosOffset + _vec3(0.f, 0.05f, 0.f);
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
+			m_pModelCom->Set_Animation(m_Animation);
+
+			m_pGameInstance->Delete_Light(m_pGameInstance->Get_CurrentLevelIndex(), L"Light_Fire");
+		}
+
 		break;
 
 	}

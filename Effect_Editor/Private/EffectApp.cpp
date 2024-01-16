@@ -80,7 +80,9 @@ void CEffectApp::Tick(_float fTimeDelta)
 		return;
 	}
 
-	m_fTimeAcc += fTimeDelta;
+	_float fFinalTimeDelta = fTimeDelta * m_pGameInstance->Get_TimeRatio();
+
+	m_fTimeAcc += fFinalTimeDelta;
 	m_fLoadingTime += fTimeDelta;
 
 	m_strLoadingText = L"맵 에디터 로딩중";
@@ -104,19 +106,19 @@ void CEffectApp::Tick(_float fTimeDelta)
 	{
 		if (!m_pImguiMgr)
 		{
-			(m_pImguiMgr = CImgui_Manager::Get_Instance())->Init(m_pDevice, m_pContext, &m_TextureList);
+			(m_pImguiMgr = CImgui_Manager::Get_Instance())->Init(m_pDevice, m_pContext, &m_TextureList, &m_ModelList);
 			Safe_AddRef(m_pImguiMgr);
 		}
 	}
 
-	m_pGameInstance->Tick_Engine(fTimeDelta);
+	m_pGameInstance->Tick_Engine(fFinalTimeDelta);
 
 	if (m_pImguiMgr)
 	{
 		ImGui_ImplDX11_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
-		m_pImguiMgr->Tick(fTimeDelta);
+		m_pImguiMgr->Tick(fFinalTimeDelta);
 	}
 }
 
@@ -217,7 +219,7 @@ HRESULT CEffectApp::Ready_Prototype_Component_For_Static()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, L"Prototype_Component_Texture_Terrain", CTexture::Create(m_pDevice, m_pContext, L"../../Client/Bin/Resources/Textures/Terrain/Tile1.dds"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, L"Prototype_Component_Texture_Terrain", CTexture::Create(m_pDevice, m_pContext, L"../Bin/Resources/Terrain.png"))))
 	{
 		return E_FAIL;
 	}
@@ -278,22 +280,20 @@ HRESULT CEffectApp::Ready_Prototype_GameObject()
 		}
 	}
 #pragma region Model
-	_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(90.f));
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/StaticMesh/Common/Mesh/SM_EFF_Sphere_02.mo.hyuntrastatmesh", false, Pivot))))
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Effect/Mesh/";
+	_uint iMeshNumber{};
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
-		return E_FAIL;
-	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sphere_HorizentalUV"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/StaticMesh/Common/Mesh/SM_EFF_Sphere_01.mo.hyuntrastatmesh"))))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Ring_14"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/StaticMesh/Common/Mesh/SM_EFF_Ring_14.mo.hyuntrastatmesh"))))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Circle"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/StaticMesh/Common/Mesh/SM_EFF_Circle_01.mo.hyuntrastatmesh"))))
-	{
-		return E_FAIL;
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(iMeshNumber++);
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
+			m_ModelList.push_back(entry.path().stem().string());
+		}
 	}
 #pragma endregion
 
