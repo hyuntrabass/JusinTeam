@@ -34,7 +34,7 @@ HRESULT CPlayer::Init(void* pArg)
 void CPlayer::Tick(_float fTimeDelta)
 {
 
-	PART_TYPE eType = CUI_Manager::Get_Instance()->is_CustomPartChanged();
+	PART_TYPE eType = CUI_Manager::Get_Instance()->Is_CustomPartChanged();
 	if (PART_TYPE::PT_END != eType)
 	{
 		m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), 0.f);
@@ -42,15 +42,15 @@ void CPlayer::Tick(_float fTimeDelta)
 	}
 	Set_Key(fTimeDelta);
 
-	_float fMouseSensor = 0.1f;
 
-	if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON))
+
+	if (!CUI_Manager::Get_Instance()->Is_Picking_UI() && m_pGameInstance->Mouse_Pressing(DIM_LBUTTON))
 	{
 		_long dwMouseMove;
 
 		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
 		{
-			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * dwMouseMove * -1.f * fMouseSensor);
+			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * dwMouseMove * -1.f * 0.1f);
 		}
 	}
 

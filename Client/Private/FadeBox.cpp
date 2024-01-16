@@ -1,59 +1,65 @@
-#include "Logo.h"
+#include "FadeBox.h"
 #include "GameInstance.h"
 
-CLogo::CLogo(_dev pDevice, _context pContext)
+CFadeBox::CFadeBox(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
 }
 
-CLogo::CLogo(const CLogo& rhs)
+CFadeBox::CFadeBox(const CFadeBox& rhs)
 	: COrthographicObject(rhs)
 {
 }
 
-HRESULT CLogo::Init_Prototype()
+HRESULT CFadeBox::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CLogo::Init(void* pArg)
+HRESULT CFadeBox::Init(void* pArg)
 {
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
 
-	m_fSizeX = 480.f;
-	m_fSizeY = 250.f;
+	m_fSizeX = g_iWinSizeX;
+	m_fSizeY = g_iWinSizeY;
 
 	m_fX = g_iWinSizeX >> 1;
 	m_fY = g_iWinSizeY >> 1;
 
-	m_fDepth = 0.5f;
+	m_fDepth = 0.05f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 	return S_OK;
 }
 
-void CLogo::Tick(_float fTimeDelta)
+void CFadeBox::Tick(_float fTimeDelta)
 {
-	m_fTime -= fTimeDelta * 0.3f;
+	m_fAlpha += fTimeDelta * m_fDir * 5.f;
+
+	if (m_fAlpha >= 1.f)
+		m_fDir *= -1.f;
+
+	if (m_fAlpha < 0.f)
+		m_isDead = true;
 }
 
-void CLogo::Late_Tick(_float fTimeDelta)
+void CFadeBox::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
-HRESULT CLogo::Render()
+HRESULT CFadeBox::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(VTPass_Dissolve)))
+	if (FAILED(m_pShaderCom->Begin(VTPass_UI_Alpha)))
 	{
 		return E_FAIL;
 	}
@@ -63,10 +69,12 @@ HRESULT CLogo::Render()
 		return E_FAIL;
 	}
 
+
+
 	return S_OK;
 }
 
-HRESULT CLogo::Add_Components()
+HRESULT CFadeBox::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -83,11 +91,7 @@ HRESULT CLogo::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_LOGO, TEXT("Prototype_Component_Texture_UI_Logo_BG_Title"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(__super::Add_Component(LEVEL_LOGO, TEXT("Prototype_Component_Texture_UI_Logo_Noise"), TEXT("Com_Texture_Noise"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_FadeBox"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -95,7 +99,7 @@ HRESULT CLogo::Add_Components()
 	return S_OK;
 }
 
-HRESULT CLogo::Bind_ShaderResources()
+HRESULT CFadeBox::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
 		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
@@ -112,45 +116,41 @@ HRESULT CLogo::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fTime, sizeof(_float))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_NoiseTexture")))
-	{
-		return E_FAIL;
-	}
 	return S_OK;
 }
 
-CLogo* CLogo::Create(_dev pDevice, _context pContext)
+CFadeBox* CFadeBox::Create(_dev pDevice, _context pContext)
 {
-	CLogo* pInstance = new CLogo(pDevice, pContext);
+	CFadeBox* pInstance = new CFadeBox(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CLogo");
+		MSG_BOX("Failed to Create : CFadeBox");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CLogo::Clone(void* pArg)
+CGameObject* CFadeBox::Clone(void* pArg)
 {
-	CLogo* pInstance = new CLogo(*this);
+	CFadeBox* pInstance = new CFadeBox(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CLogo");
+		MSG_BOX("Failed to Clone : CFadeBox");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CLogo::Free()
+void CFadeBox::Free()
 {
 	__super::Free();
 
@@ -158,5 +158,4 @@ void CLogo::Free()
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pVIBufferCom);
-	Safe_Release(m_pDissolveTextureCom);
 }

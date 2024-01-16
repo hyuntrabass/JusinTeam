@@ -28,6 +28,10 @@ void CLevel_Logo::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_RETURN))
 	{
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Static"), TEXT("Prototype_GameObject_FadeBox"))))
+		{
+			return;
+		}
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_SELECT))))
 		{
 			return;
@@ -52,6 +56,26 @@ HRESULT CLevel_Logo::Render()
 HRESULT CLevel_Logo::Ready_Logo()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_Logo"), TEXT("Prototype_GameObject_Background"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_Logo"), TEXT("Prototype_GameObject_Logo_Odin"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_Logo"), TEXT("Prototype_GameObject_Logo_Dust"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_Logo"), TEXT("Prototype_GameObject_Logo"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_Logo"), TEXT("Prototype_GameObject_Logo_Stone"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_Logo"), TEXT("Prototype_GameObject_Logo_Text"))))
 	{
 		return E_FAIL;
 	}

@@ -178,6 +178,8 @@ namespace Client
 		VTPass_SpriteMaskTexture,
 		VTPass_SpriteMaskColor,
 		VTPass_Hell,
+		VTPass_Dust,
+		VTPass_Dissolve,
 		VTPass_End
 	};
 

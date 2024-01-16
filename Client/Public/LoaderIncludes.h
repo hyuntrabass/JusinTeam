@@ -1,9 +1,14 @@
 #pragma once
 
 #include "Logo.h"
+#include "Odin.h"
 #include "Player.h"
-#include "BodyPart.h"
 #include "Select.h"
+#include "FadeBox.h"
+#include "BodyPart.h"
+#include "Logo_Text.h"
+#include "Logo_Dust.h"
+#include "Logo_Stone.h"
 #include "BackGround.h"
 #include "Camera_Main.h"
 #include "Camera_Debug.h"

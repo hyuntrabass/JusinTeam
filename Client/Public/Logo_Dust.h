@@ -4,12 +4,12 @@
 
 BEGIN(Client)
 
-class CBackGround final : public COrthographicObject
+class CLogo_Dust final : public COrthographicObject
 {
 private:
-	CBackGround(_dev pDevice, _context pContext);
-	CBackGround(const CBackGround& rhs);
-	virtual ~CBackGround() = default;
+	CLogo_Dust(_dev pDevice, _context pContext);
+	CLogo_Dust(const CLogo_Dust& rhs);
+	virtual ~CLogo_Dust() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -25,16 +25,15 @@ private:
 	CTexture* m_pTextureCom{ nullptr };
 
 private:
+	_float m_fU{ 0.f };
+	_float m_fV{ 0.f };
+
+private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
-private:
-	_float				m_fDir{ 1.f };
-	_float				m_fAlpha{ 0.f };
-	_float				m_fDuration{ 0.f };
-
 public:
-	static CBackGround* Create(_dev pDevice, _context pContext);
+	static CLogo_Dust* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };
