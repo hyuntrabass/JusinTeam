@@ -31,7 +31,7 @@ public:
 	const _uint& Get_CurrentAnimationIndex() const;
 	const _float& Get_CurrentAnimPos() const;
 	const _mat* Get_BoneMatrix(const _char* pBoneName) const;
-	_matrix Get_PivotMatrix();
+	_mat Get_PivotMatrix();
 	vector<class CAnimation*>& Get_Animations();
 	class CAnimation* Get_Animation(_uint iAnimIndex);
 	vector<class CBone*>& Get_Bones();

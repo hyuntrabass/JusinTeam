@@ -62,6 +62,7 @@ private:
     _uint m_iCurrentModelIndex = { 0 };
     _bool m_IsCreateModel = { false };
     _int m_iCurrentEffect{};
+    _int m_iCurrentBone{};
 
     vector<const _char*> m_TriggerTimes;
     vector<_char*> m_FBXDataName;

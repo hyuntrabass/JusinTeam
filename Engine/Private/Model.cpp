@@ -104,7 +104,7 @@ const _mat* CModel::Get_BoneMatrix(const _char* pBoneName) const
 	return (*iter)->Get_CombinedMatrix();
 }
 
-_matrix CModel::Get_PivotMatrix()
+_mat CModel::Get_PivotMatrix()
 {
 	return XMLoadFloat4x4(&m_PivotMatrix);
 }

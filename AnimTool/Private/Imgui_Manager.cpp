@@ -405,18 +405,27 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				m_BoneNames.push_back((*iter)->Get_BoneName());
 				++iter;
 			}
-			static int iCurrentBone = 0;
 			if (m_BoneNames.size() != 0)
 			{
-				if (ImGui::ListBox("BONE", &iCurrentBone, m_BoneNames.data(), m_BoneNames.size()))
+				if (ImGui::ListBox("BONE", &m_iCurrentBone, m_BoneNames.data(), m_BoneNames.size()))
 				{
 				}
 			}
 
 			string strNumBones = "ALLBONES : " + to_string(iNumBones);
 			ImGui::Text(strNumBones.c_str()); ImGui::SameLine();
-			string strCurBone = "CURRENTBONE : " + to_string(iCurrentBone);
+			string strCurBone = "CURRENTBONE : " + to_string(m_iCurrentBone);
 			ImGui::Text(strCurBone.c_str());
+
+			if (not m_Effects.empty())
+			{
+				CModel* pCurrentModel = m_pPlayer->Get_CurrentModel();
+				
+				CTransform* pPlayerTransform = reinterpret_cast<CTransform*>(m_pPlayer->Find_Component(TEXT("Com_Transform")));
+				
+				_mat WorldMatrix = *Bones[m_iCurrentBone]->Get_CombinedMatrix() * pCurrentModel->Get_PivotMatrix() * pPlayerTransform->Get_World_Matrix();
+				m_Effects[0]->Set_Position(WorldMatrix.Position());
+			}
 		}
 
 		ImGui::End();
