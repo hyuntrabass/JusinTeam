@@ -30,6 +30,32 @@ HRESULT CImgui_Manager::Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc)
 	m_iWinSizeX = GraphicDesc.iWinSizeX;
 	m_iWinSizeY = GraphicDesc.iWinSizeY;
 
+	string strInputFilePath = "../../Client/Bin/Resources/AnimMesh/Monster/";
+	_uint iNumMonsterModels{};
+	_char* szFileName = nullptr;
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		szFileName = new _char[MAX_PATH];
+		if (entry.is_regular_file())
+		{
+			if (entry.path().extension().string() != ".hyuntraanimmesh")
+			{
+				continue;
+			}
+			_splitpath_s(entry.path().string().c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, nullptr, 0);
+			iNumMonsterModels++;
+			m_FBXDataName.push_back(szFileName);
+		}
+	}
+
+	m_FileNames = new _char * [m_FBXDataName.size()];
+
+	for (size_t i = 0; i < m_FBXDataName.size(); i++)
+	{
+		m_FileNames[i] = new _char[MAX_PATH];
+		m_FileNames[i] = m_FBXDataName[i];
+	}
+
 	return S_OK;
 }
 
@@ -96,26 +122,30 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	ImGui::RadioButton("MONSTER", &m_eType, TYPE_MONSTER); ImGui::SameLine();
 	ImGui::RadioButton("PLAYER", &m_eType, TYPE_PLAYER);
 
+	
+
+
 	if (m_eType == TYPE_MONSTER)
 	{
-		const char* szModelTag[19] = { "Balrog","Furgoat","GiantBoss","Goat","Hirokin","Nastron02","Nastron03","Nott","NPCvsMon","Orc02","Penguin",
-		"Rabbit","Skjaldmaer","Skjaldmaer_A","Thief04","Trilobite","TrilobiteA","Void13","VoidDragon" };
-		static const char* szCurrentModel = "Balrog";
+		/*const char* szModelTag[19] = { "Balrog","Furgoat","GiantBoss","Goat","Hirokin","Nastron02","Nastron03","Nott","NPCvsMon","Orc02","Penguin",
+		"Rabbit","Skjaldmaer","Skjaldmaer_A","Thief04","Trilobite","TrilobiteA","Void13","VoidDragon" };*/
+		static const char* szCurrentModel = m_FileNames[0];
+
 		if (m_ePreType != m_eType)
 		{
 			m_ePreType = m_eType;
 			m_iCurrentModelIndex = 0;
-			szCurrentModel = "Balrog";
+			szCurrentModel = m_FileNames[0];
 		}
 
 		if (ImGui::BeginCombo("LIST", szCurrentModel))
 		{
-			for (size_t i = 0; i < IM_ARRAYSIZE(szModelTag); i++)
+			for (size_t i = 0; i < m_FBXDataName.size(); i++)
 			{
-				_bool bSelectedModel = (szCurrentModel == szModelTag[i]);
-				if (ImGui::Selectable(szModelTag[i], bSelectedModel))
+				_bool bSelectedModel = (szCurrentModel == m_FileNames[i]);
+				if (ImGui::Selectable(m_FileNames[i], bSelectedModel))
 				{
-					szCurrentModel = szModelTag[i];
+					szCurrentModel = m_FileNames[i];
 					m_iCurrentModelIndex = i;
 				}
 			}
@@ -173,7 +203,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 		{
 			m_pPlayer = (CPlayer*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Player"));
 			CTransform* pTargetTransform = (CTransform*)(m_pPlayer->Find_Component(TEXT("Com_Transform")));
-
 			m_vPreScale = pTargetTransform->Get_Scale();
 			m_vPreRight = pTargetTransform->Get_State(State::Right);
 			m_vPreUp = pTargetTransform->Get_State(State::Up);
@@ -337,6 +366,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			if (ImGui::ListBox("TRIGGER", &iTrigger, TriggerTimes.data(), TriggerTimes.size()))
 			{
 			}
+
 		}
 
 		ImGui::End();
@@ -539,11 +569,11 @@ void CImgui_Manager::Free()
 
 	Safe_Release(m_pPlayer);
 
-	for (auto& pEffect : m_Effects)
+	/*for (auto& pEffect : m_Effects)
 	{
 		Safe_Release(pEffect);
 	}
-	m_Effects.clear();
+	m_Effects.clear();*/
 
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();

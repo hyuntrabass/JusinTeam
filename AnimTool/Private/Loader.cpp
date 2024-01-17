@@ -189,8 +189,25 @@ HRESULT CLoader::Load_Tool()
 	m_strLoadingText = L"Logo : Loading Model";
 #pragma region Model
 	//Monster
-	_matrix Pivot = XMMatrixScaling(0.02f, 0.02f, 0.02f);
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Monster_0"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Balrog/Mesh/Balrog.hyuntraanimmesh"))))
+	_matrix Pivot = XMMatrixScaling(0.02f, 0.02f, 0.02f); 
+	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/Monster/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (entry.path().extension().string() != ".hyuntraanimmesh")
+			{
+				continue;
+			}
+			wstring strPrototypeTag = TEXT("Prototype_Model_Monster_") + to_wstring(m_iNumMonsterModels++);
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+	/*if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Monster_0"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Balrog/Mesh/Balrog.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
@@ -284,8 +301,8 @@ HRESULT CLoader::Load_Tool()
 	{
 		return E_FAIL;
 	}
-	m_iNumMonsterModels++;
-	//Player
+	m_iNumMonsterModels++;*/
+	////Player
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Player_0"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Select_Model/Mesh/Select_Priest.hyuntraanimmesh", false, Pivot))))
 	{
 		return E_FAIL;

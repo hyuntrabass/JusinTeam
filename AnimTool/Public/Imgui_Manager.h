@@ -61,6 +61,9 @@ private:
     _uint m_iCurrentModelIndex = { 0 };
     _bool m_IsCreateModel = { false };
 
+
+    vector<CHAR*> m_FBXDataName;
+    _char** m_FileNames = nullptr;
     //ImGuizmo
     ImGuizmo::OPERATION m_eStateType = { ImGuizmo::OPERATION::TRANSLATE };
     _int m_iManipulateType = 0;
