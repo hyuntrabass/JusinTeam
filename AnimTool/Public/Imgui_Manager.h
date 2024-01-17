@@ -61,6 +61,7 @@ private:
     _int m_eType = { TYPE_MONSTER };
     _uint m_iCurrentModelIndex = { 0 };
     _bool m_IsCreateModel = { false };
+    _int m_iCurrentEffect{};
 
     vector<const _char*> m_TriggerTimes;
     vector<_char*> m_FBXDataName;

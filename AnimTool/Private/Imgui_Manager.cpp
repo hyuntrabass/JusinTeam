@@ -10,6 +10,7 @@
 #include "Animation.h"
 #include "Bone.h"
 #include "Layer.h"
+#include "Effect_Dummy.h"
 
 #include "Player.h"
 
@@ -86,6 +87,12 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		}
 		m_pPlayer->Tick(fTimeDelta);
 	}
+
+	if (not m_Effects.empty())
+	{
+		for (auto& pEffect : m_Effects)
+			pEffect->Tick(fTimeDelta);
+	}
 }
 
 void CImgui_Manager::Late_Tick(_float fTimeDelta)
@@ -94,15 +101,16 @@ void CImgui_Manager::Late_Tick(_float fTimeDelta)
 	{
 		m_pPlayer->Late_Tick(fTimeDelta);
 	}
+
+	if (not m_Effects.empty())
+	{
+		for (auto& pEffect : m_Effects)
+			pEffect->Late_Tick(fTimeDelta);
+	}
 }
 
 HRESULT CImgui_Manager::Render()
 {
-	if (m_pPlayer)
-	{
-		m_pPlayer->Render();
-	}
-
 	bool bDemo = true;
 	ImGui::ShowDemoWindow(&bDemo);
 	ImGuiWindowFlags window_flags = 0;
@@ -196,6 +204,13 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	}
 	if (ImGui::Button("ADD_EFFECT"))
 	{
+		_uint iCurrentEffect = m_iCurrentEffect;
+		_tchar szEffectName[MAX_PATH] = TEXT("");
+		MultiByteToWideChar(CP_ACP, 0, m_EffectNames[iCurrentEffect], (_int)strlen(m_EffectNames[iCurrentEffect]), szEffectName, MAX_PATH);
+		
+		EffectInfo EffectInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(szEffectName);
+		CEffect_Dummy* pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(&EffectInfo);
+		m_Effects.push_back(pEffect);
 	}
 
 #pragma region CreateObject
@@ -417,8 +432,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	{
 		ImGui::Begin("EFFECT MENU");
 
-		static int iCurrentEffect = 0;
-		if (ImGui::ListBox("EFFECT", &iCurrentEffect, m_EffectNames.data(), m_EffectNames.size()))
+		if (ImGui::ListBox("EFFECT", &m_iCurrentEffect, m_EffectNames.data(), m_EffectNames.size()))
 		{
 		}
 
@@ -616,10 +630,10 @@ void CImgui_Manager::Free()
 
 	Safe_Release(m_pPlayer);
 
-	/*for (size_t i = 0; i < m_Effects.size(); i++)
+	for (size_t i = 0; i < m_Effects.size(); i++)
 	{
 		Safe_Release(m_Effects[i]);
-	}*/
+	}
 	m_Effects.clear();
 
 	for (auto& MonsterNames : m_FBXDataName)
