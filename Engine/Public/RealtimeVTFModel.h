@@ -3,20 +3,19 @@
 
 BEGIN(Engine)
 
+
 typedef struct tagAnimTransArray {
-	using TransformArrayType = array<_mat, 200>;
-	array<TransformArrayType, 500> TransformArray;
+	using TransformArrayType = array<_mat, 172>;
+	array<TransformArrayType, 441> TransformArray;
 }ANIMTRANS_ARRAY;
 
-// 이 VTF는 Prototype 단계에서 애니메이션을 미리 계산합니다
-
-class ENGINE_DLL CVTFModel final :
+class ENGINE_DLL CRealtimeVTFModel final :
     public CComponent
 {
 private:
-	CVTFModel(_dev pDevice, _context pContext);
-	CVTFModel(const CVTFModel& rhs);
-	virtual ~CVTFModel() = default;
+	CRealtimeVTFModel(_dev pDevice, _context pContext);
+	CRealtimeVTFModel(const CRealtimeVTFModel& rhs);
+	virtual ~CRealtimeVTFModel() = default;
 
 public:
 	HRESULT Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix);
@@ -36,7 +35,7 @@ public:
 	}
 
 	HRESULT Bind_Material(class CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType);
-	HRESULT Bind_Animation(class CShader* pShader);
+	HRESULT Bind_Bone(class CShader* pShader);
 
 	HRESULT Render(_uint iMeshIndex);
 
@@ -56,7 +55,6 @@ private:
 
 	_mat m_PivotMatrix = {};
 
-	PLAYANIM_DESC m_PlayAnimDesc;
 	_int m_iCurrentAnimIndex = 0;
 	_int m_iNextAnimIndex = -1;
 	_bool m_isLoop = false;
@@ -76,7 +74,7 @@ private:
 	HRESULT CreateAnimationTransform(_uint iIndex, vector<ANIMTRANS_ARRAY>& AnimTransforms);
 
 public:
-	static CVTFModel* Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh = false, _fmatrix PivotMatrix = XMMatrixIdentity());
+	static CRealtimeVTFModel* Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh = false, _fmatrix PivotMatrix = XMMatrixIdentity());
     // CComponent을(를) 통해 상속됨
     virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;

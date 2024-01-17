@@ -12,6 +12,9 @@ enum RenderGroup
 	RG_NonLight,
 	RG_Blend,
 	RG_BlendBlur,
+	RG_Water_Refraction,
+	RG_Water_Reflection,
+	RG_Water,
 	RG_UI,
 	RG_Cursor,
 	RG_End
@@ -63,6 +66,9 @@ private:
 	HRESULT Render_Priority();
 	HRESULT Render_Shadow();
 	HRESULT Render_NonBlend();
+	HRESULT Render_Refraction();
+	HRESULT Render_Reflection();
+	HRESULT Render_Water();
 	HRESULT Render_Blur();
 	HRESULT Render_LightAcc();
 	HRESULT Render_Deferred();

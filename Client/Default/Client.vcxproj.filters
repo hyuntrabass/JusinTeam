@@ -142,6 +142,15 @@
     <Filter Include="02.GameObjects\02.Terrain\Lake">
       <UniqueIdentifier>{cf63ced1-74e6-4b14-b3a8-630d98997eb7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\04.Monster\TestVTFRabbit">
+      <UniqueIdentifier>{0d09b625-cdf2-4c3e-aca2-9991d3b00177}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. StatObject">
+      <UniqueIdentifier>{7811bd56-9a30-483e-9b39-d9f2375daa1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. StatObject\Test">
+      <UniqueIdentifier>{83755c37-e549-4fee-bc19-f3815975968c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -274,6 +283,12 @@
     <ClInclude Include="..\Public\Lake.h">
       <Filter>02.GameObjects\02.Terrain\Lake</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\TestVTFModel.h">
+      <Filter>02.GameObjects\04.Monster\TestVTFRabbit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TestTree.h">
+      <Filter>02.GameObjects\07. StatObject\Test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -399,6 +414,12 @@
     <ClCompile Include="..\Private\Lake.cpp">
       <Filter>02.GameObjects\02.Terrain\Lake</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\TestVTFModel.cpp">
+      <Filter>02.GameObjects\04.Monster\TestVTFRabbit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TestTree.cpp">
+      <Filter>02.GameObjects\07. StatObject\Test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
@@ -429,6 +450,12 @@
       <Filter>97.Shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Water.hlsl">
+      <Filter>97.Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VTFModel.hlsl">
+      <Filter>97.Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxStatMesh_Water.hlsl">
       <Filter>97.Shaders</Filter>
     </FxCompile>
   </ItemGroup>

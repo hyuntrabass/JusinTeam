@@ -1,52 +1,48 @@
-#include "VTFModel.h"
+#include "RealtimeVTFModel.h"
 #include "Bone.h"
 #include "Mesh.h"
 #include "Texture.h"
 #include "Animation.h"
 #include "Shader.h"
 
-CVTFModel::CVTFModel(_dev pDevice, _context pContext)
+CRealtimeVTFModel::CRealtimeVTFModel(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
 {
 }
 
-CVTFModel::CVTFModel(const CVTFModel& rhs)
+CRealtimeVTFModel::CRealtimeVTFModel(const CRealtimeVTFModel& rhs)
 	: CComponent(rhs)
 	, m_eType(rhs.m_eType)
 	, m_iNumMeshes(rhs.m_iNumMeshes)
-	, m_Meshes(rhs.m_Meshes)
 	, m_iNumMaterials(rhs.m_iNumMaterials)
 	, m_Materials(rhs.m_Materials)
 	, m_PivotMatrix(rhs.m_PivotMatrix)
 	, m_iNumAnimations(rhs.m_iNumAnimations)
-	, m_Animations(rhs.m_Animations)
-	, m_pTexture(rhs.m_pTexture)
-	, m_pSRV(rhs.m_pSRV)
 {
-	for (auto& pPrototypeAnim : m_Animations)
-	{
-		Safe_AddRef(pPrototypeAnim);
+	for (auto& pPrototypeBone : rhs.m_Bones) {
+		CBone* pBone = pPrototypeBone->Clone();
+
+		m_Bones.push_back(pBone);
 	}
 
-	for (auto& pPrototypeMesh : m_Meshes)
-	{
-		Safe_AddRef(pPrototypeMesh);
+	for (auto& pPrototypeAnimation : rhs.m_Animations) {
+		CAnimation* pAnimation = pPrototypeAnimation->Clone();
+
+		m_Animations.push_back(pAnimation);
+	}
+
+	for (auto& pPrototypeMesh : rhs.m_Meshes) {
+		CMesh* pMesh = reinterpret_cast<CMesh*>(pPrototypeMesh->Clone());
+
+		m_Meshes.push_back(pMesh);
 	}
 
 	for (auto& Material : m_Materials)
-	{
 		for (auto& pTexture : Material.pMaterials)
-		{
 			Safe_AddRef(pTexture);
-		}
-	}
-
-	Safe_AddRef(m_pTexture);
-	Safe_AddRef(m_pSRV);
-
 }
 
-HRESULT CVTFModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix)
+HRESULT CRealtimeVTFModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix)
 {
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
 
@@ -136,13 +132,6 @@ HRESULT CVTFModel::Init_Prototype(const string& strFilePath, const _bool& isCOLM
 				TriggerFile.close();
 			}
 		}
-
-		_uint iMax = 0;
-		for (auto& pAnimation : m_Animations)
-			iMax = max(iMax, pAnimation->Get_MaxFrame());
-
-		if (FAILED(CreateVTF(iMax)))
-			return E_FAIL;
 	}
 	else
 	{
@@ -153,75 +142,22 @@ HRESULT CVTFModel::Init_Prototype(const string& strFilePath, const _bool& isCOLM
 	return S_OK;
 }
 
-HRESULT CVTFModel::Init(void* pArg)
+HRESULT CRealtimeVTFModel::Init(void* pArg)
 {
 	m_PlayAnimDesc.PLAYANIM_DESC();
 
+	m_isLoop = true;
+
 	return S_OK;
 }
 
-HRESULT CVTFModel::Play_Animation(_float fTimeDelta)
+HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 {
-	CAnimation* pPlayingAnim = m_Animations[m_iCurrentAnimIndex];
-
-	m_PlayAnimDesc.eCurrent.fTime += fTimeDelta;
-
-	_float fTimePerFrame = 1.f / pPlayingAnim->Get_TickPerSec();
-	if (m_PlayAnimDesc.eCurrent.fTime >= fTimePerFrame) {
-		m_PlayAnimDesc.eCurrent.fTime = 0.f;
-		m_PlayAnimDesc.eCurrent.iCurrFrame = (m_PlayAnimDesc.eCurrent.iCurrFrame + 1);
-		m_PlayAnimDesc.eCurrent.iNextFrame = (m_PlayAnimDesc.eCurrent.iCurrFrame + 1);
-
-		if (true == m_isLoop) {
-			m_PlayAnimDesc.eCurrent.iCurrFrame %= pPlayingAnim->Get_MaxFrame();
-			m_PlayAnimDesc.eCurrent.iNextFrame %= pPlayingAnim->Get_MaxFrame();
-		}
-	}
-
-	m_PlayAnimDesc.eCurrent.fRatio = m_PlayAnimDesc.eCurrent.fTime / fTimePerFrame;
-
-
-	if (m_PlayAnimDesc.eNext.iAnimIndex >= 0) {
-		m_PlayAnimDesc.SwitchTime += fTimeDelta;
-		m_PlayAnimDesc.SwitchRatio = m_PlayAnimDesc.SwitchTime / m_PlayAnimDesc.SwitchDuration;
-
-		if (m_PlayAnimDesc.SwitchRatio >= 1.f) {
-			m_PlayAnimDesc.eCurrent = m_PlayAnimDesc.eNext;
-			m_iCurrentAnimIndex = m_PlayAnimDesc.eNext.iAnimIndex;
-			m_PlayAnimDesc.ResetNextAnim();
-
-		}
-		else {
-			CAnimation* pNextAnim = m_Animations[m_PlayAnimDesc.eNext.iAnimIndex];
-
-			m_PlayAnimDesc.eNext.fTime += fTimeDelta;
-
-			_float fTimePerFrame = 1.f / pNextAnim->Get_TickPerSec();
-
-			if (m_PlayAnimDesc.eNext.fRatio >= 1.f) {
-				m_PlayAnimDesc.eNext.fTime = 0.f;
-
-				m_PlayAnimDesc.eNext.iCurrFrame = (m_PlayAnimDesc.eNext.iCurrFrame + 1) % pNextAnim->Get_MaxFrame();
-				m_PlayAnimDesc.eNext.iNextFrame = (m_PlayAnimDesc.eNext.iCurrFrame + 1) % pNextAnim->Get_MaxFrame();
-			}
-
-			m_PlayAnimDesc.eNext.fRatio = m_PlayAnimDesc.eNext.fTime / fTimePerFrame;
-
-		}
-	}
-
-	if (m_iNextAnimIndex >= 0) {
-		m_PlayAnimDesc.ResetNextAnim();
-		m_PlayAnimDesc.eNext.iAnimIndex = m_iNextAnimIndex;
-
-		m_iNextAnimIndex = -1;
-	}
-
 
 	return S_OK;
 }
 
-HRESULT CVTFModel::Set_NextAnimation(_uint iAnimIndex, _bool isLoop)
+HRESULT CRealtimeVTFModel::Set_NextAnimation(_uint iAnimIndex, _bool isLoop)
 {
 	m_iNextAnimIndex = iAnimIndex;
 	m_isLoop = isLoop;
@@ -229,7 +165,7 @@ HRESULT CVTFModel::Set_NextAnimation(_uint iAnimIndex, _bool isLoop)
 	return S_OK;
 }
 
-HRESULT CVTFModel::Bind_Material(CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType)
+HRESULT CRealtimeVTFModel::Bind_Material(CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType)
 {
 	_uint iMatIndex = m_Meshes[iMeshIndex]->Get_MatIndex();
 
@@ -247,25 +183,22 @@ HRESULT CVTFModel::Bind_Material(CShader* pShader, const _char* pVariableName, _
 	return pMaterial->Bind_ShaderResource(pShader, pVariableName);
 }
 
-HRESULT CVTFModel::Bind_Animation(CShader* pShader)
+HRESULT CRealtimeVTFModel::Bind_Bone(CShader* pShader)
 {
-	if (FAILED(pShader->Bind_RawValue("g_PlayAnimDesc", &m_PlayAnimDesc, sizeof(PLAYANIM_DESC))))
-		return E_FAIL;
-
 	if (FAILED(pShader->Bind_ShaderResourceView("g_BoneTexture", m_pSRV)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-HRESULT CVTFModel::Render(_uint iMeshIndex)
+HRESULT CRealtimeVTFModel::Render(_uint iMeshIndex)
 {
 	if (FAILED(m_Meshes[iMeshIndex]->Render()))
 		return E_FAIL;
 	return S_OK;
 }
 
-HRESULT CVTFModel::Read_Bones(ifstream& File)
+HRESULT CRealtimeVTFModel::Read_Bones(ifstream& File)
 {
 	_uint iNumBones{};
 	File.read(reinterpret_cast<_char*>(&iNumBones), sizeof _uint);
@@ -284,7 +217,7 @@ HRESULT CVTFModel::Read_Bones(ifstream& File)
 	return S_OK;
 }
 
-HRESULT CVTFModel::Read_Meshes(ifstream& File, const ModelType& eType, _fmatrix PivotMatrix)
+HRESULT CRealtimeVTFModel::Read_Meshes(ifstream& File, const ModelType& eType, _fmatrix PivotMatrix)
 {
 	File.read(reinterpret_cast<_char*>(&m_iNumMeshes), sizeof _uint);
 	m_Meshes.reserve(m_iNumMeshes);
@@ -303,7 +236,7 @@ HRESULT CVTFModel::Read_Meshes(ifstream& File, const ModelType& eType, _fmatrix 
 	return S_OK;
 }
 
-HRESULT CVTFModel::Read_Animations(ifstream& File)
+HRESULT CRealtimeVTFModel::Read_Animations(ifstream& File)
 {
 	File.read(reinterpret_cast<_char*>(&m_iNumAnimations), sizeof _uint);
 
@@ -321,7 +254,7 @@ HRESULT CVTFModel::Read_Animations(ifstream& File)
 	return S_OK;
 }
 
-HRESULT CVTFModel::Read_Materials(ifstream& File, const string& strFilePath)
+HRESULT CRealtimeVTFModel::Read_Materials(ifstream& File, const string& strFilePath)
 {
 	_char szMatFilePath[MAX_PATH]{};
 	_char szFullPath[MAX_PATH]{};
@@ -372,21 +305,16 @@ HRESULT CVTFModel::Read_Materials(ifstream& File, const string& strFilePath)
 	return S_OK;
 }
 
-HRESULT CVTFModel::CreateVTF(_uint MaxFrame)
+HRESULT CRealtimeVTFModel::CreateVTF(_uint MaxFrame)
 {
 	vector<ANIMTRANS_ARRAY> AnimTransforms;
 	AnimTransforms.resize(m_iNumAnimations);
 
-	for (size_t i = 0; i < m_iNumAnimations; i++)
-	{
-		if (FAILED(CreateAnimationTransform(i, AnimTransforms)))
-			return E_FAIL;
-	}
 
 	D3D11_TEXTURE2D_DESC Desc = {};
 	Desc.Width = m_Bones.size() * 4;
-	Desc.Height = MaxFrame;
-	Desc.ArraySize = m_iNumAnimations;
+	Desc.Height = 1;
+	Desc.ArraySize = 1;
 	Desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	Desc.Usage = D3D11_USAGE_IMMUTABLE;
 	Desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
@@ -437,7 +365,7 @@ HRESULT CVTFModel::CreateVTF(_uint MaxFrame)
 	return S_OK;
 }
 
-HRESULT CVTFModel::CreateAnimationTransform(_uint iIndex, vector<ANIMTRANS_ARRAY>& AnimTransforms)
+HRESULT CRealtimeVTFModel::CreateAnimationTransform(_uint iIndex, vector<ANIMTRANS_ARRAY>& AnimTransforms)
 {
 	CAnimation* pAnimation = m_Animations[iIndex];
 
@@ -458,31 +386,31 @@ HRESULT CVTFModel::CreateAnimationTransform(_uint iIndex, vector<ANIMTRANS_ARRAY
 	return S_OK;
 }
 
-CVTFModel* CVTFModel::Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix)
+CRealtimeVTFModel* CRealtimeVTFModel::Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix)
 {
-	CVTFModel* pInstance = new CVTFModel(pDevice, pContext);
+	CRealtimeVTFModel* pInstance = new CRealtimeVTFModel(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype(strFilePath, isCOLMesh, PivotMatrix)))
 	{
-		MSG_BOX("Failed to Create : CVTFModel");
+		MSG_BOX("Failed to Create : CRealtimeVTFModel");
 	}
 
 	return pInstance;
 }
 
-CComponent* CVTFModel::Clone(void* pArg)
+CComponent* CRealtimeVTFModel::Clone(void* pArg)
 {
-	CVTFModel* pInstance = new CVTFModel(*this);
+	CRealtimeVTFModel* pInstance = new CRealtimeVTFModel(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CVTFModel");
+		MSG_BOX("Failed to Clone : CRealtimeVTFModel");
 	}
 
 	return pInstance;
 }
 
-void CVTFModel::Free()
+void CRealtimeVTFModel::Free()
 {
 	__super::Free();
 

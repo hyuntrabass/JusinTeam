@@ -272,7 +272,6 @@ HRESULT CAnimation::Prepare_Animation(const vector<class CBone*>& Bones, _uint i
 {
 	for (auto& pChannel : m_Channels)
 		pChannel->Prepare_Transformation(Bones, iFrame);
-
 	return S_OK;
 }
 

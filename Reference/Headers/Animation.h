@@ -34,6 +34,9 @@ public:
 
 	HRESULT Prepare_Animation(const vector<class CBone*>& Bones, _uint iFrame);
 
+	const _float Get_TickPerSec() const {
+		return m_fTickPerSec;
+	}
 
 private:
 	_char m_szName[MAX_PATH]{};

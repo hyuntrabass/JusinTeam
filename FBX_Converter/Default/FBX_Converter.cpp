@@ -36,7 +36,7 @@ std::ofstream LogFile("../log.txt", std::ios::trunc);
 
 void Log(const aiString& Text);
 void Log(const char* Text);
-void Write_AnimMeshes(std::ofstream& OutputFile, const aiScene* pAIScene, const std::vector<aiString>& BoneNames);
+void Write_AnimMeshes(std::ofstream& OutputFile, const aiScene* pAIScene, const std::vector<aiString>& BoneNames, int VTFMode);
 void Write_StatMeshes(std::ofstream& OutputFile, const aiScene* pAIScene);
 void Write_Materials(std::ofstream& OutputFile, const aiScene* pAIScene);
 
@@ -50,6 +50,8 @@ int main()
 	std::string InputFilePath{};
 
 	int iConvertMode{};
+
+	int iForVTFMode{};
 
 	Log("1. Static Only   2. Anim Only   3. All");
 	std::cin >> iConvertMode;
@@ -105,6 +107,11 @@ int main()
 	if (iConvertMode != 1)
 	{
 		Log("Animation Models : Start Converting...");
+
+		Log("1. Normally Anim Model	2. For VTF Model");
+		std::cin >> iForVTFMode;
+		LogFile << iForVTFMode << std::endl;
+
 
 	#pragma region Animation Meshes
 		InputFilePath = "../AnimMesh/";
@@ -190,7 +197,7 @@ int main()
 					}
 				#pragma endregion
 
-					Write_AnimMeshes(OutputFile, pAIScene, BoneNames);
+					Write_AnimMeshes(OutputFile, pAIScene, BoneNames, iForVTFMode);
 					Write_Materials(OutputFile, pAIScene);
 
 				#pragma region Animations
@@ -316,7 +323,7 @@ void Log(const char* Text)
 	LogFile << Text << std::endl;
 }
 
-void Write_AnimMeshes(std::ofstream& OutputFile, const aiScene* pAIScene, const std::vector<aiString>& BoneNames)
+void Write_AnimMeshes(std::ofstream& OutputFile, const aiScene* pAIScene, const std::vector<aiString>& BoneNames, int VTFMode)
 {
 	OutputFile.write(reinterpret_cast<const char*>(&pAIScene->mNumMeshes), sizeof(unsigned int));
 
@@ -345,26 +352,48 @@ void Write_AnimMeshes(std::ofstream& OutputFile, const aiScene* pAIScene, const 
 		{
 			aiBone* pBone = pMesh->mBones[j];
 
+
+			unsigned int BoneIndices = j;
+			if (2 == VTFMode) {
+				// For VTF Model
+				unsigned int iBoneIndex{};
+				auto iter = std::find_if(BoneNames.begin(), BoneNames.end(), [&pBone, &iBoneIndex](aiString strBoneName)
+					{
+						if (pBone->mName == strBoneName)
+						{
+							return true;
+						}
+						iBoneIndex++;
+						return false;
+					});
+				if (iter == BoneNames.end())
+				{
+					std::cout << "Failed to Find matching name" << std::endl;
+				}
+				//
+				BoneIndices = iBoneIndex;
+			}
+
 			for (unsigned int k = 0; k < pBone->mNumWeights; k++)
 			{
 				if (vBlendWeights[pBone->mWeights[k].mVertexId].x == 0.f)
 				{
-					vBlendIndices[pBone->mWeights[k].mVertexId].x = j;
+					vBlendIndices[pBone->mWeights[k].mVertexId].x = BoneIndices;
 					vBlendWeights[pBone->mWeights[k].mVertexId].x = pBone->mWeights[k].mWeight;
 				}
 				else if (vBlendWeights[pBone->mWeights[k].mVertexId].y == 0.f)
 				{
-					vBlendIndices[pBone->mWeights[k].mVertexId].y = j;
+					vBlendIndices[pBone->mWeights[k].mVertexId].y = BoneIndices;
 					vBlendWeights[pBone->mWeights[k].mVertexId].y = pBone->mWeights[k].mWeight;
 				}
 				else if (vBlendWeights[pBone->mWeights[k].mVertexId].z == 0.f)
 				{
-					vBlendIndices[pBone->mWeights[k].mVertexId].z = j;
+					vBlendIndices[pBone->mWeights[k].mVertexId].z = BoneIndices;
 					vBlendWeights[pBone->mWeights[k].mVertexId].z = pBone->mWeights[k].mWeight;
 				}
 				else if (vBlendWeights[pBone->mWeights[k].mVertexId].w == 0.f)
 				{
-					vBlendIndices[pBone->mWeights[k].mVertexId].w = j;
+					vBlendIndices[pBone->mWeights[k].mVertexId].w = BoneIndices;
 					vBlendWeights[pBone->mWeights[k].mVertexId].w = pBone->mWeights[k].mWeight;
 				}
 			}

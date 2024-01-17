@@ -32,3 +32,6 @@
 #include "Goat.h"
 #include "Nastron03.h"
 #include "Thief04.h"
+
+// Test Model
+#include "TestVTFModel.h"

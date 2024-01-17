@@ -572,6 +572,7 @@ HRESULT CLoader::Load_Custom()
 
 	m_strLoadingText = L"Custom : Loading Shader";
 #pragma region Shader
+
 #pragma endregion
 
 	m_strLoadingText = L"Custom : Loading Prototype";
@@ -696,6 +697,15 @@ HRESULT CLoader::Load_GamePlay()
 
 	m_strLoadingText = L"Logo : Loading Shader";
 #pragma region Shader
+
+
+	// VTF Test Shader
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_VTF"), 
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VTFModel.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
+	{
+		return E_FAIL;
+	}
+
 #pragma endregion
 
 	m_strLoadingText = L"Logo : Loading Prototype";
@@ -759,6 +769,18 @@ HRESULT CLoader::Load_GamePlay()
 
 	// Terrain -> 테스트용도
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Terrain"), CTerrain::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_VTFRabbit"),
+		CVTFModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/VTFRabbit/Mesh/Rabbit.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	// VTF 테스트 용도
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_TestVTF"), CTestVTFModel::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

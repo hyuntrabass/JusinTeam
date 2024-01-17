@@ -179,12 +179,6 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 
 		ModelFile.close();
 
-		if (eType == ModelType::Anim) {
-
-			for (auto& pMesh : m_Meshes) {
-				pMesh->Set_Bone_Offset(m_Bones);
-			}
-		}
 
 		if (eType == ModelType::Anim)
 		{
@@ -207,6 +201,7 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 					TriggerFile.read(reinterpret_cast<char*>(&fTrigger), sizeof _float);
 					m_Animations[iAnimIndex]->Add_Trigger(fTrigger);
 				}
+				TriggerFile.close();
 			}
 		}
 	}

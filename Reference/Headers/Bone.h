@@ -29,7 +29,6 @@ private:
 
 	_int m_iParentIndex{};
 
-
 public:
 	void Update_CombinedMatrix(const vector<CBone*>& Bones);
 
