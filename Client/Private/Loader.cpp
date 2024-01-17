@@ -181,121 +181,6 @@ HRESULT CLoader::Load_Logo()
 
 	m_strLoadingText = L"Logo : Loading Model";
 #pragma region Model
-	_uint iIndex{};
-	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/face/";
-	_mat PivotMat = _mat::CreateScale(0.1f) * _mat::CreateRotationX(XMConvertToRadians(-90.f)) * _mat::CreateRotationY(XMConvertToRadians(180.f));
-	_mat _PivotMat = _mat::CreateScale(0.1f) * _mat::CreateRotationY(XMConvertToRadians(180.f));
-
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
-	{
-		if (entry.is_regular_file())
-		{
-			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_FACE) + L"" + to_wstring(iIndex++);
-			string strFilePath = entry.path().filename().string();
-			if (iIndex == 8)
-			{
-				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, _PivotMat))))
-				{
-					return E_FAIL;
-				}
-			}
-			else
-			{
-
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, PivotMat))))
-			{
-				return E_FAIL;
-			}
-			}
-		}
-	}
-
-	iIndex = 0;
-	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/hair/";
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
-	{
-		if (entry.is_regular_file())
-		{
-			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_HAIR) + L"" + to_wstring(iIndex++);
-			string strFilePath = entry.path().filename().string();
-
-			if (iIndex == 10)
-			{
-				
-				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, _PivotMat))))
-				{
-					return E_FAIL;
-				}
-			}
-			else
-			{
-
-				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, PivotMat))))
-				{
-					return E_FAIL;
-				}
-			}
-		}
-	}
-	iIndex = 0;
-	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/body/";
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
-	{
-		if (entry.is_regular_file())
-		{
-			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_BODY) + L"" + to_wstring(iIndex++);
-			string strFilePath = entry.path().filename().string();
-
-			if (iIndex >1)
-			{
-			
-				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, _PivotMat))))
-				{
-					return E_FAIL;
-				}
-			}
-			else
-			{
-
-				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, PivotMat))))
-				{
-					return E_FAIL;
-				}
-			}
-	
-		}
-	}
-	iIndex = 0;
-	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/weapon/";
-	
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
-	{
-		if (entry.is_regular_file())
-		{
-			wstring strPrototypeTag = TEXT("Prototype_Model_Weapon") + to_wstring(iIndex++);
-			string strFilePath = entry.path().filename().string();
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, _PivotMat))))
-			{
-				return E_FAIL;
-			}
-		}
-	}
-
-	strInputFilePath = "../Bin/Resources/StaticMesh/Effect/Mesh/";
-	_uint iMeshNumber{};
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
-	{
-		if (entry.is_regular_file())
-		{
-			wstring strPrototypeTag = TEXT("Prototype_Model_Effect_") + to_wstring(iMeshNumber++);
-
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
-			{
-				return E_FAIL;
-			}
-		}
-	}
-
 #pragma endregion
 
 	m_strLoadingText = L"Logo : Loading Shader";
@@ -441,7 +326,123 @@ HRESULT CLoader::Load_Select()
 
 	m_strLoadingText = L"Select : Loading Model";
 #pragma region Model
-	_mat PivotMat;
+	string strInputFilePath{};
+
+	_uint iIndex{};
+	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/face/";
+	_mat PivotMat = _mat::CreateScale(0.1f) * _mat::CreateRotationX(XMConvertToRadians(-90.f)) * _mat::CreateRotationY(XMConvertToRadians(180.f));
+	_mat _PivotMat = _mat::CreateScale(0.1f) * _mat::CreateRotationY(XMConvertToRadians(180.f));
+
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_FACE) + L"" + to_wstring(iIndex++);
+			string strFilePath = entry.path().filename().string();
+			if (iIndex == 8)
+			{
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, _PivotMat))))
+				{
+					return E_FAIL;
+				}
+			}
+			else
+			{
+
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, PivotMat))))
+				{
+					return E_FAIL;
+				}
+			}
+		}
+	}
+
+	iIndex = 0;
+	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/hair/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_HAIR) + L"" + to_wstring(iIndex++);
+			string strFilePath = entry.path().filename().string();
+
+			if (iIndex == 10)
+			{
+
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, _PivotMat))))
+				{
+					return E_FAIL;
+				}
+			}
+			else
+			{
+
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, PivotMat))))
+				{
+					return E_FAIL;
+				}
+			}
+		}
+	}
+	iIndex = 0;
+	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/body/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_BODY) + L"" + to_wstring(iIndex++);
+			string strFilePath = entry.path().filename().string();
+
+			if (iIndex > 1)
+			{
+
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, _PivotMat))))
+				{
+					return E_FAIL;
+				}
+			}
+			else
+			{
+
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, PivotMat))))
+				{
+					return E_FAIL;
+				}
+			}
+
+		}
+	}
+	iIndex = 0;
+	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/weapon/";
+
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_Weapon") + to_wstring(iIndex++);
+			string strFilePath = entry.path().filename().string();
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, _PivotMat))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+	strInputFilePath = "../Bin/Resources/StaticMesh/Effect/Mesh/";
+	_uint iMeshNumber{};
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_Effect_") + to_wstring(iMeshNumber++);
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
 	PivotMat = _mat::CreateScale(0.006f) * _mat::CreateRotationX(XMConvertToRadians(90.f));
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Model_Select_Map"),
@@ -456,9 +457,8 @@ HRESULT CLoader::Load_Select()
 		return E_FAIL;
 	}*/
 
-	string strInputFilePath{};
 	strInputFilePath = "../Bin/Resources/AnimMesh/Select_Model/Mesh/";
-	int iIndex{};
+	iIndex = {};
 	PivotMat = _mat::CreateScale(0.01f) * _mat::CreateRotationY(XMConvertToRadians(90.f));
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Model_Select0"), CModel::Create(m_pDevice, m_pContext, strInputFilePath + "Select_Priest.hyuntraanimmesh", false, PivotMat))))
 	{

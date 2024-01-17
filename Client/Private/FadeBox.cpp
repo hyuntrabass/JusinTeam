@@ -41,7 +41,7 @@ void CFadeBox::Tick(_float fTimeDelta)
 	m_fAlpha += fTimeDelta * m_fDir * 5.f;
 
 	if (m_fAlpha >= 1.f)
-		m_fDir *= -1.f;
+		m_fDir = -1.f;
 
 	if (m_fAlpha < 0.f)
 		m_isDead = true;
