@@ -43,7 +43,10 @@ void CPlayer::Tick(_float fTimeDelta)
 		Change_Parts(eType, CUI_Manager::Get_Instance()->Get_CustomPart(eType));
 	}
 
-	Set_Key(fTimeDelta);
+	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CUSTOM)
+	{
+		Set_Key(fTimeDelta);
+	}
 
 	_float fMouseSensor = 0.1f;
 	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_CUSTOM)
