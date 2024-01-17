@@ -42,6 +42,7 @@ public:
 	void Set_FootPosition(PxVec3 vPosition);
 	void Set_UpDirection(_vec4 vUp);
 	void Set_State(State eState, _vec4 vState);
+	void Set_Matrix(_mat Matrix);
 	void Set_Scale(_vec3 fScale);
 	void Set_Speed(_float fSpeed);
 	void Set_RotationPerSec(_float fAngle);

@@ -34,9 +34,9 @@ private:
 	vector<CModel*> m_Models{ nullptr };
 
 private:
-	CPlayer::WEAPON_TYPE m_eType{};
+	WEAPON_TYPE m_eType{};
 	_uint m_iNumVariations{};
-	_uint m_iSelectedModelIndex{0};
+	_uint m_iSelectedModelIndex{1};
 	ANIM_DESC* m_Animation{};
 
 private:
