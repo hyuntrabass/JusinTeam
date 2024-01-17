@@ -32,6 +32,11 @@ private:
 
 	// NPC
 	HRESULT Ready_Cat();
+	HRESULT Ready_Dog();
+	HRESULT Ready_NPC_Dummy();
+
+	// Boss
+	HRESULT Ready_Groar_Boss();
 
 	HRESULT Ready_Monster();
 

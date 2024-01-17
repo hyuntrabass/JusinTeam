@@ -196,6 +196,15 @@
     <Filter Include="02.GameObjects\07. NPC\Animal\01. Dog">
       <UniqueIdentifier>{fab2bdab-a60d-4964-af03-a20ce2c83454}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\07. NPC\NPC_Dummy">
+      <UniqueIdentifier>{4e366141-c410-4081-bc3c-4c5bf0976ef7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss">
+      <UniqueIdentifier>{c61f29d7-c959-47df-8a82-3a02726afaf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss">
+      <UniqueIdentifier>{a36f29cf-4d64-4404-b599-15a6ac076134}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -312,9 +321,6 @@
     <ClInclude Include="..\Public\Lake.h">
       <Filter>02.GameObjects\02.Terrain\Lake</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\NPCvsMon.h">
-      <Filter>02.GameObjects\04.Monster\Tutorial\00. NPCvsMon</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Void05.h">
       <Filter>02.GameObjects\04.Monster\Tutorial\ModelTest</Filter>
     </ClInclude>
@@ -355,7 +361,7 @@
     <ClInclude Include="..\Public\HpBar.h">
       <Filter>02.GameObjects\00.UI\GameUI\HP</Filter>
     </ClInclude>
-      <ClInclude Include="..\Public\Weapon.h">
+    <ClInclude Include="..\Public\Weapon.h">
       <Filter>02.GameObjects\03.Player\Weapon</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\TrilobiteA.h">
@@ -366,6 +372,18 @@
     </ClInclude>
     <ClInclude Include="..\Public\Cat.h">
       <Filter>02.GameObjects\07. NPC\Animal\00. Cat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NPCvsMon.h">
+      <Filter>02.GameObjects\04.Monster\Tutorial\00. NPCvsMon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Dog.h">
+      <Filter>02.GameObjects\07. NPC\Animal\01. Dog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NPC_Dummy.h">
+      <Filter>02.GameObjects\07. NPC\NPC_Dummy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Groar_Boss.h">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -534,6 +552,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Cat.cpp">
       <Filter>02.GameObjects\07. NPC\Animal\00. Cat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Dog.cpp">
+      <Filter>02.GameObjects\07. NPC\Animal\01. Dog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NPC_Dummy.cpp">
+      <Filter>02.GameObjects\07. NPC\NPC_Dummy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Groar_Boss.cpp">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
