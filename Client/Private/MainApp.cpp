@@ -5,6 +5,8 @@
 #include "Loading_Horse.h"
 #include "Mouse.h"
 #include "Camera_Main.h"
+#include "Effect_Manager.h"
+#include "UI_Manager.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -20,7 +22,7 @@ HRESULT CMainApp::Init()
 	}
 
 	srand(static_cast<_uint>(time(nullptr)));
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 #ifdef UNICODE
 #pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
 #else
@@ -168,6 +170,11 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Instancing_Point"), CVIBuffer_Instancing_Point::Create(m_pDevice, m_pContext, 100))))
+
+	{
+		return E_FAIL;
+	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex"), CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Vtxtex.hlsl"), VTXPOSTEX::Elements, VTXPOSTEX::iNumElements))))
 	{
@@ -304,6 +311,9 @@ CMainApp* CMainApp::Create()
 
 void CMainApp::Free()
 {
+	CUI_Manager::Destroy_Instance();
+	CEffect_Manager::Destroy_Instance();
+
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);

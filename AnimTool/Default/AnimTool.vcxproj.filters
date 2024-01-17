@@ -34,9 +34,6 @@
     <Filter Include="02.GameObjects\00.Camera\Main">
       <UniqueIdentifier>{bb3a1252-3870-4dfe-9514-5bd852312a39}</UniqueIdentifier>
     </Filter>
-    <Filter Include="97.Shaders">
-      <UniqueIdentifier>{dbd3a293-94ba-479c-b1a0-7650f1273b65}</UniqueIdentifier>
-    </Filter>
     <Filter Include="96.ImGui">
       <UniqueIdentifier>{d9169ca5-2b4a-45bf-9419-ad23072ea40c}</UniqueIdentifier>
     </Filter>
@@ -45,6 +42,12 @@
     </Filter>
     <Filter Include="02.GameObjects\01. Player">
       <UniqueIdentifier>{cb9b4463-64e3-4f6f-9313-c939d891ea46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\02.Effect">
+      <UniqueIdentifier>{dac8143a-b8be-4d8c-aae4-71b1be424019}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\02.Effect\Manager">
+      <UniqueIdentifier>{303de56d-8963-466e-aa1a-851427987d60}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -111,6 +114,15 @@
     <ClInclude Include="..\Public\Player.h">
       <Filter>02.GameObjects\01. Player</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Effect_Dummy.h">
+      <Filter>02.GameObjects\02.Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Manager.h">
+      <Filter>02.GameObjects\02.Effect\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\LoaderIncludes.h">
+      <Filter>01.Levels\99.Loading\Loader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="small.ico">
@@ -171,6 +183,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Player.cpp">
       <Filter>02.GameObjects\01. Player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Dummy.cpp">
+      <Filter>02.GameObjects\02.Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Manager.cpp">
+      <Filter>02.GameObjects\02.Effect\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

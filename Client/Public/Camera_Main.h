@@ -30,6 +30,10 @@ private:
 	_bool  m_bInitMode[CAMERA_MODE::CM_END];
 
 private:
+	void Select_Mode(_float fTimeDelta);
+	void Custom_Mode(_float fTimeDelta);
+
+private:
 	_float m_fSceneTimer{};
 	_uint m_iSceneIndex{};
 	CUTSCENE* m_pScene{ nullptr };

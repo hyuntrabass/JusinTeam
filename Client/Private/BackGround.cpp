@@ -23,11 +23,6 @@ HRESULT CBackGround::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pLogo = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Logo"));
-	if (not m_pLogo)
-	{
-		return E_FAIL;
-	}
 
 	m_fSizeX = g_iWinSizeX;
 	m_fSizeY = g_iWinSizeY;
@@ -53,7 +48,6 @@ void CBackGround::Tick(_float fTimeDelta)
 void CBackGround::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
-	m_pLogo->Late_Tick(fTimeDelta);
 }
 
 HRESULT CBackGround::Render()
@@ -155,7 +149,6 @@ void CBackGround::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pLogo);
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

@@ -20,6 +20,10 @@ public:
 private:
 	_float m_fMouseSensor{ 0.08f };
 	_float m_fTargetDistance{ 4.f };
+	_bool m_bTimeStop{};
+	_float m_fOriginTimeRatio{};
+	_float m_fSpeed{ 1.f };
+	_bool m_isMoveMode{};
 
 public:
 	static CCamera_Main* Create(_dev pDevice, _context pContext);

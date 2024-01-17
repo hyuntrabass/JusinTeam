@@ -31,6 +31,7 @@ private:
 	_float m_fTimeAcc{};
 	_uint m_iFrameCount{};
 	vector<string> m_TextureList{};
+	vector<string> m_ModelList{};
 
 private:
 	HANDLE m_hThread{};

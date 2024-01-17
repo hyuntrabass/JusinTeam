@@ -25,6 +25,10 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+public:
+	virtual _vec4 Compute_PlayerPos();
+	virtual _float Compute_PlayerDistance();
+
 protected:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };

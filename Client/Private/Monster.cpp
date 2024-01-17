@@ -82,6 +82,26 @@ HRESULT CMonster::Render()
     return S_OK;
 }
 
+_vec4 CMonster::Compute_PlayerPos()
+{
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Void05", LEVEL_GAMEPLAY);
+	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+
+	return vPlayerPos;
+}
+
+_float CMonster::Compute_PlayerDistance()
+{
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Void05", LEVEL_GAMEPLAY);
+	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+
+	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+
+	_float fDistance = (vPlayerPos - vPos).Length();
+
+	return fDistance;
+}
+
 HRESULT CMonster::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))

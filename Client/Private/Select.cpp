@@ -70,38 +70,41 @@ void CSelect::Tick(_float fTimeDelta)
 
 	if (m_bShow && PtInRect(&m_pBackButton->Get_Rect(), ptMouse))
 	{
-		m_pBackButton->Set_Size(140.f, 22.f);
+		m_pBackButton->Set_Size(140.f, 22.f, 0.3f);
 	}
 	else
 	{
-		m_pBackButton->Set_Size(150.f, 30.f);
+		m_pBackButton->Set_Size(150.f, 30.f, 0.35f);
 	}
 	if (m_bShow && PtInRect(&m_pSelectButton->Get_Rect(), ptMouse))
 	{
-		m_pSelectButton->Set_Size(140.f, 22.f);
+		m_pSelectButton->Set_Size(140.f, 22.f, 0.3f);
 	}
 	else
 	{
-		m_pSelectButton->Set_Size(150.f, 30.f);
+		m_pSelectButton->Set_Size(150.f, 30.f, 0.35f);
 	}
 
-	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI) && m_bShow && PtInRect(&m_pSelectButton->Get_Rect(), ptMouse))
+	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI) && m_bShow)
 	{
-		m_pGameInstance->Set_CameraState(CM_DEFAULT);
-		m_pGameInstance->Level_ShutDown(LEVEL_SELECT);
-	}
-
-	if (m_pGameInstance->Mouse_Down(DIM_RBUTTON, InputChannel::UI) && m_bShow && PtInRect(&m_pBackButton->Get_Rect(), ptMouse))
-	{
-		if (m_pSelectDesc)
+		if (PtInRect(&m_pSelectButton->Get_Rect(), ptMouse))
 		{
-			m_pSelectModels[m_eCurModel]->Change_AnimState(CSelect_Model::S_CANCEL);
 			m_pGameInstance->Set_CameraState(CM_DEFAULT);
-			m_pBackButton->Set_Size(150.f, 30.f);
-			Safe_Release(m_pSelectDesc);
-			m_bShow = false;
-			m_pCharacterSelect->Set_Active_Alpha(CCharacterSelect::NONALPHA);
+			m_pGameInstance->Level_ShutDown(LEVEL_SELECT);
 		}
+		if (PtInRect(&m_pBackButton->Get_Rect(), ptMouse))
+		{
+			if (m_pSelectDesc)
+			{
+				m_pSelectModels[m_eCurModel]->Change_AnimState(CSelect_Model::S_CANCEL);
+				m_pGameInstance->Set_CameraState(CM_DEFAULT);
+				m_pBackButton->Set_Size(150.f, 30.f, 0.35f);
+				Safe_Release(m_pSelectDesc);
+				m_bShow = false;
+				m_pCharacterSelect->Set_Active_Alpha(CCharacterSelect::NONALPHA);
+			}
+		}
+
 	}
 
 
@@ -128,6 +131,7 @@ void CSelect::Tick(_float fTimeDelta)
 
 void CSelect::Late_Tick(_float fTimeDelta)
 {
+	m_pTitleButton->Late_Tick(fTimeDelta);
 	m_pCharacterSelect->Late_Tick(fTimeDelta);
 	m_pClassButton->Late_Tick(fTimeDelta);
 	if (m_pSelectDesc != nullptr && m_bShow)
@@ -174,13 +178,23 @@ HRESULT CSelect::Add_Parts()
 	ButtonDesc.fFontSize = 0.4f;
 	ButtonDesc.strText = TEXT("클래스 선택");
 	ButtonDesc.strTexture = TEXT("");
-	ButtonDesc.vPosition = _vec2(50.f, 15.f);
+	ButtonDesc.vPosition = _vec2(65.f, 20.f);
 	ButtonDesc.vSize = _vec2(20.f, 20.f);
 	ButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	ButtonDesc.vTextPosition = _vec2(20.f, 0.f);
 	
 	m_pClassButton = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
 	if (not m_pClassButton)
+	{
+		return E_FAIL;
+	}
+	ButtonDesc.eLevelID = LEVEL_STATIC;
+	ButtonDesc.strText = TEXT("");
+	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Back");
+	ButtonDesc.vPosition = _vec2(20.f, 20.f);
+	ButtonDesc.vSize = _vec2(50.f, 50.f);	
+	m_pTitleButton = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
+	if (not m_pTitleButton)
 	{
 		return E_FAIL;
 	}
@@ -197,7 +211,7 @@ HRESULT CSelect::Add_Parts()
 	ColButtonDesc.vPosition = _vec2(1125.f, 670.f);
 	ColButtonDesc.vSize = _vec2(150.f,30.f);
 	ColButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	ColButtonDesc.vTextPosition = _vec2(0.f, 0.f);
+	ColButtonDesc.vTextPosition = _vec2(0.f, 20.f);
 
 	
 	m_pSelectButton = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
@@ -292,11 +306,14 @@ void CSelect::Set_CameraState(_uint iSelect)
 	m_pGameInstance->Set_CameraState(CM_ZOOM);
 	_vec4 vTargetPos;
 
+	m_pGameInstance->Set_Have_TargetLook(false);
+
 	switch (iSelect)
 	{
 	case 0:
 		m_pGameInstance->Set_ZoomFactor(3.5f);
-		vTargetPos = _vec4(-0.3f, 0.f, 0.1f, 1.f);
+		vTargetPos = _vec4(-0.904127300f, 1.48444211f, -3.65620041f, 1.f);
+		m_pGameInstance->Set_CameraTargetLook(_vec4(-0.658045292f, -0.0125071695f, 0.752852142f, 0.f));
 		break;
 	case 1:
 		m_pGameInstance->Set_ZoomFactor(3.5f);
@@ -307,8 +324,9 @@ void CSelect::Set_CameraState(_uint iSelect)
 		vTargetPos = _vec4(0.1f, 0.f, 0.2f, 1.f);
 		break;
 	case 3:
-		m_pGameInstance->Set_ZoomFactor(4.f);
-		vTargetPos = _vec4(0.17f, 0.f, 0.4f, 1.f);
+		//m_pGameInstance->Set_ZoomFactor(4.f);
+		vTargetPos = _vec4(0.323398888f, 1.49999952f, -3.6651926f, 1.f);
+		m_pGameInstance->Set_CameraTargetLook(_vec4(0.287743211f, -0.0157100987f, 0.957573771f, 0.0f));
 		break;
 	}
 	m_pGameInstance->Set_CameraTargetPos(vTargetPos);
@@ -353,6 +371,7 @@ void CSelect::Free()
 	}
 
 	Safe_Release(m_pSelectDesc);
+	Safe_Release(m_pTitleButton);
 	Safe_Release(m_pBackButton);
 	Safe_Release(m_pClassButton);
 	Safe_Release(m_pSelectButton);

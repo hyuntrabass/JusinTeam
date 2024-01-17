@@ -36,22 +36,30 @@ private:
 
 	_float				m_fAlpha{ 0.f };
 
-	CTextButton*		m_pCustomMenu[C_END];
-
+	_vec2				m_vCurSelect[C_END];
 	_bool				m_isMenuClick[C_END];
-	_vec2				m_HairPos[9];
-	_vec2				m_FacePos[6];
+	CTextButton*		m_pCustomMenu[C_END];
+	
+	pair<_vec2, _uint>  m_Hair[9]; //pos와 인덱스 저장
+	pair<_vec2, _uint>  m_Face[6];
+
+	CTextButtonColor*	m_pLine1{ nullptr };
+	CTextButtonColor*	m_pLine2{ nullptr };
 
 	CTextButton*		m_pFaceGroup{ nullptr };
 	CTextButton*		m_pHairGroup{ nullptr };
 	CTextButton*		m_pSelectCustomEffect{ nullptr };
 
+	CTextButton*		m_pTitleButton{ nullptr };
 	CTextButton*		m_pClassButton{ nullptr };
+	CTextButton*		m_pSelectMenuEffect{ nullptr };
+	CTextButton*		m_pSelectColorEffect{ nullptr };
 	CTextButtonColor*	m_pSelectButton{ nullptr }; 
-	CTextButton*	m_pSelectMenuEffect{ nullptr };
+	CTextButtonColor*	m_pColorButtons[10];
 
 private:
 	void Set_CameraState(_uint iSelect);
+	_bool Set_PickingRange(POINT& ptMouse);
 
 public:
 	static CCustom* Create(_dev pDevice, _context pContext);

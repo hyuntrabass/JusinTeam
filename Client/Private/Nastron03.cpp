@@ -1,5 +1,8 @@
 #include "Nastron03.h"
 
+const _float CNastron03::g_fChaseRange = 7.f;
+const _float CNastron03::g_fAttackRange = 3.f;
+
 CNastron03::CNastron03(_dev pDevice, _context pContext)
 	: CMonster(pDevice, pContext)
 {
@@ -29,25 +32,26 @@ HRESULT CNastron03::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(5.f, 0.f, 0.f, 1.f));
+	//m_pTransformCom->Set_State(State::Pos, _vec4(5.f, 0.f, 0.f, 1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
 	m_pTransformCom->Set_Speed(3.f);
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
-	m_Animation.bSkipInterpolation = true;
+	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 1.5f;
 
 	m_eCurState = STATE_IDLE;
 
 	m_iHP = 10;
 
-    return S_OK;
+	return S_OK;
 }
 
 void CNastron03::Tick(_float fTimeDelta)
 {
-	Change_State(fTimeDelta);
-	Control_State(fTimeDelta);
+	Init_State(fTimeDelta);
+	Tick_State(fTimeDelta);
 
 	m_pModelCom->Set_Animation(m_Animation);
 
@@ -67,34 +71,24 @@ HRESULT CNastron03::Render()
 {
 	__super::Render();
 
-    return S_OK;
+	return S_OK;
 }
 
-void CNastron03::Change_State(_float fTimeDelta)
+void CNastron03::Init_State(_float fTimeDelta)
 {
 	if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
 	{
 		m_eCurState = STATE_IDLE;
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_J))
+	if (m_pGameInstance->Key_Down(DIK_N, InputChannel::GamePlay))
 	{
-		m_eCurState = STATE_ATTACK;
+		m_eCurState = STATE_DIE;
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_H))
-	{
-		m_eCurState = STATE_HIT;
-	}
-
-	//if (m_pModelCom->IsAnimationFinished(WALK))
+	//if (m_pGameInstance->Key_Down(DIK_H))
 	//{
-	//	m_eCurState = STATE_IDLE;
-	//}
-
-	//if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex) == false && m_Animation.isLoop == false)
-	//{
-	//	return;
+	//	m_eCurState = STATE_HIT;
 	//}
 
 	if (m_ePreState != m_eCurState)
@@ -104,8 +98,9 @@ void CNastron03::Change_State(_float fTimeDelta)
 		case Client::CNastron03::STATE_IDLE:
 			m_Animation.iAnimIndex = IDLE;
 			m_Animation.isLoop = true;
-
+			m_pTransformCom->Set_Speed(3.f);
 			break;
+
 		case Client::CNastron03::STATE_WALK:
 			m_Animation.iAnimIndex = WALK;
 			m_Animation.isLoop = false;
@@ -116,20 +111,24 @@ void CNastron03::Change_State(_float fTimeDelta)
 				_randFloat Random = _randFloat(-1.f, 1.f);
 				m_pTransformCom->LookAt_Dir(_vec4(Random(RandNum), 0.f, Random(RandNum), 0.f));
 			}
-
 			break;
+
+		case Client::CNastron03::STATE_CHASE:
+			m_Animation.iAnimIndex = WALK;
+			m_Animation.isLoop = true;
+			m_pTransformCom->Set_Speed(5.f);
+			break;
+
 		case Client::CNastron03::STATE_ATTACK:
-			m_iAttackPattern = rand() % 3;
-
 			break;
+
 		case Client::CNastron03::STATE_HIT:
 			m_iHitPattern = rand() % 2;
-
 			break;
+
 		case Client::CNastron03::STATE_DIE:
 			m_Animation.iAnimIndex = DIE;
 			m_Animation.isLoop = false;
-
 			break;
 		}
 
@@ -137,8 +136,10 @@ void CNastron03::Change_State(_float fTimeDelta)
 	}
 }
 
-void CNastron03::Control_State(_float fTimeDelta)
+void CNastron03::Tick_State(_float fTimeDelta)
 {
+	Attack(fTimeDelta);
+
 	switch (m_eCurState)
 	{
 	case Client::CNastron03::STATE_IDLE:
@@ -150,30 +151,59 @@ void CNastron03::Control_State(_float fTimeDelta)
 			m_eCurState = STATE_WALK;
 			m_fIdleTime = 0.f;
 		}
-
 		break;
+
 	case Client::CNastron03::STATE_WALK:
 		m_pTransformCom->Go_Straight(fTimeDelta);
 		break;
+
+	case Client::CNastron03::STATE_CHASE:
+	{
+		_vec4 vPlayerPos = __super::Compute_PlayerPos();
+		_float fDistance = __super::Compute_PlayerDistance();
+
+		m_pTransformCom->LookAt(vPlayerPos);
+		m_pTransformCom->Go_Straight(fTimeDelta);
+
+		if (fDistance > g_fChaseRange)
+		{
+			m_eCurState = STATE_IDLE;
+		}
+	}
+		break;
+
 	case Client::CNastron03::STATE_ATTACK:
+
+		if (!m_bSelectAttackPattern)
+		{
+			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
+				m_pModelCom->IsAnimationFinished(ATTACK03))
+			{
+				m_iAttackPattern = rand() % 3;
+				m_bSelectAttackPattern = true;
+			}
+		}
 
 		switch (m_iAttackPattern)
 		{
 		case 0:
 			m_Animation.iAnimIndex = ATTACK01;
 			m_Animation.isLoop = false;
+			m_bSelectAttackPattern = false;
 			break;
 		case 1:
 			m_Animation.iAnimIndex = ATTACK02;
 			m_Animation.isLoop = false;
+			m_bSelectAttackPattern = false;
 			break;
 		case 2:
 			m_Animation.iAnimIndex = ATTACK03;
 			m_Animation.isLoop = false;
+			m_bSelectAttackPattern = false;
 			break;
 		}
-
 		break;
+
 	case Client::CNastron03::STATE_HIT:
 
 		switch (m_iHitPattern)
@@ -187,10 +217,38 @@ void CNastron03::Control_State(_float fTimeDelta)
 			m_Animation.isLoop = false;
 			break;
 		}
-
 		break;
+
 	case Client::CNastron03::STATE_DIE:
 		break;
+	}
+}
+
+void CNastron03::Attack(_float fTimeDelta)
+{
+	_float fDistance = __super::Compute_PlayerDistance();
+
+	if (fDistance <= g_fChaseRange)
+	{
+		if (m_eCurState == STATE_ATTACK)
+		{
+			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
+				m_pModelCom->IsAnimationFinished(ATTACK03))
+			{
+				m_eCurState = STATE_CHASE;
+			}
+		}
+
+		else
+		{
+			m_eCurState = STATE_CHASE;
+		}
+	}
+
+	if (fDistance <= g_fAttackRange)
+	{
+		m_eCurState = STATE_ATTACK;
+		m_Animation.isLoop = true;
 	}
 }
 
@@ -206,7 +264,7 @@ HRESULT CNastron03::Add_Collider()
 		TEXT("Com_Collider_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))
 		return E_FAIL;
 
-    return S_OK;
+	return S_OK;
 }
 
 void CNastron03::Update_Collider()

@@ -55,7 +55,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_DEBUGTEST1;ENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_DEBUGTEST;ENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>../Public/;../Public/PhysX/;../ImGui/</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -192,6 +192,7 @@ call UpdateLib.bat</Command>
     <ClInclude Include="..\public\RenderTarget_Manager.h" />
     <ClInclude Include="..\public\Shader.h" />
     <ClInclude Include="..\public\Mesh.h" />
+    <ClInclude Include="..\Public\SimpleMath.h" />
     <ClInclude Include="..\Public\Sound_Manager.h" />
     <ClInclude Include="..\public\Texture.h" />
     <ClInclude Include="..\public\Timer.h" />

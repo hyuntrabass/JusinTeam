@@ -1,5 +1,5 @@
 #pragma once
-
+#include "SimpleMath.h"
 
 namespace Engine
 {
@@ -47,7 +47,40 @@ namespace Engine
 		SimpleMath::Vector4 vPosition{};
 	};
 
+	struct ParticleDesc
+	{
+		SimpleMath::Vector3 vMinPos{}, vMaxPos;
+		SimpleMath::Vector2 vSpeedRange{};
+		SimpleMath::Vector2 vLifeTime{};
+		SimpleMath::Vector2 vScaleRange{};
+		SimpleMath::Vector3 vMinDir{}, vMaxDir{};
+		bool isLoop{};
+	};
 
+	struct EffectInfo
+	{
+		unsigned int iType{};
+		bool isSprite{};
+		XMINT2 vNumSprites{};
+		float fSpriteDuration{};
+		ParticleDesc PartiDesc{};
+		unsigned int iNumInstances{};
+		float fLifeTime{};
+		int iDiffTextureID{};
+		int iMaskTextureID{};
+		SimpleMath::Vector4 vColor{};
+		unsigned int iPassIndex{};
+		SimpleMath::Vector2 vSize{};
+		SimpleMath::Vector3* pPos{};
+		SimpleMath::Vector3 vPosOffset{};
+		SimpleMath::Vector2 vSizeDelta{};
+		bool bApplyGravity{};
+		SimpleMath::Vector3 vGravityDir{};
+		SimpleMath::Vector3 vPos{};
+		int iDissolveTextureID{};
+		float fDissolveDuration{};
+		unsigned int iModelIndex{};
+	};
 
 	using ANIMTIME_DESC = struct tagAnimTimeDesc {
 		float SwitchDuration = 0.2f;
@@ -55,6 +88,18 @@ namespace Engine
 		float SwitchTime = 0.f;
 		float fPadding = 0.f;
 
+	};
+
+	using TRIGGEREFFECT_DESC = struct tagTriggerEffectDesc {
+		TCHAR szEffectName[MAX_PATH];
+		int iBoneIndex = -1;
+		SimpleMath::Vector3 vPos{};
+	};
+
+	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {
+		TCHAR szSoundName[MAX_PATH];
+		int iChannel;
+		float fVolume;
 	};
 
 	using VTXPOSCOLOR = struct ENGINE_DLL tagVertex_Position_Color
@@ -122,15 +167,15 @@ namespace Engine
 
 	using VTXINSTANCING = struct tagVertex_Instancing
 	{
-		XMFLOAT4 vRight{};
-		XMFLOAT4 vUp{};
-		XMFLOAT4 vLook{};
-		XMFLOAT4 vPos{};
+		SimpleMath::Vector4 vRight{};
+		SimpleMath::Vector4 vUp{};
+		SimpleMath::Vector4 vLook{};
+		SimpleMath::Vector4 vPos{};
 
 		float fSpeed{};
-		XMFLOAT2 vLifeTime{};
-		XMFLOAT4 vOriginPos{};
-		XMFLOAT4 vDirection{};
+		SimpleMath::Vector2 vLifeTime{};
+		SimpleMath::Vector4 vOriginPos{};
+		SimpleMath::Vector4 vDirection{};
 	};
 
 	using VTXPOINT = struct ENGINE_DLL tagVertex_Point

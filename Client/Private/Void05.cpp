@@ -30,6 +30,8 @@ HRESULT CVoid05::Init(void* pArg)
     m_Animation.isLoop = true;
     m_Animation.bSkipInterpolation = true;
 
+    m_pTransformCom->Set_Speed(5.f);
+
     return S_OK;
 }
 
@@ -51,7 +53,24 @@ void CVoid05::Tick(_float fTimeDelta)
         }
     }
 
-
+    // юс╫ц
+    if (m_pGameInstance->Key_Pressing(DIK_UP))
+    {
+        m_pTransformCom->Go_Straight(fTimeDelta);
+    }
+	if (m_pGameInstance->Key_Pressing(DIK_DOWN))
+	{
+		m_pTransformCom->Go_Backward(fTimeDelta);
+	}
+	if (m_pGameInstance->Key_Pressing(DIK_LEFT))
+	{
+		m_pTransformCom->Go_Left(fTimeDelta);
+	}
+	if (m_pGameInstance->Key_Pressing(DIK_RIGHT))
+	{
+		m_pTransformCom->Go_Right(fTimeDelta);
+	}
+    //
 
     m_pModelCom->Set_Animation(m_Animation);
 }

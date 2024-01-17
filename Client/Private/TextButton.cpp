@@ -63,26 +63,31 @@ void CTextButton::Tick(_float fTimeDelta)
 
 void CTextButton::Late_Tick(_float fTimeDelta)
 {
+	wstring strTexture = m_strTexture;
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 
 }
 
 HRESULT CTextButton::Render()
 {
-	if (FAILED(Bind_ShaderResources()))
+	if (m_strTexture != TEXT(""))
 	{
-		return E_FAIL;
-	}
+		if (FAILED(Bind_ShaderResources()))
+		{
+			return E_FAIL;
+		}
 
-	if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
-	{
-		return E_FAIL;
-	}
+		if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
+		{
+			return E_FAIL;
+		}
 
-	if (FAILED(m_pVIBufferCom->Render()))
-	{
-		return E_FAIL;
+		if (FAILED(m_pVIBufferCom->Render()))
+		{
+			return E_FAIL;
+		}
 	}
+	
 
 	if (m_strText != TEXT(""))
 	{
@@ -153,6 +158,14 @@ void CTextButton::Set_Position(_vec2 vPos)
 	m_fX = vPos.x;
 	m_fY = vPos.y;
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+}
+
+void CTextButton::Set_Size(_float fSizeX, _float fSizeY, _float fFontSize)
+{
+	m_fSizeX = fSizeX;
+	m_fSizeY = fSizeY;
+	if (m_fFontSize != -1.f)
+		m_fFontSize = fFontSize;
 }
 
 CTextButton* CTextButton::Create(_dev pDevice, _context pContext)

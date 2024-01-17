@@ -16,6 +16,8 @@ CAnimation::CAnimation(const CAnimation& rhs)
 	//, m_Channels(rhs.m_Channels)
 	//, m_CurrentKeyFrames(rhs.m_CurrentKeyFrames)
 	//, m_PrevTransformations(rhs.m_PrevTransformations)
+	, m_pPrevTransformation(rhs.m_pPrevTransformation)
+	, m_hasCloned(true)
 {
 	strcpy_s(m_szName, rhs.m_szName);
 	//for (auto& pChannel : m_Channels)
@@ -97,7 +99,7 @@ void CAnimation::Set_CurrentAnimPos(_float fCurrentAnimPos)
 	m_fCurrentAnimPos = fCurrentAnimPos;
 }
 
-HRESULT CAnimation::Init(ifstream& ModelFile)
+HRESULT CAnimation::Init(ifstream& ModelFile, const vector<class CBone*>& Bones)
 {
 	_uint iNameSize{};
 	ModelFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof _uint);
@@ -127,10 +129,12 @@ HRESULT CAnimation::Init(ifstream& ModelFile)
 		m_iMaxFrame = max(m_iMaxFrame, pChannel->Get_KeyFrames().size());
 	}
 
+	m_pPrevTransformation = new _mat[Bones.size()];
+
 	return S_OK;
 }
 
-void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio)
+void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio, _uint* iCurrentTrigger)
 {
 	if (isAnimChanged)
 	{
@@ -143,7 +147,6 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 		{
 			m_fCurrentAnimPos = 0.f;
 			m_isInterpolating = true;
-			m_pPrevTransformation = new _mat[Bones.size()];
 		}
 		else
 		{
@@ -177,6 +180,12 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 		{
 			m_isFinished = false;
 		}
+		/*if (*iCurrentTrigger <= m_iNumTriggers) {
+			if (m_fCurrentAnimPos >= m_Triggers[*iCurrentTrigger]) {
+				뭐 어떤 것을 생성시킨다;
+				(*iCurrentTrigger)++;
+			}
+		}*/
 	}
 
 	if (isAnimChanged)
@@ -276,11 +285,11 @@ HRESULT CAnimation::Prepare_Animation(const vector<class CBone*>& Bones, _uint i
 	return S_OK;
 }
 
-CAnimation* CAnimation::Create(ifstream& ModelFile)
+CAnimation* CAnimation::Create(ifstream& ModelFile, const vector<class CBone*>& Bones)
 {
 	CAnimation* pInstance = new CAnimation();
 
-	if (FAILED(pInstance->Init(ModelFile)))
+	if (FAILED(pInstance->Init(ModelFile, Bones)))
 	{
 		MSG_BOX("Failed to Create : CAnimation");
 		Safe_Release(pInstance);
@@ -303,4 +312,9 @@ void CAnimation::Free()
 	m_Channels.clear();
 
 	m_Triggers.clear();
+
+	if (not m_hasCloned)
+	{
+		Safe_Delete_Array(m_pPrevTransformation);
+	}
 }

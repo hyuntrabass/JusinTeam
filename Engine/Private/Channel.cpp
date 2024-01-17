@@ -82,7 +82,7 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 			fCurrentAnimPos = 0.f;
 		}
 	}
-	else */if (fCurrentAnimPos >= LastKeyFrame.fTime)
+	else*/ if (fCurrentAnimPos >= LastKeyFrame.fTime)
 	{
 		vScaling = XMLoadFloat4(&LastKeyFrame.vScaling);
 		vRotation = XMLoadFloat4(&LastKeyFrame.vRotation);
