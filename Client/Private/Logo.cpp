@@ -38,6 +38,7 @@ HRESULT CLogo::Init(void* pArg)
 
 void CLogo::Tick(_float fTimeDelta)
 {
+	m_fTime -= fTimeDelta * 0.3f;
 }
 
 void CLogo::Late_Tick(_float fTimeDelta)
@@ -52,7 +53,7 @@ HRESULT CLogo::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
+	if (FAILED(m_pShaderCom->Begin(VTPass_Dissolve)))
 	{
 		return E_FAIL;
 	}
@@ -86,6 +87,10 @@ HRESULT CLogo::Add_Components()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(__super::Add_Component(LEVEL_LOGO, TEXT("Prototype_Component_Texture_UI_Logo_Noise"), TEXT("Com_Texture_Noise"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom))))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -107,7 +112,15 @@ HRESULT CLogo::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fTime, sizeof(_float))))
+	{
+		return E_FAIL;
+	}
 
+	if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
+	{
+		return E_FAIL;
+	}
 	return S_OK;
 }
 
@@ -145,4 +158,5 @@ void CLogo::Free()
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pVIBufferCom);
+	Safe_Release(m_pDissolveTextureCom);
 }

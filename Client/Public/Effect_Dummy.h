@@ -1,34 +1,9 @@
 #pragma once
 #include "Client_Define.h"
 #include "BlendObject.h"
+#include "Effect_Manager.h"
 
 BEGIN(Client)
-
-struct EffectInfo
-{
-	_uint eType{};
-	_bool isSprite{};
-	_int2 vNumSprites{};
-	_float fSpriteDuration{};
-	CVIBuffer_Instancing::ParticleDesc PartiDesc{};
-	_uint iNumInstances{};
-	_float fLifeTime{};
-	_int iDiffTextureID{};
-	_int iMaskTextureID{};
-	_vec4 vColor{};
-	_uint iPassIndex{};
-	_vec2 vSize{};
-	_vec3 vPos{};
-	_vec3 vPosOffset{};
-	_vec2 vSizeDelta{};
-};
-
-enum Effect_Type
-{
-	ET_PARTICLE,
-	ET_RECT,
-	ET_END
-};
 
 class CEffect_Dummy final : public CBlendObject
 {
@@ -51,6 +26,7 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CTexture* m_pMaskTextureCom{};
 	CTexture* m_pDiffTextureCom{};
+	CTexture* m_pDissolveTextureCom{};
 
 private:
 	EffectInfo m_Effect{};
@@ -59,6 +35,7 @@ private:
 	_float m_fSpriteTimer{};
 	_int m_iSpriteIndex{};
 	_vec2 m_vScaleAcc{ 1.f };
+	_float m_fDissolveRatio{};
 
 private:
 	HRESULT Add_Components();

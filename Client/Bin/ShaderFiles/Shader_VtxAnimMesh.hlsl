@@ -8,6 +8,7 @@ texture2D g_NormalTexture;
 texture2D g_SpecTexture;
 texture2D g_NoiseTexture;
 
+vector g_vColor = {1.f, 1.f, 1.f, 0.f};
 vector g_vCamPos;
 float g_fCamFar;
 float g_fLightFar;
@@ -62,7 +63,9 @@ VS_OUT VS_Main(VS_IN Input)
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
     Output.vProjPos = Output.vPos;
-    
+    Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), g_WorldMatrix)).xyz;
+    Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
+	
     return Output;
 }
 
@@ -94,9 +97,7 @@ VS_OUT VS_Main_OutLine(VS_IN Input)
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
     Output.vProjPos = Output.vPos;
-    Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), g_WorldMatrix)).xyz;
-    Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
-	
+   
     return Output;
 }
 
@@ -156,7 +157,6 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
         vSpecular = vector(vSpecular.b, vSpecular.b, vSpecular.b, vSpecular.a);
 
     }
-    
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
@@ -306,7 +306,7 @@ VS_BlurOUT VS_Test(VS_IN Input)
     vector vOldPos = mul(vPos, matOldWVP);
     
     float4 vDir = vNewPos - vOldPos;
-    float4 vCalNor = mul(vNor.xyz, matWV);
+    float4 vCalNor = mul(vNor, matWV);
     
     float a = dot(normalize(vDir), normalize(vCalNor));
     
@@ -383,6 +383,49 @@ PS_OUT_Blur PS_Test(PS_Blur_IN Input)
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
     Output.vVelocity = Input.vDir;
+    
+    return Output;
+}
+PS_OUT_DEFERRED PS_LerpColor(PS_IN Input)
+{
+    PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + vector(0.5f, 0.f, 0.f, 0.f) * g_bSelected;
+    if (vMtrlDiffuse.a < 0.3f)
+    {
+        discard;
+    }
+    if(g_vColor.a > 0.f)
+    {
+        vMtrlDiffuse = lerp(vMtrlDiffuse, g_vColor, 0.5f);
+    }
+    float3 vNormal;
+    if (g_HasNorTex)
+    {
+        vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
+    
+        vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+        float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
+    
+        vNormal = mul(normalize(vNormal), WorldMatrix) * -1.f;
+    }
+    else
+    {
+        vNormal = Input.vNor.xyz;
+    }
+    
+    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
+    if (g_HasSpecTex)
+    {
+        vSpecular = g_SpecTexture.Sample(LinearSampler, Input.vTex);
+        vSpecular = vector(vSpecular.b, vSpecular.b, vSpecular.b, vSpecular.a);
+
+    }
+    Output.vDiffuse = vMtrlDiffuse;
+    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vSpecular = vSpecular;
     
     return Output;
 }
@@ -468,4 +511,17 @@ technique11 DefaultTechniqueShader_VtxNorTex
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Test();
     }
+        pass LerpColor
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_LerpColor();
+    }
+
 };

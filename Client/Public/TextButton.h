@@ -67,6 +67,7 @@ public:
 	const RECT& Get_Rect() const { return m_rcRect; }
 	const _vec2& Get_Position() const { return m_vPosition; }
 	void Set_Position(_vec2 vPos);
+	void Set_Size(_float fSizeX, _float fSizeY, _float fFontSize = -1.f);
 
 public:
 	static CTextButton* Create(_dev pDevice, _context pContext);

@@ -366,3 +366,26 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Engine/Bin/Engine.exp
+Client/Bin/Resources/AnimMesh/Player/test/body/body1.hyuntraanimmesh
+Client/Bin/Resources/AnimMesh/Player/test/body/body2.hyuntraanimmesh
+Client/Bin/Resources/AnimMesh/Player/test/body/body3.hyuntraanimmesh
+Client/Bin/Resources/AnimMesh/Player/test/face/face7.hyuntraanimmesh
+Client/Bin/Resources/AnimMesh/Player/test/hair/hair9.hyuntraanimmesh
+Client/Bin/Resources/AnimMesh/Player/test/weapon/bow0.hyuntraanimmesh
+Client/Bin/Resources/AnimMesh/Player/test/weapon/bow1.hyuntraanimmesh
+Client/Bin/Resources/AnimMesh/Player/test/weapon/bow2.hyuntraanimmesh
+Client/Bin/Resources/AnimMesh/Player/test/weapon/sword0.hyuntraanimmesh
+Client/Bin/Resources/AnimMesh/Player/test/weapon/sword1.hyuntraanimmesh
+Client/Bin/Resources/AnimMesh/Player/test/weapon/sword2.hyuntraanimmesh
+FBX_Converter/Output/Anim/2004wpb.hyuntraanimmesh
+FBX_Converter/Output/Anim/2004wps.hyuntraanimmesh
+FBX_Converter/Output/Anim/2005bd.hyuntraanimmesh
+FBX_Converter/Output/Anim/3007wpb.hyuntraanimmesh
+FBX_Converter/Output/Anim/3007wps.hyuntraanimmesh
+FBX_Converter/Output/Anim/3009bd.hyuntraanimmesh
+FBX_Converter/Output/Anim/5001BD.hyuntraanimmesh
+FBX_Converter/Output/Anim/5001wpb.hyuntraanimmesh
+FBX_Converter/Output/Anim/5001wps.hyuntraanimmesh
+FBX_Converter/Output/Anim/baseface.hyuntraanimmesh
+FBX_Converter/Output/Anim/basehairfbx.hyuntraanimmesh

@@ -264,6 +264,9 @@
     <ClCompile Include="..\private\Font_Manager.cpp">
       <Filter>01.Utility\07.Fonts\Manager</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Model.cpp">
+      <Filter>01.Utility\03.Components\Model</Filter>
+    </ClCompile>
     <ClCompile Include="..\private\Mesh.cpp">
       <Filter>01.Utility\03.Components\Model\Mesh</Filter>
     </ClCompile>
@@ -502,6 +505,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\RealtimeVTFModel.h">
       <Filter>01.Utility\03.Components\Model\RealtimeVTFModel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SimpleMath.h">
+      <Filter>99,Headers\SimpleMath</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

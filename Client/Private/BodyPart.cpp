@@ -1,4 +1,5 @@
 #include "BodyPart.h"
+#include "UI_Manager.h"
 
 CBodyPart::CBodyPart(_dev pDevice, _context pContext)
 	: CPartObject(pDevice, pContext)
@@ -23,7 +24,7 @@ HRESULT CBodyPart::Init(void* pArg)
 	m_iNumVariations = Desc.iNumVariations;
 	m_Models.resize(m_iNumVariations, nullptr);
 	m_Animation = Desc.Animation;
-
+	m_iSelectedModelIndex = 0;
 	if (FAILED(__super::Init(Desc.pParentTransform)))
 	{
 		return E_FAIL;
@@ -93,6 +94,9 @@ HRESULT CBodyPart::Render()
 
 	for (_uint i = 0; i < m_Models[m_iSelectedModelIndex]->Get_NumMeshes(); i++)
 	{
+		if (m_iSelectedModelIndex == 8 && i < 3)
+			continue;
+
 		if (FAILED(m_Models[m_iSelectedModelIndex]->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
 		}
@@ -127,10 +131,22 @@ HRESULT CBodyPart::Render()
 		//	return E_FAIL;
 		//}
 
-		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+
+		if (m_eType == PT_HAIR)
 		{
-			return E_FAIL;
+			if (FAILED(m_pShaderCom->Begin(AnimPass_LerpColor)))
+			{
+				return E_FAIL;
+			}
 		}
+		else
+		{
+			if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+			{
+				return E_FAIL;
+			}
+		}
+
 
 		if (FAILED(m_Models[m_iSelectedModelIndex]->Render(i)))
 		{
@@ -197,7 +213,7 @@ _float CBodyPart::Get_CurrentAnimPos()
 	return m_Models[m_iSelectedModelIndex]->Get_CurrentAnimPos();
 }
 
-const _float44* CBodyPart::Get_BoneMatrix(const _char* pBoneName)
+const _mat* CBodyPart::Get_BoneMatrix(const _char* pBoneName)
 {
 	return m_Models[m_iSelectedModelIndex]->Get_BoneMatrix(pBoneName);
 }
@@ -275,6 +291,14 @@ HRESULT CBodyPart::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
+	if (m_eType == PT_HAIR)
+	{
+		_vec4 vColor = CUI_Manager::Get_Instance()->Get_HairColor();
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _vec4)))
+		{
+			return E_FAIL;
+		}
+	}
 	return S_OK;
 }
 

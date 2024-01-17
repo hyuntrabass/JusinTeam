@@ -28,6 +28,10 @@ private:
 	HRESULT Ready_Nastron03();
 	HRESULT Ready_NPCvsMon();
 	HRESULT Ready_Thief04();
+	HRESULT Ready_TrilobiteA();
+
+	// NPC
+	HRESULT Ready_Cat();
 
 	HRESULT Ready_Monster();
 

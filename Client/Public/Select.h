@@ -42,6 +42,7 @@ private:
 
 	_float				m_fAlpha{ 0.f };
 
+	CTextButton*		m_pTitleButton{ nullptr };
 	CTextButton*		m_pClassButton{ nullptr };
 	CSelectDesc*		m_pSelectDesc{ nullptr };
 	CCharacterSelect*	m_pCharacterSelect{ nullptr };

@@ -45,6 +45,13 @@ CModel::CModel(const CModel& rhs)
 			Safe_AddRef(pTexture);
 		}
 	}
+
+	strcpy_s(m_szFilePath, MAX_PATH, rhs.m_szFilePath);
+}
+
+const _char* CModel::Get_FilePath() const
+{
+	return m_szFilePath;
 }
 
 const _uint& CModel::Get_NumMeshes() const
@@ -102,12 +109,18 @@ vector<class CAnimation*>& CModel::Get_Animations()
 	return m_Animations;
 }
 
+CAnimation* CModel::Get_Animation(_uint iAnimIndex)
+{
+	return m_Animations[iAnimIndex];
+}
+
 void CModel::Set_Animation(ANIM_DESC Animation_Desc)
 {
 	if (m_AnimDesc.iAnimIndex != Animation_Desc.iAnimIndex or
 		Animation_Desc.bRestartAnimation)
 	{
 		m_isAnimChanged = true;
+		m_iCurrentTrigger = 0;
 
 		for (auto& pAnim : m_Animations)
 		{
@@ -125,6 +138,7 @@ void CModel::Set_Animation(ANIM_DESC Animation_Desc)
 
 HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix)
 {
+	strcpy_s(m_szFilePath, MAX_PATH, strFilePath.c_str());
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
 	ModelType eType{};
 	_char szDirectory[MAX_PATH]{};
@@ -221,7 +235,8 @@ HRESULT CModel::Init(void* pArg)
 
 void CModel::Play_Animation(_float fTimeDelta)
 {
-	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop, m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio);
+	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop,
+		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio, &m_iCurrentTrigger);
 
 	for (auto& pBone : m_Bones)
 	{
@@ -327,7 +342,7 @@ HRESULT CModel::Read_Animations(ifstream& File)
 
 	for (size_t i = 0; i < m_iNumAnimations; i++)
 	{
-		CAnimation* pAnimation = CAnimation::Create(File);
+		CAnimation* pAnimation = CAnimation::Create(File, m_Bones);
 		if (!pAnimation)
 		{
 			MSG_BOX("Failed to Read Animations!");

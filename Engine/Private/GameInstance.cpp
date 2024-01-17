@@ -1094,6 +1094,17 @@ void CGameInstance::Set_CameraTargetPos(const _vec4& vPos)
 	m_vTarget = vPos;
 }
 
+void CGameInstance::Set_CameraTargetLook(const _vec4& vLook)
+{
+	m_vTargetLook = vLook;
+	m_bTargetLook = true;
+}
+
+void CGameInstance::Set_Have_TargetLook(const _bool& bHaveLook)
+{	
+	m_bTargetLook = bHaveLook;
+}
+
 const _uint& CGameInstance::Get_CameraState() const
 {
 	return m_iCameraState;
@@ -1107,6 +1118,16 @@ const _vec4& CGameInstance::Get_CameraTargetPos() const
 const _float& CGameInstance::Get_ZoomFactor() const
 {
 	return m_fZoomFactor;
+}
+
+const _vec4& CGameInstance::Get_CameraTargetLook()
+{
+	return 	m_vTargetLook;
+}
+
+const _bool& CGameInstance::Have_TargetLook() const
+{
+	return m_bTargetLook;
 }
 
 void CGameInstance::Initialize_Level(_uint iLevelNum)

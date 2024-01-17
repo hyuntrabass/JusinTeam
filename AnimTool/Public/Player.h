@@ -31,6 +31,10 @@ public:
 		return m_eType;
 	}
 
+	void Set_TimeDelta(_float fTimeDelta) {
+		m_fTimeDelta = fTimeDelta;
+	}
+
 public:
 	virtual HRESULT Init_Prototype(_uint iNumMonsterModels, _uint iNumPlayerModels);
 	virtual HRESULT Init(void* pArg) override;
@@ -54,6 +58,7 @@ private:
 	wstring* m_pPlayerModelTag = {};
 	_uint m_iCurrentIndex = { 0 };
 	TYPE m_eType = { TYPE_END };
+	_float m_fTimeDelta = { 0.f };
 
 private:
 	HRESULT Add_Components();

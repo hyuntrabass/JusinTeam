@@ -23,6 +23,7 @@ private:
 	virtual ~CModel() = default;
 
 public:
+	const _char* Get_FilePath() const;
 	const _uint& Get_NumMeshes() const;
 	const _uint& Get_NumAnim() const;
 	const _bool& IsAnimationFinished(_uint iAnimIndex) const;
@@ -31,6 +32,7 @@ public:
 	const _mat* Get_BoneMatrix(const _char* pBoneName) const;
 	_matrix Get_PivotMatrix();
 	vector<class CAnimation*>& Get_Animations();
+	class CAnimation* Get_Animation(_uint iAnimIndex);
 
 	void Set_Animation(ANIM_DESC Animation_Desc);
 
@@ -49,6 +51,7 @@ public:
 	_bool Intersect_RayModel(_fmatrix WorldMatrix, _vec4* pPickPos);
 
 private:
+	_char m_szFilePath[MAX_PATH] = "";
 	_uint m_iNumMeshes{};
 	vector<class CMesh*> m_Meshes{};
 
@@ -71,6 +74,8 @@ private:
 	_bool m_isAnimChanged{};
 
 	ANIM_DESC m_AnimDesc{};
+
+	_uint m_iCurrentTrigger = 0;
 
 	ID3D11Texture2D* m_pTexture{ nullptr };
 	ID3D11ShaderResourceView* m_pSRV{ nullptr };

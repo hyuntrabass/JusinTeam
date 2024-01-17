@@ -18,24 +18,36 @@ HRESULT CTerrain::Init_Prototype()
 
 HRESULT CTerrain::Init(void* pArg)
 {
+	if (not pArg)
+	{
+		MSG_BOX("No Argument");
+		return E_FAIL;
+	}
+
+	m_vTerrainSize = *reinterpret_cast<_uint2*>(pArg);
+
 	if (FAILED(Add_Component()))
 		return E_FAIL;
 
 	//m_pTransformCom->LookAt_Dir(_vec4(0.f, -1.f, 0.f, 0.f));
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(-5.f, -1.f, -5.f, 1.f));
 
 	return S_OK;
 }
 
 void CTerrain::Tick(_float fTimeDelta)
 {
+	m_pTransformCom->Set_State(State::Pos, _vec4(-1.f, -0.5f, -1.f, 1.f));
 
 }
 
 void CTerrain::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	if (m_pGameInstance->Key_Pressing(DIK_O))
+	{
+		return;
+	}
+	m_pRendererCom->Add_RenderGroup(RG_Priority, this);
 }
 
 HRESULT CTerrain::Render()
@@ -43,7 +55,7 @@ HRESULT CTerrain::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+	if (FAILED(m_pShaderCom->Begin(VNTPass_Terrain_Effect)))
 		return E_FAIL;
 
 	if (FAILED(m_pVIBufferCom->Render()))
@@ -66,7 +78,7 @@ HRESULT CTerrain::Add_Component()
 		return E_FAIL;
 	}
 	// For.Com_VIBuffer
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom, &m_vTerrainSize)))
 	{
 		return E_FAIL;
 	}

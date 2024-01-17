@@ -29,14 +29,15 @@ public:
 	}
 
 public:
-	HRESULT Init(ifstream& ModelFile);
-	void Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio);
+	HRESULT Init(ifstream& ModelFile, const vector<class CBone*>& Bones);
+	void Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio, _uint* iCurrentTrigger);
 
 	HRESULT Prepare_Animation(const vector<class CBone*>& Bones, _uint iFrame);
 
 	const _float Get_TickPerSec() const {
 		return m_fTickPerSec;
 	}
+
 
 private:
 	_char m_szName[MAX_PATH]{};
@@ -55,15 +56,24 @@ private:
 	_bool m_isInterpolating{};
 
 	_uint m_iNumTriggers{};
-	vector<_float> m_Triggers;
+	vector<_float> m_Triggers; // 이펙트 트리거
+
+	vector<_uint> m_NumEffects;
+	vector<vector<TRIGGEREFFECT_DESC>> m_TriggerEffects;
+
+	_uint m_iNumSoundTrigger{};
+	vector<_float> m_SoundTriggers; // 사운드 트리거
+	vector<TRIGGERSOUND_DESC> m_TriggerSounds;
 
 	_uint m_iMaxFrame = 0;
+
+	_bool m_hasCloned{};
 
 private:
 	void Update_Lerp_TransformationMatrix(const vector<class CBone*>& Bones, _bool& isAnimChanged, _float fInterpolationTime);
 
 public:
-	static CAnimation* Create(ifstream& ModelFile);
+	static CAnimation* Create(ifstream& ModelFile, const vector<class CBone*>& Bones);
 	CAnimation* Clone();
 	virtual void Free() override;
 };
