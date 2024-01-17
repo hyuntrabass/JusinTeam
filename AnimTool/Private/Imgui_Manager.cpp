@@ -30,6 +30,8 @@ HRESULT CImgui_Manager::Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc)
 	m_iWinSizeX = GraphicDesc.iWinSizeX;
 	m_iWinSizeY = GraphicDesc.iWinSizeY;
 
+
+
 	return S_OK;
 }
 
@@ -539,11 +541,11 @@ void CImgui_Manager::Free()
 
 	Safe_Release(m_pPlayer);
 
-	for (auto& pEffect : m_Effects)
-	{
-		Safe_Release(pEffect);
-	}
-	m_Effects.clear();
+	//for (auto& pEffect : m_Effects)
+	//{
+	//	Safe_Release(pEffect);
+	//}
+	//m_Effects.clear();
 
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();

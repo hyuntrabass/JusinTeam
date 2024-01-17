@@ -157,6 +157,8 @@ HRESULT CVTFModel::Init(void* pArg)
 {
 	m_PlayAnimDesc.PLAYANIM_DESC();
 
+	m_isLoop = true;
+
 	return S_OK;
 }
 
@@ -176,6 +178,12 @@ HRESULT CVTFModel::Play_Animation(_float fTimeDelta)
 			m_PlayAnimDesc.eCurrent.iCurrFrame %= pPlayingAnim->Get_MaxFrame();
 			m_PlayAnimDesc.eCurrent.iNextFrame %= pPlayingAnim->Get_MaxFrame();
 		}
+		/*else {
+			if (pPlayingAnim->Get_MaxFrame() <= m_PlayAnimDesc.eCurrent.iCurrFrame) {
+				m_PlayAnimDesc.eCurrent.iCurrFrame = pPlayingAnim->Get_MaxFrame();
+				m_PlayAnimDesc.eCurrent.iNextFrame = pPlayingAnim->Get_MaxFrame();
+			}
+		}*/
 	}
 
 	m_PlayAnimDesc.eCurrent.fRatio = m_PlayAnimDesc.eCurrent.fTime / fTimePerFrame;

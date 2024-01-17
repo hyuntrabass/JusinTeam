@@ -61,6 +61,7 @@ private:
     _uint m_iCurrentModelIndex = { 0 };
     _bool m_IsCreateModel = { false };
 
+
     //ImGuizmo
     ImGuizmo::OPERATION m_eStateType = { ImGuizmo::OPERATION::TRANSLATE };
     _int m_iManipulateType = 0;
