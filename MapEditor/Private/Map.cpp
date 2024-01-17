@@ -9,9 +9,9 @@ CMap::CMap(_dev pDevice, _context pContext)
 
 CMap::CMap(const CMap& rhs)
 	: CBlendObject(rhs)
-	, m_pImGui_Manager(CImGui_Manager::Get_Instance())
+	//, m_pImGui_Manager(CImGui_Manager::Get_Instance())
 {
-	Safe_AddRef(m_pImGui_Manager);
+	//Safe_AddRef(m_pImGui_Manager);
 	m_iID = iID++;
 }
 
@@ -203,8 +203,8 @@ HRESULT CMap::Create_HightMap(vector<_float3> VerticesPos)
 	ID3D11Texture2D* pTexture2D = nullptr;
 	D3D11_TEXTURE2D_DESC	TextureDesc = {};
 
-	TextureDesc.Width = 40;
-	TextureDesc.Height = 40;
+	TextureDesc.Width = 128;
+	TextureDesc.Height = 128;
 	TextureDesc.MipLevels = 1;
 	TextureDesc.ArraySize = 1;
 	TextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -217,22 +217,22 @@ HRESULT CMap::Create_HightMap(vector<_float3> VerticesPos)
 	TextureDesc.MiscFlags = 0;
 
 	vector<_uint> colors(TextureDesc.Width * TextureDesc.Height);
-	//for (_int i = 0; i < vHight.size(); ++i) {
-	//	_float fValue = (vHight[i] - minHeight) / (maxHeight - minHeight);
-	//	colors[i] = lerp(0, 255, fValue);
-	//}
-
 
 	ID3D11Texture2D* pTexture = nullptr;
 
-	for (_int i = 0; i < TextureDesc.Width * TextureDesc.Height; ++i) {
-		if (i < vHight.size()) {
-			_float fValue = (vHight[i] - minHeight) / (maxHeight - minHeight); 
-			_uint colorValue = static_cast<_uint>(lerp(0, 255, fValue));
-			colors[i] = (colorValue << 24) | (colorValue << 16) | (colorValue << 8) | colorValue;
-		}
-		else {
-			colors[i] = 0xFF000000; 
+	for (int y = 0; y < TextureDesc.Height; ++y) {
+		for (int x = 0; x < TextureDesc.Width; ++x) {
+			int vertexIndex = y * TextureDesc.Width + x;
+
+			// 버텍스 배열의 크기를 넘어서지 않도록 검사합니다.
+			if (vertexIndex < vHight.size()) {
+				_float fValue = (vHight[vertexIndex] - minHeight) / (maxHeight - minHeight);
+				_uint colorValue = static_cast<_uint>(lerp(0, 255, fValue));
+
+				// ARGB 포맷으로 변환하여 텍스처의 해당 위치에 색상값을 저장합니다.
+				int textureIndex = y * TextureDesc.Width + x;
+				colors[textureIndex] = (colorValue << 24) | (colorValue << 16) | (colorValue << 8) | colorValue;
+			}
 		}
 	}
 	
@@ -250,6 +250,8 @@ HRESULT CMap::Create_HightMap(vector<_float3> VerticesPos)
 	if (FAILED(SaveWICTextureToFile(m_pContext, pTexture, GUID_ContainerFormatPng, L"../Bin/Data/HightMap.png")))
 		return E_FAIL;
 
+	Safe_Release(pTexture2D);
+	Safe_Release(pTexture);
 
 	return S_OK;
 }
@@ -288,7 +290,7 @@ void CMap::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pImGui_Manager);
+	//Safe_Release(m_pImGui_Manager);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

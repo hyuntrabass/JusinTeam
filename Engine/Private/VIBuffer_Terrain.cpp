@@ -216,6 +216,96 @@ HRESULT CVIBuffer_Terrain::ModifyTerrainVertexBuffer( _uint iNumVerticesX, _uint
 
 	return S_OK;
 }
+
+//
+//HRESULT CVIBuffer_Terrain::VertexBuffer_Terrain(vector<_float3> vVertices, vector<_float3> vIndices)
+//{
+//
+//	m_iNumVertexBuffers = 1;
+//	m_iVertexStride = sizeof VTXNORTEX;
+//	m_iNumVertices = vVertices.size();
+//	m_iIndexStride = 4;
+//	m_eIndexFormat = DXGI_FORMAT_R32_UINT;
+//	m_ePrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+//
+//#pragma region VERTEX_BUFFER
+//
+//	D3D11_MAPPED_SUBRESOURCE MappedVertex;
+//	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedVertex);
+//	VTXNORTEX* pVertices = (VTXNORTEX*)MappedVertex.pData;
+//
+//	_uint iIndex = 0;
+//	for(auto iter = vVertices.begin(); iter != vVertices.end(); iter++)
+//	{
+//
+//		pVertices[iIndex].vPosition = _float3(static_cast<_float>(x), 0.f, static_cast<_float>(z));
+//		pVertices[iIndex].vNormal = _float3(0.f, 0.f, 0.f);
+//		pVertices[iIndex].vTexcoord = _float2(x / (iNumVerticesX - 1.f), z / (iNumVerticesZ - 1.f));
+//
+//			iIndex++;
+//	}
+//
+//	m_pContext->Unmap(m_pVB, 0);
+//#pragma endregion
+//
+//#pragma region INDEX_BUFFER
+//	D3D11_MAPPED_SUBRESOURCE MappedIndex;
+//	m_pContext->Map(m_pIB, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedIndex);
+//	_ulong* pIndices = (_ulong*)MappedIndex.pData;
+//
+//	_uint iNumIndices = 0;
+//	for (size_t i = 0; i < iNumVerticesZ - 1; ++i)
+//	{
+//		for (size_t j = 0; j < iNumVerticesX - 1; ++j)
+//		{
+//			_uint	iIndex = (_uint)i * iNumVerticesX + (_uint)j;
+//			_uint	iIndices[4] = {
+//				iIndex + iNumVerticesX,
+//				iIndex + iNumVerticesX + 1,
+//				iIndex + 1,
+//				iIndex
+//			};
+//
+//
+//			_vector	vSour, vDest, vNormal;
+//
+//			pIndices[iNumIndices++] = iIndices[0];
+//			pIndices[iNumIndices++] = iIndices[1];
+//			pIndices[iNumIndices++] = iIndices[2];
+//
+//			vSour = XMLoadFloat3(&pVertices[iIndices[1]].vPosition) - XMLoadFloat3(&pVertices[iIndices[0]].vPosition);
+//			vDest = XMLoadFloat3(&pVertices[iIndices[2]].vPosition) - XMLoadFloat3(&pVertices[iIndices[1]].vPosition);
+//			vNormal = XMVector3Normalize(XMVector3Cross(vSour, vDest));
+//
+//			XMStoreFloat3(&pVertices[iIndices[0]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[0]].vNormal)) + vNormal);
+//			XMStoreFloat3(&pVertices[iIndices[1]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[0]].vNormal)) + vNormal);
+//			XMStoreFloat3(&pVertices[iIndices[2]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[0]].vNormal)) + vNormal);
+//
+//			pIndices[iNumIndices++] = iIndices[0];
+//			pIndices[iNumIndices++] = iIndices[2];
+//			pIndices[iNumIndices++] = iIndices[3];
+//
+//			vSour = XMLoadFloat3(&pVertices[iIndices[2]].vPosition) - XMLoadFloat3(&pVertices[iIndices[0]].vPosition);
+//			vDest = XMLoadFloat3(&pVertices[iIndices[3]].vPosition) - XMLoadFloat3(&pVertices[iIndices[2]].vPosition);
+//			vNormal = XMVector3Normalize(XMVector3Cross(vSour, vDest));
+//
+//			XMStoreFloat3(&pVertices[iIndices[0]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[0]].vNormal)) + vNormal);
+//			XMStoreFloat3(&pVertices[iIndices[2]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[2]].vNormal)) + vNormal);
+//			XMStoreFloat3(&pVertices[iIndices[3]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[3]].vNormal)) + vNormal);
+//		}
+//	}
+//
+//	for (size_t i = 0; i < m_iNumVertices; i++)
+//	{
+//		XMStoreFloat3(&pVertices[i].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[i].vNormal)));
+//	}
+//
+//	m_pContext->Unmap(m_pIB, 0);
+//
+//	return S_OK;
+//}
+
+
 CVIBuffer_Terrain* CVIBuffer_Terrain::Create(_dev pDevice, _context pContext)
 {
 	CVIBuffer_Terrain* pInstance = new CVIBuffer_Terrain(pDevice, pContext);

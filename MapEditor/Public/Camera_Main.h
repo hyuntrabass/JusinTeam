@@ -22,7 +22,7 @@ public:
 
 private:
 	CTransform* m_pPlayerTransform{ nullptr };
-	CImGui_Manager* m_pImGui_Manager{ nullptr };
+	//CImGui_Manager* m_pImGui_Manager{ nullptr };
 	_bool m_isMoveMode{ true };
 	_float m_fMouseSensor{ 0.08f };
 	_float m_fSpeed{ 10.f };

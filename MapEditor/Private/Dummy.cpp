@@ -11,9 +11,9 @@ CDummy::CDummy(_dev pDevice, _context pContext)
 
 CDummy::CDummy(const CDummy& rhs)
 	: CBlendObject(rhs)
-	, m_pImGui_Manager(CImGui_Manager::Get_Instance())
+	//, m_pImGui_Manager(CImGui_Manager::Get_Instance())
 {
-	Safe_AddRef(m_pImGui_Manager);
+	//Safe_AddRef(m_pImGui_Manager);
 	m_iID = iID++;
 }
 
@@ -311,7 +311,7 @@ void CDummy::Free()
 	__super::Free();
 
 	//if(m_pImGui_Manager)
-	Safe_Release(m_pImGui_Manager);
+	//Safe_Release(m_pImGui_Manager);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

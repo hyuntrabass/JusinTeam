@@ -157,7 +157,7 @@ HRESULT CLoader::Load_Editor()
 
 	m_strLoadingText = L"Editor : Loading Object Model";
 #pragma region Model
-	_matrix Pivot = XMMatrixScaling(0.01f,0.01f,0.01f);
+	_matrix Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 	//_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(90.f));
 
 	// Object Model
@@ -175,7 +175,7 @@ HRESULT CLoader::Load_Editor()
 		}
 	}
 
-	//Pivot = XMMatrixScaling(1.f, 1.f, 1.f);
+	Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 	// Map Model
 	strInputFilePath = "../Bin/Resources/StaticMesh/Map/Midgard/Map1/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
@@ -545,18 +545,18 @@ HRESULT CLoader::Load_Editor()
 	}
 
 	// Void13
-	strInputFilePath = "../Bin/Resources/AnimMesh/Monster/Void13/Mesh";
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
-	{
-		if (entry.is_regular_file())
-		{
+	//strInputFilePath = "../Bin/Resources/AnimMesh/Monster/Void13/Mesh";
+	//for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	//{
+	//	if (entry.is_regular_file())
+	//	{
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void13"), CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
-			{
-				return E_FAIL;
-			}
-		}
-	}
+	//		if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void13"), CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+	//		{
+	//			return E_FAIL;
+	//		}
+	//	}
+	//}
 
 	// VoidDragon
 	strInputFilePath = "../Bin/Resources/AnimMesh/Monster/VoidDragon/Mesh";

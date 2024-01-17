@@ -160,6 +160,11 @@ HRESULT CImGui_Manager::ImGuiMenu()
 					Modify_Terrain();
 				}
 			}
+
+
+			ImGui::SeparatorText("Save / Load");
+	
+
 			ImGui::EndTabItem();
 		}
 #pragma endregion
@@ -228,14 +233,15 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				}
 			}
 
-			ImGui::Separator();
-			
+			ImGui::SeparatorText("Wireframe");
+
 			ImGui::Checkbox("WireFrame", &m_isMode);
 			if (m_pSelectMap)
 			{
 				m_pSelectMap->Mode(m_isMode);
 			}
-			ImGui::Separator();
+
+			ImGui::SeparatorText("Save / Load");
 
 			if (ImGui::Button("Save_Map"))
 			{
@@ -323,6 +329,19 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				}
 			}
 
+			ImGui::SeparatorText("Save / Load");
+
+			if (ImGui::Button("SAVE"))
+			{
+				Save_Object();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("LOAD"))
+			{
+				Load_Object();
+			}
+
+
 			ImGui::EndTabItem();
 		}
 
@@ -399,7 +418,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				}
 			}
 
-			ImGui::Separator();
+			ImGui::SeparatorText("Save / Load");
 
 			if (ImGui::Button("SAVE"))
 			{
@@ -423,7 +442,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			/* NPC */
 			m_eItemType = ItemType::NPC;
 
-			ImGui::SeparatorText("LIST");
+		/*	ImGui::SeparatorText("LIST");
 
 			static int NPC_current_idx = 0;
 			ImGui::Text("NPC");
@@ -479,7 +498,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			if (ImGui::Button("LOAD"))
 			{
 				Load_Monster();
-			}
+			}*/
 
 
 			ImGui::EndTabItem();
@@ -947,10 +966,21 @@ void CImGui_Manager::Mouse_Pos()
 
 void CImGui_Manager::FastPicking()
 {
+	if (m_pSelectedDummy)
+	{
+		m_pSelectedDummy->Select(false);
+		return;
+	}
+	if (m_pSelectMap)
+	{
+		m_pSelectMap->Select(false);
+		return;
+	}
+
 	if (m_eItemType != ItemType::Map)
 	{
 		DummyIndex = 0;
-
+		
 		if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
 		{
 			DummyIndex = m_pGameInstance->FastPicking(m_vMousePos.x, m_vMousePos.y);
@@ -958,6 +988,7 @@ void CImGui_Manager::FastPicking()
 			auto iter = m_DummyList.find(DummyIndex);
 			if (iter != m_DummyList.end())
 			{
+
 				m_pSelectedDummy = (*iter).second;
 				m_pSelectedDummy->Select(true);
 				CTransform* pObjectsTransform = (CTransform*)m_pSelectedDummy->Find_Component(TEXT("Com_Transform"));
@@ -994,7 +1025,17 @@ void CImGui_Manager::MeshToMask()
 
 		m_pSelectMap->Create_HightMap(VerticesPos);
 	}
+}
 
+VOID CImGui_Manager::Map_Vertices()
+{
+	vector<_float3>Vertices{};
+	if (m_pSelectMap)
+	{
+		CModel* pModel = dynamic_cast<CModel*>(m_pSelectMap->Find_Component(TEXT("Com_Model")));
+		Vertices = pModel->Get_VerticesPos();
+
+	}
 
 }
 
@@ -1223,6 +1264,7 @@ HRESULT CImGui_Manager::Load_Object()
 			}
 
 			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
+			m_ObjectsList.push_back( m_pSelectedDummy);
 
 			CTransform* pObjectsTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
 
@@ -1345,6 +1387,7 @@ HRESULT CImGui_Manager::Load_Monster()
 			}
 
 			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
+			m_MonsterList.push_back(m_pSelectedDummy);
 
 			CTransform* pMonsterTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
 			
@@ -1396,23 +1439,28 @@ void CImGui_Manager::Free()
 	}
 	Monsters.clear();
 
-	if (!m_ObjectsList.empty())
-	{
-		for (auto& cstr : m_ObjectsList)
-		{
-			Safe_Release(cstr);
-		}
-		m_ObjectsList.clear();
-	}
 
-	if (!m_MonsterList.empty())
+	for (auto& Map : m_MapsList)
 	{
-		for (auto& cstr : m_MonsterList)
-		{
-			Safe_Release(cstr);
-		}
-		m_MonsterList.clear();
+		Safe_Release(Map);
 	}
+	m_MapsList.clear();
+	
+
+	for (auto& cstr : m_ObjectsList)
+	{
+		Safe_Release(cstr);
+	}
+	m_ObjectsList.clear();
+
+
+
+	for (auto& cstr : m_MonsterList)
+	{
+		Safe_Release(cstr);
+	}
+	m_MonsterList.clear();
+	
 
 	if (!m_DummyList.empty())
 	{
@@ -1423,8 +1471,16 @@ void CImGui_Manager::Free()
 	}
 	m_DummyList.clear();
 
+
+	for (auto& Pair : m_Map)
+	{
+		Safe_Release(Pair.second);
+	}
+	m_Map.clear();
+
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pSelectedDummy);
+	Safe_Release(m_pSelectMap);
 
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();

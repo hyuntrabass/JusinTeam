@@ -88,6 +88,7 @@ HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _mat OffsetM
 		m_pIndices[dwIndex++] = pIndices[dwIndex];
 		ModelFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
 		m_pIndices[dwIndex++] = pIndices[dwIndex];
+
 	}
 
 	m_InitialData.pSysMem = pIndices;

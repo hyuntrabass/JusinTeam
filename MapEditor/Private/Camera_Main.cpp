@@ -7,9 +7,9 @@ CCamera_Main::CCamera_Main(_dev pDevice, _context pContext)
 
 CCamera_Main::CCamera_Main(const CCamera_Main& rhs)
 	: CCamera(rhs)
-	, m_pImGui_Manager(CImGui_Manager::Get_Instance())
+	//, m_pImGui_Manager(CImGui_Manager::Get_Instance())
 {
-	Safe_AddRef(m_pImGui_Manager);
+	//Safe_AddRef(m_pImGui_Manager);
 }
 
 HRESULT CCamera_Main::Init_Prototype()
@@ -146,6 +146,6 @@ CGameObject* CCamera_Main::Clone(void* pArg)
 void CCamera_Main::Free()
 {
 	__super::Free();
-	Safe_Release(m_pImGui_Manager);
+	//Safe_Release(m_pImGui_Manager);
 	//Safe_Release(m_pPlayerTransform);
 }
