@@ -35,7 +35,7 @@ public:
 	}
 
 	HRESULT Bind_Material(class CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType);
-	HRESULT Bind_Animation(class CShader* pShader);
+	HRESULT Bind_Bone(class CShader* pShader);
 
 	HRESULT Render(_uint iMeshIndex);
 
@@ -55,7 +55,6 @@ private:
 
 	_mat m_PivotMatrix = {};
 
-	PLAYANIM_DESC m_PlayAnimDesc;
 	_int m_iCurrentAnimIndex = 0;
 	_int m_iNextAnimIndex = -1;
 	_bool m_isLoop = false;

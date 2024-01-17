@@ -144,8 +144,6 @@ HRESULT CRealtimeVTFModel::Init_Prototype(const string& strFilePath, const _bool
 
 HRESULT CRealtimeVTFModel::Init(void* pArg)
 {
-	m_PlayAnimDesc.PLAYANIM_DESC();
-
 	m_isLoop = true;
 
 	return S_OK;
@@ -242,7 +240,7 @@ HRESULT CRealtimeVTFModel::Read_Animations(ifstream& File)
 
 	for (size_t i = 0; i < m_iNumAnimations; i++)
 	{
-		CAnimation* pAnimation = CAnimation::Create(File);
+		CAnimation* pAnimation = CAnimation::Create(File, m_Bones);
 		if (!pAnimation)
 		{
 			MSG_BOX("Failed to Read Animations!");
