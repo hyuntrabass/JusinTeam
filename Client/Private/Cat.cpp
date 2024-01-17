@@ -24,8 +24,8 @@ HRESULT CCat::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(5.f, 0.f, 5.f, 1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
+	//m_pTransformCom->Set_State(State::Pos, _vec4(5.f, 0.f, 5.f, 1.f));
 	m_pTransformCom->Set_Speed(1.f);
 
 	m_Animation.iAnimIndex = IDLE01;
@@ -42,9 +42,6 @@ void CCat::Tick(_float fTimeDelta)
 {
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
-
-
-
 
 	m_pModelCom->Set_Animation(m_Animation);
 }

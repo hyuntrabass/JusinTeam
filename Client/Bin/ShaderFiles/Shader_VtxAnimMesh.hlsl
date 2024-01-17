@@ -1,6 +1,6 @@
 #include "Engine_Shader_Define.hlsli"
 
-matrix g_BoneMatrices[256];
+matrix g_BoneMatrices[512];
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_DiffuseTexture;

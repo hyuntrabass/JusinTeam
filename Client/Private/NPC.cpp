@@ -68,7 +68,7 @@ HRESULT CNPC::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(5)))
+		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
 		{
 			return E_FAIL;
 		}

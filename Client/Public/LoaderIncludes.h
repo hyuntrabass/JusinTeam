@@ -49,3 +49,8 @@
 
 // NPC
 #include "Cat.h"
+#include "Dog.h"
+#include "NPC_Dummy.h"
+
+// Boss
+#include "Groar_Boss.h"

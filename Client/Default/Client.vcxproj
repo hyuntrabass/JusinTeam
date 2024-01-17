@@ -154,10 +154,12 @@
     <ClInclude Include="..\Public\Camera_Main.h" />
     <ClInclude Include="..\Public\Cat.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
+    <ClInclude Include="..\Public\Dog.h" />
     <ClInclude Include="..\public\Effect_Manager.h" />
     <ClInclude Include="..\Public\ExpBar.h" />
     <ClInclude Include="..\Public\FadeBox.h" />
     <ClInclude Include="..\Public\Goat.h" />
+    <ClInclude Include="..\Public\Groar_Boss.h" />
     <ClInclude Include="..\Public\HpBar.h" />
     <ClInclude Include="..\Public\ItemBlock.h" />
     <ClInclude Include="..\Public\ItemSlot.h" />
@@ -171,6 +173,7 @@
     <ClInclude Include="..\Public\NPCvsMon.h" />
     <ClInclude Include="..\Public\Custom.h" />
     <ClInclude Include="..\Public\Effect_Dummy.h" />
+    <ClInclude Include="..\Public\NPC_Dummy.h" />
     <ClInclude Include="..\Public\Odin.h" />
     <ClInclude Include="..\Public\Rabbit.h" />
     <ClInclude Include="..\Public\Select_Map.h" />
@@ -219,10 +222,12 @@
     <ClCompile Include="..\Private\Camera_Main.cpp" />
     <ClCompile Include="..\Private\Cat.cpp" />
     <ClCompile Include="..\Private\CharacterSelect.cpp" />
+    <ClCompile Include="..\Private\Dog.cpp" />
     <ClCompile Include="..\private\Effect_Manager.cpp" />
     <ClCompile Include="..\Private\ExpBar.cpp" />
     <ClCompile Include="..\Private\FadeBox.cpp" />
     <ClCompile Include="..\Private\Goat.cpp" />
+    <ClCompile Include="..\Private\Groar_Boss.cpp" />
     <ClCompile Include="..\Private\HPBar.cpp" />
     <ClCompile Include="..\Private\ItemBlock.cpp" />
     <ClCompile Include="..\Private\ItemSlot.cpp" />
@@ -236,6 +241,7 @@
     <ClCompile Include="..\Private\NPCvsMon.cpp" />
     <ClCompile Include="..\Private\Custom.cpp" />
     <ClCompile Include="..\Private\Effect_Dummy.cpp" />
+    <ClCompile Include="..\Private\NPC_Dummy.cpp" />
     <ClCompile Include="..\Private\Odin.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />
     <ClCompile Include="..\Private\Select_Map.cpp" />

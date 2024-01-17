@@ -211,6 +211,15 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\EXP">
       <UniqueIdentifier>{ee5645a6-aaff-4259-ab47-4b4d8b9bbfb0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\07. NPC\NPC_Dummy">
+      <UniqueIdentifier>{4e366141-c410-4081-bc3c-4c5bf0976ef7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss">
+      <UniqueIdentifier>{c61f29d7-c959-47df-8a82-3a02726afaf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss">
+      <UniqueIdentifier>{a36f29cf-4d64-4404-b599-15a6ac076134}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -327,9 +336,6 @@
     <ClInclude Include="..\Public\Lake.h">
       <Filter>02.GameObjects\02.Terrain\Lake</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\NPCvsMon.h">
-      <Filter>02.GameObjects\04.Monster\Tutorial\00. NPCvsMon</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Void05.h">
       <Filter>02.GameObjects\04.Monster\Tutorial\ModelTest</Filter>
     </ClInclude>
@@ -402,6 +408,18 @@
     </ClInclude>
     <ClInclude Include="..\Public\ExpBar.h">
       <Filter>02.GameObjects\00.UI\GameUI\EXP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NPCvsMon.h">
+      <Filter>02.GameObjects\04.Monster\Tutorial\00. NPCvsMon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Dog.h">
+      <Filter>02.GameObjects\07. NPC\Animal\01. Dog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NPC_Dummy.h">
+      <Filter>02.GameObjects\07. NPC\NPC_Dummy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Groar_Boss.h">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -591,6 +609,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\ExpBar.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\EXP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Dog.cpp">
+      <Filter>02.GameObjects\07. NPC\Animal\01. Dog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NPC_Dummy.cpp">
+      <Filter>02.GameObjects\07. NPC\NPC_Dummy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Groar_Boss.cpp">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
