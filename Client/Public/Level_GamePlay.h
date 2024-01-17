@@ -35,6 +35,10 @@ private:
 
 	HRESULT Ready_Monster();
 
+
+	//UI
+	HRESULT Ready_UI();
+
 public:
 	static CLevel_GamePlay* Create(_dev pDevice, _context pContext);
 	virtual void Free() override;

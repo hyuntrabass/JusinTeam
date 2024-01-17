@@ -5,8 +5,8 @@
 #include "Loading_Horse.h"
 #include "Mouse.h"
 #include "Camera_Main.h"
-#include "Effect_Manager.h"
 #include "UI_Manager.h"
+#include "Effect_Manager.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -313,7 +313,6 @@ void CMainApp::Free()
 {
 	CUI_Manager::Destroy_Instance();
 	CEffect_Manager::Destroy_Instance();
-
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);

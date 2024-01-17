@@ -1,15 +1,19 @@
 #pragma once
 #include "Client_Define.h"
 #include "OrthographicObject.h"
+#include "SkillSlot.h"
 
 BEGIN(Client)
-
-class CHPBar final : public COrthographicObject
+class CSkillSlot;
+class CSkillBlock final : public CGameObject
 {
+public: 
+	enum SKILLSLOT{ SKILL_Q, SKILL_W, SKILL_E, SKILL_R, SKILL_END };
+
 private:
-	CHPBar(_dev pDevice, _context pContext);
-	CHPBar(const CHPBar& rhs);
-	virtual ~CHPBar() = default;
+	CSkillBlock(_dev pDevice, _context pContext);
+	CSkillBlock(const CSkillBlock& rhs);
+	virtual ~CSkillBlock() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -20,23 +24,18 @@ public:
 
 private:
 	CRenderer* m_pRendererCom{ nullptr };
-	CShader* m_pShaderCom{ nullptr };
-	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
-	CTexture* m_pTextureCom{ nullptr };
-	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
-	_float			m_fTime{};
-	_float2			m_vRatio{};
-	CGameObject* m_pBackground{ nullptr };
-	CGameObject* m_pBorder{ nullptr };
+	_bool			m_isPrototype{ false };
+	CSkillSlot*		m_pSlots[SKILL_END];
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
+	HRESULT Add_Slots();
 
 public:
-	static CHPBar* Create(_dev pDevice, _context pContext);
+	static CSkillBlock* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

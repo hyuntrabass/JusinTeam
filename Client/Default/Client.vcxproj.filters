@@ -196,6 +196,21 @@
     <Filter Include="02.GameObjects\07. NPC\Animal\01. Dog">
       <UniqueIdentifier>{fab2bdab-a60d-4964-af03-a20ce2c83454}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\ItemBlock">
+      <UniqueIdentifier>{1c6a9727-3e73-4eb5-b65f-8f868161884b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\ItemBlock\Slot">
+      <UniqueIdentifier>{ea401f40-795b-4de8-ae6e-f811248b7802}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\SkillBlock">
+      <UniqueIdentifier>{035e699b-1aef-4ab2-a3bc-5c4b384cf13a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\SkillBlock\Slot">
+      <UniqueIdentifier>{05317b15-69d7-4c48-b656-4c0f5a1dd27d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\EXP">
+      <UniqueIdentifier>{ee5645a6-aaff-4259-ab47-4b4d8b9bbfb0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -355,7 +370,7 @@
     <ClInclude Include="..\Public\HpBar.h">
       <Filter>02.GameObjects\00.UI\GameUI\HP</Filter>
     </ClInclude>
-      <ClInclude Include="..\Public\Weapon.h">
+    <ClInclude Include="..\Public\Weapon.h">
       <Filter>02.GameObjects\03.Player\Weapon</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\TrilobiteA.h">
@@ -366,6 +381,27 @@
     </ClInclude>
     <ClInclude Include="..\Public\Cat.h">
       <Filter>02.GameObjects\07. NPC\Animal\00. Cat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MPBar.h">
+      <Filter>02.GameObjects\00.UI\GameUI\MP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\JobMark.h">
+      <Filter>02.GameObjects\00.UI\GameUI\JOBMARK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SkillBlock.h">
+      <Filter>02.GameObjects\00.UI\GameUI\SkillBlock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ItemBlock.h">
+      <Filter>02.GameObjects\00.UI\GameUI\ItemBlock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SkillSlot.h">
+      <Filter>02.GameObjects\00.UI\GameUI\SkillBlock\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ItemSlot.h">
+      <Filter>02.GameObjects\00.UI\GameUI\ItemBlock\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ExpBar.h">
+      <Filter>02.GameObjects\00.UI\GameUI\EXP</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -534,6 +570,27 @@
     </ClCompile>
     <ClCompile Include="..\Private\Cat.cpp">
       <Filter>02.GameObjects\07. NPC\Animal\00. Cat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MPBar .cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\MP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\JobMark.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\JOBMARK</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SkillBlock.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\SkillBlock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ItemBlock.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\ItemBlock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SkillSlot.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\SkillBlock\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ItemSlot.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\ItemBlock\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ExpBar.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\EXP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

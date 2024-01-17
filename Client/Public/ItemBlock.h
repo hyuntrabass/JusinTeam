@@ -1,15 +1,19 @@
 #pragma once
 #include "Client_Define.h"
 #include "OrthographicObject.h"
+#include "ItemSlot.h"
 
 BEGIN(Client)
-
-class CHPBar final : public COrthographicObject
+class CItemSlot;
+class CItemBlock final : public CGameObject
 {
+public:
+	enum ITEMSLOT { ITEM1, ITEM2, ITEM3, ITEM4, ITEMSLOT_END };
+
 private:
-	CHPBar(_dev pDevice, _context pContext);
-	CHPBar(const CHPBar& rhs);
-	virtual ~CHPBar() = default;
+	CItemBlock(_dev pDevice, _context pContext);
+	CItemBlock(const CItemBlock& rhs);
+	virtual ~CItemBlock() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -20,23 +24,19 @@ public:
 
 private:
 	CRenderer* m_pRendererCom{ nullptr };
-	CShader* m_pShaderCom{ nullptr };
-	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
-	CTexture* m_pTextureCom{ nullptr };
-	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
-	_float			m_fTime{};
-	_float2			m_vRatio{};
-	CGameObject* m_pBackground{ nullptr };
-	CGameObject* m_pBorder{ nullptr };
+	_bool			m_isPrototype{ false };
+	CItemSlot*		m_pSlots[ITEMSLOT_END];
+
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
+	HRESULT Add_Slots();
 
 public:
-	static CHPBar* Create(_dev pDevice, _context pContext);
+	static CItemBlock* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

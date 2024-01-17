@@ -1,65 +1,61 @@
-#include "FadeBox.h"
+#include "ItemSlot.h"
 #include "GameInstance.h"
+#include "TextButton.h"
 
-CFadeBox::CFadeBox(_dev pDevice, _context pContext)
+CItemSlot::CItemSlot(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
 }
 
-CFadeBox::CFadeBox(const CFadeBox& rhs)
+CItemSlot::CItemSlot(const CItemSlot& rhs)
 	: COrthographicObject(rhs)
 {
 }
 
-HRESULT CFadeBox::Init_Prototype()
+HRESULT CItemSlot::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CFadeBox::Init(void* pArg)
+HRESULT CItemSlot::Init(void* pArg)
 {
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
 
-	m_fSizeX = g_iWinSizeX;
-	m_fSizeY = g_iWinSizeY;
+	m_fSizeX = ((ITEMSLOT_DESC*)pArg)->vSize.x;
+	m_fSizeY = ((ITEMSLOT_DESC*)pArg)->vSize.y;
 
-	m_fX = g_iWinSizeX >> 1;
-	m_fY = g_iWinSizeY >> 1;
+	m_fX = ((ITEMSLOT_DESC*)pArg)->vPosition.x;
+	m_fY = ((ITEMSLOT_DESC*)pArg)->vPosition.y;
 
-	m_fDepth = 0.05f;
+	m_fDepth = 0.8f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+	
 
 	return S_OK;
 }
 
-void CFadeBox::Tick(_float fTimeDelta)
+void CItemSlot::Tick(_float fTimeDelta)
 {
-	m_fAlpha += fTimeDelta * m_fDir * 5.f;
 
-	if (m_fAlpha >= 1.f)
-		m_fDir = -1.f;
-	
-	if (m_fAlpha < 0.f)
-		m_isDead = true;
 }
 
-void CFadeBox::Late_Tick(_float fTimeDelta)
+void CItemSlot::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
-HRESULT CFadeBox::Render()
+HRESULT CItemSlot::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(VTPass_UI_Alpha)))
+	if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
 	{
 		return E_FAIL;
 	}
@@ -69,12 +65,10 @@ HRESULT CFadeBox::Render()
 		return E_FAIL;
 	}
 
-
-
 	return S_OK;
 }
 
-HRESULT CFadeBox::Add_Components()
+HRESULT CItemSlot::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -91,7 +85,11 @@ HRESULT CFadeBox::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_FadeBox"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_HPBar"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_Slot"), TEXT("Com_Texture1"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -99,7 +97,7 @@ HRESULT CFadeBox::Add_Components()
 	return S_OK;
 }
 
-HRESULT CFadeBox::Bind_ShaderResources()
+HRESULT CItemSlot::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
 		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
@@ -116,7 +114,7 @@ HRESULT CFadeBox::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float))))
+	if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
 	{
 		return E_FAIL;
 	}
@@ -124,37 +122,38 @@ HRESULT CFadeBox::Bind_ShaderResources()
 	return S_OK;
 }
 
-CFadeBox* CFadeBox::Create(_dev pDevice, _context pContext)
+CItemSlot* CItemSlot::Create(_dev pDevice, _context pContext)
 {
-	CFadeBox* pInstance = new CFadeBox(pDevice, pContext);
+	CItemSlot* pInstance = new CItemSlot(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CFadeBox");
+		MSG_BOX("Failed to Create : CItemBlock");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CFadeBox::Clone(void* pArg)
+CGameObject* CItemSlot::Clone(void* pArg)
 {
-	CFadeBox* pInstance = new CFadeBox(*this);
+	CItemSlot* pInstance = new CItemSlot(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CFadeBox");
+		MSG_BOX("Failed to Clone : CItemBlock");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CFadeBox::Free()
+void CItemSlot::Free()
 {
 	__super::Free();
 
 	Safe_Release(m_pTextureCom);
+	Safe_Release(m_pMaskTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pVIBufferCom);

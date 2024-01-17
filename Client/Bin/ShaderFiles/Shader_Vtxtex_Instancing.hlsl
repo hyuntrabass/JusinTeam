@@ -46,8 +46,8 @@ VS_OUT VS_Main_RandomIndex(VS_IN Input)
     
     Output.vPos = mul(vPosition, g_WorldMatrix);
     Output.vPSize = float2(Input.vPSize.x * Input.TransformMatrix._11, Input.vPSize.y * Input.TransformMatrix._22);
-    g_iIndex = g_iIndex % (g_vNumSprite.x * g_vNumSprite.y);
-    g_iIndex++;
+    //g_iIndex = g_iIndex % (g_vNumSprite.x * g_vNumSprite.y);
+    //g_iIndex++;
     
     return Output;
 }
