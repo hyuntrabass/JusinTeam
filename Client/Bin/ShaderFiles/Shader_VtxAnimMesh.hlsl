@@ -6,7 +6,7 @@ matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
 texture2D g_SpecTexture;
-texture2D g_NoiseTexture;
+texture2D g_DissolveTexture;
 
 vector g_vColor = {1.f, 1.f, 1.f, 0.f};
 vector g_vCamPos;
@@ -238,7 +238,7 @@ PS_OUT_DEFERRED PS_Main_Dissolve(PS_IN Input)
     PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + vector(0.5f, 0.f, 0.f, 0.f) * g_bSelected;
-    float fDissolve = g_NoiseTexture.Sample(LinearSampler, Input.vTex).r;
+    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
     
     if (g_fDissolveRatio > fDissolve)
     {

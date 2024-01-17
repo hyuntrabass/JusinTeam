@@ -285,6 +285,10 @@ CGameObject* CSelect_Model::Clone(void* pArg)
 
 void CSelect_Model::Free()
 {
+	if (m_strModelTag == L"Prototype_Model_Select2")
+	{
+		Safe_Release(m_pEffect);
+	}
 	__super::Free();
 
 	Safe_Release(m_pModelCom);

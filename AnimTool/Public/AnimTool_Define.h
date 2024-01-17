@@ -105,7 +105,7 @@ namespace AnimTool
 	enum InstancingPass
 	{
 		InstPass_Particle_TextureMask,
-		InstPass_Particle_Sprite,
+		InstPass_Particle_Sprite_Color,
 		InstPass_Particle_MaskColor,
 	};
 #pragma endregion

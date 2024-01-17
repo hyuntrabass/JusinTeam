@@ -66,6 +66,7 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 	}
 
 	m_fTimer += fTimeDelta;
+	m_vUV += m_Effect.vUVDelta * fTimeDelta;
 
 	if (m_Effect.pPos)
 	{
@@ -109,7 +110,10 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 {
 	__super::Compute_CamDistance();
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
-	m_pRendererCom->Add_RenderGroup(RG_Blur, this);
+	if (not m_Effect.bSkipBloom)
+	{
+		m_pRendererCom->Add_RenderGroup(RG_BlendBlur, this);
+	}
 }
 
 HRESULT CEffect_Dummy::Render()
@@ -224,7 +228,12 @@ HRESULT CEffect_Dummy::Bind_ShaderResources()
 
 	if (m_Effect.iDiffTextureID >= 0)
 	{
-		if (FAILED(m_pDiffTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+		string strVariableName = "g_Texture";
+		if (m_Effect.iType == ET_MESH)
+		{
+			strVariableName = "g_DiffuseTexture";
+		}
+		if (FAILED(m_pDiffTextureCom->Bind_ShaderResource(m_pShaderCom, strVariableName.c_str())))
 		{
 			return E_FAIL;
 		}
@@ -306,6 +315,7 @@ void CEffect_Dummy::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pDissolveTextureCom);
 	Safe_Release(m_pDiffTextureCom);
