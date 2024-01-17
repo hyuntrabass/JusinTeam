@@ -148,6 +148,7 @@ PS_OUT PS_InvMaskTexture(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    
     if (Input.vTex.y < g_fHpRatio + 0.5f)
     {
         Output.vColor.xyz -= 0.9f;
@@ -190,18 +191,14 @@ PS_OUT PS_Main_HP(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, float2(Input.vTex.x - (g_fHpRatio - 0.5f), Input.vTex.y));
-    vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
-    
+    Output.vColor = g_Texture.Sample(LinearSampler, float2(Input.vTex));
+    vector vMask = g_MaskTexture.Sample(LinearSampler, float2(Input.vTex.x + g_fTime, Input.vTex.y));
     Output.vColor.a = Output.vColor.a * vMask.r;
-    /*
-    vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
-    vector vMask2 = g_MaskTexture2.Sample(LinearClampSampler, float2(Input.vTex.x - (g_fHpRatio - 0.5f), Input.vTex.y));
-    Output.vColor = g_vColor;
-    
-    Output.vColor.a = (Output.vColor.a * vMask.r) * vMask2.r;
-    
-    */
+    if (Input.vTex.x > g_fHpRatio)
+    {
+        discard;
+    }
+
     return Output;
 }
 
@@ -480,6 +477,20 @@ PS_OUT PS_Main_Dissolve(PS_IN Input)
     
     Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
     
+    return Output;
+}
+PS_OUT PS_Main_MP(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    Output.vColor = g_Texture.Sample(LinearSampler, float2(Input.vTex));
+    vector vMask = g_MaskTexture.Sample(LinearSampler, float2(Input.vTex.x + g_fTime, Input.vTex.y));
+    Output.vColor.a = Output.vColor.a * vMask.r;
+    if (Input.vTex.x < 1.f - g_fHpRatio)
+    {
+        discard;
+    }
+
     return Output;
 }
 
@@ -790,5 +801,17 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Dissolve();
     
+    }
+    pass MP
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_MP();
     }
 };

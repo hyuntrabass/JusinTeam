@@ -4,12 +4,14 @@
 
 BEGIN(Client)
 
-class CHPBar final : public COrthographicObject
+class CJobMark final : public COrthographicObject
 {
+public:
+	enum JOBSTATE{ BOW, ASSASSIN, JOBSTATE_END };
 private:
-	CHPBar(_dev pDevice, _context pContext);
-	CHPBar(const CHPBar& rhs);
-	virtual ~CHPBar() = default;
+	CJobMark(_dev pDevice, _context pContext);
+	CJobMark(const CJobMark& rhs);
+	virtual ~CJobMark() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -23,20 +25,19 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
 	CTexture* m_pTextureCom{ nullptr };
-	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
-	_float			m_fTime{};
-	_float2			m_vRatio{};
-	CGameObject* m_pBackground{ nullptr };
-	CGameObject* m_pBorder{ nullptr };
+	JOBSTATE m_eCurState{ BOW };
+	JOBSTATE m_ePrevState{ BOW };
+
+	CGameObject* m_pJob{ nullptr };
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CHPBar* Create(_dev pDevice, _context pContext);
+	static CJobMark* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

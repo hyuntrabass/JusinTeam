@@ -93,6 +93,13 @@ HRESULT CLevel_GamePlay::Init()
 		MSG_BOX("Failed to Ready Map");
 		return E_FAIL;
 	}
+	
+
+	if (FAILED(Ready_UI()))
+	{
+		MSG_BOX("Failed to Ready UI");
+		return E_FAIL;
+	}
 
 	m_pGameInstance->Set_HellHeight(-5000.f);
 
@@ -277,6 +284,37 @@ HRESULT CLevel_GamePlay::Ready_Thief04()
 HRESULT CLevel_GamePlay::Ready_TrilobiteA()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_TrilobiteA"), TEXT("Prototype_GameObject_TrilobiteA"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_UI()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Player_HP"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Player_MP"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Player_Job"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_SkillBlock"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_ItemBlock"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_ExpBar"))))
 	{
 		return E_FAIL;
 	}

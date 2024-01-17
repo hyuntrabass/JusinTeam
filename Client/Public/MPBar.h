@@ -4,12 +4,12 @@
 
 BEGIN(Client)
 
-class CHPBar final : public COrthographicObject
+class CMPBar final : public COrthographicObject
 {
 private:
-	CHPBar(_dev pDevice, _context pContext);
-	CHPBar(const CHPBar& rhs);
-	virtual ~CHPBar() = default;
+	CMPBar(_dev pDevice, _context pContext);
+	CMPBar(const CMPBar& rhs);
+	virtual ~CMPBar() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -27,16 +27,17 @@ private:
 
 private:
 	_float			m_fTime{};
+	_float			m_fStartSize{};
 	_float2			m_vRatio{};
-	CGameObject* m_pBackground{ nullptr };
-	CGameObject* m_pBorder{ nullptr };
+	CGameObject*	m_pBackground{ nullptr };
+	CGameObject*	m_pBorder{ nullptr };
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CHPBar* Create(_dev pDevice, _context pContext);
+	static CMPBar* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

@@ -188,6 +188,7 @@ namespace Client
 		VTPass_SpriteMaskColor_Dissolve,
 		VTPass_Dust,
 		VTPass_Dissolve,
+		VTPass_MP,
 		VTPass_End
 	};
 

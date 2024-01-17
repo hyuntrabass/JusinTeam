@@ -1,37 +1,33 @@
-#include "HPBar.h"
+#include "MPBar.h"
 #include "GameInstance.h"
 #include "TextButton.h"
 
-CHPBar::CHPBar(_dev pDevice, _context pContext)
+CMPBar::CMPBar(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
 }
 
-CHPBar::CHPBar(const CHPBar& rhs)
+CMPBar::CMPBar(const CMPBar& rhs)
 	: COrthographicObject(rhs)
 {
 }
 
-HRESULT CHPBar::Init_Prototype()
+HRESULT CMPBar::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CHPBar::Init(void* pArg)
+HRESULT CMPBar::Init(void* pArg)
 {
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
 
-
-
-
-
 	m_fSizeX = 193.f;
 	m_fSizeY = 25.f;
 
-	m_fX = 490.f;
+	m_fX = 790.f;
 	m_fY = 610.f;
 
 	m_fDepth = 0.8f;
@@ -56,46 +52,44 @@ HRESULT CHPBar::Init(void* pArg)
 
 	Button.fDepth = 0.7f;
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BarBorder");
-	m_pBorder = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+	m_pBorder= m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
 	if (not m_pBorder)
 	{
 		return E_FAIL;
 	}
 
-
-
 	return S_OK;
 }
 
-void CHPBar::Tick(_float fTimeDelta)
+void CMPBar::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Pressing(DIK_1))
-		m_vRatio.x -= 2.f;;
+		m_vRatio.x -= 1.f;
 	if (m_pGameInstance->Key_Pressing(DIK_2))
 	{
-		if(m_vRatio.x <= m_vRatio.y)
+		if (m_vRatio.x <= m_vRatio.y)
 			m_vRatio.x += 0.1f;;
 	}
-	
+
 	m_fTime += fTimeDelta;
 }
 
-void CHPBar::Late_Tick(_float fTimeDelta)
+void CMPBar::Late_Tick(_float fTimeDelta)
 {
 	m_pBorder->Late_Tick(fTimeDelta);
 	m_pBackground->Late_Tick(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
-HRESULT CHPBar::Render()
+HRESULT CMPBar::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(VTPass_MP)))
+	if (FAILED(m_pShaderCom->Begin(VTPass_HP)))
 	{
 		return E_FAIL;
 	}
@@ -111,11 +105,10 @@ HRESULT CHPBar::Render()
 	m_pGameInstance->Render_Text(L"Font_Dialogue", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX, m_fY + 16.9f), 0.3f);
 	m_pGameInstance->Render_Text(L"Font_Dialogue", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX, m_fY + 17.f), 0.3f);
 
-
 	return S_OK;
 }
 
-HRESULT CHPBar::Add_Components()
+HRESULT CMPBar::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -132,7 +125,7 @@ HRESULT CHPBar::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_HPBar"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_MPBar"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -144,7 +137,7 @@ HRESULT CHPBar::Add_Components()
 	return S_OK;
 }
 
-HRESULT CHPBar::Bind_ShaderResources()
+HRESULT CMPBar::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
 		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
@@ -175,36 +168,37 @@ HRESULT CHPBar::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
+
 	return S_OK;
 }
 
-CHPBar* CHPBar::Create(_dev pDevice, _context pContext)
+CMPBar* CMPBar::Create(_dev pDevice, _context pContext)
 {
-	CHPBar* pInstance = new CHPBar(pDevice, pContext);
+	CMPBar* pInstance = new CMPBar(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CHPBar");
+		MSG_BOX("Failed to Create : CMPBar");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CHPBar::Clone(void* pArg)
+CGameObject* CMPBar::Clone(void* pArg)
 {
-	CHPBar* pInstance = new CHPBar(*this);
+	CMPBar* pInstance = new CMPBar(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CHPBar");
+		MSG_BOX("Failed to Clone : CMPBar");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CHPBar::Free()
+void CMPBar::Free()
 {
 	__super::Free();
 

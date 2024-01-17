@@ -4,12 +4,19 @@
 
 BEGIN(Client)
 
-class CHPBar final : public COrthographicObject
+class CItemSlot final : public COrthographicObject
 {
+public:
+	typedef struct tagItemSlotDesc
+	{
+		_float2 vSize;
+		_float2 vPosition;
+	}ITEMSLOT_DESC;
+
 private:
-	CHPBar(_dev pDevice, _context pContext);
-	CHPBar(const CHPBar& rhs);
-	virtual ~CHPBar() = default;
+	CItemSlot(_dev pDevice, _context pContext);
+	CItemSlot(const CItemSlot& rhs);
+	virtual ~CItemSlot() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -26,17 +33,17 @@ private:
 	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
+	_bool			m_isFull{};
 	_float			m_fTime{};
-	_float2			m_vRatio{};
-	CGameObject* m_pBackground{ nullptr };
-	CGameObject* m_pBorder{ nullptr };
+	_float			m_fCoolTime{};
+	CGameObject*	m_pItem{ nullptr };
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CHPBar* Create(_dev pDevice, _context pContext);
+	static CItemSlot* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

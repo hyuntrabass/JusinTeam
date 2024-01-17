@@ -680,12 +680,26 @@ HRESULT CLoader::Load_GamePlay()
 #pragma region Texture
 
 #pragma region UI
+	string strInputFilePath = "../Bin/Resources/Textures/UI/Gameplay";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_UI_Gameplay_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
 #pragma endregion
 
 #pragma region Terrain
 
 	// Terrain -> 테스트용도
-	string strInputFilePath = "../Bin/Resources/Textures/Terrain/";
+	strInputFilePath = "../Bin/Resources/Textures/Terrain/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -815,6 +829,42 @@ HRESULT CLoader::Load_GamePlay()
 	//{
 	//	return E_FAIL;
 	//}
+#pragma region UI
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Player_HP"), CHPBar::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Player_MP"), CMPBar::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Player_Job"), CJobMark::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_SkillSlot"), CSkillSlot::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_SkillBlock"), CSkillBlock::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_ItemSlot"), CItemSlot::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_ItemBlock"), CItemBlock::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_ExpBar"), CExpBar::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+#pragma endregion
+
 
 #pragma region Monster
 

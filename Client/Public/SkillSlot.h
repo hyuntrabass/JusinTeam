@@ -4,12 +4,18 @@
 
 BEGIN(Client)
 
-class CHPBar final : public COrthographicObject
+class CSkillSlot final : public COrthographicObject
 {
+public:
+	typedef struct tagSkillSlotDesc
+	{
+		_float2 vSize;
+		_float2 vPosition;
+	}SKILLSLOT_DESC;
 private:
-	CHPBar(_dev pDevice, _context pContext);
-	CHPBar(const CHPBar& rhs);
-	virtual ~CHPBar() = default;
+	CSkillSlot(_dev pDevice, _context pContext);
+	CSkillSlot(const CSkillSlot& rhs);
+	virtual ~CSkillSlot() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -23,20 +29,20 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
 	CTexture* m_pTextureCom{ nullptr };
-	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
+	_bool			m_isFull{};
 	_float			m_fTime{};
-	_float2			m_vRatio{};
-	CGameObject* m_pBackground{ nullptr };
-	CGameObject* m_pBorder{ nullptr };
+	_float			m_fCoolTime{};
+	CGameObject*	m_pSkill{ nullptr };
+
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CHPBar* Create(_dev pDevice, _context pContext);
+	static CSkillSlot* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };
