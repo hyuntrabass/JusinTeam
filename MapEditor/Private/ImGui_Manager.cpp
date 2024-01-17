@@ -229,6 +229,13 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			}
 
 			ImGui::Separator();
+			
+			ImGui::Checkbox("WireFrame", &m_isMode);
+			if (m_pSelectMap)
+			{
+				m_pSelectMap->Mode(m_isMode);
+			}
+			ImGui::Separator();
 
 			if (ImGui::Button("Save_Map"))
 			{
@@ -550,9 +557,12 @@ HRESULT CImGui_Manager::ImGuiPos()
 
 	ImGui::SeparatorText("All Reset : ");
 
-	if (ImGui::Button("Normal Save"))
+	if (m_eItemType == ItemType::Map)
 	{
-		MeshToMask();
+		if (ImGui::Button("Normal Save"))
+		{
+			MeshToMask();
+		}
 	}
 
 	if (ImGui::Button("Reset"))

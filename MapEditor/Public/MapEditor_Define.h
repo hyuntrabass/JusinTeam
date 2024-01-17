@@ -115,6 +115,7 @@ namespace MapEditor
 	enum StaticMeshPass
 	{
 		StaticPass_Default,
+		StaticPass_Wire,
 		StaticPass_NonLight,
 		StaticPass_OutLine,
 		StaticPass_AlphaTestMeshes,

@@ -47,7 +47,10 @@ HRESULT CMap::Init(void* pArg)
 
 void CMap::Tick(_float fTimeDelta)
 {
-	
+	if (m_isMode == false)
+		m_iShaderPass = StaticPass_Default;
+	else
+		m_iShaderPass = StaticPass_Wire;
 }
 
 void CMap::Late_Tick(_float fTimeDelta)
@@ -93,6 +96,7 @@ HRESULT CMap::Render()
 		{
 			return E_FAIL;
 		}
+		
 
 		if (FAILED(m_pShaderCom->Begin(m_iOutLineShaderPass)))
 		{
@@ -130,6 +134,7 @@ HRESULT CMap::Add_Components()
 	{
 		return E_FAIL;
 	}
+
 	m_iShaderPass = StaticPass_Default;
 	m_iOutLineShaderPass = StaticPass_OutLine;
 	
@@ -181,6 +186,11 @@ void CMap::Select(const _bool& isSelected)
 	m_isSelected = isSelected;
 }
 
+void CMap::Mode(const _bool& isMode)
+{
+	m_isMode = isMode;
+}
+
 HRESULT CMap::Create_HightMap(vector<_float3> VerticesPos)
 {
 	vector<_float> vHight;
@@ -193,19 +203,11 @@ HRESULT CMap::Create_HightMap(vector<_float3> VerticesPos)
 	ID3D11Texture2D* pTexture2D = nullptr;
 	D3D11_TEXTURE2D_DESC	TextureDesc = {};
 
-	TextureDesc.Width = 256;
-	TextureDesc.Height = 256;
+	TextureDesc.Width = 40;
+	TextureDesc.Height = 40;
 	TextureDesc.MipLevels = 1;
 	TextureDesc.ArraySize = 1;
 	TextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-
-	vector<_uint> colors(TextureDesc.Width * TextureDesc.Height);
-	for (_int i = 0; i < vHight.size(); ++i) {
-		_float fValue = (vHight[i] - minHeight) / (maxHeight - minHeight);
-		colors[i] = lerp(0, 255, fValue);
-	}
-
-
 	TextureDesc.SampleDesc.Quality = 0;
 	TextureDesc.SampleDesc.Count = 1;
 
@@ -214,24 +216,44 @@ HRESULT CMap::Create_HightMap(vector<_float3> VerticesPos)
 	TextureDesc.CPUAccessFlags = 0;
 	TextureDesc.MiscFlags = 0;
 
-	D3D11_SUBRESOURCE_DATA initData;
-	initData.pSysMem = &colors[0];
+	vector<_uint> colors(TextureDesc.Width * TextureDesc.Height);
+	//for (_int i = 0; i < vHight.size(); ++i) {
+	//	_float fValue = (vHight[i] - minHeight) / (maxHeight - minHeight);
+	//	colors[i] = lerp(0, 255, fValue);
+	//}
+
+
+	ID3D11Texture2D* pTexture = nullptr;
+
+	for (_int i = 0; i < TextureDesc.Width * TextureDesc.Height; ++i) {
+		if (i < vHight.size()) {
+			_float fValue = (vHight[i] - minHeight) / (maxHeight - minHeight); 
+			_uint colorValue = static_cast<_uint>(lerp(0, 255, fValue));
+			colors[i] = (colorValue << 24) | (colorValue << 16) | (colorValue << 8) | colorValue;
+		}
+		else {
+			colors[i] = 0xFF000000; 
+		}
+	}
+	
+
+	D3D11_SUBRESOURCE_DATA initData{};
+	initData.pSysMem = colors.data();
 	initData.SysMemPitch = TextureDesc.Width * 4;
 	initData.SysMemSlicePitch = 0;
 
 
-
-	ID3D11Texture2D* pTexture = NULL;
-	if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, NULL, &pTexture)))
+	if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, &initData, &pTexture)))
 		return E_FAIL;
+
 
 	if (FAILED(SaveWICTextureToFile(m_pContext, pTexture, GUID_ContainerFormatPng, L"../Bin/Data/HightMap.png")))
 		return E_FAIL;
 
 
 	return S_OK;
-
 }
+
 _float CMap::lerp(_float a, _float b, _float f) {
 	return a + f * (b - a);
 }

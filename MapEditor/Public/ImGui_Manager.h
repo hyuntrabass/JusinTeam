@@ -64,7 +64,6 @@ public:
 
 	_vec4 Get_MouseWorld() { return m_vMouseWorld; }
 
-
 private:
 	HRESULT ImGuiMenu();
 	HRESULT ImGuiPos();
@@ -126,6 +125,7 @@ private:
 	_int MapIndex{0};
 	_bool m_isTerrain{false};
 
+	_bool m_isMode{false};
 
 private:
 	// 파일의 이름 가져와서 저장

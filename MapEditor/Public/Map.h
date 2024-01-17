@@ -20,6 +20,7 @@ public:
 	virtual HRESULT Render() override;
 
 	void Select(const _bool& isSelected);
+	void Mode(const _bool& isMode);
 	_bool Get_Selected() { return m_isSelected; }
 	_int Get_ID() const { return m_iID; }
 	MapInfo Get_Info() const { return m_Info; }
@@ -42,7 +43,7 @@ private:
 	_uint m_iOutLineShaderPass{};
 
 	_int m_iID = 0;
-
+	_bool m_isMode{ false };
 	_bool m_isCreate{ false };
 private:
 	HRESULT Add_Components();
