@@ -30,6 +30,7 @@ HRESULT CPlayer::Init(void* pArg)
 	Add_Parts();
 	m_pTransformCom->Set_Speed(1);
 	m_pCameraTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
+	Safe_AddRef(m_pCameraTransform);
 	return S_OK;
 }
 
