@@ -56,14 +56,15 @@ private:
     ANIM_DESC m_AnimDesc{};
     POINT m_ptMouse = {};
     vector<const _char*> m_AnimationNames;
+    vector<const _char*> m_BoneNames;
     _int m_ePreType = { TYPE_MONSTER };
     _int m_eType = { TYPE_MONSTER };
     _uint m_iCurrentModelIndex = { 0 };
     _bool m_IsCreateModel = { false };
 
-
-    vector<CHAR*> m_FBXDataName;
-    _char** m_FileNames = nullptr;
+    vector<const _char*> m_TriggerTimes;
+    vector<_char*> m_FBXDataName;
+    vector<const _char*> m_EffectNames;
     //ImGuizmo
     ImGuizmo::OPERATION m_eStateType = { ImGuizmo::OPERATION::TRANSLATE };
     _int m_iManipulateType = 0;

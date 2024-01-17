@@ -8,6 +8,7 @@
 #include "PipeLine.h"
 #include "GameObject.h"
 #include "Animation.h"
+#include "Bone.h"
 #include "Layer.h"
 
 #include "Player.h"
@@ -35,25 +36,34 @@ HRESULT CImgui_Manager::Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc)
 	_char* szFileName = nullptr;
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
-		szFileName = new _char[MAX_PATH];
 		if (entry.is_regular_file())
 		{
 			if (entry.path().extension().string() != ".hyuntraanimmesh")
 			{
 				continue;
 			}
+			szFileName = new _char[MAX_PATH];
 			_splitpath_s(entry.path().string().c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, nullptr, 0);
 			iNumMonsterModels++;
 			m_FBXDataName.push_back(szFileName);
 		}
 	}
 
-	m_FileNames = new _char * [m_FBXDataName.size()];
-
-	for (size_t i = 0; i < m_FBXDataName.size(); i++)
+	strInputFilePath = "../../Client/Bin/EffectData/";
+	_uint iNumEffects{};
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
-		m_FileNames[i] = new _char[MAX_PATH];
-		m_FileNames[i] = m_FBXDataName[i];
+		if (entry.is_regular_file())
+		{
+			if (entry.path().extension().string() != ".effect")
+			{
+				continue;
+			}
+			szFileName = new _char[MAX_PATH];
+			_splitpath_s(entry.path().string().c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, nullptr, 0);
+			iNumEffects++;
+			m_EffectNames.push_back(szFileName);
+		}
 	}
 
 	return S_OK;
@@ -117,35 +127,30 @@ HRESULT CImgui_Manager::ImGuiMenu()
 #pragma endregion
 	ImGui::Begin("MENU");
 
-	ImGui::SeparatorText("SELECT"); 
-	
+	ImGui::SeparatorText("SELECT");
+
 	ImGui::RadioButton("MONSTER", &m_eType, TYPE_MONSTER); ImGui::SameLine();
 	ImGui::RadioButton("PLAYER", &m_eType, TYPE_PLAYER);
 
-	
-
-
 	if (m_eType == TYPE_MONSTER)
 	{
-		/*const char* szModelTag[19] = { "Balrog","Furgoat","GiantBoss","Goat","Hirokin","Nastron02","Nastron03","Nott","NPCvsMon","Orc02","Penguin",
-		"Rabbit","Skjaldmaer","Skjaldmaer_A","Thief04","Trilobite","TrilobiteA","Void13","VoidDragon" };*/
-		static const char* szCurrentModel = m_FileNames[0];
+		static const char* szCurrentModel = m_FBXDataName[0];
 
 		if (m_ePreType != m_eType)
 		{
 			m_ePreType = m_eType;
 			m_iCurrentModelIndex = 0;
-			szCurrentModel = m_FileNames[0];
+			szCurrentModel = m_FBXDataName[0];
 		}
 
 		if (ImGui::BeginCombo("LIST", szCurrentModel))
 		{
 			for (size_t i = 0; i < m_FBXDataName.size(); i++)
 			{
-				_bool bSelectedModel = (szCurrentModel == m_FileNames[i]);
-				if (ImGui::Selectable(m_FileNames[i], bSelectedModel))
+				_bool bSelectedModel = (szCurrentModel == m_FBXDataName[i]);
+				if (ImGui::Selectable(m_FBXDataName[i], bSelectedModel))
 				{
-					szCurrentModel = m_FileNames[i];
+					szCurrentModel = m_FBXDataName[i];
 					m_iCurrentModelIndex = i;
 				}
 			}
@@ -191,7 +196,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	}
 	if (ImGui::Button("ADD_EFFECT"))
 	{
-
 	}
 
 #pragma region CreateObject
@@ -287,7 +291,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			wsprintf(szComName, strMonsterComName.c_str(), m_iCurrentModelIndex);
 		}
 		else if (m_eType == TYPE_PLAYER)
-		{ 
+		{
 			wsprintf(szComName, strPlayerComName.c_str(), m_iCurrentModelIndex);
 		}
 		wstring strFinalComName = szComName;
@@ -323,7 +327,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			{
 				++iter;
 			}
-			
+
 			if (ImGui::SliderInt("ANIMPOS", &iCurrentAnimPos, 0.f, (_int)(*iter)->Get_Duration()))
 			{
 				(*iter)->Set_CurrentAnimPos((_float)iCurrentAnimPos);
@@ -346,27 +350,58 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			{
 				(*iter)->Add_Trigger((*iter)->Get_CurrentAnimPos());
 			}
-			
-			vector<const _char*> TriggerTimes;
+
 			vector<_float> Triggers = (*iter)->Get_Triggers();
-			_tchar szTriggerTime[MAX_PATH] = TEXT("");
-			const wstring& strTriggerTime = TEXT("%d");
 			auto Trigger = Triggers.begin();
-			_char* szTrigger = nullptr;
+			string* strTrigger = new string[(*iter)->Get_NumTrigger()];
 			for (size_t i = 0; i < (*iter)->Get_NumTrigger(); i++)
 			{
-				szTrigger = new _char;
-				wsprintf(szTriggerTime, strTriggerTime.c_str(), (_int)(*Trigger));
-				WideCharToMultiByte(CP_ACP, 0, szTriggerTime, (_int)lstrlen(szTriggerTime), szTrigger, MAX_PATH, nullptr, nullptr);
-				TriggerTimes.push_back(szTrigger);
+				strTrigger[i] = to_string((*Trigger));
+				m_TriggerTimes.push_back(strTrigger[i].c_str());
 				++Trigger;
 			}
 			ImGui::SameLine();
 			static int iTrigger = 0;
-			if (ImGui::ListBox("TRIGGER", &iTrigger, TriggerTimes.data(), TriggerTimes.size()))
+			if (ImGui::ListBox("TRIGGER", &iTrigger, m_TriggerTimes.data(), m_TriggerTimes.size()))
 			{
 			}
+			m_TriggerTimes.clear();
+			Safe_Delete_Array(strTrigger);
 
+		}
+
+		ImGui::End();
+	}
+	if (m_pPlayer)
+	{
+		ImGui::Begin("OBJECT BONES");
+
+		CModel* pCurrentModel = m_pPlayer->Get_CurrentModel();
+		if (pCurrentModel != nullptr)
+		{
+			_uint iNumBones = pCurrentModel->Get_NumBones();
+			vector<CBone*> Bones = pCurrentModel->Get_Bones();
+
+			m_BoneNames.clear();
+
+			auto iter = Bones.begin();
+			for (_uint i = 0; i < iNumBones; i++)
+			{
+				m_BoneNames.push_back((*iter)->Get_BoneName());
+				++iter;
+			}
+			static int iCurrentBone = 0;
+			if (m_BoneNames.size() != 0)
+			{
+				if (ImGui::ListBox("BONE", &iCurrentBone, m_BoneNames.data(), m_BoneNames.size()))
+				{
+				}
+			}
+
+			string strNumBones = "ALLBONES : " + to_string(iNumBones);
+			ImGui::Text(strNumBones.c_str()); ImGui::SameLine();
+			string strCurBone = "CURRENTBONE : " + to_string(iCurrentBone);
+			ImGui::Text(strCurBone.c_str());
 		}
 
 		ImGui::End();
@@ -376,6 +411,18 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	{
 		m_pPlayer->Set_ModelType((CPlayer::TYPE)m_eType);
 		m_pPlayer->Set_ModelIndex(m_iCurrentModelIndex);
+	}
+
+	//if (m_Effects.size() != 0)
+	{
+		ImGui::Begin("EFFECT MENU");
+
+		static int iCurrentEffect = 0;
+		if (ImGui::ListBox("EFFECT", &iCurrentEffect, m_EffectNames.data(), m_EffectNames.size()))
+		{
+		}
+
+		ImGui::End();
 	}
 
 	return S_OK;
@@ -569,11 +616,22 @@ void CImgui_Manager::Free()
 
 	Safe_Release(m_pPlayer);
 
-	/*for (auto& pEffect : m_Effects)
+	/*for (size_t i = 0; i < m_Effects.size(); i++)
 	{
-		Safe_Release(pEffect);
+		Safe_Release(m_Effects[i]);
+	}*/
+	m_Effects.clear();
+
+	for (auto& MonsterNames : m_FBXDataName)
+	{
+		Safe_Delete_Array(MonsterNames);
 	}
-	m_Effects.clear();*/
+
+	for (auto& EffectName : m_EffectNames)
+	{
+		Safe_Delete_Array(EffectName);
+	}
+	
 
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();

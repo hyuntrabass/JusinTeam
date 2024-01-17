@@ -64,6 +64,11 @@ const _uint& CModel::Get_NumAnim() const
 	return m_iNumAnimations;
 }
 
+const _uint& CModel::Get_NumBones() const
+{
+	return m_Bones.size();
+}
+
 const _bool& CModel::IsAnimationFinished(_uint iAnimIndex) const
 {
 	return m_Animations[iAnimIndex]->IsFinished();
@@ -112,6 +117,11 @@ vector<class CAnimation*>& CModel::Get_Animations()
 CAnimation* CModel::Get_Animation(_uint iAnimIndex)
 {
 	return m_Animations[iAnimIndex];
+}
+
+vector<class CBone*>& CModel::Get_Bones()
+{
+	return m_Bones;
 }
 
 void CModel::Set_Animation(ANIM_DESC Animation_Desc)

@@ -3,7 +3,7 @@
 
 BEGIN(Engine)
 
-class CBone final : public CBase
+class ENGINE_DLL CBone final : public CBase
 {
 private:
 	CBone();

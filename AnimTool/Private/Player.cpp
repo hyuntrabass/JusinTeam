@@ -245,6 +245,9 @@ void CPlayer::Free()
 			Safe_Release(m_pMonsterModelCom[i]);
 		}
 	}
+	Safe_Delete_Array(m_pMonsterModelCom);
+
+	Safe_Delete_Array(m_pMonsterModelTag);
 
 	if (m_pPlayerModelCom)
 	{
@@ -253,6 +256,9 @@ void CPlayer::Free()
 			Safe_Release(m_pPlayerModelCom[i]);
 		}
 	}
+	Safe_Delete_Array(m_pPlayerModelCom);
+
+	Safe_Delete_Array(m_pPlayerModelTag);
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
