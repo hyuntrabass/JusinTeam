@@ -304,8 +304,10 @@ CGameObject* CEffect_Dummy::Clone(void* pArg)
 
 void CEffect_Dummy::Free()
 {
+
 	__super::Free();
 
+	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pDissolveTextureCom);
 	Safe_Release(m_pDiffTextureCom);

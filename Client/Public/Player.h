@@ -1,7 +1,8 @@
 #pragma once
 #include "Client_Define.h"
 #include "GameObject.h"
-
+#include "BodyPart.h"
+#include "Weapon.h"
 BEGIN(Client)
 
 struct BODYPART_DESC
@@ -50,7 +51,7 @@ public:
 	Anim_Climb_start,
 	Anim_Climb_wait,
 	Anim_Collect_end,
-	Anim_Collect_loop,
+	Anim_Collect_loop, //채집
 	Anim_Collect_Start,
 	Anim_Create_Idle,
 	Anim_Create_Pick,
@@ -87,19 +88,19 @@ public:
 	Anim_Idle_11,
 	Anim_Idle_Change10,
 	Anim_Interactioning,
-	Anim_jump_end,
+	Anim_jump_end,												// 점프
 	Anim_jump_end_long,
 	Anim_jump_end_run,
 	Anim_jump_loop,
 	Anim_jump_start,
 	Anim_LoadingScene_Pose_Sniper,
-	Anim_logging,
-	Anim_Mining,
+	Anim_logging,												// 나무베는거
+	Anim_Mining,												// 광물캐는거
 	Anim_Mount_fly_run,
 	Anim_Mount_Idle,
 	Anim_Mount_Run,
-	Anim_Mount_Walk,
-	Anim_Normal_run,
+	Anim_Mount_Walk,											
+	Anim_Normal_run,											// 기본 움직임
 	Anim_Normal_run_L,
 	Anim_Normal_run_R,
 	Anim_Normal_run_start,
@@ -204,18 +205,28 @@ public:
 	Anim_end
 };
 
-	enum WEAPON_TYPE
-	{
-		WP_BOW,
-		WP_SWORD,
-		WP_END
-	};
+
 
 	struct WEAPONPART_DESC
 	{
 		_uint iNumVariations{};
 		ANIM_DESC* Animation{};
 		CTransform* pParentTransform{ nullptr };
+	};
+
+	enum PLAYER_STATE
+	{
+		Idle,
+		Walk,
+		Run_Start,
+		Run,
+		Run_End,
+		Attack,
+		Attack_Idle,
+		Jump_Start,
+		Jump,
+		Jump_End,
+		State_End
 	};
 private:
 	CPlayer(_dev pDevice, _context pContext);
@@ -239,20 +250,40 @@ public:
 
 	void Reset_PartsAnim();
 	void Set_Key(_float fTimeDelta);
-	
+	void Move(_float fTimeDelta);
+	void Common_SwordAttack();
+	void Return_Attack_IdleForm();
+	void Sword_Attack_Dash(_float fTimeDelta);
 public:
-	void Attack();
-
+	void Init_State();
+	void Tick_State(_float fTimeDelta);
 private:
-	vector<CGameObject*> m_vecParts{};
+	vector<CBodyPart*> m_vecParts{};
 	CGameObject* m_pWeapon{};
-
+	CTransform* m_pCameraTransform{};
 private:
 	ANIM_DESC m_Animation{};
+	PLAYER_STATE m_eState{ Idle };
+	PLAYER_STATE m_ePrevState{ Idle };
 	_float4 m_vPos{};
 	_float m_fGravity{};
 	WEAPON_TYPE m_Current_Weapon{WP_END};
 	_bool m_bStartGame{};
+	_float m_fWalkSpeed{2.f};
+	_float m_fRunSpeed{4.f};
+
+	_bool m_isInterpolating{};
+	_float m_fInterpolationRatio{};
+	_vec4 m_vOriginalLook{};
+	_float m_iSuperArmor{};
+	_float m_fAttTimer{};
+	_bool m_bAttacked{};
+	_bool m_hasJumped{};
+	_int m_iAttackCombo{};
+
+	_vec4 m_currentDir{};
+	_float m_lerpFactor{0.1f};
+
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

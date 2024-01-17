@@ -85,14 +85,14 @@ void CSelect_Model::Tick(_float fTimeDelta)
 		m_Animation.iAnimIndex = S_PICK_IDLE;
 		m_Animation.isLoop = true;
 		m_Animation.fAnimSpeedRatio = 1.5f;
-		m_Animation.bSkipInterpolation = true;
+
 	}
 	if (m_pModelCom->IsAnimationFinished(S_CANCEL))
 	{
 		m_Animation.iAnimIndex = S_IDLE;
 		m_Animation.isLoop = true;
 		m_Animation.fAnimSpeedRatio = 2.5f;
-		m_Animation.bSkipInterpolation = true;
+
 	}
 
 	m_pModelCom->Set_Animation(m_Animation);
@@ -225,20 +225,19 @@ void CSelect_Model::Change_AnimState(SELECTMODEL_ANIM eAnim)
 	case S_IDLE:
 		m_Animation.iAnimIndex = S_IDLE;
 		m_Animation.isLoop = true;
-		m_Animation.bSkipInterpolation = true;
+
 		break;
 	case S_MOTION:
 		m_Animation.iAnimIndex = S_MOTION;
 		m_Animation.isLoop = false;
 		m_Animation.fAnimSpeedRatio = 1.5f;
 		m_Animation.bRestartAnimation = false;
-		m_Animation.bSkipInterpolation = true;
+
 		break;
 	case S_CANCEL:
 		m_Animation.iAnimIndex = S_CANCEL;
 		m_Animation.isLoop = false;
 		m_Animation.fAnimSpeedRatio = 1.5f;
-		m_Animation.bSkipInterpolation = true;
 
 		if (m_strModelTag == L"Prototype_Model_Select2")
 		{

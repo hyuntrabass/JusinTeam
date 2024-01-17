@@ -227,7 +227,7 @@ HRESULT CLevel_Select::Ready_Camera()
 	m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
 
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, L"Layer_Camera", TEXT("Prototype_GameObject_Camera_Debug"), &CamDesc)))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, L"Layer_Camera_Debug", TEXT("Prototype_GameObject_Camera_Debug"), &CamDesc)))
 	{
 		return E_FAIL;
 	}

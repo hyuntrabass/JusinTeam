@@ -42,6 +42,13 @@ namespace Client
 		CM_STATEEND
 	};
 
+	enum WEAPON_TYPE
+	{
+		WP_BOW,
+		WP_SWORD,
+		WP_END
+	};
+
 	enum PART_TYPE
 	{
 		PT_HAIR,
