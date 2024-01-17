@@ -238,8 +238,6 @@ HRESULT CMesh::Ready_StaticMesh(ifstream& ModelFile, _mat OffsetMatrix)
 		return E_FAIL;
 	}
 
-	Safe_Delete_Array(pVertices);
-
 
 	return S_OK;
 }
