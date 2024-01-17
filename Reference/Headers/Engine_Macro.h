@@ -9,6 +9,10 @@
 #define ENGINE_DLL _declspec(dllimport)
 #endif
 
+// 하이트맵 만들기 위한 정의 -> 알파값이 앞에 있음
+#define D3DCOLOR_ABGR(a,r,g,b) \
+    ((D3DCOLOR)((((a)&0xff)<<24)|(((r)&0xff)<<16)|(((g)&0xff)<<8)|((b)&0xff)))
+
 // 마우스 커서 위치를 얻어오는 과정을 매크로로 축약함.
 #define GET_CURSOR_POINT(ptName)\
 POINT ptName;\

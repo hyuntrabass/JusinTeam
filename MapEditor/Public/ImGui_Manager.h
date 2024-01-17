@@ -74,17 +74,19 @@ private:
 	void Create_Dummy(const _int& iListIndex);
 	void Create_Map(const _int& iListIndex);
 	HRESULT Create_Terrain();
-	HRESULT Modify_Object();
 	
 	void Delete_Dummy();
 	void Delete_Map();
 	HRESULT Modify_Terrain();
 
-	const char* Search_Files();
+	void Search_Path();
+	void Search_Files(string DirPath, const char* Path, vector<const char*>* List);
 	void Reset();
 	void Mouse_Pos();
 	void FastPicking();
-	void TerrainPicking();
+
+
+	void MeshToMask();
 
 
 	// 데이터 파싱
@@ -129,19 +131,24 @@ private:
 	// 파일의 이름 가져와서 저장
 	vector<const char*> Maps;
 	vector<const char*> Objects;
+	vector<const char*> ObjectPath;
 	vector<const char*> Monsters;
+	vector<const char*> MonsterPath;
 	vector<const char*> NPCs;
-	vector<const char*> Triggers;
+	vector<const char*> NPCPath;
 
+
+	vector<class CMap*> m_MapsList{};
 	vector<class CDummy*> m_ObjectsList{};
 	vector<class CDummy*> m_MonsterList{};
 	vector<class CDummy*> m_NPCList{};
-	vector<class CMap*> m_MapsList{};
+	vector<const CDummy*> TriggerList;
 
 	map<int, class CDummy*>m_DummyList{};
 	map<int, class CMap*>m_Map{};
 
 	class CDummy* m_pSelectedDummy{ nullptr };
+	class CDummy* m_pCreateDummy{ nullptr };
 	class CMap* m_pSelectMap{ nullptr };
 	class CTerrain* m_pTerrain{ nullptr };
 	char Serch_Name[MAX_PATH]{};

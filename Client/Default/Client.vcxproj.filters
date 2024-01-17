@@ -142,6 +142,9 @@
     <Filter Include="02.GameObjects\02.Terrain\Lake">
       <UniqueIdentifier>{cf63ced1-74e6-4b14-b3a8-630d98997eb7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\07.Map">
+      <UniqueIdentifier>{8e2295d8-49f8-4964-8cf1-492d50fc7d62}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -274,6 +277,9 @@
     <ClInclude Include="..\Public\Lake.h">
       <Filter>02.GameObjects\02.Terrain\Lake</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Map.h">
+      <Filter>02.GameObjects\07.Map</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -398,6 +404,9 @@
     <ClCompile Include="..\Private\Void05.cpp" />
     <ClCompile Include="..\Private\Lake.cpp">
       <Filter>02.GameObjects\02.Terrain\Lake</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Map.cpp">
+      <Filter>02.GameObjects\07.Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

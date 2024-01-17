@@ -1,5 +1,5 @@
 #include "Map.h"
-
+#include <wincodec.h>
 static _int iID = 1;
 
 CMap::CMap(_dev pDevice, _context pContext)
@@ -179,6 +179,61 @@ HRESULT CMap::Bind_ShaderResources()
 void CMap::Select(const _bool& isSelected)
 {
 	m_isSelected = isSelected;
+}
+
+HRESULT CMap::Create_HightMap(vector<_float3> VerticesPos)
+{
+	vector<_float> vHight;
+	for (const auto& Value : VerticesPos) {
+		vHight.push_back(Value.y);
+	}
+	auto minHeight = *min_element(vHight.begin(), vHight.end());
+	auto maxHeight = *max_element(vHight.begin(), vHight.end());
+	
+	ID3D11Texture2D* pTexture2D = nullptr;
+	D3D11_TEXTURE2D_DESC	TextureDesc = {};
+
+	TextureDesc.Width = 256;
+	TextureDesc.Height = 256;
+	TextureDesc.MipLevels = 1;
+	TextureDesc.ArraySize = 1;
+	TextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+	vector<_uint> colors(TextureDesc.Width * TextureDesc.Height);
+	for (_int i = 0; i < vHight.size(); ++i) {
+		_float fValue = (vHight[i] - minHeight) / (maxHeight - minHeight);
+		colors[i] = lerp(0, 255, fValue);
+	}
+
+
+	TextureDesc.SampleDesc.Quality = 0;
+	TextureDesc.SampleDesc.Count = 1;
+
+	TextureDesc.Usage = D3D11_USAGE_DEFAULT;
+	TextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	TextureDesc.CPUAccessFlags = 0;
+	TextureDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA initData;
+	initData.pSysMem = &colors[0];
+	initData.SysMemPitch = TextureDesc.Width * 4;
+	initData.SysMemSlicePitch = 0;
+
+
+
+	ID3D11Texture2D* pTexture = NULL;
+	if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, NULL, &pTexture)))
+		return E_FAIL;
+
+	if (FAILED(SaveWICTextureToFile(m_pContext, pTexture, GUID_ContainerFormatPng, L"../Bin/Data/HightMap.png")))
+		return E_FAIL;
+
+
+	return S_OK;
+
+}
+_float CMap::lerp(_float a, _float b, _float f) {
+	return a + f * (b - a);
 }
 
 CMap* CMap::Create(_dev pDevice, _context pContext)

@@ -1,6 +1,7 @@
 #include "Level_GamePlay.h"
 #include "Camera.h"
 #include "Monster.h"
+#include "Map.h"
 
 CLevel_GamePlay::CLevel_GamePlay(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -131,13 +132,48 @@ HRESULT CLevel_GamePlay::Ready_Player()
 
 HRESULT CLevel_GamePlay::Ready_Map()
 {
-	_uint2 vTerrainSize{ 50, 50 };
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &vTerrainSize)))
+	//_uint2 vTerrainSize{ 50, 50 };
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &vTerrainSize)))
+	//{
+	//	return E_FAIL;
+	//}
+
+	const TCHAR* pGetPath = TEXT("../Bin/Data/MapData.dat");
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
 	{
+		MessageBox(g_hWnd, L"맵 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
 		return E_FAIL;
 	}
 
+	_uint MapListSize;
+	inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
 
+
+	for (_uint i = 0; i < MapListSize; ++i)
+	{
+		_ulong MapPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+
+		wstring MapPrototype;
+		MapPrototype.resize(MapPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+
+		_mat MapWorldMat;
+		inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+
+		MapInfo MapInfo{};
+		MapInfo.Prototype = MapPrototype;
+		MapInfo.m_Matrix = MapWorldMat;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Map"), &MapInfo)))
+		{
+			MessageBox(g_hWnd, L"맵 불러오기 실패", L"파일 로드", MB_OK);
+			return E_FAIL;
+		}
+	}
 	return S_OK;
 }
 

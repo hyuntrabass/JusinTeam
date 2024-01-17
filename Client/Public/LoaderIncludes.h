@@ -23,6 +23,8 @@
 #include "Sky.h"
 #include "BackGround_Mask.h"
 
+#include "Map.h"
+
 #include "Effect_Dummy.h"
 
 // Monster

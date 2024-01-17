@@ -24,6 +24,8 @@ public:
 	void Apply_TransformToActor(_mat WorldMatrix);
 
 	void Set_Bone_Offset(const vector<class CBone*>& Bones);
+	vector<_float3>  Get_VerticesPos(){ return m_VerticesPos; }
+	vector<_float3>  Get_VerticesNor(){ return m_VerticesNor; }
 
 private:
 	_float3* m_pVerticesPos{ nullptr };
@@ -35,6 +37,9 @@ private:
 	_uint m_iNumBones{};
 	vector<_uint> m_BoneIndices{};
 	vector<_mat> m_OffsetMatrices{};
+
+	vector<_float3> m_VerticesPos{};
+	vector<_float3> m_VerticesNor{};
 
 	_mat* m_BoneMatrices{};
 
