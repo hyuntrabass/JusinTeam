@@ -190,12 +190,18 @@ PS_OUT PS_Main_HP(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
+    Output.vColor = g_Texture.Sample(LinearSampler, float2(Input.vTex.x - (g_fHpRatio - 0.5f), Input.vTex.y));
+    vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
+    
+    Output.vColor.a = Output.vColor.a * vMask.r;
+    /*
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     vector vMask2 = g_MaskTexture2.Sample(LinearClampSampler, float2(Input.vTex.x - (g_fHpRatio - 0.5f), Input.vTex.y));
     Output.vColor = g_vColor;
     
     Output.vColor.a = (Output.vColor.a * vMask.r) * vMask2.r;
     
+    */
     return Output;
 }
 
