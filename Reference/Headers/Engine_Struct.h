@@ -120,12 +120,16 @@ namespace Engine
 	};
 
 	using TRIGGEREFFECT_DESC = struct tagTriggerEffectDesc {
+		float fStartAnimPos;
+		float fEndAnimPos = -1.f;
+		bool IsFollow;
+		unsigned int iNameLength;
 		TCHAR szEffectName[MAX_PATH];
-		int iBoneIndex = -1;
-		SimpleMath::Vector3 vPos{};
+		int iBoneIndex;
 	};
 
 	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {
+		float fStartAnimPos;
 		TCHAR szSoundName[MAX_PATH];
 		int iChannel;
 		float fVolume;

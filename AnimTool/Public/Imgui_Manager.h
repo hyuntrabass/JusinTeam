@@ -53,6 +53,9 @@ private:
 private:
     class CPlayer* m_pPlayer = { nullptr };
     vector<class CEffect_Dummy*> m_Effects;
+    vector<const _char*> m_EffectDescNames;
+    vector<_float> m_StartEffect;
+    vector<_float> m_EndEffect;
     ANIM_DESC m_AnimDesc{};
     POINT m_ptMouse = {};
     vector<const _char*> m_AnimationNames;
@@ -61,6 +64,7 @@ private:
     _int m_eType = { TYPE_MONSTER };
     _uint m_iCurrentModelIndex = { 0 };
     _bool m_IsCreateModel = { false };
+    _int m_iSelectEffectFile{};
     _int m_iCurrentEffect{};
     _int m_iCurrentBone{};
 
