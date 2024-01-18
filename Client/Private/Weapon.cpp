@@ -18,7 +18,7 @@ HRESULT CWeapon::Init_Prototype()
 
 HRESULT CWeapon::Init(void* pArg)
 {
-	CPlayer::WEAPONPART_DESC Desc = *reinterpret_cast<CPlayer::WEAPONPART_DESC*>(pArg);
+	WEAPONPART_DESC Desc = *reinterpret_cast<WEAPONPART_DESC*>(pArg);
 
 	m_iNumVariations = Desc.iNumVariations;
 	m_Models.resize(m_iNumVariations, nullptr);
@@ -75,6 +75,9 @@ void CWeapon::Late_Tick(_float fTimeDelta)
 
 HRESULT CWeapon::Render()
 {
+	if (m_bHide)
+		return S_OK;
+
 	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
 	{
 		return S_OK;
@@ -92,8 +95,6 @@ HRESULT CWeapon::Render()
 
 	for (_uint i = 0; i < m_Models[m_iSelectedModelIndex]->Get_NumMeshes(); i++)
 	{
-		if (m_iSelectedModelIndex == 8 && i < 3)
-			continue;
 
 		if (FAILED(m_Models[m_iSelectedModelIndex]->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{

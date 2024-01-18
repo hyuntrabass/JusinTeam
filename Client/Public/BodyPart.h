@@ -30,6 +30,8 @@ public:
 	void Reset_Model();
 	void Set_ModelIndex(_int ModelIndex) { m_iSelectedModelIndex = ModelIndex;}
 	_int Get_ModelIndex() { return m_iSelectedModelIndex; }
+
+	void Set_Hide(_bool Hide) { m_bHide = Hide;}
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
@@ -40,7 +42,7 @@ private:
 	_uint m_iNumVariations{};
 	_uint m_iSelectedModelIndex{0};
 	ANIM_DESC* m_Animation{};
-
+	_bool m_bHide{};
 private:
 
 	HRESULT Add_Components();
