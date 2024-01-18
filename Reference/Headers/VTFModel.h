@@ -4,8 +4,8 @@
 BEGIN(Engine)
 
 typedef struct tagAnimTransArray {
-	using TransformArrayType = array<_mat, 200>;
-	array<TransformArrayType, 500> TransformArray;
+	using TransformArrayType = array<_mat, 150>;
+	array<TransformArrayType, 300> TransformArray;
 }ANIMTRANS_ARRAY;
 
 // 이 VTF는 Prototype 단계에서 애니메이션을 미리 계산합니다
@@ -37,6 +37,7 @@ public:
 
 	HRESULT Bind_Material(class CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType);
 	HRESULT Bind_Animation(class CShader* pShader);
+	HRESULT Bind_OldAnimation(class CShader* pShader);
 
 	HRESULT Render(_uint iMeshIndex);
 
@@ -57,6 +58,7 @@ private:
 	_mat m_PivotMatrix = {};
 
 	PLAYANIM_DESC m_PlayAnimDesc;
+	ANIMTIME_DESC m_OldAnimDesc;
 	_int m_iCurrentAnimIndex = 0;
 	_int m_iNextAnimIndex = -1;
 	_bool m_isLoop = false;
@@ -73,7 +75,7 @@ private:
 	HRESULT Read_Animations(ifstream& File);
 	HRESULT Read_Materials(ifstream& File, const string& strFilePath);
 	HRESULT CreateVTF(_uint MaxFrame);
-	HRESULT CreateAnimationTransform(_uint iIndex, vector<ANIMTRANS_ARRAY>& AnimTransforms);
+	HRESULT CreateAnimationTransform(_uint iIndex, ANIMTRANS_ARRAY* pAnimTransform);
 
 public:
 	static CVTFModel* Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh = false, _fmatrix PivotMatrix = XMMatrixIdentity());

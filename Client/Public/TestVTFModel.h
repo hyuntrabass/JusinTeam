@@ -32,9 +32,12 @@ private:
 	CVTFModel* m_pModelCom = { nullptr };
 
 private:
+	_mat m_OldWorldMatrix{};
+	_uint m_iAnimIndex = 0;
+
+private:
 	SELECTMODEL_ANIM m_eCurAnimState{ S_IDLE };
 	wstring m_strModelTag = {};
-	ANIM_DESC m_Animation{};
 
 public:
 	static CTestVTFModel* Create(_dev pDevice, _context pContext);

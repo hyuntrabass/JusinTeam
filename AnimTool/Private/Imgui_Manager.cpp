@@ -151,6 +151,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			}
 			ImGui::EndCombo();
 		}
+
 	}
 	else if (m_eType == TYPE_PLAYER)
 	{
@@ -574,6 +575,14 @@ void CImgui_Manager::Free()
 	//	Safe_Release(pEffect);
 	//}
 	//m_Effects.clear();
+
+	for (size_t i = 0; i < m_FBXDataName.size(); i++)
+		Safe_Delete_Array(m_FileNames[i]);
+
+	Safe_Delete_Array(m_FileNames);
+
+	m_FBXDataName.clear();
+
 
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();

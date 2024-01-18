@@ -33,7 +33,10 @@ struct tagPlayAnimDesc
     tagAnimTimeDesc eNext;
 };
 
+tagAnimTimeDesc g_OldAnimDesc;
+
 tagPlayAnimDesc g_PlayAnimDesc;
+
 
 Texture2DArray g_BoneTexture;
 
@@ -132,6 +135,53 @@ matrix Get_BoneMatrix(VS_IN Input)
     return BoneMatrix;
 }
 
+matrix Get_OldBoneMatrix(VS_IN Input)
+{
+    float fIndices[4] = { Input.vBlendIndices.x, Input.vBlendIndices.y, Input.vBlendIndices.z, Input.vBlendIndices.w };
+   
+    float fWeights[4] = { Input.vBlendWeight.x, Input.vBlendWeight.y, Input.vBlendWeight.z, Input.vBlendWeight.w };
+
+    int iAnimIndex;
+    int iCurrentFrame;
+    int iNextFrame;
+    float fRatio;
+    
+    iAnimIndex = g_OldAnimDesc.iAnimIndex;
+    iCurrentFrame = g_OldAnimDesc.iCurrFrame;
+    iNextFrame = g_OldAnimDesc.iNextFrame;
+    fRatio = g_OldAnimDesc.fRatio;
+        
+    float4 CurrentBoneVec[4];
+    float4 NextBoneVec[4];
+    
+    matrix CurrentBone = 0;
+    matrix NextBone = 0;
+    
+    matrix BoneMatrix = 0;
+    
+    for (uint i = 0; i < 4; i++)
+    {
+        CurrentBoneVec[0] = g_BoneTexture.Load(int4(fIndices[i] * 4 + 0, iCurrentFrame, iAnimIndex, 0));
+        CurrentBoneVec[1] = g_BoneTexture.Load(int4(fIndices[i] * 4 + 1, iCurrentFrame, iAnimIndex, 0));
+        CurrentBoneVec[2] = g_BoneTexture.Load(int4(fIndices[i] * 4 + 2, iCurrentFrame, iAnimIndex, 0));
+        CurrentBoneVec[3] = g_BoneTexture.Load(int4(fIndices[i] * 4 + 3, iCurrentFrame, iAnimIndex, 0));
+        
+        CurrentBone = matrix(CurrentBoneVec[0], CurrentBoneVec[1], CurrentBoneVec[2], CurrentBoneVec[3]);
+
+        NextBoneVec[0] = g_BoneTexture.Load(int4(fIndices[i] * 4 + 0, iNextFrame, iAnimIndex, 0));
+        NextBoneVec[1] = g_BoneTexture.Load(int4(fIndices[i] * 4 + 1, iNextFrame, iAnimIndex, 0));
+        NextBoneVec[2] = g_BoneTexture.Load(int4(fIndices[i] * 4 + 2, iNextFrame, iAnimIndex, 0));
+        NextBoneVec[3] = g_BoneTexture.Load(int4(fIndices[i] * 4 + 3, iNextFrame, iAnimIndex, 0));
+        
+        NextBone = matrix(NextBoneVec[0], NextBoneVec[1], NextBoneVec[2], NextBoneVec[3]);
+        
+        matrix LerpBone = lerp(CurrentBone, NextBone, fRatio);
+        
+        BoneMatrix += mul(LerpBone, fWeights[i]);
+    }
+    return BoneMatrix;
+}
+
 VS_OUT VS_Main(VS_IN Input)
 {
     VS_OUT Output = (VS_OUT) 0;
@@ -153,6 +203,77 @@ VS_OUT VS_Main(VS_IN Input)
     Output.vProjPos = Output.vPos;
     Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), g_WorldMatrix)).xyz;
     Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
+    
+    return Output;
+}
+
+struct VS_Motion_Blur_Out
+{
+    vector vPos : SV_Position; // == float4
+    vector vNor : Normal;
+    float2 vTex : Texcoord0;
+    vector vWorldPos : Texcoord1;
+    vector vProjPos : Texcoord2;
+    float3 vTangent : Tangent;
+    float3 vBinormal : Binormal;
+    float4 vDir : DIRECTION;
+};
+
+VS_Motion_Blur_Out VS_Motion_Blur(VS_IN Input)
+{
+    VS_Motion_Blur_Out Output = (VS_Motion_Blur_Out) 0;
+	
+    matrix matWV, matWVP;
+    
+    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+    
+    matrix matOldWV, matOldWVP;
+    
+    matOldWV = mul(g_OldWorldMatrix, g_OldViewMatrix);
+    matOldWVP = mul(matOldWV, g_ProjMatrix);
+    
+    matrix BoneMatrix = Get_BoneMatrix(Input);
+    
+    vector vNew = mul(vector(Input.vPos, 1.f), BoneMatrix);
+    
+    matrix OldBoneMatrix = Get_OldBoneMatrix(Input);
+    
+    vector vOld = mul(vector(Input.vPos, 1.f), OldBoneMatrix);
+    
+    
+    vector vNormal = mul(vector(Input.vNor, 0.f), BoneMatrix);
+    
+    vector vOldPos = mul(vOld, matOldWVP);
+    vector vNewPos = mul(vNew, matWVP);
+    
+    vector vDir = vNewPos - vOldPos;
+    vector vCalNor = mul(vNormal, matWV);
+    
+    float a = dot(normalize(vDir), normalize(vCalNor));
+    
+    vector vPos;
+    if(a<0.f)
+        vPos = vOldPos;
+    else
+        vPos = vNewPos;
+    
+    float2 velocity = (vNewPos.xy / vNewPos.w) - (vOldPos.xy / vOldPos.w);
+    
+    vector vCalDir;
+    vCalDir.xy = velocity * 0.5f;
+    vCalDir.y *= -1.f;
+    vCalDir.z = vPos.z;
+    vCalDir.w = vPos.w;
+    
+    Output.vPos = vPos;
+    Output.vNor = normalize(mul(vNormal, g_WorldMatrix));
+    Output.vTex = Input.vTex;
+    Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
+    Output.vProjPos = Output.vPos;
+    Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), g_WorldMatrix)).xyz;
+    Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
+    Output.vDir = vCalDir;
     
     return Output;
 }
@@ -213,7 +334,62 @@ PS_OUT PS_Main(PS_IN Input)
     return Output;
 }
 
-technique11 DefaultTechniqueShader_VtxNorTex
+struct PS_Blur_IN
+{
+    vector vPos : SV_Position; // == float4
+    vector vNor : Normal;
+    float2 vTex : Texcoord0;
+    vector vWorldPos : Texcoord1;
+    vector vProjPos : Texcoord2;
+    float3 vTangent : Tangent;
+    float3 vBinormal : Binormal;
+    float4 vDir : DIRECTION;
+};
+
+struct PS_Blur_OUT
+{
+    vector vDiffuse : SV_Target0;
+    vector vNormal : SV_Target1;
+    vector vDepth : SV_Target2;
+    vector vVelocity : SV_Target4;
+};
+
+PS_Blur_OUT PS_Motion_Blur(PS_Blur_IN Input)
+{
+    PS_Blur_OUT Output = (PS_Blur_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
+    
+    if (0.3f > vMtrlDiffuse.a)
+    {
+        discard;
+    }
+    
+    float3 vNormal;
+    if (g_HasNorTex)
+    {
+        vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
+        
+        vNormal = vNormalDesc.xyz * 2.f - 1.f;
+        
+        float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
+        
+        vNormal = mul(normalize(vNormal), WorldMatrix) * -1.f;
+    }
+    else
+    {
+        vNormal = Input.vNor.xyz;
+    }
+    
+    Output.vDiffuse = vMtrlDiffuse;
+    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vVelocity = Input.vDir;
+    
+    return Output;
+}
+
+technique11 DefaultTechniqueShader_VTF
 {
     pass Default
     {
@@ -226,5 +402,18 @@ technique11 DefaultTechniqueShader_VtxNorTex
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main();
+    }
+
+    pass Motion_Blur
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Motion_Blur();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Motion_Blur();
     }
 };

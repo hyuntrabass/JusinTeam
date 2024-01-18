@@ -64,6 +64,9 @@ private:
 
     vector<CHAR*> m_FBXDataName;
     _char** m_FileNames = nullptr;
+
+    CModel* m_pCurrentModel = nullptr;
+
     //ImGuizmo
     ImGuizmo::OPERATION m_eStateType = { ImGuizmo::OPERATION::TRANSLATE };
     _int m_iManipulateType = 0;

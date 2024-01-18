@@ -323,6 +323,8 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
+#pragma region SSAO할려고 랜덤값 생성
+
 	random_device RandomDevice;
 	mt19937_64 RandomNumber;
 	RandomNumber = mt19937_64(RandomDevice());
@@ -331,9 +333,10 @@ HRESULT CRenderer::Init_Prototype()
 	uniform_real_distribution<float> RandomY = uniform_real_distribution<float>(-1.f, 1.f);
 	uniform_real_distribution<float> RandomZ = uniform_real_distribution<float>(-1.f, 1.f);
 
-	for (size_t i = 0; i < 50; i++)
+	for (size_t i = 0; i < 16; i++)
 		m_vRandom[i] = _vec3(RandomX(RandomNumber), RandomY(RandomNumber), RandomZ(RandomNumber));
 
+#pragma endregion
 
 #ifdef _DEBUGTEST
 	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Diffuse"), _float2(50.f, 50.f), _float2(100.f, 100.f))))

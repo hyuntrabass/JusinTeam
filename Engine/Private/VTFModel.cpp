@@ -166,6 +166,8 @@ HRESULT CVTFModel::Play_Animation(_float fTimeDelta)
 {
 	CAnimation* pPlayingAnim = m_Animations[m_iCurrentAnimIndex];
 
+	m_OldAnimDesc = m_PlayAnimDesc.eCurrent;
+
 	m_PlayAnimDesc.eCurrent.fTime += fTimeDelta;
 
 	_float fTimePerFrame = 1.f / pPlayingAnim->Get_TickPerSec();
@@ -261,6 +263,14 @@ HRESULT CVTFModel::Bind_Animation(CShader* pShader)
 		return E_FAIL;
 
 	if (FAILED(pShader->Bind_ShaderResourceView("g_BoneTexture", m_pSRV)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CVTFModel::Bind_OldAnimation(CShader* pShader)
+{
+	if (FAILED(pShader->Bind_RawValue("g_OldAnimDesc", &m_OldAnimDesc, sizeof(ANIMTIME_DESC))))
 		return E_FAIL;
 
 	return S_OK;
@@ -382,12 +392,14 @@ HRESULT CVTFModel::Read_Materials(ifstream& File, const string& strFilePath)
 
 HRESULT CVTFModel::CreateVTF(_uint MaxFrame)
 {
-	vector<ANIMTRANS_ARRAY> AnimTransforms;
-	AnimTransforms.resize(m_iNumAnimations);
+	//vector<ANIMTRANS_ARRAY> AnimTransforms;
+	//AnimTransforms.resize(m_iNumAnimations);
+
+	ANIMTRANS_ARRAY* pAnimTransform = new ANIMTRANS_ARRAY[m_iNumAnimations];
 
 	for (size_t i = 0; i < m_iNumAnimations; i++)
 	{
-		if (FAILED(CreateAnimationTransform(i, AnimTransforms)))
+		if (FAILED(CreateAnimationTransform(i, pAnimTransform)))
 			return E_FAIL;
 	}
 
@@ -414,7 +426,7 @@ HRESULT CVTFModel::CreateVTF(_uint MaxFrame)
 		for (size_t j = 0; j < MaxFrame; j++)
 		{
 			void* Ptr = AnimationPtr + j * BoneMatrixSize;
-			memcpy(Ptr, AnimTransforms[i].TransformArray[j].data(), BoneMatrixSize);
+			memcpy(Ptr, &pAnimTransform[i].TransformArray[j], BoneMatrixSize);
 		}
 	}
 
@@ -445,7 +457,7 @@ HRESULT CVTFModel::CreateVTF(_uint MaxFrame)
 	return S_OK;
 }
 
-HRESULT CVTFModel::CreateAnimationTransform(_uint iIndex, vector<ANIMTRANS_ARRAY>& AnimTransforms)
+HRESULT CVTFModel::CreateAnimationTransform(_uint iIndex, ANIMTRANS_ARRAY* AnimTransforms)
 {
 	CAnimation* pAnimation = m_Animations[iIndex];
 
