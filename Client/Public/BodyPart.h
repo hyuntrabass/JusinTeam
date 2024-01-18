@@ -1,7 +1,7 @@
 #pragma once
 #include "Client_Define.h"
 #include "PartObject.h"
-#include "Player.h"
+
 
 BEGIN(Client)
 
@@ -29,6 +29,7 @@ public:
 	//void Set_ModelIndex(_uint iIndex);
 	void Reset_Model();
 	void Set_ModelIndex(_int ModelIndex) { m_iSelectedModelIndex = ModelIndex;}
+	_int Get_ModelIndex() { return m_iSelectedModelIndex; }
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };

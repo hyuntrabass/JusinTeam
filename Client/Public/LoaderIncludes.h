@@ -20,6 +20,14 @@
 #include "SelectDesc.h"
 #include "TextButton.h"
 
+#include "ExpBar.h"
+#include "HPBar.h"
+#include "MPBar.h"
+#include "JobMark.h"
+#include "SkillSlot.h"
+#include "SkillBlock.h"
+#include "ItemSlot.h"
+#include "ItemBlock.h"
 #include "TextButtonColor.h"
 #include "CharacterSelect.h"
 #include "Select_Map.h"
@@ -43,3 +51,8 @@
 
 // NPC
 #include "Cat.h"
+#include "Dog.h"
+#include "NPC_Dummy.h"
+
+// Boss
+#include "Groar_Boss.h"

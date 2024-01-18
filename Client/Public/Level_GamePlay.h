@@ -34,8 +34,17 @@ private:
 
 	// NPC
 	HRESULT Ready_Cat();
+	HRESULT Ready_Dog();
+	HRESULT Ready_NPC_Dummy();
+
+	// Boss
+	HRESULT Ready_Groar_Boss();
 
 	HRESULT Ready_Monster();
+
+
+	//UI
+	HRESULT Ready_UI();
 
 public:
 	static CLevel_GamePlay* Create(_dev pDevice, _context pContext);

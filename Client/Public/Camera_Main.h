@@ -28,6 +28,9 @@ private:
 	_float m_fPlayerDistance{ 4.f };
 	_float m_fShakeAcc{ 100.f };
 	_bool  m_bInitMode[CAMERA_MODE::CM_END];
+	_float m_fLerpTime{};
+	_float m_fLerpDistance{4.f};
+	_float m_fFirstDistance{4.f};
 
 private:
 	void Select_Mode(_float fTimeDelta);

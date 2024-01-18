@@ -1,6 +1,7 @@
 #include "Level_GamePlay.h"
 #include "Camera.h"
 #include "Monster.h"
+#include "NPC_Dummy.h"
 #include "Map.h"
 
 CLevel_GamePlay::CLevel_GamePlay(_dev pDevice, _context pContext)
@@ -81,19 +82,46 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
-	//NPC
+	// NPC
 	if (FAILED(Ready_Cat()))
 	{
 		MSG_BOX("Failed to Ready Cat");
 		return E_FAIL;
 	}
 
+	if (FAILED(Ready_Dog()))
+	{
+		MSG_BOX("Failed to Ready Dog");
+		return E_FAIL;
+	}
 
+	if (FAILED(Ready_NPC_Dummy()))
+	{
+		MSG_BOX("Failed to Ready NPC_Dummy");
+		return E_FAIL;
+	}
+
+	// Boss
+	if (FAILED(Ready_Groar_Boss()))
+	{
+		MSG_BOX("Failed to Ready Groar_Boss");
+		return E_FAIL;
+	}
+
+	// Map
 	if (FAILED(Ready_Map()))
 	{
 		MSG_BOX("Failed to Ready Map");
 		return E_FAIL;
 	}
+	
+
+	if (FAILED(Ready_UI()))
+	{
+		MSG_BOX("Failed to Ready UI");
+		return E_FAIL;
+	}
+
 
 	if (FAILED(Ready_Object()))
 	{
@@ -261,6 +289,52 @@ HRESULT CLevel_GamePlay::Ready_Cat()
 	return S_OK;
 }
 
+HRESULT CLevel_GamePlay::Ready_Dog()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Dog"), TEXT("Prototype_GameObject_Dog"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_NPC_Dummy()
+{
+	NPC_TYPE eType = ITEM_MERCHANT;
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &eType)))
+	{
+		return E_FAIL;
+	}
+
+	eType = SKILL_MERCHANT;
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &eType)))
+	{
+		return E_FAIL;
+	}
+
+	eType = GROAR;
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &eType)))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Groar_Boss()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Groar_Boss"), TEXT("Prototype_GameObject_Groar_Boss"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
 HRESULT CLevel_GamePlay::Ready_Monster()
 {
 	MonsterInfo Info{};
@@ -320,7 +394,7 @@ HRESULT CLevel_GamePlay::Ready_Goat()
 {
 	for (size_t i = 0; i < 1; i++)
 	{
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Furgoat"), TEXT("Prototype_GameObject_Furgoat"))))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Goat"), TEXT("Prototype_GameObject_Goat"))))
 		{
 			return E_FAIL;
 		}
@@ -362,6 +436,37 @@ HRESULT CLevel_GamePlay::Ready_Thief04()
 HRESULT CLevel_GamePlay::Ready_TrilobiteA()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_TrilobiteA"), TEXT("Prototype_GameObject_TrilobiteA"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_UI()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Player_HP"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Player_MP"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Player_Job"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_SkillBlock"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_ItemBlock"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_ExpBar"))))
 	{
 		return E_FAIL;
 	}

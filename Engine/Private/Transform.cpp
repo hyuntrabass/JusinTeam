@@ -140,6 +140,11 @@ void CTransform::Set_State(State eState, _vec4 vState)
 	}
 }
 
+void CTransform::Set_Matrix(_mat Matrix)
+{
+	m_WorldMatrix = Matrix;
+}
+
 void CTransform::Set_Scale(_vec3 fScale)
 {
 	_vec4 vRight = XMVector3Normalize(Get_State(State::Right));

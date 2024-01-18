@@ -42,6 +42,13 @@ namespace Client
 		CM_STATEEND
 	};
 
+	enum WEAPON_TYPE
+	{
+		WP_BOW,
+		WP_SWORD,
+		WP_END
+	};
+
 	enum PART_TYPE
 	{
 		PT_HAIR,
@@ -189,17 +196,24 @@ namespace Client
 		VTPass_SpriteMaskColor_Dissolve,
 		VTPass_Dust,
 		VTPass_Dissolve,
+		VTPass_MP,
 		VTPass_End
 	};
 
 	enum InstancingPass
 	{
 		InstPass_Particle_TextureMask,
-		InstPass_Particle_Sprite,
+		InstPass_Particle_Sprite_Color,
 		InstPass_Particle_MaskColor,
 		InstPass_Particle_TextureMask_Dissolve,
-		InstPass_Particle_Sprite_Dissolve,
+		InstPass_Particle_Sprite_Color_Dissolve,
 		InstPass_Particle_MaskColor_Dissolve,
+		InstPass_Particle_Sprite_Texture,
+		InstPass_Particle_Sprite_Texture_Dissolve,
+		InstPass_Particle_Sprite_Texture_RandomIndex,
+		InstPass_Particle_Sprite_Texture_RandomIndex_Dissolve,
+		InstPass_Particle_Sprite_Color_RandomIndex,
+		InstPass_Particle_Sprite_Color_RandomIndex_Dissolve,
 		InstPass_End,
 	};
 #pragma endregion

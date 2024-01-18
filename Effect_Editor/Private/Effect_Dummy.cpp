@@ -33,12 +33,21 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 	m_pTransformCom->Set_Scale(_vec3(m_Effect.vSize.x, m_Effect.vSize.y, 1.f));
 	m_vScaleAcc = m_Effect.vSize;
 
+	if (m_Effect.iUnDissolveTextureID >= 0)
+	{
+		m_fDissolveRatio = 1.f;
+	}
+
 	return S_OK;
 }
 
 void CEffect_Dummy::Tick(_float fTimeDelta)
 {
-	if (m_Effect.fLifeTime >= 0.f and m_fTimer > m_Effect.fLifeTime)
+	if (m_Effect.iUnDissolveTextureID >= 0)
+	{
+		m_fDissolveRatio -= fTimeDelta / m_Effect.fUnDissolveDuration;
+	}
+	else if (m_Effect.fLifeTime >= 0.f and m_fTimer > m_Effect.fLifeTime)
 	{
 		if (m_Effect.iDissolveTextureID >= 0)
 		{
@@ -66,13 +75,14 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 	}
 
 	m_fTimer += fTimeDelta;
+	m_vUV += m_Effect.vUVDelta * fTimeDelta;
 
 	if (m_Effect.iType == Effect_Type::ET_PARTICLE)
 	{
 		m_pParticle->Update(fTimeDelta, m_pTransformCom->Get_World_Matrix(), m_Effect.iNumInstances, m_Effect.bApplyGravity, m_Effect.vGravityDir);
 		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
 	}
-	else
+	else if (m_Effect.iType == ET_RECT)
 	{
 		m_pTransformCom->LookAway(m_pGameInstance->Get_CameraPos());
 
@@ -95,7 +105,12 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 		m_WorldMatrix.Position(vPos);
 	}
 
-	m_pRendererCom->Add_RenderGroup(RG_Blur, this);
+	if (m_Effect.bSkipBloom)
+	{
+		return;
+	}
+
+	m_pRendererCom->Add_RenderGroup(RG_BlendBlur, this);
 }
 
 void CEffect_Dummy::Late_Tick(_float fTimeDelta)
@@ -197,6 +212,15 @@ HRESULT CEffect_Dummy::Add_Components()
 		}
 	}
 
+	if (m_Effect.iUnDissolveTextureID >= 0)
+	{
+		wstring PrototypeTag = L"Prototype_Component_Texture_Effect_" + to_wstring(m_Effect.iUnDissolveTextureID);
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, PrototypeTag, TEXT("Com_UnDissolveTexture"), (CComponent**)&m_pUnDissolveTextureCom)))
+		{
+			return E_FAIL;
+		}
+	}
+
 	if (m_Effect.iDiffTextureID >= 0)
 	{
 		wstring PrototypeTag = L"Prototype_Component_Texture_Effect_" + to_wstring(m_Effect.iDiffTextureID);
@@ -217,9 +241,36 @@ HRESULT CEffect_Dummy::Bind_ShaderResources()
 		{
 			return E_FAIL;
 		}
+
+		if (m_Effect.iType == ET_MESH)
+		{
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_vUVTransform", &m_vUV, sizeof m_vUV)))
+			{
+				return E_FAIL;
+			}
+		}
 	}
 
-	if (m_Effect.iDissolveTextureID >= 0)
+	if (m_Effect.iUnDissolveTextureID >= 0)
+	{
+		if (FAILED(m_pUnDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof m_fDissolveRatio)))
+		{
+			return E_FAIL;
+		}
+
+		if (m_fDissolveRatio < 0.f)
+		{
+			m_fDissolveRatio = 0.f;
+			m_Effect.iUnDissolveTextureID = -1;
+			m_fTimer = {};
+		}
+	}
+	else if (m_Effect.iDissolveTextureID >= 0)
 	{
 		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
 		{
@@ -234,7 +285,12 @@ HRESULT CEffect_Dummy::Bind_ShaderResources()
 
 	if (m_Effect.iDiffTextureID >= 0)
 	{
-		if (FAILED(m_pDiffTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+		string strVariableName = "g_Texture";
+		if (m_Effect.iType == ET_MESH)
+		{
+			strVariableName = "g_DiffuseTexture";
+		}
+		if (FAILED(m_pDiffTextureCom->Bind_ShaderResource(m_pShaderCom, strVariableName.c_str())))
 		{
 			return E_FAIL;
 		}

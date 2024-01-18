@@ -247,7 +247,7 @@ HRESULT CMesh::Ready_AnimMesh(ifstream& ModelFile)
 {
 
 	ModelFile.read(reinterpret_cast<_char*>(&m_iNumBones), sizeof _uint);
-	if (m_iNumBones > 256)
+	if (m_iNumBones > 512)
 	{
 		MSG_BOX("Too Many Bones!");
 	}
