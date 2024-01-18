@@ -26,6 +26,10 @@ public:
 	virtual HRESULT Render();
 	virtual HRESULT Render_Shadow();
 
+	// ¿ø¸í
+	virtual HRESULT Render_Refract();
+	virtual HRESULT Render_Reflection();
+
 public:
 	class CComponent* Find_Component(const wstring& strComTag);
 

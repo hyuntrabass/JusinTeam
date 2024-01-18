@@ -87,11 +87,36 @@ namespace Engine
 	};
 
 	using ANIMTIME_DESC = struct tagAnimTimeDesc {
+		int iAnimIndex = 0;
+		unsigned int iCurrFrame = 0;
+		unsigned int iNextFrame = 0;
+		float fRatio = 0.f;
+		float fTime = 0.f;
+		float fSpeed = 1.f;
+		XMFLOAT2 vPadding;
+	};
+
+	using PLAYANIM_DESC = struct tagPlayAnimDesc {
+		void PLAYANIM_DESC() {
+			eCurrent.iAnimIndex = 0;
+			eNext.iAnimIndex = -1;
+		}
+
+		void ResetNextAnim() {
+			eNext.iAnimIndex = -1;
+			eNext.iCurrFrame = 0;
+			eNext.iNextFrame = 0;
+			eNext.fTime = 0;
+			SwitchTime = 0.f;
+			SwitchRatio = 0.f;
+		}
+
 		float SwitchDuration = 0.2f;
 		float SwitchRatio = 0.f;
 		float SwitchTime = 0.f;
 		float fPadding = 0.f;
-
+		ANIMTIME_DESC eCurrent;
+		ANIMTIME_DESC eNext;
 	};
 
 	using TRIGGEREFFECT_DESC = struct tagTriggerEffectDesc {

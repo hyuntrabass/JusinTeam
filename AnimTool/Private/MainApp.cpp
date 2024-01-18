@@ -10,6 +10,8 @@
 #include "Level_Loading.h"
 #include "Effect_Manager.h"
 
+#include "Effect_Manager.h"
+
 CMainApp::CMainApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
 {

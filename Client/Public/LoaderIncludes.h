@@ -56,3 +56,7 @@
 
 // Boss
 #include "Groar_Boss.h"
+#include "Thief04.h"
+
+// Test Model
+#include "TestVTFModel.h"

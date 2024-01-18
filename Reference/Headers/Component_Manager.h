@@ -12,6 +12,8 @@
 #include "Collider.h"
 #include "VIBuffer_Trail.h"
 
+#include "VTFModel.h"
+
 BEGIN(Engine)
 
 class CComponent_Manager final : public CBase

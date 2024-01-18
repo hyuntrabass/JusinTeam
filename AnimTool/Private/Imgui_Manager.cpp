@@ -164,6 +164,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			}
 			ImGui::EndCombo();
 		}
+
 	}
 	else if (m_eType == TYPE_PLAYER)
 	{

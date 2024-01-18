@@ -387,6 +387,11 @@ HRESULT CLevel_GamePlay::Ready_Rabbit()
 		}
 	}
 
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Test"), TEXT("Prototype_GameObject_TestVTF"))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 

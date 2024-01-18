@@ -62,7 +62,6 @@ public:
 
 private:
 	CCollider* m_pColliderCom[COLL_END] = { nullptr };
-
 private:
 	RABBIT_STATE m_ePreState = STATE_END;
 	RABBIT_STATE m_eCurState = STATE_END;

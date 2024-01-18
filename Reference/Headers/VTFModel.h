@@ -3,12 +3,12 @@
 
 BEGIN(Engine)
 
-
-
 typedef struct tagAnimTransArray {
-	using TransformArrayType = array<_mat, 350>;
-	array<TransformArrayType, 600> TransformArray;
+	using TransformArrayType = array<_mat, 150>;
+	array<TransformArrayType, 300> TransformArray;
 }ANIMTRANS_ARRAY;
+
+// 이 VTF는 Prototype 단계에서 애니메이션을 미리 계산합니다
 
 class ENGINE_DLL CVTFModel final :
     public CComponent
@@ -21,6 +21,25 @@ private:
 public:
 	HRESULT Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix);
 	HRESULT Init(void* pArg) override;
+
+public:
+	HRESULT Play_Animation(_float fTimeDelta);
+
+	HRESULT Set_NextAnimation(_uint iAnimIndex, _bool isLoop);
+
+	void Set_NextAnimationIndex(_int iAnimIndex) {
+		m_iNextAnimIndex = iAnimIndex;
+	}
+
+	const _uint& Get_NumMeshes() const {
+		return m_iNumMeshes;
+	}
+
+	HRESULT Bind_Material(class CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType);
+	HRESULT Bind_Animation(class CShader* pShader);
+	HRESULT Bind_OldAnimation(class CShader* pShader);
+
+	HRESULT Render(_uint iMeshIndex);
 
 private:
 	ModelType m_eType = ModelType::End;
@@ -38,6 +57,12 @@ private:
 
 	_mat m_PivotMatrix = {};
 
+	PLAYANIM_DESC m_PlayAnimDesc;
+	ANIMTIME_DESC m_OldAnimDesc;
+	_int m_iCurrentAnimIndex = 0;
+	_int m_iNextAnimIndex = -1;
+	_bool m_isLoop = false;
+	_bool m_isFinished = false;
 
 private:
 	// For_Animation
@@ -50,7 +75,7 @@ private:
 	HRESULT Read_Animations(ifstream& File);
 	HRESULT Read_Materials(ifstream& File, const string& strFilePath);
 	HRESULT CreateVTF(_uint MaxFrame);
-	HRESULT CreateAnimationTransform(_uint iIndex, vector<ANIMTRANS_ARRAY>& AnimTransforms);
+	HRESULT CreateAnimationTransform(_uint iIndex, ANIMTRANS_ARRAY* pAnimTransform);
 
 public:
 	static CVTFModel* Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh = false, _fmatrix PivotMatrix = XMMatrixIdentity());
