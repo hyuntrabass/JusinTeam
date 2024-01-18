@@ -12,7 +12,7 @@ CGroar_Boss::CGroar_Boss(const CGroar_Boss& rhs)
 
 HRESULT CGroar_Boss::Init_Prototype()
 {
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CGroar_Boss::Init(void* pArg)
@@ -30,16 +30,16 @@ HRESULT CGroar_Boss::Init(void* pArg)
 	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
 	m_pTransformCom->Set_State(State::Pos, _vec4(10.f, 0.f, 0.f, 1.f));
 
+	m_eCurState = STATE_NPC;
+
 	m_Animation.iAnimIndex = NPC_IDLE;
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 1.5f;
 
-	m_eCurState = STATE_NPC_IDLE;
-
 	m_iHP = 100;
 
-    return S_OK;
+	return S_OK;
 }
 
 void CGroar_Boss::Tick(_float fTimeDelta)
@@ -49,78 +49,26 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 		m_eCurState = STATE_SCENE01;
 	}
 
-	if (m_eCurState == STATE_SCENE01)
-	{
-		m_Animation.iAnimIndex = 0;
-		m_Animation.isLoop = false;
-
-		if (m_pScene01ModelCom->IsAnimationFinished(0))
-		{
-			m_eCurState = STATE_SCENE02;
-		}
-	}
-
-	if (m_eCurState == STATE_SCENE02)
-	{
-		m_Animation.iAnimIndex = 0;
-		m_Animation.isLoop = false;
-
-		//m_pTransformCom->Go_Up(fTimeDelta);
-
-		if (m_pScene02ModelCom->IsAnimationFinished(0))
-		{
-			m_bBossState = true;
-			m_Animation.iAnimIndex = IDLE;
-			m_Animation.isLoop = true;
-		}
-
-	}
-
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
-
-	if (m_eCurState == STATE_NPC_IDLE || m_eCurState == STATE_NPC_TALK)
-	{
-		m_pNPCModelCom->Set_Animation(m_Animation);
-	}
-
-	if (m_eCurState == STATE_SCENE01)
-	{
-		m_pScene01ModelCom->Set_Animation(m_Animation);
-	}
-
-	if (m_eCurState == STATE_SCENE02 && !m_bBossState)
-	{
-		m_pScene02ModelCom->Set_Animation(m_Animation);
-	}
-
-	if (m_bBossState == true)
-	{
-		m_pBossModelCom->Set_Animation(m_Animation);
-	}
-
 }
 
 void CGroar_Boss::Late_Tick(_float fTimeDelta)
 {
-	if (m_eCurState == STATE_NPC_IDLE || m_eCurState == STATE_NPC_TALK)
+	switch (m_eCurState)
 	{
+	case Client::CGroar_Boss::STATE_NPC:
 		m_pNPCModelCom->Play_Animation(fTimeDelta);
-	}
-
-	if (m_eCurState == STATE_SCENE01)
-	{
+		break;
+	case Client::CGroar_Boss::STATE_SCENE01:
 		m_pScene01ModelCom->Play_Animation(fTimeDelta);
-	}
-
-	if (m_eCurState == STATE_SCENE02)
-	{
+		break;
+	case Client::CGroar_Boss::STATE_SCENE02:
 		m_pScene02ModelCom->Play_Animation(fTimeDelta);
-	}
-
-	if (m_bBossState == true)
-	{
+		break;
+	case Client::CGroar_Boss::STATE_BOSS:
 		m_pBossModelCom->Play_Animation(fTimeDelta);
+		break;
 	}
 
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
@@ -133,8 +81,9 @@ HRESULT CGroar_Boss::Render()
 		return E_FAIL;
 	}
 
-	if (m_eCurState == STATE_NPC_IDLE || m_eCurState == STATE_NPC_TALK)
+	switch (m_eCurState)
 	{
+	case Client::CGroar_Boss::STATE_NPC:
 		for (_uint i = 0; i < m_pNPCModelCom->Get_NumMeshes(); i++)
 		{
 			if (FAILED(m_pNPCModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
@@ -171,11 +120,8 @@ HRESULT CGroar_Boss::Render()
 				return E_FAIL;
 			}
 		}
-
-	}
-
-	if (m_eCurState == STATE_SCENE01)
-	{
+		break;
+	case Client::CGroar_Boss::STATE_SCENE01:
 		for (_uint i = 0; i < m_pScene01ModelCom->Get_NumMeshes(); i++)
 		{
 			if (FAILED(m_pScene01ModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
@@ -212,11 +158,8 @@ HRESULT CGroar_Boss::Render()
 				return E_FAIL;
 			}
 		}
-
-	}
-
-	if (m_eCurState == STATE_SCENE02)
-	{
+		break;
+	case Client::CGroar_Boss::STATE_SCENE02:
 		for (_uint i = 0; i < m_pScene02ModelCom->Get_NumMeshes(); i++)
 		{
 			if (FAILED(m_pScene02ModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
@@ -253,11 +196,8 @@ HRESULT CGroar_Boss::Render()
 				return E_FAIL;
 			}
 		}
-
-	}
-
-	if (m_bBossState == true)
-	{
+		break;
+	case Client::CGroar_Boss::STATE_BOSS:
 		for (_uint i = 0; i < m_pBossModelCom->Get_NumMeshes(); i++)
 		{
 			if (FAILED(m_pBossModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
@@ -294,7 +234,7 @@ HRESULT CGroar_Boss::Render()
 				return E_FAIL;
 			}
 		}
-
+		break;
 	}
 
 	return S_OK;
@@ -302,15 +242,150 @@ HRESULT CGroar_Boss::Render()
 
 void CGroar_Boss::Init_State(_float fTimeDelta)
 {
+	if (m_ePreState != m_eCurState)
+	{
+		switch (m_eCurState)
+		{
+		case Client::CGroar_Boss::STATE_NPC:
+			break;
+		case Client::CGroar_Boss::STATE_SCENE01:
+			m_Animation.iAnimIndex = 0;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 1.5f;
+
+			break;
+		case Client::CGroar_Boss::STATE_SCENE02:
+			m_Animation.iAnimIndex = 0;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
+			break;
+		case Client::CGroar_Boss::STATE_BOSS:
+			break;
+		}
+
+		m_ePreState = m_eCurState;
+	}
+
+	if (m_eBossPreState != m_eBossCurState)
+	{
+		switch (m_eBossCurState)
+		{
+		case Client::CGroar_Boss::BOSS_STATE_IDLE:
+			break;
+		case Client::CGroar_Boss::BOSS_STATE_RUN:
+			break;
+		case Client::CGroar_Boss::BOSS_STATE_ATTACK:
+			break;
+		case Client::CGroar_Boss::BOSS_STATE_STUN:
+			break;
+		case Client::CGroar_Boss::BOSS_STATE_DIE:
+			break;
+		}
+
+		m_eBossPreState = m_eBossCurState;
+	}
 }
 
 void CGroar_Boss::Tick_State(_float fTimeDelta)
 {
+	switch (m_eCurState)
+	{
+	case Client::CGroar_Boss::STATE_NPC:
+		m_pNPCModelCom->Set_Animation(m_Animation);
+		break;
+	case Client::CGroar_Boss::STATE_SCENE01:
+		if (m_pScene01ModelCom->IsAnimationFinished(0))
+		{
+			m_eCurState = STATE_SCENE02;
+		}
+
+		m_pScene01ModelCom->Set_Animation(m_Animation);
+		break;
+	case Client::CGroar_Boss::STATE_SCENE02:
+		if (m_pScene02ModelCom->IsAnimationFinished(0))
+		{
+			m_eCurState = STATE_BOSS;
+			m_eBossCurState = BOSS_STATE_ATTACK;
+
+			m_Animation.iAnimIndex = 0;
+			m_Animation.isLoop = true;
+			m_Animation.fAnimSpeedRatio = 2.f;
+		}
+
+		m_pScene02ModelCom->Set_Animation(m_Animation);
+		break;
+	case Client::CGroar_Boss::STATE_BOSS:
+		m_pBossModelCom->Set_Animation(m_Animation);
+		break;
+	}
+
+	switch (m_eBossCurState)
+	{
+	case Client::CGroar_Boss::BOSS_STATE_IDLE:
+		break;
+	case Client::CGroar_Boss::BOSS_STATE_RUN:
+		break;
+	case Client::CGroar_Boss::BOSS_STATE_ATTACK:
+
+		if (!m_bSelectAttackPattern)
+		{
+			if (m_pBossModelCom->IsAnimationFinished(ATTACK01) || m_pBossModelCom->IsAnimationFinished(ATTACK02) ||
+				m_pBossModelCom->IsAnimationFinished(ATTACK03) || m_pBossModelCom->IsAnimationFinished(ATTACK04) ||
+				m_pBossModelCom->IsAnimationFinished(ATTACK05) || m_pBossModelCom->IsAnimationFinished(ATTACK06))
+			{
+				m_iAttackPattern = rand() % 6;
+				m_bSelectAttackPattern = true;
+			}
+		}
+
+		switch (m_iAttackPattern)
+		{
+		case 0:
+			m_Animation.iAnimIndex = ATTACK01;
+			m_Animation.isLoop = false;
+			m_bSelectAttackPattern = false;
+			break;
+		case 1:
+			m_Animation.iAnimIndex = ATTACK02;
+			m_Animation.isLoop = false;
+			m_bSelectAttackPattern = false;
+			break;
+		case 2:
+			m_Animation.iAnimIndex = ATTACK03;
+			m_Animation.isLoop = false;
+			m_bSelectAttackPattern = false;
+			break;
+		case 3:
+			m_Animation.iAnimIndex = ATTACK04;
+			m_Animation.isLoop = false;
+			m_bSelectAttackPattern = false;
+			break;
+		case 4:
+			m_Animation.iAnimIndex = ATTACK05;
+			m_Animation.isLoop = false;
+			m_bSelectAttackPattern = false;
+			break;
+		case 5:
+			m_Animation.iAnimIndex = ATTACK06;
+			m_Animation.isLoop = false;
+			m_bSelectAttackPattern = false;
+			break;
+
+		}
+		break;
+
+		break;
+	case Client::CGroar_Boss::BOSS_STATE_STUN:
+		break;
+	case Client::CGroar_Boss::BOSS_STATE_DIE:
+		break;
+	}
 }
 
 HRESULT CGroar_Boss::Add_Collider()
 {
-    return S_OK;
+	return S_OK;
 }
 
 void CGroar_Boss::Update_Collider()
@@ -349,7 +424,7 @@ HRESULT CGroar_Boss::Add_Components()
 		return E_FAIL;
 	}
 
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CGroar_Boss::Bind_ShaderResources()

@@ -45,6 +45,8 @@ HRESULT CNastron03::Init(void* pArg)
 
 	m_iHP = 10;
 
+	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
+
 	return S_OK;
 }
 
@@ -56,6 +58,7 @@ void CNastron03::Tick(_float fTimeDelta)
 	m_pModelCom->Set_Animation(m_Animation);
 
 	Update_Collider();
+	__super::Update_BodyCollider();
 }
 
 void CNastron03::Late_Tick(_float fTimeDelta)
@@ -64,6 +67,8 @@ void CNastron03::Late_Tick(_float fTimeDelta)
 
 #ifdef _DEBUGTEST
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
+	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
+
 #endif
 }
 
@@ -252,6 +257,16 @@ HRESULT CNastron03::Add_Collider()
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 		TEXT("Com_Collider_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))
+		return E_FAIL;
+
+	Collider_Desc BodyCollDesc = {};
+	BodyCollDesc.eType = ColliderType::OBB;
+	BodyCollDesc.vExtents = _vec3(0.6f, 1.4f, 0.4f);
+	BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y / 2.f, 0.f);
+	BodyCollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+		TEXT("Com_Collider_OBB"), (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
 		return E_FAIL;
 
 	return S_OK;
