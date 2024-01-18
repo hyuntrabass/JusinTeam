@@ -315,13 +315,6 @@ HRESULT CLevel_GamePlay::Ready_NPC_Dummy()
 		return E_FAIL;
 	}
 
-	eType = GROAR;
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &eType)))
-	{
-		return E_FAIL;
-	}
-
 	return S_OK;
 }
 

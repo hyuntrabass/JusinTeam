@@ -117,6 +117,9 @@ private:
 	ANIM_DESC m_Animation{};
 
 private:
+	_bool m_bBossState = { false };
+
+private:
 	_uint m_iAttackPattern = {};
 	_bool m_bSelectAttackPattern = { false };
 

@@ -81,11 +81,6 @@ void CThief04::Init_State(_float fTimeDelta)
 		m_eCurState = STATE_IDLE;
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_H))
-	{
-		m_eCurState = STATE_HIT;
-	}
-
 	if (m_ePreState != m_eCurState)
 	{
 		switch (m_eCurState)
