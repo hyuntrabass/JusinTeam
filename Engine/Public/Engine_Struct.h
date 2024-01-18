@@ -126,6 +126,7 @@ namespace Engine
 		unsigned int iNameLength;
 		TCHAR szEffectName[MAX_PATH];
 		int iBoneIndex;
+		SimpleMath::Vector3 vPosOffset{};
 	};
 
 	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {
