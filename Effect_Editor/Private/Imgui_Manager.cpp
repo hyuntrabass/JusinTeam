@@ -41,7 +41,7 @@ HRESULT CImgui_Manager::Init(_dev pDevice, _context pContext, vector<string>* pT
 
 	m_iNumModels = static_cast<_int>(pModelList->size());
 	m_pItemList_Model = new const _char * [m_iNumModels];
-	m_pModels = new CModel* [m_iNumModels];
+	m_pModels = new CModel * [m_iNumModels];
 
 	for (_int i = 0; i < m_iNumModels; i++)
 	{
@@ -105,12 +105,17 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	const _char* szInstancingPasses[InstPass_End]
 	{
 		"InstPass_Particle_TextureMask",
-		"InstPass_Particle_Sprite",
+		"InstPass_Particle_Sprite_Color",
 		"InstPass_Particle_MaskColor",
 		"InstPass_Particle_TextureMask_Dissolve",
-		"InstPass_Particle_Sprite_Dissolve",
+		"InstPass_Particle_Sprite_Color_Dissolve",
 		"InstPass_Particle_MaskColor_Dissolve",
-
+		"InstPass_Particle_Sprite_Texture",
+		"InstPass_Particle_Sprite_Texture_Dissolve",
+		"InstPass_Particle_Sprite_Texture_RandomIndex",
+		"InstPass_Particle_Sprite_Texture_RandomIndex_Dissolve",
+		"InstPass_Particle_Sprite_Color_RandomIndex",
+		"InstPass_Particle_Sprite_Color_RandomIndex_Dissolve",
 	};
 
 	const _char* szVTPasses[VTPass_End]
@@ -157,7 +162,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		"StaticPass_Shadow",
 	};
 
-	SeparatorText("Particle Information");
+	SeparatorText("Shader Pass");
 
 	if (m_iCurrent_Type == ET_PARTICLE)
 	{
@@ -186,9 +191,14 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	Info.iType = m_iCurrent_Type;
 	Info.iPassIndex = iPassIndex;
 
+	static _bool bSkipBloom{};
+	Checkbox("Bloom Effect", &bSkipBloom);
+	Info.bSkipBloom = bSkipBloom;
+
 	NewLine();
 
 	static _int iIsColor{};
+	static _bool hasUnDissolve{};
 	static _bool hasDissolve{};
 
 	SeparatorText("Diffuse");
@@ -236,10 +246,16 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 	Checkbox("Mask", &m_hasMask);
 
+	static _vec2 vUVDelta{};
 	if (m_hasMask)
 	{
 		SameLine();
-		SeparatorText("Texture");
+		SeparatorText("Mask Texture");
+		if (m_iCurrent_Type == ET_MESH)
+		{
+			InputFloat2("UV Delta", reinterpret_cast<_float*>(&vUVDelta));
+			Info.vUVDelta = vUVDelta;
+		}
 		ListBox("Mask Texture", &m_iSelected_MaskTexture, m_pItemList_Texture, m_iNumTextures);
 		Image(reinterpret_cast<void*>(m_pTextures[m_iSelected_MaskTexture]->Get_SRV()), ImVec2(128.f, 128.f));
 		Info.iMaskTextureID = m_iSelected_MaskTexture;
@@ -247,6 +263,32 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	else
 	{
 		Info.iMaskTextureID = -1;
+	}
+	Separator();
+	NewLine();
+
+	Checkbox("UnDissolve", &hasUnDissolve);
+
+	static _int iSelectd_UnDissolve{};
+	static _float fUnDissolveDuration{};
+	if (hasUnDissolve)
+	{
+		SameLine();
+		SeparatorText("Texture");
+		InputFloat("UnDissove Duration", &fUnDissolveDuration);
+		Info.fUnDissolveDuration = fUnDissolveDuration;
+		if (iSelectd_UnDissolve < 0)
+		{
+			iSelectd_UnDissolve = 0;
+		}
+		ListBox("UnDissolve Texture", &iSelectd_UnDissolve, m_pItemList_Texture, m_iNumTextures);
+		Image(reinterpret_cast<void*>(m_pTextures[iSelectd_UnDissolve]->Get_SRV()), ImVec2(128.f, 128.f));
+		Info.iUnDissolveTextureID = iSelectd_UnDissolve;
+	}
+	else
+	{
+		iSelectd_UnDissolve = -1;
+		Info.iUnDissolveTextureID = -1;
 	}
 	Separator();
 	NewLine();
@@ -268,13 +310,11 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		ListBox("Dissolve Texture", &iSelectd_Dissolve, m_pItemList_Texture, m_iNumTextures);
 		Image(reinterpret_cast<void*>(m_pTextures[iSelectd_Dissolve]->Get_SRV()), ImVec2(128.f, 128.f));
 		Info.iDissolveTextureID = iSelectd_Dissolve;
-		m_EffectInfo.iDissolveTextureID = iSelectd_Dissolve;
 	}
 	else
 	{
 		iSelectd_Dissolve = -1;
 		Info.iDissolveTextureID = -1;
-		m_EffectInfo.iDissolveTextureID = iSelectd_Dissolve;
 	}
 	Separator();
 	NewLine();
@@ -385,7 +425,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 	if (Button("Export"))
 	{
-		Export_Data();
+		Export_Data(Info);
 	} SameLine();
 
 	if (Button("Load"))
@@ -394,7 +434,6 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 		Safe_Release(m_pEffect);
 		m_pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Info));
-		m_EffectInfo = Info;
 
 		m_iCurrent_Type = Info.iType;
 
@@ -437,6 +476,18 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		{
 			m_hasMask = true;
 			m_iSelected_MaskTexture = Info.iMaskTextureID;
+			vUVDelta = Info.vUVDelta;
+		}
+
+		if (Info.iUnDissolveTextureID < 0)
+		{
+			hasUnDissolve = false;
+		}
+		else
+		{
+			hasUnDissolve = true;
+			iSelectd_UnDissolve = Info.iUnDissolveTextureID;
+			fUnDissolveDuration = Info.fUnDissolveDuration;
 		}
 
 		if (Info.iDissolveTextureID < 0)
@@ -450,21 +501,25 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			fDissolveDuration = Info.fDissolveDuration;
 		}
 
-		if (Info.iType == ET_PARTICLE)
+		switch (Info.iType)
 		{
+		case Effect::ET_PARTICLE:
 			m_ParticleInfo = Info.PartiDesc;
 			m_iNumInstance = Info.iNumInstances;
 			bApplyGravity = Info.bApplyGravity;
 			vGravityDir = Info.vGravityDir;
-		}
-		else
-		{
+			break;
+		case Effect::ET_RECT:
 			if (Info.isSprite)
 			{
 				fSizeforSprite = Info.vSize.y;
 			}
 			vSize = Info.vSize;
 			vSizeDelta = Info.vSizeDelta;
+			break;
+		case Effect::ET_MESH:
+			m_iSelected_Model = Info.iModelIndex;
+			break;
 		}
 	}
 
@@ -500,7 +555,6 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	{
 		Safe_Release(m_pEffect);
 		m_pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Info));
-		m_EffectInfo = Info;
 		m_pEffect->Tick(0.f);
 	}
 }
@@ -628,7 +682,7 @@ EffectInfo CImgui_Manager::Load_Data()
 	return Info;
 }
 
-HRESULT CImgui_Manager::Export_Data()
+HRESULT CImgui_Manager::Export_Data(EffectInfo& Info)
 {
 	OPENFILENAME ofn;
 	TCHAR filePathName[MAX_PATH] = L"";
@@ -651,7 +705,7 @@ HRESULT CImgui_Manager::Export_Data()
 
 		if (OutFile.is_open())
 		{
-			OutFile.write(reinterpret_cast<const _char*>(&m_EffectInfo), sizeof EffectInfo);
+			OutFile.write(reinterpret_cast<const _char*>(&Info), sizeof EffectInfo);
 
 			OutFile.close();
 		}

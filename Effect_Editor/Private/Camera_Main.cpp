@@ -160,15 +160,15 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
 			{
 				m_fTargetDistance -= 1.f;
-				if (m_fTargetDistance < 0.f)
-				{
-					m_fTargetDistance = 0.5f;
-				}
 			}
 			else if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
 			{
 				m_fTargetDistance += 1.f;
 			}
+		}
+		if (m_fTargetDistance <= 0.f)
+		{
+			m_fTargetDistance = 0.5f;
 		}
 
 		m_pTransformCom->Set_State(State::Pos, _vec4(0.f, 0.f, 0.f, 1.f) - (m_pTransformCom->Get_State(State::Look) * m_fTargetDistance));

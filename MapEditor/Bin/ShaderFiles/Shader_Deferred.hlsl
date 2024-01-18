@@ -268,6 +268,7 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     //    return Output;
     //}
         
+    // ¿Ü°û¼±
   //{
   //      float3 vCenter = g_NormalTexture.Sample(LinearSampler, Input.vTexcoord).xyz;
   //      vCenter = vCenter.xyz * 2.f - 1.f;
@@ -287,15 +288,15 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
   //      fOutline = min(fDotR, fOutline);
     
   //      Output.vColor *= saturate((saturate(saturate(fOutline - 0.5f) + 0.8f) - 0.8f) * 5.f);
-  //  }
     
-    //if (fDotT < 0.5f ||
-    //    fDotTR < 0.5f ||
-    //    fDotR < 0.5f)
-    //{
-    //    Output.vColor = fFogFactor * (vector) 0 + (1.f - fFogFactor) * vFogColor;
-    //    return Output;
-    //}
+  //      if (fDotT < 0.5f ||
+  //      fDotTR < 0.5f ||
+  //      fDotR < 0.5f)
+  //      {
+  //          Output.vColor = fFogFactor * (vector) 0 + (1.f - fFogFactor) * vFogColor;
+  //          return Output;
+  //      }
+  //  }
     
     float4 vWorldPos;
     

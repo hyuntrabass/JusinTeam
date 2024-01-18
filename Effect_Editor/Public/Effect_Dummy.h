@@ -27,6 +27,7 @@ private:
 	CTexture* m_pMaskTextureCom{};
 	CTexture* m_pDiffTextureCom{};
 	CTexture* m_pDissolveTextureCom{};
+	CTexture* m_pUnDissolveTextureCom{};
 	CModel* m_pModelCom{};
 
 private:
@@ -37,6 +38,7 @@ private:
 	_int m_iSpriteIndex{};
 	_vec2 m_vScaleAcc{ 1.f };
 	_float m_fDissolveRatio{};
+	_vec2 m_vUV{};
 
 private:
 	HRESULT Add_Components();

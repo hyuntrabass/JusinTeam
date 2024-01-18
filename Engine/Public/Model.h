@@ -26,13 +26,15 @@ public:
 	const _char* Get_FilePath() const;
 	const _uint& Get_NumMeshes() const;
 	const _uint& Get_NumAnim() const;
+	const _uint& Get_NumBones() const;
 	const _bool& IsAnimationFinished(_uint iAnimIndex) const;
 	const _uint& Get_CurrentAnimationIndex() const;
 	const _float& Get_CurrentAnimPos() const;
 	const _mat* Get_BoneMatrix(const _char* pBoneName) const;
-	_matrix Get_PivotMatrix();
+	_mat Get_PivotMatrix();
 	vector<class CAnimation*>& Get_Animations();
 	class CAnimation* Get_Animation(_uint iAnimIndex);
+	vector<class CBone*>& Get_Bones();
 
 	void Set_Animation(ANIM_DESC Animation_Desc);
 

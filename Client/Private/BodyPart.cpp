@@ -1,5 +1,6 @@
 #include "BodyPart.h"
 #include "UI_Manager.h"
+#include "Player.h"
 
 CBodyPart::CBodyPart(_dev pDevice, _context pContext)
 	: CPartObject(pDevice, pContext)

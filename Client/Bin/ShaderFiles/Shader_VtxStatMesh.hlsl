@@ -5,7 +5,7 @@ texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
 texture2D g_SpecTexture;
 texture2D g_MaskTexture;
-texture2D g_NoiseTexture;
+texture2D g_DissolveTexture;
 texture2D g_GradationTexture;
 
 vector g_vColor;
@@ -265,7 +265,7 @@ PS_OUT PS_Main_Effect_Dissolve(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
 
-    float fDissolve = g_NoiseTexture.Sample(LinearSampler, Input.vTex).r;
+    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
     
     if (g_fDissolveRatio > fDissolve)
     {
@@ -307,7 +307,7 @@ PS_OUT PS_Main_MaskEffect_Dissolve(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
 
-    float fDissolve = g_NoiseTexture.Sample(LinearSampler, Input.vTex).r;
+    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
     
     if (g_fDissolveRatio > fDissolve)
     {

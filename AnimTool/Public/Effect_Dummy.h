@@ -13,6 +13,11 @@ private:
 	virtual ~CEffect_Dummy() = default;
 
 public:
+	void Set_Position(_vec4 vPos) {
+		m_Effect.vPos = vPos;
+	}
+
+public:
 	virtual HRESULT Init_Prototype() override;
 	virtual HRESULT Init(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;

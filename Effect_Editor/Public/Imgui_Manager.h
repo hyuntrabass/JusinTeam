@@ -50,7 +50,7 @@ private:
 	_int m_iNumModels{};
 	CModel** m_pModels{ nullptr };
 
-	_vec4 m_vColor{};
+	_vec4 m_vColor{ 1.f };
 	_uint m_iShaderType{};
 	_float m_fEffectLifeTime{ 1.f };
 	_int m_iNumInstance{ 30 };
@@ -58,13 +58,11 @@ private:
 	_bool m_hasMask{};
 	ParticleDesc m_ParticleInfo{};
 
-	EffectInfo m_EffectInfo{};
-
 private:
 	HRESULT Ready_Layers();
 
 	EffectInfo Load_Data();
-	HRESULT Export_Data();
+	HRESULT Export_Data(EffectInfo& Info);
 
 public:
 	virtual void Free() override;
