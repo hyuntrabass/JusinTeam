@@ -123,11 +123,11 @@ HRESULT CLevel_GamePlay::Init()
 	}
 
 
-	if (FAILED(Ready_Object()))
-	{
-		MSG_BOX("Failed to Ready Object");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Object()))
+	//{
+	//	MSG_BOX("Failed to Ready Object");
+	//	return E_FAIL;
+	//}
 
 	m_pGameInstance->Set_HellHeight(-5000.f);
 
@@ -236,7 +236,7 @@ HRESULT CLevel_GamePlay::Ready_Object()
 
 	if (!inFile.is_open())
 	{
-		MessageBox(g_hWnd, L"오브젝트 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+		MSG_BOX("오브젝트 파일을 찾지 못했습니다.");
 		return E_FAIL;
 	}
 
@@ -262,7 +262,7 @@ HRESULT CLevel_GamePlay::Ready_Object()
 
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Prologue_Object"), ObjectPrototype, &ObjectInfo)))
 		{
-			MessageBox(g_hWnd, L"오브젝트 불러오기 실패", L"파일 로드", MB_OK);
+			MSG_BOX("오브젝트 불러오기 실패");
 			return E_FAIL;
 		}
 	}

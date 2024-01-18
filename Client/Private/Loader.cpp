@@ -928,7 +928,7 @@ HRESULT CLoader::Load_GamePlay()
 
 #pragma region Terrain
 
-	string strInputFilePath = "../Bin/Resources/Textures/Terrain/";
+	strInputFilePath = "../Bin/Resources/Textures/Terrain/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -984,7 +984,7 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Goat"),
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Furgoat"),
 														CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Goat/Mesh/Furgoat.hyuntraanimmesh"))))
 	{
 		return E_FAIL;

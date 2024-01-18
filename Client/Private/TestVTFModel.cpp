@@ -55,7 +55,7 @@ HRESULT CTestVTFModel::Render()
         return E_FAIL;
     }
 
-    for (size_t i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
+    for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
     {
         if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
         {

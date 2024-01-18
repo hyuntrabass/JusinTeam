@@ -392,14 +392,14 @@ HRESULT CVTFModel::Read_Materials(ifstream& File, const string& strFilePath)
 
 HRESULT CVTFModel::CreateVTF(_uint MaxFrame)
 {
-	//vector<ANIMTRANS_ARRAY> AnimTransforms;
-	//AnimTransforms.resize(m_iNumAnimations);
+	vector<ANIMTRANS_ARRAY> AnimTransforms;
+	AnimTransforms.resize(m_iNumAnimations);
 
-	ANIMTRANS_ARRAY* pAnimTransform = new ANIMTRANS_ARRAY[m_iNumAnimations];
+	//ANIMTRANS_ARRAY* pAnimTransform = new ANIMTRANS_ARRAY[m_iNumAnimations];
 
 	for (size_t i = 0; i < m_iNumAnimations; i++)
 	{
-		if (FAILED(CreateAnimationTransform(i, pAnimTransform)))
+		if (FAILED(CreateAnimationTransform(i, AnimTransforms)))
 			return E_FAIL;
 	}
 
@@ -426,7 +426,7 @@ HRESULT CVTFModel::CreateVTF(_uint MaxFrame)
 		for (size_t j = 0; j < MaxFrame; j++)
 		{
 			void* Ptr = AnimationPtr + j * BoneMatrixSize;
-			memcpy(Ptr, &pAnimTransform[i].TransformArray[j], BoneMatrixSize);
+			memcpy(Ptr, AnimTransforms[i].TransformArray[j].data(), BoneMatrixSize);
 		}
 	}
 
@@ -457,7 +457,7 @@ HRESULT CVTFModel::CreateVTF(_uint MaxFrame)
 	return S_OK;
 }
 
-HRESULT CVTFModel::CreateAnimationTransform(_uint iIndex, ANIMTRANS_ARRAY* AnimTransforms)
+HRESULT CVTFModel::CreateAnimationTransform(_uint iIndex, vector<ANIMTRANS_ARRAY>& AnimTransforms)
 {
 	CAnimation* pAnimation = m_Animations[iIndex];
 

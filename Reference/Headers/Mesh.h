@@ -40,6 +40,7 @@ private:
 
 	vector<_float3> m_VerticesPos{};
 	vector<_float3> m_VerticesNor{};
+	vector<_float3> m_Indices{};
 
 	_mat* m_BoneMatrices{};
 

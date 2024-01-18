@@ -83,6 +83,8 @@ HRESULT CItemBlock::Add_Slots()
 			return E_FAIL;
 		}
 	}
+
+	return S_OK;
 }
 
 CItemBlock* CItemBlock::Create(_dev pDevice, _context pContext)

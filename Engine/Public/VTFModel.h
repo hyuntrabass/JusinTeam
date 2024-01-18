@@ -75,7 +75,7 @@ private:
 	HRESULT Read_Animations(ifstream& File);
 	HRESULT Read_Materials(ifstream& File, const string& strFilePath);
 	HRESULT CreateVTF(_uint MaxFrame);
-	HRESULT CreateAnimationTransform(_uint iIndex, ANIMTRANS_ARRAY* pAnimTransform);
+	HRESULT CreateAnimationTransform(_uint iIndex, vector<ANIMTRANS_ARRAY>& pAnimTransform);
 
 public:
 	static CVTFModel* Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh = false, _fmatrix PivotMatrix = XMMatrixIdentity());

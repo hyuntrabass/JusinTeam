@@ -124,7 +124,6 @@ vector<_float3> CModel::Get_VerticesPos()
 	return vVerticesPos;
 }
 
-_matrix CModel::Get_PivotMatrix()
 _mat CModel::Get_PivotMatrix()
 {
 	return XMLoadFloat4x4(&m_PivotMatrix);
