@@ -29,11 +29,16 @@ public:
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
-	CVTFModel* m_pModelCom = { nullptr };
+	CRealtimeVTFModel* m_pModelCom = { nullptr };
 
 private:
 	_mat m_OldWorldMatrix{};
 	_uint m_iAnimIndex = 0;
+
+	_uint hi = 0;
+	_bool m_UsingMotionBlur = false;
+
+	ANIM_DESC m_Animation{};
 
 private:
 	SELECTMODEL_ANIM m_eCurAnimState{ S_IDLE };

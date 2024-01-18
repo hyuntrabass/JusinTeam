@@ -395,6 +395,10 @@ HRESULT CVTFModel::CreateVTF(_uint MaxFrame)
 	//vector<ANIMTRANS_ARRAY> AnimTransforms;
 	//AnimTransforms.resize(m_iNumAnimations);
 
+	//_mat* BoneMatrix = new _mat[m_Bones.size()];
+	//_mat** FrameSize = new _mat * [MaxFrame];
+	//_mat*** AnimSize = new _mat * *[m_iNumAnimations];
+
 	ANIMTRANS_ARRAY* pAnimTransform = new ANIMTRANS_ARRAY[m_iNumAnimations];
 
 	for (size_t i = 0; i < m_iNumAnimations; i++)
@@ -426,7 +430,7 @@ HRESULT CVTFModel::CreateVTF(_uint MaxFrame)
 		for (size_t j = 0; j < MaxFrame; j++)
 		{
 			void* Ptr = AnimationPtr + j * BoneMatrixSize;
-			memcpy(Ptr, &pAnimTransform[i].TransformArray[j], BoneMatrixSize);
+			memcpy(Ptr, pAnimTransform[i].TransformArray[j].data(), BoneMatrixSize);
 		}
 	}
 
@@ -434,7 +438,7 @@ HRESULT CVTFModel::CreateVTF(_uint MaxFrame)
 
 	for (size_t i = 0; i < m_iNumAnimations; i++)
 	{
-		void* Ptr = reinterpret_cast<BYTE*>(AllAnimationPtr) + i * BoneMatrixSize;
+		void* Ptr = reinterpret_cast<BYTE*>(AllAnimationPtr) + i * AnimationSize;
 		SubResourceData[i].pSysMem = Ptr;
 		SubResourceData[i].SysMemPitch = BoneMatrixSize;
 		SubResourceData[i].SysMemSlicePitch = AnimationSize;
@@ -453,6 +457,8 @@ HRESULT CVTFModel::CreateVTF(_uint MaxFrame)
 
 	if (FAILED(m_pDevice->CreateShaderResourceView(m_pTexture, &SRVDesc, &m_pSRV)))
 		return E_FAIL;
+
+	Safe_Delete_Array(pAnimTransform);
 
 	return S_OK;
 }

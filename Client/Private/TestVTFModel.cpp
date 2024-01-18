@@ -23,6 +23,13 @@ HRESULT CTestVTFModel::Init(void* pArg)
 
     m_iHP = 10;
 
+    m_Animation.iAnimIndex = 0;
+    m_Animation.isLoop = true;
+    m_Animation.bSkipInterpolation = false;
+    m_Animation.fAnimSpeedRatio = 2.f;
+
+    m_pModelCom->Set_Animation(m_Animation);
+
     return S_OK;
 }
 
@@ -37,13 +44,20 @@ void CTestVTFModel::Tick(_float fTimeDelta)
     }
 
     if (m_pGameInstance->Key_Pressing(DIK_L)) {
-        m_pModelCom->Set_NextAnimationIndex(++m_iAnimIndex);
+        m_UsingMotionBlur = !m_UsingMotionBlur;
+        m_pModelCom->Set_UsingMotionBlur(m_UsingMotionBlur);
     }
+
+    if (m_UsingMotionBlur) {
+        hi = 1;
+    }
+    else
+        hi = 0;
 }
 
 void CTestVTFModel::Late_Tick(_float fTimeDelta)
 {
-    m_pModelCom->Play_Animation(fTimeDelta * 2.f);
+    m_pModelCom->Play_Animation(fTimeDelta);
     m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
 }
@@ -91,7 +105,7 @@ HRESULT CTestVTFModel::Render()
             return E_FAIL;
         }
 
-        if (FAILED(m_pShaderCom->Begin(1)))
+        if (FAILED(m_pShaderCom->Begin(hi)))
             return E_FAIL;
 
         if (FAILED(m_pModelCom->Render(i)))
@@ -108,12 +122,12 @@ HRESULT CTestVTFModel::Add_Components()
         return E_FAIL;
     }
 
-    if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_VTF"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+    if (FAILED(__super::Add_Component(LEVEL_SELECT, TEXT("Prototype_Component_Shader_RTVTF"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
     {
         return E_FAIL;
     }
 
-    if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_VTFRabbit"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+    if (FAILED(__super::Add_Component(LEVEL_SELECT, TEXT("Prototype_Model_RTVTFRabbit"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
     {
         return E_FAIL;
     }
@@ -148,11 +162,9 @@ HRESULT CTestVTFModel::Bind_ShaderResources()
 
     if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix_vec4x4())))
         return E_FAIL;
+    
 
-    if (FAILED(m_pModelCom->Bind_OldAnimation(m_pShaderCom)))
-        return E_FAIL;
-
-    if (FAILED(m_pModelCom->Bind_Animation(m_pShaderCom)))
+    if (FAILED(m_pModelCom->Bind_Bone(m_pShaderCom)))
         return E_FAIL;
 
     return S_OK;
