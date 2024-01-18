@@ -36,6 +36,7 @@ private:
 	_int m_iSpriteIndex{};
 	_vec2 m_vScaleAcc{ 1.f };
 	_float m_fDissolveRatio{};
+	_vec2 m_vUV{};
 
 private:
 	HRESULT Add_Components();

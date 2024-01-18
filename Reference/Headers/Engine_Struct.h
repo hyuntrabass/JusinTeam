@@ -80,6 +80,10 @@ namespace Engine
 		int iDissolveTextureID{};
 		float fDissolveDuration{};
 		unsigned int iModelIndex{};
+		bool bSkipBloom{};
+		int iUnDissolveTextureID{};
+		float fUnDissolveDuration{};
+		SimpleMath::Vector2 vUVDelta{};
 	};
 
 	using ANIMTIME_DESC = struct tagAnimTimeDesc {

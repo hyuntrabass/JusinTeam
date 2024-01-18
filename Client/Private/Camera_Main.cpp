@@ -79,18 +79,36 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 			if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
 			{
+
+				_mat a = m_pTransformCom->Get_World_Matrix();
 				m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
+				_vec4 ps = m_pTransformCom->Get_State(State::Pos);
+				_vec4 pps = m_pPlayerTransform->Get_State(State::Pos);
+
+				if (ps.y < _float(pps.y + 0.5f) && dwMouseMove <= 0.f)
+					m_pTransformCom->Set_Matrix(a);
 			}
 
 		}
 
 		if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
 		{
-			m_fPlayerDistance -= 1.f;
+			if(m_fPlayerDistance>2.f)
+			m_fPlayerDistance -= 0.8f;
+			if (m_fLerpTime >= 1.f)
+			{
+				m_fLerpTime = 0.f;
+			}
+		
 		}
 		else if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
 		{
-			m_fPlayerDistance += 1.f;
+			if (m_fPlayerDistance < 7.f)
+			m_fPlayerDistance += 0.8f;
+			if (m_fLerpTime >= 1.f)
+			{
+				m_fLerpTime = 0.f;
+			}
 		}
 
 		// 	y = sin(x * 10.0f) * powf(0.5f, x)
@@ -102,11 +120,23 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		}
 
 		_float fShakeAmount = sin(m_fShakeAcc * 15.f) * powf(0.5f, m_fShakeAcc) * 0.2f;
-		
+		if (m_fLerpTime < 1.f)
+		{
+			m_fLerpTime += (fTimeDelta * 3.f);
+			m_fLerpDistance = Lerp(m_fFirstDistance, m_fPlayerDistance, m_fLerpTime);
+		}
+		else
+		{
+			m_fFirstDistance = m_fPlayerDistance;
+			m_fLerpDistance = m_fFirstDistance;
+			
+		}
+
+		_float vZoomY = 1.3f - (m_fLerpDistance * 0.25f);
 		m_pTransformCom->Set_State(State::Pos,
-			m_pPlayerTransform->Get_CenterPos() +_vec4(0,1.3,0,0)
-			- (m_pTransformCom->Get_State(State::Look) * m_fPlayerDistance)
-			+ (m_pTransformCom->Get_State(State::Up) * m_fPlayerDistance * 0.25));
+			m_pPlayerTransform->Get_CenterPos() + _vec4(0.f, vZoomY,0.f,0.f)
+			- (m_pTransformCom->Get_State(State::Look) * m_fLerpDistance)
+			+ (m_pTransformCom->Get_State(State::Up) * m_fLerpDistance * 0.15));
 		
 
 		_vec4 vLook = m_pTransformCom->Get_State(State::Look);

@@ -78,10 +78,7 @@ void CLevel_Select::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Is_Level_ShutDown(LEVEL_SELECT))
 	{
-		//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Static"), TEXT("Prototype_GameObject_FadeBox"))))
-		//{
-		//	return;
-		//}
+		
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_CUSTOM))))
 		{
 			return;
@@ -227,7 +224,7 @@ HRESULT CLevel_Select::Ready_Camera()
 	m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
 
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, L"Layer_Camera", TEXT("Prototype_GameObject_Camera_Debug"), &CamDesc)))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, L"Layer_Camera_Debug", TEXT("Prototype_GameObject_Camera_Debug"), &CamDesc)))
 	{
 		return E_FAIL;
 	}

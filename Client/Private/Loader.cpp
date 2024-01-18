@@ -181,8 +181,8 @@ HRESULT CLoader::Load_Logo()
 
 	m_strLoadingText = L"Logo : Loading Model";
 #pragma region Model
-	_uint iIndex{};
-	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/face/";
+	_uint iIndex = 0;
+	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/body/";
 	_mat PivotMat = _mat::CreateScale(0.1f) * _mat::CreateRotationX(XMConvertToRadians(-90.f)) * _mat::CreateRotationY(XMConvertToRadians(180.f));
 	_mat _PivotMat = _mat::CreateScale(0.1f) * _mat::CreateRotationY(XMConvertToRadians(180.f));
 
@@ -190,65 +190,12 @@ HRESULT CLoader::Load_Logo()
 	{
 		if (entry.is_regular_file())
 		{
-			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_FACE) + L"" + to_wstring(iIndex++);
-			string strFilePath = entry.path().filename().string();
-			if (iIndex == 8)
-			{
-				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, _PivotMat))))
-				{
-					return E_FAIL;
-				}
-			}
-			else
-			{
-
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, PivotMat))))
-			{
-				return E_FAIL;
-			}
-			}
-		}
-	}
-
-	iIndex = 0;
-	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/hair/";
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
-	{
-		if (entry.is_regular_file())
-		{
-			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_HAIR) + L"" + to_wstring(iIndex++);
-			string strFilePath = entry.path().filename().string();
-
-			if (iIndex == 10)
-			{
-				
-				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, _PivotMat))))
-				{
-					return E_FAIL;
-				}
-			}
-			else
-			{
-
-				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, PivotMat))))
-				{
-					return E_FAIL;
-				}
-			}
-		}
-	}
-	iIndex = 0;
-	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/body/";
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
-	{
-		if (entry.is_regular_file())
-		{
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_BODY) + L"" + to_wstring(iIndex++);
 			string strFilePath = entry.path().filename().string();
 
-			if (iIndex >1)
+			if (iIndex > 1)
 			{
-			
+
 				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, _PivotMat))))
 				{
 					return E_FAIL;
@@ -262,12 +209,12 @@ HRESULT CLoader::Load_Logo()
 					return E_FAIL;
 				}
 			}
-	
+
 		}
 	}
 	iIndex = 0;
 	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/weapon/";
-	
+
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -275,21 +222,6 @@ HRESULT CLoader::Load_Logo()
 			wstring strPrototypeTag = TEXT("Prototype_Model_Weapon") + to_wstring(iIndex++);
 			string strFilePath = entry.path().filename().string();
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, _PivotMat))))
-			{
-				return E_FAIL;
-			}
-		}
-	}
-
-	strInputFilePath = "../Bin/Resources/StaticMesh/Effect/Mesh/";
-	_uint iMeshNumber{};
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
-	{
-		if (entry.is_regular_file())
-		{
-			wstring strPrototypeTag = TEXT("Prototype_Model_Effect_") + to_wstring(iMeshNumber++);
-
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
 			{
 				return E_FAIL;
 			}
@@ -441,7 +373,80 @@ HRESULT CLoader::Load_Select()
 
 	m_strLoadingText = L"Select : Loading Model";
 #pragma region Model
-	_mat PivotMat;
+	string strInputFilePath{};
+
+	_uint iIndex{};
+	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/face/";
+	_mat PivotMat = _mat::CreateScale(0.1f) * _mat::CreateRotationX(XMConvertToRadians(-90.f)) * _mat::CreateRotationY(XMConvertToRadians(180.f));
+	_mat _PivotMat = _mat::CreateScale(0.1f) * _mat::CreateRotationY(XMConvertToRadians(180.f));
+
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_FACE) + L"" + to_wstring(iIndex++);
+			string strFilePath = entry.path().filename().string();
+			if (iIndex == 8)
+			{
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, _PivotMat))))
+				{
+					return E_FAIL;
+				}
+			}
+			else
+			{
+
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, PivotMat))))
+				{
+					return E_FAIL;
+				}
+			}
+		}
+	}
+
+	iIndex = 0;
+	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/hair/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_HAIR) + L"" + to_wstring(iIndex++);
+			string strFilePath = entry.path().filename().string();
+
+			if (iIndex == 10)
+			{
+
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, _PivotMat))))
+				{
+					return E_FAIL;
+				}
+			}
+			else
+			{
+
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, false, PivotMat))))
+				{
+					return E_FAIL;
+				}
+			}
+		}
+	}
+
+	strInputFilePath = "../Bin/Resources/StaticMesh/Effect/Mesh/";
+	_uint iMeshNumber{};
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_Effect_") + to_wstring(iMeshNumber++);
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
 	PivotMat = _mat::CreateScale(0.006f) * _mat::CreateRotationX(XMConvertToRadians(90.f));
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Model_Select_Map"),
@@ -456,9 +461,8 @@ HRESULT CLoader::Load_Select()
 		return E_FAIL;
 	}*/
 
-	string strInputFilePath{};
 	strInputFilePath = "../Bin/Resources/AnimMesh/Select_Model/Mesh/";
-	int iIndex{};
+	iIndex = {};
 	PivotMat = _mat::CreateScale(0.01f) * _mat::CreateRotationY(XMConvertToRadians(90.f));
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Model_Select0"), CModel::Create(m_pDevice, m_pContext, strInputFilePath + "Select_Priest.hyuntraanimmesh", false, PivotMat))))
 	{
@@ -680,12 +684,26 @@ HRESULT CLoader::Load_GamePlay()
 #pragma region Texture
 
 #pragma region UI
+	string strInputFilePath = "../Bin/Resources/Textures/UI/Gameplay";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_UI_Gameplay_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
 #pragma endregion
 
 #pragma region Terrain
 
 	// Terrain -> 테스트용도
-	string strInputFilePath = "../Bin/Resources/Textures/Terrain/";
+	strInputFilePath = "../Bin/Resources/Textures/Terrain/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -699,7 +717,6 @@ HRESULT CLoader::Load_GamePlay()
 		}
 	}
 #pragma endregion
-
 
 #pragma region Effect
 #pragma endregion
@@ -790,8 +807,48 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Item_Merchant"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/ItemMerchant/Mesh/ItemMerchant.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Skill_Merchant"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/SkillMerchant/Mesh/SkillMerchant.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 
 #pragma endregion NPC
+
+
+#pragma  region Boss
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Groar"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Groar/Mesh/Groar.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_GroarScene01"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/GroarScene01/Mesh/GroarScene01.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_GroarScene02"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/GroarScene02/Mesh/GroarScene02.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Groar_Boss"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Groar_Boss/Mesh/Groar_Boss.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+#pragma  endregion Boss
 
 #pragma endregion
 
@@ -815,6 +872,42 @@ HRESULT CLoader::Load_GamePlay()
 	//{
 	//	return E_FAIL;
 	//}
+#pragma region UI
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Player_HP"), CHPBar::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Player_MP"), CMPBar::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Player_Job"), CJobMark::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_SkillSlot"), CSkillSlot::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_SkillBlock"), CSkillBlock::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_ItemSlot"), CItemSlot::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_ItemBlock"), CItemBlock::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_ExpBar"), CExpBar::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+#pragma endregion
+
 
 #pragma region Monster
 
@@ -862,13 +955,27 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
-	//if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Dog"), CDog::Create(m_pDevice, m_pContext))))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Dog"), CDog::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_NPC_Dummy"), CNPC_Dummy::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 
 #pragma endregion NPC
+
+#pragma region Boss
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Groar_Boss"), CGroar_Boss::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+
+#pragma endregion Boss
 
 
 	// Terrain -> 테스트용도
