@@ -196,6 +196,8 @@ public: // Get_Set
 	void Set_CameraTargetLook(const _vec4& vLook);
 	void Set_Have_TargetLook(const _bool& bHaveLook);
 
+	void Set_CameraAttackZoom(_float fAttackZoom) { m_fCameraAttackZoom = fAttackZoom; }
+	_float Get_CameraAttackZoom() { return m_fCameraAttackZoom; }
 	const _uint& Get_CameraState()  const;
 	const _float& Get_ZoomFactor() const;
 	const _vec4& Get_CameraTargetPos() const;
@@ -234,6 +236,7 @@ private:
 	_float m_fTimeRatio{ 1.f };
 	_float m_fZoomFactor{ 3.f };
 	_float2 m_vCameraNF{};
+	_float m_fCameraAttackZoom{};
 	_float2 m_vFogNF{ 2000.f, 2000.f };
 	_bool m_bShakeCamera{};
 	_bool m_bTargetLook{ false };
