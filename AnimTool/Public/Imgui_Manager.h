@@ -54,8 +54,6 @@ private:
     class CPlayer* m_pPlayer = { nullptr };
     vector<class CEffect_Dummy*> m_Effects;
     vector<const _char*> m_EffectDescNames;
-    vector<_float> m_StartEffect;
-    vector<_float> m_EndEffect;
     ANIM_DESC m_AnimDesc{};
     POINT m_ptMouse = {};
     vector<const _char*> m_AnimationNames;

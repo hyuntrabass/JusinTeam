@@ -218,7 +218,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	{	//이펙트 디스크립션 저장
 		TRIGGEREFFECT_DESC EffectDesc{};
 		_uint iSelectEffectFile = m_iSelectEffectFile;
-		EffectDesc.iNameLength = strlen(m_EffectNames[iSelectEffectFile]) * sizeof(_tchar);
+		EffectDesc.iNameLength = strlen(m_EffectNames[iSelectEffectFile]) * sizeof(_tchar) + sizeof(_tchar);
  		MultiByteToWideChar(CP_UTF8, 0, m_EffectNames[iSelectEffectFile], (_int)strlen(m_EffectNames[iSelectEffectFile]), EffectDesc.szEffectName, EffectDesc.iNameLength / sizeof(_tchar));
 		CAnimation* pCurrentAnim = m_pPlayer->Get_CurrentAnim();
 		pCurrentAnim->Add_TriggerEffect(EffectDesc);
@@ -228,8 +228,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 		m_Effects.push_back(pEffect);
 		//이펙트 디스크립션 이름 저장(메뉴로 보여주기 위해)
 		m_EffectDescNames.push_back(m_EffectNames[iSelectEffectFile]);
-		m_StartEffect.push_back(EffectDesc.fStartAnimPos);
-		m_EndEffect.push_back(EffectDesc.fEndAnimPos);
 	}
 
 #pragma region CreateObject
@@ -401,7 +399,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			}
 			m_TriggerTimes.clear();
 			Safe_Delete_Array(strTrigger);
-
 		}
 
 		ImGui::End();
@@ -475,9 +472,27 @@ HRESULT CImgui_Manager::ImGuiMenu()
 		{
 		}
 
-		string strStartEffect = "START : " + to_string(static_cast<_int>(m_StartEffect[m_iCurrentEffect]));
+		TRIGGEREFFECT_DESC* pEffectDesc = m_pPlayer->Get_CurrentAnim()->Get_TriggerEffect(m_iCurrentEffect);
+		if (ImGui::Button("START"))
+		{
+			if (pEffectDesc->fEndAnimPos > m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos() ||
+				pEffectDesc->fEndAnimPos == -1.f)
+			{
+				pEffectDesc->fStartAnimPos = m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos();
+			}
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("END"))
+		{
+			if (pEffectDesc->fStartAnimPos < m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos())
+			{
+				pEffectDesc->fEndAnimPos = m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos();
+			}
+		}
+
+		string strStartEffect = "START : " + to_string(static_cast<_int>(pEffectDesc->fStartAnimPos));
 		ImGui::Text(strStartEffect.c_str()); ImGui::SameLine();
-		string strEndEffect = "END : " + to_string(static_cast<_int>(m_EndEffect[m_iCurrentEffect]));
+		string strEndEffect = "END : " + to_string(static_cast<_int>(pEffectDesc->fEndAnimPos));
 		ImGui::Text(strEndEffect.c_str());
 
 		ImGui::End();
