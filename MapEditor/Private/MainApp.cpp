@@ -45,15 +45,17 @@ HRESULT CMainApp::Init()
 	GraphicDesc.iWinSizeX = rc.right - rc.left;
 	GraphicDesc.iWinSizeY = rc.bottom - rc.top;
 
-	if (FAILED(m_pGameInstance->Init_Engine(LEVEL_END, GraphicDesc, &m_pDevice, &m_pContext)))
+	m_pImGui_Manager = CImGui_Manager::Create(GraphicDesc);
+	if (m_pImGui_Manager == nullptr)
 		return E_FAIL;
-	
+
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 
-	m_pImGui_Manager = CImGui_Manager::Create( GraphicDesc);
-	if (m_pImGui_Manager == nullptr)
+
+	if (FAILED(m_pGameInstance->Init_Engine(LEVEL_END, GraphicDesc, &m_pDevice, &m_pContext)))
 		return E_FAIL;
+	
 
 	if (FAILED(Ready_Prototype_Component_For_Static()))
 	{

@@ -392,12 +392,7 @@ HRESULT CVTFModel::Read_Materials(ifstream& File, const string& strFilePath)
 
 HRESULT CVTFModel::CreateVTF(_uint MaxFrame)
 {
-	//vector<ANIMTRANS_ARRAY> AnimTransforms;
-	//AnimTransforms.resize(m_iNumAnimations);
 
-	//_mat* BoneMatrix = new _mat[m_Bones.size()];
-	//_mat** FrameSize = new _mat * [MaxFrame];
-	//_mat*** AnimSize = new _mat * *[m_iNumAnimations];
 
 	ANIMTRANS_ARRAY* pAnimTransform = new ANIMTRANS_ARRAY[m_iNumAnimations];
 

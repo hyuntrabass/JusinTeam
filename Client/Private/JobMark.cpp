@@ -70,10 +70,10 @@ void CJobMark::Tick(_float fTimeDelta)
 
 		switch (m_eCurState)
 		{
-		BOW:
+		case BOW:
 			Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_basic_bow");
 			break;
-		ASSASSIN:
+		case ASSASSIN:
 			Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_basic_sword");
 			break;
 		}

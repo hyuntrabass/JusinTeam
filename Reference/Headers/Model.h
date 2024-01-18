@@ -26,6 +26,8 @@ public:
 	vector<class CBone*>& Get_Bones();
 
 	void Set_Animation(ANIM_DESC Animation_Desc);
+	vector<_float3> Get_VerticesNor();
+	vector<_float3> Get_VerticesPos();
 
 public:
 	HRESULT Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix);
@@ -43,6 +45,8 @@ public:
 
 private:
 	_char m_szFilePath[MAX_PATH] = "";
+	_float3* m_Vertices{};
+
 	_uint m_iNumMeshes{};
 	vector<class CMesh*> m_Meshes{};
 

@@ -229,6 +229,12 @@
     <Filter Include="02.GameObjects\07. StatObject\Test">
       <UniqueIdentifier>{83755c37-e549-4fee-bc19-f3815975968c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\08.Map">
+      <UniqueIdentifier>{8e2295d8-49f8-4964-8cf1-492d50fc7d62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\09.Prologue_Object">
+      <UniqueIdentifier>{81af0f87-34df-4131-8061-fdbca3043fe5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -436,6 +442,12 @@
     <ClInclude Include="..\Public\TestTree.h">
       <Filter>02.GameObjects\07. StatObject\Test</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Map.h">
+      <Filter>02.GameObjects\08.Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Prologue_Object.h">
+      <Filter>02.GameObjects\09.Prologue_Object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -639,6 +651,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\TestTree.cpp">
       <Filter>02.GameObjects\07. StatObject\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Map.cpp">
+      <Filter>02.GameObjects\08.Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Prologue_Object.cpp">
+      <Filter>02.GameObjects\09.Prologue_Object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

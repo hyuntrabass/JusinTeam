@@ -80,38 +80,33 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // 기본 메시지 루프입니다:
     while (true)
     {
+
         if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
         {
             if (msg.message == WM_QUIT)
             {
                 break;
             }
+
             if (not TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
             {
                 TranslateMessage(&msg);
                 DispatchMessage(&msg);
             }
+            
         }
-        POINT mousePos;
-        GetCursorPos(&mousePos);
-        ScreenToClient(g_hWnd, &mousePos);
+    
+        fTimeAcc += pGameInstance->Compute_TimeDelta(TEXT("Timer_Default"));
 
-        RECT clientRect;
-        GetClientRect(g_hWnd, &clientRect);
-
-        if (PtInRect(&clientRect, mousePos))
+        //if (true)
+        if (fTimeAcc > 1.f / 60.f)
         {
-            fTimeAcc += pGameInstance->Compute_TimeDelta(TEXT("Timer_Default"));
+            pMainApp->Tick(pGameInstance->Compute_TimeDelta(TEXT("Timer_60")));
+            pMainApp->Render();
 
-            //if (true)
-            if (fTimeAcc > 1.f / 60.f)
-            {
-                pMainApp->Tick(pGameInstance->Compute_TimeDelta(TEXT("Timer_60")));
-                pMainApp->Render();
-
-                fTimeAcc = 0.f;
-            }
+            fTimeAcc = 0.f;
         }
+        
     }
 
     Safe_Release(pGameInstance);

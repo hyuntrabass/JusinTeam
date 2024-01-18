@@ -29,7 +29,7 @@ HRESULT CImGui_Manager::Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc)
 	window_flags |= ImGuiWindowFlags_NoMove;
 	window_flags |= ImGuiWindowFlags_NoResize;
 
-	Search_Files();
+	Search_Path();
 
 	return S_OK;
 }
@@ -37,44 +37,70 @@ HRESULT CImGui_Manager::Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc)
 void CImGui_Manager::Tick(_float fTimeDelta)
 {
 	Mouse_Pos();
+	if (m_pSelectedDummy)
+	{
+		CTransform* pObjectsTransform = (CTransform*)m_pSelectedDummy->Find_Component(TEXT("Com_Transform"));
+
+		_vector ObjRight = { m_ObjectMatrix._11, m_ObjectMatrix._12, m_ObjectMatrix._13, m_ObjectMatrix._14 };
+		_vector ObjUp = { m_ObjectMatrix._21, m_ObjectMatrix._22, m_ObjectMatrix._23, m_ObjectMatrix._24 };
+		_vector ObjLook = { m_ObjectMatrix._31, m_ObjectMatrix._32, m_ObjectMatrix._33, m_ObjectMatrix._34 };
+		_vector ObjPosition = { m_ObjectMatrix._41, m_ObjectMatrix._42, m_ObjectMatrix._43, m_ObjectMatrix._44 };
+		pObjectsTransform->Set_State(State::Right, ObjRight);
+		pObjectsTransform->Set_State(State::Up, ObjUp);
+		pObjectsTransform->Set_State(State::Look, ObjLook);
+		pObjectsTransform->Set_State(State::Pos, ObjPosition);
+	}
+	else if (m_pSelectMap)
+	{
+		CTransform* pMapTransform = (CTransform*)m_pSelectMap->Find_Component(TEXT("Com_Transform"));
+
+		_vector ObjRight = { m_MapMatrix._11, m_MapMatrix._12, m_MapMatrix._13, m_MapMatrix._14 };
+		_vector ObjUp = { m_MapMatrix._21, m_MapMatrix._22, m_MapMatrix._23, m_MapMatrix._24 };
+		_vector ObjLook = { m_MapMatrix._31, m_MapMatrix._32, m_MapMatrix._33, m_MapMatrix._34 };
+		_vector ObjPosition = { m_MapMatrix._41, m_MapMatrix._42, m_MapMatrix._43, m_MapMatrix._44 };
+		pMapTransform->Set_State(State::Right, ObjRight);
+		pMapTransform->Set_State(State::Up, ObjUp);
+		pMapTransform->Set_State(State::Look, ObjLook);
+		pMapTransform->Set_State(State::Pos, ObjPosition);
+	}
+
 
 	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LSHIFT))
 	{
-
 		if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
 		{
 			m_PickingPos = m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y);
 		}
+			FastPicking();
 
+		//if (m_pSelectedDummy)
+		//{
+		//	m_pSelectedDummy->Select(false);
+		//	m_pSelectedDummy = nullptr;
+		//}
+
+		//if (m_pSelectMap)
+		//{
+		//	m_pSelectMap->Select(false);
+		//	m_pSelectMap = nullptr;
+		//}
+	
+		
+	}
+	if (m_pGameInstance->Mouse_Down(DIM_RBUTTON))
+	{
 		if (m_pSelectedDummy)
 		{
 			m_pSelectedDummy->Select(false);
 			m_pSelectedDummy = nullptr;
-			DummyIndex = 0;
 		}
 
 		if (m_pSelectMap)
 		{
 			m_pSelectMap->Select(false);
 			m_pSelectMap = nullptr;
-			MapIndex = 0;
 		}
-
-		if (m_eItemType != ItemType::Terrain)
-			FastPicking();
-		else
-			TerrainPicking();
 	}
-	/*if (m_pGameInstance->Mouse_Down(DIM_RBUTTON))
-	{
-		if (m_pSelectedDummy)
-		{
-			m_pSelectedDummy->Select(false);
-			m_pSelectedDummy = nullptr;
-			DummyIndex = 0;
-		}
-
-	}*/
 
 }
 
@@ -88,16 +114,17 @@ HRESULT CImGui_Manager::Render()
 	ImGuiPos();
 	ImGuiMenu();
 
-	bool bDemo = true;
-	ImGui::ShowDemoWindow(&bDemo);
+	//bool bDemo = true;
+	//ImGui::ShowDemoWindow(&bDemo);
 
 	ImGuizmo::BeginFrame();
 	ImGuizmo::SetOrthographic(false);
 	ImGuizmo::SetDrawlist(ImGui::GetBackgroundDrawList());
 	ImGuizmo::SetRect(0, 0, (_float)(m_iWinSizeX), (_float)(m_iWinSizeY));
 
-	ImGuizmoMenu();
-
+	if(m_iImGuizmoCheck)
+		ImGuizmoMenu();
+	
 	ImGui::Render();
 
 	return S_OK;
@@ -105,12 +132,12 @@ HRESULT CImGui_Manager::Render()
 
 HRESULT CImGui_Manager::ImGuiMenu()
 {
-#pragma endregion
 	ImGui::Begin("EDITOR");
 
 	ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 	if (ImGui::BeginTabBar("EDITOR", tab_bar_flags))
 	{
+#pragma region 터레인
 		if (ImGui::BeginTabItem("Terrain"))
 		{
 			m_eItemType = ItemType::Terrain;
@@ -133,17 +160,26 @@ HRESULT CImGui_Manager::ImGuiMenu()
 					Modify_Terrain();
 				}
 			}
+
+
+			ImGui::SeparatorText("Save / Load");
+	
+
 			ImGui::EndTabItem();
 		}
+#pragma endregion
+
+#pragma region 맵
+
 		if (ImGui::BeginTabItem("MAP"))
 		{
 			m_eItemType = ItemType::Map;
 
 			ImGui::SeparatorText("LIST");
 
-			static int Map_current_idx = 0;
+			static int Map_current_idx = -1;
 			ImGui::Text("Map");
-			if (ImGui::BeginListBox("MAPS FILE", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+			if (ImGui::BeginListBox("MAPS PATH", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
 			{
 				for (int n = 0; n < Maps.size(); n++)
 				{
@@ -151,50 +187,78 @@ HRESULT CImGui_Manager::ImGuiMenu()
 					if (ImGui::Selectable(Maps[n], is_selected))
 					{
 						Map_current_idx = n;
-						m_iSelectIdx = Map_current_idx;
 					}
 
 					if (is_selected)
+					{
 						ImGui::SetItemDefaultFocus();
+					}
 				}
 
 				ImGui::EndListBox();
 			}
+			ImGui::Separator();
 
+
+			if (ImGui::InputText("Search", Serch_Name, ImGuiInputTextFlags_EnterReturnsTrue))
+			{
+				int foundIdx = FindByName(Serch_Name, Maps);
+
+				if (foundIdx != -1)
+				{
+					Map_current_idx = foundIdx;
+				}
+			}
 			ImGui::Separator();
 
 			ImGui::SeparatorText("MATRIX : ");
-			ImGui::InputFloat4("Right", &m_MapMatrix.m[0][0], 0);
-			ImGui::InputFloat4("Up", &m_MapMatrix.m[1][0], 0);
-			ImGui::InputFloat4("Look", &m_MapMatrix.m[2][0], 0);
-			ImGui::InputFloat4("Position", &m_MapMatrix.m[3][0], 0);
+			ImGui::InputFloat4("Right", &m_MapMatrix.m[0][0]);
+			ImGui::InputFloat4("Up", &m_MapMatrix.m[1][0]);
+			ImGui::InputFloat4("Look", &m_MapMatrix.m[2][0]);
+			ImGui::InputFloat4("Position", &m_MapMatrix.m[3][0]);
 
 			ImGui::Separator();
 			if (ImGui::Button("Delete"))
 			{
-				Delete_Dummy();
+				Delete_Map();
 			}
 
 			ImGui::SameLine();
 
 			if (ImGui::Button("Create"))
 			{
-				if (m_iSelectIdx != -1)
+				if (Map_current_idx != -1)
 				{
 					Create_Map(Map_current_idx);
 				}
 			}
 
+			ImGui::SeparatorText("Wireframe");
+
+			ImGui::Checkbox("WireFrame", &m_isMode);
+			if (m_pSelectMap)
+			{
+				m_pSelectMap->Mode(m_isMode);
+			}
+
+			ImGui::SeparatorText("Save / Load");
+
+			if (ImGui::Button("Save_Map"))
+			{
+				Save_Map();
+			}
+			ImGui::SameLine();
+
+			if (ImGui::Button("Load_Map"))
+			{
+				Load_Map();
+			}
+
 			ImGui::EndTabItem();
 		}
-		if (ImGui::BeginTabItem("Camera"))
-		{
-			m_eItemType = ItemType::Camera;
+#pragma endregion
 
-
-			ImGui::Text("Ready for Camera CutScene......");
-			ImGui::EndTabItem();
-		}
+#pragma region 오브젝트
 
 		if (ImGui::BeginTabItem("Objects"))
 		{
@@ -205,7 +269,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 
 			static int Object_current_idx = 0;
 			ImGui::Text("Objects");
-			if (ImGui::BeginListBox("OBJECTS FILE", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+			if (ImGui::BeginListBox("OBJECTS DIR", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
 			{
 				for (int n = 0; n < Objects.size(); n++)
 				{
@@ -217,7 +281,10 @@ HRESULT CImGui_Manager::ImGuiMenu()
 					}
 
 					if (is_selected)
+					{
 						ImGui::SetItemDefaultFocus();
+
+					}
 				}
 
 				ImGui::EndListBox();
@@ -225,11 +292,26 @@ HRESULT CImGui_Manager::ImGuiMenu()
 
 			ImGui::Separator();
 
+
+
+			if (ImGui::InputText("Search", Serch_Name, ImGuiInputTextFlags_EnterReturnsTrue))
+			{
+				int foundIdx = FindByName(Serch_Name, Objects);
+
+				if (foundIdx != -1)
+				{
+					Object_current_idx = foundIdx;
+					m_iSelectIdx = Object_current_idx;
+				}
+			}
+			ImGui::Separator();
+
+
 			ImGui::SeparatorText("MATRIX : ");
-			ImGui::InputFloat4("Right", &m_ObjectMatrix.m[0][0], 0);
-			ImGui::InputFloat4("Up", &m_ObjectMatrix.m[1][0], 0);
-			ImGui::InputFloat4("Look", &m_ObjectMatrix.m[2][0], 0);
-			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0], 0);
+			ImGui::InputFloat4("Right", &m_ObjectMatrix.m[0][0],0);
+			ImGui::InputFloat4("Up", &m_ObjectMatrix.m[1][0],0);
+			ImGui::InputFloat4("Look", &m_ObjectMatrix.m[2][0],0);
+			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0],0);
 
 			ImGui::Separator();
 			if (ImGui::Button("Delete"))
@@ -241,24 +323,41 @@ HRESULT CImGui_Manager::ImGuiMenu()
 
 			if (ImGui::Button("Create"))
 			{
-				if (m_iSelectIdx != -1)
+				if (Object_current_idx != -1)
 				{
 					Create_Dummy(Object_current_idx);
 				}
 			}
 
+			ImGui::SeparatorText("Save / Load");
+
+			if (ImGui::Button("SAVE"))
+			{
+				Save_Object();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("LOAD"))
+			{
+				Load_Object();
+			}
+
+
 			ImGui::EndTabItem();
 		}
+
+#pragma endregion
+
+#pragma region 몬스터
+
 		if (ImGui::BeginTabItem("Monster"))
 		{
 			/* 몬스터 */
 			m_eItemType = ItemType::Monster;
 
 			ImGui::SeparatorText("LIST");
-
 			static int Monster_current_idx = 0;
-			ImGui::Text("Monster");
-			if (ImGui::BeginListBox("MONSTERS FILE", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+			ImGui::Text("MONSTER");
+			if (ImGui::BeginListBox("MONSTER DIR", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
 			{
 				for (int n = 0; n < Monsters.size(); n++)
 				{
@@ -270,18 +369,35 @@ HRESULT CImGui_Manager::ImGuiMenu()
 					}
 
 					if (is_selected)
+					{
+
 						ImGui::SetItemDefaultFocus();
+
+					}
 				}
 
 				ImGui::EndListBox();
 			}
+
+			ImGui::Separator();
+			
+			if (ImGui::InputText("Search", Serch_Name, ImGuiInputTextFlags_EnterReturnsTrue))
+			{
+				int foundIdx = FindByName(Serch_Name, Monsters);
+
+				if (foundIdx != -1)
+				{
+					Monster_current_idx = foundIdx;
+					m_iSelectIdx = Monster_current_idx;
+				}
+			}
 			ImGui::Separator();
 
 			ImGui::SeparatorText("MATRIX : ");
-			ImGui::InputFloat4("Right", &m_ObjectMatrix.m[0][0], 0);
-			ImGui::InputFloat4("Up", &m_ObjectMatrix.m[1][0], 0);
-			ImGui::InputFloat4("Look", &m_ObjectMatrix.m[2][0], 0);
-			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0], 0);
+			ImGui::InputFloat4("Right", &m_ObjectMatrix.m[0][0]);
+			ImGui::InputFloat4("Up", &m_ObjectMatrix.m[1][0]);
+			ImGui::InputFloat4("Look", &m_ObjectMatrix.m[2][0]);
+			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0]);
 
 			ImGui::Separator();
 
@@ -296,13 +412,13 @@ HRESULT CImGui_Manager::ImGuiMenu()
 
 			if (ImGui::Button("Create"))
 			{
-				if (m_iSelectIdx != -1)
+				if (Monster_current_idx != -1)
 				{
 					Create_Dummy(Monster_current_idx);
 				}
 			}
 
-			ImGui::Separator();
+			ImGui::SeparatorText("Save / Load");
 
 			if (ImGui::Button("SAVE"))
 			{
@@ -317,16 +433,20 @@ HRESULT CImGui_Manager::ImGuiMenu()
 
 			ImGui::EndTabItem();
 		}
+
+#pragma endregion
+
+#pragma region 엔피씨
 		if (ImGui::BeginTabItem("NPC"))
 		{
 			/* NPC */
 			m_eItemType = ItemType::NPC;
 
-			ImGui::SeparatorText("LIST");
+		/*	ImGui::SeparatorText("LIST");
 
 			static int NPC_current_idx = 0;
-			ImGui::Text("Monster");
-			if (ImGui::BeginListBox("MONSTERS FILE", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+			ImGui::Text("NPC");
+			if (ImGui::BeginListBox("NPC FILE", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
 			{
 				for (int n = 0; n < Monsters.size(); n++)
 				{
@@ -378,12 +498,25 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			if (ImGui::Button("LOAD"))
 			{
 				Load_Monster();
-			}
+			}*/
 
 
 			ImGui::EndTabItem();
 		}
+#pragma endregion
 
+#pragma region 카메라
+		if (ImGui::BeginTabItem("Camera"))
+		{
+			m_eItemType = ItemType::Camera;
+
+
+			ImGui::Text("Ready for Camera CutScene......");
+			ImGui::EndTabItem();
+		}
+#pragma endregion
+
+#pragma region 트리거
 		if (ImGui::BeginTabItem("Trigger"))
 		{
 			/* Trigger */
@@ -391,46 +524,12 @@ HRESULT CImGui_Manager::ImGuiMenu()
 
 			ImGui::SeparatorText("LIST");
 
-			static int Trigger_current_idx = 0;
-			ImGui::Text("Trigger");
-			if (ImGui::BeginListBox("Trigger List", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
-			{
-				for (int n = 0; n < Triggers.size(); n++)
-				{
-					const bool is_selected = (Trigger_current_idx == n);
-					if (ImGui::Selectable(Monsters[n], is_selected))
-					{
-						Trigger_current_idx = n;
-						m_iSelectIdx = Trigger_current_idx;
-					}
-
-					if (is_selected)
-						ImGui::SetItemDefaultFocus();
-				}
-
-				ImGui::EndListBox();
-			}
+		
 			ImGui::Separator();
 			
 			
 			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0], 0);
 
-			ImGui::Separator();
-
-			if (ImGui::Button("Delete"))
-			{
-				Delete_Dummy();
-			}
-
-			ImGui::SameLine();
-
-			if (ImGui::Button("Create"))
-			{
-				if (m_iSelectIdx != -1)
-				{
-					Create_Dummy(Trigger_current_idx);
-				}
-			}
 
 			ImGui::Separator();
 
@@ -446,7 +545,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 
 			ImGui::EndTabItem();
 		}
-
+#pragma endregion
 		ImGui::EndTabBar();
 	}
 
@@ -463,13 +562,27 @@ HRESULT CImGui_Manager::ImGuiPos()
 	ImGui::InputFloat2("Mouse Pos", &m_vMousePos.x, 0);
 
 	ImGui::SeparatorText("MOUSE WORLDPOS : ");
-	ImGui::InputFloat3("Mouse WorldPos", &m_vMouseWorld.x, 0);
+	ImGui::InputFloat3("Mouse WorldPos", &m_vMouseWorld.x, nullptr, 2);
 
 	ImGui::SeparatorText("PICKING POS : ");
 	ImGui::InputFloat3("Picking Pos", &m_PickingPos.x, 0);
 
 	ImGui::SeparatorText("TERRAIN POS : ");
 	ImGui::InputFloat3("Terrain Pos", &m_TerrainPos.x, 0);
+
+	ImGui::SeparatorText("Check : ");
+
+	ImGui::Checkbox("ImGui Check", &m_iImGuizmoCheck);
+
+	ImGui::SeparatorText("All Reset : ");
+
+	if (m_eItemType == ItemType::Map)
+	{
+		if (ImGui::Button("Normal Save"))
+		{
+			MeshToMask();
+		}
+	}
 
 	if (ImGui::Button("Reset"))
 	{
@@ -480,8 +593,17 @@ HRESULT CImGui_Manager::ImGuiPos()
 	return S_OK;
 }
 
+// 검색
+_int CImGui_Manager::FindByName(char* SearchStr, vector<const char*> List)
+{
+	for (_uint n = 0; n < List.size(); ++n)
+	{
+		if (strcmp(List[n], SearchStr) == 0)
+			return n;
+	}
 
-
+	return -1;
+}
 HRESULT CImGui_Manager::ImGuizmoMenu()
 {
 	m_ViewMatrix = m_pGameInstance->Get_Transform(TransformType::View);
@@ -554,6 +676,7 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	_tchar strUnicode[MAX_PATH]{}; 
 	switch (m_eItemType)
 	{
+
 	case ItemType::Objects:
 		MultiByteToWideChar(CP_ACP, 0, Objects[iListIndex], static_cast<int>(strlen(Objects[iListIndex])), strUnicode, static_cast<int>(strlen(Objects[iListIndex])));
 		break;
@@ -571,6 +694,7 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	
 	switch (m_eItemType)
 	{
+
 	case MapEditor::ItemType::Objects:
 		m_ObjectsList.push_back(m_pSelectedDummy);
 		break;
@@ -587,7 +711,7 @@ void CImGui_Manager::Create_Map(const _int& iListIndex)
 	MapInfo Info{};
 
 	Info.ppMap = &m_pSelectMap;
-	Info.vPos = m_PickingPos;
+	Info.vPos = _vec4(m_MapMatrix.Position());
 	Info.Prototype = L"Prototype_Model_";
 	Info.eType = m_eItemType;
 	Info.iStageIndex = 0;
@@ -602,7 +726,7 @@ void CImGui_Manager::Create_Map(const _int& iListIndex)
 	{
 		MSG_BOX("Failed to Add Layer : Map");
 	}
-
+	m_MapsList.push_back(m_pSelectMap);
 	m_Map.emplace(m_pSelectMap->Get_ID(), m_pSelectMap);
 	m_pSelectMap = nullptr;
 	
@@ -691,6 +815,12 @@ HRESULT CImGui_Manager::Modify_Terrain()
 
 void CImGui_Manager::Reset()
 {
+	for (auto iter : m_MapsList)
+	{
+		iter->Set_Dead();
+	}
+	m_MapsList.clear();
+
 	for (auto iter : m_ObjectsList)
 	{
 		iter->Set_Dead();
@@ -713,50 +843,98 @@ void CImGui_Manager::Reset()
 }
 
 
-const char* CImGui_Manager::Search_Files()
+void CImGui_Manager::Search_Path()
 {
-	string strMapFilePath = "../Bin/Resources/StaticMesh/Village/Mesh/";
+	string strMapFilePath = "../Bin/Resources/StaticMesh/Map/";
 
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strMapFilePath))
 	{
 		if (entry.is_regular_file())
 		{
 			string strName = entry.path().stem().string();
-			char* cstr = new char[strName.length() + 1];
-			strcpy_s(cstr, strName.length() + 1, strName.c_str());
-			Maps.push_back(cstr);
+			string extension = entry.path().extension().string();
+
+			if (extension == ".hyuntrastatmesh") {
+				char* cstr = new char[strName.length() + 1];
+				strcpy_s(cstr, strName.length() + 1, strName.c_str());
+				Maps.push_back(cstr);
+			}
 		}
-		
 	}
 
-	string strObjectsFilePath = "../Bin/Resources/StaticMesh/Village/Mesh/";
+	string strObjectsFilePath = "../Bin/Resources/StaticMesh/Object/Mesh/";
 
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(strObjectsFilePath))
+	for (const auto& entry : std::filesystem::directory_iterator(strObjectsFilePath))
 	{
+
 		if (entry.is_regular_file())
 		{
 			string strName = entry.path().stem().string();
-			char* cstr = new char[strName.length() + 1];
-			strcpy_s(cstr, strName.length() + 1, strName.c_str());
-			Objects.push_back(cstr);
+			string extension = entry.path().extension().string();
+
+			if (extension == ".hyuntrastatmesh") {
+
+				char* cstr = new char[strName.length() + 1];
+				strcpy_s(cstr, strName.length() + 1, strName.c_str());
+				Objects.push_back(cstr);
+			}
 		}
 
 	}
 
 	string strMonsterFilePath = "../Bin/Resources/AnimMesh/Monster/";
 
-	for (const auto& entry : std::filesystem::directory_iterator(strMonsterFilePath))
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strMonsterFilePath))
 	{
-		if (entry.is_directory())
+		if (entry.is_regular_file())
 		{
-			string strName = entry.path().filename().string();
-			char* cstr = new char[strName.length() + 1];
-			strcpy_s(cstr, strName.length() + 1, strName.c_str());
-			Monsters.push_back(cstr);
+			string strName = entry.path().stem().string();
+			string extension = entry.path().extension().string();
+
+			if (extension == ".hyuntraanimmesh") {
+				char* cstr = new char[strName.length() + 1];
+				strcpy_s(cstr, strName.length() + 1, strName.c_str());
+				Monsters.push_back(cstr);
+
+			}
 		}
+
 	}
 
-	return nullptr;
+	// TODO : NPC 등 추가
+}
+
+
+void CImGui_Manager::Search_Files(string DirPath, const char* Path, vector<const char*>* List )
+{
+	string strPath(Path);
+	string strFilePath;
+	if(DirPath == "Map" || DirPath == "Map/Midgard")
+	{
+		strFilePath = "../Bin/Resources/StaticMesh/" + DirPath + "/" + strPath + "/Mesh/";
+	}
+	else if (DirPath == "Object")
+	{
+		strFilePath = "../Bin/Resources/StaticMesh/"+ DirPath+ "/" + strPath + "/Mesh/";
+	}
+	else if(DirPath == "Monster" || DirPath == "NPC")
+		strFilePath = "../Bin/Resources/AnimMesh/" + DirPath + "/" + strPath + "/Mesh/";
+
+
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			string strName = entry.path().stem().string();
+			char* cstr = new char[strName.length() + 1];
+			strcpy_s(cstr, strName.length() + 1, strName.c_str());
+			List->push_back(cstr);
+		}
+		if(!entry.exists())
+			continue;
+	}
+	
+	
 }
 
 void CImGui_Manager::Mouse_Pos()
@@ -788,10 +966,21 @@ void CImGui_Manager::Mouse_Pos()
 
 void CImGui_Manager::FastPicking()
 {
+	if (m_pSelectedDummy)
+	{
+		m_pSelectedDummy->Select(false);
+		return;
+	}
+	if (m_pSelectMap)
+	{
+		m_pSelectMap->Select(false);
+		return;
+	}
+
 	if (m_eItemType != ItemType::Map)
 	{
 		DummyIndex = 0;
-
+		
 		if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
 		{
 			DummyIndex = m_pGameInstance->FastPicking(m_vMousePos.x, m_vMousePos.y);
@@ -799,8 +988,11 @@ void CImGui_Manager::FastPicking()
 			auto iter = m_DummyList.find(DummyIndex);
 			if (iter != m_DummyList.end())
 			{
+
 				m_pSelectedDummy = (*iter).second;
 				m_pSelectedDummy->Select(true);
+				CTransform* pObjectsTransform = (CTransform*)m_pSelectedDummy->Find_Component(TEXT("Com_Transform"));
+				m_ObjectMatrix = pObjectsTransform->Get_World_Matrix();
 			}
 		}
 	}
@@ -817,16 +1009,280 @@ void CImGui_Manager::FastPicking()
 			{
 				m_pSelectMap = (*iter).second;
 				m_pSelectMap->Select(true);
+				CTransform* pMapTransform = (CTransform*)m_pSelectMap->Find_Component(TEXT("Com_Transform"));
+				m_MapMatrix = pMapTransform->Get_World_Matrix();
 			}
 		}
 	}
 }
 
-void CImGui_Manager::TerrainPicking()
+void CImGui_Manager::MeshToMask()
 {
+	if (m_pSelectMap)
+	{
+		CModel* pModel = dynamic_cast<CModel*>(m_pSelectMap->Find_Component(TEXT("Com_Model")));
+		vector<_float3> VerticesPos = pModel->Get_VerticesPos();
+
+		m_pSelectMap->Create_HightMap(VerticesPos);
+	}
+}
+
+VOID CImGui_Manager::Map_Vertices()
+{
+	vector<_float3>Vertices{};
+	if (m_pSelectMap)
+	{
+		CModel* pModel = dynamic_cast<CModel*>(m_pSelectMap->Find_Component(TEXT("Com_Model")));
+		Vertices = pModel->Get_VerticesPos();
+
+	}
 
 }
 
+#pragma region 맵 저장 / 불러오기
+HRESULT CImGui_Manager::Save_Map()
+{
+	OPENFILENAME OFN;
+	TCHAR filePathName[MAX_PATH] = L"";
+	TCHAR lpstrFile[MAX_PATH] = L"MapData.dat";
+	static TCHAR filter[] = L"모든 파일\0*.*\0텍스트 파일\0*.txt\0dat 파일\0*.dat";
+
+	memset(&OFN, 0, sizeof(OPENFILENAME));
+	OFN.lStructSize = sizeof(OPENFILENAME);
+	OFN.hwndOwner = g_hWnd;
+	OFN.lpstrFilter = filter;
+	OFN.lpstrFile = lpstrFile;
+	OFN.nMaxFile = 256;
+	OFN.lpstrInitialDir = L"..\\Bin\\Data";
+
+	if (GetSaveFileName(&OFN) != 0)
+	{
+		const TCHAR* pGetPath = OFN.lpstrFile;
+
+		std::ofstream outFile(pGetPath, std::ios::binary);
+
+		if (!outFile.is_open())
+			return E_FAIL;
+
+		_uint MapListSize = m_MapsList.size();
+		outFile.write(reinterpret_cast<const char*>(&MapListSize), sizeof(_uint));
+
+		for (auto& Map : m_MapsList)
+		{
+			CTransform* pMapTransform = dynamic_cast<CTransform*>(Map->Find_Component(TEXT("Com_Transform")));
+
+			wstring MapPrototype = Map->Get_Info().Prototype;
+			_ulong MapPrototypeSize = MapPrototype.size();
+
+			outFile.write(reinterpret_cast<const char*>(&MapPrototypeSize), sizeof(_ulong));
+			outFile.write(reinterpret_cast<const char*>(MapPrototype.c_str()), MapPrototypeSize * sizeof(wchar_t));
+
+			_mat MapWorldMat = pMapTransform->Get_World_Matrix();
+			outFile.write(reinterpret_cast<const char*>(&MapWorldMat), sizeof(_mat));
+		}
+
+		MessageBox(g_hWnd, L"파일 저장 완료", L"파일 저장", MB_OK);
+	}
+	return S_OK;
+}
+
+
+HRESULT CImGui_Manager::Load_Map()
+{
+
+	OPENFILENAME OFN;
+	TCHAR filePathName[MAX_PATH] = L"";
+	static TCHAR filter[] = L"모두(*.*)\0*.*\0데이터 파일(*.dat)\0*.dat";
+
+	memset(&OFN, 0, sizeof(OPENFILENAME));
+	OFN.lStructSize = sizeof(OPENFILENAME);
+	OFN.hwndOwner = g_hWnd;
+	OFN.lpstrFilter = filter;
+	OFN.lpstrFile = filePathName;
+	OFN.nMaxFile = 256;
+	OFN.lpstrInitialDir = L"..\\Bin\\Data\\";
+
+	if (GetOpenFileName(&OFN) != 0)
+	{
+		const TCHAR* pGetPath = OFN.lpstrFile;
+
+		std::ifstream inFile(pGetPath, std::ios::binary);
+
+		if (!inFile.is_open())
+		{
+			MessageBox(g_hWnd, L"파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+			return E_FAIL;
+		}
+
+		_uint MapListSize;
+		inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+
+
+		for (_uint i = 0; i < MapListSize; ++i)
+		{
+			_ulong MapPrototypeSize;
+			inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+
+			wstring MapPrototype;
+			MapPrototype.resize(MapPrototypeSize);
+			inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+
+			_mat MapWorldMat;
+			inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+
+			MapInfo MapInfo{};
+			MapInfo.eType = ItemType::Map;
+			MapInfo.Prototype = MapPrototype;
+			MapInfo.vPos = _float4(MapWorldMat._41, MapWorldMat._42, MapWorldMat._43, MapWorldMat._44);
+			MapInfo.ppMap = &m_pSelectMap;
+
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Map"), &MapInfo)))
+			{
+				MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
+				return E_FAIL;
+			}
+
+			m_Map.emplace(m_pSelectMap->Get_ID(), m_pSelectMap);
+			m_MapsList.push_back(m_pSelectMap);
+
+			CTransform* pMapTransform = dynamic_cast<CTransform*>(m_pSelectMap->Find_Component(TEXT("Com_Transform")));
+
+			pMapTransform->Set_State(State::Right, MapWorldMat.Right());
+			pMapTransform->Set_State(State::Up, MapWorldMat.Up());
+			pMapTransform->Set_State(State::Look, MapWorldMat.Look());
+			pMapTransform->Set_State(State::Pos, MapWorldMat.Position());
+
+			m_pSelectMap = nullptr;
+		}
+
+		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
+	}
+	return S_OK;
+}
+#pragma endregion
+
+#pragma region 오브젝트 저장 / 불러오기
+HRESULT CImGui_Manager::Save_Object()
+{
+	OPENFILENAME OFN;
+	TCHAR filePathName[MAX_PATH] = L"";
+	TCHAR lpstrFile[MAX_PATH] = L"ObjectsData.dat";
+	static TCHAR filter[] = L"모든 파일\0*.*\0텍스트 파일\0*.txt\0dat 파일\0*.dat";
+
+	memset(&OFN, 0, sizeof(OPENFILENAME));
+	OFN.lStructSize = sizeof(OPENFILENAME);
+	OFN.hwndOwner = g_hWnd;
+	OFN.lpstrFilter = filter;
+	OFN.lpstrFile = lpstrFile;
+	OFN.nMaxFile = 256;
+	OFN.lpstrInitialDir = L"..\\Bin\\Data";
+
+	if (GetSaveFileName(&OFN) != 0)
+	{
+		const TCHAR* pGetPath = OFN.lpstrFile;
+
+		std::ofstream outFile(pGetPath, std::ios::binary);
+
+		if (!outFile.is_open())
+			return E_FAIL;
+
+		_uint ObjectsListSize = m_ObjectsList.size();
+		outFile.write(reinterpret_cast<const char*>(&ObjectsListSize), sizeof(_uint));
+
+		for (auto& Objects : m_ObjectsList)
+		{
+			CTransform* pObjectsTransform = dynamic_cast<CTransform*>(Objects->Find_Component(TEXT("Com_Transform")));
+
+			wstring ObjectsPrototype = Objects->Get_Info().Prototype;
+			_ulong ObjectsPrototypeSize = ObjectsPrototype.size();
+
+			outFile.write(reinterpret_cast<const char*>(&ObjectsPrototypeSize), sizeof(_ulong));
+			outFile.write(reinterpret_cast<const char*>(ObjectsPrototype.c_str()), ObjectsPrototypeSize * sizeof(wchar_t));
+
+			_mat ObjectsWorldMat = pObjectsTransform->Get_World_Matrix();
+			outFile.write(reinterpret_cast<const char*>(&ObjectsWorldMat), sizeof(_mat));
+		}
+
+		MessageBox(g_hWnd, L"오브젝트 파일 저장 완료", L"파일 저장", MB_OK);
+	}
+	return S_OK;
+}
+
+HRESULT CImGui_Manager::Load_Object()
+{
+	OPENFILENAME OFN;
+	TCHAR filePathName[MAX_PATH] = L"";
+	static TCHAR filter[] = L"모두(*.*)\0*.*\0데이터 파일(*.dat)\0*.dat";
+
+	memset(&OFN, 0, sizeof(OPENFILENAME));
+	OFN.lStructSize = sizeof(OPENFILENAME);
+	OFN.hwndOwner = g_hWnd;
+	OFN.lpstrFilter = filter;
+	OFN.lpstrFile = filePathName;
+	OFN.nMaxFile = 256;
+	OFN.lpstrInitialDir = L"..\\Bin\\Data\\";
+
+	if (GetOpenFileName(&OFN) != 0)
+	{
+		const TCHAR* pGetPath = OFN.lpstrFile;
+
+		std::ifstream inFile(pGetPath, std::ios::binary);
+
+		if (!inFile.is_open())
+		{
+			MessageBox(g_hWnd, L"파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+			return E_FAIL;
+		}
+
+		_uint ObjectsListSize;
+		inFile.read(reinterpret_cast<char*>(&ObjectsListSize), sizeof(_uint));
+
+
+		for (_uint i = 0; i < ObjectsListSize; ++i)
+		{
+			_ulong ObjectsPrototypeSize;
+			inFile.read(reinterpret_cast<char*>(&ObjectsPrototypeSize), sizeof(_ulong));
+
+			wstring ObjectsPrototype;
+			ObjectsPrototype.resize(ObjectsPrototypeSize);
+			inFile.read(reinterpret_cast<char*>(&ObjectsPrototype[0]), ObjectsPrototypeSize * sizeof(wchar_t));
+
+			_mat ObjectsWorldMat;
+			inFile.read(reinterpret_cast<char*>(&ObjectsWorldMat), sizeof(_mat));
+
+			DummyInfo ObjectsInfo{};
+			ObjectsInfo.eType = ItemType::Objects;
+			ObjectsInfo.Prototype = ObjectsPrototype;
+			ObjectsInfo.vLook = _float4(ObjectsWorldMat._31, ObjectsWorldMat._32, ObjectsWorldMat._33, ObjectsWorldMat._34);
+			ObjectsInfo.vPos = _float4(ObjectsWorldMat._41, ObjectsWorldMat._42, ObjectsWorldMat._43, ObjectsWorldMat._44);
+			ObjectsInfo.ppDummy = &m_pSelectedDummy;
+
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &ObjectsInfo)))
+			{
+				MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
+				return E_FAIL;
+			}
+
+			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
+			m_ObjectsList.push_back( m_pSelectedDummy);
+
+			CTransform* pObjectsTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
+
+			pObjectsTransform->Set_State(State::Right, ObjectsWorldMat.Right());
+			pObjectsTransform->Set_State(State::Up, ObjectsWorldMat.Up());
+			pObjectsTransform->Set_State(State::Look, ObjectsWorldMat.Look());
+			pObjectsTransform->Set_State(State::Pos, ObjectsWorldMat.Position());
+
+			m_pSelectedDummy = nullptr;
+		}
+
+		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
+	}
+	return S_OK;
+}
+#pragma endregion
+
+#pragma region 몬스터 저장 / 불러오기
 HRESULT CImGui_Manager::Save_Monster()
 {
 	OPENFILENAME OFN;
@@ -930,6 +1386,9 @@ HRESULT CImGui_Manager::Load_Monster()
 				return E_FAIL;
 			}
 
+			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
+			m_MonsterList.push_back(m_pSelectedDummy);
+
 			CTransform* pMonsterTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
 			
 			pMonsterTransform->Set_State(State::Right, MonsterWorldMat.Right());
@@ -937,13 +1396,15 @@ HRESULT CImGui_Manager::Load_Monster()
 			pMonsterTransform->Set_State(State::Look, MonsterWorldMat.Look());
 			pMonsterTransform->Set_State(State::Pos, MonsterWorldMat.Position());
 			
-			
+			m_pSelectedDummy = nullptr;
 		}
 
 		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
 	}
 	return S_OK;
 }
+
+#pragma endregion
 
 CImGui_Manager* CImGui_Manager::Create(const GRAPHIC_DESC& GraphicDesc)
 {
@@ -978,23 +1439,28 @@ void CImGui_Manager::Free()
 	}
 	Monsters.clear();
 
-	if (!m_ObjectsList.empty())
-	{
-		for (auto& cstr : m_ObjectsList)
-		{
-			Safe_Release(cstr);
-		}
-		m_ObjectsList.clear();
-	}
 
-	if (!m_MonsterList.empty())
+	for (auto& Map : m_MapsList)
 	{
-		for (auto& cstr : m_MonsterList)
-		{
-			Safe_Release(cstr);
-		}
-		m_MonsterList.clear();
+		Safe_Release(Map);
 	}
+	m_MapsList.clear();
+	
+
+	for (auto& cstr : m_ObjectsList)
+	{
+		Safe_Release(cstr);
+	}
+	m_ObjectsList.clear();
+
+
+
+	for (auto& cstr : m_MonsterList)
+	{
+		Safe_Release(cstr);
+	}
+	m_MonsterList.clear();
+	
 
 	if (!m_DummyList.empty())
 	{
@@ -1005,8 +1471,16 @@ void CImGui_Manager::Free()
 	}
 	m_DummyList.clear();
 
+
+	for (auto& Pair : m_Map)
+	{
+		Safe_Release(Pair.second);
+	}
+	m_Map.clear();
+
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pSelectedDummy);
+	Safe_Release(m_pSelectMap);
 
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();

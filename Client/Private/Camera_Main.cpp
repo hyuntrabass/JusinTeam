@@ -136,7 +136,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		m_pTransformCom->Set_State(State::Pos,
 			m_pPlayerTransform->Get_CenterPos() + _vec4(0.f, vZoomY,0.f,0.f)
 			- (m_pTransformCom->Get_State(State::Look) * m_fLerpDistance)
-			+ (m_pTransformCom->Get_State(State::Up) * m_fLerpDistance * 0.15));
+			+ (m_pTransformCom->Get_State(State::Up) * m_fLerpDistance * 0.15f));
 		
 
 		_vec4 vLook = m_pTransformCom->Get_State(State::Look);

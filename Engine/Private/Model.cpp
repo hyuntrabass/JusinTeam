@@ -104,6 +104,26 @@ const _mat* CModel::Get_BoneMatrix(const _char* pBoneName) const
 	return (*iter)->Get_CombinedMatrix();
 }
 
+vector<_float3> CModel::Get_VerticesNor()
+{
+	vector<_float3> vVerticesNor;
+	for (auto iter = m_Meshes.begin(); iter != m_Meshes.end(); iter++)
+	{
+		vVerticesNor = ((*iter)->Get_VerticesNor());
+	}
+	return vVerticesNor;
+}
+
+vector<_float3> CModel::Get_VerticesPos()
+{
+	vector<_float3> vVerticesPos;
+	for (auto iter = m_Meshes.begin(); iter != m_Meshes.end(); iter++)
+	{
+		vVerticesPos = ((*iter)->Get_VerticesPos());
+	}
+	return vVerticesPos;
+}
+
 _mat CModel::Get_PivotMatrix()
 {
 	return XMLoadFloat4x4(&m_PivotMatrix);

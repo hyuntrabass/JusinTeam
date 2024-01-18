@@ -1,16 +1,17 @@
 #include "Map.h"
-
+#include <wincodec.h>
 static _int iID = 1;
 
 CMap::CMap(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
-
 {
 }
 
 CMap::CMap(const CMap& rhs)
 	: CBlendObject(rhs)
+	//, m_pImGui_Manager(CImGui_Manager::Get_Instance())
 {
+	//Safe_AddRef(m_pImGui_Manager);
 	m_iID = iID++;
 }
 
@@ -24,11 +25,12 @@ HRESULT CMap::Init(void* pArg)
 {
 
 	m_Info = *(MapInfo*)pArg;
-
+	_vec3 MapPos = _vec3(m_Info.vPos.x, m_Info.vPos.y, m_Info.vPos.z);
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
+
 	if (m_Info.ppMap)
 	{
 		*m_Info.ppMap = this;
@@ -38,14 +40,17 @@ HRESULT CMap::Init(void* pArg)
 
 	m_iShaderPass = StaticPass_AlphaTestMeshes;
 	
-	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_Info.vPos));
+	m_pTransformCom->Set_Position(MapPos);
 
 	return S_OK;
 }
 
 void CMap::Tick(_float fTimeDelta)
 {
-	
+	if (m_isMode == false)
+		m_iShaderPass = StaticPass_Default;
+	else
+		m_iShaderPass = StaticPass_Wire;
 }
 
 void CMap::Late_Tick(_float fTimeDelta)
@@ -91,6 +96,7 @@ HRESULT CMap::Render()
 		{
 			return E_FAIL;
 		}
+		
 
 		if (FAILED(m_pShaderCom->Begin(m_iOutLineShaderPass)))
 		{
@@ -128,6 +134,7 @@ HRESULT CMap::Add_Components()
 	{
 		return E_FAIL;
 	}
+
 	m_iShaderPass = StaticPass_Default;
 	m_iOutLineShaderPass = StaticPass_OutLine;
 	
@@ -179,6 +186,80 @@ void CMap::Select(const _bool& isSelected)
 	m_isSelected = isSelected;
 }
 
+void CMap::Mode(const _bool& isMode)
+{
+	m_isMode = isMode;
+}
+
+HRESULT CMap::Create_HightMap(vector<_float3> VerticesPos)
+{
+	vector<_float> vHight;
+	for (const auto& Value : VerticesPos) {
+		vHight.push_back(Value.y);
+	}
+	auto minHeight = *min_element(vHight.begin(), vHight.end());
+	auto maxHeight = *max_element(vHight.begin(), vHight.end());
+	
+	ID3D11Texture2D* pTexture2D = nullptr;
+	D3D11_TEXTURE2D_DESC	TextureDesc = {};
+
+	TextureDesc.Width = 128;
+	TextureDesc.Height = 128;
+	TextureDesc.MipLevels = 1;
+	TextureDesc.ArraySize = 1;
+	TextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	TextureDesc.SampleDesc.Quality = 0;
+	TextureDesc.SampleDesc.Count = 1;
+
+	TextureDesc.Usage = D3D11_USAGE_DEFAULT;
+	TextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	TextureDesc.CPUAccessFlags = 0;
+	TextureDesc.MiscFlags = 0;
+
+	vector<_uint> colors(TextureDesc.Width * TextureDesc.Height);
+
+	ID3D11Texture2D* pTexture = nullptr;
+
+	for (int y = 0; y < TextureDesc.Height; ++y) {
+		for (int x = 0; x < TextureDesc.Width; ++x) {
+			int vertexIndex = y * TextureDesc.Width + x;
+
+			// 버텍스 배열의 크기를 넘어서지 않도록 검사합니다.
+			if (vertexIndex < vHight.size()) {
+				_float fValue = (vHight[vertexIndex] - minHeight) / (maxHeight - minHeight);
+				_uint colorValue = static_cast<_uint>(lerp(0, 255, fValue));
+
+				// ARGB 포맷으로 변환하여 텍스처의 해당 위치에 색상값을 저장합니다.
+				int textureIndex = y * TextureDesc.Width + x;
+				colors[textureIndex] = (colorValue << 24) | (colorValue << 16) | (colorValue << 8) | colorValue;
+			}
+		}
+	}
+	
+
+	D3D11_SUBRESOURCE_DATA initData{};
+	initData.pSysMem = colors.data();
+	initData.SysMemPitch = TextureDesc.Width * 4;
+	initData.SysMemSlicePitch = 0;
+
+
+	if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, &initData, &pTexture)))
+		return E_FAIL;
+
+
+	if (FAILED(SaveWICTextureToFile(m_pContext, pTexture, GUID_ContainerFormatPng, L"../Bin/Data/HightMap.png")))
+		return E_FAIL;
+
+	Safe_Release(pTexture2D);
+	Safe_Release(pTexture);
+
+	return S_OK;
+}
+
+_float CMap::lerp(_float a, _float b, _float f) {
+	return a + f * (b - a);
+}
+
 CMap* CMap::Create(_dev pDevice, _context pContext)
 {
 	CMap* pInstance = new CMap(pDevice, pContext);
@@ -209,6 +290,7 @@ void CMap::Free()
 {
 	__super::Free();
 
+	//Safe_Release(m_pImGui_Manager);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
