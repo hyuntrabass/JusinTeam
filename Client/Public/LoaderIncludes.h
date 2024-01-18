@@ -36,6 +36,8 @@
 #include "Sky.h"
 #include "BackGround_Mask.h"
 
+#include "Map.h"
+
 #include "Effect_Dummy.h"
 
 // Monster
@@ -54,3 +56,7 @@
 
 // Boss
 #include "Groar_Boss.h"
+#include "Thief04.h"
+
+// Test Model
+#include "TestVTFModel.h"

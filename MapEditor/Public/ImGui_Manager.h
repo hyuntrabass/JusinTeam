@@ -5,6 +5,7 @@
 
 BEGIN(Engine)
 class CGameInstance;
+class CVIBuffer_Terrain;
 END
 
 BEGIN(MapEditor)
@@ -38,13 +39,13 @@ struct MapInfo
 	enum class ItemType eType {};
 	_uint iStageIndex{};
 	_uint iTriggerNum{};
-	_float4 vPos{};
+	_vec4 vPos{};
 	class CMap** ppMap{ nullptr };
 };
 
 struct TerrainInfo {
-	_uint m_iNumVerticesX{};
-	_uint m_iNumVerticesZ{};
+	_uint m_iNumVerticesX{1};
+	_uint m_iNumVerticesZ{1};
 	class CTerrain** ppTerrain{ nullptr };
 };
 
@@ -63,9 +64,11 @@ public:
 	HRESULT Render();
 
 	_vec4 Get_MouseWorld() { return m_vMouseWorld; }
+
 private:
 	HRESULT ImGuiMenu();
 	HRESULT ImGuiPos();
+	_int FindByName(char* SearchStr, vector<const char*> List);
 	HRESULT ImGuizmoMenu();
 
 	void Create_Dummy(const _int& iListIndex);
@@ -76,12 +79,28 @@ private:
 	void Delete_Map();
 	HRESULT Modify_Terrain();
 
-	const char* Search_Files();
+	void Search_Path();
+	void Search_Files(string DirPath, const char* Path, vector<const char*>* List);
 	void Reset();
 	void Mouse_Pos();
 	void FastPicking();
-	void TerrainPicking();
 
+
+	void MeshToMask();
+
+	void Map_Vertices();
+
+
+	// 데이터 파싱
+	// 맵
+	HRESULT Save_Map();
+	HRESULT Load_Map();
+
+	// 오브젝트
+	HRESULT Save_Object();
+	HRESULT Load_Object();
+
+	// 몬스터
 	HRESULT Save_Monster();
 	HRESULT Load_Monster();
 
@@ -91,11 +110,12 @@ private:
 	HWND m_hWnd;
 	_uint m_iWinSizeX{ 0 };
 	_uint m_iWinSizeY{ 0 };
+	float m_iCameraSpeed{ 0 };
 
 	POINT m_ptMouse = {};
 	_float2 m_vMousePos{ 0.f,0.f };
-	_vec4 m_PickingPos{ 0.f, 0.f, 0.f, 0.f };
-	_vec4 m_TerrainPos{ 0.f, 0.f, 0.f, 0.f };
+	_vec4 m_PickingPos{ 0.f, 0.f, 0.f, 1.f };
+	_vec4 m_TerrainPos{ 0.f, 0.f, 0.f, 1.f };
 	_float m_fCamDist{};
 	_int TerrainCount[1]{};
 
@@ -108,18 +128,22 @@ private:
 	_int MapIndex{0};
 	_bool m_isTerrain{false};
 
+	_bool m_isMode{false};
+
 private:
 	// 파일의 이름 가져와서 저장
 	vector<const char*> Maps;
 	vector<const char*> Objects;
 	vector<const char*> Monsters;
-	vector<const char*> NPCs;
-	vector<const char*> Triggers;
+	//vector<const char*> NPCs;
+	//vector<const char*> NPCPath;
 
+
+	vector<class CMap*> m_MapsList{};
 	vector<class CDummy*> m_ObjectsList{};
 	vector<class CDummy*> m_MonsterList{};
-	vector<class CDummy*> m_NPCList{};
-	vector<class CMap*> m_MapsList{};
+	//vector<class CDummy*> m_NPCList{};
+	//vector<const CDummy*> TriggerList;
 
 	map<int, class CDummy*>m_DummyList{};
 	map<int, class CMap*>m_Map{};
@@ -127,6 +151,7 @@ private:
 	class CDummy* m_pSelectedDummy{ nullptr };
 	class CMap* m_pSelectMap{ nullptr };
 	class CTerrain* m_pTerrain{ nullptr };
+	char Serch_Name[MAX_PATH]{};
 
 	_mat	m_ObjectMatrix{};
 	_mat	m_MapMatrix{};
@@ -134,6 +159,7 @@ private:
 	_mat	m_ProjMatrix = {};
 
 	_int m_iSelectIdx = {-1 };
+	_bool m_iImGuizmoCheck = {false };
 
 public:
 	static CImGui_Manager* Create( const GRAPHIC_DESC& GraphicDesc);

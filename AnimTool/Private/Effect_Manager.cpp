@@ -45,7 +45,7 @@ HRESULT CEffect_Manager::Read_EffectFile()
 			{
 				File.read(reinterpret_cast<_char*>(&Info), sizeof Info);
 
-				m_Effects.emplace(entry.path().stem().string(), Info);
+				m_Effects.emplace(entry.path().stem().wstring(), Info);
 
 				File.close();
 			}

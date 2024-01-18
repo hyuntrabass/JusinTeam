@@ -1,6 +1,7 @@
 #pragma once
 #include "MapEditor_Define.h"
 #include "Camera.h"
+#include "ImGui_Manager.h"
 
 BEGIN(MapEditor)
 
@@ -17,8 +18,11 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 
+	void Set_Speed(_float fSpeed) { m_fSpeed = fSpeed; }
+
 private:
 	CTransform* m_pPlayerTransform{ nullptr };
+	//CImGui_Manager* m_pImGui_Manager{ nullptr };
 	_bool m_isMoveMode{ true };
 	_float m_fMouseSensor{ 0.08f };
 	_float m_fSpeed{ 10.f };

@@ -19,7 +19,6 @@ bool g_HasSpecTex;
 bool g_bSelected = false;
 
 matrix g_OldWorldMatrix, g_OldViewMatrix;
-texture2D g_BoneTexture;
 
 struct VS_IN
 {

@@ -3,7 +3,7 @@
 
 BEGIN(Engine)
 
-class CBone final : public CBase
+class ENGINE_DLL CBone final : public CBase
 {
 private:
 	CBone();
@@ -28,7 +28,6 @@ private:
 	_mat m_OffsetMatrix{};
 
 	_int m_iParentIndex{};
-
 
 public:
 	void Update_CombinedMatrix(const vector<CBone*>& Bones);

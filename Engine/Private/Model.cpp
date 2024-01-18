@@ -64,6 +64,11 @@ const _uint& CModel::Get_NumAnim() const
 	return m_iNumAnimations;
 }
 
+const _uint& CModel::Get_NumBones() const
+{
+	return m_Bones.size();
+}
+
 const _bool& CModel::IsAnimationFinished(_uint iAnimIndex) const
 {
 	return m_Animations[iAnimIndex]->IsFinished();
@@ -99,7 +104,28 @@ const _mat* CModel::Get_BoneMatrix(const _char* pBoneName) const
 	return (*iter)->Get_CombinedMatrix();
 }
 
+vector<_float3> CModel::Get_VerticesNor()
+{
+	vector<_float3> vVerticesNor;
+	for (auto iter = m_Meshes.begin(); iter != m_Meshes.end(); iter++)
+	{
+		vVerticesNor = ((*iter)->Get_VerticesNor());
+	}
+	return vVerticesNor;
+}
+
+vector<_float3> CModel::Get_VerticesPos()
+{
+	vector<_float3> vVerticesPos;
+	for (auto iter = m_Meshes.begin(); iter != m_Meshes.end(); iter++)
+	{
+		vVerticesPos = ((*iter)->Get_VerticesPos());
+	}
+	return vVerticesPos;
+}
+
 _matrix CModel::Get_PivotMatrix()
+_mat CModel::Get_PivotMatrix()
 {
 	return XMLoadFloat4x4(&m_PivotMatrix);
 }
@@ -112,6 +138,11 @@ vector<class CAnimation*>& CModel::Get_Animations()
 CAnimation* CModel::Get_Animation(_uint iAnimIndex)
 {
 	return m_Animations[iAnimIndex];
+}
+
+vector<class CBone*>& CModel::Get_Bones()
+{
+	return m_Bones;
 }
 
 void CModel::Set_Animation(ANIM_DESC Animation_Desc)
@@ -193,12 +224,6 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 
 		ModelFile.close();
 
-		if (eType == ModelType::Anim) {
-
-			for (auto& pMesh : m_Meshes) {
-				pMesh->Set_Bone_Offset(m_Bones);
-			}
-		}
 
 		if (eType == ModelType::Anim)
 		{
@@ -221,7 +246,6 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 					TriggerFile.read(reinterpret_cast<char*>(&fTrigger), sizeof _float);
 					m_Animations[iAnimIndex]->Add_Trigger(fTrigger);
 				}
-
 				TriggerFile.close();
 			}
 		}

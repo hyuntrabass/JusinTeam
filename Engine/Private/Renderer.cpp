@@ -17,6 +17,8 @@ HRESULT CRenderer::Init_Prototype()
 
 	m_pContext->RSGetViewports(&iNumViewPorts, &ViewportDesc);
 
+#pragma region For_MRT_GameObject
+
 	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Diffuse"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
 	{
 		return E_FAIL;
@@ -43,6 +45,94 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 	//
+
+#pragma endregion
+
+#pragma region For_MRT_Refraction
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Refraction_Diffuse"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Refraction_Normal"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(1.f, 1.f, 1.f, 1.f))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Refraction_Depth"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 0.f, 1.f))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Refraction_Shade"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 1.f))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Refraction_Specular"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Refraction_Final"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	{
+		return E_FAIL;
+	}
+
+#pragma endregion
+
+#pragma region For_MRT_Reflection
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Reflection_Diffuse"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Reflection_Normal"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(1.f, 1.f, 1.f, 1.f))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Reflection_Depth"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 0.f, 1.f))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Reflection_Shade"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 1.f))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Reflection_Specular"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Reflection_Final"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	{
+		return E_FAIL;
+	}
+
+#pragma endregion
+
+#pragma region For_MRT_Water
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Water_Depth"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 0.f, 1.f))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Water"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	{
+		return E_FAIL;
+	}
+
+#pragma endregion
+
+
+#pragma region For_MRT_Light
+
 	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Shade"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 1.f))))
 	{
 		return E_FAIL;
@@ -53,6 +143,9 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
+#pragma endregion
+
+
 	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Bloom"), static_cast<_uint>(ViewportDesc.Width/* * 0.5f*/), static_cast<_uint>(ViewportDesc.Height /** 0.5f*/), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 	{
 		return E_FAIL;
@@ -62,6 +155,7 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
+
 	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_SSAOTEST"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 	{
 		return E_FAIL;
@@ -80,6 +174,8 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
+
+#pragma region MRT_GameObjects
 
 	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Diffuse"))))
 	{
@@ -107,6 +203,63 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
+#pragma endregion
+
+#pragma region MRT_Refraction
+
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Refraction"), TEXT("Target_Refraction_Diffuse"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Refraction"), TEXT("Target_Refraction_Normal"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Refraction"), TEXT("Target_Refraction_Depth"))))
+	{
+		return E_FAIL;
+	}
+
+#pragma endregion
+
+#pragma region MRT_Reflection
+
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Reflection"), TEXT("Target_Reflection_Diffuse"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Reflection"), TEXT("Target_Reflection_Normal"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Reflection"), TEXT("Target_Reflection_Depth"))))
+	{
+		return E_FAIL;
+	}
+
+#pragma endregion
+
+#pragma region MRT_Water
+
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Water"), TEXT("Target_Water_Depth"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Water"), TEXT("Target_Water"))))
+	{
+		return E_FAIL;
+	}
+
+#pragma endregion
+
+
+#pragma region MRT_Lights
+
 	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Lights"), TEXT("Target_Shade"))))
 	{
 		return E_FAIL;
@@ -116,6 +269,8 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
+
+#pragma endregion
 
 	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Shadow"), TEXT("Target_LightDepth"))))
 	{
@@ -132,6 +287,8 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
+#pragma region SSAO
+
 	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_SSAOTEST"), TEXT("Target_SSAOTEST"))))
 	{
 		return E_FAIL;
@@ -140,6 +297,8 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
+#pragma endregion
+
 
 	m_pVIBuffer = CVIBuffer_Rect::Create(m_pDevice, m_pContext);
 	if (not m_pVIBuffer)
@@ -164,6 +323,8 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
+#pragma region SSAO할려고 랜덤값 생성
+
 	random_device RandomDevice;
 	mt19937_64 RandomNumber;
 	RandomNumber = mt19937_64(RandomDevice());
@@ -172,9 +333,10 @@ HRESULT CRenderer::Init_Prototype()
 	uniform_real_distribution<float> RandomY = uniform_real_distribution<float>(-1.f, 1.f);
 	uniform_real_distribution<float> RandomZ = uniform_real_distribution<float>(-1.f, 1.f);
 
-	for (size_t i = 0; i < 50; i++)
+	for (size_t i = 0; i < 16; i++)
 		m_vRandom[i] = _vec3(RandomX(RandomNumber), RandomY(RandomNumber), RandomZ(RandomNumber));
 
+#pragma endregion
 
 #ifdef _DEBUGTEST
 	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Diffuse"), _float2(50.f, 50.f), _float2(100.f, 100.f))))
@@ -258,6 +420,19 @@ HRESULT CRenderer::Draw_RenderGroup()
 	if (FAILED(Render_NonBlend()))
 	{
 		MSG_BOX("Failed to Render : NonBlend");
+		return E_FAIL;
+	}
+	if (FAILED(Render_Refraction()))
+	{
+		MSG_BOX("Failed to Render : Refraction");
+		return E_FAIL;
+	}
+	if (FAILED(Render_Reflection())) {
+		MSG_BOX("Failed to Render : Reflection");
+		return E_FAIL;
+	}
+	if (FAILED(Render_Water())) {
+		MSG_BOX("Failed to Render : Water");
 		return E_FAIL;
 	}
 	if (FAILED(Render_LightAcc()))
@@ -497,6 +672,78 @@ HRESULT CRenderer::Render_NonBlend()
 	return S_OK;
 }
 
+HRESULT CRenderer::Render_Refraction()
+{
+	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Refraction"))))
+		return E_FAIL;
+
+	for (auto& pGameObject : m_RenderObjects[RG_Water_Refraction]) {
+		if (pGameObject) {
+			if (FAILED(pGameObject->Render_Refract()))
+				MSG_BOX("Failed to Refraction Render");
+		}
+
+		Safe_Release(pGameObject);
+	}
+
+	m_RenderObjects[RG_Water_Refraction].clear();
+
+	if (FAILED(m_pGameInstance->End_MRT()))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_Reflection()
+{
+	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Reflection"))))
+		return E_FAIL;
+
+	for (auto& pGameObject : m_RenderObjects[RG_Water_Reflection]) {
+		if (pGameObject) {
+			if (FAILED(pGameObject->Render_Reflection()))
+				MSG_BOX("Failed to Reflection Render");
+		}
+
+		Safe_Release(pGameObject);
+	}
+
+	m_RenderObjects[RG_Water_Reflection].clear();
+
+	if (FAILED(m_pGameInstance->End_MRT()))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_Water()
+{
+	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Water"))))
+		return E_FAIL;
+
+	for (auto& pGameObject : m_RenderObjects[RG_Water]) {
+		if (pGameObject) {
+			if (FAILED(pGameObject->Render()))
+				MSG_BOX("Failed to Water Render");
+		}
+
+		Safe_Release(pGameObject);
+	}
+
+	m_RenderObjects[RG_Water].clear();
+
+	if (FAILED(m_pGameInstance->End_MRT()))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
 HRESULT CRenderer::Render_LightAcc()
 {
 	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Lights"))))
@@ -564,6 +811,8 @@ HRESULT CRenderer::Render_LightAcc()
 		return E_FAIL;
 	}
 
+#pragma region SSAO(Still Test...)
+
 	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_SSAOTEST"))))
 	{
 		return E_FAIL;
@@ -616,6 +865,8 @@ HRESULT CRenderer::Render_LightAcc()
 	{
 		return E_FAIL;
 	}
+
+#pragma endregion
 
 	return S_OK;
 }

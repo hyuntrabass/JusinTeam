@@ -12,8 +12,9 @@ private:
 	CEffect_Dummy(const CEffect_Dummy& rhs);
 	virtual ~CEffect_Dummy() = default;
 
-	void Set_EffectInfo(EffectInfo EffectInfo) {
-		m_Effect = EffectInfo;
+public:
+	void Set_Position(_vec4 vPos) {
+		m_Effect.vPos = vPos;
 	}
 
 public:
@@ -30,6 +31,7 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CTexture* m_pMaskTextureCom{};
 	CTexture* m_pDiffTextureCom{};
+	CTexture* m_pDissolveTextureCom{};
 
 private:
 	EffectInfo m_Effect{};
@@ -38,6 +40,7 @@ private:
 	_float m_fSpriteTimer{};
 	_int m_iSpriteIndex{};
 	_vec2 m_vScaleAcc{ 1.f };
+	_float m_fDissolveRatio{};
 
 private:
 	HRESULT Add_Components();

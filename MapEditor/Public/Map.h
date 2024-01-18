@@ -20,15 +20,21 @@ public:
 	virtual HRESULT Render() override;
 
 	void Select(const _bool& isSelected);
+	void Mode(const _bool& isMode);
 	_bool Get_Selected() { return m_isSelected; }
 	_int Get_ID() const { return m_iID; }
+	MapInfo Get_Info() const { return m_Info; }
 	void Set_Dead() { m_isDead = true; }
+	HRESULT Create_HightMap(vector<_float3> VerticesPos);
+
+	_float lerp(_float a, _float b, _float f);
 
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
 
+	//CImGui_Manager* m_pImGui_Manager{ nullptr };
 private:
 
 	MapInfo m_Info{};
@@ -37,7 +43,7 @@ private:
 	_uint m_iOutLineShaderPass{};
 
 	_int m_iID = 0;
-
+	_bool m_isMode{ false };
 	_bool m_isCreate{ false };
 private:
 	HRESULT Add_Components();

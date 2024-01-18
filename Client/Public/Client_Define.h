@@ -114,6 +114,7 @@ namespace Client
 		wstring strPrototypeTag{};
 		_vec4 vPos{ _vec4(0.f, 0.f, 0.f, 1.f)};
 		_vec4 vLook{ _vec4(0.f, 0.f, 1.f, 0.f)};
+		_mat m_WorldMatrix{};
 	};
 
 	struct UiInfo

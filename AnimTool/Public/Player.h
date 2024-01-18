@@ -35,6 +35,14 @@ public:
 		m_fTimeDelta = fTimeDelta;
 	}
 
+	CModel* Get_CurrentModel() {
+		return m_pModelCom;
+	}
+
+	CAnimation* Get_CurrentAnim() {
+		return m_pModelCom->Get_Animation(m_pModelCom->Get_CurrentAnimationIndex());
+	}
+
 public:
 	virtual HRESULT Init_Prototype(_uint iNumMonsterModels, _uint iNumPlayerModels);
 	virtual HRESULT Init(void* pArg) override;
