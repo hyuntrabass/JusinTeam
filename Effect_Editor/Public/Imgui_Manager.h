@@ -13,6 +13,36 @@ enum Effect_Type
 	ET_END
 };
 
+struct OldEffectInfo
+{
+	unsigned int iType{};
+	bool isSprite{};
+	XMINT2 vNumSprites{};
+	float fSpriteDuration{};
+	ParticleDesc PartiDesc{};
+	unsigned int iNumInstances{};
+	float fLifeTime{};
+	int iDiffTextureID{};
+	int iMaskTextureID{};
+	SimpleMath::Vector4 vColor{};
+	unsigned int iPassIndex{};
+	SimpleMath::Vector2 vSize{};
+	SimpleMath::Vector3* pPos{};
+	SimpleMath::Vector3 vPosOffset{};
+	SimpleMath::Vector2 vSizeDelta{};
+	bool bApplyGravity{};
+	SimpleMath::Vector3 vGravityDir{};
+	SimpleMath::Vector3 vPos{};
+	int iDissolveTextureID{};
+	float fDissolveDuration{};
+	unsigned int iModelIndex{};
+	bool bSkipBloom{};
+	int iUnDissolveTextureID{};
+	float fUnDissolveDuration{};
+	SimpleMath::Vector2 vUVDelta{};
+	bool isRandomSprite{};
+};
+
 class CImgui_Manager : public CBase
 {
 	DECLARE_SINGLETON(CImgui_Manager)
@@ -61,7 +91,11 @@ private:
 private:
 	HRESULT Ready_Layers();
 
+	const _int& Compute_TextureIndex(const wstring& strTexture);
+	const _int& Compute_ModelIndex(const string& strModel);
+
 	EffectInfo Load_Data();
+	OldEffectInfo Load_OldData();
 	HRESULT Export_Data(EffectInfo& Info);
 
 public:
