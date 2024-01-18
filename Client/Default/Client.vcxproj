@@ -168,6 +168,7 @@
     <ClInclude Include="..\Public\Logo_Stone.h" />
     <ClInclude Include="..\Public\Logo_Text.h" />
     <ClInclude Include="..\Public\MPBar.h" />
+    <ClInclude Include="..\Public\Map.h" />
     <ClInclude Include="..\Public\Nastron03.h" />
     <ClInclude Include="..\Public\NPC.h" />
     <ClInclude Include="..\Public\NPCvsMon.h" />
@@ -210,6 +211,7 @@
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\Public\Weapon.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="Prologue_Object.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
@@ -236,6 +238,7 @@
     <ClCompile Include="..\Private\Logo_Stone.cpp" />
     <ClCompile Include="..\Private\Logo_Text.cpp" />
     <ClCompile Include="..\Private\MPBar .cpp" />
+    <ClCompile Include="..\Private\Map.cpp" />
     <ClCompile Include="..\Private\Nastron03.cpp" />
     <ClCompile Include="..\Private\NPC.cpp" />
     <ClCompile Include="..\Private\NPCvsMon.cpp" />
@@ -276,6 +279,7 @@
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\Private\Weapon.cpp" />
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="Prologue_Object.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc" />

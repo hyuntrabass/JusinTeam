@@ -20,7 +20,7 @@ HRESULT CGoat::Init_Prototype()
 
 HRESULT CGoat::Init(void* pArg)
 {
-	m_strModelTag = TEXT("Prototype_Model_Goat");
+	m_strModelTag = TEXT("Prototype_Model_Furgoat");
 
 	if (FAILED(__super::Add_Components()))
 	{

@@ -21,6 +21,8 @@ private:
 	HRESULT Ready_Player();
 	HRESULT Ready_Map();
 
+	HRESULT Ready_Object();
+
 	// Monster
 	HRESULT Ready_Void05();
 	HRESULT Ready_Rabbit();

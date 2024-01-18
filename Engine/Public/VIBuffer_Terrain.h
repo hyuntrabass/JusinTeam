@@ -31,6 +31,7 @@ private:
 	_uint m_iNumVerticesZ{ 0 };
 public:
 	HRESULT ModifyTerrainVertexBuffer( _uint iNumVerticesX,  _uint iNumVerticesZ);
+	//HRESULT VertexBuffer_Terrain(vector<_float3> vVertices, vector<_float3> vIndices);
 	//HRESULT ModifyPos( _uint iNumVerticesX,  _uint iNumVerticesZ);
 
 

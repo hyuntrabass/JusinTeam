@@ -3,14 +3,16 @@
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_Texture;
 texture2D g_MaskTexture;
+texture2D g_MaskTexture2;
 texture2D g_SkillReadyTexture;
 texture2D g_TextureArray[12];
 int g_TexIndex;
 vector g_vColor;
+float g_fx;
 float g_fHpRatio;
 float g_fAlpha;
 int2 g_vNumSprite;
-int g_iIndex;
+uint g_iIndex;
 
 struct VS_IN
 {
@@ -37,7 +39,22 @@ VS_OUT VS_Main(VS_IN Input)
 	
     return Output;
 }
-
+VS_OUT VS_Main_Mask(VS_IN Input)
+{
+    VS_OUT Output = (VS_OUT) 0;
+	
+    vector vPosition = mul(float4(Input.vPos, 1.f), g_WorldMatrix);
+    vPosition = mul(vPosition, g_ViewMatrix);
+    vPosition = mul(vPosition, g_ProjMatrix);
+	
+    float2 vTex = Input.vTex;
+    vTex.x += g_fx;
+    
+    Output.vPos = vPosition;
+    Output.vTex = vTex;
+	
+    return Output;
+}
 struct PS_IN
 {
     vector vPos : SV_Position;
@@ -73,7 +90,7 @@ PS_OUT PS_Main_Color_Alpha(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor.xyz = g_vColor;
+    Output.vColor.xyz = g_vColor.xyz;
     Output.vColor.a = g_fAlpha;
 
     return Output;
@@ -120,11 +137,11 @@ PS_OUT PS_InvMaskTexture(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_MasKColor(PS_IN Input)
+PS_OUT PS_MaskColor(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    vector vMask = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     
     Output.vColor = g_vColor;
     
@@ -133,11 +150,11 @@ PS_OUT PS_MasKColor(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_MasKColorAlpha(PS_IN Input)
+PS_OUT PS_MaskColorAlpha(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    vector vMask = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     
     Output.vColor = g_vColor;
     
@@ -150,8 +167,8 @@ PS_OUT PS_Main_HP(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    vector vMask = g_Texture.Sample(LinearSampler, Input.vTex);
-    vector vMask2 = g_MaskTexture.Sample(LinearClampSampler, float2(Input.vTex.x - (g_fHpRatio - 0.5f), Input.vTex.y));
+    vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
+    vector vMask2 = g_MaskTexture2.Sample(LinearClampSampler, float2(Input.vTex.x - (g_fHpRatio - 0.5f), Input.vTex.y));
     Output.vColor = g_vColor;
     
     Output.vColor.a = (Output.vColor.a * vMask.r) * vMask2.r;
@@ -180,7 +197,32 @@ PS_OUT PS_Main_Sprite(PS_IN Input)
     vSpriteCoord.y = g_iIndex / g_vNumSprite.x;
     float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
     
+    Output.vColor = g_Texture.Sample(LinearSampler, vUV);
+    
+    //Output.vColor.a = Output.vColor.r
+    
+    if (Output.vColor.a < 0.1f)
+    {
+        discard;
+    }
+
+    return Output;
+}
+
+PS_OUT PS_Main_Sprite_MaskTexture(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    float2 vSpriteSize = float2(1.f, 1.f) / g_vNumSprite;
+    int2 vSpriteCoord;
+    vSpriteCoord.x = g_iIndex % g_vNumSprite.x;
+    vSpriteCoord.y = g_iIndex / g_vNumSprite.x;
+    float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
+    
     vector vMask = g_MaskTexture.Sample(LinearSampler, vUV);
+    vMask.r = max(vMask.r, vMask.g);
+    vMask.r = max(vMask.r, vMask.b);
+    
     if (vMask.r < 0.1f)
     {
         discard;
@@ -204,6 +246,9 @@ PS_OUT PS_Main_Sprite_MaskColor(PS_IN Input)
     float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
     
     vector vMask = g_MaskTexture.Sample(LinearSampler, vUV);
+    vMask.r = max(vMask.r, vMask.g);
+    vMask.r = max(vMask.r, vMask.b);
+    
     if (vMask.r < 0.1f)
     {
         discard;
@@ -224,6 +269,8 @@ PS_OUT PS_Main_Hell(PS_IN Input)
     
     return Output;
 }
+
+
 
 technique11 DefaultTechnique
 {
@@ -292,6 +339,18 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main();
     }
 
+    pass BackgroundMask
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main_Mask();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main();
+    }
     pass Mask_Texture
     {
         SetRasterizerState(RS_Default);
@@ -328,7 +387,7 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_MasKColor();
+        PixelShader = compile ps_5_0 PS_MaskColor();
     }
 
     pass Mask_ColorAlpha
@@ -341,7 +400,7 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_MasKColorAlpha();
+        PixelShader = compile ps_5_0 PS_MaskColorAlpha();
     }
 
     pass HP
@@ -381,6 +440,18 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Sprite();
+    }
+    pass SpriteMaskTexture
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Sprite_MaskTexture();
     }
     pass SpriteMaskColor
     {

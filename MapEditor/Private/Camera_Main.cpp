@@ -7,7 +7,9 @@ CCamera_Main::CCamera_Main(_dev pDevice, _context pContext)
 
 CCamera_Main::CCamera_Main(const CCamera_Main& rhs)
 	: CCamera(rhs)
+	//, m_pImGui_Manager(CImGui_Manager::Get_Instance())
 {
+	//Safe_AddRef(m_pImGui_Manager);
 }
 
 HRESULT CCamera_Main::Init_Prototype()
@@ -17,13 +19,7 @@ HRESULT CCamera_Main::Init_Prototype()
 
 HRESULT CCamera_Main::Init(void* pArg)
 {
-	//m_pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-	//if (not m_pPlayerTransform)
-	//{
-	//	return E_FAIL;
-	//}
-	//Safe_AddRef(m_pPlayerTransform);
-	//
+
 	if (not m_pTransformCom)
 	{
 		MSG_BOX("Can't Find Player!! : Camera Main");
@@ -45,6 +41,7 @@ HRESULT CCamera_Main::Init(void* pArg)
 
 void CCamera_Main::Tick(_float fTimeDelta)
 {
+
 	if (m_pGameInstance->Get_CameraModeIndex() != CM_MAIN)
 	{
 		return;
@@ -70,43 +67,38 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
 		}
 	}
-
-	_float fRStickMove{};
-	if (fRStickMove = m_pGameInstance->Gamepad_RStick().x)
+	
+	_float iSpeed;
+	if (iSpeed = m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
 	{
-		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta / m_pGameInstance->Get_TimeRatio() * fRStickMove);
+		if(m_fSpeed < 100)
+			m_fSpeed += iSpeed * 2;
+		/*m_pTransformCom->Go_Straight(fTimeDelta);*/
 	}
-	if (fRStickMove = m_pGameInstance->Gamepad_RStick().y)
+	else if (iSpeed = m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
 	{
-		m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * -fRStickMove);
-	}
-
-	if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
-	{
-		m_pTransformCom->Go_Straight(fTimeDelta);
-	}
-	else if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
-	{
-		m_pTransformCom->Go_Backward(fTimeDelta);
+		if(m_fSpeed >= 4)
+			m_fSpeed += iSpeed * -2;
+		//m_pTransformCom->Go_Backward(fTimeDelta);
 	}
 
 	// 	y = sin(x * 10.0f) * powf(0.5f, x)
 
 	if (m_pGameInstance->Key_Pressing(DIK_W))
 	{
-		m_pTransformCom->Go_Straight(fTimeDelta);
+		m_pTransformCom->Go_Straight(fTimeDelta * m_fSpeed);
 	}
 	if (m_pGameInstance->Key_Pressing(DIK_S))
 	{
-		m_pTransformCom->Go_Backward(fTimeDelta);
+		m_pTransformCom->Go_Backward(fTimeDelta * m_fSpeed);
 	}
 	if (m_pGameInstance->Key_Pressing(DIK_A))
 	{
-		m_pTransformCom->Go_Left(fTimeDelta);
+		m_pTransformCom->Go_Left(fTimeDelta * m_fSpeed);
 	}
 	if (m_pGameInstance->Key_Pressing(DIK_D))
 	{
-		m_pTransformCom->Go_Right(fTimeDelta);
+		m_pTransformCom->Go_Right(fTimeDelta * m_fSpeed);
 	}
 	if (m_pGameInstance->Key_Pressing(DIK_Q))
 	{
@@ -154,6 +146,6 @@ CGameObject* CCamera_Main::Clone(void* pArg)
 void CCamera_Main::Free()
 {
 	__super::Free();
-
+	//Safe_Release(m_pImGui_Manager);
 	//Safe_Release(m_pPlayerTransform);
 }

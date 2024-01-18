@@ -3,6 +3,7 @@
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
+texture2D g_SpecTexture;
 texture2D g_MaskTexture;
 texture2D g_NoiseTexture;
 texture2D g_GradationTexture;
@@ -15,6 +16,7 @@ float g_fLightFar;
 float g_fDissolveRatio;
 
 bool g_HasNorTex;
+bool g_HasSpecTex;
 bool g_bSelected = false;
 
 vector g_vLightDir;
@@ -85,10 +87,10 @@ VS_OUT VS_OutLine(VS_IN Input)
     
     float fThickness = clamp(fDist / 300.f, 0.03f, 0.2f);
     
-    vPos += normalize(vNor) * (fThickness);
+    vPos += normalize(vNor) * (fThickness + 0.5 * g_bSelected);
     
     Output.vPos = mul(vPos, matWVP);
-    Output.vNor = mul(vNor, g_WorldMatrix);
+    Output.vNor = normalize(mul(vNor, g_WorldMatrix));
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
     Output.vProjPos = Output.vPos;
@@ -112,7 +114,8 @@ struct PS_OUT_DEFERRED
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
-    int iID : SV_Target3;
+    vector vSpecular : SV_Target3;
+    int ID : SV_Target5;
 };
 
 struct PS_OUT
@@ -142,11 +145,17 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
         vNormal = Input.vNor.xyz;
     }
     
-    Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
-    Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.iID = g_iID;
+    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
+    if (g_HasSpecTex)
+    {
+        vSpecular = g_SpecTexture.Sample(LinearSampler, Input.vTex);
+    }
     
+    Output.vDiffuse = vMtrlDiffuse;
+    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vSpecular = vSpecular;
+    Output.ID = g_iID;
     return Output;
 }
 
@@ -191,7 +200,7 @@ PS_OUT_DEFERRED PS_Main_AlphaTest(PS_IN Input)
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.iID = g_iID;
+    Output.ID = g_iID;
 
     return Output;
 }
@@ -207,9 +216,9 @@ PS_OUT_DEFERRED PS_OutLine(PS_IN Input)
         discard;
     }
     
-    Output.vDiffuse = g_vColor;
+    Output.vDiffuse = vector(0.f, 0.f, 0.f, 1.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.iID = g_iID;
+    Output.ID = g_iID;
 
     return Output;
 }
@@ -361,7 +370,18 @@ technique11 DefaultTechniqueShader_VtxNorTex
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main();
     }
+    pass Wire
+    {
+        SetRasterizerState(RS_Wire);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main();
+    }
     pass NonLight
     {
         SetRasterizerState(RS_Default);

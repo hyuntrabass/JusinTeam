@@ -47,7 +47,7 @@ HRESULT CDummy::Init(void* pArg)
 
 	m_Info = *(DummyInfo*)pArg;
 
-	if (m_Info.Prototype == L"Prototype_Model_Barlog" ||
+	/*if (m_Info.Prototype == L"Prototype_Model_Barlog" ||
 		m_Info.Prototype == L"Prototype_Model_Furgoat" ||
 		m_Info.Prototype == L"Prototype_Model_GiantBoss" ||
 		m_Info.Prototype == L"Prototype_Model_Nastron02" ||
@@ -60,7 +60,8 @@ HRESULT CDummy::Init(void* pArg)
 		m_Info.Prototype == L"Prototype_Model_TrilobiteA" ||
 		m_Info.Prototype == L"Prototype_Model_Void13" ||
 		m_Info.Prototype == L"Prototype_Model_VoidDragon" ||
-		m_Info.Prototype == L"Prototype_Model_Void05")
+		m_Info.Prototype == L"Prototype_Model_Void05")*/
+	if(m_Info.eType == ItemType::Monster || m_Info.eType == ItemType::NPC)
 	{
 		m_isAnim = true;
 		m_Animation.isLoop = true;
@@ -91,34 +92,6 @@ void CDummy::Tick(_float fTimeDelta)
 	
 	if (m_isAnim)
 	{
-	/*	if (m_pGameInstance->Key_Down(DIK_PRIOR))
-		{
-			if (m_Animation.iAnimIndex < 51)
-			{
-				m_Animation.iAnimIndex += 1;
-			}
-		}
-
-		if (m_pGameInstance->Key_Down(DIK_NEXT))
-		{
-			if (m_Animation.iAnimIndex > 0)
-			{
-				m_Animation.iAnimIndex -= 1;
-			}
-		}
-
-		if (m_pGameInstance->Key_Pressing(DIK_HOME))
-		{
-			m_Animation.bRestartAnimation = true;
-			m_Animation.bSkipInterpolation = true;
-			m_pModelCom->Set_Animation(m_Animation);
-		}
-		else
-		{
-			m_Animation.bRestartAnimation = false;
-			m_Animation.bSkipInterpolation = false;
-			m_pModelCom->Set_Animation(m_Animation);
-		}*/
 
 		m_pModelCom->Play_Animation(fTimeDelta);
 	}
@@ -338,7 +311,7 @@ void CDummy::Free()
 	__super::Free();
 
 	//if(m_pImGui_Manager)
-	//	Safe_Release(m_pImGui_Manager);
+	//Safe_Release(m_pImGui_Manager);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
