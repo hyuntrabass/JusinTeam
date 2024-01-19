@@ -156,7 +156,7 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 		m_pContext->CopyResource(m_pOldBoneTexture, m_pBoneTexture);
 
 	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop,
-		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio, &m_iCurrentTrigger);
+		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio);
 
 
 	vector<_mat> CombinedBones;
@@ -182,7 +182,6 @@ void CRealtimeVTFModel::Set_Animation(ANIM_DESC Animation_Desc)
 		Animation_Desc.bRestartAnimation) {
 
 		m_isAnimChanged = true;
-		m_iCurrentTrigger = 0;
 
 		for (auto& pAnim : m_Animations)
 			pAnim->ResetFinished();

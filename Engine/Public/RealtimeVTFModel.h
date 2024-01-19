@@ -55,8 +55,6 @@ private:
 	ANIM_DESC m_AnimDesc{};
 	_bool m_isAnimChanged = false;
 
-	_uint m_iCurrentTrigger = 0;
-
 	_bool m_isUsingMotionBlur = false;
 
 private:
