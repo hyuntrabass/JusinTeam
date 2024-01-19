@@ -34,7 +34,7 @@ HRESULT CMouse::Init(void* pArg)
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
-	ShowCursor(false);
+	ShowCursor(false);                                                                                 
 
 	return S_OK;
 }

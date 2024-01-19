@@ -56,7 +56,11 @@ HRESULT CNameTag::Render()
 	}
 
 	_vec2 v2DPos = __super::Convert_To_2D(m_pTransformCom);
-	m_pGameInstance->Render_Text(L"Font_Dialogue", m_strNameTag, v2DPos, m_fFontSize, m_vColor);
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strNameTag, _vec2(v2DPos.x + 1.f, v2DPos.y), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strNameTag, _vec2(v2DPos.x - 1.f, v2DPos.y), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strNameTag, _vec2(v2DPos.x, v2DPos.y + 1.f), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strNameTag, _vec2(v2DPos.x, v2DPos.y - 1.f), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strNameTag, v2DPos, m_fFontSize, m_vColor);
 
 	return S_OK;
 }
