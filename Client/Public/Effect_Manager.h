@@ -25,12 +25,16 @@ public:
 	HRESULT Add_Layer_Effect(EffectInfo* pInfo);
 	class CEffect_Dummy* Clone_Effect(EffectInfo* pInfo);
 
+	void Create_Effect(const wstring& strEffectTag, _mat* pMatrix, _bool isFollow);
+	void Delete_Effect(void* pMatrix);
+
 public:
 	HRESULT Read_EffectFile();
 
 private:
 	CGameInstance* m_pGameInstance{ nullptr };
-	map<const wstring, EffectInfo> m_Effects{};
+	map<const wstring, EffectInfo> m_EffectInfos{};
+	map<const void*, class CEffect_Dummy*> m_Effects{};
 
 public:
 	virtual void Free() override;

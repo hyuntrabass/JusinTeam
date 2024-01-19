@@ -158,6 +158,16 @@ public: // Sound Manager
 
 	void SetChannelVolume(_uint iChannel, _float fVolume);
 
+public: // Effect Callback
+	using Func_CreateFX = function<void(const wstring&, _mat*, _bool)>;
+	using Func_DeleteFX = function<void(const void*)>;
+
+	void Register_CreateEffect_Callback(Func_CreateFX Function);
+	void Register_DeleteEffect_Callback(Func_DeleteFX Function);
+
+	void Create_Effect(const wstring& strEffectTag, _mat* pMatrix, _bool isFollow);
+	void Delete_Effect(const void* pMatrix);
+
 public: // Get_Set
 	// 현재 카메라가 메인 카메라인지 디버그 카메라인지 반환함. client define에 이넘 있음.
 	const _uint& Get_CameraModeIndex() const;
@@ -247,8 +257,14 @@ private:
 	_vec4 m_vTarget{};
 	_vec4 m_vTargetLook{};
 	_bool m_AimMode{};
+
 private:
 	vector<_bool> m_vecLevelInvalid;
+
+private:
+	Func_CreateFX m_Function_Create_FX{};
+	Func_DeleteFX m_Function_Delete_FX{};
+
 
 public:
 	static void Release_Engine();

@@ -87,6 +87,7 @@ namespace Engine
 
 		SimpleMath::Vector3* pPos{};
 		SimpleMath::Vector3 vPos{};
+		SimpleMath::Matrix* pMatrix{};
 	};
 
 	struct ANIM_DESC

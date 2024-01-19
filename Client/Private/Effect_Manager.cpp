@@ -11,8 +11,8 @@ CEffect_Manager::CEffect_Manager()
 
 EffectInfo CEffect_Manager::Get_EffectInformation(const wstring& strEffectTag)
 {
-	auto iter = m_Effects.find(strEffectTag);
-	if (iter == m_Effects.end())
+	auto iter = m_EffectInfos.find(strEffectTag);
+	if (iter == m_EffectInfos.end())
 	{
 		MSG_BOX("Failed to Find Effect Information");
 		return EffectInfo();
@@ -29,6 +29,28 @@ HRESULT CEffect_Manager::Add_Layer_Effect(EffectInfo* pInfo)
 CEffect_Dummy* CEffect_Manager::Clone_Effect(EffectInfo* pInfo)
 {
 	return dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_EffectDummy", pInfo));
+}
+
+void CEffect_Manager::Create_Effect(const wstring& strEffectTag, _mat* pMatrix, _bool isFollow)
+{
+	EffectInfo Info = Get_EffectInformation(strEffectTag);
+	
+	CEffect_Dummy* pEffect = Clone_Effect(&Info);
+
+	m_Effects.emplace(pMatrix, pEffect);
+}
+
+void CEffect_Manager::Delete_Effect(void* pMatrix)
+{
+	auto iter = m_Effects.find(pMatrix);
+	if (iter == m_Effects.end())
+	{
+		MSG_BOX("이펙트를 없음.");
+		return;
+	}
+
+	Safe_Release(iter->second);
+	m_Effects.erase(iter);
 }
 
 HRESULT CEffect_Manager::Read_EffectFile()
@@ -112,7 +134,7 @@ HRESULT CEffect_Manager::Read_EffectFile()
 					iNameSize = {};
 				}
 
-				m_Effects.emplace(entry.path().stem().wstring(), Info);
+				m_EffectInfos.emplace(entry.path().stem().wstring(), Info);
 
 				File.close();
 			}

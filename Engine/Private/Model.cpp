@@ -64,7 +64,7 @@ const _uint& CModel::Get_NumAnim() const
 	return m_iNumAnimations;
 }
 
-const _uint& CModel::Get_NumBones() const
+const _uint CModel::Get_NumBones() const
 {
 	return m_Bones.size();
 }

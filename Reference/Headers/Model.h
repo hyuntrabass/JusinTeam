@@ -15,7 +15,7 @@ public:
 	const _char* Get_FilePath() const;
 	const _uint& Get_NumMeshes() const;
 	const _uint& Get_NumAnim() const;
-	const _uint& Get_NumBones() const;
+	const _uint Get_NumBones() const;
 	const _bool& IsAnimationFinished(_uint iAnimIndex) const;
 	const _uint& Get_CurrentAnimationIndex() const;
 	const _float& Get_CurrentAnimPos() const;
