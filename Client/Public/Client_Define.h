@@ -52,10 +52,10 @@ namespace Client
 	enum WEAPON_INDEX
 	{
 		BOW0,
-		SWORD0,
 		BOW1,
-		SWORD1,
 		BOW2,
+		SWORD0,
+		SWORD1,
 		SWORD2,
 		WP_INDEX_END
 	};

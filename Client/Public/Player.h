@@ -220,6 +220,8 @@ public:
 		Skill2,
 		Skill3,
 		Skill4,
+		SkillR,
+		Aim_Idle,
 		Jump_Start,
 		Jump,
 		Jump_End,
@@ -254,6 +256,7 @@ public:
 	void Skill2_Attack();
 	void Skill3_Attack();
 	void Skill4_Attack();
+	void SkillR_Attack();
 
 	void Cam_AttackZoom(_float fZoom);
 	void Return_Attack_IdleForm();
@@ -267,6 +270,7 @@ private:
 	vector<CBodyPart*> m_vecParts{};
 	CWeapon* m_pWeapon{};
 	CTransform* m_pCameraTransform{};
+
 private:
 	ANIM_DESC m_Animation{};
 	PLAYER_STATE m_eState{ Idle };
@@ -295,8 +299,8 @@ private:
 	_vec4 m_fFirstLook{};
 	_float m_fAttackZoom{};
 	_float m_ReturnZoomTime{};
-	ANIM_LIST m_SwordSkill[4]{};
-	ANIM_LIST m_BowSkill[4]{};
+	ANIM_LIST m_SwordSkill[5]{};
+	ANIM_LIST m_BowSkill[5]{};
 	_float m_fSkiilTimer{};
 private:
 	HRESULT Add_Components();

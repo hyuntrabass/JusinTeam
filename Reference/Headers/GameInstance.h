@@ -195,6 +195,9 @@ public: // Get_Set
 	void Set_CameraTargetPos(const _vec4& vPos);
 	void Set_CameraTargetLook(const _vec4& vLook);
 	void Set_Have_TargetLook(const _bool& bHaveLook);
+	void Set_AimMode(_bool Aim) { m_AimMode = Aim; }
+	_bool Get_AimMode() { return m_AimMode; }
+
 
 	void Set_CameraAttackZoom(_float fAttackZoom) { m_fCameraAttackZoom = fAttackZoom; }
 	_float Get_CameraAttackZoom() { return m_fCameraAttackZoom; }
@@ -243,7 +246,7 @@ private:
 	_float m_fHellHeight{};
 	_vec4 m_vTarget{};
 	_vec4 m_vTargetLook{};
-
+	_bool m_AimMode{};
 private:
 	vector<_bool> m_vecLevelInvalid;
 

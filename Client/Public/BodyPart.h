@@ -25,7 +25,7 @@ public:
 	_uint Get_CurrentAnimationIndex();
 	_float Get_CurrentAnimPos();
 	const _mat* Get_BoneMatrix(const _char* pBoneName);
-
+	void All_Reset_Anim();
 	//void Set_ModelIndex(_uint iIndex);
 	void Reset_Model();
 	void Set_ModelIndex(_int ModelIndex) { m_iSelectedModelIndex = ModelIndex;}

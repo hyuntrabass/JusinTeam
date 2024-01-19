@@ -224,6 +224,16 @@ const _mat* CBodyPart::Get_BoneMatrix(const _char* pBoneName)
 	return m_Models[m_iSelectedModelIndex]->Get_BoneMatrix(pBoneName);
 }
 
+void CBodyPart::All_Reset_Anim()
+{
+	for (int i = 0; i < m_Models.size(); i++)
+	{
+		m_Animation->bRestartAnimation = true;
+		m_Models[i]->Set_Animation(*m_Animation);
+		m_Animation->bRestartAnimation = false;
+	}
+}
+
 //void CBodyPart::
 // (_uint iIndex)
 //{
