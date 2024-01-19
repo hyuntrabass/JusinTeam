@@ -4,6 +4,7 @@
 #include "Texture.h"
 #include "Animation.h"
 #include "Shader.h"
+#include "Part_Model.h"
 
 CRealtimeVTFModel::CRealtimeVTFModel(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
@@ -40,9 +41,15 @@ CRealtimeVTFModel::CRealtimeVTFModel(const CRealtimeVTFModel& rhs)
 	for (auto& Material : m_Materials)
 		for (auto& pTexture : Material.pMaterials)
 			Safe_AddRef(pTexture);
+
+	for (auto& pPrototypePart : rhs.m_Parts) {
+		CPart_Model* pPart = reinterpret_cast<CPart_Model*>(pPrototypePart->Clone());
+
+		m_Parts.push_back(pPart);
+	}
 }
 
-HRESULT CRealtimeVTFModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix)
+HRESULT CRealtimeVTFModel::Init_Prototype(const string& strFilePath, _fmatrix PivotMatrix)
 {
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
 
@@ -53,19 +60,14 @@ HRESULT CRealtimeVTFModel::Init_Prototype(const string& strFilePath, const _bool
 	_char szTriggerExt[MAX_PATH] = ".animtrigger";
 	_char szExt[MAX_PATH]{};
 
-	if (false == isCOLMesh) {
-		_splitpath_s(strFilePath.c_str(), nullptr, 0, szDirectory, MAX_PATH, szFileName, MAX_PATH, szExt, MAX_PATH);
-		if (!strcmp(szExt, ".hyuntraanimmesh"))
-		{
-			m_eType = ModelType::Anim;
-		}
-		else
-		{
-			m_eType = ModelType::Static;
-		}
+	_splitpath_s(strFilePath.c_str(), nullptr, 0, szDirectory, MAX_PATH, szFileName, MAX_PATH, szExt, MAX_PATH);
+	if (!strcmp(szExt, ".hyuntraanimmesh"))
+	{
+		m_eType = ModelType::Anim;
 	}
-	else {
-		m_eType = ModelType::Collision;
+	else
+	{
+		m_eType = ModelType::Static;
 	}
 
 	ifstream ModelFile(strFilePath.c_str(), ios::binary);
@@ -105,8 +107,6 @@ HRESULT CRealtimeVTFModel::Init_Prototype(const string& strFilePath, const _bool
 
 		ModelFile.close();
 
-
-
 		if (m_eType == ModelType::Anim)
 		{
 			_char szTriggerFilePath[MAX_PATH]{};
@@ -138,6 +138,8 @@ HRESULT CRealtimeVTFModel::Init_Prototype(const string& strFilePath, const _bool
 		MSG_BOX("Failed to Open File!");
 		return E_FAIL;
 	}
+
+
 
 	return S_OK;
 }
@@ -200,6 +202,11 @@ HRESULT CRealtimeVTFModel::Set_UsingMotionBlur(_bool UsingBlur)
 	return S_OK;
 }
 
+const _uint CRealtimeVTFModel::Get_Num_PartMeshes(_uint iPartIndex) const
+{
+	return m_Parts[iPartIndex]->Get_NumMeshes();
+}
+
 HRESULT CRealtimeVTFModel::Bind_Material(CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType)
 {
 	_uint iMatIndex = m_Meshes[iMeshIndex]->Get_MatIndex();
@@ -233,8 +240,46 @@ HRESULT CRealtimeVTFModel::Bind_Bone(CShader* pShader)
 
 HRESULT CRealtimeVTFModel::Render(_uint iMeshIndex)
 {
+	if (iMeshIndex >= m_iNumMeshes)
+		return E_FAIL;
+
 	if (FAILED(m_Meshes[iMeshIndex]->Render()))
 		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CRealtimeVTFModel::Bind_Part_Material(CShader* pShader, const _char* pVariableName, TextureType eTextureType, _uint iPartIndex, _uint iPartMeshIndex)
+{
+	if (m_Parts.size() <= iPartIndex)
+		return E_FAIL;
+
+	return m_Parts[iPartIndex]->Bind_Material(pShader, pVariableName, iPartMeshIndex, eTextureType);
+}
+
+HRESULT CRealtimeVTFModel::Render_Part(_uint iPartIndex, _uint iPartMeshIndex)
+{
+	if (m_Parts.size() <= iPartIndex)
+		return E_FAIL;
+
+	if (FAILED(m_Parts[iPartIndex]->Render(iPartMeshIndex)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CRealtimeVTFModel::Seting_Parts(const string& strFilePath)
+{
+	CPart_Model* pPart = CPart_Model::Create(m_pDevice, m_pContext, strFilePath);
+
+	if (nullptr == pPart)
+		return E_FAIL;
+
+	if (FAILED(pPart->Get_Bone_Offset(m_Bones)))
+		return E_FAIL;
+
+	m_Parts.push_back(pPart);
+
 	return S_OK;
 }
 
@@ -361,6 +406,9 @@ HRESULT CRealtimeVTFModel::CreateVTF()
 	if (FAILED(m_pDevice->CreateTexture2D(&Desc, nullptr, &m_pBoneTexture)))
 		return E_FAIL;
 
+	Desc.Usage = D3D11_USAGE_DEFAULT;
+	Desc.CPUAccessFlags = 0;
+
 	if (FAILED(m_pDevice->CreateTexture2D(&Desc, nullptr, &m_pOldBoneTexture)))
 		return E_FAIL;
 	
@@ -392,11 +440,11 @@ HRESULT CRealtimeVTFModel::UpdateBoneTexture(vector<_mat>& CombinedBones)
 	return S_OK;
 }
 
-CRealtimeVTFModel* CRealtimeVTFModel::Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix)
+CRealtimeVTFModel* CRealtimeVTFModel::Create(_dev pDevice, _context pContext, const string& strFilePath, _fmatrix PivotMatrix)
 {
 	CRealtimeVTFModel* pInstance = new CRealtimeVTFModel(pDevice, pContext);
 
-	if (FAILED(pInstance->Init_Prototype(strFilePath, isCOLMesh, PivotMatrix)))
+	if (FAILED(pInstance->Init_Prototype(strFilePath, PivotMatrix)))
 	{
 		MSG_BOX("Failed to Create : CRealtimeVTFModel");
 	}
@@ -446,6 +494,11 @@ void CRealtimeVTFModel::Free()
 		}
 	}
 	m_Materials.clear();
+
+	for (auto& pPart : m_Parts)
+		Safe_Release(pPart);
+
+	m_Parts.clear();
 
 	Safe_Release(m_pOldBoneTexture);
 	Safe_Release(m_pOldBoneSRV);

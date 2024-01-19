@@ -231,6 +231,11 @@ PS_OUT PS_Main(PS_IN Input)
     }
     
     vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
+    if (g_HasSpecTex)
+    {
+        vector vSpecDesc = g_SpecTexture.Sample(LinearSampler, Input.vTex);
+        vSpecDesc = vector(vSpecDesc.b, vSpecDesc.b, vSpecDesc.b, vSpecDesc.a);
+    }
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
@@ -257,6 +262,7 @@ struct PS_Blur_OUT
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
+    vector vSpecular : SV_Target3;
     vector vVelocity : SV_Target4;
 };
 
@@ -287,9 +293,18 @@ PS_Blur_OUT PS_Motion_Blur(PS_Blur_IN Input)
         vNormal = Input.vNor.xyz;
     }
     
+    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
+    if (g_HasSpecTex)
+    {
+        vector vSpecDesc = g_SpecTexture.Sample(LinearSampler, Input.vTex);
+        vSpecDesc = vector(vSpecDesc.b, vSpecDesc.b, vSpecDesc.b, vSpecDesc.a);
+    }
+    
+    
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vSpecular = vSpecular;
     Output.vVelocity = Input.vDir;
     
     return Output;

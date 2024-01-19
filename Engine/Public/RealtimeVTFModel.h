@@ -13,7 +13,7 @@ private:
 	virtual ~CRealtimeVTFModel() = default;
 
 public:
-	HRESULT Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix);
+	HRESULT Init_Prototype(const string& strFilePath, _fmatrix PivotMatrix);
 	HRESULT Init(void* pArg) override;
 
 public:
@@ -31,13 +31,28 @@ public:
 		return m_iNumMeshes;
 	}
 
+	const _uint Get_NumPart() const {
+		return m_Parts.size();
+	}
+
+	const _uint Get_Num_PartMeshes(_uint iPartIndex) const;
+
 	HRESULT Bind_Material(class CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType);
 	HRESULT Bind_Bone(class CShader* pShader);
 
 	HRESULT Render(_uint iMeshIndex);
 
+	HRESULT Bind_Part_Material(class CShader* pShader, const _char* pVariableName, TextureType eTextureType, _uint iPartIndex, _uint iPartMeshIndex);
+	HRESULT Render_Part(_uint iPartIndex, _uint iPartMeshIndex);
+
+public:
+	HRESULT Seting_Parts(const string& strFilePath);
+
 private:
 	ModelType m_eType = ModelType::End;
+
+
+	vector<class CPart_Model*> m_Parts;
 
 	_uint m_iNumMeshes = 0;
 	vector<class CMesh*> m_Meshes;
@@ -58,7 +73,6 @@ private:
 	_bool m_isUsingMotionBlur = false;
 
 private:
-
 	// For_Animation
 	ID3D11Texture2D* m_pOldBoneTexture = nullptr;
 	ID3D11ShaderResourceView* m_pOldBoneSRV = nullptr;
@@ -75,7 +89,7 @@ private:
 	HRESULT UpdateBoneTexture(vector<_mat>& CombinedBones);
 
 public:
-	static CRealtimeVTFModel* Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh = false, _fmatrix PivotMatrix = XMMatrixIdentity());
+	static CRealtimeVTFModel* Create(_dev pDevice, _context pContext, const string& strFilePath, _fmatrix PivotMatrix = XMMatrixIdentity());
     // CComponent을(를) 통해 상속됨
     virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
