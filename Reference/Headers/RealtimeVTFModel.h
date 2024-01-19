@@ -4,11 +4,6 @@
 BEGIN(Engine)
 
 
-typedef struct tagAnimTransArray {
-	using TransformArrayType = array<_mat, 172>;
-	array<TransformArrayType, 441> TransformArray;
-}ANIMTRANS_ARRAY;
-
 class ENGINE_DLL CRealtimeVTFModel final :
     public CComponent
 {
@@ -24,11 +19,13 @@ public:
 public:
 	HRESULT Play_Animation(_float fTimeDelta);
 
-	HRESULT Set_NextAnimation(_uint iAnimIndex, _bool isLoop);
+	void Set_Animation(ANIM_DESC Animation_Desc);
 
-	void Set_NextAnimationIndex(_int iAnimIndex) {
-		m_iNextAnimIndex = iAnimIndex;
+	_bool Get_isMotionBlur() const {
+		return m_isUsingMotionBlur;
 	}
+
+	HRESULT Set_UsingMotionBlur(_bool UsingBlur);
 
 	const _uint& Get_NumMeshes() const {
 		return m_iNumMeshes;
@@ -55,23 +52,29 @@ private:
 
 	_mat m_PivotMatrix = {};
 
-	_int m_iCurrentAnimIndex = 0;
-	_int m_iNextAnimIndex = -1;
-	_bool m_isLoop = false;
-	_bool m_isFinished = false;
+	ANIM_DESC m_AnimDesc{};
+	_bool m_isAnimChanged = false;
+
+	_uint m_iCurrentTrigger = 0;
+
+	_bool m_isUsingMotionBlur = false;
 
 private:
+
 	// For_Animation
-	ID3D11Texture2D* m_pTexture = nullptr;
-	ID3D11ShaderResourceView* m_pSRV = nullptr;
+	ID3D11Texture2D* m_pOldBoneTexture = nullptr;
+	ID3D11ShaderResourceView* m_pOldBoneSRV = nullptr;
+	
+	ID3D11Texture2D* m_pBoneTexture = nullptr;
+	ID3D11ShaderResourceView* m_pBoneSRV = nullptr;
 
 private:
 	HRESULT Read_Bones(ifstream& File);
 	HRESULT Read_Meshes(ifstream& File, const ModelType& eType, _fmatrix PivotMatrix);
 	HRESULT Read_Animations(ifstream& File);
 	HRESULT Read_Materials(ifstream& File, const string& strFilePath);
-	HRESULT CreateVTF(_uint MaxFrame);
-	HRESULT CreateAnimationTransform(_uint iIndex, vector<ANIMTRANS_ARRAY>& AnimTransforms);
+	HRESULT CreateVTF();
+	HRESULT UpdateBoneTexture(vector<_mat>& CombinedBones);
 
 public:
 	static CRealtimeVTFModel* Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh = false, _fmatrix PivotMatrix = XMMatrixIdentity());

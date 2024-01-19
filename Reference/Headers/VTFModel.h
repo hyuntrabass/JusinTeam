@@ -4,8 +4,8 @@
 BEGIN(Engine)
 
 typedef struct tagAnimTransArray {
-	using TransformArrayType = array<_mat, 150>;
-	array<TransformArrayType, 300> TransformArray;
+	using TransformArrayType = array<_mat, 300>;
+	array<TransformArrayType, 500> TransformArray;
 }ANIMTRANS_ARRAY;
 
 // 이 VTF는 Prototype 단계에서 애니메이션을 미리 계산합니다
@@ -75,7 +75,7 @@ private:
 	HRESULT Read_Animations(ifstream& File);
 	HRESULT Read_Materials(ifstream& File, const string& strFilePath);
 	HRESULT CreateVTF(_uint MaxFrame);
-	HRESULT CreateAnimationTransform(_uint iIndex, vector<ANIMTRANS_ARRAY>& pAnimTransform);
+	HRESULT CreateAnimationTransform(_uint iIndex, ANIMTRANS_ARRAY* pAnimTransform);
 
 public:
 	static CVTFModel* Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh = false, _fmatrix PivotMatrix = XMMatrixIdentity());

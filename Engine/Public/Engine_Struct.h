@@ -89,6 +89,18 @@ namespace Engine
 		SimpleMath::Vector3 vPos{};
 	};
 
+	struct ANIM_DESC
+	{
+		unsigned int iAnimIndex{};
+		bool isLoop{};
+		float fAnimSpeedRatio{ 1.f };
+		bool bSkipInterpolation{};
+		float fInterpolationTime{ 0.2f };
+		float fDurationRatio{ 1.f };
+		bool bRestartAnimation{ false };
+	};
+
+
 	using ANIMTIME_DESC = struct tagAnimTimeDesc {
 		int iAnimIndex = 0;
 		unsigned int iCurrFrame = 0;
@@ -123,12 +135,17 @@ namespace Engine
 	};
 
 	using TRIGGEREFFECT_DESC = struct tagTriggerEffectDesc {
+		float fStartAnimPos;
+		float fEndAnimPos = -1.f;
+		bool IsFollow;
+		unsigned int iNameLength;
 		TCHAR szEffectName[MAX_PATH];
-		int iBoneIndex = -1;
-		SimpleMath::Vector3 vPos{};
+		int iBoneIndex;
+		SimpleMath::Vector3 vPosOffset{};
 	};
 
 	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {
+		float fStartAnimPos;
 		TCHAR szSoundName[MAX_PATH];
 		int iChannel;
 		float fVolume;
