@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "BodyPart.h"
 #include "UI_Manager.h"
+#include "Event_Manager.h"
 #include "Weapon.h"
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -43,7 +44,7 @@ HRESULT CPlayer::Init(void* pArg)
 	m_BowSkill[3] = Anim_ID_8130_IllusionArrow; // 분신 나와서 화살(쿨김)
 	m_BowSkill[4] = Anim_ID_7060_KnockBack; // 에임모드 변경(우클릭)
 
-	
+
 	return S_OK;
 }
 
@@ -113,6 +114,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		m_pTransformCom->Set_Scale(_vec3(0.1f));
 		Add_Weapon();
 		Add_Info();
+
 		m_bStartGame = true;
 	}
 
@@ -126,7 +128,6 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	
 	if (m_pNameTag != nullptr)
 		m_pNameTag->Late_Tick(fTimeDelta);
-
 }
 
 HRESULT CPlayer::Render()

@@ -4,6 +4,7 @@
 #include "NPC_Dummy.h"
 #include "Map.h"
 
+
 CLevel_GamePlay::CLevel_GamePlay(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
 {
@@ -140,6 +141,7 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 	{
 		DestroyWindow(g_hWnd);
 	}
+
 }
 
 HRESULT CLevel_GamePlay::Render()
@@ -469,10 +471,12 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	{
 		return E_FAIL;
 	}
+	/*
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Pop_QuestIn"))))
 	{
 		return E_FAIL;
 	}
+	*/
 
 	return S_OK;
 }

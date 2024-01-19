@@ -4,22 +4,22 @@
 
 BEGIN(Client)
 
-class CPop_QuestIn final : public COrthographicObject
+class CQuestBox final : public COrthographicObject
 {
 public:
-	typedef struct tagQuestInDesc
+	typedef struct tagQuestConditionDesc
 	{
-		_bool	isMain;
-		_float	fExp;
-		_uint	iMoney;
+		_uint iNum;
+		_bool isMain;
+		_float2 vPosition;
 		wstring strQuestTitle;
 		wstring strText;
+	}QUESTBOX_DESC;
 
-	}QUESTIN_DESC;
 private:
-	CPop_QuestIn(_dev pDevice, _context pContext);
-	CPop_QuestIn(const CPop_QuestIn& rhs);
-	virtual ~CPop_QuestIn() = default;
+	CQuestBox(_dev pDevice, _context pContext);
+	CQuestBox(const CQuestBox& rhs);
+	virtual ~CQuestBox() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -33,29 +33,21 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
 	CTexture* m_pTextureCom{ nullptr };
-	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
+	_uint			m_iNum{};
 	_bool			m_isMain{ false };
-	_uint			m_iMoney{ 0 };
-	_float			m_fExp{ 0.f };
-	_float			m_fDir{ -1.f };
-
+	_float2			m_vPosition;
 	wstring			m_strQuestTitle;
 	wstring			m_strText;
 
+	CGameObject*	m_pArrow{ nullptr };
 
-	_float			m_fTime{};
-	_float			m_fButtonTime{};
-	_float2			m_fStartButtonPos{};
-
-
-	CGameObject*	m_pBackground{ nullptr };
-	CGameObject*	m_pBorder{ nullptr };
-	CGameObject*	m_pButton{ nullptr };
-	CGameObject*	m_pExclamationMark{ nullptr };
-	CGameObject*	m_pMoney{ nullptr };
-	CGameObject*	m_pExp{ nullptr };
+public:
+	_bool Update_Quest();
+	const _vec2& Get_Position() const { return _vec2(m_fX, m_fY); }
+	void Set_Position(_vec2 vPos);
+	_bool IsMain() { return m_isMain; }
 
 private:
 	HRESULT Add_Parts();
@@ -63,7 +55,7 @@ private:
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CPop_QuestIn* Create(_dev pDevice, _context pContext);
+	static CQuestBox* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };
