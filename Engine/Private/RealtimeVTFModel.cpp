@@ -362,6 +362,9 @@ HRESULT CRealtimeVTFModel::CreateVTF()
 	if (FAILED(m_pDevice->CreateTexture2D(&Desc, nullptr, &m_pBoneTexture)))
 		return E_FAIL;
 
+	Desc.Usage = D3D11_USAGE_DEFAULT;
+	Desc.CPUAccessFlags = 0;
+
 	if (FAILED(m_pDevice->CreateTexture2D(&Desc, nullptr, &m_pOldBoneTexture)))
 		return E_FAIL;
 	
