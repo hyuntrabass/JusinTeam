@@ -18,6 +18,8 @@ public:
 	const _uint Get_NumTrigger() const;
 	vector<_float>& Get_Triggers();
 	void Add_Trigger(_float fAnimPos);
+	TRIGGEREFFECT_DESC* Get_TriggerEffect(_uint iTriggerEffectIndex);
+	void Add_TriggerEffect(TRIGGEREFFECT_DESC TriggerEffectDesc);
 	void Reset_Trigger();
 
 	void ResetFinished();
@@ -58,8 +60,8 @@ private:
 	_uint m_iNumTriggers{};
 	vector<_float> m_Triggers; // 이펙트 트리거
 
-	vector<_uint> m_NumEffects;
-	vector<vector<TRIGGEREFFECT_DESC>> m_TriggerEffects;
+	_uint m_iNumEffectTriggers{};
+	vector<TRIGGEREFFECT_DESC> m_TriggerEffects;
 
 	_uint m_iNumSoundTrigger{};
 	vector<_float> m_SoundTriggers; // 사운드 트리거

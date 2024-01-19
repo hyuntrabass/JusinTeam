@@ -1105,6 +1105,8 @@ void CGameInstance::Set_Have_TargetLook(const _bool& bHaveLook)
 	m_bTargetLook = bHaveLook;
 }
 
+
+
 const _uint& CGameInstance::Get_CameraState() const
 {
 	return m_iCameraState;

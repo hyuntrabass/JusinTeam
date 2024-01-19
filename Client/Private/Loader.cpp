@@ -166,7 +166,7 @@ HRESULT CLoader::Load_Logo()
 	{
 		if (entry.is_regular_file())
 		{
-			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_Effect_") + to_wstring(iTextureNumber++);
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_Effect_") + entry.path().stem().wstring();
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
 			{
@@ -586,6 +586,11 @@ HRESULT CLoader::Load_Select()
 		}
 	}
 #pragma endregion
+	/*if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sky"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Select_Map/Mesh/map.hyuntrastatmesh", false, PivotMat))))
+	{
+		return E_FAIL;
+	}*/
 	
 	_uint iIndex{};
 	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/face/";
@@ -615,11 +620,6 @@ HRESULT CLoader::Load_Select()
 			}
 		}
 	}
-	/*if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sky"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Select_Map/Mesh/map.hyuntrastatmesh", false, PivotMat))))
-	{
-		return E_FAIL;
-	}*/
 	iIndex = 0;
 	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/hair/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
@@ -654,7 +654,7 @@ HRESULT CLoader::Load_Select()
 	{
 		if (entry.is_regular_file())
 		{
-			wstring strPrototypeTag = TEXT("Prototype_Model_Effect_") + to_wstring(iMeshNumber++);
+			wstring strPrototypeTag = TEXT("Prototype_Model_Effect_") + entry.path().stem().wstring();
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
 			{
@@ -758,6 +758,31 @@ HRESULT CLoader::Load_Select()
 
 	m_strLoadingText = L"Select : Loading Shader";
 #pragma region Shader
+
+	// VTF Test
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Component_Shader_VTF"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VTFModel.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Component_Shader_RTVTF"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_RT_VTFModel.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Model_RTVTFRabbit"),
+		CRealtimeVTFModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/VTFRabbit/Mesh/Rabbit.hyuntraanimmesh"))))
+		return E_FAIL;
+
+	// VTF 테스트 용도
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_TestVTF"), CTestVTFModel::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	//
+
 #pragma endregion
 
 	m_strLoadingText = L"Select : Loading Prototype";
@@ -1083,13 +1108,6 @@ HRESULT CLoader::Load_GamePlay()
 #pragma region Shader
 
 
-	// VTF Test Shader
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_VTF"), 
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VTFModel.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
-	{
-		return E_FAIL;
-	}
-
 #pragma endregion
 
 	m_strLoadingText = L"GamePlay : Loading Prototype";
@@ -1230,17 +1248,11 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_VTFRabbit"),
-		CVTFModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/VTFRabbit/Mesh/Rabbit.hyuntraanimmesh"))))
-	{
-		return E_FAIL;
-	}
-
-	// VTF 테스트 용도
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_TestVTF"), CTestVTFModel::Create(m_pDevice, m_pContext))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_VTFRabbit"),
+	//	CVTFModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/VTFRabbit/Mesh/Rabbit.hyuntraanimmesh"))))
+	//{
+	//	return E_FAIL;
+	//}
 
 #pragma endregion
 

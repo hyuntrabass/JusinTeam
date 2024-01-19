@@ -714,5 +714,8 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxStatMesh_Water.hlsl">
       <Filter>97.Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_RT_VTFModel.hlsl">
+      <Filter>97.Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
