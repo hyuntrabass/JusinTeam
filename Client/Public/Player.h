@@ -205,15 +205,6 @@ public:
 	Anim_end
 };
 
-
-
-	struct WEAPONPART_DESC
-	{
-		_uint iNumVariations{};
-		ANIM_DESC* Animation{};
-		CTransform* pParentTransform{ nullptr };
-	};
-
 	enum PLAYER_STATE
 	{
 		Idle,
@@ -223,6 +214,14 @@ public:
 		Run_End,
 		Attack,
 		Attack_Idle,
+		Attack_Run,
+		Skill1,
+		Skill1_End,
+		Skill2,
+		Skill3,
+		Skill4,
+		SkillR,
+		Aim_Idle,
 		Jump_Start,
 		Jump,
 		Jump_End,
@@ -246,21 +245,32 @@ public:
 
 public:
 	void Change_Parts(PART_TYPE PartsType,_int ChangeIndex);
-	void Change_Weapon(WEAPON_TYPE PartsType,_int ChangeIndex);
+	void Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex);
 
 	void Reset_PartsAnim();
 	void Set_Key(_float fTimeDelta);
 	void Move(_float fTimeDelta);
-	void Common_SwordAttack();
+
+	void Common_Attack();
+	void Skill1_Attack();
+	void Skill2_Attack();
+	void Skill3_Attack();
+	void Skill4_Attack();
+	void SkillR_Attack();
+
+	void Cam_AttackZoom(_float fZoom);
 	void Return_Attack_IdleForm();
-	void Sword_Attack_Dash(_float fTimeDelta);
+	void After_CommonAtt(_float fTimeDelta);
+	void After_SkillAtt(_float fTimeDelta);
+
 public:
 	void Init_State();
 	void Tick_State(_float fTimeDelta);
 private:
 	vector<CBodyPart*> m_vecParts{};
-	CGameObject* m_pWeapon{};
+	CWeapon* m_pWeapon{};
 	CTransform* m_pCameraTransform{};
+
 private:
 	ANIM_DESC m_Animation{};
 	PLAYER_STATE m_eState{ Idle };
@@ -280,10 +290,18 @@ private:
 	_bool m_bAttacked{};
 	_bool m_hasJumped{};
 	_int m_iAttackCombo{};
-
+	_int m_iCurrentSkill_Index{};
 	_vec4 m_currentDir{};
 	_float m_lerpFactor{0.1f};
-
+	_vec4 m_vLook{};
+	_float m_fLerpTime{};
+	_vec4 m_fLerpLook{};
+	_vec4 m_fFirstLook{};
+	_float m_fAttackZoom{};
+	_float m_ReturnZoomTime{};
+	ANIM_LIST m_SwordSkill[5]{};
+	ANIM_LIST m_BowSkill[5]{};
+	_float m_fSkiilTimer{};
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

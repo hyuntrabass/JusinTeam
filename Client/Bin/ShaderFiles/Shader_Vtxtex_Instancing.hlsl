@@ -14,12 +14,15 @@ struct VS_IN
     float2 vPSize : PSize;
     
     row_major matrix TransformMatrix : World;
+    
+    uint iVertexID : SV_InstanceID;
 };
 
 struct VS_OUT
 {
     vector vPos : Position;
     float2 vPSize : PSize;
+    uint iIndex : Index;
 };
 
 VS_OUT VS_Main(VS_IN Input)
@@ -32,6 +35,7 @@ VS_OUT VS_Main(VS_IN Input)
     
     Output.vPos = mul(vPosition, g_WorldMatrix);
     Output.vPSize = float2(Input.vPSize.x * Input.TransformMatrix._11, Input.vPSize.y * Input.TransformMatrix._22);
+    Output.iIndex = g_iIndex;
     
     return Output;
 }
@@ -46,8 +50,7 @@ VS_OUT VS_Main_RandomIndex(VS_IN Input)
     
     Output.vPos = mul(vPosition, g_WorldMatrix);
     Output.vPSize = float2(Input.vPSize.x * Input.TransformMatrix._11, Input.vPSize.y * Input.TransformMatrix._22);
-    //g_iIndex = g_iIndex % (g_vNumSprite.x * g_vNumSprite.y);
-    //g_iIndex++;
+    Output.iIndex = Input.iVertexID /*% uint(g_vNumSprite.x * g_vNumSprite.y)*/;
     
     return Output;
 }
@@ -56,12 +59,14 @@ struct GS_IN
 {
     vector vPos : Position;
     float2 vPSize : PSize;
+    uint iIndex : Index;
 };
 
 struct GS_OUT
 {
     vector vPos : SV_Position;
     float2 vTex : Texcoord0;
+    uint iIndex : Index;
 };
 
 [maxvertexcount(6)]
@@ -92,6 +97,11 @@ void GS_MAIN(point GS_IN Input[1], inout TriangleStream<GS_OUT> Triangles)
     Output[2].vPos = mul(Output[2].vPos, matVP);
     Output[3].vPos = mul(Output[3].vPos, matVP);
 
+    Output[0].iIndex = Input[0].iIndex;
+    Output[1].iIndex = Input[0].iIndex;
+    Output[2].iIndex = Input[0].iIndex;
+    Output[3].iIndex = Input[0].iIndex;
+
     Triangles.Append(Output[0]);
     Triangles.Append(Output[1]);
     Triangles.Append(Output[2]);
@@ -106,6 +116,7 @@ struct PS_IN
 {
     vector vPos : SV_Position;
     float2 vTex : Texcoord0;
+    uint iIndex : Index;
 };
 
 struct PS_OUT
@@ -129,17 +140,10 @@ PS_OUT PS_Main_Sprite(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio > fDissolve)
-    {
-        discard;
-    }
-    
     float2 vSpriteSize = float2(1.f, 1.f) / g_vNumSprite;
     int2 vSpriteCoord;
-    vSpriteCoord.x = g_iIndex % g_vNumSprite.x;
-    vSpriteCoord.y = g_iIndex / g_vNumSprite.x;
+    vSpriteCoord.x = Input.iIndex % g_vNumSprite.x;
+    vSpriteCoord.y = Input.iIndex / g_vNumSprite.x;
     float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
     
     vector vMask = g_MaskTexture.Sample(LinearSampler, vUV);
@@ -203,8 +207,8 @@ PS_OUT PS_Main_Sprite_Dissolve(PS_IN Input)
     
     float2 vSpriteSize = float2(1.f, 1.f) / g_vNumSprite;
     int2 vSpriteCoord;
-    vSpriteCoord.x = g_iIndex % g_vNumSprite.x;
-    vSpriteCoord.y = g_iIndex / g_vNumSprite.x;
+    vSpriteCoord.x = Input.iIndex % g_vNumSprite.x;
+    vSpriteCoord.y = Input.iIndex / g_vNumSprite.x;
     float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
     
     vector vMask = g_MaskTexture.Sample(LinearSampler, vUV);
@@ -247,28 +251,13 @@ PS_OUT PS_Main_Sprite_Texture(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio > fDissolve)
-    {
-        discard;
-    }
-    
     float2 vSpriteSize = float2(1.f, 1.f) / g_vNumSprite;
     int2 vSpriteCoord;
-    vSpriteCoord.x = g_iIndex % g_vNumSprite.x;
-    vSpriteCoord.y = g_iIndex / g_vNumSprite.x;
+    vSpriteCoord.x = Input.iIndex % g_vNumSprite.x;
+    vSpriteCoord.y = Input.iIndex / g_vNumSprite.x;
     float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
     
-    vector vMask = g_MaskTexture.Sample(LinearSampler, vUV);
-    if (vMask.r < 0.1f)
-    {
-        discard;
-    }
-
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
-    
-    Output.vColor.a = vMask.r;
+    Output.vColor = g_Texture.Sample(LinearSampler, vUV);
     
     return Output;
 }
@@ -286,19 +275,11 @@ PS_OUT PS_Main_Sprite_Texture_Dissolve(PS_IN Input)
     
     float2 vSpriteSize = float2(1.f, 1.f) / g_vNumSprite;
     int2 vSpriteCoord;
-    vSpriteCoord.x = g_iIndex % g_vNumSprite.x;
-    vSpriteCoord.y = g_iIndex / g_vNumSprite.x;
+    vSpriteCoord.x = Input.iIndex % g_vNumSprite.x;
+    vSpriteCoord.y = Input.iIndex / g_vNumSprite.x;
     float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
     
-    vector vMask = g_MaskTexture.Sample(LinearSampler, vUV);
-    if (vMask.r < 0.1f)
-    {
-        discard;
-    }
-
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
-    
-    Output.vColor.a = vMask.r;
+    Output.vColor = g_Texture.Sample(LinearSampler, vUV);
     
     return Output;
 }
@@ -393,7 +374,7 @@ technique11 DefaultTechnique
         GeometryShader = compile gs_5_0 GS_MAIN();
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main_Sprite();
+        PixelShader = compile ps_5_0 PS_Main_Sprite_Texture();
     }
 
     pass Particle_Sprite_Texture_Dissolve
@@ -406,7 +387,7 @@ technique11 DefaultTechnique
         GeometryShader = compile gs_5_0 GS_MAIN();
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main_Sprite_Dissolve();
+        PixelShader = compile ps_5_0 PS_Main_Sprite_Texture_Dissolve();
     }
 
     pass Particle_Sprite_Texture_RandomIndex
@@ -419,7 +400,7 @@ technique11 DefaultTechnique
         GeometryShader = compile gs_5_0 GS_MAIN();
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main_Sprite();
+        PixelShader = compile ps_5_0 PS_Main_Sprite_Texture();
     }
 
     pass Particle_Sprite_Texture_RandomIndex_Dissolve
@@ -432,7 +413,7 @@ technique11 DefaultTechnique
         GeometryShader = compile gs_5_0 GS_MAIN();
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main_Sprite_Dissolve();
+        PixelShader = compile ps_5_0 PS_Main_Sprite_Texture_Dissolve();
     }
 
     pass Particle_Sprite_Color_RandomIndex

@@ -90,8 +90,19 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 	if (not m_Effects.empty())
 	{
-		for (auto& pEffect : m_Effects)
-			pEffect->Tick(fTimeDelta);
+		for (auto& iter = m_Effects.begin(); iter != m_Effects.end();)
+		{
+			(*iter)->Tick(fTimeDelta);
+			if ((*iter)->isDead())
+			{
+				Safe_Release((*iter));
+				iter = m_Effects.erase(iter);
+			}
+			else
+			{
+				++iter;
+			}
+		}
 	}
 }
 
@@ -204,19 +215,23 @@ HRESULT CImgui_Manager::ImGuiMenu()
 		LoadFile();
 	}
 	if (ImGui::Button("ADD_EFFECT"))
-	{
-		_uint iCurrentEffect = m_iCurrentEffect;
-		_tchar szEffectName[MAX_PATH] = TEXT("");
-		MultiByteToWideChar(CP_ACP, 0, m_EffectNames[iCurrentEffect], (_int)strlen(m_EffectNames[iCurrentEffect]), szEffectName, MAX_PATH);
-		
-		EffectInfo EffectInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(szEffectName);
+	{	//이펙트 디스크립션 저장
+		TRIGGEREFFECT_DESC EffectDesc{};
+		_uint iSelectEffectFile = m_iSelectEffectFile;
+		EffectDesc.iNameLength = strlen(m_EffectNames[iSelectEffectFile]) * sizeof(_tchar) + sizeof(_tchar);
+ 		MultiByteToWideChar(CP_UTF8, 0, m_EffectNames[iSelectEffectFile], (_int)strlen(m_EffectNames[iSelectEffectFile]), EffectDesc.szEffectName, EffectDesc.iNameLength / sizeof(_tchar));
+		CAnimation* pCurrentAnim = m_pPlayer->Get_CurrentAnim();
+		pCurrentAnim->Add_TriggerEffect(EffectDesc);
+		//이펙트 생성
+		EffectInfo EffectInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(EffectDesc.szEffectName);
 		CEffect_Dummy* pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(&EffectInfo);
 		m_Effects.push_back(pEffect);
+		//이펙트 디스크립션 이름 저장(메뉴로 보여주기 위해)
+		m_EffectDescNames.push_back(m_EffectNames[iSelectEffectFile]);
 	}
 
 #pragma region CreateObject
 
-	//if (ImGui::Button("CREATE"))
 	if (m_IsCreateModel)
 	{
 		if (not m_pPlayer)
@@ -325,13 +340,14 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				m_AnimationNames.push_back((*iter)->Get_Name());
 				++iter;
 			}
-			static int iCurrentAnimation = 0;
+
+			static int iCurrentAnimIndex = 0;
 			if (m_AnimationNames.size() != 0)
 			{
-				iCurrentAnimation = pCurrentModel->Get_CurrentAnimationIndex();
-				if (ImGui::ListBox("ANIMATION", &iCurrentAnimation, m_AnimationNames.data(), m_AnimationNames.size()))
+				iCurrentAnimIndex = pCurrentModel->Get_CurrentAnimationIndex();
+				if (ImGui::ListBox("ANIMATION", &iCurrentAnimIndex, m_AnimationNames.data(), m_AnimationNames.size()))
 				{
-					m_AnimDesc.iAnimIndex = iCurrentAnimation;
+					m_AnimDesc.iAnimIndex = iCurrentAnimIndex;
 					m_AnimDesc.bSkipInterpolation = false;
 					pCurrentModel->Set_Animation(m_AnimDesc);
 				}
@@ -339,7 +355,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 
 			_int iCurrentAnimPos = (_int)pCurrentModel->Get_CurrentAnimPos();
 			iter = pAnimations.begin();
-			for (_uint i = 0; i < iCurrentAnimation; i++)
+			for (_uint i = 0; i < iCurrentAnimIndex; i++)
 			{
 				++iter;
 			}
@@ -383,12 +399,11 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			}
 			m_TriggerTimes.clear();
 			Safe_Delete_Array(strTrigger);
-
 		}
 
 		ImGui::End();
 	}
-	if (m_pPlayer)
+	if (not m_Effects.empty())
 	{
 		ImGui::Begin("OBJECT BONES");
 
@@ -408,8 +423,12 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			}
 			if (m_BoneNames.size() != 0)
 			{
+				CAnimation* pCurAnim = m_pPlayer->Get_CurrentAnim();
+				TRIGGEREFFECT_DESC* pEffectDesc = pCurAnim->Get_TriggerEffect(m_iCurrentEffect);
+				m_iCurrentBone = pEffectDesc->iBoneIndex;
 				if (ImGui::ListBox("BONE", &m_iCurrentBone, m_BoneNames.data(), m_BoneNames.size()))
 				{
+					pEffectDesc->iBoneIndex = m_iCurrentBone;
 				}
 			}
 
@@ -421,32 +440,69 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			if (not m_Effects.empty())
 			{
 				CModel* pCurrentModel = m_pPlayer->Get_CurrentModel();
-				
+				CAnimation* pCurAnim = m_pPlayer->Get_CurrentAnim();
 				CTransform* pPlayerTransform = reinterpret_cast<CTransform*>(m_pPlayer->Find_Component(TEXT("Com_Transform")));
 				
-				_mat WorldMatrix = *Bones[m_iCurrentBone]->Get_CombinedMatrix() * pCurrentModel->Get_PivotMatrix() * pPlayerTransform->Get_World_Matrix();
-				m_Effects[0]->Set_Position(WorldMatrix.Position());
+				_uint iEffectIndex{};
+				for (auto& pEffect : m_Effects)
+				{
+					TRIGGEREFFECT_DESC* pEffectDesc = pCurAnim->Get_TriggerEffect(iEffectIndex++);
+					_mat WorldMatrix = *Bones[pEffectDesc->iBoneIndex]->Get_CombinedMatrix() * pCurrentModel->Get_PivotMatrix() * pPlayerTransform->Get_World_Matrix();
+					pEffect->Set_Position(WorldMatrix.Position());
+				}
 			}
 		}
 
 		ImGui::End();
 	}
 
+	ImGui::Begin("EFFECT DATAFILE");
+
+	if (ImGui::ListBox("EFFECTDATA", &m_iSelectEffectFile, m_EffectNames.data(), m_EffectNames.size()))
+	{
+	}
+
+	ImGui::End();
+
+	if (not m_Effects.empty())
+	{
+		ImGui::Begin("EFFECT MENU");
+
+		if (ImGui::ListBox("EFFECT", &m_iCurrentEffect, m_EffectDescNames.data(), m_EffectDescNames.size()))
+		{
+		}
+
+		TRIGGEREFFECT_DESC* pEffectDesc = m_pPlayer->Get_CurrentAnim()->Get_TriggerEffect(m_iCurrentEffect);
+		if (ImGui::Button("START"))
+		{
+			if (pEffectDesc->fEndAnimPos > m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos() ||
+				pEffectDesc->fEndAnimPos == -1.f)
+			{
+				pEffectDesc->fStartAnimPos = m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos();
+			}
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("END"))
+		{
+			if (pEffectDesc->fStartAnimPos < m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos())
+			{
+				pEffectDesc->fEndAnimPos = m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos();
+			}
+		}
+
+		string strStartEffect = "START : " + to_string(static_cast<_int>(pEffectDesc->fStartAnimPos));
+		ImGui::Text(strStartEffect.c_str()); ImGui::SameLine();
+		string strEndEffect = "END : " + to_string(static_cast<_int>(pEffectDesc->fEndAnimPos));
+		ImGui::Text(strEndEffect.c_str());
+
+		ImGui::End();
+	}
+
+	//
 	if (m_pPlayer)
 	{
 		m_pPlayer->Set_ModelType((CPlayer::TYPE)m_eType);
 		m_pPlayer->Set_ModelIndex(m_iCurrentModelIndex);
-	}
-
-	//if (m_Effects.size() != 0)
-	{
-		ImGui::Begin("EFFECT MENU");
-
-		if (ImGui::ListBox("EFFECT", &m_iCurrentEffect, m_EffectNames.data(), m_EffectNames.size()))
-		{
-		}
-
-		ImGui::End();
 	}
 
 	return S_OK;
