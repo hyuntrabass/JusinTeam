@@ -37,7 +37,7 @@ private:
 private:
 	WEAPON_TYPE m_eType{};
 	_uint m_iNumVariations{};
-	_uint m_iSelectedModelIndex{1};
+	_uint m_iSelectedModelIndex{};
 	ANIM_DESC* m_Animation{};
 	_bool m_bHide{};
 private:

@@ -33,14 +33,17 @@ HRESULT CPlayer::Init(void* pArg)
 	Safe_AddRef(m_pCameraTransform);
 	m_SwordSkill[0] = Anim_RA_7062_KnockBack_A; // 검기 날리기 (주력기)
 	m_SwordSkill[1] = Anim_RA_9060_SealChain; // 앞으로 점프하면서 때리기
-	m_SwordSkill[2] = Anim_RA_9040_RapidAttack; //사라졌다가 찌르기
-	m_SwordSkill[3] = Anim_RA_9050_SealStack; //난타(쿨김)
+	m_SwordSkill[2] = Anim_RA_9040_RapidAttack; // 사라졌다가 찌르기
+	m_SwordSkill[3] = Anim_RA_9050_SealStack; // 난타(쿨김)
+	m_SwordSkill[4] = Anim_RA_9080_Hiding; // 은신(우클릭)
 
-	m_BowSkill[0] = Anim_ID_8070_TripleStrike; //트리플 샷 (주력기)
-	m_BowSkill[1] = Anim_ID_8080_BackTumbling; //백덤블링
+	m_BowSkill[0] = Anim_ID_8070_TripleStrike; // 트리플 샷 (주력기)
+	m_BowSkill[1] = Anim_ID_8080_BackTumbling; // 백덤블링
 	m_BowSkill[2] = Anim_ID_8120_RainArrow; // 화살비
-	m_BowSkill[3] = Anim_ID_8130_IllusionArrow; //분신 나와서 화살(쿨김)
+	m_BowSkill[3] = Anim_ID_8130_IllusionArrow; // 분신 나와서 화살(쿨김)
+	m_BowSkill[4] = Anim_ID_7060_KnockBack; // 에임모드 변경(우클릭)
 
+	
 	return S_OK;
 }
 
@@ -188,8 +191,12 @@ HRESULT CPlayer::Add_Weapon()
 	if (m_pWeapon == nullptr)
 		return E_FAIL;
 
-	m_Current_Weapon = WP_SWORD;
-	Reset_PartsAnim();
+	Change_Weapon(WP_BOW, BOW0);
+	for (int i = 0; i < m_vecParts.size(); i++)
+	{
+		m_vecParts[i]->All_Reset_Anim();
+	}
+
 	return S_OK;
 }
 
@@ -268,6 +275,37 @@ void CPlayer::Move(_float fTimeDelta)
 		Change_Weapon(WP_BOW, BOW0);
 		else
 		Change_Weapon(WP_SWORD, SWORD0);
+	}
+
+	if(m_pGameInstance->Mouse_Down(DIM_RBUTTON))
+	{
+		if(m_Current_Weapon == WP_BOW)
+		{
+			if (m_eState != Aim_Idle)
+			{
+				m_eState = SkillR;
+				m_iCurrentSkill_Index = SkillR;
+				m_pGameInstance->Set_AimMode(true);
+			}
+			else
+			{
+				m_eState = Attack_Idle;
+				m_pGameInstance->Set_AimMode(false);
+			}
+		}
+
+
+	}
+
+	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON))
+	{
+		if (m_eState == Aim_Idle)
+		{
+			m_eState = SkillR;
+			m_iCurrentSkill_Index = SkillR;
+			Reset_PartsAnim();
+
+		}
 	}
 
 	if(m_eState!=Attack&&m_eState< Skill1)
@@ -564,6 +602,28 @@ void CPlayer::Skill4_Attack()
 		m_fSkiilTimer = 0.f;
 	}
 }
+void CPlayer::SkillR_Attack()
+{
+	if (m_Current_Weapon == WP_SWORD)
+	{
+		m_Animation.iAnimIndex = m_SwordSkill[4];
+		m_Animation.isLoop = false;
+		m_hasJumped = false;
+		m_iSuperArmor = {};
+		m_fSkiilTimer = 0.f;
+	}
+	else if (m_Current_Weapon == WP_BOW)
+	{
+		m_Animation.iAnimIndex = 0;
+
+		m_Animation.iAnimIndex = m_BowSkill[4];
+		
+		m_Animation.isLoop = false;
+		m_hasJumped = false;
+		m_iSuperArmor = {};
+		m_fSkiilTimer = 0.f;
+	}
+}
 void CPlayer::Cam_AttackZoom(_float fZoom)
 {
 	if(m_fAttackZoom<fZoom)
@@ -700,7 +760,7 @@ void CPlayer::After_SkillAtt(_float fTimeDelta)
 		{
 			if (m_fSkiilTimer > 0.2f && m_fSkiilTimer < 0.6f)
 			{
-				Cam_AttackZoom(2*m_fSkiilTimer);
+				Cam_AttackZoom(3*m_fSkiilTimer);
 				m_pGameInstance->Set_ShakeCam(true);
 			}
 		}
@@ -869,6 +929,11 @@ void CPlayer::Init_State()
 		case Client::CPlayer::Skill4:
 			Skill4_Attack();
 			break;
+		case Client::CPlayer::SkillR:
+			SkillR_Attack();
+			break;
+		case Client::CPlayer::Aim_Idle:
+			break;
 		default:
 			break;
 		}
@@ -1036,6 +1101,20 @@ void CPlayer::Init_State()
 				}
 			}
 		}
+			break;
+		case Client::CPlayer::SkillR:
+			if (m_Current_Weapon == WP_SWORD)
+			{
+			}
+			else if (m_Current_Weapon == WP_BOW)
+			{
+				if (m_vecParts[PT_FACE]->IsAnimationFinished(m_BowSkill[4]))
+				{
+					m_Animation.isLoop = false;
+					m_eState = Aim_Idle;
+				}
+			}
+
 			break;
 		case Client::CPlayer::Jump_Start:
 			break;
