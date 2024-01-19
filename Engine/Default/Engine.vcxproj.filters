@@ -163,14 +163,20 @@
     <Filter Include="01.Utility\03.Components\VIBuffer\Terrain\VIBuffer_Terrain_Dynamic">
       <UniqueIdentifier>{b2115fba-c7c5-46be-8241-8c00eb49b841}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\03.Components\Model\VTFModel">
-      <UniqueIdentifier>{11b73b55-ac6b-447a-ae08-3f96ccbbd819}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\03.Components\Model\Model">
       <UniqueIdentifier>{1ea4898d-d524-4b65-9516-1e0d02e629d5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\03.Components\Model\RealtimeVTFModel">
+    <Filter Include="01.Utility\03.Components\Model\VTFModels">
+      <UniqueIdentifier>{46c018cc-7737-4b6b-9dbd-d7a31dbabf38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Components\Model\VTFModels\PartModel">
+      <UniqueIdentifier>{dadcd713-8b54-4799-963a-11f13b77a3e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Components\Model\VTFModels\RealtimeVTFModel">
       <UniqueIdentifier>{812e93a8-3802-4801-880c-7da761e5b6a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Components\Model\VTFModels\PreCalVTFModel">
+      <UniqueIdentifier>{11b73b55-ac6b-447a-ae08-3f96ccbbd819}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -328,13 +334,16 @@
       <Filter>01.Utility\03.Components\VIBuffer\Terrain\VIBuffer_Terrain_Dynamic</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VTFModel.cpp">
-      <Filter>01.Utility\03.Components\Model\VTFModel</Filter>
+      <Filter>01.Utility\03.Components\Model\VTFModels\PreCalVTFModel</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Model.cpp">
       <Filter>01.Utility\03.Components\Model\Model</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\RealtimeVTFModel.cpp">
-      <Filter>01.Utility\03.Components\Model\RealtimeVTFModel</Filter>
+      <Filter>01.Utility\03.Components\Model\VTFModels\RealtimeVTFModel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Part_Model.cpp">
+      <Filter>01.Utility\03.Components\Model\VTFModels\PartModel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -498,15 +507,18 @@
       <Filter>01.Utility\03.Components\VIBuffer\Terrain\VIBuffer_Terrain_Dynamic</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VTFModel.h">
-      <Filter>01.Utility\03.Components\Model\VTFModel</Filter>
+      <Filter>01.Utility\03.Components\Model\VTFModels\PreCalVTFModel</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Model.h">
       <Filter>01.Utility\03.Components\Model\Model</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\RealtimeVTFModel.h">
-      <Filter>01.Utility\03.Components\Model\RealtimeVTFModel</Filter>
+      <Filter>01.Utility\03.Components\Model\VTFModels\RealtimeVTFModel</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\SimpleMath.h" />
+    <ClInclude Include="..\Public\Part_Model.h">
+      <Filter>01.Utility\03.Components\Model\VTFModels\PartModel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Define.hlsli">
