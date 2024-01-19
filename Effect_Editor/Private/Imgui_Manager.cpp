@@ -166,10 +166,28 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 	if (m_iCurrent_Type == ET_PARTICLE)
 	{
-		ListBox("Pass##1", &iPassIndex, szInstancingPasses, InstPass_End);
-		if (iPassIndex >= InstPass_End)
+		if (BeginListBox("Pass##1", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
 		{
-			iPassIndex = 0;
+
+			for (size_t i = 0; i < InstPass_End; i++)
+			{
+				//ListBox("Pass##1", &iPassIndex, szInstancingPasses, InstPass_End);
+				const _bool isSelected = iPassIndex == i;
+				if (Selectable(szInstancingPasses[i], isSelected))
+				{
+					iPassIndex = i;
+				}
+
+				if (isSelected)
+				{
+					SetItemDefaultFocus();
+				}
+			}
+			if (iPassIndex >= InstPass_End)
+			{
+				iPassIndex = 0;
+			}
+			EndListBox();
 		}
 	}
 	else if (m_iCurrent_Type == ET_RECT)
@@ -192,7 +210,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	Info.iPassIndex = iPassIndex;
 
 	static _bool bSkipBloom{};
-	Checkbox("Bloom Effect", &bSkipBloom);
+	Checkbox("No Bloom", &bSkipBloom);
 	Info.bSkipBloom = bSkipBloom;
 
 	NewLine();
@@ -201,26 +219,31 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	static _bool hasUnDissolve{};
 	static _bool hasDissolve{};
 
-	SeparatorText("Diffuse");
-	RadioButton("Texture", &iIsColor, 0); SameLine();
-	RadioButton("Color", &iIsColor, 1);
-
 	static _bool isSprite{};
 	static _int2 vNumSprites{ 1, 1 };
 	static _float fSpriteDuration{ 1.f };
-	if (iIsColor == 0)
+	Checkbox("Sprite", &isSprite);
+	if (isSprite)
 	{
-		Checkbox("Sprite", &isSprite);
-		if (isSprite)
-		{
-			InputInt2("Number of Sprites", reinterpret_cast<_int*>(&vNumSprites));
+		InputInt2("Number of Sprites", reinterpret_cast<_int*>(&vNumSprites));
 
-			InputFloat("Duration", &fSpriteDuration, 0.f, 0.f, "%.1f");
+		InputFloat("Duration", &fSpriteDuration, 0.f, 0.f, "%.1f");
 
-			Info.isSprite = true;
-			Info.vNumSprites = vNumSprites;
-			Info.fSpriteDuration = fSpriteDuration;
-		}
+		Info.isSprite = true;
+		Info.vNumSprites = vNumSprites;
+		Info.fSpriteDuration = fSpriteDuration;
+	}
+
+	SeparatorText("Diffuse");
+	RadioButton("Texture", &iIsColor, 0); SameLine();
+	RadioButton("Color", &iIsColor, 1);
+	if (iIsColor)
+	{
+		ColorPicker4("Color", reinterpret_cast<_float*>(&m_vColor), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_DisplayRGB);
+		m_hasDiffTexture = false;
+	}
+	else
+	{
 		Separator();
 		NewLine();
 
@@ -228,19 +251,18 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		Image(reinterpret_cast<void*>(m_pTextures[m_iSelected_Texture]->Get_SRV()), ImVec2(128.f, 128.f));
 		m_hasDiffTexture = true;
 	}
-	else
-	{
-		ColorPicker4("Color", reinterpret_cast<_float*>(&m_vColor), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_DisplayRGB);
-		m_hasDiffTexture = false;
-	}
 
 	if (m_hasDiffTexture)
 	{
-		Info.iDiffTextureID = m_iSelected_Texture;
+		//Info.iDiffTextureID = m_iSelected_Texture;
+		_tchar strUnicode[MAX_PATH]{};
+		MultiByteToWideChar(CP_ACP, 0, m_pItemList_Texture[m_iSelected_Texture], static_cast<int>(strlen(m_pItemList_Texture[m_iSelected_Texture])), strUnicode, static_cast<int>(strlen(m_pItemList_Texture[m_iSelected_Texture])));
+		Info.strDiffuseTexture = strUnicode;
 	}
 	else
 	{
-		Info.iDiffTextureID = -1;
+		m_iSelected_Texture = -1;
+		Info.strDiffuseTexture = {};
 		Info.vColor = m_vColor;
 	}
 
@@ -249,6 +271,10 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	static _vec2 vUVDelta{};
 	if (m_hasMask)
 	{
+		if (m_iSelected_MaskTexture < 0)
+		{
+			m_iSelected_MaskTexture = 0;
+		}
 		SameLine();
 		SeparatorText("Mask Texture");
 		if (m_iCurrent_Type == ET_MESH)
@@ -258,11 +284,16 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		}
 		ListBox("Mask Texture", &m_iSelected_MaskTexture, m_pItemList_Texture, m_iNumTextures);
 		Image(reinterpret_cast<void*>(m_pTextures[m_iSelected_MaskTexture]->Get_SRV()), ImVec2(128.f, 128.f));
-		Info.iMaskTextureID = m_iSelected_MaskTexture;
+
+		//Info.iMaskTextureID = m_iSelected_MaskTexture;
+		_tchar strUnicode[MAX_PATH]{};
+		MultiByteToWideChar(CP_ACP, 0, m_pItemList_Texture[m_iSelected_MaskTexture], static_cast<int>(strlen(m_pItemList_Texture[m_iSelected_MaskTexture])), strUnicode, static_cast<int>(strlen(m_pItemList_Texture[m_iSelected_MaskTexture])));
+		Info.strMaskTexture = strUnicode;
 	}
 	else
 	{
-		Info.iMaskTextureID = -1;
+		m_iSelected_MaskTexture = -1;
+		Info.strMaskTexture = {};
 	}
 	Separator();
 	NewLine();
@@ -283,12 +314,16 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		}
 		ListBox("UnDissolve Texture", &iSelectd_UnDissolve, m_pItemList_Texture, m_iNumTextures);
 		Image(reinterpret_cast<void*>(m_pTextures[iSelectd_UnDissolve]->Get_SRV()), ImVec2(128.f, 128.f));
-		Info.iUnDissolveTextureID = iSelectd_UnDissolve;
+
+		//Info.iUnDissolveTextureID = iSelectd_UnDissolve;
+		_tchar strUnicode[MAX_PATH]{};
+		MultiByteToWideChar(CP_ACP, 0, m_pItemList_Texture[iSelectd_UnDissolve], static_cast<int>(strlen(m_pItemList_Texture[iSelectd_UnDissolve])), strUnicode, static_cast<int>(strlen(m_pItemList_Texture[iSelectd_UnDissolve])));
+		Info.strUnDissolveTexture = strUnicode;
 	}
 	else
 	{
 		iSelectd_UnDissolve = -1;
-		Info.iUnDissolveTextureID = -1;
+		Info.strUnDissolveTexture = {};
 	}
 	Separator();
 	NewLine();
@@ -309,19 +344,23 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		}
 		ListBox("Dissolve Texture", &iSelectd_Dissolve, m_pItemList_Texture, m_iNumTextures);
 		Image(reinterpret_cast<void*>(m_pTextures[iSelectd_Dissolve]->Get_SRV()), ImVec2(128.f, 128.f));
-		Info.iDissolveTextureID = iSelectd_Dissolve;
+
+		//Info.iDissolveTextureID = iSelectd_Dissolve;
+		_tchar strUnicode[MAX_PATH]{};
+		MultiByteToWideChar(CP_ACP, 0, m_pItemList_Texture[iSelectd_Dissolve], static_cast<int>(strlen(m_pItemList_Texture[iSelectd_Dissolve])), strUnicode, static_cast<int>(strlen(m_pItemList_Texture[iSelectd_Dissolve])));
+		Info.strDissolveTexture = strUnicode;
 	}
 	else
 	{
 		iSelectd_Dissolve = -1;
-		Info.iDissolveTextureID = -1;
+		Info.strDissolveTexture = {};
 	}
 	Separator();
 	NewLine();
 
-	static _vec2 vSize{ 1.f, 1.f };
+	static _vec3 vSize{ 1.f };
 	static _float fSizeforSprite{ 1.f };
-	static _vec2 vSizeDelta{};
+	static _vec3 vSizeDelta{};
 	static _bool bApplyGravity{};
 	static _vec3 vGravityDir{};
 
@@ -390,9 +429,11 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 		Info.iNumInstances = m_iNumInstance;
 		Info.PartiDesc = m_ParticleInfo;
-		Info.vSize = _vec2(1.f);
+		Info.vSize = _vec3(1.f);
 		Info.bApplyGravity = bApplyGravity;
 		Info.vGravityDir = vGravityDir;
+
+		Info.strModel = {};
 	}
 	else if (m_iCurrent_Type == ET_RECT)
 	{
@@ -414,13 +455,23 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 		InputFloat2("Size Delta", reinterpret_cast<_float*>(&vSizeDelta), "%.2f");
 		Info.vSizeDelta = vSizeDelta;
+
+		Info.strModel = {};
 	}
 	else if (m_iCurrent_Type == ET_MESH)
 	{
 		SeparatorText("Mesh Information");
 
+		InputFloat3("Size##2", reinterpret_cast<_float*>(&vSize), "%.2f");
+		Info.vSize = vSize;
+
+		InputFloat3("Size Delta", reinterpret_cast<_float*>(&vSizeDelta), "%.2f");
+		Info.vSizeDelta = vSizeDelta;
+
 		ListBox("Model", &m_iSelected_Model, m_pItemList_Model, m_iNumModels);
-		Info.iModelIndex = m_iSelected_Model;
+
+		//Info.iModelIndex = m_iSelected_Model;
+		Info.strModel = m_pItemList_Model[m_iSelected_Model];
 	}
 
 	if (Button("Export"))
@@ -452,53 +503,59 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 		iPassIndex = Info.iPassIndex;
 
-		if (Info.iDiffTextureID < 0)
+		bSkipBloom = Info.bSkipBloom;
+
+		if (Info.strDiffuseTexture.size())
+		{
+			iIsColor = 0;
+			m_hasDiffTexture = true;
+			m_iSelected_Texture = Compute_TextureIndex(Info.strDiffuseTexture);
+		}
+		else
 		{
 			iIsColor = 1;
 			m_hasDiffTexture = false;
 			m_vColor = Info.vColor;
 		}
-		else
+
+		isSprite = Info.isSprite;
+		if (Info.isSprite)
 		{
-			iIsColor = 0;
-			m_hasDiffTexture = true;
-			m_iSelected_Texture = Info.iDiffTextureID;
-			isSprite = Info.isSprite;
 			vNumSprites = Info.vNumSprites;
 			fSpriteDuration = Info.fSpriteDuration;
 		}
 
-		if (Info.iMaskTextureID < 0)
+		if (Info.strMaskTexture.size())
+		{
+			m_hasMask = true;
+			m_iSelected_MaskTexture = Compute_TextureIndex(Info.strMaskTexture);
+			vUVDelta = Info.vUVDelta;
+		}
+		else
 		{
 			m_hasMask = false;
 		}
-		else
-		{
-			m_hasMask = true;
-			m_iSelected_MaskTexture = Info.iMaskTextureID;
-			vUVDelta = Info.vUVDelta;
-		}
 
-		if (Info.iUnDissolveTextureID < 0)
+		if (Info.strUnDissolveTexture.size())
+		{
+			hasUnDissolve = true;
+			iSelectd_UnDissolve = Compute_TextureIndex(Info.strUnDissolveTexture);
+			fUnDissolveDuration = Info.fUnDissolveDuration;
+		}
+		else
 		{
 			hasUnDissolve = false;
 		}
-		else
-		{
-			hasUnDissolve = true;
-			iSelectd_UnDissolve = Info.iUnDissolveTextureID;
-			fUnDissolveDuration = Info.fUnDissolveDuration;
-		}
 
-		if (Info.iDissolveTextureID < 0)
-		{
-			hasDissolve = false;
-		}
-		else
+		if (Info.strDissolveTexture.size())
 		{
 			hasDissolve = true;
-			iSelectd_Dissolve = Info.iDissolveTextureID;
+			iSelectd_Dissolve = Compute_TextureIndex(Info.strDissolveTexture);
 			fDissolveDuration = Info.fDissolveDuration;
+		}
+		else
+		{
+			hasDissolve = false;
 		}
 
 		switch (Info.iType)
@@ -518,7 +575,9 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			vSizeDelta = Info.vSizeDelta;
 			break;
 		case Effect::ET_MESH:
-			m_iSelected_Model = Info.iModelIndex;
+			m_iSelected_Model = Compute_ModelIndex(Info.strModel);
+			vSize = Info.vSize;
+			vSizeDelta = Info.vSizeDelta;
 			break;
 		}
 	}
@@ -539,7 +598,6 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		m_AddEffect.clear();
 	}
 
-	End();
 
 	if (m_pEffect)
 	{
@@ -557,6 +615,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		m_pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Info));
 		m_pEffect->Tick(0.f);
 	}
+
+	End();
 }
 
 HRESULT CImgui_Manager::Render()
@@ -636,17 +696,55 @@ HRESULT CImgui_Manager::Ready_Layers()
 
 	for (_int i = 0; i < m_iNumTextures; i++)
 	{
-		wstring strPrototypeTag = L"Prototype_Component_Texture_Effect_" + to_wstring(i);
+		wstring strPrototypeTag = L"Prototype_Component_Texture_Effect_";
+		_tchar strUnicode[MAX_PATH]{};
+		MultiByteToWideChar(CP_ACP, 0, m_pItemList_Texture[i], static_cast<int>(strlen(m_pItemList_Texture[i])), strUnicode, static_cast<int>(strlen(m_pItemList_Texture[i])));
+
+		strPrototypeTag += strUnicode;
 		m_pTextures[i] = dynamic_cast<CTexture*>(m_pGameInstance->Clone_Component(LEVEL_STATIC, strPrototypeTag));
 	}
 
 	for (_int i = 0; i < m_iNumModels; i++)
 	{
-		wstring strPrototypeTag = L"Prototype_Model_" + to_wstring(i);
+		wstring strPrototypeTag = L"Prototype_Model_";
+		_tchar strUnicode[MAX_PATH]{};
+		MultiByteToWideChar(CP_ACP, 0, m_pItemList_Model[i], static_cast<int>(strlen(m_pItemList_Model[i])), strUnicode, static_cast<int>(strlen(m_pItemList_Model[i])));
+
+		strPrototypeTag += strUnicode;
 		m_pModels[i] = dynamic_cast<CModel*>(m_pGameInstance->Clone_Component(LEVEL_STATIC, strPrototypeTag));
 	}
 
 	return S_OK;
+}
+
+const _int& CImgui_Manager::Compute_TextureIndex(const wstring& strTexture)
+{
+	int size_needed = WideCharToMultiByte(CP_UTF8, 0, strTexture.c_str(), (int)strTexture.size(), NULL, 0, NULL, NULL);
+	std::string str(size_needed, 0);
+	WideCharToMultiByte(CP_UTF8, 0, strTexture.c_str(), (int)strTexture.size(), &str[0], size_needed, NULL, NULL);
+
+	for (size_t i = 0; i < m_iNumTextures; i++)
+	{
+		if (str == m_pItemList_Texture[i])
+		{
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+const _int& CImgui_Manager::Compute_ModelIndex(const string& strModel)
+{
+	for (size_t i = 0; i < m_iNumModels; i++)
+	{
+		if (strModel == m_pItemList_Model[i])
+		{
+			return i;
+		}
+	}
+
+	return -1;
 }
 
 EffectInfo CImgui_Manager::Load_Data()
@@ -673,9 +771,106 @@ EffectInfo CImgui_Manager::Load_Data()
 
 		if (InFile.is_open())
 		{
-			InFile.read(reinterpret_cast<_char*>(&Info), sizeof EffectInfo);
+			InFile.read(reinterpret_cast<_char*>(&Info.iType), sizeof Info.iType);
+			InFile.read(reinterpret_cast<_char*>(&Info.isSprite), sizeof Info.isSprite);
+			InFile.read(reinterpret_cast<_char*>(&Info.vNumSprites), sizeof Info.vNumSprites);
+			InFile.read(reinterpret_cast<_char*>(&Info.fSpriteDuration), sizeof Info.fSpriteDuration);
+			InFile.read(reinterpret_cast<_char*>(&Info.PartiDesc), sizeof Info.PartiDesc);
+			InFile.read(reinterpret_cast<_char*>(&Info.iNumInstances), sizeof Info.iNumInstances);
+			InFile.read(reinterpret_cast<_char*>(&Info.fLifeTime), sizeof Info.fLifeTime);
+			InFile.read(reinterpret_cast<_char*>(&Info.vColor), sizeof Info.vColor);
+			InFile.read(reinterpret_cast<_char*>(&Info.iPassIndex), sizeof Info.iPassIndex);
+			InFile.read(reinterpret_cast<_char*>(&Info.vSize), sizeof Info.vSize);
+			InFile.read(reinterpret_cast<_char*>(&Info.vPosOffset), sizeof Info.vPosOffset);
+			InFile.read(reinterpret_cast<_char*>(&Info.vSizeDelta), sizeof Info.vSizeDelta);
+			InFile.read(reinterpret_cast<_char*>(&Info.bApplyGravity), sizeof Info.bApplyGravity);
+			InFile.read(reinterpret_cast<_char*>(&Info.vGravityDir), sizeof Info.vGravityDir);
+			InFile.read(reinterpret_cast<_char*>(&Info.fDissolveDuration), sizeof Info.fDissolveDuration);
+			InFile.read(reinterpret_cast<_char*>(&Info.bSkipBloom), sizeof Info.bSkipBloom);
+			InFile.read(reinterpret_cast<_char*>(&Info.fUnDissolveDuration), sizeof Info.fUnDissolveDuration);
+			InFile.read(reinterpret_cast<_char*>(&Info.vUVDelta), sizeof Info.vUVDelta);
+
+			size_t iNameSize{};
+
+			{
+				_tchar* pBuffer{};
+
+				InFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+				pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
+				InFile.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
+				Info.strDiffuseTexture = pBuffer;
+				Safe_Delete_Array(pBuffer);
+				iNameSize = {};
+
+				InFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+				pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
+				InFile.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
+				Info.strMaskTexture = pBuffer;
+				Safe_Delete_Array(pBuffer);
+				iNameSize = {};
+
+				InFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+				pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
+				InFile.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
+				Info.strDissolveTexture = pBuffer;
+				Safe_Delete_Array(pBuffer);
+				iNameSize = {};
+
+				InFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+				pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
+				InFile.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
+				Info.strUnDissolveTexture = pBuffer;
+				Safe_Delete_Array(pBuffer);
+				iNameSize = {};
+			}
+
+			{
+				_char* pBuffer{};
+				InFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+				pBuffer = new _char[iNameSize];
+				InFile.read(pBuffer, iNameSize);
+				Info.strModel = pBuffer;
+				Safe_Delete_Array(pBuffer);
+				iNameSize = {};
+			}
 
 			InFile.close();
+		}
+	}
+
+	return Info;
+}
+
+OldEffectInfo CImgui_Manager::Load_OldData()
+{
+	OldEffectInfo Info{};
+
+	OPENFILENAME ofn;
+	TCHAR filePathName[MAX_PATH] = L"";
+	TCHAR lpstrFile[MAX_PATH] = L"Effect.effect";
+	static TCHAR filter[] = L"¿Ã∆Â∆Æ ∆ƒ¿œ(*.effect)\0*.effect\0";
+
+	memset(&ofn, 0, sizeof(OPENFILENAME));
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = g_hWnd;
+	ofn.lpstrFilter = filter;
+	ofn.lpstrFile = lpstrFile;
+	ofn.nMaxFile = 256;
+	ofn.lpstrInitialDir = L"..\\..\\Client\\Bin\\EffectData";
+
+	if (GetOpenFileName(&ofn))
+	{
+		filesystem::path strFilePath = ofn.lpstrFile;
+		ifstream InFile(strFilePath.c_str(), ios::binary);
+
+		if (InFile.is_open())
+		{
+			if (InFile.is_open())
+			{
+				InFile.read(reinterpret_cast<_char*>(&Info), sizeof OldEffectInfo);
+
+				InFile.close();
+			}
 		}
 	}
 
@@ -686,7 +881,7 @@ HRESULT CImgui_Manager::Export_Data(EffectInfo& Info)
 {
 	OPENFILENAME ofn;
 	TCHAR filePathName[MAX_PATH] = L"";
-	TCHAR lpstrFile[MAX_PATH] = L"Effect.effect";
+	TCHAR lpstrFile[MAX_PATH] = L".effect";
 	static TCHAR filter[] = L"¿Ã∆Â∆Æ ∆ƒ¿œ(*.effect)\0*.effect\0";
 
 	memset(&ofn, 0, sizeof(OPENFILENAME));
@@ -705,7 +900,45 @@ HRESULT CImgui_Manager::Export_Data(EffectInfo& Info)
 
 		if (OutFile.is_open())
 		{
-			OutFile.write(reinterpret_cast<const _char*>(&Info), sizeof EffectInfo);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.iType), sizeof Info.iType);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.isSprite), sizeof Info.isSprite);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.vNumSprites), sizeof Info.vNumSprites);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.fSpriteDuration), sizeof Info.fSpriteDuration);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.PartiDesc), sizeof Info.PartiDesc);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.iNumInstances), sizeof Info.iNumInstances);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.fLifeTime), sizeof Info.fLifeTime);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.vColor), sizeof Info.vColor);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.iPassIndex), sizeof Info.iPassIndex);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.vSize), sizeof Info.vSize);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.vPosOffset), sizeof Info.vPosOffset);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.vSizeDelta), sizeof Info.vSizeDelta);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.bApplyGravity), sizeof Info.bApplyGravity);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.vGravityDir), sizeof Info.vGravityDir);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.fDissolveDuration), sizeof Info.fDissolveDuration);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.bSkipBloom), sizeof Info.bSkipBloom);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.fUnDissolveDuration), sizeof Info.fUnDissolveDuration);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.vUVDelta), sizeof Info.vUVDelta);
+
+			size_t iNameSize{};
+			iNameSize = (Info.strDiffuseTexture.size() + 1) * sizeof(_tchar);
+			OutFile.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+			OutFile.write(reinterpret_cast<const _char*>(Info.strDiffuseTexture.data()), iNameSize);
+
+			iNameSize = (Info.strMaskTexture.size() + 1) * sizeof(_tchar);
+			OutFile.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+			OutFile.write(reinterpret_cast<const _char*>(Info.strMaskTexture.data()), iNameSize);
+
+			iNameSize = (Info.strDissolveTexture.size() + 1) * sizeof(_tchar);
+			OutFile.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+			OutFile.write(reinterpret_cast<const _char*>(Info.strDissolveTexture.data()), iNameSize);
+
+			iNameSize = (Info.strUnDissolveTexture.size() + 1) * sizeof(_tchar);
+			OutFile.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+			OutFile.write(reinterpret_cast<const _char*>(Info.strUnDissolveTexture.data()), iNameSize);
+
+			iNameSize = (Info.strModel.size() + 1) * sizeof(_char);
+			OutFile.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+			OutFile.write(Info.strModel.data(), iNameSize);
 
 			OutFile.close();
 		}
