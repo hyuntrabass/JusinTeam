@@ -164,7 +164,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 
 		if (ImGui::BeginCombo("LIST", szCurrentModel))
 		{
-			for (size_t i = 0; i < m_FBXDataName.size(); i++)
+			for (_uint i = 0; i < m_FBXDataName.size(); i++)
 			{
 				_bool bSelectedModel = (szCurrentModel == m_FBXDataName[i]);
 				if (ImGui::Selectable(m_FBXDataName[i], bSelectedModel))
@@ -190,7 +190,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 
 		if (ImGui::BeginCombo("LIST", szCurrentModel))
 		{
-			for (size_t i = 0; i < IM_ARRAYSIZE(szModelTag); i++)
+			for (_uint i = 0; i < IM_ARRAYSIZE(szModelTag); i++)
 			{
 				_bool bSelectedModel = (szCurrentModel == szModelTag[i]);
 				if (ImGui::Selectable(szModelTag[i], bSelectedModel))
@@ -218,7 +218,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	{	//이펙트 디스크립션 저장
 		TRIGGEREFFECT_DESC EffectDesc{};
 		_uint iSelectEffectFile = m_iSelectEffectFile;
-		EffectDesc.iNameLength = strlen(m_EffectNames[iSelectEffectFile]) * sizeof(_tchar) + sizeof(_tchar);
+		EffectDesc.iNameLength = (_uint)strlen(m_EffectNames[iSelectEffectFile]) * sizeof(_tchar) + sizeof(_tchar);
  		MultiByteToWideChar(CP_UTF8, 0, m_EffectNames[iSelectEffectFile], (_int)strlen(m_EffectNames[iSelectEffectFile]), EffectDesc.szEffectName, EffectDesc.iNameLength / sizeof(_tchar));
 		CAnimation* pCurrentAnim = m_pPlayer->Get_CurrentAnim();
 		pCurrentAnim->Add_TriggerEffect(EffectDesc);
@@ -355,12 +355,12 @@ HRESULT CImgui_Manager::ImGuiMenu()
 
 			_int iCurrentAnimPos = (_int)pCurrentModel->Get_CurrentAnimPos();
 			iter = pAnimations.begin();
-			for (_uint i = 0; i < iCurrentAnimIndex; i++)
+			for (_int i = 0; i < iCurrentAnimIndex; i++)
 			{
 				++iter;
 			}
 
-			if (ImGui::SliderInt("ANIMPOS", &iCurrentAnimPos, 0.f, (_int)(*iter)->Get_Duration()))
+			if (ImGui::SliderInt("ANIMPOS", &iCurrentAnimPos, 0, (_int)(*iter)->Get_Duration()))
 			{
 				(*iter)->Set_CurrentAnimPos((_float)iCurrentAnimPos);
 			}
@@ -378,7 +378,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				(*iter)->Set_CurrentAnimPos((_float)iCurrentAnimPos);
 			}
 
-			if (ImGui::Button("ADD TRIGGER"))
+			/*if (ImGui::Button("ADD TRIGGER"))
 			{
 				(*iter)->Add_Trigger((*iter)->Get_CurrentAnimPos());
 			}
@@ -398,7 +398,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			{
 			}
 			m_TriggerTimes.clear();
-			Safe_Delete_Array(strTrigger);
+			Safe_Delete_Array(strTrigger);*/
 		}
 
 		ImGui::End();
@@ -437,19 +437,17 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			string strCurBone = "CURRENTBONE : " + to_string(m_iCurrentBone);
 			ImGui::Text(strCurBone.c_str());
 
-			if (not m_Effects.empty())
+			CAnimation* pCurAnim = m_pPlayer->Get_CurrentAnim();
+			CTransform* pPlayerTransform = reinterpret_cast<CTransform*>(m_pPlayer->Find_Component(TEXT("Com_Transform")));
+
+			_uint iEffectIndex{};
+			for (auto& pEffect : m_Effects)
 			{
-				CModel* pCurrentModel = m_pPlayer->Get_CurrentModel();
-				CAnimation* pCurAnim = m_pPlayer->Get_CurrentAnim();
-				CTransform* pPlayerTransform = reinterpret_cast<CTransform*>(m_pPlayer->Find_Component(TEXT("Com_Transform")));
-				
-				_uint iEffectIndex{};
-				for (auto& pEffect : m_Effects)
-				{
-					TRIGGEREFFECT_DESC* pEffectDesc = pCurAnim->Get_TriggerEffect(iEffectIndex++);
-					_mat WorldMatrix = *Bones[pEffectDesc->iBoneIndex]->Get_CombinedMatrix() * pCurrentModel->Get_PivotMatrix() * pPlayerTransform->Get_World_Matrix();
-					pEffect->Set_Position(WorldMatrix.Position());
-				}
+				TRIGGEREFFECT_DESC* pEffectDesc = pCurAnim->Get_TriggerEffect(iEffectIndex++);
+				ImGui::InputFloat("Offset", &pEffectDesc->vPosOffset.x);
+				_mat WorldMatrix = *Bones[pEffectDesc->iBoneIndex]->Get_CombinedMatrix() * pCurrentModel->Get_PivotMatrix() * pPlayerTransform->Get_World_Matrix();
+				_vec4 vPos = WorldMatrix.Position() + pEffectDesc->vPosOffset;
+				pEffect->Set_Position(vPos);
 			}
 		}
 
@@ -711,7 +709,8 @@ void CImgui_Manager::Free()
 	{
 		Safe_Delete_Array(EffectName);
 	}
-	
+
+	m_EffectDescNames.clear();
 
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
