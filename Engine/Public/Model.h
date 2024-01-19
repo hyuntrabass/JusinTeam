@@ -4,17 +4,6 @@
 BEGIN(Engine)
 
 
-struct ANIM_DESC
-{
-	_uint iAnimIndex{};
-	_bool isLoop{};
-	_float fAnimSpeedRatio{ 1.f };
-	_bool bSkipInterpolation{};
-	_float fInterpolationTime{ 0.2f };
-	_float fDurationRatio{ 1.f };
-	_bool bRestartAnimation{ false };
-};
-
 class ENGINE_DLL CModel final : public CComponent
 {
 private:
@@ -82,9 +71,6 @@ private:
 	ANIM_DESC m_AnimDesc{};
 
 	_uint m_iCurrentTrigger = 0;
-
-	ID3D11Texture2D* m_pTexture{ nullptr };
-	ID3D11ShaderResourceView* m_pSRV{ nullptr };
 
 private:
 	HRESULT Read_Bones(ifstream& File);

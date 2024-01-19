@@ -104,6 +104,11 @@ HRESULT CLevel_Select::Ready_Select()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Test"), TEXT("Prototype_GameObject_TestVTF"))))
+	{
+		return E_FAIL;
+	}
+
 
 	return S_OK;
 }
