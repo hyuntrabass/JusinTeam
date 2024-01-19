@@ -30,17 +30,26 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_Scale(_vec3(m_Effect.vSize.x, m_Effect.vSize.y, 1.f));
+	m_pTransformCom->Set_Scale(m_Effect.vSize);
 	m_vScaleAcc = m_Effect.vSize;
+
+	if (m_Effect.strUnDissolveTexture.size())
+	{
+		m_fDissolveRatio = 1.f;
+	}
 
 	return S_OK;
 }
 
 void CEffect_Dummy::Tick(_float fTimeDelta)
 {
-	if (m_Effect.fLifeTime >= 0.f and m_fTimer > m_Effect.fLifeTime)
+	if (m_Effect.strUnDissolveTexture.size())
 	{
-		if (m_Effect.iDissolveTextureID >= 0)
+		m_fDissolveRatio -= fTimeDelta / m_Effect.fUnDissolveDuration;
+	}
+	else if (m_Effect.fLifeTime >= 0.f and m_fTimer > m_Effect.fLifeTime)
+	{
+		if (m_Effect.strDissolveTexture.size())
 		{
 			m_fDissolveRatio += fTimeDelta / m_Effect.fDissolveDuration;
 			if (m_fDissolveRatio > 1.f)
@@ -66,28 +75,25 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 	}
 
 	m_fTimer += fTimeDelta;
+	m_vUV += m_Effect.vUVDelta * fTimeDelta;
 
 	if (m_Effect.pPos)
 	{
 		m_pTransformCom->Set_Position(*m_Effect.pPos);
 	}
-	else
-	{
-		m_pTransformCom->Set_Position(m_Effect.vPos);
-	}
 
-	if (m_Effect.iType == Effect_Type::ET_PARTICLE)
+	switch (m_Effect.iType)
 	{
+	case Effect_Type::ET_PARTICLE:
 		m_pParticle->Update(fTimeDelta, m_pTransformCom->Get_World_Matrix(), m_Effect.iNumInstances, m_Effect.bApplyGravity, m_Effect.vGravityDir);
 		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
-	}
-	else
+		break;
+	case Effect_Type::ET_RECT:
 	{
 		m_pTransformCom->LookAway(m_pGameInstance->Get_CameraPos());
 
-		m_pTransformCom->Set_Scale(_vec3(m_vScaleAcc.x, m_vScaleAcc.y, 1.f));
-		m_vScaleAcc.x += m_Effect.vSizeDelta.x * fTimeDelta;
-		m_vScaleAcc.y += m_Effect.vSizeDelta.y * fTimeDelta;
+		m_pTransformCom->Set_Scale(m_vScaleAcc);
+		m_vScaleAcc += m_Effect.vSizeDelta * fTimeDelta;
 
 		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
 
@@ -102,6 +108,29 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 		vPos += vLook * m_Effect.vPosOffset.z;
 
 		m_WorldMatrix.Position(vPos);
+		break;
+	}
+	case Effect_Type::ET_MESH:
+	{
+		m_pTransformCom->Set_Scale(m_vScaleAcc);
+		m_vScaleAcc += m_Effect.vSizeDelta * fTimeDelta;
+
+		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
+
+		_vec4 vPos = m_WorldMatrix.Position();;
+
+		_vec4 vRight = m_WorldMatrix.Right().Get_Normalized();
+		_vec4 vUp = m_WorldMatrix.Up().Get_Normalized();
+		_vec4 vLook = m_WorldMatrix.Look().Get_Normalized();
+
+		vPos += vRight * m_Effect.vPosOffset.x;
+		vPos += vUp * m_Effect.vPosOffset.y;
+		vPos += vLook * m_Effect.vPosOffset.z;
+
+		m_WorldMatrix.Position(vPos);
+
+		break;
+	}
 	}
 }
 
@@ -109,7 +138,10 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 {
 	__super::Compute_CamDistance();
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
-	m_pRendererCom->Add_RenderGroup(RG_Blur, this);
+	if (not m_Effect.bSkipBloom)
+	{
+		m_pRendererCom->Add_RenderGroup(RG_BlendBlur, this);
+	}
 }
 
 HRESULT CEffect_Dummy::Render()
@@ -132,6 +164,15 @@ HRESULT CEffect_Dummy::Render()
 		break;
 	case Effect_Type::ET_RECT:
 		hr = m_pRect->Render();
+		break;
+	case Effect_Type::ET_MESH:
+		for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
+		{
+			if (FAILED(m_pModelCom->Render(i)))
+			{
+				return E_FAIL;
+			}
+		}
 		break;
 	}
 
@@ -167,29 +208,54 @@ HRESULT CEffect_Dummy::Add_Components()
 			return E_FAIL;
 		}
 		break;
+	case Effect_Type::ET_MESH:
+		wstring PrototypeTag = L"Prototype_Model_Effect_";
+
+		_tchar strUnicode[MAX_PATH]{};
+		MultiByteToWideChar(CP_ACP, 0, &m_Effect.strModel[0], static_cast<_int>(m_Effect.strModel.size()), strUnicode, static_cast<_int>(m_Effect.strModel.size()));
+		PrototypeTag += strUnicode;
+
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, PrototypeTag, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxStatMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+		{
+			return E_FAIL;
+		}
+		break;
 	}
 
-	if (m_Effect.iMaskTextureID >= 0)
+	if (m_Effect.strMaskTexture.size())
 	{
-		wstring PrototypeTag = L"Prototype_Component_Texture_Effect_" + to_wstring(m_Effect.iMaskTextureID);
+		wstring PrototypeTag = L"Prototype_Component_Texture_Effect_" + m_Effect.strMaskTexture;
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, PrototypeTag, TEXT("Com_MaskTexture"), (CComponent**)&m_pMaskTextureCom)))
 		{
 			return E_FAIL;
 		}
 	}
 
-	if (m_Effect.iDissolveTextureID >= 0)
+	if (m_Effect.strDissolveTexture.size())
 	{
-		wstring PrototypeTag = L"Prototype_Component_Texture_Effect_" + to_wstring(m_Effect.iDissolveTextureID);
+		wstring PrototypeTag = L"Prototype_Component_Texture_Effect_" + m_Effect.strDissolveTexture;
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, PrototypeTag, TEXT("Com_DissolveTexture"), (CComponent**)&m_pDissolveTextureCom)))
 		{
 			return E_FAIL;
 		}
 	}
 
-	if (m_Effect.iDiffTextureID >= 0)
+	if (m_Effect.strUnDissolveTexture.size())
 	{
-		wstring PrototypeTag = L"Prototype_Component_Texture_Effect_" + to_wstring(m_Effect.iDiffTextureID);
+		wstring PrototypeTag = L"Prototype_Component_Texture_Effect_" + m_Effect.strUnDissolveTexture;
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, PrototypeTag, TEXT("Com_UnDissolveTexture"), (CComponent**)&m_pUnDissolveTextureCom)))
+		{
+			return E_FAIL;
+		}
+	}
+
+	if (m_Effect.strDiffuseTexture.size())
+	{
+		wstring PrototypeTag = L"Prototype_Component_Texture_Effect_" + m_Effect.strDiffuseTexture;
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, PrototypeTag, TEXT("Com_DiffTexture"), (CComponent**)&m_pDiffTextureCom)))
 		{
 			return E_FAIL;
@@ -201,15 +267,42 @@ HRESULT CEffect_Dummy::Add_Components()
 
 HRESULT CEffect_Dummy::Bind_ShaderResources()
 {
-	if (m_Effect.iMaskTextureID >= 0)
+	if (m_Effect.strMaskTexture.size())
 	{
 		if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
 		{
 			return E_FAIL;
 		}
+
+		if (m_Effect.iType == ET_MESH)
+		{
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_vUVTransform", &m_vUV, sizeof m_vUV)))
+			{
+				return E_FAIL;
+			}
+		}
 	}
 
-	if (m_Effect.iDissolveTextureID >= 0)
+	if (m_Effect.strUnDissolveTexture.size())
+	{
+		if (FAILED(m_pUnDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof m_fDissolveRatio)))
+		{
+			return E_FAIL;
+		}
+
+		if (m_fDissolveRatio < 0.f)
+		{
+			m_fDissolveRatio = 0.f;
+			m_Effect.strUnDissolveTexture = {};
+			m_fTimer = {};
+		}
+	}
+	else if (m_Effect.strDissolveTexture.size())
 	{
 		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
 		{
@@ -222,9 +315,14 @@ HRESULT CEffect_Dummy::Bind_ShaderResources()
 		}
 	}
 
-	if (m_Effect.iDiffTextureID >= 0)
+	if (m_Effect.strDiffuseTexture.size())
 	{
-		if (FAILED(m_pDiffTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+		string strVariableName = "g_Texture";
+		if (m_Effect.iType == ET_MESH)
+		{
+			strVariableName = "g_DiffuseTexture";
+		}
+		if (FAILED(m_pDiffTextureCom->Bind_ShaderResource(m_pShaderCom, strVariableName.c_str())))
 		{
 			return E_FAIL;
 		}
@@ -306,8 +404,11 @@ void CEffect_Dummy::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pUnDissolveTextureCom);
+	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pDissolveTextureCom);
 	Safe_Release(m_pDiffTextureCom);
 	Safe_Release(m_pMaskTextureCom);

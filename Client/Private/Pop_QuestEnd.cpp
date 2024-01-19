@@ -1,6 +1,8 @@
 #include "Pop_QuestEnd.h"
 #include "GameInstance.h"
 #include "TextButton.h"
+#include "BlurTexture.h"
+#include "FadeBox.h"
 
 CPop_QuestEnd::CPop_QuestEnd(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -33,50 +35,68 @@ HRESULT CPop_QuestEnd::Init(void* pArg)
 	m_fDepth = 0.8f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
-	m_vRatio = _float2(1000.f, 1000.f);
+	m_fSizeX = 300.f;
+	m_fSizeY = 300.f;
 
-	CTextButton::TEXTBUTTON_DESC Button = {};
-	Button.eLevelID = LEVEL_STATIC;
-	Button.fDepth = 1.f;
-	Button.strText = TEXT("");
-	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BarContext");
-	Button.vPosition = _vec2(m_fX, m_fY);
-	Button.vSize = _vec2(m_fSizeX, m_fSizeY);
+	m_fX = (_float)g_iWinSizeX / 2.f;
+	m_fY = 100.f;
 
-	m_pBackground = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+	m_fDepth = 0.3f;
 
-	if (not m_pBackground)
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+
+	m_strQuestTitle = ((QUESTEND_DESC*)pArg)->strQuestTitle;
+	m_fExp = ((QUESTEND_DESC*)pArg)->fExp;
+	m_iMoney = ((QUESTEND_DESC*)pArg)->iMoney;
+
+	if (FAILED(Add_Parts()))
 	{
 		return E_FAIL;
 	}
 
-	Button.fDepth = 0.7f;
-	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BarBorder");
-	m_pBorder= m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
-
-	if (not m_pBorder)
-	{
-		return E_FAIL;
-	}
-
+	m_fStartButtonPos = dynamic_cast<CTextButton*>(m_pButton)->Get_Position();
+	m_fButtonTime = m_fStartButtonPos.y;
 	return S_OK;
 }
 
 void CPop_QuestEnd::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Pressing(DIK_1))
-		m_vRatio.x -= 1.f;
-	if (m_pGameInstance->Key_Pressing(DIK_2))
+
+	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 	{
-		if (m_vRatio.x <= m_vRatio.y)
-			m_vRatio.x += 0.1f;;
+		m_isDead = true;
 	}
 
-	m_fTime += fTimeDelta;
+	m_fTime += fTimeDelta * 0.2f;
+
+	if (dynamic_cast<CTextButton*>(m_pButton)->Get_Position().y <= m_fStartButtonPos.y - 5.f)
+	{
+		m_fDir = 0.6f;
+		dynamic_cast<CTextButton*>(m_pButton)->Set_Position(_float2(m_fStartButtonPos.x, m_fStartButtonPos.y - 5.f));
+	}
+	if (dynamic_cast<CTextButton*>(m_pButton)->Get_Position().y >= m_fStartButtonPos.y)
+	{
+		m_fDir = -1.f;
+		dynamic_cast<CTextButton*>(m_pButton)->Set_Position(_float2(m_fStartButtonPos.x, m_fStartButtonPos.y));
+	}
+	m_fButtonTime += fTimeDelta * m_fDir * 10.f;
+	dynamic_cast<CTextButton*>(m_pButton)->Set_Position(_float2(m_fStartButtonPos.x, m_fButtonTime));
+
+
+
+
+	m_pBackground->Tick(fTimeDelta);
+	m_pButton->Tick(fTimeDelta);
+
+
 }
 
 void CPop_QuestEnd::Late_Tick(_float fTimeDelta)
 {
+	m_pExp->Late_Tick(fTimeDelta);
+	m_pMoney->Late_Tick(fTimeDelta);
+	m_pButton->Late_Tick(fTimeDelta);
+	m_pExclamationMark->Late_Tick(fTimeDelta);
 	m_pBorder->Late_Tick(fTimeDelta);
 	m_pBackground->Late_Tick(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
@@ -89,7 +109,7 @@ HRESULT CPop_QuestEnd::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(VTPass_HP)))
+	if (FAILED(m_pShaderCom->Begin(VTPass_Bright)))
 	{
 		return E_FAIL;
 	}
@@ -99,13 +119,110 @@ HRESULT CPop_QuestEnd::Render()
 		return E_FAIL;
 	}
 
-	m_pGameInstance->Render_Text(L"Font_Dialogue", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX - 0.1f, m_fY + 17.f), 0.3f);
-	m_pGameInstance->Render_Text(L"Font_Dialogue", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX + 0.1f, m_fY + 17.f), 0.3f);
-	m_pGameInstance->Render_Text(L"Font_Dialogue", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX, m_fY + 17.1f), 0.3f);
-	m_pGameInstance->Render_Text(L"Font_Dialogue", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX, m_fY + 16.9f), 0.3f);
-	m_pGameInstance->Render_Text(L"Font_Dialogue", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX, m_fY + 17.f), 0.3f);
+
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 230.f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 230.f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f - 0.2f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f + 0.2f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f), 0.7, _vec4(0.4431f, 0.1333f, 0.9098f, 1.f));
+
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 280.f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 280.f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f, 280.f - 0.2f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f, 280.f + 0.2f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f, 280.f), 0.7);
+
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 종료하세요."), _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 580.f), 0.4, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 종료하세요."), _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 580.f), 0.4, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 종료하세요."), _vec2((_float)g_iWinSizeX / 2.f, 580.f - 0.2f), 0.4, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 종료하세요."), _vec2((_float)g_iWinSizeX / 2.f, 580.f + 0.2f), 0.4, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 종료하세요."), _vec2((_float)g_iWinSizeX / 2.f, 580.f), 0.4, _vec4(0.6f, 0.6f, 0.6f, 1.f));
 
 	return S_OK;
+}
+
+HRESULT CPop_QuestEnd::Add_Parts()
+{
+	CBlurTexture::BLURTEX_DESC BLURTEXDesc = {};
+	BLURTEXDesc.eLevelID = LEVEL_STATIC;
+	BLURTEXDesc.fDepth = 0.2f;
+	BLURTEXDesc.fFontSize = 0.f;
+	BLURTEXDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Check");
+	BLURTEXDesc.vPosition = _vec2(m_fX, m_fY);
+	BLURTEXDesc.vSize = _vec2(50.f, 50);
+	BLURTEXDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	BLURTEXDesc.vColor = _vec4(1.0f, 0.5f, 0.1f, 1.f);
+	BLURTEXDesc.vTextPosition = _vec2(0.f, 0.f);
+
+	m_pExclamationMark = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BlurTexture"), &BLURTEXDesc);
+	if (not m_pExclamationMark)
+	{
+		return E_FAIL;
+	}
+
+
+	CTextButton::TEXTBUTTON_DESC ButtonDesc = {};
+	ButtonDesc.eLevelID = LEVEL_STATIC;
+	ButtonDesc.fDepth = 0.3f;
+	ButtonDesc.fFontSize = 0.45f;
+	ButtonDesc.strText = TEXT("");
+	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SiegeQuest");
+	ButtonDesc.vPosition = _vec2((_float)g_iWinSizeX / 2.f, 360.f);
+	ButtonDesc.vSize = _vec2(360.f, 10.f);
+	ButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	ButtonDesc.vTextPosition = _vec2(20.f, 12.f);
+	m_pBorder = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
+	if (not m_pBorder)
+	{
+		return E_FAIL;
+	}
+
+	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_ClickArrow");
+	ButtonDesc.vPosition = _vec2(780.f, 565.f);
+	ButtonDesc.vSize = _vec2(30.f, 30.f);
+
+	m_pButton = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
+	if (not m_pButton)
+	{
+		return E_FAIL;
+	}
+
+	wstring fExp = to_wstring(m_fExp);
+	size_t dotPos = fExp.find(L'.');
+	if (dotPos != wstring::npos && fExp.length() > dotPos + 3) {
+		fExp.erase(dotPos + 3);
+	}
+	ButtonDesc.strText = fExp + TEXT("%");
+
+	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_exp");
+	ButtonDesc.vPosition = _vec2((_float)g_iWinSizeX / 2.f - 120.f, 420.f);
+	ButtonDesc.vSize = _vec2(35.f, 35.f);
+	ButtonDesc.vTextPosition = _vec2(60.f, 12.f);
+
+	m_pExp = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
+	if (not m_pExp)
+	{
+		return E_FAIL;
+	}
+	ButtonDesc.strText = to_wstring(m_iMoney);
+	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_coin");
+	ButtonDesc.vPosition = _vec2((_float)g_iWinSizeX / 2.f + 90.f, 420.f);
+	ButtonDesc.vSize = _vec2(35.f, 35.f);
+	ButtonDesc.vTextPosition = _vec2(40.f, 12.f);
+	m_pMoney = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
+	if (not m_pMoney)
+	{
+		return E_FAIL;
+	}
+
+
+	CFadeBox::STATE eState = CFadeBox::FADELOOP;
+	m_pBackground = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_FadeBox"), &eState);
+	if (not m_pBackground)
+	{
+		return E_FAIL;
+	}
+
 }
 
 HRESULT CPop_QuestEnd::Add_Components()
@@ -125,11 +242,11 @@ HRESULT CPop_QuestEnd::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_MPBar"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_QuestEnd"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_Mask_FlagMove"), TEXT("Com_Texture1"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_Noise_04"), TEXT("Com_Texture1"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -158,13 +275,19 @@ HRESULT CPop_QuestEnd::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
+	/*
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fx", &m_fTime, sizeof(_float))))
 	{
 		return E_FAIL;
 	}
+	*/
 
-	_float fRatio = m_vRatio.x / m_vRatio.y;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fHpRatio", &fRatio, sizeof(_float))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fx", &m_fTime, sizeof(_float))))
+	{
+		return E_FAIL;
+	}
+	_float fTemp = 0.f;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fy", &fTemp, sizeof(_float))))
 	{
 		return E_FAIL;
 	}

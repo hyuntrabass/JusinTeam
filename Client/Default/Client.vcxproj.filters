@@ -235,6 +235,12 @@
     <Filter Include="02.GameObjects\00.UI\Texture&amp;Text">
       <UniqueIdentifier>{e433917e-0435-4307-a9c2-4229c403b1c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Quest">
+      <UniqueIdentifier>{5bc3acdf-901a-4a18-a41b-de1e6afdec75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Quest\QuestBox">
+      <UniqueIdentifier>{2da81de6-d6ce-459f-87a1-7a17217f00b1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -457,6 +463,15 @@
     <ClInclude Include="..\Public\BlurTexture.h">
       <Filter>02.GameObjects\00.UI\Texture&amp;Text</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Event_Manager.h">
+      <Filter>02.GameObjects\00.UI\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Quest.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\QuestBox.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Quest\QuestBox</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -675,6 +690,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\BlurTexture.cpp">
       <Filter>02.GameObjects\00.UI\Texture&amp;Text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Event_Manager.cpp">
+      <Filter>02.GameObjects\00.UI\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Quest.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\QuestBox.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Quest\QuestBox</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

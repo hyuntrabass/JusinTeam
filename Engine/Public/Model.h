@@ -26,8 +26,8 @@ public:
 	vector<class CBone*>& Get_Bones();
 
 	void Set_Animation(ANIM_DESC Animation_Desc);
-	vector<_float3> Get_VerticesNor();
-	vector<_float3> Get_VerticesPos();
+	vector<VTXSTATICMESH> Get_StaticMeshVertices();
+	vector<_ulong> Get_StaticMeshIndices();
 
 public:
 	HRESULT Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix);
@@ -70,7 +70,8 @@ private:
 
 	ANIM_DESC m_AnimDesc{};
 
-	_uint m_iCurrentTrigger = 0;
+	ID3D11Texture2D* m_pTexture{ nullptr };
+	ID3D11ShaderResourceView* m_pSRV{ nullptr };
 
 private:
 	HRESULT Read_Bones(ifstream& File);

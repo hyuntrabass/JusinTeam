@@ -6,6 +6,14 @@ BEGIN(Client)
 
 class CPop_QuestEnd final : public COrthographicObject
 {
+public:
+	typedef struct tagQuestEndDesc
+	{
+		_float	fExp;
+		_uint	iMoney;
+		wstring strQuestTitle;
+
+	}QUESTEND_DESC;
 private:
 	CPop_QuestEnd(_dev pDevice, _context pContext);
 	CPop_QuestEnd(const CPop_QuestEnd& rhs);
@@ -26,13 +34,27 @@ private:
 	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
+	_uint			m_iMoney{ 0 };
+	_float			m_fExp{ 0.f };
+	_float			m_fDir{ -1.f };
+
+	wstring			m_strQuestTitle;
+
+
 	_float			m_fTime{};
-	_float			m_fStartSize{};
-	_float2			m_vRatio{};
-	CGameObject*	m_pBackground{ nullptr };
-	CGameObject*	m_pBorder{ nullptr };
+	_float			m_fButtonTime{};
+	_float2			m_fStartButtonPos{};
+
+
+	CGameObject* m_pBackground{ nullptr };
+	CGameObject* m_pBorder{ nullptr };
+	CGameObject* m_pButton{ nullptr };
+	CGameObject* m_pExclamationMark{ nullptr };
+	CGameObject* m_pMoney{ nullptr };
+	CGameObject* m_pExp{ nullptr };
 
 private:
+	HRESULT Add_Parts();
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 

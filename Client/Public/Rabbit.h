@@ -52,6 +52,8 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+
+	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) override;
 	
 public:
 	void Init_State(_float fTimeDelta);

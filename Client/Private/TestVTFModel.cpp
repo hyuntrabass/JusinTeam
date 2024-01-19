@@ -48,6 +48,16 @@ void CTestVTFModel::Tick(_float fTimeDelta)
         m_pModelCom->Set_UsingMotionBlur(m_UsingMotionBlur);
     }
 
+    if (m_pGameInstance->Key_Pressing(DIK_M)) {
+        m_Animation.iAnimIndex++;
+        m_pModelCom->Set_Animation(m_Animation);
+    }
+
+    if (m_pGameInstance->Key_Pressing(DIK_N)) {
+        m_Animation.iAnimIndex--;
+        m_pModelCom->Set_Animation(m_Animation);
+    }
+
     if (m_UsingMotionBlur) {
         hi = 1;
     }
@@ -110,6 +120,44 @@ HRESULT CTestVTFModel::Render()
 
         if (FAILED(m_pModelCom->Render(i)))
             return E_FAIL;
+    }
+
+    for (size_t i = 0; i < m_pModelCom->Get_NumPart(); i++)
+    {
+		for (size_t j = 0; j < m_pModelCom->Get_Num_PartMeshes(i); j++)
+		{
+			if (FAILED(m_pModelCom->Bind_Part_Material(m_pShaderCom, "g_DiffuseTexture", TextureType::Diffuse, i, j)))
+				continue;
+
+			_bool HasNorTex{};
+            if (FAILED(m_pModelCom->Bind_Part_Material(m_pShaderCom, "g_NormalTexture", TextureType::Normals, i, j)))
+                HasNorTex = false;
+            else
+				HasNorTex = true;
+
+            _bool HasSpecTex{};
+            if (FAILED(m_pModelCom->Bind_Part_Material(m_pShaderCom, "g_SpecTexture", TextureType::Shininess, i, j)))
+                HasSpecTex = false;
+            else
+                HasSpecTex = true;
+
+
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_HasSpecTex", &HasSpecTex, sizeof _bool)))
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pShaderCom->Begin(hi)))
+				return E_FAIL;
+
+			if (FAILED(m_pModelCom->Render_Part(i, j)))
+				return E_FAIL;
+		}
     }
 
     return S_OK;

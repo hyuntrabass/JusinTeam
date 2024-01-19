@@ -9,12 +9,11 @@ class CPop_QuestIn final : public COrthographicObject
 public:
 	typedef struct tagQuestInDesc
 	{
-		_float	iExp;
+		_bool	isMain;
+		_float	fExp;
 		_uint	iMoney;
 		wstring strQuestTitle;
-		wstring strText1;
-		wstring strEmphasis;
-		wstring strText2;
+		wstring strText;
 
 	}QUESTIN_DESC;
 private:
@@ -37,17 +36,18 @@ private:
 	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
+	_bool			m_isMain{ false };
 	_uint			m_iMoney{ 0 };
 	_float			m_fExp{ 0.f };
-	_float			m_fDir{ 1.f };
+	_float			m_fDir{ -1.f };
 
 	wstring			m_strQuestTitle;
-	wstring			m_strText1;
-	wstring			m_strEmphasis;
-	wstring			m_strText2;
+	wstring			m_strText;
+
 
 	_float			m_fTime{};
 	_float			m_fButtonTime{};
+	_float2			m_fStartButtonPos{};
 
 
 	CGameObject*	m_pBackground{ nullptr };
@@ -58,8 +58,8 @@ private:
 	CGameObject*	m_pExp{ nullptr };
 
 private:
-	HRESULT Add_Components();
 	HRESULT Add_Parts();
+	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:

@@ -15,13 +15,17 @@ public:
 	const _bool& IsFinished() const;
 	const _float Get_CurrentAnimPos() const;
 	const _float Get_Duration() const;
+	const _uint Get_NumEffectTrigger() const;
+	TRIGGEREFFECT_DESC* Get_TriggerEffect(_uint iTriggerEffectIndex);
+	vector<TRIGGEREFFECT_DESC>& Get_TriggerEffects();
+	void Add_TriggerEffect(TRIGGEREFFECT_DESC TriggerEffectDesc);
+	void Reset_TriggerEffects();
+	//나중에 지울것들
 	const _uint Get_NumTrigger() const;
 	vector<_float>& Get_Triggers();
 	void Add_Trigger(_float fAnimPos);
-	TRIGGEREFFECT_DESC* Get_TriggerEffect(_uint iTriggerEffectIndex);
-	void Add_TriggerEffect(TRIGGEREFFECT_DESC TriggerEffectDesc);
 	void Reset_Trigger();
-
+	//여기까지
 	void ResetFinished();
 	void Set_CurrentAnimPos(_float fCurrentAnimPos);
 
@@ -32,7 +36,7 @@ public:
 
 public:
 	HRESULT Init(ifstream& ModelFile, const vector<class CBone*>& Bones);
-	void Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio, _uint* iCurrentTrigger);
+	void Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio);
 
 	HRESULT Prepare_Animation(const vector<class CBone*>& Bones, _uint iFrame);
 
@@ -70,6 +74,9 @@ private:
 	_uint m_iMaxFrame = 0;
 
 	_bool m_hasCloned{};
+
+private:
+	static _uint m_iEffectID;
 
 private:
 	void Update_Lerp_TransformationMatrix(const vector<class CBone*>& Bones, _bool& isAnimChanged, _float fInterpolationTime);
