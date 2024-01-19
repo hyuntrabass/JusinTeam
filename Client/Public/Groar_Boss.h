@@ -66,16 +66,21 @@ public:
 
 	enum GROAR_STATE
 	{
-		STATE_NPC_IDLE,
-		STATE_NPC_TALK,
+		STATE_NPC,
 		STATE_SCENE01,
 		STATE_SCENE02,
-		STATE_IDLE,
-		STATE_RUN,
-		STATE_ATTACK,
-		STATE_STUN,
-		STATE_DIE,
+		STATE_BOSS,
 		STATE_END
+	};
+
+	enum GROAR_BOSS_STATE
+	{
+		BOSS_STATE_IDLE,
+		BOSS_STATE_RUN,
+		BOSS_STATE_ATTACK,
+		BOSS_STATE_STUN,
+		BOSS_STATE_DIE,
+		BOSS_STATE_END
 	};
 
 private:
@@ -107,11 +112,15 @@ private:
 	CModel* m_pScene02ModelCom = { nullptr };
 	CModel* m_pBossModelCom = { nullptr };
 
-	CCollider* m_pColliderCom = { nullptr };
+	CCollider* m_pBodyColliderCom = { nullptr };
+	CCollider* m_pAttackColliderCom = { nullptr };
 
 private:
 	GROAR_STATE m_ePreState = STATE_END;
 	GROAR_STATE m_eCurState = STATE_END;
+
+	GROAR_BOSS_STATE m_eBossPreState = BOSS_STATE_END;
+	GROAR_BOSS_STATE m_eBossCurState = BOSS_STATE_END;
 
 private:
 	ANIM_DESC m_Animation{};

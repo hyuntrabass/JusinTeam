@@ -12,7 +12,7 @@ CGroar_Boss::CGroar_Boss(const CGroar_Boss& rhs)
 
 HRESULT CGroar_Boss::Init_Prototype()
 {
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CGroar_Boss::Init(void* pArg)
@@ -28,32 +28,58 @@ HRESULT CGroar_Boss::Init(void* pArg)
 	}
 
 	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(10.f, 0.f, 10.f, 1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(10.f, 0.f, 0.f, 1.f));
 
-	m_Animation.iAnimIndex = ATTACK03;
+	m_eCurState = STATE_NPC;
+
+	m_Animation.iAnimIndex = NPC_IDLE;
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 1.5f;
 
-	m_eCurState = STATE_IDLE;
-
 	m_iHP = 100;
 
-    return S_OK;
+	return S_OK;
 }
 
 void CGroar_Boss::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_G))
+	{
+		m_eCurState = STATE_SCENE01;
+	}
+
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 
-	m_pBossModelCom->Set_Animation(m_Animation);
+	Update_Collider();
 }
 
 void CGroar_Boss::Late_Tick(_float fTimeDelta)
 {
-	m_pBossModelCom->Play_Animation(fTimeDelta);
+	switch (m_eCurState)
+	{
+	case Client::CGroar_Boss::STATE_NPC:
+		m_pNPCModelCom->Play_Animation(fTimeDelta);
+		break;
+	case Client::CGroar_Boss::STATE_SCENE01:
+		m_pScene01ModelCom->Play_Animation(fTimeDelta);
+		break;
+	case Client::CGroar_Boss::STATE_SCENE02:
+		m_pScene02ModelCom->Play_Animation(fTimeDelta);
+		break;
+	case Client::CGroar_Boss::STATE_BOSS:
+		m_pBossModelCom->Play_Animation(fTimeDelta);
+		break;
+	}
+
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+
+#ifdef _DEBUGTEST
+	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
+	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
+#endif
+
 }
 
 HRESULT CGroar_Boss::Render()
@@ -63,41 +89,160 @@ HRESULT CGroar_Boss::Render()
 		return E_FAIL;
 	}
 
-	for (_uint i = 0; i < m_pBossModelCom->Get_NumMeshes(); i++)
+	switch (m_eCurState)
 	{
-		if (FAILED(m_pBossModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+	case Client::CGroar_Boss::STATE_NPC:
+		for (_uint i = 0; i < m_pNPCModelCom->Get_NumMeshes(); i++)
 		{
-		}
+			if (FAILED(m_pNPCModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+			{
+			}
 
-		_bool HasNorTex{};
-		if (FAILED(m_pBossModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-		{
-			HasNorTex = false;
-		}
-		else
-		{
-			HasNorTex = true;
-		}
+			_bool HasNorTex{};
+			if (FAILED(m_pNPCModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+			{
+				HasNorTex = false;
+			}
+			else
+			{
+				HasNorTex = true;
+			}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+			{
+				return E_FAIL;
+			}
 
-		if (FAILED(m_pBossModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-		{
-			return E_FAIL;
-		}
+			if (FAILED(m_pNPCModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+			{
+				return E_FAIL;
+			}
 
-		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
-		{
-			return E_FAIL;
-		}
+			if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+			{
+				return E_FAIL;
+			}
 
-		if (FAILED(m_pBossModelCom->Render(i)))
-		{
-			return E_FAIL;
+			if (FAILED(m_pNPCModelCom->Render(i)))
+			{
+				return E_FAIL;
+			}
 		}
+		break;
+	case Client::CGroar_Boss::STATE_SCENE01:
+		for (_uint i = 0; i < m_pScene01ModelCom->Get_NumMeshes(); i++)
+		{
+			if (FAILED(m_pScene01ModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+			{
+			}
+
+			_bool HasNorTex{};
+			if (FAILED(m_pScene01ModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+			{
+				HasNorTex = false;
+			}
+			else
+			{
+				HasNorTex = true;
+			}
+
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pScene01ModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pScene01ModelCom->Render(i)))
+			{
+				return E_FAIL;
+			}
+		}
+		break;
+	case Client::CGroar_Boss::STATE_SCENE02:
+		for (_uint i = 0; i < m_pScene02ModelCom->Get_NumMeshes(); i++)
+		{
+			if (FAILED(m_pScene02ModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+			{
+			}
+
+			_bool HasNorTex{};
+			if (FAILED(m_pScene02ModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+			{
+				HasNorTex = false;
+			}
+			else
+			{
+				HasNorTex = true;
+			}
+
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pScene02ModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pScene02ModelCom->Render(i)))
+			{
+				return E_FAIL;
+			}
+		}
+		break;
+	case Client::CGroar_Boss::STATE_BOSS:
+		for (_uint i = 0; i < m_pBossModelCom->Get_NumMeshes(); i++)
+		{
+			if (FAILED(m_pBossModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+			{
+			}
+
+			_bool HasNorTex{};
+			if (FAILED(m_pBossModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+			{
+				HasNorTex = false;
+			}
+			else
+			{
+				HasNorTex = true;
+			}
+
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pBossModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pBossModelCom->Render(i)))
+			{
+				return E_FAIL;
+			}
+		}
+		break;
 	}
 
 	return S_OK;
@@ -105,19 +250,181 @@ HRESULT CGroar_Boss::Render()
 
 void CGroar_Boss::Init_State(_float fTimeDelta)
 {
+	if (m_ePreState != m_eCurState)
+	{
+		switch (m_eCurState)
+		{
+		case Client::CGroar_Boss::STATE_NPC:
+			break;
+		case Client::CGroar_Boss::STATE_SCENE01:
+			m_Animation.iAnimIndex = 0;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 1.5f;
+
+			break;
+		case Client::CGroar_Boss::STATE_SCENE02:
+			m_Animation.iAnimIndex = 0;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
+			break;
+		case Client::CGroar_Boss::STATE_BOSS:
+			break;
+		}
+
+		m_ePreState = m_eCurState;
+	}
+
+	if (m_eBossPreState != m_eBossCurState)
+	{
+		switch (m_eBossCurState)
+		{
+		case Client::CGroar_Boss::BOSS_STATE_IDLE:
+			break;
+		case Client::CGroar_Boss::BOSS_STATE_RUN:
+			break;
+		case Client::CGroar_Boss::BOSS_STATE_ATTACK:
+			break;
+		case Client::CGroar_Boss::BOSS_STATE_STUN:
+			break;
+		case Client::CGroar_Boss::BOSS_STATE_DIE:
+			break;
+		}
+
+		m_eBossPreState = m_eBossCurState;
+	}
 }
 
 void CGroar_Boss::Tick_State(_float fTimeDelta)
 {
+	switch (m_eCurState)
+	{
+	case Client::CGroar_Boss::STATE_NPC:
+		m_pNPCModelCom->Set_Animation(m_Animation);
+		break;
+	case Client::CGroar_Boss::STATE_SCENE01:
+		if (m_pScene01ModelCom->IsAnimationFinished(0))
+		{
+			m_eCurState = STATE_SCENE02;
+		}
+
+		m_pScene01ModelCom->Set_Animation(m_Animation);
+		break;
+	case Client::CGroar_Boss::STATE_SCENE02:
+		if (m_pScene02ModelCom->IsAnimationFinished(0))
+		{
+			m_eCurState = STATE_BOSS;
+			m_eBossCurState = BOSS_STATE_ATTACK;
+
+			m_Animation.iAnimIndex = 0;
+			m_Animation.isLoop = true;
+			m_Animation.fAnimSpeedRatio = 2.f;
+		}
+
+		m_pScene02ModelCom->Set_Animation(m_Animation);
+		break;
+	case Client::CGroar_Boss::STATE_BOSS:
+		m_pBossModelCom->Set_Animation(m_Animation);
+		break;
+	}
+
+	switch (m_eBossCurState)
+	{
+	case Client::CGroar_Boss::BOSS_STATE_IDLE:
+		break;
+	case Client::CGroar_Boss::BOSS_STATE_RUN:
+		break;
+	case Client::CGroar_Boss::BOSS_STATE_ATTACK:
+
+		if (!m_bSelectAttackPattern)
+		{
+			if (m_pBossModelCom->IsAnimationFinished(ATTACK01) || m_pBossModelCom->IsAnimationFinished(ATTACK02) ||
+				m_pBossModelCom->IsAnimationFinished(ATTACK03) || m_pBossModelCom->IsAnimationFinished(ATTACK04) ||
+				m_pBossModelCom->IsAnimationFinished(ATTACK05) || m_pBossModelCom->IsAnimationFinished(ATTACK06))
+			{
+				m_iAttackPattern = rand() % 6;
+				m_bSelectAttackPattern = true;
+			}
+		}
+
+		switch (m_iAttackPattern)
+		{
+		case 0:
+			m_Animation.iAnimIndex = ATTACK01;
+			m_Animation.isLoop = false;
+			m_bSelectAttackPattern = false;
+			break;
+		case 1:
+			m_Animation.iAnimIndex = ATTACK02;
+			m_Animation.isLoop = false;
+			m_bSelectAttackPattern = false;
+			break;
+		case 2:
+			m_Animation.iAnimIndex = ATTACK03;
+			m_Animation.isLoop = false;
+			m_bSelectAttackPattern = false;
+			break;
+		case 3:
+			m_Animation.iAnimIndex = ATTACK04;
+			m_Animation.isLoop = false;
+			m_bSelectAttackPattern = false;
+			break;
+		case 4:
+			m_Animation.iAnimIndex = ATTACK05;
+			m_Animation.isLoop = false;
+			m_bSelectAttackPattern = false;
+			break;
+		case 5:
+			m_Animation.iAnimIndex = ATTACK06;
+			m_Animation.isLoop = false;
+			m_bSelectAttackPattern = false;
+			break;
+
+		}
+		break;
+
+		break;
+	case Client::CGroar_Boss::BOSS_STATE_STUN:
+		break;
+	case Client::CGroar_Boss::BOSS_STATE_DIE:
+		break;
+	}
 }
 
 HRESULT CGroar_Boss::Add_Collider()
 {
-    return S_OK;
+	Collider_Desc BodyCollDesc = {};
+	BodyCollDesc.eType = ColliderType::OBB;
+	BodyCollDesc.vExtents = _vec3(2.f, 2.f, 2.f);
+	BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y, 0.f);
+	BodyCollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+		TEXT("Com_Collider_OBB"), (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
+		return E_FAIL;
+
+	// Frustum
+	Collider_Desc ColDesc{};
+	ColDesc.eType = ColliderType::Frustum;
+	_matrix matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
+	// 1인자 : 절두체 각도(범위), 2인자 : Aspect, 3인자 : Near, 4인자 : Far(절두체 깊이)
+	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(90.f), 1.f, 0.01f, 3.f);
+	XMStoreFloat4x4(&ColDesc.matFrustum, matView * matProj);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack"), reinterpret_cast<CComponent**>(&m_pAttackColliderCom), &ColDesc)))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
 }
 
 void CGroar_Boss::Update_Collider()
 {
+	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+
+	_mat Offset = _mat::CreateTranslation(0.f, 2.f, 1.f);
+	m_pAttackColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
 }
 
 HRESULT CGroar_Boss::Add_Components()
@@ -152,7 +459,7 @@ HRESULT CGroar_Boss::Add_Components()
 		return E_FAIL;
 	}
 
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CGroar_Boss::Bind_ShaderResources()
@@ -225,5 +532,8 @@ void CGroar_Boss::Free()
 	Safe_Release(m_pScene01ModelCom);
 	Safe_Release(m_pScene02ModelCom);
 	Safe_Release(m_pBossModelCom);
+
+	Safe_Release(m_pBodyColliderCom);
+	Safe_Release(m_pAttackColliderCom);
 
 }

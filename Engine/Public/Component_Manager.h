@@ -13,6 +13,7 @@
 #include "VIBuffer_Trail.h"
 
 #include "VTFModel.h"
+#include "RealtimeVTFModel.h"
 
 BEGIN(Engine)
 

@@ -4,6 +4,7 @@
 #include "NPC_Dummy.h"
 #include "Map.h"
 
+
 CLevel_GamePlay::CLevel_GamePlay(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
 {
@@ -140,6 +141,7 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 	{
 		DestroyWindow(g_hWnd);
 	}
+
 }
 
 HRESULT CLevel_GamePlay::Render()
@@ -315,13 +317,6 @@ HRESULT CLevel_GamePlay::Ready_NPC_Dummy()
 		return E_FAIL;
 	}
 
-	eType = GROAR;
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &eType)))
-	{
-		return E_FAIL;
-	}
-
 	return S_OK;
 }
 
@@ -386,12 +381,6 @@ HRESULT CLevel_GamePlay::Ready_Rabbit()
 			return E_FAIL;
 		}
 	}
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Test"), TEXT("Prototype_GameObject_TestVTF"))))
-	{
-		return E_FAIL;
-	}
-
 	return S_OK;
 }
 
@@ -475,6 +464,12 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	{
 		return E_FAIL;
 	}
+	/*
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Pop_QuestIn"))))
+	{
+		return E_FAIL;
+	}
+	*/
 
 	return S_OK;
 }

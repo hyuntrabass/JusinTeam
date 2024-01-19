@@ -275,6 +275,14 @@ HRESULT CLoader::Load_Logo()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Quest"), CQuest::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_QuestBox"), CQuestBox::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 
 
 #pragma endregion
@@ -758,6 +766,31 @@ HRESULT CLoader::Load_Select()
 
 	m_strLoadingText = L"Select : Loading Shader";
 #pragma region Shader
+
+	// VTF Test
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Component_Shader_VTF"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VTFModel.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Component_Shader_RTVTF"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_RT_VTFModel.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Model_RTVTFRabbit"),
+		CRealtimeVTFModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/VTFRabbit/Mesh/Rabbit.hyuntraanimmesh"))))
+		return E_FAIL;
+
+	// VTF 테스트 용도
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_TestVTF"), CTestVTFModel::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	//
+
 #pragma endregion
 
 	m_strLoadingText = L"Select : Loading Prototype";
@@ -1083,13 +1116,6 @@ HRESULT CLoader::Load_GamePlay()
 #pragma region Shader
 
 
-	// VTF Test Shader
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_VTF"), 
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VTFModel.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
-	{
-		return E_FAIL;
-	}
-
 #pragma endregion
 
 	m_strLoadingText = L"GamePlay : Loading Prototype";
@@ -1137,6 +1163,22 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_ExpBar"), CExpBar::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_NameTag"), CNameTag::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Pop_QuestIn"), CPop_QuestIn::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Pop_QuestEnd"), CPop_QuestEnd::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BlurTexture"), CBlurTexture::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -1218,17 +1260,11 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_VTFRabbit"),
-		CVTFModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/VTFRabbit/Mesh/Rabbit.hyuntraanimmesh"))))
-	{
-		return E_FAIL;
-	}
-
-	// VTF 테스트 용도
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_TestVTF"), CTestVTFModel::Create(m_pDevice, m_pContext))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_VTFRabbit"),
+	//	CVTFModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/VTFRabbit/Mesh/Rabbit.hyuntraanimmesh"))))
+	//{
+	//	return E_FAIL;
+	//}
 
 #pragma endregion
 

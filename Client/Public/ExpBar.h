@@ -26,6 +26,7 @@ private:
 	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
+	_uint			m_iLevel{ 1 };
 	_float			m_fTime{};
 	_float2			m_vRatio{};
 	CGameObject* m_pBackground{ nullptr };

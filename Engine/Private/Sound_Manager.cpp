@@ -91,7 +91,7 @@ void CSound_Manager::SetChannelVolume(_uint iChannel, _float fVolume)
 
 HRESULT CSound_Manager::LoadSoundFile()
 {
-	string FilePath = "../Bin/Resources/Sound/";
+	string FilePath = "../../Client/Bin/Resources/Sound/";
 
 	for (const auto& entry : filesystem::recursive_directory_iterator(FilePath))
 	{

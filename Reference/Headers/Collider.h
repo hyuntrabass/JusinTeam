@@ -38,6 +38,10 @@ public:
 public:
 	_bool Intersect(const class CCollider* pTargetCollider);
 
+public:
+	void Change_Extents(_vec3 vExtents);
+	_vec3 Get_Extents();
+
 #ifdef _DEBUGTEST
 public:
 	virtual HRESULT Render() override;

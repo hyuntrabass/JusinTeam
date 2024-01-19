@@ -102,6 +102,80 @@ _float CMonster::Compute_PlayerDistance()
 	return fDistance;
 }
 
+void CMonster::Update_MonsterCollider()
+{
+	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+}
+
+void CMonster::Change_Extents(_vec3 vStartSize)
+{
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD7))
+	{
+		m_fSizeX += m_fScale;
+		cout << "Collider Extents" << endl << m_pBodyColliderCom->Get_Extents().x << endl 
+			<< m_pBodyColliderCom->Get_Extents().y << endl
+			<< m_pBodyColliderCom->Get_Extents().z << endl;
+		cout << endl << "Scale Value" << endl << m_fScale << endl;
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD8))
+	{
+		m_fSizeY += m_fScale;
+		cout << "Collider Extents" << endl << m_pBodyColliderCom->Get_Extents().x << endl
+			<< m_pBodyColliderCom->Get_Extents().y << endl
+			<< m_pBodyColliderCom->Get_Extents().z << endl;
+		cout << endl << "Scale Value" << endl << m_fScale << endl;
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD9))
+	{
+		m_fSizeZ += m_fScale;
+		cout << "Collider Extents" << endl << m_pBodyColliderCom->Get_Extents().x << endl
+			<< m_pBodyColliderCom->Get_Extents().y << endl
+			<< m_pBodyColliderCom->Get_Extents().z << endl;
+		cout << endl << "Scale Value" << endl << m_fScale << endl;
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
+	{
+		m_fSizeX -= m_fScale;
+		cout << "Collider Extents" << endl << m_pBodyColliderCom->Get_Extents().x << endl
+			<< m_pBodyColliderCom->Get_Extents().y << endl
+			<< m_pBodyColliderCom->Get_Extents().z << endl;
+		cout << endl << "Scale Value" << endl << m_fScale << endl;
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD5))
+	{
+		m_fSizeY -= m_fScale;
+		cout << "Collider Extents" << endl << m_pBodyColliderCom->Get_Extents().x << endl
+			<< m_pBodyColliderCom->Get_Extents().y << endl
+			<< m_pBodyColliderCom->Get_Extents().z << endl;
+		cout << endl << "Scale Value" << endl << m_fScale << endl;
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD6))
+	{
+		m_fSizeZ -= m_fScale;
+		cout << "Collider Extents" << endl << m_pBodyColliderCom->Get_Extents().x << endl
+			<< m_pBodyColliderCom->Get_Extents().y << endl
+			<< m_pBodyColliderCom->Get_Extents().z << endl;
+		cout << endl << "Scale Value" << endl << m_fScale << endl;
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
+	{
+		m_fScale -= 0.1f;
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD3))
+	{
+		m_fScale += 0.1f;
+	}
+
+	m_pBodyColliderCom->Change_Extents(_vec3(vStartSize.x + m_fSizeX, vStartSize.y + m_fSizeY, vStartSize.z + m_fSizeZ));
+}
+
 HRESULT CMonster::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
@@ -162,4 +236,6 @@ void CMonster::Free()
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pBodyColliderCom);
+	Safe_Release(m_pAttackColliderCom);
 }

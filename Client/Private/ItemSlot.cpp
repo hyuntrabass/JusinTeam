@@ -30,7 +30,7 @@ HRESULT CItemSlot::Init(void* pArg)
 	m_fX = ((ITEMSLOT_DESC*)pArg)->vPosition.x;
 	m_fY = ((ITEMSLOT_DESC*)pArg)->vPosition.y;
 
-	m_fDepth = 0.8f;
+	m_fDepth = 1.f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	

@@ -4,17 +4,6 @@
 BEGIN(Engine)
 
 
-struct ANIM_DESC
-{
-	_uint iAnimIndex{};
-	_bool isLoop{};
-	_float fAnimSpeedRatio{ 1.f };
-	_bool bSkipInterpolation{};
-	_float fInterpolationTime{ 0.2f };
-	_float fDurationRatio{ 1.f };
-	_bool bRestartAnimation{ false };
-};
-
 class ENGINE_DLL CModel final : public CComponent
 {
 private:
@@ -37,8 +26,8 @@ public:
 	vector<class CBone*>& Get_Bones();
 
 	void Set_Animation(ANIM_DESC Animation_Desc);
-	vector<_float3> Get_VerticesNor();
-	vector<_float3> Get_VerticesPos();
+	vector<VTXSTATICMESH> Get_StaticMeshVertices();
+	vector<_ulong> Get_StaticMeshIndices();
 
 public:
 	HRESULT Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix);

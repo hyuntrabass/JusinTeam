@@ -6,6 +6,8 @@ BEGIN(Client)
 
 class CFadeBox final : public COrthographicObject
 {
+public:
+	enum STATE { FADEIN, FADELOOP, FADEOUT, STATE_END };
 private:
 	CFadeBox(_dev pDevice, _context pContext);
 	CFadeBox(const CFadeBox& rhs);
@@ -27,6 +29,7 @@ private:
 private:
 	_float m_fAlpha{ 0.f };
 	_float m_fDir{ 1.f };
+	STATE  m_eState{ STATE_END };
 
 private:
 	HRESULT Add_Components();
