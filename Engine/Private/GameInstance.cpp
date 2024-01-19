@@ -1009,6 +1009,26 @@ void CGameInstance::SetChannelVolume(_uint iChannel, _float fVolume)
 	return m_pSound_Manager->SetChannelVolume(iChannel, fVolume);
 }
 
+void CGameInstance::Register_CreateEffect_Callback(Func_CreateFX Function)
+{
+	m_Function_Create_FX = Function;
+}
+
+void CGameInstance::Register_DeleteEffect_Callback(Func_DeleteFX Function)
+{
+	m_Function_Delete_FX = Function;
+}
+
+void CGameInstance::Create_Effect(const wstring& strEffectTag, _mat* pMatrix, _bool isFollow)
+{
+	m_Function_Create_FX(strEffectTag, pMatrix, isFollow);
+}
+
+void CGameInstance::Delete_Effect(const void* pMatrix)
+{
+	m_Function_Delete_FX(pMatrix);
+}
+
 const _uint& CGameInstance::Get_CameraModeIndex() const
 {
 	return m_iCameraModeIndex;

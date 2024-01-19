@@ -779,8 +779,35 @@ HRESULT CLoader::Load_Select()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Model_RTVTFRabbit"),
-		CRealtimeVTFModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/VTFRabbit/Mesh/Rabbit.hyuntraanimmesh"))))
+	PivotMat = _mat::CreateScale(0.01f) * _mat::CreateRotationY(XMConvertToRadians(90.f));
+	CRealtimeVTFModel* pModel = CRealtimeVTFModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/VTFPlayer/Main/baseface.hyuntraanimmesh", PivotMat);
+	//if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/baseface.PartModel")))
+	//	return E_FAIL;	
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/2004wpb.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/2004wps.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/2005bd.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/3007wpb.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/3007wps.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/3009bd.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/5001BD.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/5001wpb.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/5001wps.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/5001wps.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/basehairfbx.PartModel")))
+		return E_FAIL;
+
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Model_RTVTFRabbit"), pModel)))
 		return E_FAIL;
 
 	// VTF 테스트 용도

@@ -108,7 +108,7 @@ int main()
 	{
 		Log("Animation Models : Start Converting...");
 
-		Log("1. Normally Anim Model	2. For VTF Model");
+		Log("1. Normally Anim Model	2. For VTF Model 3. Part Model");
 		std::cin >> iForVTFMode;
 		LogFile << iForVTFMode << std::endl;
 
@@ -138,7 +138,11 @@ int main()
 				}
 
 				// 최종 파일 경로를 생성
-				OutputFilePath /= entry.path().stem().string() + ".hyuntraanimmesh";
+				if (3 != iForVTFMode)
+					OutputFilePath /= entry.path().stem().string() + ".hyuntraanimmesh";
+				else
+					OutputFilePath /= entry.path().stem().string() + ".PartModel"; // 파츠 모델로 만들어봅시다
+
 				std::ofstream OutputFile(OutputFilePath.c_str(), std::ios::binary);
 
 				if (OutputFile.is_open())
@@ -164,7 +168,8 @@ int main()
 							Nodes.push(pCurrNode->mChildren[i]);
 						}
 					}
-					OutputFile.write(reinterpret_cast<const char*>(&iNumBones), sizeof(unsigned int));
+					if(3 != iForVTFMode)
+						OutputFile.write(reinterpret_cast<const char*>(&iNumBones), sizeof(unsigned int));
 
 					std::list<std::pair<aiNode*, int>> Bones{};
 					int iMyIndex{ -1 };
@@ -181,13 +186,14 @@ int main()
 						aiString BoneName = pCurrentBone->mName;
 						BoneNames.push_back(BoneName);
 
-						strcpy_s(szName, BoneName.C_Str());
-						unsigned int iNameSize = static_cast<unsigned int>(strlen(szName)) + 1;
-						OutputFile.write(reinterpret_cast<const char*>(&iNameSize), sizeof(unsigned int));
-						OutputFile.write(BoneName.C_Str(), iNameSize);
-						OutputFile.write(reinterpret_cast<const char*>(&pCurrentBone->mTransformation.Transpose()), sizeof(aiMatrix4x4));
-						OutputFile.write(reinterpret_cast<const char*>(&iParentIndex), sizeof(int));
-
+						if (3 != iForVTFMode) {
+							strcpy_s(szName, BoneName.C_Str());
+							unsigned int iNameSize = static_cast<unsigned int>(strlen(szName)) + 1;
+							OutputFile.write(reinterpret_cast<const char*>(&iNameSize), sizeof(unsigned int));
+							OutputFile.write(BoneName.C_Str(), iNameSize);
+							OutputFile.write(reinterpret_cast<const char*>(&pCurrentBone->mTransformation.Transpose()), sizeof(aiMatrix4x4));
+							OutputFile.write(reinterpret_cast<const char*>(&iParentIndex), sizeof(int));
+						}
 						iMyIndex++;
 
 						for (size_t i = 0; i < pCurrentBone->mNumChildren; i++)
@@ -201,86 +207,88 @@ int main()
 					Write_Materials(OutputFile, pAIScene);
 
 				#pragma region Animations
-					unsigned int iNumAnimations = pAIScene->mNumAnimations;
-					OutputFile.write(reinterpret_cast<const char*>(&iNumAnimations), sizeof(unsigned int));
-					Log("Animation name list: ");
-					for (size_t i = 0; i < iNumAnimations; i++)
-					{
-						aiAnimation* pAnimation = pAIScene->mAnimations[i];
-
-						unsigned int iNameSize = pAnimation->mName.length + 1;
-						OutputFile.write(reinterpret_cast<const char*>(&iNameSize), sizeof(unsigned int));
-						OutputFile.write(pAnimation->mName.C_Str(), iNameSize);
-						Log(pAnimation->mName.C_Str());
-
-						float fDuration{ static_cast<float>(pAnimation->mDuration) };
-						float fTickPerSec{ static_cast<float>(pAnimation->mTicksPerSecond) };
-						OutputFile.write(reinterpret_cast<const char*>(&fDuration), sizeof(float));
-						OutputFile.write(reinterpret_cast<const char*>(&fTickPerSec), sizeof(float));
-
-						unsigned int iNumChannels = pAnimation->mNumChannels;
-						OutputFile.write(reinterpret_cast<const char*>(&iNumChannels), sizeof(unsigned int));
-
-						for (size_t j = 0; j < iNumChannels; j++)
+					if (3 != iForVTFMode) {
+						unsigned int iNumAnimations = pAIScene->mNumAnimations;
+						OutputFile.write(reinterpret_cast<const char*>(&iNumAnimations), sizeof(unsigned int));
+						Log("Animation name list: ");
+						for (size_t i = 0; i < iNumAnimations; i++)
 						{
-							aiNodeAnim* pChannel = pAnimation->mChannels[j];
+							aiAnimation* pAnimation = pAIScene->mAnimations[i];
 
-							unsigned int iChannelNameSize = pChannel->mNodeName.length + 1;
-							OutputFile.write(reinterpret_cast<const char*>(&iChannelNameSize), sizeof(unsigned int));
-							OutputFile.write(pChannel->mNodeName.C_Str(), iChannelNameSize);
+							unsigned int iNameSize = pAnimation->mName.length + 1;
+							OutputFile.write(reinterpret_cast<const char*>(&iNameSize), sizeof(unsigned int));
+							OutputFile.write(pAnimation->mName.C_Str(), iNameSize);
+							Log(pAnimation->mName.C_Str());
 
-							unsigned int iBoneIndex{};
-							auto iter = std::find_if(BoneNames.begin(), BoneNames.end(), [&pChannel, &iBoneIndex](aiString strBoneName)
+							float fDuration{ static_cast<float>(pAnimation->mDuration) };
+							float fTickPerSec{ static_cast<float>(pAnimation->mTicksPerSecond) };
+							OutputFile.write(reinterpret_cast<const char*>(&fDuration), sizeof(float));
+							OutputFile.write(reinterpret_cast<const char*>(&fTickPerSec), sizeof(float));
+
+							unsigned int iNumChannels = pAnimation->mNumChannels;
+							OutputFile.write(reinterpret_cast<const char*>(&iNumChannels), sizeof(unsigned int));
+
+							for (size_t j = 0; j < iNumChannels; j++)
 							{
-								if (pChannel->mNodeName == strBoneName)
+								aiNodeAnim* pChannel = pAnimation->mChannels[j];
+
+								unsigned int iChannelNameSize = pChannel->mNodeName.length + 1;
+								OutputFile.write(reinterpret_cast<const char*>(&iChannelNameSize), sizeof(unsigned int));
+								OutputFile.write(pChannel->mNodeName.C_Str(), iChannelNameSize);
+
+								unsigned int iBoneIndex{};
+								auto iter = std::find_if(BoneNames.begin(), BoneNames.end(), [&pChannel, &iBoneIndex](aiString strBoneName)
+									{
+										if (pChannel->mNodeName == strBoneName)
+										{
+											return true;
+										}
+										iBoneIndex++;
+										return false;
+									});
+								if (iter == BoneNames.end())
 								{
-									return true;
-								}
-								iBoneIndex++;
-								return false;
-							});
-							if (iter == BoneNames.end())
-							{
-								Log("Failed to Find matching name");
-							}
-
-							OutputFile.write(reinterpret_cast<const char*>(&iBoneIndex), sizeof(unsigned int));
-
-							unsigned int iNumKeyFrame = max(pChannel->mNumScalingKeys, pChannel->mNumRotationKeys);
-							iNumKeyFrame = max(iNumKeyFrame, pChannel->mNumPositionKeys);
-							OutputFile.write(reinterpret_cast<const char*>(&iNumKeyFrame), sizeof(unsigned int));
-
-							float fTime{};
-							float fScaleW{ 0.f };
-							float fPositionW{ 1.f };
-
-							for (size_t k = 0; k < iNumKeyFrame; k++)
-							{
-								if (k < pChannel->mNumScalingKeys)
-								{
-									OutputFile.write(reinterpret_cast<const char*>(&pChannel->mScalingKeys[k].mValue), sizeof(aiVector3D));
-									OutputFile.write(reinterpret_cast<const char*>(&fScaleW), sizeof(float));
-
-									fTime = static_cast<float>(pChannel->mScalingKeys[k].mTime);
-								}
-								if (k < pChannel->mNumRotationKeys)
-								{
-									OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.x), sizeof(float));
-									OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.y), sizeof(float));
-									OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.z), sizeof(float));
-									OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.w), sizeof(float));
-
-									fTime = static_cast<float>(pChannel->mRotationKeys[k].mTime);
-								}
-								if (k < pChannel->mNumPositionKeys)
-								{
-									OutputFile.write(reinterpret_cast<const char*>(&pChannel->mPositionKeys[k].mValue), sizeof(aiVector3D));
-									OutputFile.write(reinterpret_cast<const char*>(&fPositionW), sizeof(float));
-
-									fTime = static_cast<float>(pChannel->mPositionKeys[k].mTime);
+									Log("Failed to Find matching name");
 								}
 
-								OutputFile.write(reinterpret_cast<const char*>(&fTime), sizeof(float));
+								OutputFile.write(reinterpret_cast<const char*>(&iBoneIndex), sizeof(unsigned int));
+
+								unsigned int iNumKeyFrame = max(pChannel->mNumScalingKeys, pChannel->mNumRotationKeys);
+								iNumKeyFrame = max(iNumKeyFrame, pChannel->mNumPositionKeys);
+								OutputFile.write(reinterpret_cast<const char*>(&iNumKeyFrame), sizeof(unsigned int));
+
+								float fTime{};
+								float fScaleW{ 0.f };
+								float fPositionW{ 1.f };
+
+								for (size_t k = 0; k < iNumKeyFrame; k++)
+								{
+									if (k < pChannel->mNumScalingKeys)
+									{
+										OutputFile.write(reinterpret_cast<const char*>(&pChannel->mScalingKeys[k].mValue), sizeof(aiVector3D));
+										OutputFile.write(reinterpret_cast<const char*>(&fScaleW), sizeof(float));
+
+										fTime = static_cast<float>(pChannel->mScalingKeys[k].mTime);
+									}
+									if (k < pChannel->mNumRotationKeys)
+									{
+										OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.x), sizeof(float));
+										OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.y), sizeof(float));
+										OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.z), sizeof(float));
+										OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.w), sizeof(float));
+
+										fTime = static_cast<float>(pChannel->mRotationKeys[k].mTime);
+									}
+									if (k < pChannel->mNumPositionKeys)
+									{
+										OutputFile.write(reinterpret_cast<const char*>(&pChannel->mPositionKeys[k].mValue), sizeof(aiVector3D));
+										OutputFile.write(reinterpret_cast<const char*>(&fPositionW), sizeof(float));
+
+										fTime = static_cast<float>(pChannel->mPositionKeys[k].mTime);
+									}
+
+									OutputFile.write(reinterpret_cast<const char*>(&fTime), sizeof(float));
+								}
 							}
 						}
 					}
@@ -354,7 +362,7 @@ void Write_AnimMeshes(std::ofstream& OutputFile, const aiScene* pAIScene, const 
 
 
 			unsigned int BoneIndices = j;
-			if (2 == VTFMode) {
+			if (1 != VTFMode) {
 				// For VTF Model
 				unsigned int iBoneIndex{};
 				auto iter = std::find_if(BoneNames.begin(), BoneNames.end(), [&pBone, &iBoneIndex](aiString strBoneName)

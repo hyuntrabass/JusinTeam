@@ -12,6 +12,8 @@ CAnimation::CAnimation(const CAnimation& rhs)
 	, m_iNumChannels(rhs.m_iNumChannels)
 	, m_iNumTriggers(rhs.m_iNumTriggers)
 	, m_Triggers(rhs.m_Triggers)
+	, m_iNumEffectTriggers(rhs.m_iNumEffectTriggers)
+	, m_TriggerEffects(rhs.m_TriggerEffects)
 	, m_iMaxFrame(rhs.m_iMaxFrame)
 	//, m_Channels(rhs.m_Channels)
 	//, m_CurrentKeyFrames(rhs.m_CurrentKeyFrames)
@@ -57,6 +59,11 @@ const _uint CAnimation::Get_NumTrigger() const
 	return m_iNumTriggers;
 }
 
+const _uint CAnimation::Get_NumEffectTrigger() const
+{
+	return m_iNumEffectTriggers;
+}
+
 vector<_float>& CAnimation::Get_Triggers()
 {
 	return m_Triggers;
@@ -65,6 +72,13 @@ vector<_float>& CAnimation::Get_Triggers()
 void CAnimation::Add_TriggerEffect(TRIGGEREFFECT_DESC TriggerEffectDesc)
 {
 	m_TriggerEffects.push_back(TriggerEffectDesc);
+	m_iNumEffectTriggers++;
+}
+
+void CAnimation::Reset_TriggerEffects()
+{
+	m_iNumEffectTriggers = 0;
+	m_TriggerEffects.clear();
 }
 
 void CAnimation::Add_Trigger(_float fAnimPos)
@@ -86,6 +100,11 @@ void CAnimation::Add_Trigger(_float fAnimPos)
 TRIGGEREFFECT_DESC* CAnimation::Get_TriggerEffect(_uint iTriggerEffectIndex)
 {
 	return &m_TriggerEffects[iTriggerEffectIndex];
+}
+
+vector<TRIGGEREFFECT_DESC>& CAnimation::Get_TriggerEffects()
+{
+	return m_TriggerEffects;
 }
 
 void CAnimation::Reset_Trigger()
@@ -144,7 +163,7 @@ HRESULT CAnimation::Init(ifstream& ModelFile, const vector<class CBone*>& Bones)
 	return S_OK;
 }
 
-void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio, _uint* iCurrentTrigger)
+void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio)
 {
 	if (isAnimChanged)
 	{
@@ -190,17 +209,15 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 		{
 			m_isFinished = false;
 		}
-		/*if (*iCurrentTrigger < m_iNumTriggers) {
-			if (m_fCurrentAnimPos >= m_Triggers[*iCurrentTrigger]) {
-				뭐 어떤 것을 생성시킨다;
-				(*iCurrentTrigger)++;
-			}
-		}*/
-		if (*iCurrentTrigger < m_iNumEffectTriggers)
+		for (_uint i = 0; i < m_iNumEffectTriggers; i++)
 		{
-			while (m_fCurrentAnimPos >= m_TriggerEffects[*iCurrentTrigger].fStartAnimPos)
+			if (m_fCurrentAnimPos >= m_TriggerEffects[i].fStartAnimPos)
 			{
-				(*iCurrentTrigger)++;
+				//이펙트 생성
+			}
+			if (m_fCurrentAnimPos <= m_TriggerEffects[i].fEndAnimPos)
+			{
+				//이펙트 제거
 			}
 		}
 	}

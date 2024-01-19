@@ -178,7 +178,7 @@ HRESULT CVIBuffer_Terrain::Mesh_Terrain(vector<VTXSTATICMESH> vVertices, vector<
 		pIndices[iIndex++] = (*iter);
 		iIndex++;
 	}
-	
+
 	m_pContext->Unmap(m_pIB, 0);
 
 
@@ -235,7 +235,7 @@ HRESULT CVIBuffer_Terrain::Modify_Terrain_Hight(_uint iNumVerticesX, _uint iNumV
 }
 
 
-HRESULT CVIBuffer_Terrain::ModifyTerrainVertexBuffer( _uint iNumVerticesX, _uint iNumVerticesZ)
+HRESULT CVIBuffer_Terrain::ModifyTerrainVertexBuffer(_uint iNumVerticesX, _uint iNumVerticesZ)
 {
 	m_iNumVertexBuffers = 1;
 	m_iVertexStride = sizeof VTXNORTEX;
@@ -355,8 +355,7 @@ CComponent* CVIBuffer_Terrain::Clone(void* pArg)
 
 void CVIBuffer_Terrain::Free()
 {
-	if (!m_isClone)
-		Safe_Delete_Array(m_pVertices);
+	Safe_Delete_Array(m_pVertices);
 	__super::Free();
 
 }

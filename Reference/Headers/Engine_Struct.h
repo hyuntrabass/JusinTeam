@@ -87,6 +87,7 @@ namespace Engine
 
 		SimpleMath::Vector3* pPos{};
 		SimpleMath::Vector3 vPos{};
+		SimpleMath::Matrix* pMatrix{};
 	};
 
 	struct ANIM_DESC
@@ -135,20 +136,24 @@ namespace Engine
 	};
 
 	using TRIGGEREFFECT_DESC = struct tagTriggerEffectDesc {
-		float fStartAnimPos;
+		float fStartAnimPos{};
 		float fEndAnimPos = -1.f;
-		bool IsFollow;
-		unsigned int iNameLength;
-		TCHAR szEffectName[MAX_PATH];
-		int iBoneIndex;
+		bool IsFollow{};
+		std::wstring strEffectName{};
+		unsigned int iBoneIndex{};
 		SimpleMath::Vector3 vPosOffset{};
+		SimpleMath::Vector3 vRotationAxis = { 0.f, 1.f, 0.f };
+		float fAngle{};
+		SimpleMath::Vector3 vSize = { 1.f, 1.f, 1.f };
+
+		int iTriggerEffecID{};
 	};
 
 	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {
-		float fStartAnimPos;
-		TCHAR szSoundName[MAX_PATH];
-		int iChannel;
-		float fVolume;
+		float fStartAnimPos{};
+		std::wstring strSoundName{};
+		int iChannel{};
+		float fVolume{};
 	};
 
 	using VTXPOSCOLOR = struct ENGINE_DLL tagVertex_Position_Color

@@ -62,7 +62,8 @@ void CSelect_Model::Tick(_float fTimeDelta)
 					CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
 
 					Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"FireSpark");
-					Info.vPos = m_vRHPos + _vec3(0.f, 0.1f, 0.f);
+					//Info.vPos = m_vRHPos + _vec3(0.f, 0.1f, 0.f);
+					Info.pPos = &m_vRHPos;
 					Info.vSize = Info.vSize * 0.5f;
 					Info.iNumInstances = 50;
 					CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
@@ -97,8 +98,7 @@ void CSelect_Model::Tick(_float fTimeDelta)
 					m_pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
 
 					Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"ArrowParti");
-					//Info.vPos = m_vRHPos;
-					Info.pPos = &m_vRHPos;
+					Info.vPos = m_vRHPos;
 					CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
 
 					LIGHT_DESC Light_Info{};

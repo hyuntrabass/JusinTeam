@@ -63,6 +63,7 @@ using namespace physx;
 #include <fstream>
 #include <filesystem>
 #include <random>
+#include <functional>
 
 #include "Engine_Macro.h"
 #include "Engine_Struct.h"

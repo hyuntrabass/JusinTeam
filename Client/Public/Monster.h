@@ -33,7 +33,9 @@ protected:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
+
 	CCollider* m_pBodyColliderCom = { nullptr };
+	CCollider* m_pAttackColliderCom = { nullptr };
 
 protected:
 	wstring m_strModelTag = {};
@@ -41,6 +43,9 @@ protected:
 
 protected:
 	_uint m_iPassIndex = {};
+
+protected:
+	_float m_fBackPower = { 1.f };
 
 private: // Collier 사이즈 조절용
 	_float m_fSizeX = {}, m_fSizeY = {}, m_fSizeZ = {};
@@ -50,7 +55,7 @@ protected:
 	virtual HRESULT Add_Collider() = 0;
 	virtual void Update_Collider() = 0;
 
-	void Update_BodyCollider();
+	void Update_MonsterCollider();
 
 	// Collier 사이즈 조절용
 	void Change_Extents(_vec3 vStartSize);

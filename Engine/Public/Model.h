@@ -15,7 +15,7 @@ public:
 	const _char* Get_FilePath() const;
 	const _uint& Get_NumMeshes() const;
 	const _uint& Get_NumAnim() const;
-	const _uint& Get_NumBones() const;
+	const _uint Get_NumBones() const;
 	const _bool& IsAnimationFinished(_uint iAnimIndex) const;
 	const _uint& Get_CurrentAnimationIndex() const;
 	const _float& Get_CurrentAnimPos() const;
@@ -70,7 +70,8 @@ private:
 
 	ANIM_DESC m_AnimDesc{};
 
-	_uint m_iCurrentTrigger = 0;
+	ID3D11Texture2D* m_pTexture{ nullptr };
+	ID3D11ShaderResourceView* m_pSRV{ nullptr };
 
 private:
 	HRESULT Read_Bones(ifstream& File);

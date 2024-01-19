@@ -41,6 +41,13 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 	for (size_t i = 0; i < m_iNumInstances; i++)
 	{
 		VTXINSTANCING* pVertex = &reinterpret_cast<VTXINSTANCING*>(SubResource.pData)[i];
+
+		if (pVertex->vLifeTime.x == 0)
+		{
+			_vec4 Test = _vec4::UnitX;
+			pVertex->vPos = _vec4::Transform(pVertex->vPos, WorldMatrix);
+		}
+
 		//pVertex->vPos.y += pVertex->fSpeed * fTimeDelta;
 		if (bApplyGravity)
 		{
