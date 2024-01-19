@@ -217,9 +217,8 @@ public: // Get_Set
 	const _vec4& Get_CameraTargetPos() const;
 	const _vec4& Get_CameraTargetLook();
 	const _bool& Have_TargetLook() const;
-	
-
 	_vec3 Get_AimPos() { return m_AimPos; }
+
 public:
 	void Initialize_Level(_uint iLevelNum);
 	void Level_ShutDown(_uint iCurrentLevel);
