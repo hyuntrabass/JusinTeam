@@ -458,7 +458,7 @@ HRESULT CVTFModel::CreateVTF(_uint MaxFrame)
 	return S_OK;
 }
 
-HRESULT CVTFModel::CreateAnimationTransform(_uint iIndex, ANIMTRANS_ARRAY* AnimTransforms)
+HRESULT CVTFModel::CreateAnimationTransform(_uint iIndex, ANIMTRANS_ARRAY* pAnimTransform)
 {
 	CAnimation* pAnimation = m_Animations[iIndex];
 
@@ -472,7 +472,7 @@ HRESULT CVTFModel::CreateAnimationTransform(_uint iIndex, ANIMTRANS_ARRAY* AnimT
 		{
 			m_Bones[j]->Update_CombinedMatrix(m_Bones);
 
-			AnimTransforms[iIndex].TransformArray[i][j] = m_Bones[j]->Get_OffsetMatrix() * *(m_Bones[j]->Get_CombinedMatrix()) * m_PivotMatrix;
+			pAnimTransform[iIndex].TransformArray[i][j] = m_Bones[j]->Get_OffsetMatrix() * *(m_Bones[j]->Get_CombinedMatrix()) * m_PivotMatrix;
 		}
 	}
 
