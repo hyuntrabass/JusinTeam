@@ -75,7 +75,7 @@ HRESULT CItemBlock::Add_Slots()
 	{
 		CItemSlot::ITEMSLOT_DESC ItemSlotDesc = {};
 		ItemSlotDesc.vSize = _float2(60.f, 60.f);
-		ItemSlotDesc.vPosition = _float2((_float)g_iWinSizeX / 2.f + 55.f + (ItemSlotDesc.vSize.x / 2.f) + (ItemSlotDesc.vSize.x * i) + (-15.f * i), 660.f);
+		ItemSlotDesc.vPosition = _float2((_float)g_iWinSizeX / 2.f + 55.f + (ItemSlotDesc.vSize.x / 2.f) + (ItemSlotDesc.vSize.x * i) + (-15.f * i), 675.f);
 
 		m_pSlots[i] = (CItemSlot*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_SkillSlot"), &ItemSlotDesc);
 		if (m_pSlots[i] == nullptr)

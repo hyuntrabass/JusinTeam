@@ -81,6 +81,8 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if(m_pWeapon!=nullptr)
 	m_pWeapon->Tick(fTimeDelta);
+	if (m_pNameTag != nullptr)
+		m_pNameTag->Tick(fTimeDelta);
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)
@@ -92,6 +94,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		Change_Parts(PT_BODY, 1);
 		m_pTransformCom->Set_Scale(_vec3(0.1f));
 		Add_Weapon();
+		Add_Info();
 		m_bStartGame = true;
 	}
 
@@ -101,7 +104,10 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	}
 
 	if (m_pWeapon != nullptr)
-	m_pWeapon->Late_Tick(fTimeDelta);
+		m_pWeapon->Late_Tick(fTimeDelta);
+	
+	if (m_pNameTag != nullptr)
+		m_pNameTag->Late_Tick(fTimeDelta);
 
 }
 
@@ -174,6 +180,24 @@ HRESULT CPlayer::Add_Weapon()
 
 	m_Current_Weapon = WP_SWORD;
 	Reset_PartsAnim();
+	return S_OK;
+}
+
+HRESULT CPlayer::Add_Info()
+{
+	CNameTag::NAMETAG_DESC NameTagDesc = {};
+	NameTagDesc.eLevelID = LEVEL_STATIC;
+	NameTagDesc.fFontSize = 0.32f;
+	NameTagDesc.pParentTransform = m_pTransformCom;
+	NameTagDesc.strNameTag = TEXT("플레이어");
+	NameTagDesc.vColor = _vec4(0.5f, 0.7f, 0.5f, 1.f);
+	NameTagDesc.vTextPosition = _vec2(0.f, 1.9f);
+	
+	m_pNameTag = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_NameTag"), & NameTagDesc);
+	if (not m_pNameTag)
+	{
+		return E_FAIL;
+	}
 	return S_OK;
 }
 
@@ -601,6 +625,7 @@ void CPlayer::Free()
 
 	m_vecParts.clear();
 
+	Safe_Release(m_pNameTag);
 	Safe_Release(m_pWeapon);
 	Safe_Release(m_pCameraTransform);
 

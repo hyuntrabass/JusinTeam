@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "BodyPart.h"
 #include "Weapon.h"
+#include "NameTag.h"
 BEGIN(Client)
 
 struct BODYPART_DESC
@@ -243,6 +244,7 @@ public:
 public:
 	HRESULT Add_Parts();
 	HRESULT Add_Weapon();
+	HRESULT Add_Info();
 
 public:
 	void Change_Parts(PART_TYPE PartsType,_int ChangeIndex);
@@ -260,6 +262,7 @@ public:
 private:
 	vector<CBodyPart*> m_vecParts{};
 	CGameObject* m_pWeapon{};
+	CGameObject* m_pNameTag{};
 	CTransform* m_pCameraTransform{};
 private:
 	ANIM_DESC m_Animation{};

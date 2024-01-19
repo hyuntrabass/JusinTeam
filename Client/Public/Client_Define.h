@@ -197,6 +197,8 @@ namespace Client
 		VTPass_Dust,
 		VTPass_Dissolve,
 		VTPass_MP,
+		VTPass_BLUR,
+		VTPass_Bright,
 		VTPass_End
 	};
 

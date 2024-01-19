@@ -4,14 +4,12 @@
 
 BEGIN(Client)
 
-class CFadeBox final : public COrthographicObject
+class CPop_QuestEnd final : public COrthographicObject
 {
-public:
-	enum STATE { FADEIN, FADELOOP, FADEOUT, STATE_END };
 private:
-	CFadeBox(_dev pDevice, _context pContext);
-	CFadeBox(const CFadeBox& rhs);
-	virtual ~CFadeBox() = default;
+	CPop_QuestEnd(_dev pDevice, _context pContext);
+	CPop_QuestEnd(const CPop_QuestEnd& rhs);
+	virtual ~CPop_QuestEnd() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -25,18 +23,21 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
 	CTexture* m_pTextureCom{ nullptr };
+	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
-	_float m_fAlpha{ 0.f };
-	_float m_fDir{ 1.f };
-	STATE  m_eState{ STATE_END };
+	_float			m_fTime{};
+	_float			m_fStartSize{};
+	_float2			m_vRatio{};
+	CGameObject*	m_pBackground{ nullptr };
+	CGameObject*	m_pBorder{ nullptr };
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CFadeBox* Create(_dev pDevice, _context pContext);
+	static CPop_QuestEnd* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

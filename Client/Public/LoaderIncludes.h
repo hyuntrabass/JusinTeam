@@ -19,7 +19,11 @@
 #include "Custom.h"
 #include "SelectDesc.h"
 #include "TextButton.h"
+#include "Pop_QuestIn.h"
+#include "Pop_QuestEnd.h"
+#include "BlurTexture.h"
 
+#include "NameTag.h"
 #include "ExpBar.h"
 #include "HPBar.h"
 #include "MPBar.h"
