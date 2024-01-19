@@ -29,10 +29,10 @@ HRESULT CHPBar::Init(void* pArg)
 
 
 	m_fSizeX = 193.f;
-	m_fSizeY = 25.f;
+	m_fSizeY = 22.f;
 
-	m_fX = 490.f;
-	m_fY = 610.f;
+	m_fX = 500.f;
+	m_fY = 630.f;
 
 	m_fDepth = 0.8f;
 
@@ -45,7 +45,7 @@ HRESULT CHPBar::Init(void* pArg)
 	Button.strText = TEXT("");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BarContext");
 	Button.vPosition = _vec2(m_fX, m_fY);
-	Button.vSize = _vec2(m_fSizeX, m_fSizeY);
+	Button.vSize = _vec2(m_fSizeX + 2.f, m_fSizeY);
 
 	m_pBackground = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
@@ -105,11 +105,11 @@ HRESULT CHPBar::Render()
 		return E_FAIL;
 	}
 
-	m_pGameInstance->Render_Text(L"Font_Dialogue", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX - 0.1f, m_fY + 17.f), 0.3f);
-	m_pGameInstance->Render_Text(L"Font_Dialogue", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX + 0.1f, m_fY + 17.f), 0.3f);
-	m_pGameInstance->Render_Text(L"Font_Dialogue", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX, m_fY + 17.1f), 0.3f);
-	m_pGameInstance->Render_Text(L"Font_Dialogue", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX, m_fY + 16.9f), 0.3f);
-	m_pGameInstance->Render_Text(L"Font_Dialogue", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX, m_fY + 17.f), 0.3f);
+	m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX - 0.1f, m_fY + 17.f), 0.3f);
+	m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX + 0.1f, m_fY + 17.f), 0.3f);
+	m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX, m_fY + 17.1f), 0.3f);
+	m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX, m_fY + 16.9f), 0.3f);
+	m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX, m_fY + 17.f), 0.3f);
 
 
 	return S_OK;

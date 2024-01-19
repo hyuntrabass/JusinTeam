@@ -88,9 +88,6 @@
     <Filter Include="02.GameObjects\05.Select_Object\Model">
       <UniqueIdentifier>{fcda4183-f684-44f5-8d3f-169f46e02502}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.UI\TextButton">
-      <UniqueIdentifier>{e433917e-0435-4307-a9c2-4229c403b1c9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\00.UI\NameTag">
       <UniqueIdentifier>{58d52e8e-1cbf-4e42-b53c-27b4eb35e680}</UniqueIdentifier>
     </Filter>
@@ -147,9 +144,6 @@
     </Filter>
     <Filter Include="02.GameObjects\04.Monster\Thief">
       <UniqueIdentifier>{363b1ef8-0629-4888-ae4b-61cf858f86f2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\01.Camera\Select">
-      <UniqueIdentifier>{8d83bd06-503a-4299-90d9-bd4f9f6c1225}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\00.UI\Manager">
       <UniqueIdentifier>{af6d411e-a06c-4009-b24b-072bf6a7d7b2}</UniqueIdentifier>
@@ -235,6 +229,12 @@
     <Filter Include="02.GameObjects\09.Prologue_Object">
       <UniqueIdentifier>{81af0f87-34df-4131-8061-fdbca3043fe5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.UI\POPUP">
+      <UniqueIdentifier>{395d4c54-fec4-4c43-8e36-2a78faf9edea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\Texture&amp;Text">
+      <UniqueIdentifier>{e433917e-0435-4307-a9c2-4229c403b1c9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -307,7 +307,7 @@
       <Filter>02.GameObjects\00.UI\01.SelectLevel\CharacterSelect</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\TextButton.h">
-      <Filter>02.GameObjects\00.UI\TextButton</Filter>
+      <Filter>02.GameObjects\00.UI\Texture&amp;Text</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\BodyPart.h">
       <Filter>02.GameObjects\03.Player\BodyParts</Filter>
@@ -325,7 +325,7 @@
       <Filter>02.GameObjects\00.UI\01.SelectLevel\SelectDesc</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\TextButtonColor.h">
-      <Filter>02.GameObjects\00.UI\TextButton</Filter>
+      <Filter>02.GameObjects\00.UI\Texture&amp;Text</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\NameTag.h">
       <Filter>02.GameObjects\00.UI\NameTag</Filter>
@@ -448,6 +448,15 @@
     <ClInclude Include="Prologue_Object.h">
       <Filter>02.GameObjects\09.Prologue_Object</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Pop_QuestEnd.h">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Pop_QuestIn.h">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BlurTexture.h">
+      <Filter>02.GameObjects\00.UI\Texture&amp;Text</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -518,7 +527,7 @@
       <Filter>02.GameObjects\00.UI\01.SelectLevel\CharacterSelect</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\TextButton.cpp">
-      <Filter>02.GameObjects\00.UI\TextButton</Filter>
+      <Filter>02.GameObjects\00.UI\Texture&amp;Text</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\BodyPart.cpp">
       <Filter>02.GameObjects\03.Player\BodyParts</Filter>
@@ -536,7 +545,7 @@
       <Filter>02.GameObjects\00.UI\01.SelectLevel\SelectDesc</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\TextButtonColor.cpp">
-      <Filter>02.GameObjects\00.UI\TextButton</Filter>
+      <Filter>02.GameObjects\00.UI\Texture&amp;Text</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\NameTag.cpp">
       <Filter>02.GameObjects\00.UI\NameTag</Filter>
@@ -657,6 +666,15 @@
     </ClCompile>
     <ClCompile Include="Prologue_Object.cpp">
       <Filter>02.GameObjects\09.Prologue_Object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Pop_QuestEnd.cpp">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Pop_QuestIn.cpp">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BlurTexture.cpp">
+      <Filter>02.GameObjects\00.UI\Texture&amp;Text</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

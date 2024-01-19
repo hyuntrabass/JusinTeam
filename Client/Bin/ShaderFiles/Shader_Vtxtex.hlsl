@@ -16,6 +16,7 @@ float g_fHpRatio;
 float g_fAlpha;
 float g_fTime;
 float g_fDissolveRatio;
+float g_fAmount;
 int2 g_vNumSprite;
 uint g_iIndex;
 
@@ -136,7 +137,7 @@ PS_OUT PS_MaskTexture(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
-    vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
+    vector vMask = g_MaskTexture.Sample(LinearSampler, float2(Input.vTex.x + g_fx, Input.vTex.y + g_fy));
     
     Output.vColor.a = Output.vColor.a * vMask.r;
     
@@ -483,7 +484,7 @@ PS_OUT PS_Main_MP(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, float2(Input.vTex));
+    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
     vector vMask = g_MaskTexture.Sample(LinearSampler, float2(Input.vTex.x + g_fTime, Input.vTex.y));
     Output.vColor.a = Output.vColor.a * vMask.r;
     if (Input.vTex.x < 1.f - g_fHpRatio)
@@ -494,6 +495,64 @@ PS_OUT PS_Main_MP(PS_IN Input)
     return Output;
 }
 
+PS_OUT PS_Main_BLUR(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+
+
+    float4 texColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    float brightness = texColor.r + texColor.g + texColor.b;
+
+    float threshold = 0.9;
+
+
+    if (brightness > threshold)
+    {
+        texColor *= 3.f;
+    }
+
+
+    float edgeThreshold = 0.1;
+    float edge = 1.0 - smoothstep(1.0 - edgeThreshold, 1.0 + edgeThreshold, texColor.a);
+
+    float4 blurColor = float4(0.0, 0.0, 0.0, 0.0);
+    float totalWeight = 0.0;
+
+    for (int i = -2; i <= 2; ++i)
+    {
+        for (int j = -2; j <= 2; ++j)
+        {
+            float2 offset = float2(i, j) * g_fAmount;
+            float weight = 8.f;
+            blurColor += g_Texture.Sample(LinearSampler, Input.vTex + offset) * weight;
+            totalWeight += weight;
+        }
+    }
+
+	blurColor /= totalWeight;
+
+    blurColor.rgb *= g_vColor.rgb;
+
+
+    Output.vColor = lerp(texColor, blurColor, edge);
+
+    return Output;
+}
+PS_OUT PS_Bright(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vMask = g_MaskTexture.Sample(LinearSampler, float2(Input.vTex.x + g_fx, Input.vTex.y + g_fy));
+    
+    Output.vColor.a = Output.vColor.a * vMask.r;
+
+
+    Output.vColor *= 3.f;
+  
+    
+    return Output;
+}
 technique11 DefaultTechnique
 {
     pass UI
@@ -814,4 +873,30 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_MP();
     }
+
+    pass BLUR
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_BLUR();
+    }
+    pass Bright
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Bright();
+    }
+
 };

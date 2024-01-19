@@ -12,7 +12,6 @@ public:
 		_float  fDepth{1.f};
 		_vec2	vSize;
 		_vec2	vPosition;
-		_vec4	vColor{ _vec4(1.f, 1.f, 1.f, 1.f) };
 
 		_float	fFontSize;
 		_vec2	vTextPosition;
@@ -20,7 +19,6 @@ public:
 		_vec4	vTextColor{ _vec4(1.f, 1.f, 1.f, 1.f) };
 
 		wstring strTexture;
-		wstring strMaskTexture;
 
 		LEVEL_ID eLevelID;
 	}TEXTBUTTON_DESC;

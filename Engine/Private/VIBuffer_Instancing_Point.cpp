@@ -66,6 +66,11 @@ HRESULT CVIBuffer_Instancing_Point::Init_Prototype(_uint iNumInstances)
 
 	_ushort* pIndices = new _ushort[m_iNumIndices]{};
 
+	for (_ushort i = 0; i < m_iNumIndices; i++)
+	{
+		pIndices[i] = i;
+	}
+
 	m_InitialData.pSysMem = pIndices;
 
 	if (FAILED(__super::Create_Buffer(&m_pIB)))

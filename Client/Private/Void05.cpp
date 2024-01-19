@@ -29,6 +29,7 @@ HRESULT CVoid05::Init(void* pArg)
     m_Animation.iAnimIndex = 0;
     m_Animation.isLoop = true;
     m_Animation.bSkipInterpolation = true;
+    m_Animation.fAnimSpeedRatio = 2.f;
 
     m_pTransformCom->Set_Speed(5.f);
 

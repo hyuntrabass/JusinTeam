@@ -269,7 +269,7 @@ HRESULT CEffectApp::Ready_Prototype_GameObject()
 	{
 		if (entry.is_regular_file())
 		{
-			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_Effect_") + to_wstring(iTextureNumber++);
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_Effect_") + entry.path().stem().wstring();
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
 			{
@@ -286,7 +286,7 @@ HRESULT CEffectApp::Ready_Prototype_GameObject()
 	{
 		if (entry.is_regular_file())
 		{
-			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(iMeshNumber++);
+			wstring strPrototypeTag = TEXT("Prototype_Model_Effect_") + entry.path().stem().wstring();
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
 			{

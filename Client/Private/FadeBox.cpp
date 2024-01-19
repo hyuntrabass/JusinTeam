@@ -31,20 +31,50 @@ HRESULT CFadeBox::Init(void* pArg)
 
 	m_fDepth = 0.05f;
 
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
+
+	m_eState = *((STATE*)pArg);
+
+	switch (m_eState)
+	{
+	case FADEIN:
+		m_fAlpha = 0.f;
+		break;
+	case FADELOOP:
+		m_fDepth = 0.5f;
+		m_fAlpha = 0.f;
+		break;
+	case FADEOUT:
+		m_fAlpha = 1.f;
+		break;
+	}
+
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	return S_OK;
 }
 
 void CFadeBox::Tick(_float fTimeDelta)
 {
-	m_fAlpha += fTimeDelta * m_fDir * 5.f;
+	switch (m_eState)
+	{
+	case FADEIN:
+		if (m_fAlpha >= 1.f)
+			m_isDead = true;
+		m_fAlpha += fTimeDelta * m_fDir * 2.f;
+		break;
+	case FADELOOP:
+		if(m_fAlpha < 0.7f)
+			m_fAlpha += fTimeDelta;
+		break;
+	case FADEOUT:
+		if (m_fAlpha <= 0.f)
+			m_isDead = true;
+		m_fAlpha -= fTimeDelta * m_fDir * 2.f;
 
-	if (m_fAlpha >= 1.f)
-		m_fDir = -1.f;
-	
-	if (m_fAlpha < 0.f)
-		m_isDead = true;
+		break;
+	}
+
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
 
 void CFadeBox::Late_Tick(_float fTimeDelta)

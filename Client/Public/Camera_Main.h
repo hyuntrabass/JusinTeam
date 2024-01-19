@@ -19,7 +19,6 @@ public:
 
 public:
 	void Camera_Zoom(_float fTimeDelta);
-
 private:
 	CTransform* m_pPlayerTransform{ nullptr };
 	_bool m_isMoveMode{ true };
@@ -31,6 +30,11 @@ private:
 	_float m_fLerpTime{};
 	_float m_fLerpDistance{4.f};
 	_float m_fFirstDistance{4.f};
+	_vec4 m_vAimCamPos{};
+	_float m_AimLerpTime{};
+	float swayAmount = 3.0f;  // 출렁임의 크기를 결정하는 값. 원하는 크기로 조절 가능
+	float swaySpeed = 3.0f;   // 출렁임의 속도를 결정하는 값. 원하는 속도로 조절 가능
+	float time{}; // 현재 시간
 
 private:
 	void Select_Mode(_float fTimeDelta);

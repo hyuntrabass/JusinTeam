@@ -37,7 +37,7 @@ public:
 
 	enum RABBIT_COLL
 	{
-		LH, RH, LF, RF,
+		BODY, LH, RH, LF, RF,
 		COLL_END
 	};
 

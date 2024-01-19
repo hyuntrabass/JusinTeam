@@ -27,6 +27,8 @@ private:
 	CTexture* m_pMaskTextureCom{};
 	CTexture* m_pDiffTextureCom{};
 	CTexture* m_pDissolveTextureCom{};
+	CTexture* m_pUnDissolveTextureCom{};
+	CModel* m_pModelCom{};
 
 private:
 	EffectInfo m_Effect{};
@@ -34,7 +36,7 @@ private:
 	_float m_fTimer{};
 	_float m_fSpriteTimer{};
 	_int m_iSpriteIndex{};
-	_vec2 m_vScaleAcc{ 1.f };
+	_vec3 m_vScaleAcc{ 1.f };
 	_float m_fDissolveRatio{};
 	_vec2 m_vUV{};
 

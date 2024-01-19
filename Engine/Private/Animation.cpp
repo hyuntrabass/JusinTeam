@@ -62,6 +62,11 @@ vector<_float>& CAnimation::Get_Triggers()
 	return m_Triggers;
 }
 
+void CAnimation::Add_TriggerEffect(TRIGGEREFFECT_DESC TriggerEffectDesc)
+{
+	m_TriggerEffects.push_back(TriggerEffectDesc);
+}
+
 void CAnimation::Add_Trigger(_float fAnimPos)
 {
 	auto	iter = find_if(m_Triggers.begin(), m_Triggers.end(), [&](_float fTrigger)->_bool {
@@ -76,6 +81,11 @@ void CAnimation::Add_Trigger(_float fAnimPos)
 		m_Triggers.push_back(fAnimPos);
 		m_iNumTriggers++;
 	}
+}
+
+TRIGGEREFFECT_DESC* CAnimation::Get_TriggerEffect(_uint iTriggerEffectIndex)
+{
+	return &m_TriggerEffects[iTriggerEffectIndex];
 }
 
 void CAnimation::Reset_Trigger()
@@ -180,12 +190,19 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 		{
 			m_isFinished = false;
 		}
-		/*if (*iCurrentTrigger <= m_iNumTriggers) {
+		/*if (*iCurrentTrigger < m_iNumTriggers) {
 			if (m_fCurrentAnimPos >= m_Triggers[*iCurrentTrigger]) {
 				뭐 어떤 것을 생성시킨다;
 				(*iCurrentTrigger)++;
 			}
 		}*/
+		if (*iCurrentTrigger < m_iNumEffectTriggers)
+		{
+			while (m_fCurrentAnimPos >= m_TriggerEffects[*iCurrentTrigger].fStartAnimPos)
+			{
+				(*iCurrentTrigger)++;
+			}
+		}
 	}
 
 	if (isAnimChanged)
