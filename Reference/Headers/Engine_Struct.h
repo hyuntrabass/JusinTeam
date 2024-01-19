@@ -119,6 +119,18 @@ namespace Engine
 		SimpleMath::Vector3 vPos{};
 	};
 
+	struct ANIM_DESC
+	{
+		unsigned int iAnimIndex{};
+		bool isLoop{};
+		float fAnimSpeedRatio{ 1.f };
+		bool bSkipInterpolation{};
+		float fInterpolationTime{ 0.2f };
+		float fDurationRatio{ 1.f };
+		bool bRestartAnimation{ false };
+	};
+
+
 	using ANIMTIME_DESC = struct tagAnimTimeDesc {
 		int iAnimIndex = 0;
 		unsigned int iCurrFrame = 0;

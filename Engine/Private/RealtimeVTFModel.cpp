@@ -144,21 +144,59 @@ HRESULT CRealtimeVTFModel::Init_Prototype(const string& strFilePath, const _bool
 
 HRESULT CRealtimeVTFModel::Init(void* pArg)
 {
-	m_isLoop = true;
+	if (FAILED(CreateVTF()))
+		return E_FAIL;
 
 	return S_OK;
 }
 
 HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 {
+	if(true == m_isUsingMotionBlur)
+		m_pContext->CopyResource(m_pOldBoneTexture, m_pBoneTexture);
+
+	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop,
+		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio, &m_iCurrentTrigger);
+
+
+	vector<_mat> CombinedBones;
+
+
+	for (auto& pBone : m_Bones) {
+		pBone->Update_CombinedMatrix(m_Bones);
+		_mat BoneMatrix = pBone->Get_OffsetMatrix() * *(pBone->Get_CombinedMatrix()) * m_PivotMatrix;
+		CombinedBones.push_back(BoneMatrix);
+	}
+
+	if (FAILED(UpdateBoneTexture(CombinedBones)))
+		return E_FAIL;
+	
+	CombinedBones.clear();
 
 	return S_OK;
 }
 
-HRESULT CRealtimeVTFModel::Set_NextAnimation(_uint iAnimIndex, _bool isLoop)
+void CRealtimeVTFModel::Set_Animation(ANIM_DESC Animation_Desc)
 {
-	m_iNextAnimIndex = iAnimIndex;
-	m_isLoop = isLoop;
+	if (m_AnimDesc.iAnimIndex != Animation_Desc.iAnimIndex or
+		Animation_Desc.bRestartAnimation) {
+
+		m_isAnimChanged = true;
+		m_iCurrentTrigger = 0;
+
+		for (auto& pAnim : m_Animations)
+			pAnim->ResetFinished();
+
+		if (m_AnimDesc.iAnimIndex >= m_iNumAnimations)
+			m_AnimDesc.iAnimIndex = m_iNumAnimations - 1;
+	}
+
+	m_AnimDesc = Animation_Desc;
+}
+
+HRESULT CRealtimeVTFModel::Set_UsingMotionBlur(_bool UsingBlur)
+{
+	m_isUsingMotionBlur = UsingBlur;
 
 	return S_OK;
 }
@@ -183,8 +221,13 @@ HRESULT CRealtimeVTFModel::Bind_Material(CShader* pShader, const _char* pVariabl
 
 HRESULT CRealtimeVTFModel::Bind_Bone(CShader* pShader)
 {
-	if (FAILED(pShader->Bind_ShaderResourceView("g_BoneTexture", m_pSRV)))
+	if (FAILED(pShader->Bind_ShaderResourceView("g_BoneTexture", m_pBoneSRV)))
 		return E_FAIL;
+
+	if (true == m_isUsingMotionBlur) {
+		if (FAILED(pShader->Bind_ShaderResourceView("g_OldBoneTexture", m_pOldBoneSRV)))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -303,83 +346,49 @@ HRESULT CRealtimeVTFModel::Read_Materials(ifstream& File, const string& strFileP
 	return S_OK;
 }
 
-HRESULT CRealtimeVTFModel::CreateVTF(_uint MaxFrame)
+HRESULT CRealtimeVTFModel::CreateVTF()
 {
-	vector<ANIMTRANS_ARRAY> AnimTransforms;
-	AnimTransforms.resize(m_iNumAnimations);
-
-
 	D3D11_TEXTURE2D_DESC Desc = {};
 	Desc.Width = m_Bones.size() * 4;
 	Desc.Height = 1;
+	Desc.MipLevels = 1;
 	Desc.ArraySize = 1;
 	Desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	Desc.Usage = D3D11_USAGE_IMMUTABLE;
+	Desc.Usage = D3D11_USAGE_DYNAMIC;
+	Desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	Desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	Desc.MipLevels = 1;
 	Desc.SampleDesc.Count = 1;
 
-	const _uint BoneMatrixSize = m_Bones.size() * sizeof(_mat);
-	const _uint AnimationSize = BoneMatrixSize * MaxFrame;
-	void* AllAnimationPtr = malloc(AnimationSize * m_iNumAnimations);
-
-	for (size_t i = 0; i < m_iNumAnimations; i++)
-	{
-		_uint iAnimSize = i * AnimationSize;
-
-		BYTE* AnimationPtr = reinterpret_cast<BYTE*>(AllAnimationPtr) + iAnimSize;
-
-		for (size_t j = 0; j < MaxFrame; j++)
-		{
-			void* Ptr = AnimationPtr + j * BoneMatrixSize;
-			memcpy(Ptr, AnimTransforms[i].TransformArray[j].data(), BoneMatrixSize);
-		}
-	}
-
-	vector<D3D11_SUBRESOURCE_DATA> SubResourceData(m_iNumAnimations);
-
-	for (size_t i = 0; i < m_iNumAnimations; i++)
-	{
-		void* Ptr = reinterpret_cast<BYTE*>(AllAnimationPtr) + i * BoneMatrixSize;
-		SubResourceData[i].pSysMem = Ptr;
-		SubResourceData[i].SysMemPitch = BoneMatrixSize;
-		SubResourceData[i].SysMemSlicePitch = AnimationSize;
-	}
-
-	if (FAILED(m_pDevice->CreateTexture2D(&Desc, SubResourceData.data(), &m_pTexture)))
+	if (FAILED(m_pDevice->CreateTexture2D(&Desc, nullptr, &m_pBoneTexture)))
 		return E_FAIL;
 
-	free(AllAnimationPtr);
-
+	if (FAILED(m_pDevice->CreateTexture2D(&Desc, nullptr, &m_pOldBoneTexture)))
+		return E_FAIL;
+	
 	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
 	SRVDesc.Format = Desc.Format;
 	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
 	SRVDesc.Texture2DArray.MipLevels = 1;
-	SRVDesc.Texture2DArray.ArraySize = m_iNumAnimations;
+	SRVDesc.Texture2DArray.ArraySize = 1;
 
-	if (FAILED(m_pDevice->CreateShaderResourceView(m_pTexture, &SRVDesc, &m_pSRV)))
+	if (FAILED(m_pDevice->CreateShaderResourceView(m_pBoneTexture, &SRVDesc, &m_pBoneSRV)))
+		return E_FAIL;
+
+	if (FAILED(m_pDevice->CreateShaderResourceView(m_pOldBoneTexture, &SRVDesc, &m_pOldBoneSRV)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-HRESULT CRealtimeVTFModel::CreateAnimationTransform(_uint iIndex, vector<ANIMTRANS_ARRAY>& AnimTransforms)
+HRESULT CRealtimeVTFModel::UpdateBoneTexture(vector<_mat>& CombinedBones)
 {
-	CAnimation* pAnimation = m_Animations[iIndex];
+	D3D11_MAPPED_SUBRESOURCE TexData;
+	if (FAILED(m_pContext->Map(m_pBoneTexture, 0, D3D11_MAP_WRITE_DISCARD, 0, &TexData)))
+		return E_FAIL;
 
-	for (size_t i = 0; i < pAnimation->Get_MaxFrame(); i++)
-	{
-		if (FAILED(pAnimation->Prepare_Animation(m_Bones, i)))
-			return E_FAIL;
+	memcpy(TexData.pData, CombinedBones.data(), m_Bones.size() * sizeof(_mat));
 
-
-		for (size_t j = 0; j < m_Bones.size(); j++)
-		{
-			m_Bones[j]->Update_CombinedMatrix(m_Bones);
-
-			AnimTransforms[iIndex].TransformArray[i][j] = m_Bones[j]->Get_OffsetMatrix() * *(m_Bones[j]->Get_CombinedMatrix()) * m_PivotMatrix;
-		}
-	}
+	m_pContext->Unmap(m_pBoneTexture, 0);
 
 	return S_OK;
 }
@@ -439,6 +448,9 @@ void CRealtimeVTFModel::Free()
 	}
 	m_Materials.clear();
 
-	Safe_Release(m_pTexture);
-	Safe_Release(m_pSRV);
+	Safe_Release(m_pOldBoneTexture);
+	Safe_Release(m_pOldBoneSRV);
+
+	Safe_Release(m_pBoneTexture);
+	Safe_Release(m_pBoneSRV);
 }

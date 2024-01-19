@@ -119,16 +119,6 @@ HRESULT CMesh::Init(void* pArg)
 
 HRESULT CMesh::Bind_BoneMatrices(CShader* pShader, const vector<CBone*>& Bones, const _char* pVariableName, _mat PivotMatrix)
 {
-	//D3D11_MAPPED_SUBRESOURCE TexData;
-	//m_pContext->Map(m_pTexture, 0, D3D11_MAP_WRITE_DISCARD, 0, &TexData);
-
-	//_mat* BonMatrices = (_mat*)TexData.pData;
-	//_uint i = 0;
-	//for (size_t i = 0; i < m_iNumBones; i++)
-	//	BonMatrices[i] = m_BoneMatrices[i];
-
-	//m_pContext->Unmap(m_pTexture, 0);
-
 	for (size_t i = 0; i < m_iNumBones; i++)
 	{
 		m_BoneMatrices[i] = m_OffsetMatrices[i] * *Bones[m_BoneIndices[i]]->Get_CombinedMatrix() * PivotMatrix;
