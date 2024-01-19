@@ -49,7 +49,7 @@ HRESULT CPop_QuestIn::Init(void* pArg)
 
 void CPop_QuestIn::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON))
+	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 	{
 		m_isDead = true;
 	}

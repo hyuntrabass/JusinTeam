@@ -270,7 +270,7 @@ public:
 	void Tick_State(_float fTimeDelta);
 private:
 	vector<CBodyPart*> m_vecParts{};
-	CGameObject* m_pWeapon{};
+	CWeapon* m_pWeapon{};
 	CGameObject* m_pNameTag{};
 
 	CTransform* m_pCameraTransform{};
