@@ -44,12 +44,10 @@ HRESULT CPlayer::Init(void* pArg)
 	m_BowSkill[3] = Anim_ID_8130_IllusionArrow; // 분신 나와서 화살(쿨김)
 	m_BowSkill[4] = Anim_ID_7060_KnockBack; // 에임모드 변경(우클릭)
 
-<<<<<<< HEAD
+
 	m_pGameInstance->Register_CollisionObject(this, m_pHitCollider, true);
 	
-=======
 
->>>>>>> 09b5d792ee702f75b51bbef7d7291c793f7f3091
 	return S_OK;
 }
 
@@ -101,7 +99,6 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if(m_pWeapon!=nullptr)
 	m_pWeapon->Tick(fTimeDelta);
-<<<<<<< HEAD
 	m_pHitCollider->Update(m_pTransformCom->Get_World_Matrix());
 	for (int i = 0; i < AT_End; i++)
 	{
@@ -109,10 +106,9 @@ void CPlayer::Tick(_float fTimeDelta)
 		m_pAttCollider[i]->Update(offset *m_pTransformCom->Get_World_Matrix());
 	}
 
-=======
 	if (m_pNameTag != nullptr)
 		m_pNameTag->Tick(fTimeDelta);
->>>>>>> 09b5d792ee702f75b51bbef7d7291c793f7f3091
+
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)
@@ -135,7 +131,6 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	}
 
 	if (m_pWeapon != nullptr)
-<<<<<<< HEAD
 	m_pWeapon->Late_Tick(fTimeDelta);
 
 	m_pRendererCom->Add_DebugComponent(m_pHitCollider);
@@ -145,12 +140,10 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Common]);
 	}
 
-=======
-		m_pWeapon->Late_Tick(fTimeDelta);
-	
+		
+
 	if (m_pNameTag != nullptr)
 		m_pNameTag->Late_Tick(fTimeDelta);
->>>>>>> 09b5d792ee702f75b51bbef7d7291c793f7f3091
 }
 
 HRESULT CPlayer::Render()
@@ -1268,14 +1261,13 @@ void CPlayer::Free()
 	}
 	m_vecParts.clear();
 
-<<<<<<< HEAD
 	for (int i = 0; i < AT_End; i++)
 	{
 		Safe_Release(m_pAttCollider[i]);
 	}
-=======
+
 	Safe_Release(m_pNameTag);
->>>>>>> 09b5d792ee702f75b51bbef7d7291c793f7f3091
+
 	Safe_Release(m_pWeapon);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pCameraTransform);
