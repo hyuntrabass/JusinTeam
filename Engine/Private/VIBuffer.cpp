@@ -16,6 +16,7 @@ CVIBuffer::CVIBuffer(const CVIBuffer& rhs)
 	, m_iNumIndices(rhs.m_iNumIndices)
 	, m_eIndexFormat(rhs.m_eIndexFormat)
 	, m_ePrimitiveTopology(rhs.m_ePrimitiveTopology)
+	, m_pVertices(rhs.m_pVertices)
 {
 	Safe_AddRef(m_pVB);
 	Safe_AddRef(m_pIB);

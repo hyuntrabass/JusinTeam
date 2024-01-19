@@ -15,9 +15,11 @@ enum class ItemType
 	Map,
 	Terrain,
 	Objects,
+	Environment,
 	Monster,
 	NPC,
 	Trigger,
+	Interaction,
 	Camera,
 	End
 };
@@ -44,8 +46,9 @@ struct MapInfo
 };
 
 struct TerrainInfo {
-	_uint m_iNumVerticesX{1};
-	_uint m_iNumVerticesZ{1};
+	_uint m_iNumVerticesX{0};
+	_uint m_iNumVerticesZ{0};
+
 	class CTerrain** ppTerrain{ nullptr };
 };
 
@@ -62,34 +65,36 @@ public:
 	HRESULT Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc);
 	void Tick(_float fTimeDelta);
 	HRESULT Render();
-
 	_vec4 Get_MouseWorld() { return m_vMouseWorld; }
 
 private:
+	_int FindByName(char* SearchStr, vector<const char*> List);
 	HRESULT ImGuiMenu();
 	HRESULT ImGuiPos();
-	_int FindByName(char* SearchStr, vector<const char*> List);
 	HRESULT ImGuizmoMenu();
 
 	void Create_Dummy(const _int& iListIndex);
 	void Create_Map(const _int& iListIndex);
 	HRESULT Create_Terrain();
-	
+	HRESULT Modify_Terrain();
 	void Delete_Dummy();
 	void Delete_Map();
-	HRESULT Modify_Terrain();
 
-	void Search_Path();
+
+
 	void Search_Files(string DirPath, const char* Path, vector<const char*>* List);
 	void Reset();
+
+	void Search_Map(int iSelectMap);
+	void Search_Object(int iSelectObject);
+	void Search_Monster(int iSelectMonster);
+	void Search_NPC(int iSelectNPC);
+
 	void Mouse_Pos();
 	void FastPicking();
-
-
+	void Picking_On_Terrain();
 	void MeshToMask();
-
-	void Map_Vertices();
-
+	HRESULT Map_Vertices();
 
 	// 데이터 파싱
 	// 맵
@@ -104,8 +109,10 @@ private:
 	HRESULT Save_Monster();
 	HRESULT Load_Monster();
 
-private:
+	// 현재 위치 저장
+	HRESULT Save_Pos();
 
+private:
 	CGameInstance* m_pGameInstance{ nullptr };
 	HWND m_hWnd;
 	_uint m_iWinSizeX{ 0 };
@@ -117,7 +124,8 @@ private:
 	_vec4 m_PickingPos{ 0.f, 0.f, 0.f, 1.f };
 	_vec4 m_TerrainPos{ 0.f, 0.f, 0.f, 1.f };
 	_float m_fCamDist{};
-	_int TerrainCount[1]{};
+	_int TerrainCount[1]{2};
+	_float TerrainHight{};
 
 	_float4 m_vPos{ 0.f, 0.f, 0.f, 1.f };
 	_float4 m_vLook{ 0.f, 0.f, 1.f, 0.f };
@@ -126,8 +134,6 @@ private:
 
 	_int DummyIndex{0};
 	_int MapIndex{0};
-	_bool m_isTerrain{false};
-
 	_bool m_isMode{false};
 
 private:
@@ -135,14 +141,14 @@ private:
 	vector<const char*> Maps;
 	vector<const char*> Objects;
 	vector<const char*> Monsters;
-	//vector<const char*> NPCs;
+	vector<const char*> NPCs;
 	//vector<const char*> NPCPath;
 
 
 	vector<class CMap*> m_MapsList{};
 	vector<class CDummy*> m_ObjectsList{};
 	vector<class CDummy*> m_MonsterList{};
-	//vector<class CDummy*> m_NPCList{};
+	vector<class CDummy*> m_NPCList{};
 	//vector<const CDummy*> TriggerList;
 
 	map<int, class CDummy*>m_DummyList{};
@@ -160,6 +166,7 @@ private:
 
 	_int m_iSelectIdx = {-1 };
 	_bool m_iImGuizmoCheck = {false };
+	_vec3 LastMousePosition{};
 
 public:
 	static CImGui_Manager* Create( const GRAPHIC_DESC& GraphicDesc);

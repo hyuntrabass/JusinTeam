@@ -1,9 +1,15 @@
 #pragma once
 #include "VIBuffer.h"
+#include "Mesh.h"
 
-struct Info {
+struct NormalTerrain {
 	_uint iNumVerticesX{};
 	_uint iNumVerticesZ{};
+};
+
+struct MeshTerrain {
+	vector<VTXSTATICMESH> Vertices{};
+	vector<_ulong> Indices{};
 };
 
 BEGIN(Engine)
@@ -21,23 +27,23 @@ public:
 public:
 	_uint Get_NumVerticesX() { return m_iNumVerticesX; }
 	_uint Get_NumVerticesZ() { return m_iNumVerticesZ; }
-
 private:
-	Info m_pTerrain{};
+	NormalTerrain m_pTerrain{};
+	MeshTerrain m_pMeshTerrain{};
 
 private:
 	_bool	m_isClone;
 	_uint m_iNumVerticesX{ 0 };
 	_uint m_iNumVerticesZ{ 0 };
+
 public:
 	HRESULT ModifyTerrainVertexBuffer( _uint iNumVerticesX,  _uint iNumVerticesZ);
-	//HRESULT VertexBuffer_Terrain(vector<_float3> vVertices, vector<_float3> vIndices);
-	//HRESULT ModifyPos( _uint iNumVerticesX,  _uint iNumVerticesZ);
-
+	HRESULT Mesh_Terrain(vector<VTXSTATICMESH> vVertices, vector<_ulong> vIndices);
+	HRESULT Modify_Terrain_Hight(_uint iNumVerticesX, _uint iNumVerticesZ, _vec3 PickedPosition, _float fNewHight);
 
 public:
 	static CVIBuffer_Terrain* Create(_dev pDevice, _context pContext);
-	virtual CComponent* Clone(void* pArg) override;
+	virtual CComponent* Clone(void* pArg);
 	virtual void Free() override;
 };
 
