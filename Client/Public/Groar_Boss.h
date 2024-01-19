@@ -112,7 +112,8 @@ private:
 	CModel* m_pScene02ModelCom = { nullptr };
 	CModel* m_pBossModelCom = { nullptr };
 
-	CCollider* m_pColliderCom = { nullptr };
+	CCollider* m_pBodyColliderCom = { nullptr };
+	CCollider* m_pAttackColliderCom = { nullptr };
 
 private:
 	GROAR_STATE m_ePreState = STATE_END;

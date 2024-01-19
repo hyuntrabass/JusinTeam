@@ -58,7 +58,7 @@ void CGoat::Tick(_float fTimeDelta)
 	m_pModelCom->Set_Animation(m_Animation);
 
 	Update_Collider();
-	__super::Update_BodyCollider();
+	__super::Update_MonsterCollider();
 
 }
 
@@ -68,7 +68,9 @@ void CGoat::Late_Tick(_float fTimeDelta)
 
 #ifdef _DEBUGTEST
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
+
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
+	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
 
 #endif
 }
@@ -78,6 +80,22 @@ HRESULT CGoat::Render()
 	__super::Render();
 
 	return S_OK;
+}
+
+void CGoat::Set_Damage(_int iDamage, _uint iDamageType)
+{
+	m_iHP -= iDamage;
+
+	if (iDamageType == WP_BOW)
+	{
+		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
+
+		m_pTransformCom->Go_To_Dir(vDir, 0.1f);
+	}
+
+	else if (iDamageType == WP_SWORD)
+	{
+	}
 }
 
 void CGoat::Init_State(_float fTimeDelta)
@@ -265,13 +283,27 @@ HRESULT CGoat::Add_Collider()
 
 	Collider_Desc BodyCollDesc = {};
 	BodyCollDesc.eType = ColliderType::OBB;
-	BodyCollDesc.vExtents = _vec3(0.3f, 1.2f, 0.7f);
-	BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y / 2.f, 0.f);
+	BodyCollDesc.vExtents = _vec3(0.3f, 1.f, 0.7f);
+	BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y, 0.f);
 	BodyCollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 		TEXT("Com_Collider_OBB"), (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
 		return E_FAIL;
+
+	// Frustum
+	Collider_Desc ColDesc{};
+	ColDesc.eType = ColliderType::Frustum;
+	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+	_matrix matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
+	// 1인자 : 절두체 각도(범위), 2인자 : Aspect, 3인자 : Near, 4인자 : Far(절두체 깊이)
+	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.f), 1.f / 2.5f, 0.01f, 2.f);
+	XMStoreFloat4x4(&ColDesc.matFrustum, matView * matProj);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack"), reinterpret_cast<CComponent**>(&m_pAttackColliderCom), &ColDesc)))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -283,6 +315,10 @@ void CGoat::Update_Collider()
 	Matrix *= m_pTransformCom->Get_World_Matrix();
 
 	m_pColliderCom->Update(Matrix);
+
+	_mat Offset = _mat::CreateTranslation(0.f, 1.f, 0.f);
+	m_pAttackColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
+
 }
 
 CGoat* CGoat::Create(_dev pDevice, _context pContext)

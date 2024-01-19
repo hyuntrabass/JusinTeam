@@ -102,7 +102,7 @@ _float CMonster::Compute_PlayerDistance()
 	return fDistance;
 }
 
-void CMonster::Update_BodyCollider()
+void CMonster::Update_MonsterCollider()
 {
 	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 }
@@ -237,4 +237,5 @@ void CMonster::Free()
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pBodyColliderCom);
+	Safe_Release(m_pAttackColliderCom);
 }
