@@ -81,10 +81,6 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 	{
 		m_pTransformCom->Set_Position(*m_Effect.pPos);
 	}
-	else
-	{
-		m_pTransformCom->Set_Position(m_Effect.vPos);
-	}
 
 	switch (m_Effect.iType)
 	{

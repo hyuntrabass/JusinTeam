@@ -13,8 +13,8 @@ private:
 	virtual ~CEffect_Dummy() = default;
 
 public:
-	void Set_Position(_vec4 vPos) {
-		m_Effect.vPos = vPos;
+	void Set_WorldMatrix(_mat WorldMatrix) {
+		m_pTransformCom->Set_Matrix(WorldMatrix);
 	}
 
 public:

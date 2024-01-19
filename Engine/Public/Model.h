@@ -81,8 +81,6 @@ private:
 
 	ANIM_DESC m_AnimDesc{};
 
-	_uint m_iCurrentTrigger = 0;
-
 	ID3D11Texture2D* m_pTexture{ nullptr };
 	ID3D11ShaderResourceView* m_pSRV{ nullptr };
 
