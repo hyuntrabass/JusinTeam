@@ -14,6 +14,19 @@ public:
 	virtual HRESULT Init_Prototype() override;
 	virtual HRESULT Init(void* pArg) override;
 	virtual HRESULT Render() override;
+	ID3D11Buffer* Get_VB()
+	{
+		return m_pVB;
+	}
+	ID3D11Buffer* Get_IB()
+	{
+		return m_pIB;
+	}
+
+	_float3* Get_Vertices(void)
+	{
+		return m_pVertices;
+	}
 
 protected:
 	ID3D11Buffer* m_pVB{ nullptr };
@@ -32,6 +45,9 @@ protected:
 
 	D3D11_BUFFER_DESC m_BufferDesc{};
 	D3D11_SUBRESOURCE_DATA m_InitialData{};
+
+	_float3* m_pVertices {};
+
 
 protected:
 	HRESULT Create_Buffer(ID3D11Buffer** ppBuffer);

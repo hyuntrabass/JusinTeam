@@ -8,11 +8,6 @@ class CUI_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CUI_Manager)
 
-public:
-	enum CHANNELID
-	{
-	};
-
 private:
 	CUI_Manager();
 	virtual ~CUI_Manager() = default;

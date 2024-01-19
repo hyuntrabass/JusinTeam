@@ -23,6 +23,8 @@
 #include "Pop_QuestEnd.h"
 #include "BlurTexture.h"
 
+#include "QuestBox.h"
+#include "Quest.h"
 #include "NameTag.h"
 #include "ExpBar.h"
 #include "HPBar.h"

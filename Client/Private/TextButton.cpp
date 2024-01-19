@@ -59,6 +59,7 @@ HRESULT CTextButton::Init(void* pArg)
 void CTextButton::Tick(_float fTimeDelta)
 {
 
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
 
 void CTextButton::Late_Tick(_float fTimeDelta)
@@ -157,7 +158,7 @@ void CTextButton::Set_Position(_vec2 vPos)
 {
 	m_fX = vPos.x;
 	m_fY = vPos.y;
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+	//__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
 
 void CTextButton::Set_Size(_float fSizeX, _float fSizeY, _float fFontSize)

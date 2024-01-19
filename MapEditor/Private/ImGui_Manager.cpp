@@ -6,15 +6,14 @@
 #include "GameInstance.h"
 
 #include "Dummy.h"
-#include "Map.h"
 #include "Terrain.h"
+#include "Map.h"
 
 IMPLEMENT_SINGLETON(CImGui_Manager)
 
 CImGui_Manager::CImGui_Manager()
 	: m_pGameInstance(CGameInstance::Get_Instance())
 {
-
 	Safe_AddRef(m_pGameInstance);
 }
 
@@ -28,14 +27,32 @@ HRESULT CImGui_Manager::Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc)
 	window_flags |= ImGuiWindowFlags_NoTitleBar;
 	window_flags |= ImGuiWindowFlags_NoMove;
 	window_flags |= ImGuiWindowFlags_NoResize;
-
-	Search_Path();
-
 	return S_OK;
 }
 
 void CImGui_Manager::Tick(_float fTimeDelta)
 {
+	if (m_eItemType == ItemType::Terrain)
+	{
+		if (m_pTerrain)
+		{
+			CVIBuffer_Terrain* pBuffer = static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer")));
+			Picking_On_Terrain();
+		
+			_vec3 CurrentMousePosition = m_TerrainPos;
+
+			if (LastMousePosition != _float3())
+			{
+				_float fMouseMoveDistance = XMVectorGetX(CurrentMousePosition - LastMousePosition);				
+				_float fNewHeight = fMouseMoveDistance * 0.1f;
+				pBuffer->Modify_Terrain_Hight(pBuffer->Get_NumVerticesX(), pBuffer->Get_NumVerticesZ(), CurrentMousePosition, fNewHeight);
+			}
+
+			LastMousePosition = CurrentMousePosition;
+		
+
+		}
+	}
 	Mouse_Pos();
 	if (m_pSelectedDummy)
 	{
@@ -64,27 +81,14 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 		pMapTransform->Set_State(State::Pos, ObjPosition);
 	}
 
-
 	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LSHIFT))
 	{
+
 		if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
 		{
 			m_PickingPos = m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y);
 		}
 			FastPicking();
-
-		//if (m_pSelectedDummy)
-		//{
-		//	m_pSelectedDummy->Select(false);
-		//	m_pSelectedDummy = nullptr;
-		//}
-
-		//if (m_pSelectMap)
-		//{
-		//	m_pSelectMap->Select(false);
-		//	m_pSelectMap = nullptr;
-		//}
-	
 		
 	}
 	if (m_pGameInstance->Mouse_Down(DIM_RBUTTON))
@@ -103,7 +107,6 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 	}
 
 }
-
 
 HRESULT CImGui_Manager::Render()
 {
@@ -141,10 +144,11 @@ HRESULT CImGui_Manager::ImGuiMenu()
 		if (ImGui::BeginTabItem("Terrain"))
 		{
 			m_eItemType = ItemType::Terrain;
-
-
 			ImGui::InputInt2("Terrain Count", TerrainCount, 0);
 
+			ImGui::SeparatorText("Terrain Hight");
+
+			ImGui::InputFloat("Hight", &TerrainHight, 2);
 
 			if (!m_pTerrain)
 			{
@@ -160,11 +164,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 					Modify_Terrain();
 				}
 			}
-
-
 			ImGui::SeparatorText("Save / Load");
-	
-
 			ImGui::EndTabItem();
 		}
 #pragma endregion
@@ -176,9 +176,14 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			m_eItemType = ItemType::Map;
 
 			ImGui::SeparatorText("LIST");
-
 			static int Map_current_idx = -1;
 			ImGui::Text("Map");
+			static int iSelectMap = 0;
+			ImGui::RadioButton("Midgard", &iSelectMap, 0); ImGui::SameLine();
+			ImGui::RadioButton("Deongeon", &iSelectMap, 1); ImGui::SameLine();
+			ImGui::RadioButton("Village", &iSelectMap, 2);
+			Search_Map(iSelectMap);
+			
 			if (ImGui::BeginListBox("MAPS PATH", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
 			{
 				for (int n = 0; n < Maps.size(); n++)
@@ -188,18 +193,14 @@ HRESULT CImGui_Manager::ImGuiMenu()
 					{
 						Map_current_idx = n;
 					}
-
 					if (is_selected)
 					{
 						ImGui::SetItemDefaultFocus();
 					}
 				}
-
 				ImGui::EndListBox();
 			}
 			ImGui::Separator();
-
-
 			if (ImGui::InputText("Search", Serch_Name, ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				int foundIdx = FindByName(Serch_Name, Maps);
@@ -210,21 +211,17 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				}
 			}
 			ImGui::Separator();
-
 			ImGui::SeparatorText("MATRIX : ");
 			ImGui::InputFloat4("Right", &m_MapMatrix.m[0][0]);
 			ImGui::InputFloat4("Up", &m_MapMatrix.m[1][0]);
 			ImGui::InputFloat4("Look", &m_MapMatrix.m[2][0]);
 			ImGui::InputFloat4("Position", &m_MapMatrix.m[3][0]);
-
 			ImGui::Separator();
 			if (ImGui::Button("Delete"))
 			{
 				Delete_Map();
 			}
-
 			ImGui::SameLine();
-
 			if (ImGui::Button("Create"))
 			{
 				if (Map_current_idx != -1)
@@ -232,15 +229,17 @@ HRESULT CImGui_Manager::ImGuiMenu()
 					Create_Map(Map_current_idx);
 				}
 			}
-
 			ImGui::SeparatorText("Wireframe");
-
 			ImGui::Checkbox("WireFrame", &m_isMode);
 			if (m_pSelectMap)
 			{
 				m_pSelectMap->Mode(m_isMode);
 			}
-
+			ImGui::SeparatorText("Save Vertices");
+			if (ImGui::Button("Save_Vertices"))
+			{
+				Map_Vertices();
+			}
 			ImGui::SeparatorText("Save / Load");
 
 			if (ImGui::Button("Save_Map"))
@@ -253,7 +252,6 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			{
 				Load_Map();
 			}
-
 			ImGui::EndTabItem();
 		}
 #pragma endregion
@@ -263,10 +261,14 @@ HRESULT CImGui_Manager::ImGuiMenu()
 		if (ImGui::BeginTabItem("Objects"))
 		{
 			m_eItemType = ItemType::Objects;
-
 			/* 오브젝트 */
-			ImGui::SeparatorText("LIST");
+			static int iSelectObject = 0;
+			ImGui::RadioButton("Midgard", &iSelectObject, 0); ImGui::SameLine();
+			ImGui::RadioButton("Deongeon", &iSelectObject, 1); ImGui::SameLine();
+			ImGui::RadioButton("Village", &iSelectObject, 2);
+			Search_Object(iSelectObject);
 
+			ImGui::SeparatorText("LIST");
 			static int Object_current_idx = 0;
 			ImGui::Text("Objects");
 			if (ImGui::BeginListBox("OBJECTS DIR", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
@@ -279,25 +281,17 @@ HRESULT CImGui_Manager::ImGuiMenu()
 						Object_current_idx = n;
 						m_iSelectIdx = Object_current_idx;
 					}
-
 					if (is_selected)
 					{
 						ImGui::SetItemDefaultFocus();
-
 					}
 				}
-
 				ImGui::EndListBox();
 			}
-
 			ImGui::Separator();
-
-
-
 			if (ImGui::InputText("Search", Serch_Name, ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				int foundIdx = FindByName(Serch_Name, Objects);
-
 				if (foundIdx != -1)
 				{
 					Object_current_idx = foundIdx;
@@ -305,14 +299,11 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				}
 			}
 			ImGui::Separator();
-
-
 			ImGui::SeparatorText("MATRIX : ");
 			ImGui::InputFloat4("Right", &m_ObjectMatrix.m[0][0],0);
 			ImGui::InputFloat4("Up", &m_ObjectMatrix.m[1][0],0);
 			ImGui::InputFloat4("Look", &m_ObjectMatrix.m[2][0],0);
 			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0],0);
-
 			ImGui::Separator();
 			if (ImGui::Button("Delete"))
 			{
@@ -340,20 +331,100 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			{
 				Load_Object();
 			}
-
-
 			ImGui::EndTabItem();
 		}
 
 #pragma endregion
 
-#pragma region 몬스터
+#pragma region 환경
 
+		if (ImGui::BeginTabItem("Environment"))
+		{
+			m_eItemType = ItemType::Environment;
+			/* 환경 */
+			static int iSelectEnvir = 0;
+			ImGui::RadioButton("Tree", &iSelectEnvir, 0); ImGui::SameLine();
+			ImGui::RadioButton("Grass", &iSelectEnvir, 1); ImGui::SameLine();
+			ImGui::RadioButton("Rock", &iSelectEnvir, 2);
+			Search_Object(iSelectEnvir);
+			ImGui::SeparatorText("LIST");
+			static int Environment_current_idx = 0;
+			ImGui::Text("Objects");
+			if (ImGui::BeginListBox("OBJECTS DIR", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+			{
+				for (int n = 0; n < Objects.size(); n++)
+				{
+					const bool is_selected = (Environment_current_idx == n);
+					if (ImGui::Selectable(Objects[n], is_selected))
+					{
+						Environment_current_idx = n;
+						m_iSelectIdx = Environment_current_idx;
+					}
+					if (is_selected)
+					{
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+				ImGui::EndListBox();
+			}
+			ImGui::Separator();
+			if (ImGui::InputText("Search", Serch_Name, ImGuiInputTextFlags_EnterReturnsTrue))
+			{
+				int foundIdx = FindByName(Serch_Name, Objects);
+				if (foundIdx != -1)
+				{
+					Environment_current_idx = foundIdx;
+					m_iSelectIdx = Environment_current_idx;
+				}
+			}
+			ImGui::Separator();
+			ImGui::SeparatorText("MATRIX : ");
+			ImGui::InputFloat4("Right", &m_ObjectMatrix.m[0][0], 0);
+			ImGui::InputFloat4("Up", &m_ObjectMatrix.m[1][0], 0);
+			ImGui::InputFloat4("Look", &m_ObjectMatrix.m[2][0], 0);
+			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0], 0);
+			ImGui::Separator();
+			if (ImGui::Button("Delete"))
+			{
+				Delete_Dummy();
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("Create"))
+			{
+				if (Environment_current_idx != -1)
+				{
+					Create_Dummy(Environment_current_idx);
+				}
+			}
+
+			ImGui::SeparatorText("Save / Load");
+
+			if (ImGui::Button("SAVE"))
+			{
+				Save_Object();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("LOAD"))
+			{
+				Load_Object();
+			}
+			ImGui::EndTabItem();
+		}
+
+#pragma endregion
+#pragma region 몬스터
 		if (ImGui::BeginTabItem("Monster"))
 		{
 			/* 몬스터 */
-			m_eItemType = ItemType::Monster;
+			static int iSelectMonster = 0;
+			ImGui::RadioButton("Midgard", &iSelectMonster, 0); ImGui::SameLine();
+			ImGui::RadioButton("Deongeon", &iSelectMonster, 1); ImGui::SameLine();
+			ImGui::RadioButton("Village", &iSelectMonster, 2);
+			Search_Monster(iSelectMonster);
 
+			m_eItemType = ItemType::Monster;
 			ImGui::SeparatorText("LIST");
 			static int Monster_current_idx = 0;
 			ImGui::Text("MONSTER");
@@ -367,20 +438,14 @@ HRESULT CImGui_Manager::ImGuiMenu()
 						Monster_current_idx = n;
 						m_iSelectIdx = Monster_current_idx;
 					}
-
 					if (is_selected)
 					{
-
 						ImGui::SetItemDefaultFocus();
-
 					}
 				}
-
 				ImGui::EndListBox();
 			}
-
 			ImGui::Separator();
-			
 			if (ImGui::InputText("Search", Serch_Name, ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				int foundIdx = FindByName(Serch_Name, Monsters);
@@ -392,22 +457,16 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				}
 			}
 			ImGui::Separator();
-
 			ImGui::SeparatorText("MATRIX : ");
 			ImGui::InputFloat4("Right", &m_ObjectMatrix.m[0][0]);
 			ImGui::InputFloat4("Up", &m_ObjectMatrix.m[1][0]);
 			ImGui::InputFloat4("Look", &m_ObjectMatrix.m[2][0]);
 			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0]);
-
 			ImGui::Separator();
-
-
-
 			if (ImGui::Button("Delete"))
 			{
 				Delete_Dummy();
 			}
-
 			ImGui::SameLine();
 
 			if (ImGui::Button("Create"))
@@ -417,9 +476,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 					Create_Dummy(Monster_current_idx);
 				}
 			}
-
 			ImGui::SeparatorText("Save / Load");
-
 			if (ImGui::Button("SAVE"))
 			{
 				Save_Monster();
@@ -429,8 +486,6 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			{
 				Load_Monster();
 			}
-
-
 			ImGui::EndTabItem();
 		}
 
@@ -440,44 +495,42 @@ HRESULT CImGui_Manager::ImGuiMenu()
 		if (ImGui::BeginTabItem("NPC"))
 		{
 			/* NPC */
+			static int iSelectNPC = 0;
+			ImGui::RadioButton("Midgard", &iSelectNPC, 0); ImGui::SameLine();
+			ImGui::RadioButton("Deongeon", &iSelectNPC, 1); ImGui::SameLine();
+			ImGui::RadioButton("Village", &iSelectNPC, 2);
+			Search_NPC(iSelectNPC);
+
 			m_eItemType = ItemType::NPC;
-
-		/*	ImGui::SeparatorText("LIST");
-
+			ImGui::SeparatorText("LIST");
 			static int NPC_current_idx = 0;
 			ImGui::Text("NPC");
 			if (ImGui::BeginListBox("NPC FILE", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
 			{
-				for (int n = 0; n < Monsters.size(); n++)
+				for (int n = 0; n < NPCs.size(); n++)
 				{
 					const bool is_selected = (NPC_current_idx == n);
-					if (ImGui::Selectable(Monsters[n], is_selected))
+					if (ImGui::Selectable(NPCs[n], is_selected))
 					{
 						NPC_current_idx = n;
 						m_iSelectIdx = NPC_current_idx;
 					}
-
 					if (is_selected)
 						ImGui::SetItemDefaultFocus();
 				}
-
 				ImGui::EndListBox();
 			}
 			ImGui::Separator();
-
 			ImGui::SeparatorText("MATRIX : ");
 			ImGui::InputFloat4("Right", &m_ObjectMatrix.m[0][0], 0);
 			ImGui::InputFloat4("Up", &m_ObjectMatrix.m[1][0], 0);
 			ImGui::InputFloat4("Look", &m_ObjectMatrix.m[2][0], 0);
 			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0], 0);
-
 			ImGui::Separator();
-
 			if (ImGui::Button("Delete"))
 			{
 				Delete_Dummy();
 			}
-
 			ImGui::SameLine();
 
 			if (ImGui::Button("Create"))
@@ -487,9 +540,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 					Create_Dummy(NPC_current_idx);
 				}
 			}
-
 			ImGui::Separator();
-
 			if (ImGui::Button("SAVE"))
 			{
 				Save_Monster();
@@ -498,13 +549,67 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			if (ImGui::Button("LOAD"))
 			{
 				Load_Monster();
-			}*/
-
-
+			}
 			ImGui::EndTabItem();
 		}
 #pragma endregion
 
+#pragma region 상호작용
+		if (ImGui::BeginTabItem("Interaction"))
+		{
+			/* NPC */
+			m_eItemType = ItemType::NPC;
+			ImGui::SeparatorText("LIST");
+			static int NPC_current_idx = 0;
+			ImGui::Text("Interaction");
+			if (ImGui::BeginListBox("Interaction FILE", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+			{
+				for (int n = 0; n < NPCs.size(); n++)
+				{
+					const bool is_selected = (NPC_current_idx == n);
+					if (ImGui::Selectable(NPCs[n], is_selected))
+					{
+						NPC_current_idx = n;
+						m_iSelectIdx = NPC_current_idx;
+					}
+					if (is_selected)
+						ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndListBox();
+			}
+			ImGui::Separator();
+			ImGui::SeparatorText("MATRIX : ");
+			ImGui::InputFloat4("Right", &m_ObjectMatrix.m[0][0], 0);
+			ImGui::InputFloat4("Up", &m_ObjectMatrix.m[1][0], 0);
+			ImGui::InputFloat4("Look", &m_ObjectMatrix.m[2][0], 0);
+			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0], 0);
+			ImGui::Separator();
+			if (ImGui::Button("Delete"))
+			{
+				Delete_Dummy();
+			}
+			ImGui::SameLine();
+
+			if (ImGui::Button("Create"))
+			{
+				if (m_iSelectIdx != -1)
+				{
+					Create_Dummy(NPC_current_idx);
+				}
+			}
+			ImGui::Separator();
+			if (ImGui::Button("SAVE"))
+			{
+
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("LOAD"))
+			{
+
+			}
+			ImGui::EndTabItem();
+		}
+#pragma endregion
 #pragma region 카메라
 		if (ImGui::BeginTabItem("Camera"))
 		{
@@ -574,8 +679,7 @@ HRESULT CImGui_Manager::ImGuiPos()
 
 	ImGui::Checkbox("ImGui Check", &m_iImGuizmoCheck);
 
-	ImGui::SeparatorText("All Reset : ");
-
+	// 마스크맵 만들기
 	if (m_eItemType == ItemType::Map)
 	{
 		if (ImGui::Button("Normal Save"))
@@ -583,12 +687,18 @@ HRESULT CImGui_Manager::ImGuiPos()
 			MeshToMask();
 		}
 	}
+	ImGui::SeparatorText("All Reset : ");
 
 	if (ImGui::Button("Reset"))
 	{
 		Reset();
 	}
-		
+	ImGui::SeparatorText("Pos Save : ");
+
+	if (ImGui::Button("Save_Pos"))
+	{
+		Save_Pos();
+	}
 	ImGui::End();
 	return S_OK;
 }
@@ -652,13 +762,11 @@ HRESULT CImGui_Manager::ImGuizmoMenu()
 			}
 		}
 	}
-	
 	return S_OK;
 }
 
 void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 {
-
 	if (m_pSelectedDummy)
 	{
 		m_pSelectedDummy->Select(false);
@@ -683,6 +791,9 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	case ItemType::Monster:
 		MultiByteToWideChar(CP_ACP, 0, Monsters[iListIndex], static_cast<int>(strlen(Monsters[iListIndex])), strUnicode, static_cast<int>(strlen(Monsters[iListIndex])));
 		break;
+	case ItemType::NPC:
+		MultiByteToWideChar(CP_ACP, 0, NPCs[iListIndex], static_cast<int>(strlen(NPCs[iListIndex])), strUnicode, static_cast<int>(strlen(NPCs[iListIndex])));
+		break;
 	}
 	Info.Prototype += strUnicode;
 
@@ -694,12 +805,14 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	
 	switch (m_eItemType)
 	{
-
 	case MapEditor::ItemType::Objects:
 		m_ObjectsList.push_back(m_pSelectedDummy);
 		break;
 	case MapEditor::ItemType::Monster:
 		m_MonsterList.push_back(m_pSelectedDummy);
+		break;
+	case MapEditor::ItemType::NPC:
+		m_NPCList.push_back(m_pSelectedDummy);
 		break;
 	}
 	m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
@@ -737,6 +850,7 @@ HRESULT CImGui_Manager::Create_Terrain()
 	TerrainInfo pTerrainInfo{};
 	pTerrainInfo.m_iNumVerticesX = TerrainCount[0];
 	pTerrainInfo.m_iNumVerticesZ = TerrainCount[1];
+
 	pTerrainInfo.ppTerrain = &m_pTerrain;
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &pTerrainInfo)))
@@ -841,69 +955,148 @@ void CImGui_Manager::Reset()
 	if(m_pTerrain)
 		m_pTerrain = nullptr;
 }
-
-
-void CImGui_Manager::Search_Path()
+void CImGui_Manager::Search_Map(int iSelectMap)
 {
-	string strMapFilePath = "../Bin/Resources/StaticMesh/Map/";
+	if (!Maps.empty())
+		Maps.clear();
 
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(strMapFilePath))
+	if (iSelectMap == 0)
 	{
-		if (entry.is_regular_file())
+		string strFilePath = "../../Client/Bin/Resources/StaticMesh/Map/";
+		for (const auto& entry : std::filesystem::recursive_directory_iterator(strFilePath))
 		{
-			string strName = entry.path().stem().string();
-			string extension = entry.path().extension().string();
+			if (entry.is_regular_file())
+			{
+				string strName = entry.path().stem().string();
+				string extension = entry.path().extension().string();
 
-			if (extension == ".hyuntrastatmesh") {
-				char* cstr = new char[strName.length() + 1];
-				strcpy_s(cstr, strName.length() + 1, strName.c_str());
-				Maps.push_back(cstr);
+				if (extension == ".hyuntrastatmesh") {
+					char* cstr = new char[strName.length() + 1];
+					strcpy_s(cstr, strName.length() + 1, strName.c_str());
+					Maps.push_back(cstr);
+				}
 			}
 		}
 	}
-
-	string strObjectsFilePath = "../Bin/Resources/StaticMesh/Object/Mesh/";
-
-	for (const auto& entry : std::filesystem::directory_iterator(strObjectsFilePath))
+	else
 	{
-
-		if (entry.is_regular_file())
+		string strFilePath = "../../Client/Bin/Resources/StaticMesh/Deongeon/";
+		try
 		{
-			string strName = entry.path().stem().string();
-			string extension = entry.path().extension().string();
-
-			if (extension == ".hyuntrastatmesh") {
-
-				char* cstr = new char[strName.length() + 1];
-				strcpy_s(cstr, strName.length() + 1, strName.c_str());
-				Objects.push_back(cstr);
-			}
+			
 		}
-
-	}
-
-	string strMonsterFilePath = "../Bin/Resources/AnimMesh/Monster/";
-
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(strMonsterFilePath))
-	{
-		if (entry.is_regular_file())
+		catch (const std::exception& e)
 		{
-			string strName = entry.path().stem().string();
-			string extension = entry.path().extension().string();
-
-			if (extension == ".hyuntraanimmesh") {
-				char* cstr = new char[strName.length() + 1];
-				strcpy_s(cstr, strName.length() + 1, strName.c_str());
-				Monsters.push_back(cstr);
-
-			}
+			return;
 		}
-
 	}
-
-	// TODO : NPC 등 추가
 }
 
+void CImGui_Manager::Search_Object(int iSelectObject)
+{
+	if (!Objects.empty())
+		Objects.clear();
+
+	if (iSelectObject == 0)
+	{
+		string strFilePath = "../../Client/Bin/Resources/StaticMesh/Object/Mesh/";
+		for (const auto& entry : std::filesystem::directory_iterator(strFilePath))
+		{
+			if (entry.is_regular_file())
+			{
+				string strName = entry.path().stem().string();
+				string extension = entry.path().extension().string();
+
+				if (extension == ".hyuntrastatmesh") {
+
+					char* cstr = new char[strName.length() + 1];
+					strcpy_s(cstr, strName.length() + 1, strName.c_str());
+					Objects.push_back(cstr);
+				}
+			}
+
+		}
+	}
+}
+
+
+
+void CImGui_Manager::Search_Monster(int iSelectMonster)
+{
+	if (!Monsters.empty())
+		Monsters.clear();
+
+	if (iSelectMonster == 0)
+	{
+		string strFilePath = "../../Client/Bin/Resources/AnimMesh/Monster/";
+		for (const auto& entry : std::filesystem::recursive_directory_iterator(strFilePath))
+		{
+			if (entry.is_regular_file())
+			{
+				string strName = entry.path().stem().string();
+				string extension = entry.path().extension().string();
+
+				if (extension == ".hyuntraanimmesh") {
+					char* cstr = new char[strName.length() + 1];
+					strcpy_s(cstr, strName.length() + 1, strName.c_str());
+					Monsters.push_back(cstr);
+
+				}
+			}
+		}
+	}
+	else
+	{
+		string strFilePath = "../Bin/Resources/StaticMesh/Deongeon/";
+		try
+		{
+			
+		}
+		catch (const std::exception& e)
+		{
+			return;
+		}
+	}
+}
+
+
+void CImGui_Manager::Search_NPC(int iSelectNPC)
+{
+	if (!Monsters.empty())
+		Monsters.clear();
+
+	if (iSelectNPC == 0)
+	{
+		string strFilePath = "../../Client/Bin/Resources/AnimMesh/NPC/";
+		for (const auto& entry : std::filesystem::recursive_directory_iterator(strFilePath))
+		{
+			if (entry.is_regular_file())
+			{
+				string strName = entry.path().stem().string();
+				string extension = entry.path().extension().string();
+
+				if (extension == ".hyuntraanimmesh") {
+					char* cstr = new char[strName.length() + 1];
+					strcpy_s(cstr, strName.length() + 1, strName.c_str());
+					NPCs.push_back(cstr);
+
+				}
+			}
+		}
+	}
+	else
+	{
+		string strFilePath = "../../Client/Bin/Resources/StaticMesh/Deongeon/";
+		try
+		{
+
+		}
+		catch (const std::exception& e)
+		{
+			return;
+		}
+	}
+}
 
 void CImGui_Manager::Search_Files(string DirPath, const char* Path, vector<const char*>* List )
 {
@@ -961,6 +1154,13 @@ void CImGui_Manager::Mouse_Pos()
 	_vec4 eyeCoords = XMVector3TransformCoord(XMLoadFloat4(&clipCoords), InversProjMat);
 	eyeCoords = XMVector4Transform(XMLoadFloat4(&eyeCoords), InversViewMat);
 
+	if (m_pTerrain)
+	{
+
+		//m_pTerrain->Set_MousePos(m_PickingPos);
+		m_pTerrain->Set_MousePos(m_TerrainPos);
+	}
+
 	m_vMouseWorld = eyeCoords;
 }
 
@@ -983,7 +1183,7 @@ void CImGui_Manager::FastPicking()
 		
 		if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
 		{
-			DummyIndex = m_pGameInstance->FastPicking(m_vMousePos.x, m_vMousePos.y);
+			DummyIndex = m_pGameInstance->FastPicking((_uint)m_vMousePos.x, (_uint)m_vMousePos.y);
 
 			auto iter = m_DummyList.find(DummyIndex);
 			if (iter != m_DummyList.end())
@@ -1002,7 +1202,7 @@ void CImGui_Manager::FastPicking()
 
 		if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
 		{
-			MapIndex = m_pGameInstance->FastPicking(m_vMousePos.x, m_vMousePos.y);
+			MapIndex = m_pGameInstance->FastPicking((_uint)m_vMousePos.x, (_uint)m_vMousePos.y);
 
 			auto iter = m_Map.find(MapIndex);
 			if (iter != m_Map.end())
@@ -1016,27 +1216,44 @@ void CImGui_Manager::FastPicking()
 	}
 }
 
+void CImGui_Manager::Picking_On_Terrain()
+{
+	if (m_pTerrain)
+	{
+		CVIBuffer* pBuffer = dynamic_cast<CVIBuffer*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer")));
+		CVIBuffer_Terrain* pTerrainBuffer = dynamic_cast<CVIBuffer_Terrain*>(pBuffer);
+		CTransform* pTransform = static_cast<CTransform*>(m_pTerrain->Find_Component(TEXT("Com_Transform")));
+		m_TerrainPos = m_pGameInstance->Compute_MousePicked_Terrain(pTransform->Get_World_Matrix(), pTerrainBuffer->Get_Vertices(), pTerrainBuffer->Get_NumVerticesX(), pTerrainBuffer->Get_NumVerticesZ());
+
+	}
+}
+
 void CImGui_Manager::MeshToMask()
 {
 	if (m_pSelectMap)
 	{
 		CModel* pModel = dynamic_cast<CModel*>(m_pSelectMap->Find_Component(TEXT("Com_Model")));
-		vector<_float3> VerticesPos = pModel->Get_VerticesPos();
+		vector<VTXSTATICMESH> VerticesPos = pModel->Get_StaticMeshVertices();
 
 		m_pSelectMap->Create_HightMap(VerticesPos);
 	}
 }
 
-VOID CImGui_Manager::Map_Vertices()
+HRESULT CImGui_Manager::Map_Vertices()
 {
-	vector<_float3>Vertices{};
-	if (m_pSelectMap)
+	vector<VTXSTATICMESH>Vertices{};
+	vector<_ulong>Indices{};
+	if (m_pSelectMap && m_pTerrain)
 	{
 		CModel* pModel = dynamic_cast<CModel*>(m_pSelectMap->Find_Component(TEXT("Com_Model")));
-		Vertices = pModel->Get_VerticesPos();
+		Vertices = pModel->Get_StaticMeshVertices();
+		Indices = pModel->Get_StaticMeshIndices();
+
+		CVIBuffer_Terrain* pBuffer = dynamic_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer")));
+		pBuffer->Mesh_Terrain(Vertices, Indices);
 
 	}
-
+	return S_OK;
 }
 
 #pragma region 맵 저장 / 불러오기
@@ -1064,7 +1281,7 @@ HRESULT CImGui_Manager::Save_Map()
 		if (!outFile.is_open())
 			return E_FAIL;
 
-		_uint MapListSize = m_MapsList.size();
+		_uint MapListSize = (_uint)m_MapsList.size();
 		outFile.write(reinterpret_cast<const char*>(&MapListSize), sizeof(_uint));
 
 		for (auto& Map : m_MapsList)
@@ -1072,7 +1289,7 @@ HRESULT CImGui_Manager::Save_Map()
 			CTransform* pMapTransform = dynamic_cast<CTransform*>(Map->Find_Component(TEXT("Com_Transform")));
 
 			wstring MapPrototype = Map->Get_Info().Prototype;
-			_ulong MapPrototypeSize = MapPrototype.size();
+			_ulong MapPrototypeSize = (_ulong)MapPrototype.size();
 
 			outFile.write(reinterpret_cast<const char*>(&MapPrototypeSize), sizeof(_ulong));
 			outFile.write(reinterpret_cast<const char*>(MapPrototype.c_str()), MapPrototypeSize * sizeof(wchar_t));
@@ -1085,8 +1302,6 @@ HRESULT CImGui_Manager::Save_Map()
 	}
 	return S_OK;
 }
-
-
 HRESULT CImGui_Manager::Load_Map()
 {
 
@@ -1186,7 +1401,7 @@ HRESULT CImGui_Manager::Save_Object()
 		if (!outFile.is_open())
 			return E_FAIL;
 
-		_uint ObjectsListSize = m_ObjectsList.size();
+		_uint ObjectsListSize = (_uint)m_ObjectsList.size();
 		outFile.write(reinterpret_cast<const char*>(&ObjectsListSize), sizeof(_uint));
 
 		for (auto& Objects : m_ObjectsList)
@@ -1194,7 +1409,7 @@ HRESULT CImGui_Manager::Save_Object()
 			CTransform* pObjectsTransform = dynamic_cast<CTransform*>(Objects->Find_Component(TEXT("Com_Transform")));
 
 			wstring ObjectsPrototype = Objects->Get_Info().Prototype;
-			_ulong ObjectsPrototypeSize = ObjectsPrototype.size();
+			_ulong ObjectsPrototypeSize = (_ulong)ObjectsPrototype.size();
 
 			outFile.write(reinterpret_cast<const char*>(&ObjectsPrototypeSize), sizeof(_ulong));
 			outFile.write(reinterpret_cast<const char*>(ObjectsPrototype.c_str()), ObjectsPrototypeSize * sizeof(wchar_t));
@@ -1207,7 +1422,6 @@ HRESULT CImGui_Manager::Save_Object()
 	}
 	return S_OK;
 }
-
 HRESULT CImGui_Manager::Load_Object()
 {
 	OPENFILENAME OFN;
@@ -1307,7 +1521,7 @@ HRESULT CImGui_Manager::Save_Monster()
 		if (!outFile.is_open())
 			return E_FAIL;
 
-		_uint MonsterListSize = m_MonsterList.size();
+		_uint MonsterListSize = (_uint)m_MonsterList.size();
 		outFile.write(reinterpret_cast<const char*>(&MonsterListSize), sizeof(_uint));
 
 		for (auto& monster : m_MonsterList)
@@ -1315,7 +1529,7 @@ HRESULT CImGui_Manager::Save_Monster()
 			CTransform* pMonsterTransform = dynamic_cast<CTransform*>(monster->Find_Component(TEXT("Com_Transform")));
 
 			wstring MonsterPrototype = monster->Get_Info().Prototype;
-			_ulong MonsterPrototypeSize = MonsterPrototype.size();
+			_ulong MonsterPrototypeSize = (_ulong)MonsterPrototype.size();
 
 			outFile.write(reinterpret_cast<const char*>(&MonsterPrototypeSize), sizeof(_ulong));
 			outFile.write(reinterpret_cast<const char*>(MonsterPrototype.c_str()), MonsterPrototypeSize * sizeof(wchar_t));
@@ -1328,11 +1542,8 @@ HRESULT CImGui_Manager::Save_Monster()
 	}
 	return S_OK;
 }
-
-
 HRESULT CImGui_Manager::Load_Monster()
 {
-
 	OPENFILENAME OFN;
 	TCHAR filePathName[MAX_PATH] = L"";
 	static TCHAR filter[] = L"모두(*.*)\0*.*\0데이터 파일(*.dat)\0*.dat";
@@ -1403,7 +1614,37 @@ HRESULT CImGui_Manager::Load_Monster()
 	}
 	return S_OK;
 }
+HRESULT CImGui_Manager::Save_Pos()
+{
+	OPENFILENAME OFN;
+	TCHAR filePathName[MAX_PATH] = L"";
+	TCHAR lpstrFile[MAX_PATH] = L"_Pos.dat";
+	static TCHAR filter[] = L"모든 파일\0*.*\0텍스트 파일\0*.txt\0dat 파일\0*.dat";
 
+	memset(&OFN, 0, sizeof(OPENFILENAME));
+	OFN.lStructSize = sizeof(OPENFILENAME);
+	OFN.hwndOwner = g_hWnd;
+	OFN.lpstrFilter = filter;
+	OFN.lpstrFile = lpstrFile;
+	OFN.nMaxFile = 256;
+	OFN.lpstrInitialDir = L"..\\Bin\\Data";
+
+	if (GetSaveFileName(&OFN) != 0)
+	{
+		const TCHAR* pGetPath = OFN.lpstrFile;
+
+		std::ofstream outFile(pGetPath, std::ios::binary);
+
+		if (!outFile.is_open())
+			return E_FAIL;
+
+		_vec4 vSelectPos = m_PickingPos;
+		outFile.write(reinterpret_cast<const char*>(&vSelectPos), sizeof(_vec4));
+
+		MessageBox(g_hWnd, L"위치 파일 저장 완료", L"파일 저장", MB_OK);
+	}
+	return S_OK;
+}
 #pragma endregion
 
 CImGui_Manager* CImGui_Manager::Create(const GRAPHIC_DESC& GraphicDesc)

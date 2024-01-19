@@ -36,27 +36,52 @@ HRESULT CPop_QuestIn::Init(void* pArg)
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
+	m_isMain = ((QUESTIN_DESC*)pArg)->isMain;
+	m_strQuestTitle = ((QUESTIN_DESC*)pArg)->strQuestTitle;
+	m_strText = ((QUESTIN_DESC*)pArg)->strText;
+	m_fExp = ((QUESTIN_DESC*)pArg)->fExp;
+	m_iMoney = ((QUESTIN_DESC*)pArg)->iMoney;
 
 	if (FAILED(Add_Parts()))
 	{
 		return E_FAIL;
 	}
 
-	m_strQuestTitle = TEXT("퀘스트 제목");
-	m_strText1 = TEXT("내용");
+
+	m_fStartButtonPos = dynamic_cast<CTextButton*>(m_pButton)->Get_Position();
+	m_fButtonTime = m_fStartButtonPos.y;
 	return S_OK;
 }
 
 void CPop_QuestIn::Tick(_float fTimeDelta)
 {
+	
 	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 	{
 		m_isDead = true;
 	}
+
 	m_fTime += fTimeDelta * 0.2f;
+
+	if (dynamic_cast<CTextButton*>(m_pButton)->Get_Position().y <= m_fStartButtonPos.y - 5.f)
+	{
+		m_fDir = 0.6f;
+		dynamic_cast<CTextButton*>(m_pButton)->Set_Position(_float2(m_fStartButtonPos.x, m_fStartButtonPos.y - 5.f));
+	}
+	if (dynamic_cast<CTextButton*>(m_pButton)->Get_Position().y >= m_fStartButtonPos.y)
+	{
+		m_fDir = -1.f;
+		dynamic_cast<CTextButton*>(m_pButton)->Set_Position(_float2(m_fStartButtonPos.x, m_fStartButtonPos.y));
+	}
+	m_fButtonTime += fTimeDelta * m_fDir * 10.f;
+	dynamic_cast<CTextButton*>(m_pButton)->Set_Position(_float2(m_fStartButtonPos.x, m_fButtonTime));
+
+
+
 
 	m_pBackground->Tick(fTimeDelta);
 	m_pButton->Tick(fTimeDelta);
+
 
 }
 
@@ -95,11 +120,11 @@ HRESULT CPop_QuestIn::Render()
 	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f + 0.2f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f), 0.7, _vec4(1.f, 1.f, 0.f, 1.f));
 	
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText1, _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 280.f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText1, _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 280.f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText1, _vec2((_float)g_iWinSizeX / 2.f, 280.f - 0.2f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText1, _vec2((_float)g_iWinSizeX / 2.f, 280.f + 0.2f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText1, _vec2((_float)g_iWinSizeX / 2.f, 280.f), 0.7);
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 280.f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 280.f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2((_float)g_iWinSizeX / 2.f, 280.f - 0.2f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2((_float)g_iWinSizeX / 2.f, 280.f + 0.2f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2((_float)g_iWinSizeX / 2.f, 280.f), 0.7);
 
 	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 수락하세요."), _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 580.f), 0.4, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 수락하세요."), _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 580.f), 0.4, _vec4(0.f, 0.f, 0.f, 1.f));
@@ -147,7 +172,7 @@ HRESULT CPop_QuestIn::Add_Parts()
 	BLURTEXDesc.fFontSize = 0.f;
 	BLURTEXDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_ExclamationMark");
 	BLURTEXDesc.vPosition = _vec2(m_fX, m_fY);
-	BLURTEXDesc.vSize = _vec2(50.f, 45.f);
+	BLURTEXDesc.vSize = _vec2(55.f, 60.f);
 	BLURTEXDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	BLURTEXDesc.vColor = _vec4(1.0f, 0.5f, 0.1f, 1.f);
 	BLURTEXDesc.vTextPosition = _vec2(0.f, 0.f);
@@ -176,7 +201,7 @@ HRESULT CPop_QuestIn::Add_Parts()
 	}
 
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_ClickArrow");
-	ButtonDesc.vPosition = _vec2(800.f, 560.f);
+	ButtonDesc.vPosition = _vec2(780.f, 565.f);
 	ButtonDesc.vSize = _vec2(30.f, 30.f);
 
 	m_pButton = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
@@ -194,7 +219,7 @@ HRESULT CPop_QuestIn::Add_Parts()
 
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_exp");
 	ButtonDesc.vPosition = _vec2((_float)g_iWinSizeX / 2.f - 120.f, 420.f);
-	ButtonDesc.vSize = _vec2(40.f, 40.f);
+	ButtonDesc.vSize = _vec2(35.f, 35.f);
 	ButtonDesc.vTextPosition = _vec2(60.f, 12.f);
 
 	m_pExp = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
@@ -204,8 +229,8 @@ HRESULT CPop_QuestIn::Add_Parts()
 	}
 	ButtonDesc.strText = to_wstring(m_iMoney);
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_coin");
-	ButtonDesc.vPosition = _vec2((_float)g_iWinSizeX / 2.f + 100.f, 420.f);
-	ButtonDesc.vSize = _vec2(40.f, 40.f);
+	ButtonDesc.vPosition = _vec2((_float)g_iWinSizeX / 2.f + 90.f, 420.f);
+	ButtonDesc.vSize = _vec2(35.f, 35.f);
 	ButtonDesc.vTextPosition = _vec2(40.f, 12.f);
 	m_pMoney = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
 	if (not m_pMoney)
