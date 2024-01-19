@@ -185,17 +185,18 @@ public: // Get_Set
 	// 안개의 정도를 조정할 때 씀. near부터 안개가 끼기 시작해서 far로 갈 수록 안개가 진해짐.
 	void Set_FogNF(const _float2& vFogNF);
 	// 카메라 쉐이크 기능. true 던지면 카메라가 한번 흔들림.
-	void Set_ShakeCam(const _bool& bShake);
+	void Set_ShakeCam(const _bool& bShake , _float fShakePower = 0.1f);
 	// hell 높이를 지정한다.
 	void Set_HellHeight(const _float& fHeight);
 
+	_float Get_ShakePower() { return m_fShakePower; }
 
 	void Set_ZoomFactor(const _float fFactor);
 	void Set_CameraState(const _uint& iIndex);
 	void Set_CameraTargetPos(const _vec4& vPos);
 	void Set_CameraTargetLook(const _vec4& vLook);
 	void Set_Have_TargetLook(const _bool& bHaveLook);
-	void Set_AimMode(_bool Aim) { m_AimMode = Aim; }
+	void Set_AimMode(_bool Aim, _vec3 AimPos = _vec3(0.63f, 1.8f, 1.1f));
 	_bool Get_AimMode() { return m_AimMode; }
 
 
@@ -206,7 +207,9 @@ public: // Get_Set
 	const _vec4& Get_CameraTargetPos() const;
 	const _vec4& Get_CameraTargetLook();
 	const _bool& Have_TargetLook() const;
+	
 
+	_vec3 Get_AimPos() { return m_AimPos; }
 public:
 	void Initialize_Level(_uint iLevelNum);
 	void Level_ShutDown(_uint iCurrentLevel);
@@ -247,6 +250,8 @@ private:
 	_vec4 m_vTarget{};
 	_vec4 m_vTargetLook{};
 	_bool m_AimMode{};
+	_float m_fShakePower{};
+	_vec3 m_AimPos{};
 private:
 	vector<_bool> m_vecLevelInvalid;
 

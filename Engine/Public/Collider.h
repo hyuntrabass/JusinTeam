@@ -16,11 +16,11 @@ struct Collider_Desc
 {
 	ColliderType eType{};
 
-	_float3 vCenter{};
+	_vec3 vCenter{};
 	_float fRadius{};
-	_float3 vExtents{};
-	_float3 vRadians{};
-	_float44 matFrustum{};
+	_vec3 vExtents{};
+	_vec3 vRadians{};
+	_mat matFrustum{};
 };
 
 class ENGINE_DLL CCollider final : public CComponent

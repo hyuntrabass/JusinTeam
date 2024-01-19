@@ -68,6 +68,14 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			m_pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 			Safe_AddRef(m_pPlayerTransform);
 		}
+
+		if (m_pGameInstance->Get_ShakeCam())
+		{
+			
+			m_fShakeAcc = m_pGameInstance->Get_ShakePower();
+			m_pGameInstance->Set_ShakeCam(false);
+		}
+
 		if (!m_pGameInstance->Get_AimMode())
 		{
 			if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON))
@@ -91,12 +99,8 @@ void CCamera_Main::Tick(_float fTimeDelta)
 				}
 
 			}
-	
-			if (m_pGameInstance->Get_ShakeCam())
-			{
-				m_fShakeAcc = { 0.1f };
-				m_pGameInstance->Set_ShakeCam(false);
-			}
+			
+		
 
 			if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
 			{
@@ -134,20 +138,20 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 			}
 
-		m_AimLerpTime += fTimeDelta;
+			m_AimZoomInTime += fTimeDelta * 1.5f;
 
 		_float CamAttackZoom = m_fLerpDistance - m_pGameInstance->Get_CameraAttackZoom();
 		
 		_float vZoomY = 1.3f - (CamAttackZoom * 0.25f);
-		_vec4 vCam = (m_pPlayerTransform->Get_CenterPos()) + _vec4(0.f, vZoomY, 0.f, 0.f)
+		m_vOriCamPos = (m_pPlayerTransform->Get_CenterPos()) + _vec4(0.f, vZoomY, 0.f, 0.f)
 			- (m_pTransformCom->Get_State(State::Look) * CamAttackZoom)
 			+ (m_pTransformCom->Get_State(State::Up) * CamAttackZoom * 0.15f) ;
 
 		_vec4 OriCam{};
-		if (m_AimLerpTime < 1.f)
-			OriCam = XMVectorLerp(m_vAimCamPos, vCam, m_AimLerpTime);
+		if (m_AimZoomInTime < 1.f)
+			OriCam = XMVectorLerp(m_vAimCamPos, m_vOriCamPos, m_AimZoomInTime);
 		else
-			OriCam = vCam;
+			OriCam = m_vOriCamPos;
 
 		m_pTransformCom->Set_State(State::Pos, OriCam);
 		
@@ -166,11 +170,11 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			m_pTransformCom->Set_State(State::Pos, PxVec3ToVector(Buffer.block.position, 1.f));
 		}
 		
-
-		_vec4 vShakePos = m_pTransformCom->Get_State(State::Pos);
+		 _vec4 vShakePos = m_pTransformCom->Get_State(State::Pos);
 		vShakePos += XMVectorSet(fShakeAmount, -fShakeAmount, 0.f, 0.f);
 		m_pTransformCom->Set_State(State::Pos, vShakePos);
 		m_fShakeAcc += fTimeDelta * 10.f;
+		m_AimZoomOutTime = 0.f;
 	} 
 	else
 	{
@@ -182,7 +186,6 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
 		{
-
 			_mat testmat = m_pTransformCom->Get_World_Matrix();
 			m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
 			_vec4 ps = m_pTransformCom->Get_State(State::Pos);
@@ -192,18 +195,29 @@ void CCamera_Main::Tick(_float fTimeDelta)
 				m_pTransformCom->Set_Matrix(testmat);
 		}
 
+		m_AimZoomOutTime += fTimeDelta* 4.f;
 		_vec4 vMeLook = m_pTransformCom->Get_State(State::Look);
 		_vec4 PlayerRight = m_pPlayerTransform->Get_State(State::Right).Get_Normalized();
 		_vec4 PlayerUp = m_pPlayerTransform->Get_State(State::Up).Get_Normalized();
-		m_vAimCamPos = m_pPlayerTransform->Get_CenterPos() - vMeLook *1.1
-			+ (PlayerUp * 1.8) + (PlayerRight * 0.63);
+		_vec3 AimPos = m_pGameInstance->Get_AimPos();
+		m_vAimCamPos = m_pPlayerTransform->Get_CenterPos() - vMeLook * AimPos.z
+			+ (PlayerUp * AimPos.y) + (PlayerRight * AimPos.x);
 
-		m_pTransformCom->Set_State(State::Pos, m_vAimCamPos);
-		m_AimLerpTime = 0.f;
+		_vec4 OriCam{};
+		if (m_AimZoomOutTime < 1.f)
+			OriCam = XMVectorLerp(m_vOriCamPos, m_vAimCamPos, m_AimZoomOutTime);
+		else
+			OriCam = m_vAimCamPos;
+		_float fShakeAmount = sin(m_fShakeAcc * 15.f) * powf(0.5f, m_fShakeAcc) * 0.2f;
+		m_pTransformCom->Set_State(State::Pos, OriCam);
+		_vec4 vShakePos = m_pTransformCom->Get_State(State::Pos);
+		vShakePos += XMVectorSet(fShakeAmount, -fShakeAmount, 0.f, 0.f);
+		m_pTransformCom->Set_State(State::Pos, vShakePos);
+		m_fShakeAcc += fTimeDelta * 10.f;
+		m_AimZoomInTime = 0.f;
 		}
 	}
-	//time = GetTickCount() * 0.001f;
-	//float sway = sin(time * swaySpeed) * swayAmount;
+
 
 	__super::Tick(fTimeDelta);
 }
@@ -257,6 +271,7 @@ void CCamera_Main::Select_Mode(_float fTimeDelta)
 
 		_vec4 vNewLook = XMVectorLerp(vCurLook, vTargetLook, 0.1f);
 		m_pTransformCom->LookAt_Dir(vNewLook);
+		m_bZoomEnd = false;
 		break;
 	}
 	
@@ -279,6 +294,12 @@ void CCamera_Main::Select_Mode(_float fTimeDelta)
 			vTargetLook = m_pGameInstance->Get_CameraTargetLook();
 			_vec4 vNewLook = XMVectorLerp(vCurLook, vTargetLook, fLerpFactor);
 			m_pTransformCom->LookAt_Dir(vNewLook);
+			if (vNewLook == vTargetLook)
+			{
+				m_bZoomEnd = true;
+			}
+			else
+				m_bZoomEnd = false;
 		}
 		else
 		{
@@ -298,6 +319,12 @@ void CCamera_Main::Select_Mode(_float fTimeDelta)
 			vTargetLook.y = 0.f;
 			_vec4 vNewLook = XMVectorLerp(vCurLook, vTargetLook, fLerpFactor);
 			m_pTransformCom->LookAt_Dir(vNewLook);
+			if (vNewLook == vTargetLook)
+			{
+				m_bZoomEnd = true;
+			}
+			else
+				m_bZoomEnd = false;
 		}
 
 		break;
@@ -305,6 +332,37 @@ void CCamera_Main::Select_Mode(_float fTimeDelta)
 	default:
 		break;
 	}
+
+
+	_vec4 OriPos = m_pTransformCom->Get_State(State::Pos);
+	m_CurrentTime = GetTickCount() * 0.001f;
+
+
+	float swayX = (sin(m_CurrentTime * m_SwaySpeed) * m_SwayAmount) * 0.0008f;
+	float swayY = (sin((m_CurrentTime + m_TimeOffset) * m_SwaySpeed) * m_SwayAmount) * 0.0008f;
+
+	m_fSelectRotation += (fTimeDelta *0.8f* m_iRotation);
+
+	if (m_fSelectRotation > 2.f)
+		m_iRotation *= -1;
+	else if (m_fSelectRotation < -2.f)
+	{
+		m_iRotation *= -1;
+	}
+
+
+	_vec4 vRight = XMVectorSet(1.f, 0.f, 0.f, 0.f) ;
+	_vec4 vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+	_vec4 vLook = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+
+	if(eState == CAMERA_STATE::CM_DEFAULT)
+	m_pTransformCom->Rotation(_vec4(0.f, 0.f, 1.f, 0.f), m_fSelectRotation);
+	else if(m_bZoomEnd)
+		m_pTransformCom->Rotation(_vec4(0.f, 0.f, 1.f, 0.f), m_fSelectRotation);
+
+	m_pTransformCom->Set_State(State::Pos, OriPos + (m_pTransformCom->Get_State(State::Right) * swayX)
+		+ m_pTransformCom->Get_State(State::Up) * swayY);
+
 }
 
 void CCamera_Main::Custom_Mode(_float fTimeDelta)
@@ -317,7 +375,6 @@ void CCamera_Main::Custom_Mode(_float fTimeDelta)
 		m_bInitMode[CM_CUSTOM] = true;
 		return;
 	}
-
 	CAMERA_STATE eState = (CAMERA_STATE)m_pGameInstance->Get_CameraState();
 	switch (eState)
 	{
@@ -351,6 +408,8 @@ void CCamera_Main::Custom_Mode(_float fTimeDelta)
 	default:
 		break;
 	}
+
+	
 }
 
 CCamera_Main* CCamera_Main::Create(_dev pDevice, _context pContext)

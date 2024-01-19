@@ -43,6 +43,7 @@ HRESULT CPlayer::Init(void* pArg)
 	m_BowSkill[3] = Anim_ID_8130_IllusionArrow; // 분신 나와서 화살(쿨김)
 	m_BowSkill[4] = Anim_ID_7060_KnockBack; // 에임모드 변경(우클릭)
 
+	m_pGameInstance->Register_CollisionObject(this, m_pHitCollider, true);
 	
 	return S_OK;
 }
@@ -63,15 +64,11 @@ void CPlayer::Tick(_float fTimeDelta)
 	m_fAttTimer += fTimeDelta;
 	m_fSkiilTimer += fTimeDelta;
 	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CUSTOM&&m_vecParts[PT_BODY]->Get_ModelIndex()!=0)
-	{
-		
-		Set_Key(fTimeDelta);
-		
+	{	
 		Move(fTimeDelta);
 		Init_State();
 		Tick_State(fTimeDelta);
 	}
-
 
 	_float fMouseSensor = 0.1f;
 	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_CUSTOM)
@@ -99,6 +96,13 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if(m_pWeapon!=nullptr)
 	m_pWeapon->Tick(fTimeDelta);
+	m_pHitCollider->Update(m_pTransformCom->Get_World_Matrix());
+	for (int i = 0; i < AT_End; i++)
+	{
+		_mat offset = _mat::CreateScale(_vec3(1.f,2.5f,1.f))* _mat::CreateTranslation(_vec3(0.f, 12.f, 0.f));
+		m_pAttCollider[i]->Update(offset *m_pTransformCom->Get_World_Matrix());
+	}
+
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)
@@ -121,10 +125,18 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	if (m_pWeapon != nullptr)
 	m_pWeapon->Late_Tick(fTimeDelta);
 
+	m_pRendererCom->Add_DebugComponent(m_pHitCollider);
+
+	//for (int i = 0; i < AT_End; i++)
+	{
+		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Common]);
+	}
+
 }
 
 HRESULT CPlayer::Render()
 {
+
 	return S_OK;
 }
 
@@ -225,13 +237,6 @@ void CPlayer::Reset_PartsAnim()
 	dynamic_cast<CWeapon*>(m_pWeapon)->Reset_Model();
 }
 
-void CPlayer::Set_Key(_float fTimeDelta)
-{
-
-	
-
-	
-}
 
 void CPlayer::Move(_float fTimeDelta)
 {
@@ -244,7 +249,11 @@ void CPlayer::Move(_float fTimeDelta)
 
 	_vec4 vDirection{};
 	_bool go{};
+	if (m_eState == SkillR || m_eState == Aim_Idle)
+	{
+		m_pTransformCom->LookAt_Dir(m_pCameraTransform->Get_State(State::Look));
 
+	}
 	if (m_pGameInstance->Key_Down(DIK_1))
 	{
 		m_eState = Skill1;
@@ -269,6 +278,7 @@ void CPlayer::Move(_float fTimeDelta)
 		m_iCurrentSkill_Index = Skill4;
 		//Change_Weapon(WP_BOW, BOW0);
 	}
+
 	if (m_pGameInstance->Key_Down(DIK_5))
 	{
 		if(m_Current_Weapon == WP_SWORD)
@@ -437,15 +447,13 @@ void CPlayer::Move(_float fTimeDelta)
 	{
 		_float fZoom = Lerp(m_fAttackZoom, 0.f, m_ReturnZoomTime);
 		m_pGameInstance->Set_CameraAttackZoom(fZoom);
-		if (fZoom <= 0.f)
-			m_fAttackZoom = 0.f;
+
 	}
 	else if (m_iCurrentSkill_Index != 0 && m_fSkiilTimer> 1.0f)
 	{
 		_float fZoom = Lerp(m_fAttackZoom, 0.f, m_ReturnZoomTime);
 		m_pGameInstance->Set_CameraAttackZoom(fZoom);
-		if (fZoom <= 0.f)
-			m_fAttackZoom = 0.f;
+
 	}
 }
 void CPlayer::Common_Attack()
@@ -626,10 +634,13 @@ void CPlayer::SkillR_Attack()
 }
 void CPlayer::Cam_AttackZoom(_float fZoom)
 {
-	if(m_fAttackZoom<fZoom)
-	m_fAttackZoom = fZoom;
+	
+		m_fAttackZoom = fZoom;
+		
 
-	m_pGameInstance->Set_CameraAttackZoom(m_fAttackZoom);
+
+		m_pGameInstance->Set_CameraAttackZoom(m_fAttackZoom);
+
 		m_ReturnZoomTime = 0.f;
 
 }
@@ -758,10 +769,13 @@ void CPlayer::After_SkillAtt(_float fTimeDelta)
 		}
 		else if (m_iCurrentSkill_Index == Skill4)
 		{
-			if (m_fSkiilTimer > 0.2f && m_fSkiilTimer < 0.6f)
+			if (m_fSkiilTimer > 0.5f && m_fSkiilTimer < 1.1f)
 			{
-				Cam_AttackZoom(3*m_fSkiilTimer);
-				m_pGameInstance->Set_ShakeCam(true);
+				m_pGameInstance->Set_ShakeCam(true,0.15f);
+			}
+			if (m_fSkiilTimer > 0.1f && m_fSkiilTimer < 0.8f)
+			{
+				Cam_AttackZoom(3.3 * m_fSkiilTimer);
 			}
 		}
 		
@@ -770,65 +784,53 @@ void CPlayer::After_SkillAtt(_float fTimeDelta)
 	{
 		if (m_iCurrentSkill_Index == Skill1)
 		{
-			if (m_fSkiilTimer > 0.1f && m_fSkiilTimer < 0.2f)
-				Cam_AttackZoom(1.3f);
-			else if (m_fSkiilTimer > 0.32f && m_fSkiilTimer < 0.5f)
-				Cam_AttackZoom(2.6f);
+			if (m_fSkiilTimer > 0.f && m_fSkiilTimer < 0.2f)
+			{
+				m_pGameInstance->Set_AimMode(true,_vec3(0.5f,1.1f,1.7f));
+			}
+			else if (m_fSkiilTimer > 1.3 && m_fSkiilTimer < 2.0f)
+			{
+				m_pGameInstance->Set_AimMode(false);
+			}
+		
 
 		}
 		else if (m_iCurrentSkill_Index == Skill2)
 		{
 			if (m_fSkiilTimer > 0.1f && m_fSkiilTimer < 0.5f)
 			{
-				m_pTransformCom->Set_Speed(25.f);
-				m_pTransformCom->Go_Straight(fTimeDelta);
+				m_pTransformCom->Set_Speed(9.f);
+				m_pTransformCom->Go_Backward(fTimeDelta);
 			}
-			else if (m_fSkiilTimer > 0.65f && m_fSkiilTimer < 1.0f)
+			else if (m_fSkiilTimer > 0.8f && m_fSkiilTimer < 0.9f)
 			{
-				m_pTransformCom->Set_Speed(7.f);
-				m_pTransformCom->Go_Straight(fTimeDelta);
+				m_pGameInstance->Set_ShakeCam(true, 0.1f);
 			}
 		}
 		else if (m_iCurrentSkill_Index == Skill3)
 		{
-			if (m_fSkiilTimer > 0.1f && m_fSkiilTimer < 0.5f)
-				Cam_AttackZoom(0.5f);
-			if (m_fSkiilTimer > 0.15f && m_fSkiilTimer < 0.35f)
-			{
-				for (int i = 0; i < m_vecParts.size(); i++)
-				{
-					m_vecParts[i]->Set_Hide(true);
-				}
-				m_pWeapon->Set_Hide(true);
-			}
-
-			if (m_fSkiilTimer > 0.35f && m_fSkiilTimer < 0.6f)
-			{
-				for (int i = 0; i < m_vecParts.size(); i++)
-				{
-					m_vecParts[i]->Set_Hide(false);
-				}
-				m_pWeapon->Set_Hide(false);
-				m_pTransformCom->Set_Speed(15.f);
-				m_pTransformCom->Go_Straight(fTimeDelta);
-				//Cam_AttackZoom(0.3f);
-			}
-			/*if (m_fSkiilTimer > 0.2f && m_fSkiilTimer < 0.3f)
-				Cam_AttackZoom(0.6f);
-			if (m_fSkiilTimer > 0.3f && m_fSkiilTimer < 0.4f)
-				Cam_AttackZoom(0.7f);
-			if (m_fSkiilTimer > 0.4f && m_fSkiilTimer < 0.5f)
-				Cam_AttackZoom(0.85f);
-			if (m_fSkiilTimer > 0.5f && m_fSkiilTimer < 0.6f)
-				Cam_AttackZoom(1.0f);*/
+			if (m_fSkiilTimer > 0.1f && m_fSkiilTimer < 0.92f)
+				Cam_AttackZoom(-3.f);
 
 		}
 		else if (m_iCurrentSkill_Index == Skill4)
 		{
 			if (m_fSkiilTimer > 0.2f && m_fSkiilTimer < 0.6f)
+			{
 				m_pGameInstance->Set_ShakeCam(true);
+				Cam_AttackZoom(-2.f);
+			}
+			
 		}
+		else if (m_iCurrentSkill_Index == SkillR)
+		{
+			if (m_fSkiilTimer > 0.f && m_fSkiilTimer < 0.06f)
+			{
+				Cam_AttackZoom(2.f);
 
+				m_pGameInstance->Set_ShakeCam(true,0.01f);
+			}
+		}
 	}
 
 }
@@ -1132,6 +1134,58 @@ void CPlayer::Init_State()
 
 HRESULT CPlayer::Add_Components()
 {
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
+	{
+		return E_FAIL;
+	}
+	// Com_Collider
+	Collider_Desc CollDesc = {};
+	CollDesc.eType = ColliderType::OBB;
+	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
+	CollDesc.vExtents = _vec3(4.f, 10.f, 3.f);
+	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y *0.9f, 0.f);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+		TEXT("Com_Player_Hit_OBB"), (CComponent**)&m_pHitCollider, &CollDesc)))
+		return E_FAIL;
+
+	CollDesc.eType = ColliderType::Frustum;
+	_mat matView = XMMatrixLookAtLH(XMVectorSet(0.f,0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
+	_mat matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(30.f), 4.f, 0.01f, 12.f);
+
+	CollDesc.matFrustum = matView * matProj;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack15"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Common]), &CollDesc)))
+	{
+		return E_FAIL;
+	}
+
+	matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.f), 3.f, 0.01f, 3.f);
+
+	CollDesc.matFrustum = matView * matProj;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack26"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Skill1]), &CollDesc)))
+	{
+		return E_FAIL;
+	}
+
+	CollDesc.matFrustum = matView * matProj;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack264"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Skill2]), &CollDesc)))
+	{
+		return E_FAIL;
+	}
+
+	CollDesc.matFrustum = matView * matProj;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack262"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Skill3]), &CollDesc)))
+	{
+		return E_FAIL;
+	}
+
+	CollDesc.matFrustum = matView * matProj;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack2621"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Skill4]), &CollDesc)))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -1175,10 +1229,15 @@ void CPlayer::Free()
 	{
 		Safe_Release(iter);
 	}
-
 	m_vecParts.clear();
 
+	for (int i = 0; i < AT_End; i++)
+	{
+		Safe_Release(m_pAttCollider[i]);
+	}
 	Safe_Release(m_pWeapon);
+	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pCameraTransform);
+	Safe_Release(m_pHitCollider);
 
 }

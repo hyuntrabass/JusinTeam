@@ -227,6 +227,16 @@ public:
 		Jump_End,
 		State_End
 	};
+	
+	enum ATTACK_TYPE
+	{
+		AT_Common,
+		AT_Skill1,
+		AT_Skill2,
+		AT_Skill3,
+		AT_Skill4,
+		AT_End
+	};
 private:
 	CPlayer(_dev pDevice, _context pContext);
 	CPlayer(const CPlayer& rhs);
@@ -248,7 +258,7 @@ public:
 	void Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex);
 
 	void Reset_PartsAnim();
-	void Set_Key(_float fTimeDelta);
+
 	void Move(_float fTimeDelta);
 
 	void Common_Attack();
@@ -266,10 +276,16 @@ public:
 public:
 	void Init_State();
 	void Tick_State(_float fTimeDelta);
+
 private:
 	vector<CBodyPart*> m_vecParts{};
 	CWeapon* m_pWeapon{};
 	CTransform* m_pCameraTransform{};
+	CCollider* m_pHitCollider = { nullptr };
+	CCollider* m_pAttCollider[AT_End] = {nullptr};
+
+	
+	CRenderer* m_pRendererCom{ nullptr };
 
 private:
 	ANIM_DESC m_Animation{};

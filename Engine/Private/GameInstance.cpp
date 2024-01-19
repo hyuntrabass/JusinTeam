@@ -1069,9 +1069,10 @@ void CGameInstance::Set_FogNF(const _float2& vFogNF)
 	m_vFogNF = vFogNF;
 }
 
-void CGameInstance::Set_ShakeCam(const _bool& bShake)
+void CGameInstance::Set_ShakeCam(const _bool& bShake, _float fShakePower)
 {
 	m_bShakeCamera = bShake;
+	m_fShakePower = fShakePower;
 }
 
 void CGameInstance::Set_HellHeight(const _float& fHeight)
@@ -1103,6 +1104,12 @@ void CGameInstance::Set_CameraTargetLook(const _vec4& vLook)
 void CGameInstance::Set_Have_TargetLook(const _bool& bHaveLook)
 {	
 	m_bTargetLook = bHaveLook;
+}
+
+void CGameInstance::Set_AimMode(_bool Aim, _vec3 AimPos)
+{
+	m_AimMode = Aim;
+	m_AimPos = AimPos;
 }
 
 
