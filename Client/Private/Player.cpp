@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "BodyPart.h"
 #include "UI_Manager.h"
+#include "Event_Manager.h"
 #include "Weapon.h"
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -43,8 +44,12 @@ HRESULT CPlayer::Init(void* pArg)
 	m_BowSkill[3] = Anim_ID_8130_IllusionArrow; // 분신 나와서 화살(쿨김)
 	m_BowSkill[4] = Anim_ID_7060_KnockBack; // 에임모드 변경(우클릭)
 
+<<<<<<< HEAD
 	m_pGameInstance->Register_CollisionObject(this, m_pHitCollider, true);
 	
+=======
+
+>>>>>>> 09b5d792ee702f75b51bbef7d7291c793f7f3091
 	return S_OK;
 }
 
@@ -96,6 +101,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if(m_pWeapon!=nullptr)
 	m_pWeapon->Tick(fTimeDelta);
+<<<<<<< HEAD
 	m_pHitCollider->Update(m_pTransformCom->Get_World_Matrix());
 	for (int i = 0; i < AT_End; i++)
 	{
@@ -103,6 +109,10 @@ void CPlayer::Tick(_float fTimeDelta)
 		m_pAttCollider[i]->Update(offset *m_pTransformCom->Get_World_Matrix());
 	}
 
+=======
+	if (m_pNameTag != nullptr)
+		m_pNameTag->Tick(fTimeDelta);
+>>>>>>> 09b5d792ee702f75b51bbef7d7291c793f7f3091
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)
@@ -114,6 +124,8 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		Change_Parts(PT_BODY, 1);
 		m_pTransformCom->Set_Scale(_vec3(0.1f));
 		Add_Weapon();
+		Add_Info();
+
 		m_bStartGame = true;
 	}
 
@@ -123,6 +135,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	}
 
 	if (m_pWeapon != nullptr)
+<<<<<<< HEAD
 	m_pWeapon->Late_Tick(fTimeDelta);
 
 	m_pRendererCom->Add_DebugComponent(m_pHitCollider);
@@ -132,6 +145,12 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Common]);
 	}
 
+=======
+		m_pWeapon->Late_Tick(fTimeDelta);
+	
+	if (m_pNameTag != nullptr)
+		m_pNameTag->Late_Tick(fTimeDelta);
+>>>>>>> 09b5d792ee702f75b51bbef7d7291c793f7f3091
 }
 
 HRESULT CPlayer::Render()
@@ -209,6 +228,24 @@ HRESULT CPlayer::Add_Weapon()
 		m_vecParts[i]->All_Reset_Anim();
 	}
 
+	return S_OK;
+}
+
+HRESULT CPlayer::Add_Info()
+{
+	CNameTag::NAMETAG_DESC NameTagDesc = {};
+	NameTagDesc.eLevelID = LEVEL_STATIC;
+	NameTagDesc.fFontSize = 0.32f;
+	NameTagDesc.pParentTransform = m_pTransformCom;
+	NameTagDesc.strNameTag = TEXT("플레이어");
+	NameTagDesc.vColor = _vec4(0.5f, 0.7f, 0.5f, 1.f);
+	NameTagDesc.vTextPosition = _vec2(0.f, 1.9f);
+	
+	m_pNameTag = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_NameTag"), & NameTagDesc);
+	if (not m_pNameTag)
+	{
+		return E_FAIL;
+	}
 	return S_OK;
 }
 
@@ -1231,10 +1268,14 @@ void CPlayer::Free()
 	}
 	m_vecParts.clear();
 
+<<<<<<< HEAD
 	for (int i = 0; i < AT_End; i++)
 	{
 		Safe_Release(m_pAttCollider[i]);
 	}
+=======
+	Safe_Release(m_pNameTag);
+>>>>>>> 09b5d792ee702f75b51bbef7d7291c793f7f3091
 	Safe_Release(m_pWeapon);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pCameraTransform);

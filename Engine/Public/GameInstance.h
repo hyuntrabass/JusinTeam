@@ -117,7 +117,7 @@ public: // Collision
 	void Attack_Monster(class CCollider* pCollider, _uint iDamage, _uint iDamageType = 0);
 	_bool CheckCollision_Monster(class CCollider* pCollider);
 	_bool Attack_Player(class CCollider* pCollider, _uint iDamage, _uint iDamageType = 0);
-	_bool CheckCollision_Player(class CCollider* pCollider);
+	_bool CheckCollision_Player(class CCollider* pCollider); // 필요없음
 
 public: // PhysX
 	void Init_PhysX_Character(class CTransform* pTransform, CollisionGroup eGroup, PxCapsuleControllerDesc* pDesc = nullptr);

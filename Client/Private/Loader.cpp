@@ -275,6 +275,14 @@ HRESULT CLoader::Load_Logo()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Quest"), CQuest::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_QuestBox"), CQuestBox::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 
 
 #pragma endregion
@@ -1155,6 +1163,22 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_ExpBar"), CExpBar::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_NameTag"), CNameTag::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Pop_QuestIn"), CPop_QuestIn::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Pop_QuestEnd"), CPop_QuestEnd::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BlurTexture"), CBlurTexture::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

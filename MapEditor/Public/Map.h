@@ -25,7 +25,7 @@ public:
 	_int Get_ID() const { return m_iID; }
 	MapInfo Get_Info() const { return m_Info; }
 	void Set_Dead() { m_isDead = true; }
-	HRESULT Create_HightMap(vector<_float3> VerticesPos);
+	HRESULT Create_HightMap(vector<VTXSTATICMESH> VerticesPos);
 
 	_float lerp(_float a, _float b, _float f);
 

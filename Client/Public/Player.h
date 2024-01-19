@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "BodyPart.h"
 #include "Weapon.h"
+#include "NameTag.h"
 BEGIN(Client)
 
 struct BODYPART_DESC
@@ -51,7 +52,7 @@ public:
 	Anim_Climb_start,
 	Anim_Climb_wait,
 	Anim_Collect_end,
-	Anim_Collect_loop, //Ã¤Áý
+	Anim_Collect_loop, //Ã¤ï¿½ï¿½
 	Anim_Collect_Start,
 	Anim_Create_Idle,
 	Anim_Create_Pick,
@@ -88,19 +89,19 @@ public:
 	Anim_Idle_11,
 	Anim_Idle_Change10,
 	Anim_Interactioning,
-	Anim_jump_end,												// Á¡ÇÁ
+	Anim_jump_end,												// ï¿½ï¿½ï¿½ï¿½
 	Anim_jump_end_long,
 	Anim_jump_end_run,
 	Anim_jump_loop,
 	Anim_jump_start,
 	Anim_LoadingScene_Pose_Sniper,
-	Anim_logging,												// ³ª¹«º£´Â°Å
-	Anim_Mining,												// ±¤¹°Ä³´Â°Å
+	Anim_logging,												// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½
+	Anim_Mining,												// ï¿½ï¿½ï¿½ï¿½Ä³ï¿½Â°ï¿½
 	Anim_Mount_fly_run,
 	Anim_Mount_Idle,
 	Anim_Mount_Run,
 	Anim_Mount_Walk,											
-	Anim_Normal_run,											// ±âº» ¿òÁ÷ÀÓ
+	Anim_Normal_run,											// ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	Anim_Normal_run_L,
 	Anim_Normal_run_R,
 	Anim_Normal_run_start,
@@ -252,6 +253,7 @@ public:
 public:
 	HRESULT Add_Parts();
 	HRESULT Add_Weapon();
+	HRESULT Add_Info();
 
 public:
 	void Change_Parts(PART_TYPE PartsType,_int ChangeIndex);
@@ -280,6 +282,8 @@ public:
 private:
 	vector<CBodyPart*> m_vecParts{};
 	CWeapon* m_pWeapon{};
+	CGameObject* m_pNameTag{};
+
 	CTransform* m_pCameraTransform{};
 	CCollider* m_pHitCollider = { nullptr };
 	CCollider* m_pAttCollider[AT_End] = {nullptr};

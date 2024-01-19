@@ -79,7 +79,7 @@ HRESULT CSkillBlock::Add_Slots()
 	{
 		CSkillSlot::SKILLSLOT_DESC SkillSlotDesc = {};
 		SkillSlotDesc.vSize = _float2(60.f, 60.f);
-		SkillSlotDesc.vPosition = _float2((_float)g_iWinSizeX/2.f - 250.f + (SkillSlotDesc.vSize.x / 2.f) + (SkillSlotDesc.vSize.x * i) + (-15.f * i), 660.f);
+		SkillSlotDesc.vPosition = _float2((_float)g_iWinSizeX/2.f - 250.f + (SkillSlotDesc.vSize.x / 2.f) + (SkillSlotDesc.vSize.x * i) + (-15.f * i), 675.f);
 
 		m_pSlots[i] = (CSkillSlot*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_SkillSlot"), &SkillSlotDesc);
 		if (m_pSlots[i] == nullptr)

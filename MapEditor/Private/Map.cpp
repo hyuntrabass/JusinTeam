@@ -191,11 +191,11 @@ void CMap::Mode(const _bool& isMode)
 	m_isMode = isMode;
 }
 
-HRESULT CMap::Create_HightMap(vector<_float3> VerticesPos)
+HRESULT CMap::Create_HightMap(vector<VTXSTATICMESH> VerticesPos)
 {
 	vector<_float> vHight;
 	for (const auto& Value : VerticesPos) {
-		vHight.push_back(Value.y);
+		vHight.push_back(Value.vPosition.y);
 	}
 	auto minHeight = *min_element(vHight.begin(), vHight.end());
 	auto maxHeight = *max_element(vHight.begin(), vHight.end());

@@ -12,8 +12,8 @@ CMesh::CMesh(const CMesh& rhs)
 	: CVIBuffer(rhs)
 	, m_pVerticesPos(rhs.m_pVerticesPos)
 	, m_pVerticesNor(rhs.m_pVerticesNor)
-	, m_VerticesPos(rhs.m_VerticesPos)
-	, m_VerticesNor(rhs.m_VerticesNor)
+	, m_Vertices(rhs.m_Vertices)
+	, m_Indices(rhs.m_Indices)
 	, m_pIndices(rhs.m_pIndices)
 	, m_iMatIndex(rhs.m_iMatIndex)
 	, m_iNumBones(rhs.m_iNumBones)
@@ -83,11 +83,19 @@ HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _mat OffsetM
 	for (size_t i = 0; i < iNumFaces; i++)
 	{
 		ModelFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
-		m_pIndices[dwIndex++] = pIndices[dwIndex];
+		m_pIndices[dwIndex] = pIndices[dwIndex];
+		m_Indices.push_back(m_pIndices[dwIndex]);
+		dwIndex++;
+
 		ModelFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
-		m_pIndices[dwIndex++] = pIndices[dwIndex];
+		m_pIndices[dwIndex] = pIndices[dwIndex];
+		m_Indices.push_back(m_pIndices[dwIndex]);
+		dwIndex++;
+
 		ModelFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
-		m_pIndices[dwIndex++] = pIndices[dwIndex];
+		m_pIndices[dwIndex] = pIndices[dwIndex];
+		m_Indices.push_back(m_pIndices[dwIndex]);
+		dwIndex++;
 
 	}
 
@@ -210,15 +218,16 @@ HRESULT CMesh::Ready_StaticMesh(ifstream& ModelFile, _mat OffsetMatrix)
 		ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vPosition), sizeof _float3);
 		XMStoreFloat3(&pVertices[i].vPosition, XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vPosition), OffsetMatrix));
 		m_pVerticesPos[i] = pVertices[i].vPosition;
-		m_VerticesPos.push_back(m_pVerticesPos[i]);
+		m_VerticesInfo.vPosition = m_pVerticesPos[i];
 		ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vNormal), sizeof _float3);
 		XMStoreFloat3(&pVertices[i].vNormal, XMVector3TransformNormal(XMLoadFloat3(&pVertices[i].vNormal), OffsetMatrix));
 		m_pVerticesNor[i] = pVertices[i].vNormal;
-		m_VerticesNor.push_back(m_pVerticesNor[i]);
-
+		m_VerticesInfo.vNormal = m_pVerticesNor[i];
 		ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vTexcoord), sizeof _float2);
-
+		m_VerticesInfo.vTexcoord = pVertices[i].vTexcoord;
 		ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vTangent), sizeof _float3);
+
+		m_Vertices.push_back(m_VerticesInfo);
 	}
 
 
@@ -294,7 +303,6 @@ HRESULT CMesh::Ready_AnimMesh(ifstream& ModelFile)
 		m_OffsetMatrices.push_back(OffsetMatrix);
 		m_BoneIndices.push_back(iBoneIndex);
 	}
-
 	return S_OK;
 }
 

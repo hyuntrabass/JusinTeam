@@ -103,7 +103,6 @@ void CCollider::Update(_fmatrix WorldMatrix)
 
 _bool CCollider::Intersect(const CCollider* pTargetCollider)
 {
-
 	switch (pTargetCollider->m_eType)
 	{
 	case Engine::ColliderType::AABB:
@@ -177,6 +176,33 @@ _bool CCollider::Intersect(const CCollider* pTargetCollider)
 	}
 
 	return m_isCollided;
+}
+
+void CCollider::Change_Extents(_vec3 vExtents)
+{
+	switch (m_eType)
+	{
+	case Engine::ColliderType::AABB:
+		reinterpret_cast<BoundingBox*>(m_pBounder_Origin)->Extents = vExtents;
+		break;
+	case Engine::ColliderType::OBB:
+		reinterpret_cast<BoundingOrientedBox*>(m_pBounder_Origin)->Extents = vExtents;
+		reinterpret_cast<BoundingOrientedBox*>(m_pBounder_Origin)->Center.y = vExtents.y;
+		break;
+	}
+}
+
+_vec3 CCollider::Get_Extents()
+{
+	switch (m_eType)
+	{
+	case Engine::ColliderType::AABB:
+		return reinterpret_cast<BoundingBox*>(m_pBounder_Origin)->Extents;
+		break;
+	case Engine::ColliderType::OBB:
+		return reinterpret_cast<BoundingOrientedBox*>(m_pBounder_Origin)->Extents;
+		break;
+	}
 }
 
 #ifdef _DEBUGTEST

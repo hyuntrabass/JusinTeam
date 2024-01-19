@@ -104,25 +104,26 @@ const _mat* CModel::Get_BoneMatrix(const _char* pBoneName) const
 	return (*iter)->Get_CombinedMatrix();
 }
 
-vector<_float3> CModel::Get_VerticesNor()
+vector<VTXSTATICMESH> CModel::Get_StaticMeshVertices()
 {
-	vector<_float3> vVerticesNor;
+	vector<VTXSTATICMESH> vVertices;
 	for (auto iter = m_Meshes.begin(); iter != m_Meshes.end(); iter++)
 	{
-		vVerticesNor = ((*iter)->Get_VerticesNor());
+		vVertices = ((*iter)->Get_VtxStaticInfo());
 	}
-	return vVerticesNor;
+	return vVertices;
 }
 
-vector<_float3> CModel::Get_VerticesPos()
+vector<_ulong> CModel::Get_StaticMeshIndices()
 {
-	vector<_float3> vVerticesPos;
+	vector<_ulong> vIndices;
 	for (auto iter = m_Meshes.begin(); iter != m_Meshes.end(); iter++)
 	{
-		vVerticesPos = ((*iter)->Get_VerticesPos());
+		vIndices = ((*iter)->Get_InidcesStaticInfo());
 	}
-	return vVerticesPos;
+	return vIndices;
 }
+
 
 _mat CModel::Get_PivotMatrix()
 {

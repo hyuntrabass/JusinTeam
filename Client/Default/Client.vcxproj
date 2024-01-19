@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="..\Public\BackGround.h" />
     <ClInclude Include="..\Public\BackGround_Mask.h" />
+    <ClInclude Include="..\Public\BlurTexture.h" />
     <ClInclude Include="..\Public\BodyPart.h" />
     <ClInclude Include="..\Public\Camera_Debug.h" />
     <ClInclude Include="..\Public\Camera_Main.h" />
@@ -156,6 +157,7 @@
     <ClInclude Include="..\Public\CharacterSelect.h" />
     <ClInclude Include="..\Public\Dog.h" />
     <ClInclude Include="..\public\Effect_Manager.h" />
+    <ClInclude Include="..\Public\Event_Manager.h" />
     <ClInclude Include="..\Public\ExpBar.h" />
     <ClInclude Include="..\Public\FadeBox.h" />
     <ClInclude Include="..\Public\Goat.h" />
@@ -176,6 +178,10 @@
     <ClInclude Include="..\Public\Effect_Dummy.h" />
     <ClInclude Include="..\Public\NPC_Dummy.h" />
     <ClInclude Include="..\Public\Odin.h" />
+    <ClInclude Include="..\Public\Pop_QuestEnd.h" />
+    <ClInclude Include="..\Public\Pop_QuestIn.h" />
+    <ClInclude Include="..\Public\Quest.h" />
+    <ClInclude Include="..\Public\QuestBox.h" />
     <ClInclude Include="..\Public\Rabbit.h" />
     <ClInclude Include="..\Public\Select_Map.h" />
     <ClInclude Include="..\Public\Select_Model.h" />
@@ -221,6 +227,7 @@
   <ItemGroup>
     <ClCompile Include="..\Private\BackGround.cpp" />
     <ClCompile Include="..\Private\BackGround_Mask.cpp" />
+    <ClCompile Include="..\Private\BlurTexture.cpp" />
     <ClCompile Include="..\Private\BodyPart.cpp" />
     <ClCompile Include="..\Private\Camera_Debug.cpp" />
     <ClCompile Include="..\Private\Camera_Main.cpp" />
@@ -228,6 +235,7 @@
     <ClCompile Include="..\Private\CharacterSelect.cpp" />
     <ClCompile Include="..\Private\Dog.cpp" />
     <ClCompile Include="..\private\Effect_Manager.cpp" />
+    <ClCompile Include="..\Private\Event_Manager.cpp" />
     <ClCompile Include="..\Private\ExpBar.cpp" />
     <ClCompile Include="..\Private\FadeBox.cpp" />
     <ClCompile Include="..\Private\Goat.cpp" />
@@ -248,6 +256,10 @@
     <ClCompile Include="..\Private\Effect_Dummy.cpp" />
     <ClCompile Include="..\Private\NPC_Dummy.cpp" />
     <ClCompile Include="..\Private\Odin.cpp" />
+    <ClCompile Include="..\Private\Pop_QuestEnd.cpp" />
+    <ClCompile Include="..\Private\Pop_QuestIn.cpp" />
+    <ClCompile Include="..\Private\Quest.cpp" />
+    <ClCompile Include="..\Private\QuestBox.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />
     <ClCompile Include="..\Private\Select_Map.cpp" />
     <ClCompile Include="..\Private\Select_Model.cpp" />
