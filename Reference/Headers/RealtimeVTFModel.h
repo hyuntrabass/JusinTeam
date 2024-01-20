@@ -32,7 +32,7 @@ public:
 	}
 
 	const _uint Get_NumPart() const {
-		return m_Parts.size();
+		return static_cast<_uint>(m_Parts.size());
 	}
 
 	const _uint Get_Num_PartMeshes(_uint iPartIndex) const;

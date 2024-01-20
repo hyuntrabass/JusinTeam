@@ -75,24 +75,25 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	GetCursorPos(&m_ptMouse);
 	ScreenToClient(m_hWnd, &m_ptMouse);
 
+	if (m_pGameInstance->Key_Down(DIK_X))
+	{
+		m_fTimeDelta = 0.f;
+	}
+	else if (m_pGameInstance->Key_Down(DIK_C))
+	{
+		m_fTimeDelta = fTimeDelta;
+	}
+
 	if (m_pPlayer)
 	{
-		if (m_pGameInstance->Key_Down(DIK_X))
-		{
-			m_pPlayer->Set_TimeDelta(0.f);
-		}
-		else if(m_pGameInstance->Key_Down(DIK_C))
-		{
-			m_pPlayer->Set_TimeDelta(fTimeDelta);
-		}
-		m_pPlayer->Tick(fTimeDelta);
+		m_pPlayer->Tick(m_fTimeDelta);
 	}
 
 	if (not m_Effects.empty())
 	{
 		for (auto& iter = m_Effects.begin(); iter != m_Effects.end();)
 		{
-			(*iter)->Tick(fTimeDelta);
+			(*iter)->Tick(m_fTimeDelta);
 			if ((*iter)->isDead())
 			{
 				Safe_Release((*iter));
@@ -110,13 +111,13 @@ void CImgui_Manager::Late_Tick(_float fTimeDelta)
 {
 	if (m_pPlayer)
 	{
-		m_pPlayer->Late_Tick(fTimeDelta);
+		m_pPlayer->Late_Tick(m_fTimeDelta);
 	}
 
 	if (not m_Effects.empty())
 	{
 		for (auto& pEffect : m_Effects)
-			pEffect->Late_Tick(fTimeDelta);
+			pEffect->Late_Tick(m_fTimeDelta);
 	}
 }
 
@@ -145,8 +146,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 {
 #pragma endregion
 	ImGui::Begin("MENU");
-
-	ImGui::SeparatorText("SELECT");
 
 	ImGui::RadioButton("MONSTER", &m_eType, TYPE_MONSTER); ImGui::SameLine();
 	ImGui::RadioButton("PLAYER", &m_eType, TYPE_PLAYER);
@@ -203,7 +202,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 		}
 	}
 
-	ImGui::SeparatorText("FILE");
+	ImGui::SeparatorText("TRIGGER");
 
 	if (ImGui::Button("SAVE"))
 	{
@@ -214,7 +213,8 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	{
 		LoadFile();
 	}
-	if (ImGui::Button("ADD_EFFECT"))
+	ImGui::SeparatorText("EFFECT");
+	if (ImGui::Button("ADD"))
 	{	//이펙트 디스크립션 저장
 		TRIGGEREFFECT_DESC EffectDesc{};
 		_uint iSelectEffectFile = m_iSelectEffectFile;
@@ -229,6 +229,11 @@ HRESULT CImgui_Manager::ImGuiMenu()
 		m_Effects.push_back(pEffect);
 		//이펙트 디스크립션 이름 저장(메뉴로 보여주기 위해)
 		m_EffectDescNames.push_back(m_EffectNames[iSelectEffectFile]);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("DELETE"))
+	{
+
 	}
 
 #pragma region CreateObject

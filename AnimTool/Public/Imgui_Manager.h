@@ -52,23 +52,28 @@ private:
 
 private:
     class CPlayer* m_pPlayer = { nullptr };
-    vector<class CEffect_Dummy*> m_Effects;
-    vector<const _char*> m_EffectDescNames;
     ANIM_DESC m_AnimDesc{};
-    POINT m_ptMouse = {};
     vector<const _char*> m_AnimationNames;
     vector<const _char*> m_BoneNames;
-    _int m_ePreType = { TYPE_MONSTER };
-    _int m_eType = { TYPE_MONSTER };
     _uint m_iCurrentModelIndex = { 0 };
-    _bool m_IsCreateModel = { false };
-    _int m_iSelectEffectFile{};
-    _int m_iCurrentEffect{};
     _int m_iCurrentBone{};
 
-    vector<const _char*> m_TriggerTimes;
+    vector<class CEffect_Dummy*> m_Effects;
+    vector<const _char*> m_EffectDescNames;
+    _int m_iSelectEffectFile{};
+    _int m_iCurrentEffect{};
+
+    _bool m_IsCreateModel = { false };
+    POINT m_ptMouse = {};
+    _int m_ePreType = { TYPE_MONSTER };
+    _int m_eType = { TYPE_MONSTER };
+    _float m_fTimeDelta{};
+
     vector<_char*> m_FBXDataName;
     vector<const _char*> m_EffectNames;
+
+    vector<const _char*> m_TriggerTimes;
+
     //ImGuizmo
     ImGuizmo::OPERATION m_eStateType = { ImGuizmo::OPERATION::TRANSLATE };
     _int m_iManipulateType = 0;

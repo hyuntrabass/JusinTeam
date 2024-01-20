@@ -81,8 +81,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if (m_pModelCom)
 	{
-		//m_fTimeDelta = fTimeDelta;
-		m_pModelCom->Play_Animation(m_fTimeDelta);
+		m_pModelCom->Play_Animation(fTimeDelta);
 	}
 }
 

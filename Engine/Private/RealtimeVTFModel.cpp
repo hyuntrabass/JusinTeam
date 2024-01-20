@@ -393,7 +393,7 @@ HRESULT CRealtimeVTFModel::Read_Materials(ifstream& File, const string& strFileP
 HRESULT CRealtimeVTFModel::CreateVTF()
 {
 	D3D11_TEXTURE2D_DESC Desc = {};
-	Desc.Width = m_Bones.size() * 4;
+	Desc.Width = static_cast<_uint>(m_Bones.size() * 4);
 	Desc.Height = 1;
 	Desc.MipLevels = 1;
 	Desc.ArraySize = 1;
