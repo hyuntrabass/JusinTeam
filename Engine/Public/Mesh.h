@@ -23,7 +23,7 @@ public:
 	_bool Intersect_RayMesh(_mat WorldMatrix, _vec4* pPickPos);
 	void Apply_TransformToActor(_mat WorldMatrix);
 
-	void Set_Bone_Offset(const vector<class CBone*>& Bones);
+	HRESULT Set_Bone_Offset(const vector<class CBone*>& Bones);
 	vector<VTXSTATICMESH> Get_VtxStaticInfo() { return m_Vertices; }
 	vector<_ulong> Get_InidcesStaticInfo() { return m_Indices; }
 

@@ -779,32 +779,61 @@ HRESULT CLoader::Load_Select()
 		return E_FAIL;
 	}
 
-	PivotMat = _mat::CreateScale(0.01f) * _mat::CreateRotationY(XMConvertToRadians(90.f));
-	CRealtimeVTFModel* pModel = CRealtimeVTFModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/VTFPlayer/Main/baseface.hyuntraanimmesh", PivotMat);
-	//if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/baseface.PartModel")))
-	//	return E_FAIL;	
-	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/2004wpb.PartModel")))
+	CRealtimeVTFModel* pModel = CRealtimeVTFModel::Create(m_pDevice, m_pContext, 
+		"../Bin/Resources/AnimMesh/VTFPlayer/Main/basemodel.hyuntraanimmesh");
+
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_2005_BD.ao.PartModel")))
 		return E_FAIL;
-	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/2004wps.PartModel")))
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_3009_BD.ao.PartModel")))
 		return E_FAIL;
-	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/2005bd.PartModel")))
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_5001_BD.ao.PartModel")))
 		return E_FAIL;
-	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/3007wpb.PartModel")))
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_5001_HD.ao.PartModel")))
 		return E_FAIL;
-	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/3007wps.PartModel")))
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9000_FC.ao.PartModel")))
 		return E_FAIL;
-	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/3009bd.PartModel")))
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9000_HR.ao.PartModel")))
 		return E_FAIL;
-	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/5001BD.PartModel")))
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9000_S_HR.ao.PartModel")))
 		return E_FAIL;
-	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/5001wpb.PartModel")))
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9001_FC.ao.PartModel")))
 		return E_FAIL;
-	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/5001wps.PartModel")))
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9001_HR.ao.PartModel")))
 		return E_FAIL;
-	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/5001wps.PartModel")))
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9002_FC.ao.PartModel")))
 		return E_FAIL;
-	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/basehairfbx.PartModel")))
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9002_HR.ao.PartModel")))
 		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9003_FC.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9004_FC.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9004_HR.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9005_FC.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9006_HR.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9008_HR.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9011_HR.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9012_HR.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/RA_2004_WP.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/RA_3007_WP.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/RA_5001_WP.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/RS_2004_WP.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/RS_3007_WP.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/RS_5001_WP.ao.PartModel")))
+		return E_FAIL;
+
+
 
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Model_RTVTFRabbit"), pModel)))
