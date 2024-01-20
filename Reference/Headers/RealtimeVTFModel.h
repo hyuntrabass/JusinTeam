@@ -80,7 +80,7 @@ public:
 	HRESULT Render_Part(_uint iPartType, _uint iPartID, _uint iPartMeshIndex);
 
 public:
-	// 이 베이스 모델에 해당 파츠 모델 파일을 붙입니다.
+	// 이 베이스 모델에 해당 파츠 모델 파일을 붙입니다.(Loader 에서 해야합니다)
 	HRESULT Seting_Parts(const string& strFilePath);
 
 private:
