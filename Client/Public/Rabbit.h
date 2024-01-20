@@ -77,6 +77,10 @@ private:
 	_bool m_bSelectAttackPattern = { false };
 
 private:
+	_bool m_bAttacked = { false };
+	_bool m_bAttacked2 = { false };
+
+private:
 	static const _float g_fChaseRange;
 	static const _float g_fAttackRange;
 

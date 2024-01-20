@@ -45,7 +45,7 @@ protected:
 	_uint m_iPassIndex = {};
 
 protected:
-	_float m_fBackPower = { 1.f };
+	_float m_fBackPower = { 0.5f };
 
 private: // Collier 사이즈 조절용
 	_float m_fSizeX = {}, m_fSizeY = {}, m_fSizeZ = {};

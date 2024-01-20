@@ -52,11 +52,6 @@ HRESULT CRabbit::Init(void* pArg)
 
 void CRabbit::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_B))
-	{
-		Set_Damage(1, WP_BOW);
-	}
-
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 
@@ -97,7 +92,7 @@ void CRabbit::Set_Damage(_int iDamage, _uint iDamageType)
 	{
 		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
 
-		m_pTransformCom->Go_To_Dir(vDir, 0.1f);
+		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
 	}
 
 	else if (iDamageType == WP_SWORD)
@@ -222,6 +217,8 @@ void CRabbit::Tick_State(_float fTimeDelta)
 			{
 				m_iAttackPattern = rand() % 2;
 				m_bSelectAttackPattern = true;
+				m_bAttacked = false;
+				m_bAttacked2 = false;
 			}
 		}
 
@@ -231,13 +228,32 @@ void CRabbit::Tick_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = ATTACK01;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
-			//m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2.f, 0);
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 45.f && fAnimpos <= 47.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+			}
 			break;
 		case 1:
 			m_Animation.iAnimIndex = ATTACK02;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
-			//m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2.f, 0);
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 37.f && fAnimpos <= 39.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+				if (fAnimpos >= 52.f && fAnimpos <= 54.f && !m_bAttacked2)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked2 = true;
+				}
+			}
 			break;
 		}
 		break;

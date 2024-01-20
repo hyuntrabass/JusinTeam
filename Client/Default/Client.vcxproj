@@ -215,8 +215,10 @@
     <ClInclude Include="..\Public\Thief04.h" />
     <ClInclude Include="..\Public\TrilobiteA.h" />
     <ClInclude Include="..\Public\UI_Manager.h" />
-    <ClInclude Include="..\Public\Void05.h" />
+    <ClInclude Include="..\Public\ModelTest.h" />
     <ClInclude Include="..\Public\Terrain.h" />
+    <ClInclude Include="..\Public\Void01.h" />
+    <ClInclude Include="..\Public\Void05.h" />
     <ClInclude Include="..\Public\Weapon.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Prologue_Object.h" />
@@ -291,8 +293,10 @@
     <ClCompile Include="..\Private\Thief04.cpp" />
     <ClCompile Include="..\Private\TrilobiteA.cpp" />
     <ClCompile Include="..\Private\UI_Manager.cpp" />
-    <ClCompile Include="..\Private\Void05.cpp" />
+    <ClCompile Include="..\Private\ModelTest.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
+    <ClCompile Include="..\Private\Void01.cpp" />
+    <ClCompile Include="..\Private\Void05.cpp" />
     <ClCompile Include="..\Private\Weapon.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="Prologue_Object.cpp" />
