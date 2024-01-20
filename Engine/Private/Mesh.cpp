@@ -192,10 +192,18 @@ void CMesh::Apply_TransformToActor(_mat WorldMatrix)
 	m_pActor->setGlobalPose(Transform);
 }
 
-void CMesh::Set_Bone_Offset(const vector<class CBone*>& Bones)
+HRESULT CMesh::Set_Bone_Offset(const vector<class CBone*>& Bones)
 {
-	for (size_t i = 0; i < m_iNumBones; i++)
+	for (size_t i = 0; i < m_iNumBones; i++) {
+		if (Bones.size() <= m_BoneIndices[i]) {
+			MSG_BOX("»À Á¿µÊ ¤µ¤¡");
+			return E_FAIL;
+		}
+
 		Bones[m_BoneIndices[i]]->Set_OffsetMatrix(m_OffsetMatrices[i]);
+	}
+
+	return S_OK;
 }
 
 HRESULT CMesh::Ready_StaticMesh(ifstream& ModelFile, _mat OffsetMatrix)

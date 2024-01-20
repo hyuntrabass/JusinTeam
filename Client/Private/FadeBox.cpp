@@ -41,7 +41,7 @@ HRESULT CFadeBox::Init(void* pArg)
 		m_fAlpha = 0.f;
 		break;
 	case FADELOOP:
-		m_fDepth = 0.5f;
+		m_fDepth = 0.4f;
 		m_fAlpha = 0.f;
 		break;
 	case FADEOUT:

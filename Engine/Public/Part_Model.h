@@ -17,6 +17,14 @@ public:
 	HRESULT Init(void* pArg) override;
 
 public:
+	const void Set_isRender(_bool isRender) {
+		m_isRender = isRender;
+	}
+
+	const _bool& Get_isRender() const {
+		return m_isRender;
+	}
+
 	const _uint& Get_NumMeshes() const {
 		return m_iNumMeshes;
 	}
@@ -37,6 +45,7 @@ private:
 	_uint m_iNumMaterials = 0;
 	vector<Model_Material> m_Materials;
 
+	_bool m_isRender = false;
 
 private:
 	HRESULT Read_Meshes(ifstream& File, const ModelType& eType, _fmatrix PivotMatrix);

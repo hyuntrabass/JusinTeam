@@ -1,1 +1,78 @@
 1. Static Only   2. Anim Only   3. All
+2
+Animation Models : Start Converting...
+1. Normally Anim Model	2. For VTF Model 3. Part Model
+1
+Converting... Bird.fbx
+Read File Succssefully
+Animation name list: 
+VC_Cuervo_0005.ao|1005_Fly
+VC_Cuervo_0005.ao|1005_Fly_Add_L
+VC_Cuervo_0005.ao|1005_Fly_Add_R
+VC_Cuervo_0005.ao|1005_Fly_L
+VC_Cuervo_0005.ao|1005_Fly_R
+VC_Cuervo_0005.ao|1005_Landing
+VC_Cuervo_0005.ao|1005_Start
+VC_Cuervo_0005.ao|1005_Takeoff
+VC_Cuervo_0005.ao|2005_Fly
+VC_Cuervo_0005.ao|2005_Fly_Add_L
+VC_Cuervo_0005.ao|2005_Fly_Add_R
+VC_Cuervo_0005.ao|2005_Fly_L
+VC_Cuervo_0005.ao|2005_Fly_R
+VC_Cuervo_0005.ao|2005_Landing
+VC_Cuervo_0005.ao|2005_Start
+VC_Cuervo_0005.ao|2005_Takeoff
+Converting... Nihilir.fbx
+Read File Succssefully
+Animation name list: 
+VC_Nihilir_5002.ao|VC_Nihilir_5002_Attack01
+VC_Nihilir_5002.ao|VC_Nihilir_5002_Attack01_End
+VC_Nihilir_5002.ao|VC_Nihilir_5002_Attack01_Loop
+VC_Nihilir_5002.ao|VC_Nihilir_5002_Attack01_Start
+VC_Nihilir_5002.ao|VC_Nihilir_5002_Attack02
+VC_Nihilir_5002.ao|VC_Nihilir_5002_Attack03
+VC_Nihilir_5002.ao|VC_Nihilir_5002_Idle
+VC_Nihilir_5002.ao|VC_Nihilir_5002_Jump_End
+VC_Nihilir_5002.ao|VC_Nihilir_5002_Jump_End_Run
+VC_Nihilir_5002.ao|VC_Nihilir_5002_Jump_Loop
+VC_Nihilir_5002.ao|VC_Nihilir_5002_Jump_Start
+VC_Nihilir_5002.ao|VC_Nihilir_5002_Roar
+VC_Nihilir_5002.ao|VC_Nihilir_5002_Run
+VC_Nihilir_5002.ao|VC_Nihilir_5002_Run_add_L
+VC_Nihilir_5002.ao|VC_Nihilir_5002_Run_add_R
+VC_Nihilir_5002.ao|VC_Nihilir_5002_Run_L
+VC_Nihilir_5002.ao|VC_Nihilir_5002_Run_R
+VC_Nihilir_5002.ao|VC_Nihilir_5002_Walk
+Converting... Tiger.fbx
+Read File Succssefully
+Animation name list: 
+VC_sabertooth_2003.ao|1003_Attack01
+VC_sabertooth_2003.ao|1003_Idle
+VC_sabertooth_2003.ao|1003_Jump_End
+VC_sabertooth_2003.ao|1003_Jump_End_Run
+VC_sabertooth_2003.ao|1003_Jump_loop
+VC_sabertooth_2003.ao|1003_Jump_Start
+VC_sabertooth_2003.ao|1003_Run
+VC_sabertooth_2003.ao|1003_Run_Add_L
+VC_sabertooth_2003.ao|1003_Run_Add_R
+VC_sabertooth_2003.ao|1003_Run_L
+VC_sabertooth_2003.ao|1003_Run_R
+VC_sabertooth_2003.ao|1003_Start
+VC_sabertooth_2003.ao|1003_Walk
+VC_sabertooth_2003.ao|2003_Attack01
+VC_sabertooth_2003.ao|2003_Idle
+VC_sabertooth_2003.ao|2003_Jump_End
+VC_sabertooth_2003.ao|2003_Jump_End_Run
+VC_sabertooth_2003.ao|2003_Jump_loop
+VC_sabertooth_2003.ao|2003_Jump_Start
+VC_sabertooth_2003.ao|2003_Run
+VC_sabertooth_2003.ao|2003_Run_Add_L
+VC_sabertooth_2003.ao|2003_Run_Add_R
+VC_sabertooth_2003.ao|2003_Run_L
+VC_sabertooth_2003.ao|2003_Run_R
+VC_sabertooth_2003.ao|2003_Start
+VC_sabertooth_2003.ao|2003_Walk
+Animation Models : Convert Success!
+
+3 Animation Models
+are Successfully Converted as hyuntramesh!!

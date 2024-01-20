@@ -83,10 +83,10 @@ _float4 CPicking::PickingDepth(_float x, _float y)
 	}
 
 	D3D11_BOX m_Box;
-	m_Box.left = x;
-	m_Box.top = y;
-	m_Box.right = x + 1;
-	m_Box.bottom = y + 1;
+	m_Box.left = static_cast<_uint>(x);
+	m_Box.top = static_cast<_uint>(y);
+	m_Box.right = static_cast<_uint>(x + 1);
+	m_Box.bottom = static_cast<_uint>(y + 1);
 	m_Box.front = 0;
 	m_Box.back = 1;
 

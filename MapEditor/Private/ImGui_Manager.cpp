@@ -32,65 +32,76 @@ HRESULT CImGui_Manager::Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc)
 
 void CImGui_Manager::Tick(_float fTimeDelta)
 {
+	Mouse_Pos();
+
 	if (m_eItemType == ItemType::Terrain)
 	{
 		if (m_pTerrain)
 		{
+			_float fHight;
+
+			if (fHight = m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
+			{
+				TerrainHight += 1.f;
+			}
+			else if (fHight = m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
+			{
+				TerrainHight -= 1.f;
+			}
 			CVIBuffer_Terrain* pBuffer = static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer")));
 			Picking_On_Terrain();
-		
+
 			_vec3 CurrentMousePosition = m_TerrainPos;
 
-			if (LastMousePosition != _float3())
+			if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))
 			{
-				_float fMouseMoveDistance = XMVectorGetX(CurrentMousePosition - LastMousePosition);				
-				_float fNewHeight = fMouseMoveDistance * 0.1f;
-				pBuffer->Modify_Terrain_Hight(pBuffer->Get_NumVerticesX(), pBuffer->Get_NumVerticesZ(), CurrentMousePosition, fNewHeight);
+				pBuffer->Modify_Terrain_Hight(pBuffer->Get_NumVerticesX(), pBuffer->Get_NumVerticesZ(), CurrentMousePosition, TerrainHight, BrushSize);
 			}
+			else if (m_pGameInstance->Mouse_Down(DIM_RBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))
+			{
 
-			LastMousePosition = CurrentMousePosition;
-		
-
+			}
 		}
 	}
-	Mouse_Pos();
-	if (m_pSelectedDummy)
+	else
 	{
-		CTransform* pObjectsTransform = (CTransform*)m_pSelectedDummy->Find_Component(TEXT("Com_Transform"));
-
-		_vector ObjRight = { m_ObjectMatrix._11, m_ObjectMatrix._12, m_ObjectMatrix._13, m_ObjectMatrix._14 };
-		_vector ObjUp = { m_ObjectMatrix._21, m_ObjectMatrix._22, m_ObjectMatrix._23, m_ObjectMatrix._24 };
-		_vector ObjLook = { m_ObjectMatrix._31, m_ObjectMatrix._32, m_ObjectMatrix._33, m_ObjectMatrix._34 };
-		_vector ObjPosition = { m_ObjectMatrix._41, m_ObjectMatrix._42, m_ObjectMatrix._43, m_ObjectMatrix._44 };
-		pObjectsTransform->Set_State(State::Right, ObjRight);
-		pObjectsTransform->Set_State(State::Up, ObjUp);
-		pObjectsTransform->Set_State(State::Look, ObjLook);
-		pObjectsTransform->Set_State(State::Pos, ObjPosition);
-	}
-	else if (m_pSelectMap)
-	{
-		CTransform* pMapTransform = (CTransform*)m_pSelectMap->Find_Component(TEXT("Com_Transform"));
-
-		_vector ObjRight = { m_MapMatrix._11, m_MapMatrix._12, m_MapMatrix._13, m_MapMatrix._14 };
-		_vector ObjUp = { m_MapMatrix._21, m_MapMatrix._22, m_MapMatrix._23, m_MapMatrix._24 };
-		_vector ObjLook = { m_MapMatrix._31, m_MapMatrix._32, m_MapMatrix._33, m_MapMatrix._34 };
-		_vector ObjPosition = { m_MapMatrix._41, m_MapMatrix._42, m_MapMatrix._43, m_MapMatrix._44 };
-		pMapTransform->Set_State(State::Right, ObjRight);
-		pMapTransform->Set_State(State::Up, ObjUp);
-		pMapTransform->Set_State(State::Look, ObjLook);
-		pMapTransform->Set_State(State::Pos, ObjPosition);
-	}
-
-	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LSHIFT))
-	{
-
-		if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
+		if (m_pSelectedDummy)
 		{
-			m_PickingPos = m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y);
+			CTransform* pObjectsTransform = (CTransform*)m_pSelectedDummy->Find_Component(TEXT("Com_Transform"));
+
+			_vector ObjRight = { m_ObjectMatrix._11, m_ObjectMatrix._12, m_ObjectMatrix._13, m_ObjectMatrix._14 };
+			_vector ObjUp = { m_ObjectMatrix._21, m_ObjectMatrix._22, m_ObjectMatrix._23, m_ObjectMatrix._24 };
+			_vector ObjLook = { m_ObjectMatrix._31, m_ObjectMatrix._32, m_ObjectMatrix._33, m_ObjectMatrix._34 };
+			_vector ObjPosition = { m_ObjectMatrix._41, m_ObjectMatrix._42, m_ObjectMatrix._43, m_ObjectMatrix._44 };
+			pObjectsTransform->Set_State(State::Right, ObjRight);
+			pObjectsTransform->Set_State(State::Up, ObjUp);
+			pObjectsTransform->Set_State(State::Look, ObjLook);
+			pObjectsTransform->Set_State(State::Pos, ObjPosition);
 		}
+		else if (m_pSelectMap)
+		{
+			CTransform* pMapTransform = (CTransform*)m_pSelectMap->Find_Component(TEXT("Com_Transform"));
+
+			_vector ObjRight = { m_MapMatrix._11, m_MapMatrix._12, m_MapMatrix._13, m_MapMatrix._14 };
+			_vector ObjUp = { m_MapMatrix._21, m_MapMatrix._22, m_MapMatrix._23, m_MapMatrix._24 };
+			_vector ObjLook = { m_MapMatrix._31, m_MapMatrix._32, m_MapMatrix._33, m_MapMatrix._34 };
+			_vector ObjPosition = { m_MapMatrix._41, m_MapMatrix._42, m_MapMatrix._43, m_MapMatrix._44 };
+			pMapTransform->Set_State(State::Right, ObjRight);
+			pMapTransform->Set_State(State::Up, ObjUp);
+			pMapTransform->Set_State(State::Look, ObjLook);
+			pMapTransform->Set_State(State::Pos, ObjPosition);
+		}
+		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))
+		{
+			if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
+			{
+				m_PickingPos = m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y);
+			}
 			FastPicking();
-		
+		}
+
 	}
+
 	if (m_pGameInstance->Mouse_Down(DIM_RBUTTON))
 	{
 		if (m_pSelectedDummy)
@@ -125,9 +136,9 @@ HRESULT CImGui_Manager::Render()
 	ImGuizmo::SetDrawlist(ImGui::GetBackgroundDrawList());
 	ImGuizmo::SetRect(0, 0, (_float)(m_iWinSizeX), (_float)(m_iWinSizeY));
 
-	if(m_iImGuizmoCheck)
+	if (m_iImGuizmoCheck)
 		ImGuizmoMenu();
-	
+
 	ImGui::Render();
 
 	return S_OK;
@@ -149,6 +160,14 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::SeparatorText("Terrain Hight");
 
 			ImGui::InputFloat("Hight", &TerrainHight, 2);
+			ImGui::InputFloat("Size", &BrushSize, 1);
+			if (BrushSize <= 0.f)
+				BrushSize = 1.f;
+			else if (BrushSize > 100.f)
+				BrushSize = 100.f;
+
+			if (m_pTerrain)
+				m_pTerrain->Set_BrushSize(BrushSize);
 
 			if (!m_pTerrain)
 			{
@@ -164,6 +183,9 @@ HRESULT CImGui_Manager::ImGuiMenu()
 					Modify_Terrain();
 				}
 			}
+
+
+
 			ImGui::SeparatorText("Save / Load");
 			ImGui::EndTabItem();
 		}
@@ -183,7 +205,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::RadioButton("Deongeon", &iSelectMap, 1); ImGui::SameLine();
 			ImGui::RadioButton("Village", &iSelectMap, 2);
 			Search_Map(iSelectMap);
-			
+
 			if (ImGui::BeginListBox("MAPS PATH", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
 			{
 				for (int n = 0; n < Maps.size(); n++)
@@ -231,10 +253,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			}
 			ImGui::SeparatorText("Wireframe");
 			ImGui::Checkbox("WireFrame", &m_isMode);
-			if (m_pSelectMap)
-			{
-				m_pSelectMap->Mode(m_isMode);
-			}
+
 			ImGui::SeparatorText("Save Vertices");
 			if (ImGui::Button("Save_Vertices"))
 			{
@@ -300,10 +319,10 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			}
 			ImGui::Separator();
 			ImGui::SeparatorText("MATRIX : ");
-			ImGui::InputFloat4("Right", &m_ObjectMatrix.m[0][0],0);
-			ImGui::InputFloat4("Up", &m_ObjectMatrix.m[1][0],0);
-			ImGui::InputFloat4("Look", &m_ObjectMatrix.m[2][0],0);
-			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0],0);
+			ImGui::InputFloat4("Right", &m_ObjectMatrix.m[0][0], 0);
+			ImGui::InputFloat4("Up", &m_ObjectMatrix.m[1][0], 0);
+			ImGui::InputFloat4("Look", &m_ObjectMatrix.m[2][0], 0);
+			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0], 0);
 			ImGui::Separator();
 			if (ImGui::Button("Delete"))
 			{
@@ -629,10 +648,10 @@ HRESULT CImGui_Manager::ImGuiMenu()
 
 			ImGui::SeparatorText("LIST");
 
-		
+
 			ImGui::Separator();
-			
-			
+
+
 			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0], 0);
 
 
@@ -675,9 +694,21 @@ HRESULT CImGui_Manager::ImGuiPos()
 	ImGui::SeparatorText("TERRAIN POS : ");
 	ImGui::InputFloat3("Terrain Pos", &m_TerrainPos.x, 0);
 
-	ImGui::SeparatorText("Check : ");
-
+	ImGui::SeparatorText("ImGuizmo : ");
 	ImGui::Checkbox("ImGui Check", &m_iImGuizmoCheck);
+
+	ImGui::SeparatorText("Wireframe : ");
+	ImGui::Checkbox("WireFrame", &m_isMode);
+
+	if (m_pTerrain)
+	{
+		m_pTerrain->Mode(m_isMode);
+	}
+	if (m_pSelectMap)
+	{
+		m_pSelectMap->Mode(m_isMode);
+	}
+
 
 	// 마스크맵 만들기
 	if (m_eItemType == ItemType::Map)
@@ -776,12 +807,12 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	DummyInfo Info{};
 
 	Info.ppDummy = &m_pSelectedDummy;
-	
+
 	Info.vPos = m_PickingPos;
 	XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_vLook)));
 	Info.Prototype = L"Prototype_Model_";
 	Info.eType = m_eItemType;
-	_tchar strUnicode[MAX_PATH]{}; 
+	_tchar strUnicode[MAX_PATH]{};
 	switch (m_eItemType)
 	{
 
@@ -802,7 +833,7 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	{
 		MSG_BOX("Failed to Add Layer : Dummy");
 	}
-	
+
 	switch (m_eItemType)
 	{
 	case MapEditor::ItemType::Objects:
@@ -842,7 +873,7 @@ void CImGui_Manager::Create_Map(const _int& iListIndex)
 	m_MapsList.push_back(m_pSelectMap);
 	m_Map.emplace(m_pSelectMap->Get_ID(), m_pSelectMap);
 	m_pSelectMap = nullptr;
-	
+
 }
 
 HRESULT CImGui_Manager::Create_Terrain()
@@ -871,7 +902,7 @@ void CImGui_Manager::Delete_Dummy()
 
 		if (m_eItemType == ItemType::Objects)
 		{
-	
+
 			for (auto it = m_ObjectsList.begin(); it != m_ObjectsList.end(); it++)
 			{
 				if ((*it)->Get_Selected() == true)
@@ -892,7 +923,7 @@ void CImGui_Manager::Delete_Dummy()
 					break;
 				}
 			}
-		
+
 		}
 		m_pSelectedDummy->Set_Dead();
 		m_pSelectedDummy = nullptr;
@@ -948,11 +979,11 @@ void CImGui_Manager::Reset()
 	m_MonsterList.clear();
 
 	m_DummyList.clear();
-	if(m_pSelectedDummy)
+	if (m_pSelectedDummy)
 		m_pSelectedDummy = nullptr;
-	if(m_pSelectMap)
+	if (m_pSelectMap)
 		m_pSelectMap = nullptr;
-	if(m_pTerrain)
+	if (m_pTerrain)
 		m_pTerrain = nullptr;
 }
 void CImGui_Manager::Search_Map(int iSelectMap)
@@ -983,7 +1014,7 @@ void CImGui_Manager::Search_Map(int iSelectMap)
 		string strFilePath = "../../Client/Bin/Resources/StaticMesh/Deongeon/";
 		try
 		{
-			
+
 		}
 		catch (const std::exception& e)
 		{
@@ -1050,7 +1081,7 @@ void CImGui_Manager::Search_Monster(int iSelectMonster)
 		string strFilePath = "../Bin/Resources/StaticMesh/Deongeon/";
 		try
 		{
-			
+
 		}
 		catch (const std::exception& e)
 		{
@@ -1098,19 +1129,19 @@ void CImGui_Manager::Search_NPC(int iSelectNPC)
 	}
 }
 
-void CImGui_Manager::Search_Files(string DirPath, const char* Path, vector<const char*>* List )
+void CImGui_Manager::Search_Files(string DirPath, const char* Path, vector<const char*>* List)
 {
 	string strPath(Path);
 	string strFilePath;
-	if(DirPath == "Map" || DirPath == "Map/Midgard")
+	if (DirPath == "Map" || DirPath == "Map/Midgard")
 	{
 		strFilePath = "../Bin/Resources/StaticMesh/" + DirPath + "/" + strPath + "/Mesh/";
 	}
 	else if (DirPath == "Object")
 	{
-		strFilePath = "../Bin/Resources/StaticMesh/"+ DirPath+ "/" + strPath + "/Mesh/";
+		strFilePath = "../Bin/Resources/StaticMesh/" + DirPath + "/" + strPath + "/Mesh/";
 	}
-	else if(DirPath == "Monster" || DirPath == "NPC")
+	else if (DirPath == "Monster" || DirPath == "NPC")
 		strFilePath = "../Bin/Resources/AnimMesh/" + DirPath + "/" + strPath + "/Mesh/";
 
 
@@ -1123,11 +1154,11 @@ void CImGui_Manager::Search_Files(string DirPath, const char* Path, vector<const
 			strcpy_s(cstr, strName.length() + 1, strName.c_str());
 			List->push_back(cstr);
 		}
-		if(!entry.exists())
+		if (!entry.exists())
 			continue;
 	}
-	
-	
+
+
 }
 
 void CImGui_Manager::Mouse_Pos()
@@ -1180,7 +1211,7 @@ void CImGui_Manager::FastPicking()
 	if (m_eItemType != ItemType::Map)
 	{
 		DummyIndex = 0;
-		
+
 		if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
 		{
 			DummyIndex = m_pGameInstance->FastPicking((_uint)m_vMousePos.x, (_uint)m_vMousePos.y);
@@ -1250,7 +1281,11 @@ HRESULT CImGui_Manager::Map_Vertices()
 		Indices = pModel->Get_StaticMeshIndices();
 
 		CVIBuffer_Terrain* pBuffer = dynamic_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer")));
-		pBuffer->Mesh_Terrain(Vertices, Indices);
+		pBuffer->Mesh_Terrain(pBuffer->Get_NumVerticesX(), pBuffer->Get_NumVerticesZ(), Vertices, Indices);
+
+		m_pSelectMap->Select(false);
+		m_pSelectMap->Kill();
+		m_pSelectMap = nullptr;
 
 	}
 	return S_OK;
@@ -1478,7 +1513,7 @@ HRESULT CImGui_Manager::Load_Object()
 			}
 
 			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
-			m_ObjectsList.push_back( m_pSelectedDummy);
+			m_ObjectsList.push_back(m_pSelectedDummy);
 
 			CTransform* pObjectsTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
 
@@ -1537,7 +1572,7 @@ HRESULT CImGui_Manager::Save_Monster()
 			_mat MonsterWorldMat = pMonsterTransform->Get_World_Matrix();
 			outFile.write(reinterpret_cast<const char*>(&MonsterWorldMat), sizeof(_mat));
 		}
-		
+
 		MessageBox(g_hWnd, L"파일 저장 완료", L"파일 저장", MB_OK);
 	}
 	return S_OK;
@@ -1601,12 +1636,12 @@ HRESULT CImGui_Manager::Load_Monster()
 			m_MonsterList.push_back(m_pSelectedDummy);
 
 			CTransform* pMonsterTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
-			
+
 			pMonsterTransform->Set_State(State::Right, MonsterWorldMat.Right());
 			pMonsterTransform->Set_State(State::Up, MonsterWorldMat.Up());
 			pMonsterTransform->Set_State(State::Look, MonsterWorldMat.Look());
 			pMonsterTransform->Set_State(State::Pos, MonsterWorldMat.Position());
-			
+
 			m_pSelectedDummy = nullptr;
 		}
 
@@ -1686,7 +1721,7 @@ void CImGui_Manager::Free()
 		Safe_Release(Map);
 	}
 	m_MapsList.clear();
-	
+
 
 	for (auto& cstr : m_ObjectsList)
 	{
@@ -1701,7 +1736,7 @@ void CImGui_Manager::Free()
 		Safe_Release(cstr);
 	}
 	m_MonsterList.clear();
-	
+
 
 	if (!m_DummyList.empty())
 	{

@@ -327,6 +327,12 @@ void CPop_QuestEnd::Free()
 
 	Safe_Release(m_pBorder);
 	Safe_Release(m_pBackground);
+	Safe_Release(m_pButton);
+	Safe_Release(m_pExclamationMark);
+	Safe_Release(m_pMoney);
+	Safe_Release(m_pExp);
+
+
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pMaskTextureCom);
 	Safe_Release(m_pRendererCom);
