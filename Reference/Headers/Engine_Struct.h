@@ -85,8 +85,6 @@ namespace Engine
 		std::wstring strUnDissolveTexture{};
 		std::string strModel{};
 
-		SimpleMath::Vector3* pPos{};
-		SimpleMath::Vector3 vPos{};
 		SimpleMath::Matrix* pMatrix{};
 	};
 
