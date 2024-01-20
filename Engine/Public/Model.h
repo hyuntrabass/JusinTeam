@@ -29,6 +29,8 @@ public:
 	vector<VTXSTATICMESH> Get_StaticMeshVertices();
 	vector<_ulong> Get_StaticMeshIndices();
 
+	_uint Get_NumIndices();
+
 public:
 	HRESULT Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix);
 	HRESULT Init(void* pArg) override;

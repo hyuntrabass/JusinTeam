@@ -124,6 +124,15 @@ vector<_ulong> CModel::Get_StaticMeshIndices()
 	return vIndices;
 }
 
+_uint CModel::Get_NumIndices()
+{
+	_uint iNumIndices;
+	for (auto iter = m_Meshes.begin(); iter != m_Meshes.end(); iter++)
+	{
+		iNumIndices = ((*iter)->Get_NumIndices());
+	}
+	return iNumIndices;
+}
 
 _mat CModel::Get_PivotMatrix()
 {

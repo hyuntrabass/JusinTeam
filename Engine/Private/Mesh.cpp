@@ -17,6 +17,7 @@ CMesh::CMesh(const CMesh& rhs)
 	, m_pIndices(rhs.m_pIndices)
 	, m_iMatIndex(rhs.m_iMatIndex)
 	, m_iNumBones(rhs.m_iNumBones)
+	, m_iNum(rhs.m_iNum)
 	, m_BoneIndices(rhs.m_BoneIndices)
 	, m_OffsetMatrices(rhs.m_OffsetMatrices)
 	, m_BoneMatrices(rhs.m_BoneMatrices)
@@ -98,6 +99,7 @@ HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _mat OffsetM
 		dwIndex++;
 
 	}
+	m_iNum = dwIndex;
 
 	m_InitialData.pSysMem = pIndices;
 
