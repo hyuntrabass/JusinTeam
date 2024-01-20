@@ -179,6 +179,20 @@ HRESULT CLoader::Load_Editor()
 		}
 	}
 
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Map/Village/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
 	Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 	// Map Model
 	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Map/Midgard/Map1/Mesh/";

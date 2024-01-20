@@ -166,6 +166,7 @@
     <ClInclude Include="..\Public\ItemBlock.h" />
     <ClInclude Include="..\Public\ItemSlot.h" />
     <ClInclude Include="..\Public\JobMark.h" />
+    <ClInclude Include="..\Public\Level_Village.h" />
     <ClInclude Include="..\Public\Logo_Dust.h" />
     <ClInclude Include="..\Public\Logo_Stone.h" />
     <ClInclude Include="..\Public\Logo_Text.h" />
@@ -244,6 +245,7 @@
     <ClCompile Include="..\Private\ItemBlock.cpp" />
     <ClCompile Include="..\Private\ItemSlot.cpp" />
     <ClCompile Include="..\Private\JobMark.cpp" />
+    <ClCompile Include="..\Private\Level_Village.cpp" />
     <ClCompile Include="..\Private\Logo_Dust.cpp" />
     <ClCompile Include="..\Private\Logo_Stone.cpp" />
     <ClCompile Include="..\Private\Logo_Text.cpp" />

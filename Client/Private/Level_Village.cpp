@@ -1,5 +1,4 @@
-#include "Level_GamePlay.h"
-#include "Level_Loading.h"
+#include "Level_Village.h"
 #include "Camera.h"
 #include "Monster.h"
 #include "NPC_Dummy.h"
@@ -7,14 +6,14 @@
 #include "Player.h"
 
 
-CLevel_GamePlay::CLevel_GamePlay(_dev pDevice, _context pContext)
+CLevel_Village::CLevel_Village(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
 {
 }
 
-HRESULT CLevel_GamePlay::Init()
+HRESULT CLevel_Village::Init()
 {
-	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_GAMEPLAY);
+	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_VILLAGE);
 	
 	if (FAILED(Ready_Player()))
 	{
@@ -35,81 +34,6 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
-	// Monster
-	if (FAILED(Ready_Void05()))
-	{
-		MSG_BOX("Failed to Ready Void05");
-		return E_FAIL;
-	}
-
-	// Monster Parse
-	//if (FAILED(Ready_Monster()))
-	//{
-	//	MSG_BOX("Failed to Ready Monster");
-	//	return E_FAIL;
-	//}
-
-	if (FAILED(Ready_Rabbit()))
-	{
-		MSG_BOX("Failed to Ready Rabbit");
-		return E_FAIL;
-	}
-
-	if (FAILED(Ready_Goat()))
-	{
-		MSG_BOX("Failed to Ready Goat");
-		return E_FAIL;
-	}
-
-	if (FAILED(Ready_Nastron03()))
-	{
-		MSG_BOX("Failed to Ready Nastron03");
-		return E_FAIL;
-	}
-
-	if (FAILED(Ready_NPCvsMon()))
-	{
-		MSG_BOX("Failed to Ready NPCvsMon");
-		return E_FAIL;
-	}
-
-	if (FAILED(Ready_Thief04()))
-	{
-		MSG_BOX("Failed to Ready Thief04");
-		return E_FAIL;
-	}
-
-	if (FAILED(Ready_TrilobiteA()))
-	{
-		MSG_BOX("Failed to Ready TrilobiteA");
-		return E_FAIL;
-	}
-
-	// NPC
-	if (FAILED(Ready_Cat()))
-	{
-		MSG_BOX("Failed to Ready Cat");
-		return E_FAIL;
-	}
-
-	if (FAILED(Ready_Dog()))
-	{
-		MSG_BOX("Failed to Ready Dog");
-		return E_FAIL;
-	}
-
-	if (FAILED(Ready_NPC_Dummy()))
-	{
-		MSG_BOX("Failed to Ready NPC_Dummy");
-		return E_FAIL;
-	}
-
-	// Boss
-	if (FAILED(Ready_Groar_Boss()))
-	{
-		MSG_BOX("Failed to Ready Groar_Boss");
-		return E_FAIL;
-	}
 
 	// Map
 	if (FAILED(Ready_Map()))
@@ -119,50 +43,39 @@ HRESULT CLevel_GamePlay::Init()
 	}
 	
 
-	if (FAILED(Ready_UI()))
-	{
-		MSG_BOX("Failed to Ready UI");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_UI()))
+	//{
+	//	MSG_BOX("Failed to Ready UI");
+	//	return E_FAIL;
+	//}
 
 
-	if (FAILED(Ready_Object()))
-	{
-		MSG_BOX("Failed to Ready Object");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Object()))
+	//{
+	//	MSG_BOX("Failed to Ready Object");
+	//	return E_FAIL;
+	//}
 
 	m_pGameInstance->Set_HellHeight(-5000.f);
 
 	return S_OK;
 }
 
-void CLevel_GamePlay::Tick(_float fTimeDelta)
+void CLevel_Village::Tick(_float fTimeDelta)
 {
-
-	if (m_pGameInstance->Key_Down(DIK_RETURN))
+	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 	{
-	
-		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_VILLAGE))))
-		{
-			return;
-		}
-
-		return;
-		
-		if (m_pGameInstance->Key_Down(DIK_ESCAPE))
-		{
-			DestroyWindow(g_hWnd);
-		}
+		DestroyWindow(g_hWnd);
 	}
+
 }
 
-HRESULT CLevel_GamePlay::Render()
+HRESULT CLevel_Village::Render()
 {
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Camera()
+HRESULT CLevel_Village::Ready_Camera()
 {
 	if (not m_pGameInstance)
 	{
@@ -172,7 +85,7 @@ HRESULT CLevel_GamePlay::Ready_Camera()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Light()
+HRESULT CLevel_Village::Ready_Light()
 {
 	LIGHT_DESC LightDesc{};
 
@@ -181,13 +94,13 @@ HRESULT CLevel_GamePlay::Ready_Light()
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
 
-	return m_pGameInstance->Add_Light(LEVEL_GAMEPLAY, TEXT("Light_Main"), LightDesc);
+	return m_pGameInstance->Add_Light(LEVEL_VILLAGE, TEXT("Light_Main"), LightDesc);
 }
 
-HRESULT CLevel_GamePlay::Ready_Player()
+HRESULT CLevel_Village::Ready_Player()
 {
 	// 플레이어 위치 설정
-	const TCHAR* pGetPath = TEXT("../Bin/Data/Player_Pos.dat");
+	const TCHAR* pGetPath = TEXT("../Bin/Data/Village_Player_Pos.dat");
 
 	std::ifstream inFile(pGetPath, std::ios::binary);
 
@@ -207,15 +120,9 @@ HRESULT CLevel_GamePlay::Ready_Player()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Map()
+HRESULT CLevel_Village::Ready_Map()
 {
-	//_uint2 vTerrainSize{ 100, 100 };
-	TerrainInfo Terrain;
-	Terrain.m_iNumVerticesX = 100;
-	Terrain.m_iNumVerticesZ = 100;
-	Terrain.isMesh = false;
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &Terrain)))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Map"))))
 	{
 		return E_FAIL;
 	}
@@ -260,7 +167,7 @@ HRESULT CLevel_GamePlay::Ready_Map()
 }
 
 
-HRESULT CLevel_GamePlay::Ready_Object()
+HRESULT CLevel_Village::Ready_Object()
 {
 
 	const TCHAR* pGetPath = TEXT("../Bin/Data/Prologue_ObjectData.dat");
@@ -302,7 +209,7 @@ HRESULT CLevel_GamePlay::Ready_Object()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Void05()
+HRESULT CLevel_Village::Ready_Void05()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void05"), TEXT("Prototype_GameObject_Void05"))))
 	{
@@ -312,7 +219,7 @@ HRESULT CLevel_GamePlay::Ready_Void05()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Cat()
+HRESULT CLevel_Village::Ready_Cat()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Cat"), TEXT("Prototype_GameObject_Cat"))))
 	{
@@ -322,7 +229,7 @@ HRESULT CLevel_GamePlay::Ready_Cat()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Dog()
+HRESULT CLevel_Village::Ready_Dog()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Dog"), TEXT("Prototype_GameObject_Dog"))))
 	{
@@ -332,7 +239,7 @@ HRESULT CLevel_GamePlay::Ready_Dog()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_NPC_Dummy()
+HRESULT CLevel_Village::Ready_NPC_Dummy()
 {
 	NPC_TYPE eType = ITEM_MERCHANT;
 
@@ -351,7 +258,7 @@ HRESULT CLevel_GamePlay::Ready_NPC_Dummy()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Groar_Boss()
+HRESULT CLevel_Village::Ready_Groar_Boss()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Groar_Boss"), TEXT("Prototype_GameObject_Groar_Boss"))))
 	{
@@ -361,7 +268,7 @@ HRESULT CLevel_GamePlay::Ready_Groar_Boss()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Monster()
+HRESULT CLevel_Village::Ready_Monster()
 {
 	MonsterInfo Info{};
 	const TCHAR* pGetPath = L"../Bin/Data/Prologue_MonsterData.dat";
@@ -403,7 +310,7 @@ HRESULT CLevel_GamePlay::Ready_Monster()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Rabbit()
+HRESULT CLevel_Village::Ready_Rabbit()
 {
 	for (size_t i = 0; i < 1; i++)
 	{
@@ -415,7 +322,7 @@ HRESULT CLevel_GamePlay::Ready_Rabbit()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Goat()
+HRESULT CLevel_Village::Ready_Goat()
 {
 	for (size_t i = 0; i < 1; i++)
 	{
@@ -428,7 +335,7 @@ HRESULT CLevel_GamePlay::Ready_Goat()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Nastron03()
+HRESULT CLevel_Village::Ready_Nastron03()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Nastron03"), TEXT("Prototype_GameObject_Nastron03"))))
 	{
@@ -438,7 +345,7 @@ HRESULT CLevel_GamePlay::Ready_Nastron03()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_NPCvsMon()
+HRESULT CLevel_Village::Ready_NPCvsMon()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPCvsMon"), TEXT("Prototype_GameObject_NPCvsMon"))))
 	{
@@ -448,7 +355,7 @@ HRESULT CLevel_GamePlay::Ready_NPCvsMon()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Thief04()
+HRESULT CLevel_Village::Ready_Thief04()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Thief04"), TEXT("Prototype_GameObject_Thief04"))))
 	{
@@ -458,7 +365,7 @@ HRESULT CLevel_GamePlay::Ready_Thief04()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_TrilobiteA()
+HRESULT CLevel_Village::Ready_TrilobiteA()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_TrilobiteA"), TEXT("Prototype_GameObject_TrilobiteA"))))
 	{
@@ -468,7 +375,7 @@ HRESULT CLevel_GamePlay::Ready_TrilobiteA()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_UI()
+HRESULT CLevel_Village::Ready_UI()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Player_HP"))))
 	{
@@ -505,20 +412,20 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	return S_OK;
 }
 
-CLevel_GamePlay* CLevel_GamePlay::Create(_dev pDevice, _context pContext)
+CLevel_Village* CLevel_Village::Create(_dev pDevice, _context pContext)
 {
-	CLevel_GamePlay* pInstance = new CLevel_GamePlay(pDevice, pContext);
+	CLevel_Village* pInstance = new CLevel_Village(pDevice, pContext);
 
 	if (FAILED(pInstance->Init()))
 	{
-		MSG_BOX("Failed to create : CLevel_GamePlay");
+		MSG_BOX("Failed to create : CLevel_Village");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CLevel_GamePlay::Free()
+void CLevel_Village::Free()
 {
 	__super::Free();
 }

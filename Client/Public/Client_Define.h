@@ -25,6 +25,7 @@ namespace Client
 		LEVEL_SELECT,
 		LEVEL_CUSTOM,
 		LEVEL_GAMEPLAY,
+		LEVEL_VILLAGE,
 		LEVEL_END
 	};
 

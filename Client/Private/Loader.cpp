@@ -108,9 +108,9 @@ HRESULT CLoader::Loading_LevelResources()
 		//case Client::LEVEL_FOREST:
 		//	hr = Load_Tutorial();
 		//	break;
-		//case Client::LEVEL_VILLAGE:
-		//	hr = Load_VillageStage();
-		//	break;
+	case Client::LEVEL_VILLAGE:
+		hr = Load_Village();
+		break;
 		//case Client::LEVEL_CLOUD:
 		//	hr = Load_CloudStage();
 		//	break;
@@ -384,7 +384,9 @@ HRESULT CLoader::Load_Select()
 	string strInputFilePath{};
 
 #pragma region ÁöÇü ¸Ê
-	_mat Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+
+
+	/*_mat Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 	strInputFilePath = "../Bin/Resources/StaticMesh/Map/Midgard/Map1/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -592,7 +594,7 @@ HRESULT CLoader::Load_Select()
 				return E_FAIL;
 			}
 		}
-	}
+	}*/
 
 #pragma endregion
 	/*if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sky"),
@@ -1331,6 +1333,34 @@ HRESULT CLoader::Load_GamePlay()
 
 	return S_OK;
 }
+
+HRESULT CLoader::Load_Village()
+{
+	// ¸Ê
+	//string strInputFilePath = "../Bin/Resources/StaticMesh/Map/Village/Mesh/";
+	/*for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false))))
+			{
+				return E_FAIL;
+			}
+		}
+	}*/
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, TEXT("Prototype_Model_Village"),CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Map/Village/Mesh/Village.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	m_isFinished = true;
+
+	return S_OK;
+}
+
+
 
 CLoader* CLoader::Create(_dev pDevice, _context pContext, LEVEL_ID eNextLevel)
 {
