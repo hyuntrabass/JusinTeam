@@ -27,6 +27,10 @@ public:
 	virtual void Late_Tick(_float fTimeDelta)override;
 	virtual HRESULT Render()override;
 
+	void Set_MousePos(_float4 MousePos) { m_MousePos = MousePos; }
+	void Set_BrushSize(_uint iBrushSize) { m_iBrushSize = iBrushSize; }
+	void Mode(_bool isMode) { m_isMode = isMode; }
+
 private:
 	// 객체가 컴포넌트를 사용할 때 용이하게끔 멤버변수로 보관한다.
 	CRenderer* m_pRendererCom = { nullptr };
@@ -41,7 +45,11 @@ private:
 	_float				m_fX, m_fY;
 	_float44			m_ViewMatrix, m_ProjMatrix;
 	_uint				m_iTextureNum = { 0 };
-	TerrainInfo m_Info{};
+	TerrainInfo m_Info;
+
+	_float4				m_MousePos{};
+	_float				m_iBrushSize{ 1.f };
+	_bool				m_isMode{ false };
 
 private:
 	HRESULT Add_Component();

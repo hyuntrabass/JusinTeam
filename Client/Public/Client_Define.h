@@ -7,6 +7,7 @@
 #include "Transform.h"
 #include <Windows.h>
 #include <Commdlg.h>
+#include "Model.h"
 #pragma comment(lib, "Engine.lib")
 #pragma comment(lib, "Imm32.lib")
 
@@ -48,7 +49,22 @@ namespace Client
 		WP_SWORD,
 		WP_END
 	};
-
+	enum WEAPON_INDEX
+	{
+		BOW0,
+		BOW1,
+		BOW2,
+		SWORD0,
+		SWORD1,
+		SWORD2,
+		WP_INDEX_END
+	};
+	struct WEAPONPART_DESC
+	{
+		_uint iNumVariations{};
+		ANIM_DESC* Animation{};
+		CTransform* pParentTransform{ nullptr };
+	};
 	enum PART_TYPE
 	{
 		PT_HAIR,
@@ -109,6 +125,18 @@ namespace Client
 		SCH_MAX
 	};
 
+	enum SortDepth
+	{
+		D_SCREEN1,
+		D_SCREEN2,
+		D_SCREEN3,
+		D_QUEST,
+		D_SHOP,
+		D_INVEN,
+		D_FADE,
+		D_MOUSE,
+		D_END
+	};
 	struct ObjectInfo
 	{
 		wstring strPrototypeTag{};
@@ -197,6 +225,9 @@ namespace Client
 		VTPass_Dust,
 		VTPass_Dissolve,
 		VTPass_MP,
+		VTPass_BLUR,
+		VTPass_Bright,
+		VTPass_ScrollAlpha,
 		VTPass_End
 	};
 

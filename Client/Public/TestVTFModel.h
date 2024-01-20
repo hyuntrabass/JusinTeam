@@ -8,7 +8,6 @@ BEGIN(Client)
 class CTestVTFModel final : public CGameObject
 {
 public:
-	enum SELECTMODEL_ANIM { S_IDLE, S_MOTION, S_CANCEL, S_PICK_IDLE, S_END };
 
 private:
 	CTestVTFModel(_dev pDevice, _context pContext);
@@ -22,22 +21,28 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
-public:
-	HRESULT Add_Components();
-	HRESULT Bind_ShaderResources();
 
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
-	CVTFModel* m_pModelCom = { nullptr };
+	CRealtimeVTFModel* m_pModelCom = { nullptr };
 
 private:
 	_mat m_OldWorldMatrix{};
 	_uint m_iAnimIndex = 0;
 
+	_uint hi = 0;
+	_bool m_UsingMotionBlur = false;
+
+	ANIM_DESC m_Animation{};
+
 private:
-	SELECTMODEL_ANIM m_eCurAnimState{ S_IDLE };
 	wstring m_strModelTag = {};
+
+private:
+	HRESULT Add_Components();
+	HRESULT Bind_ShaderResources();
+	HRESULT Place_PartModels();
 
 public:
 	static CTestVTFModel* Create(_dev pDevice, _context pContext);

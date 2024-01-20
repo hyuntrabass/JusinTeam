@@ -31,7 +31,7 @@ HRESULT CSkillSlot::Init(void* pArg)
 	m_fX = ((SKILLSLOT_DESC*)pArg)->vPosition.x;
 	m_fY = ((SKILLSLOT_DESC*)pArg)->vPosition.y;
 
-	m_fDepth = 0.8f;
+	m_fDepth = 1.f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 

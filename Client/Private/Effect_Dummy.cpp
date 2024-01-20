@@ -33,6 +33,12 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 	m_pTransformCom->Set_Scale(m_Effect.vSize);
 	m_vScaleAcc = m_Effect.vSize;
 
+	if (not m_Effect.pMatrix)
+	{
+		MSG_BOX("No Matrix Info");
+		return E_FAIL;
+	}
+
 	if (m_Effect.strUnDissolveTexture.size())
 	{
 		m_fDissolveRatio = 1.f;
@@ -77,18 +83,9 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 	m_fTimer += fTimeDelta;
 	m_vUV += m_Effect.vUVDelta * fTimeDelta;
 
-	if (m_Effect.pPos)
-	{
-		m_pTransformCom->Set_Position(*m_Effect.pPos);
-	}
-	else
-	{
-		m_pTransformCom->Set_Position(m_Effect.vPos);
-	}
-
 	switch (m_Effect.iType)
 	{
-	case Client::ET_PARTICLE:
+	case Effect_Type::ET_PARTICLE:
 		m_pParticle->Update(fTimeDelta, m_pTransformCom->Get_World_Matrix(), m_Effect.iNumInstances, m_Effect.bApplyGravity, m_Effect.vGravityDir);
 		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
 		break;
@@ -136,6 +133,8 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 		break;
 	}
 	}
+
+	m_WorldMatrix *= *m_Effect.pMatrix;
 }
 
 void CEffect_Dummy::Late_Tick(_float fTimeDelta)

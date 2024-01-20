@@ -19,7 +19,13 @@
 #include "Custom.h"
 #include "SelectDesc.h"
 #include "TextButton.h"
-
+#include "Pop_QuestIn.h"
+#include "Pop_QuestEnd.h"
+#include "BlurTexture.h"
+#include "Riding.h"
+#include "QuestBox.h"
+#include "Quest.h"
+#include "NameTag.h"
 #include "ExpBar.h"
 #include "HPBar.h"
 #include "MPBar.h"
@@ -42,12 +48,14 @@
 
 // Monster
 #include "NPCvsMon.h"
-#include "Void05.h"
+#include "ModelTest.h"
 #include "Rabbit.h"
 #include "Goat.h"
 #include "Nastron03.h"
 #include "Thief04.h"
 #include "TrilobiteA.h"
+#include "Void01.h"
+#include "Void05.h"
 
 // NPC
 #include "Cat.h"
@@ -56,7 +64,6 @@
 
 // Boss
 #include "Groar_Boss.h"
-#include "Thief04.h"
 
 // Test Model
 #include "TestVTFModel.h"

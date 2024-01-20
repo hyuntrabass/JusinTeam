@@ -21,16 +21,26 @@ private:
 	virtual ~CEffect_Manager() = default;
 
 public:
+	void Tick(_float fTimeDelta);
+	void Late_Tick(_float fTimeDelta);
+
+public:
 	EffectInfo Get_EffectInformation(const wstring& strEffectTag);
 	HRESULT Add_Layer_Effect(EffectInfo* pInfo);
 	class CEffect_Dummy* Clone_Effect(EffectInfo* pInfo);
+
+	void Create_Effect(const wstring& strEffectTag, _mat* pMatrix);
+	void Delete_Effect(const void* pMatrix);
+
+	void Register_Callback();
 
 public:
 	HRESULT Read_EffectFile();
 
 private:
 	CGameInstance* m_pGameInstance{ nullptr };
-	map<const wstring, EffectInfo> m_Effects{};
+	map<const wstring, EffectInfo> m_EffectInfos{};
+	map<const void*, class CEffect_Dummy*> m_Effects{};
 
 public:
 	virtual void Free() override;

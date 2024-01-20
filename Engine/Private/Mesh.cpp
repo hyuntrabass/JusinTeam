@@ -12,8 +12,8 @@ CMesh::CMesh(const CMesh& rhs)
 	: CVIBuffer(rhs)
 	, m_pVerticesPos(rhs.m_pVerticesPos)
 	, m_pVerticesNor(rhs.m_pVerticesNor)
-	, m_VerticesPos(rhs.m_VerticesPos)
-	, m_VerticesNor(rhs.m_VerticesNor)
+	, m_Vertices(rhs.m_Vertices)
+	, m_Indices(rhs.m_Indices)
 	, m_pIndices(rhs.m_pIndices)
 	, m_iMatIndex(rhs.m_iMatIndex)
 	, m_iNumBones(rhs.m_iNumBones)
@@ -83,11 +83,19 @@ HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _mat OffsetM
 	for (size_t i = 0; i < iNumFaces; i++)
 	{
 		ModelFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
-		m_pIndices[dwIndex++] = pIndices[dwIndex];
+		m_pIndices[dwIndex] = pIndices[dwIndex];
+		m_Indices.push_back(m_pIndices[dwIndex]);
+		dwIndex++;
+
 		ModelFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
-		m_pIndices[dwIndex++] = pIndices[dwIndex];
+		m_pIndices[dwIndex] = pIndices[dwIndex];
+		m_Indices.push_back(m_pIndices[dwIndex]);
+		dwIndex++;
+
 		ModelFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
-		m_pIndices[dwIndex++] = pIndices[dwIndex];
+		m_pIndices[dwIndex] = pIndices[dwIndex];
+		m_Indices.push_back(m_pIndices[dwIndex]);
+		dwIndex++;
 
 	}
 
@@ -119,16 +127,6 @@ HRESULT CMesh::Init(void* pArg)
 
 HRESULT CMesh::Bind_BoneMatrices(CShader* pShader, const vector<CBone*>& Bones, const _char* pVariableName, _mat PivotMatrix)
 {
-	//D3D11_MAPPED_SUBRESOURCE TexData;
-	//m_pContext->Map(m_pTexture, 0, D3D11_MAP_WRITE_DISCARD, 0, &TexData);
-
-	//_mat* BonMatrices = (_mat*)TexData.pData;
-	//_uint i = 0;
-	//for (size_t i = 0; i < m_iNumBones; i++)
-	//	BonMatrices[i] = m_BoneMatrices[i];
-
-	//m_pContext->Unmap(m_pTexture, 0);
-
 	for (size_t i = 0; i < m_iNumBones; i++)
 	{
 		m_BoneMatrices[i] = m_OffsetMatrices[i] * *Bones[m_BoneIndices[i]]->Get_CombinedMatrix() * PivotMatrix;
@@ -194,10 +192,18 @@ void CMesh::Apply_TransformToActor(_mat WorldMatrix)
 	m_pActor->setGlobalPose(Transform);
 }
 
-void CMesh::Set_Bone_Offset(const vector<class CBone*>& Bones)
+HRESULT CMesh::Set_Bone_Offset(const vector<class CBone*>& Bones)
 {
-	for (size_t i = 0; i < m_iNumBones; i++)
+	for (size_t i = 0; i < m_iNumBones; i++) {
+		if (Bones.size() <= m_BoneIndices[i]) {
+			MSG_BOX("»À Á¿µÊ ¤µ¤¡");
+			return E_FAIL;
+		}
+
 		Bones[m_BoneIndices[i]]->Set_OffsetMatrix(m_OffsetMatrices[i]);
+	}
+
+	return S_OK;
 }
 
 HRESULT CMesh::Ready_StaticMesh(ifstream& ModelFile, _mat OffsetMatrix)
@@ -220,15 +226,16 @@ HRESULT CMesh::Ready_StaticMesh(ifstream& ModelFile, _mat OffsetMatrix)
 		ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vPosition), sizeof _float3);
 		XMStoreFloat3(&pVertices[i].vPosition, XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vPosition), OffsetMatrix));
 		m_pVerticesPos[i] = pVertices[i].vPosition;
-		m_VerticesPos.push_back(m_pVerticesPos[i]);
+		m_VerticesInfo.vPosition = m_pVerticesPos[i];
 		ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vNormal), sizeof _float3);
 		XMStoreFloat3(&pVertices[i].vNormal, XMVector3TransformNormal(XMLoadFloat3(&pVertices[i].vNormal), OffsetMatrix));
 		m_pVerticesNor[i] = pVertices[i].vNormal;
-		m_VerticesNor.push_back(m_pVerticesNor[i]);
-
+		m_VerticesInfo.vNormal = m_pVerticesNor[i];
 		ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vTexcoord), sizeof _float2);
-
+		m_VerticesInfo.vTexcoord = pVertices[i].vTexcoord;
 		ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vTangent), sizeof _float3);
+
+		m_Vertices.push_back(m_VerticesInfo);
 	}
 
 
@@ -304,7 +311,6 @@ HRESULT CMesh::Ready_AnimMesh(ifstream& ModelFile)
 		m_OffsetMatrices.push_back(OffsetMatrix);
 		m_BoneIndices.push_back(iBoneIndex);
 	}
-
 	return S_OK;
 }
 

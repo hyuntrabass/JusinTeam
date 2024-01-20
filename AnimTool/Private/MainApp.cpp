@@ -75,6 +75,8 @@ HRESULT CMainApp::Init()
 		return E_FAIL;
 	}
 
+	CEffect_Manager::Get_Instance()->Register_Functions();
+
 	return S_OK;
 }
 
@@ -126,7 +128,7 @@ HRESULT CMainApp::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Clear_BackBuffer_View(_float4(0.f, 1.f, 0.f, 1.f))))
+	if (FAILED(m_pGameInstance->Clear_BackBuffer_View(_float4(0.2f, 0.2f, 0.2f, 1.f))))
 	{
 		return E_FAIL;
 	}

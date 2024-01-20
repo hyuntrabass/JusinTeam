@@ -4,17 +4,6 @@
 BEGIN(Engine)
 
 
-struct ANIM_DESC
-{
-	_uint iAnimIndex{};
-	_bool isLoop{};
-	_float fAnimSpeedRatio{ 1.f };
-	_bool bSkipInterpolation{};
-	_float fInterpolationTime{ 0.2f };
-	_float fDurationRatio{ 1.f };
-	_bool bRestartAnimation{ false };
-};
-
 class ENGINE_DLL CModel final : public CComponent
 {
 private:
@@ -26,7 +15,7 @@ public:
 	const _char* Get_FilePath() const;
 	const _uint& Get_NumMeshes() const;
 	const _uint& Get_NumAnim() const;
-	const _uint& Get_NumBones() const;
+	const _uint Get_NumBones() const;
 	const _bool& IsAnimationFinished(_uint iAnimIndex) const;
 	const _uint& Get_CurrentAnimationIndex() const;
 	const _float& Get_CurrentAnimPos() const;
@@ -37,12 +26,12 @@ public:
 	vector<class CBone*>& Get_Bones();
 
 	void Set_Animation(ANIM_DESC Animation_Desc);
-	vector<_float3> Get_VerticesNor();
-	vector<_float3> Get_VerticesPos();
+	vector<VTXSTATICMESH> Get_StaticMeshVertices();
+	vector<_ulong> Get_StaticMeshIndices();
 
 public:
 	HRESULT Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix);
-	HRESULT Init(void* pArg) override;
+	HRESULT Init(void* pArg, const CModel& rhs);
 
 public:
 	void Play_Animation(_float fTimeDelta);
@@ -80,8 +69,6 @@ private:
 	_bool m_isAnimChanged{};
 
 	ANIM_DESC m_AnimDesc{};
-
-	_uint m_iCurrentTrigger = 0;
 
 	ID3D11Texture2D* m_pTexture{ nullptr };
 	ID3D11ShaderResourceView* m_pSRV{ nullptr };

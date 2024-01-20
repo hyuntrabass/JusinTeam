@@ -183,8 +183,8 @@ HRESULT CLoader::Load_Logo()
 #pragma region Model
 	_uint iIndex = 0;
 	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/body/";
-	_mat PivotMat = _mat::CreateScale(0.1f) * _mat::CreateRotationX(XMConvertToRadians(-90.f)) * _mat::CreateRotationY(XMConvertToRadians(180.f));
-	_mat _PivotMat = _mat::CreateScale(0.1f) * _mat::CreateRotationY(XMConvertToRadians(180.f));
+	_mat PivotMat = _mat::CreateScale(0.01f) * _mat::CreateRotationX(XMConvertToRadians(-90.f)) * _mat::CreateRotationY(XMConvertToRadians(180.f));
+	_mat _PivotMat = _mat::CreateScale(0.01f) * _mat::CreateRotationY(XMConvertToRadians(180.f));
 
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -212,6 +212,23 @@ HRESULT CLoader::Load_Logo()
 
 		}
 	}
+
+	iIndex = 0;
+	strInputFilePath = "../Bin/Resources/AnimMesh/Riding/Mesh/";
+
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_Riding") + to_wstring(iIndex++);
+			string strFilePath = entry.path().filename().string();
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
 	iIndex = 0;
 	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/weapon/";
 
@@ -245,6 +262,10 @@ HRESULT CLoader::Load_Logo()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Riding"), CRiding::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Logo"), CLogo::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -272,6 +293,14 @@ HRESULT CLoader::Load_Logo()
 		return E_FAIL;
 	}
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_FadeBox"), CFadeBox::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Quest"), CQuest::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_QuestBox"), CQuestBox::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -594,8 +623,8 @@ HRESULT CLoader::Load_Select()
 	
 	_uint iIndex{};
 	strInputFilePath = "../Bin/Resources/AnimMesh/Player/test/face/";
-	_mat PivotMat = _mat::CreateScale(0.1f) * _mat::CreateRotationX(XMConvertToRadians(-90.f)) * _mat::CreateRotationY(XMConvertToRadians(180.f));
-	_mat _PivotMat = _mat::CreateScale(0.1f) * _mat::CreateRotationY(XMConvertToRadians(180.f));
+	_mat PivotMat = _mat::CreateScale(0.01f) * _mat::CreateRotationX(XMConvertToRadians(-90.f)) * _mat::CreateRotationY(XMConvertToRadians(180.f));
+	_mat _PivotMat = _mat::CreateScale(0.01f) * _mat::CreateRotationY(XMConvertToRadians(180.f));
 
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -758,6 +787,87 @@ HRESULT CLoader::Load_Select()
 
 	m_strLoadingText = L"Select : Loading Shader";
 #pragma region Shader
+
+	// VTF Test
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Component_Shader_VTF"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VTFModel.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Component_Shader_RTVTF"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_RT_VTFModel.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
+	{
+		return E_FAIL;
+	}
+
+	CRealtimeVTFModel* pModel = CRealtimeVTFModel::Create(m_pDevice, m_pContext, 
+		"../Bin/Resources/AnimMesh/VTFPlayer/Main/basemodel.hyuntraanimmesh");
+
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_2005_BD.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_3009_BD.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_5001_BD.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_5001_HD.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9000_FC.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9000_HR.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9000_S_HR.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9001_FC.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9001_HR.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9002_FC.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9002_HR.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9003_FC.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9004_FC.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9004_HR.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9005_FC.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9006_HR.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9008_HR.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9011_HR.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/R_9012_HR.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/RA_2004_WP.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/RA_3007_WP.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/RA_5001_WP.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/RS_2004_WP.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/RS_3007_WP.ao.PartModel")))
+		return E_FAIL;
+	if (FAILED(pModel->Seting_Parts("../Bin/Resources/AnimMesh/VTFPlayer/Part/RS_5001_WP.ao.PartModel")))
+		return E_FAIL;
+
+
+
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Model_RTVTFRabbit"), pModel)))
+		return E_FAIL;
+
+	// VTF 테스트 용도
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_TestVTF"), CTestVTFModel::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	//
+
 #pragma endregion
 
 	m_strLoadingText = L"Select : Loading Prototype";
@@ -970,7 +1080,7 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		if (entry.is_regular_file())
 		{
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Void05"), CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_ModelTest"), CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
 			{
 				return E_FAIL;
 			}
@@ -1014,6 +1124,19 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Void01"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Void01/Mesh/Void01.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Void05"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Void05/Mesh/Void05.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
 
 #pragma endregion Monster
 
@@ -1083,13 +1206,6 @@ HRESULT CLoader::Load_GamePlay()
 #pragma region Shader
 
 
-	// VTF Test Shader
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_VTF"), 
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VTFModel.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
-	{
-		return E_FAIL;
-	}
-
 #pragma endregion
 
 	m_strLoadingText = L"GamePlay : Loading Prototype";
@@ -1140,12 +1256,28 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_NameTag"), CNameTag::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Pop_QuestIn"), CPop_QuestIn::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Pop_QuestEnd"), CPop_QuestEnd::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BlurTexture"), CBlurTexture::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 
 #pragma region Monster
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Void05"), CVoid05::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_ModelTest"), CModelTest::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -1179,6 +1311,17 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Void01"), CVoid01::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Void05"), CVoid05::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 
 #pragma endregion Monster
 
@@ -1218,17 +1361,11 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_VTFRabbit"),
-		CVTFModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/VTFRabbit/Mesh/Rabbit.hyuntraanimmesh"))))
-	{
-		return E_FAIL;
-	}
-
-	// VTF 테스트 용도
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_TestVTF"), CTestVTFModel::Create(m_pDevice, m_pContext))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_VTFRabbit"),
+	//	CVTFModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/VTFRabbit/Mesh/Rabbit.hyuntraanimmesh"))))
+	//{
+	//	return E_FAIL;
+	//}
 
 #pragma endregion
 

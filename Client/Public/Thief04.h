@@ -70,6 +70,8 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) override;
+
 public:
 	void Init_State(_float fTimeDelta);
 	void Tick_State(_float fTimeDelta);
@@ -92,6 +94,11 @@ private:
 	_uint m_iHitPattern = {};
 
 	_bool m_bSelectAttackPattern = { false };
+
+private:
+	_bool m_bAttacked = { false };
+	_bool m_bAttacked2 = { false };
+
 
 private:
 	static const _float g_fChaseRange;

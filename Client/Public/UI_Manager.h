@@ -8,17 +8,13 @@ class CUI_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CUI_Manager)
 
-public:
-	enum CHANNELID
-	{
-	};
-
 private:
 	CUI_Manager();
 	virtual ~CUI_Manager() = default;
 
 private:
 	_bool			m_isPicking{ false };
+	_bool			m_isShowing{ false };
 	_uint			m_CustomPart[PART_TYPE::PT_END];
 	PART_TYPE		m_eChangedPart{ PT_END };
 
@@ -34,6 +30,7 @@ public:
 
 	const PART_TYPE& Is_CustomPartChanged() const { return m_eChangedPart; }
 	const _bool& Is_Picking_UI() const { return m_isPicking; }
+	const _bool& Showing_UI() const { return m_isPicking; }
 
 public:
 	virtual void Free() override;

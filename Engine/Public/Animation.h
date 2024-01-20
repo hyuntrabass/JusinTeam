@@ -15,11 +15,17 @@ public:
 	const _bool& IsFinished() const;
 	const _float Get_CurrentAnimPos() const;
 	const _float Get_Duration() const;
+	const _uint Get_NumEffectTrigger() const;
+	TRIGGEREFFECT_DESC* Get_TriggerEffect(_uint iTriggerEffectIndex);
+	vector<TRIGGEREFFECT_DESC>& Get_TriggerEffects();
+	void Add_TriggerEffect(TRIGGEREFFECT_DESC TriggerEffectDesc);
+	void Reset_TriggerEffects();
+	//나중에 지울것들
 	const _uint Get_NumTrigger() const;
 	vector<_float>& Get_Triggers();
 	void Add_Trigger(_float fAnimPos);
 	void Reset_Trigger();
-
+	//여기까지
 	void ResetFinished();
 	void Set_CurrentAnimPos(_float fCurrentAnimPos);
 
@@ -29,8 +35,9 @@ public:
 	}
 
 public:
-	HRESULT Init(ifstream& ModelFile, const vector<class CBone*>& Bones);
-	void Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio, _uint* iCurrentTrigger);
+	HRESULT Init_Prototype(ifstream& ModelFile, const vector<class CBone*>& Bones, const _mat& PivotMatrix);
+	HRESULT Init(void* pArg);
+	void Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio);
 
 	HRESULT Prepare_Animation(const vector<class CBone*>& Bones, _uint iFrame);
 
@@ -40,6 +47,10 @@ public:
 
 
 private:
+	class CGameInstance* m_pGameInstance{};
+	class CTransform* m_pOwnerTransform{};
+	_mat m_PivotMatrix{};
+
 	_char m_szName[MAX_PATH]{};
 	
 	_float m_fDuration{};
@@ -58,8 +69,9 @@ private:
 	_uint m_iNumTriggers{};
 	vector<_float> m_Triggers; // 이펙트 트리거
 
-	vector<_uint> m_NumEffects;
-	vector<vector<TRIGGEREFFECT_DESC>> m_TriggerEffects;
+	_uint m_iNumEffectTriggers{};
+	vector<TRIGGEREFFECT_DESC> m_TriggerEffects;
+	vector<_mat*> m_EffectMatrices;
 
 	_uint m_iNumSoundTrigger{};
 	vector<_float> m_SoundTriggers; // 사운드 트리거
@@ -70,11 +82,14 @@ private:
 	_bool m_hasCloned{};
 
 private:
+	static _uint m_iEffectID;
+
+private:
 	void Update_Lerp_TransformationMatrix(const vector<class CBone*>& Bones, _bool& isAnimChanged, _float fInterpolationTime);
 
 public:
-	static CAnimation* Create(ifstream& ModelFile, const vector<class CBone*>& Bones);
-	CAnimation* Clone();
+	static CAnimation* Create(ifstream& ModelFile, const vector<class CBone*>& Bones, const _mat& PivotMatrix);
+	CAnimation* Clone(void* pArg);
 	virtual void Free() override;
 };
 

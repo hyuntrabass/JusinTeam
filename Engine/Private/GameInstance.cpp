@@ -119,6 +119,10 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	m_pInput_Manager->Update_InputDev();
 
 	m_pObject_Manager->Tick(fTimeDelta);
+	if (m_Function_Tick_FX)
+	{
+		m_Function_Tick_FX(fTimeDelta);
+	}
 	m_pPipeLine->Tick();
 	m_pPicking->Tick();
 	m_pLevel_Manager->Tick(fTimeDelta);
@@ -127,7 +131,10 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 
 	m_pObject_Manager->Release_DeadObjects();
 	m_pObject_Manager->Late_Tick(fTimeDelta);
-
+	if (m_Function_LateTick_FX)
+	{
+		m_Function_LateTick_FX(fTimeDelta);
+	}
 }
 
 void CGameInstance::Clear(_uint iLevelIndex)
@@ -654,7 +661,7 @@ HRESULT CGameInstance::Ready_Texture2D()
 	{
 		return E_FAIL;
 	}
-		return m_pPicking->Ready_Texture2D();
+	return m_pPicking->Ready_Texture2D();
 }
 HRESULT CGameInstance::Ready_FastPicking()
 {
@@ -1009,6 +1016,42 @@ void CGameInstance::SetChannelVolume(_uint iChannel, _float fVolume)
 	return m_pSound_Manager->SetChannelVolume(iChannel, fVolume);
 }
 
+void CGameInstance::Register_CreateEffect_Callback(Func_CreateFX Function)
+{
+	m_Function_Create_FX = Function;
+}
+
+void CGameInstance::Register_DeleteEffect_Callback(Func_DeleteFX Function)
+{
+	m_Function_Delete_FX = Function;
+}
+
+void CGameInstance::Register_Tick_LateTick_Callback(Func_TickFX Tick, Func_TickFX Late_Tick)
+{
+	m_Function_Tick_FX = Tick;
+	m_Function_LateTick_FX = Late_Tick;
+}
+
+void CGameInstance::Create_Effect(const wstring& strEffectTag, _mat* pMatrix)
+{
+	if (not m_Function_Create_FX)
+	{
+		MSG_BOX("Function is not ready!!");
+		return;
+	}
+	m_Function_Create_FX(strEffectTag, pMatrix);
+}
+
+void CGameInstance::Delete_Effect(const void* pMatrix)
+{
+	if (not m_Function_Delete_FX)
+	{
+		MSG_BOX("Function is not ready!!");
+		return;
+	}
+	m_Function_Delete_FX(pMatrix);
+}
+
 const _uint& CGameInstance::Get_CameraModeIndex() const
 {
 	return m_iCameraModeIndex;
@@ -1069,9 +1112,10 @@ void CGameInstance::Set_FogNF(const _float2& vFogNF)
 	m_vFogNF = vFogNF;
 }
 
-void CGameInstance::Set_ShakeCam(const _bool& bShake)
+void CGameInstance::Set_ShakeCam(const _bool& bShake, _float fShakePower)
 {
 	m_bShakeCamera = bShake;
+	m_fShakePower = fShakePower;
 }
 
 void CGameInstance::Set_HellHeight(const _float& fHeight)
@@ -1101,9 +1145,17 @@ void CGameInstance::Set_CameraTargetLook(const _vec4& vLook)
 }
 
 void CGameInstance::Set_Have_TargetLook(const _bool& bHaveLook)
-{	
+{
 	m_bTargetLook = bHaveLook;
 }
+
+void CGameInstance::Set_AimMode(_bool Aim, _vec3 AimPos)
+{
+	m_AimMode = Aim;
+	m_AimPos = AimPos;
+}
+
+
 
 const _uint& CGameInstance::Get_CameraState() const
 {

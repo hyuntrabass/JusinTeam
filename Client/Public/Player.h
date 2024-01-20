@@ -3,6 +3,8 @@
 #include "GameObject.h"
 #include "BodyPart.h"
 #include "Weapon.h"
+#include "Riding.h"
+#include "NameTag.h"
 BEGIN(Client)
 
 struct BODYPART_DESC
@@ -51,7 +53,7 @@ public:
 	Anim_Climb_start,
 	Anim_Climb_wait,
 	Anim_Collect_end,
-	Anim_Collect_loop, //Ã¤Áý
+	Anim_Collect_loop, //Ã¤ï¿½ï¿½
 	Anim_Collect_Start,
 	Anim_Create_Idle,
 	Anim_Create_Pick,
@@ -88,19 +90,19 @@ public:
 	Anim_Idle_11,
 	Anim_Idle_Change10,
 	Anim_Interactioning,
-	Anim_jump_end,												// Á¡ÇÁ
+	Anim_jump_end,												// ï¿½ï¿½ï¿½ï¿½
 	Anim_jump_end_long,
 	Anim_jump_end_run,
 	Anim_jump_loop,
 	Anim_jump_start,
 	Anim_LoadingScene_Pose_Sniper,
-	Anim_logging,												// ³ª¹«º£´Â°Å
-	Anim_Mining,												// ±¤¹°Ä³´Â°Å
+	Anim_logging,												// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½
+	Anim_Mining,												// ï¿½ï¿½ï¿½ï¿½Ä³ï¿½Â°ï¿½
 	Anim_Mount_fly_run,
 	Anim_Mount_Idle,
 	Anim_Mount_Run,
 	Anim_Mount_Walk,											
-	Anim_Normal_run,											// ±âº» ¿òÁ÷ÀÓ
+	Anim_Normal_run,											// ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	Anim_Normal_run_L,
 	Anim_Normal_run_R,
 	Anim_Normal_run_start,
@@ -205,15 +207,6 @@ public:
 	Anim_end
 };
 
-
-
-	struct WEAPONPART_DESC
-	{
-		_uint iNumVariations{};
-		ANIM_DESC* Animation{};
-		CTransform* pParentTransform{ nullptr };
-	};
-
 	enum PLAYER_STATE
 	{
 		Idle,
@@ -223,10 +216,28 @@ public:
 		Run_End,
 		Attack,
 		Attack_Idle,
+		Attack_Run,
+		Skill1,
+		Skill1_End,
+		Skill2,
+		Skill3,
+		Skill4,
+		SkillR,
+		Aim_Idle,
 		Jump_Start,
 		Jump,
 		Jump_End,
 		State_End
+	};
+
+	enum ATTACK_TYPE
+	{
+		AT_Common,
+		AT_Skill1,
+		AT_Skill2,
+		AT_Skill3,
+		AT_Skill4,
+		AT_End
 	};
 private:
 	CPlayer(_dev pDevice, _context pContext);
@@ -243,24 +254,51 @@ public:
 public:
 	HRESULT Add_Parts();
 	HRESULT Add_Weapon();
+	HRESULT Add_Info();
+	
+
 
 public:
 	void Change_Parts(PART_TYPE PartsType,_int ChangeIndex);
-	void Change_Weapon(WEAPON_TYPE PartsType,_int ChangeIndex);
+	void Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex);
 
 	void Reset_PartsAnim();
-	void Set_Key(_float fTimeDelta);
+	
 	void Move(_float fTimeDelta);
-	void Common_SwordAttack();
+
+	void Common_Attack();
+	void Skill1_Attack();
+	void Skill2_Attack();
+	void Skill3_Attack();
+	void Skill4_Attack();
+	void SkillR_Attack();
+
+	void Cam_AttackZoom(_float fZoom);
 	void Return_Attack_IdleForm();
-	void Sword_Attack_Dash(_float fTimeDelta);
+	void After_CommonAtt(_float fTimeDelta);
+	void After_SkillAtt(_float fTimeDelta);
+	void Check_Att_Collider(ATTACK_TYPE Att_Type);
+
+public:
+	void Summon_Riding(Riding_Type Type);
+	void UnMount_Riding();
 public:
 	void Init_State();
 	void Tick_State(_float fTimeDelta);
+
 private:
 	vector<CBodyPart*> m_vecParts{};
-	CGameObject* m_pWeapon{};
+	CWeapon* m_pWeapon{};
+	CRiding* m_pRiding{};
+	CGameObject* m_pNameTag{};
+
 	CTransform* m_pCameraTransform{};
+	CCollider* m_pHitCollider = { nullptr };
+	CCollider* m_pAttCollider[AT_End] = {nullptr};
+
+	
+	CRenderer* m_pRendererCom{ nullptr };
+
 private:
 	ANIM_DESC m_Animation{};
 	PLAYER_STATE m_eState{ Idle };
@@ -280,10 +318,18 @@ private:
 	_bool m_bAttacked{};
 	_bool m_hasJumped{};
 	_int m_iAttackCombo{};
-
+	_int m_iCurrentSkill_Index{};
 	_vec4 m_currentDir{};
 	_float m_lerpFactor{0.1f};
-
+	_vec4 m_vLook{};
+	_float m_fLerpTime{};
+	_vec4 m_fLerpLook{};
+	_vec4 m_fFirstLook{};
+	_float m_fAttackZoom{};
+	_float m_ReturnZoomTime{};
+	ANIM_LIST m_SwordSkill[5]{};
+	ANIM_LIST m_BowSkill[5]{};
+	_float m_fSkiilTimer{};
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

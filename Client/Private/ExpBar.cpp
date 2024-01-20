@@ -1,6 +1,7 @@
 #include "ExpBar.h"
 #include "GameInstance.h"
 #include "TextButton.h"
+#include "TextButtonColor.h"
 
 CExpBar::CExpBar(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -29,25 +30,31 @@ HRESULT CExpBar::Init(void* pArg)
 
 
 	m_fSizeX = g_iWinSizeX;
-	m_fSizeY = 12.f;
+	m_fSizeY = 10.f;
 
 	m_fX = (_float)g_iWinSizeX / 2.f;
 	m_fY = 720.f;
 
-	m_fDepth = 0.8f;
+	m_fDepth = 1.f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	m_vRatio = _float2(70.f, 100.f);
 
-	CTextButton::TEXTBUTTON_DESC Button = {};
-	Button.eLevelID = LEVEL_STATIC;
-	Button.fDepth = 1.f;
-	Button.strText = TEXT("");
-	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BG");
-	Button.vPosition = _vec2(m_fX, m_fY);
-	Button.vSize = _vec2(m_fSizeX, m_fSizeY);
 
-	m_pBackground = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+	CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
+	ColButtonDesc.eLevelID = LEVEL_STATIC;
+	ColButtonDesc.fDepth = 1.f;
+	ColButtonDesc.fAlpha = 0.7f;
+	ColButtonDesc.vColor = _vec4(0.f, 0.f, 0.f, 0.7f);
+	ColButtonDesc.strText = TEXT("");
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BG");
+	ColButtonDesc.vPosition = _vec2(m_fX, m_fY);
+	ColButtonDesc.vSize = _vec2(m_fSizeX, m_fSizeY + 5.f);
+	ColButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	ColButtonDesc.vTextPosition = _vec2(0.f, 20.f);
+
+	m_pBackground = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+
 
 	if (not m_pBackground)
 	{
@@ -60,14 +67,7 @@ HRESULT CExpBar::Init(void* pArg)
 
 void CExpBar::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Pressing(DIK_1))
-		m_vRatio.x -= 2.f;;
-	if (m_pGameInstance->Key_Pressing(DIK_2))
-	{
-		if(m_vRatio.x <= m_vRatio.y)
-			m_vRatio.x += 0.1f;;
-	}
-	
+
 	m_fTime += fTimeDelta;
 }
 
@@ -94,11 +94,18 @@ HRESULT CExpBar::Render()
 		return E_FAIL;
 	}
 	_float iExp = 100.f * (m_vRatio.x / m_vRatio.y);
-	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("경험치 ") + to_wstring(static_cast<_uint>(iExp)) + TEXT("% "), _vec2(50.f - 0.1f, m_fY), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("경험치 ") + to_wstring(static_cast<_uint>(iExp)) + TEXT("% "), _vec2(50.f + 0.1f, m_fY), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("경험치 ") + to_wstring(static_cast<_uint>(iExp)) + TEXT("% "), _vec2(50.f, m_fY - 0.1f), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("경험치 ") + to_wstring(static_cast<_uint>(iExp)) + TEXT("% "), _vec2(50.f, m_fY + 0.1f), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("경험치 ") + to_wstring(static_cast<_uint>(iExp)) + TEXT("% "), _vec2(50.f, m_fY), 0.3f, _vec4(0.5f, 1.0f, 0.5f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("Lv. ") + to_wstring(m_iLevel), _vec2(50.f - 0.1f, m_fY), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("Lv. ") + to_wstring(m_iLevel), _vec2(50.f + 0.1f, m_fY), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("Lv. ") + to_wstring(m_iLevel), _vec2(50.f, m_fY - 0.1f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("Lv. ") + to_wstring(m_iLevel), _vec2(50.f, m_fY + 0.1f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("Lv. ") + to_wstring(m_iLevel), _vec2(50.f, m_fY), 0.7f, _vec4(1.f, 1.f, 1.f, 1.f));
+	
+
+	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("경험치 ") + to_wstring(static_cast<_uint>(iExp)) + TEXT("% "),  _vec2(140.f - 0.1f, m_fY + 5.f), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("경험치 ") + to_wstring(static_cast<_uint>(iExp)) + TEXT("% "), _vec2(140.f + 0.1f, m_fY + 5.f), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("경험치 ") + to_wstring(static_cast<_uint>(iExp)) + TEXT("% "), _vec2(140.f, m_fY + 5.f - 0.1f), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("경험치 ") + to_wstring(static_cast<_uint>(iExp)) + TEXT("% "), _vec2(140.f, m_fY + 5.f + 0.1f), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("경험치 ") + to_wstring(static_cast<_uint>(iExp)) + TEXT("% "), _vec2(140.f, m_fY + 5.f), 0.3f, _vec4(0.6196f, 0.8509f, 0.0196f, 1.f));
 
 
 	return S_OK;
@@ -158,7 +165,7 @@ HRESULT CExpBar::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
-	_vec4 vColor = _vec4(0.5f, 1.f, 0.5f, 1.f);
+	_vec4 vColor = _vec4(0.6196f, 0.8509f, 0.0196f, 1.f);
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_vec4))))
 	{
 		return E_FAIL;

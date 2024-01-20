@@ -37,7 +37,7 @@ public:
 
 	enum RABBIT_COLL
 	{
-		LH, RH, LF, RF,
+		BODY, LH, RH, LF, RF,
 		COLL_END
 	};
 
@@ -52,6 +52,8 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+
+	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) override;
 	
 public:
 	void Init_State(_float fTimeDelta);
@@ -73,6 +75,10 @@ private:
 	_uint m_iAttackPattern = {};
 
 	_bool m_bSelectAttackPattern = { false };
+
+private:
+	_bool m_bAttacked = { false };
+	_bool m_bAttacked2 = { false };
 
 private:
 	static const _float g_fChaseRange;

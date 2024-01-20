@@ -117,7 +117,7 @@ public: // Collision
 	void Attack_Monster(class CCollider* pCollider, _uint iDamage, _uint iDamageType = 0);
 	_bool CheckCollision_Monster(class CCollider* pCollider);
 	_bool Attack_Player(class CCollider* pCollider, _uint iDamage, _uint iDamageType = 0);
-	_bool CheckCollision_Player(class CCollider* pCollider);
+	_bool CheckCollision_Player(class CCollider* pCollider); // 필요없음
 
 public: // PhysX
 	void Init_PhysX_Character(class CTransform* pTransform, CollisionGroup eGroup, PxCapsuleControllerDesc* pDesc = nullptr);
@@ -158,6 +158,18 @@ public: // Sound Manager
 
 	void SetChannelVolume(_uint iChannel, _float fVolume);
 
+public: // Effect Callback
+	using Func_CreateFX = function<void(const wstring&, _mat*)>;
+	using Func_DeleteFX = function<void(const void*)>;
+	using Func_TickFX = function<void(_float)>;
+
+	void Register_CreateEffect_Callback(Func_CreateFX Function);
+	void Register_DeleteEffect_Callback(Func_DeleteFX Function);
+	void Register_Tick_LateTick_Callback(Func_TickFX Tick, Func_TickFX Late_Tick);
+
+	void Create_Effect(const wstring& strEffectTag, _mat* pMatrix);
+	void Delete_Effect(const void* pMatrix);
+
 public: // Get_Set
 	// 현재 카메라가 메인 카메라인지 디버그 카메라인지 반환함. client define에 이넘 있음.
 	const _uint& Get_CameraModeIndex() const;
@@ -185,22 +197,29 @@ public: // Get_Set
 	// 안개의 정도를 조정할 때 씀. near부터 안개가 끼기 시작해서 far로 갈 수록 안개가 진해짐.
 	void Set_FogNF(const _float2& vFogNF);
 	// 카메라 쉐이크 기능. true 던지면 카메라가 한번 흔들림.
-	void Set_ShakeCam(const _bool& bShake);
+	void Set_ShakeCam(const _bool& bShake , _float fShakePower = 0.1f);
 	// hell 높이를 지정한다.
 	void Set_HellHeight(const _float& fHeight);
 
+	_float Get_ShakePower() { return m_fShakePower; }
 
 	void Set_ZoomFactor(const _float fFactor);
 	void Set_CameraState(const _uint& iIndex);
 	void Set_CameraTargetPos(const _vec4& vPos);
 	void Set_CameraTargetLook(const _vec4& vLook);
 	void Set_Have_TargetLook(const _bool& bHaveLook);
+	void Set_AimMode(_bool Aim, _vec3 AimPos = _vec3(0.63f, 1.8f, 1.1f));
+	_bool Get_AimMode() { return m_AimMode; }
 
+
+	void Set_CameraAttackZoom(_float fAttackZoom) { m_fCameraAttackZoom = fAttackZoom; }
+	_float Get_CameraAttackZoom() { return m_fCameraAttackZoom; }
 	const _uint& Get_CameraState()  const;
 	const _float& Get_ZoomFactor() const;
 	const _vec4& Get_CameraTargetPos() const;
 	const _vec4& Get_CameraTargetLook();
 	const _bool& Have_TargetLook() const;
+	_vec3 Get_AimPos() { return m_AimPos; }
 
 public:
 	void Initialize_Level(_uint iLevelNum);
@@ -234,15 +253,24 @@ private:
 	_float m_fTimeRatio{ 1.f };
 	_float m_fZoomFactor{ 3.f };
 	_float2 m_vCameraNF{};
+	_float m_fCameraAttackZoom{};
 	_float2 m_vFogNF{ 2000.f, 2000.f };
 	_bool m_bShakeCamera{};
 	_bool m_bTargetLook{ false };
 	_float m_fHellHeight{};
 	_vec4 m_vTarget{};
 	_vec4 m_vTargetLook{};
-
+	_bool m_AimMode{};
+	_float m_fShakePower{};
+	_vec3 m_AimPos{};
 private:
 	vector<_bool> m_vecLevelInvalid;
+
+private:
+	Func_CreateFX m_Function_Create_FX{};
+	Func_DeleteFX m_Function_Delete_FX{};
+	Func_TickFX m_Function_Tick_FX{};
+	Func_TickFX m_Function_LateTick_FX{};
 
 public:
 	static void Release_Engine();

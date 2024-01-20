@@ -5,7 +5,7 @@
 
 BEGIN(Client)
 
-typedef struct MonsterInfo 
+typedef struct MonsterInfo
 {
 	wstring strMonsterPrototype{};
 	_mat	MonsterWorldMat{};
@@ -34,6 +34,9 @@ protected:
 	CRenderer* m_pRendererCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
 
+	CCollider* m_pBodyColliderCom = { nullptr };
+	CCollider* m_pAttackColliderCom = { nullptr };
+
 protected:
 	wstring m_strModelTag = {};
 	ANIM_DESC m_Animation{};
@@ -42,8 +45,20 @@ protected:
 	_uint m_iPassIndex = {};
 
 protected:
+	_float m_fBackPower = { 0.5f };
+
+private: // Collier 사이즈 조절용
+	_float m_fSizeX = {}, m_fSizeY = {}, m_fSizeZ = {};
+	_float m_fScale = { 0.2f };
+
+protected:
 	virtual HRESULT Add_Collider() = 0;
 	virtual void Update_Collider() = 0;
+
+	void Update_MonsterCollider();
+
+	// Collier 사이즈 조절용
+	void Change_Extents(_vec3 vStartSize);
 
 public:
 	HRESULT Add_Components();

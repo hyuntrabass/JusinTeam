@@ -85,9 +85,20 @@ namespace Engine
 		std::wstring strUnDissolveTexture{};
 		std::string strModel{};
 
-		SimpleMath::Vector3* pPos{};
-		SimpleMath::Vector3 vPos{};
+		SimpleMath::Matrix* pMatrix{};
 	};
+
+	struct ANIM_DESC
+	{
+		unsigned int iAnimIndex{};
+		bool isLoop{};
+		float fAnimSpeedRatio{ 1.f };
+		bool bSkipInterpolation{};
+		float fInterpolationTime{ 0.2f };
+		float fDurationRatio{ 1.f };
+		bool bRestartAnimation{ false };
+	};
+
 
 	using ANIMTIME_DESC = struct tagAnimTimeDesc {
 		int iAnimIndex = 0;
@@ -123,15 +134,19 @@ namespace Engine
 	};
 
 	using TRIGGEREFFECT_DESC = struct tagTriggerEffectDesc {
-		TCHAR szEffectName[MAX_PATH];
-		int iBoneIndex = -1;
-		SimpleMath::Vector3 vPos{};
+		float fStartAnimPos{};
+		float fEndAnimPos = -1.f;
+		bool IsFollow{};
+		std::wstring strEffectName{};
+		unsigned int iBoneIndex{};
+		SimpleMath::Matrix OffsetMatrix{};
 	};
 
 	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {
-		TCHAR szSoundName[MAX_PATH];
-		int iChannel;
-		float fVolume;
+		float fStartAnimPos{};
+		std::wstring strSoundName{};
+		int iChannel{};
+		float fVolume{};
 	};
 
 	using VTXPOSCOLOR = struct ENGINE_DLL tagVertex_Position_Color

@@ -34,7 +34,7 @@ HRESULT CMouse::Init(void* pArg)
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
-	ShowCursor(false);
+	ShowCursor(false);                                                                                 
 
 	return S_OK;
 }
@@ -56,7 +56,6 @@ void CMouse::Tick(_float fTimeDelta)
 void CMouse::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
-
 }
 
 HRESULT CMouse::Render()

@@ -24,13 +24,6 @@ CModel::CModel(const CModel& rhs)
 		m_Bones.push_back(pBone);
 	}
 
-	for (auto& pPrototypeAnimation : rhs.m_Animations)
-	{
-		CAnimation* pAnimation = pPrototypeAnimation->Clone();
-
-		m_Animations.push_back(pAnimation);
-	}
-
 	for (auto& pPrototypeMesh : rhs.m_Meshes)
 	{
 		CMesh* pMesh = reinterpret_cast<CMesh*>(pPrototypeMesh->Clone());
@@ -64,7 +57,7 @@ const _uint& CModel::Get_NumAnim() const
 	return m_iNumAnimations;
 }
 
-const _uint& CModel::Get_NumBones() const
+const _uint CModel::Get_NumBones() const
 {
 	return m_Bones.size();
 }
@@ -104,25 +97,26 @@ const _mat* CModel::Get_BoneMatrix(const _char* pBoneName) const
 	return (*iter)->Get_CombinedMatrix();
 }
 
-vector<_float3> CModel::Get_VerticesNor()
+vector<VTXSTATICMESH> CModel::Get_StaticMeshVertices()
 {
-	vector<_float3> vVerticesNor;
+	vector<VTXSTATICMESH> vVertices;
 	for (auto iter = m_Meshes.begin(); iter != m_Meshes.end(); iter++)
 	{
-		vVerticesNor = ((*iter)->Get_VerticesNor());
+		vVertices = ((*iter)->Get_VtxStaticInfo());
 	}
-	return vVerticesNor;
+	return vVertices;
 }
 
-vector<_float3> CModel::Get_VerticesPos()
+vector<_ulong> CModel::Get_StaticMeshIndices()
 {
-	vector<_float3> vVerticesPos;
+	vector<_ulong> vIndices;
 	for (auto iter = m_Meshes.begin(); iter != m_Meshes.end(); iter++)
 	{
-		vVerticesPos = ((*iter)->Get_VerticesPos());
+		vIndices = ((*iter)->Get_InidcesStaticInfo());
 	}
-	return vVerticesPos;
+	return vIndices;
 }
+
 
 _mat CModel::Get_PivotMatrix()
 {
@@ -150,7 +144,6 @@ void CModel::Set_Animation(ANIM_DESC Animation_Desc)
 		Animation_Desc.bRestartAnimation)
 	{
 		m_isAnimChanged = true;
-		m_iCurrentTrigger = 0;
 
 		for (auto& pAnim : m_Animations)
 		{
@@ -258,15 +251,22 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 	return S_OK;
 }
 
-HRESULT CModel::Init(void* pArg)
+HRESULT CModel::Init(void* pArg, const CModel& rhs)
 {
+	for (auto& pPrototypeAnimation : rhs.m_Animations)
+	{
+		CAnimation* pAnimation = pPrototypeAnimation->Clone(pArg);
+
+		m_Animations.push_back(pAnimation);
+	}
+
 	return S_OK;
 }
 
 void CModel::Play_Animation(_float fTimeDelta)
 {
 	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop,
-		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio, &m_iCurrentTrigger);
+		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio);
 
 	for (auto& pBone : m_Bones)
 	{
@@ -372,7 +372,7 @@ HRESULT CModel::Read_Animations(ifstream& File)
 
 	for (size_t i = 0; i < m_iNumAnimations; i++)
 	{
-		CAnimation* pAnimation = CAnimation::Create(File, m_Bones);
+		CAnimation* pAnimation = CAnimation::Create(File, m_Bones, m_PivotMatrix);
 		if (!pAnimation)
 		{
 			MSG_BOX("Failed to Read Animations!");
@@ -451,7 +451,7 @@ CComponent* CModel::Clone(void* pArg)
 {
 	CModel* pInstance = new CModel(*this);
 
-	if (FAILED(pInstance->Init(pArg)))
+	if (FAILED(pInstance->Init(pArg, *this)))
 	{
 		MSG_BOX("Failed to Clone : CModel");
 	}

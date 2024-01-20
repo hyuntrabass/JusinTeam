@@ -24,23 +24,23 @@ HRESULT CJobMark::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_fSizeX = 150.f;
-	m_fSizeY = 150.f;
+	m_fSizeX = 120.f;
+	m_fSizeY = 120.f;
 
 	m_fX = (_float)g_iWinSizeX / 2.f;
-	m_fY = 610.f;
+	m_fY = 630.f;
 
-	m_fDepth = 0.7f;
+	m_fDepth = 0.5f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 
 	CTextButton::TEXTBUTTON_DESC Button = {};
 	Button.eLevelID = LEVEL_STATIC;
-	Button.fDepth = 0.5f;
-	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_basic_bow");
+	Button.fDepth = 0.5f - 0.01f;
+	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Image_Emblem_01");
 	Button.vPosition = _vec2(m_fX, m_fY);
-	Button.vSize = _vec2(80.f, 80.f);
+	Button.vSize = _vec2(140.f, 140.f);
 
 	m_pJob = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
@@ -55,6 +55,7 @@ HRESULT CJobMark::Init(void* pArg)
 void CJobMark::Tick(_float fTimeDelta)
 {
 
+
 	if (m_eCurState != m_ePrevState)
 	{
 		if (m_pJob)
@@ -66,7 +67,7 @@ void CJobMark::Tick(_float fTimeDelta)
 		Button.eLevelID = LEVEL_STATIC;
 		Button.fDepth = 0.5f;
 		Button.vPosition = _vec2(m_fX, m_fY);
-		Button.vSize = _vec2(80.f, 80.f);
+		Button.vSize = _vec2(60.f, 60.f);
 
 		switch (m_eCurState)
 		{

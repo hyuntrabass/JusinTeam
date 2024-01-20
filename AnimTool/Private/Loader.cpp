@@ -174,9 +174,24 @@ HRESULT CLoader::Load_Tool()
 	{
 		if (entry.is_regular_file())
 		{
-			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_Effect_") + to_wstring(iTextureNumber++);
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_Effect_") + entry.path().stem().wstring();
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Effect/Mesh/";
+	_uint iMeshNumber{};
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_Effect_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
 			{
 				return E_FAIL;
 			}
@@ -189,7 +204,7 @@ HRESULT CLoader::Load_Tool()
 	m_strLoadingText = L"Logo : Loading Model";
 #pragma region Model
 	//Monster
-	_matrix Pivot = XMMatrixScaling(0.02f, 0.02f, 0.02f); 
+	_matrix Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f); 
 	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/Monster/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{

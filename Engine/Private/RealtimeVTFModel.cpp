@@ -4,6 +4,7 @@
 #include "Texture.h"
 #include "Animation.h"
 #include "Shader.h"
+#include "Part_Model.h"
 
 CRealtimeVTFModel::CRealtimeVTFModel(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
@@ -25,12 +26,6 @@ CRealtimeVTFModel::CRealtimeVTFModel(const CRealtimeVTFModel& rhs)
 		m_Bones.push_back(pBone);
 	}
 
-	for (auto& pPrototypeAnimation : rhs.m_Animations) {
-		CAnimation* pAnimation = pPrototypeAnimation->Clone();
-
-		m_Animations.push_back(pAnimation);
-	}
-
 	for (auto& pPrototypeMesh : rhs.m_Meshes) {
 		CMesh* pMesh = reinterpret_cast<CMesh*>(pPrototypeMesh->Clone());
 
@@ -40,9 +35,24 @@ CRealtimeVTFModel::CRealtimeVTFModel(const CRealtimeVTFModel& rhs)
 	for (auto& Material : m_Materials)
 		for (auto& pTexture : Material.pMaterials)
 			Safe_AddRef(pTexture);
+
+	//for (auto& PrototypePartVector : rhs.m_Parts) {
+	//	vector<CPart_Model*> Parts;
+	//	for (auto& pPrototypePart : PrototypePartVector.second) {
+	//		CPart_Model* pPart = reinterpret_cast<CPart_Model*>(pPrototypePart->Clone());
+
+	//		Parts.push_back(pPart);
+	//	}
+	//	m_Parts.emplace(PrototypePartVector.first, Parts);
+	//}
+
+	for (auto& PrototypePartPair : rhs.m_PrototypeParts) {
+		CPart_Model* pPart = reinterpret_cast<CPart_Model*>(PrototypePartPair.second->Clone());
+		m_PrototypeParts.emplace(PrototypePartPair.first, pPart);
+	}
 }
 
-HRESULT CRealtimeVTFModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix)
+HRESULT CRealtimeVTFModel::Init_Prototype(const string& strFilePath, _fmatrix PivotMatrix)
 {
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
 
@@ -53,19 +63,14 @@ HRESULT CRealtimeVTFModel::Init_Prototype(const string& strFilePath, const _bool
 	_char szTriggerExt[MAX_PATH] = ".animtrigger";
 	_char szExt[MAX_PATH]{};
 
-	if (false == isCOLMesh) {
-		_splitpath_s(strFilePath.c_str(), nullptr, 0, szDirectory, MAX_PATH, szFileName, MAX_PATH, szExt, MAX_PATH);
-		if (!strcmp(szExt, ".hyuntraanimmesh"))
-		{
-			m_eType = ModelType::Anim;
-		}
-		else
-		{
-			m_eType = ModelType::Static;
-		}
+	_splitpath_s(strFilePath.c_str(), nullptr, 0, szDirectory, MAX_PATH, szFileName, MAX_PATH, szExt, MAX_PATH);
+	if (!strcmp(szExt, ".hyuntraanimmesh"))
+	{
+		m_eType = ModelType::Anim;
 	}
-	else {
-		m_eType = ModelType::Collision;
+	else
+	{
+		m_eType = ModelType::Static;
 	}
 
 	ifstream ModelFile(strFilePath.c_str(), ios::binary);
@@ -105,8 +110,6 @@ HRESULT CRealtimeVTFModel::Init_Prototype(const string& strFilePath, const _bool
 
 		ModelFile.close();
 
-
-
 		if (m_eType == ModelType::Anim)
 		{
 			_char szTriggerFilePath[MAX_PATH]{};
@@ -119,7 +122,7 @@ HRESULT CRealtimeVTFModel::Init_Prototype(const string& strFilePath, const _bool
 			{
 				_uint iAnimIndex = { 0 };
 				TriggerFile.read(reinterpret_cast<char*>(&iAnimIndex), sizeof _uint);
-				
+
 				_uint iNumTrigger = { 0 };
 				TriggerFile.read(reinterpret_cast<char*>(&iNumTrigger), sizeof _uint);
 				for (_uint i = 0; i < iNumTrigger; i++)
@@ -139,26 +142,188 @@ HRESULT CRealtimeVTFModel::Init_Prototype(const string& strFilePath, const _bool
 		return E_FAIL;
 	}
 
+
+
 	return S_OK;
 }
 
-HRESULT CRealtimeVTFModel::Init(void* pArg)
+HRESULT CRealtimeVTFModel::Init(void* pArg, const CRealtimeVTFModel& rhs)
 {
-	m_isLoop = true;
+	if (FAILED(CreateVTF()))
+		return E_FAIL;
+
+	for (auto& pPrototypeAnimation : rhs.m_Animations)
+	{
+		CAnimation* pAnimation = pPrototypeAnimation->Clone(pArg);
+
+		m_Animations.push_back(pAnimation);
+	}
+
+	return S_OK;
+}
+
+HRESULT CRealtimeVTFModel::Place_Parts(PART_DESC& ePartDesc, _bool isRender)
+{
+
+	auto Protoiter = m_PrototypeParts.find(ePartDesc.FileName);
+
+	if (m_PrototypeParts.end() == Protoiter) {
+		MSG_BOX("그런 파일 이름 없어용");
+		return E_FAIL;
+	}
+
+	auto iter = m_Parts.find(ePartDesc.ePartType);
+
+	if (m_Parts.end() == iter) {
+		vector<CPart_Model*> PartVec;
+		PartVec.push_back(Protoiter->second);
+
+		m_Parts.emplace(ePartDesc.ePartType, PartVec);
+	}
+	else
+		iter->second.push_back(Protoiter->second);
+
+	Protoiter->second->Set_isRender(isRender);
 
 	return S_OK;
 }
 
 HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 {
+	if (true == m_isUsingMotionBlur)
+		m_pContext->CopyResource(m_pOldBoneTexture, m_pBoneTexture);
+
+	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop,
+		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio);
+
+
+	vector<_mat> CombinedBones;
+
+	for (auto& pBone : m_Bones) {
+		pBone->Update_CombinedMatrix(m_Bones);
+		_mat BoneMatrix = pBone->Get_OffsetMatrix() * *(pBone->Get_CombinedMatrix()) * m_PivotMatrix;
+		CombinedBones.push_back(BoneMatrix);
+	}
+
+	if (FAILED(UpdateBoneTexture(CombinedBones)))
+		return E_FAIL;
+
+	CombinedBones.clear();
 
 	return S_OK;
 }
 
-HRESULT CRealtimeVTFModel::Set_NextAnimation(_uint iAnimIndex, _bool isLoop)
+void CRealtimeVTFModel::Set_Animation(ANIM_DESC Animation_Desc)
 {
-	m_iNextAnimIndex = iAnimIndex;
-	m_isLoop = isLoop;
+	if (m_AnimDesc.iAnimIndex != Animation_Desc.iAnimIndex or
+		Animation_Desc.bRestartAnimation) {
+
+		m_AnimDesc = Animation_Desc;
+
+		m_isAnimChanged = true;
+
+		for (auto& pAnim : m_Animations)
+			pAnim->ResetFinished();
+
+		if (m_AnimDesc.iAnimIndex >= m_iNumAnimations)
+			m_AnimDesc.iAnimIndex = m_iNumAnimations - 1;
+		else if (0 > m_AnimDesc.iAnimIndex)
+			m_AnimDesc.iAnimIndex = 0;
+	}
+
+}
+
+const _bool& CRealtimeVTFModel::IsAnimationFinished(_uint iAnimIndex) const
+{
+	return m_Animations[iAnimIndex]->IsFinished();
+}
+
+const _uint& CRealtimeVTFModel::Get_CurrentAnimationIndex() const
+{
+	return m_AnimDesc.iAnimIndex;
+}
+
+const _float& CRealtimeVTFModel::Get_CurrentAnimPos() const
+{
+	return m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos();
+}
+
+const _mat* CRealtimeVTFModel::Get_BoneMatrix(const _char* pBoneName) const
+{
+	auto iter = find_if(m_Bones.begin(), m_Bones.end(), [&pBoneName](CBone* pBone) {
+		if (!strcmp(pBone->Get_BoneName(), pBoneName))
+			return true;
+		return false;
+	});
+
+	if (m_Bones.end() == iter) {
+		MSG_BOX("Can't Find Bone");
+		return nullptr;
+	}
+
+	return (*iter)->Get_CombinedMatrix();
+}
+
+const _bool CRealtimeVTFModel::Get_PartIsRender(_uint iPartType, _uint iPartID)
+{
+	auto iter = m_Parts.find(iPartType);
+
+	if (m_Parts.end() == iter) {
+		MSG_BOX("그런 파츠 타입 없어용");
+		return false;
+	}
+
+	if (0 > iPartID or iter->second.size() <= iPartID) {
+		MSG_BOX("해당 파츠는 없어용");
+		return false;
+	}
+
+	return iter->second[iPartID]->Get_isRender();
+}
+
+const _uint CRealtimeVTFModel::Get_Num_PartMeshes(_uint iPartType, _uint iPartID) const
+{
+	auto iter = m_Parts.find(iPartType);
+
+	if (m_Parts.end() == iter) {
+		MSG_BOX("그 파츠 타입은 없구연");
+		return 0;
+	}
+
+	return iter->second[iPartID]->Get_NumMeshes();
+}
+
+const _uint CRealtimeVTFModel::Get_NumPart(_uint iPartType) const
+{
+	auto iter = m_Parts.find(iPartType);
+
+	if (m_Parts.end() == iter) {
+		MSG_BOX("그 파츠 타입은 없구연");
+		return 0;
+	}
+
+	return iter->second.size();
+}
+
+HRESULT CRealtimeVTFModel::Seting_Render(_uint iPartType, _uint iPartID)
+{
+	auto iter = m_Parts.find(iPartType);
+
+	if (m_Parts.end() == iter) {
+		MSG_BOX("그 파츠 타입은 없구연");
+		return E_FAIL;
+	}
+
+	if (0 > iPartID or iter->second.size() <= iPartID) {
+		MSG_BOX("그 파츠는 없구연");
+		return E_FAIL;
+	}
+
+	for (auto& pPart : iter->second) {
+		pPart->Set_isRender(false);
+	}
+
+	iter->second[iPartID]->Set_isRender(true);
 
 	return S_OK;
 }
@@ -183,16 +348,68 @@ HRESULT CRealtimeVTFModel::Bind_Material(CShader* pShader, const _char* pVariabl
 
 HRESULT CRealtimeVTFModel::Bind_Bone(CShader* pShader)
 {
-	if (FAILED(pShader->Bind_ShaderResourceView("g_BoneTexture", m_pSRV)))
+	if (FAILED(pShader->Bind_ShaderResourceView("g_BoneTexture", m_pBoneSRV)))
 		return E_FAIL;
+
+	if (true == m_isUsingMotionBlur) {
+		if (FAILED(pShader->Bind_ShaderResourceView("g_OldBoneTexture", m_pOldBoneSRV)))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }
 
 HRESULT CRealtimeVTFModel::Render(_uint iMeshIndex)
 {
+	if (iMeshIndex >= m_iNumMeshes)
+		return E_FAIL;
+
 	if (FAILED(m_Meshes[iMeshIndex]->Render()))
 		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CRealtimeVTFModel::Bind_Part_Material(CShader* pShader, const _char* pVariableName, TextureType eTextureType, _uint iPartType, _uint iPartID, _uint iPartMeshIndex)
+{
+	auto iter = m_Parts.find(iPartType);
+
+	if (m_Parts.end() == iter) {
+		MSG_BOX("그 파츠 타입은 없구연");
+		return E_FAIL;
+	}
+
+	return iter->second[iPartID]->Bind_Material(pShader, pVariableName, iPartMeshIndex, eTextureType);
+}
+
+HRESULT CRealtimeVTFModel::Render_Part(_uint iPartType, _uint iPartID, _uint iPartMeshIndex)
+{
+	auto iter = m_Parts.find(iPartType);
+
+	if (m_Parts.end() == iter) {
+		MSG_BOX("그 파츠 타입은 없구연");
+		return E_FAIL;
+	}
+
+	return iter->second[iPartID]->Render(iPartMeshIndex);
+}
+
+HRESULT CRealtimeVTFModel::Seting_Parts(const string& strFilePath)
+{
+	CPart_Model* pPart = CPart_Model::Create(m_pDevice, m_pContext, strFilePath);
+
+	if (nullptr == pPart)
+		return E_FAIL;
+
+	if (FAILED(pPart->Get_Bone_Offset(m_Bones)))
+		return E_FAIL;
+
+	_char szFileName[MAX_PATH]{};
+
+	_splitpath_s(strFilePath.c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, nullptr, 0);
+
+	m_PrototypeParts.emplace(szFileName, pPart);
+
 	return S_OK;
 }
 
@@ -240,7 +457,7 @@ HRESULT CRealtimeVTFModel::Read_Animations(ifstream& File)
 
 	for (size_t i = 0; i < m_iNumAnimations; i++)
 	{
-		CAnimation* pAnimation = CAnimation::Create(File, m_Bones);
+		CAnimation* pAnimation = CAnimation::Create(File, m_Bones, m_PivotMatrix);
 		if (!pAnimation)
 		{
 			MSG_BOX("Failed to Read Animations!");
@@ -303,92 +520,61 @@ HRESULT CRealtimeVTFModel::Read_Materials(ifstream& File, const string& strFileP
 	return S_OK;
 }
 
-HRESULT CRealtimeVTFModel::CreateVTF(_uint MaxFrame)
+HRESULT CRealtimeVTFModel::CreateVTF()
 {
-	vector<ANIMTRANS_ARRAY> AnimTransforms;
-	AnimTransforms.resize(m_iNumAnimations);
-
-
 	D3D11_TEXTURE2D_DESC Desc = {};
-	Desc.Width = m_Bones.size() * 4;
+	Desc.Width = static_cast<_uint>(m_Bones.size() * 4);
 	Desc.Height = 1;
+	Desc.MipLevels = 1;
 	Desc.ArraySize = 1;
 	Desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	Desc.Usage = D3D11_USAGE_IMMUTABLE;
+	Desc.Usage = D3D11_USAGE_DYNAMIC;
+	Desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	Desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	Desc.MipLevels = 1;
 	Desc.SampleDesc.Count = 1;
 
-	const _uint BoneMatrixSize = m_Bones.size() * sizeof(_mat);
-	const _uint AnimationSize = BoneMatrixSize * MaxFrame;
-	void* AllAnimationPtr = malloc(AnimationSize * m_iNumAnimations);
-
-	for (size_t i = 0; i < m_iNumAnimations; i++)
-	{
-		_uint iAnimSize = i * AnimationSize;
-
-		BYTE* AnimationPtr = reinterpret_cast<BYTE*>(AllAnimationPtr) + iAnimSize;
-
-		for (size_t j = 0; j < MaxFrame; j++)
-		{
-			void* Ptr = AnimationPtr + j * BoneMatrixSize;
-			memcpy(Ptr, AnimTransforms[i].TransformArray[j].data(), BoneMatrixSize);
-		}
-	}
-
-	vector<D3D11_SUBRESOURCE_DATA> SubResourceData(m_iNumAnimations);
-
-	for (size_t i = 0; i < m_iNumAnimations; i++)
-	{
-		void* Ptr = reinterpret_cast<BYTE*>(AllAnimationPtr) + i * BoneMatrixSize;
-		SubResourceData[i].pSysMem = Ptr;
-		SubResourceData[i].SysMemPitch = BoneMatrixSize;
-		SubResourceData[i].SysMemSlicePitch = AnimationSize;
-	}
-
-	if (FAILED(m_pDevice->CreateTexture2D(&Desc, SubResourceData.data(), &m_pTexture)))
+	if (FAILED(m_pDevice->CreateTexture2D(&Desc, nullptr, &m_pBoneTexture)))
 		return E_FAIL;
 
-	free(AllAnimationPtr);
+	Desc.Usage = D3D11_USAGE_DEFAULT;
+	Desc.CPUAccessFlags = 0;
 
+	if (FAILED(m_pDevice->CreateTexture2D(&Desc, nullptr, &m_pOldBoneTexture)))
+		return E_FAIL;
+	
 	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
 	SRVDesc.Format = Desc.Format;
 	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
 	SRVDesc.Texture2DArray.MipLevels = 1;
-	SRVDesc.Texture2DArray.ArraySize = m_iNumAnimations;
+	SRVDesc.Texture2DArray.ArraySize = 1;
 
-	if (FAILED(m_pDevice->CreateShaderResourceView(m_pTexture, &SRVDesc, &m_pSRV)))
+	if (FAILED(m_pDevice->CreateShaderResourceView(m_pBoneTexture, &SRVDesc, &m_pBoneSRV)))
+		return E_FAIL;
+
+	if (FAILED(m_pDevice->CreateShaderResourceView(m_pOldBoneTexture, &SRVDesc, &m_pOldBoneSRV)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-HRESULT CRealtimeVTFModel::CreateAnimationTransform(_uint iIndex, vector<ANIMTRANS_ARRAY>& AnimTransforms)
+HRESULT CRealtimeVTFModel::UpdateBoneTexture(vector<_mat>& CombinedBones)
 {
-	CAnimation* pAnimation = m_Animations[iIndex];
+	D3D11_MAPPED_SUBRESOURCE TexData = {};
+	if (FAILED(m_pContext->Map(m_pBoneTexture, 0, D3D11_MAP_WRITE_DISCARD, 0, &TexData)))
+		return E_FAIL;
 
-	for (size_t i = 0; i < pAnimation->Get_MaxFrame(); i++)
-	{
-		if (FAILED(pAnimation->Prepare_Animation(m_Bones, i)))
-			return E_FAIL;
+	memcpy(TexData.pData, CombinedBones.data(), m_Bones.size() * sizeof(_mat));
 
-
-		for (size_t j = 0; j < m_Bones.size(); j++)
-		{
-			m_Bones[j]->Update_CombinedMatrix(m_Bones);
-
-			AnimTransforms[iIndex].TransformArray[i][j] = m_Bones[j]->Get_OffsetMatrix() * *(m_Bones[j]->Get_CombinedMatrix()) * m_PivotMatrix;
-		}
-	}
+	m_pContext->Unmap(m_pBoneTexture, 0);
 
 	return S_OK;
 }
 
-CRealtimeVTFModel* CRealtimeVTFModel::Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix)
+CRealtimeVTFModel* CRealtimeVTFModel::Create(_dev pDevice, _context pContext, const string& strFilePath, _fmatrix PivotMatrix)
 {
 	CRealtimeVTFModel* pInstance = new CRealtimeVTFModel(pDevice, pContext);
 
-	if (FAILED(pInstance->Init_Prototype(strFilePath, isCOLMesh, PivotMatrix)))
+	if (FAILED(pInstance->Init_Prototype(strFilePath, PivotMatrix)))
 	{
 		MSG_BOX("Failed to Create : CRealtimeVTFModel");
 	}
@@ -400,7 +586,7 @@ CComponent* CRealtimeVTFModel::Clone(void* pArg)
 {
 	CRealtimeVTFModel* pInstance = new CRealtimeVTFModel(*this);
 
-	if (FAILED(pInstance->Init(pArg)))
+	if (FAILED(pInstance->Init(pArg, *this)))
 	{
 		MSG_BOX("Failed to Clone : CRealtimeVTFModel");
 	}
@@ -439,6 +625,16 @@ void CRealtimeVTFModel::Free()
 	}
 	m_Materials.clear();
 
-	Safe_Release(m_pTexture);
-	Safe_Release(m_pSRV);
+	for (auto& pPart : m_PrototypeParts)
+		Safe_Release(pPart.second);
+
+	m_PrototypeParts.clear();
+
+	m_Parts.clear();
+
+	Safe_Release(m_pOldBoneTexture);
+	Safe_Release(m_pOldBoneSRV);
+
+	Safe_Release(m_pBoneTexture);
+	Safe_Release(m_pBoneSRV);
 }

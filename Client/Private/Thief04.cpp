@@ -44,6 +44,8 @@ HRESULT CThief04::Init(void* pArg)
 
 	m_iHP = 10;
 
+	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
+
     return S_OK;
 }
 
@@ -55,6 +57,7 @@ void CThief04::Tick(_float fTimeDelta)
 	m_pModelCom->Set_Animation(m_Animation);
 
 	Update_Collider();
+	__super::Update_MonsterCollider();
 }
 
 void CThief04::Late_Tick(_float fTimeDelta)
@@ -64,6 +67,10 @@ void CThief04::Late_Tick(_float fTimeDelta)
 #ifdef _DEBUGTEST
 	m_pRendererCom->Add_DebugComponent(m_pAxeColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pKnifeColliderCom);
+
+	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
+	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
+
 #endif
 }
 
@@ -74,16 +81,29 @@ HRESULT CThief04::Render()
     return S_OK;
 }
 
+void CThief04::Set_Damage(_int iDamage, _uint iDamageType)
+{
+	m_iHP -= iDamage;
+
+	if (iDamageType == WP_BOW)
+	{
+		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
+
+		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
+
+		m_eCurState = STATE_HIT;
+	}
+
+	else if (iDamageType == WP_SWORD)
+	{
+	}
+}
+
 void CThief04::Init_State(_float fTimeDelta)
 {
 	if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
 	{
 		m_eCurState = STATE_IDLE;
-	}
-
-	if (m_pGameInstance->Key_Down(DIK_H))
-	{
-		m_eCurState = STATE_HIT;
 	}
 
 	if (m_ePreState != m_eCurState)
@@ -177,6 +197,8 @@ void CThief04::Tick_State(_float fTimeDelta)
 			{
 				m_iAttackPattern = rand() % 5;
 				m_bSelectAttackPattern = true;
+				m_bAttacked = false;
+				m_bAttacked2 = false;
 			}
 		}
 
@@ -186,26 +208,71 @@ void CThief04::Tick_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = ATTACK01;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 46.f && fAnimpos <= 48.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+			}
 			break;
 		case 1:
 			m_Animation.iAnimIndex = ATTACK02;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 24.f && fAnimpos <= 26.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+				if (fAnimpos >= 47.f && fAnimpos <= 49.f && !m_bAttacked2)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked2 = true;
+				}
+			}
 			break;
 		case 2:
 			m_Animation.iAnimIndex = ATTACK03;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 37.f && fAnimpos <= 39.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+			}
 			break;
 		case 3:
 			m_Animation.iAnimIndex = ATTACK04;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 33.f && fAnimpos <= 35.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+			}
 			break;
 		case 4:
 			m_Animation.iAnimIndex = ATTACK05;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 44.f && fAnimpos <= 46.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+			}
 			break;
 		}
 		break;
@@ -279,6 +346,29 @@ HRESULT CThief04::Add_Collider()
 		TEXT("Com_KnifeCollider_Sphere"), (CComponent**)&m_pKnifeColliderCom, &CollDesc)))
 		return E_FAIL;
 
+	Collider_Desc BodyCollDesc = {};
+	BodyCollDesc.eType = ColliderType::OBB;
+	BodyCollDesc.vExtents = _vec3(0.3f, 0.8f, 0.5f);
+	BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y, 0.f);
+	BodyCollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+		TEXT("Com_Collider_OBB"), (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
+		return E_FAIL;
+
+	// Frustum
+	Collider_Desc ColDesc{};
+	ColDesc.eType = ColliderType::Frustum;
+	_matrix matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
+	// 1인자 : 절두체 각도(범위), 2인자 : Aspect, 3인자 : Near, 4인자 : Far(절두체 깊이)
+	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.f), 1.f, 0.01f, 2.f);
+	XMStoreFloat4x4(&ColDesc.matFrustum, matView * matProj);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack"), reinterpret_cast<CComponent**>(&m_pAttackColliderCom), &ColDesc)))
+	{
+		return E_FAIL;
+	}
+
     return S_OK;
 }
 
@@ -293,6 +383,10 @@ void CThief04::Update_Collider()
 	KnifeMatrix *= m_pTransformCom->Get_World_Matrix();
 
 	m_pKnifeColliderCom->Update(KnifeMatrix);
+
+	_mat Offset = _mat::CreateTranslation(0.f, 0.8f, 0.f);
+	m_pAttackColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
+
 }
 
 CThief04* CThief04::Create(_dev pDevice, _context pContext)

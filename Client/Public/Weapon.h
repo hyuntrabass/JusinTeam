@@ -1,7 +1,7 @@
 #pragma once
 #include "Client_Define.h"
 #include "PartObject.h"
-#include "Player.h"
+
 
 BEGIN(Client)
 
@@ -26,19 +26,20 @@ public:
 	_float Get_CurrentAnimPos();
 	const _mat* Get_BoneMatrix(const _char* pBoneName);
 	void Reset_Model();
-	void Set_ModelIndex(_int ModelIndex) { m_iSelectedModelIndex = ModelIndex;}
+	void Set_ModelIndex(WEAPON_INDEX ModelIndex) { m_iSelectedModelIndex = ModelIndex;}
 
+	void Set_Hide(_bool Hide) { m_bHide = Hide; }
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
-	vector<CModel*> m_Models{ nullptr };
+	vector<CModel*> m_vecModel{ nullptr };
 
 private:
 	WEAPON_TYPE m_eType{};
 	_uint m_iNumVariations{};
-	_uint m_iSelectedModelIndex{1};
+	_uint m_iSelectedModelIndex{};
 	ANIM_DESC* m_Animation{};
-
+	_bool m_bHide{};
 private:
 
 	HRESULT Add_Components();

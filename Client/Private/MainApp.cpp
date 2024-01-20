@@ -66,6 +66,8 @@ HRESULT CMainApp::Init()
 
 	srand((unsigned)time(NULL));
 
+	CEffect_Manager::Get_Instance()->Register_Callback();
+
 	return S_OK;
 }
 

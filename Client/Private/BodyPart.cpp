@@ -23,7 +23,7 @@ HRESULT CBodyPart::Init(void* pArg)
 
 	m_eType = Desc.eType;
 	m_iNumVariations = Desc.iNumVariations;
-	m_Models.resize(m_iNumVariations, nullptr);
+	m_vecModel.resize(m_iNumVariations, nullptr);
 	m_Animation = Desc.Animation;
 	m_iSelectedModelIndex = 0;
 	if (FAILED(__super::Init(Desc.pParentTransform)))
@@ -53,14 +53,14 @@ void CBodyPart::Tick(_float fTimeDelta)
 	{
 		for (size_t i = 0; i < m_iNumVariations; i++)
 		{
-			m_Models[i]->Set_Animation(*m_Animation);
-			m_Models[i]->Play_Animation(fTimeDelta);
+			m_vecModel[i]->Set_Animation(*m_Animation);
+			m_vecModel[i]->Play_Animation(fTimeDelta);
 		}
 	}
 	else
 	{
-		m_Models[m_iSelectedModelIndex]->Set_Animation(*m_Animation);
-		m_Models[m_iSelectedModelIndex]->Play_Animation(fTimeDelta);
+		m_vecModel[m_iSelectedModelIndex]->Set_Animation(*m_Animation);
+		m_vecModel[m_iSelectedModelIndex]->Play_Animation(fTimeDelta);
 	}
 }
 
@@ -78,6 +78,9 @@ void CBodyPart::Late_Tick(_float fTimeDelta)
 
 HRESULT CBodyPart::Render()
 {
+	if (m_bHide)
+		return S_OK;
+
 	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
 	{
 		return S_OK;
@@ -93,17 +96,19 @@ HRESULT CBodyPart::Render()
 		return E_FAIL;
 	}
 
-	for (_uint i = 0; i < m_Models[m_iSelectedModelIndex]->Get_NumMeshes(); i++)
+	for (_uint i = 0; i < m_vecModel[m_iSelectedModelIndex]->Get_NumMeshes(); i++)
 	{
-		if (m_iSelectedModelIndex == 8 && i < 3)
-			continue;
-
-		if (FAILED(m_Models[m_iSelectedModelIndex]->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_CUSTOM/*캐릭 생성시*/)
+		{
+			if (m_iSelectedModelIndex == 8 && i < 3)
+				continue;
+		}
+		if (FAILED(m_vecModel[m_iSelectedModelIndex]->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
 		}
 
 		_bool HasNorTex{};
-		if (FAILED(m_Models[m_iSelectedModelIndex]->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+		if (FAILED(m_vecModel[m_iSelectedModelIndex]->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
 		{
 			HasNorTex = false;
 		}
@@ -117,7 +122,7 @@ HRESULT CBodyPart::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_Models[m_iSelectedModelIndex]->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		if (FAILED(m_vecModel[m_iSelectedModelIndex]->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
 		{
 			return E_FAIL;
 		}
@@ -127,7 +132,7 @@ HRESULT CBodyPart::Render()
 		//	return E_FAIL;
 		//}
 
-		//if (FAILED(m_Models[m_iSelectedModelIndex]->Render(i)))
+		//if (FAILED(m_vecModel[m_iSelectedModelIndex]->Render(i)))
 		//{
 		//	return E_FAIL;
 		//}
@@ -149,7 +154,7 @@ HRESULT CBodyPart::Render()
 		}
 
 
-		if (FAILED(m_Models[m_iSelectedModelIndex]->Render(i)))
+		if (FAILED(m_vecModel[m_iSelectedModelIndex]->Render(i)))
 		{
 			return E_FAIL;
 		}
@@ -178,9 +183,9 @@ HRESULT CBodyPart::Render_Shadow()
 		return E_FAIL;
 	}
 
-	for (_uint i = 0; i < m_Models[m_iSelectedModelIndex]->Get_NumMeshes(); i++)
+	for (_uint i = 0; i < m_vecModel[m_iSelectedModelIndex]->Get_NumMeshes(); i++)
 	{
-		if (FAILED(m_Models[m_iSelectedModelIndex]->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		if (FAILED(m_vecModel[m_iSelectedModelIndex]->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
 		{
 			return E_FAIL;
 		}
@@ -190,7 +195,7 @@ HRESULT CBodyPart::Render_Shadow()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_Models[m_iSelectedModelIndex]->Render(i)))
+		if (FAILED(m_vecModel[m_iSelectedModelIndex]->Render(i)))
 		{
 			return E_FAIL;
 		}
@@ -201,22 +206,32 @@ HRESULT CBodyPart::Render_Shadow()
 
 _bool CBodyPart::IsAnimationFinished(_uint iAnimIndex)
 {
-	return m_Models[m_iSelectedModelIndex]->IsAnimationFinished(iAnimIndex);
+	return m_vecModel[m_iSelectedModelIndex]->IsAnimationFinished(iAnimIndex);
 }
 
 _uint CBodyPart::Get_CurrentAnimationIndex()
 {
-	return m_Models[m_iSelectedModelIndex]->Get_CurrentAnimationIndex();
+	return m_vecModel[m_iSelectedModelIndex]->Get_CurrentAnimationIndex();
 }
 
 _float CBodyPart::Get_CurrentAnimPos()
 {
-	return m_Models[m_iSelectedModelIndex]->Get_CurrentAnimPos();
+	return m_vecModel[m_iSelectedModelIndex]->Get_CurrentAnimPos();
 }
 
 const _mat* CBodyPart::Get_BoneMatrix(const _char* pBoneName)
 {
-	return m_Models[m_iSelectedModelIndex]->Get_BoneMatrix(pBoneName);
+	return m_vecModel[m_iSelectedModelIndex]->Get_BoneMatrix(pBoneName);
+}
+
+void CBodyPart::All_Reset_Anim()
+{
+	for (int i = 0; i < m_vecModel.size(); i++)
+	{
+		m_Animation->bRestartAnimation = true;
+		m_vecModel[i]->Set_Animation(*m_Animation);
+		m_Animation->bRestartAnimation = false;
+	}
 }
 
 //void CBodyPart::
@@ -235,7 +250,7 @@ const _mat* CBodyPart::Get_BoneMatrix(const _char* pBoneName)
 void CBodyPart::Reset_Model()
 {
 	m_Animation->bRestartAnimation = true;
-	m_Models[m_iSelectedModelIndex]->Set_Animation(*m_Animation);
+	m_vecModel[m_iSelectedModelIndex]->Set_Animation(*m_Animation);
 	m_Animation->bRestartAnimation = false;
 }
 
@@ -251,12 +266,12 @@ HRESULT CBodyPart::Add_Components()
 		return E_FAIL;
 	}
 
-	for (size_t i = 0; i < m_Models.size(); i++)
+	for (size_t i = 0; i < m_vecModel.size(); i++)
 	{
 		wstring PrototypeTag = TEXT("Prototype_Model_") + to_wstring(m_eType) + L"" + to_wstring(i);
 		wstring ComTag = TEXT("Com_Model_") + to_wstring(i);
 
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, PrototypeTag, ComTag, reinterpret_cast<CComponent**>(&m_Models[i]))))
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, PrototypeTag, ComTag, reinterpret_cast<CComponent**>(&m_vecModel[i]))))
 		{
 			return E_FAIL;
 		}
@@ -333,11 +348,11 @@ void CBodyPart::Free()
 {
 	__super::Free();
 
-	for (auto& pModel : m_Models)
+	for (auto& pModel : m_vecModel)
 	{
 		Safe_Release(pModel);
 	}
-	m_Models.clear();
+	m_vecModel.clear();
 
 
 

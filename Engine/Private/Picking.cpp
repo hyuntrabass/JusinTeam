@@ -83,10 +83,10 @@ _float4 CPicking::PickingDepth(_float x, _float y)
 	}
 
 	D3D11_BOX m_Box;
-	m_Box.left = x;
-	m_Box.top = y;
-	m_Box.right = x + 1;
-	m_Box.bottom = y + 1;
+	m_Box.left = static_cast<_uint>(x);
+	m_Box.top = static_cast<_uint>(y);
+	m_Box.right = static_cast<_uint>(x + 1);
+	m_Box.bottom = static_cast<_uint>(y + 1);
 	m_Box.front = 0;
 	m_Box.back = 1;
 
@@ -270,7 +270,7 @@ _vec4 CPicking::Compute_MousePicked_Terrain(_float44 matTerrainWorld, _float3* p
 	//Transform_To_LocalSpace(matTerrainWorld);
 
 	_uint	iNumIndices = 0;
-	_vec4 vPickPos = { 0.f, 0.f, 0.f, 0.f };
+	_vec3 vPickPos = { 0.f, 0.f, 0.f};
 	_bool	bCheck = false;
 
 	for (size_t i = 0; i < iNumVerticesZ - 1; ++i)
@@ -292,14 +292,14 @@ _vec4 CPicking::Compute_MousePicked_Terrain(_float44 matTerrainWorld, _float3* p
 			_vector vPointD = XMLoadFloat3(&pVerticesPos[iIndices[3]]);
 
 			// ¿À¸¥ÂÊ À§ »ï°¢Çü
-			if (true == Picking_InLocal(vPointA, vPointB, vPointC, &vPickPos))
+			if (true == Picking_InWorld(vPointA, vPointB, vPointC, &vPickPos))
 			{
 				bCheck = true;
 				break;
 			}
 
 			// ¿ÞÂÊ ¾Æ·¡ »ï°¢Çü
-			if (true == Picking_InLocal(vPointA, vPointC, vPointD, &vPickPos))
+			if (true == Picking_InWorld(vPointA, vPointC, vPointD, &vPickPos))
 			{
 				bCheck = true;
 				break;
@@ -314,7 +314,7 @@ _vec4 CPicking::Compute_MousePicked_Terrain(_float44 matTerrainWorld, _float3* p
 
 	if (bCheck)
 	{
-		vResult = XMVectorSet(vPickPos.x, vPickPos.y, vPickPos.z, vPickPos.w);
+		vResult = XMVectorSet(vPickPos.x, vPickPos.y, vPickPos.z, 1.f);
 		//XMVector3TransformCoord(vResult, XMLoadFloat4x4(&matTerrainWorld));
 	}
 

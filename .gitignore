@@ -390,5 +390,13 @@ FBX_Converter/Output/Anim/5001wps.hyuntraanimmesh
 FBX_Converter/Output/Anim/baseface.hyuntraanimmesh
 FBX_Converter/Output/Anim/basehairfbx.hyuntraanimmesh
 FBX_Converter/log.txt
+/Engine/Bin/Engine.exp
+/Engine/Bin/Engine.exp
 /Client/Bin/Resources/AnimMesh/VTFPlayer/Main/baseface.hyuntraanimmesh
 /Client/Bin/Resources/AnimMesh/VTFPlayer/Main/basemodel.hyuntraanimmesh
+/Engine/Bin/Engine.exp
+>>>>>>> 1871bc803b8ed42e743e282326c6cb922fcd2b4c
+Client/Bin/Resources/AnimMesh/Riding/Mesh/1Bird.hyuntraanimmesh
+Client/Bin/Resources/AnimMesh/Riding/Mesh/2Nihilir.hyuntraanimmesh
+Client/Bin/Resources/AnimMesh/Riding/Mesh/3Tiger.hyuntraanimmesh
+FBX_Converter/Output/Anim/Main/basemodel.hyuntraanimmesh

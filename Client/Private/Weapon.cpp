@@ -18,10 +18,10 @@ HRESULT CWeapon::Init_Prototype()
 
 HRESULT CWeapon::Init(void* pArg)
 {
-	CPlayer::WEAPONPART_DESC Desc = *reinterpret_cast<CPlayer::WEAPONPART_DESC*>(pArg);
+	WEAPONPART_DESC Desc = *reinterpret_cast<WEAPONPART_DESC*>(pArg);
 
 	m_iNumVariations = Desc.iNumVariations;
-	m_Models.resize(m_iNumVariations, nullptr);
+	m_vecModel.resize(m_iNumVariations, nullptr);
 	m_Animation = Desc.Animation;
 	m_iSelectedModelIndex = 4;
 	if (FAILED(__super::Init(Desc.pParentTransform)))
@@ -50,14 +50,14 @@ void CWeapon::Tick(_float fTimeDelta)
 	{
 		for (size_t i = 0; i < m_iNumVariations; i++)
 		{
-			m_Models[i]->Set_Animation(*m_Animation);
-			m_Models[i]->Play_Animation(fTimeDelta);
+			m_vecModel[i]->Set_Animation(*m_Animation);
+			m_vecModel[i]->Play_Animation(fTimeDelta);
 		}
 	}
 	else
 	{
-		m_Models[m_iSelectedModelIndex]->Set_Animation(*m_Animation);
-		m_Models[m_iSelectedModelIndex]->Play_Animation(fTimeDelta);
+		m_vecModel[m_iSelectedModelIndex]->Set_Animation(*m_Animation);
+		m_vecModel[m_iSelectedModelIndex]->Play_Animation(fTimeDelta);
 	}
 }
 
@@ -75,6 +75,9 @@ void CWeapon::Late_Tick(_float fTimeDelta)
 
 HRESULT CWeapon::Render()
 {
+	if (m_bHide)
+		return S_OK;
+
 	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
 	{
 		return S_OK;
@@ -90,17 +93,15 @@ HRESULT CWeapon::Render()
 		return E_FAIL;
 	}
 
-	for (_uint i = 0; i < m_Models[m_iSelectedModelIndex]->Get_NumMeshes(); i++)
+	for (_uint i = 0; i < m_vecModel[m_iSelectedModelIndex]->Get_NumMeshes(); i++)
 	{
-		if (m_iSelectedModelIndex == 8 && i < 3)
-			continue;
 
-		if (FAILED(m_Models[m_iSelectedModelIndex]->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		if (FAILED(m_vecModel[m_iSelectedModelIndex]->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
 		}
 
 		_bool HasNorTex{};
-		if (FAILED(m_Models[m_iSelectedModelIndex]->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+		if (FAILED(m_vecModel[m_iSelectedModelIndex]->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
 		{
 			HasNorTex = false;
 		}
@@ -114,7 +115,7 @@ HRESULT CWeapon::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_Models[m_iSelectedModelIndex]->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		if (FAILED(m_vecModel[m_iSelectedModelIndex]->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
 		{
 			return E_FAIL;
 		}
@@ -125,7 +126,7 @@ HRESULT CWeapon::Render()
 		}
 
 
-		if (FAILED(m_Models[m_iSelectedModelIndex]->Render(i)))
+		if (FAILED(m_vecModel[m_iSelectedModelIndex]->Render(i)))
 		{
 			return E_FAIL;
 		}
@@ -154,9 +155,9 @@ HRESULT CWeapon::Render_Shadow()
 		return E_FAIL;
 	}
 
-	for (_uint i = 0; i < m_Models[m_iSelectedModelIndex]->Get_NumMeshes(); i++)
+	for (_uint i = 0; i < m_vecModel[m_iSelectedModelIndex]->Get_NumMeshes(); i++)
 	{
-		if (FAILED(m_Models[m_iSelectedModelIndex]->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		if (FAILED(m_vecModel[m_iSelectedModelIndex]->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
 		{
 			return E_FAIL;
 		}
@@ -166,7 +167,7 @@ HRESULT CWeapon::Render_Shadow()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_Models[m_iSelectedModelIndex]->Render(i)))
+		if (FAILED(m_vecModel[m_iSelectedModelIndex]->Render(i)))
 		{
 			return E_FAIL;
 		}
@@ -177,22 +178,22 @@ HRESULT CWeapon::Render_Shadow()
 
 _bool CWeapon::IsAnimationFinished(_uint iAnimIndex)
 {
-	return m_Models[m_iSelectedModelIndex]->IsAnimationFinished(iAnimIndex);
+	return m_vecModel[m_iSelectedModelIndex]->IsAnimationFinished(iAnimIndex);
 }
 
 _uint CWeapon::Get_CurrentAnimationIndex()
 {
-	return m_Models[m_iSelectedModelIndex]->Get_CurrentAnimationIndex();
+	return m_vecModel[m_iSelectedModelIndex]->Get_CurrentAnimationIndex();
 }
 
 _float CWeapon::Get_CurrentAnimPos()
 {
-	return m_Models[m_iSelectedModelIndex]->Get_CurrentAnimPos();
+	return m_vecModel[m_iSelectedModelIndex]->Get_CurrentAnimPos();
 }
 
 const _mat* CWeapon::Get_BoneMatrix(const _char* pBoneName)
 {
-	return m_Models[m_iSelectedModelIndex]->Get_BoneMatrix(pBoneName);
+	return m_vecModel[m_iSelectedModelIndex]->Get_BoneMatrix(pBoneName);
 }
 
 //void CWeapon::
@@ -211,7 +212,7 @@ const _mat* CWeapon::Get_BoneMatrix(const _char* pBoneName)
 void CWeapon::Reset_Model()
 {
 	m_Animation->bRestartAnimation = true;
-	m_Models[m_iSelectedModelIndex]->Set_Animation(*m_Animation);
+	m_vecModel[m_iSelectedModelIndex]->Set_Animation(*m_Animation);
 	m_Animation->bRestartAnimation = false;
 
 }
@@ -228,12 +229,12 @@ HRESULT CWeapon::Add_Components()
 		return E_FAIL;
 	}
 
-	for (size_t i = 0; i < m_Models.size(); i++)
+	for (size_t i = 0; i < m_vecModel.size(); i++)
 	{
 		wstring PrototypeTag = TEXT("Prototype_Model_Weapon") + to_wstring(i);
 		wstring ComTag = TEXT("Com_Model_") + to_wstring(i);
 
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, PrototypeTag, ComTag, reinterpret_cast<CComponent**>(&m_Models[i]))))
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, PrototypeTag, ComTag, reinterpret_cast<CComponent**>(&m_vecModel[i]))))
 		{
 			return E_FAIL;
 		}
@@ -302,11 +303,11 @@ void CWeapon::Free()
 {
 	__super::Free();
 
-	for (auto& pModel : m_Models)
+	for (auto& pModel : m_vecModel)
 	{
 		Safe_Release(pModel);
 	}
-	m_Models.clear();
+	m_vecModel.clear();
 
 
 

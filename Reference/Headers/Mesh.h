@@ -23,9 +23,9 @@ public:
 	_bool Intersect_RayMesh(_mat WorldMatrix, _vec4* pPickPos);
 	void Apply_TransformToActor(_mat WorldMatrix);
 
-	void Set_Bone_Offset(const vector<class CBone*>& Bones);
-	vector<_float3>  Get_VerticesPos(){ return m_VerticesPos; }
-	vector<_float3>  Get_VerticesNor(){ return m_VerticesNor; }
+	HRESULT Set_Bone_Offset(const vector<class CBone*>& Bones);
+	vector<VTXSTATICMESH> Get_VtxStaticInfo() { return m_Vertices; }
+	vector<_ulong> Get_InidcesStaticInfo() { return m_Indices; }
 
 private:
 	_float3* m_pVerticesPos{ nullptr };
@@ -38,15 +38,15 @@ private:
 	vector<_uint> m_BoneIndices{};
 	vector<_mat> m_OffsetMatrices{};
 
-	vector<_float3> m_VerticesPos{};
-	vector<_float3> m_VerticesNor{};
-	vector<_float3> m_Indices{};
+	vector<VTXSTATICMESH> m_Vertices{};
+	vector<_ulong> m_Indices{};
+
 
 	_mat* m_BoneMatrices{};
 
 	PxRigidStatic* m_pActor{ nullptr };
 	ModelType m_eType{};
-
+	VTXSTATICMESH m_VerticesInfo{};
 
 private:
 	HRESULT Ready_StaticMesh(ifstream& ModelFile, _mat OffsetMatrix);
