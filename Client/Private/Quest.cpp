@@ -25,14 +25,16 @@ HRESULT CQuest::Init(void* pArg)
 	}
 	
 
-	m_fSizeX = 40.f;
-	m_fSizeY = 70.f;
+	m_fSizeX = 30.f;
+	m_fSizeY = 50.f;
 
-	m_fX = 360.f;
-	m_fY = 630.f;
+	m_fX = 1180.f;
+	m_fY = 120.f;
 
 	m_fDepth = 0.5f;
 
+	m_fMin = m_fY - m_fSizeY / 2.f;
+	m_fMax = m_fY + 50.f;
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 	if (FAILED(Add_Parts()))
@@ -60,10 +62,12 @@ void CQuest::Tick(_float fTimeDelta)
 	{
 		if (m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
+			Sort_Quest();
 			m_isActive = false;
 		}
 		if (!m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
+			Sort_Quest();
 			m_bNewQuestIn = false;
 			m_isActive = true;
 		}
@@ -71,18 +75,89 @@ void CQuest::Tick(_float fTimeDelta)
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
+
+	m_pSymbol->Tick(fTimeDelta);
+
 	if (m_isActive)
 	{
-		for (auto& iter : m_QuestMap)
-		{
-			iter.second->Tick(fTimeDelta);
-		}
-	}
+		RECT rectUI = {
+		  (LONG)(m_fX - 100.f * 0.5f),
+		  (LONG)(m_fY - 200.f * 0.5f),
+		  (LONG)(m_fX + 100.f * 0.5f),
+		  (LONG)(m_fY + 200.f * 0.5f)
+		};
 
+		if (TRUE == PtInRect(&rectUI, ptMouse))
+		{
+			if (m_vecQuest.empty())
+			{
+				return;
+			}
+
+			if (m_vecQuest.back()->Get_Position().y + m_fSizeY / 2.f <= m_fMax && m_vecQuest.front()->Get_Position().y - m_fSizeY / 2.f >= m_fMin)
+			{
+				return;
+			}
+			if (m_vecQuest.back()->Get_Position().y + m_fSizeY / 2.f < m_fMax)
+			{
+				_uint iSize = m_vecQuest.size();
+				for (auto& iter : m_vecQuest)
+				{
+					iSize--;
+					_float fY = (m_fMax - m_fSizeY / 2.f) - (iSize * m_fSizeY) - (iSize * 4.f);
+					iter->Set_Position(_float2(iter->Get_Position().x, fY));
+
+				}
+				return;
+			}
+			if (m_vecQuest.front()->Get_Position().y - m_fSizeY / 2.f > m_fMin)
+			{
+				Sort_Quest();
+				return;
+			}
+
+			if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
+			{
+				for (auto& iter : m_vecQuest)
+				{
+					iter->Set_Position(_vec2(iter->Get_Position().x, iter->Get_Position().y - 5.f));
+				}
+			}
+
+			if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
+			{
+
+				for (auto& iter : m_vecQuest)
+				{
+					iter->Set_Position(_vec2(iter->Get_Position().x, iter->Get_Position().y + 5.f));
+				}
+			}
+		}
+
+	}
+	for (auto& iter : m_vecQuest)
+	{
+		iter->Tick(fTimeDelta);
+	}
 }
 
 void CQuest::Late_Tick(_float fTimeDelta)
 {
+
+	for (auto& iter : m_vecQuest)
+	{
+		if (iter->IsMain())
+		{
+			iter->Late_Tick(fTimeDelta);
+		}
+		else
+		{
+			if (m_isActive)
+			{
+				iter->Late_Tick(fTimeDelta);
+			}
+		}
+	}
 	if (m_isActive)
 	{
 		m_pButton->Late_Tick(fTimeDelta);
@@ -92,8 +167,9 @@ void CQuest::Late_Tick(_float fTimeDelta)
 	{
 		m_pNotify->Late_Tick(fTimeDelta);
 	}
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
+	m_pSymbol->Late_Tick(fTimeDelta);
 }
 
 HRESULT CQuest::Render()
@@ -119,15 +195,24 @@ HRESULT CQuest::Render()
 
 HRESULT CQuest::Set_Quest(CQuestBox::QUESTBOX_DESC& QuestBoxDesc)
 {
-	_float fY = m_fY + (m_QuestMap.size() * 45.f) + (m_QuestMap.size() * 2.f);
-	QuestBoxDesc.vPosition = _float2(m_fX - 70.f, fY);
-
+	_float fY = m_fY + (m_vecQuest.size() * m_fSizeX) + (m_vecQuest.size() * 1.f);
+	QuestBoxDesc.vPosition = _float2(m_fX - m_fSizeX / 2.f, fY);
+	QuestBoxDesc.fMax = m_fMax;
+	QuestBoxDesc.fMin = m_fMin;
 	CQuestBox* pQuestBox = (CQuestBox*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_QuestBox"), &QuestBoxDesc);
 	if (not pQuestBox)
 	{
 		return E_FAIL;
 	}
-	m_QuestMap.emplace(QuestBoxDesc.strQuestTitle, pQuestBox);
+	if (pQuestBox->IsMain())
+	{
+		m_vecQuest.insert(m_vecQuest.begin(), pQuestBox);
+	}
+	else
+	{
+		m_vecQuest.push_back(pQuestBox);
+	}
+
 	m_bNewQuestIn = true;
 
 	Sort_Quest();
@@ -137,62 +222,76 @@ HRESULT CQuest::Set_Quest(CQuestBox::QUESTBOX_DESC& QuestBoxDesc)
 
 void CQuest::Sort_Quest()
 {
-	if (m_QuestMap.empty())
+	if (m_vecQuest.empty())
 	{
 		return;
 	}
+	/*
+	
 	_bool isMain = false;
-	for (auto& iter : m_QuestMap)
+	for (auto& iter : m_vecQuest)
 	{
-		if (iter.second->IsMain())
+		if (iter->IsMain())
 		{
 			isMain = true;
 			break;
 		}
 	}
-
-	_float fY = m_fY + (m_QuestMap.size() * 45.f) + (m_QuestMap.size() * 2.f);
+	*/
+	_uint iSize = 0;
+	for (auto& iter : m_vecQuest)
+	{
+		_float fY = m_fY + (iSize * m_fSizeY) + (iSize * 4.f);
+		iter->Set_Position(_float2(iter->Get_Position().x, fY));
+		iSize++;
+	}
+	/*
+	
+	_float fY = m_fY + (m_vecQuest.size() * m_fSizeX) + (m_vecQuest.size() * 1.f);
 	if (isMain)
 	{
 		_uint iSize = 1;
-		for (auto& iter : m_QuestMap)
+		for (auto& iter : m_vecQuest)
 		{
-			if (iter.second->IsMain())
+			if (iter->IsMain())
 			{
-				iter.second->Set_Position(_float2(iter.second->Get_Position().x, m_fY));
+				iter->Set_Position(_float2(iter->Get_Position().x, m_fY));
 			}
 			else
 			{
-				_float fY = m_fY + (iSize * 45.f) + (iSize * 2.f);
-				iter.second->Set_Position(_float2(iter.second->Get_Position().x, fY));
+				_float fY = m_fY + (iSize * m_fSizeX) + (iSize * 2.f);
+				iter->Set_Position(_float2(iter->Get_Position().x, fY));
 			}
 			iSize++;
 		}
 	}
 	else
 	{
-		_uint iSize = 0;
-		for (auto& iter : m_QuestMap)
-		{
-			_float fY = m_fY + (iSize * 45.f) + (iSize * 2.f);
-			iter.second->Set_Position(_float2(iter.second->Get_Position().x, fY));
-		}
-	}
+
+	}*/
 }
 
 _bool CQuest::Update_Quest(const wstring& strQuest)
 {
-	auto iter = m_QuestMap.find(strQuest);
-	if (iter == m_QuestMap.end())
-		return false;
-
-	if (iter->second->Update_Quest())
+	_bool bUpdateQuest = false;
+	_uint i = 0;
+	for (i = 0; i < m_vecQuest.size(); i++)
 	{
-		Safe_Release(m_QuestMap[strQuest]);
-		m_QuestMap.erase(iter);
+		if (m_vecQuest[i]->Get_QuestName() == strQuest)
+		{
+			bUpdateQuest = m_vecQuest[i]->Update_Quest();
+			break;
+		}
+	}
+
+	if (bUpdateQuest)
+	{
+		Safe_Release(m_vecQuest[i]);
+		m_vecQuest.erase(m_vecQuest.begin() + i);
 		Sort_Quest();
 		return true;
 	}
+
 	return false;
 }
 
@@ -200,7 +299,7 @@ HRESULT CQuest::Add_Parts()
 {
 	CTextButton::TEXTBUTTON_DESC Button = {};
 	Button.eLevelID = LEVEL_STATIC;
-	Button.fDepth = m_fDepth - 0.01f;
+	Button.fDepth = m_fDepth - 0.02f;
 	Button.strText = TEXT("");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_ShadeButton");
 	Button.vPosition = _vec2(m_fX, m_fY);
@@ -214,15 +313,31 @@ HRESULT CQuest::Add_Parts()
 	}
 
 	Button.eLevelID = LEVEL_STATIC;
-	Button.fDepth = m_fDepth - 0.02f;
+	Button.fDepth = m_fDepth - 0.03f;
 	Button.strText = TEXT("");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Notify");
-	Button.vPosition = _vec2(m_fX + 5.f, m_fY - 7.f);
-	Button.vSize = _vec2(20.f, 20.f);
+	Button.vPosition = _vec2(m_fX + 7.f, m_fY - 14.f);
+	Button.vSize = _vec2(40.f, 40.f);
 
 	m_pNotify = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
 	if (not m_pNotify)
+	{
+		return E_FAIL;
+	}
+
+
+
+	Button.eLevelID = LEVEL_STATIC;
+	Button.fDepth = m_fDepth - 0.01f;
+	Button.strText = TEXT("");
+	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_questbox");
+	Button.vPosition = _vec2(m_fX, m_fY);
+	Button.vSize = _vec2(30.f, 30.f);
+
+	m_pSymbol  = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+
+	if (not m_pSymbol)
 	{
 		return E_FAIL;
 	}
@@ -246,7 +361,7 @@ HRESULT CQuest::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_questbox"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_QuestAlpha"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -305,12 +420,13 @@ void CQuest::Free()
 {
 	__super::Free();
 
-	for (auto& iter : m_QuestMap)
+	for (auto& iter : m_vecQuest)
 	{
-		Safe_Release(iter.second);
+		Safe_Release(iter);
 	}
-	m_QuestMap.clear();
+	m_vecQuest.clear();
 
+	Safe_Release(m_pSymbol);
 	Safe_Release(m_pButton);
 	Safe_Release(m_pNotify);
 	Safe_Release(m_pTextureCom);

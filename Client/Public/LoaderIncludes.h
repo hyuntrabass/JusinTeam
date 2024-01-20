@@ -22,7 +22,7 @@
 #include "Pop_QuestIn.h"
 #include "Pop_QuestEnd.h"
 #include "BlurTexture.h"
-
+#include "Riding.h"
 #include "QuestBox.h"
 #include "Quest.h"
 #include "NameTag.h"

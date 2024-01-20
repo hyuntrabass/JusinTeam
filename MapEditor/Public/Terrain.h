@@ -28,6 +28,8 @@ public:
 	virtual HRESULT Render()override;
 
 	void Set_MousePos(_float4 MousePos) { m_MousePos = MousePos; }
+	void Set_BrushSize(_uint iBrushSize) { m_iBrushSize = iBrushSize; }
+	void Mode(_bool isMode) { m_isMode = isMode; }
 
 private:
 	// 객체가 컴포넌트를 사용할 때 용이하게끔 멤버변수로 보관한다.
@@ -46,6 +48,8 @@ private:
 	TerrainInfo m_Info;
 
 	_float4				m_MousePos{};
+	_float				m_iBrushSize{ 1.f };
+	_bool				m_isMode{ false };
 
 private:
 	HRESULT Add_Component();

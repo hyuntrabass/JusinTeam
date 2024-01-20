@@ -259,6 +259,9 @@
     <Filter Include="02.GameObjects\04.Monster\06. Void">
       <UniqueIdentifier>{3fa7b5a0-0b1a-44e8-9f3a-a8e819b027f3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\03.Player\Riding">
+      <UniqueIdentifier>{073d72ed-ee94-48c7-98cd-dce26867b879}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -496,6 +499,9 @@
     <ClInclude Include="..\Public\Void05.h">
       <Filter>02.GameObjects\04.Monster\01. Tutorial\02. Void05</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Riding.h">
+      <Filter>02.GameObjects\03.Player\Riding</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -729,6 +735,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Void05.cpp">
       <Filter>02.GameObjects\04.Monster\01. Tutorial\02. Void05</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Riding.cpp">
+      <Filter>02.GameObjects\03.Player\Riding</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

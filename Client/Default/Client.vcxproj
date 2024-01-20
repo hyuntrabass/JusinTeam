@@ -183,6 +183,7 @@
     <ClInclude Include="..\Public\Quest.h" />
     <ClInclude Include="..\Public\QuestBox.h" />
     <ClInclude Include="..\Public\Rabbit.h" />
+    <ClInclude Include="..\Public\Riding.h" />
     <ClInclude Include="..\Public\Select_Map.h" />
     <ClInclude Include="..\Public\Select_Model.h" />
     <ClInclude Include="..\Public\NameTag.h" />
@@ -263,6 +264,7 @@
     <ClCompile Include="..\Private\Quest.cpp" />
     <ClCompile Include="..\Private\QuestBox.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />
+    <ClCompile Include="..\Private\Riding.cpp" />
     <ClCompile Include="..\Private\Select_Map.cpp" />
     <ClCompile Include="..\Private\Select_Model.cpp" />
     <ClCompile Include="..\Private\NameTag.cpp" />

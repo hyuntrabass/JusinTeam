@@ -9,8 +9,10 @@ class CQuestBox final : public COrthographicObject
 public:
 	typedef struct tagQuestConditionDesc
 	{
-		_uint iNum;
 		_bool isMain;
+		_uint iNum;
+		_float fMin;
+		_float fMax;
 		_float2 vPosition;
 		wstring strQuestTitle;
 		wstring strText;
@@ -36,7 +38,10 @@ private:
 
 private:
 	_uint			m_iNum{};
+	_uint			m_iOriginNum{};
 	_bool			m_isMain{ false };
+	_float			m_fMin{};
+	_float			m_fMax{};
 	_float2			m_vPosition;
 	wstring			m_strQuestTitle;
 	wstring			m_strText;
@@ -45,6 +50,7 @@ private:
 
 public:
 	_bool Update_Quest();
+	const wstring& Get_QuestName() const { return m_strQuestTitle; }
 	const _vec2& Get_Position() const { return _vec2(m_fX, m_fY); }
 	void Set_Position(_vec2 vPos);
 	_bool IsMain() { return m_isMain; }
