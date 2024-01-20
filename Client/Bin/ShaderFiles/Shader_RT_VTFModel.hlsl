@@ -6,6 +6,7 @@ texture2D g_NormalTexture;
 texture2D g_SpecTexture;
 
 float g_fCamFar;
+vector g_vCamPos;
 
 bool g_HasNorTex;
 bool g_HasSpecTex;
@@ -37,7 +38,7 @@ struct VS_OUT
     float3 vBinormal : Binormal;
 };
 
-matrix Get_BoneMatrix(VS_IN Input)
+matrix Get_BoneMatrix(VS_IN Input, Texture2DArray BoneTexture)
 {
     float BoneIndices[4] = { Input.vBlendIndices.x, Input.vBlendIndices.y, Input.vBlendIndices.z, Input.vBlendIndices.w };
    
@@ -50,36 +51,10 @@ matrix Get_BoneMatrix(VS_IN Input)
     
     for (uint i = 0; i < 4; ++i)
     {
-        BoneVec[0] = g_BoneTexture.Load(int4(BoneIndices[i] * 4 + 0, 0, 0, 0));
-        BoneVec[1] = g_BoneTexture.Load(int4(BoneIndices[i] * 4 + 1, 0, 0, 0));
-        BoneVec[2] = g_BoneTexture.Load(int4(BoneIndices[i] * 4 + 2, 0, 0, 0));
-        BoneVec[3] = g_BoneTexture.Load(int4(BoneIndices[i] * 4 + 3, 0, 0, 0));
-        
-        Bone = matrix(BoneVec[0], BoneVec[1], BoneVec[2], BoneVec[3]);
-        
-        BoneMatrix += mul(Bone, fBoneWeights[i]);
-    }
-
-    return BoneMatrix;
-}
-
-matrix Get_OldBoneMatrix(VS_IN Input)
-{
-    float BoneIndices[4] = { Input.vBlendIndices.x, Input.vBlendIndices.y, Input.vBlendIndices.z, Input.vBlendIndices.w };
-   
-    float fBoneWeights[4] = { Input.vBlendWeight.x, Input.vBlendWeight.y, Input.vBlendWeight.z, Input.vBlendWeight.w };
-    
-    vector BoneVec[4];
-    matrix Bone = 0;
-    
-    matrix BoneMatrix = 0;
-    
-    for (uint i = 0; i < 4; ++i)
-    {
-        BoneVec[0] = g_OldBoneTexture.Load(int4(BoneIndices[i] * 4 + 0, 0, 0, 0));
-        BoneVec[1] = g_OldBoneTexture.Load(int4(BoneIndices[i] * 4 + 1, 0, 0, 0));
-        BoneVec[2] = g_OldBoneTexture.Load(int4(BoneIndices[i] * 4 + 2, 0, 0, 0));
-        BoneVec[3] = g_OldBoneTexture.Load(int4(BoneIndices[i] * 4 + 3, 0, 0, 0));
+        BoneVec[0] = BoneTexture.Load(int4(BoneIndices[i] * 4 + 0, 0, 0, 0));
+        BoneVec[1] = BoneTexture.Load(int4(BoneIndices[i] * 4 + 1, 0, 0, 0));
+        BoneVec[2] = BoneTexture.Load(int4(BoneIndices[i] * 4 + 2, 0, 0, 0));
+        BoneVec[3] = BoneTexture.Load(int4(BoneIndices[i] * 4 + 3, 0, 0, 0));
         
         Bone = matrix(BoneVec[0], BoneVec[1], BoneVec[2], BoneVec[3]);
         
@@ -98,7 +73,7 @@ VS_OUT VS_Main(VS_IN Input)
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
     
-    matrix BoneMatrix = Get_BoneMatrix(Input);
+    matrix BoneMatrix = Get_BoneMatrix(Input, g_BoneTexture);
     
     vector vPos = mul(vector(Input.vPos, 1.f), BoneMatrix);
     vector vNormal = mul(vector(Input.vNor, 0.f), BoneMatrix);
@@ -140,11 +115,11 @@ VS_Motion_Blur_Out VS_Motion_Blur(VS_IN Input)
     matOldWV = mul(g_OldWorldMatrix, g_OldViewMatrix);
     matOldWVP = mul(matOldWV, g_ProjMatrix);
     
-    matrix BoneMatrix = Get_BoneMatrix(Input);
+    matrix BoneMatrix = Get_BoneMatrix(Input, g_BoneTexture);
     
     vector vNew = mul(vector(Input.vPos, 1.f), BoneMatrix);
     
-    matrix OldBoneMatrix = Get_OldBoneMatrix(Input);
+    matrix OldBoneMatrix = Get_BoneMatrix(Input, g_OldBoneTexture);
     
     vector vOld = mul(vector(Input.vPos, 1.f), OldBoneMatrix);
     
@@ -181,6 +156,37 @@ VS_Motion_Blur_Out VS_Motion_Blur(VS_IN Input)
     Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
     Output.vDir = vCalDir;
     
+    return Output;
+}
+
+VS_OUT VS_Main_OutLine(VS_IN Input)
+{
+    VS_OUT Output = (VS_OUT) 0;
+    
+    matrix matWV, matWVP;
+    
+    matrix Bone = Get_BoneMatrix(Input, g_BoneTexture);
+    
+    vector vPos = mul(vector(Input.vPos, 1.f), Bone);
+    vector vNor = mul(vector(Input.vNor, 0.f), Bone);
+    
+    float fDist = length(g_vCamPos - mul(vPos, g_WorldMatrix));
+    
+    float fThickness = clamp(fDist / g_fCamFar, 0.001f, 0.05f);
+    
+    vPos += normalize(vNor) * fThickness;
+    
+    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+    
+    Output.vPos = mul(vPos, matWVP);
+    Output.vNor = normalize(mul(vNor, g_WorldMatrix));
+    Output.vTex = Input.vTex;
+    Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
+    Output.vProjPos = Output.vPos;
+    Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), g_WorldMatrix)).xyz;
+    Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
+
     return Output;
 }
 
@@ -310,6 +316,23 @@ PS_Blur_OUT PS_Motion_Blur(PS_Blur_IN Input)
     return Output;
 }
 
+//PS_OUT PS_Main_OutLine(PS_IN Input)
+//{
+//    PS_OUT Output = (PS_OUT) 0;
+    
+//    vector vLook = g_vCamPos - Input.vWorldPos;
+//    float Dot = dot(normalize(vLook.xyz), normalize(vNormal));
+    
+//    if(0.f < Dot)
+//        discard;
+    
+    
+//    Output.vDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+//    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    
+//    return Output;
+//}
+
 technique11 DefaultTechniqueShader_VTF
 {
     pass Default
@@ -337,4 +360,17 @@ technique11 DefaultTechniqueShader_VTF
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Motion_Blur();
     }
+
+    //pass OutLine
+    //{
+    //    SetRasterizerState(RS_None);
+    //    SetDepthStencilState(DSS_Default, 0);
+    //    SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+    //    VertexShader = compile vs_5_0 VS_Main_OutLine();
+    //    GeometryShader = NULL;
+    //    HullShader = NULL;
+    //    DomainShader = NULL;
+    //    PixelShader = compile ps_5_0 PS_Main_OutLine();
+    //}
 };

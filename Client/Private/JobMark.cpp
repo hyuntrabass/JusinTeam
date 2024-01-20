@@ -30,14 +30,14 @@ HRESULT CJobMark::Init(void* pArg)
 	m_fX = (_float)g_iWinSizeX / 2.f;
 	m_fY = 630.f;
 
-	m_fDepth = 0.7f;
+	m_fDepth = 0.5f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 
 	CTextButton::TEXTBUTTON_DESC Button = {};
 	Button.eLevelID = LEVEL_STATIC;
-	Button.fDepth = 0.5f;
+	Button.fDepth = 0.5f - 0.01f;
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Image_Emblem_01");
 	Button.vPosition = _vec2(m_fX, m_fY);
 	Button.vSize = _vec2(140.f, 140.f);
