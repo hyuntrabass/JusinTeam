@@ -32,7 +32,7 @@ public:
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
-	vector<CModel*> m_Models{ nullptr };
+	vector<CModel*> m_vecModel{ nullptr };
 
 private:
 	WEAPON_TYPE m_eType{};

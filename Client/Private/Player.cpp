@@ -27,7 +27,7 @@ HRESULT CPlayer::Init(void* pArg)
 
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = false;
-	m_pTransformCom->Set_Scale(_vec3(4.f));
+	m_pTransformCom->Set_Scale(_vec3(40.f));
 	Add_Parts();
 	m_pTransformCom->Set_Speed(1);
 	m_pCameraTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
@@ -87,7 +87,7 @@ void CPlayer::Tick(_float fTimeDelta)
 			}
 		}
 	}
-
+	_vec4 vScale = m_pTransformCom->Get_Scale();
 
 	After_CommonAtt(fTimeDelta);
 	After_SkillAtt(fTimeDelta);
@@ -102,7 +102,7 @@ void CPlayer::Tick(_float fTimeDelta)
 	m_pHitCollider->Update(m_pTransformCom->Get_World_Matrix());
 	for (int i = 0; i < AT_End; i++)
 	{
-		_mat offset = _mat::CreateScale(_vec3(1.f,2.5f,1.f))* _mat::CreateTranslation(_vec3(0.f, 12.f, 0.f));
+		_mat offset = /*_mat::CreateScale(_vec3(1.f,6.5f,1.f))* */_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f));
 		m_pAttCollider[i]->Update(offset *m_pTransformCom->Get_World_Matrix());
 	}
 
@@ -118,7 +118,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		Change_Parts(PT_FACE, 7);
 		Change_Parts(PT_HAIR, 9);
 		Change_Parts(PT_BODY, 1);
-		m_pTransformCom->Set_Scale(_vec3(0.1f));
+		m_pTransformCom->Set_Scale(_vec3(1.0f));
 		Add_Weapon();
 		Add_Info();
 
@@ -138,6 +138,10 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	//for (int i = 0; i < AT_End; i++)
 	{
 		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Common]);
+		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Skill1]);
+		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Skill2]);
+		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Skill3]);
+		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Skill4]);
 	}
 
 		
@@ -864,6 +868,51 @@ void CPlayer::After_SkillAtt(_float fTimeDelta)
 	}
 
 }
+void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
+{
+	switch (Att_Type)
+	{
+	case Client::CPlayer::AT_Common:
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type],10,Att_Type); // 맞았을때 데미지를 줘라!
+		m_pGameInstance->CheckCollision_Monster(m_pAttCollider[Att_Type]); //맞았는지 체크해라 !
+		break;
+	case Client::CPlayer::AT_Skill1:
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], 20, Att_Type);
+		break;
+	case Client::CPlayer::AT_Skill2:
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], 30, Att_Type);
+		break;
+	case Client::CPlayer::AT_Skill3:
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], 40, Att_Type);
+		break;
+	case Client::CPlayer::AT_Skill4:
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], 50, Att_Type);
+		break;
+	default:
+		break;
+	}
+}
+void CPlayer::Summon_Riding(Riding_Type Type)
+{
+	if (m_pRiding != nullptr)
+		Safe_Release(m_pRiding);
+
+	Riding_Desc Desc{};
+	Desc.Type = Type;
+	wstring strName{};
+
+	strName = TEXT("Prototype_GameObject_Riding");
+
+	m_pRiding = dynamic_cast<CRiding*>(m_pGameInstance->Clone_Object(strName, &Desc));
+
+	if (m_pRiding == nullptr)
+		return;
+}
+void CPlayer::UnMount_Riding()
+{
+	m_pRiding->Delete_Riding();
+}
+
 void CPlayer::Init_State()
 {
 	if (m_eState != m_ePrevState)
@@ -997,7 +1046,11 @@ void CPlayer::Init_State()
 			break;
 		case Client::CPlayer::Attack:
 		{
+			if (m_Current_Weapon == WP_SWORD)
+			Check_Att_Collider(AT_Common);
+
 			Return_Attack_IdleForm();
+
 			if(m_Current_Weapon == WP_SWORD)
 			{
 				if (m_vecParts[PT_FACE]->IsAnimationFinished(Anim_Assassin_Attack01_B) or
@@ -1051,9 +1104,10 @@ void CPlayer::Init_State()
 			}
 			break;
 		case Client::CPlayer::Skill1:
-		{
+		{		
 			if(m_Current_Weapon == WP_SWORD)
 			{
+				Check_Att_Collider(AT_Skill1);
 				if (m_vecParts[PT_FACE]->IsAnimationFinished(m_SwordSkill[0]))
 				{
 					m_eState = Skill1_End;
@@ -1081,6 +1135,7 @@ void CPlayer::Init_State()
 		{
 			if (m_Current_Weapon == WP_SWORD)
 			{
+				Check_Att_Collider(AT_Skill2);
 				if (m_vecParts[PT_FACE]->IsAnimationFinished(m_SwordSkill[1]))
 				{
 					m_eState = Attack_Idle;
@@ -1100,6 +1155,7 @@ void CPlayer::Init_State()
 		{
 			if (m_Current_Weapon == WP_SWORD)
 			{
+				Check_Att_Collider(AT_Skill3);
 				if (m_vecParts[PT_FACE]->IsAnimationFinished(m_SwordSkill[2]))
 				{
 					m_eState = Attack_Idle;
@@ -1119,6 +1175,7 @@ void CPlayer::Init_State()
 		{
 			if (m_Current_Weapon == WP_SWORD)
 			{
+				Check_Att_Collider(AT_Skill4);
 				if (m_vecParts[PT_FACE]->IsAnimationFinished(m_SwordSkill[3]))
 				{
 					m_eState = Attack_Idle;
@@ -1173,48 +1230,66 @@ HRESULT CPlayer::Add_Components()
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::OBB;
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
-	CollDesc.vExtents = _vec3(4.f, 10.f, 3.f);
+	CollDesc.vExtents = _vec3(0.4f, 0.9f, 0.4f);
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y *0.9f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 		TEXT("Com_Player_Hit_OBB"), (CComponent**)&m_pHitCollider, &CollDesc)))
 		return E_FAIL;
 
-	CollDesc.eType = ColliderType::Frustum;
-	_mat matView = XMMatrixLookAtLH(XMVectorSet(0.f,0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
-	_mat matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(30.f), 4.f, 0.01f, 12.f);
+	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
+	CollDesc.vExtents = _vec3(1.2f, 0.8f, 1.0f);
+	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.4f, 0.4f);
+	
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), 
+		TEXT("Com_Collider_Common_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Common]), &CollDesc)))
+		return E_FAIL;
 
-	CollDesc.matFrustum = matView * matProj;
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack15"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Common]), &CollDesc)))
+
+
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Skill2_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Skill2]), &CollDesc)))
 	{
 		return E_FAIL;
 	}
 
-	matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.f), 3.f, 0.01f, 3.f);
+	CollDesc.vExtents = _vec3(2.3f, 1.2f, 2.3f);
+	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.5f, 0.2f);
 
-	CollDesc.matFrustum = matView * matProj;
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack26"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Skill1]), &CollDesc)))
-	{
-		return E_FAIL;
-	}
-
-	CollDesc.matFrustum = matView * matProj;
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack264"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Skill2]), &CollDesc)))
-	{
-		return E_FAIL;
-	}
-
-	CollDesc.matFrustum = matView * matProj;
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack262"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Skill3]), &CollDesc)))
-	{
-		return E_FAIL;
-	}
-
-	CollDesc.matFrustum = matView * matProj;
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack2621"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Skill4]), &CollDesc)))
 	{
 		return E_FAIL;
 	}
+
+
+	CollDesc.eType = ColliderType::Frustum;
+	_mat matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
+	_mat matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(30.f), 0.5f, 0.01f, 1.7f);
+
+	
+
+	CollDesc.matFrustum = matView * matProj;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Skill3_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Skill1]), &CollDesc)))
+	{
+		return E_FAIL;
+	}
+
+	matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(30.f), 0.5f, 0.01f,2.5f);
+
+	CollDesc.matFrustum = matView * matProj;
+
+
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Skill1_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Skill3]), &CollDesc)))
+	{
+		return E_FAIL;
+	}
+
+	
+
+
+	
 
 	return S_OK;
 }
@@ -1265,6 +1340,9 @@ void CPlayer::Free()
 	{
 		Safe_Release(m_pAttCollider[i]);
 	}
+
+	if (m_pRiding != nullptr)
+		Safe_Release(m_pRiding);
 
 	Safe_Release(m_pNameTag);
 

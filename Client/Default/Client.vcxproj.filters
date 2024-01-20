@@ -241,6 +241,9 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\Quest\QuestBox">
       <UniqueIdentifier>{2da81de6-d6ce-459f-87a1-7a17217f00b1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\03.Player\Riding">
+      <UniqueIdentifier>{073d72ed-ee94-48c7-98cd-dce26867b879}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -472,6 +475,9 @@
     <ClInclude Include="..\Public\QuestBox.h">
       <Filter>02.GameObjects\00.UI\GameUI\Quest\QuestBox</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Riding.h">
+      <Filter>02.GameObjects\03.Player\Riding</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -699,6 +705,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\QuestBox.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\Quest\QuestBox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Riding.cpp">
+      <Filter>02.GameObjects\03.Player\Riding</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
