@@ -159,10 +159,9 @@ HRESULT CPart_Model::Read_Materials(ifstream& File, const string& strFilePath)
 
 HRESULT CPart_Model::Get_Bone_Offset(const vector<class CBone*>& Bones)
 {
-	for (auto& pMesh : m_Meshes) {
-		pMesh->Set_Bone_Offset(Bones);
-	}
-
+	for (auto& pMesh : m_Meshes)
+		if (FAILED(pMesh->Set_Bone_Offset(Bones)))
+			return E_FAIL;
 	return S_OK;
 }
 
