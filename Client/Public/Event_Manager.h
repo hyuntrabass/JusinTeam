@@ -31,6 +31,7 @@ private:
 	CGameInstance*				m_pGameInstance{ nullptr };
 
 	_bool								m_isEventIn = { false };
+	_bool								m_isWaiting = { false };
 	class CQuest*						m_pQuest{ nullptr };
 
 	vector<EVENT_DESC>					m_vecPopEvents;

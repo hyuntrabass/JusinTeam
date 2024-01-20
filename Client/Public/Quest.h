@@ -31,9 +31,15 @@ private:
 	_bool										m_isActive{ false };
 
 	_float										m_fTime{ 0.f };
+	_float										m_fMin{ 0.f };
+	_float										m_fMax{ 0.f };
+
+	CGameObject*								m_pSymbol{ nullptr };
 	CGameObject*								m_pNotify{ nullptr };
 	CGameObject*								m_pButton{ nullptr };
-	map <const wstring, class CQuestBox*>		m_QuestMap;
+	//순서때매 map으로 하면 안되겠다....
+	//map <const wstring, class CQuestBox*>		m_QuestMap;
+	vector<class CQuestBox*>					m_vecQuest;
 
 public:
 	HRESULT	 Set_Quest(CQuestBox::QUESTBOX_DESC& QuestBoxDesc);

@@ -138,7 +138,7 @@ HRESULT CLoading_Horse::Bind_ShaderResources()
 	}
 	
 	_vec4 vColor{ 1.f, 1.f, 1.f, 1.f, };
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof vColor)))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _vec4)))
 	{
 		return E_FAIL;
 	}

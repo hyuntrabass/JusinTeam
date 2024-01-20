@@ -25,11 +25,15 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 
 	if (m_isEventIn)
 	{
+		if (m_pGameInstance->Get_LayerSize(LEVEL_STATIC, TEXT("Layer_Pop")) == 0)
+		{
+			m_isWaiting = false;
+		}
 		if (m_vecPopEvents.empty())
 		{
 			m_isEventIn = false;
 		}
-		if (m_pGameInstance->Get_LayerSize(LEVEL_GAMEPLAY, TEXT("Layer_Pop")) > 0)
+		if (!m_isWaiting)
 		{
 			EVENT_TYPE eType = m_vecPopEvents.front().eType;
 
@@ -67,6 +71,7 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 			}
 			break;
 			}
+			m_isWaiting = true;
 		}
 	}
 	m_pQuest->Tick(fTimeDelta);
@@ -101,11 +106,11 @@ HRESULT CEvent_Manager::Init_Quest()
 
 	tDesc.eType = QUESTIN;
 	tDesc.fExp = 2;
-	tDesc.iNum = 1;
+	tDesc.iNum = 3;
 	tDesc.iMoney = 1000;
 	tDesc.isMain = false;
 	tDesc.strQuestTitle = TEXT("몬스터와 접촉");
-	tDesc.strText = TEXT("몬스터와 접촉해봐");
+	tDesc.strText = TEXT("몬스터와 3회 접촉해봐");
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	return S_OK;
@@ -165,6 +170,7 @@ HRESULT CEvent_Manager::Set_Quest(const wstring& strQuest)
 }
 HRESULT CEvent_Manager::Set_Event(EVENT_DESC pDesc)
 {
+	m_isWaiting = false;
 	m_vecPopEvents.push_back(pDesc);
 	m_isEventIn = true;
 

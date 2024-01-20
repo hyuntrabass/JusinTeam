@@ -56,7 +56,6 @@ void CMouse::Tick(_float fTimeDelta)
 void CMouse::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
-
 }
 
 HRESULT CMouse::Render()
