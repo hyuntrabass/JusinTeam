@@ -2,6 +2,7 @@
 
 #pragma warning (disable : 4005)
 #pragma warning (disable : 4251)
+#pragma warning (disable : 4267)
 
 // 외부 라이브러리 헤더
 #include <d3d11.h>

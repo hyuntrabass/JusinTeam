@@ -42,10 +42,19 @@ CRealtimeVTFModel::CRealtimeVTFModel(const CRealtimeVTFModel& rhs)
 		for (auto& pTexture : Material.pMaterials)
 			Safe_AddRef(pTexture);
 
-	for (auto& pPrototypePart : rhs.m_Parts) {
-		CPart_Model* pPart = reinterpret_cast<CPart_Model*>(pPrototypePart->Clone());
+	//for (auto& PrototypePartVector : rhs.m_Parts) {
+	//	vector<CPart_Model*> Parts;
+	//	for (auto& pPrototypePart : PrototypePartVector.second) {
+	//		CPart_Model* pPart = reinterpret_cast<CPart_Model*>(pPrototypePart->Clone());
 
-		m_Parts.push_back(pPart);
+	//		Parts.push_back(pPart);
+	//	}
+	//	m_Parts.emplace(PrototypePartVector.first, Parts);
+	//}
+
+	for (auto& PrototypePartPair : rhs.m_PrototypeParts) {
+		CPart_Model* pPart = reinterpret_cast<CPart_Model*>(PrototypePartPair.second->Clone());
+		m_PrototypeParts.emplace(PrototypePartPair.first, pPart);
 	}
 }
 
@@ -119,7 +128,7 @@ HRESULT CRealtimeVTFModel::Init_Prototype(const string& strFilePath, _fmatrix Pi
 			{
 				_uint iAnimIndex = { 0 };
 				TriggerFile.read(reinterpret_cast<char*>(&iAnimIndex), sizeof _uint);
-				
+
 				_uint iNumTrigger = { 0 };
 				TriggerFile.read(reinterpret_cast<char*>(&iNumTrigger), sizeof _uint);
 				for (_uint i = 0; i < iNumTrigger; i++)
@@ -152,9 +161,35 @@ HRESULT CRealtimeVTFModel::Init(void* pArg)
 	return S_OK;
 }
 
+HRESULT CRealtimeVTFModel::Place_Parts(PART_DESC& ePartDesc, _bool isRender)
+{
+
+	auto Protoiter = m_PrototypeParts.find(ePartDesc.FileName);
+
+	if (m_PrototypeParts.end() == Protoiter) {
+		MSG_BOX("그런 파일 이름 없어용");
+		return E_FAIL;
+	}
+
+	auto iter = m_Parts.find(ePartDesc.ePartType);
+
+	if (m_Parts.end() == iter) {
+		vector<CPart_Model*> PartVec;
+		PartVec.push_back(Protoiter->second);
+
+		m_Parts.emplace(ePartDesc.ePartType, PartVec);
+	}
+	else
+		iter->second.push_back(Protoiter->second);
+
+	Protoiter->second->Set_isRender(isRender);
+
+	return S_OK;
+}
+
 HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 {
-	if(true == m_isUsingMotionBlur)
+	if (true == m_isUsingMotionBlur)
 		m_pContext->CopyResource(m_pOldBoneTexture, m_pBoneTexture);
 
 	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop,
@@ -162,7 +197,6 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 
 
 	vector<_mat> CombinedBones;
-
 
 	for (auto& pBone : m_Bones) {
 		pBone->Update_CombinedMatrix(m_Bones);
@@ -172,7 +206,7 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 
 	if (FAILED(UpdateBoneTexture(CombinedBones)))
 		return E_FAIL;
-	
+
 	CombinedBones.clear();
 
 	return S_OK;
@@ -183,6 +217,8 @@ void CRealtimeVTFModel::Set_Animation(ANIM_DESC Animation_Desc)
 	if (m_AnimDesc.iAnimIndex != Animation_Desc.iAnimIndex or
 		Animation_Desc.bRestartAnimation) {
 
+		m_AnimDesc = Animation_Desc;
+
 		m_isAnimChanged = true;
 
 		for (auto& pAnim : m_Animations)
@@ -190,21 +226,105 @@ void CRealtimeVTFModel::Set_Animation(ANIM_DESC Animation_Desc)
 
 		if (m_AnimDesc.iAnimIndex >= m_iNumAnimations)
 			m_AnimDesc.iAnimIndex = m_iNumAnimations - 1;
+		else if (0 > m_AnimDesc.iAnimIndex)
+			m_AnimDesc.iAnimIndex = 0;
 	}
 
-	m_AnimDesc = Animation_Desc;
 }
 
-HRESULT CRealtimeVTFModel::Set_UsingMotionBlur(_bool UsingBlur)
+const _bool& CRealtimeVTFModel::IsAnimationFinished(_uint iAnimIndex) const
 {
-	m_isUsingMotionBlur = UsingBlur;
+	return m_Animations[iAnimIndex]->IsFinished();
+}
+
+const _uint& CRealtimeVTFModel::Get_CurrentAnimationIndex() const
+{
+	return m_AnimDesc.iAnimIndex;
+}
+
+const _float& CRealtimeVTFModel::Get_CurrentAnimPos() const
+{
+	return m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos();
+}
+
+const _mat* CRealtimeVTFModel::Get_BoneMatrix(const _char* pBoneName) const
+{
+	auto iter = find_if(m_Bones.begin(), m_Bones.end(), [&pBoneName](CBone* pBone) {
+		if (!strcmp(pBone->Get_BoneName(), pBoneName))
+			return true;
+		return false;
+	});
+
+	if (m_Bones.end() == iter) {
+		MSG_BOX("Can't Find Bone");
+		return nullptr;
+	}
+
+	return (*iter)->Get_CombinedMatrix();
+}
+
+const _bool CRealtimeVTFModel::Get_PartIsRender(_uint iPartType, _uint iPartID)
+{
+	auto iter = m_Parts.find(iPartType);
+
+	if (m_Parts.end() == iter) {
+		MSG_BOX("그런 파츠 타입 없어용");
+		return false;
+	}
+
+	if (0 > iPartID or iter->second.size() <= iPartID) {
+		MSG_BOX("해당 파츠는 없어용");
+		return false;
+	}
+
+	return iter->second[iPartID]->Get_isRender();
+}
+
+const _uint CRealtimeVTFModel::Get_Num_PartMeshes(_uint iPartType, _uint iPartID) const
+{
+	auto iter = m_Parts.find(iPartType);
+
+	if (m_Parts.end() == iter) {
+		MSG_BOX("그 파츠 타입은 없구연");
+		return 0;
+	}
+
+	return iter->second[iPartID]->Get_NumMeshes();
+}
+
+const _uint CRealtimeVTFModel::Get_NumPart(_uint iPartType) const
+{
+	auto iter = m_Parts.find(iPartType);
+
+	if (m_Parts.end() == iter) {
+		MSG_BOX("그 파츠 타입은 없구연");
+		return 0;
+	}
+
+	return iter->second.size();
+}
+
+HRESULT CRealtimeVTFModel::Seting_Render(_uint iPartType, _uint iPartID)
+{
+	auto iter = m_Parts.find(iPartType);
+
+	if (m_Parts.end() == iter) {
+		MSG_BOX("그 파츠 타입은 없구연");
+		return E_FAIL;
+	}
+
+	if (0 > iPartID or iter->second.size() <= iPartID) {
+		MSG_BOX("그 파츠는 없구연");
+		return E_FAIL;
+	}
+
+	for (auto& pPart : iter->second) {
+		pPart->Set_isRender(false);
+	}
+
+	iter->second[iPartID]->Set_isRender(true);
 
 	return S_OK;
-}
-
-const _uint CRealtimeVTFModel::Get_Num_PartMeshes(_uint iPartIndex) const
-{
-	return m_Parts[iPartIndex]->Get_NumMeshes();
 }
 
 HRESULT CRealtimeVTFModel::Bind_Material(CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType)
@@ -249,23 +369,28 @@ HRESULT CRealtimeVTFModel::Render(_uint iMeshIndex)
 	return S_OK;
 }
 
-HRESULT CRealtimeVTFModel::Bind_Part_Material(CShader* pShader, const _char* pVariableName, TextureType eTextureType, _uint iPartIndex, _uint iPartMeshIndex)
+HRESULT CRealtimeVTFModel::Bind_Part_Material(CShader* pShader, const _char* pVariableName, TextureType eTextureType, _uint iPartType, _uint iPartID, _uint iPartMeshIndex)
 {
-	if (m_Parts.size() <= iPartIndex)
-		return E_FAIL;
+	auto iter = m_Parts.find(iPartType);
 
-	return m_Parts[iPartIndex]->Bind_Material(pShader, pVariableName, iPartMeshIndex, eTextureType);
+	if (m_Parts.end() == iter) {
+		MSG_BOX("그 파츠 타입은 없구연");
+		return E_FAIL;
+	}
+
+	return iter->second[iPartID]->Bind_Material(pShader, pVariableName, iPartMeshIndex, eTextureType);
 }
 
-HRESULT CRealtimeVTFModel::Render_Part(_uint iPartIndex, _uint iPartMeshIndex)
+HRESULT CRealtimeVTFModel::Render_Part(_uint iPartType, _uint iPartID, _uint iPartMeshIndex)
 {
-	if (m_Parts.size() <= iPartIndex)
-		return E_FAIL;
+	auto iter = m_Parts.find(iPartType);
 
-	if (FAILED(m_Parts[iPartIndex]->Render(iPartMeshIndex)))
+	if (m_Parts.end() == iter) {
+		MSG_BOX("그 파츠 타입은 없구연");
 		return E_FAIL;
+	}
 
-	return S_OK;
+	return iter->second[iPartID]->Render(iPartMeshIndex);
 }
 
 HRESULT CRealtimeVTFModel::Seting_Parts(const string& strFilePath)
@@ -278,7 +403,11 @@ HRESULT CRealtimeVTFModel::Seting_Parts(const string& strFilePath)
 	if (FAILED(pPart->Get_Bone_Offset(m_Bones)))
 		return E_FAIL;
 
-	m_Parts.push_back(pPart);
+	_char szFileName[MAX_PATH]{};
+
+	_splitpath_s(strFilePath.c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, nullptr, 0);
+
+	m_PrototypeParts.emplace(szFileName, pPart);
 
 	return S_OK;
 }
@@ -429,7 +558,7 @@ HRESULT CRealtimeVTFModel::CreateVTF()
 
 HRESULT CRealtimeVTFModel::UpdateBoneTexture(vector<_mat>& CombinedBones)
 {
-	D3D11_MAPPED_SUBRESOURCE TexData;
+	D3D11_MAPPED_SUBRESOURCE TexData = {};
 	if (FAILED(m_pContext->Map(m_pBoneTexture, 0, D3D11_MAP_WRITE_DISCARD, 0, &TexData)))
 		return E_FAIL;
 
@@ -495,8 +624,10 @@ void CRealtimeVTFModel::Free()
 	}
 	m_Materials.clear();
 
-	for (auto& pPart : m_Parts)
-		Safe_Release(pPart);
+	for (auto& pPart : m_PrototypeParts)
+		Safe_Release(pPart.second);
+
+	m_PrototypeParts.clear();
 
 	m_Parts.clear();
 

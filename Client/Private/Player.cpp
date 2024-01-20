@@ -109,6 +109,10 @@ void CPlayer::Tick(_float fTimeDelta)
 	if (m_pNameTag != nullptr)
 		m_pNameTag->Tick(fTimeDelta);
 
+	if (m_bStartGame)
+	{
+		CEvent_Manager::Get_Instance()->Tick(fTimeDelta);
+	}
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)
@@ -123,6 +127,10 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		Add_Info();
 
 		m_bStartGame = true;
+		CEvent_Manager::Get_Instance()->Init();
+		CEvent_Manager::Get_Instance()->Set_Quest(TEXT("공격하기"));
+		CEvent_Manager::Get_Instance()->Set_Quest(TEXT("이동하기"));
+		CEvent_Manager::Get_Instance()->Set_Quest(TEXT("몬스터와 접촉"));
 	}
 
 	for (int i = 0; i < m_vecParts.size();i++)
@@ -133,6 +141,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	if (m_pWeapon != nullptr)
 	m_pWeapon->Late_Tick(fTimeDelta);
 
+#ifdef _DEBUGTEST
 	m_pRendererCom->Add_DebugComponent(m_pHitCollider);
 
 	//for (int i = 0; i < AT_End; i++)
@@ -144,7 +153,13 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Skill4]);
 	}
 
-		
+#endif // DEBUG
+
+
+	if (m_bStartGame)
+	{
+		CEvent_Manager::Get_Instance()->Late_Tick(fTimeDelta);
+	}
 
 	if (m_pNameTag != nullptr)
 		m_pNameTag->Late_Tick(fTimeDelta);
@@ -290,6 +305,7 @@ void CPlayer::Move(_float fTimeDelta)
 	}
 	if (m_pGameInstance->Key_Down(DIK_1))
 	{
+		CEvent_Manager::Get_Instance()->Update_Quest(TEXT("공격하기"));
 		m_eState = Skill1;
 		m_iCurrentSkill_Index = Skill1;
 	}
@@ -354,11 +370,12 @@ void CPlayer::Move(_float fTimeDelta)
 
 	if(m_eState!=Attack&&m_eState< Skill1)
 	{
+		//퀘스트 개수에 따라 bool로 통과하도록 한번 거쳐야할듯 아니면 계속 맵에서 찾아야되니까 
 		if (m_pGameInstance->Key_Pressing(DIK_W))
 		{
 			vDirection += vForwardDir;
 			hasMoved = true;
-		
+			CEvent_Manager::Get_Instance()->Update_Quest(TEXT("이동하기"));
 		}
 		else if (m_pGameInstance->Key_Pressing(DIK_S))
 		{
@@ -1329,7 +1346,7 @@ void CPlayer::Free()
 {
 	__super::Free();
 
-
+	CEvent_Manager::Destroy_Instance();
 	for (auto& iter : m_vecParts)
 	{
 		Safe_Release(iter);

@@ -37,9 +37,10 @@ private:
 	_uint m_iNumVerticesZ{ 0 };
 
 public:
-	HRESULT ModifyTerrainVertexBuffer( _uint iNumVerticesX,  _uint iNumVerticesZ);
-	HRESULT Mesh_Terrain(vector<VTXSTATICMESH> vVertices, vector<_ulong> vIndices);
-	HRESULT Modify_Terrain_Hight(_uint iNumVerticesX, _uint iNumVerticesZ, _vec3 PickedPosition, _float fNewHight);
+	HRESULT ModifyTerrainVertexBuffer(_uint iNumVerticesX, _uint iNumVerticesZ);
+	HRESULT Mesh_Terrain(_uint iNumVerticesX, _uint iNumVerticesZ, vector<VTXSTATICMESH> vVertices, vector<_ulong> vIndices);
+	HRESULT Modify_Terrain_Hight(_uint iNumVerticesX, _uint iNumVerticesZ, _vec3 PickedPosition, _float fNewHeight, _float fSize);
+	HRESULT Terrain_Init(_uint iNumVerticesX, _uint iNumVerticesZ, _vec3 PickedPosition, _float fNewHeight, _float fSize);
 
 public:
 	static CVIBuffer_Terrain* Create(_dev pDevice, _context pContext);
