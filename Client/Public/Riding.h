@@ -60,7 +60,7 @@ enum Tiger_Anim
 	Tiger_2003_Run_Add_L,
 	Tiger_2003_Run_Add_R,
 	Tiger_2003_Run_L,
-	Tiger_2003_Run_R
+	Tiger_2003_Run_R,
 	Tiger_2003_Start,
 	Tiger_2003_Walk
 };
