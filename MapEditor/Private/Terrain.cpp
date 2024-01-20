@@ -22,7 +22,7 @@ HRESULT CTerrain::Init(void* pArg)
 
 	if (FAILED(Add_Component()))
 		return E_FAIL;
-	
+
 	return S_OK;
 }
 
@@ -43,9 +43,16 @@ HRESULT CTerrain::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	// Pass가 하나만 있으므로 index는 0
-	if(FAILED(m_pShaderCom->Begin(1)))
-		return E_FAIL;
+	if (m_isMode)
+	{
+		if (FAILED(m_pShaderCom->Begin(2)))
+			return E_FAIL;
+	}
+	else
+	{
+		if (FAILED(m_pShaderCom->Begin(1)))
+			return E_FAIL;
+	}
 
 	if (FAILED(m_pVIBufferCom->Render()))
 		return E_FAIL;
@@ -110,6 +117,9 @@ HRESULT CTerrain::Bind_ShaderResources()
 		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCursorPos", &m_MousePos, sizeof(_float4))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCursorRange", &m_iBrushSize, sizeof(_float))))
 		return E_FAIL;
 
 	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_EDITOR, TEXT("Light_Main"));

@@ -46,8 +46,8 @@ struct MapInfo
 };
 
 struct TerrainInfo {
-	_uint m_iNumVerticesX{0};
-	_uint m_iNumVerticesZ{0};
+	_uint m_iNumVerticesX{ 0 };
+	_uint m_iNumVerticesZ{ 0 };
 
 	class CTerrain** ppTerrain{ nullptr };
 };
@@ -124,17 +124,18 @@ private:
 	_vec4 m_PickingPos{ 0.f, 0.f, 0.f, 1.f };
 	_vec4 m_TerrainPos{ 0.f, 0.f, 0.f, 1.f };
 	_float m_fCamDist{};
-	_int TerrainCount[1]{2};
-	_float TerrainHight{};
+	_int TerrainCount[2]{ 0,0 };
+	_float TerrainHight{ 0.f };
+	_float BrushSize{ 1.f };
 
 	_float4 m_vPos{ 0.f, 0.f, 0.f, 1.f };
 	_float4 m_vLook{ 0.f, 0.f, 1.f, 0.f };
 	ItemType m_eItemType{ ItemType::End };
 	_vec4 m_vMouseWorld{ 0.f,0.f,0.f,0.f };
 
-	_int DummyIndex{0};
-	_int MapIndex{0};
-	_bool m_isMode{false};
+	_int DummyIndex{ 0 };
+	_int MapIndex{ 0 };
+	_bool m_isMode{ false };
 
 private:
 	// 파일의 이름 가져와서 저장
@@ -164,12 +165,11 @@ private:
 	_mat	m_ViewMatrix = {};
 	_mat	m_ProjMatrix = {};
 
-	_int m_iSelectIdx = {-1 };
-	_bool m_iImGuizmoCheck = {false };
-	_vec3 LastMousePosition{};
+	_int m_iSelectIdx = { -1 };
+	_bool m_iImGuizmoCheck = { false };
 
 public:
-	static CImGui_Manager* Create( const GRAPHIC_DESC& GraphicDesc);
+	static CImGui_Manager* Create(const GRAPHIC_DESC& GraphicDesc);
 	virtual void Free() override;
 
 };
