@@ -35,7 +35,8 @@ public:
 	}
 
 public:
-	HRESULT Init(ifstream& ModelFile, const vector<class CBone*>& Bones);
+	HRESULT Init_Prototype(ifstream& ModelFile, const vector<class CBone*>& Bones, const _mat& PivotMatrix);
+	HRESULT Init(void* pArg);
 	void Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio);
 
 	HRESULT Prepare_Animation(const vector<class CBone*>& Bones, _uint iFrame);
@@ -46,6 +47,10 @@ public:
 
 
 private:
+	class CGameInstance* m_pGameInstance{};
+	class CTransform* m_pOwnerTransform{};
+	_mat m_PivotMatrix{};
+
 	_char m_szName[MAX_PATH]{};
 	
 	_float m_fDuration{};
@@ -66,6 +71,7 @@ private:
 
 	_uint m_iNumEffectTriggers{};
 	vector<TRIGGEREFFECT_DESC> m_TriggerEffects;
+	vector<_mat*> m_EffectMatrices;
 
 	_uint m_iNumSoundTrigger{};
 	vector<_float> m_SoundTriggers; // 사운드 트리거
@@ -82,8 +88,8 @@ private:
 	void Update_Lerp_TransformationMatrix(const vector<class CBone*>& Bones, _bool& isAnimChanged, _float fInterpolationTime);
 
 public:
-	static CAnimation* Create(ifstream& ModelFile, const vector<class CBone*>& Bones);
-	CAnimation* Clone();
+	static CAnimation* Create(ifstream& ModelFile, const vector<class CBone*>& Bones, const _mat& PivotMatrix);
+	CAnimation* Clone(void* pArg);
 	virtual void Free() override;
 };
 

@@ -1019,9 +1019,9 @@ void CGameInstance::Register_DeleteEffect_Callback(Func_DeleteFX Function)
 	m_Function_Delete_FX = Function;
 }
 
-void CGameInstance::Create_Effect(const wstring& strEffectTag, _mat* pMatrix, _bool isFollow)
+void CGameInstance::Create_Effect(const wstring& strEffectTag, _mat* pMatrix)
 {
-	m_Function_Create_FX(strEffectTag, pMatrix, isFollow);
+	m_Function_Create_FX(strEffectTag, pMatrix);
 }
 
 void CGameInstance::Delete_Effect(const void* pMatrix)

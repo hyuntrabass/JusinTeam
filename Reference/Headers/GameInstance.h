@@ -159,13 +159,13 @@ public: // Sound Manager
 	void SetChannelVolume(_uint iChannel, _float fVolume);
 
 public: // Effect Callback
-	using Func_CreateFX = function<void(const wstring&, _mat*, _bool)>;
+	using Func_CreateFX = function<void(const wstring&, _mat*)>;
 	using Func_DeleteFX = function<void(const void*)>;
 
 	void Register_CreateEffect_Callback(Func_CreateFX Function);
 	void Register_DeleteEffect_Callback(Func_DeleteFX Function);
 
-	void Create_Effect(const wstring& strEffectTag, _mat* pMatrix, _bool isFollow);
+	void Create_Effect(const wstring& strEffectTag, _mat* pMatrix);
 	void Delete_Effect(const void* pMatrix);
 
 public: // Get_Set

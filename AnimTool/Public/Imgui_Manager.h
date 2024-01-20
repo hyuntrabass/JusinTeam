@@ -18,6 +18,7 @@ public:
 public:
     //ImGuizmo
     enum MANIPULATETYPE { TYPE_STATE, TYPE_RESET, MANIPULATE_TYPE_END };
+    enum SELECT { SELECT_PLAYER, SELECT_EFFECT, SELECT_END };
 
 private:
     CImgui_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -58,7 +59,6 @@ private:
     _uint m_iCurrentModelIndex = { 0 };
     _int m_iCurrentBone{};
 
-    vector<class CEffect_Dummy*> m_Effects;
     vector<const _char*> m_EffectDescNames;
     _int m_iSelectEffectFile{};
     _int m_iCurrentEffect{};
@@ -69,12 +69,15 @@ private:
     _int m_eType = { TYPE_MONSTER };
     _float m_fTimeDelta{};
 
-    vector<_char*> m_FBXDataName;
-    vector<const _char*> m_EffectNames;
+    vector<string> m_FBXDataName;
+    const _char** m_szFBXDataName;
+    vector<string> m_EffectNames;
+    const _char** m_szEffectNames;
 
     vector<const _char*> m_TriggerTimes;
 
     //ImGuizmo
+    SELECT m_eSelect = { SELECT_PLAYER };
     ImGuizmo::OPERATION m_eStateType = { ImGuizmo::OPERATION::TRANSLATE };
     _int m_iManipulateType = 0;
     MANIPULATETYPE m_eManipulateType = { TYPE_STATE };
