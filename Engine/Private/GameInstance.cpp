@@ -1032,6 +1032,11 @@ void CGameInstance::Register_Tick_LateTick_Callback(Func_TickFX Tick, Func_TickF
 	m_Function_LateTick_FX = Late_Tick;
 }
 
+void CGameInstance::Register_HasCreated_Callback(Func_HasCreatedFX Function)
+{
+	m_Function_HasCreated = Function;
+}
+
 void CGameInstance::Create_Effect(const wstring& strEffectTag, _mat* pMatrix)
 {
 	if (not m_Function_Create_FX)
@@ -1050,6 +1055,11 @@ void CGameInstance::Delete_Effect(const void* pMatrix)
 		return;
 	}
 	m_Function_Delete_FX(pMatrix);
+}
+
+_bool CGameInstance::Has_Created_Effect(const void* pMatrixKey)
+{
+	return m_Function_HasCreated(pMatrixKey);
 }
 
 const _uint& CGameInstance::Get_CameraModeIndex() const

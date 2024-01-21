@@ -33,6 +33,7 @@ private:
 private:
 	EffectInfo m_Effect{};
 	_mat m_WorldMatrix{};
+	_mat m_OffsetMatrix{};
 	_float m_fTimer{};
 	_float m_fSpriteTimer{};
 	_int m_iSpriteIndex{};

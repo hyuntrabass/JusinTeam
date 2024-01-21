@@ -34,6 +34,16 @@ void CEffect_Manager::Late_Tick(_float fTimeDelta)
 	}
 }
 
+_bool CEffect_Manager::Has_Created(const void* pMatrixKey)
+{
+	auto iter = m_Effects.find(pMatrixKey);
+	if (iter == m_Effects.end())
+	{
+		return false;
+	}
+	return true;
+}
+
 EffectInfo CEffect_Manager::Get_EffectInformation(const wstring& strEffectTag)
 {
 	auto iter = m_EffectInfos.find(strEffectTag);
@@ -61,9 +71,16 @@ void CEffect_Manager::Create_Effect(const wstring& strEffectTag, _mat* pMatrix)
 	EffectInfo Info = Get_EffectInformation(strEffectTag);
 	Info.pMatrix = pMatrix;
 	
-	CEffect_Dummy* pEffect = Clone_Effect(&Info);
+	if (Info.fLifeTime < 0)
+	{
+		CEffect_Dummy* pEffect = Clone_Effect(&Info);
 
-	m_Effects.emplace(pMatrix, pEffect);
+		m_Effects.emplace(pMatrix, pEffect);
+	}
+	else
+	{
+		Add_Layer_Effect(&Info);
+	}
 }
 
 void CEffect_Manager::Delete_Effect(const void* pMatrix)
@@ -71,7 +88,6 @@ void CEffect_Manager::Delete_Effect(const void* pMatrix)
 	auto iter = m_Effects.find(pMatrix);
 	if (iter == m_Effects.end())
 	{
-		MSG_BOX("ÀÌÆåÆ® ¾øÀ½.");
 		return;
 	}
 
@@ -88,9 +104,11 @@ void CEffect_Manager::Register_Callback()
 	m_pGameInstance->Register_DeleteEffect_Callback(func_Delete);
 
 	CGameInstance::Func_TickFX func_Tick = [this](auto... args) { return Tick(args...); };
-
 	CGameInstance::Func_TickFX func_LateTick = [this](auto... args) { return Late_Tick(args...); };
 	m_pGameInstance->Register_Tick_LateTick_Callback(func_Tick, func_LateTick);
+
+	CGameInstance::Func_HasCreatedFX func_HasCreated = [this](auto... args) { return Has_Created(args...); };
+	m_pGameInstance->Register_HasCreated_Callback(func_HasCreated);
 }
 
 HRESULT CEffect_Manager::Read_EffectFile()

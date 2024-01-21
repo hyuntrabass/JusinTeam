@@ -25,6 +25,8 @@ public:
 	void Late_Tick(_float fTimeDelta);
 
 public:
+	_bool Has_Created(const void* pMatrixKey);
+
 	EffectInfo Get_EffectInformation(const wstring& strEffectTag);
 	HRESULT Add_Layer_Effect(EffectInfo* pInfo);
 	class CEffect_Dummy* Clone_Effect(EffectInfo* pInfo);
