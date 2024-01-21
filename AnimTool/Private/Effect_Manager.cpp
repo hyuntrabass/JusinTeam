@@ -9,6 +9,31 @@ CEffect_Manager::CEffect_Manager()
 	Safe_AddRef(m_pGameInstance);
 }
 
+void CEffect_Manager::Tick(_float fTimeDelta)
+{
+	for (auto iter = m_Effects.begin(); iter != m_Effects.end();)
+	{
+		iter->second->Tick(fTimeDelta);
+
+		if (iter->second->isDead())
+		{
+			iter = m_Effects.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+}
+
+void CEffect_Manager::Late_Tick(_float fTimeDelta)
+{
+	for (auto& pEffect : m_Effects)
+	{
+		pEffect.second->Late_Tick(fTimeDelta);
+	}
+}
+
 EffectInfo CEffect_Manager::Get_EffectInformation(const wstring& strEffectTag)
 {
 	auto iter = m_EffectInfos.find(strEffectTag);
@@ -29,15 +54,6 @@ HRESULT CEffect_Manager::Add_Layer_Effect(EffectInfo* pInfo)
 CEffect_Dummy* CEffect_Manager::Clone_Effect(EffectInfo* pInfo)
 {
 	return dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_EffectDummy", pInfo));
-}
-
-void CEffect_Manager::Register_Functions()
-{
-	CGameInstance::Func_CreateFX func_Create = [this](auto... args) { return Create_Effect(args...); };
-	m_pGameInstance->Register_CreateEffect_Callback(func_Create);
-
-	CGameInstance::Func_DeleteFX func_Delete = [this](auto... args) { return Delete_Effect(args...); };
-	m_pGameInstance->Register_DeleteEffect_Callback(func_Delete);
 }
 
 void CEffect_Manager::Create_Effect(const wstring& strEffectTag, _mat* pMatrix)
@@ -61,6 +77,20 @@ void CEffect_Manager::Delete_Effect(const void* pMatrix)
 
 	Safe_Release(iter->second);
 	m_Effects.erase(iter);
+}
+
+void CEffect_Manager::Register_Callback()
+{
+	CGameInstance::Func_CreateFX func_Create = [this](auto... args) { return Create_Effect(args...); };
+	m_pGameInstance->Register_CreateEffect_Callback(func_Create);
+
+	CGameInstance::Func_DeleteFX func_Delete = [this](auto... args) { return Delete_Effect(args...); };
+	m_pGameInstance->Register_DeleteEffect_Callback(func_Delete);
+
+	CGameInstance::Func_TickFX func_Tick = [this](auto... args) { return Tick(args...); };
+
+	CGameInstance::Func_TickFX func_LateTick = [this](auto... args) { return Late_Tick(args...); };
+	m_pGameInstance->Register_Tick_LateTick_Callback(func_Tick, func_LateTick);
 }
 
 HRESULT CEffect_Manager::Read_EffectFile()

@@ -241,7 +241,8 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 				m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i]);
 				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
 			}
-			if (m_fCurrentAnimPos <= m_TriggerEffects[i].fEndAnimPos)
+			if (m_TriggerEffects[i].fEndAnimPos != -1 &&
+				m_fCurrentAnimPos >= m_TriggerEffects[i].fEndAnimPos)
 			{
 				//ÀÌÆåÆ® Á¦°Å
 				m_pGameInstance->Delete_Effect(m_EffectMatrices[i]);

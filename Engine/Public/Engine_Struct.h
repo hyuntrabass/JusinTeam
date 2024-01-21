@@ -134,7 +134,9 @@ namespace Engine
 	};
 
 	using TRIGGEREFFECT_DESC = struct tagTriggerEffectDesc {
+		int iStartAnimIndex{};
 		float fStartAnimPos{};
+		int iEndAnimIndex{};
 		float fEndAnimPos = -1.f;
 		bool IsFollow{};
 		std::wstring strEffectName{};
