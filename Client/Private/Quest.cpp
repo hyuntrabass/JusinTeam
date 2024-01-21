@@ -1,6 +1,7 @@
 #include "Quest.h"
 #include "GameInstance.h"
 #include "TextButton.h"
+#include "UI_Manager.h"
 
 CQuest::CQuest(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -31,7 +32,7 @@ HRESULT CQuest::Init(void* pArg)
 	m_fX = 1180.f;
 	m_fY = 120.f;
 
-	m_fDepth = 0.5f;
+	m_fDepth = (_float)D_SCREEN / (_float)D_END;
 
 	m_fMin = m_fY - m_fSizeY / 2.f;
 	m_fMax = m_fY + 50.f;
@@ -47,6 +48,10 @@ HRESULT CQuest::Init(void* pArg)
 
 void CQuest::Tick(_float fTimeDelta)
 {
+	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
+	{
+		return;
+	}
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
@@ -143,21 +148,18 @@ void CQuest::Tick(_float fTimeDelta)
 
 void CQuest::Late_Tick(_float fTimeDelta)
 {
-
-	for (auto& iter : m_vecQuest)
+	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
 	{
-		if (iter->IsMain())
-		{
-			iter->Late_Tick(fTimeDelta);
-		}
-		else
-		{
-			if (m_isActive)
-			{
-				iter->Late_Tick(fTimeDelta);
-			}
-		}
+		return;
 	}
+
+	for (_uint i = 0; i < m_vecQuest.size(); i++)
+	{
+		m_vecQuest[i]->Late_Tick(fTimeDelta);
+		if (!m_isActive && i <= 0)
+			break;
+	}
+
 	if (m_isActive)
 	{
 		m_pButton->Late_Tick(fTimeDelta);
@@ -226,18 +228,7 @@ void CQuest::Sort_Quest()
 	{
 		return;
 	}
-	/*
-	
-	_bool isMain = false;
-	for (auto& iter : m_vecQuest)
-	{
-		if (iter->IsMain())
-		{
-			isMain = true;
-			break;
-		}
-	}
-	*/
+
 	_uint iSize = 0;
 	for (auto& iter : m_vecQuest)
 	{
@@ -245,30 +236,6 @@ void CQuest::Sort_Quest()
 		iter->Set_Position(_float2(iter->Get_Position().x, fY));
 		iSize++;
 	}
-	/*
-	
-	_float fY = m_fY + (m_vecQuest.size() * m_fSizeX) + (m_vecQuest.size() * 1.f);
-	if (isMain)
-	{
-		_uint iSize = 1;
-		for (auto& iter : m_vecQuest)
-		{
-			if (iter->IsMain())
-			{
-				iter->Set_Position(_float2(iter->Get_Position().x, m_fY));
-			}
-			else
-			{
-				_float fY = m_fY + (iSize * m_fSizeX) + (iSize * 2.f);
-				iter->Set_Position(_float2(iter->Get_Position().x, fY));
-			}
-			iSize++;
-		}
-	}
-	else
-	{
-
-	}*/
 }
 
 _bool CQuest::Update_Quest(const wstring& strQuest)

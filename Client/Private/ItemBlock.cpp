@@ -1,6 +1,7 @@
 #include "ItemBlock.h"
 #include "GameInstance.h"
 #include "TextButton.h"
+#include "UI_Manager.h"
 
 CItemBlock::CItemBlock(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -42,6 +43,10 @@ void CItemBlock::Tick(_float fTimeDelta)
 
 void CItemBlock::Late_Tick(_float fTimeDelta)
 {
+	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
+	{
+		return;
+	}
 	for (size_t i = 0; i < ITEMSLOT_END; i++)
 	{
 		m_pSlots[i]->Late_Tick(fTimeDelta);

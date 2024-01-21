@@ -45,10 +45,10 @@ struct MapInfo
 	class CMap** ppMap{ nullptr };
 };
 
-struct TerrainInfo {
-	_uint m_iNumVerticesX{ 0 };
-	_uint m_iNumVerticesZ{ 0 };
-
+struct TERRAIN_INFO_MAPTOOL : public TERRAIN_INFO
+{
+	std::vector<VTXSTATICMESH> Vertices{};
+	std::vector<unsigned long> Indices{};
 	class CTerrain** ppTerrain{ nullptr };
 };
 
@@ -79,22 +79,23 @@ private:
 	HRESULT Modify_Terrain();
 	void Delete_Dummy();
 	void Delete_Map();
-
+	void Delete_Terrain();
 
 
 	void Search_Files(string DirPath, const char* Path, vector<const char*>* List);
 	void Reset();
 
-	void Search_Map(int iSelectMap);
-	void Search_Object(int iSelectObject);
-	void Search_Monster(int iSelectMonster);
-	void Search_NPC(int iSelectNPC);
+	void Search_Map();
+	void Search_Object();
+	void Search_Monster();
+	void Search_NPC();
 
 	void Mouse_Pos();
 	void FastPicking();
 	void Picking_On_Terrain();
 	void MeshToMask();
-	HRESULT Map_Vertices();
+	HRESULT Save_Map_Vertex_Info();
+	HRESULT Load_Map_Vertex_Info_For_Terrain();
 
 	// µ•¿Ã≈Õ ∆ƒΩÃ
 	// ∏ 
@@ -167,6 +168,7 @@ private:
 
 	_int m_iSelectIdx = { -1 };
 	_bool m_iImGuizmoCheck = { false };
+	CTexture* m_pTextures{ nullptr };
 
 public:
 	static CImGui_Manager* Create(const GRAPHIC_DESC& GraphicDesc);

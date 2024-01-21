@@ -2,16 +2,6 @@
 #include "VIBuffer.h"
 #include "Mesh.h"
 
-struct NormalTerrain {
-	_uint iNumVerticesX{};
-	_uint iNumVerticesZ{};
-};
-
-struct MeshTerrain {
-	vector<VTXSTATICMESH> Vertices{};
-	vector<_ulong> Indices{};
-};
-
 BEGIN(Engine)
 
 class ENGINE_DLL CVIBuffer_Terrain final : public CVIBuffer
@@ -28,8 +18,7 @@ public:
 	_uint Get_NumVerticesX() { return m_iNumVerticesX; }
 	_uint Get_NumVerticesZ() { return m_iNumVerticesZ; }
 private:
-	NormalTerrain m_pTerrain{};
-	MeshTerrain m_pMeshTerrain{};
+	TERRAIN_INFO m_pTerrain{};
 
 private:
 	_bool	m_isClone;
@@ -38,7 +27,7 @@ private:
 
 public:
 	HRESULT ModifyTerrainVertexBuffer(_uint iNumVerticesX, _uint iNumVerticesZ);
-	HRESULT Mesh_Terrain(_uint iNumVerticesX, _uint iNumVerticesZ, vector<VTXSTATICMESH> vVertices, vector<_ulong> vIndices);
+	HRESULT Mesh_Terrain( vector<VTXSTATICMESH> vVertices, vector<_ulong> vIndices);
 	HRESULT Modify_Terrain_Hight(_uint iNumVerticesX, _uint iNumVerticesZ, _vec3 PickedPosition, _float fNewHeight, _float fSize);
 	HRESULT Terrain_Init(_uint iNumVerticesX, _uint iNumVerticesZ, _vec3 PickedPosition, _float fNewHeight, _float fSize);
 

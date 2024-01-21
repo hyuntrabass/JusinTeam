@@ -118,6 +118,18 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 
 	m_pInput_Manager->Update_InputDev();
 
+	if (Key_Down(DIK_F1, InputChannel::Engine))
+	{
+		if (m_bSkipDebugRender)
+		{
+			m_bSkipDebugRender = false;
+		}
+		else
+		{
+			m_bSkipDebugRender = true;
+		}
+	}
+
 	m_pObject_Manager->Tick(fTimeDelta);
 	if (m_Function_Tick_FX)
 	{
@@ -861,9 +873,12 @@ void CGameInstance::PhysXTick(_float fTimeDelta)
 }
 
 #ifdef _DEBUGTEST
-#ifndef _MapEditor
 HRESULT CGameInstance::Render_PhysX()
 {
+	if (m_bSkipDebugRender)
+	{
+		return S_OK;
+	}
 	if (FAILED(m_pPhysX_Manager->Render()))
 	{
 		MSG_BOX("Failed to Render PhysX");
@@ -872,7 +887,6 @@ HRESULT CGameInstance::Render_PhysX()
 
 	return S_OK;
 }
-#endif // _MapEditor
 #endif // _DEBUG
 
 HRESULT CGameInstance::Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _vec4& vColor)
@@ -945,6 +959,10 @@ HRESULT CGameInstance::Ready_Debug_RT(const wstring& strTargetTag, _float2 vPos,
 
 HRESULT CGameInstance::Render_Debug_RT(const wstring& strMRTTag, CShader* pShader, CVIBuffer_Rect* pVIBuffer)
 {
+	if (m_bSkipDebugRender)
+	{
+		return S_OK;
+	}
 	if (!m_pRenderTarget_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pRenderTarget_Manager is NULL");
@@ -1032,14 +1050,19 @@ void CGameInstance::Register_Tick_LateTick_Callback(Func_TickFX Tick, Func_TickF
 	m_Function_LateTick_FX = Late_Tick;
 }
 
-void CGameInstance::Create_Effect(const wstring& strEffectTag, _mat* pMatrix)
+void CGameInstance::Register_HasCreated_Callback(Func_HasCreatedFX Function)
+{
+	m_Function_HasCreated = Function;
+}
+
+void CGameInstance::Create_Effect(const wstring& strEffectTag, _mat* pMatrix, const _bool& isFollow)
 {
 	if (not m_Function_Create_FX)
 	{
 		MSG_BOX("Function is not ready!!");
 		return;
 	}
-	m_Function_Create_FX(strEffectTag, pMatrix);
+	m_Function_Create_FX(strEffectTag, pMatrix, isFollow);
 }
 
 void CGameInstance::Delete_Effect(const void* pMatrix)
@@ -1050,6 +1073,11 @@ void CGameInstance::Delete_Effect(const void* pMatrix)
 		return;
 	}
 	m_Function_Delete_FX(pMatrix);
+}
+
+_bool CGameInstance::Has_Created_Effect(const void* pMatrixKey)
+{
+	return m_Function_HasCreated(pMatrixKey);
 }
 
 const _uint& CGameInstance::Get_CameraModeIndex() const
@@ -1180,6 +1208,11 @@ const _vec4& CGameInstance::Get_CameraTargetLook()
 const _bool& CGameInstance::Have_TargetLook() const
 {
 	return m_bTargetLook;
+}
+
+const _bool& CGameInstance::IsSkipDebugRendering() const
+{
+	return m_bSkipDebugRender;
 }
 
 void CGameInstance::Initialize_Level(_uint iLevelNum)

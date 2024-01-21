@@ -44,6 +44,8 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 		m_fDissolveRatio = 1.f;
 	}
 
+	m_OffsetMatrix = *m_Effect.pMatrix;
+
 	return S_OK;
 }
 
@@ -83,6 +85,18 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 	m_fTimer += fTimeDelta;
 	m_vUV += m_Effect.vUVDelta * fTimeDelta;
 
+	if (m_Effect.isFollow)
+	{
+		m_OffsetMatrix = *m_Effect.pMatrix;
+	}
+
+	if (m_Effect.iType != ET_MESH)
+	{
+		m_OffsetMatrix.RemoveRotation();
+	}
+
+	m_pTransformCom->Set_Matrix(m_OffsetMatrix);
+
 	switch (m_Effect.iType)
 	{
 	case Effect_Type::ET_PARTICLE:
@@ -91,50 +105,47 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 		break;
 	case Effect_Type::ET_RECT:
 	{
+		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+
+		_vec4 vRightDir = m_WorldMatrix.Right().Get_Normalized();
+		_vec4 vUpDir = m_WorldMatrix.Up().Get_Normalized();
+		_vec4 vLookDir = m_WorldMatrix.Look().Get_Normalized();
+
+		vPos += vRightDir * m_Effect.vPosOffset.x;
+		vPos += vUpDir * m_Effect.vPosOffset.y;
+		vPos += vLookDir * m_Effect.vPosOffset.z;
+
+		m_pTransformCom->Set_State(State::Pos, vPos);
+
 		m_pTransformCom->LookAway(m_pGameInstance->Get_CameraPos());
 
-		m_pTransformCom->Set_Scale(m_vScaleAcc);
+		m_pTransformCom->Set_Scale(m_vScaleAcc * m_OffsetMatrix.Get_Scale());
 		m_vScaleAcc += m_Effect.vSizeDelta * fTimeDelta;
 
 		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
-
-		_vec4 vPos = m_WorldMatrix.Position();;
-
-		_vec4 vRight = m_WorldMatrix.Right().Get_Normalized();
-		_vec4 vUp = m_WorldMatrix.Up().Get_Normalized();
-		_vec4 vLook = m_WorldMatrix.Look().Get_Normalized();
-
-		vPos += vRight * m_Effect.vPosOffset.x;
-		vPos += vUp * m_Effect.vPosOffset.y;
-		vPos += vLook * m_Effect.vPosOffset.z;
-
-		m_WorldMatrix.Position(vPos);
 		break;
 	}
 	case Effect_Type::ET_MESH:
 	{
-		m_pTransformCom->Set_Scale(m_vScaleAcc);
+		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+
+		_vec4 vRightDir = m_WorldMatrix.Right().Get_Normalized();
+		_vec4 vUpDir = m_WorldMatrix.Up().Get_Normalized();
+		_vec4 vLookDir = m_WorldMatrix.Look().Get_Normalized();
+
+		vPos += vRightDir * m_Effect.vPosOffset.x;
+		vPos += vUpDir * m_Effect.vPosOffset.y;
+		vPos += vLookDir * m_Effect.vPosOffset.z;
+
+		m_pTransformCom->Set_State(State::Pos, vPos);
+
+		m_pTransformCom->Set_Scale(m_vScaleAcc * m_OffsetMatrix.Get_Scale());
 		m_vScaleAcc += m_Effect.vSizeDelta * fTimeDelta;
 
 		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
-
-		_vec4 vPos = m_WorldMatrix.Position();;
-
-		_vec4 vRight = m_WorldMatrix.Right().Get_Normalized();
-		_vec4 vUp = m_WorldMatrix.Up().Get_Normalized();
-		_vec4 vLook = m_WorldMatrix.Look().Get_Normalized();
-
-		vPos += vRight * m_Effect.vPosOffset.x;
-		vPos += vUp * m_Effect.vPosOffset.y;
-		vPos += vLook * m_Effect.vPosOffset.z;
-
-		m_WorldMatrix.Position(vPos);
-
 		break;
 	}
 	}
-
-	m_WorldMatrix *= *m_Effect.pMatrix;
 }
 
 void CEffect_Dummy::Late_Tick(_float fTimeDelta)
@@ -409,7 +420,6 @@ void CEffect_Dummy::Free()
 
 	Safe_Release(m_pUnDissolveTextureCom);
 	Safe_Release(m_pModelCom);
-	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pDissolveTextureCom);

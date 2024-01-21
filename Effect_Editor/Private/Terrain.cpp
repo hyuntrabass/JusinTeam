@@ -24,7 +24,7 @@ HRESULT CTerrain::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_vTerrainSize = *reinterpret_cast<_uint2*>(pArg);
+	TerrainInfo = *reinterpret_cast<TERRAIN_INFO*>(pArg);
 
 	if (FAILED(Add_Component()))
 		return E_FAIL;
@@ -78,7 +78,7 @@ HRESULT CTerrain::Add_Component()
 		return E_FAIL;
 	}
 	// For.Com_VIBuffer
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom, &m_vTerrainSize)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom, &TerrainInfo)))
 	{
 		return E_FAIL;
 	}

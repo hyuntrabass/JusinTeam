@@ -19,7 +19,7 @@ HRESULT CNameTag::Init_Prototype()
 HRESULT CNameTag::Init(void* pArg)
 {
 
-	m_fDepth = 0.5f;
+	m_fDepth = (_float)D_NAMETAG / (_float)D_END;
 	m_eLevel = ((NAMETAG_DESC*)pArg)->eLevelID;
 	m_fFontSize = ((NAMETAG_DESC*)pArg)->fFontSize;
 	m_vTextPosition = ((NAMETAG_DESC*)pArg)->vTextPosition;

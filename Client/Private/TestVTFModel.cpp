@@ -42,7 +42,7 @@ void CTestVTFModel::Tick(_float fTimeDelta)
     // 모션블러용으로 이전프레임 WorldMatrix를 저장합니다
     m_OldWorldMatrix = m_pTransformCom->Get_World_Matrix();
 
-    if (m_pGameInstance->Key_Pressing(DIK_K)) {
+    if (m_pGameInstance->Key_Pressing(DIK_W)) {
         _vec4 vPos = m_pTransformCom->Get_State(State::Pos);
         vPos += _vec4(1.f, 0.f, 0.f, 0.f) * fTimeDelta;
         m_pTransformCom->Set_State(State::Pos, vPos);
@@ -231,9 +231,10 @@ HRESULT CTestVTFModel::Bind_ShaderResources()
 HRESULT CTestVTFModel::Place_PartModels()
 {
     CRealtimeVTFModel::PART_DESC Desc{};
-    Desc.ePartType = 0; // enum 값으로 파츠타입을 정해서 주세용
+    Desc.ePartType = hair; // enum 값으로 파츠타입을 정해서 주세용
     Desc.FileName = "R_2005_BD.ao";
 
+    // 파츠타입을 정한후 bool 값은 처음에 랜더할것만 true 주고 랜더 안할것들은 안주면 자동으로 false 들어갑니다
     if (FAILED(m_pModelCom->Place_Parts(Desc, true)))
         return E_FAIL;
 

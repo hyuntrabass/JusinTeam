@@ -127,13 +127,7 @@ PS_OUT PS_Main_Effect(PS_IN Input)
     
     vector vMtrlDiffuse = g_Texture.Sample(LinearSampler, Input.vTex * 3.f);
     
-    float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, Input.vNor));
-    
-    vector vReflect = reflect(normalize(g_vLightDir), Input.vNor);
-    vector vLook = Input.vWorldPos - g_vCamPos;
-    float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
-
-    Output.vDiffuse = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular);
+    Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = Input.vNor;
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
     

@@ -155,7 +155,7 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     {
         vSpecular = g_SpecTexture.Sample(LinearSampler, Input.vTex);
         vSpecular = vector(vSpecular.b, vSpecular.b, vSpecular.b, vSpecular.a);
-
+        vSpecular *= vMtrlDiffuse;
     }
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);

@@ -45,7 +45,7 @@ private:
 	_float				m_fX, m_fY;
 	_float44			m_ViewMatrix, m_ProjMatrix;
 	_uint				m_iTextureNum = { 0 };
-	TerrainInfo m_Info;
+	TERRAIN_INFO m_Info;
 
 	_float4				m_MousePos{};
 	_float				m_iBrushSize{ 1.f };

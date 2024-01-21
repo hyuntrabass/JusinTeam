@@ -40,7 +40,8 @@ private:
 	_float				m_fX, m_fY;
 	_float44			m_ViewMatrix, m_ProjMatrix;
 	_uint				m_iTextureNum = { 0 };
-	_uint2				m_vTerrainSize{};
+	//_uint2				m_vTerrainSize{};
+	TERRAIN_INFO			m_TerrainInfo;
 
 private:
 	HRESULT Add_Component();

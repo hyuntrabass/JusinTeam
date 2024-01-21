@@ -17,7 +17,7 @@ HRESULT CTerrain::Init_Prototype()
 
 HRESULT CTerrain::Init(void* pArg)
 {
-	m_Info = *(TerrainInfo*)pArg;
+	m_Info = *(TERRAIN_INFO*)pArg;
 	*m_Info.ppTerrain = this;
 
 	if (FAILED(Add_Component()))
@@ -122,21 +122,21 @@ HRESULT CTerrain::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCursorRange", &m_iBrushSize, sizeof(_float))))
 		return E_FAIL;
 
-	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_EDITOR, TEXT("Light_Main"));
-	if (nullptr == pLightDesc)
-		return E_FAIL;
+	//const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_EDITOR, TEXT("Light_Main"));
+	//if (nullptr == pLightDesc)
+	//	return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof(_float4))))
-		return E_FAIL;
+	//if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof(_float4))))
+	//	return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof(_float4))))
-		return E_FAIL;
+	//if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof(_float4))))
+	//	return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof(_float4))))
-		return E_FAIL;
+	//if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof(_float4))))
+	//	return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
-		return E_FAIL;
+	//if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
+	//	return E_FAIL;
 
 	return S_OK;
 }
