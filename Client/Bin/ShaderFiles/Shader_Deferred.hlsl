@@ -28,11 +28,11 @@ Texture2D g_SpecularTexture;
 Texture2D g_DepthTexture;
 Texture2D g_LightDepthTexture;
 Texture2D g_BlurTexture;
-Texture2D g_SSAOTexture;
 Texture2D g_Texture;
 
 // ¿ø¸í
 Texture2D g_VelocityTexture;
+Texture2D g_SSAOTexture;
 
 struct VS_IN
 {
@@ -397,7 +397,7 @@ PS_OUT PS_Main_SSAO(PS_IN Input)
     float ssao = 0.f;
     vector RandomDepth;
     float g_fRadius = 0.025f / fViewZ;
-    for (int i = 0; i < 50; ++i)
+    for (int i = 0; i < 16; ++i)
     {
         vector vReflect = normalize(reflect(vNormal, vector(normalize(g_vRandom[i]), 0.f))) * g_fRadius;
         

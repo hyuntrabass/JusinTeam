@@ -28,11 +28,11 @@ Texture2D g_SpecularTexture;
 Texture2D g_DepthTexture;
 Texture2D g_LightDepthTexture;
 Texture2D g_BlurTexture;
-Texture2D g_SSAOTexture;
 Texture2D g_Texture;
 
 // ¿ø¸í
 Texture2D g_VelocityTexture;
+Texture2D g_SSAOTexture;
 
 struct VS_IN
 {
@@ -394,27 +394,48 @@ PS_OUT PS_Main_SSAO(PS_IN Input)
     
     vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
     
+    float4 vWorldPos;
+    
+    vWorldPos.x = Input.vTexcoord.x * 2.f - 1.f;
+    vWorldPos.y = Input.vTexcoord.y * -2.f + 1.f;
+    vWorldPos.z = vDepthDesc.x;
+    vWorldPos.w = 1.f;
+    
+    vWorldPos = vWorldPos * fViewZ;
+    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
+    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    
     float ssao = 0.f;
     vector RandomDepth;
     float g_fRadius = 0.025f / fViewZ;
-    for (int i = 0; i < 50; ++i)
+    for (uint i = 0; i < 16; ++i)
     {
-        vector vReflect = normalize(reflect(vNormal, vector(normalize(g_vRandom[i]), 0.f))) * g_fRadius;
+        float2 vReflect = reflect(normalize(vNormal), vector(normalize(g_vRandom[i]), 0.f)).xy * g_fRadius;
         
-        vector vRefNormalDesc = g_NormalTexture.Sample(PointSampler, Input.vTexcoord + vReflect.xy);
-        vector vRfNormal = vector(vRefNormalDesc.xyz * 2.f - 1.f, 0.f);
         
-        RandomDepth = g_DepthTexture.Sample(PointSampler, Input.vTexcoord + vReflect.xy);
-        
-        RandomDepth.g *= g_vCamNF.y;
-        
-        if (RandomDepth.g <= fViewZ)
-            ssao += 1.f;
     }
     
-    float color = abs((ssao / 50.f) - 1.f) + 0.25f;
+    //float ssao = 0.f;
+    //vector RandomDepth;
+    //float g_fRadius = 0.025f / fViewZ;
+    //for (int i = 0; i < 16; ++i)
+    //{
+    //    vector vReflect = normalize(reflect(vNormal, vector(normalize(g_vRandom[i]), 0.f))) * g_fRadius;
+        
+    //    vector vRefNormalDesc = g_NormalTexture.Sample(PointSampler, Input.vTexcoord + vReflect.xy);
+    //    vector vRfNormal = vector(vRefNormalDesc.xyz * 2.f - 1.f, 0.f);
+        
+    //    RandomDepth = g_DepthTexture.Sample(PointSampler, Input.vTexcoord + vReflect.xy);
+        
+    //    RandomDepth.g *= g_vCamNF.y;
+        
+    //    if (RandomDepth.g <= fViewZ)
+    //        ssao += 1.f;
+    //}
     
-    Out.vColor = vector(color, color, color, 1.f);
+    //float color = abs((ssao / 50.f) - 1.f) + 0.25f;
+    
+    //Out.vColor = vector(color, color, color, 1.f);
     
     //vector vNormalDesc = g_NormalTexture.Sample(PointSampler, Input.vTexcoord);
     //vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
@@ -447,7 +468,7 @@ PS_OUT PS_Main_SSAO(PS_IN Input)
     
     //Out.vColor = vector(Color, Color, Color, 1.f);
     
-    return Out;
+        return Out;
 }
 
 technique11 DefaultTechnique
