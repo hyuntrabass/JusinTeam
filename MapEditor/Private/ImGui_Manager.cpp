@@ -27,6 +27,12 @@ HRESULT CImGui_Manager::Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc)
 	window_flags |= ImGuiWindowFlags_NoTitleBar;
 	window_flags |= ImGuiWindowFlags_NoMove;
 	window_flags |= ImGuiWindowFlags_NoResize;
+
+	Search_Map();
+	Search_Object();
+	Search_Monster();
+	Search_NPC();
+
 	return S_OK;
 }
 
@@ -175,6 +181,11 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				{
 					Create_Terrain();
 				}
+
+				if (ImGui::Button("Load_Create"))
+				{
+					Load_Map_Vertex_Info_For_Terrain();
+				}
 			}
 			else
 			{
@@ -182,9 +193,21 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				{
 					Modify_Terrain();
 				}
+				ImGui::SameLine();
+				if (ImGui::Button("Delete"))
+				{
+					Delete_Terrain();
+				}
 			}
 
+			ImGui::SeparatorText("Texture");
 
+			//if (m_pTerrain)
+			//{
+			//	CTexture* TerrainTexture = static_cast<CTexture*>(m_pTerrain->Find_Component(TEXT("Com_Texture")));
+			//	ImGui::ImageButton((TerrainTexture->Get_SRV()), ImVec2(128.f, 128.f));
+
+			//}
 
 			ImGui::SeparatorText("Save / Load");
 			ImGui::EndTabItem();
@@ -204,7 +227,6 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::RadioButton("Midgard", &iSelectMap, 0); ImGui::SameLine();
 			ImGui::RadioButton("Deongeon", &iSelectMap, 1); ImGui::SameLine();
 			ImGui::RadioButton("Village", &iSelectMap, 2);
-			Search_Map(iSelectMap);
 
 			if (ImGui::BeginListBox("MAPS PATH", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
 			{
@@ -251,13 +273,11 @@ HRESULT CImGui_Manager::ImGuiMenu()
 					Create_Map(Map_current_idx);
 				}
 			}
-			ImGui::SeparatorText("Wireframe");
-			ImGui::Checkbox("WireFrame", &m_isMode);
 
 			ImGui::SeparatorText("Save Vertices");
 			if (ImGui::Button("Save_Vertices"))
 			{
-				Map_Vertices();
+				Save_Map_Vertex_Info();
 			}
 			ImGui::SeparatorText("Save / Load");
 
@@ -285,7 +305,6 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::RadioButton("Midgard", &iSelectObject, 0); ImGui::SameLine();
 			ImGui::RadioButton("Deongeon", &iSelectObject, 1); ImGui::SameLine();
 			ImGui::RadioButton("Village", &iSelectObject, 2);
-			Search_Object(iSelectObject);
 
 			ImGui::SeparatorText("LIST");
 			static int Object_current_idx = 0;
@@ -365,7 +384,6 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::RadioButton("Tree", &iSelectEnvir, 0); ImGui::SameLine();
 			ImGui::RadioButton("Grass", &iSelectEnvir, 1); ImGui::SameLine();
 			ImGui::RadioButton("Rock", &iSelectEnvir, 2);
-			Search_Object(iSelectEnvir);
 			ImGui::SeparatorText("LIST");
 			static int Environment_current_idx = 0;
 			ImGui::Text("Objects");
@@ -441,7 +459,6 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::RadioButton("Midgard", &iSelectMonster, 0); ImGui::SameLine();
 			ImGui::RadioButton("Deongeon", &iSelectMonster, 1); ImGui::SameLine();
 			ImGui::RadioButton("Village", &iSelectMonster, 2);
-			Search_Monster(iSelectMonster);
 
 			m_eItemType = ItemType::Monster;
 			ImGui::SeparatorText("LIST");
@@ -518,7 +535,6 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::RadioButton("Midgard", &iSelectNPC, 0); ImGui::SameLine();
 			ImGui::RadioButton("Deongeon", &iSelectNPC, 1); ImGui::SameLine();
 			ImGui::RadioButton("Village", &iSelectNPC, 2);
-			Search_NPC(iSelectNPC);
 
 			m_eItemType = ItemType::NPC;
 			ImGui::SeparatorText("LIST");
@@ -950,6 +966,15 @@ void CImGui_Manager::Delete_Map()
 	}
 }
 
+void CImGui_Manager::Delete_Terrain()
+{
+	if (m_pTerrain)
+	{
+		m_pTerrain->Kill();
+		m_pTerrain = nullptr;
+	}
+}
+
 HRESULT CImGui_Manager::Modify_Terrain()
 {
 	CVIBuffer_Terrain* pVIBuffer = (CVIBuffer_Terrain*)m_pTerrain->Find_Component(TEXT("Com_VIBuffer"));
@@ -986,147 +1011,103 @@ void CImGui_Manager::Reset()
 	if (m_pTerrain)
 		m_pTerrain = nullptr;
 }
-void CImGui_Manager::Search_Map(int iSelectMap)
+void CImGui_Manager::Search_Map()
 {
 	if (!Maps.empty())
 		Maps.clear();
 
-	if (iSelectMap == 0)
+	string strFilePath = "../../Client/Bin/Resources/StaticMesh/Map/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strFilePath))
 	{
-		string strFilePath = "../../Client/Bin/Resources/StaticMesh/Map/";
-		for (const auto& entry : std::filesystem::recursive_directory_iterator(strFilePath))
+		if (entry.is_regular_file())
 		{
-			if (entry.is_regular_file())
-			{
-				string strName = entry.path().stem().string();
-				string extension = entry.path().extension().string();
+			string strName = entry.path().stem().string();
+			string extension = entry.path().extension().string();
 
-				if (extension == ".hyuntrastatmesh") {
-					char* cstr = new char[strName.length() + 1];
-					strcpy_s(cstr, strName.length() + 1, strName.c_str());
-					Maps.push_back(cstr);
-				}
+			if (extension == ".hyuntrastatmesh") {
+				char* cstr = new char[strName.length() + 1];
+				strcpy_s(cstr, strName.length() + 1, strName.c_str());
+				Maps.push_back(cstr);
 			}
 		}
 	}
-	else
-	{
-		string strFilePath = "../../Client/Bin/Resources/StaticMesh/Deongeon/";
-		try
-		{
 
-		}
-		catch (const std::exception& e)
-		{
-			return;
-		}
-	}
 }
 
-void CImGui_Manager::Search_Object(int iSelectObject)
+void CImGui_Manager::Search_Object()
 {
 	if (!Objects.empty())
 		Objects.clear();
 
-	if (iSelectObject == 0)
+
+	string strFilePath = "../../Client/Bin/Resources/StaticMesh/Object/Mesh/";
+	for (const auto& entry : std::filesystem::directory_iterator(strFilePath))
 	{
-		string strFilePath = "../../Client/Bin/Resources/StaticMesh/Object/Mesh/";
-		for (const auto& entry : std::filesystem::directory_iterator(strFilePath))
+		if (entry.is_regular_file())
 		{
-			if (entry.is_regular_file())
-			{
-				string strName = entry.path().stem().string();
-				string extension = entry.path().extension().string();
+			string strName = entry.path().stem().string();
+			string extension = entry.path().extension().string();
 
-				if (extension == ".hyuntrastatmesh") {
+			if (extension == ".hyuntrastatmesh") {
 
-					char* cstr = new char[strName.length() + 1];
-					strcpy_s(cstr, strName.length() + 1, strName.c_str());
-					Objects.push_back(cstr);
-				}
+				char* cstr = new char[strName.length() + 1];
+				strcpy_s(cstr, strName.length() + 1, strName.c_str());
+				Objects.push_back(cstr);
 			}
-
 		}
+
 	}
+	
 }
 
 
 
-void CImGui_Manager::Search_Monster(int iSelectMonster)
+void CImGui_Manager::Search_Monster()
 {
 	if (!Monsters.empty())
 		Monsters.clear();
 
-	if (iSelectMonster == 0)
+	string strFilePath = "../../Client/Bin/Resources/AnimMesh/Monster/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strFilePath))
 	{
-		string strFilePath = "../../Client/Bin/Resources/AnimMesh/Monster/";
-		for (const auto& entry : std::filesystem::recursive_directory_iterator(strFilePath))
+		if (entry.is_regular_file())
 		{
-			if (entry.is_regular_file())
-			{
-				string strName = entry.path().stem().string();
-				string extension = entry.path().extension().string();
+			string strName = entry.path().stem().string();
+			string extension = entry.path().extension().string();
 
-				if (extension == ".hyuntraanimmesh") {
-					char* cstr = new char[strName.length() + 1];
-					strcpy_s(cstr, strName.length() + 1, strName.c_str());
-					Monsters.push_back(cstr);
-
-				}
+			if (extension == ".hyuntraanimmesh") {
+				char* cstr = new char[strName.length() + 1];
+				strcpy_s(cstr, strName.length() + 1, strName.c_str());
+				Monsters.push_back(cstr);
 			}
 		}
+		
 	}
-	else
-	{
-		string strFilePath = "../Bin/Resources/StaticMesh/Deongeon/";
-		try
-		{
 
-		}
-		catch (const std::exception& e)
-		{
-			return;
-		}
-	}
 }
 
 
-void CImGui_Manager::Search_NPC(int iSelectNPC)
+void CImGui_Manager::Search_NPC()
 {
-	if (!Monsters.empty())
-		Monsters.clear();
-
-	if (iSelectNPC == 0)
+	if (!NPCs.empty())
+		NPCs.clear();
+	string strFilePath = "../../Client/Bin/Resources/AnimMesh/NPC/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strFilePath))
 	{
-		string strFilePath = "../../Client/Bin/Resources/AnimMesh/NPC/";
-		for (const auto& entry : std::filesystem::recursive_directory_iterator(strFilePath))
+		if (entry.is_regular_file())
 		{
-			if (entry.is_regular_file())
-			{
-				string strName = entry.path().stem().string();
-				string extension = entry.path().extension().string();
+			string strName = entry.path().stem().string();
+			string extension = entry.path().extension().string();
 
-				if (extension == ".hyuntraanimmesh") {
-					char* cstr = new char[strName.length() + 1];
-					strcpy_s(cstr, strName.length() + 1, strName.c_str());
-					NPCs.push_back(cstr);
+			if (extension == ".hyuntraanimmesh") {
+				char* cstr = new char[strName.length() + 1];
+				strcpy_s(cstr, strName.length() + 1, strName.c_str());
+				NPCs.push_back(cstr);
 
-				}
 			}
 		}
 	}
-	else
-	{
-		string strFilePath = "../../Client/Bin/Resources/StaticMesh/Deongeon/";
-		try
-		{
-
-		}
-		catch (const std::exception& e)
-		{
-			return;
-		}
-	}
+	
 }
 
 void CImGui_Manager::Search_Files(string DirPath, const char* Path, vector<const char*>* List)
@@ -1270,24 +1251,89 @@ void CImGui_Manager::MeshToMask()
 	}
 }
 
-HRESULT CImGui_Manager::Map_Vertices()
+HRESULT CImGui_Manager::Save_Map_Vertex_Info()
 {
-	vector<VTXSTATICMESH>Vertices{};
-	vector<_ulong>Indices{};
-	if (m_pSelectMap && m_pTerrain)
+	vector<VTXSTATICMESH>Vertices;
+	vector<_ulong>Indices;
+	if (m_pSelectMap)
 	{
 		CModel* pModel = dynamic_cast<CModel*>(m_pSelectMap->Find_Component(TEXT("Com_Model")));
 		Vertices = pModel->Get_StaticMeshVertices();
 		Indices = pModel->Get_StaticMeshIndices();
 
-		CVIBuffer_Terrain* pBuffer = dynamic_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer")));
-		pBuffer->Mesh_Terrain(pBuffer->Get_NumVerticesX(), pBuffer->Get_NumVerticesZ(), Vertices, Indices);
+		const TCHAR* pGetPath = TEXT("../Bin/Resources/Info/MeshInfo.dat");
+
+		std::ofstream outFile(pGetPath, std::ios::binary);
+
+		if (!outFile.is_open())
+		{
+			MessageBox(g_hWnd, L"파일 저장 실패", L"파일 저장", MB_OK);
+
+			return E_FAIL;
+		}
+
+		size_t VerticesSize = Vertices.size();
+		outFile.write(reinterpret_cast<char*>(&VerticesSize), sizeof(size_t));
+		outFile.write(reinterpret_cast<char*>(Vertices.data()), Vertices.size() * sizeof(VTXSTATICMESH));
+
+
+		size_t IndicesSize = Indices.size();
+		outFile.write(reinterpret_cast<char*>(&IndicesSize), sizeof(size_t));
+		outFile.write(reinterpret_cast<char*>(Indices.data()), Indices.size() * sizeof(_ulong));
+	
+		outFile.close();
 
 		m_pSelectMap->Select(false);
 		m_pSelectMap->Kill();
 		m_pSelectMap = nullptr;
 
 	}
+	return S_OK;
+}
+
+HRESULT CImGui_Manager::Load_Map_Vertex_Info_For_Terrain()
+{
+	const TCHAR* pGetPath = TEXT("../Bin/Resources/Info/MeshInfo.dat");
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
+		return E_FAIL;
+	}
+
+	vector<VTXSTATICMESH> LoadVertices;
+	size_t VerticesSize;
+	inFile.read(reinterpret_cast<char*>(&VerticesSize), sizeof(size_t));
+
+	LoadVertices.resize(VerticesSize);
+
+	inFile.read(reinterpret_cast<char*>(LoadVertices.data()), VerticesSize * sizeof(VTXSTATICMESH));
+
+
+	vector<_ulong> LoadIndices;
+	size_t IndicesSize;
+	inFile.read(reinterpret_cast<char*>(&IndicesSize), sizeof(size_t));
+	LoadIndices.resize(IndicesSize);
+	inFile.read(reinterpret_cast<char*>(LoadIndices.data()), IndicesSize * sizeof(_ulong));
+
+
+	if (!m_pTerrain)
+	{
+		TerrainInfo pTerrainInfo{};
+		pTerrainInfo.Vertices = LoadVertices;
+		pTerrainInfo.Indices = LoadIndices;
+		pTerrainInfo.ppTerrain = &m_pTerrain;
+		pTerrainInfo.isMesh = true;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &pTerrainInfo)))
+		{
+			return E_FAIL;
+		}
+	}
+	inFile.close();
+
 	return S_OK;
 }
 

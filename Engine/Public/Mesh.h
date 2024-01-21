@@ -26,6 +26,7 @@ public:
 	HRESULT Set_Bone_Offset(const vector<class CBone*>& Bones);
 	vector<VTXSTATICMESH> Get_VtxStaticInfo() { return m_Vertices; }
 	vector<_ulong> Get_InidcesStaticInfo() { return m_Indices; }
+	_uint Get_NumIndices() { return m_iNum; }
 
 private:
 	_float3* m_pVerticesPos{ nullptr };
@@ -41,7 +42,7 @@ private:
 	vector<VTXSTATICMESH> m_Vertices{};
 	vector<_ulong> m_Indices{};
 
-
+	_uint m_iNum{};
 	_mat* m_BoneMatrices{};
 
 	PxRigidStatic* m_pActor{ nullptr };

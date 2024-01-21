@@ -37,6 +37,7 @@ public:
 	void Delete_TriggerEffect(_uint iTriggerEffectIndex);
 	void Reset_TriggerEffects();
 	//
+	_uint Get_NumIndices();
 
 public:
 	HRESULT Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix);

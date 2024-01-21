@@ -67,3 +67,6 @@
 
 // Test Model
 #include "TestVTFModel.h"
+
+// Object
+#include "Prologue_Object.h"

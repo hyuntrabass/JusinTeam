@@ -1,8 +1,10 @@
 #include "Level_GamePlay.h"
+#include "Level_Loading.h"
 #include "Camera.h"
 #include "Monster.h"
 #include "NPC_Dummy.h"
 #include "Map.h"
+#include "Player.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(_dev pDevice, _context pContext)
@@ -13,13 +15,13 @@ CLevel_GamePlay::CLevel_GamePlay(_dev pDevice, _context pContext)
 HRESULT CLevel_GamePlay::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_GAMEPLAY);
-	/*
+	
 	if (FAILED(Ready_Player()))
 	{
 		MSG_BOX("Failed to Ready Player");
 		return E_FAIL;
 	}
-	*/
+	
 
 	if (FAILED(Ready_Camera()))
 	{
@@ -41,11 +43,11 @@ HRESULT CLevel_GamePlay::Init()
 	}
 
 	// Monster Parse
-	//if (FAILED(Ready_Monster()))
-	//{
-	//	MSG_BOX("Failed to Ready Monster");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Monster()))
+	{
+		MSG_BOX("Failed to Ready Monster");
+		return E_FAIL;
+	}
 
 	if (FAILED(Ready_Rabbit()))
 	{
@@ -137,11 +139,11 @@ HRESULT CLevel_GamePlay::Init()
 	}
 
 
-	//if (FAILED(Ready_Object()))
-	//{
-	//	MSG_BOX("Failed to Ready Object");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Object()))
+	{
+		MSG_BOX("Failed to Ready Object");
+		return E_FAIL;
+	}
 
 	m_pGameInstance->Set_HellHeight(-5000.f);
 
@@ -150,11 +152,22 @@ HRESULT CLevel_GamePlay::Init()
 
 void CLevel_GamePlay::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
-	{
-		DestroyWindow(g_hWnd);
-	}
 
+	if (m_pGameInstance->Key_Down(DIK_RETURN))
+	{
+	
+		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_VILLAGE))))
+		{
+			return;
+		}
+
+		return;
+		
+		if (m_pGameInstance->Key_Down(DIK_ESCAPE))
+		{
+			DestroyWindow(g_hWnd);
+		}
+	}
 }
 
 HRESULT CLevel_GamePlay::Render()
@@ -186,18 +199,36 @@ HRESULT CLevel_GamePlay::Ready_Light()
 
 HRESULT CLevel_GamePlay::Ready_Player()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Prototype_GameObject_Player"))))
+	// 플레이어 위치 설정
+	const TCHAR* pGetPath = TEXT("../Bin/Data/Player_Pos.dat");
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
 	{
+		MessageBox(g_hWnd, L"../Bin/Data/Player_Pos.dat 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
 		return E_FAIL;
 	}
 
+	_vec4 Player_Pos{0.f};
+	inFile.read(reinterpret_cast<char*>(&Player_Pos), sizeof(_vec4));
+
+	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+	pPlayerTransform->Set_State(State::Pos, Player_Pos);
+
+	
 	return S_OK;
 }
 
 HRESULT CLevel_GamePlay::Ready_Map()
 {
-	_uint2 vTerrainSize{ 100, 100 };
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &vTerrainSize)))
+	//_uint2 vTerrainSize{ 100, 100 };
+	TerrainInfo Terrain;
+	Terrain.m_iNumVerticesX = 100;
+	Terrain.m_iNumVerticesZ = 100;
+	Terrain.isMesh = false;
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &Terrain)))
 	{
 		return E_FAIL;
 	}
@@ -275,7 +306,7 @@ HRESULT CLevel_GamePlay::Ready_Object()
 		ObjectInfo.strPrototypeTag = ObjectPrototype;
 		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Prologue_Object"), ObjectPrototype, &ObjectInfo)))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Prologue_Object"), TEXT("Prototype_GameObject_Prologue_Object"), &ObjectInfo)))
 		{
 			MSG_BOX("오브젝트 불러오기 실패");
 			return E_FAIL;
@@ -346,13 +377,13 @@ HRESULT CLevel_GamePlay::Ready_Groar_Boss()
 HRESULT CLevel_GamePlay::Ready_Monster()
 {
 	MonsterInfo Info{};
-	const TCHAR* pGetPath = L"../Bin/Data/MonsterData.dat";
+	const TCHAR* pGetPath = L"../Bin/Data/Prologue_MonsterData.dat";
 
 	std::ifstream inFile(pGetPath, std::ios::binary);
 
 	if (!inFile.is_open())
 	{
-		MessageBox(g_hWnd, L"파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+		MessageBox(g_hWnd, L"../Bin/Data/Prologue_MonsterData.dat 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
 		return E_FAIL;
 	}
 
@@ -375,11 +406,16 @@ HRESULT CLevel_GamePlay::Ready_Monster()
 		Info.strMonsterPrototype = MonsterPrototype;
 		Info.MonsterWorldMat = MonsterWorldMat;
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"), MonsterPrototype, &Info)))
+		if(Info.strMonsterPrototype == TEXT("Prototype_Model_NPCvsMon"))
 		{
-			MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
-				return E_FAIL;
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_NPCvsMon"), &Info)))
+			{
+				MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
+					return E_FAIL;
+			}
+
 		}
+
 
 	}
 	return S_OK;
@@ -422,6 +458,8 @@ HRESULT CLevel_GamePlay::Ready_Nastron03()
 
 HRESULT CLevel_GamePlay::Ready_NPCvsMon()
 {
+
+
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPCvsMon"), TEXT("Prototype_GameObject_NPCvsMon"))))
 	{
 		return E_FAIL;
@@ -497,7 +535,7 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	{
 		return E_FAIL;
 	}
-	/*
+	/*'
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Pop_QuestIn"))))
 	{
 		return E_FAIL;
