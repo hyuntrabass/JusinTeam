@@ -26,6 +26,13 @@ CRealtimeVTFModel::CRealtimeVTFModel(const CRealtimeVTFModel& rhs)
 		m_Bones.push_back(pBone);
 	}
 
+	for (auto& pPrototypeAnimation : rhs.m_Animations)
+	{
+		CAnimation* pAnimation = pPrototypeAnimation->Clone();
+
+		m_Animations.push_back(pAnimation);
+	}
+
 	for (auto& pPrototypeMesh : rhs.m_Meshes) {
 		CMesh* pMesh = reinterpret_cast<CMesh*>(pPrototypeMesh->Clone());
 
@@ -151,13 +158,6 @@ HRESULT CRealtimeVTFModel::Init(void* pArg, const CRealtimeVTFModel& rhs)
 {
 	if (FAILED(CreateVTF()))
 		return E_FAIL;
-
-	for (auto& pPrototypeAnimation : rhs.m_Animations)
-	{
-		CAnimation* pAnimation = pPrototypeAnimation->Clone(pArg);
-
-		m_Animations.push_back(pAnimation);
-	}
 
 	return S_OK;
 }

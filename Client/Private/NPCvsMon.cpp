@@ -30,6 +30,14 @@ HRESULT CNPCvsMon::Init(void* pArg)
 	m_Animation.isLoop = true;
 	m_Animation.fAnimSpeedRatio = 1.5f;
 
+	if (pArg)
+	{
+		m_pInfo = *(MonsterInfo*)pArg;
+		_mat WorldPos = m_pInfo.MonsterWorldMat;
+		m_pTransformCom->Set_Matrix(WorldPos);
+	}
+
+
     return S_OK;
 }
 

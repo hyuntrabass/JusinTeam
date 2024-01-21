@@ -85,6 +85,7 @@ namespace Engine
 		std::wstring strUnDissolveTexture{};
 		std::string strModel{};
 
+		bool isFollow{};
 		SimpleMath::Matrix* pMatrix{};
 	};
 
@@ -134,12 +135,17 @@ namespace Engine
 	};
 
 	using TRIGGEREFFECT_DESC = struct tagTriggerEffectDesc {
+		int iStartAnimIndex{};
 		float fStartAnimPos{};
-		float fEndAnimPos = -1.f;
+		int iEndAnimIndex = -1;
+		float fEndAnimPos{};
 		bool IsFollow{};
 		std::wstring strEffectName{};
 		unsigned int iBoneIndex{};
 		SimpleMath::Matrix OffsetMatrix{};
+		bool IsRotateToBone{};
+
+		SimpleMath::Matrix BoneCombinedMatrix{};
 	};
 
 	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {

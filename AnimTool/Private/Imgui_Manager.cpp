@@ -175,6 +175,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				{
 					szCurrentModel = m_szFBXDataName[i];
 					m_iCurrentModelIndex = i;
+					m_iCurrentEffect = 0;
 				}
 			}
 			ImGui::EndCombo();
@@ -201,6 +202,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				{
 					szCurrentModel = szModelTag[i];
 					m_iCurrentModelIndex = i;
+					m_iCurrentEffect = 0;
 				}
 			}
 			ImGui::EndCombo();
@@ -230,13 +232,20 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			_tchar szEffectName[MAX_PATH]{};
 			MultiByteToWideChar(CP_UTF8, 0, m_szEffectNames[iSelectEffectFile], (_int)strlen(m_szEffectNames[iSelectEffectFile]), szEffectName, MAX_PATH);
 			EffectDesc.strEffectName = szEffectName;
-			CAnimation* pCurrentAnim = m_pPlayer->Get_CurrentAnim();
-			pCurrentAnim->Add_TriggerEffect(EffectDesc);
+			CModel* pCurModel = m_pPlayer->Get_CurrentModel();
+			EffectDesc.IsFollow = true;
+			EffectDesc.iStartAnimIndex = m_AnimDesc.iAnimIndex;
+			pCurModel->Add_TriggerEffect(EffectDesc);
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("DELETE"))
 		{
-
+			CModel* pCurModel = m_pPlayer->Get_CurrentModel();
+			pCurModel->Delete_TriggerEffect(m_iCurrentEffect);
+			if (m_iCurrentEffect != 0)
+			{
+				m_iCurrentEffect--;
+			}
 		}
 	}
 
@@ -400,11 +409,11 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	}
 	if (m_pPlayer)
 	{
-		CAnimation* pCurAnim = m_pPlayer->Get_CurrentAnim();
-		if (pCurAnim->Get_NumEffectTrigger() != 0)
+		CModel* pCurModel = m_pPlayer->Get_CurrentModel();
+		if (pCurModel->Get_NumTriggerEffect() != 0)
 		{
 			//이펙트 디스크립션 이름 저장(메뉴로 보여주기 위해)
-			vector<TRIGGEREFFECT_DESC> EffectDescs = pCurAnim->Get_TriggerEffects();
+			vector<TRIGGEREFFECT_DESC> EffectDescs = pCurModel->Get_TriggerEffects();
 			_char** ppEffectNameList = new _char * [EffectDescs.size()] {};
 
 			for (size_t i = 0; i < EffectDescs.size(); i++)
@@ -417,11 +426,13 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			//
 			ImGui::Begin("EFFECTDESC MENU");
 
-			CModel* pCurrentModel = m_pPlayer->Get_CurrentModel();
-			if (pCurrentModel != nullptr)
+			CModel* pCurModel = m_pPlayer->Get_CurrentModel();
+			if (pCurModel != nullptr)
 			{
-				_uint iNumBones = pCurrentModel->Get_NumBones();
-				vector<CBone*> Bones = pCurrentModel->Get_Bones();
+				TRIGGEREFFECT_DESC* pEffectDesc = pCurModel->Get_TriggerEffect(m_iCurrentEffect);
+
+				_uint iNumBones = pCurModel->Get_NumBones();
+				vector<CBone*> Bones = pCurModel->Get_Bones();
 
 				m_BoneNames.clear();
 
@@ -433,8 +444,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				}
 				if (m_BoneNames.size() != 0)
 				{
-					CAnimation* pCurAnim = m_pPlayer->Get_CurrentAnim();
-					TRIGGEREFFECT_DESC* pEffectDesc = pCurAnim->Get_TriggerEffect(m_iCurrentEffect);
 					m_iCurrentBone = pEffectDesc->iBoneIndex;
 					ImGui::PushItemWidth(270.f);
 					if (ImGui::ListBox("BONE", &m_iCurrentBone, m_BoneNames.data(), m_BoneNames.size()))
@@ -449,25 +458,32 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				string strCurBone = "CURRENTBONE : " + to_string(m_iCurrentBone);
 				ImGui::Text(strCurBone.c_str());
 
-				CAnimation* pCurAnim = m_pPlayer->Get_CurrentAnim();
-				CTransform* pPlayerTransform = reinterpret_cast<CTransform*>(m_pPlayer->Find_Component(TEXT("Com_Transform")));
 
-				/*ImGui::PushItemWidth(90.f);
-				TRIGGEREFFECT_DESC* pEffectDesc = pCurAnim->Get_TriggerEffect(m_iCurrentEffect);
-				ImGui::SeparatorText("OFFSET");
-				ImGui::InputFloat("X##1", &pEffectDesc->vPosOffset.x, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
-				ImGui::InputFloat("Y##1", &pEffectDesc->vPosOffset.y, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
-				ImGui::InputFloat("Z##1", &pEffectDesc->vPosOffset.z, 0.1f, 0.f, "%.1f");
-				ImGui::SeparatorText("AXIS");
-				ImGui::InputFloat("X##2", &pEffectDesc->vRotationAxis.x, 1.f, 0.f, "%.1f"); ImGui::SameLine();
-				ImGui::InputFloat("Y##2", &pEffectDesc->vRotationAxis.y, 1.f, 0.f, "%.1f"); ImGui::SameLine();
-				ImGui::InputFloat("Z##2", &pEffectDesc->vRotationAxis.z, 1.f, 0.f, "%.1f");
-				ImGui::InputFloat("ANGLE", &pEffectDesc->fAngle, 1.f, 0.f, "%.1f");
+				ImGui::PushItemWidth(90.f);
+				_vec3 vScale{}, vPosition{};
+				vScale.x = pEffectDesc->OffsetMatrix.Right().Length();
+				vScale.y = pEffectDesc->OffsetMatrix.Up().Length();
+				vScale.z = pEffectDesc->OffsetMatrix.Look().Length();
+				vPosition = pEffectDesc->OffsetMatrix.Position();
+
 				ImGui::SeparatorText("SIZE");
-				ImGui::InputFloat("X##3", &pEffectDesc->vSize.x, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
-				ImGui::InputFloat("Y##3", &pEffectDesc->vSize.y, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
-				ImGui::InputFloat("Z##3", &pEffectDesc->vSize.z, 0.1f, 0.f, "%.1f");
-				ImGui::PopItemWidth();*/
+				ImGui::InputFloat("X##1", &vScale.x, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
+				ImGui::InputFloat("Y##1", &vScale.y, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
+				ImGui::InputFloat("Z##1", &vScale.z, 0.1f, 0.f, "%.1f");
+				ImGui::SeparatorText("OFFSET");
+				ImGui::InputFloat("X##2", &vPosition.x, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
+				ImGui::InputFloat("Y##2", &vPosition.y, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
+				ImGui::InputFloat("Z##2", &vPosition.z, 0.1f, 0.f, "%.1f");/*
+				ImGui::SeparatorText("AXIS");
+				ImGui::InputFloat("X##3", &vRotation.x, 1.f, 0.f, "%.1f"); ImGui::SameLine();
+				ImGui::InputFloat("Y##3", &vRotation.y, 1.f, 0.f, "%.1f"); ImGui::SameLine();
+				ImGui::InputFloat("Z##3", &vRotation.z, 1.f, 0.f, "%.1f");
+				ImGui::InputFloat("ANGLE", &vRotation.w, 1.f, 0.f, "%.1f");*/
+				ImGui::PopItemWidth();
+				pEffectDesc->OffsetMatrix.Right(pEffectDesc->OffsetMatrix.Right().Get_Normalized()* vScale.x);
+				pEffectDesc->OffsetMatrix.Up(pEffectDesc->OffsetMatrix.Up().Get_Normalized()* vScale.y);
+				pEffectDesc->OffsetMatrix.Look(pEffectDesc->OffsetMatrix.Look().Get_Normalized()* vScale.z);
+				pEffectDesc->OffsetMatrix.Position(vPosition);
 			}
 
 			ImGui::End();
@@ -485,28 +501,80 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			}
 			Safe_Delete_Array(ppEffectNameList);
 			//
-			TRIGGEREFFECT_DESC* pEffectDesc = m_pPlayer->Get_CurrentAnim()->Get_TriggerEffect(m_iCurrentEffect);
+			TRIGGEREFFECT_DESC* pEffectDesc = m_pPlayer->Get_CurrentModel()->Get_TriggerEffect(m_iCurrentEffect);
 			if (ImGui::Button("START"))
 			{
-				if (pEffectDesc->fEndAnimPos > m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos() ||
-					pEffectDesc->fEndAnimPos == -1.f)
+				if (pEffectDesc->iStartAnimIndex != pEffectDesc->iEndAnimIndex ||
+					pEffectDesc->iStartAnimIndex == pEffectDesc->iEndAnimIndex &&
+					pEffectDesc->fEndAnimPos > m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos())
 				{
+					pEffectDesc->iStartAnimIndex = m_pPlayer->Get_CurrentModel()->Get_CurrentAnimationIndex();
 					pEffectDesc->fStartAnimPos = m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos();
 				}
 			}
 			ImGui::SameLine();
 			if (ImGui::Button("END"))
 			{
-				if (pEffectDesc->fStartAnimPos < m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos())
+				if (pEffectDesc->iStartAnimIndex != pEffectDesc->iEndAnimIndex ||
+					pEffectDesc->iStartAnimIndex == pEffectDesc->iEndAnimIndex &&
+					pEffectDesc->fStartAnimPos < m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos())
 				{
+					pEffectDesc->iEndAnimIndex = m_pPlayer->Get_CurrentModel()->Get_CurrentAnimationIndex();
 					pEffectDesc->fEndAnimPos = m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos();
 				}
 			}
 
-			string strStartEffect = "START : " + to_string(static_cast<_int>(pEffectDesc->fStartAnimPos));
-			ImGui::Text(strStartEffect.c_str()); ImGui::SameLine();
-			string strEndEffect = "END : " + to_string(static_cast<_int>(pEffectDesc->fEndAnimPos));
-			ImGui::Text(strEndEffect.c_str());
+			ImGui::SeparatorText("ANIMINDEX");
+			string strStartEffectIndex = "START : " + to_string(pEffectDesc->iStartAnimIndex);
+			ImGui::Text(strStartEffectIndex.c_str()); ImGui::SameLine();
+			string strEndEffectIndex = "END : " + to_string(pEffectDesc->iEndAnimIndex);
+			ImGui::Text(strEndEffectIndex.c_str());
+			ImGui::SeparatorText("ANIMPOS");
+			string strStartEffectPos = "START : " + to_string(static_cast<_int>(pEffectDesc->fStartAnimPos));
+			ImGui::Text(strStartEffectPos.c_str()); ImGui::SameLine();
+			string strEndEffectPos = "END : " + to_string(static_cast<_int>(pEffectDesc->fEndAnimPos));
+			ImGui::Text(strEndEffectPos.c_str());
+
+			if (ImGui::Button("FOLLOW"))
+			{
+				if (pEffectDesc->IsFollow == false)
+				{
+					pEffectDesc->IsFollow = true;
+				}
+				else if (pEffectDesc->IsFollow == true)
+				{
+					pEffectDesc->IsFollow = false;
+				}
+			}
+			ImGui::SameLine();
+			if (pEffectDesc->IsFollow)
+			{
+				ImGui::Text("TRUE");
+			}
+			else
+			{
+				ImGui::Text("FALSE");
+			}
+			if (ImGui::Button("ROTATE"))
+			{
+				if (pEffectDesc->IsRotateToBone == false)
+				{
+					pEffectDesc->IsRotateToBone = true;
+				}
+				else if (pEffectDesc->IsRotateToBone == true)
+				{
+					pEffectDesc->IsRotateToBone = false;
+				}
+			}
+			ImGui::SameLine();
+			if (pEffectDesc->IsRotateToBone)
+			{
+				ImGui::Text("TRUE");
+			}
+			else
+			{
+				ImGui::Text("FALSE");
+			}
 
 			ImGui::PopItemWidth();
 			ImGui::End();
@@ -580,12 +648,12 @@ HRESULT CImgui_Manager::ImGuizmoMenu()
 
 	if (m_pPlayer)
 	{
-		CAnimation* pCurAnim = m_pPlayer->Get_CurrentAnim();
-		if (pCurAnim->Get_NumEffectTrigger() != 0)
+		CModel* pCurModel = m_pPlayer->Get_CurrentModel();
+		if (pCurModel->Get_NumTriggerEffect() != 0)
 		{
 			if (m_eSelect == SELECT_EFFECT)
 			{
-				TRIGGEREFFECT_DESC* pEffectDesc = pCurAnim->Get_TriggerEffect(m_iCurrentEffect);
+				TRIGGEREFFECT_DESC* pEffectDesc = pCurModel->Get_TriggerEffect(m_iCurrentEffect);
 				_mat TargetMatrix = pEffectDesc->OffsetMatrix;
 				_mat PreMatrix = pEffectDesc->OffsetMatrix;
 
@@ -605,16 +673,16 @@ HRESULT CImgui_Manager::ImGuizmoMenu()
 						_vec4 Look = PreMatrix.Look();
 						Look.Normalize();
 
-						TargetMatrix.Right() = Right * m_vCurrentScale.x;
-						TargetMatrix.Up() = Up * m_vCurrentScale.y;
-						TargetMatrix.Look() = Look * m_vCurrentScale.z;
+						pEffectDesc->OffsetMatrix.Right(Right * m_vCurrentScale.x);
+						pEffectDesc->OffsetMatrix.Up(Up * m_vCurrentScale.y);
+						pEffectDesc->OffsetMatrix.Look(Look * m_vCurrentScale.z);
 					}
 					else
 					{
-						TargetMatrix.Right() = TargetMatrix.Right();
-						TargetMatrix.Up() = TargetMatrix.Up();
-						TargetMatrix.Look() = TargetMatrix.Look();
-						TargetMatrix.Position() = TargetMatrix.Position();
+						pEffectDesc->OffsetMatrix.Right(TargetMatrix.Right());
+						pEffectDesc->OffsetMatrix.Up(TargetMatrix.Up());
+						pEffectDesc->OffsetMatrix.Look(TargetMatrix.Look());
+						pEffectDesc->OffsetMatrix.Position(TargetMatrix.Position());
 					}
 				}
 			}
@@ -643,38 +711,37 @@ HRESULT CImgui_Manager::SaveFile()
 
 	if (Fileout.is_open())
 	{
-		vector<CAnimation*> pAnimations = pCurrentModel->Get_Animations();
-		auto iter = pAnimations.begin();
-		for (_uint i = 0; i < pCurrentModel->Get_NumAnim(); i++)
+		CModel* pCurModel = m_pPlayer->Get_CurrentModel();
+		for (_uint i = 0; i < pCurModel->Get_NumTriggerEffect(); i++)
 		{
-			if ((*iter)->Get_NumEffectTrigger() != 0)
+			vector<TRIGGEREFFECT_DESC> EffectDescs = pCurModel->Get_TriggerEffects();
+			_uint iNumTriggerEffect = EffectDescs.size();
+			Fileout.write(reinterpret_cast<_char*>(&iNumTriggerEffect), sizeof(_uint));
+			for (_uint i = 0; i < iNumTriggerEffect; i++)
 			{
-				_uint iAnimIndex = i;
-				Fileout.write(reinterpret_cast<char*>(&iAnimIndex), sizeof _uint);
-				vector<TRIGGEREFFECT_DESC> EffectDescs = (*iter)->Get_TriggerEffects();
-				_uint iNumEffectTrigger = EffectDescs.size();
-				Fileout.write(reinterpret_cast<_char*>(&iNumEffectTrigger), sizeof(_uint));
-				for (_uint i = 0; i < iNumEffectTrigger; i++)
-				{
-					_float fStartAnimPos = EffectDescs[i].fStartAnimPos;
-					Fileout.write(reinterpret_cast<_char*>(&fStartAnimPos), sizeof(_float));
-					_float fEndAnimPos = EffectDescs[i].fEndAnimPos;
-					Fileout.write(reinterpret_cast<_char*>(&fEndAnimPos), sizeof(_float));
-					_bool IsFollow = EffectDescs[i].IsFollow;
-					Fileout.write(reinterpret_cast<_char*>(&IsFollow), sizeof(_bool));
+				_int iStartAnimIndex = EffectDescs[i].iStartAnimIndex;
+				Fileout.write(reinterpret_cast<_char*>(&iStartAnimIndex), sizeof(_int));
+				_float fStartAnimPos = EffectDescs[i].fStartAnimPos;
+				Fileout.write(reinterpret_cast<_char*>(&fStartAnimPos), sizeof(_float));
+				_int iEndAnimIndex = EffectDescs[i].iEndAnimIndex;
+				Fileout.write(reinterpret_cast<_char*>(&iEndAnimIndex), sizeof(_int));
+				_float fEndAnimPos = EffectDescs[i].fEndAnimPos;
+				Fileout.write(reinterpret_cast<_char*>(&fEndAnimPos), sizeof(_float));
+				_bool IsFollow = EffectDescs[i].IsFollow;
+				Fileout.write(reinterpret_cast<_char*>(&IsFollow), sizeof(_bool));
 
-					size_t iNameSize{};
-					iNameSize = (EffectDescs[i].strEffectName.size() + 1) * sizeof(_tchar);
-					Fileout.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
-					Fileout.write(reinterpret_cast<const _char*>(EffectDescs[i].strEffectName.data()), iNameSize);
+				size_t iNameSize{};
+				iNameSize = (EffectDescs[i].strEffectName.size() + 1) * sizeof(_tchar);
+				Fileout.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+				Fileout.write(reinterpret_cast<const _char*>(EffectDescs[i].strEffectName.data()), iNameSize);
 
-					_uint iBoneIndex = EffectDescs[i].iBoneIndex;
-					Fileout.write(reinterpret_cast<_char*>(&iBoneIndex), sizeof(_uint));
-					_mat OffsetMatrix = EffectDescs[i].OffsetMatrix;
-					Fileout.write(reinterpret_cast<_char*>(&OffsetMatrix), sizeof(_mat));
-				}
+				_uint iBoneIndex = EffectDescs[i].iBoneIndex;
+				Fileout.write(reinterpret_cast<_char*>(&iBoneIndex), sizeof(_uint));
+				_mat OffsetMatrix = EffectDescs[i].OffsetMatrix;
+				Fileout.write(reinterpret_cast<_char*>(&OffsetMatrix), sizeof(_mat));
+				_bool IsRotateToBone = EffectDescs[i].IsRotateToBone;
+				Fileout.write(reinterpret_cast<_char*>(&IsRotateToBone), sizeof(_bool));
 			}
-			++iter;
 		}
 
 		MessageBox(g_hWnd, L"파일 저장 완료", L"파일 저장", MB_OK);
@@ -701,28 +768,18 @@ HRESULT CImgui_Manager::LoadFile()
 
 	if (Filein.is_open())
 	{
-		vector<CAnimation*> pAnimations = pCurrentModel->Get_Animations();
-		auto iter = pAnimations.begin();
+		CModel* pCurModel = m_pPlayer->Get_CurrentModel();
 
-		for (_uint i = 0; i < pCurrentModel->Get_NumAnim(); i++)
-		{
-			(*iter)->Reset_TriggerEffects();
-			++iter;
-		}
+		pCurModel->Reset_TriggerEffects();
 
-		iter = pAnimations.begin();
-		_uint iAnimIndex = { 0 };
-		Filein.read(reinterpret_cast<char*>(&iAnimIndex), sizeof _uint);
-		for (_uint i = 0; i < iAnimIndex; i++)
-		{
-			++iter;
-		}
-		_uint iNumEffectTrigger = { 0 };
-		Filein.read(reinterpret_cast<char*>(&iNumEffectTrigger), sizeof _uint);
-		for (_uint i = 0; i < iNumEffectTrigger; i++)
+		_uint iNumTriggerEffect = { 0 };
+		Filein.read(reinterpret_cast<char*>(&iNumTriggerEffect), sizeof _uint);
+		for (_uint i = 0; i < iNumTriggerEffect; i++)
 		{
 			TRIGGEREFFECT_DESC EffectDesc{};
+			Filein.read(reinterpret_cast<_char*>(&EffectDesc.iStartAnimIndex), sizeof(_int));
 			Filein.read(reinterpret_cast<_char*>(&EffectDesc.fStartAnimPos), sizeof(_float));
+			Filein.read(reinterpret_cast<_char*>(&EffectDesc.iEndAnimIndex), sizeof(_int));
 			Filein.read(reinterpret_cast<_char*>(&EffectDesc.fEndAnimPos), sizeof(_float));
 			Filein.read(reinterpret_cast<_char*>(&EffectDesc.IsFollow), sizeof(_bool));
 
@@ -736,6 +793,9 @@ HRESULT CImgui_Manager::LoadFile()
 
 			Filein.read(reinterpret_cast<_char*>(&EffectDesc.iBoneIndex), sizeof(_uint));
 			Filein.read(reinterpret_cast<_char*>(&EffectDesc.OffsetMatrix), sizeof(_mat));
+			Filein.read(reinterpret_cast<_char*>(&EffectDesc.IsRotateToBone), sizeof(_bool));
+
+			pCurModel->Add_TriggerEffect(EffectDesc);
 		}
 
 		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);

@@ -135,7 +135,7 @@ void CCustom::Tick(_float fTimeDelta)
 
 			}
 		}
-		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Editor))
+		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
 		{
 			for (_int i = 0; i < 10; i++)
 			{
@@ -160,7 +160,7 @@ void CCustom::Tick(_float fTimeDelta)
 	}
 	if (PtInRect(&m_pSelectButton->Get_Rect(), ptMouse))
 	{
-		if (m_pGameInstance->Mouse_Down(DIM_RBUTTON, InputChannel::Editor))
+		if (m_pGameInstance->Mouse_Down(DIM_RBUTTON, InputChannel::Engine))
 		{
 			m_pGameInstance->Level_ShutDown(LEVEL_CUSTOM);
 		}

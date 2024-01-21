@@ -43,7 +43,7 @@ protected:
 
 protected:
 	_uint m_iPassIndex = {};
-
+	MonsterInfo m_pInfo{};
 protected:
 	_float m_fBackPower = { 0.5f };
 

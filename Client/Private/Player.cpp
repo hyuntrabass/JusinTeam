@@ -44,9 +44,8 @@ HRESULT CPlayer::Init(void* pArg)
 	m_BowSkill[3] = Anim_ID_8130_IllusionArrow; // 분신 나와서 화살(쿨김)
 	m_BowSkill[4] = Anim_ID_7060_KnockBack; // 에임모드 변경(우클릭)
 
-
 	m_pGameInstance->Register_CollisionObject(this, m_pHitCollider, true);
-	
+
 
 	return S_OK;
 }

@@ -7,11 +7,11 @@ texture2D g_Texture_Cursor;
 vector g_vCursorPos = vector(15.f, 0.f, 15.f, 1.f);
 float g_fCursorRange = 1.f;
 
-vector g_vLightDir;
+//vector g_vLightDir;
 
-vector g_vLightDiffuse;
-vector g_vLightAmbient;
-vector g_vLightSpecular;
+//vector g_vLightDiffuse;
+//vector g_vLightAmbient;
+//vector g_vLightSpecular;
 
 vector g_vMtrlAmbient = vector(0.3f, 0.3f, 0.3f, 1.f);
 vector g_vMtrlSpecular = vector(0.7f, 1.0f, 0.7f, 1.f);
@@ -80,13 +80,15 @@ PS_OUT PS_Main(PS_IN Input)
     
     vector vMtrlDiffuse = g_Texture.Sample(LinearSampler, Input.vTex * 100.f);
     
-    float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, Input.vNor));
+    //float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, Input.vNor));
+    float fShade = -1.f * Input.vNor;
     
-    vector vReflect = reflect(normalize(g_vLightDir), Input.vNor);
+    //vector vReflect = reflect(normalize(g_vLightDir), Input.vNor);
     vector vLook = Input.vWorldPos - g_vCamPos;
-    float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
+    //float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
 
-    Output.vDiffuse = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular);
+    //Output.vDiffuse = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular);
+    Output.vDiffuse = vMtrlDiffuse *  g_vMtrlAmbient +  g_vMtrlSpecular;
     Output.vNormal = Input.vNor;
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
     
@@ -99,7 +101,7 @@ PS_OUT PS_Main_Editor(PS_IN Input)
     
     vector vMtrlDiffuse = g_Texture.Sample(LinearSampler, Input.vTex * 100.f);
     vector vCursorDiffuse = vector(0.f, 0.f, 0.f, 0.f);
-    
+
     if (Input.vWorldPos.x >= g_vCursorPos.x - g_fCursorRange && Input.vWorldPos.x < g_vCursorPos.x + g_fCursorRange &&
         Input.vWorldPos.z >= g_vCursorPos.z - g_fCursorRange && Input.vWorldPos.z < g_vCursorPos.z + g_fCursorRange)
     {
@@ -109,13 +111,14 @@ PS_OUT PS_Main_Editor(PS_IN Input)
         vCursorDiffuse = g_Texture_Cursor.Sample(LinearSampler, vCursorUV / 4);
     }
     
-    float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, Input.vNor));
+    //float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, Input.vNor));
     
-    vector vReflect = reflect(normalize(g_vLightDir), Input.vNor);
+    //vector vReflect = reflect(normalize(g_vLightDir), Input.vNor);
     vector vLook = Input.vWorldPos - g_vCamPos;
-    float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
+    //float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
 
-    Output.vDiffuse = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular) + vCursorDiffuse;
+    //Output.vDiffuse = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular) + vCursorDiffuse;
+    Output.vDiffuse =  vMtrlDiffuse *  g_vMtrlAmbient + g_vMtrlSpecular + vCursorDiffuse;
     Output.vNormal = Input.vNor;
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
     return Output;
