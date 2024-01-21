@@ -511,7 +511,8 @@ technique11 DefaultTechniqueShader_VtxNorTex
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Test();
     }
-        pass LerpColor
+
+    pass LerpColor
     {
         SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);

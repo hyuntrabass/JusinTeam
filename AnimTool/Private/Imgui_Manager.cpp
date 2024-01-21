@@ -34,7 +34,6 @@ HRESULT CImgui_Manager::Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc)
 
 	string strInputFilePath = "../../Client/Bin/Resources/AnimMesh/Monster/";
 	_uint iNumMonsterModels{};
-	_char* szFileName = nullptr;
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -43,11 +42,16 @@ HRESULT CImgui_Manager::Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc)
 			{
 				continue;
 			}
-			szFileName = new _char[MAX_PATH];
-			_splitpath_s(entry.path().string().c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, nullptr, 0);
 			iNumMonsterModels++;
-			m_FBXDataName.push_back(szFileName);
+			m_FBXDataName.push_back(entry.path().stem().string());
 		}
+	}
+
+	m_szFBXDataName = new const _char * [iNumMonsterModels];
+
+	for (size_t i = 0; i < iNumMonsterModels; i++)
+	{
+		m_szFBXDataName[i] = m_FBXDataName[i].c_str();
 	}
 
 	strInputFilePath = "../../Client/Bin/EffectData/";
@@ -60,11 +64,16 @@ HRESULT CImgui_Manager::Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc)
 			{
 				continue;
 			}
-			szFileName = new _char[MAX_PATH];
-			_splitpath_s(entry.path().string().c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, nullptr, 0);
 			iNumEffects++;
-			m_EffectNames.push_back(szFileName);
+			m_EffectNames.push_back(entry.path().stem().string());
 		}
+	}
+
+	m_szEffectNames = new const _char * [iNumEffects];
+
+	for (size_t i = 0; i < iNumEffects; i++)
+	{
+		m_szEffectNames[i] = m_EffectNames[i].c_str();
 	}
 
 	return S_OK;
@@ -75,34 +84,37 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	GetCursorPos(&m_ptMouse);
 	ScreenToClient(m_hWnd, &m_ptMouse);
 
-	if (m_pPlayer)
+#pragma region CreateObject
+
+	if (m_IsCreateModel)
 	{
-		if (m_pGameInstance->Key_Down(DIK_X))
+		if (not m_pPlayer)
 		{
-			m_pPlayer->Set_TimeDelta(0.f);
+			m_pPlayer = (CPlayer*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Player"));
+			CTransform* pTargetTransform = (CTransform*)(m_pPlayer->Find_Component(TEXT("Com_Transform")));
+			m_vPreScale = pTargetTransform->Get_Scale();
+			m_vPreRight = pTargetTransform->Get_State(State::Right);
+			m_vPreUp = pTargetTransform->Get_State(State::Up);
+			m_vPreLook = pTargetTransform->Get_State(State::Look);
+			m_vPrePosition = pTargetTransform->Get_State(State::Pos);
 		}
-		else if(m_pGameInstance->Key_Down(DIK_C))
-		{
-			m_pPlayer->Set_TimeDelta(fTimeDelta);
-		}
-		m_pPlayer->Tick(fTimeDelta);
+	}
+#pragma endregion
+
+	if (m_pGameInstance->Key_Down(DIK_X))
+	{
+		m_fTimeDelta = 0.f;
+	}
+	else if (m_pGameInstance->Key_Down(DIK_C))
+	{
+		m_fTimeDelta = fTimeDelta;
 	}
 
-	if (not m_Effects.empty())
+	if (m_pPlayer)
 	{
-		for (auto& iter = m_Effects.begin(); iter != m_Effects.end();)
-		{
-			(*iter)->Tick(fTimeDelta);
-			if ((*iter)->isDead())
-			{
-				Safe_Release((*iter));
-				iter = m_Effects.erase(iter);
-			}
-			else
-			{
-				++iter;
-			}
-		}
+		m_pPlayer->Set_ModelType((CPlayer::TYPE)m_eType);
+		m_pPlayer->Set_ModelIndex(m_iCurrentModelIndex);
+		m_pPlayer->Tick(m_fTimeDelta);
 	}
 }
 
@@ -110,13 +122,7 @@ void CImgui_Manager::Late_Tick(_float fTimeDelta)
 {
 	if (m_pPlayer)
 	{
-		m_pPlayer->Late_Tick(fTimeDelta);
-	}
-
-	if (not m_Effects.empty())
-	{
-		for (auto& pEffect : m_Effects)
-			pEffect->Late_Tick(fTimeDelta);
+		m_pPlayer->Late_Tick(m_fTimeDelta);
 	}
 }
 
@@ -146,20 +152,18 @@ HRESULT CImgui_Manager::ImGuiMenu()
 #pragma endregion
 	ImGui::Begin("MENU");
 
-	ImGui::SeparatorText("SELECT");
-
 	ImGui::RadioButton("MONSTER", &m_eType, TYPE_MONSTER); ImGui::SameLine();
 	ImGui::RadioButton("PLAYER", &m_eType, TYPE_PLAYER);
 
 	if (m_eType == TYPE_MONSTER)
 	{
-		static const char* szCurrentModel = m_FBXDataName[0];
+		static const char* szCurrentModel = m_szFBXDataName[0];
 
 		if (m_ePreType != m_eType)
 		{
 			m_ePreType = m_eType;
 			m_iCurrentModelIndex = 0;
-			szCurrentModel = m_FBXDataName[0];
+			szCurrentModel = m_szFBXDataName[0];
 		}
 
 		if (ImGui::BeginCombo("LIST", szCurrentModel))
@@ -167,9 +171,9 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			for (_uint i = 0; i < m_FBXDataName.size(); i++)
 			{
 				_bool bSelectedModel = (szCurrentModel == m_FBXDataName[i]);
-				if (ImGui::Selectable(m_FBXDataName[i], bSelectedModel))
+				if (ImGui::Selectable(m_szFBXDataName[i], bSelectedModel))
 				{
-					szCurrentModel = m_FBXDataName[i];
+					szCurrentModel = m_szFBXDataName[i];
 					m_iCurrentModelIndex = i;
 				}
 			}
@@ -203,50 +207,38 @@ HRESULT CImgui_Manager::ImGuiMenu()
 		}
 	}
 
-	ImGui::SeparatorText("FILE");
-
-	if (ImGui::Button("SAVE"))
+	if (m_pPlayer)
 	{
-		SaveFile();
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("LOAD"))
-	{
-		LoadFile();
-	}
-	if (ImGui::Button("ADD_EFFECT"))
-	{	//이펙트 디스크립션 저장
-		TRIGGEREFFECT_DESC EffectDesc{};
-		_uint iSelectEffectFile = m_iSelectEffectFile;
-		_tchar szEffectName[MAX_PATH]{};
- 		MultiByteToWideChar(CP_UTF8, 0, m_EffectNames[iSelectEffectFile], (_int)strlen(m_EffectNames[iSelectEffectFile]), szEffectName, MAX_PATH);
-		EffectDesc.strEffectName = szEffectName;
-		CAnimation* pCurrentAnim = m_pPlayer->Get_CurrentAnim();
-		pCurrentAnim->Add_TriggerEffect(EffectDesc);
-		//이펙트 생성
-		EffectInfo EffectInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(szEffectName);
-		CEffect_Dummy* pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(&EffectInfo);
-		m_Effects.push_back(pEffect);
-		//이펙트 디스크립션 이름 저장(메뉴로 보여주기 위해)
-		m_EffectDescNames.push_back(m_EffectNames[iSelectEffectFile]);
-	}
+		ImGui::SeparatorText("TRIGGER");
 
-#pragma region CreateObject
-
-	if (m_IsCreateModel)
-	{
-		if (not m_pPlayer)
+		if (ImGui::Button("SAVE"))
 		{
-			m_pPlayer = (CPlayer*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Player"));
-			CTransform* pTargetTransform = (CTransform*)(m_pPlayer->Find_Component(TEXT("Com_Transform")));
-			m_vPreScale = pTargetTransform->Get_Scale();
-			m_vPreRight = pTargetTransform->Get_State(State::Right);
-			m_vPreUp = pTargetTransform->Get_State(State::Up);
-			m_vPreLook = pTargetTransform->Get_State(State::Look);
-			m_vPrePosition = pTargetTransform->Get_State(State::Pos);
+			SaveFile();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("LOAD"))
+		{
+			LoadFile();
+		}
+
+		ImGui::SeparatorText("EFFECT");
+
+		if (ImGui::Button("ADD"))
+		{	//이펙트 디스크립션 저장
+			TRIGGEREFFECT_DESC EffectDesc{};
+			_uint iSelectEffectFile = m_iSelectEffectFile;
+			_tchar szEffectName[MAX_PATH]{};
+			MultiByteToWideChar(CP_UTF8, 0, m_szEffectNames[iSelectEffectFile], (_int)strlen(m_szEffectNames[iSelectEffectFile]), szEffectName, MAX_PATH);
+			EffectDesc.strEffectName = szEffectName;
+			CAnimation* pCurrentAnim = m_pPlayer->Get_CurrentAnim();
+			pCurrentAnim->Add_TriggerEffect(EffectDesc);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("DELETE"))
+		{
+
 		}
 	}
-#pragma endregion
 
 	ImGui::SameLine();
 
@@ -406,127 +398,130 @@ HRESULT CImgui_Manager::ImGuiMenu()
 		ImGui::PopItemWidth();
 		ImGui::End();
 	}
-	if (not m_Effects.empty())
+	if (m_pPlayer)
 	{
-		ImGui::Begin("EFFECTDESC MENU");
-
-		CModel* pCurrentModel = m_pPlayer->Get_CurrentModel();
-		if (pCurrentModel != nullptr)
+		CAnimation* pCurAnim = m_pPlayer->Get_CurrentAnim();
+		if (pCurAnim->Get_NumEffectTrigger() != 0)
 		{
-			_uint iNumBones = pCurrentModel->Get_NumBones();
-			vector<CBone*> Bones = pCurrentModel->Get_Bones();
+			//이펙트 디스크립션 이름 저장(메뉴로 보여주기 위해)
+			vector<TRIGGEREFFECT_DESC> EffectDescs = pCurAnim->Get_TriggerEffects();
+			_char** ppEffectNameList = new _char * [EffectDescs.size()] {};
 
-			m_BoneNames.clear();
-
-			auto iter = Bones.begin();
-			for (_uint i = 0; i < iNumBones; i++)
+			for (size_t i = 0; i < EffectDescs.size(); i++)
 			{
-				m_BoneNames.push_back((*iter)->Get_BoneName());
-				++iter;
+				ppEffectNameList[i] = new _char[MAX_PATH];
+				int bufferSize = WideCharToMultiByte(CP_UTF8, 0, EffectDescs[i].strEffectName.c_str(), -1, nullptr, 0, nullptr, nullptr);
+				std::string str(bufferSize, 0);
+				WideCharToMultiByte(CP_UTF8, 0, EffectDescs[i].strEffectName.c_str(), -1, ppEffectNameList[i], bufferSize, nullptr, nullptr);
 			}
-			if (m_BoneNames.size() != 0)
+			//
+			ImGui::Begin("EFFECTDESC MENU");
+
+			CModel* pCurrentModel = m_pPlayer->Get_CurrentModel();
+			if (pCurrentModel != nullptr)
 			{
-				CAnimation* pCurAnim = m_pPlayer->Get_CurrentAnim();
-				TRIGGEREFFECT_DESC* pEffectDesc = pCurAnim->Get_TriggerEffect(m_iCurrentEffect);
-				m_iCurrentBone = pEffectDesc->iBoneIndex;
-				ImGui::PushItemWidth(270.f);
-				if (ImGui::ListBox("BONE", &m_iCurrentBone, m_BoneNames.data(), m_BoneNames.size()))
+				_uint iNumBones = pCurrentModel->Get_NumBones();
+				vector<CBone*> Bones = pCurrentModel->Get_Bones();
+
+				m_BoneNames.clear();
+
+				auto iter = Bones.begin();
+				for (_uint i = 0; i < iNumBones; i++)
 				{
-					pEffectDesc->iBoneIndex = m_iCurrentBone;
+					m_BoneNames.push_back((*iter)->Get_BoneName());
+					++iter;
 				}
-				ImGui::PopItemWidth();
+				if (m_BoneNames.size() != 0)
+				{
+					CAnimation* pCurAnim = m_pPlayer->Get_CurrentAnim();
+					TRIGGEREFFECT_DESC* pEffectDesc = pCurAnim->Get_TriggerEffect(m_iCurrentEffect);
+					m_iCurrentBone = pEffectDesc->iBoneIndex;
+					ImGui::PushItemWidth(270.f);
+					if (ImGui::ListBox("BONE", &m_iCurrentBone, m_BoneNames.data(), m_BoneNames.size()))
+					{
+						pEffectDesc->iBoneIndex = m_iCurrentBone;
+					}
+					ImGui::PopItemWidth();
+				}
+
+				string strNumBones = "ALLBONES : " + to_string(iNumBones);
+				ImGui::Text(strNumBones.c_str()); ImGui::SameLine();
+				string strCurBone = "CURRENTBONE : " + to_string(m_iCurrentBone);
+				ImGui::Text(strCurBone.c_str());
+
+				CAnimation* pCurAnim = m_pPlayer->Get_CurrentAnim();
+				CTransform* pPlayerTransform = reinterpret_cast<CTransform*>(m_pPlayer->Find_Component(TEXT("Com_Transform")));
+
+				/*ImGui::PushItemWidth(90.f);
+				TRIGGEREFFECT_DESC* pEffectDesc = pCurAnim->Get_TriggerEffect(m_iCurrentEffect);
+				ImGui::SeparatorText("OFFSET");
+				ImGui::InputFloat("X##1", &pEffectDesc->vPosOffset.x, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
+				ImGui::InputFloat("Y##1", &pEffectDesc->vPosOffset.y, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
+				ImGui::InputFloat("Z##1", &pEffectDesc->vPosOffset.z, 0.1f, 0.f, "%.1f");
+				ImGui::SeparatorText("AXIS");
+				ImGui::InputFloat("X##2", &pEffectDesc->vRotationAxis.x, 1.f, 0.f, "%.1f"); ImGui::SameLine();
+				ImGui::InputFloat("Y##2", &pEffectDesc->vRotationAxis.y, 1.f, 0.f, "%.1f"); ImGui::SameLine();
+				ImGui::InputFloat("Z##2", &pEffectDesc->vRotationAxis.z, 1.f, 0.f, "%.1f");
+				ImGui::InputFloat("ANGLE", &pEffectDesc->fAngle, 1.f, 0.f, "%.1f");
+				ImGui::SeparatorText("SIZE");
+				ImGui::InputFloat("X##3", &pEffectDesc->vSize.x, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
+				ImGui::InputFloat("Y##3", &pEffectDesc->vSize.y, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
+				ImGui::InputFloat("Z##3", &pEffectDesc->vSize.z, 0.1f, 0.f, "%.1f");
+				ImGui::PopItemWidth();*/
 			}
 
-			string strNumBones = "ALLBONES : " + to_string(iNumBones);
-			ImGui::Text(strNumBones.c_str()); ImGui::SameLine();
-			string strCurBone = "CURRENTBONE : " + to_string(m_iCurrentBone);
-			ImGui::Text(strCurBone.c_str());
+			ImGui::End();
 
-			CAnimation* pCurAnim = m_pPlayer->Get_CurrentAnim();
-			CTransform* pPlayerTransform = reinterpret_cast<CTransform*>(m_pPlayer->Find_Component(TEXT("Com_Transform")));
+			ImGui::Begin("EFFECT MENU");
+			ImGui::PushItemWidth(150.f);
 
-			ImGui::PushItemWidth(90.f);
-			TRIGGEREFFECT_DESC* pEffectDesc = pCurAnim->Get_TriggerEffect(m_iCurrentEffect);
-			ImGui::SeparatorText("OFFSET");
-			ImGui::InputFloat("X##1", &pEffectDesc->vPosOffset.x, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
-			ImGui::InputFloat("Y##1", &pEffectDesc->vPosOffset.y, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
-			ImGui::InputFloat("Z##1", &pEffectDesc->vPosOffset.z, 0.1f, 0.f, "%.1f");
-			ImGui::SeparatorText("AXIS");
-			ImGui::InputFloat("X##2", &pEffectDesc->vRotationAxis.x, 1.f, 0.f, "%.1f"); ImGui::SameLine();
-			ImGui::InputFloat("Y##2", &pEffectDesc->vRotationAxis.y, 1.f, 0.f, "%.1f"); ImGui::SameLine();
-			ImGui::InputFloat("Z##2", &pEffectDesc->vRotationAxis.z, 1.f, 0.f, "%.1f");
-			ImGui::InputFloat("ANGLE", &pEffectDesc->fAngle, 1.f, 0.f, "%.1f");
-			ImGui::SeparatorText("SIZE");
-			ImGui::InputFloat("X##3", &pEffectDesc->vSize.x, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
-			ImGui::InputFloat("Y##3", &pEffectDesc->vSize.y, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
-			ImGui::InputFloat("Z##3", &pEffectDesc->vSize.z, 0.1f, 0.f, "%.1f");
-			ImGui::PopItemWidth();
-
-			_uint iEffectIndex{};
-			for (auto& pEffect : m_Effects)
+			if (ImGui::ListBox("EFFECT##2", &m_iCurrentEffect, ppEffectNameList, EffectDescs.size()))
 			{
-				pEffectDesc = pCurAnim->Get_TriggerEffect(iEffectIndex++);
-				_mat WorldMatrix = _mat::CreateFromAxisAngle(pEffectDesc->vRotationAxis, XMConvertToRadians(pEffectDesc->fAngle)) * *Bones[pEffectDesc->iBoneIndex]->Get_CombinedMatrix() * pCurrentModel->Get_PivotMatrix() * pPlayerTransform->Get_World_Matrix();
-				WorldMatrix.Position() += pEffectDesc->vPosOffset;
-				pEffect->Set_WorldMatrix(WorldMatrix);
 			}
-		}
+			//릭 제거
+			for (size_t i = 0; i < EffectDescs.size(); i++)
+			{
+				Safe_Delete_Array(ppEffectNameList[i]);
+			}
+			Safe_Delete_Array(ppEffectNameList);
+			//
+			TRIGGEREFFECT_DESC* pEffectDesc = m_pPlayer->Get_CurrentAnim()->Get_TriggerEffect(m_iCurrentEffect);
+			if (ImGui::Button("START"))
+			{
+				if (pEffectDesc->fEndAnimPos > m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos() ||
+					pEffectDesc->fEndAnimPos == -1.f)
+				{
+					pEffectDesc->fStartAnimPos = m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos();
+				}
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("END"))
+			{
+				if (pEffectDesc->fStartAnimPos < m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos())
+				{
+					pEffectDesc->fEndAnimPos = m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos();
+				}
+			}
 
-		ImGui::End();
+			string strStartEffect = "START : " + to_string(static_cast<_int>(pEffectDesc->fStartAnimPos));
+			ImGui::Text(strStartEffect.c_str()); ImGui::SameLine();
+			string strEndEffect = "END : " + to_string(static_cast<_int>(pEffectDesc->fEndAnimPos));
+			ImGui::Text(strEndEffect.c_str());
+
+			ImGui::PopItemWidth();
+			ImGui::End();
+		}
 	}
 
 	ImGui::Begin("EFFECT DATAFILE");
 	ImGui::PushItemWidth(150.f);
 
-	if (ImGui::ListBox("EFFECT##1", &m_iSelectEffectFile, m_EffectNames.data(), m_EffectNames.size()))
+	if (ImGui::ListBox("EFFECT##1", &m_iSelectEffectFile, m_szEffectNames, m_EffectNames.size()))
 	{
 	}
 
 	ImGui::PopItemWidth();
 	ImGui::End();
-
-	if (not m_Effects.empty())
-	{
-		ImGui::Begin("EFFECT MENU");
-		ImGui::PushItemWidth(150.f);
-
-		if (ImGui::ListBox("EFFECT##2", &m_iCurrentEffect, m_EffectDescNames.data(), m_EffectDescNames.size()))
-		{
-		}
-
-		TRIGGEREFFECT_DESC* pEffectDesc = m_pPlayer->Get_CurrentAnim()->Get_TriggerEffect(m_iCurrentEffect);
-		if (ImGui::Button("START"))
-		{
-			if (pEffectDesc->fEndAnimPos > m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos() ||
-				pEffectDesc->fEndAnimPos == -1.f)
-			{
-				pEffectDesc->fStartAnimPos = m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos();
-			}
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("END"))
-		{
-			if (pEffectDesc->fStartAnimPos < m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos())
-			{
-				pEffectDesc->fEndAnimPos = m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos();
-			}
-		}
-
-		string strStartEffect = "START : " + to_string(static_cast<_int>(pEffectDesc->fStartAnimPos));
-		ImGui::Text(strStartEffect.c_str()); ImGui::SameLine();
-		string strEndEffect = "END : " + to_string(static_cast<_int>(pEffectDesc->fEndAnimPos));
-		ImGui::Text(strEndEffect.c_str());
-
-		ImGui::PopItemWidth();
-		ImGui::End();
-	}
-
-	//
-	if (m_pPlayer)
-	{
-		m_pPlayer->Set_ModelType((CPlayer::TYPE)m_eType);
-		m_pPlayer->Set_ModelIndex(m_iCurrentModelIndex);
-	}
 
 	return S_OK;
 }
@@ -536,7 +531,16 @@ HRESULT CImgui_Manager::ImGuizmoMenu()
 	_mat ViewMatrix = m_pGameInstance->Get_Transform(TransformType::View);
 	_mat ProjMatrix = m_pGameInstance->Get_Transform(TransformType::Proj);
 
-	if (m_pPlayer)
+	if (m_pGameInstance->Key_Down(DIK_1))
+	{
+		m_eSelect = SELECT_PLAYER;
+	}
+	else if (m_pGameInstance->Key_Down(DIK_2))
+	{
+		m_eSelect = SELECT_EFFECT;
+	}
+
+	if (m_pPlayer && m_eSelect == SELECT_PLAYER)
 	{
 		CTransform* pTargetTransform = (CTransform*)(m_pPlayer->Find_Component(TEXT("Com_Transform")));
 		if (pTargetTransform != nullptr)
@@ -569,6 +573,49 @@ HRESULT CImgui_Manager::ImGuizmoMenu()
 					pTargetTransform->Set_State(State::Up, TargetMatrix.Up());
 					pTargetTransform->Set_State(State::Look, TargetMatrix.Look());
 					pTargetTransform->Set_State(State::Pos, TargetMatrix.Position());
+				}
+			}
+		}
+	}
+
+	if (m_pPlayer)
+	{
+		CAnimation* pCurAnim = m_pPlayer->Get_CurrentAnim();
+		if (pCurAnim->Get_NumEffectTrigger() != 0)
+		{
+			if (m_eSelect == SELECT_EFFECT)
+			{
+				TRIGGEREFFECT_DESC* pEffectDesc = pCurAnim->Get_TriggerEffect(m_iCurrentEffect);
+				_mat TargetMatrix = pEffectDesc->OffsetMatrix;
+				_mat PreMatrix = pEffectDesc->OffsetMatrix;
+
+				ImGuizmo::Manipulate(&ViewMatrix.m[0][0], &ProjMatrix.m[0][0], m_eStateType, ImGuizmo::MODE::WORLD, &TargetMatrix.m[0][0]);
+				if (ImGuizmo::IsUsing())
+				{
+					if (m_eStateType == ImGuizmo::OPERATION::SCALE)
+					{
+						m_vCurrentScale = _vec3(TargetMatrix.Right().Length(),
+							TargetMatrix.Up().Length(),
+							TargetMatrix.Backward().Length());
+
+						_vec4 Right = PreMatrix.Right();
+						Right.Normalize();
+						_vec4 Up = PreMatrix.Up();
+						Up.Normalize();
+						_vec4 Look = PreMatrix.Look();
+						Look.Normalize();
+
+						TargetMatrix.Right() = Right * m_vCurrentScale.x;
+						TargetMatrix.Up() = Up * m_vCurrentScale.y;
+						TargetMatrix.Look() = Look * m_vCurrentScale.z;
+					}
+					else
+					{
+						TargetMatrix.Right() = TargetMatrix.Right();
+						TargetMatrix.Up() = TargetMatrix.Up();
+						TargetMatrix.Look() = TargetMatrix.Look();
+						TargetMatrix.Position() = TargetMatrix.Position();
+					}
 				}
 			}
 		}
@@ -623,14 +670,8 @@ HRESULT CImgui_Manager::SaveFile()
 
 					_uint iBoneIndex = EffectDescs[i].iBoneIndex;
 					Fileout.write(reinterpret_cast<_char*>(&iBoneIndex), sizeof(_uint));
-					_vec3 vPosOffset = EffectDescs[i].vPosOffset;
-					Fileout.write(reinterpret_cast<_char*>(&vPosOffset), sizeof(_vec3));
-					_vec3 vRotationAxis = EffectDescs[i].vRotationAxis;
-					Fileout.write(reinterpret_cast<_char*>(&vRotationAxis), sizeof(_vec3));
-					_float fAngle = EffectDescs[i].fAngle;
-					Fileout.write(reinterpret_cast<_char*>(&fAngle), sizeof(_float));
-					_vec3 vSize = EffectDescs[i].vSize;
-					Fileout.write(reinterpret_cast<_char*>(&vSize), sizeof(_vec3));
+					_mat OffsetMatrix = EffectDescs[i].OffsetMatrix;
+					Fileout.write(reinterpret_cast<_char*>(&OffsetMatrix), sizeof(_mat));
 				}
 			}
 			++iter;
@@ -694,10 +735,7 @@ HRESULT CImgui_Manager::LoadFile()
 			Safe_Delete_Array(pBuffer);
 
 			Filein.read(reinterpret_cast<_char*>(&EffectDesc.iBoneIndex), sizeof(_uint));
-			Filein.read(reinterpret_cast<_char*>(&EffectDesc.vPosOffset), sizeof(_vec3));
-			Filein.read(reinterpret_cast<_char*>(&EffectDesc.vRotationAxis), sizeof(_vec3));
-			Filein.read(reinterpret_cast<_char*>(&EffectDesc.fAngle), sizeof(_float));
-			Filein.read(reinterpret_cast<_char*>(&EffectDesc.vSize), sizeof(_vec3));
+			Filein.read(reinterpret_cast<_char*>(&EffectDesc.OffsetMatrix), sizeof(_mat));
 		}
 
 		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
@@ -728,21 +766,8 @@ void CImgui_Manager::Free()
 
 	Safe_Release(m_pPlayer);
 
-	for (size_t i = 0; i < m_Effects.size(); i++)
-	{
-		Safe_Release(m_Effects[i]);
-	}
-	m_Effects.clear();
-
-	for (auto& MonsterNames : m_FBXDataName)
-	{
-		Safe_Delete_Array(MonsterNames);
-	}
-
-	for (auto& EffectName : m_EffectNames)
-	{
-		Safe_Delete_Array(EffectName);
-	}
+	Safe_Delete_Array(m_szFBXDataName);
+	Safe_Delete_Array(m_szEffectNames);
 
 	m_EffectDescNames.clear();
 

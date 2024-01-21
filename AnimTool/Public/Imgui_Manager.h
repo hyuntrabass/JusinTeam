@@ -18,6 +18,7 @@ public:
 public:
     //ImGuizmo
     enum MANIPULATETYPE { TYPE_STATE, TYPE_RESET, MANIPULATE_TYPE_END };
+    enum SELECT { SELECT_PLAYER, SELECT_EFFECT, SELECT_END };
 
 private:
     CImgui_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -52,24 +53,31 @@ private:
 
 private:
     class CPlayer* m_pPlayer = { nullptr };
-    vector<class CEffect_Dummy*> m_Effects;
-    vector<const _char*> m_EffectDescNames;
     ANIM_DESC m_AnimDesc{};
-    POINT m_ptMouse = {};
     vector<const _char*> m_AnimationNames;
     vector<const _char*> m_BoneNames;
-    _int m_ePreType = { TYPE_MONSTER };
-    _int m_eType = { TYPE_MONSTER };
     _uint m_iCurrentModelIndex = { 0 };
-    _bool m_IsCreateModel = { false };
-    _int m_iSelectEffectFile{};
-    _int m_iCurrentEffect{};
     _int m_iCurrentBone{};
 
+    vector<const _char*> m_EffectDescNames;
+    _int m_iSelectEffectFile{};
+    _int m_iCurrentEffect{};
+
+    _bool m_IsCreateModel = { false };
+    POINT m_ptMouse = {};
+    _int m_ePreType = { TYPE_MONSTER };
+    _int m_eType = { TYPE_MONSTER };
+    _float m_fTimeDelta{};
+
+    vector<string> m_FBXDataName;
+    const _char** m_szFBXDataName;
+    vector<string> m_EffectNames;
+    const _char** m_szEffectNames;
+
     vector<const _char*> m_TriggerTimes;
-    vector<_char*> m_FBXDataName;
-    vector<const _char*> m_EffectNames;
+
     //ImGuizmo
+    SELECT m_eSelect = { SELECT_PLAYER };
     ImGuizmo::OPERATION m_eStateType = { ImGuizmo::OPERATION::TRANSLATE };
     _int m_iManipulateType = 0;
     MANIPULATETYPE m_eManipulateType = { TYPE_STATE };

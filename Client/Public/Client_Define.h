@@ -126,6 +126,18 @@ namespace Client
 		SCH_MAX
 	};
 
+	enum SortDepth
+	{
+		D_SCREEN1,
+		D_SCREEN2,
+		D_SCREEN3,
+		D_QUEST,
+		D_SHOP,
+		D_INVEN,
+		D_FADE,
+		D_MOUSE,
+		D_END
+	};
 	struct ObjectInfo
 	{
 		wstring strPrototypeTag{};
@@ -223,6 +235,7 @@ namespace Client
 		VTPass_MP,
 		VTPass_BLUR,
 		VTPass_Bright,
+		VTPass_ScrollAlpha,
 		VTPass_End
 	};
 

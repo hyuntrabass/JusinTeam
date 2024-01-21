@@ -52,18 +52,18 @@ void CSelect_Model::Tick(_float fTimeDelta)
 				if (m_pModelCom->Get_CurrentAnimPos() > 121.f)
 				{
 					EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Fire");
-					Info.pPos = &m_vRHPos;
+					//Info.pPos = &m_vRHPos;
 					Info.vPosOffset = Info.vPosOffset + _vec3(0.f, 0.05f, 0.f);
 					m_pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
 
 					Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"FireInit");
-					Info.pPos = &m_vRHPos;
+					//Info.pPos = &m_vRHPos;
 					Info.vSize = Info.vSize * 0.5f;
 					CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
 
 					Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"FireSpark");
 					//Info.vPos = m_vRHPos + _vec3(0.f, 0.1f, 0.f);
-					Info.pPos = &m_vRHPos;
+					//Info.pPos = &m_vRHPos;
 					Info.vSize = Info.vSize * 0.5f;
 					Info.iNumInstances = 50;
 					CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
@@ -72,7 +72,7 @@ void CSelect_Model::Tick(_float fTimeDelta)
 					Light_Info.eType = LIGHT_DESC::Point;
 					Light_Info.vAttenuation = LIGHT_RANGE_13;
 					Light_Info.vDiffuse = _vec4(0.75f, 0.5f, 0.f, 1.f);
-					Light_Info.vPosition = _vec4(Info.vPos, 1.f);
+					//Light_Info.vPosition = _vec4(Info.vPos, 1.f);
 					m_pGameInstance->Add_Light(m_pGameInstance->Get_CurrentLevelIndex(), L"Light_Effect", Light_Info);
 				}
 			}
@@ -94,18 +94,18 @@ void CSelect_Model::Tick(_float fTimeDelta)
 				if (m_pModelCom->Get_CurrentAnimPos() > 121.f)
 				{
 					EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"ArrowApear");
-					Info.pPos = &m_vRHPos;
+					//Info.pPos = &m_vRHPos;
 					m_pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
 
 					Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"ArrowParti");
-					Info.vPos = m_vRHPos;
+					//Info.vPos = m_vRHPos;
 					CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
 
 					LIGHT_DESC Light_Info{};
 					Light_Info.eType = LIGHT_DESC::Point;
 					Light_Info.vAttenuation = LIGHT_RANGE_13;
 					Light_Info.vDiffuse = _vec4(0.4f, 0.7f, 1.f, 1.f);
-					Light_Info.vPosition = _vec4(Info.vPos, 1.f);
+					//Light_Info.vPosition = _vec4(Info.vPos, 1.f);
 					m_pGameInstance->Add_Light(m_pGameInstance->Get_CurrentLevelIndex(), L"Light_Effect", Light_Info);
 				}
 			}

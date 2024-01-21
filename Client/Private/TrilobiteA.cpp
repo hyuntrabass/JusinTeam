@@ -88,7 +88,9 @@ void CTrilobiteA::Set_Damage(_int iDamage, _uint iDamageType)
 	{
 		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
 
-		m_pTransformCom->Go_To_Dir(vDir, 0.1f);
+		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
+
+		m_eCurState = STATE_HIT;
 	}
 
 	else if (iDamageType == WP_SWORD)
@@ -207,6 +209,7 @@ void CTrilobiteA::Tick_State(_float fTimeDelta)
 			{
 				m_iAttackPattern = rand() % 2;
 				m_bSelectAttackPattern = true;
+				m_bAttacked = false;
 			}
 		}
 
@@ -216,11 +219,41 @@ void CTrilobiteA::Tick_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = ATTACK01;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 22.f && fAnimpos <= 24.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+			}
 			break;
 		case 1:
 			m_Animation.iAnimIndex = ATTACK02;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 31.f && fAnimpos <= 33.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+			}
+			break;
+		}
+		break;
+	case Client::CTrilobiteA::STATE_HIT:
+
+		switch (m_iHitPattern)
+		{
+		case 0:
+			m_Animation.iAnimIndex = HIT_L;
+			m_Animation.isLoop = false;
+			break;
+		case 1:
+			m_Animation.iAnimIndex = HIT_R;
+			m_Animation.isLoop = false;
 			break;
 		}
 		break;

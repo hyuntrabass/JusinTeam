@@ -52,6 +52,11 @@ HRESULT CNastron03::Init(void* pArg)
 
 void CNastron03::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_B))
+	{
+		Set_Damage(1, WP_BOW);
+	}
+
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 
@@ -88,11 +93,14 @@ void CNastron03::Set_Damage(_int iDamage, _uint iDamageType)
 	{
 		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
 
-		m_pTransformCom->Go_To_Dir(vDir, 0.1f);
+		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
+
+		m_eCurState = STATE_HIT;
 	}
 
 	else if (iDamageType == WP_SWORD)
 	{
+		m_eCurState = STATE_HIT;
 	}
 }
 
@@ -193,6 +201,8 @@ void CNastron03::Tick_State(_float fTimeDelta)
 			{
 				m_iAttackPattern = rand() % 3;
 				m_bSelectAttackPattern = true;
+				m_bAttacked = false;
+				m_bAttacked2 = false;
 			}
 		}
 
@@ -202,16 +212,45 @@ void CNastron03::Tick_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = ATTACK01;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 51.f && fAnimpos <= 53.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+			}
 			break;
 		case 1:
 			m_Animation.iAnimIndex = ATTACK02;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 37.f && fAnimpos <= 39.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+				if (fAnimpos >= 68.f && fAnimpos <= 70.f && !m_bAttacked2)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked2 = true;
+				}
+			}
 			break;
 		case 2:
 			m_Animation.iAnimIndex = ATTACK03;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 110.f && fAnimpos <= 112.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+			}
 			break;
 		}
 		break;

@@ -33,7 +33,7 @@ public:
 
 public:
 	HRESULT Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix);
-	HRESULT Init(void* pArg) override;
+	HRESULT Init(void* pArg, const CModel& rhs);
 
 public:
 	void Play_Animation(_float fTimeDelta);

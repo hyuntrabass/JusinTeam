@@ -24,13 +24,6 @@ CModel::CModel(const CModel& rhs)
 		m_Bones.push_back(pBone);
 	}
 
-	for (auto& pPrototypeAnimation : rhs.m_Animations)
-	{
-		CAnimation* pAnimation = pPrototypeAnimation->Clone();
-
-		m_Animations.push_back(pAnimation);
-	}
-
 	for (auto& pPrototypeMesh : rhs.m_Meshes)
 	{
 		CMesh* pMesh = reinterpret_cast<CMesh*>(pPrototypeMesh->Clone());
@@ -267,8 +260,15 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 	return S_OK;
 }
 
-HRESULT CModel::Init(void* pArg)
+HRESULT CModel::Init(void* pArg, const CModel& rhs)
 {
+	for (auto& pPrototypeAnimation : rhs.m_Animations)
+	{
+		CAnimation* pAnimation = pPrototypeAnimation->Clone(pArg);
+
+		m_Animations.push_back(pAnimation);
+	}
+
 	return S_OK;
 }
 
@@ -381,7 +381,7 @@ HRESULT CModel::Read_Animations(ifstream& File)
 
 	for (size_t i = 0; i < m_iNumAnimations; i++)
 	{
-		CAnimation* pAnimation = CAnimation::Create(File, m_Bones);
+		CAnimation* pAnimation = CAnimation::Create(File, m_Bones, m_PivotMatrix);
 		if (!pAnimation)
 		{
 			MSG_BOX("Failed to Read Animations!");
@@ -460,7 +460,7 @@ CComponent* CModel::Clone(void* pArg)
 {
 	CModel* pInstance = new CModel(*this);
 
-	if (FAILED(pInstance->Init(pArg)))
+	if (FAILED(pInstance->Init(pArg, *this)))
 	{
 		MSG_BOX("Failed to Clone : CModel");
 	}

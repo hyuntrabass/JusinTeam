@@ -12,6 +12,7 @@ int g_TexIndex;
 vector g_vColor;
 float g_fx;
 float g_fy;
+float g_fScrollRatio;
 float g_fHpRatio;
 float g_fAlpha;
 float g_fTime;
@@ -553,6 +554,30 @@ PS_OUT PS_Bright(PS_IN Input)
     
     return Output;
 }
+PS_OUT PS_ScrollAlpha(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    
+    Output.vColor.a *= g_fAlpha;
+    if (g_fScrollRatio < 0)
+    {
+        if (Input.vTex.y < (g_fScrollRatio * -1.f))
+        {
+            discard;
+        }
+    }
+    if(g_fScrollRatio > 0)
+    {
+        if (Input.vTex.y > g_fScrollRatio)
+        {
+            discard;
+        }
+    }
+
+    return Output;
+}
 technique11 DefaultTechnique
 {
     pass UI
@@ -897,6 +922,18 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Bright();
+    }
+    pass ScrollAlpha
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_ScrollAlpha();
     }
 
 };

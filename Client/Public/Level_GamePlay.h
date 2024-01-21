@@ -25,11 +25,17 @@ private:
 	HRESULT Ready_Object();
 
 	// Monster
+	HRESULT Ready_ModelTest();
+
+	// Monster_Tutorial
+	HRESULT Ready_NPCvsMon();
+	HRESULT Ready_Void01();
 	HRESULT Ready_Void05();
+
+	// Monster_GamePlay
 	HRESULT Ready_Rabbit();
 	HRESULT Ready_Goat();
 	HRESULT Ready_Nastron03();
-	HRESULT Ready_NPCvsMon();
 	HRESULT Ready_Thief04();
 	HRESULT Ready_TrilobiteA();
 

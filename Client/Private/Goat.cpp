@@ -90,7 +90,7 @@ void CGoat::Set_Damage(_int iDamage, _uint iDamageType)
 	{
 		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
 
-		m_pTransformCom->Go_To_Dir(vDir, 0.1f);
+		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
 	}
 
 	else if (iDamageType == WP_SWORD)
@@ -213,6 +213,7 @@ void CGoat::Tick_State(_float fTimeDelta)
 			{
 				m_iAttackPattern = rand() % 3;
 				m_bSelectAttackPattern = true;
+				m_bAttacked = false;
 			}
 		}
 
@@ -222,16 +223,40 @@ void CGoat::Tick_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = ATTACK01;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 55.f && fAnimpos <= 57.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+			}
 			break;
 		case 1:
 			m_Animation.iAnimIndex = ATTACK02;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 43.f && fAnimpos <= 45.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+			}
 			break;
 		case 2:
 			m_Animation.iAnimIndex = ATTACK03;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 48.f && fAnimpos <= 50.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+			}
 			break;
 		}
 		break;

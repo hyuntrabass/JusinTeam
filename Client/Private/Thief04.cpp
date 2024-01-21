@@ -89,7 +89,9 @@ void CThief04::Set_Damage(_int iDamage, _uint iDamageType)
 	{
 		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
 
-		m_pTransformCom->Go_To_Dir(vDir, 0.1f);
+		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
+
+		m_eCurState = STATE_HIT;
 	}
 
 	else if (iDamageType == WP_SWORD)
@@ -195,6 +197,8 @@ void CThief04::Tick_State(_float fTimeDelta)
 			{
 				m_iAttackPattern = rand() % 5;
 				m_bSelectAttackPattern = true;
+				m_bAttacked = false;
+				m_bAttacked2 = false;
 			}
 		}
 
@@ -204,26 +208,71 @@ void CThief04::Tick_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = ATTACK01;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 46.f && fAnimpos <= 48.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+			}
 			break;
 		case 1:
 			m_Animation.iAnimIndex = ATTACK02;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 24.f && fAnimpos <= 26.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+				if (fAnimpos >= 47.f && fAnimpos <= 49.f && !m_bAttacked2)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked2 = true;
+				}
+			}
 			break;
 		case 2:
 			m_Animation.iAnimIndex = ATTACK03;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 37.f && fAnimpos <= 39.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+			}
 			break;
 		case 3:
 			m_Animation.iAnimIndex = ATTACK04;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 33.f && fAnimpos <= 35.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+			}
 			break;
 		case 4:
 			m_Animation.iAnimIndex = ATTACK05;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
+			{
+				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
+				if (fAnimpos >= 44.f && fAnimpos <= 46.f && !m_bAttacked)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					m_bAttacked = true;
+				}
+			}
 			break;
 		}
 		break;

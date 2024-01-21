@@ -36,7 +36,7 @@ HRESULT CLevel_GamePlay::Init()
 	}
 
 	// Monster
-	if (FAILED(Ready_Void05()))
+	if (FAILED(Ready_ModelTest()))
 	{
 		MSG_BOX("Failed to Ready Void05");
 		return E_FAIL;
@@ -84,6 +84,19 @@ HRESULT CLevel_GamePlay::Init()
 		MSG_BOX("Failed to Ready TrilobiteA");
 		return E_FAIL;
 	}
+
+	if (FAILED(Ready_Void01()))
+	{
+		MSG_BOX("Failed to Ready Void01");
+		return E_FAIL;
+	}
+
+	if (FAILED(Ready_Void05()))
+	{
+		MSG_BOX("Failed to Ready Void05");
+		return E_FAIL;
+	}
+
 
 	// NPC
 	if (FAILED(Ready_Cat()))
@@ -302,9 +315,9 @@ HRESULT CLevel_GamePlay::Ready_Object()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Void05()
+HRESULT CLevel_GamePlay::Ready_ModelTest()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void05"), TEXT("Prototype_GameObject_Void05"))))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_ModelTest"), TEXT("Prototype_GameObject_ModelTest"))))
 	{
 		return E_FAIL;
 	}
@@ -448,6 +461,26 @@ HRESULT CLevel_GamePlay::Ready_NPCvsMon()
 
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPCvsMon"), TEXT("Prototype_GameObject_NPCvsMon"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Void01()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void01"), TEXT("Prototype_GameObject_Void01"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Void05()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void05"), TEXT("Prototype_GameObject_Void05"))))
 	{
 		return E_FAIL;
 	}

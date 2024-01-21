@@ -81,8 +81,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if (m_pModelCom)
 	{
-		//m_fTimeDelta = fTimeDelta;
-		m_pModelCom->Play_Animation(m_fTimeDelta);
+		m_pModelCom->Play_Animation(fTimeDelta);
 	}
 }
 
@@ -161,7 +160,7 @@ HRESULT CPlayer::Add_Components()
 		wsprintf(szComName, strComName.c_str(), i);
 		wstring strFinalComName = szComName;
 
-		if (FAILED(__super::Add_Component(LEVEL_TOOL, m_pMonsterModelTag[i], strFinalComName, reinterpret_cast<CComponent**>(&m_pMonsterModelCom[i]))))
+		if (FAILED(__super::Add_Component(LEVEL_TOOL, m_pMonsterModelTag[i], strFinalComName, reinterpret_cast<CComponent**>(&m_pMonsterModelCom[i]), m_pTransformCom)))
 		{
 			return E_FAIL;
 		}
@@ -174,7 +173,7 @@ HRESULT CPlayer::Add_Components()
 		wsprintf(szComName, strComName.c_str(), i);
 		wstring strFinalComName = szComName;
 
-		if (FAILED(__super::Add_Component(LEVEL_TOOL, m_pPlayerModelTag[i], strFinalComName, reinterpret_cast<CComponent**>(&m_pPlayerModelCom[i]))))
+		if (FAILED(__super::Add_Component(LEVEL_TOOL, m_pPlayerModelTag[i], strFinalComName, reinterpret_cast<CComponent**>(&m_pPlayerModelCom[i]), m_pTransformCom)))
 		{
 			return E_FAIL;
 		}
