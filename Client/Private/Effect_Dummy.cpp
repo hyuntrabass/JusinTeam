@@ -406,7 +406,6 @@ void CEffect_Dummy::Free()
 
 	Safe_Release(m_pUnDissolveTextureCom);
 	Safe_Release(m_pModelCom);
-	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pDissolveTextureCom);
