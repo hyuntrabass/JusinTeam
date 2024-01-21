@@ -206,8 +206,8 @@ HRESULT CInven::Add_Parts()
 	}
 	Button.strText = TEXT("");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SiegeLine");
-	Button.vPosition = _vec2(100.f, 350.f);
-	Button.vSize = _vec2(4.f, 360.f);
+	Button.vPosition = _vec2(102.f, 350.f);
+	Button.vSize = _vec2(6.f, 360.f);
 
 	m_pSeigeLine = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
