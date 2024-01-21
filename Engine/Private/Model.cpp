@@ -141,7 +141,6 @@ vector<TRIGGEREFFECT_DESC>& CModel::Get_TriggerEffects()
 {
 	return m_TriggerEffects;
 }
-
 void CModel::Add_TriggerEffect(TRIGGEREFFECT_DESC TriggerEffectDesc)
 {
 	m_iNumTriggersEffect++;
@@ -298,6 +297,12 @@ HRESULT CModel::Init(void* pArg)
 		Safe_AddRef(m_pOwnerTransform);
 	}
 
+	for (size_t i = 0; i < m_TriggerEffects.size(); i++)
+	{
+		_mat* pMatrix = new _mat{};
+		m_EffectMatrices.push_back(pMatrix);
+	}
+
 	return S_OK;
 }
 
@@ -318,7 +323,11 @@ void CModel::Play_Animation(_float fTimeDelta)
 		{
 			//이펙트 생성
 			m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
-			*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
+			_mat PosOffset{};
+			PosOffset.Position(m_TriggerEffects[i].OffsetMatrix.Position());
+			_mat ScaleRotationOffset = m_TriggerEffects[i].OffsetMatrix;
+			ScaleRotationOffset.Position(_vec4(0.f, 0.f, 0.f, 1.f));
+			*m_EffectMatrices[i] = ScaleRotationOffset * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix() * PosOffset;
 		}
 		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iEndAnimIndex &&
 			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fEndAnimPos)
@@ -333,7 +342,11 @@ void CModel::Play_Animation(_float fTimeDelta)
 		if (m_TriggerEffects[i].IsFollow)
 		{
 			//이펙트 위치 갱신
-			*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
+			_mat PosOffset{};
+			PosOffset.Position(m_TriggerEffects[i].OffsetMatrix.Position());
+			_mat ScaleRotationOffset = m_TriggerEffects[i].OffsetMatrix;
+			ScaleRotationOffset.Position(_vec4(0.f, 0.f, 0.f, 1.f));
+			*m_EffectMatrices[i] = ScaleRotationOffset * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix() * PosOffset;
 		}
 	}
 }
@@ -534,7 +547,8 @@ HRESULT CModel::Read_TriggerEffects(const string& strFilePath)
 			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.iBoneIndex), sizeof(_uint));
 			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.OffsetMatrix), sizeof(_mat));
 
-			Add_TriggerEffect(EffectDesc);
+			m_TriggerEffects.push_back(EffectDesc);
+			m_iNumTriggersEffect++;
 		}
 		TriggerFile.close();
 	}

@@ -70,6 +70,7 @@ void CEffect_Manager::Create_Effect(const wstring& strEffectTag, _mat* pMatrix, 
 {
 	EffectInfo Info = Get_EffectInformation(strEffectTag);
 	Info.pMatrix = pMatrix;
+	Info.isFollow = isFollow;
 	
 	if (Info.fLifeTime < 0)
 	{

@@ -3,7 +3,6 @@
 
 BEGIN(Engine)
 
-
 class ENGINE_DLL CModel final : public CComponent
 {
 private:
@@ -33,9 +32,11 @@ public:
 	const _uint Get_NumTriggerEffect() const;
 	TRIGGEREFFECT_DESC* Get_TriggerEffect(_uint iTriggerEffectIndex);
 	vector<TRIGGEREFFECT_DESC>& Get_TriggerEffects();
+	//툴에서만 쓰세요
 	void Add_TriggerEffect(TRIGGEREFFECT_DESC TriggerEffectDesc);
 	void Delete_TriggerEffect(_uint iTriggerEffectIndex);
 	void Reset_TriggerEffects();
+	//
 
 public:
 	HRESULT Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix);
