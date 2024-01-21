@@ -45,7 +45,7 @@ protected:
 	_uint m_iPassIndex = {};
 	MonsterInfo m_pInfo{};
 protected:
-	_float m_fBackPower = { 0.5f };
+	_float m_fBackPower = { 0.01f };
 
 private: // Collier 사이즈 조절용
 	_float m_fSizeX = {}, m_fSizeY = {}, m_fSizeZ = {};

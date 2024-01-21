@@ -1,6 +1,7 @@
 #include "JobMark.h"
 #include "GameInstance.h"
 #include "TextButton.h"
+#include "UI_Manager.h"
 
 CJobMark::CJobMark(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -30,14 +31,14 @@ HRESULT CJobMark::Init(void* pArg)
 	m_fX = (_float)g_iWinSizeX / 2.f;
 	m_fY = 630.f;
 
-	m_fDepth = 0.5f;
+	m_fDepth = (_float)D_JOBMARK / (_float)D_END;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 
 	CTextButton::TEXTBUTTON_DESC Button = {};
 	Button.eLevelID = LEVEL_STATIC;
-	Button.fDepth = 0.5f - 0.01f;
+	Button.fDepth = m_fDepth - 0.01f;
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Image_Emblem_01");
 	Button.vPosition = _vec2(m_fX, m_fY);
 	Button.vSize = _vec2(140.f, 140.f);
@@ -92,6 +93,10 @@ void CJobMark::Tick(_float fTimeDelta)
 
 void CJobMark::Late_Tick(_float fTimeDelta)
 {
+	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
+	{
+		return;
+	}
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 	if (m_pJob != nullptr)
 	{
