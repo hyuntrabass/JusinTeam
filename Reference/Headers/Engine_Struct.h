@@ -85,8 +85,6 @@ namespace Engine
 		std::wstring strUnDissolveTexture{};
 		std::string strModel{};
 
-		SimpleMath::Vector3* pPos{};
-		SimpleMath::Vector3 vPos{};
 		SimpleMath::Matrix* pMatrix{};
 	};
 
@@ -141,12 +139,7 @@ namespace Engine
 		bool IsFollow{};
 		std::wstring strEffectName{};
 		unsigned int iBoneIndex{};
-		SimpleMath::Vector3 vPosOffset{};
-		SimpleMath::Vector3 vRotationAxis = { 0.f, 1.f, 0.f };
-		float fAngle{};
-		SimpleMath::Vector3 vSize = { 1.f, 1.f, 1.f };
-
-		int iTriggerEffecID{};
+		SimpleMath::Matrix OffsetMatrix{};
 	};
 
 	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {

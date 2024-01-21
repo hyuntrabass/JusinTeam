@@ -22,7 +22,7 @@ public:
 
 protected:
 	void Apply_Orthographic(_uint iWinSizeX, _uint iWinSizeY);
-	const _vec2& Convert_To_2D(class CTransform* pTransform) const;
+	const _vec2 Convert_To_2D(class CTransform* pTransform) const;
 
 protected:
 	_float m_fSizeX{}, m_fSizeY{};

@@ -1,13 +1,15 @@
 #include "Animation.h"
 #include "Channel.h"
 #include "Bone.h"
+#include "GameInstance.h"
 
 CAnimation::CAnimation()
 {
 }
 
 CAnimation::CAnimation(const CAnimation& rhs)
-	: m_fDuration(rhs.m_fDuration)
+	:m_pGameInstance(CGameInstance::Get_Instance())
+	, m_fDuration(rhs.m_fDuration)
 	, m_fTickPerSec(rhs.m_fTickPerSec)
 	, m_iNumChannels(rhs.m_iNumChannels)
 	, m_iNumTriggers(rhs.m_iNumTriggers)
@@ -20,7 +22,10 @@ CAnimation::CAnimation(const CAnimation& rhs)
 	//, m_PrevTransformations(rhs.m_PrevTransformations)
 	, m_pPrevTransformation(rhs.m_pPrevTransformation)
 	, m_hasCloned(true)
+	, m_PivotMatrix(rhs.m_PivotMatrix)
 {
+	Safe_AddRef(m_pGameInstance);
+
 	strcpy_s(m_szName, rhs.m_szName);
 	//for (auto& pChannel : m_Channels)
 	//{
@@ -71,6 +76,8 @@ vector<_float>& CAnimation::Get_Triggers()
 
 void CAnimation::Add_TriggerEffect(TRIGGEREFFECT_DESC TriggerEffectDesc)
 {
+	_mat* pMatrix = new _mat{};
+	m_EffectMatrices.push_back(pMatrix);
 	m_TriggerEffects.push_back(TriggerEffectDesc);
 	m_iNumEffectTriggers++;
 }
@@ -85,7 +92,7 @@ void CAnimation::Add_Trigger(_float fAnimPos)
 {
 	auto	iter = find_if(m_Triggers.begin(), m_Triggers.end(), [&](_float fTrigger)->_bool {
 		if (fTrigger == fAnimPos)
-			return true; 
+			return true;
 
 		return false;
 		});
@@ -115,6 +122,10 @@ void CAnimation::Reset_Trigger()
 
 void CAnimation::ResetFinished()
 {
+	for (size_t i = 0; i < m_EffectMatrices.size(); i++)
+	{
+		m_pGameInstance->Delete_Effect(m_EffectMatrices[i]);
+	}
 	m_isFinished = false;
 	m_fCurrentAnimPos = {};
 	for (auto& pChannel : m_Channels)
@@ -128,7 +139,7 @@ void CAnimation::Set_CurrentAnimPos(_float fCurrentAnimPos)
 	m_fCurrentAnimPos = fCurrentAnimPos;
 }
 
-HRESULT CAnimation::Init(ifstream& ModelFile, const vector<class CBone*>& Bones)
+HRESULT CAnimation::Init_Prototype(ifstream& ModelFile, const vector<class CBone*>& Bones, const _mat& PivotMatrix)
 {
 	_uint iNameSize{};
 	ModelFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof _uint);
@@ -136,7 +147,7 @@ HRESULT CAnimation::Init(ifstream& ModelFile, const vector<class CBone*>& Bones)
 	{
 		MSG_BOX("Name Is Too Long!");
 	}
- 	ModelFile.read(m_szName, iNameSize);
+	ModelFile.read(m_szName, iNameSize);
 
 	ModelFile.read(reinterpret_cast<_char*>(&m_fDuration), sizeof _float);
 	ModelFile.read(reinterpret_cast<_char*>(&m_fTickPerSec), sizeof _float);
@@ -159,6 +170,19 @@ HRESULT CAnimation::Init(ifstream& ModelFile, const vector<class CBone*>& Bones)
 	}
 
 	m_pPrevTransformation = new _mat[Bones.size()];
+
+	m_PivotMatrix = PivotMatrix;
+
+	return S_OK;
+}
+
+HRESULT CAnimation::Init(void* pArg)
+{
+	if (pArg != nullptr)
+	{
+		m_pOwnerTransform = reinterpret_cast<CTransform*>(pArg);
+		Safe_AddRef(m_pOwnerTransform);
+	}
 
 	return S_OK;
 }
@@ -209,15 +233,18 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 		{
 			m_isFinished = false;
 		}
-		for (_uint i = 0; i < m_iNumEffectTriggers; i++)
+		for (size_t i = 0; i < m_TriggerEffects.size(); i++)
 		{
 			if (m_fCurrentAnimPos >= m_TriggerEffects[i].fStartAnimPos)
 			{
 				//이펙트 생성
+				m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i]);
+				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
 			}
 			if (m_fCurrentAnimPos <= m_TriggerEffects[i].fEndAnimPos)
 			{
 				//이펙트 제거
+				m_pGameInstance->Delete_Effect(m_EffectMatrices[i]);
 			}
 		}
 	}
@@ -231,6 +258,15 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 		for (size_t i = 0; i < m_iNumChannels; i++)
 		{
 			m_Channels[i]->Update_TransformationMatrix(Bones, m_fCurrentAnimPos, isAnimChanged, fInterpolationTime);
+		}
+
+		for (size_t i = 0; i < m_TriggerEffects.size(); i++)
+		{
+			if (m_TriggerEffects[i].IsFollow)
+			{
+				//이펙트 위치 갱신
+				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
+			}
 		}
 	}
 }
@@ -300,7 +336,7 @@ void CAnimation::Update_Lerp_TransformationMatrix(const vector<class CBone*>& Bo
 		vPosition = XMVectorLerp(vSrcPotition, vDstPosition, fRatio);
 
 		_matrix TransformationMatrix = XMMatrixAffineTransformation(vScaling, XMVectorSet(0.f, 0.f, 0.f, 1.f), vRotation, vPosition);
-		
+
 		pBone->Set_Transformation(TransformationMatrix);
 
 		++iNumPrevTransformation;
@@ -320,11 +356,11 @@ HRESULT CAnimation::Prepare_Animation(const vector<class CBone*>& Bones, _uint i
 	return S_OK;
 }
 
-CAnimation* CAnimation::Create(ifstream& ModelFile, const vector<class CBone*>& Bones)
+CAnimation* CAnimation::Create(ifstream& ModelFile, const vector<class CBone*>& Bones, const _mat& PivotMatrix)
 {
 	CAnimation* pInstance = new CAnimation();
 
-	if (FAILED(pInstance->Init(ModelFile, Bones)))
+	if (FAILED(pInstance->Init_Prototype(ModelFile, Bones, PivotMatrix)))
 	{
 		MSG_BOX("Failed to Create : CAnimation");
 		Safe_Release(pInstance);
@@ -333,13 +369,23 @@ CAnimation* CAnimation::Create(ifstream& ModelFile, const vector<class CBone*>& 
 	return pInstance;
 }
 
-CAnimation* CAnimation::Clone()
+CAnimation* CAnimation::Clone(void* pArg)
 {
-	return new CAnimation(*this);
+	CAnimation* pInstance = new CAnimation(*this);
+
+	if (FAILED(pInstance->Init(pArg)))
+	{
+		MSG_BOX("Failed to Clone : CAnimation");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
 }
 
 void CAnimation::Free()
 {
+	Safe_Release(m_pGameInstance);
+
 	for (auto& pChannel : m_Channels)
 	{
 		Safe_Release(pChannel);
@@ -351,5 +397,12 @@ void CAnimation::Free()
 	if (not m_hasCloned)
 	{
 		Safe_Delete_Array(m_pPrevTransformation);
+	}
+
+	Safe_Release(m_pOwnerTransform);
+	
+	for (auto& pEffectMatrix : m_EffectMatrices)
+	{
+		Safe_Delete(pEffectMatrix);
 	}
 }

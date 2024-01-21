@@ -19,7 +19,7 @@ private:
 
 public:
 	HRESULT Init_Prototype(const string& strFilePath, _fmatrix PivotMatrix);
-	HRESULT Init(void* pArg) override;
+	HRESULT Init(void* pArg, const CRealtimeVTFModel& rhs);
 
 	// 해당 파츠 타입에 이 해당 모델파일에 넣어 정리할겁니다(isRender는 true 넣으면 랜더 할거라고 정합니다)
 	HRESULT Place_Parts(PART_DESC& ePartDesc, _bool isRender = false);
@@ -44,7 +44,7 @@ public:
 
 	// 총 파츠 타입이 몇개인지 가져옵니다
 	const _uint Get_NumPartType() const {
-		return m_Parts.size();
+		return static_cast<_uint>(m_Parts.size());
 	}
 
 	const _bool& IsAnimationFinished(_uint iAnimIndex) const;

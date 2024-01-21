@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "BodyPart.h"
 #include "Weapon.h"
+#include "Riding.h"
 #include "NameTag.h"
 BEGIN(Client)
 
@@ -228,7 +229,7 @@ public:
 		Jump_End,
 		State_End
 	};
-	
+
 	enum ATTACK_TYPE
 	{
 		AT_Common,
@@ -254,13 +255,15 @@ public:
 	HRESULT Add_Parts();
 	HRESULT Add_Weapon();
 	HRESULT Add_Info();
+	
+
 
 public:
 	void Change_Parts(PART_TYPE PartsType,_int ChangeIndex);
 	void Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex);
 
 	void Reset_PartsAnim();
-
+	
 	void Move(_float fTimeDelta);
 
 	void Common_Attack();
@@ -274,7 +277,11 @@ public:
 	void Return_Attack_IdleForm();
 	void After_CommonAtt(_float fTimeDelta);
 	void After_SkillAtt(_float fTimeDelta);
+	void Check_Att_Collider(ATTACK_TYPE Att_Type);
 
+public:
+	void Summon_Riding(Riding_Type Type);
+	void UnMount_Riding();
 public:
 	void Init_State();
 	void Tick_State(_float fTimeDelta);
@@ -282,6 +289,7 @@ public:
 private:
 	vector<CBodyPart*> m_vecParts{};
 	CWeapon* m_pWeapon{};
+	CRiding* m_pRiding{};
 	CGameObject* m_pNameTag{};
 
 	CTransform* m_pCameraTransform{};

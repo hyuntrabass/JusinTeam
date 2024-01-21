@@ -327,7 +327,7 @@ HRESULT CVTFModel::Read_Animations(ifstream& File)
 
 	for (size_t i = 0; i < m_iNumAnimations; i++)
 	{
-		CAnimation* pAnimation = CAnimation::Create(File, m_Bones);
+		CAnimation* pAnimation = CAnimation::Create(File, m_Bones, m_PivotMatrix);
 		if (!pAnimation)
 		{
 			MSG_BOX("Failed to Read Animations!");

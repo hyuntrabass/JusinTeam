@@ -326,6 +326,7 @@ void CPop_QuestIn::Free()
 	Safe_Release(m_pExclamationMark);
 	Safe_Release(m_pBackground);
 	Safe_Release(m_pButton);
+
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pMaskTextureCom);
 	Safe_Release(m_pRendererCom);

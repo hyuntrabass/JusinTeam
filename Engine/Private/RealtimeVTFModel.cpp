@@ -26,12 +26,6 @@ CRealtimeVTFModel::CRealtimeVTFModel(const CRealtimeVTFModel& rhs)
 		m_Bones.push_back(pBone);
 	}
 
-	for (auto& pPrototypeAnimation : rhs.m_Animations) {
-		CAnimation* pAnimation = pPrototypeAnimation->Clone();
-
-		m_Animations.push_back(pAnimation);
-	}
-
 	for (auto& pPrototypeMesh : rhs.m_Meshes) {
 		CMesh* pMesh = reinterpret_cast<CMesh*>(pPrototypeMesh->Clone());
 
@@ -153,10 +147,17 @@ HRESULT CRealtimeVTFModel::Init_Prototype(const string& strFilePath, _fmatrix Pi
 	return S_OK;
 }
 
-HRESULT CRealtimeVTFModel::Init(void* pArg)
+HRESULT CRealtimeVTFModel::Init(void* pArg, const CRealtimeVTFModel& rhs)
 {
 	if (FAILED(CreateVTF()))
 		return E_FAIL;
+
+	for (auto& pPrototypeAnimation : rhs.m_Animations)
+	{
+		CAnimation* pAnimation = pPrototypeAnimation->Clone(pArg);
+
+		m_Animations.push_back(pAnimation);
+	}
 
 	return S_OK;
 }
@@ -456,7 +457,7 @@ HRESULT CRealtimeVTFModel::Read_Animations(ifstream& File)
 
 	for (size_t i = 0; i < m_iNumAnimations; i++)
 	{
-		CAnimation* pAnimation = CAnimation::Create(File, m_Bones);
+		CAnimation* pAnimation = CAnimation::Create(File, m_Bones, m_PivotMatrix);
 		if (!pAnimation)
 		{
 			MSG_BOX("Failed to Read Animations!");
@@ -522,7 +523,7 @@ HRESULT CRealtimeVTFModel::Read_Materials(ifstream& File, const string& strFileP
 HRESULT CRealtimeVTFModel::CreateVTF()
 {
 	D3D11_TEXTURE2D_DESC Desc = {};
-	Desc.Width = m_Bones.size() * 4;
+	Desc.Width = static_cast<_uint>(m_Bones.size() * 4);
 	Desc.Height = 1;
 	Desc.MipLevels = 1;
 	Desc.ArraySize = 1;
@@ -585,7 +586,7 @@ CComponent* CRealtimeVTFModel::Clone(void* pArg)
 {
 	CRealtimeVTFModel* pInstance = new CRealtimeVTFModel(*this);
 
-	if (FAILED(pInstance->Init(pArg)))
+	if (FAILED(pInstance->Init(pArg, *this)))
 	{
 		MSG_BOX("Failed to Clone : CRealtimeVTFModel");
 	}

@@ -203,6 +203,8 @@ _vec3 CCollider::Get_Extents()
 		return reinterpret_cast<BoundingOrientedBox*>(m_pBounder_Origin)->Extents;
 		break;
 	}
+
+	return _vec3{};
 }
 
 #ifdef _DEBUGTEST

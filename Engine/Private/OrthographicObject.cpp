@@ -46,7 +46,7 @@ void COrthographicObject::Apply_Orthographic(_uint iWinSizeX, _uint iWinSizeY)
 	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixOrthographicLH(static_cast<_float>(iWinSizeX), static_cast<_float>(iWinSizeY), 0.f, 1.1f));
 }
 
-const _vec2& COrthographicObject::Convert_To_2D(CTransform* pTransform) const
+const _vec2 COrthographicObject::Convert_To_2D(CTransform* pTransform) const
 {
 
 	_mat	ProjMatrix = m_pGameInstance->Get_Transform(TransformType::Proj);
