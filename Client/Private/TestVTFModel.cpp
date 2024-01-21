@@ -231,7 +231,7 @@ HRESULT CTestVTFModel::Bind_ShaderResources()
 HRESULT CTestVTFModel::Place_PartModels()
 {
     CRealtimeVTFModel::PART_DESC Desc{};
-    Desc.ePartType = 0; // enum 값으로 파츠타입을 정해서 주세용
+    Desc.ePartType = hair; // enum 값으로 파츠타입을 정해서 주세용
     Desc.FileName = "R_2005_BD.ao";
 
     if (FAILED(m_pModelCom->Place_Parts(Desc, true)))

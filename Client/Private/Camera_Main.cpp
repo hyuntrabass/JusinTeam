@@ -173,7 +173,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		 _vec4 vShakePos = m_pTransformCom->Get_State(State::Pos);
 		vShakePos += XMVectorSet(fShakeAmount, -fShakeAmount, 0.f, 0.f);
 		m_pTransformCom->Set_State(State::Pos, vShakePos);
-		m_fShakeAcc += fTimeDelta * 10.f;
+		m_fShakeAcc += fTimeDelta * 10.f / m_pGameInstance->Get_TimeRatio();
 		m_AimZoomOutTime = 0.f;
 	} 
 	else
@@ -213,8 +213,9 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		_vec4 vShakePos = m_pTransformCom->Get_State(State::Pos);
 		vShakePos += XMVectorSet(fShakeAmount, -fShakeAmount, 0.f, 0.f);
 		m_pTransformCom->Set_State(State::Pos, vShakePos);
-		m_fShakeAcc += fTimeDelta * 10.f;
+		m_fShakeAcc += fTimeDelta * 10.f / m_pGameInstance->Get_TimeRatio();
 		m_AimZoomInTime = 0.f;
+
 		}
 	}
 

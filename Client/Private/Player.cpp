@@ -27,8 +27,8 @@ HRESULT CPlayer::Init(void* pArg)
 
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = false;
-	m_pTransformCom->Set_Scale(_vec3(40.f));
-	Add_Parts();
+	m_pTransformCom->Set_Scale(_vec3(4.f));
+	Place_PartModels();
 	m_pTransformCom->Set_Speed(1);
 	m_pCameraTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
 	Safe_AddRef(m_pCameraTransform);
@@ -44,6 +44,9 @@ HRESULT CPlayer::Init(void* pArg)
 	m_BowSkill[3] = Anim_ID_8130_IllusionArrow; // 분신 나와서 화살(쿨김)
 	m_BowSkill[4] = Anim_ID_7060_KnockBack; // 에임모드 변경(우클릭)
 
+	Change_Parts(PT_BODY, 0);
+	Change_Parts(PT_HAIR, 0);
+	Change_Parts(PT_FACE, 0);
 
 	m_pGameInstance->Register_CollisionObject(this, m_pHitCollider, true);
 	
@@ -53,6 +56,8 @@ HRESULT CPlayer::Init(void* pArg)
 
 void CPlayer::Tick(_float fTimeDelta)
 {
+	m_pGameInstance->Set_TimeRatio(1.0f);
+
 	if (m_pGameInstance->Get_CameraModeIndex() == CM_DEBUG)
 		return;
 
@@ -66,17 +71,19 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	m_fAttTimer += fTimeDelta;
 	m_fSkiilTimer += fTimeDelta;
-	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CUSTOM&&m_vecParts[PT_BODY]->Get_ModelIndex()!=0)
+	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CUSTOM)
 	{	
 		Move(fTimeDelta);
 		Init_State();
 		Tick_State(fTimeDelta);
 	}
-
+	Attack_Camera_Effect();
 	_float fMouseSensor = 0.1f;
 	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_CUSTOM)
 	{
 		m_Animation.bSkipInterpolation = true;
+		m_Animation.isLoop = true;
+		m_Animation.iAnimIndex = Anim_idle_00;
 		if (!CUI_Manager::Get_Instance()->Is_Picking_UI() && m_pGameInstance->Mouse_Pressing(DIM_LBUTTON))
 		{
 			_long dwMouseMove;
@@ -92,15 +99,9 @@ void CPlayer::Tick(_float fTimeDelta)
 	After_CommonAtt(fTimeDelta);
 	After_SkillAtt(fTimeDelta);
 
-	for (int i = 0; i < m_vecParts.size(); i++)
-	{
-		m_vecParts[i]->Tick(fTimeDelta);
-	}
-
-	if(m_pWeapon!=nullptr)
-	m_pWeapon->Tick(fTimeDelta);
 	m_pHitCollider->Update(m_pTransformCom->Get_World_Matrix());
-	for (int i = 0; i < AT_End; i++)
+
+	for (int i = 0; i < AT_Bow_Common; i++)
 	{
 		_mat offset = /*_mat::CreateScale(_vec3(1.f,6.5f,1.f))* */_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f));
 		m_pAttCollider[i]->Update(offset *m_pTransformCom->Get_World_Matrix());
@@ -113,17 +114,26 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		CEvent_Manager::Get_Instance()->Tick(fTimeDelta);
 	}
+
+	if (m_eState==Skill4&&!m_bAttacked)
+	{
+		m_pGameInstance->Set_TimeRatio(0.08f);
+		//m_pGameInstance->Set_ShakeCam(true,0.01f);
+	}
+	m_pModelCom->Set_Animation(m_Animation);
+
+	if (m_UsingMotionBlur)
+		m_ShaderIndex = 1;
+	else
+		m_ShaderIndex = 0;
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
 	if (!m_bStartGame && m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY)
 	{
-		Change_Parts(PT_FACE, 7);
-		Change_Parts(PT_HAIR, 9);
-		Change_Parts(PT_BODY, 1);
+
 		m_pTransformCom->Set_Scale(_vec3(1.0f));
-		Add_Weapon();
 		Add_Info();
 
 		m_bStartGame = true;
@@ -131,26 +141,21 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		CEvent_Manager::Get_Instance()->Set_Quest(TEXT("공격하기"));
 		CEvent_Manager::Get_Instance()->Set_Quest(TEXT("이동하기"));
 		CEvent_Manager::Get_Instance()->Set_Quest(TEXT("몬스터와 접촉"));
+
+		Change_Weapon(WP_SWORD,SWORD0);
 	}
 
-	for (int i = 0; i < m_vecParts.size();i++)
-	{
-		m_vecParts[i]->Late_Tick(fTimeDelta);
-	}
-
-	if (m_pWeapon != nullptr)
-	m_pWeapon->Late_Tick(fTimeDelta);
 
 #ifdef _DEBUGTEST
 	m_pRendererCom->Add_DebugComponent(m_pHitCollider);
 
 	//for (int i = 0; i < AT_End; i++)
 	{
-		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Common]);
-		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Skill1]);
-		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Skill2]);
-		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Skill3]);
-		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Skill4]);
+		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Sword_Common]);
+		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Sword_Skill1]);
+		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Sword_Skill2]);
+		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Sword_Skill3]);
+		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Sword_Skill4]);
 	}
 
 #endif // DEBUG
@@ -163,82 +168,32 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 	if (m_pNameTag != nullptr)
 		m_pNameTag->Late_Tick(fTimeDelta);
+
+	m_pModelCom->Play_Animation(fTimeDelta);
+	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 }
 
 HRESULT CPlayer::Render()
 {
+	if (m_bHide)
+		return S_OK;
 
-	return S_OK;
-}
-
-HRESULT CPlayer::Add_Parts()
-{
-	CBodyPart* pParts = { nullptr };
-
-	BODYPART_DESC BodyParts_Desc{};
-	BodyParts_Desc.pParentTransform = m_pTransformCom;
-	BodyParts_Desc.Animation = &m_Animation;
-	BodyParts_Desc.eType = PT_HAIR;
-	BodyParts_Desc.iNumVariations = 10;
-	
-	wstring strName{};
-
-	strName = TEXT("Prototype_GameObject_Body_Parts");
-	pParts = dynamic_cast<CBodyPart*>(m_pGameInstance->Clone_Object(strName, &BodyParts_Desc));
-
-	if (pParts == nullptr)
-		return E_FAIL;
-
-	m_vecParts.push_back(pParts);
-
-	BodyParts_Desc.eType = PT_FACE;
-	BodyParts_Desc.iNumVariations = 8;
-
-
-	pParts = dynamic_cast<CBodyPart*>(m_pGameInstance->Clone_Object(strName, &BodyParts_Desc));
-
-	if (pParts == nullptr)
-		return E_FAIL;
-
-	m_vecParts.push_back(pParts);
-
-	BodyParts_Desc.eType = PT_BODY;
-	BodyParts_Desc.iNumVariations = 4;
-
-	pParts = dynamic_cast<CBodyPart*>(m_pGameInstance->Clone_Object(strName, &BodyParts_Desc));
-
-	if (pParts == nullptr)
-		return E_FAIL;
-
-	m_vecParts.push_back(pParts);
-
-	return S_OK;
-}
-
-HRESULT CPlayer::Add_Weapon()
-{
-
-	
-
-	WEAPONPART_DESC WeaponParts_Desc{};
-	WeaponParts_Desc.pParentTransform = m_pTransformCom;
-	WeaponParts_Desc.Animation = &m_Animation;
-	WeaponParts_Desc.iNumVariations = 6;
-
-	wstring strName{};
-
-	strName = TEXT("Prototype_GameObject_Weapon");
-
-	m_pWeapon = dynamic_cast<CWeapon*>(m_pGameInstance->Clone_Object(strName, &WeaponParts_Desc));
-
-	if (m_pWeapon == nullptr)
-		return E_FAIL;
-
-	Change_Weapon(WP_BOW, BOW0);
-	for (int i = 0; i < m_vecParts.size(); i++)
+	if (FAILED(Bind_ShaderResources()))
 	{
-		m_vecParts[i]->All_Reset_Anim();
+		return E_FAIL;
 	}
+		if(m_Body_CurrentIndex>=0)
+		Render_Parts(PT_BODY, m_Body_CurrentIndex);
+		if (m_Hair_CurrentIndex >= 0)
+		Render_Parts(PT_HAIR, m_Hair_CurrentIndex);
+		if (m_Face_CurrentIndex >= 0)
+		Render_Parts(PT_FACE, m_Face_CurrentIndex);
+
+		if (m_Weapon_CurrentIndex != WP_INDEX_END)
+			Render_Parts(PT_WEAPON, (_uint)m_Weapon_CurrentIndex);
+
+		if (m_View_Helmat)
+			Render_Parts(PT_HELMET, 0);
 
 	return S_OK;
 }
@@ -261,29 +216,213 @@ HRESULT CPlayer::Add_Info()
 	return S_OK;
 }
 
+HRESULT CPlayer::Place_PartModels()
+{
+	CRealtimeVTFModel::PART_DESC Desc{};
+	Desc.ePartType = PT_BODY; 
+
+	Desc.FileName = "body0";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc, true)))
+		return E_FAIL;
+
+	Desc.FileName = "body1";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "body2";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.ePartType = PT_HELMET;
+	Desc.FileName = "helmet";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.ePartType = PT_FACE;
+	Desc.FileName = "face0";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "face1";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "face2";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "face3";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "face4";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "face5";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.ePartType = PT_HAIR;
+	Desc.FileName = "hair0";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "hair1";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "hair2";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "hair3";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "hair4";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "hair5";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "hair6";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "hair7";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "hair8";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.ePartType = PT_WEAPON;
+	
+	Desc.FileName = "bow0";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "bow1";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "bow2";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "sword0";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "sword1";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "sword2";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CPlayer::Render_Parts(PART_TYPE Parts, _uint Index)
+{
+ 
+ for (size_t k = 0; k < m_pModelCom->Get_Num_PartMeshes(Parts, Index); k++)
+ { 
+	 if (FAILED(m_pModelCom->Bind_Part_Material(m_pShaderCom, "g_DiffuseTexture", TextureType::Diffuse, (_uint)Parts, (_uint)Index, k)))
+		continue;
+ 
+	_bool HasNorTex{}; 
+	if (FAILED(m_pModelCom->Bind_Part_Material(m_pShaderCom, "g_NormalTexture", TextureType::Normals, (_uint)Parts, (_uint)Index, k)))
+	{ 
+		HasNorTex = false; 
+	} 
+	else 
+	{ 
+		HasNorTex = true; 
+	}
+ 
+	_bool HasSpecTex{}; 
+	if (FAILED(m_pModelCom->Bind_Part_Material(m_pShaderCom, "g_SpecTexture", TextureType::Shininess, (_uint)Parts, (_uint)Index, k)))
+	{ 
+		HasSpecTex = false; 
+	} 
+	else 
+	{ 
+		HasSpecTex = true; 
+	}
+ 
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool))) 
+		return E_FAIL; 
+ 
+	HasSpecTex = false;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_HasSpecTex", &HasSpecTex, sizeof _bool))) 
+		return E_FAIL; 
+	
+ 
+	if (FAILED(m_pShaderCom->Begin(m_ShaderIndex)))
+		return E_FAIL;
+ 
+	if (FAILED(m_pModelCom->Render_Part((_uint)Parts,(_uint)Index, k)))
+		return E_FAIL;
+ }
+ 
+	return S_OK;
+}
+
 void CPlayer::Change_Parts(PART_TYPE PartsType, _int ChangeIndex)
 {
-	dynamic_cast<CBodyPart*>(m_vecParts[PartsType])->Set_ModelIndex(ChangeIndex);
-	Reset_PartsAnim();
+	switch (PartsType)
+	{
+	case Client::PT_HAIR:
+		m_Hair_CurrentIndex = ChangeIndex;
+		break;
+	case Client::PT_FACE:
+		m_Face_CurrentIndex = ChangeIndex;
+		break;
+	case Client::PT_BODY:
+		m_Body_CurrentIndex = ChangeIndex;
+		break;
+	default:
+		break;
+	}
 }
 
 void CPlayer::Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex)
 {
-	m_Animation.bSkipInterpolation = true;
-	m_pWeapon->Set_ModelIndex(ChangeIndex);
+	m_Weapon_CurrentIndex = ChangeIndex;
 	m_Current_Weapon = PartsType;
-	Reset_PartsAnim();
-	m_Animation.bSkipInterpolation = false;
-}
-
-void CPlayer::Reset_PartsAnim()
-{
-	dynamic_cast<CBodyPart*>(m_vecParts[PT_HAIR])->Reset_Model();
-	dynamic_cast<CBodyPart*>(m_vecParts[PT_FACE])->Reset_Model();
-	dynamic_cast<CBodyPart*>(m_vecParts[PT_BODY])->Reset_Model();
-
-	if(m_pWeapon!=nullptr)
-	dynamic_cast<CWeapon*>(m_pWeapon)->Reset_Model();
 }
 
 
@@ -306,26 +445,42 @@ void CPlayer::Move(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_1))
 	{
 		CEvent_Manager::Get_Instance()->Update_Quest(TEXT("공격하기"));
-		m_eState = Skill1;
-		m_iCurrentSkill_Index = Skill1;
+		if(m_eState!= Skill1)
+		{
+			m_eState = Skill1;
+			m_iCurrentSkill_Index = Skill1;
+			m_bAttacked = false;
+		}
 	}
 
 	if (m_pGameInstance->Key_Down(DIK_2))
 	{
-		m_eState = Skill2;
-		m_iCurrentSkill_Index = Skill2;
+		if (m_eState != Skill2)
+		{
+			m_eState = Skill2;
+			m_iCurrentSkill_Index = Skill2;
+			m_bAttacked = false;
+		}
 	}
 
 	if (m_pGameInstance->Key_Down(DIK_3))
 	{
-		m_eState = Skill3;
-		m_iCurrentSkill_Index = Skill3;
+		if (m_eState != Skill3)
+		{
+			m_eState = Skill3;
+			m_iCurrentSkill_Index = Skill3;
+			m_bAttacked = false;
+		}
 	}
 
 	if (m_pGameInstance->Key_Down(DIK_4))
 	{
-		m_eState = Skill4;
-		m_iCurrentSkill_Index = Skill4;
+		if (m_eState != Skill4)
+		{
+			m_eState = Skill4;
+			m_iCurrentSkill_Index = Skill4;
+			m_bAttacked = false;
+		}
 		//Change_Weapon(WP_BOW, BOW0);
 	}
 
@@ -351,6 +506,9 @@ void CPlayer::Move(_float fTimeDelta)
 			{
 				m_eState = Attack_Idle;
 				m_pGameInstance->Set_AimMode(false);
+				_vec4 vLook = m_pTransformCom->Get_State(State::Look);
+				vLook.y = m_pTransformCom->Get_State(State::Pos).y;
+				m_pTransformCom->LookAt_Dir(vLook);
 			}
 		}
 
@@ -363,7 +521,6 @@ void CPlayer::Move(_float fTimeDelta)
 		{
 			m_eState = SkillR;
 			m_iCurrentSkill_Index = SkillR;
-			Reset_PartsAnim();
 
 		}
 	}
@@ -411,7 +568,7 @@ void CPlayer::Move(_float fTimeDelta)
 			else if (/*m_pTransformCom->Is_OnGround() and*/
 				m_eState == Run or 
 				m_eState == Run_End or
-				m_vecParts[PT_FACE]->IsAnimationFinished(Anim_Normal_run_start))
+				m_pModelCom->IsAnimationFinished(Anim_Normal_run_start))
 			{
 				m_eState = Run;
 				m_pTransformCom->Set_Speed(m_fRunSpeed);
@@ -476,7 +633,7 @@ void CPlayer::Move(_float fTimeDelta)
 		
 	}
 	else if (m_eState == Walk or
-		m_vecParts[PT_FACE]->IsAnimationFinished(Anim_B_idle_end)
+		m_pModelCom->IsAnimationFinished(Anim_B_idle_end)
 		)
 	{
 		m_eState = Idle;
@@ -699,24 +856,24 @@ void CPlayer::Return_Attack_IdleForm()
 {
 	if(m_Current_Weapon==WP_SWORD)
 	{
-		if (m_vecParts[PT_FACE]->IsAnimationFinished(Anim_Assassin_Attack01_A))
+		if (m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack01_A))
 			m_Animation.iAnimIndex = Anim_Assassin_Attack01_B;
-		else if (m_vecParts[PT_FACE]->IsAnimationFinished(Anim_Assassin_Attack02_A))
+		else if (m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack02_A))
 			m_Animation.iAnimIndex = Anim_Assassin_Attack02_B;
-		else if (m_vecParts[PT_FACE]->IsAnimationFinished(Anim_Assassin_Attack03_A))
+		else if (m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack03_A))
 			m_Animation.iAnimIndex = Anim_Assassin_Attack03_B;
-		else if (m_vecParts[PT_FACE]->IsAnimationFinished(Anim_Assassin_Attack04_A))
+		else if (m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack04_A))
 			m_Animation.iAnimIndex = Anim_Assassin_Attack04_B;
 	}
 	else if (m_Current_Weapon == WP_BOW)
 	{
-		if (m_vecParts[PT_FACE]->IsAnimationFinished(Anim_ID_Sniper_attack01_A))
+		if (m_pModelCom->IsAnimationFinished(Anim_ID_Sniper_attack01_A))
 			m_Animation.iAnimIndex = Anim_ID_Sniper_Attack_01_B;
-		else if (m_vecParts[PT_FACE]->IsAnimationFinished(Anim_ID_Sniper_attack02_A))
+		else if (m_pModelCom->IsAnimationFinished(Anim_ID_Sniper_attack02_A))
 			m_Animation.iAnimIndex = Anim_ID_Sniper_Attack_02_B;
-		else if (m_vecParts[PT_FACE]->IsAnimationFinished(Anim_ID_Sniper_attack03_A))
+		else if (m_pModelCom->IsAnimationFinished(Anim_ID_Sniper_attack03_A))
 			m_Animation.iAnimIndex = Anim_ID_Sniper_Attack_03_B;
-		else if (m_vecParts[PT_FACE]->IsAnimationFinished(Anim_ID_Sniper_attack04_A))
+		else if (m_pModelCom->IsAnimationFinished(Anim_ID_Sniper_attack04_A))
 			m_Animation.iAnimIndex = Anim_ID_Sniper_Attack_04_B;
 	}
 
@@ -732,6 +889,7 @@ void CPlayer::After_CommonAtt(_float fTimeDelta)
 				m_pTransformCom->Set_Speed(5.f);
 				m_pTransformCom->Go_Straight(fTimeDelta);
 				Cam_AttackZoom(0.7f);
+
 			}
 			else if (m_iAttackCombo == 2)
 			{
@@ -775,22 +933,100 @@ void CPlayer::After_SkillAtt(_float fTimeDelta)
 		if (m_iCurrentSkill_Index == Skill1)
 		{
 			if (m_fSkiilTimer > 0.1f && m_fSkiilTimer < 0.2f)
-					Cam_AttackZoom(1.3f);
-			else if (m_fSkiilTimer > 0.32f && m_fSkiilTimer < 0.5f)
-					Cam_AttackZoom(2.6f);
+			{
+				Cam_AttackZoom(1.3f);
 
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill1);
+					m_bAttacked = true;
+				}
+			}
+			else if (m_fSkiilTimer > 0.32f && m_fSkiilTimer < 0.5f)
+			{
+				Cam_AttackZoom(2.6f);
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill1);
+					m_bAttacked = true;
+				}
+			}
+			if (m_fSkiilTimer > 0.21f && m_fSkiilTimer < 0.32f && m_bAttacked)
+				m_bAttacked = false;
 		}
 		else if (m_iCurrentSkill_Index == Skill2)
 		{
 			if (m_fSkiilTimer > 0.1f && m_fSkiilTimer < 0.5f)
 			{
-				m_pTransformCom->Set_Speed(25.f);
+				m_pTransformCom->Set_Speed(15.f);
 				m_pTransformCom->Go_Straight(fTimeDelta);
 			}
 			else if (m_fSkiilTimer > 0.65f && m_fSkiilTimer < 1.0f)
 			{
-				m_pTransformCom->Set_Speed(7.f);
+				m_pTransformCom->Set_Speed(5.f);
 				m_pTransformCom->Go_Straight(fTimeDelta);
+
+			}
+
+			if (m_fSkiilTimer > 0.1f && m_fSkiilTimer < 0.2f)
+			{
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill2);
+					m_bAttacked = true;
+				}
+			}
+			if (m_fSkiilTimer > 0.2f && m_fSkiilTimer < 0.27f && m_bAttacked)
+			{
+				m_bAttacked = false;
+			}
+
+			if (m_fSkiilTimer > 0.27f && m_fSkiilTimer < 0.35f)
+			{
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill2);
+					m_bAttacked = true;
+				}
+			}
+			else if (m_fSkiilTimer > 0.35f && m_fSkiilTimer < 0.4f && m_bAttacked)
+			{
+				m_bAttacked = false;
+			}
+
+			if (m_fSkiilTimer > 0.42f && m_fSkiilTimer < 0.5f)
+			{
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill2);
+					m_bAttacked = true;
+				}
+			}
+			else if (m_fSkiilTimer > 0.5f && m_fSkiilTimer < 0.54f && m_bAttacked)
+			{
+				m_bAttacked = false;
+			}
+
+			if (m_fSkiilTimer > 0.7f && m_fSkiilTimer < 0.8f)
+			{
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill2);
+					m_bAttacked = true;
+				}
+			}
+			else if (m_fSkiilTimer > 0.81f && m_fSkiilTimer < 0.87f && m_bAttacked)
+			{
+				m_bAttacked = false;
+			}
+
+			if (m_fSkiilTimer > 0.88f && m_fSkiilTimer < 0.98f)
+			{
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill2);
+					m_bAttacked = true;
+				}
 			}
 		}
 		else if (m_iCurrentSkill_Index == Skill3)
@@ -799,22 +1035,36 @@ void CPlayer::After_SkillAtt(_float fTimeDelta)
 				Cam_AttackZoom(0.5f);
 			if (m_fSkiilTimer > 0.15f && m_fSkiilTimer < 0.35f)
 			{
-				for (int i = 0; i < m_vecParts.size(); i++)
-				{
-					m_vecParts[i]->Set_Hide(true);
-				}
-				m_pWeapon->Set_Hide(true);
+				m_bHide = true;
 			}
 
 			if (m_fSkiilTimer > 0.35f && m_fSkiilTimer < 0.6f)
 			{
-				for (int i = 0; i < m_vecParts.size(); i++)
-				{
-					m_vecParts[i]->Set_Hide(false);
-				}
-				m_pWeapon->Set_Hide(false);
+				m_bHide = false;
 				m_pTransformCom->Set_Speed(15.f);
 				m_pTransformCom->Go_Straight(fTimeDelta);
+			}
+
+			if (m_fSkiilTimer > 0.35f && m_fSkiilTimer < 0.38f)
+			{
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill3);
+					m_bAttacked = true;
+				}
+			}
+			else if (m_fSkiilTimer > 0.38f && m_fSkiilTimer < 0.43f && m_bAttacked)
+			{
+				m_bAttacked = false;
+			}
+
+			if (m_fSkiilTimer > 0.5f && m_fSkiilTimer < 0.6f)
+			{
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill3);
+					m_bAttacked = true;
+				}
 			}
 
 		}
@@ -822,11 +1072,136 @@ void CPlayer::After_SkillAtt(_float fTimeDelta)
 		{
 			if (m_fSkiilTimer > 0.5f && m_fSkiilTimer < 1.1f)
 			{
-				m_pGameInstance->Set_ShakeCam(true,0.15f);
+				//m_pGameInstance->Set_ShakeCam(true,0.15f);
 			}
 			if (m_fSkiilTimer > 0.1f && m_fSkiilTimer < 0.8f)
 			{
 				Cam_AttackZoom(3.3 * m_fSkiilTimer);
+			}
+
+			if (m_fSkiilTimer > 0.1f && m_fSkiilTimer < 0.2f)
+			{
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill4);
+					m_bAttacked = true;
+				}
+			}
+			else if (m_fSkiilTimer > 0.2f && m_fSkiilTimer < 0.22f && m_bAttacked)
+			{
+				m_bAttacked = false;
+			}
+
+			if (m_fSkiilTimer > 0.23f && m_fSkiilTimer < 0.25f)
+			{
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill4);
+					m_bAttacked = true;
+				}
+			}
+			else if (m_fSkiilTimer > 0.25f && m_fSkiilTimer < 0.29f && m_bAttacked)
+			{
+				m_bAttacked = false;
+			}
+
+			if (m_fSkiilTimer > 0.29f && m_fSkiilTimer < 0.35f)
+			{
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill4);
+					m_bAttacked = true;
+				}
+			}
+			else if (m_fSkiilTimer > 0.35f && m_fSkiilTimer < 0.4f && m_bAttacked)
+			{
+				m_bAttacked = false;
+			}
+
+			if (m_fSkiilTimer > 0.45f && m_fSkiilTimer < 0.5f)
+			{
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill4);
+					m_bAttacked = true;
+				}
+			}
+			else if (m_fSkiilTimer > 0.5f && m_fSkiilTimer < 0.53f && m_bAttacked)
+			{
+				m_bAttacked = false;
+			}
+
+			if (m_fSkiilTimer > 0.54f && m_fSkiilTimer < 0.6f)
+			{
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill4);
+					m_bAttacked = true;
+				}
+			}
+			else if (m_fSkiilTimer > 0.61f && m_fSkiilTimer < 0.66f && m_bAttacked)
+			{
+				m_bAttacked = false;
+			}
+
+			if (m_fSkiilTimer > 0.66f && m_fSkiilTimer < 0.7f)
+			{
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill4);
+					m_bAttacked = true;
+				}
+			}
+			else if (m_fSkiilTimer > 0.71f && m_fSkiilTimer < 0.74f && m_bAttacked)
+			{
+				m_bAttacked = false;
+			}
+
+			if (m_fSkiilTimer > 0.75f && m_fSkiilTimer < 0.779f)
+			{
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill4);
+					m_bAttacked = true;
+				}
+			}
+			else if (m_fSkiilTimer > 0.8f && m_fSkiilTimer < 0.82f && m_bAttacked)
+			{
+				m_bAttacked = false;
+			}
+
+			if (m_fSkiilTimer > 0.85f && m_fSkiilTimer < 0.89f)
+			{
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill4);
+					m_bAttacked = true;
+				}
+			}
+			else if (m_fSkiilTimer > 0.9f && m_fSkiilTimer < 0.92f && m_bAttacked)
+			{
+				m_bAttacked = false;
+			}
+			if (m_fSkiilTimer > 0.92f && m_fSkiilTimer < 0.94f)
+			{
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill4);
+					m_bAttacked = true;
+				}
+			}
+			else if (m_fSkiilTimer > 0.94f && m_fSkiilTimer < 0.97f && m_bAttacked)
+			{
+				m_bAttacked = false;
+			}
+
+			if (m_fSkiilTimer > 1.0f && m_fSkiilTimer < 1.2f)
+			{
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill4);
+					m_bAttacked = true;
+				}
 			}
 		}
 		
@@ -887,27 +1262,50 @@ void CPlayer::After_SkillAtt(_float fTimeDelta)
 }
 void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 {
+
+
 	switch (Att_Type)
 	{
-	case Client::CPlayer::AT_Common:
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type],10,Att_Type); // 맞았을때 데미지를 줘라!
-		m_pGameInstance->CheckCollision_Monster(m_pAttCollider[Att_Type]); //맞았는지 체크해라 !
+	case Client::AT_Sword_Common:
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type],10,0); // 맞았을때 데미지를 줘라!
+		if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[Att_Type]))
+		{
+			m_pGameInstance->Set_TimeRatio(0.01f);
+			m_pGameInstance->Set_ShakeCam(true, 0.01f);
+		}
 		break;
-	case Client::CPlayer::AT_Skill1:
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], 20, Att_Type);
+	case Client::AT_Sword_Skill1:
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], 20, 0);
 		break;
-	case Client::CPlayer::AT_Skill2:
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], 30, Att_Type);
+	case Client::AT_Sword_Skill2:
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], 30, 0);
 		break;
-	case Client::CPlayer::AT_Skill3:
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], 40, Att_Type);
+	case Client::AT_Sword_Skill3:
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], 40, 0);
 		break;
-	case Client::CPlayer::AT_Skill4:
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], 50, Att_Type);
+	case Client::AT_Sword_Skill4:
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], 50, 0);
+
+
 		break;
 	default:
 		break;
 	}
+
+	
+}
+void CPlayer::Attack_Camera_Effect()
+{
+	for(int i = 0; i < AT_Bow_Common;i++)
+	{
+		if (m_eState == Skill4 && !m_bAttacked)
+		{
+			
+		}
+		else
+			m_pGameInstance->Set_TimeRatio(1.f);
+	}
+
 }
 void CPlayer::Summon_Riding(Riding_Type Type)
 {
@@ -1055,7 +1453,7 @@ void CPlayer::Init_State()
 			m_eState = Run_End;
 			break;
 		case Client::CPlayer::Run_End:
-			if (m_vecParts[PT_FACE]->IsAnimationFinished(Anim_Normal_run_stop))
+			if (m_pModelCom->IsAnimationFinished(Anim_Normal_run_stop))
 			{
 				m_eState = Idle;
 				m_hasJumped = false;
@@ -1063,17 +1461,21 @@ void CPlayer::Init_State()
 			break;
 		case Client::CPlayer::Attack:
 		{
-			if (m_Current_Weapon == WP_SWORD)
-			Check_Att_Collider(AT_Common);
+			//if(!m_bAttacked)
+			{
+				if (m_Current_Weapon == WP_SWORD)
+					Check_Att_Collider(AT_Sword_Common);
+				m_bAttacked = true;
+			}
 
 			Return_Attack_IdleForm();
 
 			if(m_Current_Weapon == WP_SWORD)
 			{
-				if (m_vecParts[PT_FACE]->IsAnimationFinished(Anim_Assassin_Attack01_B) or
-					m_vecParts[PT_FACE]->IsAnimationFinished(Anim_Assassin_Attack02_B) or
-					m_vecParts[PT_FACE]->IsAnimationFinished(Anim_Assassin_Attack03_B) or
-					m_vecParts[PT_FACE]->IsAnimationFinished(Anim_Assassin_Attack04_B)
+				if (m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack01_B) or
+					m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack02_B) or
+					m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack03_B) or
+					m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack04_B)
 					)
 				{
 					m_eState = Attack_Idle;
@@ -1081,10 +1483,10 @@ void CPlayer::Init_State()
 			}
 			if (m_Current_Weapon == WP_BOW)
 			{
-				if (m_vecParts[PT_FACE]->IsAnimationFinished(Anim_ID_Sniper_Attack_01_B) or
-					m_vecParts[PT_FACE]->IsAnimationFinished(Anim_ID_Sniper_Attack_02_B) or
-					m_vecParts[PT_FACE]->IsAnimationFinished(Anim_ID_Sniper_Attack_03_B) or
-					m_vecParts[PT_FACE]->IsAnimationFinished(Anim_ID_Sniper_Attack_04_B))
+				if (m_pModelCom->IsAnimationFinished(Anim_ID_Sniper_Attack_01_B) or
+					m_pModelCom->IsAnimationFinished(Anim_ID_Sniper_Attack_02_B) or
+					m_pModelCom->IsAnimationFinished(Anim_ID_Sniper_Attack_03_B) or
+					m_pModelCom->IsAnimationFinished(Anim_ID_Sniper_Attack_04_B))
 				{
 					m_eState = Attack_Idle;
 				}
@@ -1104,7 +1506,7 @@ void CPlayer::Init_State()
 		case Client::CPlayer::Attack_Run:
 			if (m_Current_Weapon == WP_SWORD)
 			{
-				if (m_vecParts[PT_FACE]->IsAnimationFinished(Anim_Assassin_Battle_Run_end))
+				if (m_pModelCom->IsAnimationFinished(Anim_Assassin_Battle_Run_end))
 				{
 					m_eState = Run;
 					m_hasJumped = false;
@@ -1113,7 +1515,7 @@ void CPlayer::Init_State()
 
 			if (m_Current_Weapon == WP_BOW)
 			{
-				if (m_vecParts[PT_FACE]->IsAnimationFinished(Anim_Sniper_Battle_Run_end))
+				if (m_pModelCom->IsAnimationFinished(Anim_Sniper_Battle_Run_end))
 				{
 					m_eState = Run;
 					m_hasJumped = false;
@@ -1124,8 +1526,8 @@ void CPlayer::Init_State()
 		{		
 			if(m_Current_Weapon == WP_SWORD)
 			{
-				Check_Att_Collider(AT_Skill1);
-				if (m_vecParts[PT_FACE]->IsAnimationFinished(m_SwordSkill[0]))
+				
+				if (m_pModelCom->IsAnimationFinished(m_SwordSkill[0]))
 				{
 					m_eState = Skill1_End;
 
@@ -1133,7 +1535,7 @@ void CPlayer::Init_State()
 			}
 			else if (m_Current_Weapon == WP_BOW)
 			{
-				if (m_vecParts[PT_FACE]->IsAnimationFinished(m_BowSkill[0]))
+				if (m_pModelCom->IsAnimationFinished(m_BowSkill[0]))
 				{
 					m_eState = Attack_Idle;
 				
@@ -1142,7 +1544,7 @@ void CPlayer::Init_State()
 		}
 			break;
 		case Client::CPlayer::Skill1_End:
-			if (m_vecParts[PT_FACE]->IsAnimationFinished(Anim_RA_7062_KnockBack_B))
+			if (m_pModelCom->IsAnimationFinished(Anim_RA_7062_KnockBack_B))
 			{
 				m_eState = Attack_Idle;
 		
@@ -1152,15 +1554,19 @@ void CPlayer::Init_State()
 		{
 			if (m_Current_Weapon == WP_SWORD)
 			{
-				Check_Att_Collider(AT_Skill2);
-				if (m_vecParts[PT_FACE]->IsAnimationFinished(m_SwordSkill[1]))
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill2);
+					m_bAttacked = true;
+				}
+				if (m_pModelCom->IsAnimationFinished(m_SwordSkill[1]))
 				{
 					m_eState = Attack_Idle;
 				}
 			}
 			else if (m_Current_Weapon == WP_BOW)
 			{
-				if (m_vecParts[PT_FACE]->IsAnimationFinished(m_BowSkill[1]))
+				if (m_pModelCom->IsAnimationFinished(m_BowSkill[1]))
 				{
 					m_eState = Attack_Idle;
 
@@ -1172,15 +1578,19 @@ void CPlayer::Init_State()
 		{
 			if (m_Current_Weapon == WP_SWORD)
 			{
-				Check_Att_Collider(AT_Skill3);
-				if (m_vecParts[PT_FACE]->IsAnimationFinished(m_SwordSkill[2]))
+				if (!m_bAttacked)
+				{
+					Check_Att_Collider(AT_Sword_Skill3);
+					m_bAttacked = true;
+				}
+				if (m_pModelCom->IsAnimationFinished(m_SwordSkill[2]))
 				{
 					m_eState = Attack_Idle;
 				}
 			}
 			else if (m_Current_Weapon == WP_BOW)
 			{
-				if (m_vecParts[PT_FACE]->IsAnimationFinished(m_BowSkill[2]))
+				if (m_pModelCom->IsAnimationFinished(m_BowSkill[2]))
 				{
 					m_eState = Attack_Idle;
 
@@ -1192,15 +1602,15 @@ void CPlayer::Init_State()
 		{
 			if (m_Current_Weapon == WP_SWORD)
 			{
-				Check_Att_Collider(AT_Skill4);
-				if (m_vecParts[PT_FACE]->IsAnimationFinished(m_SwordSkill[3]))
+				
+				if (m_pModelCom->IsAnimationFinished(m_SwordSkill[3]))
 				{
 					m_eState = Attack_Idle;
 				}
 			}
 			else if (m_Current_Weapon == WP_BOW)
 			{
-				if (m_vecParts[PT_FACE]->IsAnimationFinished(m_BowSkill[3]))
+				if (m_pModelCom->IsAnimationFinished(m_BowSkill[3]))
 				{
 					m_eState = Attack_Idle;
 
@@ -1214,7 +1624,7 @@ void CPlayer::Init_State()
 			}
 			else if (m_Current_Weapon == WP_BOW)
 			{
-				if (m_vecParts[PT_FACE]->IsAnimationFinished(m_BowSkill[4]))
+				if (m_pModelCom->IsAnimationFinished(m_BowSkill[4]))
 				{
 					m_Animation.isLoop = false;
 					m_eState = Aim_Idle;
@@ -1243,6 +1653,13 @@ HRESULT CPlayer::Add_Components()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_RTVTF"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Player"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+		return E_FAIL;
+
 	// Com_Collider
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::OBB;
@@ -1259,13 +1676,13 @@ HRESULT CPlayer::Add_Components()
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.4f, 0.4f);
 	
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), 
-		TEXT("Com_Collider_Common_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Common]), &CollDesc)))
+		TEXT("Com_Collider_Common_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Common]), &CollDesc)))
 		return E_FAIL;
 
 
 
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Skill2_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Skill2]), &CollDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Skill2_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Skill2]), &CollDesc)))
 	{
 		return E_FAIL;
 	}
@@ -1273,7 +1690,7 @@ HRESULT CPlayer::Add_Components()
 	CollDesc.vExtents = _vec3(2.3f, 1.2f, 2.3f);
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.5f, 0.2f);
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack2621"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Skill4]), &CollDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack2621"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Skill4]), &CollDesc)))
 	{
 		return E_FAIL;
 	}
@@ -1287,7 +1704,7 @@ HRESULT CPlayer::Add_Components()
 
 	CollDesc.matFrustum = matView * matProj;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Skill3_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Skill1]), &CollDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Skill3_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Skill1]), &CollDesc)))
 	{
 		return E_FAIL;
 	}
@@ -1298,7 +1715,7 @@ HRESULT CPlayer::Add_Components()
 
 
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Skill1_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Skill3]), &CollDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Skill1_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Skill3]), &CollDesc)))
 	{
 		return E_FAIL;
 	}
@@ -1313,6 +1730,34 @@ HRESULT CPlayer::Add_Components()
 
 HRESULT CPlayer::Bind_ShaderResources()
 {
+	// WorldMatrix 바인드
+	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+		return E_FAIL;
+
+	// ViewMatrix 바인드
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
+		return E_FAIL;
+
+	// ProjMatrix 바인드
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
+		return E_FAIL;
+
+	// 카메라 Far 바인드
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
+		return E_FAIL;
+
+	// 모션블러용 이전프레임 WorldMatrix 바인드
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldWorldMatrix", m_OldWorldMatrix)))
+		return E_FAIL;
+
+	// 모션블러용 이전프레임 ViewMatrix 바인드
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix_vec4x4())))
+		return E_FAIL;
+
+	// 뼈 바인드
+	if (FAILED(m_pModelCom->Bind_Bone(m_pShaderCom)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -1347,11 +1792,7 @@ void CPlayer::Free()
 	__super::Free();
 
 	CEvent_Manager::Destroy_Instance();
-	for (auto& iter : m_vecParts)
-	{
-		Safe_Release(iter);
-	}
-	m_vecParts.clear();
+
 
 	for (int i = 0; i < AT_End; i++)
 	{
@@ -1362,8 +1803,8 @@ void CPlayer::Free()
 		Safe_Release(m_pRiding);
 
 	Safe_Release(m_pNameTag);
-
-	Safe_Release(m_pWeapon);
+	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pCameraTransform);
 	Safe_Release(m_pHitCollider);

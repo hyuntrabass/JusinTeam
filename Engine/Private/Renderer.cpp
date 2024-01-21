@@ -1194,7 +1194,7 @@ HRESULT CRenderer::Render_Debug()
 {
 	for (auto& pComponent : m_DebugComponents)
 	{
-		pComponent->Render();
+		//pComponent->Render();
 		Safe_Release(pComponent);
 	}
 	m_DebugComponents.clear();

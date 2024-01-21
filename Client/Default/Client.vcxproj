@@ -194,7 +194,6 @@
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\Lake.h" />
     <ClInclude Include="..\Public\TestTree.h" />
-    <ClInclude Include="..\Public\TestVTFModel.h" />
     <ClInclude Include="..\Public\TextButton.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Level_Custom.h" />
@@ -275,7 +274,6 @@
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Lake.cpp" />
     <ClCompile Include="..\Private\TestTree.cpp" />
-    <ClCompile Include="..\Private\TestVTFModel.cpp" />
     <ClCompile Include="..\Private\TextButton.cpp" />
     <ClCompile Include="..\Private\Level_Custom.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />

@@ -59,6 +59,22 @@ namespace Client
 		SWORD2,
 		WP_INDEX_END
 	};
+
+	enum ATTACK_TYPE  //데미지주는 타입
+	{
+		AT_Sword_Common,
+		AT_Sword_Skill1,
+		AT_Sword_Skill2,
+		AT_Sword_Skill3,
+		AT_Sword_Skill4,
+		AT_Bow_Common,
+		AT_Bow_Skill1,
+		AT_Bow_Skill2,
+		AT_Bow_Skill3,
+		AT_Bow_Skill4,
+		AT_End
+	};
+
 	struct WEAPONPART_DESC
 	{
 		_uint iNumVariations{};
@@ -70,7 +86,8 @@ namespace Client
 		PT_HAIR,
 		PT_FACE,
 		PT_BODY,
-		PT_HELMAT,
+		PT_HELMET,
+		PT_WEAPON,
 		PT_END
 	};
 
