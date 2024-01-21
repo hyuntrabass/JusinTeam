@@ -1,6 +1,7 @@
 #include "HPBar.h"
 #include "GameInstance.h"
 #include "TextButton.h"
+#include "UI_Manager.h"
 
 CHPBar::CHPBar(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -34,14 +35,14 @@ HRESULT CHPBar::Init(void* pArg)
 	m_fX = 500.f;
 	m_fY = 630.f;
 
-	m_fDepth = 0.8f;
+	m_fDepth = (_float)D_BAR / (_float)D_END;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	m_vRatio = _float2(1000.f, 1000.f);
 
 	CTextButton::TEXTBUTTON_DESC Button = {};
 	Button.eLevelID = LEVEL_STATIC;
-	Button.fDepth = 1.f;
+	Button.fDepth = m_fDepth + 0.01f;
 	Button.strText = TEXT("");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BarContext");
 	Button.vPosition = _vec2(m_fX, m_fY);
@@ -54,7 +55,7 @@ HRESULT CHPBar::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	Button.fDepth = 0.7f;
+	Button.fDepth = m_fDepth - 0.01f;
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BarBorder");
 	m_pBorder = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
@@ -83,6 +84,10 @@ void CHPBar::Tick(_float fTimeDelta)
 
 void CHPBar::Late_Tick(_float fTimeDelta)
 {
+	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
+	{
+		return;
+	}
 	m_pBorder->Late_Tick(fTimeDelta);
 	m_pBackground->Late_Tick(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);

@@ -130,6 +130,7 @@ HRESULT CLoader::Load_Editor()
 			}
 		}
 	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Brush"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Brush/Brush.png")))))
 	{
 		return E_FAIL;
@@ -172,6 +173,20 @@ HRESULT CLoader::Load_Editor()
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Map/Village/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false))))
 			{
 				return E_FAIL;
 			}

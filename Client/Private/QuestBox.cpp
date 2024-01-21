@@ -39,7 +39,7 @@ HRESULT CQuestBox::Init(void* pArg)
 
 	m_fX = m_vPosition.x - m_fSizeX / 2.f;
 	m_fY = m_vPosition.y;
-	m_fDepth = 0.5f;
+	m_fDepth = (_float)D_SCREEN / (_float)D_END;
 	m_iOriginNum = m_iNum;
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
@@ -93,21 +93,21 @@ HRESULT CQuestBox::Render()
 		vTextColor = _vec4(1.f, 0.7f, 0.1f, 1.f);
 	}
 
-	m_pGameInstance->Render_Text(L"Font_Malang", strType + m_strQuestTitle, _vec2(fTextPosX - 0.1f, m_fY - 10.f), fFontSize, vTextColor, 0.f, true);
-	m_pGameInstance->Render_Text(L"Font_Malang", strType + m_strQuestTitle, _vec2(fTextPosX + 0.1f, m_fY - 10.f), fFontSize, vTextColor, 0.f, true);
-	m_pGameInstance->Render_Text(L"Font_Malang", strType + m_strQuestTitle, _vec2(fTextPosX, m_fY - 10.f + 0.1f), fFontSize, vTextColor, 0.f, true);
-	m_pGameInstance->Render_Text(L"Font_Malang", strType + m_strQuestTitle, _vec2(fTextPosX, m_fY - 10.f - 0.1f), fFontSize, vTextColor, 0.f, true);
-	m_pGameInstance->Render_Text(L"Font_Malang", strType + m_strQuestTitle, _vec2(fTextPosX, m_fY - 10.f), fFontSize, vTextColor, 0.f, true);
+	m_pGameInstance->Render_Text(L"Font_Malang", strType + m_strQuestTitle, _vec2(fTextPosX - 0.1f, m_fY - 15.f), fFontSize, vTextColor, 0.f, true);
+	m_pGameInstance->Render_Text(L"Font_Malang", strType + m_strQuestTitle, _vec2(fTextPosX + 0.1f, m_fY - 15.f), fFontSize, vTextColor, 0.f, true);
+	m_pGameInstance->Render_Text(L"Font_Malang", strType + m_strQuestTitle, _vec2(fTextPosX, m_fY - 15.f + 0.1f), fFontSize, vTextColor, 0.f, true);
+	m_pGameInstance->Render_Text(L"Font_Malang", strType + m_strQuestTitle, _vec2(fTextPosX, m_fY - 15.f - 0.1f), fFontSize, vTextColor, 0.f, true);
+	m_pGameInstance->Render_Text(L"Font_Malang", strType + m_strQuestTitle, _vec2(fTextPosX, m_fY - 15.f), fFontSize, vTextColor, 0.f, true);
 	
 	if (m_iOriginNum > 1)
 	{
 		strNum = TEXT("(") + to_wstring((m_iOriginNum - m_iNum)) + TEXT("/") + to_wstring(m_iOriginNum) + TEXT(")");
 	}
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText + strNum, _vec2(fTextPosX - 0.1f, m_fY + 10.f), fFontSize, _vec4(0.0f, 0.0f, 0.0f, 1.0f), 0.f, true);
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText + strNum, _vec2(fTextPosX + 0.1f, m_fY + 10.f), fFontSize, _vec4(0.0f, 0.0f, 0.0f, 1.0f), 0.f, true);
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText + strNum, _vec2(fTextPosX, m_fY + 10.f + 0.1f), fFontSize, _vec4(0.0f, 0.0f, 0.0f, 1.0f), 0.f, true);
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText + strNum, _vec2(fTextPosX, m_fY + 10.f - 0.1f), fFontSize, _vec4(0.0f, 0.0f, 0.0f, 1.0f), 0.f, true);
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText + strNum, _vec2(fTextPosX, m_fY + 10.f), fFontSize, _vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.f, true);
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText + strNum, _vec2(fTextPosX - 0.1f, m_fY + 5.f), fFontSize, _vec4(0.0f, 0.0f, 0.0f, 1.0f), 0.f, true);
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText + strNum, _vec2(fTextPosX + 0.1f, m_fY + 5.f), fFontSize, _vec4(0.0f, 0.0f, 0.0f, 1.0f), 0.f, true);
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText + strNum, _vec2(fTextPosX, m_fY + 5.f + 0.1f), fFontSize, _vec4(0.0f, 0.0f, 0.0f, 1.0f), 0.f, true);
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText + strNum, _vec2(fTextPosX, m_fY + 5.f - 0.1f), fFontSize, _vec4(0.0f, 0.0f, 0.0f, 1.0f), 0.f, true);
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText + strNum, _vec2(fTextPosX, m_fY + 5.f), fFontSize, _vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.f, true);
 
 
 	return S_OK;

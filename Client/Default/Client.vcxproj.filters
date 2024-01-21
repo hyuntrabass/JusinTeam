@@ -259,6 +259,18 @@
     <Filter Include="02.GameObjects\03.Player\Riding">
       <UniqueIdentifier>{073d72ed-ee94-48c7-98cd-dce26867b879}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven">
+      <UniqueIdentifier>{a3563dd2-4399-4fd0-b2ef-4ec038b98d67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Wearable Slots">
+      <UniqueIdentifier>{b373fc29-646c-4bd3-8638-6561ec5c16ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Desc">
+      <UniqueIdentifier>{9243a5dc-24e7-4b3f-af5a-176532212fb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Item">
+      <UniqueIdentifier>{b5de1188-8dfd-4cce-be30-4873c65ba985}</UniqueIdentifier>
+    </Filter>
     <Filter Include="99.Headers\98.Default">
       <UniqueIdentifier>{6ef1e47a-756a-4482-9f45-993c308095c3}</UniqueIdentifier>
     </Filter>
@@ -499,6 +511,15 @@
     <ClInclude Include="..\Public\Riding.h">
       <Filter>02.GameObjects\03.Player\Riding</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Inven.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Wearable_Slot.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Wearable Slots</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Item.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Item</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -732,6 +753,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Riding.cpp">
       <Filter>02.GameObjects\03.Player\Riding</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Inven.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Wearable_Slot.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Wearable Slots</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Item.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Item</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

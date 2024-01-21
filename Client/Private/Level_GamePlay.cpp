@@ -1,8 +1,10 @@
 #include "Level_GamePlay.h"
+#include "Level_Loading.h"
 #include "Camera.h"
 #include "Monster.h"
 #include "NPC_Dummy.h"
 #include "Map.h"
+#include "Player.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(_dev pDevice, _context pContext)
@@ -13,13 +15,13 @@ CLevel_GamePlay::CLevel_GamePlay(_dev pDevice, _context pContext)
 HRESULT CLevel_GamePlay::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_GAMEPLAY);
-	/*
+
 	if (FAILED(Ready_Player()))
 	{
 		MSG_BOX("Failed to Ready Player");
 		return E_FAIL;
 	}
-	*/
+
 
 	if (FAILED(Ready_Camera()))
 	{
@@ -41,11 +43,11 @@ HRESULT CLevel_GamePlay::Init()
 	}
 
 	// Monster Parse
-	//if (FAILED(Ready_Monster()))
-	//{
-	//	MSG_BOX("Failed to Ready Monster");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Monster()))
+	{
+		MSG_BOX("Failed to Ready Monster");
+		return E_FAIL;
+	}
 
 	if (FAILED(Ready_Rabbit()))
 	{
@@ -128,7 +130,7 @@ HRESULT CLevel_GamePlay::Init()
 		MSG_BOX("Failed to Ready Map");
 		return E_FAIL;
 	}
-	
+
 
 	if (FAILED(Ready_UI()))
 	{
@@ -137,11 +139,11 @@ HRESULT CLevel_GamePlay::Init()
 	}
 
 
-	//if (FAILED(Ready_Object()))
-	//{
-	//	MSG_BOX("Failed to Ready Object");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Object()))
+	{
+		MSG_BOX("Failed to Ready Object");
+		return E_FAIL;
+	}
 
 	m_pGameInstance->Set_HellHeight(-5000.f);
 
@@ -150,11 +152,22 @@ HRESULT CLevel_GamePlay::Init()
 
 void CLevel_GamePlay::Tick(_float fTimeDelta)
 {
+
+	if (m_pGameInstance->Key_Down(DIK_RETURN))
+	{
+
+		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_VILLAGE))))
+		{
+			return;
+		}
+
+		return;
+	}
+
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 	{
 		DestroyWindow(g_hWnd);
 	}
-
 }
 
 HRESULT CLevel_GamePlay::Render()
@@ -186,18 +199,36 @@ HRESULT CLevel_GamePlay::Ready_Light()
 
 HRESULT CLevel_GamePlay::Ready_Player()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Prototype_GameObject_Player"))))
+	// ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½
+	const TCHAR* pGetPath = TEXT("../Bin/Data/Player_Pos.dat");
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
 	{
+		MessageBox(g_hWnd, L"../Bin/Data/Player_Pos.dat ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½.", L"ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ ï¿½ï¿½ï¿½ï¿½", MB_OK);
 		return E_FAIL;
 	}
+
+	_vec4 Player_Pos{ 0.f };
+	inFile.read(reinterpret_cast<char*>(&Player_Pos), sizeof(_vec4));
+
+	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+	pPlayerTransform->Set_State(State::Pos, Player_Pos);
+
 
 	return S_OK;
 }
 
 HRESULT CLevel_GamePlay::Ready_Map()
 {
-	_uint2 vTerrainSize{ 100, 100 };
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &vTerrainSize)))
+	//_uint2 vTerrainSize{ 100, 100 };
+	TerrainInfo Terrain;
+	Terrain.m_iNumVerticesX = 100;
+	Terrain.m_iNumVerticesZ = 100;
+	Terrain.isMesh = false;
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &Terrain)))
 	{
 		return E_FAIL;
 	}
@@ -208,7 +239,7 @@ HRESULT CLevel_GamePlay::Ready_Map()
 
 	//if (!inFile.is_open())
 	//{
-	//	MessageBox(g_hWnd, L"¸Ê ÆÄÀÏÀ» Ã£Áö ¸øÇß½À´Ï´Ù.", L"ÆÄÀÏ ·Îµå ½ÇÆÐ", MB_OK);
+	//	MessageBox(g_hWnd, L"ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½.", L"ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ ï¿½ï¿½ï¿½ï¿½", MB_OK);
 	//	return E_FAIL;
 	//}
 
@@ -234,7 +265,7 @@ HRESULT CLevel_GamePlay::Ready_Map()
 
 	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Map"), &MapInfo)))
 	//	{
-	//		MessageBox(g_hWnd, L"¸Ê ºÒ·¯¿À±â ½ÇÆÐ", L"ÆÄÀÏ ·Îµå", MB_OK);
+	//		MessageBox(g_hWnd, L"ï¿½ï¿½ ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½", L"ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½", MB_OK);
 	//		return E_FAIL;
 	//	}
 	//}
@@ -251,7 +282,7 @@ HRESULT CLevel_GamePlay::Ready_Object()
 
 	if (!inFile.is_open())
 	{
-		MSG_BOX("¿ÀºêÁ§Æ® ÆÄÀÏÀ» Ã£Áö ¸øÇß½À´Ï´Ù.");
+		MSG_BOX("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½.");
 		return E_FAIL;
 	}
 
@@ -275,9 +306,9 @@ HRESULT CLevel_GamePlay::Ready_Object()
 		ObjectInfo.strPrototypeTag = ObjectPrototype;
 		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Prologue_Object"), ObjectPrototype, &ObjectInfo)))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Prologue_Object"), TEXT("Prototype_GameObject_Prologue_Object"), &ObjectInfo)))
 		{
-			MSG_BOX("¿ÀºêÁ§Æ® ºÒ·¯¿À±â ½ÇÆÐ");
+			MSG_BOX("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
 			return E_FAIL;
 		}
 	}
@@ -346,13 +377,13 @@ HRESULT CLevel_GamePlay::Ready_Groar_Boss()
 HRESULT CLevel_GamePlay::Ready_Monster()
 {
 	MonsterInfo Info{};
-	const TCHAR* pGetPath = L"../Bin/Data/MonsterData.dat";
+	const TCHAR* pGetPath = L"../Bin/Data/Prologue_MonsterData.dat";
 
 	std::ifstream inFile(pGetPath, std::ios::binary);
 
 	if (!inFile.is_open())
 	{
-		MessageBox(g_hWnd, L"ÆÄÀÏÀ» Ã£Áö ¸øÇß½À´Ï´Ù.", L"ÆÄÀÏ ·Îµå ½ÇÆÐ", MB_OK);
+		MessageBox(g_hWnd, L"../Bin/Data/Prologue_MonsterData.dat ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½.", L"ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ ï¿½ï¿½ï¿½ï¿½", MB_OK);
 		return E_FAIL;
 	}
 
@@ -375,11 +406,16 @@ HRESULT CLevel_GamePlay::Ready_Monster()
 		Info.strMonsterPrototype = MonsterPrototype;
 		Info.MonsterWorldMat = MonsterWorldMat;
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"), MonsterPrototype, &Info)))
+		if (Info.strMonsterPrototype == TEXT("Prototype_Model_NPCvsMon"))
 		{
-			MessageBox(g_hWnd, L"ÆÄÀÏ ·Îµå ½ÇÆÐ", L"ÆÄÀÏ ·Îµå", MB_OK);
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_NPCvsMon"), &Info)))
+			{
+				MessageBox(g_hWnd, L"ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ ï¿½ï¿½ï¿½ï¿½", L"ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½", MB_OK);
 				return E_FAIL;
+			}
+
 		}
+
 
 	}
 	return S_OK;
@@ -422,6 +458,8 @@ HRESULT CLevel_GamePlay::Ready_Nastron03()
 
 HRESULT CLevel_GamePlay::Ready_NPCvsMon()
 {
+
+
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPCvsMon"), TEXT("Prototype_GameObject_NPCvsMon"))))
 	{
 		return E_FAIL;
@@ -494,6 +532,11 @@ HRESULT CLevel_GamePlay::Ready_UI()
 		return E_FAIL;
 	}
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_ExpBar"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Inven"))))
 	{
 		return E_FAIL;
 	}

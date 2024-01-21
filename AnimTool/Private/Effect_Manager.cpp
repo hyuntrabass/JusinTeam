@@ -9,6 +9,41 @@ CEffect_Manager::CEffect_Manager()
 	Safe_AddRef(m_pGameInstance);
 }
 
+void CEffect_Manager::Tick(_float fTimeDelta)
+{
+	for (auto iter = m_Effects.begin(); iter != m_Effects.end();)
+	{
+		iter->second->Tick(fTimeDelta);
+
+		if (iter->second->isDead())
+		{
+			iter = m_Effects.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+}
+
+void CEffect_Manager::Late_Tick(_float fTimeDelta)
+{
+	for (auto& pEffect : m_Effects)
+	{
+		pEffect.second->Late_Tick(fTimeDelta);
+	}
+}
+
+_bool CEffect_Manager::Has_Created(const void* pMatrixKey)
+{
+	auto iter = m_Effects.find(pMatrixKey);
+	if (iter == m_Effects.end())
+	{
+		return false;
+	}
+	return true;
+}
+
 EffectInfo CEffect_Manager::Get_EffectInformation(const wstring& strEffectTag)
 {
 	auto iter = m_EffectInfos.find(strEffectTag);
@@ -31,23 +66,22 @@ CEffect_Dummy* CEffect_Manager::Clone_Effect(EffectInfo* pInfo)
 	return dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_EffectDummy", pInfo));
 }
 
-void CEffect_Manager::Register_Functions()
-{
-	CGameInstance::Func_CreateFX func_Create = [this](auto... args) { return Create_Effect(args...); };
-	m_pGameInstance->Register_CreateEffect_Callback(func_Create);
-
-	CGameInstance::Func_DeleteFX func_Delete = [this](auto... args) { return Delete_Effect(args...); };
-	m_pGameInstance->Register_DeleteEffect_Callback(func_Delete);
-}
-
-void CEffect_Manager::Create_Effect(const wstring& strEffectTag, _mat* pMatrix)
+void CEffect_Manager::Create_Effect(const wstring& strEffectTag, _mat* pMatrix, const _bool& isFollow)
 {
 	EffectInfo Info = Get_EffectInformation(strEffectTag);
 	Info.pMatrix = pMatrix;
+	Info.isFollow = isFollow;
 
-	CEffect_Dummy* pEffect = Clone_Effect(&Info);
+	if (Info.fLifeTime < 0)
+	{
+		CEffect_Dummy* pEffect = Clone_Effect(&Info);
 
-	m_Effects.emplace(pMatrix, pEffect);
+		m_Effects.emplace(pMatrix, pEffect);
+	}
+	else
+	{
+		Add_Layer_Effect(&Info);
+	}
 }
 
 void CEffect_Manager::Delete_Effect(const void* pMatrix)
@@ -55,12 +89,27 @@ void CEffect_Manager::Delete_Effect(const void* pMatrix)
 	auto iter = m_Effects.find(pMatrix);
 	if (iter == m_Effects.end())
 	{
-		MSG_BOX("ÀÌÆåÆ® ¾øÀ½.");
 		return;
 	}
 
 	Safe_Release(iter->second);
 	m_Effects.erase(iter);
+}
+
+void CEffect_Manager::Register_Callback()
+{
+	CGameInstance::Func_CreateFX func_Create = [this](auto... args) { return Create_Effect(args...); };
+	m_pGameInstance->Register_CreateEffect_Callback(func_Create);
+
+	CGameInstance::Func_DeleteFX func_Delete = [this](auto... args) { return Delete_Effect(args...); };
+	m_pGameInstance->Register_DeleteEffect_Callback(func_Delete);
+
+	CGameInstance::Func_TickFX func_Tick = [this](auto... args) { return Tick(args...); };
+	CGameInstance::Func_TickFX func_LateTick = [this](auto... args) { return Late_Tick(args...); };
+	m_pGameInstance->Register_Tick_LateTick_Callback(func_Tick, func_LateTick);
+
+	CGameInstance::Func_HasCreatedFX func_HasCreated = [this](auto... args) { return Has_Created(args...); };
+	m_pGameInstance->Register_HasCreated_Callback(func_HasCreated);
 }
 
 HRESULT CEffect_Manager::Read_EffectFile()

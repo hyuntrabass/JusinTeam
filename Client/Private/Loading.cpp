@@ -35,7 +35,7 @@ HRESULT CLoading::Init(void* pArg)
 	m_fX = g_iWinSizeX >> 1;
 	m_fY = g_iWinSizeY >> 1;
 
-	m_fDepth = 1.f;
+	m_fDepth = (_float)D_LOADING / (_float)D_END;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 

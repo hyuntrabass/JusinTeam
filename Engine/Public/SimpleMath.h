@@ -557,6 +557,11 @@ namespace DirectX
             Vector3 Position_vec3() const  noexcept { return Vector3(_41, _42, _43); }
             void Position_vec3(const Vector3& v) noexcept { _41 = v.x; _42 = v.y; _43 = v.z; }
 
+            Vector3 Get_Scale() const noexcept;
+
+            Matrix Get_RotationRemoved() const noexcept;
+            void RemoveRotation() noexcept;
+
             // Matrix operations
             bool Decompose(Vector3& scale, Quaternion& rotation, Vector3& translation) noexcept;
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Inven.h"
 #include "Logo.h"
 #include "Odin.h"
 #include "Player.h"
@@ -41,6 +42,9 @@
 #include "Terrain.h"
 #include "Sky.h"
 #include "BackGround_Mask.h"
+#include "Item.h"
+#include "Wearable_Slot.h"
+
 
 #include "Map.h"
 
@@ -67,3 +71,6 @@
 
 // Test Model
 #include "TestVTFModel.h"
+
+// Object
+#include "Prologue_Object.h"

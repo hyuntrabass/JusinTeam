@@ -49,7 +49,7 @@ HRESULT CPlayer::Init(void* pArg)
 	Change_Parts(PT_FACE, 0);
 
 	m_pGameInstance->Register_CollisionObject(this, m_pHitCollider, true);
-	
+
 
 	return S_OK;
 }
@@ -57,6 +57,11 @@ HRESULT CPlayer::Init(void* pArg)
 void CPlayer::Tick(_float fTimeDelta)
 {
 	m_pGameInstance->Set_TimeRatio(1.0f);
+
+	if (m_bStartGame)
+	{
+		CEvent_Manager::Get_Instance()->Tick(fTimeDelta);
+	}
 
 	if (m_pGameInstance->Get_CameraModeIndex() == CM_DEBUG)
 		return;
@@ -71,8 +76,46 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	m_fAttTimer += fTimeDelta;
 	m_fSkiilTimer += fTimeDelta;
+
+
+	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
+	{
+		if (CUI_Manager::Get_Instance()->Is_InvenActive())
+		{
+			m_isInvenActive = true;
+			if (CUI_Manager::Get_Instance()->Set_CurrentPlayerPos(m_pTransformCom->Get_State(State::Pos)))
+			{
+				m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), 0.f);
+				m_Animation.iAnimIndex = Anim_idle_00;
+				m_Animation.isLoop = true;
+				m_hasJumped = false;
+				m_iSuperArmor = {};
+			}
+		
+			m_pTransformCom->Set_State(State::Pos, CUI_Manager::Get_Instance()->Get_InvenPos());
+
+			if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON))
+			{
+				_long dwMouseMove;
+
+				if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
+				{
+					m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * dwMouseMove * -1.f * 0.1f);
+				}
+			}
+		}
+		return;
+	}
+	if (m_isInvenActive && !CUI_Manager::Get_Instance()->Showing_FullScreenUI())
+	{
+		m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), 0.f);
+		m_pTransformCom->Set_State(State::Pos, CUI_Manager::Get_Instance()->Get_LastPlayerPos());
+		m_isInvenActive = false;
+		return;
+	}
+
 	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CUSTOM)
-	{	
+	{
 		Move(fTimeDelta);
 		Init_State();
 		Tick_State(fTimeDelta);
@@ -110,26 +153,28 @@ void CPlayer::Tick(_float fTimeDelta)
 	if (m_pNameTag != nullptr)
 		m_pNameTag->Tick(fTimeDelta);
 
+
+}
+
+void CPlayer::Late_Tick(_float fTimeDelta)
+{
 	if (m_bStartGame)
 	{
-		CEvent_Manager::Get_Instance()->Tick(fTimeDelta);
+		CEvent_Manager::Get_Instance()->Late_Tick(fTimeDelta);
 	}
-
 	if (m_eState==Skill4&&!m_bAttacked)
 	{
 		m_pGameInstance->Set_TimeRatio(0.08f);
 		//m_pGameInstance->Set_ShakeCam(true,0.01f);
 	}
+
 	m_pModelCom->Set_Animation(m_Animation);
 
 	if (m_UsingMotionBlur)
 		m_ShaderIndex = 1;
 	else
 		m_ShaderIndex = 0;
-}
 
-void CPlayer::Late_Tick(_float fTimeDelta)
-{
 	if (!m_bStartGame && m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY)
 	{
 
@@ -161,11 +206,11 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 #endif // DEBUG
 
 
-	if (m_bStartGame)
-	{
-		CEvent_Manager::Get_Instance()->Late_Tick(fTimeDelta);
-	}
 
+	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
+	{
+		return;
+	}
 	if (m_pNameTag != nullptr)
 		m_pNameTag->Late_Tick(fTimeDelta);
 

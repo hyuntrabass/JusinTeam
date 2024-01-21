@@ -26,22 +26,13 @@ HRESULT CPop_QuestEnd::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_fSizeX = 193.f;
-	m_fSizeY = 25.f;
-
-	m_fX = 790.f;
-	m_fY = 610.f;
-
-	m_fDepth = 0.8f;
-
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	m_fSizeX = 300.f;
 	m_fSizeY = 300.f;
 
 	m_fX = (_float)g_iWinSizeX / 2.f;
 	m_fY = 100.f;
 
-	m_fDepth = 0.3f;
+	m_fDepth = (_float)D_QUEST / (_float)D_END;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
@@ -145,7 +136,7 @@ HRESULT CPop_QuestEnd::Add_Parts()
 {
 	CBlurTexture::BLURTEX_DESC BLURTEXDesc = {};
 	BLURTEXDesc.eLevelID = LEVEL_STATIC;
-	BLURTEXDesc.fDepth = 0.2f;
+	BLURTEXDesc.fDepth = m_fDepth - 0.01f;
 	BLURTEXDesc.fFontSize = 0.f;
 	BLURTEXDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Check");
 	BLURTEXDesc.vPosition = _vec2(m_fX, m_fY);
@@ -163,7 +154,7 @@ HRESULT CPop_QuestEnd::Add_Parts()
 
 	CTextButton::TEXTBUTTON_DESC ButtonDesc = {};
 	ButtonDesc.eLevelID = LEVEL_STATIC;
-	ButtonDesc.fDepth = 0.3f;
+	ButtonDesc.fDepth = m_fDepth;
 	ButtonDesc.fFontSize = 0.45f;
 	ButtonDesc.strText = TEXT("");
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SiegeQuest");
@@ -223,6 +214,7 @@ HRESULT CPop_QuestEnd::Add_Parts()
 		return E_FAIL;
 	}
 
+	return S_OK;
 }
 
 HRESULT CPop_QuestEnd::Add_Components()

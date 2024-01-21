@@ -15,11 +15,6 @@ public:
 	const _bool& IsFinished() const;
 	const _float Get_CurrentAnimPos() const;
 	const _float Get_Duration() const;
-	const _uint Get_NumEffectTrigger() const;
-	TRIGGEREFFECT_DESC* Get_TriggerEffect(_uint iTriggerEffectIndex);
-	vector<TRIGGEREFFECT_DESC>& Get_TriggerEffects();
-	void Add_TriggerEffect(TRIGGEREFFECT_DESC TriggerEffectDesc);
-	void Reset_TriggerEffects();
 	//나중에 지울것들
 	const _uint Get_NumTrigger() const;
 	vector<_float>& Get_Triggers();
@@ -35,8 +30,7 @@ public:
 	}
 
 public:
-	HRESULT Init_Prototype(ifstream& ModelFile, const vector<class CBone*>& Bones, const _mat& PivotMatrix);
-	HRESULT Init(void* pArg);
+	HRESULT Init(ifstream& ModelFile, const vector<class CBone*>& Bones);
 	void Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio);
 
 	HRESULT Prepare_Animation(const vector<class CBone*>& Bones, _uint iFrame);
@@ -45,12 +39,7 @@ public:
 		return m_fTickPerSec;
 	}
 
-
 private:
-	class CGameInstance* m_pGameInstance{};
-	class CTransform* m_pOwnerTransform{};
-	_mat m_PivotMatrix{};
-
 	_char m_szName[MAX_PATH]{};
 	
 	_float m_fDuration{};
@@ -67,15 +56,7 @@ private:
 	_bool m_isInterpolating{};
 
 	_uint m_iNumTriggers{};
-	vector<_float> m_Triggers; // 이펙트 트리거
-
-	_uint m_iNumEffectTriggers{};
-	vector<TRIGGEREFFECT_DESC> m_TriggerEffects;
-	vector<_mat*> m_EffectMatrices;
-
-	_uint m_iNumSoundTrigger{};
-	vector<_float> m_SoundTriggers; // 사운드 트리거
-	vector<TRIGGERSOUND_DESC> m_TriggerSounds;
+	vector<_float> m_Triggers; // 트리거
 
 	_uint m_iMaxFrame = 0;
 
@@ -89,7 +70,7 @@ private:
 
 public:
 	static CAnimation* Create(ifstream& ModelFile, const vector<class CBone*>& Bones, const _mat& PivotMatrix);
-	CAnimation* Clone(void* pArg);
+	CAnimation* Clone();
 	virtual void Free() override;
 };
 
