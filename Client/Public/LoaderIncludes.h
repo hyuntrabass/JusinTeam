@@ -56,6 +56,9 @@
 #include "TrilobiteA.h"
 #include "Void01.h"
 #include "Void05.h"
+#include "Imp.h"
+#include "Void09.h"
+#include "Void20.h"
 
 // NPC
 #include "Cat.h"

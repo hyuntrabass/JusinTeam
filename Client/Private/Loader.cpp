@@ -1137,6 +1137,24 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Imp"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Imp/Mesh/Imp.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	_mat Pivot1 = _mat::CreateScale(0.5f);
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Void09"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Void09/Mesh/Void09.hyuntraanimmesh", false, Pivot1))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Void20"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Void20/Mesh/Void20.hyuntraanimmesh", false, Pivot1))))
+	{
+		return E_FAIL;
+	}
 
 #pragma endregion Monster
 
@@ -1322,6 +1340,20 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Imp"), CImp::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Void09"), CVoid09::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Void20"), CVoid20::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 
 #pragma endregion Monster
 

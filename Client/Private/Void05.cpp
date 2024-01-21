@@ -1,7 +1,7 @@
 #include "Void05.h"
 
-const _float CVoid05::g_fChaseRange = 7.f;
-const _float CVoid05::g_fAttackRange = 2.f;
+const _float CVoid05::m_fChaseRange = 7.f;
+const _float CVoid05::m_fAttackRange = 2.f;
 
 CVoid05::CVoid05(_dev pDevice, _context pContext)
 	: CMonster(pDevice, pContext)
@@ -152,7 +152,7 @@ void CVoid05::Tick_State(_float fTimeDelta)
 		m_pTransformCom->LookAt(vPlayerPos);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 
-		if (fDistance > g_fChaseRange)
+		if (fDistance > m_fChaseRange)
 		{
 			m_eCurState = STATE_IDLE;
 		}
@@ -235,7 +235,7 @@ void CVoid05::Attack(_float fTimeDelta)
 {
 	_float fDistance = __super::Compute_PlayerDistance();
 
-	if (fDistance <= g_fChaseRange)
+	if (fDistance <= m_fChaseRange)
 	{
 		if (m_eCurState == STATE_ATTACK)
 		{
@@ -252,7 +252,7 @@ void CVoid05::Attack(_float fTimeDelta)
 		}
 	}
 
-	if (fDistance <= g_fAttackRange)
+	if (fDistance <= m_fAttackRange)
 	{
 		m_eCurState = STATE_ATTACK;
 		m_Animation.isLoop = true;

@@ -95,6 +95,23 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
+	if (FAILED(Ready_Imp()))
+	{
+		MSG_BOX("Failed to Ready Imp");
+		return E_FAIL;
+	}
+
+	if (FAILED(Ready_Void09()))
+	{
+		MSG_BOX("Failed to Ready Void09");
+		return E_FAIL;
+	}
+
+	if (FAILED(Ready_Void20()))
+	{
+		MSG_BOX("Failed to Ready Void20");
+		return E_FAIL;
+	}
 
 	// NPC
 	if (FAILED(Ready_Cat()))
@@ -463,6 +480,36 @@ HRESULT CLevel_GamePlay::Ready_Thief04()
 HRESULT CLevel_GamePlay::Ready_TrilobiteA()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_TrilobiteA"), TEXT("Prototype_GameObject_TrilobiteA"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Imp()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Imp"), TEXT("Prototype_GameObject_Imp"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Void09()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void09"), TEXT("Prototype_GameObject_Void09"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Void20()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
 	{
 		return E_FAIL;
 	}

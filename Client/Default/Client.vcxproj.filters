@@ -262,6 +262,21 @@
     <Filter Include="02.GameObjects\03.Player\Riding">
       <UniqueIdentifier>{073d72ed-ee94-48c7-98cd-dce26867b879}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\04.Monster\06. Void\Void09">
+      <UniqueIdentifier>{708cdd65-d615-4fef-b8a3-5eb67028c4ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Monster\06. Void\Void20">
+      <UniqueIdentifier>{003eae17-dbfe-4be7-895f-7f1fd99a9dd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Monster\06. Void\Void23">
+      <UniqueIdentifier>{dd18462f-f63e-461d-bb94-cf13ddd980dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Monster\07. Imp">
+      <UniqueIdentifier>{29051842-1671-42b2-a983-c0712f3f2e64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\10. Pet">
+      <UniqueIdentifier>{1c9f08e4-2674-40c5-8777-3b03e17501c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -387,7 +402,6 @@
     <ClInclude Include="..\public\Effect_Manager.h">
       <Filter>03.Effect</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\NPCvsMon.h" />
     <ClInclude Include="..\Public\Logo_Text.h">
       <Filter>02.GameObjects\00.UI\00.LogoLevel\Logo_Background</Filter>
     </ClInclude>
@@ -502,6 +516,16 @@
     <ClInclude Include="..\Public\Riding.h">
       <Filter>02.GameObjects\03.Player\Riding</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\NPCvsMon.h">
+      <Filter>02.GameObjects\04.Monster\01. Tutorial\00. NPCvsMon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Imp.h">
+      <Filter>02.GameObjects\04.Monster\07. Imp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Void09.h">
+      <Filter>02.GameObjects\04.Monster\06. Void\Void09</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Void20.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -739,6 +763,13 @@
     <ClCompile Include="..\Private\Riding.cpp">
       <Filter>02.GameObjects\03.Player\Riding</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Imp.cpp">
+      <Filter>02.GameObjects\04.Monster\07. Imp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Void09.cpp">
+      <Filter>02.GameObjects\04.Monster\06. Void\Void09</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Void20.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
