@@ -11,9 +11,18 @@ CEffect_Manager::CEffect_Manager()
 
 void CEffect_Manager::Tick(_float fTimeDelta)
 {
-	for (auto& pEffect : m_Effects)
+	for (auto iter = m_Effects.begin(); iter != m_Effects.end();)
 	{
-		pEffect.second->Tick(fTimeDelta);
+		iter->second->Tick(fTimeDelta);
+
+		if (iter->second->isDead())
+		{
+			iter = m_Effects.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
 	}
 }
 
