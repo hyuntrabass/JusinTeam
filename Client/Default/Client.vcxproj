@@ -178,6 +178,7 @@
     <ClInclude Include="..\Public\Custom.h" />
     <ClInclude Include="..\Public\Effect_Dummy.h" />
     <ClInclude Include="..\Public\NPC_Dummy.h" />
+    <ClInclude Include="..\Public\Objects.h" />
     <ClInclude Include="..\Public\Odin.h" />
     <ClInclude Include="..\Public\Pop_QuestEnd.h" />
     <ClInclude Include="..\Public\Pop_QuestIn.h" />
@@ -257,6 +258,7 @@
     <ClCompile Include="..\Private\Custom.cpp" />
     <ClCompile Include="..\Private\Effect_Dummy.cpp" />
     <ClCompile Include="..\Private\NPC_Dummy.cpp" />
+    <ClCompile Include="..\Private\Objects.cpp" />
     <ClCompile Include="..\Private\Odin.cpp" />
     <ClCompile Include="..\Private\Pop_QuestEnd.cpp" />
     <ClCompile Include="..\Private\Pop_QuestIn.cpp" />

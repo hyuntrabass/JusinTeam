@@ -43,11 +43,11 @@ HRESULT CLevel_GamePlay::Init()
 	}
 
 	// Monster Parse
-	//if (FAILED(Ready_Monster()))
-	//{
-	//	MSG_BOX("Failed to Ready Monster");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Monster()))
+	{
+		MSG_BOX("Failed to Ready Monster");
+		return E_FAIL;
+	}
 
 	if (FAILED(Ready_Rabbit()))
 	{
@@ -393,11 +393,16 @@ HRESULT CLevel_GamePlay::Ready_Monster()
 		Info.strMonsterPrototype = MonsterPrototype;
 		Info.MonsterWorldMat = MonsterWorldMat;
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"), MonsterPrototype, &Info)))
+		if(Info.strMonsterPrototype == TEXT("Prototype_Model_NPCvsMon"))
 		{
-			MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
-				return E_FAIL;
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_NPCvsMon"), &Info)))
+			{
+				MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
+					return E_FAIL;
+			}
+
 		}
+
 
 	}
 	return S_OK;
@@ -440,6 +445,8 @@ HRESULT CLevel_GamePlay::Ready_Nastron03()
 
 HRESULT CLevel_GamePlay::Ready_NPCvsMon()
 {
+
+
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPCvsMon"), TEXT("Prototype_GameObject_NPCvsMon"))))
 	{
 		return E_FAIL;

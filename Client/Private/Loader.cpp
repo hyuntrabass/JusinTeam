@@ -1350,7 +1350,7 @@ HRESULT CLoader::Load_Village()
 			}
 		}
 	}*/
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, TEXT("Prototype_Model_Village"),CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Map/Village/Mesh/Village.hyuntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, TEXT("Prototype_Model_Village"),CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Map/Village/Mesh/Village1.hyuntrastatmesh"))))
 	{
 		return E_FAIL;
 	}

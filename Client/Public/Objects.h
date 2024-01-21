@@ -1,22 +1,22 @@
 #pragma once
 #include "Client_Define.h"
-#include "Objects.h"
+#include "BlendObject.h"
 
-//struct ObjectInfo
-//{
-//	wstring Prototype{};
-//	_mat m_Matrix{};
-//};
-//
+struct ObjectInfo
+{
+	wstring Prototype{};
+	_mat m_Matrix{};
+};
+
 
 BEGIN(Client)
 
-class CPrologue_Object final : public CObjects
+class CObjects abstract : public CBlendObject
 {
-private:
-	CPrologue_Object(_dev pDevice, _context pContext);
-	CPrologue_Object(const CPrologue_Object& rhs);
-	virtual ~CPrologue_Object() = default;
+protected:
+	CObjects(_dev pDevice, _context pContext);
+	CObjects(const CObjects& rhs);
+	virtual ~CObjects() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -27,21 +27,24 @@ public:
 
 	ObjectInfo Get_Info() const { return m_Info; }
 
-private:
+protected:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
-private:
+protected:
 
 	ObjectInfo m_Info{};
 	_bool m_isSelected{};
 	_uint m_iShaderPass{};
 	_uint m_iOutLineShaderPass{};
 
+protected:
+	HRESULT Add_Components(wstring strPrototype);
+	HRESULT Bind_ShaderResources();
+
 
 public:
-	static CPrologue_Object* Create(_dev pDevice, _context pContext);
-	virtual CGameObject* Clone(void* pArg) override;
+	virtual CGameObject* Clone(void* pArg) = 0;
 	virtual void Free() override;
 };
 
