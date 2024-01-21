@@ -26,22 +26,13 @@ HRESULT CPop_QuestEnd::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_fSizeX = 193.f;
-	m_fSizeY = 25.f;
-
-	m_fX = 790.f;
-	m_fY = 610.f;
-
-	m_fDepth = 0.8f;
-
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	m_fSizeX = 300.f;
 	m_fSizeY = 300.f;
 
 	m_fX = (_float)g_iWinSizeX / 2.f;
 	m_fY = 100.f;
 
-	m_fDepth = 0.3f;
+	m_fDepth = (_float)D_QUEST / (_float)D_END;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
@@ -120,16 +111,16 @@ HRESULT CPop_QuestEnd::Render()
 	}
 
 
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 230.f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 230.f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f - 0.2f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f + 0.2f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 230.f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 230.f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f - 0.2f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f + 0.2f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f), 0.7, _vec4(0.4431f, 0.1333f, 0.9098f, 1.f));
 
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 280.f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 280.f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f, 280.f - 0.2f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f, 280.f + 0.2f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 280.f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 280.f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f, 280.f - 0.2f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f, 280.f + 0.2f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f, 280.f), 0.7);
 
 	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 종료하세요."), _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 580.f), 0.4, _vec4(0.f, 0.f, 0.f, 1.f));
@@ -145,7 +136,7 @@ HRESULT CPop_QuestEnd::Add_Parts()
 {
 	CBlurTexture::BLURTEX_DESC BLURTEXDesc = {};
 	BLURTEXDesc.eLevelID = LEVEL_STATIC;
-	BLURTEXDesc.fDepth = 0.2f;
+	BLURTEXDesc.fDepth = m_fDepth - 0.01f;
 	BLURTEXDesc.fFontSize = 0.f;
 	BLURTEXDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Check");
 	BLURTEXDesc.vPosition = _vec2(m_fX, m_fY);
@@ -163,7 +154,7 @@ HRESULT CPop_QuestEnd::Add_Parts()
 
 	CTextButton::TEXTBUTTON_DESC ButtonDesc = {};
 	ButtonDesc.eLevelID = LEVEL_STATIC;
-	ButtonDesc.fDepth = 0.3f;
+	ButtonDesc.fDepth = m_fDepth;
 	ButtonDesc.fFontSize = 0.45f;
 	ButtonDesc.strText = TEXT("");
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SiegeQuest");

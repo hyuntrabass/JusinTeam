@@ -555,6 +555,26 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			{
 				ImGui::Text("FALSE");
 			}
+			if (ImGui::Button("ROTATE"))
+			{
+				if (pEffectDesc->IsRotateToBone == false)
+				{
+					pEffectDesc->IsRotateToBone = true;
+				}
+				else if (pEffectDesc->IsRotateToBone == true)
+				{
+					pEffectDesc->IsRotateToBone = false;
+				}
+			}
+			ImGui::SameLine();
+			if (pEffectDesc->IsRotateToBone)
+			{
+				ImGui::Text("TRUE");
+			}
+			else
+			{
+				ImGui::Text("FALSE");
+			}
 
 			ImGui::PopItemWidth();
 			ImGui::End();
@@ -719,6 +739,8 @@ HRESULT CImgui_Manager::SaveFile()
 				Fileout.write(reinterpret_cast<_char*>(&iBoneIndex), sizeof(_uint));
 				_mat OffsetMatrix = EffectDescs[i].OffsetMatrix;
 				Fileout.write(reinterpret_cast<_char*>(&OffsetMatrix), sizeof(_mat));
+				_bool IsRotateToBone = EffectDescs[i].IsRotateToBone;
+				Fileout.write(reinterpret_cast<_char*>(&IsRotateToBone), sizeof(_bool));
 			}
 		}
 
@@ -771,6 +793,7 @@ HRESULT CImgui_Manager::LoadFile()
 
 			Filein.read(reinterpret_cast<_char*>(&EffectDesc.iBoneIndex), sizeof(_uint));
 			Filein.read(reinterpret_cast<_char*>(&EffectDesc.OffsetMatrix), sizeof(_mat));
+			Filein.read(reinterpret_cast<_char*>(&EffectDesc.IsRotateToBone), sizeof(_bool));
 
 			pCurModel->Add_TriggerEffect(EffectDesc);
 		}

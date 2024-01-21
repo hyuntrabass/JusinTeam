@@ -19,13 +19,13 @@ HRESULT CVIBuffer_Terrain::Init_Prototype()
 
 HRESULT CVIBuffer_Terrain::Init(void* pArg)
 {
-	m_pTerrain = *(Info*)pArg;
+	m_pTerrain = *(TERRAIN_INFO*)pArg;
 	_bool isMesh = m_pTerrain.isMesh;
 
 	if (isMesh == false)
 	{
-		m_iNumVerticesX = m_pTerrain.iNumVerticesX;
-		m_iNumVerticesZ = m_pTerrain.iNumVerticesZ;
+		m_iNumVerticesX = m_pTerrain.vTerrainSize.x;
+		m_iNumVerticesZ = m_pTerrain.vTerrainSize.y;
 
 		m_iNumVertexBuffers = 1;
 		m_iVertexStride = sizeof VTXNORTEX;
@@ -155,7 +155,7 @@ HRESULT CVIBuffer_Terrain::Init(void* pArg)
 	}
 	else
 	{
-		Mesh_Terrain(m_pTerrain.Vertices, m_pTerrain.Indices);
+		//Mesh_Terrain(m_pTerrain.Vertices, m_pTerrain.Indices);
 	}
 
 	return S_OK;
@@ -169,8 +169,8 @@ HRESULT CVIBuffer_Terrain::Mesh_Terrain(vector<VTXSTATICMESH> vVertices, vector<
 	//m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedVertex);
 	//VTXNORTEX* pVertices = (VTXNORTEX*)MappedVertex.pData;
 
-	m_iNumVerticesX = m_pTerrain.iNumVerticesX;
-	m_iNumVerticesZ = m_pTerrain.iNumVerticesZ;
+	m_iNumVerticesX = m_pTerrain.vTerrainSize.x;
+	m_iNumVerticesZ = m_pTerrain.vTerrainSize.y;
 
 	m_iNumVertexBuffers = 1;
 	m_iVertexStride = sizeof VTXNORTEX;

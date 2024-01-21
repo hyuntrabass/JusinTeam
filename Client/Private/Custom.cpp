@@ -170,12 +170,13 @@ void CCustom::Tick(_float fTimeDelta)
 	{
 		m_pSelectButton->Set_Size(150.f, 30.f, 0.35f);
 	}
-	
+	m_pSelectMenuEffect->Tick(fTimeDelta);
 	m_pSelectCustomEffect->Tick(fTimeDelta);
 	if (m_pSelectButton != nullptr)
 	{
 		m_pSelectButton->Tick(fTimeDelta);
 	}
+	m_pBackGround->Tick(fTimeDelta);
 }
 
 
@@ -211,6 +212,7 @@ void CCustom::Late_Tick(_float fTimeDelta)
 	{
 		m_pSelectButton->Late_Tick(fTimeDelta);
 	}
+	m_pBackGround->Late_Tick(fTimeDelta);
 }
 
 HRESULT CCustom::Render()
@@ -452,8 +454,18 @@ HRESULT CCustom::Add_Parts()
 		}
 
 	}
-	
 
+	UiInfo info{};
+	info.strTexture = TEXT("Prototype_Component_Texture_BackGround_Mask");
+	info.vPos = _vec2(640, 360);
+	info.vSize = _vec2(1280, 720);
+	info.iLevel = (_uint)LEVEL_CUSTOM;
+
+	m_pBackGround = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BackGround_Mask"), &info);
+	if (not m_pBackGround)
+	{
+		return E_FAIL;
+	}
 	return S_OK;
 }
 
@@ -497,7 +509,7 @@ HRESULT CCustom::Bind_ShaderResources()
 
 void CCustom::Set_CameraState(_uint iSelect)
 {
-	m_pGameInstance->Set_CameraState(CM_ZOOM);
+	m_pGameInstance->Set_CameraState(CS_ZOOM);
 	m_pGameInstance->Set_ZoomFactor(3.5f);
 }
 
@@ -578,6 +590,8 @@ void CCustom::Free()
 			Safe_Release(m_pColorButtons[i]);
 		}
 	}
+
+	Safe_Release(m_pBackGround);
 
 	Safe_Release(m_pClassButton);
 	Safe_Release(m_pSelectButton);

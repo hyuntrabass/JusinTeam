@@ -204,7 +204,7 @@ HRESULT CLoader::Load_Tool()
 	m_strLoadingText = L"Logo : Loading Model";
 #pragma region Model
 	//Monster
-	_matrix Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f); 
+	_mat Pivot = _mat::CreateScale(0.01f)/* * _mat::CreateRotationY(XMConvertToRadians(30.f))*/;
 	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/Monster/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{

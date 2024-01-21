@@ -14,8 +14,9 @@ HRESULT CLevel_Select::Init()
 	info.strTexture = TEXT("Prototype_Component_Texture_BackGround_Mask"); 
 	info.vPos = _vec2(640,360);
 	info.vSize = _vec2(1280, 720);
+	info.iLevel = (_uint)LEVEL_SELECT;
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Mask"), TEXT("Prototype_GameObject_BackGround_Mask"),&info)))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Mask"), TEXT("Prototype_GameObject_BackGround_Mask"),&info)))
 	{
 		return E_FAIL;
 	}
@@ -103,12 +104,6 @@ HRESULT CLevel_Select::Ready_Select()
 	{
 		return E_FAIL;
 	}
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Test"), TEXT("Prototype_GameObject_TestVTF"))))
-	{
-		return E_FAIL;
-	}
-
 
 	return S_OK;
 }

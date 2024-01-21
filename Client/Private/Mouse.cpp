@@ -30,7 +30,7 @@ HRESULT CMouse::Init(void* pArg)
 	m_fX = g_iWinSizeX >> 1;
 	m_fY = g_iWinSizeY >> 1;
 
-	m_fDepth = 0.01f;
+	m_fDepth = (_float)D_MOUSE / (_float)D_END;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 

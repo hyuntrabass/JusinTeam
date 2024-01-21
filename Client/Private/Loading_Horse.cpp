@@ -35,7 +35,7 @@ HRESULT CLoading_Horse::Init(void* pArg)
 	m_fY = 520.f;
 
 	*/
-	m_fDepth = 0.5f;
+	m_fDepth = (_float)D_LOADING / (_float)D_END - 0.01f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 

@@ -163,6 +163,8 @@
     <ClInclude Include="..\Public\Goat.h" />
     <ClInclude Include="..\Public\Groar_Boss.h" />
     <ClInclude Include="..\Public\HpBar.h" />
+    <ClInclude Include="..\Public\Inven.h" />
+    <ClInclude Include="..\Public\Item.h" />
     <ClInclude Include="..\Public\ItemBlock.h" />
     <ClInclude Include="..\Public\ItemSlot.h" />
     <ClInclude Include="..\Public\JobMark.h" />
@@ -197,7 +199,6 @@
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\Lake.h" />
     <ClInclude Include="..\Public\TestTree.h" />
-    <ClInclude Include="..\Public\TestVTFModel.h" />
     <ClInclude Include="..\Public\TextButton.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Level_Custom.h" />
@@ -224,6 +225,7 @@
     <ClInclude Include="..\Public\Void01.h" />
     <ClInclude Include="..\Public\Void05.h" />
     <ClInclude Include="..\Public\Weapon.h" />
+    <ClInclude Include="..\Public\Wearable_Slot.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
@@ -246,6 +248,8 @@
     <ClCompile Include="..\Private\Goat.cpp" />
     <ClCompile Include="..\Private\Groar_Boss.cpp" />
     <ClCompile Include="..\Private\HPBar.cpp" />
+    <ClCompile Include="..\Private\Inven.cpp" />
+    <ClCompile Include="..\Private\Item.cpp" />
     <ClCompile Include="..\Private\ItemBlock.cpp" />
     <ClCompile Include="..\Private\ItemSlot.cpp" />
     <ClCompile Include="..\Private\JobMark.cpp" />
@@ -280,7 +284,6 @@
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Lake.cpp" />
     <ClCompile Include="..\Private\TestTree.cpp" />
-    <ClCompile Include="..\Private\TestVTFModel.cpp" />
     <ClCompile Include="..\Private\TextButton.cpp" />
     <ClCompile Include="..\Private\Level_Custom.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
@@ -305,6 +308,7 @@
     <ClCompile Include="..\Private\Void01.cpp" />
     <ClCompile Include="..\Private\Void05.cpp" />
     <ClCompile Include="..\Private\Weapon.cpp" />
+    <ClCompile Include="..\Private\Wearable_Slot.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>
   <ItemGroup>
