@@ -332,12 +332,17 @@ void CModel::Play_Animation(_float fTimeDelta)
 			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fStartAnimPos)
 		{
 			//ÀÌÆåÆ® »ý¼º
-			m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
 			_mat PosOffset{};
 			PosOffset.Position(m_TriggerEffects[i].OffsetMatrix.Position());
 			_mat ScaleRotationOffset = m_TriggerEffects[i].OffsetMatrix;
 			ScaleRotationOffset.Position(_vec4(0.f, 0.f, 0.f, 1.f));
+			
 			*m_EffectMatrices[i] = ScaleRotationOffset * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix() * PosOffset;
+			m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
+			if (not m_TriggerEffects[i].IsRotateToBone)
+			{
+				m_TriggerEffects[i].BoneCombinedMatrix = *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix();
+			}
 		}
 		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iEndAnimIndex &&
 			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fEndAnimPos)
@@ -356,7 +361,17 @@ void CModel::Play_Animation(_float fTimeDelta)
 			PosOffset.Position(m_TriggerEffects[i].OffsetMatrix.Position());
 			_mat ScaleRotationOffset = m_TriggerEffects[i].OffsetMatrix;
 			ScaleRotationOffset.Position(_vec4(0.f, 0.f, 0.f, 1.f));
-			*m_EffectMatrices[i] = ScaleRotationOffset * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix() * PosOffset;
+			if (m_TriggerEffects[i].IsRotateToBone)
+			{
+				*m_EffectMatrices[i] = ScaleRotationOffset * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix() * PosOffset;
+			}
+			else if (not m_TriggerEffects[i].IsRotateToBone)
+			{
+				_vector vScale{}, vRotation{}, vPosition{};
+				XMMatrixDecompose(&vScale, &vRotation, &vPosition, m_TriggerEffects[i].BoneCombinedMatrix);
+				_mat BoneCombinedMatrix = XMMatrixAffineTransformation(vScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 0.f, 0.f), vPosition);
+				*m_EffectMatrices[i] = ScaleRotationOffset * BoneCombinedMatrix * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix() * PosOffset;
+			}
 		}
 	}
 }

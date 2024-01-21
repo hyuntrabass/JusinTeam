@@ -143,6 +143,8 @@ namespace Engine
 		std::wstring strEffectName{};
 		unsigned int iBoneIndex{};
 		SimpleMath::Matrix OffsetMatrix{};
+		bool IsRotateToBone{};
+		SimpleMath::Matrix BoneCombinedMatrix{};
 	};
 
 	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {
