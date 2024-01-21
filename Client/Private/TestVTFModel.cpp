@@ -42,7 +42,7 @@ void CTestVTFModel::Tick(_float fTimeDelta)
     // 모션블러용으로 이전프레임 WorldMatrix를 저장합니다
     m_OldWorldMatrix = m_pTransformCom->Get_World_Matrix();
 
-    if (m_pGameInstance->Key_Pressing(DIK_K)) {
+    if (m_pGameInstance->Key_Pressing(DIK_W)) {
         _vec4 vPos = m_pTransformCom->Get_State(State::Pos);
         vPos += _vec4(1.f, 0.f, 0.f, 0.f) * fTimeDelta;
         m_pTransformCom->Set_State(State::Pos, vPos);

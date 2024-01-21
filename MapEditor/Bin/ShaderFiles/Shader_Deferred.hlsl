@@ -33,6 +33,39 @@ Texture2D g_Texture;
 // 원명
 Texture2D g_VelocityTexture;
 Texture2D g_SSAOTexture;
+bool TurnOnSSAO;
+float g_intensity;
+float g_fRadius;
+float g_fScale;
+float g_fBias;
+
+
+vector Get_WorldPos(float2 vTex)
+{
+    vector vDepthDesc = g_DepthTexture.Sample(PointSampler, vTex);
+    float fViewZ = vDepthDesc.y * g_vCamNF.y;
+    
+    vector vWorldPos;
+    vWorldPos.x = vTex.x * 2.f - 1.f;
+    vWorldPos.y = vTex.y * -2.f + 1.f;
+    vWorldPos.z = vDepthDesc.x;
+    vWorldPos.w = 1.f;
+    
+    vWorldPos = vWorldPos * fViewZ;
+    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
+    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    
+    return vWorldPos;
+}
+
+vector Get_Normal(float2 vTex)
+{
+    vector vNormalDesc = g_NormalTexture.Sample(PointSampler, vTex);
+    
+    vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
+    
+    return vNormal;
+}
 
 struct VS_IN
 {
@@ -116,11 +149,7 @@ PS_OUT_Light PS_Main_Directional(PS_IN Input)
 {
     PS_OUT_Light Output = (PS_OUT_Light) 0;
     
-    vector vNormalDesc = g_NormalTexture.Sample(PointSampler, Input.vTexcoord);
-    vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
-    float fViewZ = vDepthDesc.y * g_vCamNF.y;
-    
-    vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
+    vector vNormal = Get_Normal(Input.vTexcoord);
     
     vector vSpecDesc = g_ObjectSpecTexture.Sample(PointSampler, Input.vTexcoord);
     
@@ -130,22 +159,7 @@ PS_OUT_Light PS_Main_Directional(PS_IN Input)
     
     vector vReflect = normalize(reflect(normalize(g_vLightDir), vNormal));
     
-    vector vWorldPos;
-    
-    // 투영 스페이스로
-    vWorldPos.x = Input.vTexcoord.x * 2.f - 1.f;
-    vWorldPos.y = Input.vTexcoord.y * -2.f + 1.f;
-    vWorldPos.z = vDepthDesc.x;
-    vWorldPos.w = 1.f;
-    
-    // w 나누기 제거
-    vWorldPos = vWorldPos * fViewZ;
-    
-    // 뷰스페이스로
-    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
-    
-    // 월드로
-    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    vector vWorldPos = Get_WorldPos(Input.vTexcoord);
     
     vector vLook = vWorldPos - g_vCamPosition;
     
@@ -334,7 +348,8 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
 
     Output.vColor = fFogFactor * Output.vColor + (1.f - fFogFactor) * vFogColor;
     
-    //Output.vColor *= vSsaoDesc;
+    if(TurnOnSSAO)
+        Output.vColor *= vSsaoDesc;
     
     return Output;
 }
@@ -373,7 +388,7 @@ PS_OUT PS_Main_Blur(PS_IN Input)
     {
         for (int x = -10; x <= 10; ++x)
         {
-            Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + float2(x, y) * fTexelSize) * 1.f / 400.f;
+            Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + float2(x, y) * fTexelSize) * 1.f / 441.f;
         }
     }
     
@@ -382,39 +397,71 @@ PS_OUT PS_Main_Blur(PS_IN Input)
     return Output;
 }
 
+float Get_AO(float2 vTex, float2 plusTex, vector myPos, float3 myNor)
+{
+    float2 Tex = vTex + plusTex;
+    
+    if(Tex.x < 0.f || Tex.x > 1.f || Tex.y < 0.f || Tex.y > 1.f)
+        return 0.0625f;
+    
+
+    vector diff = Get_WorldPos(vTex + plusTex) - myPos;
+    vector v = normalize(diff);
+    float d = length(diff) * g_fScale;
+    
+    float final = max(0.f, dot(myNor, v.xyz) - g_fBias) * (1.f / (1.f + d)) * g_intensity;
+    
+    return final;
+}
+
 PS_OUT PS_Main_SSAO(PS_IN Input)
 {
     // 완벽하지 않습니당 임시용
     
     PS_OUT Out = (PS_OUT) 0;
     
-    vector vNormalDesc = g_NormalTexture.Sample(PointSampler, Input.vTexcoord);
     vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
     float fViewZ = vDepthDesc.y * g_vCamNF.y;
     
-    vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
+    vector MyWorldPos = Get_WorldPos(Input.vTexcoord);
+    
+    vector MyNormal = Get_Normal(Input.vTexcoord);
     
     float ssao = 0.f;
     vector RandomDepth;
-    float g_fRadius = 0.025f / fViewZ;
-    for (int i = 0; i < 16; ++i)
+    float fRadius = g_fRadius / fViewZ;
+    for (uint i = 0; i < 16; ++i)
     {
-        vector vReflect = normalize(reflect(vNormal, vector(normalize(g_vRandom[i]), 0.f))) * g_fRadius;
+        float2 vReflect = reflect(normalize(MyNormal), vector(normalize(g_vRandom[i]), 0.f)).xy * fRadius;
         
-        vector vRefNormalDesc = g_NormalTexture.Sample(PointSampler, Input.vTexcoord + vReflect.xy);
-        vector vRfNormal = vector(vRefNormalDesc.xyz * 2.f - 1.f, 0.f);
+        ssao += Get_AO(Input.vTexcoord, vReflect, MyWorldPos, MyNormal.xyz);
         
-        RandomDepth = g_DepthTexture.Sample(PointSampler, Input.vTexcoord + vReflect.xy);
-        
-        RandomDepth.g *= g_vCamNF.y;
-        
-        if (RandomDepth.g <= fViewZ)
-            ssao += 1.f;
     }
+    ssao = ssao / 16.f;
     
-    float color = abs((ssao / 50.f) - 1.f) + 0.25f;
+    ssao = 1.f - ssao;
+    Out.vColor = vector(ssao, ssao, ssao, 1.f);
+    //float ssao = 0.f;
+    //vector RandomDepth;
+    //float g_fRadius = 0.025f / fViewZ;
+    //for (int i = 0; i < 16; ++i)
+    //{
+    //    vector vReflect = normalize(reflect(vNormal, vector(normalize(g_vRandom[i]), 0.f))) * g_fRadius;
+        
+    //    vector vRefNormalDesc = g_NormalTexture.Sample(PointSampler, Input.vTexcoord + vReflect.xy);
+    //    vector vRfNormal = vector(vRefNormalDesc.xyz * 2.f - 1.f, 0.f);
+        
+    //    RandomDepth = g_DepthTexture.Sample(PointSampler, Input.vTexcoord + vReflect.xy);
+        
+    //    RandomDepth.g *= g_vCamNF.y;
+        
+    //    if (RandomDepth.g <= fViewZ)
+    //        ssao += 1.f;
+    //}
     
-    Out.vColor = vector(color, color, color, 1.f);
+    //float color = abs((ssao / 50.f) - 1.f) + 0.25f;
+    
+    //Out.vColor = vector(color, color, color, 1.f);
     
     //vector vNormalDesc = g_NormalTexture.Sample(PointSampler, Input.vTexcoord);
     //vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
