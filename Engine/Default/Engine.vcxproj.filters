@@ -524,6 +524,7 @@
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Define.hlsli">
       <Filter>01.Utility\98.ShaderFiles</Filter>
     </None>
+    <None Include="..\Public\SimpleMath.inl" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxColor.hlsl">

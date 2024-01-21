@@ -162,13 +162,16 @@ public: // Effect Callback
 	using Func_CreateFX = function<void(const wstring&, _mat*)>;
 	using Func_DeleteFX = function<void(const void*)>;
 	using Func_TickFX = function<void(_float)>;
+	using Func_HasCreatedFX = function<_bool(const void*)>;
 
 	void Register_CreateEffect_Callback(Func_CreateFX Function);
 	void Register_DeleteEffect_Callback(Func_DeleteFX Function);
 	void Register_Tick_LateTick_Callback(Func_TickFX Tick, Func_TickFX Late_Tick);
+	void Register_HasCreated_Callback(Func_HasCreatedFX Function);
 
 	void Create_Effect(const wstring& strEffectTag, _mat* pMatrix);
 	void Delete_Effect(const void* pMatrix);
+	_bool Has_Created_Effect(const void* pMatrixKey);
 
 public: // Get_Set
 	// 현재 카메라가 메인 카메라인지 디버그 카메라인지 반환함. client define에 이넘 있음.
@@ -271,6 +274,7 @@ private:
 	Func_DeleteFX m_Function_Delete_FX{};
 	Func_TickFX m_Function_Tick_FX{};
 	Func_TickFX m_Function_LateTick_FX{};
+	Func_HasCreatedFX m_Function_HasCreated{};
 
 public:
 	static void Release_Engine();
