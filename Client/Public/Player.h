@@ -300,6 +300,7 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 
 private:
+	_bool	  m_isInvenActive{ false };
 	ANIM_DESC m_Animation{};
 	PLAYER_STATE m_eState{ Idle };
 	PLAYER_STATE m_ePrevState{ Idle };

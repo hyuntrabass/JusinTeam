@@ -10,6 +10,18 @@ CUI_Manager::CUI_Manager()
 	}
 }
 
+_bool CUI_Manager::Set_CurrentPlayerPos(_vec4 vPos)
+{
+	if (!m_isSetInvenState) 
+	{
+		m_vPlayerPos = vPos; 
+		m_isSetInvenState = true;
+		return true; 
+	}
+	return false;
+}
+
+
 const _uint& CUI_Manager::Get_CustomPart(PART_TYPE eType)
 {
 	m_eChangedPart = PT_END;

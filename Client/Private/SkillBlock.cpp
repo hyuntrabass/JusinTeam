@@ -1,6 +1,7 @@
 #include "SkillBlock.h"
 #include "GameInstance.h"
 #include "TextButton.h"
+#include "UI_Manager.h"
 
 CSkillBlock::CSkillBlock(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -43,6 +44,10 @@ void CSkillBlock::Tick(_float fTimeDelta)
 
 void CSkillBlock::Late_Tick(_float fTimeDelta)
 {
+	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
+	{
+		return;
+	}
 	for (size_t i = 0; i < SKILL_END; i++)
 	{
 		m_pSlots[i]->Late_Tick(fTimeDelta);

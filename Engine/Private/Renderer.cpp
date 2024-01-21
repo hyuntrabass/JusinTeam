@@ -1208,7 +1208,8 @@ HRESULT CRenderer::Render_Debug()
 	{
 		return E_FAIL;
 	}
-
+	/*
+	
 	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_GameObjects"), m_pShader, m_pVIBuffer)))
 	{
 		return E_FAIL;
@@ -1243,6 +1244,7 @@ HRESULT CRenderer::Render_Debug()
 	{
 		return E_FAIL;
 	}
+	*/
 	return S_OK;
 }
 #endif // _DEBUG

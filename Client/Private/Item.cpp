@@ -1,58 +1,54 @@
-#include "SkillSlot.h"
+#include "Item.h"
 #include "GameInstance.h"
 #include "TextButton.h"
 
-CSkillSlot::CSkillSlot(_dev pDevice, _context pContext)
+CItem::CItem(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
 }
 
-CSkillSlot::CSkillSlot(const CSkillSlot& rhs)
+CItem::CItem(const CItem& rhs)
 	: COrthographicObject(rhs)
 {
 }
 
-HRESULT CSkillSlot::Init_Prototype()
+HRESULT CItem::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CSkillSlot::Init(void* pArg)
+HRESULT CItem::Init(void* pArg)
 {
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
 
+	m_fSizeX = ((ITEM_DESC*)pArg)->vSize.x;
+	m_fSizeY = ((ITEM_DESC*)pArg)->vSize.y;
 
-	m_fSizeX = ((SKILLSLOT_DESC*)pArg)->vSize.x;
-	m_fSizeY = ((SKILLSLOT_DESC*)pArg)->vSize.y;
+	m_fX = ((ITEM_DESC*)pArg)->vPosition.x;
+	m_fY = ((ITEM_DESC*)pArg)->vPosition.y;
 
-	m_fX = ((SKILLSLOT_DESC*)pArg)->vPosition.x;
-	m_fY = ((SKILLSLOT_DESC*)pArg)->vPosition.y;
-
-	m_fDepth = (_float)D_SCREEN / (_float)D_END;;
+	m_fDepth = ((ITEM_DESC*)pArg)->fDepth;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+	
 
 	return S_OK;
 }
 
-void CSkillSlot::Tick(_float fTimeDelta)
+void CItem::Tick(_float fTimeDelta)
 {
 
 }
 
-void CSkillSlot::Late_Tick(_float fTimeDelta)
+void CItem::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
-	if (m_pSkill != nullptr)
-	{
-		m_pSkill->Late_Tick(fTimeDelta);
-	}
 }
 
-HRESULT CSkillSlot::Render()
+HRESULT CItem::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
@@ -69,11 +65,10 @@ HRESULT CSkillSlot::Render()
 		return E_FAIL;
 	}
 
-
 	return S_OK;
 }
 
-HRESULT CSkillSlot::Add_Components()
+HRESULT CItem::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -90,7 +85,11 @@ HRESULT CSkillSlot::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_Slot"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_HPBar"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_eItemDesc.strTexture, TEXT("Com_Texture1"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -98,7 +97,7 @@ HRESULT CSkillSlot::Add_Components()
 	return S_OK;
 }
 
-HRESULT CSkillSlot::Bind_ShaderResources()
+HRESULT CItem::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
 		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
@@ -115,42 +114,46 @@ HRESULT CSkillSlot::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
 
-CSkillSlot* CSkillSlot::Create(_dev pDevice, _context pContext)
+CItem* CItem::Create(_dev pDevice, _context pContext)
 {
-	CSkillSlot* pInstance = new CSkillSlot(pDevice, pContext);
+	CItem* pInstance = new CItem(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CSkillSlot");
+		MSG_BOX("Failed to Create : CItemBlock");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CSkillSlot::Clone(void* pArg)
+CGameObject* CItem::Clone(void* pArg)
 {
-	CSkillSlot* pInstance = new CSkillSlot(*this);
+	CItem* pInstance = new CItem(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CSkillSlot");
+		MSG_BOX("Failed to Clone : CItemBlock");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CSkillSlot::Free()
+void CItem::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pSkill);
 	Safe_Release(m_pTextureCom);
+	Safe_Release(m_pMaskTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pVIBufferCom);

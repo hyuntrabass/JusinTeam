@@ -32,6 +32,7 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 		if (m_vecPopEvents.empty())
 		{
 			m_isEventIn = false;
+			return;
 		}
 		if (!m_isWaiting)
 		{

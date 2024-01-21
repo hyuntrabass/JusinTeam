@@ -38,9 +38,10 @@ namespace Client
 	};
 	enum CAMERA_STATE
 	{
-		CM_DEFAULT,
-		CM_ZOOM,
-		CM_STATEEND
+		CS_DEFAULT,
+		CS_ZOOM,
+		CS_INVEN,
+		CS_STATEEND
 	};
 
 	enum WEAPON_TYPE
@@ -127,16 +128,38 @@ namespace Client
 
 	enum SortDepth
 	{
-		D_SCREEN1,
-		D_SCREEN2,
-		D_SCREEN3,
-		D_QUEST,
-		D_SHOP,
-		D_INVEN,
-		D_FADE,
 		D_MOUSE,
+		D_FADE,
+		D_LOADING,
+		D_INVEN,
+		D_SHOP,
+		D_QUEST,
+		D_JOBMARK,
+		D_BAR,
+		D_SCREEN,
+		D_NAMETAG,
 		D_END
 	};
+
+	enum InvenType
+	{
+		INVEN_EQUIP, 
+		INVEN_EXPENDABLES,
+		INVEN_INGREDIENTS,
+		INVEN_ALL,
+		INVEN__END
+	};
+
+	enum WEARABLE_TYPE 
+	{
+		W_TOP, 
+		W_CHEST, 
+		W_HAND, 
+		W_FOOT, 
+		W_EQUIP, 
+		W_PET, 
+		W_END };
+
 	struct ObjectInfo
 	{
 		wstring strPrototypeTag{};
@@ -147,6 +170,7 @@ namespace Client
 
 	struct UiInfo
 	{
+		_uint iLevel{};
 		_vec2 vPos{};
 		_vec2 vSize{};
 		wstring strTexture{};
@@ -159,6 +183,23 @@ namespace Client
 		_mat* pSocket{ nullptr };
 		_mat PivotMatrix{};
 	};
+
+	typedef struct tagItemInfo
+	{
+		wstring strName;
+		wstring strType;
+
+		_uint iItemType;
+		wstring strTexture;
+		wstring strModel;
+		wstring strDetail;
+
+		_uint iAD;
+		_uint iCritical;
+		_uint iDefense;
+		_uint iMP;
+		_uint iHP;
+	}ITEM;
 
 #pragma region Shader Passes
 	enum AnimMeshPass

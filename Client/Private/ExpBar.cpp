@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "TextButton.h"
 #include "TextButtonColor.h"
+#include "UI_Manager.h"
 
 CExpBar::CExpBar(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -35,7 +36,7 @@ HRESULT CExpBar::Init(void* pArg)
 	m_fX = (_float)g_iWinSizeX / 2.f;
 	m_fY = 720.f;
 
-	m_fDepth = 1.f;
+	m_fDepth = (_float)D_BAR / (_float)D_END;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	m_vRatio = _float2(70.f, 100.f);
@@ -43,7 +44,7 @@ HRESULT CExpBar::Init(void* pArg)
 
 	CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
 	ColButtonDesc.eLevelID = LEVEL_STATIC;
-	ColButtonDesc.fDepth = 1.f;
+	ColButtonDesc.fDepth = m_fDepth + 0.01f;
 	ColButtonDesc.fAlpha = 0.7f;
 	ColButtonDesc.vColor = _vec4(0.f, 0.f, 0.f, 0.7f);
 	ColButtonDesc.strText = TEXT("");
@@ -73,6 +74,10 @@ void CExpBar::Tick(_float fTimeDelta)
 
 void CExpBar::Late_Tick(_float fTimeDelta)
 {
+	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
+	{
+		return;
+	}
 	m_pBackground->Late_Tick(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
