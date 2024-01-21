@@ -84,19 +84,19 @@ private:
 	void Delete_Map();
 	void Delete_Terrain();
 
-
-	void Search_Files(string DirPath, const char* Path, vector<const char*>* List);
 	void Reset();
 
 	void Search_Map();
 	void Search_Object();
 	void Search_Monster();
 	void Search_NPC();
+	void Search_Envir();
 
 	void Mouse_Pos();
 	void FastPicking();
 	void Picking_On_Terrain();
 	void MeshToMask();
+
 	HRESULT Save_Map_Vertex_Info();
 	HRESULT Load_Map_Vertex_Info_For_Terrain();
 
@@ -112,6 +112,14 @@ private:
 	// 몬스터
 	HRESULT Save_Monster();
 	HRESULT Load_Monster();
+
+	// NPC
+	HRESULT Save_NPC();
+	HRESULT Load_NPC();
+
+	// 환경
+	HRESULT Save_Envir();
+	HRESULT Load_Envir();
 
 	// 현재 위치 저장
 	HRESULT Save_Pos();
@@ -143,20 +151,20 @@ private:
 
 private:
 	// 파일의 이름 가져와서 저장
-	vector<const char*> Maps;
-	vector<const char*> Objects;
-	vector<const char*> Monsters;
+	unordered_map<wstring, vector<const char*>> Maps;
+	unordered_map<wstring, vector<const char*>> Objects;
+	unordered_map<wstring, vector<const char*>> Monsters;
 	vector<const char*> NPCs;
-	//vector<const char*> NPCPath;
+	unordered_map<wstring, vector<const char*>> Envirs;
 
-
-	vector<class CMap*> m_MapsList{};
-	vector<class CDummy*> m_ObjectsList{};
-	vector<class CDummy*> m_MonsterList{};
-	vector<class CDummy*> m_NPCList{};
+	vector<class CMap*> m_MapsList;
+	vector<class CDummy*> m_ObjectsList;
+	vector<class CDummy*> m_MonsterList;
+	vector<class CDummy*> m_NPCList;
+	vector<class CDummy*> m_EnvirList;
 	//vector<const CDummy*> TriggerList;
 
-	map<int, class CDummy*>m_DummyList{};
+	map<int, class CDummy*>m_DummyList;
 	map<int, class CMap*>m_Map{};
 
 	class CDummy* m_pSelectedDummy{ nullptr };
@@ -172,6 +180,7 @@ private:
 	_int m_iSelectIdx = { -1 };
 	_bool m_iImGuizmoCheck = { false };
 	CTexture* m_pTextures{ nullptr };
+	wstring m_eType{};
 
 public:
 	static CImGui_Manager* Create(const GRAPHIC_DESC& GraphicDesc);

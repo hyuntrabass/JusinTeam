@@ -22,6 +22,7 @@ public:
 	virtual HRESULT Init_Prototype() override;
 	virtual HRESULT Init(void* pArg) override;
 
+
 public:
 	_uint Get_NumVerticesX() { return m_iNumVerticesX; }
 	_uint Get_NumVerticesZ() { return m_iNumVerticesZ; }
@@ -32,6 +33,7 @@ private:
 	_bool	m_isClone;
 	_uint m_iNumVerticesX{ 0 };
 	_uint m_iNumVerticesZ{ 0 };
+
 
 public:
 	HRESULT ModifyTerrainVertexBuffer(_uint iNumVerticesX, _uint iNumVerticesZ);

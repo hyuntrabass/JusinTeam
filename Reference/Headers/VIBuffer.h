@@ -27,7 +27,8 @@ public:
 	{
 		return m_pVertices;
 	}
-
+	vector<VTXNORTEX> Get_TerrainVertices() { return m_vVertices; }
+	vector<_ulong> Get_TerrainIndices() { return m_vIndices; }
 protected:
 	ID3D11Buffer* m_pVB{ nullptr };
 	ID3D11Buffer* m_pIB{ nullptr };
@@ -47,7 +48,8 @@ protected:
 	D3D11_SUBRESOURCE_DATA m_InitialData{};
 
 	_float3* m_pVertices {};
-
+	vector<VTXNORTEX> m_vVertices;
+	vector<_ulong> m_vIndices;
 
 protected:
 	HRESULT Create_Buffer(ID3D11Buffer** ppBuffer);

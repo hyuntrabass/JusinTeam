@@ -268,6 +268,9 @@
     <Filter Include="02.GameObjects\03.Player\Riding">
       <UniqueIdentifier>{073d72ed-ee94-48c7-98cd-dce26867b879}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\10. Objects\01.Village_Object">
+      <UniqueIdentifier>{d1c926ce-bf30-4b7f-8e77-ff21240fc39b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -444,9 +447,6 @@
     <ClInclude Include="..\Public\ExpBar.h">
       <Filter>02.GameObjects\00.UI\GameUI\EXP</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\NPCvsMon.h">
-      <Filter>02.GameObjects\04.Monster\Tutorial\00. NPCvsMon</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Dog.h">
       <Filter>02.GameObjects\07. NPC\Animal\01. Dog</Filter>
     </ClInclude>
@@ -515,6 +515,10 @@
     </ClInclude>
     <ClInclude Include="..\Public\NPCvsMon.h">
       <Filter>02.GameObjects\04.Monster\01. Tutorial\00. NPCvsMon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NPCvsMon.h" />
+    <ClInclude Include="..\Public\Village_Object.h">
+      <Filter>02.GameObjects\10. Objects\01.Village_Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -758,6 +762,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Objects.cpp">
       <Filter>02.GameObjects\10. Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Village_Object.cpp">
+      <Filter>02.GameObjects\10. Objects\01.Village_Object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

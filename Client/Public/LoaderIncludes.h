@@ -70,3 +70,4 @@
 
 // Object
 #include "Prologue_Object.h"
+#include "Village_Object.h"

@@ -18,7 +18,7 @@ HRESULT CMap::Init_Prototype()
 
 HRESULT CMap::Init(void* pArg)
 {
-	//m_Info = *(MapInfo*)pArg;
+	m_Info = *(MapInfo*)pArg;
 
 	//_vec4 MapPos = _vec4(m_Info.m_Matrix._41, m_Info.m_Matrix._42, m_Info.m_Matrix._43, m_Info.m_Matrix._44);
 	if (FAILED(Add_Components()))
@@ -110,7 +110,7 @@ HRESULT CMap::Add_Components()
 	m_iOutLineShaderPass = StaticPass_OutLine;
 	
 
-	if (FAILED(__super::Add_Component(LEVEL_VILLAGE, TEXT("Prototype_Model_Village"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(m_pGameInstance->Get_CurrentLevelIndex(), m_Info.Prototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	{
 		return E_FAIL;
 	}
