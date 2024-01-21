@@ -717,7 +717,7 @@ HRESULT CLoader::Load_Select()
 		return E_FAIL;
 	}
 
-	PivotMat = _mat::CreateScale(0.01f) * _mat::CreateRotationY(XMConvertToRadians(30.f));
+	PivotMat = _mat::CreateScale(0.01f) *_mat::CreateRotationY(XMConvertToRadians(30.f));
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Model_Select1"), CModel::Create(m_pDevice, m_pContext, strInputFilePath + "Select_Rogue.hyuntraanimmesh", false, PivotMat))))
 	{
 		return E_FAIL;

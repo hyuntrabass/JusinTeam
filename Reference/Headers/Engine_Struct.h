@@ -144,6 +144,7 @@ namespace Engine
 		unsigned int iBoneIndex{};
 		SimpleMath::Matrix OffsetMatrix{};
 		bool IsRotateToBone{};
+
 		SimpleMath::Matrix BoneCombinedMatrix{};
 	};
 

@@ -26,7 +26,6 @@ HRESULT CSelect_Model::Init(void* pArg)
 
 	m_pTransformCom->Set_State(State::Pos, Info->vPos);
 
-
 	m_Animation.iAnimIndex = 0;
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = true;
