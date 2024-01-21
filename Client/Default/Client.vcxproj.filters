@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="98.Default">
-      <UniqueIdentifier>{6ef1e47a-756a-4482-9f45-993c308095c3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="00,MainApp">
       <UniqueIdentifier>{d75afd3c-146f-4dea-86e4-053365be8e3f}</UniqueIdentifier>
     </Filter>
@@ -262,19 +259,34 @@
     <Filter Include="02.GameObjects\03.Player\Riding">
       <UniqueIdentifier>{073d72ed-ee94-48c7-98cd-dce26867b879}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven">
+      <UniqueIdentifier>{a3563dd2-4399-4fd0-b2ef-4ec038b98d67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Wearable Slots">
+      <UniqueIdentifier>{b373fc29-646c-4bd3-8638-6561ec5c16ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Desc">
+      <UniqueIdentifier>{9243a5dc-24e7-4b3f-af5a-176532212fb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Item">
+      <UniqueIdentifier>{b5de1188-8dfd-4cce-be30-4873c65ba985}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="99.Headers\98.Default">
+      <UniqueIdentifier>{6ef1e47a-756a-4482-9f45-993c308095c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
-      <Filter>98.Default</Filter>
+      <Filter>99.Headers\98.Default</Filter>
     </ClInclude>
     <ClInclude Include="framework.h">
-      <Filter>98.Default</Filter>
+      <Filter>99.Headers\98.Default</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>98.Default</Filter>
+      <Filter>99.Headers\98.Default</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
-      <Filter>98.Default</Filter>
+      <Filter>99.Headers\98.Default</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Client_Define.h">
       <Filter>99.Headers</Filter>
@@ -451,9 +463,6 @@
     <ClInclude Include="..\Public\Groar_Boss.h">
       <Filter>02.GameObjects\08. Boss\Groar_Boss</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\TestVTFModel.h">
-      <Filter>02.GameObjects\04.Monster\TestVTFRabbit</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\TestTree.h">
       <Filter>02.GameObjects\07. StatObject\Test</Filter>
     </ClInclude>
@@ -499,23 +508,32 @@
     <ClInclude Include="..\Public\Riding.h">
       <Filter>02.GameObjects\03.Player\Riding</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Inven.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Wearable_Slot.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Wearable Slots</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Item.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Item</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
-      <Filter>98.Default</Filter>
+      <Filter>99.Headers\98.Default</Filter>
     </Image>
     <Image Include="small.ico">
-      <Filter>98.Default</Filter>
+      <Filter>99.Headers\98.Default</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc">
-      <Filter>98.Default</Filter>
+      <Filter>99.Headers\98.Default</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
-      <Filter>98.Default</Filter>
+      <Filter>99.Headers\98.Default</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\MainApp.cpp">
       <Filter>00,MainApp</Filter>
@@ -685,9 +703,6 @@
     <ClCompile Include="..\Private\Groar_Boss.cpp">
       <Filter>02.GameObjects\08. Boss\Groar_Boss</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\TestVTFModel.cpp">
-      <Filter>02.GameObjects\04.Monster\TestVTFRabbit</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\TestTree.cpp">
       <Filter>02.GameObjects\07. StatObject\Test</Filter>
     </ClCompile>
@@ -732,6 +747,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Riding.cpp">
       <Filter>02.GameObjects\03.Player\Riding</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Inven.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Wearable_Slot.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Wearable Slots</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Item.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Item</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

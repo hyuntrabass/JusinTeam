@@ -53,9 +53,14 @@ const _vec2 COrthographicObject::Convert_To_2D(CTransform* pTransform) const
 	_mat	ViewMatrix = m_pGameInstance->Get_Transform(TransformType::View);
 	_mat	WorldMatrix = XMMatrixIdentity();
 
-	_float2 vPosition2D;
-	XMStoreFloat2(&vPosition2D, XMVector3Project(pTransform->Get_State(State::Pos), 0, 0, 1280, 720, 0, 1, ProjMatrix, ViewMatrix, XMLoadFloat4x4(&WorldMatrix)));
+	_vec4 vPos= XMVector3Project(pTransform->Get_State(State::Pos), 0, 0, 1280, 720, 0, 1, ProjMatrix, ViewMatrix, XMLoadFloat4x4(&WorldMatrix));
 
+	if (vPos.z > 1.f)
+	{
+		vPos.x = -10.f;
+		vPos.y = -10.f;
+	}
+	_vec2 vPosition2D = _vec2(vPos.x, vPos.y);
 	return vPosition2D;
 }
 

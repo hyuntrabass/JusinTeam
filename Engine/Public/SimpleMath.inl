@@ -1,3 +1,4 @@
+#include "SimpleMath.h"
 //-------------------------------------------------------------------------------------
 // SimpleMath.inl -- Simplified C++ Math wrapper for DirectXMath
 //
@@ -2308,6 +2309,41 @@ inline Matrix operator* (float S, const Matrix& M) noexcept
     XMStoreFloat4(reinterpret_cast<XMFLOAT4*>(&R._31), x3);
     XMStoreFloat4(reinterpret_cast<XMFLOAT4*>(&R._41), x4);
     return R;
+}
+
+inline Vector3 DirectX::SimpleMath::Matrix::Get_Scale() const noexcept
+{
+    using namespace DirectX;
+
+    Vector3 result;
+
+    result.x = this->Right().Length();
+    result.y = this->Up().Length();
+    result.z = this->Look().Length();
+
+    return result;
+}
+
+inline Matrix DirectX::SimpleMath::Matrix::Get_RotationRemoved() const noexcept
+{
+    using namespace DirectX;
+
+    Matrix R = Matrix::CreateScale(this->Get_Scale());
+
+    R.Position(this->Position());
+
+    return R;
+}
+
+inline void DirectX::SimpleMath::Matrix::RemoveRotation() noexcept
+{
+    using namespace DirectX;
+
+    Matrix R = Matrix::CreateScale(this->Get_Scale());
+
+    R.Position(this->Position());
+
+    *this = R;
 }
 
 //------------------------------------------------------------------------------

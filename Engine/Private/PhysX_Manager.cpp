@@ -128,16 +128,14 @@ HRESULT CPhysX_Manager::Init()
 	//PxRigidStatic* pGround = PxCreatePlane(*m_pPhysics, PxPlane(0.f, 1.f, 0.f, 0.f), *m_pMaterial);
 	//m_pScene->addActor(*pGround);
 #ifdef _DEBUGTEST
-#ifndef _MapEditor
-	m_pScene->setVisualizationParameter(PxVisualizationParameter::eSCALE, 1.0);
-	m_pScene->setVisualizationParameter(PxVisualizationParameter::eACTOR_AXES, 1.0);
+	//m_pScene->setVisualizationParameter(PxVisualizationParameter::eSCALE, 1.0);
+	//m_pScene->setVisualizationParameter(PxVisualizationParameter::eACTOR_AXES, 1.0);
 
-	m_pDebugShader = CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxColor.hlsl"), VTXPOSCOLOR::Elements, VTXPOSCOLOR::iNumElements);
-	if (!m_pDebugShader)
-	{
-		return E_FAIL;
-	}
-#endif
+	//m_pDebugShader = CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxColor.hlsl"), VTXPOSCOLOR::Elements, VTXPOSCOLOR::iNumElements);
+	//if (!m_pDebugShader)
+	//{
+	//	return E_FAIL;
+	//}
 #endif // _DEBUG
 
 	return S_OK;
@@ -150,7 +148,6 @@ void CPhysX_Manager::Tick(_float fTimeDelta)
 }
 
 #ifdef _DEBUGTEST
-#ifndef _MapEditor
 HRESULT CPhysX_Manager::Render()
 {
 	if (!m_pVIBufferCom)
@@ -170,11 +167,11 @@ HRESULT CPhysX_Manager::Render()
 		m_pVIBufferCom->Update_Buffer(rb);
 	}
 
-	if (FAILED(m_pDebugShader->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(TransformType::View))))
+	if (FAILED(m_pDebugShader->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pDebugShader->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(TransformType::Proj))))
+	if (FAILED(m_pDebugShader->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
 	{
 		return E_FAIL;
 	}
@@ -190,7 +187,6 @@ HRESULT CPhysX_Manager::Render()
 
 	return S_OK;
 }
-#endif // _MapEditor
 #endif // _DEBUG
 
 void CPhysX_Manager::Init_PhysX_Character(CTransform* pTransform, CollisionGroup eGroup, PxCapsuleControllerDesc* pDesc)
@@ -419,10 +415,8 @@ void CPhysX_Manager::Free()
 	PX_RELEASE(m_pFoundation);
 
 #ifdef _DEBUGTEST
-#ifndef _MapEditor
 	Safe_Release(m_pDebugShader);
 	Safe_Release(m_pVIBufferCom);
-#endif // _MapEditor
 #endif // _DEBUG
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);

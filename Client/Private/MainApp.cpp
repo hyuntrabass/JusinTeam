@@ -68,6 +68,8 @@ HRESULT CMainApp::Init()
 
 	CEffect_Manager::Get_Instance()->Register_Callback();
 
+
+	//(_float)D_SCREEN1 / (_float)D_END
 	return S_OK;
 }
 

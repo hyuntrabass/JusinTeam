@@ -307,8 +307,9 @@ _vec4 CPicking::Compute_MousePicked_Terrain(_float44 matTerrainWorld, _float3* p
 		}
 		if (bCheck == true)
 			break;
-
 	}
+	
+	// 
 	// 로컬상에서의 충돌된 위치를 월드로 변환한다.
 	_vector vResult = XMVectorSet(-100.f, -100.f, -100.f, 0.f);
 

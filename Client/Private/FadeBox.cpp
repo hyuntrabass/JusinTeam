@@ -29,7 +29,7 @@ HRESULT CFadeBox::Init(void* pArg)
 	m_fX = g_iWinSizeX >> 1;
 	m_fY = g_iWinSizeY >> 1;
 
-	m_fDepth = 0.05f;
+	m_fDepth = (_float)D_FADE / (_float)D_END;
 
 
 
@@ -41,7 +41,7 @@ HRESULT CFadeBox::Init(void* pArg)
 		m_fAlpha = 0.f;
 		break;
 	case FADELOOP:
-		m_fDepth = 0.4f;
+		m_fDepth = (_float)D_QUEST / (_float)D_END + 0.01;
 		m_fAlpha = 0.f;
 		break;
 	case FADEOUT:

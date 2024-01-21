@@ -12,7 +12,7 @@ enum class InputChannel
 	Default,
 	UI,
 	GamePlay,
-	Editor,
+	Engine,
 	End
 };
 

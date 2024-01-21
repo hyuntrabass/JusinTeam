@@ -231,7 +231,7 @@ HRESULT CTestVTFModel::Bind_ShaderResources()
 HRESULT CTestVTFModel::Place_PartModels()
 {
     CRealtimeVTFModel::PART_DESC Desc{};
-    Desc.ePartType = 0; // enum 값으로 파츠타입을 정해서 주세용
+    Desc.ePartType = hair; // enum 값으로 파츠타입을 정해서 주세용
     Desc.FileName = "R_2005_BD.ao";
 
     // 파츠타입을 정한후 bool 값은 처음에 랜더할것만 true 주고 랜더 안할것들은 안주면 자동으로 false 들어갑니다

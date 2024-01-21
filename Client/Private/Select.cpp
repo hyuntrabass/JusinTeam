@@ -89,7 +89,7 @@ void CSelect::Tick(_float fTimeDelta)
 	{
 		if (PtInRect(&m_pSelectButton->Get_Rect(), ptMouse))
 		{
-			m_pGameInstance->Set_CameraState(CM_DEFAULT);
+			m_pGameInstance->Set_CameraState(CS_DEFAULT);
 			m_pGameInstance->Level_ShutDown(LEVEL_SELECT);
 		}
 		if (PtInRect(&m_pBackButton->Get_Rect(), ptMouse))
@@ -97,7 +97,7 @@ void CSelect::Tick(_float fTimeDelta)
 			if (m_pSelectDesc)
 			{
 				m_pSelectModels[m_eCurModel]->Change_AnimState(CSelect_Model::S_CANCEL);
-				m_pGameInstance->Set_CameraState(CM_DEFAULT);
+				m_pGameInstance->Set_CameraState(CS_DEFAULT);
 				m_pBackButton->Set_Size(150.f, 30.f, 0.35f);
 				Safe_Release(m_pSelectDesc);
 				m_bShow = false;
@@ -303,7 +303,7 @@ void CSelect::Set_SelectDesc(_uint iSelect)
 void CSelect::Set_CameraState(_uint iSelect)
 {
 	m_pSelectModels[iSelect]->Change_AnimState(CSelect_Model::S_MOTION);
-	m_pGameInstance->Set_CameraState(CM_ZOOM);
+	m_pGameInstance->Set_CameraState(CS_ZOOM);
 	_vec4 vTargetPos;
 
 	m_pGameInstance->Set_Have_TargetLook(false);

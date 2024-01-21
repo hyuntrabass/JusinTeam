@@ -36,13 +36,14 @@ private:
 
 	ANIM_DESC m_Animation{};
 
+
 private:
 	wstring m_strModelTag = {};
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
-	HRESULT Place_PartModels();
+
 
 public:
 	static CTestVTFModel* Create(_dev pDevice, _context pContext);

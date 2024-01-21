@@ -46,6 +46,7 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 #ifdef _DEBUG
 	_vector Pos = m_pTransformCom->Get_State(State::Pos);
 	_vector Look = m_pTransformCom->Get_State(State::Look);
+
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), COORD());
 	cout << "CamPos X :" << Pos.m128_f32[0] << endl;
 	cout << "CamPos Y :" << Pos.m128_f32[1] << endl;
