@@ -153,14 +153,6 @@ namespace Client
 		wstring strTexture{};
 	};
 
-	struct TerrainInfo {
-		_uint m_iNumVerticesX{ 0 };
-		_uint m_iNumVerticesZ{ 0 };
-		vector<VTXSTATICMESH> Vertices;
-		vector<_ulong> Indices;
-		_bool isMesh{ false };
-	};
-
 	struct AttachmentInfo
 	{
 		CTransform* pParent{ nullptr };

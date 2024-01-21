@@ -894,9 +894,9 @@ void CImGui_Manager::Create_Map(const _int& iListIndex)
 
 HRESULT CImGui_Manager::Create_Terrain()
 {
-	TerrainInfo pTerrainInfo{};
-	pTerrainInfo.m_iNumVerticesX = TerrainCount[0];
-	pTerrainInfo.m_iNumVerticesZ = TerrainCount[1];
+	TERRAIN_INFO_MAPTOOL pTerrainInfo{};
+	pTerrainInfo.vTerrainSize.x = TerrainCount[0];
+	pTerrainInfo.vTerrainSize.y = TerrainCount[1];
 
 	pTerrainInfo.ppTerrain = &m_pTerrain;
 
@@ -1321,7 +1321,7 @@ HRESULT CImGui_Manager::Load_Map_Vertex_Info_For_Terrain()
 
 	if (!m_pTerrain)
 	{
-		TerrainInfo pTerrainInfo{};
+		TERRAIN_INFO_MAPTOOL pTerrainInfo{};
 		pTerrainInfo.Vertices = LoadVertices;
 		pTerrainInfo.Indices = LoadIndices;
 		pTerrainInfo.ppTerrain = &m_pTerrain;

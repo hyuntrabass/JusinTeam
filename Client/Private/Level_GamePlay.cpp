@@ -222,10 +222,8 @@ HRESULT CLevel_GamePlay::Ready_Player()
 
 HRESULT CLevel_GamePlay::Ready_Map()
 {
-	//_uint2 vTerrainSize{ 100, 100 };
-	TerrainInfo Terrain;
-	Terrain.m_iNumVerticesX = 100;
-	Terrain.m_iNumVerticesZ = 100;
+	TERRAIN_INFO Terrain;
+	Terrain.vTerrainSize = _uint2(100, 100);
 	Terrain.isMesh = false;
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &Terrain)))
