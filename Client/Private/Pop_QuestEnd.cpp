@@ -223,6 +223,7 @@ HRESULT CPop_QuestEnd::Add_Parts()
 		return E_FAIL;
 	}
 
+	return S_OK;
 }
 
 HRESULT CPop_QuestEnd::Add_Components()

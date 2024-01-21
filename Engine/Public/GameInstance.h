@@ -129,9 +129,7 @@ public: // PhysX
 	_bool Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer);
 	void PhysXTick(_float fTimeDelta);
 #ifdef _DEBUGTEST
-#ifndef _MapEditor
 	HRESULT Render_PhysX();
-#endif // _MapEditor
 #endif // _DEBUG
 
 public: // RenderTarget
@@ -212,17 +210,18 @@ public: // Get_Set
 	void Set_CameraTargetLook(const _vec4& vLook);
 	void Set_Have_TargetLook(const _bool& bHaveLook);
 	void Set_AimMode(_bool Aim, _vec3 AimPos = _vec3(0.63f, 1.8f, 1.1f));
-	_bool Get_AimMode() { return m_AimMode; }
 
 
 	void Set_CameraAttackZoom(_float fAttackZoom) { m_fCameraAttackZoom = fAttackZoom; }
-	_float Get_CameraAttackZoom() { return m_fCameraAttackZoom; }
+	const _float& Get_CameraAttackZoom() { return m_fCameraAttackZoom; }
 	const _uint& Get_CameraState()  const;
 	const _float& Get_ZoomFactor() const;
 	const _vec4& Get_CameraTargetPos() const;
 	const _vec4& Get_CameraTargetLook();
 	const _bool& Have_TargetLook() const;
-	_vec3 Get_AimPos() { return m_AimPos; }
+	const _vec3& Get_AimPos() { return m_AimPos; }
+	const _bool& Get_AimMode() { return m_AimMode; }
+	const _bool& IsSkipDebugRendering() const;
 
 public:
 	void Initialize_Level(_uint iLevelNum);
@@ -266,6 +265,8 @@ private:
 	_bool m_AimMode{};
 	_float m_fShakePower{};
 	_vec3 m_AimPos{};
+	_bool m_bSkipDebugRender{};
+
 private:
 	vector<_bool> m_vecLevelInvalid;
 
