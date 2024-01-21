@@ -38,6 +38,8 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 		m_fDissolveRatio = 1.f;
 	}
 
+	m_OffsetMatrix = *m_Effect.pMatrix;
+
 	return S_OK;
 }
 
@@ -77,24 +79,19 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 	m_fTimer += fTimeDelta;
 	m_vUV += m_Effect.vUVDelta * fTimeDelta;
 
-	_mat OffsetMatrix = *m_Effect.pMatrix;
+	if (m_Effect.isFollow)
+	{
+		m_OffsetMatrix = *m_Effect.pMatrix;
+	}
 
 	if (m_Effect.iType != ET_MESH)
 	{
-		_float fScaleX = OffsetMatrix.Right().Length();
-		_float fScaleY = OffsetMatrix.Up().Length();
-		_float fScaleZ = OffsetMatrix.Look().Length();
-
-		_mat TempMatrix = _mat::Identity;
-
-		OffsetMatrix.Right(TempMatrix.Right() * fScaleX);
-		OffsetMatrix.Up(TempMatrix.Up() * fScaleY);
-		OffsetMatrix.Look(TempMatrix.Look() * fScaleZ);
+		m_OffsetMatrix.RemoveRotation();
 	}
 
-	m_pTransformCom->Set_Matrix(OffsetMatrix);
+	m_pTransformCom->Set_Matrix(m_OffsetMatrix);
 
-		switch (m_Effect.iType)
+	switch (m_Effect.iType)
 	{
 	case Effect_Type::ET_PARTICLE:
 		m_pParticle->Update(fTimeDelta, m_pTransformCom->Get_World_Matrix(), m_Effect.iNumInstances, m_Effect.bApplyGravity, m_Effect.vGravityDir);
@@ -116,7 +113,7 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 
 		m_pTransformCom->LookAway(m_pGameInstance->Get_CameraPos());
 
-		m_pTransformCom->Set_Scale(m_vScaleAcc);
+		m_pTransformCom->Set_Scale(m_vScaleAcc * m_OffsetMatrix.Get_Scale());
 		m_vScaleAcc += m_Effect.vSizeDelta * fTimeDelta;
 
 		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
@@ -137,7 +134,7 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 
 		m_pTransformCom->Set_State(State::Pos, vPos);
 
-		m_pTransformCom->Set_Scale(m_vScaleAcc);
+		m_pTransformCom->Set_Scale(m_vScaleAcc * m_OffsetMatrix.Get_Scale());
 		m_vScaleAcc += m_Effect.vSizeDelta * fTimeDelta;
 
 		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();

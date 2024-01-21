@@ -17,7 +17,7 @@ CModel::CModel(const CModel& rhs)
 	, m_Materials(rhs.m_Materials)
 	, m_PivotMatrix(rhs.m_PivotMatrix)
 	, m_iNumAnimations(rhs.m_iNumAnimations)
-	, m_iNumEffectTriggers(rhs.m_iNumEffectTriggers)
+	, m_iNumTriggersEffect(rhs.m_iNumTriggersEffect)
 	, m_TriggerEffects(rhs.m_TriggerEffects)
 {
 	for (auto& pPrototypeBone : rhs.m_Bones)
@@ -127,9 +127,9 @@ vector<_ulong> CModel::Get_StaticMeshIndices()
 	return vIndices;
 }
 
-const _uint CModel::Get_NumEffectTrigger() const
+const _uint CModel::Get_NumTriggerEffect() const
 {
-	return m_iNumEffectTriggers;
+	return m_iNumTriggersEffect;
 }
 
 TRIGGEREFFECT_DESC* CModel::Get_TriggerEffect(_uint iTriggerEffectIndex)
@@ -144,16 +144,37 @@ vector<TRIGGEREFFECT_DESC>& CModel::Get_TriggerEffects()
 
 void CModel::Add_TriggerEffect(TRIGGEREFFECT_DESC TriggerEffectDesc)
 {
+	m_iNumTriggersEffect++;
 	_mat* pMatrix = new _mat{};
 	m_EffectMatrices.push_back(pMatrix);
 	m_TriggerEffects.push_back(TriggerEffectDesc);
-	m_iNumEffectTriggers++;
+}
+
+void CModel::Delete_TriggerEffect(_uint iTriggerEffectIndex)
+{
+	m_iNumTriggersEffect--;
+	auto Effect_iter = m_TriggerEffects.begin();
+	auto Matrix_iter = m_EffectMatrices.begin();
+	for (_uint i = 0; i < iTriggerEffectIndex; i++)
+	{
+		Effect_iter++;
+		Matrix_iter++;
+	}
+	m_pGameInstance->Delete_Effect((*Matrix_iter));
+	m_TriggerEffects.erase(Effect_iter);
+	m_EffectMatrices.erase(Matrix_iter);
 }
 
 void CModel::Reset_TriggerEffects()
 {
-	m_iNumEffectTriggers = 0;
+	m_iNumTriggersEffect = 0;
 	m_TriggerEffects.clear();
+	for (auto& pEffectMatrix : m_EffectMatrices)
+	{
+		m_pGameInstance->Delete_Effect(pEffectMatrix);
+		Safe_Delete(pEffectMatrix);
+	}
+	m_EffectMatrices.clear();
 }
 
 _mat CModel::Get_PivotMatrix()
@@ -202,13 +223,10 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 	strcpy_s(m_szFilePath, MAX_PATH, strFilePath.c_str());
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
 	ModelType eType{};
-	_char szDirectory[MAX_PATH]{};
-	_char szFileName[MAX_PATH]{};
-	_char szTriggerExt[MAX_PATH] = ".animtrigger";
 	_char szExt[MAX_PATH]{};
 	if (!isCOLMesh)
 	{
-		_splitpath_s(strFilePath.c_str(), nullptr, 0, szDirectory, MAX_PATH, szFileName, MAX_PATH, szExt, MAX_PATH);
+		_splitpath_s(strFilePath.c_str(), nullptr, 0, nullptr, 0, nullptr, 0, szExt, MAX_PATH);
 		if (!strcmp(szExt, ".hyuntraanimmesh"))
 		{
 			eType = ModelType::Anim;
@@ -257,26 +275,9 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 
 		if (eType == ModelType::Anim)
 		{
-			_char szTriggerFilePath[MAX_PATH]{};
-			strcpy_s(szTriggerFilePath, MAX_PATH, szDirectory);
-			strcat_s(szTriggerFilePath, MAX_PATH, szFileName);
-			strcat_s(szTriggerFilePath, MAX_PATH, szTriggerExt);
-
-			ifstream TriggerFile(szTriggerFilePath, ios::binary);
-			if (TriggerFile.is_open())
+			if (FAILED(Read_TriggerEffects(strFilePath)))
 			{
-				_uint iAnimIndex = { 0 };
-				TriggerFile.read(reinterpret_cast<char*>(&iAnimIndex), sizeof _uint);
-				
-				_uint iNumTrigger = { 0 };
-				TriggerFile.read(reinterpret_cast<char*>(&iNumTrigger), sizeof _uint);
-				for (_uint i = 0; i < iNumTrigger; i++)
-				{
-					_float fTrigger = { 0.f };
-					TriggerFile.read(reinterpret_cast<char*>(&fTrigger), sizeof _float);
-					m_Animations[iAnimIndex]->Add_Trigger(fTrigger);
-				}
-				TriggerFile.close();
+				return E_FAIL;
 			}
 		}
 	}
@@ -316,7 +317,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fStartAnimPos)
 		{
 			//ÀÌÆåÆ® »ý¼º
-			m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i]);
+			m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
 			*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
 		}
 		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iEndAnimIndex &&
@@ -492,6 +493,50 @@ HRESULT CModel::Read_Materials(ifstream& File, const string& strFilePath)
 		}
 
 		m_Materials.push_back(Material);
+	}
+
+	return S_OK;
+}
+
+HRESULT CModel::Read_TriggerEffects(const string& strFilePath)
+{
+	_char szTriggerFilePath[MAX_PATH]{};
+	_char szDirectory[MAX_PATH]{};
+	_char szFileName[MAX_PATH]{};
+	_char szExt[MAX_PATH] = ".effecttrigger";
+	_splitpath_s(strFilePath.c_str(), nullptr, 0, szDirectory, MAX_PATH, szFileName, MAX_PATH, nullptr, 0);
+	strcpy_s(szTriggerFilePath, MAX_PATH, szDirectory);
+	strcat_s(szTriggerFilePath, MAX_PATH, szFileName);
+	strcat_s(szTriggerFilePath, MAX_PATH, szExt);
+
+	ifstream TriggerFile(szTriggerFilePath, ios::binary);
+	if (TriggerFile.is_open())
+	{
+		_uint iNumTriggerEffect = { 0 };
+		TriggerFile.read(reinterpret_cast<char*>(&iNumTriggerEffect), sizeof _uint);
+		for (_uint i = 0; i < iNumTriggerEffect; i++)
+		{
+			TRIGGEREFFECT_DESC EffectDesc{};
+			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.iStartAnimIndex), sizeof(_int));
+			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.fStartAnimPos), sizeof(_float));
+			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.iEndAnimIndex), sizeof(_int));
+			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.fEndAnimPos), sizeof(_float));
+			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.IsFollow), sizeof(_bool));
+
+			size_t iNameSize{};
+			_tchar* pBuffer{};
+			TriggerFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+			pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
+			TriggerFile.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
+			EffectDesc.strEffectName = pBuffer;
+			Safe_Delete_Array(pBuffer);
+
+			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.iBoneIndex), sizeof(_uint));
+			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.OffsetMatrix), sizeof(_mat));
+
+			Add_TriggerEffect(EffectDesc);
+		}
+		TriggerFile.close();
 	}
 
 	return S_OK;

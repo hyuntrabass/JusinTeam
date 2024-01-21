@@ -159,7 +159,7 @@ public: // Sound Manager
 	void SetChannelVolume(_uint iChannel, _float fVolume);
 
 public: // Effect Callback
-	using Func_CreateFX = function<void(const wstring&, _mat*)>;
+	using Func_CreateFX = function<void(const wstring&, _mat*, const _bool&)>;
 	using Func_DeleteFX = function<void(const void*)>;
 	using Func_TickFX = function<void(_float)>;
 	using Func_HasCreatedFX = function<_bool(const void*)>;
@@ -169,7 +169,7 @@ public: // Effect Callback
 	void Register_Tick_LateTick_Callback(Func_TickFX Tick, Func_TickFX Late_Tick);
 	void Register_HasCreated_Callback(Func_HasCreatedFX Function);
 
-	void Create_Effect(const wstring& strEffectTag, _mat* pMatrix);
+	void Create_Effect(const wstring& strEffectTag, _mat* pMatrix, const _bool& isFollow);
 	void Delete_Effect(const void* pMatrix);
 	_bool Has_Created_Effect(const void* pMatrixKey);
 

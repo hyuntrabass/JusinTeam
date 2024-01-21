@@ -175,6 +175,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				{
 					szCurrentModel = m_szFBXDataName[i];
 					m_iCurrentModelIndex = i;
+					m_iCurrentEffect = 0;
 				}
 			}
 			ImGui::EndCombo();
@@ -201,6 +202,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				{
 					szCurrentModel = szModelTag[i];
 					m_iCurrentModelIndex = i;
+					m_iCurrentEffect = 0;
 				}
 			}
 			ImGui::EndCombo();
@@ -232,12 +234,18 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			EffectDesc.strEffectName = szEffectName;
 			CModel* pCurModel = m_pPlayer->Get_CurrentModel();
 			EffectDesc.IsFollow = true;
+			EffectDesc.iStartAnimIndex = m_AnimDesc.iAnimIndex;
 			pCurModel->Add_TriggerEffect(EffectDesc);
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("DELETE"))
 		{
-
+			CModel* pCurModel = m_pPlayer->Get_CurrentModel();
+			pCurModel->Delete_TriggerEffect(m_iCurrentEffect);
+			if (m_iCurrentEffect != 0)
+			{
+				m_iCurrentEffect--;
+			}
 		}
 	}
 
@@ -402,7 +410,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	if (m_pPlayer)
 	{
 		CModel* pCurModel = m_pPlayer->Get_CurrentModel();
-		if (pCurModel->Get_NumEffectTrigger() != 0)
+		if (pCurModel->Get_NumTriggerEffect() != 0)
 		{
 			//이펙트 디스크립션 이름 저장(메뉴로 보여주기 위해)
 			vector<TRIGGEREFFECT_DESC> EffectDescs = pCurModel->Get_TriggerEffects();
@@ -452,27 +460,30 @@ HRESULT CImgui_Manager::ImGuiMenu()
 
 
 				ImGui::PushItemWidth(90.f);
-				_vector vPreScale{}, vPreRotation{}, vPrePosition{};
-				XMMatrixDecompose(&vPreScale, &vPreRotation, &vPrePosition, pEffectDesc->OffsetMatrix);
-				_vec4 vScale{}, vRotation{}, vPosition{};
-				vScale = vPreScale;
-				vRotation = vPreRotation;
-				
-				/*ImGui::SeparatorText("OFFSET");
-				ImGui::InputFloat("X##1", &pEffectDesc->OffsetMatrix.Position().x, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
-				ImGui::InputFloat("Y##1", &pEffectDesc->OffsetMatrix.Position().y, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
-				ImGui::InputFloat("Z##1", &pEffectDesc->OffsetMatrix.Position().z, 0.1f, 0.f, "%.1f");
-				ImGui::SeparatorText("AXIS");
-				ImGui::InputFloat("X##2", &vRotation.x, 1.f, 0.f, "%.1f"); ImGui::SameLine();
-				ImGui::InputFloat("Y##2", &vRotation.y, 1.f, 0.f, "%.1f"); ImGui::SameLine();
-				ImGui::InputFloat("Z##2", &vRotation.z, 1.f, 0.f, "%.1f");
-				ImGui::InputFloat("ANGLE", &vRotation.w, 1.f, 0.f, "%.1f");
+				_vec3 vScale{}, vPosition{};
+				vScale.x = pEffectDesc->OffsetMatrix.Right().Length();
+				vScale.y = pEffectDesc->OffsetMatrix.Up().Length();
+				vScale.z = pEffectDesc->OffsetMatrix.Look().Length();
+				vPosition = pEffectDesc->OffsetMatrix.Position();
+
 				ImGui::SeparatorText("SIZE");
-				ImGui::InputFloat("X##3", &pEffectDesc->OffsetMatrix.Right().Get_Normalized().x, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
-				ImGui::InputFloat("Y##3", &pEffectDesc->OffsetMatrix.Up().Get_Normalized().y, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
-				ImGui::InputFloat("Z##3", &pEffectDesc->OffsetMatrix.Look().Get_Normalized().z, 0.1f, 0.f, "%.1f");
+				ImGui::InputFloat("X##1", &vScale.x, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
+				ImGui::InputFloat("Y##1", &vScale.y, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
+				ImGui::InputFloat("Z##1", &vScale.z, 0.1f, 0.f, "%.1f");
+				ImGui::SeparatorText("OFFSET");
+				ImGui::InputFloat("X##2", &vPosition.x, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
+				ImGui::InputFloat("Y##2", &vPosition.y, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
+				ImGui::InputFloat("Z##2", &vPosition.z, 0.1f, 0.f, "%.1f");/*
+				ImGui::SeparatorText("AXIS");
+				ImGui::InputFloat("X##3", &vRotation.x, 1.f, 0.f, "%.1f"); ImGui::SameLine();
+				ImGui::InputFloat("Y##3", &vRotation.y, 1.f, 0.f, "%.1f"); ImGui::SameLine();
+				ImGui::InputFloat("Z##3", &vRotation.z, 1.f, 0.f, "%.1f");
+				ImGui::InputFloat("ANGLE", &vRotation.w, 1.f, 0.f, "%.1f");*/
 				ImGui::PopItemWidth();
-				XMMatrixAffineTransformation()*/
+				pEffectDesc->OffsetMatrix.Right(pEffectDesc->OffsetMatrix.Right().Get_Normalized()* vScale.x);
+				pEffectDesc->OffsetMatrix.Up(pEffectDesc->OffsetMatrix.Up().Get_Normalized()* vScale.y);
+				pEffectDesc->OffsetMatrix.Look(pEffectDesc->OffsetMatrix.Look().Get_Normalized()* vScale.z);
+				pEffectDesc->OffsetMatrix.Position(vPosition);
 			}
 
 			ImGui::End();
@@ -523,6 +534,27 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			ImGui::Text(strStartEffectPos.c_str()); ImGui::SameLine();
 			string strEndEffectPos = "END : " + to_string(static_cast<_int>(pEffectDesc->fEndAnimPos));
 			ImGui::Text(strEndEffectPos.c_str());
+
+			if (ImGui::Button("FOLLOW"))
+			{
+				if (pEffectDesc->IsFollow == false)
+				{
+					pEffectDesc->IsFollow = true;
+				}
+				else if (pEffectDesc->IsFollow == true)
+				{
+					pEffectDesc->IsFollow = false;
+				}
+			}
+			ImGui::SameLine();
+			if (pEffectDesc->IsFollow)
+			{
+				ImGui::Text("TRUE");
+			}
+			else
+			{
+				ImGui::Text("FALSE");
+			}
 
 			ImGui::PopItemWidth();
 			ImGui::End();
@@ -597,7 +629,7 @@ HRESULT CImgui_Manager::ImGuizmoMenu()
 	if (m_pPlayer)
 	{
 		CModel* pCurModel = m_pPlayer->Get_CurrentModel();
-		if (pCurModel->Get_NumEffectTrigger() != 0)
+		if (pCurModel->Get_NumTriggerEffect() != 0)
 		{
 			if (m_eSelect == SELECT_EFFECT)
 			{
@@ -660,12 +692,12 @@ HRESULT CImgui_Manager::SaveFile()
 	if (Fileout.is_open())
 	{
 		CModel* pCurModel = m_pPlayer->Get_CurrentModel();
-		for (_uint i = 0; i < pCurModel->Get_NumEffectTrigger(); i++)
+		for (_uint i = 0; i < pCurModel->Get_NumTriggerEffect(); i++)
 		{
 			vector<TRIGGEREFFECT_DESC> EffectDescs = pCurModel->Get_TriggerEffects();
-			_uint iNumEffectTrigger = EffectDescs.size();
-			Fileout.write(reinterpret_cast<_char*>(&iNumEffectTrigger), sizeof(_uint));
-			for (_uint i = 0; i < iNumEffectTrigger; i++)
+			_uint iNumTriggerEffect = EffectDescs.size();
+			Fileout.write(reinterpret_cast<_char*>(&iNumTriggerEffect), sizeof(_uint));
+			for (_uint i = 0; i < iNumTriggerEffect; i++)
 			{
 				_int iStartAnimIndex = EffectDescs[i].iStartAnimIndex;
 				Fileout.write(reinterpret_cast<_char*>(&iStartAnimIndex), sizeof(_int));
@@ -718,9 +750,9 @@ HRESULT CImgui_Manager::LoadFile()
 
 		pCurModel->Reset_TriggerEffects();
 
-		_uint iNumEffectTrigger = { 0 };
-		Filein.read(reinterpret_cast<char*>(&iNumEffectTrigger), sizeof _uint);
-		for (_uint i = 0; i < iNumEffectTrigger; i++)
+		_uint iNumTriggerEffect = { 0 };
+		Filein.read(reinterpret_cast<char*>(&iNumTriggerEffect), sizeof _uint);
+		for (_uint i = 0; i < iNumTriggerEffect; i++)
 		{
 			TRIGGEREFFECT_DESC EffectDesc{};
 			Filein.read(reinterpret_cast<_char*>(&EffectDesc.iStartAnimIndex), sizeof(_int));

@@ -31,7 +31,7 @@ public:
 	HRESULT Add_Layer_Effect(EffectInfo* pInfo);
 	class CEffect_Dummy* Clone_Effect(EffectInfo* pInfo);
 
-	void Create_Effect(const wstring& strEffectTag, _mat* pMatrix);
+	void Create_Effect(const wstring& strEffectTag, _mat* pMatrix, const _bool& isFollow);
 	void Delete_Effect(const void* pMatrix);
 
 	void Register_Callback();

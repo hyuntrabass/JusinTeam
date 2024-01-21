@@ -30,10 +30,11 @@ public:
 	vector<_ulong> Get_StaticMeshIndices();
 
 	//트리거
-	const _uint Get_NumEffectTrigger() const;
+	const _uint Get_NumTriggerEffect() const;
 	TRIGGEREFFECT_DESC* Get_TriggerEffect(_uint iTriggerEffectIndex);
 	vector<TRIGGEREFFECT_DESC>& Get_TriggerEffects();
 	void Add_TriggerEffect(TRIGGEREFFECT_DESC TriggerEffectDesc);
+	void Delete_TriggerEffect(_uint iTriggerEffectIndex);
 	void Reset_TriggerEffects();
 
 public:
@@ -53,11 +54,11 @@ public:
 private:
 	class CTransform* m_pOwnerTransform{};
 	//이펙트 트리거
-	_uint m_iNumEffectTriggers{};
+	_uint m_iNumTriggersEffect{};
 	vector<TRIGGEREFFECT_DESC> m_TriggerEffects;
 	vector<_mat*> m_EffectMatrices;
 	// 사운드 트리거
-	_uint m_iNumSoundTriggers{};
+	_uint m_iNumTriggersSound{};
 	vector<TRIGGERSOUND_DESC> m_TriggerSounds;
 
 	_char m_szFilePath[MAX_PATH] = "";
@@ -94,6 +95,7 @@ private:
 	HRESULT Read_Meshes(ifstream& File, const ModelType& eType, _fmatrix PivotMatrix);
 	HRESULT Read_Animations(ifstream& File);
 	HRESULT Read_Materials(ifstream& File, const string& strFilePath);
+	HRESULT Read_TriggerEffects(const string& strFilePath);
 
 public:
 	static CModel* Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh = false, _fmatrix PivotMatrix = XMMatrixIdentity());

@@ -66,7 +66,7 @@ CEffect_Dummy* CEffect_Manager::Clone_Effect(EffectInfo* pInfo)
 	return dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_EffectDummy", pInfo));
 }
 
-void CEffect_Manager::Create_Effect(const wstring& strEffectTag, _mat* pMatrix)
+void CEffect_Manager::Create_Effect(const wstring& strEffectTag, _mat* pMatrix, const _bool& isFollow)
 {
 	EffectInfo Info = Get_EffectInformation(strEffectTag);
 	Info.pMatrix = pMatrix;
