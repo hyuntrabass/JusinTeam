@@ -393,7 +393,6 @@
     <ClInclude Include="..\public\Effect_Manager.h">
       <Filter>03.Effect</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\NPCvsMon.h" />
     <ClInclude Include="..\Public\Logo_Text.h">
       <Filter>02.GameObjects\00.UI\00.LogoLevel\Logo_Background</Filter>
     </ClInclude>
@@ -513,6 +512,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Objects.h">
       <Filter>02.GameObjects\10. Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NPCvsMon.h">
+      <Filter>02.GameObjects\04.Monster\01. Tutorial\00. NPCvsMon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
