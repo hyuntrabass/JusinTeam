@@ -3,6 +3,7 @@
 #include "Texture.h"
 #include "Bone.h"
 #include "Animation.h"
+#include "GameInstance.h"
 
 CModel::CModel(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
@@ -16,12 +17,21 @@ CModel::CModel(const CModel& rhs)
 	, m_Materials(rhs.m_Materials)
 	, m_PivotMatrix(rhs.m_PivotMatrix)
 	, m_iNumAnimations(rhs.m_iNumAnimations)
+	, m_iNumEffectTriggers(rhs.m_iNumEffectTriggers)
+	, m_TriggerEffects(rhs.m_TriggerEffects)
 {
 	for (auto& pPrototypeBone : rhs.m_Bones)
 	{
 		CBone* pBone = pPrototypeBone->Clone();
 
 		m_Bones.push_back(pBone);
+	}
+
+	for (auto& pPrototypeAnimation : rhs.m_Animations)
+	{
+		CAnimation* pAnimation = pPrototypeAnimation->Clone();
+
+		m_Animations.push_back(pAnimation);
 	}
 
 	for (auto& pPrototypeMesh : rhs.m_Meshes)
@@ -117,6 +127,34 @@ vector<_ulong> CModel::Get_StaticMeshIndices()
 	return vIndices;
 }
 
+const _uint CModel::Get_NumEffectTrigger() const
+{
+	return m_iNumEffectTriggers;
+}
+
+TRIGGEREFFECT_DESC* CModel::Get_TriggerEffect(_uint iTriggerEffectIndex)
+{
+	return &m_TriggerEffects[iTriggerEffectIndex];
+}
+
+vector<TRIGGEREFFECT_DESC>& CModel::Get_TriggerEffects()
+{
+	return m_TriggerEffects;
+}
+
+void CModel::Add_TriggerEffect(TRIGGEREFFECT_DESC TriggerEffectDesc)
+{
+	_mat* pMatrix = new _mat{};
+	m_EffectMatrices.push_back(pMatrix);
+	m_TriggerEffects.push_back(TriggerEffectDesc);
+	m_iNumEffectTriggers++;
+}
+
+void CModel::Reset_TriggerEffects()
+{
+	m_iNumEffectTriggers = 0;
+	m_TriggerEffects.clear();
+}
 
 _mat CModel::Get_PivotMatrix()
 {
@@ -251,13 +289,12 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 	return S_OK;
 }
 
-HRESULT CModel::Init(void* pArg, const CModel& rhs)
+HRESULT CModel::Init(void* pArg)
 {
-	for (auto& pPrototypeAnimation : rhs.m_Animations)
+	if (pArg != nullptr)
 	{
-		CAnimation* pAnimation = pPrototypeAnimation->Clone(pArg);
-
-		m_Animations.push_back(pAnimation);
+		m_pOwnerTransform = reinterpret_cast<CTransform*>(pArg);
+		Safe_AddRef(m_pOwnerTransform);
 	}
 
 	return S_OK;
@@ -272,7 +309,32 @@ void CModel::Play_Animation(_float fTimeDelta)
 	{
 		pBone->Update_CombinedMatrix(m_Bones);
 	}
-		
+	
+	for (size_t i = 0; i < m_TriggerEffects.size(); i++)
+	{
+		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iStartAnimIndex &&
+			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fStartAnimPos)
+		{
+			//이펙트 생성
+			m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i]);
+			*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
+		}
+		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iEndAnimIndex &&
+			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fEndAnimPos)
+		{
+			//이펙트 제거
+			m_pGameInstance->Delete_Effect(m_EffectMatrices[i]);
+		}
+	}
+
+	for (size_t i = 0; i < m_TriggerEffects.size(); i++)
+	{
+		if (m_TriggerEffects[i].IsFollow)
+		{
+			//이펙트 위치 갱신
+			*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
+		}
+	}
 }
 
 HRESULT CModel::Bind_BoneMatrices(_uint iMeshIndex, CShader* pShader, const _char* pVariableName)
@@ -451,7 +513,7 @@ CComponent* CModel::Clone(void* pArg)
 {
 	CModel* pInstance = new CModel(*this);
 
-	if (FAILED(pInstance->Init(pArg, *this)))
+	if (FAILED(pInstance->Init(pArg)))
 	{
 		MSG_BOX("Failed to Clone : CModel");
 	}
@@ -489,4 +551,11 @@ void CModel::Free()
 		}
 	}
 	m_Materials.clear();
+
+	for (auto& pEffectMatrix : m_EffectMatrices)
+	{
+		Safe_Delete(pEffectMatrix);
+	}
+
+	Safe_Release(m_pOwnerTransform);
 }

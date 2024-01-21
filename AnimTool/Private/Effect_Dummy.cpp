@@ -79,13 +79,8 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 
 	_mat OffsetMatrix = *m_Effect.pMatrix;
 
-	switch (m_Effect.iType)
+	if (m_Effect.iType != ET_MESH)
 	{
-	case Effect_Type::ET_PARTICLE:
-	{
-		m_pParticle->Update(fTimeDelta, m_pTransformCom->Get_World_Matrix(), m_Effect.iNumInstances, m_Effect.bApplyGravity, m_Effect.vGravityDir);
-		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
-
 		_float fScaleX = OffsetMatrix.Right().Length();
 		_float fScaleY = OffsetMatrix.Up().Length();
 		_float fScaleZ = OffsetMatrix.Look().Length();
@@ -95,11 +90,30 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 		OffsetMatrix.Right(TempMatrix.Right() * fScaleX);
 		OffsetMatrix.Up(TempMatrix.Up() * fScaleY);
 		OffsetMatrix.Look(TempMatrix.Look() * fScaleZ);
-
-		break;
 	}
+
+	m_pTransformCom->Set_Matrix(OffsetMatrix);
+
+		switch (m_Effect.iType)
+	{
+	case Effect_Type::ET_PARTICLE:
+		m_pParticle->Update(fTimeDelta, m_pTransformCom->Get_World_Matrix(), m_Effect.iNumInstances, m_Effect.bApplyGravity, m_Effect.vGravityDir);
+		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
+		break;
 	case Effect_Type::ET_RECT:
 	{
+		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+
+		_vec4 vRightDir = m_WorldMatrix.Right().Get_Normalized();
+		_vec4 vUpDir = m_WorldMatrix.Up().Get_Normalized();
+		_vec4 vLookDir = m_WorldMatrix.Look().Get_Normalized();
+
+		vPos += vRightDir * m_Effect.vPosOffset.x;
+		vPos += vUpDir * m_Effect.vPosOffset.y;
+		vPos += vLookDir * m_Effect.vPosOffset.z;
+
+		m_pTransformCom->Set_State(State::Pos, vPos);
+
 		m_pTransformCom->LookAway(m_pGameInstance->Get_CameraPos());
 
 		m_pTransformCom->Set_Scale(m_vScaleAcc);
@@ -107,53 +121,30 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 
 		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
 
-		_vec4 vPos = m_WorldMatrix.Position();;
-
-		_vec4 vRight = m_WorldMatrix.Right().Get_Normalized();
-		_vec4 vUp = m_WorldMatrix.Up().Get_Normalized();
-		_vec4 vLook = m_WorldMatrix.Look().Get_Normalized();
-
-		vPos += vRight * m_Effect.vPosOffset.x;
-		vPos += vUp * m_Effect.vPosOffset.y;
-		vPos += vLook * m_Effect.vPosOffset.z;
-
-		m_WorldMatrix.Position(vPos);
-
-		_float fScaleX = OffsetMatrix.Right().Length();
-		_float fScaleY = OffsetMatrix.Up().Length();
-		_float fScaleZ = OffsetMatrix.Look().Length();
-
-		_mat TempMatrix = _mat::Identity;
-
-		OffsetMatrix.Right(TempMatrix.Right() * fScaleX);
-		OffsetMatrix.Up(TempMatrix.Up() * fScaleY);
-		OffsetMatrix.Look(TempMatrix.Look() * fScaleZ);
 		break;
 	}
 	case Effect_Type::ET_MESH:
 	{
+		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+
+		_vec4 vRightDir = m_WorldMatrix.Right().Get_Normalized();
+		_vec4 vUpDir = m_WorldMatrix.Up().Get_Normalized();
+		_vec4 vLookDir = m_WorldMatrix.Look().Get_Normalized();
+
+		vPos += vRightDir * m_Effect.vPosOffset.x;
+		vPos += vUpDir * m_Effect.vPosOffset.y;
+		vPos += vLookDir * m_Effect.vPosOffset.z;
+
+		m_pTransformCom->Set_State(State::Pos, vPos);
+
 		m_pTransformCom->Set_Scale(m_vScaleAcc);
 		m_vScaleAcc += m_Effect.vSizeDelta * fTimeDelta;
 
 		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
 
-		_vec4 vPos = m_WorldMatrix.Position();;
-
-		_vec4 vRight = m_WorldMatrix.Right().Get_Normalized();
-		_vec4 vUp = m_WorldMatrix.Up().Get_Normalized();
-		_vec4 vLook = m_WorldMatrix.Look().Get_Normalized();
-
-		vPos += vRight * m_Effect.vPosOffset.x;
-		vPos += vUp * m_Effect.vPosOffset.y;
-		vPos += vLook * m_Effect.vPosOffset.z;
-
-		m_WorldMatrix.Position(vPos);
-
 		break;
 	}
 	}
-
-	m_WorldMatrix *= OffsetMatrix;
 }
 
 void CEffect_Dummy::Late_Tick(_float fTimeDelta)
