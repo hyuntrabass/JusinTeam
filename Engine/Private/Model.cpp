@@ -571,6 +571,7 @@ HRESULT CModel::Read_TriggerEffects(const string& strFilePath)
 
 			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.iBoneIndex), sizeof(_uint));
 			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.OffsetMatrix), sizeof(_mat));
+			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.IsRotateToBone), sizeof(_bool));
 
 			m_TriggerEffects.push_back(EffectDesc);
 			m_iNumTriggersEffect++;
