@@ -161,9 +161,11 @@ public: // Sound Manager
 public: // Effect Callback
 	using Func_CreateFX = function<void(const wstring&, _mat*)>;
 	using Func_DeleteFX = function<void(const void*)>;
+	using Func_TickFX = function<void(_float)>;
 
 	void Register_CreateEffect_Callback(Func_CreateFX Function);
 	void Register_DeleteEffect_Callback(Func_DeleteFX Function);
+	void Register_Tick_LateTick_Callback(Func_TickFX Tick, Func_TickFX Late_Tick);
 
 	void Create_Effect(const wstring& strEffectTag, _mat* pMatrix);
 	void Delete_Effect(const void* pMatrix);
@@ -267,7 +269,8 @@ private:
 private:
 	Func_CreateFX m_Function_Create_FX{};
 	Func_DeleteFX m_Function_Delete_FX{};
-
+	Func_TickFX m_Function_Tick_FX{};
+	Func_TickFX m_Function_LateTick_FX{};
 
 public:
 	static void Release_Engine();

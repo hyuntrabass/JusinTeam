@@ -936,7 +936,7 @@ HRESULT CImgui_Manager::Export_Data(EffectInfo& Info)
 			OutFile.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
 			OutFile.write(reinterpret_cast<const _char*>(Info.strUnDissolveTexture.data()), iNameSize);
 
-			iNameSize = (Info.strModel.size() + 1) * sizeof(_char);
+			iNameSize = Info.strModel.size() + sizeof(_char);
 			OutFile.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
 			OutFile.write(Info.strModel.data(), iNameSize);
 
