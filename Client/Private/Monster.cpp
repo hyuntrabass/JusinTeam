@@ -7,6 +7,7 @@ CMonster::CMonster(_dev pDevice, _context pContext)
 
 CMonster::CMonster(const CMonster& rhs)
 	: CGameObject(rhs)
+	,m_pInfo(rhs.m_pInfo)
 {
 }
 

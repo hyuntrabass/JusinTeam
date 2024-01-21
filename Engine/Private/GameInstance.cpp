@@ -1055,14 +1055,14 @@ void CGameInstance::Register_HasCreated_Callback(Func_HasCreatedFX Function)
 	m_Function_HasCreated = Function;
 }
 
-void CGameInstance::Create_Effect(const wstring& strEffectTag, _mat* pMatrix)
+void CGameInstance::Create_Effect(const wstring& strEffectTag, _mat* pMatrix, const _bool& isFollow)
 {
 	if (not m_Function_Create_FX)
 	{
 		MSG_BOX("Function is not ready!!");
 		return;
 	}
-	m_Function_Create_FX(strEffectTag, pMatrix);
+	m_Function_Create_FX(strEffectTag, pMatrix, isFollow);
 }
 
 void CGameInstance::Delete_Effect(const void* pMatrix)

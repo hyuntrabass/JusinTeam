@@ -166,6 +166,7 @@
     <ClInclude Include="..\Public\ItemBlock.h" />
     <ClInclude Include="..\Public\ItemSlot.h" />
     <ClInclude Include="..\Public\JobMark.h" />
+    <ClInclude Include="..\Public\Level_Village.h" />
     <ClInclude Include="..\Public\Logo_Dust.h" />
     <ClInclude Include="..\Public\Logo_Stone.h" />
     <ClInclude Include="..\Public\Logo_Text.h" />
@@ -177,9 +178,11 @@
     <ClInclude Include="..\Public\Custom.h" />
     <ClInclude Include="..\Public\Effect_Dummy.h" />
     <ClInclude Include="..\Public\NPC_Dummy.h" />
+    <ClInclude Include="..\Public\Objects.h" />
     <ClInclude Include="..\Public\Odin.h" />
     <ClInclude Include="..\Public\Pop_QuestEnd.h" />
     <ClInclude Include="..\Public\Pop_QuestIn.h" />
+    <ClInclude Include="..\Public\Prologue_Object.h" />
     <ClInclude Include="..\Public\Quest.h" />
     <ClInclude Include="..\Public\QuestBox.h" />
     <ClInclude Include="..\Public\Rabbit.h" />
@@ -222,7 +225,6 @@
     <ClInclude Include="..\Public\Void05.h" />
     <ClInclude Include="..\Public\Weapon.h" />
     <ClInclude Include="Client.h" />
-    <ClInclude Include="Prologue_Object.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
@@ -247,6 +249,7 @@
     <ClCompile Include="..\Private\ItemBlock.cpp" />
     <ClCompile Include="..\Private\ItemSlot.cpp" />
     <ClCompile Include="..\Private\JobMark.cpp" />
+    <ClCompile Include="..\Private\Level_Village.cpp" />
     <ClCompile Include="..\Private\Logo_Dust.cpp" />
     <ClCompile Include="..\Private\Logo_Stone.cpp" />
     <ClCompile Include="..\Private\Logo_Text.cpp" />
@@ -258,9 +261,11 @@
     <ClCompile Include="..\Private\Custom.cpp" />
     <ClCompile Include="..\Private\Effect_Dummy.cpp" />
     <ClCompile Include="..\Private\NPC_Dummy.cpp" />
+    <ClCompile Include="..\Private\Objects.cpp" />
     <ClCompile Include="..\Private\Odin.cpp" />
     <ClCompile Include="..\Private\Pop_QuestEnd.cpp" />
     <ClCompile Include="..\Private\Pop_QuestIn.cpp" />
+    <ClCompile Include="..\Private\Prologue_Object.cpp" />
     <ClCompile Include="..\Private\Quest.cpp" />
     <ClCompile Include="..\Private\QuestBox.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />
@@ -301,7 +306,6 @@
     <ClCompile Include="..\Private\Void05.cpp" />
     <ClCompile Include="..\Private\Weapon.cpp" />
     <ClCompile Include="Client.cpp" />
-    <ClCompile Include="Prologue_Object.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc" />

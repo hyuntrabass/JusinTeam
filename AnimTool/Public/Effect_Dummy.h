@@ -13,11 +13,6 @@ private:
 	virtual ~CEffect_Dummy() = default;
 
 public:
-	void Set_WorldMatrix(_mat WorldMatrix) {
-		m_pTransformCom->Set_Matrix(WorldMatrix);
-	}
-
-public:
 	virtual HRESULT Init_Prototype() override;
 	virtual HRESULT Init(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
@@ -38,6 +33,7 @@ private:
 private:
 	EffectInfo m_Effect{};
 	_mat m_WorldMatrix{};
+	_mat m_OffsetMatrix{};
 	_float m_fTimer{};
 	_float m_fSpriteTimer{};
 	_int m_iSpriteIndex{};
