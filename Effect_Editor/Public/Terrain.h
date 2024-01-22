@@ -25,7 +25,7 @@ private:
 	CVIBuffer_Terrain* m_pVIBufferCom = { nullptr };
 
 private:
-	_uint2 m_vTerrainSize{};
+	TERRAIN_INFO TerrainInfo{};
 
 private:
 	HRESULT Add_Component();

@@ -45,13 +45,10 @@ struct MapInfo
 	class CMap** ppMap{ nullptr };
 };
 
-struct TerrainInfo {
-	_uint m_iNumVerticesX{ 0 };
-	_uint m_iNumVerticesZ{ 0 };
-	vector<VTXSTATICMESH> Vertices;
-	vector<_ulong> Indices;
-	_bool isMesh{ false };
-
+struct TERRAIN_INFO_MAPTOOL : public TERRAIN_INFO
+{
+	std::vector<VTXSTATICMESH> Vertices{};
+	std::vector<unsigned long> Indices{};
 	class CTerrain** ppTerrain{ nullptr };
 };
 

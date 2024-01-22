@@ -131,9 +131,7 @@ public: // PhysX
 	_bool Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer);
 	void PhysXTick(_float fTimeDelta);
 #ifdef _DEBUGTEST
-#ifndef _MapEditor
 	HRESULT Render_PhysX();
-#endif // _MapEditor
 #endif // _DEBUG
 
 public: // RenderTarget
@@ -161,16 +159,19 @@ public: // Sound Manager
 	void SetChannelVolume(_uint iChannel, _float fVolume);
 
 public: // Effect Callback
-	using Func_CreateFX = function<void(const wstring&, _mat*)>;
+	using Func_CreateFX = function<void(const wstring&, _mat*, const _bool&)>;
 	using Func_DeleteFX = function<void(const void*)>;
 	using Func_TickFX = function<void(_float)>;
+	using Func_HasCreatedFX = function<_bool(const void*)>;
 
 	void Register_CreateEffect_Callback(Func_CreateFX Function);
 	void Register_DeleteEffect_Callback(Func_DeleteFX Function);
 	void Register_Tick_LateTick_Callback(Func_TickFX Tick, Func_TickFX Late_Tick);
+	void Register_HasCreated_Callback(Func_HasCreatedFX Function);
 
-	void Create_Effect(const wstring& strEffectTag, _mat* pMatrix);
+	void Create_Effect(const wstring& strEffectTag, _mat* pMatrix, const _bool& isFollow);
 	void Delete_Effect(const void* pMatrix);
+	_bool Has_Created_Effect(const void* pMatrixKey);
 
 public: // Get_Set
 	// 현재 카메라가 메인 카메라인지 디버그 카메라인지 반환함. client define에 이넘 있음.
@@ -211,17 +212,18 @@ public: // Get_Set
 	void Set_CameraTargetLook(const _vec4& vLook);
 	void Set_Have_TargetLook(const _bool& bHaveLook);
 	void Set_AimMode(_bool Aim, _vec3 AimPos = _vec3(0.63f, 1.8f, 1.1f));
-	_bool Get_AimMode() { return m_AimMode; }
 
 
 	void Set_CameraAttackZoom(_float fAttackZoom) { m_fCameraAttackZoom = fAttackZoom; }
-	_float Get_CameraAttackZoom() { return m_fCameraAttackZoom; }
+	const _float& Get_CameraAttackZoom() { return m_fCameraAttackZoom; }
 	const _uint& Get_CameraState()  const;
 	const _float& Get_ZoomFactor() const;
 	const _vec4& Get_CameraTargetPos() const;
 	const _vec4& Get_CameraTargetLook();
 	const _bool& Have_TargetLook() const;
-	_vec3 Get_AimPos() { return m_AimPos; }
+	const _vec3& Get_AimPos() { return m_AimPos; }
+	const _bool& Get_AimMode() { return m_AimMode; }
+	const _bool& IsSkipDebugRendering() const;
 
 public:
 	void Initialize_Level(_uint iLevelNum);
@@ -265,6 +267,8 @@ private:
 	_bool m_AimMode{};
 	_float m_fShakePower{};
 	_vec3 m_AimPos{};
+	_bool m_bSkipDebugRender{};
+
 private:
 	vector<_bool> m_vecLevelInvalid;
 
@@ -273,6 +277,7 @@ private:
 	Func_DeleteFX m_Function_Delete_FX{};
 	Func_TickFX m_Function_Tick_FX{};
 	Func_TickFX m_Function_LateTick_FX{};
+	Func_HasCreatedFX m_Function_HasCreated{};
 
 public:
 	static void Release_Engine();

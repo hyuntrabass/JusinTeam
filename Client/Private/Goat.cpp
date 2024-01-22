@@ -1,7 +1,7 @@
 #include "Goat.h"
 
-const _float CGoat::g_fChaseRange = 5.f;
-const _float CGoat::g_fAttackRange = 2.f;
+const _float CGoat::m_fChaseRange = 5.f;
+const _float CGoat::m_fAttackRange = 2.f;
 
 CGoat::CGoat(_dev pDevice, _context pContext)
 	: CMonster(pDevice, pContext)
@@ -197,7 +197,7 @@ void CGoat::Tick_State(_float fTimeDelta)
 		m_pTransformCom->LookAt(vPlayerPos);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 
-		if (fDistance > g_fChaseRange)
+		if (fDistance > m_fChaseRange)
 		{
 			m_eCurState = STATE_IDLE;
 		}
@@ -270,7 +270,7 @@ void CGoat::Attack(_float fTimeDelta)
 {
 	_float fDistance = __super::Compute_PlayerDistance();
 
-	if (fDistance <= g_fChaseRange)
+	if (fDistance <= m_fChaseRange)
 	{
 		if (m_eCurState == STATE_ATTACK)
 		{
@@ -287,7 +287,7 @@ void CGoat::Attack(_float fTimeDelta)
 		}
 	}
 
-	if (fDistance <= g_fAttackRange)
+	if (fDistance <= m_fAttackRange)
 	{
 		m_eCurState = STATE_ATTACK;
 		m_Animation.isLoop = true;

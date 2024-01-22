@@ -79,8 +79,8 @@ private:
 
 
 private:
-	static const _float g_fChaseRange;
-	static const _float g_fAttackRange;
+	static const _float m_fChaseRange;
+	static const _float m_fAttackRange;
 
 public:
 	virtual HRESULT Add_Collider() override;

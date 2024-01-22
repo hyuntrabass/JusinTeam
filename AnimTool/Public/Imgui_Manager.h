@@ -77,7 +77,7 @@ private:
     vector<const _char*> m_TriggerTimes;
 
     //ImGuizmo
-    SELECT m_eSelect = { SELECT_PLAYER };
+    SELECT m_eSelect = { SELECT_EFFECT };
     ImGuizmo::OPERATION m_eStateType = { ImGuizmo::OPERATION::TRANSLATE };
     _int m_iManipulateType = 0;
     MANIPULATETYPE m_eManipulateType = { TYPE_STATE };

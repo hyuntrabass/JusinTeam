@@ -427,11 +427,13 @@ HRESULT CRenderer::Draw_RenderGroup()
 		MSG_BOX("Failed to Render : Refraction");
 		return E_FAIL;
 	}
-	if (FAILED(Render_Reflection())) {
+	if (FAILED(Render_Reflection()))
+	{
 		MSG_BOX("Failed to Render : Reflection");
 		return E_FAIL;
 	}
-	if (FAILED(Render_Water())) {
+	if (FAILED(Render_Water()))
+	{
 		MSG_BOX("Failed to Render : Water");
 		return E_FAIL;
 	}
@@ -472,10 +474,13 @@ HRESULT CRenderer::Draw_RenderGroup()
 	}
 
 #ifdef _DEBUGTEST
-	if (FAILED(Render_Debug()))
+	if (not m_pGameInstance->IsSkipDebugRendering())
 	{
-		MSG_BOX("Failed to Render Debug");
-		return E_FAIL;
+		if (FAILED(Render_Debug()))
+		{
+			MSG_BOX("Failed to Render Debug");
+			return E_FAIL;
+		}
 	}
 #endif // _DEBUG
 
@@ -486,6 +491,11 @@ HRESULT CRenderer::Draw_RenderGroup()
 #ifdef _DEBUGTEST
 HRESULT CRenderer::Add_DebugComponent(CComponent* pDebugComponent)
 {
+	if (m_pGameInstance->IsSkipDebugRendering())
+	{
+		return S_OK;
+	}
+
 	m_DebugComponents.push_back(pDebugComponent);
 	Safe_AddRef(pDebugComponent);
 
@@ -677,8 +687,10 @@ HRESULT CRenderer::Render_Refraction()
 	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Refraction"))))
 		return E_FAIL;
 
-	for (auto& pGameObject : m_RenderObjects[RG_Water_Refraction]) {
-		if (pGameObject) {
+	for (auto& pGameObject : m_RenderObjects[RG_Water_Refraction])
+	{
+		if (pGameObject)
+		{
 			if (FAILED(pGameObject->Render_Refract()))
 				MSG_BOX("Failed to Refraction Render");
 		}
@@ -701,8 +713,10 @@ HRESULT CRenderer::Render_Reflection()
 	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Reflection"))))
 		return E_FAIL;
 
-	for (auto& pGameObject : m_RenderObjects[RG_Water_Reflection]) {
-		if (pGameObject) {
+	for (auto& pGameObject : m_RenderObjects[RG_Water_Reflection])
+	{
+		if (pGameObject)
+		{
 			if (FAILED(pGameObject->Render_Reflection()))
 				MSG_BOX("Failed to Reflection Render");
 		}
@@ -725,8 +739,10 @@ HRESULT CRenderer::Render_Water()
 	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Water"))))
 		return E_FAIL;
 
-	for (auto& pGameObject : m_RenderObjects[RG_Water]) {
-		if (pGameObject) {
+	for (auto& pGameObject : m_RenderObjects[RG_Water])
+	{
+		if (pGameObject)
+		{
 			if (FAILED(pGameObject->Render()))
 				MSG_BOX("Failed to Water Render");
 		}
@@ -787,7 +803,8 @@ HRESULT CRenderer::Render_LightAcc()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pShader->Bind_RawValue("g_vRandom", m_vRandom, sizeof(_vec3) * 50))) {
+	if (FAILED(m_pShader->Bind_RawValue("g_vRandom", m_vRandom, sizeof(_vec3) * 50)))
+	{
 		return E_FAIL;
 	}
 
@@ -958,6 +975,25 @@ HRESULT CRenderer::Render_Deferred()
 		//return E_FAIL;
 	}
 
+	if (m_pGameInstance->Key_Down(DIK_J))
+		m_TurnOnSSAO = !m_TurnOnSSAO;
+
+	// ¿ø¸í
+	if(FAILED(m_pShader->Bind_RawValue("TurnOnSSAO", &m_TurnOnSSAO, sizeof(_bool))))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Bind_RawValue("g_intensity", &m_fIntensity, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Bind_RawValue("g_fRadius", &m_fRadius, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Bind_RawValue("g_fScale", &m_fScale, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Bind_RawValue("g_fBias", &m_fBias, sizeof(_float))))
+		return E_FAIL;
+
 	if (FAILED(m_pShader->Begin(DefPass_Deferred)))
 	{
 		return E_FAIL;
@@ -1019,12 +1055,12 @@ HRESULT CRenderer::Render_Blur()
 	//}
 
 	//m_pContext->RSSetViewports(iNumViewPorts, &OldViewportDesc);
-	
+
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_Bloom"))))
 	{
 		return E_FAIL;
 	}
-	
+
 	if (FAILED(m_pShader->Begin(DefPass_Blur)))
 	{
 		return E_FAIL;
@@ -1136,7 +1172,7 @@ HRESULT CRenderer::Render_BlendBlur()
 	}
 
 	//m_pContext->RSSetViewports(iNumViewPorts, &OldViewportDesc);
-	
+
 	//if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_BlurTest"))))
 	//{
 	//	return E_FAIL;
@@ -1194,7 +1230,7 @@ HRESULT CRenderer::Render_Debug()
 {
 	for (auto& pComponent : m_DebugComponents)
 	{
-		pComponent->Render();
+		//pComponent->Render();
 		Safe_Release(pComponent);
 	}
 	m_DebugComponents.clear();
@@ -1208,7 +1244,8 @@ HRESULT CRenderer::Render_Debug()
 	{
 		return E_FAIL;
 	}
-
+	/*
+	
 	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_GameObjects"), m_pShader, m_pVIBuffer)))
 	{
 		return E_FAIL;
@@ -1243,6 +1280,7 @@ HRESULT CRenderer::Render_Debug()
 	{
 		return E_FAIL;
 	}
+	*/
 	return S_OK;
 }
 #endif // _DEBUG

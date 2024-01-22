@@ -43,6 +43,8 @@ private:
 	pair<_vec2, _uint>  m_Hair[9]; //pos와 인덱스 저장
 	pair<_vec2, _uint>  m_Face[6];
 
+	CGameObject*		m_pBackGround{ nullptr };
+
 	CTextButtonColor*	m_pLine1{ nullptr };
 	CTextButtonColor*	m_pLine2{ nullptr };
 

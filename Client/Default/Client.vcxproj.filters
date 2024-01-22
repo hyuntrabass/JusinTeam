@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="98.Default">
-      <UniqueIdentifier>{6ef1e47a-756a-4482-9f45-993c308095c3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="00,MainApp">
       <UniqueIdentifier>{d75afd3c-146f-4dea-86e4-053365be8e3f}</UniqueIdentifier>
     </Filter>
@@ -196,6 +193,12 @@
     <Filter Include="02.GameObjects\07. StatObject\Test">
       <UniqueIdentifier>{83755c37-e549-4fee-bc19-f3815975968c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\08.Map">
+      <UniqueIdentifier>{8e2295d8-49f8-4964-8cf1-492d50fc7d62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\09.Prologue_Object">
+      <UniqueIdentifier>{81af0f87-34df-4131-8061-fdbca3043fe5}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObjects\00.UI\POPUP">
       <UniqueIdentifier>{395d4c54-fec4-4c43-8e36-2a78faf9edea}</UniqueIdentifier>
     </Filter>
@@ -207,18 +210,6 @@
     </Filter>
     <Filter Include="02.GameObjects\00.UI\GameUI\Quest\QuestBox">
       <UniqueIdentifier>{2da81de6-d6ce-459f-87a1-7a17217f00b1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Levels\04.Village">
-      <UniqueIdentifier>{cc2b53e0-c112-4104-812c-218593716a67}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\09.Map">
-      <UniqueIdentifier>{8e2295d8-49f8-4964-8cf1-492d50fc7d62}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\10. Objects">
-      <UniqueIdentifier>{b1963590-5fe6-42c0-b50c-01b10c9289c8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\10. Objects\00.Prologue_Object">
-      <UniqueIdentifier>{81af0f87-34df-4131-8061-fdbca3043fe5}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\04.Monster\00. ModelTest">
       <UniqueIdentifier>{0e66fe14-e7ce-411d-974f-08f8c5cae5d8}</UniqueIdentifier>
@@ -268,22 +259,52 @@
     <Filter Include="02.GameObjects\03.Player\Riding">
       <UniqueIdentifier>{073d72ed-ee94-48c7-98cd-dce26867b879}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven">
+      <UniqueIdentifier>{a3563dd2-4399-4fd0-b2ef-4ec038b98d67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Wearable Slots">
+      <UniqueIdentifier>{b373fc29-646c-4bd3-8638-6561ec5c16ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Desc">
+      <UniqueIdentifier>{9243a5dc-24e7-4b3f-af5a-176532212fb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Item">
+      <UniqueIdentifier>{b5de1188-8dfd-4cce-be30-4873c65ba985}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="99.Headers\98.Default">
+      <UniqueIdentifier>{6ef1e47a-756a-4482-9f45-993c308095c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Monster\06. Void\Void09">
+      <UniqueIdentifier>{708cdd65-d615-4fef-b8a3-5eb67028c4ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Monster\06. Void\Void20">
+      <UniqueIdentifier>{003eae17-dbfe-4be7-895f-7f1fd99a9dd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Monster\06. Void\Void23">
+      <UniqueIdentifier>{dd18462f-f63e-461d-bb94-cf13ddd980dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Monster\07. Imp">
+      <UniqueIdentifier>{29051842-1671-42b2-a983-c0712f3f2e64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\10. Pet">
+      <UniqueIdentifier>{1c9f08e4-2674-40c5-8777-3b03e17501c0}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObjects\10. Objects\01.Village_Object">
       <UniqueIdentifier>{d1c926ce-bf30-4b7f-8e77-ff21240fc39b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
-      <Filter>98.Default</Filter>
+      <Filter>99.Headers\98.Default</Filter>
     </ClInclude>
     <ClInclude Include="framework.h">
-      <Filter>98.Default</Filter>
+      <Filter>99.Headers\98.Default</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>98.Default</Filter>
+      <Filter>99.Headers\98.Default</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
-      <Filter>98.Default</Filter>
+      <Filter>99.Headers\98.Default</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Client_Define.h">
       <Filter>99.Headers</Filter>
@@ -456,14 +477,11 @@
     <ClInclude Include="..\Public\Groar_Boss.h">
       <Filter>02.GameObjects\08. Boss\Groar_Boss</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\TestVTFModel.h">
-      <Filter>02.GameObjects\04.Monster\TestVTFRabbit</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\TestTree.h">
       <Filter>02.GameObjects\07. StatObject\Test</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Map.h">
-      <Filter>02.GameObjects\09.Map</Filter>
+      <Filter>02.GameObjects\08.Map</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Pop_QuestEnd.h">
       <Filter>02.GameObjects\00.UI\POPUP</Filter>
@@ -504,39 +522,42 @@
     <ClInclude Include="..\Public\Riding.h">
       <Filter>02.GameObjects\03.Player\Riding</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Prologue_Object.h">
-      <Filter>02.GameObjects\10. Objects\00.Prologue_Object</Filter>
+    <ClInclude Include="..\Public\Inven.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Level_Village.h">
-      <Filter>01.Levels\04.Village</Filter>
+    <ClInclude Include="..\Public\Wearable_Slot.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Wearable Slots</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Objects.h">
-      <Filter>02.GameObjects\10. Objects</Filter>
+    <ClInclude Include="..\Public\Item.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Item</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\NPCvsMon.h">
       <Filter>02.GameObjects\04.Monster\01. Tutorial\00. NPCvsMon</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\NPCvsMon.h" />
-    <ClInclude Include="..\Public\Village_Object.h">
-      <Filter>02.GameObjects\10. Objects\01.Village_Object</Filter>
+    <ClInclude Include="..\Public\Imp.h">
+      <Filter>02.GameObjects\04.Monster\07. Imp</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Void09.h">
+      <Filter>02.GameObjects\04.Monster\06. Void\Void09</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Void20.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
-      <Filter>98.Default</Filter>
+      <Filter>99.Headers\98.Default</Filter>
     </Image>
     <Image Include="small.ico">
-      <Filter>98.Default</Filter>
+      <Filter>99.Headers\98.Default</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc">
-      <Filter>98.Default</Filter>
+      <Filter>99.Headers\98.Default</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
-      <Filter>98.Default</Filter>
+      <Filter>99.Headers\98.Default</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\MainApp.cpp">
       <Filter>00,MainApp</Filter>
@@ -706,14 +727,11 @@
     <ClCompile Include="..\Private\Groar_Boss.cpp">
       <Filter>02.GameObjects\08. Boss\Groar_Boss</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\TestVTFModel.cpp">
-      <Filter>02.GameObjects\04.Monster\TestVTFRabbit</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\TestTree.cpp">
       <Filter>02.GameObjects\07. StatObject\Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Map.cpp">
-      <Filter>02.GameObjects\09.Map</Filter>
+      <Filter>02.GameObjects\08.Map</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Pop_QuestEnd.cpp">
       <Filter>02.GameObjects\00.UI\POPUP</Filter>
@@ -754,18 +772,22 @@
     <ClCompile Include="..\Private\Riding.cpp">
       <Filter>02.GameObjects\03.Player\Riding</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Prologue_Object.cpp">
-      <Filter>02.GameObjects\10. Objects\00.Prologue_Object</Filter>
+    <ClCompile Include="..\Private\Inven.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Level_Village.cpp">
-      <Filter>01.Levels\04.Village</Filter>
+    <ClCompile Include="..\Private\Wearable_Slot.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Wearable Slots</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Objects.cpp">
-      <Filter>02.GameObjects\10. Objects</Filter>
+    <ClCompile Include="..\Private\Item.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Item</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Village_Object.cpp">
-      <Filter>02.GameObjects\10. Objects\01.Village_Object</Filter>
+    <ClCompile Include="..\Private\Imp.cpp">
+      <Filter>02.GameObjects\04.Monster\07. Imp</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Void09.cpp">
+      <Filter>02.GameObjects\04.Monster\06. Void\Void09</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Void20.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">

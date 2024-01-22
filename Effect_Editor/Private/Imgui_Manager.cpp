@@ -672,8 +672,11 @@ HRESULT CImgui_Manager::Ready_Layers()
 		return E_FAIL;
 	}
 
-	_uint2 vTerrainSize{ 3, 3 };
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &vTerrainSize)))
+	TERRAIN_INFO TerrainInfo{};
+	TerrainInfo.vTerrainSize = { 3, 3 };
+	TerrainInfo.isMesh = false;
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &TerrainInfo)))
 	{
 		return E_FAIL;
 	}

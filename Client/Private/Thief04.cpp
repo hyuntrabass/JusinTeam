@@ -1,7 +1,7 @@
 #include "Thief04.h"
 
-const _float CThief04::g_fChaseRange = 7.f;
-const _float CThief04::g_fAttackRange = 2.f;
+const _float CThief04::m_fChaseRange = 7.f;
+const _float CThief04::m_fAttackRange = 2.f;
 
 CThief04::CThief04(_dev pDevice, _context pContext)
 	: CMonster(pDevice, pContext)
@@ -96,6 +96,7 @@ void CThief04::Set_Damage(_int iDamage, _uint iDamageType)
 
 	else if (iDamageType == WP_SWORD)
 	{
+		m_eCurState = STATE_HIT;
 	}
 }
 
@@ -119,7 +120,6 @@ void CThief04::Init_State(_float fTimeDelta)
 		case Client::CThief04::STATE_WALK:
 			m_Animation.iAnimIndex = WALK;
 			m_Animation.isLoop = false;
-
 			{
 				random_device rd;
 				_randNum RandNum(rd());
@@ -180,12 +180,12 @@ void CThief04::Tick_State(_float fTimeDelta)
 		m_pTransformCom->LookAt(vPlayerPos);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 
-		if (fDistance > g_fChaseRange)
+		if (fDistance > m_fChaseRange)
 		{
 			m_eCurState = STATE_IDLE;
 		}
 	}
-	break;
+		break;
 
 	case Client::CThief04::STATE_ATTACK:
 
@@ -302,7 +302,7 @@ void CThief04::Attack(_float fTimeDelta)
 {
 	_float fDistance = __super::Compute_PlayerDistance();
 
-	if (fDistance <= g_fChaseRange)
+	if (fDistance <= m_fChaseRange)
 	{
 		if (m_eCurState == STATE_ATTACK)
 		{
@@ -320,7 +320,7 @@ void CThief04::Attack(_float fTimeDelta)
 		}
 	}
 
-	if (fDistance <= g_fAttackRange)
+	if (fDistance <= m_fAttackRange)
 	{
 		m_eCurState = STATE_ATTACK;
 		m_Animation.isLoop = true;

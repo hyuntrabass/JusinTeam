@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Inven.h"
 #include "Logo.h"
 #include "Odin.h"
 #include "Player.h"
@@ -41,6 +42,9 @@
 #include "Terrain.h"
 #include "Sky.h"
 #include "BackGround_Mask.h"
+#include "Item.h"
+#include "Wearable_Slot.h"
+
 
 #include "Map.h"
 
@@ -56,6 +60,9 @@
 #include "TrilobiteA.h"
 #include "Void01.h"
 #include "Void05.h"
+#include "Imp.h"
+#include "Void09.h"
+#include "Void20.h"
 
 // NPC
 #include "Cat.h"

@@ -26,7 +26,6 @@ HRESULT CSelect_Model::Init(void* pArg)
 
 	m_pTransformCom->Set_State(State::Pos, Info->vPos);
 
-
 	m_Animation.iAnimIndex = 0;
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = true;
@@ -36,82 +35,6 @@ HRESULT CSelect_Model::Init(void* pArg)
 
 void CSelect_Model::Tick(_float fTimeDelta)
 {
-	if (m_strModelTag == L"Prototype_Model_Select2")
-	{
-		m_vRHPos = _vec4::Transform((*m_pModelCom->Get_BoneMatrix("Bip001-L-Finger3") * m_pModelCom->Get_PivotMatrix()).Position(), m_pTransformCom->Get_World_Matrix());
-
-		if (m_pEffect)
-		{
-			m_pEffect->Tick(fTimeDelta);
-		}
-		else
-		{
-			if (m_pModelCom->Get_CurrentAnimationIndex() == S_MOTION)
-			{
-				//121
-				if (m_pModelCom->Get_CurrentAnimPos() > 121.f)
-				{
-					EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Fire");
-					//Info.pPos = &m_vRHPos;
-					Info.vPosOffset = Info.vPosOffset + _vec3(0.f, 0.05f, 0.f);
-					m_pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
-
-					Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"FireInit");
-					//Info.pPos = &m_vRHPos;
-					Info.vSize = Info.vSize * 0.5f;
-					CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
-
-					Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"FireSpark");
-					//Info.vPos = m_vRHPos + _vec3(0.f, 0.1f, 0.f);
-					//Info.pPos = &m_vRHPos;
-					Info.vSize = Info.vSize * 0.5f;
-					Info.iNumInstances = 50;
-					CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
-
-					LIGHT_DESC Light_Info{};
-					Light_Info.eType = LIGHT_DESC::Point;
-					Light_Info.vAttenuation = LIGHT_RANGE_13;
-					Light_Info.vDiffuse = _vec4(0.75f, 0.5f, 0.f, 1.f);
-					//Light_Info.vPosition = _vec4(Info.vPos, 1.f);
-					m_pGameInstance->Add_Light(m_pGameInstance->Get_CurrentLevelIndex(), L"Light_Effect", Light_Info);
-				}
-			}
-		}
-	}
-	else if (m_strModelTag == L"Prototype_Model_Select1")
-	{
-		m_vRHPos = _vec4::Transform((*m_pModelCom->Get_BoneMatrix("Bip001-R-Finger3") * m_pModelCom->Get_PivotMatrix()).Position(), m_pTransformCom->Get_World_Matrix());
-
-		if (m_pEffect)
-		{
-			m_pEffect->Tick(fTimeDelta);
-		}
-		else
-		{
-			if (m_pModelCom->Get_CurrentAnimationIndex() == S_MOTION)
-			{
-				//121
-				if (m_pModelCom->Get_CurrentAnimPos() > 121.f)
-				{
-					EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"ArrowApear");
-					//Info.pPos = &m_vRHPos;
-					m_pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
-
-					Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"ArrowParti");
-					//Info.vPos = m_vRHPos;
-					CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
-
-					LIGHT_DESC Light_Info{};
-					Light_Info.eType = LIGHT_DESC::Point;
-					Light_Info.vAttenuation = LIGHT_RANGE_13;
-					Light_Info.vDiffuse = _vec4(0.4f, 0.7f, 1.f, 1.f);
-					//Light_Info.vPosition = _vec4(Info.vPos, 1.f);
-					m_pGameInstance->Add_Light(m_pGameInstance->Get_CurrentLevelIndex(), L"Light_Effect", Light_Info);
-				}
-			}
-		}
-	}
-
 	if (m_pModelCom->IsAnimationFinished(S_MOTION))
 	{
 		m_eCurAnimState = S_PICK_IDLE;
@@ -216,7 +139,7 @@ HRESULT CSelect_Model::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_SELECT, m_strModelTag, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_SELECT, m_strModelTag, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
 	{
 		return E_FAIL;
 	}
@@ -272,16 +195,7 @@ void CSelect_Model::Change_AnimState(SELECTMODEL_ANIM eAnim)
 		m_Animation.isLoop = false;
 		m_Animation.fAnimSpeedRatio = 1.5f;
 
-		if (m_strModelTag == L"Prototype_Model_Select2" or m_strModelTag == L"Prototype_Model_Select1")
-		{
-			Safe_Release(m_pEffect);
-			m_pModelCom->Set_Animation(m_Animation);
-
-			m_pGameInstance->Delete_Light(m_pGameInstance->Get_CurrentLevelIndex(), L"Light_Effect");
-		}
-
 		break;
-
 	}
 }
 

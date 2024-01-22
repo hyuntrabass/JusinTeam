@@ -1,8 +1,29 @@
 1. Static Only   2. Anim Only   3. All
 1
+Converting... Imp.fbx
 Static Models : Start Converting...
 Converting... Fol_SM_ArecaPalm_001.fbx
 Read File Succssefully
+Animation name list: 
+Mon_Imp01.ao|attack01
+Mon_Imp01.ao|attack01_H
+Mon_Imp01.ao|attack02
+Mon_Imp01.ao|attack02_H
+Mon_Imp01.ao|attack03
+Mon_Imp01.ao|attack03_H
+Mon_Imp01.ao|attack04
+Mon_Imp01.ao|attack05
+Mon_Imp01.ao|die
+Mon_Imp01.ao|hit_add
+Mon_Imp01.ao|Hit_L
+Mon_Imp01.ao|Hit_R
+Mon_Imp01.ao|idle
+Mon_Imp01.ao|knockdown
+Mon_Imp01.ao|roar
+Mon_Imp01.ao|run
+Mon_Imp01.ao|stun
+Mon_Imp01.ao|walk
+Converting... Nastron07.fbx
 Converting... Fol_SM_ArecaPalm_004.fbx
 Read File Succssefully
 Converting... Fol_SM_Azalea_002.fbx
@@ -67,9 +88,53 @@ Converting... Fol_SM_Spiderweb_007.fbx
 Read File Succssefully
 Converting... Fol_SM_SwampPlants_002.fbx
 Read File Succssefully
+Animation name list: 
+Mon_nastron_07.ao|Attack01
+Mon_nastron_07.ao|Attack02
+Mon_nastron_07.ao|Attack03
+Mon_nastron_07.ao|Die
+Mon_nastron_07.ao|Hell_End_SC02_Mon_Nastron_07_01_A
+Mon_nastron_07.ao|Hell_End_SC02_Mon_Nastron_07_01_B
+Mon_nastron_07.ao|Hit_Add
+Mon_nastron_07.ao|Hit_L
+Mon_nastron_07.ao|Hit_R
+Mon_nastron_07.ao|Idle
+Mon_nastron_07.ao|Knockdown
+Mon_nastron_07.ao|Roar
+Mon_nastron_07.ao|Run
+Mon_nastron_07.ao|Stun
+Mon_nastron_07.ao|Walk
+Converting... NPCvsMon.fbx
 Converting... Fol_SM_Weed_001.fbx
 Read File Succssefully
 Static Models : Convert Success!
 
 34 Static Models
+are Successfully Converted as hyuntramesh!!
+VC_sabertooth_2003.ao|1003_Jump_End_Run
+VC_sabertooth_2003.ao|1003_Jump_loop
+VC_sabertooth_2003.ao|1003_Jump_Start
+VC_sabertooth_2003.ao|1003_Run
+VC_sabertooth_2003.ao|1003_Run_Add_L
+VC_sabertooth_2003.ao|1003_Run_Add_R
+VC_sabertooth_2003.ao|1003_Run_L
+VC_sabertooth_2003.ao|1003_Run_R
+VC_sabertooth_2003.ao|1003_Start
+VC_sabertooth_2003.ao|1003_Walk
+VC_sabertooth_2003.ao|2003_Attack01
+VC_sabertooth_2003.ao|2003_Idle
+VC_sabertooth_2003.ao|2003_Jump_End
+VC_sabertooth_2003.ao|2003_Jump_End_Run
+VC_sabertooth_2003.ao|2003_Jump_loop
+VC_sabertooth_2003.ao|2003_Jump_Start
+VC_sabertooth_2003.ao|2003_Run
+VC_sabertooth_2003.ao|2003_Run_Add_L
+VC_sabertooth_2003.ao|2003_Run_Add_R
+VC_sabertooth_2003.ao|2003_Run_L
+VC_sabertooth_2003.ao|2003_Run_R
+VC_sabertooth_2003.ao|2003_Start
+VC_sabertooth_2003.ao|2003_Walk
+Animation Models : Convert Success!
+
+3 Animation Models
 are Successfully Converted as hyuntramesh!!

@@ -32,7 +32,7 @@ HRESULT CPop_QuestIn::Init(void* pArg)
 	m_fX = (_float)g_iWinSizeX / 2.f;
 	m_fY = 100.f;
 
-	m_fDepth = 0.3f;
+	m_fDepth = (_float)D_QUEST / (_float)D_END;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
@@ -168,7 +168,7 @@ HRESULT CPop_QuestIn::Add_Parts()
 {
 	CBlurTexture::BLURTEX_DESC BLURTEXDesc = {};
 	BLURTEXDesc.eLevelID = LEVEL_STATIC;
-	BLURTEXDesc.fDepth = 0.2f;
+	BLURTEXDesc.fDepth = m_fDepth - 0.01f;
 	BLURTEXDesc.fFontSize = 0.f;
 	BLURTEXDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_ExclamationMark");
 	BLURTEXDesc.vPosition = _vec2(m_fX, m_fY);
@@ -186,7 +186,7 @@ HRESULT CPop_QuestIn::Add_Parts()
 
 	CTextButton::TEXTBUTTON_DESC ButtonDesc = {};
 	ButtonDesc.eLevelID = LEVEL_STATIC;
-	ButtonDesc.fDepth = 0.3f;
+	ButtonDesc.fDepth = m_fDepth;
 	ButtonDesc.fFontSize = 0.45f;
 	ButtonDesc.strText = TEXT("");
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SiegeQuest");
@@ -246,7 +246,7 @@ HRESULT CPop_QuestIn::Add_Parts()
 		return E_FAIL;
 	}
 
-
+	return S_OK;
 }
 
 HRESULT CPop_QuestIn::Bind_ShaderResources()

@@ -3,7 +3,6 @@
 
 BEGIN(Engine)
 
-
 class ENGINE_DLL CModel final : public CComponent
 {
 private:
@@ -29,11 +28,20 @@ public:
 	vector<VTXSTATICMESH> Get_StaticMeshVertices();
 	vector<_ulong> Get_StaticMeshIndices();
 
+	//트리거
+	const _uint Get_NumTriggerEffect() const;
+	TRIGGEREFFECT_DESC* Get_TriggerEffect(_uint iTriggerEffectIndex);
+	vector<TRIGGEREFFECT_DESC>& Get_TriggerEffects();
+	//툴에서만 쓰세요
+	void Add_TriggerEffect(TRIGGEREFFECT_DESC TriggerEffectDesc);
+	void Delete_TriggerEffect(_uint iTriggerEffectIndex);
+	void Reset_TriggerEffects();
+	//
 	_uint Get_NumIndices();
 
 public:
 	HRESULT Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix);
-	HRESULT Init(void* pArg, const CModel& rhs);
+	HRESULT Init(void* pArg) override;
 
 public:
 	void Play_Animation(_float fTimeDelta);
@@ -46,6 +54,15 @@ public:
 	_bool Intersect_RayModel(_fmatrix WorldMatrix, _vec4* pPickPos);
 
 private:
+	class CTransform* m_pOwnerTransform{};
+	//이펙트 트리거
+	_uint m_iNumTriggersEffect{};
+	vector<TRIGGEREFFECT_DESC> m_TriggerEffects;
+	vector<_mat*> m_EffectMatrices;
+	// 사운드 트리거
+	_uint m_iNumTriggersSound{};
+	vector<TRIGGERSOUND_DESC> m_TriggerSounds;
+
 	_char m_szFilePath[MAX_PATH] = "";
 	_float3* m_Vertices{};
 
@@ -80,6 +97,7 @@ private:
 	HRESULT Read_Meshes(ifstream& File, const ModelType& eType, _fmatrix PivotMatrix);
 	HRESULT Read_Animations(ifstream& File);
 	HRESULT Read_Materials(ifstream& File, const string& strFilePath);
+	HRESULT Read_TriggerEffects(const string& strFilePath);
 
 public:
 	static CModel* Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh = false, _fmatrix PivotMatrix = XMMatrixIdentity());

@@ -2,14 +2,6 @@
 #include "VIBuffer.h"
 #include "Mesh.h"
 
-struct Info {
-	_uint iNumVerticesX{};
-	_uint iNumVerticesZ{};
-	vector<VTXSTATICMESH> Vertices;
-	vector<_ulong> Indices;
-	_bool isMesh{ false };
-};
-
 BEGIN(Engine)
 
 class ENGINE_DLL CVIBuffer_Terrain final : public CVIBuffer
@@ -27,7 +19,7 @@ public:
 	_uint Get_NumVerticesX() { return m_iNumVerticesX; }
 	_uint Get_NumVerticesZ() { return m_iNumVerticesZ; }
 private:
-	Info m_pTerrain{};
+	TERRAIN_INFO m_pTerrain{};
 
 private:
 	_bool	m_isClone;
