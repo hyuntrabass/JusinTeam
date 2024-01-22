@@ -205,7 +205,8 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 #endif // DEBUG
 
-
+	m_pModelCom->Play_Animation(fTimeDelta);
+	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
 	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
 	{
@@ -214,8 +215,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	if (m_pNameTag != nullptr)
 		m_pNameTag->Late_Tick(fTimeDelta);
 
-	m_pModelCom->Play_Animation(fTimeDelta);
-	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+
 }
 
 HRESULT CPlayer::Render()

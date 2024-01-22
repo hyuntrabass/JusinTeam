@@ -4,23 +4,12 @@
 
 BEGIN(Client)
 
-class CItem final : public COrthographicObject
+class CCoin final : public COrthographicObject
 {
-public:
-	typedef struct tagItemSlotDesc
-	{
-		_bool					bCanInteract;
-		_float					fDepth;
-		_float2					vSize;
-		_float2					vPosition;
-		ITEM					eItemDesc;
-		_uint					iNumItem = { 1 };
-	}ITEM_DESC;
-
 private:
-	CItem(_dev pDevice, _context pContext);
-	CItem(const CItem& rhs);
-	virtual ~CItem() = default;
+	CCoin(_dev pDevice, _context pContext);
+	CCoin(const CCoin& rhs);
+	virtual ~CCoin() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -34,17 +23,22 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
 	CTexture* m_pTextureCom{ nullptr };
-	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
-	ITEM					m_eItemDesc;
+	_uint			m_iCoin{};
+	_float			m_fTime{};
+	_float2			m_vRatio{};
+
+public:
+	const _uint& Get_Coin() const { return m_iCoin; }
+	void Set_Coin(_uint iCoin) { m_iCoin += iCoin; }
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CItem* Create(_dev pDevice, _context pContext);
+	static CCoin* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

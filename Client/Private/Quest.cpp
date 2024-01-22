@@ -29,7 +29,7 @@ HRESULT CQuest::Init(void* pArg)
 	m_fSizeX = 30.f;
 	m_fSizeY = 50.f;
 
-	m_fX = 1180.f;
+	m_fX = 1220.f;
 	m_fY = 120.f;
 
 	m_fDepth = (_float)D_SCREEN / (_float)D_END;
@@ -48,10 +48,12 @@ HRESULT CQuest::Init(void* pArg)
 
 void CQuest::Tick(_float fTimeDelta)
 {
+
 	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
 	{
 		return;
 	}
+	CUI_Manager::Get_Instance()->Set_Picking_UI(false);
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
@@ -80,20 +82,20 @@ void CQuest::Tick(_float fTimeDelta)
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
-
 	m_pSymbol->Tick(fTimeDelta);
 
 	if (m_isActive)
 	{
 		RECT rectUI = {
-		  (LONG)(m_fX - 100.f * 0.5f),
+		  (LONG)(m_fX - 200.f * 0.5f),
 		  (LONG)(m_fY - 200.f * 0.5f),
-		  (LONG)(m_fX + 100.f * 0.5f),
+		  (LONG)(m_fX + 200.f * 0.5f),
 		  (LONG)(m_fY + 200.f * 0.5f)
 		};
 
 		if (TRUE == PtInRect(&rectUI, ptMouse))
 		{
+			CUI_Manager::Get_Instance()->Set_Picking_UI(true);
 			if (m_vecQuest.empty())
 			{
 				return;
@@ -138,7 +140,6 @@ void CQuest::Tick(_float fTimeDelta)
 				}
 			}
 		}
-
 	}
 	for (auto& iter : m_vecQuest)
 	{

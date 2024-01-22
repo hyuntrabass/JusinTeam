@@ -39,7 +39,7 @@ HRESULT CExpBar::Init(void* pArg)
 	m_fDepth = (_float)D_BAR / (_float)D_END;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
-	m_vRatio = _float2(70.f, 100.f);
+	m_vRatio = _float2(0.f, 100.f);
 
 
 	CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
@@ -68,7 +68,7 @@ HRESULT CExpBar::Init(void* pArg)
 
 void CExpBar::Tick(_float fTimeDelta)
 {
-
+	m_vRatio = CUI_Manager::Get_Instance()->Get_Exp();
 	m_fTime += fTimeDelta;
 }
 
@@ -98,19 +98,23 @@ HRESULT CExpBar::Render()
 	{
 		return E_FAIL;
 	}
-	_float iExp = 100.f * (m_vRatio.x / m_vRatio.y);
+	_float Exp = 100.f * (m_vRatio.x / m_vRatio.y);
 	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("Lv. ") + to_wstring(m_iLevel), _vec2(50.f - 0.1f, m_fY), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("Lv. ") + to_wstring(m_iLevel), _vec2(50.f + 0.1f, m_fY), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("Lv. ") + to_wstring(m_iLevel), _vec2(50.f, m_fY - 0.1f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("Lv. ") + to_wstring(m_iLevel), _vec2(50.f, m_fY + 0.1f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("Lv. ") + to_wstring(m_iLevel), _vec2(50.f, m_fY), 0.7f, _vec4(1.f, 1.f, 1.f, 1.f));
-	
 
-	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("경험치 ") + to_wstring(static_cast<_uint>(iExp)) + TEXT("% "),  _vec2(140.f - 0.1f, m_fY + 5.f), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("경험치 ") + to_wstring(static_cast<_uint>(iExp)) + TEXT("% "), _vec2(140.f + 0.1f, m_fY + 5.f), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("경험치 ") + to_wstring(static_cast<_uint>(iExp)) + TEXT("% "), _vec2(140.f, m_fY + 5.f - 0.1f), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("경험치 ") + to_wstring(static_cast<_uint>(iExp)) + TEXT("% "), _vec2(140.f, m_fY + 5.f + 0.1f), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Dialogue",  TEXT("경험치 ") + to_wstring(static_cast<_uint>(iExp)) + TEXT("% "), _vec2(140.f, m_fY + 5.f), 0.3f, _vec4(0.6196f, 0.8509f, 0.0196f, 1.f));
+	wstring fExp = to_wstring(Exp);
+	size_t dotPos = fExp.find(L'.');
+	if (dotPos != wstring::npos && fExp.length() > dotPos + 3) {
+		fExp.erase(dotPos + 3);
+	}
+	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("경험치 ") + fExp + TEXT("% "),  _vec2(140.f - 0.1f, m_fY + 5.f), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("경험치 ") + fExp + TEXT("% "), _vec2(140.f + 0.1f, m_fY + 5.f), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("경험치 ") + fExp + TEXT("% "), _vec2(140.f, m_fY + 5.f - 0.1f), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("경험치 ") + fExp + TEXT("% "), _vec2(140.f, m_fY + 5.f + 0.1f), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Dialogue", TEXT("경험치 ") + fExp + TEXT("% "), _vec2(140.f, m_fY + 5.f), 0.3f, _vec4(0.6196f, 0.8509f, 0.0196f, 1.f));
 
 
 	return S_OK;

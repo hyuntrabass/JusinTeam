@@ -70,19 +70,19 @@ void CSelect::Tick(_float fTimeDelta)
 
 	if (m_bShow && PtInRect(&m_pBackButton->Get_Rect(), ptMouse))
 	{
-		m_pBackButton->Set_Size(140.f, 22.f, 0.3f);
+		m_pBackButton->Set_Size(140.f, 80.f, 0.3f);
 	}
 	else
 	{
-		m_pBackButton->Set_Size(150.f, 30.f, 0.35f);
+		m_pBackButton->Set_Size(150.f, 100.f, 0.35f);
 	}
 	if (m_bShow && PtInRect(&m_pSelectButton->Get_Rect(), ptMouse))
 	{
-		m_pSelectButton->Set_Size(140.f, 22.f, 0.3f);
+		m_pSelectButton->Set_Size(140.f, 80.f, 0.3f);
 	}
 	else
 	{
-		m_pSelectButton->Set_Size(150.f, 30.f, 0.35f);
+		m_pSelectButton->Set_Size(150.f, 100.f, 0.35f);
 	}
 
 	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI) && m_bShow)
@@ -207,21 +207,22 @@ HRESULT CSelect::Add_Parts()
 	ColButtonDesc.fFontSize = 0.35f;
 	ColButtonDesc.vColor = _vec4(0.2f, 0.2f, 0.2f, 0.5f);
 	ColButtonDesc.strText = TEXT("선택");
-	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Select_BG_BoxEfc_WhiteBlur");
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Button_Blue");
 	ColButtonDesc.vPosition = _vec2(1125.f, 670.f);
-	ColButtonDesc.vSize = _vec2(150.f,30.f);
+	ColButtonDesc.vSize = _vec2(150.f,100.f);
 	ColButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	ColButtonDesc.vTextPosition = _vec2(0.f, 20.f);
+	ColButtonDesc.vTextPosition = _vec2(0.f, 17.f);
 
-	
+
 	m_pSelectButton = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
 	if (not m_pSelectButton)
 	{
 		return E_FAIL;  
 	}
+	m_pSelectButton->Set_Pass(VTPass_UI_Alpha);
 
 	ColButtonDesc.strText = TEXT("뒤로 가기");
-	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Select_BG_BoxEfc_WhiteBlur");
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Button_Blue");
 	ColButtonDesc.vPosition = _vec2(155.f, 670.f);
 
 	
@@ -230,7 +231,7 @@ HRESULT CSelect::Add_Parts()
 	{
 		return E_FAIL;
 	}
-
+	m_pBackButton->Set_Pass(VTPass_UI_Alpha);
 
 
 	return S_OK;

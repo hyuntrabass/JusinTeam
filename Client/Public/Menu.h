@@ -1,26 +1,17 @@
 #pragma once
 #include "Client_Define.h"
 #include "OrthographicObject.h"
+#include "Wearable_Slot.h"
 
 BEGIN(Client)
-
-class CItem final : public COrthographicObject
+class CWearable_Slot;
+class CMenu final : public COrthographicObject
 {
-public:
-	typedef struct tagItemSlotDesc
-	{
-		_bool					bCanInteract;
-		_float					fDepth;
-		_float2					vSize;
-		_float2					vPosition;
-		ITEM					eItemDesc;
-		_uint					iNumItem = { 1 };
-	}ITEM_DESC;
 
 private:
-	CItem(_dev pDevice, _context pContext);
-	CItem(const CItem& rhs);
-	virtual ~CItem() = default;
+	CMenu(_dev pDevice, _context pContext);
+	CMenu(const CMenu& rhs);
+	virtual ~CMenu() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -34,17 +25,23 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
 	CTexture* m_pTextureCom{ nullptr };
-	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
-	ITEM					m_eItemDesc;
+	_bool										m_isPrototype{ false };
+	_bool										m_isActive{ false };
+
+	CGameObject*								m_pExitGame{ nullptr };
+	CGameObject*								m_pSetting{ nullptr };
+
+public:
 
 private:
+	HRESULT Add_Parts();
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CItem* Create(_dev pDevice, _context pContext);
+	static CMenu* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

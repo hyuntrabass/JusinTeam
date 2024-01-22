@@ -44,6 +44,10 @@
 #include "BackGround_Mask.h"
 #include "Item.h"
 #include "Wearable_Slot.h"
+#include "Coin.h"
+#include "Diamond.h"
+#include "Menu.h"
+#include "InvenFrame.h"
 
 
 #include "Map.h"

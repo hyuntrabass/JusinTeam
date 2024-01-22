@@ -4,23 +4,12 @@
 
 BEGIN(Client)
 
-class CItem final : public COrthographicObject
+class CDiamond final : public COrthographicObject
 {
-public:
-	typedef struct tagItemSlotDesc
-	{
-		_bool					bCanInteract;
-		_float					fDepth;
-		_float2					vSize;
-		_float2					vPosition;
-		ITEM					eItemDesc;
-		_uint					iNumItem = { 1 };
-	}ITEM_DESC;
-
 private:
-	CItem(_dev pDevice, _context pContext);
-	CItem(const CItem& rhs);
-	virtual ~CItem() = default;
+	CDiamond(_dev pDevice, _context pContext);
+	CDiamond(const CDiamond& rhs);
+	virtual ~CDiamond() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -37,14 +26,18 @@ private:
 	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
-	ITEM					m_eItemDesc;
+	_uint			m_iDiamond{};
+	_float			m_fTime{};
+	_float2			m_vRatio{};
+	CGameObject* m_pBackground{ nullptr };
+	CGameObject* m_pBorder{ nullptr };
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CItem* Create(_dev pDevice, _context pContext);
+	static CDiamond* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };
