@@ -62,6 +62,7 @@ private:
     vector<const _char*> m_EffectDescNames;
     _int m_iSelectEffectFile{};
     _int m_iCurrentEffect{};
+    _mat m_OffsetMatrix{};
 
     _bool m_IsCreateModel = { false };
     POINT m_ptMouse = {};

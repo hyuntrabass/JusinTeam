@@ -213,12 +213,12 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	{
 		ImGui::SeparatorText("TRIGGER");
 
-		if (ImGui::Button("SAVE"))
+		if (ImGui::Button("SAVE##1"))
 		{
 			SaveFile();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("LOAD"))
+		if (ImGui::Button("LOAD##1"))
 		{
 			LoadFile();
 		}
@@ -380,28 +380,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				}
 				(*iter)->Set_CurrentAnimPos((_float)iCurrentAnimPos);
 			}
-
-			/*if (ImGui::Button("ADD TRIGGER"))
-			{
-				(*iter)->Add_Trigger((*iter)->Get_CurrentAnimPos());
-			}
-
-			vector<_float> Triggers = (*iter)->Get_Triggers();
-			auto Trigger = Triggers.begin();
-			string* strTrigger = new string[(*iter)->Get_NumTrigger()];
-			for (size_t i = 0; i < (*iter)->Get_NumTrigger(); i++)
-			{
-				strTrigger[i] = to_string((*Trigger));
-				m_TriggerTimes.push_back(strTrigger[i].c_str());
-				++Trigger;
-			}
-			ImGui::SameLine();
-			static int iTrigger = 0;
-			if (ImGui::ListBox("TRIGGER", &iTrigger, m_TriggerTimes.data(), m_TriggerTimes.size()))
-			{
-			}
-			m_TriggerTimes.clear();
-			Safe_Delete_Array(strTrigger);*/
 		}
 
 		ImGui::PopItemWidth();
@@ -467,13 +445,13 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				vPosition = pEffectDesc->OffsetMatrix.Position();
 
 				ImGui::SeparatorText("SIZE");
-				ImGui::InputFloat("X##1", &vScale.x, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
-				ImGui::InputFloat("Y##1", &vScale.y, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
-				ImGui::InputFloat("Z##1", &vScale.z, 0.1f, 0.f, "%.1f");
+				ImGui::InputFloat("X##1", &vScale.x, 0.01f, 0.f, "%.2f"); ImGui::SameLine();
+				ImGui::InputFloat("Y##1", &vScale.y, 0.01f, 0.f, "%.2f"); ImGui::SameLine();
+				ImGui::InputFloat("Z##1", &vScale.z, 0.01f, 0.f, "%.2f");
 				ImGui::SeparatorText("OFFSET");
-				ImGui::InputFloat("X##2", &vPosition.x, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
-				ImGui::InputFloat("Y##2", &vPosition.y, 0.1f, 0.f, "%.1f"); ImGui::SameLine();
-				ImGui::InputFloat("Z##2", &vPosition.z, 0.1f, 0.f, "%.1f");/*
+				ImGui::InputFloat("X##2", &vPosition.x, 0.01f, 0.f, "%.2f"); ImGui::SameLine();
+				ImGui::InputFloat("Y##2", &vPosition.y, 0.01f, 0.f, "%.2f"); ImGui::SameLine();
+				ImGui::InputFloat("Z##2", &vPosition.z, 0.01f, 0.f, "%.2f");/*
 				ImGui::SeparatorText("AXIS");
 				ImGui::InputFloat("X##3", &vRotation.x, 1.f, 0.f, "%.1f"); ImGui::SameLine();
 				ImGui::InputFloat("Y##3", &vRotation.y, 1.f, 0.f, "%.1f"); ImGui::SameLine();
@@ -535,6 +513,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			string strEndEffectPos = "END : " + to_string(static_cast<_int>(pEffectDesc->fEndAnimPos));
 			ImGui::Text(strEndEffectPos.c_str());
 
+			ImGui::SeparatorText("DESC");
 			if (ImGui::Button("FOLLOW"))
 			{
 				if (pEffectDesc->IsFollow == false)
@@ -555,25 +534,58 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			{
 				ImGui::Text("FALSE");
 			}
-			if (ImGui::Button("ROTATE"))
+
+			if (ImGui::Button("INIT ROTATE"))
 			{
-				if (pEffectDesc->IsRotateToBone == false)
+				if (pEffectDesc->IsInitRotateToBone == false)
 				{
-					pEffectDesc->IsRotateToBone = true;
+					pEffectDesc->IsInitRotateToBone = true;
 				}
-				else if (pEffectDesc->IsRotateToBone == true)
+				else if (pEffectDesc->IsInitRotateToBone == true)
 				{
-					pEffectDesc->IsRotateToBone = false;
+					pEffectDesc->IsInitRotateToBone = false;
 				}
 			}
 			ImGui::SameLine();
-			if (pEffectDesc->IsRotateToBone)
+			if (pEffectDesc->IsInitRotateToBone)
 			{
 				ImGui::Text("TRUE");
 			}
 			else
 			{
 				ImGui::Text("FALSE");
+			}
+
+			if (ImGui::Button("DELETE ROTATE"))
+			{
+				if (pEffectDesc->IsDeleteRotateToBone == false)
+				{
+					pEffectDesc->IsDeleteRotateToBone = true;
+				}
+				else if (pEffectDesc->IsDeleteRotateToBone == true)
+				{
+					pEffectDesc->IsDeleteRotateToBone = false;
+				}
+			}
+			ImGui::SameLine();
+			if (pEffectDesc->IsDeleteRotateToBone)
+			{
+				ImGui::Text("TRUE");
+			}
+			else
+			{
+				ImGui::Text("FALSE");
+			}
+
+			ImGui::SeparatorText("OFFSET");
+			if (ImGui::Button("SAVE##2"))
+			{
+				m_OffsetMatrix = pEffectDesc->OffsetMatrix;
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("LOAD##2"))
+			{
+				pEffectDesc->OffsetMatrix = m_OffsetMatrix;
 			}
 
 			ImGui::PopItemWidth();
@@ -739,8 +751,10 @@ HRESULT CImgui_Manager::SaveFile()
 				Fileout.write(reinterpret_cast<_char*>(&iBoneIndex), sizeof(_uint));
 				_mat OffsetMatrix = EffectDescs[i].OffsetMatrix;
 				Fileout.write(reinterpret_cast<_char*>(&OffsetMatrix), sizeof(_mat));
-				_bool IsRotateToBone = EffectDescs[i].IsRotateToBone;
-				Fileout.write(reinterpret_cast<_char*>(&IsRotateToBone), sizeof(_bool));
+				_bool IsInitRotateToBone = EffectDescs[i].IsInitRotateToBone;
+				Fileout.write(reinterpret_cast<_char*>(&IsInitRotateToBone), sizeof(_bool));
+				_bool IsDeleteRotateToBone = EffectDescs[i].IsDeleteRotateToBone;
+				Fileout.write(reinterpret_cast<_char*>(&IsDeleteRotateToBone), sizeof(_bool));
 			}
 		}
 
@@ -793,7 +807,8 @@ HRESULT CImgui_Manager::LoadFile()
 
 			Filein.read(reinterpret_cast<_char*>(&EffectDesc.iBoneIndex), sizeof(_uint));
 			Filein.read(reinterpret_cast<_char*>(&EffectDesc.OffsetMatrix), sizeof(_mat));
-			Filein.read(reinterpret_cast<_char*>(&EffectDesc.IsRotateToBone), sizeof(_bool));
+			Filein.read(reinterpret_cast<_char*>(&EffectDesc.IsInitRotateToBone), sizeof(_bool));
+			Filein.read(reinterpret_cast<_char*>(&EffectDesc.IsDeleteRotateToBone), sizeof(_bool));
 
 			pCurModel->Add_TriggerEffect(EffectDesc);
 		}

@@ -332,20 +332,36 @@ void CModel::Play_Animation(_float fTimeDelta)
 			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fStartAnimPos)
 		{
 			//이펙트 생성
-			_mat PosOffset{};
-			PosOffset.Position(m_TriggerEffects[i].OffsetMatrix.Position());
-			_mat ScaleRotationOffset = m_TriggerEffects[i].OffsetMatrix;
-			ScaleRotationOffset.Position(_vec4(0.f, 0.f, 0.f, 1.f));
-			
-			*m_EffectMatrices[i] = ScaleRotationOffset * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix() * PosOffset;
-			m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
-			if (not m_TriggerEffects[i].IsRotateToBone)
+			if (m_TriggerEffects[i].iEndAnimIndex < 0)
+			{
+				if (static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerEffects[i].fStartAnimPos))
+				{
+					m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
+				}
+			}
+			else
+			{
+				m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
+			}
+			//초기 매트릭스 세팅
+			if (m_TriggerEffects[i].IsDeleteRotateToBone)
+			{
+				_mat BoneMatrix = *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix();
+				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * BoneMatrix.Get_RotationRemoved()* m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
+			}
+			else
+			{
+				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
+			}
+			//초기값 세팅
+			if (m_TriggerEffects[i].IsInitRotateToBone || m_TriggerEffects[i].IsDeleteRotateToBone)
 			{
 				m_TriggerEffects[i].BoneCombinedMatrix = *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix();
 			}
 		}
 		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iEndAnimIndex &&
-			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fEndAnimPos)
+			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fEndAnimPos &&
+			m_TriggerEffects[i].iEndAnimIndex > 0)
 		{
 			//이펙트 제거
 			m_pGameInstance->Delete_Effect(m_EffectMatrices[i]);
@@ -357,20 +373,14 @@ void CModel::Play_Animation(_float fTimeDelta)
 		if (m_TriggerEffects[i].IsFollow)
 		{
 			//이펙트 위치 갱신
-			_mat PosOffset{};
-			PosOffset.Position(m_TriggerEffects[i].OffsetMatrix.Position());
-			_mat ScaleRotationOffset = m_TriggerEffects[i].OffsetMatrix;
-			ScaleRotationOffset.Position(_vec4(0.f, 0.f, 0.f, 1.f));
-			if (m_TriggerEffects[i].IsRotateToBone)
+			if (m_TriggerEffects[i].IsInitRotateToBone || m_TriggerEffects[i].IsDeleteRotateToBone)
 			{
-				*m_EffectMatrices[i] = ScaleRotationOffset * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix() * PosOffset;
+				_mat BoneMatrix = m_TriggerEffects[i].BoneCombinedMatrix;
+				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * BoneMatrix.Get_RotationRemoved() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
 			}
-			else if (not m_TriggerEffects[i].IsRotateToBone)
+			else
 			{
-				_vector vScale{}, vRotation{}, vPosition{};
-				XMMatrixDecompose(&vScale, &vRotation, &vPosition, m_TriggerEffects[i].BoneCombinedMatrix);
-				_mat BoneCombinedMatrix = XMMatrixAffineTransformation(vScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 0.f, 0.f), vPosition);
-				*m_EffectMatrices[i] = ScaleRotationOffset * BoneCombinedMatrix * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix() * PosOffset;
+				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
 			}
 		}
 	}
@@ -571,7 +581,8 @@ HRESULT CModel::Read_TriggerEffects(const string& strFilePath)
 
 			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.iBoneIndex), sizeof(_uint));
 			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.OffsetMatrix), sizeof(_mat));
-			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.IsRotateToBone), sizeof(_bool));
+			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.IsInitRotateToBone), sizeof(_bool));
+			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.IsDeleteRotateToBone), sizeof(_bool));
 
 			m_TriggerEffects.push_back(EffectDesc);
 			m_iNumTriggersEffect++;

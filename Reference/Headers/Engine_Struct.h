@@ -143,7 +143,8 @@ namespace Engine
 		std::wstring strEffectName{};
 		unsigned int iBoneIndex{};
 		SimpleMath::Matrix OffsetMatrix{};
-		bool IsRotateToBone{};
+		bool IsInitRotateToBone{};
+		bool IsDeleteRotateToBone{};
 
 		SimpleMath::Matrix BoneCombinedMatrix{};
 	};
