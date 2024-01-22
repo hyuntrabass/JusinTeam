@@ -3,6 +3,7 @@
 #include "TextButton.h"
 #include "BlurTexture.h"
 #include "FadeBox.h"
+#include "UI_Manager.h"
 
 CPop_QuestEnd::CPop_QuestEnd(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -40,6 +41,9 @@ HRESULT CPop_QuestEnd::Init(void* pArg)
 	m_fExp = ((QUESTEND_DESC*)pArg)->fExp;
 	m_iMoney = ((QUESTEND_DESC*)pArg)->iMoney;
 
+	CUI_Manager::Get_Instance()->Set_Coin(m_iMoney);
+	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(m_fExp);
+
 	if (FAILED(Add_Parts()))
 	{
 		return E_FAIL;
@@ -53,12 +57,13 @@ HRESULT CPop_QuestEnd::Init(void* pArg)
 void CPop_QuestEnd::Tick(_float fTimeDelta)
 {
 
-	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
+	if (m_fDeadTime >= 0.8f && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 	{
 		m_isDead = true;
 	}
 
 	m_fTime += fTimeDelta * 0.2f;
+	m_fDeadTime += fTimeDelta;
 
 	if (dynamic_cast<CTextButton*>(m_pButton)->Get_Position().y <= m_fStartButtonPos.y - 5.f)
 	{

@@ -152,6 +152,7 @@ namespace Client
 		D_INVEN,
 		D_SHOP,
 		D_QUEST,
+		D_MENU,
 		D_JOBMARK,
 		D_BAR,
 		D_SCREEN,
@@ -159,13 +160,13 @@ namespace Client
 		D_END
 	};
 
-	enum InvenType
+	enum INVEN_TYPE
 	{
+		INVEN_ALL, 
+		INVEN_WEARABLE,
 		INVEN_EQUIP, 
 		INVEN_EXPENDABLES,
-		INVEN_INGREDIENTS,
-		INVEN_ALL,
-		INVEN__END
+		INVEN_END
 	};
 
 	enum WEARABLE_TYPE 
@@ -207,6 +208,7 @@ namespace Client
 		wstring strType;
 
 		_uint iItemType;
+		_uint iItemTier;
 		wstring strTexture;
 		wstring strModel;
 		wstring strDetail;

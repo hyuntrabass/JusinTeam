@@ -122,27 +122,30 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			}
 
 
-
-			if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
+			if (!CUI_Manager::Get_Instance()->Is_Picking_UI())
 			{
-				if (m_fPlayerDistance > 2.f)
-					m_fPlayerDistance -= 0.8f;
-
-				if (m_fLerpTime >= 1.f)
+				if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
 				{
-					m_fLerpTime = 0.f;
+					if (m_fPlayerDistance > 2.f)
+						m_fPlayerDistance -= 0.8f;
+
+					if (m_fLerpTime >= 1.f)
+					{
+						m_fLerpTime = 0.f;
+					}
+				}
+				else if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
+				{
+					if (m_fPlayerDistance < 10.f)
+						m_fPlayerDistance += 0.8f;
+
+					if (m_fLerpTime >= 1.f)
+					{
+						m_fLerpTime = 0.f;
+					}
 				}
 			}
-			else if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
-			{
-				if (m_fPlayerDistance < 10.f)
-					m_fPlayerDistance += 0.8f;
-
-				if (m_fLerpTime >= 1.f)
-				{
-					m_fLerpTime = 0.f;
-				}
-			}
+		
 
 			// 	y = sin(x * 10.0f) * powf(0.5f, x)
 
