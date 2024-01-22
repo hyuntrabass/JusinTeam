@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Shader_Define.h"
-
 #include "Level.h"
 
 BEGIN(ShaderEdit)

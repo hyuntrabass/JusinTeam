@@ -57,6 +57,13 @@ namespace Engine
 		bool isLoop{};
 	};
 
+	typedef struct tagSSAOValue {
+		float fIntensity = 3.f;
+		float fRadius = 0.05f;
+		float fScale = 3.f;
+		float fBias = 0.25f;
+	}SSAO_DESC;
+
 	struct EffectInfo
 	{
 		unsigned int iType{};
@@ -143,9 +150,20 @@ namespace Engine
 		std::wstring strEffectName{};
 		unsigned int iBoneIndex{};
 		SimpleMath::Matrix OffsetMatrix{};
-		bool IsRotateToBone{};
+		bool IsInitRotateToBone{};
+		bool IsDeleteRotateToBone{};
+	};
 
-		SimpleMath::Matrix BoneCombinedMatrix{};
+	using TRIGGERLIGHT_DESC = struct tagTriggerLightDesc {
+		int iStartAnimIndex{};
+		float fStartAnimPos{};
+		int iEndAnimIndex = -1;
+		float fEndAnimPos{};
+		bool IsFollow{};
+		unsigned int iBoneIndex{};
+		SimpleMath::Matrix OffsetMatrix{};
+		
+		tagLightDesc LightDesc{};
 	};
 
 	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {

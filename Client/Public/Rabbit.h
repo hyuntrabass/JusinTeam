@@ -35,12 +35,6 @@ public:
 		STATE_END
 	};
 
-	enum RABBIT_COLL
-	{
-		BODY, LH, RH, LF, RF,
-		COLL_END
-	};
-
 private:
 	CRabbit(_dev pDevice, _context pContext);
 	CRabbit(const CRabbit& rhs);
@@ -59,11 +53,6 @@ public:
 	void Init_State(_float fTimeDelta);
 	void Tick_State(_float fTimeDelta);
 
-public:
-	void Attack(_float fTimeDelta);
-
-private:
-	CCollider* m_pColliderCom[COLL_END] = { nullptr };
 private:
 	RABBIT_STATE m_ePreState = STATE_END;
 	RABBIT_STATE m_eCurState = STATE_END;
@@ -73,16 +62,18 @@ private:
 
 	_uint m_iRoamingPattern = {};
 	_uint m_iAttackPattern = {};
-
 	_bool m_bSelectAttackPattern = { false };
 
 private:
 	_bool m_bAttacked = { false };
 	_bool m_bAttacked2 = { false };
 
+	_bool m_bDamaged = { false };
+
+
 private:
-	static const _float g_fChaseRange;
-	static const _float g_fAttackRange;
+	static const _float m_fChaseRange;
+	static const _float m_fAttackRange;
 
 public:
 	virtual HRESULT Add_Collider() override;

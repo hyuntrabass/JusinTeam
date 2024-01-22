@@ -90,7 +90,7 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 		m_OffsetMatrix = *m_Effect.pMatrix;
 	}
 
-	if (m_Effect.iType != ET_MESH)
+	if (m_Effect.iType == ET_RECT)
 	{
 		m_OffsetMatrix.RemoveRotation();
 	}
@@ -105,7 +105,7 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 		break;
 	case Effect_Type::ET_RECT:
 	{
-		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+		/*_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
 
 		_vec4 vRightDir = m_WorldMatrix.Right().Get_Normalized();
 		_vec4 vUpDir = m_WorldMatrix.Up().Get_Normalized();
@@ -115,7 +115,7 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 		vPos += vUpDir * m_Effect.vPosOffset.y;
 		vPos += vLookDir * m_Effect.vPosOffset.z;
 
-		m_pTransformCom->Set_State(State::Pos, vPos);
+		m_pTransformCom->Set_State(State::Pos, vPos);*/
 
 		m_pTransformCom->LookAway(m_pGameInstance->Get_CameraPos());
 
@@ -127,7 +127,7 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 	}
 	case Effect_Type::ET_MESH:
 	{
-		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+		/*_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
 
 		_vec4 vRightDir = m_WorldMatrix.Right().Get_Normalized();
 		_vec4 vUpDir = m_WorldMatrix.Up().Get_Normalized();
@@ -137,7 +137,7 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 		vPos += vUpDir * m_Effect.vPosOffset.y;
 		vPos += vLookDir * m_Effect.vPosOffset.z;
 
-		m_pTransformCom->Set_State(State::Pos, vPos);
+		m_pTransformCom->Set_State(State::Pos, vPos);*/
 
 		m_pTransformCom->Set_Scale(m_vScaleAcc * m_OffsetMatrix.Get_Scale());
 		m_vScaleAcc += m_Effect.vSizeDelta * fTimeDelta;

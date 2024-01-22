@@ -1,7 +1,7 @@
 #include "Rabbit.h"
 
-const _float CRabbit::g_fChaseRange = 5.f;
-const _float CRabbit::g_fAttackRange = 2.f;
+const _float CRabbit::m_fChaseRange = 5.f;
+const _float CRabbit::m_fAttackRange = 2.f;
 
 CRabbit::CRabbit(_dev pDevice, _context pContext)
 	: CMonster(pDevice, pContext)
@@ -52,6 +52,11 @@ HRESULT CRabbit::Init(void* pArg)
 
 void CRabbit::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_R))
+	{
+		Set_Damage(5, WP_BOW);
+	}
+
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 
@@ -59,7 +64,6 @@ void CRabbit::Tick(_float fTimeDelta)
 
 	Update_Collider();
 	__super::Update_MonsterCollider();
-
 }
 
 void CRabbit::Late_Tick(_float fTimeDelta)
@@ -67,11 +71,6 @@ void CRabbit::Late_Tick(_float fTimeDelta)
 	__super::Late_Tick(fTimeDelta);
 
 #ifdef _DEBUGTEST
-	for (size_t i = 0; i < COLL_END; i++)
-	{
-		m_pRendererCom->Add_DebugComponent(m_pColliderCom[i]);
-	}
-
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
 #endif
@@ -87,6 +86,12 @@ HRESULT CRabbit::Render()
 void CRabbit::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_iHP -= iDamage;
+	m_bDamaged = true;
+
+	m_eCurState = STATE_CHASE;
+
+	_vec4 vPlayerPos = __super::Compute_PlayerPos();
+	m_pTransformCom->LookAt(vPlayerPos);
 
 	if (iDamageType == WP_BOW)
 	{
@@ -98,15 +103,11 @@ void CRabbit::Set_Damage(_int iDamage, _uint iDamageType)
 	else if (iDamageType == WP_SWORD)
 	{
 	}
+
 }
 
 void CRabbit::Init_State(_float fTimeDelta)
 {
-	if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
-	{
-		m_eCurState = STATE_IDLE;
-	}
-
 	if (m_iHP <= 0)
 	{
 		m_eCurState = STATE_DIE;
@@ -119,7 +120,10 @@ void CRabbit::Init_State(_float fTimeDelta)
 		case Client::CRabbit::STATE_IDLE:
 			m_Animation.iAnimIndex = IDLE;
 			m_Animation.isLoop = true;
+			m_pTransformCom->Set_Speed(1.f);
+			m_bDamaged = false;
 			break;
+
 		case Client::CRabbit::STATE_ROAM:
 			m_iRoamingPattern = rand() % 3;
 
@@ -131,13 +135,34 @@ void CRabbit::Init_State(_float fTimeDelta)
 				m_pTransformCom->LookAt_Dir(_vec4(Random(RandNum), 0.f, Random(RandNum), 0.f));
 			}
 
+			switch (m_iRoamingPattern)
+			{
+			case 0:
+				m_Animation.iAnimIndex = ROAR;
+				m_Animation.isLoop = false;
+				break;
+			case 1:
+				m_Animation.iAnimIndex = RUN;
+				m_Animation.isLoop = false;
+				break;
+			case 2:
+				m_Animation.iAnimIndex = STUN;
+				m_Animation.isLoop = false;
+				break;
+			}
+
 			break;
+
 		case Client::CRabbit::STATE_CHASE:
 			m_Animation.iAnimIndex = RUN;
 			m_Animation.isLoop = true;
+			m_pTransformCom->Set_Speed(3.f);
 			break;
+
 		case Client::CRabbit::STATE_ATTACK:
+			m_bDamaged = false;
 			break;
+
 		case Client::CRabbit::STATE_DIE:
 			m_Animation.iAnimIndex = DIE;
 			m_Animation.isLoop = false;
@@ -145,26 +170,15 @@ void CRabbit::Init_State(_float fTimeDelta)
 		}
 
 		m_ePreState = m_eCurState;
-
 	}
 }
 
 void CRabbit::Tick_State(_float fTimeDelta)
 {
-	if (m_iHP > 0)
-	{
-		Attack(fTimeDelta);
-	}
-
-	if (m_pGameInstance->Key_Down(DIK_R, InputChannel::GamePlay))
-	{
-		m_eCurState = STATE_DIE;
-	}
-
 	switch (m_eCurState)
 	{
 	case Client::CRabbit::STATE_IDLE:
-
+	{
 		m_fIdleTime += fTimeDelta;
 
 		if (m_fIdleTime >= 2.f)
@@ -173,29 +187,30 @@ void CRabbit::Tick_State(_float fTimeDelta)
 			m_fIdleTime = 0.f;
 		}
 
+		//_float fDistance = __super::Compute_PlayerDistance();
+		//if (fDistance <= m_fChaseRange)
+		//{
+		//	m_eCurState = STATE_CHASE;
+		//}
+
+	}
 		break;
+
 	case Client::CRabbit::STATE_ROAM:
 
-		switch (m_iRoamingPattern)
+		if (m_iRoamingPattern == 1)
 		{
-		case 0:
-			m_Animation.iAnimIndex = ROAR;
-			m_Animation.isLoop = false;
-			break;
-		case 1:
-			m_Animation.iAnimIndex = RUN;
-			m_Animation.isLoop = false;
 			m_pTransformCom->Go_Straight(fTimeDelta);
-			break;
-		case 2:
-			m_Animation.iAnimIndex = STUN;
-			m_Animation.isLoop = false;
-			break;
+		}
+
+		if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
+		{
+			m_eCurState = STATE_IDLE;
 		}
 
 		break;
-	case Client::CRabbit::STATE_CHASE:
 
+	case Client::CRabbit::STATE_CHASE:
 	{
 		_vec4 vPlayerPos = __super::Compute_PlayerPos();
 		_float fDistance = __super::Compute_PlayerDistance();
@@ -203,14 +218,22 @@ void CRabbit::Tick_State(_float fTimeDelta)
 		m_pTransformCom->LookAt(vPlayerPos);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 
-		if (fDistance > g_fChaseRange)
+		if (fDistance > m_fChaseRange && !m_bDamaged)
 		{
 			m_eCurState = STATE_IDLE;
 		}
-	}
 
+		if (fDistance <= m_fAttackRange)
+		{
+			m_eCurState = STATE_ATTACK;
+			m_Animation.isLoop = true;
+		}
+
+	}
 		break;
+
 	case Client::CRabbit::STATE_ATTACK:
+
 		if (!m_bSelectAttackPattern)
 		{
 			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02))
@@ -237,6 +260,7 @@ void CRabbit::Tick_State(_float fTimeDelta)
 				}
 			}
 			break;
+
 		case 1:
 			m_Animation.iAnimIndex = ATTACK02;
 			m_Animation.isLoop = false;
@@ -256,58 +280,28 @@ void CRabbit::Tick_State(_float fTimeDelta)
 			}
 			break;
 		}
-		break;
-	case Client::CRabbit::STATE_DIE:
-		break;
-	}
 
-
-}
-
-void CRabbit::Attack(_float fTimeDelta)
-{
-	_float fDistance = __super::Compute_PlayerDistance();
-
-	if (fDistance <= g_fChaseRange)
-	{
-		if (m_eCurState == STATE_ATTACK)
-		{
-			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02))
-			{
-				m_eCurState = STATE_CHASE;
-			}
-		}
-
-		else
+		if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02))
 		{
 			m_eCurState = STATE_CHASE;
 		}
+
+		break;
+
+	case Client::CRabbit::STATE_DIE:
+
+		if (m_pModelCom->IsAnimationFinished(DIE))
+		{
+			m_iPassIndex = AnimPass_Dissolve;
+		}
+
+		break;
 	}
 
-	if (fDistance <= g_fAttackRange)
-	{
-		m_eCurState = STATE_ATTACK;
-		m_Animation.isLoop = true;
-	}
 }
 
 HRESULT CRabbit::Add_Collider()
 {
-	// Com_Collider
-	Collider_Desc RCollDesc = {};
-	RCollDesc.eType = ColliderType::Sphere;
-	RCollDesc.fRadius = 0.1f;
-	RCollDesc.vCenter = _vec3(0.f, 0.f, 0.f);
-
-	RABBIT_COLL eColl = {};
-
-	for (size_t i = 0; i < COLL_END; i++)
-	{
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-			TEXT("Com_Collider_Sphere") + to_wstring(i), (CComponent**)&m_pColliderCom[i], &RCollDesc)))
-			return E_FAIL;
-	}
-
 	Collider_Desc BodyCollDesc = {};
 	BodyCollDesc.eType = ColliderType::OBB;
 	BodyCollDesc.vExtents = _vec3(0.2f, 0.4f, 0.6f);
@@ -337,28 +331,6 @@ HRESULT CRabbit::Add_Collider()
 
 void CRabbit::Update_Collider()
 {
-	_mat LeftHandMatrix = *(m_pModelCom->Get_BoneMatrix("Bip001-L-Finger0"));
-	LeftHandMatrix *= m_pTransformCom->Get_World_Matrix();
-
-	m_pColliderCom[LH]->Update(LeftHandMatrix);
-
-
-	_mat RightHandMatrix = *(m_pModelCom->Get_BoneMatrix("Bip001-R-Finger0"));
-	RightHandMatrix *= m_pTransformCom->Get_World_Matrix();
-
-	m_pColliderCom[RH]->Update(RightHandMatrix);
-
-	_mat LeftFootMatrix = *(m_pModelCom->Get_BoneMatrix("Bip001-L-Toe0"));
-	LeftFootMatrix *= m_pTransformCom->Get_World_Matrix();
-
-	m_pColliderCom[LF]->Update(LeftFootMatrix);
-
-
-	_mat RightFootMatrix = *(m_pModelCom->Get_BoneMatrix("Bip001-R-Toe0"));
-	RightFootMatrix *= m_pTransformCom->Get_World_Matrix();
-
-	m_pColliderCom[RF]->Update(RightFootMatrix);
-
 	_mat Offset = _mat::CreateTranslation(0.f, 0.5f, 0.f);
 	m_pAttackColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
 }
@@ -392,9 +364,4 @@ CGameObject* CRabbit::Clone(void* pArg)
 void CRabbit::Free()
 {
 	__super::Free();
-
-	for (size_t i = 0; i < COLL_END; i++)
-	{
-		Safe_Release(m_pColliderCom[i]);
-	}
 }

@@ -1,7 +1,7 @@
 #include "Goat.h"
 
-const _float CGoat::g_fChaseRange = 5.f;
-const _float CGoat::g_fAttackRange = 2.f;
+const _float CGoat::m_fChaseRange = 5.f;
+const _float CGoat::m_fAttackRange = 2.f;
 
 CGoat::CGoat(_dev pDevice, _context pContext)
 	: CMonster(pDevice, pContext)
@@ -43,7 +43,7 @@ HRESULT CGoat::Init(void* pArg)
 
 	m_eCurState = STATE_IDLE;
 
-	m_iHP = 1;
+	m_iHP = 10;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
@@ -52,6 +52,11 @@ HRESULT CGoat::Init(void* pArg)
 
 void CGoat::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_O))
+	{
+		Set_Damage(4, WP_BOW);
+	}
+
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 
@@ -67,11 +72,8 @@ void CGoat::Late_Tick(_float fTimeDelta)
 	__super::Late_Tick(fTimeDelta);
 
 #ifdef _DEBUGTEST
-	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
-
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
-
 #endif
 }
 
@@ -85,6 +87,12 @@ HRESULT CGoat::Render()
 void CGoat::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_iHP -= iDamage;
+	m_bDamaged = true;
+
+	m_eCurState = STATE_CHASE;
+
+	_vec4 vPlayerPos = __super::Compute_PlayerPos();
+	m_pTransformCom->LookAt(vPlayerPos);
 
 	if (iDamageType == WP_BOW)
 	{
@@ -100,9 +108,9 @@ void CGoat::Set_Damage(_int iDamage, _uint iDamageType)
 
 void CGoat::Init_State(_float fTimeDelta)
 {
-	if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
+	if (m_iHP <= 0)
 	{
-		m_eCurState = STATE_IDLE;
+		m_eCurState = STATE_DIE;
 	}
 
 	if (m_ePreState != m_eCurState)
@@ -113,6 +121,7 @@ void CGoat::Init_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = IDLE;
 			m_Animation.isLoop = true;
 			m_pTransformCom->Set_Speed(1.f);
+			m_bDamaged = false;
 			break;
 
 		case Client::CGoat::STATE_ROAM:
@@ -125,6 +134,24 @@ void CGoat::Init_State(_float fTimeDelta)
 				_randFloat Random = _randFloat(-1.f, 1.f);
 				m_pTransformCom->LookAt_Dir(_vec4(Random(RandNum), 0.f, Random(RandNum), 0.f));
 			}
+
+			switch (m_iRoamingPattern)
+			{
+			case 0:
+				m_Animation.iAnimIndex = ROAR;
+				m_Animation.isLoop = false;
+				break;
+			case 1:
+				m_Animation.iAnimIndex = WALK;
+				m_Animation.isLoop = false;
+				m_pTransformCom->Go_Straight(fTimeDelta);
+				break;
+			case 2:
+				m_Animation.iAnimIndex = STUN;
+				m_Animation.isLoop = false;
+				break;
+			}
+
 			break;
 
 		case Client::CGoat::STATE_CHASE:
@@ -134,6 +161,7 @@ void CGoat::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CGoat::STATE_ATTACK:
+			m_bDamaged = false;
 			break;
 
 		case Client::CGoat::STATE_DIE:
@@ -149,13 +177,6 @@ void CGoat::Init_State(_float fTimeDelta)
 
 void CGoat::Tick_State(_float fTimeDelta)
 {
-	Attack(fTimeDelta);
-
-	if (m_pGameInstance->Key_Down(DIK_G, InputChannel::GamePlay))
-	{
-		m_eCurState = STATE_DIE;
-	}
-
 	switch (m_eCurState)
 	{
 	case Client::CGoat::STATE_IDLE:
@@ -167,26 +188,27 @@ void CGoat::Tick_State(_float fTimeDelta)
 			m_eCurState = STATE_ROAM;
 			m_fIdleTime = 0.f;
 		}
+
+		//_float fDistance = __super::Compute_PlayerDistance();
+		//if (fDistance <= m_fChaseRange)
+		//{
+		//	m_eCurState = STATE_CHASE;
+		//}
+
 		break;
 
 	case Client::CGoat::STATE_ROAM:
 
-		switch (m_iRoamingPattern)
+		if (m_iRoamingPattern == 1)
 		{
-		case 0:
-			m_Animation.iAnimIndex = ROAR;
-			m_Animation.isLoop = false;
-			break;
-		case 1:
-			m_Animation.iAnimIndex = WALK;
-			m_Animation.isLoop = false;
 			m_pTransformCom->Go_Straight(fTimeDelta);
-			break;
-		case 2:
-			m_Animation.iAnimIndex = STUN;
-			m_Animation.isLoop = false;
-			break;
 		}
+
+		if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
+		{
+			m_eCurState = STATE_IDLE;
+		}
+
 		break;
 
 	case Client::CGoat::STATE_CHASE:
@@ -197,12 +219,19 @@ void CGoat::Tick_State(_float fTimeDelta)
 		m_pTransformCom->LookAt(vPlayerPos);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 
-		if (fDistance > g_fChaseRange)
+		if (fDistance > m_fChaseRange && !m_bDamaged)
 		{
 			m_eCurState = STATE_IDLE;
 		}
+
+		if (fDistance <= m_fAttackRange)
+		{
+			m_eCurState = STATE_ATTACK;
+			m_Animation.isLoop = true;
+		}
+
 	}
-	break;
+		break;
 
 	case Client::CGoat::STATE_ATTACK:
 
@@ -259,53 +288,28 @@ void CGoat::Tick_State(_float fTimeDelta)
 			}
 			break;
 		}
-		break;
 
-	case Client::CGoat::STATE_DIE:
-		break;
-	}
-}
-
-void CGoat::Attack(_float fTimeDelta)
-{
-	_float fDistance = __super::Compute_PlayerDistance();
-
-	if (fDistance <= g_fChaseRange)
-	{
-		if (m_eCurState == STATE_ATTACK)
-		{
-			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
-				m_pModelCom->IsAnimationFinished(ATTACK03))
-			{
-				m_eCurState = STATE_CHASE;
-			}
-		}
-
-		else
+		if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
+			m_pModelCom->IsAnimationFinished(ATTACK03))
 		{
 			m_eCurState = STATE_CHASE;
 		}
-	}
 
-	if (fDistance <= g_fAttackRange)
-	{
-		m_eCurState = STATE_ATTACK;
-		m_Animation.isLoop = true;
+		break;
+
+	case Client::CGoat::STATE_DIE:
+
+		if (m_pModelCom->IsAnimationFinished(DIE))
+		{
+			m_iPassIndex = AnimPass_Dissolve;
+		}
+
+		break;
 	}
 }
 
 HRESULT CGoat::Add_Collider()
 {
-	// Com_Collider
-	Collider_Desc CollDesc = {};
-	CollDesc.eType = ColliderType::Sphere;
-	CollDesc.fRadius = 0.2f;
-	CollDesc.vCenter = _vec3(0.f, 0.f, 0.f);
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-		TEXT("Com_Collider_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))
-		return E_FAIL;
-
 	Collider_Desc BodyCollDesc = {};
 	BodyCollDesc.eType = ColliderType::OBB;
 	BodyCollDesc.vExtents = _vec3(0.3f, 1.f, 0.7f);
@@ -335,15 +339,8 @@ HRESULT CGoat::Add_Collider()
 
 void CGoat::Update_Collider()
 {
-	_mat Matrix = *(m_pModelCom->Get_BoneMatrix("Bip001-HeadNub"));
-	Matrix *= XMMatrixTranslation(0.f, 0.2f, 0.1f);
-	Matrix *= m_pTransformCom->Get_World_Matrix();
-
-	m_pColliderCom->Update(Matrix);
-
 	_mat Offset = _mat::CreateTranslation(0.f, 1.f, 0.f);
 	m_pAttackColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
-
 }
 
 CGoat* CGoat::Create(_dev pDevice, _context pContext)
@@ -375,6 +372,4 @@ CGameObject* CGoat::Clone(void* pArg)
 void CGoat::Free()
 {
 	__super::Free();
-
-	Safe_Release(m_pColliderCom);
 }

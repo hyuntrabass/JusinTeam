@@ -160,6 +160,14 @@ namespace Engine
 		DefPass_Deferred,
 		DefPass_Blur,
 	};
+
+	enum Effect_Type
+	{
+		ET_PARTICLE,
+		ET_RECT,
+		ET_MESH,
+		ET_END
+	};
 }
 
 using namespace std;

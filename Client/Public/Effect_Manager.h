@@ -5,14 +5,6 @@
 
 BEGIN(Client)
 
-enum Effect_Type
-{
-	ET_PARTICLE,
-	ET_RECT,
-	ET_MESH,
-	ET_END
-};
-
 class CEffect_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CEffect_Manager)

@@ -323,6 +323,53 @@ _vec4 CPicking::Compute_MousePicked_Terrain(_float44 matTerrainWorld, _float3* p
 	return vResult;
 }
 
+_vec4 CPicking::Compute_MousePicked_MeshTerrain(_float44 matTerrainWorld, _float3* pVerticesPos, vector<VTXNORTEX> vVertices, vector<_ulong> vIndices)
+{
+	//Transform_To_LocalSpace(matTerrainWorld);
+
+	_uint	iNumIndices = 0;
+	_vec3 vPickPos = { 0.f, 0.f, 0.f };
+	_bool	bCheck = false;
+	
+
+	for(_uint i = 0; i < vIndices.size(); i++)
+	{
+		// 로컬스페이스에서 충돌이 이뤄지고 있다.
+		_vector vPointA = XMLoadFloat3(&vVertices[vIndices[iNumIndices++]].vPosition);
+		_vector vPointB = XMLoadFloat3(&vVertices[vIndices[iNumIndices++]].vPosition);
+		_vector vPointC = XMLoadFloat3(&vVertices[vIndices[iNumIndices++]].vPosition);
+		_vector vPointD = XMLoadFloat3(&vVertices[vIndices[iNumIndices++]].vPosition);
+
+
+		// 오른쪽 위 삼각형
+		if (true == Picking_InWorld(vPointA, vPointB, vPointC, &vPickPos))
+		{
+			bCheck = true;
+			break;
+		}
+
+		// 왼쪽 아래 삼각형
+		if (true == Picking_InWorld(vPointA, vPointC, vPointD, &vPickPos))
+		{
+			bCheck = true;
+			break;
+		}
+	}
+
+
+	// 
+	// 로컬상에서의 충돌된 위치를 월드로 변환한다.
+	_vector vResult = XMVectorSet(-100.f, -100.f, -100.f, 0.f);
+
+	if (bCheck)
+	{
+		vResult = XMVectorSet(vPickPos.x, vPickPos.y, vPickPos.z, 1.f);
+		//XMVector3TransformCoord(vResult, XMLoadFloat4x4(&matTerrainWorld));
+	}
+
+	//XMStoreFloat4(&m_vMousePos, vResult);
+	return vResult;
+}
 
 
 CPicking* CPicking::Create(_dev pDevice, _context pContext, HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)

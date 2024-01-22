@@ -56,12 +56,6 @@ public:
 	void Init_State(_float fTimeDelta);
 	void Tick_State(_float fTimeDelta);
 
-public:
-	void Attack(_float fTimeDelta);
-
-private:
-	CCollider* m_pColliderCom = { nullptr };
-
 private:
 	TRILOBITE_A_STATE m_ePreState = STATE_END;
 	TRILOBITE_A_STATE m_eCurState = STATE_END;
@@ -71,17 +65,17 @@ private:
 
 	_uint m_iRoamingPattern = {};
 	_uint m_iAttackPattern = {};
-	_uint m_iHitPattern = {};
-
 	_bool m_bSelectAttackPattern = { false };
 
 private:
 	_bool m_bAttacked = { false };
 
+	_bool m_bDamaged = { false };
+
 
 private:
-	static const _float g_fChaseRange;
-	static const _float g_fAttackRange;
+	static const _float m_fChaseRange;
+	static const _float m_fAttackRange;
 
 public:
 	virtual HRESULT Add_Collider() override;

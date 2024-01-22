@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Shader_Define.h"
-
 #include "Base.h"
+#include "Shader_Define.h"
 
 BEGIN(Engine)
 class CGameInstance;
@@ -30,6 +29,7 @@ private:
 private:
     CGameInstance* m_pGameInstance = nullptr;
     CRenderer* m_pRenderer = nullptr;
+    class CImGui_Mgr* m_pImgui = nullptr;
     _float m_fTimeAcc = 0.f;
     _uint m_iFrameCount = 0;
 

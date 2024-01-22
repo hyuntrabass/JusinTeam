@@ -17,6 +17,7 @@ void CEffect_Manager::Tick(_float fTimeDelta)
 
 		if (iter->second->isDead())
 		{
+			Safe_Release(iter->second);
 			iter = m_Effects.erase(iter);
 		}
 		else
@@ -72,16 +73,16 @@ void CEffect_Manager::Create_Effect(const wstring& strEffectTag, _mat* pMatrix, 
 	Info.pMatrix = pMatrix;
 	Info.isFollow = isFollow;
 
-	if (Info.fLifeTime < 0)
+	//if (Info.fLifeTime < 0)
 	{
 		CEffect_Dummy* pEffect = Clone_Effect(&Info);
 
 		m_Effects.emplace(pMatrix, pEffect);
 	}
-	else
-	{
-		Add_Layer_Effect(&Info);
-	}
+	//else
+	//{
+	//	Add_Layer_Effect(&Info);
+	//}
 }
 
 void CEffect_Manager::Delete_Effect(const void* pMatrix)

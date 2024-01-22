@@ -37,15 +37,22 @@ protected:
 	CCollider* m_pBodyColliderCom = { nullptr };
 	CCollider* m_pAttackColliderCom = { nullptr };
 
+	CTexture* m_pDissolveTextureCom = { nullptr };
+
 protected:
 	wstring m_strModelTag = {};
 	ANIM_DESC m_Animation{};
 
 protected:
-	_uint m_iPassIndex = {};
+	_uint m_iPassIndex = { AnimPass_Default };
 	MonsterInfo m_pInfo{};
+
 protected:
 	_float m_fBackPower = { 0.01f };
+
+	_float m_fDissolveTime = {};
+	_float m_fDissolveRatio = {};
+
 
 private: // Collier 사이즈 조절용
 	_float m_fSizeX = {}, m_fSizeY = {}, m_fSizeZ = {};

@@ -682,6 +682,7 @@ HRESULT CRenderer::Render_NonBlend()
 	return S_OK;
 }
 
+
 HRESULT CRenderer::Render_Refraction()
 {
 	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Refraction"))))
@@ -979,19 +980,10 @@ HRESULT CRenderer::Render_Deferred()
 		m_TurnOnSSAO = !m_TurnOnSSAO;
 
 	// ¿ø¸í
-	if(FAILED(m_pShader->Bind_RawValue("TurnOnSSAO", &m_TurnOnSSAO, sizeof(_bool))))
+	if (FAILED(m_pShader->Bind_RawValue("TurnOnSSAO", &m_TurnOnSSAO, sizeof(_bool))))
 		return E_FAIL;
 
-	if (FAILED(m_pShader->Bind_RawValue("g_intensity", &m_fIntensity, sizeof(_float))))
-		return E_FAIL;
-
-	if (FAILED(m_pShader->Bind_RawValue("g_fRadius", &m_fRadius, sizeof(_float))))
-		return E_FAIL;
-
-	if (FAILED(m_pShader->Bind_RawValue("g_fScale", &m_fScale, sizeof(_float))))
-		return E_FAIL;
-
-	if (FAILED(m_pShader->Bind_RawValue("g_fBias", &m_fBias, sizeof(_float))))
+	if (FAILED(m_pShader->Bind_RawValue("g_SSAO", &m_SSAO, sizeof(SSAO_DESC))))
 		return E_FAIL;
 
 	if (FAILED(m_pShader->Begin(DefPass_Deferred)))
@@ -1230,7 +1222,7 @@ HRESULT CRenderer::Render_Debug()
 {
 	for (auto& pComponent : m_DebugComponents)
 	{
-		//pComponent->Render();
+		pComponent->Render();
 		Safe_Release(pComponent);
 	}
 	m_DebugComponents.clear();

@@ -44,6 +44,10 @@
 #include "BackGround_Mask.h"
 #include "Item.h"
 #include "Wearable_Slot.h"
+#include "Coin.h"
+#include "Diamond.h"
+#include "Menu.h"
+#include "InvenFrame.h"
 
 
 #include "Map.h"
@@ -60,6 +64,11 @@
 #include "TrilobiteA.h"
 #include "Void01.h"
 #include "Void05.h"
+#include "Imp.h"
+#include "Void09.h"
+#include "Void20.h"
+#include "Void23.h"
+#include "Nastron07.h"
 
 // NPC
 #include "Cat.h"
@@ -74,3 +83,4 @@
 
 // Object
 #include "Prologue_Object.h"
+#include "Village_Object.h"

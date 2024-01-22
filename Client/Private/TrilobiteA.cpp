@@ -1,7 +1,7 @@
 #include "TrilobiteA.h"
 
-const _float CTrilobiteA::g_fChaseRange = 5.f;
-const _float CTrilobiteA::g_fAttackRange = 1.5f;
+const _float CTrilobiteA::m_fChaseRange = 5.f;
+const _float CTrilobiteA::m_fAttackRange = 1.5f;
 
 CTrilobiteA::CTrilobiteA(_dev pDevice, _context pContext)
 	: CMonster(pDevice, pContext)
@@ -34,7 +34,6 @@ HRESULT CTrilobiteA::Init(void* pArg)
 
 	//m_pTransformCom->Set_State(State::Pos, _vec4(10.f, 0.f, 0.f, 1.f));
 	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
-	m_pTransformCom->Set_Speed(1.f);
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
@@ -52,6 +51,11 @@ HRESULT CTrilobiteA::Init(void* pArg)
 
 void CTrilobiteA::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_L))
+	{
+		Set_Damage(4, WP_BOW);
+	}
+
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 
@@ -66,8 +70,6 @@ void CTrilobiteA::Late_Tick(_float fTimeDelta)
 	__super::Late_Tick(fTimeDelta);
 
 #ifdef _DEBUGTEST
-	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
-
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
 #endif
@@ -83,14 +85,18 @@ HRESULT CTrilobiteA::Render()
 void CTrilobiteA::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_iHP -= iDamage;
+	m_bDamaged = true;
+
+	m_eCurState = STATE_HIT;
+
+	_vec4 vPlayerPos = __super::Compute_PlayerPos();
+	m_pTransformCom->LookAt(vPlayerPos);
 
 	if (iDamageType == WP_BOW)
 	{
 		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
 
 		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
-
-		m_eCurState = STATE_HIT;
 	}
 
 	else if (iDamageType == WP_SWORD)
@@ -100,9 +106,9 @@ void CTrilobiteA::Set_Damage(_int iDamage, _uint iDamageType)
 
 void CTrilobiteA::Init_State(_float fTimeDelta)
 {
-	if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
+	if (m_iHP <= 0)
 	{
-		m_eCurState = STATE_IDLE;
+		m_eCurState = STATE_DIE;
 	}
 
 	if (m_ePreState != m_eCurState)
@@ -125,6 +131,23 @@ void CTrilobiteA::Init_State(_float fTimeDelta)
 				_randFloat Random = _randFloat(-1.f, 1.f);
 				m_pTransformCom->LookAt_Dir(_vec4(Random(RandNum), 0.f, Random(RandNum), 0.f));
 			}
+
+			switch (m_iRoamingPattern)
+			{
+			case 0:
+				m_Animation.iAnimIndex = STUN;
+				m_Animation.isLoop = false;
+				break;
+			case 1:
+				m_Animation.iAnimIndex = WALK;
+				m_Animation.isLoop = false;
+				break;
+			case 2:
+				m_Animation.iAnimIndex = TURN_L;
+				m_Animation.isLoop = false;
+				break;
+			}
+
 			break;
 
 		case Client::CTrilobiteA::STATE_CHASE:
@@ -135,9 +158,25 @@ void CTrilobiteA::Init_State(_float fTimeDelta)
 
 		case Client::CTrilobiteA::STATE_ATTACK:
 			break;
+
 		case Client::CTrilobiteA::STATE_HIT:
-			m_iHitPattern = rand() % 2;
+		{
+			_uint iHitPattern = rand() % 2;
+
+			switch (iHitPattern)
+			{
+			case 0:
+				m_Animation.iAnimIndex = HIT_L;
+				m_Animation.isLoop = false;
+				break;
+			case 1:
+				m_Animation.iAnimIndex = HIT_R;
+				m_Animation.isLoop = false;
+				break;
+			}
+		}
 			break;
+
 		case Client::CTrilobiteA::STATE_DIE:
 			m_Animation.iAnimIndex = DIE01;
 			m_Animation.isLoop = false;
@@ -145,14 +184,11 @@ void CTrilobiteA::Init_State(_float fTimeDelta)
 		}
 
 		m_ePreState = m_eCurState;
-
 	}
 }
 
 void CTrilobiteA::Tick_State(_float fTimeDelta)
 {
-	Attack(fTimeDelta);
-
 	switch (m_eCurState)
 	{
 	case Client::CTrilobiteA::STATE_IDLE:
@@ -164,26 +200,27 @@ void CTrilobiteA::Tick_State(_float fTimeDelta)
 			m_eCurState = STATE_ROAM;
 			m_fIdleTime = 0.f;
 		}
+
+		//_float fDistance = __super::Compute_PlayerDistance();
+		//if (fDistance <= m_fChaseRange)
+		//{
+		//	m_eCurState = STATE_CHASE;
+		//}
+
 		break;
 
 	case Client::CTrilobiteA::STATE_ROAM:
 
-		switch (m_iRoamingPattern)
+		if (m_iRoamingPattern == 1)
 		{
-		case 0:
-			m_Animation.iAnimIndex = STUN;
-			m_Animation.isLoop = false;
-			break;
-		case 1:
-			m_Animation.iAnimIndex = WALK;
-			m_Animation.isLoop = false;
 			m_pTransformCom->Go_Straight(fTimeDelta);
-			break;
-		case 2:
-			m_Animation.iAnimIndex = TURN_L;
-			m_Animation.isLoop = false;
-			break;
 		}
+
+		if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
+		{
+			m_eCurState = STATE_IDLE;
+		}
+
 		break;
 
 	case Client::CTrilobiteA::STATE_CHASE:
@@ -194,12 +231,18 @@ void CTrilobiteA::Tick_State(_float fTimeDelta)
 		m_pTransformCom->LookAt(vPlayerPos);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 
-		if (fDistance > g_fChaseRange)
+		if (fDistance > m_fChaseRange && !m_bDamaged)
 		{
 			m_eCurState = STATE_IDLE;
 		}
+
+		if (fDistance <= m_fAttackRange)
+		{
+			m_eCurState = STATE_ATTACK;
+			m_Animation.isLoop = true;
+		}
 	}
-	break;
+		break;
 
 	case Client::CTrilobiteA::STATE_ATTACK:
 
@@ -228,6 +271,7 @@ void CTrilobiteA::Tick_State(_float fTimeDelta)
 				}
 			}
 			break;
+
 		case 1:
 			m_Animation.iAnimIndex = ATTACK02;
 			m_Animation.isLoop = false;
@@ -243,65 +287,29 @@ void CTrilobiteA::Tick_State(_float fTimeDelta)
 			break;
 		}
 		break;
+
 	case Client::CTrilobiteA::STATE_HIT:
 
-		switch (m_iHitPattern)
-		{
-		case 0:
-			m_Animation.iAnimIndex = HIT_L;
-			m_Animation.isLoop = false;
-			break;
-		case 1:
-			m_Animation.iAnimIndex = HIT_R;
-			m_Animation.isLoop = false;
-			break;
-		}
-		break;
-
-	case Client::CTrilobiteA::STATE_DIE:
-		break;
-	}
-}
-
-void CTrilobiteA::Attack(_float fTimeDelta)
-{
-	_float fDistance = __super::Compute_PlayerDistance();
-
-	if (fDistance <= g_fChaseRange)
-	{
-		if (m_eCurState == STATE_ATTACK)
-		{
-			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02))
-			{
-				m_eCurState = STATE_CHASE;
-			}
-		}
-
-		else
+		if (m_pModelCom->IsAnimationFinished(HIT_L) || m_pModelCom->IsAnimationFinished(HIT_R))
 		{
 			m_eCurState = STATE_CHASE;
 		}
-	}
 
-	if (fDistance <= g_fAttackRange)
-	{
-		m_eCurState = STATE_ATTACK;
-		m_Animation.isLoop = true;
+		break;
+
+	case Client::CTrilobiteA::STATE_DIE:
+
+		if (m_pModelCom->IsAnimationFinished(DIE01))
+		{
+			m_iPassIndex = AnimPass_Dissolve;
+		}
+
+		break;
 	}
 }
 
 HRESULT CTrilobiteA::Add_Collider()
 {
-	// Com_Collider
-	Collider_Desc CollDesc = {};
-	CollDesc.eType = ColliderType::Sphere;
-	CollDesc.fRadius = 0.15f;
-	CollDesc.vCenter = _vec3(0.f, 0.f, 0.f);
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-		TEXT("Com_Collider_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))
-		return E_FAIL;
-
 	Collider_Desc BodyCollDesc = {};
 	BodyCollDesc.eType = ColliderType::OBB;
 	BodyCollDesc.vExtents = _vec3(0.3f, 0.2f, 0.4f);
@@ -330,12 +338,6 @@ HRESULT CTrilobiteA::Add_Collider()
 
 void CTrilobiteA::Update_Collider() 
 {
-	_mat Matrix = *(m_pModelCom->Get_BoneMatrix("Tail_Bone004"));
-	//Matrix *= XMMatrixTranslation(0.f, 0.2f, 0.1f);
-	Matrix *= m_pTransformCom->Get_World_Matrix();
-
-	m_pColliderCom->Update(Matrix);
-
 	_mat Offset = _mat::CreateTranslation(0.f, 0.2f, 0.f);
 	m_pAttackColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
 }
@@ -369,6 +371,4 @@ CGameObject* CTrilobiteA::Clone(void* pArg)
 void CTrilobiteA::Free()
 {
 	__super::Free();
-
-	Safe_Release(m_pColliderCom);
 }

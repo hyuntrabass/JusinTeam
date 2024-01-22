@@ -41,6 +41,11 @@ private:
 	HRESULT Ready_Nastron03();
 	HRESULT Ready_Thief04();
 	HRESULT Ready_TrilobiteA();
+	HRESULT Ready_Imp();
+	HRESULT Ready_Void09();
+	HRESULT Ready_Void20();
+	HRESULT Ready_Void23();
+	HRESULT Ready_Nastron07();
 
 	// NPC
 	HRESULT Ready_Cat();
