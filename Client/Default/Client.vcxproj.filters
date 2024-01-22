@@ -555,10 +555,6 @@
     <ClInclude Include="..\Public\Void09.h">
       <Filter>02.GameObjects\04.Monster\06. Void\Void09</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Level_Village.h" />
-    <ClInclude Include="..\Public\NPCvsMon.h" />
-    <ClInclude Include="..\Public\Objects.h" />
-    <ClInclude Include="..\Public\Prologue_Object.h" />
     <ClInclude Include="..\Public\Void20.h">
       <Filter>02.GameObjects\04.Monster\06. Void\Void20</Filter>
     </ClInclude>
