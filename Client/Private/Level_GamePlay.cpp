@@ -42,13 +42,14 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
+
 	// Monster Parse
 	if (FAILED(Ready_Monster()))
 	{
 		MSG_BOX("Failed to Ready Monster");
 		return E_FAIL;
 	}
-
+	
 	if (FAILED(Ready_Rabbit()))
 	{
 		MSG_BOX("Failed to Ready Rabbit");
@@ -163,16 +164,15 @@ HRESULT CLevel_GamePlay::Init()
 	}
 
 	m_pGameInstance->Set_HellHeight(-5000.f);
-
+	
 	return S_OK;
 }
 
 void CLevel_GamePlay::Tick(_float fTimeDelta)
 {
 
-	if (m_pGameInstance->Key_Down(DIK_RETURN))
+	if (m_pGameInstance->Key_Down(DIK_PRIOR))
 	{
-
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_VILLAGE))))
 		{
 			return;
@@ -406,7 +406,7 @@ HRESULT CLevel_GamePlay::Ready_Monster()
 	inFile.read(reinterpret_cast<char*>(&MonsterListSize), sizeof(_uint));
 
 
-	for (_uint i = 0; i < MonsterListSize; ++i)
+	for (_uint i = 0; i < 1; ++i)
 	{
 		_ulong MonsterPrototypeSize;
 		inFile.read(reinterpret_cast<char*>(&MonsterPrototypeSize), sizeof(_ulong));

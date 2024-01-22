@@ -289,11 +289,13 @@ public:
 	void After_CommonAtt(_float fTimeDelta);
 	void After_SkillAtt(_float fTimeDelta);
 	void Check_Att_Collider(ATTACK_TYPE Att_Type);
+	void Sword_Att_Camera_Effect();
+	void Bow_Att_Camera_Effect();
 
-	void Attack_Camera_Effect();
 public:
 	void Summon_Riding(Riding_Type Type);
 	void UnMount_Riding();
+
 public:
 	void Init_State();
 	void Tick_State(_float fTimeDelta);
@@ -319,7 +321,8 @@ private:
 	ANIM_LIST m_SwordSkill[5]{};
 	ANIM_LIST m_BowSkill[5]{};
 	WEAPON_INDEX m_Weapon_CurrentIndex{ WP_INDEX_END };
-
+	_float m_fSkillSpeed{};
+	_bool m_bAttackStop{};
 	_float4 m_vPos{};
 	_float m_fGravity{};
 	_bool m_bStartGame{};
@@ -348,10 +351,12 @@ private:
 	_int m_Body_CurrentIndex{-1};
 	_int m_Hair_CurrentIndex{-1};
 	_int m_Face_CurrentIndex{-1};
-
+	_float m_SkillSpeed{};
 	_uint m_ShaderIndex{};
 	_bool m_UsingMotionBlur{};
 	_bool m_View_Helmat{};
+	_vec4 m_SaveCamPos{};
+	_vec4 m_SaveCamLook{};
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

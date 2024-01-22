@@ -61,12 +61,14 @@ void CCamera_Main::Tick(_float fTimeDelta)
 	}
 	else
 	{
-		if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_GAMEPLAY)
-			return;
-
+		
 		if (m_pPlayerTransform == nullptr)
 		{
 			m_pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+			if (not m_pPlayerTransform)
+			{ 
+				return;
+			}
 			Safe_AddRef(m_pPlayerTransform);
 		}
 
@@ -199,6 +201,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 	} 
 	else
 	{
+		m_fPlayerDistance = 10.f;
 		_long dwMouseMove;
 		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
 		{
