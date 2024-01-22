@@ -196,9 +196,6 @@
     <Filter Include="02.GameObjects\08.Map">
       <UniqueIdentifier>{8e2295d8-49f8-4964-8cf1-492d50fc7d62}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\09.Prologue_Object">
-      <UniqueIdentifier>{81af0f87-34df-4131-8061-fdbca3043fe5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\00.UI\POPUP">
       <UniqueIdentifier>{395d4c54-fec4-4c43-8e36-2a78faf9edea}</UniqueIdentifier>
     </Filter>
@@ -289,20 +286,17 @@
     <Filter Include="02.GameObjects\10. Pet">
       <UniqueIdentifier>{1c9f08e4-2674-40c5-8777-3b03e17501c0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Money">
-      <UniqueIdentifier>{2be09cd7-397e-4bf6-9136-086de0714ae1}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\09.Object">
+      <UniqueIdentifier>{81af0f87-34df-4131-8061-fdbca3043fe5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Money\Coin">
-      <UniqueIdentifier>{6fbfca69-1d2b-40dc-ba8d-2973bca2df34}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\09.Object\Prologue">
+      <UniqueIdentifier>{92ff68df-9a5c-4e12-bcd4-ef818437743e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Money\Diamond">
-      <UniqueIdentifier>{a6690f71-f1f0-43ac-b1de-cfdf619c1aab}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\09.Object\Village">
+      <UniqueIdentifier>{8b2984b1-580e-4d35-b673-8de40cf2ad2e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Menu">
-      <UniqueIdentifier>{5ff1a306-fa11-4fe9-b769-01c482fe6772}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Frame">
-      <UniqueIdentifier>{fdd05eca-43ad-4ffc-8b6e-5610bf509f4d}</UniqueIdentifier>
+    <Filter Include="01.Levels\04.Village">
+      <UniqueIdentifier>{c2ce56cf-d551-4fb0-b7a8-880ccf58f895}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -474,6 +468,9 @@
     <ClInclude Include="..\Public\SkillSlot.h">
       <Filter>02.GameObjects\00.UI\GameUI\SkillBlock\Slot</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\ItemSlot.h">
+      <Filter>02.GameObjects\00.UI\GameUI\ItemBlock\Slot</Filter>
+    </ClInclude>
     <ClInclude Include="..\Public\ExpBar.h">
       <Filter>02.GameObjects\00.UI\GameUI\EXP</Filter>
     </ClInclude>
@@ -550,24 +547,17 @@
       <Filter>02.GameObjects\04.Monster\06. Void\Void09</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Void20.h" />
-    <ClInclude Include="..\Public\Level_Village.h" />
-    <ClInclude Include="..\Public\NPCvsMon.h" />
-    <ClInclude Include="..\Public\Objects.h" />
-    <ClInclude Include="..\Public\Prologue_Object.h" />
-    <ClInclude Include="..\Public\Coin.h">
-      <Filter>02.GameObjects\00.UI\GameUI\Money\Coin</Filter>
+    <ClInclude Include="..\Public\Village_Object.h">
+      <Filter>02.GameObjects\09.Object\Village</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Diamond.h">
-      <Filter>02.GameObjects\00.UI\GameUI\Money\Diamond</Filter>
+    <ClInclude Include="..\Public\Prologue_Object.h">
+      <Filter>02.GameObjects\09.Object\Prologue</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\ItemSlot.h">
-      <Filter>02.GameObjects\00.UI\GameUI\ItemBlock</Filter>
+    <ClInclude Include="..\Public\Objects.h">
+      <Filter>02.GameObjects\09.Object</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Menu.h">
-      <Filter>02.GameObjects\00.UI\GameUI\Menu</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\InvenFrame.h">
-      <Filter>02.GameObjects\00.UI\GameUI\Inven\Frame</Filter>
+    <ClInclude Include="..\Public\Level_Village.h">
+      <Filter>01.Levels\04.Village</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -816,20 +806,17 @@
       <Filter>02.GameObjects\04.Monster\06. Void\Void09</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Void20.cpp" />
-    <ClCompile Include="..\Private\Level_Village.cpp" />
-    <ClCompile Include="..\Private\Objects.cpp" />
-    <ClCompile Include="..\Private\Prologue_Object.cpp" />
-    <ClCompile Include="..\Private\Coin.cpp">
-      <Filter>02.GameObjects\00.UI\GameUI\Money\Coin</Filter>
+    <ClCompile Include="..\Private\Village_Object.cpp">
+      <Filter>02.GameObjects\09.Object\Village</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Diamond.cpp">
-      <Filter>02.GameObjects\00.UI\GameUI\Money\Diamond</Filter>
+    <ClCompile Include="..\Private\Prologue_Object.cpp">
+      <Filter>02.GameObjects\09.Object\Prologue</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Menu.cpp">
-      <Filter>02.GameObjects\00.UI\GameUI\Menu</Filter>
+    <ClCompile Include="..\Private\Objects.cpp">
+      <Filter>02.GameObjects\09.Object</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\InvenFrame.cpp">
-      <Filter>02.GameObjects\00.UI\GameUI\Inven\Frame</Filter>
+    <ClCompile Include="..\Private\Level_Village.cpp">
+      <Filter>01.Levels\04.Village</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -890,12 +890,14 @@ HRESULT CLoader::Load_GamePlay()
 	_mat Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 	//_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(90.f));
 
-	// Object Model
-	strInputFilePath = "../Bin/Resources/StaticMesh/Object/Mesh/";
+	// Prologue Object Model
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Map/Tutorial/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
 		{
+			if (!entry.exists())
+				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
@@ -904,6 +906,72 @@ HRESULT CLoader::Load_GamePlay()
 			}
 		}
 	}
+
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Object/Tutorial/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (!entry.exists())
+				return S_OK;
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Environment/Grass/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (!entry.exists())
+				return S_OK;
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Environment/Rock/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (!entry.exists())
+				return S_OK;
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Environment/Tree/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (!entry.exists())
+				return S_OK;
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
 #pragma endregion
 
 #pragma region Monster
@@ -1250,7 +1318,7 @@ HRESULT CLoader::Load_GamePlay()
 
 #pragma region Terrain
 
-	// Terrain -> 테스트용도
+	// Terrain
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Terrain"), CTerrain::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -1280,11 +1348,14 @@ HRESULT CLoader::Load_GamePlay()
 HRESULT CLoader::Load_Village()
 {
 	// 맵
-	//string strInputFilePath = "../Bin/Resources/StaticMesh/Map/Village/Mesh/";
-	/*for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+
+	string strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Map/Midgard/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
 		{
+			if (!entry.exists())
+				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false))))
@@ -1292,8 +1363,27 @@ HRESULT CLoader::Load_Village()
 				return E_FAIL;
 			}
 		}
-	}*/
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, TEXT("Prototype_Model_Village"),CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Map/Village/Mesh/Village1.hyuntrastatmesh"))))
+	}
+	_mat Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Object/Midgard/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (!entry.exists())
+				return S_OK;
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Village_Object"), CVillage_Object::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
