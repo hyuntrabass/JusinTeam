@@ -1,7 +1,7 @@
 #include "TrilobiteA.h"
 
-const _float CTrilobiteA::g_fChaseRange = 5.f;
-const _float CTrilobiteA::g_fAttackRange = 1.5f;
+const _float CTrilobiteA::m_fChaseRange = 5.f;
+const _float CTrilobiteA::m_fAttackRange = 1.5f;
 
 CTrilobiteA::CTrilobiteA(_dev pDevice, _context pContext)
 	: CMonster(pDevice, pContext)
@@ -194,7 +194,7 @@ void CTrilobiteA::Tick_State(_float fTimeDelta)
 		m_pTransformCom->LookAt(vPlayerPos);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 
-		if (fDistance > g_fChaseRange)
+		if (fDistance > m_fChaseRange)
 		{
 			m_eCurState = STATE_IDLE;
 		}
@@ -267,7 +267,7 @@ void CTrilobiteA::Attack(_float fTimeDelta)
 {
 	_float fDistance = __super::Compute_PlayerDistance();
 
-	if (fDistance <= g_fChaseRange)
+	if (fDistance <= m_fChaseRange)
 	{
 		if (m_eCurState == STATE_ATTACK)
 		{
@@ -283,7 +283,7 @@ void CTrilobiteA::Attack(_float fTimeDelta)
 		}
 	}
 
-	if (fDistance <= g_fAttackRange)
+	if (fDistance <= m_fAttackRange)
 	{
 		m_eCurState = STATE_ATTACK;
 		m_Animation.isLoop = true;

@@ -196,9 +196,6 @@
     <Filter Include="02.GameObjects\08.Map">
       <UniqueIdentifier>{8e2295d8-49f8-4964-8cf1-492d50fc7d62}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\09.Prologue_Object">
-      <UniqueIdentifier>{81af0f87-34df-4131-8061-fdbca3043fe5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\00.UI\POPUP">
       <UniqueIdentifier>{395d4c54-fec4-4c43-8e36-2a78faf9edea}</UniqueIdentifier>
     </Filter>
@@ -273,6 +270,33 @@
     </Filter>
     <Filter Include="99.Headers\98.Default">
       <UniqueIdentifier>{6ef1e47a-756a-4482-9f45-993c308095c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Monster\06. Void\Void09">
+      <UniqueIdentifier>{708cdd65-d615-4fef-b8a3-5eb67028c4ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Monster\06. Void\Void20">
+      <UniqueIdentifier>{003eae17-dbfe-4be7-895f-7f1fd99a9dd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Monster\06. Void\Void23">
+      <UniqueIdentifier>{dd18462f-f63e-461d-bb94-cf13ddd980dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Monster\07. Imp">
+      <UniqueIdentifier>{29051842-1671-42b2-a983-c0712f3f2e64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\10. Pet">
+      <UniqueIdentifier>{1c9f08e4-2674-40c5-8777-3b03e17501c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\09.Object">
+      <UniqueIdentifier>{81af0f87-34df-4131-8061-fdbca3043fe5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\09.Object\Prologue">
+      <UniqueIdentifier>{92ff68df-9a5c-4e12-bcd4-ef818437743e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\09.Object\Village">
+      <UniqueIdentifier>{8b2984b1-580e-4d35-b673-8de40cf2ad2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\04.Village">
+      <UniqueIdentifier>{c2ce56cf-d551-4fb0-b7a8-880ccf58f895}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -399,7 +423,6 @@
     <ClInclude Include="..\public\Effect_Manager.h">
       <Filter>03.Effect</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\NPCvsMon.h" />
     <ClInclude Include="..\Public\Logo_Text.h">
       <Filter>02.GameObjects\00.UI\00.LogoLevel\Logo_Background</Filter>
     </ClInclude>
@@ -450,9 +473,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\ExpBar.h">
       <Filter>02.GameObjects\00.UI\GameUI\EXP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\NPCvsMon.h">
-      <Filter>02.GameObjects\04.Monster\Tutorial\00. NPCvsMon</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Dog.h">
       <Filter>02.GameObjects\07. NPC\Animal\01. Dog</Filter>
@@ -516,6 +536,28 @@
     </ClInclude>
     <ClInclude Include="..\Public\Item.h">
       <Filter>02.GameObjects\00.UI\GameUI\Inven\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NPCvsMon.h">
+      <Filter>02.GameObjects\04.Monster\01. Tutorial\00. NPCvsMon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Imp.h">
+      <Filter>02.GameObjects\04.Monster\07. Imp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Void09.h">
+      <Filter>02.GameObjects\04.Monster\06. Void\Void09</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Void20.h" />
+    <ClInclude Include="..\Public\Village_Object.h">
+      <Filter>02.GameObjects\09.Object\Village</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prologue_Object.h">
+      <Filter>02.GameObjects\09.Object\Prologue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Objects.h">
+      <Filter>02.GameObjects\09.Object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Village.h">
+      <Filter>01.Levels\04.Village</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -756,6 +798,25 @@
     </ClCompile>
     <ClCompile Include="..\Private\Item.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\Inven\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Imp.cpp">
+      <Filter>02.GameObjects\04.Monster\07. Imp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Void09.cpp">
+      <Filter>02.GameObjects\04.Monster\06. Void\Void09</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Void20.cpp" />
+    <ClCompile Include="..\Private\Village_Object.cpp">
+      <Filter>02.GameObjects\09.Object\Village</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prologue_Object.cpp">
+      <Filter>02.GameObjects\09.Object\Prologue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Objects.cpp">
+      <Filter>02.GameObjects\09.Object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Village.cpp">
+      <Filter>01.Levels\04.Village</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

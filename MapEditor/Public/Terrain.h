@@ -29,6 +29,7 @@ public:
 
 	void Set_MousePos(_float4 MousePos) { m_MousePos = MousePos; }
 	void Set_BrushSize(_uint iBrushSize) { m_iBrushSize = iBrushSize; }
+	_bool Get_Mesh_Terrain() { return m_Info.isMesh; }
 	void Mode(_bool isMode) { m_isMode = isMode; }
 
 private:
@@ -45,7 +46,7 @@ private:
 	_float				m_fX, m_fY;
 	_float44			m_ViewMatrix, m_ProjMatrix;
 	_uint				m_iTextureNum = { 0 };
-	TerrainInfo m_Info;
+	TERRAIN_INFO m_Info;
 
 	_float4				m_MousePos{};
 	_float				m_iBrushSize{ 1.f };

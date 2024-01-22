@@ -1,7 +1,7 @@
 #include "Nastron03.h"
 
-const _float CNastron03::g_fChaseRange = 7.f;
-const _float CNastron03::g_fAttackRange = 3.f;
+const _float CNastron03::m_fChaseRange = 7.f;
+const _float CNastron03::m_fAttackRange = 3.f;
 
 CNastron03::CNastron03(_dev pDevice, _context pContext)
 	: CMonster(pDevice, pContext)
@@ -54,7 +54,7 @@ void CNastron03::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_B))
 	{
-		Set_Damage(1, WP_BOW);
+		Set_Damage(0, WP_BOW);
 	}
 
 	Init_State(fTimeDelta);
@@ -88,27 +88,37 @@ HRESULT CNastron03::Render()
 void CNastron03::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_iHP -= iDamage;
+	m_bDamaged = true;
+
+	m_eCurState = STATE_HIT;
 
 	if (iDamageType == WP_BOW)
 	{
 		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
 
 		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
-
-		m_eCurState = STATE_HIT;
 	}
 
 	else if (iDamageType == WP_SWORD)
 	{
-		m_eCurState = STATE_HIT;
 	}
 }
 
 void CNastron03::Init_State(_float fTimeDelta)
 {
-	if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
+	//if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
+	//{
+	//	m_eCurState = STATE_IDLE;
+	//}
+
+	//if (m_pModelCom->IsAnimationFinished(HIT_L) || m_pModelCom->IsAnimationFinished(HIT_R))
+	//{
+	//	m_eCurState = STATE_CHASE;
+	//}
+
+	if (m_iHP <= 0)
 	{
-		m_eCurState = STATE_IDLE;
+		m_eCurState = STATE_DIE;
 	}
 
 	if (m_ePreState != m_eCurState)
@@ -140,10 +150,26 @@ void CNastron03::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CNastron03::STATE_ATTACK:
+			m_bDamaged = false;
 			break;
 
 		case Client::CNastron03::STATE_HIT:
-			m_iHitPattern = rand() % 2;
+
+		{
+			_uint iHitPattern = rand() % 2;
+			switch (iHitPattern)
+			{
+			case 0:
+				m_Animation.iAnimIndex = HIT_L;
+				m_Animation.isLoop = false;
+				break;
+			case 1:
+				m_Animation.iAnimIndex = HIT_R;
+				m_Animation.isLoop = false;
+				break;
+			}
+		}
+
 			break;
 
 		case Client::CNastron03::STATE_DIE:
@@ -158,12 +184,13 @@ void CNastron03::Init_State(_float fTimeDelta)
 
 void CNastron03::Tick_State(_float fTimeDelta)
 {
-	Attack(fTimeDelta);
+	//Attack(fTimeDelta);
 
 	switch (m_eCurState)
 	{
 	case Client::CNastron03::STATE_IDLE:
 
+	{
 		m_fIdleTime += fTimeDelta;
 
 		if (m_fIdleTime >= 2.f)
@@ -171,10 +198,25 @@ void CNastron03::Tick_State(_float fTimeDelta)
 			m_eCurState = STATE_WALK;
 			m_fIdleTime = 0.f;
 		}
+
+		_float fDistance = __super::Compute_PlayerDistance();
+
+		if (fDistance <= m_fChaseRange)
+		{
+			m_eCurState = STATE_CHASE;
+		}
 		break;
+	}
+
 
 	case Client::CNastron03::STATE_WALK:
 		m_pTransformCom->Go_Straight(fTimeDelta);
+
+		if (m_pModelCom->IsAnimationFinished(WALK))
+		{
+			m_eCurState = STATE_IDLE;
+		}
+
 		break;
 
 	case Client::CNastron03::STATE_CHASE:
@@ -185,12 +227,19 @@ void CNastron03::Tick_State(_float fTimeDelta)
 		m_pTransformCom->LookAt(vPlayerPos);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 
-		if (fDistance > g_fChaseRange)
+		if (fDistance > m_fChaseRange && !m_bDamaged)
 		{
 			m_eCurState = STATE_IDLE;
 		}
-	}
+
+		if (fDistance <= m_fAttackRange)
+		{
+			m_eCurState = STATE_ATTACK;
+			m_Animation.isLoop = true;
+		}
+
 		break;
+	}
 
 	case Client::CNastron03::STATE_ATTACK:
 
@@ -253,53 +302,26 @@ void CNastron03::Tick_State(_float fTimeDelta)
 			}
 			break;
 		}
+
+		if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
+			m_pModelCom->IsAnimationFinished(ATTACK03))
+		{
+			m_eCurState = STATE_CHASE;
+		}
+
 		break;
 
 	case Client::CNastron03::STATE_HIT:
 
-		switch (m_iHitPattern)
+		if (m_pModelCom->IsAnimationFinished(HIT_L) || m_pModelCom->IsAnimationFinished(HIT_R))
 		{
-		case 0:
-			m_Animation.iAnimIndex = HIT_L;
-			m_Animation.isLoop = false;
-			break;
-		case 1:
-			m_Animation.iAnimIndex = HIT_R;
-			m_Animation.isLoop = false;
-			break;
+			m_eCurState = STATE_CHASE;
 		}
+
 		break;
 
 	case Client::CNastron03::STATE_DIE:
 		break;
-	}
-}
-
-void CNastron03::Attack(_float fTimeDelta)
-{
-	_float fDistance = __super::Compute_PlayerDistance();
-
-	if (fDistance <= g_fChaseRange)
-	{
-		if (m_eCurState == STATE_ATTACK)
-		{
-			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
-				m_pModelCom->IsAnimationFinished(ATTACK03))
-			{
-				m_eCurState = STATE_CHASE;
-			}
-		}
-
-		else
-		{
-			m_eCurState = STATE_CHASE;
-		}
-	}
-
-	if (fDistance <= g_fAttackRange)
-	{
-		m_eCurState = STATE_ATTACK;
-		m_Animation.isLoop = true;
 	}
 }
 
