@@ -17,9 +17,9 @@ HRESULT CTerrain::Init_Prototype()
 
 HRESULT CTerrain::Init(void* pArg)
 {
-	m_Info = *(TERRAIN_INFO*)pArg;
+	m_Info = *(TERRAIN_INFO_MAPTOOL*)pArg;
 	*m_Info.ppTerrain = this;
-
+	
 	if (FAILED(Add_Component()))
 		return E_FAIL;
 
