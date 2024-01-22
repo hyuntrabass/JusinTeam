@@ -46,6 +46,7 @@ private:
 
 
 	_float			m_fTime{};
+	_float			m_fDeadTime{};
 	_float			m_fButtonTime{};
 	_float2			m_fStartButtonPos{};
 

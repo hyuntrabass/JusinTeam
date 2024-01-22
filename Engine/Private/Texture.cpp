@@ -91,7 +91,6 @@ CTexture* CTexture::Create(_dev pDevice, _context pContext, const wstring& strTe
 	if (FAILED(pInstance->Init_Prototype(strTextureFilePath, iNumTextures)))
 	{
 		MSG_BOX("Failed to Create : CTexture");
-		Safe_Release(pInstance);
 	}
 
 	return pInstance;

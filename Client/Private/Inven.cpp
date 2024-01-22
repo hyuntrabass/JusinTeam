@@ -3,7 +3,7 @@
 #include "TextButton.h"
 #include "UI_Manager.h"
 #include "FadeBox.h"
-
+#include "InvenFrame.h"
 CInven::CInven(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
@@ -27,12 +27,10 @@ HRESULT CInven::Init(void* pArg)
 		return E_FAIL;
 	}
 	
-	m_fSizeX = 100.f;
-	m_fSizeY = 100.f;
-
-	m_fX = 1180.f;
-	m_fY = 80.f;
-
+	m_fSizeX = 70.f;
+	m_fSizeY = 70.f;
+	m_fX = 1160.f;
+	m_fY = 45.f;
 	m_fDepth = (_float)D_INVEN / (_float)D_END;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
@@ -47,12 +45,6 @@ HRESULT CInven::Init(void* pArg)
 
 void CInven::Tick(_float fTimeDelta)
 {
-	m_fSizeX = 80.f;
-	m_fSizeY = 80.f;
-	m_fX = 1160.f;
-	m_fY = 45.f;
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
-
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
@@ -79,6 +71,7 @@ void CInven::Tick(_float fTimeDelta)
 			CUI_Manager::Get_Instance()->Set_InvenActive(true);
 			m_bNewItemIn = false;
 			m_isActive = true;
+			Init_InvenState();
 		}
 	}
 	if (TRUE == PtInRect(&dynamic_cast<CTextButton*>(m_pExitButton)->Get_Rect(), ptMouse)
@@ -98,12 +91,14 @@ void CInven::Tick(_float fTimeDelta)
 	{
 		CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 		m_pExitButton->Tick(fTimeDelta);
+		m_pInvenFrame->Tick(fTimeDelta);
 		m_pBackGround->Tick(fTimeDelta);
 		m_pTitleButton->Tick(fTimeDelta);
 		for (size_t i = 0; i < WEARABLE_TYPE::W_END; i++)
 		{
 			m_pWearableSlots[i]->Tick(fTimeDelta);
 		}
+
 	}
 
 }
@@ -113,6 +108,10 @@ void CInven::Late_Tick(_float fTimeDelta)
 
 	if (m_isActive)
 	{
+		m_pMoney->Late_Tick(fTimeDelta);
+		m_pDiamond->Late_Tick(fTimeDelta);
+		m_pSeigeLine->Late_Tick(fTimeDelta);
+		m_pInvenFrame->Late_Tick(fTimeDelta);
 		m_pExitButton->Late_Tick(fTimeDelta);
 		m_pBackGround->Late_Tick(fTimeDelta);
 		m_pTitleButton->Late_Tick(fTimeDelta);
@@ -120,7 +119,6 @@ void CInven::Late_Tick(_float fTimeDelta)
 		{
 			m_pWearableSlots[i]->Late_Tick(fTimeDelta);
 		}
-		m_pSeigeLine->Late_Tick(fTimeDelta);
 	}
 
 
@@ -157,6 +155,17 @@ HRESULT CInven::Render()
 	return S_OK;
 }
 
+
+void CInven::Init_InvenState()
+{
+	//dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Init_State();
+
+	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
+	dynamic_cast<CTextButton*>(m_pMoney)->Set_Text(to_wstring(iMoney));
+
+	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
+	dynamic_cast<CTextButton*>(m_pDiamond)->Set_Text(to_wstring(iDiamond));
+}
 
 HRESULT CInven::Add_Parts()
 {
@@ -216,6 +225,36 @@ HRESULT CInven::Add_Parts()
 		return E_FAIL;
 	}
 
+	
+	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
+	Button.strText = to_wstring(iMoney);
+	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_coin");
+	Button.vPosition = _vec2(1100.f, 30.f);
+	Button.vSize = _vec2(25.f, 25.f);
+	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	Button.vTextPosition = _vec2(Button.vSize.x + 10.f, Button.vSize.y - 26.f);
+
+	m_pMoney = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+
+	if (not m_pMoney)
+	{
+		return E_FAIL;
+	}
+	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
+	Button.strText = to_wstring(iDiamond);
+	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Diamond");
+	Button.vPosition = _vec2(1010.f, 30.f);
+	Button.vSize = _vec2(25.f, 25.f);
+	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	Button.vTextPosition = _vec2(Button.vSize.x + 10.f, Button.vSize.y - 26.f);
+
+	m_pDiamond = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+
+	if (not m_pDiamond)
+	{
+		return E_FAIL;
+	}
+
 	UiInfo info{};
 	info.strTexture = TEXT("Prototype_Component_Texture_BackGround_Mask");
 	info.vPos = _vec2((_float)g_iWinSizeX/2.f, (_float)g_iWinSizeY / 2.f);
@@ -228,22 +267,29 @@ HRESULT CInven::Add_Parts()
 		return E_FAIL;
 	}
 
-
 	for (size_t i = 0; i < WEARABLE_TYPE::W_END; i++)
 	{
 		CWearable_Slot::WEARABLESLOT SlotDesc = {};
 		SlotDesc.eType = (WEARABLE_TYPE)i;
 		SlotDesc.fDepth = m_fDepth - 0.01f;
 		SlotDesc.vSize = _float2(60.f, 60.f);
-		SlotDesc.vPosition = _float2(60.f, 180.f + (SlotDesc.vSize.x * i) + (4.f * i));
+		SlotDesc.vPosition = _float2(60.f, 180.f + (SlotDesc.vSize.x * (_uint)i) + (4.f * (_uint)i));
 		m_pWearableSlots[i] = (CWearable_Slot*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Wearable_Slot"), &SlotDesc);
 		if (not m_pWearableSlots[i])
 		{
 			return E_FAIL;
 		}
-
 	}
 
+	CInvenFrame::INVENFRAME_DESC InvenDesc = {};
+	InvenDesc.fDepth = m_fDepth - 0.01f;
+	InvenDesc.vPosition = _float2(1070.f, 400.f);
+	InvenDesc.vSize = _float2(360.f, 580.f);
+	m_pInvenFrame = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_InvenFrame"), &InvenDesc);
+	if (not m_pInvenFrame)
+	{
+		return E_FAIL;
+	}
 	return S_OK;
 }
 
@@ -330,14 +376,20 @@ void CInven::Free()
 			Safe_Release(m_pWearableSlots[i]);
 		}
 	}
+
+
+	Safe_Release(m_pMoney);
+	Safe_Release(m_pDiamond);
 	Safe_Release(m_pNotify);
 	Safe_Release(m_pSeigeLine);
 	Safe_Release(m_pBackGround);
 	Safe_Release(m_pExitButton);
 	Safe_Release(m_pTitleButton);
+	Safe_Release(m_pInvenFrame);
 
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pVIBufferCom);
+
 }

@@ -10,7 +10,6 @@ public:
 	typedef struct tagItemSlotDesc
 	{
 		_bool					bCanInteract;
-		//CTransform* pParentTransform;
 		_float					fDepth;
 		_float2					vSize;
 		_float2					vPosition;

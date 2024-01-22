@@ -34,7 +34,6 @@ HRESULT CNastron03::Init(void* pArg)
 
 	//m_pTransformCom->Set_State(State::Pos, _vec4(5.f, 0.f, 0.f, 1.f));
 	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
-	m_pTransformCom->Set_Speed(3.f);
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
@@ -52,7 +51,7 @@ HRESULT CNastron03::Init(void* pArg)
 
 void CNastron03::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_B))
+	if (m_pGameInstance->Key_Down(DIK_N))
 	{
 		Set_Damage(0, WP_BOW);
 	}
@@ -71,8 +70,6 @@ void CNastron03::Late_Tick(_float fTimeDelta)
 	__super::Late_Tick(fTimeDelta);
 
 #ifdef _DEBUGTEST
-	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
-
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
 #endif
@@ -92,6 +89,9 @@ void CNastron03::Set_Damage(_int iDamage, _uint iDamageType)
 
 	m_eCurState = STATE_HIT;
 
+	_vec4 vPlayerPos = __super::Compute_PlayerPos();
+	m_pTransformCom->LookAt(vPlayerPos);
+
 	if (iDamageType == WP_BOW)
 	{
 		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
@@ -106,16 +106,6 @@ void CNastron03::Set_Damage(_int iDamage, _uint iDamageType)
 
 void CNastron03::Init_State(_float fTimeDelta)
 {
-	//if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
-	//{
-	//	m_eCurState = STATE_IDLE;
-	//}
-
-	//if (m_pModelCom->IsAnimationFinished(HIT_L) || m_pModelCom->IsAnimationFinished(HIT_R))
-	//{
-	//	m_eCurState = STATE_CHASE;
-	//}
-
 	if (m_iHP <= 0)
 	{
 		m_eCurState = STATE_DIE;
@@ -134,7 +124,6 @@ void CNastron03::Init_State(_float fTimeDelta)
 		case Client::CNastron03::STATE_WALK:
 			m_Animation.iAnimIndex = WALK;
 			m_Animation.isLoop = false;
-
 			{
 				random_device rd;
 				_randNum RandNum(rd());
@@ -154,9 +143,9 @@ void CNastron03::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CNastron03::STATE_HIT:
-
 		{
 			_uint iHitPattern = rand() % 2;
+
 			switch (iHitPattern)
 			{
 			case 0:
@@ -169,7 +158,6 @@ void CNastron03::Init_State(_float fTimeDelta)
 				break;
 			}
 		}
-
 			break;
 
 		case Client::CNastron03::STATE_DIE:
@@ -184,12 +172,9 @@ void CNastron03::Init_State(_float fTimeDelta)
 
 void CNastron03::Tick_State(_float fTimeDelta)
 {
-	//Attack(fTimeDelta);
-
 	switch (m_eCurState)
 	{
 	case Client::CNastron03::STATE_IDLE:
-
 	{
 		m_fIdleTime += fTimeDelta;
 
@@ -199,15 +184,14 @@ void CNastron03::Tick_State(_float fTimeDelta)
 			m_fIdleTime = 0.f;
 		}
 
-		_float fDistance = __super::Compute_PlayerDistance();
+		//_float fDistance = __super::Compute_PlayerDistance();
+		//if (fDistance <= m_fChaseRange)
+		//{
+		//	m_eCurState = STATE_CHASE;
+		//}
 
-		if (fDistance <= m_fChaseRange)
-		{
-			m_eCurState = STATE_CHASE;
-		}
-		break;
 	}
-
+		break;
 
 	case Client::CNastron03::STATE_WALK:
 		m_pTransformCom->Go_Straight(fTimeDelta);
@@ -237,9 +221,8 @@ void CNastron03::Tick_State(_float fTimeDelta)
 			m_eCurState = STATE_ATTACK;
 			m_Animation.isLoop = true;
 		}
-
-		break;
 	}
+		break;
 
 	case Client::CNastron03::STATE_ATTACK:
 
@@ -270,6 +253,7 @@ void CNastron03::Tick_State(_float fTimeDelta)
 				}
 			}
 			break;
+
 		case 1:
 			m_Animation.iAnimIndex = ATTACK02;
 			m_Animation.isLoop = false;
@@ -288,6 +272,7 @@ void CNastron03::Tick_State(_float fTimeDelta)
 				}
 			}
 			break;
+
 		case 2:
 			m_Animation.iAnimIndex = ATTACK03;
 			m_Animation.isLoop = false;
@@ -308,7 +293,6 @@ void CNastron03::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = STATE_CHASE;
 		}
-
 		break;
 
 	case Client::CNastron03::STATE_HIT:
@@ -321,22 +305,18 @@ void CNastron03::Tick_State(_float fTimeDelta)
 		break;
 
 	case Client::CNastron03::STATE_DIE:
+
+		if (m_pModelCom->IsAnimationFinished(DIE))
+		{
+			m_iPassIndex = AnimPass_Dissolve;
+		}
+
 		break;
 	}
 }
 
 HRESULT CNastron03::Add_Collider()
 {
-	// Com_Collider
-	Collider_Desc CollDesc = {};
-	CollDesc.eType = ColliderType::Sphere;
-	CollDesc.fRadius = 0.3f;
-	CollDesc.vCenter = _vec3(0.f, 0.7f, -1.5f);
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-		TEXT("Com_Collider_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))
-		return E_FAIL;
-
 	Collider_Desc BodyCollDesc = {};
 	BodyCollDesc.eType = ColliderType::OBB;
 	BodyCollDesc.vExtents = _vec3(0.6f, 1.4f, 0.4f);
@@ -366,11 +346,6 @@ HRESULT CNastron03::Add_Collider()
 
 void CNastron03::Update_Collider()
 {
-	_mat Matrix = *(m_pModelCom->Get_BoneMatrix("Bip001-Prop1_end"));
-	Matrix *= m_pTransformCom->Get_World_Matrix();
-
-	m_pColliderCom->Update(Matrix);
-
 	_mat Offset = _mat::CreateTranslation(0.f, 1.5f, 0.f);
 	m_pAttackColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
 }
@@ -404,6 +379,4 @@ CGameObject* CNastron03::Clone(void* pArg)
 void CNastron03::Free()
 {
 	__super::Free();
-
-	Safe_Release(m_pColliderCom);
 }

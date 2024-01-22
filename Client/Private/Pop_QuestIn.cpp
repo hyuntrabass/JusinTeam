@@ -56,12 +56,13 @@ HRESULT CPop_QuestIn::Init(void* pArg)
 void CPop_QuestIn::Tick(_float fTimeDelta)
 {
 	
-	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
+	if (m_fDeadTime >= 0.8f && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 	{
 		m_isDead = true;
 	}
 
 	m_fTime += fTimeDelta * 0.2f;
+	m_fDeadTime += fTimeDelta;
 
 	if (dynamic_cast<CTextButton*>(m_pButton)->Get_Position().y <= m_fStartButtonPos.y - 5.f)
 	{

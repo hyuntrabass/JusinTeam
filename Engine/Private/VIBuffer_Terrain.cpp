@@ -189,7 +189,11 @@ HRESULT CVIBuffer_Terrain::Mesh_Terrain(vector<VTXSTATICMESH> vVertices, vector<
 		pVertices[i].vPosition = vVertices[i].vPosition;
 		pVertices[i].vNormal = vVertices[i].vNormal;
 		pVertices[i].vTexcoord = vVertices[i].vTexcoord;
+
+		m_vVertices.push_back(pVertices[i]);
 	}
+
+
 
 	//m_pContext->Unmap(m_pVB, 0);
 
@@ -206,6 +210,7 @@ HRESULT CVIBuffer_Terrain::Mesh_Terrain(vector<VTXSTATICMESH> vVertices, vector<
 	for (_uint i = 0; i < m_iNumIndices; i++)
 	{
 		pIndices[i] = vIndices[i];
+		m_vIndices.push_back(pIndices[i]);
 	}
 
 	//m_pContext->Unmap(m_pIB, 0);

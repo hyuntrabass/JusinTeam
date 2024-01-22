@@ -2,6 +2,7 @@
 #include "Shader_Loading.h"
 
 #include "Shader_Loader.h"
+#include "Level_Test.h"
 
 CShader_Loading::CShader_Loading(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -31,6 +32,7 @@ void CShader_Loading::Tick(_float fTimeDelta)
 		switch (m_eNextLevel)
 		{
 		case ShaderEdit::LEVEL_ShaderTest:
+			pLevel = CLevel_Test::Create(m_pDevice, m_pContext);
 			break;
 		}
 
