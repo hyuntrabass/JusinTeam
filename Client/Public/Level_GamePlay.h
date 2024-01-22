@@ -21,6 +21,7 @@ private:
 	HRESULT Ready_Light();
 	HRESULT Ready_Player();
 	HRESULT Ready_Map();
+	HRESULT Ready_Environment();
 
 	HRESULT Ready_Object();
 

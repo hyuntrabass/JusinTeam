@@ -483,12 +483,12 @@ HRESULT CImGui_Manager::ImGuiMenu()
 
 			if (ImGui::Button("SAVE"))
 			{
-				Save_Object();
+				Save_Envir();
 			}
 			ImGui::SameLine();
 			if (ImGui::Button("LOAD"))
 			{
-				Load_Object();
+				Load_Envir();
 			}
 			ImGui::EndTabItem();
 		}

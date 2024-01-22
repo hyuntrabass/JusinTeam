@@ -147,6 +147,12 @@ HRESULT CLevel_GamePlay::Init()
 		MSG_BOX("Failed to Ready Map");
 		return E_FAIL;
 	}
+		// Environment
+	//if (FAILED(Ready_Environment()))
+	//{
+	//	MSG_BOX("Failed to Ready Environment");
+	//	return E_FAIL;
+	//}
 
 
 	if (FAILED(Ready_UI()))
@@ -216,14 +222,14 @@ HRESULT CLevel_GamePlay::Ready_Light()
 
 HRESULT CLevel_GamePlay::Ready_Player()
 {
-	// �÷��̾� ��ġ ����
-	const TCHAR* pGetPath = TEXT("../Bin/Data/Player_Pos.dat");
+	// 플레이어 위치 세팅
+	const TCHAR* pGetPath = TEXT("../Bin/Data/Prologue_Player_Pos.dat");
 
 	std::ifstream inFile(pGetPath, std::ios::binary);
 
 	if (!inFile.is_open())
 	{
-		MessageBox(g_hWnd, L"../Bin/Data/Player_Pos.dat ������ ã�� ���߽��ϴ�.", L"���� �ε� ����", MB_OK);
+		MessageBox(g_hWnd, L"../Bin/Data/Prologue_Player_Pos.dat 파일이 없습니다..", L"불러오기 실패", MB_OK);
 		return E_FAIL;
 	}
 
@@ -240,7 +246,7 @@ HRESULT CLevel_GamePlay::Ready_Player()
 HRESULT CLevel_GamePlay::Ready_Map()
 {
 	TERRAIN_INFO Terrain;
-	Terrain.vTerrainSize = _uint2(100, 100);
+	Terrain.vTerrainSize = _uint2(200, 200);
 	Terrain.isMesh = false;
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &Terrain)))
@@ -248,43 +254,91 @@ HRESULT CLevel_GamePlay::Ready_Map()
 		return E_FAIL;
 	}
 
-	//const TCHAR* pGetPath = TEXT("../Bin/Data/MapData.dat");
+	const TCHAR* pGetPath = TEXT("../Bin/Data/Prologue_MapData.dat");
 
-	//std::ifstream inFile(pGetPath, std::ios::binary);
+	std::ifstream inFile(pGetPath, std::ios::binary);
 
-	//if (!inFile.is_open())
-	//{
-	//	MessageBox(g_hWnd, L"�� ������ ã�� ���߽��ϴ�.", L"���� �ε� ����", MB_OK);
-	//	return E_FAIL;
-	//}
+	if (!inFile.is_open())
+	{
+		MSG_BOX("맵 데이터 파일 불러오기 실패.");
+		return E_FAIL;
+	}
 
-	//_uint MapListSize;
-	//inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+	_uint MapListSize;
+	inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
 
 
-	//for (_uint i = 0; i < MapListSize; ++i)
-	//{
-	//	_ulong MapPrototypeSize;
-	//	inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+	for (_uint i = 0; i < MapListSize; ++i)
+	{
+		_ulong MapPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
 
-	//	wstring MapPrototype;
-	//	MapPrototype.resize(MapPrototypeSize);
-	//	inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+		wstring MapPrototype;
+		MapPrototype.resize(MapPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
 
-	//	_mat MapWorldMat;
-	//	inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+		_mat MapWorldMat;
+		inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
 
-	//	MapInfo MapInfo{};
-	//	MapInfo.Prototype = MapPrototype;
-	//	MapInfo.m_Matrix = MapWorldMat;
+		MapInfo MapInfo{};
+		MapInfo.Prototype = MapPrototype;
+		MapInfo.m_Matrix = MapWorldMat;
 
-	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Map"), &MapInfo)))
-	//	{
-	//		MessageBox(g_hWnd, L"�� �ҷ����� ����", L"���� �ε�", MB_OK);
-	//		return E_FAIL;
-	//	}
-	//}
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Map"), &MapInfo)))
+		{
+			MSG_BOX("맵 생성 실패", L"로드 실패");
+			return E_FAIL;
+		}
+	}
+
+	inFile.close();
+
+
+
 	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Environment()
+{
+
+	const TCHAR* pGetPath = TEXT("../Bin/Data/Prologue_EnvirData.dat");
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MSG_BOX("환경 데이터 파일 불러오기 실패.");
+		return E_FAIL;
+	}
+
+	_uint EnvirListSize;
+	inFile.read(reinterpret_cast<char*>(&EnvirListSize), sizeof(_uint));
+
+
+	for (_uint i = 0; i < EnvirListSize; ++i)
+	{
+		_ulong EnvirPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&EnvirPrototypeSize), sizeof(_ulong));
+
+		wstring EnvirPrototype;
+		EnvirPrototype.resize(EnvirPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&EnvirPrototype[0]), EnvirPrototypeSize * sizeof(wchar_t));
+
+		_mat EnvirWorldMat;
+		inFile.read(reinterpret_cast<char*>(&EnvirWorldMat), sizeof(_mat));
+
+		ObjectInfo EnvirInfo{};
+		EnvirInfo.strPrototypeTag = EnvirPrototype;
+		EnvirInfo.m_WorldMatrix = EnvirWorldMat;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Prologue_Envir"), TEXT("Prototype_GameObject_Prologue_Object"), &EnvirInfo)))
+		{
+			MSG_BOX("맵 생성 실패", L"로드 실패");
+			return E_FAIL;
+		}
+	}
+	return S_OK;
+
 }
 
 
@@ -297,7 +351,7 @@ HRESULT CLevel_GamePlay::Ready_Object()
 
 	if (!inFile.is_open())
 	{
-		MSG_BOX("������Ʈ ������ ã�� ���߽��ϴ�.");
+		MSG_BOX("오브젝트 불러오기 실패.");
 		return E_FAIL;
 	}
 
@@ -323,7 +377,7 @@ HRESULT CLevel_GamePlay::Ready_Object()
 
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Prologue_Object"), TEXT("Prototype_GameObject_Prologue_Object"), &ObjectInfo)))
 		{
-			MSG_BOX("������Ʈ �ҷ����� ����");
+			MSG_BOX("오브젝트 생성 실패");
 			return E_FAIL;
 		}
 	}
@@ -398,7 +452,7 @@ HRESULT CLevel_GamePlay::Ready_Monster()
 
 	if (!inFile.is_open())
 	{
-		MessageBox(g_hWnd, L"../Bin/Data/Prologue_MonsterData.dat ������ ã�� ���߽��ϴ�.", L"���� �ε� ����", MB_OK);
+		MSG_BOX("../Bin/Data/Prologue_MonsterData.dat 몬스터 불러오기 실패.");
 		return E_FAIL;
 	}
 
@@ -425,12 +479,20 @@ HRESULT CLevel_GamePlay::Ready_Monster()
 		{
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_NPCvsMon"), &Info)))
 			{
-				MessageBox(g_hWnd, L"���� �ε� ����", L"���� �ε�", MB_OK);
+				MSG_BOX("몬스터 생성 실패");
 				return E_FAIL;
 			}
 
 		}
+		else if (Info.strMonsterPrototype == TEXT("Prototype_Model_Void05"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Void05"), &Info)))
+			{
+				MSG_BOX("몬스터 생성 실패");
+				return E_FAIL;
+			}
 
+		}
 
 	}
 	return S_OK;
