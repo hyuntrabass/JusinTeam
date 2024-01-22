@@ -85,7 +85,7 @@ void CEffectApp::Tick(_float fTimeDelta)
 	m_fTimeAcc += fFinalTimeDelta;
 	m_fLoadingTime += fTimeDelta;
 
-	m_strLoadingText = L"맵 에디터 로딩중";
+	m_strLoadingText = L"이펙트 툴 로딩중";
 
 	if (m_fLoadingTime >= 0.3f)
 	{
@@ -143,7 +143,7 @@ HRESULT CEffectApp::Render()
 
 	if (!m_bLoadComplete)
 	{
-		m_pGameInstance->Render_Text(L"Font_Malang", m_strLoadingText, _float2(200.f, 300.f), 1.f);
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strLoadingText, _float2(300.f, 300.f), 1.f);
 	}
 
 	if (m_pImguiMgr)
@@ -183,7 +183,7 @@ HRESULT CEffectApp::Ready_Prototype_Component_For_Static()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Instancing_Point"), CVIBuffer_Instancing_Point::Create(m_pDevice, m_pContext, 100))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Instancing_Point"), CVIBuffer_Instancing_Point::Create(m_pDevice, m_pContext, 300))))
 
 	{
 		return E_FAIL;

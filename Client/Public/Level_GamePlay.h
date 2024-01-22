@@ -17,6 +17,9 @@ public:
 	virtual HRESULT Render() override;
 
 private:
+	_mat m_RainMatrix{};
+
+private:
 	HRESULT Ready_Camera();
 	HRESULT Ready_Light();
 	HRESULT Ready_Player();

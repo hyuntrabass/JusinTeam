@@ -57,6 +57,8 @@ private:
 	PxControllerManager* m_pControllerManager{ nullptr };
 	PxDefaultCpuDispatcher* m_pDispatcher{ nullptr };
 	PxMaterial* m_pMaterial{ nullptr };
+	PxPvd* m_pPvd{ nullptr };
+	PxPvdTransport* m_pTransport{ nullptr };
 
 	map<class CTransform*, PxRigidDynamic*> m_DynamicActors{};
 

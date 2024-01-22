@@ -247,6 +247,29 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		Separator();
 		NewLine();
 
+		Text(m_pItemList_Texture[m_iSelected_Texture]);
+		static ImGuiTextFilter Filter;
+		Filter.Draw("Search");
+		if (Filter.IsActive())
+		{
+			SetScrollFromPosY(0.f);
+		}
+		for (size_t i = 0; i < m_iNumTextures; i++)
+		{
+			if (Filter.PassFilter(m_pItemList_Texture[i]))
+			{
+				m_iSelected_Texture = i;
+				break;
+			}
+		}
+		BeginGroup();
+		for (size_t i = 0; i < m_iNumTextures; i++)
+		{
+			if (i == m_iSelected_Texture)
+			{
+				TextColored(ImVec4(1, 1, 0, 1), m_pItemList_Texture[i]);
+			}
+		}
 		ListBox("Texture", &m_iSelected_Texture, m_pItemList_Texture, m_iNumTextures);
 		Image(reinterpret_cast<void*>(m_pTextures[m_iSelected_Texture]->Get_SRV()), ImVec2(128.f, 128.f));
 		m_hasDiffTexture = true;
@@ -282,6 +305,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			InputFloat2("UV Delta", reinterpret_cast<_float*>(&vUVDelta));
 			Info.vUVDelta = vUVDelta;
 		}
+		Text(m_pItemList_Texture[m_iSelected_MaskTexture]);
 		ListBox("Mask Texture", &m_iSelected_MaskTexture, m_pItemList_Texture, m_iNumTextures);
 		Image(reinterpret_cast<void*>(m_pTextures[m_iSelected_MaskTexture]->Get_SRV()), ImVec2(128.f, 128.f));
 
@@ -312,6 +336,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		{
 			iSelectd_UnDissolve = 0;
 		}
+		Text(m_pItemList_Texture[iSelectd_UnDissolve]);
 		ListBox("UnDissolve Texture", &iSelectd_UnDissolve, m_pItemList_Texture, m_iNumTextures);
 		Image(reinterpret_cast<void*>(m_pTextures[iSelectd_UnDissolve]->Get_SRV()), ImVec2(128.f, 128.f));
 
@@ -342,6 +367,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		{
 			iSelectd_Dissolve = 0;
 		}
+		Text(m_pItemList_Texture[iSelectd_Dissolve]);
 		ListBox("Dissolve Texture", &iSelectd_Dissolve, m_pItemList_Texture, m_iNumTextures);
 		Image(reinterpret_cast<void*>(m_pTextures[iSelectd_Dissolve]->Get_SRV()), ImVec2(128.f, 128.f));
 
@@ -370,7 +396,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		Checkbox("Loop", &m_ParticleInfo.isLoop);
 
 		InputInt("Instance Number", &m_iNumInstance);
-		m_iNumInstance = clamp(m_iNumInstance, 0, 100);
+		m_iNumInstance = clamp(m_iNumInstance, 0, 300);
 
 		InputFloat3("Min Pos", reinterpret_cast<_float*>(&m_ParticleInfo.vMinPos));
 		InputFloat3("Max Pos", reinterpret_cast<_float*>(&m_ParticleInfo.vMaxPos)); SameLine(); if (Button("Same with Min")) { m_ParticleInfo.vMaxPos = m_ParticleInfo.vMinPos; }
@@ -613,7 +639,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	{
 		Safe_Release(m_pEffect);
 		m_pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Info));
-		m_pEffect->Tick(0.f);
+		m_pEffect->Tick(fTimeDelta);
 	}
 
 	End();
