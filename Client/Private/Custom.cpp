@@ -164,11 +164,11 @@ void CCustom::Tick(_float fTimeDelta)
 		{
 			m_pGameInstance->Level_ShutDown(LEVEL_CUSTOM);
 		}
-		m_pSelectButton->Set_Size(140.f, 22.f, 0.3f);
+		m_pSelectButton->Set_Size(140.f, 80.f, 0.3f);
 	}
 	else
 	{
-		m_pSelectButton->Set_Size(150.f, 30.f, 0.35f);
+		m_pSelectButton->Set_Size(150.f, 100.f, 0.35f);
 	}
 	m_pSelectMenuEffect->Tick(fTimeDelta);
 	m_pSelectCustomEffect->Tick(fTimeDelta);
@@ -343,11 +343,11 @@ HRESULT CCustom::Add_Parts()
 	ColButtonDesc.fFontSize = 0.35f;
 	ColButtonDesc.vColor = _vec4(0.2f, 0.2f, 0.2f, 0.5f);
 	ColButtonDesc.strText = TEXT("캐릭터 생성");
-	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Select_BG_BoxEfc_WhiteBlur");
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Button_Blue");
 	ColButtonDesc.vPosition = _vec2(1125.f, 670.f);
-	ColButtonDesc.vSize = _vec2(150.f,30.f);
+	ColButtonDesc.vSize = _vec2(150.f, 100.f);
 	ColButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	ColButtonDesc.vTextPosition = _vec2(0.f, 20.f);
+	ColButtonDesc.vTextPosition = _vec2(0.f, 17.f);
 
 	
 	m_pSelectButton = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
@@ -355,6 +355,7 @@ HRESULT CCustom::Add_Parts()
 	{
 		return E_FAIL;  
 	}
+	m_pSelectButton->Set_Pass(VTPass_UI_Alpha);
 
 	//라인 생성
 	ColButtonDesc.strText = TEXT("");

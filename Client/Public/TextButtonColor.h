@@ -48,6 +48,7 @@ private:
 	HRESULT Bind_ShaderResources();
 
 private:
+	VTPass				m_ePass{ VTPass_Mask_Color };
 	_float				m_fDuration{ 0.f };
 	_float				m_fAlpha{ 1.f };
 
@@ -73,6 +74,9 @@ public:
 	const _vec2& Get_Position() const { return m_vPosition; }
 	const _vec4& Get_Color() const { return m_vColor; }
 	void Set_Position(_vec2 vPos);
+	void Set_Text(const wstring strText) { m_strText = strText; }
+	void Set_Alpha(const _float fAlpha) { m_fAlpha = fAlpha; }
+	void Set_Pass(VTPass ePass) { m_ePass = ePass; }
 
 public:
 	static CTextButtonColor* Create(_dev pDevice, _context pContext);

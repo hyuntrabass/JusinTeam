@@ -32,12 +32,43 @@ void CMonster::Tick(_float fTimeDelta)
 
 void CMonster::Late_Tick(_float fTimeDelta)
 {
+	if (m_iPassIndex == AnimPass_Dissolve)
+	{
+		m_fDissolveTime += fTimeDelta;
+	}
+
+	if (m_fDissolveRatio >= 1.f)
+	{
+		Kill();
+	}
+
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 }
 
 HRESULT CMonster::Render()
 {
+	if (m_iPassIndex == AnimPass_Dissolve && m_fDissolveTime >= 3.f)
+	{
+		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
+		{
+			return E_FAIL;
+		}
+
+		m_fDissolveRatio += 0.02f;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
+		{
+			return E_FAIL;
+		}
+
+		_bool bHasNorTex = true;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &bHasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+	}
+
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
@@ -68,7 +99,8 @@ HRESULT CMonster::Render()
 		{
 			return E_FAIL;
 		}
-		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+
+		if (FAILED(m_pShaderCom->Begin(m_iPassIndex)))
 		{
 			return E_FAIL;
 		}
@@ -84,7 +116,7 @@ HRESULT CMonster::Render()
 
 _vec4 CMonster::Compute_PlayerPos()
 {
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
 	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 
 	return vPlayerPos;
@@ -92,7 +124,7 @@ _vec4 CMonster::Compute_PlayerPos()
 
 _float CMonster::Compute_PlayerDistance()
 {
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
 	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 
 	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
@@ -193,6 +225,11 @@ HRESULT CMonster::Add_Components()
 		return E_FAIL;
 	}
 
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_T_EFF_Noise_04_BC"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom))))
+	{
+		return E_FAIL;
+	}
+
     return S_OK;
 }
 
@@ -236,6 +273,9 @@ void CMonster::Free()
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
+
 	Safe_Release(m_pBodyColliderCom);
 	Safe_Release(m_pAttackColliderCom);
+
+	Safe_Release(m_pDissolveTextureCom);
 }
