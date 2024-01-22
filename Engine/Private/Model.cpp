@@ -5,6 +5,8 @@
 #include "Animation.h"
 #include "GameInstance.h"
 
+_uint CModel::m_iModelID = {};
+
 CModel::CModel(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
 {
@@ -19,6 +21,9 @@ CModel::CModel(const CModel& rhs)
 	, m_iNumAnimations(rhs.m_iNumAnimations)
 	, m_iNumTriggersEffect(rhs.m_iNumTriggersEffect)
 	, m_TriggerEffects(rhs.m_TriggerEffects)
+	, m_iNumTriggersLight(rhs.m_iNumTriggersLight)
+	, m_TriggerLights(rhs.m_TriggerLights)
+	, m_iMyModelID(m_iModelID++)
 {
 	for (auto& pPrototypeBone : rhs.m_Bones)
 	{
@@ -364,6 +369,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 		pBone->Update_CombinedMatrix(m_Bones);
 	}
 	
+#pragma region Trigger_Effect
 	for (size_t i = 0; i < m_TriggerEffects.size(); i++)
 	{
 		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iStartAnimIndex &&
@@ -373,7 +379,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 			if (m_TriggerEffects[i].IsDeleteRotateToBone)
 			{
 				_mat BoneMatrix = *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix();
-				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * BoneMatrix.Get_RotationRemoved()* m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
+				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * BoneMatrix.Get_RotationRemoved() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
 			}
 			else
 			{
@@ -392,20 +398,18 @@ void CModel::Play_Animation(_float fTimeDelta)
 				m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
 			}
 		}
+
+		//이펙트 제거
 		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iEndAnimIndex &&
 			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fEndAnimPos &&
 			m_TriggerEffects[i].iEndAnimIndex > 0)
 		{
-			//이펙트 제거
 			m_pGameInstance->Delete_Effect(m_EffectMatrices[i]);
 		}
-	}
 
-	for (size_t i = 0; i < m_TriggerEffects.size(); i++)
-	{
+		//이펙트 위치 갱신
 		if (m_TriggerEffects[i].IsFollow)
 		{
-			//이펙트 위치 갱신
 			if (m_TriggerEffects[i].IsInitRotateToBone || m_TriggerEffects[i].IsDeleteRotateToBone)
 			{
 				_mat BoneMatrix = *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix();
@@ -417,6 +421,35 @@ void CModel::Play_Animation(_float fTimeDelta)
 			}
 		}
 	}
+#pragma endregion
+
+#pragma region Trigger_Light
+	wstring strLightTag = L"Light_Trigger_" + to_wstring(m_iMyModelID);
+	for (size_t i = 0; i < m_TriggerLights.size(); i++)
+	{
+		//라이트 생성
+		if (m_AnimDesc.iAnimIndex == m_TriggerLights[i].iStartAnimIndex &&
+			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerLights[i].fStartAnimPos)
+		{
+			m_pGameInstance->Add_Light(m_pGameInstance->Get_CurrentLevelIndex(), strLightTag + to_wstring(i), m_TriggerLights[i].LightDesc);
+		}
+
+		//라이트 제거
+		if (m_AnimDesc.iAnimIndex == m_TriggerLights[i].iEndAnimIndex &&
+			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerLights[i].fEndAnimPos &&
+			m_TriggerLights[i].iEndAnimIndex > 0)
+		{
+			m_pGameInstance->Delete_Light(m_pGameInstance->Get_CurrentLevelIndex(), strLightTag + to_wstring(i));
+		}
+
+		//라이트 위치 갱신
+		if (m_TriggerLights[i].IsFollow)
+		{
+			//= m_TriggerLights[i].OffsetMatrix * *m_Bones[m_TriggerLights[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
+		}
+	}
+#pragma endregion
+
 }
 
 HRESULT CModel::Bind_BoneMatrices(_uint iMeshIndex, CShader* pShader, const _char* pVariableName)

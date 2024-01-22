@@ -103,6 +103,9 @@ private:
 	ID3D11Texture2D* m_pTexture{ nullptr };
 	ID3D11ShaderResourceView* m_pSRV{ nullptr };
 
+	static _uint m_iModelID;
+	_uint m_iMyModelID{};
+
 private:
 	HRESULT Read_Bones(ifstream& File);
 	HRESULT Read_Meshes(ifstream& File, const ModelType& eType, _fmatrix PivotMatrix);
