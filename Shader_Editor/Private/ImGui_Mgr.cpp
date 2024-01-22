@@ -50,10 +50,8 @@ void CImGui_Mgr::Frame()
 		if (ImGui::BeginTabItem(u8"아쎄이 AO")) {
 			ImGui::DragFloat(u8"Intensity(강도)", &m_SSAO_Desc.fIntensity, 0.25f, 0.01f, 50.f);
 			ImGui::DragFloat(u8"Radius(반지름)", &m_SSAO_Desc.fRadius, 0.005f, 0.001f, 1.f);
-			ImGui::DragFloat(u8"Scale(사이 거리)", &m_SSAO_Desc.fBias, 0.25f, 0.05f, 10.f);
+			ImGui::DragFloat(u8"Scale(사이 거리)", &m_SSAO_Desc.fScale, 0.25f, 0.05f, 10.f);
 			ImGui::DragFloat(u8"Bias(차폐물의 너비)", &m_SSAO_Desc.fBias, 0.25f, 0.05f, 10.f);
-
-			m_pRenderer->Set_SSAODesc(m_SSAO_Desc);
 
 			ImGui::EndTabItem();
 		}
@@ -64,6 +62,7 @@ void CImGui_Mgr::Frame()
 
 void CImGui_Mgr::Editing(_float fTimeDelta)
 {
+	m_pRenderer->Set_SSAODesc(m_SSAO_Desc);
 }
 
 void CImGui_Mgr::Render()

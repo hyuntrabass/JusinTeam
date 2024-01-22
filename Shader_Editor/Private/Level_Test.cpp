@@ -18,6 +18,12 @@ HRESULT CLevel_Test::Init()
 	if (FAILED(Ready_Light()))
 		return E_FAIL;
 
+	if (FAILED(Ready_Map()))
+		return E_FAIL;
+
+	if (FAILED(Ready_Npc()))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -52,9 +58,8 @@ HRESULT CLevel_Test::Ready_Npc()
 
 HRESULT CLevel_Test::Ready_Map()
 {
-	TerrainInfo Terrain;
-	Terrain.m_iNumVerticesX = 100;
-	Terrain.m_iNumVerticesZ = 100;
+	TERRAIN_INFO Terrain;
+	Terrain.vTerrainSize = _uint2(100, 100);
 	Terrain.isMesh = false;
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_ShaderTest, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &Terrain)))
@@ -94,6 +99,15 @@ HRESULT CLevel_Test::Ready_Light()
 
 	if (FAILED(m_pGameInstance->Add_Light(LEVEL_ShaderTest, L"Light_Select", LightDesc)))
 		return E_FAIL;
+
+	LightDesc = {};
+
+	LightDesc.eType = LIGHT_DESC::Directional;
+	LightDesc.vDirection = _float4(-1.f, -2.f, -1.f, 0.f);
+	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
+
+	return m_pGameInstance->Add_Light(LEVEL_ShaderTest, TEXT("Light_Main"), LightDesc);
 
 	return S_OK;
 }

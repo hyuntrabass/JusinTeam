@@ -4,6 +4,8 @@
 #include "GameInstance.h"
 
 #include "Shader_Camera.h"
+#include "Shader_Player.h"
+#include "Shader_Terrain.h"
 
 CShader_Loader::CShader_Loader(_dev pDevice, _context pContext)
 	: m_pDevice(pDevice)
@@ -147,6 +149,11 @@ HRESULT CShader_Loader::Load_Test()
 
 #pragma region Terrain
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Terrain"),
+		CShader_Terrain::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 
 
 #pragma endregion
@@ -157,7 +164,7 @@ HRESULT CShader_Loader::Load_Test()
 		"../../Client/Bin/Resources/AnimMesh/VTFPlayer/Main/basemodel.hyuntraanimmesh");
 
 
-	strInputFilePath = "../Client/Bin/Resources/AnimMesh/VTFPlayer/Part/";
+	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/VTFPlayer/Part/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -169,6 +176,11 @@ HRESULT CShader_Loader::Load_Test()
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Player"), pModel)))
 		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Player"), CShader_Player::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 
 #pragma endregion
 
