@@ -3,7 +3,7 @@
 Static Models : Start Converting...
 Converting... Map.fbx
 Read File Succssefully
-Converting... Map_Final.fbx
+Converting... Village.fbx
 Read File Succssefully
 Static Models : Convert Success!
 
