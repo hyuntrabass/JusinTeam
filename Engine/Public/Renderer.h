@@ -60,15 +60,15 @@ private:
 private:
 	_vec3 m_vRandom[16]{};
 	_bool m_TurnOnSSAO = false;
-	SSAO_DESC m_SSAODesc;
+	SSAO_DESC m_SSAO;
 
 public:
-	SSAO_DESC Get_SSAODesc() {
-		return m_SSAODesc;
+	SSAO_DESC Get_SSAO() const {
+		return m_SSAO;
 	}
 
-	void Set_SSAODesc(SSAO_DESC Desc) {
-		m_SSAODesc = Desc;
+	void Set_SSAO(SSAO_DESC Desc) {
+		m_SSAO = Desc;
 	}
 
 private:

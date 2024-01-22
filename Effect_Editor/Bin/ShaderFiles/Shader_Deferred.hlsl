@@ -34,7 +34,7 @@ Texture2D g_Texture;
 Texture2D g_VelocityTexture;
 Texture2D g_SSAOTexture;
 bool TurnOnSSAO;
-SSAO_DESC g_SSAO_Desc;
+SSAO_DESC g_SSAO;
 
 
 
@@ -405,9 +405,9 @@ float Get_AO(float2 vTex, float2 plusTex, vector myPos, float3 myNor)
 
     vector diff = Get_WorldPos(vTex + plusTex) - myPos;
     vector v = normalize(diff);
-    float d = length(diff) * g_SSAO_Desc.fScale;
+    float d = length(diff) * g_SSAO.fScale;
     
-    float final = max(0.f, dot(myNor, v.xyz) - g_SSAO_Desc.fBias) * (1.f / (1.f + d)) * g_SSAO_Desc.fIntensity;
+    float final = max(0.f, dot(myNor, v.xyz) - g_SSAO.fBias) * (1.f / (1.f + d)) * g_SSAO.fIntensity;
     
     return final;
 }
@@ -427,7 +427,7 @@ PS_OUT PS_Main_SSAO(PS_IN Input)
     
     float ssao = 0.f;
     vector RandomDepth;
-    float fRadius = g_SSAO_Desc.fRadius / fViewZ;
+    float fRadius = g_SSAO.fRadius / fViewZ;
     for (uint i = 0; i < 16; ++i)
     {
         float2 vReflect = reflect(normalize(MyNormal), vector(normalize(g_vRandom[i]), 0.f)).xy * fRadius;

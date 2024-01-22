@@ -192,9 +192,6 @@
     <ClCompile Include="..\private\Timer_Manager.cpp">
       <Filter>00.System\02.Timer\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Graphic_Device.cpp">
-      <Filter>00.System\00.Graphic_Device</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\Level.cpp">
       <Filter>01.Utility\01.Levels</Filter>
     </ClCompile>
@@ -212,9 +209,6 @@
     </ClCompile>
     <ClCompile Include="..\private\Component_Manager.cpp">
       <Filter>01.Utility\03.Components\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\Renderer.cpp">
-      <Filter>01.Utility\03.Components\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\private\GameObject.cpp">
       <Filter>01.Utility\02.GameObjects</Filter>
@@ -312,9 +306,6 @@
     <ClCompile Include="..\private\Collider.cpp">
       <Filter>01.Utility\03.Components\Collider</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\RenderTarget.cpp">
-      <Filter>01.Utility\11.RenderTargets</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\RenderTarget_Manager.cpp">
       <Filter>01.Utility\11.RenderTargets\Manager</Filter>
     </ClCompile>
@@ -345,6 +336,15 @@
     <ClCompile Include="..\Private\Part_Model.cpp">
       <Filter>01.Utility\03.Components\Model\VTFModels\PartModel</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Renderer.cpp">
+      <Filter>01.Utility\03.Components\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\RenderTarget.cpp">
+      <Filter>01.Utility\11.RenderTargets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Graphic_Device.cpp">
+      <Filter>00.System\00.Graphic_Device</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h">
@@ -374,9 +374,6 @@
     <ClInclude Include="..\public\Timer_Manager.h">
       <Filter>00.System\02.Timer\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Graphic_Device.h">
-      <Filter>00.System\00.Graphic_Device</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\Level.h">
       <Filter>01.Utility\01.Levels</Filter>
     </ClInclude>
@@ -394,9 +391,6 @@
     </ClInclude>
     <ClInclude Include="..\public\Component_Manager.h">
       <Filter>01.Utility\03.Components\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\Renderer.h">
-      <Filter>01.Utility\03.Components\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\public\GameObject.h">
       <Filter>01.Utility\02.GameObjects</Filter>
@@ -485,9 +479,6 @@
     <ClInclude Include="..\public\Collider.h">
       <Filter>01.Utility\03.Components\Collider</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\RenderTarget.h">
-      <Filter>01.Utility\11.RenderTargets</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\RenderTarget_Manager.h">
       <Filter>01.Utility\11.RenderTargets\Manager</Filter>
     </ClInclude>
@@ -519,12 +510,21 @@
     <ClInclude Include="..\public\Channel.h">
       <Filter>01.Utility\03.Components\Model\Animation\Channel</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Renderer.h">
+      <Filter>01.Utility\03.Components\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Graphic_Device.h">
+      <Filter>00.System\00.Graphic_Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\RenderTarget.h">
+      <Filter>01.Utility\11.RenderTargets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Public\SimpleMath.inl" />
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Define.hlsli">
       <Filter>01.Utility\98.ShaderFiles</Filter>
     </None>
-    <None Include="..\Public\SimpleMath.inl" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxColor.hlsl">

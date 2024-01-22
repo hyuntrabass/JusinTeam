@@ -31,15 +31,6 @@ HRESULT CRenderTarget::Init(_uint iWidth, _uint iHeight, DXGI_FORMAT ePixelForma
     Desc.ArraySize = 1;
     Desc.Format = ePixelFormat;
 
-    //_uint Quality = 0;
-    //_uint Count = 4;
-    //if (iWidth == D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION)
-    //    Count = 1;
-
-    //if(FAILED(m_pDevice->CheckMultisampleQualityLevels(ePixelFormat, Count, &Quality)))
-    //    return E_FAIL;
-
-
     Desc.SampleDesc.Quality = 0;
     Desc.SampleDesc.Count = 1;
 

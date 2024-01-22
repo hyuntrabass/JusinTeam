@@ -34,7 +34,7 @@ HRESULT CImGui_Mgr::Init(_dev pDevice, _context pContext, CGameInstance* pGameIn
 	m_pRenderer = pRenderer;
 	Safe_AddRef(m_pRenderer);
 
-	m_SSAO_Desc = m_pRenderer->Get_SSAODesc();
+	m_SSAO = m_pRenderer->Get_SSAO();
 
 	return S_OK;
 }
@@ -48,10 +48,12 @@ void CImGui_Mgr::Frame()
 	ImGui::Begin(u8"뽀큐");
 	if (ImGui::BeginTabBar(u8"쉐이더")) {
 		if (ImGui::BeginTabItem(u8"아쎄이 AO")) {
-			ImGui::DragFloat(u8"Intensity(강도)", &m_SSAO_Desc.fIntensity, 0.25f, 0.01f, 50.f);
-			ImGui::DragFloat(u8"Radius(반지름)", &m_SSAO_Desc.fRadius, 0.005f, 0.001f, 1.f);
-			ImGui::DragFloat(u8"Scale(사이 거리)", &m_SSAO_Desc.fScale, 0.25f, 0.05f, 10.f);
-			ImGui::DragFloat(u8"Bias(차폐물의 너비)", &m_SSAO_Desc.fBias, 0.25f, 0.05f, 10.f);
+			ImGui::DragFloat(u8"Intensity(강도)", &m_SSAO.fIntensity, 0.5f, 0.001f, 100.f);
+			ImGui::DragFloat(u8"Radius(반지름)", &m_SSAO.fRadius, 0.001f, 0.001f, 5.f);
+			ImGui::DragFloat(u8"Scale(사이 거리)", &m_SSAO.fScale, 0.01f, 0.001f, 100.f);
+			ImGui::DragFloat(u8"Bias(차폐물의 너비)", &m_SSAO.fBias, 0.01f, 0.001f, 100.f);
+
+			m_pRenderer->Set_SSAO(m_SSAO);
 
 			ImGui::EndTabItem();
 		}
@@ -62,7 +64,6 @@ void CImGui_Mgr::Frame()
 
 void CImGui_Mgr::Editing(_float fTimeDelta)
 {
-	m_pRenderer->Set_SSAODesc(m_SSAO_Desc);
 }
 
 void CImGui_Mgr::Render()

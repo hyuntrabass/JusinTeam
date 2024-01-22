@@ -73,6 +73,8 @@ HRESULT CShader_Terrain::Add_Component()
 	// For.Com_Texture
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom[TYPE_DIFFUSE])))
 		return E_FAIL;
+
+	return S_OK;
 }
 
 HRESULT CShader_Terrain::Bind_ShaderResources()

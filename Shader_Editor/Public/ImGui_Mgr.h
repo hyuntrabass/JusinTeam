@@ -40,7 +40,7 @@ private:
 
 private:
     // SSAO
-    SSAO_DESC m_SSAO_Desc;
+    SSAO_DESC m_SSAO;
 
 public:
     // CBase을(를) 통해 상속됨

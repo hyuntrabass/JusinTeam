@@ -803,7 +803,7 @@ HRESULT CRenderer::Render_LightAcc()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pShader->Bind_RawValue("g_vRandom", m_vRandom, sizeof(_vec3) * 16)))
+	if (FAILED(m_pShader->Bind_RawValue("g_vRandom", m_vRandom, sizeof(_vec3) * 50)))
 	{
 		return E_FAIL;
 	}
@@ -979,10 +979,10 @@ HRESULT CRenderer::Render_Deferred()
 		m_TurnOnSSAO = !m_TurnOnSSAO;
 
 	// ¿ø¸í
-	if(FAILED(m_pShader->Bind_RawValue("TurnOnSSAO", &m_TurnOnSSAO, sizeof(_bool))))
+	if (FAILED(m_pShader->Bind_RawValue("TurnOnSSAO", &m_TurnOnSSAO, sizeof(_bool))))
 		return E_FAIL;
 
-	if (FAILED(m_pShader->Bind_RawValue("g_SSAO_Desc", &m_SSAODesc, sizeof(SSAO_DESC))))
+	if (FAILED(m_pShader->Bind_RawValue("g_SSAO", &m_SSAO, sizeof(SSAO_DESC))))
 		return E_FAIL;
 
 	if (FAILED(m_pShader->Begin(DefPass_Deferred)))

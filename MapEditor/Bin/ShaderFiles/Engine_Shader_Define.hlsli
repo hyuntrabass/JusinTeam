@@ -1,6 +1,6 @@
 
-//¿ø¸í
-float3 g_vRandom[16];
+
+float3 g_vRandom[50];
 
 struct SSAO_DESC
 {
