@@ -298,6 +298,15 @@
     <Filter Include="01.Levels\04.Village">
       <UniqueIdentifier>{c2ce56cf-d551-4fb0-b7a8-880ccf58f895}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Frame">
+      <UniqueIdentifier>{001bd6e9-6120-4b88-82ae-b6fa21e64e57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Money">
+      <UniqueIdentifier>{622305e8-95d7-491a-8205-5e2949cc44b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Menu">
+      <UniqueIdentifier>{ee0bd121-9652-4824-9ef1-c2d380c11fbf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -559,6 +568,18 @@
     <ClInclude Include="..\Public\Level_Village.h">
       <Filter>01.Levels\04.Village</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\InvenFrame.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Frame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Coin.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Money</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Diamond.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Money</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Menu.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Menu</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -817,6 +838,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\Level_Village.cpp">
       <Filter>01.Levels\04.Village</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\InvenFrame.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Frame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Coin.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Money</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Diamond.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Money</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Menu.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Menu</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
