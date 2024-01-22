@@ -59,6 +59,10 @@ private:
 	_uint m_iNumTriggersEffect{};
 	vector<TRIGGEREFFECT_DESC> m_TriggerEffects;
 	vector<_mat*> m_EffectMatrices;
+	//라이트 트리거
+	_uint m_iNumTriggersLight{};
+	vector<TRIGGEREFFECT_DESC> m_TriggerLights;
+	vector<const wstring> m_LightTags;
 	// 사운드 트리거
 	_uint m_iNumTriggersSound{};
 	vector<TRIGGERSOUND_DESC> m_TriggerSounds;

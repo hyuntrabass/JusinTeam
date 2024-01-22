@@ -331,6 +331,16 @@ void CModel::Play_Animation(_float fTimeDelta)
 		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iStartAnimIndex &&
 			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fStartAnimPos)
 		{
+			//초기 매트릭스 세팅
+			if (m_TriggerEffects[i].IsDeleteRotateToBone)
+			{
+				_mat BoneMatrix = *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix();
+				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * BoneMatrix.Get_RotationRemoved()* m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
+			}
+			else
+			{
+				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
+			}
 			//이펙트 생성
 			if (m_TriggerEffects[i].iEndAnimIndex < 0)
 			{
@@ -342,21 +352,6 @@ void CModel::Play_Animation(_float fTimeDelta)
 			else
 			{
 				m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
-			}
-			//초기 매트릭스 세팅
-			if (m_TriggerEffects[i].IsDeleteRotateToBone)
-			{
-				_mat BoneMatrix = *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix();
-				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * BoneMatrix.Get_RotationRemoved()* m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
-			}
-			else
-			{
-				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
-			}
-			//초기값 세팅
-			if (m_TriggerEffects[i].IsInitRotateToBone || m_TriggerEffects[i].IsDeleteRotateToBone)
-			{
-				m_TriggerEffects[i].BoneCombinedMatrix = *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix();
 			}
 		}
 		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iEndAnimIndex &&
@@ -375,7 +370,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 			//이펙트 위치 갱신
 			if (m_TriggerEffects[i].IsInitRotateToBone || m_TriggerEffects[i].IsDeleteRotateToBone)
 			{
-				_mat BoneMatrix = m_TriggerEffects[i].BoneCombinedMatrix;
+				_mat BoneMatrix = *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix();
 				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * BoneMatrix.Get_RotationRemoved() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
 			}
 			else

@@ -145,8 +145,6 @@ namespace Engine
 		SimpleMath::Matrix OffsetMatrix{};
 		bool IsInitRotateToBone{};
 		bool IsDeleteRotateToBone{};
-
-		SimpleMath::Matrix BoneCombinedMatrix{};
 	};
 
 	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {

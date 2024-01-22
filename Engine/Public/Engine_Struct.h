@@ -145,8 +145,21 @@ namespace Engine
 		SimpleMath::Matrix OffsetMatrix{};
 		bool IsInitRotateToBone{};
 		bool IsDeleteRotateToBone{};
+	};
 
-		SimpleMath::Matrix BoneCombinedMatrix{};
+	using TRIGGERLIGHT_DESC = struct tagTriggerLightDesc {
+		int iStartAnimIndex{};
+		float fStartAnimPos{};
+		int iEndAnimIndex = -1;
+		float fEndAnimPos{};
+		bool IsFollow{};
+		unsigned int iBoneIndex{};
+		SimpleMath::Matrix OffsetMatrix{};
+		SimpleMath::Vector4 vAttenuation{};
+
+		SimpleMath::Vector4 vDiffuse{};
+		SimpleMath::Vector4 vAmbient{};
+		SimpleMath::Vector4 vSpecular{};
 	};
 
 	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {
