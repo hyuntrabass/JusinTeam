@@ -248,29 +248,41 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		NewLine();
 
 		Text(m_pItemList_Texture[m_iSelected_Texture]);
-		static ImGuiTextFilter Filter;
-		Filter.Draw("Search");
-		if (Filter.IsActive())
+		static ImGuiTextFilter Filter_Diff;
+		Filter_Diff.Draw("Search##1");
+		ImGui::BeginChild("##listbox", ImVec2(0, 100), true);
+
+		// ListBox의 각 아이템을 생성합니다.
+		for (int i = 0; i < m_iNumTextures; ++i)
 		{
-			SetScrollFromPosY(0.f);
-		}
-		for (size_t i = 0; i < m_iNumTextures; i++)
-		{
-			if (Filter.PassFilter(m_pItemList_Texture[i]))
+			if (Filter_Diff.PassFilter(m_pItemList_Texture[i]))
 			{
-				m_iSelected_Texture = i;
-				break;
+				if (i == m_iSelected_Texture)
+				{
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
+				}
+				// 각 아이템을 Selectable로 만듭니다.
+				// "Item " + std::to_string(i)는 아이템의 레이블입니다.
+				if (ImGui::Selectable(m_pItemList_Texture[i], i == m_iSelected_Texture))
+				{
+					// 아이템이 선택되면 그 위치로 스크롤합니다.
+					m_iSelected_Texture = i;
+					ImGui::SetScrollHereY();
+				}
+				else if (i == m_iSelected_Texture)
+				{
+					PopStyleColor();
+				}
 			}
 		}
-		BeginGroup();
-		for (size_t i = 0; i < m_iNumTextures; i++)
-		{
-			if (i == m_iSelected_Texture)
-			{
-				TextColored(ImVec4(1, 1, 0, 1), m_pItemList_Texture[i]);
-			}
-		}
-		ListBox("Texture", &m_iSelected_Texture, m_pItemList_Texture, m_iNumTextures);
+
+		// Child window를 종료합니다.
+		ImGui::EndChild();
+		
+		//if (ListBox("Texture", &m_iSelected_Texture, m_pItemList_Texture, m_iNumTextures))
+		//{
+		//	SetScrollHereY();
+		//}
 		Image(reinterpret_cast<void*>(m_pTextures[m_iSelected_Texture]->Get_SRV()), ImVec2(128.f, 128.f));
 		m_hasDiffTexture = true;
 	}
@@ -306,7 +318,34 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			Info.vUVDelta = vUVDelta;
 		}
 		Text(m_pItemList_Texture[m_iSelected_MaskTexture]);
-		ListBox("Mask Texture", &m_iSelected_MaskTexture, m_pItemList_Texture, m_iNumTextures);
+
+		static ImGuiTextFilter Filter_Mask;
+		Filter_Mask.Draw("Search##2");
+		ImGui::BeginChild("Mask Texture", ImVec2(0, 100), true);
+
+		for (int i = 0; i < m_iNumTextures; ++i)
+		{
+			if (Filter_Mask.PassFilter(m_pItemList_Texture[i]))
+			{
+				if (i == m_iSelected_MaskTexture)
+				{
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
+				}
+				if (ImGui::Selectable(m_pItemList_Texture[i], i == m_iSelected_MaskTexture))
+				{
+					m_iSelected_MaskTexture = i;
+					ImGui::SetScrollHereY();
+				}
+				else if (i == m_iSelected_MaskTexture)
+				{
+					PopStyleColor();
+				}
+			}
+		}
+
+		ImGui::EndChild();
+
+		//ListBox("Mask Texture", &m_iSelected_MaskTexture, m_pItemList_Texture, m_iNumTextures);
 		Image(reinterpret_cast<void*>(m_pTextures[m_iSelected_MaskTexture]->Get_SRV()), ImVec2(128.f, 128.f));
 
 		//Info.iMaskTextureID = m_iSelected_MaskTexture;
@@ -337,7 +376,34 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			iSelectd_UnDissolve = 0;
 		}
 		Text(m_pItemList_Texture[iSelectd_UnDissolve]);
-		ListBox("UnDissolve Texture", &iSelectd_UnDissolve, m_pItemList_Texture, m_iNumTextures);
+
+		static ImGuiTextFilter Filter_UnDiss;
+		Filter_UnDiss.Draw("Search##3");
+		ImGui::BeginChild("UnDissolve Texture", ImVec2(0, 100), true);
+
+		for (int i = 0; i < m_iNumTextures; ++i)
+		{
+			if (Filter_UnDiss.PassFilter(m_pItemList_Texture[i]))
+			{
+				if (i == iSelectd_UnDissolve)
+				{
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
+				}
+				if (ImGui::Selectable(m_pItemList_Texture[i], i == iSelectd_UnDissolve))
+				{
+					iSelectd_UnDissolve = i;
+					ImGui::SetScrollHereY();
+				}
+				else if (i == iSelectd_UnDissolve)
+				{
+					PopStyleColor();
+				}
+			}
+		}
+
+		ImGui::EndChild();
+
+		//ListBox("UnDissolve Texture", &iSelectd_UnDissolve, m_pItemList_Texture, m_iNumTextures);
 		Image(reinterpret_cast<void*>(m_pTextures[iSelectd_UnDissolve]->Get_SRV()), ImVec2(128.f, 128.f));
 
 		//Info.iUnDissolveTextureID = iSelectd_UnDissolve;
@@ -368,7 +434,34 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			iSelectd_Dissolve = 0;
 		}
 		Text(m_pItemList_Texture[iSelectd_Dissolve]);
-		ListBox("Dissolve Texture", &iSelectd_Dissolve, m_pItemList_Texture, m_iNumTextures);
+		
+		static ImGuiTextFilter Filter_Diss;
+		Filter_Diss.Draw("Search##4");
+		ImGui::BeginChild("Dissolve Texture", ImVec2(0, 100), true);
+
+		for (int i = 0; i < m_iNumTextures; ++i)
+		{
+			if (Filter_Diss.PassFilter(m_pItemList_Texture[i]))
+			{
+				if (i == iSelectd_Dissolve)
+				{
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
+				}
+				if (ImGui::Selectable(m_pItemList_Texture[i], i == iSelectd_Dissolve))
+				{
+					iSelectd_Dissolve = i;
+					ImGui::SetScrollHereY();
+				}
+				else if (i == iSelectd_Dissolve)
+				{
+					PopStyleColor();
+				}
+			}
+		}
+
+		ImGui::EndChild();
+
+		//ListBox("Dissolve Texture", &iSelectd_Dissolve, m_pItemList_Texture, m_iNumTextures);
 		Image(reinterpret_cast<void*>(m_pTextures[iSelectd_Dissolve]->Get_SRV()), ImVec2(128.f, 128.f));
 
 		//Info.iDissolveTextureID = iSelectd_Dissolve;
