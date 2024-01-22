@@ -155,11 +155,8 @@ namespace Engine
 		bool IsFollow{};
 		unsigned int iBoneIndex{};
 		SimpleMath::Matrix OffsetMatrix{};
-		SimpleMath::Vector4 vAttenuation{};
-
-		SimpleMath::Vector4 vDiffuse{};
-		SimpleMath::Vector4 vAmbient{};
-		SimpleMath::Vector4 vSpecular{};
+		
+		tagLightDesc LightDesc{};
 	};
 
 	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {

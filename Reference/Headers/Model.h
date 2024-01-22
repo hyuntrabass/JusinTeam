@@ -27,8 +27,9 @@ public:
 	void Set_Animation(ANIM_DESC Animation_Desc);
 	vector<VTXSTATICMESH> Get_StaticMeshVertices();
 	vector<_ulong> Get_StaticMeshIndices();
-
-	//트리거
+	_uint Get_NumIndices();
+ 
+	//이펙트 트리거
 	const _uint Get_NumTriggerEffect() const;
 	TRIGGEREFFECT_DESC* Get_TriggerEffect(_uint iTriggerEffectIndex);
 	vector<TRIGGEREFFECT_DESC>& Get_TriggerEffects();
@@ -36,8 +37,14 @@ public:
 	void Add_TriggerEffect(TRIGGEREFFECT_DESC TriggerEffectDesc);
 	void Delete_TriggerEffect(_uint iTriggerEffectIndex);
 	void Reset_TriggerEffects();
-	//
-	_uint Get_NumIndices();
+
+	//라이트 트리거
+	const _uint Get_NumTriggerLight() const;
+	TRIGGERLIGHT_DESC* Get_TriggerLight(_uint iTriggerLightIndex);
+	vector<TRIGGERLIGHT_DESC>& Get_TriggerLights();
+	void Add_TriggerLight(TRIGGERLIGHT_DESC TriggerLightDesc);
+	void Delete_TriggerLight(_uint iTriggerLightIndex);
+	void Reset_TriggerLights();
 
 public:
 	HRESULT Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix);
@@ -59,6 +66,10 @@ private:
 	_uint m_iNumTriggersEffect{};
 	vector<TRIGGEREFFECT_DESC> m_TriggerEffects;
 	vector<_mat*> m_EffectMatrices;
+	//라이트 트리거
+	_uint m_iNumTriggersLight{};
+	vector<TRIGGERLIGHT_DESC> m_TriggerLights;
+	vector<wstring> m_LightTags;
 	// 사운드 트리거
 	_uint m_iNumTriggersSound{};
 	vector<TRIGGERSOUND_DESC> m_TriggerSounds;

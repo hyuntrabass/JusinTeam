@@ -176,6 +176,44 @@ void CModel::Reset_TriggerEffects()
 	m_EffectMatrices.clear();
 }
 
+const _uint CModel::Get_NumTriggerLight() const
+{
+	return m_iNumTriggersLight;
+}
+
+TRIGGERLIGHT_DESC* CModel::Get_TriggerLight(_uint iTriggerLightIndex)
+{
+	return &m_TriggerLights[iTriggerLightIndex];
+}
+
+vector<TRIGGERLIGHT_DESC>& CModel::Get_TriggerLights()
+{
+	return m_TriggerLights;
+}
+
+void CModel::Add_TriggerLight(TRIGGERLIGHT_DESC TriggerLightDesc)
+{
+	m_iNumTriggersLight++;
+	m_TriggerLights.push_back(TriggerLightDesc);
+}
+
+void CModel::Delete_TriggerLight(_uint iTriggerLightIndex)
+{
+	m_iNumTriggersLight--;
+	auto Light_iter = m_TriggerLights.begin();
+	for (_uint i = 0; i < iTriggerLightIndex; i++)
+	{
+		Light_iter++;
+	}
+	m_TriggerLights.erase(Light_iter);
+}
+
+void CModel::Reset_TriggerLights()
+{
+	m_iNumTriggersLight = 0;
+	m_TriggerLights.clear();
+}
+
 _uint CModel::Get_NumIndices()
 {
 	_uint iNumIndices;
