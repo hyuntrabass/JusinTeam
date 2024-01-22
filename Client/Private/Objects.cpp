@@ -99,7 +99,7 @@ HRESULT CObjects::Add_Components(wstring strPrototype )
 	m_iOutLineShaderPass = StaticPass_OutLine;
 
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, strPrototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, strPrototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	{
 		return E_FAIL;
 	}
