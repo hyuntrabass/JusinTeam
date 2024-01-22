@@ -31,6 +31,11 @@ HRESULT CImGui_Mgr::Init(_dev pDevice, _context pContext, CGameInstance* pGameIn
 	m_pGameInstance = pGameInstance;
 	Safe_AddRef(m_pGameInstance);
 
+	m_pRenderer = pRenderer;
+	Safe_AddRef(m_pRenderer);
+
+	m_SSAO_Desc = m_pRenderer->Get_SSAODesc();
+
 	return S_OK;
 }
 
@@ -40,10 +45,24 @@ void CImGui_Mgr::Frame()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	ImGuiTabBarFlags TabBarFlag = ImGuiTabBarFlags_None;
+	ImGui::Begin(u8"뽀큐");
+	if (ImGui::BeginTabBar(u8"쉐이더")) {
+		if (ImGui::BeginTabItem(u8"아쎄이 AO")) {
+			ImGui::DragFloat(u8"Intensity(강도)", &m_SSAO_Desc.fIntensity, 0.25f, 0.01f, 50.f);
+			ImGui::DragFloat(u8"Radius(반지름)", &m_SSAO_Desc.fRadius, 0.005f, 0.001f, 1.f);
+			ImGui::DragFloat(u8"Scale(사이 거리)", &m_SSAO_Desc.fBias, 0.25f, 0.05f, 10.f);
+			ImGui::DragFloat(u8"Bias(차폐물의 너비)", &m_SSAO_Desc.fBias, 0.25f, 0.05f, 10.f);
+
+			m_pRenderer->Set_SSAODesc(m_SSAO_Desc);
+
+			ImGui::EndTabItem();
+		}
+		ImGui::EndTabBar();
+	}
+	ImGui::End();
 }
 
-void CImGui_Mgr::Editin(_float fTimeDelta)
+void CImGui_Mgr::Editing(_float fTimeDelta)
 {
 }
 
@@ -56,6 +75,7 @@ void CImGui_Mgr::Render()
 
 void CImGui_Mgr::Free()
 {
+	Safe_Release(m_pRenderer);
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

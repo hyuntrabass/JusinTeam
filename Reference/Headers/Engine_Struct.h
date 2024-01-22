@@ -57,6 +57,13 @@ namespace Engine
 		bool isLoop{};
 	};
 
+	typedef struct tagSSAOValue {
+		float fIntensity = 5.f;
+		float fRadius = 0.025f;
+		float fScale = 0.5f;
+		float fBias = 0.5f;
+	}SSAO_DESC;
+
 	struct EffectInfo
 	{
 		unsigned int iType{};

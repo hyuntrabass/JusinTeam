@@ -3,7 +3,6 @@
 
 #include "framework.h"
 #include "Shader_Editor.h"
-#include "Shader_Define.h"
 
 
 #include "ShaderEdit.h"
@@ -12,7 +11,7 @@
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
-HINSTANCE hInst;                                // 현재 인스턴스입니다.
+HINSTANCE g_hInst;                                // 현재 인스턴스입니다.
 HWND g_hWnd;
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
@@ -156,9 +155,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    RECT rc = { 0, 0, g_iWinSizeX, g_iWinSizeY };
 
-   AdjustWindowRect(&rc, WS_POPUP, TRUE);
+   AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, TRUE);
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_POPUP,
+   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
        CW_USEDEFAULT, 0, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)

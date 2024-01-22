@@ -42,12 +42,27 @@ HRESULT CLevel_Test::Ready_Model()
 
 HRESULT CLevel_Test::Ready_Npc()
 {
-	return E_NOTIMPL;
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Prototype_GameObject_Player"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
 }
 
 HRESULT CLevel_Test::Ready_Map()
 {
-	return E_NOTIMPL;
+	TerrainInfo Terrain;
+	Terrain.m_iNumVerticesX = 100;
+	Terrain.m_iNumVerticesZ = 100;
+	Terrain.isMesh = false;
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_ShaderTest, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &Terrain)))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
 }
 
 HRESULT CLevel_Test::Ready_Camera()
@@ -63,9 +78,6 @@ HRESULT CLevel_Test::Ready_Camera()
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, L"Layer_Camera", L"Prototype_GameObject_Camera_Main", &Desc)))
 		return E_FAIL;
 
-	m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
-
-
 	return S_OK;
 }
 
@@ -75,7 +87,7 @@ HRESULT CLevel_Test::Ready_Light()
 
 	LightDesc.eType = LIGHT_DESC::Point;
 	LightDesc.vAttenuation = LIGHT_RANGE_50;
-	LightDesc.vDiffuse = _float4(1.f, 0.6f, 0.1f, 1.f);
+	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
 	LightDesc.vPosition = _float4(0.134f, 0.5f, -3.2f, 1.f);
 	LightDesc.vSpecular = _vec4(1.f);

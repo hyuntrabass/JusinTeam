@@ -138,12 +138,20 @@ HRESULT CGraphic_Device::Ready_SwapChain(const GRAPHIC_DESC& GraphicInfo)
 	/*스왑하는 형태*/
 	SwapChain.BufferDesc.RefreshRate.Numerator = 60;
 	SwapChain.BufferDesc.RefreshRate.Denominator = 1;
+
+
+	//_uint iCount = 4;
+	//_uint iQuality = 0;
+	//if (FAILED(m_pDevice->CheckMultisampleQualityLevels(SwapChain.BufferDesc.Format, iCount, &iQuality)))
+	//	return E_FAIL;
+
 	SwapChain.SampleDesc.Quality = 0;
-	SwapChain.SampleDesc.Count = 1;	
+	SwapChain.SampleDesc.Count = 1;
 
 	SwapChain.OutputWindow = GraphicInfo.hWnd;	
 	SwapChain.Windowed = GraphicInfo.isWindowed;
 	SwapChain.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+
 
 	/* 백버퍼라는 텍스쳐를 생성했다. */
 	if (FAILED(pFactory->CreateSwapChain(m_pDevice, &SwapChain, &m_pSwapChain)))
@@ -199,6 +207,11 @@ HRESULT CGraphic_Device::Ready_DepthStencilRenderTargetView(_uint iWinCX, _uint 
 	TextureDesc.MipLevels = 1;
 	TextureDesc.ArraySize = 1;
 	TextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	//_uint iCount = 4;
+	//_uint iQuality = 0;
+	//if (FAILED(m_pDevice->CheckMultisampleQualityLevels(TextureDesc.Format, iCount, &iQuality)))
+	//	return E_FAIL;
 
 	TextureDesc.SampleDesc.Quality = 0;
 	TextureDesc.SampleDesc.Count = 1;

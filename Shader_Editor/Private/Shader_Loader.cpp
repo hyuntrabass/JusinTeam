@@ -105,6 +105,35 @@ HRESULT CShader_Loader::Loading_LevelResources()
 
 HRESULT CShader_Loader::Load_Test()
 {
+#pragma region TerrainTexture
+
+	string strInputFilePath = "../../Client/Bin/Resources/Textures/Terrain/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_Terrain");
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+
+#pragma endregion
+
+#pragma region TerrainBuffer
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"),
+		CVIBuffer_Terrain::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+#pragma endregion
+
+#pragma region VTFShader
+
 	// VTF Test
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_ShaderTest, TEXT("Prototype_Component_Shader_VTF"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VTFModel.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
@@ -113,6 +142,37 @@ HRESULT CShader_Loader::Load_Test()
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_ShaderTest, TEXT("Prototype_Component_Shader_RTVTF"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_RT_VTFModel.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
 		return E_FAIL;
+
+#pragma endregion
+
+#pragma region Terrain
+
+
+
+#pragma endregion
+
+#pragma region Player
+
+	CRealtimeVTFModel* pModel = CRealtimeVTFModel::Create(m_pDevice, m_pContext,
+		"../../Client/Bin/Resources/AnimMesh/VTFPlayer/Main/basemodel.hyuntraanimmesh");
+
+
+	strInputFilePath = "../Client/Bin/Resources/AnimMesh/VTFPlayer/Part/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (FAILED(pModel->Seting_Parts(entry.path().string())))
+				return E_FAIL;
+		}
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Player"), pModel)))
+		return E_FAIL;
+
+#pragma endregion
+
+
 
 	m_isFinished = true;
 

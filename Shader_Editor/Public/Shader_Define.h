@@ -104,6 +104,34 @@ namespace ShaderEdit
 		InstPass_End,
 	};
 #pragma endregion
+
+	enum PART_TYPE
+	{
+		PT_HAIR,
+		PT_FACE,
+		PT_BODY,
+		PT_HELMET,
+		PT_WEAPON,
+		PT_END
+	};
+
+	enum WEAPON_TYPE
+	{
+		WP_BOW,
+		WP_SWORD,
+		WP_END
+	};
+
+	enum WEAPON_INDEX
+	{
+		BOW0,
+		BOW1,
+		BOW2,
+		SWORD0,
+		SWORD1,
+		SWORD2,
+		WP_INDEX_END
+	};
 }
 
 extern HWND g_hWnd;

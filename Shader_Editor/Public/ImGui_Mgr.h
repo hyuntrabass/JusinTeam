@@ -25,7 +25,7 @@ public:
 
     void Frame();
 
-    void Editin(_float fTimeDelta);
+    void Editing(_float fTimeDelta);
 
     void Render();
 
@@ -36,6 +36,11 @@ private:
 
 private:
     CGameInstance* m_pGameInstance = nullptr;
+
+
+private:
+    // SSAO
+    SSAO_DESC m_SSAO_Desc;
 
 public:
     // CBase을(를) 통해 상속됨
