@@ -34,7 +34,6 @@ HRESULT CVoid20::Init(void* pArg)
 
 	//m_pTransformCom->Set_State(State::Pos, _vec4(10.f, 0.f, 0.f, 1.f));
 	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
-	m_pTransformCom->Set_Speed(1.f);
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
@@ -52,6 +51,11 @@ HRESULT CVoid20::Init(void* pArg)
 
 void CVoid20::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_0))
+	{
+		Set_Damage(0, WP_BOW);
+	}
+
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 
@@ -81,27 +85,30 @@ HRESULT CVoid20::Render()
 void CVoid20::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_iHP -= iDamage;
+	m_bDamaged = true;
+
+	m_eCurState = STATE_HIT;
+
+	_vec4 vPlayerPos = __super::Compute_PlayerPos();
+	m_pTransformCom->LookAt(vPlayerPos);
 
 	if (iDamageType == WP_BOW)
 	{
 		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
 
 		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
-
-		m_eCurState = STATE_HIT;
 	}
 
 	else if (iDamageType == WP_SWORD)
 	{
-		m_eCurState = STATE_HIT;
 	}
 }
 
 void CVoid20::Init_State(_float fTimeDelta)
 {
-	if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
+	if (m_iHP <= 0)
 	{
-		m_eCurState = STATE_IDLE;
+		m_eCurState = STATE_DIE;
 	}
 
 	if (m_ePreState != m_eCurState)
@@ -132,10 +139,25 @@ void CVoid20::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CVoid20::STATE_ATTACK:
+			m_bDamaged = false;
 			break;
 
 		case Client::CVoid20::STATE_HIT:
-			m_iHitPattern = rand() % 2;
+		{
+			_uint iHitPattern = rand() % 2;
+
+			switch (iHitPattern)
+			{
+			case 0:
+				m_Animation.iAnimIndex = HIT_L;
+				m_Animation.isLoop = false;
+				break;
+			case 1:
+				m_Animation.iAnimIndex = HIT_R;
+				m_Animation.isLoop = false;
+				break;
+			}
+		}
 			break;
 
 		case Client::CVoid20::STATE_DIE:
@@ -150,8 +172,6 @@ void CVoid20::Init_State(_float fTimeDelta)
 
 void CVoid20::Tick_State(_float fTimeDelta)
 {
-	Attack(fTimeDelta);
-
 	switch (m_eCurState)
 	{
 	case Client::CVoid20::STATE_IDLE:
@@ -162,10 +182,23 @@ void CVoid20::Tick_State(_float fTimeDelta)
 			m_eCurState = STATE_WALK;
 			m_fIdleTime = 0.f;
 		}
+
+		//_float fDistance = __super::Compute_PlayerDistance();
+		//if (fDistance <= m_fChaseRange)
+		//{
+		//	m_eCurState = STATE_CHASE;
+		//}
+
 		break;
 
 	case Client::CVoid20::STATE_WALK:
 		m_pTransformCom->Go_Straight(fTimeDelta);
+
+		if (m_pModelCom->IsAnimationFinished(WALK))
+		{
+			m_eCurState = STATE_IDLE;
+		}
+
 		break;
 
 	case Client::CVoid20::STATE_CHASE:
@@ -176,14 +209,22 @@ void CVoid20::Tick_State(_float fTimeDelta)
 		m_pTransformCom->LookAt(vPlayerPos);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 
-		if (fDistance > m_fChaseRange)
+		if (fDistance > m_fChaseRange && !m_bDamaged)
 		{
 			m_eCurState = STATE_IDLE;
 		}
+
+		if (fDistance <= m_fAttackRange)
+		{
+			m_eCurState = STATE_ATTACK;
+			m_Animation.isLoop = true;
+		}
+
 	}
-	break;
+		break;
 
 	case Client::CVoid20::STATE_ATTACK:
+
 		if (!m_bSelectAttackPattern)
 		{
 			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
@@ -237,54 +278,34 @@ void CVoid20::Tick_State(_float fTimeDelta)
 			}
 			break;
 		}
-		break;
 
-	case Client::CVoid20::STATE_HIT:
-		switch (m_iHitPattern)
-		{
-		case 0:
-			m_Animation.iAnimIndex = HIT_L;
-			m_Animation.isLoop = false;
-			break;
-		case 1:
-			m_Animation.iAnimIndex = HIT_R;
-			m_Animation.isLoop = false;
-			break;
-		}
-		break;
-
-	case Client::CVoid20::STATE_DIE:
-		break;
-	}
-
-}
-
-void CVoid20::Attack(_float fTimeDelta)
-{
-	_float fDistance = __super::Compute_PlayerDistance();
-
-	if (fDistance <= m_fChaseRange)
-	{
-		if (m_eCurState == STATE_ATTACK)
-		{
-			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
-				m_pModelCom->IsAnimationFinished(ATTACK03))
-			{
-				m_eCurState = STATE_CHASE;
-			}
-		}
-
-		else
+		if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
+			m_pModelCom->IsAnimationFinished(ATTACK03))
 		{
 			m_eCurState = STATE_CHASE;
 		}
+
+		break;
+
+	case Client::CVoid20::STATE_HIT:
+
+		if (m_pModelCom->IsAnimationFinished(HIT_L) || m_pModelCom->IsAnimationFinished(HIT_R))
+		{
+			m_eCurState = STATE_CHASE;
+		}
+
+		break;
+
+	case Client::CVoid20::STATE_DIE:
+
+		if (m_pModelCom->IsAnimationFinished(DIE))
+		{
+			m_iPassIndex = AnimPass_Dissolve;
+		}
+
+		break;
 	}
 
-	if (fDistance <= m_fAttackRange)
-	{
-		m_eCurState = STATE_ATTACK;
-		m_Animation.isLoop = true;
-	}
 }
 
 HRESULT CVoid20::Add_Collider()

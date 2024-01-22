@@ -3,6 +3,7 @@
 #include "OrthographicObject.h"
 #include "Wearable_Slot.h"
 
+
 BEGIN(Client)
 class CWearable_Slot;
 class CInven final : public COrthographicObject
@@ -31,14 +32,19 @@ private:
 	_bool										m_bNewItemIn{ false };
 	_bool										m_isActive{ false };
 
+	CGameObject*								m_pMoney{ nullptr };
+	CGameObject*								m_pDiamond{ nullptr };
 	CGameObject*								m_pNotify{ nullptr };
 	CGameObject*								m_pTitleButton{ nullptr };
 	CGameObject*								m_pExitButton{ nullptr };
 	CGameObject*								m_pBackGround{ nullptr };
 	CGameObject*								m_pSeigeLine{ nullptr };
+	CGameObject*								m_pInvenFrame{ nullptr };
 
 	CWearable_Slot*								m_pWearableSlots[WEARABLE_TYPE::W_END];
-public:
+
+private:
+	void Init_InvenState(); 
 
 private:
 	HRESULT Add_Parts();
