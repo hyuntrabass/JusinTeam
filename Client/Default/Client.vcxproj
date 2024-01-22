@@ -176,6 +176,7 @@
     <ClInclude Include="..\Public\MPBar.h" />
     <ClInclude Include="..\Public\Map.h" />
     <ClInclude Include="..\Public\Nastron03.h" />
+    <ClInclude Include="..\Public\Nastron07.h" />
     <ClInclude Include="..\Public\NPC.h" />
     <ClInclude Include="..\Public\NPCvsMon.h" />
     <ClInclude Include="..\Public\Custom.h" />
@@ -227,6 +228,7 @@
     <ClInclude Include="..\Public\Void05.h" />
     <ClInclude Include="..\Public\Void09.h" />
     <ClInclude Include="..\Public\Void20.h" />
+    <ClInclude Include="..\Public\Void23.h" />
     <ClInclude Include="..\Public\Weapon.h" />
     <ClInclude Include="..\Public\Wearable_Slot.h" />
     <ClInclude Include="Client.h" />
@@ -264,6 +266,7 @@
     <ClCompile Include="..\Private\MPBar .cpp" />
     <ClCompile Include="..\Private\Map.cpp" />
     <ClCompile Include="..\Private\Nastron03.cpp" />
+    <ClCompile Include="..\Private\Nastron07.cpp" />
     <ClCompile Include="..\Private\NPC.cpp" />
     <ClCompile Include="..\Private\NPCvsMon.cpp" />
     <ClCompile Include="..\Private\Custom.cpp" />
@@ -313,6 +316,7 @@
     <ClCompile Include="..\Private\Void05.cpp" />
     <ClCompile Include="..\Private\Void09.cpp" />
     <ClCompile Include="..\Private\Void20.cpp" />
+    <ClCompile Include="..\Private\Void23.cpp" />
     <ClCompile Include="..\Private\Weapon.cpp" />
     <ClCompile Include="..\Private\Wearable_Slot.cpp" />
     <ClCompile Include="Client.cpp" />

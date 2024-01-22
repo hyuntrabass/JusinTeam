@@ -115,6 +115,18 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
+	if (FAILED(Ready_Void23()))
+	{
+		MSG_BOX("Failed to Ready Void23");
+		return E_FAIL;
+	}
+
+	if (FAILED(Ready_Nastron07()))
+	{
+		MSG_BOX("Failed to Ready Nastron07");
+		return E_FAIL;
+	}
+
 	// NPC
 	if (FAILED(Ready_Cat()))
 	{
@@ -546,6 +558,26 @@ HRESULT CLevel_GamePlay::Ready_Void09()
 HRESULT CLevel_GamePlay::Ready_Void20()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Void23()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void23"), TEXT("Prototype_GameObject_Void23"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Nastron07()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Nastron07"), TEXT("Prototype_GameObject_Nastron07"))))
 	{
 		return E_FAIL;
 	}

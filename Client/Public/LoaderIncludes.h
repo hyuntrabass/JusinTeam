@@ -63,6 +63,8 @@
 #include "Imp.h"
 #include "Void09.h"
 #include "Void20.h"
+#include "Void23.h"
+#include "Nastron07.h"
 
 // NPC
 #include "Cat.h"

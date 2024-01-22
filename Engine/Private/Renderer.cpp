@@ -1230,7 +1230,7 @@ HRESULT CRenderer::Render_Debug()
 {
 	for (auto& pComponent : m_DebugComponents)
 	{
-		//pComponent->Render();
+		pComponent->Render();
 		Safe_Release(pComponent);
 	}
 	m_DebugComponents.clear();
@@ -1244,7 +1244,7 @@ HRESULT CRenderer::Render_Debug()
 	{
 		return E_FAIL;
 	}
-	/*
+	
 	
 	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_GameObjects"), m_pShader, m_pVIBuffer)))
 	{
@@ -1280,7 +1280,7 @@ HRESULT CRenderer::Render_Debug()
 	{
 		return E_FAIL;
 	}
-	*/
+	
 	return S_OK;
 }
 #endif // _DEBUG

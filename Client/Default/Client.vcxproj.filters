@@ -465,9 +465,6 @@
     <ClInclude Include="..\Public\ExpBar.h">
       <Filter>02.GameObjects\00.UI\GameUI\EXP</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\NPCvsMon.h">
-      <Filter>02.GameObjects\04.Monster\Tutorial\00. NPCvsMon</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Dog.h">
       <Filter>02.GameObjects\07. NPC\Animal\01. Dog</Filter>
     </ClInclude>
@@ -540,7 +537,19 @@
     <ClInclude Include="..\Public\Void09.h">
       <Filter>02.GameObjects\04.Monster\06. Void\Void09</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Void20.h" />
+    <ClInclude Include="..\Public\Level_Village.h" />
+    <ClInclude Include="..\Public\NPCvsMon.h" />
+    <ClInclude Include="..\Public\Objects.h" />
+    <ClInclude Include="..\Public\Prologue_Object.h" />
+    <ClInclude Include="..\Public\Void20.h">
+      <Filter>02.GameObjects\04.Monster\06. Void\Void20</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Void23.h">
+      <Filter>02.GameObjects\04.Monster\06. Void\Void23</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Nastron07.h">
+      <Filter>02.GameObjects\04.Monster\03. Nastron\Nastron07</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -787,7 +796,18 @@
     <ClCompile Include="..\Private\Void09.cpp">
       <Filter>02.GameObjects\04.Monster\06. Void\Void09</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Void20.cpp" />
+    <ClCompile Include="..\Private\Level_Village.cpp" />
+    <ClCompile Include="..\Private\Objects.cpp" />
+    <ClCompile Include="..\Private\Prologue_Object.cpp" />
+    <ClCompile Include="..\Private\Void20.cpp">
+      <Filter>02.GameObjects\04.Monster\06. Void\Void20</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Void23.cpp">
+      <Filter>02.GameObjects\04.Monster\06. Void\Void23</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Nastron07.cpp">
+      <Filter>02.GameObjects\04.Monster\03. Nastron\Nastron07</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">

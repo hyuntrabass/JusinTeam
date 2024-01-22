@@ -3,44 +3,5 @@
 Animation Models : Start Converting...
 1. Normally Anim Model	2. For VTF Model 3. Part Model
 1
-Converting... Imp.fbx
-Read File Succssefully
-Animation name list: 
-Mon_Imp01.ao|attack01
-Mon_Imp01.ao|attack01_H
-Mon_Imp01.ao|attack02
-Mon_Imp01.ao|attack02_H
-Mon_Imp01.ao|attack03
-Mon_Imp01.ao|attack03_H
-Mon_Imp01.ao|attack04
-Mon_Imp01.ao|attack05
-Mon_Imp01.ao|die
-Mon_Imp01.ao|hit_add
-Mon_Imp01.ao|Hit_L
-Mon_Imp01.ao|Hit_R
-Mon_Imp01.ao|idle
-Mon_Imp01.ao|knockdown
-Mon_Imp01.ao|roar
-Mon_Imp01.ao|run
-Mon_Imp01.ao|stun
-Mon_Imp01.ao|walk
-Converting... Nastron07.fbx
-Read File Succssefully
-Animation name list: 
-Mon_nastron_07.ao|Attack01
-Mon_nastron_07.ao|Attack02
-Mon_nastron_07.ao|Attack03
-Mon_nastron_07.ao|Die
-Mon_nastron_07.ao|Hell_End_SC02_Mon_Nastron_07_01_A
-Mon_nastron_07.ao|Hell_End_SC02_Mon_Nastron_07_01_B
-Mon_nastron_07.ao|Hit_Add
-Mon_nastron_07.ao|Hit_L
-Mon_nastron_07.ao|Hit_R
-Mon_nastron_07.ao|Idle
-Mon_nastron_07.ao|Knockdown
-Mon_nastron_07.ao|Roar
-Mon_nastron_07.ao|Run
-Mon_nastron_07.ao|Stun
-Mon_nastron_07.ao|Walk
 Converting... NPCvsMon.fbx
 Read File Succssefully

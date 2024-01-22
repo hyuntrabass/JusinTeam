@@ -59,9 +59,6 @@ public:
 	void Tick_State(_float fTimeDelta);
 
 private:
-	CCollider* m_pColliderCom = { nullptr };
-
-private:
 	NASTRON03_STATE m_ePreState = STATE_END;
 	NASTRON03_STATE m_eCurState = STATE_END;
 
@@ -69,14 +66,12 @@ private:
 	_float m_fIdleTime = {};
 	
 	_uint m_iAttackPattern = {};
-
 	_bool m_bSelectAttackPattern = { false };
 
 private:
 	_bool m_bAttacked = { false };
 	_bool m_bAttacked2 = { false };
 
-private:
 	_bool m_bDamaged = { false };
 
 private:
