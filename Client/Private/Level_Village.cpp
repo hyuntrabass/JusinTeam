@@ -204,7 +204,7 @@ HRESULT CLevel_Village::Ready_Object()
 	return S_OK;
 }
 
-HRESULT CLevel_Village::Ready_Monster()
+HRESULT CLevel_Village::Ready_NpcvsMon()
 {
 	MonsterInfo Info{};
 	const TCHAR* pGetPath = L"../Bin/Data/Prologue_MonsterData.dat";

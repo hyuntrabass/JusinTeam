@@ -56,7 +56,7 @@ private:
 	// Boss
 	HRESULT Ready_Groar_Boss();
 
-	HRESULT Ready_Monster();
+	HRESULT Ready_NpcvsMon();
 
 
 	//UI
