@@ -88,7 +88,7 @@ HRESULT CEvent_Manager::Init_Quest()
 
 	EVENT_DESC tDesc = {};
 	tDesc.eType = QUESTIN;
-	tDesc.fExp = 1.7;
+	tDesc.fExp = 1.7f;
 	tDesc.iNum = 1;
 	tDesc.iMoney = 1000;
 	tDesc.isMain = true;
@@ -97,7 +97,7 @@ HRESULT CEvent_Manager::Init_Quest()
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	tDesc.eType = QUESTIN;
-	tDesc.fExp = 1.3;
+	tDesc.fExp = 1.3f;
 	tDesc.iNum = 1;
 	tDesc.iMoney = 1000;
 	tDesc.isMain = false;

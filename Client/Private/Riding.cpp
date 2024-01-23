@@ -20,48 +20,69 @@ HRESULT CRiding::Init(void* pArg)
 	Riding_Desc* Desc = (Riding_Desc*)pArg;
 	m_CurrentIndex = Desc->Type;
 
+	
+	switch (m_CurrentIndex)
+	{
+	case Client::Bird:
+		m_Animation.iAnimIndex = Bird_1005_Start;
+		m_eState = Riding_Sky;
+		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Bird");
+		break;
+	case Client::Tiger:
+		m_Animation.iAnimIndex = Tiger_1003_Idle;
+		m_eState = Riding_Idle;
+		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Tiger");
+
+		m_fRunSpeed = 7.5f;
+		break;
+	case Client::Nihilir:
+		m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Idle;
+		m_eState = Riding_Idle;
+		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Nihilir");
+		m_fWalkSpeed = 5.f;
+		m_fRunSpeed = 12.f;
+		break;
+	default:
+		break;
+	}
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
-
-	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(10.f, 0.f, 0.f, 1.f));
-
-
-	m_Animation.iAnimIndex = 10;
-	m_iNumVariations = 3;
-	m_vecModel.resize(m_iNumVariations, nullptr);
-	m_Animation.isLoop = true;
-	m_Animation.bSkipInterpolation = false;
+	m_pTransformCom->Set_State(State::Pos, Desc->vSummonPos);
 	m_Animation.fAnimSpeedRatio = 2.f;
 
-	m_iHP = 100;
-
+	m_fDissolveRatio = 1.f;
 	return S_OK;
 }
 
 void CRiding::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_G))
+	if (m_fDissolveRatio >= 0.f && !m_isDead)
+		m_fDissolveRatio -= fTimeDelta / 2.f;
+	else if (m_isDead)
 	{
-
+		m_fDissolveRatio += fTimeDelta / 1.4f;
+		if (m_fDissolveRatio >= 1.f)
+			m_bDelete = true;
 	}
-
-	Update_Collider();
+	
+	Move(fTimeDelta);
+	Init_State();
+	Tick_State(fTimeDelta);
+	m_pModelCom->Set_Animation(m_Animation);
+	//Update_Collider();
 }
 
 void CRiding::Late_Tick(_float fTimeDelta)
 {
-	
-
+	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
 #ifdef _DEBUGTEST
-	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
-	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
+	/*m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
+	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);*/
 #endif
-
 }
 
 HRESULT CRiding::Render()
@@ -72,14 +93,15 @@ HRESULT CRiding::Render()
 	}
 
 
-		for (_uint i = 0; i < m_vecModel[m_CurrentIndex]->Get_NumMeshes(); i++)
+		for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
 		{
-			if (FAILED(m_vecModel[m_CurrentIndex]->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+			if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 			{
+				return E_FAIL;
 			}
 
 			_bool HasNorTex{};
-			if (FAILED(m_vecModel[m_CurrentIndex]->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+			if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
 			{
 				HasNorTex = false;
 			}
@@ -93,17 +115,17 @@ HRESULT CRiding::Render()
 				return E_FAIL;
 			}
 
-			if (FAILED(m_vecModel[m_CurrentIndex]->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+			if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
 			{
 				return E_FAIL;
 			}
 
-			if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+			if (FAILED(m_pShaderCom->Begin(AnimPass_Dissolve)))
 			{
 				return E_FAIL;
 			}
 
-			if (FAILED(m_vecModel[m_CurrentIndex]->Render(i)))
+			if (FAILED(m_pModelCom->Render(i)))
 			{
 				return E_FAIL;
 			}
@@ -112,10 +134,246 @@ HRESULT CRiding::Render()
 	return S_OK;
 }
 
+void CRiding::Move(_float fTimeDelta)
+{
+	_bool hasMoved{};
+	_vec4 vForwardDir = m_pGameInstance->Get_CameraLook();
+	vForwardDir.y = 0.f;
+	_vec4 vRightDir = XMVector3Cross(m_pTransformCom->Get_State(State::Up), vForwardDir);
+	vRightDir.Normalize();
+
+	_vec4 vDirection{};
+	if (m_CurrentIndex == Bird)
+		return;
+
+	if (m_pGameInstance->Key_Pressing(DIK_W))
+	{
+		vDirection += vForwardDir;
+		hasMoved = true;
+	}
+	else if (m_pGameInstance->Key_Pressing(DIK_S))
+	{
+		vDirection -= vForwardDir;
+		hasMoved = true;
+	}
+
+	if (m_pGameInstance->Key_Pressing(DIK_D))
+	{
+		vDirection += vRightDir;
+		hasMoved = true;
+	}
+	else if (m_pGameInstance->Key_Pressing(DIK_A))
+	{
+		vDirection -= vRightDir;
+		hasMoved = true;
+	}
+	if (hasMoved)
+	{
+
+		if (m_pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			if (m_eState == Riding_Walk or m_eState == Riding_Idle)
+			{
+				m_eState = Riding_Run;
+				m_pTransformCom->Set_Speed(m_fRunSpeed);
+			}
+		}
+		else
+		{
+			if (m_eState == Riding_Run)
+			{
+				m_eState = Riding_Run;
+				m_pTransformCom->Set_Speed(m_fRunSpeed);
+			}
+			else
+			{
+				m_eState = Riding_Walk;
+				m_pTransformCom->Set_Speed(m_fWalkSpeed);
+			}
+		}
+		m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
+		_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
+
+		_float fInterpolTime = 0.4f;
+		m_vOriginalLook = vLook;
+		if (m_fInterpolationRatio < fInterpolTime)
+		{
+			if (not m_isInterpolating)
+			{
+				m_vOriginalLook = vLook;
+				m_isInterpolating = true;
+			}
+
+			m_fInterpolationRatio += fTimeDelta;
+
+
+			_float fRatio = m_fInterpolationRatio / fInterpolTime;
+
+			vDirection = XMVectorLerp(m_vOriginalLook, vDirection, fRatio);
+		}
+		else
+		{
+			m_isInterpolating = false;
+			m_fInterpolationRatio = 0.f;
+		}
+		m_pTransformCom->LookAt_Dir(vDirection);
+
+	}
+	else if (m_eState == Riding_Walk or m_eState == Riding_Run)
+	{
+		m_eState = Riding_Idle;
+	}
+	
+}
+void CRiding::Init_State()
+{
+	if (m_eState != m_ePrevState)
+	{
+		m_Animation.isLoop = false;
+		m_Animation.fAnimSpeedRatio = 2.f;
+		m_Animation.bSkipInterpolation = false;
+		
+		switch (m_eState)
+		{
+		case Client::Riding_Landing:
+			break;
+		case Client::Riding_Idle:
+			switch (m_CurrentIndex)
+			{
+			case Client::Bird:
+				break;
+			case Client::Tiger:
+				m_Animation.iAnimIndex = Tiger_1003_Idle;
+
+				break;
+			case Client::Nihilir:
+				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Idle;
+				break;
+			case Client::Riding_End:
+				break;
+			default:
+				break;
+			}
+			m_Animation.isLoop = true;
+			break;
+		case Client::Riding_Run:
+			switch (m_CurrentIndex)
+			{
+			case Client::Bird:
+				break;
+			case Client::Tiger:
+				m_Animation.iAnimIndex = Tiger_1003_Run;
+				break;
+			case Client::Nihilir:
+				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Run;
+				break;
+			case Client::Riding_End:
+				break;
+			default:
+				break;
+			}
+			m_Animation.isLoop = true;
+			break;
+		case Client::Riding_Walk:
+			switch (m_CurrentIndex)
+			{
+			case Client::Bird:
+				break;
+			case Client::Tiger:
+				m_Animation.iAnimIndex = Tiger_1003_Walk;
+				break;
+			case Client::Nihilir:
+				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Walk;
+				break;
+			case Client::Riding_End:
+				break;
+			default:
+				break;
+			}
+			m_Animation.isLoop = true;
+			break;
+		case Client::Riding_Attack:
+			break;
+		case Client::Riding_Jump:
+			break;
+		case Client::Riding_Sky:
+			m_Animation.iAnimIndex = Bird_1005_Takeoff;
+			break;
+		case Client::Riding_End:
+			break;
+		default:
+			break;
+		}
+		m_ePrevState = m_eState;
+	}
+}
+
+void CRiding::Tick_State(_float fTimeDelta)
+{
+	switch (m_eState)
+	{
+	case Client::Riding_Landing:
+		break;
+	case Client::Riding_Idle:
+		switch (m_CurrentIndex)
+		{
+		case Client::Bird:
+			if (m_pModelCom->IsAnimationFinished(Bird_1005_Start))
+			{
+				m_eState = Riding_Sky;
+			}
+			break;
+		case Client::Tiger:
+			break;
+		case Client::Nihilir:
+			break;
+		case Client::Riding_End:
+			break;
+		default:
+			break;
+		}
+		break;
+	case Client::Riding_Run:
+		break;
+	case Client::Riding_Walk:
+		break;
+	case Client::Riding_Attack:
+		break;
+	case Client::Riding_Jump:
+		break;
+	case Client::Riding_Sky:
+		// 애니메이션 종료후 지역 이동하는 효과
+		break;
+	case Client::Riding_End:
+		break;
+	default:
+		break;
+	}
+}
+
+_mat CRiding::Get_World_Mat()
+{
+	_mat OffsetMat{};
+	if (m_CurrentIndex == Tiger)
+		OffsetMat = _mat::CreateRotationY(XMConvertToRadians(-90.f)) * *m_pModelCom->Get_BoneMatrix("saddle");
+	else if (m_CurrentIndex == Nihilir)
+		OffsetMat = _mat::CreateRotationY(XMConvertToRadians(-180.f))  * _mat::CreateRotationX(XMConvertToRadians(-90.f)) * *m_pModelCom->Get_BoneMatrix("saddle");
+	else if (m_CurrentIndex == Bird)
+		OffsetMat = _mat::CreateTranslation(0.f,0.8f,0.f)*_mat::CreateRotationZ(XMConvertToRadians(-180.f)) * _mat::CreateRotationY(XMConvertToRadians(90.f)) * *m_pModelCom->Get_BoneMatrix("Saddle");
+
+	return (OffsetMat *  m_pTransformCom->Get_World_Matrix());
+}
+
+_vec4 CRiding::Get_Pos()
+{
+	return m_pTransformCom->Get_State(State::Pos);
+}
+
+
 
 void CRiding::Update_Collider()
 {
-	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+	//m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 
 	_mat Offset = _mat::CreateTranslation(0.f, 2.f, 1.f);
 	m_pAttackColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
@@ -124,21 +382,18 @@ void CRiding::Update_Collider()
 void CRiding::Delete_Riding()
 {
 	//죽는 처리 후 m_bReady_Dead = true;
-	
+	m_isDead = true;
 }
 
 HRESULT CRiding::Add_Components()
 {
-	for (size_t i = 0; i < m_vecModel.size(); i++)
-	{
-		wstring PrototypeTag = TEXT("Prototype_Model_Riding")+ to_wstring(i);
-		wstring ComTag = TEXT("Com_Model_") + to_wstring(i);
+	
 
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, PrototypeTag, ComTag, reinterpret_cast<CComponent**>(&m_vecModel[i]))))
-		{
-			return E_FAIL;
-		}
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_strPrototypeTag, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	{
+		return E_FAIL;
 	}
+	
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -149,16 +404,19 @@ HRESULT CRiding::Add_Components()
 	{
 		return E_FAIL;
 	}
-
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Logo_Noise"), TEXT("Com_Texture_e"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom))))
+	{
+		return E_FAIL;
+	}
 	Collider_Desc BodyCollDesc = {};
 	BodyCollDesc.eType = ColliderType::OBB;
 	BodyCollDesc.vExtents = _vec3(2.f, 2.f, 2.f);
 	BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y, 0.f);
 	BodyCollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-		TEXT("Com_Collider_OBB"), (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
-		return E_FAIL;
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+	//	TEXT("Com_Collider_OBB"), (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
+	//	return E_FAIL;
 
 	// Frustum
 	Collider_Desc ColDesc{};
@@ -168,23 +426,21 @@ HRESULT CRiding::Add_Components()
 	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(90.f), 1.f, 0.01f, 3.f);
 	XMStoreFloat4x4(&ColDesc.matFrustum, matView * matProj);
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack"), reinterpret_cast<CComponent**>(&m_pAttackColliderCom), &ColDesc)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack"), reinterpret_cast<CComponent**>(&m_pAttackColliderCom), &ColDesc)))
+	//{
+	//	return E_FAIL;
+	//}
 
 
 	return S_OK;
 
-	return S_OK;
+
 }
 
 HRESULT CRiding::Bind_ShaderResources()
 {
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
-	{
 		return E_FAIL;
-	}
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
 	{
@@ -201,13 +457,21 @@ HRESULT CRiding::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
-		return E_FAIL;
-
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+	if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
+		return E_FAIL;
+
+	/*if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+	{
+		return E_FAIL;
+	}*/
 
 	return S_OK;
 }
@@ -242,15 +506,12 @@ void CRiding::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pDissolveTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
-	for (auto& iter : m_vecModel)
-	{
-		Safe_Release(iter);
-	}
+	Safe_Release(m_pModelCom);
 
-	m_vecModel.clear();
-	Safe_Release(m_pBodyColliderCom);
-	Safe_Release(m_pAttackColliderCom);
+	//Safe_Release(m_pBodyColliderCom);
+	//Safe_Release(m_pAttackColliderCom);
 
 }

@@ -24,6 +24,7 @@ private:
 	HRESULT Ready_Light();
 	HRESULT Ready_Player();
 	HRESULT Ready_Map();
+	HRESULT Ready_Environment();
 
 	HRESULT Ready_Object();
 
@@ -55,7 +56,7 @@ private:
 	// Boss
 	HRESULT Ready_Groar_Boss();
 
-	HRESULT Ready_Monster();
+	HRESULT Ready_NpcvsMon();
 
 
 	//UI

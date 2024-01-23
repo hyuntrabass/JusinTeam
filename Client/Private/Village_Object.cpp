@@ -23,7 +23,7 @@ HRESULT CVillage_Object::Init(void* pArg)
 	m_Info = *(ObjectInfo*)pArg;
 	wstring strPrototype = m_Info.strPrototypeTag;
 
-	if (FAILED(__super::Add_Components(strPrototype)))
+	if (FAILED(__super::Add_Components(strPrototype, m_Info.eObjectType)))
 	{
 		return E_FAIL;
 	}

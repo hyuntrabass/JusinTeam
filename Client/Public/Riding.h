@@ -7,14 +7,27 @@ BEGIN(Client)
 
 enum Riding_Type
 {
-	Riding_Bird,
-	Riding_Tiger,
-	Riding_Nihilir,
-	Riding_End
+	Bird,
+	Tiger,
+	Nihilir,
+	Type_End
 };
 struct Riding_Desc
 {
-	Riding_Type Type;
+	Riding_Type Type{ Type_End };
+	_vec4 vSummonPos{};
+};
+enum Riding_State
+{
+	Riding_Landing,
+	Riding_Idle,
+	Riding_Run,
+	Riding_Walk,
+	Riding_Attack,
+	Riding_Jump,
+	Riding_Sky,
+	Riding_End
+
 };
 enum Bird_Anim
 {
@@ -89,7 +102,7 @@ enum Nihilir
 class CRiding final : public CGameObject
 {
 public:
-	
+
 private:
 	CRiding(_dev pDevice, _context pContext);
 	CRiding(const CRiding& rhs);
@@ -103,22 +116,38 @@ public:
 	virtual HRESULT Render() override;
 
 public:
+	void Move(_float fTimeDelta);
+	void Init_State();
+	void Tick_State(_float fTimeDelta);
+	_mat Get_World_Mat();
+	_vec4 Get_Pos();
+	Riding_State Get_State() { return m_eState; }
+	_bool Get_Delete() { return m_bDelete; }
 	void Update_Collider();
 	void Delete_Riding();
-	_bool Get_Ready_Dead() { return m_bReady_Dead; }
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
-	vector<CModel*> m_vecModel{ nullptr };
+	CModel* m_pModelCom = { nullptr };
 
 	CCollider* m_pBodyColliderCom = { nullptr };
 	CCollider* m_pAttackColliderCom = { nullptr };
 
 private:
 	ANIM_DESC m_Animation{};
-	_uint m_iNumVariations{};
-	Riding_Type m_CurrentIndex{ Riding_End };
-	_bool m_bReady_Dead{};
+	Riding_Type m_CurrentIndex{ Type_End };
+	Riding_State m_eState{};
+	Riding_State m_ePrevState{};
+	_mat m_Worldmatrix{};
+	wstring m_strPrototypeTag{};
+	_bool m_bDelete{};
+	_float m_fRunSpeed{ 7.f };
+	_float m_fWalkSpeed{ 3.f };
+	_vec4 m_vOriginalLook{};
+	_float m_fInterpolationRatio{};
+	_bool m_isInterpolating{};
+	_float m_fDissolveRatio{};
+	CTexture* m_pDissolveTextureCom{};
 public:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

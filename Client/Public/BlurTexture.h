@@ -48,7 +48,7 @@ private:
 
 private:
 	_float	m_fDuration{ 0.f };
-	_float	m_fAmount{ 0.04 };
+	_float	m_fAmount{ 0.04f };
 
 	_float	m_fFontSize;
 	_vec2	m_vSize;

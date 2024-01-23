@@ -64,18 +64,18 @@ void CPop_QuestIn::Tick(_float fTimeDelta)
 	m_fTime += fTimeDelta * 0.2f;
 	m_fDeadTime += fTimeDelta;
 
-	if (dynamic_cast<CTextButton*>(m_pButton)->Get_Position().y <= m_fStartButtonPos.y - 5.f)
+	if (dynamic_cast<CTextButton*>(m_pButton)->Get_TransPosition().y <= dynamic_cast<CTextButton*>(m_pButton)->Get_Position().y - 5.f)
 	{
 		m_fDir = 0.6f;
-		dynamic_cast<CTextButton*>(m_pButton)->Set_Position(_float2(m_fStartButtonPos.x, m_fStartButtonPos.y - 5.f));
+		dynamic_cast<CTextButton*>(m_pButton)->Set_Position(_float2(dynamic_cast<CTextButton*>(m_pButton)->Get_Position().x, dynamic_cast<CTextButton*>(m_pButton)->Get_Position().y - 5.f));
 	}
-	if (dynamic_cast<CTextButton*>(m_pButton)->Get_Position().y >= m_fStartButtonPos.y)
+	if (dynamic_cast<CTextButton*>(m_pButton)->Get_TransPosition().y >= dynamic_cast<CTextButton*>(m_pButton)->Get_Position().y)
 	{
 		m_fDir = -1.f;
-		dynamic_cast<CTextButton*>(m_pButton)->Set_Position(_float2(m_fStartButtonPos.x, m_fStartButtonPos.y));
+		dynamic_cast<CTextButton*>(m_pButton)->Set_Position(_float2(dynamic_cast<CTextButton*>(m_pButton)->Get_Position().x, dynamic_cast<CTextButton*>(m_pButton)->Get_Position().y));
 	}
 	m_fButtonTime += fTimeDelta * m_fDir * 10.f;
-	dynamic_cast<CTextButton*>(m_pButton)->Set_Position(_float2(m_fStartButtonPos.x, m_fButtonTime));
+	dynamic_cast<CTextButton*>(m_pButton)->Set_Position(_float2(dynamic_cast<CTextButton*>(m_pButton)->Get_Position().x, m_fButtonTime));
 
 
 
@@ -115,23 +115,23 @@ HRESULT CPop_QuestIn::Render()
 		return E_FAIL;
 	}
 
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 230.f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 230.f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f - 0.2f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f + 0.2f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f), 0.7, _vec4(1.f, 1.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 230.f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 230.f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f - 0.2f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f + 0.2f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f), 0.7f, _vec4(1.f, 1.f, 0.f, 1.f));
 	
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 280.f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 280.f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2((_float)g_iWinSizeX / 2.f, 280.f - 0.2f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2((_float)g_iWinSizeX / 2.f, 280.f + 0.2f), 0.7, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2((_float)g_iWinSizeX / 2.f, 280.f), 0.7);
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 280.f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 280.f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2((_float)g_iWinSizeX / 2.f, 280.f - 0.2f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2((_float)g_iWinSizeX / 2.f, 280.f + 0.2f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2((_float)g_iWinSizeX / 2.f, 280.f), 0.7f);
 
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 수락하세요."), _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 580.f), 0.4, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 수락하세요."), _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 580.f), 0.4, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 수락하세요."), _vec2((_float)g_iWinSizeX / 2.f, 580.f - 0.2f), 0.4, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 수락하세요."), _vec2((_float)g_iWinSizeX / 2.f, 580.f + 0.2f), 0.4, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 수락하세요."), _vec2((_float)g_iWinSizeX / 2.f, 580.f), 0.4, _vec4(0.6f, 0.6f, 0.6f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 수락하세요."), _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 580.f), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 수락하세요."), _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 580.f), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 수락하세요."), _vec2((_float)g_iWinSizeX / 2.f, 580.f - 0.2f), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 수락하세요."), _vec2((_float)g_iWinSizeX / 2.f, 580.f + 0.2f), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 수락하세요."), _vec2((_float)g_iWinSizeX / 2.f, 580.f), 0.4f, _vec4(0.6f, 0.6f, 0.6f, 1.f));
 
 	return S_OK;
 }
