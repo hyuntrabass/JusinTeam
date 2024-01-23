@@ -76,13 +76,6 @@ public:
 	void Init_State(_float fTimeDelta);
 	void Tick_State(_float fTimeDelta);
 
-public:
-	void Attack(_float fTimeDelta);
-
-private:
-	CCollider* m_pAxeColliderCom = { nullptr };
-	CCollider* m_pKnifeColliderCom = { nullptr };
-
 private:
 	THIEF04_STATE m_ePreState = STATE_END;
 	THIEF04_STATE m_eCurState = STATE_END;
@@ -91,14 +84,13 @@ private:
 	_float m_fIdleTime = {};
 
 	_uint m_iAttackPattern = {};
-	_uint m_iHitPattern = {};
-
 	_bool m_bSelectAttackPattern = { false };
 
 private:
 	_bool m_bAttacked = { false };
 	_bool m_bAttacked2 = { false };
 
+	_bool m_bDamaged = { false };
 
 private:
 	static const _float m_fChaseRange;

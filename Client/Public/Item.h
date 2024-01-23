@@ -10,12 +10,10 @@ public:
 	typedef struct tagItemSlotDesc
 	{
 		_bool					bCanInteract;
-		//CTransform* pParentTransform;
 		_float					fDepth;
 		_float2					vSize;
 		_float2					vPosition;
 		ITEM					eItemDesc;
-		_uint					iNumItem = { 1 };
 	}ITEM_DESC;
 
 private:
@@ -35,11 +33,17 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
 	CTexture* m_pTextureCom{ nullptr };
-	CTexture* m_pMaskTextureCom{ nullptr };
+
 
 private:
-	ITEM					m_eItemDesc;
+	_bool					m_bCanInteract{ false };
+	ITEM					m_eItemDesc{};
+	_uint					m_iNum{1};
 
+public:
+	const ITEM& Get_ItemDesc() const { return m_eItemDesc; }
+	void Set_ItemNum(_uint iNum) { m_iNum += iNum; }
+	void Set_Position(_vec2 vPos);
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

@@ -34,7 +34,6 @@ HRESULT CImp::Init(void* pArg)
 
 	//m_pTransformCom->Set_State(State::Pos, _vec4(10.f, 0.f, 0.f, 1.f));
 	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
-	m_pTransformCom->Set_Speed(1.f);
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
@@ -52,6 +51,11 @@ HRESULT CImp::Init(void* pArg)
 
 void CImp::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_M))
+	{
+		Set_Damage(0, WP_BOW);
+	}
+
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 
@@ -81,27 +85,30 @@ HRESULT CImp::Render()
 void CImp::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_iHP -= iDamage;
+	m_bDamaged = true;
+
+	m_eCurState = STATE_HIT;
+
+	_vec4 vPlayerPos = __super::Compute_PlayerPos();
+	m_pTransformCom->LookAt(vPlayerPos);
 
 	if (iDamageType == WP_BOW)
 	{
 		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
 
 		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
-
-		m_eCurState = STATE_HIT;
 	}
 
 	else if (iDamageType == WP_SWORD)
 	{
-		m_eCurState = STATE_HIT;
 	}
 }
 
 void CImp::Init_State(_float fTimeDelta)
 {
-	if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
+	if (m_iHP <= 0)
 	{
-		m_eCurState = STATE_IDLE;
+		m_eCurState = STATE_DIE;
 	}
 
 	if (m_ePreState != m_eCurState)
@@ -132,10 +139,25 @@ void CImp::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CImp::STATE_ATTACK:
+			m_bDamaged = false;
 			break;
 
 		case Client::CImp::STATE_HIT:
-			m_iHitPattern = rand() % 2;
+		{
+			_uint iHitPattern = rand() % 2;
+
+			switch (iHitPattern)
+			{
+			case 0:
+				m_Animation.iAnimIndex = HIT_L;
+				m_Animation.isLoop = false;
+				break;
+			case 1:
+				m_Animation.iAnimIndex = HIT_R;
+				m_Animation.isLoop = false;
+				break;
+			}
+		}
 			break;
 
 		case Client::CImp::STATE_DIE:
@@ -150,12 +172,11 @@ void CImp::Init_State(_float fTimeDelta)
 
 void CImp::Tick_State(_float fTimeDelta)
 {
-	Attack(fTimeDelta);
-
 	switch (m_eCurState)
 	{
 	case Client::CImp::STATE_IDLE:
 
+	{
 		m_fIdleTime += fTimeDelta;
 
 		if (m_fIdleTime >= 2.f)
@@ -164,10 +185,23 @@ void CImp::Tick_State(_float fTimeDelta)
 			m_fIdleTime = 0.f;
 		}
 
+		//_float fDistance = __super::Compute_PlayerDistance();
+		//if (fDistance <= m_fChaseRange)
+		//{
+		//	m_eCurState = STATE_CHASE;
+		//}
+	}
+
 		break;
 
 	case Client::CImp::STATE_FLY:
 		m_pTransformCom->Go_Straight(fTimeDelta);
+
+		if (m_pModelCom->IsAnimationFinished(WALK))
+		{
+			m_eCurState = STATE_IDLE;
+		}
+
 		break;
 
 	case Client::CImp::STATE_CHASE:
@@ -178,10 +212,17 @@ void CImp::Tick_State(_float fTimeDelta)
 		m_pTransformCom->LookAt(vPlayerPos);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 
-		if (fDistance > m_fChaseRange)
+		if (fDistance > m_fChaseRange && !m_bDamaged)
 		{
 			m_eCurState = STATE_IDLE;
 		}
+
+		if (fDistance <= m_fAttackRange)
+		{
+			m_eCurState = STATE_ATTACK;
+			m_Animation.isLoop = true;
+		}
+
 	}
 		break;
 
@@ -213,6 +254,7 @@ void CImp::Tick_State(_float fTimeDelta)
 				}
 			}
 			break;
+
 		case 1:
 			m_Animation.iAnimIndex = ATTACK02;
 			m_Animation.isLoop = false;
@@ -226,6 +268,7 @@ void CImp::Tick_State(_float fTimeDelta)
 				}
 			}
 			break;
+
 		case 2:
 			m_Animation.iAnimIndex = ATTACK04;
 			m_Animation.isLoop = false;
@@ -240,55 +283,34 @@ void CImp::Tick_State(_float fTimeDelta)
 			}
 			break;
 		}
+
+		if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
+			m_pModelCom->IsAnimationFinished(ATTACK04))
+		{
+			m_eCurState = STATE_CHASE;
+		}
+
 		break;
 
 	case Client::CImp::STATE_HIT:
 
-		switch (m_iHitPattern)
-		{
-		case 0:
-			m_Animation.iAnimIndex = HIT_L;
-			m_Animation.isLoop = false;
-			break;
-		case 1:
-			m_Animation.iAnimIndex = HIT_R;
-			m_Animation.isLoop = false;
-			break;
-		}
-		break;
-
-	case Client::CImp::STATE_DIE:
-		break;
-	}
-
-}
-
-void CImp::Attack(_float fTimeDelta)
-{
-	_float fDistance = __super::Compute_PlayerDistance();
-
-	if (fDistance <= m_fChaseRange)
-	{
-		if (m_eCurState == STATE_ATTACK)
-		{
-			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
-				m_pModelCom->IsAnimationFinished(ATTACK04))
-			{
-				m_eCurState = STATE_CHASE;
-			}
-		}
-
-		else
+		if (m_pModelCom->IsAnimationFinished(HIT_L) || m_pModelCom->IsAnimationFinished(HIT_R))
 		{
 			m_eCurState = STATE_CHASE;
 		}
+
+		break;
+
+	case Client::CImp::STATE_DIE:
+
+		if (m_pModelCom->IsAnimationFinished(DIE))
+		{
+			m_iPassIndex = AnimPass_Dissolve;
+		}
+
+		break;
 	}
 
-	if (fDistance <= m_fAttackRange)
-	{
-		m_eCurState = STATE_ATTACK;
-		m_Animation.isLoop = true;
-	}
 }
 
 HRESULT CImp::Add_Collider()

@@ -49,6 +49,12 @@
     <Filter Include="01.Levels\00.Level_Test">
       <UniqueIdentifier>{40ecdb8f-373b-478a-a90d-6c3fcece8a00}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\01.Terrain">
+      <UniqueIdentifier>{1e4bebba-31c1-478a-b169-4b11466ad48f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\02.Player">
+      <UniqueIdentifier>{caa5e8bb-b101-4ded-9dda-7fecc1204f9f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -111,6 +117,12 @@
     <ClInclude Include="..\ImGui\imgui_impl_win32.h">
       <Filter>03.ImGui\ImGui_Default</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Shader_Player.h">
+      <Filter>02.GameObjects\02.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Shader_Terrain.h">
+      <Filter>02.GameObjects\01.Terrain</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -157,6 +169,12 @@
     </ClCompile>
     <ClCompile Include="..\ImGui\imgui_impl_win32.cpp">
       <Filter>03.ImGui\ImGui_Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Shader_Player.cpp">
+      <Filter>02.GameObjects\02.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Shader_Terrain.cpp">
+      <Filter>02.GameObjects\01.Terrain</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

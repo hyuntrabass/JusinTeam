@@ -60,10 +60,16 @@ private:
 private:
 	_vec3 m_vRandom[16]{};
 	_bool m_TurnOnSSAO = false;
-	_float m_fIntensity = 5.f;
-	_float m_fRadius = 0.025f;
-	_float m_fScale = 0.5f;
-	_float m_fBias = 0.5f;
+	SSAO_DESC m_SSAO;
+
+public:
+	SSAO_DESC Get_SSAO() const {
+		return m_SSAO;
+	}
+
+	void Set_SSAO(SSAO_DESC Desc) {
+		m_SSAO = Desc;
+	}
 
 private:
 	HRESULT Ready_ShadowDSV();

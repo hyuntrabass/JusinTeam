@@ -14,6 +14,7 @@ class CImgui_Manager final : public CBase
 {
 public:
     enum TYPE { TYPE_MONSTER, TYPE_PLAYER, TYPE_END };
+    enum TRIGGER { TRIGGER_EFFECT, TRIGGER_LIGHT, TRIGGER_SOUND, TRIGGER_END };
 
 public:
     //ImGuizmo
@@ -57,24 +58,27 @@ private:
     vector<const _char*> m_AnimationNames;
     vector<const _char*> m_BoneNames;
     _uint m_iCurrentModelIndex = { 0 };
-    _int m_iCurrentBone{};
-
-    vector<const _char*> m_EffectDescNames;
-    _int m_iSelectEffectFile{};
-    _int m_iCurrentEffect{};
-
+    _int m_iCurrentBoneIndex{};
     _bool m_IsCreateModel = { false };
     POINT m_ptMouse = {};
-    _int m_ePreType = { TYPE_MONSTER };
-    _int m_eType = { TYPE_MONSTER };
-    _float m_fTimeDelta{};
+    _int m_ePreModelType = { TYPE_MONSTER };
+    _int m_eModelType = { TYPE_MONSTER };
 
-    vector<string> m_FBXDataName;
-    const _char** m_szFBXDataName;
+    //트리거
+    _int m_ePreTriggerType = { TRIGGER_EFFECT };
+    _int m_eTriggerType = { TRIGGER_EFFECT };
+    _int m_iSelectFile{};
+    _int m_iCurTriggerIndex{};
+    //이펙트
+    vector<const _char*> m_EffectDescNames;
+    _mat m_OffsetMatrix{};
+
+    vector<string> m_MonsterNames;
+    const _char** m_szMonsterNames;
     vector<string> m_EffectNames;
     const _char** m_szEffectNames;
 
-    vector<const _char*> m_TriggerTimes;
+    _float m_fTimeDelta{};
 
     //ImGuizmo
     SELECT m_eSelect = { SELECT_EFFECT };

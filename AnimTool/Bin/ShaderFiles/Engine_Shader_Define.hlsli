@@ -2,6 +2,14 @@
 
 float3 g_vRandom[50];
 
+struct SSAO_DESC
+{
+    float fIntensity;
+    float fRadius;
+    float fScale;
+    float fBias;
+};
+
 // Sampler
 sampler PointSampler = sampler_state
 {

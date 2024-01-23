@@ -5,6 +5,8 @@
 #include "NPC_Dummy.h"
 #include "Map.h"
 #include "Player.h"
+#include "Effect_Manager.h"
+#include "UI_Manager.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(_dev pDevice, _context pContext)
@@ -42,13 +44,14 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
+
 	// Monster Parse
 	if (FAILED(Ready_Monster()))
 	{
 		MSG_BOX("Failed to Ready Monster");
 		return E_FAIL;
 	}
-
+	
 	if (FAILED(Ready_Rabbit()))
 	{
 		MSG_BOX("Failed to Ready Rabbit");
@@ -115,6 +118,18 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
+	if (FAILED(Ready_Void23()))
+	{
+		MSG_BOX("Failed to Ready Void23");
+		return E_FAIL;
+	}
+
+	if (FAILED(Ready_Nastron07()))
+	{
+		MSG_BOX("Failed to Ready Nastron07");
+		return E_FAIL;
+	}
+
 	// NPC
 	if (FAILED(Ready_Cat()))
 	{
@@ -170,15 +185,27 @@ HRESULT CLevel_GamePlay::Init()
 
 	m_pGameInstance->Set_HellHeight(-5000.f);
 
+	EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Rain");
+	EffectDesc.pMatrix = &m_RainMatrix;
+	EffectDesc.isFollow = true;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
+
+	CUI_Manager::Get_Instance()->Init();
+
+
 	return S_OK;
 }
 
 void CLevel_GamePlay::Tick(_float fTimeDelta)
 {
-
-	if (m_pGameInstance->Key_Down(DIK_RETURN))
+	if (!CUI_Manager::Get_Instance()->Is_InvenActive())
 	{
+		m_RainMatrix = _mat::CreateTranslation(_vec3(m_pGameInstance->Get_CameraPos()));
+	}
+	//m_RainMatrix = _mat::CreateTranslation(_vec3(50.f, 3.f, 50.f));
 
+	if (m_pGameInstance->Key_Down(DIK_PRIOR))
+	{
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_VILLAGE))))
 		{
 			return;
@@ -186,6 +213,8 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 
 		return;
 	}
+
+	m_pGameInstance->PhysXTick(fTimeDelta);
 
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 	{
@@ -462,7 +491,7 @@ HRESULT CLevel_GamePlay::Ready_Monster()
 	inFile.read(reinterpret_cast<char*>(&MonsterListSize), sizeof(_uint));
 
 
-	for (_uint i = 0; i < MonsterListSize; ++i)
+	for (_uint i = 0; i < 1; ++i)
 	{
 		_ulong MonsterPrototypeSize;
 		inFile.read(reinterpret_cast<char*>(&MonsterPrototypeSize), sizeof(_ulong));
@@ -617,6 +646,26 @@ HRESULT CLevel_GamePlay::Ready_Void20()
 	return S_OK;
 }
 
+HRESULT CLevel_GamePlay::Ready_Void23()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void23"), TEXT("Prototype_GameObject_Void23"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Nastron07()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Nastron07"), TEXT("Prototype_GameObject_Nastron07"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
 HRESULT CLevel_GamePlay::Ready_UI()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Player_HP"))))
@@ -646,6 +695,18 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Inven"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Coin"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Diamond"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Menu"))))
 	{
 		return E_FAIL;
 	}

@@ -42,7 +42,7 @@ HRESULT CThief04::Init(void* pArg)
 
 	m_eCurState = STATE_IDLE;
 
-	m_iHP = 10;
+	m_iHP = 30;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
@@ -51,6 +51,11 @@ HRESULT CThief04::Init(void* pArg)
 
 void CThief04::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_T))
+	{
+		Set_Damage(0, WP_BOW);
+	}
+
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 
@@ -65,12 +70,8 @@ void CThief04::Late_Tick(_float fTimeDelta)
 	__super::Late_Tick(fTimeDelta);
 
 #ifdef _DEBUGTEST
-	m_pRendererCom->Add_DebugComponent(m_pAxeColliderCom);
-	m_pRendererCom->Add_DebugComponent(m_pKnifeColliderCom);
-
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
-
 #endif
 }
 
@@ -84,27 +85,30 @@ HRESULT CThief04::Render()
 void CThief04::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_iHP -= iDamage;
+	m_bDamaged = true;
+
+	m_eCurState = STATE_HIT;
+
+	_vec4 vPlayerPos = __super::Compute_PlayerPos();
+	m_pTransformCom->LookAt(vPlayerPos);
 
 	if (iDamageType == WP_BOW)
 	{
 		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
 
 		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
-
-		m_eCurState = STATE_HIT;
 	}
 
 	else if (iDamageType == WP_SWORD)
 	{
-		m_eCurState = STATE_HIT;
 	}
 }
 
 void CThief04::Init_State(_float fTimeDelta)
 {
-	if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
+	if (m_iHP <= 0)
 	{
-		m_eCurState = STATE_IDLE;
+		m_eCurState = STATE_DIE;
 	}
 
 	if (m_ePreState != m_eCurState)
@@ -135,10 +139,25 @@ void CThief04::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CThief04::STATE_ATTACK:
+			m_bDamaged = false;
 			break;
 
 		case Client::CThief04::STATE_HIT:
-			m_iHitPattern = rand() % 2;
+		{
+			_uint iHitPattern = rand() % 2;
+
+			switch (iHitPattern)
+			{
+			case 0:
+				m_Animation.iAnimIndex = L_HIT;
+				m_Animation.isLoop = false;
+				break;
+			case 1:
+				m_Animation.iAnimIndex = R_HIT;
+				m_Animation.isLoop = false;
+				break;
+			}
+		}
 			break;
 
 		case Client::CThief04::STATE_DIE:
@@ -153,8 +172,6 @@ void CThief04::Init_State(_float fTimeDelta)
 
 void CThief04::Tick_State(_float fTimeDelta)
 {
-	Attack(fTimeDelta);
-
 	switch (m_eCurState)
 	{
 	case Client::CThief04::STATE_IDLE:
@@ -166,10 +183,23 @@ void CThief04::Tick_State(_float fTimeDelta)
 			m_eCurState = STATE_WALK;
 			m_fIdleTime = 0.f;
 		}
+
+		//_float fDistance = __super::Compute_PlayerDistance();
+		//if (fDistance <= m_fChaseRange)
+		//{
+		//	m_eCurState = STATE_CHASE;
+		//}
+
 		break;
 
 	case Client::CThief04::STATE_WALK:
 		m_pTransformCom->Go_Straight(fTimeDelta);
+
+		if (m_pModelCom->IsAnimationFinished(WALK))
+		{
+			m_eCurState = STATE_IDLE;
+		}
+
 		break;
 
 	case Client::CThief04::STATE_CHASE:
@@ -180,10 +210,17 @@ void CThief04::Tick_State(_float fTimeDelta)
 		m_pTransformCom->LookAt(vPlayerPos);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 
-		if (fDistance > m_fChaseRange)
+		if (fDistance > m_fChaseRange && !m_bDamaged)
 		{
 			m_eCurState = STATE_IDLE;
 		}
+
+		if (fDistance <= m_fAttackRange)
+		{
+			m_eCurState = STATE_ATTACK;
+			m_Animation.isLoop = true;
+		}
+
 	}
 		break;
 
@@ -275,77 +312,38 @@ void CThief04::Tick_State(_float fTimeDelta)
 			}
 			break;
 		}
+
+		if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
+			m_pModelCom->IsAnimationFinished(ATTACK03) || m_pModelCom->IsAnimationFinished(ATTACK04) ||
+			m_pModelCom->IsAnimationFinished(ATTACK05))
+		{
+			m_eCurState = STATE_CHASE;
+		}
+
 		break;
 
 	case Client::CThief04::STATE_HIT:
 
-		switch (m_iHitPattern)
-		{
-		case 0:
-			m_Animation.iAnimIndex = L_HIT;
-			m_Animation.isLoop = false;
-			break;
-		case 1:
-			m_Animation.iAnimIndex = R_HIT;
-			m_Animation.isLoop = false;
-			break;
-		}
-		break;
-
-	case Client::CThief04::STATE_DIE:
-		break;
-	}
-
-}
-
-void CThief04::Attack(_float fTimeDelta)
-{
-	_float fDistance = __super::Compute_PlayerDistance();
-
-	if (fDistance <= m_fChaseRange)
-	{
-		if (m_eCurState == STATE_ATTACK)
-		{
-			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
-				m_pModelCom->IsAnimationFinished(ATTACK03) || m_pModelCom->IsAnimationFinished(ATTACK04)||
-				m_pModelCom->IsAnimationFinished(ATTACK05))
-			{
-				m_eCurState = STATE_CHASE;
-			}
-		}
-
-		else
+		if (m_pModelCom->IsAnimationFinished(L_HIT) || m_pModelCom->IsAnimationFinished(R_HIT))
 		{
 			m_eCurState = STATE_CHASE;
 		}
-	}
 
-	if (fDistance <= m_fAttackRange)
-	{
-		m_eCurState = STATE_ATTACK;
-		m_Animation.isLoop = true;
+		break;
+
+	case Client::CThief04::STATE_DIE:
+
+		if (m_pModelCom->IsAnimationFinished(DIE))
+		{
+			m_iPassIndex = AnimPass_Dissolve;
+		}
+
+		break;
 	}
 }
 
 HRESULT CThief04::Add_Collider()
 {
-	// Com_Collider
-	Collider_Desc CollDesc = {};
-	CollDesc.eType = ColliderType::Sphere;
-	CollDesc.fRadius = 0.1f;
-	CollDesc.vCenter = _vec3(0.35f, 0.f, 0.15f);
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-		TEXT("Com_AxeCollider_Sphere"), (CComponent**)&m_pAxeColliderCom, &CollDesc)))
-		return E_FAIL;
-
-	CollDesc.fRadius = 0.05f;
-	CollDesc.vCenter = _vec3(0.3f, 0.f, 0.f);
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-		TEXT("Com_KnifeCollider_Sphere"), (CComponent**)&m_pKnifeColliderCom, &CollDesc)))
-		return E_FAIL;
-
 	Collider_Desc BodyCollDesc = {};
 	BodyCollDesc.eType = ColliderType::OBB;
 	BodyCollDesc.vExtents = _vec3(0.3f, 0.8f, 0.5f);
@@ -374,19 +372,8 @@ HRESULT CThief04::Add_Collider()
 
 void CThief04::Update_Collider()
 {
-	_mat AxeMatrix = *(m_pModelCom->Get_BoneMatrix("bone_R_weapon_01"));
-	AxeMatrix *= m_pTransformCom->Get_World_Matrix();
-
-	m_pAxeColliderCom->Update(AxeMatrix);
-
-	_mat KnifeMatrix = *(m_pModelCom->Get_BoneMatrix("bone_L_weapon_01"));
-	KnifeMatrix *= m_pTransformCom->Get_World_Matrix();
-
-	m_pKnifeColliderCom->Update(KnifeMatrix);
-
 	_mat Offset = _mat::CreateTranslation(0.f, 0.8f, 0.f);
 	m_pAttackColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
-
 }
 
 CThief04* CThief04::Create(_dev pDevice, _context pContext)
@@ -418,7 +405,4 @@ CGameObject* CThief04::Clone(void* pArg)
 void CThief04::Free()
 {
 	__super::Free();
-
-	Safe_Release(m_pAxeColliderCom);
-	Safe_Release(m_pKnifeColliderCom);
 }

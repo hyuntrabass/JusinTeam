@@ -45,6 +45,7 @@ using namespace physx;
 #pragma comment(lib, "PhysX_64.lib")
 #pragma comment(lib, "PhysXFoundation_64.lib")
 #pragma comment(lib, "PhysXCooking_64.lib")
+#pragma comment(lib, "PhysXPvdSDK_static_64.lib")
 
 
 #ifdef _DEBUG
@@ -158,6 +159,14 @@ namespace Engine
 		DefPass_Light_Point,
 		DefPass_Deferred,
 		DefPass_Blur,
+	};
+
+	enum Effect_Type
+	{
+		ET_PARTICLE,
+		ET_RECT,
+		ET_MESH,
+		ET_END
 	};
 }
 

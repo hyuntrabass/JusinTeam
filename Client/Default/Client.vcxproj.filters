@@ -268,9 +268,6 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Item">
       <UniqueIdentifier>{b5de1188-8dfd-4cce-be30-4873c65ba985}</UniqueIdentifier>
     </Filter>
-    <Filter Include="99.Headers\98.Default">
-      <UniqueIdentifier>{6ef1e47a-756a-4482-9f45-993c308095c3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\04.Monster\06. Void\Void09">
       <UniqueIdentifier>{708cdd65-d615-4fef-b8a3-5eb67028c4ea}</UniqueIdentifier>
     </Filter>
@@ -298,19 +295,31 @@
     <Filter Include="01.Levels\04.Village">
       <UniqueIdentifier>{c2ce56cf-d551-4fb0-b7a8-880ccf58f895}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Frame">
+      <UniqueIdentifier>{001bd6e9-6120-4b88-82ae-b6fa21e64e57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Money">
+      <UniqueIdentifier>{622305e8-95d7-491a-8205-5e2949cc44b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Menu">
+      <UniqueIdentifier>{ee0bd121-9652-4824-9ef1-c2d380c11fbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98.Default">
+      <UniqueIdentifier>{6ef1e47a-756a-4482-9f45-993c308095c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
-      <Filter>99.Headers\98.Default</Filter>
+      <Filter>98.Default</Filter>
     </ClInclude>
     <ClInclude Include="framework.h">
-      <Filter>99.Headers\98.Default</Filter>
+      <Filter>98.Default</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>99.Headers\98.Default</Filter>
+      <Filter>98.Default</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
-      <Filter>99.Headers\98.Default</Filter>
+      <Filter>98.Default</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Client_Define.h">
       <Filter>99.Headers</Filter>
@@ -546,7 +555,15 @@
     <ClInclude Include="..\Public\Void09.h">
       <Filter>02.GameObjects\04.Monster\06. Void\Void09</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Void20.h" />
+    <ClInclude Include="..\Public\Void20.h">
+      <Filter>02.GameObjects\04.Monster\06. Void\Void20</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Void23.h">
+      <Filter>02.GameObjects\04.Monster\06. Void\Void23</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Nastron07.h">
+      <Filter>02.GameObjects\04.Monster\03. Nastron\Nastron07</Filter>
+    </ClInclude>
     <ClInclude Include="..\Public\Village_Object.h">
       <Filter>02.GameObjects\09.Object\Village</Filter>
     </ClInclude>
@@ -559,23 +576,38 @@
     <ClInclude Include="..\Public\Level_Village.h">
       <Filter>01.Levels\04.Village</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\InvenFrame.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Frame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Coin.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Money</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Diamond.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Money</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Menu.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CommonTrail.h">
+      <Filter>03.Effect\Common_Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
-      <Filter>99.Headers\98.Default</Filter>
+      <Filter>98.Default</Filter>
     </Image>
     <Image Include="small.ico">
-      <Filter>99.Headers\98.Default</Filter>
+      <Filter>98.Default</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc">
-      <Filter>99.Headers\98.Default</Filter>
+      <Filter>98.Default</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
-      <Filter>99.Headers\98.Default</Filter>
+      <Filter>98.Default</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\MainApp.cpp">
       <Filter>00,MainApp</Filter>
@@ -805,7 +837,15 @@
     <ClCompile Include="..\Private\Void09.cpp">
       <Filter>02.GameObjects\04.Monster\06. Void\Void09</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Void20.cpp" />
+    <ClCompile Include="..\Private\Void20.cpp">
+      <Filter>02.GameObjects\04.Monster\06. Void\Void20</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Void23.cpp">
+      <Filter>02.GameObjects\04.Monster\06. Void\Void23</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Nastron07.cpp">
+      <Filter>02.GameObjects\04.Monster\03. Nastron\Nastron07</Filter>
+    </ClCompile>
     <ClCompile Include="..\Private\Village_Object.cpp">
       <Filter>02.GameObjects\09.Object\Village</Filter>
     </ClCompile>
@@ -817,6 +857,21 @@
     </ClCompile>
     <ClCompile Include="..\Private\Level_Village.cpp">
       <Filter>01.Levels\04.Village</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\InvenFrame.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Frame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Coin.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Money</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Diamond.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Money</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Menu.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CommonTrail.cpp">
+      <Filter>03.Effect\Common_Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -93,10 +93,11 @@ HRESULT CPhysX_Manager::Init()
 		return E_FAIL;
 	}
 
-	//m_pPvd = PxCreatePvd(*m_pFoundation);
-	//PxPvdTransport* pTransport = PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
+	m_pPvd = PxCreatePvd(*m_pFoundation);
+	m_pTransport = PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
+	m_pPvd->connect(*m_pTransport, PxPvdInstrumentationFlag::eALL);
 
-	m_pPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_pFoundation, PxTolerancesScale(), true);
+	m_pPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_pFoundation, PxTolerancesScale(), true, m_pPvd);
 	if (!m_pPhysics)
 	{
 		return E_FAIL;
@@ -127,9 +128,14 @@ HRESULT CPhysX_Manager::Init()
 
 	//PxRigidStatic* pGround = PxCreatePlane(*m_pPhysics, PxPlane(0.f, 1.f, 0.f, 0.f), *m_pMaterial);
 	//m_pScene->addActor(*pGround);
-#ifdef _DEBUGTEST
-	//m_pScene->setVisualizationParameter(PxVisualizationParameter::eSCALE, 1.0);
-	//m_pScene->setVisualizationParameter(PxVisualizationParameter::eACTOR_AXES, 1.0);
+#ifdef _DEBUG
+	PxPvdSceneClient* pPvdClient = m_pScene->getScenePvdClient();
+	pPvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
+	pPvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
+	pPvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
+
+	m_pScene->setVisualizationParameter(PxVisualizationParameter::eSCALE, 1.0);
+	m_pScene->setVisualizationParameter(PxVisualizationParameter::eACTOR_AXES, 1.0);
 
 	//m_pDebugShader = CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxColor.hlsl"), VTXPOSCOLOR::Elements, VTXPOSCOLOR::iNumElements);
 	//if (!m_pDebugShader)
@@ -412,6 +418,8 @@ void CPhysX_Manager::Free()
 	PX_RELEASE(m_pDispatcher);
 	PX_RELEASE(m_pMaterial);
 	PX_RELEASE(m_pPhysics);
+	PX_RELEASE(m_pPvd);
+	PX_RELEASE(m_pTransport);
 	PX_RELEASE(m_pFoundation);
 
 #ifdef _DEBUGTEST

@@ -163,6 +163,7 @@ public: // Effect Callback
 	using Func_DeleteFX = function<void(const void*)>;
 	using Func_TickFX = function<void(_float)>;
 	using Func_HasCreatedFX = function<_bool(const void*)>;
+	using Func_GetInfoFX = function<EffectInfo(const void*)>;
 
 	void Register_CreateEffect_Callback(Func_CreateFX Function);
 	void Register_DeleteEffect_Callback(Func_DeleteFX Function);

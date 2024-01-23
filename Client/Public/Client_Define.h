@@ -152,6 +152,7 @@ namespace Client
 		D_INVEN,
 		D_SHOP,
 		D_QUEST,
+		D_MENU,
 		D_JOBMARK,
 		D_BAR,
 		D_SCREEN,
@@ -159,13 +160,33 @@ namespace Client
 		D_END
 	};
 
-	enum InvenType
+	enum INVEN_TYPE
 	{
+		INVEN_ALL, 
+		INVEN_WEARABLE,
 		INVEN_EQUIP, 
 		INVEN_EXPENDABLES,
-		INVEN_INGREDIENTS,
-		INVEN_ALL,
-		INVEN__END
+		INVEN_END
+	};
+	enum ITEM_TYPE
+	{
+		ITEM_TOP, 
+		ITEM_BODY,
+		ITEM_HAND,
+		ITEM_FOOT, 
+		ITEM_POTION,
+		ITEM_INGREDIENT,
+		ITEMTYPEEND
+	};
+	
+	enum ITEM_TIER
+	{
+		TIER_COMMON, 
+		TIER_UNCOMMON, 
+		TIER_RARE,
+		TIER_UNIQUE,
+		TIER_LEGENDARY,
+		TIER_END
 	};
 
 	enum WEARABLE_TYPE 
@@ -216,18 +237,17 @@ namespace Client
 	typedef struct tagItemInfo
 	{
 		wstring strName;
-		wstring strType;
 
+		_uint iInvenType;
 		_uint iItemType;
-		wstring strTexture;
-		wstring strModel;
-		wstring strDetail;
+		_uint iItemTier;
 
-		_uint iAD;
-		_uint iCritical;
-		_uint iDefense;
-		_uint iMP;
-		_uint iHP;
+		wstring strTexture;
+
+		_uint iStatus;
+		_uint iPurchase;
+		_uint iSale;
+
 	}ITEM;
 
 #pragma region Shader Passes

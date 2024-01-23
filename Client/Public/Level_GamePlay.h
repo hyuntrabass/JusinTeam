@@ -17,6 +17,9 @@ public:
 	virtual HRESULT Render() override;
 
 private:
+	_mat m_RainMatrix{};
+
+private:
 	HRESULT Ready_Camera();
 	HRESULT Ready_Light();
 	HRESULT Ready_Player();
@@ -42,6 +45,8 @@ private:
 	HRESULT Ready_Imp();
 	HRESULT Ready_Void09();
 	HRESULT Ready_Void20();
+	HRESULT Ready_Void23();
+	HRESULT Ready_Nastron07();
 
 	// NPC
 	HRESULT Ready_Cat();
