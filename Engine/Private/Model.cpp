@@ -424,9 +424,18 @@ void CModel::Play_Animation(_float fTimeDelta)
 	for (size_t i = 0; i < m_TriggerSounds.size(); i++)
 	{
 		if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iStartAnimIndex &&
-			static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerSounds[i].fStartAnimPos))
+			static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerEffects[i].fStartAnimPos) &&
+			m_TriggerSounds[i].iChannel == -1)
 		{
 			m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundName, m_TriggerSounds[i].fVolume);
+		}
+
+		if (m_TriggerSounds[i].iChannel != -1)
+		{
+			if (not m_pGameInstance->Get_IsPlayingSound(m_TriggerSounds[i].iChannel))
+			{
+				m_TriggerSounds[i].iChannel = -1;
+			}
 		}
 	}
 #pragma endregion

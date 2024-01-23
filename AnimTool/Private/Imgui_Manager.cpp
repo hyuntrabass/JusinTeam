@@ -269,7 +269,16 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			}
 			else if (m_eTriggerType == TRIGGER_SOUND)
 			{
+				_uint iSelectSoundFile = m_iSelectFile;
+				_tchar szSoundName[MAX_PATH]{};
+				MultiByteToWideChar(CP_UTF8, 0, m_szSoundFiles[iSelectSoundFile], (_int)strlen(m_szSoundFiles[iSelectSoundFile]), szSoundName, MAX_PATH);
 
+				TRIGGERSOUND_DESC SoundDesc{};
+				SoundDesc.strSoundName = szSoundName;
+				SoundDesc.iStartAnimIndex = m_AnimDesc.iAnimIndex;
+				SoundDesc.fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
+				SoundDesc.fVolume = 0.5f;
+				pCurModel->Add_TriggerSound(SoundDesc);
 			}
 		}
 		ImGui::SameLine();
@@ -286,7 +295,11 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			}
 			else if (m_eTriggerType == TRIGGER_SOUND)
 			{
-
+				pCurModel->Delete_TriggerSound(m_iCurTriggerIndex);
+				if (m_iCurTriggerIndex != 0)
+				{
+					m_iCurTriggerIndex--;
+				}
 			}
 		}
 	}
