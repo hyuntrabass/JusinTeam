@@ -56,9 +56,14 @@ namespace Client
 		BOW0,
 		BOW1,
 		BOW2,
+		BOW3,
+		BOW4,
 		SWORD0,
 		SWORD1,
 		SWORD2,
+		SWORD3,
+		SWORD4,
+		WP_UNEQUIP,
 		WP_INDEX_END
 	};
 

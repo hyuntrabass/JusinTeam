@@ -45,11 +45,11 @@ HRESULT CLevel_GamePlay::Init()
 
 
 	// Monster Parse
-	if (FAILED(Ready_Monster()))
-	{
-		MSG_BOX("Failed to Ready Monster");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_NpcvsMon()))
+	//{
+	//	MSG_BOX("Failed to Ready Monster");
+	//	return E_FAIL;
+	//}
 	
 	if (FAILED(Ready_Rabbit()))
 	{
@@ -229,7 +229,7 @@ HRESULT CLevel_GamePlay::Ready_Light()
 	LIGHT_DESC LightDesc{};
 
 	LightDesc.eType = LIGHT_DESC::Directional;
-	LightDesc.vDirection = _float4(-1.f, -2.f, -1.f, 0.f);
+	LightDesc.vDirection = _float4(-1.f, -2.f,-1.f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
 
@@ -411,7 +411,7 @@ HRESULT CLevel_GamePlay::Ready_Groar_Boss()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Monster()
+HRESULT CLevel_GamePlay::Ready_NpcvsMon()
 {
 	MonsterInfo Info{};
 	const TCHAR* pGetPath = L"../Bin/Data/Prologue_MonsterData.dat";
@@ -428,7 +428,7 @@ HRESULT CLevel_GamePlay::Ready_Monster()
 	inFile.read(reinterpret_cast<char*>(&MonsterListSize), sizeof(_uint));
 
 
-	for (_uint i = 0; i < 1; ++i)
+	for (_uint i = 0; i < MonsterListSize; ++i)
 	{
 		_ulong MonsterPrototypeSize;
 		inFile.read(reinterpret_cast<char*>(&MonsterPrototypeSize), sizeof(_ulong));

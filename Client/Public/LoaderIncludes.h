@@ -48,7 +48,7 @@
 #include "Diamond.h"
 #include "Menu.h"
 #include "InvenFrame.h"
-
+#include "CommonTrail.h"
 
 #include "Map.h"
 
