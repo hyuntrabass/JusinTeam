@@ -6,6 +6,7 @@
 #include "Map.h"
 #include "Player.h"
 #include "Effect_Manager.h"
+#include "UI_Manager.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(_dev pDevice, _context pContext)
@@ -183,12 +184,18 @@ HRESULT CLevel_GamePlay::Init()
 	EffectDesc.isFollow = true;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
 
+	CUI_Manager::Get_Instance()->Init();
+
+
 	return S_OK;
 }
 
 void CLevel_GamePlay::Tick(_float fTimeDelta)
 {
-	m_RainMatrix = _mat::CreateTranslation(_vec3(m_pGameInstance->Get_CameraPos()));
+	if (!CUI_Manager::Get_Instance()->Is_InvenActive())
+	{
+		m_RainMatrix = _mat::CreateTranslation(_vec3(m_pGameInstance->Get_CameraPos()));
+	}
 	//m_RainMatrix = _mat::CreateTranslation(_vec3(50.f, 3.f, 50.f));
 
 	if (m_pGameInstance->Key_Down(DIK_PRIOR))

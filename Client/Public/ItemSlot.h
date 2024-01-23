@@ -30,15 +30,17 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
 	CTexture* m_pTextureCom{ nullptr };
-	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
-	_bool			m_isFull{};
+	_bool			m_isFull{ false };
 	_float			m_fTime{};
 	_float			m_fCoolTime{};
 	CGameObject*	m_pItem{ nullptr };
 
-private:
+public:
+	const _bool& Is_Full() const { return m_isFull; }
+
+private: 
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 

@@ -72,6 +72,8 @@ public:
 	void Set_Size(_float fSizeX, _float fSizeY, _float fFontSize = -1.f);
 	void Set_Color(_vec4 vColor) { m_vColor = vColor; }
 	const _vec2& Get_Position() const { return m_vPosition; }
+	const _vec2 Get_TransPosition() const { return _vec2(m_fX, m_fY); }
+	const _vec2 Get_Size() const { return _vec2(m_fSizeX, m_fSizeY); }
 	const _vec4& Get_Color() const { return m_vColor; }
 	void Set_Position(_vec2 vPos);
 	void Set_Text(const wstring strText) { m_strText = strText; }

@@ -850,6 +850,19 @@ HRESULT CLoader::Load_GamePlay()
 			}
 		}
 	}
+	strInputFilePath = "../Bin/Resources/Textures/UI/Item";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 
 #pragma endregion
 
