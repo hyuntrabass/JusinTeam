@@ -155,6 +155,7 @@
     <ClInclude Include="..\Public\Imgui\imstb_truetype.h" />
     <ClInclude Include="..\public\Imgui_Manager.h" />
     <ClInclude Include="..\Public\LoadingImg.h" />
+    <ClInclude Include="..\Public\Select_Map.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="Effect_Editor.h" />
     <ClInclude Include="framework.h" />
@@ -167,6 +168,7 @@
     <ClCompile Include="..\private\EffectApp.cpp" />
     <ClCompile Include="..\private\Imgui_Manager.cpp" />
     <ClCompile Include="..\Private\LoadingImg.cpp" />
+    <ClCompile Include="..\Private\Select_Map.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\Public\Imgui\imgui.cpp" />
     <ClCompile Include="..\Public\Imgui\imgui_demo.cpp" />

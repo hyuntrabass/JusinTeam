@@ -41,6 +41,9 @@ private:
 	_float m_fDissolveRatio{};
 	_vec2 m_vUV{};
 
+	static _int m_iLightID;
+	wstring m_strLightTag{};
+
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

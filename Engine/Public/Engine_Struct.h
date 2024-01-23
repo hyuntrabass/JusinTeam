@@ -83,8 +83,12 @@ namespace Engine
 		float fDissolveDuration{};
 		bool bSkipBloom{};
 		float fUnDissolveDuration{};
+		SimpleMath::Vector2 vUVInit{};
 		SimpleMath::Vector2 vUVDelta{};
 		bool isRandomSprite{};
+
+		bool hasLight{};
+		LIGHT_DESC Light_Desc{};
 
 		std::wstring strDiffuseTexture{};
 		std::wstring strMaskTexture{};

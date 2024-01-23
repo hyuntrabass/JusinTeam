@@ -22,25 +22,28 @@ struct OldEffectInfo
 	ParticleDesc PartiDesc{};
 	unsigned int iNumInstances{};
 	float fLifeTime{};
-	int iDiffTextureID{};
-	int iMaskTextureID{};
 	SimpleMath::Vector4 vColor{};
 	unsigned int iPassIndex{};
-	SimpleMath::Vector2 vSize{};
-	SimpleMath::Vector3* pPos{};
+	SimpleMath::Vector3 vSize{};
 	SimpleMath::Vector3 vPosOffset{};
-	SimpleMath::Vector2 vSizeDelta{};
+	SimpleMath::Vector3 vSizeDelta{};
 	bool bApplyGravity{};
 	SimpleMath::Vector3 vGravityDir{};
-	SimpleMath::Vector3 vPos{};
-	int iDissolveTextureID{};
 	float fDissolveDuration{};
-	unsigned int iModelIndex{};
 	bool bSkipBloom{};
-	int iUnDissolveTextureID{};
 	float fUnDissolveDuration{};
+	SimpleMath::Vector2 vUVInit{};
 	SimpleMath::Vector2 vUVDelta{};
 	bool isRandomSprite{};
+
+	std::wstring strDiffuseTexture{};
+	std::wstring strMaskTexture{};
+	std::wstring strDissolveTexture{};
+	std::wstring strUnDissolveTexture{};
+	std::string strModel{};
+
+	bool isFollow{};
+	SimpleMath::Matrix* pMatrix{};
 };
 
 class CImgui_Manager : public CBase
@@ -49,6 +52,9 @@ class CImgui_Manager : public CBase
 private:
 	CImgui_Manager();
 	virtual ~CImgui_Manager() = default;
+
+public:
+	const _bool& Has_Light();
 
 public:
 	HRESULT Init(_dev pDevice, _context pContext, vector<string>* pTextureList, vector<string>* pModelList);
@@ -86,6 +92,7 @@ private:
 	_int m_iNumInstance{ 30 };
 	_bool m_hasDiffTexture{};
 	_bool m_hasMask{};
+	_bool m_hasLight{};
 	ParticleDesc m_ParticleInfo{};
 
 private:
@@ -95,7 +102,7 @@ private:
 	const _int& Compute_ModelIndex(const string& strModel);
 
 	EffectInfo Load_Data();
-	OldEffectInfo Load_OldData();
+	void Load_OldData();
 	HRESULT Export_Data(EffectInfo& Info);
 
 public:

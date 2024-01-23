@@ -262,7 +262,7 @@ private:
 	_float2 m_vFogNF{ 2000.f, 2000.f };
 	_bool m_bShakeCamera{};
 	_bool m_bTargetLook{ false };
-	_float m_fHellHeight{};
+	_float m_fHellHeight{ -1000.f };
 	_vec4 m_vTarget{};
 	_vec4 m_vTargetLook{};
 	_bool m_AimMode{};

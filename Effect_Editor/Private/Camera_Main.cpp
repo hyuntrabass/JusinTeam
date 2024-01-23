@@ -35,6 +35,8 @@ void CCamera_Main::Tick(_float fTimeDelta)
 {
 	fTimeDelta = fTimeDelta / m_pGameInstance->Get_TimeRatio();
 
+	m_pGameInstance->Set_CameraNF(_vec2(m_fNear, m_fFar));
+
 	if (m_pGameInstance->Key_Down(DIK_P))
 	{
 		if (m_isMoveMode)

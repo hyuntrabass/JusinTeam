@@ -1,5 +1,7 @@
 #include "Effect_Dummy.h"
 
+_int CEffect_Dummy::m_iLightID = {};
+
 CEffect_Dummy::CEffect_Dummy(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
 {
@@ -45,6 +47,12 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 	}
 
 	m_OffsetMatrix = *m_Effect.pMatrix;
+
+	if (m_Effect.hasLight)
+	{
+		m_strLightTag = L"Light_Effect_" + to_wstring(m_iLightID++);
+		m_pGameInstance->Add_Light(m_pGameInstance->Get_CurrentLevelIndex(), m_strLightTag, m_Effect.Light_Desc);
+	}
 
 	return S_OK;
 }
@@ -145,6 +153,12 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
 		break;
 	}
+	}
+
+	if (m_Effect.hasLight)
+	{
+		LIGHT_DESC* pLightInfo = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), m_strLightTag);
+		pLightInfo->vPosition = m_WorldMatrix.Position();
 	}
 }
 
@@ -416,6 +430,11 @@ CGameObject* CEffect_Dummy::Clone(void* pArg)
 
 void CEffect_Dummy::Free()
 {
+	if (m_Effect.hasLight)
+	{
+		m_pGameInstance->Delete_Light(m_pGameInstance->Get_CurrentLevelIndex(), m_strLightTag);
+	}
+
 	__super::Free();
 
 	Safe_Release(m_pUnDissolveTextureCom);
