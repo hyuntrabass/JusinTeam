@@ -45,11 +45,11 @@ HRESULT CLevel_GamePlay::Init()
 
 
 	// Monster Parse
-	if (FAILED(Ready_Monster()))
-	{
-		MSG_BOX("Failed to Ready Monster");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Monster()))
+	//{
+	//	MSG_BOX("Failed to Ready Monster");
+	//	return E_FAIL;
+	//}
 	
 	if (FAILED(Ready_Rabbit()))
 	{
@@ -69,11 +69,11 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_NPCvsMon()))
-	{
-		MSG_BOX("Failed to Ready NPCvsMon");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_NPCvsMon()))
+	//{
+	//	MSG_BOX("Failed to Ready NPCvsMon");
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(Ready_Thief04()))
 	{
@@ -428,7 +428,7 @@ HRESULT CLevel_GamePlay::Ready_Monster()
 	inFile.read(reinterpret_cast<char*>(&MonsterListSize), sizeof(_uint));
 
 
-	for (_uint i = 0; i < 1; ++i)
+	for (_uint i = 0; i < MonsterListSize; ++i)
 	{
 		_ulong MonsterPrototypeSize;
 		inFile.read(reinterpret_cast<char*>(&MonsterPrototypeSize), sizeof(_ulong));

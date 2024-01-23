@@ -64,16 +64,16 @@ namespace Client
 
 	enum ATTACK_TYPE  //데미지주는 타입
 	{
-		AT_Sword_Common,
-		AT_Sword_Skill1,
-		AT_Sword_Skill2,
-		AT_Sword_Skill3,
-		AT_Sword_Skill4,
-		AT_Bow_Common,
-		AT_Bow_Skill1,
-		AT_Bow_Skill2,
-		AT_Bow_Skill3,
-		AT_Bow_Skill4,
+		AT_Sword_Common,// 경직
+		AT_Sword_Skill1,// 경직
+		AT_Sword_Skill2,// 경직
+		AT_Sword_Skill3,// 경직
+		AT_Sword_Skill4,// 경직
+		AT_Bow_Common,// 밀려나게
+		AT_Bow_Skill1,// 밀려나게
+		AT_Bow_Skill2,// 경직
+		AT_Bow_Skill3,// 이속 느려지게
+		AT_Bow_Skill4,// 경직
 		AT_End
 	};
 

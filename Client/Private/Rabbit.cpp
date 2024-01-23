@@ -34,12 +34,11 @@ HRESULT CRabbit::Init(void* pArg)
 
 	//m_pTransformCom->Set_State(State::Pos, _vec4(5.f, 0.f, 0.f, 1.f));
 	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
-	m_pTransformCom->Set_Speed(3.f);
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = false;
-	m_Animation.fAnimSpeedRatio = 1.5f;
+	m_Animation.fAnimSpeedRatio = 2.f;
 
 	m_eCurState = STATE_IDLE;
 
@@ -54,7 +53,7 @@ void CRabbit::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_R))
 	{
-		Set_Damage(5, WP_BOW);
+		Set_Damage(0, AT_Bow_Common);
 	}
 
 	Init_State(fTimeDelta);
@@ -69,6 +68,11 @@ void CRabbit::Tick(_float fTimeDelta)
 void CRabbit::Late_Tick(_float fTimeDelta)
 {
 	__super::Late_Tick(fTimeDelta);
+
+	//if (m_bStun == false)
+	//{
+	//	m_pModelCom->Play_Animation(fTimeDelta);
+	//}
 
 #ifdef _DEBUGTEST
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
@@ -87,23 +91,32 @@ void CRabbit::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_iHP -= iDamage;
 	m_bDamaged = true;
-
 	m_eCurState = STATE_CHASE;
 
 	_vec4 vPlayerPos = __super::Compute_PlayerPos();
 	m_pTransformCom->LookAt(vPlayerPos);
 
-	if (iDamageType == WP_BOW)
+	if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
+		iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
 	{
+		// 경직
+		//m_bStun = true;
+		m_fStunTime += (1.f / 60.f);
+	}
+
+	if (iDamageType == AT_Bow_Common || iDamageType == AT_Bow_Skill1)
+	{
+		// 밀려나게
 		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
 
 		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
 	}
 
-	else if (iDamageType == WP_SWORD)
+	if (iDamageType == AT_Bow_Skill3)
 	{
+		// 이속 느려지게
+		m_pTransformCom->Set_Speed(0.5f);
 	}
-
 }
 
 void CRabbit::Init_State(_float fTimeDelta)
@@ -113,6 +126,16 @@ void CRabbit::Init_State(_float fTimeDelta)
 		m_eCurState = STATE_DIE;
 	}
 
+	if (m_fStunTime >= 0.01f && m_fStunTime <= 0.5f)
+	{
+		m_bStun = true;
+	}
+	else
+	{
+		m_fStunTime = 0.f;
+		m_bStun = false;
+	}
+
 	if (m_ePreState != m_eCurState)
 	{
 		switch (m_eCurState)
@@ -120,7 +143,10 @@ void CRabbit::Init_State(_float fTimeDelta)
 		case Client::CRabbit::STATE_IDLE:
 			m_Animation.iAnimIndex = IDLE;
 			m_Animation.isLoop = true;
-			m_pTransformCom->Set_Speed(1.f);
+			m_Animation.fAnimSpeedRatio = 2.2f;
+			m_Animation.fInterpolationTime = 0.5f;
+
+			m_pTransformCom->Set_Speed(3.f);
 			m_bDamaged = false;
 			break;
 
@@ -156,7 +182,7 @@ void CRabbit::Init_State(_float fTimeDelta)
 		case Client::CRabbit::STATE_CHASE:
 			m_Animation.iAnimIndex = RUN;
 			m_Animation.isLoop = true;
-			m_pTransformCom->Set_Speed(3.f);
+			m_pTransformCom->Set_Speed(4.f);
 			break;
 
 		case Client::CRabbit::STATE_ATTACK:
