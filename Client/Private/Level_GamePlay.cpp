@@ -148,11 +148,11 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 		// Environment
-	//if (FAILED(Ready_Environment()))
-	//{
-	//	MSG_BOX("Failed to Ready Environment");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Environment()))
+	{
+		MSG_BOX("Failed to Ready Environment");
+		return E_FAIL;
+	}
 
 
 	if (FAILED(Ready_UI()))
@@ -246,7 +246,7 @@ HRESULT CLevel_GamePlay::Ready_Player()
 HRESULT CLevel_GamePlay::Ready_Map()
 {
 	TERRAIN_INFO Terrain;
-	Terrain.vTerrainSize = _uint2(200, 200);
+	Terrain.vTerrainSize = _uint2(300, 300);
 	Terrain.isMesh = false;
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &Terrain)))
@@ -286,7 +286,7 @@ HRESULT CLevel_GamePlay::Ready_Map()
 
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Map"), &MapInfo)))
 		{
-			MSG_BOX("맵 생성 실패", L"로드 실패");
+			MSG_BOX("맵 생성 실패");
 			return E_FAIL;
 		}
 	}
@@ -330,10 +330,11 @@ HRESULT CLevel_GamePlay::Ready_Environment()
 		ObjectInfo EnvirInfo{};
 		EnvirInfo.strPrototypeTag = EnvirPrototype;
 		EnvirInfo.m_WorldMatrix = EnvirWorldMat;
+		EnvirInfo.eObjectType = Object_Environment;
 
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Prologue_Envir"), TEXT("Prototype_GameObject_Prologue_Object"), &EnvirInfo)))
 		{
-			MSG_BOX("맵 생성 실패", L"로드 실패");
+			MSG_BOX("맵 생성 실패");
 			return E_FAIL;
 		}
 	}
@@ -374,6 +375,7 @@ HRESULT CLevel_GamePlay::Ready_Object()
 		ObjectInfo ObjectInfo{};
 		ObjectInfo.strPrototypeTag = ObjectPrototype;
 		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
+		ObjectInfo.eObjectType = Object_Etc;
 
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Prologue_Object"), TEXT("Prototype_GameObject_Prologue_Object"), &ObjectInfo)))
 		{

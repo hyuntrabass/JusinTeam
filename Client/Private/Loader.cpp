@@ -1120,6 +1120,7 @@ HRESULT CLoader::Load_Village()
 {
 	// ¸Ê
 
+	_mat Pivot = _mat::CreateScale(0.002f);
 	string strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Map/Midgard/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -1129,13 +1130,12 @@ HRESULT CLoader::Load_Village()
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
 			{
 				return E_FAIL;
 			}
 		}
 	}
-	_mat Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 
 	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Object/Midgard/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))

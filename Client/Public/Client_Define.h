@@ -178,13 +178,25 @@ namespace Client
 		W_PET, 
 		W_END };
 
+#pragma region Objects
+	enum ObjectType
+	{
+		Object_Building,
+		Object_Environment,
+		Object_Etc,
+		Object_End
+	};
+
 	struct ObjectInfo
 	{
 		wstring strPrototypeTag{};
-		_vec4 vPos{ _vec4(0.f, 0.f, 0.f, 1.f)};
-		_vec4 vLook{ _vec4(0.f, 0.f, 1.f, 0.f)};
+		_vec4 vPos{ _vec4(0.f, 0.f, 0.f, 1.f) };
+		_vec4 vLook{ _vec4(0.f, 0.f, 1.f, 0.f) };
 		_mat m_WorldMatrix{};
+		ObjectType eObjectType{ };
 	};
+
+#pragma endregion
 
 	struct UiInfo
 	{
@@ -306,6 +318,7 @@ namespace Client
 		InstPass_End,
 	};
 #pragma endregion
+
 
 }
 

@@ -143,7 +143,7 @@ HRESULT CLoader::Load_Editor()
 #pragma region Model
 	//_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(90.f));
 
-	_matrix Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	_matrix Pivot = XMMatrixScaling(0.002f, 0.002f, 0.002f);
 
 	// Map Model
 	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Map/Midgard/Mesh/";
@@ -162,7 +162,7 @@ HRESULT CLoader::Load_Editor()
 		}
 	}
 
-	//Pivot = XMMatrixScaling(1.f, 1.f, 1.f);
+	Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Map/Dungeon/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -210,6 +210,8 @@ HRESULT CLoader::Load_Editor()
 			}
 		}
 	}
+	 Pivot = XMMatrixScaling(0.002f, 0.002f, 0.002f);
+
 	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Object/Midgard/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -226,6 +228,7 @@ HRESULT CLoader::Load_Editor()
 		}
 	}
 	//_mat Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 
 	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Environment/Grass/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
@@ -355,53 +358,30 @@ HRESULT CLoader::Load_Editor()
 #pragma endregion
 
 #pragma region NPC
-	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/Select_Npc/Mesh/";
-	_uint iIndex = 0;
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Cat"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Cat/Mesh/Cat.hyuntraanimmesh", false))))
 	{
-		if (entry.is_regular_file())
-		{
-
-			wstring strPrototypeTag = TEXT("Prototype_Model_Select_Npc") + to_wstring(iIndex++);
-			if (iIndex == 2)
-			{
-				Pivot = _mat::CreateScale(0.01f) * _mat::CreateRotationY(XMConvertToRadians(-40.f));
-				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_EDITOR, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
-				{
-					return E_FAIL;
-				}
-
-			}
-			else if (iIndex == 1)
-			{
-				Pivot = _mat::CreateScale(0.01f) * _mat::CreateRotationY(XMConvertToRadians(-90.f));
-				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_EDITOR, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
-				{
-					return E_FAIL;
-				}
-
-			}
-			else if (iIndex == 3)
-			{
-				Pivot = _mat::CreateScale(0.01f) * _mat::CreateRotationY(XMConvertToRadians(90.f));
-				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_EDITOR, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
-				{
-					return E_FAIL;
-				}
-
-			}
-			else
-			{
-				Pivot = _mat::CreateScale(0.008f) * _mat::CreateRotationY(XMConvertToRadians(-150.f));
-				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_EDITOR, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
-				{
-					return E_FAIL;
-				}
-			}
-
-
-		}
+		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Dog"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Dog/Mesh/Dog.hyuntraanimmesh", false))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_ItemMerchant"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/ItemMerchant/Mesh/ItemMerchant.hyuntraanimmesh", false))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_SkillMerchant"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/SkillMerchant/Mesh/SkillMerchant.hyuntraanimmesh", false))))
+	{
+		return E_FAIL;
+	}
+
 #pragma endregion NPC
 
 

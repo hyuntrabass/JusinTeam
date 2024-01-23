@@ -79,47 +79,47 @@ HRESULT CVIBuffer_Terrain::Init(void* pArg)
 
 				_vector vSrc{}, vDst{}, vNor{};
 
-				//pIndices[iNumIndices++] = iIndices[0];
-				//pIndices[iNumIndices++] = iIndices[1];
-				//pIndices[iNumIndices++] = iIndices[2];
-				pIndices[iNumIndices++] = iIndices[3];
-				pIndices[iNumIndices++] = iIndices[0];
-				pIndices[iNumIndices++] = iIndices[1];
+			pIndices[iNumIndices++] = iIndices[0];
+			pIndices[iNumIndices++] = iIndices[1];
+			pIndices[iNumIndices++] = iIndices[2];
+			//pIndices[iNumIndices++] = iIndices[3];
+			//pIndices[iNumIndices++] = iIndices[0];
+			//pIndices[iNumIndices++] = iIndices[1];
 
-				//vSour = XMLoadFloat3(&pVertices[iIndices[1]].vPosition) - XMLoadFloat3(&pVertices[iIndices[0]].vPosition);
-				//vDest = XMLoadFloat3(&pVertices[iIndices[2]].vPosition) - XMLoadFloat3(&pVertices[iIndices[1]].vPosition);
-				//vNormal = XMVector3Normalize(XMVector3Cross(vSour, vDest));
-				vSrc = XMLoadFloat3(&pVertices[iIndices[0]].vPosition) - XMLoadFloat3(&pVertices[iIndices[3]].vPosition);
-				vDst = XMLoadFloat3(&pVertices[iIndices[1]].vPosition) - XMLoadFloat3(&pVertices[iIndices[0]].vPosition);
-				vNor = XMVector3Normalize(XMVector3Cross(vSrc, vDst));
+			vSrc = XMLoadFloat3(&pVertices[iIndices[1]].vPosition) - XMLoadFloat3(&pVertices[iIndices[0]].vPosition);
+			vDst = XMLoadFloat3(&pVertices[iIndices[2]].vPosition) - XMLoadFloat3(&pVertices[iIndices[1]].vPosition);
+			vNor = XMVector3Normalize(XMVector3Cross(vSrc, vDst));
+			//vSrc = XMLoadFloat3(&pVertices[iIndices[0]].vPosition) - XMLoadFloat3(&pVertices[iIndices[3]].vPosition);
+			//vDst = XMLoadFloat3(&pVertices[iIndices[1]].vPosition) - XMLoadFloat3(&pVertices[iIndices[0]].vPosition);
+			//vNor = XMVector3Normalize(XMVector3Cross(vSrc, vDst));
 
-				//XMStoreFloat3(&pVertices[iIndices[0]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[0]].vNormal)) + vNormal);
-				//XMStoreFloat3(&pVertices[iIndices[1]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[1]].vNormal)) + vNormal);
-				//XMStoreFloat3(&pVertices[iIndices[2]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[2]].vNormal)) + vNormal);
-				XMStoreFloat3(&pVertices[iIndices[3]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[3]].vNormal) + vNor));
-				XMStoreFloat3(&pVertices[iIndices[0]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[0]].vNormal) + vNor));
-				XMStoreFloat3(&pVertices[iIndices[1]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[1]].vNormal) + vNor));
+			XMStoreFloat3(&pVertices[iIndices[0]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[0]].vNormal)) + vNor);
+			XMStoreFloat3(&pVertices[iIndices[1]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[1]].vNormal)) + vNor);
+			XMStoreFloat3(&pVertices[iIndices[2]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[2]].vNormal)) + vNor);
+			//XMStoreFloat3(&pVertices[iIndices[3]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[3]].vNormal) + vNor));
+			//XMStoreFloat3(&pVertices[iIndices[0]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[0]].vNormal) + vNor));
+			//XMStoreFloat3(&pVertices[iIndices[1]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[1]].vNormal) + vNor));
 
-				//pIndices[iNumIndices++] = iIndices[0];
-				//pIndices[iNumIndices++] = iIndices[2];
-				//pIndices[iNumIndices++] = iIndices[3];
-				pIndices[iNumIndices++] = iIndices[3];
-				pIndices[iNumIndices++] = iIndices[1];
-				pIndices[iNumIndices++] = iIndices[2];
+			pIndices[iNumIndices++] = iIndices[0];
+			pIndices[iNumIndices++] = iIndices[2];
+			pIndices[iNumIndices++] = iIndices[3];
+			//pIndices[iNumIndices++] = iIndices[3];
+			//pIndices[iNumIndices++] = iIndices[1];
+			//pIndices[iNumIndices++] = iIndices[2];
 
-				//vSour = XMLoadFloat3(&pVertices[iIndices[2]].vPosition) - XMLoadFloat3(&pVertices[iIndices[0]].vPosition);
-				//vDest = XMLoadFloat3(&pVertices[iIndices[3]].vPosition) - XMLoadFloat3(&pVertices[iIndices[2]].vPosition);
-				//vNormal = XMVector3Normalize(XMVector3Cross(vSour, vDest));
-				vSrc = XMLoadFloat3(&pVertices[iIndices[1]].vPosition) - XMLoadFloat3(&pVertices[iIndices[3]].vPosition);
-				vDst = XMLoadFloat3(&pVertices[iIndices[2]].vPosition) - XMLoadFloat3(&pVertices[iIndices[1]].vPosition);
-				vNor = XMVector3Normalize(XMVector3Cross(vSrc, vDst));
+			vSrc = XMLoadFloat3(&pVertices[iIndices[2]].vPosition) - XMLoadFloat3(&pVertices[iIndices[0]].vPosition);
+			vDst = XMLoadFloat3(&pVertices[iIndices[3]].vPosition) - XMLoadFloat3(&pVertices[iIndices[2]].vPosition);
+			vNor = XMVector3Normalize(XMVector3Cross(vSrc, vDst));
+			//vSrc = XMLoadFloat3(&pVertices[iIndices[1]].vPosition) - XMLoadFloat3(&pVertices[iIndices[3]].vPosition);
+			//vDst = XMLoadFloat3(&pVertices[iIndices[2]].vPosition) - XMLoadFloat3(&pVertices[iIndices[1]].vPosition);
+			//vNor = XMVector3Normalize(XMVector3Cross(vSrc, vDst));
 
-				//XMStoreFloat3(&pVertices[iIndices[0]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[0]].vNormal)) + vNormal);
-				//XMStoreFloat3(&pVertices[iIndices[2]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[2]].vNormal)) + vNormal);
-				//XMStoreFloat3(&pVertices[iIndices[3]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[3]].vNormal)) + vNormal);
-				XMStoreFloat3(&pVertices[iIndices[3]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[3]].vNormal) + vNor));
-				XMStoreFloat3(&pVertices[iIndices[1]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[1]].vNormal) + vNor));
-				XMStoreFloat3(&pVertices[iIndices[2]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[2]].vNormal) + vNor));
+			XMStoreFloat3(&pVertices[iIndices[0]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[0]].vNormal)) + vNor);
+			XMStoreFloat3(&pVertices[iIndices[2]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[2]].vNormal)) + vNor);
+			XMStoreFloat3(&pVertices[iIndices[3]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[3]].vNormal)) + vNor);
+			//XMStoreFloat3(&pVertices[iIndices[3]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[3]].vNormal) + vNor));
+			//XMStoreFloat3(&pVertices[iIndices[1]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[1]].vNormal) + vNor));
+			//XMStoreFloat3(&pVertices[iIndices[2]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[2]].vNormal) + vNor));
 			}
 		}
 #pragma endregion
@@ -475,7 +475,7 @@ HRESULT CVIBuffer_Terrain::ModifyTerrainVertexBuffer(_uint iNumVerticesX, _uint 
 #pragma region VERTEX_BUFFER
 
 	D3D11_MAPPED_SUBRESOURCE MappedVertex;
-	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &MappedVertex);
+	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedVertex);
 	VTXNORTEX* pVertices = (VTXNORTEX*)MappedVertex.pData;
 
 	for (_uint z = 0; z < iNumVerticesZ; z++)
@@ -484,7 +484,7 @@ HRESULT CVIBuffer_Terrain::ModifyTerrainVertexBuffer(_uint iNumVerticesX, _uint 
 		{
 			_uint iIndex = z * iNumVerticesX + x;
 
-			pVertices[iIndex].vPosition = _float3(pVertices[iIndex].vPosition.x, pVertices[iIndex].vPosition.y, pVertices[iIndex].vPosition.z);
+			pVertices[iIndex].vPosition = _float3(static_cast<_float>(x), 0.f, static_cast<_float>(z));
 			XMStoreFloat3(&pVertices[iIndex].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndex].vNormal)));
 			pVertices[iIndex].vTexcoord = _float2(x / (iNumVerticesX - 1.f), z / (iNumVerticesZ - 1.f));
 
@@ -496,7 +496,7 @@ HRESULT CVIBuffer_Terrain::ModifyTerrainVertexBuffer(_uint iNumVerticesX, _uint 
 
 #pragma region INDEX_BUFFER
 	D3D11_MAPPED_SUBRESOURCE MappedIndex;
-	m_pContext->Map(m_pIB, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &MappedIndex);
+	m_pContext->Map(m_pIB, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedIndex);
 	_ulong* pIndices = (_ulong*)MappedIndex.pData;
 
 	_uint iNumIndices = 0;
@@ -514,6 +514,7 @@ HRESULT CVIBuffer_Terrain::ModifyTerrainVertexBuffer(_uint iNumVerticesX, _uint 
 
 
 			_vector vSrc{}, vDst{}, vNor{};
+
 
 			pIndices[iNumIndices++] = iIndices[0];
 			pIndices[iNumIndices++] = iIndices[1];
@@ -556,7 +557,6 @@ HRESULT CVIBuffer_Terrain::ModifyTerrainVertexBuffer(_uint iNumVerticesX, _uint 
 			//XMStoreFloat3(&pVertices[iIndices[3]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[3]].vNormal) + vNor));
 			//XMStoreFloat3(&pVertices[iIndices[1]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[1]].vNormal) + vNor));
 			//XMStoreFloat3(&pVertices[iIndices[2]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[2]].vNormal) + vNor));
-		}
 	}
 
 	m_pContext->Unmap(m_pIB, 0);

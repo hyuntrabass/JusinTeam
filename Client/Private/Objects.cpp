@@ -84,7 +84,7 @@ HRESULT CObjects::Render()
 	return S_OK;
 }
 
-HRESULT CObjects::Add_Components(wstring strPrototype )
+HRESULT CObjects::Add_Components(wstring strPrototype, ObjectType eType )
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -98,10 +98,19 @@ HRESULT CObjects::Add_Components(wstring strPrototype )
 	m_iShaderPass = StaticPass_Default;
 	m_iOutLineShaderPass = StaticPass_OutLine;
 
-
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, strPrototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (eType == Object_Environment)
 	{
-		return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, strPrototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+		{
+			return E_FAIL;
+		}
+	}
+	else
+	{
+		if (FAILED(__super::Add_Component(m_pGameInstance->Get_CurrentLevelIndex(), strPrototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+		{
+			return E_FAIL;
+		}
 	}
 
 	return S_OK;
