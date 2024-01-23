@@ -6,6 +6,7 @@
 #include "Map.h"
 #include "Player.h"
 #include "Effect_Manager.h"
+#include "UI_Manager.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(_dev pDevice, _context pContext)
@@ -45,7 +46,7 @@ HRESULT CLevel_GamePlay::Init()
 
 
 	// Monster Parse
-	//if (FAILED(Ready_Monster()))
+	//if (FAILED(Ready_NpcvsMon()))
 	//{
 	//	MSG_BOX("Failed to Ready Monster");
 	//	return E_FAIL;
@@ -69,11 +70,11 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
-	//if (FAILED(Ready_NPCvsMon()))
-	//{
-	//	MSG_BOX("Failed to Ready NPCvsMon");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_NPCvsMon()))
+	{
+		MSG_BOX("Failed to Ready NPCvsMon");
+		return E_FAIL;
+	}
 
 	if (FAILED(Ready_Thief04()))
 	{
@@ -183,12 +184,18 @@ HRESULT CLevel_GamePlay::Init()
 	EffectDesc.isFollow = true;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
 
+	CUI_Manager::Get_Instance()->Init();
+
+
 	return S_OK;
 }
 
 void CLevel_GamePlay::Tick(_float fTimeDelta)
 {
-	m_RainMatrix = _mat::CreateTranslation(_vec3(m_pGameInstance->Get_CameraPos()));
+	if (!CUI_Manager::Get_Instance()->Is_InvenActive())
+	{
+		m_RainMatrix = _mat::CreateTranslation(_vec3(m_pGameInstance->Get_CameraPos()));
+	}
 	//m_RainMatrix = _mat::CreateTranslation(_vec3(50.f, 3.f, 50.f));
 
 	if (m_pGameInstance->Key_Down(DIK_PRIOR))
@@ -229,7 +236,7 @@ HRESULT CLevel_GamePlay::Ready_Light()
 	LIGHT_DESC LightDesc{};
 
 	LightDesc.eType = LIGHT_DESC::Directional;
-	LightDesc.vDirection = _float4(-1.f, -2.f, -1.f, 0.f);
+	LightDesc.vDirection = _float4(-1.f, -2.f,-1.f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
 
@@ -411,7 +418,7 @@ HRESULT CLevel_GamePlay::Ready_Groar_Boss()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Monster()
+HRESULT CLevel_GamePlay::Ready_NpcvsMon()
 {
 	MonsterInfo Info{};
 	const TCHAR* pGetPath = L"../Bin/Data/Prologue_MonsterData.dat";

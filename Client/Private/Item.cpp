@@ -19,10 +19,18 @@ HRESULT CItem::Init_Prototype()
 
 HRESULT CItem::Init(void* pArg)
 {
+	/*		_bool					bCanInteract;
+
+
+		_uint					iNumItem = { 1 };
+	*/
+	m_eItemDesc = ((ITEM_DESC*)pArg)->eItemDesc;
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
+
+	m_bCanInteract = ((ITEM_DESC*)pArg)->bCanInteract;
 
 	m_fSizeX = ((ITEM_DESC*)pArg)->vSize.x;
 	m_fSizeY = ((ITEM_DESC*)pArg)->vSize.y;
@@ -40,7 +48,7 @@ HRESULT CItem::Init(void* pArg)
 
 void CItem::Tick(_float fTimeDelta)
 {
-
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
 
 void CItem::Late_Tick(_float fTimeDelta)
@@ -68,6 +76,13 @@ HRESULT CItem::Render()
 	return S_OK;
 }
 
+void CItem::Set_Position(_vec2 vPos)
+{
+	m_fX = vPos.x;
+	m_fY = vPos.y;	
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+}
+
 HRESULT CItem::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
@@ -85,14 +100,11 @@ HRESULT CItem::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_HPBar"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_eItemDesc.strTexture, TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_eItemDesc.strTexture, TEXT("Com_Texture1"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom))))
-	{
-		return E_FAIL;
-	}
+
 
 	return S_OK;
 }
@@ -111,10 +123,6 @@ HRESULT CItem::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
 	{
 		return E_FAIL;
 	}
@@ -153,7 +161,6 @@ void CItem::Free()
 	__super::Free();
 
 	Safe_Release(m_pTextureCom);
-	Safe_Release(m_pMaskTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pVIBufferCom);

@@ -46,6 +46,9 @@ private:
 private:
 	void Init_InvenState(); 
 
+public:
+	HRESULT Set_Item(ITEM eItem);
+
 private:
 	HRESULT Add_Parts();
 	HRESULT Add_Components();

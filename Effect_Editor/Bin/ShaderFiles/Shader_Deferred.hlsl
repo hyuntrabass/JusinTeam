@@ -382,13 +382,13 @@ PS_OUT PS_Main_Blur(PS_IN Input)
     
     //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord) * 1.f / 19.f;
     
-    for (int y = -10; y <= 10; ++y)
-    {
-        for (int x = -10; x <= 10; ++x)
-        {
-            Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + float2(x, y) * fTexelSize) * 1.f / 441.f;
-        }
-    }
+    //for (int y = -10; y <= 10; ++y)
+    //{
+    //    for (int x = -10; x <= 10; ++x)
+    //    {
+    //        Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + float2(x, y) * fTexelSize) * 1.f / 441.f;
+    //    }
+    //}
     
     //Output.vColor = g_BlurTexture.Sample(LinearSampler, Input.vTexcoord);
     

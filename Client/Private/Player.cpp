@@ -49,15 +49,52 @@ HRESULT CPlayer::Init(void* pArg)
 	Change_Parts(PT_FACE, 0);
 
 	m_pGameInstance->Register_CollisionObject(this, m_pHitCollider, true);
-
+	TRAIL_DESC trail_desc{};
+	trail_desc.vColor = _vec4(0.301f, 0.215f, 0.482f, 1.f);
+	trail_desc.vColor = _vec4(1.f,0.f, 0.f, 1.f);
+	trail_desc.vPSize = _vec2(0.08f, 0.01f);
+	trail_desc.iNumVertices = 20.f;
+	m_pLeft_Trail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &trail_desc);
+	m_pRight_Trail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &trail_desc);
+	m_Left_Mat = m_pModelCom->Get_BoneMatrix("B_Weapon_L");
+	m_Right_Mat = m_pModelCom->Get_BoneMatrix("B_Weapon_R");
 
 	return S_OK;
 }
 
 void CPlayer::Tick(_float fTimeDelta)
 {
-	m_OldWorldMatrix = m_pTransformCom->Get_World_Matrix();
+	
+	if(m_Current_Weapon==WP_SWORD)
+	{
+		if (m_eState == Attack or m_eState == Skill1 or m_eState == Skill2 or m_eState == Skill3 or m_eState == Skill4)
+		{
+			m_bLeft_TrailOn = true;
+		}
+		else
+			m_bLeft_TrailOn = false;
 
+		if (m_eState == Skill2 or m_eState == Skill4)
+		{
+			m_bRight_TrailOn = true;
+		}
+		else
+			m_bRight_TrailOn = false;
+	}
+
+	m_OldWorldMatrix = m_pTransformCom->Get_World_Matrix();
+	_mat m{};
+	if(m_bLeft_TrailOn)
+	{
+		m = _mat::CreateTranslation(0.f, -0.5f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
+		m_pLeft_Trail->Tick((m.Position_vec3()));
+	}
+	if(m_bRight_TrailOn)
+	{
+		m = _mat::CreateTranslation(0.f, 0.5f, 0.f) * *m_Right_Mat * m_pTransformCom->Get_World_Matrix();
+		m_pRight_Trail->Tick((m.Position_vec3()));
+	}
+	
 	if (m_bStartGame)
 	{
 		CEvent_Manager::Get_Instance()->Tick(fTimeDelta);
@@ -71,12 +108,37 @@ void CPlayer::Tick(_float fTimeDelta)
 	if (PART_TYPE::PT_END != eType)
 	{
 		m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), 0.f);
+		if (eType == PT_WEAPON)
+		{
+			//Change_Weapon(CUI_Manager::Get_Instance()->Get_CustomPart(eType));
+
+		}
 		Change_Parts(eType, CUI_Manager::Get_Instance()->Get_CustomPart(eType));
 	}
 
 	m_fAttTimer += fTimeDelta;
 	m_fSkiilTimer += fTimeDelta;
+	
+	if (m_pGameInstance->Key_Down(DIK_8))
+	{
+		if (!m_bIsMount)
+		{
+			m_bIsMount = true;
+			m_Animation.iAnimIndex = Anim_Mount_Idle;
+			Summon_Riding(Nihilir);
+		}
+		else
+		{
+			m_pRiding->Delete_Riding();
+		}
 
+	}
+
+	if (m_bIsMount)
+	{
+		m_pRiding->Tick(fTimeDelta);
+		Tick_Riding();
+	}
 
 	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
 	{
@@ -114,11 +176,11 @@ void CPlayer::Tick(_float fTimeDelta)
 		return;
 	}
 
-	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CUSTOM)
+	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CUSTOM &&!m_bIsMount)
 	{
 		Move(fTimeDelta);
 		Init_State();
-		m_pModelCom->Play_Animation(fTimeDelta);
+
 		Tick_State(fTimeDelta);
 		if(m_Current_Weapon == WP_SWORD)
 		Sword_Att_Camera_Effect();
@@ -168,7 +230,10 @@ void CPlayer::Tick(_float fTimeDelta)
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
-
+	if (m_bIsMount)
+	{
+		m_pRiding->Late_Tick(fTimeDelta);
+	}
 
 	if (m_bStartGame)
 	{
@@ -202,7 +267,10 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 		Change_Weapon(WP_SWORD,SWORD0);
 	}
-
+	if (m_bLeft_TrailOn)
+	m_pLeft_Trail->Late_Tick(fTimeDelta);
+	if (m_bRight_TrailOn)
+	m_pRight_Trail->Late_Tick(fTimeDelta);
 
 #ifdef _DEBUGTEST
 	m_pRendererCom->Add_DebugComponent(m_pHitCollider);
@@ -292,6 +360,21 @@ HRESULT CPlayer::Place_PartModels()
 		return E_FAIL;
 
 	Desc.FileName = "body2";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "body3";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "body4";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "body5";
 
 	if (FAILED(m_pModelCom->Place_Parts(Desc)))
 		return E_FAIL;
@@ -396,6 +479,16 @@ HRESULT CPlayer::Place_PartModels()
 	if (FAILED(m_pModelCom->Place_Parts(Desc)))
 		return E_FAIL;
 
+	Desc.FileName = "bow3";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "bow4";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
 	Desc.FileName = "sword0";
 
 	if (FAILED(m_pModelCom->Place_Parts(Desc)))
@@ -411,12 +504,24 @@ HRESULT CPlayer::Place_PartModels()
 	if (FAILED(m_pModelCom->Place_Parts(Desc)))
 		return E_FAIL;
 
+	Desc.FileName = "sword3";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+	Desc.FileName = "sword4";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
 	return S_OK;
 }
 
 HRESULT CPlayer::Render_Parts(PART_TYPE Parts, _uint Index)
 {
- 
+	if (m_bWeapon_Unequip&& Parts == PT_WEAPON)
+	{
+		return S_OK;	
+	}
+
  for (size_t k = 0; k < m_pModelCom->Get_Num_PartMeshes(Parts, Index); k++)
  { 
 	 if (FAILED(m_pModelCom->Bind_Part_Material(m_pShaderCom, "g_DiffuseTexture", TextureType::Diffuse, (_uint)Parts, (_uint)Index, k)))
@@ -461,6 +566,19 @@ HRESULT CPlayer::Render_Parts(PART_TYPE Parts, _uint Index)
 	return S_OK;
 }
 
+HRESULT CPlayer::Add_Riding()
+{
+	Riding_Desc riding_desc{};
+	riding_desc.Type = Bird;
+
+	m_pRiding = (CRiding*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Riding"), &riding_desc);
+
+	if (m_pRiding == nullptr)
+		return E_FAIL;
+
+	return S_OK;
+}
+
 void CPlayer::Change_Parts(PART_TYPE PartsType, _int ChangeIndex)
 {
 	switch (PartsType)
@@ -481,8 +599,13 @@ void CPlayer::Change_Parts(PART_TYPE PartsType, _int ChangeIndex)
 
 void CPlayer::Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex)
 {
-	m_Weapon_CurrentIndex = ChangeIndex;
-	m_Current_Weapon = PartsType;
+	if (ChangeIndex == WP_UNEQUIP)
+		m_bWeapon_Unequip = true;
+	else
+	{
+		m_Weapon_CurrentIndex = ChangeIndex;
+		m_Current_Weapon = PartsType;
+	}
 }
 
 
@@ -734,7 +857,7 @@ void CPlayer::Common_Attack()
 		m_iAttackCombo = 0;
 
 	m_Animation.bSkipInterpolation = false;
-	m_Animation.fAnimSpeedRatio = 1.f;
+	m_Animation.fAnimSpeedRatio = 2.f;
 	m_eState = Attack;
 	m_iCurrentSkill_Index = 0;
 	if(m_Current_Weapon == WP_SWORD)
@@ -759,7 +882,7 @@ void CPlayer::Common_Attack()
 			m_fAttackZoom = 1.5f;
 			break;
 		case 3:
-			m_Animation.fAnimSpeedRatio = 1.5f;
+			m_Animation.fAnimSpeedRatio = 3.5f;
 			m_Animation.iAnimIndex = Anim_Assassin_Attack04_A;
 			m_fAttTimer = 0.f;
 			m_iAttackCombo++;
@@ -847,7 +970,6 @@ void CPlayer::Skill3_Attack()
 {
 	if (m_Current_Weapon == WP_SWORD)
 	{
-		m_Animation.fAnimSpeedRatio = 1.f;
 		m_Animation.iAnimIndex = m_SwordSkill[2];
 		m_Animation.isLoop = false;
 		m_hasJumped = false;
@@ -868,6 +990,9 @@ void CPlayer::Skill4_Attack()
 {
 	if (m_Current_Weapon == WP_SWORD)
 	{
+		_vec4 vLook = m_pGameInstance->Get_CameraLook();
+		vLook.y = m_pTransformCom->Get_State(State::Look).y;
+		m_pTransformCom->LookAt_Dir(vLook);
 		m_Animation.iAnimIndex = m_SwordSkill[3];
 		m_Animation.isLoop = false;
 		m_hasJumped = false;
@@ -1459,7 +1584,7 @@ void CPlayer::Sword_Att_Camera_Effect()
 			else if (Index > 40.f)
 			{
 				_vec4 vLerpPos{};
-				vLerpPos = XMVectorLerp(m_pCameraTransform->Get_State(State::Pos), m_SaveCamPos, 0.1);
+				vLerpPos = XMVectorLerp(m_pCameraTransform->Get_State(State::Pos), m_SaveCamPos, 0.1f);
 				m_pCameraTransform->Set_State(State::Pos, vLerpPos);
 				_vec4 vLerpLook{};
 				vLerpLook = XMVectorLerp(m_pCameraTransform->Get_State(State::Look), m_SaveCamLook, 0.2f);
@@ -1523,12 +1648,10 @@ void CPlayer::Bow_Att_Camera_Effect()
 }
 void CPlayer::Summon_Riding(Riding_Type Type)
 {
-	
-	if (m_pRiding != nullptr)
-		Safe_Release(m_pRiding);
-
 	Riding_Desc Desc{};
 	Desc.Type = Type;
+	Desc.vSummonPos = m_pTransformCom->Get_State(State::Pos);
+
 	wstring strName{};
 
 	strName = TEXT("Prototype_GameObject_Riding");
@@ -1537,6 +1660,51 @@ void CPlayer::Summon_Riding(Riding_Type Type)
 
 	if (m_pRiding == nullptr)
 		return;
+}
+void CPlayer::Tick_Riding()
+{
+	if (m_pRiding == nullptr)
+		return;
+
+	if (m_pRiding->Get_Delete())
+	{
+		m_pTransformCom->Set_State(State::Pos, m_pRiding->Get_Pos());
+
+		Safe_Release(m_pRiding);
+		m_bIsMount = false;
+		
+		m_eState = Idle;
+
+		return;
+	}
+	if (m_pModelCom->IsAnimationFinished(Anim_Mount_Run))
+	{
+		int a = 0;
+	}
+ 	m_pTransformCom->Set_Matrix(m_pRiding->Get_World_Mat());
+	Riding_State State = m_pRiding->Get_State();
+	m_Animation.isLoop = true;
+	m_Animation.fAnimSpeedRatio = 2.f;
+	if(m_Riding_State!= State)
+	{
+		if (State == Riding_Run)
+		{
+			m_Animation.iAnimIndex = Anim_Mount_Run;
+			m_Animation.isLoop = true;
+			
+		}
+		else if (State == Riding_Idle)
+		{
+			m_Animation.iAnimIndex = Anim_Mount_Idle;
+			m_Animation.isLoop = true;
+		}
+		else if (State == Riding_Walk)
+		{
+			m_Animation.iAnimIndex = Anim_Mount_Walk;
+			m_Animation.isLoop = true;
+		}
+		m_Riding_State = State;
+	}
 }
 void CPlayer::UnMount_Riding()
 {
@@ -1548,7 +1716,7 @@ void CPlayer::Init_State()
 	if (m_eState != m_ePrevState)
 	{
 		m_Animation.isLoop = false;
-		m_Animation.fAnimSpeedRatio = 1.f;
+		m_Animation.fAnimSpeedRatio = 2.f;
 		m_Animation.bSkipInterpolation = false;
 		switch (m_eState)
 		{
@@ -1572,14 +1740,12 @@ void CPlayer::Init_State()
 			break;
 		case Client::CPlayer::Run:
 			m_Animation.iAnimIndex = Anim_Normal_run;
-			m_Animation.fAnimSpeedRatio = 1.f;
 			m_Animation.isLoop = true;
 			m_iSuperArmor = {};
 			m_hasJumped = false;
 			break;
 		case Client::CPlayer::Run_End:
 			m_Animation.iAnimIndex = Anim_Normal_run_stop;
-			m_Animation.fAnimSpeedRatio = 1.f;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
 			m_iSuperArmor = {};
@@ -2021,6 +2187,8 @@ void CPlayer::Free()
 		Safe_Release(m_pRiding);
 
 	Safe_Release(m_pNameTag);
+	Safe_Release(m_pLeft_Trail);
+	Safe_Release(m_pRight_Trail);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
