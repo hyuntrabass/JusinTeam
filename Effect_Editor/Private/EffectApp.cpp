@@ -5,6 +5,7 @@
 #include "Terrain.h"
 #include "Effect_Dummy.h"
 #include "Camera_Main.h"
+#include "Select_Map.h"
 
 CEffectApp::CEffectApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -295,6 +296,14 @@ HRESULT CEffectApp::Ready_Prototype_GameObject()
 			m_ModelList.push_back(entry.path().stem().string());
 		}
 	}
+
+	_mat PivotMat = _mat::CreateScale(0.006f) * _mat::CreateRotationX(XMConvertToRadians(90.f));
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Select_Map"),
+														CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/StaticMesh/Select_Map/Mesh/map.hyuntrastatmesh", false, PivotMat))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Terrain"), CTerrain::Create(m_pDevice, m_pContext))))
@@ -309,7 +318,10 @@ HRESULT CEffectApp::Ready_Prototype_GameObject()
 	{
 		return E_FAIL;
 	}
-
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Map"), CSelect_Map::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 
 	m_bLoadComplete = true;
 

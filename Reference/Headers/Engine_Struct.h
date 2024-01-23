@@ -83,8 +83,12 @@ namespace Engine
 		float fDissolveDuration{};
 		bool bSkipBloom{};
 		float fUnDissolveDuration{};
+		SimpleMath::Vector2 vUVInit{};
 		SimpleMath::Vector2 vUVDelta{};
 		bool isRandomSprite{};
+
+		bool hasLight{};
+		LIGHT_DESC Light_Desc{};
 
 		std::wstring strDiffuseTexture{};
 		std::wstring strMaskTexture{};
@@ -154,22 +158,11 @@ namespace Engine
 		bool IsDeleteRotateToBone{};
 	};
 
-	using TRIGGERLIGHT_DESC = struct tagTriggerLightDesc {
+	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {
 		int iStartAnimIndex{};
 		float fStartAnimPos{};
-		int iEndAnimIndex = -1;
-		float fEndAnimPos{};
-		bool IsFollow{};
-		unsigned int iBoneIndex{};
-		SimpleMath::Matrix OffsetMatrix{};
-		
-		tagLightDesc LightDesc{};
-	};
-
-	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {
-		float fStartAnimPos{};
 		std::wstring strSoundName{};
-		int iChannel{};
+		int iChannel = -1;
 		float fVolume{};
 	};
 

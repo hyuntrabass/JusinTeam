@@ -56,24 +56,29 @@ namespace Client
 		BOW0,
 		BOW1,
 		BOW2,
+		BOW3,
+		BOW4,
 		SWORD0,
 		SWORD1,
 		SWORD2,
+		SWORD3,
+		SWORD4,
+		WP_UNEQUIP,
 		WP_INDEX_END
 	};
 
 	enum ATTACK_TYPE  //데미지주는 타입
 	{
-		AT_Sword_Common,
-		AT_Sword_Skill1,
-		AT_Sword_Skill2,
-		AT_Sword_Skill3,
-		AT_Sword_Skill4,
-		AT_Bow_Common,
-		AT_Bow_Skill1,
-		AT_Bow_Skill2,
-		AT_Bow_Skill3,
-		AT_Bow_Skill4,
+		AT_Sword_Common,// 경직
+		AT_Sword_Skill1,// 경직
+		AT_Sword_Skill2,// 경직
+		AT_Sword_Skill3,// 경직
+		AT_Sword_Skill4,// 경직
+		AT_Bow_Common,// 밀려나게
+		AT_Bow_Skill1,// 밀려나게
+		AT_Bow_Skill2,// 경직
+		AT_Bow_Skill3,// 이속 느려지게
+		AT_Bow_Skill4,// 경직
 		AT_End
 	};
 
@@ -93,7 +98,7 @@ namespace Client
 		PT_END
 	};
 
-	enum SoundChannel
+	/*enum SoundChannel
 	{
 		SCH_BGM,
 		SCH_EFFECT_PLAYER,
@@ -142,7 +147,7 @@ namespace Client
 		SCH_EFFECT_MONSTER18,
 		SCH_EFFECT_MONSTER19,
 		SCH_MAX
-	};
+	};*/
 
 	enum SortDepth
 	{
@@ -168,6 +173,26 @@ namespace Client
 		INVEN_EXPENDABLES,
 		INVEN_END
 	};
+	enum ITEM_TYPE
+	{
+		ITEM_TOP, 
+		ITEM_BODY,
+		ITEM_HAND,
+		ITEM_FOOT, 
+		ITEM_POTION,
+		ITEM_INGREDIENT,
+		ITEMTYPEEND
+	};
+	
+	enum ITEM_TIER
+	{
+		TIER_COMMON, 
+		TIER_UNCOMMON, 
+		TIER_RARE,
+		TIER_UNIQUE,
+		TIER_LEGENDARY,
+		TIER_END
+	};
 
 	enum WEARABLE_TYPE 
 	{
@@ -179,13 +204,25 @@ namespace Client
 		W_PET, 
 		W_END };
 
+#pragma region Objects
+	enum ObjectType
+	{
+		Object_Building,
+		Object_Environment,
+		Object_Etc,
+		Object_End
+	};
+
 	struct ObjectInfo
 	{
 		wstring strPrototypeTag{};
-		_vec4 vPos{ _vec4(0.f, 0.f, 0.f, 1.f)};
-		_vec4 vLook{ _vec4(0.f, 0.f, 1.f, 0.f)};
+		_vec4 vPos{ _vec4(0.f, 0.f, 0.f, 1.f) };
+		_vec4 vLook{ _vec4(0.f, 0.f, 1.f, 0.f) };
 		_mat m_WorldMatrix{};
+		ObjectType eObjectType{ };
 	};
+
+#pragma endregion
 
 	struct UiInfo
 	{
@@ -205,19 +242,17 @@ namespace Client
 	typedef struct tagItemInfo
 	{
 		wstring strName;
-		wstring strType;
 
+		_uint iInvenType;
 		_uint iItemType;
 		_uint iItemTier;
-		wstring strTexture;
-		wstring strModel;
-		wstring strDetail;
 
-		_uint iAD;
-		_uint iCritical;
-		_uint iDefense;
-		_uint iMP;
-		_uint iHP;
+		wstring strTexture;
+
+		_uint iStatus;
+		_uint iPurchase;
+		_uint iSale;
+
 	}ITEM;
 
 #pragma region Shader Passes
@@ -308,6 +343,7 @@ namespace Client
 		InstPass_End,
 	};
 #pragma endregion
+
 
 }
 

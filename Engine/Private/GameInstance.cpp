@@ -102,6 +102,12 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 		return E_FAIL;
 	}
 
+	m_pSound_Manager = CSound_Manager::Create();
+	if (!m_pSound_Manager)
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -114,6 +120,10 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	if (!m_pObject_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pObject_Manager is NULL");
+	}
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
 	}
 
 	m_pInput_Manager->Update_InputDev();
@@ -143,6 +153,7 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 
 	m_pObject_Manager->Release_DeadObjects();
 	m_pObject_Manager->Late_Tick(fTimeDelta);
+	m_pSound_Manager->Update();
 	if (m_Function_LateTick_FX)
 	{
 		m_Function_LateTick_FX(fTimeDelta);
@@ -979,30 +990,19 @@ HRESULT CGameInstance::Render_Debug_RT(const wstring& strMRTTag, CShader* pShade
 }
 #endif // _DEBUG
 
-HRESULT CGameInstance::Init_SoundManager(_uint iNumChannels)
-{
-	m_pSound_Manager = CSound_Manager::Create(iNumChannels);
-	if (!m_pSound_Manager)
-	{
-		return E_FAIL;
-	}
-
-	return S_OK;
-}
-
 _bool CGameInstance::Is_SoundManager_Ready()
 {
 	return static_cast<_bool>(m_pSound_Manager);
 }
 
-void CGameInstance::Play_Sound(const wstring& strSoundTag, _uint iChannel, _float fVolume, _bool isLoop)
+_int CGameInstance::Play_Sound(const wstring& strSoundTag, _float fVolume, _bool isLoop)
 {
 	if (!m_pSound_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
 	}
 
-	return m_pSound_Manager->Play_Sound(strSoundTag, iChannel, fVolume, isLoop);
+	return m_pSound_Manager->Play_Sound(strSoundTag, fVolume, isLoop);
 }
 void CGameInstance::PlayBGM(const wstring& strSoundTag, float fVolume)
 {
@@ -1120,6 +1120,16 @@ const _bool& CGameInstance::Get_ShakeCam() const
 const _float& CGameInstance::Get_HellHeight() const
 {
 	return m_fHellHeight;
+}
+
+_bool CGameInstance::Get_IsPlayingSound(_uint iChannel)
+{
+	if(!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->Get_IsPlayingSound(iChannel);
 }
 
 void CGameInstance::Set_CameraModeIndex(const _uint& iIndex)

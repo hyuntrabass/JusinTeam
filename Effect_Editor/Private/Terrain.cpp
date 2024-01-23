@@ -1,5 +1,6 @@
 #include "Terrain.h"
 #include "GameInstance.h"
+#include "Imgui_Manager.h"
 
 CTerrain::CTerrain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CGameObject(pDevice, pContext)
@@ -31,23 +32,22 @@ HRESULT CTerrain::Init(void* pArg)
 
 	//m_pTransformCom->LookAt_Dir(_vec4(0.f, -1.f, 0.f, 0.f));
 
+	m_pTransformCom->Set_State(State::Pos, _vec4(-1.f, -0.5f, -1.f, 1.f));
 
 	return S_OK;
 }
 
 void CTerrain::Tick(_float fTimeDelta)
 {
-	m_pTransformCom->Set_State(State::Pos, _vec4(-1.f, -0.5f, -1.f, 1.f));
-
 }
 
 void CTerrain::Late_Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Pressing(DIK_O))
+	if (CImgui_Manager::Get_Instance()->Has_Light())
 	{
 		return;
 	}
-	m_pRendererCom->Add_RenderGroup(RG_Priority, this);
+	m_pRendererCom->Add_RenderGroup(RG_NonLight, this);
 }
 
 HRESULT CTerrain::Render()

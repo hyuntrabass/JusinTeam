@@ -2,11 +2,6 @@
 #include "Client_Define.h"
 #include "BlendObject.h"
 
-struct ObjectInfo
-{
-	wstring Prototype{};
-	_mat m_Matrix{};
-};
 
 
 BEGIN(Client)
@@ -39,7 +34,7 @@ protected:
 	_uint m_iOutLineShaderPass{};
 
 protected:
-	HRESULT Add_Components(wstring strPrototype);
+	HRESULT Add_Components(wstring strPrototype, ObjectType eType);
 	HRESULT Bind_ShaderResources();
 
 

@@ -53,7 +53,7 @@ void CImp::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_M))
 	{
-		Set_Damage(0, WP_BOW);
+		Set_Damage(0, AT_Bow_Skill3);
 	}
 
 	Init_State(fTimeDelta);
@@ -92,15 +92,27 @@ void CImp::Set_Damage(_int iDamage, _uint iDamageType)
 	_vec4 vPlayerPos = __super::Compute_PlayerPos();
 	m_pTransformCom->LookAt(vPlayerPos);
 
-	if (iDamageType == WP_BOW)
+	if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
+		iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
 	{
-		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
-
-		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
+		// 경직
+		m_Animation.fAnimSpeedRatio = 1.f;
 	}
 
-	else if (iDamageType == WP_SWORD)
+	if (iDamageType == AT_Bow_Common || iDamageType == AT_Bow_Skill1)
 	{
+		// 밀려나게
+		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
+		m_pTransformCom->Go_To_Dir(vDir, 0.3f);
+
+		m_Animation.fAnimSpeedRatio = 2.5f;
+	}
+
+	if (iDamageType == AT_Bow_Skill3)
+	{
+		// 이속 느려지게
+		m_bSlow = true;
+		m_Animation.fAnimSpeedRatio = 1.f;
 	}
 }
 
@@ -118,12 +130,16 @@ void CImp::Init_State(_float fTimeDelta)
 		case Client::CImp::STATE_IDLE:
 			m_Animation.iAnimIndex = IDLE;
 			m_Animation.isLoop = true;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
 			m_pTransformCom->Set_Speed(1.f);
 			break;
 
 		case Client::CImp::STATE_FLY:
 			m_Animation.iAnimIndex = WALK;
 			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 4.f;
+
 			{
 				random_device rd;
 				_randNum RandNum(rd());
@@ -135,11 +151,23 @@ void CImp::Init_State(_float fTimeDelta)
 		case Client::CImp::STATE_CHASE:
 			m_Animation.iAnimIndex = RUN;
 			m_Animation.isLoop = true;
-			m_pTransformCom->Set_Speed(3.f);
+			m_Animation.fAnimSpeedRatio = 4.f;
+
+			if (m_bSlow == true)
+			{
+				m_pTransformCom->Set_Speed(2.f);
+				m_Animation.fAnimSpeedRatio = 2.f;
+			}
+			else
+			{
+				m_pTransformCom->Set_Speed(4.f);
+			}
+
 			break;
 
 		case Client::CImp::STATE_ATTACK:
 			m_bDamaged = false;
+			m_Animation.fAnimSpeedRatio = 3.f;
 			break;
 
 		case Client::CImp::STATE_HIT:
@@ -215,12 +243,14 @@ void CImp::Tick_State(_float fTimeDelta)
 		if (fDistance > m_fChaseRange && !m_bDamaged)
 		{
 			m_eCurState = STATE_IDLE;
+			m_bSlow = false;
 		}
 
 		if (fDistance <= m_fAttackRange)
 		{
 			m_eCurState = STATE_ATTACK;
 			m_Animation.isLoop = true;
+			m_bSlow = false;
 		}
 
 	}
@@ -294,7 +324,7 @@ void CImp::Tick_State(_float fTimeDelta)
 
 	case Client::CImp::STATE_HIT:
 
-		if (m_pModelCom->IsAnimationFinished(HIT_L) || m_pModelCom->IsAnimationFinished(HIT_R))
+		if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
 		{
 			m_eCurState = STATE_CHASE;
 		}
