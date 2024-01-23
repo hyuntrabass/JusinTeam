@@ -40,6 +40,9 @@ HRESULT CInven::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	CUI_Manager::Get_Instance()->Set_Inven(this);
+	wstring strItem = TEXT("체력 포션");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);
 	return S_OK;
 }
 
@@ -165,6 +168,12 @@ void CInven::Init_InvenState()
 
 	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
 	dynamic_cast<CTextButton*>(m_pDiamond)->Set_Text(to_wstring(iDiamond));
+}
+
+HRESULT CInven::Set_Item(ITEM eItem)
+{
+	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(eItem);
+	return S_OK;
 }
 
 HRESULT CInven::Add_Parts()

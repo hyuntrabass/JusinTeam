@@ -85,14 +85,11 @@ HRESULT CItemSlot::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_HPBar"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_Slot"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_Slot"), TEXT("Com_Texture1"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom))))
-	{
-		return E_FAIL;
-	}
+
 
 	return S_OK;
 }
@@ -111,10 +108,6 @@ HRESULT CItemSlot::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
 	{
 		return E_FAIL;
 	}
@@ -153,7 +146,6 @@ void CItemSlot::Free()
 	__super::Free();
 
 	Safe_Release(m_pTextureCom);
-	Safe_Release(m_pMaskTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pVIBufferCom);

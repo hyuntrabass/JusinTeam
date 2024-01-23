@@ -1459,7 +1459,7 @@ void CPlayer::Sword_Att_Camera_Effect()
 			else if (Index > 40.f)
 			{
 				_vec4 vLerpPos{};
-				vLerpPos = XMVectorLerp(m_pCameraTransform->Get_State(State::Pos), m_SaveCamPos, 0.1);
+				vLerpPos = XMVectorLerp(m_pCameraTransform->Get_State(State::Pos), m_SaveCamPos, 0.1f);
 				m_pCameraTransform->Set_State(State::Pos, vLerpPos);
 				_vec4 vLerpLook{};
 				vLerpLook = XMVectorLerp(m_pCameraTransform->Get_State(State::Look), m_SaveCamLook, 0.2f);
