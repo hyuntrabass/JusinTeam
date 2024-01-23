@@ -63,7 +63,8 @@ private:
 
 public:
 	const RECT& Get_Rect() const { return m_rcRect; }
-	const _vec2& Get_Position() const { return _vec2(m_fX, m_fY); }
+	const _vec2 Get_Position() const { return  m_vPosition; }
+	const _vec2 Get_TransPosition() const { return _vec2(m_fX, m_fY); }
 	void Set_Position(_vec2 vPos);
 	void Set_Size(_float fSizeX, _float fSizeY, _float fFontSize = -1.f);
 	void Set_Text(const wstring strText) { m_strText = strText; }

@@ -337,7 +337,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				m_eType = TEXT("Dungeon");
 			}
 
-			if (ImGui::BeginListBox("OBJECTS DIR", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+			if (ImGui::BeginListBox("OBJECTS DIR", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
 			{
 				for (int n = 0; n < Objects[m_eType].size(); n++)
 				{
@@ -430,7 +430,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				m_eType = TEXT("Rock");
 			}
 
-			if (ImGui::BeginListBox("OBJECTS DIR", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+			if (ImGui::BeginListBox("OBJECTS DIR", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
 			{
 				for (int n = 0; n < Envirs[m_eType].size(); n++)
 				{
@@ -483,12 +483,12 @@ HRESULT CImGui_Manager::ImGuiMenu()
 
 			if (ImGui::Button("SAVE"))
 			{
-				Save_Object();
+				Save_Envir();
 			}
 			ImGui::SameLine();
 			if (ImGui::Button("LOAD"))
 			{
-				Load_Object();
+				Load_Envir();
 			}
 			ImGui::EndTabItem();
 		}
@@ -516,7 +516,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				m_eType = TEXT("Boss");
 			}
 
-			if (ImGui::BeginListBox("MONSTER DIR", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+			if (ImGui::BeginListBox("MONSTER DIR", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
 			{
 				for (int n = 0; n < Monsters[m_eType].size(); n++)
 				{
@@ -592,7 +592,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::SeparatorText("LIST");
 			static int NPC_current_idx = 0;
 			ImGui::Text("NPC");
-			if (ImGui::BeginListBox("NPC FILE", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+			if (ImGui::BeginListBox("NPC FILE", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
 			{
 				for (int n = 0; n < NPCs.size(); n++)
 				{
@@ -644,8 +644,8 @@ HRESULT CImGui_Manager::ImGuiMenu()
 #pragma region 상호작용
 		if (ImGui::BeginTabItem("Interaction"))
 		{
-			/* NPC */
-			m_eItemType = ItemType::NPC;
+			/* Interaction */
+			m_eItemType = ItemType::Interaction;
 			ImGui::SeparatorText("LIST");
 			static int NPC_current_idx = 0;
 			ImGui::Text("Interaction");
@@ -1010,6 +1010,19 @@ void CImGui_Manager::Delete_Dummy()
 			}
 
 		}
+		else if (m_eItemType == ItemType::Environment)
+		{
+			for (auto it = m_EnvirList.begin(); it != m_EnvirList.end(); it++)
+			{
+				if ((*it)->Get_Selected() == true)
+				{
+					m_EnvirList.erase(it);
+					break;
+				}
+			}
+
+		}
+	
 		m_pSelectedDummy->Set_Dead();
 		m_pSelectedDummy = nullptr;
 	}
@@ -1072,12 +1085,16 @@ void CImGui_Manager::Reset()
 	}
 	m_MonsterList.clear();
 
-
 	for (auto iter : m_NPCList)
 	{
 		iter->Set_Dead();
 	}
-	m_NPCList.clear();
+	m_EnvirList.clear();
+	for (auto iter : m_EnvirList)
+	{
+		iter->Set_Dead();
+	}
+	m_EnvirList.clear();
 
 	m_DummyList.clear();
 	if (m_pSelectedDummy)
@@ -2075,14 +2092,14 @@ HRESULT CImGui_Manager::Load_Envir()
 			}
 
 			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
-			m_MonsterList.push_back(m_pSelectedDummy);
+			m_EnvirList.push_back(m_pSelectedDummy);
 
-			CTransform* pMonsterTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
+			CTransform* pEnvirTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
 
-			pMonsterTransform->Set_State(State::Right, EnvirWorldMat.Right());
-			pMonsterTransform->Set_State(State::Up, EnvirWorldMat.Up());
-			pMonsterTransform->Set_State(State::Look, EnvirWorldMat.Look());
-			pMonsterTransform->Set_State(State::Pos, EnvirWorldMat.Position());
+			pEnvirTransform->Set_State(State::Right, EnvirWorldMat.Right());
+			pEnvirTransform->Set_State(State::Up, EnvirWorldMat.Up());
+			pEnvirTransform->Set_State(State::Look, EnvirWorldMat.Look());
+			pEnvirTransform->Set_State(State::Pos, EnvirWorldMat.Position());
 
 			m_pSelectedDummy = nullptr;
 		}
@@ -2167,6 +2184,14 @@ void CImGui_Manager::Free()
 	}
 	Monsters.clear();
 
+	for (auto& entry : Envirs)
+	{
+		for (const char* cstr : entry.second) {
+			Safe_Delete_Array(cstr);
+		}
+		entry.second.clear();
+	}
+	Envirs.clear();
 
 	for (auto& Map : m_MapsList)
 	{
@@ -2188,6 +2213,19 @@ void CImGui_Manager::Free()
 		Safe_Release(cstr);
 	}
 	m_MonsterList.clear();
+
+	for (auto& cstr : m_NPCList)
+	{
+		Safe_Release(cstr);
+	}
+	m_NPCList.clear();
+
+
+	for (auto& cstr : m_EnvirList)
+	{
+		Safe_Release(cstr);
+	}
+	m_EnvirList.clear();
 
 
 	if (!m_DummyList.empty())

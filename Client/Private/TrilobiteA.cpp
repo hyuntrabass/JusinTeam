@@ -38,7 +38,6 @@ HRESULT CTrilobiteA::Init(void* pArg)
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = false;
-	m_Animation.fAnimSpeedRatio = 1.5f;
 
 	m_eCurState = STATE_IDLE;
 
@@ -53,7 +52,7 @@ void CTrilobiteA::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_L))
 	{
-		Set_Damage(4, WP_BOW);
+		Set_Damage(0, AT_Bow_Skill3);
 	}
 
 	Init_State(fTimeDelta);
@@ -92,15 +91,27 @@ void CTrilobiteA::Set_Damage(_int iDamage, _uint iDamageType)
 	_vec4 vPlayerPos = __super::Compute_PlayerPos();
 	m_pTransformCom->LookAt(vPlayerPos);
 
-	if (iDamageType == WP_BOW)
+	if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
+		iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
 	{
-		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
-
-		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
+		// 경직
+		m_Animation.fAnimSpeedRatio = 1.f;
 	}
 
-	else if (iDamageType == WP_SWORD)
+	if (iDamageType == AT_Bow_Common || iDamageType == AT_Bow_Skill1)
 	{
+		// 밀려나게
+		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
+		m_pTransformCom->Go_To_Dir(vDir, 0.3f);
+
+		m_Animation.fAnimSpeedRatio = 2.5f;
+	}
+
+	if (iDamageType == AT_Bow_Skill3)
+	{
+		// 이속 느려지게
+		m_bSlow = true;
+		m_Animation.fAnimSpeedRatio = 0.8f;
 	}
 }
 
@@ -118,7 +129,9 @@ void CTrilobiteA::Init_State(_float fTimeDelta)
 		case Client::CTrilobiteA::STATE_IDLE:
 			m_Animation.iAnimIndex = IDLE;
 			m_Animation.isLoop = true;
-			m_pTransformCom->Set_Speed(1.f);
+			m_Animation.fAnimSpeedRatio = 2.f;
+
+			m_pTransformCom->Set_Speed(1.5f);
 			break;
 
 		case Client::CTrilobiteA::STATE_ROAM:
@@ -154,6 +167,16 @@ void CTrilobiteA::Init_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = RUN;
 			m_Animation.isLoop = true;
 			m_pTransformCom->Set_Speed(3.f);
+
+			if (m_bSlow == true)
+			{
+				m_pTransformCom->Set_Speed(1.f);
+			}
+			else
+			{
+				m_pTransformCom->Set_Speed(4.f);
+			}
+
 			break;
 
 		case Client::CTrilobiteA::STATE_ATTACK:
@@ -234,12 +257,14 @@ void CTrilobiteA::Tick_State(_float fTimeDelta)
 		if (fDistance > m_fChaseRange && !m_bDamaged)
 		{
 			m_eCurState = STATE_IDLE;
+			m_bSlow = false;
 		}
 
 		if (fDistance <= m_fAttackRange)
 		{
 			m_eCurState = STATE_ATTACK;
 			m_Animation.isLoop = true;
+			m_bSlow = false;
 		}
 	}
 		break;
@@ -285,12 +310,13 @@ void CTrilobiteA::Tick_State(_float fTimeDelta)
 				}
 			}
 			break;
+
 		}
 		break;
 
 	case Client::CTrilobiteA::STATE_HIT:
 
-		if (m_pModelCom->IsAnimationFinished(HIT_L) || m_pModelCom->IsAnimationFinished(HIT_R))
+		if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
 		{
 			m_eCurState = STATE_CHASE;
 		}

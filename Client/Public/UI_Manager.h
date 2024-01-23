@@ -1,9 +1,12 @@
 ﻿#pragma once
 #include "Client_Define.h"
 #include "Base.h"
-
+#include "ItemBlock.h"
+BEGIN(Engine)
+class CGameInstance;
+END
 BEGIN(Client)
-
+class CItemBlock;
 class CUI_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CUI_Manager)
@@ -30,8 +33,34 @@ private:
 	_vec4			m_vPlayerPos{0.f, 0.f, 0.f, 0.f};
 	_vec4			m_vCameraPos{0.f, 0.f, 0.f, 0.f};
 	_vec4			m_vHairColor{0.f, 0.f, 0.f, 0.f};
+	
+	map<const wstring, ITEM> m_mapItem;
+
+	CGameInstance*	m_pGameInstance{ nullptr };
+	CGameObject*	m_pItemSlots[CItemBlock::ITEMSLOT_END];
+	CGameObject*	m_pInven;
+
 
 public:
+	HRESULT Init();
+	/*
+	
+	void	Tick(_float fTimeDelta);
+	void	Late_Tick(_float fTimeDelta);
+	HRESULT Render();
+	*/
+
+public:
+	HRESULT Init_Items();
+	ITEM Find_Item(wstring& strItemName);
+
+	HRESULT Set_Item(wstring& strItemName);
+	HRESULT Set_Inven(CGameObject* pGameObject);
+	HRESULT Set_ItemSlots(CItemBlock::ITEMSLOT eSlot, CGameObject* pGameObject);
+
+	CGameObject* Get_ItemSlots(CItemBlock::ITEMSLOT eSlot);
+
+
 	HRESULT Set_CustomPart(PART_TYPE eType, _uint iIndex);
 	void Set_HairColor(_vec4 vColor) { m_vHairColor = vColor; }
 	void Set_Picking_UI(_bool isPicking) { m_isPicking = isPicking; }

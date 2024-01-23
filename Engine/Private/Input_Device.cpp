@@ -64,57 +64,57 @@ void CInput_Device::Update_InputDev()
 		MSG_BOX("Failed to Get Keyboard State");
 	}
 
-	_ulong result = XInputGetState(0, &m_GamepadState);
-	if (result != ERROR_SUCCESS && result != ERROR_DEVICE_NOT_CONNECTED)
-	{
-		MSG_BOX("Failed to Get Gamepad State");
-	}
+	//_ulong result = XInputGetState(0, &m_GamepadState);
+	//if (result != ERROR_SUCCESS && result != ERROR_DEVICE_NOT_CONNECTED)
+	//{
+	//	MSG_BOX("Failed to Get Gamepad State");
+	//}
 
-	if (abs(m_GamepadState.Gamepad.sThumbLX) < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
-		abs(m_GamepadState.Gamepad.sThumbLY) < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
-	{
-		m_vLStick = _float2(0.f, 0.f);
-	}
-	else
-	{
-		m_vLStick.x = static_cast<_float>(m_GamepadState.Gamepad.sThumbLX) / SHRT_MAX;
-		m_vLStick.y = static_cast<_float>(m_GamepadState.Gamepad.sThumbLY) / SHRT_MAX;
-	}
+	//if (abs(m_GamepadState.Gamepad.sThumbLX) < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
+	//	abs(m_GamepadState.Gamepad.sThumbLY) < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
+	//{
+	//	m_vLStick = _float2(0.f, 0.f);
+	//}
+	//else
+	//{
+	//	m_vLStick.x = static_cast<_float>(m_GamepadState.Gamepad.sThumbLX) / SHRT_MAX;
+	//	m_vLStick.y = static_cast<_float>(m_GamepadState.Gamepad.sThumbLY) / SHRT_MAX;
+	//}
 
-	if (abs(m_GamepadState.Gamepad.sThumbRX) < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE &&
-		abs(m_GamepadState.Gamepad.sThumbRY) < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
-	{
-		m_vRStick = _float2(0.f, 0.f);
-	}
-	else
-	{
-		m_vRStick.x = static_cast<_float>(m_GamepadState.Gamepad.sThumbRX) / SHRT_MAX;
-		m_vRStick.y = static_cast<_float>(m_GamepadState.Gamepad.sThumbRY) / SHRT_MAX;
-	}
+	//if (abs(m_GamepadState.Gamepad.sThumbRX) < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE &&
+	//	abs(m_GamepadState.Gamepad.sThumbRY) < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
+	//{
+	//	m_vRStick = _float2(0.f, 0.f);
+	//}
+	//else
+	//{
+	//	m_vRStick.x = static_cast<_float>(m_GamepadState.Gamepad.sThumbRX) / SHRT_MAX;
+	//	m_vRStick.y = static_cast<_float>(m_GamepadState.Gamepad.sThumbRY) / SHRT_MAX;
+	//}
 
-	if (abs(m_GamepadState.Gamepad.bLeftTrigger) < XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
-	{
-		m_fLTrigger = 0.f;
-	}
-	else
-	{
-		m_fLTrigger = static_cast<_float>(m_GamepadState.Gamepad.bLeftTrigger) / CHAR_MAX;
-	}
+	//if (abs(m_GamepadState.Gamepad.bLeftTrigger) < XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+	//{
+	//	m_fLTrigger = 0.f;
+	//}
+	//else
+	//{
+	//	m_fLTrigger = static_cast<_float>(m_GamepadState.Gamepad.bLeftTrigger) / CHAR_MAX;
+	//}
 
-	if (abs(m_GamepadState.Gamepad.bRightTrigger) < XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
-	{
-		m_fRTrigger = 0.f;
-	}
-	else
-	{
-		m_fRTrigger = static_cast<_float>(m_GamepadState.Gamepad.bRightTrigger) / CHAR_MAX;
-	}
+	//if (abs(m_GamepadState.Gamepad.bRightTrigger) < XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+	//{
+	//	m_fRTrigger = 0.f;
+	//}
+	//else
+	//{
+	//	m_fRTrigger = static_cast<_float>(m_GamepadState.Gamepad.bRightTrigger) / CHAR_MAX;
+	//}
 
-	if (m_GamepadState.dwPacketNumber != m_dwPrevPacket) // 패드 입력
-	{
-		m_isGamepadMode = true;
-	}
-	m_dwPrevPacket = m_GamepadState.dwPacketNumber;
+	//if (m_GamepadState.dwPacketNumber != m_dwPrevPacket) // 패드 입력
+	//{
+	//	m_isGamepadMode = true;
+	//}
+	//m_dwPrevPacket = m_GamepadState.dwPacketNumber;
 
 	if (m_MouseState.lX || m_MouseState.lY || m_MouseState.lZ || *(_long*)(&m_MouseState.rgbButtons)) // 마우스 입력
 	{

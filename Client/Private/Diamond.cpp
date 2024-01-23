@@ -123,6 +123,7 @@ HRESULT CDiamond::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
+	return S_OK;
 }
 
 CDiamond* CDiamond::Create(_dev pDevice, _context pContext)

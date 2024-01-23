@@ -25,8 +25,8 @@ private:
 	_bool	m_isClone;
 	_uint m_iNumVerticesX{ 0 };
 	_uint m_iNumVerticesZ{ 0 };
-
-
+	VTXNORTEX* pVertices;
+	_ulong* pIndices;
 public:
 	HRESULT ModifyTerrainVertexBuffer(_uint iNumVerticesX, _uint iNumVerticesZ);
 	HRESULT Mesh_Terrain( vector<VTXSTATICMESH> vVertices, vector<_ulong> vIndices);

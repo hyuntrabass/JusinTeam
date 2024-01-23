@@ -72,6 +72,7 @@ private:
 	_bool m_bAttacked = { false };
 
 	_bool m_bDamaged = { false };
+	_bool m_bSlow = { false };
 
 private:
 	static const _float m_fChaseRange;

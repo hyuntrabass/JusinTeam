@@ -194,7 +194,7 @@ HRESULT CLevel_Village::Ready_Object()
 		ObjectInfo ObjectInfo{};
 		ObjectInfo.strPrototypeTag = ObjectPrototype;
 		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
-
+		ObjectInfo.eObjectType = Object_Building;
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Village_Object"), &ObjectInfo)))
 		{
 			MSG_BOX("오브젝트 불러오기 실패");
@@ -204,7 +204,7 @@ HRESULT CLevel_Village::Ready_Object()
 	return S_OK;
 }
 
-HRESULT CLevel_Village::Ready_Monster()
+HRESULT CLevel_Village::Ready_NpcvsMon()
 {
 	MonsterInfo Info{};
 	const TCHAR* pGetPath = L"../Bin/Data/Prologue_MonsterData.dat";
@@ -236,7 +236,7 @@ HRESULT CLevel_Village::Ready_Monster()
 		Info.strMonsterPrototype = MonsterPrototype;
 		Info.MonsterWorldMat = MonsterWorldMat;
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"), MonsterPrototype, &Info)))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), MonsterPrototype, &Info)))
 		{
 			MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
 				return E_FAIL;
