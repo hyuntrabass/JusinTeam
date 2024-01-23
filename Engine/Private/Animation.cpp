@@ -223,19 +223,20 @@ void CAnimation::Update_Lerp_TransformationMatrix(const vector<class CBone*>& Bo
 		PrevTransformation = m_pPrevTransformation[iNumPrevTransformation];
 		const _char* szBoneName = pBone->Get_BoneName();
 
+		_vector vTmpScaling{}, vSrcRotation{}, vTmpPotition{};
 		_vec4 vSrcScaling{}, vDstScaling{};
-		_vector vSrcRotation{};
 		_vec4 vDstRotation{};
 		_vec4 vSrcPotition{}, vDstPosition{};
 		_float fRatio = m_fCurrentAnimPos / fInterpolationTime;
 
-		XMMatrixDecompose(&XMLoadFloat4(&vSrcScaling), &vSrcRotation, &XMLoadFloat4(&vSrcPotition), PrevTransformation);
+		XMMatrixDecompose(&vTmpScaling, &vSrcRotation, &vTmpPotition, PrevTransformation);
 		vSrcScaling.x = PrevTransformation.Right().Length();
 		vSrcScaling.y = PrevTransformation.Up().Length();
 		vSrcScaling.z = PrevTransformation.Look().Length();
 		vSrcScaling.w = 0.f;
 		//vSrcRotation = XMQuaternionRotationMatrix(PrevTransformation);
-		vSrcPotition = _vec4(&PrevTransformation._41);
+		//vSrcPotition = _vec4(&PrevTransformation._41);
+		vSrcPotition = PrevTransformation.Position();
 
 		KEYFRAME DestKeyFrame = {};
 

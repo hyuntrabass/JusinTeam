@@ -154,19 +154,8 @@ namespace Engine
 		bool IsDeleteRotateToBone{};
 	};
 
-	using TRIGGERLIGHT_DESC = struct tagTriggerLightDesc {
-		int iStartAnimIndex{};
-		float fStartAnimPos{};
-		int iEndAnimIndex = -1;
-		float fEndAnimPos{};
-		bool IsFollow{};
-		unsigned int iBoneIndex{};
-		SimpleMath::Matrix OffsetMatrix{};
-		
-		tagLightDesc LightDesc{};
-	};
-
 	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {
+		int iStartAnimIndex{};
 		float fStartAnimPos{};
 		std::wstring strSoundName{};
 		int iChannel{};

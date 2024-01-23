@@ -5,8 +5,6 @@
 #include "Animation.h"
 #include "GameInstance.h"
 
-_uint CModel::m_iModelID = {};
-
 CModel::CModel(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
 {
@@ -21,9 +19,8 @@ CModel::CModel(const CModel& rhs)
 	, m_iNumAnimations(rhs.m_iNumAnimations)
 	, m_iNumTriggersEffect(rhs.m_iNumTriggersEffect)
 	, m_TriggerEffects(rhs.m_TriggerEffects)
-	, m_iNumTriggersLight(rhs.m_iNumTriggersLight)
-	, m_TriggerLights(rhs.m_TriggerLights)
-	, m_iMyModelID(m_iModelID++)
+	, m_iNumTriggersSound(rhs.m_iNumTriggersSound)
+	, m_TriggerSounds(rhs.m_TriggerSounds)
 {
 	for (auto& pPrototypeBone : rhs.m_Bones)
 	{
@@ -149,9 +146,9 @@ vector<TRIGGEREFFECT_DESC>& CModel::Get_TriggerEffects()
 void CModel::Add_TriggerEffect(TRIGGEREFFECT_DESC TriggerEffectDesc)
 {
 	m_iNumTriggersEffect++;
+	m_TriggerEffects.push_back(TriggerEffectDesc);
 	_mat* pMatrix = new _mat{};
 	m_EffectMatrices.push_back(pMatrix);
-	m_TriggerEffects.push_back(TriggerEffectDesc);
 }
 
 void CModel::Delete_TriggerEffect(_uint iTriggerEffectIndex)
@@ -181,42 +178,42 @@ void CModel::Reset_TriggerEffects()
 	m_EffectMatrices.clear();
 }
 
-const _uint CModel::Get_NumTriggerLight() const
+const _uint CModel::Get_NumTriggerSound() const
 {
-	return m_iNumTriggersLight;
+	return m_iNumTriggersSound;
 }
 
-TRIGGERLIGHT_DESC* CModel::Get_TriggerLight(_uint iTriggerLightIndex)
+TRIGGERSOUND_DESC* CModel::Get_TriggerSound(_uint iTriggerSoundIndex)
 {
-	return &m_TriggerLights[iTriggerLightIndex];
+	return &m_TriggerSounds[iTriggerSoundIndex];
 }
 
-vector<TRIGGERLIGHT_DESC>& CModel::Get_TriggerLights()
+vector<TRIGGERSOUND_DESC>& CModel::Get_TriggerSounds()
 {
-	return m_TriggerLights;
+	return m_TriggerSounds;
 }
 
-void CModel::Add_TriggerLight(TRIGGERLIGHT_DESC TriggerLightDesc)
+void CModel::Add_TriggerSound(TRIGGERSOUND_DESC TriggerSoundDesc)
 {
-	m_iNumTriggersLight++;
-	m_TriggerLights.push_back(TriggerLightDesc);
+	m_iNumTriggersSound++;
+	m_TriggerSounds.push_back(TriggerSoundDesc);
 }
 
-void CModel::Delete_TriggerLight(_uint iTriggerLightIndex)
+void CModel::Delete_TriggerSound(_uint iTriggerSoundIndex)
 {
-	m_iNumTriggersLight--;
-	auto Light_iter = m_TriggerLights.begin();
-	for (_uint i = 0; i < iTriggerLightIndex; i++)
+	m_iNumTriggersSound--;
+	auto Sound_iter = m_TriggerSounds.begin();
+	for (_uint i = 0; i < iTriggerSoundIndex; i++)
 	{
-		Light_iter++;
+		Sound_iter++;
 	}
-	m_TriggerLights.erase(Light_iter);
+	m_TriggerSounds.erase(Sound_iter);
 }
 
-void CModel::Reset_TriggerLights()
+void CModel::Reset_TriggerSounds()
 {
-	m_iNumTriggersLight = 0;
-	m_TriggerLights.clear();
+	m_iNumTriggersSound = 0;
+	m_TriggerSounds.clear();
 }
 
 _uint CModel::Get_NumIndices()
@@ -372,8 +369,22 @@ void CModel::Play_Animation(_float fTimeDelta)
 #pragma region Trigger_Effect
 	for (size_t i = 0; i < m_TriggerEffects.size(); i++)
 	{
+		//이펙트 위치 갱신
+		if (m_TriggerEffects[i].IsFollow && m_pGameInstance->Has_Created_Effect(m_EffectMatrices[i]))
+		{
+			if (m_TriggerEffects[i].IsInitRotateToBone || m_TriggerEffects[i].IsDeleteRotateToBone)
+			{
+				_mat BoneMatrix = *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix();
+				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * BoneMatrix.Get_RotationRemoved() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
+			}
+			else
+			{
+				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
+			}
+		}
 		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iStartAnimIndex &&
-			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fStartAnimPos)
+			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fStartAnimPos&&
+			not m_pGameInstance->Has_Created_Effect(m_EffectMatrices[i]))
 		{
 			//초기 매트릭스 세팅
 			if (m_TriggerEffects[i].IsDeleteRotateToBone)
@@ -402,53 +413,25 @@ void CModel::Play_Animation(_float fTimeDelta)
 		//이펙트 제거
 		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iEndAnimIndex &&
 			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fEndAnimPos &&
-			m_TriggerEffects[i].iEndAnimIndex > 0)
+			m_TriggerEffects[i].iEndAnimIndex > 0 && m_pGameInstance->Has_Created_Effect(m_EffectMatrices[i]))
 		{
 			m_pGameInstance->Delete_Effect(m_EffectMatrices[i]);
 		}
-
-		//이펙트 위치 갱신
-		if (m_TriggerEffects[i].IsFollow)
-		{
-			if (m_TriggerEffects[i].IsInitRotateToBone || m_TriggerEffects[i].IsDeleteRotateToBone)
-			{
-				_mat BoneMatrix = *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix();
-				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * BoneMatrix.Get_RotationRemoved() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
-			}
-			else
-			{
-				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
-			}
-		}
 	}
 #pragma endregion
 
-#pragma region Trigger_Light
-	wstring strLightTag = L"Light_Trigger_" + to_wstring(m_iMyModelID);
-	for (size_t i = 0; i < m_TriggerLights.size(); i++)
+#pragma region Trigger_Sound
+	for (size_t i = 0; i < m_TriggerSounds.size(); i++)
 	{
-		//라이트 생성
-		if (m_AnimDesc.iAnimIndex == m_TriggerLights[i].iStartAnimIndex &&
-			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerLights[i].fStartAnimPos)
+		if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iStartAnimIndex &&
+			static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerSounds[i].fStartAnimPos))
 		{
-			m_pGameInstance->Add_Light(m_pGameInstance->Get_CurrentLevelIndex(), strLightTag + to_wstring(i), m_TriggerLights[i].LightDesc);
-		}
-
-		//라이트 제거
-		if (m_AnimDesc.iAnimIndex == m_TriggerLights[i].iEndAnimIndex &&
-			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerLights[i].fEndAnimPos &&
-			m_TriggerLights[i].iEndAnimIndex > 0)
-		{
-			m_pGameInstance->Delete_Light(m_pGameInstance->Get_CurrentLevelIndex(), strLightTag + to_wstring(i));
-		}
-
-		//라이트 위치 갱신
-		if (m_TriggerLights[i].IsFollow)
-		{
-			//= m_TriggerLights[i].OffsetMatrix * *m_Bones[m_TriggerLights[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
+			//m_pGameInstance->StopSound(m_TriggerSounds[i].iChannel);
+			//m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundName, m_TriggerSounds[i].iChannel, m_TriggerSounds[i].fVolume);
 		}
 	}
 #pragma endregion
+
 
 }
 

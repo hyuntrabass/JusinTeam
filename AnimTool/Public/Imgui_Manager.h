@@ -14,7 +14,7 @@ class CImgui_Manager final : public CBase
 {
 public:
     enum TYPE { TYPE_MONSTER, TYPE_PLAYER, TYPE_END };
-    enum TRIGGER { TRIGGER_EFFECT, TRIGGER_LIGHT, TRIGGER_SOUND, TRIGGER_END };
+    enum TRIGGER { TRIGGER_EFFECT, TRIGGER_SOUND, TRIGGER_END };
 
 public:
     //ImGuizmo
@@ -53,6 +53,8 @@ private:
     _uint m_iWinSizeY = { 0 };
 
 private:
+    vector<string> m_MonsterNames;
+    const _char** m_szMonsterNames;
     class CPlayer* m_pPlayer = { nullptr };
     ANIM_DESC m_AnimDesc{};
     vector<const _char*> m_AnimationNames;
@@ -70,13 +72,12 @@ private:
     _int m_iSelectFile{};
     _int m_iCurTriggerIndex{};
     //이펙트
-    vector<const _char*> m_EffectDescNames;
+    vector<string> m_EffectFiles;
+    const _char** m_szEffectFiles;
     _mat m_OffsetMatrix{};
-
-    vector<string> m_MonsterNames;
-    const _char** m_szMonsterNames;
-    vector<string> m_EffectNames;
-    const _char** m_szEffectNames;
+    //사운드
+    vector<string> m_SoundFiles;
+    const _char** m_szSoundFiles;
 
     _float m_fTimeDelta{};
 
