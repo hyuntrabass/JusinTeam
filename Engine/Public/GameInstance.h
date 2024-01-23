@@ -149,9 +149,8 @@ public:
 #endif // _DEBUG
 
 public: // Sound Manager
-	HRESULT Init_SoundManager(_uint iNumChannels);
 	_bool Is_SoundManager_Ready();
-	void Play_Sound(const wstring& strSoundTag, _uint iChannel, _float fVolume = 0.5f, _bool isLoop = false);
+	_int Play_Sound(const wstring& strSoundTag, _float fVolume = 0.5f, _bool isLoop = false);
 	void PlayBGM(const wstring& strSoundTag, float fVolume);
 	void StopSound(_uint iChannel);
 	void StopAll();
@@ -189,6 +188,8 @@ public: // Get_Set
 	const _bool& Get_ShakeCam() const;
 	// 지옥이 시작되는 높이를 반환 함. (일정 높이부터 내려갈 수록 어두워지는걸 hell이라고 해놨음.)
 	const _float& Get_HellHeight() const;
+	// 현재 사운드 채널이 재생중인지를 반환 함.
+	_bool Get_IsPlayingSound(_uint iChannel);
 
 	// 카메라 모드를 지정함. 카메라에서 말고는 쓰지 말것.
 	void Set_CameraModeIndex(const _uint& iIndex);

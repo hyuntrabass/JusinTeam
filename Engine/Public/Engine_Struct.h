@@ -158,7 +158,7 @@ namespace Engine
 		int iStartAnimIndex{};
 		float fStartAnimPos{};
 		std::wstring strSoundName{};
-		int iChannel{};
+		int iChannel = -1;
 		float fVolume{};
 	};
 

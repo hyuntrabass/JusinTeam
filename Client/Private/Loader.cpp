@@ -126,12 +126,6 @@ HRESULT CLoader::Loading_LevelResources()
 
 HRESULT CLoader::Load_Logo()
 {
-	m_strLoadingText = L"Logo : Loading Sounds";
-	if (FAILED(m_pGameInstance->Init_SoundManager(SCH_MAX)))
-	{
-		return E_FAIL;
-	}
-
 	m_strLoadingText = L"Logo : Loading Texture";
 #pragma region Texture
 

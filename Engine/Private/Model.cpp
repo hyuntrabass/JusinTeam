@@ -383,7 +383,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 			}
 		}
 		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iStartAnimIndex &&
-			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fStartAnimPos&&
+			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fStartAnimPos &&
 			not m_pGameInstance->Has_Created_Effect(m_EffectMatrices[i]))
 		{
 			//초기 매트릭스 세팅
@@ -426,8 +426,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 		if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iStartAnimIndex &&
 			static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerSounds[i].fStartAnimPos))
 		{
-			//m_pGameInstance->StopSound(m_TriggerSounds[i].iChannel);
-			//m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundName, m_TriggerSounds[i].iChannel, m_TriggerSounds[i].fVolume);
+			m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundName, m_TriggerSounds[i].fVolume);
 		}
 	}
 #pragma endregion

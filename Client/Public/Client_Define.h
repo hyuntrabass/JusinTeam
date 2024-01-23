@@ -93,7 +93,7 @@ namespace Client
 		PT_END
 	};
 
-	enum SoundChannel
+	/*enum SoundChannel
 	{
 		SCH_BGM,
 		SCH_EFFECT_PLAYER,
@@ -142,7 +142,7 @@ namespace Client
 		SCH_EFFECT_MONSTER18,
 		SCH_EFFECT_MONSTER19,
 		SCH_MAX
-	};
+	};*/
 
 	enum SortDepth
 	{
