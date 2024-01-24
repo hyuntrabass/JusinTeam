@@ -146,15 +146,14 @@ namespace Engine
 	};
 
 	using TRIGGEREFFECT_DESC = struct tagTriggerEffectDesc {
-		int iStartAnimIndex{};
-		float fStartAnimPos{};
-		int iEndAnimIndex = -1;
-		float fEndAnimPos{};
+		int iStartAnimIndex;
+		float fStartAnimPos;
+		std::vector<int> iEndAnimIndices;
+		std::vector<float> fEndAnimPoses;
 		bool IsFollow{};
 		std::wstring strEffectName{};
 		unsigned int iBoneIndex{};
 		SimpleMath::Matrix OffsetMatrix{};
-		bool IsInitRotateToBone{};
 		bool IsDeleteRotateToBone{};
 	};
 
@@ -162,8 +161,9 @@ namespace Engine
 		int iStartAnimIndex{};
 		float fStartAnimPos{};
 		std::wstring strSoundName{};
-		int iChannel = -1;
 		float fVolume{};
+		
+		int iChannel = -1;
 	};
 
 	using VTXPOSCOLOR = struct ENGINE_DLL tagVertex_Position_Color

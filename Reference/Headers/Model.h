@@ -105,6 +105,7 @@ private:
 	HRESULT Read_Animations(ifstream& File);
 	HRESULT Read_Materials(ifstream& File, const string& strFilePath);
 	HRESULT Read_TriggerEffects(const string& strFilePath);
+	HRESULT Read_TriggerSounds(const string& strFilePath);
 
 public:
 	static CModel* Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh = false, _fmatrix PivotMatrix = XMMatrixIdentity());

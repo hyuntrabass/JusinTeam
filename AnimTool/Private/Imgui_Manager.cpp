@@ -295,6 +295,8 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			}
 			else if (m_eTriggerType == TRIGGER_SOUND)
 			{
+				TRIGGERSOUND_DESC* pSoundDesc = pCurModel->Get_TriggerSound(m_iCurTriggerIndex);
+				m_pGameInstance->StopSound(pSoundDesc->iChannel);
 				pCurModel->Delete_TriggerSound(m_iCurTriggerIndex);
 				if (m_iCurTriggerIndex != 0)
 				{
@@ -537,39 +539,49 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			TRIGGEREFFECT_DESC* pEffectDesc = m_pPlayer->Get_CurrentModel()->Get_TriggerEffect(m_iCurTriggerIndex);
 			if (ImGui::Button("START"))
 			{
-				if (pEffectDesc->iStartAnimIndex != pEffectDesc->iEndAnimIndex ||
-					pEffectDesc->iStartAnimIndex == pEffectDesc->iEndAnimIndex &&
-					pEffectDesc->fEndAnimPos > m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos())
-				{
-					pEffectDesc->iStartAnimIndex = m_pPlayer->Get_CurrentModel()->Get_CurrentAnimationIndex();
-					_uint iCurrentAnimPos = static_cast<_uint>(m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos());
-					pEffectDesc->fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
-				}
+				pEffectDesc->iStartAnimIndex = m_pPlayer->Get_CurrentModel()->Get_CurrentAnimationIndex();
+				_uint iCurrentAnimPos = static_cast<_uint>(m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos());
+				pEffectDesc->fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
 			}
-			ImGui::SameLine();
+
+			string strStartEffectIndex = "ANIMINDEX : " + to_string(pEffectDesc->iStartAnimIndex);
+			ImGui::Text(strStartEffectIndex.c_str()); ImGui::SameLine();
+			string strStartEffectPos = "ANIMPOS : " + to_string(static_cast<_int>(pEffectDesc->fStartAnimPos));
+			ImGui::Text(strStartEffectPos.c_str());
+
 			if (ImGui::Button("END"))
 			{
-				if (pEffectDesc->iStartAnimIndex != pEffectDesc->iEndAnimIndex ||
-					pEffectDesc->iStartAnimIndex == pEffectDesc->iEndAnimIndex &&
-					pEffectDesc->fStartAnimPos < m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos())
+				_uint iEndIndex = static_cast<_uint>(pEffectDesc->iEndAnimIndices.size()) - 1;
+				pEffectDesc->iEndAnimIndices[iEndIndex] = m_pPlayer->Get_CurrentModel()->Get_CurrentAnimationIndex();
+				_uint iCurrentAnimPos = static_cast<_uint>(m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos());
+				pEffectDesc->fEndAnimPoses[iEndIndex] = static_cast<_float>(iCurrentAnimPos);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("END ADD"))
+			{
+				pEffectDesc->iEndAnimIndices.push_back(-1);
+				_uint iEndAnimPos = static_cast<_uint>(0.f);
+				pEffectDesc->fEndAnimPoses.push_back(static_cast<_float>(iEndAnimPos));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("END DELETE"))
+			{
+				if (pEffectDesc->iEndAnimIndices.size() > 1)
 				{
-					pEffectDesc->iEndAnimIndex = m_pPlayer->Get_CurrentModel()->Get_CurrentAnimationIndex();
-					_uint iCurrentAnimPos = static_cast<_uint>(m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos());
-					pEffectDesc->fEndAnimPos = static_cast<_float>(iCurrentAnimPos);
+					pEffectDesc->iEndAnimIndices.pop_back();
+					pEffectDesc->fEndAnimPoses.pop_back();
 				}
 			}
 
-			ImGui::SeparatorText("ANIMINDEX");
-			string strStartEffectIndex = "START : " + to_string(pEffectDesc->iStartAnimIndex);
-			ImGui::Text(strStartEffectIndex.c_str()); ImGui::SameLine();
-			string strEndEffectIndex = "END : " + to_string(pEffectDesc->iEndAnimIndex);
-			ImGui::Text(strEndEffectIndex.c_str());
-			ImGui::SeparatorText("ANIMPOS");
-			string strStartEffectPos = "START : " + to_string(static_cast<_int>(pEffectDesc->fStartAnimPos));
-			ImGui::Text(strStartEffectPos.c_str()); ImGui::SameLine();
-			string strEndEffectPos = "END : " + to_string(static_cast<_int>(pEffectDesc->fEndAnimPos));
-			ImGui::Text(strEndEffectPos.c_str());
+			for (size_t i = 0; i < pEffectDesc->iEndAnimIndices.size(); i++)
+			{
+				string strEndEffectIndex = "ANIMINDEX  : " + to_string(pEffectDesc->iEndAnimIndices[i]);
+				ImGui::Text(strEndEffectIndex.c_str()); ImGui::SameLine();
+				string strEndEffectPos = "ANIMPOS : " + to_string(static_cast<_int>(pEffectDesc->fEndAnimPoses[i]));
+				ImGui::Text(strEndEffectPos.c_str());
+			}
 
+			ImGui::SeparatorText("BONE");
 			if (ImGui::Button("FOLLOW"))
 			{
 				if (pEffectDesc->IsFollow == false)
@@ -590,28 +602,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			{
 				ImGui::Text("FALSE");
 			}
-
-			if (ImGui::Button("INIT ROTATE"))
-			{
-				if (pEffectDesc->IsInitRotateToBone == false)
-				{
-					pEffectDesc->IsInitRotateToBone = true;
-				}
-				else if (pEffectDesc->IsInitRotateToBone == true)
-				{
-					pEffectDesc->IsInitRotateToBone = false;
-				}
-			}
 			ImGui::SameLine();
-			if (pEffectDesc->IsInitRotateToBone)
-			{
-				ImGui::Text("TRUE");
-			}
-			else
-			{
-				ImGui::Text("FALSE");
-			}
-
 			if (ImGui::Button("DELETE ROTATE"))
 			{
 				if (pEffectDesc->IsDeleteRotateToBone == false)
@@ -674,20 +665,26 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				pSoundDesc->fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
 			}
 
-			ImGui::SeparatorText("ANIMINDEX");
-			string strStartSoundIndex = "START : " + to_string(pSoundDesc->iStartAnimIndex);
-			ImGui::Text(strStartSoundIndex.c_str()); ImGui::SameLine();
-			ImGui::SeparatorText("ANIMPOS");
-			string strStartSoundPos = "START : " + to_string(static_cast<_int>(pSoundDesc->fStartAnimPos));
-			ImGui::Text(strStartSoundPos.c_str()); ImGui::SameLine();
+			string strStartEffectIndex = "ANIMINDEX : " + to_string(pSoundDesc->iStartAnimIndex);
+			ImGui::Text(strStartEffectIndex.c_str()); ImGui::SameLine();
+			string strStartEffectPos = "ANIMPOS : " + to_string(static_cast<_int>(pSoundDesc->fStartAnimPos));
+			ImGui::Text(strStartEffectPos.c_str());
 
-			//pSoundDesc->fVolume
-			ImGui::SeparatorText("CHANNEL");
-			string strSoundChannel = to_string(pSoundDesc->iChannel);
-			ImGui::Text(strSoundChannel.c_str());
 			ImGui::SeparatorText("VOLUME");
-			string strSoundVolume = to_string(pSoundDesc->fVolume);
-
+			ImGui::InputFloat("X##2", &pSoundDesc->fVolume, 0.01f, 0.f, "%.2f");
+			if (pSoundDesc->fVolume >= 1.f)
+			{
+				pSoundDesc->fVolume = 1.f;
+			}
+			else if (pSoundDesc->fVolume <= 0.f)
+			{
+				pSoundDesc->fVolume = 0.f;
+			}
+			if (pSoundDesc->iChannel != -1)
+			{
+				m_pGameInstance->SetChannelVolume(pSoundDesc->iChannel, pSoundDesc->fVolume);
+			}
+			
 			ImGui::PopItemWidth();
 			ImGui::End();
 		}
@@ -708,7 +705,23 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	{
 		if (ImGui::ListBox("SOUND##1", &m_iSelectFile, m_szSoundFiles, m_SoundFiles.size()))
 		{
+			if (m_pPlayer)
+			{
+				if (m_pPlayer->Get_CurrentModel()->Get_NumTriggerSound() > 0)
+				{
+					TRIGGERSOUND_DESC* pSoundDesc = m_pPlayer->Get_CurrentModel()->Get_TriggerSound(m_iCurTriggerIndex);
+					if (pSoundDesc->iChannel != -1)
+					{
+						m_pGameInstance->StopSound(pSoundDesc->iChannel);
+					}
 
+					_uint iSelectEffectFile = m_iSelectFile;
+					_tchar szEffectName[MAX_PATH]{};
+					MultiByteToWideChar(CP_UTF8, 0, m_szSoundFiles[iSelectEffectFile], (_int)strlen(m_szSoundFiles[iSelectEffectFile]), szEffectName, MAX_PATH);
+
+					pSoundDesc->strSoundName = szEffectName;
+				}
+			}
 		}
 	}
 
@@ -826,17 +839,27 @@ HRESULT CImgui_Manager::SaveFile()
 	_char szFileName[MAX_PATH] = "";
 	_splitpath_s(pCurrentModel->Get_FilePath(), nullptr, 0, szDirectory, MAX_PATH, szFileName, MAX_PATH, nullptr, 0);
 
-	_char szExt[MAX_PATH] = ".effecttrigger";
+	_char szEffectExt[MAX_PATH] = ".effecttrigger";
+	_char szSoundExt[MAX_PATH] = ".soundtrigger";
+	 
 	strcpy_s(szFilePath, MAX_PATH, szDirectory);
 	strcat_s(szFilePath, MAX_PATH, szFileName);
-	strcat_s(szFilePath, MAX_PATH, szExt);
+	if (m_eTriggerType == TRIGGER_EFFECT)
+	{
+		strcat_s(szFilePath, MAX_PATH, szEffectExt);
+	}
+	else if (m_eTriggerType == TRIGGER_SOUND)
+	{
+		strcat_s(szFilePath, MAX_PATH, szSoundExt);
+	}
 
 	ofstream Fileout(szFilePath, ios::binary);
 
 	if (Fileout.is_open())
 	{
 		CModel* pCurModel = m_pPlayer->Get_CurrentModel();
-		for (_uint i = 0; i < pCurModel->Get_NumTriggerEffect(); i++)
+		//이펙트 트리거 저장
+		if (m_eTriggerType == TRIGGER_EFFECT)
 		{
 			vector<TRIGGEREFFECT_DESC> EffectDescs = pCurModel->Get_TriggerEffects();
 			_uint iNumTriggerEffect = EffectDescs.size();
@@ -847,10 +870,15 @@ HRESULT CImgui_Manager::SaveFile()
 				Fileout.write(reinterpret_cast<_char*>(&iStartAnimIndex), sizeof(_int));
 				_float fStartAnimPos = EffectDescs[i].fStartAnimPos;
 				Fileout.write(reinterpret_cast<_char*>(&fStartAnimPos), sizeof(_float));
-				_int iEndAnimIndex = EffectDescs[i].iEndAnimIndex;
-				Fileout.write(reinterpret_cast<_char*>(&iEndAnimIndex), sizeof(_int));
-				_float fEndAnimPos = EffectDescs[i].fEndAnimPos;
-				Fileout.write(reinterpret_cast<_char*>(&fEndAnimPos), sizeof(_float));
+				_uint iNumEnd = static_cast<_uint>(EffectDescs[i].iEndAnimIndices.size());
+				Fileout.write(reinterpret_cast<_char*>(&iNumEnd), sizeof(_uint));
+				for (_uint j = 0; j < iNumEnd; j++)
+				{
+					_int iEndAnimIndex = EffectDescs[i].iEndAnimIndices[j];
+					Fileout.write(reinterpret_cast<_char*>(&iEndAnimIndex), sizeof(_int));
+					_float fEndAnimPos = EffectDescs[i].fEndAnimPoses[j];
+					Fileout.write(reinterpret_cast<_char*>(&fEndAnimPos), sizeof(_float));
+				}
 				_bool IsFollow = EffectDescs[i].IsFollow;
 				Fileout.write(reinterpret_cast<_char*>(&IsFollow), sizeof(_bool));
 
@@ -863,13 +891,32 @@ HRESULT CImgui_Manager::SaveFile()
 				Fileout.write(reinterpret_cast<_char*>(&iBoneIndex), sizeof(_uint));
 				_mat OffsetMatrix = EffectDescs[i].OffsetMatrix;
 				Fileout.write(reinterpret_cast<_char*>(&OffsetMatrix), sizeof(_mat));
-				_bool IsInitRotateToBone = EffectDescs[i].IsInitRotateToBone;
-				Fileout.write(reinterpret_cast<_char*>(&IsInitRotateToBone), sizeof(_bool));
 				_bool IsDeleteRotateToBone = EffectDescs[i].IsDeleteRotateToBone;
 				Fileout.write(reinterpret_cast<_char*>(&IsDeleteRotateToBone), sizeof(_bool));
 			}
-		}
+		}//사운드 트리거 저장
+		else if (m_eTriggerType == TRIGGER_SOUND)
+		{
+			vector<TRIGGERSOUND_DESC> SoundDescs = pCurModel->Get_TriggerSounds();
+			_uint iNumTriggerSound = SoundDescs.size();
+			Fileout.write(reinterpret_cast<_char*>(&iNumTriggerSound), sizeof(_uint));
+			for (_uint i = 0; i < iNumTriggerSound; i++)
+			{
+				_int iStartAnimIndex = SoundDescs[i].iStartAnimIndex;
+				Fileout.write(reinterpret_cast<_char*>(&iStartAnimIndex), sizeof(_int));
+				_float fStartAnimPos = SoundDescs[i].fStartAnimPos;
+				Fileout.write(reinterpret_cast<_char*>(&fStartAnimPos), sizeof(_float));
 
+				size_t iNameSize{};
+				iNameSize = (SoundDescs[i].strSoundName.size() + 1) * sizeof(_tchar);
+				Fileout.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+				Fileout.write(reinterpret_cast<const _char*>(SoundDescs[i].strSoundName.data()), iNameSize);
+				
+				_float fVolume = SoundDescs[i].fVolume;
+				Fileout.write(reinterpret_cast<_char*>(&fVolume), sizeof(_float));
+			}
+		}
+		
 		MessageBox(g_hWnd, L"파일 저장 완료", L"파일 저장", MB_OK);
 	}
 
@@ -885,44 +932,88 @@ HRESULT CImgui_Manager::LoadFile()
 	_char szFileName[MAX_PATH] = "";
 	_splitpath_s(pCurrentModel->Get_FilePath(), nullptr, 0, szDirectory, MAX_PATH, szFileName, MAX_PATH, nullptr, 0);
 
-	_char szExt[MAX_PATH] = ".effecttrigger";
+	_char szEffectExt[MAX_PATH] = ".effecttrigger";
+	_char szSoundExt[MAX_PATH] = ".soundtrigger";
+
 	strcpy_s(szFilePath, MAX_PATH, szDirectory);
 	strcat_s(szFilePath, MAX_PATH, szFileName);
-	strcat_s(szFilePath, MAX_PATH, szExt);
+	if (m_eTriggerType == TRIGGER_EFFECT)
+	{
+		strcat_s(szFilePath, MAX_PATH, szEffectExt);
+	}
+	else if (m_eTriggerType == TRIGGER_SOUND)
+	{
+		strcat_s(szFilePath, MAX_PATH, szSoundExt);
+	}
 
 	ifstream Filein(szFilePath, ios::binary);
 
 	if (Filein.is_open())
 	{
 		CModel* pCurModel = m_pPlayer->Get_CurrentModel();
-
-		pCurModel->Reset_TriggerEffects();
-
-		_uint iNumTriggerEffect = { 0 };
-		Filein.read(reinterpret_cast<char*>(&iNumTriggerEffect), sizeof _uint);
-		for (_uint i = 0; i < iNumTriggerEffect; i++)
+		//이펙트 트리거 불러오기
+		if (m_eTriggerType == TRIGGER_EFFECT)
 		{
-			TRIGGEREFFECT_DESC EffectDesc{};
-			Filein.read(reinterpret_cast<_char*>(&EffectDesc.iStartAnimIndex), sizeof(_int));
-			Filein.read(reinterpret_cast<_char*>(&EffectDesc.fStartAnimPos), sizeof(_float));
-			Filein.read(reinterpret_cast<_char*>(&EffectDesc.iEndAnimIndex), sizeof(_int));
-			Filein.read(reinterpret_cast<_char*>(&EffectDesc.fEndAnimPos), sizeof(_float));
-			Filein.read(reinterpret_cast<_char*>(&EffectDesc.IsFollow), sizeof(_bool));
+			pCurModel->Reset_TriggerEffects();
 
-			size_t iNameSize{};
-			_tchar* pBuffer{};
-			Filein.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
-			pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
-			Filein.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
-			EffectDesc.strEffectName = pBuffer;
-			Safe_Delete_Array(pBuffer);
+			_uint iNumTriggerEffect = { 0 };
+			Filein.read(reinterpret_cast<char*>(&iNumTriggerEffect), sizeof _uint);
+			for (_uint i = 0; i < iNumTriggerEffect; i++)
+			{
+				TRIGGEREFFECT_DESC EffectDesc{};
+				Filein.read(reinterpret_cast<_char*>(&EffectDesc.iStartAnimIndex), sizeof(_int));
+				Filein.read(reinterpret_cast<_char*>(&EffectDesc.fStartAnimPos), sizeof(_float));
+				_uint iNumEnd{};
+				Filein.read(reinterpret_cast<_char*>(&iNumEnd), sizeof(_uint));
+				for (_uint j = 0; j < iNumEnd; j++)
+				{
+					_int iEndAnimIndex{};
+					Filein.read(reinterpret_cast<_char*>(&iEndAnimIndex), sizeof(_int));
+					EffectDesc.iEndAnimIndices.push_back(iEndAnimIndex);
+					_float fEndAnimPos{};
+					Filein.read(reinterpret_cast<_char*>(&fEndAnimPos), sizeof(_float));
+					EffectDesc.fEndAnimPoses.push_back(fEndAnimPos);
+				}
+				Filein.read(reinterpret_cast<_char*>(&EffectDesc.IsFollow), sizeof(_bool));
 
-			Filein.read(reinterpret_cast<_char*>(&EffectDesc.iBoneIndex), sizeof(_uint));
-			Filein.read(reinterpret_cast<_char*>(&EffectDesc.OffsetMatrix), sizeof(_mat));
-			Filein.read(reinterpret_cast<_char*>(&EffectDesc.IsInitRotateToBone), sizeof(_bool));
-			Filein.read(reinterpret_cast<_char*>(&EffectDesc.IsDeleteRotateToBone), sizeof(_bool));
+				size_t iNameSize{};
+				_tchar* pBuffer{};
+				Filein.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+				pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
+				Filein.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
+				EffectDesc.strEffectName = pBuffer;
+				Safe_Delete_Array(pBuffer);
 
-			pCurModel->Add_TriggerEffect(EffectDesc);
+				Filein.read(reinterpret_cast<_char*>(&EffectDesc.iBoneIndex), sizeof(_uint));
+				Filein.read(reinterpret_cast<_char*>(&EffectDesc.OffsetMatrix), sizeof(_mat));
+				Filein.read(reinterpret_cast<_char*>(&EffectDesc.IsDeleteRotateToBone), sizeof(_bool));
+
+				pCurModel->Add_TriggerEffect(EffectDesc);
+			}
+		}//사운드 트리거 불러오기
+		else if (m_eTriggerType == TRIGGER_SOUND)
+		{
+			pCurModel->Reset_TriggerSounds();
+
+			_uint iNumTriggerSound = { 0 };
+			Filein.read(reinterpret_cast<char*>(&iNumTriggerSound), sizeof _uint);
+			for (_uint i = 0; i < iNumTriggerSound; i++)
+			{
+				TRIGGERSOUND_DESC SoundDesc{};
+
+				Filein.read(reinterpret_cast<_char*>(&SoundDesc.iStartAnimIndex), sizeof(_int));
+				Filein.read(reinterpret_cast<_char*>(&SoundDesc.fStartAnimPos), sizeof(_float));
+
+				size_t iNameSize{};
+				_tchar* pBuffer{};
+				Filein.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+				pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
+				Filein.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
+				SoundDesc.strSoundName = pBuffer;
+				Safe_Delete_Array(pBuffer);
+
+				Filein.read(reinterpret_cast<_char*>(&SoundDesc.fVolume), sizeof(_float));
+			}
 		}
 
 		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);

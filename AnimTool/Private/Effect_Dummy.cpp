@@ -64,7 +64,10 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 			m_isDead = true;
 		}
 	}
+}
 
+void CEffect_Dummy::Late_Tick(_float fTimeDelta)
+{
 	if (m_Effect.isSprite)
 	{
 		m_iSpriteIndex = static_cast<_int>(m_fSpriteTimer);
@@ -118,10 +121,6 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 		break;
 	}
 	}
-}
-
-void CEffect_Dummy::Late_Tick(_float fTimeDelta)
-{
 	__super::Compute_CamDistance();
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 	if (not m_Effect.bSkipBloom)
