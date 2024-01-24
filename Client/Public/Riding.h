@@ -119,7 +119,7 @@ public:
 	void Move(_float fTimeDelta);
 	void Init_State();
 	void Tick_State(_float fTimeDelta);
-	_mat Get_World_Mat();
+	_mat Get_Mat();
 	_vec4 Get_Pos();
 	Riding_State Get_State() { return m_eState; }
 	_bool Get_Delete() { return m_bDelete; }

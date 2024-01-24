@@ -10,6 +10,7 @@ public:
 	typedef struct tagItemSlotDesc
 	{
 		_bool					bCanInteract;
+		_uint					iNum{ 1 };
 		_float					fDepth;
 		_float2					vSize;
 		_float2					vPosition;
@@ -39,11 +40,16 @@ private:
 	_bool					m_bCanInteract{ false };
 	ITEM					m_eItemDesc{};
 	_uint					m_iNum{1};
+	RECT					m_rcRect{};
 
 public:
 	const ITEM& Get_ItemDesc() const { return m_eItemDesc; }
-	void Set_ItemNum(_uint iNum) { m_iNum += iNum; }
+	void Set_ItemNum(_int iNum) { m_iNum += iNum; }
 	void Set_Position(_vec2 vPos);
+	const RECT& Get_Rect() const { return m_rcRect; }
+	const _uint& Get_ItemNum() const { return m_iNum; }
+
+
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

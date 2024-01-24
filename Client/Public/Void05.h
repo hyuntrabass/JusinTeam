@@ -40,7 +40,6 @@ public:
 	enum VOID05_STATE
 	{
 		STATE_IDLE,
-		STATE_WALK,
 		STATE_CHASE,
 		STATE_ATTACK,
 		STATE_HIT,
@@ -66,24 +65,19 @@ public:
 	void Init_State(_float fTimeDelta);
 	void Tick_State(_float fTimeDelta);
 
-public:
-	void Attack(_float fTimeDelta);
-
 private:
 	VOID05_STATE m_ePreState = STATE_END;
 	VOID05_STATE m_eCurState = STATE_END;
 
 private:
-	//_float m_fIdleTime = {};
-
 	_uint m_iAttackPattern = {};
-	//_uint m_iHitPattern = {};
-
 	_bool m_bSelectAttackPattern = { false };
 
 private:
 	_bool m_bAttacked = { false };
-	_bool m_bAttacked2 = { false };
+
+	_bool m_bDamaged = { false };
+	_bool m_bSlow = { false };
 
 private:
 	_uint m_iHitPercentage = {};

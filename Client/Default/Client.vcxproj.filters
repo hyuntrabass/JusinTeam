@@ -151,15 +151,6 @@
     <Filter Include="02.GameObjects\07. NPC">
       <UniqueIdentifier>{897af39d-fd9a-46e6-b7f1-eb5be95ebd16}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\07. NPC\Animal">
-      <UniqueIdentifier>{816f86d3-0f2e-4f81-bee2-c4bd4ec3a9c7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\07. NPC\Animal\00. Cat">
-      <UniqueIdentifier>{1639c92f-96d1-468d-b986-29d1bdb3cd33}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\07. NPC\Animal\01. Dog">
-      <UniqueIdentifier>{fab2bdab-a60d-4964-af03-a20ce2c83454}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\00.UI\GameUI\ItemBlock">
       <UniqueIdentifier>{1c6a9727-3e73-4eb5-b65f-8f868161884b}</UniqueIdentifier>
     </Filter>
@@ -175,17 +166,11 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\EXP">
       <UniqueIdentifier>{ee5645a6-aaff-4259-ab47-4b4d8b9bbfb0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\07. NPC\NPC_Dummy">
-      <UniqueIdentifier>{4e366141-c410-4081-bc3c-4c5bf0976ef7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\08. Boss">
       <UniqueIdentifier>{c61f29d7-c959-47df-8a82-3a02726afaf2}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\08. Boss\Groar_Boss">
       <UniqueIdentifier>{a36f29cf-4d64-4404-b599-15a6ac076134}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\04.Monster\TestVTFRabbit">
-      <UniqueIdentifier>{0d09b625-cdf2-4c3e-aca2-9991d3b00177}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\07. StatObject">
       <UniqueIdentifier>{7811bd56-9a30-483e-9b39-d9f2375daa1e}</UniqueIdentifier>
@@ -306,6 +291,36 @@
     </Filter>
     <Filter Include="98.Default">
       <UniqueIdentifier>{6ef1e47a-756a-4482-9f45-993c308095c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. NPC\00. Animal">
+      <UniqueIdentifier>{29c1dbe5-920f-4393-aa7d-41eab1d970a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. NPC\00. Animal\00. Cat">
+      <UniqueIdentifier>{1639c92f-96d1-468d-b986-29d1bdb3cd33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. NPC\00. Animal\01. Dog">
+      <UniqueIdentifier>{fab2bdab-a60d-4964-af03-a20ce2c83454}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. NPC\01. ItemMerchant">
+      <UniqueIdentifier>{113b2c8c-f04a-4123-b043-549dbe1e645d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. NPC\02. BlackSmith">
+      <UniqueIdentifier>{872b8a27-e284-4dda-a7b7-b9fa6fe14775}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. NPC\03. Roskva">
+      <UniqueIdentifier>{88258cf9-381f-4ac6-808e-85cd7b309db0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. NPC\99. NPC_Dummy">
+      <UniqueIdentifier>{928182d5-be3c-4ae5-8446-4ad85efdd212}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\10. Pet\00. Pet_Cat">
+      <UniqueIdentifier>{d4e309ec-9d64-4cfa-b9f5-3866a3a173a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\10. Pet\01. Pet_Dragon">
+      <UniqueIdentifier>{f4e79604-d38f-4470-a9ff-6543df3b4a41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Dragon_Boss">
+      <UniqueIdentifier>{c85e57aa-99ca-447a-b20f-843b04b33165}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -460,7 +475,7 @@
       <Filter>02.GameObjects\07. NPC</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Cat.h">
-      <Filter>02.GameObjects\07. NPC\Animal\00. Cat</Filter>
+      <Filter>02.GameObjects\07. NPC\00. Animal\00. Cat</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\MPBar.h">
       <Filter>02.GameObjects\00.UI\GameUI\MP</Filter>
@@ -484,10 +499,7 @@
       <Filter>02.GameObjects\00.UI\GameUI\EXP</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Dog.h">
-      <Filter>02.GameObjects\07. NPC\Animal\01. Dog</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\NPC_Dummy.h">
-      <Filter>02.GameObjects\07. NPC\NPC_Dummy</Filter>
+      <Filter>02.GameObjects\07. NPC\00. Animal\01. Dog</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Groar_Boss.h">
       <Filter>02.GameObjects\08. Boss\Groar_Boss</Filter>
@@ -590,6 +602,30 @@
     </ClInclude>
     <ClInclude Include="..\Public\CommonTrail.h">
       <Filter>03.Effect\Common_Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NPC_Dummy.h">
+      <Filter>02.GameObjects\07. NPC\99. NPC_Dummy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ItemMerchant.h">
+      <Filter>02.GameObjects\07. NPC\01. ItemMerchant</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BlackSmith.h">
+      <Filter>02.GameObjects\07. NPC\02. BlackSmith</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Roskva.h">
+      <Filter>02.GameObjects\07. NPC\03. Roskva</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Pet_Cat.h">
+      <Filter>02.GameObjects\10. Pet\00. Pet_Cat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Pet_Dragon.h">
+      <Filter>02.GameObjects\10. Pet\01. Pet_Dragon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Pet.h">
+      <Filter>02.GameObjects\10. Pet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Dragon_Boss.h">
+      <Filter>02.GameObjects\08. Boss\Dragon_Boss</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -745,7 +781,7 @@
       <Filter>02.GameObjects\07. NPC</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Cat.cpp">
-      <Filter>02.GameObjects\07. NPC\Animal\00. Cat</Filter>
+      <Filter>02.GameObjects\07. NPC\00. Animal\00. Cat</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\MPBar .cpp">
       <Filter>02.GameObjects\00.UI\GameUI\MP</Filter>
@@ -769,10 +805,7 @@
       <Filter>02.GameObjects\00.UI\GameUI\EXP</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Dog.cpp">
-      <Filter>02.GameObjects\07. NPC\Animal\01. Dog</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\NPC_Dummy.cpp">
-      <Filter>02.GameObjects\07. NPC\NPC_Dummy</Filter>
+      <Filter>02.GameObjects\07. NPC\00. Animal\01. Dog</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Groar_Boss.cpp">
       <Filter>02.GameObjects\08. Boss\Groar_Boss</Filter>
@@ -873,6 +906,30 @@
     <ClCompile Include="..\Private\CommonTrail.cpp">
       <Filter>03.Effect\Common_Effect</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\NPC_Dummy.cpp">
+      <Filter>02.GameObjects\07. NPC\99. NPC_Dummy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ItemMerchant.cpp">
+      <Filter>02.GameObjects\07. NPC\01. ItemMerchant</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BlackSmith.cpp">
+      <Filter>02.GameObjects\07. NPC\02. BlackSmith</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Roskva.cpp">
+      <Filter>02.GameObjects\07. NPC\03. Roskva</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Pet_Cat.cpp">
+      <Filter>02.GameObjects\10. Pet\00. Pet_Cat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Pet_Dragon.cpp">
+      <Filter>02.GameObjects\10. Pet\01. Pet_Dragon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Pet.cpp">
+      <Filter>02.GameObjects\10. Pet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Dragon_Boss.cpp">
+      <Filter>02.GameObjects\08. Boss\Dragon_Boss</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
@@ -888,9 +945,6 @@
       <Filter>97.Shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Trail.hlsl">
-      <Filter>97.Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_Deferred.hlsl">
       <Filter>97.Shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxAnimMesh.hlsl">

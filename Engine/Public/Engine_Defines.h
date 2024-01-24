@@ -159,6 +159,8 @@ namespace Engine
 		DefPass_Light_Point,
 		DefPass_Deferred,
 		DefPass_Blur,
+		DefPass_SSAO,
+		DefPass_HDR
 	};
 
 	enum Effect_Type

@@ -16,7 +16,7 @@ public:
 		NPC_ANIM_END
 	};
 
-	enum GROAR_BOSS_ANIM
+	enum DRAGON_ANIM
 	{
 		ATTACK01,
 		ATTACK02,
