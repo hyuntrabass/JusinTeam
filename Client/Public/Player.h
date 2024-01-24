@@ -5,7 +5,7 @@
 #include "Weapon.h"
 #include "Riding.h"
 #include "NameTag.h"
-
+#include "CommonTrail.h"
 BEGIN(Client)
 
 struct BODYPART_DESC
@@ -250,9 +250,15 @@ public:
 		Jump_Start,
 		Jump,
 		Jump_End,
+		Mount,
 		State_End
 	};
-	
+	struct PLAYER_STATUS
+	{
+		_int Hp{};
+		_int Attack{};
+		
+	};
 
 private:
 	CPlayer(_dev pDevice, _context pContext);
@@ -271,6 +277,7 @@ public:
 	HRESULT Add_Info();
 	HRESULT Render_Parts(PART_TYPE Parts,_uint Index);
 
+	HRESULT Add_Riding();
 public:
 	void Change_Parts(PART_TYPE PartsType,_int ChangeIndex);
 	void Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex);
@@ -294,6 +301,7 @@ public:
 
 public:
 	void Summon_Riding(Riding_Type Type);
+	void Tick_Riding();
 	void UnMount_Riding();
 
 public:
@@ -304,23 +312,29 @@ private:
 	CRiding* m_pRiding{ nullptr };
 	CGameObject* m_pNameTag{ nullptr };
 	CRealtimeVTFModel* m_pModelCom = { nullptr };
-
 	CTransform* m_pCameraTransform{ nullptr };
 	CCollider* m_pHitCollider{ nullptr };
 	CCollider* m_pAttCollider[AT_End]{ nullptr };
 	CShader* m_pShaderCom{nullptr};
-	
 	CRenderer* m_pRendererCom{ nullptr };
+	CCommonTrail* m_pLeft_Trail{ nullptr };
+	CCommonTrail* m_pRight_Trail{ nullptr };
 
 private:
-	_bool	  m_isInvenActive{ false };
 	ANIM_DESC m_Animation{};
 	PLAYER_STATE m_eState{ Idle };
 	PLAYER_STATE m_ePrevState{ Idle };
-	WEAPON_TYPE m_Current_Weapon{WP_END};
+	WEAPON_TYPE m_Current_Weapon{ WP_END };
 	ANIM_LIST m_SwordSkill[5]{};
 	ANIM_LIST m_BowSkill[5]{};
 	WEAPON_INDEX m_Weapon_CurrentIndex{ WP_INDEX_END };
+	Riding_State m_Riding_State{};
+	_mat m_Riding_Mat{};
+	const _mat* m_Left_Mat{};
+	const _mat* m_Right_Mat{};
+	_bool m_bLeft_TrailOn{};
+	_bool m_bRight_TrailOn{};
+	_bool	  m_isInvenActive{ false };
 	_float m_fSkillSpeed{};
 	_bool m_bAttackStop{};
 	_float4 m_vPos{};
@@ -357,6 +371,8 @@ private:
 	_bool m_View_Helmat{};
 	_vec4 m_SaveCamPos{};
 	_vec4 m_SaveCamLook{};
+	_bool m_bIsMount{};
+	_bool m_bWeapon_Unequip{};
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

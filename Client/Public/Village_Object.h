@@ -20,10 +20,7 @@ public:
 
 	ObjectInfo Get_Info() const { return m_Info; }
 
-private:
-	CRenderer* m_pRendererCom{ nullptr };
-	CShader* m_pShaderCom{ nullptr };
-	CModel* m_pModelCom{ nullptr };
+
 private:
 
 	ObjectInfo m_Info{};

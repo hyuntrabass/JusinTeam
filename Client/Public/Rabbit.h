@@ -59,6 +59,7 @@ private:
 
 private:
 	_float m_fIdleTime = {};
+	_float m_fStunTime = {};
 
 	_uint m_iRoamingPattern = {};
 	_uint m_iAttackPattern = {};
@@ -69,6 +70,7 @@ private:
 	_bool m_bAttacked2 = { false };
 
 	_bool m_bDamaged = { false };
+	_bool m_bStun = { false };
 
 
 private:

@@ -4,55 +4,64 @@ CSound_Manager::CSound_Manager()
 {
 }
 
-HRESULT CSound_Manager::Init(_uint iNumChannels)
+HRESULT CSound_Manager::Init()
 {
 	FMOD::System_Create(&m_pSystem);
 
-	m_pSystem->init(32, FMOD_INIT_NORMAL, NULL);
+	m_pSystem->init(FMOD_MAX_CHANNEL_WIDTH, FMOD_INIT_NORMAL, NULL);
 
 	if (FAILED(LoadSoundFile()))
 	{
 		return E_FAIL;
 	}
 
-	m_iNumChannels = iNumChannels;
-	m_pChannelArr = new FMOD::Channel*[m_iNumChannels]{};
+	m_pChannelArr = new FMOD::Channel*[FMOD_MAX_CHANNEL_WIDTH]{};
+
+	m_IsPlayingSounds.reserve(FMOD_MAX_CHANNEL_WIDTH);
+	for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+	{
+		m_IsPlayingSounds.push_back(false);
+	}
 
 	return S_OK;
 }
 
-
-void CSound_Manager::Play_Sound(const wstring& strSoundTag, _uint iChannel, _float fVolume, _bool isLoop)
+_int CSound_Manager::Play_Sound(const wstring& strSoundTag, _float fVolume, _bool isLoop)
 {
 	FMOD::Sound* pSound = Find_Sound(strSoundTag);
 
 	if (!pSound)
 	{
-		return;
+		return -1;
 	}
 
-	_bool bPlay = FALSE;
-
-	if (m_pChannelArr[iChannel]->isPlaying(&bPlay))
+	for (_int i = 1; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 	{
-		m_pSystem->playSound(pSound, 0, false, &m_pChannelArr[iChannel]);
+		if(not m_IsPlayingSounds[i])
+		{
+			m_pSystem->playSound(pSound, 0, false, &m_pChannelArr[i]);
+
+			if (isLoop)
+			{
+				m_pChannelArr[i]->setMode(FMOD_LOOP_NORMAL);
+			}
+			else
+			{
+				m_pChannelArr[i]->setMode(FMOD_LOOP_OFF);
+			}
+
+			m_pChannelArr[i]->setVolume(fVolume);
+
+			m_pSystem->update();
+
+			return i;
+		}
 	}
 
-	if (isLoop)
-	{
-		m_pChannelArr[iChannel]->setMode(FMOD_LOOP_NORMAL);
-	}
-	else
-	{
-		m_pChannelArr[iChannel]->setMode(FMOD_LOOP_OFF);
-	}
-
-	m_pChannelArr[iChannel]->setVolume(fVolume);
-
-	m_pSystem->update();
+	return -1;
 }
 
-void CSound_Manager::PlayBGM(const wstring& strSoundTag, float fVolume)
+void CSound_Manager::PlayBGM(const wstring& strSoundTag, _float fVolume)
 {
 	FMOD::Sound* pSound = Find_Sound(strSoundTag);
 	if (!pSound)
@@ -76,7 +85,7 @@ void CSound_Manager::StopSound(_uint iChannel)
 
 void CSound_Manager::StopAll()
 {
-	for (int i = 0; i < m_iNumChannels; ++i)
+	for (int i = 0; i < FMOD_MAX_CHANNEL_WIDTH; ++i)
 	{
 		m_pChannelArr[i]->stop();
 	}
@@ -87,6 +96,24 @@ void CSound_Manager::SetChannelVolume(_uint iChannel, _float fVolume)
 	m_pChannelArr[iChannel]->setVolume(fVolume);
 
 	m_pSystem->update();
+}
+
+void CSound_Manager::Update()
+{
+	for (int i = 0; i < FMOD_MAX_CHANNEL_WIDTH; ++i)
+	{
+		_bool bPlay = false;
+		m_pChannelArr[i]->isPlaying(&bPlay);
+		m_IsPlayingSounds[i] = bPlay;
+	}
+}
+
+_bool CSound_Manager::Get_IsPlayingSound(_uint eChannel)
+{
+	_bool bPlay = false;
+	m_pChannelArr[eChannel]->isPlaying(&bPlay);
+
+	return bPlay;
 }
 
 HRESULT CSound_Manager::LoadSoundFile()
@@ -123,11 +150,11 @@ FMOD::Sound* CSound_Manager::Find_Sound(const wstring& strSoundTag)
 	return it->second;
 }
 
-CSound_Manager* CSound_Manager::Create(_uint iNumChannels)
+CSound_Manager* CSound_Manager::Create()
 {
 	CSound_Manager* pInstance = new CSound_Manager();
 
-	if (FAILED(pInstance->Init(iNumChannels)))
+	if (FAILED(pInstance->Init()))
 	{
 		MSG_BOX("Failed to Create : CSound_Manager");
 		Safe_Release(pInstance);

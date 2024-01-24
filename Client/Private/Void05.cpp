@@ -33,7 +33,7 @@ HRESULT CVoid05::Init(void* pArg)
 	}
 
 	//m_pTransformCom->Set_State(State::Pos, _vec4(10.f, 0.f, 0.f, 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
+	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
@@ -45,6 +45,13 @@ HRESULT CVoid05::Init(void* pArg)
 	m_iHP = 10;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
+
+	if (pArg)
+	{
+		m_pInfo = *(MonsterInfo*)pArg;
+		_mat WorldPos = m_pInfo.MonsterWorldMat;
+		m_pTransformCom->Set_Matrix(WorldPos);
+	}
 
 	return S_OK;
 }

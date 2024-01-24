@@ -48,7 +48,7 @@ protected:
 	MonsterInfo m_pInfo{};
 
 protected:
-	_float m_fBackPower = { 0.01f };
+	_float m_fBackPower = { 0.5f };
 
 	_float m_fDissolveTime = {};
 	_float m_fDissolveRatio = {};

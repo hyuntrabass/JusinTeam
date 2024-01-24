@@ -40,6 +40,17 @@ HRESULT CInven::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	HRESULT hr = CUI_Manager::Get_Instance()->Set_Inven(this);
+	if (FAILED(hr))
+	{
+		return E_FAIL;
+	}
+	wstring strItem = TEXT("체력 포션");
+	CUI_Manager::Get_Instance()->Set_Item(strItem, 80);
+	
+	strItem = TEXT("마나 포션");
+	CUI_Manager::Get_Instance()->Set_Item(strItem, 60);
+
 	return S_OK;
 }
 
@@ -158,13 +169,19 @@ HRESULT CInven::Render()
 
 void CInven::Init_InvenState()
 {
-	//dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Init_State();
+	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Init_State();
 
 	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
 	dynamic_cast<CTextButton*>(m_pMoney)->Set_Text(to_wstring(iMoney));
 
 	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
 	dynamic_cast<CTextButton*>(m_pDiamond)->Set_Text(to_wstring(iDiamond));
+}
+
+HRESULT CInven::Set_Item(ITEM eItem)
+{
+	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(eItem);
+	return S_OK;
 }
 
 HRESULT CInven::Add_Parts()

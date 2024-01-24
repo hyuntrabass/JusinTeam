@@ -13,6 +13,11 @@ CImgui_Manager::CImgui_Manager()
 	Safe_AddRef(m_pGameInstance);
 }
 
+const _bool& CImgui_Manager::Has_Light()
+{
+	return m_hasLight;
+}
+
 HRESULT CImgui_Manager::Init(_dev pDevice, _context pContext, vector<string>* pTextureList, vector<string>* pModelList)
 {
 	m_pDevice = pDevice;
@@ -61,6 +66,8 @@ HRESULT CImgui_Manager::Init(_dev pDevice, _context pContext, vector<string>* pT
 	m_ParticleInfo.vMinDir = _float3(0.f, 1.f, 0.f);
 	m_ParticleInfo.vMaxDir = _float3(0.f, 1.f, 0.f);
 	m_ParticleInfo.isLoop = true;
+
+	//Load_OldData();
 
 	return S_OK;
 }
@@ -244,41 +251,53 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	}
 	else
 	{
+		if (m_iSelected_Texture < 0)
+		{
+			m_iSelected_Texture = 0;
+		}
 		Separator();
 		NewLine();
 
 		Text(m_pItemList_Texture[m_iSelected_Texture]);
 		static ImGuiTextFilter Filter_Diff;
-		Filter_Diff.Draw("Search##1");
-		ImGui::BeginChild("##listbox", ImVec2(0, 100), true);
+		Filter_Diff.Draw("Search##1"); SameLine();
+		_bool shouldScrollToSelectedItem{};
+		if (Button("Scroll##1"))
+		{
+			shouldScrollToSelectedItem = true;
+		}
+		ImGui::BeginChild("Diff Texture", ImVec2(0, 100), true);
 
 		// ListBox의 각 아이템을 생성합니다.
 		for (int i = 0; i < m_iNumTextures; ++i)
 		{
 			if (Filter_Diff.PassFilter(m_pItemList_Texture[i]))
 			{
-				if (i == m_iSelected_Texture)
+				_bool isSelected = (i == m_iSelected_Texture);
+
+				// 선택된 항목의 경우 색상을 변경합니다.
+				if (isSelected)
 				{
-					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
 				}
-				// 각 아이템을 Selectable로 만듭니다.
-				// "Item " + std::to_string(i)는 아이템의 레이블입니다.
-				if (ImGui::Selectable(m_pItemList_Texture[i], i == m_iSelected_Texture))
+
+				if (ImGui::Selectable(m_pItemList_Texture[i], isSelected))
 				{
-					// 아이템이 선택되면 그 위치로 스크롤합니다.
 					m_iSelected_Texture = i;
-					ImGui::SetScrollHereY();
 				}
-				else if (i == m_iSelected_Texture)
+
+				if (isSelected)
 				{
+					if (shouldScrollToSelectedItem)
+					{
+						SetScrollHereY();
+					}
 					PopStyleColor();
 				}
 			}
 		}
-
-		// Child window를 종료합니다.
 		ImGui::EndChild();
-		
+
 		//if (ListBox("Texture", &m_iSelected_Texture, m_pItemList_Texture, m_iNumTextures))
 		//{
 		//	SetScrollHereY();
@@ -303,6 +322,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 	Checkbox("Mask", &m_hasMask);
 
+	static _vec2 vUVInit{};
 	static _vec2 vUVDelta{};
 	if (m_hasMask)
 	{
@@ -314,30 +334,44 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		SeparatorText("Mask Texture");
 		if (m_iCurrent_Type == ET_MESH)
 		{
+			InputFloat2("UV Initializer", reinterpret_cast<_float*>(&vUVInit));
+			Info.vUVInit = vUVInit;
 			InputFloat2("UV Delta", reinterpret_cast<_float*>(&vUVDelta));
 			Info.vUVDelta = vUVDelta;
 		}
 		Text(m_pItemList_Texture[m_iSelected_MaskTexture]);
 
 		static ImGuiTextFilter Filter_Mask;
-		Filter_Mask.Draw("Search##2");
+		Filter_Mask.Draw("Search##2"); SameLine();
+		_bool shouldScrollToSelectedItem{};
+		if (Button("Scroll##2"))
+		{
+			shouldScrollToSelectedItem = true;
+		}
 		ImGui::BeginChild("Mask Texture", ImVec2(0, 100), true);
 
 		for (int i = 0; i < m_iNumTextures; ++i)
 		{
 			if (Filter_Mask.PassFilter(m_pItemList_Texture[i]))
 			{
-				if (i == m_iSelected_MaskTexture)
+				_bool isSelected = (i == m_iSelected_MaskTexture);
+
+				if (isSelected)
 				{
-					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
 				}
-				if (ImGui::Selectable(m_pItemList_Texture[i], i == m_iSelected_MaskTexture))
+
+				if (ImGui::Selectable(m_pItemList_Texture[i], isSelected))
 				{
 					m_iSelected_MaskTexture = i;
-					ImGui::SetScrollHereY();
 				}
-				else if (i == m_iSelected_MaskTexture)
+
+				if (isSelected)
 				{
+					if (shouldScrollToSelectedItem)
+					{
+						SetScrollHereY();
+					}
 					PopStyleColor();
 				}
 			}
@@ -378,24 +412,36 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		Text(m_pItemList_Texture[iSelectd_UnDissolve]);
 
 		static ImGuiTextFilter Filter_UnDiss;
-		Filter_UnDiss.Draw("Search##3");
+		Filter_UnDiss.Draw("Search##3"); SameLine();
+		_bool shouldScrollToSelectedItem{};
+		if (Button("Scroll##3"))
+		{
+			shouldScrollToSelectedItem = true;
+		}
 		ImGui::BeginChild("UnDissolve Texture", ImVec2(0, 100), true);
 
 		for (int i = 0; i < m_iNumTextures; ++i)
 		{
 			if (Filter_UnDiss.PassFilter(m_pItemList_Texture[i]))
 			{
-				if (i == iSelectd_UnDissolve)
+				_bool isSelected = (i == iSelectd_UnDissolve);
+
+				if (isSelected)
 				{
-					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
 				}
-				if (ImGui::Selectable(m_pItemList_Texture[i], i == iSelectd_UnDissolve))
+
+				if (ImGui::Selectable(m_pItemList_Texture[i], isSelected))
 				{
 					iSelectd_UnDissolve = i;
-					ImGui::SetScrollHereY();
 				}
-				else if (i == iSelectd_UnDissolve)
+
+				if (isSelected)
 				{
+					if (shouldScrollToSelectedItem)
+					{
+						SetScrollHereY();
+					}
 					PopStyleColor();
 				}
 			}
@@ -434,26 +480,38 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			iSelectd_Dissolve = 0;
 		}
 		Text(m_pItemList_Texture[iSelectd_Dissolve]);
-		
+
 		static ImGuiTextFilter Filter_Diss;
-		Filter_Diss.Draw("Search##4");
+		Filter_Diss.Draw("Search##4"); SameLine();
+		_bool shouldScrollToSelectedItem{};
+		if (Button("Scroll##4"))
+		{
+			shouldScrollToSelectedItem = true;
+		}
 		ImGui::BeginChild("Dissolve Texture", ImVec2(0, 100), true);
 
 		for (int i = 0; i < m_iNumTextures; ++i)
 		{
 			if (Filter_Diss.PassFilter(m_pItemList_Texture[i]))
 			{
-				if (i == iSelectd_Dissolve)
+				_bool isSelected = (i == iSelectd_Dissolve);
+
+				if (isSelected)
 				{
-					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
 				}
-				if (ImGui::Selectable(m_pItemList_Texture[i], i == iSelectd_Dissolve))
+
+				if (ImGui::Selectable(m_pItemList_Texture[i], isSelected))
 				{
 					iSelectd_Dissolve = i;
-					ImGui::SetScrollHereY();
 				}
-				else if (i == iSelectd_Dissolve)
+
+				if (isSelected)
 				{
+					if (shouldScrollToSelectedItem)
+					{
+						SetScrollHereY();
+					}
 					PopStyleColor();
 				}
 			}
@@ -587,11 +645,124 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		InputFloat3("Size Delta", reinterpret_cast<_float*>(&vSizeDelta), "%.2f");
 		Info.vSizeDelta = vSizeDelta;
 
-		ListBox("Model", &m_iSelected_Model, m_pItemList_Model, m_iNumModels);
+		static ImGuiTextFilter Filter_Diss;
+		Filter_Diss.Draw("Search##5"); SameLine();
+		_bool shouldScrollToSelectedItem{};
+		if (Button("Scroll##5"))
+		{
+			shouldScrollToSelectedItem = true;
+		}
+		ImGui::BeginChild("Model", ImVec2(0, 100), true);
+
+		for (int i = 0; i < m_iNumModels; ++i)
+		{
+			if (Filter_Diss.PassFilter(m_pItemList_Model[i]))
+			{
+				_bool isSelected = (i == m_iSelected_Model);
+
+				if (isSelected)
+				{
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+				}
+
+				if (ImGui::Selectable(m_pItemList_Model[i], isSelected))
+				{
+					m_iSelected_Model = i;
+				}
+
+				if (isSelected)
+				{
+					if (shouldScrollToSelectedItem)
+					{
+						SetScrollHereY();
+					}
+					PopStyleColor();
+				}
+			}
+		}
+		ImGui::EndChild();
+		//ListBox("Model", &m_iSelected_Model, m_pItemList_Model, m_iNumModels);
 
 		//Info.iModelIndex = m_iSelected_Model;
 		Info.strModel = m_pItemList_Model[m_iSelected_Model];
 	}
+
+	NewLine();
+	Checkbox("Has Light", &m_hasLight);
+	Separator();
+	static LIGHT_DESC Light_Desc{};
+	static _int iAttenuation{}; LIGHT_RANGE_100;
+	const _char* szAttenuations[]
+	{
+		"LIGHT_RANGE_7",
+		"LIGHT_RANGE_13",
+		"LIGHT_RANGE_20",
+		"LIGHT_RANGE_32",
+		"LIGHT_RANGE_50",
+		"LIGHT_RANGE_65",
+		"LIGHT_RANGE_100",
+		"LIGHT_RANGE_160",
+		"LIGHT_RANGE_200",
+		"LIGHT_RANGE_325",
+		"LIGHT_RANGE_600",
+		"LIGHT_RANGE_3250",
+	};
+	Light_Desc.eType = LIGHT_DESC::Point;
+
+	Info.hasLight = m_hasLight;
+	if (m_hasLight)
+	{
+		SameLine();
+		SeparatorText("Light Description");
+		ColorPicker4("Diffuse", reinterpret_cast<_float*>(&Light_Desc.vDiffuse), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_DisplayRGB);
+		InputFloat4("Ambient", reinterpret_cast<_float*>(&Light_Desc.vAmbient), "%.1f");
+		InputFloat4("Specular", reinterpret_cast<_float*>(&Light_Desc.vSpecular), "%.1f");
+		Combo("Attenuation", &iAttenuation, szAttenuations, IM_ARRAYSIZE(szAttenuations));
+
+		switch (iAttenuation)
+		{
+		case 0:
+			Light_Desc.vAttenuation = LIGHT_RANGE_7;
+			break;
+		case 1:
+			Light_Desc.vAttenuation = LIGHT_RANGE_13;
+			break;
+		case 2:
+			Light_Desc.vAttenuation = LIGHT_RANGE_20;
+			break;
+		case 3:
+			Light_Desc.vAttenuation = LIGHT_RANGE_32;
+			break;
+		case 4:
+			Light_Desc.vAttenuation = LIGHT_RANGE_50;
+			break;
+		case 5:
+			Light_Desc.vAttenuation = LIGHT_RANGE_65;
+			break;
+		case 6:
+			Light_Desc.vAttenuation = LIGHT_RANGE_100;
+			break;
+		case 7:
+			Light_Desc.vAttenuation = LIGHT_RANGE_160;
+			break;
+		case 8:
+			Light_Desc.vAttenuation = LIGHT_RANGE_200;
+			break;
+		case 9:
+			Light_Desc.vAttenuation = LIGHT_RANGE_325;
+			break;
+		case 10:
+			Light_Desc.vAttenuation = LIGHT_RANGE_600;
+			break;
+		case 11:
+			Light_Desc.vAttenuation = LIGHT_RANGE_3250;
+			break;
+		}
+
+		Info.Light_Desc = Light_Desc;
+	}
+	NewLine();
+	NewLine();
 
 	if (Button("Export"))
 	{
@@ -649,6 +820,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			m_hasMask = true;
 			m_iSelected_MaskTexture = Compute_TextureIndex(Info.strMaskTexture);
 			vUVDelta = Info.vUVDelta;
+			vUVInit = Info.vUVInit;
 		}
 		else
 		{
@@ -699,6 +871,14 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			vSizeDelta = Info.vSizeDelta;
 			break;
 		}
+
+		m_hasLight = Info.hasLight;
+		
+		if (m_hasLight)
+		{
+			Light_Desc = Info.Light_Desc;
+		}
+
 	}
 
 	if (Button("Add"))
@@ -770,7 +950,7 @@ HRESULT CImgui_Manager::Ready_Layers()
 
 	LightDesc.eType = LIGHT_DESC::Directional;
 	LightDesc.vDirection = _float4(-1.f, -2.f, -1.f, 0.f);
-	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 1.f);
 	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
 
 	if (FAILED(m_pGameInstance->Add_Light(LEVEL_STATIC, TEXT("Light_Main"), LightDesc)))
@@ -796,6 +976,11 @@ HRESULT CImgui_Manager::Ready_Layers()
 	TerrainInfo.isMesh = false;
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &TerrainInfo)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Map"))))
 	{
 		return E_FAIL;
 	}
@@ -910,7 +1095,11 @@ EffectInfo CImgui_Manager::Load_Data()
 			InFile.read(reinterpret_cast<_char*>(&Info.fDissolveDuration), sizeof Info.fDissolveDuration);
 			InFile.read(reinterpret_cast<_char*>(&Info.bSkipBloom), sizeof Info.bSkipBloom);
 			InFile.read(reinterpret_cast<_char*>(&Info.fUnDissolveDuration), sizeof Info.fUnDissolveDuration);
+			InFile.read(reinterpret_cast<_char*>(&Info.vUVInit), sizeof Info.vUVInit);
 			InFile.read(reinterpret_cast<_char*>(&Info.vUVDelta), sizeof Info.vUVDelta);
+			InFile.read(reinterpret_cast<_char*>(&Info.isRandomSprite), sizeof Info.isRandomSprite);
+			InFile.read(reinterpret_cast<_char*>(&Info.hasLight), sizeof Info.hasLight);
+			InFile.read(reinterpret_cast<_char*>(&Info.Light_Desc), sizeof Info.Light_Desc);
 
 			size_t iNameSize{};
 
@@ -963,40 +1152,176 @@ EffectInfo CImgui_Manager::Load_Data()
 	return Info;
 }
 
-OldEffectInfo CImgui_Manager::Load_OldData()
+void CImgui_Manager::Load_OldData()
 {
-	OldEffectInfo Info{};
+	OldEffectInfo OldInfo{};
 
-	OPENFILENAME ofn;
-	TCHAR filePathName[MAX_PATH] = L"";
-	TCHAR lpstrFile[MAX_PATH] = L"Effect.effect";
-	static TCHAR filter[] = L"이펙트 파일(*.effect)\0*.effect\0";
-
-	memset(&ofn, 0, sizeof(OPENFILENAME));
-	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = g_hWnd;
-	ofn.lpstrFilter = filter;
-	ofn.lpstrFile = lpstrFile;
-	ofn.nMaxFile = 256;
-	ofn.lpstrInitialDir = L"..\\..\\Client\\Bin\\EffectData";
-
-	if (GetOpenFileName(&ofn))
+	string strInputFilePath = "../../Client/Bin/EffectData/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
-		filesystem::path strFilePath = ofn.lpstrFile;
-		ifstream InFile(strFilePath.c_str(), ios::binary);
-
-		if (InFile.is_open())
+		if (entry.is_regular_file())
 		{
+			wstring extension = entry.path().extension().wstring();
+			if (entry.path().extension().wstring() != L".effect")
+			{
+				continue;
+			}
+
+			OldInfo = {};
+			ifstream InFile(entry.path().c_str(), ios::binary);
+
 			if (InFile.is_open())
 			{
-				InFile.read(reinterpret_cast<_char*>(&Info), sizeof OldEffectInfo);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.iType), sizeof OldInfo.iType);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.isSprite), sizeof OldInfo.isSprite);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.vNumSprites), sizeof OldInfo.vNumSprites);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.fSpriteDuration), sizeof OldInfo.fSpriteDuration);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.PartiDesc), sizeof OldInfo.PartiDesc);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.iNumInstances), sizeof OldInfo.iNumInstances);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.fLifeTime), sizeof OldInfo.fLifeTime);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.vColor), sizeof OldInfo.vColor);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.iPassIndex), sizeof OldInfo.iPassIndex);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.vSize), sizeof OldInfo.vSize);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.vPosOffset), sizeof OldInfo.vPosOffset);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.vSizeDelta), sizeof OldInfo.vSizeDelta);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.bApplyGravity), sizeof OldInfo.bApplyGravity);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.vGravityDir), sizeof OldInfo.vGravityDir);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.fDissolveDuration), sizeof OldInfo.fDissolveDuration);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.bSkipBloom), sizeof OldInfo.bSkipBloom);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.fUnDissolveDuration), sizeof OldInfo.fUnDissolveDuration);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.vUVInit), sizeof OldInfo.vUVInit);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.vUVDelta), sizeof OldInfo.vUVDelta);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.isRandomSprite), sizeof OldInfo.isRandomSprite);
+
+				size_t iNameSize{};
+
+				{
+					_tchar* pBuffer{};
+
+					InFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+					pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
+					InFile.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
+					OldInfo.strDiffuseTexture = pBuffer;
+					Safe_Delete_Array(pBuffer);
+					iNameSize = {};
+
+					InFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+					pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
+					InFile.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
+					OldInfo.strMaskTexture = pBuffer;
+					Safe_Delete_Array(pBuffer);
+					iNameSize = {};
+
+					InFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+					pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
+					InFile.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
+					OldInfo.strDissolveTexture = pBuffer;
+					Safe_Delete_Array(pBuffer);
+					iNameSize = {};
+
+					InFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+					pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
+					InFile.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
+					OldInfo.strUnDissolveTexture = pBuffer;
+					Safe_Delete_Array(pBuffer);
+					iNameSize = {};
+				}
+
+				{
+					_char* pBuffer{};
+					InFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+					pBuffer = new _char[iNameSize];
+					InFile.read(pBuffer, iNameSize);
+					OldInfo.strModel = pBuffer;
+					Safe_Delete_Array(pBuffer);
+					iNameSize = {};
+				}
 
 				InFile.close();
 			}
+
+			EffectInfo NewInfo{};
+
+			NewInfo.iType = OldInfo.iType;
+			NewInfo.isSprite = OldInfo.isSprite;
+			NewInfo.vNumSprites = OldInfo.vNumSprites;
+			NewInfo.fSpriteDuration = OldInfo.fSpriteDuration;
+			NewInfo.PartiDesc = OldInfo.PartiDesc;
+			NewInfo.iNumInstances = OldInfo.iNumInstances;
+			NewInfo.fLifeTime = OldInfo.fLifeTime;
+			NewInfo.vColor = OldInfo.vColor;
+			NewInfo.iPassIndex = OldInfo.iPassIndex;
+			NewInfo.vSize = OldInfo.vSize;
+			NewInfo.vPosOffset = OldInfo.vPosOffset;
+			NewInfo.vSizeDelta = OldInfo.vSizeDelta;
+			NewInfo.bApplyGravity = OldInfo.bApplyGravity;
+			NewInfo.vGravityDir = OldInfo.vGravityDir;
+			NewInfo.fDissolveDuration = OldInfo.fDissolveDuration;
+			NewInfo.bSkipBloom = OldInfo.bSkipBloom;
+			NewInfo.fUnDissolveDuration = OldInfo.fUnDissolveDuration;
+			NewInfo.vUVInit = _vec2();
+			NewInfo.vUVDelta = OldInfo.vUVDelta;
+			NewInfo.isRandomSprite = OldInfo.isRandomSprite;
+
+			NewInfo.strDiffuseTexture = OldInfo.strDiffuseTexture;
+			NewInfo.strMaskTexture = OldInfo.strMaskTexture;
+			NewInfo.strDissolveTexture = OldInfo.strDissolveTexture;
+			NewInfo.strUnDissolveTexture = OldInfo.strUnDissolveTexture;
+			NewInfo.strModel = OldInfo.strModel;
+
+			filesystem::path strFilePath = entry.path();
+			ofstream OutFile(strFilePath.c_str(), ios::binary);
+
+			if (OutFile.is_open())
+			{
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.iType), sizeof NewInfo.iType);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.isSprite), sizeof NewInfo.isSprite);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.vNumSprites), sizeof NewInfo.vNumSprites);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.fSpriteDuration), sizeof NewInfo.fSpriteDuration);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.PartiDesc), sizeof NewInfo.PartiDesc);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.iNumInstances), sizeof NewInfo.iNumInstances);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.fLifeTime), sizeof NewInfo.fLifeTime);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.vColor), sizeof NewInfo.vColor);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.iPassIndex), sizeof NewInfo.iPassIndex);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.vSize), sizeof NewInfo.vSize);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.vPosOffset), sizeof NewInfo.vPosOffset);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.vSizeDelta), sizeof NewInfo.vSizeDelta);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.bApplyGravity), sizeof NewInfo.bApplyGravity);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.vGravityDir), sizeof NewInfo.vGravityDir);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.fDissolveDuration), sizeof NewInfo.fDissolveDuration);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.bSkipBloom), sizeof NewInfo.bSkipBloom);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.fUnDissolveDuration), sizeof NewInfo.fUnDissolveDuration);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.vUVInit), sizeof NewInfo.vUVInit);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.vUVDelta), sizeof NewInfo.vUVDelta);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.isRandomSprite), sizeof NewInfo.isRandomSprite);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.hasLight), sizeof NewInfo.hasLight);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.Light_Desc), sizeof NewInfo.Light_Desc);
+
+				size_t iNameSize{};
+				iNameSize = (NewInfo.strDiffuseTexture.size() + 1) * sizeof(_tchar);
+				OutFile.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+				OutFile.write(reinterpret_cast<const _char*>(NewInfo.strDiffuseTexture.data()), iNameSize);
+
+				iNameSize = (NewInfo.strMaskTexture.size() + 1) * sizeof(_tchar);
+				OutFile.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+				OutFile.write(reinterpret_cast<const _char*>(NewInfo.strMaskTexture.data()), iNameSize);
+
+				iNameSize = (NewInfo.strDissolveTexture.size() + 1) * sizeof(_tchar);
+				OutFile.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+				OutFile.write(reinterpret_cast<const _char*>(NewInfo.strDissolveTexture.data()), iNameSize);
+
+				iNameSize = (NewInfo.strUnDissolveTexture.size() + 1) * sizeof(_tchar);
+				OutFile.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+				OutFile.write(reinterpret_cast<const _char*>(NewInfo.strUnDissolveTexture.data()), iNameSize);
+
+				iNameSize = NewInfo.strModel.size() + sizeof(_char);
+				OutFile.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+				OutFile.write(NewInfo.strModel.data(), iNameSize);
+
+				OutFile.close();
+			}
 		}
 	}
-
-	return Info;
 }
 
 HRESULT CImgui_Manager::Export_Data(EffectInfo& Info)
@@ -1039,7 +1364,11 @@ HRESULT CImgui_Manager::Export_Data(EffectInfo& Info)
 			OutFile.write(reinterpret_cast<const _char*>(&Info.fDissolveDuration), sizeof Info.fDissolveDuration);
 			OutFile.write(reinterpret_cast<const _char*>(&Info.bSkipBloom), sizeof Info.bSkipBloom);
 			OutFile.write(reinterpret_cast<const _char*>(&Info.fUnDissolveDuration), sizeof Info.fUnDissolveDuration);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.vUVInit), sizeof Info.vUVInit);
 			OutFile.write(reinterpret_cast<const _char*>(&Info.vUVDelta), sizeof Info.vUVDelta);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.isRandomSprite), sizeof Info.isRandomSprite);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.hasLight), sizeof Info.hasLight);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.Light_Desc), sizeof Info.Light_Desc);
 
 			size_t iNameSize{};
 			iNameSize = (Info.strDiffuseTexture.size() + 1) * sizeof(_tchar);

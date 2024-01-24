@@ -204,7 +204,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 	} 
 	else
 	{
-		m_fPlayerDistance = 10.f;
+		m_fPlayerDistance = 8.f;
 		_long dwMouseMove;
 		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
 		{

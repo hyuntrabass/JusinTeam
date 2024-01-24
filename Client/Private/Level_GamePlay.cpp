@@ -6,6 +6,7 @@
 #include "Map.h"
 #include "Player.h"
 #include "Effect_Manager.h"
+#include "UI_Manager.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(_dev pDevice, _context pContext)
@@ -16,6 +17,9 @@ CLevel_GamePlay::CLevel_GamePlay(_dev pDevice, _context pContext)
 HRESULT CLevel_GamePlay::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_GAMEPLAY);
+
+	CUI_Manager::Get_Instance()->Init();
+
 
 	if (FAILED(Ready_Player()))
 	{
@@ -45,11 +49,11 @@ HRESULT CLevel_GamePlay::Init()
 
 
 	// Monster Parse
-	if (FAILED(Ready_Monster()))
-	{
-		MSG_BOX("Failed to Ready Monster");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_NpcvsMon()))
+	//{
+	//	MSG_BOX("Failed to Ready Monster");
+	//	return E_FAIL;
+	//}
 	
 	if (FAILED(Ready_Rabbit()))
 	{
@@ -161,6 +165,12 @@ HRESULT CLevel_GamePlay::Init()
 		MSG_BOX("Failed to Ready Map");
 		return E_FAIL;
 	}
+		// Environment
+	if (FAILED(Ready_Environment()))
+	{
+		MSG_BOX("Failed to Ready Environment");
+		return E_FAIL;
+	}
 
 
 	if (FAILED(Ready_UI()))
@@ -183,12 +193,17 @@ HRESULT CLevel_GamePlay::Init()
 	EffectDesc.isFollow = true;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
 
+
+
 	return S_OK;
 }
 
 void CLevel_GamePlay::Tick(_float fTimeDelta)
 {
-	m_RainMatrix = _mat::CreateTranslation(_vec3(m_pGameInstance->Get_CameraPos()));
+	if (!CUI_Manager::Get_Instance()->Is_InvenActive())
+	{
+		m_RainMatrix = _mat::CreateTranslation(_vec3(m_pGameInstance->Get_CameraPos()));
+	}
 	//m_RainMatrix = _mat::CreateTranslation(_vec3(50.f, 3.f, 50.f));
 
 	if (m_pGameInstance->Key_Down(DIK_PRIOR))
@@ -229,7 +244,7 @@ HRESULT CLevel_GamePlay::Ready_Light()
 	LIGHT_DESC LightDesc{};
 
 	LightDesc.eType = LIGHT_DESC::Directional;
-	LightDesc.vDirection = _float4(-1.f, -2.f, -1.f, 0.f);
+	LightDesc.vDirection = _float4(-1.f, -2.f,-1.f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
 
@@ -238,14 +253,14 @@ HRESULT CLevel_GamePlay::Ready_Light()
 
 HRESULT CLevel_GamePlay::Ready_Player()
 {
-	// �÷��̾� ��ġ ����
-	const TCHAR* pGetPath = TEXT("../Bin/Data/Player_Pos.dat");
+	// 플레이어 위치 세팅
+	const TCHAR* pGetPath = TEXT("../Bin/Data/Prologue_Player_Pos.dat");
 
 	std::ifstream inFile(pGetPath, std::ios::binary);
 
 	if (!inFile.is_open())
 	{
-		MessageBox(g_hWnd, L"../Bin/Data/Player_Pos.dat ������ ã�� ���߽��ϴ�.", L"���� �ε� ����", MB_OK);
+		MessageBox(g_hWnd, L"../Bin/Data/Prologue_Player_Pos.dat 파일이 없습니다..", L"불러오기 실패", MB_OK);
 		return E_FAIL;
 	}
 
@@ -262,7 +277,7 @@ HRESULT CLevel_GamePlay::Ready_Player()
 HRESULT CLevel_GamePlay::Ready_Map()
 {
 	TERRAIN_INFO Terrain;
-	Terrain.vTerrainSize = _uint2(100, 100);
+	Terrain.vTerrainSize = _uint2(300, 300);
 	Terrain.isMesh = false;
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &Terrain)))
@@ -270,43 +285,92 @@ HRESULT CLevel_GamePlay::Ready_Map()
 		return E_FAIL;
 	}
 
-	//const TCHAR* pGetPath = TEXT("../Bin/Data/MapData.dat");
+	const TCHAR* pGetPath = TEXT("../Bin/Data/Prologue_MapData.dat");
 
-	//std::ifstream inFile(pGetPath, std::ios::binary);
+	std::ifstream inFile(pGetPath, std::ios::binary);
 
-	//if (!inFile.is_open())
-	//{
-	//	MessageBox(g_hWnd, L"�� ������ ã�� ���߽��ϴ�.", L"���� �ε� ����", MB_OK);
-	//	return E_FAIL;
-	//}
+	if (!inFile.is_open())
+	{
+		MSG_BOX("맵 데이터 파일 불러오기 실패.");
+		return E_FAIL;
+	}
 
-	//_uint MapListSize;
-	//inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+	_uint MapListSize;
+	inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
 
 
-	//for (_uint i = 0; i < MapListSize; ++i)
-	//{
-	//	_ulong MapPrototypeSize;
-	//	inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+	for (_uint i = 0; i < MapListSize; ++i)
+	{
+		_ulong MapPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
 
-	//	wstring MapPrototype;
-	//	MapPrototype.resize(MapPrototypeSize);
-	//	inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+		wstring MapPrototype;
+		MapPrototype.resize(MapPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
 
-	//	_mat MapWorldMat;
-	//	inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+		_mat MapWorldMat;
+		inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
 
-	//	MapInfo MapInfo{};
-	//	MapInfo.Prototype = MapPrototype;
-	//	MapInfo.m_Matrix = MapWorldMat;
+		MapInfo MapInfo{};
+		MapInfo.Prototype = MapPrototype;
+		MapInfo.m_Matrix = MapWorldMat;
 
-	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Map"), &MapInfo)))
-	//	{
-	//		MessageBox(g_hWnd, L"�� �ҷ����� ����", L"���� �ε�", MB_OK);
-	//		return E_FAIL;
-	//	}
-	//}
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Map"), &MapInfo)))
+		{
+			MSG_BOX("맵 생성 실패");
+			return E_FAIL;
+		}
+	}
+
+	inFile.close();
+
+
+
 	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Environment()
+{
+
+	const TCHAR* pGetPath = TEXT("../Bin/Data/Prologue_EnvirData.dat");
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MSG_BOX("환경 데이터 파일 불러오기 실패.");
+		return E_FAIL;
+	}
+
+	_uint EnvirListSize;
+	inFile.read(reinterpret_cast<char*>(&EnvirListSize), sizeof(_uint));
+
+
+	for (_uint i = 0; i < EnvirListSize; ++i)
+	{
+		_ulong EnvirPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&EnvirPrototypeSize), sizeof(_ulong));
+
+		wstring EnvirPrototype;
+		EnvirPrototype.resize(EnvirPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&EnvirPrototype[0]), EnvirPrototypeSize * sizeof(wchar_t));
+
+		_mat EnvirWorldMat;
+		inFile.read(reinterpret_cast<char*>(&EnvirWorldMat), sizeof(_mat));
+
+		ObjectInfo EnvirInfo{};
+		EnvirInfo.strPrototypeTag = EnvirPrototype;
+		EnvirInfo.m_WorldMatrix = EnvirWorldMat;
+		EnvirInfo.eObjectType = Object_Environment;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Prologue_Envir"), TEXT("Prototype_GameObject_Prologue_Object"), &EnvirInfo)))
+		{
+			MSG_BOX("맵 생성 실패");
+			return E_FAIL;
+		}
+	}
+	return S_OK;
+
 }
 
 
@@ -319,7 +383,7 @@ HRESULT CLevel_GamePlay::Ready_Object()
 
 	if (!inFile.is_open())
 	{
-		MSG_BOX("������Ʈ ������ ã�� ���߽��ϴ�.");
+		MSG_BOX("오브젝트 불러오기 실패.");
 		return E_FAIL;
 	}
 
@@ -342,10 +406,11 @@ HRESULT CLevel_GamePlay::Ready_Object()
 		ObjectInfo ObjectInfo{};
 		ObjectInfo.strPrototypeTag = ObjectPrototype;
 		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
+		ObjectInfo.eObjectType = Object_Etc;
 
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Prologue_Object"), TEXT("Prototype_GameObject_Prologue_Object"), &ObjectInfo)))
 		{
-			MSG_BOX("������Ʈ �ҷ����� ����");
+			MSG_BOX("오브젝트 생성 실패");
 			return E_FAIL;
 		}
 	}
@@ -411,7 +476,7 @@ HRESULT CLevel_GamePlay::Ready_Groar_Boss()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Monster()
+HRESULT CLevel_GamePlay::Ready_NpcvsMon()
 {
 	MonsterInfo Info{};
 	const TCHAR* pGetPath = L"../Bin/Data/Prologue_MonsterData.dat";
@@ -420,7 +485,7 @@ HRESULT CLevel_GamePlay::Ready_Monster()
 
 	if (!inFile.is_open())
 	{
-		MessageBox(g_hWnd, L"../Bin/Data/Prologue_MonsterData.dat ������ ã�� ���߽��ϴ�.", L"���� �ε� ����", MB_OK);
+		MSG_BOX("../Bin/Data/Prologue_MonsterData.dat 몬스터 불러오기 실패.");
 		return E_FAIL;
 	}
 
@@ -428,7 +493,7 @@ HRESULT CLevel_GamePlay::Ready_Monster()
 	inFile.read(reinterpret_cast<char*>(&MonsterListSize), sizeof(_uint));
 
 
-	for (_uint i = 0; i < 1; ++i)
+	for (_uint i = 0; i < MonsterListSize; ++i)
 	{
 		_ulong MonsterPrototypeSize;
 		inFile.read(reinterpret_cast<char*>(&MonsterPrototypeSize), sizeof(_ulong));
@@ -447,12 +512,20 @@ HRESULT CLevel_GamePlay::Ready_Monster()
 		{
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_NPCvsMon"), &Info)))
 			{
-				MessageBox(g_hWnd, L"���� �ε� ����", L"���� �ε�", MB_OK);
+				MSG_BOX("몬스터 생성 실패");
 				return E_FAIL;
 			}
 
 		}
+		else if (Info.strMonsterPrototype == TEXT("Prototype_Model_Void05"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Void05"), &Info)))
+			{
+				MSG_BOX("몬스터 생성 실패");
+				return E_FAIL;
+			}
 
+		}
 
 	}
 	return S_OK;

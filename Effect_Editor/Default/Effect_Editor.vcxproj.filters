@@ -85,6 +85,9 @@
     <ClInclude Include="..\Public\Terrain.h">
       <Filter>03.Terrain</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Select_Map.h">
+      <Filter>03.Terrain</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Effect_Editor.ico">
@@ -138,6 +141,9 @@
       <Filter>01.Camera</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Terrain.cpp">
+      <Filter>03.Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Select_Map.cpp">
       <Filter>03.Terrain</Filter>
     </ClCompile>
   </ItemGroup>

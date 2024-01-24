@@ -79,13 +79,19 @@ HRESULT CItemBlock::Add_Slots()
 	for (size_t i = 0; i < ITEMSLOT_END; i++)
 	{
 		CItemSlot::ITEMSLOT_DESC ItemSlotDesc = {};
+
+		ItemSlotDesc.eSlotMode = CItemSlot::ITSLOT_SCREEN;
 		ItemSlotDesc.vSize = _float2(60.f, 60.f);
 		ItemSlotDesc.vPosition = _float2((_float)g_iWinSizeX / 2.f + 55.f + (ItemSlotDesc.vSize.x / 2.f) + (ItemSlotDesc.vSize.x * i) + (-15.f * i), 675.f);
-
-		m_pSlots[i] = (CItemSlot*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_SkillSlot"), &ItemSlotDesc);
+		ItemSlotDesc.fDepth = (_float)D_SCREEN / (_float)D_END - 0.1f;
+		m_pSlots[i] = (CItemSlot*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_ItemSlot"), &ItemSlotDesc);
 		if (m_pSlots[i] == nullptr)
 		{
 			return E_FAIL;
+		}
+		if (FAILED(CUI_Manager::Get_Instance()->Set_ItemSlots((ITEMSLOT)i, m_pSlots[i])))
+		{
+			return E_FAIL; //인벤보다 순서 먼저
 		}
 	}
 

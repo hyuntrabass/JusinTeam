@@ -2,10 +2,15 @@
 #include "Client_Define.h"
 #include "OrthographicObject.h"
 #include "Item.h"
+#include "Inven.h"
+#include "TextButtonColor.h"
+#include "ItemSlot.h"
 
 BEGIN(Client)
 class CItem;
 class CInven;
+class CItemSlot;
+class CTextButtonColor;
 class CInvenFrame final : public COrthographicObject
 {
 public:
@@ -38,11 +43,22 @@ private:
 private:
 	INVEN_TYPE									m_ePrevInvenType{ INVEN_ALL };
 	INVEN_TYPE									m_eCurInvenType{ INVEN_ALL };
+
 	_bool										m_isPrototype{ false };
 	_bool										m_bNewItemIn{ false };
 	_bool										m_isActive{ false };
+	_bool										m_isQuickAnim{ false };
+	_bool										m_isActiveQuickSlot{ false };
+	_bool										m_isPicking { false };
+
+	_uint										m_iCurIndex{};
+
+	_float										m_fButtonY{ 0.f };
+	_float										m_fBGY{ 0.f };
+	_float										m_fTime{ 0.f };
 
 	vector<_uint>								m_vecItemSlot[INVEN_TYPE::INVEN_END];
+	vector<CItem*>								m_vecItemsSlot[INVEN_TYPE::INVEN_END];
 	vector<CItem*>								m_vecItems;
 
 	CGameObject*								m_pParent{ nullptr };
@@ -52,11 +68,22 @@ private:
 	vector <CGameObject*>						m_pVerticalBar;
 	CGameObject*								m_pInvenType[INVEN_TYPE::INVEN_END];
 
-	CGameObject*								m_pBackGround{ nullptr };
-	CGameObject*								m_pSelectSlot[5];
+	CTextButtonColor*							m_pSlotSettingButton{ nullptr };
+	CTextButtonColor*							m_pWearableClearButton{ nullptr };
+	CTextButtonColor*							m_pBackGround{ nullptr };
+
+	CTextButtonColor*							m_pExitSlotSetting{ nullptr };
+	CTextButtonColor*							m_pResetSlot{ nullptr };
+	CGameObject*								m_pResetSymbol{ nullptr };
+	CItemSlot*									m_pSelectSlot[4];
 
 public:
 	void Init_State();
+	void Set_Item(ITEM eItem);
+	void Set_ItemPosition(INVEN_TYPE eInvenType);
+	void ItemSlot_Logic(_uint iSlotIdx, _uint iIndex);
+	void ItemSlot_Delete_Logic(_uint iSlotIdx);
+	void Delete_Item(INVEN_TYPE eInvenType, _uint iIndex);
 
 private:
 	HRESULT Add_Parts();

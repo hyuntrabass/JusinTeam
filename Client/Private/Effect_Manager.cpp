@@ -73,16 +73,13 @@ void CEffect_Manager::Create_Effect(const wstring& strEffectTag, _mat* pMatrix, 
 	Info.pMatrix = pMatrix;
 	Info.isFollow = isFollow;
 
-	//if (Info.fLifeTime < 0)
+	auto iter = m_Effects.find(pMatrix);
+	if (iter == m_Effects.end())
 	{
 		CEffect_Dummy* pEffect = Clone_Effect(&Info);
 
 		m_Effects.emplace(pMatrix, pEffect);
 	}
-	//else
-	//{
-	//	Add_Layer_Effect(&Info);
-	//}
 }
 
 void CEffect_Manager::Delete_Effect(const void* pMatrix)
@@ -148,7 +145,11 @@ HRESULT CEffect_Manager::Read_EffectFile()
 				File.read(reinterpret_cast<_char*>(&Info.fDissolveDuration), sizeof Info.fDissolveDuration);
 				File.read(reinterpret_cast<_char*>(&Info.bSkipBloom), sizeof Info.bSkipBloom);
 				File.read(reinterpret_cast<_char*>(&Info.fUnDissolveDuration), sizeof Info.fUnDissolveDuration);
+				File.read(reinterpret_cast<_char*>(&Info.vUVInit), sizeof Info.vUVInit);
 				File.read(reinterpret_cast<_char*>(&Info.vUVDelta), sizeof Info.vUVDelta);
+				File.read(reinterpret_cast<_char*>(&Info.isRandomSprite), sizeof Info.isRandomSprite);
+				File.read(reinterpret_cast<_char*>(&Info.hasLight), sizeof Info.hasLight);
+				File.read(reinterpret_cast<_char*>(&Info.Light_Desc), sizeof Info.Light_Desc);
 
 				size_t iNameSize{};
 

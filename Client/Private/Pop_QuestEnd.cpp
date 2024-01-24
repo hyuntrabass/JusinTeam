@@ -65,12 +65,12 @@ void CPop_QuestEnd::Tick(_float fTimeDelta)
 	m_fTime += fTimeDelta * 0.2f;
 	m_fDeadTime += fTimeDelta;
 
-	if (dynamic_cast<CTextButton*>(m_pButton)->Get_Position().y <= m_fStartButtonPos.y - 5.f)
+	if (dynamic_cast<CTextButton*>(m_pButton)->Get_TransPosition().y <= m_fStartButtonPos.y - 5.f)
 	{
 		m_fDir = 0.6f;
 		dynamic_cast<CTextButton*>(m_pButton)->Set_Position(_float2(m_fStartButtonPos.x, m_fStartButtonPos.y - 5.f));
 	}
-	if (dynamic_cast<CTextButton*>(m_pButton)->Get_Position().y >= m_fStartButtonPos.y)
+	if (dynamic_cast<CTextButton*>(m_pButton)->Get_TransPosition().y >= m_fStartButtonPos.y)
 	{
 		m_fDir = -1.f;
 		dynamic_cast<CTextButton*>(m_pButton)->Set_Position(_float2(m_fStartButtonPos.x, m_fStartButtonPos.y));
@@ -120,19 +120,19 @@ HRESULT CPop_QuestEnd::Render()
 	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 230.f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f - 0.2f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f + 0.2f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f), 0.7, _vec4(0.4431f, 0.1333f, 0.9098f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strQuestTitle, _vec2((_float)g_iWinSizeX / 2.f, 230.f), 0.7f, _vec4(0.4431f, 0.1333f, 0.9098f, 1.f));
 
 	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 280.f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 280.f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f, 280.f - 0.2f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f, 280.f + 0.2f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f, 280.f), 0.7);
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("퀘스트를 완료했습니다."), _vec2((_float)g_iWinSizeX / 2.f, 280.f), 0.7f);
 
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 종료하세요."), _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 580.f), 0.4, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 종료하세요."), _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 580.f), 0.4, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 종료하세요."), _vec2((_float)g_iWinSizeX / 2.f, 580.f - 0.2f), 0.4, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 종료하세요."), _vec2((_float)g_iWinSizeX / 2.f, 580.f + 0.2f), 0.4, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 종료하세요."), _vec2((_float)g_iWinSizeX / 2.f, 580.f), 0.4, _vec4(0.6f, 0.6f, 0.6f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 종료하세요."), _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 580.f), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 종료하세요."), _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 580.f), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 종료하세요."), _vec2((_float)g_iWinSizeX / 2.f, 580.f - 0.2f), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 종료하세요."), _vec2((_float)g_iWinSizeX / 2.f, 580.f + 0.2f), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 퀘스트를 종료하세요."), _vec2((_float)g_iWinSizeX / 2.f, 580.f), 0.4f, _vec4(0.6f, 0.6f, 0.6f, 1.f));
 
 	return S_OK;
 }
@@ -145,7 +145,7 @@ HRESULT CPop_QuestEnd::Add_Parts()
 	BLURTEXDesc.fFontSize = 0.f;
 	BLURTEXDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Check");
 	BLURTEXDesc.vPosition = _vec2(m_fX, m_fY);
-	BLURTEXDesc.vSize = _vec2(50.f, 50);
+	BLURTEXDesc.vSize = _vec2(50.f, 50.f);
 	BLURTEXDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	BLURTEXDesc.vColor = _vec4(1.0f, 0.5f, 0.1f, 1.f);
 	BLURTEXDesc.vTextPosition = _vec2(0.f, 0.f);

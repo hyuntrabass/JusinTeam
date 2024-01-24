@@ -51,7 +51,7 @@ private:
 public:
 	_bool Update_Quest();
 	const wstring& Get_QuestName() const { return m_strQuestTitle; }
-	const _vec2& Get_Position() const { return _vec2(m_fX, m_fY); }
+	const _vec2 Get_Position() const { return  _vec2(m_fX, m_fY); }
 	void Set_Position(_vec2 vPos);
 	_bool IsMain() { return m_isMain; }
 

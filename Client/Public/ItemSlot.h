@@ -1,14 +1,19 @@
 #pragma once
 #include "Client_Define.h"
 #include "OrthographicObject.h"
+#include "Item.h"
 
 BEGIN(Client)
 
 class CItemSlot final : public COrthographicObject
 {
 public:
+	enum ITSLOTMODE { ITSLOT_SCREEN, ITSLOT_INVEN, ITSLOT_END };
+
 	typedef struct tagItemSlotDesc
 	{
+		ITSLOTMODE eSlotMode;
+		_float fDepth;
 		_float2 vSize;
 		_float2 vPosition;
 	}ITEMSLOT_DESC;
@@ -30,15 +35,31 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
 	CTexture* m_pTextureCom{ nullptr };
-	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
-	_bool			m_isFull{};
+	ITSLOTMODE		m_eSlotMode{ ITSLOT_END };
+	wstring			m_strTexture{};
+	_uint			m_iMaxNum{50};
+	_bool			m_isFull{ false };
 	_float			m_fTime{};
 	_float			m_fCoolTime{};
-	CGameObject*	m_pItem{ nullptr };
+	RECT			m_rcRect{};
+	CItem*			m_pItem{ nullptr };
+	CGameObject*	m_pItemTex{ nullptr };
 
-private:
+public:
+	const _bool& Is_Full() const { return m_isFull; }
+	//HRESULT Set_Item(class CItem::ITEM_DESC eItemDesc);
+	HRESULT Set_Item(CItem* pItem, _int* iNum = nullptr);
+
+
+	void Delete_Item();
+	void Set_FullSlot(CItem* pItem, _int* iNum = nullptr);
+	const wstring Get_ItemName();
+	const CItem* Get_ItemObject() { return m_pItem; }
+	const RECT& Get_Rect() const { return m_rcRect; }
+
+private: 
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
