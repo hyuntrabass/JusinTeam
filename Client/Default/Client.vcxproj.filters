@@ -319,6 +319,9 @@
     <Filter Include="02.GameObjects\10. Pet\01. Pet_Dragon">
       <UniqueIdentifier>{f4e79604-d38f-4470-a9ff-6543df3b4a41}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Dragon_Boss">
+      <UniqueIdentifier>{c85e57aa-99ca-447a-b20f-843b04b33165}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -621,6 +624,9 @@
     <ClInclude Include="..\Public\Pet.h">
       <Filter>02.GameObjects\10. Pet</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Dragon_Boss.h">
+      <Filter>02.GameObjects\08. Boss\Dragon_Boss</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -921,6 +927,9 @@
     <ClCompile Include="..\Private\Pet.cpp">
       <Filter>02.GameObjects\10. Pet</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Dragon_Boss.cpp">
+      <Filter>02.GameObjects\08. Boss\Dragon_Boss</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
@@ -936,9 +945,6 @@
       <Filter>97.Shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Trail.hlsl">
-      <Filter>97.Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_Deferred.hlsl">
       <Filter>97.Shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxAnimMesh.hlsl">

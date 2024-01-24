@@ -6,6 +6,7 @@
 #include "Shader_Camera.h"
 #include "Shader_Player.h"
 #include "Shader_Terrain.h"
+#include "Select_Map.h"
 
 CShader_Loader::CShader_Loader(_dev pDevice, _context pContext)
 	: m_pDevice(pDevice)
@@ -147,7 +148,7 @@ HRESULT CShader_Loader::Load_Test()
 
 #pragma endregion
 
-#pragma region Terrain
+#pragma region TerrainObject
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Terrain"),
 		CShader_Terrain::Create(m_pDevice, m_pContext))))
@@ -158,7 +159,18 @@ HRESULT CShader_Loader::Load_Test()
 
 #pragma endregion
 
-#pragma region Player
+#pragma region SelectMap(캐릭터 선택 선박 안)Model
+
+	_mat PivotMat = _mat::CreateScale(0.006f) * _mat::CreateRotationX(XMConvertToRadians(90.f));
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_ShaderTest, TEXT("Prototype_Model_Select_Map"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/StaticMesh/Select_Map/Mesh/map.hyuntrastatmesh", false, PivotMat))))
+		return E_FAIL;
+
+#pragma endregion
+
+
+#pragma region PlayerModel_And_Object
 
 	CRealtimeVTFModel* pModel = CRealtimeVTFModel::Create(m_pDevice, m_pContext,
 		"../../Client/Bin/Resources/AnimMesh/VTFPlayer/Main/basemodel.hyuntraanimmesh");
@@ -178,6 +190,16 @@ HRESULT CShader_Loader::Load_Test()
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Player"), CShader_Player::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+#pragma endregion
+
+#pragma region SelectMapObject
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Select_Map"),
+		CSelect_Map::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

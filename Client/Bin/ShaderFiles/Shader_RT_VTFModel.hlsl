@@ -4,9 +4,11 @@ matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
 texture2D g_SpecTexture;
-
+texture2D g_DissolveTexture;
+vector g_vColor = { 1.f, 1.f, 1.f, 0.f };
 float g_fCamFar;
 vector g_vCamPos;
+float g_fDissolveRatio;
 
 bool g_HasNorTex;
 bool g_HasSpecTex;
@@ -250,7 +252,53 @@ PS_OUT PS_Main(PS_IN Input)
     
     return Output;
 }
-
+PS_OUT PS_Main_Dissolve(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
+    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
+    
+    if (g_fDissolveRatio > fDissolve)
+    {
+        discard;
+    }
+    
+    if (0.3f > vMtrlDiffuse.a)
+    {
+        discard;
+    }
+    
+    float3 vNormal;
+    if (g_HasNorTex)
+    {
+        vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
+        
+        vNormal = vNormalDesc.xyz * 2.f - 1.f;
+        
+        float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
+        
+        vNormal = mul(normalize(vNormal), WorldMatrix) * -1.f;
+    }
+    else
+    {
+        vNormal = Input.vNor.xyz;
+    }
+    
+    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
+    if (g_HasSpecTex)
+    {
+        vector vSpecDesc = g_SpecTexture.Sample(LinearSampler, Input.vTex);
+        vSpecDesc = vector(vSpecDesc.b, vSpecDesc.b, vSpecDesc.b, vSpecDesc.a);
+    }
+    
+    Output.vDiffuse = vMtrlDiffuse;
+    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vSpecular = vSpecular;
+    
+    return Output;
+}
 struct PS_Blur_IN
 {
     vector vPos : SV_Position; // == float4
@@ -277,6 +325,12 @@ PS_Blur_OUT PS_Motion_Blur(PS_Blur_IN Input)
     PS_Blur_OUT Output = (PS_Blur_OUT) 0;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
+    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
+    
+    if (g_fDissolveRatio > fDissolve)
+    {
+        discard;
+    }
     
     if (0.3f > vMtrlDiffuse.a)
     {
@@ -315,7 +369,109 @@ PS_Blur_OUT PS_Motion_Blur(PS_Blur_IN Input)
     
     return Output;
 }
+PS_OUT PS_Main_LerpDissolve(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
+    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
+    
+    if (g_fDissolveRatio > fDissolve)
+    {
+        discard;
+    }
+    if (g_vColor.a > 0.f)
+    {
+        vMtrlDiffuse = lerp(vMtrlDiffuse, g_vColor, 0.5f);
+    }
+    if (0.3f > vMtrlDiffuse.a)
+    {
+        discard;
+    }
+    
+    float3 vNormal;
+    if (g_HasNorTex)
+    {
+        vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
+        
+        vNormal = vNormalDesc.xyz * 2.f - 1.f;
+        
+        float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
+        
+        vNormal = mul(normalize(vNormal), WorldMatrix) * -1.f;
+    }
+    else
+    {
+        vNormal = Input.vNor.xyz;
+    }
+    
+    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
+    if (g_HasSpecTex)
+    {
+        vector vSpecDesc = g_SpecTexture.Sample(LinearSampler, Input.vTex);
+        vSpecDesc = vector(vSpecDesc.b, vSpecDesc.b, vSpecDesc.b, vSpecDesc.a);
+    }
+    
+    Output.vDiffuse = vMtrlDiffuse;
+    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vSpecular = vSpecular;
+    
+    return Output;
+}
 
+PS_Blur_OUT PS_LerpBlur(PS_Blur_IN Input)
+{
+    PS_Blur_OUT Output = (PS_Blur_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
+    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
+    
+    if (g_fDissolveRatio > fDissolve)
+    {
+        discard;
+    }
+    
+    if (0.3f > vMtrlDiffuse.a)
+    {
+        discard;
+    }
+    if (g_vColor.a > 0.f)
+    {
+        vMtrlDiffuse = lerp(vMtrlDiffuse, g_vColor, 0.5f);
+    }
+    float3 vNormal;
+    if (g_HasNorTex)
+    {
+        vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
+        
+        vNormal = vNormalDesc.xyz * 2.f - 1.f;
+        
+        float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
+        
+        vNormal = mul(normalize(vNormal), WorldMatrix) * -1.f;
+    }
+    else
+    {
+        vNormal = Input.vNor.xyz;
+    }
+    
+    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
+    if (g_HasSpecTex)
+    {
+        vector vSpecDesc = g_SpecTexture.Sample(LinearSampler, Input.vTex);
+        vSpecDesc = vector(vSpecDesc.b, vSpecDesc.b, vSpecDesc.b, vSpecDesc.a);
+    }
+    
+    
+    Output.vDiffuse = vMtrlDiffuse;
+    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vSpecular = vSpecular;
+    Output.vVelocity = Input.vDir;
+    
+    return Output;
+}
 //PS_OUT PS_Main_OutLine(PS_IN Input)
 //{
 //    PS_OUT Output = (PS_OUT) 0;
@@ -361,6 +517,18 @@ technique11 DefaultTechniqueShader_VTF
         PixelShader = compile ps_5_0 PS_Motion_Blur();
     }
 
+    pass Dissolve
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Dissolve();
+    }
     //pass OutLine
     //{
     //    SetRasterizerState(RS_None);
@@ -373,4 +541,30 @@ technique11 DefaultTechniqueShader_VTF
     //    DomainShader = NULL;
     //    PixelShader = compile ps_5_0 PS_Main_OutLine();
     //}
+
+    pass LerpDissolve
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_LerpDissolve();
+    }
+
+    pass LerpBlur
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Motion_Blur();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_LerpBlur();
+    }
 };

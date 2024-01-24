@@ -142,7 +142,15 @@ void CTransform::Set_State(State eState, _vec4 vState)
 
 void CTransform::Set_Matrix(_mat Matrix)
 {
+
 	m_WorldMatrix = Matrix;
+
+	if (m_pController)
+	{
+		_vec3 vPosition = m_WorldMatrix.Position_vec3();
+		PxExtendedVec3 NewPos{ static_cast<_double>(vPosition.x), static_cast<_double>(vPosition.y), static_cast<_double>(vPosition.z) };
+		m_pController->setPosition(NewPos);
+	}
 }
 
 void CTransform::Set_Scale(_vec3 fScale)

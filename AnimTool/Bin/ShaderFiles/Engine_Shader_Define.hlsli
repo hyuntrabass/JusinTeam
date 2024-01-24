@@ -2,6 +2,9 @@
 
 float3 g_vRandom[50];
 
+float3 g_fLuminace = float3(0.2126, 0.7152, 0.0722);
+float g_fThreshold;
+
 struct SSAO_DESC
 {
     float fIntensity;
@@ -16,6 +19,13 @@ sampler PointSampler = sampler_state
     Filter = MIN_MAG_MIP_POINT;
     AddressU = wrap;
     AddressV = wrap;
+};
+
+sampler PointClampSampler = sampler_state
+{
+    Filter = MIN_MAG_MIP_POINT;
+    AddressU = clamp;
+    AddressV = clamp;
 };
 
 sampler LinearSampler = sampler_state

@@ -21,7 +21,7 @@ class CPlayer final : public CGameObject
 {
 public:
 	enum ANIM_LIST
-{
+	{
 		Anim_Assassin_Attack01_A,
 		Anim_Assassin_Attack01_B,
 		Anim_Assassin_Attack02_A,
@@ -228,7 +228,7 @@ public:
 		Anim_Talk_reaction,
 		Anim_Talk_Reaction_D,
 		Anim_Talk_Reaction_U,
-};
+	};
 
 	enum PLAYER_STATE
 	{
@@ -240,6 +240,10 @@ public:
 		Attack,
 		Attack_Idle,
 		Attack_Run,
+		Jump_Start,
+		Jump,
+		Jump_Run,
+		Jump_End,
 		Skill1,
 		Skill1_End,
 		Skill2,
@@ -247,17 +251,19 @@ public:
 		Skill4,
 		SkillR,
 		Aim_Idle,
-		Jump_Start,
-		Jump,
-		Jump_End,
+		Jump_Long_End,
 		Mount,
 		State_End
 	};
 	struct PLAYER_STATUS
 	{
-		_int Hp{};
-		_int Attack{};
-		
+		_int Hp{ 1000 };
+		_int Mp{ 1000 };
+		_int Attack{ 10 };
+		_int Critical{};
+		_int Critical_Dmg{ 150 }; // 기본 치명타데미지 150( 기본 데미지에 추가50퍼센트 피해)
+		_int Armor{}; // 방어력이 10일때 받는 데미지 10퍼센트 줄여줌(90퍼만 받음)
+		_float Speed{}; // 기본 걷는 이속 2+스피드/2,뛰는 이속 4+스피드
 	};
 
 private:
@@ -275,13 +281,14 @@ public:
 public:
 	HRESULT Place_PartModels();
 	HRESULT Add_Info();
-	HRESULT Render_Parts(PART_TYPE Parts,_uint Index);
-
+	HRESULT Render_Parts(PART_TYPE Parts, _uint Index);
 	HRESULT Add_Riding();
 public:
-	void Change_Parts(PART_TYPE PartsType,_int ChangeIndex);
+	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) override;
+
+	void Change_Parts(PART_TYPE PartsType, _int ChangeIndex);
 	void Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex);
-	
+
 	void Move(_float fTimeDelta);
 
 	void Common_Attack();
@@ -315,10 +322,11 @@ private:
 	CTransform* m_pCameraTransform{ nullptr };
 	CCollider* m_pHitCollider{ nullptr };
 	CCollider* m_pAttCollider[AT_End]{ nullptr };
-	CShader* m_pShaderCom{nullptr};
+	CShader* m_pShaderCom{ nullptr };
 	CRenderer* m_pRendererCom{ nullptr };
 	CCommonTrail* m_pLeft_Trail{ nullptr };
 	CCommonTrail* m_pRight_Trail{ nullptr };
+	CTexture* m_pDissolveTextureCom{};
 
 private:
 	ANIM_DESC m_Animation{};
@@ -329,19 +337,21 @@ private:
 	ANIM_LIST m_BowSkill[5]{};
 	WEAPON_INDEX m_Weapon_CurrentIndex{ WP_INDEX_END };
 	Riding_State m_Riding_State{};
+	PLAYER_STATUS m_Status{};
 	_mat m_Riding_Mat{};
 	const _mat* m_Left_Mat{};
 	const _mat* m_Right_Mat{};
 	_bool m_bLeft_TrailOn{};
 	_bool m_bRight_TrailOn{};
+	_float m_fDissolveRatio{};
 	_bool	  m_isInvenActive{ false };
 	_float m_fSkillSpeed{};
 	_bool m_bAttackStop{};
 	_float4 m_vPos{};
 	_float m_fGravity{};
 	_bool m_bStartGame{};
-	_float m_fWalkSpeed{2.f};
-	_float m_fRunSpeed{4.f};
+	_float m_fWalkSpeed{ 1.f };
+	_float m_fRunSpeed{ 3.5f };
 	_bool m_isInterpolating{};
 	_float m_fInterpolationRatio{};
 	_vec4 m_vOriginalLook{};
@@ -352,7 +362,7 @@ private:
 	_int m_iAttackCombo{};
 	_int m_iCurrentSkill_Index{};
 	_vec4 m_currentDir{};
-	_float m_lerpFactor{0.1f};
+	_float m_lerpFactor{ 0.1f };
 	_vec4 m_vLook{};
 	_float m_fLerpTime{};
 	_vec4 m_fLerpLook{};
@@ -362,9 +372,10 @@ private:
 	_float m_fSkiilTimer{};
 	_mat m_OldWorldMatrix{};
 	_bool m_bHide{};
-	_int m_Body_CurrentIndex{-1};
-	_int m_Hair_CurrentIndex{-1};
-	_int m_Face_CurrentIndex{-1};
+	_int m_Body_CurrentIndex{ -1 };
+	_int m_Helmet_CurrentIndex{ -1 };
+	_int m_Hair_CurrentIndex{ -1 };
+	_int m_Face_CurrentIndex{ -1 };
 	_float m_SkillSpeed{};
 	_uint m_ShaderIndex{};
 	_bool m_UsingMotionBlur{};
@@ -373,6 +384,7 @@ private:
 	_vec4 m_SaveCamLook{};
 	_bool m_bIsMount{};
 	_bool m_bWeapon_Unequip{};
+	_bool m_bHelmet_Hide{};
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

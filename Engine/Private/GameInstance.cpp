@@ -964,6 +964,16 @@ ID3D11Texture2D* CGameInstance::Get_Texture2D(const wstring& strTargetTag)
 	return m_pRenderTarget_Manager->Get_Texture2D(strTargetTag);
 }
 
+ID3D11ShaderResourceView* CGameInstance::Get_SRV(const wstring& strTargetTag)
+{
+	if (!m_pRenderTarget_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pRenderTarget_Manager is NULL");
+	}
+
+	return m_pRenderTarget_Manager->Get_SRV(strTargetTag);
+}
+
 #ifdef _DEBUGTEST
 HRESULT CGameInstance::Ready_Debug_RT(const wstring& strTargetTag, _float2 vPos, _float2 vSize)
 {

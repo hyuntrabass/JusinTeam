@@ -55,6 +55,12 @@
     <Filter Include="02.GameObjects\02.Player">
       <UniqueIdentifier>{caa5e8bb-b101-4ded-9dda-7fecc1204f9f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\03.Map">
+      <UniqueIdentifier>{21501850-9adf-4ff7-9605-18f62a09422a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\03.Map\SelectMap">
+      <UniqueIdentifier>{d01e7b85-0d60-4d9c-9a2c-7421862a7745}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -123,6 +129,9 @@
     <ClInclude Include="..\Public\Shader_Terrain.h">
       <Filter>02.GameObjects\01.Terrain</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Select_Map.h">
+      <Filter>02.GameObjects\03.Map\SelectMap</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -175,6 +184,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Shader_Terrain.cpp">
       <Filter>02.GameObjects\01.Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Select_Map.cpp">
+      <Filter>02.GameObjects\03.Map\SelectMap</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

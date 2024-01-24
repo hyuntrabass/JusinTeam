@@ -3,7 +3,6 @@
 #include "TextButton.h"
 #include "UI_Manager.h"
 #include "ItemBlock.h"
-#include "ItemSlot.h"
 
 CInvenFrame::CInvenFrame(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -81,20 +80,55 @@ void CInvenFrame::Tick(_float fTimeDelta)
 				break;
 			}
 		}
-
-		for (size_t i = 0; i < m_vecItemSlot[m_eCurInvenType].size(); i++)
+		if (!m_isPicking)
 		{
-			if (m_vecItems.empty())
+			for (_uint j = 0; j < 4; j++)
 			{
-				return;
-			}
-			if (PtInRect(&dynamic_cast<CTextButtonColor*>(m_vecItems[m_vecItemSlot[m_eCurInvenType][i]])->Get_Rect(), ptMouse))
-			{
-				//아이템 선택시 로직  desc표시, 무기면 장착, 옷이어도 장착, 포션이면 아이템슬롯에 끼우기 등? 
-				//왼클릭 설명 우클릭 장착? 
+				if (PtInRect(&m_pSelectSlot[j]->Get_Rect(), ptMouse))
+				{
+					if (m_pSelectSlot[j]->Is_Full())
+					{
+						ItemSlot_Delete_Logic(j);
+						break;
+					}
+				}
 			}
 		}
+
+		if (m_isPicking)
+		{
+			_bool isPicking = false;
+			for (_uint j = 0; j < 4; j++)
+			{
+				if (PtInRect(&m_pSelectSlot[j]->Get_Rect(), ptMouse))
+				{
+					isPicking = true;
+					ItemSlot_Logic(j, m_iCurIndex);
+					break;
+				}
+			}
+			m_isPicking = false;
+		}
+
+		if (m_isActiveQuickSlot)
+		{
+			for (size_t i = 0; i < m_vecItemsSlot[m_eCurInvenType].size(); i++)
+			{
+				if (PtInRect(&m_vecItemsSlot[m_eCurInvenType][i]->Get_Rect(), ptMouse))
+				{
+					if (m_vecItemsSlot[m_eCurInvenType][i]->Get_ItemDesc().iItemType == (_uint)ITEM_POTION)
+					{
+						m_isPicking = true;
+						m_iCurIndex = i;
+						break;
+					}
+				}
+				//이건 아이템 타입에 따라 달라질듯
+			}
+		}
+		
 	}
+
 
 	if (m_isQuickAnim)
 	{
@@ -129,6 +163,12 @@ void CInvenFrame::Tick(_float fTimeDelta)
 
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+
+	for (size_t i = 0; i < m_vecItemsSlot[m_eCurInvenType].size(); i++)
+	{
+		m_vecItemsSlot[m_eCurInvenType][i]->Tick(fTimeDelta);
+	}
+
 
 	for (size_t i = 0; i < INVEN_TYPE::INVEN_END; i++)
 	{
@@ -182,7 +222,7 @@ void CInvenFrame::Tick(_float fTimeDelta)
 
 		for (_uint i = 0; i < 4; i++)
 		{
-			m_pSelectSlot[i]->Late_Tick(fTimeDelta);
+			m_pSelectSlot[i]->Tick(fTimeDelta);
 		}
 	}
 }
@@ -202,15 +242,8 @@ void CInvenFrame::Late_Tick(_float fTimeDelta)
 		iter->Late_Tick(fTimeDelta);
 	}
 
-	/*아이템 렌더*/
-	for (size_t i = 0; i < m_vecItemSlot[m_eCurInvenType].size(); i++)
-	{
-		if (m_vecItems.empty())
-		{
-			return;
-		}
-		m_vecItems[m_vecItemSlot[m_eCurInvenType][i]]->Late_Tick(fTimeDelta);
-	}
+
+
 
 	m_pUnderBar->Late_Tick(fTimeDelta);
 	m_pBackGround->Late_Tick(fTimeDelta);
@@ -231,6 +264,13 @@ void CInvenFrame::Late_Tick(_float fTimeDelta)
 		{
 			m_pSelectSlot[i]->Late_Tick(fTimeDelta);
 		}
+	}	
+	
+	/*아이템 렌더 */
+
+	for (size_t i = 0; i < m_vecItemsSlot[m_eCurInvenType].size(); i++)
+	{
+		m_vecItemsSlot[m_eCurInvenType][i]->Late_Tick(fTimeDelta);
 	}
 }
 
@@ -260,6 +300,7 @@ void CInvenFrame::Init_State()
 {
 	dynamic_cast<CTextButtonColor*>(m_pInvenType[INVEN_ALL])->Set_Alpha(1.f);
 	m_eCurInvenType = INVEN_ALL;
+	Set_ItemPosition(m_eCurInvenType);
 
 	_vec2 vPos = dynamic_cast<CTextButtonColor*>(m_pInvenType[INVEN_ALL])->Get_Position();
 	dynamic_cast<CTextButton*>(m_pSelectButton)->Set_Position(vPos);
@@ -398,20 +439,20 @@ HRESULT CInvenFrame::Add_Parts()
 
 	for (_uint i = 0; i < 4; i++)
 	{
-		Button.strText = TEXT("");
-		Button.fDepth = m_fDepth - 0.03f;
-		Button.vColor = _vec4(0.2f, 0.2f, 0.2f, 1.f);
-		Button.fAlpha = 1.f;
-		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_invenslot");
-		Button.vSize = _vec2(60.f, 60.f);
-		Button.vPosition = _vec2(fStartX + fTerm * i, fBgY - 62.5f);
-		m_pSelectSlot[i] = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &Button);
-		if (not m_pSelectSlot[i])
+		CItemSlot::ITEMSLOT_DESC ItemSlotDesc = {};
+		ItemSlotDesc.eSlotMode = CItemSlot::ITSLOT_INVEN;
+		ItemSlotDesc.vSize = _vec2(60.f, 60.f);
+		ItemSlotDesc.fDepth = m_fDepth - 0.03f;
+		ItemSlotDesc.vPosition = _vec2(fStartX + fTerm * i, fBgY - 62.5f);
+		m_pSelectSlot[i] = (CItemSlot*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_ItemSlot"), &ItemSlotDesc);
+		if (m_pSelectSlot[i] == nullptr)
 		{
 			return E_FAIL;
 		}
-		dynamic_cast<CTextButtonColor*>(m_pSelectSlot[i])->Set_Pass(VTPass_UI_Alpha);
-
+		if (FAILED(CUI_Manager::Get_Instance()->Set_InvenItemSlots((CItemBlock::ITEMSLOT)i, m_pSelectSlot[i])))
+		{
+			return E_FAIL;
+		}
 	}
 
 	CTextButton::TEXTBUTTON_DESC TextButton = {};
@@ -562,7 +603,7 @@ void CInvenFrame::Set_Item(ITEM eItem)
 		{
 			iter->Set_ItemNum(1);
 			isItemExist = true;
-			break;
+			return;
 		}
 	}
 
@@ -571,18 +612,128 @@ void CInvenFrame::Set_Item(ITEM eItem)
 		CItem::ITEM_DESC ItemDesc{};
 		ItemDesc.bCanInteract = true;
 		ItemDesc.eItemDesc = eItem;
-		ItemDesc.fDepth = m_fDepth - 0.03f;
+		ItemDesc.fDepth = m_fDepth - 0.05f;
 		ItemDesc.vSize = _vec2(50.f, 50.f);
 		ItemDesc.vPosition = _vec2(-50.f, -50.f);
 		CItem* pItem = (CItem*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Item"), &ItemDesc);
-		if (pItem != nullptr)
+		if (pItem == nullptr)
 		{
 			return;
 		}
 		m_vecItems.push_back(pItem);
-		m_vecItemSlot[(INVEN_TYPE)eItem.iInvenType].push_back(m_vecItems.size() - 1);
 	}
 
+	m_vecItemsSlot[INVEN_ALL].push_back(m_vecItems.back());
+	m_vecItemsSlot[(INVEN_TYPE)eItem.iInvenType].push_back(m_vecItems.back());
+}
+
+void CInvenFrame::ItemSlot_Logic(_uint iSlotIdx, _uint iIndex)
+{
+	if (!m_pSelectSlot[iSlotIdx]->Is_Full())
+	{
+		_int iNum = 0;
+		HRESULT hr = CUI_Manager::Get_Instance()->Set_Item_In_EmptySlot((CItemBlock::ITEMSLOT)iSlotIdx, m_vecItemsSlot[m_eCurInvenType][iIndex], &iNum);
+		if (FAILED(hr))
+		{
+			return;
+		}
+		if (iNum > 0)
+		{
+			m_vecItemsSlot[m_eCurInvenType][iIndex]->Set_ItemNum(-iNum);
+		}
+		else
+		{
+			Delete_Item(m_eCurInvenType, iIndex);
+		}
+	}
+	else
+	{	//m_iItemNum이 0보다 클경우 그 수만큼 빼주면되고, 0이면 다없애면되고 -1이면 없애면안됨
+		_int iNum = 0;
+		CItem* pItem = (CItem*)CUI_Manager::Get_Instance()->Set_Item_In_FullSlot((CItemBlock::ITEMSLOT)iSlotIdx, m_vecItemsSlot[m_eCurInvenType][iIndex], &iNum);
+		if (pItem != nullptr)
+		{
+			if (iNum > 0)
+			{
+				m_vecItemsSlot[m_eCurInvenType][iIndex]->Set_ItemNum(-iNum);
+			}
+			else
+			{
+				Delete_Item(m_eCurInvenType, iIndex);
+			}
+			Set_Item(pItem->Get_ItemDesc());
+		}
+		else
+		{
+			if (iNum > 0)
+			{
+				m_vecItemsSlot[m_eCurInvenType][iIndex]->Set_ItemNum(-iNum);
+			}
+			else if (iNum == -1)
+			{
+				return;
+			}
+			else
+			{
+				Delete_Item(m_eCurInvenType, iIndex);
+			}
+		}
+	}
+
+}
+
+void CInvenFrame::ItemSlot_Delete_Logic(_uint iSlotIdx)
+{
+	_bool isItemExist = false;
+	for (auto& iter : m_vecItems)
+	{
+		if (m_pSelectSlot[iSlotIdx]->Get_ItemName() == iter->Get_ItemDesc().strName)
+		{
+			iter->Set_ItemNum(m_pSelectSlot[iSlotIdx]->Get_ItemObject()->Get_ItemNum());
+			CUI_Manager::Get_Instance()->Delete_Item_In_Slot((CItemBlock::ITEMSLOT)iSlotIdx);
+			isItemExist = true;
+			return;
+		}
+	}
+	if (!isItemExist)
+	{
+		Set_Item(m_pSelectSlot[iSlotIdx]->Get_ItemObject()->Get_ItemDesc());
+		CUI_Manager::Get_Instance()->Delete_Item_In_Slot((CItemBlock::ITEMSLOT)iSlotIdx);
+	}
+	return;
+}
+
+void CInvenFrame::Delete_Item(INVEN_TYPE eInvenType, _uint iIndex)
+{
+	INVEN_TYPE eOriginInvenType = (INVEN_TYPE)m_vecItemsSlot[eInvenType][iIndex]->Get_ItemDesc().iInvenType;
+	wstring strItemName = m_vecItemsSlot[eInvenType][iIndex]->Get_ItemDesc().strName;
+
+	for (size_t i = 0; i < m_vecItemsSlot[eOriginInvenType].size(); i++)
+	{
+		if (m_vecItemsSlot[eOriginInvenType][i]->Get_ItemDesc().strName == strItemName)
+		{
+			m_vecItemsSlot[eOriginInvenType].erase(m_vecItemsSlot[eOriginInvenType].begin() + i);
+			break;
+		}
+	}
+	for (size_t i = 0; i < m_vecItemsSlot[INVEN_ALL].size(); i++)
+	{
+		if (m_vecItemsSlot[INVEN_ALL][i]->Get_ItemDesc().strName == strItemName)
+		{
+			m_vecItemsSlot[INVEN_ALL].erase(m_vecItemsSlot[INVEN_ALL].begin() + i);
+			break;
+		}
+	}
+
+	for (size_t i = 0; i < m_vecItems.size(); i++)
+	{
+		if (m_vecItems[i]->Get_ItemDesc().strName == strItemName)
+		{
+			Safe_Release(m_vecItems[i]);
+			m_vecItems.erase(m_vecItems.begin() + i);
+			break;
+		}
+	}
+	Set_ItemPosition(m_eCurInvenType);
 }
 
 void CInvenFrame::Set_ItemPosition(INVEN_TYPE eInvenType)
@@ -592,10 +743,11 @@ void CInvenFrame::Set_ItemPosition(INVEN_TYPE eInvenType)
 	_float fTerm = m_fSizeX / 5.f;
 	_float fStartX = m_fX - (m_fSizeX / 2.f) + (m_fSizeX / 5.f) / 2.f;
 	_float fStartY = m_fY - m_fSizeY / 2.f + fSize / 2.f + 5.f;
-	for (_uint i = 0; i < m_vecItemSlot[eInvenType].size(); i++)
+	for (_uint i = 0; i < m_vecItemsSlot[eInvenType].size(); i++)
 	{
-		_vec2 vPos = _vec2(fStartX + fTerm * i, fStartY + fSize * (i / 5.f) + 5.f * (i / 5.f));
-		m_vecItems[m_vecItemSlot[eInvenType][i]]->Set_Position(vPos);
+		_uint iTermY = i / 5.f;
+		_vec2 vPos = _vec2(fStartX + fTerm * i, fStartY + fSize * iTermY + 5.f * iTermY);
+		m_vecItemsSlot[eInvenType][i]->Set_Position(vPos);
 	}
 }
 

@@ -172,6 +172,7 @@ void CCustom::Tick(_float fTimeDelta)
 	}
 	m_pSelectMenuEffect->Tick(fTimeDelta);
 	m_pSelectCustomEffect->Tick(fTimeDelta);
+	m_pSelectColorEffect->Tick(fTimeDelta);
 	if (m_pSelectButton != nullptr)
 	{
 		m_pSelectButton->Tick(fTimeDelta);

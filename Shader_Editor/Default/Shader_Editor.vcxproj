@@ -155,6 +155,7 @@
     <ClInclude Include="..\ImGui\imstb_truetype.h" />
     <ClInclude Include="..\Public\ImGui_Mgr.h" />
     <ClInclude Include="..\Public\Level_Test.h" />
+    <ClInclude Include="..\Public\Select_Map.h" />
     <ClInclude Include="..\Public\ShaderEdit.h" />
     <ClInclude Include="..\Public\Shader_Camera.h" />
     <ClInclude Include="..\Public\Shader_Define.h" />
@@ -178,6 +179,7 @@
     <ClCompile Include="..\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="..\Private\ImGui_Mgr.cpp" />
     <ClCompile Include="..\Private\Level_Test.cpp" />
+    <ClCompile Include="..\Private\Select_Map.cpp" />
     <ClCompile Include="..\Private\ShaderEdit.cpp" />
     <ClCompile Include="..\Private\Shader_Camera.cpp" />
     <ClCompile Include="..\Private\Shader_Loader.cpp" />
