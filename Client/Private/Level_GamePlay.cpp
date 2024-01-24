@@ -2,7 +2,7 @@
 #include "Level_Loading.h"
 #include "Camera.h"
 #include "Monster.h"
-#include "NPC_Dummy.h"
+#include "NPC.h"
 #include "Map.h"
 #include "Player.h"
 #include "Effect_Manager.h"
@@ -143,7 +143,13 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_NPC_Dummy()))
+	if (FAILED(Ready_NPC_Test()))
+	{
+		MSG_BOX("Failed to Ready NPC");
+		return E_FAIL;
+	}
+
+	if (FAILED(Ready_NPC_Dummy_Test()))
 	{
 		MSG_BOX("Failed to Ready NPC_Dummy");
 		return E_FAIL;
@@ -153,6 +159,13 @@ HRESULT CLevel_GamePlay::Init()
 	if (FAILED(Ready_Groar_Boss()))
 	{
 		MSG_BOX("Failed to Ready Groar_Boss");
+		return E_FAIL;
+	}
+
+	// Pet
+	if (FAILED(Ready_Pet()))
+	{
+		MSG_BOX("Failed to Ready Pet");
 		return E_FAIL;
 	}
 
@@ -445,18 +458,116 @@ HRESULT CLevel_GamePlay::Ready_Dog()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_NPC_Dummy()
+HRESULT CLevel_GamePlay::Ready_NPC_Test()
 {
-	NPC_TYPE eType = ITEM_MERCHANT;
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &eType)))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_ItemMerchant"), TEXT("Prototype_GameObject_ItemMerchant"))))
 	{
 		return E_FAIL;
 	}
 
-	eType = SKILL_MERCHANT;
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BlackSmith"), TEXT("Prototype_GameObject_BlackSmith"))))
+	{
+		return E_FAIL;
+	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &eType)))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Roskva"), TEXT("Prototype_GameObject_Roskva"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_NPC_Dummy_Test()
+{
+	NPC_INFO Info = {};
+	Info.strNPCPrototype = TEXT("Prototype_Model_Dwarf_Male_002");
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	{
+		return E_FAIL;
+	}
+
+	Info.strNPCPrototype = TEXT("Prototype_Model_Female_003");
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	{
+		return E_FAIL;
+	}
+
+	Info.strNPCPrototype = TEXT("Prototype_Model_Female_004");
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	{
+		return E_FAIL;
+	}
+
+	Info.strNPCPrototype = TEXT("Prototype_Model_Female_006");
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	{
+		return E_FAIL;
+	}
+
+	Info.strNPCPrototype = TEXT("Prototype_Model_Male_013");
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	{
+		return E_FAIL;
+	}
+
+	Info.strNPCPrototype = TEXT("Prototype_Model_Male_015");
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	{
+		return E_FAIL;
+	}
+
+	Info.strNPCPrototype = TEXT("Prototype_Model_Male_018");
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	{
+		return E_FAIL;
+	}
+
+	Info.strNPCPrototype = TEXT("Prototype_Model_Female_013");
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	{
+		return E_FAIL;
+	}
+
+	Info.strNPCPrototype = TEXT("Prototype_Model_Female_027");
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	{
+		return E_FAIL;
+	}
+
+	Info.strNPCPrototype = TEXT("Prototype_Model_Male_Chi");
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	{
+		return E_FAIL;
+	}
+
+	Info.strNPCPrototype = TEXT("Prototype_Model_Male_016");
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	{
+		return E_FAIL;
+	}
+
+	Info.strNPCPrototype = TEXT("Prototype_Model_Male_020");
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	{
+		return E_FAIL;
+	}
+
+	Info.strNPCPrototype = TEXT("Prototype_Model_Male_027");
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
 	{
 		return E_FAIL;
 	}
@@ -467,6 +578,21 @@ HRESULT CLevel_GamePlay::Ready_NPC_Dummy()
 HRESULT CLevel_GamePlay::Ready_Groar_Boss()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Groar_Boss"), TEXT("Prototype_GameObject_Groar_Boss"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Pet()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pet_Cat"), TEXT("Prototype_GameObject_Pet_Cat"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pet_Dragon"), TEXT("Prototype_GameObject_Pet_Dragon"))))
 	{
 		return E_FAIL;
 	}
