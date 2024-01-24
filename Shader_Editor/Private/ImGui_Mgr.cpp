@@ -57,6 +57,12 @@ void CImGui_Mgr::Frame()
 
 			ImGui::EndTabItem();
 		}
+		if (ImGui::BeginTabItem(u8"¶Ë¸Ê")) {
+
+			ImGui::EndTabItem();
+		}
+
+
 		ImGui::EndTabBar();
 	}
 	ImGui::End();

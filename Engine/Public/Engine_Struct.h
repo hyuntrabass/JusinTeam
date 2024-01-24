@@ -64,6 +64,19 @@ namespace Engine
 		float fBias = 0.25f;
 	}SSAO_DESC;
 
+	typedef struct ThresholdParams {
+		alignas(16) float fThreshold;
+	}THPARAM;
+
+#define GAUSSIAN_RADIUS 7
+
+	typedef struct BlurParams
+	{
+		alignas(16) float coefficients[GAUSSIAN_RADIUS + 1];
+		int radius;     // must be <= MAX_GAUSSIAN_RADIUS
+		int direction;  // 0 = horizontal, 1 = vertical
+	}BLURPARAM;
+
 	struct EffectInfo
 	{
 		unsigned int iType{};

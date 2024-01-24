@@ -890,9 +890,6 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Trail.hlsl">
       <Filter>97.Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_Deferred.hlsl">
-      <Filter>97.Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxAnimMesh.hlsl">
       <Filter>97.Shaders</Filter>
     </FxCompile>
