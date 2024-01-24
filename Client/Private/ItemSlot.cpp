@@ -19,6 +19,16 @@ HRESULT CItemSlot::Init_Prototype()
 
 HRESULT CItemSlot::Init(void* pArg)
 {
+	m_eSlotMode = ((ITEMSLOT_DESC*)pArg)->eSlotMode;
+	switch (m_eSlotMode)
+	{
+	case ITSLOT_SCREEN:
+		m_strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Slot");
+		break;
+	case ITSLOT_INVEN:
+		m_strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_invenslot");
+		break;
+	}
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
@@ -30,10 +40,16 @@ HRESULT CItemSlot::Init(void* pArg)
 	m_fX = ((ITEMSLOT_DESC*)pArg)->vPosition.x;
 	m_fY = ((ITEMSLOT_DESC*)pArg)->vPosition.y;
 
-	m_fDepth = (_float)D_SCREEN / (_float)D_END;
+	m_fDepth = ((ITEMSLOT_DESC*)pArg)->fDepth;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	
+	m_rcRect = {
+		  (LONG)(m_fX - m_fSizeX * 0.5f),
+		  (LONG)(m_fY - m_fSizeY * 0.5f),
+		  (LONG)(m_fX + m_fSizeX * 0.5f),
+		  (LONG)(m_fY + m_fSizeY * 0.5f)
+	};
 
 	return S_OK;
 }
@@ -45,6 +61,10 @@ void CItemSlot::Tick(_float fTimeDelta)
 
 void CItemSlot::Late_Tick(_float fTimeDelta)
 {
+	if (m_pItem != nullptr)
+	{
+		m_pItem->Late_Tick(fTimeDelta);
+	}
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
@@ -68,6 +88,79 @@ HRESULT CItemSlot::Render()
 	return S_OK;
 }
 
+HRESULT CItemSlot::Set_Item(CItem* pItem, _int* iNum)
+{
+	if (pItem == nullptr)
+	{
+		return E_FAIL;
+	}
+	if (m_pItem != nullptr)
+	{
+		Safe_Release(m_pItem);
+	}
+	_uint iItemNum = pItem->Get_ItemNum();
+	if (iItemNum > m_iMaxNum)
+	{
+		*iNum = m_iMaxNum;
+		iItemNum = m_iMaxNum;
+	}
+	else
+	{
+		*iNum = 0;
+	}
+	CItem::ITEM_DESC ItemDesc = {};
+	ItemDesc.bCanInteract = false;
+	ItemDesc.eItemDesc = pItem->Get_ItemDesc();
+	ItemDesc.fDepth = m_fDepth - 0.1f;
+	ItemDesc.iNum = iItemNum;
+	ItemDesc.vPosition = _vec2(m_fX, m_fY);
+	ItemDesc.vSize = _vec2(m_fSizeX, m_fSizeY);
+	m_pItem = (CItem*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Item"), &ItemDesc);
+
+	m_isFull = true;
+	return S_OK;
+}
+
+
+
+void CItemSlot::Delete_Item()
+{
+	Safe_Release(m_pItem);
+	m_isFull = false;
+}
+
+void CItemSlot::Set_FullSlot(CItem* pItem, _int* iNum)
+{
+	if (m_pItem == nullptr)
+	{
+		return;
+	}
+	_uint iCurItemNum = m_pItem->Get_ItemNum();
+	if (iCurItemNum >= m_iMaxNum)
+	{
+		*iNum = -1; //꽉차서 못들어감
+	}
+	else if (iCurItemNum + pItem->Get_ItemNum() > m_iMaxNum)
+	{
+		*iNum = m_iMaxNum - iCurItemNum;
+	}
+	else
+	{
+		*iNum = 0;
+	}
+	return;
+}
+
+const wstring CItemSlot::Get_ItemName()
+{
+	wstring strName = TEXT("");
+	if (m_pItem == nullptr)
+	{
+		return strName;
+	}
+	return m_pItem->Get_ItemDesc().strName;
+}
+
 HRESULT CItemSlot::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
@@ -85,7 +178,7 @@ HRESULT CItemSlot::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_Slot"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_strTexture, TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -145,6 +238,8 @@ void CItemSlot::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pItem);
+	Safe_Release(m_pItemTex);
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

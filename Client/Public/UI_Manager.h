@@ -38,6 +38,7 @@ private:
 
 	CGameInstance*	m_pGameInstance{ nullptr };
 	CGameObject*	m_pItemSlots[CItemBlock::ITEMSLOT_END];
+	CGameObject*	m_pInvenItemSlots[CItemBlock::ITEMSLOT_END];
 	CGameObject*	m_pInven;
 
 
@@ -54,11 +55,16 @@ public:
 	HRESULT Init_Items();
 	ITEM Find_Item(wstring& strItemName);
 
-	HRESULT Set_Item(wstring& strItemName);
+	HRESULT Set_Item(wstring& strItemName, _uint iNum = 1);
 	HRESULT Set_Inven(CGameObject* pGameObject);
 	HRESULT Set_ItemSlots(CItemBlock::ITEMSLOT eSlot, CGameObject* pGameObject);
+	HRESULT Set_InvenItemSlots(CItemBlock::ITEMSLOT eSlot, CGameObject* pGameObject);
 
 	CGameObject* Get_ItemSlots(CItemBlock::ITEMSLOT eSlot);
+	_bool Is_ItemSlotFull(CItemBlock::ITEMSLOT eSlot);
+	HRESULT Set_Item_In_EmptySlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* m_iItemNum);
+	CItem* Set_Item_In_FullSlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* m_iItemNum);
+	void Delete_Item_In_Slot(CItemBlock::ITEMSLOT eSlot);
 
 
 	HRESULT Set_CustomPart(PART_TYPE eType, _uint iIndex);

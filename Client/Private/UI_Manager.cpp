@@ -94,6 +94,17 @@ HRESULT CUI_Manager::Set_ItemSlots(CItemBlock::ITEMSLOT eSlot, CGameObject* pGam
 	return S_OK;
 }
 
+HRESULT CUI_Manager::Set_InvenItemSlots(CItemBlock::ITEMSLOT eSlot, CGameObject* pGameObject)
+{
+	if (pGameObject == nullptr)
+	{
+		return E_FAIL;
+	}
+	m_pInvenItemSlots[eSlot] = pGameObject;
+
+	return S_OK;
+}
+
 
 HRESULT CUI_Manager::Init_Items()
 {
@@ -225,25 +236,25 @@ ITEM CUI_Manager::Find_Item(wstring& strItemName)
 
 }
 
-HRESULT CUI_Manager::Set_Item(wstring& strItemName)
+HRESULT CUI_Manager::Set_Item(wstring& strItemName, _uint iNum)
 {
-	wstring strTest = TEXT("체력 포션");
-	ITEM Item = Find_Item(strTest);
+
+	ITEM Item = Find_Item(strItemName);
 	if (Item.iInvenType == -1)
 	{
 		return E_FAIL;
 	}
-	dynamic_cast<CInven*>(m_pInven)->Set_Item(Item);
+	for (_uint i = 0; i < iNum; i++)
+	{
+		dynamic_cast<CInven*>(m_pInven)->Set_Item(Item);
+	}
+
 	return S_OK;
 }
 
 HRESULT CUI_Manager::Set_Inven(CGameObject* pGameObject)
 {
 	if (pGameObject == nullptr)
-	{
-		return E_FAIL;
-	}
-	if (m_pInven != nullptr)
 	{
 		return E_FAIL;
 	}
@@ -256,6 +267,51 @@ HRESULT CUI_Manager::Set_Inven(CGameObject* pGameObject)
 CGameObject* CUI_Manager::Get_ItemSlots(CItemBlock::ITEMSLOT eSlot)
 {
 	return m_pItemSlots[eSlot];
+}
+
+_bool CUI_Manager::Is_ItemSlotFull(CItemBlock::ITEMSLOT eSlot)
+{
+	return dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Is_Full();
+}
+
+HRESULT CUI_Manager::Set_Item_In_EmptySlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* m_iItemNum)
+{
+
+	if (FAILED(dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Set_Item(pItem, m_iItemNum)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(dynamic_cast<CItemSlot*>(m_pItemSlots[eSlot])->Set_Item(pItem, m_iItemNum)))
+	{
+		return E_FAIL;
+	}
+	
+	return S_OK;
+}
+
+CItem* CUI_Manager::Set_Item_In_FullSlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* m_iItemNum)
+{
+	//m_iItemNum이 0보다 클경우 그 수만큼 빼주면되고, 0이면 다없애면되고 -1이면 없애면안됨
+	if (dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Get_ItemName() != pItem->Get_ItemDesc().strName)
+	{
+		if (FAILED(Set_Item_In_EmptySlot(eSlot, pItem, m_iItemNum)))
+		{
+			return nullptr;
+		}
+		return pItem;
+	}
+	else
+	{
+		dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Set_FullSlot(pItem, m_iItemNum);
+		dynamic_cast<CItemSlot*>(m_pItemSlots[eSlot])->Set_FullSlot(pItem, m_iItemNum);
+	}
+	return nullptr;
+}
+
+void CUI_Manager::Delete_Item_In_Slot(CItemBlock::ITEMSLOT eSlot)
+{
+	dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Delete_Item();
+	dynamic_cast<CItemSlot*>(m_pItemSlots[eSlot])->Delete_Item();
 }
 
 
