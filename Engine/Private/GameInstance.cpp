@@ -102,12 +102,6 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 		return E_FAIL;
 	}
 
-	m_pSound_Manager = CSound_Manager::Create();
-	if (!m_pSound_Manager)
-	{
-		return E_FAIL;
-	}
-
 	return S_OK;
 }
 
@@ -120,10 +114,6 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	if (!m_pObject_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pObject_Manager is NULL");
-	}
-	if (!m_pSound_Manager)
-	{
-		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
 	}
 
 	m_pInput_Manager->Update_InputDev();
@@ -153,7 +143,10 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 
 	m_pObject_Manager->Release_DeadObjects();
 	m_pObject_Manager->Late_Tick(fTimeDelta);
-	m_pSound_Manager->Update();
+	if (m_pSound_Manager)
+	{
+		m_pSound_Manager->Update();
+	}
 	if (m_Function_LateTick_FX)
 	{
 		m_Function_LateTick_FX(fTimeDelta);
@@ -989,6 +982,17 @@ HRESULT CGameInstance::Render_Debug_RT(const wstring& strMRTTag, CShader* pShade
 	return m_pRenderTarget_Manager->Render_Debug(strMRTTag, pShader, pVIBuffer);
 }
 #endif // _DEBUG
+
+HRESULT CGameInstance::Init_SoundManager()
+{
+	m_pSound_Manager = CSound_Manager::Create();
+	if (!m_pSound_Manager)
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
 
 _bool CGameInstance::Is_SoundManager_Ready()
 {
