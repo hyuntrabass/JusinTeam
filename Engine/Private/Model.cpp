@@ -435,7 +435,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 			static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerSounds[i].fStartAnimPos) &&
 			m_TriggerSounds[i].iChannel == -1)
 		{
-			m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundName, m_TriggerSounds[i].fVolume);
+			m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[0], m_TriggerSounds[i].fVolume);
 		}
 
 		if (m_TriggerSounds[i].iChannel != -1)
@@ -693,7 +693,7 @@ HRESULT CModel::Read_TriggerSounds(const string& strFilePath)
 			TriggerFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
 			pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
 			TriggerFile.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
-			SoundDesc.strSoundName = pBuffer;
+			SoundDesc.strSoundNames.push_back(pBuffer);
 			Safe_Delete_Array(pBuffer);
 
 			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fVolume), sizeof(_float));

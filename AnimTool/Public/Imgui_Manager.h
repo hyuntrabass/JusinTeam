@@ -78,6 +78,7 @@ private:
     //»ç¿îµå
     vector<string> m_SoundFiles;
     const _char** m_szSoundFiles;
+    _int m_iCurSoundNameIndex{};
 
     _float m_fTimeDelta{};
 

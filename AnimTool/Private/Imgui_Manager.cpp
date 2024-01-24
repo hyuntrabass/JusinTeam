@@ -182,6 +182,8 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			m_ePreModelType = m_eModelType;
 			m_iCurrentModelIndex = 0;
 			szCurrentModel = m_szMonsterNames[0];
+			m_iCurTriggerIndex = 0;
+			m_iCurSoundNameIndex = 0;
 		}
 
 		if (ImGui::BeginCombo("LIST", szCurrentModel))
@@ -194,6 +196,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					szCurrentModel = m_szMonsterNames[i];
 					m_iCurrentModelIndex = i;
 					m_iCurTriggerIndex = 0;
+					m_iCurSoundNameIndex = 0;
 				}
 			}
 			ImGui::EndCombo();
@@ -209,6 +212,8 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			m_ePreModelType = m_eModelType;
 			m_iCurrentModelIndex = 0;
 			szCurrentModel = "Select_Priest";
+			m_iCurTriggerIndex = 0;
+			m_iCurSoundNameIndex = 0;
 		}
 
 		if (ImGui::BeginCombo("LIST", szCurrentModel))
@@ -221,6 +226,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					szCurrentModel = szModelTag[i];
 					m_iCurrentModelIndex = i;
 					m_iCurTriggerIndex = 0;
+					m_iCurSoundNameIndex = 0;
 				}
 			}
 			ImGui::EndCombo();
@@ -235,6 +241,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 		m_ePreTriggerType = m_eTriggerType;
 		m_iCurTriggerIndex = 0;
 		m_iSelectFile = 0;
+		m_iCurSoundNameIndex = 0;
 	}
 
 	if (m_pPlayer)
@@ -274,7 +281,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				MultiByteToWideChar(CP_UTF8, 0, m_szSoundFiles[iSelectSoundFile], (_int)strlen(m_szSoundFiles[iSelectSoundFile]), szSoundName, MAX_PATH);
 
 				TRIGGERSOUND_DESC SoundDesc{};
-				SoundDesc.strSoundName = szSoundName;
+				SoundDesc.strSoundNames.push_back(szSoundName);
 				SoundDesc.iStartAnimIndex = m_AnimDesc.iAnimIndex;
 				SoundDesc.fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
 				SoundDesc.fVolume = 0.5f;
@@ -526,7 +533,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				int bufferSize = WideCharToMultiByte(CP_UTF8, 0, EffectDescs[i].strEffectName.c_str(), -1, nullptr, 0, nullptr, nullptr);
 				WideCharToMultiByte(CP_UTF8, 0, EffectDescs[i].strEffectName.c_str(), -1, ppEffectNameList[i], bufferSize, nullptr, nullptr);
 			}
-			if (ImGui::ListBox("EFFECT##2", &m_iCurTriggerIndex, ppEffectNameList, EffectDescs.size()))
+			if (ImGui::ListBox("EFFECT##1", &m_iCurTriggerIndex, ppEffectNameList, EffectDescs.size()))
 			{
 			}
 			//릭 제거
@@ -636,18 +643,30 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			ImGui::PushItemWidth(150.f);
 
 			CModel* pCurModel = m_pPlayer->Get_CurrentModel();
-
-			//사운드 이름 띄우기
 			vector<TRIGGERSOUND_DESC> SoundDescs = pCurModel->Get_TriggerSounds();
-			_char** ppSoundNameList = new _char * [SoundDescs.size()] {};
+			//사운드 이름 띄우기
+			/*_char** ppSoundTriggerList = new _char* [SoundDescs.size()];
+			string strSonudTrigger = "SOUND_TRIGGER_";
 
 			for (size_t i = 0; i < SoundDescs.size(); i++)
 			{
-				ppSoundNameList[i] = new _char[MAX_PATH];
-				int bufferSize = WideCharToMultiByte(CP_UTF8, 0, SoundDescs[i].strSoundName.c_str(), -1, nullptr, 0, nullptr, nullptr);
-				WideCharToMultiByte(CP_UTF8, 0, SoundDescs[i].strSoundName.c_str(), -1, ppSoundNameList[i], bufferSize, nullptr, nullptr);
+				ppSoundTriggerList[i] = new _char[MAX_PATH];
+				strSonudTrigger + to_string(i)
 			}
-			if (ImGui::ListBox("EFFECT##2", &m_iCurTriggerIndex, ppSoundNameList, SoundDescs.size()))
+			if (ImGui::ListBox("SOUND##1", &m_iCurTriggerIndex, SoundTriggerList, SoundDescs.size()))
+			{
+			}*/
+			
+			//사운드 파일 이름 띄우기
+			_char** ppSoundNameList = new _char * [SoundDescs[m_iCurTriggerIndex].strSoundNames.size()] {};
+
+			for (size_t i = 0; i < SoundDescs[m_iCurTriggerIndex].strSoundNames.size(); i++)
+			{
+				ppSoundNameList[i] = new _char[MAX_PATH];
+				int bufferSize = WideCharToMultiByte(CP_UTF8, 0, SoundDescs[m_iCurTriggerIndex].strSoundNames[i].c_str(), -1, nullptr, 0, nullptr, nullptr);
+				WideCharToMultiByte(CP_UTF8, 0, SoundDescs[m_iCurTriggerIndex].strSoundNames[i].c_str(), -1, ppSoundNameList[i], bufferSize, nullptr, nullptr);
+			}
+			if (ImGui::ListBox("SOUND##2", &m_iCurSoundNameIndex, ppSoundNameList, SoundDescs[m_iCurTriggerIndex].strSoundNames.size()))
 			{
 			}
 			//릭 제거
@@ -671,7 +690,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			ImGui::Text(strStartEffectPos.c_str());
 
 			ImGui::SeparatorText("VOLUME");
-			ImGui::InputFloat("X##2", &pSoundDesc->fVolume, 0.01f, 0.f, "%.2f");
+			ImGui::InputFloat("VOLUME##1", &pSoundDesc->fVolume, 0.01f, 0.f, "%.2f");
 			if (pSoundDesc->fVolume >= 1.f)
 			{
 				pSoundDesc->fVolume = 1.f;
@@ -693,17 +712,17 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	}
 
 	ImGui::Begin("TRIGGER DATAFILE");
-	ImGui::PushItemWidth(150.f);
+	ImGui::PushItemWidth(250.f);
 
 	if (m_eTriggerType == TRIGGER_EFFECT)
 	{
-		if (ImGui::ListBox("EFFECT##1", &m_iSelectFile, m_szEffectFiles, m_EffectFiles.size()))
+		if (ImGui::ListBox("EFFECT##2", &m_iSelectFile, m_szEffectFiles, m_EffectFiles.size()))
 		{
 		}
 	}
 	else if (m_eTriggerType == TRIGGER_SOUND)
 	{
-		if (ImGui::ListBox("SOUND##1", &m_iSelectFile, m_szSoundFiles, m_SoundFiles.size()))
+		if (ImGui::ListBox("SOUND##3", &m_iSelectFile, m_szSoundFiles, m_SoundFiles.size()))
 		{
 			if (m_pPlayer)
 			{
@@ -719,7 +738,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					_tchar szEffectName[MAX_PATH]{};
 					MultiByteToWideChar(CP_UTF8, 0, m_szSoundFiles[iSelectEffectFile], (_int)strlen(m_szSoundFiles[iSelectEffectFile]), szEffectName, MAX_PATH);
 
-					pSoundDesc->strSoundName = szEffectName;
+					pSoundDesc->strSoundNames[m_iCurSoundNameIndex] = szEffectName;
 				}
 			}
 		}
@@ -907,10 +926,15 @@ HRESULT CImgui_Manager::SaveFile()
 				_float fStartAnimPos = SoundDescs[i].fStartAnimPos;
 				Fileout.write(reinterpret_cast<_char*>(&fStartAnimPos), sizeof(_float));
 
-				size_t iNameSize{};
-				iNameSize = (SoundDescs[i].strSoundName.size() + 1) * sizeof(_tchar);
-				Fileout.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
-				Fileout.write(reinterpret_cast<const _char*>(SoundDescs[i].strSoundName.data()), iNameSize);
+				_uint iNumName = static_cast<_uint>(SoundDescs[i].strSoundNames.size());
+				Fileout.write(reinterpret_cast<_char*>(&iNumName), sizeof(_uint));
+				for (_uint j = 0; j < iNumName; j++)
+				{
+					size_t iNameSize{};
+					iNameSize = (SoundDescs[i].strSoundNames[j].size() + 1) * sizeof(_tchar);
+					Fileout.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+					Fileout.write(reinterpret_cast<const _char*>(SoundDescs[i].strSoundNames[j].data()), iNameSize);
+				}
 				
 				_float fVolume = SoundDescs[i].fVolume;
 				Fileout.write(reinterpret_cast<_char*>(&fVolume), sizeof(_float));
@@ -1004,13 +1028,18 @@ HRESULT CImgui_Manager::LoadFile()
 				Filein.read(reinterpret_cast<_char*>(&SoundDesc.iStartAnimIndex), sizeof(_int));
 				Filein.read(reinterpret_cast<_char*>(&SoundDesc.fStartAnimPos), sizeof(_float));
 
-				size_t iNameSize{};
-				_tchar* pBuffer{};
-				Filein.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
-				pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
-				Filein.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
-				SoundDesc.strSoundName = pBuffer;
-				Safe_Delete_Array(pBuffer);
+				_uint iNumName{};
+				Filein.read(reinterpret_cast<_char*>(&iNumName), sizeof(_uint));
+				for (_uint i = 0; i < iNumName; i++)
+				{
+					size_t iNameSize{};
+					_tchar* pBuffer{};
+					Filein.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+					pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
+					Filein.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
+					SoundDesc.strSoundNames.push_back(pBuffer);
+					Safe_Delete_Array(pBuffer);
+				}
 
 				Filein.read(reinterpret_cast<_char*>(&SoundDesc.fVolume), sizeof(_float));
 			}
