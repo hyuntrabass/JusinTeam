@@ -219,7 +219,7 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 	}
 	//m_RainMatrix = _mat::CreateTranslation(_vec3(50.f, 3.f, 50.f));
 
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD9))
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD9) or m_pGameInstance->Key_Down(DIK_PRIOR))
 	{
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_VILLAGE))))
 		{

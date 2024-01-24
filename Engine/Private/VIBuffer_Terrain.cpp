@@ -558,12 +558,12 @@ HRESULT CVIBuffer_Terrain::ModifyTerrainVertexBuffer(_uint iNumVerticesX, _uint 
 			//XMStoreFloat3(&pVertices[iIndices[1]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[1]].vNormal) + vNor));
 			//XMStoreFloat3(&pVertices[iIndices[2]].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[iIndices[2]].vNormal) + vNor));
 		}
+	}
 
-		m_pContext->Unmap(m_pIB, 0);
+	m_pContext->Unmap(m_pIB, 0);
 #pragma endregion
 
-		return S_OK;
-	}
+	return S_OK;
 }
 CVIBuffer_Terrain* CVIBuffer_Terrain::Create(_dev pDevice, _context pContext)
 {
