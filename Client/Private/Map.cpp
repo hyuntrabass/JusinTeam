@@ -20,8 +20,7 @@ HRESULT CMap::Init(void* pArg)
 {
 	m_Info = *(MapInfo*)pArg;
 	wstring strPrototype = m_Info.Prototype;
-
-	//_vec4 MapPos = _vec4(m_Info.m_Matrix._41, m_Info.m_Matrix._42, m_Info.m_Matrix._43, m_Info.m_Matrix._44);
+	
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
@@ -30,16 +29,10 @@ HRESULT CMap::Init(void* pArg)
 
 	m_iShaderPass = 0;
 	
-	//m_pTransformCom->Set_State(State::Pos, MapPos);
-	_vec4 vRight = _vec4(m_Info.m_Matrix._11, m_Info.m_Matrix._12, m_Info.m_Matrix._13, m_Info.m_Matrix._14);
-	_vec4 vUp = _vec4(m_Info.m_Matrix._21, m_Info.m_Matrix._22, m_Info.m_Matrix._23, m_Info.m_Matrix._24);
-	_vec4 vLook = _vec4(m_Info.m_Matrix._31, m_Info.m_Matrix._32, m_Info.m_Matrix._33, m_Info.m_Matrix._34);
-	_vec4 vPos = _vec4(m_Info.m_Matrix._41, m_Info.m_Matrix._42, m_Info.m_Matrix._43, m_Info.m_Matrix._44);
+	//m_pTransformCom->Set_Position(_vec3(m_Info.m_Matrix._41, m_Info.m_Matrix._42, m_Info.m_Matrix._43));
+	m_pTransformCom->Set_Matrix(m_Info.m_Matrix);
+	m_pModelCom->Apply_TransformToActor(m_Info.m_Matrix);
 
-	m_pTransformCom->Set_State(State::Right, vRight);
-	m_pTransformCom->Set_State(State::Up, vUp);
-	m_pTransformCom->Set_State(State::Look, vLook);
-	m_pTransformCom->Set_State(State::Pos, vPos);
 	return S_OK;
 }
 

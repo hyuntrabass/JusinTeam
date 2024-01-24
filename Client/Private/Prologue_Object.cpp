@@ -30,15 +30,10 @@ HRESULT CPrologue_Object::Init(void* pArg)
 
 	m_iShaderPass = 0;
 
-	_vec4 vRight = _vec4(m_Info.m_WorldMatrix._11, m_Info.m_WorldMatrix._12, m_Info.m_WorldMatrix._13, m_Info.m_WorldMatrix._14);
-	_vec4 vUp = _vec4(m_Info.m_WorldMatrix._21, m_Info.m_WorldMatrix._22, m_Info.m_WorldMatrix._23, m_Info.m_WorldMatrix._24);
-	_vec4 vLook = _vec4(m_Info.m_WorldMatrix._31, m_Info.m_WorldMatrix._32, m_Info.m_WorldMatrix._33, m_Info.m_WorldMatrix._34);
-	_vec4 vPos = _vec4(m_Info.m_WorldMatrix._41, m_Info.m_WorldMatrix._42, m_Info.m_WorldMatrix._43, m_Info.m_WorldMatrix._44);
+	m_pTransformCom->Set_Matrix(m_Info.m_WorldMatrix);
+	m_pModelCom->Apply_TransformToActor(m_Info.m_WorldMatrix);
 
-	m_pTransformCom->Set_State(State::Right, vRight);
-	m_pTransformCom->Set_State(State::Up, vUp);
-	m_pTransformCom->Set_State(State::Look, vLook);
-	m_pTransformCom->Set_State(State::Pos, vPos);
+
 	return S_OK;
 }
 
