@@ -68,8 +68,10 @@ namespace Engine
 	{
 		unsigned int iType{};
 		bool isSprite{};
+		bool isFixedIndex{};
 		XMINT2 vNumSprites{};
 		float fSpriteDuration{};
+		int iFixedSpriteIndex{};
 		ParticleDesc PartiDesc{};
 		unsigned int iNumInstances{};
 		float fLifeTime{};
@@ -235,6 +237,7 @@ namespace Engine
 		SimpleMath::Vector4 vUp{};
 		SimpleMath::Vector4 vLook{};
 		SimpleMath::Vector4 vPos{};
+		SimpleMath::Vector4 vPrevPos{};
 
 		float fSpeed{};
 		SimpleMath::Vector2 vLifeTime{};
@@ -263,7 +266,7 @@ namespace Engine
 
 	using VTXPOINT_INSTANCING = struct ENGINE_DLL tagVertex_Point_Instancing
 	{
-		static const unsigned int iNumElements{ 6 };
+		static const unsigned int iNumElements{ 7 };
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	};
 

@@ -14,6 +14,7 @@ struct VS_IN
     float2 vPSize : PSize;
     
     row_major matrix TransformMatrix : World;
+    float3 vPrevPos : PrevPosition;
     
     uint iVertexID : SV_InstanceID;
 };
@@ -23,6 +24,7 @@ struct VS_OUT
     vector vPos : Position;
     float2 vPSize : PSize;
     uint iIndex : Index;
+    vector vPrevPos : PrevPosition;
 };
 
 VS_OUT VS_Main(VS_IN Input)
