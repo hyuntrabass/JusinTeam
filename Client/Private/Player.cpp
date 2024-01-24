@@ -44,7 +44,8 @@ HRESULT CPlayer::Init(void* pArg)
 	m_BowSkill[3] = Anim_ID_8130_IllusionArrow; // 분신 나와서 화살(쿨김)
 	m_BowSkill[4] = Anim_RS_8110_DodgeAttack; // 에임모드 변경(우클릭)
 
-	Change_Parts(PT_BODY, 0);
+	Change_Parts(PT_BODY, 1);
+	Change_Parts(PT_HELMET,0);
 	Change_Parts(PT_HAIR, 0);
 	Change_Parts(PT_FACE, 0);
 
@@ -59,12 +60,20 @@ HRESULT CPlayer::Init(void* pArg)
 	m_Left_Mat = m_pModelCom->Get_BoneMatrix("B_Weapon_L");
 	m_Right_Mat = m_pModelCom->Get_BoneMatrix("B_Weapon_R");
 
+	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER);
 	return S_OK;
 }
 
 void CPlayer::Tick(_float fTimeDelta)
 {
-	
+	if (m_bHide && m_fDissolveRatio <= 1.f)
+	{
+		m_fDissolveRatio += fTimeDelta * 6.f;
+	}
+	else if (!m_bHide && m_fDissolveRatio > 0.f)
+	{
+		m_fDissolveRatio -= fTimeDelta * 6.f;
+	}
 	if(m_Current_Weapon==WP_SWORD)
 	{
 		if (m_eState == Attack or m_eState == Skill1 or m_eState == Skill2 or m_eState == Skill3 or m_eState == Skill4)
@@ -251,7 +260,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	if (m_UsingMotionBlur)
 		m_ShaderIndex = 1;
 	else
-		m_ShaderIndex = 0;
+		m_ShaderIndex = 2;
 
 	if (!m_bStartGame && m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY)
 	{
@@ -303,8 +312,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 HRESULT CPlayer::Render()
 {
-	if (m_bHide)
-		return S_OK;
+
 
 	if (FAILED(Bind_ShaderResources()))
 	{
@@ -312,16 +320,15 @@ HRESULT CPlayer::Render()
 	}
 		if(m_Body_CurrentIndex>=0)
 		Render_Parts(PT_BODY, m_Body_CurrentIndex);
-		if (m_Hair_CurrentIndex >= 0)
+		if (m_Hair_CurrentIndex >= 0 &&!m_bHelmet_Hide)
 		Render_Parts(PT_HAIR, m_Hair_CurrentIndex);
-		if (m_Face_CurrentIndex >= 0)
+		if (m_Face_CurrentIndex >= 0&& !m_bHelmet_Hide)
 		Render_Parts(PT_FACE, m_Face_CurrentIndex);
-
+		if (m_Helmet_CurrentIndex >= 0&&m_bHelmet_Hide)
+			Render_Parts(PT_HELMET,m_Helmet_CurrentIndex);
 		if (m_Weapon_CurrentIndex != WP_INDEX_END)
 			Render_Parts(PT_WEAPON, (_uint)m_Weapon_CurrentIndex);
 
-		if (m_View_Helmat)
-			Render_Parts(PT_HELMET, 0);
 
 	return S_OK;
 }
@@ -555,10 +562,16 @@ HRESULT CPlayer::Render_Parts(PART_TYPE Parts, _uint Index)
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_HasSpecTex", &HasSpecTex, sizeof _bool))) 
 		return E_FAIL; 
 	
- 
-	if (FAILED(m_pShaderCom->Begin(m_ShaderIndex)))
-		return E_FAIL;
- 
+	if(Parts == PT_HAIR)
+	{
+		if (FAILED(m_pShaderCom->Begin(5 - m_ShaderIndex)))
+			return E_FAIL;
+	}
+	else
+	{
+		if (FAILED(m_pShaderCom->Begin(m_ShaderIndex)))
+			return E_FAIL;
+	}
 	if (FAILED(m_pModelCom->Render_Part((_uint)Parts,(_uint)Index, k)))
 		return E_FAIL;
  }
@@ -579,6 +592,13 @@ HRESULT CPlayer::Add_Riding()
 	return S_OK;
 }
 
+void CPlayer::Set_Damage(_int iDamage, _uint iDamageType)
+{	
+	m_iHP -= (iDamage - iDamage * (m_Status.Armor / 0.01f));
+
+
+}
+
 void CPlayer::Change_Parts(PART_TYPE PartsType, _int ChangeIndex)
 {
 	switch (PartsType)
@@ -592,6 +612,8 @@ void CPlayer::Change_Parts(PART_TYPE PartsType, _int ChangeIndex)
 	case Client::PT_BODY:
 		m_Body_CurrentIndex = ChangeIndex;
 		break;
+	case Client::PT_HELMET:
+		m_Helmet_CurrentIndex = ChangeIndex;
 	default:
 		break;
 	}
@@ -611,7 +633,6 @@ void CPlayer::Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex)
 
 void CPlayer::Move(_float fTimeDelta)
 {
-
 	_bool hasMoved{};
 	_vec4 vForwardDir = m_pGameInstance->Get_CameraLook();
 	vForwardDir.y = 0.f; 
@@ -709,6 +730,13 @@ void CPlayer::Move(_float fTimeDelta)
 		}
 	}
 
+	
+	if (m_eState == Jump)
+	{
+		if (!m_pTransformCom->Is_Jumping())
+			m_eState = Jump_Long_End;
+	}
+
 	if(m_eState!=Attack&&m_eState< Skill1)
 	{
 		//퀘스트 개수에 따라 bool로 통과하도록 한번 거쳐야할듯 아니면 계속 맵에서 찾아야되니까 
@@ -734,8 +762,18 @@ void CPlayer::Move(_float fTimeDelta)
 			vDirection -= vRightDir;
 			hasMoved = true;
 		}
-	}
 
+		if (m_pGameInstance->Key_Down(DIK_SPACE))
+		{
+ 			//if (!m_pTransformCom->Is_Jumping())
+			{ 
+				m_pTransformCom->Jump(9.f);
+				m_eState = Jump_Start;
+			}
+		}
+
+
+	
 	if (hasMoved)
 	{
 
@@ -747,7 +785,7 @@ void CPlayer::Move(_float fTimeDelta)
 				)
 			{
 				m_eState = Run_Start;
-				m_pTransformCom->Set_Speed(m_fRunSpeed);
+			
 			 }
 			else if (/*m_pTransformCom->Is_OnGround() and*/
 				m_eState == Run or 
@@ -755,13 +793,22 @@ void CPlayer::Move(_float fTimeDelta)
 				m_pModelCom->IsAnimationFinished(Anim_Normal_run_start))
 			{
 				m_eState = Run;
-				m_pTransformCom->Set_Speed(m_fRunSpeed);
+			
 			}
 			else if (m_eState == Attack_Idle)
 			{
 				m_eState = Attack_Run;
-				m_pTransformCom->Set_Speed(m_fRunSpeed);
+				
 			}
+			else if (m_eState == Jump_End)
+			{
+				m_eState = Jump_Run;
+				
+			}
+			m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed);
+
+		
+		
 		}
 		else
 		{
@@ -770,21 +817,28 @@ void CPlayer::Move(_float fTimeDelta)
 				m_eState == Run_Start)
 			{
 				m_eState = Run;
-				m_pTransformCom->Set_Speed(m_fRunSpeed);
+				m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed);
 			}
-			else if (/*m_pTransformCom->Is_OnGround() and*/
-				m_eState == Idle or
-				m_eState == Walk or
-				m_eState == Attack_Idle)
+			else 
 			{
-				m_eState = Walk;
-				m_pTransformCom->Set_Speed(m_fWalkSpeed);
+				if (/*m_pTransformCom->Is_OnGround() and*/
+					m_eState == Idle or
+					m_eState == Walk or
+					m_eState == Attack_Idle)
+				{
+					m_eState = Walk;
+					
+				}
+
+				m_pTransformCom->Set_Speed(m_fWalkSpeed + m_Status.Speed / 3.f);
 			}
-			if (m_eState == Run)
-			{
-				m_eState = Run;
-				m_pTransformCom->Set_Speed(m_fRunSpeed);
-			}
+
+		}
+
+		if (m_eState == Jump_Start)
+		{
+			if (!m_pTransformCom->Is_Jumping())
+				m_eState = Idle;
 		}
 
 		m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
@@ -814,13 +868,19 @@ void CPlayer::Move(_float fTimeDelta)
 			m_fInterpolationRatio = 0.f;
 		}
 			m_pTransformCom->LookAt_Dir(vDirection);
-		
+		    
 	}
-	else if (m_eState == Walk or
+	else if (m_eState == Walk or m_eState ==Run_Start or
 		m_pModelCom->IsAnimationFinished(Anim_B_idle_end)
 		)
 	{
 		m_eState = Idle;
+	}
+	if (m_eState == Jump_Start)
+	{
+		if (!m_pTransformCom->Is_Jumping())
+			m_eState = Jump_End;
+	}
 	}
 
 	if (m_pGameInstance->Key_Down(DIK_F))
@@ -847,6 +907,8 @@ void CPlayer::Move(_float fTimeDelta)
 		m_pGameInstance->Set_CameraAttackZoom(fZoom);
 
 	}
+
+	m_pTransformCom->Gravity(fTimeDelta);
 }
 void CPlayer::Common_Attack()
 {
@@ -933,7 +995,7 @@ void CPlayer::Skill1_Attack()
 		m_hasJumped = false;
 		m_iSuperArmor = {};
 		m_fSkiilTimer = 0.f;
-
+		m_Status.Mp -= 150;
 	}
 	else if (m_Current_Weapon == WP_BOW)
 	{
@@ -942,6 +1004,7 @@ void CPlayer::Skill1_Attack()
 		m_hasJumped = false;
 		m_iSuperArmor = {};
 		m_fSkiilTimer = 0.f;
+		m_Status.Mp -= 150;
 	}
 
 }
@@ -955,6 +1018,7 @@ void CPlayer::Skill2_Attack()
 		m_iSuperArmor = {};
 		m_fSkiilTimer = 0.f;
 		m_fSkillSpeed = 12.f;
+		m_Status.Mp -= 250;
 	}
 	else if (m_Current_Weapon == WP_BOW)
 	{
@@ -963,6 +1027,7 @@ void CPlayer::Skill2_Attack()
 		m_hasJumped = false;
 		m_iSuperArmor = {};
 		m_fSkiilTimer = 0.f;
+		m_Status.Mp -= 250;
 	}
 
 }
@@ -975,6 +1040,7 @@ void CPlayer::Skill3_Attack()
 		m_hasJumped = false;
 		m_iSuperArmor = {};
 		m_fSkiilTimer = 0.f;
+		m_Status.Mp -= 350;
 	}
 	else if (m_Current_Weapon == WP_BOW)
 	{
@@ -983,6 +1049,7 @@ void CPlayer::Skill3_Attack()
 		m_hasJumped = false;
 		m_iSuperArmor = {};
 		m_fSkiilTimer = 0.f;
+		m_Status.Mp -= 350;
 	}
 
 }
@@ -998,6 +1065,7 @@ void CPlayer::Skill4_Attack()
 		m_hasJumped = false;
 		m_iSuperArmor = {};
 		m_fSkiilTimer = 0.f;
+		m_Status.Mp -= 500;
 	}
 	else if (m_Current_Weapon == WP_BOW)
 	{
@@ -1006,6 +1074,7 @@ void CPlayer::Skill4_Attack()
 		m_hasJumped = false;
 		m_iSuperArmor = {};
 		m_fSkiilTimer = 0.f;
+		m_Status.Mp -= 500;
 	}
 
 }
@@ -1225,22 +1294,29 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 {
 
 
+	_int Random = rand() % 100 + 1;
+	_uint Critical{};
+	if (Random <= m_Status.Critical)
+		Critical = m_Status.Attack * (m_Status.Critical_Dmg * 0.01) - m_Status.Attack;
+
+	
+
 	switch (Att_Type)
 	{
 	case Client::AT_Sword_Common:
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type],10,0); // 맞았을때 데미지를 줘라!
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], m_Status.Attack + Critical, Att_Type); 
 		break;
 	case Client::AT_Sword_Skill1:
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], 20, 0);
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack *1.5) + Critical, Att_Type);
 		break;
 	case Client::AT_Sword_Skill2:
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], 30, 0);
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack * 2) + Critical, Att_Type);
 		break;
 	case Client::AT_Sword_Skill3:
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], 40, 0);
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack * 2.5) + Critical, Att_Type);
 		break;
 	case Client::AT_Sword_Skill4:
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], 50, 0);
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack * 3) + Critical, Att_Type);
 		break;
 	default:
 		break;
@@ -1668,8 +1744,7 @@ void CPlayer::Tick_Riding()
 
 	if (m_pRiding->Get_Delete())
 	{
-		m_pTransformCom->Set_State(State::Pos, m_pRiding->Get_Pos());
-
+		m_pTransformCom->Set_Position(_vec3(m_pRiding->Get_Pos()+_vec3(0.f,2.f,0.f)));
 		Safe_Release(m_pRiding);
 		m_bIsMount = false;
 		
@@ -1681,7 +1756,9 @@ void CPlayer::Tick_Riding()
 	{
 		int a = 0;
 	}
- 	m_pTransformCom->Set_Matrix(m_pRiding->Get_World_Mat());
+
+ 	m_pTransformCom->Set_Matrix(m_pRiding->Get_Mat());
+	//m_pTransformCom->Set_Position(_vec3(m_pRiding->Get_Pos()));
 	Riding_State State = m_pRiding->Get_State();
 	m_Animation.isLoop = true;
 	m_Animation.fAnimSpeedRatio = 2.f;
@@ -1762,8 +1839,20 @@ void CPlayer::Init_State()
 			m_hasJumped = true;
 			m_iSuperArmor = {};
 			break;
+		case Client::CPlayer::Jump_Run:
+			m_Animation.iAnimIndex = Anim_jump_end_run;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+			m_iSuperArmor = {};
+			break;
 		case Client::CPlayer::Jump_End:
 			m_Animation.iAnimIndex = Anim_jump_end;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+			m_iSuperArmor = {};
+			break;
+		case Client::CPlayer::Jump_Long_End:
+			m_Animation.iAnimIndex = Anim_jump_end_long;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
 			m_iSuperArmor = {};
@@ -2004,10 +2093,22 @@ void CPlayer::Init_State()
 
 			break;
 		case Client::CPlayer::Jump_Start:
+			if (m_pModelCom->IsAnimationFinished(Anim_jump_start))
+				m_eState = Jump;
 			break;
 		case Client::CPlayer::Jump:
 			break;
 		case Client::CPlayer::Jump_End:
+			if (m_pModelCom->IsAnimationFinished(Anim_jump_end))
+				m_eState = Idle;
+			break;
+		case Client::CPlayer::Jump_Long_End:
+			if (m_pModelCom->IsAnimationFinished(Anim_jump_end_long))
+				m_eState = Idle;
+			break;
+		case Client::CPlayer::Jump_Run:
+			if (m_pModelCom->IsAnimationFinished(Anim_jump_end_run))
+				m_eState = Run;
 			break;
 		case Client::CPlayer::State_End:
 			break;
@@ -2032,6 +2133,10 @@ HRESULT CPlayer::Add_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Player"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Logo_Noise"), TEXT("Com_Dissolve_Texture"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom))))
+	{
+		return E_FAIL;
+	}
 	// Com_Collider
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::OBB;
@@ -2099,14 +2204,6 @@ HRESULT CPlayer::Add_Components()
 	CollDesc.matFrustum = matView * matProj;
 
 
-
-	
-
-	
-
-
-	
-
 	return S_OK;
 }
 
@@ -2128,6 +2225,17 @@ HRESULT CPlayer::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
 		return E_FAIL;
 
+	if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &CUI_Manager::Get_Instance()->Get_HairColor(), sizeof _vec4)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
+		return E_FAIL;
+
 	// 모션블러용 이전프레임 WorldMatrix 바인드
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldWorldMatrix", m_OldWorldMatrix)))
 		return E_FAIL;
@@ -2141,6 +2249,7 @@ HRESULT CPlayer::Bind_ShaderResources()
 	// 뼈 바인드
 	if (FAILED(m_pModelCom->Bind_Bone(m_pShaderCom)))
 		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -2187,6 +2296,7 @@ void CPlayer::Free()
 		Safe_Release(m_pRiding);
 
 	Safe_Release(m_pNameTag);
+	Safe_Release(m_pDissolveTextureCom);
 	Safe_Release(m_pLeft_Trail);
 	Safe_Release(m_pRight_Trail);
 	Safe_Release(m_pShaderCom);
@@ -2194,5 +2304,4 @@ void CPlayer::Free()
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pCameraTransform);
 	Safe_Release(m_pHitCollider);
-
 }

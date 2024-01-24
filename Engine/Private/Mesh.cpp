@@ -190,7 +190,7 @@ void CMesh::Apply_TransformToActor(_mat WorldMatrix)
 		return;
 	}
 	_vec4 vQuat = XMQuaternionRotationMatrix(WorldMatrix);
-	PxTransform Transform(VectorToPxVec3(_vec4(&WorldMatrix._31)), PxQuat(vQuat.x, vQuat.y, vQuat.z, vQuat.w));
+	PxTransform Transform(VectorToPxVec3(_vec4(WorldMatrix.Position())), PxQuat(vQuat.x, vQuat.y, vQuat.z, vQuat.w));
 	m_pActor->setGlobalPose(Transform);
 }
 

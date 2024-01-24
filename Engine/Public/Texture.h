@@ -24,7 +24,6 @@ public:
 private:
 	_uint m_iNumTextures{};
 	vector<ID3D11ShaderResourceView*> m_SRVs{};
-
 public:
 	static CTexture* Create(_dev pDevice, _context pContext, const wstring& strTextureFilePath, _uint iNumTextures = 1);
 	virtual CComponent* Clone(void* pArg) override;

@@ -351,7 +351,7 @@ void CRiding::Tick_State(_float fTimeDelta)
 	}
 }
 
-_mat CRiding::Get_World_Mat()
+_mat CRiding::Get_Mat()
 {
 	_mat OffsetMat{};
 	if (m_CurrentIndex == Tiger)
@@ -361,7 +361,9 @@ _mat CRiding::Get_World_Mat()
 	else if (m_CurrentIndex == Bird)
 		OffsetMat = _mat::CreateTranslation(0.f,0.8f,0.f)*_mat::CreateRotationZ(XMConvertToRadians(-180.f)) * _mat::CreateRotationY(XMConvertToRadians(90.f)) * *m_pModelCom->Get_BoneMatrix("Saddle");
 
-	return (OffsetMat *  m_pTransformCom->Get_World_Matrix());
+	OffsetMat *= m_pTransformCom->Get_World_Matrix();
+
+	return (OffsetMat);
 }
 
 _vec4 CRiding::Get_Pos()
@@ -404,7 +406,7 @@ HRESULT CRiding::Add_Components()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Logo_Noise"), TEXT("Com_Texture_e"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Logo_Noise"), TEXT("Com_Dissolve_Texture"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -457,14 +459,14 @@ HRESULT CRiding::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
-	{
-		return E_FAIL;
-	}
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
 		return E_FAIL;
 
+	if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
+	{
+		return E_FAIL;
+	}
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
 		return E_FAIL;
 

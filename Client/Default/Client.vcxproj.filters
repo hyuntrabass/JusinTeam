@@ -307,6 +307,9 @@
     <Filter Include="98.Default">
       <UniqueIdentifier>{6ef1e47a-756a-4482-9f45-993c308095c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Dragon_Boss">
+      <UniqueIdentifier>{c85e57aa-99ca-447a-b20f-843b04b33165}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -591,6 +594,9 @@
     <ClInclude Include="..\Public\CommonTrail.h">
       <Filter>03.Effect\Common_Effect</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Dragon_Boss.h">
+      <Filter>02.GameObjects\08. Boss\Dragon_Boss</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -872,6 +878,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\CommonTrail.cpp">
       <Filter>03.Effect\Common_Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Dragon_Boss.cpp">
+      <Filter>02.GameObjects\08. Boss\Dragon_Boss</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

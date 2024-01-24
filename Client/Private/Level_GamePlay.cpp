@@ -204,7 +204,7 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 	}
 	//m_RainMatrix = _mat::CreateTranslation(_vec3(50.f, 3.f, 50.f));
 
-	if (m_pGameInstance->Key_Down(DIK_PRIOR))
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD9))
 	{
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_VILLAGE))))
 		{
@@ -266,7 +266,7 @@ HRESULT CLevel_GamePlay::Ready_Player()
 	inFile.read(reinterpret_cast<char*>(&Player_Pos), sizeof(_vec4));
 
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-	pPlayerTransform->Set_State(State::Pos, Player_Pos);
+	pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 2.f, 0.f));
 
 
 	return S_OK;

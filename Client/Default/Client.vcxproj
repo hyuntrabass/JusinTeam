@@ -163,6 +163,7 @@
     <ClInclude Include="..\Public\Diamond.h" />
     <ClInclude Include="..\Public\CommonTrail.h" />
     <ClInclude Include="..\Public\Dog.h" />
+    <ClInclude Include="..\Public\Dragon_Boss.h" />
     <ClInclude Include="..\public\Effect_Manager.h" />
     <ClInclude Include="..\Public\Event_Manager.h" />
     <ClInclude Include="..\Public\ExpBar.h" />
@@ -259,6 +260,7 @@
     <ClCompile Include="..\Private\Diamond.cpp" />
     <ClCompile Include="..\Private\CommonTrail.cpp" />
     <ClCompile Include="..\Private\Dog.cpp" />
+    <ClCompile Include="..\Private\Dragon_Boss.cpp" />
     <ClCompile Include="..\private\Effect_Manager.cpp" />
     <ClCompile Include="..\Private\Event_Manager.cpp" />
     <ClCompile Include="..\Private\ExpBar.cpp" />

@@ -2,32 +2,47 @@
 2
 Animation Models : Start Converting...
 1. Normally Anim Model	2. For VTF Model 3. Part Model
-3
-Converting... 1.fbx
 1
-Static Models : Start Converting...
-Converting... Map_Final.fbx
+Converting... Dragon.fbx
 Read File Succssefully
-Converting... body0.fbx
-Read File Succssefully
-Converting... body1.fbx
-Read File Succssefully
-Converting... body2.fbx
-Read File Succssefully
-Converting... bow0.fbx
-Read File Succssefully
-Converting... bow1.fbx
-Read File Succssefully
-Converting... sword0.fbx
-Read File Succssefully
-Converting... sword1.fbx
-Read File Succssefully
+Animation name list: 
+mon_ouroboros.ao|Attack00
+mon_ouroboros.ao|Attack01
+mon_ouroboros.ao|Attack02
+mon_ouroboros.ao|Attack03
+mon_ouroboros.ao|Attack04
+mon_ouroboros.ao|Attack05
+mon_ouroboros.ao|Attack06
+mon_ouroboros.ao|Die
+mon_ouroboros.ao|Fafnir01_SC08_mon_roar
+mon_ouroboros.ao|Fly_loop
+mon_ouroboros.ao|hit_add
+mon_ouroboros.ao|Hit_L
+mon_ouroboros.ao|Hit_R
+mon_ouroboros.ao|Idle
+mon_ouroboros.ao|Knockdown
+mon_ouroboros.ao|ouroboros_attack01
+mon_ouroboros.ao|ouroboros_attack02
+mon_ouroboros.ao|ouroboros_attack03
+mon_ouroboros.ao|ouroboros_attack04
+mon_ouroboros.ao|ouroboros_attack05
+mon_ouroboros.ao|ouroboros_attack06_end
+mon_ouroboros.ao|ouroboros_attack06_loop
+mon_ouroboros.ao|ouroboros_attack06_start
+mon_ouroboros.ao|ouroboros_attack07
+mon_ouroboros.ao|ouroboros_attack08
+mon_ouroboros.ao|ouroboros_attack09
+mon_ouroboros.ao|ouroboros_attack10
+mon_ouroboros.ao|ouroboros_Rage
+mon_ouroboros.ao|roar
+mon_ouroboros.ao|Run
+mon_ouroboros.ao|start
+mon_ouroboros.ao|sturn
+mon_ouroboros.ao|turn_L
+mon_ouroboros.ao|turn_R
+mon_ouroboros.ao|VoidDragon_Rage
+mon_ouroboros.ao|walk
 Animation Models : Convert Success!
 
-8 Animation Models
-Converting... Village.fbx
-Read File Succssefully
-Static Models : Convert Success!
-
-2 Static Models
+1 Animation Models
 are Successfully Converted as hyuntramesh!!
