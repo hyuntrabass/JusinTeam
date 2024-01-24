@@ -23,6 +23,11 @@ public:
 	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
 #endif // _DEBUG
 
+	//¿ø¸í
+public:
+	ID3D11ShaderResourceView* Get_SRV() const {
+		return m_pShaderResourceView;
+	}
 
 private:
 	_dev m_pDevice{ nullptr };

@@ -18,6 +18,9 @@ HRESULT CLevel_GamePlay::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_GAMEPLAY);
 
+	CUI_Manager::Get_Instance()->Init();
+
+
 	if (FAILED(Ready_Player()))
 	{
 		MSG_BOX("Failed to Ready Player");
@@ -190,7 +193,6 @@ HRESULT CLevel_GamePlay::Init()
 	EffectDesc.isFollow = true;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
 
-	CUI_Manager::Get_Instance()->Init();
 
 
 	return S_OK;
