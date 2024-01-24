@@ -5,6 +5,12 @@
 
 BEGIN(Client)
 
+using NPC_INFO = struct NPCInfo
+{
+	wstring strNPCPrototype{};
+	_mat	NPCWorldMat{};
+};
+
 class CNPC abstract : public CGameObject
 {
 protected:
@@ -18,6 +24,9 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+
+protected:
+	NPCInfo m_NPCInfo{};
 
 //public:
 //	virtual _vec4 Compute_PlayerPos();

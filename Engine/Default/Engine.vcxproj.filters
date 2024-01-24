@@ -178,6 +178,12 @@
     <Filter Include="01.Utility\03.Components\Model\VTFModels\PreCalVTFModel">
       <UniqueIdentifier>{11b73b55-ac6b-447a-ae08-3f96ccbbd819}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Components\Shader\Effect_Shader">
+      <UniqueIdentifier>{2ffadf11-d5b1-4673-9e70-d2a22162e29d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Components\Shader\Compute_Shader">
+      <UniqueIdentifier>{08266119-acd4-4bd9-a6a0-fd3446caeb89}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -221,9 +227,6 @@
     </ClCompile>
     <ClCompile Include="..\private\VIBuffer_Rect.cpp">
       <Filter>01.Utility\03.Components\VIBuffer\Rect</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\Shader.cpp">
-      <Filter>01.Utility\03.Components\Shader</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Texture.cpp">
       <Filter>01.Utility\03.Components\Texture</Filter>
@@ -345,6 +348,12 @@
     <ClCompile Include="..\Private\Graphic_Device.cpp">
       <Filter>00.System\00.Graphic_Device</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Shader.cpp">
+      <Filter>01.Utility\03.Components\Shader\Effect_Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Compute_Shader.cpp">
+      <Filter>01.Utility\03.Components\Shader\Compute_Shader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h">
@@ -403,9 +412,6 @@
     </ClInclude>
     <ClInclude Include="..\public\VIBuffer_Rect.h">
       <Filter>01.Utility\03.Components\VIBuffer\Rect</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\Shader.h">
-      <Filter>01.Utility\03.Components\Shader</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Texture.h">
       <Filter>01.Utility\03.Components\Texture</Filter>
@@ -519,6 +525,12 @@
     <ClInclude Include="..\Public\RenderTarget.h">
       <Filter>01.Utility\11.RenderTargets</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Shader.h">
+      <Filter>01.Utility\03.Components\Shader\Effect_Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Compute_Shader.h">
+      <Filter>01.Utility\03.Components\Shader\Compute_Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Public\SimpleMath.inl" />
@@ -533,5 +545,13 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Deferred.hlsl">
       <Filter>01.Utility\98.ShaderFiles</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\Bin\ShaderFiles\Shader_DownScale.hlsl">
+      <Filter>01.Utility\98.ShaderFiles</Filter>
+    </Text>
+    <Text Include="..\Bin\ShaderFiles\Shader_Blur.hlsl">
+      <Filter>01.Utility\98.ShaderFiles</Filter>
+    </Text>
   </ItemGroup>
 </Project>

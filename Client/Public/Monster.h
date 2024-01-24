@@ -30,6 +30,9 @@ public:
 	virtual _float Compute_PlayerDistance();
 
 protected:
+	MonsterInfo m_pInfo{};
+
+protected:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
@@ -45,7 +48,6 @@ protected:
 
 protected:
 	_uint m_iPassIndex = { AnimPass_Default };
-	MonsterInfo m_pInfo{};
 
 protected:
 	_float m_fBackPower = { 0.5f };

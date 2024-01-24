@@ -28,6 +28,9 @@ public:
 	HRESULT Render_Debug(const wstring& strMRTTag, class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
 #endif // _DEBUG
 
+	// ¿ø¸í
+public:
+	ID3D11ShaderResourceView* Get_SRV(const wstring& strTargetTag);
 
 private:
 	_dev m_pDevice{ nullptr };

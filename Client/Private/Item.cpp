@@ -19,11 +19,7 @@ HRESULT CItem::Init_Prototype()
 
 HRESULT CItem::Init(void* pArg)
 {
-	/*		_bool					bCanInteract;
 
-
-		_uint					iNumItem = { 1 };
-	*/
 	m_eItemDesc = ((ITEM_DESC*)pArg)->eItemDesc;
 	if (FAILED(Add_Components()))
 	{
@@ -31,6 +27,8 @@ HRESULT CItem::Init(void* pArg)
 	}
 
 	m_bCanInteract = ((ITEM_DESC*)pArg)->bCanInteract;
+
+	m_iNum = ((ITEM_DESC*)pArg)->iNum;
 
 	m_fSizeX = ((ITEM_DESC*)pArg)->vSize.x;
 	m_fSizeY = ((ITEM_DESC*)pArg)->vSize.y;
@@ -43,17 +41,42 @@ HRESULT CItem::Init(void* pArg)
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	
 
+	m_rcRect = {
+		  (LONG)(m_fX - m_fSizeX * 0.5f),
+		  (LONG)(m_fY - m_fSizeY * 0.5f),
+		  (LONG)(m_fX + m_fSizeX * 0.5f),
+		  (LONG)(m_fY + m_fSizeY * 0.5f)
+	};
+
 	return S_OK;
 }
 
 void CItem::Tick(_float fTimeDelta)
 {
+	m_rcRect = {
+	  (LONG)(m_fX - m_fSizeX * 0.5f),
+	  (LONG)(m_fY - m_fSizeY * 0.5f),
+	  (LONG)(m_fX + m_fSizeX * 0.5f),
+	  (LONG)(m_fY + m_fSizeY * 0.5f)
+	};
+
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
 
 void CItem::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
+
+	if (m_iNum > 1)
+	{
+		_vec2 vStartPos = _vec2(m_fX, m_fY);
+		wstring strText = TEXT("°³");
+		m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(m_iNum) + strText, _vec2(vStartPos.x + 1.f, vStartPos.y), 0.5f, _vec4(0.f, 0.f, 0.f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(m_iNum) + strText, _vec2(vStartPos.x, + vStartPos.y + 1.f), 0.5f, _vec4(0.f, 0.f, 0.f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(m_iNum) + strText, _vec2(vStartPos.x, + vStartPos.y), 0.5f, _vec4(1.f, 1.f, 1.f, 1.f));
+													
+	}
+
 }
 
 HRESULT CItem::Render()
@@ -81,6 +104,13 @@ void CItem::Set_Position(_vec2 vPos)
 	m_fX = vPos.x;
 	m_fY = vPos.y;	
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+	m_rcRect = {
+	  (LONG)(m_fX - m_fSizeX * 0.5f),
+	  (LONG)(m_fY - m_fSizeY * 0.5f),
+	  (LONG)(m_fX + m_fSizeX * 0.5f),
+	  (LONG)(m_fY + m_fSizeY * 0.5f)
+	};
+
 }
 
 HRESULT CItem::Add_Components()
