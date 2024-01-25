@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Public\3DUITex.h" />
     <ClInclude Include="..\Public\BackGround.h" />
     <ClInclude Include="..\Public\BackGround_Mask.h" />
     <ClInclude Include="..\Public\BlackSmith.h" />
@@ -172,11 +173,13 @@
     <ClInclude Include="..\Public\Goat.h" />
     <ClInclude Include="..\Public\Groar_Boss.h" />
     <ClInclude Include="..\Public\HpBar.h" />
+    <ClInclude Include="..\Public\HpMonster.h" />
     <ClInclude Include="..\Public\Inven.h" />
     <ClInclude Include="..\Public\InvenFrame.h" />
     <ClInclude Include="..\Public\Item.h" />
     <ClInclude Include="..\Public\Imp.h" />
     <ClInclude Include="..\Public\ItemBlock.h" />
+    <ClInclude Include="..\Public\ItemInfo.h" />
     <ClInclude Include="..\Public\ItemMerchant.h" />
     <ClInclude Include="..\Public\ItemSlot.h" />
     <ClInclude Include="..\Public\JobMark.h" />
@@ -205,6 +208,7 @@
     <ClInclude Include="..\Public\Quest.h" />
     <ClInclude Include="..\Public\QuestBox.h" />
     <ClInclude Include="..\Public\Rabbit.h" />
+    <ClInclude Include="..\Public\Radar.h" />
     <ClInclude Include="..\Public\Riding.h" />
     <ClInclude Include="..\Public\Roskva.h" />
     <ClInclude Include="..\Public\Select_Map.h" />
@@ -254,6 +258,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Private\3DUITex.cpp" />
     <ClCompile Include="..\Private\BackGround.cpp" />
     <ClCompile Include="..\Private\BackGround_Mask.cpp" />
     <ClCompile Include="..\Private\BlackSmith.cpp" />
@@ -275,11 +280,13 @@
     <ClCompile Include="..\Private\Goat.cpp" />
     <ClCompile Include="..\Private\Groar_Boss.cpp" />
     <ClCompile Include="..\Private\HPBar.cpp" />
+    <ClCompile Include="..\Private\HPMonster.cpp" />
     <ClCompile Include="..\Private\Inven.cpp" />
     <ClCompile Include="..\Private\InvenFrame.cpp" />
     <ClCompile Include="..\Private\Item.cpp" />
     <ClCompile Include="..\Private\Imp.cpp" />
     <ClCompile Include="..\Private\ItemBlock.cpp" />
+    <ClCompile Include="..\Private\ItemInfo.cpp" />
     <ClCompile Include="..\Private\ItemMerchant.cpp" />
     <ClCompile Include="..\Private\ItemSlot.cpp" />
     <ClCompile Include="..\Private\JobMark.cpp" />
@@ -308,6 +315,7 @@
     <ClCompile Include="..\Private\Quest.cpp" />
     <ClCompile Include="..\Private\QuestBox.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />
+    <ClCompile Include="..\Private\Radar.cpp" />
     <ClCompile Include="..\Private\Riding.cpp" />
     <ClCompile Include="..\Private\Roskva.cpp" />
     <ClCompile Include="..\Private\Select_Map.cpp" />

@@ -13,7 +13,7 @@ BEGIN(AnimTool)
 class CImgui_Manager final : public CBase
 {
 public:
-    enum TYPE { TYPE_MONSTER, TYPE_PLAYER, TYPE_END };
+    enum TYPE { TYPE_MONSTER, TYPE_SELECT, TYPE_PLAYER, TYPE_END };
     enum TRIGGER { TRIGGER_EFFECT, TRIGGER_SOUND, TRIGGER_END };
 
 public:

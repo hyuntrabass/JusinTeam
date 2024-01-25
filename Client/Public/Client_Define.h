@@ -329,6 +329,7 @@ namespace Client
 		VTPass_BLUR,
 		VTPass_Bright,
 		VTPass_ScrollAlpha,
+		VTPass_HPNoMask,
 		VTPass_End
 	};
 

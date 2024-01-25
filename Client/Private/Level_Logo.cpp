@@ -9,6 +9,8 @@ CLevel_Logo::CLevel_Logo(_dev pDevice, _context pContext)
 HRESULT CLevel_Logo::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_LOGO);
+	m_pGameInstance->StopAll();
+	m_pGameInstance->PlayBGM(TEXT("BGM_Credit_01"));
 
 	if (FAILED(Ready_Logo()))
 	{

@@ -178,9 +178,9 @@ void CInven::Init_InvenState()
 	dynamic_cast<CTextButton*>(m_pDiamond)->Set_Text(to_wstring(iDiamond));
 }
 
-HRESULT CInven::Set_Item(ITEM eItem)
+HRESULT CInven::Set_Item(ITEM eItem, _uint iNum)
 {
-	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(eItem);
+	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(eItem, iNum);
 	return S_OK;
 }
 
