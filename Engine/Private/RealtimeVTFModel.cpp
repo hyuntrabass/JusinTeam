@@ -965,4 +965,11 @@ void CRealtimeVTFModel::Free()
 
 	Safe_Release(m_pBoneTexture);
 	Safe_Release(m_pBoneSRV);
+
+	for (auto& pEffectMatrix : m_EffectMatrices)
+	{
+		Safe_Delete(pEffectMatrix);
+	}
+
+	Safe_Release(m_pOwnerTransform);
 }
