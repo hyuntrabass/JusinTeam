@@ -358,6 +358,17 @@ _bool CPhysX_Manager::Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycast
 	return false;
 }
 
+_bool CPhysX_Manager::Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer,  PxQueryFilterData Filter)
+{
+
+	if (m_pScene->raycast(PxVec3(vOrigin.x, vOrigin.y, vOrigin.z), PxVec3(vDir.x, vDir.y, vDir.z), fDist, Buffer, PxHitFlag::eDEFAULT, Filter))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 _bool CPhysX_Manager::Raycast(_vec3 vOrigin, _vec3 vDir, _float fDist, PxRaycastBuffer& Buffer)
 {
 	if (m_pScene->raycast(PxVec3(vOrigin.x, vOrigin.y, vOrigin.z), PxVec3(vDir.x, vDir.y, vDir.z), fDist, Buffer))

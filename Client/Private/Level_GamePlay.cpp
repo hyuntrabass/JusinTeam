@@ -48,12 +48,7 @@ HRESULT CLevel_GamePlay::Init()
 	}
 
 
-	// Monster Parse
-	//if (FAILED(Ready_NpcvsMon()))
-	//{
-	//	MSG_BOX("Failed to Ready Monster");
-	//	return E_FAIL;
-	//}
+
 	
 	if (FAILED(Ready_Rabbit()))
 	{

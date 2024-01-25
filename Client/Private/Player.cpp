@@ -45,7 +45,6 @@ HRESULT CPlayer::Init(void* pArg)
 	m_BowSkill[4] = Anim_RS_8110_DodgeAttack; // 에임모드 변경(우클릭)
 
 	Change_Parts(PT_BODY, 1);
-	Change_Parts(PT_HELMET,0);
 	Change_Parts(PT_HAIR, 0);
 	Change_Parts(PT_FACE, 0);
 
@@ -91,6 +90,7 @@ void CPlayer::Tick(_float fTimeDelta)
 			m_bRight_TrailOn = false;
 	}
 
+	m_StartRegen += fTimeDelta;
 	m_OldWorldMatrix = m_pTransformCom->Get_World_Matrix();
 	_mat m{};
 	if(m_bLeft_TrailOn)
@@ -127,7 +127,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	m_fAttTimer += fTimeDelta;
 	m_fSkiilTimer += fTimeDelta;
-	
+
 	if (m_pGameInstance->Key_Down(DIK_8))
 	{
 		if (!m_bIsMount)
@@ -142,12 +142,19 @@ void CPlayer::Tick(_float fTimeDelta)
 		}
 
 	}
+	Front_Ray_Check();
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), COORD());
+	cout <<m_bIsClimb<< endl;
 
+	cout << endl;
 	if (m_bIsMount)
 	{
 		m_pRiding->Tick(fTimeDelta);
 		Tick_Riding();
 	}
+
+	if(m_bIsClimb)
+	Is_Climb(fTimeDelta);
 
 	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
 	{
@@ -274,7 +281,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		CEvent_Manager::Get_Instance()->Set_Quest(TEXT("이동하기"));
 		CEvent_Manager::Get_Instance()->Set_Quest(TEXT("몬스터와 접촉"));
 
-		Change_Weapon(WP_SWORD,SWORD0);
+		Change_Weapon(WP_SWORD,SWORD4);
 	}
 	if (m_bLeft_TrailOn)
 	m_pLeft_Trail->Late_Tick(fTimeDelta);
@@ -318,13 +325,22 @@ HRESULT CPlayer::Render()
 	{
 		return E_FAIL;
 	}
+		
 		if(m_Body_CurrentIndex>=0)
 		Render_Parts(PT_BODY, m_Body_CurrentIndex);
-		if (m_Hair_CurrentIndex >= 0 &&!m_bHelmet_Hide)
-		Render_Parts(PT_HAIR, m_Hair_CurrentIndex);
-		if (m_Face_CurrentIndex >= 0&& !m_bHelmet_Hide)
+		if (m_Hair_CurrentIndex >= 0 and m_bHelmet_Hide)
+		Render_Parts(PT_HAIR, m_Hair_CurrentIndex );
+		else if(m_Hair_CurrentIndex >= 0 and m_Helmet_CurrentIndex <= 0)
+			Render_Parts(PT_HAIR, m_Hair_CurrentIndex);
+		if (m_Face_CurrentIndex >= 0 and m_bHelmet_Hide)
 		Render_Parts(PT_FACE, m_Face_CurrentIndex);
-		if (m_Helmet_CurrentIndex >= 0&&m_bHelmet_Hide)
+		else if (m_Hair_CurrentIndex >= 0 and m_Helmet_CurrentIndex <= 0)
+			Render_Parts(PT_FACE, m_Face_CurrentIndex);
+		else if (m_Hair_CurrentIndex >= 0 and m_Helmet_CurrentIndex == 1)
+			Render_Parts(PT_FACE, m_Face_CurrentIndex);
+		else if (m_Hair_CurrentIndex >= 0 and m_Helmet_CurrentIndex == 2)
+			Render_Parts(PT_FACE, m_Face_CurrentIndex);
+		if (m_Helmet_CurrentIndex >= 0&&!m_bHelmet_Hide)
 			Render_Parts(PT_HELMET,m_Helmet_CurrentIndex);
 		if (m_Weapon_CurrentIndex != WP_INDEX_END)
 			Render_Parts(PT_WEAPON, (_uint)m_Weapon_CurrentIndex);
@@ -387,11 +403,31 @@ HRESULT CPlayer::Place_PartModels()
 		return E_FAIL;
 
 	Desc.ePartType = PT_HELMET;
-	Desc.FileName = "helmet";
+	Desc.FileName = "helmet0";
 
 	if (FAILED(m_pModelCom->Place_Parts(Desc)))
 		return E_FAIL;
 
+	Desc.FileName = "helmet1";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+	Desc.FileName = "helmet2";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+	Desc.FileName = "helmet3";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+	Desc.FileName = "helmet4";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+	Desc.FileName = "helmet5";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
 	Desc.ePartType = PT_FACE;
 	Desc.FileName = "face0";
 
@@ -592,11 +628,33 @@ HRESULT CPlayer::Add_Riding()
 	return S_OK;
 }
 
-void CPlayer::Set_Damage(_int iDamage, _uint iDamageType)
+void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 {	
 	m_iHP -= (iDamage - iDamage * (m_Status.Armor / 0.01f));
-
-
+	//if (m_iHP < 0)
+	if(MonAttType==4)
+	{
+		m_iHP = 0;
+		m_eState = Die;
+	}
+	else
+	{
+		switch (MonAttType)
+		{
+		case MonAtt_Hit:
+			m_eState = Hit;
+			break;
+		case MonAtt_KnockDown:
+			m_eState = KnockDown;
+			break;
+		case MonAtt_Stun:
+			m_eState = Stun_Start;
+			break;
+		default:
+			break;
+		}
+	}
+	m_StartRegen = 0.f;
 }
 
 void CPlayer::Change_Parts(PART_TYPE PartsType, _int ChangeIndex)
@@ -630,6 +688,70 @@ void CPlayer::Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex)
 	}
 }
 
+
+void CPlayer::Front_Ray_Check()
+{
+	PxRaycastBuffer Buffer{};
+	_vec4 vRayDir{};
+	_vec4 vMyPos = m_pTransformCom->Get_State(State::Pos);
+	_vec4 PlayerCenter = m_pTransformCom->Get_CenterPos();
+	PlayerCenter.y += 0.6f;
+	vRayDir = m_pTransformCom->Get_State(State::Look).Get_Normalized();
+	_float fDist = XMVectorGetX(XMVector3Length(vRayDir)) - 0.4f;
+	if (m_pGameInstance->Raycast(PlayerCenter + vRayDir * 0.4f, vRayDir, fDist, Buffer))
+	{
+		m_bReady_Climb = true;
+	}
+	else
+		m_bReady_Climb = false;
+}
+
+_bool CPlayer::Turn_Ray_Check(_bool bRight)
+{
+	PxRaycastBuffer Buffer{};
+	_vec4 vRayDir{};
+	_vec4 vMyPos = m_pTransformCom->Get_State(State::Pos);
+	_vec4 vRight = m_pTransformCom->Get_State(State::Right).Get_Normalized();
+	_vec4 PlayerCenter = m_pTransformCom->Get_CenterPos();
+	PlayerCenter.y += 0.6f;
+	if(bRight)
+	PlayerCenter += vRight*0.5f;
+	else
+		PlayerCenter -= vRight*0.5f;
+
+	vRayDir = m_pTransformCom->Get_State(State::Look).Get_Normalized();
+	_float fDist = XMVectorGetX(XMVector3Length(vRayDir)) - 0.4f;
+
+	return (m_pGameInstance->Raycast(PlayerCenter + vRayDir * 0.4f, vRayDir, fDist, Buffer));
+}
+
+void CPlayer::Health_Regen(_float fTImeDelta)
+{
+	if (m_StartRegen > 5.f && m_Status.Max_Hp > m_Status.Current_Hp)
+		m_fHpRegenTime += fTImeDelta;
+
+	if (m_Status.Max_Mp > m_Status.Current_Mp)
+		m_fMpRegenTime += fTImeDelta;
+
+	if (m_fHpRegenTime >= 1.f)
+	{
+		m_Status.Current_Hp += 1;
+		m_fHpRegenTime = 0;
+	}
+
+	if (m_fMpRegenTime >= 1.f)
+	{
+		m_Status.Current_Mp += 1;
+		m_fMpRegenTime = 0;
+	}
+	
+
+	if (m_Status.Max_Hp < m_Status.Current_Hp)
+		m_Status.Current_Hp = m_Status.Max_Hp;
+	if (m_Status.Max_Mp < m_Status.Current_Mp)
+		m_Status.Current_Mp = m_Status.Max_Mp;
+
+}
 
 void CPlayer::Move(_float fTimeDelta)
 {
@@ -666,6 +788,7 @@ void CPlayer::Move(_float fTimeDelta)
 			m_bAttacked = false;
 		}
 	}
+	
 
 	if (m_pGameInstance->Key_Down(DIK_3))
 	{
@@ -726,7 +849,14 @@ void CPlayer::Move(_float fTimeDelta)
 		{
 			m_eState = SkillR;
 			m_iCurrentSkill_Index = SkillR;
-
+			m_fAttTimer = 0.f;
+		}
+		else if (m_fAttTimer > 0.2f and m_eState == SkillR)
+		{
+			SkillR_Attack();
+			m_eState = SkillR;
+			m_iCurrentSkill_Index = SkillR;
+			m_fAttTimer = 0.f;
 		}
 	}
 
@@ -737,7 +867,7 @@ void CPlayer::Move(_float fTimeDelta)
 			m_eState = Jump_Long_End;
 	}
 
-	if(m_eState!=Attack&&m_eState< Skill1)
+	if (m_fAttTimer > 0.8f && m_fSkiilTimer > 1.2f)
 	{
 		//퀘스트 개수에 따라 bool로 통과하도록 한번 거쳐야할듯 아니면 계속 맵에서 찾아야되니까 
 		if (m_pGameInstance->Key_Pressing(DIK_W))
@@ -765,28 +895,40 @@ void CPlayer::Move(_float fTimeDelta)
 
 		if (m_pGameInstance->Key_Down(DIK_SPACE))
 		{
- 			//if (!m_pTransformCom->Is_Jumping())
+ 			if (!m_hasJumped)
 			{ 
-				m_pTransformCom->Jump(9.f);
+				m_pTransformCom->Jump(8.f);
 				m_eState = Jump_Start;
+			}
+			else if(m_bReady_Climb)
+			{
+				m_eState = Climb;
+				m_bIsClimb = true;
 			}
 		}
 
 
 	
-	if (hasMoved)
+	if (hasMoved &&!m_bIsClimb)
 	{
 
 		if (m_pGameInstance->Key_Pressing(DIK_LSHIFT))
 		{
 			if (/*m_pTransformCom->Is_OnGround() and*/
 				m_eState == Walk or 
-				m_eState == Idle
-				)
+				m_eState == Idle )
 			{
 				m_eState = Run_Start;
 			
 			 }
+			else if (m_eState == Attack or
+				m_eState == Skill1_End or
+				m_eState == Skill2 or
+				m_eState == Skill3 or
+				m_eState == Skill4)
+			{
+				m_eState =Attack_Run;
+			}
 			else if (/*m_pTransformCom->Is_OnGround() and*/
 				m_eState == Run or 
 				m_eState == Run_End or
@@ -814,7 +956,8 @@ void CPlayer::Move(_float fTimeDelta)
 		{
 			if (m_eState == Run or
 				m_eState == Run_End or
-				m_eState == Run_Start)
+				m_eState == Run_Start 
+				)
 			{
 				m_eState = Run;
 				m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed);
@@ -824,7 +967,12 @@ void CPlayer::Move(_float fTimeDelta)
 				if (/*m_pTransformCom->Is_OnGround() and*/
 					m_eState == Idle or
 					m_eState == Walk or
-					m_eState == Attack_Idle)
+					m_eState == Attack_Idle or 
+					m_eState == Attack or
+					m_eState == Skill1_End or
+					m_eState == Skill2 or
+					m_eState == Skill3 or
+					m_eState == Skill4)
 				{
 					m_eState = Walk;
 					
@@ -885,6 +1033,9 @@ void CPlayer::Move(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_F))
 	{
+		if (m_bIsClimb)
+			return;
+
 		vDirection += vForwardDir;
 	
 		m_pTransformCom->Set_Speed(0.5f);
@@ -908,7 +1059,125 @@ void CPlayer::Move(_float fTimeDelta)
 
 	}
 
+	if(!m_bIsClimb or m_eState == Jump_Start)
 	m_pTransformCom->Gravity(fTimeDelta);
+
+}
+void CPlayer::Is_Climb(_float fTimeDelta)
+{
+	m_pTransformCom->Set_Speed(0.6f);
+	_bool hasMove{};
+	if (m_eState == Jump_Start)
+	{
+		if (m_pModelCom->Get_CurrentAnimationIndex() == Anim_jump_start)
+		{
+			_float Index = m_pModelCom->Get_CurrentAnimPos();
+			if (!m_bReady_Climb && Index > 48)
+			{
+				m_eState = Idle;
+				m_bIsClimb = false;
+				return;
+			}
+		}
+	}
+	if (m_eState == Jump)
+	{
+		m_bIsClimb = false;
+		return;
+	}
+
+	if(m_eState!=Jump_Start)
+	{
+		if (m_pGameInstance->Key_Pressing(DIK_W))
+		{
+			m_pTransformCom->Go_Up(fTimeDelta);
+			if (!m_bReady_Climb)
+			{
+				m_pTransformCom->Jump(8.f);
+				m_eState = Jump_Start;
+				m_bIsClimb = false;
+				return;
+			}
+			hasMove = true;
+			m_eState = Climb_U;
+
+		}
+		else if (m_pGameInstance->Key_Pressing(DIK_S))
+		{
+			m_pTransformCom->Go_Down(fTimeDelta);
+			if (!m_pTransformCom->Is_Jumping())
+			{
+				m_eState = Idle;
+				m_bIsClimb = false;
+				return;
+			}
+			hasMove = true;
+			m_eState = Climb_D;
+			
+		}
+
+		if (m_pGameInstance->Key_Pressing(DIK_D))
+		{			
+				m_pTransformCom->Go_Right(fTimeDelta);
+				hasMove = true;
+			m_eState = Climb_R;
+		}
+		else if (m_pGameInstance->Key_Pressing(DIK_A))
+		{			
+				m_pTransformCom->Go_Left(fTimeDelta);
+
+			hasMove = true;
+			m_eState = Climb_L;
+		}
+	}
+	if (m_eState == Climb_R)
+	{
+		if (!Turn_Ray_Check(true))
+		{
+			m_pTransformCom->Set_RotationPerSec(-40.f);
+			m_pTransformCom->Turn(_vec4(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+		}
+	}
+	if (m_eState == Climb_L)
+	{
+		if (!Turn_Ray_Check(false))
+		{
+			m_pTransformCom->Set_RotationPerSec(40.f);
+			m_pTransformCom->Turn(_vec4(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+		}
+	}
+	if (!hasMove && m_eState != Jump_Start)
+	{
+		m_eState = Climb;
+	}
+
+
+	if (m_pGameInstance->Key_Down(DIK_SPACE))
+	{
+		if (m_eState == Jump_Start)
+		{
+			if(m_pModelCom->Get_CurrentAnimationIndex() == Anim_jump_start)
+			{
+				_float Index = m_pModelCom->Get_CurrentAnimPos();
+				if (Index > 48)
+				{
+					if (m_bReady_Climb)
+					{
+						m_eState = Climb;
+					}
+				}
+			}
+		}
+		else
+		{
+			m_pTransformCom->Jump(8.f);
+			m_eState = Jump_Start;
+			m_bIsClimb = false;
+		}
+		
+	}
+
+
 }
 void CPlayer::Common_Attack()
 {
@@ -995,7 +1264,7 @@ void CPlayer::Skill1_Attack()
 		m_hasJumped = false;
 		m_iSuperArmor = {};
 		m_fSkiilTimer = 0.f;
-		m_Status.Mp -= 150;
+		m_Status.Current_Mp -= 150;
 	}
 	else if (m_Current_Weapon == WP_BOW)
 	{
@@ -1004,7 +1273,7 @@ void CPlayer::Skill1_Attack()
 		m_hasJumped = false;
 		m_iSuperArmor = {};
 		m_fSkiilTimer = 0.f;
-		m_Status.Mp -= 150;
+		m_Status.Current_Mp -= 150;
 	}
 
 }
@@ -1018,7 +1287,7 @@ void CPlayer::Skill2_Attack()
 		m_iSuperArmor = {};
 		m_fSkiilTimer = 0.f;
 		m_fSkillSpeed = 12.f;
-		m_Status.Mp -= 250;
+		m_Status.Current_Mp -= 250;
 	}
 	else if (m_Current_Weapon == WP_BOW)
 	{
@@ -1027,7 +1296,7 @@ void CPlayer::Skill2_Attack()
 		m_hasJumped = false;
 		m_iSuperArmor = {};
 		m_fSkiilTimer = 0.f;
-		m_Status.Mp -= 250;
+		m_Status.Current_Mp -= 250;
 	}
 
 }
@@ -1040,7 +1309,7 @@ void CPlayer::Skill3_Attack()
 		m_hasJumped = false;
 		m_iSuperArmor = {};
 		m_fSkiilTimer = 0.f;
-		m_Status.Mp -= 350;
+		m_Status.Current_Mp -= 350;
 	}
 	else if (m_Current_Weapon == WP_BOW)
 	{
@@ -1049,7 +1318,7 @@ void CPlayer::Skill3_Attack()
 		m_hasJumped = false;
 		m_iSuperArmor = {};
 		m_fSkiilTimer = 0.f;
-		m_Status.Mp -= 350;
+		m_Status.Current_Mp -= 350;
 	}
 
 }
@@ -1065,7 +1334,7 @@ void CPlayer::Skill4_Attack()
 		m_hasJumped = false;
 		m_iSuperArmor = {};
 		m_fSkiilTimer = 0.f;
-		m_Status.Mp -= 500;
+		m_Status.Current_Mp -= 500;
 	}
 	else if (m_Current_Weapon == WP_BOW)
 	{
@@ -1074,7 +1343,7 @@ void CPlayer::Skill4_Attack()
 		m_hasJumped = false;
 		m_iSuperArmor = {};
 		m_fSkiilTimer = 0.f;
-		m_Status.Mp -= 500;
+		m_Status.Current_Mp -= 500;
 	}
 
 }
@@ -1091,7 +1360,7 @@ void CPlayer::SkillR_Attack()
 	else if (m_Current_Weapon == WP_BOW)
 	{
 		m_Animation.iAnimIndex = m_BowSkill[4];
-	
+		m_Animation.bRestartAnimation = true;
 		m_Animation.isLoop = false;
 		m_hasJumped = false;
 		m_iSuperArmor = {};
@@ -1180,6 +1449,7 @@ void CPlayer::After_CommonAtt(_float fTimeDelta)
 			}
 		}
 	}
+
 }
 void CPlayer::After_SkillAtt(_float fTimeDelta)
 {
@@ -1295,28 +1565,28 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 
 
 	_int Random = rand() % 100 + 1;
+	_int RandomDmg = rand() % 30;
 	_uint Critical{};
 	if (Random <= m_Status.Critical)
 		Critical = m_Status.Attack * (m_Status.Critical_Dmg * 0.01) - m_Status.Attack;
 
 	
-
 	switch (Att_Type)
 	{
 	case Client::AT_Sword_Common:
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], m_Status.Attack + Critical, Att_Type); 
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], m_Status.Attack + Critical + RandomDmg, Att_Type);
 		break;
 	case Client::AT_Sword_Skill1:
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack *1.5) + Critical, Att_Type);
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack * 2) + Critical + RandomDmg, Att_Type);
 		break;
 	case Client::AT_Sword_Skill2:
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack * 2) + Critical, Att_Type);
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack * 1.5) + Critical + RandomDmg, Att_Type);
 		break;
 	case Client::AT_Sword_Skill3:
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack * 2.5) + Critical, Att_Type);
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack * 3) + Critical + RandomDmg, Att_Type);
 		break;
 	case Client::AT_Sword_Skill4:
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack * 3) + Critical, Att_Type);
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack * 2) + Critical + RandomDmg, Att_Type);
 		break;
 	default:
 		break;
@@ -1643,7 +1913,7 @@ void CPlayer::Sword_Att_Camera_Effect()
 				m_pGameInstance->Set_AimMode(false);
 				m_pGameInstance->Set_ShakeCam(true);
 
-				Cam_AttackZoom(6.f);
+				Cam_AttackZoom(4.f);
 
 			}
 			else if (Index >= 67.f && Index <= 68.f)
@@ -1655,7 +1925,7 @@ void CPlayer::Sword_Att_Camera_Effect()
 				}
 
 				m_pGameInstance->Set_ShakeCam(true);
-				Cam_AttackZoom(7.f);
+				Cam_AttackZoom(5.f);
 			}
 			else if (Index > 40.f)
 			{
@@ -1792,9 +2062,11 @@ void CPlayer::Init_State()
 {
 	if (m_eState != m_ePrevState)
 	{
-		m_Animation.isLoop = false;
+		m_Animation = {};
+	
 		m_Animation.fAnimSpeedRatio = 2.f;
-		m_Animation.bSkipInterpolation = false;
+
+		
 		switch (m_eState)
 		{
 		case Client::CPlayer::Idle:
@@ -1903,12 +2175,83 @@ void CPlayer::Init_State()
 			m_hasJumped = false;
 			m_iSuperArmor = {};
 			break;
+		case Client::CPlayer::Climb:
+			m_Animation.iAnimIndex = Anim_Climb_wait;
+			m_Animation.isLoop = true;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Climb_U:
+			m_Animation.iAnimIndex = Anim_Climb_F;
+			m_Animation.isLoop = true;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Climb_D:
+			m_Animation.iAnimIndex = Anim_Climb_B;
+			m_Animation.isLoop = true;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Climb_R:
+			m_Animation.iAnimIndex = Anim_Climb_R;
+			m_Animation.isLoop = true;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Climb_L:
+			m_Animation.iAnimIndex = Anim_Climb_L;
+			m_Animation.isLoop = true;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Stun_Start:
+			m_Animation.iAnimIndex = Anim_Stun_start;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Stun:
+			m_Animation.iAnimIndex = Anim_stun;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Hit:
+		{
+				m_Animation.iAnimIndex = Anim_Stun_start;
+				m_Animation.fDurationRatio = 0.4f;
+				m_Animation.fAnimSpeedRatio = 2.f;
+				m_Animation.bSkipInterpolation = true;
+				m_Animation.fStartAimPos = 18.f;
+				m_Animation.isLoop = false;
+				m_hasJumped = false;
+		}
+			break;
+		case Client::CPlayer::KnockDown:
+			if(m_Current_Weapon==WP_SWORD)
+				m_Animation.iAnimIndex = Anim_Assassin_knockdown;
+			else
+			m_Animation.iAnimIndex = Anim_Sniper_knockdown;
+
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Revival_Start:
+			m_Animation.iAnimIndex = Anim_revival_start;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Revival_End:
+			m_Animation.iAnimIndex = Anim_revival_end;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Die:
+			m_Animation.iAnimIndex = Anim_die;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+			break;
 		default:
 			break;
 		}
 
 		m_ePrevState = m_eState;
 	}
+
 }
 
 	void CPlayer::Tick_State(_float fTimeDelta)
@@ -1916,8 +2259,6 @@ void CPlayer::Init_State()
 		switch (m_eState)
 		{
 		case Client::CPlayer::Idle:
-			m_Animation.iAnimIndex = Anim_idle_00;
-			m_Animation.isLoop = true;
 			break;
 		case Client::CPlayer::Walk:
 				m_hasJumped = false;
@@ -2110,9 +2451,42 @@ void CPlayer::Init_State()
 			if (m_pModelCom->IsAnimationFinished(Anim_jump_end_run))
 				m_eState = Run;
 			break;
-		case Client::CPlayer::State_End:
+		case Client::CPlayer::Stun_Start:
+			if (m_pModelCom->IsAnimationFinished(Anim_Stun_start))
+				m_eState = Stun;
 			break;
-
+		case Client::CPlayer::Stun:
+			if (m_pModelCom->IsAnimationFinished(Anim_stun))
+				m_eState = Idle;
+		
+			break;
+		case Client::CPlayer::Hit:
+			if (m_pModelCom->IsAnimationFinished(Anim_Stun_start))
+				m_eState = Idle;
+			break;
+		case Client::CPlayer::KnockDown:
+			if (m_Current_Weapon == WP_SWORD)
+				if (m_pModelCom->IsAnimationFinished(Anim_Assassin_knockdown))
+					m_eState = Idle;
+				else
+					if (m_pModelCom->IsAnimationFinished(Anim_Sniper_knockdown))
+						m_eState = Idle;
+				break;
+		case Client::CPlayer::Revival_Start:
+			if (m_pModelCom->IsAnimationFinished(Anim_revival_start))
+				m_eState = Revival_End;
+			break;
+		case Client::CPlayer::Revival_End:
+			if (m_pModelCom->IsAnimationFinished(Anim_revival_end))
+				m_eState = Idle;
+			break;
+		case Client::CPlayer::Die:
+			if (m_pModelCom->IsAnimationFinished(Anim_die))
+			{
+				m_eState = Revival_Start;
+			}
+			
+			break;
 		default:
 			break;
 		}

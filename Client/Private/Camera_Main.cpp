@@ -189,8 +189,9 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		_vec4 PlayerCenter = m_pPlayerTransform->Get_CenterPos();
 		
 		vRayDir = vMyPos - PlayerCenter;
-		vRayDir.Normalize();
 		_float fDist = XMVectorGetX(XMVector3Length(vRayDir)) - 0.4f;
+		vRayDir.Normalize();
+
 		if (m_pGameInstance->Raycast(m_pPlayerTransform->Get_CenterPos() + vRayDir * 0.5f, vRayDir, fDist, Buffer))
 		{
 			m_pTransformCom->Set_State(State::Pos, PxVec3ToVector(Buffer.block.position, 1.f));
@@ -204,7 +205,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 	} 
 	else
 	{
-		m_fPlayerDistance = 8.f;
+		m_fPlayerDistance = 7.f;
 		_long dwMouseMove;
 		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
 		{
@@ -227,8 +228,8 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			_vec4 PlayerRight = m_pPlayerTransform->Get_State(State::Right).Get_Normalized();
 			_vec4 PlayerUp = m_pPlayerTransform->Get_State(State::Up).Get_Normalized();
 			_vec3 AimPos = m_pGameInstance->Get_AimPos();
-			m_vAimCamPos = m_pPlayerTransform->Get_CenterPos() - vMeLook * AimPos.z
-				+ (PlayerUp * AimPos.y) + (PlayerRight * AimPos.x);
+			m_vAimCamPos = m_pPlayerTransform->Get_CenterPos() - (vMeLook * AimPos.z * 1.3f)
+				+ (PlayerUp * AimPos.y * 0.5f) + (PlayerRight * AimPos.x);
 
 		_vec4 OriCam{};
 		if (m_AimZoomOutTime < 1.f)
