@@ -1,5 +1,5 @@
 #include "Dummy.h"
-
+#include "VIBuffer_Instancing_Mesh.h"
 
 static _int iID = 1;
 
@@ -46,7 +46,7 @@ HRESULT CDummy::Init(void* pArg)
 {
 
 	m_Info = *(DummyInfo*)pArg;
-
+	m_eType = m_Info.eType;
 	/*if (m_Info.Prototype == L"Prototype_Model_Barlog" ||
 		m_Info.Prototype == L"Prototype_Model_Furgoat" ||
 		m_Info.Prototype == L"Prototype_Model_GiantBoss" ||
@@ -198,6 +198,15 @@ HRESULT CDummy::Add_Components()
 		}
 		m_iShaderPass = StaticPass_Default;
 		m_iOutLineShaderPass = StaticPass_OutLine;
+	}
+	
+	if (m_eType == ItemType::Environment)
+	{
+
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Mesh"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBuffer), &m_pTransformCom->Get_World_Matrix())))
+		{
+			return E_FAIL;
+		}
 	}
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Info.Prototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))

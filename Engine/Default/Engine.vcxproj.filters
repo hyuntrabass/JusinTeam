@@ -184,6 +184,9 @@
     <Filter Include="01.Utility\03.Components\Shader\Compute_Shader">
       <UniqueIdentifier>{08266119-acd4-4bd9-a6a0-fd3446caeb89}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Components\VIBuffer\Instancing\Mesh">
+      <UniqueIdentifier>{e655b4c4-18b0-4255-84ea-ce42ad2fefb6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -353,6 +356,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Compute_Shader.cpp">
       <Filter>01.Utility\03.Components\Shader\Compute_Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Instancing_Mesh.cpp">
+      <Filter>01.Utility\03.Components\VIBuffer\Instancing\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Model_Instancing.cpp">
+      <Filter>01.Utility\03.Components\VIBuffer\Instancing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -530,6 +539,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Compute_Shader.h">
       <Filter>01.Utility\03.Components\Shader\Compute_Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Model_Instancing.h">
+      <Filter>01.Utility\03.Components\VIBuffer\Instancing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Instancing_Mesh.h">
+      <Filter>01.Utility\03.Components\VIBuffer\Instancing\Mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

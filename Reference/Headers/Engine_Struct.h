@@ -288,4 +288,13 @@ namespace Engine
 		XMUINT2 vTerrainSize{};
 		bool isMesh{ false };
 	};
+
+	using VTXMESHINSTANCING = struct tagVertex_Mesh_Instancing
+	{
+		SimpleMath::Vector4 vRight{};
+		SimpleMath::Vector4 vUp{};
+		SimpleMath::Vector4 vLook{};
+		SimpleMath::Vector4 vPos{};
+	};
+
 }

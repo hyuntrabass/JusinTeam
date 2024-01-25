@@ -3,6 +3,10 @@
 #include "BlendObject.h"
 #include "ImGui_Manager.h"
 
+BEGIN(Engine)
+class CVIBuffer_Instance_Mesh;
+END
+
 BEGIN(MapEditor)
 
 class CDummy final : public CBlendObject
@@ -38,6 +42,7 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
 	//CImGui_Manager* m_pImGui_Manager{ nullptr };
+	CVIBuffer_Instance_Mesh* m_pVIBuffer{ nullptr };
 
 private:
 
@@ -48,6 +53,7 @@ private:
 	_bool m_isAnim{};
 	ANIM_DESC m_Animation{};
 	
+	ItemType m_eType{ItemType::End};
 	_int m_iID = 0;
 	_int m_iTrigger = 0;
 

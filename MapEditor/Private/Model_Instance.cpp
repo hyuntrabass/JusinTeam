@@ -1,13 +1,12 @@
-#include "Map.h"
-#include <wincodec.h>
+#include "Model_Instance.h"
 static _int iID = 1;
 
-CMap::CMap(_dev pDevice, _context pContext)
+CModel_Instance::CModel_Instance(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
 {
 }
 
-CMap::CMap(const CMap& rhs)
+CModel_Instance::CModel_Instance(const CModel_Instance& rhs)
 	: CBlendObject(rhs)
 	//, m_pImGui_Manager(CImGui_Manager::Get_Instance())
 {
@@ -16,15 +15,15 @@ CMap::CMap(const CMap& rhs)
 }
 
 
-HRESULT CMap::Init_Prototype()
+HRESULT CModel_Instance::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CMap::Init(void* pArg)
+HRESULT CModel_Instance::Init(void* pArg)
 {
 	m_Info = *(MapInfo*)pArg;
-	
+
 	_vec3 MapPos = _vec3(m_Info.vPos.x, m_Info.vPos.y, m_Info.vPos.z);
 	if (FAILED(Add_Components()))
 	{
@@ -39,28 +38,25 @@ HRESULT CMap::Init(void* pArg)
 
 
 	m_iShaderPass = StaticPass_AlphaTestMeshes;
-	
+
 	m_pTransformCom->Set_Position(MapPos);
 
 	return S_OK;
 }
 
-void CMap::Tick(_float fTimeDelta)
+void CModel_Instance::Tick(_float fTimeDelta)
 {
-	if (m_isMode == false)
-		m_iShaderPass = StaticPass_Default;
-	else
-		m_iShaderPass = StaticPass_Wire;
+
 }
 
-void CMap::Late_Tick(_float fTimeDelta)
+void CModel_Instance::Late_Tick(_float fTimeDelta)
 {
 
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 
 }
 
-HRESULT CMap::Render()
+HRESULT CModel_Instance::Render()
 {
 
 	if (FAILED(Bind_ShaderResources()))
@@ -96,7 +92,7 @@ HRESULT CMap::Render()
 		{
 			return E_FAIL;
 		}
-		
+
 
 		if (FAILED(m_pShaderCom->Begin(m_iOutLineShaderPass)))
 		{
@@ -123,7 +119,7 @@ HRESULT CMap::Render()
 	return S_OK;
 }
 
-HRESULT CMap::Add_Components()
+HRESULT CModel_Instance::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -137,16 +133,18 @@ HRESULT CMap::Add_Components()
 
 	m_iShaderPass = StaticPass_Default;
 	m_iOutLineShaderPass = StaticPass_OutLine;
-	
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Info.Prototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
-	{
-		return E_FAIL;
-	}
+
+	if (FAILED(Add_Component(LEVEL_STATIC), TEXT("Com_VB")))
+
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Info.Prototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+		{
+			return E_FAIL;
+		}
 
 	return S_OK;
 }
 
-HRESULT CMap::Bind_ShaderResources()
+HRESULT CModel_Instance::Bind_ShaderResources()
 {
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
@@ -180,17 +178,17 @@ HRESULT CMap::Bind_ShaderResources()
 	return S_OK;
 }
 
-void CMap::Select(const _bool& isSelected)
+void CModel_Instance::Select(const _bool& isSelected)
 {
 	m_isSelected = isSelected;
 }
 
-void CMap::Mode(const _bool& isMode)
+void CModel_Instance::Mode(const _bool& isMode)
 {
 	m_isMode = isMode;
 }
 
-HRESULT CMap::Create_HightMap(vector<VTXSTATICMESH> VerticesPos)
+HRESULT CModel_Instance::Create_HightMap(vector<VTXSTATICMESH> VerticesPos)
 {
 	vector<_float> vHight;
 	for (const auto& Value : VerticesPos) {
@@ -198,7 +196,7 @@ HRESULT CMap::Create_HightMap(vector<VTXSTATICMESH> VerticesPos)
 	}
 	auto minHeight = *min_element(vHight.begin(), vHight.end());
 	auto maxHeight = *max_element(vHight.begin(), vHight.end());
-	
+
 	ID3D11Texture2D* pTexture2D = nullptr;
 	D3D11_TEXTURE2D_DESC	TextureDesc = {};
 
@@ -234,7 +232,7 @@ HRESULT CMap::Create_HightMap(vector<VTXSTATICMESH> VerticesPos)
 			}
 		}
 	}
-	
+
 
 	D3D11_SUBRESOURCE_DATA initData{};
 	initData.pSysMem = colors.data();
@@ -255,37 +253,37 @@ HRESULT CMap::Create_HightMap(vector<VTXSTATICMESH> VerticesPos)
 	return S_OK;
 }
 
-_float CMap::lerp(_float a, _float b, _float f) {
+_float CModel_Instance::lerp(_float a, _float b, _float f) {
 	return a + f * (b - a);
 }
 
-CMap* CMap::Create(_dev pDevice, _context pContext)
+CModel_Instance* CModel_Instance::Create(_dev pDevice, _context pContext)
 {
-	CMap* pInstance = new CMap(pDevice, pContext);
+	CModel_Instance* pInstance = new CModel_Instance(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CMap");
+		MSG_BOX("Failed to Create : CModel_Instance");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CMap::Clone(void* pArg)
+CGameObject* CModel_Instance::Clone(void* pArg)
 {
-	CMap* pInstance = new CMap(*this);
+	CModel_Instance* pInstance = new CModel_Instance(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CMap");
+		MSG_BOX("Failed to Clone : CModel_Instance");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CMap::Free()
+void CModel_Instance::Free()
 {
 	__super::Free();
 
