@@ -645,18 +645,20 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			CModel* pCurModel = m_pPlayer->Get_CurrentModel();
 			vector<TRIGGERSOUND_DESC> SoundDescs = pCurModel->Get_TriggerSounds();
 			//사운드 이름 띄우기
-			/*_char** ppSoundTriggerList = new _char* [SoundDescs.size()];
-			string strSonudTrigger = "SOUND_TRIGGER_";
+			_char** ppSoundTriggerList = new _char* [SoundDescs.size()];
+			wstring strSonudTrigger = L"SOUND_TRIGGER_";
 
 			for (size_t i = 0; i < SoundDescs.size(); i++)
 			{
 				ppSoundTriggerList[i] = new _char[MAX_PATH];
-				strSonudTrigger + to_string(i)
+				wstring SoundTrigger = strSonudTrigger + to_wstring(i);
+				int bufferSize = WideCharToMultiByte(CP_UTF8, 0, SoundTrigger.c_str(), -1, nullptr, 0, nullptr, nullptr);
+				WideCharToMultiByte(CP_UTF8, 0, SoundTrigger.c_str(), -1, ppSoundTriggerList[i], bufferSize, nullptr, nullptr);
 			}
-			if (ImGui::ListBox("SOUND##1", &m_iCurTriggerIndex, SoundTriggerList, SoundDescs.size()))
+			if (ImGui::ListBox("SOUND##1", &m_iCurTriggerIndex, ppSoundTriggerList, SoundDescs.size()))
 			{
-			}*/
-			
+				m_iCurSoundNameIndex = 0;
+			}
 			//사운드 파일 이름 띄우기
 			_char** ppSoundNameList = new _char * [SoundDescs[m_iCurTriggerIndex].strSoundNames.size()] {};
 
@@ -671,6 +673,11 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			}
 			//릭 제거
 			for (size_t i = 0; i < SoundDescs.size(); i++)
+			{
+				Safe_Delete_Array(ppSoundTriggerList[i]);
+			}
+			Safe_Delete_Array(ppSoundTriggerList);
+			for (size_t i = 0; i < SoundDescs[m_iCurTriggerIndex].strSoundNames.size(); i++)
 			{
 				Safe_Delete_Array(ppSoundNameList[i]);
 			}
@@ -688,6 +695,38 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			ImGui::Text(strStartEffectIndex.c_str()); ImGui::SameLine();
 			string strStartEffectPos = "ANIMPOS : " + to_string(static_cast<_int>(pSoundDesc->fStartAnimPos));
 			ImGui::Text(strStartEffectPos.c_str());
+
+			if (ImGui::Button("END"))
+			{
+				_uint iEndIndex = static_cast<_uint>(pSoundDesc->iEndAnimIndices.size()) - 1;
+				pSoundDesc->iEndAnimIndices[iEndIndex] = m_pPlayer->Get_CurrentModel()->Get_CurrentAnimationIndex();
+				_uint iCurrentAnimPos = static_cast<_uint>(m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos());
+				pSoundDesc->fEndAnimPoses[iEndIndex] = static_cast<_float>(iCurrentAnimPos);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("END ADD"))
+			{
+				pSoundDesc->iEndAnimIndices.push_back(-1);
+				_uint iEndAnimPos = static_cast<_uint>(0.f);
+				pSoundDesc->fEndAnimPoses.push_back(static_cast<_float>(iEndAnimPos));
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("END DELETE"))
+			{
+				if (pSoundDesc->iEndAnimIndices.size() > 1)
+				{
+					pSoundDesc->iEndAnimIndices.pop_back();
+					pSoundDesc->fEndAnimPoses.pop_back();
+				}
+			}
+
+			for (size_t i = 0; i < pSoundDesc->iEndAnimIndices.size(); i++)
+			{
+				string strEndEffectIndex = "ANIMINDEX  : " + to_string(pSoundDesc->iEndAnimIndices[i]);
+				ImGui::Text(strEndEffectIndex.c_str()); ImGui::SameLine();
+				string strEndEffectPos = "ANIMPOS : " + to_string(static_cast<_int>(pSoundDesc->fEndAnimPoses[i]));
+				ImGui::Text(strEndEffectPos.c_str());
+			}
 
 			ImGui::SeparatorText("VOLUME");
 			ImGui::InputFloat("VOLUME##1", &pSoundDesc->fVolume, 0.01f, 0.f, "%.2f");

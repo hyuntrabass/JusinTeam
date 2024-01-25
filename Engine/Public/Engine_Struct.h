@@ -175,6 +175,8 @@ namespace Engine
 	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {
 		int iStartAnimIndex{};
 		float fStartAnimPos{};
+		std::vector<int> iEndAnimIndices;
+		std::vector<float> fEndAnimPoses;
 		std::vector<std::wstring> strSoundNames;
 		float fVolume{};
 		
