@@ -62,8 +62,8 @@ public:
 
 	CGameObject* Get_ItemSlots(CItemBlock::ITEMSLOT eSlot);
 	_bool Is_ItemSlotFull(CItemBlock::ITEMSLOT eSlot);
-	HRESULT Set_Item_In_EmptySlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* m_iItemNum);
-	CItem* Set_Item_In_FullSlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* m_iItemNum);
+	HRESULT Set_Item_In_EmptySlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* iItemNum);
+	ITEM Set_Item_In_FullSlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* iItemNum, _int* iChangeItemNum = nullptr);
 	void Delete_Item_In_Slot(CItemBlock::ITEMSLOT eSlot);
 
 

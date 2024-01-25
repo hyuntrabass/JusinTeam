@@ -210,8 +210,15 @@ void CInvenFrame::Tick(_float fTimeDelta)
 		{
 			m_pResetSlot->Set_Size(140.f, 80.f, 0.3f);
 			dynamic_cast<CTextButton*>(m_pResetSymbol)->Set_Size(20.f, 20.f);
-			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
+			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine) && !m_isPicking)
 			{
+				for (_uint i = 0; i < 4; i++)
+				{
+					if (m_pSelectSlot[i]->Is_Full())
+					{
+						ItemSlot_Delete_Logic(i);
+					}
+				}
 			}
 		}
 		else
@@ -594,14 +601,14 @@ CGameObject* CInvenFrame::Clone(void* pArg)
 	return pInstance;
 }
 
-void CInvenFrame::Set_Item(ITEM eItem)
+void CInvenFrame::Set_Item(ITEM eItem, _uint iNum)
 {
 	_bool isItemExist = false;
 	for (auto& iter : m_vecItems)
 	{
 		if (eItem.strName == iter->Get_ItemDesc().strName)
 		{
-			iter->Set_ItemNum(1);
+			iter->Set_ItemNum(iNum);
 			isItemExist = true;
 			return;
 		}
@@ -612,6 +619,7 @@ void CInvenFrame::Set_Item(ITEM eItem)
 		CItem::ITEM_DESC ItemDesc{};
 		ItemDesc.bCanInteract = true;
 		ItemDesc.eItemDesc = eItem;
+		ItemDesc.iNum = iNum;
 		ItemDesc.fDepth = m_fDepth - 0.05f;
 		ItemDesc.vSize = _vec2(50.f, 50.f);
 		ItemDesc.vPosition = _vec2(-50.f, -50.f);
@@ -649,8 +657,9 @@ void CInvenFrame::ItemSlot_Logic(_uint iSlotIdx, _uint iIndex)
 	else
 	{	//m_iItemNum이 0보다 클경우 그 수만큼 빼주면되고, 0이면 다없애면되고 -1이면 없애면안됨
 		_int iNum = 0;
-		CItem* pItem = (CItem*)CUI_Manager::Get_Instance()->Set_Item_In_FullSlot((CItemBlock::ITEMSLOT)iSlotIdx, m_vecItemsSlot[m_eCurInvenType][iIndex], &iNum);
-		if (pItem != nullptr)
+		_int ChangeItemNum = 0;
+		ITEM eItem = CUI_Manager::Get_Instance()->Set_Item_In_FullSlot((CItemBlock::ITEMSLOT)iSlotIdx, m_vecItemsSlot[m_eCurInvenType][iIndex], &iNum, &ChangeItemNum);
+		if (eItem.iInvenType != -1)
 		{
 			if (iNum > 0)
 			{
@@ -660,7 +669,7 @@ void CInvenFrame::ItemSlot_Logic(_uint iSlotIdx, _uint iIndex)
 			{
 				Delete_Item(m_eCurInvenType, iIndex);
 			}
-			Set_Item(pItem->Get_ItemDesc());
+			Set_Item(eItem, ChangeItemNum);
 		}
 		else
 		{
@@ -676,6 +685,7 @@ void CInvenFrame::ItemSlot_Logic(_uint iSlotIdx, _uint iIndex)
 			{
 				Delete_Item(m_eCurInvenType, iIndex);
 			}
+			Set_ItemPosition(m_eCurInvenType);
 		}
 	}
 
@@ -684,11 +694,13 @@ void CInvenFrame::ItemSlot_Logic(_uint iSlotIdx, _uint iIndex)
 void CInvenFrame::ItemSlot_Delete_Logic(_uint iSlotIdx)
 {
 	_bool isItemExist = false;
+	_uint iItemNum = m_pSelectSlot[iSlotIdx]->Get_ItemObject()->Get_ItemNum();
+
 	for (auto& iter : m_vecItems)
 	{
 		if (m_pSelectSlot[iSlotIdx]->Get_ItemName() == iter->Get_ItemDesc().strName)
 		{
-			iter->Set_ItemNum(m_pSelectSlot[iSlotIdx]->Get_ItemObject()->Get_ItemNum());
+			iter->Set_ItemNum(iItemNum);
 			CUI_Manager::Get_Instance()->Delete_Item_In_Slot((CItemBlock::ITEMSLOT)iSlotIdx);
 			isItemExist = true;
 			return;
@@ -696,9 +708,11 @@ void CInvenFrame::ItemSlot_Delete_Logic(_uint iSlotIdx)
 	}
 	if (!isItemExist)
 	{
-		Set_Item(m_pSelectSlot[iSlotIdx]->Get_ItemObject()->Get_ItemDesc());
+		Set_Item(m_pSelectSlot[iSlotIdx]->Get_ItemObject()->Get_ItemDesc(), iItemNum);
+
 		CUI_Manager::Get_Instance()->Delete_Item_In_Slot((CItemBlock::ITEMSLOT)iSlotIdx);
 	}
+	Set_ItemPosition(m_eCurInvenType);
 	return;
 }
 
@@ -745,7 +759,7 @@ void CInvenFrame::Set_ItemPosition(INVEN_TYPE eInvenType)
 	_float fStartY = m_fY - m_fSizeY / 2.f + fSize / 2.f + 5.f;
 	for (_uint i = 0; i < m_vecItemsSlot[eInvenType].size(); i++)
 	{
-		_uint iTermY = i / 5.f;
+		_uint iTermY = i / 5;
 		_vec2 vPos = _vec2(fStartX + fTerm * i, fStartY + fSize * iTermY + 5.f * iTermY);
 		m_vecItemsSlot[eInvenType][i]->Set_Position(vPos);
 	}
@@ -777,18 +791,16 @@ void CInvenFrame::Free()
 		Safe_Release(iter);
 	}
 
-
-
-
 	Safe_Release(m_pUnderBar);
+	Safe_Release(m_pResetSlot);
+	Safe_Release(m_pResetSymbol);
 	Safe_Release(m_pBackGround);
 	Safe_Release(m_pSelectButton);
+	Safe_Release(m_pExitSlotSetting);
 	Safe_Release(m_pSlotSettingButton);
 	Safe_Release(m_pWearableClearButton);
 
-	Safe_Release(m_pResetSlot);
-	Safe_Release(m_pResetSymbol);
-	Safe_Release(m_pExitSlotSetting);
+
 
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);

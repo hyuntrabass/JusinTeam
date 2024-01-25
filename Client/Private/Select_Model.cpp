@@ -48,7 +48,10 @@ void CSelect_Model::Tick(_float fTimeDelta)
 		m_Animation.iAnimIndex = S_IDLE;
 		m_Animation.isLoop = true;
 		m_Animation.fAnimSpeedRatio = 2.5f;
-
+	}
+	if (m_eCurAnimState == S_MOTION)
+	{
+		m_Animation.fAnimSpeedRatio = 1.7f;
 	}
 
 	m_pModelCom->Set_Animation(m_Animation);

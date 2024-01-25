@@ -47,7 +47,7 @@ private:
 	void Init_InvenState(); 
 
 public:
-	HRESULT Set_Item(ITEM eItem);
+	HRESULT Set_Item(ITEM eItem, _uint iNum = 1);
 
 private:
 	HRESULT Add_Parts();

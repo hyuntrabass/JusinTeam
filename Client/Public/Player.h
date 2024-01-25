@@ -6,6 +6,7 @@
 #include "Riding.h"
 #include "NameTag.h"
 #include "CommonTrail.h"
+
 BEGIN(Client)
 
 struct BODYPART_DESC

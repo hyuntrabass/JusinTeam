@@ -66,6 +66,7 @@ HRESULT CPlayer::Init(void* pArg)
 
 void CPlayer::Tick(_float fTimeDelta)
 {
+
 	if (m_bHide && m_fDissolveRatio <= 1.f)
 	{
 		m_fDissolveRatio += fTimeDelta * 6.f;
@@ -239,6 +240,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
+
 	if (m_bIsMount)
 	{
 		m_pRiding->Late_Tick(fTimeDelta);
@@ -2130,7 +2132,7 @@ HRESULT CPlayer::Add_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_RTVTF"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Player"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Player"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
 		return E_FAIL;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Logo_Noise"), TEXT("Com_Dissolve_Texture"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom))))
@@ -2294,6 +2296,7 @@ void CPlayer::Free()
 
 	if (m_pRiding != nullptr)
 		Safe_Release(m_pRiding);
+
 
 	Safe_Release(m_pNameTag);
 	Safe_Release(m_pDissolveTextureCom);

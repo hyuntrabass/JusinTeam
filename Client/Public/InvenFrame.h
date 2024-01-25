@@ -79,7 +79,7 @@ private:
 
 public:
 	void Init_State();
-	void Set_Item(ITEM eItem);
+	void Set_Item(ITEM eItem, _uint iNum = 1);
 	void Set_ItemPosition(INVEN_TYPE eInvenType);
 	void ItemSlot_Logic(_uint iSlotIdx, _uint iIndex);
 	void ItemSlot_Delete_Logic(_uint iSlotIdx);
