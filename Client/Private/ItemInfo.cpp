@@ -1,43 +1,39 @@
-#include "Item.h"
+#include "ItemInfo.h"
 #include "GameInstance.h"
 #include "TextButton.h"
-#include "ItemInfo.h"
 
-CItem::CItem(_dev pDevice, _context pContext)
+CItemInfo::CItemInfo(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
 }
 
-CItem::CItem(const CItem& rhs)
+CItemInfo::CItemInfo(const CItemInfo& rhs)
 	: COrthographicObject(rhs)
 {
 }
 
-HRESULT CItem::Init_Prototype()
+HRESULT CItemInfo::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CItem::Init(void* pArg)
+HRESULT CItemInfo::Init(void* pArg)
 {
 
-	m_eItemDesc = ((ITEM_DESC*)pArg)->eItemDesc;
+	m_eItemDesc = ((ITEMINFO_DESC*)pArg)->eItemDesc;
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
 
-	m_bCanInteract = ((ITEM_DESC*)pArg)->bCanInteract;
+	m_fSizeX = 300.f;
+	m_fSizeY = 300.f;
 
-	m_iNum = ((ITEM_DESC*)pArg)->iNum;
+	m_fX = (_float)g_iWinSizeX / 2.f;
+	m_fY = (_float)g_iWinSizeY / 2.f;
 
-	m_fSizeX = ((ITEM_DESC*)pArg)->vSize.x;
-	m_fSizeY = ((ITEM_DESC*)pArg)->vSize.y;
-
-	m_fX = ((ITEM_DESC*)pArg)->vPosition.x;
-	m_fY = ((ITEM_DESC*)pArg)->vPosition.y;
-
-	m_fDepth = ((ITEM_DESC*)pArg)->fDepth;
+	m_fDepth = ((ITEMINFO_DESC*)pArg)->fDepth;
+	m_eItemDesc = ((ITEMINFO_DESC*)pArg)->eItemDesc;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	
@@ -49,51 +45,40 @@ HRESULT CItem::Init(void* pArg)
 		  (LONG)(m_fY + m_fSizeY * 0.5f)
 	};
 
-
+	if (FAILED(Add_Parts()))
+	{
+		return E_FAIL;
+	}
 	return S_OK;
 }
 
-void CItem::Tick(_float fTimeDelta)
+void CItemInfo::Tick(_float fTimeDelta)
 {
-	m_rcRect = {
-	  (LONG)(m_fX - m_fSizeX * 0.5f),
-	  (LONG)(m_fY - m_fSizeY * 0.5f),
-	  (LONG)(m_fX + m_fSizeX * 0.5f),
-	  (LONG)(m_fY + m_fSizeY * 0.5f)
-	};
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
 
-	if (m_bCanInteract)
-	{
-		if (PtInRect(&m_rcRect, ptMouse) && m_pGameInstance->Mouse_Down(DIM_RBUTTON, InputChannel::UI))
-		{
-			if (m_pGameInstance->Get_LayerSize(LEVEL_STATIC, TEXT("Layer_ItemInfo")) == 0)
-			{
-				CItemInfo::ITEMINFO_DESC InfoDesc = {};
-				InfoDesc.eItemDesc = m_eItemDesc;
-				InfoDesc.fDepth = m_fDepth - 0.05f;
-				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_ItemInfo"), TEXT("Prototype_GameObject_ItemInfo"), &InfoDesc)))
-				{
-					return;
-				}
-			}
 
-		}
+	if (PtInRect(&m_pExitButton->Get_Rect(), ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
+	{
+		m_isDead = true;
+		return;
 	}
 
 
+	m_pExitButton->Tick(fTimeDelta);
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
 
-void CItem::Late_Tick(_float fTimeDelta)
+void CItemInfo::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 
+	m_pExitButton->Late_Tick(fTimeDelta);
+
 }
 
-HRESULT CItem::Render()
+HRESULT CItemInfo::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
@@ -119,21 +104,28 @@ HRESULT CItem::Render()
 	return S_OK;
 }
 
-void CItem::Set_Position(_vec2 vPos)
-{
-	m_fX = vPos.x;
-	m_fY = vPos.y;	
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
-	m_rcRect = {
-	  (LONG)(m_fX - m_fSizeX * 0.5f),
-	  (LONG)(m_fY - m_fSizeY * 0.5f),
-	  (LONG)(m_fX + m_fSizeX * 0.5f),
-	  (LONG)(m_fY + m_fSizeY * 0.5f)
-	};
 
+HRESULT CItemInfo::Add_Parts()
+{
+	CTextButton::TEXTBUTTON_DESC Button = {};
+
+	Button.eLevelID = LEVEL_STATIC;
+	Button.fDepth = m_fDepth - 0.01f;
+	Button.strText = TEXT("");
+	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Exit");
+	Button.vPosition = _vec2(m_fX + 70.f, m_fY - 70.f);
+	Button.vSize = _vec2(30.f, 30.f);
+
+	m_pExitButton = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+	if (not m_pExitButton)
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
 }
 
-HRESULT CItem::Add_Components()
+HRESULT CItemInfo::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -150,7 +142,7 @@ HRESULT CItem::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_eItemDesc.strTexture, TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_ItemInfo"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -159,7 +151,7 @@ HRESULT CItem::Add_Components()
 	return S_OK;
 }
 
-HRESULT CItem::Bind_ShaderResources()
+HRESULT CItemInfo::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
 		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
@@ -180,9 +172,9 @@ HRESULT CItem::Bind_ShaderResources()
 	return S_OK;
 }
 
-CItem* CItem::Create(_dev pDevice, _context pContext)
+CItemInfo* CItemInfo::Create(_dev pDevice, _context pContext)
 {
-	CItem* pInstance = new CItem(pDevice, pContext);
+	CItemInfo* pInstance = new CItemInfo(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
@@ -193,9 +185,9 @@ CItem* CItem::Create(_dev pDevice, _context pContext)
 	return pInstance;
 }
 
-CGameObject* CItem::Clone(void* pArg)
+CGameObject* CItemInfo::Clone(void* pArg)
 {
-	CItem* pInstance = new CItem(*this);
+	CItemInfo* pInstance = new CItemInfo(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
@@ -206,9 +198,12 @@ CGameObject* CItem::Clone(void* pArg)
 	return pInstance;
 }
 
-void CItem::Free()
+void CItemInfo::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pItemTex);
+	Safe_Release(m_pExitButton);
 
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);

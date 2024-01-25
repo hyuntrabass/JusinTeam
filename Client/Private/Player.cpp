@@ -66,6 +66,7 @@ HRESULT CPlayer::Init(void* pArg)
 
 void CPlayer::Tick(_float fTimeDelta)
 {
+
 	if (m_bHide && m_fDissolveRatio <= 1.f)
 	{
 		m_fDissolveRatio += fTimeDelta * 6.f;
@@ -239,6 +240,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
+
 	if (m_bIsMount)
 	{
 		m_pRiding->Late_Tick(fTimeDelta);
@@ -2294,6 +2296,7 @@ void CPlayer::Free()
 
 	if (m_pRiding != nullptr)
 		Safe_Release(m_pRiding);
+
 
 	Safe_Release(m_pNameTag);
 	Safe_Release(m_pDissolveTextureCom);
