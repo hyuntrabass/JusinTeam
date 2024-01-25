@@ -303,7 +303,10 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			else if (m_eTriggerType == TRIGGER_SOUND)
 			{
 				TRIGGERSOUND_DESC* pSoundDesc = pCurModel->Get_TriggerSound(m_iCurTriggerIndex);
-				m_pGameInstance->StopSound(pSoundDesc->iChannel);
+				if (pSoundDesc->iChannel != -1)
+				{
+					m_pGameInstance->StopSound(pSoundDesc->iChannel);
+				}
 				pCurModel->Delete_TriggerSound(m_iCurTriggerIndex);
 				if (m_iCurTriggerIndex != 0)
 				{
@@ -403,6 +406,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				{
 					m_AnimDesc.iAnimIndex = iCurrentAnimIndex;
 					m_AnimDesc.bSkipInterpolation = false;
+					m_AnimDesc.fAnimSpeedRatio = 1.7f;
 					pCurrentModel->Set_Animation(m_AnimDesc);
 				}
 			}
@@ -521,7 +525,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			ImGui::End();
 
 			ImGui::Begin("TRIGGER MENU");
-			ImGui::PushItemWidth(150.f);
+			ImGui::PushItemWidth(250.f);
 
 			//¿Ã∆Â∆Æ ¿Ã∏ß ∂ÁøÏ±‚
 			vector<TRIGGEREFFECT_DESC> EffectDescs = pCurModel->Get_TriggerEffects();
@@ -640,7 +644,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 		if (pCurModel->Get_NumTriggerSound() != 0 && m_eTriggerType == TRIGGER_SOUND)
 		{
 			ImGui::Begin("TRIGGER MENU");
-			ImGui::PushItemWidth(150.f);
+			ImGui::PushItemWidth(250.f);
 
 			CModel* pCurModel = m_pPlayer->Get_CurrentModel();
 			vector<TRIGGERSOUND_DESC> SoundDescs = pCurModel->Get_TriggerSounds();
@@ -684,6 +688,21 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			Safe_Delete_Array(ppSoundNameList);
 
 			TRIGGERSOUND_DESC* pSoundDesc = m_pPlayer->Get_CurrentModel()->Get_TriggerSound(m_iCurTriggerIndex);
+			ImGui::SeparatorText("SOUND");
+			if (ImGui::Button("ADD##2"))
+			{
+				_uint iSelectSoundFile = m_iSelectFile;
+				_tchar szSoundName[MAX_PATH]{};
+				MultiByteToWideChar(CP_UTF8, 0, m_szSoundFiles[iSelectSoundFile], (_int)strlen(m_szSoundFiles[iSelectSoundFile]), szSoundName, MAX_PATH);
+
+				pSoundDesc->strSoundNames.push_back(szSoundName);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("DELETE##2"))
+			{
+				pSoundDesc->strSoundNames.pop_back();
+			}
+
 			if (ImGui::Button("START"))
 			{
 				pSoundDesc->iStartAnimIndex = m_pPlayer->Get_CurrentModel()->Get_CurrentAnimationIndex();
@@ -928,6 +947,7 @@ HRESULT CImgui_Manager::SaveFile()
 				Fileout.write(reinterpret_cast<_char*>(&iStartAnimIndex), sizeof(_int));
 				_float fStartAnimPos = EffectDescs[i].fStartAnimPos;
 				Fileout.write(reinterpret_cast<_char*>(&fStartAnimPos), sizeof(_float));
+
 				_uint iNumEnd = static_cast<_uint>(EffectDescs[i].iEndAnimIndices.size());
 				Fileout.write(reinterpret_cast<_char*>(&iNumEnd), sizeof(_uint));
 				for (_uint j = 0; j < iNumEnd; j++)
@@ -964,6 +984,16 @@ HRESULT CImgui_Manager::SaveFile()
 				Fileout.write(reinterpret_cast<_char*>(&iStartAnimIndex), sizeof(_int));
 				_float fStartAnimPos = SoundDescs[i].fStartAnimPos;
 				Fileout.write(reinterpret_cast<_char*>(&fStartAnimPos), sizeof(_float));
+
+				_uint iNumEnd = static_cast<_uint>(SoundDescs[i].iEndAnimIndices.size());
+				Fileout.write(reinterpret_cast<_char*>(&iNumEnd), sizeof(_uint));
+				for (_uint j = 0; j < iNumEnd; j++)
+				{
+					_int iEndAnimIndex = SoundDescs[i].iEndAnimIndices[j];
+					Fileout.write(reinterpret_cast<_char*>(&iEndAnimIndex), sizeof(_int));
+					_float fEndAnimPos = SoundDescs[i].fEndAnimPoses[j];
+					Fileout.write(reinterpret_cast<_char*>(&fEndAnimPos), sizeof(_float));
+				}
 
 				_uint iNumName = static_cast<_uint>(SoundDescs[i].strSoundNames.size());
 				Fileout.write(reinterpret_cast<_char*>(&iNumName), sizeof(_uint));
@@ -1026,6 +1056,7 @@ HRESULT CImgui_Manager::LoadFile()
 				TRIGGEREFFECT_DESC EffectDesc{};
 				Filein.read(reinterpret_cast<_char*>(&EffectDesc.iStartAnimIndex), sizeof(_int));
 				Filein.read(reinterpret_cast<_char*>(&EffectDesc.fStartAnimPos), sizeof(_float));
+
 				_uint iNumEnd{};
 				Filein.read(reinterpret_cast<_char*>(&iNumEnd), sizeof(_uint));
 				for (_uint j = 0; j < iNumEnd; j++)
@@ -1066,6 +1097,18 @@ HRESULT CImgui_Manager::LoadFile()
 
 				Filein.read(reinterpret_cast<_char*>(&SoundDesc.iStartAnimIndex), sizeof(_int));
 				Filein.read(reinterpret_cast<_char*>(&SoundDesc.fStartAnimPos), sizeof(_float));
+
+				_uint iNumEnd{};
+				Filein.read(reinterpret_cast<_char*>(&iNumEnd), sizeof(_uint));
+				for (_uint j = 0; j < iNumEnd; j++)
+				{
+					_int iEndAnimIndex{};
+					Filein.read(reinterpret_cast<_char*>(&iEndAnimIndex), sizeof(_int));
+					SoundDesc.iEndAnimIndices.push_back(iEndAnimIndex);
+					_float fEndAnimPos{};
+					Filein.read(reinterpret_cast<_char*>(&fEndAnimPos), sizeof(_float));
+					SoundDesc.fEndAnimPoses.push_back(fEndAnimPos);
+				}
 
 				_uint iNumName{};
 				Filein.read(reinterpret_cast<_char*>(&iNumName), sizeof(_uint));

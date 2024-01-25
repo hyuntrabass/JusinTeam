@@ -335,7 +335,6 @@ HRESULT CLoader::Load_Select()
 
 #pragma endregion
 
-
 	strInputFilePath = "../Bin/Resources/StaticMesh/Effect/Mesh/";
 	_uint iMeshNumber{};
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))

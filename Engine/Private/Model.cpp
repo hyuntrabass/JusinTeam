@@ -358,6 +358,9 @@ HRESULT CModel::Init(void* pArg)
 		m_EffectMatrices.push_back(pMatrix);
 	}
 
+	random_device rand;
+	m_RandomNumber = _randNum(rand());
+
 	return S_OK;
 }
 
@@ -430,19 +433,34 @@ void CModel::Play_Animation(_float fTimeDelta)
 
 #pragma region Trigger_Sound
 	for (size_t i = 0; i < m_TriggerSounds.size(); i++)
-	{
+	{	//사운드 생성
 		if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iStartAnimIndex &&
 			static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerSounds[i].fStartAnimPos) &&
 			m_TriggerSounds[i].iChannel == -1)
 		{
-			m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[0], m_TriggerSounds[i].fVolume);
+			_int iMaxSound = m_TriggerSounds[i].strSoundNames.size() - 1;
+			_randInt RandomSound(0, iMaxSound);
+			m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[RandomSound(m_RandomNumber)], m_TriggerSounds[i].fVolume);
 		}
-
+		//채널 갱신
 		if (m_TriggerSounds[i].iChannel != -1)
 		{
 			if (not m_pGameInstance->Get_IsPlayingSound(m_TriggerSounds[i].iChannel))
 			{
 				m_TriggerSounds[i].iChannel = -1;
+			}
+		}
+		//사운드 제거
+		if (m_TriggerSounds[i].iChannel != -1)
+		{
+			for (size_t j = 0; j < m_TriggerSounds[i].iEndAnimIndices.size(); j++)
+			{
+				if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iEndAnimIndices[j] &&
+					m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerSounds[i].fEndAnimPoses[j])
+				{
+					m_pGameInstance->StopSound(m_TriggerSounds[i].iChannel);
+					m_TriggerSounds[i].iChannel = -1;
+				}
 			}
 		}
 	}
@@ -688,13 +706,30 @@ HRESULT CModel::Read_TriggerSounds(const string& strFilePath)
 			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.iStartAnimIndex), sizeof(_int));
 			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fStartAnimPos), sizeof(_float));
 
-			size_t iNameSize{};
-			_tchar* pBuffer{};
-			TriggerFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
-			pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
-			TriggerFile.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
-			SoundDesc.strSoundNames.push_back(pBuffer);
-			Safe_Delete_Array(pBuffer);
+			_uint iNumEnd{};
+			TriggerFile.read(reinterpret_cast<_char*>(&iNumEnd), sizeof(_uint));
+			for (_uint i = 0; i < iNumEnd; i++)
+			{
+				_int iEndAnimIndex{};
+				TriggerFile.read(reinterpret_cast<_char*>(&iEndAnimIndex), sizeof(_int));
+				SoundDesc.iEndAnimIndices.push_back(iEndAnimIndex);
+				_float fEndAnimPos{};
+				TriggerFile.read(reinterpret_cast<_char*>(&fEndAnimPos), sizeof(_float));
+				SoundDesc.fEndAnimPoses.push_back(fEndAnimPos);
+			}
+
+			_uint iNumName{};
+			TriggerFile.read(reinterpret_cast<_char*>(&iNumName), sizeof(_uint));
+			for (size_t i = 0; i < iNumName; i++)
+			{
+				size_t iNameSize{};
+				_tchar* pBuffer{};
+				TriggerFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+				pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
+				TriggerFile.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
+				SoundDesc.strSoundNames.push_back(pBuffer);
+				Safe_Delete_Array(pBuffer);
+			}
 
 			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fVolume), sizeof(_float));
 

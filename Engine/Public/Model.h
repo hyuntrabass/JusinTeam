@@ -69,6 +69,7 @@ private:
 	// 사운드 트리거
 	_uint m_iNumTriggersSound{};
 	vector<TRIGGERSOUND_DESC> m_TriggerSounds;
+	_randNum m_RandomNumber;
 
 	_char m_szFilePath[MAX_PATH] = "";
 	_float3* m_Vertices{};
