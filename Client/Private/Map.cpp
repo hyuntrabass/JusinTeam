@@ -29,10 +29,8 @@ HRESULT CMap::Init(void* pArg)
 
 	m_iShaderPass = 0;
 	
-	//m_pTransformCom->Set_Position(_vec3(m_Info.m_Matrix._41, m_Info.m_Matrix._42, m_Info.m_Matrix._43));
 	m_pTransformCom->Set_Matrix(m_Info.m_Matrix);
 	m_pModelCom->Apply_TransformToActor(m_Info.m_Matrix);
-
 	return S_OK;
 }
 

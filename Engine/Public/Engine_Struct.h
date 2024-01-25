@@ -64,12 +64,27 @@ namespace Engine
 		float fBias = 0.25f;
 	}SSAO_DESC;
 
+	typedef struct ThresholdParams {
+		alignas(16) float fThreshold;
+	}THPARAM;
+
+#define GAUSSIAN_RADIUS 7
+
+	typedef struct BlurParams
+	{
+		alignas(16) float coefficients[GAUSSIAN_RADIUS + 1];
+		int radius;     // must be <= MAX_GAUSSIAN_RADIUS
+		int direction;  // 0 = horizontal, 1 = vertical
+	}BLURPARAM;
+
 	struct EffectInfo
 	{
 		unsigned int iType{};
 		bool isSprite{};
+		bool isFixedIndex{};
 		XMINT2 vNumSprites{};
 		float fSpriteDuration{};
+		int iFixedSpriteIndex{};
 		ParticleDesc PartiDesc{};
 		unsigned int iNumInstances{};
 		float fLifeTime{};
@@ -146,24 +161,24 @@ namespace Engine
 	};
 
 	using TRIGGEREFFECT_DESC = struct tagTriggerEffectDesc {
-		int iStartAnimIndex{};
-		float fStartAnimPos{};
-		int iEndAnimIndex = -1;
-		float fEndAnimPos{};
+		int iStartAnimIndex;
+		float fStartAnimPos;
+		std::vector<int> iEndAnimIndices;
+		std::vector<float> fEndAnimPoses;
 		bool IsFollow{};
 		std::wstring strEffectName{};
 		unsigned int iBoneIndex{};
 		SimpleMath::Matrix OffsetMatrix{};
-		bool IsInitRotateToBone{};
 		bool IsDeleteRotateToBone{};
 	};
 
 	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {
 		int iStartAnimIndex{};
 		float fStartAnimPos{};
-		std::wstring strSoundName{};
-		int iChannel = -1;
+		std::vector<std::wstring> strSoundNames;
 		float fVolume{};
+		
+		int iChannel = -1;
 	};
 
 	using VTXPOSCOLOR = struct ENGINE_DLL tagVertex_Position_Color
@@ -235,6 +250,7 @@ namespace Engine
 		SimpleMath::Vector4 vUp{};
 		SimpleMath::Vector4 vLook{};
 		SimpleMath::Vector4 vPos{};
+		SimpleMath::Vector4 vPrevPos{};
 
 		float fSpeed{};
 		SimpleMath::Vector2 vLifeTime{};
@@ -263,7 +279,7 @@ namespace Engine
 
 	using VTXPOINT_INSTANCING = struct ENGINE_DLL tagVertex_Point_Instancing
 	{
-		static const unsigned int iNumElements{ 6 };
+		static const unsigned int iNumElements{ 7 };
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	};
 

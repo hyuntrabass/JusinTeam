@@ -51,10 +51,15 @@ private:
 	// NPC
 	HRESULT Ready_Cat();
 	HRESULT Ready_Dog();
-	HRESULT Ready_NPC_Dummy();
+	HRESULT Ready_NPC_Test();
+	HRESULT Ready_NPC_Dummy_Test();
 
 	// Boss
 	HRESULT Ready_Groar_Boss();
+
+	// Pet
+	HRESULT Ready_Pet();
+
 
 	HRESULT Ready_NpcvsMon();
 

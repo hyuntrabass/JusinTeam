@@ -92,7 +92,7 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 	{
 		m_PrevTransformation = {};
 		_int iNextKeyFrame = m_iCurrentKeyFrame + 1;
-		if (iNextKeyFrame >= m_iNumkeyFrames - 1)
+		if (iNextKeyFrame >= static_cast<_int>(m_iNumkeyFrames - 1))
 		{
 			iNextKeyFrame = m_iNumkeyFrames - 1;
 		}
@@ -108,7 +108,7 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 			{
 				m_iCurrentKeyFrame++;
 				iNextKeyFrame++;
-				if (iNextKeyFrame >= m_iNumkeyFrames - 1)
+				if (iNextKeyFrame >= static_cast<_int>(m_iNumkeyFrames - 1))
 				{
 					iNextKeyFrame = m_iNumkeyFrames - 1;
 					break;

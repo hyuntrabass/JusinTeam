@@ -17,8 +17,10 @@ struct OldEffectInfo
 {
 	unsigned int iType{};
 	bool isSprite{};
+	bool isFixedIndex{};
 	XMINT2 vNumSprites{};
 	float fSpriteDuration{};
+	int iFixedSpriteIndex{};
 	ParticleDesc PartiDesc{};
 	unsigned int iNumInstances{};
 	float fLifeTime{};
@@ -35,6 +37,9 @@ struct OldEffectInfo
 	SimpleMath::Vector2 vUVInit{};
 	SimpleMath::Vector2 vUVDelta{};
 	bool isRandomSprite{};
+
+	bool hasLight{};
+	LIGHT_DESC Light_Desc{};
 
 	std::wstring strDiffuseTexture{};
 	std::wstring strMaskTexture{};

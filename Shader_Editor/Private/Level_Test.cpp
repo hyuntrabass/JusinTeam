@@ -67,6 +67,11 @@ HRESULT CLevel_Test::Ready_Map()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_ShaderTest, TEXT("Layer_Select_Map"), TEXT("Prototype_GameObject_Select_Map"))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 

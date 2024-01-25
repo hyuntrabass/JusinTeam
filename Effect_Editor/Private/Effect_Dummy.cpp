@@ -75,12 +75,19 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 
 	if (m_Effect.isSprite)
 	{
-		m_iSpriteIndex = static_cast<_int>(m_fSpriteTimer);
-		m_fSpriteTimer += (fTimeDelta * m_Effect.vNumSprites.x * m_Effect.vNumSprites.y) / m_Effect.fSpriteDuration;
-		if (m_iSpriteIndex >= m_Effect.vNumSprites.x * m_Effect.vNumSprites.y)
+		if (m_Effect.isFixedIndex)
 		{
-			m_iSpriteIndex = 0;
-			m_fSpriteTimer = {};
+			m_iSpriteIndex = m_Effect.iFixedSpriteIndex;
+		}
+		else
+		{
+			m_iSpriteIndex = static_cast<_int>(m_fSpriteTimer);
+			m_fSpriteTimer += (fTimeDelta * m_Effect.vNumSprites.x * m_Effect.vNumSprites.y) / m_Effect.fSpriteDuration;
+			if (m_iSpriteIndex >= m_Effect.vNumSprites.x * m_Effect.vNumSprites.y)
+			{
+				m_iSpriteIndex = 0;
+				m_fSpriteTimer = {};
+			}
 		}
 	}
 
@@ -222,7 +229,7 @@ HRESULT CEffect_Dummy::Add_Components()
 		break;
 	case Effect_Type::ET_MESH:
 		wstring PrototypeTag = L"Prototype_Model_Effect_";
-		
+
 		_tchar strUnicode[MAX_PATH]{};
 		MultiByteToWideChar(CP_ACP, 0, &m_Effect.strModel[0], static_cast<_int>(m_Effect.strModel.size()), strUnicode, static_cast<_int>(m_Effect.strModel.size()));
 		PrototypeTag += strUnicode;

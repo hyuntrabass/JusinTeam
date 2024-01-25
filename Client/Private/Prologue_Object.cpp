@@ -32,8 +32,7 @@ HRESULT CPrologue_Object::Init(void* pArg)
 
 	m_pTransformCom->Set_Matrix(m_Info.m_WorldMatrix);
 	m_pModelCom->Apply_TransformToActor(m_Info.m_WorldMatrix);
-
-
+	
 	return S_OK;
 }
 

@@ -42,6 +42,8 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 	{
 		VTXINSTANCING* pVertex = &reinterpret_cast<VTXINSTANCING*>(SubResource.pData)[i];
 
+		pVertex->vPrevPos = pVertex->vPos;
+
 		if (pVertex->vLifeTime.x == 0)
 		{
 			_vec4 Test = _vec4::UnitX;

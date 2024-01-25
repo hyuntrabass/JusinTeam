@@ -126,6 +126,11 @@ HRESULT CLoader::Loading_LevelResources()
 
 HRESULT CLoader::Load_Logo()
 {
+	m_strLoadingText = L"Logo : Loading Sounds";
+	if (FAILED(m_pGameInstance->Init_SoundManager()))
+	{
+		return E_FAIL;
+	}
 	m_strLoadingText = L"Logo : Loading Texture";
 #pragma region Texture
 
@@ -143,12 +148,15 @@ HRESULT CLoader::Load_Logo()
 			{
 				return E_FAIL;
 			}
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
-			{
-				return E_FAIL;
-			}
+		
 		}
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Logo_Noise"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI//Logo/Noise.dds")))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_FadeBox"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/FadeBox.png")))))
 	{
 		return E_FAIL;
@@ -708,7 +716,7 @@ HRESULT CLoader::Load_GamePlay()
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
 			{
 				return E_FAIL;
 			}
@@ -741,7 +749,7 @@ HRESULT CLoader::Load_GamePlay()
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
 			{
 				return E_FAIL;
 			}
@@ -863,35 +871,56 @@ HRESULT CLoader::Load_GamePlay()
 
 #pragma endregion Monster
 
-
 #pragma region NPC
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Cat"),
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Cat"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Cat/Mesh/Cat.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Dog"),
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Dog"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Dog/Mesh/Dog.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Item_Merchant"),
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_ItemMerchant"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/ItemMerchant/Mesh/ItemMerchant.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Skill_Merchant"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/SkillMerchant/Mesh/SkillMerchant.hyuntraanimmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_BlackSmith"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/BlackSmith/Mesh/BlackSmith.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
 
-#pragma endregion NPC
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Roskva"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Roskva/Mesh/Roskva.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 
+	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/NPC/NPC_Dummy/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (!entry.exists())
+				return S_OK;
+
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+#pragma endregion NPC
 
 #pragma  region Boss
 
@@ -920,6 +949,22 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 #pragma  endregion Boss
+
+#pragma region Pet
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Pet_Cat"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Pet/Pet_Cat/Mesh/Pet_Cat.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Pet_Dragon"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Pet/Pet_Dragon/Mesh/Pet_Dragon.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+#pragma endregion Pet
 
 #pragma endregion
 
@@ -1114,6 +1159,21 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_ItemMerchant"), CItemMerchant::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BlackSmith"), CBlackSmith::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Roskva"), CRoskva::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_NPC_Dummy"), CNPC_Dummy::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -1130,6 +1190,21 @@ HRESULT CLoader::Load_GamePlay()
 
 
 #pragma endregion Boss
+
+#pragma region Pet
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Pet_Cat"), CPet_Cat::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Pet_Dragon"), CPet_Dragon::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+
+#pragma endregion Pet
 
 #pragma region Terrain
 

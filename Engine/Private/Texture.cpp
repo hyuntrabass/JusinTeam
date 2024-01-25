@@ -4,6 +4,7 @@
 CTexture::CTexture(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
 {
+
 }
 
 CTexture::CTexture(const CTexture& rhs)

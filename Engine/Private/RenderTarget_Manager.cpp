@@ -168,6 +168,14 @@ HRESULT CRenderTarget_Manager::Render_Debug(const wstring& strMRTTag, CShader* p
 }
 #endif // _DEBUG
 
+ID3D11ShaderResourceView* CRenderTarget_Manager::Get_SRV(const wstring& strTargetTag)
+{
+	CRenderTarget* pRenderTarget = Find_RenderTarget(strTargetTag);
+	if (nullptr == pRenderTarget)
+		return nullptr;
+
+	return pRenderTarget->Get_SRV();
+}
 
 CRenderTarget* CRenderTarget_Manager::Find_RenderTarget(const wstring& strTargetTag)
 {

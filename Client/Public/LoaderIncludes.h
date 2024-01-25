@@ -73,10 +73,17 @@
 // NPC
 #include "Cat.h"
 #include "Dog.h"
+#include "ItemMerchant.h"
+#include "BlackSmith.h"
+#include "Roskva.h"
 #include "NPC_Dummy.h"
 
 // Boss
 #include "Groar_Boss.h"
+
+// Pet
+#include "Pet_Cat.h"
+#include "Pet_Dragon.h"
 
 // Test Model
 #include "TestVTFModel.h"

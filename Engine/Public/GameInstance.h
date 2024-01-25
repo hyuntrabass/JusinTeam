@@ -141,6 +141,7 @@ public: // RenderTarget
 	HRESULT End_MRT();
 	HRESULT Bind_ShaderResourceView(class CShader* pShader, const _char* pVariableName, const wstring& strTargetTag);
 	ID3D11Texture2D* Get_Texture2D(const wstring& strTargetTag);
+	ID3D11ShaderResourceView* Get_SRV(const wstring& strTargetTag);
 
 #ifdef _DEBUGTEST
 public:
@@ -149,6 +150,7 @@ public:
 #endif // _DEBUG
 
 public: // Sound Manager
+	HRESULT Init_SoundManager();
 	_bool Is_SoundManager_Ready();
 	_int Play_Sound(const wstring& strSoundTag, _float fVolume = 0.5f, _bool isLoop = false);
 	void PlayBGM(const wstring& strSoundTag, float fVolume);

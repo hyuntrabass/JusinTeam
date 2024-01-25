@@ -145,7 +145,11 @@ HRESULT CEffect_Manager::Read_EffectFile()
 				File.read(reinterpret_cast<_char*>(&Info.fDissolveDuration), sizeof Info.fDissolveDuration);
 				File.read(reinterpret_cast<_char*>(&Info.bSkipBloom), sizeof Info.bSkipBloom);
 				File.read(reinterpret_cast<_char*>(&Info.fUnDissolveDuration), sizeof Info.fUnDissolveDuration);
+				File.read(reinterpret_cast<_char*>(&Info.vUVInit), sizeof Info.vUVInit);
 				File.read(reinterpret_cast<_char*>(&Info.vUVDelta), sizeof Info.vUVDelta);
+				File.read(reinterpret_cast<_char*>(&Info.isRandomSprite), sizeof Info.isRandomSprite);
+				File.read(reinterpret_cast<_char*>(&Info.hasLight), sizeof Info.hasLight);
+				File.read(reinterpret_cast<_char*>(&Info.Light_Desc), sizeof Info.Light_Desc);
 
 				size_t iNameSize{};
 
