@@ -55,7 +55,7 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 	cout << "CamLook X :" << Look.m128_f32[0] << endl;
 	cout << "CamLook Y :" << Look.m128_f32[1] << endl;
 	cout << "CamLook Z :" << Look.m128_f32[2] << endl;
-	cout << endl;*/
+	cout << endl;
 
 #endif // _DEBUG
 
