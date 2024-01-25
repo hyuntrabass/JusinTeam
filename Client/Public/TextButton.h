@@ -68,6 +68,7 @@ public:
 	void Set_Position(_vec2 vPos);
 	void Set_Size(_float fSizeX, _float fSizeY, _float fFontSize = -1.f);
 	void Set_Text(const wstring strText) { m_strText = strText; }
+	CTransform* Get_Transform() { return m_pTransformCom; }
 
 public:
 	static CTextButton* Create(_dev pDevice, _context pContext);

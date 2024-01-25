@@ -1068,6 +1068,24 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Radar"), CRadar::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_ItemInfo"), CItemInfo::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_HPMonster"), CHPMonster::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	/*
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_3DUITex"), C3DUITex::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	*/
 
 #pragma endregion
 

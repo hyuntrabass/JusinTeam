@@ -64,7 +64,6 @@ void CTextButton::Tick(_float fTimeDelta)
 
 void CTextButton::Late_Tick(_float fTimeDelta)
 {
-	wstring strTexture = m_strTexture;
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 
 }
