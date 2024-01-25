@@ -321,7 +321,6 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 
 		ModelFile.close();
 
-
 		if (eType == ModelType::Anim)
 		{
 			if (FAILED(Read_TriggerEffects(strFilePath)))
