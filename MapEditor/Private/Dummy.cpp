@@ -202,14 +202,21 @@ HRESULT CDummy::Add_Components()
 		m_iOutLineShaderPass = StaticPass_OutLine;
 	}
 	
-	//if (m_eType == ItemType::Environment)
-	//{
+	if (m_eType == ItemType::Environment)
+	{
 
-	//	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Mesh"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBuffer), &m_pTransformCom->Get_World_Matrix())))
-	//	{
-	//		return E_FAIL;
-	//	}
-	//}
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Mesh"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBuffer), &m_pTransformCom->Get_World_Matrix())))
+		{
+			return E_FAIL;
+		}
+	}
+	else
+	{
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Info.Prototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+		{
+			return E_FAIL;
+		}
+	}
 
 	if (m_eType == ItemType::Trigger)
 	{
@@ -223,10 +230,7 @@ HRESULT CDummy::Add_Components()
 			return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Info.Prototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
-	{
-		return E_FAIL;
-	}
+
 
 	return S_OK;
 }

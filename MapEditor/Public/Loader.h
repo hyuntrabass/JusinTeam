@@ -4,6 +4,7 @@
 
 BEGIN(Engine)
 class CGameInstance;
+class CVIBuffer_Instancing_Mesh;
 END
 
 BEGIN(MapEditor)

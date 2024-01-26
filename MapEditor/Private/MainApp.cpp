@@ -248,20 +248,7 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 
 HRESULT CMainApp::Ready_Prototype_For_Loading()
 {
-#pragma region Textures
-	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_Screen"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Loading/LoadingScreen_%d.dds")))))
-	//{
-	//	return E_FAIL;
-	//}
-	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_Indicator"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Loading/Loading_Indicator.dds")))))
-	//{
-	//	return E_FAIL;
-	//}
-	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_Icon"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Loading/Loading_Icon.dds")))))
-	//{
-	//	return E_FAIL;
-	//}
-#pragma endregion
+
 
 #pragma region Prototype
 #pragma endregion

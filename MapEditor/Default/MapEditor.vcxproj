@@ -88,6 +88,7 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxCubeTex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxStatMesh.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxStatMesh_Instancing.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Instancing.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Trail.hlsl" />
