@@ -335,6 +335,7 @@ PS_Blur_OUT PS_Motion_Blur(PS_Blur_IN Input)
     if (0.3f > vMtrlDiffuse.a)
     {
         discard;
+    
     }
     
     float3 vNormal;
@@ -382,7 +383,7 @@ PS_OUT PS_Main_LerpDissolve(PS_IN Input)
     }
     if (g_vColor.a > 0.f)
     {
-        vMtrlDiffuse = lerp(vMtrlDiffuse, g_vColor, 0.5f);
+        vMtrlDiffuse = lerp(vMtrlDiffuse, g_vColor, 0.3f);
     }
     if (0.3f > vMtrlDiffuse.a)
     {
@@ -438,7 +439,7 @@ PS_Blur_OUT PS_LerpBlur(PS_Blur_IN Input)
     }
     if (g_vColor.a > 0.f)
     {
-        vMtrlDiffuse = lerp(vMtrlDiffuse, g_vColor, 0.5f);
+        vMtrlDiffuse = lerp(vMtrlDiffuse, g_vColor, 0.3f);
     }
     float3 vNormal;
     if (g_HasNorTex)

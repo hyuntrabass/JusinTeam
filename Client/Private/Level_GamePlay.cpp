@@ -221,7 +221,7 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		return;
 	}
 
-	m_pGameInstance->PhysXTick(fTimeDelta);
+	//m_pGameInstance->PhysXTick(fTimeDelta);
 
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 	{
