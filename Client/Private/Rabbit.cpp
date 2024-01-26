@@ -1,4 +1,5 @@
 #include "Rabbit.h"
+#include "UI_Manager.h"
 
 const _float CRabbit::m_fChaseRange = 5.f;
 const _float CRabbit::m_fAttackRange = 2.f;
@@ -31,6 +32,7 @@ HRESULT CRabbit::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 
 	m_pTransformCom->Set_State(State::Pos, _vec4(100.f, 8.f, 108.f, 1.f));
 	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
@@ -56,11 +58,25 @@ HRESULT CRabbit::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
+	CHPMonster::HP_DESC HpDesc = {};
+	HpDesc.eLevelID = LEVEL_STATIC;
+	HpDesc.iMaxHp = m_iHP;
+	HpDesc.pParentTransform = m_pTransformCom;
+	HpDesc.vPosition = _vec3(0.f, 1.2f, 0.f);
+	m_HpBar = (CHPMonster*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPMonster"), &HpDesc);
+	if (m_HpBar == nullptr)
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
 void CRabbit::Tick(_float fTimeDelta)
 {
+	//Á×À»¶§ ·¹ÀÌ´õ °¨Áö¿¡¼­ Æ®·£½ºÆû »©Áà¾ßÇÔ
+	//CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
+
 	if (m_pGameInstance->Key_Down(DIK_R))
 	{
 		//Set_Damage(0, AT_Bow_Common);
@@ -72,6 +88,7 @@ void CRabbit::Tick(_float fTimeDelta)
 
 	m_pModelCom->Set_Animation(m_Animation);
 
+	m_HpBar->Tick(fTimeDelta);
 	Update_Collider();
 	__super::Update_MonsterCollider();
 
@@ -88,6 +105,7 @@ void CRabbit::Late_Tick(_float fTimeDelta)
 	//	m_pModelCom->Play_Animation(fTimeDelta);
 	//}
 
+	m_HpBar->Late_Tick(fTimeDelta);
 #ifdef _DEBUGTEST
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
@@ -407,4 +425,5 @@ CGameObject* CRabbit::Clone(void* pArg)
 void CRabbit::Free()
 {
 	__super::Free();
+	Safe_Release(m_HpBar);
 }

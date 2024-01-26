@@ -20,8 +20,7 @@ HRESULT CMap::Init(void* pArg)
 {
 	m_Info = *(MapInfo*)pArg;
 	wstring strPrototype = m_Info.Prototype;
-
-	//_vec4 MapPos = _vec4(m_Info.m_Matrix._41, m_Info.m_Matrix._42, m_Info.m_Matrix._43, m_Info.m_Matrix._44);
+	
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;

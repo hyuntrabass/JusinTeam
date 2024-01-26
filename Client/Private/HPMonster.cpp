@@ -36,28 +36,8 @@ HRESULT CHPMonster::Init(void* pArg)
 	m_fSizeY = 7.f;
 	m_fDepth = (_float)D_NAMETAG / (_float)D_END;
 
-
+	m_iCurHp = m_iMaxHp;
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
-
-
-	/*
-	
-	
-
-
-	C3DUITex::UITEX_DESC Desc = {};
-	Desc.eLevelID = m_eLevel;
-	Desc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BG");
-	Desc.vPosition = _vec3(m_vPosition.x, m_vPosition.y, + 0.01f);
-	Desc.pParentTransform = m_pParentTransform;
-	Desc.vSize = _vec2(m_fSizeX + 2.f, m_fSizeY + 2.f);
-	m_pBackground = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &Desc);
-
-	if (not m_pBackground)
-	{
-		return E_FAIL;
-	}
-	*/
 
 	return S_OK;
 }
@@ -65,11 +45,18 @@ HRESULT CHPMonster::Init(void* pArg)
 void CHPMonster::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Pressing(DIK_5))
-		m_iCurHp -= 0.1f;;
+	{
+		if (m_iCurHp > 0)
+		{
+			m_iCurHp -= 1;
+		}
+	}
 	if (m_pGameInstance->Key_Pressing(DIK_6))
 	{
 		if (m_iCurHp <= m_iMaxHp)
-			m_iCurHp += 0.1f;;
+		{
+			m_iCurHp += 1;
+		}
 	}
 
 	if (m_iCurHp <= 0)
@@ -83,8 +70,6 @@ void CHPMonster::Tick(_float fTimeDelta)
 	m_fX = v2DPos.x;
 	m_fY = v2DPos.y;
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
-
-	//m_pBackground->Tick(fTimeDelta);
 }
 
 void CHPMonster::Late_Tick(_float fTimeDelta)
@@ -94,11 +79,37 @@ void CHPMonster::Late_Tick(_float fTimeDelta)
 		return;
 	}
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
-	//m_pBackground->Late_Tick(fTimeDelta);
 }
 
 HRESULT CHPMonster::Render()
 {
+	m_pTransformCom->Set_Scale(_float3(m_fSizeX + 2.f, m_fSizeY + 2.f, 1.f));
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
+		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pBGTex->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pVIBufferCom->Render()))
+	{
+		return E_FAIL;
+	}
+
+	m_pTransformCom->Set_Scale(_float3(m_fSizeX, m_fSizeY, 1.f));
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
@@ -135,6 +146,10 @@ HRESULT CHPMonster::Add_Components()
 	}
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_HPBar"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_BG"), TEXT("Com_Texture1"), reinterpret_cast<CComponent**>(&m_pBGTex))))
 	{
 		return E_FAIL;
 	}
@@ -198,9 +213,9 @@ void CHPMonster::Free()
 {
 	__super::Free();
 
-	//Safe_Release(m_pBackground);
-	//Safe_Release(m_pParentTransform);
+	Safe_Release(m_pParentTransform);
 
+	Safe_Release(m_pBGTex);
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

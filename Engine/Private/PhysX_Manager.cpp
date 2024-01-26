@@ -252,6 +252,8 @@ void CPhysX_Manager::Init_PhysX_Character(CTransform* pTransform, CollisionGroup
 	//m_Characters.emplace(pTransform, pController);
 }
 
+
+
 void CPhysX_Manager::Init_PhysX_MoveableObject(CTransform* pTransform)
 {
 	_mat World = pTransform->Get_World_Matrix();

@@ -317,6 +317,27 @@ void CUI_Manager::Delete_Item_In_Slot(CItemBlock::ITEMSLOT eSlot)
 	dynamic_cast<CItemSlot*>(m_pItemSlots[eSlot])->Delete_Item();
 }
 
+void CUI_Manager::Set_RadarPos(TYPE eType, CTransform* pTransform)
+{
+	m_vecRadarPos[eType].push_back(pTransform);
+}
+
+void CUI_Manager::Delete_RadarPos(TYPE eType, CTransform* pTransform)
+{
+	for (size_t i = 0; i < m_vecRadarPos[eType].size(); i++)
+	{
+		if (m_vecRadarPos[eType][i] == pTransform)
+		{
+			m_vecRadarPos[eType].erase(m_vecRadarPos[eType].begin() + i);
+		}
+	}
+}
+
+const vector<CTransform*> CUI_Manager::Get_RadarPosition(TYPE eType) const
+{
+	return m_vecRadarPos[eType];
+}
+
 
 void CUI_Manager::Level_Up()
 {

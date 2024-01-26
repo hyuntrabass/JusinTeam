@@ -107,11 +107,7 @@ HRESULT CLoader::Loading_LevelResources()
 
 HRESULT CLoader::Load_Editor()
 {
-	m_strLoadingText = L"Editor : Loading Sounds";
-	if (FAILED(m_pGameInstance->Init_SoundManager(SCH_MAX)))
-	{
-		return E_FAIL;
-	}
+
 
 	m_strLoadingText = L"Editor : Loading Texture";
 #pragma region Texture
@@ -420,15 +416,7 @@ HRESULT CLoader::Load_Editor()
 
 	m_strLoadingText = L"Editor : Loading Prototype";
 #pragma region Prototype
-#pragma endregion
 
-	m_strLoadingText = L"CreateCharacter : Loading Sounds";
-	if (FAILED(m_pGameInstance->Init_SoundManager(SCH_MAX)))
-	{
-		return E_FAIL;
-	}
-
-	m_strLoadingText = L"Editor : Loading Texture";
 #pragma region Texture
 
 #pragma region UI

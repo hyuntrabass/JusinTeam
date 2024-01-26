@@ -93,7 +93,7 @@ void CRadar::Tick(_float fTimeDelta)
 		fAngle = atan2(vPlayerLook.z, vPlayerLook.x) - atan2(vPos.y, vPos.x);
 		m_fAnglePlayer = fAngle * 180.0f / XM_PI;
 
-		m_pPlayerIcon->Get_Transform()->Rotation(_vec4(0.f, 0.f, 1.f, 0.f), m_fAnglePlayer);
+		m_pPlayerIcon->Get_Transform()->Rotation(_vec4(0.f, 0.f, 1.f, 0.f), m_fAnglePlayer + m_fAngleCamera * -1.f);
 
 
 		m_pRadar->Tick(fTimeDelta);
@@ -122,6 +122,8 @@ void CRadar::Late_Tick(_float fTimeDelta)
 		m_pButton->Late_Tick(fTimeDelta);
 	}
 
+	m_pMonsterIcon->Late_Tick(fTimeDelta);
+	m_pNpcIcon->Late_Tick(fTimeDelta);
 }
 
 HRESULT CRadar::Render()
@@ -141,7 +143,81 @@ HRESULT CRadar::Render()
 		return E_FAIL;
 	}
 
+	for (size_t i = 0; i < CUI_Manager::TYPE_END; i++)
+	{
+		if (CUI_Manager::Get_Instance()->Get_RadarPosition((CUI_Manager::TYPE)i).empty())
+		{
+			continue;
+		}
+		Render_Icons(i);
+	}
+
 	return S_OK;
+}
+
+void CRadar::Render_Icons(_uint iIdx)
+{
+	if ((CUI_Manager::TYPE)iIdx >= CUI_Manager::TYPE_END)
+	{
+		return;
+	}
+
+	vector<CTransform*> vecTransform = CUI_Manager::Get_Instance()->Get_RadarPosition((CUI_Manager::TYPE)iIdx);
+	for (auto& iter : vecTransform)
+	{
+		_vec3 vObjectPos = iter->Get_State(State::Pos);
+		CTransform* pPlayerTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform"));
+		_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+		_vec3 vLength = XMVector3Length(vPlayerPos - vObjectPos);
+
+		if (vLength.x < 45.f)
+		{
+			_vec2 MapCenter = m_pRadar->Get_Position();
+			_float fMapPosX = (vObjectPos.x - vPlayerPos.x) / 100.f * 140.f;
+			_float fMapPosY = (vObjectPos.z - vPlayerPos.z) / 100.f * 140.f;
+
+			_vec2 vObjectRadarPos = _vec2(MapCenter.x + fMapPosX, MapCenter.y + fMapPosY * -1.f);
+			_vec3 fDir = vObjectPos - vPlayerPos;
+			_float fAngle = atan2(fDir.z, fDir.x) - atan2(1.f, 0.f);
+
+			_float fTheta = (m_fAngleCamera + fAngle * -1.f) * XM_PI / 180.0f;
+
+			_float fCosTheta = cos(fTheta);
+			_float fSinTheta = sin(fTheta);
+
+			_float fRotateX = (vObjectRadarPos.x - MapCenter.x) * fCosTheta - (vObjectRadarPos.y - MapCenter.y) * fSinTheta;
+			_float fRotateY = (vObjectRadarPos.x - MapCenter.x) * fSinTheta + (vObjectRadarPos.y - MapCenter.y) * fCosTheta;
+
+			_vec2 vNewPos = _vec2(fRotateX + MapCenter.x, fRotateY + MapCenter.y);
+			switch ((CUI_Manager::TYPE)iIdx)
+			{
+			case CUI_Manager::MONSTER:
+				m_pMonsterIcon->Set_Position(vNewPos);
+				m_pMonsterIcon->Render();
+				break;
+			case CUI_Manager::NPC:
+				m_pNpcIcon->Set_Position(vNewPos);
+				m_pNpcIcon->Render();
+				break;
+
+			}
+
+		}
+		else if (vLength.x >= 45.f)
+		{
+			switch ((CUI_Manager::TYPE)iIdx)
+			{
+			case CUI_Manager::MONSTER:
+				m_pMonsterIcon->Set_Position(_vec2(-10.f, -10.f));
+				break;
+			case CUI_Manager::NPC:
+				m_pNpcIcon->Set_Position(_vec2(-10.f, -10.f));
+				break;
+
+			}
+
+		}
+	}
 }
 
 HRESULT CRadar::Add_Parts()
@@ -178,6 +254,27 @@ HRESULT CRadar::Add_Parts()
 	m_pPlayerIcon = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
 	if (not m_pPlayerIcon)
+	{
+		return E_FAIL;
+	}
+	
+
+	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_MonsterIcon");
+	Button.vPosition = _vec2(m_fX, m_fY);
+	Button.vSize = _vec2(5.f, 5.f);
+	m_pMonsterIcon = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+
+	if (not m_pMonsterIcon)
+	{
+		return E_FAIL;
+	}
+	
+	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_NpcIcon");
+	Button.vPosition = _vec2(m_fX, m_fY);
+	Button.vSize = _vec2(20.f, 20.f);
+	m_pNpcIcon = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+
+	if (not m_pNpcIcon)
 	{
 		return E_FAIL;
 	}
@@ -264,7 +361,9 @@ void CRadar::Free()
 
 	Safe_Release(m_pRadar);
 	Safe_Release(m_pButton);
+	Safe_Release(m_pNpcIcon);
 	Safe_Release(m_pPlayerIcon);
+	Safe_Release(m_pMonsterIcon);
 
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);

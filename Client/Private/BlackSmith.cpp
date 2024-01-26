@@ -1,4 +1,5 @@
 #include "BlackSmith.h"
+#include "UI_Manager.h"
 
 CBlackSmith::CBlackSmith(_dev pDevice, _context pContext)
 	: CNPC(pDevice, pContext)
