@@ -170,6 +170,8 @@ namespace Engine
 		unsigned int iBoneIndex{};
 		SimpleMath::Matrix OffsetMatrix{};
 		bool IsDeleteRotateToBone{};
+
+		bool HasCreated{};
 	};
 
 	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {
@@ -181,6 +183,7 @@ namespace Engine
 		float fVolume{};
 		
 		int iChannel = -1;
+		bool HasPlayed{};
 	};
 
 	using VTXPOSCOLOR = struct ENGINE_DLL tagVertex_Position_Color

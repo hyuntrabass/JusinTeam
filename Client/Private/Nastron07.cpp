@@ -388,13 +388,13 @@ void CNastron07::Update_Trail(_float fTimeDelta)
 {
 	_mat Matrix = *m_pModelCom->Get_BoneMatrix("Bone_Claw_L");
 	_mat Offset = _mat::CreateTranslation(_vec3(-1.62f, 0.01f, 0.27f));
-	_mat Result = Offset * Matrix * m_pTransformCom->Get_World_Matrix();
+	_mat Result = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 
 	m_pLeftTrail2->Tick(Result.Position_vec3());
 
 	Matrix = *m_pModelCom->Get_BoneMatrix("Bone_Claw_R");
 	Offset = _mat::CreateTranslation(_vec3(1.62f, -0.01f, -0.27f));
-	Result = Offset * Matrix * m_pTransformCom->Get_World_Matrix();
+	Result = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 
 	m_pRightTrail2->Tick(Result.Position_vec3());
 
@@ -403,13 +403,13 @@ void CNastron07::Update_Trail(_float fTimeDelta)
 
 	Matrix = *m_pModelCom->Get_BoneMatrix("Bone_Claw_L");
 	Offset = _mat::CreateTranslation(_vec3(-1.55f, 0.09f, 0.2f));
-	Result = Offset * Matrix * m_pTransformCom->Get_World_Matrix();
+	Result = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 
 	m_pLeftTrail1->Tick(Result.Position_vec3());
 
 	Matrix = *m_pModelCom->Get_BoneMatrix("Bone_Claw_R");
 	Offset = _mat::CreateTranslation(_vec3(1.55f, -0.09f, -0.2f));
-	Result = Offset * Matrix * m_pTransformCom->Get_World_Matrix();
+	Result = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 
 	m_pRightTrail1->Tick(Result.Position_vec3());
 
@@ -418,13 +418,13 @@ void CNastron07::Update_Trail(_float fTimeDelta)
 
 	Matrix = *m_pModelCom->Get_BoneMatrix("Bone_Claw_L");
 	Offset = _mat::CreateTranslation(_vec3(-1.52f, -0.07f, 0.25f));
-	Result = Offset * Matrix * m_pTransformCom->Get_World_Matrix();
+	Result = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 
 	m_pLeftTrail3->Tick(Result.Position_vec3());
 
 	Matrix = *m_pModelCom->Get_BoneMatrix("Bone_Claw_R");
 	Offset = _mat::CreateTranslation(_vec3(1.52f, 0.07f, -0.25f));
-	Result = Offset * Matrix * m_pTransformCom->Get_World_Matrix();
+	Result = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 
 	m_pRightTrail3->Tick(Result.Position_vec3());
 

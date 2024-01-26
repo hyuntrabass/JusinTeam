@@ -73,12 +73,19 @@ void CEffect_Manager::Create_Effect(const wstring& strEffectTag, _mat* pMatrix, 
 	Info.pMatrix = pMatrix;
 	Info.isFollow = isFollow;
 
-	auto iter = m_Effects.find(pMatrix);
-	if (iter == m_Effects.end())
+	if (not Info.isFollow)
 	{
-		CEffect_Dummy* pEffect = Clone_Effect(&Info);
+		Add_Layer_Effect(&Info);
+	}
+	else
+	{
+		auto iter = m_Effects.find(pMatrix);
+		if (iter == m_Effects.end())
+		{
+			CEffect_Dummy* pEffect = Clone_Effect(&Info);
 
-		m_Effects.emplace(pMatrix, pEffect);
+			m_Effects.emplace(pMatrix, pEffect);
+		}
 	}
 }
 

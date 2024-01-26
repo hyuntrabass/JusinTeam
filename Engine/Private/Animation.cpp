@@ -52,38 +52,6 @@ const _float CAnimation::Get_Duration() const
 	return m_fDuration;
 }
 
-const _uint CAnimation::Get_NumTrigger() const
-{
-	return m_iNumTriggers;
-}
-
-vector<_float>& CAnimation::Get_Triggers()
-{
-	return m_Triggers;
-}
-
-void CAnimation::Add_Trigger(_float fAnimPos)
-{
-	auto	iter = find_if(m_Triggers.begin(), m_Triggers.end(), [&](_float fTrigger)->_bool {
-		if (fTrigger == fAnimPos)
-			return true;
-
-		return false;
-		});
-
-	if (iter == m_Triggers.end())
-	{
-		m_Triggers.push_back(fAnimPos);
-		m_iNumTriggers++;
-	}
-}
-
-void CAnimation::Reset_Trigger()
-{
-	m_iNumTriggers = 0;
-	m_Triggers.clear();
-}
-
 void CAnimation::ResetFinished()
 {
 	m_isFinished = false;
