@@ -34,9 +34,16 @@ private:
 	_float						m_fTime{};
 	_float						m_fAngleCamera{};
 	_float						m_fAnglePlayer{};
+	_float						m_fAngleMonster{};
+
 	class CTextButton*			m_pRadar{ nullptr };
 	CTextButton*				m_pButton{ nullptr };
 	CTextButton*				m_pPlayerIcon{ nullptr };
+	CTextButton*				m_pMonsterIcon{ nullptr };
+	CTextButton*				m_pNpcIcon{ nullptr };
+
+private:
+	void Render_Icons(_uint iIdx);
 
 private:
 	HRESULT Add_Parts();

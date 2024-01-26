@@ -51,7 +51,32 @@ HRESULT CRiding::Init(void* pArg)
 	}
 	m_pTransformCom->Set_State(State::Pos, Desc->vSummonPos);
 	m_Animation.fAnimSpeedRatio = 2.f;
+	if (m_CurrentIndex == Nihilir)
+	{
+		PxCapsuleControllerDesc ControllerDesc{};
+		ControllerDesc.height = 3.08f; // 높이(위 아래의 반구 크기 제외
+		ControllerDesc.radius = 2.24f; // 위아래 반구의 반지름
+		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+		ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+		ControllerDesc.stepOffset = 0.3f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 
+		
+	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
+
+	}
+	else if (m_CurrentIndex == Tiger)
+	{
+		PxCapsuleControllerDesc ControllerDesc{};
+		ControllerDesc.height = 1.176f; // 높이(위 아래의 반구 크기 제외
+		ControllerDesc.radius = 0.65f; // 위아래 반구의 반지름
+		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+		ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f)); // 캐릭터가 오를 수 있는 최대 각도
+		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+		ControllerDesc.stepOffset = 0.3f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+		m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
+
+	}
 	m_fDissolveRatio = 1.f;
 	return S_OK;
 }
@@ -71,6 +96,7 @@ void CRiding::Tick(_float fTimeDelta)
 	Init_State();
 	Tick_State(fTimeDelta);
 	m_pModelCom->Set_Animation(m_Animation);
+	m_pTransformCom->Gravity(fTimeDelta);
 	//Update_Collider();
 }
 
@@ -167,16 +193,36 @@ void CRiding::Move(_float fTimeDelta)
 		vDirection -= vRightDir;
 		hasMoved = true;
 	}
+	if (m_pGameInstance->Key_Down(DIK_SPACE,InputChannel::GamePlay))
+	{
+		if(!m_hasJumped)
+		{
+			m_eState = Riding_Jump_Start;
+			m_pTransformCom->Jump(9.f);
+		}
+	}
+	if (m_eState == Riding_Jump_Start)
+	{
+		if (!m_pTransformCom->Is_Jumping())
+		{
+			m_eState = Riding_Jump_End;
+			m_hasJumped = false;
+		}
+	}
+	
 	if (hasMoved)
 	{
 
 		if (m_pGameInstance->Key_Pressing(DIK_LSHIFT))
 		{
+			if (m_eState == Riding_Jump_End)
+				m_eState = Riding_Jump_Run;
+
 			if (m_eState == Riding_Walk or m_eState == Riding_Idle)
 			{
 				m_eState = Riding_Run;
-				m_pTransformCom->Set_Speed(m_fRunSpeed);
 			}
+				m_pTransformCom->Set_Speed(m_fRunSpeed);
 		}
 		else
 		{
@@ -241,13 +287,15 @@ void CRiding::Init_State()
 			switch (m_CurrentIndex)
 			{
 			case Client::Bird:
+
 				break;
 			case Client::Tiger:
 				m_Animation.iAnimIndex = Tiger_1003_Idle;
-
+				m_hasJumped = false;
 				break;
 			case Client::Nihilir:
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Idle;
+				m_hasJumped = false;
 				break;
 			case Client::Riding_End:
 				break;
@@ -263,9 +311,11 @@ void CRiding::Init_State()
 				break;
 			case Client::Tiger:
 				m_Animation.iAnimIndex = Tiger_1003_Run;
+				m_hasJumped = false;
 				break;
 			case Client::Nihilir:
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Run;
+				m_hasJumped = false;
 				break;
 			case Client::Riding_End:
 				break;
@@ -281,9 +331,11 @@ void CRiding::Init_State()
 				break;
 			case Client::Tiger:
 				m_Animation.iAnimIndex = Tiger_1003_Walk;
+				m_hasJumped = false;
 				break;
 			case Client::Nihilir:
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Walk;
+				m_hasJumped = false;
 				break;
 			case Client::Riding_End:
 				break;
@@ -293,8 +345,78 @@ void CRiding::Init_State()
 			m_Animation.isLoop = true;
 			break;
 		case Client::Riding_Attack:
+			m_hasJumped = false;
+			break;
+		case Client::Riding_Jump_Start:
+			switch (m_CurrentIndex)
+			{
+			case Client::Tiger:
+				m_Animation.iAnimIndex = Tiger_1003_Jump_Start;
+				m_hasJumped = true;
+				break;
+			case Client::Nihilir:
+				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Jump_Start;
+
+				m_hasJumped = true;
+				break;
+			case Client::Riding_End:
+				break;
+			default:
+				break;
+			}
 			break;
 		case Client::Riding_Jump:
+			switch (m_CurrentIndex)
+			{
+			case Client::Tiger:
+				m_Animation.iAnimIndex = Tiger_1003_Jump_loop;
+				m_hasJumped = true;
+				m_Animation.isLoop = true;
+				break;
+			case Client::Nihilir:
+				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Jump_Loop;
+				m_hasJumped = true;
+				m_Animation.isLoop = true;
+				break;
+			case Client::Riding_End:
+				break;
+			default:
+				break;
+			}
+			break;
+		case Client::Riding_Jump_Run:
+			switch (m_CurrentIndex)
+			{
+			case Client::Tiger:
+				m_Animation.iAnimIndex = Tiger_1003_Jump_End_Run;
+				m_hasJumped = false;
+				break;
+			case Client::Nihilir:
+				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Jump_End_Run;
+				m_hasJumped = false;
+				break;
+			case Client::Riding_End:
+				break;
+			default:
+				break;
+			}
+			break;
+		case Client::Riding_Jump_End:
+			switch (m_CurrentIndex)
+			{
+			case Client::Tiger:
+				m_Animation.iAnimIndex = Tiger_1003_Jump_End;
+				m_hasJumped = false;
+				break;
+			case Client::Nihilir:
+				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Jump_End;
+				m_hasJumped = false;
+				break;
+			case Client::Riding_End:
+				break;
+			default:
+				break;
+			}
 			break;
 		case Client::Riding_Sky:
 			m_Animation.iAnimIndex = Bird_1005_Takeoff;
@@ -333,6 +455,62 @@ void CRiding::Tick_State(_float fTimeDelta)
 			break;
 		}
 		break;
+	case Client::Riding_Jump_Start:
+		switch (m_CurrentIndex)
+		{
+		case Client::Tiger:
+			if (m_pModelCom->IsAnimationFinished(Tiger_1003_Jump_Start))
+			{
+				m_eState = Riding_Jump;
+			}
+			break;
+		case Client::Nihilir:
+			if (m_pModelCom->IsAnimationFinished(Nihilir_VC_Nihilir_5002_Jump_Start))
+			{
+				m_eState = Riding_Jump;
+			}
+		default:
+			break;
+		}
+		break;
+	case Client::Riding_Jump_End:
+		switch (m_CurrentIndex)
+		{
+		case Client::Tiger:
+			if (m_pModelCom->IsAnimationFinished(Tiger_1003_Jump_End))
+			{
+				m_eState = Riding_Idle;
+			}
+			break;
+		case Client::Nihilir:
+			if (m_pModelCom->IsAnimationFinished(Nihilir_VC_Nihilir_5002_Jump_End))
+			{
+				m_eState = Riding_Idle;
+			}
+			break;
+		default:
+			break;
+		}
+		break;
+	case Client::Riding_Jump_Run:
+		switch (m_CurrentIndex)
+		{
+		case Client::Tiger:
+			if (m_pModelCom->IsAnimationFinished(Tiger_1003_Jump_End_Run))
+			{
+				m_eState = Riding_Run;
+			}
+			break;
+		case Client::Nihilir:
+			if (m_pModelCom->IsAnimationFinished(Nihilir_VC_Nihilir_5002_Jump_End_Run))
+			{
+				m_eState = Riding_Run;
+			}
+		default:
+			break;
+		}
+		break;
+
 	case Client::Riding_Run:
 		break;
 	case Client::Riding_Walk:

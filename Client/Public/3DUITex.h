@@ -38,7 +38,7 @@ private:
 	wstring			m_strTexture;
 	_vec2			m_vSize;
 	_vec3			m_vPosition{};
-	CTransform*		m_pParentTransform;
+	CTransform*		m_pParentTransform{ nullptr };
 
 private:
 	HRESULT Add_Components();

@@ -11,6 +11,7 @@
 #include "VIBuffer_Instancing_Point.h"
 #include "Collider.h"
 #include "VIBuffer_Trail.h"
+#include "VIBuffer_Trail_Surface.h"
 
 #include "VTFModel.h"
 #include "RealtimeVTFModel.h"

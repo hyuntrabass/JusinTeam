@@ -186,6 +186,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	wstring composingString{};
+
 	switch (message)
 	{
 	case WM_COMMAND:
@@ -205,12 +207,39 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	break;
+	case WM_IME_COMPOSITION:
+	{
+		HIMC hIMC = ::ImmGetContext(hWnd);
+		if (hIMC)
+		{
+			if (lParam & GCS_COMPSTR)
+			{ // 조합 중인 문자열이 있는 경우
+				LONG len = ::ImmGetCompositionString(hIMC, GCS_COMPSTR, NULL, 0);
+				std::vector<wchar_t> buffer(len / sizeof(wchar_t) + 1);
+				::ImmGetCompositionString(hIMC, GCS_COMPSTR, buffer.data(), len);
+				composingString = buffer.data(); // 조합 중인 문자열을 저장
+			}
+			if (lParam & GCS_RESULTSTR)
+			{ // 조합이 완료된 문자열이 있는 경우
+				LONG len = ::ImmGetCompositionString(hIMC, GCS_RESULTSTR, NULL, 0);
+				std::vector<wchar_t> buffer(len / sizeof(wchar_t) + 1);
+				::ImmGetCompositionString(hIMC, GCS_RESULTSTR, buffer.data(), len);
+				composingString += buffer.data(); // 조합 완료된 문자열을 저장
+			}
+			::ImmReleaseContext(hWnd, hIMC);
+		}
+		break;
+	}
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
+	wstring CompleteString = CGameInstance::Get_Instance()->Get_InputString();
+	CompleteString += composingString;
+	CGameInstance::Get_Instance()->Set_InputString(composingString);
+	
 	return 0;
 }
 

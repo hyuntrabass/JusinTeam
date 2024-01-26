@@ -9,17 +9,19 @@ CVIBuffer_Trail::CVIBuffer_Trail(const CVIBuffer_Trail& rhs)
 	: CVIBuffer(rhs)
 	, m_TrailBufferDesc(rhs.m_TrailBufferDesc)
 	, m_TrailInitialData(rhs.m_TrailInitialData)
+	, m_iDetailRatio(rhs.m_iDetailRatio)
 {
 }
 
 HRESULT CVIBuffer_Trail::Init_Prototype(const _uint iNumVertices, _float2 vPSize)
 {
+	m_iDetailRatio = 4;
 	m_iNumVertexBuffers = 1;
 	m_iVertexStride = sizeof VTXTRAIL;
-	m_iNumVertices = iNumVertices;
+	m_iNumVertices = iNumVertices * m_iDetailRatio;
 
 	m_iIndexStride = 2;
-	m_iNumIndices = iNumVertices;
+	m_iNumIndices = iNumVertices * m_iDetailRatio;
 
 	m_eIndexFormat = DXGI_FORMAT_R16_UINT;
 	m_ePrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
@@ -91,34 +93,57 @@ HRESULT CVIBuffer_Trail::Init(void* pArg)
 	return S_OK;
 }
 
-void CVIBuffer_Trail::Update(_uint iNumVerticesToUse, _float3* pPositions, _float4* pColors, _float2* pPSize)
+void CVIBuffer_Trail::Update(_uint iNumVerticesToUse, _vec3* pPositions, _vec4* pColors, _vec2* pPSize)
 {
 	D3D11_MAPPED_SUBRESOURCE SubResource{};
 
-	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
+	_uint iCMRIndex[4]{ 0, 0, 1, 2 };
+	_float fWeight{};
 
-	for (size_t i = 0; i < m_iNumVertices; i++)
+	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
+	for (_uint i = 0; i < m_iNumVertices; i++)
 	{
-		if (i >= iNumVerticesToUse)
+		if (i >= iNumVerticesToUse * m_iDetailRatio)
 		{
 			reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPosition = pPositions[iNumVerticesToUse - 1];
 			reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vColor = _float4();
-			reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPSize = _float2();;
+			reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPSize = _float2();
 		}
 		else
 		{
+			if (i == m_iDetailRatio)
+			{
+				iCMRIndex[1]++;
+				iCMRIndex[2]++;
+				iCMRIndex[3]++;
+				fWeight = 0.f;
+			}
+			else if (i and i % m_iDetailRatio == 0)
+			{
+				iCMRIndex[0]++;
+				iCMRIndex[1]++;
+				iCMRIndex[2]++;
+				if (iCMRIndex[3] < iNumVerticesToUse - 1)
+				{
+					iCMRIndex[3]++;
+				}
+				fWeight = 0.f;
+			}
+
 			if (pPositions)
 			{
-				reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPosition = pPositions[i];
+				reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPosition = _vec3(_vec4::CatmullRom(pPositions[iCMRIndex[0]], pPositions[iCMRIndex[1]], pPositions[iCMRIndex[2]], pPositions[iCMRIndex[3]], fWeight));
 			}
 			if (pColors)
 			{
-				reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vColor = pColors[i];
+				reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vColor = _vec4::Lerp(pColors[iCMRIndex[1]], pColors[iCMRIndex[2]], fWeight);
 			}
 			if (pPSize)
 			{
-				reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPSize = pPSize[i];
+				reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPSize = _vec2::Lerp(pPSize[iCMRIndex[1]], pPSize[iCMRIndex[2]], fWeight);
 			}
+
+			fWeight += 1.f / static_cast<_float>(m_iDetailRatio);
 		}
 	}
 

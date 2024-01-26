@@ -124,6 +124,7 @@ namespace Engine
 		float fInterpolationTime{ 0.2f };
 		float fDurationRatio{ 1.f };
 		bool bRestartAnimation{ false };
+		float fStartAimPos{};
 	};
 
 
@@ -277,6 +278,16 @@ namespace Engine
 		XMFLOAT3 vPosition{};
 		XMFLOAT2 vPSize{};
 		XMFLOAT4 vColor{};
+
+		static const unsigned int iNumElements{ 3 };
+		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
+	};
+
+	using VTXTRAILSURFACE = struct ENGINE_DLL tagVertex_Trail_Surface
+	{
+		XMFLOAT3 vTopPosition{};
+		XMFLOAT3 vBottomPosition{};
+		float fAlpha{};
 
 		static const unsigned int iNumElements{ 3 };
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
