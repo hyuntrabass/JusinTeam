@@ -78,32 +78,34 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		if (m_eState == Attack or m_eState == Skill1 or m_eState == Skill2 or m_eState == Skill3 or m_eState == Skill4)
 		{
-			m_bLeft_TrailOn = true;
+			m_pLeft_Trail->On();
 		}
 		else
-			m_bLeft_TrailOn = false;
+			m_pLeft_Trail->Off();
 
 		if (m_eState == Skill2 or m_eState == Skill4)
 		{
-			m_bRight_TrailOn = true;
+			m_pRight_Trail->On();
 		}
 		else
-			m_bRight_TrailOn = false;
+			m_pRight_Trail->Off();
 	}
 
 	m_StartRegen += fTimeDelta;
 	m_OldWorldMatrix = m_pTransformCom->Get_World_Matrix();
 	_mat m{};
-	if(m_bLeft_TrailOn)
+	if(m_pLeft_Trail!=nullptr)
 	{
 		m = _mat::CreateTranslation(0.f, -0.5f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
 		m_pLeft_Trail->Tick((m.Position_vec3()));
 	}
-	if(m_bRight_TrailOn)
+
+	if (m_pRight_Trail != nullptr)
 	{
 		m = _mat::CreateTranslation(0.f, 0.5f, 0.f) * *m_Right_Mat * m_pTransformCom->Get_World_Matrix();
 		m_pRight_Trail->Tick((m.Position_vec3()));
 	}
+	
 	
 	if (m_bStartGame)
 	{
@@ -135,7 +137,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		{
 			m_bIsMount = true;
 			m_Animation.iAnimIndex = Anim_Mount_Idle;
-			Summon_Riding(Nihilir);
+			Summon_Riding(Tiger);
 		}
 		else
 		{
@@ -285,9 +287,8 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 		Change_Weapon(WP_SWORD,SWORD4);
 	}
-	if (m_bLeft_TrailOn)
+
 	m_pLeft_Trail->Late_Tick(fTimeDelta);
-	if (m_bRight_TrailOn)
 	m_pRight_Trail->Late_Tick(fTimeDelta);
 
 #ifdef _DEBUGTEST
@@ -876,6 +877,7 @@ void CPlayer::Move(_float fTimeDelta)
 		if (m_pGameInstance->Key_Pressing(DIK_W))
 		{
 			vDirection += vForwardDir;
+			
 			hasMoved = true;
 			CEvent_Manager::Get_Instance()->Update_Quest(TEXT("이동하기"));
 		}
@@ -910,8 +912,7 @@ void CPlayer::Move(_float fTimeDelta)
 			}
 		}
 
-
-	
+		
 	if (hasMoved &&!m_bIsClimb)
 	{
 
@@ -950,10 +951,7 @@ void CPlayer::Move(_float fTimeDelta)
 				m_eState = Jump_Run;
 				
 			}
-			m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed);
-
-		
-		
+			m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed);		
 		}
 		else
 		{
@@ -984,6 +982,19 @@ void CPlayer::Move(_float fTimeDelta)
 				m_pTransformCom->Set_Speed(m_fWalkSpeed + m_Status.Speed / 3.f);
 			}
 
+			
+		}
+		if (m_pGameInstance->Key_Down(DIK_F))
+		{
+			if (m_bIsClimb)
+				return;
+			if (vDirection == _vec4())
+				vDirection += vForwardDir;
+
+		m_pTransformCom->LookAt_Dir(vDirection);
+			//m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
+			m_bAttacked = false;
+			Common_Attack();
 		}
 
 		if (m_eState == Jump_Start)
@@ -1033,19 +1044,8 @@ void CPlayer::Move(_float fTimeDelta)
 			m_eState = Jump_End;
 	}
 	}
-
-	if (m_pGameInstance->Key_Down(DIK_F))
-	{
-		if (m_bIsClimb)
-			return;
-
-		vDirection += vForwardDir;
 	
-		m_pTransformCom->Set_Speed(0.5f);
-		m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
-		m_bAttacked = false;
-		Common_Attack();
-	}
+	
 
 	m_ReturnZoomTime += (fTimeDelta * 0.5f);
 	
@@ -1182,13 +1182,14 @@ void CPlayer::Is_Climb(_float fTimeDelta)
 
 
 }
+
 void CPlayer::Common_Attack()
 {
 	if (m_fAttTimer < 0.55f)
 		return;
 
-	if (m_fAttTimer > 1.1f || m_iAttackCombo > 3 || (m_eState != Attack_Idle && m_eState != Attack))
-		m_iAttackCombo = 0;
+	if (m_fAttTimer > 1.5f || m_iAttackCombo > 3 || (m_eState != Attack_Idle && m_eState != Attack))
+	m_iAttackCombo = 0;
 
 	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 2.f;

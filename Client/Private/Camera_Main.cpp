@@ -199,7 +199,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		Filter.data.word0 = ~COLGROUP_PLAYER;
 		
 
-		if (m_pGameInstance->Raycast(m_pPlayerTransform->Get_CenterPos() + vRayDir * (0.5f + ps), vRayDir, fDist, Buffer))
+		if (m_pGameInstance->Raycast(m_pPlayerTransform->Get_CenterPos() /*+ vRayDir * (0.5f + ps)*/, vRayDir, fDist, Buffer))
 		{
 			m_pTransformCom->Set_State(State::Pos, PxVec3ToVector(Buffer.block.position, 1.f));
 		}
