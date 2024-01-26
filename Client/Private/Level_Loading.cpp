@@ -17,6 +17,10 @@ HRESULT CLevel_Loading::Init(LEVEL_ID eNextLevel)
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_LOADING);
 
+	if (m_pGameInstance->Is_SoundManager_Ready())
+	{
+		m_pGameInstance->StopAll();
+	}
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOADING, TEXT("Layer_Loading"), TEXT("Prototype_GameObject_Loading"))))
 	{

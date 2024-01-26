@@ -33,7 +33,7 @@ HRESULT CNastron03::Init(void* pArg)
 	}
 
 	//m_pTransformCom->Set_State(State::Pos, _vec4(5.f, 0.f, 0.f, 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
@@ -44,6 +44,22 @@ HRESULT CNastron03::Init(void* pArg)
 	m_iHP = 30;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
+
+	TRAIL_DESC Desc{};
+	Desc.vColor = Colors::PowderBlue;
+	Desc.vPSize = _vec2(0.05f, 0.05f);
+	Desc.iNumVertices = 10.f;
+	m_pSwordTrail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
+
+	PxCapsuleControllerDesc ControllerDesc{};
+	ControllerDesc.height = 1.4f; // 높이(위 아래의 반구 크기 제외
+	ControllerDesc.radius = 0.4f; // 위아래 반구의 반지름
+	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+
+	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
 	return S_OK;
 }
@@ -62,6 +78,8 @@ void CNastron03::Tick(_float fTimeDelta)
 
 	Update_Collider();
 	__super::Update_MonsterCollider();
+
+	Update_Trail(fTimeDelta);
 }
 
 void CNastron03::Late_Tick(_float fTimeDelta)
@@ -256,7 +274,14 @@ void CNastron03::Tick_State(_float fTimeDelta)
 			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
 				m_pModelCom->IsAnimationFinished(ATTACK03))
 			{
-				m_iAttackPattern = rand() % 3;
+				m_iAttackPattern++;
+
+				if (m_iAttackPattern == 3)
+				{
+					m_iAttackPattern = 0;
+				}
+
+				//m_iAttackPattern = rand() % 3;
 				m_bSelectAttackPattern = true;
 				m_bAttacked = false;
 				m_bAttacked2 = false;
@@ -276,6 +301,11 @@ void CNastron03::Tick_State(_float fTimeDelta)
 					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
 					m_bAttacked = true;
 				}
+				if (fAnimpos >= 44.f && fAnimpos <= 54.f)
+				{
+					m_pSwordTrail->Late_Tick(fTimeDelta);
+				}
+
 			}
 			break;
 
@@ -295,6 +325,15 @@ void CNastron03::Tick_State(_float fTimeDelta)
 					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
 					m_bAttacked2 = true;
 				}
+				if (fAnimpos >= 34.f && fAnimpos <= 41.f)
+				{
+					m_pSwordTrail->Late_Tick(fTimeDelta);
+				}
+				if (fAnimpos >= 66.f && fAnimpos <= 71.f)
+				{
+					m_pSwordTrail->Late_Tick(fTimeDelta);
+				}
+
 			}
 			break;
 
@@ -339,6 +378,16 @@ void CNastron03::Tick_State(_float fTimeDelta)
 
 		break;
 	}
+}
+
+void CNastron03::Update_Trail(_float fTimeDelta)
+{
+	_mat Matrix = *m_pModelCom->Get_BoneMatrix("Bip001-Prop1");
+	_mat Offset = _mat::CreateTranslation(_vec3(0.f, 0.89f, -1.18f));
+
+	_mat Result = Offset * Matrix * m_pTransformCom->Get_World_Matrix();
+
+	m_pSwordTrail->Tick(Result.Position_vec3());
 }
 
 HRESULT CNastron03::Add_Collider()
@@ -405,4 +454,6 @@ CGameObject* CNastron03::Clone(void* pArg)
 void CNastron03::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pSwordTrail);
 }

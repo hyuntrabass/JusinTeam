@@ -1,5 +1,9 @@
 #pragma once
 
+#include "3DUITex.h"
+#include "HPMonster.h"
+#include "ItemInfo.h"
+#include "Radar.h"
 #include "Inven.h"
 #include "Logo.h"
 #include "Odin.h"

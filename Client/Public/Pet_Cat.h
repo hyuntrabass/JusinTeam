@@ -24,6 +24,7 @@ public:
 		STATE_IDLE,
 		STATE_WALK,
 		STATE_CHASE,
+		STATE_EMOTION,
 		STATE_END
 	};
 
@@ -46,6 +47,10 @@ public:
 private:
 	PET_CAT_STATE m_ePreState = STATE_END;
 	PET_CAT_STATE m_eCurState = STATE_END;
+
+private:
+	_float m_fIdleTime = {};
+
 
 public:
 	static CPet_Cat* Create(_dev pDevice, _context pContext);
