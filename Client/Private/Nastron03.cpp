@@ -228,11 +228,11 @@ void CNastron03::Tick_State(_float fTimeDelta)
 			m_fIdleTime = 0.f;
 		}
 
-		_float fDistance = __super::Compute_PlayerDistance();
-		if (fDistance <= m_fChaseRange)
-		{
-			m_eCurState = STATE_CHASE;
-		}
+		//_float fDistance = __super::Compute_PlayerDistance();
+		//if (fDistance <= m_fChaseRange)
+		//{
+		//	m_eCurState = STATE_CHASE;
+		//}
 
 	}
 		break;
