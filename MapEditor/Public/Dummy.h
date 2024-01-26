@@ -27,9 +27,9 @@ public:
 	void Set_Create() { m_isCreate = true; }
 	void Set_Dead() { m_isDead = true; }
 	_bool Get_Create() { return m_isCreate; }
-	
+	_float Get_Size() { return m_fTriggerSize; }
 	_int Get_ID() const {return m_iID;}
-	_int Get_Trigger() const {return m_iTrigger;}
+	_uint Get_TriggerNum() { return m_iTrigger; }
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -57,8 +57,8 @@ private:
 	
 	ItemType m_eType{ItemType::End};
 	_int m_iID = 0;
-	_int m_iTrigger = 0;
-
+	_uint m_iTrigger{ 0 };
+	_float m_fTriggerSize{};
 	_bool m_isCreate{false};
 private:
 	HRESULT Add_Components();

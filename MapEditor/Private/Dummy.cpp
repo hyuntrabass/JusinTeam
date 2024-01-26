@@ -56,6 +56,8 @@ HRESULT CDummy::Init(void* pArg)
 	else if (m_Info.eType == ItemType::Trigger)
 	{
 		m_iTrigger = m_Info.iTriggerNum;
+		m_fTriggerSize = m_Info.fTriggerSize;
+
 		m_iShaderPass = StaticPass_AlphaTestMeshes;
 
 	}
@@ -87,6 +89,10 @@ void CDummy::Tick(_float fTimeDelta)
 	{
 
 		m_pModelCom->Play_Animation(fTimeDelta);
+	}
+	if (m_eType == ItemType::Trigger)
+	{
+		m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
 	}
 }
 
@@ -211,8 +217,8 @@ HRESULT CDummy::Add_Components()
 	// Com_Collider
 		Collider_Desc CollDesc = {};
 		CollDesc.eType = ColliderType::Sphere;
-		CollDesc.fRadius = m_Info.fTriggerSize;
-		CollDesc.vCenter = _vec3(m_Info.vPos.x, m_Info.vPos.y, m_Info.vPos.z);
+		CollDesc.fRadius = m_fTriggerSize;
+		CollDesc.vCenter = _vec3(m_pTransformCom->Get_State(State::Pos));
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Trigger_Sphere"), (CComponent**)&m_pCollider, &CollDesc)))
 			return E_FAIL;
 	}

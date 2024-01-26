@@ -6,4 +6,3 @@
 #include "Terrain.h"
 #include "Dummy.h"
 #include "Map.h"
-#include "Trigger.h"

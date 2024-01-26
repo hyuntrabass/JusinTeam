@@ -158,6 +158,7 @@ private:
 	_int DummyIndex{ 0 };
 	_int MapIndex{ 0 };
 	_bool m_isMode{ false };
+	_int iTriggerNum{ -1 };
 
 private:
 	// 파일의 이름 가져와서 저장

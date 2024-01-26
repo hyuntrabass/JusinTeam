@@ -44,7 +44,6 @@
     <ClInclude Include="..\Public\Map.h" />
     <ClInclude Include="..\Public\MapEditor_Define.h" />
     <ClInclude Include="..\Public\Terrain.h" />
-    <ClInclude Include="..\Public\Trigger.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MapEditor.h" />
     <ClInclude Include="Resource.h" />
@@ -73,7 +72,6 @@
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\Map.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
-    <ClCompile Include="..\Private\Trigger.cpp" />
     <ClCompile Include="MapEditor.cpp" />
   </ItemGroup>
   <ItemGroup>

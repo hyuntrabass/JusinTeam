@@ -8,7 +8,6 @@
 #include "Dummy.h"
 #include "Terrain.h"
 #include "Map.h"
-#include "Trigger.h"
 
 IMPLEMENT_SINGLETON(CImGui_Manager)
 
@@ -721,23 +720,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::InputInt("Trigger Count", &m_iTriggerCount, 14);
 			ImGui::Separator();
 
-			_int iTriggerNum = 0;
-			if (!m_TriggerList.empty())
-			{
-				auto iter = m_TriggerList.begin();
-				int iTriggerNum = -1;
-
-				for (int index = 0; iter != m_TriggerList.end(); iter++, index++)
-				{
-					if ((*iter)->Get_Selected() == true)
-					{
-						iTriggerNum = index;
-						break;
-					}
-				}
-			}
-
-			ImGui::InputInt("Trigger Index", &iTriggerNum);
+			
 			ImGui::Separator();
 			ImGui::InputFloat("Size", &m_fTriggerSize,1.f, 5.f, "%.3f", 0);
 			ImGui::Separator();
@@ -912,7 +895,7 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	Info.eType = m_eItemType;
 	if (m_eItemType == ItemType::Trigger)
 	{
-		Info.iTriggerNum = m_iTriggerNumber;
+		Info.iTriggerNum = m_TriggerList.size();
 		Info.fTriggerSize = m_fTriggerSize;
 	}
 	else
@@ -2169,11 +2152,142 @@ HRESULT CImGui_Manager::Load_Envir()
 }
 HRESULT CImGui_Manager::Save_Trigger()
 {
-	return E_NOTIMPL;
+	OPENFILENAME OFN;
+	TCHAR filePathName[MAX_PATH] = L"";
+	TCHAR lpstrFile[MAX_PATH] = L"_Trigger.dat";
+	static TCHAR filter[] = L"모든 파일\0*.*\0텍스트 파일\0*.txt\0dat 파일\0*.dat";
+
+	memset(&OFN, 0, sizeof(OPENFILENAME));
+	OFN.lStructSize = sizeof(OPENFILENAME);
+	OFN.hwndOwner = g_hWnd;
+	OFN.lpstrFilter = filter;
+	OFN.lpstrFile = lpstrFile;
+	OFN.nMaxFile = 256;
+	OFN.lpstrInitialDir = L"..\\Bin\\Data";
+
+	if (GetSaveFileName(&OFN) != 0)
+	{
+		const TCHAR* pGetPath = OFN.lpstrFile;
+
+		std::ofstream outFile(pGetPath, std::ios::binary);
+
+		if (!outFile.is_open())
+			return E_FAIL;
+
+		_uint TriggerList = (_uint)m_TriggerList.size();
+		outFile.write(reinterpret_cast<const char*>(&TriggerList), sizeof(_uint));
+
+		_uint iIndex = 0;
+		for (auto& Trigger : m_TriggerList)
+		{
+			outFile.write(reinterpret_cast<const char*>(&iIndex), sizeof(_uint));
+
+			wstring TriggerPrototype = Trigger->Get_Info().Prototype;
+			_ulong TriggerPrototypeSize = (_ulong)TriggerPrototype.size();
+
+			outFile.write(reinterpret_cast<const char*>(&TriggerPrototypeSize), sizeof(_ulong));
+			outFile.write(reinterpret_cast<const char*>(TriggerPrototype.c_str()), TriggerPrototypeSize * sizeof(wchar_t));
+
+			_float fSize = Trigger->Get_Size();
+			outFile.write(reinterpret_cast<const char*>(&fSize), sizeof(_float));
+
+			CTransform* pEnvirTransform = dynamic_cast<CTransform*>(Trigger->Find_Component(TEXT("Com_Transform")));
+			_mat TriggerWorldMat = pEnvirTransform->Get_World_Matrix();
+			outFile.write(reinterpret_cast<const char*>(&TriggerWorldMat), sizeof(_mat));
+			iIndex++;
+		}
+
+		MessageBox(g_hWnd, L"파일 저장 완료", L"파일 저장", MB_OK);
+
+	}
+	return S_OK;
 }
 HRESULT CImGui_Manager::Load_Trigger()
 {
-	return E_NOTIMPL;
+	OPENFILENAME OFN;
+	TCHAR filePathName[MAX_PATH] = L"";
+	static TCHAR filter[] = L"모두(*.*)\0*.*\0데이터 파일(*.dat)\0*.dat";
+
+	memset(&OFN, 0, sizeof(OPENFILENAME));
+	OFN.lStructSize = sizeof(OPENFILENAME);
+	OFN.hwndOwner = g_hWnd;
+	OFN.lpstrFilter = filter;
+	OFN.lpstrFile = filePathName;
+	OFN.nMaxFile = 256;
+	OFN.lpstrInitialDir = L"..\\Bin\\Data\\";
+
+	if (GetOpenFileName(&OFN) != 0)
+	{
+		const TCHAR* pGetPath = OFN.lpstrFile;
+
+		std::ifstream inFile(pGetPath, std::ios::binary);
+
+		if (!inFile.is_open())
+		{
+			MessageBox(g_hWnd, L"파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+			return E_FAIL;
+		}
+
+		_uint TriggerListSize;
+		inFile.read(reinterpret_cast<char*>(&TriggerListSize), sizeof(_uint));
+
+
+		for (_uint i = 0; i < TriggerListSize; ++i)
+		{
+
+
+			DummyInfo TriggerInfo{};
+
+
+			_uint iIndex{};
+			inFile.read(reinterpret_cast<char*>(&iIndex), sizeof(_uint));
+
+			TriggerInfo.iTriggerNum = iIndex;
+
+			_ulong TriggerPrototypeSize;
+			inFile.read(reinterpret_cast<char*>(&TriggerPrototypeSize), sizeof(_ulong));
+
+			wstring TriggerPrototype;
+			TriggerPrototype.resize(TriggerPrototypeSize);
+			inFile.read(reinterpret_cast<char*>(&TriggerPrototype[0]), TriggerPrototypeSize * sizeof(wchar_t));
+
+			_float TriggerSize{};
+			inFile.read(reinterpret_cast<char*>(&TriggerSize), sizeof(_float));
+			TriggerInfo.fTriggerSize = TriggerSize;
+
+			_mat TriggerWorldMat;
+			inFile.read(reinterpret_cast<char*>(&TriggerWorldMat), sizeof(_mat));
+
+			TriggerInfo.eType = ItemType::Trigger;
+			TriggerInfo.vLook = _float4(TriggerWorldMat._31, TriggerWorldMat._32, TriggerWorldMat._33, TriggerWorldMat._34);
+			TriggerInfo.vPos = _float4(TriggerWorldMat._41, TriggerWorldMat._42, TriggerWorldMat._43, TriggerWorldMat._44);
+			TriggerInfo.fTriggerSize = TriggerSize;
+			TriggerInfo.iTriggerNum = iIndex;
+			TriggerInfo.Prototype = TriggerPrototype;
+			TriggerInfo.ppDummy = &m_pSelectedDummy;
+
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &TriggerInfo)))
+			{
+				MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
+				return E_FAIL;
+			}
+
+			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
+			m_TriggerList.push_back(m_pSelectedDummy);
+
+			CTransform* pEnvirTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
+
+			pEnvirTransform->Set_State(State::Right, TriggerWorldMat.Right());
+			pEnvirTransform->Set_State(State::Up, TriggerWorldMat.Up());
+			pEnvirTransform->Set_State(State::Look, TriggerWorldMat.Look());
+			pEnvirTransform->Set_State(State::Pos, TriggerWorldMat.Position());
+
+			m_pSelectedDummy = nullptr;
+		}
+
+		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
+	}
+	return S_OK;
 }
 HRESULT CImGui_Manager::Save_Pos()
 {

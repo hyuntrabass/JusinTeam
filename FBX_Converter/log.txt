@@ -1,15 +1,11 @@
 1. Static Only   2. Anim Only   3. All
-2
-Animation Models : Start Converting...
-1. Normally Anim Model	2. For VTF Model 3. Part Model
-3
-Converting... helmet0.fbx
+1
+Static Models : Start Converting...
+Converting... Map.fbx
 Read File Succssefully
-Converting... helmet2.fbx
+Converting... Village.fbx
 Read File Succssefully
-Converting... helmet5.fbx
-Read File Succssefully
-Animation Models : Convert Success!
+Static Models : Convert Success!
 
-3 Animation Models
+2 Static Models
 are Successfully Converted as hyuntramesh!!
