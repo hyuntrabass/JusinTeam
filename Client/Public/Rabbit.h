@@ -2,9 +2,10 @@
 
 #include "Client_Define.h"
 #include "Monster.h"
+#include "HPMonster.h"
 
 BEGIN(Client)
-
+class CHPMonster;
 class CRabbit final : public CMonster
 {
 public:
@@ -64,6 +65,7 @@ private:
 	_uint m_iRoamingPattern = {};
 	_uint m_iAttackPattern = {};
 	_bool m_bSelectAttackPattern = { false };
+	CHPMonster* m_HpBar{ nullptr };
 
 private:
 	_bool m_bAttacked = { false };

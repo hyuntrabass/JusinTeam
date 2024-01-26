@@ -674,6 +674,7 @@ void CPlayer::Change_Parts(PART_TYPE PartsType, _int ChangeIndex)
 		break;
 	case Client::PT_HELMET:
 		m_Helmet_CurrentIndex = ChangeIndex;
+		break;
 	default:
 		break;
 	}
@@ -897,12 +898,12 @@ void CPlayer::Move(_float fTimeDelta)
 
 		if (m_pGameInstance->Key_Down(DIK_SPACE))
 		{
- 			if (!m_hasJumped)
+ 			//if (!m_hasJumped)
 			{ 
 				m_pTransformCom->Jump(8.f);
 				m_eState = Jump_Start;
 			}
-			else if(m_bReady_Climb)
+			if(m_bReady_Climb)
 			{
 				m_eState = Climb;
 				m_bIsClimb = true;

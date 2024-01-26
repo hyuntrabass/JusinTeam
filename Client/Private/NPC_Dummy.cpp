@@ -1,4 +1,6 @@
 #include "NPC_Dummy.h"
+#include "UI_Manager.h"
+#include "Dialog.h"
 
 _float CNPC_Dummy::m_fOffsetX = 75.f;
 
@@ -33,11 +35,17 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 
 	m_pTransformCom->Set_State(State::Pos, _vec4(/*75.f - */m_fOffsetX, 0.f, 90.f, 1.f));
 
+	CDialog::DIALOG_DESC DialogDesc = {};
+	DialogDesc.eLevelID = LEVEL_STATIC;
+	DialogDesc.pParentTransform = m_pTransformCom;
+	DialogDesc.vPosition = _vec3(0.f, 1.5f, 0.f);
+	DialogDesc.strText = TEXT("테스트입니다~");
 #pragma region IDLE NPC
 
 	if (m_strModelTag == TEXT("Prototype_Model_Dwarf_Male_002"))
 	{
 		m_Animation.iAnimIndex = 0;
+		DialogDesc.strText = TEXT("나는 드워프다");
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Female_003"))
@@ -77,6 +85,7 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 	if (m_strModelTag == TEXT("Prototype_Model_Female_013"))
 	{
 		m_Animation.iAnimIndex = 1;
+		DialogDesc.strText = TEXT("춤추는 사람 춤추는 사람 춤추는 사람 긴 텍스트");
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Female_027"))
@@ -115,17 +124,28 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 
 	m_fOffsetX -= 2.f;
 
+	/*
+	m_pDialog = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Dialog"), &DialogDesc);
+	if (m_pDialog == nullptr)
+	{
+		return E_FAIL;
+	}
+	*/
+	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::NPC, m_pTransformCom);
+
     return S_OK;
 }
 
 void CNPC_Dummy::Tick(_float fTimeDelta)
 {	
 	m_pModelCom->Set_Animation(m_Animation);
+	m_pDialog->Tick(fTimeDelta);
 }
 
 void CNPC_Dummy::Late_Tick(_float fTimeDelta)
 {
 	__super::Late_Tick(fTimeDelta);
+	m_pDialog->Late_Tick(fTimeDelta);
 }
 
 HRESULT CNPC_Dummy::Render()
@@ -164,4 +184,5 @@ CGameObject* CNPC_Dummy::Clone(void* pArg)
 void CNPC_Dummy::Free()
 {
 	__super::Free();
+	Safe_Release(m_pDialog);
 }

@@ -4,21 +4,21 @@
 
 BEGIN(Client)
 
-class C3DUITex final : public COrthographicObject
+class CDialog final : public COrthographicObject
 {
 public:
 	typedef struct tagNameTagDesc
 	{
-		wstring strTexture;
-		_vec2   vSize;
+		wstring strText;
 		_vec3	vPosition;
 		class CTransform* pParentTransform;
 		LEVEL_ID eLevelID;
-	}UITEX_DESC;
+	}DIALOG_DESC;
+
 private:
-	C3DUITex(_dev pDevice, _context pContext);
-	C3DUITex(const C3DUITex& rhs);
-	virtual ~C3DUITex() = default;
+	CDialog(_dev pDevice, _context pContext);
+	CDialog(const CDialog& rhs);
+	virtual ~CDialog() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -35,17 +35,18 @@ private:
 
 private:
 	LEVEL_ID		m_eLevel{};
-	wstring			m_strTexture;
-	_vec2			m_vSize;
+	wstring			m_strText{};
+
+	_vec2			m_vTextPos{};
 	_vec3			m_vPosition{};
-	CTransform*		m_pParentTransform{ nullptr };
+	CTransform* m_pParentTransform{ nullptr };
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static C3DUITex* Create(_dev pDevice, _context pContext);
+	static CDialog* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

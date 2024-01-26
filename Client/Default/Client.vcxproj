@@ -162,6 +162,7 @@
     <ClInclude Include="..\Public\Cat.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
     <ClInclude Include="..\Public\Coin.h" />
+    <ClInclude Include="..\Public\Dialog.h" />
     <ClInclude Include="..\Public\Diamond.h" />
     <ClInclude Include="..\Public\CommonTrail.h" />
     <ClInclude Include="..\Public\Dog.h" />
@@ -269,6 +270,7 @@
     <ClCompile Include="..\Private\Cat.cpp" />
     <ClCompile Include="..\Private\CharacterSelect.cpp" />
     <ClCompile Include="..\Private\Coin.cpp" />
+    <ClCompile Include="..\Private\Dialog.cpp" />
     <ClCompile Include="..\Private\Diamond.cpp" />
     <ClCompile Include="..\Private\CommonTrail.cpp" />
     <ClCompile Include="..\Private\Dog.cpp" />

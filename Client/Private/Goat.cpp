@@ -1,4 +1,5 @@
 #include "Goat.h"
+#include "UI_Manager.h"
 
 const _float CGoat::m_fChaseRange = 5.f;
 const _float CGoat::m_fAttackRange = 2.f;
@@ -31,6 +32,7 @@ HRESULT CGoat::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 
 	//m_pTransformCom->Set_State(State::Pos, _vec4(10.f, 0.f, 0.f, 1.f));
 	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));

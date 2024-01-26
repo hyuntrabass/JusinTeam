@@ -1,5 +1,6 @@
 #include "Monster.h"
 
+
 CMonster::CMonster(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -22,6 +23,7 @@ HRESULT CMonster::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+
 
     return S_OK;
 }
