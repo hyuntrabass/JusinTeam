@@ -84,7 +84,7 @@ HRESULT CPet::Render()
 
 _vec4 CPet::Compute_PlayerPos()
 {
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 
 	return vPlayerPos;
@@ -92,7 +92,7 @@ _vec4 CPet::Compute_PlayerPos()
 
 _float CPet::Compute_PlayerDistance()
 {
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 
 	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);

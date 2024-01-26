@@ -31,7 +31,7 @@ public:
 
 public:
 	HRESULT Init(ifstream& ModelFile, const vector<class CBone*>& Bones);
-	void Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio);
+	void Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio,_float fStartAnimPos = 0.f);
 
 	HRESULT Prepare_Animation(const vector<class CBone*>& Bones, _uint iFrame);
 

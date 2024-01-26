@@ -32,8 +32,8 @@ HRESULT CVoid20::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pTransformCom->Set_State(State::Pos, _vec4(10.f, 0.f, 0.f, 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(100.f, 8.f, 108.f, 1.f));
+	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
@@ -41,9 +41,28 @@ HRESULT CVoid20::Init(void* pArg)
 
 	m_eCurState = STATE_IDLE;
 
-	m_iHP = 10;
+	m_iHP = 5000;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
+
+	TRAIL_DESC Desc{};
+	Desc.vColor = Colors::Firebrick;
+	Desc.vPSize = _vec2(0.05f, 0.05f);
+	Desc.iNumVertices = 10.f;
+	m_pSwordTrail1 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
+	m_pSwordTrail2 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
+	m_pSwordTrail3 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
+	m_pSwordTrail4 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
+
+	PxCapsuleControllerDesc ControllerDesc{};
+	ControllerDesc.height = 1.2f; // 높이(위 아래의 반구 크기 제외
+	ControllerDesc.radius = 0.6f; // 위아래 반구의 반지름
+	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+
+	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
 	return S_OK;
 }
@@ -52,7 +71,7 @@ void CVoid20::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_0))
 	{
-		Set_Damage(0, AT_Bow_Skill3);
+		Set_Damage(0, AT_Sword_Common);
 	}
 
 	Init_State(fTimeDelta);
@@ -62,6 +81,11 @@ void CVoid20::Tick(_float fTimeDelta)
 
 	Update_Collider();
 	__super::Update_MonsterCollider();
+
+	Update_Trail(fTimeDelta);
+
+	m_pTransformCom->Gravity(fTimeDelta);
+
 }
 
 void CVoid20::Late_Tick(_float fTimeDelta)
@@ -252,7 +276,7 @@ void CVoid20::Tick_State(_float fTimeDelta)
 		break;
 
 	case Client::CVoid20::STATE_ATTACK:
-
+		
 		if (!m_bSelectAttackPattern)
 		{
 			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
@@ -274,8 +298,16 @@ void CVoid20::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 36.f && fAnimpos <= 38.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iDefaultDamage2 - rand() % 30;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
+				}
+				if (fAnimpos >= 32.f && fAnimpos <= 42.f)
+				{
+					m_pSwordTrail1->Late_Tick(fTimeDelta);
+					m_pSwordTrail2->Late_Tick(fTimeDelta);
+					m_pSwordTrail3->Late_Tick(fTimeDelta);
+					m_pSwordTrail4->Late_Tick(fTimeDelta);
 				}
 			}
 			break;
@@ -287,8 +319,14 @@ void CVoid20::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 64.f && fAnimpos <= 66.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iDefaultDamage2 - rand() % 10;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_KnockDown);
 					m_bAttacked = true;
+				}
+				if (fAnimpos >= 58.f && fAnimpos <= 64.f)
+				{
+					m_pSwordTrail1->Late_Tick(fTimeDelta);
+					m_pSwordTrail2->Late_Tick(fTimeDelta);
 				}
 			}
 			break;
@@ -300,8 +338,14 @@ void CVoid20::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 39.f && fAnimpos <= 41.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iDefaultDamage2 - rand() % 30;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
+				}
+				if (fAnimpos >= 36.f && fAnimpos <= 43.f)
+				{
+					m_pSwordTrail3->Late_Tick(fTimeDelta);
+					m_pSwordTrail4->Late_Tick(fTimeDelta);
 				}
 			}
 			break;
@@ -334,6 +378,33 @@ void CVoid20::Tick_State(_float fTimeDelta)
 		break;
 	}
 
+}
+
+void CVoid20::Update_Trail(_float fTimeDelta)
+{
+	_mat Matrix = *m_pModelCom->Get_BoneMatrix("Bip001-R-Hand");
+	_mat Offset = _mat::CreateTranslation(_vec3(2.55, -0.215f, -0.02f));
+	_mat Result = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
+
+	m_pSwordTrail1->Tick(Result.Position_vec3());
+
+	Matrix = *m_pModelCom->Get_BoneMatrix("Bip001-R-Hand");
+	Offset = _mat::CreateTranslation(_vec3(-0.46f, -0.04f, 0.08f));
+	Result = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
+
+	m_pSwordTrail2->Tick(Result.Position_vec3());
+
+	Matrix = *m_pModelCom->Get_BoneMatrix("Bip001-L-Hand");
+	Offset = _mat::CreateTranslation(_vec3(2.55f, -0.215f, 0.02f));
+	Result = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
+
+	m_pSwordTrail3->Tick(Result.Position_vec3());
+
+	Matrix = *m_pModelCom->Get_BoneMatrix("Bip001-L-Hand");
+	Offset = _mat::CreateTranslation(_vec3(-0.47f, -0.04f, -0.08f));
+	Result = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
+
+	m_pSwordTrail4->Tick(Result.Position_vec3());
 }
 
 HRESULT CVoid20::Add_Collider()
@@ -399,4 +470,9 @@ CGameObject* CVoid20::Clone(void* pArg)
 void CVoid20::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pSwordTrail1);
+	Safe_Release(m_pSwordTrail2);
+	Safe_Release(m_pSwordTrail3);
+	Safe_Release(m_pSwordTrail4);
 }

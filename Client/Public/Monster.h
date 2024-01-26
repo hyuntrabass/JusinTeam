@@ -55,6 +55,12 @@ protected:
 	_float m_fDissolveTime = {};
 	_float m_fDissolveRatio = {};
 
+protected:
+	_uint m_iSmallDamage = { 50 };
+	_uint m_iDefaultDamage1 = { 100 };
+	_uint m_iDefaultDamage2 = { 200 };
+	_uint m_iDefaultDamage3 = { 300 };
+
 
 private: // Collier 사이즈 조절용
 	_float m_fSizeX = {}, m_fSizeY = {}, m_fSizeZ = {};

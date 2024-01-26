@@ -24,7 +24,7 @@ HRESULT CModelTest::Init(void* pArg)
         return E_FAIL;
     }
 
-    m_pTransformCom->Set_State(State::Pos, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
 
     m_Animation.iAnimIndex = 0;
     m_Animation.isLoop = true;

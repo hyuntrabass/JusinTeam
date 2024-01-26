@@ -1,4 +1,5 @@
 #include "Goat.h"
+#include "UI_Manager.h"
 
 const _float CGoat::m_fChaseRange = 5.f;
 const _float CGoat::m_fAttackRange = 2.f;
@@ -31,10 +32,10 @@ HRESULT CGoat::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 
-	//m_pTransformCom->Set_State(State::Pos, _vec4(10.f, 0.f, 0.f, 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
-	m_pTransformCom->Set_Speed(1.f);
+	m_pTransformCom->Set_State(State::Pos, _vec4(100.f, 8.f, 108.f, 1.f));
+	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
@@ -43,9 +44,19 @@ HRESULT CGoat::Init(void* pArg)
 
 	m_eCurState = STATE_IDLE;
 
-	m_iHP = 10;
+	m_iHP = 500;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
+
+	PxCapsuleControllerDesc ControllerDesc{};
+	ControllerDesc.height = 1.f; // 높이(위 아래의 반구 크기 제외
+	ControllerDesc.radius = 0.7f; // 위아래 반구의 반지름
+	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+
+	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
 	return S_OK;
 }
@@ -54,7 +65,8 @@ void CGoat::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_O))
 	{
-		Set_Damage(4, WP_BOW);
+		//Set_Damage(4, WP_BOW);
+		Kill();
 	}
 
 	Init_State(fTimeDelta);
@@ -64,6 +76,8 @@ void CGoat::Tick(_float fTimeDelta)
 
 	Update_Collider();
 	__super::Update_MonsterCollider();
+
+	m_pTransformCom->Gravity(fTimeDelta);
 
 }
 
@@ -256,7 +270,8 @@ void CGoat::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 55.f && fAnimpos <= 57.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iSmallDamage / 2 - rand() % 5;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
 				}
 			}
@@ -269,7 +284,8 @@ void CGoat::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 43.f && fAnimpos <= 45.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iSmallDamage / 2 - rand() % 5;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
 				}
 			}
@@ -282,7 +298,8 @@ void CGoat::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 48.f && fAnimpos <= 50.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iSmallDamage / 2 - rand() % 5;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
 				}
 			}

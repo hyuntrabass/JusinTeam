@@ -45,7 +45,6 @@ void CNameTag::Tick(_float fTimeDelta)
 void CNameTag::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
-
 }
 
 HRESULT CNameTag::Render()

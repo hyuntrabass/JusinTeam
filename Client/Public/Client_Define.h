@@ -221,7 +221,13 @@ namespace Client
 		_mat m_WorldMatrix{};
 		ObjectType eObjectType{ };
 	};
-
+	enum Monster_AttType
+	{
+		MonAtt_Hit,
+		MonAtt_KnockDown,
+		MonAtt_Stun,
+		MonAtt_End
+	};
 #pragma endregion
 
 	struct UiInfo
@@ -323,6 +329,8 @@ namespace Client
 		VTPass_BLUR,
 		VTPass_Bright,
 		VTPass_ScrollAlpha,
+		VTPass_HPNoMask,
+		VTPass_NineSlice,
 		VTPass_End
 	};
 

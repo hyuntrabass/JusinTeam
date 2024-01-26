@@ -2,6 +2,7 @@
 
 #include "Client_Define.h"
 #include "Monster.h"
+#include "CommonTrail.h"
 
 BEGIN(Client)
 
@@ -57,9 +58,21 @@ public:
 	void Init_State(_float fTimeDelta);
 	void Tick_State(_float fTimeDelta);
 
+public:
+	void Update_Trail(_float fTimeDelta);
+
 private:
 	NASTRON07_STATE m_ePreState = STATE_END;
 	NASTRON07_STATE m_eCurState = STATE_END;
+
+private:
+	CCommonTrail* m_pLeftTrail1 = { nullptr };
+	CCommonTrail* m_pLeftTrail2 = { nullptr };
+	CCommonTrail* m_pLeftTrail3 = { nullptr };
+
+	CCommonTrail* m_pRightTrail1 = { nullptr };
+	CCommonTrail* m_pRightTrail2 = { nullptr };
+	CCommonTrail* m_pRightTrail3 = { nullptr };
 
 private:
 	_float m_fIdleTime = {};

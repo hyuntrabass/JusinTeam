@@ -336,7 +336,6 @@ HRESULT CLoader::Load_Select()
 
 #pragma endregion
 
-
 	strInputFilePath = "../Bin/Resources/StaticMesh/Effect/Mesh/";
 	_uint iMeshNumber{};
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
@@ -1070,6 +1069,28 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Radar"), CRadar::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_ItemInfo"), CItemInfo::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_HPMonster"), CHPMonster::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_3DUITex"), C3DUITex::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Dialog"), CDialog::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
 
 #pragma endregion
 

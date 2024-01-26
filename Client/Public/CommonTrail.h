@@ -6,8 +6,8 @@ BEGIN(Client)
 
 struct TRAIL_DESC
 {
-	_float4 vColor{};
-	_float2 vPSize{};
+	_vec4 vColor{};
+	_vec2 vPSize{};
 	_uint iNumVertices{};
 };
 
@@ -29,6 +29,8 @@ public:
 	void Late_Tick(_float fTimeDelta) override;
 	HRESULT Render() override;
 
+	void Change_Info(_vec4 vColor, _vec2 vSize);
+
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 
@@ -38,7 +40,7 @@ private:
 private:
 	_bool m_bNoRender{};
 
-	list<_float3> m_TrailPosList{};
+	list<_vec3> m_TrailPosList{};
 	TRAIL_DESC m_Info{};
 	_vec3* m_PosArray{};
 	_vec4* m_ColorArray{};

@@ -17,6 +17,28 @@ private:
 	CRealtimeVTFModel(const CRealtimeVTFModel& rhs);
 	virtual ~CRealtimeVTFModel() = default;
 
+public://트리거하려고 추가함
+	const _uint& Get_NumAnim() const;
+	const _uint Get_NumBones() const;
+	vector<class CAnimation*>& Get_Animations();
+	class CAnimation* Get_Animation(_uint iAnimIndex);
+	vector<class CBone*>& Get_Bones();
+	//이펙트 트리거
+	const _uint Get_NumTriggerEffect() const;
+	TRIGGEREFFECT_DESC* Get_TriggerEffect(_uint iTriggerEffectIndex);
+	vector<TRIGGEREFFECT_DESC>& Get_TriggerEffects();
+	//툴에서만 쓰세요
+	void Add_TriggerEffect(TRIGGEREFFECT_DESC TriggerEffectDesc);
+	void Delete_TriggerEffect(_uint iTriggerEffectIndex);
+	void Reset_TriggerEffects();
+	//라이트 트리거
+	const _uint Get_NumTriggerSound() const;
+	TRIGGERSOUND_DESC* Get_TriggerSound(_uint iTriggerSoundIndex);
+	vector<TRIGGERSOUND_DESC>& Get_TriggerSounds();
+	void Add_TriggerSound(TRIGGERSOUND_DESC TriggerSoundDesc);
+	void Delete_TriggerSound(_uint iTriggerSoundIndex);
+	void Reset_TriggerSounds();
+
 public:
 	HRESULT Init_Prototype(const string& strFilePath, _fmatrix PivotMatrix);
 	HRESULT Init(void* pArg, const CRealtimeVTFModel& rhs);
@@ -117,12 +139,25 @@ private:
 	ID3D11ShaderResourceView* m_pBoneSRV = nullptr;
 
 private:
+	class CTransform* m_pOwnerTransform{};
+	//이펙트 트리거
+	_uint m_iNumTriggersEffect{};
+	vector<TRIGGEREFFECT_DESC> m_TriggerEffects;
+	vector<_mat*> m_EffectMatrices;
+	// 사운드 트리거
+	_uint m_iNumTriggersSound{};
+	vector<TRIGGERSOUND_DESC> m_TriggerSounds;
+	_randNum m_RandomNumber;
+
+private:
 	HRESULT Read_Bones(ifstream& File);
 	HRESULT Read_Meshes(ifstream& File, const ModelType& eType, _fmatrix PivotMatrix);
 	HRESULT Read_Animations(ifstream& File);
 	HRESULT Read_Materials(ifstream& File, const string& strFilePath);
 	HRESULT CreateVTF();
 	HRESULT UpdateBoneTexture(vector<_mat>& CombinedBones);
+	HRESULT Read_TriggerEffects(const string& strFilePath);
+	HRESULT Read_TriggerSounds(const string& strFilePath);
 
 public:
 	static CRealtimeVTFModel* Create(_dev pDevice, _context pContext, const string& strFilePath, _fmatrix PivotMatrix = XMMatrixIdentity());

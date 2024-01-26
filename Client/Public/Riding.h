@@ -24,7 +24,10 @@ enum Riding_State
 	Riding_Run,
 	Riding_Walk,
 	Riding_Attack,
+	Riding_Jump_Start,
 	Riding_Jump,
+	Riding_Jump_Run,
+	Riding_Jump_End,
 	Riding_Sky,
 	Riding_End
 
@@ -148,6 +151,7 @@ private:
 	_bool m_isInterpolating{};
 	_float m_fDissolveRatio{};
 	CTexture* m_pDissolveTextureCom{};
+	_bool m_hasJumped{};
 public:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

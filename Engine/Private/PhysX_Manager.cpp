@@ -218,6 +218,11 @@ void CPhysX_Manager::Init_PhysX_Character(CTransform* pTransform, CollisionGroup
 	else
 	{
 		ControllerDesc = *pDesc;
+		ControllerDesc.reportCallback = nullptr;
+		Position.y += ControllerDesc.height * 0.5f + ControllerDesc.radius;
+		ControllerDesc.position = Position;
+		ControllerDesc.material = m_pMaterial;
+		ControllerDesc.density = 700.f;
 	}
 
 	PxController* pController = m_pControllerManager->createController(ControllerDesc);
@@ -246,6 +251,8 @@ void CPhysX_Manager::Init_PhysX_Character(CTransform* pTransform, CollisionGroup
 	}
 	//m_Characters.emplace(pTransform, pController);
 }
+
+
 
 void CPhysX_Manager::Init_PhysX_MoveableObject(CTransform* pTransform)
 {
@@ -351,6 +358,17 @@ PxRigidStatic* CPhysX_Manager::Cook_StaticMesh(_uint iNumVertices, void* pVertic
 _bool CPhysX_Manager::Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer)
 {
 	if (m_pScene->raycast(PxVec3(vOrigin.x, vOrigin.y, vOrigin.z), PxVec3(vDir.x, vDir.y, vDir.z), fDist, Buffer))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+_bool CPhysX_Manager::Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer,  PxQueryFilterData Filter)
+{
+
+	if (m_pScene->raycast(PxVec3(vOrigin.x, vOrigin.y, vOrigin.z), PxVec3(vDir.x, vDir.y, vDir.z), fDist, Buffer, PxHitFlag::eDEFAULT, Filter))
 	{
 		return true;
 	}

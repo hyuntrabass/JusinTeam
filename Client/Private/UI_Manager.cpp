@@ -244,10 +244,8 @@ HRESULT CUI_Manager::Set_Item(wstring& strItemName, _uint iNum)
 	{
 		return E_FAIL;
 	}
-	for (_uint i = 0; i < iNum; i++)
-	{
-		dynamic_cast<CInven*>(m_pInven)->Set_Item(Item);
-	}
+
+	dynamic_cast<CInven*>(m_pInven)->Set_Item(Item, iNum);
 
 	return S_OK;
 }
@@ -274,14 +272,14 @@ _bool CUI_Manager::Is_ItemSlotFull(CItemBlock::ITEMSLOT eSlot)
 	return dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Is_Full();
 }
 
-HRESULT CUI_Manager::Set_Item_In_EmptySlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* m_iItemNum)
+HRESULT CUI_Manager::Set_Item_In_EmptySlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* iItemNum)
 {
 
-	if (FAILED(dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Set_Item(pItem, m_iItemNum)))
+	if (FAILED(dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Set_Item(pItem, iItemNum)))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(dynamic_cast<CItemSlot*>(m_pItemSlots[eSlot])->Set_Item(pItem, m_iItemNum)))
+	if (FAILED(dynamic_cast<CItemSlot*>(m_pItemSlots[eSlot])->Set_Item(pItem, iItemNum)))
 	{
 		return E_FAIL;
 	}
@@ -289,29 +287,55 @@ HRESULT CUI_Manager::Set_Item_In_EmptySlot(CItemBlock::ITEMSLOT eSlot, CItem* pI
 	return S_OK;
 }
 
-CItem* CUI_Manager::Set_Item_In_FullSlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* m_iItemNum)
+ITEM CUI_Manager::Set_Item_In_FullSlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* iItemNum, _int* iChangeItemNum )
 {
+	ITEM eDefItem = {};
+	eDefItem.iInvenType = -1;
 	//m_iItemNum이 0보다 클경우 그 수만큼 빼주면되고, 0이면 다없애면되고 -1이면 없애면안됨
 	if (dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Get_ItemName() != pItem->Get_ItemDesc().strName)
 	{
-		if (FAILED(Set_Item_In_EmptySlot(eSlot, pItem, m_iItemNum)))
+		*iChangeItemNum = dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Get_ItemObject()->Get_ItemNum();
+		 ITEM eItem = dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Get_ItemObject()->Get_ItemDesc();
+
+		if (FAILED(Set_Item_In_EmptySlot(eSlot, pItem, iItemNum)))
 		{
-			return nullptr;
+			return eDefItem;
 		}
-		return pItem;
+		return eItem;
 	}
 	else
 	{
-		dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Set_FullSlot(pItem, m_iItemNum);
-		dynamic_cast<CItemSlot*>(m_pItemSlots[eSlot])->Set_FullSlot(pItem, m_iItemNum);
+		dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Set_FullSlot(pItem, iItemNum);
+		dynamic_cast<CItemSlot*>(m_pItemSlots[eSlot])->Set_FullSlot(pItem, iItemNum);
 	}
-	return nullptr;
+	return eDefItem;
 }
 
 void CUI_Manager::Delete_Item_In_Slot(CItemBlock::ITEMSLOT eSlot)
 {
 	dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Delete_Item();
 	dynamic_cast<CItemSlot*>(m_pItemSlots[eSlot])->Delete_Item();
+}
+
+void CUI_Manager::Set_RadarPos(TYPE eType, CTransform* pTransform)
+{
+	m_vecRadarPos[eType].push_back(pTransform);
+}
+
+void CUI_Manager::Delete_RadarPos(TYPE eType, CTransform* pTransform)
+{
+	for (size_t i = 0; i < m_vecRadarPos[eType].size(); i++)
+	{
+		if (m_vecRadarPos[eType][i] == pTransform)
+		{
+			m_vecRadarPos[eType].erase(m_vecRadarPos[eType].begin() + i);
+		}
+	}
+}
+
+const vector<CTransform*> CUI_Manager::Get_RadarPosition(TYPE eType) const
+{
+	return m_vecRadarPos[eType];
 }
 
 

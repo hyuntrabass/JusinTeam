@@ -17,6 +17,9 @@ CLevel_GamePlay::CLevel_GamePlay(_dev pDevice, _context pContext)
 HRESULT CLevel_GamePlay::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_GAMEPLAY);
+	m_pGameInstance->StopAll();
+	m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.1f);
+	m_pGameInstance->Play_Sound(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.3f, true);
 
 	CUI_Manager::Get_Instance()->Init();
 
@@ -43,17 +46,9 @@ HRESULT CLevel_GamePlay::Init()
 	// Monster
 	if (FAILED(Ready_ModelTest()))
 	{
-		MSG_BOX("Failed to Ready Void05");
+		MSG_BOX("Failed to Ready ModelTest");
 		return E_FAIL;
 	}
-
-
-	// Monster Parse
-	//if (FAILED(Ready_NpcvsMon()))
-	//{
-	//	MSG_BOX("Failed to Ready Monster");
-	//	return E_FAIL;
-	//}
 	
 	if (FAILED(Ready_Rabbit()))
 	{
@@ -70,12 +65,6 @@ HRESULT CLevel_GamePlay::Init()
 	if (FAILED(Ready_Nastron03()))
 	{
 		MSG_BOX("Failed to Ready Nastron03");
-		return E_FAIL;
-	}
-
-	if (FAILED(Ready_NPCvsMon()))
-	{
-		MSG_BOX("Failed to Ready NPCvsMon");
 		return E_FAIL;
 	}
 
@@ -235,6 +224,12 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 	{
 		DestroyWindow(g_hWnd);
 	}
+
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+
+	cout << "Player Pos" << endl;
+	cout << vPlayerPos.x << endl << vPlayerPos.y << endl << vPlayerPos.z << endl;
 }
 
 HRESULT CLevel_GamePlay::Render()
@@ -838,12 +833,10 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	{
 		return E_FAIL;
 	}
-	/*
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Pop_QuestIn"))))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Radar"))))
 	{
 		return E_FAIL;
 	}
-	*/
 
 	return S_OK;
 }

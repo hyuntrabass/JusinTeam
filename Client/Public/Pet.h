@@ -30,8 +30,12 @@ protected:
 
 protected:
 	wstring	m_strModelTag = {};
-
 	ANIM_DESC m_Animation{};
+
+protected:
+	_float m_fPosLerpRatio = {};
+	_float m_fLookLerpRatio = {};
+
 
 public:
 	HRESULT Add_Components();

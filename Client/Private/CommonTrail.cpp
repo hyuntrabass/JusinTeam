@@ -118,6 +118,12 @@ HRESULT CCommonTrail::Render()
 	return S_OK;
 }
 
+void CCommonTrail::Change_Info(_vec4 vColor, _vec2 vSize)
+{
+	m_Info.vColor = vColor;
+	m_Info.vPSize = vSize;
+}
+
 HRESULT CCommonTrail::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
