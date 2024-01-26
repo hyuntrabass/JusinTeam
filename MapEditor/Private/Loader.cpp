@@ -139,6 +139,13 @@ HRESULT CLoader::Load_Editor()
 #pragma region Model
 	//_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(90.f));
 
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Collider"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Model/Collider/Mesh/SM_EFF_Sphere_01.mo.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+
 	_matrix Pivot = XMMatrixScaling(0.002f, 0.002f, 0.002f);
 
 	// Map Model
@@ -431,6 +438,10 @@ HRESULT CLoader::Load_Editor()
 
 	m_strLoadingText = L"Editor : Loading Prototype";
 #pragma region Prototype
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Trigger"), CTrigger::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Debug"), CCamera_Debug::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;

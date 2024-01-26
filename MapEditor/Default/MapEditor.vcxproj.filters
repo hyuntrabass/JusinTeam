@@ -58,6 +58,9 @@
     <Filter Include="02.GameObjects\03.Dummy">
       <UniqueIdentifier>{1d422567-eac4-4b76-b5d4-85fd2f25bbb0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\05.Trigger">
+      <UniqueIdentifier>{f542a090-033f-478a-a916-41fec983bc11}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MapEditor_Define.h">
@@ -147,6 +150,9 @@
     <ClInclude Include="..\Public\Map.h">
       <Filter>02.GameObjects\04.Map</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Trigger.h">
+      <Filter>02.GameObjects\05.Trigger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -217,6 +223,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Map.cpp">
       <Filter>02.GameObjects\04.Map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Trigger.cpp">
+      <Filter>02.GameObjects\05.Trigger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

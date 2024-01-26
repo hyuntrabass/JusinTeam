@@ -29,6 +29,7 @@ public:
 	_bool Get_Create() { return m_isCreate; }
 	
 	_int Get_ID() const {return m_iID;}
+	_int Get_Trigger() const {return m_iTrigger;}
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -42,6 +43,7 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
 	//CImGui_Manager* m_pImGui_Manager{ nullptr };
+	CCollider* m_pCollider{ nullptr };
 	CVIBuffer_Instance_Mesh* m_pVIBuffer{ nullptr };
 
 private:

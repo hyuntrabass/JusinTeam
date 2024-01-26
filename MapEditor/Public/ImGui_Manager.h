@@ -29,9 +29,10 @@ struct DummyInfo
 	wstring Prototype{};
 	enum class ItemType eType {};
 	_uint iStageIndex{};
+	_int iTriggerNum{};
+	_float fTriggerSize{};
 	_float4 vPos{};
 	_float4 vLook{};
-	_uint iTriggerNum{};
 	class CDummy** ppDummy{ nullptr };
 };
 
@@ -40,9 +41,17 @@ struct MapInfo
 	wstring Prototype{};
 	enum class ItemType eType {};
 	_uint iStageIndex{};
-	_uint iTriggerNum{};
 	_vec4 vPos{};
 	class CMap** ppMap{ nullptr };
+};
+
+
+struct TriggerInfo
+{
+	_uint iTriggerNum{};
+	_float fTriggerSize{};
+	_vec4 vPos{};
+	class CTrigger** ppTrigger{ nullptr };
 };
 
 struct TERRAIN_INFO_MAPTOOL : public TERRAIN_INFO
@@ -118,6 +127,10 @@ private:
 	HRESULT Save_Envir();
 	HRESULT Load_Envir();
 
+	// 트리거
+	HRESULT Save_Trigger();
+	HRESULT Load_Trigger();
+
 	// 현재 위치 저장
 	HRESULT Save_Pos();
 
@@ -159,7 +172,7 @@ private:
 	vector<class CDummy*> m_MonsterList;
 	vector<class CDummy*> m_NPCList;
 	vector<class CDummy*> m_EnvirList;
-	//vector<const CDummy*> TriggerList;
+	vector<class CDummy*> m_TriggerList;
 
 	map<int, class CDummy*>m_DummyList;
 	map<int, class CMap*>m_Map{};
@@ -178,6 +191,9 @@ private:
 	_bool m_iImGuizmoCheck = { false };
 	CTexture* m_pTextures{ nullptr };
 	wstring m_eType{};
+	_float m_fTriggerSize{1.f};
+	_int m_iTriggerNumber{0};
+
 
 public:
 	static CImGui_Manager* Create(const GRAPHIC_DESC& GraphicDesc);

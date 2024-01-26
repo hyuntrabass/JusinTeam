@@ -47,24 +47,17 @@ HRESULT CDummy::Init(void* pArg)
 
 	m_Info = *(DummyInfo*)pArg;
 	m_eType = m_Info.eType;
-	/*if (m_Info.Prototype == L"Prototype_Model_Barlog" ||
-		m_Info.Prototype == L"Prototype_Model_Furgoat" ||
-		m_Info.Prototype == L"Prototype_Model_GiantBoss" ||
-		m_Info.Prototype == L"Prototype_Model_Nastron02" ||
-		m_Info.Prototype == L"Prototype_Model_Nastron03" ||
-		m_Info.Prototype == L"Prototype_Model_Orc02" ||
-		m_Info.Prototype == L"Prototype_Model_Penguin" ||
-		m_Info.Prototype == L"Prototype_Model_Rabbit" ||
-		m_Info.Prototype == L"Prototype_Model_Thief04" ||
-		m_Info.Prototype == L"Prototype_Model_Trilobite" ||
-		m_Info.Prototype == L"Prototype_Model_TrilobiteA" ||
-		m_Info.Prototype == L"Prototype_Model_Void13" ||
-		m_Info.Prototype == L"Prototype_Model_VoidDragon" ||
-		m_Info.Prototype == L"Prototype_Model_Void05")*/
+
 	if(m_Info.eType == ItemType::Monster || m_Info.eType == ItemType::NPC)
 	{
 		m_isAnim = true;
 		m_Animation.isLoop = true;
+	}
+	else if (m_Info.eType == ItemType::Trigger)
+	{
+		m_iTrigger = m_Info.iTriggerNum;
+		m_iShaderPass = StaticPass_AlphaTestMeshes;
+
 	}
 	else
 	{
@@ -99,7 +92,10 @@ void CDummy::Tick(_float fTimeDelta)
 
 void CDummy::Late_Tick(_float fTimeDelta)
 {
-
+#ifdef _DEBUGTEST
+if(m_eType == ItemType::Trigger)
+	m_pRendererCom->Add_DebugComponent(m_pCollider);
+#endif
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 	
 }
@@ -200,13 +196,25 @@ HRESULT CDummy::Add_Components()
 		m_iOutLineShaderPass = StaticPass_OutLine;
 	}
 	
-	if (m_eType == ItemType::Environment)
-	{
+	//if (m_eType == ItemType::Environment)
+	//{
 
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Mesh"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBuffer), &m_pTransformCom->Get_World_Matrix())))
-		{
+	//	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Mesh"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBuffer), &m_pTransformCom->Get_World_Matrix())))
+	//	{
+	//		return E_FAIL;
+	//	}
+	//}
+
+	if (m_eType == ItemType::Trigger)
+	{
+		/* For.Com_Collider_SPHERE */
+	// Com_Collider
+		Collider_Desc CollDesc = {};
+		CollDesc.eType = ColliderType::Sphere;
+		CollDesc.fRadius = m_Info.fTriggerSize;
+		CollDesc.vCenter = _vec3(m_Info.vPos.x, m_Info.vPos.y, m_Info.vPos.z);
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Trigger_Sphere"), (CComponent**)&m_pCollider, &CollDesc)))
 			return E_FAIL;
-		}
 	}
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Info.Prototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
@@ -259,7 +267,7 @@ HRESULT CDummy::Bind_ShaderResources()
 			return E_FAIL;
 		}
 
-		const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
+		const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_EDITOR, TEXT("Light_Main"));
 		if (!pLightDesc)
 		{
 			return E_FAIL;
@@ -324,4 +332,6 @@ void CDummy::Free()
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
+	if(m_eType == ItemType::Trigger)
+		Safe_Release(m_pCollider);
 }

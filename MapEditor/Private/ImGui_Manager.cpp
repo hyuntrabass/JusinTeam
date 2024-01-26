@@ -8,6 +8,7 @@
 #include "Dummy.h"
 #include "Terrain.h"
 #include "Map.h"
+#include "Trigger.h"
 
 IMPLEMENT_SINGLETON(CImGui_Manager)
 
@@ -74,6 +75,7 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 	{
 		if (m_pSelectedDummy)
 		{
+
 			CTransform* pObjectsTransform = (CTransform*)m_pSelectedDummy->Find_Component(TEXT("Com_Transform"));
 
 			_vector ObjRight = { m_ObjectMatrix._11, m_ObjectMatrix._12, m_ObjectMatrix._13, m_ObjectMatrix._14 };
@@ -642,60 +644,60 @@ HRESULT CImGui_Manager::ImGuiMenu()
 #pragma endregion
 
 #pragma region 상호작용
-		if (ImGui::BeginTabItem("Interaction"))
-		{
-			/* Interaction */
-			m_eItemType = ItemType::Interaction;
-			ImGui::SeparatorText("LIST");
-			static int NPC_current_idx = 0;
-			ImGui::Text("Interaction");
-			if (ImGui::BeginListBox("Interaction FILE", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
-			{
-				for (int n = 0; n < NPCs.size(); n++)
-				{
-					const bool is_selected = (NPC_current_idx == n);
-					if (ImGui::Selectable(NPCs[n], is_selected))
-					{
-						NPC_current_idx = n;
-						m_iSelectIdx = NPC_current_idx;
-					}
-					if (is_selected)
-						ImGui::SetItemDefaultFocus();
-				}
-				ImGui::EndListBox();
-			}
-			ImGui::Separator();
-			ImGui::SeparatorText("MATRIX : ");
-			ImGui::InputFloat4("Right", &m_ObjectMatrix.m[0][0], 0);
-			ImGui::InputFloat4("Up", &m_ObjectMatrix.m[1][0], 0);
-			ImGui::InputFloat4("Look", &m_ObjectMatrix.m[2][0], 0);
-			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0], 0);
-			ImGui::Separator();
-			if (ImGui::Button("Delete"))
-			{
-				Delete_Dummy();
-			}
-			ImGui::SameLine();
+		//if (ImGui::BeginTabItem("Interaction"))
+		//{
+		//	/* Interaction */
+		//	m_eItemType = ItemType::Interaction;
+		//	ImGui::SeparatorText("LIST");
+		//	static int NPC_current_idx = 0;
+		//	ImGui::Text("Interaction");
+		//	if (ImGui::BeginListBox("Interaction FILE", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+		//	{
+		//		for (int n = 0; n < NPCs.size(); n++)
+		//		{
+		//			const bool is_selected = (NPC_current_idx == n);
+		//			if (ImGui::Selectable(NPCs[n], is_selected))
+		//			{
+		//				NPC_current_idx = n;
+		//				m_iSelectIdx = NPC_current_idx;
+		//			}
+		//			if (is_selected)
+		//				ImGui::SetItemDefaultFocus();
+		//		}
+		//		ImGui::EndListBox();
+		//	}
+		//	ImGui::Separator();
+		//	ImGui::SeparatorText("MATRIX : ");
+		//	ImGui::InputFloat4("Right", &m_ObjectMatrix.m[0][0], 0);
+		//	ImGui::InputFloat4("Up", &m_ObjectMatrix.m[1][0], 0);
+		//	ImGui::InputFloat4("Look", &m_ObjectMatrix.m[2][0], 0);
+		//	ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0], 0);
+		//	ImGui::Separator();
+		//	if (ImGui::Button("Delete"))
+		//	{
+		//		Delete_Dummy();
+		//	}
+		//	ImGui::SameLine();
 
-			if (ImGui::Button("Create"))
-			{
-				if (m_iSelectIdx != -1)
-				{
-					Create_Dummy(NPC_current_idx);
-				}
-			}
-			ImGui::Separator();
-			if (ImGui::Button("SAVE"))
-			{
+		//	if (ImGui::Button("Create"))
+		//	{
+		//		if (m_iSelectIdx != -1)
+		//		{
+		//			Create_Dummy(NPC_current_idx);
+		//		}
+		//	}
+		//	ImGui::Separator();
+		//	if (ImGui::Button("SAVE"))
+		//	{
 
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("LOAD"))
-			{
+		//	}
+		//	ImGui::SameLine();
+		//	if (ImGui::Button("LOAD"))
+		//	{
 
-			}
-			ImGui::EndTabItem();
-		}
+		//	}
+		//	ImGui::EndTabItem();
+		//}
 #pragma endregion
 #pragma region 카메라
 		if (ImGui::BeginTabItem("Camera"))
@@ -714,25 +716,53 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			/* Trigger */
 			m_eItemType = ItemType::Trigger;
 
-			ImGui::SeparatorText("LIST");
+			_int m_iTriggerCount = m_TriggerList.size();
 
-
+			ImGui::InputInt("Trigger Count", &m_iTriggerCount, 14);
 			ImGui::Separator();
 
+			_int iTriggerNum = 0;
+			if (!m_TriggerList.empty())
+			{
+				auto iter = m_TriggerList.begin();
+				int iTriggerNum = -1;
 
+				for (int index = 0; iter != m_TriggerList.end(); iter++, index++)
+				{
+					if ((*iter)->Get_Selected() == true)
+					{
+						iTriggerNum = index;
+						break;
+					}
+				}
+			}
+
+			ImGui::InputInt("Trigger Index", &iTriggerNum);
+			ImGui::Separator();
+			ImGui::InputFloat("Size", &m_fTriggerSize,1.f, 5.f, "%.3f", 0);
+			ImGui::Separator();
 			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0], 0);
+			ImGui::Separator();
 
-
+			if (ImGui::Button("Create"))
+			{
+				Create_Dummy(0);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Delete"))
+			{
+				Delete_Dummy();
+			}
 			ImGui::Separator();
 
 			if (ImGui::Button("SAVE"))
 			{
-				Save_Monster();
+				Save_Trigger();
 			}
 			ImGui::SameLine();
 			if (ImGui::Button("LOAD"))
 			{
-				Load_Monster();
+				Load_Trigger();
 			}
 
 			ImGui::EndTabItem();
@@ -880,6 +910,17 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_vLook)));
 	Info.Prototype = L"Prototype_Model_";
 	Info.eType = m_eItemType;
+	if (m_eItemType == ItemType::Trigger)
+	{
+		Info.iTriggerNum = m_iTriggerNumber;
+		Info.fTriggerSize = m_fTriggerSize;
+	}
+	else
+	{
+		Info.iTriggerNum = 0;
+		Info.fTriggerSize = 0;
+	}
+
 	_tchar strUnicode[MAX_PATH]{};
 	switch (m_eItemType)
 	{
@@ -895,6 +936,9 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	case ItemType::Environment:
 		MultiByteToWideChar(CP_ACP, 0, Envirs[m_eType][iListIndex], static_cast<int>(strlen(Envirs[m_eType][iListIndex])), strUnicode, static_cast<int>(strlen(Envirs[m_eType][iListIndex])));
 		break;
+	case ItemType::Trigger:
+		Info.Prototype = L"Prototype_Model_Collider";
+
 	}
 	Info.Prototype += strUnicode;
 
@@ -918,6 +962,9 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	case MapEditor::ItemType::Environment:
 		m_EnvirList.push_back(m_pSelectedDummy);
 		break;
+	case MapEditor::ItemType::Trigger:
+		m_TriggerList.push_back(m_pSelectedDummy);
+		break;
 	}
 	m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
 	m_pSelectedDummy = nullptr;
@@ -932,7 +979,6 @@ void CImGui_Manager::Create_Map(const _int& iListIndex)
 	Info.Prototype = L"Prototype_Model_";
 	Info.eType = m_eItemType;
 	Info.iStageIndex = 0;
-	Info.iTriggerNum = 0;
 
 	_tchar strUnicode[MAX_PATH]{};
 
@@ -948,6 +994,7 @@ void CImGui_Manager::Create_Map(const _int& iListIndex)
 	m_pSelectMap = nullptr;
 
 }
+
 
 HRESULT CImGui_Manager::Create_Terrain()
 {
@@ -1017,6 +1064,18 @@ void CImGui_Manager::Delete_Dummy()
 				if ((*it)->Get_Selected() == true)
 				{
 					m_EnvirList.erase(it);
+					break;
+				}
+			}
+
+		}
+		else if (m_eItemType == ItemType::Trigger)
+		{
+			for (auto it = m_TriggerList.begin(); it != m_TriggerList.end(); it++)
+			{
+				if ((*it)->Get_Selected() == true)
+				{
+					m_TriggerList.erase(it);
 					break;
 				}
 			}
@@ -2108,6 +2167,14 @@ HRESULT CImGui_Manager::Load_Envir()
 	}
 	return S_OK;
 }
+HRESULT CImGui_Manager::Save_Trigger()
+{
+	return E_NOTIMPL;
+}
+HRESULT CImGui_Manager::Load_Trigger()
+{
+	return E_NOTIMPL;
+}
 HRESULT CImGui_Manager::Save_Pos()
 {
 	OPENFILENAME OFN;
@@ -2162,7 +2229,6 @@ void CImGui_Manager::Free()
 		}
 		entry.second.clear(); 
 	}
-
 	Maps.clear();
 
 	for (auto& entry : Objects)
@@ -2171,7 +2237,6 @@ void CImGui_Manager::Free()
 			Safe_Delete_Array(cstr);
 		}
 		entry.second.clear();
-
 	}
 	Objects.clear();
 
@@ -2183,6 +2248,12 @@ void CImGui_Manager::Free()
 		entry.second.clear();
 	}
 	Monsters.clear();
+
+	for (auto& cstr : NPCs)
+	{
+		Safe_Delete_Array(cstr);
+	}
+	NPCs.clear();
 
 	for (auto& entry : Envirs)
 	{
@@ -2226,6 +2297,12 @@ void CImGui_Manager::Free()
 		Safe_Release(cstr);
 	}
 	m_EnvirList.clear();
+
+	for (auto& cstr : m_TriggerList)
+	{
+		Safe_Release(cstr);
+	}
+	m_TriggerList.clear();
 
 
 	if (!m_DummyList.empty())
