@@ -218,6 +218,11 @@ void CPhysX_Manager::Init_PhysX_Character(CTransform* pTransform, CollisionGroup
 	else
 	{
 		ControllerDesc = *pDesc;
+		ControllerDesc.reportCallback = nullptr;
+		Position.y += ControllerDesc.height * 0.5f + ControllerDesc.radius;
+		ControllerDesc.position = Position;
+		ControllerDesc.material = m_pMaterial;
+		ControllerDesc.density = 700.f;
 	}
 
 	PxController* pController = m_pControllerManager->createController(ControllerDesc);

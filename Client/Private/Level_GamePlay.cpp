@@ -46,7 +46,7 @@ HRESULT CLevel_GamePlay::Init()
 	// Monster
 	if (FAILED(Ready_ModelTest()))
 	{
-		MSG_BOX("Failed to Ready Void05");
+		MSG_BOX("Failed to Ready ModelTest");
 		return E_FAIL;
 	}
 
@@ -68,12 +68,6 @@ HRESULT CLevel_GamePlay::Init()
 	if (FAILED(Ready_Nastron03()))
 	{
 		MSG_BOX("Failed to Ready Nastron03");
-		return E_FAIL;
-	}
-
-	if (FAILED(Ready_NPCvsMon()))
-	{
-		MSG_BOX("Failed to Ready NPCvsMon");
 		return E_FAIL;
 	}
 
@@ -132,29 +126,29 @@ HRESULT CLevel_GamePlay::Init()
 	}
 
 	// NPC
-	if (FAILED(Ready_Cat()))
-	{
-		MSG_BOX("Failed to Ready Cat");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Cat()))
+	//{
+	//	MSG_BOX("Failed to Ready Cat");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_Dog()))
-	{
-		MSG_BOX("Failed to Ready Dog");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Dog()))
+	//{
+	//	MSG_BOX("Failed to Ready Dog");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_NPC_Test()))
-	{
-		MSG_BOX("Failed to Ready NPC");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_NPC_Test()))
+	//{
+	//	MSG_BOX("Failed to Ready NPC");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_NPC_Dummy_Test()))
-	{
-		MSG_BOX("Failed to Ready NPC_Dummy");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_NPC_Dummy_Test()))
+	//{
+	//	MSG_BOX("Failed to Ready NPC_Dummy");
+	//	return E_FAIL;
+	//}
 
 	// Boss
 	if (FAILED(Ready_Groar_Boss()))
