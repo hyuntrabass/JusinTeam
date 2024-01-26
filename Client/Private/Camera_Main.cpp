@@ -187,12 +187,19 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		_vec4 vRayDir{};
 		_vec4 vMyPos = m_pTransformCom->Get_State(State::Pos);
 		_vec4 PlayerCenter = m_pPlayerTransform->Get_CenterPos();
-		
+		_float ps = vMyPos.y - PlayerCenter.y;
+		if (ps < 0.f)
+			ps = 0.f;
+		 
+		ps *= 0.2f;
 		vRayDir = vMyPos - PlayerCenter;
 		_float fDist = XMVectorGetX(XMVector3Length(vRayDir)) - 0.4f;
 		vRayDir.Normalize();
+		PxQueryFilterData Filter;
+		Filter.data.word0 = ~COLGROUP_PLAYER;
+		
 
-		if (m_pGameInstance->Raycast(m_pPlayerTransform->Get_CenterPos() + vRayDir * 0.5f, vRayDir, fDist, Buffer))
+		if (m_pGameInstance->Raycast(m_pPlayerTransform->Get_CenterPos() + vRayDir * (0.5f + ps), vRayDir, fDist, Buffer))
 		{
 			m_pTransformCom->Set_State(State::Pos, PxVec3ToVector(Buffer.block.position, 1.f));
 		}
