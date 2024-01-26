@@ -49,9 +49,6 @@ HRESULT CLevel_GamePlay::Init()
 		MSG_BOX("Failed to Ready ModelTest");
 		return E_FAIL;
 	}
-
-
-
 	
 	if (FAILED(Ready_Rabbit()))
 	{
@@ -126,29 +123,29 @@ HRESULT CLevel_GamePlay::Init()
 	}
 
 	// NPC
-	//if (FAILED(Ready_Cat()))
-	//{
-	//	MSG_BOX("Failed to Ready Cat");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Cat()))
+	{
+		MSG_BOX("Failed to Ready Cat");
+		return E_FAIL;
+	}
 
-	//if (FAILED(Ready_Dog()))
-	//{
-	//	MSG_BOX("Failed to Ready Dog");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Dog()))
+	{
+		MSG_BOX("Failed to Ready Dog");
+		return E_FAIL;
+	}
 
-	//if (FAILED(Ready_NPC_Test()))
-	//{
-	//	MSG_BOX("Failed to Ready NPC");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_NPC_Test()))
+	{
+		MSG_BOX("Failed to Ready NPC");
+		return E_FAIL;
+	}
 
-	//if (FAILED(Ready_NPC_Dummy_Test()))
-	//{
-	//	MSG_BOX("Failed to Ready NPC_Dummy");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_NPC_Dummy_Test()))
+	{
+		MSG_BOX("Failed to Ready NPC_Dummy");
+		return E_FAIL;
+	}
 
 	// Boss
 	if (FAILED(Ready_Groar_Boss()))
@@ -227,6 +224,12 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 	{
 		DestroyWindow(g_hWnd);
 	}
+
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+
+	cout << "Player Pos" << endl;
+	cout << vPlayerPos.x << endl << vPlayerPos.y << endl << vPlayerPos.z << endl;
 }
 
 HRESULT CLevel_GamePlay::Render()

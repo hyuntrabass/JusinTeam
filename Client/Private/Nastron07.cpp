@@ -41,13 +41,13 @@ HRESULT CNastron07::Init(void* pArg)
 
 	m_eCurState = STATE_IDLE;
 
-	m_iHP = 30;
+	m_iHP = 5000;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
 	TRAIL_DESC Desc{};
 	Desc.vColor = Colors::LightBlue;
-	Desc.vPSize = _vec2(0.05f, 0.05f);
+	Desc.vPSize = _vec2(0.02f, 0.02f);
 	Desc.iNumVertices = 10.f;
 	m_pLeftTrail1 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
 	m_pLeftTrail2 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
@@ -276,13 +276,6 @@ void CNastron07::Tick_State(_float fTimeDelta)
 
 	case Client::CNastron07::STATE_ATTACK:
 
-		m_pLeftTrail1->Late_Tick(fTimeDelta);
-		m_pLeftTrail2->Late_Tick(fTimeDelta);
-		m_pLeftTrail3->Late_Tick(fTimeDelta);
-		m_pRightTrail1->Late_Tick(fTimeDelta);
-		m_pRightTrail2->Late_Tick(fTimeDelta);
-		m_pRightTrail3->Late_Tick(fTimeDelta);
-
 		if (!m_bSelectAttackPattern)
 		{
 			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
@@ -306,8 +299,18 @@ void CNastron07::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 54.f && fAnimpos <= 56.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iDefaultDamage1 + rand() % 30;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
+				}
+				if (fAnimpos >= 49.f && fAnimpos <= 58.f)
+				{
+					m_pLeftTrail1->Late_Tick(fTimeDelta);
+					m_pLeftTrail2->Late_Tick(fTimeDelta);
+					m_pLeftTrail3->Late_Tick(fTimeDelta);
+					m_pRightTrail1->Late_Tick(fTimeDelta);
+					m_pRightTrail2->Late_Tick(fTimeDelta);
+					m_pRightTrail3->Late_Tick(fTimeDelta);
 				}
 			}
 			break;
@@ -320,18 +323,40 @@ void CNastron07::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 39.f && fAnimpos <= 41.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iDefaultDamage1 + rand() % 30;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
 				}
 				if (fAnimpos >= 82.f && fAnimpos <= 84.f && !m_bAttacked2)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iDefaultDamage1 + rand() % 30;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked2 = true;
 				}
+
+				if (fAnimpos >= 34.f && fAnimpos <= 44.f)
+				{
+					m_pLeftTrail1->Late_Tick(fTimeDelta);
+					m_pLeftTrail2->Late_Tick(fTimeDelta);
+					m_pLeftTrail3->Late_Tick(fTimeDelta);
+					m_pRightTrail1->Late_Tick(fTimeDelta);
+					m_pRightTrail2->Late_Tick(fTimeDelta);
+					m_pRightTrail3->Late_Tick(fTimeDelta);
+				}
+				if (fAnimpos >= 79.f && fAnimpos <= 86.f)
+				{
+					m_pLeftTrail1->Late_Tick(fTimeDelta);
+					m_pLeftTrail2->Late_Tick(fTimeDelta);
+					m_pLeftTrail3->Late_Tick(fTimeDelta);
+					m_pRightTrail1->Late_Tick(fTimeDelta);
+					m_pRightTrail2->Late_Tick(fTimeDelta);
+					m_pRightTrail3->Late_Tick(fTimeDelta);
+				}
+
 			}
 			break;
 
-		case 2: // #TODO
+		case 2:
 			m_Animation.iAnimIndex = ATTACK03;
 			m_Animation.isLoop = false;
 			m_bSelectAttackPattern = false;
@@ -339,17 +364,20 @@ void CNastron07::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 56.f && fAnimpos <= 58.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iDefaultDamage1 + rand() % 30;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
 				}
 				if (fAnimpos >= 86.f && fAnimpos <= 88.f && !m_bAttacked2)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iDefaultDamage1 + rand() % 30;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked2 = true;
 				}
 				if (fAnimpos >= 140.f && fAnimpos <= 142.f && !m_bAttacked3)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iDefaultDamage1 + rand() % 30;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Stun);
 					m_bAttacked3 = true;
 				}
 
@@ -386,45 +414,46 @@ void CNastron07::Tick_State(_float fTimeDelta)
 
 void CNastron07::Update_Trail(_float fTimeDelta)
 {
+	// 가운데 손가락
 	_mat Matrix = *m_pModelCom->Get_BoneMatrix("Bone_Claw_L");
 	_mat Offset = _mat::CreateTranslation(_vec3(-1.62f, 0.01f, 0.27f));
-	_mat Result = Offset * Matrix * m_pTransformCom->Get_World_Matrix();
+	_mat Result = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 
 	m_pLeftTrail2->Tick(Result.Position_vec3());
 
 	Matrix = *m_pModelCom->Get_BoneMatrix("Bone_Claw_R");
 	Offset = _mat::CreateTranslation(_vec3(1.62f, -0.01f, -0.27f));
-	Result = Offset * Matrix * m_pTransformCom->Get_World_Matrix();
+	Result = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 
 	m_pRightTrail2->Tick(Result.Position_vec3());
 
 
 
-
+	// 1번째 손가락
 	Matrix = *m_pModelCom->Get_BoneMatrix("Bone_Claw_L");
 	Offset = _mat::CreateTranslation(_vec3(-1.55f, 0.09f, 0.2f));
-	Result = Offset * Matrix * m_pTransformCom->Get_World_Matrix();
+	Result = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 
 	m_pLeftTrail1->Tick(Result.Position_vec3());
 
 	Matrix = *m_pModelCom->Get_BoneMatrix("Bone_Claw_R");
 	Offset = _mat::CreateTranslation(_vec3(1.55f, -0.09f, -0.2f));
-	Result = Offset * Matrix * m_pTransformCom->Get_World_Matrix();
+	Result = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 
 	m_pRightTrail1->Tick(Result.Position_vec3());
 
 
 
-
+	// 3번째 손가락
 	Matrix = *m_pModelCom->Get_BoneMatrix("Bone_Claw_L");
 	Offset = _mat::CreateTranslation(_vec3(-1.52f, -0.07f, 0.25f));
-	Result = Offset * Matrix * m_pTransformCom->Get_World_Matrix();
+	Result = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 
 	m_pLeftTrail3->Tick(Result.Position_vec3());
 
 	Matrix = *m_pModelCom->Get_BoneMatrix("Bone_Claw_R");
 	Offset = _mat::CreateTranslation(_vec3(1.52f, 0.07f, -0.25f));
-	Result = Offset * Matrix * m_pTransformCom->Get_World_Matrix();
+	Result = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 
 	m_pRightTrail3->Tick(Result.Position_vec3());
 

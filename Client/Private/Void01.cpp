@@ -32,8 +32,8 @@ HRESULT CVoid01::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pTransformCom->Set_State(State::Pos, _vec4(10.f, 0.f, 0.f, 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(100.f, 5.f, 128.f, 1.f));
+	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
@@ -41,7 +41,7 @@ HRESULT CVoid01::Init(void* pArg)
 
 	m_eCurState = STATE_IDLE;
 
-	m_iHP = 10;
+	m_iHP = 1500;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
@@ -69,7 +69,8 @@ void CVoid01::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_V))
 	{
-		Set_Damage(0, AT_Bow_Common);
+		//Set_Damage(0, AT_Bow_Common);
+		Kill();
 	}
 
 	Init_State(fTimeDelta);
@@ -82,8 +83,8 @@ void CVoid01::Tick(_float fTimeDelta)
 
 	Update_Trail(fTimeDelta);
 
-	m_pLeftTrail->Change_Info(_vec4(Colors::RosyBrown), _vec2(0.05f, 0.05f));
-	m_pRightTrail->Change_Info(_vec4(Colors::RosyBrown), _vec2(0.05f, 0.05f));
+	m_pTransformCom->Gravity(fTimeDelta);
+
 }
 
 void CVoid01::Late_Tick(_float fTimeDelta)
@@ -253,7 +254,8 @@ void CVoid01::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 87.f && fAnimpos <= 89.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iSmallDamage + rand() % 20;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
 				}
 				//if (fAnimpos >= 18.f && fAnimpos <= 23.f)
@@ -271,7 +273,8 @@ void CVoid01::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 68.f && fAnimpos <= 70.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iSmallDamage + rand() % 20;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
 				}
 				if (fAnimpos >= 40.f && fAnimpos <= 75.f)
@@ -289,7 +292,8 @@ void CVoid01::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 44.f && fAnimpos <= 46.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iSmallDamage + rand() % 20;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
 				}
 				if (fAnimpos >= 42.f && fAnimpos <= 50.f)

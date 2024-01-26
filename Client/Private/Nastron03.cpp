@@ -32,8 +32,8 @@ HRESULT CNastron03::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pTransformCom->Set_State(State::Pos, _vec4(5.f, 0.f, 0.f, 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(100.f, 8.f, 108.f, 1.f));
+	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
@@ -41,7 +41,7 @@ HRESULT CNastron03::Init(void* pArg)
 
 	m_eCurState = STATE_IDLE;
 
-	m_iHP = 30;
+	m_iHP = 3000;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
@@ -53,7 +53,7 @@ HRESULT CNastron03::Init(void* pArg)
 
 	PxCapsuleControllerDesc ControllerDesc{};
 	ControllerDesc.height = 1.4f; // 높이(위 아래의 반구 크기 제외
-	ControllerDesc.radius = 0.4f; // 위아래 반구의 반지름
+	ControllerDesc.radius = 0.8f; // 위아래 반구의 반지름
 	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
 	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
 	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
@@ -80,6 +80,9 @@ void CNastron03::Tick(_float fTimeDelta)
 	__super::Update_MonsterCollider();
 
 	Update_Trail(fTimeDelta);
+
+	m_pTransformCom->Gravity(fTimeDelta);
+
 }
 
 void CNastron03::Late_Tick(_float fTimeDelta)
@@ -225,11 +228,11 @@ void CNastron03::Tick_State(_float fTimeDelta)
 			m_fIdleTime = 0.f;
 		}
 
-		//_float fDistance = __super::Compute_PlayerDistance();
-		//if (fDistance <= m_fChaseRange)
-		//{
-		//	m_eCurState = STATE_CHASE;
-		//}
+		_float fDistance = __super::Compute_PlayerDistance();
+		if (fDistance <= m_fChaseRange)
+		{
+			m_eCurState = STATE_CHASE;
+		}
 
 	}
 		break;
@@ -298,7 +301,8 @@ void CNastron03::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 51.f && fAnimpos <= 53.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iDefaultDamage1 - rand() % 10;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
 				}
 				if (fAnimpos >= 44.f && fAnimpos <= 54.f)
@@ -317,12 +321,14 @@ void CNastron03::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 37.f && fAnimpos <= 39.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iDefaultDamage1 - rand() % 20;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
 				}
 				if (fAnimpos >= 68.f && fAnimpos <= 70.f && !m_bAttacked2)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iDefaultDamage1 - rand() % 20;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked2 = true;
 				}
 				if (fAnimpos >= 34.f && fAnimpos <= 41.f)
@@ -345,7 +351,8 @@ void CNastron03::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 110.f && fAnimpos <= 112.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iDefaultDamage1 - rand() % 20;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Stun);
 					m_bAttacked = true;
 				}
 			}
