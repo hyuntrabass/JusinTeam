@@ -124,6 +124,7 @@ namespace Engine
 		float fInterpolationTime{ 0.2f };
 		float fDurationRatio{ 1.f };
 		bool bRestartAnimation{ false };
+		float fStartAimPos{};
 	};
 
 
@@ -175,6 +176,8 @@ namespace Engine
 	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {
 		int iStartAnimIndex{};
 		float fStartAnimPos{};
+		std::vector<int> iEndAnimIndices;
+		std::vector<float> fEndAnimPoses;
 		std::vector<std::wstring> strSoundNames;
 		float fVolume{};
 		

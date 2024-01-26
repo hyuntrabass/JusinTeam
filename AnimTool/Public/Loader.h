@@ -34,7 +34,7 @@ private:
 
 private:
 	_uint m_iNumMonsterModels = { 0 };
-	_uint m_iNumPlayerModels = { 0 };
+	_uint m_iNumSelectModels = { 0 };
 
 private:
 	HANDLE m_hThread{};

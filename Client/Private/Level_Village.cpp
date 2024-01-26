@@ -14,6 +14,8 @@ CLevel_Village::CLevel_Village(_dev pDevice, _context pContext)
 HRESULT CLevel_Village::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_VILLAGE);
+	m_pGameInstance->StopAll();
+	m_pGameInstance->PlayBGM(TEXT("BGM_1st_Village"));
 	
 	if (FAILED(Ready_Player()))
 	{

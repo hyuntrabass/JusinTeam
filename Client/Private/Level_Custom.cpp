@@ -10,6 +10,8 @@ CLevel_Custom::CLevel_Custom(_dev pDevice, _context pContext)
 HRESULT CLevel_Custom::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_CUSTOM);
+	m_pGameInstance->StopAll();
+	m_pGameInstance->PlayBGM(TEXT("Odin_CharacterSelect_02"));
 
 	if (FAILED(Ready_Player()))
 	{

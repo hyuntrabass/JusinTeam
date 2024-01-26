@@ -863,6 +863,16 @@ _bool CGameInstance::Raycast(_vec3 vOrigin, _vec3 vDir, _float fDist, PxRaycastB
 	return m_pPhysX_Manager->Raycast(vOrigin, vDir, fDist, Buffer);
 }
 
+_bool CGameInstance::Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer, PxQueryFilterData Filter)
+{
+	if (!m_pPhysX_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pPhysX_Manager is NULL");
+	}
+
+	return m_pPhysX_Manager->Raycast(vOrigin, vDir, fDist, Buffer,Filter);
+}
+
 _bool CGameInstance::Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer)
 {
 	if (!m_pPhysX_Manager)

@@ -9,14 +9,36 @@ CPlayer::CPlayer(_dev pDevice, _context pContext)
 CPlayer::CPlayer(const CPlayer& rhs)
 	: CGameObject(rhs)
 	, m_iNumMonsterModels(rhs.m_iNumMonsterModels)
-	, m_iNumPlayerModels(rhs.m_iNumPlayerModels)
+	, m_iNumSelectModels(rhs.m_iNumSelectModels)
 {
 }
 
-HRESULT CPlayer::Init_Prototype(_uint iNumMonsterModels, _uint iNumPlayerModels)
+CModel* CPlayer::Get_CurrentModel()
+{
+	return m_pModelCom;
+}
+
+CRealtimeVTFModel* CPlayer::Get_CurrentPlayerModel()
+{
+	return m_pPlayerModelCom;
+}
+
+CAnimation* CPlayer::Get_CurrentAnim()
+{
+	if (m_eType == TYPE_PLAYER)
+	{
+		m_pPlayerModelCom->Get_Animation(m_pPlayerModelCom->Get_CurrentAnimationIndex());
+	}
+	else
+	{
+		return m_pModelCom->Get_Animation(m_pModelCom->Get_CurrentAnimationIndex());
+	}
+}
+
+HRESULT CPlayer::Init_Prototype(_uint iNumMonsterModels, _uint iNumSelectModels)
 {
 	m_iNumMonsterModels = iNumMonsterModels;
-	m_iNumPlayerModels = iNumPlayerModels;
+	m_iNumSelectModels = iNumSelectModels;
 
 	return S_OK;
 }
@@ -34,18 +56,23 @@ HRESULT CPlayer::Init(void* pArg)
 		m_pMonsterModelTag[i] = szPrototypeTag;
 	}
 
-	m_pPlayerModelCom = new CModel * [m_iNumPlayerModels];
-	m_pPlayerModelTag = new wstring[m_iNumPlayerModels];
+	m_pSelectModelCom = new CModel * [m_iNumSelectModels];
+	m_pSelectModelTag = new wstring[m_iNumSelectModels];
 
-	for (_uint i = 0; i < m_iNumPlayerModels; i++)
+	for (_uint i = 0; i < m_iNumSelectModels; i++)
 	{
 		_tchar szPrototypeTag[MAX_PATH] = TEXT("");
-		const wstring& strPrototypeTag = TEXT("Prototype_Model_Player_%d");
+		const wstring& strPrototypeTag = TEXT("Prototype_Model_Select_%d");
 		wsprintf(szPrototypeTag, strPrototypeTag.c_str(), i);
-		m_pPlayerModelTag[i] = szPrototypeTag;
+		m_pSelectModelTag[i] = szPrototypeTag;
 	}
 
 	if (FAILED(Add_Components()))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(Place_PartModels()))
 	{
 		return E_FAIL;
 	}
@@ -55,31 +82,23 @@ HRESULT CPlayer::Init(void* pArg)
 
 void CPlayer::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_SPACE))
-	{
-		_vector vPos = XMLoadFloat4(&m_vPos);
-		_vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-
-		vPos += vUp * m_fGravity * fTimeDelta * 0.6f;
-
-		m_fGravity -= 19.8f * fTimeDelta;
-
-		m_pTransformCom->Turn(XMVectorSet(0.f, 0.f, 1.f, 0.f), fTimeDelta);
-		vPos = XMVectorSetW(vPos, 1.f);
-		m_pTransformCom->Set_State(State::Pos, vPos);
-
-		XMStoreFloat4(&m_vPos, vPos);
-	}
 	if (m_eType == TYPE_MONSTER)
 	{
 		m_pModelCom = m_pMonsterModelCom[m_iCurrentIndex];
 	}
-	else if (m_eType == TYPE_PLAYER)
+	else if (m_eType == TYPE_SELECT)
 	{
-		m_pModelCom = m_pPlayerModelCom[m_iCurrentIndex];
+		m_pModelCom = m_pSelectModelCom[m_iCurrentIndex];
 	}
 
-	if (m_pModelCom)
+	if (m_eType == TYPE_PLAYER)
+	{
+		if (m_pPlayerModelCom)
+		{
+			m_pPlayerModelCom->Play_Animation(fTimeDelta);
+		}
+	}
+	else if (m_pModelCom)
 	{
 		m_pModelCom->Play_Animation(fTimeDelta);
 	}
@@ -96,7 +115,54 @@ HRESULT CPlayer::Render()
 	{
 		return E_FAIL;
 	}
-	if (m_pModelCom)
+	
+	if (m_eType == TYPE_PLAYER)
+	{
+		for (size_t i = 0; i < 4; i++)
+		{
+			for (size_t k = 0; k < m_pPlayerModelCom->Get_Num_PartMeshes(i, 0); k++)
+			{
+				if (FAILED(m_pPlayerModelCom->Bind_Part_Material(m_pPlayerShaderCom, "g_DiffuseTexture", TextureType::Diffuse, (_uint)i, (_uint)0, k)))
+					continue;
+
+				_bool HasNorTex{};
+				if (FAILED(m_pPlayerModelCom->Bind_Part_Material(m_pPlayerShaderCom, "g_NormalTexture", TextureType::Normals, (_uint)i, (_uint)0, k)))
+				{
+					HasNorTex = false;
+				}
+				else
+				{
+					HasNorTex = true;
+				}
+
+				_bool HasSpecTex{};
+				if (FAILED(m_pPlayerModelCom->Bind_Part_Material(m_pPlayerShaderCom, "g_SpecTexture", TextureType::Shininess, (_uint)i, (_uint)0, k)))
+				{
+					HasSpecTex = false;
+				}
+				else
+				{
+					HasSpecTex = true;
+				}
+
+				if (FAILED(m_pPlayerShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+					return E_FAIL;
+
+				HasSpecTex = false;
+
+				if (FAILED(m_pPlayerShaderCom->Bind_RawValue("g_HasSpecTex", &HasSpecTex, sizeof _bool)))
+					return E_FAIL;
+
+
+				if (FAILED(m_pPlayerShaderCom->Begin(0)))
+					return E_FAIL;
+
+				if (FAILED(m_pPlayerModelCom->Render_Part((_uint)i, (_uint)0, k)))
+					return E_FAIL;
+			}
+		}
+	}
+	else if (m_pModelCom)
 	{
 		for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
 		{
@@ -141,6 +207,42 @@ HRESULT CPlayer::Render()
 	return S_OK;
 }
 
+HRESULT CPlayer::Place_PartModels()
+{
+	CRealtimeVTFModel::PART_DESC Desc{};
+
+	Desc.ePartType = 0;
+	Desc.FileName = "body5";
+
+	if (FAILED(m_pPlayerModelCom->Place_Parts(Desc, true)))
+		return E_FAIL;
+
+	Desc.ePartType = 1;
+	Desc.FileName = "face0";
+
+	if (FAILED(m_pPlayerModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.ePartType = 2;
+	Desc.FileName = "hair0";
+
+	if (FAILED(m_pPlayerModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.ePartType = 3;
+	Desc.FileName = "bow4";
+
+	if (FAILED(m_pPlayerModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "sword4";
+
+	if (FAILED(m_pPlayerModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 HRESULT CPlayer::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
@@ -149,6 +251,16 @@ HRESULT CPlayer::Add_Components()
 	}
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_RTVTF"), TEXT("Com_Shader_Player"), reinterpret_cast<CComponent**>(&m_pPlayerShaderCom))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Player"), TEXT("Com_Model_Player"), reinterpret_cast<CComponent**>(&m_pPlayerModelCom), m_pTransformCom)))
 	{
 		return E_FAIL;
 	}
@@ -166,14 +278,14 @@ HRESULT CPlayer::Add_Components()
 		}
 	}
 
-	for (_uint i = 0; i < m_iNumPlayerModels; i++)
+	for (_uint i = 0; i < m_iNumSelectModels; i++)
 	{
 		_tchar szComName[MAX_PATH] = TEXT("");
-		const wstring& strComName = TEXT("Com_Model_Player%d");
+		const wstring& strComName = TEXT("Com_Model_Select%d");
 		wsprintf(szComName, strComName.c_str(), i);
 		wstring strFinalComName = szComName;
 
-		if (FAILED(__super::Add_Component(LEVEL_TOOL, m_pPlayerModelTag[i], strFinalComName, reinterpret_cast<CComponent**>(&m_pPlayerModelCom[i]), m_pTransformCom)))
+		if (FAILED(__super::Add_Component(LEVEL_TOOL, m_pSelectModelTag[i], strFinalComName, reinterpret_cast<CComponent**>(&m_pSelectModelCom[i]), m_pTransformCom)))
 		{
 			return E_FAIL;
 		}
@@ -184,34 +296,61 @@ HRESULT CPlayer::Add_Components()
 
 HRESULT CPlayer::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	if (m_eType == TYPE_PLAYER)
 	{
-		return E_FAIL;
-	}
+		// WorldMatrix 바인드
+		if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pPlayerShaderCom, "g_WorldMatrix")))
+			return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
-	{
-		return E_FAIL;
-	}
+		// ViewMatrix 바인드
+		if (FAILED(m_pPlayerShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
+			return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
-	{
-		return E_FAIL;
-	}
+		// ProjMatrix 바인드
+		if (FAILED(m_pPlayerShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
+			return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
+		// 카메라 Far 바인드
+		if (FAILED(m_pPlayerShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
+			return E_FAIL;
+
+		m_pPlayerModelCom->Set_UsingMotionBlur(false);
+
+		// 뼈 바인드
+		if (FAILED(m_pPlayerModelCom->Bind_Bone(m_pPlayerShaderCom)))
+			return E_FAIL;
+	}
+	else
 	{
-		return E_FAIL;
+		if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
+		{
+			return E_FAIL;
+		}
 	}
 
 	return S_OK;
 }
 
-CPlayer* CPlayer::Create(_dev pDevice, _context pContext, _uint iNumMonsterModels, _uint iNumPlayerModels)
+CPlayer* CPlayer::Create(_dev pDevice, _context pContext, _uint iNumMonsterModels, _uint iNumSelectModels)
 {
 	CPlayer* pInstance = new CPlayer(pDevice, pContext);
 
-	if (FAILED(pInstance->Init_Prototype(iNumMonsterModels, iNumPlayerModels)))
+	if (FAILED(pInstance->Init_Prototype(iNumMonsterModels, iNumSelectModels)))
 	{
 		MSG_BOX("Failed to Create : CPlayer");
 		Safe_Release(pInstance);
@@ -248,17 +387,20 @@ void CPlayer::Free()
 
 	Safe_Delete_Array(m_pMonsterModelTag);
 
-	if (m_pPlayerModelCom)
+	if (m_pSelectModelCom)
 	{
-		for (_uint i = 0; i < m_iNumPlayerModels; i++)
+		for (_uint i = 0; i < m_iNumSelectModels; i++)
 		{
-			Safe_Release(m_pPlayerModelCom[i]);
+			Safe_Release(m_pSelectModelCom[i]);
 		}
 	}
-	Safe_Delete_Array(m_pPlayerModelCom);
+	Safe_Delete_Array(m_pSelectModelCom);
 
-	Safe_Delete_Array(m_pPlayerModelTag);
+	Safe_Delete_Array(m_pSelectModelTag);
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
+
+	Safe_Release(m_pPlayerModelCom);
+	Safe_Release(m_pPlayerShaderCom);
 }

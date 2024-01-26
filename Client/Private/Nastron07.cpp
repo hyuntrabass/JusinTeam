@@ -33,7 +33,7 @@ HRESULT CNastron07::Init(void* pArg)
 	}
 
 	//m_pTransformCom->Set_State(State::Pos, _vec4(5.f, 0.f, 0.f, 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
@@ -44,6 +44,27 @@ HRESULT CNastron07::Init(void* pArg)
 	m_iHP = 30;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
+
+	TRAIL_DESC Desc{};
+	Desc.vColor = Colors::LightBlue;
+	Desc.vPSize = _vec2(0.05f, 0.05f);
+	Desc.iNumVertices = 10.f;
+	m_pLeftTrail1 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
+	m_pLeftTrail2 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
+	m_pLeftTrail3 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
+	m_pRightTrail1 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
+	m_pRightTrail2 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
+	m_pRightTrail3 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
+
+	PxCapsuleControllerDesc ControllerDesc{};
+	ControllerDesc.height = 1.4f; // 높이(위 아래의 반구 크기 제외
+	ControllerDesc.radius = 0.4f; // 위아래 반구의 반지름
+	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+
+	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
     return S_OK;
 }
@@ -62,6 +83,8 @@ void CNastron07::Tick(_float fTimeDelta)
 
 	Update_Collider();
 	__super::Update_MonsterCollider();
+
+	Update_Trail(fTimeDelta);
 }
 
 void CNastron07::Late_Tick(_float fTimeDelta)
@@ -253,6 +276,13 @@ void CNastron07::Tick_State(_float fTimeDelta)
 
 	case Client::CNastron07::STATE_ATTACK:
 
+		m_pLeftTrail1->Late_Tick(fTimeDelta);
+		m_pLeftTrail2->Late_Tick(fTimeDelta);
+		m_pLeftTrail3->Late_Tick(fTimeDelta);
+		m_pRightTrail1->Late_Tick(fTimeDelta);
+		m_pRightTrail2->Late_Tick(fTimeDelta);
+		m_pRightTrail3->Late_Tick(fTimeDelta);
+
 		if (!m_bSelectAttackPattern)
 		{
 			if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
@@ -354,6 +384,52 @@ void CNastron07::Tick_State(_float fTimeDelta)
 	}
 }
 
+void CNastron07::Update_Trail(_float fTimeDelta)
+{
+	_mat Matrix = *m_pModelCom->Get_BoneMatrix("Bone_Claw_L");
+	_mat Offset = _mat::CreateTranslation(_vec3(-1.62f, 0.01f, 0.27f));
+	_mat Result = Offset * Matrix * m_pTransformCom->Get_World_Matrix();
+
+	m_pLeftTrail2->Tick(Result.Position_vec3());
+
+	Matrix = *m_pModelCom->Get_BoneMatrix("Bone_Claw_R");
+	Offset = _mat::CreateTranslation(_vec3(1.62f, -0.01f, -0.27f));
+	Result = Offset * Matrix * m_pTransformCom->Get_World_Matrix();
+
+	m_pRightTrail2->Tick(Result.Position_vec3());
+
+
+
+
+	Matrix = *m_pModelCom->Get_BoneMatrix("Bone_Claw_L");
+	Offset = _mat::CreateTranslation(_vec3(-1.55f, 0.09f, 0.2f));
+	Result = Offset * Matrix * m_pTransformCom->Get_World_Matrix();
+
+	m_pLeftTrail1->Tick(Result.Position_vec3());
+
+	Matrix = *m_pModelCom->Get_BoneMatrix("Bone_Claw_R");
+	Offset = _mat::CreateTranslation(_vec3(1.55f, -0.09f, -0.2f));
+	Result = Offset * Matrix * m_pTransformCom->Get_World_Matrix();
+
+	m_pRightTrail1->Tick(Result.Position_vec3());
+
+
+
+
+	Matrix = *m_pModelCom->Get_BoneMatrix("Bone_Claw_L");
+	Offset = _mat::CreateTranslation(_vec3(-1.52f, -0.07f, 0.25f));
+	Result = Offset * Matrix * m_pTransformCom->Get_World_Matrix();
+
+	m_pLeftTrail3->Tick(Result.Position_vec3());
+
+	Matrix = *m_pModelCom->Get_BoneMatrix("Bone_Claw_R");
+	Offset = _mat::CreateTranslation(_vec3(1.52f, 0.07f, -0.25f));
+	Result = Offset * Matrix * m_pTransformCom->Get_World_Matrix();
+
+	m_pRightTrail3->Tick(Result.Position_vec3());
+
+}
+
 HRESULT CNastron07::Add_Collider()
 {
 	Collider_Desc BodyCollDesc = {};
@@ -418,4 +494,11 @@ CGameObject* CNastron07::Clone(void* pArg)
 void CNastron07::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pLeftTrail1);
+	Safe_Release(m_pLeftTrail2);
+	Safe_Release(m_pLeftTrail3);
+	Safe_Release(m_pRightTrail1);
+	Safe_Release(m_pRightTrail2);
+	Safe_Release(m_pRightTrail3);
 }
