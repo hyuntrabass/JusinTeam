@@ -277,6 +277,16 @@ namespace Engine
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	};
 
+	using VTXTRAILSURFACE = struct ENGINE_DLL tagVertex_Trail_Surface
+	{
+		XMFLOAT3 vTopPosition{};
+		XMFLOAT3 vBottomPosition{};
+		float fAlpha{};
+
+		static const unsigned int iNumElements{ 3 };
+		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
+	};
+
 	using VTXPOINT_INSTANCING = struct ENGINE_DLL tagVertex_Point_Instancing
 	{
 		static const unsigned int iNumElements{ 7 };

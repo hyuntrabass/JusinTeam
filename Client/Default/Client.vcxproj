@@ -161,6 +161,7 @@
     <ClInclude Include="..\Public\Cat.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
     <ClInclude Include="..\Public\Coin.h" />
+    <ClInclude Include="..\Public\CommonSurfaceTrail.h" />
     <ClInclude Include="..\Public\Diamond.h" />
     <ClInclude Include="..\Public\CommonTrail.h" />
     <ClInclude Include="..\Public\Dog.h" />
@@ -264,6 +265,7 @@
     <ClCompile Include="..\Private\Cat.cpp" />
     <ClCompile Include="..\Private\CharacterSelect.cpp" />
     <ClCompile Include="..\Private\Coin.cpp" />
+    <ClCompile Include="..\Private\CommonSurfaceTrail.cpp" />
     <ClCompile Include="..\Private\Diamond.cpp" />
     <ClCompile Include="..\Private\CommonTrail.cpp" />
     <ClCompile Include="..\Private\Dog.cpp" />
@@ -370,6 +372,7 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Instancing.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Trail.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Trail_Surface.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Water.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>

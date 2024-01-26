@@ -6,6 +6,8 @@
 #include "Riding.h"
 #include "NameTag.h"
 #include "CommonTrail.h"
+#include "CommonSurfaceTrail.h"
+
 BEGIN(Client)
 
 struct BODYPART_DESC
@@ -326,6 +328,7 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CCommonTrail* m_pLeft_Trail{ nullptr };
 	CCommonTrail* m_pRight_Trail{ nullptr };
+	CCommonSurfaceTrail* m_pTest_Trail{ nullptr };
 	CTexture* m_pDissolveTextureCom{};
 
 private:

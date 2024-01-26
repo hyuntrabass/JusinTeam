@@ -1,11 +1,11 @@
-#include "VIBuffer_Trail.h"
+#include "VIBuffer_Trail_Surface.h"
 
-CVIBuffer_Trail::CVIBuffer_Trail(_dev pDevice, _context pContext)
+CVIBuffer_Trail_Surface::CVIBuffer_Trail_Surface(_dev pDevice, _context pContext)
 	: CVIBuffer(pDevice, pContext)
 {
 }
 
-CVIBuffer_Trail::CVIBuffer_Trail(const CVIBuffer_Trail& rhs)
+CVIBuffer_Trail_Surface::CVIBuffer_Trail_Surface(const CVIBuffer_Trail_Surface& rhs)
 	: CVIBuffer(rhs)
 	, m_TrailBufferDesc(rhs.m_TrailBufferDesc)
 	, m_TrailInitialData(rhs.m_TrailInitialData)
@@ -13,11 +13,11 @@ CVIBuffer_Trail::CVIBuffer_Trail(const CVIBuffer_Trail& rhs)
 {
 }
 
-HRESULT CVIBuffer_Trail::Init_Prototype(const _uint iNumVertices, _float2 vPSize)
+HRESULT CVIBuffer_Trail_Surface::Init_Prototype(const _uint iNumVertices)
 {
 	m_iDetailRatio = 4;
 	m_iNumVertexBuffers = 1;
-	m_iVertexStride = sizeof VTXTRAIL;
+	m_iVertexStride = sizeof VTXTRAILSURFACE;
 	m_iNumVertices = iNumVertices * m_iDetailRatio;
 
 	m_iIndexStride = 2;
@@ -37,14 +37,13 @@ HRESULT CVIBuffer_Trail::Init_Prototype(const _uint iNumVertices, _float2 vPSize
 
 	ZeroMemory(&m_TrailInitialData, sizeof m_TrailInitialData);
 
-	VTXTRAIL* pVertices = new VTXTRAIL[m_iNumVertices];
-	ZeroMemory(pVertices, sizeof(VTXTRAIL) * m_iNumVertices);
+	VTXTRAILSURFACE* pVertices = new VTXTRAILSURFACE[m_iNumVertices];
+	ZeroMemory(pVertices, sizeof(VTXTRAILSURFACE) * m_iNumVertices);
 
 	for (size_t i = 0; i < m_iNumVertices; i++)
 	{
-		pVertices[i].vPosition = _float3(0.f, 0.f, 0.f);
-		pVertices[i].vPSize = vPSize;
-		pVertices[i].vColor = _float4(1.f, 1.f, 1.f, 1.f);
+		pVertices[i].vTopPosition = _float3(0.f, 0.f, 0.f);
+		pVertices[i].vBottomPosition = _float3(0.f, 0.f, 0.f);
 	}
 
 	m_TrailInitialData.pSysMem = pVertices;
@@ -82,7 +81,7 @@ HRESULT CVIBuffer_Trail::Init_Prototype(const _uint iNumVertices, _float2 vPSize
 	return S_OK;
 }
 
-HRESULT CVIBuffer_Trail::Init(void* pArg)
+HRESULT CVIBuffer_Trail_Surface::Init(void* pArg)
 {
 	if (FAILED(m_pDevice->CreateBuffer(&m_TrailBufferDesc, &m_TrailInitialData, &m_pVB)))
 	{
@@ -93,7 +92,7 @@ HRESULT CVIBuffer_Trail::Init(void* pArg)
 	return S_OK;
 }
 
-void CVIBuffer_Trail::Update(_uint iNumVerticesToUse, _vec3* pPositions, _vec4* pColors, _vec2* pPSize)
+void CVIBuffer_Trail_Surface::Update(_uint iNumVerticesToUse, _vec3* pTopPositionArray, _vec3* pBottomPositionArray, _float* pAlphaArray)
 {
 	D3D11_MAPPED_SUBRESOURCE SubResource{};
 
@@ -105,9 +104,8 @@ void CVIBuffer_Trail::Update(_uint iNumVerticesToUse, _vec3* pPositions, _vec4* 
 	{
 		if (i >= iNumVerticesToUse * m_iDetailRatio)
 		{
-			reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPosition = pPositions[iNumVerticesToUse - 1];
-			reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vColor = _float4();
-			reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPSize = _float2();
+			reinterpret_cast<VTXTRAILSURFACE*>(SubResource.pData)[i].vTopPosition = pTopPositionArray[iNumVerticesToUse - 1];
+			reinterpret_cast<VTXTRAILSURFACE*>(SubResource.pData)[i].vBottomPosition = pBottomPositionArray[iNumVerticesToUse - 1];
 		}
 		else
 		{
@@ -130,17 +128,13 @@ void CVIBuffer_Trail::Update(_uint iNumVerticesToUse, _vec3* pPositions, _vec4* 
 				fWeight = 0.f;
 			}
 
-			if (pPositions)
+			reinterpret_cast<VTXTRAILSURFACE*>(SubResource.pData)[i].vTopPosition = _vec3(_vec4::CatmullRom(pTopPositionArray[iCMRIndex[0]], pTopPositionArray[iCMRIndex[1]], pTopPositionArray[iCMRIndex[2]], pTopPositionArray[iCMRIndex[3]], fWeight));
+
+			reinterpret_cast<VTXTRAILSURFACE*>(SubResource.pData)[i].vBottomPosition = _vec3(_vec4::CatmullRom(pBottomPositionArray[iCMRIndex[0]], pBottomPositionArray[iCMRIndex[1]], pBottomPositionArray[iCMRIndex[2]], pBottomPositionArray[iCMRIndex[3]], fWeight));
+
+			if (pAlphaArray)
 			{
-				reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPosition = _vec3(_vec4::CatmullRom(pPositions[iCMRIndex[0]], pPositions[iCMRIndex[1]], pPositions[iCMRIndex[2]], pPositions[iCMRIndex[3]], fWeight));
-			}
-			if (pColors)
-			{
-				reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vColor = _vec4::Lerp(pColors[iCMRIndex[1]], pColors[iCMRIndex[2]], fWeight);
-			}
-			if (pPSize)
-			{
-				reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPSize = _vec2::Lerp(pPSize[iCMRIndex[1]], pPSize[iCMRIndex[2]], fWeight);
+				reinterpret_cast<VTXTRAILSURFACE*>(SubResource.pData)[i].fAlpha = Lerp(pAlphaArray[iCMRIndex[1]], pAlphaArray[iCMRIndex[2]], fWeight);
 			}
 
 			fWeight += 1.f / static_cast<_float>(m_iDetailRatio);
@@ -150,33 +144,33 @@ void CVIBuffer_Trail::Update(_uint iNumVerticesToUse, _vec3* pPositions, _vec4* 
 	m_pContext->Unmap(m_pVB, 0);
 }
 
-CVIBuffer_Trail* CVIBuffer_Trail::Create(_dev pDevice, _context pContext, _uint iNumVertices, _float2 vPSize)
+CVIBuffer_Trail_Surface* CVIBuffer_Trail_Surface::Create(_dev pDevice, _context pContext, _uint iNumVertices)
 {
-	CVIBuffer_Trail* pInstance = new CVIBuffer_Trail(pDevice, pContext);
+	CVIBuffer_Trail_Surface* pInstance = new CVIBuffer_Trail_Surface(pDevice, pContext);
 
-	if (FAILED(pInstance->Init_Prototype(iNumVertices, vPSize)))
+	if (FAILED(pInstance->Init_Prototype(iNumVertices)))
 	{
-		MSG_BOX("Failed to Create : CVIBuffer_Trail");
+		MSG_BOX("Failed to Create : CVIBuffer_Trail_Surface");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CComponent* CVIBuffer_Trail::Clone(void* pArg)
+CComponent* CVIBuffer_Trail_Surface::Clone(void* pArg)
 {
-	CVIBuffer_Trail* pInstance = new CVIBuffer_Trail(*this);
+	CVIBuffer_Trail_Surface* pInstance = new CVIBuffer_Trail_Surface(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CVIBuffer_Trail");
+		MSG_BOX("Failed to Clone : CVIBuffer_Trail_Surface");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CVIBuffer_Trail::Free()
+void CVIBuffer_Trail_Surface::Free()
 {
 	__super::Free();
 

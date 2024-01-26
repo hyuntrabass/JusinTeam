@@ -45,9 +45,9 @@ HRESULT CCommonTrail::Init(void* pArg)
 		MSG_BOX("버텍스 개수는 50을 초과할 수 없습니다.");
 	}
 
-	m_PosArray = new _float3[m_Info.iNumVertices];
-	m_ColorArray = new _float4[m_Info.iNumVertices];
-	m_PSizeArray = new _float2[m_Info.iNumVertices];
+	m_PosArray = new _vec3[m_Info.iNumVertices];
+	m_ColorArray = new _vec4[m_Info.iNumVertices];
+	m_PSizeArray = new _vec2[m_Info.iNumVertices];
 
 	return S_OK;
 }

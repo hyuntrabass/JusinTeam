@@ -53,13 +53,18 @@ HRESULT CPlayer::Init(void* pArg)
 	TRAIL_DESC trail_desc{};
 	trail_desc.vColor = _vec4(0.301f, 0.215f, 0.482f, 1.f);
 	trail_desc.vColor = _vec4(1.f,0.f, 0.f, 1.f);
-	trail_desc.vPSize = _vec2(0.08f, 0.01f);
-	trail_desc.iNumVertices = 20.f;
+	trail_desc.vPSize = _vec2(0.08f, 0.08f);
+	trail_desc.iNumVertices = 20;
 	m_pLeft_Trail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &trail_desc);
 	m_pRight_Trail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &trail_desc);
 	m_Left_Mat = m_pModelCom->Get_BoneMatrix("B_Weapon_L");
 	m_Right_Mat = m_pModelCom->Get_BoneMatrix("B_Weapon_R");
 
+	SURFACETRAIL_DESC SurfaceDesc{};
+	SurfaceDesc.iNumVertices = 20;
+	SurfaceDesc.vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
+	m_pTest_Trail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &SurfaceDesc);
+	
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER);
 	return S_OK;
 }
@@ -93,15 +98,23 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	m_OldWorldMatrix = m_pTransformCom->Get_World_Matrix();
 	_mat m{};
-	if(m_bLeft_TrailOn)
+	if (m_pGameInstance->Get_CameraModeIndex() == CM_MAIN)
 	{
-		m = _mat::CreateTranslation(0.f, -0.5f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
-		m_pLeft_Trail->Tick((m.Position_vec3()));
-	}
-	if(m_bRight_TrailOn)
-	{
-		m = _mat::CreateTranslation(0.f, 0.5f, 0.f) * *m_Right_Mat * m_pTransformCom->Get_World_Matrix();
-		m_pRight_Trail->Tick((m.Position_vec3()));
+		if (m_bLeft_TrailOn)
+		{
+			m = _mat::CreateTranslation(0.f, -0.5f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
+			m_pLeft_Trail->Tick((m.Position_vec3()));
+		}
+		if (m_bRight_TrailOn)
+		{
+			m = _mat::CreateTranslation(0.f, 0.5f, 0.f) * *m_Right_Mat * m_pTransformCom->Get_World_Matrix();
+			m_pRight_Trail->Tick((m.Position_vec3()));
+		}
+		if (m_pTest_Trail)
+		{
+			_vec3 vCenterforTrail = _vec3(m_pTransformCom->Get_CenterPos());
+			m_pTest_Trail->Tick(vCenterforTrail, vCenterforTrail + _vec3(0.f, -1.f, 0.f));
+		}
 	}
 	
 	if (m_bStartGame)
@@ -280,6 +293,12 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	m_pLeft_Trail->Late_Tick(fTimeDelta);
 	if (m_bRight_TrailOn)
 	m_pRight_Trail->Late_Tick(fTimeDelta);
+
+	if (m_pTest_Trail)
+	{
+		m_pTest_Trail->Late_Tick(fTimeDelta);
+	}
+
 
 #ifdef _DEBUGTEST
 	m_pRendererCom->Add_DebugComponent(m_pHitCollider);
@@ -2299,6 +2318,7 @@ void CPlayer::Free()
 	Safe_Release(m_pDissolveTextureCom);
 	Safe_Release(m_pLeft_Trail);
 	Safe_Release(m_pRight_Trail);
+	Safe_Release(m_pTest_Trail);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);

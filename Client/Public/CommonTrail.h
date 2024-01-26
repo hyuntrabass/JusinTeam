@@ -40,9 +40,9 @@ private:
 
 	list<_float3> m_TrailPosList{};
 	TRAIL_DESC m_Info{};
-	_float3* m_PosArray{};
-	_float4* m_ColorArray{};
-	_float2* m_PSizeArray{};
+	_vec3* m_PosArray{};
+	_vec4* m_ColorArray{};
+	_vec2* m_PSizeArray{};
 
 
 private:
