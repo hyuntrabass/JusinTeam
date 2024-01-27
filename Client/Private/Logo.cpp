@@ -63,6 +63,8 @@ HRESULT CLogo::Render()
 		return E_FAIL;
 	}
 
+	m_pGameInstance->Render_Text(L"Font_Dialogue", m_pGameInstance->Get_InputString(), _vec2(100.f, 600.f), 0.5f, _vec4(1.f, 1.f, 1.f, 1.f));
+
 	return S_OK;
 }
 
