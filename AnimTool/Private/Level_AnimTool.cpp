@@ -30,6 +30,7 @@ HRESULT CLevel_AnimTool::Init()
 
 void CLevel_AnimTool::Tick(_float fTimeDelta)
 {
+	m_pGameInstance->StopSound(0);
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 	{
 		DestroyWindow(g_hWnd);

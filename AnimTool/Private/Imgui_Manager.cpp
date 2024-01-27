@@ -820,14 +820,12 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				vector<TRIGGERSOUND_DESC> SoundDescs = pCurModel->Get_TriggerSounds();
 				//사운드 이름 띄우기
 				_char** ppSoundTriggerList = new _char * [SoundDescs.size()];
-				wstring strSonudTrigger = L"SOUND_TRIGGER_";
 
 				for (size_t i = 0; i < SoundDescs.size(); i++)
 				{
 					ppSoundTriggerList[i] = new _char[MAX_PATH];
-					wstring SoundTrigger = strSonudTrigger + to_wstring(i);
-					int bufferSize = WideCharToMultiByte(CP_UTF8, 0, SoundTrigger.c_str(), -1, nullptr, 0, nullptr, nullptr);
-					WideCharToMultiByte(CP_UTF8, 0, SoundTrigger.c_str(), -1, ppSoundTriggerList[i], bufferSize, nullptr, nullptr);
+					int bufferSize = WideCharToMultiByte(CP_UTF8, 0, SoundDescs[i].strSoundNames[0].c_str(), -1, nullptr, 0, nullptr, nullptr);
+					WideCharToMultiByte(CP_UTF8, 0, SoundDescs[i].strSoundNames[0].c_str(), -1, ppSoundTriggerList[i], bufferSize, nullptr, nullptr);
 				}
 				if (ImGui::ListBox("SOUND##1", &m_iCurTriggerIndex, ppSoundTriggerList, SoundDescs.size()))
 				{
@@ -1177,14 +1175,12 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				vector<TRIGGERSOUND_DESC> SoundDescs = pCurModel->Get_TriggerSounds();
 				//사운드 이름 띄우기
 				_char** ppSoundTriggerList = new _char * [SoundDescs.size()];
-				wstring strSonudTrigger = L"SOUND_TRIGGER_";
 
 				for (size_t i = 0; i < SoundDescs.size(); i++)
 				{
 					ppSoundTriggerList[i] = new _char[MAX_PATH];
-					wstring SoundTrigger = strSonudTrigger + to_wstring(i);
-					int bufferSize = WideCharToMultiByte(CP_UTF8, 0, SoundTrigger.c_str(), -1, nullptr, 0, nullptr, nullptr);
-					WideCharToMultiByte(CP_UTF8, 0, SoundTrigger.c_str(), -1, ppSoundTriggerList[i], bufferSize, nullptr, nullptr);
+					int bufferSize = WideCharToMultiByte(CP_UTF8, 0, SoundDescs[i].strSoundNames[0].c_str(), -1, nullptr, 0, nullptr, nullptr);
+					WideCharToMultiByte(CP_UTF8, 0, SoundDescs[i].strSoundNames[0].c_str(), -1, ppSoundTriggerList[i], bufferSize, nullptr, nullptr);
 				}
 				if (ImGui::ListBox("SOUND##1", &m_iCurTriggerIndex, ppSoundTriggerList, SoundDescs.size()))
 				{
