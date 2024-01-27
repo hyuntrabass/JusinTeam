@@ -143,6 +143,7 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 
 	m_pObject_Manager->Release_DeadObjects();
 	m_pObject_Manager->Late_Tick(fTimeDelta);
+	m_pInput_Manager->Late_Update_InputDev();
 	if (m_pSound_Manager)
 	{
 		m_pSound_Manager->Update();
@@ -166,6 +167,7 @@ void CGameInstance::Clear(_uint iLevelIndex)
 
 	m_pObject_Manager->Clear(iLevelIndex);
 	m_pComponent_Manager->Clear(iLevelIndex);
+	m_Function_Clear_FX(iLevelIndex);
 }
 
 HRESULT CGameInstance::Clear_BackBuffer_View(_vec4 vClearColor)
@@ -1084,6 +1086,11 @@ void CGameInstance::Register_Tick_LateTick_Callback(Func_TickFX Tick, Func_TickF
 void CGameInstance::Register_HasCreated_Callback(Func_HasCreatedFX Function)
 {
 	m_Function_HasCreated = Function;
+}
+
+void CGameInstance::Register_Clear_Callback(Func_ClearFX Function)
+{
+	m_Function_Clear_FX = Function;
 }
 
 void CGameInstance::Create_Effect(const wstring& strEffectTag, _mat* pMatrix, const _bool& isFollow)
