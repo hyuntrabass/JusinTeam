@@ -1,4 +1,5 @@
 #include "VIBuffer_Instancing_Mesh.h"
+#include "Texture.h"
 
 CVIBuffer_Instancing_Mesh::CVIBuffer_Instancing_Mesh(_dev pDevice, _context pContext)
 	: CVIBuffer_Model_Instancing(pDevice, pContext)
@@ -19,102 +20,152 @@ HRESULT CVIBuffer_Instancing_Mesh::Init_Prototype(const string& strFilePath, _ui
 	_uint m_iNumMeshes{};
 	_uint m_iMatIndex{};
 	_char m_szName[MAX_PATH]{};
+	_uint m_iNumMaterials{};
 
 	ifstream ModelFile(strFilePath.c_str(), ios::binary);
 	if (ModelFile.is_open())
 	{
+
 		ModelFile.read(reinterpret_cast<_char*>(&m_iNumMeshes), sizeof _uint);
 
-		ModelFile.read(reinterpret_cast<_char*>(&m_iMatIndex), sizeof _uint);
-
-		_uint iNameSize{};
-		ModelFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof _uint);
-		if (iNameSize >= sizeof(m_szName))
+		for (size_t i = 0; i < m_iNumMeshes; i++)
 		{
-			MSG_BOX("Name Is Too Long!");
-		}
-		ModelFile.read(m_szName, iNameSize);
-		ModelFile.read(reinterpret_cast<_char*>(&m_iNumVertices), sizeof _uint);
-		_uint iNumFaces{};
-		ModelFile.read(reinterpret_cast<_char*>(&iNumFaces), sizeof _uint);
 
-		m_iNumVertexBuffers = 1;
-		m_iIndexStride = 4;
-		m_iNumIndices = iNumFaces * 3;
-		m_eIndexFormat = DXGI_FORMAT_R32_UINT;
-		m_ePrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+			ModelFile.read(reinterpret_cast<_char*>(&m_iMatIndex), sizeof _uint);
 
-		m_iVertexStride = sizeof VTXSTATICMESH;
-		ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
-		m_BufferDesc.ByteWidth = m_iVertexStride * m_iNumVertices;
-		m_BufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		m_BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		m_BufferDesc.CPUAccessFlags = 0;
-		m_BufferDesc.MiscFlags = 0;
-		m_BufferDesc.StructureByteStride = m_iVertexStride;
+			_uint iNameSize{};
+			ModelFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof _uint);
+			if (iNameSize >= sizeof(m_szName))
+			{
+				MSG_BOX("Name Is Too Long!");
+			}
+			ModelFile.read(m_szName, iNameSize);
+			ModelFile.read(reinterpret_cast<_char*>(&m_iNumVertices), sizeof _uint);
+			_uint iNumFaces{};
+			ModelFile.read(reinterpret_cast<_char*>(&iNumFaces), sizeof _uint);
 
-		ZeroMemory(&m_InitialData, sizeof m_InitialData);
+			m_iNumVertexBuffers = 1;
+			m_iIndexStride = 4;
+			m_iNumIndices = iNumFaces * 3;
+			m_eIndexFormat = DXGI_FORMAT_R32_UINT;
+			m_ePrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
-		VTXSTATICMESH* pVertices = new VTXSTATICMESH[m_iNumVertices]{};
+			m_iVertexStride = sizeof VTXSTATICMESH;
+			ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
+			m_BufferDesc.ByteWidth = m_iVertexStride * m_iNumVertices;
+			m_BufferDesc.Usage = D3D11_USAGE_DEFAULT;
+			m_BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+			m_BufferDesc.CPUAccessFlags = 0;
+			m_BufferDesc.MiscFlags = 0;
+			m_BufferDesc.StructureByteStride = m_iVertexStride;
 
-		for (size_t i = 0; i < m_iNumVertices; i++)
-		{
-			ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vPosition), sizeof _float3);
-			XMStoreFloat3(&pVertices[i].vPosition, XMLoadFloat3(&pVertices[i].vPosition));
-			ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vNormal), sizeof _float3);
-			XMStoreFloat3(&pVertices[i].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[i].vNormal)));
-			ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vTexcoord), sizeof _float2);
-			ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vTangent), sizeof _float3);
-		}
+			ZeroMemory(&m_InitialData, sizeof m_InitialData);
+
+			VTXSTATICMESH* pVertices = new VTXSTATICMESH[m_iNumVertices]{};
+
+			for (size_t i = 0; i < m_iNumVertices; i++)
+			{
+				ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vPosition), sizeof _float3);
+				XMStoreFloat3(&pVertices[i].vPosition, XMLoadFloat3(&pVertices[i].vPosition));
+				ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vNormal), sizeof _float3);
+				XMStoreFloat3(&pVertices[i].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[i].vNormal)));
+				ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vTexcoord), sizeof _float2);
+				ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vTangent), sizeof _float3);
+			}
 
 
-		m_InitialData.pSysMem = pVertices;
+			m_InitialData.pSysMem = pVertices;
 
-		if (FAILED(__super::Create_Buffer(&m_pVB)))
-		{
-			return E_FAIL;
-		}
+			if (FAILED(__super::Create_Buffer(&m_pVB)))
+			{
+				return E_FAIL;
+			}
 
-		Safe_Delete_Array(pVertices);
+			Safe_Delete_Array(pVertices);
 
 
 #pragma region Index
-		ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
-		m_BufferDesc.ByteWidth = m_iIndexStride * m_iNumIndices;
-		m_BufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		m_BufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		m_BufferDesc.CPUAccessFlags = 0;
-		m_BufferDesc.MiscFlags = 0;
-		m_BufferDesc.StructureByteStride = 0;
+			ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
+			m_BufferDesc.ByteWidth = m_iIndexStride * m_iNumIndices;
+			m_BufferDesc.Usage = D3D11_USAGE_DEFAULT;
+			m_BufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+			m_BufferDesc.CPUAccessFlags = 0;
+			m_BufferDesc.MiscFlags = 0;
+			m_BufferDesc.StructureByteStride = 0;
 
-		ZeroMemory(&m_InitialData, sizeof m_InitialData);
+			ZeroMemory(&m_InitialData, sizeof m_InitialData);
 
-		_ulong* pIndices = new _ulong[m_iNumIndices]{};
+			_ulong* pIndices = new _ulong[m_iNumIndices]{};
 
-		_ulong dwIndex{};
-		for (size_t i = 0; i < iNumFaces; i++)
-		{
-			ModelFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
-			dwIndex++;
+			_ulong dwIndex{};
+			for (size_t i = 0; i < iNumFaces; i++)
+			{
+				ModelFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
+				dwIndex++;
 
-			ModelFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
-			dwIndex++;
+				ModelFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
+				dwIndex++;
 
-			ModelFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
-			dwIndex++;
+				ModelFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
+				dwIndex++;
+
+			}
+
+			m_InitialData.pSysMem = pIndices;
+
+			if (FAILED(__super::Create_Buffer(&m_pIB)))
+			{
+				return E_FAIL;
+			}
+			Safe_Delete_Array(pIndices);
 
 		}
-
-		m_InitialData.pSysMem = pIndices;
-
-		if (FAILED(__super::Create_Buffer(&m_pIB)))
-		{
-			return E_FAIL;
-		}
-		Safe_Delete_Array(pIndices);
-
 	}
 
+	_char szMatFilePath[MAX_PATH]{};
+	_char szFullPath[MAX_PATH]{};
+
+	_splitpath_s(strFilePath.c_str(), nullptr, 0, szMatFilePath, MAX_PATH, nullptr, 0, nullptr, 0);
+	strcat_s(szMatFilePath, "../Texture/");
+
+	ModelFile.read(reinterpret_cast<_char*>(&m_iNumMaterials), sizeof _uint);
+
+	for (size_t i = 0; i < m_iNumMaterials; i++)
+	{
+		Model_Material Material{};
+		_uint iNameSize{};
+		_char* pFileName{};
+
+		for (size_t j = 0; j < ToIndex(TextureType::End); j++)
+		{
+			ModelFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof _uint);
+			if (iNameSize == 1)
+			{
+				continue;
+			}
+
+			pFileName = new _char[iNameSize];
+			ModelFile.read(pFileName, iNameSize);
+			if (strlen(szMatFilePath) + strlen(pFileName) >= sizeof(szFullPath))
+			{
+				MSG_BOX("Name Is Too Long!");
+			}
+			strcpy_s(szFullPath, szMatFilePath);
+			strcat_s(szFullPath, pFileName);
+			Safe_Delete_Array(pFileName);
+
+			_tchar szTexturePath[MAX_PATH]{};
+			MultiByteToWideChar(CP_ACP, 0, szFullPath, static_cast<_int>(strlen(szFullPath)), szTexturePath, MAX_PATH);
+
+			Material.pMaterials[j] = CTexture::Create(m_pDevice, m_pContext, szTexturePath);
+			if (!Material.pMaterials[j])
+			{
+				MSG_BOX("Failed to Create Texture from Model!");
+				return E_FAIL;
+			}
+		}
+
+	}
 	ModelFile.close();
 
 
@@ -141,6 +192,7 @@ HRESULT CVIBuffer_Instancing_Mesh::Init_Prototype(const string& strFilePath, _ui
 		pVertexInstance[i].vPos = _float4(rand() % 10, 5.f, rand() % 10, 1.f);
 	}
 	m_InstancingInitialData.pSysMem = pVertexInstance;
+
 #pragma endregion
 
 	return S_OK;
@@ -208,5 +260,6 @@ void CVIBuffer_Instancing_Mesh::Free()
 	{
 		Safe_Delete_Array(m_InstancingInitialData.pSysMem);
 	}
+
 	__super::Free();
 }
