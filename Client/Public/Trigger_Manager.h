@@ -33,7 +33,6 @@ private:
 	_uint m_iWinSizeY = { 0 };
 
 public:
-	static CTrigger_Manager* Create(const GRAPHIC_DESC& GraphicDesc);
 	virtual void Free() override;
 };
 

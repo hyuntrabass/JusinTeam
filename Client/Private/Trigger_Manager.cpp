@@ -25,18 +25,6 @@ void CTrigger_Manager::Late_Tick(_float fTimeDelta)
 
 }
 
-CTrigger_Manager* CTrigger_Manager::Create(const GRAPHIC_DESC& GraphicDesc)
-{
-	CTrigger_Manager* pInstance = new CTrigger_Manager();
-
-	if (FAILED(pInstance->Initialize_Prototype(GraphicDesc)))
-	{
-		MSG_BOX("Failed to Created : CImGui_Manager");
-		Safe_Release(pInstance);
-	}
-
-	return pInstance;
-}
 
 void CTrigger_Manager::Free()
 {

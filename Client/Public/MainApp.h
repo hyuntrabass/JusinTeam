@@ -27,7 +27,6 @@ private:
 private:
 	CGameInstance* m_pGameInstance{ nullptr };
 	CRenderer* m_pRenderer{ nullptr };
-	CTrigger_Manager* m_pTrigger{ nullptr };
 	_float m_fTimeAcc{};
 	_uint m_iFrameCount{};
 

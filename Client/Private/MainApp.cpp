@@ -68,9 +68,6 @@ HRESULT CMainApp::Init()
 	srand((unsigned)time(NULL));
 
 	CEffect_Manager::Get_Instance()->Register_Callback();
-	m_pTrigger = CTrigger_Manager::Create(GraphicDesc);
-	if (m_pTrigger == nullptr)
-		return E_FAIL;
 
 
 	//(_float)D_SCREEN1 / (_float)D_END
@@ -89,7 +86,6 @@ void CMainApp::Tick(_float fTimeDelta)
 	m_fTimeAcc += fFinalTimeDelta;
 
 	m_pGameInstance->Tick_Engine(fFinalTimeDelta);
-	m_pTrigger->Late_Tick(fTimeDelta);
 }
 
 HRESULT CMainApp::Render()
