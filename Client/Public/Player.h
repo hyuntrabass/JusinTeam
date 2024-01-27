@@ -414,6 +414,8 @@ private:
 	_bool m_bReady_Move{};
 	_float m_StartRegen{};
 
+	wstring m_strPlayerName{};
+
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

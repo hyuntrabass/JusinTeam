@@ -65,6 +65,9 @@ HRESULT CPlayer::Init(void* pArg)
 	m_pTest_Trail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &SurfaceDesc);
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER);
+
+	m_strPlayerName = m_pGameInstance->Get_InputString();
+
 	return S_OK;
 }
 
@@ -378,7 +381,7 @@ HRESULT CPlayer::Add_Info()
 	NameTagDesc.eLevelID = LEVEL_STATIC;
 	NameTagDesc.fFontSize = 0.32f;
 	NameTagDesc.pParentTransform = m_pTransformCom;
-	NameTagDesc.strNameTag = TEXT("플레이어");
+	NameTagDesc.strNameTag = m_strPlayerName;
 	NameTagDesc.vColor = _vec4(0.5f, 0.7f, 0.5f, 1.f);
 	NameTagDesc.vTextPosition = _vec2(0.f, 1.9f);
 
