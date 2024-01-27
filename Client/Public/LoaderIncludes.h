@@ -75,6 +75,7 @@
 #include "Void20.h"
 #include "Void23.h"
 #include "Nastron07.h"
+#include "Spider.h"
 
 // NPC
 #include "Cat.h"

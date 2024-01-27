@@ -27,8 +27,8 @@ HRESULT CGroar_Boss::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(10.f, 0.f, 0.f, 1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
+	//m_pTransformCom->Set_State(State::Pos, _vec4(10.f, 0.f, 0.f, 1.f));
 
 	m_eCurState = STATE_NPC;
 
@@ -256,18 +256,21 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 		{
 		case Client::CGroar_Boss::STATE_NPC:
 			break;
+
 		case Client::CGroar_Boss::STATE_SCENE01:
 			m_Animation.iAnimIndex = 0;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 1.5f;
 
 			break;
+
 		case Client::CGroar_Boss::STATE_SCENE02:
 			m_Animation.iAnimIndex = 0;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
 
 			break;
+
 		case Client::CGroar_Boss::STATE_BOSS:
 			break;
 		}
@@ -281,13 +284,53 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 		{
 		case Client::CGroar_Boss::BOSS_STATE_IDLE:
 			break;
-		case Client::CGroar_Boss::BOSS_STATE_RUN:
+
+		case Client::CGroar_Boss::BOSS_STATE_ROAR:
+			m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK_RAGE;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
 			break;
-		case Client::CGroar_Boss::BOSS_STATE_ATTACK:
+
+		case Client::CGroar_Boss::BOSS_STATE_CHASE:
+			m_Animation.iAnimIndex = RUN;
+			m_Animation.isLoop = true;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
 			break;
-		case Client::CGroar_Boss::BOSS_STATE_STUN:
+
+		case Client::CGroar_Boss::BOSS_STATE_THROW_ATTACK: // 00, 01
 			break;
+
+		case Client::CGroar_Boss::BOSS_STATE_FLOOR_ATTACK: // 03, 06, 07, 08 
+			break;
+
+		case Client::CGroar_Boss::BOSS_STATE_SIX_MISSILE: // 02
+			m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK02;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
+			break;
+
+		case Client::CGroar_Boss::BOSS_STATE_WEB: // 04
+			m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK04;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
+			break;
+
+		case Client::CGroar_Boss::BOSS_STATE_SPIDER: // 05
+			m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK05;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
+			break;
+
 		case Client::CGroar_Boss::BOSS_STATE_DIE:
+			m_Animation.iAnimIndex = MON_GROAR_ASGARD_DIE;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
 			break;
 		}
 
@@ -302,6 +345,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 	case Client::CGroar_Boss::STATE_NPC:
 		m_pNPCModelCom->Set_Animation(m_Animation);
 		break;
+
 	case Client::CGroar_Boss::STATE_SCENE01:
 		if (m_pScene01ModelCom->IsAnimationFinished(0))
 		{
@@ -310,11 +354,12 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		m_pScene01ModelCom->Set_Animation(m_Animation);
 		break;
+
 	case Client::CGroar_Boss::STATE_SCENE02:
 		if (m_pScene02ModelCom->IsAnimationFinished(0))
 		{
 			m_eCurState = STATE_BOSS;
-			m_eBossCurState = BOSS_STATE_ATTACK;
+			m_eBossCurState = BOSS_STATE_ROAR;
 
 			m_Animation.iAnimIndex = 0;
 			m_Animation.isLoop = true;
@@ -323,6 +368,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		m_pScene02ModelCom->Set_Animation(m_Animation);
 		break;
+
 	case Client::CGroar_Boss::STATE_BOSS:
 		m_pBossModelCom->Set_Animation(m_Animation);
 		break;
@@ -332,63 +378,90 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 	{
 	case Client::CGroar_Boss::BOSS_STATE_IDLE:
 		break;
-	case Client::CGroar_Boss::BOSS_STATE_RUN:
-		break;
-	case Client::CGroar_Boss::BOSS_STATE_ATTACK:
+	case Client::CGroar_Boss::BOSS_STATE_ROAR:
 
-		if (!m_bSelectAttackPattern)
+		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK_RAGE))
 		{
-			if (m_pBossModelCom->IsAnimationFinished(ATTACK01) || m_pBossModelCom->IsAnimationFinished(ATTACK02) ||
-				m_pBossModelCom->IsAnimationFinished(ATTACK03) || m_pBossModelCom->IsAnimationFinished(ATTACK04) ||
-				m_pBossModelCom->IsAnimationFinished(ATTACK05) || m_pBossModelCom->IsAnimationFinished(ATTACK06))
-			{
-				m_iAttackPattern = rand() % 6;
-				m_bSelectAttackPattern = true;
-			}
 		}
 
-		switch (m_iAttackPattern)
-		{
-		case 0:
-			m_Animation.iAnimIndex = ATTACK01;
-			m_Animation.isLoop = false;
-			m_bSelectAttackPattern = false;
-			break;
-		case 1:
-			m_Animation.iAnimIndex = ATTACK02;
-			m_Animation.isLoop = false;
-			m_bSelectAttackPattern = false;
-			break;
-		case 2:
-			m_Animation.iAnimIndex = ATTACK03;
-			m_Animation.isLoop = false;
-			m_bSelectAttackPattern = false;
-			break;
-		case 3:
-			m_Animation.iAnimIndex = ATTACK04;
-			m_Animation.isLoop = false;
-			m_bSelectAttackPattern = false;
-			break;
-		case 4:
-			m_Animation.iAnimIndex = ATTACK05;
-			m_Animation.isLoop = false;
-			m_bSelectAttackPattern = false;
-			break;
-		case 5:
-			m_Animation.iAnimIndex = ATTACK06;
-			m_Animation.isLoop = false;
-			m_bSelectAttackPattern = false;
-			break;
-
-		}
 		break;
-
+	case Client::CGroar_Boss::BOSS_STATE_CHASE:
 		break;
-	case Client::CGroar_Boss::BOSS_STATE_STUN:
+	case Client::CGroar_Boss::BOSS_STATE_THROW_ATTACK:
+		break;
+	case Client::CGroar_Boss::BOSS_STATE_FLOOR_ATTACK:
+		break;
+	case Client::CGroar_Boss::BOSS_STATE_SIX_MISSILE:
+		break;
+	case Client::CGroar_Boss::BOSS_STATE_WEB:
+		break;
+	case Client::CGroar_Boss::BOSS_STATE_SPIDER:
 		break;
 	case Client::CGroar_Boss::BOSS_STATE_DIE:
 		break;
 	}
+
+	//switch (m_eBossCurState)
+	//{
+	//case Client::CGroar_Boss::BOSS_STATE_IDLE:
+	//	break;
+	//case Client::CGroar_Boss::BOSS_STATE_RUN:
+	//	break;
+	//case Client::CGroar_Boss::BOSS_STATE_ATTACK:
+
+	//	if (!m_bSelectAttackPattern)
+	//	{
+	//		if (m_pBossModelCom->IsAnimationFinished(ATTACK01) || m_pBossModelCom->IsAnimationFinished(ATTACK02) ||
+	//			m_pBossModelCom->IsAnimationFinished(ATTACK03) || m_pBossModelCom->IsAnimationFinished(ATTACK04) ||
+	//			m_pBossModelCom->IsAnimationFinished(ATTACK05) || m_pBossModelCom->IsAnimationFinished(ATTACK06))
+	//		{
+	//			m_iAttackPattern = rand() % 6;
+	//			m_bSelectAttackPattern = true;
+	//		}
+	//	}
+
+	//	switch (m_iAttackPattern)
+	//	{
+	//	case 0:
+	//		m_Animation.iAnimIndex = ATTACK01;
+	//		m_Animation.isLoop = false;
+	//		m_bSelectAttackPattern = false;
+	//		break;
+	//	case 1:
+	//		m_Animation.iAnimIndex = ATTACK02;
+	//		m_Animation.isLoop = false;
+	//		m_bSelectAttackPattern = false;
+	//		break;
+	//	case 2:
+	//		m_Animation.iAnimIndex = ATTACK03;
+	//		m_Animation.isLoop = false;
+	//		m_bSelectAttackPattern = false;
+	//		break;
+	//	case 3:
+	//		m_Animation.iAnimIndex = ATTACK04;
+	//		m_Animation.isLoop = false;
+	//		m_bSelectAttackPattern = false;
+	//		break;
+	//	case 4:
+	//		m_Animation.iAnimIndex = ATTACK05;
+	//		m_Animation.isLoop = false;
+	//		m_bSelectAttackPattern = false;
+	//		break;
+	//	case 5:
+	//		m_Animation.iAnimIndex = ATTACK06;
+	//		m_Animation.isLoop = false;
+	//		m_bSelectAttackPattern = false;
+	//		break;
+
+	//	}
+	//	break;
+
+	//	break;
+	//case Client::CGroar_Boss::BOSS_STATE_STUN:
+	//	break;
+	//case Client::CGroar_Boss::BOSS_STATE_DIE:
+	//	break;
+	//}
 }
 
 HRESULT CGroar_Boss::Add_Collider()

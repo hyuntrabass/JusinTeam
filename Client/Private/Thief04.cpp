@@ -45,14 +45,12 @@ HRESULT CThief04::Init(void* pArg)
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
-	TRAIL_DESC Desc{};
-	Desc.vColor = Colors::DarkGray;
-	Desc.vPSize = _vec2(0.05f, 0.05f);
+	SURFACETRAIL_DESC Desc{};
+	Desc.vColor = Colors::Gray;
 	Desc.iNumVertices = 10.f;
-	m_pAxeTrail1 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
-	m_pAxeTrail2 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
-	m_pKnifeTrail1 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
-	m_pKnifeTrail2 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
+
+	m_pAxeTrail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
+	m_pKnifeTrail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 
 	PxCapsuleControllerDesc ControllerDesc{};
 	ControllerDesc.height = 0.8f; // 높이(위 아래의 반구 크기 제외
@@ -71,8 +69,7 @@ void CThief04::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_T))
 	{
-		//Set_Damage(0, AT_Bow_Skill3);
-		Kill();
+		Set_Damage(0, AT_Sword_Common);
 	}
 
 	Init_State(fTimeDelta);
@@ -188,6 +185,7 @@ void CThief04::Init_State(_float fTimeDelta)
 
 		case Client::CThief04::STATE_ATTACK:
 			m_bDamaged = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
 			break;
 
 		case Client::CThief04::STATE_HIT:
@@ -254,8 +252,10 @@ void CThief04::Tick_State(_float fTimeDelta)
 	{
 		_vec4 vPlayerPos = __super::Compute_PlayerPos();
 		_float fDistance = __super::Compute_PlayerDistance();
+		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
+		vDir.y = 0.f;
 
-		m_pTransformCom->LookAt(vPlayerPos);
+		m_pTransformCom->LookAt_Dir(vDir);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 
 		if (fDistance > m_fChaseRange && !m_bDamaged)
@@ -305,10 +305,8 @@ void CThief04::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 40.f && fAnimpos <= 48.f)
 				{
-					m_pAxeTrail1->Late_Tick(fTimeDelta);
-					m_pAxeTrail2->Late_Tick(fTimeDelta);
-					m_pKnifeTrail1->Late_Tick(fTimeDelta);
-					m_pKnifeTrail2->Late_Tick(fTimeDelta);
+					m_pAxeTrail->Late_Tick(fTimeDelta);
+					m_pKnifeTrail->Late_Tick(fTimeDelta);
 				}
 			}
 			break;
@@ -333,13 +331,11 @@ void CThief04::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 22.f && fAnimpos <= 28.f)
 				{
-					m_pKnifeTrail1->Late_Tick(fTimeDelta);
-					m_pKnifeTrail2->Late_Tick(fTimeDelta);
+					m_pKnifeTrail->Late_Tick(fTimeDelta);
 				}
 				if (fAnimpos >= 44.f && fAnimpos <= 49.f)
 				{
-					m_pAxeTrail1->Late_Tick(fTimeDelta);
-					m_pAxeTrail2->Late_Tick(fTimeDelta);
+					m_pAxeTrail->Late_Tick(fTimeDelta);
 				}
 			}
 			break;
@@ -358,10 +354,8 @@ void CThief04::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 29.f && fAnimpos <= 40.f)
 				{
-					m_pKnifeTrail1->Late_Tick(fTimeDelta);
-					m_pKnifeTrail2->Late_Tick(fTimeDelta);
-					m_pAxeTrail1->Late_Tick(fTimeDelta);
-					m_pAxeTrail2->Late_Tick(fTimeDelta);
+					m_pKnifeTrail->Late_Tick(fTimeDelta);
+					m_pAxeTrail->Late_Tick(fTimeDelta);
 				}
 			}
 			break;
@@ -380,13 +374,11 @@ void CThief04::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 30.f && fAnimpos <= 34.f)
 				{
-					m_pAxeTrail1->Late_Tick(fTimeDelta);
-					m_pAxeTrail2->Late_Tick(fTimeDelta);
+					m_pAxeTrail->Late_Tick(fTimeDelta);
 				}
 				if (fAnimpos >= 44.f && fAnimpos <= 50.f)
 				{
-					m_pKnifeTrail1->Late_Tick(fTimeDelta);
-					m_pKnifeTrail2->Late_Tick(fTimeDelta);
+					m_pKnifeTrail->Late_Tick(fTimeDelta);
 				}
 			}
 			break;
@@ -405,8 +397,7 @@ void CThief04::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 42.f && fAnimpos <= 48.f)
 				{
-					m_pAxeTrail1->Late_Tick(fTimeDelta);
-					m_pAxeTrail2->Late_Tick(fTimeDelta);
+					m_pAxeTrail->Late_Tick(fTimeDelta);
 				}
 			}
 			break;
@@ -447,26 +438,21 @@ void CThief04::Update_Trail(_float fTimeDelta)
 	_mat Offset = _mat::CreateTranslation(_vec3(0.23f, 0.04f, -0.52f));
 	_mat Result = Offset * AxeMatrix * m_pTransformCom->Get_World_Matrix();
 
-	m_pAxeTrail1->Tick(Result.Position_vec3());
-
 	AxeMatrix = *m_pModelCom->Get_BoneMatrix("Bip001-R-Hand");
 	Offset = _mat::CreateTranslation(_vec3(0.24f, 0.04f, -0.27f));
-	Result = Offset * AxeMatrix * m_pTransformCom->Get_World_Matrix();
+	_mat Result2 = Offset * AxeMatrix * m_pTransformCom->Get_World_Matrix();
 
-	m_pAxeTrail2->Tick(Result.Position_vec3());
+	m_pAxeTrail->Tick(Result.Position_vec3(), Result2.Position_vec3());
 
 	_mat KnifeMatrix = *m_pModelCom->Get_BoneMatrix("Bip001-L-Hand");
 	Offset = _mat::CreateTranslation(_vec3(0.06f, 0.08f, -0.34f));
 	Result = Offset * KnifeMatrix * m_pTransformCom->Get_World_Matrix();
 
-	m_pKnifeTrail1->Tick(Result.Position_vec3());
-
 	KnifeMatrix = *m_pModelCom->Get_BoneMatrix("Bip001-L-Hand");
 	Offset = _mat::CreateTranslation(_vec3(0.07f, 0.06f, -0.17f));
-	Result = Offset * KnifeMatrix * m_pTransformCom->Get_World_Matrix();
+	Result2 = Offset * KnifeMatrix * m_pTransformCom->Get_World_Matrix();
 
-	m_pKnifeTrail2->Tick(Result.Position_vec3());
-
+	m_pKnifeTrail->Tick(Result.Position_vec3(), Result2.Position_vec3());
 }
 
 HRESULT CThief04::Add_Collider()
@@ -533,8 +519,6 @@ void CThief04::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pAxeTrail1);
-	Safe_Release(m_pAxeTrail2);
-	Safe_Release(m_pKnifeTrail1);
-	Safe_Release(m_pKnifeTrail2);
+	Safe_Release(m_pAxeTrail);
+	Safe_Release(m_pKnifeTrail);
 }

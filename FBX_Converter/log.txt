@@ -2,14 +2,31 @@
 2
 Animation Models : Start Converting...
 1. Normally Anim Model	2. For VTF Model 3. Part Model
-3
-Converting... helmet0.fbx
+1
+Converting... Spider.fbx
 Read File Succssefully
-Converting... helmet2.fbx
-Read File Succssefully
-Converting... helmet5.fbx
-Read File Succssefully
+Animation name list: 
+Mon_Spider_D.ao|attack01
+Mon_Spider_D.ao|attack02
+Mon_Spider_D.ao|attack03
+Mon_Spider_D.ao|attack04
+Mon_Spider_D.ao|attack05
+Mon_Spider_D.ao|die
+Mon_Spider_D.ao|hit_add
+Mon_Spider_D.ao|idle
+Mon_Spider_D.ao|knockdown
+Mon_Spider_D.ao|L_hit
+Mon_Spider_D.ao|L_turn
+Mon_Spider_D.ao|R_hit
+Mon_Spider_D.ao|R_turn
+Mon_Spider_D.ao|roar
+Mon_Spider_D.ao|run
+Mon_Spider_D.ao|Salerobia_attack06
+Mon_Spider_D.ao|Salerobia_attack09
+Mon_Spider_D.ao|Salerobia_Rage
+Mon_Spider_D.ao|stun
+Mon_Spider_D.ao|walk
 Animation Models : Convert Success!
 
-3 Animation Models
+1 Animation Models
 are Successfully Converted as hyuntramesh!!

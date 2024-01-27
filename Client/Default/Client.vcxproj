@@ -190,6 +190,7 @@
     <ClInclude Include="..\Public\Logo_Stone.h" />
     <ClInclude Include="..\Public\Logo_Text.h" />
     <ClInclude Include="..\Public\Menu.h" />
+    <ClInclude Include="..\Public\Missile.h" />
     <ClInclude Include="..\Public\MPBar.h" />
     <ClInclude Include="..\Public\Map.h" />
     <ClInclude Include="..\Public\Nastron03.h" />
@@ -222,6 +223,7 @@
     <ClInclude Include="..\Public\SkillSlot.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\Lake.h" />
+    <ClInclude Include="..\Public\Spider.h" />
     <ClInclude Include="..\Public\TestTree.h" />
     <ClInclude Include="..\Public\TextButton.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
@@ -299,6 +301,7 @@
     <ClCompile Include="..\Private\Logo_Stone.cpp" />
     <ClCompile Include="..\Private\Logo_Text.cpp" />
     <ClCompile Include="..\Private\Menu.cpp" />
+    <ClCompile Include="..\Private\Missile.cpp" />
     <ClCompile Include="..\Private\MPBar .cpp" />
     <ClCompile Include="..\Private\Map.cpp" />
     <ClCompile Include="..\Private\Nastron03.cpp" />
@@ -331,6 +334,7 @@
     <ClCompile Include="..\Private\SkillSlot.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Lake.cpp" />
+    <ClCompile Include="..\Private\Spider.cpp" />
     <ClCompile Include="..\Private\TestTree.cpp" />
     <ClCompile Include="..\Private\TextButton.cpp" />
     <ClCompile Include="..\Private\Level_Custom.cpp" />

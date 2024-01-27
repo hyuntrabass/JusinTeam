@@ -331,6 +331,12 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\Dialog">
       <UniqueIdentifier>{8bbd3cf3-05ec-4392-a70b-e8cdc3ab6750}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Spider">
+      <UniqueIdentifier>{f363281d-5323-407d-80fa-91b4b26af4c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Missile">
+      <UniqueIdentifier>{60d859ff-77f1-4b49-be0b-495060f838c9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -654,6 +660,12 @@
     <ClInclude Include="..\Public\CommonSurfaceTrail.h">
       <Filter>03.Effect\Common_Effect</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Spider.h">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss\Spider</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Missile.h">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss\Missile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -974,6 +986,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\CommonSurfaceTrail.cpp">
       <Filter>03.Effect\Common_Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Spider.cpp">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss\Spider</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Missile.cpp">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss\Missile</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
