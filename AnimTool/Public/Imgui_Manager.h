@@ -60,6 +60,7 @@ private:
     vector<const _char*> m_AnimationNames;
     vector<const _char*> m_BoneNames;
     _uint m_iCurrentModelIndex = { 0 };
+    _int m_iCurrentAnimIndex{};
     _int m_iCurrentBoneIndex{};
     _bool m_IsCreateModel = { false };
     POINT m_ptMouse = {};

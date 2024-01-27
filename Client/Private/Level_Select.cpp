@@ -12,7 +12,7 @@ HRESULT CLevel_Select::Init()
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_SELECT);
 	m_pGameInstance->StopAll();
 	m_pGameInstance->PlayBGM(TEXT("Odin_CharacterCreate_01"));
-	m_pGameInstance->Play_Sound(TEXT("Amb_Fire_SFX_03_03"), 0.3f, true);
+	m_pGameInstance->Play_Sound(TEXT("Amb_Fire_SFX_03_03"), 0.2f, true);
 	UiInfo info{};
 	info.strTexture = TEXT("Prototype_Component_Texture_BackGround_Mask"); 
 	info.vPos = _vec2(640,360);

@@ -32,8 +32,8 @@ HRESULT CVoid05::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pTransformCom->Set_State(State::Pos, _vec4(10.f, 0.f, 0.f, 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(100.f, 8.f, 108.f, 1.f));
+	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
@@ -41,7 +41,7 @@ HRESULT CVoid05::Init(void* pArg)
 
 	m_eCurState = STATE_IDLE;
 
-	m_iHP = 10;
+	m_iHP = 1000;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
@@ -88,6 +88,9 @@ void CVoid05::Tick(_float fTimeDelta)
 	__super::Update_MonsterCollider();
 
 	Update_Trail(fTimeDelta);
+
+	m_pTransformCom->Gravity(fTimeDelta);
+
 }
 
 void CVoid05::Late_Tick(_float fTimeDelta)
@@ -258,7 +261,8 @@ void CVoid05::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 48.f && fAnimpos <= 50.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iSmallDamage / 2 + rand() % 10;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
 				}
 				if (fAnimpos >= 43.f && fAnimpos <= 52.f)
@@ -277,7 +281,8 @@ void CVoid05::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 51.f && fAnimpos <= 53.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iSmallDamage / 2 + rand() % 10;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
 				}
 			}
@@ -291,7 +296,8 @@ void CVoid05::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 22.f && fAnimpos <= 24.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iSmallDamage / 2 + rand() % 10;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
 				}
 				if (fAnimpos >= 17.f && fAnimpos <= 50.f)

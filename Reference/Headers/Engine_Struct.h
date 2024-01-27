@@ -171,6 +171,8 @@ namespace Engine
 		unsigned int iBoneIndex{};
 		SimpleMath::Matrix OffsetMatrix{};
 		bool IsDeleteRotateToBone{};
+
+		bool HasCreated{};
 	};
 
 	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {
@@ -182,6 +184,7 @@ namespace Engine
 		float fVolume{};
 		
 		int iChannel = -1;
+		bool HasPlayed{};
 	};
 
 	using VTXPOSCOLOR = struct ENGINE_DLL tagVertex_Position_Color
@@ -275,6 +278,16 @@ namespace Engine
 		XMFLOAT3 vPosition{};
 		XMFLOAT2 vPSize{};
 		XMFLOAT4 vColor{};
+
+		static const unsigned int iNumElements{ 3 };
+		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
+	};
+
+	using VTXTRAILSURFACE = struct ENGINE_DLL tagVertex_Trail_Surface
+	{
+		XMFLOAT3 vTopPosition{};
+		XMFLOAT3 vBottomPosition{};
+		float fAlpha{};
 
 		static const unsigned int iNumElements{ 3 };
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];

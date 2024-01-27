@@ -1,5 +1,6 @@
 #include "Monster.h"
 
+
 CMonster::CMonster(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -22,6 +23,7 @@ HRESULT CMonster::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+
 
     return S_OK;
 }
@@ -116,7 +118,7 @@ HRESULT CMonster::Render()
 
 _vec4 CMonster::Compute_PlayerPos()
 {
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 
 	return vPlayerPos;
@@ -124,7 +126,7 @@ _vec4 CMonster::Compute_PlayerPos()
 
 _float CMonster::Compute_PlayerDistance()
 {
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 
 	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);

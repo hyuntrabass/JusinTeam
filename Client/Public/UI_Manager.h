@@ -10,7 +10,8 @@ class CItemBlock;
 class CUI_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CUI_Manager)
-
+public:
+	enum TYPE { MONSTER, NPC, TYPE_END };
 private:
 	CUI_Manager();
 	virtual ~CUI_Manager() = default;
@@ -39,8 +40,9 @@ private:
 	CGameInstance*	m_pGameInstance{ nullptr };
 	CGameObject*	m_pItemSlots[CItemBlock::ITEMSLOT_END];
 	CGameObject*	m_pInvenItemSlots[CItemBlock::ITEMSLOT_END];
-	CGameObject*	m_pInven;
+	CGameObject*	m_pInven{ nullptr };
 
+	vector<CTransform*> m_vecRadarPos[TYPE_END];
 
 public:
 	HRESULT Init();
@@ -66,6 +68,9 @@ public:
 	ITEM Set_Item_In_FullSlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* iItemNum, _int* iChangeItemNum = nullptr);
 	void Delete_Item_In_Slot(CItemBlock::ITEMSLOT eSlot);
 
+	void Set_RadarPos(TYPE eType, CTransform* pTransform);
+	void Delete_RadarPos(TYPE eType, CTransform* pTransform);
+	const vector<CTransform*> Get_RadarPosition(TYPE eType) const;
 
 	HRESULT Set_CustomPart(PART_TYPE eType, _uint iIndex);
 	void Set_HairColor(_vec4 vColor) { m_vHairColor = vColor; }

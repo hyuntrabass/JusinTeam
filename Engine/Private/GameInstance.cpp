@@ -1224,7 +1224,10 @@ void CGameInstance::Set_AimMode(_bool Aim, _vec3 AimPos)
 	m_AimPos = AimPos;
 }
 
-
+void CGameInstance::Set_InputString(const wstring& strInput)
+{
+	m_strInput = strInput;
+}
 
 const _uint& CGameInstance::Get_CameraState() const
 {
@@ -1254,6 +1257,11 @@ const _bool& CGameInstance::Have_TargetLook() const
 const _bool& CGameInstance::IsSkipDebugRendering() const
 {
 	return m_bSkipDebugRender;
+}
+
+const wstring& CGameInstance::Get_InputString() const
+{
+	return m_strInput;
 }
 
 void CGameInstance::Initialize_Level(_uint iLevelNum)

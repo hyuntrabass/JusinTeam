@@ -313,6 +313,20 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 {
 	if (true == m_isUsingMotionBlur)
 		m_pContext->CopyResource(m_pOldBoneTexture, m_pBoneTexture);
+	//트리거 루프
+	if ((m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() + fTimeDelta * m_AnimDesc.fAnimSpeedRatio * m_Animations[m_AnimDesc.iAnimIndex]->Get_TickPerSec()) >=
+		(m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() * m_AnimDesc.fDurationRatio) ||
+		m_isAnimChanged)
+	{
+		for (size_t i = 0; i < m_TriggerEffects.size(); i++)
+		{
+			m_TriggerEffects[i].HasCreated = false;
+		}
+		for (size_t i = 0; i < m_TriggerSounds.size(); i++)
+		{
+			m_TriggerSounds[i].HasPlayed = false;
+		}
+	}
 
 	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop,
 		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio,m_AnimDesc.fStartAimPos);
@@ -348,8 +362,8 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 			}
 		}
 		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iStartAnimIndex &&
-			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fStartAnimPos &&
-			not m_pGameInstance->Has_Created_Effect(m_EffectMatrices[i]))
+			static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerEffects[i].fStartAnimPos) &&
+				not m_TriggerEffects[i].HasCreated)
 		{
 			//초기 매트릭스 세팅
 			if (m_TriggerEffects[i].IsDeleteRotateToBone)
@@ -362,25 +376,16 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
 			}
 			//이펙트 생성
-			if (m_TriggerEffects[i].iEndAnimIndices[0] < 0)
-			{
-				if (static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerEffects[i].fStartAnimPos))
-				{
-					m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
-				}
-			}
-			else
-			{
-				m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
-			}
+			m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
+			m_TriggerEffects[i].HasCreated = true;
 		}
 
 		//이펙트 제거
 		for (size_t j = 0; j < m_TriggerEffects[i].iEndAnimIndices.size(); j++)
 		{
 			if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iEndAnimIndices[j] &&
-				m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fEndAnimPoses[j] &&
-				m_TriggerEffects[i].iEndAnimIndices[j] > 0 && m_pGameInstance->Has_Created_Effect(m_EffectMatrices[i]))
+				static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerEffects[i].fEndAnimPoses[j]) &&
+				m_pGameInstance->Has_Created_Effect(m_EffectMatrices[i]))
 			{
 				m_pGameInstance->Delete_Effect(m_EffectMatrices[i]);
 			}
@@ -393,11 +398,12 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 	{	//사운드 생성
 		if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iStartAnimIndex &&
 			static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerSounds[i].fStartAnimPos) &&
-			m_TriggerSounds[i].iChannel == -1)
+			not m_TriggerSounds[i].HasPlayed)
 		{
 			_int iMaxSound = m_TriggerSounds[i].strSoundNames.size() - 1;
 			_randInt RandomSound(0, iMaxSound);
 			m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[RandomSound(m_RandomNumber)], m_TriggerSounds[i].fVolume);
+			m_TriggerSounds[i].HasPlayed = true;
 		}
 		//채널 갱신
 		if (m_TriggerSounds[i].iChannel != -1)
@@ -443,7 +449,6 @@ void CRealtimeVTFModel::Set_Animation(ANIM_DESC Animation_Desc)
 		else if (0 > m_AnimDesc.iAnimIndex)
 			m_AnimDesc.iAnimIndex = 0;
 	}
-
 }
 
 const _bool& CRealtimeVTFModel::IsAnimationFinished(_uint iAnimIndex) const

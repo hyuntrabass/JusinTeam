@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Dialog.h"
 #include "3DUITex.h"
 #include "HPMonster.h"
 #include "ItemInfo.h"
@@ -53,6 +54,7 @@
 #include "Menu.h"
 #include "InvenFrame.h"
 #include "CommonTrail.h"
+#include "CommonSurfaceTrail.h"
 
 #include "Map.h"
 

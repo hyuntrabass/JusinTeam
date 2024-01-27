@@ -184,6 +184,9 @@
     <Filter Include="01.Utility\03.Components\Shader\Compute_Shader">
       <UniqueIdentifier>{08266119-acd4-4bd9-a6a0-fd3446caeb89}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Components\VIBuffer\Trail\Surface">
+      <UniqueIdentifier>{b69a5b91-5d90-4582-8c10-1a5f59f81a14}</UniqueIdentifier>
+    </Filter>
     <Filter Include="01.Utility\03.Components\VIBuffer\Instancing\Mesh">
       <UniqueIdentifier>{e655b4c4-18b0-4255-84ea-ce42ad2fefb6}</UniqueIdentifier>
     </Filter>
@@ -356,6 +359,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Compute_Shader.cpp">
       <Filter>01.Utility\03.Components\Shader\Compute_Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Trail_Surface.cpp">
+      <Filter>01.Utility\03.Components\VIBuffer\Trail\Surface</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Instancing_Mesh.cpp">
       <Filter>01.Utility\03.Components\VIBuffer\Instancing\Mesh</Filter>
@@ -539,6 +545,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Compute_Shader.h">
       <Filter>01.Utility\03.Components\Shader\Compute_Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Trail_Surface.h">
+      <Filter>01.Utility\03.Components\VIBuffer\Trail\Surface</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Model_Instancing.h">
       <Filter>01.Utility\03.Components\VIBuffer\Instancing</Filter>

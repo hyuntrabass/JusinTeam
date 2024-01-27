@@ -109,34 +109,6 @@ HRESULT CVTFModel::Init_Prototype(const string& strFilePath, const _bool& isCOLM
 
 		ModelFile.close();
 
-
-
-		if (m_eType == ModelType::Anim)
-		{
-			_char szTriggerFilePath[MAX_PATH]{};
-			strcpy_s(szTriggerFilePath, MAX_PATH, szDirectory);
-			strcat_s(szTriggerFilePath, MAX_PATH, szFileName);
-			strcat_s(szTriggerFilePath, MAX_PATH, szTriggerExt);
-
-			ifstream TriggerFile(szTriggerFilePath, ios::binary);
-			if (TriggerFile.is_open())
-			{
-				_uint iAnimIndex = { 0 };
-				TriggerFile.read(reinterpret_cast<char*>(&iAnimIndex), sizeof _uint);
-				
-				_uint iNumTrigger = { 0 };
-				TriggerFile.read(reinterpret_cast<char*>(&iNumTrigger), sizeof _uint);
-				for (_uint i = 0; i < iNumTrigger; i++)
-				{
-					_float fTrigger = { 0.f };
-					TriggerFile.read(reinterpret_cast<char*>(&fTrigger), sizeof _float);
-					m_Animations[iAnimIndex]->Add_Trigger(fTrigger);
-				}
-
-				TriggerFile.close();
-			}
-		}
-
 		_uint iMax = 0;
 		for (auto& pAnimation : m_Animations)
 			iMax = max(iMax, pAnimation->Get_MaxFrame());

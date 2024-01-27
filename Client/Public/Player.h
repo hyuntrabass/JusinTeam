@@ -6,6 +6,7 @@
 #include "Riding.h"
 #include "NameTag.h"
 #include "CommonTrail.h"
+#include "CommonSurfaceTrail.h"
 
 BEGIN(Client)
 
@@ -303,12 +304,15 @@ public:
 	virtual void Set_Damage(_int iDamage, _uint MonAttType = 0) override;
 	void Change_Parts(PART_TYPE PartsType, _int ChangeIndex);
 	void Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex);
+	void Move(_float fTimeDelta);
+
 	void Front_Ray_Check();
 	_bool Turn_Ray_Check(_bool bRight);
+	
 	void Health_Regen(_float fTImeDelta);
 	void Is_Climb(_float fTimeDelta);
+	
 	void Common_Attack();
-	void Move(_float fTimeDelta);
 	void Skill1_Attack();
 	void Skill2_Attack();
 	void Skill3_Attack();
@@ -319,9 +323,10 @@ public:
 	void Return_Attack_IdleForm();
 	void After_CommonAtt(_float fTimeDelta);
 	void After_SkillAtt(_float fTimeDelta);
-	void Check_Att_Collider(ATTACK_TYPE Att_Type);
 	void Sword_Att_Camera_Effect();
 	void Bow_Att_Camera_Effect();
+	
+	void Check_Att_Collider(ATTACK_TYPE Att_Type);
 
 public:
 	void Summon_Riding(Riding_Type Type);
@@ -343,6 +348,7 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CCommonTrail* m_pLeft_Trail{ nullptr };
 	CCommonTrail* m_pRight_Trail{ nullptr };
+	CCommonSurfaceTrail* m_pTest_Trail{ nullptr };
 	CTexture* m_pDissolveTextureCom{};
 
 
@@ -359,8 +365,6 @@ private:
 	_mat m_Riding_Mat{};
 	const _mat* m_Left_Mat{};
 	const _mat* m_Right_Mat{};
-	_bool m_bLeft_TrailOn{};
-	_bool m_bRight_TrailOn{};
 	_float m_fDissolveRatio{};
 	_bool	  m_isInvenActive{ false };
 	_float m_fSkillSpeed{};

@@ -217,6 +217,7 @@ public: // Get_Set
 	void Set_CameraTargetLook(const _vec4& vLook);
 	void Set_Have_TargetLook(const _bool& bHaveLook);
 	void Set_AimMode(_bool Aim, _vec3 AimPos = _vec3(0.63f, 1.8f, 1.1f));
+	void Set_InputString(const wstring& strInput);
 
 
 	void Set_CameraAttackZoom(_float fAttackZoom) { m_fCameraAttackZoom = fAttackZoom; }
@@ -229,6 +230,7 @@ public: // Get_Set
 	const _vec3& Get_AimPos() { return m_AimPos; }
 	const _bool& Get_AimMode() { return m_AimMode; }
 	const _bool& IsSkipDebugRendering() const;
+	const wstring& Get_InputString() const;
 
 public:
 	void Initialize_Level(_uint iLevelNum);
@@ -273,6 +275,7 @@ private:
 	_float m_fShakePower{};
 	_vec3 m_AimPos{};
 	_bool m_bSkipDebugRender{};
+	wstring m_strInput{};
 
 private:
 	vector<_bool> m_vecLevelInvalid;

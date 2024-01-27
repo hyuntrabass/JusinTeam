@@ -27,6 +27,7 @@ public:
 private:
 	NPC_TYPE m_eNPCType = TYPE_END;
 
+	CGameObject* m_pDialog{ nullptr };
 private: // Test
 	static _float m_fOffsetX;
 
