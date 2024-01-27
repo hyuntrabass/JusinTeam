@@ -181,6 +181,7 @@ HRESULT CEffect_Manager::Read_EffectFile()
 				File.read(reinterpret_cast<_char*>(&Info.Light_Desc), sizeof Info.Light_Desc);
 				File.read(reinterpret_cast<_char*>(&Info.isFixedIndex), sizeof Info.isFixedIndex);
 				File.read(reinterpret_cast<_char*>(&Info.iFixedSpriteIndex), sizeof Info.iFixedSpriteIndex);
+				File.read(reinterpret_cast<_char*>(&Info.isUVLoop), sizeof Info.isUVLoop);
 
 				size_t iNameSize{};
 
