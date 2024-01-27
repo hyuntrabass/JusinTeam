@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\3DUITex.h" />
+    <ClInclude Include="..\Public\Arrow.h" />
     <ClInclude Include="..\Public\BackGround.h" />
     <ClInclude Include="..\Public\BackGround_Mask.h" />
     <ClInclude Include="..\Public\BlackSmith.h" />
@@ -261,6 +262,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\3DUITex.cpp" />
+    <ClCompile Include="..\Private\Arrow.cpp" />
     <ClCompile Include="..\Private\BackGround.cpp" />
     <ClCompile Include="..\Private\BackGround_Mask.cpp" />
     <ClCompile Include="..\Private\BlackSmith.cpp" />

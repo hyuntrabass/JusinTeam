@@ -20,7 +20,7 @@ HRESULT CRiding::Init(void* pArg)
 	Riding_Desc* Desc = (Riding_Desc*)pArg;
 	m_CurrentIndex = Desc->Type;
 
-	
+
 	switch (m_CurrentIndex)
 	{
 	case Client::Bird:
@@ -61,8 +61,8 @@ HRESULT CRiding::Init(void* pArg)
 		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
 		ControllerDesc.stepOffset = 0.3f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 
-		
-	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
+
+		m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
 
 	}
 	else if (m_CurrentIndex == Tiger)
@@ -91,7 +91,7 @@ void CRiding::Tick(_float fTimeDelta)
 		if (m_fDissolveRatio >= 1.f)
 			m_bDelete = true;
 	}
-	
+
 	Move(fTimeDelta);
 	Init_State();
 	Tick_State(fTimeDelta);
@@ -119,44 +119,44 @@ HRESULT CRiding::Render()
 	}
 
 
-		for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
+	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
+	{
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
-			if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-			{
-				return E_FAIL;
-			}
-
-			_bool HasNorTex{};
-			if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-			{
-				HasNorTex = false;
-			}
-			else
-			{
-				HasNorTex = true;
-			}
-
-			if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pShaderCom->Begin(AnimPass_Dissolve)))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pModelCom->Render(i)))
-			{
-				return E_FAIL;
-			}
+			return E_FAIL;
 		}
-	
+
+		_bool HasNorTex{};
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+		{
+			HasNorTex = false;
+		}
+		else
+		{
+			HasNorTex = true;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(AnimPass_Dissolve)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pModelCom->Render(i)))
+		{
+			return E_FAIL;
+		}
+	}
+
 	return S_OK;
 }
 
@@ -193,15 +193,16 @@ void CRiding::Move(_float fTimeDelta)
 		vDirection -= vRightDir;
 		hasMoved = true;
 	}
-	if (m_pGameInstance->Key_Down(DIK_SPACE,InputChannel::GamePlay))
+	if (m_pGameInstance->Key_Down(DIK_SPACE, InputChannel::GamePlay))
 	{
-		if(!m_hasJumped)
+		if (!m_hasJumped)
 		{
 			m_eState = Riding_Jump_Start;
 			m_pTransformCom->Jump(9.f);
 		}
 	}
-	if (m_eState == Riding_Jump_Start)
+	if (m_eState == Riding_Jump_Start or
+		m_eState == Riding_Jump)
 	{
 		if (!m_pTransformCom->Is_Jumping())
 		{
@@ -209,7 +210,7 @@ void CRiding::Move(_float fTimeDelta)
 			m_hasJumped = false;
 		}
 	}
-	
+
 	if (hasMoved)
 	{
 
@@ -222,18 +223,36 @@ void CRiding::Move(_float fTimeDelta)
 			{
 				m_eState = Riding_Run;
 			}
-				m_pTransformCom->Set_Speed(m_fRunSpeed);
+			m_pTransformCom->Set_Speed(m_fRunSpeed);
+		}
+		else if (m_eState == Riding_Run)
+		{
+			m_eState = Riding_Run;
+			m_pTransformCom->Set_Speed(m_fRunSpeed);
 		}
 		else
 		{
-			if (m_eState == Riding_Run)
+			if (m_CurrentIndex == Tiger)
 			{
-				m_eState = Riding_Run;
+				if (m_eState == Riding_Jump_End)
+					m_eState = Riding_Jump_Run;
+				else if (m_eState == Riding_Run or
+					m_eState == Riding_Walk or
+					m_eState == Riding_Idle)
+					m_eState = Riding_Run;
+
+			
+
 				m_pTransformCom->Set_Speed(m_fRunSpeed);
 			}
 			else
 			{
-				m_eState = Riding_Walk;
+				if (m_eState == Riding_Idle or
+					m_eState == Riding_Jump_End or
+					m_eState == Riding_Walk)
+				{
+					m_eState = Riding_Walk;
+				}
 				m_pTransformCom->Set_Speed(m_fWalkSpeed);
 			}
 		}
@@ -269,7 +288,7 @@ void CRiding::Move(_float fTimeDelta)
 	{
 		m_eState = Riding_Idle;
 	}
-	
+
 }
 void CRiding::Init_State()
 {
@@ -278,7 +297,7 @@ void CRiding::Init_State()
 		m_Animation.isLoop = false;
 		m_Animation.fAnimSpeedRatio = 2.f;
 		m_Animation.bSkipInterpolation = false;
-		
+
 		switch (m_eState)
 		{
 		case Client::Riding_Landing:
@@ -291,10 +310,12 @@ void CRiding::Init_State()
 				break;
 			case Client::Tiger:
 				m_Animation.iAnimIndex = Tiger_1003_Idle;
+				m_Animation.isLoop = true;
 				m_hasJumped = false;
 				break;
 			case Client::Nihilir:
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Idle;
+				m_Animation.isLoop = true;
 				m_hasJumped = false;
 				break;
 			case Client::Riding_End:
@@ -302,7 +323,6 @@ void CRiding::Init_State()
 			default:
 				break;
 			}
-			m_Animation.isLoop = true;
 			break;
 		case Client::Riding_Run:
 			switch (m_CurrentIndex)
@@ -311,10 +331,12 @@ void CRiding::Init_State()
 				break;
 			case Client::Tiger:
 				m_Animation.iAnimIndex = Tiger_1003_Run;
+				m_Animation.isLoop = true;
 				m_hasJumped = false;
 				break;
 			case Client::Nihilir:
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Run;
+				m_Animation.isLoop = true;
 				m_hasJumped = false;
 				break;
 			case Client::Riding_End:
@@ -322,7 +344,6 @@ void CRiding::Init_State()
 			default:
 				break;
 			}
-			m_Animation.isLoop = true;
 			break;
 		case Client::Riding_Walk:
 			switch (m_CurrentIndex)
@@ -331,10 +352,13 @@ void CRiding::Init_State()
 				break;
 			case Client::Tiger:
 				m_Animation.iAnimIndex = Tiger_1003_Walk;
+				m_Animation.bSkipInterpolation = true;
+				m_Animation.isLoop = true;
 				m_hasJumped = false;
 				break;
 			case Client::Nihilir:
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Walk;
+				m_Animation.isLoop = true;
 				m_hasJumped = false;
 				break;
 			case Client::Riding_End:
@@ -342,7 +366,6 @@ void CRiding::Init_State()
 			default:
 				break;
 			}
-			m_Animation.isLoop = true;
 			break;
 		case Client::Riding_Attack:
 			m_hasJumped = false;
@@ -535,9 +558,9 @@ _mat CRiding::Get_Mat()
 	if (m_CurrentIndex == Tiger)
 		OffsetMat = _mat::CreateRotationY(XMConvertToRadians(-90.f)) * *m_pModelCom->Get_BoneMatrix("saddle");
 	else if (m_CurrentIndex == Nihilir)
-		OffsetMat = _mat::CreateRotationY(XMConvertToRadians(-180.f))  * _mat::CreateRotationX(XMConvertToRadians(-90.f)) * *m_pModelCom->Get_BoneMatrix("saddle");
+		OffsetMat = _mat::CreateRotationY(XMConvertToRadians(-180.f)) * _mat::CreateRotationX(XMConvertToRadians(-90.f)) * *m_pModelCom->Get_BoneMatrix("saddle");
 	else if (m_CurrentIndex == Bird)
-		OffsetMat = _mat::CreateTranslation(0.f,0.8f,0.f)*_mat::CreateRotationZ(XMConvertToRadians(-180.f)) * _mat::CreateRotationY(XMConvertToRadians(90.f)) * *m_pModelCom->Get_BoneMatrix("Saddle");
+		OffsetMat = _mat::CreateTranslation(0.f, 0.8f, 0.f) * _mat::CreateRotationZ(XMConvertToRadians(-180.f)) * _mat::CreateRotationY(XMConvertToRadians(90.f)) * *m_pModelCom->Get_BoneMatrix("Saddle");
 
 	OffsetMat *= m_pTransformCom->Get_World_Matrix();
 
@@ -567,13 +590,13 @@ void CRiding::Delete_Riding()
 
 HRESULT CRiding::Add_Components()
 {
-	
+
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_strPrototypeTag, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	{
 		return E_FAIL;
 	}
-	
+
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{

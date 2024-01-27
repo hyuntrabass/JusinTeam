@@ -58,7 +58,8 @@ HRESULT CPlayer::Init(void* pArg)
 	m_pRight_Trail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &trail_desc);
 	m_Left_Mat = m_pModelCom->Get_BoneMatrix("B_Weapon_L");
 	m_Right_Mat = m_pModelCom->Get_BoneMatrix("B_Weapon_R");
-
+	m_pLeft_Trail->Off();
+	m_pRight_Trail->Off();
 	SURFACETRAIL_DESC SurfaceDesc{};
 	SurfaceDesc.iNumVertices = 20;
 	SurfaceDesc.vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
@@ -97,6 +98,10 @@ void CPlayer::Tick(_float fTimeDelta)
 	}
 
 	m_StartRegen += fTimeDelta;
+	m_fAttTimer += fTimeDelta;
+	m_fSkiilTimer += fTimeDelta;
+
+
 	m_OldWorldMatrix = m_pTransformCom->Get_World_Matrix();
 	_mat m{};
 	if (m_pGameInstance->Get_CameraModeIndex() == CM_MAIN)
@@ -142,8 +147,6 @@ void CPlayer::Tick(_float fTimeDelta)
 		Change_Parts(eType, CUI_Manager::Get_Instance()->Get_CustomPart(eType));
 	}
 
-	m_fAttTimer += fTimeDelta;
-	m_fSkiilTimer += fTimeDelta;
 
 	if (m_pGameInstance->Key_Down(DIK_8))
 	{
@@ -151,7 +154,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		{
 			m_bIsMount = true;
 			m_Animation.iAnimIndex = Anim_Mount_Idle;
-			Summon_Riding(Tiger);
+			Summon_Riding(Nihilir);
 		}
 		else
 		{
@@ -832,7 +835,7 @@ void CPlayer::Move(_float fTimeDelta)
 			m_iCurrentSkill_Index = Skill4;
 			m_bAttacked = false;
 		}
-		//Change_Weapon(WP_BOW, BOW0);
+
 	}
 
 	if (m_pGameInstance->Key_Down(DIK_5))
@@ -918,6 +921,19 @@ void CPlayer::Move(_float fTimeDelta)
 			hasMoved = true;
 		}
 
+		if (m_pGameInstance->Key_Down(DIK_F))
+		{
+			if (m_bIsClimb)
+				return;
+			if (vDirection == _vec4())
+				vDirection += vForwardDir;
+
+			m_pTransformCom->LookAt_Dir(vDirection);
+			//m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
+			m_bAttacked = false;
+			Common_Attack();
+			hasMoved = false;
+		}
 		if (m_pGameInstance->Key_Down(DIK_SPACE))
 		{
 			//if (!m_hasJumped)
@@ -933,7 +949,7 @@ void CPlayer::Move(_float fTimeDelta)
 		}
 
 
-		if (hasMoved && !m_bIsClimb)
+		if (hasMoved && !m_bIsClimb && m_eState != Attack)
 		{
 
 			if (m_pGameInstance->Key_Pressing(DIK_LSHIFT))
@@ -946,17 +962,17 @@ void CPlayer::Move(_float fTimeDelta)
 
 				}
 				else if (m_eState == Attack or
-						 m_eState == Skill1_End or
-						 m_eState == Skill2 or
-						 m_eState == Skill3 or
-						 m_eState == Skill4)
+					m_eState == Skill1_End or
+					m_eState == Skill2 or
+					m_eState == Skill3 or
+					m_eState == Skill4)
 				{
 					m_eState = Attack_Run;
 				}
 				else if (/*m_pTransformCom->Is_OnGround() and*/
-						 m_eState == Run or
-						 m_eState == Run_End or
-						 m_pModelCom->IsAnimationFinished(Anim_Normal_run_start))
+					m_eState == Run or
+					m_eState == Run_End or
+					m_pModelCom->IsAnimationFinished(Anim_Normal_run_start))
 				{
 					m_eState = Run;
 
@@ -989,7 +1005,7 @@ void CPlayer::Move(_float fTimeDelta)
 						m_eState == Idle or
 						m_eState == Walk or
 						m_eState == Attack_Idle or
-						m_eState == Attack or
+					/*	m_eState == Attack or*/
 						m_eState == Skill1_End or
 						m_eState == Skill2 or
 						m_eState == Skill3 or
@@ -998,24 +1014,13 @@ void CPlayer::Move(_float fTimeDelta)
 						m_eState = Walk;
 
 					}
-
+					if(m_eState != Attack)
 					m_pTransformCom->Set_Speed(m_fWalkSpeed + m_Status.Speed / 3.f);
 				}
 
 
 			}
-			if (m_pGameInstance->Key_Down(DIK_F))
-			{
-				if (m_bIsClimb)
-					return;
-				if (vDirection == _vec4())
-					vDirection += vForwardDir;
-
-				m_pTransformCom->LookAt_Dir(vDirection);
-				//m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
-				m_bAttacked = false;
-				Common_Attack();
-			}
+		
 
 			if (m_eState == Jump_Start)
 			{
@@ -1025,6 +1030,7 @@ void CPlayer::Move(_float fTimeDelta)
 
 			m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
 
+	
 			_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
 
 			_float fInterpolTime = 0.4f;
@@ -1053,8 +1059,8 @@ void CPlayer::Move(_float fTimeDelta)
 
 		}
 		else if (m_eState == Walk or m_eState == Run_Start or
-				 m_pModelCom->IsAnimationFinished(Anim_B_idle_end)
-				 )
+			m_pModelCom->IsAnimationFinished(Anim_B_idle_end)
+			)
 		{
 			m_eState = Idle;
 		}
@@ -2544,7 +2550,7 @@ HRESULT CPlayer::Add_Components()
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.9f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-									  TEXT("Com_Player_Hit_OBB"), (CComponent**)&m_pHitCollider, &CollDesc)))
+		TEXT("Com_Player_Hit_OBB"), (CComponent**)&m_pHitCollider, &CollDesc)))
 		return E_FAIL;
 
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
@@ -2552,7 +2558,7 @@ HRESULT CPlayer::Add_Components()
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.4f, 0.4f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-									  TEXT("Com_Collider_Common_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Common]), &CollDesc)))
+		TEXT("Com_Collider_Common_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Common]), &CollDesc)))
 		return E_FAIL;
 
 
