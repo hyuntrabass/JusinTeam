@@ -116,6 +116,7 @@ HRESULT CVIBuffer_Instancing_Mesh::Init(void* pArg)
 	//MESH_DESC* pDesc = (MESH_DESC*)pArg;
 	_mat mWorldMatrix = *(_mat*)pArg;
 
+
 	VTXMESHINSTANCING* pVertexInstance = reinterpret_cast<VTXMESHINSTANCING*>(const_cast<void*>(m_InstancingInitialData.pSysMem));
 
 	if (pArg)
@@ -132,7 +133,6 @@ HRESULT CVIBuffer_Instancing_Mesh::Init(void* pArg)
 			pVertexInstance[i].vUp = _vec4(mWorldMatrix._21, mWorldMatrix._22, mWorldMatrix._23, mWorldMatrix._24);
 			pVertexInstance[i].vLook = _vec4(mWorldMatrix._31, mWorldMatrix._32, mWorldMatrix._33, mWorldMatrix._34);
 			pVertexInstance[i].vPos = _vec4(mWorldMatrix._41, mWorldMatrix._42, mWorldMatrix._43, mWorldMatrix._44);
-
 		}
 	}
 
@@ -141,9 +141,6 @@ HRESULT CVIBuffer_Instancing_Mesh::Init(void* pArg)
 		Safe_Delete_Array(m_InstancingInitialData.pSysMem);
 		return E_FAIL;
 	}
-
-
-
 	return S_OK;
 }
 
@@ -356,5 +353,6 @@ void CVIBuffer_Instancing_Mesh::Free()
 		}
 	}
 	m_Materials.clear();
+
 
 }

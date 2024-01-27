@@ -56,6 +56,8 @@ private:
 	_uint m_iTrigger{ 0 };
 	_float m_fTriggerSize{};
 	_bool m_isCreate{false};
+	_bool m_isInstancing{ false };
+
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

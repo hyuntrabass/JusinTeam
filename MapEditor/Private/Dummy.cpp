@@ -46,7 +46,7 @@ HRESULT CDummy::Init(void* pArg)
 
 	m_Info = *(DummyInfo*)pArg;
 	m_eType = m_Info.eType;
-
+	m_isInstancing = m_Info.isInstancing;
 	if(m_Info.eType == ItemType::Monster || m_Info.eType == ItemType::NPC)
 	{
 		m_isAnim = true;
@@ -113,7 +113,44 @@ HRESULT CDummy::Render()
 	{
 		return E_FAIL;
 	}
-	if (m_eType != ItemType::Environment)
+	if (m_eType == ItemType::Environment && m_isInstancing == true)
+	{
+		if (FAILED(m_pVIBuffer->Bind_Material(m_pShaderCom, "g_DiffuseTexture", TextureType::Diffuse)))
+		{
+			return E_FAIL;
+		}
+
+		_bool HasNorTex{};
+		if (FAILED(m_pVIBuffer->Bind_Material(m_pShaderCom, "g_NormalTexture", TextureType::Normals)))
+		{
+			HasNorTex = false;
+		}
+		else
+		{
+			HasNorTex = true;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_bSelected", &m_isSelected, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(StaticPass_AlphaTestMeshes)))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pVIBuffer->Render()))
+		{
+			return E_FAIL;
+		}
+
+	}
+	else
 	{
 		_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -174,48 +211,6 @@ HRESULT CDummy::Render()
 			}
 		}
 	}
-	else
-	{
-		_uint iNumMeshes = m_pVIBuffer->Get_NumMeshes();
-
-		for (_uint i = 0; i < iNumMeshes; i++)
-		{
-			if (FAILED(m_pVIBuffer->Bind_Material(m_pShaderCom, "g_DiffuseTexture",i, TextureType::Diffuse)))
-			{
-				return E_FAIL;
-			}
-
-			_bool HasNorTex{};
-			if (FAILED(m_pVIBuffer->Bind_Material(m_pShaderCom, "g_NormalTexture",i,TextureType::Normals)))
-			{
-				HasNorTex = false;
-			}
-			else
-			{
-				HasNorTex = true;
-			}
-
-			if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pShaderCom->Bind_RawValue("g_bSelected", &m_isSelected, sizeof _bool)))
-			{
-				return E_FAIL;
-			}
-
-
-			if (FAILED(m_pShaderCom->Begin(StaticPass_AlphaTestMeshes)))
-			{
-				return E_FAIL;
-			}
-			if (FAILED(m_pVIBuffer->Render()))
-			{
-				return E_FAIL;
-			}
-		}
-	}
 	
 	
 
@@ -247,7 +242,7 @@ HRESULT CDummy::Add_Components()
 		m_iOutLineShaderPass = StaticPass_OutLine;
 	}
 	
-	if (m_eType == ItemType::Environment)
+	if (m_eType == ItemType::Environment && m_isInstancing == true)
 	{
 
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Info.Prototype, TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBuffer), &m_pTransformCom->Get_World_Matrix())))

@@ -33,6 +33,7 @@ struct DummyInfo
 	_float fTriggerSize{};
 	_float4 vPos{};
 	_float4 vLook{};
+	_bool isInstancing{false};
 	class CDummy** ppDummy{ nullptr };
 };
 
@@ -159,6 +160,8 @@ private:
 	_int MapIndex{ 0 };
 	_bool m_isMode{ false };
 	_int iTriggerNum{ -1 };
+
+	_bool m_isInstancing{false};
 
 private:
 	// 파일의 이름 가져와서 저장

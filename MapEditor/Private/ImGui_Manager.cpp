@@ -423,18 +423,24 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::SeparatorText("LIST");
 			static int Environment_current_idx = 0;
 			ImGui::Text("Environment");
+			m_isInstancing = false;
 
 			if(iSelectEnvir == 0)
 			{
+				m_isInstancing = false;
 				m_eType = TEXT("Tree");
 			}
 			else if (iSelectEnvir == 1)
 			{
 				m_eType = TEXT("Grass");
+				m_isInstancing = true;
+
 			}
 			else if (iSelectEnvir == 2)
 			{
 				m_eType = TEXT("Rock");
+				m_isInstancing = true;
+
 			}
 
 			if (ImGui::BeginListBox("OBJECTS DIR", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
@@ -899,6 +905,7 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_vLook)));
 	Info.Prototype = L"Prototype_Model_";
 	Info.eType = m_eItemType;
+	Info.isInstancing = m_isInstancing;
 	if (m_eItemType == ItemType::Trigger)
 	{
 		Info.iTriggerNum = m_TriggerList.size();

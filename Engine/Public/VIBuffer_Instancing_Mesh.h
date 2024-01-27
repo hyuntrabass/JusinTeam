@@ -17,7 +17,7 @@ public:
 
 	HRESULT Read_Meshes(ifstream& File, const ModelType& eType, _fmatrix PivotMatrix);
 	HRESULT Read_Materials(ifstream& File, const string& strFilePath);
-	HRESULT Bind_Material(class CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType);
+	HRESULT Bind_Material(class CShader* pShader, const _char* pVariableName, TextureType eTextureType);
 
 
 	//HRESULT Render(_uint iMeshIndex);
@@ -29,8 +29,8 @@ public:
 
 	_uint m_iNumMaterials{};
 	vector<Model_Material> m_Materials{};
-	vector<VTXSTATICMESH*> vVertices {};
-	vector<_ulong*> vIndices {};
+	vector<VTXSTATICMESH> vVertices {};
+	vector<_ulong> vIndices {};
 
 private:
 	_mat m_PivotMatrix{};
