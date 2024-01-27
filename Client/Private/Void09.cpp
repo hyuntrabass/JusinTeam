@@ -45,12 +45,11 @@ HRESULT CVoid09::Init(void* pArg)
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
-	TRAIL_DESC Desc{};
-	Desc.vColor = Colors::Tan;
-	Desc.vPSize = _vec2(0.05f, 0.05f);
+	SURFACETRAIL_DESC Desc{};
+	Desc.vColor = Colors::Sienna;
 	Desc.iNumVertices = 10.f;
-	m_pSwordTrail1 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
-	m_pSwordTrail2 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
+
+	m_pSwordTrail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 
 	PxCapsuleControllerDesc ControllerDesc{};
 	ControllerDesc.height = 0.6f; // 높이(위 아래의 반구 크기 제외
@@ -187,7 +186,7 @@ void CVoid09::Init_State(_float fTimeDelta)
 
 		case Client::CVoid09::STATE_ATTACK:
 			m_bDamaged = false;
-			m_Animation.fAnimSpeedRatio = 2.5f;
+			m_Animation.fAnimSpeedRatio = 2.f;
 			break;
 
 		case Client::CVoid09::STATE_HIT:
@@ -253,8 +252,10 @@ void CVoid09::Tick_State(_float fTimeDelta)
 	{
 		_vec4 vPlayerPos = __super::Compute_PlayerPos();
 		_float fDistance = __super::Compute_PlayerDistance();
+		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
+		vDir.y = 0.f;
 
-		m_pTransformCom->LookAt(vPlayerPos);
+		m_pTransformCom->LookAt_Dir(vDir);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 
 		if (fDistance > m_fChaseRange && !m_bDamaged)
@@ -301,8 +302,7 @@ void CVoid09::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 29.f && fAnimpos <= 33.f)
 				{
-					m_pSwordTrail1->Late_Tick(fTimeDelta);
-					m_pSwordTrail2->Late_Tick(fTimeDelta);
+					m_pSwordTrail->Late_Tick(fTimeDelta);
 				}
 			}
 			break;
@@ -370,15 +370,13 @@ void CVoid09::Update_Trail(_float fTimeDelta)
 {
 	_mat Matrix = *m_pModelCom->Get_BoneMatrix("Bip001-R-Hand");
 	_mat Offset = _mat::CreateTranslation(_vec3(-0.3f, 0.1f, -1.69f));
-	_mat Result = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
-
-	m_pSwordTrail1->Tick(Result.Position_vec3());
+	_mat Result1 = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 
 	Matrix = *m_pModelCom->Get_BoneMatrix("Bip001-R-Hand");
 	Offset = _mat::CreateTranslation(_vec3(0.29f, 0.07f, -0.36f));
-	Result = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
+	_mat Result2 = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 
-	m_pSwordTrail2->Tick(Result.Position_vec3());
+	m_pSwordTrail->Tick(Result1.Position_vec3(), Result2.Position_vec3());
 }
 
 HRESULT CVoid09::Add_Collider()
@@ -445,6 +443,5 @@ void CVoid09::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pSwordTrail1);
-	Safe_Release(m_pSwordTrail2);
+	Safe_Release(m_pSwordTrail);
 }

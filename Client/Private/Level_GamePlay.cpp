@@ -18,8 +18,8 @@ HRESULT CLevel_GamePlay::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_GAMEPLAY);
 	m_pGameInstance->StopAll();
-	//m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.1f);
-	//m_pGameInstance->Play_Sound(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.3f, true);
+	m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.1f);
+	m_pGameInstance->Play_Sound(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.3f, true);
 
 	CUI_Manager::Get_Instance()->Init();
 
@@ -50,102 +50,108 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 	
-	if (FAILED(Ready_Rabbit()))
-	{
-		MSG_BOX("Failed to Ready Rabbit");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Rabbit()))
+	//{
+	//	MSG_BOX("Failed to Ready Rabbit");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_Goat()))
-	{
-		MSG_BOX("Failed to Ready Goat");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Goat()))
+	//{
+	//	MSG_BOX("Failed to Ready Goat");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_Nastron03()))
-	{
-		MSG_BOX("Failed to Ready Nastron03");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Nastron03()))
+	//{
+	//	MSG_BOX("Failed to Ready Nastron03");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_Thief04()))
-	{
-		MSG_BOX("Failed to Ready Thief04");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Thief04()))
+	//{
+	//	MSG_BOX("Failed to Ready Thief04");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_TrilobiteA()))
-	{
-		MSG_BOX("Failed to Ready TrilobiteA");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_TrilobiteA()))
+	//{
+	//	MSG_BOX("Failed to Ready TrilobiteA");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_Void01()))
-	{
-		MSG_BOX("Failed to Ready Void01");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Void01()))
+	//{
+	//	MSG_BOX("Failed to Ready Void01");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_Void05()))
-	{
-		MSG_BOX("Failed to Ready Void05");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Void05()))
+	//{
+	//	MSG_BOX("Failed to Ready Void05");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_Imp()))
-	{
-		MSG_BOX("Failed to Ready Imp");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Imp()))
+	//{
+	//	MSG_BOX("Failed to Ready Imp");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_Void09()))
-	{
-		MSG_BOX("Failed to Ready Void09");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Void09()))
+	//{
+	//	MSG_BOX("Failed to Ready Void09");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_Void20()))
-	{
-		MSG_BOX("Failed to Ready Void20");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Void20()))
+	//{
+	//	MSG_BOX("Failed to Ready Void20");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_Void23()))
-	{
-		MSG_BOX("Failed to Ready Void23");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Void23()))
+	//{
+	//	MSG_BOX("Failed to Ready Void23");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_Nastron07()))
-	{
-		MSG_BOX("Failed to Ready Nastron07");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Nastron07()))
+	//{
+	//	MSG_BOX("Failed to Ready Nastron07");
+	//	return E_FAIL;
+	//}
 
-	// NPC
-	if (FAILED(Ready_Cat()))
-	{
-		MSG_BOX("Failed to Ready Cat");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Spider()))
+	//{
+	//	MSG_BOX("Failed to Ready Spider");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_Dog()))
-	{
-		MSG_BOX("Failed to Ready Dog");
-		return E_FAIL;
-	}
+	//// NPC
+	//if (FAILED(Ready_Cat()))
+	//{
+	//	MSG_BOX("Failed to Ready Cat");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_NPC_Test()))
-	{
-		MSG_BOX("Failed to Ready NPC");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Dog()))
+	//{
+	//	MSG_BOX("Failed to Ready Dog");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_NPC_Dummy_Test()))
-	{
-		MSG_BOX("Failed to Ready NPC_Dummy");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_NPC_Test()))
+	//{
+	//	MSG_BOX("Failed to Ready NPC");
+	//	return E_FAIL;
+	//}
+
+	//if (FAILED(Ready_NPC_Dummy_Test()))
+	//{
+	//	MSG_BOX("Failed to Ready NPC_Dummy");
+	//	return E_FAIL;
+	//}
 
 	// Boss
 	if (FAILED(Ready_Groar_Boss()))
@@ -780,6 +786,16 @@ HRESULT CLevel_GamePlay::Ready_Void23()
 HRESULT CLevel_GamePlay::Ready_Nastron07()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Nastron07"), TEXT("Prototype_GameObject_Nastron07"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Spider()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Spider"), TEXT("Prototype_GameObject_Spider"))))
 	{
 		return E_FAIL;
 	}

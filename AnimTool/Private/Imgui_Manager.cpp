@@ -407,9 +407,9 @@ HRESULT CImgui_Manager::ImGuiMenu()
 		ImGui::Begin("ANIMATION MENU");
 		ImGui::PushItemWidth(270.f);
 #pragma region ImGuizmo
-		//ImGui::RadioButton("STATE", &m_iManipulateType, TYPE_STATE); ImGui::SameLine();
-		//ImGui::RadioButton("RESET", &m_iManipulateType, TYPE_RESET);
-		//m_eManipulateType = (MANIPULATETYPE)(m_iManipulateType);
+		/*ImGui::RadioButton("STATE", &m_iManipulateType, TYPE_STATE); ImGui::SameLine();
+		ImGui::RadioButton("RESET", &m_iManipulateType, TYPE_RESET);
+		m_eManipulateType = (MANIPULATETYPE)(m_iManipulateType);*/
 		if (ImGui::Button("SCALE"))
 		{
 			if (m_eManipulateType == TYPE_STATE)
@@ -800,6 +800,11 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				{
 					ImGui::Text("FALSE");
 				}
+				//알아서 사라지는거 편하게 보기 위해서
+				if (pEffectDesc->HasCreated)
+				{
+					pEffectDesc->HasCreated = false;
+				}
 
 				ImGui::PopItemWidth();
 				ImGui::End();
@@ -815,14 +820,12 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				vector<TRIGGERSOUND_DESC> SoundDescs = pCurModel->Get_TriggerSounds();
 				//사운드 이름 띄우기
 				_char** ppSoundTriggerList = new _char * [SoundDescs.size()];
-				wstring strSonudTrigger = L"SOUND_TRIGGER_";
 
 				for (size_t i = 0; i < SoundDescs.size(); i++)
 				{
 					ppSoundTriggerList[i] = new _char[MAX_PATH];
-					wstring SoundTrigger = strSonudTrigger + to_wstring(i);
-					int bufferSize = WideCharToMultiByte(CP_UTF8, 0, SoundTrigger.c_str(), -1, nullptr, 0, nullptr, nullptr);
-					WideCharToMultiByte(CP_UTF8, 0, SoundTrigger.c_str(), -1, ppSoundTriggerList[i], bufferSize, nullptr, nullptr);
+					int bufferSize = WideCharToMultiByte(CP_UTF8, 0, SoundDescs[i].strSoundNames[0].c_str(), -1, nullptr, 0, nullptr, nullptr);
+					WideCharToMultiByte(CP_UTF8, 0, SoundDescs[i].strSoundNames[0].c_str(), -1, ppSoundTriggerList[i], bufferSize, nullptr, nullptr);
 				}
 				if (ImGui::ListBox("SOUND##1", &m_iCurTriggerIndex, ppSoundTriggerList, SoundDescs.size()))
 				{
@@ -922,7 +925,11 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					ImGui::Text(strEndEffectPos.c_str());
 				}
 
+				ImGui::PopItemWidth();
+
 				ImGui::SeparatorText("VOLUME");
+				ImGui::PushItemWidth(100.f);
+
 				ImGui::InputFloat("VOLUME##1", &pSoundDesc->fVolume, 0.01f, 0.f, "%.2f");
 				if (pSoundDesc->fVolume >= 1.f)
 				{
@@ -1147,6 +1154,11 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				{
 					ImGui::Text("FALSE");
 				}
+				//알아서 사라지는거 편하게 보기 위해서
+				if (pEffectDesc->HasCreated)
+				{
+					pEffectDesc->HasCreated = false;
+				}
 
 				ImGui::PopItemWidth();
 				ImGui::End();
@@ -1163,14 +1175,12 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				vector<TRIGGERSOUND_DESC> SoundDescs = pCurModel->Get_TriggerSounds();
 				//사운드 이름 띄우기
 				_char** ppSoundTriggerList = new _char * [SoundDescs.size()];
-				wstring strSonudTrigger = L"SOUND_TRIGGER_";
 
 				for (size_t i = 0; i < SoundDescs.size(); i++)
 				{
 					ppSoundTriggerList[i] = new _char[MAX_PATH];
-					wstring SoundTrigger = strSonudTrigger + to_wstring(i);
-					int bufferSize = WideCharToMultiByte(CP_UTF8, 0, SoundTrigger.c_str(), -1, nullptr, 0, nullptr, nullptr);
-					WideCharToMultiByte(CP_UTF8, 0, SoundTrigger.c_str(), -1, ppSoundTriggerList[i], bufferSize, nullptr, nullptr);
+					int bufferSize = WideCharToMultiByte(CP_UTF8, 0, SoundDescs[i].strSoundNames[0].c_str(), -1, nullptr, 0, nullptr, nullptr);
+					WideCharToMultiByte(CP_UTF8, 0, SoundDescs[i].strSoundNames[0].c_str(), -1, ppSoundTriggerList[i], bufferSize, nullptr, nullptr);
 				}
 				if (ImGui::ListBox("SOUND##1", &m_iCurTriggerIndex, ppSoundTriggerList, SoundDescs.size()))
 				{
@@ -1270,7 +1280,11 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					ImGui::Text(strEndEffectPos.c_str());
 				}
 
+				ImGui::PopItemWidth();
+
 				ImGui::SeparatorText("VOLUME");
+				ImGui::PushItemWidth(100.f);
+
 				ImGui::InputFloat("VOLUME##1", &pSoundDesc->fVolume, 0.01f, 0.f, "%.2f");
 				if (pSoundDesc->fVolume >= 1.f)
 				{
@@ -1407,41 +1421,86 @@ HRESULT CImgui_Manager::ImGuizmoMenu()
 
 	if (m_pPlayer)
 	{
-		CModel* pCurModel = m_pPlayer->Get_CurrentModel();
-		if (pCurModel->Get_NumTriggerEffect() != 0)
+		if (m_eModelType == TYPE_PLAYER)
 		{
-			if (m_eSelect == SELECT_EFFECT)
+			CRealtimeVTFModel* pCurModel = m_pPlayer->Get_CurrentPlayerModel();
+			if (pCurModel->Get_NumTriggerEffect() != 0)
 			{
-				TRIGGEREFFECT_DESC* pEffectDesc = pCurModel->Get_TriggerEffect(m_iCurTriggerIndex);
-				_mat TargetMatrix = pEffectDesc->OffsetMatrix;
-				_mat PreMatrix = pEffectDesc->OffsetMatrix;
-
-				ImGuizmo::Manipulate(&ViewMatrix.m[0][0], &ProjMatrix.m[0][0], m_eStateType, ImGuizmo::MODE::WORLD, &TargetMatrix.m[0][0]);
-				if (ImGuizmo::IsUsing())
+				if (m_eSelect == SELECT_EFFECT && m_eTriggerType == TRIGGER_EFFECT)
 				{
-					if (m_eStateType == ImGuizmo::OPERATION::SCALE)
+					TRIGGEREFFECT_DESC* pEffectDesc = pCurModel->Get_TriggerEffect(m_iCurTriggerIndex);
+					_mat TargetMatrix = pEffectDesc->OffsetMatrix;
+					_mat PreMatrix = pEffectDesc->OffsetMatrix;
+
+					ImGuizmo::Manipulate(&ViewMatrix.m[0][0], &ProjMatrix.m[0][0], m_eStateType, ImGuizmo::MODE::WORLD, &TargetMatrix.m[0][0]);
+					if (ImGuizmo::IsUsing())
 					{
-						m_vCurrentScale = _vec3(TargetMatrix.Right().Length(),
-							TargetMatrix.Up().Length(),
-							TargetMatrix.Backward().Length());
+						if (m_eStateType == ImGuizmo::OPERATION::SCALE)
+						{
+							m_vCurrentScale = _vec3(TargetMatrix.Right().Length(),
+								TargetMatrix.Up().Length(),
+								TargetMatrix.Backward().Length());
 
-						_vec4 Right = PreMatrix.Right();
-						Right.Normalize();
-						_vec4 Up = PreMatrix.Up();
-						Up.Normalize();
-						_vec4 Look = PreMatrix.Look();
-						Look.Normalize();
+							_vec4 Right = PreMatrix.Right();
+							Right.Normalize();
+							_vec4 Up = PreMatrix.Up();
+							Up.Normalize();
+							_vec4 Look = PreMatrix.Look();
+							Look.Normalize();
 
-						pEffectDesc->OffsetMatrix.Right(Right * m_vCurrentScale.x);
-						pEffectDesc->OffsetMatrix.Up(Up * m_vCurrentScale.y);
-						pEffectDesc->OffsetMatrix.Look(Look * m_vCurrentScale.z);
+							pEffectDesc->OffsetMatrix.Right(Right * m_vCurrentScale.x);
+							pEffectDesc->OffsetMatrix.Up(Up * m_vCurrentScale.y);
+							pEffectDesc->OffsetMatrix.Look(Look * m_vCurrentScale.z);
+						}
+						else
+						{
+							pEffectDesc->OffsetMatrix.Right(TargetMatrix.Right());
+							pEffectDesc->OffsetMatrix.Up(TargetMatrix.Up());
+							pEffectDesc->OffsetMatrix.Look(TargetMatrix.Look());
+							pEffectDesc->OffsetMatrix.Position(TargetMatrix.Position());
+						}
 					}
-					else
+				}
+			}
+		}
+		else
+		{
+			CModel* pCurModel = m_pPlayer->Get_CurrentModel();
+			if (pCurModel->Get_NumTriggerEffect() != 0)
+			{
+				if (m_eSelect == SELECT_EFFECT && m_eTriggerType == TRIGGER_EFFECT)
+				{
+					TRIGGEREFFECT_DESC* pEffectDesc = pCurModel->Get_TriggerEffect(m_iCurTriggerIndex);
+					_mat TargetMatrix = pEffectDesc->OffsetMatrix;
+					_mat PreMatrix = pEffectDesc->OffsetMatrix;
+
+					ImGuizmo::Manipulate(&ViewMatrix.m[0][0], &ProjMatrix.m[0][0], m_eStateType, ImGuizmo::MODE::WORLD, &TargetMatrix.m[0][0]);
+					if (ImGuizmo::IsUsing())
 					{
-						pEffectDesc->OffsetMatrix.Right(TargetMatrix.Right());
-						pEffectDesc->OffsetMatrix.Up(TargetMatrix.Up());
-						pEffectDesc->OffsetMatrix.Look(TargetMatrix.Look());
-						pEffectDesc->OffsetMatrix.Position(TargetMatrix.Position());
+						if (m_eStateType == ImGuizmo::OPERATION::SCALE)
+						{
+							m_vCurrentScale = _vec3(TargetMatrix.Right().Length(),
+								TargetMatrix.Up().Length(),
+								TargetMatrix.Backward().Length());
+
+							_vec4 Right = PreMatrix.Right();
+							Right.Normalize();
+							_vec4 Up = PreMatrix.Up();
+							Up.Normalize();
+							_vec4 Look = PreMatrix.Look();
+							Look.Normalize();
+
+							pEffectDesc->OffsetMatrix.Right(Right * m_vCurrentScale.x);
+							pEffectDesc->OffsetMatrix.Up(Up * m_vCurrentScale.y);
+							pEffectDesc->OffsetMatrix.Look(Look * m_vCurrentScale.z);
+						}
+						else
+						{
+							pEffectDesc->OffsetMatrix.Right(TargetMatrix.Right());
+							pEffectDesc->OffsetMatrix.Up(TargetMatrix.Up());
+							pEffectDesc->OffsetMatrix.Look(TargetMatrix.Look());
+							pEffectDesc->OffsetMatrix.Position(TargetMatrix.Position());
+						}
 					}
 				}
 			}

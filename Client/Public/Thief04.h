@@ -2,7 +2,7 @@
 
 #include "Client_Define.h"
 #include "Monster.h"
-#include "CommonTrail.h"
+#include "CommonSurfaceTrail.h"
 
 BEGIN(Client)
 
@@ -85,10 +85,8 @@ private:
 	THIEF04_STATE m_eCurState = STATE_END;
 
 private:
-	CCommonTrail* m_pAxeTrail1 = { nullptr };
-	CCommonTrail* m_pAxeTrail2 = { nullptr };
-	CCommonTrail* m_pKnifeTrail1 = { nullptr };
-	CCommonTrail* m_pKnifeTrail2 = { nullptr };
+	CCommonSurfaceTrail* m_pAxeTrail = { nullptr };
+	CCommonSurfaceTrail* m_pKnifeTrail = { nullptr };
 
 private:
 	_float m_fIdleTime = {};
