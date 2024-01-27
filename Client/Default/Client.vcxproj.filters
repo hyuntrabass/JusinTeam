@@ -331,6 +331,9 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\Dialog">
       <UniqueIdentifier>{8bbd3cf3-05ec-4392-a70b-e8cdc3ab6750}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\03.Player\Weapon\Arrow">
+      <UniqueIdentifier>{3c9caad4-a7e8-48db-a836-c8c8b3ca4edd}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Spider">
       <UniqueIdentifier>{f363281d-5323-407d-80fa-91b4b26af4c3}</UniqueIdentifier>
     </Filter>
@@ -660,6 +663,9 @@
     <ClInclude Include="..\Public\CommonSurfaceTrail.h">
       <Filter>03.Effect\Common_Effect</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Arrow.h">
+      <Filter>02.GameObjects\03.Player\Weapon\Arrow</Filter>
+    </ClInclude>
     <ClInclude Include="..\Public\Spider.h">
       <Filter>02.GameObjects\08. Boss\Groar_Boss\Spider</Filter>
     </ClInclude>
@@ -986,6 +992,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\CommonSurfaceTrail.cpp">
       <Filter>03.Effect\Common_Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Arrow.cpp">
+      <Filter>02.GameObjects\03.Player\Weapon\Arrow</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Spider.cpp">
       <Filter>02.GameObjects\08. Boss\Groar_Boss\Spider</Filter>

@@ -156,7 +156,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	RECT rc = { 0, 0, g_iWinSizeX, g_iWinSizeY };
 
-	AdjustWindowRect(&rc, WS_POPUP, TRUE);
+	//AdjustWindowRect(&rc, WS_POPUP, TRUE);
 
 	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_POPUP,
 		CW_USEDEFAULT, 0, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
@@ -187,6 +187,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	wstring composingString{};
+	static wstring CompleteString{};
 
 	switch (message)
 	{
@@ -209,6 +210,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	break;
 	case WM_IME_COMPOSITION:
 	{
+		if (CGameInstance::Get_Instance()->Get_CurrentLevelIndex() >= LEVEL_GAMEPLAY)
+		{
+			break;
+		}
 		HIMC hIMC = ::ImmGetContext(hWnd);
 		if (hIMC)
 		{
@@ -224,7 +229,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				LONG len = ::ImmGetCompositionString(hIMC, GCS_RESULTSTR, NULL, 0);
 				std::vector<wchar_t> buffer(len / sizeof(wchar_t) + 1);
 				::ImmGetCompositionString(hIMC, GCS_RESULTSTR, buffer.data(), len);
-				composingString += buffer.data(); // 조합 완료된 문자열을 저장
+				CompleteString += buffer.data();
+				composingString.clear(); // 조합 완료된 문자열을 저장
 			}
 			::ImmReleaseContext(hWnd, hIMC);
 		}
@@ -236,9 +242,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
-	wstring CompleteString = CGameInstance::Get_Instance()->Get_InputString();
-	CompleteString += composingString;
-	CGameInstance::Get_Instance()->Set_InputString(composingString);
+	CGameInstance::Get_Instance()->Set_InputString(CompleteString + composingString);
 	
 	return 0;
 }

@@ -18,8 +18,8 @@ HRESULT CLevel_GamePlay::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_GAMEPLAY);
 	m_pGameInstance->StopAll();
-	//m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.1f);
-	//m_pGameInstance->Play_Sound(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.3f, true);
+	m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.1f);
+	m_pGameInstance->Play_Sound(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.3f, true);
 
 	CUI_Manager::Get_Instance()->Init();
 
@@ -193,8 +193,6 @@ HRESULT CLevel_GamePlay::Init()
 		MSG_BOX("Failed to Ready Object");
 		return E_FAIL;
 	}
-
-	m_pGameInstance->Set_HellHeight(-5000.f);
 
 	EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Rain");
 	EffectDesc.pMatrix = &m_RainMatrix;
