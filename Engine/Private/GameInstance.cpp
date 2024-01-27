@@ -714,6 +714,16 @@ HRESULT CGameInstance::Render_Text(const wstring& strFontTag, const wstring& str
 	return m_pFont_Manager->Render(strFontTag, strText, vPosition, fScale, vColor, fRotation, isFront);
 }
 
+_vec2 CGameInstance::Get_TextSize(const wstring& strFontTag, const wstring& strText)
+{
+	if (!m_pFont_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pFont_Manager is NULL");
+	}
+	return m_pFont_Manager->Get_TextSize(strFontTag, strText);
+
+}
+
 _bool CGameInstance::IsIn_Fov_World(_vec4 vPos, _float fRange)
 {
 	if (!m_pFrustum)

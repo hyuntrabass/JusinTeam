@@ -31,11 +31,11 @@ HRESULT CDialog::Init(void* pArg)
 	m_pParentTransform = ((DIALOG_DESC*)pArg)->pParentTransform;
 	Safe_AddRef(m_pParentTransform);
 
-	_vec2 vTextSize;
+	_vec2 vTextSize = m_pGameInstance->Get_TextSize(L"Font_Malang", m_strText);
 	//엔진에서 받아오는게... ?
 
-	m_fSizeX = vTextSize.x + 10.f;
-	m_fSizeY = vTextSize.y + 10.f;
+	m_fSizeX = vTextSize.x + 2.f;
+	m_fSizeY = vTextSize.y + 5.f;
 	m_fDepth = (_float)D_NAMETAG / (_float)D_END;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
@@ -125,7 +125,7 @@ HRESULT CDialog::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	_vec4 vSliceRect = _vec4(0.2f, 0.2f, 0.8f, 0.8f);
+	_vec4 vSliceRect = _vec4(0.1f, 0.2f, 0.9f, 0.8f);
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vSliceRect", &vSliceRect, sizeof(_vec4))))
 	{
 		return E_FAIL;

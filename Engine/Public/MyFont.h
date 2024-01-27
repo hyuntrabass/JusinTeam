@@ -21,6 +21,9 @@ private:
 	SpriteFont* m_pFont{ nullptr };
 
 public:
+	_vec2 Get_TextSize(const wstring& strText) { return m_pFont->MeasureString(strText.c_str()); }
+
+public:
 	static CMyFont* Create(_dev pDevice, _context pContext, const wstring& strFilePath);
 	virtual void Free() override;
 };
