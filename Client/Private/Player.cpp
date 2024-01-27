@@ -3,6 +3,7 @@
 #include "UI_Manager.h"
 #include "Event_Manager.h"
 #include "Weapon.h"
+#include "Arrow.h"
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -927,6 +928,13 @@ void CPlayer::Move(_float fTimeDelta)
 				return;
 			if (vDirection == _vec4())
 				vDirection += vForwardDir;
+
+			Arrow_Type type{};
+			type.vPos = _vec4(m_pTransformCom->Get_State(State::Pos));
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"),&type)))
+			{
+				return;
+			}
 
 			m_pTransformCom->LookAt_Dir(vDirection);
 			//m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
