@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NameWindow.h"
 #include "Dialog.h"
 #include "3DUITex.h"
 #include "HPMonster.h"

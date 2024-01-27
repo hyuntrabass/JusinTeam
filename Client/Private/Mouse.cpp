@@ -1,5 +1,6 @@
 #include "Mouse.h"
 #include "GameInstance.h"
+#include "UI_Manager.h"
 
 CMouse::CMouse(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -60,6 +61,7 @@ void CMouse::Late_Tick(_float fTimeDelta)
 
 HRESULT CMouse::Render()
 {
+	CUI_Manager::MOUSESTATE eState = CUI_Manager::Get_Instance()->Get_MouseState();
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;

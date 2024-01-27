@@ -19,6 +19,7 @@ float g_fAlpha;
 float g_fTime;
 float g_fDissolveRatio;
 float g_fAmount;
+float2 g_vRatio;
 int2 g_vNumSprite;
 uint g_iIndex;
 
@@ -595,21 +596,32 @@ PS_OUT PS_Main_HPNoMask(PS_IN Input)
 PS_OUT PS_Main_NineSlice(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
-    
+    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+
+/*
 
     if (Input.vTex.x < g_vSliceRect.x)
+    {
         Input.vTex.x = lerp(0, g_vSliceRect.x, Input.vTex.x / g_vSliceRect.x);
+        Input.vTex *= _float2(
+    }
     else if (Input.vTex.x > g_vSliceRect.z)
-        Input.vTex.x = lerp(g_vSliceRect.z, 1, (Input.vTex.x - g_vSliceRect.z) / (1 - g_vSliceRect.z));
+    {
+        float ratioX = 1.0 / (1.0 - g_vSliceRect.z);
+        Input.vTex.x = lerp(g_vSliceRect.z, 1, (Input.vTex.x - g_vSliceRect.z) * ratioX);
+    }
 
-    
     if (Input.vTex.y < g_vSliceRect.y)
+    {
         Input.vTex.y = lerp(0, g_vSliceRect.y, Input.vTex.y / g_vSliceRect.y);
+    }
     else if (Input.vTex.y > g_vSliceRect.w)
-        Input.vTex.y = lerp(g_vSliceRect.w, 1, (Input.vTex.y - g_vSliceRect.w) / (1 - g_vSliceRect.w));
-
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    {
+        float ratioY = 1.0 / (1.0 - g_vSliceRect.w);
+        Input.vTex.y = lerp(g_vSliceRect.w, 1, (Input.vTex.y - g_vSliceRect.w) * ratioY);
+    }*/
     return Output;
+
 }
 technique11 DefaultTechnique
 {

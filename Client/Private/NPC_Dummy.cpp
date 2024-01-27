@@ -139,13 +139,13 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 void CNPC_Dummy::Tick(_float fTimeDelta)
 {	
 	m_pModelCom->Set_Animation(m_Animation);
-	//m_pDialog->Tick(fTimeDelta);
+	m_pDialog->Tick(fTimeDelta);
 }
 
 void CNPC_Dummy::Late_Tick(_float fTimeDelta)
 {
 	__super::Late_Tick(fTimeDelta);
-	//m_pDialog->Late_Tick(fTimeDelta);
+	m_pDialog->Late_Tick(fTimeDelta);
 }
 
 HRESULT CNPC_Dummy::Render()

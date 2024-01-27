@@ -162,7 +162,13 @@ void CCustom::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->Mouse_Down(DIM_RBUTTON, InputChannel::Engine))
 		{
-			m_pGameInstance->Level_ShutDown(LEVEL_CUSTOM);
+			if (m_pGameInstance->Get_LayerSize(LEVEL_CUSTOM, TEXT("Layer_SetName")) == 0)
+			{
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CUSTOM, TEXT("Layer_SetName"), TEXT("Prototype_GameObject_NameWindow"))))
+				{
+					return;
+				}
+			}
 		}
 		m_pSelectButton->Set_Size(140.f, 80.f, 0.3f);
 	}
@@ -348,7 +354,7 @@ HRESULT CCustom::Add_Parts()
 	ColButtonDesc.vPosition = _vec2(1125.f, 670.f);
 	ColButtonDesc.vSize = _vec2(150.f, 100.f);
 	ColButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	ColButtonDesc.vTextPosition = _vec2(0.f, 17.f);
+	Button.vTextPosition = _vec2(0.f, -5.f);
 
 	
 	m_pSelectButton = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);

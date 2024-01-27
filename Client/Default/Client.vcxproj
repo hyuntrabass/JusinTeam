@@ -192,6 +192,7 @@
     <ClInclude Include="..\Public\Menu.h" />
     <ClInclude Include="..\Public\MPBar.h" />
     <ClInclude Include="..\Public\Map.h" />
+    <ClInclude Include="..\Public\NameWindow.h" />
     <ClInclude Include="..\Public\Nastron03.h" />
     <ClInclude Include="..\Public\Nastron07.h" />
     <ClInclude Include="..\Public\NPC.h" />
@@ -301,6 +302,7 @@
     <ClCompile Include="..\Private\Menu.cpp" />
     <ClCompile Include="..\Private\MPBar .cpp" />
     <ClCompile Include="..\Private\Map.cpp" />
+    <ClCompile Include="..\Private\NameWindow.cpp" />
     <ClCompile Include="..\Private\Nastron03.cpp" />
     <ClCompile Include="..\Private\Nastron07.cpp" />
     <ClCompile Include="..\Private\NPC.cpp" />

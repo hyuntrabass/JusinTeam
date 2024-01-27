@@ -331,6 +331,9 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\Dialog">
       <UniqueIdentifier>{8bbd3cf3-05ec-4392-a70b-e8cdc3ab6750}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.UI\02.Custom\NameWindow">
+      <UniqueIdentifier>{226b54d7-1dcb-47da-b299-496acadd2b2e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -654,6 +657,9 @@
     <ClInclude Include="..\Public\CommonSurfaceTrail.h">
       <Filter>03.Effect\Common_Effect</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\NameWindow.h">
+      <Filter>02.GameObjects\00.UI\02.Custom\NameWindow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -974,6 +980,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\CommonSurfaceTrail.cpp">
       <Filter>03.Effect\Common_Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NameWindow.cpp">
+      <Filter>02.GameObjects\00.UI\02.Custom\NameWindow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

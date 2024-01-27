@@ -12,12 +12,15 @@ class CUI_Manager final : public CBase
 	DECLARE_SINGLETON(CUI_Manager)
 public:
 	enum TYPE { MONSTER, NPC, TYPE_END };
+	enum MOUSESTATE { M_DEFAULT, M_TEXT, MOUSESTATE_END };
+
 private:
 	CUI_Manager();
 	virtual ~CUI_Manager() = default;
 
 private:
 	PART_TYPE		m_eChangedPart{ PT_END };
+	MOUSESTATE		m_eMouseState { M_DEFAULT };
 
 	_bool			m_isPicking{ false };
 	_bool			m_isShowing{ false };
@@ -81,6 +84,7 @@ public:
 	HRESULT Set_Coin(_uint iCoin);
 	HRESULT Set_Diamond(_uint iDia);
 	_bool Set_CurrentPlayerPos(_vec4 vPos);
+	void Set_MouseState(MOUSESTATE eState) { m_eMouseState = eState; }
 
 	const _vec4& Get_HairColor() const { return m_vHairColor; }
 	const _vec4& Get_InvenPos() const { return m_vInvenPos; }
@@ -89,6 +93,8 @@ public:
 	const _uint& Get_Coin() const { return m_iCoin; }
 	const _uint& Get_Diamond() const { return m_iDiamond; }
 	const _float2& Get_Exp() const { return m_fExp; }
+	const _float2& Get_Exp() const { return m_fExp; }
+	const MOUSESTATE& Get_MouseState() const { return m_eMouseState; }
 
 	const PART_TYPE& Is_CustomPartChanged() const { return m_eChangedPart; }
 	const _bool& Is_Picking_UI() const { return m_isPicking; }

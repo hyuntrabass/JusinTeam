@@ -34,8 +34,8 @@ HRESULT CDialog::Init(void* pArg)
 	_vec2 vTextSize = m_pGameInstance->Get_TextSize(L"Font_Malang", m_strText);
 	//엔진에서 받아오는게... ?
 
-	m_fSizeX = vTextSize.x + 2.f;
-	m_fSizeY = vTextSize.y + 5.f;
+	m_fSizeX = vTextSize.x;
+	m_fSizeY = vTextSize.y + 20.f;
 	m_fDepth = (_float)D_NAMETAG / (_float)D_END;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
@@ -79,6 +79,15 @@ HRESULT CDialog::Render()
 		return E_FAIL;
 	}
 
+	_vec2 TextPos = m_vTextPos;
+	/*
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText ,TextPos, 0.3f);
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText ,TextPos, 0.3f);
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText ,TextPos, 0.3f);
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText ,TextPos, 0.3f);
+	*/
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, TextPos, 0.35f);
+
 	return S_OK;
 }
 
@@ -99,7 +108,7 @@ HRESULT CDialog::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_customslot"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_Dialog"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -125,20 +134,17 @@ HRESULT CDialog::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	_vec4 vSliceRect = _vec4(0.1f, 0.2f, 0.9f, 0.8f);
+	_vec4 vSliceRect = _vec4(0.2f, 0.2f, 0.8f, 0.8f);
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vSliceRect", &vSliceRect, sizeof(_vec4))))
 	{
 		return E_FAIL;
 	}
-
-	_vec2 TextPos = m_vTextPos;
-	/*
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText ,TextPos, 0.3f);
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText ,TextPos, 0.3f);
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText ,TextPos, 0.3f);
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText ,TextPos, 0.3f);
-	*/
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText ,TextPos, 0.35f);
+	
+	_float2 vRatio =_float2(m_fSizeX, m_fSizeY);
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vRatio", &vRatio, sizeof(_float2))))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }

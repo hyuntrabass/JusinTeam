@@ -325,6 +325,16 @@ HRESULT CLoader::Load_Select()
 		return E_FAIL;
 	
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Button_Blue2"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Select/buttonBlue2.png")))))
+	{
+		return E_FAIL;
+	
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_NameWindow"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Custom/NameWindow.png")))))
+	{
+		return E_FAIL;
+	
+	}
 
 
 	m_strLoadingText = L"Select : Loading Model";
@@ -599,6 +609,10 @@ HRESULT CLoader::Load_Custom()
 
 #pragma region Prototype
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Custom"), CCustom::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_NameWindow"), CNameWindow::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
