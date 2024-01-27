@@ -308,10 +308,10 @@ public:
 
 	void Front_Ray_Check();
 	_bool Turn_Ray_Check(_bool bRight);
-	
+
 	void Health_Regen(_float fTImeDelta);
 	void Is_Climb(_float fTimeDelta);
-	
+
 	void Common_Attack();
 	void Skill1_Attack();
 	void Skill2_Attack();
@@ -325,7 +325,7 @@ public:
 	void After_SkillAtt(_float fTimeDelta);
 	void Sword_Att_Camera_Effect();
 	void Bow_Att_Camera_Effect();
-	
+
 	void Check_Att_Collider(ATTACK_TYPE Att_Type);
 
 public:
@@ -342,15 +342,14 @@ private:
 	CGameObject* m_pNameTag{ nullptr };
 	CRealtimeVTFModel* m_pModelCom = { nullptr };
 	CTransform* m_pCameraTransform{ nullptr };
-	CCollider* m_pHitCollider{ nullptr };
 	CCollider* m_pAttCollider[AT_End]{ nullptr };
+	CCollider* m_pHitCollider{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CRenderer* m_pRendererCom{ nullptr };
 	CCommonTrail* m_pLeft_Trail{ nullptr };
 	CCommonTrail* m_pRight_Trail{ nullptr };
 	CCommonSurfaceTrail* m_pTest_Trail{ nullptr };
 	CTexture* m_pDissolveTextureCom{};
-
 
 private:
 	ANIM_DESC m_Animation{};
@@ -370,10 +369,9 @@ private:
 	_float m_fSkillSpeed{};
 	_bool m_bAttackStop{};
 	_float4 m_vPos{};
-	_float m_fGravity{};
 	_bool m_bStartGame{};
-	_float m_fWalkSpeed{ 1.f };
-	_float m_fRunSpeed{ 3.5f };
+	const _float m_fWalkSpeed{ 1.f };
+	const _float m_fRunSpeed{ 3.5f };
 	_bool m_isInterpolating{};
 	_float m_fInterpolationRatio{};
 	_vec4 m_vOriginalLook{};
@@ -383,12 +381,7 @@ private:
 	_bool m_hasJumped{};
 	_int m_iAttackCombo{};
 	_int m_iCurrentSkill_Index{};
-	_vec4 m_currentDir{};
-	_float m_lerpFactor{ 0.1f };
-	_vec4 m_vLook{};
-	_float m_fLerpTime{};
-	_vec4 m_fLerpLook{};
-	_vec4 m_fFirstLook{};
+
 	_float m_fAttackZoom{};
 	_float m_ReturnZoomTime{};
 	_float m_fSkiilTimer{};
@@ -400,10 +393,8 @@ private:
 	_int m_Helmet_CurrentIndex{ -1 };
 	_int m_Hair_CurrentIndex{ -1 };
 	_int m_Face_CurrentIndex{ -1 };
-	_float m_SkillSpeed{};
 	_uint m_ShaderIndex{};
 	_bool m_UsingMotionBlur{};
-	_bool m_View_Helmat{};
 	_vec4 m_SaveCamPos{};
 	_vec4 m_SaveCamLook{};
 	_bool m_bIsMount{};
@@ -411,8 +402,10 @@ private:
 	_bool m_bHelmet_Hide{};
 	_bool m_bIsClimb{};
 	_bool m_bReady_Climb{};
-	_bool m_bReady_Move{};
+
 	_float m_StartRegen{};
+
+	wstring m_strPlayerName{};
 
 private:
 	HRESULT Add_Components();

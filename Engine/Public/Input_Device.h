@@ -25,15 +25,16 @@ private:
 public:
 	HRESULT Init(HINSTANCE hInst, HWND hWnd);
 	void Update_InputDev();
+	void Late_Update_InputDev();
 
 public:
 	_bool Key_Pressing(_ubyte iKey);
-	_bool Key_Down(_ubyte iKey, InputChannel eInputChannel);
-	_bool Key_Up(_ubyte iKey, InputChannel eInputChannel);
+	_bool Key_Down(_ubyte iKey, InputChannel eInputChannel = InputChannel::End);
+	_bool Key_Up(_ubyte iKey, InputChannel eInputChannel = InputChannel::End);
 
 	_bool Mouse_Pressing(_long iKey);
-	_bool Mouse_Down(_long iKey, InputChannel eInputChannel);
-	_bool Mouse_Up(_long iKey, InputChannel eInputChannel);
+	_bool Mouse_Down(_long iKey, InputChannel eInputChannel = InputChannel::End);
+	_bool Mouse_Up(_long iKey, InputChannel eInputChannel = InputChannel::End);
 	_long Get_MouseMove(MouseState eMouseState);
 
 	_bool Gamepad_Pressing(GAMPAD_KEY_STATE eKey);
@@ -61,7 +62,9 @@ private:
 	_bool m_bPrevFrame_GampadState[ToIndex(InputChannel::End)][USHRT_MAX]{};
 
 	_byte m_byKeyState[UCHAR_MAX]{};
+	_byte m_byPreKeyState[UCHAR_MAX]{};
 	DIMOUSESTATE m_MouseState{};
+	DIMOUSESTATE m_PreMouseState{};
 	XINPUT_STATE m_GamepadState{};
 
 	_float2 m_vLStick{};

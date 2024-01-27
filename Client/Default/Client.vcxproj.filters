@@ -331,6 +331,9 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\Dialog">
       <UniqueIdentifier>{8bbd3cf3-05ec-4392-a70b-e8cdc3ab6750}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\03.Player\Weapon\Arrow">
+      <UniqueIdentifier>{3c9caad4-a7e8-48db-a836-c8c8b3ca4edd}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObjects\11.Trigger">
       <UniqueIdentifier>{e34cfd3d-cd3e-4a9c-a182-3c577c5cdb93}</UniqueIdentifier>
     </Filter>
@@ -656,6 +659,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\CommonSurfaceTrail.h">
       <Filter>03.Effect\Common_Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Arrow.h">
+      <Filter>02.GameObjects\03.Player\Weapon\Arrow</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Trigger.h">
       <Filter>02.GameObjects\11.Trigger</Filter>
@@ -986,6 +992,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\CommonSurfaceTrail.cpp">
       <Filter>03.Effect\Common_Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Arrow.cpp">
+      <Filter>02.GameObjects\03.Player\Weapon\Arrow</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Trigger.cpp">
       <Filter>02.GameObjects\11.Trigger</Filter>
