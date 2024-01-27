@@ -320,6 +320,8 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::RadioButton("Tutorial", &iSelectObject, 0); ImGui::SameLine();
 			ImGui::RadioButton("Midgard", &iSelectObject, 1); ImGui::SameLine();
 			ImGui::RadioButton("Dungeon", &iSelectObject, 2);
+			_int iObjectCount = m_ObjectsList.size();
+			ImGui::InputInt("Count", &iObjectCount, 14);
 
 			ImGui::SeparatorText("LIST");
 			static int Object_current_idx = 0;
@@ -414,6 +416,10 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::RadioButton("Tree", &iSelectEnvir, 0); ImGui::SameLine();
 			ImGui::RadioButton("Grass", &iSelectEnvir, 1); ImGui::SameLine();
 			ImGui::RadioButton("Rock", &iSelectEnvir, 2);
+
+			_int iEnvirCount = m_EnvirList.size();
+			ImGui::InputInt("Count", &iEnvirCount, 14);
+
 			ImGui::SeparatorText("LIST");
 			static int Environment_current_idx = 0;
 			ImGui::Text("Environment");

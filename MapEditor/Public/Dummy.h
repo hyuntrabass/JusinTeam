@@ -3,10 +3,6 @@
 #include "BlendObject.h"
 #include "ImGui_Manager.h"
 
-BEGIN(Engine)
-class CVIBuffer_Instance_Mesh;
-END
-
 BEGIN(MapEditor)
 
 class CDummy final : public CBlendObject
@@ -44,7 +40,7 @@ private:
 	CModel* m_pModelCom{ nullptr };
 	//CImGui_Manager* m_pImGui_Manager{ nullptr };
 	CCollider* m_pCollider{ nullptr };
-	CVIBuffer_Instance_Mesh* m_pVIBuffer{ nullptr };
+	CVIBuffer_Instancing_Mesh* m_pVIBuffer{ nullptr };
 
 private:
 

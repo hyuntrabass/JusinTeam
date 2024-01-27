@@ -5,6 +5,14 @@ BEGIN(Engine)
 
 class ENGINE_DLL CVIBuffer_Instancing abstract : public CVIBuffer
 {
+//public:
+	//typedef struct tagMeshDesc
+	//{
+	//	_float3		vMinPosition, vMaxPosition;
+	//	_float2		vScaleRange;
+	//	_mat		mWorldMatrix;
+	//}MESH_DESC;
+
 protected:
 	CVIBuffer_Instancing(_dev pDevice, _context pContext);
 	CVIBuffer_Instancing(const CVIBuffer_Instancing& rhs);

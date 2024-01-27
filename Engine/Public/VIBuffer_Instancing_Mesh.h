@@ -1,9 +1,9 @@
 #pragma once
-#include "VIBuffer_Model_Instancing.h"
+#include "VIBuffer_Instancing.h"
 
 BEGIN(Engine)
 
-class ENGINE_DLL CVIBuffer_Instancing_Mesh final : public CVIBuffer_Model_Instancing
+class ENGINE_DLL CVIBuffer_Instancing_Mesh final : public CVIBuffer_Instancing
 {
 private:
 	CVIBuffer_Instancing_Mesh(_dev pDevice, _context pContext);
@@ -11,16 +11,32 @@ private:
 	virtual ~CVIBuffer_Instancing_Mesh() = default;
 
 public:
-	//virtual HRESULT Init_Prototype(vector<VTXSTATICMESH> m_Vertices, vector<_ulong> m_Indices, _uint iNumInstance);
-	virtual HRESULT Init_Prototype(const string& strFilePath, _uint iNumInstance);
-	virtual HRESULT Init(void* pArg) override;
+	const _uint& Get_NumMeshes() const;
+	HRESULT Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix, _uint iNumInstance);
+	HRESULT Init(void* pArg) override;
+
+	HRESULT Read_Meshes(ifstream& File, const ModelType& eType, _fmatrix PivotMatrix);
+	HRESULT Read_Materials(ifstream& File, const string& strFilePath);
+	HRESULT Bind_Material(class CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType);
+
+
+	//HRESULT Render(_uint iMeshIndex);
 
 	_char m_szFilePath[MAX_PATH] = "";
+	_char m_szName[MAX_PATH]{};
+	_uint m_iMatIndex{};
+	_uint m_iNumMeshes{};
 
+	_uint m_iNumMaterials{};
+	vector<Model_Material> m_Materials{};
+	vector<VTXSTATICMESH*> vVertices {};
+	vector<_ulong*> vIndices {};
+
+private:
+	_mat m_PivotMatrix{};
 
 public:
-	//static CVIBuffer_Instancing_Mesh* Create(_dev pDevice, _context pContext, vector<VTXSTATICMESH> m_Vertices,	vector<_ulong> m_Indices, _uint iNumInstance);
-	static CVIBuffer_Instancing_Mesh* Create(_dev pDevice, _context pContext, const string& strFilePath, _uint iNumInstance);
+	static CVIBuffer_Instancing_Mesh* Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh = false, _fmatrix PivotMatrix = XMMatrixIdentity(), _uint iNumInstance = 1);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };
