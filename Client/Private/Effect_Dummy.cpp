@@ -43,7 +43,7 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 
 	if (m_Effect.strUnDissolveTexture.size())
 	{
-		m_fDissolveRatio = 1.f;
+		m_fUnDissolveRatio = 1.f;
 	}
 
 	m_OffsetMatrix = *m_Effect.pMatrix;
@@ -59,11 +59,16 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 
 void CEffect_Dummy::Tick(_float fTimeDelta)
 {
-	if (m_Effect.strUnDissolveTexture.size())
+	if (m_fUnDissolveRatio > 0.f and m_Effect.strUnDissolveTexture.size())
 	{
-		m_fDissolveRatio -= fTimeDelta / m_Effect.fUnDissolveDuration;
+		m_fUnDissolveRatio -= fTimeDelta / m_Effect.fUnDissolveDuration;
+		if (m_fUnDissolveRatio < 0.f)
+		{
+			m_fUnDissolveRatio = 0.f;
+		}
 	}
-	else if (m_Effect.fLifeTime >= 0.f and m_fTimer > m_Effect.fLifeTime)
+
+	if (m_fUnDissolveRatio <= 0.f and m_Effect.fLifeTime >= 0.f and m_fTimer > m_Effect.fLifeTime)
 	{
 		if (m_Effect.strDissolveTexture.size())
 		{
@@ -310,26 +315,20 @@ HRESULT CEffect_Dummy::Bind_ShaderResources()
 		}
 	}
 
-	if (m_Effect.strUnDissolveTexture.size())
+	if (m_fDissolveRatio >= 0.f and m_Effect.strUnDissolveTexture.size())
 	{
 		if (FAILED(m_pUnDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
 		{
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof m_fDissolveRatio)))
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fUnDissolveRatio, sizeof m_fDissolveRatio)))
 		{
 			return E_FAIL;
 		}
-
-		if (m_fDissolveRatio < 0.f)
-		{
-			m_fDissolveRatio = 0.f;
-			m_Effect.strUnDissolveTexture = {};
-			m_fTimer = {};
-		}
 	}
-	else if (m_Effect.strDissolveTexture.size())
+
+	if (m_fUnDissolveRatio <= 0.f and m_Effect.strDissolveTexture.size())
 	{
 		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
 		{
