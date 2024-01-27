@@ -78,7 +78,7 @@ void CPet_Cat::Tick_State(_float fTimeDelta)
 
 	if (fDistance <= 5.f && fDistance >= 2.f)
 	{
-		m_fPosLerpRatio = 0.02f;
+		m_fPosLerpRatio = 0.03f;
 	}
 	else if (fDistance > 5.f)
 	{

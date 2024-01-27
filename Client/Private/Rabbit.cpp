@@ -34,8 +34,8 @@ HRESULT CRabbit::Init(void* pArg)
 	}
 	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 
-	//m_pTransformCom->Set_State(State::Pos, _vec4(75.f, 0.f, 90.f, 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(100.f, 8.f, 108.f, 1.f));
+	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
@@ -44,7 +44,7 @@ HRESULT CRabbit::Init(void* pArg)
 
 	m_eCurState = STATE_IDLE;
 
-	m_iHP = 10;
+	m_iHP = 250;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
@@ -79,7 +79,8 @@ void CRabbit::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_R))
 	{
-		Set_Damage(0, AT_Bow_Common);
+		//Set_Damage(0, AT_Bow_Common);
+		Kill();
 	}
 
 	Init_State(fTimeDelta);
@@ -90,6 +91,9 @@ void CRabbit::Tick(_float fTimeDelta)
 	m_HpBar->Tick(fTimeDelta);
 	Update_Collider();
 	__super::Update_MonsterCollider();
+
+	m_pTransformCom->Gravity(fTimeDelta);
+
 }
 
 void CRabbit::Late_Tick(_float fTimeDelta)
@@ -309,7 +313,8 @@ void CRabbit::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 45.f && fAnimpos <= 47.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iSmallDamage / 2 - rand() % 20;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
 				}
 			}
@@ -323,12 +328,14 @@ void CRabbit::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 37.f && fAnimpos <= 39.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iSmallDamage / 2 - rand() % 20;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
 				}
 				if (fAnimpos >= 52.f && fAnimpos <= 54.f && !m_bAttacked2)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iSmallDamage / 2 - rand() % 20;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked2 = true;
 				}
 			}

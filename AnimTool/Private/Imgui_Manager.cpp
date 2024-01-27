@@ -406,22 +406,22 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	{
 		ImGui::Begin("ANIMATION MENU");
 		ImGui::PushItemWidth(270.f);
-
-		ImGui::RadioButton("STATE", &m_iManipulateType, TYPE_STATE); ImGui::SameLine();
-		ImGui::RadioButton("RESET", &m_iManipulateType, TYPE_RESET);
-		m_eManipulateType = (MANIPULATETYPE)(m_iManipulateType);
+#pragma region ImGuizmo
+		//ImGui::RadioButton("STATE", &m_iManipulateType, TYPE_STATE); ImGui::SameLine();
+		//ImGui::RadioButton("RESET", &m_iManipulateType, TYPE_RESET);
+		//m_eManipulateType = (MANIPULATETYPE)(m_iManipulateType);
 		if (ImGui::Button("SCALE"))
 		{
 			if (m_eManipulateType == TYPE_STATE)
 			{
 				m_eStateType = ImGuizmo::OPERATION::SCALE;
 			}
-			else if (m_eManipulateType == TYPE_RESET)
+			/*else if (m_eManipulateType == TYPE_RESET)
 			{
 				CTransform* pTargetTransform = (CTransform*)(m_pPlayer->Find_Component(TEXT("Com_Transform")));
 				pTargetTransform->Set_Scale(m_vPreScale);
 				m_vCurrentScale = m_vPreScale;
-			}
+			}*/
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("ROTATION"))
@@ -430,13 +430,13 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			{
 				m_eStateType = ImGuizmo::OPERATION::ROTATE;
 			}
-			else if (m_eManipulateType == TYPE_RESET)
+			/*else if (m_eManipulateType == TYPE_RESET)
 			{
 				CTransform* pTargetTransform = (CTransform*)(m_pPlayer->Find_Component(TEXT("Com_Transform")));
 				pTargetTransform->Set_State(State::Right, XMVector3Normalize(XMLoadFloat4(&m_vPreRight)) * m_vCurrentScale.x);
 				pTargetTransform->Set_State(State::Up, XMVector3Normalize(XMLoadFloat4(&m_vPreUp)) * m_vCurrentScale.y);
 				pTargetTransform->Set_State(State::Look, XMVector3Normalize(XMLoadFloat4(&m_vPreLook)) * m_vCurrentScale.z);
-			}
+			}*/
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("POSITION"))
@@ -445,13 +445,13 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			{
 				m_eStateType = ImGuizmo::OPERATION::TRANSLATE;
 			}
-			else if (m_eManipulateType == TYPE_RESET)
+			/*else if (m_eManipulateType == TYPE_RESET)
 			{
 				CTransform* pTargetTransform = (CTransform*)(m_pPlayer->Find_Component(TEXT("Com_Transform")));
 				pTargetTransform->Set_State(State::Pos, XMLoadFloat4(&m_vPrePosition));
-			}
+			}*/
 		}
-		if (m_eManipulateType == TYPE_RESET)
+		/*if (m_eManipulateType == TYPE_RESET)
 		{
 			ImGui::SameLine();
 			if (ImGui::Button("ALL"))
@@ -463,7 +463,9 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				pTargetTransform->Set_State(State::Pos, XMLoadFloat4(&m_vPrePosition));
 				m_vCurrentScale = m_vPreScale;
 			}
-		}
+		}*/
+#pragma endregion
+
 #pragma region Player
 		if (m_eModelType == TYPE_PLAYER)
 		{
@@ -482,22 +484,27 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					++iter;
 				}
 
-				static int iCurrentAnimIndex = 0;
+				m_iCurrentAnimIndex = 0;
 				if (m_AnimationNames.size() != 0)
 				{
-					iCurrentAnimIndex = pCurModel->Get_CurrentAnimationIndex();
-					if (ImGui::ListBox("ANIMATION", &iCurrentAnimIndex, m_AnimationNames.data(), m_AnimationNames.size()))
+					m_iCurrentAnimIndex = pCurModel->Get_CurrentAnimationIndex();
+					if (ImGui::ListBox("ANIMATION", &m_iCurrentAnimIndex, m_AnimationNames.data(), m_AnimationNames.size()))
 					{
-						m_AnimDesc.iAnimIndex = iCurrentAnimIndex;
+						m_AnimDesc.iAnimIndex = m_iCurrentAnimIndex;
 						m_AnimDesc.bSkipInterpolation = false;
 						m_AnimDesc.fAnimSpeedRatio = 1.7f;
 						pCurModel->Set_Animation(m_AnimDesc);
 					}
 				}
 
+				string strNumAnims = "ALLANIMS: " + to_string(pCurModel->Get_NumAnim());
+				ImGui::Text(strNumAnims.c_str()); ImGui::SameLine();
+				string strCurAnim = "CURRENTANIM : " + to_string(m_iCurrentAnimIndex);
+				ImGui::Text(strCurAnim.c_str());
+
 				_int iCurrentAnimPos = static_cast<_int>(pCurModel->Get_CurrentAnimPos());
 				iter = pAnimations.begin();
-				for (_int i = 0; i < iCurrentAnimIndex; i++)
+				for (_int i = 0; i < m_iCurrentAnimIndex; i++)
 				{
 					++iter;
 				}
@@ -539,22 +546,27 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					++iter;
 				}
 
-				static int iCurrentAnimIndex = 0;
+				m_iCurrentAnimIndex = 0;
 				if (m_AnimationNames.size() != 0)
 				{
-					iCurrentAnimIndex = pCurModel->Get_CurrentAnimationIndex();
-					if (ImGui::ListBox("ANIMATION", &iCurrentAnimIndex, m_AnimationNames.data(), m_AnimationNames.size()))
+					m_iCurrentAnimIndex = pCurModel->Get_CurrentAnimationIndex();
+					if (ImGui::ListBox("ANIMATION", &m_iCurrentAnimIndex, m_AnimationNames.data(), m_AnimationNames.size()))
 					{
-						m_AnimDesc.iAnimIndex = iCurrentAnimIndex;
+						m_AnimDesc.iAnimIndex = m_iCurrentAnimIndex;
 						m_AnimDesc.bSkipInterpolation = false;
 						m_AnimDesc.fAnimSpeedRatio = 1.7f;
 						pCurModel->Set_Animation(m_AnimDesc);
 					}
 				}
 
+				string strNumAnims = "ALLANIMS: " + to_string(pCurModel->Get_NumAnim());
+				ImGui::Text(strNumAnims.c_str()); ImGui::SameLine();
+				string strCurAnim = "CURRENTANIM : " + to_string(m_iCurrentAnimIndex);
+				ImGui::Text(strCurAnim.c_str());
+
 				_int iCurrentAnimPos = static_cast<_int>(pCurModel->Get_CurrentAnimPos());
 				iter = pAnimations.begin();
-				for (_int i = 0; i < iCurrentAnimIndex; i++)
+				for (_int i = 0; i < m_iCurrentAnimIndex; i++)
 				{
 					++iter;
 				}
@@ -712,19 +724,29 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					pEffectDesc->fEndAnimPoses[iEndIndex] = static_cast<_float>(iCurrentAnimPos);
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("END ADD"))
+				if (ImGui::Button("ADD##2"))
 				{
 					pEffectDesc->iEndAnimIndices.push_back(-1);
 					_uint iEndAnimPos = static_cast<_uint>(0.f);
 					pEffectDesc->fEndAnimPoses.push_back(static_cast<_float>(iEndAnimPos));
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("END DELETE"))
+				if (ImGui::Button("DELETE##2"))
 				{
 					if (pEffectDesc->iEndAnimIndices.size() > 1)
 					{
 						pEffectDesc->iEndAnimIndices.pop_back();
 						pEffectDesc->fEndAnimPoses.pop_back();
+					}
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("INIT"))
+				{
+					if (pEffectDesc->iEndAnimIndices.size() == 1)
+					{
+						pEffectDesc->iEndAnimIndices[0] = -1;
+						_uint iEndAnimPos = static_cast<_uint>(0.f);
+						pEffectDesc->fEndAnimPoses[0] = static_cast<_float>(iEndAnimPos);
 					}
 				}
 
@@ -866,19 +888,29 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					pSoundDesc->fEndAnimPoses[iEndIndex] = static_cast<_float>(iCurrentAnimPos);
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("END ADD"))
+				if (ImGui::Button("ADD##2"))
 				{
 					pSoundDesc->iEndAnimIndices.push_back(-1);
 					_uint iEndAnimPos = static_cast<_uint>(0.f);
 					pSoundDesc->fEndAnimPoses.push_back(static_cast<_float>(iEndAnimPos));
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("END DELETE"))
+				if (ImGui::Button("DELETE##2"))
 				{
 					if (pSoundDesc->iEndAnimIndices.size() > 1)
 					{
 						pSoundDesc->iEndAnimIndices.pop_back();
 						pSoundDesc->fEndAnimPoses.pop_back();
+					}
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("INIT"))
+				{
+					if (pSoundDesc->iEndAnimIndices.size() == 1)
+					{
+						pSoundDesc->iEndAnimIndices[0] = -1;
+						_uint iEndAnimPos = static_cast<_uint>(0.f);
+						pSoundDesc->fEndAnimPoses[0] = static_cast<_float>(iEndAnimPos);
 					}
 				}
 
@@ -966,13 +998,16 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					ImGui::SeparatorText("OFFSET");
 					ImGui::InputFloat("X##2", &vPosition.x, 0.01f, 0.f, "%.2f"); ImGui::SameLine();
 					ImGui::InputFloat("Y##2", &vPosition.y, 0.01f, 0.f, "%.2f"); ImGui::SameLine();
-					ImGui::InputFloat("Z##2", &vPosition.z, 0.01f, 0.f, "%.2f");/*
-					ImGui::SeparatorText("AXIS");
-					ImGui::InputFloat("X##3", &vRotation.x, 1.f, 0.f, "%.1f"); ImGui::SameLine();
-					ImGui::InputFloat("Y##3", &vRotation.y, 1.f, 0.f, "%.1f"); ImGui::SameLine();
-					ImGui::InputFloat("Z##3", &vRotation.z, 1.f, 0.f, "%.1f");
-					ImGui::InputFloat("ANGLE", &vRotation.w, 1.f, 0.f, "%.1f");*/
+					ImGui::InputFloat("Z##2", &vPosition.z, 0.01f, 0.f, "%.2f");
 					ImGui::PopItemWidth();
+					if (vScale.x <= 0.01f)
+					{
+						vScale.x = 0.1f;
+					}
+					if (vScale.y <= 0.01f)
+					{
+						vScale.y = 0.1f;
+					}
 					pEffectDesc->OffsetMatrix.Right(pEffectDesc->OffsetMatrix.Right().Get_Normalized() * vScale.x);
 					pEffectDesc->OffsetMatrix.Up(pEffectDesc->OffsetMatrix.Up().Get_Normalized() * vScale.y);
 					pEffectDesc->OffsetMatrix.Look(pEffectDesc->OffsetMatrix.Look().Get_Normalized() * vScale.z);
@@ -1036,19 +1071,29 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					pEffectDesc->fEndAnimPoses[iEndIndex] = static_cast<_float>(iCurrentAnimPos);
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("END ADD"))
+				if (ImGui::Button("ADD##2"))
 				{
 					pEffectDesc->iEndAnimIndices.push_back(-1);
 					_uint iEndAnimPos = static_cast<_uint>(0.f);
 					pEffectDesc->fEndAnimPoses.push_back(static_cast<_float>(iEndAnimPos));
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("END DELETE"))
+				if (ImGui::Button("DELETE##2"))
 				{
 					if (pEffectDesc->iEndAnimIndices.size() > 1)
 					{
 						pEffectDesc->iEndAnimIndices.pop_back();
 						pEffectDesc->fEndAnimPoses.pop_back();
+					}
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("INIT"))
+				{
+					if (pEffectDesc->iEndAnimIndices.size() == 1)
+					{
+						pEffectDesc->iEndAnimIndices[0] = -1;
+						_uint iEndAnimPos = static_cast<_uint>(0.f);
+						pEffectDesc->fEndAnimPoses[0] = static_cast<_float>(iEndAnimPos);
 					}
 				}
 
@@ -1191,19 +1236,29 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					pSoundDesc->fEndAnimPoses[iEndIndex] = static_cast<_float>(iCurrentAnimPos);
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("END ADD"))
+				if (ImGui::Button("ADD##2"))
 				{
 					pSoundDesc->iEndAnimIndices.push_back(-1);
 					_uint iEndAnimPos = static_cast<_uint>(0.f);
 					pSoundDesc->fEndAnimPoses.push_back(static_cast<_float>(iEndAnimPos));
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("END DELETE"))
+				if (ImGui::Button("DELETE##2"))
 				{
 					if (pSoundDesc->iEndAnimIndices.size() > 1)
 					{
 						pSoundDesc->iEndAnimIndices.pop_back();
 						pSoundDesc->fEndAnimPoses.pop_back();
+					}
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("INIT"))
+				{
+					if (pSoundDesc->iEndAnimIndices.size() == 1)
+					{
+						pSoundDesc->iEndAnimIndices[0] = -1;
+						_uint iEndAnimPos = static_cast<_uint>(0.f);
+						pSoundDesc->fEndAnimPoses[0] = static_cast<_float>(iEndAnimPos);
 					}
 				}
 
@@ -1717,6 +1772,8 @@ HRESULT CImgui_Manager::LoadFile()
 					}
 
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fVolume), sizeof(_float));
+
+					pCurModel->Add_TriggerSound(SoundDesc);
 				}
 			}
 		}
@@ -1804,6 +1861,8 @@ HRESULT CImgui_Manager::LoadFile()
 					}
 
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fVolume), sizeof(_float));
+
+					pCurModel->Add_TriggerSound(SoundDesc);
 				}
 			}
 		}

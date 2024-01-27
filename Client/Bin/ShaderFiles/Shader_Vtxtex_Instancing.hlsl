@@ -14,7 +14,7 @@ struct VS_IN
     float2 vPSize : PSize;
     
     row_major matrix TransformMatrix : World;
-    float3 vPrevPos : PrevPosition;
+    vector vPrevPos : PrevPosition;
     
     uint iVertexID : SV_InstanceID;
 };
@@ -38,6 +38,7 @@ VS_OUT VS_Main(VS_IN Input)
     Output.vPos = mul(vPosition, g_WorldMatrix);
     Output.vPSize = float2(Input.vPSize.x * Input.TransformMatrix._11, Input.vPSize.y * Input.TransformMatrix._22);
     Output.iIndex = g_iIndex;
+    Output.vPrevPos = Input.vPrevPos;
     
     return Output;
 }
@@ -53,6 +54,7 @@ VS_OUT VS_Main_RandomIndex(VS_IN Input)
     Output.vPos = mul(vPosition, g_WorldMatrix);
     Output.vPSize = float2(Input.vPSize.x * Input.TransformMatrix._11, Input.vPSize.y * Input.TransformMatrix._22);
     Output.iIndex = Input.iVertexID /*% uint(g_vNumSprite.x * g_vNumSprite.y)*/;
+    Output.vPrevPos = Input.vPrevPos;
     
     return Output;
 }
@@ -62,6 +64,7 @@ struct GS_IN
     vector vPos : Position;
     float2 vPSize : PSize;
     uint iIndex : Index;
+    vector vPrevPos : PrevPosition;
 };
 
 struct GS_OUT
@@ -90,6 +93,50 @@ void GS_MAIN(point GS_IN Input[1], inout TriangleStream<GS_OUT> Triangles)
     Output[2].vTex = float2(1.f, 1.f);
 
     Output[3].vPos = vector(Input[0].vPos.xyz + vRight - vUp, 1.f);
+    Output[3].vTex = float2(0.f, 1.f);
+    
+    matrix matVP = mul(g_ViewMatrix, g_ProjMatrix);
+    
+    Output[0].vPos = mul(Output[0].vPos, matVP);
+    Output[1].vPos = mul(Output[1].vPos, matVP);
+    Output[2].vPos = mul(Output[2].vPos, matVP);
+    Output[3].vPos = mul(Output[3].vPos, matVP);
+
+    Output[0].iIndex = Input[0].iIndex;
+    Output[1].iIndex = Input[0].iIndex;
+    Output[2].iIndex = Input[0].iIndex;
+    Output[3].iIndex = Input[0].iIndex;
+
+    Triangles.Append(Output[0]);
+    Triangles.Append(Output[1]);
+    Triangles.Append(Output[2]);
+    Triangles.RestartStrip();
+    
+    Triangles.Append(Output[0]);
+    Triangles.Append(Output[2]);
+    Triangles.Append(Output[3]);
+}
+
+[maxvertexcount(6)]
+void GS_MAIN_Trail(point GS_IN Input[1], inout TriangleStream<GS_OUT> Triangles)
+{
+    GS_OUT Output[4];
+    
+    float3 vLook = normalize((g_vCamPos - Input[0].vPrevPos).xyz);
+    float3 vMove = (Input[0].vPos - Input[0].vPrevPos).xyz;
+    float3 vRight = normalize(cross(vMove, vLook)) * Input[0].vPSize.x * 0.5f;
+    float3 vUp = normalize(cross(vLook, vRight)) * Input[0].vPSize.y * 0.5f;
+    
+    Output[0].vPos = vector(Input[0].vPos.xyz + vRight + vUp, 1.f);
+    Output[0].vTex = float2(0.f, 0.f);
+
+    Output[1].vPos = vector(Input[0].vPos.xyz - vRight + vUp, 1.f);
+    Output[1].vTex = float2(1.f, 0.f);
+
+    Output[2].vPos = vector(Input[0].vPrevPos.xyz - vRight - vUp, 1.f);
+    Output[2].vTex = float2(1.f, 1.f);
+
+    Output[3].vPos = vector(Input[0].vPrevPos.xyz + vRight - vUp, 1.f);
     Output[3].vTex = float2(0.f, 1.f);
     
     matrix matVP = mul(g_ViewMatrix, g_ProjMatrix);
@@ -439,6 +486,162 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_Main_RandomIndex();
         GeometryShader = compile gs_5_0 GS_MAIN();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Sprite_Dissolve();
+    }
+
+    pass Particle_Texture_Mask_Trail
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = compile gs_5_0 GS_MAIN_Trail();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main();
+    }
+
+    pass Particle_Sprite_Color_Trail
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = compile gs_5_0 GS_MAIN_Trail();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Sprite();
+    }
+
+    pass Particle_Color_Trail
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = compile gs_5_0 GS_MAIN_Trail();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Color();
+    }
+
+    pass Particle_Texture_Mask_Dissolve_Trail
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = compile gs_5_0 GS_MAIN_Trail();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Dissolve();
+    }
+
+    pass Particle_Sprite_Color_Dissolve_Trail
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = compile gs_5_0 GS_MAIN_Trail();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Sprite_Dissolve();
+    }
+
+    pass Particle_Color_Dissolve_Trail
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = compile gs_5_0 GS_MAIN_Trail();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Color_Dissolve();
+    }
+
+    pass Particle_Sprite_Texture_Trail
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = compile gs_5_0 GS_MAIN_Trail();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Sprite_Texture();
+    }
+
+    pass Particle_Sprite_Texture_Dissolve_Trail
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = compile gs_5_0 GS_MAIN_Trail();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Sprite_Texture_Dissolve();
+    }
+
+    pass Particle_Sprite_Texture_RandomIndex_Trail
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main_RandomIndex();
+        GeometryShader = compile gs_5_0 GS_MAIN_Trail();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Sprite_Texture();
+    }
+
+    pass Particle_Sprite_Texture_RandomIndex_Dissolve_Trail
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main_RandomIndex();
+        GeometryShader = compile gs_5_0 GS_MAIN_Trail();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Sprite_Texture_Dissolve();
+    }
+
+    pass Particle_Sprite_Color_RandomIndex_Trail
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main_RandomIndex();
+        GeometryShader = compile gs_5_0 GS_MAIN_Trail();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Sprite();
+    }
+
+    pass Particle_Sprite_Color_RandomIndex_Dissolve_Trail
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main_RandomIndex();
+        GeometryShader = compile gs_5_0 GS_MAIN_Trail();
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Sprite_Dissolve();

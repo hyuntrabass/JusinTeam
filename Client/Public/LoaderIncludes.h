@@ -54,6 +54,7 @@
 #include "Menu.h"
 #include "InvenFrame.h"
 #include "CommonTrail.h"
+#include "CommonSurfaceTrail.h"
 
 #include "Map.h"
 

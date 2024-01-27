@@ -101,6 +101,18 @@ namespace Effect
 		InstPass_Particle_Sprite_Texture_RandomIndex_Dissolve,
 		InstPass_Particle_Sprite_Color_RandomIndex,
 		InstPass_Particle_Sprite_Color_RandomIndex_Dissolve,
+		InstPass_Particle_TextureMask_Trail,
+		InstPass_Particle_Sprite_Color_Trail,
+		InstPass_Particle_MaskColor_Trail,
+		InstPass_Particle_TextureMask_Dissolve_Trail,
+		InstPass_Particle_Sprite_Color_Dissolve_Trail,
+		InstPass_Particle_MaskColor_Dissolve_Trail,
+		InstPass_Particle_Sprite_Texture_Trail,
+		InstPass_Particle_Sprite_Texture_Dissolve_Trail,
+		InstPass_Particle_Sprite_Texture_RandomIndex_Trail,
+		InstPass_Particle_Sprite_Texture_RandomIndex_Dissolve_Trail,
+		InstPass_Particle_Sprite_Color_RandomIndex_Trail,
+		InstPass_Particle_Sprite_Color_RandomIndex_Dissolve_Trail,
 		InstPass_End,
 	};
 #pragma endregion
