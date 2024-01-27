@@ -188,8 +188,6 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
-	m_pGameInstance->Set_HellHeight(-5000.f);
-
 	EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Rain");
 	EffectDesc.pMatrix = &m_RainMatrix;
 	EffectDesc.isFollow = true;

@@ -166,11 +166,13 @@ public: // Effect Callback
 	using Func_TickFX = function<void(_float)>;
 	using Func_HasCreatedFX = function<_bool(const void*)>;
 	using Func_GetInfoFX = function<EffectInfo(const void*)>;
+	using Func_ClearFX = function<void(_uint)>;
 
 	void Register_CreateEffect_Callback(Func_CreateFX Function);
 	void Register_DeleteEffect_Callback(Func_DeleteFX Function);
 	void Register_Tick_LateTick_Callback(Func_TickFX Tick, Func_TickFX Late_Tick);
 	void Register_HasCreated_Callback(Func_HasCreatedFX Function);
+	void Register_Clear_Callback(Func_ClearFX Function);
 
 	void Create_Effect(const wstring& strEffectTag, _mat* pMatrix, const _bool& isFollow);
 	void Delete_Effect(const void* pMatrix);
@@ -286,6 +288,7 @@ private:
 	Func_TickFX m_Function_Tick_FX{};
 	Func_TickFX m_Function_LateTick_FX{};
 	Func_HasCreatedFX m_Function_HasCreated{};
+	Func_ClearFX m_Function_Clear_FX{};
 
 public:
 	static void Release_Engine();
