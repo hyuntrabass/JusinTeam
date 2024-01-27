@@ -143,6 +143,7 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 
 	m_pObject_Manager->Release_DeadObjects();
 	m_pObject_Manager->Late_Tick(fTimeDelta);
+	m_pInput_Manager->Late_Update_InputDev();
 	if (m_pSound_Manager)
 	{
 		m_pSound_Manager->Update();
