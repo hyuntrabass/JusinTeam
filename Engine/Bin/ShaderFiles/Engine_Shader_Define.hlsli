@@ -1,7 +1,3 @@
-
-
-float3 g_vRandom[50];
-
 float3 g_fLuminace = float3(0.2126f, 0.7152f, 0.0722f);
 float g_fThreshold;
 

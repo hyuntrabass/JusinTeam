@@ -30,6 +30,7 @@ Texture2D g_Texture;
 
 // ¿ø¸í
 Texture2D g_VelocityTexture;
+Texture2D g_SSAONoiseNormal;
 Texture2D g_SSAOTexture;
 Texture2D g_HDRTexture;
 Texture2D g_Luminance;
@@ -37,6 +38,7 @@ Texture2D g_TestBlurTexture;
 bool TurnOnSSAO;
 bool TurnOnToneMap;
 bool TurnOnBlur;
+uint ChangeToneMap;
 SSAO_DESC g_SSAO;
 HDR_DESC g_HDR;
 
@@ -69,7 +71,7 @@ vector Get_Normal(float2 vTex)
 
 float Get_Luminance(float3 vRGB)
 {
-    return dot(vRGB, g_fLuminace) + 0.0001f;
+    return dot(vRGB, g_fLuminace);
 }
 
 struct VS_IN
@@ -294,10 +296,20 @@ PS_OUT PS_Main_SSAO(PS_IN Input)
     float fRadius = g_SSAO.fRadius / fViewZ;
     for (uint i = 0; i < 16; ++i)
     {
-        float2 vReflect = reflect(normalize(MyNormal), vector(normalize(g_vRandom[i]), 0.f)).xy * fRadius;
+        vector vRandomNormal = g_SSAONoiseNormal.Sample(LinearSampler, Input.vTexcoord + (0.5f * i));
+        
+        float3 vReflectedLight = reflect(normalize(MyNormal.xyz), normalize(vRandomNormal.xyz));
+        
+        float Dot = dot(normalize(MyNormal.xyz), normalize(vReflectedLight));
+        
+        if (0.f > Dot)
+        {
+            vReflectedLight = reflect(normalize(MyNormal.xyz), normalize(-vRandomNormal.xyz));
+        }
+        
+        float2 vReflect = vReflectedLight.xy * fRadius;
         
         ssao += Get_AO(Input.vTexcoord, vReflect, MyWorldPos, MyNormal.xyz);
-        
     }
     ssao = ssao / 16.f;
     
@@ -315,44 +327,96 @@ PS_OUT PS_Main_HDR(PS_IN Input)
     if(0.f == vColor.a)
         discard;
     
+    float3 vHDRColor = vColor.rgb;
     
     if (true == TurnOnBlur)
     {
         vector vBlur = g_TestBlurTexture.Sample(LinearSampler, Input.vTexcoord);
         
-        vColor.rgb += vBlur.rgb;
+        vHDRColor += vBlur.rgb;
     }
     
     if (true == TurnOnToneMap)
     {
-        float fAvgLum = g_Luminance.Sample(PointClampSampler, float2(0.f, 0.f)).r;
+        //if (ChangeToneMap == 0)
+        //{
+        //    //SimpleReinhardToneMapping
+        //    vHDRColor *= 1.5f / (1.f + vHDRColor / 1.5f);
+            
+        //}
+        //else if (ChangeToneMap == 1)
+        //{
+        //    //LuminanceBasedReinhardTonMapping
+        //    float fLum = Get_Luminance(vHDRColor);
+        //    float ToneMappedLum = fLum / (1.f + fLum);
+        //    vHDRColor *= ToneMappedLum / fLum;
+            
+        //}
+        //else if (ChangeToneMap == 2)
+        //{
+        //    //WhitePreservingLuminanceBasedReinhardToneMapping
+        //    float White = 2.f;
+        //    float fLum = Get_Luminance(vHDRColor);
+        //    float ToneMappedLum = fLum * (1.f + fLum / (White * White)) / (1.f + fLum);
+        //    vHDRColor *= ToneMappedLum / fLum;
+            
+        //}
+        //else if (ChangeToneMap == 3)
+        //{
+        //    //RomBinDaHouseToneMapping
+        //    vHDRColor = exp(-1.f / (2.72f * vHDRColor + 0.15f));
+            
+        //}
+        //else if (ChangeToneMap == 4)
+        //{
+        //    //FilmicToneMapping
+        //    vHDRColor = max(0.f, vHDRColor - 0.004f);
+        //    vHDRColor = (vHDRColor * (62.f * vHDRColor + 0.5f)) / (vHDRColor * (6.2f * vHDRColor + 1.7f) + 0.06f);
+        //}
+        //else if (ChangeToneMap == 5)
+        //{
+        //    // Uncharted2ToneMapping
+        //    float A = 0.15f;
+        //    float B = 0.5f;
+        //    float C = 0.1f;
+        //    float D = 0.2f;
+        //    float E = 0.02f;
+        //    float F = 0.3f;
+        //    float W = 11.2f;
+        //    float exposure = 2.f;
+            
+        //    vHDRColor *= exposure;
+        //    vHDRColor = ((vHDRColor * (A * vHDRColor + C * B) + D * E) / (vHDRColor * (A * vHDRColor + B) + D * F)) - E / F;
+        //    float White = ((W * (A * W + C * B) + D * E) / (W * (A * W + B) + D * F)) - E / F;
+        //    vHDRColor /= White;
+
+        //}
+        //else if (ChangeToneMap == 6)
+        //{
+        //    float fAvgLum = g_Luminance.Sample(PointClampSampler, float2(0.f, 0.f)).r;
         
-        float fLScale = Get_Luminance(vColor.rgb);
-        fLScale *= g_HDR.fMiddleGray / fAvgLum;
-        fLScale = (fLScale + fLScale * fLScale / g_HDR.fLumWhiteSqr) / (1.f + fLScale);
+        //    float fLScale = Get_Luminance(vHDRColor);
+        //    fLScale *= g_HDR.fMiddleGray / fAvgLum;
+        //    fLScale = (fLScale + fLScale * fLScale / g_HDR.fLumWhiteSqr) / (1.f + fLScale);
         
-        //float fMiddleGray = 1.03f - (2.f / (2 * log10(fAvgLum + 1.f)));
-        
-        //float fRgbLum = Get_Luminance(vColor.rgb);
-        //float fLScale = (fRgbLum * fMiddleGray) / fAvgLum;
-        
-        //fLScale = (fLScale * (1.f + fLScale / 1.f)) / (1.f + fLScale);
-        vColor.rgb *= fLScale;
-        
-        
-        float a = 2.51f;
-        float b = 0.03f;
-        float c = 2.43f;
-        float d = 0.59f;
-        float e = 0.14f;
-        vColor.rgb = saturate((vColor.rgb * (a * vColor.rgb + b)) / (vColor.rgb * (c * vColor.rgb + d) + e));
-        
+        //    vHDRColor *= fLScale;
+        //}
+        //else if (ChangeToneMap == 7)
+        //{
+            float a = 2.51f;
+            float b = 0.03f;
+            float c = 2.43f;
+            float d = 0.59f;
+            float e = 0.14f;
+            vHDRColor = saturate((vHDRColor * (a * vHDRColor + b)) / (vHDRColor * (c * vHDRColor + d) + e));
+        //}
         
     }
     
-    vColor.rgb = pow(vColor.rgb, 1.f / 2.2f);
+    
+    vHDRColor = pow(vHDRColor, 1.f / 2.2f);
         
-    Output.vColor = vColor;
+    Output.vColor = vector(vHDRColor, vColor.a);
     
     return Output;
 }

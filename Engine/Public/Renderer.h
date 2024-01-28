@@ -96,16 +96,26 @@ private:
 
 #pragma endregion
 
+	class CTexture* m_pNoiseNormal = nullptr;
+
 	_uint2 m_WinSize{};
 
 private:
-	_vec3 m_vRandom[16]{};
-	_bool m_TurnOnSSAO = false;
-	_bool m_TurnOnToneMap = false;
-	_bool m_TurnOnBlur = false;
-	_bool m_Thunder = false;
+	_bool m_TurnOnSSAO = true;
+	_bool m_TurnOnToneMap = true;
+	_bool m_TurnOnBlur = true;
+	_uint m_iChangeToneMap = 0;
+
+	_float m_fSSAOBlurPower = 1.f;
+
+	_float m_fEffectBlurPower = 3.f;
+
+	_float m_fHDRBloomPower = 1.2f;
+
 	SSAO_DESC m_SSAO;
 	HDR_DESC m_HDR;
+
+#pragma region 쉐이더 수치조절
 
 public:
 	SSAO_DESC Get_SSAO() const {
@@ -124,6 +134,33 @@ public:
 		m_HDR = Desc;
 	}
 
+	_float Get_SSAOBlurPower() const {
+		return m_fSSAOBlurPower;
+	}
+
+	void Set_SSAOBlurPower(_float fBlurPower) {
+		m_fSSAOBlurPower = fBlurPower;
+	}
+
+
+	_float Get_EffectBlurPower() const {
+		return m_fEffectBlurPower;
+	}
+
+	void Set_EffectBlurPower(_float fBlurPower) {
+		m_fEffectBlurPower = fBlurPower;
+	}
+
+
+	_float Get_HDRBlurPower() const {
+		return m_fHDRBloomPower;
+	}
+
+	void Set_HDRBlurPower(_float fBlurPower) {
+		m_fHDRBloomPower = fBlurPower;
+	}
+
+#pragma endregion
 
 private:
 	HRESULT Ready_ShadowDSV();
@@ -149,7 +186,7 @@ private:
 
 private:
 	HRESULT Get_AvgLuminance();
-	HRESULT Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MRT_Tag, _bool isBloom = false);
+	HRESULT Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MRT_Tag, _float fBlurPower, _bool isBloom = false);
 
 public:
 	static CRenderer* Create(_dev pDevice, _context pContext);

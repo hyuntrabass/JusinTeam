@@ -9,6 +9,7 @@ cbuffer BlurParams : register(b0)
     // radius <= GAUSSIAN_RADIUS, direction 0 = horizontal, 1 = vertical
     int2 radiusAndDirection;
     uint2 iWinSize;
+    float fBlurPower;
 }
 
 [numthreads(8, 8, 1)]
@@ -47,7 +48,7 @@ void Blur(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID, ui
         {
             uint cIndex = (uint) (i + radius);
             //accumulatedValue += coefficients[cIndex >> 2][cIndex & 3] * inputTexture[mad(i, dir, pixel)];
-            accumulatedValue += Gaussian[cIndex] * inputTexture[mad(i, dir, pixel)] * 2.f;
+            accumulatedValue += Gaussian[cIndex] * inputTexture[mad(i, dir, pixel)] * fBlurPower;
         }
         
         outputTexture[pixel] = accumulatedValue;
