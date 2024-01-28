@@ -167,6 +167,16 @@ HRESULT CTextButtonColor::Bind_ShaderResources()
 			}
 		}
 	}
+	else
+	{
+		if (m_strTexture != TEXT(""))
+		{
+			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 
 
 

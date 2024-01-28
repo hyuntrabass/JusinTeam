@@ -4,7 +4,10 @@
 #include "NPC.h"
 
 BEGIN(Client)
-
+class C3DUITex;
+class CDialogText;
+class CTextButton;
+class CTextButtonColor;
 class CRoskva final : public CNPC
 {
 public:
@@ -19,6 +22,7 @@ public:
 		WALK,
 		ANIM_END
 	};
+	enum ROSKVA_STATE { TALK, QUEST_ING, ROSKVA_END };
 
 private:
 	CRoskva(_dev pDevice, _context pContext);
@@ -33,7 +37,32 @@ public:
 	virtual HRESULT Render() override;
 
 private:
-	_bool m_bTalking = { false };
+
+private:
+	ROSKVA_STATE				m_eState{ TALK };
+	_bool						m_bTalking = { false };
+	_bool						m_bNextDialog = { false };
+
+	_float						m_fDir{ -1.f };
+	_float						m_fButtonTime{};
+
+	wstring						m_strQuestOngoing{};
+	vector<wstring>				m_vecDialog;
+	vector<wstring>				m_vecChatt;
+
+	CTextButton*				m_pSkipButton{ nullptr };
+	CTextButton*				m_pArrow{ nullptr };
+	CDialogText*				m_pDialogText{ nullptr };
+	CTextButton*				m_pLine{ nullptr };
+	CTextButtonColor*			m_pBackGround{ nullptr };
+	C3DUITex*					m_pSpeechBubble{ nullptr };
+
+private:
+	void Set_Text(ROSKVA_STATE eState);
+
+private:
+	HRESULT Init_Dialog();
+	HRESULT Add_Parts();
 
 public:
 	static CRoskva* Create(_dev pDevice, _context pContext);

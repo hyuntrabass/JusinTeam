@@ -660,6 +660,12 @@
     <ClInclude Include="..\Public\NameWindow.h">
       <Filter>02.GameObjects\00.UI\02.Custom\NameWindow</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Pop_LevelUp.h">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DialogText.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Dialog</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -983,6 +989,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\NameWindow.cpp">
       <Filter>02.GameObjects\00.UI\02.Custom\NameWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Pop_LevelUp.cpp">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DialogText.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Dialog</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

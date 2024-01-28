@@ -623,6 +623,50 @@ PS_OUT PS_Main_NineSlice(PS_IN Input)
     return Output;
 
 }
+
+PS_OUT PS_Main_FadeVertical(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    float fBaseAlpha = 0.9f;
+    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex) * vector(0.f, 0.f, 0.f, 1.f);
+
+    if (Input.vTex.y < 0.3f)
+    {
+        Output.vColor.a = Input.vTex.y * (3.f);
+    }
+    else if (Input.vTex.y > 0.6f)
+    {
+        Output.vColor.a = fBaseAlpha + (fBaseAlpha - Input.vTex.y * (3.f / 2.f));
+    }
+    else
+        Output.vColor.a = fBaseAlpha;
+
+    Output.vColor.a *= 2.f / 3.f;
+    
+    return Output;
+
+}
+PS_OUT PS_Main_FadeHorizontal(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    float fBaseAlpha = 0.9f;
+    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex) * vector(0.f, 0.f, 0.f, 1.f);
+
+    if (Input.vTex.x < 0.3f)
+    {
+        Output.vColor.a = Input.vTex.x * (0.9f / 0.2f);
+    }
+    else if (Input.vTex.x > 0.8f)
+    {
+        Output.vColor.a = fBaseAlpha + (fBaseAlpha / 0.2f) * (0.8f - Input.vTex.x);
+    }
+    else
+        Output.vColor.a = fBaseAlpha;
+
+    return Output;
+
+}
 technique11 DefaultTechnique
 {
     pass UI
@@ -1003,5 +1047,29 @@ pass NineSlice
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_NineSlice();
+    }
+pass FadeVertical
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_FadeVertical();
+    }
+pass FadeHorizontal
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_FadeHorizontal();
     }
 };

@@ -151,7 +151,8 @@ void CPlayer::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_8))
 	{
 		if (!m_bIsMount)
-		{
+		{	
+			CEvent_Manager::Get_Instance()->Update_Quest(TEXT("Æê ¶óÀÌµù"));
 			m_bIsMount = true;
 			m_Animation.iAnimIndex = Anim_Mount_Idle;
 			Summon_Riding(Tiger);

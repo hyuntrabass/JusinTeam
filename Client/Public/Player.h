@@ -269,18 +269,7 @@ public:
 		Revival_End,
 		State_End
 	};
-	struct PLAYER_STATUS
-	{
-		_int Current_Hp{ 1000 };
-		_int Max_Hp{ 1000 };
-		_int Max_Mp{ 1000 };
-		_int Current_Mp{ 1000 };
-		_int Attack{ 100 };
-		_int Critical{};
-		_int Critical_Dmg{ 150 }; // 기본 치명타데미지 150( 기본 데미지에 추가50퍼센트 피해)
-		_int Armor{}; // 방어력이 10일때 받는 데미지 10퍼센트 줄여줌(90퍼만 받음)
-		_float Speed{}; // 기본 걷는 이속 2+스피드/2,뛰는 이속 4+스피드
-	};
+
 
 private:
 	CPlayer(_dev pDevice, _context pContext);
