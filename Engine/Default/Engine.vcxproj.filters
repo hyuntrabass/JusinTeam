@@ -184,6 +184,9 @@
     <Filter Include="01.Utility\03.Components\Shader\Compute_Shader">
       <UniqueIdentifier>{08266119-acd4-4bd9-a6a0-fd3446caeb89}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\11.RenderTargets\Compute_RenderTarget">
+      <UniqueIdentifier>{cea93ec7-a65f-4910-9526-9324ce894f15}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -353,6 +356,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Compute_Shader.cpp">
       <Filter>01.Utility\03.Components\Shader\Compute_Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Compute_RenderTarget.cpp">
+      <Filter>01.Utility\11.RenderTargets\Compute_RenderTarget</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -531,6 +537,9 @@
     <ClInclude Include="..\Public\Compute_Shader.h">
       <Filter>01.Utility\03.Components\Shader\Compute_Shader</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Compute_RenderTarget.h">
+      <Filter>01.Utility\11.RenderTargets\Compute_RenderTarget</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Public\SimpleMath.inl" />
@@ -543,6 +552,12 @@
       <Filter>01.Utility\98.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Deferred.hlsl">
+      <Filter>01.Utility\98.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_AvgLum.hlsl">
+      <Filter>01.Utility\98.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_BlurTex.hlsl">
       <Filter>01.Utility\98.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

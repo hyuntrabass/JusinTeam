@@ -58,23 +58,34 @@ namespace Engine
 	};
 
 	typedef struct tagSSAOValue {
-		float fIntensity = 3.f;
+		float fIntensity = 2.f;
 		float fRadius = 0.05f;
 		float fScale = 3.f;
-		float fBias = 0.25f;
+		float fBias = 0.5f;
 	}SSAO_DESC;
 
-	typedef struct ThresholdParams {
-		alignas(16) float fThreshold;
-	}THPARAM;
+	typedef struct tagHDRValue {
+		float fMiddleGray = 2.5f;
+		float fLumWhiteSqr = 1.f;
+		float fPadding0 = 0.f;
+		float fPadding1 = 0.f;
+	}HDR_DESC;
+
+	typedef struct DownScaleParams {
+		unsigned int ScaleX;
+		unsigned int ScaleY;
+		unsigned int Padding0 = 0;
+		unsigned int Padding1 = 0;
+	}DSPARAM;
 
 #define GAUSSIAN_RADIUS 7
 
 	typedef struct BlurParams
 	{
-		alignas(16) float coefficients[GAUSSIAN_RADIUS + 1];
 		int radius;     // must be <= MAX_GAUSSIAN_RADIUS
 		int direction;  // 0 = horizontal, 1 = vertical
+		unsigned int ScaleX;
+		unsigned int ScaleY;
 	}BLURPARAM;
 
 	struct EffectInfo

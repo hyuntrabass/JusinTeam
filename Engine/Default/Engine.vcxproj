@@ -113,6 +113,7 @@ call UpdateLib.bat</Command>
     <ClCompile Include="..\private\Collision_Manager.cpp" />
     <ClCompile Include="..\private\Component.cpp" />
     <ClCompile Include="..\private\Component_Manager.cpp" />
+    <ClCompile Include="..\Private\Compute_RenderTarget.cpp" />
     <ClCompile Include="..\Private\Compute_Shader.cpp" />
     <ClCompile Include="..\Private\DebugDraw.cpp" />
     <ClCompile Include="..\Private\Engine_Struct.cpp" />
@@ -172,6 +173,7 @@ call UpdateLib.bat</Command>
     <ClInclude Include="..\public\Collision_Manager.h" />
     <ClInclude Include="..\public\Component.h" />
     <ClInclude Include="..\public\Component_Manager.h" />
+    <ClInclude Include="..\Public\Compute_RenderTarget.h" />
     <ClInclude Include="..\Public\Compute_Shader.h" />
     <ClInclude Include="..\Public\DebugDraw.h" />
     <ClInclude Include="..\Public\Engine_Defines.h" />
@@ -239,6 +241,8 @@ call UpdateLib.bat</Command>
     <Text Include="..\Bin\ShaderFiles\Shader_Blur.hlsl">
       <FileType>Document</FileType>
     </Text>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_AvgLum.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_BlurTex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Deferred.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxColor.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
