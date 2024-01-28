@@ -3,6 +3,7 @@
 #include "UI_Manager.h"
 #include "Event_Manager.h"
 #include "Weapon.h"
+#include "Arrow.h"
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -931,6 +932,13 @@ void CPlayer::Move(_float fTimeDelta)
 			if (vDirection == _vec4())
 				vDirection += vForwardDir;
 
+			Arrow_Type type{};
+			type.vPos = _vec4(m_pTransformCom->Get_State(State::Pos));
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
+			{
+				return;
+			}
+
 			m_pTransformCom->LookAt_Dir(vDirection);
 			//m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
 			m_bAttacked = false;
@@ -1008,7 +1016,7 @@ void CPlayer::Move(_float fTimeDelta)
 						m_eState == Idle or
 						m_eState == Walk or
 						m_eState == Attack_Idle or
-					/*	m_eState == Attack or*/
+						/*	m_eState == Attack or*/
 						m_eState == Skill1_End or
 						m_eState == Skill2 or
 						m_eState == Skill3 or
@@ -1017,13 +1025,13 @@ void CPlayer::Move(_float fTimeDelta)
 						m_eState = Walk;
 
 					}
-					if(m_eState != Attack)
-					m_pTransformCom->Set_Speed(m_fWalkSpeed + m_Status.Speed / 3.f);
+					if (m_eState != Attack)
+						m_pTransformCom->Set_Speed(m_fWalkSpeed + m_Status.Speed / 3.f);
 				}
 
 
 			}
-		
+
 
 			if (m_eState == Jump_Start)
 			{
@@ -1033,7 +1041,7 @@ void CPlayer::Move(_float fTimeDelta)
 
 			m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
 
-	
+
 			_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
 
 			_float fInterpolTime = 0.4f;
@@ -2098,6 +2106,8 @@ void CPlayer::Init_State()
 		m_Animation = {};
 
 		m_Animation.fAnimSpeedRatio = 2.f;
+		if (m_pGameInstance->Get_TimeRatio() < 1.f)
+			m_pGameInstance->Set_TimeRatio(1.f);
 
 
 		switch (m_eState)

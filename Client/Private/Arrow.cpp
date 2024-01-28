@@ -18,14 +18,14 @@ HRESULT CArrow::Init_Prototype()
 HRESULT CArrow::Init(void* pArg)
 {
 	
-
+	Arrow_Type* type = (Arrow_Type*)pArg;
+	
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
+	m_pTransformCom->Set_State(State::Pos, type->vPos);
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
-	//m_pTransformCom->Set_State(State::Pos, _vec4(5.f, 0.f, 5.f, 1.f));
 	m_pTransformCom->Set_Speed(1.f);
 
 
@@ -54,26 +54,7 @@ HRESULT CArrow::Render()
 
 	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
 	{
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-		{
-			return E_FAIL;
-		}
-
-		_bool HasNorTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-		{
-			HasNorTex = false;
-		}
-		else
-		{
-			HasNorTex = true;
-		}
-
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
-
+	
 		if (FAILED(m_pShaderCom->Begin(StaticPass_SingleColorFx)))
 		{
 			return E_FAIL;
@@ -92,12 +73,12 @@ HRESULT CArrow::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxStaticMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxStatMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT(""), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Arrow") , TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	{
 		return E_FAIL;
 	}
@@ -127,15 +108,15 @@ HRESULT CArrow::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
-		return E_FAIL;
+	//if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
+	//	return E_FAIL;
 
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+	//{
+	//	return E_FAIL;
+	//}
 
-	_vec4 Color = _vec4(0.902f, 1.f, 1.f, 1.f);
+	_vec4 Color = _vec4(0.f, 0.f, 0.f, 1.f);
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &Color, sizeof _vec4)))
 	{
 		return E_FAIL;

@@ -350,6 +350,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 	static _vec2 vUVInit{};
 	static _vec2 vUVDelta{};
+	static _bool isUVLoop{};
 	if (m_hasMask)
 	{
 		if (m_iSelected_MaskTexture < 0)
@@ -364,6 +365,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			Info.vUVInit = vUVInit;
 			InputFloat2("UV Delta", reinterpret_cast<_float*>(&vUVDelta));
 			Info.vUVDelta = vUVDelta;
+			Checkbox("UV Loop", &isUVLoop);
+			Info.isUVLoop = isUVLoop;
 		}
 		Text(m_pItemList_Texture[m_iSelected_MaskTexture]);
 
@@ -855,6 +858,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			m_iSelected_MaskTexture = Compute_TextureIndex(Info.strMaskTexture);
 			vUVDelta = Info.vUVDelta;
 			vUVInit = Info.vUVInit;
+			isUVLoop = Info.isUVLoop;
 		}
 		else
 		{
@@ -1136,6 +1140,7 @@ EffectInfo CImgui_Manager::Load_Data()
 			InFile.read(reinterpret_cast<_char*>(&Info.Light_Desc), sizeof Info.Light_Desc);
 			InFile.read(reinterpret_cast<_char*>(&Info.isFixedIndex), sizeof Info.isFixedIndex);
 			InFile.read(reinterpret_cast<_char*>(&Info.iFixedSpriteIndex), sizeof Info.iFixedSpriteIndex);
+			InFile.read(reinterpret_cast<_char*>(&Info.isUVLoop), sizeof Info.isUVLoop);
 
 			size_t iNameSize{};
 
@@ -1192,7 +1197,7 @@ void CImgui_Manager::Load_OldData()
 {
 	OldEffectInfo OldInfo{};
 
-	string strInputFilePath = "../../Client/Temp/";
+	string strInputFilePath = "../../Client/Bin/EffectData/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -1304,8 +1309,9 @@ void CImgui_Manager::Load_OldData()
 			NewInfo.isRandomSprite = OldInfo.isRandomSprite;
 			NewInfo.hasLight = OldInfo.hasLight;
 			NewInfo.Light_Desc = OldInfo.Light_Desc;
-			NewInfo.isFixedIndex = false;
-			NewInfo.iFixedSpriteIndex = 0;
+			NewInfo.isFixedIndex = OldInfo.isFixedIndex;
+			NewInfo.iFixedSpriteIndex = OldInfo.iFixedSpriteIndex;
+			NewInfo.isUVLoop = false;
 
 			NewInfo.strDiffuseTexture = OldInfo.strDiffuseTexture;
 			NewInfo.strMaskTexture = OldInfo.strMaskTexture;
@@ -1342,6 +1348,7 @@ void CImgui_Manager::Load_OldData()
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.Light_Desc), sizeof NewInfo.Light_Desc);
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.isFixedIndex), sizeof NewInfo.isFixedIndex);
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.iFixedSpriteIndex), sizeof NewInfo.iFixedSpriteIndex);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.isUVLoop), sizeof NewInfo.isUVLoop);
 
 				size_t iNameSize{};
 				iNameSize = (NewInfo.strDiffuseTexture.size() + 1) * sizeof(_tchar);
@@ -1417,6 +1424,7 @@ HRESULT CImgui_Manager::Export_Data(EffectInfo& Info)
 			OutFile.write(reinterpret_cast<const _char*>(&Info.Light_Desc), sizeof Info.Light_Desc);
 			OutFile.write(reinterpret_cast<const _char*>(&Info.isFixedIndex), sizeof Info.isFixedIndex);
 			OutFile.write(reinterpret_cast<const _char*>(&Info.iFixedSpriteIndex), sizeof Info.iFixedSpriteIndex);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.isUVLoop), sizeof Info.isUVLoop);
 
 			size_t iNameSize{};
 			iNameSize = (Info.strDiffuseTexture.size() + 1) * sizeof(_tchar);

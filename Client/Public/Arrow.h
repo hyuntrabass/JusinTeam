@@ -5,6 +5,13 @@
 
 BEGIN(Client)
 
+struct Arrow_Type
+{
+	ATTACK_TYPE Att_Type{ AT_End };
+	_vec4 vPos{};
+	_vec4 vLook{};
+
+};
 class CArrow final : public CGameObject
 {
 

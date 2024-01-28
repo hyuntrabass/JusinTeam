@@ -98,6 +98,12 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 
 	m_fTimer += fTimeDelta;
 	m_vUV += m_Effect.vUVDelta * fTimeDelta;
+	if (m_Effect.isUVLoop and 
+		(m_vUV.x < -1.f or m_vUV.x > 2.f or
+		 m_vUV.y < -1.f or m_vUV.y > 2.f))
+	{
+		m_vUV = m_Effect.vUVInit;
+	}
 
 	switch (m_Effect.iType)
 	{
