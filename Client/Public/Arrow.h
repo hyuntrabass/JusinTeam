@@ -1,18 +1,19 @@
 #pragma once
 
 #include "Client_Define.h"
-#include "GameObject.h"
-
+#include "BlendObject.h"
+#include "CommonTrail.h"
 BEGIN(Client)
 
 struct Arrow_Type
 {
 	ATTACK_TYPE Att_Type{ AT_End };
+	_mat world{};
 	_vec4 vPos{};
 	_vec4 vLook{};
 
 };
-class CArrow final : public CGameObject
+class CArrow final : public CBlendObject
 {
 
 private:
@@ -32,6 +33,10 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CRenderer* m_pRendererCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
+	CCommonTrail* m_pTrail{ nullptr };
+
+private:
+	_float m_fDeadTime{};
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
