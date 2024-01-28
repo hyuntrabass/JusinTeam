@@ -1,5 +1,7 @@
 #include "Effect_Dummy.h"
 
+_int CEffect_Dummy::m_iLightID = {};
+
 CEffect_Dummy::CEffect_Dummy(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
 {
@@ -33,23 +35,40 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 	m_pTransformCom->Set_Scale(m_Effect.vSize);
 	m_vScaleAcc = m_Effect.vSize;
 
+	if (not m_Effect.pMatrix)
+	{
+		MSG_BOX("No Matrix Info");
+		return E_FAIL;
+	}
+
 	if (m_Effect.strUnDissolveTexture.size())
 	{
-		m_fDissolveRatio = 1.f;
+		m_fUnDissolveRatio = 1.f;
 	}
 
 	m_OffsetMatrix = *m_Effect.pMatrix;
+
+	if (m_Effect.hasLight)
+	{
+		m_strLightTag = L"Light_Effect_" + to_wstring(m_iLightID++);
+		m_pGameInstance->Add_Light(m_pGameInstance->Get_CurrentLevelIndex(), m_strLightTag, m_Effect.Light_Desc);
+	}
 
 	return S_OK;
 }
 
 void CEffect_Dummy::Tick(_float fTimeDelta)
 {
-	if (m_Effect.strUnDissolveTexture.size())
+	if (m_fUnDissolveRatio > 0.f and m_Effect.strUnDissolveTexture.size())
 	{
-		m_fDissolveRatio -= fTimeDelta / m_Effect.fUnDissolveDuration;
+		m_fUnDissolveRatio -= fTimeDelta / m_Effect.fUnDissolveDuration;
+		if (m_fUnDissolveRatio < 0.f)
+		{
+			m_fUnDissolveRatio = 0.f;
+		}
 	}
-	else if (m_Effect.fLifeTime >= 0.f and m_fTimer > m_Effect.fLifeTime)
+
+	if (m_fUnDissolveRatio <= 0.f and m_Effect.fLifeTime >= 0.f and m_fTimer > m_Effect.fLifeTime)
 	{
 		if (m_Effect.strDissolveTexture.size())
 		{
@@ -81,6 +100,12 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 
 	m_fTimer += fTimeDelta;
 	m_vUV += m_Effect.vUVDelta * fTimeDelta;
+	if (m_Effect.isUVLoop and
+		(m_vUV.x < -1.f or m_vUV.x > 2.f or
+			m_vUV.y < -1.f or m_vUV.y > 2.f))
+	{
+		m_vUV = m_Effect.vUVInit;
+	}
 
 	if (m_Effect.isFollow)
 	{
@@ -102,24 +127,52 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 		break;
 	case Effect_Type::ET_RECT:
 	{
+		/*_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+
+		_vec4 vRightDir = m_WorldMatrix.Right().Get_Normalized();
+		_vec4 vUpDir = m_WorldMatrix.Up().Get_Normalized();
+		_vec4 vLookDir = m_WorldMatrix.Look().Get_Normalized();
+
+		vPos += vRightDir * m_Effect.vPosOffset.x;
+		vPos += vUpDir * m_Effect.vPosOffset.y;
+		vPos += vLookDir * m_Effect.vPosOffset.z;
+
+		m_pTransformCom->Set_State(State::Pos, vPos);*/
+
 		m_pTransformCom->LookAway(m_pGameInstance->Get_CameraPos());
 
 		m_pTransformCom->Set_Scale(m_vScaleAcc * m_OffsetMatrix.Get_Scale());
 		m_vScaleAcc += m_Effect.vSizeDelta * fTimeDelta;
 
 		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
-
 		break;
 	}
 	case Effect_Type::ET_MESH:
 	{
+		/*_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+
+		_vec4 vRightDir = m_WorldMatrix.Right().Get_Normalized();
+		_vec4 vUpDir = m_WorldMatrix.Up().Get_Normalized();
+		_vec4 vLookDir = m_WorldMatrix.Look().Get_Normalized();
+
+		vPos += vRightDir * m_Effect.vPosOffset.x;
+		vPos += vUpDir * m_Effect.vPosOffset.y;
+		vPos += vLookDir * m_Effect.vPosOffset.z;
+
+		m_pTransformCom->Set_State(State::Pos, vPos);*/
+
 		m_pTransformCom->Set_Scale(m_vScaleAcc * m_OffsetMatrix.Get_Scale());
 		m_vScaleAcc += m_Effect.vSizeDelta * fTimeDelta;
 
 		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
-
 		break;
 	}
+	}
+
+	if (m_Effect.hasLight)
+	{
+		LIGHT_DESC* pLightInfo = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), m_strLightTag);
+		pLightInfo->vPosition = m_WorldMatrix.Position();
 	}
 	__super::Compute_CamDistance();
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
@@ -151,7 +204,7 @@ HRESULT CEffect_Dummy::Render()
 		hr = m_pRect->Render();
 		break;
 	case Effect_Type::ET_MESH:
-		for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
+		for (size_t i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
 		{
 			if (FAILED(m_pModelCom->Render(i)))
 			{
@@ -268,26 +321,20 @@ HRESULT CEffect_Dummy::Bind_ShaderResources()
 		}
 	}
 
-	if (m_Effect.strUnDissolveTexture.size())
+	if (m_fDissolveRatio >= 0.f and m_Effect.strUnDissolveTexture.size())
 	{
 		if (FAILED(m_pUnDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
 		{
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof m_fDissolveRatio)))
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fUnDissolveRatio, sizeof m_fDissolveRatio)))
 		{
 			return E_FAIL;
 		}
-
-		if (m_fDissolveRatio < 0.f)
-		{
-			m_fDissolveRatio = 0.f;
-			m_Effect.strUnDissolveTexture = {};
-			m_fTimer = {};
-		}
 	}
-	else if (m_Effect.strDissolveTexture.size())
+
+	if (m_fUnDissolveRatio <= 0.f and m_Effect.strDissolveTexture.size())
 	{
 		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
 		{
@@ -387,6 +434,11 @@ CGameObject* CEffect_Dummy::Clone(void* pArg)
 
 void CEffect_Dummy::Free()
 {
+	if (m_Effect.hasLight)
+	{
+		m_pGameInstance->Delete_Light(m_pGameInstance->Get_CurrentLevelIndex(), m_strLightTag);
+	}
+
 	__super::Free();
 
 	Safe_Release(m_pUnDissolveTextureCom);
