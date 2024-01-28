@@ -5,6 +5,7 @@
 #include "Shader.h"
 #include "Compute_Shader.h"
 #include "Compute_RenderTarget.h"
+#include "Texture.h"
 
 CRenderer::CRenderer(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
@@ -13,6 +14,8 @@ CRenderer::CRenderer(_dev pDevice, _context pContext)
 
 HRESULT CRenderer::Init_Prototype()
 {
+	m_fSSAOBlurPower = 1.f;
+
 	_uint iNumViewPorts{ 1 };
 
 	D3D11_VIEWPORT ViewportDesc{};
@@ -310,6 +313,9 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
+
+	m_pNoiseNormal = CTexture::Create(m_pDevice, m_pContext, L"../../Reference/NoiseNormal/Noise_Normal.jpg");
+
 #pragma endregion
 
 #pragma region MRT_HDR
@@ -348,21 +354,6 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
-
-#pragma region SSAOÇÒ·Á°í ·£´ý°ª »ý¼º
-
-	random_device RandomDevice;
-	mt19937_64 RandomNumber;
-	RandomNumber = mt19937_64(RandomDevice());
-
-	uniform_real_distribution<float> RandomX = uniform_real_distribution<float>(-1.f, 1.f);
-	uniform_real_distribution<float> RandomY = uniform_real_distribution<float>(-1.f, 1.f);
-	uniform_real_distribution<float> RandomZ = uniform_real_distribution<float>(-1.f, 1.f);
-
-	for (size_t i = 0; i < 16; i++)
-		m_vRandom[i] = _vec3(RandomX(RandomNumber), RandomY(RandomNumber), RandomZ(RandomNumber));
-
-#pragma endregion
 
 #ifdef _DEBUGTEST
 	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Diffuse"), _float2(50.f, 50.f), _float2(100.f, 100.f))))
@@ -407,7 +398,7 @@ HRESULT CRenderer::Init_Prototype()
 	}
 #endif // _DEBUG
 
-#pragma region ½Ã¹ß Æò±Õ ÈÖµµ°ª ±¸ÇÏ±â
+#pragma region Æò±Õ ÈÖµµ°ª ±¸ÇÏ±â
 
 	m_pLumShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_AvgLum.hlsl", "DownScaleFirst", 0);
 
@@ -919,10 +910,6 @@ HRESULT CRenderer::Render_LightAcc()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pShader->Bind_RawValue("g_vRandom", m_vRandom, sizeof(_vec3) * 50)))
-	{
-		return E_FAIL;
-	}
 
 	if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrixInv", m_pGameInstance->Get_Transform_Inversed(TransformType::View))))
 	{
@@ -963,6 +950,9 @@ HRESULT CRenderer::Render_LightAcc()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pNoiseNormal->Bind_ShaderResource(m_pShader, "g_SSAONoiseNormal")))
+		return E_FAIL;
+
 	if (FAILED(m_pShader->Begin(DefPass_SSAO)))
 	{
 		return E_FAIL;
@@ -977,9 +967,9 @@ HRESULT CRenderer::Render_LightAcc()
 		return E_FAIL;
 	}
 	
-	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_SSAOTEST"), L"MRT_SSAOBlur")))
+	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_SSAOTEST"), L"MRT_SSAOBlur", m_fSSAOBlurPower)))
 		return E_FAIL;
-
+	//
 #pragma endregion
 
 	return S_OK;
@@ -1221,7 +1211,7 @@ HRESULT CRenderer::Render_BlendBlur()
 		return E_FAIL;
 	}
 
-	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Bloom"), L"MRT_BlurTest")))
+	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Bloom"), L"MRT_BlurTest", m_fEffectBlurPower)))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_BlurTest"))))
@@ -1247,7 +1237,7 @@ HRESULT CRenderer::Render_HDR()
 	if (FAILED(Get_AvgLuminance()))
 		return E_FAIL;
 
-	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_HDR"), L"MRT_BLURTEX", true)))
+	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_HDR"), L"MRT_BLURTEX", m_fHDRBloomPower, true)))
 		return E_FAIL;
 
 	if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", m_WorldMatrix)))
@@ -1285,15 +1275,22 @@ HRESULT CRenderer::Render_HDR()
 	if (m_pGameInstance->Key_Down(DIK_F3))
 		m_TurnOnToneMap = !m_TurnOnToneMap;
 
-
 	if (m_pGameInstance->Key_Down(DIK_F4))
 		m_TurnOnBlur = !m_TurnOnBlur;
 
+	if (m_pGameInstance->Key_Down(DIK_F5)) {
+		m_iChangeToneMap++;
+		if (8 <= m_iChangeToneMap)
+			m_iChangeToneMap = 0;
+	}
 
 	if (FAILED(m_pShader->Bind_RawValue("TurnOnToneMap", &m_TurnOnToneMap, sizeof(_bool))))
 		return E_FAIL;
 
 	if (FAILED(m_pShader->Bind_RawValue("TurnOnBlur", &m_TurnOnBlur, sizeof(_bool))))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Bind_RawValue("ChangeToneMap", &m_iChangeToneMap, sizeof(_uint))))
 		return E_FAIL;
 
 	if (FAILED(m_pShader->Begin(DefPass_HDR)))
@@ -1474,7 +1471,7 @@ HRESULT CRenderer::Get_AvgLuminance()
 	return S_OK;
 }
 
-HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MRT_Tag, _bool isBloom)
+HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MRT_Tag, _float fBlurPower, _bool isBloom)
 {
 
 	ID3D11ShaderResourceView* InputSRV = pSRV;
@@ -1536,6 +1533,8 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 	if (FAILED(m_pBlurShader->Set_Shader()))
 		return E_FAIL;
 
+
+	m_BLParam.fBlurPower = fBlurPower;
 	for (size_t i = 0; i < 3; i++)
 	{
 		iSize = _uint2(iSize.x / 2, iSize.y / 2);
@@ -1659,6 +1658,9 @@ void CRenderer::Free()
 	Safe_Release(m_pGetBlurShader);
 
 #pragma endregion
+
+	//SSAO
+	Safe_Release(m_pNoiseNormal);
 
 	Safe_Release(m_pShader);
 	Safe_Release(m_pVIBuffer);

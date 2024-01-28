@@ -58,15 +58,15 @@ namespace Engine
 	};
 
 	typedef struct tagSSAOValue {
-		float fIntensity = 2.f;
+		float fIntensity = 3.5f;
 		float fRadius = 0.05f;
 		float fScale = 3.f;
-		float fBias = 0.5f;
+		float fBias = 0.3f;
 	}SSAO_DESC;
 
 	typedef struct tagHDRValue {
-		float fMiddleGray = 2.5f;
-		float fLumWhiteSqr = 1.f;
+		float fMiddleGray = 6.5f;
+		float fLumWhiteSqr = 0.8f;
 		float fPadding0 = 0.f;
 		float fPadding1 = 0.f;
 	}HDR_DESC;
@@ -86,6 +86,10 @@ namespace Engine
 		int direction;  // 0 = horizontal, 1 = vertical
 		unsigned int ScaleX;
 		unsigned int ScaleY;
+		float fBlurPower;
+		unsigned int iPadding0 = 0;
+		unsigned int iPadding1 = 0;
+		unsigned int iPadding2 = 0;
 	}BLURPARAM;
 
 	struct EffectInfo
