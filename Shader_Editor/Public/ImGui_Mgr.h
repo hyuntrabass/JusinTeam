@@ -41,7 +41,7 @@ private:
 private:
     // SSAO
     SSAO_DESC m_SSAO;
-
+    HDR_DESC m_HDR;
 
 public:
     // CBase을(를) 통해 상속됨
