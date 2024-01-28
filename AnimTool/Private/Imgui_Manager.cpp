@@ -32,8 +32,60 @@ HRESULT CImgui_Manager::Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc)
 	m_iWinSizeX = GraphicDesc.iWinSizeX;
 	m_iWinSizeY = GraphicDesc.iWinSizeY;
 	//¸ó½ºÅÍ ¸ðµ¨
-	string strInputFilePath = "../../Client/Bin/Resources/AnimMesh/Monster/";
+	string strInputFilePath = "../../Client/Bin/Resources/AnimMesh/Boss/";
 	_uint iNumMonsterModels{};
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (entry.path().extension().string() != ".hyuntraanimmesh")
+			{
+				continue;
+			}
+			iNumMonsterModels++;
+			m_MonsterNames.push_back(entry.path().stem().string());
+		}
+	}
+	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/Monster/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (entry.path().extension().string() != ".hyuntraanimmesh")
+			{
+				continue;
+			}
+			iNumMonsterModels++;
+			m_MonsterNames.push_back(entry.path().stem().string());
+		}
+	}
+	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/NPC/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (entry.path().extension().string() != ".hyuntraanimmesh")
+			{
+				continue;
+			}
+			iNumMonsterModels++;
+			m_MonsterNames.push_back(entry.path().stem().string());
+		}
+	}
+	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/Pet/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (entry.path().extension().string() != ".hyuntraanimmesh")
+			{
+				continue;
+			}
+			iNumMonsterModels++;
+			m_MonsterNames.push_back(entry.path().stem().string());
+		}
+	}
+	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/Riding/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())

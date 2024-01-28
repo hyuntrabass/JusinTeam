@@ -17,7 +17,6 @@ HRESULT CArrow::Init_Prototype()
 
 HRESULT CArrow::Init(void* pArg)
 {
-	
 	Arrow_Type* type = (Arrow_Type*)pArg;
 	
 	if (FAILED(Add_Components()))
