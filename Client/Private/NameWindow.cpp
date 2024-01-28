@@ -36,7 +36,9 @@ HRESULT CNameWindow::Init(void* pArg)
 	
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	
+	CGameInstance::Get_Instance()->Set_InputString(L"");
 
+	//CGameInstance::Get_Instance()->Set_InputString(CompleteString + composingString);
 
 	if (FAILED(Add_Parts()))
 	{
@@ -83,7 +85,27 @@ void CNameWindow::Tick(_float fTimeDelta)
 	{
 		m_pSelectButton->Set_Size(150.f, 100.f, 0.35f);
 	}
+	RECT rcNameSpace = {};
 
+	rcNameSpace = {
+		  (LONG)(m_fX - m_fSizeX - 100.f * 0.5f),
+		  (LONG)(267.f - 50.f * 0.5f),
+		  (LONG)(m_fX + m_fSizeX - 100.f * 0.5f),
+		  (LONG)(267.f + 50.f * 0.5f)
+	};
+
+	if (m_pGameInstance->Get_InputString() != L"")
+	{
+		m_bStartInput = true;
+	}
+	if (m_pGameInstance->Get_InputString() == L"" && PtInRect(&rcNameSpace, ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
+	{
+		m_bStartInput = true;
+	}
+	if (m_pGameInstance->Get_InputString() == L"" && !PtInRect(&rcNameSpace, ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
+	{
+		m_bStartInput = false;
+	}
 
 	m_pExitButton->Tick(fTimeDelta);
 	m_pSelectButton->Tick(fTimeDelta);
@@ -115,11 +137,22 @@ HRESULT CNameWindow::Render()
 	{
 		return E_FAIL;
 	}
-	if (m_iNum > 1)
+	_vec2 vStartPos = _vec2(m_fX, 267.f);
+	if (!m_bStartInput)
 	{
-		_vec2 vStartPos = _vec2(m_fX, m_fY);
-		m_pGameInstance->Render_Text(L"Font_Malang", TEXT("닉네임을 입력하세요."), _vec2(vStartPos.x, vStartPos.y), 0.4f, _vec4(0.6f, 0.6f, 0.6f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang", TEXT("닉네임을 입력하세요."), _vec2(vStartPos.x, vStartPos.y), 0.35f, _vec4(0.6f, 0.6f, 0.6f, 1.f));
 	}
+	else
+	{
+		m_pGameInstance->Render_Text(L"Font_Malang", m_pGameInstance->Get_InputString(), _vec2(vStartPos.x, vStartPos.y), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f));
+	}
+
+	POINT ptMouse;
+	GetCursorPos(&ptMouse);
+	ScreenToClient(g_hWnd, &ptMouse);
+	wstring strTest = to_wstring((_uint)ptMouse.x) + to_wstring((_uint)ptMouse.y);
+	m_pGameInstance->Render_Text(L"Font_Malang", strTest, _vec2(ptMouse.x + 20.f, ptMouse.y + 20.f), 0.7f, _vec4(0.7f, 0.7f, 1.f, 1.f));
+
 	return S_OK;
 }
 
@@ -145,7 +178,7 @@ HRESULT CNameWindow::Add_Parts()
 	}
 	Button.strText = TEXT("확인");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Button_Blue2");
-	Button.vPosition = _vec2(m_fX + 70.f, m_fY + 50.f);
+	Button.vPosition = _vec2(m_fX + 80.f, m_fY + 90.f);
 
 	m_pSelectButton = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 	if (not m_pSelectButton)
