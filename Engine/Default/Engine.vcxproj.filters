@@ -184,8 +184,14 @@
     <Filter Include="01.Utility\03.Components\Shader\Compute_Shader">
       <UniqueIdentifier>{08266119-acd4-4bd9-a6a0-fd3446caeb89}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\11.RenderTargets\Compute_RenderTarget">
+      <UniqueIdentifier>{cea93ec7-a65f-4910-9526-9324ce894f15}</UniqueIdentifier>
+    </Filter>
     <Filter Include="01.Utility\03.Components\VIBuffer\Trail\Surface">
       <UniqueIdentifier>{b69a5b91-5d90-4582-8c10-1a5f59f81a14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Components\VIBuffer\Instancing\Mesh">
+      <UniqueIdentifier>{e655b4c4-18b0-4255-84ea-ce42ad2fefb6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -357,8 +363,14 @@
     <ClCompile Include="..\Private\Compute_Shader.cpp">
       <Filter>01.Utility\03.Components\Shader\Compute_Shader</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Compute_RenderTarget.cpp">
+      <Filter>01.Utility\11.RenderTargets\Compute_RenderTarget</Filter>
+    </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Trail_Surface.cpp">
       <Filter>01.Utility\03.Components\VIBuffer\Trail\Surface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Instancing_Mesh.cpp">
+      <Filter>01.Utility\03.Components\VIBuffer\Instancing\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -540,6 +552,12 @@
     <ClInclude Include="..\Public\VIBuffer_Trail_Surface.h">
       <Filter>01.Utility\03.Components\VIBuffer\Trail\Surface</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Instancing_Mesh.h">
+      <Filter>01.Utility\03.Components\VIBuffer\Instancing\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Compute_RenderTarget.h">
+      <Filter>01.Utility\11.RenderTargets\Compute_RenderTarget</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Public\SimpleMath.inl" />
@@ -552,6 +570,12 @@
       <Filter>01.Utility\98.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Deferred.hlsl">
+      <Filter>01.Utility\98.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_AvgLum.hlsl">
+      <Filter>01.Utility\98.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_BlurTex.hlsl">
       <Filter>01.Utility\98.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

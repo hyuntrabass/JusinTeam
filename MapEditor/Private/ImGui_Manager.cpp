@@ -74,6 +74,7 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 	{
 		if (m_pSelectedDummy)
 		{
+
 			CTransform* pObjectsTransform = (CTransform*)m_pSelectedDummy->Find_Component(TEXT("Com_Transform"));
 
 			_vector ObjRight = { m_ObjectMatrix._11, m_ObjectMatrix._12, m_ObjectMatrix._13, m_ObjectMatrix._14 };
@@ -319,6 +320,8 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::RadioButton("Tutorial", &iSelectObject, 0); ImGui::SameLine();
 			ImGui::RadioButton("Midgard", &iSelectObject, 1); ImGui::SameLine();
 			ImGui::RadioButton("Dungeon", &iSelectObject, 2);
+			_int iObjectCount = m_ObjectsList.size();
+			ImGui::InputInt("Count", &iObjectCount, 14);
 
 			ImGui::SeparatorText("LIST");
 			static int Object_current_idx = 0;
@@ -413,21 +416,31 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::RadioButton("Tree", &iSelectEnvir, 0); ImGui::SameLine();
 			ImGui::RadioButton("Grass", &iSelectEnvir, 1); ImGui::SameLine();
 			ImGui::RadioButton("Rock", &iSelectEnvir, 2);
+
+			_int iEnvirCount = m_EnvirList.size();
+			ImGui::InputInt("Count", &iEnvirCount, 14);
+
 			ImGui::SeparatorText("LIST");
 			static int Environment_current_idx = 0;
 			ImGui::Text("Environment");
+			m_isInstancing = false;
 
 			if(iSelectEnvir == 0)
 			{
+				m_isInstancing = false;
 				m_eType = TEXT("Tree");
 			}
 			else if (iSelectEnvir == 1)
 			{
 				m_eType = TEXT("Grass");
+				m_isInstancing = true;
+
 			}
 			else if (iSelectEnvir == 2)
 			{
 				m_eType = TEXT("Rock");
+				m_isInstancing = true;
+
 			}
 
 			if (ImGui::BeginListBox("OBJECTS DIR", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
@@ -642,60 +655,60 @@ HRESULT CImGui_Manager::ImGuiMenu()
 #pragma endregion
 
 #pragma region 상호작용
-		if (ImGui::BeginTabItem("Interaction"))
-		{
-			/* Interaction */
-			m_eItemType = ItemType::Interaction;
-			ImGui::SeparatorText("LIST");
-			static int NPC_current_idx = 0;
-			ImGui::Text("Interaction");
-			if (ImGui::BeginListBox("Interaction FILE", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
-			{
-				for (int n = 0; n < NPCs.size(); n++)
-				{
-					const bool is_selected = (NPC_current_idx == n);
-					if (ImGui::Selectable(NPCs[n], is_selected))
-					{
-						NPC_current_idx = n;
-						m_iSelectIdx = NPC_current_idx;
-					}
-					if (is_selected)
-						ImGui::SetItemDefaultFocus();
-				}
-				ImGui::EndListBox();
-			}
-			ImGui::Separator();
-			ImGui::SeparatorText("MATRIX : ");
-			ImGui::InputFloat4("Right", &m_ObjectMatrix.m[0][0], 0);
-			ImGui::InputFloat4("Up", &m_ObjectMatrix.m[1][0], 0);
-			ImGui::InputFloat4("Look", &m_ObjectMatrix.m[2][0], 0);
-			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0], 0);
-			ImGui::Separator();
-			if (ImGui::Button("Delete"))
-			{
-				Delete_Dummy();
-			}
-			ImGui::SameLine();
+		//if (ImGui::BeginTabItem("Interaction"))
+		//{
+		//	/* Interaction */
+		//	m_eItemType = ItemType::Interaction;
+		//	ImGui::SeparatorText("LIST");
+		//	static int NPC_current_idx = 0;
+		//	ImGui::Text("Interaction");
+		//	if (ImGui::BeginListBox("Interaction FILE", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+		//	{
+		//		for (int n = 0; n < NPCs.size(); n++)
+		//		{
+		//			const bool is_selected = (NPC_current_idx == n);
+		//			if (ImGui::Selectable(NPCs[n], is_selected))
+		//			{
+		//				NPC_current_idx = n;
+		//				m_iSelectIdx = NPC_current_idx;
+		//			}
+		//			if (is_selected)
+		//				ImGui::SetItemDefaultFocus();
+		//		}
+		//		ImGui::EndListBox();
+		//	}
+		//	ImGui::Separator();
+		//	ImGui::SeparatorText("MATRIX : ");
+		//	ImGui::InputFloat4("Right", &m_ObjectMatrix.m[0][0], 0);
+		//	ImGui::InputFloat4("Up", &m_ObjectMatrix.m[1][0], 0);
+		//	ImGui::InputFloat4("Look", &m_ObjectMatrix.m[2][0], 0);
+		//	ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0], 0);
+		//	ImGui::Separator();
+		//	if (ImGui::Button("Delete"))
+		//	{
+		//		Delete_Dummy();
+		//	}
+		//	ImGui::SameLine();
 
-			if (ImGui::Button("Create"))
-			{
-				if (m_iSelectIdx != -1)
-				{
-					Create_Dummy(NPC_current_idx);
-				}
-			}
-			ImGui::Separator();
-			if (ImGui::Button("SAVE"))
-			{
+		//	if (ImGui::Button("Create"))
+		//	{
+		//		if (m_iSelectIdx != -1)
+		//		{
+		//			Create_Dummy(NPC_current_idx);
+		//		}
+		//	}
+		//	ImGui::Separator();
+		//	if (ImGui::Button("SAVE"))
+		//	{
 
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("LOAD"))
-			{
+		//	}
+		//	ImGui::SameLine();
+		//	if (ImGui::Button("LOAD"))
+		//	{
 
-			}
-			ImGui::EndTabItem();
-		}
+		//	}
+		//	ImGui::EndTabItem();
+		//}
 #pragma endregion
 #pragma region 카메라
 		if (ImGui::BeginTabItem("Camera"))
@@ -714,25 +727,37 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			/* Trigger */
 			m_eItemType = ItemType::Trigger;
 
-			ImGui::SeparatorText("LIST");
+			_int m_iTriggerCount = m_TriggerList.size();
 
-
+			ImGui::InputInt("Trigger Count", &m_iTriggerCount, 14);
 			ImGui::Separator();
 
-
+			
+			ImGui::Separator();
+			ImGui::InputFloat("Size", &m_fTriggerSize,1.f, 5.f, "%.3f", 0);
+			ImGui::Separator();
 			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0], 0);
+			ImGui::Separator();
 
-
+			if (ImGui::Button("Create"))
+			{
+				Create_Dummy(0);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Delete"))
+			{
+				Delete_Dummy();
+			}
 			ImGui::Separator();
 
 			if (ImGui::Button("SAVE"))
 			{
-				Save_Monster();
+				Save_Trigger();
 			}
 			ImGui::SameLine();
 			if (ImGui::Button("LOAD"))
 			{
-				Load_Monster();
+				Load_Trigger();
 			}
 
 			ImGui::EndTabItem();
@@ -880,6 +905,18 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_vLook)));
 	Info.Prototype = L"Prototype_Model_";
 	Info.eType = m_eItemType;
+	Info.isInstancing = m_isInstancing;
+	if (m_eItemType == ItemType::Trigger)
+	{
+		Info.iTriggerNum = m_TriggerList.size();
+		Info.fTriggerSize = m_fTriggerSize;
+	}
+	else
+	{
+		Info.iTriggerNum = 0;
+		Info.fTriggerSize = 0;
+	}
+
 	_tchar strUnicode[MAX_PATH]{};
 	switch (m_eItemType)
 	{
@@ -895,6 +932,9 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	case ItemType::Environment:
 		MultiByteToWideChar(CP_ACP, 0, Envirs[m_eType][iListIndex], static_cast<int>(strlen(Envirs[m_eType][iListIndex])), strUnicode, static_cast<int>(strlen(Envirs[m_eType][iListIndex])));
 		break;
+	case ItemType::Trigger:
+		Info.Prototype = L"Prototype_Model_Collider";
+
 	}
 	Info.Prototype += strUnicode;
 
@@ -918,6 +958,9 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	case MapEditor::ItemType::Environment:
 		m_EnvirList.push_back(m_pSelectedDummy);
 		break;
+	case MapEditor::ItemType::Trigger:
+		m_TriggerList.push_back(m_pSelectedDummy);
+		break;
 	}
 	m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
 	m_pSelectedDummy = nullptr;
@@ -932,7 +975,6 @@ void CImGui_Manager::Create_Map(const _int& iListIndex)
 	Info.Prototype = L"Prototype_Model_";
 	Info.eType = m_eItemType;
 	Info.iStageIndex = 0;
-	Info.iTriggerNum = 0;
 
 	_tchar strUnicode[MAX_PATH]{};
 
@@ -948,6 +990,7 @@ void CImGui_Manager::Create_Map(const _int& iListIndex)
 	m_pSelectMap = nullptr;
 
 }
+
 
 HRESULT CImGui_Manager::Create_Terrain()
 {
@@ -1017,6 +1060,18 @@ void CImGui_Manager::Delete_Dummy()
 				if ((*it)->Get_Selected() == true)
 				{
 					m_EnvirList.erase(it);
+					break;
+				}
+			}
+
+		}
+		else if (m_eItemType == ItemType::Trigger)
+		{
+			for (auto it = m_TriggerList.begin(); it != m_TriggerList.end(); it++)
+			{
+				if ((*it)->Get_Selected() == true)
+				{
+					m_TriggerList.erase(it);
 					break;
 				}
 			}
@@ -2108,6 +2163,145 @@ HRESULT CImGui_Manager::Load_Envir()
 	}
 	return S_OK;
 }
+HRESULT CImGui_Manager::Save_Trigger()
+{
+	OPENFILENAME OFN;
+	TCHAR filePathName[MAX_PATH] = L"";
+	TCHAR lpstrFile[MAX_PATH] = L"_Trigger.dat";
+	static TCHAR filter[] = L"모든 파일\0*.*\0텍스트 파일\0*.txt\0dat 파일\0*.dat";
+
+	memset(&OFN, 0, sizeof(OPENFILENAME));
+	OFN.lStructSize = sizeof(OPENFILENAME);
+	OFN.hwndOwner = g_hWnd;
+	OFN.lpstrFilter = filter;
+	OFN.lpstrFile = lpstrFile;
+	OFN.nMaxFile = 256;
+	OFN.lpstrInitialDir = L"..\\Bin\\Data";
+
+	if (GetSaveFileName(&OFN) != 0)
+	{
+		const TCHAR* pGetPath = OFN.lpstrFile;
+
+		std::ofstream outFile(pGetPath, std::ios::binary);
+
+		if (!outFile.is_open())
+			return E_FAIL;
+
+		_uint TriggerList = (_uint)m_TriggerList.size();
+		outFile.write(reinterpret_cast<const char*>(&TriggerList), sizeof(_uint));
+
+		_uint iIndex = 0;
+		for (auto& Trigger : m_TriggerList)
+		{
+			outFile.write(reinterpret_cast<const char*>(&iIndex), sizeof(_uint));
+
+			wstring TriggerPrototype = Trigger->Get_Info().Prototype;
+			_ulong TriggerPrototypeSize = (_ulong)TriggerPrototype.size();
+
+			outFile.write(reinterpret_cast<const char*>(&TriggerPrototypeSize), sizeof(_ulong));
+			outFile.write(reinterpret_cast<const char*>(TriggerPrototype.c_str()), TriggerPrototypeSize * sizeof(wchar_t));
+
+			_float fSize = Trigger->Get_Size();
+			outFile.write(reinterpret_cast<const char*>(&fSize), sizeof(_float));
+
+			CTransform* pEnvirTransform = dynamic_cast<CTransform*>(Trigger->Find_Component(TEXT("Com_Transform")));
+			_mat TriggerWorldMat = pEnvirTransform->Get_World_Matrix();
+			outFile.write(reinterpret_cast<const char*>(&TriggerWorldMat), sizeof(_mat));
+			iIndex++;
+		}
+
+		MessageBox(g_hWnd, L"파일 저장 완료", L"파일 저장", MB_OK);
+
+	}
+	return S_OK;
+}
+HRESULT CImGui_Manager::Load_Trigger()
+{
+	OPENFILENAME OFN;
+	TCHAR filePathName[MAX_PATH] = L"";
+	static TCHAR filter[] = L"모두(*.*)\0*.*\0데이터 파일(*.dat)\0*.dat";
+
+	memset(&OFN, 0, sizeof(OPENFILENAME));
+	OFN.lStructSize = sizeof(OPENFILENAME);
+	OFN.hwndOwner = g_hWnd;
+	OFN.lpstrFilter = filter;
+	OFN.lpstrFile = filePathName;
+	OFN.nMaxFile = 256;
+	OFN.lpstrInitialDir = L"..\\Bin\\Data\\";
+
+	if (GetOpenFileName(&OFN) != 0)
+	{
+		const TCHAR* pGetPath = OFN.lpstrFile;
+
+		std::ifstream inFile(pGetPath, std::ios::binary);
+
+		if (!inFile.is_open())
+		{
+			MessageBox(g_hWnd, L"파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+			return E_FAIL;
+		}
+
+		_uint TriggerListSize;
+		inFile.read(reinterpret_cast<char*>(&TriggerListSize), sizeof(_uint));
+
+
+		for (_uint i = 0; i < TriggerListSize; ++i)
+		{
+
+
+			DummyInfo TriggerInfo{};
+
+
+			_uint iIndex{};
+			inFile.read(reinterpret_cast<char*>(&iIndex), sizeof(_uint));
+
+			TriggerInfo.iTriggerNum = iIndex;
+
+			_ulong TriggerPrototypeSize;
+			inFile.read(reinterpret_cast<char*>(&TriggerPrototypeSize), sizeof(_ulong));
+
+			wstring TriggerPrototype;
+			TriggerPrototype.resize(TriggerPrototypeSize);
+			inFile.read(reinterpret_cast<char*>(&TriggerPrototype[0]), TriggerPrototypeSize * sizeof(wchar_t));
+
+			_float TriggerSize{};
+			inFile.read(reinterpret_cast<char*>(&TriggerSize), sizeof(_float));
+			TriggerInfo.fTriggerSize = TriggerSize;
+
+			_mat TriggerWorldMat;
+			inFile.read(reinterpret_cast<char*>(&TriggerWorldMat), sizeof(_mat));
+
+			TriggerInfo.eType = ItemType::Trigger;
+			TriggerInfo.vLook = _float4(TriggerWorldMat._31, TriggerWorldMat._32, TriggerWorldMat._33, TriggerWorldMat._34);
+			TriggerInfo.vPos = _float4(TriggerWorldMat._41, TriggerWorldMat._42, TriggerWorldMat._43, TriggerWorldMat._44);
+			TriggerInfo.fTriggerSize = TriggerSize;
+			TriggerInfo.iTriggerNum = iIndex;
+			TriggerInfo.Prototype = TriggerPrototype;
+			TriggerInfo.ppDummy = &m_pSelectedDummy;
+
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &TriggerInfo)))
+			{
+				MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
+				return E_FAIL;
+			}
+
+			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
+			m_TriggerList.push_back(m_pSelectedDummy);
+
+			CTransform* pEnvirTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
+
+			pEnvirTransform->Set_State(State::Right, TriggerWorldMat.Right());
+			pEnvirTransform->Set_State(State::Up, TriggerWorldMat.Up());
+			pEnvirTransform->Set_State(State::Look, TriggerWorldMat.Look());
+			pEnvirTransform->Set_State(State::Pos, TriggerWorldMat.Position());
+
+			m_pSelectedDummy = nullptr;
+		}
+
+		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
+	}
+	return S_OK;
+}
 HRESULT CImGui_Manager::Save_Pos()
 {
 	OPENFILENAME OFN;
@@ -2162,7 +2356,6 @@ void CImGui_Manager::Free()
 		}
 		entry.second.clear(); 
 	}
-
 	Maps.clear();
 
 	for (auto& entry : Objects)
@@ -2171,7 +2364,6 @@ void CImGui_Manager::Free()
 			Safe_Delete_Array(cstr);
 		}
 		entry.second.clear();
-
 	}
 	Objects.clear();
 
@@ -2183,6 +2375,12 @@ void CImGui_Manager::Free()
 		entry.second.clear();
 	}
 	Monsters.clear();
+
+	for (auto& cstr : NPCs)
+	{
+		Safe_Delete_Array(cstr);
+	}
+	NPCs.clear();
 
 	for (auto& entry : Envirs)
 	{
@@ -2226,6 +2424,12 @@ void CImGui_Manager::Free()
 		Safe_Release(cstr);
 	}
 	m_EnvirList.clear();
+
+	for (auto& cstr : m_TriggerList)
+	{
+		Safe_Release(cstr);
+	}
+	m_TriggerList.clear();
 
 
 	if (!m_DummyList.empty())

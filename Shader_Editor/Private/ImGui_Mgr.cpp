@@ -36,6 +36,14 @@ HRESULT CImGui_Mgr::Init(_dev pDevice, _context pContext, CGameInstance* pGameIn
 
 	m_SSAO = m_pRenderer->Get_SSAO();
 
+	m_fSSAOBlurPower = m_pRenderer->Get_SSAOBlurPower();
+
+	m_fEffectBlurPower = m_pRenderer->Get_EffectBlurPower();
+
+	m_HDR = m_pRenderer->Get_HDR();
+
+	m_fHDRBlurPower = m_pRenderer->Get_HDRBlurPower();
+
 	return S_OK;
 }
 
@@ -48,16 +56,24 @@ void CImGui_Mgr::Frame()
 	ImGui::Begin(u8"뽀큐");
 	if (ImGui::BeginTabBar(u8"쉐이더")) {
 		if (ImGui::BeginTabItem(u8"아쎄이 AO")) {
-			ImGui::DragFloat(u8"Intensity(강도)", &m_SSAO.fIntensity, 0.5f, 0.001f, 100.f);
+			ImGui::DragFloat(u8"Intensity(강도)", &m_SSAO.fIntensity, 0.005f, 0.001f, 100.f);
 			ImGui::DragFloat(u8"Radius(반지름)", &m_SSAO.fRadius, 0.001f, 0.001f, 5.f);
-			ImGui::DragFloat(u8"Scale(사이 거리)", &m_SSAO.fScale, 0.01f, 0.001f, 100.f);
-			ImGui::DragFloat(u8"Bias(차폐물의 너비)", &m_SSAO.fBias, 0.01f, 0.001f, 100.f);
+			ImGui::DragFloat(u8"Scale(사이 거리)", &m_SSAO.fScale, 0.005f, 0.001f, 100.f);
+			ImGui::DragFloat(u8"Bias(차폐물의 너비)", &m_SSAO.fBias, 0.005f, 0.001f, 100.f);
+			ImGui::DragFloat(u8"SSAOBlurPower", &m_fSSAOBlurPower, 0.001f, 0.001f, 10.f);
 
 			m_pRenderer->Set_SSAO(m_SSAO);
+			m_pRenderer->Set_SSAOBlurPower(m_fSSAOBlurPower);
 
 			ImGui::EndTabItem();
 		}
 		if (ImGui::BeginTabItem(u8"똥맵")) {
+			ImGui::DragFloat(u8"MiddleGray(중간 회색값)", &m_HDR.fMiddleGray, 0.005f, 0.01f, 100.f);
+			ImGui::DragFloat(u8"LumWhiteSqr(하이라이트 클리핑)", &m_HDR.fLumWhiteSqr, 0.005f, 0.01f, 10.f);
+			ImGui::DragFloat(u8"HDRBlurPower", &m_fHDRBlurPower, 0.001f, 0.001f, 10.f);
+
+			m_pRenderer->Set_HDR(m_HDR);
+			m_pRenderer->Set_HDRBlurPower(m_fHDRBlurPower);
 
 			ImGui::EndTabItem();
 		}

@@ -35,6 +35,7 @@ public:
 
 	enum SPIDER_STATE
 	{
+		STATE_RAGE,
 		STATE_IDLE,
 		STATE_WALK,
 		STATE_CHASE,

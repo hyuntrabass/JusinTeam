@@ -23,8 +23,9 @@ public:
 	void Set_Create() { m_isCreate = true; }
 	void Set_Dead() { m_isDead = true; }
 	_bool Get_Create() { return m_isCreate; }
-	
+	_float Get_Size() { return m_fTriggerSize; }
 	_int Get_ID() const {return m_iID;}
+	_uint Get_TriggerNum() { return m_iTrigger; }
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -38,6 +39,8 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
 	//CImGui_Manager* m_pImGui_Manager{ nullptr };
+	CCollider* m_pCollider{ nullptr };
+	CVIBuffer_Instancing_Mesh* m_pVIBuffer{ nullptr };
 
 private:
 
@@ -48,10 +51,13 @@ private:
 	_bool m_isAnim{};
 	ANIM_DESC m_Animation{};
 	
+	ItemType m_eType{ItemType::End};
 	_int m_iID = 0;
-	_int m_iTrigger = 0;
-
+	_uint m_iTrigger{ 0 };
+	_float m_fTriggerSize{};
 	_bool m_isCreate{false};
+	_bool m_isInstancing{ false };
+
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

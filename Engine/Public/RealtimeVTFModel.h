@@ -21,6 +21,7 @@ public://트리거하려고 추가함
 	const _uint& Get_NumAnim() const;
 	const _uint Get_NumBones() const;
 	vector<class CAnimation*>& Get_Animations();
+	_mat Get_PivotMatrix();
 	class CAnimation* Get_Animation(_uint iAnimIndex);
 	vector<class CBone*>& Get_Bones();
 	//이펙트 트리거

@@ -165,9 +165,12 @@ void CGameInstance::Clear(_uint iLevelIndex)
 		MSG_BOX("FATAL ERROR : m_pComponent_Manager is NULL");
 	}
 
+
 	m_pObject_Manager->Clear(iLevelIndex);
 	m_pComponent_Manager->Clear(iLevelIndex);
-	m_Function_Clear_FX(iLevelIndex);
+	
+	if(m_Function_Clear_FX)
+		m_Function_Clear_FX(iLevelIndex);
 }
 
 HRESULT CGameInstance::Clear_BackBuffer_View(_vec4 vClearColor)

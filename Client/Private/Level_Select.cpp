@@ -23,6 +23,7 @@ HRESULT CLevel_Select::Init()
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Mask"), TEXT("Prototype_GameObject_BackGround_Mask"),&info)))
 	{
 		return E_FAIL;
+
 	}
 
 	if (FAILED(Ready_Select()))
