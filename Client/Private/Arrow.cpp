@@ -1,12 +1,12 @@
 #include "Arrow.h"
 
 CArrow::CArrow(_dev pDevice, _context pContext)
-	: CGameObject(pDevice, pContext)
+	: CBlendObject(pDevice, pContext)
 {
 }
 
 CArrow::CArrow(const CArrow& rhs)
-	: CGameObject(rhs)
+	: CBlendObject(rhs)
 {
 }
 
@@ -24,9 +24,24 @@ HRESULT CArrow::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-	m_pTransformCom->Set_Matrix(type->world);
+	if(type->Att_Type != AT_Bow_Skill3	)
+	{
+		m_pTransformCom->Set_Matrix(type->world);
+		m_pTransformCom->Set_Speed(25.f);
+		m_pTransformCom->Set_Scale(_vec3(1.5f));
+	}
+	else
+	{
+		_float random = rand() % 12;
+		m_pTransformCom->Set_State(State::Pos, type->vPos);
+		m_pTransformCom->Set_Speed(12.f + random);
+		m_pTransformCom->Set_Scale(_vec3(3.f,3.f,1.5f));
+	}
+	
+
 	m_pTransformCom->LookAt_Dir(type->vLook);
-	m_pTransformCom->Set_Speed(35.f);
+
+
 
 	TRAIL_DESC trail_desc{};
 	trail_desc.vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
@@ -52,7 +67,8 @@ void CArrow::Tick(_float fTimeDelta)
 void CArrow::Late_Tick(_float fTimeDelta)
 {
 	m_pTrail->Late_Tick(fTimeDelta);
-	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	__super::Compute_CamDistance();
+	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 }
 
 HRESULT CArrow::Render()
@@ -129,7 +145,7 @@ HRESULT CArrow::Bind_ShaderResources()
 	//	return E_FAIL;
 	//}
 
-	_vec4 Color = _vec4(0.89f, 0.96f, 0.969f, 1.f);
+	_vec4 Color = _vec4(0.89f, 0.96f, 0.969f, 0.5f);
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &Color, sizeof _vec4)))
 	{
 		return E_FAIL;

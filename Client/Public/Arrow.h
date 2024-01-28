@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Client_Define.h"
-#include "GameObject.h"
+#include "BlendObject.h"
 #include "CommonTrail.h"
 BEGIN(Client)
 
@@ -9,10 +9,11 @@ struct Arrow_Type
 {
 	ATTACK_TYPE Att_Type{ AT_End };
 	_mat world{};
+	_vec4 vPos{};
 	_vec4 vLook{};
 
 };
-class CArrow final : public CGameObject
+class CArrow final : public CBlendObject
 {
 
 private:
