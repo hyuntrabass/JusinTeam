@@ -80,6 +80,10 @@ vector<class CAnimation*>& CRealtimeVTFModel::Get_Animations()
 {
 	return m_Animations;
 }
+_mat CRealtimeVTFModel::Get_PivotMatrix()
+{
+	return XMLoadFloat4x4(&m_PivotMatrix);
+}
 
 CAnimation* CRealtimeVTFModel::Get_Animation(_uint iAnimIndex)
 {
