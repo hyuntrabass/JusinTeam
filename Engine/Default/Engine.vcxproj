@@ -57,7 +57,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_DEBUGTEST;ENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>../Public/;../Public/PhysX/;../ImGui/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Public/;../Public/PhysX/</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -101,6 +101,16 @@ call UpdateLib.bat</Command>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../ThirdPartyLib/</AdditionalLibraryDirectories>
     </Link>
+    <FxCompile>
+      <ShaderType>Effect</ShaderType>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
+    <PostBuildEvent>
+      <Command>cd /d $(SolutionDir)
+call UpdateLib.bat</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Animation.cpp" />
