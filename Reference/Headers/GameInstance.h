@@ -275,7 +275,7 @@ private:
 	_bool m_AimMode{};
 	_float m_fShakePower{};
 	_vec3 m_AimPos{};
-	_bool m_bSkipDebugRender{};
+	_bool m_bSkipDebugRender{ true };
 	wstring m_strInput{};
 
 private:

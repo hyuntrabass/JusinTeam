@@ -27,6 +27,7 @@ private:
 
 private:
 	_uint					m_iNum{1};
+	_bool					m_bStartInput{ false };
 
 	class CTextButton*		m_pExitButton{ nullptr };
 	CTextButton*			m_pSelectButton{ nullptr };

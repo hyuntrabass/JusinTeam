@@ -92,8 +92,8 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.iNum = 1;
 	tDesc.iMoney = 1000;
 	tDesc.isMain = true;
-	tDesc.strQuestTitle = TEXT("공격하기");
-	tDesc.strText = TEXT("공격키를 눌러봐");
+	tDesc.strQuestTitle = TEXT("퀘스트!");
+	tDesc.strText = TEXT("주말에 자습실 춥다고 말씀드리기");
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	tDesc.eType = QUESTIN;

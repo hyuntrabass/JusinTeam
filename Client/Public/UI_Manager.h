@@ -93,7 +93,6 @@ public:
 	const _uint& Get_Coin() const { return m_iCoin; }
 	const _uint& Get_Diamond() const { return m_iDiamond; }
 	const _float2& Get_Exp() const { return m_fExp; }
-	const _float2& Get_Exp() const { return m_fExp; }
 	const MOUSESTATE& Get_MouseState() const { return m_eMouseState; }
 
 	const PART_TYPE& Is_CustomPartChanged() const { return m_eChangedPart; }

@@ -298,10 +298,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 		m_bStartGame = true;
 		CEvent_Manager::Get_Instance()->Init();
-		CEvent_Manager::Get_Instance()->Set_Quest(TEXT("공격하기"));
-		CEvent_Manager::Get_Instance()->Set_Quest(TEXT("이동하기"));
-		CEvent_Manager::Get_Instance()->Set_Quest(TEXT("몬스터와 접촉"));
-
+		CEvent_Manager::Get_Instance()->Set_Quest(TEXT("퀘스트!"));
 		Change_Weapon(WP_SWORD, SWORD4);
 	}
 
@@ -797,7 +794,6 @@ void CPlayer::Move(_float fTimeDelta)
 	}
 	if (m_pGameInstance->Key_Down(DIK_1))
 	{
-		CEvent_Manager::Get_Instance()->Update_Quest(TEXT("공격하기"));
 		if (m_eState != Skill1)
 		{
 			m_eState = Skill1;
@@ -902,7 +898,7 @@ void CPlayer::Move(_float fTimeDelta)
 			vDirection += vForwardDir;
 
 			hasMoved = true;
-			CEvent_Manager::Get_Instance()->Update_Quest(TEXT("이동하기"));
+		
 		}
 		else if (m_pGameInstance->Key_Pressing(DIK_S))
 		{
