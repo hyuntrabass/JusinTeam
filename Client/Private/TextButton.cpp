@@ -64,7 +64,6 @@ void CTextButton::Tick(_float fTimeDelta)
 
 void CTextButton::Late_Tick(_float fTimeDelta)
 {
-	wstring strTexture = m_strTexture;
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 
 }
@@ -160,7 +159,7 @@ void CTextButton::Set_Position(_vec2 vPos)
 {
 	m_fX = vPos.x;
 	m_fY = vPos.y;
-	//__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	m_rcRect = {
 	  (LONG)(m_fX - m_fSizeX * 0.5f),
 	  (LONG)(m_fY - m_fSizeY * 0.5f),

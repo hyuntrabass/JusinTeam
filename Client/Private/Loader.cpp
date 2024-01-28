@@ -195,6 +195,8 @@ HRESULT CLoader::Load_Logo()
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Riding_Nihilir"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Riding/Mesh/Nihilir.hyuntraanimmesh"))))
 		return E_FAIL;
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Arrow"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Arrow/Mesh/arrow.hyuntrastatmesh"))))
+		return E_FAIL;
 #pragma endregion
 
 	m_strLoadingText = L"Logo : Loading Shader";
@@ -205,6 +207,10 @@ HRESULT CLoader::Load_Logo()
 
 #pragma region Prototype
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Background"), CBackGround::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Arrow"), CArrow::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -258,9 +264,10 @@ HRESULT CLoader::Load_Logo()
 	{
 		return E_FAIL;
 	}
-
-
-
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_CommonSurfaceTrail"), CCommonSurfaceTrail::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 	CEffect_Manager::Get_Instance()->Read_EffectFile();
@@ -334,7 +341,6 @@ HRESULT CLoader::Load_Select()
 
 
 #pragma endregion
-
 
 	strInputFilePath = "../Bin/Resources/StaticMesh/Effect/Mesh/";
 	_uint iMeshNumber{};
@@ -868,6 +874,11 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Spider"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Spider/Mesh/Spider.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 
 #pragma endregion Monster
 
@@ -1069,6 +1080,28 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Radar"), CRadar::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_ItemInfo"), CItemInfo::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_HPMonster"), CHPMonster::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_3DUITex"), C3DUITex::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Dialog"), CDialog::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
 
 #pragma endregion
 
@@ -1141,6 +1174,11 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Nastron07"), CNastron07::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Spider"), CSpider::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -1250,7 +1288,7 @@ HRESULT CLoader::Load_Village()
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
 			{
 				return E_FAIL;
 			}
@@ -1266,7 +1304,7 @@ HRESULT CLoader::Load_Village()
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
 			{
 				return E_FAIL;
 			}

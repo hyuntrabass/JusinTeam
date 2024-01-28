@@ -1124,19 +1124,19 @@ HRESULT CRenderer::Render_Blur()
 	//	return E_FAIL;
 	//}
 
-	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_Bloom"))))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_Bloom"))))
+	{
+		return E_FAIL;
+	}
 
-	//if (FAILED(m_pShader->Begin(DefPass_Blur)))
-	//{
-	//	return E_FAIL;
-	//}
-	//if (FAILED(m_pVIBuffer->Render()))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(m_pShader->Begin(DefPass_Blur)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pVIBuffer->Render()))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }

@@ -92,8 +92,10 @@ namespace Engine
 	{
 		unsigned int iType{};
 		bool isSprite{};
+		bool isFixedIndex{};
 		XMINT2 vNumSprites{};
 		float fSpriteDuration{};
+		int iFixedSpriteIndex{};
 		ParticleDesc PartiDesc{};
 		unsigned int iNumInstances{};
 		float fLifeTime{};
@@ -110,6 +112,7 @@ namespace Engine
 		SimpleMath::Vector2 vUVInit{};
 		SimpleMath::Vector2 vUVDelta{};
 		bool isRandomSprite{};
+		bool isUVLoop{};
 
 		bool hasLight{};
 		LIGHT_DESC Light_Desc{};
@@ -133,6 +136,7 @@ namespace Engine
 		float fInterpolationTime{ 0.2f };
 		float fDurationRatio{ 1.f };
 		bool bRestartAnimation{ false };
+		float fStartAimPos{};
 	};
 
 
@@ -179,15 +183,20 @@ namespace Engine
 		unsigned int iBoneIndex{};
 		SimpleMath::Matrix OffsetMatrix{};
 		bool IsDeleteRotateToBone{};
+
+		bool HasCreated{};
 	};
 
 	using TRIGGERSOUND_DESC = struct tagTriggerSoundDesc {
 		int iStartAnimIndex{};
 		float fStartAnimPos{};
+		std::vector<int> iEndAnimIndices;
+		std::vector<float> fEndAnimPoses;
 		std::vector<std::wstring> strSoundNames;
 		float fVolume{};
 		
 		int iChannel = -1;
+		bool HasPlayed{};
 	};
 
 	using VTXPOSCOLOR = struct ENGINE_DLL tagVertex_Position_Color
@@ -259,6 +268,7 @@ namespace Engine
 		SimpleMath::Vector4 vUp{};
 		SimpleMath::Vector4 vLook{};
 		SimpleMath::Vector4 vPos{};
+		SimpleMath::Vector4 vPrevPos{};
 
 		float fSpeed{};
 		SimpleMath::Vector2 vLifeTime{};
@@ -285,9 +295,19 @@ namespace Engine
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	};
 
+	using VTXTRAILSURFACE = struct ENGINE_DLL tagVertex_Trail_Surface
+	{
+		XMFLOAT3 vTopPosition{};
+		XMFLOAT3 vBottomPosition{};
+		float fAlpha{};
+
+		static const unsigned int iNumElements{ 3 };
+		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
+	};
+
 	using VTXPOINT_INSTANCING = struct ENGINE_DLL tagVertex_Point_Instancing
 	{
-		static const unsigned int iNumElements{ 6 };
+		static const unsigned int iNumElements{ 7 };
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	};
 
@@ -296,4 +316,13 @@ namespace Engine
 		XMUINT2 vTerrainSize{};
 		bool isMesh{ false };
 	};
+
+	using VTXMESHINSTANCING = struct tagVertex_Mesh_Instancing
+	{
+		SimpleMath::Vector4 vRight{};
+		SimpleMath::Vector4 vUp{};
+		SimpleMath::Vector4 vLook{};
+		SimpleMath::Vector4 vPos{};
+	};
+
 }

@@ -247,9 +247,6 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Wearable Slots">
       <UniqueIdentifier>{b373fc29-646c-4bd3-8638-6561ec5c16ef}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Desc">
-      <UniqueIdentifier>{9243a5dc-24e7-4b3f-af5a-176532212fb8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Item">
       <UniqueIdentifier>{b5de1188-8dfd-4cce-be30-4873c65ba985}</UniqueIdentifier>
     </Filter>
@@ -321,6 +318,33 @@
     </Filter>
     <Filter Include="02.GameObjects\08. Boss\Dragon_Boss">
       <UniqueIdentifier>{c85e57aa-99ca-447a-b20f-843b04b33165}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Radar">
+      <UniqueIdentifier>{3c6e6f3b-917a-4046-8c56-468ff11e4ee0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\ItemInfo">
+      <UniqueIdentifier>{9243a5dc-24e7-4b3f-af5a-176532212fb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\00.3DUITex">
+      <UniqueIdentifier>{a14d2aee-5dc3-409f-abf7-2d9316c77608}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Dialog">
+      <UniqueIdentifier>{8bbd3cf3-05ec-4392-a70b-e8cdc3ab6750}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\03.Player\Weapon\Arrow">
+      <UniqueIdentifier>{3c9caad4-a7e8-48db-a836-c8c8b3ca4edd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Spider">
+      <UniqueIdentifier>{f363281d-5323-407d-80fa-91b4b26af4c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Missile">
+      <UniqueIdentifier>{60d859ff-77f1-4b49-be0b-495060f838c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\11.Trigger">
+      <UniqueIdentifier>{e34cfd3d-cd3e-4a9c-a182-3c577c5cdb93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\11.Trigger\Manager">
+      <UniqueIdentifier>{bc9dd045-dd44-470a-8fbe-c8d5ed7e0b04}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -507,9 +531,6 @@
     <ClInclude Include="..\Public\TestTree.h">
       <Filter>02.GameObjects\07. StatObject\Test</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Map.h">
-      <Filter>02.GameObjects\08.Map</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Pop_QuestEnd.h">
       <Filter>02.GameObjects\00.UI\POPUP</Filter>
     </ClInclude>
@@ -626,6 +647,45 @@
     </ClInclude>
     <ClInclude Include="..\Public\Dragon_Boss.h">
       <Filter>02.GameObjects\08. Boss\Dragon_Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Radar.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Radar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ItemInfo.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\ItemInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\HpMonster.h">
+      <Filter>02.GameObjects\00.UI\GameUI\HP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\3DUITex.h">
+      <Filter>02.GameObjects\00.UI\GameUI\00.3DUITex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Dialog.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CommonSurfaceTrail.h">
+      <Filter>03.Effect\Common_Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Arrow.h">
+      <Filter>02.GameObjects\03.Player\Weapon\Arrow</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Spider.h">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss\Spider</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Missile.h">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss\Missile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Trigger.h">
+      <Filter>02.GameObjects\11.Trigger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TriggerList.h">
+      <Filter>02.GameObjects\11.Trigger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Trigger_Manager.h">
+      <Filter>02.GameObjects\11.Trigger\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Map.h">
+      <Filter>02.GameObjects\08.Map</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -813,9 +873,6 @@
     <ClCompile Include="..\Private\TestTree.cpp">
       <Filter>02.GameObjects\07. StatObject\Test</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Map.cpp">
-      <Filter>02.GameObjects\08.Map</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Pop_QuestEnd.cpp">
       <Filter>02.GameObjects\00.UI\POPUP</Filter>
     </ClCompile>
@@ -930,6 +987,42 @@
     <ClCompile Include="..\Private\Dragon_Boss.cpp">
       <Filter>02.GameObjects\08. Boss\Dragon_Boss</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Radar.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Radar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ItemInfo.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\ItemInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HPMonster.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\HP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\3DUITex.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\00.3DUITex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Dialog.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CommonSurfaceTrail.cpp">
+      <Filter>03.Effect\Common_Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Arrow.cpp">
+      <Filter>02.GameObjects\03.Player\Weapon\Arrow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Spider.cpp">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss\Spider</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Missile.cpp">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss\Missile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Trigger.cpp">
+      <Filter>02.GameObjects\11.Trigger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Trigger_Manager.cpp">
+      <Filter>02.GameObjects\11.Trigger\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Map.cpp">
+      <Filter>02.GameObjects\08.Map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
@@ -966,6 +1059,9 @@
       <Filter>97.Shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_RT_VTFModel.hlsl">
+      <Filter>97.Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Trail_Surface.hlsl">
       <Filter>97.Shaders</Filter>
     </FxCompile>
   </ItemGroup>

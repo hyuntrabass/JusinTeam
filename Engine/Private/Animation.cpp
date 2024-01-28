@@ -52,38 +52,6 @@ const _float CAnimation::Get_Duration() const
 	return m_fDuration;
 }
 
-const _uint CAnimation::Get_NumTrigger() const
-{
-	return m_iNumTriggers;
-}
-
-vector<_float>& CAnimation::Get_Triggers()
-{
-	return m_Triggers;
-}
-
-void CAnimation::Add_Trigger(_float fAnimPos)
-{
-	auto	iter = find_if(m_Triggers.begin(), m_Triggers.end(), [&](_float fTrigger)->_bool {
-		if (fTrigger == fAnimPos)
-			return true;
-
-		return false;
-		});
-
-	if (iter == m_Triggers.end())
-	{
-		m_Triggers.push_back(fAnimPos);
-		m_iNumTriggers++;
-	}
-}
-
-void CAnimation::Reset_Trigger()
-{
-	m_iNumTriggers = 0;
-	m_Triggers.clear();
-}
-
 void CAnimation::ResetFinished()
 {
 	m_isFinished = false;
@@ -134,18 +102,18 @@ HRESULT CAnimation::Init(ifstream& ModelFile, const vector<class CBone*>& Bones)
 	return S_OK;
 }
 
-void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio)
+void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio, _float fStartAnimPos)
 {
 	if (isAnimChanged)
 	{
 		if (bSkipInterpolation)
 		{
-			m_fCurrentAnimPos = 0.f;
+			m_fCurrentAnimPos = fStartAnimPos;
 			isAnimChanged = false;
 		}
 		else if (!m_isInterpolating)
 		{
-			m_fCurrentAnimPos = 0.f;
+			m_fCurrentAnimPos = fStartAnimPos;
 			m_isInterpolating = true;
 		}
 		else
@@ -169,7 +137,7 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 		{
 			if (isLoop)
 			{
-				m_fCurrentAnimPos = 0.f;
+				m_fCurrentAnimPos = fStartAnimPos;
 			}
 			else
 			{

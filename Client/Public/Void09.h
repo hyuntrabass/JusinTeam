@@ -2,6 +2,7 @@
 
 #include "Client_Define.h"
 #include "Monster.h"
+#include "CommonSurfaceTrail.h"
 
 BEGIN(Client)
 
@@ -66,9 +67,15 @@ public:
 	void Init_State(_float fTimeDelta);
 	void Tick_State(_float fTimeDelta);
 
+public:
+	void Update_Trail(_float fTimeDelta);
+
 private:
 	VOID09_STATE m_ePreState = STATE_END;
 	VOID09_STATE m_eCurState = STATE_END;
+
+private:
+	CCommonSurfaceTrail* m_pSwordTrail = { nullptr };
 
 private:
 	_float m_fIdleTime = {};

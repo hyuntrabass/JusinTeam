@@ -10,6 +10,7 @@ texture2D g_DissolveTexture;
 
 int g_TexIndex;
 vector g_vColor;
+vector g_vSliceRect;
 float g_fx;
 float g_fy;
 float g_fScrollRatio;
@@ -578,6 +579,38 @@ PS_OUT PS_ScrollAlpha(PS_IN Input)
 
     return Output;
 }
+PS_OUT PS_Main_HPNoMask(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    if (Input.vTex.x > g_fHpRatio)
+    {
+        discard;
+    }
+
+    return Output;
+}
+
+PS_OUT PS_Main_NineSlice(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+
+    if (Input.vTex.x < g_vSliceRect.x)
+        Input.vTex.x = lerp(0, g_vSliceRect.x, Input.vTex.x / g_vSliceRect.x);
+    else if (Input.vTex.x > g_vSliceRect.z)
+        Input.vTex.x = lerp(g_vSliceRect.z, 1, (Input.vTex.x - g_vSliceRect.z) / (1 - g_vSliceRect.z));
+
+    
+    if (Input.vTex.y < g_vSliceRect.y)
+        Input.vTex.y = lerp(0, g_vSliceRect.y, Input.vTex.y / g_vSliceRect.y);
+    else if (Input.vTex.y > g_vSliceRect.w)
+        Input.vTex.y = lerp(g_vSliceRect.w, 1, (Input.vTex.y - g_vSliceRect.w) / (1 - g_vSliceRect.w));
+
+    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    return Output;
+}
 technique11 DefaultTechnique
 {
     pass UI
@@ -935,5 +968,28 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_ScrollAlpha();
     }
+    pass HPNoMask
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_HPNoMask();
+    }
+pass NineSlice
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_NineSlice();
+    }
 };

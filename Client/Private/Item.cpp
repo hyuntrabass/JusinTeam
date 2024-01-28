@@ -1,6 +1,7 @@
 #include "Item.h"
 #include "GameInstance.h"
 #include "TextButton.h"
+#include "ItemInfo.h"
 
 CItem::CItem(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -48,6 +49,7 @@ HRESULT CItem::Init(void* pArg)
 		  (LONG)(m_fY + m_fSizeY * 0.5f)
 	};
 
+
 	return S_OK;
 }
 
@@ -59,6 +61,28 @@ void CItem::Tick(_float fTimeDelta)
 	  (LONG)(m_fX + m_fSizeX * 0.5f),
 	  (LONG)(m_fY + m_fSizeY * 0.5f)
 	};
+	POINT ptMouse;
+	GetCursorPos(&ptMouse);
+	ScreenToClient(g_hWnd, &ptMouse);
+
+	if (m_bCanInteract)
+	{
+		if (PtInRect(&m_rcRect, ptMouse) && m_pGameInstance->Mouse_Down(DIM_RBUTTON, InputChannel::UI))
+		{
+			if (m_pGameInstance->Get_LayerSize(LEVEL_STATIC, TEXT("Layer_ItemInfo")) == 0)
+			{
+				CItemInfo::ITEMINFO_DESC InfoDesc = {};
+				InfoDesc.eItemDesc = m_eItemDesc;
+				InfoDesc.fDepth = m_fDepth - 0.05f;
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_ItemInfo"), TEXT("Prototype_GameObject_ItemInfo"), &InfoDesc)))
+				{
+					return;
+				}
+			}
+
+		}
+	}
+
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
@@ -66,16 +90,6 @@ void CItem::Tick(_float fTimeDelta)
 void CItem::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
-
-	if (m_iNum > 1)
-	{
-		_vec2 vStartPos = _vec2(m_fX, m_fY);
-		wstring strText = TEXT("°³");
-		m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(m_iNum) + strText, _vec2(vStartPos.x + 1.f, vStartPos.y), 0.5f, _vec4(0.f, 0.f, 0.f, 1.f));
-		m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(m_iNum) + strText, _vec2(vStartPos.x, + vStartPos.y + 1.f), 0.5f, _vec4(0.f, 0.f, 0.f, 1.f));
-		m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(m_iNum) + strText, _vec2(vStartPos.x, + vStartPos.y), 0.5f, _vec4(1.f, 1.f, 1.f, 1.f));
-													
-	}
 
 }
 
@@ -95,7 +109,13 @@ HRESULT CItem::Render()
 	{
 		return E_FAIL;
 	}
-
+	if (m_iNum > 1)
+	{
+		_vec2 vStartPos = _vec2(m_fX + 14.f, m_fY + 20.f);
+		m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(m_iNum), _vec2(vStartPos.x + 1.f, vStartPos.y), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(m_iNum), _vec2(vStartPos.x, +vStartPos.y + 1.f), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(m_iNum), _vec2(vStartPos.x, +vStartPos.y), 0.3f, _vec4(1.f, 1.f, 1.f, 1.f));
+	}
 	return S_OK;
 }
 

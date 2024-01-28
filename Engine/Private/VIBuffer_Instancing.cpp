@@ -42,10 +42,11 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 	{
 		VTXINSTANCING* pVertex = &reinterpret_cast<VTXINSTANCING*>(SubResource.pData)[i];
 
+
 		if (pVertex->vLifeTime.x == 0)
 		{
-			_vec4 Test = _vec4::UnitX;
 			pVertex->vPos = _vec4::Transform(pVertex->vPos, WorldMatrix);
+			pVertex->vPrevPos = pVertex->vPos;
 		}
 
 		//pVertex->vPos.y += pVertex->fSpeed * fTimeDelta;
@@ -54,7 +55,8 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 			_float fAlpha = (pVertex->vLifeTime.x / pVertex->vLifeTime.y) * 0.7f;
 			pVertex->vDirection = _vec4::Lerp(pVertex->vDirection, _vec4(vGravityDir), fAlpha);
 		}
-		XMStoreFloat4(&pVertex->vPos, XMLoadFloat4(&pVertex->vPos) + XMLoadFloat4(&pVertex->vDirection) * pVertex->fSpeed * fTimeDelta);
+		pVertex->vPrevPos = pVertex->vPos;
+		pVertex->vPos += pVertex->vDirection * pVertex->fSpeed * fTimeDelta;
 		pVertex->vLifeTime.x += fTimeDelta;
 
 		if (i >= iNumUse)
@@ -69,10 +71,12 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 			{
 				pVertex->vLifeTime.x = 0.f;
 				pVertex->vPos = pVertex->vOriginPos;
+				pVertex->vPrevPos = pVertex->vPos;
 			}
 			else
 			{
 				pVertex->vPos = _float4(0.f, -10000.f, 0.f, 1.f);
+				pVertex->vPrevPos = pVertex->vPos;
 			}
 		}
 		VertexList.push_back(*pVertex);

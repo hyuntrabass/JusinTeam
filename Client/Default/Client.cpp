@@ -92,7 +92,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		fTimeAcc += pGameInstance->Compute_TimeDelta(TEXT("Timer_Default"));
 
-		//if (fTimeAcc > 1.f / 60.f)
+		if (fTimeAcc > 1.f / 60.f)
 		{
 			pMainApp->Tick(pGameInstance->Compute_TimeDelta(TEXT("Timer_60")));
 			pMainApp->Render();
@@ -156,7 +156,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	RECT rc = { 0, 0, g_iWinSizeX, g_iWinSizeY };
 
-	//AdjustWindowRect(&rc, WS_POPUPWINDOW, TRUE);
+	//AdjustWindowRect(&rc, WS_POPUP, TRUE);
 
 	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_POPUP,
 		CW_USEDEFAULT, 0, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
@@ -186,6 +186,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	wstring composingString{};
+	static wstring CompleteString{};
+
 	switch (message)
 	{
 	case WM_COMMAND:
@@ -205,12 +208,42 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	break;
+	case WM_IME_COMPOSITION:
+	{
+		if (CGameInstance::Get_Instance()->Get_CurrentLevelIndex() >= LEVEL_GAMEPLAY)
+		{
+			break;
+		}
+		HIMC hIMC = ::ImmGetContext(hWnd);
+		if (hIMC)
+		{
+			if (lParam & GCS_COMPSTR)
+			{ // 조합 중인 문자열이 있는 경우
+				LONG len = ::ImmGetCompositionString(hIMC, GCS_COMPSTR, NULL, 0);
+				std::vector<wchar_t> buffer(len / sizeof(wchar_t) + 1);
+				::ImmGetCompositionString(hIMC, GCS_COMPSTR, buffer.data(), len);
+				composingString = buffer.data(); // 조합 중인 문자열을 저장
+			}
+			if (lParam & GCS_RESULTSTR)
+			{ // 조합이 완료된 문자열이 있는 경우
+				LONG len = ::ImmGetCompositionString(hIMC, GCS_RESULTSTR, NULL, 0);
+				std::vector<wchar_t> buffer(len / sizeof(wchar_t) + 1);
+				::ImmGetCompositionString(hIMC, GCS_RESULTSTR, buffer.data(), len);
+				CompleteString += buffer.data();
+				composingString.clear(); // 조합 완료된 문자열을 저장
+			}
+			::ImmReleaseContext(hWnd, hIMC);
+		}
+		break;
+	}
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
+	CGameInstance::Get_Instance()->Set_InputString(CompleteString + composingString);
+	
 	return 0;
 }
 

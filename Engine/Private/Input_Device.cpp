@@ -135,6 +135,18 @@ void CInput_Device::Update_InputDev()
 	}
 }
 
+void CInput_Device::Late_Update_InputDev()
+{
+	for (_uint i = 0; i < UCHAR_MAX + 1; i++)
+	{
+		m_byPreKeyState[i] = m_byKeyState[i];
+	}
+	for (_uint i = 0; i < DIM_END; i++)
+	{
+		m_PreMouseState.rgbButtons[i] = m_MouseState.rgbButtons[i];
+	}
+}
+
 _bool CInput_Device::Key_Pressing(_ubyte iKey)
 {
 	if (m_byKeyState[iKey] & 0x80)
@@ -145,31 +157,54 @@ _bool CInput_Device::Key_Pressing(_ubyte iKey)
 
 _bool CInput_Device::Key_Down(_ubyte iKey, InputChannel eInputChannel)
 {
-	if (!m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && (m_byKeyState[iKey] & 0x80))
+	if (eInputChannel == InputChannel::UI)
 	{
-		m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = true;
-		return true;
+		if (!m_byPreKeyState[iKey] && (m_byKeyState[iKey] & 0x80))
+		{
+			return true;
+		}
+
+		return false;
 	}
+	else
+	{
+		if (!m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && (m_byKeyState[iKey] & 0x80))
+		{
+			m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = true;
+			return true;
+		}
 
-	if (m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && !(m_byKeyState[iKey] & 0x80))
-		m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = false;
-
-	return false;
+		if (m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && !(m_byKeyState[iKey] & 0x80))
+			m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = false;
+		
+		return false;
+	}
 }
 
 _bool CInput_Device::Key_Up(_ubyte iKey, InputChannel eInputChannel)
 {
-	if (m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && !(m_byKeyState[iKey] & 0x80))
+	if (eInputChannel == InputChannel::UI)
 	{
-		m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = false;
-		return true;
+		if (m_byPreKeyState[iKey] && !(m_byKeyState[iKey] & 0x80))
+		{
+			return true;
+		}
+
+		return false;
 	}
+	else
+	{
+		if (m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && !(m_byKeyState[iKey] & 0x80))
+		{
+			m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = false;
+			return true;
+		}
 
-	if (!m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && (m_byKeyState[iKey] & 0x80))
-		m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = true;
+		if (!m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && (m_byKeyState[iKey] & 0x80))
+			m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = true;
 
-
-	return false;
+		return false;
+	}
 }
 
 _bool CInput_Device::Mouse_Pressing(_long iKey)
@@ -182,30 +217,54 @@ _bool CInput_Device::Mouse_Pressing(_long iKey)
 
 _bool CInput_Device::Mouse_Down(_long iKey, InputChannel eInputChannel)
 {
-	if (!m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] && (m_MouseState.rgbButtons[iKey] & 0x80))
+	if (eInputChannel == InputChannel::UI)
 	{
-		m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] = true;
-		return true;
+		if (!m_PreMouseState.rgbButtons[iKey] && (m_MouseState.rgbButtons[iKey] & 0x80))
+		{
+			return true;
+		}
+
+		return false;
 	}
+	else
+	{
+		if (!m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] && (m_MouseState.rgbButtons[iKey] & 0x80))
+		{
+			m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] = true;
+			return true;
+		}
 
-	if (m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] && !(m_MouseState.rgbButtons[iKey] & 0x80))
-		m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] = false;
+		if (m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] && !(m_MouseState.rgbButtons[iKey] & 0x80))
+			m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] = false;
 
-	return false;
+		return false;
+	}
 }
 
 _bool CInput_Device::Mouse_Up(_long iKey, InputChannel eInputChannel)
 {
-	if (m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] && !(m_MouseState.rgbButtons[iKey] & 0x80))
+	if (eInputChannel == InputChannel::UI)
 	{
-		m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] = false;
-		return true;
+		if (m_PreMouseState.rgbButtons[iKey] && !(m_MouseState.rgbButtons[iKey] & 0x80))
+		{
+			return true;
+		}
+
+		return false;
 	}
+	else
+	{
+		if (m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] && !(m_MouseState.rgbButtons[iKey] & 0x80))
+		{
+			m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] = false;
+			return true;
+		}
 
-	if (!m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] && (m_MouseState.rgbButtons[iKey] & 0x80))
-		m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] = true;
+		if (!m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] && (m_MouseState.rgbButtons[iKey] & 0x80))
+			m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] = true;
 
-	return false;
+		return false;
+	}
 }
 
 _long CInput_Device::Get_MouseMove(MouseState eMouseState)

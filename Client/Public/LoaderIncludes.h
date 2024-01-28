@@ -1,5 +1,10 @@
 #pragma once
 
+#include "Dialog.h"
+#include "3DUITex.h"
+#include "HPMonster.h"
+#include "ItemInfo.h"
+#include "Radar.h"
 #include "Inven.h"
 #include "Logo.h"
 #include "Odin.h"
@@ -49,7 +54,8 @@
 #include "Menu.h"
 #include "InvenFrame.h"
 #include "CommonTrail.h"
-
+#include "CommonSurfaceTrail.h"
+#include "Arrow.h";
 #include "Map.h"
 
 #include "Effect_Dummy.h"
@@ -69,6 +75,7 @@
 #include "Void20.h"
 #include "Void23.h"
 #include "Nastron07.h"
+#include "Spider.h"
 
 // NPC
 #include "Cat.h"

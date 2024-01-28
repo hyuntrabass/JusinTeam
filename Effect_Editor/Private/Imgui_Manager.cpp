@@ -123,6 +123,18 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		"InstPass_Particle_Sprite_Texture_RandomIndex_Dissolve",
 		"InstPass_Particle_Sprite_Color_RandomIndex",
 		"InstPass_Particle_Sprite_Color_RandomIndex_Dissolve",
+		"InstPass_Particle_TextureMask_Trail",
+		"InstPass_Particle_Sprite_Color_Trail",
+		"InstPass_Particle_MaskColor_Trail",
+		"InstPass_Particle_TextureMask_Dissolve_Trail",
+		"InstPass_Particle_Sprite_Color_Dissolve_Trail",
+		"InstPass_Particle_MaskColor_Dissolve_Trail",
+		"InstPass_Particle_Sprite_Texture_Trail",
+		"InstPass_Particle_Sprite_Texture_Dissolve_Trail",
+		"InstPass_Particle_Sprite_Texture_RandomIndex_Trail",
+		"InstPass_Particle_Sprite_Texture_RandomIndex_Dissolve_Trail",
+		"InstPass_Particle_Sprite_Color_RandomIndex_Trail",
+		"InstPass_Particle_Sprite_Color_RandomIndex_Dissolve_Trail",
 	};
 
 	const _char* szVTPasses[VTPass_End]
@@ -227,17 +239,31 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	static _bool hasDissolve{};
 
 	static _bool isSprite{};
+	static _bool isFixedIndex{};
 	static _int2 vNumSprites{ 1, 1 };
 	static _float fSpriteDuration{ 1.f };
+	static _int iFixedSpriteIndex{};
 	Checkbox("Sprite", &isSprite);
 	if (isSprite)
 	{
+		SameLine();
+		Checkbox("Fix Index", &isFixedIndex);
+
 		InputInt2("Number of Sprites", reinterpret_cast<_int*>(&vNumSprites));
 
-		InputFloat("Duration", &fSpriteDuration, 0.f, 0.f, "%.1f");
+		if (isFixedIndex)
+		{
+			InputInt("Index", &iFixedSpriteIndex);
+		}
+		else
+		{
+			InputFloat("Duration", &fSpriteDuration, 0.f, 0.f, "%.1f");
+		}
 
 		Info.isSprite = true;
 		Info.vNumSprites = vNumSprites;
+		Info.isFixedIndex = isFixedIndex;
+		Info.iFixedSpriteIndex = iFixedSpriteIndex;
 		Info.fSpriteDuration = fSpriteDuration;
 	}
 
@@ -324,6 +350,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 	static _vec2 vUVInit{};
 	static _vec2 vUVDelta{};
+	static _bool isUVLoop{};
 	if (m_hasMask)
 	{
 		if (m_iSelected_MaskTexture < 0)
@@ -338,6 +365,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			Info.vUVInit = vUVInit;
 			InputFloat2("UV Delta", reinterpret_cast<_float*>(&vUVDelta));
 			Info.vUVDelta = vUVDelta;
+			Checkbox("UV Loop", &isUVLoop);
+			Info.isUVLoop = isUVLoop;
 		}
 		Text(m_pItemList_Texture[m_iSelected_MaskTexture]);
 
@@ -616,15 +645,15 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	{
 		SeparatorText("Rect Information");
 
-		if (Info.isSprite)
-		{
-			InputFloat("Size##1", &fSizeforSprite);
+		//if (Info.isSprite)
+		//{
+		//	InputFloat("Size##1", &fSizeforSprite);
 
-			Info.vSize.y = fSizeforSprite;
-			_float fSizeRatio = 1.f / (Info.vNumSprites.x / Info.vNumSprites.y);
-			Info.vSize.x = fSizeforSprite * fSizeRatio;
-		}
-		else
+		//	Info.vSize.y = fSizeforSprite;
+		//	_float fSizeRatio = 1.f / (Info.vNumSprites.x / Info.vNumSprites.y);
+		//	Info.vSize.x = fSizeforSprite * fSizeRatio;
+		//}
+		//else
 		{
 			InputFloat2("Size##2", reinterpret_cast<_float*>(&vSize), "%.2f");
 			Info.vSize = vSize;
@@ -812,7 +841,15 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		if (Info.isSprite)
 		{
 			vNumSprites = Info.vNumSprites;
-			fSpriteDuration = Info.fSpriteDuration;
+			isFixedIndex = Info.isFixedIndex;
+			if (isFixedIndex)
+			{
+				iFixedSpriteIndex = Info.iFixedSpriteIndex;
+			}
+			else
+			{
+				fSpriteDuration = Info.fSpriteDuration;
+			}
 		}
 
 		if (Info.strMaskTexture.size())
@@ -821,6 +858,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			m_iSelected_MaskTexture = Compute_TextureIndex(Info.strMaskTexture);
 			vUVDelta = Info.vUVDelta;
 			vUVInit = Info.vUVInit;
+			isUVLoop = Info.isUVLoop;
 		}
 		else
 		{
@@ -873,7 +911,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		}
 
 		m_hasLight = Info.hasLight;
-		
+
 		if (m_hasLight)
 		{
 			Light_Desc = Info.Light_Desc;
@@ -1100,6 +1138,9 @@ EffectInfo CImgui_Manager::Load_Data()
 			InFile.read(reinterpret_cast<_char*>(&Info.isRandomSprite), sizeof Info.isRandomSprite);
 			InFile.read(reinterpret_cast<_char*>(&Info.hasLight), sizeof Info.hasLight);
 			InFile.read(reinterpret_cast<_char*>(&Info.Light_Desc), sizeof Info.Light_Desc);
+			InFile.read(reinterpret_cast<_char*>(&Info.isFixedIndex), sizeof Info.isFixedIndex);
+			InFile.read(reinterpret_cast<_char*>(&Info.iFixedSpriteIndex), sizeof Info.iFixedSpriteIndex);
+			InFile.read(reinterpret_cast<_char*>(&Info.isUVLoop), sizeof Info.isUVLoop);
 
 			size_t iNameSize{};
 
@@ -1192,6 +1233,10 @@ void CImgui_Manager::Load_OldData()
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.vUVInit), sizeof OldInfo.vUVInit);
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.vUVDelta), sizeof OldInfo.vUVDelta);
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.isRandomSprite), sizeof OldInfo.isRandomSprite);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.hasLight), sizeof OldInfo.hasLight);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.Light_Desc), sizeof OldInfo.Light_Desc);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.isFixedIndex), sizeof OldInfo.isFixedIndex);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.iFixedSpriteIndex), sizeof OldInfo.iFixedSpriteIndex);
 
 				size_t iNameSize{};
 
@@ -1259,9 +1304,14 @@ void CImgui_Manager::Load_OldData()
 			NewInfo.fDissolveDuration = OldInfo.fDissolveDuration;
 			NewInfo.bSkipBloom = OldInfo.bSkipBloom;
 			NewInfo.fUnDissolveDuration = OldInfo.fUnDissolveDuration;
-			NewInfo.vUVInit = _vec2();
+			NewInfo.vUVInit = OldInfo.vUVInit;
 			NewInfo.vUVDelta = OldInfo.vUVDelta;
 			NewInfo.isRandomSprite = OldInfo.isRandomSprite;
+			NewInfo.hasLight = OldInfo.hasLight;
+			NewInfo.Light_Desc = OldInfo.Light_Desc;
+			NewInfo.isFixedIndex = OldInfo.isFixedIndex;
+			NewInfo.iFixedSpriteIndex = OldInfo.iFixedSpriteIndex;
+			NewInfo.isUVLoop = false;
 
 			NewInfo.strDiffuseTexture = OldInfo.strDiffuseTexture;
 			NewInfo.strMaskTexture = OldInfo.strMaskTexture;
@@ -1296,6 +1346,9 @@ void CImgui_Manager::Load_OldData()
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.isRandomSprite), sizeof NewInfo.isRandomSprite);
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.hasLight), sizeof NewInfo.hasLight);
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.Light_Desc), sizeof NewInfo.Light_Desc);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.isFixedIndex), sizeof NewInfo.isFixedIndex);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.iFixedSpriteIndex), sizeof NewInfo.iFixedSpriteIndex);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.isUVLoop), sizeof NewInfo.isUVLoop);
 
 				size_t iNameSize{};
 				iNameSize = (NewInfo.strDiffuseTexture.size() + 1) * sizeof(_tchar);
@@ -1369,6 +1422,9 @@ HRESULT CImgui_Manager::Export_Data(EffectInfo& Info)
 			OutFile.write(reinterpret_cast<const _char*>(&Info.isRandomSprite), sizeof Info.isRandomSprite);
 			OutFile.write(reinterpret_cast<const _char*>(&Info.hasLight), sizeof Info.hasLight);
 			OutFile.write(reinterpret_cast<const _char*>(&Info.Light_Desc), sizeof Info.Light_Desc);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.isFixedIndex), sizeof Info.isFixedIndex);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.iFixedSpriteIndex), sizeof Info.iFixedSpriteIndex);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.isUVLoop), sizeof Info.isUVLoop);
 
 			size_t iNameSize{};
 			iNameSize = (Info.strDiffuseTexture.size() + 1) * sizeof(_tchar);

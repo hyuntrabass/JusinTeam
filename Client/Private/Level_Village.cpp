@@ -14,13 +14,15 @@ CLevel_Village::CLevel_Village(_dev pDevice, _context pContext)
 HRESULT CLevel_Village::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_VILLAGE);
-	
+	m_pGameInstance->StopAll();
+	m_pGameInstance->PlayBGM(TEXT("BGM_1st_Village"));
+
 	if (FAILED(Ready_Player()))
 	{
 		MSG_BOX("Failed to Ready Player");
 		return E_FAIL;
 	}
-	
+
 
 	if (FAILED(Ready_Camera()))
 	{
@@ -41,7 +43,7 @@ HRESULT CLevel_Village::Init()
 		MSG_BOX("Failed to Ready Map");
 		return E_FAIL;
 	}
-	
+
 
 	//if (FAILED(Ready_UI()))
 	//{
@@ -110,13 +112,13 @@ HRESULT CLevel_Village::Ready_Player()
 		return E_FAIL;
 	}
 
-	_vec4 Player_Pos{0.f};
+	_vec4 Player_Pos{ 0.f };
 	inFile.read(reinterpret_cast<char*>(&Player_Pos), sizeof(_vec4));
 
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-	pPlayerTransform->Set_State(State::Pos, Player_Pos);
+	pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 2.f, 0.f));
 
-	
+
 	return S_OK;
 }
 
@@ -239,7 +241,7 @@ HRESULT CLevel_Village::Ready_NpcvsMon()
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), MonsterPrototype, &Info)))
 		{
 			MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
-				return E_FAIL;
+			return E_FAIL;
 		}
 
 	}

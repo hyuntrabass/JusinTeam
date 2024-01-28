@@ -107,11 +107,7 @@ HRESULT CLoader::Loading_LevelResources()
 
 HRESULT CLoader::Load_Editor()
 {
-	m_strLoadingText = L"Editor : Loading Sounds";
-	if (FAILED(m_pGameInstance->Init_SoundManager(SCH_MAX)))
-	{
-		return E_FAIL;
-	}
+
 
 	m_strLoadingText = L"Editor : Loading Texture";
 #pragma region Texture
@@ -142,6 +138,13 @@ HRESULT CLoader::Load_Editor()
 	m_strLoadingText = L"Editor : Loading Object Model";
 #pragma region Model
 	//_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(90.f));
+
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Collider"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Model/Collider/Mesh/SM_EFF_Sphere_01.mo.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
 
 	_matrix Pivot = XMMatrixScaling(0.002f, 0.002f, 0.002f);
 
@@ -229,8 +232,7 @@ HRESULT CLoader::Load_Editor()
 	}
 	//_mat Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 	Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
-
-	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Environment/Grass/Mesh/";
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Environment/Tree/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -240,6 +242,29 @@ HRESULT CLoader::Load_Editor()
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
+			{
+				return E_FAIL;
+			}
+			//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CVIBuffer_Instancing_Mesh::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot, 30))))
+			//{
+			//	return E_FAIL;
+			//}
+		}
+	}
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Environment/Grass/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (!entry.exists())
+				return S_OK;
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+			//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
+			//{
+			//	return E_FAIL;
+			//}
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CVIBuffer_Instancing_Mesh::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot, 30))))
 			{
 				return E_FAIL;
 			}
@@ -255,28 +280,18 @@ HRESULT CLoader::Load_Editor()
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
+			//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
+			//{
+			//	return E_FAIL;
+			//}
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CVIBuffer_Instancing_Mesh::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot, 30))))
 			{
 				return E_FAIL;
 			}
 		}
 	}
 
-	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Environment/Tree/Mesh/";
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
-	{
-		if (entry.is_regular_file())
-		{
-			if (!entry.exists())
-				return S_OK;
-			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
-			{
-				return E_FAIL;
-			}
-		}
-	}
 
 #pragma endregion
 
@@ -420,15 +435,7 @@ HRESULT CLoader::Load_Editor()
 
 	m_strLoadingText = L"Editor : Loading Prototype";
 #pragma region Prototype
-#pragma endregion
 
-	m_strLoadingText = L"CreateCharacter : Loading Sounds";
-	if (FAILED(m_pGameInstance->Init_SoundManager(SCH_MAX)))
-	{
-		return E_FAIL;
-	}
-
-	m_strLoadingText = L"Editor : Loading Texture";
 #pragma region Texture
 
 #pragma region UI
@@ -443,6 +450,7 @@ HRESULT CLoader::Load_Editor()
 
 	m_strLoadingText = L"Editor : Loading Prototype";
 #pragma region Prototype
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Debug"), CCamera_Debug::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;

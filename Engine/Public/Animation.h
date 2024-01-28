@@ -15,12 +15,7 @@ public:
 	const _bool& IsFinished() const;
 	const _float Get_CurrentAnimPos() const;
 	const _float Get_Duration() const;
-	//나중에 지울것들
-	const _uint Get_NumTrigger() const;
-	vector<_float>& Get_Triggers();
-	void Add_Trigger(_float fAnimPos);
-	void Reset_Trigger();
-	//여기까지
+
 	void ResetFinished();
 	void Set_CurrentAnimPos(_float fCurrentAnimPos);
 
@@ -31,7 +26,7 @@ public:
 
 public:
 	HRESULT Init(ifstream& ModelFile, const vector<class CBone*>& Bones);
-	void Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio);
+	void Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio,_float fStartAnimPos = 0.f);
 
 	HRESULT Prepare_Animation(const vector<class CBone*>& Bones, _uint iFrame);
 

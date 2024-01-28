@@ -1,4 +1,5 @@
 #include "Rabbit.h"
+#include "UI_Manager.h"
 
 const _float CRabbit::m_fChaseRange = 5.f;
 const _float CRabbit::m_fAttackRange = 2.f;
@@ -31,9 +32,10 @@ HRESULT CRabbit::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 
-	//m_pTransformCom->Set_State(State::Pos, _vec4(5.f, 0.f, 0.f, 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(100.f, 8.f, 108.f, 1.f));
+	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
@@ -42,18 +44,43 @@ HRESULT CRabbit::Init(void* pArg)
 
 	m_eCurState = STATE_IDLE;
 
-	m_iHP = 10;
+	m_iHP = 250;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
+
+	PxCapsuleControllerDesc ControllerDesc{};
+	ControllerDesc.height = 0.4f; // 높이(위 아래의 반구 크기 제외
+	ControllerDesc.radius = 0.6f; // 위아래 반구의 반지름
+	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+
+	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+
+	CHPMonster::HP_DESC HpDesc = {};
+	HpDesc.eLevelID = LEVEL_STATIC;
+	HpDesc.iMaxHp = m_iHP;
+	HpDesc.pParentTransform = m_pTransformCom;
+	HpDesc.vPosition = _vec3(0.f, 1.2f, 0.f);
+	m_HpBar = (CHPMonster*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPMonster"), &HpDesc);
+	if (m_HpBar == nullptr)
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
 
 void CRabbit::Tick(_float fTimeDelta)
 {
+	//죽을때 레이더 감지에서 트랜스폼 빼줘야함
+	//CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
+
 	if (m_pGameInstance->Key_Down(DIK_R))
 	{
-		Set_Damage(0, AT_Bow_Common);
+		//Set_Damage(0, AT_Bow_Common);
+		Kill();
 	}
 
 	Init_State(fTimeDelta);
@@ -61,8 +88,12 @@ void CRabbit::Tick(_float fTimeDelta)
 
 	m_pModelCom->Set_Animation(m_Animation);
 
+	m_HpBar->Tick(fTimeDelta);
 	Update_Collider();
 	__super::Update_MonsterCollider();
+
+	m_pTransformCom->Gravity(fTimeDelta);
+
 }
 
 void CRabbit::Late_Tick(_float fTimeDelta)
@@ -74,6 +105,7 @@ void CRabbit::Late_Tick(_float fTimeDelta)
 	//	m_pModelCom->Play_Animation(fTimeDelta);
 	//}
 
+	m_HpBar->Late_Tick(fTimeDelta);
 #ifdef _DEBUGTEST
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
@@ -240,8 +272,10 @@ void CRabbit::Tick_State(_float fTimeDelta)
 	{
 		_vec4 vPlayerPos = __super::Compute_PlayerPos();
 		_float fDistance = __super::Compute_PlayerDistance();
+		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
+		vDir.y = 0.f;
 
-		m_pTransformCom->LookAt(vPlayerPos);
+		m_pTransformCom->LookAt_Dir(vDir);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 
 		if (fDistance > m_fChaseRange && !m_bDamaged)
@@ -281,7 +315,8 @@ void CRabbit::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 45.f && fAnimpos <= 47.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iSmallDamage / 2 - rand() % 20;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
 				}
 			}
@@ -295,12 +330,14 @@ void CRabbit::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 37.f && fAnimpos <= 39.f && !m_bAttacked)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iSmallDamage / 2 - rand() % 20;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
 				}
 				if (fAnimpos >= 52.f && fAnimpos <= 54.f && !m_bAttacked2)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 2, 0);
+					_uint iDamage = m_iSmallDamage / 2 - rand() % 20;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked2 = true;
 				}
 			}
@@ -390,4 +427,5 @@ CGameObject* CRabbit::Clone(void* pArg)
 void CRabbit::Free()
 {
 	__super::Free();
+	Safe_Release(m_HpBar);
 }

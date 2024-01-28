@@ -321,7 +321,6 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 
 		ModelFile.close();
 
-
 		if (eType == ModelType::Anim)
 		{
 			if (FAILED(Read_TriggerEffects(strFilePath)))
@@ -357,12 +356,32 @@ HRESULT CModel::Init(void* pArg)
 		_mat* pMatrix = new _mat{};
 		m_EffectMatrices.push_back(pMatrix);
 	}
+	
+	
+
+	random_device rand;
+	m_RandomNumber = _randNum(rand());
 
 	return S_OK;
 }
 
 void CModel::Play_Animation(_float fTimeDelta)
 {
+	//트리거 루프
+	if ((m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() + fTimeDelta * m_AnimDesc.fAnimSpeedRatio * m_Animations[m_AnimDesc.iAnimIndex]->Get_TickPerSec()) >=
+		(m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() * m_AnimDesc.fDurationRatio) ||
+		m_isAnimChanged)
+	{
+		for (size_t i = 0; i < m_TriggerEffects.size(); i++)
+		{
+			m_TriggerEffects[i].HasCreated = false;
+		}
+		for (size_t i = 0; i < m_TriggerSounds.size(); i++)
+		{
+			m_TriggerSounds[i].HasPlayed = false;
+		}
+	}
+
 	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop,
 		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio);
 
@@ -388,8 +407,8 @@ void CModel::Play_Animation(_float fTimeDelta)
 			}
 		}
 		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iStartAnimIndex &&
-			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fStartAnimPos &&
-			not m_pGameInstance->Has_Created_Effect(m_EffectMatrices[i]))
+			static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerEffects[i].fStartAnimPos) &&
+			not m_TriggerEffects[i].HasCreated)
 		{
 			//초기 매트릭스 세팅
 			if (m_TriggerEffects[i].IsDeleteRotateToBone)
@@ -402,25 +421,16 @@ void CModel::Play_Animation(_float fTimeDelta)
 				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
 			}
 			//이펙트 생성
-			if (m_TriggerEffects[i].iEndAnimIndices[0] < 0)
-			{
-				if (static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerEffects[i].fStartAnimPos))
-				{
-					m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
-				}
-			}
-			else
-			{
-				m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
-			}
+			m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
+			m_TriggerEffects[i].HasCreated = true;
 		}
 
 		//이펙트 제거
 		for (size_t j = 0; j < m_TriggerEffects[i].iEndAnimIndices.size(); j++)
 		{
 			if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iEndAnimIndices[j] &&
-				m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fEndAnimPoses[j] &&
-				m_TriggerEffects[i].iEndAnimIndices[j] > 0 && m_pGameInstance->Has_Created_Effect(m_EffectMatrices[i]))
+				static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerEffects[i].fEndAnimPoses[j]) &&
+				m_pGameInstance->Has_Created_Effect(m_EffectMatrices[i]))
 			{
 				m_pGameInstance->Delete_Effect(m_EffectMatrices[i]);
 			}
@@ -430,19 +440,35 @@ void CModel::Play_Animation(_float fTimeDelta)
 
 #pragma region Trigger_Sound
 	for (size_t i = 0; i < m_TriggerSounds.size(); i++)
-	{
+	{	//사운드 생성
 		if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iStartAnimIndex &&
 			static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerSounds[i].fStartAnimPos) &&
-			m_TriggerSounds[i].iChannel == -1)
+			not m_TriggerSounds[i].HasPlayed)
 		{
-			m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[0], m_TriggerSounds[i].fVolume);
+			_int iMaxSound = m_TriggerSounds[i].strSoundNames.size() - 1;
+			_randInt RandomSound(0, iMaxSound);
+			m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[RandomSound(m_RandomNumber)], m_TriggerSounds[i].fVolume);
+			m_TriggerSounds[i].HasPlayed = true;
 		}
-
+		//채널 갱신
 		if (m_TriggerSounds[i].iChannel != -1)
 		{
 			if (not m_pGameInstance->Get_IsPlayingSound(m_TriggerSounds[i].iChannel))
 			{
 				m_TriggerSounds[i].iChannel = -1;
+			}
+		}
+		//사운드 제거
+		if (m_TriggerSounds[i].iChannel != -1)
+		{
+			for (size_t j = 0; j < m_TriggerSounds[i].iEndAnimIndices.size(); j++)
+			{
+				if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iEndAnimIndices[j] &&
+					m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerSounds[i].fEndAnimPoses[j])
+				{
+					m_pGameInstance->StopSound(m_TriggerSounds[i].iChannel);
+					m_TriggerSounds[i].iChannel = -1;
+				}
 			}
 		}
 	}
@@ -487,6 +513,7 @@ HRESULT CModel::Render(_uint iMeshIndex)
 
 	return S_OK;
 }
+
 
 _bool CModel::Intersect_RayModel(_fmatrix WorldMatrix, _vec4* pPickPos)
 {
@@ -688,13 +715,30 @@ HRESULT CModel::Read_TriggerSounds(const string& strFilePath)
 			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.iStartAnimIndex), sizeof(_int));
 			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fStartAnimPos), sizeof(_float));
 
-			size_t iNameSize{};
-			_tchar* pBuffer{};
-			TriggerFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
-			pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
-			TriggerFile.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
-			SoundDesc.strSoundNames.push_back(pBuffer);
-			Safe_Delete_Array(pBuffer);
+			_uint iNumEnd{};
+			TriggerFile.read(reinterpret_cast<_char*>(&iNumEnd), sizeof(_uint));
+			for (_uint i = 0; i < iNumEnd; i++)
+			{
+				_int iEndAnimIndex{};
+				TriggerFile.read(reinterpret_cast<_char*>(&iEndAnimIndex), sizeof(_int));
+				SoundDesc.iEndAnimIndices.push_back(iEndAnimIndex);
+				_float fEndAnimPos{};
+				TriggerFile.read(reinterpret_cast<_char*>(&fEndAnimPos), sizeof(_float));
+				SoundDesc.fEndAnimPoses.push_back(fEndAnimPos);
+			}
+
+			_uint iNumName{};
+			TriggerFile.read(reinterpret_cast<_char*>(&iNumName), sizeof(_uint));
+			for (size_t i = 0; i < iNumName; i++)
+			{
+				size_t iNameSize{};
+				_tchar* pBuffer{};
+				TriggerFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+				pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
+				TriggerFile.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
+				SoundDesc.strSoundNames.push_back(pBuffer);
+				Safe_Delete_Array(pBuffer);
+			}
 
 			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fVolume), sizeof(_float));
 

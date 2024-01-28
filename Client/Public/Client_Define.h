@@ -221,7 +221,13 @@ namespace Client
 		_mat m_WorldMatrix{};
 		ObjectType eObjectType{ };
 	};
-
+	enum Monster_AttType
+	{
+		MonAtt_Hit,
+		MonAtt_KnockDown,
+		MonAtt_Stun,
+		MonAtt_End
+	};
 #pragma endregion
 
 	struct UiInfo
@@ -323,6 +329,8 @@ namespace Client
 		VTPass_BLUR,
 		VTPass_Bright,
 		VTPass_ScrollAlpha,
+		VTPass_HPNoMask,
+		VTPass_NineSlice,
 		VTPass_End
 	};
 
@@ -340,6 +348,18 @@ namespace Client
 		InstPass_Particle_Sprite_Texture_RandomIndex_Dissolve,
 		InstPass_Particle_Sprite_Color_RandomIndex,
 		InstPass_Particle_Sprite_Color_RandomIndex_Dissolve,
+		InstPass_Particle_TextureMask_Trail,
+		InstPass_Particle_Sprite_Color_Trail,
+		InstPass_Particle_MaskColor_Trail,
+		InstPass_Particle_TextureMask_Dissolve_Trail,
+		InstPass_Particle_Sprite_Color_Dissolve_Trail,
+		InstPass_Particle_MaskColor_Dissolve_Trail,
+		InstPass_Particle_Sprite_Texture_Trail,
+		InstPass_Particle_Sprite_Texture_Dissolve_Trail,
+		InstPass_Particle_Sprite_Texture_RandomIndex_Trail,
+		InstPass_Particle_Sprite_Texture_RandomIndex_Dissolve_Trail,
+		InstPass_Particle_Sprite_Color_RandomIndex_Trail,
+		InstPass_Particle_Sprite_Color_RandomIndex_Dissolve_Trail,
 		InstPass_End,
 	};
 #pragma endregion

@@ -110,15 +110,8 @@ void CCamera_Main::Tick(_float fTimeDelta)
 				}
 
 				if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
-				{
-
-					_mat testmat = m_pTransformCom->Get_World_Matrix();
+				{			
 					m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
-					_vec4 ps = m_pTransformCom->Get_State(State::Pos);
-					_vec4 pps = m_pPlayerTransform->Get_State(State::Pos);
-
-					if (ps.y < _float(pps.y + 0.5f) && dwMouseMove <= 0.f)
-						m_pTransformCom->Set_Matrix(testmat);
 				}
 
 			}
@@ -187,11 +180,19 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		_vec4 vRayDir{};
 		_vec4 vMyPos = m_pTransformCom->Get_State(State::Pos);
 		_vec4 PlayerCenter = m_pPlayerTransform->Get_CenterPos();
-		
+		_float ps = vMyPos.y - PlayerCenter.y;
+		if (ps < 0.f)
+			ps = 0.f;
+		 
+		ps *= 0.2f;
 		vRayDir = vMyPos - PlayerCenter;
-		vRayDir.Normalize();
 		_float fDist = XMVectorGetX(XMVector3Length(vRayDir)) - 0.4f;
-		if (m_pGameInstance->Raycast(m_pPlayerTransform->Get_CenterPos() + vRayDir * 0.5f, vRayDir, fDist, Buffer))
+		vRayDir.Normalize();
+		PxQueryFilterData Filter;
+		Filter.data.word0 = ~COLGROUP_PLAYER;
+		
+
+		if (m_pGameInstance->Raycast(m_pPlayerTransform->Get_CenterPos() /*+ vRayDir * (0.5f + ps)*/, vRayDir, fDist, Buffer))
 		{
 			m_pTransformCom->Set_State(State::Pos, PxVec3ToVector(Buffer.block.position, 1.f));
 		}
@@ -204,7 +205,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 	} 
 	else
 	{
-		m_fPlayerDistance = 8.f;
+		m_fPlayerDistance = 7.f;
 		_long dwMouseMove;
 		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
 		{
@@ -218,7 +219,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 				_vec4 ps = m_pTransformCom->Get_State(State::Pos);
 				_vec4 pps = m_pPlayerTransform->Get_State(State::Pos);
 
-				if (ps.y < _float(pps.y + 0.5f) && dwMouseMove <= 0.f)
+				
 					m_pTransformCom->Set_Matrix(testmat);
 			}
 
@@ -227,8 +228,8 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			_vec4 PlayerRight = m_pPlayerTransform->Get_State(State::Right).Get_Normalized();
 			_vec4 PlayerUp = m_pPlayerTransform->Get_State(State::Up).Get_Normalized();
 			_vec3 AimPos = m_pGameInstance->Get_AimPos();
-			m_vAimCamPos = m_pPlayerTransform->Get_CenterPos() - vMeLook * AimPos.z
-				+ (PlayerUp * AimPos.y) + (PlayerRight * AimPos.x);
+			m_vAimCamPos = m_pPlayerTransform->Get_CenterPos() - (vMeLook * AimPos.z * 1.3f)
+				+ (PlayerUp * AimPos.y * 0.5f) + (PlayerRight * AimPos.x);
 
 		_vec4 OriCam{};
 		if (m_AimZoomOutTime < 1.f)

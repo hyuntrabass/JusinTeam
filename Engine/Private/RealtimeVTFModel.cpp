@@ -6,6 +6,9 @@
 #include "Shader.h"
 #include "Part_Model.h"
 
+//트리거
+#include "GameInstance.h"
+
 CRealtimeVTFModel::CRealtimeVTFModel(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
 {
@@ -19,6 +22,10 @@ CRealtimeVTFModel::CRealtimeVTFModel(const CRealtimeVTFModel& rhs)
 	, m_Materials(rhs.m_Materials)
 	, m_PivotMatrix(rhs.m_PivotMatrix)
 	, m_iNumAnimations(rhs.m_iNumAnimations)
+	, m_iNumTriggersEffect(rhs.m_iNumTriggersEffect)
+	, m_TriggerEffects(rhs.m_TriggerEffects)
+	, m_iNumTriggersSound(rhs.m_iNumTriggersSound)
+	, m_TriggerSounds(rhs.m_TriggerSounds)
 {
 	for (auto& pPrototypeBone : rhs.m_Bones) {
 		CBone* pBone = pPrototypeBone->Clone();
@@ -57,6 +64,118 @@ CRealtimeVTFModel::CRealtimeVTFModel(const CRealtimeVTFModel& rhs)
 		CPart_Model* pPart = reinterpret_cast<CPart_Model*>(PrototypePartPair.second->Clone());
 		m_PrototypeParts.emplace(PrototypePartPair.first, pPart);
 	}
+}
+
+const _uint& CRealtimeVTFModel::Get_NumAnim() const
+{
+	return m_iNumAnimations;
+}
+
+const _uint CRealtimeVTFModel::Get_NumBones() const
+{
+	return m_Bones.size();
+}
+
+vector<class CAnimation*>& CRealtimeVTFModel::Get_Animations()
+{
+	return m_Animations;
+}
+
+CAnimation* CRealtimeVTFModel::Get_Animation(_uint iAnimIndex)
+{
+	return m_Animations[iAnimIndex];
+}
+
+vector<class CBone*>& CRealtimeVTFModel::Get_Bones()
+{
+	return m_Bones;
+}
+
+const _uint CRealtimeVTFModel::Get_NumTriggerEffect() const
+{
+	return m_iNumTriggersEffect;
+}
+
+TRIGGEREFFECT_DESC* CRealtimeVTFModel::Get_TriggerEffect(_uint iTriggerEffectIndex)
+{
+	return &m_TriggerEffects[iTriggerEffectIndex];
+}
+
+vector<TRIGGEREFFECT_DESC>& CRealtimeVTFModel::Get_TriggerEffects()
+{
+	return m_TriggerEffects;
+}
+void CRealtimeVTFModel::Add_TriggerEffect(TRIGGEREFFECT_DESC TriggerEffectDesc)
+{
+	m_iNumTriggersEffect++;
+	m_TriggerEffects.push_back(TriggerEffectDesc);
+	_mat* pMatrix = new _mat{};
+	m_EffectMatrices.push_back(pMatrix);
+}
+
+void CRealtimeVTFModel::Delete_TriggerEffect(_uint iTriggerEffectIndex)
+{
+	m_iNumTriggersEffect--;
+	auto Effect_iter = m_TriggerEffects.begin();
+	auto Matrix_iter = m_EffectMatrices.begin();
+	for (_uint i = 0; i < iTriggerEffectIndex; i++)
+	{
+		Effect_iter++;
+		Matrix_iter++;
+	}
+	m_pGameInstance->Delete_Effect((*Matrix_iter));
+	m_TriggerEffects.erase(Effect_iter);
+	m_EffectMatrices.erase(Matrix_iter);
+}
+
+void CRealtimeVTFModel::Reset_TriggerEffects()
+{
+	m_iNumTriggersEffect = 0;
+	m_TriggerEffects.clear();
+	for (auto& pEffectMatrix : m_EffectMatrices)
+	{
+		m_pGameInstance->Delete_Effect(pEffectMatrix);
+		Safe_Delete(pEffectMatrix);
+	}
+	m_EffectMatrices.clear();
+}
+
+const _uint CRealtimeVTFModel::Get_NumTriggerSound() const
+{
+	return m_iNumTriggersSound;
+}
+
+TRIGGERSOUND_DESC* CRealtimeVTFModel::Get_TriggerSound(_uint iTriggerSoundIndex)
+{
+	return &m_TriggerSounds[iTriggerSoundIndex];
+}
+
+vector<TRIGGERSOUND_DESC>& CRealtimeVTFModel::Get_TriggerSounds()
+{
+	return m_TriggerSounds;
+}
+
+void CRealtimeVTFModel::Add_TriggerSound(TRIGGERSOUND_DESC TriggerSoundDesc)
+{
+	m_iNumTriggersSound++;
+	m_TriggerSounds.push_back(TriggerSoundDesc);
+}
+
+void CRealtimeVTFModel::Delete_TriggerSound(_uint iTriggerSoundIndex)
+{
+	m_iNumTriggersSound--;
+	auto Sound_iter = m_TriggerSounds.begin();
+	for (_uint i = 0; i < iTriggerSoundIndex; i++)
+	{
+		Sound_iter++;
+	}
+	m_TriggerSounds.erase(Sound_iter);
+}
+
+void CRealtimeVTFModel::Reset_TriggerSounds()
+{
+	m_iNumTriggersSound = 0;
+	m_TriggerSounds.clear();
 }
 
 HRESULT CRealtimeVTFModel::Init_Prototype(const string& strFilePath, _fmatrix PivotMatrix)
@@ -119,27 +238,14 @@ HRESULT CRealtimeVTFModel::Init_Prototype(const string& strFilePath, _fmatrix Pi
 
 		if (m_eType == ModelType::Anim)
 		{
-			_char szTriggerFilePath[MAX_PATH]{};
-			strcpy_s(szTriggerFilePath, MAX_PATH, szDirectory);
-			strcat_s(szTriggerFilePath, MAX_PATH, szFileName);
-			strcat_s(szTriggerFilePath, MAX_PATH, szTriggerExt);
-
-			ifstream TriggerFile(szTriggerFilePath, ios::binary);
-			if (TriggerFile.is_open())
+			if (FAILED(Read_TriggerEffects(strFilePath)))
 			{
-				_uint iAnimIndex = { 0 };
-				TriggerFile.read(reinterpret_cast<char*>(&iAnimIndex), sizeof _uint);
+				return E_FAIL;
+			}
 
-				_uint iNumTrigger = { 0 };
-				TriggerFile.read(reinterpret_cast<char*>(&iNumTrigger), sizeof _uint);
-				for (_uint i = 0; i < iNumTrigger; i++)
-				{
-					_float fTrigger = { 0.f };
-					TriggerFile.read(reinterpret_cast<char*>(&fTrigger), sizeof _float);
-					m_Animations[iAnimIndex]->Add_Trigger(fTrigger);
-				}
-
-				TriggerFile.close();
+			if (FAILED(Read_TriggerSounds(strFilePath)))
+			{
+				return E_FAIL;
 			}
 		}
 	}
@@ -158,6 +264,21 @@ HRESULT CRealtimeVTFModel::Init(void* pArg, const CRealtimeVTFModel& rhs)
 {
 	if (FAILED(CreateVTF()))
 		return E_FAIL;
+
+	if (pArg != nullptr)
+	{
+		m_pOwnerTransform = reinterpret_cast<CTransform*>(pArg);
+		Safe_AddRef(m_pOwnerTransform);
+	}
+
+	for (size_t i = 0; i < m_TriggerEffects.size(); i++)
+	{
+		_mat* pMatrix = new _mat{};
+		m_EffectMatrices.push_back(pMatrix);
+	}
+
+	random_device rand;
+	m_RandomNumber = _randNum(rand());
 
 	return S_OK;
 }
@@ -192,9 +313,23 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 {
 	if (true == m_isUsingMotionBlur)
 		m_pContext->CopyResource(m_pOldBoneTexture, m_pBoneTexture);
+	//트리거 루프
+	if ((m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() + fTimeDelta * m_AnimDesc.fAnimSpeedRatio * m_Animations[m_AnimDesc.iAnimIndex]->Get_TickPerSec()) >=
+		(m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() * m_AnimDesc.fDurationRatio) ||
+		m_isAnimChanged)
+	{
+		for (size_t i = 0; i < m_TriggerEffects.size(); i++)
+		{
+			m_TriggerEffects[i].HasCreated = false;
+		}
+		for (size_t i = 0; i < m_TriggerSounds.size(); i++)
+		{
+			m_TriggerSounds[i].HasPlayed = false;
+		}
+	}
 
 	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop,
-		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio);
+		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio,m_AnimDesc.fStartAimPos);
 
 
 	vector<_mat> CombinedBones;
@@ -209,6 +344,90 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 		return E_FAIL;
 
 	CombinedBones.clear();
+
+#pragma region Trigger_Effect
+	for (size_t i = 0; i < m_TriggerEffects.size(); i++)
+	{
+		//이펙트 위치 갱신
+		if (m_TriggerEffects[i].IsFollow && m_pGameInstance->Has_Created_Effect(m_EffectMatrices[i]))
+		{
+			if (m_TriggerEffects[i].IsDeleteRotateToBone)
+			{
+				_mat BoneMatrix = *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix();
+				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * BoneMatrix.Get_RotationRemoved() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
+			}
+			else
+			{
+				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
+			}
+		}
+		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iStartAnimIndex &&
+			static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerEffects[i].fStartAnimPos) &&
+				not m_TriggerEffects[i].HasCreated)
+		{
+			//초기 매트릭스 세팅
+			if (m_TriggerEffects[i].IsDeleteRotateToBone)
+			{
+				_mat BoneMatrix = *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix();
+				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * BoneMatrix.Get_RotationRemoved() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
+			}
+			else
+			{
+				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
+			}
+			//이펙트 생성
+			m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
+			m_TriggerEffects[i].HasCreated = true;
+		}
+
+		//이펙트 제거
+		for (size_t j = 0; j < m_TriggerEffects[i].iEndAnimIndices.size(); j++)
+		{
+			if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iEndAnimIndices[j] &&
+				static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerEffects[i].fEndAnimPoses[j]) &&
+				m_pGameInstance->Has_Created_Effect(m_EffectMatrices[i]))
+			{
+				m_pGameInstance->Delete_Effect(m_EffectMatrices[i]);
+			}
+		}
+	}
+#pragma endregion
+
+#pragma region Trigger_Sound
+	for (size_t i = 0; i < m_TriggerSounds.size(); i++)
+	{	//사운드 생성
+		if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iStartAnimIndex &&
+			static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerSounds[i].fStartAnimPos) &&
+			not m_TriggerSounds[i].HasPlayed)
+		{
+			_int iMaxSound = m_TriggerSounds[i].strSoundNames.size() - 1;
+			_randInt RandomSound(0, iMaxSound);
+			m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[RandomSound(m_RandomNumber)], m_TriggerSounds[i].fVolume);
+			m_TriggerSounds[i].HasPlayed = true;
+		}
+		//채널 갱신
+		if (m_TriggerSounds[i].iChannel != -1)
+		{
+			if (not m_pGameInstance->Get_IsPlayingSound(m_TriggerSounds[i].iChannel))
+			{
+				m_TriggerSounds[i].iChannel = -1;
+			}
+		}
+		//사운드 제거
+		if (m_TriggerSounds[i].iChannel != -1)
+		{
+			for (size_t j = 0; j < m_TriggerSounds[i].iEndAnimIndices.size(); j++)
+			{
+				if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iEndAnimIndices[j] &&
+					m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerSounds[i].fEndAnimPoses[j])
+				{
+					m_pGameInstance->StopSound(m_TriggerSounds[i].iChannel);
+					m_TriggerSounds[i].iChannel = -1;
+				}
+			}
+		}
+	}
+#pragma endregion
 
 	return S_OK;
 }
@@ -230,7 +449,6 @@ void CRealtimeVTFModel::Set_Animation(ANIM_DESC Animation_Desc)
 		else if (0 > m_AnimDesc.iAnimIndex)
 			m_AnimDesc.iAnimIndex = 0;
 	}
-
 }
 
 const _bool& CRealtimeVTFModel::IsAnimationFinished(_uint iAnimIndex) const
@@ -570,6 +788,121 @@ HRESULT CRealtimeVTFModel::UpdateBoneTexture(vector<_mat>& CombinedBones)
 	return S_OK;
 }
 
+HRESULT CRealtimeVTFModel::Read_TriggerEffects(const string& strFilePath)
+{
+	_char szTriggerFilePath[MAX_PATH]{};
+	_char szDirectory[MAX_PATH]{};
+	_char szFileName[MAX_PATH]{};
+	_char szExt[MAX_PATH] = ".effecttrigger";
+	_splitpath_s(strFilePath.c_str(), nullptr, 0, szDirectory, MAX_PATH, szFileName, MAX_PATH, nullptr, 0);
+	strcpy_s(szTriggerFilePath, MAX_PATH, szDirectory);
+	strcat_s(szTriggerFilePath, MAX_PATH, szFileName);
+	strcat_s(szTriggerFilePath, MAX_PATH, szExt);
+
+	ifstream TriggerFile(szTriggerFilePath, ios::binary);
+	if (TriggerFile.is_open())
+	{
+		_uint iNumTriggerEffect = { 0 };
+		TriggerFile.read(reinterpret_cast<char*>(&iNumTriggerEffect), sizeof _uint);
+		for (_uint i = 0; i < iNumTriggerEffect; i++)
+		{
+			TRIGGEREFFECT_DESC EffectDesc{};
+			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.iStartAnimIndex), sizeof(_int));
+			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.fStartAnimPos), sizeof(_float));
+			_uint iNumEnd{};
+			TriggerFile.read(reinterpret_cast<_char*>(&iNumEnd), sizeof(_uint));
+			for (_uint i = 0; i < iNumEnd; i++)
+			{
+				_int iEndAnimIndex{};
+				TriggerFile.read(reinterpret_cast<_char*>(&iEndAnimIndex), sizeof(_int));
+				EffectDesc.iEndAnimIndices.push_back(iEndAnimIndex);
+				_float fEndAnimPos{};
+				TriggerFile.read(reinterpret_cast<_char*>(&fEndAnimPos), sizeof(_float));
+				EffectDesc.fEndAnimPoses.push_back(fEndAnimPos);
+			}
+			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.IsFollow), sizeof(_bool));
+
+			size_t iNameSize{};
+			_tchar* pBuffer{};
+			TriggerFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+			pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
+			TriggerFile.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
+			EffectDesc.strEffectName = pBuffer;
+			Safe_Delete_Array(pBuffer);
+
+			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.iBoneIndex), sizeof(_uint));
+			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.OffsetMatrix), sizeof(_mat));
+			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.IsDeleteRotateToBone), sizeof(_bool));
+
+			m_TriggerEffects.push_back(EffectDesc);
+			m_iNumTriggersEffect++;
+		}
+		TriggerFile.close();
+	}
+
+	return S_OK;
+}
+
+HRESULT CRealtimeVTFModel::Read_TriggerSounds(const string& strFilePath)
+{
+	_char szTriggerFilePath[MAX_PATH]{};
+	_char szDirectory[MAX_PATH]{};
+	_char szFileName[MAX_PATH]{};
+	_char szExt[MAX_PATH] = ".soundtrigger";
+	_splitpath_s(strFilePath.c_str(), nullptr, 0, szDirectory, MAX_PATH, szFileName, MAX_PATH, nullptr, 0);
+	strcpy_s(szTriggerFilePath, MAX_PATH, szDirectory);
+	strcat_s(szTriggerFilePath, MAX_PATH, szFileName);
+	strcat_s(szTriggerFilePath, MAX_PATH, szExt);
+
+	ifstream TriggerFile(szTriggerFilePath, ios::binary);
+	if (TriggerFile.is_open())
+	{
+		_uint iNumTriggerSound = { 0 };
+		TriggerFile.read(reinterpret_cast<char*>(&iNumTriggerSound), sizeof _uint);
+		for (_uint i = 0; i < iNumTriggerSound; i++)
+		{
+			TRIGGERSOUND_DESC SoundDesc{};
+
+			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.iStartAnimIndex), sizeof(_int));
+			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fStartAnimPos), sizeof(_float));
+
+			_uint iNumEnd{};
+			TriggerFile.read(reinterpret_cast<_char*>(&iNumEnd), sizeof(_uint));
+			for (_uint i = 0; i < iNumEnd; i++)
+			{
+				_int iEndAnimIndex{};
+				TriggerFile.read(reinterpret_cast<_char*>(&iEndAnimIndex), sizeof(_int));
+				SoundDesc.iEndAnimIndices.push_back(iEndAnimIndex);
+				_float fEndAnimPos{};
+				TriggerFile.read(reinterpret_cast<_char*>(&fEndAnimPos), sizeof(_float));
+				SoundDesc.fEndAnimPoses.push_back(fEndAnimPos);
+			}
+
+			_uint iNumName{};
+			TriggerFile.read(reinterpret_cast<_char*>(&iNumName), sizeof(_uint));
+			for (size_t i = 0; i < iNumName; i++)
+			{
+				size_t iNameSize{};
+				_tchar* pBuffer{};
+				TriggerFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+				pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
+				TriggerFile.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
+				SoundDesc.strSoundNames.push_back(pBuffer);
+				Safe_Delete_Array(pBuffer);
+			}
+
+			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fVolume), sizeof(_float));
+
+			m_TriggerSounds.push_back(SoundDesc);
+			m_iNumTriggersSound++;
+		}
+
+		TriggerFile.close();
+	}
+
+	return S_OK;
+}
+
 CRealtimeVTFModel* CRealtimeVTFModel::Create(_dev pDevice, _context pContext, const string& strFilePath, _fmatrix PivotMatrix)
 {
 	CRealtimeVTFModel* pInstance = new CRealtimeVTFModel(pDevice, pContext);
@@ -637,4 +970,11 @@ void CRealtimeVTFModel::Free()
 
 	Safe_Release(m_pBoneTexture);
 	Safe_Release(m_pBoneSRV);
+
+	for (auto& pEffectMatrix : m_EffectMatrices)
+	{
+		Safe_Delete(pEffectMatrix);
+	}
+
+	Safe_Release(m_pOwnerTransform);
 }

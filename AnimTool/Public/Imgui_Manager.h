@@ -13,7 +13,7 @@ BEGIN(AnimTool)
 class CImgui_Manager final : public CBase
 {
 public:
-    enum TYPE { TYPE_MONSTER, TYPE_PLAYER, TYPE_END };
+    enum TYPE { TYPE_MONSTER, TYPE_SELECT, TYPE_PLAYER, TYPE_END };
     enum TRIGGER { TRIGGER_EFFECT, TRIGGER_SOUND, TRIGGER_END };
 
 public:
@@ -60,6 +60,7 @@ private:
     vector<const _char*> m_AnimationNames;
     vector<const _char*> m_BoneNames;
     _uint m_iCurrentModelIndex = { 0 };
+    _int m_iCurrentAnimIndex{};
     _int m_iCurrentBoneIndex{};
     _bool m_IsCreateModel = { false };
     POINT m_ptMouse = {};

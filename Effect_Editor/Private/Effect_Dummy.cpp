@@ -37,7 +37,7 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 
 	if (m_Effect.strUnDissolveTexture.size())
 	{
-		m_fDissolveRatio = 1.f;
+		m_fUnDissolveRatio = 1.f;
 	}
 
 	m_vUV = m_Effect.vUVInit;
@@ -53,11 +53,16 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 
 void CEffect_Dummy::Tick(_float fTimeDelta)
 {
-	if (m_Effect.strUnDissolveTexture.size())
+	if (m_Effect.strUnDissolveTexture.size() and m_fUnDissolveRatio > 0.f)
 	{
-		m_fDissolveRatio -= fTimeDelta / m_Effect.fUnDissolveDuration;
+		m_fUnDissolveRatio -= fTimeDelta / m_Effect.fUnDissolveDuration;
+		if (m_fUnDissolveRatio < 0.f)
+		{
+			m_fUnDissolveRatio = 0.f;
+		}
 	}
-	else if (m_Effect.fLifeTime >= 0.f and m_fTimer > m_Effect.fLifeTime)
+
+	if (m_fUnDissolveRatio <= 0.f and m_Effect.fLifeTime >= 0.f and m_fTimer > m_Effect.fLifeTime)
 	{
 		if (m_Effect.strDissolveTexture.size())
 		{
@@ -75,17 +80,30 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 
 	if (m_Effect.isSprite)
 	{
-		m_iSpriteIndex = static_cast<_int>(m_fSpriteTimer);
-		m_fSpriteTimer += (fTimeDelta * m_Effect.vNumSprites.x * m_Effect.vNumSprites.y) / m_Effect.fSpriteDuration;
-		if (m_iSpriteIndex >= m_Effect.vNumSprites.x * m_Effect.vNumSprites.y)
+		if (m_Effect.isFixedIndex)
 		{
-			m_iSpriteIndex = 0;
-			m_fSpriteTimer = {};
+			m_iSpriteIndex = m_Effect.iFixedSpriteIndex;
+		}
+		else
+		{
+			m_iSpriteIndex = static_cast<_int>(m_fSpriteTimer);
+			m_fSpriteTimer += (fTimeDelta * m_Effect.vNumSprites.x * m_Effect.vNumSprites.y) / m_Effect.fSpriteDuration;
+			if (m_iSpriteIndex >= m_Effect.vNumSprites.x * m_Effect.vNumSprites.y)
+			{
+				m_iSpriteIndex = 0;
+				m_fSpriteTimer = {};
+			}
 		}
 	}
 
 	m_fTimer += fTimeDelta;
 	m_vUV += m_Effect.vUVDelta * fTimeDelta;
+	if (m_Effect.isUVLoop and 
+		(m_vUV.x < -1.f or m_vUV.x > 2.f or
+		 m_vUV.y < -1.f or m_vUV.y > 2.f))
+	{
+		m_vUV = m_Effect.vUVInit;
+	}
 
 	switch (m_Effect.iType)
 	{
@@ -222,7 +240,7 @@ HRESULT CEffect_Dummy::Add_Components()
 		break;
 	case Effect_Type::ET_MESH:
 		wstring PrototypeTag = L"Prototype_Model_Effect_";
-		
+
 		_tchar strUnicode[MAX_PATH]{};
 		MultiByteToWideChar(CP_ACP, 0, &m_Effect.strModel[0], static_cast<_int>(m_Effect.strModel.size()), strUnicode, static_cast<_int>(m_Effect.strModel.size()));
 		PrototypeTag += strUnicode;
@@ -295,7 +313,7 @@ HRESULT CEffect_Dummy::Bind_ShaderResources()
 		}
 	}
 
-	if (m_Effect.strUnDissolveTexture.size())
+	if (m_fDissolveRatio >= 0.f and m_Effect.strUnDissolveTexture.size())
 	{
 		if (FAILED(m_pUnDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
 		{
@@ -306,15 +324,9 @@ HRESULT CEffect_Dummy::Bind_ShaderResources()
 		{
 			return E_FAIL;
 		}
-
-		if (m_fDissolveRatio < 0.f)
-		{
-			m_fDissolveRatio = 0.f;
-			m_Effect.strUnDissolveTexture = {};
-			m_fTimer = {};
-		}
 	}
-	else if (m_Effect.strDissolveTexture.size())
+	
+	if (m_fUnDissolveRatio <= 0.f and m_Effect.strDissolveTexture.size())
 	{
 		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
 		{

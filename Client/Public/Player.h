@@ -6,6 +6,8 @@
 #include "Riding.h"
 #include "NameTag.h"
 #include "CommonTrail.h"
+#include "CommonSurfaceTrail.h"
+
 BEGIN(Client)
 
 struct BODYPART_DESC
@@ -253,13 +255,27 @@ public:
 		Aim_Idle,
 		Jump_Long_End,
 		Mount,
+		Climb,
+		Climb_U,
+		Climb_D,
+		Climb_L,
+		Climb_R,
+		Hit,
+		KnockDown,
+		Stun,
+		Stun_Start,
+		Die,
+		Revival_Start,
+		Revival_End,
 		State_End
 	};
 	struct PLAYER_STATUS
 	{
-		_int Hp{ 1000 };
-		_int Mp{ 1000 };
-		_int Attack{ 10 };
+		_int Current_Hp{ 1000 };
+		_int Max_Hp{ 1000 };
+		_int Max_Mp{ 1000 };
+		_int Current_Mp{ 1000 };
+		_int Attack{ 100 };
 		_int Critical{};
 		_int Critical_Dmg{ 150 }; // 기본 치명타데미지 150( 기본 데미지에 추가50퍼센트 피해)
 		_int Armor{}; // 방어력이 10일때 받는 데미지 10퍼센트 줄여줌(90퍼만 받음)
@@ -283,13 +299,18 @@ public:
 	HRESULT Add_Info();
 	HRESULT Render_Parts(PART_TYPE Parts, _uint Index);
 	HRESULT Add_Riding();
-public:
-	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) override;
 
+public:
+	virtual void Set_Damage(_int iDamage, _uint MonAttType = 0) override;
 	void Change_Parts(PART_TYPE PartsType, _int ChangeIndex);
 	void Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex);
-
 	void Move(_float fTimeDelta);
+
+	void Front_Ray_Check();
+	_bool Turn_Ray_Check(_bool bRight);
+
+	void Health_Regen(_float fTImeDelta);
+	void Is_Climb(_float fTimeDelta);
 
 	void Common_Attack();
 	void Skill1_Attack();
@@ -302,9 +323,10 @@ public:
 	void Return_Attack_IdleForm();
 	void After_CommonAtt(_float fTimeDelta);
 	void After_SkillAtt(_float fTimeDelta);
-	void Check_Att_Collider(ATTACK_TYPE Att_Type);
 	void Sword_Att_Camera_Effect();
 	void Bow_Att_Camera_Effect();
+
+	void Check_Att_Collider(ATTACK_TYPE Att_Type);
 
 public:
 	void Summon_Riding(Riding_Type Type);
@@ -320,12 +342,13 @@ private:
 	CGameObject* m_pNameTag{ nullptr };
 	CRealtimeVTFModel* m_pModelCom = { nullptr };
 	CTransform* m_pCameraTransform{ nullptr };
-	CCollider* m_pHitCollider{ nullptr };
 	CCollider* m_pAttCollider[AT_End]{ nullptr };
+	CCollider* m_pHitCollider{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CRenderer* m_pRendererCom{ nullptr };
 	CCommonTrail* m_pLeft_Trail{ nullptr };
 	CCommonTrail* m_pRight_Trail{ nullptr };
+	CCommonSurfaceTrail* m_pTest_Trail{ nullptr };
 	CTexture* m_pDissolveTextureCom{};
 
 private:
@@ -341,17 +364,14 @@ private:
 	_mat m_Riding_Mat{};
 	const _mat* m_Left_Mat{};
 	const _mat* m_Right_Mat{};
-	_bool m_bLeft_TrailOn{};
-	_bool m_bRight_TrailOn{};
 	_float m_fDissolveRatio{};
 	_bool	  m_isInvenActive{ false };
 	_float m_fSkillSpeed{};
 	_bool m_bAttackStop{};
 	_float4 m_vPos{};
-	_float m_fGravity{};
 	_bool m_bStartGame{};
-	_float m_fWalkSpeed{ 1.f };
-	_float m_fRunSpeed{ 3.5f };
+	const _float m_fWalkSpeed{ 1.f };
+	const _float m_fRunSpeed{ 3.5f };
 	_bool m_isInterpolating{};
 	_float m_fInterpolationRatio{};
 	_vec4 m_vOriginalLook{};
@@ -361,30 +381,32 @@ private:
 	_bool m_hasJumped{};
 	_int m_iAttackCombo{};
 	_int m_iCurrentSkill_Index{};
-	_vec4 m_currentDir{};
-	_float m_lerpFactor{ 0.1f };
-	_vec4 m_vLook{};
-	_float m_fLerpTime{};
-	_vec4 m_fLerpLook{};
-	_vec4 m_fFirstLook{};
+
 	_float m_fAttackZoom{};
 	_float m_ReturnZoomTime{};
 	_float m_fSkiilTimer{};
 	_mat m_OldWorldMatrix{};
 	_bool m_bHide{};
+	_float m_fHpRegenTime{};
+	_float m_fMpRegenTime{};
 	_int m_Body_CurrentIndex{ -1 };
 	_int m_Helmet_CurrentIndex{ -1 };
 	_int m_Hair_CurrentIndex{ -1 };
 	_int m_Face_CurrentIndex{ -1 };
-	_float m_SkillSpeed{};
 	_uint m_ShaderIndex{};
 	_bool m_UsingMotionBlur{};
-	_bool m_View_Helmat{};
 	_vec4 m_SaveCamPos{};
 	_vec4 m_SaveCamLook{};
 	_bool m_bIsMount{};
 	_bool m_bWeapon_Unequip{};
 	_bool m_bHelmet_Hide{};
+	_bool m_bIsClimb{};
+	_bool m_bReady_Climb{};
+
+	_float m_StartRegen{};
+
+	wstring m_strPlayerName{};
+
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

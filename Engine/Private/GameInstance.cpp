@@ -143,6 +143,7 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 
 	m_pObject_Manager->Release_DeadObjects();
 	m_pObject_Manager->Late_Tick(fTimeDelta);
+	m_pInput_Manager->Late_Update_InputDev();
 	if (m_pSound_Manager)
 	{
 		m_pSound_Manager->Update();
@@ -166,6 +167,7 @@ void CGameInstance::Clear(_uint iLevelIndex)
 
 	m_pObject_Manager->Clear(iLevelIndex);
 	m_pComponent_Manager->Clear(iLevelIndex);
+	m_Function_Clear_FX(iLevelIndex);
 }
 
 HRESULT CGameInstance::Clear_BackBuffer_View(_vec4 vClearColor)
@@ -863,6 +865,16 @@ _bool CGameInstance::Raycast(_vec3 vOrigin, _vec3 vDir, _float fDist, PxRaycastB
 	return m_pPhysX_Manager->Raycast(vOrigin, vDir, fDist, Buffer);
 }
 
+_bool CGameInstance::Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer, PxQueryFilterData Filter)
+{
+	if (!m_pPhysX_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pPhysX_Manager is NULL");
+	}
+
+	return m_pPhysX_Manager->Raycast(vOrigin, vDir, fDist, Buffer,Filter);
+}
+
 _bool CGameInstance::Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer)
 {
 	if (!m_pPhysX_Manager)
@@ -1076,6 +1088,11 @@ void CGameInstance::Register_HasCreated_Callback(Func_HasCreatedFX Function)
 	m_Function_HasCreated = Function;
 }
 
+void CGameInstance::Register_Clear_Callback(Func_ClearFX Function)
+{
+	m_Function_Clear_FX = Function;
+}
+
 void CGameInstance::Create_Effect(const wstring& strEffectTag, _mat* pMatrix, const _bool& isFollow)
 {
 	if (not m_Function_Create_FX)
@@ -1214,7 +1231,10 @@ void CGameInstance::Set_AimMode(_bool Aim, _vec3 AimPos)
 	m_AimPos = AimPos;
 }
 
-
+void CGameInstance::Set_InputString(const wstring& strInput)
+{
+	m_strInput = strInput;
+}
 
 const _uint& CGameInstance::Get_CameraState() const
 {
@@ -1244,6 +1264,11 @@ const _bool& CGameInstance::Have_TargetLook() const
 const _bool& CGameInstance::IsSkipDebugRendering() const
 {
 	return m_bSkipDebugRender;
+}
+
+const wstring& CGameInstance::Get_InputString() const
+{
+	return m_strInput;
 }
 
 void CGameInstance::Initialize_Level(_uint iLevelNum)

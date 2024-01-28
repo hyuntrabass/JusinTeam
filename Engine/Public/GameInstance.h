@@ -128,6 +128,7 @@ public: // PhysX
 	void Update_PhysX(class CTransform* pTransform);
 	PxRigidStatic* Cook_StaticMesh(_uint iNumVertices, void* pVertices, _uint iNumIndices, void* pIndices);
 	_bool Raycast(_vec3 vOrigin, _vec3 vDir, _float fDist, PxRaycastBuffer& Buffer);
+	_bool Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer,  PxQueryFilterData Filter);
 	_bool Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer);
 	void PhysXTick(_float fTimeDelta);
 #ifdef _DEBUGTEST
@@ -153,7 +154,7 @@ public: // Sound Manager
 	HRESULT Init_SoundManager();
 	_bool Is_SoundManager_Ready();
 	_int Play_Sound(const wstring& strSoundTag, _float fVolume = 0.5f, _bool isLoop = false);
-	void PlayBGM(const wstring& strSoundTag, float fVolume);
+	void PlayBGM(const wstring& strSoundTag, float fVolume = 0.3f);
 	void StopSound(_uint iChannel);
 	void StopAll();
 
@@ -165,11 +166,13 @@ public: // Effect Callback
 	using Func_TickFX = function<void(_float)>;
 	using Func_HasCreatedFX = function<_bool(const void*)>;
 	using Func_GetInfoFX = function<EffectInfo(const void*)>;
+	using Func_ClearFX = function<void(_uint)>;
 
 	void Register_CreateEffect_Callback(Func_CreateFX Function);
 	void Register_DeleteEffect_Callback(Func_DeleteFX Function);
 	void Register_Tick_LateTick_Callback(Func_TickFX Tick, Func_TickFX Late_Tick);
 	void Register_HasCreated_Callback(Func_HasCreatedFX Function);
+	void Register_Clear_Callback(Func_ClearFX Function);
 
 	void Create_Effect(const wstring& strEffectTag, _mat* pMatrix, const _bool& isFollow);
 	void Delete_Effect(const void* pMatrix);
@@ -216,6 +219,7 @@ public: // Get_Set
 	void Set_CameraTargetLook(const _vec4& vLook);
 	void Set_Have_TargetLook(const _bool& bHaveLook);
 	void Set_AimMode(_bool Aim, _vec3 AimPos = _vec3(0.63f, 1.8f, 1.1f));
+	void Set_InputString(const wstring& strInput);
 
 
 	void Set_CameraAttackZoom(_float fAttackZoom) { m_fCameraAttackZoom = fAttackZoom; }
@@ -228,6 +232,7 @@ public: // Get_Set
 	const _vec3& Get_AimPos() { return m_AimPos; }
 	const _bool& Get_AimMode() { return m_AimMode; }
 	const _bool& IsSkipDebugRendering() const;
+	const wstring& Get_InputString() const;
 
 public:
 	void Initialize_Level(_uint iLevelNum);
@@ -271,7 +276,8 @@ private:
 	_bool m_AimMode{};
 	_float m_fShakePower{};
 	_vec3 m_AimPos{};
-	_bool m_bSkipDebugRender{};
+	_bool m_bSkipDebugRender{ true };
+	wstring m_strInput{};
 
 private:
 	vector<_bool> m_vecLevelInvalid;
@@ -282,6 +288,7 @@ private:
 	Func_TickFX m_Function_Tick_FX{};
 	Func_TickFX m_Function_LateTick_FX{};
 	Func_HasCreatedFX m_Function_HasCreated{};
+	Func_ClearFX m_Function_Clear_FX{};
 
 public:
 	static void Release_Engine();

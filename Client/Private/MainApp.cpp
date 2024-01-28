@@ -7,6 +7,7 @@
 #include "Camera_Main.h"
 #include "UI_Manager.h"
 #include "Effect_Manager.h"
+#include "Trigger_Manager.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -186,6 +187,12 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail_Surface_50"), CVIBuffer_Trail_Surface::Create(m_pDevice, m_pContext, 50))))
+
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex"), CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Vtxtex.hlsl"), VTXPOSTEX::Elements, VTXPOSTEX::iNumElements))))
 	{
 		return E_FAIL;
@@ -212,6 +219,11 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex_Trail"), CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Vtxtex_Trail.hlsl"), VTXTRAIL::Elements, VTXTRAIL::iNumElements))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex_Trail_Surface"), CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Vtxtex_Trail_Surface.hlsl"), VTXTRAILSURFACE::Elements, VTXTRAILSURFACE::iNumElements))))
 	{
 		return E_FAIL;
 	}

@@ -68,7 +68,7 @@ void CSound_Manager::PlayBGM(const wstring& strSoundTag, _float fVolume)
 	{
 		return;
 	}
-
+	
 	m_pSystem->playSound(pSound, 0, false, &m_pChannelArr[0]);
 
 	m_pChannelArr[0]->setMode(FMOD_LOOP_NORMAL);
