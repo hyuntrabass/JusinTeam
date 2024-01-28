@@ -98,18 +98,30 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 
 	m_fTimer += fTimeDelta;
 	m_vUV += m_Effect.vUVDelta * fTimeDelta;
-	if (m_Effect.isUVLoop and 
+	if (m_Effect.isUVLoop and
 		(m_vUV.x < -1.f or m_vUV.x > 2.f or
 		 m_vUV.y < -1.f or m_vUV.y > 2.f))
 	{
 		m_vUV = m_Effect.vUVInit;
 	}
 
+	if (m_Effect.pMatrix)
+	{
+		m_OffsetMatrix = *m_Effect.pMatrix;
+	}
+
+	if (m_Effect.iType == ET_RECT)
+	{
+		m_OffsetMatrix.RemoveRotation();
+	}
+
+	m_pTransformCom->Set_Matrix(m_OffsetMatrix);
+
 	switch (m_Effect.iType)
 	{
 	case Effect_Type::ET_PARTICLE:
 		m_pParticle->Update(fTimeDelta, m_pTransformCom->Get_World_Matrix(), m_Effect.iNumInstances, m_Effect.bApplyGravity, m_Effect.vGravityDir);
-		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
+		//m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
 		break;
 	case Effect_Type::ET_RECT:
 	{
@@ -325,7 +337,7 @@ HRESULT CEffect_Dummy::Bind_ShaderResources()
 			return E_FAIL;
 		}
 	}
-	
+
 	if (m_fUnDissolveRatio <= 0.f and m_Effect.strDissolveTexture.size())
 	{
 		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))

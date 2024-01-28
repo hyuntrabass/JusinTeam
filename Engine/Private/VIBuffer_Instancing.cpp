@@ -43,11 +43,11 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 		VTXINSTANCING* pVertex = &reinterpret_cast<VTXINSTANCING*>(SubResource.pData)[i];
 
 
-		if (pVertex->vLifeTime.x == 0)
-		{
-			pVertex->vPos = _vec4::Transform(pVertex->vPos, WorldMatrix);
-			pVertex->vPrevPos = pVertex->vPos;
-		}
+		//if (pVertex->vLifeTime.x == 0)
+		//{
+		//	pVertex->vPos = _vec4::Transform(pVertex->vPos, WorldMatrix);
+		//	pVertex->vPrevPos = pVertex->vPos;
+		//}
 
 		//pVertex->vPos.y += pVertex->fSpeed * fTimeDelta;
 		if (bApplyGravity)
@@ -70,7 +70,7 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 			if (m_isLoop)
 			{
 				pVertex->vLifeTime.x = 0.f;
-				pVertex->vPos = pVertex->vOriginPos;
+				pVertex->vPos = _vec4::Transform(pVertex->vOriginPos, WorldMatrix);
 				pVertex->vPrevPos = pVertex->vPos;
 			}
 			else
