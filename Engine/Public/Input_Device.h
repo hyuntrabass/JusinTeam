@@ -29,12 +29,12 @@ public:
 
 public:
 	_bool Key_Pressing(_ubyte iKey);
-	_bool Key_Down(_ubyte iKey, InputChannel eInputChannel = InputChannel::End);
-	_bool Key_Up(_ubyte iKey, InputChannel eInputChannel = InputChannel::End);
+	_bool Key_Down(_ubyte iKey, InputChannel eInputChannel);
+	_bool Key_Up(_ubyte iKey, InputChannel eInputChannel);
 
 	_bool Mouse_Pressing(_long iKey);
-	_bool Mouse_Down(_long iKey, InputChannel eInputChannel = InputChannel::End);
-	_bool Mouse_Up(_long iKey, InputChannel eInputChannel = InputChannel::End);
+	_bool Mouse_Down(_long iKey, InputChannel eInputChannel);
+	_bool Mouse_Up(_long iKey, InputChannel eInputChannel);
 	_long Get_MouseMove(MouseState eMouseState);
 
 	_bool Gamepad_Pressing(GAMPAD_KEY_STATE eKey);
