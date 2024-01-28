@@ -3,6 +3,9 @@
 #include "OrthographicObject.h"
 #include "VIBuffer_Rect.h"
 #include "Shader.h"
+#include "Compute_Shader.h"
+#include "Compute_RenderTarget.h"
+#include "Texture.h"
 
 CRenderer::CRenderer(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
@@ -11,11 +14,16 @@ CRenderer::CRenderer(_dev pDevice, _context pContext)
 
 HRESULT CRenderer::Init_Prototype()
 {
+	m_fSSAOBlurPower = 1.f;
+
 	_uint iNumViewPorts{ 1 };
 
 	D3D11_VIEWPORT ViewportDesc{};
 
 	m_pContext->RSGetViewports(&iNumViewPorts, &ViewportDesc);
+
+	m_WinSize.x = static_cast<_uint>(ViewportDesc.Width);
+	m_WinSize.y = static_cast<_uint>(ViewportDesc.Height);
 
 #pragma region For_MRT_GameObject
 
@@ -170,7 +178,7 @@ HRESULT CRenderer::Init_Prototype()
 	//{
 	//	return E_FAIL;
 	//}
-	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LightDepth"), D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION, D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION / 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LightDepth"), D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION, D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION / 2, DXGI_FORMAT_R32G32B32A32_FLOAT,
 		_float4(1.f, 1.f, 1.f, 1.f))))
 	{
 		return E_FAIL;
@@ -178,7 +186,7 @@ HRESULT CRenderer::Init_Prototype()
 
 #pragma region For_MRT_HDR
 
-	if(FAILED(m_pGameInstance->Add_RenderTarget(L"Target_HDR", static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f,0.f,0.f,0.f))))
+	if (FAILED(m_pGameInstance->Add_RenderTarget(L"Target_HDR", static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
 #pragma endregion
@@ -305,6 +313,9 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
+
+	m_pNoiseNormal = CTexture::Create(m_pDevice, m_pContext, L"../../Reference/NoiseNormal/Noise_Normal.jpg");
+
 #pragma endregion
 
 #pragma region MRT_HDR
@@ -343,21 +354,6 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
-
-#pragma region SSAO할려고 랜덤값 생성
-
-	random_device RandomDevice;
-	mt19937_64 RandomNumber;
-	RandomNumber = mt19937_64(RandomDevice());
-
-	uniform_real_distribution<float> RandomX = uniform_real_distribution<float>(-1.f, 1.f);
-	uniform_real_distribution<float> RandomY = uniform_real_distribution<float>(-1.f, 1.f);
-	uniform_real_distribution<float> RandomZ = uniform_real_distribution<float>(-1.f, 1.f);
-
-	for (size_t i = 0; i < 16; i++)
-		m_vRandom[i] = _vec3(RandomX(RandomNumber), RandomY(RandomNumber), RandomZ(RandomNumber));
-
-#pragma endregion
 
 #ifdef _DEBUGTEST
 	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Diffuse"), _float2(50.f, 50.f), _float2(100.f, 100.f))))
@@ -402,203 +398,80 @@ HRESULT CRenderer::Init_Prototype()
 	}
 #endif // _DEBUG
 
-#pragma region Compute_Shader 생성
+#pragma region 평균 휘도값 구하기
 
-	fWidth = ViewportDesc.Width;
-	fHeight = ViewportDesc.Height;
+	m_pLumShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_AvgLum.hlsl", "DownScaleFirst", 0);
 
-	D3D11_BUFFER_DESC DSBDesc{};
+	m_pDownShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_AvgLum.hlsl", "DownScaleSecond", 0);
 
-	DSBDesc.ByteWidth = sizeof(THPARAM);
-	DSBDesc.Usage = D3D11_USAGE_DYNAMIC;
-	DSBDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	DSBDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	m_pDown2Shader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_AvgLum.hlsl", "DownScaleThird", 0);
 
-	if (FAILED(m_pDevice->CreateBuffer(&DSBDesc, nullptr, &m_pDSBuffer)))
-		return E_FAIL;
+	m_pDown3Shader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_AvgLum.hlsl", "DownScaleFourth", 0);
 
-	ID3DBlob* errorBlob = nullptr;
+	m_pGetAvgLumShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_AvgLum.hlsl", "LastDownScaled", 0);
 
-	if (FAILED(D3DCompileFromFile(L"../Bin/ShaderFiles/Shader_DownScale.hlsl", nullptr, nullptr, "ThresholdAndDowsample", "cs_5_0", 0, 0, &m_pDSBlob, &errorBlob))) {
-		if (nullptr != errorBlob) {
-			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-			Safe_Release(errorBlob);
-		}
-		return E_FAIL;
-	}
+	_uint2 iSize = m_WinSize;
 
-	if (FAILED(m_pDevice->CreateComputeShader(m_pDSBlob->GetBufferPointer(), m_pDSBlob->GetBufferSize(), nullptr, &m_pDSCShader)))
-		return E_FAIL;
+	iSize = _uint2(iSize.x / 4, iSize.y / 3);
+
+	m_pLumRT = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16_UNORM);
+
+	iSize = _uint2(iSize.x / 4, iSize.y / 4);
+
+	m_pDownRT = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16_UNORM);
+
+	iSize = _uint2(iSize.x / 4, iSize.y / 3);
+
+	m_pDownRT1 = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16_UNORM);
+
+	iSize = _uint2(iSize.x / 5, iSize.y / 5);
+
+	m_pDownRT2 = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16_UNORM);
+
+	iSize = _uint2(1, 1);
+
+	m_pLumValue = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16_UNORM);
+#pragma endregion
+
+#pragma region 블러만들기
 
 	m_BLParam.radius = GAUSSIAN_RADIUS;
 	m_BLParam.direction = 0;
+	
+	m_pBlurShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_Blur.hlsl", "Blur", sizeof(BLURPARAM));
 
-	_float sigma = 10.f;
-	_float sigmaRcp = 1.f / sigma;
-	_float twoSigmaSq = 2 * sigma * sigma;
+	m_pDownScaleShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_DownScale.hlsl", "Downsample", sizeof(DSPARAM));
 
-	_float fSum = 0.f;
-	for (size_t i = 0; i < GAUSSIAN_RADIUS; i++)
-	{
-		m_BLParam.coefficients[i] = (1.f / sigma) * expf(-static_cast<_float>(i * i) / twoSigmaSq);
+	iSize = _uint2(m_WinSize.x / 2, m_WinSize.y / 2);
+	m_DSParam[0].ScaleX = iSize.x;
+	m_DSParam[0].ScaleY = iSize.y;
 
-		fSum += 2 * m_BLParam.coefficients[i];
-	}
+	m_pHalfRT = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16G16B16A16_UNORM);
+	m_pHalfBlurRT = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16G16B16A16_UNORM);
 
-	fSum -= m_BLParam.coefficients[0];
+	iSize = _uint2(iSize.x / 2, iSize.y / 2);
+	m_DSParam[1].ScaleX = iSize.x;
+	m_DSParam[1].ScaleY = iSize.y;
 
-	_float NormalizationFactor = 1.f / fSum;
-	for (size_t i = 0; i < GAUSSIAN_RADIUS; i++)
-		m_BLParam.coefficients[i] *= NormalizationFactor;
+	m_pQuarterRT = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16G16B16A16_UNORM);
+	m_pQuarterBlurRT = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16G16B16A16_UNORM);
 
-	D3D11_BUFFER_DESC BlurBDesc{};
-	BlurBDesc.ByteWidth = sizeof(BLURPARAM);
-	BlurBDesc.Usage = D3D11_USAGE_DYNAMIC;
-	BlurBDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	BlurBDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	iSize = _uint2(iSize.x / 2, iSize.y / 2);
+	m_DSParam[2].ScaleX = iSize.x;
+	m_DSParam[2].ScaleY = iSize.y;
 
-	if (FAILED(m_pDevice->CreateBuffer(&BlurBDesc, nullptr, &m_pBlurBuffer)))
+	m_pEightRT = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16G16B16A16_UNORM);
+	m_pEightBlurRT = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16G16B16A16_UNORM);
+
+	m_pGetBlurShader = CShader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_BlurTex.hlsl", VTXPOSTEX::Elements, VTXPOSTEX::iNumElements);
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_BlurTex"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
-	if (FAILED(D3DCompileFromFile(L"../Bin/ShaderFiles/Shader_Blur.hlsl", nullptr, nullptr, "Blur", "cs_5_0", 0, 0, &m_pBlurBlob, &errorBlob))) {
-		if (nullptr != errorBlob) {
-			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-			Safe_Release(errorBlob);
-		}
+	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_BLURTEX", L"Target_BlurTex")))
 		return E_FAIL;
-	}
-
-
-	if (FAILED(m_pDevice->CreateComputeShader(m_pBlurBlob->GetBufferPointer(), m_pBlurBlob->GetBufferSize(), nullptr, &m_pBlurCShader)))
-		return E_FAIL;
-
-	D3D11_TEXTURE2D_DESC TexDesc{};
-
-	TexDesc.Width = fWidth / 2;
-	TexDesc.Height = fHeight / 2;
-	TexDesc.MipLevels = 1;
-	TexDesc.ArraySize = 1;
-	TexDesc.Format = DXGI_FORMAT_R16G16B16A16_UNORM;
-	TexDesc.SampleDesc.Count = 1;
-	TexDesc.Usage = D3D11_USAGE_DEFAULT;
-	TexDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
-	TexDesc.CPUAccessFlags = 0;
-	TexDesc.MiscFlags = 0;
-
-	if (FAILED(m_pDevice->CreateTexture2D(&TexDesc, nullptr, &m_pDSTexture)))
-		return E_FAIL;
-
-	if (FAILED(m_pDevice->CreateTexture2D(&TexDesc, nullptr, &m_pBlurTexture)))
-		return E_FAIL;
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc{};
-
-	SRVDesc.Format = TexDesc.Format;
-	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	SRVDesc.Texture2D.MostDetailedMip = 0;
-	SRVDesc.Texture2D.MipLevels = 1;
-
-	if (FAILED(m_pDevice->CreateShaderResourceView(m_pDSTexture, &SRVDesc, &m_pDSSRV)))
-		return E_FAIL;
-
-	if (FAILED(m_pDevice->CreateShaderResourceView(m_pBlurTexture, &SRVDesc, &m_pBlurSRV)))
-		return E_FAIL;
-
-	D3D11_UNORDERED_ACCESS_VIEW_DESC UAVDesc{};
-
-	UAVDesc.Format = TexDesc.Format;
-	UAVDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
-	UAVDesc.Texture2D.MipSlice = 0;
-
-	if (FAILED(m_pDevice->CreateUnorderedAccessView(m_pDSTexture, &UAVDesc, &m_pDSUAV)))
-		return E_FAIL;
-
-	if (FAILED(m_pDevice->CreateUnorderedAccessView(m_pBlurTexture, &UAVDesc, &m_pBlurUAV)))
-		return E_FAIL;
-
-	{
-		////struct CBuffer {
-		////	_uint iDomain;
-		////	_uint iGroupSize;
-		////};
-
-		////CBuffer cb;
-		////ID3D11Buffer* pCBuffer = nullptr;
-
-		////D3D11_BUFFER_DESC bd{};
-		////bd.Usage = D3D11_USAGE_DYNAMIC;
-		////bd.ByteWidth = sizeof(CBuffer);
-		////bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		////bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-		////if (FAILED(m_pDevice->CreateBuffer(&bd, nullptr, &pCBuffer)))
-		////	return E_FAIL;
-
-		////cb.iDomain = fWidth * fHeight;
-		////cb.iGroupSize = 32 * 32;
-
-		////D3D11_MAPPED_SUBRESOURCE msr;
-		////if (FAILED(m_pContext->Map(pCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr)))
-		////	return E_FAIL;
-
-		////memcpy(msr.pData, &cb, sizeof(cb));
-
-		////m_pContext->Unmap(pCBuffer, 0);
-
-
-		//D3D11_BUFFER_DESC Desc{};
-
-		//Desc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
-		//Desc.StructureByteStride = sizeof(_float);
-		//Desc.ByteWidth = ViewportDesc.Width * Desc.StructureByteStride;
-		//Desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-
-		//if (FAILED(m_pDevice->CreateBuffer(&Desc, nullptr, &m_pBuffer)))
-		//	return E_FAIL;
-
-		//if (FAILED(m_pDevice->CreateBuffer(&Desc, nullptr, &m_pBuffer2)))
-		//	return E_FAIL;
-
-		//D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc{};
-
-		//SRVDesc.Format = DXGI_FORMAT_UNKNOWN;
-		//SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-		//SRVDesc.Buffer.NumElements = ViewportDesc.Width;
-		//if (FAILED(m_pDevice->CreateShaderResourceView(m_pBuffer, &SRVDesc, &m_pSRV)))
-		//	return E_FAIL;
-
-		//if (FAILED(m_pDevice->CreateShaderResourceView(m_pBuffer2, &SRVDesc, &m_pSRV2)))
-		//	return E_FAIL;
-
-		//D3D11_UNORDERED_ACCESS_VIEW_DESC UAVDesc{};
-
-		//UAVDesc.Format = DXGI_FORMAT_UNKNOWN;
-		//UAVDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
-		//UAVDesc.Buffer.NumElements = ViewportDesc.Width;
-		//if (FAILED(m_pDevice->CreateUnorderedAccessView(m_pBuffer, &UAVDesc, &m_pUAV)))
-		//	return E_FAIL;
-
-		//if (FAILED(m_pDevice->CreateUnorderedAccessView(m_pBuffer2, &UAVDesc, &m_pUAV2)))
-		//	return E_FAIL;
-
-		//ID3DBlob* pCsBlob = nullptr;
-		//ID3DBlob* pCsBlob2 = nullptr;
-
-		//if (FAILED(D3DCompileFromFile(L"../Bin/ShaderFiles/Shader_Compute.hlsl", nullptr, nullptr, "DownScaleFirstPass", "cs_5_0", 0, 0, &pCsBlob, nullptr)))
-		//	return E_FAIL;
-
-		//if (FAILED(D3DCompileFromFile(L"../Bin/ShaderFiles/Shader_Compute.hlsl", nullptr, nullptr, "DownScaleSecondPass", "cs_5_0", 0, 0, &pCsBlob2, nullptr)))
-		//	return E_FAIL;
-
-		//if (FAILED(m_pDevice->CreateComputeShader(pCsBlob->GetBufferPointer(), pCsBlob->GetBufferSize(), nullptr, &m_pComputeShader)))
-		//	return E_FAIL;
-
-		//if (FAILED(m_pDevice->CreateComputeShader(pCsBlob2->GetBufferPointer(), pCsBlob2->GetBufferSize(), nullptr, &m_pComputeShader2)))
-		//	return E_FAIL;
-	}
 
 #pragma endregion
-
 
 
 	return S_OK;
@@ -675,17 +548,18 @@ HRESULT CRenderer::Draw_RenderGroup()
 		MSG_BOX("Failed to Render : NonLight");
 		return E_FAIL;
 	}
-	if (FAILED(Render_Blend()))
-	{
-		MSG_BOX("Failed to Render : Blend");
-		return E_FAIL;
-	}
 
 	if (FAILED(m_pGameInstance->End_MRT()))
 		return E_FAIL;
 
 	if (FAILED(Render_HDR()))
 		return E_FAIL;
+
+	if (FAILED(Render_Blend()))
+	{
+		MSG_BOX("Failed to Render : Blend");
+		return E_FAIL;
+	}
 
 	if (FAILED(Render_Blur()))
 	{
@@ -762,7 +636,7 @@ HRESULT CRenderer::Ready_ShadowDSV()
 		TextureDesc.MiscFlags = 0;
 
 		if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr,
-											  &pDepthStencilTexture)))
+			&pDepthStencilTexture)))
 			return E_FAIL;
 
 		/* RenderTarget */
@@ -770,7 +644,7 @@ HRESULT CRenderer::Ready_ShadowDSV()
 		/* DepthStencil */
 
 		if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, nullptr,
-													 &m_pShadowDSV)))
+			&m_pShadowDSV)))
 			return E_FAIL;
 
 		Safe_Release(pDepthStencilTexture);
@@ -1036,10 +910,6 @@ HRESULT CRenderer::Render_LightAcc()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pShader->Bind_RawValue("g_vRandom", m_vRandom, sizeof(_vec3) * 50)))
-	{
-		return E_FAIL;
-	}
 
 	if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrixInv", m_pGameInstance->Get_Transform_Inversed(TransformType::View))))
 	{
@@ -1080,6 +950,9 @@ HRESULT CRenderer::Render_LightAcc()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pNoiseNormal->Bind_ShaderResource(m_pShader, "g_SSAONoiseNormal")))
+		return E_FAIL;
+
 	if (FAILED(m_pShader->Begin(DefPass_SSAO)))
 	{
 		return E_FAIL;
@@ -1093,31 +966,10 @@ HRESULT CRenderer::Render_LightAcc()
 	{
 		return E_FAIL;
 	}
-
-	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_SSAOBlur"))))
-	{
+	
+	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_SSAOTEST"), L"MRT_SSAOBlur", m_fSSAOBlurPower)))
 		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_SSAOTEST"))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShader->Begin(DefPass_Blur)))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(m_pVIBuffer->Render()))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->End_MRT()))
-	{
-		return E_FAIL;
-	}
-
+	//
 #pragma endregion
 
 	return S_OK;
@@ -1156,21 +1008,22 @@ HRESULT CRenderer::Render_Deferred()
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_VelocityTexture", TEXT("Target_Velocity"))))
 		return E_FAIL;
 
-	_uint iNumViewPorts{ 1 };
+	/*_uint iNumViewPorts{ 1 };
 
 	D3D11_VIEWPORT ViewportDesc{};
 
-	m_pContext->RSGetViewports(&iNumViewPorts, &ViewportDesc);
+	m_pContext->RSGetViewports(&iNumViewPorts, &ViewportDesc);*/
 
 
-	if (FAILED(m_pShader->Bind_RawValue("g_fScreenWidth", &ViewportDesc.Width, sizeof _float)))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(m_pShader->Bind_RawValue("g_fScreenHeight", &ViewportDesc.Height, sizeof _float)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pShader->Bind_RawValue("g_fScreenWidth", &ViewportDesc.Width, sizeof _float)))
+	//{
+	//	return E_FAIL;
+	//}
+	//if (FAILED(m_pShader->Bind_RawValue("g_fScreenHeight", &ViewportDesc.Height, sizeof _float)))
+	//{
+	//	return E_FAIL;
+	//}
+
 	if (FAILED(m_pShader->Bind_RawValue("g_fHellStart", &m_pGameInstance->Get_HellHeight(), sizeof _float)))
 	{
 		return E_FAIL;
@@ -1236,10 +1089,10 @@ HRESULT CRenderer::Render_Deferred()
 
 HRESULT CRenderer::Render_Blur()
 {
-	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur"))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	for (auto& pGameObject : m_RenderObjects[RG_Blur])
 	{
@@ -1256,10 +1109,10 @@ HRESULT CRenderer::Render_Blur()
 
 	m_RenderObjects[RG_Blur].clear();
 
-	if (FAILED(m_pGameInstance->End_MRT()))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->End_MRT()))
+	//{
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_Bloom"))))
 	{
@@ -1303,10 +1156,10 @@ HRESULT CRenderer::Render_Blend()
 {
 
 	m_RenderObjects[RG_Blend].sort([](CGameObject* pSrc, CGameObject* pDst)
-	{
-		return dynamic_cast<CBlendObject*>(pSrc)->Get_CamDistance() > dynamic_cast<CBlendObject*>(pDst)->Get_CamDistance();
-	});
-
+		{
+			return dynamic_cast<CBlendObject*>(pSrc)->Get_CamDistance() > dynamic_cast<CBlendObject*>(pDst)->Get_CamDistance();
+		});
+	
 	for (auto& pGameObject : m_RenderObjects[RG_Blend])
 	{
 		if (pGameObject)
@@ -1327,15 +1180,16 @@ HRESULT CRenderer::Render_Blend()
 
 HRESULT CRenderer::Render_BlendBlur()
 {
+	//
 	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur"))))
 	{
 		return E_FAIL;
 	}
 
 	m_RenderObjects[RG_BlendBlur].sort([](CGameObject* pSrc, CGameObject* pDst)
-	{
-		return dynamic_cast<CBlendObject*>(pSrc)->Get_CamDistance() > dynamic_cast<CBlendObject*>(pDst)->Get_CamDistance();
-	});
+		{
+			return dynamic_cast<CBlendObject*>(pSrc)->Get_CamDistance() > dynamic_cast<CBlendObject*>(pDst)->Get_CamDistance();
+		});
 
 	for (auto& pGameObject : m_RenderObjects[RG_BlendBlur])
 	{
@@ -1357,7 +1211,10 @@ HRESULT CRenderer::Render_BlendBlur()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_Bloom"))))
+	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Bloom"), L"MRT_BlurTest", m_fEffectBlurPower)))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_BlurTest"))))
 	{
 		return E_FAIL;
 	}
@@ -1377,62 +1234,11 @@ HRESULT CRenderer::Render_BlendBlur()
 HRESULT CRenderer::Render_HDR()
 {
 	// 원명
-	{
-		constexpr ID3D11ShaderResourceView* NULL_SRV = nullptr;
-		constexpr ID3D11UnorderedAccessView* NULL_UAV = nullptr;
-		constexpr _uint iNo_Offset = -1;
+	if (FAILED(Get_AvgLuminance()))
+		return E_FAIL;
 
-		THPARAM thParam = { 0.5f };
-		D3D11_MAPPED_SUBRESOURCE ms;
-		m_pContext->Map(m_pDSBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
-		memcpy(ms.pData, &thParam, sizeof(THPARAM));
-		m_pContext->Unmap(m_pDSBuffer, 0);
-
-		// 다운 스케일링
-		ID3D11ShaderResourceView* pSRV = nullptr;
-
-		pSRV = m_pGameInstance->Get_SRV(L"Target_HDR");
-
-		m_pContext->CSSetShader(m_pDSCShader, nullptr, 0);
-
-		m_pContext->CSSetShaderResources(0, 1, &pSRV);
-
-		m_pContext->CSSetUnorderedAccessViews(0, 1, &m_pDSUAV, &iNo_Offset);
-
-		m_pContext->CSSetConstantBuffers(0, 1, &m_pDSBuffer);
-
-		m_pContext->Dispatch(fWidth / 16, fHeight / 16, 1);
-
-		m_pContext->CSSetShaderResources(0, 1, &NULL_SRV);
-		m_pContext->CSSetUnorderedAccessViews(0, 1, &NULL_UAV, &iNo_Offset);
-
-		ID3D11ShaderResourceView* pSRVs[2] = { m_pDSSRV, m_pBlurSRV };
-		ID3D11UnorderedAccessView* pUAVs[2] = { m_pBlurUAV, m_pDSUAV };
-
-		for (size_t i = 0; i < 2; i++)
-		{
-			m_BLParam.direction = i;
-			D3D11_MAPPED_SUBRESOURCE Bms;
-			m_pContext->Map(m_pBlurBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Bms);
-			memcpy(Bms.pData, &m_BLParam, sizeof(BLURPARAM));
-			m_pContext->Unmap(m_pBlurBuffer, 0);
-
-			// 블러
-			m_pContext->CSSetShader(m_pBlurCShader, nullptr, 0);
-
-			m_pContext->CSSetShaderResources(0, 1, &pSRVs[i]);
-
-			m_pContext->CSSetUnorderedAccessViews(0, 1, &pUAVs[i], &iNo_Offset);
-
-			m_pContext->CSSetConstantBuffers(0, 1, &m_pBlurBuffer);
-
-			m_pContext->Dispatch(fWidth / 16.f, fHeight / 16.f, 1);
-
-			m_pContext->CSSetShaderResources(0, 1, &NULL_SRV);
-			m_pContext->CSSetUnorderedAccessViews(0, 1, &NULL_UAV, &iNo_Offset);
-		}
-
-	}
+	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_HDR"), L"MRT_BLURTEX", m_fHDRBloomPower, true)))
+		return E_FAIL;
 
 	if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", m_WorldMatrix)))
 	{
@@ -1451,22 +1257,40 @@ HRESULT CRenderer::Render_HDR()
 	{
 		return E_FAIL;
 	}
+	
+	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_HDRTexture", TEXT("Target_BlurTex"))))
+	//{
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(m_pShader->Bind_ShaderResourceView("g_TestBlurTexture", m_pDSSRV)))
+	if (FAILED(m_pShader->Bind_ShaderResourceView("g_Luminance", m_pLumValue->Get_SRV())))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_TestBlurTexture", L"Target_BlurTex")))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Bind_RawValue("g_HDR", &m_HDR, sizeof(HDR_DESC))))
 		return E_FAIL;
 
 	if (m_pGameInstance->Key_Down(DIK_F3))
 		m_TurnOnToneMap = !m_TurnOnToneMap;
 
-
 	if (m_pGameInstance->Key_Down(DIK_F4))
 		m_TurnOnBlur = !m_TurnOnBlur;
-	
+
+	if (m_pGameInstance->Key_Down(DIK_F5)) {
+		m_iChangeToneMap++;
+		if (8 <= m_iChangeToneMap)
+			m_iChangeToneMap = 0;
+	}
 
 	if (FAILED(m_pShader->Bind_RawValue("TurnOnToneMap", &m_TurnOnToneMap, sizeof(_bool))))
 		return E_FAIL;
 
 	if (FAILED(m_pShader->Bind_RawValue("TurnOnBlur", &m_TurnOnBlur, sizeof(_bool))))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Bind_RawValue("ChangeToneMap", &m_iChangeToneMap, sizeof(_uint))))
 		return E_FAIL;
 
 	if (FAILED(m_pShader->Begin(DefPass_HDR)))
@@ -1477,7 +1301,7 @@ HRESULT CRenderer::Render_HDR()
 	{
 		return E_FAIL;
 	}
-	
+
 
 	return S_OK;
 }
@@ -1485,9 +1309,9 @@ HRESULT CRenderer::Render_HDR()
 HRESULT CRenderer::Render_UI()
 {
 	m_RenderObjects[RG_UI].sort([](CGameObject* pSrc, CGameObject* pDst)
-	{
-		return dynamic_cast<COrthographicObject*>(pSrc)->Get_Depth() > dynamic_cast<COrthographicObject*>(pDst)->Get_Depth();
-	});
+		{
+			return dynamic_cast<COrthographicObject*>(pSrc)->Get_Depth() > dynamic_cast<COrthographicObject*>(pDst)->Get_Depth();
+		});
 
 	for (auto& pGameObject : m_RenderObjects[RG_UI])
 	{
@@ -1526,8 +1350,8 @@ HRESULT CRenderer::Render_Debug()
 	{
 		return E_FAIL;
 	}
-	
-	
+
+
 	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_GameObjects"), m_pShader, m_pVIBuffer)))
 	{
 		return E_FAIL;
@@ -1562,11 +1386,217 @@ HRESULT CRenderer::Render_Debug()
 	{
 		return E_FAIL;
 	}
-	
+
 	return S_OK;
 }
+
 #endif // _DEBUG
 
+HRESULT CRenderer::Get_AvgLuminance() 
+{
+	_uint2 iSize{};
+
+	_uint2 iSlot{};
+
+	{
+		iSlot = _uint2(0, 0);
+		ID3D11ShaderResourceView* pSRV = m_pGameInstance->Get_SRV(L"Target_HDR");;
+
+		if (FAILED(m_pLumShader->Set_Shader()))
+			return E_FAIL;
+
+		if (FAILED(m_pLumShader->Bind_ShaderResourceView(pSRV, m_pLumRT->Get_UAV(), iSlot)))
+			return E_FAIL;
+
+		iSize = _uint2(m_WinSize.x / 32, m_WinSize.y / 18);
+
+		if (FAILED(m_pLumShader->Begin(_uint3(iSize.x, iSize.y, 1))))
+			return E_FAIL;
+	}
+
+	{
+		iSlot = _uint2(1, 1);
+
+		if (FAILED(m_pDownShader->Set_Shader()))
+			return E_FAIL;
+
+		if (FAILED(m_pDownShader->Bind_ShaderResourceView(m_pLumRT->Get_SRV(), m_pDownRT->Get_UAV(), iSlot)))
+			return E_FAIL;
+
+		iSize = _uint2(320 / 16, 240 / 16);
+
+		if (FAILED(m_pDownShader->Begin(_uint3(iSize.x, iSize.y, 1))))
+			return E_FAIL;
+	}
+
+	{
+		iSlot = _uint2(2, 2);
+		if (FAILED(m_pDown2Shader->Set_Shader()))
+			return E_FAIL;
+
+		if (FAILED(m_pDown2Shader->Bind_ShaderResourceView(m_pDownRT->Get_SRV(), m_pDownRT1->Get_UAV(), iSlot)))
+			return E_FAIL;
+
+		iSize = _uint2(80 / 16, 60 / 12);
+
+		if (FAILED(m_pDown2Shader->Begin(_uint3(iSize.x, iSize.y, 1))))
+			return E_FAIL;
+	}
+
+	{
+		iSlot = _uint2(3, 3);
+		if (FAILED(m_pDown3Shader->Set_Shader()))
+			return E_FAIL;
+
+		if (FAILED(m_pDown3Shader->Bind_ShaderResourceView(m_pDownRT1->Get_SRV(), m_pDownRT2->Get_UAV(), iSlot)))
+			return E_FAIL;
+
+		if (FAILED(m_pDown3Shader->Begin(_uint3(2, 2, 1))))
+			return E_FAIL;
+	}
+
+	{
+		iSlot = _uint2(4, 4);
+		if (FAILED(m_pGetAvgLumShader->Set_Shader()))
+			return E_FAIL;
+
+		if (FAILED(m_pGetAvgLumShader->Bind_ShaderResourceView(m_pDownRT2->Get_SRV(), m_pLumValue->Get_UAV(), iSlot)))
+			return E_FAIL;
+
+		if (FAILED(m_pGetAvgLumShader->Begin(_uint3(1, 1, 1))))
+			return E_FAIL;
+	}
+
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MRT_Tag, _float fBlurPower, _bool isBloom)
+{
+
+	ID3D11ShaderResourceView* InputSRV = pSRV;
+
+	if (true == isBloom) {
+		if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_BLURTEX")))
+			return E_FAIL;
+
+		if(FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pGetBlurShader, "g_HDRTex", L"Target_HDR")))
+			return E_FAIL;
+
+		if (FAILED(m_pGetBlurShader->Bind_ShaderResourceView("g_Luminance", m_pLumValue->Get_SRV())))
+			return E_FAIL;
+
+		if (FAILED(m_pGetBlurShader->Begin(1)))
+			return E_FAIL;
+
+		if (FAILED(m_pVIBuffer->Render()))
+			return E_FAIL;
+
+		if (FAILED(m_pGameInstance->End_MRT()))
+			return E_FAIL;
+
+		InputSRV = m_pGameInstance->Get_SRV(L"Target_BlurTex");
+	}
+
+	_uint2 iSlot = _uint2(0, 0);
+
+	ID3D11ShaderResourceView* pSRVs[3] = { InputSRV, m_pHalfRT->Get_SRV(), m_pQuarterRT->Get_SRV() };
+	ID3D11UnorderedAccessView* pUAVs[3] = { m_pHalfRT->Get_UAV(), m_pQuarterRT->Get_UAV(), m_pEightRT->Get_UAV() };
+
+	if (FAILED(m_pDownScaleShader->Set_Shader()))
+		return E_FAIL;
+
+	_uint2 iSize = m_WinSize;
+
+	for (size_t i = 0; i < 3; i++)
+	{
+		if (FAILED(m_pDownScaleShader->Change_Value(&m_DSParam[i], sizeof(DSPARAM))))
+			return E_FAIL;
+
+		if (FAILED(m_pDownScaleShader->Bind_ShaderResourceView(pSRVs[i], pUAVs[i], iSlot)))
+			return E_FAIL;
+
+		_uint2 ThreadGroupSize = _uint2((iSize.x + 15) / 16, (iSize.y + 15) / 16);
+
+		if (FAILED(m_pDownScaleShader->Begin(_uint3(ThreadGroupSize.x , ThreadGroupSize.y , 1))))
+			return E_FAIL;
+
+		iSize = _uint2(iSize.x / 2, iSize.y / 2);
+	}
+
+	ID3D11ShaderResourceView* pDownSRVs[3] = { m_pHalfRT->Get_SRV(), m_pQuarterRT->Get_SRV(), m_pEightRT->Get_SRV() };
+	ID3D11ShaderResourceView* pBlurSRVs[3] = { m_pHalfBlurRT->Get_SRV(), m_pQuarterBlurRT->Get_SRV(), m_pEightBlurRT->Get_SRV() };
+	ID3D11UnorderedAccessView* pBlurUAVs[3] = { m_pHalfBlurRT->Get_UAV(), m_pQuarterBlurRT->Get_UAV(), m_pEightBlurRT->Get_UAV() };
+	
+	iSize = m_WinSize;
+
+	if (FAILED(m_pBlurShader->Set_Shader()))
+		return E_FAIL;
+
+
+	m_BLParam.fBlurPower = fBlurPower;
+	for (size_t i = 0; i < 3; i++)
+	{
+		iSize = _uint2(iSize.x / 2, iSize.y / 2);
+
+		m_BLParam.ScaleX = iSize.x;
+		m_BLParam.ScaleY = iSize.y;
+
+		_uint2 ThreadGroupSize = _uint2((iSize.x + 7) / 8, (iSize.y + 7) / 8);
+
+		for (size_t j = 0; j < 2; j++)
+		{
+			if (0 == j % 2) {
+				if (FAILED(m_pBlurShader->Bind_ShaderResourceView(pDownSRVs[i], pBlurUAVs[i], iSlot)))
+					return E_FAIL;
+			}
+			else {
+				if (FAILED(m_pBlurShader->Bind_ShaderResourceView(pBlurSRVs[i], pUAVs[i], iSlot)))
+					return E_FAIL;
+			}
+
+			m_BLParam.direction = j; // 가로 세로로 블러먹이기
+			if (FAILED(m_pBlurShader->Change_Value(&m_BLParam, sizeof(BLURPARAM))))
+				return E_FAIL;
+			
+			if (FAILED(m_pBlurShader->Begin(_uint3(ThreadGroupSize.x, ThreadGroupSize.y, 1))))
+				return E_FAIL;
+		}
+
+	}
+	
+	if (FAILED(m_pGameInstance->Begin_MRT(MRT_Tag)))
+		return E_FAIL;
+
+	if (FAILED(m_pGetBlurShader->Bind_Matrix("g_WorldMatrix", m_WorldMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pGetBlurShader->Bind_Matrix("g_ViewMatrix", m_ViewMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pGetBlurShader->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
+		return E_FAIL;
+
+	if (FAILED(m_pGetBlurShader->Bind_ShaderResourceView("g_HalfTex", m_pHalfRT->Get_SRV())))
+		return E_FAIL;
+
+	if (FAILED(m_pGetBlurShader->Bind_ShaderResourceView("g_QuarterTex", m_pQuarterRT->Get_SRV())))
+		return E_FAIL;
+
+	if (FAILED(m_pGetBlurShader->Bind_ShaderResourceView("g_EightTex", m_pEightRT->Get_SRV())))
+		return E_FAIL;
+
+
+	if (FAILED(m_pGetBlurShader->Begin(0)))
+		return E_FAIL;
+
+	if (FAILED(m_pVIBuffer->Render()))
+		return E_FAIL;
+	
+	if (FAILED(m_pGameInstance->End_MRT()))
+		return E_FAIL;
+
+
+	return S_OK;
+}
 
 CRenderer* CRenderer::Create(_dev pDevice, _context pContext)
 {
@@ -1592,19 +1622,45 @@ void CRenderer::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pDSBuffer);
-	Safe_Release(m_pDSBlob);
-	Safe_Release(m_pDSCShader);
-	Safe_Release(m_pDSTexture);
-	Safe_Release(m_pDSUAV);
-	Safe_Release(m_pDSSRV);
+#pragma region 평균휘도 Release
 
-	Safe_Release(m_pBlurBuffer);
-	Safe_Release(m_pBlurBlob);
-	Safe_Release(m_pBlurCShader);
-	Safe_Release(m_pBlurTexture);
-	Safe_Release(m_pBlurUAV);
-	Safe_Release(m_pBlurSRV);
+	Safe_Release(m_pLumShader);
+	Safe_Release(m_pLumRT);
+
+	Safe_Release(m_pDownShader);
+	Safe_Release(m_pDownRT);
+
+	Safe_Release(m_pDown2Shader);
+	Safe_Release(m_pDownRT1);
+	
+	Safe_Release(m_pDown3Shader);
+	Safe_Release(m_pDownRT2);
+	
+	Safe_Release(m_pGetAvgLumShader);
+	Safe_Release(m_pLumValue);
+
+#pragma endregion
+
+#pragma region 블러 Release
+
+	Safe_Release(m_pBlurShader);
+
+	Safe_Release(m_pDownScaleShader);
+
+	Safe_Release(m_pHalfRT);
+	Safe_Release(m_pQuarterRT);
+	Safe_Release(m_pEightRT);
+
+	Safe_Release(m_pHalfBlurRT);
+	Safe_Release(m_pQuarterBlurRT);
+	Safe_Release(m_pEightBlurRT);
+
+	Safe_Release(m_pGetBlurShader);
+
+#pragma endregion
+
+	//SSAO
+	Safe_Release(m_pNoiseNormal);
 
 	Safe_Release(m_pShader);
 	Safe_Release(m_pVIBuffer);

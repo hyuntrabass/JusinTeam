@@ -58,23 +58,38 @@ namespace Engine
 	};
 
 	typedef struct tagSSAOValue {
-		float fIntensity = 3.f;
+		float fIntensity = 3.5f;
 		float fRadius = 0.05f;
 		float fScale = 3.f;
-		float fBias = 0.25f;
+		float fBias = 0.3f;
 	}SSAO_DESC;
 
-	typedef struct ThresholdParams {
-		alignas(16) float fThreshold;
-	}THPARAM;
+	typedef struct tagHDRValue {
+		float fMiddleGray = 6.5f;
+		float fLumWhiteSqr = 0.8f;
+		float fPadding0 = 0.f;
+		float fPadding1 = 0.f;
+	}HDR_DESC;
+
+	typedef struct DownScaleParams {
+		unsigned int ScaleX;
+		unsigned int ScaleY;
+		unsigned int Padding0 = 0;
+		unsigned int Padding1 = 0;
+	}DSPARAM;
 
 #define GAUSSIAN_RADIUS 7
 
 	typedef struct BlurParams
 	{
-		alignas(16) float coefficients[GAUSSIAN_RADIUS + 1];
 		int radius;     // must be <= MAX_GAUSSIAN_RADIUS
 		int direction;  // 0 = horizontal, 1 = vertical
+		unsigned int ScaleX;
+		unsigned int ScaleY;
+		float fBlurPower;
+		unsigned int iPadding0 = 0;
+		unsigned int iPadding1 = 0;
+		unsigned int iPadding2 = 0;
 	}BLURPARAM;
 
 	struct EffectInfo
@@ -305,4 +320,13 @@ namespace Engine
 		XMUINT2 vTerrainSize{};
 		bool isMesh{ false };
 	};
+
+	using VTXMESHINSTANCING = struct tagVertex_Mesh_Instancing
+	{
+		SimpleMath::Vector4 vRight{};
+		SimpleMath::Vector4 vUp{};
+		SimpleMath::Vector4 vLook{};
+		SimpleMath::Vector4 vPos{};
+	};
+
 }

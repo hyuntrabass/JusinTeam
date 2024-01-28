@@ -79,12 +79,47 @@ HRESULT CShader_Player::Place_PartModels()
 	if (FAILED(m_pModelCom->Place_Parts(Desc)))
 		return E_FAIL;
 
-	Desc.ePartType = PT_HELMET;
-	Desc.FileName = "helmet";
+	Desc.FileName = "body3";
 
 	if (FAILED(m_pModelCom->Place_Parts(Desc)))
 		return E_FAIL;
 
+	Desc.FileName = "body4";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "body5";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.ePartType = PT_HELMET;
+	Desc.FileName = "helmet0";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "helmet1";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+	Desc.FileName = "helmet2";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+	Desc.FileName = "helmet3";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+	Desc.FileName = "helmet4";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+	Desc.FileName = "helmet5";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
 	Desc.ePartType = PT_FACE;
 	Desc.FileName = "face0";
 
@@ -179,6 +214,16 @@ HRESULT CShader_Player::Place_PartModels()
 	if (FAILED(m_pModelCom->Place_Parts(Desc)))
 		return E_FAIL;
 
+	Desc.FileName = "bow3";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "bow4";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
 	Desc.FileName = "sword0";
 
 	if (FAILED(m_pModelCom->Place_Parts(Desc)))
@@ -190,6 +235,15 @@ HRESULT CShader_Player::Place_PartModels()
 		return E_FAIL;
 
 	Desc.FileName = "sword2";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+
+	Desc.FileName = "sword3";
+
+	if (FAILED(m_pModelCom->Place_Parts(Desc)))
+		return E_FAIL;
+	Desc.FileName = "sword4";
 
 	if (FAILED(m_pModelCom->Place_Parts(Desc)))
 		return E_FAIL;

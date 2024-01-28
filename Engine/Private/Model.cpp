@@ -356,6 +356,8 @@ HRESULT CModel::Init(void* pArg)
 		_mat* pMatrix = new _mat{};
 		m_EffectMatrices.push_back(pMatrix);
 	}
+	
+	
 
 	random_device rand;
 	m_RandomNumber = _randNum(rand());
@@ -511,6 +513,7 @@ HRESULT CModel::Render(_uint iMeshIndex)
 
 	return S_OK;
 }
+
 
 _bool CModel::Intersect_RayModel(_fmatrix WorldMatrix, _vec4* pPickPos)
 {

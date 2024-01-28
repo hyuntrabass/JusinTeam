@@ -244,7 +244,7 @@ HRESULT CLevel_Select::Ready_Light()
 	LightDesc.eType = LIGHT_DESC::Point;
 	LightDesc.vAttenuation = LIGHT_RANGE_50;
 	LightDesc.vDiffuse = _float4(1.f, 0.6f, 0.1f, 1.f);
-	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
+	LightDesc.vAmbient = _float4(0.5f,0.5f, 0.5f, 1.f);
 	LightDesc.vPosition = _float4(0.134f, 0.5f,-3.2f, 1.f);
 	LightDesc.vSpecular = _vec4(1.f);
 

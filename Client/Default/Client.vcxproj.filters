@@ -340,6 +340,12 @@
     <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Missile">
       <UniqueIdentifier>{60d859ff-77f1-4b49-be0b-495060f838c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\11.Trigger">
+      <UniqueIdentifier>{e34cfd3d-cd3e-4a9c-a182-3c577c5cdb93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\11.Trigger\Manager">
+      <UniqueIdentifier>{bc9dd045-dd44-470a-8fbe-c8d5ed7e0b04}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -525,9 +531,6 @@
     <ClInclude Include="..\Public\TestTree.h">
       <Filter>02.GameObjects\07. StatObject\Test</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Map.h">
-      <Filter>02.GameObjects\08.Map</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Pop_QuestEnd.h">
       <Filter>02.GameObjects\00.UI\POPUP</Filter>
     </ClInclude>
@@ -671,6 +674,18 @@
     </ClInclude>
     <ClInclude Include="..\Public\Missile.h">
       <Filter>02.GameObjects\08. Boss\Groar_Boss\Missile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Trigger.h">
+      <Filter>02.GameObjects\11.Trigger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TriggerList.h">
+      <Filter>02.GameObjects\11.Trigger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Trigger_Manager.h">
+      <Filter>02.GameObjects\11.Trigger\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Map.h">
+      <Filter>02.GameObjects\08.Map</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -858,9 +873,6 @@
     <ClCompile Include="..\Private\TestTree.cpp">
       <Filter>02.GameObjects\07. StatObject\Test</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Map.cpp">
-      <Filter>02.GameObjects\08.Map</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Pop_QuestEnd.cpp">
       <Filter>02.GameObjects\00.UI\POPUP</Filter>
     </ClCompile>
@@ -1001,6 +1013,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Missile.cpp">
       <Filter>02.GameObjects\08. Boss\Groar_Boss\Missile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Trigger.cpp">
+      <Filter>02.GameObjects\11.Trigger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Trigger_Manager.cpp">
+      <Filter>02.GameObjects\11.Trigger\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Map.cpp">
+      <Filter>02.GameObjects\08.Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

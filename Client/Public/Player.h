@@ -332,7 +332,7 @@ public:
 	void Summon_Riding(Riding_Type Type);
 	void Tick_Riding();
 	void UnMount_Riding();
-
+	void Arrow_Rain();
 public:
 	void Init_State();
 	void Tick_State(_float fTimeDelta);
@@ -362,6 +362,7 @@ private:
 	Riding_State m_Riding_State{};
 	PLAYER_STATUS m_Status{};
 	_mat m_Riding_Mat{};
+	_int m_iArrowRain{};
 	_bool m_ReadyArrow{};
 	const _mat* m_Left_Mat{};
 	const _mat* m_Right_Mat{};
@@ -370,6 +371,7 @@ private:
 	_float m_fSkillSpeed{};
 	_bool m_bAttackStop{};
 	_float4 m_vPos{};
+	_bool m_bArrowRain_Start{};
 	_bool m_bStartGame{};
 	const _float m_fWalkSpeed{ 1.f };
 	const _float m_fRunSpeed{ 3.5f };

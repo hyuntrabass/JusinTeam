@@ -23,8 +23,8 @@ HRESULT CMap::Init_Prototype()
 
 HRESULT CMap::Init(void* pArg)
 {
-
 	m_Info = *(MapInfo*)pArg;
+	
 	_vec3 MapPos = _vec3(m_Info.vPos.x, m_Info.vPos.y, m_Info.vPos.z);
 	if (FAILED(Add_Components()))
 	{
@@ -138,7 +138,6 @@ HRESULT CMap::Add_Components()
 	m_iShaderPass = StaticPass_Default;
 	m_iOutLineShaderPass = StaticPass_OutLine;
 	
-
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Info.Prototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	{
 		return E_FAIL;
