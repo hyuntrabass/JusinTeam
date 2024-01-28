@@ -281,12 +281,6 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		CEvent_Manager::Get_Instance()->Late_Tick(fTimeDelta);
 	}
 
-	if (m_eState == Skill4 && !m_bAttacked && m_fSkiilTimer > 0.15f)
-	{
-		//m_pGameInstance->Set_TimeRatio(0.01f);
-		//m_pGameInstance->Set_ShakeCam(true,0.01f);
-	}
-
 	m_pModelCom->Set_Animation(m_Animation);
 
 	if (m_UsingMotionBlur)
@@ -841,7 +835,7 @@ void CPlayer::Move(_float fTimeDelta)
 		}
 
 	}
-
+	
 	if (m_pGameInstance->Key_Down(DIK_5))
 	{
 		if (m_Current_Weapon == WP_SWORD)
@@ -897,8 +891,12 @@ void CPlayer::Move(_float fTimeDelta)
 		if (!m_pTransformCom->Is_Jumping())
 			m_eState = Jump_Long_End;
 	}
+	if (m_fAttTimer > 0.8f && m_eState == Attack)
+		m_bReady_Move = true;
+	else if(m_eState!=Attack)
+		m_bReady_Move = false;
 
-	if (m_fAttTimer > 0.8f && m_fSkiilTimer > 1.2f)
+	if (( m_fSkiilTimer > 1.2f && m_eState != SkillR && m_eState != Aim_Idle))
 	{
 		//퀘스트 개수에 따라 bool로 통과하도록 한번 거쳐야할듯 아니면 계속 맵에서 찾아야되니까 
 		if (m_pGameInstance->Key_Pressing(DIK_W))
@@ -929,20 +927,17 @@ void CPlayer::Move(_float fTimeDelta)
 		{
 			if (m_bIsClimb)
 				return;
-			if (vDirection == _vec4())
-				vDirection += vForwardDir;
+	
 
-			Arrow_Type type{};
-			type.vPos = _vec4(m_pTransformCom->Get_State(State::Pos));
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
-			{
-				return;
-			}
+			
+			if (vDirection != _vec4())
+				m_pTransformCom->LookAt_Dir(vDirection);
 
-			m_pTransformCom->LookAt_Dir(vDirection);
+			Common_Attack();
+			m_eState = Attack;
+			m_ReadyArrow = true;
 			//m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
 			m_bAttacked = false;
-			Common_Attack();
 			hasMoved = false;
 		}
 		if (m_pGameInstance->Key_Down(DIK_SPACE))
@@ -1038,7 +1033,7 @@ void CPlayer::Move(_float fTimeDelta)
 				if (!m_pTransformCom->Is_Jumping())
 					m_eState = Idle;
 			}
-
+			if ( m_eState != Attack or (m_eState == Attack && m_fAttTimer > 0.75f))
 			m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
 
 
@@ -1230,7 +1225,7 @@ void CPlayer::Common_Attack()
 
 	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 2.f;
-	m_eState = Attack;
+	
 	m_iCurrentSkill_Index = 0;
 	if (m_Current_Weapon == WP_SWORD)
 	{
@@ -1401,7 +1396,6 @@ void CPlayer::SkillR_Attack()
 	else if (m_Current_Weapon == WP_BOW)
 	{
 		m_Animation.iAnimIndex = m_BowSkill[4];
-		m_Animation.bRestartAnimation = true;
 		m_Animation.isLoop = false;
 		m_hasJumped = false;
 		m_iSuperArmor = {};
@@ -1448,7 +1442,7 @@ void CPlayer::Return_Attack_IdleForm()
 }
 void CPlayer::After_CommonAtt(_float fTimeDelta)
 {
-	if (m_Current_Weapon == WP_SWORD)
+	if (m_Current_Weapon == WP_SWORD)  
 	{
 		if (m_fAttTimer > 0.2f && m_fAttTimer < 0.35f)
 		{
@@ -1481,6 +1475,7 @@ void CPlayer::After_CommonAtt(_float fTimeDelta)
 	}
 	else if (m_Current_Weapon == WP_BOW)
 	{
+		
 		if (m_fAttTimer > 0.25f && m_fAttTimer < 0.34f)
 		{
 			if (m_iAttackCombo == 4)
@@ -1990,7 +1985,14 @@ void CPlayer::Sword_Att_Camera_Effect()
 void CPlayer::Bow_Att_Camera_Effect()
 {
 	_float Index = m_pModelCom->Get_CurrentAnimPos();
-
+	if (m_eState == Attack)
+	{
+		if(Index >=7.f && Index<=8.f && m_ReadyArrow)
+		{
+			Create_Arrow(AT_Bow_Common);
+			m_ReadyArrow = false;
+		}
+	}
 	if (m_eState == Skill2)
 	{
 		if (Index >= 32.f && Index <= 33.f)
@@ -2032,6 +2034,44 @@ void CPlayer::Bow_Att_Camera_Effect()
 		}
 	}
 
+}
+void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
+{
+	_mat offet = _mat::CreateTranslation(_vec3(0.f, 0.5f, 0.f));
+	_mat bone = (*m_pModelCom->Get_BoneMatrix("bowstring"));
+	_mat world = m_pTransformCom->Get_World_Matrix();
+	world = offet*bone  * world;
+
+	
+	
+	Arrow_Type type{};
+	type.world = world;
+	type.vLook = m_pTransformCom->Get_State(State::Look);
+
+	switch (Att_Type)
+	{
+	case Client::AT_Bow_Common:
+
+		break;
+	case Client::AT_Bow_Skill1:
+		break;
+	case Client::AT_Bow_Skill2:
+		break;
+	case Client::AT_Bow_Skill3:
+		break;
+	case Client::AT_Bow_Skill4:
+		break;
+	case Client::AT_End:
+		break;
+	default:
+		break;
+	}
+	
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
+	{
+		return;
+	}
 }
 void CPlayer::Summon_Riding(Riding_Type Type)
 {
@@ -2101,9 +2141,12 @@ void CPlayer::UnMount_Riding()
 
 void CPlayer::Init_State()
 {
-	if (m_eState != m_ePrevState)
+	if (m_eState != m_ePrevState )
 	{
-		m_Animation = {};
+		m_Animation.isLoop = false;
+		m_Animation.bRestartAnimation = false;
+		m_Animation.bSkipInterpolation = false;
+		
 
 		m_Animation.fAnimSpeedRatio = 2.f;
 		if (m_pGameInstance->Get_TimeRatio() < 1.f)
@@ -2173,12 +2216,23 @@ void CPlayer::Init_State()
 			m_iSuperArmor = {};
 			break;
 		case Client::CPlayer::Attack:
+
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
 			m_iSuperArmor = {};
 			break;
 		case Client::CPlayer::Attack_Idle:
-			m_Animation.isLoop = true;
+			if (m_Current_Weapon == WP_SWORD)
+			{
+				m_Animation.iAnimIndex = Anim_Assassin_Battle_Idle;
+				m_Animation.isLoop = true;
+			}
+			else if (m_Current_Weapon == WP_BOW)
+			{
+				m_Animation.iAnimIndex = Anim_B_idle_end;
+				m_Animation.isLoop = false;
+			}
+
 			m_hasJumped = false;
 			m_iSuperArmor = {};
 			break;
@@ -2344,13 +2398,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 	break;
 	case Client::CPlayer::Attack_Idle:
 	{
-		if (m_Current_Weapon == WP_SWORD)
-			m_Animation.iAnimIndex = Anim_Assassin_Battle_Idle;
-		else if (m_Current_Weapon == WP_BOW)
-		{
-			m_Animation.iAnimIndex = Anim_B_idle_end;
-			m_Animation.isLoop = false;
-		}
+		
 	}
 	break;
 	case Client::CPlayer::Attack_Run:

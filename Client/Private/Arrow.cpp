@@ -24,21 +24,31 @@ HRESULT CArrow::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-	m_pTransformCom->Set_State(State::Pos, type->vPos);
+	m_pTransformCom->Set_Matrix(type->world);
+	m_pTransformCom->LookAt_Dir(type->vLook);
+	m_pTransformCom->Set_Speed(35.f);
 
-	m_pTransformCom->Set_Speed(1.f);
-
-
+	TRAIL_DESC trail_desc{};
+	trail_desc.vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
+	trail_desc.vPSize = _vec2(0.02f, 0.02f);
+	trail_desc.iNumVertices = 10;
+	m_pTrail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &trail_desc);
     return S_OK;
 }
 
 void CArrow::Tick(_float fTimeDelta)
 {
+	
+	m_pTransformCom->Go_Straight(fTimeDelta);
+	_mat world{};
+	world = m_pTransformCom->Get_World_Matrix();
+	m_pTrail->Tick((world.Position_vec3()));
 
 }
 
 void CArrow::Late_Tick(_float fTimeDelta)
 {
+	m_pTrail->Late_Tick(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 }
 
@@ -159,6 +169,7 @@ void CArrow::Free()
 
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pTrail);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pCollider);
 

@@ -2,13 +2,13 @@
 
 #include "Client_Define.h"
 #include "GameObject.h"
-
+#include "CommonTrail.h"
 BEGIN(Client)
 
 struct Arrow_Type
 {
 	ATTACK_TYPE Att_Type{ AT_End };
-	_vec4 vPos{};
+	_mat world{};
 	_vec4 vLook{};
 
 };
@@ -32,6 +32,8 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CRenderer* m_pRendererCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
+
+	CCommonTrail* m_pTrail{ nullptr };
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
