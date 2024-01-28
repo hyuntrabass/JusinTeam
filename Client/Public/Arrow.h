@@ -32,8 +32,10 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CRenderer* m_pRendererCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
-
 	CCommonTrail* m_pTrail{ nullptr };
+
+private:
+	_float m_fDeadTime{};
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

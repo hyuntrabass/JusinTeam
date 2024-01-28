@@ -38,7 +38,10 @@ HRESULT CArrow::Init(void* pArg)
 
 void CArrow::Tick(_float fTimeDelta)
 {
-	
+	m_fDeadTime += fTimeDelta;
+	if (m_fDeadTime > 6.f)
+		Kill();
+
 	m_pTransformCom->Go_Straight(fTimeDelta);
 	_mat world{};
 	world = m_pTransformCom->Get_World_Matrix();
@@ -126,7 +129,7 @@ HRESULT CArrow::Bind_ShaderResources()
 	//	return E_FAIL;
 	//}
 
-	_vec4 Color = _vec4(0.f, 0.f, 0.f, 1.f);
+	_vec4 Color = _vec4(0.89f, 0.96f, 0.969f, 1.f);
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &Color, sizeof _vec4)))
 	{
 		return E_FAIL;

@@ -800,6 +800,7 @@ void CPlayer::Move(_float fTimeDelta)
 		{
 			m_eState = Skill1;
 			m_iCurrentSkill_Index = Skill1;
+			m_ReadyArrow = true;
 			m_bAttacked = false;
 		}
 	}
@@ -810,6 +811,7 @@ void CPlayer::Move(_float fTimeDelta)
 		{
 			m_eState = Skill2;
 			m_iCurrentSkill_Index = Skill2;
+			m_ReadyArrow = true;
 			m_bAttacked = false;
 		}
 	}
@@ -820,6 +822,7 @@ void CPlayer::Move(_float fTimeDelta)
 		if (m_eState != Skill3)
 		{
 			m_eState = Skill3;
+			m_ReadyArrow = true;
 			m_iCurrentSkill_Index = Skill3;
 			m_bAttacked = false;
 		}
@@ -831,6 +834,7 @@ void CPlayer::Move(_float fTimeDelta)
 		{
 			m_eState = Skill4;
 			m_iCurrentSkill_Index = Skill4;
+			m_ReadyArrow = true;
 			m_bAttacked = false;
 		}
 
@@ -1308,6 +1312,8 @@ void CPlayer::Skill1_Attack()
 		m_Animation.isLoop = false;
 		m_hasJumped = false;
 		m_iSuperArmor = {};
+		m_Animation.fAnimSpeedRatio = 2.7f;
+		m_Animation.fDurationRatio = 0.8f;
 		m_fSkiilTimer = 0.f;
 		m_Status.Current_Mp -= 150;
 	}
@@ -1330,6 +1336,7 @@ void CPlayer::Skill2_Attack()
 		m_Animation.iAnimIndex = m_BowSkill[1];
 		m_Animation.isLoop = false;
 		m_hasJumped = false;
+	
 		m_iSuperArmor = {};
 		m_fSkiilTimer = 0.f;
 		m_Status.Current_Mp -= 250;
@@ -1993,24 +2000,54 @@ void CPlayer::Bow_Att_Camera_Effect()
 			m_ReadyArrow = false;
 		}
 	}
-	if (m_eState == Skill2)
+	else if (m_eState == Skill1)
+	{
+		if (Index >= 16.f && Index <= 17.f && m_ReadyArrow)
+		{
+			Create_Arrow(AT_Bow_Skill1);
+			m_ReadyArrow = false;
+		}
+		else if (Index > 17.f && Index <= 18.f && !m_ReadyArrow)
+			m_ReadyArrow = true;
+		else if (Index >=30.f && Index <= 32.f && m_ReadyArrow)
+		{
+			Create_Arrow(AT_Bow_Skill1);
+			m_ReadyArrow = false;
+		}
+		else if (Index > 33.f && Index <= 35.f && !m_ReadyArrow)
+			m_ReadyArrow = true;
+		else if (Index >= 47.f && Index <= 49.f && m_ReadyArrow)
+		{
+			Create_Arrow(AT_Bow_Skill1);
+			m_ReadyArrow = false;
+		}
+	}
+	else if (m_eState == Skill2)
 	{
 		if (Index >= 32.f && Index <= 33.f)
 		{
 			m_pGameInstance->Set_TimeRatio(0.2f);
 		}
+		else if (Index >= 40.f && Index <= 41.f && m_ReadyArrow)
+		{
+			Create_Arrow(AT_Bow_Skill2);
+			m_ReadyArrow = false;
+		}
 		else if (Index >= 44.f && Index <= 45.f)
 		{
 			m_pGameInstance->Set_ShakeCam(true);
+		
 		}
 		else
 			m_pGameInstance->Set_TimeRatio(1.f);
 	}
 	else if (m_eState == Skill3)
 	{
-		if (Index >= 19.f && Index <= 20.f)
+		if (Index >= 19.f && Index <= 20.f && m_ReadyArrow)
 		{
 			m_pGameInstance->Set_TimeRatio(0.2f);
+			Create_Arrow(AT_Bow_Skill3);
+			m_ReadyArrow = false;
 			m_UsingMotionBlur = true;
 		}
 		else
@@ -2041,25 +2078,61 @@ void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
 	_mat bone = (*m_pModelCom->Get_BoneMatrix("bowstring"));
 	_mat world = m_pTransformCom->Get_World_Matrix();
 	world = offet*bone  * world;
+	Arrow_Type type{};
 
 	
 	
-	Arrow_Type type{};
-	type.world = world;
-	type.vLook = m_pTransformCom->Get_State(State::Look);
+
 
 	switch (Att_Type)
 	{
 	case Client::AT_Bow_Common:
-
+		type.world = world;
+		type.vLook = m_pTransformCom->Get_State(State::Look);
+		type.Att_Type = AT_Bow_Common;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
+		{
+			return;
+		}
 		break;
 	case Client::AT_Bow_Skill1:
+		type.world = world;
+		type.vLook = m_pTransformCom->Get_State(State::Look);
+		type.Att_Type = AT_Bow_Skill1;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
+		{
+			return;
+		}
 		break;
 	case Client::AT_Bow_Skill2:
+		type.world = world;
+		type.vLook = m_pTransformCom->Get_State(State::Look);
+		type.vLook.y -= 0.25f;
+		type.Att_Type = AT_Bow_Skill2;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
+		{
+			return;
+		}
 		break;
 	case Client::AT_Bow_Skill3:
+		type.world = world;
+		type.vLook = m_pTransformCom->Get_State(State::Look);
+		type.vLook.y += 0.5f;
+		type.Att_Type = AT_Bow_Skill3;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
+		{
+			return;
+		}
 		break;
 	case Client::AT_Bow_Skill4:
+		type.world = world;
+		type.vLook = m_pTransformCom->Get_State(State::Look);
+		type.vLook.y -= 0.25f;
+		type.Att_Type = AT_Bow_Skill4;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
+		{
+			return;
+		}
 		break;
 	case Client::AT_End:
 		break;
@@ -2068,10 +2141,7 @@ void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
 	}
 	
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
-	{
-		return;
-	}
+	
 }
 void CPlayer::Summon_Riding(Riding_Type Type)
 {
