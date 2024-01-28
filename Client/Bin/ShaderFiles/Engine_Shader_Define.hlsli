@@ -2,7 +2,7 @@
 
 float3 g_vRandom[50];
 
-float3 g_fLuminace = float3(0.2126, 0.7152, 0.0722);
+float3 g_fLuminace = float3(0.2126f, 0.7152f, 0.0722f);
 float g_fThreshold;
 
 struct SSAO_DESC
@@ -11,6 +11,13 @@ struct SSAO_DESC
     float fRadius;
     float fScale;
     float fBias;
+};
+
+struct HDR_DESC
+{
+    float fMiddleGray;
+    float fLumWhiteSqr;
+    float2 vPadding;
 };
 
 // Sampler
@@ -28,6 +35,13 @@ sampler PointClampSampler = sampler_state
     AddressV = clamp;
 };
 
+sampler PointMirrorSampler = sampler_state
+{
+    Filter = MIN_MAG_MIP_POINT;
+    AddressU = Mirror;
+    AddressV = Mirror;
+};
+
 sampler LinearSampler = sampler_state
 {
     Filter = MIN_MAG_MIP_LINEAR;
@@ -40,6 +54,13 @@ sampler LinearClampSampler = sampler_state
     Filter = MIN_MAG_MIP_LINEAR;
     AddressU = clamp;
     AddressV = clamp;
+};
+
+sampler LinearMirrorSampler = sampler_state
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Mirror;
+    AddressV = Mirror;
 };
 
 sampler WaterSampler = sampler_state
