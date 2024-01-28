@@ -102,9 +102,9 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.fExp = 1.7f;
 	tDesc.iNum = 1;
 	tDesc.iMoney = 1000;
-	tDesc.isMain = true;
+	tDesc.isMain = false;
 	tDesc.strQuestTitle = TEXT("퀘스트!");
-	tDesc.strText = TEXT("주말에 자습실 춥다고 말씀드리기");
+	tDesc.strText = TEXT("그냥");
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	tDesc.eType = QUESTIN;
@@ -120,7 +120,7 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.fExp = 2;
 	tDesc.iNum = 3;
 	tDesc.iMoney = 1000;
-	tDesc.isMain = false;
+	tDesc.isMain = true;
 	tDesc.strQuestTitle = TEXT("펫 라이딩");
 	tDesc.strText = TEXT("펫 타고 이동해보기");
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
