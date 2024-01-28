@@ -13,7 +13,6 @@ CVIBuffer_Instancing::CVIBuffer_Instancing(const CVIBuffer_Instancing& rhs)
 	, m_iNumInstances(rhs.m_iNumInstances)
 	, m_iIndexCountPerInstance(rhs.m_iIndexCountPerInstance)
 	, m_iInstanceStride(rhs.m_iInstanceStride)
-	, m_pVBInstance(rhs.m_pVBInstance)
 {
 }
 

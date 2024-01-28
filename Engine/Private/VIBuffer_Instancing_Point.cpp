@@ -13,12 +13,12 @@ CVIBuffer_Instancing_Point::CVIBuffer_Instancing_Point(const CVIBuffer_Instancin
 HRESULT CVIBuffer_Instancing_Point::Init_Prototype(_uint iNumInstances)
 {
 	m_iNumVertexBuffers = 2;
-	m_iVertexStride = sizeof VTXSTATICMESH;
+	m_iVertexStride = sizeof VTXPOINT;
 	m_iNumVertices = 1;
 
 	m_iNumInstances = iNumInstances;
 	m_iIndexCountPerInstance = 1;
-	m_iInstanceStride = sizeof VTXMESHINSTANCING;
+	m_iInstanceStride = sizeof VTXINSTANCING;
 
 	m_iIndexStride = 2;
 	m_iNumIndices = m_iIndexCountPerInstance * m_iNumInstances;
