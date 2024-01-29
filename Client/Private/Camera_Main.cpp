@@ -92,9 +92,8 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			return;
 		}
 
-		if (m_pGameInstance->Get_ShakeCam())
+		if (m_fShakeAcc > 2.f and m_pGameInstance->Get_ShakeCam())
 		{
-
 			m_fShakeAcc = m_pGameInstance->Get_ShakePower();
 			m_pGameInstance->Set_ShakeCam(false);
 		}

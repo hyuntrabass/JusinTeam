@@ -51,7 +51,10 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 	if (m_Effect.hasLight)
 	{
 		m_strLightTag = L"Light_Effect_" + to_wstring(m_iLightID++);
-		m_pGameInstance->Add_Light(m_pGameInstance->Get_CurrentLevelIndex(), m_strLightTag, m_Effect.Light_Desc);
+		if (FAILED(m_pGameInstance->Add_Light(m_pGameInstance->Get_CurrentLevelIndex(), m_strLightTag, m_Effect.Light_Desc)))
+		{
+			return E_FAIL;
+		}
 	}
 
 	return S_OK;

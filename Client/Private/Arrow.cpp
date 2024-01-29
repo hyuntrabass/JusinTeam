@@ -68,6 +68,7 @@ void CArrow::Late_Tick(_float fTimeDelta)
 	m_pTrail->Late_Tick(fTimeDelta);
 	__super::Compute_CamDistance();
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
+	m_pRendererCom->Add_RenderGroup(RG_BlendBlur, this);
 }
 
 HRESULT CArrow::Render()
