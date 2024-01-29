@@ -383,7 +383,7 @@ PS_OUT PS_Main_LerpDissolve(PS_IN Input)
     }
     if (g_vColor.a > 0.f)
     {
-        vMtrlDiffuse = lerp(vMtrlDiffuse, g_vColor, 0.3f);
+        vMtrlDiffuse.xyz = lerp(vMtrlDiffuse, g_vColor, 0.3f).xyz;
     }
     if (0.3f > vMtrlDiffuse.a)
     {

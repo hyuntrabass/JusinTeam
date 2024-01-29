@@ -11,7 +11,7 @@ struct Arrow_Type
 	_mat world{};
 	_vec4 vPos{};
 	_vec4 vLook{};
-
+	CCollider* MonCollider{ nullptr };
 };
 class CArrow final : public CBlendObject
 {
@@ -36,6 +36,7 @@ private:
 	CCommonTrail* m_pTrail{ nullptr };
 
 private:
+	Arrow_Type m_ArrowType{};
 	_float m_fDeadTime{};
 private:
 	HRESULT Add_Components();

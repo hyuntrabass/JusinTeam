@@ -2,7 +2,7 @@
 #include "GameObject.h"
 #include "Collider.h"
 
-HRESULT CCollision_Manager::Register_CollisionObject(CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer)
+HRESULT CCollision_Manager::Register_CollisionObject(CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer, class CCollider* AttRangeCollider)
 {
 	if (not pObject or not pHitCollider)
 	{
@@ -18,9 +18,10 @@ HRESULT CCollision_Manager::Register_CollisionObject(CGameObject* pObject, class
 		}
 		m_pPlayer = pObject;
 		m_pPlayerHitCollider = pHitCollider;
-
+		m_pPlayerAttRangeCollider = AttRangeCollider;
 		Safe_AddRef(m_pPlayer);
 		Safe_AddRef(m_pPlayerHitCollider);
+		Safe_AddRef(m_pPlayerAttRangeCollider);
 	}
 	else
 	{
@@ -106,6 +107,28 @@ _bool CCollision_Manager::CheckCollision_Player(CCollider* pCollider)
 	return false;
 }
 
+class CCollider* CCollision_Manager::Get_Nearest_MonsterCollider()
+{
+
+	CCollider* nearestMonsterCollider = nullptr;
+	_float minDistance = 300.f;
+
+	for (auto& Monster : m_Monsters)
+	{
+		if (Monster.second->Intersect(m_pPlayerAttRangeCollider))
+		{
+			_vec4 monsterPos = _vec4(Monster.second->Get_ColliderPos(),1.f);
+			_float distance = _vec4::Distance(_vec4(m_pPlayerHitCollider->Get_ColliderPos(), 1.f), monsterPos);
+			if (distance < minDistance)
+			{
+				minDistance = distance;
+				nearestMonsterCollider = Monster.second;
+			}
+		}
+	}
+	return nearestMonsterCollider;
+}
+
 CCollision_Manager* CCollision_Manager::Create()
 {
 	CCollision_Manager* pInstance = new CCollision_Manager();
@@ -117,6 +140,7 @@ void CCollision_Manager::Free()
 {
 	Safe_Release(m_pPlayer);
 	Safe_Release(m_pPlayerHitCollider);
+	Safe_Release(m_pPlayerAttRangeCollider);
 
 	for (auto& Monster : m_Monsters)
 	{
