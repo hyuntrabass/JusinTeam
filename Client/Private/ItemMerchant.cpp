@@ -1,6 +1,7 @@
 #include "ItemMerchant.h"
 #include "Shop.h"
 #include "3DUITex.h"
+#include "UI_Manager.h"
 
 CItemMerchant::CItemMerchant(_dev pDevice, _context pContext)
 	: CNPC(pDevice, pContext)
@@ -37,6 +38,8 @@ HRESULT CItemMerchant::Init(void* pArg)
 	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 2.f;
 
+	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::NPC, m_pTransformCom);
+
 	return S_OK;
 }
 
@@ -44,6 +47,7 @@ void CItemMerchant::Tick(_float fTimeDelta)
 {
 	if (m_bTalking && !m_pShop->IsActive())
 	{
+		m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 0.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));
 		m_bTalking = false;
 	}
 
@@ -51,6 +55,7 @@ void CItemMerchant::Tick(_float fTimeDelta)
 	_bool isColl = m_pColliderCom->Intersect(pCollider);
 	if (!m_bTalking && isColl && m_pGameInstance->Key_Down(DIK_E))
 	{
+		m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 1000.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));
 		m_bTalking = true;
 		m_pShop->Open_Shop();
 	}
@@ -58,6 +63,7 @@ void CItemMerchant::Tick(_float fTimeDelta)
 
 	if (m_bTalking == true)
 	{
+
 		m_Animation.iAnimIndex = TALK;
 		m_pShop->Tick(fTimeDelta);
 	}

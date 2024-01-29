@@ -1,9 +1,11 @@
 #include "Shop.h"
 #include "GameInstance.h"
 #include "TextButton.h"
+#include "TextButtonColor.h"
 #include "UI_Manager.h"
 #include "FadeBox.h"
 #include "InvenFrame.h"
+#include "ShopDesc.h"
 CShop::CShop(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
@@ -27,15 +29,22 @@ HRESULT CShop::Init(void* pArg)
 		return E_FAIL;
 	}
 	
-	m_fSizeX = 70.f;
-	m_fSizeY = 70.f;
-	m_fX = 1160.f;
-	m_fY = 45.f;
-	m_fDepth = (_float)D_INVEN / (_float)D_END;
+	m_fX = 310.f;
+	m_fY = (_float)g_ptCenter.y;
+
+	m_fSizeX = 300.f;
+	m_fSizeY = 660.f;
+
+	m_fDepth = (_float)D_SHOP / (_float)D_END;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 	if (FAILED(Add_Parts()))
+	{
+		return E_FAIL;
+	}
+	
+	if (FAILED(Init_ShopItems()))
 	{
 		return E_FAIL;
 	}
@@ -61,44 +70,104 @@ void CShop::Tick(_float fTimeDelta)
 	{
 		if (m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
+			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_isActive = false;
 		}
 	}
 
+
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
-	if (m_isActive)
+	if (!m_isActive)
 	{
-		/* 돈 */
-		_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
-		dynamic_cast<CTextButton*>(m_pMoney)->Set_Text(to_wstring(iMoney));
-
-		_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
-		dynamic_cast<CTextButton*>(m_pDiamond)->Set_Text(to_wstring(iDiamond));
+		return;
+	}
 
 
-		CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
-		m_pExitButton->Tick(fTimeDelta);
-		m_pInvenFrame->Tick(fTimeDelta);
-		m_pBackGround->Tick(fTimeDelta);
-		m_pTitleButton->Tick(fTimeDelta);
+	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
+	{
+		/* 인벤토리 메뉴 피킹 */
+		for (size_t i = 0; i < STATE_END; i++)
+		{
+			if (PtInRect(&dynamic_cast<CTextButtonColor*>(m_pShopMenu[i])->Get_Rect(), ptMouse))
+			{
+
+				m_ePrevShopType = m_eCurShopState;
+				m_eCurShopState = (STATE)i;
+
+				if (m_ePrevShopType != m_eCurShopState)
+				{
+					dynamic_cast<CTextButtonColor*>(m_pShopMenu[m_ePrevShopType])->Set_Alpha(0.6f);
+				}
+				dynamic_cast<CTextButtonColor*>(m_pShopMenu[i])->Set_Alpha(1.f);
+				_vec2 vPos = dynamic_cast<CTextButtonColor*>(m_pShopMenu[i])->Get_Position();
+				dynamic_cast<CTextButton*>(m_pSelectButton)->Set_Position(vPos);
+				_vec2 fUnderBarPos = dynamic_cast<CTextButton*>(m_pUnderBar)->Get_Position();
+				dynamic_cast<CTextButton*>(m_pUnderBar)->Set_Position(_vec2(vPos.x, fUnderBarPos.y));
+
+				Set_ItemPosition(m_eCurShopState);
+				break;
+			}
+		}
+	}
+
+
+
+	/* 돈 */
+	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
+	dynamic_cast<CTextButton*>(m_pMoney)->Set_Text(to_wstring(iMoney));
+
+	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
+	dynamic_cast<CTextButton*>(m_pDiamond)->Set_Text(to_wstring(iDiamond));
+
+
+	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
+	m_pExitButton->Tick(fTimeDelta);
+	m_pInvenFrame->Tick(fTimeDelta);
+	m_pBackGround->Tick(fTimeDelta);
+	m_pTitleButton->Tick(fTimeDelta);
+	m_pUnderBar->Tick(fTimeDelta);
+	m_pSelectButton->Tick(fTimeDelta);
+
+	for (size_t i = 0; i < STATE_END; i++)
+	{
+		m_pShopMenu[i]->Tick(fTimeDelta);
+	}
+
+	for (auto& iter : m_vecShopItems[m_eCurShopState])
+	{
+		iter->Tick(fTimeDelta);
 	}
 
 }
 
 void CShop::Late_Tick(_float fTimeDelta)
 {
-	if (m_isActive)
+	if (!m_isActive)
 	{
-		m_pMoney->Late_Tick(fTimeDelta);
-		m_pDiamond->Late_Tick(fTimeDelta);
-		m_pSeigeLine->Late_Tick(fTimeDelta);
-		m_pInvenFrame->Late_Tick(fTimeDelta);
-		m_pExitButton->Late_Tick(fTimeDelta);
-		m_pBackGround->Late_Tick(fTimeDelta);
-		m_pTitleButton->Late_Tick(fTimeDelta);
+		return;
+	}
+	m_pMoney->Late_Tick(fTimeDelta);
+	m_pDiamond->Late_Tick(fTimeDelta);
+	m_pInvenFrame->Late_Tick(fTimeDelta);
+	m_pExitButton->Late_Tick(fTimeDelta);
+	m_pBackGround->Late_Tick(fTimeDelta);
+	m_pTitleButton->Late_Tick(fTimeDelta);
+	m_pUnderBar->Late_Tick(fTimeDelta);
+	m_pSelectButton->Late_Tick(fTimeDelta);
 
+	for (size_t i = 0; i < STATE_END; i++)
+	{
+		m_pSelectButton->Late_Tick(fTimeDelta);
+	}
+	for (size_t i = 0; i < STATE_END; i++)
+	{
+		m_pShopMenu[i]->Late_Tick(fTimeDelta);
+	}
+	for (auto& iter : m_vecShopItems[m_eCurShopState])
+	{
+		iter->Late_Tick(fTimeDelta);
 	}
 
 
@@ -118,17 +187,6 @@ HRESULT CShop::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pVIBufferCom->Render()))
-	{
-		return E_FAIL;
-	}
-
-
 	return S_OK;
 }
 
@@ -137,8 +195,10 @@ void CShop::Open_Shop()
 {
 	if (!m_isActive)
 	{
-		CFadeBox::STATE eState = CFadeBox::FADEOUT;
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &eState)))
+		CFadeBox::FADE_DESC Desc = {};
+		Desc.eState = CFadeBox::FADEOUT;
+		Desc.fDuration = 1.f;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
 		{
 			return;
 		}
@@ -146,9 +206,15 @@ void CShop::Open_Shop()
 		{
 			return;
 		}
+		m_pGameInstance->Set_CameraState(CS_SHOP);
 		m_isActive = true;
 		Init_ShopState();
 	}
+}
+
+void CShop::Set_ItemPosition(STATE eState)
+{
+	return;
 }
 
 void CShop::Init_ShopState()
@@ -161,6 +227,18 @@ void CShop::Init_ShopState()
 
 	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
 	dynamic_cast<CTextButton*>(m_pDiamond)->Set_Text(to_wstring(iDiamond));
+	
+	m_eCurShopState = EXPENDABLE;
+	Set_ItemPosition(m_eCurShopState);
+
+	dynamic_cast<CTextButtonColor*>(m_pShopMenu[EXPENDABLE])->Set_Alpha(1.f);
+	dynamic_cast<CTextButtonColor*>(m_pShopMenu[EQUIP])->Set_Alpha(0.6f);
+	_vec2 vPos = dynamic_cast<CTextButtonColor*>(m_pShopMenu[EXPENDABLE])->Get_Position();
+	dynamic_cast<CTextButton*>(m_pSelectButton)->Set_Position(vPos);
+	_vec2 fUnderBarPos = dynamic_cast<CTextButton*>(m_pUnderBar)->Get_Position();
+	dynamic_cast<CTextButton*>(m_pUnderBar)->Set_Position(_vec2(vPos.x, fUnderBarPos.y));
+
+
 }
 
 
@@ -170,7 +248,7 @@ HRESULT CShop::Add_Parts()
 
 	Button.eLevelID = LEVEL_STATIC;
 	Button.fDepth = m_fDepth - 0.01f;
-	Button.fFontSize = 0.4f;
+	Button.fFontSize = 0.5f;
 	Button.strText = TEXT("소모품 상점");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Back");
 	Button.vPosition = _vec2(20.f, 20.f);
@@ -189,26 +267,54 @@ HRESULT CShop::Add_Parts()
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Out");
 	Button.vPosition = _vec2(1230.f, 30.f);
 	Button.vSize = _vec2(70.f, 70.f);
-
 	m_pExitButton = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
 	if (not m_pExitButton)
 	{
 		return E_FAIL;
 	}
+
+
 	Button.strText = TEXT("");
-	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SiegeLine");
-	Button.vPosition = _vec2(102.f, 350.f);
-	Button.vSize = _vec2(6.f, 360.f);
+	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Out");
+	Button.vPosition = _vec2(1230.f, 30.f);
+	Button.vSize = _vec2(70.f, 70.f);
+	m_pExitButton = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
-	m_pSeigeLine = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
-
-	if (not m_pSeigeLine)
+	if (not m_pExitButton)
 	{
 		return E_FAIL;
 	}
 
-	
+
+	_float fY = 85.f;
+	_float fTerm = m_fSizeX / (_uint)STATE_END;
+	_float fStartX = 10.f + fTerm;
+
+	Button.fDepth = m_fDepth - 0.01f;
+	Button.strText = TEXT("");
+	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_InvenUnderBar");
+	Button.vSize = _vec2(150.f, 150.f);
+	Button.vPosition = _vec2(fStartX, fY + 12.f);
+	Button.vTextPosition = _vec2(0.f, 0.f);
+	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	Button.fFontSize = 0.1f;
+	m_pUnderBar = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+	if (not m_pUnderBar)
+	{
+		return E_FAIL;
+	}
+
+	Button.fDepth = m_fDepth - 0.02f;
+	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SelecInvenMenu");
+	Button.vSize = _vec2(fTerm, 34.f);
+	Button.vPosition = _vec2(fStartX, fY);
+	m_pSelectButton = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+	if (not m_pSelectButton)
+	{
+		return E_FAIL;
+	}
+
 	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
 	Button.strText = to_wstring(iMoney);
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_coin");
@@ -238,11 +344,43 @@ HRESULT CShop::Add_Parts()
 		return E_FAIL;
 	}
 
+	CTextButtonColor::TEXTBUTTON_DESC TextButton = {};
+	TextButton.eLevelID = LEVEL_STATIC;
+	TextButton.strTexture = TEXT("");
+	TextButton.fDepth = m_fDepth - 0.01f;
+	TextButton.fAlpha = 1.f;
+	TextButton.fFontSize = 0.45f;
+	TextButton.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	TextButton.strText = TEXT("소모품");
+	TextButton.vPosition = _vec2(fStartX, fY);
+	TextButton.vSize = _vec2(m_fSizeX / 2.f, 70.f);
+	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_NoTex");
+	TextButton.vTextPosition = _vec2(0.f, 0.f);
+	m_pShopMenu[EXPENDABLE] = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+
+	if (not m_pShopMenu[EXPENDABLE])
+	{
+		return E_FAIL;
+	}
+	dynamic_cast<CTextButtonColor*>(m_pShopMenu[EXPENDABLE])->Set_Pass(VTPass_UI_Alpha);
+
+	TextButton.strText = TEXT("장비");
+	TextButton.vPosition = _vec2(fStartX + fTerm, fY);
+	TextButton.vSize = _vec2(m_fSizeX / 2.f, 70.f);
+	TextButton.vTextPosition = _vec2(0.f, 0.f);
+	m_pShopMenu[EQUIP] = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+
+	if (not m_pShopMenu[EQUIP])
+	{
+		return E_FAIL;
+	}
+	dynamic_cast<CTextButtonColor*>(m_pShopMenu[EQUIP])->Set_Pass(VTPass_UI_Alpha);
+
 	UiInfo info{};
 	info.strTexture = TEXT("Prototype_Component_Texture_BackGround_Mask");
 	info.vPos = _vec2((_float)g_iWinSizeX/2.f, (_float)g_iWinSizeY / 2.f);
 	info.vSize = _vec2((_float)g_iWinSizeX, (_float)g_iWinSizeY);
-	info.iLevel = (_uint)LEVEL_CUSTOM;
+	info.iLevel = (_uint)LEVEL_STATIC;
 
 	m_pBackGround = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BackGround_Mask"), &info);
 	if (not m_pBackGround)
@@ -257,27 +395,50 @@ HRESULT CShop::Add_Parts()
 	{
 		return E_FAIL;
 	}
+	Safe_AddRef(m_pInvenFrame);
+
 	return S_OK;
 }
+
+HRESULT CShop::Init_ShopItems()
+{
+
+	_float fStartY = 85.f + 34.f + 2.f + 45.f;
+	_float fTerm = 2.f;
+	_float fShopDescY = 90.f;
+	_uint iIndex = 0;
+	CShopDesc::SHOPITEM_DESC ShopDesc = {};
+	ShopDesc.fDepth = m_fDepth - 0.01f;
+	ShopDesc.strItemName = TEXT("체력 포션");
+	ShopDesc.vPosition = _vec2(235.f, fStartY + fShopDescY * iIndex + fTerm * iIndex);
+	CShopDesc* pShopDesc = (CShopDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_ShopDesc"), &ShopDesc);
+	if (not pShopDesc)
+	{
+		return E_FAIL;
+	}
+	m_vecShopItems[EXPENDABLE].push_back(pShopDesc);
+	
+	iIndex++;
+
+	ShopDesc.strItemName = TEXT("마나 포션");
+	ShopDesc.vPosition = _vec2(235.f, fStartY + fShopDescY * iIndex + fTerm * iIndex);
+	pShopDesc = (CShopDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_ShopDesc"), &ShopDesc);
+	if (not pShopDesc)
+	{
+		return E_FAIL;
+	}
+	m_vecShopItems[EXPENDABLE].push_back(pShopDesc);
+
+
+	ShopDesc.strItemName = TEXT("마나 포션");
+
+	return S_OK;
+}
+
 
 HRESULT CShop::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_InvenBar"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -287,22 +448,6 @@ HRESULT CShop::Add_Components()
 
 HRESULT CShop::Bind_ShaderResources()
 {
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
-		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
-	{
-		return E_FAIL;
-	}
-
 	return S_OK;
 }
 
@@ -337,18 +482,36 @@ void CShop::Free()
 	__super::Free();
 
 
+	if (!m_isPrototype)
+	{
+		for (size_t i = 0; i < STATE_END; i++)
+		{
+			Safe_Release(m_pShopMenu[i]);
+		}
+
+	}
+
+	for (auto& iter : m_vecShopItems[EXPENDABLE])
+	{
+		Safe_Release(iter);
+	}
+	m_vecShopItems[EXPENDABLE].clear();
+	for (auto& iter : m_vecShopItems[EQUIP])
+	{
+		Safe_Release(iter);
+	}
+	m_vecShopItems[EQUIP].clear();
+
 
 	Safe_Release(m_pMoney);
 	Safe_Release(m_pDiamond);
-	Safe_Release(m_pSeigeLine);
 	Safe_Release(m_pBackGround);
 	Safe_Release(m_pExitButton);
 	Safe_Release(m_pTitleButton);
 	Safe_Release(m_pInvenFrame);
 
-	Safe_Release(m_pTextureCom);
-	Safe_Release(m_pRendererCom);
-	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pVIBufferCom);
+	Safe_Release(m_pUnderBar);
+	Safe_Release(m_pSelectButton);
 
+	Safe_Release(m_pRendererCom);
 }

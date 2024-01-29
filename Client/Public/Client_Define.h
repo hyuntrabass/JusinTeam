@@ -42,6 +42,8 @@ namespace Client
 		CS_DEFAULT,
 		CS_ZOOM,
 		CS_INVEN,
+		CS_SHOP,
+		CS_ENDFULLSCREEN,
 		CS_STATEEND
 	};
 	struct PLAYER_STATUS

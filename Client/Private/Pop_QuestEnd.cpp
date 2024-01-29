@@ -212,12 +212,15 @@ HRESULT CPop_QuestEnd::Add_Parts()
 	}
 
 
-	CFadeBox::STATE eState = CFadeBox::FADELOOP;
-	m_pBackground = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_FadeBox"), &eState);
+	CFadeBox::FADE_DESC Desc = {};
+	Desc.eState = CFadeBox::FADELOOP;
+	Desc.fDuration = 0.f;
+	m_pBackground = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_FadeBox"), &Desc);
 	if (not m_pBackground)
 	{
 		return E_FAIL;
 	}
+
 
 	return S_OK;
 }

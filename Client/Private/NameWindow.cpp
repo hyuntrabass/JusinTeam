@@ -94,6 +94,11 @@ void CNameWindow::Tick(_float fTimeDelta)
 		  (LONG)(267.f + 30.f * 0.5f)
 	};
 
+	if (PtInRect(&rcNameSpace, ptMouse))
+	{
+		CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_TEXT);
+	}
+
 	if (m_pGameInstance->Get_InputString() != L"")
 	{
 		m_bStartInput = true;
@@ -146,13 +151,13 @@ HRESULT CNameWindow::Render()
 	{
 		m_pGameInstance->Render_Text(L"Font_Malang", m_pGameInstance->Get_InputString(), _vec2(vStartPos.x, vStartPos.y), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f));
 	}
-
+	/*
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
 	wstring strTest = to_wstring((_uint)ptMouse.x) + to_wstring((_uint)ptMouse.y);
 	m_pGameInstance->Render_Text(L"Font_Malang", strTest, _vec2(ptMouse.x + 20.f, ptMouse.y + 20.f), 0.7f, _vec4(0.7f, 0.7f, 1.f, 1.f));
-
+	*/
 	return S_OK;
 }
 

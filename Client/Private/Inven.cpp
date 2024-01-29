@@ -70,8 +70,10 @@ void CInven::Tick(_float fTimeDelta)
 	{
 		if (!m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
-			CFadeBox::STATE eState = CFadeBox::FADEOUT;
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &eState)))
+			CFadeBox::FADE_DESC Desc = {};
+			Desc.eState = CFadeBox::FADEOUT;
+			Desc.fDuration = 0.8f;
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
 			{
 				return;
 			}
@@ -79,6 +81,7 @@ void CInven::Tick(_float fTimeDelta)
 			{
 				return;
 			}
+			m_pGameInstance->Set_CameraState(CS_INVEN);
 			CUI_Manager::Get_Instance()->Set_InvenActive(true);
 			m_bNewItemIn = false;
 			m_isActive = true;
@@ -90,6 +93,14 @@ void CInven::Tick(_float fTimeDelta)
 	{
 		if (m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
+			CFadeBox::FADE_DESC Desc = {};
+			Desc.eState = CFadeBox::FADEOUT;
+			Desc.fDuration = 0.8f;
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
+			{
+				return;
+			}
+			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			CUI_Manager::Get_Instance()->Set_InvenActive(false);
 			m_isActive = false;
@@ -204,7 +215,7 @@ HRESULT CInven::Add_Parts()
 
 	Button.eLevelID = LEVEL_STATIC;
 	Button.fDepth = m_fDepth - 0.01f;
-	Button.fFontSize = 0.4f;
+	Button.fFontSize = 0.5f;
 	Button.strText = TEXT("°¡¹æ");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Back");
 	Button.vPosition = _vec2(20.f, 20.f);
@@ -307,6 +318,7 @@ HRESULT CInven::Add_Parts()
 	{
 		return E_FAIL;
 	}
+	CUI_Manager::Get_Instance()->Set_InvenFrame(m_pInvenFrame);
 	return S_OK;
 }
 

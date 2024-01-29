@@ -6,9 +6,11 @@
 
 BEGIN(Client)
 class CWearable_Slot;
+class CShopDesc;
 class CShop final : public COrthographicObject
 {
-
+private:
+	enum STATE { EXPENDABLE, EQUIP, STATE_END };
 private:
 	CShop(_dev pDevice, _context pContext);
 	CShop(const CShop& rhs);
@@ -23,11 +25,10 @@ public:
 
 private:
 	CRenderer* m_pRendererCom{ nullptr };
-	CShader* m_pShaderCom{ nullptr };
-	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
-	CTexture* m_pTextureCom{ nullptr };
 
 private:
+	STATE										m_eCurShopState{ EXPENDABLE };
+	STATE										m_ePrevShopType{ EXPENDABLE };
 	_bool										m_isPrototype{ false };
 	_bool										m_isActive{ false };
 
@@ -36,18 +37,25 @@ private:
 	CGameObject*								m_pTitleButton{ nullptr };
 	CGameObject*								m_pExitButton{ nullptr };
 	CGameObject*								m_pBackGround{ nullptr };
-	CGameObject*								m_pSeigeLine{ nullptr };
 	CGameObject*								m_pInvenFrame{ nullptr };
+
+	CGameObject*								m_pUnderBar{ nullptr };
+	CGameObject*								m_pSelectButton{ nullptr };
+	CGameObject*								m_pShopMenu[STATE_END];
+	
+	vector<CShopDesc*>							m_vecShopItems[STATE_END];
 
 public:
 	_bool IsActive() { return m_isActive; }
-	HRESULT Set_Item(ITEM eItem, _uint iNum = 1);
+	//HRESULT Set_Item(ITEM eItem, _uint iNum = 1);
+	void Set_ItemPosition(STATE eState);
 	void Open_Shop();
 
 private:
 	void Init_ShopState();
 
 private:
+	HRESULT Init_ShopItems();
 	HRESULT Add_Parts();
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

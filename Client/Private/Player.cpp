@@ -67,9 +67,6 @@ HRESULT CPlayer::Init(void* pArg)
 	m_pTest_Trail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &SurfaceDesc);
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER);
-
-	m_strPlayerName = m_pGameInstance->Get_InputString();
-
 	return S_OK;
 }
 
@@ -299,6 +296,9 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 		m_pTransformCom->Set_Scale(_vec3(1.0f));
 		Add_Info();
+
+		m_strPlayerName = m_pGameInstance->Get_InputString();
+		dynamic_cast<CNameTag*>(m_pNameTag)->Set_Text(m_strPlayerName);
 
 		m_bStartGame = true;
 		CEvent_Manager::Get_Instance()->Init();

@@ -50,17 +50,19 @@ HRESULT CRoskva::Init(void* pArg)
 
 	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::NPC, m_pTransformCom);
 
+	m_fButtonTime = m_pArrow->Get_Position().y;
+
 	return S_OK;
 }
 
 void CRoskva::Tick(_float fTimeDelta)
 {
-	if (m_pArrow->Get_TransPosition().y <= m_pArrow->Get_Position().y - 5.f)
+	if (m_pArrow->Get_TransPosition().y < m_pArrow->Get_Position().y - 5.f)
 	{
 		m_fDir = 0.6f;
 		m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_pArrow->Get_Position().y - 5.f));
 	}
-	if (m_pArrow->Get_TransPosition().y >= m_pArrow->Get_Position().y)
+	if (m_pArrow->Get_TransPosition().y > m_pArrow->Get_Position().y)
 	{
 		m_fDir = -1.f;
 		m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_pArrow->Get_Position().y));
@@ -68,22 +70,6 @@ void CRoskva::Tick(_float fTimeDelta)
 	m_fButtonTime += fTimeDelta * m_fDir * 10.f;
 	m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_fButtonTime));
 
-	if (m_pGameInstance->Key_Down(DIK_M))
-	{
-		m_eState = TALK;
-		while(!m_vecDialog.empty())
-		{
-			m_vecDialog.pop_back();
-		}
-		while(!m_vecChatt.empty())
-		{
-			m_vecDialog.pop_back();
-		}
-		if (FAILED(Init_Dialog()))
-		{
-			return;
-		}
-	}
 
 	if (m_bTalking == true)
 	{
@@ -92,6 +78,7 @@ void CRoskva::Tick(_float fTimeDelta)
 		{
 			if (m_eState != TALK)
 			{
+				m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
 				CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 				m_bTalking = false;
 				return;
@@ -112,6 +99,11 @@ void CRoskva::Tick(_float fTimeDelta)
 	_bool isColl = m_pColliderCom->Intersect(pCollider);
 	if (!m_bTalking && isColl && m_pGameInstance->Key_Down(DIK_E) /* && collider */) // 나중에 조건 추가
 	{
+		m_pGameInstance->Set_CameraState(CS_ZOOM);
+		_vec4 vLook = m_pTransformCom->Get_State(State::Look);
+		vLook.Normalize();
+		_vec4 vTargetPos = m_pTransformCom->Get_State(State::Pos) + vLook * 2.f;
+		m_pGameInstance->Set_CameraTargetPos(vTargetPos);
 		if (m_eState == QUEST_ING)
 		{
 			if (!CEvent_Manager::Get_Instance()->Find_Quest(m_strQuestOngoing))
@@ -185,6 +177,7 @@ void CRoskva::Set_Text(ROSKVA_STATE eState)
 		wstring strText = m_vecDialog.front();
 		if (strText == TEXT("END"))
 		{
+			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_bTalking = false;
 			m_eState = ROSKVA_END;
@@ -193,6 +186,7 @@ void CRoskva::Set_Text(ROSKVA_STATE eState)
 
 		if (strText[0] == L'!')
 		{
+			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_bTalking = false;
 			wstring strQuest = strText.substr(1, strText.length());
@@ -290,7 +284,7 @@ HRESULT CRoskva::Add_Parts()
 	ButtonDesc.vSize = _vec2(30.f, 30.f);
 
 	m_pSkipButton = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
-	if (not m_pArrow)
+	if (not m_pSkipButton)
 	{
 		return E_FAIL;
 	}
@@ -302,7 +296,7 @@ HRESULT CRoskva::Add_Parts()
 	ButtonDesc.vSize = _vec2(400.f, 10.f);
 
 	m_pLine = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
-	if (not m_pArrow)
+	if (not m_pLine)
 	{
 		return E_FAIL;
 	}

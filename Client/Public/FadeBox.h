@@ -8,6 +8,12 @@ class CFadeBox final : public COrthographicObject
 {
 public:
 	enum STATE { FADEIN, FADELOOP, FADEOUT, STATE_END };
+	typedef struct tagFadeDesc
+	{
+		_float fDuration;
+		STATE eState;
+	}FADE_DESC;
+
 private:
 	CFadeBox(_dev pDevice, _context pContext);
 	CFadeBox(const CFadeBox& rhs);
@@ -28,7 +34,8 @@ private:
 
 private:
 	_float m_fAlpha{ 0.f };
-	_float m_fDir{ 1.f };
+	_float m_fTime{ 0.f };
+	_float m_fDuration{ 0.f };
 	STATE  m_eState{ STATE_END };
 
 private:

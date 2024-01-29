@@ -262,7 +262,7 @@ HRESULT CUI_Manager::Set_Inven(CGameObject* pGameObject)
 	return S_OK;
 }
 
-HRESULT CUI_Manager::Set_InvenFrame(CInvenFrame* pGameObject)
+HRESULT CUI_Manager::Set_InvenFrame(CGameObject* pGameObject)
 {
 
 	if (pGameObject == nullptr)
@@ -275,7 +275,7 @@ HRESULT CUI_Manager::Set_InvenFrame(CInvenFrame* pGameObject)
 	return S_OK;
 }
 
-CInvenFrame* CUI_Manager::Get_InvenFrame()
+CGameObject* CUI_Manager::Get_InvenFrame()
 {
 	if (m_pInvenFrame == nullptr)
 	{

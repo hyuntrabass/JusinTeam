@@ -22,7 +22,6 @@ public:
 private:
 	CTransform* m_pPlayerTransform{ nullptr };
 	_bool m_isMoveMode{ true };
-	_bool m_isInvenEnd{ false };
 	_float m_fMouseSensor{ 0.08f };
 	_float m_fSpeed{ 10.f };
 	_float m_fPlayerDistance{ 4.f };
@@ -44,8 +43,10 @@ private:
 
 private:
 	_bool Inven_Mode(_float fTimeDelta);
+	void Shop_Mode(_float fTimeDelta);
 	void Select_Mode(_float fTimeDelta);
 	void Custom_Mode(_float fTimeDelta);
+	void ZOOM_Mode(_float fTimeDelta);
 
 private:
 	_float m_fSceneTimer{};

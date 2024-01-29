@@ -208,6 +208,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	break;
+	case WM_IME_CHAR:
+	case WM_CHAR:
+	{
+		if (wParam == VK_BACK)
+		{
+
+		}
+	}
+	break;
 	case WM_IME_COMPOSITION:
 	{
 		if (CGameInstance::Get_Instance()->Get_CurrentLevelIndex() >= LEVEL_GAMEPLAY)

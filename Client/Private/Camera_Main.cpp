@@ -1,5 +1,6 @@
 #include "Camera_Main.h"
 #include "UI_Manager.h"
+#include "FadeBox.h"
 
 CCamera_Main::CCamera_Main(_dev pDevice, _context pContext)
 	: CCamera(pDevice, pContext)
@@ -72,17 +73,35 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			Safe_AddRef(m_pPlayerTransform);
 		}
 
-
-		if (CUI_Manager::Get_Instance()->Is_InvenActive())
+		if (m_pGameInstance->Get_CameraState() == CS_ZOOM)
 		{
-			m_isInvenEnd = true;
+			ZOOM_Mode(fTimeDelta);
+			__super::Tick(fTimeDelta);
+			return;
+		}
+		if (m_pGameInstance->Get_CameraState() == CS_SHOP)
+		{
+			Shop_Mode(fTimeDelta);
+			__super::Tick(fTimeDelta);
+			return;
+		}
+		if (m_pGameInstance->Get_CameraState() == CS_INVEN)
+		{
 			Inven_Mode(fTimeDelta);
 			__super::Tick(fTimeDelta);
 			return;
 		}
-		if (m_isInvenEnd && !CUI_Manager::Get_Instance()->Is_InvenActive())
+		if (m_pGameInstance->Get_CameraState() == CS_ENDFULLSCREEN)
 		{
-			m_isInvenEnd = false;
+			m_pGameInstance->Set_CameraState(CS_DEFAULT);
+
+			CFadeBox::FADE_DESC Desc = {};
+			Desc.eState = CFadeBox::FADEOUT;
+			Desc.fDuration = 1.f;
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
+			{
+				return;
+			}
 			_vec4 vPos = m_pPlayerTransform->Get_State(State::Pos);
 			vPos.y += 3.f;
 			vPos.z -= 5.f;
@@ -286,6 +305,19 @@ _bool CCamera_Main::Inven_Mode(_float fTimeDelta)
 	return true;
 }
 
+void CCamera_Main::Shop_Mode(_float fTimeDelta)
+{
+	CTransform* pTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_GAMEPLAY, TEXT("Layer_ItemMerchant"), TEXT("Com_Transform"));
+	_vec4 vPos = pTransform->Get_State(State::Pos);
+	_vec4 vShopPos = _vec4(vPos.x - 0.16f, 1001.4f, vPos.z + 1.f, 1.f);
+
+	m_pTransformCom->Set_State(State::Pos, vShopPos);
+	_vec4 vLookPos = vPos;
+	vLookPos.y += 3.f;
+	m_pTransformCom->LookAt_Dir(_vec4(0.129203543f, -0.129055128f, -0.983180106, 0.f));
+
+}
+
 void CCamera_Main::Select_Mode(_float fTimeDelta)
 {
 	if (!m_bInitMode[CM_SELECT])
@@ -453,6 +485,28 @@ void CCamera_Main::Custom_Mode(_float fTimeDelta)
 	}
 
 
+}
+
+void CCamera_Main::ZOOM_Mode(_float fTimeDelta)
+{
+	_vec4 vCurLook = m_pTransformCom->Get_State(State::Look);;
+
+	_vec4 vCurrentPos = m_pTransformCom->Get_State(State::Pos);
+	_vec4 vTargetPos = m_pGameInstance->Get_CameraTargetPos();
+
+	_float fLerpFactor = 0.1f;
+	_float fZoomFactor = m_pGameInstance->Get_ZoomFactor();
+
+	vTargetPos.y = vTargetPos.y + 1.5f;
+	//vTargetPos.z = vTargetPos.z - fZoomFactor;
+
+	_vec4 vNewPos = XMVectorLerp(vCurrentPos, vTargetPos, fLerpFactor);
+	m_pTransformCom->Set_State(State::Pos, vNewPos);
+
+	_vec4 vTargetLook = m_pGameInstance->Get_CameraTargetPos();
+	vTargetLook.y = 0.f;
+	_vec4 vNewLook = XMVectorLerp(vCurLook, vTargetLook, fLerpFactor);
+	m_pTransformCom->LookAt(vNewLook);
 }
 
 CCamera_Main* CCamera_Main::Create(_dev pDevice, _context pContext)

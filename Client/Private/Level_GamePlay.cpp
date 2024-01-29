@@ -51,6 +51,8 @@ HRESULT CLevel_GamePlay::Init()
 	//	return E_FAIL;
 	//}
 	
+	/*
+	
 	if (FAILED(Ready_Rabbit()))
 	{
 		MSG_BOX("Failed to Ready Rabbit");
@@ -61,7 +63,8 @@ HRESULT CLevel_GamePlay::Init()
 	{
 		MSG_BOX("Failed to Ready Goat");
 		return E_FAIL;
-	}
+	}*/
+
 	/*
 
 	//if (FAILED(Ready_Nastron03()))
@@ -163,11 +166,7 @@ HRESULT CLevel_GamePlay::Init()
 	//	return E_FAIL;
 	//}
 
-	if (FAILED(Ready_NPC_Test()))
-	{
-		MSG_BOX("Failed to Ready NPC");
-		return E_FAIL;
-	}
+
 
 	//if (FAILED(Ready_NPC_Dummy_Test()))
 	//{
@@ -177,11 +176,11 @@ HRESULT CLevel_GamePlay::Init()
 
 
 	// Boss
-	if (FAILED(Ready_Groar_Boss()))
-	{
-		MSG_BOX("Failed to Ready Groar_Boss");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Groar_Boss()))
+	//{
+	//	MSG_BOX("Failed to Ready Groar_Boss");
+	//	return E_FAIL;
+	//}
 
 	// Pet
 	if (FAILED(Ready_Pet()))
@@ -209,7 +208,11 @@ HRESULT CLevel_GamePlay::Init()
 		MSG_BOX("Failed to Ready UI");
 		return E_FAIL;
 	}
-
+	if (FAILED(Ready_NPC_Test()))
+	{
+		MSG_BOX("Failed to Ready NPC");
+		return E_FAIL;
+	}
 
 	if (FAILED(Ready_Object()))
 	{
@@ -486,16 +489,17 @@ HRESULT CLevel_GamePlay::Ready_NPC_Test()
 {
 	
 	/*
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_ItemMerchant"), TEXT("Prototype_GameObject_ItemMerchant"))))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_ItemMerchant"), TEXT("Prototype_GameObject_ItemMerchant"))))
 	{
 		return E_FAIL;
 	}
+	*/
+	
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BlackSmith"), TEXT("Prototype_GameObject_BlackSmith"))))
 	{
 		return E_FAIL;
 	}
-	456*/
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Roskva"), TEXT("Prototype_GameObject_Roskva"))))
 	{

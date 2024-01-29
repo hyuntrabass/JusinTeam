@@ -79,6 +79,9 @@ private:
 	CGameObject*								m_pResetSymbol{ nullptr };
 	CItemSlot*									m_pSelectSlot[4];
 
+	CTextButtonColor*							m_pSellButton{ nullptr };
+
+
 public:
 	void Init_State();
 	void Set_FrameMode(FRAME_MODE eMode) { m_eFrameMode = eMode; }
@@ -87,6 +90,13 @@ public:
 	void ItemSlot_Logic(_uint iSlotIdx, _uint iIndex);
 	void ItemSlot_Delete_Logic(_uint iSlotIdx);
 	void Delete_Item(INVEN_TYPE eInvenType, _uint iIndex);
+
+private:
+	void Picking_InvenButton(POINT ptMouse);
+	void Picking_ShopButton(POINT ptMouse);
+
+	void Inven_Tick(_float fTimeDelta, POINT ptMouse);
+	void Shop_Tick(_float fTimeDelta, POINT ptMouse);
 
 private:
 	HRESULT Add_Parts();
