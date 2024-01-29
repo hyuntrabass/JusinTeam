@@ -47,6 +47,9 @@ HRESULT CRoskva::Init(void* pArg)
 		return E_FAIL;
 	}
 
+
+	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::NPC, m_pTransformCom);
+
 	return S_OK;
 }
 
@@ -68,6 +71,14 @@ void CRoskva::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_M))
 	{
 		m_eState = TALK;
+		while(!m_vecDialog.empty())
+		{
+			m_vecDialog.pop_back();
+		}
+		while(!m_vecChatt.empty())
+		{
+			m_vecDialog.pop_back();
+		}
 		if (FAILED(Init_Dialog()))
 		{
 			return;
@@ -99,7 +110,7 @@ void CRoskva::Tick(_float fTimeDelta)
 
 	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
 	_bool isColl = m_pColliderCom->Intersect(pCollider);
-	if (!m_bTalking && pCollider && m_pGameInstance->Key_Down(DIK_E) /* && collider */) // 나중에 조건 추가
+	if (!m_bTalking && isColl && m_pGameInstance->Key_Down(DIK_E) /* && collider */) // 나중에 조건 추가
 	{
 		if (m_eState == QUEST_ING)
 		{
@@ -319,8 +330,8 @@ HRESULT CRoskva::Add_Parts()
 	TexDesc.eLevelID = LEVEL_STATIC;
 	TexDesc.pParentTransform = m_pTransformCom;
 	TexDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SpeechBubble");
-	TexDesc.vPosition = _vec3(0.f, 1.4f, 0.f);
-	TexDesc.vSize = _vec2(40.f, 40.f);
+	TexDesc.vPosition = _vec3(0.f, 2.2f, 0.f);
+	TexDesc.vSize = _vec2(20.f, 20.f);
 
 	m_pSpeechBubble = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &TexDesc);
 	if (not m_pSpeechBubble)
@@ -371,10 +382,10 @@ void CRoskva::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pSkipButton);
+	Safe_Release(m_pLine);
 	Safe_Release(m_pArrow);
 	Safe_Release(m_pDialogText);
-	Safe_Release(m_pLine);
+	Safe_Release(m_pSkipButton);
 	Safe_Release(m_pBackGround);
 	Safe_Release(m_pSpeechBubble);
 }

@@ -50,10 +50,10 @@ private:
 	vector<wstring>				m_vecDialog;
 	vector<wstring>				m_vecChatt;
 
-	CTextButton*				m_pSkipButton{ nullptr };
+	CTextButton*				m_pLine{ nullptr };
 	CTextButton*				m_pArrow{ nullptr };
 	CDialogText*				m_pDialogText{ nullptr };
-	CTextButton*				m_pLine{ nullptr };
+	CTextButton*				m_pSkipButton{ nullptr };
 	CTextButtonColor*			m_pBackGround{ nullptr };
 	C3DUITex*					m_pSpeechBubble{ nullptr };
 

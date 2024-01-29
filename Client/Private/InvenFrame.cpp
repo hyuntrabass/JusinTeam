@@ -148,7 +148,7 @@ void CInvenFrame::Tick(_float fTimeDelta)
 
 	}
 
-	if (PtInRect(&m_pSlotSettingButton->Get_Rect(), ptMouse))
+	if (PtInRect(&m_pSlotSettingButton->Get_InitialRect(), ptMouse))
 	{
 		m_pSlotSettingButton->Set_Size(140.f, 80.f, 0.3f);
 		if (!m_isActiveQuickSlot && !m_isQuickAnim && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
@@ -189,7 +189,7 @@ void CInvenFrame::Tick(_float fTimeDelta)
 		m_pResetSlot->Tick(fTimeDelta);
 		m_pResetSymbol->Tick(fTimeDelta);
 		m_pExitSlotSetting->Tick(fTimeDelta);
-		if (PtInRect(&m_pExitSlotSetting->Get_Rect(), ptMouse))
+		if (PtInRect(&m_pExitSlotSetting->Get_InitialRect(), ptMouse))
 		{
 			m_pExitSlotSetting->Set_Size(140.f, 80.f, 0.3f);
 			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
@@ -206,7 +206,7 @@ void CInvenFrame::Tick(_float fTimeDelta)
 		{
 			m_pExitSlotSetting->Set_Size(150.f, 100.f, 0.35f);
 		}
-		if (PtInRect(&m_pResetSlot->Get_Rect(), ptMouse))
+		if (PtInRect(&m_pResetSlot->Get_InitialRect(), ptMouse))
 		{
 			m_pResetSlot->Set_Size(140.f, 80.f, 0.3f);
 			dynamic_cast<CTextButton*>(m_pResetSymbol)->Set_Size(20.f, 20.f);
@@ -392,7 +392,7 @@ HRESULT CInvenFrame::Add_Parts()
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Button_Blue");
 	Button.fFontSize = 0.35f;
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	Button.vTextPosition = _vec2(0.f, 17.f);
+	Button.vTextPosition = _vec2(0.f, 0.f);
 	Button.vSize = _vec2(150.f, 100.f);
 	Button.fAlpha = 0.8f;
 	Button.strText = TEXT("Äü½½·Ô ¼³Á¤");
@@ -418,7 +418,7 @@ HRESULT CInvenFrame::Add_Parts()
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Button_Blue");
 	Button.fFontSize = 0.35f;
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	Button.vTextPosition = _vec2(0.f, 17.f);
+	Button.vTextPosition = _vec2(0.f, 0.f);
 	Button.vColor = _vec4(0.2f, 0.2f, 0.2f, 0.8f);
 	Button.vSize = _vec2(150.f, 100.f);
 	Button.fAlpha = 0.8f;

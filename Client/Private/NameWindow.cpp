@@ -55,7 +55,7 @@ void CNameWindow::Tick(_float fTimeDelta)
 	CUI_Manager::Get_Instance()->Set_Picking_UI(true);
 
 
-	if (PtInRect(&m_pExitButton->Get_Rect(), ptMouse))
+	if (PtInRect(&m_pExitButton->Get_InitialRect(), ptMouse))
 	{
 		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
@@ -69,7 +69,7 @@ void CNameWindow::Tick(_float fTimeDelta)
 	{
 		m_pExitButton->Set_Size(150.f, 100.f, 0.35f);
 	}
-	if (PtInRect(&m_pSelectButton->Get_Rect(), ptMouse))
+	if (PtInRect(&m_pSelectButton->Get_InitialRect(), ptMouse))
 	{
 		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
@@ -88,21 +88,21 @@ void CNameWindow::Tick(_float fTimeDelta)
 	RECT rcNameSpace = {};
 
 	rcNameSpace = {
-		  (LONG)(m_fX - m_fSizeX - 100.f * 0.5f),
-		  (LONG)(267.f - 50.f * 0.5f),
-		  (LONG)(m_fX + m_fSizeX - 100.f * 0.5f),
-		  (LONG)(267.f + 50.f * 0.5f)
+		  (LONG)(m_fX - m_fSizeX / 2.f * 0.5f),
+		  (LONG)(267.f - 30.f * 0.5f),
+		  (LONG)(m_fX + m_fSizeX / 2.f * 0.5f),
+		  (LONG)(267.f + 30.f * 0.5f)
 	};
 
 	if (m_pGameInstance->Get_InputString() != L"")
 	{
 		m_bStartInput = true;
 	}
-	if (m_pGameInstance->Get_InputString() == L"" && PtInRect(&rcNameSpace, ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
+	if (m_pGameInstance->Get_InputString() == L"" && PtInRect(&rcNameSpace, ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Default))
 	{
 		m_bStartInput = true;
 	}
-	if (m_pGameInstance->Get_InputString() == L"" && !PtInRect(&rcNameSpace, ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
+	if (m_pGameInstance->Get_InputString() == L"" && !PtInRect(&rcNameSpace, ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Default))
 	{
 		m_bStartInput = false;
 	}

@@ -68,7 +68,7 @@ void CSelect::Tick(_float fTimeDelta)
 		}
 	}
 
-	if (m_bShow && PtInRect(&m_pBackButton->Get_Rect(), ptMouse))
+	if (m_bShow && PtInRect(&m_pBackButton->Get_InitialRect(), ptMouse))
 	{
 		m_pBackButton->Set_Size(140.f, 80.f, 0.3f);
 	}
@@ -76,7 +76,8 @@ void CSelect::Tick(_float fTimeDelta)
 	{
 		m_pBackButton->Set_Size(150.f, 100.f, 0.35f);
 	}
-	if (m_bShow && PtInRect(&m_pSelectButton->Get_Rect(), ptMouse))
+
+	if (m_bShow && PtInRect(&m_pSelectButton->Get_InitialRect(), ptMouse))
 	{
 		m_pSelectButton->Set_Size(140.f, 80.f, 0.3f);
 	}

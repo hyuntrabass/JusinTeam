@@ -174,7 +174,7 @@ HRESULT CPop_QuestEnd::Add_Parts()
 	}
 
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_ClickArrow");
-	ButtonDesc.vPosition = _vec2(780.f, 565.f);
+	ButtonDesc.vPosition = _vec2(780.f, 585.f);
 	ButtonDesc.vSize = _vec2(30.f, 30.f);
 
 	m_pButton = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
@@ -193,7 +193,7 @@ HRESULT CPop_QuestEnd::Add_Parts()
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_exp");
 	ButtonDesc.vPosition = _vec2((_float)g_iWinSizeX / 2.f - 120.f, 420.f);
 	ButtonDesc.vSize = _vec2(35.f, 35.f);
-	ButtonDesc.vTextPosition = _vec2(60.f, 12.f);
+	ButtonDesc.vTextPosition = _vec2(60.f, 0.f);
 
 	m_pExp = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
 	if (not m_pExp)
@@ -204,7 +204,7 @@ HRESULT CPop_QuestEnd::Add_Parts()
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_coin");
 	ButtonDesc.vPosition = _vec2((_float)g_iWinSizeX / 2.f + 90.f, 420.f);
 	ButtonDesc.vSize = _vec2(35.f, 35.f);
-	ButtonDesc.vTextPosition = _vec2(40.f, 12.f);
+	ButtonDesc.vTextPosition = _vec2(60.f, 0.f);
 	m_pMoney = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
 	if (not m_pMoney)
 	{

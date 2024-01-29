@@ -1,26 +1,26 @@
-#include "Inven.h"
+#include "Shop.h"
 #include "GameInstance.h"
 #include "TextButton.h"
 #include "UI_Manager.h"
 #include "FadeBox.h"
 #include "InvenFrame.h"
-CInven::CInven(_dev pDevice, _context pContext)
+CShop::CShop(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
 }
 
-CInven::CInven(const CInven& rhs)
+CShop::CShop(const CShop& rhs)
 	: COrthographicObject(rhs)
 {
 }
 
-HRESULT CInven::Init_Prototype()
+HRESULT CShop::Init_Prototype()
 {
 	m_isPrototype = true;
 	return S_OK;
 }
 
-HRESULT CInven::Init(void* pArg)
+HRESULT CShop::Init(void* pArg)
 {
 	if (FAILED(Add_Components()))
 	{
@@ -40,21 +40,10 @@ HRESULT CInven::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	HRESULT hr = CUI_Manager::Get_Instance()->Set_Inven(this);
-	if (FAILED(hr))
-	{
-		return E_FAIL;
-	}
-	wstring strItem = TEXT("체력 포션");
-	CUI_Manager::Get_Instance()->Set_Item(strItem, 80);
-	
-	strItem = TEXT("마나 포션");
-	CUI_Manager::Get_Instance()->Set_Item(strItem, 60);
-
 	return S_OK;
 }
 
-void CInven::Tick(_float fTimeDelta)
+void CShop::Tick(_float fTimeDelta)
 {
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
@@ -66,32 +55,13 @@ void CInven::Tick(_float fTimeDelta)
 			  (LONG)(m_fX + m_fSizeX * 0.5f),
 			  (LONG)(m_fY + m_fSizeY * 0.5f)
 	};
-	if (TRUE == PtInRect(&rectUI, ptMouse))
-	{
-		if (!m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
-		{
-			CFadeBox::STATE eState = CFadeBox::FADEOUT;
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &eState)))
-			{
-				return;
-			}
-			if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
-			{
-				return;
-			}
-			CUI_Manager::Get_Instance()->Set_InvenActive(true);
-			m_bNewItemIn = false;
-			m_isActive = true;
-			Init_InvenState();
-		}
-	}
+
 	if (TRUE == PtInRect(&dynamic_cast<CTextButton*>(m_pExitButton)->Get_Rect(), ptMouse)
 		|| PtInRect(&dynamic_cast<CTextButton*>(m_pTitleButton)->Get_Rect(), ptMouse))
 	{
 		if (m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
-			CUI_Manager::Get_Instance()->Set_InvenActive(false);
 			m_isActive = false;
 		}
 	}
@@ -100,21 +70,24 @@ void CInven::Tick(_float fTimeDelta)
 
 	if (m_isActive)
 	{
+		/* 돈 */
+		_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
+		dynamic_cast<CTextButton*>(m_pMoney)->Set_Text(to_wstring(iMoney));
+
+		_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
+		dynamic_cast<CTextButton*>(m_pDiamond)->Set_Text(to_wstring(iDiamond));
+
+
 		CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 		m_pExitButton->Tick(fTimeDelta);
 		m_pInvenFrame->Tick(fTimeDelta);
 		m_pBackGround->Tick(fTimeDelta);
 		m_pTitleButton->Tick(fTimeDelta);
-		for (size_t i = 0; i < WEARABLE_TYPE::W_END; i++)
-		{
-			m_pWearableSlots[i]->Tick(fTimeDelta);
-		}
-
 	}
 
 }
 
-void CInven::Late_Tick(_float fTimeDelta)
+void CShop::Late_Tick(_float fTimeDelta)
 {
 	if (m_isActive)
 	{
@@ -125,10 +98,7 @@ void CInven::Late_Tick(_float fTimeDelta)
 		m_pExitButton->Late_Tick(fTimeDelta);
 		m_pBackGround->Late_Tick(fTimeDelta);
 		m_pTitleButton->Late_Tick(fTimeDelta);
-		for (size_t i = 0; i < WEARABLE_TYPE::W_END; i++)
-		{
-			m_pWearableSlots[i]->Late_Tick(fTimeDelta);
-		}
+
 	}
 
 
@@ -136,15 +106,12 @@ void CInven::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
-	if (m_bNewItemIn)
-	{
-		m_pNotify->Late_Tick(fTimeDelta);
-	}
+
 
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
-HRESULT CInven::Render()
+HRESULT CShop::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
@@ -166,9 +133,27 @@ HRESULT CInven::Render()
 }
 
 
-void CInven::Init_InvenState()
+void CShop::Open_Shop()
 {
-	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_FrameMode(CInvenFrame::F_INVEN);
+	if (!m_isActive)
+	{
+		CFadeBox::STATE eState = CFadeBox::FADEOUT;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &eState)))
+		{
+			return;
+		}
+		if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
+		{
+			return;
+		}
+		m_isActive = true;
+		Init_ShopState();
+	}
+}
+
+void CShop::Init_ShopState()
+{
+	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_FrameMode(CInvenFrame::F_SHOP);
 	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Init_State();
 
 	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
@@ -178,39 +163,20 @@ void CInven::Init_InvenState()
 	dynamic_cast<CTextButton*>(m_pDiamond)->Set_Text(to_wstring(iDiamond));
 }
 
-HRESULT CInven::Set_Item(ITEM eItem, _uint iNum)
-{
-	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(eItem, iNum);
-	return S_OK;
-}
 
-HRESULT CInven::Add_Parts()
+HRESULT CShop::Add_Parts()
 {
 	CTextButton::TEXTBUTTON_DESC Button = {};
 
 	Button.eLevelID = LEVEL_STATIC;
-	Button.fDepth = m_fDepth - 0.03f;
-	Button.strText = TEXT("");
-	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Notify");
-	Button.vPosition = _vec2(m_fX + 7.f, m_fY - 14.f);
-	Button.vSize = _vec2(40.f, 40.f);
-
-	m_pNotify = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
-
-	if (not m_pNotify)
-	{
-		return E_FAIL;
-	}
-
-	Button.eLevelID = LEVEL_STATIC;
 	Button.fDepth = m_fDepth - 0.01f;
 	Button.fFontSize = 0.4f;
-	Button.strText = TEXT("가방");
+	Button.strText = TEXT("소모품 상점");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Back");
 	Button.vPosition = _vec2(20.f, 20.f);
 	Button.vSize = _vec2(50.f, 50.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	Button.vTextPosition = _vec2(40.f, 0.f);
+	Button.vTextPosition = _vec2(70.f, 0.f);
 
 	m_pTitleButton =m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
@@ -284,25 +250,9 @@ HRESULT CInven::Add_Parts()
 		return E_FAIL;
 	}
 
-	for (size_t i = 0; i < WEARABLE_TYPE::W_END; i++)
-	{
-		CWearable_Slot::WEARABLESLOT SlotDesc = {};
-		SlotDesc.eType = (WEARABLE_TYPE)i;
-		SlotDesc.fDepth = m_fDepth - 0.01f;
-		SlotDesc.vSize = _float2(60.f, 60.f);
-		SlotDesc.vPosition = _float2(60.f, 180.f + (SlotDesc.vSize.x * (_uint)i) + (4.f * (_uint)i));
-		m_pWearableSlots[i] = (CWearable_Slot*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Wearable_Slot"), &SlotDesc);
-		if (not m_pWearableSlots[i])
-		{
-			return E_FAIL;
-		}
-	}
 
-	CInvenFrame::INVENFRAME_DESC InvenDesc = {};
-	InvenDesc.fDepth = m_fDepth - 0.01f;
-	InvenDesc.vPosition = _float2(1070.f, 400.f);
-	InvenDesc.vSize = _float2(360.f, 580.f);
-	m_pInvenFrame = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_InvenFrame"), &InvenDesc);
+
+	m_pInvenFrame = CUI_Manager::Get_Instance()->Get_InvenFrame();
 	if (not m_pInvenFrame)
 	{
 		return E_FAIL;
@@ -310,7 +260,7 @@ HRESULT CInven::Add_Parts()
 	return S_OK;
 }
 
-HRESULT CInven::Add_Components()
+HRESULT CShop::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -335,7 +285,7 @@ HRESULT CInven::Add_Components()
 	return S_OK;
 }
 
-HRESULT CInven::Bind_ShaderResources()
+HRESULT CShop::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
 		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
@@ -356,48 +306,40 @@ HRESULT CInven::Bind_ShaderResources()
 	return S_OK;
 }
 
-CInven* CInven::Create(_dev pDevice, _context pContext)
+CShop* CShop::Create(_dev pDevice, _context pContext)
 {
-	CInven* pInstance = new CInven(pDevice, pContext);
+	CShop* pInstance = new CShop(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CInven");
+		MSG_BOX("Failed to Create : CShop");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CInven::Clone(void* pArg)
+CGameObject* CShop::Clone(void* pArg)
 {
-	CInven* pInstance = new CInven(*this);
+	CShop* pInstance = new CShop(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CInven");
+		MSG_BOX("Failed to Clone : CShop");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CInven::Free()
+void CShop::Free()
 {
 	__super::Free();
 
-	if (!m_isPrototype)
-	{
-		for (size_t i = 0; i < WEARABLE_TYPE::W_END; i++)
-		{
-			Safe_Release(m_pWearableSlots[i]);
-		}
-	}
 
 
 	Safe_Release(m_pMoney);
 	Safe_Release(m_pDiamond);
-	Safe_Release(m_pNotify);
 	Safe_Release(m_pSeigeLine);
 	Safe_Release(m_pBackGround);
 	Safe_Release(m_pExitButton);

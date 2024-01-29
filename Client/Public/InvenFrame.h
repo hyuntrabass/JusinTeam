@@ -14,6 +14,7 @@ class CTextButtonColor;
 class CInvenFrame final : public COrthographicObject
 {
 public:
+	enum FRAME_MODE { F_INVEN, F_SHOP, F_END};
 	typedef struct tagInvenFrameDesc
 	{
 		CGameObject*			pParent;
@@ -41,6 +42,7 @@ private:
 	CTexture* m_pTextureCom{ nullptr };
 
 private:
+	FRAME_MODE									m_eFrameMode{ F_INVEN };
 	INVEN_TYPE									m_ePrevInvenType{ INVEN_ALL };
 	INVEN_TYPE									m_eCurInvenType{ INVEN_ALL };
 
@@ -79,6 +81,7 @@ private:
 
 public:
 	void Init_State();
+	void Set_FrameMode(FRAME_MODE eMode) { m_eFrameMode = eMode; }
 	void Set_Item(ITEM eItem, _uint iNum = 1);
 	void Set_ItemPosition(INVEN_TYPE eInvenType);
 	void ItemSlot_Logic(_uint iSlotIdx, _uint iIndex);

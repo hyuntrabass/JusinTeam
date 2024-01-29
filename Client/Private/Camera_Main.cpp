@@ -274,7 +274,7 @@ void CCamera_Main::Camera_Zoom(_float fTimeDelta)
 
 _bool CCamera_Main::Inven_Mode(_float fTimeDelta)
 {
-	_vec4 vInvenPos = { 0.02f, 20.7f, 2.2f, 1.f };
+	_vec4 vInvenPos = { -0.4f, 1000.7f, 2.2f, 1.f };
 	m_pTransformCom->Set_State(State::Pos, vInvenPos);
 	_vec4 vLookPos = m_pPlayerTransform->Get_State(State::Pos);
 	vLookPos.y += 3.f;

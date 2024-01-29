@@ -2,18 +2,19 @@
 #include "Client_Define.h"
 #include "Base.h"
 #include "ItemBlock.h"
+#include "InvenFrame.h"
 BEGIN(Engine)
 class CGameInstance;
 END
 BEGIN(Client)
 class CItemBlock;
+class CInvenFrame;
 class CUI_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CUI_Manager)
 public:
 	enum TYPE { MONSTER, NPC, TYPE_END };
 	enum MOUSESTATE { M_DEFAULT, M_TEXT, MOUSESTATE_END };
-
 private:
 	CUI_Manager();
 	virtual ~CUI_Manager() = default;
@@ -33,7 +34,7 @@ private:
 
 	_float2			m_fExp{0.f, 1000.f};
 
-	_vec4			m_vInvenPos{0.f, 20.f, 0.f, 1.f};
+	_vec4			m_vInvenPos{0.f, 1000.f, 0.f, 1.f};
 	_vec4			m_vPlayerPos{0.f, 0.f, 0.f, 0.f};
 	_vec4			m_vCameraPos{0.f, 0.f, 0.f, 0.f};
 	_vec4			m_vHairColor{0.f, 0.f, 0.f, 0.f};
@@ -44,6 +45,7 @@ private:
 	CGameObject*	m_pItemSlots[CItemBlock::ITEMSLOT_END];
 	CGameObject*	m_pInvenItemSlots[CItemBlock::ITEMSLOT_END];
 	CGameObject*	m_pInven{ nullptr };
+	CGameObject*	m_pInvenFrame{ nullptr };
 
 	vector<CTransform*> m_vecRadarPos[TYPE_END];
 
@@ -62,9 +64,11 @@ public:
 
 	HRESULT Set_Item(wstring& strItemName, _uint iNum = 1);
 	HRESULT Set_Inven(CGameObject* pGameObject);
+	HRESULT Set_InvenFrame(CGameObject* pGameObject);
 	HRESULT Set_ItemSlots(CItemBlock::ITEMSLOT eSlot, CGameObject* pGameObject);
 	HRESULT Set_InvenItemSlots(CItemBlock::ITEMSLOT eSlot, CGameObject* pGameObject);
 
+	CGameObject* Get_InvenFrame();
 	CGameObject* Get_ItemSlots(CItemBlock::ITEMSLOT eSlot);
 	_bool Is_ItemSlotFull(CItemBlock::ITEMSLOT eSlot);
 	HRESULT Set_Item_In_EmptySlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* iItemNum);
