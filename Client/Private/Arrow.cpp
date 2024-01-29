@@ -93,6 +93,8 @@ HRESULT CArrow::Render()
 			return E_FAIL;
 		}
 	}
+
+	return S_OK;
 }
 HRESULT CArrow::Add_Components()
 {

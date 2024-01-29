@@ -159,6 +159,7 @@ public: // Sound Manager
 	void StopAll();
 
 	void SetChannelVolume(_uint iChannel, _float fVolume);
+	_float GetChannelVolume(_uint iChannel);
 
 public: // Effect Callback
 	using Func_CreateFX = function<void(const wstring&, _mat*, const _bool&)>;

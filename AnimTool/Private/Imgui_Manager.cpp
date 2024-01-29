@@ -319,7 +319,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			LoadFile();
 		}
 
-		if (ImGui::Button("ADD"))
+		if (ImGui::Button("ADD##1"))
 		{	//트리거 정보 저장
 #pragma region Player
 			if (m_eModelType == TYPE_PLAYER)
@@ -457,7 +457,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	if (m_pPlayer)
 	{
 		ImGui::Begin("ANIMATION MENU");
-		ImGui::PushItemWidth(270.f);
+		ImGui::PushItemWidth(300.f);
 #pragma region ImGuizmo
 		/*ImGui::RadioButton("STATE", &m_iManipulateType, TYPE_STATE); ImGui::SameLine();
 		ImGui::RadioButton("RESET", &m_iManipulateType, TYPE_RESET);
@@ -943,14 +943,14 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					pSoundDesc->fEndAnimPoses[iEndIndex] = static_cast<_float>(iCurrentAnimPos);
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("ADD##2"))
+				if (ImGui::Button("ADD##3"))
 				{
 					pSoundDesc->iEndAnimIndices.push_back(-1);
 					_uint iEndAnimPos = static_cast<_uint>(0.f);
 					pSoundDesc->fEndAnimPoses.push_back(static_cast<_float>(iEndAnimPos));
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("DELETE##2"))
+				if (ImGui::Button("DELETE##3"))
 				{
 					if (pSoundDesc->iEndAnimIndices.size() > 1)
 					{
@@ -1298,14 +1298,14 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					pSoundDesc->fEndAnimPoses[iEndIndex] = static_cast<_float>(iCurrentAnimPos);
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("ADD##2"))
+				if (ImGui::Button("ADD##3"))
 				{
 					pSoundDesc->iEndAnimIndices.push_back(-1);
 					_uint iEndAnimPos = static_cast<_uint>(0.f);
 					pSoundDesc->fEndAnimPoses.push_back(static_cast<_float>(iEndAnimPos));
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("DELETE##2"))
+				if (ImGui::Button("DELETE##3"))
 				{
 					if (pSoundDesc->iEndAnimIndices.size() > 1)
 					{

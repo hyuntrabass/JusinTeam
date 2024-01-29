@@ -415,6 +415,7 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 			if (not m_pGameInstance->Get_IsPlayingSound(m_TriggerSounds[i].iChannel))
 			{
 				m_TriggerSounds[i].iChannel = -1;
+				m_TriggerSounds[i].fVolume = m_TriggerSounds[i].fInitVolume;
 			}
 		}
 		//사운드 제거
@@ -425,8 +426,17 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 				if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iEndAnimIndices[j] &&
 					m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerSounds[i].fEndAnimPoses[j])
 				{
-					m_pGameInstance->StopSound(m_TriggerSounds[i].iChannel);
-					m_TriggerSounds[i].iChannel = -1;
+					if (m_pGameInstance->GetChannelVolume(m_TriggerSounds[i].iChannel) <= 0.f)
+					{
+						m_pGameInstance->StopSound(m_TriggerSounds[i].iChannel);
+						m_TriggerSounds[i].iChannel = -1;
+						m_TriggerSounds[i].fVolume = m_TriggerSounds[i].fInitVolume;
+					}
+					else
+					{
+						m_TriggerSounds[i].fVolume -= (fTimeDelta / 2.f);
+						m_pGameInstance->SetChannelVolume(m_TriggerSounds[i].iChannel, m_TriggerSounds[i].fVolume);
+					}
 				}
 			}
 		}
@@ -897,6 +907,7 @@ HRESULT CRealtimeVTFModel::Read_TriggerSounds(const string& strFilePath)
 
 			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fVolume), sizeof(_float));
 
+			SoundDesc.fInitVolume = SoundDesc.fVolume;
 			m_TriggerSounds.push_back(SoundDesc);
 			m_iNumTriggersSound++;
 		}

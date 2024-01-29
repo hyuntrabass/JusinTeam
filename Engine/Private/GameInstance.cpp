@@ -1070,6 +1070,16 @@ void CGameInstance::SetChannelVolume(_uint iChannel, _float fVolume)
 	return m_pSound_Manager->SetChannelVolume(iChannel, fVolume);
 }
 
+_float CGameInstance::GetChannelVolume(_uint iChannel)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->GetChannelVolume(iChannel);
+}
+
 void CGameInstance::Register_CreateEffect_Callback(Func_CreateFX Function)
 {
 	m_Function_Create_FX = Function;
