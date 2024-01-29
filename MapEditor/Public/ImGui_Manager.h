@@ -34,6 +34,7 @@ struct DummyInfo
 	_float4 vPos{};
 	_float4 vLook{};
 	_bool isInstancing{false};
+	vector<_vec4> InstancePos;
 	class CDummy** ppDummy{ nullptr };
 };
 
@@ -162,6 +163,7 @@ private:
 	_int iTriggerNum{ -1 };
 
 	_bool m_isInstancing{false};
+	vector<_vec4> m_vInstancePos;
 
 private:
 	// 파일의 이름 가져와서 저장

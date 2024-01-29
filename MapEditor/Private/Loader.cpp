@@ -146,7 +146,7 @@ HRESULT CLoader::Load_Editor()
 		return E_FAIL;
 	}
 
-	_matrix Pivot = XMMatrixScaling(0.002f, 0.002f, 0.002f);
+	_mat Pivot = _mat::CreateScale(0.001f);
 
 	// Map Model
 	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Map/Midgard/Mesh/";
@@ -213,7 +213,7 @@ HRESULT CLoader::Load_Editor()
 			}
 		}
 	}
-	 Pivot = XMMatrixScaling(0.002f, 0.002f, 0.002f);
+	Pivot = _mat::CreateScale(0.001f);
 
 	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Object/Midgard/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
@@ -264,7 +264,7 @@ HRESULT CLoader::Load_Editor()
 			//{
 			//	return E_FAIL;
 			//}
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CVIBuffer_Instancing_Mesh::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot, 30))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CVIBuffer_Instancing_Mesh::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot, 20))))
 			{
 				return E_FAIL;
 			}
@@ -284,7 +284,7 @@ HRESULT CLoader::Load_Editor()
 			//{
 			//	return E_FAIL;
 			//}
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CVIBuffer_Instancing_Mesh::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot, 30))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CVIBuffer_Instancing_Mesh::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot, 20))))
 			{
 				return E_FAIL;
 			}

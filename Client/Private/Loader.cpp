@@ -1278,7 +1278,7 @@ HRESULT CLoader::Load_Village()
 {
 	// ¸Ê
 
-	_mat Pivot = _mat::CreateScale(0.002f);
+	_mat Pivot = _mat::CreateScale(0.003f);
 	string strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Map/Midgard/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{

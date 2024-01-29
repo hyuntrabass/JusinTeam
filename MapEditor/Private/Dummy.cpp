@@ -245,7 +245,7 @@ HRESULT CDummy::Add_Components()
 	if (m_eType == ItemType::Environment && m_isInstancing == true)
 	{
 
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Info.Prototype, TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBuffer), &m_pTransformCom->Get_World_Matrix())))
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Info.Prototype, TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBuffer), &m_Info.InstancePos)))
 		{
 			return E_FAIL;
 		}

@@ -28,6 +28,7 @@ public:
 		return m_pVertices;
 	}
 	vector<VTXNORTEX> Get_TerrainVertices() { return m_vVertices; }
+	vector<VTXSTATICMESH> Get_MeshVertices() { return m_vMeshVertices; }
 	vector<_ulong> Get_TerrainIndices() { return m_vIndices; }
 protected:
 	ID3D11Buffer* m_pVB{ nullptr };
@@ -49,6 +50,7 @@ protected:
 
 	_float3* m_pVertices {};
 	vector<VTXNORTEX> m_vVertices;
+	vector<VTXSTATICMESH> m_vMeshVertices;
 	vector<_ulong> m_vIndices;
 
 protected:

@@ -57,6 +57,7 @@ private:
 	_float m_fTriggerSize{};
 	_bool m_isCreate{false};
 	_bool m_isInstancing{ false };
+	vector<_vec4> m_vInstancePos;
 
 private:
 	HRESULT Add_Components();

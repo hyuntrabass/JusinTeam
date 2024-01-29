@@ -99,13 +99,44 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 			pMapTransform->Set_State(State::Look, ObjLook);
 			pMapTransform->Set_State(State::Pos, ObjPosition);
 		}
-		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))
+		if (m_isInstancing == false || m_eItemType != ItemType::Environment)
 		{
-			if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
+			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))
 			{
-				m_PickingPos = m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y);
+				if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
+				{
+					m_PickingPos = m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y);
+				}
+				FastPicking();
 			}
-			FastPicking();
+
+		}
+		else if (m_eItemType == ItemType::Environment && m_isInstancing == true)
+		{
+			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))
+			{
+				if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
+				{
+					_float CenterX = m_vMousePos.x;
+					_float CenterY = m_vMousePos.y;
+					_float areaSize = 10.f;
+
+					for (_uint y = 0; y < 5; ++y)
+					{
+						for (_uint x = 0; x < 5; ++x)
+						{
+							_float fPosX = CenterX - areaSize * 2.0f + areaSize * static_cast<float>(x);
+							_float fPosY = CenterY - areaSize * 2.0f + areaSize * static_cast<float>(y);
+
+							m_PickingPos = m_pGameInstance->PickingDepth(fPosX, fPosY);
+
+							m_vInstancePos.push_back(m_PickingPos);
+						}
+					}
+				}
+				FastPicking();
+		
+			}
 		}
 
 	}
@@ -489,6 +520,8 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				if (Environment_current_idx != -1)
 				{
 					Create_Dummy(Environment_current_idx);
+					if (!m_vInstancePos.empty())
+						m_vInstancePos.clear();
 				}
 			}
 
@@ -910,6 +943,10 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	{
 		Info.iTriggerNum = m_TriggerList.size();
 		Info.fTriggerSize = m_fTriggerSize;
+	}
+	else if(m_eItemType == ItemType::Environment && m_isInstancing == true)
+	{ 
+		Info.InstancePos = m_vInstancePos;
 	}
 	else
 	{
