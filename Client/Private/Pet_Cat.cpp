@@ -1,5 +1,7 @@
 #include "Pet_Cat.h"
 
+#include "UI_Manager.h"
+
 CPet_Cat::CPet_Cat(_dev pDevice, _context pContext)
 	: CPet(pDevice, pContext)
 {
@@ -12,7 +14,7 @@ CPet_Cat::CPet_Cat(const CPet_Cat& rhs)
 
 HRESULT CPet_Cat::Init_Prototype()
 {
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CPet_Cat::Init(void* pArg)
@@ -25,18 +27,17 @@ HRESULT CPet_Cat::Init(void* pArg)
 	}
 
 	//m_pTransformCom->Set_State(State::Pos, _vec4(75.f, 0.f, 110.f, 1.f));
-	m_pTransformCom->Set_Scale(_vec3(1.5f, 1.5f, 1.5f));
-
-	m_Animation.iAnimIndex = IDLE;
-	m_Animation.isLoop = true;
+	m_Animation.fAnimSpeedRatio = 2.f;
 	m_Animation.bSkipInterpolation = false;
 
-	m_eCurState = STATE_IDLE;
+	m_pTransformCom->Set_Scale(_vec3(1.5f, 1.5f, 1.5f));
+
+	m_eCurState = STATE_CHASE;
 
 	m_fPosLerpRatio = 0.02f;
 	m_fLookLerpRatio = 0.04f;
 
-    return S_OK;
+	return S_OK;
 }
 
 void CPet_Cat::Tick(_float fTimeDelta)
@@ -56,11 +57,58 @@ HRESULT CPet_Cat::Render()
 {
 	__super::Render();
 
-    return S_OK;
+	return S_OK;
 }
 
 void CPet_Cat::Init_State(_float fTimeDelta)
 {
+	if (m_ePreState != m_eCurState)
+	{
+		switch (m_eCurState)
+		{
+		case Client::CPet_Cat::STATE_IDLE:
+			break;
+		case Client::CPet_Cat::STATE_CHASE:
+			m_fIdleTime = 0.f;
+			m_bInvenOn = false;
+
+			break;
+		case Client::CPet_Cat::STATE_EMOTION:
+		{
+			_uint iRandom = rand() % 3;
+			switch (iRandom)
+			{
+			case 0:
+				m_Animation.iAnimIndex = EMOTION;
+				break;
+
+			case 1:
+				m_Animation.iAnimIndex = TELEPORT_END;
+				break;
+
+			case 2:
+				m_Animation.iAnimIndex = TELEPORT_START;
+				break;
+			}
+		}
+
+			m_Animation.isLoop = false;
+
+			m_fIdleTime = 0.f;
+
+		break;
+		case Client::CPet_Cat::STATE_INVEN:
+			m_Animation.iAnimIndex = IDLE;
+			m_Animation.isLoop = true;
+
+			m_fIdleTime = 0.f;
+			m_bInvenOn = true;
+
+			break;
+		}
+
+		m_ePreState = m_eCurState;
+	}
 }
 
 void CPet_Cat::Tick_State(_float fTimeDelta)
@@ -73,45 +121,111 @@ void CPet_Cat::Tick_State(_float fTimeDelta)
 	_vec4 vPlayerRight = pPlayerTransform->Get_State(State::Right).Get_Normalized();
 	_vec4 vPlayerLook = pPlayerTransform->Get_State(State::Look).Get_Normalized();
 
-	_vec3 vTargetPos = vPlayerPos - (1.f * vPlayerRight) - (1.f * vPlayerLook);
+	_vec3 vTargetPos = vPlayerPos + (1.f * vPlayerRight) - (1.f * vPlayerLook);
+	vTargetPos.y += 1.5f;
+
 	_vec3 vMyPos = m_pTransformCom->Get_State(State::Pos);
-
-	if (fDistance <= 5.f && fDistance >= 2.f)
-	{
-		m_fPosLerpRatio = 0.03f;
-	}
-	else if (fDistance > 5.f)
-	{
-		m_fPosLerpRatio = 0.05f;
-	}
-
-	_vec3 vSetPos = XMVectorLerp(vMyPos, vTargetPos, m_fPosLerpRatio);
-	vSetPos.y = vPlayerPos.y + 1.5f;
-
-	//_vec4 vMyLook = vMyPos + m_pTransformCom->Get_State(State::Look).Get_Normalized();
-	//_vec4 vTargetLook = vMyPos + vPlayerLook;
-
-	//_vec4 vSetLook = XMVectorLerp(vMyLook, vTargetLook, m_fLookLerpRatio);
-
-	//m_pTransformCom->LookAt(vSetLook);
-
 	_vec4 vMyLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
-	_vec4 vTargetLook = vPlayerLook;
 
-	_vec4 vSetLook = XMVectorLerp(vMyLook, vTargetLook, m_fLookLerpRatio);
-	//vSetLook.y = 0.f;
-
-	m_pTransformCom->LookAt_Dir(vSetLook);
-
-	if (fDistance >= 2.f)
+	switch (m_eCurState)
 	{
-		m_Animation.iAnimIndex = RUN;
-		m_pTransformCom->Set_Position(vSetPos);
-	}	
-	else
+	case Client::CPet_Cat::STATE_IDLE:
+		break;
+
+	case Client::CPet_Cat::STATE_CHASE:
+
 	{
-		m_Animation.iAnimIndex = IDLE;
+		if (fDistance <= 5.f && fDistance >= 2.f)
+		{
+			m_fPosLerpRatio = 0.03f;
+		}
+		else if (fDistance > 5.f)
+		{
+			m_fPosLerpRatio = 0.05f;
+		}
+
+		_vec3 vSetPos = XMVectorLerp(vMyPos, vTargetPos, m_fPosLerpRatio);
+		_vec4 vSetLook = XMVectorLerp(vMyLook, vPlayerLook, m_fLookLerpRatio);
+
+		m_pTransformCom->LookAt_Dir(vSetLook);
+
+		if (fDistance >= 2.f)
+		{
+			m_Animation.iAnimIndex = RUN;
+			m_Animation.isLoop = true;
+
+			m_pTransformCom->Set_Position(vSetPos);
+		}
+
+		if (fDistance < 2.1f)
+		{
+			m_Animation.iAnimIndex = IDLE;
+			m_Animation.isLoop = true;
+
+			m_fIdleTime += fTimeDelta;
+
+			if (m_fIdleTime >= 5.f + static_cast<_float>(rand() % 3))
+			{
+				m_eCurState = STATE_EMOTION;
+			}
+
+			if (CUI_Manager::Get_Instance()->Is_InvenActive() == true)
+			{
+				m_eCurState = STATE_INVEN;
+			}
+		}
+
+		if (fDistance > 10.f)
+		{
+			m_pTransformCom->Set_Position(vTargetPos);
+			m_pTransformCom->LookAt_Dir(vPlayerLook);
+		}
+
 	}
+
+	break;
+
+	case Client::CPet_Cat::STATE_EMOTION:
+
+		if (m_pModelCom->IsAnimationFinished(EMOTION) || m_pModelCom->IsAnimationFinished(TELEPORT_END) || m_pModelCom->IsAnimationFinished(TELEPORT_START))
+		{
+			if (CUI_Manager::Get_Instance()->Is_InvenActive() == true)
+			{
+				m_eCurState = STATE_INVEN;
+			}
+			else
+			{
+				m_eCurState = STATE_CHASE;
+			}
+		}
+
+		if (m_bInvenOn != CUI_Manager::Get_Instance()->Is_InvenActive())
+		{
+			m_eCurState = STATE_INVEN;
+		}
+
+		break;
+
+	case Client::CPet_Cat::STATE_INVEN:
+
+		m_pTransformCom->Set_Position(_vec3(vPlayerPos.x + 1.f, vPlayerPos.y + 1.2f, vPlayerPos.z - 1.f));
+		m_pTransformCom->LookAt_Dir(_vec4(0.f, 0.f, 1.f, 0.f));
+
+		m_fIdleTime += fTimeDelta;
+
+		if (m_fIdleTime >= 5.f + static_cast<_float>(rand() % 3))
+		{
+			m_eCurState = STATE_EMOTION;
+		}
+
+		if (CUI_Manager::Get_Instance()->Is_InvenActive() == false)
+		{
+			m_eCurState = STATE_CHASE;
+		}
+
+		break;
+	}
+
 
 }
 

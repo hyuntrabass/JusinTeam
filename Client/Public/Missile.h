@@ -47,6 +47,7 @@ private:
 	MISSILE_TYPE m_eType = TYPE_END;
 
 private:
+	_bool m_bShoot = { false };
 	_float m_fLifeTime = {};
 
 private: // SIX_MISSILE

@@ -32,7 +32,6 @@ HRESULT CVoid05::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(100.f, 8.f, 108.f, 1.f));
 	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
 
 	m_Animation.iAnimIndex = IDLE;
@@ -61,6 +60,8 @@ HRESULT CVoid05::Init(void* pArg)
 	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+
+	m_pTransformCom->Set_Position(_vec3(100.f, 8.f, 108.f));
 
 	if (pArg)
 	{
@@ -91,6 +92,7 @@ void CVoid05::Tick(_float fTimeDelta)
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
+	__super::Tick(fTimeDelta);
 }
 
 void CVoid05::Late_Tick(_float fTimeDelta)
