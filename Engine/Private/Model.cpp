@@ -475,7 +475,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 					}
 					else
 					{
-						m_TriggerSounds[i].fVolume -= (fTimeDelta / 2.f);
+						m_TriggerSounds[i].fVolume -= (fTimeDelta / (m_TriggerSounds[i].fFadeoutSecond / m_TriggerSounds[i].fInitVolume));
 						m_pGameInstance->SetChannelVolume(m_TriggerSounds[i].iChannel, m_TriggerSounds[i].fVolume);
 					}
 				}
@@ -750,9 +750,10 @@ HRESULT CModel::Read_TriggerSounds(const string& strFilePath)
 				Safe_Delete_Array(pBuffer);
 			}
 
-			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fVolume), sizeof(_float));
+			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fInitVolume), sizeof(_float));
+			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fFadeoutSecond), sizeof(_float));
 
-			SoundDesc.fInitVolume = SoundDesc.fVolume;
+			SoundDesc.fVolume = SoundDesc.fInitVolume;
 			m_TriggerSounds.push_back(SoundDesc);
 			m_iNumTriggersSound++;
 		}

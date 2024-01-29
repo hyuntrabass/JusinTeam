@@ -982,14 +982,14 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				ImGui::SeparatorText("VOLUME");
 				ImGui::PushItemWidth(100.f);
 
-				ImGui::InputFloat("VOLUME##1", &pSoundDesc->fVolume, 0.01f, 0.f, "%.2f");
-				if (pSoundDesc->fVolume >= 1.f)
+				ImGui::InputFloat("VOLUME##1", &pSoundDesc->fInitVolume, 0.01f, 0.f, "%.2f");
+				if (pSoundDesc->fInitVolume >= 1.f)
 				{
-					pSoundDesc->fVolume = 1.f;
+					pSoundDesc->fInitVolume = 1.f;
 				}
-				else if (pSoundDesc->fVolume <= 0.f)
+				else if (pSoundDesc->fInitVolume <= 0.f)
 				{
-					pSoundDesc->fVolume = 0.f;
+					pSoundDesc->fInitVolume = 0.f;
 				}
 				if (pSoundDesc->iChannel != -1)
 				{
@@ -1337,14 +1337,14 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				ImGui::SeparatorText("VOLUME");
 				ImGui::PushItemWidth(100.f);
 
-				ImGui::InputFloat("VOLUME##1", &pSoundDesc->fVolume, 0.01f, 0.f, "%.2f");
-				if (pSoundDesc->fVolume >= 1.f)
+				ImGui::InputFloat("VOLUME##1", &pSoundDesc->fInitVolume, 0.01f, 0.f, "%.2f");
+				if (pSoundDesc->fInitVolume >= 1.f)
 				{
-					pSoundDesc->fVolume = 1.f;
+					pSoundDesc->fInitVolume = 1.f;
 				}
-				else if (pSoundDesc->fVolume <= 0.f)
+				else if (pSoundDesc->fInitVolume <= 0.f)
 				{
-					pSoundDesc->fVolume = 0.f;
+					pSoundDesc->fInitVolume = 0.f;
 				}
 				if (pSoundDesc->iChannel != -1)
 				{
@@ -1672,8 +1672,10 @@ HRESULT CImgui_Manager::SaveFile()
 						Fileout.write(reinterpret_cast<const _char*>(SoundDescs[i].strSoundNames[j].data()), iNameSize);
 					}
 
-					_float fVolume = SoundDescs[i].fVolume;
-					Fileout.write(reinterpret_cast<_char*>(&fVolume), sizeof(_float));
+					_float fInitVolume = SoundDescs[i].fInitVolume;
+					Fileout.write(reinterpret_cast<_char*>(&fInitVolume), sizeof(_float));
+					_float fFadeoutSecond = SoundDescs[i].fFadeoutSecond;
+					Fileout.write(reinterpret_cast<_char*>(&fFadeoutSecond), sizeof(_float));
 				}
 			}
 		}
@@ -1751,8 +1753,10 @@ HRESULT CImgui_Manager::SaveFile()
 						Fileout.write(reinterpret_cast<const _char*>(SoundDescs[i].strSoundNames[j].data()), iNameSize);
 					}
 
-					_float fVolume = SoundDescs[i].fVolume;
-					Fileout.write(reinterpret_cast<_char*>(&fVolume), sizeof(_float));
+					_float fInitVolume = SoundDescs[i].fInitVolume;
+					Fileout.write(reinterpret_cast<_char*>(&fInitVolume), sizeof(_float));
+					_float fFadeoutSecond = SoundDescs[i].fFadeoutSecond;
+					Fileout.write(reinterpret_cast<_char*>(&fFadeoutSecond), sizeof(_float));
 				}
 			}
 		}
