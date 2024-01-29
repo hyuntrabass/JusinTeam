@@ -995,6 +995,12 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				{
 					m_pGameInstance->SetChannelVolume(pSoundDesc->iChannel, pSoundDesc->fVolume);
 				}
+				ImGui::InputFloat("FADEOUT SECOND##1", &pSoundDesc->fFadeoutSecond, 0.01f, 0.f, "%.2f");
+				if (pSoundDesc->fFadeoutSecond <= 0.f)
+				{
+					pSoundDesc->fFadeoutSecond = 0.1f;
+				}
+
 
 				ImGui::PopItemWidth();
 				ImGui::End();
@@ -1349,6 +1355,11 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				if (pSoundDesc->iChannel != -1)
 				{
 					m_pGameInstance->SetChannelVolume(pSoundDesc->iChannel, pSoundDesc->fVolume);
+				}
+				ImGui::InputFloat("FADEOUT SECOND##1", &pSoundDesc->fFadeoutSecond, 0.01f, 0.f, "%.2f");
+				if (pSoundDesc->fFadeoutSecond <= 0.f)
+				{
+					pSoundDesc->fFadeoutSecond = 0.1f;
 				}
 
 				ImGui::PopItemWidth();
@@ -1886,8 +1897,10 @@ HRESULT CImgui_Manager::LoadFile()
 						Safe_Delete_Array(pBuffer);
 					}
 
-					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fVolume), sizeof(_float));
+					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fInitVolume), sizeof(_float));
+					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fFadeoutSecond), sizeof(_float));
 
+					SoundDesc.fVolume = SoundDesc.fInitVolume;
 					pCurModel->Add_TriggerSound(SoundDesc);
 				}
 			}
@@ -1975,8 +1988,10 @@ HRESULT CImgui_Manager::LoadFile()
 						Safe_Delete_Array(pBuffer);
 					}
 
-					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fVolume), sizeof(_float));
+					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fInitVolume), sizeof(_float));
+					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fFadeoutSecond), sizeof(_float));
 
+					SoundDesc.fVolume = SoundDesc.fInitVolume;
 					pCurModel->Add_TriggerSound(SoundDesc);
 				}
 			}
