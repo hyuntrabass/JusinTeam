@@ -177,7 +177,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	}
 	else if (m_pGameInstance->Key_Down(DIK_C))
 	{
-		m_fTimeDelta = fTimeDelta;
+		m_fTimeDelta = fTimeDelta * m_fTimeRatio;
 	}
 
 	if (m_pPlayer)
@@ -319,7 +319,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			LoadFile();
 		}
 
-		if (ImGui::Button("ADD"))
+		if (ImGui::Button("ADD##1"))
 		{	//트리거 정보 저장
 #pragma region Player
 			if (m_eModelType == TYPE_PLAYER)
@@ -352,7 +352,8 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					SoundDesc.strSoundNames.push_back(szSoundName);
 					SoundDesc.iStartAnimIndex = m_AnimDesc.iAnimIndex;
 					SoundDesc.fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
-					SoundDesc.fVolume = 0.5f;
+					SoundDesc.fInitVolume = 0.5f;
+					SoundDesc.fVolume = SoundDesc.fInitVolume;
 					pCurModel->Add_TriggerSound(SoundDesc);
 				}
 			}
@@ -387,7 +388,8 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					SoundDesc.strSoundNames.push_back(szSoundName);
 					SoundDesc.iStartAnimIndex = m_AnimDesc.iAnimIndex;
 					SoundDesc.fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
-					SoundDesc.fVolume = 0.5f;
+					SoundDesc.fInitVolume = 0.5f;
+					SoundDesc.fVolume = SoundDesc.fInitVolume;
 					pCurModel->Add_TriggerSound(SoundDesc);
 				}
 			}
@@ -457,7 +459,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	if (m_pPlayer)
 	{
 		ImGui::Begin("ANIMATION MENU");
-		ImGui::PushItemWidth(270.f);
+		ImGui::PushItemWidth(300.f);
 #pragma region ImGuizmo
 		/*ImGui::RadioButton("STATE", &m_iManipulateType, TYPE_STATE); ImGui::SameLine();
 		ImGui::RadioButton("RESET", &m_iManipulateType, TYPE_RESET);
@@ -516,6 +518,10 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				m_vCurrentScale = m_vPreScale;
 			}
 		}*/
+		ImGui::SameLine();
+		ImGui::PushItemWidth(90.f);
+		ImGui::InputFloat("TIME##1", &m_fTimeRatio, 0.01f, 0.f, "%.2f");
+		ImGui::PopItemWidth();
 #pragma endregion
 
 #pragma region Player
@@ -943,14 +949,14 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					pSoundDesc->fEndAnimPoses[iEndIndex] = static_cast<_float>(iCurrentAnimPos);
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("ADD##2"))
+				if (ImGui::Button("ADD##3"))
 				{
 					pSoundDesc->iEndAnimIndices.push_back(-1);
 					_uint iEndAnimPos = static_cast<_uint>(0.f);
 					pSoundDesc->fEndAnimPoses.push_back(static_cast<_float>(iEndAnimPos));
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("DELETE##2"))
+				if (ImGui::Button("DELETE##3"))
 				{
 					if (pSoundDesc->iEndAnimIndices.size() > 1)
 					{
@@ -982,19 +988,25 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				ImGui::SeparatorText("VOLUME");
 				ImGui::PushItemWidth(100.f);
 
-				ImGui::InputFloat("VOLUME##1", &pSoundDesc->fVolume, 0.01f, 0.f, "%.2f");
-				if (pSoundDesc->fVolume >= 1.f)
+				ImGui::InputFloat("VOLUME##1", &pSoundDesc->fInitVolume, 0.01f, 0.f, "%.2f");
+				if (pSoundDesc->fInitVolume >= 1.f)
 				{
-					pSoundDesc->fVolume = 1.f;
+					pSoundDesc->fInitVolume = 1.f;
 				}
-				else if (pSoundDesc->fVolume <= 0.f)
+				else if (pSoundDesc->fInitVolume <= 0.f)
 				{
-					pSoundDesc->fVolume = 0.f;
+					pSoundDesc->fInitVolume = 0.f;
 				}
 				if (pSoundDesc->iChannel != -1)
 				{
 					m_pGameInstance->SetChannelVolume(pSoundDesc->iChannel, pSoundDesc->fVolume);
 				}
+				ImGui::InputFloat("FADEOUT SECOND##1", &pSoundDesc->fFadeoutSecond, 0.01f, 0.f, "%.2f");
+				if (pSoundDesc->fFadeoutSecond <= 0.f)
+				{
+					pSoundDesc->fFadeoutSecond = 0.1f;
+				}
+
 
 				ImGui::PopItemWidth();
 				ImGui::End();
@@ -1298,14 +1310,14 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					pSoundDesc->fEndAnimPoses[iEndIndex] = static_cast<_float>(iCurrentAnimPos);
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("ADD##2"))
+				if (ImGui::Button("ADD##3"))
 				{
 					pSoundDesc->iEndAnimIndices.push_back(-1);
 					_uint iEndAnimPos = static_cast<_uint>(0.f);
 					pSoundDesc->fEndAnimPoses.push_back(static_cast<_float>(iEndAnimPos));
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("DELETE##2"))
+				if (ImGui::Button("DELETE##3"))
 				{
 					if (pSoundDesc->iEndAnimIndices.size() > 1)
 					{
@@ -1337,18 +1349,23 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				ImGui::SeparatorText("VOLUME");
 				ImGui::PushItemWidth(100.f);
 
-				ImGui::InputFloat("VOLUME##1", &pSoundDesc->fVolume, 0.01f, 0.f, "%.2f");
-				if (pSoundDesc->fVolume >= 1.f)
+				ImGui::InputFloat("VOLUME##1", &pSoundDesc->fInitVolume, 0.01f, 0.f, "%.2f");
+				if (pSoundDesc->fInitVolume >= 1.f)
 				{
-					pSoundDesc->fVolume = 1.f;
+					pSoundDesc->fInitVolume = 1.f;
 				}
-				else if (pSoundDesc->fVolume <= 0.f)
+				else if (pSoundDesc->fInitVolume <= 0.f)
 				{
-					pSoundDesc->fVolume = 0.f;
+					pSoundDesc->fInitVolume = 0.f;
 				}
 				if (pSoundDesc->iChannel != -1)
 				{
 					m_pGameInstance->SetChannelVolume(pSoundDesc->iChannel, pSoundDesc->fVolume);
+				}
+				ImGui::InputFloat("FADEOUT SECOND##1", &pSoundDesc->fFadeoutSecond, 0.01f, 0.f, "%.2f");
+				if (pSoundDesc->fFadeoutSecond <= 0.f)
+				{
+					pSoundDesc->fFadeoutSecond = 0.1f;
 				}
 
 				ImGui::PopItemWidth();
@@ -1672,8 +1689,10 @@ HRESULT CImgui_Manager::SaveFile()
 						Fileout.write(reinterpret_cast<const _char*>(SoundDescs[i].strSoundNames[j].data()), iNameSize);
 					}
 
-					_float fVolume = SoundDescs[i].fVolume;
-					Fileout.write(reinterpret_cast<_char*>(&fVolume), sizeof(_float));
+					_float fInitVolume = SoundDescs[i].fInitVolume;
+					Fileout.write(reinterpret_cast<_char*>(&fInitVolume), sizeof(_float));
+					_float fFadeoutSecond = SoundDescs[i].fFadeoutSecond;
+					Fileout.write(reinterpret_cast<_char*>(&fFadeoutSecond), sizeof(_float));
 				}
 			}
 		}
@@ -1751,8 +1770,10 @@ HRESULT CImgui_Manager::SaveFile()
 						Fileout.write(reinterpret_cast<const _char*>(SoundDescs[i].strSoundNames[j].data()), iNameSize);
 					}
 
-					_float fVolume = SoundDescs[i].fVolume;
-					Fileout.write(reinterpret_cast<_char*>(&fVolume), sizeof(_float));
+					_float fInitVolume = SoundDescs[i].fInitVolume;
+					Fileout.write(reinterpret_cast<_char*>(&fInitVolume), sizeof(_float));
+					_float fFadeoutSecond = SoundDescs[i].fFadeoutSecond;
+					Fileout.write(reinterpret_cast<_char*>(&fFadeoutSecond), sizeof(_float));
 				}
 			}
 		}
@@ -1882,8 +1903,10 @@ HRESULT CImgui_Manager::LoadFile()
 						Safe_Delete_Array(pBuffer);
 					}
 
-					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fVolume), sizeof(_float));
+					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fInitVolume), sizeof(_float));
+					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fFadeoutSecond), sizeof(_float));
 
+					SoundDesc.fVolume = SoundDesc.fInitVolume;
 					pCurModel->Add_TriggerSound(SoundDesc);
 				}
 			}
@@ -1971,8 +1994,10 @@ HRESULT CImgui_Manager::LoadFile()
 						Safe_Delete_Array(pBuffer);
 					}
 
-					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fVolume), sizeof(_float));
+					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fInitVolume), sizeof(_float));
+					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fFadeoutSecond), sizeof(_float));
 
+					SoundDesc.fVolume = SoundDesc.fInitVolume;
 					pCurModel->Add_TriggerSound(SoundDesc);
 				}
 			}

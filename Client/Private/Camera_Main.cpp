@@ -94,8 +94,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 		if (m_fShakeAcc > 2.f and m_pGameInstance->Get_ShakeCam())
 		{
-
-			m_fShakeAcc = /*m_pGameInstance->Get_ShakePower();*/0.1f;
+			m_fShakeAcc = m_pGameInstance->Get_ShakePower();
 			m_pGameInstance->Set_ShakeCam(false);
 		}
 
@@ -162,9 +161,11 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			_float CamAttackZoom = m_fLerpDistance - m_pGameInstance->Get_CameraAttackZoom();
 
 			_float vZoomY = 1.3f - (CamAttackZoom * 0.25f);
-			m_vOriCamPos = (m_pPlayerTransform->Get_CenterPos()) + _vec4(0.f, vZoomY, 0.f, 0.f)
+			_vec4 vCamPos = (m_pPlayerTransform->Get_CenterPos()) + _vec4(0.f, vZoomY, 0.f, 0.f)
 				- (m_pTransformCom->Get_State(State::Look) * CamAttackZoom)
 				+ (m_pTransformCom->Get_State(State::Up) * CamAttackZoom * 0.15f);
+
+			m_vOriCamPos = XMVectorLerp(m_vOriCamPos, vCamPos, 0.3f);
 
 			_vec4 OriCam{};
 			if (m_AimZoomInTime < 1.f)
@@ -214,13 +215,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 			if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
 			{
-				_mat testmat = m_pTransformCom->Get_World_Matrix();
 				m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
-				_vec4 ps = m_pTransformCom->Get_State(State::Pos);
-				_vec4 pps = m_pPlayerTransform->Get_State(State::Pos);
-
-
-				m_pTransformCom->Set_Matrix(testmat);
 			}
 
 			m_AimZoomOutTime += fTimeDelta * 4.f;

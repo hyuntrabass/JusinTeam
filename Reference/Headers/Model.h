@@ -60,7 +60,9 @@ public:
 	_bool Intersect_RayModel(_fmatrix WorldMatrix, _vec4* pPickPos);
 
 private:
+	//트리거
 	class CTransform* m_pOwnerTransform{};
+	_bool m_IsResetTriggers{};
 	//이펙트 트리거
 	_uint m_iNumTriggersEffect{};
 	vector<TRIGGEREFFECT_DESC> m_TriggerEffects;

@@ -71,6 +71,7 @@ void CVoid20::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_0))
 	{
 		Set_Damage(0, AT_Sword_Common);
+	
 	}
 
 	Init_State(fTimeDelta);

@@ -108,7 +108,7 @@ private:
 
 	_float m_fSSAOBlurPower = 1.f;
 
-	_float m_fEffectBlurPower = 3.f;
+	_float m_fEffectBlurPower = 1.5f;
 
 	_float m_fHDRBloomPower = 1.2f;
 

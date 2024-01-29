@@ -250,10 +250,10 @@ HRESULT CLevel_Select::Ready_Light()
 
 	for (size_t i = 0; i < 1; i++)
 	{
-		if (FAILED(m_pGameInstance->Add_Light(LEVEL_SELECT, TEXT("Light_Select") + to_wstring(i), LightDesc)))
-		{
-			return E_FAIL;
-		}
+		//if (FAILED(m_pGameInstance->Add_Light(LEVEL_SELECT, TEXT("Light_Select") + to_wstring(i), LightDesc)))
+		//{
+		//	return E_FAIL;
+		//}
 	}
 
 	EffectInfo Effect = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BoneFire");

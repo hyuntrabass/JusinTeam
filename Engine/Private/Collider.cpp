@@ -99,6 +99,7 @@ void CCollider::Update(_fmatrix WorldMatrix)
 		reinterpret_cast<BoundingFrustum*>(m_pBounder_Origin)->Transform(*reinterpret_cast<BoundingFrustum*>(m_pBounder), WorldMatrix);
 		break;
 	}
+	
 }
 
 _bool CCollider::Intersect(const CCollider* pTargetCollider)
@@ -205,6 +206,25 @@ _vec3 CCollider::Get_Extents()
 	}
 
 	return _vec3{};
+}
+
+_vec3 CCollider::Get_ColliderPos()
+{
+	switch (m_eType)
+	{
+	case Engine::ColliderType::AABB:
+		return reinterpret_cast<BoundingBox*>(m_pBounder)->Center;
+		break;
+	case Engine::ColliderType::OBB:
+		return reinterpret_cast<BoundingOrientedBox*>(m_pBounder)->Center;
+		break;
+	case Engine::ColliderType::Sphere:
+		return reinterpret_cast<BoundingSphere*>(m_pBounder)->Center;
+		break;
+	}
+
+
+	return _vec3();
 }
 
 #ifdef _DEBUGTEST

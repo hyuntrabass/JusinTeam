@@ -51,9 +51,9 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_G))
 	{
-		//m_eCurState = STATE_SCENE01;
-		m_eCurState = STATE_BOSS;
-		m_eBossCurState = BOSS_STATE_ROAR;
+		m_eCurState = STATE_SCENE01;
+		/*m_eCurState = STATE_BOSS;
+		m_eBossCurState = BOSS_STATE_ROAR;*/
 	}
 
 	Init_State(fTimeDelta);
@@ -422,6 +422,10 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = 0;
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 2.f;
+		}
+		else
+		{
+			m_Animation.fAnimSpeedRatio = 4.5f;
 		}
 
 		m_pScene02ModelCom->Set_Animation(m_Animation);

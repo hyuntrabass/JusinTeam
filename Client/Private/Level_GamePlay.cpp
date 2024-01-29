@@ -49,7 +49,7 @@ HRESULT CLevel_GamePlay::Init()
 		MSG_BOX("Failed to Ready ModelTest");
 		return E_FAIL;
 	}
-	
+
 	//if (FAILED(Ready_Rabbit()))
 	//{
 	//	MSG_BOX("Failed to Ready Rabbit");
@@ -104,11 +104,11 @@ HRESULT CLevel_GamePlay::Init()
 	//	return E_FAIL;
 	//}
 
-	//if (FAILED(Ready_Void20()))
-	//{
-	//	MSG_BOX("Failed to Ready Void20");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Void20()))
+	{
+		MSG_BOX("Failed to Ready Void20");
+		return E_FAIL;
+	}
 
 	//if (FAILED(Ready_Void23()))
 	//{
@@ -173,7 +173,7 @@ HRESULT CLevel_GamePlay::Init()
 		MSG_BOX("Failed to Ready Map");
 		return E_FAIL;
 	}
-		// Environment
+	// Environment
 	if (FAILED(Ready_Environment()))
 	{
 		MSG_BOX("Failed to Ready Environment");
@@ -209,8 +209,8 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 	if (!CUI_Manager::Get_Instance()->Is_InvenActive())
 	{
 		m_RainMatrix = _mat::CreateTranslation(_vec3(m_pGameInstance->Get_CameraPos()));
+		//m_RainMatrix = _mat::CreateTranslation(_vec3(50.f, 3.f, 50.f));
 	}
-	//m_RainMatrix = _mat::CreateTranslation(_vec3(50.f, 3.f, 50.f));
 
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD9) or m_pGameInstance->Key_Down(DIK_PRIOR))
 	{
@@ -256,7 +256,7 @@ HRESULT CLevel_GamePlay::Ready_Light()
 	LIGHT_DESC LightDesc{};
 
 	LightDesc.eType = LIGHT_DESC::Directional;
-	LightDesc.vDirection = _float4(-1.f, -2.f,-1.f, 0.f);
+	LightDesc.vDirection = _float4(-1.f, -2.f, -1.f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
 
