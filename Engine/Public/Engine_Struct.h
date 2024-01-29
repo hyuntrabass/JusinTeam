@@ -117,6 +117,8 @@ namespace Engine
 		SimpleMath::Vector2 vUVDelta{};
 		bool isRandomSprite{};
 		bool isUVLoop{};
+		float fAlphaInit{};
+		float fAlphaDelta{};
 
 		bool hasLight{};
 		LIGHT_DESC Light_Desc{};

@@ -9,6 +9,7 @@ texture2D g_DissolveTexture;
 texture2D g_GradationTexture;
 
 vector g_vColor;
+float g_fAlpha;
 
 vector g_vCamPos;
 float g_fCamFar;
