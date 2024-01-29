@@ -70,7 +70,7 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 			if (m_isLoop)
 			{
 				pVertex->vLifeTime.x = 0.f;
-				pVertex->vPos = pVertex->vOriginPos;
+				pVertex->vPos = _vec4::Transform(pVertex->vOriginPos, WorldMatrix);
 				pVertex->vPrevPos = pVertex->vPos;
 			}
 			else

@@ -1,7 +1,7 @@
 #include "Spider.h"
 
 const _float CSpider::m_fChaseRange = 7.f;
-const _float CSpider::m_fAttackRange = 2.f;
+const _float CSpider::m_fAttackRange = 5.f;
 
 CSpider::CSpider(_dev pDevice, _context pContext)
 	: CMonster(pDevice, pContext)
@@ -15,7 +15,7 @@ CSpider::CSpider(const CSpider& rhs)
 
 HRESULT CSpider::Init_Prototype()
 {
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CSpider::Init(void* pArg)
@@ -32,35 +32,38 @@ HRESULT CSpider::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pTransformCom->Set_State(State::Pos, _vec4(100.f, 8.f, 108.f, 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
+	CTransform* pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_GAMEPLAY);
+	_vec4 vGroarPos = pGroarTransform->Get_State(State::Pos);
 
-	m_Animation.iAnimIndex = IDLE;
-	m_Animation.isLoop = true;
+	m_pTransformCom->Set_State(State::Pos, _vec4(vGroarPos.x + ((rand() % 30) - 15.f), vGroarPos.y - 1.f, vGroarPos.z + ((rand() % 30) - 15.f), 1.f));
+	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
+
+	m_Animation.iAnimIndex = SALEROBIA_RAGE;
+	m_Animation.isLoop = false;
 	m_Animation.bSkipInterpolation = false;
 
-	m_eCurState = STATE_IDLE;
+	m_eCurState = STATE_RAGE;
 
 	m_iHP = 1000;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
-	//PxCapsuleControllerDesc ControllerDesc{};
-	//ControllerDesc.height = 0.6f; // 높이(위 아래의 반구 크기 제외
-	//ControllerDesc.radius = 0.7f; // 위아래 반구의 반지름
-	//ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
-	//ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
-	//ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
-	//ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+	PxCapsuleControllerDesc ControllerDesc{};
+	ControllerDesc.height = 0.5f; // 높이(위 아래의 반구 크기 제외
+	ControllerDesc.radius = 1.4f; // 위아래 반구의 반지름
+	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 
-	//m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
-    return S_OK;
+	return S_OK;
 }
 
 void CSpider::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_9))
+	if (m_pGameInstance->Key_Down(DIK_E))
 	{
 		Set_Damage(0, AT_Sword_Common);
 	}
@@ -89,7 +92,7 @@ HRESULT CSpider::Render()
 {
 	__super::Render();
 
-    return S_OK;
+	return S_OK;
 }
 
 void CSpider::Set_Damage(_int iDamage, _uint iDamageType)
@@ -128,6 +131,14 @@ void CSpider::Set_Damage(_int iDamage, _uint iDamageType)
 
 void CSpider::Init_State(_float fTimeDelta)
 {
+	CTransform* pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_GAMEPLAY);
+	_vec4 vGroarPos = pGroarTransform->Get_State(State::Pos);
+
+	if (m_pTransformCom->Get_State(State::Pos).y < vGroarPos.y)
+	{
+		m_pTransformCom->Go_Up(fTimeDelta * 0.1f);
+	}
+
 	if (m_iHP <= 0)
 	{
 		m_eCurState = STATE_DIE;
@@ -137,6 +148,13 @@ void CSpider::Init_State(_float fTimeDelta)
 	{
 		switch (m_eCurState)
 		{
+		case Client::CSpider::STATE_RAGE:
+			m_Animation.iAnimIndex = SALEROBIA_RAGE;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
+			break;
+
 		case Client::CSpider::STATE_IDLE:
 			m_Animation.iAnimIndex = IDLE;
 			m_Animation.isLoop = true;
@@ -183,21 +201,21 @@ void CSpider::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CSpider::STATE_HIT:
-		//{
-		//	_uint iHitPattern = rand() % 2;
+			//{
+			//	_uint iHitPattern = rand() % 2;
 
-		//	switch (iHitPattern)
-		//	{
-		//	case 0:
-		//		m_Animation.iAnimIndex = L_HIT;
-		//		m_Animation.isLoop = false;
-		//		break;
-		//	case 1:
-		//		m_Animation.iAnimIndex = R_HIT;
-		//		m_Animation.isLoop = false;
-		//		break;
-		//	}
-		//}
+			//	switch (iHitPattern)
+			//	{
+			//	case 0:
+			//		m_Animation.iAnimIndex = L_HIT;
+			//		m_Animation.isLoop = false;
+			//		break;
+			//	case 1:
+			//		m_Animation.iAnimIndex = R_HIT;
+			//		m_Animation.isLoop = false;
+			//		break;
+			//	}
+			//}
 			break;
 
 		case Client::CSpider::STATE_DIE:
@@ -216,6 +234,15 @@ void CSpider::Tick_State(_float fTimeDelta)
 {
 	switch (m_eCurState)
 	{
+	case Client::CSpider::STATE_RAGE:
+
+		if (m_pModelCom->IsAnimationFinished(SALEROBIA_RAGE))
+		{
+			m_eCurState = STATE_CHASE;
+		}
+
+		break;
+
 	case Client::CSpider::STATE_IDLE:
 	{
 		m_fIdleTime += fTimeDelta;
@@ -233,7 +260,7 @@ void CSpider::Tick_State(_float fTimeDelta)
 		}
 	}
 
-		break;
+	break;
 
 	case Client::CSpider::STATE_WALK:
 		m_pTransformCom->Go_Straight(fTimeDelta);
@@ -255,11 +282,11 @@ void CSpider::Tick_State(_float fTimeDelta)
 		m_pTransformCom->LookAt_Dir(vDir);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 
-		if (fDistance > m_fChaseRange && !m_bDamaged)
-		{
-			m_eCurState = STATE_IDLE;
-			m_bSlow = false;
-		}
+		//if (fDistance > m_fChaseRange && !m_bDamaged)
+		//{
+		//	m_eCurState = STATE_IDLE;
+		//	m_bSlow = false;
+		//}
 
 		if (fDistance <= m_fAttackRange)
 		{
@@ -268,7 +295,7 @@ void CSpider::Tick_State(_float fTimeDelta)
 			m_bSlow = false;
 		}
 	}
-		break;
+	break;
 
 	case Client::CSpider::STATE_ATTACK:
 
@@ -303,7 +330,7 @@ HRESULT CSpider::Add_Collider()
 {
 	Collider_Desc BodyCollDesc = {};
 	BodyCollDesc.eType = ColliderType::OBB;
-	BodyCollDesc.vExtents = _vec3(0.7f, 0.25f, 0.7f);
+	BodyCollDesc.vExtents = _vec3(1.4f, 0.5f, 1.4f);
 	BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y, 0.f);
 	BodyCollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
 
@@ -311,7 +338,7 @@ HRESULT CSpider::Add_Collider()
 		TEXT("Com_Collider_OBB"), (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
 		return E_FAIL;
 
-    return S_OK;
+	return S_OK;
 }
 
 void CSpider::Update_Collider()

@@ -1,6 +1,7 @@
 #include "Level_Select.h"
 #include "Level_Loading.h"
 #include "Camera.h"
+#include "Effect_Manager.h"
 
 CLevel_Select::CLevel_Select(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -22,6 +23,7 @@ HRESULT CLevel_Select::Init()
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Mask"), TEXT("Prototype_GameObject_BackGround_Mask"),&info)))
 	{
 		return E_FAIL;
+
 	}
 
 	if (FAILED(Ready_Select()))
@@ -79,7 +81,6 @@ HRESULT CLevel_Select::Init()
 
 void CLevel_Select::Tick(_float fTimeDelta)
 {
-
 	if (m_pGameInstance->Is_Level_ShutDown(LEVEL_SELECT))
 	{
 		
@@ -241,8 +242,8 @@ HRESULT CLevel_Select::Ready_Light()
 	LIGHT_DESC LightDesc{};
 
 	LightDesc.eType = LIGHT_DESC::Point;
-	LightDesc.vAttenuation = LIGHT_RANGE_50;
-	LightDesc.vDiffuse = _float4(1.f, 0.6f, 0.1f, 1.f);
+	LightDesc.vAttenuation = LIGHT_RANGE_13;
+	LightDesc.vDiffuse = _float4(1.f, 0.5f, 0.1f, 1.f);
 	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
 	LightDesc.vPosition = _float4(0.134f, 0.5f,-3.2f, 1.f);
 	LightDesc.vSpecular = _vec4(1.f);
@@ -254,6 +255,11 @@ HRESULT CLevel_Select::Ready_Light()
 			return E_FAIL;
 		}
 	}
+
+	EffectInfo Effect = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BoneFire");
+	_mat EffectMat = _mat::CreateTranslation(_vec3(0.f, 0.85f, -3.3f));
+	Effect.pMatrix = &EffectMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Effect);
 
 	return S_OK;
 }

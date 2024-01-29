@@ -205,7 +205,75 @@ HRESULT CLoader::Load_Tool()
 #pragma region Model
 	//Monster
 	_mat Pivot = _mat::CreateScale(0.01f)/* * _mat::CreateRotationY(XMConvertToRadians(30.f))*/;
+	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/Boss/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (entry.path().extension().string() != ".hyuntraanimmesh")
+			{
+				continue;
+			}
+			wstring strPrototypeTag = TEXT("Prototype_Model_Monster_") + to_wstring(m_iNumMonsterModels++);
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/Monster/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (entry.path().extension().string() != ".hyuntraanimmesh")
+			{
+				continue;
+			}
+			wstring strPrototypeTag = TEXT("Prototype_Model_Monster_") + to_wstring(m_iNumMonsterModels++);
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/NPC/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (entry.path().extension().string() != ".hyuntraanimmesh")
+			{
+				continue;
+			}
+			wstring strPrototypeTag = TEXT("Prototype_Model_Monster_") + to_wstring(m_iNumMonsterModels++);
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/Pet/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (entry.path().extension().string() != ".hyuntraanimmesh")
+			{
+				continue;
+			}
+			wstring strPrototypeTag = TEXT("Prototype_Model_Monster_") + to_wstring(m_iNumMonsterModels++);
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/Riding/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())

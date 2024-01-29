@@ -87,6 +87,7 @@
 
 // Boss
 #include "Groar_Boss.h"
+#include "Missile.h"
 
 // Pet
 #include "Pet_Cat.h"

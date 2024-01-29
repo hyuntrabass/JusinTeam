@@ -100,6 +100,10 @@ private:
 	_bool m_hasLight{};
 	ParticleDesc m_ParticleInfo{};
 
+	_mat m_DummyMatrix{};
+
+	filesystem::path m_CurrFilePath{};
+
 private:
 	HRESULT Ready_Layers();
 
@@ -109,6 +113,7 @@ private:
 	EffectInfo Load_Data();
 	void Load_OldData();
 	HRESULT Export_Data(EffectInfo& Info);
+	HRESULT Override_Data(EffectInfo& Info);
 
 public:
 	virtual void Free() override;

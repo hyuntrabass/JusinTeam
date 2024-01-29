@@ -165,6 +165,7 @@ void CGameInstance::Clear(_uint iLevelIndex)
 		MSG_BOX("FATAL ERROR : m_pComponent_Manager is NULL");
 	}
 
+
 	m_pObject_Manager->Clear(iLevelIndex);
 	m_pComponent_Manager->Clear(iLevelIndex);
 	if(m_Function_Clear_FX)

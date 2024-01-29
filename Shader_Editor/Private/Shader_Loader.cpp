@@ -108,6 +108,12 @@ HRESULT CShader_Loader::Loading_LevelResources()
 
 HRESULT CShader_Loader::Load_Test()
 {
+	m_strLoadingText = L"Logo : Loading Sounds";
+	if (FAILED(m_pGameInstance->Init_SoundManager()))
+	{
+		return E_FAIL;
+	}
+
 #pragma region TerrainTexture
 
 	string strInputFilePath = "../../Client/Bin/Resources/Textures/Terrain/";

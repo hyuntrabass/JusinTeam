@@ -93,12 +93,15 @@ HRESULT CVIBuffer_Instancing_Point::Init_Prototype(_uint iNumInstances)
 
 	VTXINSTANCING* pVertexInstance = new VTXINSTANCING[m_iNumInstances]{};
 
+	_uint iInstanceID{};
+
 	for (size_t i = 0; i < m_iNumInstances; i++)
 	{
 		pVertexInstance[i].vRight = _float4(1.f, 0.f, 0.f, 0.f);
 		pVertexInstance[i].vUp = _float4(0.f, 1.f, 0.f, 0.f);
 		pVertexInstance[i].vLook = _float4(0.f, 0.f, 1.f, 0.f);
 		pVertexInstance[i].vPos = _float4(0.f + i, 0.f, 0.f + i, 1.f);
+		pVertexInstance[i].iInstanceID = iInstanceID++;
 	}
 
 	m_InstancingInitialData.pSysMem = pVertexInstance;
