@@ -104,11 +104,11 @@ HRESULT CLevel_GamePlay::Init()
 	//	return E_FAIL;
 	//}
 
-	//if (FAILED(Ready_Void20()))
-	//{
-	//	MSG_BOX("Failed to Ready Void20");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Void20()))
+	{
+		MSG_BOX("Failed to Ready Void20");
+		return E_FAIL;
+	}
 
 	//if (FAILED(Ready_Void23()))
 	//{
