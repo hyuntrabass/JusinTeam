@@ -3,6 +3,7 @@
 #include "UI_Manager.h"
 #include "Event_Manager.h"
 #include "Weapon.h"
+#include "Arrow.h"
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -58,7 +59,8 @@ HRESULT CPlayer::Init(void* pArg)
 	m_pRight_Trail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &trail_desc);
 	m_Left_Mat = m_pModelCom->Get_BoneMatrix("B_Weapon_L");
 	m_Right_Mat = m_pModelCom->Get_BoneMatrix("B_Weapon_R");
-
+	m_pLeft_Trail->Off();
+	m_pRight_Trail->Off();
 	SURFACETRAIL_DESC SurfaceDesc{};
 	SurfaceDesc.iNumVertices = 20;
 	SurfaceDesc.vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
@@ -100,6 +102,10 @@ void CPlayer::Tick(_float fTimeDelta)
 	}
 
 	m_StartRegen += fTimeDelta;
+	m_fAttTimer += fTimeDelta;
+	m_fSkiilTimer += fTimeDelta;
+
+
 	m_OldWorldMatrix = m_pTransformCom->Get_World_Matrix();
 	_mat m{};
 	if (m_pGameInstance->Get_CameraModeIndex() == CM_MAIN)
@@ -145,8 +151,6 @@ void CPlayer::Tick(_float fTimeDelta)
 		Change_Parts(eType, CUI_Manager::Get_Instance()->Get_CustomPart(eType));
 	}
 
-	m_fAttTimer += fTimeDelta;
-	m_fSkiilTimer += fTimeDelta;
 
 	if (m_pGameInstance->Key_Down(DIK_8))
 	{
@@ -155,7 +159,7 @@ void CPlayer::Tick(_float fTimeDelta)
 			CEvent_Manager::Get_Instance()->Update_Quest(TEXT("펫 라이딩"));
 			m_bIsMount = true;
 			m_Animation.iAnimIndex = Anim_Mount_Idle;
-			Summon_Riding(Tiger);
+			Summon_Riding(Nihilir);
 		}
 		else
 		{
@@ -248,6 +252,11 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	m_pHitCollider->Update(m_pTransformCom->Get_World_Matrix());
 
+	if (m_bArrowRain_Start)
+	{
+		Arrow_Rain();
+	}
+
 	for (int i = 0; i < AT_Bow_Common; i++)
 	{
 		_mat offset = /*_mat::CreateScale(_vec3(1.f,6.5f,1.f))* */_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f));
@@ -276,12 +285,6 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	if (m_bStartGame)
 	{
 		CEvent_Manager::Get_Instance()->Late_Tick(fTimeDelta);
-	}
-
-	if (m_eState == Skill4 && !m_bAttacked && m_fSkiilTimer > 0.15f)
-	{
-		//m_pGameInstance->Set_TimeRatio(0.01f);
-		//m_pGameInstance->Set_ShakeCam(true,0.01f);
 	}
 
 	m_pModelCom->Set_Animation(m_Animation);
@@ -799,6 +802,7 @@ void CPlayer::Move(_float fTimeDelta)
 		{
 			m_eState = Skill1;
 			m_iCurrentSkill_Index = Skill1;
+			m_ReadyArrow = true;
 			m_bAttacked = false;
 		}
 	}
@@ -809,6 +813,7 @@ void CPlayer::Move(_float fTimeDelta)
 		{
 			m_eState = Skill2;
 			m_iCurrentSkill_Index = Skill2;
+			m_ReadyArrow = true;
 			m_bAttacked = false;
 		}
 	}
@@ -819,6 +824,7 @@ void CPlayer::Move(_float fTimeDelta)
 		if (m_eState != Skill3)
 		{
 			m_eState = Skill3;
+			m_ReadyArrow = true;
 			m_iCurrentSkill_Index = Skill3;
 			m_bAttacked = false;
 		}
@@ -830,11 +836,12 @@ void CPlayer::Move(_float fTimeDelta)
 		{
 			m_eState = Skill4;
 			m_iCurrentSkill_Index = Skill4;
+			m_ReadyArrow = true;
 			m_bAttacked = false;
 		}
-		//Change_Weapon(WP_BOW, BOW0);
-	}
 
+	}
+	
 	if (m_pGameInstance->Key_Down(DIK_5))
 	{
 		if (m_Current_Weapon == WP_SWORD)
@@ -871,6 +878,7 @@ void CPlayer::Move(_float fTimeDelta)
 	{
 		if (m_eState == Aim_Idle)
 		{
+			SkillR_Attack();
 			m_eState = SkillR;
 			m_iCurrentSkill_Index = SkillR;
 			m_fAttTimer = 0.f;
@@ -888,10 +896,14 @@ void CPlayer::Move(_float fTimeDelta)
 	if (m_eState == Jump)
 	{
 		if (!m_pTransformCom->Is_Jumping())
-			m_eState = Jump_Long_End;
+			m_eState = Jump_End;
 	}
+	if (m_fAttTimer > 0.8f && m_eState == Attack)
+		m_bReady_Move = true;
+	else if(m_eState!=Attack)
+		m_bReady_Move = false;
 
-	if (m_fAttTimer > 0.8f && m_fSkiilTimer > 1.2f)
+	if (( m_fSkiilTimer > 1.2f && m_eState != SkillR && m_eState != Aim_Idle))
 	{
 		//퀘스트 개수에 따라 bool로 통과하도록 한번 거쳐야할듯 아니면 계속 맵에서 찾아야되니까 
 		if (m_pGameInstance->Key_Pressing(DIK_W))
@@ -918,6 +930,23 @@ void CPlayer::Move(_float fTimeDelta)
 			hasMoved = true;
 		}
 
+		if (m_pGameInstance->Key_Down(DIK_F))
+		{
+			if (m_bIsClimb)
+				return;
+	
+
+			
+			if (vDirection != _vec4())
+				m_pTransformCom->LookAt_Dir(vDirection);
+
+			Common_Attack();
+			m_eState = Attack;
+			m_ReadyArrow = true;
+			//m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
+			m_bAttacked = false;
+			hasMoved = false;
+		}
 		if (m_pGameInstance->Key_Down(DIK_SPACE))
 		{
 			//if (!m_hasJumped)
@@ -933,7 +962,7 @@ void CPlayer::Move(_float fTimeDelta)
 		}
 
 
-		if (hasMoved && !m_bIsClimb)
+		if (hasMoved && !m_bIsClimb && m_eState != Attack)
 		{
 
 			if (m_pGameInstance->Key_Pressing(DIK_LSHIFT))
@@ -946,17 +975,17 @@ void CPlayer::Move(_float fTimeDelta)
 
 				}
 				else if (m_eState == Attack or
-						 m_eState == Skill1_End or
-						 m_eState == Skill2 or
-						 m_eState == Skill3 or
-						 m_eState == Skill4)
+					m_eState == Skill1_End or
+					m_eState == Skill2 or
+					m_eState == Skill3 or
+					m_eState == Skill4)
 				{
 					m_eState = Attack_Run;
 				}
 				else if (/*m_pTransformCom->Is_OnGround() and*/
-						 m_eState == Run or
-						 m_eState == Run_End or
-						 m_pModelCom->IsAnimationFinished(Anim_Normal_run_start))
+					m_eState == Run or
+					m_eState == Run_End or
+					m_pModelCom->IsAnimationFinished(Anim_Normal_run_start))
 				{
 					m_eState = Run;
 
@@ -989,7 +1018,7 @@ void CPlayer::Move(_float fTimeDelta)
 						m_eState == Idle or
 						m_eState == Walk or
 						m_eState == Attack_Idle or
-						m_eState == Attack or
+						/*	m_eState == Attack or*/
 						m_eState == Skill1_End or
 						m_eState == Skill2 or
 						m_eState == Skill3 or
@@ -998,32 +1027,22 @@ void CPlayer::Move(_float fTimeDelta)
 						m_eState = Walk;
 
 					}
-
-					m_pTransformCom->Set_Speed(m_fWalkSpeed + m_Status.Speed / 3.f);
+					if (m_eState != Attack)
+						m_pTransformCom->Set_Speed(m_fWalkSpeed + m_Status.Speed / 3.f);
 				}
 
 
 			}
-			if (m_pGameInstance->Key_Down(DIK_F))
-			{
-				if (m_bIsClimb)
-					return;
-				if (vDirection == _vec4())
-					vDirection += vForwardDir;
 
-				m_pTransformCom->LookAt_Dir(vDirection);
-				//m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
-				m_bAttacked = false;
-				Common_Attack();
-			}
 
 			if (m_eState == Jump_Start)
 			{
 				if (!m_pTransformCom->Is_Jumping())
 					m_eState = Idle;
 			}
-
+			if ( m_eState != Attack or (m_eState == Attack && m_fAttTimer > 0.75f))
 			m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
+
 
 			_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
 
@@ -1053,8 +1072,8 @@ void CPlayer::Move(_float fTimeDelta)
 
 		}
 		else if (m_eState == Walk or m_eState == Run_Start or
-				 m_pModelCom->IsAnimationFinished(Anim_B_idle_end)
-				 )
+			m_pModelCom->IsAnimationFinished(Anim_B_idle_end)
+			)
 		{
 			m_eState = Idle;
 		}
@@ -1213,7 +1232,7 @@ void CPlayer::Common_Attack()
 
 	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 2.f;
-	m_eState = Attack;
+	
 	m_iCurrentSkill_Index = 0;
 	if (m_Current_Weapon == WP_SWORD)
 	{
@@ -1296,6 +1315,8 @@ void CPlayer::Skill1_Attack()
 		m_Animation.isLoop = false;
 		m_hasJumped = false;
 		m_iSuperArmor = {};
+		m_Animation.fAnimSpeedRatio = 2.7f;
+		m_Animation.fDurationRatio = 0.8f;
 		m_fSkiilTimer = 0.f;
 		m_Status.Current_Mp -= 150;
 	}
@@ -1318,6 +1339,7 @@ void CPlayer::Skill2_Attack()
 		m_Animation.iAnimIndex = m_BowSkill[1];
 		m_Animation.isLoop = false;
 		m_hasJumped = false;
+	
 		m_iSuperArmor = {};
 		m_fSkiilTimer = 0.f;
 		m_Status.Current_Mp -= 250;
@@ -1384,7 +1406,6 @@ void CPlayer::SkillR_Attack()
 	else if (m_Current_Weapon == WP_BOW)
 	{
 		m_Animation.iAnimIndex = m_BowSkill[4];
-		m_Animation.bRestartAnimation = true;
 		m_Animation.isLoop = false;
 		m_hasJumped = false;
 		m_iSuperArmor = {};
@@ -1431,7 +1452,7 @@ void CPlayer::Return_Attack_IdleForm()
 }
 void CPlayer::After_CommonAtt(_float fTimeDelta)
 {
-	if (m_Current_Weapon == WP_SWORD)
+	if (m_Current_Weapon == WP_SWORD)  
 	{
 		if (m_fAttTimer > 0.2f && m_fAttTimer < 0.35f)
 		{
@@ -1464,6 +1485,7 @@ void CPlayer::After_CommonAtt(_float fTimeDelta)
 	}
 	else if (m_Current_Weapon == WP_BOW)
 	{
+		
 		if (m_fAttTimer > 0.25f && m_fAttTimer < 0.34f)
 		{
 			if (m_iAttackCombo == 4)
@@ -1973,16 +1995,51 @@ void CPlayer::Sword_Att_Camera_Effect()
 void CPlayer::Bow_Att_Camera_Effect()
 {
 	_float Index = m_pModelCom->Get_CurrentAnimPos();
-
-	if (m_eState == Skill2)
+	if (m_eState == Attack)
+	{
+		if(Index >=7.f && Index<=8.f && m_ReadyArrow)
+		{
+			Create_Arrow(AT_Bow_Common);
+			m_ReadyArrow = false;
+		}
+	}
+	else if (m_eState == Skill1)
+	{
+		if (Index >= 16.f && Index <= 17.f && m_ReadyArrow)
+		{
+			Create_Arrow(AT_Bow_Skill1);
+			m_ReadyArrow = false;
+		}
+		else if (Index > 17.f && Index <= 18.f && !m_ReadyArrow)
+			m_ReadyArrow = true;
+		else if (Index >=30.f && Index <= 32.f && m_ReadyArrow)
+		{
+			Create_Arrow(AT_Bow_Skill1);
+			m_ReadyArrow = false;
+		}
+		else if (Index > 33.f && Index <= 35.f && !m_ReadyArrow)
+			m_ReadyArrow = true;
+		else if (Index >= 47.f && Index <= 49.f && m_ReadyArrow)
+		{
+			Create_Arrow(AT_Bow_Skill1);
+			m_ReadyArrow = false;
+		}
+	}
+	else if (m_eState == Skill2)
 	{
 		if (Index >= 32.f && Index <= 33.f)
 		{
 			m_pGameInstance->Set_TimeRatio(0.2f);
 		}
+		else if (Index >= 40.f && Index <= 41.f && m_ReadyArrow)
+		{
+			Create_Arrow(AT_Bow_Skill2);
+			m_ReadyArrow = false;
+		}
 		else if (Index >= 44.f && Index <= 45.f)
 		{
 			m_pGameInstance->Set_ShakeCam(true);
+		
 		}
 		else
 			m_pGameInstance->Set_TimeRatio(1.f);
@@ -1992,7 +2049,14 @@ void CPlayer::Bow_Att_Camera_Effect()
 		if (Index >= 19.f && Index <= 20.f)
 		{
 			m_pGameInstance->Set_TimeRatio(0.2f);
+			Create_Arrow(AT_Bow_Skill3_Start);
+			
 			m_UsingMotionBlur = true;
+		}
+		else if ( Index>=90.f && m_ReadyArrow)
+		{
+			Create_Arrow(AT_Bow_Skill3);
+			m_ReadyArrow = false;
 		}
 		else
 		{
@@ -2015,6 +2079,82 @@ void CPlayer::Bow_Att_Camera_Effect()
 		}
 	}
 
+}
+void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
+{
+	_mat offet = _mat::CreateTranslation(_vec3(0.f, 0.5f, 0.f));
+	_mat bone = (*m_pModelCom->Get_BoneMatrix("bowstring"));
+	_mat world = m_pTransformCom->Get_World_Matrix();
+	world = offet*bone  * world;
+	Arrow_Type type{};
+
+	
+	
+
+
+	switch (Att_Type)
+	{
+	case Client::AT_Bow_Common:
+		type.world = world;
+		type.vLook = m_pTransformCom->Get_State(State::Look);
+		type.Att_Type = AT_Bow_Common;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
+		{
+			return;
+		}
+		break;
+	case Client::AT_Bow_Skill1:
+		type.world = world;
+		type.vLook = m_pTransformCom->Get_State(State::Look);
+		type.Att_Type = AT_Bow_Skill1;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
+		{
+			return;
+		}
+		break;
+	case Client::AT_Bow_Skill2:
+		type.world = world;
+		type.vLook = m_pTransformCom->Get_State(State::Look);
+		type.vLook.y -= 0.2f;
+		type.Att_Type = AT_Bow_Skill2;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
+		{
+			return;
+		}
+		break;
+	case Client::AT_Bow_Skill3_Start:
+		type.world = world;
+		type.vLook = m_pTransformCom->Get_State(State::Look);
+		type.vLook.y += 0.5f;
+		type.Att_Type = AT_Bow_Skill3_Start;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
+		{
+			return;
+		}
+		break;
+	case Client::AT_Bow_Skill3:
+		m_bArrowRain_Start = true;
+		m_iArrowRain = 0;
+		break;
+	case Client::AT_Bow_Skill4:
+		type.world = world;
+		type.vLook = m_pTransformCom->Get_State(State::Look);
+		type.vLook.y -= 0.25f;
+		type.Att_Type = AT_Bow_Skill4;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
+		{
+			return;
+		}
+		break;
+
+	case Client::AT_End:
+		break;
+	default:
+		break;
+	}
+	
+
+	
 }
 void CPlayer::Summon_Riding(Riding_Type Type)
 {
@@ -2082,13 +2222,49 @@ void CPlayer::UnMount_Riding()
 	m_pRiding->Delete_Riding();
 }
 
+void CPlayer::Arrow_Rain()
+{
+	if (m_iArrowRain < 80)
+	{
+		Arrow_Type Type{};
+		Type.Att_Type = AT_Bow_Skill3;
+		_float random = rand() % 100;
+		_int randommos = rand() % 2;
+		if (randommos == 0)
+			random *= -1;
+		random *= 0.05f;
+		_float random2 = rand() % 101;
+		int randommo = rand() % 2;
+		if (randommo == 0)
+			random2 *= -1;
+		random2 *= 0.05;
+
+		Type.vPos = m_pTransformCom->Get_State(State::Pos) + m_pTransformCom->Get_State(State::Look) * 11.f + _vec4(random, 9.f, random2, 0.f)/* + m_pTransformCom->Get_State(State::Right) * 4.f*/;
+
+		Type.vLook = _vec4(0.01f, -1.f, 0.f, 0.f);
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &Type)))
+		{
+			return;
+		}
+		m_iArrowRain++;
+	}
+	else
+		m_bArrowRain_Start = false;
+}
+
 void CPlayer::Init_State()
 {
-	if (m_eState != m_ePrevState)
+	if (m_eState != m_ePrevState )
 	{
-		m_Animation = {};
+		m_Animation.isLoop = false;
+		m_Animation.bRestartAnimation = false;
+		m_Animation.bSkipInterpolation = false;
+		
 
 		m_Animation.fAnimSpeedRatio = 2.f;
+		if (m_pGameInstance->Get_TimeRatio() < 1.f)
+			m_pGameInstance->Set_TimeRatio(1.f);
 
 
 		switch (m_eState)
@@ -2154,12 +2330,23 @@ void CPlayer::Init_State()
 			m_iSuperArmor = {};
 			break;
 		case Client::CPlayer::Attack:
+
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
 			m_iSuperArmor = {};
 			break;
 		case Client::CPlayer::Attack_Idle:
-			m_Animation.isLoop = true;
+			if (m_Current_Weapon == WP_SWORD)
+			{
+				m_Animation.iAnimIndex = Anim_Assassin_Battle_Idle;
+				m_Animation.isLoop = true;
+			}
+			else if (m_Current_Weapon == WP_BOW)
+			{
+				m_Animation.iAnimIndex = Anim_B_idle_end;
+				m_Animation.isLoop = false;
+			}
+
 			m_hasJumped = false;
 			m_iSuperArmor = {};
 			break;
@@ -2325,13 +2512,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 	break;
 	case Client::CPlayer::Attack_Idle:
 	{
-		if (m_Current_Weapon == WP_SWORD)
-			m_Animation.iAnimIndex = Anim_Assassin_Battle_Idle;
-		else if (m_Current_Weapon == WP_BOW)
-		{
-			m_Animation.iAnimIndex = Anim_B_idle_end;
-			m_Animation.isLoop = false;
-		}
+		
 	}
 	break;
 	case Client::CPlayer::Attack_Run:
@@ -2544,7 +2725,7 @@ HRESULT CPlayer::Add_Components()
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.9f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-									  TEXT("Com_Player_Hit_OBB"), (CComponent**)&m_pHitCollider, &CollDesc)))
+		TEXT("Com_Player_Hit_OBB"), (CComponent**)&m_pHitCollider, &CollDesc)))
 		return E_FAIL;
 
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
@@ -2552,7 +2733,7 @@ HRESULT CPlayer::Add_Components()
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.4f, 0.4f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-									  TEXT("Com_Collider_Common_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Common]), &CollDesc)))
+		TEXT("Com_Collider_Common_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Common]), &CollDesc)))
 		return E_FAIL;
 
 

@@ -57,7 +57,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_DEBUGTEST;ENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>../Public/;../Public/PhysX/;../ImGui/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Public/;../Public/PhysX/</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -101,6 +101,16 @@ call UpdateLib.bat</Command>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../ThirdPartyLib/</AdditionalLibraryDirectories>
     </Link>
+    <FxCompile>
+      <ShaderType>Effect</ShaderType>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
+    <PostBuildEvent>
+      <Command>cd /d $(SolutionDir)
+call UpdateLib.bat</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Animation.cpp" />
@@ -113,6 +123,7 @@ call UpdateLib.bat</Command>
     <ClCompile Include="..\private\Collision_Manager.cpp" />
     <ClCompile Include="..\private\Component.cpp" />
     <ClCompile Include="..\private\Component_Manager.cpp" />
+    <ClCompile Include="..\Private\Compute_RenderTarget.cpp" />
     <ClCompile Include="..\Private\Compute_Shader.cpp" />
     <ClCompile Include="..\Private\DebugDraw.cpp" />
     <ClCompile Include="..\Private\Engine_Struct.cpp" />
@@ -150,6 +161,7 @@ call UpdateLib.bat</Command>
     <ClCompile Include="..\private\VIBuffer.cpp" />
     <ClCompile Include="..\private\VIBuffer_Cube.cpp" />
     <ClCompile Include="..\private\VIBuffer_Instancing.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Instancing_Mesh.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Instancing_Point.cpp" />
     <ClCompile Include="..\private\VIBuffer_PhysX.cpp" />
     <ClCompile Include="..\private\VIBuffer_Rect.cpp" />
@@ -173,6 +185,7 @@ call UpdateLib.bat</Command>
     <ClInclude Include="..\public\Collision_Manager.h" />
     <ClInclude Include="..\public\Component.h" />
     <ClInclude Include="..\public\Component_Manager.h" />
+    <ClInclude Include="..\Public\Compute_RenderTarget.h" />
     <ClInclude Include="..\Public\Compute_Shader.h" />
     <ClInclude Include="..\Public\DebugDraw.h" />
     <ClInclude Include="..\Public\Engine_Defines.h" />
@@ -215,6 +228,7 @@ call UpdateLib.bat</Command>
     <ClInclude Include="..\public\VIBuffer.h" />
     <ClInclude Include="..\public\VIBuffer_Cube.h" />
     <ClInclude Include="..\public\VIBuffer_Instancing.h" />
+    <ClInclude Include="..\Public\VIBuffer_Instancing_Mesh.h" />
     <ClInclude Include="..\Public\VIBuffer_Instancing_Point.h" />
     <ClInclude Include="..\public\VIBuffer_PhysX.h" />
     <ClInclude Include="..\public\VIBuffer_Rect.h" />
@@ -241,6 +255,8 @@ call UpdateLib.bat</Command>
     <Text Include="..\Bin\ShaderFiles\Shader_Blur.hlsl">
       <FileType>Document</FileType>
     </Text>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_AvgLum.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_BlurTex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Deferred.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxColor.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>

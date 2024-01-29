@@ -37,8 +37,10 @@ private:
 	_float m_fSpriteTimer{};
 	_int m_iSpriteIndex{};
 	_vec3 m_vScaleAcc{ 1.f };
+	_float m_fUnDissolveRatio{};
 	_float m_fDissolveRatio{};
 	_vec2 m_vUV{};
+	_mat m_OffsetMatrix{};
 
 	static _int m_iLightID;
 	wstring m_strLightTag{};

@@ -110,15 +110,8 @@ void CCamera_Main::Tick(_float fTimeDelta)
 				}
 
 				if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
-				{
-
-					_mat testmat = m_pTransformCom->Get_World_Matrix();
+				{			
 					m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
-					_vec4 ps = m_pTransformCom->Get_State(State::Pos);
-					_vec4 pps = m_pPlayerTransform->Get_State(State::Pos);
-
-					if (ps.y < _float(pps.y + 0.5f) && dwMouseMove <= 0.f)
-						m_pTransformCom->Set_Matrix(testmat);
 				}
 
 			}
@@ -226,7 +219,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 				_vec4 ps = m_pTransformCom->Get_State(State::Pos);
 				_vec4 pps = m_pPlayerTransform->Get_State(State::Pos);
 
-				if (ps.y < _float(pps.y + 0.5f) && dwMouseMove <= 0.f)
+				
 					m_pTransformCom->Set_Matrix(testmat);
 			}
 

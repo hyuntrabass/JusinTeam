@@ -11,14 +11,16 @@ CEffect_Manager::CEffect_Manager()
 
 void CEffect_Manager::Tick(_float fTimeDelta)
 {
-	for (auto iter = m_Effects.begin(); iter != m_Effects.end();)
+	_uint iCurrLevel = m_pGameInstance->Get_CurrentLevelIndex();
+
+	for (auto iter = m_Effects[iCurrLevel].begin(); iter != m_Effects[iCurrLevel].end();)
 	{
 		iter->second->Tick(fTimeDelta);
 
 		if (iter->second->isDead())
 		{
 			Safe_Release(iter->second);
-			iter = m_Effects.erase(iter);
+			iter = m_Effects[iCurrLevel].erase(iter);
 		}
 		else
 		{
@@ -29,7 +31,9 @@ void CEffect_Manager::Tick(_float fTimeDelta)
 
 void CEffect_Manager::Late_Tick(_float fTimeDelta)
 {
-	for (auto& pEffect : m_Effects)
+	_uint iCurrLevel = m_pGameInstance->Get_CurrentLevelIndex();
+
+	for (auto& pEffect : m_Effects[iCurrLevel])
 	{
 		pEffect.second->Late_Tick(fTimeDelta);
 	}
@@ -37,8 +41,10 @@ void CEffect_Manager::Late_Tick(_float fTimeDelta)
 
 _bool CEffect_Manager::Has_Created(const void* pMatrixKey)
 {
-	auto iter = m_Effects.find(pMatrixKey);
-	if (iter == m_Effects.end())
+	_uint iCurrLevel = m_pGameInstance->Get_CurrentLevelIndex();
+
+	auto iter = m_Effects[iCurrLevel].find(pMatrixKey);
+	if (iter == m_Effects[iCurrLevel].end())
 	{
 		return false;
 	}
@@ -69,6 +75,8 @@ CEffect_Dummy* CEffect_Manager::Clone_Effect(EffectInfo* pInfo)
 
 void CEffect_Manager::Create_Effect(const wstring& strEffectTag, _mat* pMatrix, const _bool& isFollow)
 {
+	_uint iCurrLevel = m_pGameInstance->Get_CurrentLevelIndex();
+
 	EffectInfo Info = Get_EffectInformation(strEffectTag);
 	Info.pMatrix = pMatrix;
 	Info.isFollow = isFollow;
@@ -79,26 +87,37 @@ void CEffect_Manager::Create_Effect(const wstring& strEffectTag, _mat* pMatrix, 
 	}
 	else
 	{
-		auto iter = m_Effects.find(pMatrix);
-		if (iter == m_Effects.end())
+		auto iter = m_Effects[iCurrLevel].find(pMatrix);
+		if (iter == m_Effects[iCurrLevel].end())
 		{
 			CEffect_Dummy* pEffect = Clone_Effect(&Info);
 
-			m_Effects.emplace(pMatrix, pEffect);
+			m_Effects[iCurrLevel].emplace(pMatrix, pEffect);
 		}
 	}
 }
 
 void CEffect_Manager::Delete_Effect(const void* pMatrix)
 {
-	auto iter = m_Effects.find(pMatrix);
-	if (iter == m_Effects.end())
+	_uint iCurrLevel = m_pGameInstance->Get_CurrentLevelIndex();
+
+	auto iter = m_Effects[iCurrLevel].find(pMatrix);
+	if (iter == m_Effects[iCurrLevel].end())
 	{
 		return;
 	}
 
 	Safe_Release(iter->second);
-	m_Effects.erase(iter);
+	m_Effects[iCurrLevel].erase(iter);
+}
+
+void CEffect_Manager::Clear(_uint iLevelIndex)
+{
+	for (auto& Pair : m_Effects[iLevelIndex])
+	{
+		Safe_Release(Pair.second);
+	}
+	m_Effects[iLevelIndex].clear();
 }
 
 void CEffect_Manager::Register_Callback()
@@ -115,6 +134,9 @@ void CEffect_Manager::Register_Callback()
 
 	CGameInstance::Func_HasCreatedFX func_HasCreated = [this](auto... args) { return Has_Created(args...); };
 	m_pGameInstance->Register_HasCreated_Callback(func_HasCreated);
+
+	CGameInstance::Func_ClearFX func_Clear = [this](auto... args) { return Clear(args...); };
+	m_pGameInstance->Register_Clear_Callback(func_Clear);
 }
 
 HRESULT CEffect_Manager::Read_EffectFile()
@@ -159,6 +181,7 @@ HRESULT CEffect_Manager::Read_EffectFile()
 				File.read(reinterpret_cast<_char*>(&Info.Light_Desc), sizeof Info.Light_Desc);
 				File.read(reinterpret_cast<_char*>(&Info.isFixedIndex), sizeof Info.isFixedIndex);
 				File.read(reinterpret_cast<_char*>(&Info.iFixedSpriteIndex), sizeof Info.iFixedSpriteIndex);
+				File.read(reinterpret_cast<_char*>(&Info.isUVLoop), sizeof Info.isUVLoop);
 
 				size_t iNameSize{};
 
@@ -220,11 +243,14 @@ HRESULT CEffect_Manager::Read_EffectFile()
 
 void CEffect_Manager::Free()
 {
-	for (auto& pEffect : m_Effects)
+	for (size_t i = 0; i < LEVEL_END; i++)
 	{
-		Safe_Release(pEffect.second);
+		for (auto& pEffect : m_Effects[i])
+		{
+			Safe_Release(pEffect.second);
+		}
+		m_Effects[i].clear();
 	}
-	m_Effects.clear();
 
 	Safe_Release(m_pGameInstance);
 }

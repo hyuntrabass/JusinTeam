@@ -88,8 +88,10 @@ namespace Client
 		AT_Bow_Common,// 밀려나게
 		AT_Bow_Skill1,// 밀려나게
 		AT_Bow_Skill2,// 경직
+		AT_Bow_Skill3_Start,
 		AT_Bow_Skill3,// 이속 느려지게
 		AT_Bow_Skill4,// 경직
+
 		AT_End
 	};
 

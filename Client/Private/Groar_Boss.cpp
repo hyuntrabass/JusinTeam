@@ -1,5 +1,10 @@
 #include "Groar_Boss.h"
 
+#include "Missile.h"
+
+const _float CGroar_Boss::m_fChaseRange = 7.f;
+const _float CGroar_Boss::m_fAttackRange = 6.f;
+
 CGroar_Boss::CGroar_Boss(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -27,8 +32,8 @@ HRESULT CGroar_Boss::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(10.f, 0.f, 0.f, 1.f));
+	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(71.f, 0.f, 97.f, 1.f));
 
 	m_eCurState = STATE_NPC;
 
@@ -37,7 +42,7 @@ HRESULT CGroar_Boss::Init(void* pArg)
 	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 1.5f;
 
-	m_iHP = 100;
+	m_iHP = 100000;
 
 	return S_OK;
 }
@@ -46,7 +51,9 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_G))
 	{
-		m_eCurState = STATE_SCENE01;
+		//m_eCurState = STATE_SCENE01;
+		m_eCurState = STATE_BOSS;
+		m_eBossCurState = BOSS_STATE_ROAR;
 	}
 
 	Init_State(fTimeDelta);
@@ -256,18 +263,21 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 		{
 		case Client::CGroar_Boss::STATE_NPC:
 			break;
+
 		case Client::CGroar_Boss::STATE_SCENE01:
 			m_Animation.iAnimIndex = 0;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 1.5f;
 
 			break;
+
 		case Client::CGroar_Boss::STATE_SCENE02:
 			m_Animation.iAnimIndex = 0;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
 
 			break;
+
 		case Client::CGroar_Boss::STATE_BOSS:
 			break;
 		}
@@ -275,19 +285,110 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 		m_ePreState = m_eCurState;
 	}
 
+	if (m_iHP <= 0)
+	{
+		m_eBossCurState = BOSS_STATE_DIE;
+	}
+
 	if (m_eBossPreState != m_eBossCurState)
 	{
 		switch (m_eBossCurState)
 		{
 		case Client::CGroar_Boss::BOSS_STATE_IDLE:
+			m_Animation.iAnimIndex = IDLE;
+			m_Animation.isLoop = true;
+
 			break;
-		case Client::CGroar_Boss::BOSS_STATE_RUN:
+
+		case Client::CGroar_Boss::BOSS_STATE_ROAR:
+			m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK_RAGE;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
 			break;
-		case Client::CGroar_Boss::BOSS_STATE_ATTACK:
+
+		case Client::CGroar_Boss::BOSS_STATE_CHASE:
+			m_Animation.iAnimIndex = RUN;
+			m_Animation.isLoop = true;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
+			m_bSelectAttackPattern = false;
+
+			m_bCreateMissile = false;
+
 			break;
-		case Client::CGroar_Boss::BOSS_STATE_STUN:
+
+		case Client::CGroar_Boss::BOSS_STATE_THROW_ATTACK: // 00, 01
+			m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK00;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
 			break;
+
+		case Client::CGroar_Boss::BOSS_STATE_FLOOR_ATTACK: // 03, 06, 07, 08 
+
+		{
+			_uint iFloorAttackPattern = rand() % 4;
+
+			switch (iFloorAttackPattern)
+			{
+			case 0:
+				m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK03;
+				m_Animation.isLoop = false;
+				m_Animation.fAnimSpeedRatio = 2.f;
+
+				break;
+
+			case 1:
+				m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK06;
+				m_Animation.isLoop = false;
+				m_Animation.fAnimSpeedRatio = 2.f;
+
+				break;
+
+			case 2:
+				m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK07;
+				m_Animation.isLoop = false;
+				m_Animation.fAnimSpeedRatio = 2.f;
+
+				break;
+
+			case 3:
+				m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK08;
+				m_Animation.isLoop = false;
+				m_Animation.fAnimSpeedRatio = 2.f;
+
+				break;
+			}
+		}
+
+			break;
+
+		case Client::CGroar_Boss::BOSS_STATE_SIX_MISSILE: // 02
+			m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK02;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
+			break;
+
+		case Client::CGroar_Boss::BOSS_STATE_WEB: // 04
+			m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK04;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
+			break;
+
+		case Client::CGroar_Boss::BOSS_STATE_SPIDER: // 05
+			m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK05;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
+			break;
+
 		case Client::CGroar_Boss::BOSS_STATE_DIE:
+			m_Animation.iAnimIndex = MON_GROAR_ASGARD_DIE;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
 			break;
 		}
 
@@ -302,6 +403,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 	case Client::CGroar_Boss::STATE_NPC:
 		m_pNPCModelCom->Set_Animation(m_Animation);
 		break;
+
 	case Client::CGroar_Boss::STATE_SCENE01:
 		if (m_pScene01ModelCom->IsAnimationFinished(0))
 		{
@@ -310,11 +412,12 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		m_pScene01ModelCom->Set_Animation(m_Animation);
 		break;
+
 	case Client::CGroar_Boss::STATE_SCENE02:
 		if (m_pScene02ModelCom->IsAnimationFinished(0))
 		{
 			m_eCurState = STATE_BOSS;
-			m_eBossCurState = BOSS_STATE_ATTACK;
+			m_eBossCurState = BOSS_STATE_ROAR;
 
 			m_Animation.iAnimIndex = 0;
 			m_Animation.isLoop = true;
@@ -323,6 +426,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		m_pScene02ModelCom->Set_Animation(m_Animation);
 		break;
+
 	case Client::CGroar_Boss::STATE_BOSS:
 		m_pBossModelCom->Set_Animation(m_Animation);
 		break;
@@ -332,60 +436,310 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 	{
 	case Client::CGroar_Boss::BOSS_STATE_IDLE:
 		break;
-	case Client::CGroar_Boss::BOSS_STATE_RUN:
-		break;
-	case Client::CGroar_Boss::BOSS_STATE_ATTACK:
 
-		if (!m_bSelectAttackPattern)
+	case Client::CGroar_Boss::BOSS_STATE_ROAR:
+
+		m_pGameInstance->Set_ShakeCam(true, 0.5f);
+
+		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK_RAGE))
 		{
-			if (m_pBossModelCom->IsAnimationFinished(ATTACK01) || m_pBossModelCom->IsAnimationFinished(ATTACK02) ||
-				m_pBossModelCom->IsAnimationFinished(ATTACK03) || m_pBossModelCom->IsAnimationFinished(ATTACK04) ||
-				m_pBossModelCom->IsAnimationFinished(ATTACK05) || m_pBossModelCom->IsAnimationFinished(ATTACK06))
+			m_eBossCurState = BOSS_STATE_CHASE;
+		}
+
+		break;
+
+	case Client::CGroar_Boss::BOSS_STATE_CHASE:
+	{
+		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+		_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+
+		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+		_float fDistance = (vPlayerPos - vPos).Length();
+
+		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
+		vDir.y = 0.f;
+
+		m_pTransformCom->LookAt_Dir(vDir);
+		m_pTransformCom->Go_Straight(fTimeDelta);
+
+		if (fDistance <= m_fAttackRange)
+		{
+			//m_eBossCurState = BOSS_STATE_SPIDER; // 패턴 시작
+			m_Animation.isLoop = false;
+
+			if (!m_bSelectAttackPattern)
 			{
-				m_iAttackPattern = rand() % 6;
+				m_iAttackPattern = rand() % 5;
+				switch (m_iAttackPattern)
+				{
+				case 0:
+					m_eBossCurState = BOSS_STATE_THROW_ATTACK;
+					break;
+				case 1:
+					m_eBossCurState = BOSS_STATE_FLOOR_ATTACK;
+					break;
+				case 2:
+					m_eBossCurState = BOSS_STATE_SIX_MISSILE;
+					break;
+				case 3:
+					m_eBossCurState = BOSS_STATE_WEB;
+					break;
+				case 4:
+					m_eBossCurState = BOSS_STATE_SPIDER;
+					break;
+				}
+				//switch (m_eBossPreState)
+				//{
+				//case Client::CGroar_Boss::BOSS_STATE_CHASE:
+				//	m_eBossCurState = BOSS_STATE_THROW_ATTACK;
+				//	break;
+
+				//case Client::CGroar_Boss::BOSS_STATE_THROW_ATTACK:
+
+				//	m_iAttackPattern = rand() % 3;
+				//	switch (m_iAttackPattern)
+				//	{
+				//	case 0:
+				//		m_eBossCurState = BOSS_STATE_FLOOR_ATTACK;
+				//		break;
+				//	case 1:
+				//		m_eBossCurState = BOSS_STATE_WEB;
+				//		break;
+				//	case 2:
+				//		m_eBossCurState = BOSS_STATE_SPIDER;
+				//		break;
+				//	}
+
+				//	break;
+				//case Client::CGroar_Boss::BOSS_STATE_FLOOR_ATTACK:
+
+				//	m_iAttackPattern = rand() % 4;
+				//	switch (m_iAttackPattern)
+				//	{
+				//	case 0:
+				//		m_eBossCurState = BOSS_STATE_THROW_ATTACK;
+				//		break;
+				//	case 1:
+				//		m_eBossCurState = BOSS_STATE_SIX_MISSILE;
+				//		break;
+				//	case 2:
+				//		m_eBossCurState = BOSS_STATE_WEB;
+				//		break;
+				//	case 3:
+				//		m_eBossCurState = BOSS_STATE_SPIDER;
+				//		break;
+				//	}
+
+				//	break;
+				//case Client::CGroar_Boss::BOSS_STATE_SIX_MISSILE:
+
+				//	m_iAttackPattern = rand() % 3;
+				//	switch (m_iAttackPattern)
+				//	{
+				//	case 0:
+				//		m_eBossCurState = BOSS_STATE_FLOOR_ATTACK;
+				//		break;
+				//	case 1:
+				//		m_eBossCurState = BOSS_STATE_WEB;
+				//		break;
+				//	case 2:
+				//		m_eBossCurState = BOSS_STATE_SPIDER;
+				//		break;
+				//	}
+
+				//	break;
+				//case Client::CGroar_Boss::BOSS_STATE_WEB:
+
+				//	m_iAttackPattern = rand() % 4;
+				//	switch (m_iAttackPattern)
+				//	{
+				//	case 0:
+				//		m_eBossCurState = BOSS_STATE_THROW_ATTACK;
+				//		break;
+				//	case 1:
+				//		m_eBossCurState = BOSS_STATE_FLOOR_ATTACK;
+				//		break;
+				//	case 2:
+				//		m_eBossCurState = BOSS_STATE_SIX_MISSILE;
+				//		break;
+				//	case 3:
+				//		m_eBossCurState = BOSS_STATE_SPIDER;
+				//		break;
+				//	}
+
+				//	break;
+				//case Client::CGroar_Boss::BOSS_STATE_SPIDER:
+
+				//	m_iAttackPattern = rand() % 4;
+				//	switch (m_iAttackPattern)
+				//	{
+				//	case 0:
+				//		m_eBossCurState = BOSS_STATE_THROW_ATTACK;
+				//		break;
+				//	case 1:
+				//		m_eBossCurState = BOSS_STATE_FLOOR_ATTACK;
+				//		break;
+				//	case 2:
+				//		m_eBossCurState = BOSS_STATE_SIX_MISSILE;
+				//		break;
+				//	case 3:
+				//		m_eBossCurState = BOSS_STATE_WEB;
+				//		break;
+				//	}
+
+				//	break;
+				//}
+
 				m_bSelectAttackPattern = true;
 			}
 		}
+	}
 
-		switch (m_iAttackPattern)
+		break;
+
+	case Client::CGroar_Boss::BOSS_STATE_THROW_ATTACK:
+
+		if (m_pBossModelCom->Get_CurrentAnimationIndex() == MON_GROAR_ASGARD_ATTACK00)
 		{
-		case 0:
-			m_Animation.iAnimIndex = ATTACK01;
-			m_Animation.isLoop = false;
-			m_bSelectAttackPattern = false;
-			break;
-		case 1:
-			m_Animation.iAnimIndex = ATTACK02;
-			m_Animation.isLoop = false;
-			m_bSelectAttackPattern = false;
-			break;
-		case 2:
-			m_Animation.iAnimIndex = ATTACK03;
-			m_Animation.isLoop = false;
-			m_bSelectAttackPattern = false;
-			break;
-		case 3:
-			m_Animation.iAnimIndex = ATTACK04;
-			m_Animation.isLoop = false;
-			m_bSelectAttackPattern = false;
-			break;
-		case 4:
-			m_Animation.iAnimIndex = ATTACK05;
-			m_Animation.isLoop = false;
-			m_bSelectAttackPattern = false;
-			break;
-		case 5:
-			m_Animation.iAnimIndex = ATTACK06;
-			m_Animation.isLoop = false;
-			m_bSelectAttackPattern = false;
-			break;
+			if (m_pBossModelCom->Get_CurrentAnimPos() >= 10.f /*&& m_pBossModelCom->Get_CurrentAnimPos() <= 12.f*/ && !m_bCreateMissile)
+			{
+				CMissile::MISSILE_TYPE eType = CMissile::RIGHT_THROW;
+				m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_Missile"), &eType);
+				m_bCreateMissile = true;
+
+				++m_iThrowAttackCombo;
+			}
+
+			if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK00))
+			{
+				m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK01;
+
+				//m_bCreateMissile = false;
+			}
+
+			if (m_pBossModelCom->Get_CurrentAnimPos() < 10.f)
+			{
+				m_bCreateMissile = false;
+			}
 
 		}
-		break;
+
+		else if (m_pBossModelCom->Get_CurrentAnimationIndex() == MON_GROAR_ASGARD_ATTACK01)
+		{
+			if (m_pBossModelCom->Get_CurrentAnimPos() >= 15.f /*&& m_pBossModelCom->Get_CurrentAnimPos() <= 17.f*/ && !m_bCreateMissile)
+			{
+				CMissile::MISSILE_TYPE eType = CMissile::LEFT_THROW;
+				m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_Missile"), &eType);
+				m_bCreateMissile = true;
+
+				++m_iThrowAttackCombo;
+			}
+
+			if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK01))
+			{
+				m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK00;
+
+				//m_bCreateMissile = false;
+				//m_eBossCurState = BOSS_STATE_CHASE;
+			}
+
+			if (m_pBossModelCom->Get_CurrentAnimPos() < 15.f)
+			{
+				m_bCreateMissile = false;
+			}
+
+		}
+
+		//if (m_pBossModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
+		//{
+		//	//m_bCreateMissile = false;
+		//	m_eBossCurState = BOSS_STATE_CHASE;
+		//}
+
+		if (m_iThrowAttackCombo == 4)
+		{
+			if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK00) || m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK01))
+			{
+				m_iThrowAttackCombo = 0;
+				m_eBossCurState = BOSS_STATE_CHASE;
+			}
+		}
 
 		break;
-	case Client::CGroar_Boss::BOSS_STATE_STUN:
+
+	case Client::CGroar_Boss::BOSS_STATE_FLOOR_ATTACK:
+
+		switch (m_Animation.iAnimIndex)
+		{
+		case MON_GROAR_ASGARD_ATTACK03:
+			break;
+
+		case MON_GROAR_ASGARD_ATTACK06:
+			break;
+
+		case MON_GROAR_ASGARD_ATTACK07:
+			break;
+
+		case MON_GROAR_ASGARD_ATTACK08:
+			break;
+		}
+
+		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK03) || m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK06) ||
+			m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK07) || m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK08))
+		{
+			m_eBossCurState = BOSS_STATE_CHASE;
+		}
+
 		break;
+
+	case Client::CGroar_Boss::BOSS_STATE_SIX_MISSILE:
+
+		if (m_pBossModelCom->Get_CurrentAnimPos() >= 60.f && !m_bCreateMissile)
+		{
+			for (size_t i = 0; i < 6; i++)
+			{
+				CMissile::MISSILE_TYPE eType = CMissile::SIX_MISSILE;
+				m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_Missile"), &eType);
+			}			
+
+			m_bCreateMissile = true;
+		}
+
+		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK02))
+		{
+			m_eBossCurState = BOSS_STATE_CHASE;
+		}
+
+		break;
+
+	case Client::CGroar_Boss::BOSS_STATE_WEB:
+
+		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK04))
+		{
+			m_eBossCurState = BOSS_STATE_CHASE;
+		}
+
+		break;
+
+	case Client::CGroar_Boss::BOSS_STATE_SPIDER:
+
+		if (m_pBossModelCom->Get_CurrentAnimPos() >= 80.f && !m_bCreateSpider)
+		{
+			for (size_t i = 0; i < 3; i++)
+			{
+				m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Spider"), TEXT("Prototype_GameObject_Spider"));
+			}
+
+			m_bCreateSpider = true;
+		}
+
+		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK05))
+		{
+			m_eBossCurState = BOSS_STATE_CHASE;
+		}
+
+		break;
+
 	case Client::CGroar_Boss::BOSS_STATE_DIE:
 		break;
 	}

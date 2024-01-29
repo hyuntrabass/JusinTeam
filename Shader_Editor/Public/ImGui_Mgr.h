@@ -42,6 +42,15 @@ private:
     // SSAO
     SSAO_DESC m_SSAO;
 
+    _float m_fSSAOBlurPower = 0.f;
+
+    // Effect
+    _float m_fEffectBlurPower = 0.f;
+
+    // HDR
+    HDR_DESC m_HDR;
+
+    _float m_fHDRBlurPower = 0.f;
 
 public:
     // CBase을(를) 통해 상속됨

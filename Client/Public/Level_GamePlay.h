@@ -47,6 +47,7 @@ private:
 	HRESULT Ready_Void20();
 	HRESULT Ready_Void23();
 	HRESULT Ready_Nastron07();
+	HRESULT Ready_Spider();
 
 	// NPC
 	HRESULT Ready_Cat();

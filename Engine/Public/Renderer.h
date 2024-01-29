@@ -57,48 +57,65 @@ private:
 	ID3D11DepthStencilView* m_pShadowDSV{ nullptr };
 	//ID3D11DepthStencilView* m_pBlurDSV{ nullptr };
 
-	//원명 다운 스케일링
-	THPARAM m_THParam;
+#pragma region 평균 휘도 구하는 쉐이더랑 랜더타겟들
 
-	ID3D11Buffer* m_pDSBuffer = nullptr;
+	class CCompute_Shader* m_pLumShader = nullptr;
+	class CCompute_RenderTarget* m_pLumRT = nullptr;
 
-	ID3DBlob* m_pDSBlob = nullptr;
+	class CCompute_Shader* m_pDownShader = nullptr;
+	class CCompute_RenderTarget* m_pDownRT = nullptr;
 
-	ID3D11ComputeShader* m_pDSCShader = nullptr;
+	class CCompute_Shader* m_pDown2Shader = nullptr;
+	class CCompute_RenderTarget* m_pDownRT1 = nullptr;
 
-	ID3D11Texture2D* m_pDSTexture = nullptr;
+	class CCompute_Shader* m_pDown3Shader = nullptr;
+	class CCompute_RenderTarget* m_pDownRT2 = nullptr;
 
-	ID3D11UnorderedAccessView* m_pDSUAV = nullptr;
+	class CCompute_Shader* m_pGetAvgLumShader = nullptr;
+	class CCompute_RenderTarget* m_pLumValue = nullptr;
 
-	ID3D11ShaderResourceView* m_pDSSRV = nullptr;
+#pragma endregion
 
-	// 원명 블러	
+#pragma region 블러하는 쉐이더랑 랜더타겟들
+
+	class CCompute_Shader* m_pBlurShader = nullptr;
 	BLURPARAM m_BLParam;
 
-	ID3D11Buffer* m_pBlurBuffer = nullptr;
+	class CCompute_Shader* m_pDownScaleShader = nullptr;
+	DSPARAM m_DSParam[3];
 
-	ID3DBlob* m_pBlurBlob = nullptr;
+	class CCompute_RenderTarget* m_pHalfRT = nullptr;
+	class CCompute_RenderTarget* m_pQuarterRT = nullptr;
+	class CCompute_RenderTarget* m_pEightRT = nullptr;
 
-	ID3D11ComputeShader* m_pBlurCShader = nullptr;
+	class CCompute_RenderTarget* m_pHalfBlurRT = nullptr;
+	class CCompute_RenderTarget* m_pQuarterBlurRT = nullptr;
+	class CCompute_RenderTarget* m_pEightBlurRT = nullptr;
 
-	ID3D11Texture2D* m_pBlurTexture = nullptr;
+	class CShader* m_pGetBlurShader{ nullptr };
 
-	ID3D11UnorderedAccessView* m_pBlurUAV = nullptr;
+#pragma endregion
 
-	ID3D11ShaderResourceView* m_pBlurSRV = nullptr;
+	class CTexture* m_pNoiseNormal = nullptr;
 
-
-	_float fWidth = 0.f;
-	_float fHeight = 0.f;
-
+	_uint2 m_WinSize{};
 
 private:
-	_vec3 m_vRandom[16]{};
-	_bool m_TurnOnSSAO = false;
-	_bool m_TurnOnToneMap = false;
-	_bool m_TurnOnBlur = false;
-	_bool m_Thunder = false;
+	_bool m_TurnOnSSAO = true;
+	_bool m_TurnOnToneMap = true;
+	_bool m_TurnOnBlur = true;
+	_uint m_iChangeToneMap = 0;
+
+	_float m_fSSAOBlurPower = 1.f;
+
+	_float m_fEffectBlurPower = 3.f;
+
+	_float m_fHDRBloomPower = 1.2f;
+
 	SSAO_DESC m_SSAO;
+	HDR_DESC m_HDR;
+
+#pragma region 쉐이더 수치조절
 
 public:
 	SSAO_DESC Get_SSAO() const {
@@ -109,6 +126,41 @@ public:
 		m_SSAO = Desc;
 	}
 
+	HDR_DESC Get_HDR() const {
+		return m_HDR;
+	}
+
+	void Set_HDR(HDR_DESC Desc) {
+		m_HDR = Desc;
+	}
+
+	_float Get_SSAOBlurPower() const {
+		return m_fSSAOBlurPower;
+	}
+
+	void Set_SSAOBlurPower(_float fBlurPower) {
+		m_fSSAOBlurPower = fBlurPower;
+	}
+
+
+	_float Get_EffectBlurPower() const {
+		return m_fEffectBlurPower;
+	}
+
+	void Set_EffectBlurPower(_float fBlurPower) {
+		m_fEffectBlurPower = fBlurPower;
+	}
+
+
+	_float Get_HDRBlurPower() const {
+		return m_fHDRBloomPower;
+	}
+
+	void Set_HDRBlurPower(_float fBlurPower) {
+		m_fHDRBloomPower = fBlurPower;
+	}
+
+#pragma endregion
 
 private:
 	HRESULT Ready_ShadowDSV();
@@ -131,6 +183,10 @@ private:
 private:
 	HRESULT Render_Debug();
 #endif // _DEBUG
+
+private:
+	HRESULT Get_AvgLuminance();
+	HRESULT Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MRT_Tag, _float fBlurPower, _bool isBloom = false);
 
 public:
 	static CRenderer* Create(_dev pDevice, _context pContext);

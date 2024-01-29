@@ -263,6 +263,9 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxCubeTex.hlsl">
       <Filter>97.Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxStatMesh_Instancing.hlsl">
+      <Filter>97.Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Define.hlsli">

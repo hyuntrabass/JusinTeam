@@ -7,6 +7,7 @@
 #include "Camera_Main.h"
 #include "UI_Manager.h"
 #include "Effect_Manager.h"
+#include "Trigger_Manager.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())

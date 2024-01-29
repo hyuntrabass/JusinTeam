@@ -149,9 +149,16 @@
       <StackReserveSize>
       </StackReserveSize>
     </Link>
+    <FxCompile>
+      <ShaderType>Effect</ShaderType>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\3DUITex.h" />
+    <ClInclude Include="..\Public\Arrow.h" />
     <ClInclude Include="..\Public\BackGround.h" />
     <ClInclude Include="..\Public\BackGround_Mask.h" />
     <ClInclude Include="..\Public\BlackSmith.h" />
@@ -191,6 +198,7 @@
     <ClInclude Include="..\Public\Logo_Stone.h" />
     <ClInclude Include="..\Public\Logo_Text.h" />
     <ClInclude Include="..\Public\Menu.h" />
+    <ClInclude Include="..\Public\Missile.h" />
     <ClInclude Include="..\Public\MPBar.h" />
     <ClInclude Include="..\Public\Map.h" />
     <ClInclude Include="..\Public\NameWindow.h" />
@@ -225,6 +233,7 @@
     <ClInclude Include="..\Public\SkillSlot.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\Lake.h" />
+    <ClInclude Include="..\Public\Spider.h" />
     <ClInclude Include="..\Public\TestTree.h" />
     <ClInclude Include="..\Public\TextButton.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
@@ -245,6 +254,9 @@
     <ClInclude Include="..\Public\Select.h" />
     <ClInclude Include="..\Public\TextButtonColor.h" />
     <ClInclude Include="..\Public\Thief04.h" />
+    <ClInclude Include="..\Public\Trigger.h" />
+    <ClInclude Include="..\Public\TriggerList.h" />
+    <ClInclude Include="..\Public\Trigger_Manager.h" />
     <ClInclude Include="..\Public\TrilobiteA.h" />
     <ClInclude Include="..\Public\UI_Manager.h" />
     <ClInclude Include="..\Public\ModelTest.h" />
@@ -264,6 +276,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\3DUITex.cpp" />
+    <ClCompile Include="..\Private\Arrow.cpp" />
     <ClCompile Include="..\Private\BackGround.cpp" />
     <ClCompile Include="..\Private\BackGround_Mask.cpp" />
     <ClCompile Include="..\Private\BlackSmith.cpp" />
@@ -303,6 +316,7 @@
     <ClCompile Include="..\Private\Logo_Stone.cpp" />
     <ClCompile Include="..\Private\Logo_Text.cpp" />
     <ClCompile Include="..\Private\Menu.cpp" />
+    <ClCompile Include="..\Private\Missile.cpp" />
     <ClCompile Include="..\Private\MPBar .cpp" />
     <ClCompile Include="..\Private\Map.cpp" />
     <ClCompile Include="..\Private\NameWindow.cpp" />
@@ -337,6 +351,7 @@
     <ClCompile Include="..\Private\SkillSlot.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Lake.cpp" />
+    <ClCompile Include="..\Private\Spider.cpp" />
     <ClCompile Include="..\Private\TestTree.cpp" />
     <ClCompile Include="..\Private\TextButton.cpp" />
     <ClCompile Include="..\Private\Level_Custom.cpp" />
@@ -355,6 +370,8 @@
     <ClCompile Include="..\Private\Select.cpp" />
     <ClCompile Include="..\Private\TextButtonColor.cpp" />
     <ClCompile Include="..\Private\Thief04.cpp" />
+    <ClCompile Include="..\Private\Trigger.cpp" />
+    <ClCompile Include="..\Private\Trigger_Manager.cpp" />
     <ClCompile Include="..\Private\TrilobiteA.cpp" />
     <ClCompile Include="..\Private\UI_Manager.cpp" />
     <ClCompile Include="..\Private\ModelTest.cpp" />
@@ -396,8 +413,8 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

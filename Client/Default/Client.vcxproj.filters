@@ -331,8 +331,20 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\Dialog">
       <UniqueIdentifier>{8bbd3cf3-05ec-4392-a70b-e8cdc3ab6750}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.UI\02.Custom\NameWindow">
-      <UniqueIdentifier>{226b54d7-1dcb-47da-b299-496acadd2b2e}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\03.Player\Weapon\Arrow">
+      <UniqueIdentifier>{3c9caad4-a7e8-48db-a836-c8c8b3ca4edd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Spider">
+      <UniqueIdentifier>{f363281d-5323-407d-80fa-91b4b26af4c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Missile">
+      <UniqueIdentifier>{60d859ff-77f1-4b49-be0b-495060f838c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\11.Trigger">
+      <UniqueIdentifier>{e34cfd3d-cd3e-4a9c-a182-3c577c5cdb93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\11.Trigger\Manager">
+      <UniqueIdentifier>{bc9dd045-dd44-470a-8fbe-c8d5ed7e0b04}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -519,9 +531,6 @@
     <ClInclude Include="..\Public\TestTree.h">
       <Filter>02.GameObjects\07. StatObject\Test</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Map.h">
-      <Filter>02.GameObjects\08.Map</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Pop_QuestEnd.h">
       <Filter>02.GameObjects\00.UI\POPUP</Filter>
     </ClInclude>
@@ -657,14 +666,26 @@
     <ClInclude Include="..\Public\CommonSurfaceTrail.h">
       <Filter>03.Effect\Common_Effect</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\NameWindow.h">
-      <Filter>02.GameObjects\00.UI\02.Custom\NameWindow</Filter>
+    <ClInclude Include="..\Public\Arrow.h">
+      <Filter>02.GameObjects\03.Player\Weapon\Arrow</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Pop_LevelUp.h">
-      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    <ClInclude Include="..\Public\Spider.h">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss\Spider</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\DialogText.h">
-      <Filter>02.GameObjects\00.UI\GameUI\Dialog</Filter>
+    <ClInclude Include="..\Public\Missile.h">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss\Missile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Trigger.h">
+      <Filter>02.GameObjects\11.Trigger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TriggerList.h">
+      <Filter>02.GameObjects\11.Trigger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Trigger_Manager.h">
+      <Filter>02.GameObjects\11.Trigger\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Map.h">
+      <Filter>02.GameObjects\08.Map</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -852,9 +873,6 @@
     <ClCompile Include="..\Private\TestTree.cpp">
       <Filter>02.GameObjects\07. StatObject\Test</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Map.cpp">
-      <Filter>02.GameObjects\08.Map</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Pop_QuestEnd.cpp">
       <Filter>02.GameObjects\00.UI\POPUP</Filter>
     </ClCompile>
@@ -987,14 +1005,23 @@
     <ClCompile Include="..\Private\CommonSurfaceTrail.cpp">
       <Filter>03.Effect\Common_Effect</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\NameWindow.cpp">
-      <Filter>02.GameObjects\00.UI\02.Custom\NameWindow</Filter>
+    <ClCompile Include="..\Private\Arrow.cpp">
+      <Filter>02.GameObjects\03.Player\Weapon\Arrow</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Pop_LevelUp.cpp">
-      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    <ClCompile Include="..\Private\Spider.cpp">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss\Spider</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\DialogText.cpp">
-      <Filter>02.GameObjects\00.UI\GameUI\Dialog</Filter>
+    <ClCompile Include="..\Private\Missile.cpp">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss\Missile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Trigger.cpp">
+      <Filter>02.GameObjects\11.Trigger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Trigger_Manager.cpp">
+      <Filter>02.GameObjects\11.Trigger\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Map.cpp">
+      <Filter>02.GameObjects\08.Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
