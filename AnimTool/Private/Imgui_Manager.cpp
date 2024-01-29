@@ -177,7 +177,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	}
 	else if (m_pGameInstance->Key_Down(DIK_C))
 	{
-		m_fTimeDelta = fTimeDelta;
+		m_fTimeDelta = fTimeDelta * m_fTimeRatio;
 	}
 
 	if (m_pPlayer)
@@ -352,7 +352,8 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					SoundDesc.strSoundNames.push_back(szSoundName);
 					SoundDesc.iStartAnimIndex = m_AnimDesc.iAnimIndex;
 					SoundDesc.fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
-					SoundDesc.fVolume = 0.5f;
+					SoundDesc.fInitVolume = 0.5f;
+					SoundDesc.fVolume = SoundDesc.fInitVolume;
 					pCurModel->Add_TriggerSound(SoundDesc);
 				}
 			}
@@ -387,7 +388,8 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					SoundDesc.strSoundNames.push_back(szSoundName);
 					SoundDesc.iStartAnimIndex = m_AnimDesc.iAnimIndex;
 					SoundDesc.fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
-					SoundDesc.fVolume = 0.5f;
+					SoundDesc.fInitVolume = 0.5f;
+					SoundDesc.fVolume = SoundDesc.fInitVolume;
 					pCurModel->Add_TriggerSound(SoundDesc);
 				}
 			}
@@ -516,6 +518,10 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				m_vCurrentScale = m_vPreScale;
 			}
 		}*/
+		ImGui::SameLine();
+		ImGui::PushItemWidth(90.f);
+		ImGui::InputFloat("TIME##1", &m_fTimeRatio, 0.01f, 0.f, "%.2f");
+		ImGui::PopItemWidth();
 #pragma endregion
 
 #pragma region Player

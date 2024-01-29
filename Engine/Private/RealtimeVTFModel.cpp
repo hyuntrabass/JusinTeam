@@ -319,17 +319,11 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 		m_pContext->CopyResource(m_pOldBoneTexture, m_pBoneTexture);
 	//트리거 루프
 	if ((m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() + fTimeDelta * m_AnimDesc.fAnimSpeedRatio * m_Animations[m_AnimDesc.iAnimIndex]->Get_TickPerSec()) >=
-		(m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() * m_AnimDesc.fDurationRatio) ||
+		(m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() * m_AnimDesc.fDurationRatio) &&
+		m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() <= (m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() * m_AnimDesc.fDurationRatio) ||
 		m_isAnimChanged)
 	{
-		for (size_t i = 0; i < m_TriggerEffects.size(); i++)
-		{
-			m_TriggerEffects[i].HasCreated = false;
-		}
-		for (size_t i = 0; i < m_TriggerSounds.size(); i++)
-		{
-			m_TriggerSounds[i].HasPlayed = false;
-		}
+		m_IsResetTriggers = true;
 	}
 
 	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop,
@@ -366,8 +360,9 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 			}
 		}
 		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iStartAnimIndex &&
-			static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerEffects[i].fStartAnimPos) &&
-				not m_TriggerEffects[i].HasCreated)
+			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fStartAnimPos &&
+			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() <= m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() &&
+			not m_TriggerEffects[i].HasCreated)
 		{
 			//초기 매트릭스 세팅
 			if (m_TriggerEffects[i].IsDeleteRotateToBone)
@@ -388,7 +383,7 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 		for (size_t j = 0; j < m_TriggerEffects[i].iEndAnimIndices.size(); j++)
 		{
 			if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iEndAnimIndices[j] &&
-				static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerEffects[i].fEndAnimPoses[j]) &&
+				m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fEndAnimPoses[j] &&
 				m_pGameInstance->Has_Created_Effect(m_EffectMatrices[i]))
 			{
 				m_pGameInstance->Delete_Effect(m_EffectMatrices[i]);
@@ -401,7 +396,8 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 	for (size_t i = 0; i < m_TriggerSounds.size(); i++)
 	{	//사운드 생성
 		if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iStartAnimIndex &&
-			static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerSounds[i].fStartAnimPos) &&
+			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerSounds[i].fStartAnimPos &&
+			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() <= m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() &&
 			not m_TriggerSounds[i].HasPlayed)
 		{
 			_int iMaxSound = m_TriggerSounds[i].strSoundNames.size() - 1;
@@ -442,6 +438,20 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta)
 		}
 	}
 #pragma endregion
+
+	if (m_IsResetTriggers)
+	{
+		m_IsResetTriggers = false;
+
+		for (size_t i = 0; i < m_TriggerEffects.size(); i++)
+		{
+			m_TriggerEffects[i].HasCreated = false;
+		}
+		for (size_t i = 0; i < m_TriggerSounds.size(); i++)
+		{
+			m_TriggerSounds[i].HasPlayed = false;
+		}
+	}
 
 	return S_OK;
 }
