@@ -22,9 +22,9 @@ public:
 	enum PET_CAT_STATE
 	{
 		STATE_IDLE,
-		STATE_WALK,
 		STATE_CHASE,
 		STATE_EMOTION,
+		STATE_INVEN,
 		STATE_END
 	};
 
@@ -51,6 +51,8 @@ private:
 private:
 	_float m_fIdleTime = {};
 
+private:
+	_bool m_bInvenOn = { false };
 
 public:
 	static CPet_Cat* Create(_dev pDevice, _context pContext);

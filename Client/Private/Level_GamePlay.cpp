@@ -51,7 +51,7 @@ HRESULT CLevel_GamePlay::Init()
 		MSG_BOX("Failed to Ready ModelTest");
 		return E_FAIL;
 	}
-	
+
 	//if (FAILED(Ready_Rabbit()))
 	//{
 	//	MSG_BOX("Failed to Ready Rabbit");
@@ -106,11 +106,11 @@ HRESULT CLevel_GamePlay::Init()
 	//	return E_FAIL;
 	//}
 
-	//if (FAILED(Ready_Void20()))
-	//{
-	//	MSG_BOX("Failed to Ready Void20");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Void20()))
+	{
+		MSG_BOX("Failed to Ready Void20");
+		return E_FAIL;
+	}
 
 	//if (FAILED(Ready_Void23()))
 	//{
@@ -175,7 +175,7 @@ HRESULT CLevel_GamePlay::Init()
 		MSG_BOX("Failed to Ready Map");
 		return E_FAIL;
 	}
-		// Environment
+	// Environment
 	if (FAILED(Ready_Environment()))
 	{
 		MSG_BOX("Failed to Ready Environment");
@@ -201,7 +201,7 @@ HRESULT CLevel_GamePlay::Init()
 	EffectDesc.isFollow = true;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
 
-
+	m_pGameInstance->Set_FogNF(_vec2(5.f, 500.f));
 
 	return S_OK;
 }
@@ -211,8 +211,54 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 	if (!CUI_Manager::Get_Instance()->Is_InvenActive())
 	{
 		m_RainMatrix = _mat::CreateTranslation(_vec3(m_pGameInstance->Get_CameraPos()));
+		//m_RainMatrix = _mat::CreateTranslation(_vec3(50.f, 3.f, 50.f));
 	}
-	//m_RainMatrix = _mat::CreateTranslation(_vec3(50.f, 3.f, 50.f));
+
+	if (m_fWaveTimer > 5.f)
+	{
+		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Wave_Init");
+		m_WaveMatrix[0] = _mat::CreateTranslation(_vec3(95.f, 4.f, 127.5f));
+		EffectDesc.pMatrix = &m_WaveMatrix[0];
+		EffectDesc.isFollow = true;
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
+
+		EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Wave_End");
+		m_WaveMatrix[1] = _mat::CreateTranslation(_vec3(93.f, 4.f, 129.5f));
+		EffectDesc.pMatrix = &m_WaveMatrix[1];
+		EffectDesc.isFollow = true;
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
+
+		EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Wave_Init");
+		m_WaveMatrix[2] = _mat::CreateTranslation(_vec3(91.f, 4.f, 129.5f));
+		EffectDesc.pMatrix = &m_WaveMatrix[2];
+		EffectDesc.isFollow = true;
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
+
+		m_isWave = false;
+		m_fWaveTimer = {};
+		m_fWaveGravity = {};
+	}
+	if (m_fWaveTimer > 0.5f)
+	{
+
+		//if (not m_isWave)
+		//{
+		//	EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Wave_End");
+		//	EffectDesc.pMatrix = &m_WaveMatrix;
+		//	EffectDesc.isFollow = true;
+		//	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
+		//	m_fWaveGravity = {};
+		//}
+
+		m_WaveMatrix[0].Position_vec3(m_WaveMatrix[0].Position_vec3() - _vec3(0.f, m_fWaveGravity, 0.f) * fTimeDelta);
+		m_WaveMatrix[1].Position_vec3(m_WaveMatrix[1].Position_vec3() - _vec3(0.f, m_fWaveGravity, 0.f) * fTimeDelta);
+		m_WaveMatrix[2].Position_vec3(m_WaveMatrix[2].Position_vec3() - _vec3(0.f, m_fWaveGravity, 0.f) * fTimeDelta);
+		m_fWaveGravity += 0.981f;
+
+		m_isWave = true;
+	}
+
+	m_fWaveTimer += fTimeDelta;
 
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD9) or m_pGameInstance->Key_Down(DIK_PRIOR))
 	{
@@ -258,7 +304,7 @@ HRESULT CLevel_GamePlay::Ready_Light()
 	LIGHT_DESC LightDesc{};
 
 	LightDesc.eType = LIGHT_DESC::Directional;
-	LightDesc.vDirection = _float4(-1.f, -2.f,-1.f, 0.f);
+	LightDesc.vDirection = _float4(-1.f, -2.f, -1.f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
 
@@ -591,6 +637,11 @@ HRESULT CLevel_GamePlay::Ready_Groar_Boss()
 	{
 		return E_FAIL;
 	}
+
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_Missile"))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	return S_OK;
 }

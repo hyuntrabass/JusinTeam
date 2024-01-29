@@ -10,17 +10,18 @@ private:
 	virtual ~CCollision_Manager() = default;
 
 public:
-	HRESULT Register_CollisionObject(class CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer = false);
+	HRESULT Register_CollisionObject(class CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer = false , class CCollider* AttRangeCollider = nullptr);
 	void Delete_CollisionObject(class CGameObject* pObject, _bool IsPlayer);
 	void Attack_Monster(class CCollider* pCollider, _uint iDamage, _uint iDamageType);
 	_bool CheckCollision_Monster(class CCollider* pCollider);
 	_bool Attack_Player(class CCollider* pCollider, _uint iDamage, _uint iDamageType);
 	_bool CheckCollision_Player(class CCollider* pCollider); // 필요없음
-
+	class CCollider* Get_Nearest_MonsterCollider();
 private:
 	map<class CGameObject*, class CCollider*> m_Monsters{};
 	class CGameObject* m_pPlayer{ nullptr };
 	class CCollider* m_pPlayerHitCollider{ nullptr };
+	class CCollider* m_pPlayerAttRangeCollider{ nullptr };
 
 public:
 	static CCollision_Manager* Create();

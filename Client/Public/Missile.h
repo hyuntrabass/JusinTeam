@@ -7,6 +7,15 @@ BEGIN(Client)
 
 class CMissile final : public CGameObject
 {
+public:
+	enum MISSILE_TYPE
+	{
+		LEFT_THROW,
+		RIGHT_THROW,
+		SIX_MISSILE,
+		TYPE_END
+	};
+
 private:
 	CMissile(_dev pDevice, _context pContext);
 	CMissile(const CMissile& rhs);
@@ -27,6 +36,24 @@ private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
 	CCollider* m_pColliderCom = { nullptr };
+
+	CModel* m_pModelCom = { nullptr }; // Sphere(Test)
+
+private: // Groar_Boss Component
+	CModel* m_pGroarModel = { nullptr };
+	CTransform* m_pGroarTransform = { nullptr };
+
+private:
+	MISSILE_TYPE m_eType = TYPE_END;
+
+private:
+	_bool m_bShoot = { false };
+	_float m_fLifeTime = {};
+
+private: // SIX_MISSILE
+	static _uint m_iMissileID;
+	_uint m_iMissileIndex = {};
+	_float m_fDepartTime = {};
 
 public:
 	HRESULT Add_Components();

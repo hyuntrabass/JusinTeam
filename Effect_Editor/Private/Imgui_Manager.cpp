@@ -77,6 +77,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	static _bool bDemo{ true };
 	ShowDemoWindow(&bDemo);
 	EffectInfo Info{};
+#pragma region Main Window
 	Begin("Effect_Tool");
 
 	const _char* szType[ET_END]{ "Particle", "Rect", "Mesh" };
@@ -107,6 +108,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	Info.vPosOffset = vPosOffset;
 	NewLine();
 
+#pragma region Pass
 	static _int iPassIndex{};
 
 	const _char* szInstancingPasses[InstPass_End]
@@ -227,6 +229,10 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	}
 	Info.iType = m_iCurrent_Type;
 	Info.iPassIndex = iPassIndex;
+#pragma endregion
+
+	Separator();
+	NewLine();
 
 	static _bool bSkipBloom{};
 	Checkbox("No Bloom", &bSkipBloom);
@@ -238,6 +244,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	static _bool hasUnDissolve{};
 	static _bool hasDissolve{};
 
+#pragma region Sprite
 	static _bool isSprite{};
 	static _bool isFixedIndex{};
 	static _int2 vNumSprites{ 1, 1 };
@@ -266,12 +273,19 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		Info.iFixedSpriteIndex = iFixedSpriteIndex;
 		Info.fSpriteDuration = fSpriteDuration;
 	}
+#pragma endregion
 
+	Separator();
+	NewLine();
+
+#pragma region Diffuse
 	SeparatorText("Diffuse");
 	RadioButton("Texture", &iIsColor, 0); SameLine();
 	RadioButton("Color", &iIsColor, 1);
 	if (iIsColor)
 	{
+		NewLine();
+
 		ColorPicker4("Color", reinterpret_cast<_float*>(&m_vColor), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_DisplayRGB);
 		m_hasDiffTexture = false;
 	}
@@ -281,7 +295,6 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		{
 			m_iSelected_Texture = 0;
 		}
-		Separator();
 		NewLine();
 
 		Text(m_pItemList_Texture[m_iSelected_Texture]);
@@ -345,12 +358,19 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		Info.strDiffuseTexture = {};
 		Info.vColor = m_vColor;
 	}
+#pragma endregion
 
+	Separator();
+	NewLine();
+
+#pragma region Mask Texture
 	Checkbox("Mask", &m_hasMask);
 
 	static _vec2 vUVInit{};
 	static _vec2 vUVDelta{};
 	static _bool isUVLoop{};
+	static _float fAlphaDelta{};
+	static _float fAlphaInit{};
 	if (m_hasMask)
 	{
 		if (m_iSelected_MaskTexture < 0)
@@ -359,6 +379,13 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		}
 		SameLine();
 		SeparatorText("Mask Texture");
+
+		InputFloat("Alpha Init", &fAlphaInit);
+		Info.fAlphaInit = fAlphaInit;
+
+		InputFloat("Alpha Delta", &fAlphaDelta);
+		Info.fAlphaDelta = fAlphaDelta;
+
 		if (m_iCurrent_Type == ET_MESH)
 		{
 			InputFloat2("UV Initializer", reinterpret_cast<_float*>(&vUVInit));
@@ -421,9 +448,12 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		m_iSelected_MaskTexture = -1;
 		Info.strMaskTexture = {};
 	}
+#pragma endregion
+
 	Separator();
 	NewLine();
 
+#pragma region UnDissolve Texture
 	Checkbox("UnDissolve", &hasUnDissolve);
 
 	static _int iSelectd_UnDissolve{};
@@ -491,9 +521,12 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		iSelectd_UnDissolve = -1;
 		Info.strUnDissolveTexture = {};
 	}
+#pragma endregion
+
 	Separator();
 	NewLine();
 
+#pragma region Dissolve Texture
 	Checkbox("Dissolve", &hasDissolve);
 
 	static _int iSelectd_Dissolve{};
@@ -561,8 +594,94 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		iSelectd_Dissolve = -1;
 		Info.strDissolveTexture = {};
 	}
+#pragma endregion
+
 	Separator();
 	NewLine();
+
+#pragma region Light
+	Checkbox("Has Light", &m_hasLight);
+	Separator();
+	static LIGHT_DESC Light_Desc{};
+	static _int iAttenuation{}; LIGHT_RANGE_100;
+	const _char* szAttenuations[]
+	{
+		"LIGHT_RANGE_7",
+		"LIGHT_RANGE_13",
+		"LIGHT_RANGE_20",
+		"LIGHT_RANGE_32",
+		"LIGHT_RANGE_50",
+		"LIGHT_RANGE_65",
+		"LIGHT_RANGE_100",
+		"LIGHT_RANGE_160",
+		"LIGHT_RANGE_200",
+		"LIGHT_RANGE_325",
+		"LIGHT_RANGE_600",
+		"LIGHT_RANGE_3250",
+	};
+	Light_Desc.eType = LIGHT_DESC::Point;
+
+	Info.hasLight = m_hasLight;
+	if (m_hasLight)
+	{
+		SameLine();
+		SeparatorText("Light Description");
+		ColorPicker4("Diffuse", reinterpret_cast<_float*>(&Light_Desc.vDiffuse), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_DisplayRGB);
+		InputFloat4("Ambient", reinterpret_cast<_float*>(&Light_Desc.vAmbient), "%.1f");
+		InputFloat4("Specular", reinterpret_cast<_float*>(&Light_Desc.vSpecular), "%.1f");
+		Combo("Attenuation", &iAttenuation, szAttenuations, IM_ARRAYSIZE(szAttenuations));
+
+		switch (iAttenuation)
+		{
+		case 0:
+			Light_Desc.vAttenuation = LIGHT_RANGE_7;
+			break;
+		case 1:
+			Light_Desc.vAttenuation = LIGHT_RANGE_13;
+			break;
+		case 2:
+			Light_Desc.vAttenuation = LIGHT_RANGE_20;
+			break;
+		case 3:
+			Light_Desc.vAttenuation = LIGHT_RANGE_32;
+			break;
+		case 4:
+			Light_Desc.vAttenuation = LIGHT_RANGE_50;
+			break;
+		case 5:
+			Light_Desc.vAttenuation = LIGHT_RANGE_65;
+			break;
+		case 6:
+			Light_Desc.vAttenuation = LIGHT_RANGE_100;
+			break;
+		case 7:
+			Light_Desc.vAttenuation = LIGHT_RANGE_160;
+			break;
+		case 8:
+			Light_Desc.vAttenuation = LIGHT_RANGE_200;
+			break;
+		case 9:
+			Light_Desc.vAttenuation = LIGHT_RANGE_325;
+			break;
+		case 10:
+			Light_Desc.vAttenuation = LIGHT_RANGE_600;
+			break;
+		case 11:
+			Light_Desc.vAttenuation = LIGHT_RANGE_3250;
+			break;
+		}
+
+		Info.Light_Desc = Light_Desc;
+	}
+	NewLine();
+	NewLine();
+#pragma endregion
+
+	End();
+#pragma endregion
+
+#pragma region Option
+	Begin("Option");
 
 	static _vec3 vSize{ 1.f };
 	static _float fSizeforSprite{ 1.f };
@@ -716,82 +835,38 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		Info.strModel = m_pItemList_Model[m_iSelected_Model];
 	}
 
-	NewLine();
-	Checkbox("Has Light", &m_hasLight);
-	Separator();
-	static LIGHT_DESC Light_Desc{};
-	static _int iAttenuation{}; LIGHT_RANGE_100;
-	const _char* szAttenuations[]
+	End();
+#pragma endregion
+
+#pragma region Dummy Move
+	Begin("Dummy Movement");
+
+	static _bool isDummyMove{};
+	static _float fRadius{ 1.f };
+	static _float fRotationPerSec{ 90.f };
+
+	Checkbox("Move Dummy", &isDummyMove);
+
+	if (isDummyMove)
 	{
-		"LIGHT_RANGE_7",
-		"LIGHT_RANGE_13",
-		"LIGHT_RANGE_20",
-		"LIGHT_RANGE_32",
-		"LIGHT_RANGE_50",
-		"LIGHT_RANGE_65",
-		"LIGHT_RANGE_100",
-		"LIGHT_RANGE_160",
-		"LIGHT_RANGE_200",
-		"LIGHT_RANGE_325",
-		"LIGHT_RANGE_600",
-		"LIGHT_RANGE_3250",
-	};
-	Light_Desc.eType = LIGHT_DESC::Point;
+		InputFloat("Radius", &fRadius);
+		InputFloat("Speed", &fRotationPerSec);
 
-	Info.hasLight = m_hasLight;
-	if (m_hasLight)
-	{
-		SameLine();
-		SeparatorText("Light Description");
-		ColorPicker4("Diffuse", reinterpret_cast<_float*>(&Light_Desc.vDiffuse), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_DisplayRGB);
-		InputFloat4("Ambient", reinterpret_cast<_float*>(&Light_Desc.vAmbient), "%.1f");
-		InputFloat4("Specular", reinterpret_cast<_float*>(&Light_Desc.vSpecular), "%.1f");
-		Combo("Attenuation", &iAttenuation, szAttenuations, IM_ARRAYSIZE(szAttenuations));
-
-		switch (iAttenuation)
-		{
-		case 0:
-			Light_Desc.vAttenuation = LIGHT_RANGE_7;
-			break;
-		case 1:
-			Light_Desc.vAttenuation = LIGHT_RANGE_13;
-			break;
-		case 2:
-			Light_Desc.vAttenuation = LIGHT_RANGE_20;
-			break;
-		case 3:
-			Light_Desc.vAttenuation = LIGHT_RANGE_32;
-			break;
-		case 4:
-			Light_Desc.vAttenuation = LIGHT_RANGE_50;
-			break;
-		case 5:
-			Light_Desc.vAttenuation = LIGHT_RANGE_65;
-			break;
-		case 6:
-			Light_Desc.vAttenuation = LIGHT_RANGE_100;
-			break;
-		case 7:
-			Light_Desc.vAttenuation = LIGHT_RANGE_160;
-			break;
-		case 8:
-			Light_Desc.vAttenuation = LIGHT_RANGE_200;
-			break;
-		case 9:
-			Light_Desc.vAttenuation = LIGHT_RANGE_325;
-			break;
-		case 10:
-			Light_Desc.vAttenuation = LIGHT_RANGE_600;
-			break;
-		case 11:
-			Light_Desc.vAttenuation = LIGHT_RANGE_3250;
-			break;
-		}
-
-		Info.Light_Desc = Light_Desc;
+		m_DummyMatrix *= _mat::CreateRotationY(XMConvertToRadians(fRotationPerSec * fTimeDelta));
 	}
-	NewLine();
-	NewLine();
+	else
+	{
+		m_DummyMatrix = _mat::Identity;
+	}
+
+	End();
+
+#pragma endregion
+
+#pragma region Files
+	Begin("Files");
+
+	Text(m_CurrFilePath.stem().string().c_str());
 
 	if (Button("Export"))
 	{
@@ -859,6 +934,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			vUVDelta = Info.vUVDelta;
 			vUVInit = Info.vUVInit;
 			isUVLoop = Info.isUVLoop;
+			fAlphaInit = Info.fAlphaInit;
+			fAlphaDelta = Info.fAlphaDelta;
 		}
 		else
 		{
@@ -916,7 +993,11 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		{
 			Light_Desc = Info.Light_Desc;
 		}
+	} SameLine();
 
+	if (Button("Override"))
+	{
+		Override_Data(Info);
 	}
 
 	if (Button("Add"))
@@ -949,11 +1030,22 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	if (not m_pEffect or m_pEffect->isDead() or m_pGameInstance->Key_Down(DIK_RETURN) or m_pGameInstance->Key_Down(DIK_E))
 	{
 		Safe_Release(m_pEffect);
+		if (isDummyMove)
+		{
+			m_DummyMatrix = _mat::CreateTranslation(_vec3(fRadius, 0.f, 0.f));
+		}
+		else
+		{
+			m_DummyMatrix = _mat::Identity;
+		}
+
+		Info.pMatrix = &m_DummyMatrix;
 		m_pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Info));
 		m_pEffect->Tick(fTimeDelta);
 	}
 
 	End();
+#pragma endregion
 }
 
 HRESULT CImgui_Manager::Render()
@@ -1114,6 +1206,8 @@ EffectInfo CImgui_Manager::Load_Data()
 		filesystem::path strFilePath = ofn.lpstrFile;
 		ifstream InFile(strFilePath.c_str(), ios::binary);
 
+		m_CurrFilePath = strFilePath;
+
 		if (InFile.is_open())
 		{
 			InFile.read(reinterpret_cast<_char*>(&Info.iType), sizeof Info.iType);
@@ -1141,6 +1235,8 @@ EffectInfo CImgui_Manager::Load_Data()
 			InFile.read(reinterpret_cast<_char*>(&Info.isFixedIndex), sizeof Info.isFixedIndex);
 			InFile.read(reinterpret_cast<_char*>(&Info.iFixedSpriteIndex), sizeof Info.iFixedSpriteIndex);
 			InFile.read(reinterpret_cast<_char*>(&Info.isUVLoop), sizeof Info.isUVLoop);
+			InFile.read(reinterpret_cast<_char*>(&Info.fAlphaInit), sizeof Info.fAlphaInit);
+			InFile.read(reinterpret_cast<_char*>(&Info.fAlphaDelta), sizeof Info.fAlphaDelta);
 
 			size_t iNameSize{};
 
@@ -1237,6 +1333,7 @@ void CImgui_Manager::Load_OldData()
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.Light_Desc), sizeof OldInfo.Light_Desc);
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.isFixedIndex), sizeof OldInfo.isFixedIndex);
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.iFixedSpriteIndex), sizeof OldInfo.iFixedSpriteIndex);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.isUVLoop), sizeof OldInfo.isUVLoop);
 
 				size_t iNameSize{};
 
@@ -1311,7 +1408,9 @@ void CImgui_Manager::Load_OldData()
 			NewInfo.Light_Desc = OldInfo.Light_Desc;
 			NewInfo.isFixedIndex = OldInfo.isFixedIndex;
 			NewInfo.iFixedSpriteIndex = OldInfo.iFixedSpriteIndex;
-			NewInfo.isUVLoop = false;
+			NewInfo.isUVLoop = OldInfo.isUVLoop;
+			NewInfo.fAlphaDelta = 0.f;
+			NewInfo.fAlphaInit = 0.f;
 
 			NewInfo.strDiffuseTexture = OldInfo.strDiffuseTexture;
 			NewInfo.strMaskTexture = OldInfo.strMaskTexture;
@@ -1349,6 +1448,8 @@ void CImgui_Manager::Load_OldData()
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.isFixedIndex), sizeof NewInfo.isFixedIndex);
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.iFixedSpriteIndex), sizeof NewInfo.iFixedSpriteIndex);
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.isUVLoop), sizeof NewInfo.isUVLoop);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.fAlphaInit), sizeof NewInfo.fAlphaInit);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.fAlphaDelta), sizeof NewInfo.fAlphaDelta);
 
 				size_t iNameSize{};
 				iNameSize = (NewInfo.strDiffuseTexture.size() + 1) * sizeof(_tchar);
@@ -1398,6 +1499,8 @@ HRESULT CImgui_Manager::Export_Data(EffectInfo& Info)
 		filesystem::path strFilePath = ofn.lpstrFile;
 		ofstream OutFile(strFilePath.c_str(), ios::binary);
 
+		m_CurrFilePath = strFilePath;
+
 		if (OutFile.is_open())
 		{
 			OutFile.write(reinterpret_cast<const _char*>(&Info.iType), sizeof Info.iType);
@@ -1425,6 +1528,8 @@ HRESULT CImgui_Manager::Export_Data(EffectInfo& Info)
 			OutFile.write(reinterpret_cast<const _char*>(&Info.isFixedIndex), sizeof Info.isFixedIndex);
 			OutFile.write(reinterpret_cast<const _char*>(&Info.iFixedSpriteIndex), sizeof Info.iFixedSpriteIndex);
 			OutFile.write(reinterpret_cast<const _char*>(&Info.isUVLoop), sizeof Info.isUVLoop);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.fAlphaInit), sizeof Info.fAlphaInit);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.fAlphaDelta), sizeof Info.fAlphaDelta);
 
 			size_t iNameSize{};
 			iNameSize = (Info.strDiffuseTexture.size() + 1) * sizeof(_tchar);
@@ -1449,6 +1554,72 @@ HRESULT CImgui_Manager::Export_Data(EffectInfo& Info)
 
 			OutFile.close();
 		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::Override_Data(EffectInfo& Info)
+{
+	if (MessageBox(g_hWnd, L"기존 정보를 덮어 씁니다.", L"주의", MB_OKCANCEL) == IDCANCEL)
+	{
+		return S_OK;
+	}
+
+	ofstream OutFile(m_CurrFilePath.c_str(), ios::binary);
+
+ 	if (OutFile.is_open())
+	{
+		OutFile.write(reinterpret_cast<const _char*>(&Info.iType), sizeof Info.iType);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.isSprite), sizeof Info.isSprite);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.vNumSprites), sizeof Info.vNumSprites);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.fSpriteDuration), sizeof Info.fSpriteDuration);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.PartiDesc), sizeof Info.PartiDesc);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.iNumInstances), sizeof Info.iNumInstances);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.fLifeTime), sizeof Info.fLifeTime);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.vColor), sizeof Info.vColor);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.iPassIndex), sizeof Info.iPassIndex);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.vSize), sizeof Info.vSize);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.vPosOffset), sizeof Info.vPosOffset);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.vSizeDelta), sizeof Info.vSizeDelta);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.bApplyGravity), sizeof Info.bApplyGravity);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.vGravityDir), sizeof Info.vGravityDir);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.fDissolveDuration), sizeof Info.fDissolveDuration);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.bSkipBloom), sizeof Info.bSkipBloom);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.fUnDissolveDuration), sizeof Info.fUnDissolveDuration);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.vUVInit), sizeof Info.vUVInit);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.vUVDelta), sizeof Info.vUVDelta);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.isRandomSprite), sizeof Info.isRandomSprite);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.hasLight), sizeof Info.hasLight);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.Light_Desc), sizeof Info.Light_Desc);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.isFixedIndex), sizeof Info.isFixedIndex);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.iFixedSpriteIndex), sizeof Info.iFixedSpriteIndex);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.isUVLoop), sizeof Info.isUVLoop);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.fAlphaInit), sizeof Info.fAlphaInit);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.fAlphaDelta), sizeof Info.fAlphaDelta);
+
+		size_t iNameSize{};
+		iNameSize = (Info.strDiffuseTexture.size() + 1) * sizeof(_tchar);
+		OutFile.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+		OutFile.write(reinterpret_cast<const _char*>(Info.strDiffuseTexture.data()), iNameSize);
+
+		iNameSize = (Info.strMaskTexture.size() + 1) * sizeof(_tchar);
+		OutFile.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+		OutFile.write(reinterpret_cast<const _char*>(Info.strMaskTexture.data()), iNameSize);
+
+		iNameSize = (Info.strDissolveTexture.size() + 1) * sizeof(_tchar);
+		OutFile.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+		OutFile.write(reinterpret_cast<const _char*>(Info.strDissolveTexture.data()), iNameSize);
+
+		iNameSize = (Info.strUnDissolveTexture.size() + 1) * sizeof(_tchar);
+		OutFile.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+		OutFile.write(reinterpret_cast<const _char*>(Info.strUnDissolveTexture.data()), iNameSize);
+
+		iNameSize = Info.strModel.size() + sizeof(_char);
+		OutFile.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+		OutFile.write(Info.strModel.data(), iNameSize);
+
+		OutFile.close();
 	}
 
 	return S_OK;

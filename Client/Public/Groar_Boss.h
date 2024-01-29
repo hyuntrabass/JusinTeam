@@ -130,12 +130,26 @@ private:
 	GROAR_BOSS_STATE m_eBossPreState = BOSS_STATE_END;
 	GROAR_BOSS_STATE m_eBossCurState = BOSS_STATE_END;
 
+	GROAR_BOSS_STATE m_eBossPreAttackState = BOSS_STATE_SPIDER;
+
+private:
+	static const _float m_fChaseRange;
+	static const _float m_fAttackRange;
+
 private:
 	ANIM_DESC m_Animation{};
 
 private:
 	_uint m_iAttackPattern = {};
 	_bool m_bSelectAttackPattern = { false };
+
+private:
+	_bool m_bSwitchThrow = { false };
+	_bool m_bCreateMissile = { false };
+	_uint m_iThrowAttackCombo = {};
+
+private:
+	_bool m_bCreateSpider = { false };
 
 public:
 	HRESULT Add_Components();

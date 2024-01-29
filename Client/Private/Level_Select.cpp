@@ -1,6 +1,7 @@
 #include "Level_Select.h"
 #include "Level_Loading.h"
 #include "Camera.h"
+#include "Effect_Manager.h"
 
 CLevel_Select::CLevel_Select(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -14,12 +15,12 @@ HRESULT CLevel_Select::Init()
 	m_pGameInstance->PlayBGM(TEXT("Odin_CharacterCreate_01"));
 	m_pGameInstance->Play_Sound(TEXT("Amb_Fire_SFX_03_03"), 0.2f, true);
 	UiInfo info{};
-	info.strTexture = TEXT("Prototype_Component_Texture_BackGround_Mask"); 
-	info.vPos = _vec2(640,360);
+	info.strTexture = TEXT("Prototype_Component_Texture_BackGround_Mask");
+	info.vPos = _vec2(640, 360);
 	info.vSize = _vec2(1280, 720);
 	info.iLevel = (_uint)LEVEL_SELECT;
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Mask"), TEXT("Prototype_GameObject_BackGround_Mask"),&info)))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Mask"), TEXT("Prototype_GameObject_BackGround_Mask"), &info)))
 	{
 		return E_FAIL;
 
@@ -67,7 +68,7 @@ HRESULT CLevel_Select::Init()
 	}
 	/*
 	셀렉트 커스텀용 카메라 만들어야할듯
-	
+
 
 	if (FAILED(Ready_Light()))
 	{
@@ -80,10 +81,9 @@ HRESULT CLevel_Select::Init()
 
 void CLevel_Select::Tick(_float fTimeDelta)
 {
-
 	if (m_pGameInstance->Is_Level_ShutDown(LEVEL_SELECT))
 	{
-		
+
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_CUSTOM))))
 		{
 			return;
@@ -125,7 +125,7 @@ HRESULT CLevel_Select::Ready_Model()
 		return E_FAIL;
 	}
 	vPos = _vec4(0.7f, 0.07f, -1.2f, 1.f);
-	
+
 	Info.vPos = vPos;
 	Info.strPrototypeTag = TEXT("Prototype_Model_Select1");
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select_Model"), TEXT("Prototype_GameObject_Select_Model"), &Info)))
@@ -141,7 +141,7 @@ HRESULT CLevel_Select::Ready_Model()
 		return E_FAIL;
 	}
 
-	vPos = _vec4(-0.9f, 0.07f,-1.2f, 1.f);
+	vPos = _vec4(-0.9f, 0.07f, -1.2f, 1.f);
 	Info.vPos = vPos;
 	Info.strPrototypeTag = TEXT("Prototype_Model_Select3");
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Select_Model"), TEXT("Prototype_GameObject_Select_Model"), &Info)))
@@ -239,22 +239,42 @@ HRESULT CLevel_Select::Ready_Camera()
 
 HRESULT CLevel_Select::Ready_Light()
 {
-	LIGHT_DESC LightDesc{};
+	//LIGHT_DESC LightDesc{};
 
-	LightDesc.eType = LIGHT_DESC::Point;
-	LightDesc.vAttenuation = LIGHT_RANGE_50;
-	LightDesc.vDiffuse = _float4(1.f, 0.6f, 0.1f, 1.f);
-	LightDesc.vAmbient = _float4(0.5f,0.5f, 0.5f, 1.f);
-	LightDesc.vPosition = _float4(0.134f, 0.5f,-3.2f, 1.f);
-	LightDesc.vSpecular = _vec4(1.f);
+	//LightDesc.eType = LIGHT_DESC::Point;
+	//LightDesc.vAttenuation = LIGHT_RANGE_13;
+	//LightDesc.vDiffuse = _float4(1.f, 0.5f, 0.1f, 1.f);
+	//LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
+	//LightDesc.vPosition = _float4(0.134f, 0.5f,-3.2f, 1.f);
+	//LightDesc.vSpecular = _vec4(1.f);
 
-	for (size_t i = 0; i < 1; i++)
-	{
-		if (FAILED(m_pGameInstance->Add_Light(LEVEL_SELECT, TEXT("Light_Select") + to_wstring(i), LightDesc)))
-		{
-			return E_FAIL;
-		}
-	}
+	//if (FAILED(m_pGameInstance->Add_Light(LEVEL_SELECT, TEXT("Light_Select") + to_wstring(i), LightDesc)))
+	//{
+	//	return E_FAIL;
+	//}
+
+	EffectInfo Effect = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BoneFire");
+	_mat EffectMat = _mat::CreateTranslation(_vec3(0.f, 0.85f, -3.3f));
+	Effect.pMatrix = &EffectMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Effect);
+	
+	// 좌
+	Effect = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"TorchFire");
+	EffectMat = _mat::CreateTranslation(_vec3(-2.58f, 2.7f, -0.79f));
+	Effect.pMatrix = &EffectMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Effect);
+
+	// 중
+	Effect = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"TorchFire");
+	EffectMat = _mat::CreateTranslation(_vec3(-0.07f, 2.4f, -1.f));
+	Effect.pMatrix = &EffectMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Effect);
+
+	// 우
+	Effect = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"TorchFire");
+	EffectMat = _mat::CreateTranslation(_vec3(2.89f, 2.84f, -1.427f));
+	Effect.pMatrix = &EffectMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Effect);
 
 	return S_OK;
 }

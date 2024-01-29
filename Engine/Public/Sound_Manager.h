@@ -20,6 +20,7 @@ public:
 	void SetChannelVolume(_uint iChannel, _float fVolume);
 	void Update();
 	_bool Get_IsPlayingSound(_uint iChannel);
+	_float GetChannelVolume(_uint iChannel);
 
 private:
 	map<const wstring, FMOD::Sound*> m_Sound;

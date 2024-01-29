@@ -181,11 +181,11 @@ PS_OUT PS_MaskColorAlpha(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
+    float vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex).a * g_MaskTexture.Sample(LinearSampler, Input.vTex).r;
     
     Output.vColor = g_vColor;
     
-    Output.vColor.a = Output.vColor.a * vMask.r * g_fAlpha;
+    Output.vColor.a = Output.vColor.a * vMask * g_fAlpha;
     
     return Output;
 }

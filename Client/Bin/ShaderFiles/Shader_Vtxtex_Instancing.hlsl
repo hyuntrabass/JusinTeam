@@ -7,6 +7,7 @@ vector g_vColor;
 int2 g_vNumSprite;
 uint g_iIndex;
 float g_fDissolveRatio;
+float g_fAlpha;
 
 struct VS_IN
 {
@@ -15,8 +16,7 @@ struct VS_IN
     
     row_major matrix TransformMatrix : World;
     vector vPrevPos : PrevPosition;
-    
-    uint iVertexID : SV_InstanceID;
+    uint iInstanceID : InstanceID;
 };
 
 struct VS_OUT
@@ -53,7 +53,7 @@ VS_OUT VS_Main_RandomIndex(VS_IN Input)
     
     Output.vPos = mul(vPosition, g_WorldMatrix);
     Output.vPSize = float2(Input.vPSize.x * Input.TransformMatrix._11, Input.vPSize.y * Input.TransformMatrix._22);
-    Output.iIndex = Input.iVertexID /*% uint(g_vNumSprite.x * g_vNumSprite.y)*/;
+    Output.iIndex = Input.iInstanceID;
     Output.vPrevPos = Input.vPrevPos;
     
     return Output;
