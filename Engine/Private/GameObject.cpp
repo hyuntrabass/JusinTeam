@@ -9,6 +9,7 @@ CGameObject::CGameObject(_dev pDevice, _context pContext)
 	Safe_AddRef(m_pGameInstance);
 	Safe_AddRef(m_pContext);
 	Safe_AddRef(m_pDevice);
+
 }
 
 CGameObject::CGameObject(const CGameObject& rhs)
@@ -46,6 +47,11 @@ void CGameObject::Late_Tick(_float fTimeDelta)
 }
 
 HRESULT CGameObject::Render()
+{
+	return S_OK;
+}
+
+HRESULT CGameObject::Render_Instance()
 {
 	return S_OK;
 }

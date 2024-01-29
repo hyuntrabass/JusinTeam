@@ -499,6 +499,8 @@ HRESULT CRenderer::Add_RenderGroup(RenderGroup eRenderGroup, CGameObject* pRende
 
 HRESULT CRenderer::Draw_RenderGroup()
 {
+	Clear_Instance();
+
 	if (FAILED(Render_Priority()))
 	{
 		MSG_BOX("Failed to Render : Priority");
@@ -514,6 +516,8 @@ HRESULT CRenderer::Draw_RenderGroup()
 		MSG_BOX("Failed to Render : NonBlend");
 		return E_FAIL;
 	}
+
+
 	if (FAILED(Render_Refraction()))
 	{
 		MSG_BOX("Failed to Render : Refraction");
@@ -571,6 +575,13 @@ HRESULT CRenderer::Draw_RenderGroup()
 		MSG_BOX("Failed to Render : BlenderBlur");
 		return E_FAIL;
 	}
+
+	if (FAILED(Render_NonBlend_Instance()))
+	{
+		MSG_BOX("Failed to Render : NonBlend_Instance");
+		return E_FAIL;
+	}
+
 
 	if (FAILED(Render_UI()))
 	{
@@ -783,6 +794,57 @@ HRESULT CRenderer::Render_NonBlend()
 	{
 		return E_FAIL;
 	}
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_NonBlend_Instance()
+{
+	map<_int, vector<CGameObject*>> InstanceData;
+
+	for (auto& pGameObject : m_RenderObjects[RG_NonBlend_Instance])
+	{
+		if (pGameObject->Find_Component(L"Com_Model") == nullptr)
+			continue;
+
+		const _int iInstanceID = static_cast<CModel*>(pGameObject->Find_Component(L"Com_Model"))->Get_InstanceID();
+		InstanceData[iInstanceID].push_back(pGameObject);
+
+		//Safe_Release(pGameObject);
+	}
+
+	for (auto& iter : InstanceData)
+	{
+		vector<CGameObject*>& vInstances = iter.second;
+		const _uint instanceId = iter.first;
+		CGameObject*& pHead = vInstances[0];
+
+		for (_uint i = 0; i < vInstances.size(); i++)
+		{
+			CGameObject*& pGameObject = vInstances[i];
+			VTXMESHINSTANCING MeshInstancing;
+			CTransform* pTransform = static_cast<CTransform*>(pGameObject->Find_Component(L"Com_Transform"));
+			MeshInstancing.vRight = pTransform->Get_State(State::Right);
+			MeshInstancing.vUp = pTransform->Get_State(State::Up);
+			MeshInstancing.vLook = pTransform->Get_State(State::Look);
+			MeshInstancing.vPos = pTransform->Get_State(State::Pos);
+			Add_Instance(instanceId, MeshInstancing);
+		}
+
+		for (auto& iter : vInstances)
+		{
+			iter->InitRendered();
+		}
+		pHead->Render_Instance();
+		CVIBuffer_Mesh_Instance*& pBuffer = m_InstanceBuffers[instanceId];
+		CModel* pModel = static_cast<CModel*>(pHead->Find_Component(L"Com_Model"));
+		CShader* pShader = static_cast<CShader*>(pHead->Find_Component(L"Com_Shader"));
+		pModel->Render_Instancing(pModel->Get_NumMeshes(), pBuffer, pModel, pShader);
+	}
+	
+
+	m_RenderObjects[RG_NonBlend_Instance].clear();
+
 
 	return S_OK;
 }
@@ -1598,6 +1660,26 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 	return S_OK;
 }
 
+HRESULT CRenderer::Add_Instance(_int iInstanceID, VTXMESHINSTANCING& pMeshInstancing)
+{
+	if (m_InstanceBuffers.find(iInstanceID) == m_InstanceBuffers.end())
+	{
+		m_InstanceBuffers[iInstanceID] = CVIBuffer_Mesh_Instance::Create(m_pDevice, m_pContext);
+	}
+	m_InstanceBuffers[iInstanceID]->Add_Instance(pMeshInstancing);
+	return S_OK;
+}
+
+HRESULT CRenderer::Clear_Instance()
+{
+	for (auto& pair : m_InstanceBuffers)
+	{
+		CVIBuffer_Mesh_Instance* pBuffer = pair.second;
+		pBuffer->Clear_Instance();
+	}
+	return S_OK;
+}
+
 CRenderer* CRenderer::Create(_dev pDevice, _context pContext)
 {
 	CRenderer* pInstance = new CRenderer(pDevice, pContext);
@@ -1620,6 +1702,8 @@ CComponent* CRenderer::Clone(void* pArg)
 
 void CRenderer::Free()
 {
+	Clear_Instance();
+
 	__super::Free();
 
 #pragma region ∆Ú±’»÷µµ Release
@@ -1683,5 +1767,6 @@ void CRenderer::Free()
 	m_DebugComponents.clear();
 #endif // _DEBUG
 
+	Clear_Instance();
 
 }

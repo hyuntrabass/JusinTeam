@@ -33,7 +33,6 @@ struct DummyInfo
 	_float fTriggerSize{};
 	_float4 vPos{};
 	_float4 vLook{};
-	_bool isInstancing{false};
 	vector<_vec4> InstancePos;
 	class CDummy** ppDummy{ nullptr };
 };

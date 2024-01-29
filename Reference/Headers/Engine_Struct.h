@@ -328,6 +328,7 @@ namespace Engine
 		SimpleMath::Vector4 vUp{};
 		SimpleMath::Vector4 vLook{};
 		SimpleMath::Vector4 vPos{};
+		unsigned int m_iID{};
 	};
 
 }

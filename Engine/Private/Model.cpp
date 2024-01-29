@@ -4,7 +4,9 @@
 #include "Bone.h"
 #include "Animation.h"
 #include "GameInstance.h"
+#include "VIBuffer_Mesh_Instance.h"
 
+_int CModel::m_iNextInstanceID = 0;
 CModel::CModel(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
 {
@@ -21,6 +23,8 @@ CModel::CModel(const CModel& rhs)
 	, m_TriggerEffects(rhs.m_TriggerEffects)
 	, m_iNumTriggersSound(rhs.m_iNumTriggersSound)
 	, m_TriggerSounds(rhs.m_TriggerSounds)
+	, m_iInstanceID(rhs.m_iInstanceID)
+
 {
 	for (auto& pPrototypeBone : rhs.m_Bones)
 	{
@@ -340,6 +344,8 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 		return E_FAIL;
 	}
 
+	m_iInstanceID = m_iNextInstanceID++;
+
 	return S_OK;
 }
 
@@ -511,6 +517,48 @@ HRESULT CModel::Render(_uint iMeshIndex)
 {
 	m_Meshes[iMeshIndex]->Render();
 
+	return S_OK;
+}
+
+HRESULT CModel::Render_Instancing(_uint iMeshIndex, CVIBuffer_Mesh_Instance*& pInstanceBuffer, CModel*& pModel, CShader*& pShader)
+{
+	for (_uint i = 0; i < iMeshIndex; i++)
+	{
+		if (FAILED(Bind_Material(pShader, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		{
+			return E_FAIL;
+		}
+
+		_bool HasNorTex{};
+		if (FAILED(Bind_Material(pShader, "g_NormalTexture", i, TextureType::Normals)))
+		{
+			HasNorTex = false;
+		}
+		else
+		{
+			HasNorTex = true;
+		}
+
+		if (FAILED(pShader->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		//if (FAILED(pShader->Bind_RawValue("g_bSelected", &m_isSelected, sizeof _bool)))
+		//{
+		//	return E_FAIL;
+		//}
+
+
+		if (FAILED(pShader->Begin(0)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(pInstanceBuffer->Render(m_Meshes[i])))
+			return E_FAIL;
+		}
+	
 	return S_OK;
 }
 
