@@ -32,8 +32,7 @@ HRESULT CNastron07::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pTransformCom->Set_State(State::Pos, _vec4(5.f, 0.f, 0.f, 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
+	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
@@ -66,6 +65,8 @@ HRESULT CNastron07::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
+	m_pTransformCom->Set_Position( _vec3(5.f, 0.f, 0.f));
+
     return S_OK;
 }
 
@@ -85,6 +86,8 @@ void CNastron07::Tick(_float fTimeDelta)
 	__super::Update_MonsterCollider();
 
 	Update_Trail(fTimeDelta);
+
+	__super::Tick(fTimeDelta);
 }
 
 void CNastron07::Late_Tick(_float fTimeDelta)

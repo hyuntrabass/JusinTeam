@@ -116,6 +116,14 @@ _bool CSound_Manager::Get_IsPlayingSound(_uint eChannel)
 	return bPlay;
 }
 
+_float CSound_Manager::GetChannelVolume(_uint iChannel)
+{
+	_float fVolume{};
+	m_pChannelArr[iChannel]->getVolume(&fVolume);
+
+	return fVolume;
+}
+
 HRESULT CSound_Manager::LoadSoundFile()
 {
 	string FilePath = "../../Client/Bin/Resources/Sound/";

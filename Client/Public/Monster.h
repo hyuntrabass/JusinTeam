@@ -29,6 +29,9 @@ public:
 	virtual _vec4 Compute_PlayerPos();
 	virtual _float Compute_PlayerDistance();
 
+	virtual _vec4 Compute_ModelTestPos();
+	virtual _float Compute_ModelTestDistance();
+
 protected:
 	MonsterInfo m_pInfo{};
 

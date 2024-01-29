@@ -23,7 +23,7 @@ private:
 	CTransform* m_pPlayerTransform{ nullptr };
 	_bool m_isMoveMode{ true };
 	_bool m_isInvenEnd{ false };
-	_float m_fMouseSensor{ 0.08f };
+	_float m_fMouseSensor{ 0.07f };
 	_float m_fSpeed{ 10.f };
 	_float m_fPlayerDistance{ 4.f };
 	_float m_fShakeAcc{ 100.f };

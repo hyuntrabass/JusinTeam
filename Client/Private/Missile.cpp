@@ -1,5 +1,7 @@
 #include "Missile.h"
 
+#include "Groar_Boss.h"
+
 _uint CMissile::m_iMissileID = 0;
 
 CMissile::CMissile(_dev pDevice, _context pContext)
@@ -110,6 +112,11 @@ HRESULT CMissile::Init(void* pArg)
 		m_fDepartTime = 102.f + m_iMissileID * 7.f;
 
 		++m_iMissileID;
+
+		if (m_iMissileID == 6)
+		{
+			m_iMissileID = 0;
+		}
 	}
 
 	break;
@@ -126,17 +133,23 @@ void CMissile::Tick(_float fTimeDelta)
 	{
 	case Client::CMissile::LEFT_THROW:
 	{
-		if (m_fLifeTime >= 1.5f /*|| 플레이어와 충돌했을때*/)
+		if (m_fLifeTime >= 1.f /*|| 플레이어와 충돌했을때*/)
 		{
 			Kill();
 		}
 
-		if (m_pGroarModel->Get_CurrentAnimPos() >= 51.f)
+		if (m_pGroarModel->Get_CurrentAnimationIndex() == CGroar_Boss::MON_GROAR_ASGARD_ATTACK01 && 
+			m_pGroarModel->Get_CurrentAnimPos() >= 51.f)
+		{
+			m_bShoot = true;
+		}
+
+
+		if (m_bShoot == true)
 		{
 			m_pTransformCom->Go_Straight(fTimeDelta);
 			m_fLifeTime += fTimeDelta;
 		}
-
 		else
 		{
 			_mat vLeftHandMatrix = *(m_pGroarModel->Get_BoneMatrix("Bip002-L-Finger2")) * m_pGroarTransform->Get_World_Matrix();
@@ -153,17 +166,23 @@ void CMissile::Tick(_float fTimeDelta)
 
 	case Client::CMissile::RIGHT_THROW:
 	{
-		if (m_fLifeTime >= 1.5f /*|| 플레이어와 충돌했을때*/)
+		if (m_fLifeTime >= 1.f /*|| 플레이어와 충돌했을때*/)
 		{
 			Kill();
 		}
 
-		if (m_pGroarModel->Get_CurrentAnimPos() >= 38.f)
+		if (m_pGroarModel->Get_CurrentAnimationIndex() == CGroar_Boss::MON_GROAR_ASGARD_ATTACK00 &&
+			m_pGroarModel->Get_CurrentAnimPos() >= 38.f)
+		{
+			m_bShoot = true;
+		}
+
+
+		if (m_bShoot == true)
 		{
 			m_pTransformCom->Go_Straight(fTimeDelta);
 			m_fLifeTime += fTimeDelta;
 		}
-
 		else
 		{
 			_mat vRightHandMatrix = *(m_pGroarModel->Get_BoneMatrix("Bip002-R-Finger2")) * m_pGroarTransform->Get_World_Matrix();
@@ -173,107 +192,33 @@ void CMissile::Tick(_float fTimeDelta)
 			_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 			m_pTransformCom->LookAt(vPlayerPos);
 		}
+
 	}
 	break;
 
 	case Client::CMissile::SIX_MISSILE:
 
-		if (m_fLifeTime >= 1.5f /*|| 플레이어와 충돌했을때*/)
+		if (m_fLifeTime >= 1.f /*|| 플레이어와 충돌했을때*/)
 		{
 			Kill();
 		}
 
-		switch (m_iMissileIndex)
+		if (m_pGroarModel->Get_CurrentAnimationIndex() == CGroar_Boss::MON_GROAR_ASGARD_ATTACK02 &&
+			m_pGroarModel->Get_CurrentAnimPos() >= m_fDepartTime)
 		{
-		case 1:
-			if (m_pGroarModel->Get_CurrentAnimPos() >= m_fDepartTime)
-			{
-				m_pTransformCom->Go_Straight(fTimeDelta);
-				m_fLifeTime += fTimeDelta;
-			}
-			else
-			{
-				CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
-				_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-				m_pTransformCom->LookAt(vPlayerPos);
-			}
+			m_bShoot = true;
+		}
 
-			break;
-
-		case 2:
-			if (m_pGroarModel->Get_CurrentAnimPos() >= m_fDepartTime)
-			{
-				m_pTransformCom->Go_Straight(fTimeDelta);
-				m_fLifeTime += fTimeDelta;
-			}
-			else
-			{
-				CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
-				_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-				m_pTransformCom->LookAt(vPlayerPos);
-			}
-
-			break;
-
-		case 3:
-			if (m_pGroarModel->Get_CurrentAnimPos() >= m_fDepartTime)
-			{
-				m_pTransformCom->Go_Straight(fTimeDelta);
-				m_fLifeTime += fTimeDelta;
-			}
-			else
-			{
-				CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
-				_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-				m_pTransformCom->LookAt(vPlayerPos);
-			}
-
-			break;
-
-		case 4:
-			if (m_pGroarModel->Get_CurrentAnimPos() >= m_fDepartTime)
-			{
-				m_pTransformCom->Go_Straight(fTimeDelta);
-				m_fLifeTime += fTimeDelta;
-			}
-			else
-			{
-				CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
-				_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-				m_pTransformCom->LookAt(vPlayerPos);
-			}
-
-			break;
-
-		case 5:
-			if (m_pGroarModel->Get_CurrentAnimPos() >= m_fDepartTime)
-			{
-				m_pTransformCom->Go_Straight(fTimeDelta);
-				m_fLifeTime += fTimeDelta;
-			}
-			else
-			{
-				CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
-				_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-				m_pTransformCom->LookAt(vPlayerPos);
-			}
-
-			break;
-
-		case 6:
-			if (m_pGroarModel->Get_CurrentAnimPos() >= m_fDepartTime)
-			{
-				m_pTransformCom->Go_Straight(fTimeDelta);
-				m_fLifeTime += fTimeDelta;
-			}
-			else
-			{
-				CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
-				_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-				m_pTransformCom->LookAt(vPlayerPos);
-			}
-
-			break;
+		if (m_bShoot == true)
+		{
+			m_pTransformCom->Go_Straight(fTimeDelta);
+			m_fLifeTime += fTimeDelta;
+		}
+		else
+		{
+			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+			_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+			m_pTransformCom->LookAt(vPlayerPos);
 		}
 
 		break;
