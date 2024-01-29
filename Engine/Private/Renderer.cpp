@@ -17,7 +17,6 @@ CRenderer::CRenderer(_dev pDevice, _context pContext)
 
 HRESULT CRenderer::Init_Prototype()
 {
-
 	_uint iNumViewPorts{ 1 };
 
 	D3D11_VIEWPORT ViewportDesc{};

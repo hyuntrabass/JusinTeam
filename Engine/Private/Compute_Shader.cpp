@@ -37,7 +37,7 @@ HRESULT CCompute_Shader::Init_Prototype(const wstring& strShaderFilePath, const 
 
 	ID3DBlob* ErrorBlob = nullptr;
 
-	if (FAILED(D3DCompileFromFile(strShaderFilePath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, strEntryPoint.c_str(), "cs_5_0", 0, 0, &m_pBlob, &ErrorBlob))) {
+	if (FAILED(D3DCompileFromFile(strShaderFilePath.c_str(), nullptr, nullptr, strEntryPoint.c_str(), "cs_5_0", 0, 0, &m_pBlob, &ErrorBlob))) {
 		if (nullptr != ErrorBlob) {
 			OutputDebugStringA((_char*)ErrorBlob->GetBufferPointer());
 			Safe_Release(ErrorBlob);
@@ -86,7 +86,7 @@ HRESULT CCompute_Shader::Begin(_uint3 ThreadGroupCount)
 	m_pContext->CSSetUnorderedAccessViews(m_iSlot.y, 1, &NULL_UAV, &NO_OFFSET);
 
 
-	m_pContext->CSSetShader(nullptr, nullptr, 0);
+	//m_pContext->CSSetShader(nullptr, nullptr, 0);
 
 	return S_OK;
 }

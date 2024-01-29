@@ -30,16 +30,15 @@ HRESULT CLake::Init(void* pArg)
 	_vec4 vRight = m_pTransformCom->Get_State(State::Right);
 	m_pTransformCom->Rotation(vRight, 90.f);
 
-	m_Desc.fReflectionScale = 0.1f;
-	m_Desc.fRefractionScale = 0.1f;
-	m_Desc.fWaterSpeed = 0.001f;
+	m_Desc.fReflectionScale = 0.05f;
+	m_Desc.fRefractionScale = 0.05f;
+	m_Desc.fWaterSpeed = 0.1f;
 
 	return S_OK;
 }
 
 void CLake::Tick(_float fTimeDelta)
 {
-	m_Desc.fWaterSpeed = 1.f;
 
 	if (m_pGameInstance->Key_Down(DIK_K))
 		m_Desc.fReflectionScale += 0.01f;
@@ -110,7 +109,6 @@ HRESULT CLake::Add_Component()
 
 HRESULT CLake::Bind_ShaderResources()
 {
-	m_pTransformCom->Set_Position(_vec3(100.f, 10.f, 100.f));
 
 	_float Y = m_pTransformCom->Get_CenterPos().y;
 
