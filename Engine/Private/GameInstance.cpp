@@ -610,6 +610,26 @@ _matrix CGameInstance::Get_OldViewMatrix() const
 	return m_pPipeLine->Get_OldViewMatrix();
 }
 
+_mat CGameInstance::ChagneViewForReflection(_float fWaterHeight)
+{
+	if (!m_pPipeLine)
+	{
+		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
+	}
+
+	return m_pPipeLine->ChagneViewForReflection(fWaterHeight);
+}
+
+void CGameInstance::Update_PipeLine()
+{
+	if (!m_pPipeLine)
+	{
+		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
+	}
+
+	return m_pPipeLine->Tick();
+}
+
 void CGameInstance::TransformRay_ToLocal(_mat WorldMatrix)
 {
 	if (!m_pPicking)

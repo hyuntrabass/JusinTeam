@@ -8,6 +8,8 @@
 #include "Effect_Manager.h"
 #include "UI_Manager.h"
 
+//원명의 꼽사리
+#include "Lake.h"
 
 CLevel_GamePlay::CLevel_GamePlay(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -336,7 +338,14 @@ HRESULT CLevel_GamePlay::Ready_Map()
 
 	inFile.close();
 
-
+	CLake::WATER_DESC Desc;
+	Desc.fReflectionScale = 10.f;
+	Desc.fRefractionScale = 10.f;
+	Desc.vPos = _vec3(100.f, 1.f, 100.f);
+	Desc.vSize = _vec2(200.f,200.f);
+	Desc.fWaterSpeed = 10.f;
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, L"Layer_Map", L"Prototype_GameObject_Water", &Desc)))
+		return E_FAIL;
 
 	return S_OK;
 }

@@ -84,9 +84,13 @@ public: // PipeLine
 
 	void Set_Transform(TransformType eState, const _mat& TransformMatrix);
 
+	// ¿ø¸í
 	void Set_OldViewMatrix(const _mat& TransformMatrix);
 	_mat Get_OldViewMatrix_vec4x4() const;
 	_matrix Get_OldViewMatrix() const;
+
+	_mat ChagneViewForReflection(_float fWaterHeight);
+	void Update_PipeLine();
 
 
 public: // Picking

@@ -27,8 +27,8 @@ public:
 	virtual HRESULT Render_Shadow();
 
 	// ¿ø¸í
-	virtual HRESULT Render_Refract();
-	virtual HRESULT Render_Reflection();
+	virtual HRESULT Render_Refract(_float4 vClipPlane);
+	virtual HRESULT Render_Reflection(_float4 vClipPlane);
 
 public:
 	class CComponent* Find_Component(const wstring& strComTag);

@@ -9,7 +9,9 @@ float g_fCamFar;
 float4 g_vClipPlane;
 
 Texture2D g_DiffuseTexture;
+bool g_HasNorTex;
 Texture2D g_NormalTexture;
+bool g_HasSpecTex;
 Texture2D g_SpecTexture;
 
 struct VS_IN
@@ -102,6 +104,8 @@ struct PS_OUT_DEFERRED
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
+    vector vSpecular : SV_Target3;
+    
 };
 
 PS_OUT_DEFERRED PS_Main(PS_IN Input)
@@ -112,20 +116,33 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     if(vMtrlDiffuse.a == 0.f)
         discard;
     
-    float3 vNormal = Input.vNor.xyz;
+    float3 vNormal;
+    if (g_HasNorTex)
+    {
+        vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
     
-    //vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
+        vNormal = vNormalDesc.xyz * 2.f - 1.f;
     
-    //float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+        float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
     
-    //float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
+        vNormal = mul(normalize(vNormal), WorldMatrix) * -1.f;
+    }
+    else
+    {
+        vNormal = Input.vNor.xyz;
+    }
     
-    //vNormal = mul(normalize(vNormal), WorldMatrix) * -1.f;
+    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
+    if (g_HasSpecTex)
+    {
+        vSpecular = g_SpecTexture.Sample(LinearSampler, Input.vTex);
+    };
     
     
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vSpecular = vSpecular;
     
     return Output;
 }
@@ -151,20 +168,32 @@ PS_OUT_DEFERRED PS_Ref_Water(PS_WATER_In Input)
     if (vMtrlDiffuse.a < 0.3f)
         discard;
     
-    float3 vNormal = Input.vNor.xyz;
+    float3 vNormal;
+    if (g_HasNorTex)
+    {
+        vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
     
-    //vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
+        vNormal = vNormalDesc.xyz * 2.f - 1.f;
     
-    //float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+        float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
     
-    //float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
+        vNormal = mul(normalize(vNormal), WorldMatrix) * -1.f;
+    }
+    else
+    {
+        vNormal = Input.vNor.xyz;
+    }
     
-    //vNormal = mul(normalize(vNormal), WorldMatrix) * -1.f;
-    
+    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
+    if (g_HasSpecTex)
+    {
+        vSpecular = g_SpecTexture.Sample(LinearSampler, Input.vTex);
+    }
     
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vSpecular = vSpecular;
 
     
     return Output;
