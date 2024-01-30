@@ -1,8 +1,6 @@
 #include "Player.h"
-#include "BodyPart.h"
 #include "UI_Manager.h"
 #include "Event_Manager.h"
-#include "Weapon.h"
 #include "Arrow.h"
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -72,7 +70,7 @@ HRESULT CPlayer::Init(void* pArg)
 
 	m_Left_Mat = m_pModelCom->Get_BoneMatrix("B_Weapon_L");
 	m_Right_Mat = m_pModelCom->Get_BoneMatrix("B_Weapon_R");
-	for(int i=0; i<5;i++)
+	for (int i = 0; i < 5; i++)
 	{
 		m_pLeft_Trail[i]->Off();
 		m_pRight_Trail[i]->Off();
@@ -104,7 +102,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		if (m_eState == Attack or m_eState == Skill1 or m_eState == Skill2 or m_eState == Skill3 or m_eState == Skill4)
 		{
 			if (m_Weapon_CurrentIndex < WP_UNEQUIP && m_Weapon_CurrentIndex>BOW4)
-			m_pLeft_Trail[(m_Weapon_CurrentIndex)-5]->On();
+				m_pLeft_Trail[(m_Weapon_CurrentIndex)-5]->On();
 		}
 		else if (m_Weapon_CurrentIndex < WP_UNEQUIP && m_Weapon_CurrentIndex>BOW4)
 			m_pLeft_Trail[(m_Weapon_CurrentIndex)-5]->Off();
@@ -112,7 +110,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		if (m_eState == Skill2 or m_eState == Skill4)
 		{
 			if (m_Weapon_CurrentIndex < WP_UNEQUIP && m_Weapon_CurrentIndex>BOW4)
-			m_pRight_Trail[(m_Weapon_CurrentIndex)-5]->On();
+				m_pRight_Trail[(m_Weapon_CurrentIndex)-5]->On();
 		}
 		else if (m_Weapon_CurrentIndex < WP_UNEQUIP && m_Weapon_CurrentIndex>BOW4)
 			m_pRight_Trail[(m_Weapon_CurrentIndex)-5]->Off();
@@ -170,18 +168,32 @@ void CPlayer::Tick(_float fTimeDelta)
 		}
 		Change_Parts(eType, CUI_Manager::Get_Instance()->Get_CustomPart(eType));
 	}
-
-
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD5))
+	{
+		m_eState = Logging;
+		m_iLoggingCount = 0;
+	}
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD6))
+	{
+		m_eState = Mining;
+		m_iMiningCount = 0;
+	}
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD7))
+	{
+		m_eState = Collect_Start;
+	}
 	if (m_pGameInstance->Key_Down(DIK_8))
 	{
 		if (!m_bIsMount)
+
 		{
 			m_bIsMount = true;
 			m_eState = Mount;
 			m_Animation.iAnimIndex = Anim_Mount_Idle;
-			Summon_Riding(Nihilir);
-			
-		
+			Summon_Riding(Bird);
+
+			m_pGameInstance->Set_FlyCam(true);
+
 		}
 		else
 		{
@@ -330,7 +342,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		Change_Weapon(WP_SWORD, SWORD0);
 	}
 
-	for(int i =0; i<5;i++)
+	for (int i = 0; i < 5; i++)
 	{
 		m_pLeft_Trail[i]->Late_Tick(fTimeDelta);
 		m_pRight_Trail[i]->Late_Tick(fTimeDelta);
@@ -708,7 +720,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 			break;
 		}
 	}
-	
+
 	m_StartRegen = 0.f;
 }
 
@@ -739,9 +751,9 @@ void CPlayer::Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex)
 		m_bWeapon_Unequip = true;
 	else
 	{
-		if(m_Current_Weapon == WP_SWORD)
+		if (m_Current_Weapon == WP_SWORD)
 		{
-			if(m_Weapon_CurrentIndex < WP_UNEQUIP && m_Weapon_CurrentIndex>BOW4)
+			if (m_Weapon_CurrentIndex < WP_UNEQUIP && m_Weapon_CurrentIndex>BOW4)
 			{
 				m_pRight_Trail[(m_Weapon_CurrentIndex)-5]->Off();
 				m_pLeft_Trail[(m_Weapon_CurrentIndex)-5]->Off();
@@ -836,24 +848,13 @@ void CPlayer::Move(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_1))
 	{
 		CEvent_Manager::Get_Instance()->Update_Quest(TEXT("공격하기"));
-		
+
 		if (m_eState != Skill1) // ui한테 스킬 쓸수 있어? 허락
 		{
 			Ready_Skill(ST_Skill1); // 1번창에 있던 스킬 넣어주기
 		}
 	}
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
-	{
-		Set_Damage(1, MonAtt_Hit);
-	}
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD3))
-	{
-		Set_Damage(1, MonAtt_Stun);
-	}
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
-	{
-		Set_Damage(1, MonAtt_KnockDown);
-	}
+
 	if (m_pGameInstance->Key_Down(DIK_2))
 	{
 		if (m_eState != Skill2)
@@ -886,7 +887,7 @@ void CPlayer::Move(_float fTimeDelta)
 	}
 	if (m_pGameInstance->Key_Down(DIK_5))
 	{
-		if(m_eState == Idle)
+		if (m_eState == Idle)
 		{
 			if (m_Current_Weapon == WP_SWORD)
 				Change_Weapon(WP_BOW, BOW0);
@@ -899,14 +900,14 @@ void CPlayer::Move(_float fTimeDelta)
 	{
 		if (m_Current_Weapon == WP_BOW)
 		{
-			if (m_eState ==Idle)
+			if (m_eState == Idle)
 			{
 				m_eState = Aim_Idle;
 				m_Animation.iAnimIndex = Anim_LoadingScene_Pose_Sniper;
 				m_iCurrentSkill_Index = Aim_Idle;
 				m_pGameInstance->Set_AimMode(true);
 			}
-			else if(m_eState == Aim_Idle)
+			else if (m_eState == Aim_Idle)
 			{
 				m_eState = Attack_Idle;
 				m_pGameInstance->Set_AimMode(false);
@@ -1720,7 +1721,7 @@ void CPlayer::Sword_Att_Camera_Effect()
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
 		if (m_iAttackCombo == 1)
 		{
-	
+
 			if (Index >= 20.f && Index <= 21.f)
 			{
 				if (!m_bAttacked)
@@ -2074,9 +2075,9 @@ void CPlayer::Bow_Att_Camera_Effect()
 		{
 			Create_Arrow(AT_Bow_Common);
 			CCollider* TargetColl = m_pGameInstance->Get_Nearest_MonsterCollider();
-			if(TargetColl !=nullptr)
+			if (TargetColl != nullptr)
 			{
-				_vec4 vLook = _vec4(TargetColl->Get_ColliderPos(),1.f);
+				_vec4 vLook = _vec4(TargetColl->Get_ColliderPos(), 1.f);
 				vLook.y = m_pTransformCom->Get_State(State::Pos).y;
 				m_pTransformCom->LookAt(vLook);
 			}
@@ -2134,7 +2135,7 @@ void CPlayer::Bow_Att_Camera_Effect()
 
 			m_UsingMotionBlur = true;
 		}
-		else if (Index >= 65.f && m_ReadyArrow)
+		else if (Index >= 50.f && m_ReadyArrow)
 		{
 			Create_Arrow(AT_Bow_Skill3);
 			m_ReadyArrow = false;
@@ -2336,7 +2337,7 @@ void CPlayer::Arrow_Rain()
 			random2 *= -1;
 		random2 *= 0.05;
 
-		Type.vPos = m_pTransformCom->Get_State(State::Pos) + m_vArrowLook * 11.f + _vec4(random, 9.f, random2, 0.f)/* + m_pTransformCom->Get_State(State::Right) * 4.f*/;
+		Type.vPos = m_pTransformCom->Get_State(State::Pos) + m_vArrowLook * 11.f + _vec4(random, 10.f, random2, 0.f)/* + m_pTransformCom->Get_State(State::Right) * 4.f*/;
 
 		Type.vLook = _vec4(0.01f, -1.f, 0.f, 0.f);
 
@@ -2550,6 +2551,31 @@ void CPlayer::Init_State()
 			break;
 		case Client::CPlayer::Die:
 			m_Animation.iAnimIndex = Anim_die;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Collect_Start:
+			m_Animation.iAnimIndex = Anim_Collect_Start;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Collect_Loop:
+			m_Animation.iAnimIndex = Anim_Collect_loop;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Collect_End:
+			m_Animation.iAnimIndex = Anim_Collect_end;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Mining:
+			m_Animation.iAnimIndex = Anim_Mining;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Logging:
+			m_Animation.iAnimIndex = Anim_logging;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
 			break;
@@ -2788,7 +2814,59 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		{
 			m_eState = Revival_Start;
 		}
+		break;
+	case Client::CPlayer::Collect_Start:
+		if (m_pModelCom->IsAnimationFinished(Anim_Collect_Start))
+		{
+			m_eState = Collect_Loop;
+		}
+		break;
+	case Client::CPlayer::Collect_Loop:
+		if (m_pModelCom->IsAnimationFinished(Anim_Collect_loop))
+		{
+			m_eState = Collect_End;
+		}
+		break;
+	case Client::CPlayer::Collect_End:
+		if (m_pModelCom->IsAnimationFinished(Anim_Collect_end))
+		{
+			m_eState = Idle;
+		}
+		break;
+	case Client::CPlayer::Mining:
+		m_Animation.bRestartAnimation = false;
+		if (m_pModelCom->IsAnimationFinished(Anim_Mining))
+		{
+			m_iMiningCount++;
+			if (m_iMiningCount >= 3)
+			{
+				m_eState = Idle;
+				m_Animation.iAnimIndex = Anim_idle_00;
+			}
+			else
+			{
+				m_Animation.iAnimIndex = Anim_Mining;
+				m_Animation.bRestartAnimation = true;
+			}
+		}
+		break;
+	case Client::CPlayer::Logging:
+		m_Animation.bRestartAnimation = false;
+		if (m_pModelCom->IsAnimationFinished(Anim_logging))
+		{
+			m_iLoggingCount++;
+			if (m_iLoggingCount >= 3)
+			{
+				m_eState = Idle;
+				m_Animation.iAnimIndex = Anim_idle_00;
 
+			}
+			else
+			{
+				m_Animation.iAnimIndex = Anim_logging;
+				m_Animation.bRestartAnimation = true;
+			}
+		}
 		break;
 	default:
 		break;
@@ -2873,7 +2951,7 @@ HRESULT CPlayer::Add_Components()
 	_mat matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(50.f), 2.f, 0.01f, 20.f);
 
 
-		CollDesc.matFrustum = matView * matProj;
+	CollDesc.matFrustum = matView * matProj;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_CommonBow_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Bow_Common]), &CollDesc)))
 	{

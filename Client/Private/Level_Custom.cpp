@@ -19,6 +19,7 @@ HRESULT CLevel_Custom::Init()
 		return E_FAIL;
 	}
 
+
 	if (FAILED(Ready_UI()))
 	{
 		MSG_BOX("Failed to Ready UI");

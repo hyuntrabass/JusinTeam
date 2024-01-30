@@ -99,7 +99,10 @@ void CRiding::Tick(_float fTimeDelta)
 	Init_State();
 	Tick_State(fTimeDelta);
 	m_pModelCom->Set_Animation(m_Animation);
+
+	if(m_CurrentIndex!=Bird)
 	m_pTransformCom->Gravity(fTimeDelta);
+
 	//Update_Collider();
 }
 

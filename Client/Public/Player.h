@@ -1,8 +1,7 @@
 #pragma once
 #include "Client_Define.h"
 #include "GameObject.h"
-#include "BodyPart.h"
-#include "Weapon.h"
+
 #include "Riding.h"
 #include "NameTag.h"
 #include "CommonTrail.h"
@@ -269,6 +268,11 @@ public:
 		Climb_R,
 		Hit,
 		KnockDown,
+		Collect_Start,
+		Collect_Loop,
+		Collect_End,
+		Mining,
+		Logging,
 		Stun,
 		Stun_Start,
 		Die,
@@ -378,6 +382,8 @@ private:
 	_bool	  m_isInvenActive{ false };
 	_float m_fSkillSpeed{};
 	_bool m_bAttackStop{};
+	_uint m_iMiningCount{};
+	_uint m_iLoggingCount{};
 	_float4 m_vPos{};
 	_bool m_bArrowRain_Start{};
 	_bool m_bStartGame{};

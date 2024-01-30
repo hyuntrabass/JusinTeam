@@ -11,7 +11,7 @@
 #include "Player.h"
 #include "Select.h"
 #include "FadeBox.h"
-#include "BodyPart.h"
+
 #include "Logo_Text.h"
 #include "Logo_Dust.h"
 #include "Logo_Stone.h"
@@ -21,7 +21,7 @@
 #include "Camera_Debug.h"
 #include "Select_Model.h"
 #include "Select_Npc.h"
-#include "Weapon.h"
+
 #include "Custom.h"
 #include "SelectDesc.h"
 #include "TextButton.h"

@@ -97,8 +97,11 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			m_fShakeAcc = m_pGameInstance->Get_ShakePower();
 			m_pGameInstance->Set_ShakeCam(false);
 		}
-
-		if (!m_pGameInstance->Get_AimMode())
+		if (m_pGameInstance->Get_FlyCam())
+		{
+			m_pTransformCom->LookAt(m_pPlayerTransform->Get_State(State::Pos));
+		}
+		else if (!m_pGameInstance->Get_AimMode())
 		{
 			if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON))
 			{
@@ -166,7 +169,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 				+ (m_pTransformCom->Get_State(State::Up) * CamAttackZoom * 0.15f);
 
 			m_vOriCamPos = XMVectorLerp(m_vOriCamPos, vCamPos, 0.3f);
-
+			
 			_vec4 OriCam{};
 			if (m_AimZoomInTime < 1.f)
 				OriCam = XMVectorLerp(m_vAimCamPos, m_vOriCamPos, m_AimZoomInTime);
