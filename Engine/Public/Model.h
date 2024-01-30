@@ -57,7 +57,7 @@ public:
 
 	HRESULT Render(_uint iMeshIndex);
 	//HRESULT Render_Instancing(_uint iMeshIndex, class CVIBuffer_Mesh_Instance*& pInstanceBuffer, CModel*& pModel, CShader*& pShader, _mat WorldMat);
-	HRESULT Render_Instancing(class CVIBuffer_Mesh_Instance*& pInstanceBuffer, CShader*& pShader);
+	HRESULT Render_Instancing(class CVIBuffer_Mesh_Instance*& pInstanceBuffer, class CShader*& pShader);
 
 	_bool Intersect_RayModel(_fmatrix WorldMatrix, _vec4* pPickPos);
 	_int Get_InstanceID() { return m_iInstanceID; }

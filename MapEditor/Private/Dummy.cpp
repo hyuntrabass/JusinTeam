@@ -99,9 +99,9 @@ void CDummy::Late_Tick(_float fTimeDelta)
 if(m_eType == ItemType::Trigger)
 	m_pRendererCom->Add_DebugComponent(m_pCollider);
 #endif
-//if (m_eType == ItemType::Environment)
-//	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
-//else
+if (m_eType == ItemType::Environment)
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
+else
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 
 }
@@ -243,9 +243,19 @@ HRESULT CDummy::Add_Components()
 	}
 	else
 	{
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxStatMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+		if (m_eType == ItemType::Environment)
 		{
-			return E_FAIL;
+			if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxStatMesh_Instance"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+			{
+				return E_FAIL;
+			}
+		}
+		else
+		{
+			if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxStatMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+			{
+				return E_FAIL;
+			}
 		}
 		m_iShaderPass = StaticPass_Default;
 		m_iOutLineShaderPass = StaticPass_OutLine;
@@ -287,7 +297,55 @@ HRESULT CDummy::Add_Components()
 
 HRESULT CDummy::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	if (m_eType != ItemType::Environment)
+	{
+		if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof _float4)))
+		{
+			return E_FAIL;
+		}
+		
+
+		if (m_Info.eType == ItemType::Trigger)
+		{
+			_float4 vColor{ 0.3f, 0.8f, 0.3f, 0.5f };
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _float4)))
+			{
+				return E_FAIL;
+			}
+
+			const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_EDITOR, TEXT("Light_Main"));
+			if (!pLightDesc)
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof _float4)))
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof _float4)))
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof _float4)))
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof _float4)))
+			{
+				return E_FAIL;
+			}
+		}
+
+	}
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
 	{
 		return E_FAIL;
 	}
@@ -302,56 +360,10 @@ HRESULT CDummy::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof _float4)))
-	{
-		return E_FAIL;
-	}
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_iID", &m_iID, sizeof(_int))))
-	{
-		return E_FAIL;
-	}
 	
 
-	if (m_Info.eType == ItemType::Trigger)
-	{
-		_float4 vColor{ 0.3f, 0.8f, 0.3f, 0.5f };
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _float4)))
-		{
-			return E_FAIL;
-		}
-
-		const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_EDITOR, TEXT("Light_Main"));
-		if (!pLightDesc)
-		{
-			return E_FAIL;
-		}
-
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof _float4)))
-		{
-			return E_FAIL;
-		}
-
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof _float4)))
-		{
-			return E_FAIL;
-		}
-
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof _float4)))
-		{
-			return E_FAIL;
-		}
-
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof _float4)))
-		{
-			return E_FAIL;
-		}
-	}
+	
 
 	return S_OK;
 }

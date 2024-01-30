@@ -916,35 +916,35 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 		m_pSelectedDummy = nullptr;
 	}
 
-	//if (m_eItemType == ItemType::Environment)
-	//{
-	//	_uint InstancePos = m_vInstancePos.size();
-	//	for (_uint i = 0; i < InstancePos; i++)
-	//	{
-	//		DummyInfo Info{};
-	//		Info.ppDummy = &m_pSelectedDummy;
-	//		Info.vPos = m_vInstancePos[i];
-	//		//Info.InstancePos = m_vInstancePos;
-	//		XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_vLook)));
-	//		Info.Prototype = L"Prototype_Model_";
-	//		Info.eType = m_eItemType;
+	if (m_eItemType == ItemType::Environment)
+	{
+		_uint InstancePos = m_vInstancePos.size();
+		for (_uint i = 0; i < InstancePos; i++)
+		{
+			DummyInfo Info{};
+			Info.ppDummy = &m_pSelectedDummy;
+			Info.vPos = m_vInstancePos[i];
+			//Info.InstancePos = m_vInstancePos;
+			XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_vLook)));
+			Info.Prototype = L"Prototype_Model_";
+			Info.eType = m_eItemType;
 
-	//		_tchar strUnicode[MAX_PATH]{};
-	//		MultiByteToWideChar(CP_ACP, 0, Envirs[m_eType][iListIndex], static_cast<int>(strlen(Envirs[m_eType][iListIndex])), strUnicode, static_cast<int>(strlen(Envirs[m_eType][iListIndex])));
-	//		Info.Prototype += strUnicode;
+			_tchar strUnicode[MAX_PATH]{};
+			MultiByteToWideChar(CP_ACP, 0, Envirs[m_eType][iListIndex], static_cast<int>(strlen(Envirs[m_eType][iListIndex])), strUnicode, static_cast<int>(strlen(Envirs[m_eType][iListIndex])));
+			Info.Prototype += strUnicode;
 
 
-	//		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
-	//		{
-	//			MSG_BOX("Failed to Add Layer : Dummy");
-	//		}
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
+			{
+				MSG_BOX("Failed to Add Layer : Dummy");
+			}
 
-	//		m_EnvirList.push_back(m_pSelectedDummy);
-	//		m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
-	//		m_pSelectedDummy = nullptr;
-	//	}
-	//}
-	//else
+			m_EnvirList.push_back(m_pSelectedDummy);
+			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
+			m_pSelectedDummy = nullptr;
+		}
+	}
+	else
 	{
 		DummyInfo Info{};
 		Info.ppDummy = &m_pSelectedDummy;

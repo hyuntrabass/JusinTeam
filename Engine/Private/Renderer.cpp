@@ -882,12 +882,13 @@ HRESULT CRenderer::Render_NonBlend_Instance()
 		for (_uint i = 0; i < vInstances.size(); i++)
 		{
 			CGameObject*& pGameObject = vInstances[i];
-			VTXMESHINSTANCING MeshInstancing;
+			Instance_Data MeshInstancing;
 			CTransform* pTransform = static_cast<CTransform*>(pGameObject->Find_Component(L"Com_Transform"));
-			MeshInstancing.vRight = pTransform->Get_State(State::Right);
-			MeshInstancing.vUp = pTransform->Get_State(State::Up);
-			MeshInstancing.vLook = pTransform->Get_State(State::Look);
-			MeshInstancing.vPos = pTransform->Get_State(State::Pos);
+			//MeshInstancing.vRight = pTransform->Get_State(State::Right);
+			//MeshInstancing.vUp = pTransform->Get_State(State::Up);
+			//MeshInstancing.vLook = pTransform->Get_State(State::Look);
+			//MeshInstancing.vPos = pTransform->Get_State(State::Pos);
+			MeshInstancing.mMatrix = pTransform->Get_World_Matrix();
 			MeshInstancing.m_iID = pGameObject->Get_ID();
 			Add_Instance(instanceId, MeshInstancing);
 		}
@@ -896,8 +897,8 @@ HRESULT CRenderer::Render_NonBlend_Instance()
 		{
 			iter->InitRendered();
 		}
-		pHead->Render_Instance();
 		CVIBuffer_Mesh_Instance*& pBuffer = m_InstanceBuffers[instanceId];
+		pHead->Render_Instance();
 		CModel* pModel = static_cast<CModel*>(pHead->Find_Component(L"Com_Model"));
 		CShader* pShader = static_cast<CShader*>(pHead->Find_Component(L"Com_Shader"));
 		pModel->Render_Instancing(pBuffer, pShader);
@@ -1929,7 +1930,7 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 	return S_OK;
 }
 
-HRESULT CRenderer::Add_Instance(_int iInstanceID, VTXMESHINSTANCING& pMeshInstancing)
+HRESULT CRenderer::Add_Instance(_int iInstanceID, Instance_Data& pMeshInstancing)
 {
 	if (m_InstanceBuffers.find(iInstanceID) == m_InstanceBuffers.end())
 	{

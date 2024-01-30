@@ -326,13 +326,24 @@ namespace Engine
 		bool isMesh{ false };
 	};
 
-	using VTXMESHINSTANCING = struct tagVertex_Mesh_Instancing
+	struct Instance_Data
 	{
-		SimpleMath::Vector4 vRight{};
-		SimpleMath::Vector4 vUp{};
-		SimpleMath::Vector4 vLook{};
-		SimpleMath::Vector4 vPos{};
+		SimpleMath::Matrix mMatrix{};
 		unsigned int m_iID{};
+	};
+
+	using VTXMESH_INSTANCING = struct ENGINE_DLL tagVertex_Mesh_Instancing
+	{
+		XMFLOAT3 vPosition{};
+		XMFLOAT3 vNormal{};
+		XMFLOAT2 vTexcoord{};
+		XMFLOAT3 vTangent{};
+		XMMATRIX mMatrix{};
+
+		unsigned int iInstanceID{};
+
+		static const unsigned int iNumElements{ 9 };
+		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	};
 
 }
