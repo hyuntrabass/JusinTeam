@@ -19,6 +19,7 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+	virtual HRESULT Render_Instance() override;
 
 	// ¿ø¸í
 	virtual HRESULT Render_Refract(_float4 vClipPlane);

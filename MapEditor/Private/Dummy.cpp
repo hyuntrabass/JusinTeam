@@ -5,13 +5,13 @@ static _int iID = 1;
 CDummy::CDummy(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
 {
-	m_iID = iID++;
 }
 
 CDummy::CDummy(const CDummy& rhs)
 	: CBlendObject(rhs)
 	//, m_pImGui_Manager(CImGui_Manager::Get_Instance())
 {
+	m_iID = iID++;
 	//Safe_AddRef(m_pImGui_Manager);
 }
 
@@ -99,9 +99,9 @@ void CDummy::Late_Tick(_float fTimeDelta)
 if(m_eType == ItemType::Trigger)
 	m_pRendererCom->Add_DebugComponent(m_pCollider);
 #endif
-if (m_eType == ItemType::Environment)
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
-else
+//if (m_eType == ItemType::Environment)
+//	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
+//else
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 
 }

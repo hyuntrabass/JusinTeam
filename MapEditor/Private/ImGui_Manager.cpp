@@ -100,8 +100,8 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 			pMapTransform->Set_State(State::Pos, ObjPosition);
 		}
 
-		//if (m_eItemType != ItemType::Environment)
-		//{
+		if (m_eItemType != ItemType::Environment)
+		{
 			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))
 			{
 				if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
@@ -111,34 +111,34 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 				FastPicking();
 			}
 
-		//}
-		//else if (m_eItemType == ItemType::Environment)
-		//{
-		//	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))
-		//	{
-		//		if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
-		//		{
-		//			_float CenterX = m_vMousePos.x;
-		//			_float CenterY = m_vMousePos.y;
-		//			_float areaSize = 10.f;
+		}
+		else if (m_eItemType == ItemType::Environment)
+		{
+			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))
+			{
+				if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
+				{
+					_float CenterX = m_vMousePos.x;
+					_float CenterY = m_vMousePos.y;
+					_float areaSize = 10.f;
 
-		//			for (_uint y = 0; y < 5; ++y)
-		//			{
-		//				for (_uint x = 0; x < 5; ++x)
-		//				{
-		//					_float fPosX = CenterX - areaSize * 2.0f + areaSize * static_cast<float>(x);
-		//					_float fPosY = CenterY - areaSize * 2.0f + areaSize * static_cast<float>(y);
+					for (_uint y = 0; y < 5; ++y)
+					{
+						for (_uint x = 0; x < 5; ++x)
+						{
+							_float fPosX = CenterX - areaSize * 2.0f + areaSize * static_cast<float>(x);
+							_float fPosY = CenterY - areaSize * 2.0f + areaSize * static_cast<float>(y);
 
-		//					m_PickingPos = m_pGameInstance->PickingDepth(fPosX, fPosY);
+							m_PickingPos = m_pGameInstance->PickingDepth(fPosX, fPosY);
 
-		//					m_vInstancePos.push_back(m_PickingPos);
-		//				}
-		//			}
-		//		}
-		//		FastPicking();
-		//
-		//	}
-		//}
+							m_vInstancePos.push_back(m_PickingPos);
+						}
+					}
+				}
+				FastPicking();
+		
+			}
+		}
 
 	}
 

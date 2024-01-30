@@ -562,6 +562,8 @@ HRESULT CRenderer::Add_RenderGroup(RenderGroup eRenderGroup, CGameObject* pRende
 
 HRESULT CRenderer::Draw_RenderGroup()
 {
+	Clear_Instance();
+
 	if (FAILED(Render_Priority()))
 	{
 		MSG_BOX("Failed to Render : Priority");
@@ -605,6 +607,8 @@ HRESULT CRenderer::Draw_RenderGroup()
 		MSG_BOX("Failed to Render : NonBlend");
 		return E_FAIL;
 	}
+
+
 	if (FAILED(m_pGameInstance->End_MRT()))
 		return E_FAIL;
 
@@ -867,7 +871,6 @@ HRESULT CRenderer::Render_NonBlend_Instance()
 
 		const _int iInstanceID = static_cast<CModel*>(pGameObject->Find_Component(L"Com_Model"))->Get_InstanceID();
 		InstanceData[iInstanceID].push_back(pGameObject);
-
 	}
 
 	for (auto& Pair : InstanceData)
@@ -885,6 +888,7 @@ HRESULT CRenderer::Render_NonBlend_Instance()
 			MeshInstancing.vUp = pTransform->Get_State(State::Up);
 			MeshInstancing.vLook = pTransform->Get_State(State::Look);
 			MeshInstancing.vPos = pTransform->Get_State(State::Pos);
+			MeshInstancing.m_iID = pGameObject->Get_ID();
 			Add_Instance(instanceId, MeshInstancing);
 		}
 
@@ -896,32 +900,16 @@ HRESULT CRenderer::Render_NonBlend_Instance()
 		CVIBuffer_Mesh_Instance*& pBuffer = m_InstanceBuffers[instanceId];
 		CModel* pModel = static_cast<CModel*>(pHead->Find_Component(L"Com_Model"));
 		CShader* pShader = static_cast<CShader*>(pHead->Find_Component(L"Com_Shader"));
-		pModel->Render_Instancing(pModel->Get_NumMeshes(), pBuffer, pModel, pShader);
-
-
-		for (CGameObject*& pGameObject : vInstances)
-		{
-			Safe_Release(pGameObject);
-		}
-		vInstances.clear();
-
+		pModel->Render_Instancing(pBuffer, pShader);
 	}
 
-	for (auto& entry : InstanceData)
-	{
-		for (CGameObject* pGameObject : entry.second)
-		{
-			Safe_Release(pGameObject);
-		}
-		entry.second.clear(); 
-	}
-	InstanceData.clear();
-
+	for (auto& pGameObject : m_RenderObjects[RG_NonBlend_Instance])
+		Safe_Release(pGameObject);
 	m_RenderObjects[RG_NonBlend_Instance].clear();
-
 
 	return S_OK;
 }
+
 HRESULT CRenderer::Render_Refraction()
 {
 	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Refraction"))))
@@ -2048,5 +2036,10 @@ void CRenderer::Free()
 	m_DebugComponents.clear();
 #endif // _DEBUG
 
+	for (auto& pair : m_InstanceBuffers)
+	{
+		Safe_Release(pair.second);  // 동적으로 할당된 메모리를 해제
+	}
+	m_InstanceBuffers.clear();
 
 }

@@ -540,9 +540,10 @@ HRESULT CModel::Render(_uint iMeshIndex)
 	return S_OK;
 }
 
-HRESULT CModel::Render_Instancing(_uint iMeshIndex, CVIBuffer_Mesh_Instance*& pInstanceBuffer, CModel*& pModel, CShader*& pShader)
+
+HRESULT CModel::Render_Instancing(CVIBuffer_Mesh_Instance*& pInstanceBuffer, CShader*& pShader)
 {
-	for (_uint i = 0; i < iMeshIndex; i++)
+	for (_uint i = 0; i < m_Meshes.size(); ++i)
 	{
 		if (FAILED(Bind_Material(pShader, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{

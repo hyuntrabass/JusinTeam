@@ -31,7 +31,7 @@ void CObjects::Tick(_float fTimeDelta)
 void CObjects::Late_Tick(_float fTimeDelta)
 {
 
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
 
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Water_Reflection, this);
 
@@ -84,6 +84,16 @@ HRESULT CObjects::Render()
 
 	}
 
+
+	return S_OK;
+}
+
+HRESULT CObjects::Render_Instance()
+{
+	if (FAILED(Bind_ShaderResources()))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
