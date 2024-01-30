@@ -70,8 +70,8 @@ void CVoid20::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_0))
 	{
-		Set_Damage(0, AT_Sword_Common);
-	
+		//Set_Damage(0, AT_Sword_Common);
+		m_eCurState = STATE_DIE;
 	}
 
 	Init_State(fTimeDelta);
@@ -371,7 +371,7 @@ void CVoid20::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->IsAnimationFinished(DIE))
 		{
-			m_iPassIndex = AnimPass_Dissolve;
+			m_fDeadTime += fTimeDelta;
 		}
 
 		break;

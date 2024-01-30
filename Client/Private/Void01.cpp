@@ -330,7 +330,7 @@ void CVoid01::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->IsAnimationFinished(KNOCKBACK))
 		{
-			m_iPassIndex = AnimPass_Dissolve;
+			m_fDeadTime += fTimeDelta;
 		}
 
 		break;

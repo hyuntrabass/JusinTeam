@@ -346,6 +346,9 @@
     <Filter Include="02.GameObjects\11.Trigger\Manager">
       <UniqueIdentifier>{bc9dd045-dd44-470a-8fbe-c8d5ed7e0b04}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\07. NPC\04. Aur">
+      <UniqueIdentifier>{fd280966-4c1a-40f4-be13-f7c665463df0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -687,6 +690,9 @@
     <ClInclude Include="..\Public\Map.h">
       <Filter>02.GameObjects\08.Map</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Aur.h">
+      <Filter>02.GameObjects\07. NPC\04. Aur</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1022,6 +1028,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Map.cpp">
       <Filter>02.GameObjects\08.Map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Aur.cpp">
+      <Filter>02.GameObjects\07. NPC\04. Aur</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

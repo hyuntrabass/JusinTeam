@@ -435,7 +435,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->IsAnimationFinished(DIE))
 		{
-			m_iPassIndex = AnimPass_Dissolve;
+			m_fDeadTime += fTimeDelta;
 		}
 
 		break;

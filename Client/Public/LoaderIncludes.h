@@ -83,6 +83,7 @@
 #include "ItemMerchant.h"
 #include "BlackSmith.h"
 #include "Roskva.h"
+#include "Aur.h"
 #include "NPC_Dummy.h"
 
 // Boss

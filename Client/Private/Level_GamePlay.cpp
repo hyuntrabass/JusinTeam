@@ -143,11 +143,11 @@ HRESULT CLevel_GamePlay::Init()
 	//	return E_FAIL;
 	//}
 
-	//if (FAILED(Ready_NPC_Test()))
-	//{
-	//	MSG_BOX("Failed to Ready NPC");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_NPC_Test()))
+	{
+		MSG_BOX("Failed to Ready NPC");
+		return E_FAIL;
+	}
 
 	//if (FAILED(Ready_NPC_Dummy_Test()))
 	//{
@@ -387,7 +387,7 @@ HRESULT CLevel_GamePlay::Ready_Map()
 	CLake::WATER_DESC Desc;
 	Desc.fReflectionScale = 10.f;
 	Desc.fRefractionScale = 10.f;
-	Desc.vPos = _vec3(100.f, 1.f, 100.f);
+	Desc.vPos = _vec3(100.f, -1.f, 100.f);
 	Desc.vSize = _vec2(200.f,200.f);
 	Desc.fWaterSpeed = 10.f;
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, L"Layer_Map", L"Prototype_GameObject_Water", &Desc)))
@@ -516,17 +516,22 @@ HRESULT CLevel_GamePlay::Ready_Dog()
 
 HRESULT CLevel_GamePlay::Ready_NPC_Test()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_ItemMerchant"), TEXT("Prototype_GameObject_ItemMerchant"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_ItemMerchant"), TEXT("Prototype_GameObject_ItemMerchant"))))
+	//{
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BlackSmith"), TEXT("Prototype_GameObject_BlackSmith"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BlackSmith"), TEXT("Prototype_GameObject_BlackSmith"))))
+	//{
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Roskva"), TEXT("Prototype_GameObject_Roskva"))))
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Roskva"), TEXT("Prototype_GameObject_Roskva"))))
+	//{
+	//	return E_FAIL;
+	//}
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Aur"), TEXT("Prototype_GameObject_Aur"))))
 	{
 		return E_FAIL;
 	}
@@ -648,10 +653,10 @@ HRESULT CLevel_GamePlay::Ready_Groar_Boss()
 
 HRESULT CLevel_GamePlay::Ready_Pet()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pet_Cat"), TEXT("Prototype_GameObject_Pet_Cat"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pet_Cat"), TEXT("Prototype_GameObject_Pet_Cat"))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pet_Dragon"), TEXT("Prototype_GameObject_Pet_Dragon"))))
 	{
@@ -825,11 +830,14 @@ HRESULT CLevel_GamePlay::Ready_Void09()
 
 HRESULT CLevel_GamePlay::Ready_Void20()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
+	for (size_t i = 0; i < 1; i++)
 	{
-		return E_FAIL;
-	}
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
+		{
+			return E_FAIL;
+		}
 
+	}
 	return S_OK;
 }
 
