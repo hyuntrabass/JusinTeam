@@ -361,7 +361,7 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigg
 		}
 		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iStartAnimIndex &&
 			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fStartAnimPos &&
-			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() <= m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() &&
+			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() <= m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() * m_AnimDesc.fDurationRatio &&
 			not m_TriggerEffects[i].HasCreated)
 		{
 			//초기 매트릭스 세팅
@@ -407,7 +407,7 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigg
 	{	//사운드 생성
 		if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iStartAnimIndex &&
 			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerSounds[i].fStartAnimPos &&
-			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() <= m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() &&
+			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() <= m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() * m_AnimDesc.fDurationRatio &&
 			not m_TriggerSounds[i].HasPlayed)
 		{
 			_int iMaxSound = m_TriggerSounds[i].strSoundNames.size() - 1;
