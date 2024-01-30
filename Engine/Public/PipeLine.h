@@ -30,10 +30,6 @@ public:
 	void Set_OldViewMatrix(const _mat& TransformMatrix);
 	_mat Get_OldViewMatrix_vec4x4() const;
 	_mat Get_OldViewMatrix() const;
-
-	//¿ø¸í
-	_mat ChagneViewForReflection(_float fWaterHeight);
-
 public:
 	HRESULT Init();
 	void Tick();
@@ -45,7 +41,6 @@ private:
 	_mat m_TransformMatrix_Inversed[ToIndex(TransformType::End)]{};
 
 	_mat m_OldViewMatrix{};
-
 public:
 	static CPipeLine* Create();
 	virtual void Free() override;
