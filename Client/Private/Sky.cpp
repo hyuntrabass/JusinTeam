@@ -21,20 +21,60 @@ HRESULT CSky::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-
+	m_iTextureIndex = 10;
 	return S_OK;
 }
 
 void CSky::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
+	{
+		m_iTextureIndex++;
+
+	}
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD3))
+	{
+		m_iTextureIndex--;
+
+	}
+
+	switch (m_pGameInstance->Get_CurrentLevelIndex())
+	{
+	case LEVEL_GAMEPLAY:
+		m_fLightning_Time += fTimeDelta;
+		if (m_fLightning_Time > 5.f && m_fLightning_Time<5.1f)
+		{
+			m_iTextureIndex = 9;
+			
+		}
+		else if(m_fLightning_Time> 5.1f && m_fLightning_Time<5.2f)
+		{
+			m_iTextureIndex = 10;
+		}
+		else if (m_fLightning_Time>=5.2f && m_fLightning_Time<5.3f)
+		{
+			m_iTextureIndex = 9;
+		}
+		else if (m_fLightning_Time >= 5.4f)
+		{
+			m_fLightning_Time = 0.f;
+			m_iTextureIndex = 10;
+		}
+		break;
+	case LEVEL_VILLAGE:
+		m_iTextureIndex = 12;
+		break;
+	default:
+		break;
+	}
 }
 
 void CSky::Late_Tick(_float fTimeDelta)
 {
-	_vec4 vPos = m_pGameInstance->Get_CameraPos() - _vec4(0.f, 10.f, 0.f, 0.f);
+	_vec4 vPos = m_pGameInstance->Get_CameraPos() - _vec4(0.f,15.f, 0.f, 0.f);
 
 	m_pTransformCom->Set_State(State::Pos, vPos);
-	
+
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Priority, this);
 }
 
@@ -54,10 +94,10 @@ HRESULT CSky::Render()
 
 	for (_uint i = 0; i < iNumMeshes; i++)
 	{
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-		{
-			return E_FAIL;
-		}
+		//if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		//{
+		//	return E_FAIL;
+		//}
 
 		if (FAILED(m_pShaderCom->Begin(StaticPass_Sky)))
 		{
@@ -90,6 +130,14 @@ HRESULT CSky::Add_Components()
 		return E_FAIL;
 	}
 
+	for (size_t i = 0; i < 19; i++)
+	{
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Sky") + to_wstring(i), TEXT("Com_Texture") + to_wstring(i), reinterpret_cast<CComponent**>(&m_Textures[i]))))
+		{
+			return E_FAIL;
+		}
+	}
+
 	return S_OK;
 }
 
@@ -116,9 +164,14 @@ HRESULT CSky::Bind_ShaderResources()
 	//}
 
 	//const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"));
-	
+
 	_vec4 diffuse = _vec4(1, 1, 1, 1);
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &diffuse, sizeof _vec4)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_Textures[m_iTextureIndex]->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
 	{
 		return E_FAIL;
 	}
@@ -155,6 +208,11 @@ CGameObject* CSky::Clone(void* pArg)
 void CSky::Free()
 {
 	__super::Free();
+
+	for (int i = 0; i < 19; i++)
+	{
+	Safe_Release(m_Textures[i]);
+	}
 
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);

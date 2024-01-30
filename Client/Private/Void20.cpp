@@ -46,7 +46,7 @@ HRESULT CVoid20::Init(void* pArg)
 
 	SURFACETRAIL_DESC Desc{};
 	Desc.vColor = Colors::Maroon;
-	Desc.iNumVertices = 10.f;
+	Desc.iNumVertices = 10;
 
 	m_pSwordTrailL = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 	m_pSwordTrailR = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
@@ -382,7 +382,7 @@ void CVoid20::Tick_State(_float fTimeDelta)
 void CVoid20::Update_Trail(_float fTimeDelta)
 {
 	_mat Matrix = *m_pModelCom->Get_BoneMatrix("Bip001-R-Hand");
-	_mat Offset = _mat::CreateTranslation(_vec3(2.55, -0.215f, -0.02f));
+	_mat Offset = _mat::CreateTranslation(_vec3(2.55f, -0.215f, -0.02f));
 	_mat Result1 = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 
 	Matrix = *m_pModelCom->Get_BoneMatrix("Bip001-R-Hand");

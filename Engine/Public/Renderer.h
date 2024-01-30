@@ -8,6 +8,7 @@ enum RenderGroup
 	RG_Priority,
 	RG_Shadow,
 	RG_NonBlend,
+	RG_NonBlend_Instance,
 	RG_Blur,
 	RG_NonLight,
 	RG_Blend,
@@ -169,6 +170,7 @@ private:
 	HRESULT Render_Priority();
 	HRESULT Render_Shadow();
 	HRESULT Render_NonBlend();
+	HRESULT Render_NonBlend_Instance();
 	HRESULT Render_Refraction();
 	HRESULT Render_Reflection();
 	HRESULT Render_Water();
@@ -188,6 +190,9 @@ private:
 private:
 	HRESULT Get_AvgLuminance();
 	HRESULT Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MRT_Tag, _float fBlurPower, _bool isBloom = false);
+	HRESULT Add_Instance(_int iInstanceID, VTXMESHINSTANCING& pMeshInstancing);
+	HRESULT Clear_Instance();
+	map<_int, class CVIBuffer_Mesh_Instance*>	m_InstanceBuffers;
 
 public:
 	static CRenderer* Create(_dev pDevice, _context pContext);

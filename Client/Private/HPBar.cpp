@@ -110,11 +110,11 @@ HRESULT CHPBar::Render()
 		return E_FAIL;
 	}
 
-	m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX - 0.1f, m_fY + 17.f), 0.3f);
-	m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX + 0.1f, m_fY + 17.f), 0.3f);
-	m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX, m_fY + 17.1f), 0.3f);
-	m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX, m_fY + 16.9f), 0.3f);
-	m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX, m_fY + 17.f), 0.3f);
+	m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX - 0.1f, m_fY + 0.f), 0.3f);
+	m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX + 0.1f, m_fY + 0.f), 0.3f);
+	m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX, m_fY + 0.1f), 0.3f);
+	m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX, m_fY + 0.9f), 0.3f);
+	m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(static_cast<int>(m_vRatio.x)) + TEXT(" / ") + to_wstring(static_cast<int>(m_vRatio.y)), _vec2(m_fX, m_fY + 0.f), 0.3f);
 
 
 	return S_OK;

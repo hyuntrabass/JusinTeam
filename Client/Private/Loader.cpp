@@ -214,10 +214,6 @@ HRESULT CLoader::Load_Logo()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Weapon"), CWeapon::Create(m_pDevice, m_pContext))))
-	{
-		return E_FAIL;
-	}
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Riding"), CRiding::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -331,6 +327,16 @@ HRESULT CLoader::Load_Select()
 		return E_FAIL;
 	
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Button_Blue2"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Select/buttonBlue2.png")))))
+	{
+		return E_FAIL;
+	
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_NameWindow"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Custom/NameWindow.png")))))
+	{
+		return E_FAIL;
+	
+	}
 
 
 	m_strLoadingText = L"Select : Loading Model";
@@ -365,14 +371,30 @@ HRESULT CLoader::Load_Select()
 		return E_FAIL;
 	}
 
-	/*if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sky"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Select_Map/Mesh/map.hyuntrastatmesh", false, PivotMat))))
+	PivotMat = _mat::CreateScale(0.012f);
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sky"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Sky/Mesh/sky.hyuntrastatmesh",false , PivotMat))))
 	{
 		return E_FAIL;
-	}*/
+	}
+	 strInputFilePath = "../Bin/Resources/StaticMesh/Sky/Texture/";
+	 _uint iIndex{};
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_Sky") + to_wstring(iIndex);
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+			iIndex++;
+		}
+	}
 
 	strInputFilePath = "../Bin/Resources/AnimMesh/Select_Model/Mesh/";
-	_uint iIndex = {};
+	iIndex = 0;
 	PivotMat = _mat::CreateScale(0.01f) * _mat::CreateRotationY(XMConvertToRadians(90.f));
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Model_Select0"), CModel::Create(m_pDevice, m_pContext, strInputFilePath + "Select_Priest.hyuntraanimmesh", false, PivotMat))))
 	{
@@ -605,6 +627,10 @@ HRESULT CLoader::Load_Custom()
 
 #pragma region Prototype
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Custom"), CCustom::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_NameWindow"), CNameWindow::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -1116,6 +1142,22 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_DialogText"), CDialogText::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Shop"), CShop::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_ShopDesc"), CShopDesc::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
 
 #pragma endregion
 
@@ -1300,7 +1342,7 @@ HRESULT CLoader::Load_Village()
 {
 	// ¸Ê
 
-	_mat Pivot = _mat::CreateScale(0.002f);
+	_mat Pivot = _mat::CreateScale(0.003f);
 	string strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Map/Midgard/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{

@@ -4,8 +4,8 @@ static _int iID = 1;
 
 CDummy::CDummy(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
-
 {
+	m_iID = iID++;
 }
 
 CDummy::CDummy(const CDummy& rhs)
@@ -13,7 +13,6 @@ CDummy::CDummy(const CDummy& rhs)
 	//, m_pImGui_Manager(CImGui_Manager::Get_Instance())
 {
 	//Safe_AddRef(m_pImGui_Manager);
-	m_iID = iID++;
 }
 
 void CDummy::Select(const _bool& isSelected)
@@ -46,7 +45,6 @@ HRESULT CDummy::Init(void* pArg)
 
 	m_Info = *(DummyInfo*)pArg;
 	m_eType = m_Info.eType;
-	m_isInstancing = m_Info.isInstancing;
 	if(m_Info.eType == ItemType::Monster || m_Info.eType == ItemType::NPC)
 	{
 		m_isAnim = true;
@@ -101,9 +99,11 @@ void CDummy::Late_Tick(_float fTimeDelta)
 if(m_eType == ItemType::Trigger)
 	m_pRendererCom->Add_DebugComponent(m_pCollider);
 #endif
-
+if (m_eType == ItemType::Environment)
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
+else
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
-	
+
 }
 
 HRESULT CDummy::Render()
@@ -113,7 +113,7 @@ HRESULT CDummy::Render()
 	{
 		return E_FAIL;
 	}
-	if (m_eType == ItemType::Environment && m_isInstancing == true)
+	/*if (m_eType == ItemType::Environment && m_isInstancing == true)
 	{
 		if (FAILED(m_pVIBuffer->Bind_Material(m_pShaderCom, "g_DiffuseTexture", TextureType::Diffuse)))
 		{
@@ -150,7 +150,7 @@ HRESULT CDummy::Render()
 		}
 
 	}
-	else
+	else*/
 	{
 		_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -217,6 +217,15 @@ HRESULT CDummy::Render()
 	return S_OK;
 }
 
+HRESULT CDummy::Render_Instance()
+{
+	if (FAILED(Bind_ShaderResources()))
+	{
+		return E_FAIL;
+	}
+	return S_OK;
+}
+
 HRESULT CDummy::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
@@ -242,16 +251,16 @@ HRESULT CDummy::Add_Components()
 		m_iOutLineShaderPass = StaticPass_OutLine;
 	}
 	
-	if (m_eType == ItemType::Environment && m_isInstancing == true)
-	{
+	//if (m_eType == ItemType::Environment && m_isInstancing == true)
+	//{
 
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Info.Prototype, TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBuffer), &m_pTransformCom->Get_World_Matrix())))
-		{
-			return E_FAIL;
-		}
+	//	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Info.Prototype, TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBuffer), &m_Info.InstancePos)))
+	//	{
+	//		return E_FAIL;
+	//	}
 
-	}
-	else
+	//}
+	//else
 	{
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Info.Prototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		{
@@ -302,7 +311,6 @@ HRESULT CDummy::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
-
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_iID", &m_iID, sizeof(_int))))
 	{
@@ -383,7 +391,7 @@ void CDummy::Free()
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pVIBuffer);
+	//Safe_Release(m_pVIBuffer);
 
 	if(m_eType == ItemType::Trigger)
 		Safe_Release(m_pCollider);

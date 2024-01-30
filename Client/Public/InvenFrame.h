@@ -14,6 +14,7 @@ class CTextButtonColor;
 class CInvenFrame final : public COrthographicObject
 {
 public:
+	enum FRAME_MODE { F_INVEN, F_SHOP, F_END};
 	typedef struct tagInvenFrameDesc
 	{
 		CGameObject*			pParent;
@@ -41,6 +42,7 @@ private:
 	CTexture* m_pTextureCom{ nullptr };
 
 private:
+	FRAME_MODE									m_eFrameMode{ F_INVEN };
 	INVEN_TYPE									m_ePrevInvenType{ INVEN_ALL };
 	INVEN_TYPE									m_eCurInvenType{ INVEN_ALL };
 
@@ -50,16 +52,18 @@ private:
 	_bool										m_isQuickAnim{ false };
 	_bool										m_isActiveQuickSlot{ false };
 	_bool										m_isPicking { false };
+	_bool										m_isPickingDouble{ false };
 
 	_uint										m_iCurIndex{};
+	ITEM_TYPE									m_iCurItemType{};
 
 	_float										m_fButtonY{ 0.f };
 	_float										m_fBGY{ 0.f };
 	_float										m_fTime{ 0.f };
+	_float										m_fDoubleClick{ 0.f };
 
-	vector<_uint>								m_vecItemSlot[INVEN_TYPE::INVEN_END];
-	vector<CItem*>								m_vecItemsSlot[INVEN_TYPE::INVEN_END];
 	vector<CItem*>								m_vecItems;
+	vector<CItem*>								m_vecItemsSlot[INVEN_TYPE::INVEN_END];
 
 	CGameObject*								m_pParent{ nullptr };
 	CGameObject*								m_pUnderBar{ nullptr };
@@ -77,13 +81,25 @@ private:
 	CGameObject*								m_pResetSymbol{ nullptr };
 	CItemSlot*									m_pSelectSlot[4];
 
+	CTextButtonColor*							m_pSellButton{ nullptr };
+
+
 public:
 	void Init_State();
+	void Set_FrameMode(FRAME_MODE eMode) { m_eFrameMode = eMode; }
 	void Set_Item(ITEM eItem, _uint iNum = 1);
 	void Set_ItemPosition(INVEN_TYPE eInvenType);
 	void ItemSlot_Logic(_uint iSlotIdx, _uint iIndex);
 	void ItemSlot_Delete_Logic(_uint iSlotIdx);
 	void Delete_Item(INVEN_TYPE eInvenType, _uint iIndex);
+
+	void Set_Parent(CGameObject* pGameObject) { m_pParent = pGameObject; }
+private:
+	void Picking_InvenButton(POINT ptMouse);
+	void Picking_ShopButton(POINT ptMouse);
+
+	void Inven_Tick(_float fTimeDelta, POINT ptMouse);
+	void Shop_Tick(_float fTimeDelta, POINT ptMouse);
 
 private:
 	HRESULT Add_Parts();

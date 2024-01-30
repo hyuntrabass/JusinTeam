@@ -81,6 +81,10 @@ HRESULT CNPC::Render()
 
 	return S_OK;
 }
+void CNPC::Update_Collider()
+{
+	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+}
 
 HRESULT CNPC::Add_Components()
 {
@@ -139,6 +143,7 @@ void CNPC::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pColliderCom);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

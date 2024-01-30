@@ -46,7 +46,7 @@ HRESULT CThief04::Init(void* pArg)
 
 	SURFACETRAIL_DESC Desc{};
 	Desc.vColor = Colors::Gray;
-	Desc.iNumVertices = 10.f;
+	Desc.iNumVertices = 10;
 
 	m_pAxeTrail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 	m_pKnifeTrail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
