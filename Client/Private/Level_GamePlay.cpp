@@ -332,8 +332,8 @@ HRESULT CLevel_GamePlay::Ready_Light()
 
 	LightDesc.eType = LIGHT_DESC::Directional;
 	LightDesc.vDirection = _float4(-1.f, -2.f, -1.f, 0.f);
-	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	LightDesc.vDiffuse = _vec4(1.f);
+	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
 
 	return m_pGameInstance->Add_Light(LEVEL_GAMEPLAY, TEXT("Light_Main"), LightDesc);
 }
