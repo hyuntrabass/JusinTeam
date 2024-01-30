@@ -202,7 +202,7 @@ void CRoskva::Set_Text(ROSKVA_STATE eState)
 		TextDesc.eLevelID = LEVEL_STATIC;
 		TextDesc.fDepth = (_float)D_TALK / (_float)D_END - 0.01f;
 		TextDesc.strText = m_vecDialog.front();
-		TextDesc.vTextPos = _vec2(g_ptCenter.x, 620.f);
+		TextDesc.vTextPos = _vec2((_float)g_ptCenter.x, 620.f);
 		m_pDialogText = (CDialogText*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_DialogText"), &TextDesc);
 		if (m_pDialogText == nullptr)
 		{
@@ -217,7 +217,7 @@ void CRoskva::Set_Text(ROSKVA_STATE eState)
 		TextDesc.eLevelID = LEVEL_STATIC;
 		TextDesc.fDepth = (_float)D_TALK / (_float)D_END - 0.02f;
 		TextDesc.strText = m_vecChatt[0];
-		TextDesc.vTextPos = _vec2(g_ptCenter.x, 620.f);
+		TextDesc.vTextPos = _vec2((_float)g_ptCenter.x, 620.f);
 		m_pDialogText = (CDialogText*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_DialogText"), &TextDesc);
 		if (m_pDialogText == nullptr)
 		{
@@ -231,7 +231,7 @@ void CRoskva::Set_Text(ROSKVA_STATE eState)
 		TextDesc.eLevelID = LEVEL_STATIC;
 		TextDesc.fDepth = (_float)D_TALK / (_float)D_END - 0.02f;
 		TextDesc.strText = m_vecChatt[1];
-		TextDesc.vTextPos = _vec2(g_ptCenter.x, 620.f);
+		TextDesc.vTextPos = _vec2((_float)g_ptCenter.x, 620.f);
 		m_pDialogText = (CDialogText*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_DialogText"), &TextDesc);
 		if (m_pDialogText == nullptr)
 		{
@@ -292,7 +292,7 @@ HRESULT CRoskva::Add_Parts()
 	ButtonDesc.fFontSize = 0.5f;
 	ButtonDesc.vTextPosition = _vec2(0.f, - 30.f);
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SiegeQuest");
-	ButtonDesc.vPosition = _vec2(g_ptCenter.x, 590.f);
+	ButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, 590.f);
 	ButtonDesc.vSize = _vec2(400.f, 10.f);
 
 	m_pLine = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
@@ -309,7 +309,7 @@ HRESULT CRoskva::Add_Parts()
 	ColButtonDesc.strText = TEXT("");
 	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_FadeBox");
 	ColButtonDesc.vSize = _vec2(g_iWinSizeX, 250.f);
-	ColButtonDesc.vPosition = _vec2(g_ptCenter.x, (_float)g_iWinSizeY);
+	ColButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, (_float)g_iWinSizeY);
 
 
 	m_pBackGround = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);

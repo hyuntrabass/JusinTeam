@@ -309,7 +309,7 @@ void CCamera_Main::Shop_Mode(_float fTimeDelta)
 	m_pTransformCom->Set_State(State::Pos, vShopPos);
 	_vec4 vLookPos = vPos;
 	vLookPos.y += 3.f;
-	m_pTransformCom->LookAt_Dir(_vec4(0.129203543f, -0.129055128f, -0.983180106, 0.f));
+	m_pTransformCom->LookAt_Dir(_vec4(0.129203543f, -0.129055128f, -0.983180106f, 0.f));
 
 }
 
