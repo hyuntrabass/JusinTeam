@@ -855,6 +855,7 @@ HRESULT CRenderer::Render_NonBlend()
 
 	return S_OK;
 }
+
 HRESULT CRenderer::Render_NonBlend_Instance()
 {
 	map<_int, vector<CGameObject*>> InstanceData;
@@ -867,13 +868,12 @@ HRESULT CRenderer::Render_NonBlend_Instance()
 		const _int iInstanceID = static_cast<CModel*>(pGameObject->Find_Component(L"Com_Model"))->Get_InstanceID();
 		InstanceData[iInstanceID].push_back(pGameObject);
 
-		//Safe_Release(pGameObject);
 	}
 
-	for (auto& iter : InstanceData)
+	for (auto& Pair : InstanceData)
 	{
-		vector<CGameObject*>& vInstances = iter.second;
-		const _uint instanceId = iter.first;
+		vector<CGameObject*>& vInstances = Pair.second;
+		const _uint instanceId = Pair.first;
 		CGameObject*& pHead = vInstances[0];
 
 		for (_uint i = 0; i < vInstances.size(); i++)
@@ -897,8 +897,25 @@ HRESULT CRenderer::Render_NonBlend_Instance()
 		CModel* pModel = static_cast<CModel*>(pHead->Find_Component(L"Com_Model"));
 		CShader* pShader = static_cast<CShader*>(pHead->Find_Component(L"Com_Shader"));
 		pModel->Render_Instancing(pModel->Get_NumMeshes(), pBuffer, pModel, pShader);
+
+
+		for (CGameObject*& pGameObject : vInstances)
+		{
+			Safe_Release(pGameObject);
+		}
+		vInstances.clear();
+
 	}
 
+	for (auto& entry : InstanceData)
+	{
+		for (CGameObject* pGameObject : entry.second)
+		{
+			Safe_Release(pGameObject);
+		}
+		entry.second.clear(); 
+	}
+	InstanceData.clear();
 
 	m_RenderObjects[RG_NonBlend_Instance].clear();
 
@@ -1963,6 +1980,8 @@ void CRenderer::Free()
 
 #pragma region ∆Ú±’»÷µµ Release
 
+	Clear_Instance();
+
 	Safe_Release(m_pLumShader);
 	Safe_Release(m_pLumRT);
 
@@ -2013,6 +2032,7 @@ void CRenderer::Free()
 		}
 		ObjectList.clear();
 	}
+
 
 #ifdef _DEBUGTEST
 	for (auto& pComponent : m_DebugComponents)
