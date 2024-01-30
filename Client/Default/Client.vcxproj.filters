@@ -705,11 +705,11 @@
     <ClInclude Include="..\Public\Pop_LevelUp.h">
       <Filter>02.GameObjects\00.UI\POPUP</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Shop.h">
-      <Filter>02.GameObjects\00.UI\Shop</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\ShopDesc.h">
       <Filter>02.GameObjects\00.UI\Shop\ShopDesc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Shop.h">
+      <Filter>02.GameObjects\00.UI\Shop</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

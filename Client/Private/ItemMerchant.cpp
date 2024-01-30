@@ -45,11 +45,13 @@ HRESULT CItemMerchant::Init(void* pArg)
 
 void CItemMerchant::Tick(_float fTimeDelta)
 {
+	
 	if (m_bTalking && !m_pShop->IsActive())
 	{
 		m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 0.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));
 		m_bTalking = false;
 	}
+	
 
 	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
 	_bool isColl = m_pColliderCom->Intersect(pCollider);

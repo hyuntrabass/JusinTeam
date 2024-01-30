@@ -48,6 +48,7 @@ HRESULT CShop::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+	
 
 	return S_OK;
 }
@@ -64,7 +65,7 @@ void CShop::Tick(_float fTimeDelta)
 			  (LONG)(m_fX + m_fSizeX * 0.5f),
 			  (LONG)(m_fY + m_fSizeY * 0.5f)
 	};
-
+	
 	if (TRUE == PtInRect(&dynamic_cast<CTextButton*>(m_pExitButton)->Get_Rect(), ptMouse)
 		|| PtInRect(&dynamic_cast<CTextButton*>(m_pTitleButton)->Get_Rect(), ptMouse))
 	{
@@ -75,6 +76,7 @@ void CShop::Tick(_float fTimeDelta)
 			m_isActive = false;
 		}
 	}
+	
 
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
@@ -121,9 +123,9 @@ void CShop::Tick(_float fTimeDelta)
 	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
 	dynamic_cast<CTextButton*>(m_pDiamond)->Set_Text(to_wstring(iDiamond));
 
-
 	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 	m_pExitButton->Tick(fTimeDelta);
+	//CUI_Manager::Get_Instance()->Get_InvenFrame()->Tick(fTimeDelta);
 	m_pInvenFrame->Tick(fTimeDelta);
 	m_pBackGround->Tick(fTimeDelta);
 	m_pTitleButton->Tick(fTimeDelta);
@@ -134,11 +136,12 @@ void CShop::Tick(_float fTimeDelta)
 	{
 		m_pShopMenu[i]->Tick(fTimeDelta);
 	}
-
+	
 	for (auto& iter : m_vecShopItems[m_eCurShopState])
 	{
 		iter->Tick(fTimeDelta);
 	}
+	
 
 }
 
@@ -159,16 +162,14 @@ void CShop::Late_Tick(_float fTimeDelta)
 
 	for (size_t i = 0; i < STATE_END; i++)
 	{
-		m_pSelectButton->Late_Tick(fTimeDelta);
-	}
-	for (size_t i = 0; i < STATE_END; i++)
-	{
 		m_pShopMenu[i]->Late_Tick(fTimeDelta);
 	}
+	
 	for (auto& iter : m_vecShopItems[m_eCurShopState])
 	{
 		iter->Late_Tick(fTimeDelta);
 	}
+	
 
 
 	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
@@ -221,12 +222,15 @@ void CShop::Init_ShopState()
 {
 	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_FrameMode(CInvenFrame::F_SHOP);
 	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Init_State();
+	
 
+	
 	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
 	dynamic_cast<CTextButton*>(m_pMoney)->Set_Text(to_wstring(iMoney));
 
 	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
 	dynamic_cast<CTextButton*>(m_pDiamond)->Set_Text(to_wstring(iDiamond));
+	
 	
 	m_eCurShopState = EXPENDABLE;
 	Set_ItemPosition(m_eCurShopState);
@@ -244,6 +248,11 @@ void CShop::Init_ShopState()
 
 HRESULT CShop::Add_Parts()
 {
+	_float fY = 85.f;
+	_float fTerm = m_fSizeX / (_uint)STATE_END;
+	_float fStartX = 10.f + fTerm;
+
+
 	CTextButton::TEXTBUTTON_DESC Button = {};
 
 	Button.eLevelID = LEVEL_STATIC;
@@ -274,23 +283,6 @@ HRESULT CShop::Add_Parts()
 		return E_FAIL;
 	}
 
-
-	Button.strText = TEXT("");
-	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Out");
-	Button.vPosition = _vec2(1230.f, 30.f);
-	Button.vSize = _vec2(70.f, 70.f);
-	m_pExitButton = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
-
-	if (not m_pExitButton)
-	{
-		return E_FAIL;
-	}
-
-
-	_float fY = 85.f;
-	_float fTerm = m_fSizeX / (_uint)STATE_END;
-	_float fStartX = 10.f + fTerm;
-
 	Button.fDepth = m_fDepth - 0.01f;
 	Button.strText = TEXT("");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_InvenUnderBar");
@@ -298,7 +290,7 @@ HRESULT CShop::Add_Parts()
 	Button.vPosition = _vec2(fStartX, fY + 12.f);
 	Button.vTextPosition = _vec2(0.f, 0.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	Button.fFontSize = 0.1f;
+
 	m_pUnderBar = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 	if (not m_pUnderBar)
 	{
@@ -315,7 +307,8 @@ HRESULT CShop::Add_Parts()
 		return E_FAIL;
 	}
 
-	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
+	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();
+	Button.fFontSize = 0.45f;
 	Button.strText = to_wstring(iMoney);
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_coin");
 	Button.vPosition = _vec2(1100.f, 30.f);
@@ -343,7 +336,7 @@ HRESULT CShop::Add_Parts()
 	{
 		return E_FAIL;
 	}
-
+	
 	CTextButtonColor::TEXTBUTTON_DESC TextButton = {};
 	TextButton.eLevelID = LEVEL_STATIC;
 	TextButton.strTexture = TEXT("");
@@ -389,12 +382,13 @@ HRESULT CShop::Add_Parts()
 	}
 
 
-
+	
 	m_pInvenFrame = CUI_Manager::Get_Instance()->Get_InvenFrame();
 	if (not m_pInvenFrame)
 	{
 		return E_FAIL;
 	}
+	
 
 	return S_OK;
 }

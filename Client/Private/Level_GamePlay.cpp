@@ -493,8 +493,7 @@ HRESULT CLevel_GamePlay::Ready_NPC_Test()
 	{
 		return E_FAIL;
 	}
-	
-	
+
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BlackSmith"), TEXT("Prototype_GameObject_BlackSmith"))))
 	{
