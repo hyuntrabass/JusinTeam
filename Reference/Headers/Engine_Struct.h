@@ -58,9 +58,9 @@ namespace Engine
 	};
 
 	typedef struct tagSSAOValue {
-		float fIntensity = 3.5f;
-		float fRadius = 0.05f;
-		float fScale = 3.f;
+		float fIntensity = 2.f;
+		float fRadius = 0.01f;
+		float fScale = 2.f;
 		float fBias = 0.3f;
 	}SSAO_DESC;
 

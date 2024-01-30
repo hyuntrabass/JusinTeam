@@ -651,12 +651,12 @@ HRESULT CPlayer::Render_Parts(PART_TYPE Parts, _uint Index)
 
 		if (Parts == PT_HAIR)
 		{
-			if (FAILED(m_pShaderCom->Begin(5 - m_ShaderIndex)))
+			if (FAILED(m_pShaderCom->Begin(5)))
 				return E_FAIL;
 		}
 		else
 		{
-			if (FAILED(m_pShaderCom->Begin(m_ShaderIndex)))
+			if (FAILED(m_pShaderCom->Begin(5)))
 				return E_FAIL;
 		}
 		if (FAILED(m_pModelCom->Render_Part((_uint)Parts, (_uint)Index, k)))
@@ -2926,6 +2926,16 @@ HRESULT CPlayer::Bind_ShaderResources()
 	if (FAILED(m_pModelCom->Bind_Bone(m_pShaderCom)))
 		return E_FAIL;
 
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof(_float4))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Inversed(TransformType::Proj))))
+		return E_FAIL;
+
+	_float4 vColor = _float4(1.f, 1.f, 1.f, 1.f);
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vColor, sizeof(_float4))))
+		return E_FAIL;
 
 	return S_OK;
 }

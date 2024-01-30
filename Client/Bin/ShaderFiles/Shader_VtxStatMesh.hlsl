@@ -20,12 +20,7 @@ bool g_HasNorTex;
 bool g_HasSpecTex;
 bool g_bSelected = false;
 
-vector g_vLightDir;
-
 vector g_vLightDiffuse;
-
-vector g_vMtrlAmbient = vector(0.3f, 0.3f, 0.3f, 1.f);
-vector g_vMtrlSpecular = vector(0.8f, 0.8f, 0.8f, 1.f);
 
 float2 g_vUVTransform;
 
@@ -174,11 +169,11 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     
         float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
     
-        vNormal = mul(normalize(vNormal), WorldMatrix) * -1.f;
+        vNormal = normalize(mul(normalize(vNormal), WorldMatrix) * -1.f);
     }
     else
     {
-        vNormal = Input.vNor.xyz;
+        vNormal = normalize(Input.vNor.xyz);
     }
     
     vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
@@ -226,11 +221,11 @@ PS_OUT_DEFERRED PS_Main_AlphaTest(PS_IN Input)
     
         float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
     
-        vNormal = mul(normalize(vNormal), WorldMatrix) * -1.f;
+        vNormal = normalize(mul(normalize(vNormal), WorldMatrix) * -1.f);
     }
     else
     {
-        vNormal = Input.vNor.xyz;
+        vNormal = normalize(Input.vNor.xyz);
     }
     
     Output.vDiffuse = vMtrlDiffuse;
@@ -403,11 +398,11 @@ PS_OUT_DEFERRED PS_Main_Water(PS_WATER_IN Input)
     
         float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
     
-        vNormal = mul(normalize(vNormal), WorldMatrix) * -1.f;
+        vNormal = normalize(mul(normalize(vNormal), WorldMatrix) * -1.f);
     }
     else
     {
-        vNormal = Input.vNor.xyz;
+        vNormal = normalize(Input.vNor.xyz);
     }
     
     vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
