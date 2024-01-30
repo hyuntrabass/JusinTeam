@@ -343,6 +343,15 @@
     <Filter Include="02.GameObjects\11.Trigger\Manager">
       <UniqueIdentifier>{bc9dd045-dd44-470a-8fbe-c8d5ed7e0b04}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.UI\02.Custom\NameWindow">
+      <UniqueIdentifier>{eea7de1f-cd72-4835-9958-d2604412b273}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\Shop">
+      <UniqueIdentifier>{8543d625-6250-4be5-ad55-baadea9329a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\Shop\ShopDesc">
+      <UniqueIdentifier>{37a8ca72-2b72-457f-931a-134d39c72fc6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -678,6 +687,21 @@
     <ClInclude Include="..\Public\Map.h">
       <Filter>02.GameObjects\08.Map</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\NameWindow.h">
+      <Filter>02.GameObjects\00.UI\02.Custom\NameWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DialogText.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Pop_LevelUp.h">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ShopDesc.h">
+      <Filter>02.GameObjects\00.UI\Shop\ShopDesc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Shop.h">
+      <Filter>02.GameObjects\00.UI\Shop</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1007,6 +1031,21 @@
     </ClCompile>
     <ClCompile Include="..\Private\Map.cpp">
       <Filter>02.GameObjects\08.Map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NameWindow.cpp">
+      <Filter>02.GameObjects\00.UI\02.Custom\NameWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DialogText.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Pop_LevelUp.cpp">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Shop.cpp">
+      <Filter>02.GameObjects\00.UI\Shop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ShopDesc.cpp">
+      <Filter>02.GameObjects\00.UI\Shop\ShopDesc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

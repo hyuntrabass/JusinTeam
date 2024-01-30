@@ -485,7 +485,7 @@ const _uint& CRealtimeVTFModel::Get_CurrentAnimationIndex() const
 	return m_AnimDesc.iAnimIndex;
 }
 
-const _float& CRealtimeVTFModel::Get_CurrentAnimPos() const
+const _float CRealtimeVTFModel::Get_CurrentAnimPos() const
 {
 	return m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos();
 }

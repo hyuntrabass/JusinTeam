@@ -372,6 +372,12 @@
     <ClCompile Include="..\Private\VIBuffer_Instancing_Mesh.cpp">
       <Filter>01.Utility\03.Components\VIBuffer\Instancing\Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Mesh_Instance.cpp">
+      <Filter>01.Utility\03.Components\VIBuffer\Instancing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Model_Instancing.cpp">
+      <Filter>01.Utility\03.Components\VIBuffer\Instancing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h">
@@ -557,6 +563,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Compute_RenderTarget.h">
       <Filter>01.Utility\11.RenderTargets\Compute_RenderTarget</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Mesh_Instance.h">
+      <Filter>01.Utility\03.Components\VIBuffer\Instancing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Model_Instancing.h">
+      <Filter>01.Utility\03.Components\VIBuffer\Instancing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

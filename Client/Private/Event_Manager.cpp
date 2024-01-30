@@ -78,6 +78,17 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 	m_pQuest->Tick(fTimeDelta);
 }
 
+_bool CEvent_Manager::Find_Quest(const wstring& strQuest)
+{
+	auto iter = m_QuestMap.find(strQuest);
+	if (iter == m_QuestMap.end())
+	{
+		return false;
+	}
+	
+	return true;
+}
+
 HRESULT CEvent_Manager::Init_Quest()
 {
 	m_pQuest = (CQuest*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Quest"));
@@ -91,9 +102,9 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.fExp = 1.7f;
 	tDesc.iNum = 1;
 	tDesc.iMoney = 1000;
-	tDesc.isMain = true;
-	tDesc.strQuestTitle = TEXT("공격하기");
-	tDesc.strText = TEXT("공격키를 눌러봐");
+	tDesc.isMain = false;
+	tDesc.strQuestTitle = TEXT("퀘스트!");
+	tDesc.strText = TEXT("그냥");
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	tDesc.eType = QUESTIN;
@@ -109,9 +120,9 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.fExp = 2;
 	tDesc.iNum = 3;
 	tDesc.iMoney = 1000;
-	tDesc.isMain = false;
-	tDesc.strQuestTitle = TEXT("몬스터와 접촉");
-	tDesc.strText = TEXT("몬스터와 3회 접촉해봐");
+	tDesc.isMain = true;
+	tDesc.strQuestTitle = TEXT("펫 라이딩");
+	tDesc.strText = TEXT("펫 타고 이동해보기");
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	return S_OK;
@@ -126,7 +137,6 @@ HRESULT CEvent_Manager::Update_Quest(const wstring& strQuest)
 
 	if (m_pQuest->Update_Quest(strQuest))
 	{
-		
 		EVENT_DESC tDesc = m_QuestMap[strQuest];
 		tDesc.eType = QUESTEND;
 		Set_Event(tDesc);

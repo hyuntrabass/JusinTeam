@@ -170,6 +170,7 @@
     <ClInclude Include="..\Public\Coin.h" />
     <ClInclude Include="..\Public\Dialog.h" />
     <ClInclude Include="..\Public\CommonSurfaceTrail.h" />
+    <ClInclude Include="..\Public\DialogText.h" />
     <ClInclude Include="..\Public\Diamond.h" />
     <ClInclude Include="..\Public\CommonTrail.h" />
     <ClInclude Include="..\Public\Dog.h" />
@@ -199,6 +200,7 @@
     <ClInclude Include="..\Public\Missile.h" />
     <ClInclude Include="..\Public\MPBar.h" />
     <ClInclude Include="..\Public\Map.h" />
+    <ClInclude Include="..\Public\NameWindow.h" />
     <ClInclude Include="..\Public\Nastron03.h" />
     <ClInclude Include="..\Public\Nastron07.h" />
     <ClInclude Include="..\Public\NPC.h" />
@@ -211,6 +213,7 @@
     <ClInclude Include="..\Public\Pet.h" />
     <ClInclude Include="..\Public\Pet_Cat.h" />
     <ClInclude Include="..\Public\Pet_Dragon.h" />
+    <ClInclude Include="..\Public\Pop_LevelUp.h" />
     <ClInclude Include="..\Public\Pop_QuestEnd.h" />
     <ClInclude Include="..\Public\Pop_QuestIn.h" />
     <ClInclude Include="..\Public\Prologue_Object.h" />
@@ -225,6 +228,8 @@
     <ClInclude Include="..\Public\NameTag.h" />
     <ClInclude Include="..\Public\SelectDesc.h" />
     <ClInclude Include="..\Public\Select_Npc.h" />
+    <ClInclude Include="..\Public\Shop.h" />
+    <ClInclude Include="..\Public\ShopDesc.h" />
     <ClInclude Include="..\Public\SkillBlock.h" />
     <ClInclude Include="..\Public\SkillSlot.h" />
     <ClInclude Include="..\Public\Sky.h" />
@@ -283,6 +288,7 @@
     <ClCompile Include="..\Private\Coin.cpp" />
     <ClCompile Include="..\Private\Dialog.cpp" />
     <ClCompile Include="..\Private\CommonSurfaceTrail.cpp" />
+    <ClCompile Include="..\Private\DialogText.cpp" />
     <ClCompile Include="..\Private\Diamond.cpp" />
     <ClCompile Include="..\Private\CommonTrail.cpp" />
     <ClCompile Include="..\Private\Dog.cpp" />
@@ -312,6 +318,7 @@
     <ClCompile Include="..\Private\Missile.cpp" />
     <ClCompile Include="..\Private\MPBar .cpp" />
     <ClCompile Include="..\Private\Map.cpp" />
+    <ClCompile Include="..\Private\NameWindow.cpp" />
     <ClCompile Include="..\Private\Nastron03.cpp" />
     <ClCompile Include="..\Private\Nastron07.cpp" />
     <ClCompile Include="..\Private\NPC.cpp" />
@@ -324,6 +331,7 @@
     <ClCompile Include="..\Private\Pet.cpp" />
     <ClCompile Include="..\Private\Pet_Cat.cpp" />
     <ClCompile Include="..\Private\Pet_Dragon.cpp" />
+    <ClCompile Include="..\Private\Pop_LevelUp.cpp" />
     <ClCompile Include="..\Private\Pop_QuestEnd.cpp" />
     <ClCompile Include="..\Private\Pop_QuestIn.cpp" />
     <ClCompile Include="..\Private\Prologue_Object.cpp" />
@@ -338,6 +346,8 @@
     <ClCompile Include="..\Private\NameTag.cpp" />
     <ClCompile Include="..\Private\SelectDesc.cpp" />
     <ClCompile Include="..\Private\Select_Npc.cpp" />
+    <ClCompile Include="..\Private\Shop.cpp" />
+    <ClCompile Include="..\Private\ShopDesc.cpp" />
     <ClCompile Include="..\Private\SkillBlock.cpp" />
     <ClCompile Include="..\Private\SkillSlot.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />

@@ -29,8 +29,8 @@ public:
 
 	_uint m_iNumMaterials{};
 	vector<Model_Material> m_Materials{};
-	vector<VTXSTATICMESH> vVertices {};
-	vector<_ulong> vIndices {};
+	//vector<VTXSTATICMESH> vVertices {};
+	//vector<_ulong> vIndices {};
 
 private:
 	_mat m_PivotMatrix{};

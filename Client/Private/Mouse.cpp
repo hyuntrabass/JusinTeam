@@ -1,5 +1,6 @@
 #include "Mouse.h"
 #include "GameInstance.h"
+#include "UI_Manager.h"
 
 CMouse::CMouse(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -50,6 +51,8 @@ void CMouse::Tick(_float fTimeDelta)
 	m_fX = static_cast<_float>(ptMouse.x);
 	m_fY = static_cast<_float>(ptMouse.y);
 
+	CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_DEFAULT);
+
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
 
@@ -60,6 +63,7 @@ void CMouse::Late_Tick(_float fTimeDelta)
 
 HRESULT CMouse::Render()
 {
+	CUI_Manager::MOUSESTATE eState = CUI_Manager::Get_Instance()->Get_MouseState();
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
@@ -116,7 +120,8 @@ HRESULT CMouse::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	_uint iIndex = (_uint)CUI_Manager::Get_Instance()->Get_MouseState();
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", iIndex)))
 	{
 		return E_FAIL;
 	}

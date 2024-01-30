@@ -44,6 +44,16 @@ HRESULT CFont_Manager::Render(const wstring& strFontTag, const wstring& strText,
 	return pFont->Render(strText, vPosition, fScale, vColor, fRotation, isFront);
 }
 
+_vec2 CFont_Manager::Get_TextSize(const wstring& strFontTag, const wstring& strText)
+{
+	CMyFont* pFont = Find_Font(strFontTag);
+	if (!pFont)
+	{
+		return _vec2(0.f, 0.f);
+	}
+	return pFont->Get_TextSize(strText);
+}
+
 CMyFont* CFont_Manager::Find_Font(const wstring& strFontTag)
 {
 	auto iter = m_Fonts.find(strFontTag);

@@ -46,23 +46,28 @@ HRESULT CLevel_GamePlay::Init()
 	}
 
 	// Monster
-	if (FAILED(Ready_ModelTest()))
+
+	//if (FAILED(Ready_ModelTest()))
+	//{
+	//	MSG_BOX("Failed to Ready ModelTest");
+	//	return E_FAIL;
+	//}
+	
+	/*
+	
+	if (FAILED(Ready_Rabbit()))
 	{
-		MSG_BOX("Failed to Ready ModelTest");
+		MSG_BOX("Failed to Ready Rabbit");
 		return E_FAIL;
 	}
 
-	//if (FAILED(Ready_Rabbit()))
-	//{
-	//	MSG_BOX("Failed to Ready Rabbit");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Goat()))
+	{
+		MSG_BOX("Failed to Ready Goat");
+		return E_FAIL;
+	}*/
 
-	//if (FAILED(Ready_Goat()))
-	//{
-	//	MSG_BOX("Failed to Ready Goat");
-	//	return E_FAIL;
-	//}
+	/*
 
 	//if (FAILED(Ready_Nastron03()))
 	//{
@@ -130,6 +135,26 @@ HRESULT CLevel_GamePlay::Init()
 	//	return E_FAIL;
 	//}
 
+	if (FAILED(Ready_Dog()))
+	{
+		MSG_BOX("Failed to Ready Dog");
+		return E_FAIL;
+	}
+	if (FAILED(Ready_NPC_Test()))
+	{
+		MSG_BOX("Failed to Ready NPC");
+		return E_FAIL;
+	}
+		*/
+	/*
+	
+	if (FAILED(Ready_NPC_Dummy_Test()))
+	{
+		MSG_BOX("Failed to Ready NPC_Dummy");
+		return E_FAIL;
+	}
+	*/
+
 	//// NPC
 	//if (FAILED(Ready_Cat()))
 	//{
@@ -143,11 +168,7 @@ HRESULT CLevel_GamePlay::Init()
 	//	return E_FAIL;
 	//}
 
-	//if (FAILED(Ready_NPC_Test()))
-	//{
-	//	MSG_BOX("Failed to Ready NPC");
-	//	return E_FAIL;
-	//}
+
 
 	//if (FAILED(Ready_NPC_Dummy_Test()))
 	//{
@@ -155,12 +176,13 @@ HRESULT CLevel_GamePlay::Init()
 	//	return E_FAIL;
 	//}
 
+
 	// Boss
-	if (FAILED(Ready_Groar_Boss()))
-	{
-		MSG_BOX("Failed to Ready Groar_Boss");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Groar_Boss()))
+	//{
+	//	MSG_BOX("Failed to Ready Groar_Boss");
+	//	return E_FAIL;
+	//}
 
 	// Pet
 	if (FAILED(Ready_Pet()))
@@ -188,7 +210,11 @@ HRESULT CLevel_GamePlay::Init()
 		MSG_BOX("Failed to Ready UI");
 		return E_FAIL;
 	}
-
+	if (FAILED(Ready_NPC_Test()))
+	{
+		MSG_BOX("Failed to Ready NPC");
+		return E_FAIL;
+	}
 
 	if (FAILED(Ready_Object()))
 	{
@@ -201,7 +227,8 @@ HRESULT CLevel_GamePlay::Init()
 	EffectDesc.isFollow = true;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
 
-	m_pGameInstance->Set_FogNF(_vec2(5.f, 500.f));
+	m_pGameInstance->Set_FogNF(_vec2(5.f, 300.f));
+	m_pGameInstance->Set_FogColor(_color(0.1f));
 
 	return S_OK;
 }
@@ -516,10 +543,13 @@ HRESULT CLevel_GamePlay::Ready_Dog()
 
 HRESULT CLevel_GamePlay::Ready_NPC_Test()
 {
+	
+	
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_ItemMerchant"), TEXT("Prototype_GameObject_ItemMerchant"))))
 	{
 		return E_FAIL;
 	}
+
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BlackSmith"), TEXT("Prototype_GameObject_BlackSmith"))))
 	{
