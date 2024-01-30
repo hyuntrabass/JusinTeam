@@ -296,6 +296,17 @@ PS_OUT PS_Main_Blur(PS_IN Input)
     
     Output.vColor = g_BlurTexture.Sample(LinearSampler, Input.vTexcoord);
     
+    //float2 fTexelSize = 1.f / float2(g_fScreenWidth, g_fScreenHeight);
+    
+    //for (int y = -10; y <= 10; ++y)
+    //{
+    //    for (int x = -10; x <= 10; ++x)
+    //    {
+    
+    //        Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + float2(x, y) * fTexelSize) * 1.f / 441.f;
+    //    }
+    //}
+    
     return Output;
 }
 
