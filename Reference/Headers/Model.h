@@ -56,8 +56,10 @@ public:
 	void Apply_TransformToActor(_fmatrix WorldMatrix);
 
 	HRESULT Render(_uint iMeshIndex);
+	HRESULT Render_Instancing(_uint iMeshIndex, class CVIBuffer_Mesh_Instance*& pInstanceBuffer, CModel*& pModel, CShader*& pShader);
 
 	_bool Intersect_RayModel(_fmatrix WorldMatrix, _vec4* pPickPos);
+	_int Get_InstanceID() { return m_iInstanceID; }
 
 private:
 	//Æ®¸®°Å
@@ -100,6 +102,9 @@ private:
 
 	ID3D11Texture2D* m_pTexture{ nullptr };
 	ID3D11ShaderResourceView* m_pSRV{ nullptr };
+
+	static _int	m_iNextInstanceID;
+	_int m_iInstanceID{};
 
 private:
 	HRESULT Read_Bones(ifstream& File);
