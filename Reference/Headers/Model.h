@@ -62,6 +62,7 @@ public:
 	_int Get_InstanceID() { return m_iInstanceID; }
 
 private:
+	//트리거
 	class CTransform* m_pOwnerTransform{};
 	_bool m_IsResetTriggers{};
 	//이펙트 트리거

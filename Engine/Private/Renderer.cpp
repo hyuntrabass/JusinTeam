@@ -932,16 +932,19 @@ HRESULT CRenderer::Render_Refraction()
 			CTransform* pWaterTransform = dynamic_cast<CTransform*>(pWater->Find_Component(L"Com_Transform"));
 			_float fWaterHeight = pWaterTransform->Get_CenterPos().y;
 			_float4 vClipPlane = _float4(0.f, 1.f, 0.f, fWaterHeight + 0.1f);
-			for (auto& pGameObject : m_RenderObjects[RG_Water_Reflection]) {
+			for (auto& pGameObject : m_RenderObjects[RG_Water_Refraction]) {
 				if (pGameObject) {
 					if (FAILED(pGameObject->Render_Refract(vClipPlane)))
 						return E_FAIL;
 				}
-				Safe_Release(pGameObject);
-
 			}
 		}
 	}
+
+	for (auto& pGameObject : m_RenderObjects[RG_Water_Refraction])
+		Safe_Release(pGameObject);
+	m_RenderObjects[RG_Water_Refraction].clear();
+
 
 	if (FAILED(m_pGameInstance->End_MRT()))
 	{
@@ -1057,16 +1060,19 @@ HRESULT CRenderer::Render_Reflection()
 					if (FAILED(pGameObject->Render_Reflection(vClipPlane)))
 						return E_FAIL;
 				}
-				Safe_Release(pGameObject);
 
 			}
-			m_RenderObjects[RG_Water_Reflection].clear();
 
 			m_pGameInstance->Set_Transform(TransformType::View, OriginView);
 			m_pGameInstance->Update_PipeLine();
 		}
 
 	}
+
+	for (auto& pGameObject : m_RenderObjects[RG_Water_Reflection])
+		Safe_Release(pGameObject);
+
+	m_RenderObjects[RG_Water_Reflection].clear();
 
 	if (FAILED(m_pGameInstance->End_MRT()))
 	{
