@@ -223,7 +223,7 @@ public: // Get_Set
 	void Set_ChannelVolume(_uint iChannel, _float fVolume);
 
 	_float Get_ShakePower() { return m_fShakePower; }
-
+	_bool Get_FlyCam() { return m_bFlyCam; }
 	void Set_ZoomFactor(const _float fFactor);
 	void Set_CameraState(const _uint& iIndex);
 	void Set_CameraTargetPos(const _vec4& vPos);
@@ -231,7 +231,7 @@ public: // Get_Set
 	void Set_Have_TargetLook(const _bool& bHaveLook);
 	void Set_AimMode(_bool Aim, _vec3 AimPos = _vec3(0.63f, 1.8f, 1.1f));
 	void Set_InputString(const wstring& strInput);
-
+	void Set_FlyCam(_bool Fly) { m_bFlyCam = Fly; }
 
 	void Set_CameraAttackZoom(_float fAttackZoom) { m_fCameraAttackZoom = fAttackZoom; }
 	const _float& Get_CameraAttackZoom() { return m_fCameraAttackZoom; }
@@ -290,7 +290,7 @@ private:
 	_vec3 m_AimPos{};
 	_bool m_bSkipDebugRender{ true };
 	wstring m_strInput{};
-
+	_bool m_bFlyCam{};
 private:
 	vector<_bool> m_vecLevelInvalid;
 

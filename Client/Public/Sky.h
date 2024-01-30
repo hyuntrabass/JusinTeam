@@ -21,6 +21,12 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
+	CTexture* m_Textures[19]{};
+
+private:
+	_float m_fLightning_Time{};
+private:
+	_uint m_iTextureIndex{};
 
 private:
 	HRESULT Add_Components();

@@ -14,17 +14,7 @@ HRESULT CLevel_Select::Init()
 	m_pGameInstance->StopAll();
 	m_pGameInstance->PlayBGM(TEXT("Odin_CharacterCreate_01"));
 	m_pGameInstance->Play_Sound(TEXT("Amb_Fire_SFX_03_03"), 0.2f, true);
-	UiInfo info{};
-	info.strTexture = TEXT("Prototype_Component_Texture_BackGround_Mask");
-	info.vPos = _vec2(640, 360);
-	info.vSize = _vec2(1280, 720);
-	info.iLevel = (_uint)LEVEL_SELECT;
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_SELECT, TEXT("Layer_Mask"), TEXT("Prototype_GameObject_BackGround_Mask"), &info)))
-	{
-		return E_FAIL;
-
-	}
 
 	if (FAILED(Ready_Select()))
 	{
@@ -200,6 +190,10 @@ HRESULT CLevel_Select::Ready_Map()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Sky"), TEXT("Prototype_GameObject_Sky"))))
+	{
+		return E_FAIL;
+	}
 	return S_OK;
 }
 

@@ -52,12 +52,15 @@ private:
 	_bool										m_isQuickAnim{ false };
 	_bool										m_isActiveQuickSlot{ false };
 	_bool										m_isPicking { false };
+	_bool										m_isPickingDouble{ false };
 
 	_uint										m_iCurIndex{};
+	ITEM_TYPE									m_iCurItemType{};
 
 	_float										m_fButtonY{ 0.f };
 	_float										m_fBGY{ 0.f };
 	_float										m_fTime{ 0.f };
+	_float										m_fDoubleClick{ 0.f };
 
 	vector<CItem*>								m_vecItems;
 	vector<CItem*>								m_vecItemsSlot[INVEN_TYPE::INVEN_END];
@@ -90,6 +93,7 @@ public:
 	void ItemSlot_Delete_Logic(_uint iSlotIdx);
 	void Delete_Item(INVEN_TYPE eInvenType, _uint iIndex);
 
+	void Set_Parent(CGameObject* pGameObject) { m_pParent = pGameObject; }
 private:
 	void Picking_InvenButton(POINT ptMouse);
 	void Picking_ShopButton(POINT ptMouse);

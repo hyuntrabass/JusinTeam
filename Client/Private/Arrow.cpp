@@ -39,9 +39,9 @@ HRESULT CArrow::Init(void* pArg)
 	}
 	else
 	{
-		_float random = rand() % 12;
+		_uint random = rand() % 12;
 		m_pTransformCom->Set_State(State::Pos, m_ArrowType.vPos);
-		m_pTransformCom->Set_Speed(12.f + random);
+		m_pTransformCom->Set_Speed(12.f + (_float)random);
 		m_pTransformCom->Set_Scale(_vec3(3.f, 3.f, 1.5f));
 	}
 

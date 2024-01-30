@@ -83,6 +83,10 @@ private:
 	static const _float m_fChaseRange;
 	static const _float m_fAttackRange;
 
+private:
+	static _uint m_iSpiderID;
+	static _bool m_bDirSelected[8];
+
 public:
 	virtual HRESULT Add_Collider() override;
 	virtual void Update_Collider() override;

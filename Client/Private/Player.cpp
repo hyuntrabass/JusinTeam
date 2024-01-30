@@ -1,9 +1,8 @@
 #include "Player.h"
-#include "BodyPart.h"
 #include "UI_Manager.h"
 #include "Event_Manager.h"
-#include "Weapon.h"
 #include "Arrow.h"
+#include "FadeBox.h"
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -33,17 +32,17 @@ HRESULT CPlayer::Init(void* pArg)
 	m_pTransformCom->Set_Speed(1);
 	m_pCameraTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
 	Safe_AddRef(m_pCameraTransform);
-	m_SwordSkill[0] = Anim_RA_7062_KnockBack_A; // �˱� ������ (�ַ±�)
-	m_SwordSkill[1] = Anim_RA_9060_SealChain; // ������ �����ϸ鼭 ������
-	m_SwordSkill[2] = Anim_RA_9040_RapidAttack; // ������ٰ� ���
-	m_SwordSkill[3] = Anim_RA_9050_SealStack; // ��Ÿ(���)
-	m_SwordSkill[4] = Anim_RA_9080_Hiding; // ����(��Ŭ��)
+	m_SwordSkill[0] = Anim_RA_7062_KnockBack_A; // 검기 날리기 (주력기)
+	m_SwordSkill[1] = Anim_RA_9060_SealChain; // 앞으로 점프하면서 때리기
+	m_SwordSkill[2] = Anim_RA_9040_RapidAttack; // 사라졌다가 찌르기
+	m_SwordSkill[3] = Anim_RA_9050_SealStack; // 난타(쿨김)
+	m_SwordSkill[4] = Anim_RA_9080_Hiding; // 은신(우클릭)
 
-	m_BowSkill[0] = Anim_ID_8070_TripleStrike; // Ʈ���� �� (�ַ±�)
-	m_BowSkill[1] = Anim_ID_8080_BackTumbling; // �������
-	m_BowSkill[2] = Anim_ID_8120_RainArrow; // ȭ���
-	m_BowSkill[3] = Anim_ID_8130_IllusionArrow; // �н� ���ͼ� ȭ��(���)
-	m_BowSkill[4] = Anim_RS_8110_DodgeAttack; // ���Ӹ�� ����(��Ŭ��)
+	m_BowSkill[0] = Anim_ID_8070_TripleStrike; // 트리플 샷 (주력기)
+	m_BowSkill[1] = Anim_ID_8080_BackTumbling; // 백덤블링
+	m_BowSkill[2] = Anim_ID_8120_RainArrow; // 화살비
+	m_BowSkill[3] = Anim_ID_8130_IllusionArrow; // 분신 나와서 화살(쿨김)
+	m_BowSkill[4] = Anim_RS_8110_DodgeAttack; // 에임모드 변경(우클릭)
 
 	Change_Parts(PT_BODY, 1);
 	Change_Parts(PT_HAIR, 0);
@@ -72,7 +71,7 @@ HRESULT CPlayer::Init(void* pArg)
 
 	m_Left_Mat = m_pModelCom->Get_BoneMatrix("B_Weapon_L");
 	m_Right_Mat = m_pModelCom->Get_BoneMatrix("B_Weapon_R");
-	for(int i=0; i<5;i++)
+	for (int i = 0; i < 5; i++)
 	{
 		m_pLeft_Trail[i]->Off();
 		m_pRight_Trail[i]->Off();
@@ -101,7 +100,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		if (m_eState == Attack or m_eState == Skill1 or m_eState == Skill2 or m_eState == Skill3 or m_eState == Skill4)
 		{
 			if (m_Weapon_CurrentIndex < WP_UNEQUIP && m_Weapon_CurrentIndex>BOW4)
-			m_pLeft_Trail[(m_Weapon_CurrentIndex)-5]->On();
+				m_pLeft_Trail[(m_Weapon_CurrentIndex)-5]->On();
 		}
 		else if (m_Weapon_CurrentIndex < WP_UNEQUIP && m_Weapon_CurrentIndex>BOW4)
 			m_pLeft_Trail[(m_Weapon_CurrentIndex)-5]->Off();
@@ -109,7 +108,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		if (m_eState == Skill2 or m_eState == Skill4)
 		{
 			if (m_Weapon_CurrentIndex < WP_UNEQUIP && m_Weapon_CurrentIndex>BOW4)
-			m_pRight_Trail[(m_Weapon_CurrentIndex)-5]->On();
+				m_pRight_Trail[(m_Weapon_CurrentIndex)-5]->On();
 		}
 		else if (m_Weapon_CurrentIndex < WP_UNEQUIP && m_Weapon_CurrentIndex>BOW4)
 			m_pRight_Trail[(m_Weapon_CurrentIndex)-5]->Off();
@@ -162,24 +161,44 @@ void CPlayer::Tick(_float fTimeDelta)
 		m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), 0.f);
 		if (eType == PT_WEAPON)
 		{
-			//Change_Weapon(CUI_Manager::Get_Instance()->Get_CustomPart(eType));
+			WEAPON_TYPE eWpType{};
+			_uint iWpIdx = CUI_Manager::Get_Instance()->Get_WeaponType(eType, &eWpType);
+			Change_Weapon(eWpType, (WEAPON_INDEX)iWpIdx);
 
 		}
-		Change_Parts(eType, CUI_Manager::Get_Instance()->Get_CustomPart(eType));
+		else
+		{
+			Change_Parts(eType, CUI_Manager::Get_Instance()->Get_CustomPart(eType));
+		}
+
 	}
-
-
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD5))
+	{
+		m_eState = Logging;
+		m_iLoggingCount = 0;
+	}
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD6))
+	{
+		m_eState = Mining;
+		m_iMiningCount = 0;
+	}
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD7))
+	{
+		m_eState = Collect_Start;
+	}
 	if (m_pGameInstance->Key_Down(DIK_8))
 	{
 		if (!m_bIsMount)
 		{	
-			CEvent_Manager::Get_Instance()->Update_Quest(TEXT("�� ���̵�"));
 			m_bIsMount = true;
 			m_eState = Mount;
 			m_Animation.iAnimIndex = Anim_Mount_Idle;
-			Summon_Riding(Nihilir);
+			Summon_Riding(Bird);
+
 			
-		
+
+			m_pGameInstance->Set_FlyCam(true);
+
 		}
 		else
 		{
@@ -331,7 +350,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 	}
 
-	for(int i =0; i<5;i++)
+	for (int i = 0; i < 5; i++)
 	{
 		m_pLeft_Trail[i]->Late_Tick(fTimeDelta);
 		m_pRight_Trail[i]->Late_Tick(fTimeDelta);
@@ -709,7 +728,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 			break;
 		}
 	}
-	
+
 	m_StartRegen = 0.f;
 }
 
@@ -740,9 +759,9 @@ void CPlayer::Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex)
 		m_bWeapon_Unequip = true;
 	else
 	{
-		if(m_Current_Weapon == WP_SWORD)
+		if (m_Current_Weapon == WP_SWORD)
 		{
-			if(m_Weapon_CurrentIndex < WP_UNEQUIP && m_Weapon_CurrentIndex>BOW4)
+			if (m_Weapon_CurrentIndex < WP_UNEQUIP && m_Weapon_CurrentIndex>BOW4)
 			{
 				m_pRight_Trail[(m_Weapon_CurrentIndex)-5]->Off();
 				m_pLeft_Trail[(m_Weapon_CurrentIndex)-5]->Off();
@@ -838,21 +857,10 @@ void CPlayer::Move(_float fTimeDelta)
 	{
 		if (m_eState != Skill1)
 		{
-			Ready_Skill(ST_Skill1); // 1��â�� �ִ� ��ų �־��ֱ�
+			Ready_Skill(ST_Skill1); // 1번창에 있던 스킬 넣어주기
 		}
 	}
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
-	{
-		Set_Damage(1, MonAtt_Hit);
-	}
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD3))
-	{
-		Set_Damage(1, MonAtt_Stun);
-	}
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
-	{
-		Set_Damage(1, MonAtt_KnockDown);
-	}
+
 	if (m_pGameInstance->Key_Down(DIK_2))
 	{
 		if (m_eState != Skill2)
@@ -885,7 +893,7 @@ void CPlayer::Move(_float fTimeDelta)
 	}
 	if (m_pGameInstance->Key_Down(DIK_5))
 	{
-		if(m_eState == Idle)
+		if (m_eState == Idle)
 		{
 			if (m_Current_Weapon == WP_SWORD)
 				Change_Weapon(WP_BOW, BOW0);
@@ -898,14 +906,14 @@ void CPlayer::Move(_float fTimeDelta)
 	{
 		if (m_Current_Weapon == WP_BOW)
 		{
-			if (m_eState ==Idle)
+			if (m_eState == Idle)
 			{
 				m_eState = Aim_Idle;
 				m_Animation.iAnimIndex = Anim_LoadingScene_Pose_Sniper;
 				m_iCurrentSkill_Index = Aim_Idle;
 				m_pGameInstance->Set_AimMode(true);
 			}
-			else if(m_eState == Aim_Idle)
+			else if (m_eState == Aim_Idle)
 			{
 				m_eState = Attack_Idle;
 				m_pGameInstance->Set_AimMode(false);
@@ -949,7 +957,7 @@ void CPlayer::Move(_float fTimeDelta)
 
 	if ((m_fSkiilTimer > 1.2f && m_eState != SkillR && m_eState != Aim_Idle))
 	{
-		//����Ʈ ������ ���� bool�� ����ϵ��� �ѹ� ���ľ��ҵ� �ƴϸ� ��� �ʿ��� ã�ƾߵǴϱ� 
+		//퀘스트 개수에 따라 bool로 통과하도록 한번 거쳐야할듯 아니면 계속 맵에서 찾아야되니까 
 		if (m_pGameInstance->Key_Pressing(DIK_W))
 		{
 			vDirection += vForwardDir;
@@ -1477,7 +1485,7 @@ void CPlayer::Ready_Skill(Skill_Type Type)
 		m_iCurrentSkill_Index = Skill4;
 		break;
 
-	default: // ��Ž�̰ų� ���� ���� ��ų�϶� ó��
+	default: // 쿨탐이거나 얻지 못한 스킬일때 처리
 		break;
 	}
 	m_ReadyArrow = true;
@@ -1719,7 +1727,7 @@ void CPlayer::Sword_Att_Camera_Effect()
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
 		if (m_iAttackCombo == 1)
 		{
-	
+
 			if (Index >= 20.f && Index <= 21.f)
 			{
 				if (!m_bAttacked)
@@ -2073,9 +2081,9 @@ void CPlayer::Bow_Att_Camera_Effect()
 		{
 			Create_Arrow(AT_Bow_Common);
 			CCollider* TargetColl = m_pGameInstance->Get_Nearest_MonsterCollider();
-			if(TargetColl !=nullptr)
+			if (TargetColl != nullptr)
 			{
-				_vec4 vLook = _vec4(TargetColl->Get_ColliderPos(),1.f);
+				_vec4 vLook = _vec4(TargetColl->Get_ColliderPos(), 1.f);
 				vLook.y = m_pTransformCom->Get_State(State::Pos).y;
 				m_pTransformCom->LookAt(vLook);
 			}
@@ -2133,7 +2141,7 @@ void CPlayer::Bow_Att_Camera_Effect()
 
 			m_UsingMotionBlur = true;
 		}
-		else if (Index >= 65.f && m_ReadyArrow)
+		else if (Index >= 50.f && m_ReadyArrow)
 		{
 			Create_Arrow(AT_Bow_Skill3);
 			m_ReadyArrow = false;
@@ -2335,7 +2343,7 @@ void CPlayer::Arrow_Rain()
 			random2 *= -1;
 		random2 *= 0.05;
 
-		Type.vPos = m_pTransformCom->Get_State(State::Pos) + m_vArrowLook * 11.f + _vec4(random, 9.f, random2, 0.f)/* + m_pTransformCom->Get_State(State::Right) * 4.f*/;
+		Type.vPos = m_pTransformCom->Get_State(State::Pos) + m_vArrowLook * 11.f + _vec4(random, 10.f, random2, 0.f)/* + m_pTransformCom->Get_State(State::Right) * 4.f*/;
 
 		Type.vLook = _vec4(0.01f, -1.f, 0.f, 0.f);
 
@@ -2549,6 +2557,31 @@ void CPlayer::Init_State()
 			break;
 		case Client::CPlayer::Die:
 			m_Animation.iAnimIndex = Anim_die;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Collect_Start:
+			m_Animation.iAnimIndex = Anim_Collect_Start;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Collect_Loop:
+			m_Animation.iAnimIndex = Anim_Collect_loop;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Collect_End:
+			m_Animation.iAnimIndex = Anim_Collect_end;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Mining:
+			m_Animation.iAnimIndex = Anim_Mining;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Logging:
+			m_Animation.iAnimIndex = Anim_logging;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
 			break;
@@ -2787,7 +2820,59 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		{
 			m_eState = Revival_Start;
 		}
+		break;
+	case Client::CPlayer::Collect_Start:
+		if (m_pModelCom->IsAnimationFinished(Anim_Collect_Start))
+		{
+			m_eState = Collect_Loop;
+		}
+		break;
+	case Client::CPlayer::Collect_Loop:
+		if (m_pModelCom->IsAnimationFinished(Anim_Collect_loop))
+		{
+			m_eState = Collect_End;
+		}
+		break;
+	case Client::CPlayer::Collect_End:
+		if (m_pModelCom->IsAnimationFinished(Anim_Collect_end))
+		{
+			m_eState = Idle;
+		}
+		break;
+	case Client::CPlayer::Mining:
+		m_Animation.bRestartAnimation = false;
+		if (m_pModelCom->IsAnimationFinished(Anim_Mining))
+		{
+			m_iMiningCount++;
+			if (m_iMiningCount >= 3)
+			{
+				m_eState = Idle;
+				m_Animation.iAnimIndex = Anim_idle_00;
+			}
+			else
+			{
+				m_Animation.iAnimIndex = Anim_Mining;
+				m_Animation.bRestartAnimation = true;
+			}
+		}
+		break;
+	case Client::CPlayer::Logging:
+		m_Animation.bRestartAnimation = false;
+		if (m_pModelCom->IsAnimationFinished(Anim_logging))
+		{
+			m_iLoggingCount++;
+			if (m_iLoggingCount >= 3)
+			{
+				m_eState = Idle;
+				m_Animation.iAnimIndex = Anim_idle_00;
 
+			}
+			else
+			{
+				m_Animation.iAnimIndex = Anim_logging;
+				m_Animation.bRestartAnimation = true;
+			}
+		}
 		break;
 	default:
 		break;
@@ -2872,7 +2957,7 @@ HRESULT CPlayer::Add_Components()
 	_mat matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(50.f), 2.f, 0.01f, 20.f);
 
 
-		CollDesc.matFrustum = matView * matProj;
+	CollDesc.matFrustum = matView * matProj;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_CommonBow_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Bow_Common]), &CollDesc)))
 	{
@@ -2884,19 +2969,19 @@ HRESULT CPlayer::Add_Components()
 
 HRESULT CPlayer::Bind_ShaderResources()
 {
-	// WorldMatrix ���ε�
+	// WorldMatrix 바인드
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
-	// ViewMatrix ���ε�
+	// ViewMatrix 바인드
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
 		return E_FAIL;
 
-	// ProjMatrix ���ε�
+	// ProjMatrix 바인드
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
 		return E_FAIL;
 
-	// ī�޶� Far ���ε�
+	// 카메라 Far 바인드
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
 		return E_FAIL;
 
@@ -2911,17 +2996,17 @@ HRESULT CPlayer::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
 		return E_FAIL;
 
-	// ��Ǻ����� ���������� WorldMatrix ���ε�
+	// 모션블러용 이전프레임 WorldMatrix 바인드
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldWorldMatrix", m_OldWorldMatrix)))
 		return E_FAIL;
 
-	// ��Ǻ����� ���������� ViewMatrix ���ε�
+	// 모션블러용 이전프레임 ViewMatrix 바인드
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix_vec4x4())))
 		return E_FAIL;
 
 	m_pModelCom->Set_UsingMotionBlur(m_UsingMotionBlur);
 
-	// �� ���ε�
+	// 뼈 바인드
 	if (FAILED(m_pModelCom->Bind_Bone(m_pShaderCom)))
 		return E_FAIL;
 

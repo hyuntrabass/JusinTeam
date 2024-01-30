@@ -50,7 +50,33 @@ HRESULT CInven::Init(void* pArg)
 	
 	strItem = TEXT("마나 포션");
 	CUI_Manager::Get_Instance()->Set_Item(strItem, 60);
+	
+	strItem = TEXT("그냥모자");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);
+	
+	strItem = TEXT("안흔한모자");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);
+	
+	strItem = TEXT("유니크헬멧");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);
+	
+	strItem = TEXT("유니크한옷");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);
+	
+	strItem = TEXT("신화옷");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);
+	
+	/*
+	strItem = TEXT("유니크검");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);
+	
+	strItem = TEXT("유니크활");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);
 
+	*/
+	strItem = TEXT("그냥옷");
+	ITEM eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
+	m_pWearableSlots[W_CHEST]->Set_WearableItem(eItem);
 	return S_OK;
 }
 
@@ -107,10 +133,27 @@ void CInven::Tick(_float fTimeDelta)
 		}
 	}
 
+
+
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 	if (m_isActive)
 	{
+		for (size_t i = 0; i < WEARABLE_TYPE::W_END; i++)
+		{
+			if (PtInRect(&m_pWearableSlots[i]->Get_Rect(), ptMouse) && m_pGameInstance->Mouse_Down(DIM_RBUTTON))
+			{
+				if (m_pWearableSlots[i]->Is_Full())
+				{
+					ITEM Item = m_pWearableSlots[i]->Get_ItemDesc();
+					dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(Item);
+					m_pWearableSlots[i]->Delete_Item();
+				}
+				break;
+			}
+		}
+
+
 		CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 		m_pExitButton->Tick(fTimeDelta);
 		m_pInvenFrame->Tick(fTimeDelta);
@@ -181,18 +224,49 @@ void CInven::Init_InvenState()
 {
 	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_FrameMode(CInvenFrame::F_INVEN);
 	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Init_State();
+	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Parent(this);
 
 	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
 	dynamic_cast<CTextButton*>(m_pMoney)->Set_Text(to_wstring(iMoney));
 
 	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
 	dynamic_cast<CTextButton*>(m_pDiamond)->Set_Text(to_wstring(iDiamond));
+
 }
 
 HRESULT CInven::Set_Item(ITEM eItem, _uint iNum)
 {
 	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(eItem, iNum);
 	return S_OK;
+}
+
+HRESULT CInven::Set_WearableItem(WEARABLE_TYPE eType, ITEM eItemDesc)
+{
+	if (m_pWearableSlots[eType] == nullptr)
+	{
+		return E_FAIL;
+	}
+	if (m_pWearableSlots[eType]->Is_Full())
+	{
+		ITEM Item = m_pWearableSlots[eType]->Get_ItemDesc();
+		dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(Item);
+	}
+	m_pWearableSlots[eType]->Set_WearableItem(eItemDesc);
+
+	return S_OK;
+}
+
+void CInven::Reset_WearableSlot()
+{
+	for (size_t i = 0; i < WEARABLE_TYPE::W_END; i++)
+	{
+		if (m_pWearableSlots[i]->Is_Full())
+		{
+			ITEM Item = m_pWearableSlots[i]->Get_ItemDesc();
+			dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(Item);
+			m_pWearableSlots[i]->Delete_Item();
+		}
+	}
 }
 
 HRESULT CInven::Add_Parts()
@@ -310,6 +384,7 @@ HRESULT CInven::Add_Parts()
 	}
 
 	CInvenFrame::INVENFRAME_DESC InvenDesc = {};
+	//InvenDesc.pParent = this;
 	InvenDesc.fDepth = m_fDepth - 0.01f;
 	InvenDesc.vPosition = _float2(1070.f, 400.f);
 	InvenDesc.vSize = _float2(360.f, 580.f);

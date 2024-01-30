@@ -31,8 +31,8 @@ HRESULT CDialogText::Init(void* pArg)
 	m_vTextPos = ((DIALOGTEXT_DESC*)pArg)->vTextPos;
 
 
-	m_fX =  g_ptCenter.x;
-	m_fY = g_ptCenter.y;
+	m_fX = (_float)g_ptCenter.x;
+	m_fY = (_float)g_ptCenter.y;
 
 	m_fSizeX = g_iWinSizeX;
 	m_fSizeY = g_iWinSizeY;

@@ -15,7 +15,7 @@
 #include "Player.h"
 #include "Select.h"
 #include "FadeBox.h"
-#include "BodyPart.h"
+
 #include "Logo_Text.h"
 #include "Logo_Dust.h"
 #include "Logo_Stone.h"
@@ -25,7 +25,7 @@
 #include "Camera_Debug.h"
 #include "Select_Model.h"
 #include "Select_Npc.h"
-#include "Weapon.h"
+
 #include "Custom.h"
 #include "SelectDesc.h"
 #include "TextButton.h"
@@ -59,7 +59,7 @@
 #include "InvenFrame.h"
 #include "CommonTrail.h"
 #include "CommonSurfaceTrail.h"
-#include "Arrow.h";
+#include "Arrow.h"
 #include "Map.h"
 
 #include "Effect_Dummy.h"
@@ -87,6 +87,7 @@
 #include "ItemMerchant.h"
 #include "BlackSmith.h"
 #include "Roskva.h"
+#include "Aur.h"
 #include "NPC_Dummy.h"
 
 // Boss

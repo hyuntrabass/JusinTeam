@@ -26,7 +26,6 @@ HRESULT CInvenFrame::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-	m_pParent = ((INVENFRAME_DESC*)pArg)->pParent;
 	m_fSizeX = ((INVENFRAME_DESC*)pArg)->vSize.x;
 	m_fSizeY = ((INVENFRAME_DESC*)pArg)->vSize.y;
 
@@ -663,6 +662,48 @@ void CInvenFrame::Delete_Item(INVEN_TYPE eInvenType, _uint iIndex)
 
 void CInvenFrame::Picking_InvenButton(POINT ptMouse)
 {
+
+	if (m_isPickingDouble && m_fDoubleClick < 0.3f)
+	{
+		m_isPicking = false;
+		if (m_iCurItemType == (_uint)ITEM_POTION && m_isActiveQuickSlot)
+		{
+			for (_uint j = 0; j < 4; j++)
+			{
+				if (!m_pSelectSlot[j]->Is_Full())
+				{
+					ItemSlot_Logic(j, m_iCurIndex);
+					break;
+				}
+			}
+		}
+		if (m_iCurItemType ==ITEM_BODY || m_iCurItemType == ITEM_TOP || m_iCurItemType == ITEM_SWORD)
+		{
+			ITEM eItem = m_vecItemsSlot[m_eCurInvenType][m_iCurIndex]->Get_ItemDesc();
+			WEARABLE_TYPE eType{};
+
+			if (m_iCurItemType == ITEM_TOP)
+			{
+				eType = W_TOP;
+			}
+			else if (m_iCurItemType == ITEM_BODY)
+			{
+				eType = W_CHEST;
+			}
+			else if (m_iCurItemType == ITEM_SWORD)
+			{
+				eType = W_EQUIP;
+			}
+			if (FAILED(dynamic_cast<CInven*>(m_pParent)->Set_WearableItem(eType, eItem)))
+			{
+				return;
+			}
+			Delete_Item(m_eCurInvenType, m_iCurIndex);
+		}
+		m_isPickingDouble = false;
+		return;
+	}
+
 	if (!m_isPicking)
 	{
 		for (_uint j = 0; j < 4; j++)
@@ -693,32 +734,36 @@ void CInvenFrame::Picking_InvenButton(POINT ptMouse)
 		m_isPicking = false;
 	}
 
-	if (m_isActiveQuickSlot)
+	for (size_t i = 0; i < m_vecItemsSlot[m_eCurInvenType].size(); i++)
 	{
-		for (size_t i = 0; i < m_vecItemsSlot[m_eCurInvenType].size(); i++)
+		if (PtInRect(&m_vecItemsSlot[m_eCurInvenType][i]->Get_Rect(), ptMouse))
 		{
-			if (PtInRect(&m_vecItemsSlot[m_eCurInvenType][i]->Get_Rect(), ptMouse))
+			if (m_vecItemsSlot[m_eCurInvenType][i]->Get_ItemDesc().iItemType == (_uint)ITEM_POTION)
 			{
-				if (m_vecItemsSlot[m_eCurInvenType][i]->Get_ItemDesc().iItemType == (_uint)ITEM_POTION)
-				{
-					m_isPicking = true;
-					m_iCurIndex = i;
-					break;
-				}
+				m_isPicking = true;
 			}
-			//이건 아이템 타입에 따라 달라질듯
+			m_isPickingDouble = true;
+			m_fDoubleClick = 0.f;
+			m_iCurIndex = i;
+			m_iCurItemType = (ITEM_TYPE)m_vecItemsSlot[m_eCurInvenType][i]->Get_ItemDesc().iItemType;
+			break;
 		}
 	}
 }
 
 void CInvenFrame::Picking_ShopButton(POINT ptMouse)
 {
-	
+
 }
 
 void CInvenFrame::Inven_Tick(_float fTimeDelta, POINT ptMouse)
 {
+	m_fDoubleClick += fTimeDelta;
 
+	if (m_isPickingDouble && m_fDoubleClick >= 0.5f)
+	{
+		m_isPickingDouble = false;
+	}
 
 	if (m_isQuickAnim)
 	{
@@ -802,6 +847,21 @@ void CInvenFrame::Inven_Tick(_float fTimeDelta, POINT ptMouse)
 			dynamic_cast<CTextButton*>(m_pResetSymbol)->Set_Size(25.f, 25.f);
 		}
 
+		if (!m_isActiveQuickSlot && PtInRect(&m_pWearableClearButton->Get_InitialRect(), ptMouse))
+		{
+			m_pWearableClearButton->Set_Size(140.f, 80.f, 0.3f);
+			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
+			{
+				dynamic_cast<CInven*>(m_pParent)->Reset_WearableSlot();
+			}
+		}
+		else
+		{
+			m_pWearableClearButton->Set_Size(150.f, 100.f, 0.35f);
+		}
+
+
+
 		for (_uint i = 0; i < 4; i++)
 		{
 			m_pSelectSlot[i]->Tick(fTimeDelta);
@@ -838,7 +898,8 @@ void CInvenFrame::Set_ItemPosition(INVEN_TYPE eInvenType)
 	for (_uint i = 0; i < m_vecItemsSlot[eInvenType].size(); i++)
 	{
 		_uint iTermY = i / 5;
-		_vec2 vPos = _vec2(fStartX + fTerm * i, fStartY + fSize * iTermY + 5.f * iTermY);
+		_uint iTermX = i % 5;
+		_vec2 vPos = _vec2(fStartX + fTerm * iTermX, fStartY + fSize * iTermY + 5.f * iTermY);
 		m_vecItemsSlot[eInvenType][i]->Set_Position(vPos);
 	}
 }

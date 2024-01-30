@@ -260,7 +260,7 @@ HRESULT CRadar::Add_Parts()
 	
 
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_MonsterIcon");
-	Button.vPosition = _vec2(m_fX, m_fY);
+	Button.vPosition = _vec2(-10.f, -10.f);//m_fX, m_fY);
 	Button.vSize = _vec2(5.f, 5.f);
 	m_pMonsterIcon = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
