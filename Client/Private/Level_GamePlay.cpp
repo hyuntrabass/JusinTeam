@@ -178,11 +178,11 @@ HRESULT CLevel_GamePlay::Init()
 
 
 	// Boss
-	//if (FAILED(Ready_Groar_Boss()))
-	//{
-	//	MSG_BOX("Failed to Ready Groar_Boss");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Groar_Boss()))
+	{
+		MSG_BOX("Failed to Ready Groar_Boss");
+		return E_FAIL;
+	}
 
 	// Pet
 	if (FAILED(Ready_Pet()))
