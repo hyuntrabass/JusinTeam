@@ -386,7 +386,7 @@ HRESULT CShop::Add_Parts()
 	m_pInvenFrame = CUI_Manager::Get_Instance()->Get_InvenFrame();
 	if (not m_pInvenFrame)
 	{
-		return E_FAIL;
+		//return E_FAIL;
 	}
 	
 
