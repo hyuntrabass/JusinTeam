@@ -1188,7 +1188,12 @@ _bool CGameInstance::Get_IsPlayingSound(_uint iChannel)
 
 _float CGameInstance::Get_ChannelVolume(_uint iChannel)
 {
-	return _float();
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->GetChannelVolume(iChannel);
 }
 
 void CGameInstance::Set_CameraModeIndex(const _uint& iIndex)

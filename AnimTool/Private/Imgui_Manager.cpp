@@ -1033,6 +1033,9 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					pSoundDesc->fFadeoutSecond = 0.1f;
 				}
 
+				ImGui::SeparatorText("CHANNEL");
+				string strChannel = "CHANNEL : " + to_string(pSoundDesc->iChannel);
+				ImGui::Text(strChannel.c_str());
 
 				ImGui::PopItemWidth();
 				ImGui::End();
@@ -1414,6 +1417,10 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				{
 					pSoundDesc->fFadeoutSecond = 0.1f;
 				}
+
+				ImGui::SeparatorText("CHANNEL");
+				string strChannel = "CHANNEL : " + to_string(pSoundDesc->iChannel);
+				ImGui::Text(strChannel.c_str());
 
 				ImGui::PopItemWidth();
 				ImGui::End();
