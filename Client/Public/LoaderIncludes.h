@@ -99,6 +99,7 @@
 
 // Test Model
 #include "TestVTFModel.h"
+#include "Lake.h"
 
 // Object
 #include "Prologue_Object.h"

@@ -41,6 +41,7 @@ private:
 	_float m_fUnDissolveRatio{};
 	_float m_fDissolveRatio{};
 	_vec2 m_vUV{};
+	_float m_fAlpha{};
 
 	static _int m_iLightID;
 	wstring m_strLightTag{};

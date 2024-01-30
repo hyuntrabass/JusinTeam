@@ -10,6 +10,7 @@ cbuffer BlurParams : register(b0)
     int2 radiusAndDirection;
     uint2 iWinSize;
     float fBlurPower;
+    uint3 Padding;
 }
 
 [numthreads(8, 8, 1)]

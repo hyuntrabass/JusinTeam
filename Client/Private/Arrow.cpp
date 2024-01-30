@@ -17,28 +17,29 @@ HRESULT CArrow::Init_Prototype()
 
 HRESULT CArrow::Init(void* pArg)
 {
-	Arrow_Type* type = (Arrow_Type*)pArg;
-	
+	m_ArrowType = *(Arrow_Type*)pArg;
+	CGameObject* A = this;
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
-	if(type->Att_Type != AT_Bow_Skill3	)
+
+	if(m_ArrowType.Att_Type != AT_Bow_Skill3	)
 	{
-		m_pTransformCom->Set_Matrix(type->world);
+		m_pTransformCom->Set_Matrix(m_ArrowType.world);
 		m_pTransformCom->Set_Speed(25.f);
 		m_pTransformCom->Set_Scale(_vec3(1.5f));
 	}
 	else
 	{
 		_float random = rand() % 12;
-		m_pTransformCom->Set_State(State::Pos, type->vPos);
+		m_pTransformCom->Set_State(State::Pos, m_ArrowType.vPos);
 		m_pTransformCom->Set_Speed(12.f + random);
 		m_pTransformCom->Set_Scale(_vec3(3.f,3.f,1.5f));
 	}
 	
+		m_pTransformCom->LookAt_Dir(m_ArrowType.vLook);
 
-	m_pTransformCom->LookAt_Dir(type->vLook);
 
 
 
@@ -53,10 +54,25 @@ HRESULT CArrow::Init(void* pArg)
 void CArrow::Tick(_float fTimeDelta)
 {
 	m_fDeadTime += fTimeDelta;
-	if (m_fDeadTime > 6.f)
+	if (m_fDeadTime > 2.5f)
 		Kill();
 
-	m_pTransformCom->Go_Straight(fTimeDelta);
+	if (m_ArrowType.Att_Type == AT_Bow_Common && m_ArrowType.MonCollider!=nullptr)
+	{
+		m_pTransformCom->LookAt(_vec4(m_ArrowType.MonCollider->Get_ColliderPos(), 1.f));
+		m_pTransformCom->Go_To(_vec4(m_ArrowType.MonCollider->Get_ColliderPos(), 1.f), fTimeDelta,0.f);
+	}
+	else
+		m_pTransformCom->Go_Straight(fTimeDelta);
+
+	m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
+
+	if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
+	{
+		m_pGameInstance->Attack_Monster(m_pCollider, 20, AT_Bow_Common);
+		Kill();
+	}
+
 	_mat world{};
 	world = m_pTransformCom->Get_World_Matrix();
 	m_pTrail->Tick((world.Position_vec3()));
@@ -68,10 +84,14 @@ void CArrow::Late_Tick(_float fTimeDelta)
 	m_pTrail->Late_Tick(fTimeDelta);
 	__super::Compute_CamDistance();
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
+	m_pRendererCom->Add_RenderGroup(RG_BlendBlur, this);
+	m_pRendererCom->Add_DebugComponent(m_pCollider);
 }
 
 HRESULT CArrow::Render()
 {
+
+
 
 
 	if (FAILED(Bind_ShaderResources()))
@@ -93,6 +113,8 @@ HRESULT CArrow::Render()
 			return E_FAIL;
 		}
 	}
+
+	return S_OK;
 }
 HRESULT CArrow::Add_Components()
 {
@@ -111,6 +133,23 @@ HRESULT CArrow::Add_Components()
 		return E_FAIL;
 	}
 
+	//Collider_Desc CollDesc = {};
+	//CollDesc.eType = ColliderType::Sphere;
+	//CollDesc.vRadians = _vec3(0.5f, 0.5f, 0.5f);
+	//CollDesc.vCenter = _vec3(0.f, 0.f, 0.f);
+
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+	//	TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
+	//	return E_FAIL;
+
+	Collider_Desc CollDesc = {};
+	CollDesc.eType = ColliderType::Sphere;
+	CollDesc.fRadius = 0.25f;
+	CollDesc.vCenter = _vec3(0.f, 0.f, 0.f);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+		TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
+		return E_FAIL;
 	return S_OK;
 }
 
@@ -185,11 +224,11 @@ void CArrow::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pCollider);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pTrail);
 	Safe_Release(m_pRendererCom);
-	Safe_Release(m_pCollider);
 
 
 }

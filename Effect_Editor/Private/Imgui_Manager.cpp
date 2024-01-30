@@ -369,6 +369,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	static _vec2 vUVInit{};
 	static _vec2 vUVDelta{};
 	static _bool isUVLoop{};
+	static _float fAlphaDelta{};
+	static _float fAlphaInit{};
 	if (m_hasMask)
 	{
 		if (m_iSelected_MaskTexture < 0)
@@ -377,6 +379,13 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		}
 		SameLine();
 		SeparatorText("Mask Texture");
+
+		InputFloat("Alpha Init", &fAlphaInit);
+		Info.fAlphaInit = fAlphaInit;
+
+		InputFloat("Alpha Delta", &fAlphaDelta);
+		Info.fAlphaDelta = fAlphaDelta;
+
 		if (m_iCurrent_Type == ET_MESH)
 		{
 			InputFloat2("UV Initializer", reinterpret_cast<_float*>(&vUVInit));
@@ -925,6 +934,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			vUVDelta = Info.vUVDelta;
 			vUVInit = Info.vUVInit;
 			isUVLoop = Info.isUVLoop;
+			fAlphaInit = Info.fAlphaInit;
+			fAlphaDelta = Info.fAlphaDelta;
 		}
 		else
 		{
@@ -1224,6 +1235,8 @@ EffectInfo CImgui_Manager::Load_Data()
 			InFile.read(reinterpret_cast<_char*>(&Info.isFixedIndex), sizeof Info.isFixedIndex);
 			InFile.read(reinterpret_cast<_char*>(&Info.iFixedSpriteIndex), sizeof Info.iFixedSpriteIndex);
 			InFile.read(reinterpret_cast<_char*>(&Info.isUVLoop), sizeof Info.isUVLoop);
+			InFile.read(reinterpret_cast<_char*>(&Info.fAlphaInit), sizeof Info.fAlphaInit);
+			InFile.read(reinterpret_cast<_char*>(&Info.fAlphaDelta), sizeof Info.fAlphaDelta);
 
 			size_t iNameSize{};
 
@@ -1320,6 +1333,7 @@ void CImgui_Manager::Load_OldData()
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.Light_Desc), sizeof OldInfo.Light_Desc);
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.isFixedIndex), sizeof OldInfo.isFixedIndex);
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.iFixedSpriteIndex), sizeof OldInfo.iFixedSpriteIndex);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.isUVLoop), sizeof OldInfo.isUVLoop);
 
 				size_t iNameSize{};
 
@@ -1394,7 +1408,9 @@ void CImgui_Manager::Load_OldData()
 			NewInfo.Light_Desc = OldInfo.Light_Desc;
 			NewInfo.isFixedIndex = OldInfo.isFixedIndex;
 			NewInfo.iFixedSpriteIndex = OldInfo.iFixedSpriteIndex;
-			NewInfo.isUVLoop = false;
+			NewInfo.isUVLoop = OldInfo.isUVLoop;
+			NewInfo.fAlphaDelta = 0.f;
+			NewInfo.fAlphaInit = 0.f;
 
 			NewInfo.strDiffuseTexture = OldInfo.strDiffuseTexture;
 			NewInfo.strMaskTexture = OldInfo.strMaskTexture;
@@ -1432,6 +1448,8 @@ void CImgui_Manager::Load_OldData()
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.isFixedIndex), sizeof NewInfo.isFixedIndex);
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.iFixedSpriteIndex), sizeof NewInfo.iFixedSpriteIndex);
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.isUVLoop), sizeof NewInfo.isUVLoop);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.fAlphaInit), sizeof NewInfo.fAlphaInit);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.fAlphaDelta), sizeof NewInfo.fAlphaDelta);
 
 				size_t iNameSize{};
 				iNameSize = (NewInfo.strDiffuseTexture.size() + 1) * sizeof(_tchar);
@@ -1510,6 +1528,8 @@ HRESULT CImgui_Manager::Export_Data(EffectInfo& Info)
 			OutFile.write(reinterpret_cast<const _char*>(&Info.isFixedIndex), sizeof Info.isFixedIndex);
 			OutFile.write(reinterpret_cast<const _char*>(&Info.iFixedSpriteIndex), sizeof Info.iFixedSpriteIndex);
 			OutFile.write(reinterpret_cast<const _char*>(&Info.isUVLoop), sizeof Info.isUVLoop);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.fAlphaInit), sizeof Info.fAlphaInit);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.fAlphaDelta), sizeof Info.fAlphaDelta);
 
 			size_t iNameSize{};
 			iNameSize = (Info.strDiffuseTexture.size() + 1) * sizeof(_tchar);
@@ -1575,6 +1595,8 @@ HRESULT CImgui_Manager::Override_Data(EffectInfo& Info)
 		OutFile.write(reinterpret_cast<const _char*>(&Info.isFixedIndex), sizeof Info.isFixedIndex);
 		OutFile.write(reinterpret_cast<const _char*>(&Info.iFixedSpriteIndex), sizeof Info.iFixedSpriteIndex);
 		OutFile.write(reinterpret_cast<const _char*>(&Info.isUVLoop), sizeof Info.isUVLoop);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.fAlphaInit), sizeof Info.fAlphaInit);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.fAlphaDelta), sizeof Info.fAlphaDelta);
 
 		size_t iNameSize{};
 		iNameSize = (Info.strDiffuseTexture.size() + 1) * sizeof(_tchar);

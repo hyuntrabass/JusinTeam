@@ -18,6 +18,14 @@ struct BODYPART_DESC
 	CTransform* pParentTransform{ nullptr };
 };
 
+enum Skill_Type
+{
+	ST_Skill1,
+	ST_Skill2,
+	ST_Skill3,
+	ST_Skill4,
+	ST_End
+};
 
 class CPlayer final : public CGameObject
 {
@@ -231,7 +239,6 @@ public:
 		Anim_Talk_Reaction_D,
 		Anim_Talk_Reaction_U,
 	};
-
 	enum PLAYER_STATE
 	{
 		Idle,
@@ -270,6 +277,18 @@ public:
 		State_End
 	};
 
+	struct PLAYER_STATUS
+	{
+		_int Current_Hp{ 1000 };
+		_int Max_Hp{ 1000 };
+		_int Max_Mp{ 1000 };
+		_int Current_Mp{ 1000 };
+		_int Attack{ 100 };
+		_int Critical{};
+		_int Critical_Dmg{ 150 }; // �⺻ ġ��Ÿ������ 150( �⺻ �������� �߰�50�ۼ�Ʈ ����)
+		_int Armor{}; // ������ 10�϶� �޴� ������ 10�ۼ�Ʈ �ٿ���(90�۸� ����)
+		_float Speed{}; // �⺻ �ȴ� �̼� 2+���ǵ�/2,�ٴ� �̼� 4+���ǵ�
+	};
 
 private:
 	CPlayer(_dev pDevice, _context pContext);
@@ -307,7 +326,7 @@ public:
 	void Skill3_Attack();
 	void Skill4_Attack();
 	void SkillR_Attack();
-
+	void Ready_Skill(Skill_Type Type);
 	void Cam_AttackZoom(_float fZoom);
 	void Return_Attack_IdleForm();
 	void After_CommonAtt(_float fTimeDelta);
@@ -335,18 +354,18 @@ private:
 	CCollider* m_pHitCollider{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CRenderer* m_pRendererCom{ nullptr };
-	CCommonTrail* m_pLeft_Trail{ nullptr };
-	CCommonTrail* m_pRight_Trail{ nullptr };
-	CCommonSurfaceTrail* m_pTest_Trail{ nullptr };
-	CTexture* m_pDissolveTextureCom{};
-
+	CCommonTrail* m_pLeft_Trail[5]{ nullptr };
+	CCommonTrail* m_pRight_Trail[5]{ nullptr };
+	CTexture* m_pDissolveTextureCom{ nullptr };
 private:
+	_int qq = 0;
 	ANIM_DESC m_Animation{};
 	PLAYER_STATE m_eState{ Idle };
 	PLAYER_STATE m_ePrevState{ Idle };
 	WEAPON_TYPE m_Current_Weapon{ WP_END };
 	ANIM_LIST m_SwordSkill[5]{};
 	ANIM_LIST m_BowSkill[5]{};
+	_vec4 m_vArrowLook{};
 	WEAPON_INDEX m_Weapon_CurrentIndex{ WP_INDEX_END };
 	Riding_State m_Riding_State{};
 	PLAYER_STATUS m_Status{};
@@ -363,7 +382,7 @@ private:
 	_bool m_bArrowRain_Start{};
 	_bool m_bStartGame{};
 	const _float m_fWalkSpeed{ 1.f };
-	const _float m_fRunSpeed{ 3.5f };
+	const _float m_fRunSpeed{ 4.f };
 	_bool m_isInterpolating{};
 	_bool m_bReady_Move{};
 	_float m_fInterpolationRatio{};

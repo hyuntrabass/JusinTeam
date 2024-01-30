@@ -205,13 +205,13 @@ void CPhysX_Manager::Init_PhysX_Character(CTransform* pTransform, CollisionGroup
 	PxCapsuleControllerDesc ControllerDesc{};
 	if (not pDesc)
 	{
-		ControllerDesc.height = 0.8f; // ³ôÀÌ(À§ ¾Æ·¡ÀÇ ¹Ý±¸ Å©±â Á¦¿Ü
-		ControllerDesc.radius = 0.35f; // À§¾Æ·¡ ¹Ý±¸ÀÇ ¹ÝÁö¸§
-		ControllerDesc.position = Position; // ÃÊ±â À§Ä¡
-		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // ¾÷ ¹æÇâ
-		ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // Ä³¸¯ÅÍ°¡ ¿À¸¦ ¼ö ÀÖ´Â ÃÖ´ë °¢µµ
-		ControllerDesc.contactOffset = 0.1f; // Ä³¸¯ÅÍ¿Í ´Ù¸¥ ¹°Ã¼¿ÍÀÇ Ãæµ¹À» ¾ó¸¶³ª ¸ÕÀú °¨ÁöÇÒÁö. °ªÀÌ Å¬¼ö·Ï ´õ ÀÏÂï °¨ÁöÇÏÁö¸¸ ¼º´É¿¡ ¿µÇâ ÀÖÀ» ¼ö ÀÖÀ½.
-		ControllerDesc.stepOffset = 0.2f; // Ä³¸¯ÅÍ°¡ ¿À¸¦ ¼ö ÀÖ´Â °è´ÜÀÇ ÃÖ´ë ³ôÀÌ
+		ControllerDesc.height = 0.8f; // ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ ï¿½Æ·ï¿½ï¿½ï¿½ ï¿½Ý±ï¿½ Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+		ControllerDesc.radius = 0.35f; // ï¿½ï¿½ï¿½Æ·ï¿½ ï¿½Ý±ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		ControllerDesc.position = Position; // ï¿½Ê±ï¿½ ï¿½ï¿½Ä¡
+		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+		ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // Ä³ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½
+		ControllerDesc.contactOffset = 0.1f; // Ä³ï¿½ï¿½ï¿½Í¿ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½ï¿½ ï¿½æµ¹ï¿½ï¿½ ï¿½ó¸¶³ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+		ControllerDesc.stepOffset = 0.2f; // Ä³ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½
 		ControllerDesc.reportCallback = nullptr;
 		ControllerDesc.material = m_pMaterial;
 		ControllerDesc.density = 700.f;

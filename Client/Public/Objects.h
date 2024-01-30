@@ -20,6 +20,10 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+	// ¿ø¸í
+	virtual HRESULT Render_Refract(_float4 vClipPlane);
+	virtual HRESULT Render_Reflection(_float4 vClipPlane);
+
 	ObjectInfo Get_Info() const { return m_Info; }
 
 protected:

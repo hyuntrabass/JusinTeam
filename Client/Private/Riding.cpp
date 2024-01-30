@@ -49,8 +49,6 @@ HRESULT CRiding::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-	m_pTransformCom->Set_State(State::Pos, Desc->vSummonPos);
-	m_Animation.fAnimSpeedRatio = 2.f;
 	if (m_CurrentIndex == Nihilir)
 	{
 		PxCapsuleControllerDesc ControllerDesc{};
@@ -60,7 +58,6 @@ HRESULT CRiding::Init(void* pArg)
 		ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
 		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
 		ControllerDesc.stepOffset = 0.3f; // 캐릭터가 오를 수 있는 계단의 최대 높이
-
 
 		m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
 
@@ -77,6 +74,8 @@ HRESULT CRiding::Init(void* pArg)
 		m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
 
 	}
+	m_pTransformCom->Set_Position(_vec3(Desc->vSummonPos));
+	m_Animation.fAnimSpeedRatio = 2.f;
 	m_fDissolveRatio = 1.f;
 	return S_OK;
 }
@@ -88,6 +87,10 @@ void CRiding::Tick(_float fTimeDelta)
 	else if (m_isDead)
 	{
 		m_fDissolveRatio += fTimeDelta / 1.4f;
+
+		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+		vPos.y -= 0.5f;
+		m_pTransformCom->Set_State(State::Pos, vPos);
 		if (m_fDissolveRatio >= 1.f)
 			m_bDelete = true;
 	}

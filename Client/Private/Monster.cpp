@@ -30,10 +30,6 @@ HRESULT CMonster::Init(void* pArg)
 
 void CMonster::Tick(_float fTimeDelta)
 {
-}
-
-void CMonster::Late_Tick(_float fTimeDelta)
-{
 	if (m_iPassIndex == AnimPass_Dissolve)
 	{
 		m_fDissolveTime += fTimeDelta;
@@ -42,8 +38,12 @@ void CMonster::Late_Tick(_float fTimeDelta)
 	if (m_fDissolveRatio >= 1.f)
 	{
 		Kill();
+		m_pGameInstance->Delete_CollisionObject(this);
 	}
+}
 
+void CMonster::Late_Tick(_float fTimeDelta)
+{
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 }
@@ -118,13 +118,33 @@ HRESULT CMonster::Render()
 
 _vec4 CMonster::Compute_PlayerPos()
 {
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 
 	return vPlayerPos;
 }
 
 _float CMonster::Compute_PlayerDistance()
+{
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+
+	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+
+	_float fDistance = (vPlayerPos - vPos).Length();
+
+	return fDistance;
+}
+
+_vec4 CMonster::Compute_ModelTestPos()
+{
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+
+	return vPlayerPos;
+}
+
+_float CMonster::Compute_ModelTestDistance()
 {
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
 	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);

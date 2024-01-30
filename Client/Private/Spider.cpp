@@ -34,7 +34,17 @@ HRESULT CSpider::Init(void* pArg)
 
 	CTransform* pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_GAMEPLAY);
 	_vec4 vGroarPos = pGroarTransform->Get_State(State::Pos);
+	_vec4 vGroarLook = pGroarTransform->Get_State(State::Look).Get_Normalized();
 
+	_vec4 vDir[8] = {};
+
+	for (size_t i = 0; i < 8; i++)
+	{
+		vDir[i] = _vec4::Transform(vGroarLook, _mat::CreateRotationY(XMConvertToRadians(45.f * i)));
+	}
+
+
+	//m_pTransformCom->Set_State(State::Pos, _vec4(fSetX, vGroarPos.y - 1.f, fSetZ, 1.f));
 	m_pTransformCom->Set_State(State::Pos, _vec4(vGroarPos.x + ((rand() % 30) - 15.f), vGroarPos.y - 1.f, vGroarPos.z + ((rand() % 30) - 15.f), 1.f));
 	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
 
@@ -75,6 +85,8 @@ void CSpider::Tick(_float fTimeDelta)
 
 	Update_Collider();
 	__super::Update_MonsterCollider();
+
+	__super::Tick(fTimeDelta);
 
 	//m_pTransformCom->Gravity(fTimeDelta);
 }
@@ -253,7 +265,7 @@ void CSpider::Tick_State(_float fTimeDelta)
 			m_fIdleTime = 0.f;
 		}
 
-		_float fDistance = __super::Compute_PlayerDistance();
+		_float fDistance = __super::Compute_ModelTestDistance();
 		if (fDistance <= m_fChaseRange)
 		{
 			m_eCurState = STATE_CHASE;
@@ -274,8 +286,8 @@ void CSpider::Tick_State(_float fTimeDelta)
 
 	case Client::CSpider::STATE_CHASE:
 	{
-		_vec4 vPlayerPos = __super::Compute_PlayerPos();
-		_float fDistance = __super::Compute_PlayerDistance();
+		_vec4 vPlayerPos = __super::Compute_ModelTestPos();
+		_float fDistance = __super::Compute_ModelTestDistance();
 		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 		vDir.y = 0.f;
 

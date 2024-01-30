@@ -4,7 +4,9 @@
 #include "Bone.h"
 #include "Animation.h"
 #include "GameInstance.h"
+#include "VIBuffer_Mesh_Instance.h"
 
+_int CModel::m_iNextInstanceID = 0;
 CModel::CModel(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
 {
@@ -21,6 +23,8 @@ CModel::CModel(const CModel& rhs)
 	, m_TriggerEffects(rhs.m_TriggerEffects)
 	, m_iNumTriggersSound(rhs.m_iNumTriggersSound)
 	, m_TriggerSounds(rhs.m_TriggerSounds)
+	, m_iInstanceID(rhs.m_iInstanceID)
+
 {
 	for (auto& pPrototypeBone : rhs.m_Bones)
 	{
@@ -340,6 +344,8 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 		return E_FAIL;
 	}
 
+	m_iInstanceID = m_iNextInstanceID++;
+
 	return S_OK;
 }
 
@@ -369,17 +375,11 @@ void CModel::Play_Animation(_float fTimeDelta)
 {
 	//트리거 루프
 	if ((m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() + fTimeDelta * m_AnimDesc.fAnimSpeedRatio * m_Animations[m_AnimDesc.iAnimIndex]->Get_TickPerSec()) >=
-		(m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() * m_AnimDesc.fDurationRatio) ||
+		(m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() * m_AnimDesc.fDurationRatio) &&
+		m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() <= (m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() * m_AnimDesc.fDurationRatio) ||
 		m_isAnimChanged)
 	{
-		for (size_t i = 0; i < m_TriggerEffects.size(); i++)
-		{
-			m_TriggerEffects[i].HasCreated = false;
-		}
-		for (size_t i = 0; i < m_TriggerSounds.size(); i++)
-		{
-			m_TriggerSounds[i].HasPlayed = false;
-		}
+		m_IsResetTriggers = true;
 	}
 
 	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop,
@@ -389,7 +389,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 	{
 		pBone->Update_CombinedMatrix(m_Bones);
 	}
-	
+
 #pragma region Trigger_Effect
 	for (size_t i = 0; i < m_TriggerEffects.size(); i++)
 	{
@@ -407,7 +407,8 @@ void CModel::Play_Animation(_float fTimeDelta)
 			}
 		}
 		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iStartAnimIndex &&
-			static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerEffects[i].fStartAnimPos) &&
+			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fStartAnimPos &&
+			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() <= m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() &&
 			not m_TriggerEffects[i].HasCreated)
 		{
 			//초기 매트릭스 세팅
@@ -429,7 +430,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 		for (size_t j = 0; j < m_TriggerEffects[i].iEndAnimIndices.size(); j++)
 		{
 			if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iEndAnimIndices[j] &&
-				static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerEffects[i].fEndAnimPoses[j]) &&
+				m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fEndAnimPoses[j] &&
 				m_pGameInstance->Has_Created_Effect(m_EffectMatrices[i]))
 			{
 				m_pGameInstance->Delete_Effect(m_EffectMatrices[i]);
@@ -442,7 +443,8 @@ void CModel::Play_Animation(_float fTimeDelta)
 	for (size_t i = 0; i < m_TriggerSounds.size(); i++)
 	{	//사운드 생성
 		if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iStartAnimIndex &&
-			static_cast<_int>(m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos()) == static_cast<_int>(m_TriggerSounds[i].fStartAnimPos) &&
+			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerSounds[i].fStartAnimPos &&
+			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() <= m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() &&
 			not m_TriggerSounds[i].HasPlayed)
 		{
 			_int iMaxSound = m_TriggerSounds[i].strSoundNames.size() - 1;
@@ -456,6 +458,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 			if (not m_pGameInstance->Get_IsPlayingSound(m_TriggerSounds[i].iChannel))
 			{
 				m_TriggerSounds[i].iChannel = -1;
+				m_TriggerSounds[i].fVolume = m_TriggerSounds[i].fInitVolume;
 			}
 		}
 		//사운드 제거
@@ -466,13 +469,36 @@ void CModel::Play_Animation(_float fTimeDelta)
 				if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iEndAnimIndices[j] &&
 					m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerSounds[i].fEndAnimPoses[j])
 				{
-					m_pGameInstance->StopSound(m_TriggerSounds[i].iChannel);
-					m_TriggerSounds[i].iChannel = -1;
+					if (m_pGameInstance->GetChannelVolume(m_TriggerSounds[i].iChannel) <= 0.f)
+					{
+						m_pGameInstance->StopSound(m_TriggerSounds[i].iChannel);
+						m_TriggerSounds[i].iChannel = -1;
+						m_TriggerSounds[i].fVolume = m_TriggerSounds[i].fInitVolume;
+					}
+					else
+					{
+						m_TriggerSounds[i].fVolume -= (fTimeDelta / (m_TriggerSounds[i].fFadeoutSecond / m_TriggerSounds[i].fInitVolume));
+						m_pGameInstance->SetChannelVolume(m_TriggerSounds[i].iChannel, m_TriggerSounds[i].fVolume);
+					}
 				}
 			}
 		}
 	}
 #pragma endregion
+
+	if (m_IsResetTriggers)
+	{
+		m_IsResetTriggers = false;
+
+		for (size_t i = 0; i < m_TriggerEffects.size(); i++)
+		{
+			m_TriggerEffects[i].HasCreated = false;
+		}
+		for (size_t i = 0; i < m_TriggerSounds.size(); i++)
+		{
+			m_TriggerSounds[i].HasPlayed = false;
+		}
+	}
 
 }
 
@@ -511,6 +537,48 @@ HRESULT CModel::Render(_uint iMeshIndex)
 {
 	m_Meshes[iMeshIndex]->Render();
 
+	return S_OK;
+}
+
+HRESULT CModel::Render_Instancing(_uint iMeshIndex, CVIBuffer_Mesh_Instance*& pInstanceBuffer, CModel*& pModel, CShader*& pShader)
+{
+	for (_uint i = 0; i < iMeshIndex; i++)
+	{
+		if (FAILED(Bind_Material(pShader, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		{
+			return E_FAIL;
+		}
+
+		_bool HasNorTex{};
+		if (FAILED(Bind_Material(pShader, "g_NormalTexture", i, TextureType::Normals)))
+		{
+			HasNorTex = false;
+		}
+		else
+		{
+			HasNorTex = true;
+		}
+
+		if (FAILED(pShader->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		//if (FAILED(pShader->Bind_RawValue("g_bSelected", &m_isSelected, sizeof _bool)))
+		//{
+		//	return E_FAIL;
+		//}
+
+
+		if (FAILED(pShader->Begin(0)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(pInstanceBuffer->Render(m_Meshes[i])))
+			return E_FAIL;
+		}
+	
 	return S_OK;
 }
 
@@ -740,8 +808,10 @@ HRESULT CModel::Read_TriggerSounds(const string& strFilePath)
 				Safe_Delete_Array(pBuffer);
 			}
 
-			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fVolume), sizeof(_float));
+			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fInitVolume), sizeof(_float));
+			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fFadeoutSecond), sizeof(_float));
 
+			SoundDesc.fVolume = SoundDesc.fInitVolume;
 			m_TriggerSounds.push_back(SoundDesc);
 			m_iNumTriggersSound++;
 		}

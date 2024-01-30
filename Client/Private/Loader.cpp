@@ -648,6 +648,11 @@ HRESULT CLoader::Load_GamePlay()
 	m_strLoadingText = L"GamePlay : Loading Texture";
 #pragma region Texture
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, L"Prototype_Component_Texture_Water_Normal",
+		CTexture::Create(m_pDevice, m_pContext, L"../../Client/Bin/Resources/Textures/waterNormal.dds"))))
+		return E_FAIL;
+#pragma endregion
+
 #pragma region UI
 	string strInputFilePath = "../Bin/Resources/Textures/UI/Gameplay";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
@@ -699,7 +704,6 @@ HRESULT CLoader::Load_GamePlay()
 #pragma region Effect
 #pragma endregion
 
-#pragma endregion
 
 	m_strLoadingText = L"GamePlay : Loading Model";
 #pragma region Model
@@ -999,6 +1003,10 @@ HRESULT CLoader::Load_GamePlay()
 #pragma region Shader
 
 
+	if(FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, L"Prototype_Component_Shader_Water", 
+		CShader::Create(m_pDevice, m_pContext, L"../../Client/Bin/ShaderFiles/Shader_Water.hlsl", VTXPOSTEX::Elements, VTXPOSTEX::iNumElements))))
+		return E_FAIL;
+
 #pragma endregion
 
 	m_strLoadingText = L"GamePlay : Loading Prototype";
@@ -1286,11 +1294,7 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
-	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_VTFRabbit"),
-	//	CVTFModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/VTFRabbit/Mesh/Rabbit.hyuntraanimmesh"))))
-	//{
-	//	return E_FAIL;
-	//}
+
 
 #pragma endregion
 
@@ -1299,6 +1303,9 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(L"Prototype_GameObject_Water", CLake::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 #pragma endregion
 
@@ -1312,7 +1319,7 @@ HRESULT CLoader::Load_Village()
 {
 	// ¸Ê
 
-	_mat Pivot = _mat::CreateScale(0.002f);
+	_mat Pivot = _mat::CreateScale(0.003f);
 	string strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Map/Midgard/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{

@@ -67,6 +67,9 @@ HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _mat OffsetM
 #pragma endregion
 
 #pragma region Index
+	m_iNumPrimitives = m_iNumIndices / 3;
+	m_iIndexSizePrimitives = sizeof(_ulong);
+	m_iNumIndicesPrimitives = 3;
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
 	m_BufferDesc.ByteWidth = m_iIndexStride * m_iNumIndices;
 	m_BufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -210,6 +213,8 @@ HRESULT CMesh::Set_Bone_Offset(const vector<class CBone*>& Bones)
 
 HRESULT CMesh::Ready_StaticMesh(ifstream& ModelFile, _mat OffsetMatrix)
 {
+	m_iNumPrimitives = m_iNumVertices / 3;
+	m_iNumIndicesPrimitives = 3;
 	m_iVertexStride = sizeof VTXSTATICMESH;
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
 	m_BufferDesc.ByteWidth = m_iVertexStride * m_iNumVertices;
@@ -218,6 +223,7 @@ HRESULT CMesh::Ready_StaticMesh(ifstream& ModelFile, _mat OffsetMatrix)
 	m_BufferDesc.CPUAccessFlags = 0;
 	m_BufferDesc.MiscFlags = 0;
 	m_BufferDesc.StructureByteStride = m_iVertexStride;
+
 
 	ZeroMemory(&m_InitialData, sizeof m_InitialData);
 

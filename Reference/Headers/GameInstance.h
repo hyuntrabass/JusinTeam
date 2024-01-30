@@ -84,9 +84,13 @@ public: // PipeLine
 
 	void Set_Transform(TransformType eState, const _mat& TransformMatrix);
 
+	// 원명
 	void Set_OldViewMatrix(const _mat& TransformMatrix);
 	_mat Get_OldViewMatrix_vec4x4() const;
 	_matrix Get_OldViewMatrix() const;
+
+	_mat ChagneViewForReflection(_float fWaterHeight);
+	void Update_PipeLine();
 
 
 public: // Picking
@@ -115,13 +119,13 @@ public: // Frustum
 	_bool IsIn_Fov_Local(_vec4 vPos, _float fRange = 0.f);
 
 public: // Collision
-	HRESULT Register_CollisionObject(class CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer = false);
+	HRESULT Register_CollisionObject(class CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer = false,class CCollider* AttRangeCollider = nullptr );
 	void Delete_CollisionObject(class CGameObject* pObject, _bool IsPlayer = false);
 	void Attack_Monster(class CCollider* pCollider, _uint iDamage, _uint iDamageType = 0);
 	_bool CheckCollision_Monster(class CCollider* pCollider);
 	_bool Attack_Player(class CCollider* pCollider, _uint iDamage, _uint iDamageType = 0);
 	_bool CheckCollision_Player(class CCollider* pCollider); // 필요없음
-
+	 CCollider* Get_Nearest_MonsterCollider();
 public: // PhysX
 	void Init_PhysX_Character(class CTransform* pTransform, CollisionGroup eGroup, PxCapsuleControllerDesc* pDesc = nullptr);
 	void Init_PhysX_MoveableObject(class CTransform* pTransform);
@@ -160,6 +164,7 @@ public: // Sound Manager
 	void StopAll();
 
 	void SetChannelVolume(_uint iChannel, _float fVolume);
+	_float GetChannelVolume(_uint iChannel);
 
 public: // Effect Callback
 	using Func_CreateFX = function<void(const wstring&, _mat*, const _bool&)>;
