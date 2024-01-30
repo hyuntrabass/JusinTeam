@@ -4,7 +4,9 @@
 #include "Bone.h"
 #include "Animation.h"
 #include "GameInstance.h"
+#include "VIBuffer_Mesh_Instance.h"
 
+_int CModel::m_iNextInstanceID = 0;
 CModel::CModel(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
 {
@@ -21,6 +23,8 @@ CModel::CModel(const CModel& rhs)
 	, m_TriggerEffects(rhs.m_TriggerEffects)
 	, m_iNumTriggersSound(rhs.m_iNumTriggersSound)
 	, m_TriggerSounds(rhs.m_TriggerSounds)
+	, m_iInstanceID(rhs.m_iInstanceID)
+
 {
 	for (auto& pPrototypeBone : rhs.m_Bones)
 	{
@@ -91,14 +95,14 @@ const _float& CModel::Get_CurrentAnimPos() const
 
 const _mat* CModel::Get_BoneMatrix(const _char* pBoneName) const
 {
-	auto iter = find_if(m_Bones.begin(), m_Bones.end(), [&pBoneName](CBone* pBone)
+	auto iter = find_if(m_Bones.begin(), m_Bones.end(), [&pBoneName](CBone* pBone) 
+	{
+		if (!strcmp(pBone->Get_BoneName(), pBoneName))
 		{
-			if (!strcmp(pBone->Get_BoneName(), pBoneName))
-			{
-				return true;
-			}
-			return false;
-		});
+			return true;
+		}
+		return false;
+	});
 
 	if (iter == m_Bones.end())
 	{
@@ -263,7 +267,7 @@ void CModel::Set_Animation(ANIM_DESC Animation_Desc)
 			m_AnimDesc.iAnimIndex = m_iNumAnimations - 1;
 		}
 	}
-
+	
 	m_AnimDesc = Animation_Desc;
 }
 
@@ -340,6 +344,8 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 		return E_FAIL;
 	}
 
+	m_iInstanceID = m_iNextInstanceID++;
+
 	return S_OK;
 }
 
@@ -356,8 +362,8 @@ HRESULT CModel::Init(void* pArg)
 		_mat* pMatrix = new _mat{};
 		m_EffectMatrices.push_back(pMatrix);
 	}
-
-
+	
+	
 
 	random_device rand;
 	m_RandomNumber = _randNum(rand());
@@ -493,6 +499,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 			m_TriggerSounds[i].HasPlayed = false;
 		}
 	}
+
 }
 
 HRESULT CModel::Bind_BoneMatrices(_uint iMeshIndex, CShader* pShader, const _char* pVariableName)
@@ -530,6 +537,48 @@ HRESULT CModel::Render(_uint iMeshIndex)
 {
 	m_Meshes[iMeshIndex]->Render();
 
+	return S_OK;
+}
+
+HRESULT CModel::Render_Instancing(_uint iMeshIndex, CVIBuffer_Mesh_Instance*& pInstanceBuffer, CModel*& pModel, CShader*& pShader)
+{
+	for (_uint i = 0; i < iMeshIndex; i++)
+	{
+		if (FAILED(Bind_Material(pShader, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		{
+			return E_FAIL;
+		}
+
+		_bool HasNorTex{};
+		if (FAILED(Bind_Material(pShader, "g_NormalTexture", i, TextureType::Normals)))
+		{
+			HasNorTex = false;
+		}
+		else
+		{
+			HasNorTex = true;
+		}
+
+		if (FAILED(pShader->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		//if (FAILED(pShader->Bind_RawValue("g_bSelected", &m_isSelected, sizeof _bool)))
+		//{
+		//	return E_FAIL;
+		//}
+
+
+		if (FAILED(pShader->Begin(0)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(pInstanceBuffer->Render(m_Meshes[i])))
+			return E_FAIL;
+		}
+	
 	return S_OK;
 }
 

@@ -500,7 +500,7 @@ HRESULT CRenderer::Init_Prototype()
 
 	m_BLParam.radius = GAUSSIAN_RADIUS;
 	m_BLParam.direction = 0;
-	
+
 	m_pBlurShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_Blur.hlsl", "Blur", sizeof(BLURPARAM));
 
 	m_pDownScaleShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_DownScale.hlsl", "Downsample", sizeof(DSPARAM));
@@ -600,7 +600,11 @@ HRESULT CRenderer::Draw_RenderGroup()
 		MSG_BOX("Failed to Render : NonBlend");
 		return E_FAIL;
 	}
-
+	if (FAILED(Render_NonBlend_Instance()))
+	{
+		MSG_BOX("Failed to Render : NonBlend");
+		return E_FAIL;
+	}
 	if (FAILED(m_pGameInstance->End_MRT()))
 		return E_FAIL;
 
@@ -851,7 +855,56 @@ HRESULT CRenderer::Render_NonBlend()
 
 	return S_OK;
 }
+HRESULT CRenderer::Render_NonBlend_Instance()
+{
+	map<_int, vector<CGameObject*>> InstanceData;
 
+	for (auto& pGameObject : m_RenderObjects[RG_NonBlend_Instance])
+	{
+		if (pGameObject->Find_Component(L"Com_Model") == nullptr)
+			continue;
+
+		const _int iInstanceID = static_cast<CModel*>(pGameObject->Find_Component(L"Com_Model"))->Get_InstanceID();
+		InstanceData[iInstanceID].push_back(pGameObject);
+
+		//Safe_Release(pGameObject);
+	}
+
+	for (auto& iter : InstanceData)
+	{
+		vector<CGameObject*>& vInstances = iter.second;
+		const _uint instanceId = iter.first;
+		CGameObject*& pHead = vInstances[0];
+
+		for (_uint i = 0; i < vInstances.size(); i++)
+		{
+			CGameObject*& pGameObject = vInstances[i];
+			VTXMESHINSTANCING MeshInstancing;
+			CTransform* pTransform = static_cast<CTransform*>(pGameObject->Find_Component(L"Com_Transform"));
+			MeshInstancing.vRight = pTransform->Get_State(State::Right);
+			MeshInstancing.vUp = pTransform->Get_State(State::Up);
+			MeshInstancing.vLook = pTransform->Get_State(State::Look);
+			MeshInstancing.vPos = pTransform->Get_State(State::Pos);
+			Add_Instance(instanceId, MeshInstancing);
+		}
+
+		for (auto& iter : vInstances)
+		{
+			iter->InitRendered();
+		}
+		pHead->Render_Instance();
+		CVIBuffer_Mesh_Instance*& pBuffer = m_InstanceBuffers[instanceId];
+		CModel* pModel = static_cast<CModel*>(pHead->Find_Component(L"Com_Model"));
+		CShader* pShader = static_cast<CShader*>(pHead->Find_Component(L"Com_Shader"));
+		pModel->Render_Instancing(pModel->Get_NumMeshes(), pBuffer, pModel, pShader);
+	}
+
+
+	m_RenderObjects[RG_NonBlend_Instance].clear();
+
+
+	return S_OK;
+}
 HRESULT CRenderer::Render_Refraction()
 {
 	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Refraction"))))
@@ -1229,7 +1282,7 @@ HRESULT CRenderer::Render_LightAcc()
 	{
 		return E_FAIL;
 	}
-	
+
 	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_SSAOTEST"), L"MRT_SSAOBlur", m_fSSAOBlurPower)))
 		return E_FAIL;
 	//
@@ -1422,7 +1475,7 @@ HRESULT CRenderer::Render_Blend()
 		{
 			return dynamic_cast<CBlendObject*>(pSrc)->Get_CamDistance() > dynamic_cast<CBlendObject*>(pDst)->Get_CamDistance();
 		});
-	
+
 	for (auto& pGameObject : m_RenderObjects[RG_Blend])
 	{
 		if (pGameObject)
@@ -1520,7 +1573,7 @@ HRESULT CRenderer::Render_HDR()
 	{
 		return E_FAIL;
 	}
-	
+
 	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_HDRTexture", TEXT("Target_BlurTex"))))
 	//{
 	//	return E_FAIL;
@@ -1653,8 +1706,8 @@ HRESULT CRenderer::Render_Debug()
 	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_Refraction_Final"), m_pShader, m_pVIBuffer)))
 	{
 		return E_FAIL;
-	}	
-	
+	}
+
 	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_Reflection_Final"), m_pShader, m_pVIBuffer)))
 	{
 		return E_FAIL;
@@ -1665,7 +1718,7 @@ HRESULT CRenderer::Render_Debug()
 
 #endif // _DEBUG
 
-HRESULT CRenderer::Get_AvgLuminance() 
+HRESULT CRenderer::Get_AvgLuminance()
 {
 	_uint2 iSize{};
 
@@ -1753,7 +1806,7 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 		if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_BLURTEX")))
 			return E_FAIL;
 
-		if(FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pGetBlurShader, "g_HDRTex", L"Target_HDR")))
+		if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pGetBlurShader, "g_HDRTex", L"Target_HDR")))
 			return E_FAIL;
 
 		if (FAILED(m_pGetBlurShader->Bind_ShaderResourceView("g_Luminance", m_pLumValue->Get_SRV())))
@@ -1791,7 +1844,7 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 
 		_uint2 ThreadGroupSize = _uint2((iSize.x + 15) / 16, (iSize.y + 15) / 16);
 
-		if (FAILED(m_pDownScaleShader->Begin(_uint3(ThreadGroupSize.x , ThreadGroupSize.y , 1))))
+		if (FAILED(m_pDownScaleShader->Begin(_uint3(ThreadGroupSize.x, ThreadGroupSize.y, 1))))
 			return E_FAIL;
 
 		iSize = _uint2(iSize.x / 2, iSize.y / 2);
@@ -1800,7 +1853,7 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 	ID3D11ShaderResourceView* pDownSRVs[3] = { m_pHalfRT->Get_SRV(), m_pQuarterRT->Get_SRV(), m_pEightRT->Get_SRV() };
 	ID3D11ShaderResourceView* pBlurSRVs[3] = { m_pHalfBlurRT->Get_SRV(), m_pQuarterBlurRT->Get_SRV(), m_pEightBlurRT->Get_SRV() };
 	ID3D11UnorderedAccessView* pBlurUAVs[3] = { m_pHalfBlurRT->Get_UAV(), m_pQuarterBlurRT->Get_UAV(), m_pEightBlurRT->Get_UAV() };
-	
+
 	iSize = m_WinSize;
 
 	if (FAILED(m_pBlurShader->Set_Shader()))
@@ -1831,13 +1884,13 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 			m_BLParam.direction = j; // 가로 세로로 블러먹이기
 			if (FAILED(m_pBlurShader->Change_Value(&m_BLParam, sizeof(BLURPARAM))))
 				return E_FAIL;
-			
+
 			if (FAILED(m_pBlurShader->Begin(_uint3(ThreadGroupSize.x, ThreadGroupSize.y, 1))))
 				return E_FAIL;
 		}
 
 	}
-	
+
 	if (FAILED(m_pGameInstance->Begin_MRT(MRT_Tag)))
 		return E_FAIL;
 
@@ -1863,7 +1916,7 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 
 	if (FAILED(m_pVIBuffer->Render()))
 		return E_FAIL;
-	
+
 	if (FAILED(m_pGameInstance->End_MRT()))
 		return E_FAIL;
 
@@ -1871,6 +1924,25 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 	return S_OK;
 }
 
+HRESULT CRenderer::Add_Instance(_int iInstanceID, VTXMESHINSTANCING& pMeshInstancing)
+{
+	if (m_InstanceBuffers.find(iInstanceID) == m_InstanceBuffers.end())
+	{
+		m_InstanceBuffers[iInstanceID] = CVIBuffer_Mesh_Instance::Create(m_pDevice, m_pContext);
+	}
+	m_InstanceBuffers[iInstanceID]->Add_Instance(pMeshInstancing);
+	return S_OK;
+}
+
+HRESULT CRenderer::Clear_Instance()
+{
+	for (auto& pair : m_InstanceBuffers)
+	{
+		CVIBuffer_Mesh_Instance* pBuffer = pair.second;
+		pBuffer->Clear_Instance();
+	}
+	return S_OK;
+}
 CRenderer* CRenderer::Create(_dev pDevice, _context pContext)
 {
 	CRenderer* pInstance = new CRenderer(pDevice, pContext);
@@ -1905,10 +1977,10 @@ void CRenderer::Free()
 
 	Safe_Release(m_pDown2Shader);
 	Safe_Release(m_pDownRT1);
-	
+
 	Safe_Release(m_pDown3Shader);
 	Safe_Release(m_pDownRT2);
-	
+
 	Safe_Release(m_pGetAvgLumShader);
 	Safe_Release(m_pLumValue);
 
