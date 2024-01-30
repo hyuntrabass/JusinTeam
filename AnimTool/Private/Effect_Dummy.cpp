@@ -51,8 +51,13 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 	if (m_Effect.hasLight)
 	{
 		m_strLightTag = L"Light_Effect_" + to_wstring(m_iLightID++);
-		m_pGameInstance->Add_Light(m_pGameInstance->Get_CurrentLevelIndex(), m_strLightTag, m_Effect.Light_Desc);
+		if (FAILED(m_pGameInstance->Add_Light(m_pGameInstance->Get_CurrentLevelIndex(), m_strLightTag, m_Effect.Light_Desc)))
+		{
+			return E_FAIL;
+		}
 	}
+
+	m_fAlpha = m_Effect.fAlphaInit;
 
 	return S_OK;
 }
@@ -100,6 +105,8 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 
 	m_fTimer += fTimeDelta;
 	m_vUV += m_Effect.vUVDelta * fTimeDelta;
+	m_fAlpha += m_Effect.fAlphaDelta * fTimeDelta;
+
 	if (m_Effect.isUVLoop and
 		(m_vUV.x < -1.f or m_vUV.x > 2.f or
 			m_vUV.y < -1.f or m_vUV.y > 2.f))
@@ -140,11 +147,14 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 		m_pTransformCom->Set_State(State::Pos, vPos);*/
 
 		m_pTransformCom->LookAway(m_pGameInstance->Get_CameraPos());
+		//m_pTransformCom->Rotation(m_pTransformCom->Get_State(State::Look), m_Effect.fRectRotationAngle);
 
 		m_pTransformCom->Set_Scale(m_vScaleAcc * m_OffsetMatrix.Get_Scale());
 		m_vScaleAcc += m_Effect.vSizeDelta * fTimeDelta;
 
 		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
+		m_WorldMatrix *= _mat::CreateFromAxisAngle(_vec3(m_pTransformCom->Get_State(State::Look)), XMConvertToRadians(m_Effect.fRectRotationAngle));
+
 		break;
 	}
 	case Effect_Type::ET_MESH:
@@ -318,6 +328,11 @@ HRESULT CEffect_Dummy::Bind_ShaderResources()
 			{
 				return E_FAIL;
 			}
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof m_fAlpha)))
+		{
+			return E_FAIL;
 		}
 	}
 
