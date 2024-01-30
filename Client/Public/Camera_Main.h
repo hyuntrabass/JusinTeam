@@ -1,4 +1,3 @@
-#pragma once
 #include "Client_Define.h"
 #include "Camera.h"
 

@@ -55,7 +55,8 @@ protected:
 protected:
 	_float m_fBackPower = { 0.5f };
 
-	_float m_fDissolveTime = {};
+protected:
+	_float m_fDeadTime = {};
 	_float m_fDissolveRatio = {};
 
 protected:

@@ -197,6 +197,8 @@ namespace Client
 		ITEM_HAND,
 		ITEM_FOOT, 
 		ITEM_POTION,
+		ITEM_SWORD,
+		ITEM_BOW,
 		ITEM_INGREDIENT,
 		ITEMTYPEEND
 	};
@@ -271,10 +273,12 @@ namespace Client
 		_uint iItemTier;
 
 		wstring strTexture;
+		_uint iIndex;
 
 		_uint iStatus;
 		_uint iPurchase;
 		_uint iSale;
+		_uint iPartIndex{};
 
 	}ITEM;
 

@@ -8,13 +8,13 @@ CMonster::CMonster(_dev pDevice, _context pContext)
 
 CMonster::CMonster(const CMonster& rhs)
 	: CGameObject(rhs)
-	,m_pInfo(rhs.m_pInfo)
+	, m_pInfo(rhs.m_pInfo)
 {
 }
 
 HRESULT CMonster::Init_Prototype()
 {
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CMonster::Init(void* pArg)
@@ -25,14 +25,14 @@ HRESULT CMonster::Init(void* pArg)
 	}
 
 
-    return S_OK;
+	return S_OK;
 }
 
 void CMonster::Tick(_float fTimeDelta)
 {
-	if (m_iPassIndex == AnimPass_Dissolve)
+	if (m_fDeadTime >= 2.f)
 	{
-		m_fDissolveTime += fTimeDelta;
+		m_iPassIndex = AnimPass_Dissolve;
 	}
 
 	if (m_fDissolveRatio >= 1.f)
@@ -50,7 +50,7 @@ void CMonster::Late_Tick(_float fTimeDelta)
 
 HRESULT CMonster::Render()
 {
-	if (m_iPassIndex == AnimPass_Dissolve && m_fDissolveTime >= 3.f)
+	if (m_iPassIndex == AnimPass_Dissolve)
 	{
 		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
 		{
@@ -80,6 +80,7 @@ HRESULT CMonster::Render()
 	{
 		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
+			_bool bFailed = true;
 		}
 
 		_bool HasNorTex{};
@@ -113,7 +114,7 @@ HRESULT CMonster::Render()
 		}
 	}
 
-    return S_OK;
+	return S_OK;
 }
 
 _vec4 CMonster::Compute_PlayerPos()
@@ -166,7 +167,7 @@ void CMonster::Change_Extents(_vec3 vStartSize)
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD7))
 	{
 		m_fSizeX += m_fScale;
-		cout << "Collider Extents" << endl << m_pBodyColliderCom->Get_Extents().x << endl 
+		cout << "Collider Extents" << endl << m_pBodyColliderCom->Get_Extents().x << endl
 			<< m_pBodyColliderCom->Get_Extents().y << endl
 			<< m_pBodyColliderCom->Get_Extents().z << endl;
 		cout << endl << "Scale Value" << endl << m_fScale << endl;
@@ -252,7 +253,7 @@ HRESULT CMonster::Add_Components()
 		return E_FAIL;
 	}
 
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CMonster::Bind_ShaderResources()

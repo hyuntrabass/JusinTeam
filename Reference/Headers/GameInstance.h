@@ -163,9 +163,6 @@ public: // Sound Manager
 	void StopSound(_uint iChannel);
 	void StopAll();
 
-	void SetChannelVolume(_uint iChannel, _float fVolume);
-	_float GetChannelVolume(_uint iChannel);
-
 public: // Effect Callback
 	using Func_CreateFX = function<void(const wstring&, _mat*, const _bool&)>;
 	using Func_DeleteFX = function<void(const void*)>;
@@ -201,8 +198,10 @@ public: // Get_Set
 	const _bool& Get_ShakeCam() const;
 	// 지옥이 시작되는 높이를 반환 함. (일정 높이부터 내려갈 수록 어두워지는걸 hell이라고 해놨음.)
 	const _float& Get_HellHeight() const;
-	// 현재 사운드 채널이 재생중인지를 반환 함.
+	// 사운드 채널이 재생중인지를 반환 함.
 	_bool Get_IsPlayingSound(_uint iChannel);
+	// 사운드 채널의 볼륨을 반환 함.
+	_float Get_ChannelVolume(_uint iChannel);
 
 	// 카메라 모드를 지정함. 카메라에서 말고는 쓰지 말것.
 	void Set_CameraModeIndex(const _uint& iIndex);
@@ -220,9 +219,11 @@ public: // Get_Set
 	void Set_ShakeCam(const _bool& bShake , _float fShakePower = 0.1f);
 	// hell 높이를 지정한다.
 	void Set_HellHeight(const _float& fHeight);
+	// 사운드 채널의 볼륨을 지정함.
+	void Set_ChannelVolume(_uint iChannel, _float fVolume);
 
 	_float Get_ShakePower() { return m_fShakePower; }
-
+	_bool Get_FlyCam() { return m_bFlyCam; }
 	void Set_ZoomFactor(const _float fFactor);
 	void Set_CameraState(const _uint& iIndex);
 	void Set_CameraTargetPos(const _vec4& vPos);
@@ -230,7 +231,7 @@ public: // Get_Set
 	void Set_Have_TargetLook(const _bool& bHaveLook);
 	void Set_AimMode(_bool Aim, _vec3 AimPos = _vec3(0.63f, 1.8f, 1.1f));
 	void Set_InputString(const wstring& strInput);
-
+	void Set_FlyCam(_bool Fly) { m_bFlyCam = Fly; }
 
 	void Set_CameraAttackZoom(_float fAttackZoom) { m_fCameraAttackZoom = fAttackZoom; }
 	const _float& Get_CameraAttackZoom() { return m_fCameraAttackZoom; }
@@ -289,7 +290,7 @@ private:
 	_vec3 m_AimPos{};
 	_bool m_bSkipDebugRender{ true };
 	wstring m_strInput{};
-
+	_bool m_bFlyCam{};
 private:
 	vector<_bool> m_vecLevelInvalid;
 

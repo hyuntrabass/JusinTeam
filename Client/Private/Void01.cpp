@@ -47,7 +47,7 @@ HRESULT CVoid01::Init(void* pArg)
 	TRAIL_DESC Desc{};
 	Desc.vColor = Colors::RosyBrown;
 	Desc.vPSize = _vec2(0.05f, 0.05f);
-	Desc.iNumVertices = 10.f;
+	Desc.iNumVertices = 10;
 	m_pLeftTrail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
 	m_pRightTrail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
 
@@ -330,7 +330,7 @@ void CVoid01::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->IsAnimationFinished(KNOCKBACK))
 		{
-			m_iPassIndex = AnimPass_Dissolve;
+			m_fDeadTime += fTimeDelta;
 		}
 
 		break;

@@ -48,6 +48,8 @@ private:
 
 public:
 	HRESULT Set_Item(ITEM eItem, _uint iNum = 1);
+	HRESULT Set_WearableItem(WEARABLE_TYPE eType,ITEM eItemDesc);
+	void Reset_WearableSlot();
 
 private:
 	HRESULT Add_Parts();

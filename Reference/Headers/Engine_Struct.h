@@ -190,6 +190,7 @@ namespace Engine
 		unsigned int iBoneIndex{};
 		SimpleMath::Matrix OffsetMatrix{};
 		bool IsDeleteRotateToBone{};
+		bool IsClientTrigger{};
 
 		bool HasCreated{};
 	};

@@ -3,6 +3,9 @@
 const _float CSpider::m_fChaseRange = 7.f;
 const _float CSpider::m_fAttackRange = 5.f;
 
+_uint CSpider::m_iSpiderID = 0;
+_bool CSpider::m_bDirSelected[8] = { false };
+
 CSpider::CSpider(_dev pDevice, _context pContext)
 	: CMonster(pDevice, pContext)
 {
@@ -32,22 +35,6 @@ HRESULT CSpider::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	CTransform* pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_GAMEPLAY);
-	_vec4 vGroarPos = pGroarTransform->Get_State(State::Pos);
-	_vec4 vGroarLook = pGroarTransform->Get_State(State::Look).Get_Normalized();
-
-	_vec4 vDir[8] = {};
-
-	for (size_t i = 0; i < 8; i++)
-	{
-		vDir[i] = _vec4::Transform(vGroarLook, _mat::CreateRotationY(XMConvertToRadians(45.f * i)));
-	}
-
-
-	//m_pTransformCom->Set_State(State::Pos, _vec4(fSetX, vGroarPos.y - 1.f, fSetZ, 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(vGroarPos.x + ((rand() % 30) - 15.f), vGroarPos.y - 1.f, vGroarPos.z + ((rand() % 30) - 15.f), 1.f));
-	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
-
 	m_Animation.iAnimIndex = SALEROBIA_RAGE;
 	m_Animation.isLoop = false;
 	m_Animation.bSkipInterpolation = false;
@@ -67,6 +54,50 @@ HRESULT CSpider::Init(void* pArg)
 	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+
+	CTransform* pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_GAMEPLAY);
+	_vec4 vGroarPos = pGroarTransform->Get_State(State::Pos);
+	_vec4 vGroarLook = pGroarTransform->Get_State(State::Look).Get_Normalized();
+
+	_vec4 vDir[8] = {};
+
+	for (size_t i = 0; i < 8; i++)
+	{
+		vDir[i] = _vec4::Transform(vGroarLook, _mat::CreateRotationY(XMConvertToRadians(45.f * i)));
+	}
+
+	_uint iRandomDir = {};
+
+	if (m_iSpiderID == 0)
+	{
+		iRandomDir = rand() % 8;
+		m_bDirSelected[iRandomDir] = true;
+	}
+	else
+	{
+		iRandomDir = rand() % 8;
+		while (m_bDirSelected[iRandomDir] == true)
+		{
+			iRandomDir = rand() % 8;
+		}
+
+		m_bDirSelected[iRandomDir] = true;
+	}
+
+	m_pTransformCom->Set_Position(_vec3(vGroarPos + 10 * vDir[iRandomDir]));
+	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
+
+	++m_iSpiderID;
+
+	if (m_iSpiderID == 3)
+	{
+		m_iSpiderID = 0;
+		
+		for (auto& it : m_bDirSelected)
+		{
+			it = false;
+		}
+	}
 
 	return S_OK;
 }
@@ -146,7 +177,7 @@ void CSpider::Init_State(_float fTimeDelta)
 	CTransform* pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_GAMEPLAY);
 	_vec4 vGroarPos = pGroarTransform->Get_State(State::Pos);
 
-	if (m_pTransformCom->Get_State(State::Pos).y < vGroarPos.y)
+	if (m_pTransformCom->Get_State(State::Pos).y < vGroarPos.y && m_iHP > 0)
 	{
 		m_pTransformCom->Go_Up(fTimeDelta * 0.1f);
 	}
@@ -331,7 +362,7 @@ void CSpider::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->IsAnimationFinished(KNOCKDOWN))
 		{
-			m_iPassIndex = AnimPass_Dissolve;
+			m_fDeadTime += fTimeDelta;
 		}
 
 		break;

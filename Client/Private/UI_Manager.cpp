@@ -76,10 +76,22 @@ const _uint& CUI_Manager::Get_CustomPart(PART_TYPE eType)
 	return m_CustomPart[eType];
 }
 
+const _uint& CUI_Manager::Get_WeaponType(PART_TYPE eType, WEAPON_TYPE* wpType)
+{
+	*wpType = m_eWeaponType;
+	return m_CustomPart[eType];
+}
+
 HRESULT CUI_Manager::Set_CustomPart(PART_TYPE eType, _uint iIndex)
 {
 	m_eChangedPart = eType;
 	m_CustomPart[eType] = iIndex;
+	return S_OK;
+}
+
+HRESULT CUI_Manager::Set_WeaponType(WEAPON_TYPE eWpType)
+{
+	m_eWeaponType = eWpType;
 	return S_OK;
 }
 
@@ -127,9 +139,11 @@ HRESULT CUI_Manager::Init_Items()
 		wstring strInvenType;
 		wstring strItemType;
 		wstring strItemTier;
+		wstring strItemIndex;
 		wstring strPurchase;
 		wstring strSale;
 		wstring strStatus;
+		wstring strPartIndex;
 		getline(fin, strInvenType, L'|');
 
 		if (i > 0)
@@ -179,6 +193,15 @@ HRESULT CUI_Manager::Init_Items()
 		{
 			Item.iItemType = (_uint)ITEM_INGREDIENT;
 		}
+		else if (strItemType == TEXT("SWORD"))
+		{
+			Item.iItemType = (_uint)ITEM_SWORD;
+		}
+		
+		else if (strItemType == TEXT("BOW"))
+		{
+			Item.iItemType = (_uint)ITEM_BOW;
+		}
 
 		getline(fin, strItemTier, L'|');
 
@@ -206,12 +229,17 @@ HRESULT CUI_Manager::Init_Items()
 		getline(fin, Item.strName, L'|');		
 		getline(fin, Item.strTexture, L'|');
 
+		getline(fin, strItemIndex, L'|');
 		getline(fin, strStatus, L'|');
 		getline(fin, strPurchase, L'|');
 		getline(fin, strSale, L'|');
+		getline(fin, strPartIndex, L'|');
+
+		Item.iIndex = stoi(strItemIndex);
 		Item.iStatus = stoi(strStatus);
 		Item.iPurchase = stoi(strPurchase);
 		Item.iSale = stoi(strSale);
+		Item.iPartIndex = stoi(strPartIndex);
 
 		m_mapItem.emplace(Item.strName, Item);
 		i++;

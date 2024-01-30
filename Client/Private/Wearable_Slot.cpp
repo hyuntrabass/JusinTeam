@@ -45,6 +45,13 @@ HRESULT CWearable_Slot::Init(void* pArg)
 void CWearable_Slot::Tick(_float fTimeDelta)
 {
 
+	m_rcRect = {
+		  (LONG)(m_fX - m_fSizeX * 0.5f),
+		  (LONG)(m_fY - m_fSizeY * 0.5f),
+		  (LONG)(m_fX + m_fSizeX * 0.5f),
+		  (LONG)(m_fY + m_fSizeY * 0.5f)
+	};
+
 }
 
 void CWearable_Slot::Late_Tick(_float fTimeDelta)
@@ -95,7 +102,7 @@ HRESULT CWearable_Slot::Set_WearableItem(ITEM eItemDesc)
 {
 	if (m_pItem != nullptr)
 	{
-		m_pItem = nullptr;
+		Safe_Release(m_pItem);
 	}
 
 	CItem::ITEM_DESC ItemDesc= {};
@@ -103,17 +110,50 @@ HRESULT CWearable_Slot::Set_WearableItem(ITEM eItemDesc)
 	ItemDesc.vPosition = _float2(m_fX, m_fY);
 	ItemDesc.bCanInteract = false;
 	ItemDesc.eItemDesc = eItemDesc;
-	//ItemDesc.pParentTransform = m_pTransformCom;
-
+	ItemDesc.fDepth = m_fDepth - 0.1f;
 	m_pItem = (CItem*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Item"), &ItemDesc);
 	if (nullptr == m_pItem)
 		return E_FAIL;
 
 	m_isFull = true;
-	//CUI_Manager::Get_Instance()->Set_CustomPart();
+	_int iIndex = eItemDesc.iPartIndex;
+	if (m_ePartType == PT_WEAPON)
+	{
+		if (eItemDesc.iItemType == ITEM_TYPE::ITEM_BOW)
+		{
+			CUI_Manager::Get_Instance()->Set_WeaponType(WP_BOW);
+		}
+		else if (eItemDesc.iItemType == ITEM_TYPE::ITEM_SWORD)
+		{
+			CUI_Manager::Get_Instance()->Set_WeaponType(WP_SWORD);
+			iIndex += 5;
+		}
+
+	}
+	CUI_Manager::Get_Instance()->Set_CustomPart(m_ePartType, iIndex);
+
 	return S_OK;
 }
 
+const ITEM& CWearable_Slot::Get_ItemDesc() const
+{
+	return m_pItem->Get_ItemDesc();
+}
+void CWearable_Slot::Delete_Item()
+{
+	if (m_pItem != nullptr)
+	{
+		Safe_Release(m_pItem);
+	}
+
+	m_isFull = false;
+	_int iResetIdx = -1;
+	if (m_ePartType == PT_BODY)
+	{
+		iResetIdx = 0;
+	}
+	CUI_Manager::Get_Instance()->Set_CustomPart(m_ePartType, iResetIdx);
+}
 HRESULT CWearable_Slot::Add_Components()
 {
 
@@ -175,18 +215,22 @@ HRESULT CWearable_Slot::Add_Slots()
 	{
 	case W_TOP:
 		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_inven_top");
+		m_ePartType = PT_HELMET;
 		break;
 	case W_CHEST:
 		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Inven_Chest");
+		m_ePartType = PT_BODY;
 		break;
 	case W_HAND:
 		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Inven_Hand");
+		//m_ePartType = PT_;
 		break;
 	case W_FOOT:
 		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Inven_Foot");
 		break;
 	case W_EQUIP:
 		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Inven_Equip");
+		m_ePartType = PT_WEAPON;
 		break;
 	case W_PET:
 		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Inven_Pet");

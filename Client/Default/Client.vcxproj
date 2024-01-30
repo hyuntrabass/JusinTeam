@@ -163,10 +163,10 @@
     <ClInclude Include="..\Public\BackGround_Mask.h" />
     <ClInclude Include="..\Public\BlackSmith.h" />
     <ClInclude Include="..\Public\BlurTexture.h" />
-    <ClInclude Include="..\Public\BodyPart.h" />
     <ClInclude Include="..\Public\Camera_Debug.h" />
     <ClInclude Include="..\Public\Camera_Main.h" />
     <ClInclude Include="..\Public\Cat.h" />
+    <ClInclude Include="..\Public\Aur.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
     <ClInclude Include="..\Public\Coin.h" />
     <ClInclude Include="..\Public\Dialog.h" />
@@ -269,7 +269,6 @@
     <ClInclude Include="..\Public\Void09.h" />
     <ClInclude Include="..\Public\Void20.h" />
     <ClInclude Include="..\Public\Void23.h" />
-    <ClInclude Include="..\Public\Weapon.h" />
     <ClInclude Include="..\Public\Wearable_Slot.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
@@ -283,10 +282,10 @@
     <ClCompile Include="..\Private\BackGround_Mask.cpp" />
     <ClCompile Include="..\Private\BlackSmith.cpp" />
     <ClCompile Include="..\Private\BlurTexture.cpp" />
-    <ClCompile Include="..\Private\BodyPart.cpp" />
     <ClCompile Include="..\Private\Camera_Debug.cpp" />
     <ClCompile Include="..\Private\Camera_Main.cpp" />
     <ClCompile Include="..\Private\Cat.cpp" />
+    <ClCompile Include="..\Private\Aur.cpp" />
     <ClCompile Include="..\Private\CharacterSelect.cpp" />
     <ClCompile Include="..\Private\Coin.cpp" />
     <ClCompile Include="..\Private\Dialog.cpp" />
@@ -386,7 +385,6 @@
     <ClCompile Include="..\Private\Void09.cpp" />
     <ClCompile Include="..\Private\Void20.cpp" />
     <ClCompile Include="..\Private\Void23.cpp" />
-    <ClCompile Include="..\Private\Weapon.cpp" />
     <ClCompile Include="..\Private\Wearable_Slot.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>

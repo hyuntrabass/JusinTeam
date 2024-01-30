@@ -182,6 +182,9 @@ HRESULT CEffect_Manager::Read_EffectFile()
 				File.read(reinterpret_cast<_char*>(&Info.isFixedIndex), sizeof Info.isFixedIndex);
 				File.read(reinterpret_cast<_char*>(&Info.iFixedSpriteIndex), sizeof Info.iFixedSpriteIndex);
 				File.read(reinterpret_cast<_char*>(&Info.isUVLoop), sizeof Info.isUVLoop);
+				File.read(reinterpret_cast<_char*>(&Info.fAlphaInit), sizeof Info.fAlphaInit);
+				File.read(reinterpret_cast<_char*>(&Info.fAlphaDelta), sizeof Info.fAlphaDelta);
+				File.read(reinterpret_cast<_char*>(&Info.fRectRotationAngle), sizeof Info.fRectRotationAngle);
 
 				size_t iNameSize{};
 
