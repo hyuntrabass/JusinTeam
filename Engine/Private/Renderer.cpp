@@ -7,6 +7,9 @@
 #include "Compute_RenderTarget.h"
 #include "Texture.h"
 
+// 물을 위해서...
+#include "Transform.h"
+
 CRenderer::CRenderer(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
 {
@@ -14,8 +17,6 @@ CRenderer::CRenderer(_dev pDevice, _context pContext)
 
 HRESULT CRenderer::Init_Prototype()
 {
-	m_fSSAOBlurPower = 1.f;
-
 	_uint iNumViewPorts{ 1 };
 
 	D3D11_VIEWPORT ViewportDesc{};
@@ -58,17 +59,22 @@ HRESULT CRenderer::Init_Prototype()
 
 #pragma region For_MRT_Refraction
 
-	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Refraction_Diffuse"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Object_Refraction_Diffuse"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Refraction_Normal"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(1.f, 1.f, 1.f, 1.f))))
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Object_Refraction_Normal"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(1.f, 1.f, 1.f, 1.f))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Refraction_Depth"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 0.f, 1.f))))
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Object_Refraction_Depth"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 0.f, 1.f))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Object_Refraction_Specular"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 0.f, 1.f))))
 	{
 		return E_FAIL;
 	}
@@ -92,17 +98,22 @@ HRESULT CRenderer::Init_Prototype()
 
 #pragma region For_MRT_Reflection
 
-	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Reflection_Diffuse"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Object_Reflection_Diffuse"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Reflection_Normal"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(1.f, 1.f, 1.f, 1.f))))
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Object_Reflection_Normal"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(1.f, 1.f, 1.f, 1.f))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Reflection_Depth"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 0.f, 1.f))))
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Object_Reflection_Depth"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 0.f, 1.f))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Object_Reflection_Specular"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 0.f, 1.f))))
 	{
 		return E_FAIL;
 	}
@@ -223,17 +234,22 @@ HRESULT CRenderer::Init_Prototype()
 
 #pragma region MRT_Refraction
 
-	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Refraction"), TEXT("Target_Refraction_Diffuse"))))
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Refraction"), TEXT("Target_Object_Refraction_Diffuse"))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Refraction"), TEXT("Target_Refraction_Normal"))))
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Refraction"), TEXT("Target_Object_Refraction_Normal"))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Refraction"), TEXT("Target_Refraction_Depth"))))
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Refraction"), TEXT("Target_Object_Refraction_Depth"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Refraction"), TEXT("Target_Object_Refraction_Specular"))))
 	{
 		return E_FAIL;
 	}
@@ -242,17 +258,22 @@ HRESULT CRenderer::Init_Prototype()
 
 #pragma region MRT_Reflection
 
-	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Reflection"), TEXT("Target_Reflection_Diffuse"))))
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Reflection"), TEXT("Target_Object_Reflection_Diffuse"))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Reflection"), TEXT("Target_Reflection_Normal"))))
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Reflection"), TEXT("Target_Object_Reflection_Normal"))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Reflection"), TEXT("Target_Reflection_Depth"))))
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Reflection"), TEXT("Target_Object_Reflection_Depth"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Reflection"), TEXT("Target_Object_Reflection_Specular"))))
 	{
 		return E_FAIL;
 	}
@@ -287,6 +308,41 @@ HRESULT CRenderer::Init_Prototype()
 	}
 
 #pragma endregion
+
+#pragma region MRT_Refraction_Light
+
+	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_Refraction_Light", L"Target_Refraction_Shade")))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_Refraction_Light", L"Target_Refraction_Specular")))
+		return E_FAIL;
+
+#pragma endregion
+
+#pragma region MRT_Reflection_Light
+
+	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_Reflection_Light", L"Target_Reflection_Shade")))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_Reflection_Light", L"Target_Reflection_Specular")))
+		return E_FAIL;
+
+#pragma endregion
+
+#pragma region MRT_Refraction_Final
+
+	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_Refraction_Final", L"Target_Refraction_Final")))
+		return E_FAIL;
+
+#pragma endregion
+
+#pragma region MRT_Reflection_Final
+
+	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_Reflection_Final", L"Target_Reflection_Final")))
+		return E_FAIL;
+
+#pragma endregion
+
 
 	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Shadow"), TEXT("Target_LightDepth"))))
 	{
@@ -396,6 +452,13 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Ready_Debug_RT(L"Target_Refraction_Final", _float2(ViewportDesc.Width - 250.f, 50.f), _float2(100.f, 100.f))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Ready_Debug_RT(L"Target_Reflection_Final", _float2(ViewportDesc.Width - 250.f, 150.f), _float2(100.f, 100.f))))
+		return E_FAIL;
+
 #endif // _DEBUG
 
 #pragma region 평균 휘도값 구하기
@@ -437,7 +500,7 @@ HRESULT CRenderer::Init_Prototype()
 
 	m_BLParam.radius = GAUSSIAN_RADIUS;
 	m_BLParam.direction = 0;
-	
+
 	m_pBlurShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_Blur.hlsl", "Blur", sizeof(BLURPARAM));
 
 	m_pDownScaleShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_DownScale.hlsl", "Downsample", sizeof(DSPARAM));
@@ -509,11 +572,7 @@ HRESULT CRenderer::Draw_RenderGroup()
 		MSG_BOX("Failed to Render : Shadow");
 		return E_FAIL;
 	}
-	if (FAILED(Render_NonBlend()))
-	{
-		MSG_BOX("Failed to Render : NonBlend");
-		return E_FAIL;
-	}
+
 	if (FAILED(Render_Refraction()))
 	{
 		MSG_BOX("Failed to Render : Refraction");
@@ -524,11 +583,31 @@ HRESULT CRenderer::Draw_RenderGroup()
 		MSG_BOX("Failed to Render : Reflection");
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_GameObjects"))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(Render_Water()))
 	{
 		MSG_BOX("Failed to Render : Water");
 		return E_FAIL;
 	}
+
+	if (FAILED(Render_NonBlend()))
+	{
+		MSG_BOX("Failed to Render : NonBlend");
+		return E_FAIL;
+	}
+	if (FAILED(Render_NonBlend_Instance()))
+	{
+		MSG_BOX("Failed to Render : NonBlend");
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->End_MRT()))
+		return E_FAIL;
+
 	if (FAILED(Render_LightAcc()))
 	{
 		MSG_BOX("Failed to Render : LightAcc");
@@ -759,11 +838,6 @@ HRESULT CRenderer::Render_Shadow()
 
 HRESULT CRenderer::Render_NonBlend()
 {
-	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_GameObjects"))))
-	{
-		return E_FAIL;
-	}
-
 	for (auto& pGameObject : m_RenderObjects[RG_NonBlend])
 	{
 		if (pGameObject)
@@ -779,36 +853,170 @@ HRESULT CRenderer::Render_NonBlend()
 
 	m_RenderObjects[RG_NonBlend].clear();
 
-	if (FAILED(m_pGameInstance->End_MRT()))
+	return S_OK;
+}
+HRESULT CRenderer::Render_NonBlend_Instance()
+{
+	map<_int, vector<CGameObject*>> InstanceData;
+
+	for (auto& pGameObject : m_RenderObjects[RG_NonBlend_Instance])
 	{
-		return E_FAIL;
+		if (pGameObject->Find_Component(L"Com_Model") == nullptr)
+			continue;
+
+		const _int iInstanceID = static_cast<CModel*>(pGameObject->Find_Component(L"Com_Model"))->Get_InstanceID();
+		InstanceData[iInstanceID].push_back(pGameObject);
+
+		//Safe_Release(pGameObject);
 	}
+
+	for (auto& iter : InstanceData)
+	{
+		vector<CGameObject*>& vInstances = iter.second;
+		const _uint instanceId = iter.first;
+		CGameObject*& pHead = vInstances[0];
+
+		for (_uint i = 0; i < vInstances.size(); i++)
+		{
+			CGameObject*& pGameObject = vInstances[i];
+			VTXMESHINSTANCING MeshInstancing;
+			CTransform* pTransform = static_cast<CTransform*>(pGameObject->Find_Component(L"Com_Transform"));
+			MeshInstancing.vRight = pTransform->Get_State(State::Right);
+			MeshInstancing.vUp = pTransform->Get_State(State::Up);
+			MeshInstancing.vLook = pTransform->Get_State(State::Look);
+			MeshInstancing.vPos = pTransform->Get_State(State::Pos);
+			Add_Instance(instanceId, MeshInstancing);
+		}
+
+		for (auto& iter : vInstances)
+		{
+			iter->InitRendered();
+		}
+		pHead->Render_Instance();
+		CVIBuffer_Mesh_Instance*& pBuffer = m_InstanceBuffers[instanceId];
+		CModel* pModel = static_cast<CModel*>(pHead->Find_Component(L"Com_Model"));
+		CShader* pShader = static_cast<CShader*>(pHead->Find_Component(L"Com_Shader"));
+		pModel->Render_Instancing(pModel->Get_NumMeshes(), pBuffer, pModel, pShader);
+	}
+
+
+	m_RenderObjects[RG_NonBlend_Instance].clear();
+
 
 	return S_OK;
 }
-
 HRESULT CRenderer::Render_Refraction()
 {
 	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Refraction"))))
 		return E_FAIL;
 
-	for (auto& pGameObject : m_RenderObjects[RG_Water_Refraction])
-	{
-		if (pGameObject)
-		{
-			if (FAILED(pGameObject->Render_Refract()))
-				MSG_BOX("Failed to Refraction Render");
+	for (auto& pWater : m_RenderObjects[RG_Water]) {
+		if (pWater) {
+			CTransform* pWaterTransform = dynamic_cast<CTransform*>(pWater->Find_Component(L"Com_Transform"));
+			_float fWaterHeight = pWaterTransform->Get_CenterPos().y;
+			_float4 vClipPlane = _float4(0.f, 1.f, 0.f, fWaterHeight + 0.1f);
+			for (auto& pGameObject : m_RenderObjects[RG_Water_Refraction]) {
+				if (pGameObject) {
+					if (FAILED(pGameObject->Render_Refract(vClipPlane)))
+						return E_FAIL;
+				}
+			}
 		}
-
-		Safe_Release(pGameObject);
 	}
 
+	for (auto& pGameObject : m_RenderObjects[RG_Water_Refraction])
+		Safe_Release(pGameObject);
 	m_RenderObjects[RG_Water_Refraction].clear();
+
 
 	if (FAILED(m_pGameInstance->End_MRT()))
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Clear_DepthStencil_View()))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_Refraction_Light")))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", m_WorldMatrix)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", m_ViewMatrix)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrixInv", m_pGameInstance->Get_Transform_Inversed(TransformType::View))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Inversed(TransformType::Proj))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pShader->Bind_RawValue("g_vCamPosition", &m_pGameInstance->Get_CameraPos(), sizeof _float4)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pShader->Bind_RawValue("g_vCamNF", &m_pGameInstance->Get_CameraNF(), sizeof _float2)))
+	{
+		return E_FAIL;
+	}
+
+	for (auto& pWater : m_RenderObjects[RG_Water]) {
+		if (pWater) {
+
+			if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_NormalTexture", L"Target_Object_Refraction_Normal")))
+				return E_FAIL;
+
+			if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DepthTexture", L"Target_Object_Refraction_Depth")))
+				return E_FAIL;
+
+			if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_ObjectSpecTexture", L"Target_Object_Refraction_Specular")))
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pGameInstance->Render_Lights(m_pGameInstance->Get_CurrentLevelIndex(), m_pShader, m_pVIBuffer)))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+	if (FAILED(m_pGameInstance->End_MRT()))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_Refraction_Final")))
+		return E_FAIL;
+
+	for (auto& pWater : m_RenderObjects[RG_Water]) {
+		if (pWater) {
+			if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DiffuseTexture", L"Target_Object_Refraction_Diffuse")))
+				return E_FAIL;
+
+			if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_ShadeTexture", L"Target_Refraction_Shade")))
+				return E_FAIL;
+
+			if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_SpecularTexture", L"Target_Refraction_Specular")))
+				return E_FAIL;
+
+			if (FAILED(m_pShader->Begin(DefPass_Water)))
+				return E_FAIL;
+
+			if (FAILED(m_pVIBuffer->Render()))
+				return E_FAIL;
+		}
+	}
+
+	if (FAILED(m_pGameInstance->End_MRT()))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -818,16 +1026,34 @@ HRESULT CRenderer::Render_Reflection()
 	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Reflection"))))
 		return E_FAIL;
 
-	for (auto& pGameObject : m_RenderObjects[RG_Water_Reflection])
-	{
-		if (pGameObject)
-		{
-			if (FAILED(pGameObject->Render_Reflection()))
-				MSG_BOX("Failed to Reflection Render");
+	_mat OriginView = m_pGameInstance->Get_Transform(TransformType::View);
+
+	for (auto& pWater : m_RenderObjects[RG_Water]) {
+		if (pWater) {
+			CTransform* pWaterTransform = dynamic_cast<CTransform*>(pWater->Find_Component(L"Com_Transform"));
+			_float fWaterHeight = pWaterTransform->Get_CenterPos().y;
+			_mat ReflectionViewMat = m_pGameInstance->ChagneViewForReflection(fWaterHeight);
+
+			m_pGameInstance->Set_Transform(TransformType::View, ReflectionViewMat);
+			m_pGameInstance->Update_PipeLine();
+
+			_float4 vClipPlane = _float4(0.f, 1.f, 0.f, -(fWaterHeight - 0.1f));
+			for (auto& pGameObject : m_RenderObjects[RG_Water_Reflection]) {
+				if (pGameObject) {
+					if (FAILED(pGameObject->Render_Reflection(vClipPlane)))
+						return E_FAIL;
+				}
+
+			}
+
+			m_pGameInstance->Set_Transform(TransformType::View, OriginView);
+			m_pGameInstance->Update_PipeLine();
 		}
 
-		Safe_Release(pGameObject);
 	}
+
+	for (auto& pGameObject : m_RenderObjects[RG_Water_Reflection])
+		Safe_Release(pGameObject);
 
 	m_RenderObjects[RG_Water_Reflection].clear();
 
@@ -836,31 +1062,121 @@ HRESULT CRenderer::Render_Reflection()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Clear_DepthStencil_View()))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_Reflection_Light")))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", m_WorldMatrix)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", m_ViewMatrix)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pShader->Bind_RawValue("g_vCamNF", &m_pGameInstance->Get_CameraNF(), sizeof _float2)))
+	{
+		return E_FAIL;
+	}
+
+	for (auto& pGameObejct : m_RenderObjects[RG_Water]) {
+		if (pGameObejct) {
+			CTransform* pWaterTransform = dynamic_cast<CTransform*>(pGameObejct->Find_Component(L"Com_Transform"));
+			_float fWaterHeight = pWaterTransform->Get_CenterPos().y;
+			_mat ReflectionViewMat = m_pGameInstance->ChagneViewForReflection(fWaterHeight);
+			_mat ReflectionViewInv = ReflectionViewMat.Invert();
+
+			if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrixInv", ReflectionViewInv)))
+			{
+				return E_FAIL;
+			}
+			if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Inversed(TransformType::Proj))))
+			{
+				return E_FAIL;
+			}
+
+			_vec4 vCamPos = m_pGameInstance->Get_CameraPos();
+
+			_float fReflectionCamY = -vCamPos.y + 2 * fWaterHeight;
+			_vec4 vReflectionCamPos(vCamPos.x, fReflectionCamY, vCamPos.z, 1.f);
+
+			if (FAILED(m_pShader->Bind_RawValue("g_vCamPosition", &vReflectionCamPos, sizeof _float4)))
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_NormalTexture", L"Target_Object_Reflection_Normal")))
+				return E_FAIL;
+
+			if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DepthTexture", L"Target_Object_Reflection_Depth")))
+				return E_FAIL;
+
+			if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_ObjectSpecTexture", L"Target_Object_Reflection_Specular")))
+			{
+				return E_FAIL;
+			}
+
+
+			if (FAILED(m_pGameInstance->Render_Lights(m_pGameInstance->Get_CurrentLevelIndex(), m_pShader, m_pVIBuffer)))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+	if (FAILED(m_pGameInstance->End_MRT()))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_Reflection_Final")))
+		return E_FAIL;
+
+	for (auto& pWater : m_RenderObjects[RG_Water]) {
+		if (pWater) {
+			if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DiffuseTexture", L"Target_Object_Reflection_Diffuse")))
+				return E_FAIL;
+
+			if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_ShadeTexture", L"Target_Reflection_Shade")))
+				return E_FAIL;
+
+			if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_SpecularTexture", L"Target_Reflection_Specular")))
+				return E_FAIL;
+
+			if (FAILED(m_pShader->Begin(DefPass_Water)))
+				return E_FAIL;
+
+			if (FAILED(m_pVIBuffer->Render()))
+				return E_FAIL;
+		}
+	}
+
+	if (FAILED(m_pGameInstance->End_MRT()))
+		return E_FAIL;
+
+
 	return S_OK;
 }
 
 HRESULT CRenderer::Render_Water()
 {
-	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Water"))))
-		return E_FAIL;
-
 	for (auto& pGameObject : m_RenderObjects[RG_Water])
 	{
 		if (pGameObject)
 		{
-			if (FAILED(pGameObject->Render()))
+			if (FAILED(pGameObject->Render())) {
 				MSG_BOX("Failed to Water Render");
+				return E_FAIL;
+			}
 		}
 
 		Safe_Release(pGameObject);
 	}
 
 	m_RenderObjects[RG_Water].clear();
-
-	if (FAILED(m_pGameInstance->End_MRT()))
-	{
-		return E_FAIL;
-	}
 
 	return S_OK;
 }
@@ -966,7 +1282,7 @@ HRESULT CRenderer::Render_LightAcc()
 	{
 		return E_FAIL;
 	}
-	
+
 	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_SSAOTEST"), L"MRT_SSAOBlur", m_fSSAOBlurPower)))
 		return E_FAIL;
 	//
@@ -1118,19 +1434,19 @@ HRESULT CRenderer::Render_Blur()
 	//	return E_FAIL;
 	//}
 
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_Bloom"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_Bloom"))))
+	//{
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(m_pShader->Begin(DefPass_Blur)))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(m_pVIBuffer->Render()))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pShader->Begin(DefPass_Blur)))
+	//{
+	//	return E_FAIL;
+	//}
+	//if (FAILED(m_pVIBuffer->Render()))
+	//{
+	//	return E_FAIL;
+	//}
 
 	return S_OK;
 }
@@ -1163,7 +1479,7 @@ HRESULT CRenderer::Render_Blend()
 		{
 			return dynamic_cast<CBlendObject*>(pSrc)->Get_CamDistance() > dynamic_cast<CBlendObject*>(pDst)->Get_CamDistance();
 		});
-	
+
 	for (auto& pGameObject : m_RenderObjects[RG_Blend])
 	{
 		if (pGameObject)
@@ -1261,7 +1577,7 @@ HRESULT CRenderer::Render_HDR()
 	{
 		return E_FAIL;
 	}
-	
+
 	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_HDRTexture", TEXT("Target_BlurTex"))))
 	//{
 	//	return E_FAIL;
@@ -1391,12 +1707,22 @@ HRESULT CRenderer::Render_Debug()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_Refraction_Final"), m_pShader, m_pVIBuffer)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_Reflection_Final"), m_pShader, m_pVIBuffer)))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
 #endif // _DEBUG
 
-HRESULT CRenderer::Get_AvgLuminance() 
+HRESULT CRenderer::Get_AvgLuminance()
 {
 	_uint2 iSize{};
 
@@ -1484,7 +1810,7 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 		if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_BLURTEX")))
 			return E_FAIL;
 
-		if(FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pGetBlurShader, "g_HDRTex", L"Target_HDR")))
+		if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pGetBlurShader, "g_HDRTex", L"Target_HDR")))
 			return E_FAIL;
 
 		if (FAILED(m_pGetBlurShader->Bind_ShaderResourceView("g_Luminance", m_pLumValue->Get_SRV())))
@@ -1522,7 +1848,7 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 
 		_uint2 ThreadGroupSize = _uint2((iSize.x + 15) / 16, (iSize.y + 15) / 16);
 
-		if (FAILED(m_pDownScaleShader->Begin(_uint3(ThreadGroupSize.x , ThreadGroupSize.y , 1))))
+		if (FAILED(m_pDownScaleShader->Begin(_uint3(ThreadGroupSize.x, ThreadGroupSize.y, 1))))
 			return E_FAIL;
 
 		iSize = _uint2(iSize.x / 2, iSize.y / 2);
@@ -1531,7 +1857,7 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 	ID3D11ShaderResourceView* pDownSRVs[3] = { m_pHalfRT->Get_SRV(), m_pQuarterRT->Get_SRV(), m_pEightRT->Get_SRV() };
 	ID3D11ShaderResourceView* pBlurSRVs[3] = { m_pHalfBlurRT->Get_SRV(), m_pQuarterBlurRT->Get_SRV(), m_pEightBlurRT->Get_SRV() };
 	ID3D11UnorderedAccessView* pBlurUAVs[3] = { m_pHalfBlurRT->Get_UAV(), m_pQuarterBlurRT->Get_UAV(), m_pEightBlurRT->Get_UAV() };
-	
+
 	iSize = m_WinSize;
 
 	if (FAILED(m_pBlurShader->Set_Shader()))
@@ -1562,13 +1888,13 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 			m_BLParam.direction = j; // 가로 세로로 블러먹이기
 			if (FAILED(m_pBlurShader->Change_Value(&m_BLParam, sizeof(BLURPARAM))))
 				return E_FAIL;
-			
+
 			if (FAILED(m_pBlurShader->Begin(_uint3(ThreadGroupSize.x, ThreadGroupSize.y, 1))))
 				return E_FAIL;
 		}
 
 	}
-	
+
 	if (FAILED(m_pGameInstance->Begin_MRT(MRT_Tag)))
 		return E_FAIL;
 
@@ -1594,7 +1920,7 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 
 	if (FAILED(m_pVIBuffer->Render()))
 		return E_FAIL;
-	
+
 	if (FAILED(m_pGameInstance->End_MRT()))
 		return E_FAIL;
 
@@ -1602,6 +1928,25 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 	return S_OK;
 }
 
+HRESULT CRenderer::Add_Instance(_int iInstanceID, VTXMESHINSTANCING& pMeshInstancing)
+{
+	if (m_InstanceBuffers.find(iInstanceID) == m_InstanceBuffers.end())
+	{
+		m_InstanceBuffers[iInstanceID] = CVIBuffer_Mesh_Instance::Create(m_pDevice, m_pContext);
+	}
+	m_InstanceBuffers[iInstanceID]->Add_Instance(pMeshInstancing);
+	return S_OK;
+}
+
+HRESULT CRenderer::Clear_Instance()
+{
+	for (auto& pair : m_InstanceBuffers)
+	{
+		CVIBuffer_Mesh_Instance* pBuffer = pair.second;
+		pBuffer->Clear_Instance();
+	}
+	return S_OK;
+}
 CRenderer* CRenderer::Create(_dev pDevice, _context pContext)
 {
 	CRenderer* pInstance = new CRenderer(pDevice, pContext);
@@ -1636,10 +1981,10 @@ void CRenderer::Free()
 
 	Safe_Release(m_pDown2Shader);
 	Safe_Release(m_pDownRT1);
-	
+
 	Safe_Release(m_pDown3Shader);
 	Safe_Release(m_pDownRT2);
-	
+
 	Safe_Release(m_pGetAvgLumShader);
 	Safe_Release(m_pLumValue);
 

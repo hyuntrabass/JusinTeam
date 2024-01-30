@@ -30,6 +30,9 @@ public:
 	void Set_OldViewMatrix(const _mat& TransformMatrix);
 	_mat Get_OldViewMatrix_vec4x4() const;
 	_mat Get_OldViewMatrix() const;
+
+	_mat ChagneViewForReflection(_float fWaterHeight);
+
 public:
 	HRESULT Init();
 	void Tick();

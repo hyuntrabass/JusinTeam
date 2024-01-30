@@ -52,7 +52,7 @@ HRESULT CTextButton::Init(void* pArg)
 		  (LONG)(m_vPosition.x + m_fSizeX * 0.5f),
 		  (LONG)(m_vPosition.y + m_fSizeY * 0.5f)
 	};
-
+	m_rcInitialRect = m_rcRect;
 	return S_OK;
 }
 

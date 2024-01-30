@@ -8,6 +8,8 @@
 #include "Effect_Manager.h"
 #include "UI_Manager.h"
 
+//원명의 꼽사리
+#include "Lake.h"
 
 CLevel_GamePlay::CLevel_GamePlay(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -44,23 +46,28 @@ HRESULT CLevel_GamePlay::Init()
 	}
 
 	// Monster
-	if (FAILED(Ready_ModelTest()))
+
+	//if (FAILED(Ready_ModelTest()))
+	//{
+	//	MSG_BOX("Failed to Ready ModelTest");
+	//	return E_FAIL;
+	//}
+	
+	/*
+	
+	if (FAILED(Ready_Rabbit()))
 	{
-		MSG_BOX("Failed to Ready ModelTest");
+		MSG_BOX("Failed to Ready Rabbit");
 		return E_FAIL;
 	}
 
-	//if (FAILED(Ready_Rabbit()))
-	//{
-	//	MSG_BOX("Failed to Ready Rabbit");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Goat()))
+	{
+		MSG_BOX("Failed to Ready Goat");
+		return E_FAIL;
+	}*/
 
-	//if (FAILED(Ready_Goat()))
-	//{
-	//	MSG_BOX("Failed to Ready Goat");
-	//	return E_FAIL;
-	//}
+	/*
 
 	//if (FAILED(Ready_Nastron03()))
 	//{
@@ -128,6 +135,26 @@ HRESULT CLevel_GamePlay::Init()
 	//	return E_FAIL;
 	//}
 
+	if (FAILED(Ready_Dog()))
+	{
+		MSG_BOX("Failed to Ready Dog");
+		return E_FAIL;
+	}
+	if (FAILED(Ready_NPC_Test()))
+	{
+		MSG_BOX("Failed to Ready NPC");
+		return E_FAIL;
+	}
+		*/
+	/*
+	
+	if (FAILED(Ready_NPC_Dummy_Test()))
+	{
+		MSG_BOX("Failed to Ready NPC_Dummy");
+		return E_FAIL;
+	}
+	*/
+
 	//// NPC
 	//if (FAILED(Ready_Cat()))
 	//{
@@ -141,11 +168,7 @@ HRESULT CLevel_GamePlay::Init()
 	//	return E_FAIL;
 	//}
 
-	//if (FAILED(Ready_NPC_Test()))
-	//{
-	//	MSG_BOX("Failed to Ready NPC");
-	//	return E_FAIL;
-	//}
+
 
 	//if (FAILED(Ready_NPC_Dummy_Test()))
 	//{
@@ -153,12 +176,13 @@ HRESULT CLevel_GamePlay::Init()
 	//	return E_FAIL;
 	//}
 
+
 	// Boss
-	if (FAILED(Ready_Groar_Boss()))
-	{
-		MSG_BOX("Failed to Ready Groar_Boss");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Groar_Boss()))
+	//{
+	//	MSG_BOX("Failed to Ready Groar_Boss");
+	//	return E_FAIL;
+	//}
 
 	// Pet
 	if (FAILED(Ready_Pet()))
@@ -186,7 +210,11 @@ HRESULT CLevel_GamePlay::Init()
 		MSG_BOX("Failed to Ready UI");
 		return E_FAIL;
 	}
-
+	if (FAILED(Ready_NPC_Test()))
+	{
+		MSG_BOX("Failed to Ready NPC");
+		return E_FAIL;
+	}
 
 	if (FAILED(Ready_Object()))
 	{
@@ -383,7 +411,14 @@ HRESULT CLevel_GamePlay::Ready_Map()
 
 	inFile.close();
 
-
+	CLake::WATER_DESC Desc;
+	Desc.fReflectionScale = 10.f;
+	Desc.fRefractionScale = 10.f;
+	Desc.vPos = _vec3(100.f, 1.f, 100.f);
+	Desc.vSize = _vec2(200.f,200.f);
+	Desc.fWaterSpeed = 10.f;
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, L"Layer_Map", L"Prototype_GameObject_Water", &Desc)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -508,10 +543,13 @@ HRESULT CLevel_GamePlay::Ready_Dog()
 
 HRESULT CLevel_GamePlay::Ready_NPC_Test()
 {
+	
+	
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_ItemMerchant"), TEXT("Prototype_GameObject_ItemMerchant"))))
 	{
 		return E_FAIL;
 	}
+
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BlackSmith"), TEXT("Prototype_GameObject_BlackSmith"))))
 	{

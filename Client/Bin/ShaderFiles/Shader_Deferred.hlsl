@@ -180,6 +180,29 @@ PS_OUT_Light PS_Main_Point(PS_IN Input)
     return Output;
 }
 
+PS_OUT PS_Main_Water(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    vector FinalColor = 0;
+    
+    vector vDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTexcoord);
+    if(vDiffuse.a == 0.f)
+        discard;
+    
+    vDiffuse.rgb = pow(vDiffuse.rgb, 2.2f);
+    
+    vector vShade = g_ShadeTexture.Sample(LinearSampler, Input.vTexcoord);
+    
+    vector vSpecular = g_SpecularTexture.Sample(LinearSampler, Input.vTexcoord);
+    
+    FinalColor = vDiffuse * vShade + vSpecular;
+    
+    Output.vColor = FinalColor;
+    
+    return Output;
+}
+
 PS_OUT PS_Main_Deferred(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
@@ -464,6 +487,19 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main_Point();
     }
 
+    pass Water
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Water();
+    }
+
     pass Deferrd
     {
         SetRasterizerState(RS_Default);
@@ -515,4 +551,6 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_HDR();
     }
+
+
 };

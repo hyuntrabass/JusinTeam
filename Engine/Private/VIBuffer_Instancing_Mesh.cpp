@@ -98,10 +98,10 @@ HRESULT CVIBuffer_Instancing_Mesh::Init_Prototype(const string& strFilePath, con
 
 	for (size_t i = 0; i < m_iNumInstances; i++)
 	{
-		pVertexInstance[i].vRight = _float4(1.f, 0.f, 0.f, 0.f);
-		pVertexInstance[i].vUp = _float4(0.f, 1.f, 0.f, 0.f);
-		pVertexInstance[i].vLook = _float4(0.f, 0.f, 1.f, 0.f);
-		pVertexInstance[i].vPos = _float4(0.f, 0.f,0.f, 1.f);
+	pVertexInstance[i].vRight = _vec4(1.f, 0.f, 0.f, 0.f);
+	pVertexInstance[i].vUp = _vec4(0.f, 1.f, 0.f, 0.f);
+	pVertexInstance[i].vLook = _vec4(0.f, 0.f, 1.f, 0.f);
+	pVertexInstance[i].vPos = _vec4(0.f, 0.f,0.f, 1.f);
 	}
 	m_InstancingInitialData.pSysMem = pVertexInstance;
 
@@ -114,34 +114,45 @@ HRESULT CVIBuffer_Instancing_Mesh::Init_Prototype(const string& strFilePath, con
 HRESULT CVIBuffer_Instancing_Mesh::Init(void* pArg)
 {
 	//MESH_DESC* pDesc = (MESH_DESC*)pArg;
-	_mat mWorldMatrix = *(_mat*)pArg;
+	vector<_vec4> vInstancePos = *(vector<_vec4>*)pArg;
 
 
 	VTXMESHINSTANCING* pVertexInstance = reinterpret_cast<VTXMESHINSTANCING*>(const_cast<void*>(m_InstancingInitialData.pSysMem));
 
 	if (pArg)
 	{
-
+		size_t numPositions = vInstancePos.size();
 		for (size_t i = 0; i < m_iNumInstances; i++)
 		{
-			//pVertexInstance[i].vRight = _vec4(pDesc->mWorldMatrix._11, pDesc->mWorldMatrix._12, pDesc->mWorldMatrix._13, pDesc->mWorldMatrix._14);
-			//pVertexInstance[i].vUp = _vec4(pDesc->mWorldMatrix._21, pDesc->mWorldMatrix._22, pDesc->mWorldMatrix._23, pDesc->mWorldMatrix._24);
-			//pVertexInstance[i].vLook = _vec4(pDesc->mWorldMatrix._31, pDesc->mWorldMatrix._32, pDesc->mWorldMatrix._33, pDesc->mWorldMatrix._34);
-			//pVertexInstance[i].vPos = _vec4(pDesc->mWorldMatrix._41, pDesc->mWorldMatrix._42, pDesc->mWorldMatrix._43, pDesc->mWorldMatrix._44);
-
-			pVertexInstance[i].vRight = _vec4(mWorldMatrix._11, mWorldMatrix._12, mWorldMatrix._13, mWorldMatrix._14);
-			pVertexInstance[i].vUp = _vec4(mWorldMatrix._21, mWorldMatrix._22, mWorldMatrix._23, mWorldMatrix._24);
-			pVertexInstance[i].vLook = _vec4(mWorldMatrix._31, mWorldMatrix._32, mWorldMatrix._33, mWorldMatrix._34);
-			pVertexInstance[i].vPos = _vec4(mWorldMatrix._41, mWorldMatrix._42, mWorldMatrix._43, mWorldMatrix._44);
+			if (i < numPositions)
+			{
+				pVertexInstance[i].vPos = vInstancePos[i];
+			}
+			else
+			{
+				// 기본 위치 설정
+				pVertexInstance[i].vPos = _vec4(0, 0, 0, 0);
+			}
 		}
-	}
+		//for (size_t i = 0; i < m_iNumInstances; i++)
+		//{
+		//	//pVertexInstance[i].vRight = _vec4(mWorldMatrix._11, mWorldMatrix._12, mWorldMatrix._13, mWorldMatrix._14);
+		//	//pVertexInstance[i].vUp = _vec4(mWorldMatrix._21, mWorldMatrix._22, mWorldMatrix._23, mWorldMatrix._24);
+		//	//pVertexInstance[i].vLook = _vec4(mWorldMatrix._31, mWorldMatrix._32, mWorldMatrix._33, mWorldMatrix._34);
+		//	//pVertexInstance[i].vPos = _vec4(mWorldMatrix._41, mWorldMatrix._42, mWorldMatrix._43, mWorldMatrix._44);
+		//	pVertexInstance[i].vPos = vInstancePos[i];
 
+		//}
+
+	}
+	
 	if (FAILED(m_pDevice->CreateBuffer(&m_InstancingBufferDesc, &m_InstancingInitialData, &m_pVBInstance)))
 	{
 		Safe_Delete_Array(m_InstancingInitialData.pSysMem);
 		return E_FAIL;
 	}
 	return S_OK;
+
 }
 
 HRESULT CVIBuffer_Instancing_Mesh::Read_Meshes(ifstream& File, const ModelType& eType, _fmatrix PivotMatrix)
@@ -191,6 +202,8 @@ HRESULT CVIBuffer_Instancing_Mesh::Read_Meshes(ifstream& File, const ModelType& 
 			XMStoreFloat3(&pVertices[i].vNormal, XMVector3TransformNormal(XMLoadFloat3(&pVertices[i].vNormal), PivotMatrix));
 			File.read(reinterpret_cast<_char*>(&pVertices[i].vTexcoord), sizeof _float2);
 			File.read(reinterpret_cast<_char*>(&pVertices[i].vTangent), sizeof _float3);
+
+			m_vMeshVertices.push_back(pVertices[i]);
 		}
 
 		m_InitialData.pSysMem = pVertices;
@@ -221,17 +234,14 @@ HRESULT CVIBuffer_Instancing_Mesh::Read_Meshes(ifstream& File, const ModelType& 
 		for (size_t i = 0; i < iNumFaces; i++)
 		{
 			File.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
-
 			dwIndex++;
-
+			m_vIndices.push_back(pIndices[dwIndex]);
 			File.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
-
 			dwIndex++;
-
+			m_vIndices.push_back(pIndices[dwIndex]);
 			File.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
-
 			dwIndex++;
-
+			m_vIndices.push_back(pIndices[dwIndex]);
 		}
 
 		m_InitialData.pSysMem = pIndices;
@@ -353,6 +363,5 @@ void CVIBuffer_Instancing_Mesh::Free()
 		}
 	}
 	m_Materials.clear();
-
 
 }

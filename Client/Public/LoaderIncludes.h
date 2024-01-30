@@ -1,5 +1,9 @@
 #pragma once
 
+#include "ShopDesc.h"
+#include "Shop.h"
+#include "DialogText.h"
+#include "NameWindow.h"
 #include "Dialog.h"
 #include "3DUITex.h"
 #include "HPMonster.h"
@@ -95,6 +99,7 @@
 
 // Test Model
 #include "TestVTFModel.h"
+#include "Lake.h"
 
 // Object
 #include "Prologue_Object.h"

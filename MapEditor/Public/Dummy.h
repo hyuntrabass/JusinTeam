@@ -33,6 +33,9 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+	virtual HRESULT Render_Instance() override;
+	//virtual HRESULT Render_Instance() override;
+	_int Get_ID() { return m_iID; }
 
 private:
 	CRenderer* m_pRendererCom{ nullptr };
@@ -40,7 +43,7 @@ private:
 	CModel* m_pModelCom{ nullptr };
 	//CImGui_Manager* m_pImGui_Manager{ nullptr };
 	CCollider* m_pCollider{ nullptr };
-	CVIBuffer_Instancing_Mesh* m_pVIBuffer{ nullptr };
+	//CVIBuffer_Instancing_Mesh* m_pVIBuffer{ nullptr };
 
 private:
 
@@ -52,11 +55,12 @@ private:
 	ANIM_DESC m_Animation{};
 	
 	ItemType m_eType{ItemType::End};
-	_int m_iID = 0;
 	_uint m_iTrigger{ 0 };
 	_float m_fTriggerSize{};
 	_bool m_isCreate{false};
 	_bool m_isInstancing{ false };
+	vector<_vec4> m_vInstancePos;
+	_int m_iID = 0;
 
 private:
 	HRESULT Add_Components();

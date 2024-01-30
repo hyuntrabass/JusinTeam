@@ -262,8 +262,34 @@ HRESULT CUI_Manager::Set_Inven(CGameObject* pGameObject)
 	return S_OK;
 }
 
+HRESULT CUI_Manager::Set_InvenFrame(CGameObject* pGameObject)
+{
+
+	if (pGameObject == nullptr)
+	{
+		return E_FAIL;
+	}
+
+	m_pInvenFrame = pGameObject;
+
+	return S_OK;
+}
+
+CGameObject* CUI_Manager::Get_InvenFrame()
+{
+	if (m_pInvenFrame == nullptr)
+	{
+		return nullptr;
+	}
+	return m_pInvenFrame;
+}
+
 CGameObject* CUI_Manager::Get_ItemSlots(CItemBlock::ITEMSLOT eSlot)
 {
+	if (m_pItemSlots[eSlot] == nullptr)
+	{
+		return nullptr;
+	}
 	return m_pItemSlots[eSlot];
 }
 

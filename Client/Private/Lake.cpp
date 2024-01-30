@@ -24,11 +24,22 @@ HRESULT CLake::Init(void* pArg)
 	
 	m_pTransformCom->Set_Position(m_Desc.vPos);
 
+	_vec3 Scale = _vec3(m_Desc.vSize.x, m_Desc.vSize.y, 1.f);
+	m_pTransformCom->Set_Scale(Scale);
+
+	_vec4 vRight = m_pTransformCom->Get_State(State::Right);
+	m_pTransformCom->Rotation(vRight, 90.f);
+
+	m_Desc.fReflectionScale = 0.05f;
+	m_Desc.fRefractionScale = 0.05f;
+	m_Desc.fWaterSpeed = 0.1f;
+
 	return S_OK;
 }
 
 void CLake::Tick(_float fTimeDelta)
 {
+
 	if (m_pGameInstance->Key_Down(DIK_K))
 		m_Desc.fReflectionScale += 0.01f;
 	if (m_pGameInstance->Key_Down(DIK_I))
@@ -46,7 +57,7 @@ void CLake::Tick(_float fTimeDelta)
 
 void CLake::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	m_pRendererCom->Add_RenderGroup(RG_Water, this);
 }
 
 HRESULT CLake::Render()
@@ -76,24 +87,20 @@ HRESULT CLake::Add_Component()
 	}
 
 	// For.Com_Shader_Water
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Water"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Water"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 	{
 		return E_FAIL;
 	}
 
-	CVIBuffer_Terrain_Dynamic::VERTEX_DESC Desc;
-	Desc.iSize.x = static_cast<_uint>(m_Desc.vSize.x);
-	Desc.iSize.y = static_cast<_uint>(m_Desc.vSize.y);
-	Desc.iC.x = static_cast<_uint>(m_Desc.vSize.x);
-	Desc.iC.y = static_cast<_uint>(m_Desc.vSize.y);
+
 	// For.Com_VIBuffer
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain_Dynamic"), TEXT("Com_VIBuffer"),
-		(CComponent**)&m_pVIBufferCom, &Desc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"),
+		(CComponent**)&m_pVIBufferCom)))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Water"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Water_Normal"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
 
 
@@ -102,6 +109,17 @@ HRESULT CLake::Add_Component()
 
 HRESULT CLake::Bind_ShaderResources()
 {
+
+	_float Y = m_pTransformCom->Get_CenterPos().y;
+
+	_mat ReflectionViewMat = m_pGameInstance->ChagneViewForReflection(Y);
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ReflectionViewMatrix", ReflectionViewMat)))
+		return E_FAIL;
+
+	//if (FAILED(m_pShaderCom->Bind_Matrix("g_ReflectionViewMatrix", XMMatrixIdentity())))
+	//	return E_FAIL;
+
 	_float44 pWorldMatrix = m_pTransformCom->Get_World_Matrix();
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", pWorldMatrix)))
 		return E_FAIL;
@@ -110,6 +128,16 @@ HRESULT CLake::Bind_ShaderResources()
 		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShaderCom, "g_ReflectionTexture", L"Target_Reflection_Final")))
+		return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShaderCom, "g_ReflectionTexture", L"Target_Object_Reflection_Diffuse")))
+	//	return E_FAIL;
+
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShaderCom, "g_RefractionTexture", L"Target_Refraction_Final")))
 		return E_FAIL;
 
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture")))
@@ -127,7 +155,7 @@ HRESULT CLake::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof(_vec4))))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCmaNF", &m_pGameInstance->Get_CameraNF(), sizeof(_float2))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamNF", &m_pGameInstance->Get_CameraNF(), sizeof(_float2))))
 		return E_FAIL;
 
 

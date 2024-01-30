@@ -168,7 +168,6 @@ void CGameInstance::Clear(_uint iLevelIndex)
 
 	m_pObject_Manager->Clear(iLevelIndex);
 	m_pComponent_Manager->Clear(iLevelIndex);
-	
 	if(m_Function_Clear_FX)
 		m_Function_Clear_FX(iLevelIndex);
 }
@@ -610,6 +609,26 @@ _matrix CGameInstance::Get_OldViewMatrix() const
 	return m_pPipeLine->Get_OldViewMatrix();
 }
 
+_mat CGameInstance::ChagneViewForReflection(_float fWaterHeight)
+{
+	if (!m_pPipeLine)
+	{
+		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
+	}
+
+	return m_pPipeLine->ChagneViewForReflection(fWaterHeight);
+}
+
+void CGameInstance::Update_PipeLine()
+{
+	if (!m_pPipeLine)
+	{
+		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
+	}
+
+	return m_pPipeLine->Tick();
+}
+
 void CGameInstance::TransformRay_ToLocal(_mat WorldMatrix)
 {
 	if (!m_pPicking)
@@ -717,6 +736,16 @@ HRESULT CGameInstance::Render_Text(const wstring& strFontTag, const wstring& str
 	}
 
 	return m_pFont_Manager->Render(strFontTag, strText, vPosition, fScale, vColor, fRotation, isFront);
+}
+
+_vec2 CGameInstance::Get_TextSize(const wstring& strFontTag, const wstring& strText)
+{
+	if (!m_pFont_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pFont_Manager is NULL");
+	}
+	return m_pFont_Manager->Get_TextSize(strFontTag, strText);
+
 }
 
 _bool CGameInstance::IsIn_Fov_World(_vec4 vPos, _float fRange)

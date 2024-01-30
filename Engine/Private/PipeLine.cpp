@@ -59,6 +59,29 @@ _mat CPipeLine::Get_OldViewMatrix() const
 	return XMLoadFloat4x4(&m_OldViewMatrix);
 }
 
+_mat CPipeLine::ChagneViewForReflection(_float fWaterHeight)
+{
+	_mat CamWorldMatrix = m_TransformMatrix_Inversed[ToIndex(TransformType::View)];
+	
+	_vec3 vCamPos = CamWorldMatrix.Position_vec3();
+	_vec3 vCamLook = m_vCameraLook;
+	_vec3 vCamRight = CamWorldMatrix.Right_vec3();
+
+	_vec3 vTargetPos = vCamPos + vCamLook;
+
+	_float fReflectionCamY = -vCamPos.y + 2.f * fWaterHeight;
+	_vec3 vReflectionCamPos(vCamPos.x, fReflectionCamY, vCamPos.z);
+
+	_float fReflectionTargetY = -vTargetPos.y + 2.f * fWaterHeight;
+	_vec3 vReflectionTarget(vTargetPos.x, fReflectionTargetY, vTargetPos.z);
+
+	_vec3 vReflectionLook = vReflectionTarget - vReflectionCamPos;
+
+	_vec3 vReflectionCamUp = vCamRight.Cross(vReflectionLook);
+
+	return XMMatrixLookAtLH(vReflectionCamPos, vReflectionTarget, vReflectionCamUp);
+}
+
 HRESULT CPipeLine::Init()
 {
 	for (size_t i = 0; i < ToIndex(TransformType::End); i++)

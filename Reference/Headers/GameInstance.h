@@ -84,9 +84,13 @@ public: // PipeLine
 
 	void Set_Transform(TransformType eState, const _mat& TransformMatrix);
 
+	// ¿ø¸í
 	void Set_OldViewMatrix(const _mat& TransformMatrix);
 	_mat Get_OldViewMatrix_vec4x4() const;
 	_matrix Get_OldViewMatrix() const;
+
+	_mat ChagneViewForReflection(_float fWaterHeight);
+	void Update_PipeLine();
 
 
 public: // Picking
@@ -107,6 +111,7 @@ public: // Picking
 public: // Font
 	HRESULT Add_Font(const wstring& strFontTag, const wstring& strFilePath);
 	HRESULT Render_Text(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale = 1.f, _vec4 vColor = _vec4(1.f), _float fRotation = 0.f, _bool isFront = false);
+	_vec2 Get_TextSize(const wstring& strFontTag, const wstring& strText);
 
 public: // Frustum
 	_bool IsIn_Fov_World(_vec4 vPos, _float fRange = 0.f);

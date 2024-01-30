@@ -18,6 +18,9 @@ private:
 	_dev m_pDevice{ nullptr };
 	_context m_pContext{ nullptr };
 
+public:
+	_vec2 Get_TextSize(const wstring& strFontTag, const wstring& strText);
+
 private:
 	map<const wstring, class CMyFont*> m_Fonts{};
 

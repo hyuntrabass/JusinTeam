@@ -19,6 +19,7 @@ float g_fAlpha;
 float g_fTime;
 float g_fDissolveRatio;
 float g_fAmount;
+float2 g_vRatio;
 int2 g_vNumSprite;
 uint g_iIndex;
 
@@ -595,21 +596,76 @@ PS_OUT PS_Main_HPNoMask(PS_IN Input)
 PS_OUT PS_Main_NineSlice(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
-    
+    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+
+/*
 
     if (Input.vTex.x < g_vSliceRect.x)
+    {
         Input.vTex.x = lerp(0, g_vSliceRect.x, Input.vTex.x / g_vSliceRect.x);
+        Input.vTex *= _float2(
+    }
     else if (Input.vTex.x > g_vSliceRect.z)
-        Input.vTex.x = lerp(g_vSliceRect.z, 1, (Input.vTex.x - g_vSliceRect.z) / (1 - g_vSliceRect.z));
+    {
+        float ratioX = 1.0 / (1.0 - g_vSliceRect.z);
+        Input.vTex.x = lerp(g_vSliceRect.z, 1, (Input.vTex.x - g_vSliceRect.z) * ratioX);
+    }
 
-    
     if (Input.vTex.y < g_vSliceRect.y)
+    {
         Input.vTex.y = lerp(0, g_vSliceRect.y, Input.vTex.y / g_vSliceRect.y);
+    }
     else if (Input.vTex.y > g_vSliceRect.w)
-        Input.vTex.y = lerp(g_vSliceRect.w, 1, (Input.vTex.y - g_vSliceRect.w) / (1 - g_vSliceRect.w));
-
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    {
+        float ratioY = 1.0 / (1.0 - g_vSliceRect.w);
+        Input.vTex.y = lerp(g_vSliceRect.w, 1, (Input.vTex.y - g_vSliceRect.w) * ratioY);
+    }*/
     return Output;
+
+}
+
+PS_OUT PS_Main_FadeVertical(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    float fBaseAlpha = 0.9f;
+    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex) * vector(0.f, 0.f, 0.f, 1.f);
+
+    if (Input.vTex.y < 0.3f)
+    {
+        Output.vColor.a = Input.vTex.y * (3.f);
+    }
+    else if (Input.vTex.y > 0.6f)
+    {
+        Output.vColor.a = fBaseAlpha + (fBaseAlpha - Input.vTex.y * (3.f / 2.f));
+    }
+    else
+        Output.vColor.a = fBaseAlpha;
+
+    Output.vColor.a *= 2.f / 3.f;
+    
+    return Output;
+
+}
+PS_OUT PS_Main_FadeHorizontal(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    float fBaseAlpha = 0.9f;
+    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex) * vector(0.f, 0.f, 0.f, 1.f);
+
+    if (Input.vTex.x < 0.3f)
+    {
+        Output.vColor.a = Input.vTex.x * (0.9f / 0.2f);
+    }
+    else if (Input.vTex.x > 0.8f)
+    {
+        Output.vColor.a = fBaseAlpha + (fBaseAlpha / 0.2f) * (0.8f - Input.vTex.x);
+    }
+    else
+        Output.vColor.a = fBaseAlpha;
+
+    return Output;
+
 }
 technique11 DefaultTechnique
 {
@@ -991,5 +1047,29 @@ pass NineSlice
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_NineSlice();
+    }
+pass FadeVertical
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_FadeVertical();
+    }
+pass FadeHorizontal
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_FadeHorizontal();
     }
 };
