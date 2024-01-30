@@ -162,10 +162,16 @@ void CPlayer::Tick(_float fTimeDelta)
 		m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), 0.f);
 		if (eType == PT_WEAPON)
 		{
-			//Change_Weapon(CUI_Manager::Get_Instance()->Get_CustomPart(eType));
+			WEAPON_TYPE eWpType{};
+			_uint iWpIdx = CUI_Manager::Get_Instance()->Get_WeaponType(eType, &eWpType);
+			Change_Weapon(eWpType, (WEAPON_INDEX)iWpIdx);
 
 		}
-		Change_Parts(eType, CUI_Manager::Get_Instance()->Get_CustomPart(eType));
+		else
+		{
+			Change_Parts(eType, CUI_Manager::Get_Instance()->Get_CustomPart(eType));
+		}
+
 	}
 
 
@@ -173,7 +179,7 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		if (!m_bIsMount)
 		{	
-			CEvent_Manager::Get_Instance()->Update_Quest(TEXT("�� ���̵�"));
+			//CEvent_Manager::Get_Instance()->Update_Quest(TEXT("펫 라이딩"));
 			m_bIsMount = true;
 			m_eState = Mount;
 			m_Animation.iAnimIndex = Anim_Mount_Idle;
