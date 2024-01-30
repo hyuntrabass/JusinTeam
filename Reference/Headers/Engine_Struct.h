@@ -119,6 +119,7 @@ namespace Engine
 		bool isUVLoop{};
 		float fAlphaInit{};
 		float fAlphaDelta{};
+		float fRectRotationAngle{};
 
 		bool hasLight{};
 		LIGHT_DESC Light_Desc{};
@@ -283,6 +284,7 @@ namespace Engine
 		SimpleMath::Vector2 vLifeTime{};
 		SimpleMath::Vector4 vOriginPos{};
 		SimpleMath::Vector4 vDirection{};
+		SimpleMath::Vector4 vOriginDir{};
 	};
 
 	using VTXPOINT = struct ENGINE_DLL tagVertex_Point

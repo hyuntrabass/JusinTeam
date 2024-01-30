@@ -199,7 +199,8 @@ HRESULT CLevel_GamePlay::Init()
 	EffectDesc.isFollow = true;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
 
-	m_pGameInstance->Set_FogNF(_vec2(5.f, 500.f));
+	m_pGameInstance->Set_FogNF(_vec2(5.f, 300.f));
+	m_pGameInstance->Set_FogColor(_color(0.1f));
 
 	return S_OK;
 }

@@ -84,7 +84,7 @@ const _uint& CModel::Get_CurrentAnimationIndex() const
 	return m_AnimDesc.iAnimIndex;
 }
 
-const _float& CModel::Get_CurrentAnimPos() const
+const _float CModel::Get_CurrentAnimPos() const
 {
 	return m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos();
 }

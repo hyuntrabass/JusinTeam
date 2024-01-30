@@ -2324,6 +2324,21 @@ inline Vector3 DirectX::SimpleMath::Matrix::Get_Scale() const noexcept
     return result;
 }
 
+inline Quaternion DirectX::SimpleMath::Matrix::Get_Rotation() const noexcept
+{
+    using namespace DirectX;
+
+    XMVECTOR s, r, t;
+    Quaternion result;
+
+    if (!XMMatrixDecompose(&s, &r, &t, *this))
+        return Quaternion();
+
+    XMStoreFloat4(&result, r);
+
+    return result;
+}
+
 inline Matrix DirectX::SimpleMath::Matrix::Get_RotationRemoved() const noexcept
 {
     using namespace DirectX;

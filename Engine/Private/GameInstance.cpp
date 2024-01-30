@@ -1165,6 +1165,11 @@ const _float2& CGameInstance::Get_FogNF() const
 	return m_vFogNF;
 }
 
+const _color& CGameInstance::Get_FogColor() const
+{
+	return m_vFogColor;
+}
+
 const _bool& CGameInstance::Get_ShakeCam() const
 {
 	return m_bShakeCamera;
@@ -1208,6 +1213,11 @@ void CGameInstance::Set_TimeRatio(const _float fRatio)
 void CGameInstance::Set_FogNF(const _float2& vFogNF)
 {
 	m_vFogNF = vFogNF;
+}
+
+void CGameInstance::Set_FogColor(const _color& vFogColor)
+{
+	m_vFogColor = vFogColor;
 }
 
 void CGameInstance::Set_ShakeCam(const _bool& bShake, _float fShakePower)

@@ -603,7 +603,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	Checkbox("Has Light", &m_hasLight);
 	Separator();
 	static LIGHT_DESC Light_Desc{};
-	static _int iAttenuation{}; LIGHT_RANGE_100;
+	static _int iAttenuation{};
 	const _char* szAttenuations[]
 	{
 		"LIGHT_RANGE_7",
@@ -688,6 +688,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	static _vec3 vSizeDelta{};
 	static _bool bApplyGravity{};
 	static _vec3 vGravityDir{};
+	static _float fRectRotationAngle{};
 
 	if (m_iCurrent_Type == ET_PARTICLE)
 	{
@@ -775,11 +776,22 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		//else
 		{
 			InputFloat2("Size##2", reinterpret_cast<_float*>(&vSize), "%.2f");
+			vSize.z = 1.f;
 			Info.vSize = vSize;
 		}
 
 		InputFloat2("Size Delta", reinterpret_cast<_float*>(&vSizeDelta), "%.2f");
 		Info.vSizeDelta = vSizeDelta;
+
+		NewLine();
+		Text("Rotation");
+		SliderAngle(" ", &fRectRotationAngle); SameLine();
+		if (Button("Reset"))
+		{
+			fRectRotationAngle = 0.f;
+		}
+		InputFloat(" ##2", &fRectRotationAngle, 45.f, 0.f, "%.2f");
+		Info.fRectRotationAngle = fRectRotationAngle;
 
 		Info.strModel = {};
 	}
@@ -878,6 +890,10 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		EffectInfo Info = Load_Data();
 
 		Safe_Release(m_pEffect);
+		if (Info.vSize.z == 0.f)
+		{
+			Info.vSize.z = 1.f;
+		}
 		m_pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Info));
 
 		m_iCurrent_Type = Info.iType;
@@ -978,7 +994,12 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 				fSizeforSprite = Info.vSize.y;
 			}
 			vSize = Info.vSize;
+			if (vSize.z == 0.f)
+			{
+				vSize.z = 1.f;
+			}
 			vSizeDelta = Info.vSizeDelta;
+			fRectRotationAngle = Info.fRectRotationAngle;
 			break;
 		case Effect::ET_MESH:
 			m_iSelected_Model = Compute_ModelIndex(Info.strModel);
@@ -989,9 +1010,69 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 		m_hasLight = Info.hasLight;
 
+		//"LIGHT_RANGE_7",
+		//"LIGHT_RANGE_13",
+		//"LIGHT_RANGE_20",
+		//"LIGHT_RANGE_32",
+		//"LIGHT_RANGE_50",
+		//"LIGHT_RANGE_65",
+		//"LIGHT_RANGE_100",
+		//"LIGHT_RANGE_160",
+		//"LIGHT_RANGE_200",
+		//"LIGHT_RANGE_325",
+		//"LIGHT_RANGE_600",
+		//"LIGHT_RANGE_3250",
 		if (m_hasLight)
 		{
 			Light_Desc = Info.Light_Desc;
+			if (Light_Desc.vAttenuation.x > 600.f)
+			{
+				iAttenuation = 11;
+			}
+			else if (Light_Desc.vAttenuation.x > 325.f)
+			{
+				iAttenuation = 10;
+			}
+			else if (Light_Desc.vAttenuation.x > 200.f)
+			{
+				iAttenuation = 9;
+			}
+			else if (Light_Desc.vAttenuation.x > 160.f)
+			{
+				iAttenuation = 8;
+			}
+			else if (Light_Desc.vAttenuation.x > 100.f)
+			{
+				iAttenuation = 7;
+			}
+			else if (Light_Desc.vAttenuation.x > 65.f)
+			{
+				iAttenuation = 6;
+			}
+			else if (Light_Desc.vAttenuation.x > 50.f)
+			{
+				iAttenuation = 5;
+			}
+			else if (Light_Desc.vAttenuation.x > 32.f)
+			{
+				iAttenuation = 4;
+			}
+			else if (Light_Desc.vAttenuation.x > 20.f)
+			{
+				iAttenuation = 3;
+			}
+			else if (Light_Desc.vAttenuation.x > 13.f)
+			{
+				iAttenuation = 2;
+			}
+			else if (Light_Desc.vAttenuation.x > 7.f)
+			{
+				iAttenuation = 1;
+			}
+			else
+			{
+				iAttenuation = 0;
+			}
 		}
 	} SameLine();
 
@@ -1237,6 +1318,7 @@ EffectInfo CImgui_Manager::Load_Data()
 			InFile.read(reinterpret_cast<_char*>(&Info.isUVLoop), sizeof Info.isUVLoop);
 			InFile.read(reinterpret_cast<_char*>(&Info.fAlphaInit), sizeof Info.fAlphaInit);
 			InFile.read(reinterpret_cast<_char*>(&Info.fAlphaDelta), sizeof Info.fAlphaDelta);
+			InFile.read(reinterpret_cast<_char*>(&Info.fRectRotationAngle), sizeof Info.fRectRotationAngle);
 
 			size_t iNameSize{};
 
@@ -1334,6 +1416,8 @@ void CImgui_Manager::Load_OldData()
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.isFixedIndex), sizeof OldInfo.isFixedIndex);
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.iFixedSpriteIndex), sizeof OldInfo.iFixedSpriteIndex);
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.isUVLoop), sizeof OldInfo.isUVLoop);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.fAlphaInit), sizeof OldInfo.fAlphaInit);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.fAlphaDelta), sizeof OldInfo.fAlphaDelta);
 
 				size_t iNameSize{};
 
@@ -1409,8 +1493,9 @@ void CImgui_Manager::Load_OldData()
 			NewInfo.isFixedIndex = OldInfo.isFixedIndex;
 			NewInfo.iFixedSpriteIndex = OldInfo.iFixedSpriteIndex;
 			NewInfo.isUVLoop = OldInfo.isUVLoop;
-			NewInfo.fAlphaDelta = 0.f;
-			NewInfo.fAlphaInit = 0.f;
+			NewInfo.fAlphaDelta = OldInfo.fAlphaDelta;
+			NewInfo.fAlphaInit = OldInfo.fAlphaInit;
+			NewInfo.fRectRotationAngle = 0.f;
 
 			NewInfo.strDiffuseTexture = OldInfo.strDiffuseTexture;
 			NewInfo.strMaskTexture = OldInfo.strMaskTexture;
@@ -1450,6 +1535,7 @@ void CImgui_Manager::Load_OldData()
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.isUVLoop), sizeof NewInfo.isUVLoop);
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.fAlphaInit), sizeof NewInfo.fAlphaInit);
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.fAlphaDelta), sizeof NewInfo.fAlphaDelta);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.fRectRotationAngle), sizeof NewInfo.fRectRotationAngle);
 
 				size_t iNameSize{};
 				iNameSize = (NewInfo.strDiffuseTexture.size() + 1) * sizeof(_tchar);
@@ -1530,6 +1616,7 @@ HRESULT CImgui_Manager::Export_Data(EffectInfo& Info)
 			OutFile.write(reinterpret_cast<const _char*>(&Info.isUVLoop), sizeof Info.isUVLoop);
 			OutFile.write(reinterpret_cast<const _char*>(&Info.fAlphaInit), sizeof Info.fAlphaInit);
 			OutFile.write(reinterpret_cast<const _char*>(&Info.fAlphaDelta), sizeof Info.fAlphaDelta);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.fRectRotationAngle), sizeof Info.fRectRotationAngle);
 
 			size_t iNameSize{};
 			iNameSize = (Info.strDiffuseTexture.size() + 1) * sizeof(_tchar);
@@ -1568,7 +1655,7 @@ HRESULT CImgui_Manager::Override_Data(EffectInfo& Info)
 
 	ofstream OutFile(m_CurrFilePath.c_str(), ios::binary);
 
- 	if (OutFile.is_open())
+	if (OutFile.is_open())
 	{
 		OutFile.write(reinterpret_cast<const _char*>(&Info.iType), sizeof Info.iType);
 		OutFile.write(reinterpret_cast<const _char*>(&Info.isSprite), sizeof Info.isSprite);
@@ -1597,6 +1684,7 @@ HRESULT CImgui_Manager::Override_Data(EffectInfo& Info)
 		OutFile.write(reinterpret_cast<const _char*>(&Info.isUVLoop), sizeof Info.isUVLoop);
 		OutFile.write(reinterpret_cast<const _char*>(&Info.fAlphaInit), sizeof Info.fAlphaInit);
 		OutFile.write(reinterpret_cast<const _char*>(&Info.fAlphaDelta), sizeof Info.fAlphaDelta);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.fRectRotationAngle), sizeof Info.fRectRotationAngle);
 
 		size_t iNameSize{};
 		iNameSize = (Info.strDiffuseTexture.size() + 1) * sizeof(_tchar);

@@ -558,6 +558,7 @@ namespace DirectX
             void Position_vec3(const Vector3& v) noexcept { _41 = v.x; _42 = v.y; _43 = v.z; }
 
             Vector3 Get_Scale() const noexcept;
+            Quaternion Get_Rotation() const noexcept;
 
             Matrix Get_RotationRemoved() const noexcept;
             void RemoveRotation() noexcept;
@@ -768,6 +769,7 @@ namespace DirectX
         struct Color : public XMFLOAT4
         {
             Color() noexcept : XMFLOAT4(0, 0, 0, 1.f) {}
+            constexpr explicit Color(float ix) noexcept : XMFLOAT4(ix, ix, ix, ix) {}
             constexpr Color(float _r, float _g, float _b) noexcept : XMFLOAT4(_r, _g, _b, 1.f) {}
             constexpr Color(float _r, float _g, float _b, float _a) noexcept : XMFLOAT4(_r, _g, _b, _a) {}
             explicit Color(const Vector3& clr) noexcept : XMFLOAT4(clr.x, clr.y, clr.z, 1.f) {}
