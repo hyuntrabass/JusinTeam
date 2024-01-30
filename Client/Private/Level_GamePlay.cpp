@@ -488,12 +488,12 @@ HRESULT CLevel_GamePlay::Ready_Dog()
 HRESULT CLevel_GamePlay::Ready_NPC_Test()
 {
 	
-	/*
+	
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_ItemMerchant"), TEXT("Prototype_GameObject_ItemMerchant"))))
 	{
 		return E_FAIL;
 	}
-	*/
+	
 	
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BlackSmith"), TEXT("Prototype_GameObject_BlackSmith"))))

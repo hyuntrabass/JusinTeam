@@ -59,9 +59,8 @@ private:
 	_float										m_fBGY{ 0.f };
 	_float										m_fTime{ 0.f };
 
-	vector<_uint>								m_vecItemSlot[INVEN_TYPE::INVEN_END];
-	vector<CItem*>								m_vecItemsSlot[INVEN_TYPE::INVEN_END];
 	vector<CItem*>								m_vecItems;
+	vector<CItem*>								m_vecItemsSlot[INVEN_TYPE::INVEN_END];
 
 	CGameObject*								m_pParent{ nullptr };
 	CGameObject*								m_pUnderBar{ nullptr };

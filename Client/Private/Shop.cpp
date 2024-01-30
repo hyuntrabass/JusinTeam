@@ -395,7 +395,6 @@ HRESULT CShop::Add_Parts()
 	{
 		return E_FAIL;
 	}
-	Safe_AddRef(m_pInvenFrame);
 
 	return S_OK;
 }
@@ -508,7 +507,6 @@ void CShop::Free()
 	Safe_Release(m_pBackGround);
 	Safe_Release(m_pExitButton);
 	Safe_Release(m_pTitleButton);
-	Safe_Release(m_pInvenFrame);
 
 	Safe_Release(m_pUnderBar);
 	Safe_Release(m_pSelectButton);
