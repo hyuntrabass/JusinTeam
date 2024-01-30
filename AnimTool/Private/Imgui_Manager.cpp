@@ -999,7 +999,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				}
 				if (pSoundDesc->iChannel != -1)
 				{
-					m_pGameInstance->SetChannelVolume(pSoundDesc->iChannel, pSoundDesc->fVolume);
+					m_pGameInstance->Set_ChannelVolume(pSoundDesc->iChannel, pSoundDesc->fVolume);
 				}
 				ImGui::InputFloat("FADEOUT SECOND##1", &pSoundDesc->fFadeoutSecond, 0.01f, 0.f, "%.2f");
 				if (pSoundDesc->fFadeoutSecond <= 0.f)
@@ -1360,7 +1360,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				}
 				if (pSoundDesc->iChannel != -1)
 				{
-					m_pGameInstance->SetChannelVolume(pSoundDesc->iChannel, pSoundDesc->fVolume);
+					m_pGameInstance->Set_ChannelVolume(pSoundDesc->iChannel, pSoundDesc->fVolume);
 				}
 				ImGui::InputFloat("FADEOUT SECOND##1", &pSoundDesc->fFadeoutSecond, 0.01f, 0.f, "%.2f");
 				if (pSoundDesc->fFadeoutSecond <= 0.f)

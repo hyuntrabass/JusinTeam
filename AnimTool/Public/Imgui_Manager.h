@@ -83,6 +83,7 @@ private:
 
     _float m_fTimeDelta{};
     _float m_fTimeRatio = 1.f;
+    _float m_fPitch = 1.f;
 
     //ImGuizmo
     SELECT m_eSelect = { SELECT_EFFECT };

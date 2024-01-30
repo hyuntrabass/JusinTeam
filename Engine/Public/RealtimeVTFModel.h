@@ -48,7 +48,7 @@ public:
 	HRESULT Place_Parts(PART_DESC& ePartDesc, _bool isRender = false);
 
 public:
-	HRESULT Play_Animation(_float fTimeDelta);
+	HRESULT Play_Animation(_float fTimeDelta, _bool OnClientTrigger = false);
 
 	void Set_Animation(ANIM_DESC Animation_Desc);
 

@@ -162,9 +162,6 @@ public: // Sound Manager
 	void StopSound(_uint iChannel);
 	void StopAll();
 
-	void SetChannelVolume(_uint iChannel, _float fVolume);
-	_float GetChannelVolume(_uint iChannel);
-
 public: // Effect Callback
 	using Func_CreateFX = function<void(const wstring&, _mat*, const _bool&)>;
 	using Func_DeleteFX = function<void(const void*)>;
@@ -198,8 +195,10 @@ public: // Get_Set
 	const _bool& Get_ShakeCam() const;
 	// 지옥이 시작되는 높이를 반환 함. (일정 높이부터 내려갈 수록 어두워지는걸 hell이라고 해놨음.)
 	const _float& Get_HellHeight() const;
-	// 현재 사운드 채널이 재생중인지를 반환 함.
+	// 사운드 채널이 재생중인지를 반환 함.
 	_bool Get_IsPlayingSound(_uint iChannel);
+	// 사운드 채널의 볼륨을 반환 함.
+	_float Get_ChannelVolume(_uint iChannel);
 
 	// 카메라 모드를 지정함. 카메라에서 말고는 쓰지 말것.
 	void Set_CameraModeIndex(const _uint& iIndex);
@@ -215,6 +214,8 @@ public: // Get_Set
 	void Set_ShakeCam(const _bool& bShake , _float fShakePower = 0.1f);
 	// hell 높이를 지정한다.
 	void Set_HellHeight(const _float& fHeight);
+	// 사운드 채널의 볼륨을 지정함.
+	void Set_ChannelVolume(_uint iChannel, _float fVolume);
 
 	_float Get_ShakePower() { return m_fShakePower; }
 

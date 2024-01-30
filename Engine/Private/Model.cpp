@@ -365,7 +365,7 @@ HRESULT CModel::Init(void* pArg)
 	return S_OK;
 }
 
-void CModel::Play_Animation(_float fTimeDelta)
+void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 {
 	//트리거 루프
 	if ((m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() + fTimeDelta * m_AnimDesc.fAnimSpeedRatio * m_Animations[m_AnimDesc.iAnimIndex]->Get_TickPerSec()) >=
@@ -416,8 +416,18 @@ void CModel::Play_Animation(_float fTimeDelta)
 				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
 			}
 			//이펙트 생성
-			m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
-			m_TriggerEffects[i].HasCreated = true;
+			if (m_TriggerEffects[i].IsClientTrigger)
+			{
+				if (OnClientTrigger)
+				{
+					m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
+				}
+			}
+			else
+			{
+				m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
+				m_TriggerEffects[i].HasCreated = true;
+			}
 		}
 
 		//이펙트 제거
@@ -463,7 +473,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 				if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iEndAnimIndices[j] &&
 					m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerSounds[i].fEndAnimPoses[j])
 				{
-					if (m_pGameInstance->GetChannelVolume(m_TriggerSounds[i].iChannel) <= 0.f)
+					if (m_pGameInstance->Get_ChannelVolume(m_TriggerSounds[i].iChannel) <= 0.f)
 					{
 						m_pGameInstance->StopSound(m_TriggerSounds[i].iChannel);
 						m_TriggerSounds[i].iChannel = -1;
@@ -472,7 +482,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 					else
 					{
 						m_TriggerSounds[i].fVolume -= (fTimeDelta / (m_TriggerSounds[i].fFadeoutSecond / m_TriggerSounds[i].fInitVolume));
-						m_pGameInstance->SetChannelVolume(m_TriggerSounds[i].iChannel, m_TriggerSounds[i].fVolume);
+						m_pGameInstance->Set_ChannelVolume(m_TriggerSounds[i].iChannel, m_TriggerSounds[i].fVolume);
 					}
 				}
 			}
