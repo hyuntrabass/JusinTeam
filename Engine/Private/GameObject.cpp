@@ -61,16 +61,15 @@ HRESULT CGameObject::Render_Shadow()
 	return S_OK;
 }
 
-HRESULT CGameObject::Render_Refract()
+HRESULT CGameObject::Render_Refract(_float4 vClipPlane)
 {
 	return S_OK;
 }
 
-HRESULT CGameObject::Render_Reflection()
+HRESULT CGameObject::Render_Reflection(_float4 vClipPlane)
 {
 	return S_OK;
 }
-
 CComponent* CGameObject::Find_Component(const wstring& strComTag)
 {
 	auto& it = m_Components.find(strComTag);
