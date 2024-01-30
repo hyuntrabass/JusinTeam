@@ -681,6 +681,9 @@ HRESULT CPlayer::Add_Riding()
 
 void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 {
+	if (m_eState == Aim_Idle or m_eState == SkillR)
+		m_pGameInstance->Set_AimMode(false);
+
 	m_iHP -= (iDamage - iDamage * (m_Status.Armor / 0.01f));
 	//if (m_iHP < 0)
 	if (MonAttType == 4)
@@ -705,6 +708,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 			break;
 		}
 	}
+	
 	m_StartRegen = 0.f;
 }
 
@@ -838,7 +842,18 @@ void CPlayer::Move(_float fTimeDelta)
 			Ready_Skill(ST_Skill1); // 1번창에 있던 스킬 넣어주기
 		}
 	}
-
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
+	{
+		Set_Damage(1, MonAtt_Hit);
+	}
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD3))
+	{
+		Set_Damage(1, MonAtt_Stun);
+	}
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
+	{
+		Set_Damage(1, MonAtt_KnockDown);
+	}
 	if (m_pGameInstance->Key_Down(DIK_2))
 	{
 		if (m_eState != Skill2)
@@ -884,14 +899,14 @@ void CPlayer::Move(_float fTimeDelta)
 	{
 		if (m_Current_Weapon == WP_BOW)
 		{
-			if (m_eState != Aim_Idle)
+			if (m_eState ==Idle)
 			{
 				m_eState = Aim_Idle;
 				m_Animation.iAnimIndex = Anim_LoadingScene_Pose_Sniper;
 				m_iCurrentSkill_Index = Aim_Idle;
 				m_pGameInstance->Set_AimMode(true);
 			}
-			else
+			else if(m_eState == Aim_Idle)
 			{
 				m_eState = Attack_Idle;
 				m_pGameInstance->Set_AimMode(false);
@@ -2342,8 +2357,8 @@ void CPlayer::Init_State()
 		m_Animation.isLoop = false;
 		m_Animation.bRestartAnimation = false;
 		m_Animation.bSkipInterpolation = false;
-
-
+		m_Animation.fDurationRatio = 1.f;
+		m_Animation.fStartAimPos = 0.f;
 		m_Animation.fAnimSpeedRatio = 2.f;
 		if (m_pGameInstance->Get_TimeRatio() < 1.f)
 			m_pGameInstance->Set_TimeRatio(1.f);
