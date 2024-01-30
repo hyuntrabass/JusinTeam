@@ -168,7 +168,6 @@ void CGameInstance::Clear(_uint iLevelIndex)
 
 	m_pObject_Manager->Clear(iLevelIndex);
 	m_pComponent_Manager->Clear(iLevelIndex);
-	
 	if(m_Function_Clear_FX)
 		m_Function_Clear_FX(iLevelIndex);
 }
@@ -739,6 +738,16 @@ HRESULT CGameInstance::Render_Text(const wstring& strFontTag, const wstring& str
 	return m_pFont_Manager->Render(strFontTag, strText, vPosition, fScale, vColor, fRotation, isFront);
 }
 
+_vec2 CGameInstance::Get_TextSize(const wstring& strFontTag, const wstring& strText)
+{
+	if (!m_pFont_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pFont_Manager is NULL");
+	}
+	return m_pFont_Manager->Get_TextSize(strFontTag, strText);
+
+}
+
 _bool CGameInstance::IsIn_Fov_World(_vec4 vPos, _float fRange)
 {
 	if (!m_pFrustum)
@@ -1166,6 +1175,11 @@ const _float2& CGameInstance::Get_FogNF() const
 	return m_vFogNF;
 }
 
+const _color& CGameInstance::Get_FogColor() const
+{
+	return m_vFogColor;
+}
+
 const _bool& CGameInstance::Get_ShakeCam() const
 {
 	return m_bShakeCamera;
@@ -1219,6 +1233,11 @@ void CGameInstance::Set_TimeRatio(const _float fRatio)
 void CGameInstance::Set_FogNF(const _float2& vFogNF)
 {
 	m_vFogNF = vFogNF;
+}
+
+void CGameInstance::Set_FogColor(const _color& vFogColor)
+{
+	m_vFogColor = vFogColor;
 }
 
 void CGameInstance::Set_ShakeCam(const _bool& bShake, _float fShakePower)

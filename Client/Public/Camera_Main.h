@@ -22,8 +22,7 @@ public:
 private:
 	CTransform* m_pPlayerTransform{ nullptr };
 	_bool m_isMoveMode{ true };
-	_bool m_isInvenEnd{ false };
-	_float m_fMouseSensor{ 0.07f };
+	_float m_fMouseSensor{ 0.08f };
 	_float m_fSpeed{ 10.f };
 	_float m_fPlayerDistance{ 4.f };
 	_float m_fShakeAcc{ 100.f };
@@ -37,15 +36,17 @@ private:
 	_float m_AimZoomOutTime{};
 	_float m_fSelectRotation{};
 	_int m_iRotation{1};
-	float m_SwayAmount = 3.0f;  // Ãâ··ÀÓÀÇ Å©±â¸¦ °áÁ¤ÇÏ´Â °ª. ¿øÇÏ´Â Å©±â·Î Á¶Àý °¡´É
-	float m_SwaySpeed = 3.0f;   // Ãâ··ÀÓÀÇ ¼Óµµ¸¦ °áÁ¤ÇÏ´Â °ª. ¿øÇÏ´Â ¼Óµµ·Î Á¶Àý °¡´É
-	float m_TimeOffset = 0.5f;  // µÎ Ãâ··ÀÓ »çÀÌÀÇ ½Ã°£ Â÷. ¿øÇÏ´Â ½Ã°£ Â÷·Î Á¶Àý °¡´É
-	float m_CurrentTime{}; // ÇöÀç ½Ã°£
+	float m_SwayAmount = 3.0f;  // ï¿½â··ï¿½ï¿½ï¿½ï¿½ Å©ï¿½â¸¦ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½. ï¿½ï¿½ï¿½Ï´ï¿½ Å©ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	float m_SwaySpeed = 3.0f;   // ï¿½â··ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½. ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Óµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	float m_TimeOffset = 0.5f;  // ï¿½ï¿½ ï¿½â··ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½. ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	float m_CurrentTime{}; // ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
 
 private:
 	_bool Inven_Mode(_float fTimeDelta);
+	void Shop_Mode(_float fTimeDelta);
 	void Select_Mode(_float fTimeDelta);
 	void Custom_Mode(_float fTimeDelta);
+	void ZOOM_Mode(_float fTimeDelta);
 
 private:
 	_float m_fSceneTimer{};

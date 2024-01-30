@@ -1,5 +1,9 @@
 #pragma once
 
+#include "ShopDesc.h"
+#include "Shop.h"
+#include "DialogText.h"
+#include "NameWindow.h"
 #include "Dialog.h"
 #include "3DUITex.h"
 #include "HPMonster.h"

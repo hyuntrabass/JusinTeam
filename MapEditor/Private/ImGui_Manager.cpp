@@ -99,14 +99,46 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 			pMapTransform->Set_State(State::Look, ObjLook);
 			pMapTransform->Set_State(State::Pos, ObjPosition);
 		}
-		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))
-		{
-			if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
+
+		//if (m_eItemType != ItemType::Environment)
+		//{
+			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))
 			{
-				m_PickingPos = m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y);
+				if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
+				{
+					m_PickingPos = m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y);
+				}
+				FastPicking();
 			}
-			FastPicking();
-		}
+
+		//}
+		//else if (m_eItemType == ItemType::Environment)
+		//{
+		//	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))
+		//	{
+		//		if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
+		//		{
+		//			_float CenterX = m_vMousePos.x;
+		//			_float CenterY = m_vMousePos.y;
+		//			_float areaSize = 10.f;
+
+		//			for (_uint y = 0; y < 5; ++y)
+		//			{
+		//				for (_uint x = 0; x < 5; ++x)
+		//				{
+		//					_float fPosX = CenterX - areaSize * 2.0f + areaSize * static_cast<float>(x);
+		//					_float fPosY = CenterY - areaSize * 2.0f + areaSize * static_cast<float>(y);
+
+		//					m_PickingPos = m_pGameInstance->PickingDepth(fPosX, fPosY);
+
+		//					m_vInstancePos.push_back(m_PickingPos);
+		//				}
+		//			}
+		//		}
+		//		FastPicking();
+		//
+		//	}
+		//}
 
 	}
 
@@ -239,7 +271,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			}
 			else if (iSelectMap == 2)
 			{
-				m_eType = TEXT("Deongeon");
+				m_eType = TEXT("Dungeon");
 			}
 
 			if (ImGui::BeginListBox("MAPS PATH", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
@@ -423,25 +455,10 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::SeparatorText("LIST");
 			static int Environment_current_idx = 0;
 			ImGui::Text("Environment");
-			m_isInstancing = false;
 
-			if(iSelectEnvir == 0)
-			{
-				m_isInstancing = false;
-				m_eType = TEXT("Tree");
-			}
-			else if (iSelectEnvir == 1)
-			{
-				m_eType = TEXT("Grass");
-				m_isInstancing = true;
-
-			}
-			else if (iSelectEnvir == 2)
-			{
-				m_eType = TEXT("Rock");
-				m_isInstancing = true;
-
-			}
+			if(iSelectEnvir == 0){m_eType = TEXT("Tree");}
+			else if (iSelectEnvir == 1)	{m_eType = TEXT("Grass");}
+			else if (iSelectEnvir == 2)	{m_eType = TEXT("Rock");}
 
 			if (ImGui::BeginListBox("OBJECTS DIR", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
 			{
@@ -489,6 +506,8 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				if (Environment_current_idx != -1)
 				{
 					Create_Dummy(Environment_current_idx);
+					if (!m_vInstancePos.empty())
+						m_vInstancePos.clear();
 				}
 			}
 
@@ -897,73 +916,102 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 		m_pSelectedDummy = nullptr;
 	}
 
-	DummyInfo Info{};
+	//if (m_eItemType == ItemType::Environment)
+	//{
+	//	_uint InstancePos = m_vInstancePos.size();
+	//	for (_uint i = 0; i < InstancePos; i++)
+	//	{
+	//		DummyInfo Info{};
+	//		Info.ppDummy = &m_pSelectedDummy;
+	//		Info.vPos = m_vInstancePos[i];
+	//		//Info.InstancePos = m_vInstancePos;
+	//		XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_vLook)));
+	//		Info.Prototype = L"Prototype_Model_";
+	//		Info.eType = m_eItemType;
 
-	Info.ppDummy = &m_pSelectedDummy;
+	//		_tchar strUnicode[MAX_PATH]{};
+	//		MultiByteToWideChar(CP_ACP, 0, Envirs[m_eType][iListIndex], static_cast<int>(strlen(Envirs[m_eType][iListIndex])), strUnicode, static_cast<int>(strlen(Envirs[m_eType][iListIndex])));
+	//		Info.Prototype += strUnicode;
 
-	Info.vPos = m_PickingPos;
-	XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_vLook)));
-	Info.Prototype = L"Prototype_Model_";
-	Info.eType = m_eItemType;
-	Info.isInstancing = m_isInstancing;
-	if (m_eItemType == ItemType::Trigger)
-	{
-		Info.iTriggerNum = m_TriggerList.size();
-		Info.fTriggerSize = m_fTriggerSize;
-	}
-	else
-	{
-		Info.iTriggerNum = 0;
-		Info.fTriggerSize = 0;
-	}
 
-	_tchar strUnicode[MAX_PATH]{};
-	switch (m_eItemType)
+	//		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
+	//		{
+	//			MSG_BOX("Failed to Add Layer : Dummy");
+	//		}
+
+	//		m_EnvirList.push_back(m_pSelectedDummy);
+	//		m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
+	//		m_pSelectedDummy = nullptr;
+	//	}
+	//}
+	//else
 	{
-	case ItemType::Objects:
+		DummyInfo Info{};
+		Info.ppDummy = &m_pSelectedDummy;
+		Info.vPos = m_PickingPos;
+		XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_vLook)));
+		Info.Prototype = L"Prototype_Model_";
+		Info.eType = m_eItemType;
+		if (m_eItemType == ItemType::Trigger)
+		{
+			Info.iTriggerNum = m_TriggerList.size();
+			Info.fTriggerSize = m_fTriggerSize;
+		}
+		else
+		{
+			Info.iTriggerNum = 0;
+			Info.fTriggerSize = 0;
+		}
+
+		_tchar strUnicode[MAX_PATH]{};
+		switch (m_eItemType)
+		{
+		case ItemType::Objects:
 			MultiByteToWideChar(CP_ACP, 0, Objects[m_eType][iListIndex], static_cast<int>(strlen(Objects[m_eType][iListIndex])), strUnicode, static_cast<int>(strlen(Objects[m_eType][iListIndex])));
-		break;
-	case ItemType::Monster:
-		MultiByteToWideChar(CP_ACP, 0, Monsters[m_eType][iListIndex], static_cast<int>(strlen(Monsters[m_eType][iListIndex])), strUnicode, static_cast<int>(strlen(Monsters[m_eType][iListIndex])));
-		break;
-	case ItemType::NPC:
-		MultiByteToWideChar(CP_ACP, 0, NPCs[iListIndex], static_cast<int>(strlen(NPCs[iListIndex])), strUnicode, static_cast<int>(strlen(NPCs[iListIndex])));
-		break;
-	case ItemType::Environment:
-		MultiByteToWideChar(CP_ACP, 0, Envirs[m_eType][iListIndex], static_cast<int>(strlen(Envirs[m_eType][iListIndex])), strUnicode, static_cast<int>(strlen(Envirs[m_eType][iListIndex])));
-		break;
-	case ItemType::Trigger:
-		Info.Prototype = L"Prototype_Model_Collider";
+			break;
+		case ItemType::Monster:
+			MultiByteToWideChar(CP_ACP, 0, Monsters[m_eType][iListIndex], static_cast<int>(strlen(Monsters[m_eType][iListIndex])), strUnicode, static_cast<int>(strlen(Monsters[m_eType][iListIndex])));
+			break;
+		case ItemType::NPC:
+			MultiByteToWideChar(CP_ACP, 0, NPCs[iListIndex], static_cast<int>(strlen(NPCs[iListIndex])), strUnicode, static_cast<int>(strlen(NPCs[iListIndex])));
+			break;
+		case ItemType::Environment:
+			MultiByteToWideChar(CP_ACP, 0, Envirs[m_eType][iListIndex], static_cast<int>(strlen(Envirs[m_eType][iListIndex])), strUnicode, static_cast<int>(strlen(Envirs[m_eType][iListIndex])));
+			break;
+		case ItemType::Trigger:
+			Info.Prototype = L"Prototype_Model_Collider";
 
+		}
+		Info.Prototype += strUnicode;
+
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
+		{
+			MSG_BOX("Failed to Add Layer : Dummy");
+		}
+
+		switch (m_eItemType)
+		{
+		case MapEditor::ItemType::Objects:
+			m_ObjectsList.push_back(m_pSelectedDummy);
+			break;
+		case MapEditor::ItemType::Monster:
+			m_MonsterList.push_back(m_pSelectedDummy);
+			break;
+		case MapEditor::ItemType::NPC:
+			m_NPCList.push_back(m_pSelectedDummy);
+			break;
+		case MapEditor::ItemType::Environment:
+			m_EnvirList.push_back(m_pSelectedDummy);
+			break;
+		case MapEditor::ItemType::Trigger:
+			m_TriggerList.push_back(m_pSelectedDummy);
+			break;
+		}
+		m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
+		m_pSelectedDummy = nullptr;
 	}
-	Info.Prototype += strUnicode;
-
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
-	{
-		MSG_BOX("Failed to Add Layer : Dummy");
-	}
-
-	switch (m_eItemType)
-	{
-	case MapEditor::ItemType::Objects:
-		m_ObjectsList.push_back(m_pSelectedDummy);
-		break;
-	case MapEditor::ItemType::Monster:
-		m_MonsterList.push_back(m_pSelectedDummy);
-		break;
-	case MapEditor::ItemType::NPC:
-		m_NPCList.push_back(m_pSelectedDummy);
-		break;
-	case MapEditor::ItemType::Environment:
-		m_EnvirList.push_back(m_pSelectedDummy);
-		break;
-	case MapEditor::ItemType::Trigger:
-		m_TriggerList.push_back(m_pSelectedDummy);
-		break;
-	}
-	m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
-	m_pSelectedDummy = nullptr;
+	
 }
 
 void CImGui_Manager::Create_Map(const _int& iListIndex)
@@ -1144,7 +1192,8 @@ void CImGui_Manager::Reset()
 	{
 		iter->Set_Dead();
 	}
-	m_EnvirList.clear();
+	m_NPCList.clear();
+
 	for (auto iter : m_EnvirList)
 	{
 		iter->Set_Dead();
@@ -2381,7 +2430,6 @@ void CImGui_Manager::Free()
 		Safe_Delete_Array(cstr);
 	}
 	NPCs.clear();
-
 	for (auto& entry : Envirs)
 	{
 		for (const char* cstr : entry.second) {
@@ -2404,8 +2452,6 @@ void CImGui_Manager::Free()
 	}
 	m_ObjectsList.clear();
 
-
-
 	for (auto& cstr : m_MonsterList)
 	{
 		Safe_Release(cstr);
@@ -2424,6 +2470,7 @@ void CImGui_Manager::Free()
 		Safe_Release(cstr);
 	}
 	m_EnvirList.clear();
+
 
 	for (auto& cstr : m_TriggerList)
 	{

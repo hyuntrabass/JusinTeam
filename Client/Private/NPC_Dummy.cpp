@@ -38,7 +38,7 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 	CDialog::DIALOG_DESC DialogDesc = {};
 	DialogDesc.eLevelID = LEVEL_STATIC;
 	DialogDesc.pParentTransform = m_pTransformCom;
-	DialogDesc.vPosition = _vec3(0.f, 1.5f, 0.f);
+	DialogDesc.vPosition = _vec3(0.f, 1.8f, 0.f);
 	DialogDesc.strText = TEXT("테스트입니다~");
 #pragma region IDLE NPC
 
@@ -124,13 +124,13 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 
 	m_fOffsetX -= 2.f;
 
-	/*
+	
 	m_pDialog = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Dialog"), &DialogDesc);
 	if (m_pDialog == nullptr)
 	{
 		return E_FAIL;
 	}
-	*/
+	
 	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::NPC, m_pTransformCom);
 
     return S_OK;
@@ -139,13 +139,13 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 void CNPC_Dummy::Tick(_float fTimeDelta)
 {	
 	m_pModelCom->Set_Animation(m_Animation);
-	//m_pDialog->Tick(fTimeDelta);
+	m_pDialog->Tick(fTimeDelta);
 }
 
 void CNPC_Dummy::Late_Tick(_float fTimeDelta)
 {
 	__super::Late_Tick(fTimeDelta);
-	//m_pDialog->Late_Tick(fTimeDelta);
+	m_pDialog->Late_Tick(fTimeDelta);
 }
 
 HRESULT CNPC_Dummy::Render()

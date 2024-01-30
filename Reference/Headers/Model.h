@@ -17,7 +17,7 @@ public:
 	const _uint Get_NumBones() const;
 	const _bool& IsAnimationFinished(_uint iAnimIndex) const;
 	const _uint& Get_CurrentAnimationIndex() const;
-	const _float& Get_CurrentAnimPos() const;
+	const _float Get_CurrentAnimPos() const;
 	const _mat* Get_BoneMatrix(const _char* pBoneName) const;
 	_mat Get_PivotMatrix();
 	vector<class CAnimation*>& Get_Animations();
@@ -56,11 +56,12 @@ public:
 	void Apply_TransformToActor(_fmatrix WorldMatrix);
 
 	HRESULT Render(_uint iMeshIndex);
+	HRESULT Render_Instancing(_uint iMeshIndex, class CVIBuffer_Mesh_Instance*& pInstanceBuffer, CModel*& pModel, CShader*& pShader);
 
 	_bool Intersect_RayModel(_fmatrix WorldMatrix, _vec4* pPickPos);
+	_int Get_InstanceID() { return m_iInstanceID; }
 
 private:
-	//트리거
 	class CTransform* m_pOwnerTransform{};
 	_bool m_IsResetTriggers{};
 	//이펙트 트리거
@@ -100,6 +101,9 @@ private:
 
 	ID3D11Texture2D* m_pTexture{ nullptr };
 	ID3D11ShaderResourceView* m_pSRV{ nullptr };
+
+	static _int	m_iNextInstanceID;
+	_int m_iInstanceID{};
 
 private:
 	HRESULT Read_Bones(ifstream& File);

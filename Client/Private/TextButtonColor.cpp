@@ -56,7 +56,7 @@ HRESULT CTextButtonColor::Init(void* pArg)
 		  (LONG)(m_vPosition.x + m_fSizeX * 0.5f),
 		  (LONG)(m_vPosition.y + m_fSizeY * 0.5f)
 	};
-
+	m_rcInitialRect = m_rcRect;
 	return S_OK;
 }
 
@@ -88,7 +88,7 @@ HRESULT CTextButtonColor::Render()
 	{
 		return E_FAIL;
 	}
-
+	m_vTextColor.w = m_fAlpha;
 	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x + 1.f, m_fY + m_vTextPosition.y), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y + 1.f), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
@@ -159,6 +159,16 @@ HRESULT CTextButtonColor::Bind_ShaderResources()
 		{
 			return E_FAIL;
 		}
+		if (m_strTexture != TEXT(""))
+		{
+			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+	else
+	{
 		if (m_strTexture != TEXT(""))
 		{
 			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))

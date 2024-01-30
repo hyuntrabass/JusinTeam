@@ -32,8 +32,8 @@ HRESULT CFadeBox::Init(void* pArg)
 	m_fDepth = (_float)D_FADE / (_float)D_END;
 
 
-
-	m_eState = *((STATE*)pArg);
+	m_fDuration = ((FADE_DESC*)pArg)->fDuration;
+	m_eState = ((FADE_DESC*)pArg)->eState;
 
 	switch (m_eState)
 	{
@@ -55,22 +55,27 @@ HRESULT CFadeBox::Init(void* pArg)
 
 void CFadeBox::Tick(_float fTimeDelta)
 {
+
+	m_fTime += fTimeDelta;
 	switch (m_eState)
 	{
 	case FADEIN:
 		if (m_fAlpha >= 1.f)
+		{
 			m_isDead = true;
-		m_fAlpha += fTimeDelta * m_fDir * 2.f;
+		}
+		m_fAlpha = Lerp(0.f, 1.f, m_fTime / m_fDuration);
 		break;
 	case FADELOOP:
-		if(m_fAlpha < 0.7f)
+		if (m_fAlpha < 0.7f)
 			m_fAlpha += fTimeDelta;
 		break;
-	case FADEOUT:
+	case FADEOUT:	
 		if (m_fAlpha <= 0.f)
+		{
 			m_isDead = true;
-		m_fAlpha -= fTimeDelta * m_fDir * 2.f;
-
+		}
+		m_fAlpha = m_fDuration - Lerp(0.f, 1.f, m_fTime / m_fDuration);
 		break;
 	}
 
@@ -146,6 +151,7 @@ HRESULT CFadeBox::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
+	
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float))))
 	{
 		return E_FAIL;

@@ -111,6 +111,7 @@ public: // Picking
 public: // Font
 	HRESULT Add_Font(const wstring& strFontTag, const wstring& strFilePath);
 	HRESULT Render_Text(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale = 1.f, _vec4 vColor = _vec4(1.f), _float fRotation = 0.f, _bool isFront = false);
+	_vec2 Get_TextSize(const wstring& strFontTag, const wstring& strText);
 
 public: // Frustum
 	_bool IsIn_Fov_World(_vec4 vPos, _float fRange = 0.f);
@@ -191,6 +192,8 @@ public: // Get_Set
 	const _float& Get_TimeRatio() const;
 	// 현재 안개의 near 에서 far를 반환 함.
 	const _float2& Get_FogNF() const;
+	// 현재 안개의 색을 반환 함.
+	const _color& Get_FogColor() const;
 	// 카메라에서 쉐이킹 해야되는지 받는 함수.
 	const _bool& Get_ShakeCam() const;
 	// 지옥이 시작되는 높이를 반환 함. (일정 높이부터 내려갈 수록 어두워지는걸 hell이라고 해놨음.)
@@ -210,6 +213,8 @@ public: // Get_Set
 	void Set_TimeRatio(const _float fRatio);
 	// 안개의 정도를 조정할 때 씀. near부터 안개가 끼기 시작해서 far로 갈 수록 안개가 진해짐.
 	void Set_FogNF(const _float2& vFogNF);
+	// 안개의 색을 정함.
+	void Set_FogColor(const _color& vFogColor);
 	// 카메라 쉐이크 기능. true 던지면 카메라가 한번 흔들림.
 	void Set_ShakeCam(const _bool& bShake , _float fShakePower = 0.1f);
 	// hell 높이를 지정한다.
@@ -274,6 +279,7 @@ private:
 	_float2 m_vCameraNF{};
 	_float m_fCameraAttackZoom{};
 	_float2 m_vFogNF{ 2000.f, 2000.f };
+	_color m_vFogColor{ 0.9f };
 	_bool m_bShakeCamera{};
 	_bool m_bTargetLook{ false };
 	_float m_fHellHeight{ -1000.f };

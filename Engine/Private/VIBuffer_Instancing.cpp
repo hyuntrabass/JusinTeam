@@ -47,6 +47,8 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 		{
 			pVertex->vPos = _vec4::Transform(pVertex->vOriginPos, WorldMatrix);
 			pVertex->vPrevPos = pVertex->vPos;
+
+			pVertex->vDirection = _vec4::Transform(pVertex->vOriginDir, WorldMatrix.Get_Rotation());
 		}
 
 		//pVertex->vPos.y += pVertex->fSpeed * fTimeDelta;
@@ -55,6 +57,7 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 			_float fAlpha = (pVertex->vLifeTime.x / pVertex->vLifeTime.y) * 0.7f;
 			pVertex->vDirection = _vec4::Lerp(pVertex->vDirection, _vec4(vGravityDir), fAlpha);
 		}
+
 		pVertex->vPrevPos = pVertex->vPos;
 		pVertex->vPos += pVertex->vDirection * pVertex->fSpeed * fTimeDelta;
 		pVertex->vLifeTime.x += fTimeDelta;

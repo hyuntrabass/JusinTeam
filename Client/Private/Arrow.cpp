@@ -1,4 +1,6 @@
 #include "Arrow.h"
+#include "Effect_Manager.h"
+#include "Effect_Dummy.h"
 
 CArrow::CArrow(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
@@ -12,7 +14,7 @@ CArrow::CArrow(const CArrow& rhs)
 
 HRESULT CArrow::Init_Prototype()
 {
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CArrow::Init(void* pArg)
@@ -24,31 +26,33 @@ HRESULT CArrow::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	if(m_ArrowType.Att_Type != AT_Bow_Skill3	)
+	if (m_ArrowType.Att_Type != AT_Bow_Skill3)
 	{
 		m_pTransformCom->Set_Matrix(m_ArrowType.world);
 		m_pTransformCom->Set_Speed(25.f);
 		m_pTransformCom->Set_Scale(_vec3(1.5f));
+
+		EffectInfo EffectInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"CommonArrowParti");
+		EffectInfo.pMatrix = &m_ParticleMatrix;
+		EffectInfo.isFollow = true;
+		m_pParticle = CEffect_Manager::Get_Instance()->Clone_Effect(&EffectInfo);
 	}
 	else
 	{
 		_float random = rand() % 12;
 		m_pTransformCom->Set_State(State::Pos, m_ArrowType.vPos);
 		m_pTransformCom->Set_Speed(12.f + random);
-		m_pTransformCom->Set_Scale(_vec3(3.f,3.f,1.5f));
+		m_pTransformCom->Set_Scale(_vec3(3.f, 3.f, 1.5f));
 	}
-	
-		m_pTransformCom->LookAt_Dir(m_ArrowType.vLook);
 
-
-
+	m_pTransformCom->LookAt_Dir(m_ArrowType.vLook);
 
 	TRAIL_DESC trail_desc{};
 	trail_desc.vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
 	trail_desc.vPSize = _vec2(0.02f, 0.02f);
 	trail_desc.iNumVertices = 10;
 	m_pTrail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &trail_desc);
-    return S_OK;
+	return S_OK;
 }
 
 void CArrow::Tick(_float fTimeDelta)
@@ -57,10 +61,10 @@ void CArrow::Tick(_float fTimeDelta)
 	if (m_fDeadTime > 2.5f)
 		Kill();
 
-	if (m_ArrowType.Att_Type == AT_Bow_Common && m_ArrowType.MonCollider!=nullptr)
+	if (m_ArrowType.Att_Type == AT_Bow_Common && m_ArrowType.MonCollider != nullptr)
 	{
 		m_pTransformCom->LookAt(_vec4(m_ArrowType.MonCollider->Get_ColliderPos(), 1.f));
-		m_pTransformCom->Go_To(_vec4(m_ArrowType.MonCollider->Get_ColliderPos(), 1.f), fTimeDelta,0.f);
+		m_pTransformCom->Go_To(_vec4(m_ArrowType.MonCollider->Get_ColliderPos(), 1.f), fTimeDelta, 0.f);
 	}
 	else
 		m_pTransformCom->Go_Straight(fTimeDelta);
@@ -76,12 +80,22 @@ void CArrow::Tick(_float fTimeDelta)
 	_mat world{};
 	world = m_pTransformCom->Get_World_Matrix();
 	m_pTrail->Tick((world.Position_vec3()));
-
+	m_ParticleMatrix = m_pTransformCom->Get_World_Matrix();
+	//m_ParticleMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+	if (m_pParticle)
+	{
+		m_pParticle->Tick(fTimeDelta);
+	}
 }
 
 void CArrow::Late_Tick(_float fTimeDelta)
 {
 	m_pTrail->Late_Tick(fTimeDelta);
+	if (m_pParticle)
+	{
+		m_pParticle->Late_Tick(fTimeDelta);
+	}
+
 	__super::Compute_CamDistance();
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 	m_pRendererCom->Add_RenderGroup(RG_BlendBlur, this);
@@ -90,10 +104,6 @@ void CArrow::Late_Tick(_float fTimeDelta)
 
 HRESULT CArrow::Render()
 {
-
-
-
-
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
@@ -102,7 +112,7 @@ HRESULT CArrow::Render()
 
 	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
 	{
-	
+
 		if (FAILED(m_pShaderCom->Begin(StaticPass_SingleColorFx)))
 		{
 			return E_FAIL;
@@ -128,7 +138,7 @@ HRESULT CArrow::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Arrow") , TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Arrow"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	{
 		return E_FAIL;
 	}
@@ -148,7 +158,7 @@ HRESULT CArrow::Add_Components()
 	CollDesc.vCenter = _vec3(0.f, 0.f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-		TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
+									  TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
 		return E_FAIL;
 	return S_OK;
 }
@@ -230,5 +240,5 @@ void CArrow::Free()
 	Safe_Release(m_pTrail);
 	Safe_Release(m_pRendererCom);
 
-
+	Safe_Release(m_pParticle);
 }

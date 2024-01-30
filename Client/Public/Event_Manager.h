@@ -28,7 +28,7 @@ private:
 	virtual ~CEvent_Manager() = default;
 
 private:
-	CGameInstance*				m_pGameInstance{ nullptr };
+	CGameInstance*						m_pGameInstance{ nullptr };
 
 	_bool								m_isEventIn = { false };
 	_bool								m_isWaiting = { false };
@@ -43,10 +43,13 @@ public:
 	void	Late_Tick(_float fTimeDelta);
 	HRESULT Render();
 
+private:
+
+	HRESULT Set_Event(EVENT_DESC pDesc);
 
 public:
+	_bool Find_Quest(const wstring& strQuest);
 	HRESULT Init_Quest();
-	HRESULT Set_Event(EVENT_DESC pDesc);
 	HRESULT Set_Quest(const wstring& strQuest);
 	//HRESULT Set_Event_byList(EVENT_LIST eNum);
 	HRESULT Update_Quest(const wstring& strQuest);

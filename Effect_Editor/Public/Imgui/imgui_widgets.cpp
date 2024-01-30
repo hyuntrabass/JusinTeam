@@ -3136,7 +3136,15 @@ bool ImGui::SliderFloat4(const char* label, float v[4], float v_min, float v_max
     return SliderScalarN(label, ImGuiDataType_Float, v, 4, &v_min, &v_max, format, flags);
 }
 
-bool ImGui::SliderAngle(const char* label, float* v_rad, float v_degrees_min, float v_degrees_max, const char* format, ImGuiSliderFlags flags)
+bool ImGui::SliderAngle(const char* label, float* v_Angle, float v_degrees_min, float v_degrees_max, const char* format, ImGuiSliderFlags flags)
+{
+    if (format == NULL)
+        format = "%.0f deg";
+    bool value_changed = SliderFloat(label, v_Angle, v_degrees_min, v_degrees_max, format, flags);
+    return value_changed;
+}
+
+bool ImGui::SliderRadian(const char* label, float* v_rad, float v_degrees_min, float v_degrees_max, const char* format, ImGuiSliderFlags flags)
 {
     if (format == NULL)
         format = "%.0f deg";

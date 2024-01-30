@@ -130,11 +130,13 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 	case Effect_Type::ET_RECT:
 	{
 		m_pTransformCom->LookAway(m_pGameInstance->Get_CameraPos());
+		//m_pTransformCom->Rotation(m_pTransformCom->Get_State(State::Look), m_Effect.fRectRotationAngle);
 
 		m_pTransformCom->Set_Scale(m_vScaleAcc);
 		m_vScaleAcc += m_Effect.vSizeDelta * fTimeDelta;
 
 		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
+		m_WorldMatrix *= _mat::CreateFromAxisAngle(_vec3(m_pTransformCom->Get_State(State::Look)), XMConvertToRadians(m_Effect.fRectRotationAngle));
 
 		_vec4 vPos = m_WorldMatrix.Position();;
 

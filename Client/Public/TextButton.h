@@ -60,9 +60,11 @@ private:
 	LEVEL_ID m_eLevel;
 
 	RECT				m_rcRect{};
+	RECT				m_rcInitialRect{};
 
 public:
 	const RECT& Get_Rect() const { return m_rcRect; }
+	const RECT& Get_InitialRect() const { return m_rcInitialRect; }
 	const _vec2 Get_Position() const { return  m_vPosition; }
 	const _vec2 Get_TransPosition() const { return _vec2(m_fX, m_fY); }
 	void Set_Position(_vec2 vPos);
