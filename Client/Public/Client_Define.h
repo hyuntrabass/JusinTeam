@@ -80,6 +80,7 @@ namespace Client
 		AT_Bow_Skill3_Start,
 		AT_Bow_Skill3,// 이속 느려지게
 		AT_Bow_Skill4,// 경직
+		AT_Bow_SkillR,// 경직
 
 		AT_End
 	};
@@ -291,6 +292,7 @@ namespace Client
 		StaticPass_MaskEffectClamp,
 		StaticPass_SingleColoredEffectFrontCull,
 		StaticPass_Shadow,
+		StaticPass_Water,
 		StaticPass_End,
 	};
 

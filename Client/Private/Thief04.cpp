@@ -32,7 +32,6 @@ HRESULT CThief04::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(100.f, 8.f, 108.f, 1.f));
 	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
 
 	m_Animation.iAnimIndex = IDLE;
@@ -62,6 +61,8 @@ HRESULT CThief04::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
+	m_pTransformCom->Set_Position(_vec3(100.f, 8.f, 108.f));
+
     return S_OK;
 }
 
@@ -84,6 +85,7 @@ void CThief04::Tick(_float fTimeDelta)
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
+	__super::Tick(fTimeDelta);
 }
 
 void CThief04::Late_Tick(_float fTimeDelta)

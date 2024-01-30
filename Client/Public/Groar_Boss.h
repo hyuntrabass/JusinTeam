@@ -130,6 +130,8 @@ private:
 	GROAR_BOSS_STATE m_eBossPreState = BOSS_STATE_END;
 	GROAR_BOSS_STATE m_eBossCurState = BOSS_STATE_END;
 
+	GROAR_BOSS_STATE m_eBossPreAttackState = BOSS_STATE_SPIDER;
+
 private:
 	static const _float m_fChaseRange;
 	static const _float m_fAttackRange;

@@ -37,6 +37,7 @@ struct OldEffectInfo
 	SimpleMath::Vector2 vUVInit{};
 	SimpleMath::Vector2 vUVDelta{};
 	bool isRandomSprite{};
+	bool isUVLoop{};
 
 	bool hasLight{};
 	LIGHT_DESC Light_Desc{};

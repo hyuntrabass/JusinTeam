@@ -39,7 +39,7 @@ HRESULT CTestTree::Render()
     return S_OK;
 }
 
-HRESULT CTestTree::Render_Refract()
+HRESULT CTestTree::Render_Refract(_float4 vClipPlane)
 {
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
@@ -47,7 +47,7 @@ HRESULT CTestTree::Render_Refract()
     return S_OK;
 }
 
-HRESULT CTestTree::Render_Reflection()
+HRESULT CTestTree::Render_Reflection(_float4 vClipPlane)
 {
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;

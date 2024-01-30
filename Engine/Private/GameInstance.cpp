@@ -609,6 +609,26 @@ _matrix CGameInstance::Get_OldViewMatrix() const
 	return m_pPipeLine->Get_OldViewMatrix();
 }
 
+_mat CGameInstance::ChagneViewForReflection(_float fWaterHeight)
+{
+	if (!m_pPipeLine)
+	{
+		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
+	}
+
+	return m_pPipeLine->ChagneViewForReflection(fWaterHeight);
+}
+
+void CGameInstance::Update_PipeLine()
+{
+	if (!m_pPipeLine)
+	{
+		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
+	}
+
+	return m_pPipeLine->Tick();
+}
+
 void CGameInstance::TransformRay_ToLocal(_mat WorldMatrix)
 {
 	if (!m_pPicking)
@@ -748,14 +768,14 @@ _bool CGameInstance::IsIn_Fov_Local(_vec4 vPos, _float fRange)
 	return m_pFrustum->IsIn_Fov_Local(vPos, fRange);
 }
 
-HRESULT CGameInstance::Register_CollisionObject(CGameObject* pObject, CCollider* pHitCollider, _bool IsPlayer)
+HRESULT CGameInstance::Register_CollisionObject(CGameObject* pObject, CCollider* pHitCollider, _bool IsPlayer, class CCollider* AttRangeCollider)
 {
 	if (!m_pCollision_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
 	}
 
-	return m_pCollision_Manager->Register_CollisionObject(pObject, pHitCollider, IsPlayer);
+	return m_pCollision_Manager->Register_CollisionObject(pObject, pHitCollider, IsPlayer , AttRangeCollider);
 }
 
 void CGameInstance::Delete_CollisionObject(CGameObject* pObject, _bool IsPlayer)
@@ -806,6 +826,15 @@ _bool CGameInstance::CheckCollision_Player(CCollider* pCollider)
 	}
 
 	return m_pCollision_Manager->CheckCollision_Player(pCollider);
+}
+CCollider* CGameInstance::Get_Nearest_MonsterCollider()
+{
+	if (!m_pCollision_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
+	}
+
+	return m_pCollision_Manager->Get_Nearest_MonsterCollider();
 }
 void CGameInstance::Init_PhysX_Character(CTransform* pTransform, CollisionGroup eGroup, PxCapsuleControllerDesc* pDesc)
 {
@@ -1069,6 +1098,16 @@ void CGameInstance::SetChannelVolume(_uint iChannel, _float fVolume)
 	return m_pSound_Manager->SetChannelVolume(iChannel, fVolume);
 }
 
+_float CGameInstance::GetChannelVolume(_uint iChannel)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->GetChannelVolume(iChannel);
+}
+
 void CGameInstance::Register_CreateEffect_Callback(Func_CreateFX Function)
 {
 	m_Function_Create_FX = Function;
@@ -1193,7 +1232,6 @@ void CGameInstance::Set_FogNF(const _float2& vFogNF)
 void CGameInstance::Set_ShakeCam(const _bool& bShake, _float fShakePower)
 {
 	m_bShakeCamera = bShake;
-	m_fShakePower = fShakePower;
 }
 
 void CGameInstance::Set_HellHeight(const _float& fHeight)

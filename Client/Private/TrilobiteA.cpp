@@ -32,7 +32,6 @@ HRESULT CTrilobiteA::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(100.f, 8.f, 108.f, 1.f));
 	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
 
 	m_Animation.iAnimIndex = IDLE;
@@ -55,6 +54,8 @@ HRESULT CTrilobiteA::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
+	m_pTransformCom->Set_Position(_vec3(100.f, 8.f, 108.f));
+
 	return S_OK;
 }
 
@@ -74,6 +75,8 @@ void CTrilobiteA::Tick(_float fTimeDelta)
 	__super::Update_MonsterCollider();
 
 	m_pTransformCom->Gravity(fTimeDelta);
+
+	__super::Tick(fTimeDelta);
 }
 
 void CTrilobiteA::Late_Tick(_float fTimeDelta)

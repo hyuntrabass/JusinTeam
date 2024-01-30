@@ -101,6 +101,8 @@ private:
 
 	_uint2 m_WinSize{};
 
+#pragma region 쉐이더 수치조절
+
 private:
 	_bool m_TurnOnSSAO = true;
 	_bool m_TurnOnToneMap = true;
@@ -109,14 +111,13 @@ private:
 
 	_float m_fSSAOBlurPower = 1.f;
 
-	_float m_fEffectBlurPower = 3.f;
+	_float m_fEffectBlurPower = 1.5f;
 
 	_float m_fHDRBloomPower = 1.2f;
 
 	SSAO_DESC m_SSAO;
 	HDR_DESC m_HDR;
 
-#pragma region 쉐이더 수치조절
 
 public:
 	SSAO_DESC Get_SSAO() const {

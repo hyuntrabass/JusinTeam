@@ -17,6 +17,11 @@ public:
 	virtual HRESULT Render() override;
 
 private:
+	_float m_fWaveTimer{};
+	_float m_fWaveGravity{};
+	_mat m_WaveMatrix[3]{};
+	_bool m_isWave{};
+
 	_mat m_RainMatrix{};
 
 private:

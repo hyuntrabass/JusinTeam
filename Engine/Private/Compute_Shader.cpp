@@ -86,6 +86,8 @@ HRESULT CCompute_Shader::Begin(_uint3 ThreadGroupCount)
 	m_pContext->CSSetUnorderedAccessViews(m_iSlot.y, 1, &NULL_UAV, &NO_OFFSET);
 
 
+	//m_pContext->CSSetShader(nullptr, nullptr, 0);
+
 	return S_OK;
 }
 

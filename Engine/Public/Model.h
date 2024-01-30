@@ -63,6 +63,7 @@ public:
 
 private:
 	class CTransform* m_pOwnerTransform{};
+	_bool m_IsResetTriggers{};
 	//이펙트 트리거
 	_uint m_iNumTriggersEffect{};
 	vector<TRIGGEREFFECT_DESC> m_TriggerEffects;

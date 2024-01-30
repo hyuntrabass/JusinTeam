@@ -117,6 +117,8 @@ namespace Engine
 		SimpleMath::Vector2 vUVDelta{};
 		bool isRandomSprite{};
 		bool isUVLoop{};
+		float fAlphaInit{};
+		float fAlphaDelta{};
 
 		bool hasLight{};
 		LIGHT_DESC Light_Desc{};
@@ -197,10 +199,12 @@ namespace Engine
 		std::vector<int> iEndAnimIndices;
 		std::vector<float> fEndAnimPoses;
 		std::vector<std::wstring> strSoundNames;
-		float fVolume{};
+		float fInitVolume{};
+		float fFadeoutSecond = 1.f;
 		
 		int iChannel = -1;
 		bool HasPlayed{};
+		float fVolume{};
 	};
 
 	using VTXPOSCOLOR = struct ENGINE_DLL tagVertex_Position_Color

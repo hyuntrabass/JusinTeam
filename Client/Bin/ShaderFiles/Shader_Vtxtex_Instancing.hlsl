@@ -7,6 +7,7 @@ vector g_vColor;
 int2 g_vNumSprite;
 uint g_iIndex;
 float g_fDissolveRatio;
+float g_fAlpha;
 
 struct VS_IN
 {
