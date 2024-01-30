@@ -100,7 +100,7 @@ HRESULT CItem::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
+	if (FAILED(m_pShaderCom->Begin(VTPass_Sprite)))
 	{
 		return E_FAIL;
 	}
@@ -177,6 +177,16 @@ HRESULT CItem::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
+	_int2 vNumSprite = { 8, 8 };
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vNumSprite", &vNumSprite, sizeof(_int2))))
+	{
+		return E_FAIL;
+	}
+	_uint iIndex = m_eItemDesc.iIndex;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_iIndex", &iIndex, sizeof(_int))))
+	{
+		return E_FAIL;
+	}
 	return S_OK;
 }
 

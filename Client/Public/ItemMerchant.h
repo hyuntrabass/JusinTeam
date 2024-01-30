@@ -3,8 +3,10 @@
 #include "Client_Define.h"
 #include "NPC.h"
 
-BEGIN(Client)
 
+BEGIN(Client)
+class CShop;
+class C3DUITex;
 class CItemMerchant final : public CNPC
 {
 public:
@@ -28,7 +30,14 @@ public:
 	virtual HRESULT Render() override;
 
 private:
-	_bool m_bTalking = { false };
+	_bool		m_bTalking = { false };
+
+	CShop*		m_pShop{ nullptr };
+	C3DUITex*	m_pSpeechBubble{ nullptr };
+
+private:
+	HRESULT Add_Parts();
+
 
 public:
 	static CItemMerchant* Create(_dev pDevice, _context pContext);

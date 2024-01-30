@@ -147,11 +147,17 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 		m_pTransformCom->Set_State(State::Pos, vPos);*/
 
 		m_pTransformCom->LookAway(m_pGameInstance->Get_CameraPos());
+		//m_pTransformCom->Rotation(m_pTransformCom->Get_State(State::Look), m_Effect.fRectRotationAngle);
 
 		m_pTransformCom->Set_Scale(m_vScaleAcc * m_OffsetMatrix.Get_Scale());
 		m_vScaleAcc += m_Effect.vSizeDelta * fTimeDelta;
 
 		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
+		_vec4 vPos = m_WorldMatrix.Position();
+		m_WorldMatrix.Position(_vec4(0.f, 0.f, 0.f, 1.f));
+		m_WorldMatrix *= _mat::CreateFromAxisAngle(_vec3(m_pTransformCom->Get_State(State::Look)), XMConvertToRadians(m_Effect.fRectRotationAngle));
+		m_WorldMatrix.Position(vPos);
+
 		break;
 	}
 	case Effect_Type::ET_MESH:

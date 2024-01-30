@@ -34,10 +34,13 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
 	CCommonTrail* m_pTrail{ nullptr };
+	class CEffect_Dummy* m_pParticle{ nullptr };
 
 private:
 	Arrow_Type m_ArrowType{};
 	_float m_fDeadTime{};
+	_mat m_ParticleMatrix{};
+
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

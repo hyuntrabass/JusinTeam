@@ -1,6 +1,7 @@
 #include "Level_Custom.h"
 #include "Level_Loading.h"
 #include "Camera.h"
+#include "FadeBox.h"
 
 CLevel_Custom::CLevel_Custom(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -19,6 +20,7 @@ HRESULT CLevel_Custom::Init()
 		return E_FAIL;
 	}
 
+
 	if (FAILED(Ready_UI()))
 	{
 		MSG_BOX("Failed to Ready UI");
@@ -32,8 +34,6 @@ HRESULT CLevel_Custom::Init()
 		MSG_BOX("Failed to Ready Light");
 		return E_FAIL;
 	}
-
-
 
 	return S_OK;
 }

@@ -17,6 +17,7 @@ float g_fLightFar;
 float g_fHellStart;
 
 float2 g_vFogNF;
+vector g_vFogColor;
 
 Texture2D g_DiffuseTexture;
 Texture2D g_NormalTexture;
@@ -250,9 +251,9 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
     float fViewZ = vDepthDesc.y * g_vCamNF.y;
     
-    vector vFogColor = vector(0.9f, 0.9f, 0.9f, 1.f);
     float fFogFactor = saturate((g_vFogNF.y - fViewZ) / (g_vFogNF.y - g_vFogNF.x));
-    
+    vector vFogColor = g_vFogColor;
+    vFogColor.a = 1.f;
     
     float4 vWorldPos = Get_WorldPos(Input.vTexcoord);
     
@@ -279,7 +280,8 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
         FinalColor.xyz = FinalColor.xyz * 0.5f;
     }
 
-    FinalColor = fFogFactor * FinalColor + (1.f - fFogFactor) * vFogColor;
+    FinalColor = lerp(fFogFactor * FinalColor, vFogColor, (1.f - fFogFactor));
+    //FinalColor = fFogFactor * FinalColor + (1.f - fFogFactor) * vFogColor;
     
     Output.vColor = FinalColor;
     
@@ -293,6 +295,17 @@ PS_OUT PS_Main_Blur(PS_IN Input)
     Output.vColor = vector(0.f, 0.f, 0.f, 0.f);
     
     Output.vColor = g_BlurTexture.Sample(LinearSampler, Input.vTexcoord);
+    
+    //float2 fTexelSize = 1.f / float2(g_fScreenWidth, g_fScreenHeight);
+    
+    //for (int y = -10; y <= 10; ++y)
+    //{
+    //    for (int x = -10; x <= 10; ++x)
+    //    {
+    
+    //        Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + float2(x, y) * fTexelSize) * 1.f / 441.f;
+    //    }
+    //}
     
     return Output;
 }

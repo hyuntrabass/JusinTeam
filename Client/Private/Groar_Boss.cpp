@@ -51,9 +51,9 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_G))
 	{
-		m_eCurState = STATE_SCENE01;
-		/*m_eCurState = STATE_BOSS;
-		m_eBossCurState = BOSS_STATE_ROAR;*/
+		//m_eCurState = STATE_SCENE01;
+		m_eCurState = STATE_BOSS;
+		m_eBossCurState = BOSS_STATE_ROAR;
 	}
 
 	Init_State(fTimeDelta);
@@ -359,6 +359,8 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 
 				break;
 			}
+
+			//m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK07; // 테스트용
 		}
 
 		break;
@@ -566,7 +568,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 					break;
 				}
 
-				m_eBossCurState = CGroar_Boss::BOSS_STATE_SPIDER; // 테스트용
+				//m_eBossCurState = CGroar_Boss::BOSS_STATE_FLOOR_ATTACK; // 테스트용
 				m_bSelectAttackPattern = true;
 			}
 		}
@@ -590,8 +592,6 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK00))
 			{
 				m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK01;
-
-				//m_bCreateMissile = false;
 			}
 
 			if (m_pBossModelCom->Get_CurrentAnimPos() < 10.f)
@@ -615,9 +615,6 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK01))
 			{
 				m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK00;
-
-				//m_bCreateMissile = false;
-				//m_eBossCurState = BOSS_STATE_CHASE;
 			}
 
 			if (m_pBossModelCom->Get_CurrentAnimPos() < 15.f)
@@ -626,12 +623,6 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			}
 
 		}
-
-		//if (m_pBossModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
-		//{
-		//	//m_bCreateMissile = false;
-		//	m_eBossCurState = BOSS_STATE_CHASE;
-		//}
 
 		if (m_iThrowAttackCombo == 4)
 		{
@@ -650,12 +641,32 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 		switch (m_Animation.iAnimIndex)
 		{
 		case MON_GROAR_ASGARD_ATTACK03:
+			if (m_pBossModelCom->Get_CurrentAnimPos() >= 69.f && m_pBossModelCom->Get_CurrentAnimPos() <= 72.f)
+			{
+				m_pGameInstance->Set_ShakeCam(true);
+			}
+
+			if (m_pBossModelCom->Get_CurrentAnimPos() >= 97.f && m_pBossModelCom->Get_CurrentAnimPos() <= 100.f)
+			{
+				m_pGameInstance->Set_ShakeCam(true);
+			}
+
+			if (m_pBossModelCom->Get_CurrentAnimPos() >= 135.f && m_pBossModelCom->Get_CurrentAnimPos() <= 138.f)
+			{
+				m_pGameInstance->Set_ShakeCam(true);
+			}
+
 			break;
 
 		case MON_GROAR_ASGARD_ATTACK06:
 			break;
 
 		case MON_GROAR_ASGARD_ATTACK07:
+			if (m_pBossModelCom->Get_CurrentAnimPos() >= 108.f && m_pBossModelCom->Get_CurrentAnimPos() <= 115.f)
+			{
+				m_pGameInstance->Set_ShakeCam(true);
+			}
+
 			break;
 
 		case MON_GROAR_ASGARD_ATTACK08:
@@ -682,6 +693,11 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			}
 
 			m_bCreateMissile = true;
+		}
+
+		if (m_pBossModelCom->Get_CurrentAnimPos() >= 99.f && m_pBossModelCom->Get_CurrentAnimPos() <= 110.f)
+		{
+			m_pGameInstance->Set_ShakeCam(true);
 		}
 
 		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK02))

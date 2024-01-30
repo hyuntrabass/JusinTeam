@@ -17,7 +17,7 @@ public:
 	const _uint Get_NumBones() const;
 	const _bool& IsAnimationFinished(_uint iAnimIndex) const;
 	const _uint& Get_CurrentAnimationIndex() const;
-	const _float& Get_CurrentAnimPos() const;
+	const _float Get_CurrentAnimPos() const;
 	const _mat* Get_BoneMatrix(const _char* pBoneName) const;
 	_mat Get_PivotMatrix();
 	vector<class CAnimation*>& Get_Animations();
@@ -50,7 +50,7 @@ public:
 	HRESULT Init(void* pArg) override;
 
 public:
-	void Play_Animation(_float fTimeDelta);
+	void Play_Animation(_float fTimeDelta, _bool OnClientTrigger = false);
 	HRESULT Bind_BoneMatrices(_uint iMeshIndex, class CShader* pShader, const _char* pVariableName);
 	HRESULT Bind_Material(class CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType);
 	void Apply_TransformToActor(_fmatrix WorldMatrix);

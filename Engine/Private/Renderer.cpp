@@ -1366,6 +1366,10 @@ HRESULT CRenderer::Render_Deferred()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pShader->Bind_RawValue("g_vFogColor", &m_pGameInstance->Get_FogColor(), sizeof _color)))
+	{
+		return E_FAIL;
+	}
 
 	if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", m_WorldMatrix)))
 	{

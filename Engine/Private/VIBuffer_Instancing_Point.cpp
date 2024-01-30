@@ -158,6 +158,7 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 				pVertexInstance[i].vLifeTime.x = 0.f;
 			}
 			XMStoreFloat4(&pVertexInstance[i].vDirection, XMVector3Normalize(XMVectorSet(RandomDirX(RandomNumber), RandomDirY(RandomNumber), RandomDirZ(RandomNumber), 0.f)));
+			pVertexInstance[i].vOriginDir = pVertexInstance[i].vDirection;
 		}
 	}
 

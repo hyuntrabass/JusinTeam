@@ -46,7 +46,7 @@ HRESULT CVoid09::Init(void* pArg)
 
 	SURFACETRAIL_DESC Desc{};
 	Desc.vColor = Colors::Sienna;
-	Desc.iNumVertices = 10.f;
+	Desc.iNumVertices = 10;
 
 	m_pSwordTrail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 
@@ -361,7 +361,7 @@ void CVoid09::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->IsAnimationFinished(DIE))
 		{
-			m_iPassIndex = AnimPass_Dissolve;
+			m_fDeadTime += fTimeDelta;
 		}
 
 		break;

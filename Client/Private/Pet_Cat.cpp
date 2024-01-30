@@ -55,7 +55,15 @@ void CPet_Cat::Late_Tick(_float fTimeDelta)
 
 HRESULT CPet_Cat::Render()
 {
-	__super::Render();
+	CTransform* pCameraTransform = GET_TRANSFORM("Layer_Camera", LEVEL_STATIC);
+	_vec4 vCameraPos = pCameraTransform->Get_State(State::Pos);
+
+	_vec4 vMyPos = m_pTransformCom->Get_State(State::Pos);
+
+	if ((vCameraPos - vMyPos).Length() > 3.f)
+	{
+		__super::Render();
+	}
 
 	return S_OK;
 }
@@ -121,7 +129,7 @@ void CPet_Cat::Tick_State(_float fTimeDelta)
 	_vec4 vPlayerRight = pPlayerTransform->Get_State(State::Right).Get_Normalized();
 	_vec4 vPlayerLook = pPlayerTransform->Get_State(State::Look).Get_Normalized();
 
-	_vec3 vTargetPos = vPlayerPos + (1.f * vPlayerRight) - (1.f * vPlayerLook);
+	_vec3 vTargetPos = vPlayerPos - (1.f * vPlayerRight) - (1.f * vPlayerLook);
 	vTargetPos.y += 1.5f;
 
 	_vec3 vMyPos = m_pTransformCom->Get_State(State::Pos);

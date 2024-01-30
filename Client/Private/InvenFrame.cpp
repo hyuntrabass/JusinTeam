@@ -26,7 +26,6 @@ HRESULT CInvenFrame::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-	m_pParent = ((INVENFRAME_DESC*)pArg)->pParent;
 	m_fSizeX = ((INVENFRAME_DESC*)pArg)->vSize.x;
 	m_fSizeY = ((INVENFRAME_DESC*)pArg)->vSize.y;
 
@@ -80,86 +79,19 @@ void CInvenFrame::Tick(_float fTimeDelta)
 				break;
 			}
 		}
-		if (!m_isPicking)
+		switch (m_eFrameMode)
 		{
-			for (_uint j = 0; j < 4; j++)
-			{
-				if (PtInRect(&m_pSelectSlot[j]->Get_Rect(), ptMouse))
-				{
-					if (m_pSelectSlot[j]->Is_Full())
-					{
-						ItemSlot_Delete_Logic(j);
-						break;
-					}
-				}
-			}
+		case F_INVEN:
+			Picking_InvenButton(ptMouse);
+			break;
+		case F_SHOP:
+			Picking_ShopButton(ptMouse);
+			break;
 		}
-
-		if (m_isPicking)
-		{
-			_bool isPicking = false;
-			for (_uint j = 0; j < 4; j++)
-			{
-				if (PtInRect(&m_pSelectSlot[j]->Get_Rect(), ptMouse))
-				{
-					isPicking = true;
-					ItemSlot_Logic(j, m_iCurIndex);
-					break;
-				}
-			}
-			m_isPicking = false;
-		}
-
-		if (m_isActiveQuickSlot)
-		{
-			for (size_t i = 0; i < m_vecItemsSlot[m_eCurInvenType].size(); i++)
-			{
-				if (PtInRect(&m_vecItemsSlot[m_eCurInvenType][i]->Get_Rect(), ptMouse))
-				{
-					if (m_vecItemsSlot[m_eCurInvenType][i]->Get_ItemDesc().iItemType == (_uint)ITEM_POTION)
-					{
-						m_isPicking = true;
-						m_iCurIndex = i;
-						break;
-					}
-				}
-				//이건 아이템 타입에 따라 달라질듯
-			}
-		}
+		
 		
 	}
 
-
-	if (m_isQuickAnim)
-	{
-		if (m_pSlotSettingButton->Get_TransPosition().y + 10.f < m_fY + m_fSizeY / 2.f)
-		{
-			m_pSlotSettingButton->Set_Position(_vec2(m_pSlotSettingButton->Get_Position().x, m_pSlotSettingButton->Get_TransPosition().y + fTimeDelta * 50.f));
-			m_pWearableClearButton->Set_Position(_vec2(m_pWearableClearButton->Get_Position().x, m_pWearableClearButton->Get_TransPosition().y + fTimeDelta * 50.f));
-
-		}
-		m_pBackGround->Set_Position(_vec2(m_pBackGround->Get_Position().x, m_pBackGround->Get_TransPosition().y - fTimeDelta * 200.f));
-		m_pBackGround->Set_Size(m_fSizeX, m_pBackGround->Get_Size().y + (fTimeDelta * 200.f) * 2.f);
-		if (m_pBackGround->Get_Position().y - m_pBackGround->Get_TransPosition().y >= 40.f)
-		{
-			m_isQuickAnim = false;
-			m_isActiveQuickSlot = true;
-		}
-
-	}
-
-	if (PtInRect(&m_pSlotSettingButton->Get_Rect(), ptMouse))
-	{
-		m_pSlotSettingButton->Set_Size(140.f, 80.f, 0.3f);
-		if (!m_isActiveQuickSlot && !m_isQuickAnim && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
-		{
-			m_isQuickAnim = true;
-		}
-	}
-	else
-	{
-		m_pSlotSettingButton->Set_Size(150.f, 100.f, 0.35f);
-	}
 
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
@@ -178,60 +110,16 @@ void CInvenFrame::Tick(_float fTimeDelta)
 	m_pBackGround->Tick(fTimeDelta);
 	m_pSelectButton->Tick(fTimeDelta);
 
-	if (!m_isActiveQuickSlot)
+	switch (m_eFrameMode)
 	{
-		m_pSlotSettingButton->Tick(fTimeDelta);
-		m_pWearableClearButton->Tick(fTimeDelta);
-
+	case F_INVEN:
+		Inven_Tick(fTimeDelta, ptMouse);
+		break;
+	case F_SHOP:
+		Shop_Tick(fTimeDelta, ptMouse);
+		break;
 	}
-	if (m_isActiveQuickSlot)
-	{
-		m_pResetSlot->Tick(fTimeDelta);
-		m_pResetSymbol->Tick(fTimeDelta);
-		m_pExitSlotSetting->Tick(fTimeDelta);
-		if (PtInRect(&m_pExitSlotSetting->Get_Rect(), ptMouse))
-		{
-			m_pExitSlotSetting->Set_Size(140.f, 80.f, 0.3f);
-			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
-			{
-				m_isActiveQuickSlot = false;
-				m_pBackGround->Set_Size(m_fSizeX, 50.f);
-				m_pBackGround->Set_Position(_vec2(m_pBackGround->Get_Position().x, m_pBackGround->Get_Position().y));
-				m_pSlotSettingButton->Set_Position(_vec2(m_pSlotSettingButton->Get_Position().x, m_pSlotSettingButton->Get_Position().y));
-				m_pWearableClearButton->Set_Position(_vec2(m_pWearableClearButton->Get_Position().x, m_pWearableClearButton->Get_Position().y));
-
-			}
-		}
-		else
-		{
-			m_pExitSlotSetting->Set_Size(150.f, 100.f, 0.35f);
-		}
-		if (PtInRect(&m_pResetSlot->Get_Rect(), ptMouse))
-		{
-			m_pResetSlot->Set_Size(140.f, 80.f, 0.3f);
-			dynamic_cast<CTextButton*>(m_pResetSymbol)->Set_Size(20.f, 20.f);
-			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine) && !m_isPicking)
-			{
-				for (_uint i = 0; i < 4; i++)
-				{
-					if (m_pSelectSlot[i]->Is_Full())
-					{
-						ItemSlot_Delete_Logic(i);
-					}
-				}
-			}
-		}
-		else
-		{
-			m_pResetSlot->Set_Size(150.f, 100.f, 0.35f);
-			dynamic_cast<CTextButton*>(m_pResetSymbol)->Set_Size(25.f, 25.f);
-		}
-
-		for (_uint i = 0; i < 4; i++)
-		{
-			m_pSelectSlot[i]->Tick(fTimeDelta);
-		}
-	}
+	
 }
 
 void CInvenFrame::Late_Tick(_float fTimeDelta)
@@ -243,36 +131,48 @@ void CInvenFrame::Late_Tick(_float fTimeDelta)
 		m_pInvenType[i]->Late_Tick(fTimeDelta);
 	}
 
-	/*수직바 렌더*/
+	m_pUnderBar->Late_Tick(fTimeDelta);
+	m_pBackGround->Late_Tick(fTimeDelta);
+	m_pSelectButton->Late_Tick(fTimeDelta);
+
+
+	switch (m_eFrameMode)
+	{
+	case F_INVEN:
+	{
+		if (!m_isActiveQuickSlot)
+		{
+			m_pSlotSettingButton->Late_Tick(fTimeDelta);
+			m_pWearableClearButton->Late_Tick(fTimeDelta);
+
+		}
+		if (m_isActiveQuickSlot)
+		{
+			m_pResetSlot->Late_Tick(fTimeDelta);
+			m_pResetSymbol->Late_Tick(fTimeDelta);
+			m_pExitSlotSetting->Late_Tick(fTimeDelta);
+			for (_uint i = 0; i < 4; i++)
+			{
+				m_pSelectSlot[i]->Late_Tick(fTimeDelta);
+			}
+		}
+
+	}
+	break;
+	case F_SHOP:
+	{
+		m_pSellButton->Late_Tick(fTimeDelta);
+	}
+	break;
+	}
+
+	
+	/*인벤 메뉴 사이 수직바 렌더*/
 	for (auto& iter : m_pVerticalBar)
 	{
 		iter->Late_Tick(fTimeDelta);
 	}
 
-
-
-
-	m_pUnderBar->Late_Tick(fTimeDelta);
-	m_pBackGround->Late_Tick(fTimeDelta);
-	m_pSelectButton->Late_Tick(fTimeDelta);
-
-	if (!m_isActiveQuickSlot)
-	{
-		m_pSlotSettingButton->Late_Tick(fTimeDelta);
-		m_pWearableClearButton->Late_Tick(fTimeDelta);
-
-	}
-	if (m_isActiveQuickSlot)
-	{
-		m_pResetSlot->Late_Tick(fTimeDelta);
-		m_pResetSymbol->Late_Tick(fTimeDelta);
-		m_pExitSlotSetting->Late_Tick(fTimeDelta);
-		for (_uint i = 0; i < 4; i++)
-		{
-			m_pSelectSlot[i]->Late_Tick(fTimeDelta);
-		}
-	}	
-	
 	/*아이템 렌더 */
 
 	for (size_t i = 0; i < m_vecItemsSlot[m_eCurInvenType].size(); i++)
@@ -392,7 +292,7 @@ HRESULT CInvenFrame::Add_Parts()
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Button_Blue");
 	Button.fFontSize = 0.35f;
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	Button.vTextPosition = _vec2(0.f, 17.f);
+	Button.vTextPosition = _vec2(0.f, 0.f);
 	Button.vSize = _vec2(150.f, 100.f);
 	Button.fAlpha = 0.8f;
 	Button.strText = TEXT("퀵슬롯 설정");
@@ -413,12 +313,22 @@ HRESULT CInvenFrame::Add_Parts()
 	}
 	dynamic_cast<CTextButtonColor*>(m_pWearableClearButton)->Set_Pass(VTPass_UI_Alpha);
 
+	Button.strText = TEXT("아이템 판매");
+	Button.vPosition = _vec2(fButtonStartX + m_fSizeX / 2.f, fBgY);
+	m_pSellButton = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &Button);
+	if (not m_pSellButton)
+	{
+		return E_FAIL;
+	}
+	dynamic_cast<CTextButtonColor*>(m_pSellButton)->Set_Pass(VTPass_UI_Alpha);
+
+
 	/* 슬롯 열었을때 */
 	Button.fDepth = m_fDepth - 0.03f;
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Button_Blue");
 	Button.fFontSize = 0.35f;
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	Button.vTextPosition = _vec2(0.f, 17.f);
+	Button.vTextPosition = _vec2(0.f, 0.f);
 	Button.vColor = _vec4(0.2f, 0.2f, 0.2f, 0.8f);
 	Button.vSize = _vec2(150.f, 100.f);
 	Button.fAlpha = 0.8f;
@@ -750,6 +660,234 @@ void CInvenFrame::Delete_Item(INVEN_TYPE eInvenType, _uint iIndex)
 	Set_ItemPosition(m_eCurInvenType);
 }
 
+void CInvenFrame::Picking_InvenButton(POINT ptMouse)
+{
+
+	if (m_isPickingDouble && m_fDoubleClick < 0.3f)
+	{
+		m_isPicking = false;
+		if (m_iCurItemType == (_uint)ITEM_POTION && m_isActiveQuickSlot)
+		{
+			for (_uint j = 0; j < 4; j++)
+			{
+				if (!m_pSelectSlot[j]->Is_Full())
+				{
+					ItemSlot_Logic(j, m_iCurIndex);
+					break;
+				}
+			}
+		}
+		if (m_iCurItemType ==ITEM_BODY || m_iCurItemType == ITEM_TOP || m_iCurItemType == ITEM_SWORD)
+		{
+			ITEM eItem = m_vecItemsSlot[m_eCurInvenType][m_iCurIndex]->Get_ItemDesc();
+			WEARABLE_TYPE eType{};
+
+			if (m_iCurItemType == ITEM_TOP)
+			{
+				eType = W_TOP;
+			}
+			else if (m_iCurItemType == ITEM_BODY)
+			{
+				eType = W_CHEST;
+			}
+			else if (m_iCurItemType == ITEM_SWORD)
+			{
+				eType = W_EQUIP;
+			}
+			if (FAILED(dynamic_cast<CInven*>(m_pParent)->Set_WearableItem(eType, eItem)))
+			{
+				return;
+			}
+			Delete_Item(m_eCurInvenType, m_iCurIndex);
+		}
+		m_isPickingDouble = false;
+		return;
+	}
+
+	if (!m_isPicking)
+	{
+		for (_uint j = 0; j < 4; j++)
+		{
+			if (PtInRect(&m_pSelectSlot[j]->Get_Rect(), ptMouse))
+			{
+				if (m_pSelectSlot[j]->Is_Full())
+				{
+					ItemSlot_Delete_Logic(j);
+					break;
+				}
+			}
+		}
+	}
+
+	if (m_isPicking)
+	{
+		_bool isPicking = false;
+		for (_uint j = 0; j < 4; j++)
+		{
+			if (PtInRect(&m_pSelectSlot[j]->Get_Rect(), ptMouse))
+			{
+				isPicking = true;
+				ItemSlot_Logic(j, m_iCurIndex);
+				break;
+			}
+		}
+		m_isPicking = false;
+	}
+
+	for (size_t i = 0; i < m_vecItemsSlot[m_eCurInvenType].size(); i++)
+	{
+		if (PtInRect(&m_vecItemsSlot[m_eCurInvenType][i]->Get_Rect(), ptMouse))
+		{
+			if (m_vecItemsSlot[m_eCurInvenType][i]->Get_ItemDesc().iItemType == (_uint)ITEM_POTION)
+			{
+				m_isPicking = true;
+			}
+			m_isPickingDouble = true;
+			m_fDoubleClick = 0.f;
+			m_iCurIndex = i;
+			m_iCurItemType = (ITEM_TYPE)m_vecItemsSlot[m_eCurInvenType][i]->Get_ItemDesc().iItemType;
+			break;
+		}
+	}
+}
+
+void CInvenFrame::Picking_ShopButton(POINT ptMouse)
+{
+
+}
+
+void CInvenFrame::Inven_Tick(_float fTimeDelta, POINT ptMouse)
+{
+	m_fDoubleClick += fTimeDelta;
+
+	if (m_isPickingDouble && m_fDoubleClick >= 0.5f)
+	{
+		m_isPickingDouble = false;
+	}
+
+	if (m_isQuickAnim)
+	{
+		if (m_pSlotSettingButton->Get_TransPosition().y + 10.f < m_fY + m_fSizeY / 2.f)
+		{
+			m_pSlotSettingButton->Set_Position(_vec2(m_pSlotSettingButton->Get_Position().x, m_pSlotSettingButton->Get_TransPosition().y + fTimeDelta * 50.f));
+			m_pWearableClearButton->Set_Position(_vec2(m_pWearableClearButton->Get_Position().x, m_pWearableClearButton->Get_TransPosition().y + fTimeDelta * 50.f));
+
+		}
+		m_pBackGround->Set_Position(_vec2(m_pBackGround->Get_Position().x, m_pBackGround->Get_TransPosition().y - fTimeDelta * 200.f));
+		m_pBackGround->Set_Size(m_fSizeX, m_pBackGround->Get_Size().y + (fTimeDelta * 200.f) * 2.f);
+		if (m_pBackGround->Get_Position().y - m_pBackGround->Get_TransPosition().y >= 40.f)
+		{
+			m_isQuickAnim = false;
+			m_isActiveQuickSlot = true;
+		}
+
+	}
+
+	if (PtInRect(&m_pSlotSettingButton->Get_InitialRect(), ptMouse))
+	{
+		m_pSlotSettingButton->Set_Size(140.f, 80.f, 0.3f);
+		if (!m_isActiveQuickSlot && !m_isQuickAnim && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
+		{
+			m_isQuickAnim = true;
+		}
+	}
+	else
+	{
+		m_pSlotSettingButton->Set_Size(150.f, 100.f, 0.35f);
+	}
+
+
+
+	if (!m_isActiveQuickSlot)
+	{
+		m_pSlotSettingButton->Tick(fTimeDelta);
+		m_pWearableClearButton->Tick(fTimeDelta);
+
+	}
+	if (m_isActiveQuickSlot)
+	{
+		m_pResetSlot->Tick(fTimeDelta);
+		m_pResetSymbol->Tick(fTimeDelta);
+		m_pExitSlotSetting->Tick(fTimeDelta);
+		if (PtInRect(&m_pExitSlotSetting->Get_InitialRect(), ptMouse))
+		{
+			m_pExitSlotSetting->Set_Size(140.f, 80.f, 0.3f);
+			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
+			{
+				m_isActiveQuickSlot = false;
+				m_pBackGround->Set_Size(m_fSizeX, 50.f);
+				m_pBackGround->Set_Position(_vec2(m_pBackGround->Get_Position().x, m_pBackGround->Get_Position().y));
+				m_pSlotSettingButton->Set_Position(_vec2(m_pSlotSettingButton->Get_Position().x, m_pSlotSettingButton->Get_Position().y));
+				m_pWearableClearButton->Set_Position(_vec2(m_pWearableClearButton->Get_Position().x, m_pWearableClearButton->Get_Position().y));
+
+			}
+		}
+		else
+		{
+			m_pExitSlotSetting->Set_Size(150.f, 100.f, 0.35f);
+		}
+		if (PtInRect(&m_pResetSlot->Get_InitialRect(), ptMouse))
+		{
+			m_pResetSlot->Set_Size(140.f, 80.f, 0.3f);
+			dynamic_cast<CTextButton*>(m_pResetSymbol)->Set_Size(20.f, 20.f);
+			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine) && !m_isPicking)
+			{
+				for (_uint i = 0; i < 4; i++)
+				{
+					if (m_pSelectSlot[i]->Is_Full())
+					{
+						ItemSlot_Delete_Logic(i);
+					}
+				}
+			}
+		}
+		else
+		{
+			m_pResetSlot->Set_Size(150.f, 100.f, 0.35f);
+			dynamic_cast<CTextButton*>(m_pResetSymbol)->Set_Size(25.f, 25.f);
+		}
+
+		if (!m_isActiveQuickSlot && PtInRect(&m_pWearableClearButton->Get_InitialRect(), ptMouse))
+		{
+			m_pWearableClearButton->Set_Size(140.f, 80.f, 0.3f);
+			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
+			{
+				dynamic_cast<CInven*>(m_pParent)->Reset_WearableSlot();
+			}
+		}
+		else
+		{
+			m_pWearableClearButton->Set_Size(150.f, 100.f, 0.35f);
+		}
+
+
+
+		for (_uint i = 0; i < 4; i++)
+		{
+			m_pSelectSlot[i]->Tick(fTimeDelta);
+		}
+	}
+}
+
+void CInvenFrame::Shop_Tick(_float fTimeDelta, POINT ptMouse)
+{
+
+	if (PtInRect(&m_pSellButton->Get_InitialRect(), ptMouse))
+	{
+		m_pSellButton->Set_Size(140.f, 80.f, 0.3f);
+		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
+		{
+		
+		}
+	}
+	else
+	{
+		m_pSellButton->Set_Size(150.f, 100.f, 0.35f);
+	}
+
+	m_pSellButton->Tick(fTimeDelta);
+}
+
 void CInvenFrame::Set_ItemPosition(INVEN_TYPE eInvenType)
 {
 
@@ -760,7 +898,8 @@ void CInvenFrame::Set_ItemPosition(INVEN_TYPE eInvenType)
 	for (_uint i = 0; i < m_vecItemsSlot[eInvenType].size(); i++)
 	{
 		_uint iTermY = i / 5;
-		_vec2 vPos = _vec2(fStartX + fTerm * i, fStartY + fSize * iTermY + 5.f * iTermY);
+		_uint iTermX = i % 5;
+		_vec2 vPos = _vec2(fStartX + fTerm * iTermX, fStartY + fSize * iTermY + 5.f * iTermY);
 		m_vecItemsSlot[eInvenType][i]->Set_Position(vPos);
 	}
 }
@@ -801,6 +940,8 @@ void CInvenFrame::Free()
 	Safe_Release(m_pWearableClearButton);
 
 
+	/* shop 모드 */
+	Safe_Release(m_pSellButton);
 
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);

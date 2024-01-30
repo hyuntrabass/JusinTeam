@@ -36,6 +36,7 @@ protected:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
+	CCollider* m_pColliderCom = { nullptr };
 
 protected:
 	wstring m_strModelTag = {};
@@ -43,6 +44,9 @@ protected:
 
 protected:
 	_uint m_iPassIndex = {};
+
+protected:
+	void Update_Collider();
 
 public:
 	HRESULT Add_Components();

@@ -1,8 +1,7 @@
 #pragma once
 #include "Client_Define.h"
 #include "GameObject.h"
-#include "BodyPart.h"
-#include "Weapon.h"
+
 #include "Riding.h"
 #include "NameTag.h"
 #include "CommonTrail.h"
@@ -269,6 +268,11 @@ public:
 		Climb_R,
 		Hit,
 		KnockDown,
+		Collect_Start,
+		Collect_Loop,
+		Collect_End,
+		Mining,
+		Logging,
 		Stun,
 		Stun_Start,
 		Die,
@@ -285,9 +289,9 @@ public:
 		_int Current_Mp{ 1000 };
 		_int Attack{ 100 };
 		_int Critical{};
-		_int Critical_Dmg{ 150 }; // ±âº» Ä¡¸íÅ¸µ¥¹ÌÁö 150( ±âº» µ¥¹ÌÁö¿¡ Ãß°¡50ÆÛ¼¾Æ® ÇÇÇØ)
-		_int Armor{}; // ¹æ¾î·ÂÀÌ 10ÀÏ¶§ ¹Þ´Â µ¥¹ÌÁö 10ÆÛ¼¾Æ® ÁÙ¿©ÁÜ(90ÆÛ¸¸ ¹ÞÀ½)
-		_float Speed{}; // ±âº» °È´Â ÀÌ¼Ó 2+½ºÇÇµå/2,¶Ù´Â ÀÌ¼Ó 4+½ºÇÇµå
+		_int Critical_Dmg{ 150 }; // ï¿½âº» Ä¡ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 150( ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½50ï¿½Û¼ï¿½Æ® ï¿½ï¿½ï¿½ï¿½)
+		_int Armor{}; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 10ï¿½Ï¶ï¿½ ï¿½Þ´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 10ï¿½Û¼ï¿½Æ® ï¿½Ù¿ï¿½ï¿½ï¿½(90ï¿½Û¸ï¿½ ï¿½ï¿½ï¿½ï¿½)
+		_float Speed{}; // ï¿½âº» ï¿½È´ï¿½ ï¿½Ì¼ï¿½ 2+ï¿½ï¿½ï¿½Çµï¿½/2,ï¿½Ù´ï¿½ ï¿½Ì¼ï¿½ 4+ï¿½ï¿½ï¿½Çµï¿½
 	};
 
 private:
@@ -378,6 +382,8 @@ private:
 	_bool	  m_isInvenActive{ false };
 	_float m_fSkillSpeed{};
 	_bool m_bAttackStop{};
+	_uint m_iMiningCount{};
+	_uint m_iLoggingCount{};
 	_float4 m_vPos{};
 	_bool m_bArrowRain_Start{};
 	_bool m_bStartGame{};
