@@ -35,6 +35,7 @@ private:
 	CTexture*			m_pTextureCom{ nullptr };
 
 private:
+	PART_TYPE				m_ePartType{};
 	RECT					m_rcRect;
 	_bool					m_isFull = { false };
 
@@ -46,6 +47,10 @@ private:
 public:
 	const RECT& Get_Rect() const { return m_rcRect; }
 	HRESULT Set_WearableItem(ITEM eItemDesc);
+	_bool Is_Full() { return m_isFull; }
+	const ITEM& Get_ItemDesc() const;
+
+	void Delete_Item();
 
 private:
 	HRESULT Add_Components();

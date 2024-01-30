@@ -161,10 +161,16 @@ void CPlayer::Tick(_float fTimeDelta)
 		m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), 0.f);
 		if (eType == PT_WEAPON)
 		{
-			//Change_Weapon(CUI_Manager::Get_Instance()->Get_CustomPart(eType));
+			WEAPON_TYPE eWpType{};
+			_uint iWpIdx = CUI_Manager::Get_Instance()->Get_WeaponType(eType, &eWpType);
+			Change_Weapon(eWpType, (WEAPON_INDEX)iWpIdx);
 
 		}
-		Change_Parts(eType, CUI_Manager::Get_Instance()->Get_CustomPart(eType));
+		else
+		{
+			Change_Parts(eType, CUI_Manager::Get_Instance()->Get_CustomPart(eType));
+		}
+
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD5))
 	{
