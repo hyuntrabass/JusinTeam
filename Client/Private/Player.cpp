@@ -2,6 +2,7 @@
 #include "UI_Manager.h"
 #include "Event_Manager.h"
 #include "Arrow.h"
+#include "FadeBox.h"
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -183,11 +184,12 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		if (!m_bIsMount)
 		{	
-			CEvent_Manager::Get_Instance()->Update_Quest(TEXT("�� ���̵�"));
 			m_bIsMount = true;
 			m_eState = Mount;
 			m_Animation.iAnimIndex = Anim_Mount_Idle;
 			Summon_Riding(Bird);
+
+			
 
 			m_pGameInstance->Set_FlyCam(true);
 

@@ -47,7 +47,7 @@ HRESULT CNastron07::Init(void* pArg)
 	TRAIL_DESC Desc{};
 	Desc.vColor = Colors::LightBlue;
 	Desc.vPSize = _vec2(0.02f, 0.02f);
-	Desc.iNumVertices = 10.f;
+	Desc.iNumVertices = 10;
 	m_pLeftTrail1 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
 	m_pLeftTrail2 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
 	m_pLeftTrail3 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);

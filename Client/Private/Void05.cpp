@@ -47,7 +47,7 @@ HRESULT CVoid05::Init(void* pArg)
 	TRAIL_DESC Desc{};
 	Desc.vColor = Colors::BurlyWood;
 	Desc.vPSize = _vec2(0.03f, 0.03f);
-	Desc.iNumVertices = 10.f;
+	Desc.iNumVertices = 10;
 	m_pLeftTrail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
 	m_pRightTrail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
 

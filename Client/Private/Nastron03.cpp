@@ -47,7 +47,7 @@ HRESULT CNastron03::Init(void* pArg)
 	TRAIL_DESC Desc{};
 	Desc.vColor = Colors::PowderBlue;
 	Desc.vPSize = _vec2(0.05f, 0.05f);
-	Desc.iNumVertices = 10.f;
+	Desc.iNumVertices = 10;
 	m_pSwordTrail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
 
 	PxCapsuleControllerDesc ControllerDesc{};

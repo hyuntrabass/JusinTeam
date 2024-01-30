@@ -352,6 +352,9 @@
     <Filter Include="02.GameObjects\00.UI\Shop\ShopDesc">
       <UniqueIdentifier>{37a8ca72-2b72-457f-931a-134d39c72fc6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\12.WorldMap">
+      <UniqueIdentifier>{6c40ed79-665a-45bf-ac56-9bcb324ab06c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">

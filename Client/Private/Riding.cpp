@@ -1,5 +1,5 @@
 #include "Riding.h"
-
+#include "FadeBox.h"
 CRiding::CRiding(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -99,7 +99,21 @@ void CRiding::Tick(_float fTimeDelta)
 	Init_State();
 	Tick_State(fTimeDelta);
 	m_pModelCom->Set_Animation(m_Animation);
-
+	if (m_CurrentIndex == Bird)
+	{
+		_float Index = m_pModelCom->Get_CurrentAnimPos();
+		if (Index >= 88.f && !m_hasJumped)
+		{
+			CFadeBox::FADE_DESC Desc = {};
+			Desc.eState = CFadeBox::FADEIN;
+			Desc.fDuration = 1.f;
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
+			{
+				return;
+			}
+			m_hasJumped = true;
+		}
+	}
 	if(m_CurrentIndex!=Bird)
 	m_pTransformCom->Gravity(fTimeDelta);
 
@@ -466,23 +480,6 @@ void CRiding::Tick_State(_float fTimeDelta)
 	case Client::Riding_Landing:
 		break;
 	case Client::Riding_Idle:
-		switch (m_CurrentIndex)
-		{
-		case Client::Bird:
-			if (m_pModelCom->IsAnimationFinished(Bird_1005_Start))
-			{
-				m_eState = Riding_Sky;
-			}
-			break;
-		case Client::Tiger:
-			break;
-		case Client::Nihilir:
-			break;
-		case Client::Riding_End:
-			break;
-		default:
-			break;
-		}
 		break;
 	case Client::Riding_Jump_Start:
 		switch (m_CurrentIndex)
