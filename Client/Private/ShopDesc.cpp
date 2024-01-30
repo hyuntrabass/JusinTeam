@@ -159,7 +159,7 @@ HRESULT CShopDesc::Add_Parts()
 	ItemDesc.iNum = 1;
 	ItemDesc.vPosition = _vec2(m_fX - 100.f, m_fY);
 	ItemDesc.vSize = _vec2(70.f, 70.f);
-	ItemDesc.bCanInteract - false;
+	ItemDesc.bCanInteract = false;
 
 	m_pItem = (CItem*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Item"), &ItemDesc);
 

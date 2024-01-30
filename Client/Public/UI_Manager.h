@@ -22,7 +22,7 @@ private:
 private:
 	PART_TYPE		m_eChangedPart{ PT_END };
 	MOUSESTATE		m_eMouseState { M_DEFAULT };
-
+	WEAPON_TYPE		m_eWeaponType{ WP_BOW };
 	_bool			m_isPicking{ false };
 	_bool			m_isShowing{ false };
 	_bool			m_isInvenActive{ false };
@@ -80,6 +80,7 @@ public:
 	const vector<CTransform*> Get_RadarPosition(TYPE eType) const;
 
 	HRESULT Set_CustomPart(PART_TYPE eType, _uint iIndex);
+	HRESULT Set_WeaponType(WEAPON_TYPE eWpType);
 	void Set_HairColor(_vec4 vColor) { m_vHairColor = vColor; }
 	void Set_Picking_UI(_bool isPicking) { m_isPicking = isPicking; }
 	void Set_FullScreenUI(_bool isShowing) { m_isShowing = isShowing; }
@@ -94,6 +95,7 @@ public:
 	const _vec4& Get_InvenPos() const { return m_vInvenPos; }
 	const _vec4& Get_LastPlayerPos() const { return m_vPlayerPos; }
 	const _uint& Get_CustomPart (PART_TYPE eType);
+	const _uint& Get_WeaponType(PART_TYPE eType, WEAPON_TYPE* wpType);
 	const _uint& Get_Coin() const { return m_iCoin; }
 	const _uint& Get_Diamond() const { return m_iDiamond; }
 	const _float2& Get_Exp() const { return m_fExp; }
