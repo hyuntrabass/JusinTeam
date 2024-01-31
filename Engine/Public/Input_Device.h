@@ -57,6 +57,8 @@ private:
 	LPDIRECTINPUTDEVICE8 m_pGamepad{ nullptr };
 
 private:
+	HWND m_hWnd{};
+
 	_bool m_bPrevFrame_KeyState[ToIndex(InputChannel::End)][UCHAR_MAX]{};
 	_bool m_bPrevFrame_MouseState[ToIndex(InputChannel::End)][DIM_END]{};
 	_bool m_bPrevFrame_GampadState[ToIndex(InputChannel::End)][USHRT_MAX]{};
