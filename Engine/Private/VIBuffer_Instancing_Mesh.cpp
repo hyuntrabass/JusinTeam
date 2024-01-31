@@ -37,7 +37,7 @@ HRESULT CVIBuffer_Instancing_Mesh::Init_Prototype(const string& strFilePath, con
 	m_iVertexStride = sizeof VTXSTATICMESH;
 
 	m_iNumInstances = iNumInstance;
-	m_iInstanceStride = sizeof VTXMESHINSTANCING;
+	m_iInstanceStride = sizeof Instance_Data;
 
 	//m_iNumIndices = m_iIndexCountPerInstance * m_iNumInstances;
 
@@ -93,15 +93,16 @@ HRESULT CVIBuffer_Instancing_Mesh::Init_Prototype(const string& strFilePath, con
 
 	ZeroMemory(&m_InstancingInitialData, sizeof m_InstancingInitialData);
 
-	VTXMESHINSTANCING* pVertexInstance = new VTXMESHINSTANCING[m_iNumInstances];
-	ZeroMemory(pVertexInstance, sizeof(VTXMESHINSTANCING) * m_iNumInstances);
+	Instance_Data* pVertexInstance = new Instance_Data[m_iNumInstances];
+	ZeroMemory(pVertexInstance, sizeof(Instance_Data) * m_iNumInstances);
 
 	for (size_t i = 0; i < m_iNumInstances; i++)
 	{
-	pVertexInstance[i].vRight = _vec4(1.f, 0.f, 0.f, 0.f);
-	pVertexInstance[i].vUp = _vec4(0.f, 1.f, 0.f, 0.f);
-	pVertexInstance[i].vLook = _vec4(0.f, 0.f, 1.f, 0.f);
-	pVertexInstance[i].vPos = _vec4(0.f, 0.f,0.f, 1.f);
+	//pVertexInstance[i].vRight = _vec4(1.f, 0.f, 0.f, 0.f);
+	//pVertexInstance[i].vUp = _vec4(0.f, 1.f, 0.f, 0.f);
+	//pVertexInstance[i].vLook = _vec4(0.f, 0.f, 1.f, 0.f);
+	//pVertexInstance[i].vPos = _vec4(0.f, 0.f,0.f, 1.f);
+		pVertexInstance[i].mMatrix = 
 	}
 	m_InstancingInitialData.pSysMem = pVertexInstance;
 
@@ -117,7 +118,7 @@ HRESULT CVIBuffer_Instancing_Mesh::Init(void* pArg)
 	vector<_vec4> vInstancePos = *(vector<_vec4>*)pArg;
 
 
-	VTXMESHINSTANCING* pVertexInstance = reinterpret_cast<VTXMESHINSTANCING*>(const_cast<void*>(m_InstancingInitialData.pSysMem));
+	Instance_Data* pVertexInstance = reinterpret_cast<Instance_Data*>(const_cast<void*>(m_InstancingInitialData.pSysMem));
 
 	if (pArg)
 	{

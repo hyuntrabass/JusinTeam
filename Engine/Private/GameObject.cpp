@@ -16,6 +16,7 @@ CGameObject::CGameObject(const CGameObject& rhs)
 	: m_pDevice(rhs.m_pDevice)
 	, m_pContext(rhs.m_pContext)
 	, m_pGameInstance(rhs.m_pGameInstance)
+	, m_iID(rhs.m_iID)
 {
 	Safe_AddRef(m_pGameInstance);
 	Safe_AddRef(m_pContext);

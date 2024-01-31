@@ -161,10 +161,8 @@ call UpdateLib.bat</Command>
     <ClCompile Include="..\private\VIBuffer.cpp" />
     <ClCompile Include="..\private\VIBuffer_Cube.cpp" />
     <ClCompile Include="..\private\VIBuffer_Instancing.cpp" />
-    <ClCompile Include="..\Private\VIBuffer_Instancing_Mesh.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Instancing_Point.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Mesh_Instance.cpp" />
-    <ClCompile Include="..\Private\VIBuffer_Model_Instancing.cpp" />
     <ClCompile Include="..\private\VIBuffer_PhysX.cpp" />
     <ClCompile Include="..\private\VIBuffer_Rect.cpp" />
     <ClCompile Include="..\private\VIBuffer_Terrain.cpp" />
@@ -230,10 +228,8 @@ call UpdateLib.bat</Command>
     <ClInclude Include="..\public\VIBuffer.h" />
     <ClInclude Include="..\public\VIBuffer_Cube.h" />
     <ClInclude Include="..\public\VIBuffer_Instancing.h" />
-    <ClInclude Include="..\Public\VIBuffer_Instancing_Mesh.h" />
     <ClInclude Include="..\Public\VIBuffer_Instancing_Point.h" />
     <ClInclude Include="..\Public\VIBuffer_Mesh_Instance.h" />
-    <ClInclude Include="..\Public\VIBuffer_Model_Instancing.h" />
     <ClInclude Include="..\public\VIBuffer_PhysX.h" />
     <ClInclude Include="..\public\VIBuffer_Rect.h" />
     <ClInclude Include="..\public\VIBuffer_Terrain.h" />

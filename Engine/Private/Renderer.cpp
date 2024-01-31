@@ -582,6 +582,8 @@ HRESULT CRenderer::Add_RenderGroup(RenderGroup eRenderGroup, CGameObject* pRende
 
 HRESULT CRenderer::Draw_RenderGroup()
 {
+	Clear_Instance();
+
 	if (FAILED(Render_Priority()))
 	{
 		MSG_BOX("Failed to Render : Priority");
@@ -625,6 +627,8 @@ HRESULT CRenderer::Draw_RenderGroup()
 		MSG_BOX("Failed to Render : NonBlend");
 		return E_FAIL;
 	}
+
+
 	if (FAILED(m_pGameInstance->End_MRT()))
 		return E_FAIL;
 
@@ -875,6 +879,7 @@ HRESULT CRenderer::Render_NonBlend()
 
 	return S_OK;
 }
+
 HRESULT CRenderer::Render_NonBlend_Instance()
 {
 	map<_int, vector<CGameObject*>> InstanceData;
@@ -886,25 +891,25 @@ HRESULT CRenderer::Render_NonBlend_Instance()
 
 		const _int iInstanceID = static_cast<CModel*>(pGameObject->Find_Component(L"Com_Model"))->Get_InstanceID();
 		InstanceData[iInstanceID].push_back(pGameObject);
-
-		//Safe_Release(pGameObject);
 	}
 
-	for (auto& iter : InstanceData)
+	for (auto& Pair : InstanceData)
 	{
-		vector<CGameObject*>& vInstances = iter.second;
-		const _uint instanceId = iter.first;
+		vector<CGameObject*>& vInstances = Pair.second;
+		const _uint instanceId = Pair.first;
 		CGameObject*& pHead = vInstances[0];
 
 		for (_uint i = 0; i < vInstances.size(); i++)
 		{
 			CGameObject*& pGameObject = vInstances[i];
-			VTXMESHINSTANCING MeshInstancing;
+			Instance_Data MeshInstancing;
 			CTransform* pTransform = static_cast<CTransform*>(pGameObject->Find_Component(L"Com_Transform"));
-			MeshInstancing.vRight = pTransform->Get_State(State::Right);
-			MeshInstancing.vUp = pTransform->Get_State(State::Up);
-			MeshInstancing.vLook = pTransform->Get_State(State::Look);
-			MeshInstancing.vPos = pTransform->Get_State(State::Pos);
+			//MeshInstancing.vRight = pTransform->Get_State(State::Right);
+			//MeshInstancing.vUp = pTransform->Get_State(State::Up);
+			//MeshInstancing.vLook = pTransform->Get_State(State::Look);
+			//MeshInstancing.vPos = pTransform->Get_State(State::Pos);
+			MeshInstancing.mMatrix = pTransform->Get_World_Matrix();
+			MeshInstancing.m_iID = pGameObject->Get_ID();
 			Add_Instance(instanceId, MeshInstancing);
 		}
 
@@ -912,16 +917,16 @@ HRESULT CRenderer::Render_NonBlend_Instance()
 		{
 			iter->InitRendered();
 		}
-		pHead->Render_Instance();
 		CVIBuffer_Mesh_Instance*& pBuffer = m_InstanceBuffers[instanceId];
+		pHead->Render_Instance();
 		CModel* pModel = static_cast<CModel*>(pHead->Find_Component(L"Com_Model"));
 		CShader* pShader = static_cast<CShader*>(pHead->Find_Component(L"Com_Shader"));
-		pModel->Render_Instancing(pModel->Get_NumMeshes(), pBuffer, pModel, pShader);
+		pModel->Render_Instancing(pBuffer, pShader);
 	}
 
-
+	for (auto& pGameObject : m_RenderObjects[RG_NonBlend_Instance])
+		Safe_Release(pGameObject);
 	m_RenderObjects[RG_NonBlend_Instance].clear();
-
 
 	return S_OK;
 }
@@ -1947,7 +1952,7 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 	return S_OK;
 }
 
-HRESULT CRenderer::Add_Instance(_int iInstanceID, VTXMESHINSTANCING& pMeshInstancing)
+HRESULT CRenderer::Add_Instance(_int iInstanceID, Instance_Data& pMeshInstancing)
 {
 	if (m_InstanceBuffers.find(iInstanceID) == m_InstanceBuffers.end())
 	{
@@ -1992,6 +1997,8 @@ void CRenderer::Free()
 	__super::Free();
 
 #pragma region 평균휘도 Release
+
+	Clear_Instance();
 
 	Safe_Release(m_pLumShader);
 	Safe_Release(m_pLumRT);
@@ -2044,6 +2051,7 @@ void CRenderer::Free()
 		ObjectList.clear();
 	}
 
+
 #ifdef _DEBUGTEST
 	for (auto& pComponent : m_DebugComponents)
 	{
@@ -2052,5 +2060,10 @@ void CRenderer::Free()
 	m_DebugComponents.clear();
 #endif // _DEBUG
 
+	for (auto& pair : m_InstanceBuffers)
+	{
+		Safe_Release(pair.second);  // 동적으로 할당된 메모리를 해제
+	}
+	m_InstanceBuffers.clear();
 
 }

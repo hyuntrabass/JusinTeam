@@ -17,7 +17,7 @@ public:
 	virtual HRESULT Init(void* pArg) override;
 	virtual void Update(_float fTimeDelta, _mat WorldMatrix, _int iNumUse = -1, _bool bApplyGravity = false, _vec3 vGravityDir = _vec3());
 	virtual HRESULT Render(CMesh* pMesh);
-	void Add_Instance(VTXMESHINSTANCING& MeshData);
+	void Add_Instance(Instance_Data& MeshData);
 	void Clear_Instance();
 protected:
 	D3D11_BUFFER_DESC m_InstancingBufferDesc{};
@@ -30,7 +30,7 @@ protected:
 	_uint m_iMaxCount{ 0 };
 	_bool m_isLoop{};
 
-	vector<VTXMESHINSTANCING> m_vMeshInstance;
+	vector<Instance_Data> m_vMeshInstance;
 
 public:
 	static CVIBuffer_Mesh_Instance* Create(_dev pDevice, _context pContext);

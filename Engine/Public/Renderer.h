@@ -190,7 +190,7 @@ private:
 private:
 	HRESULT Get_AvgLuminance();
 	HRESULT Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MRT_Tag, _float fBlurPower, _bool isBloom = false);
-	HRESULT Add_Instance(_int iInstanceID, VTXMESHINSTANCING& pMeshInstancing);
+	HRESULT Add_Instance(_int iInstanceID, Instance_Data& pMeshInstancing);
 	HRESULT Clear_Instance();
 	map<_int, class CVIBuffer_Mesh_Instance*>	m_InstanceBuffers;
 
