@@ -568,7 +568,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 					break;
 				}
 
-				m_eBossCurState = CGroar_Boss::BOSS_STATE_WEB; // 테스트용
+				m_eBossCurState = CGroar_Boss::BOSS_STATE_FLOOR_ATTACK; // 테스트용
 				m_bSelectAttackPattern = true;
 			}
 		}
