@@ -568,7 +568,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 					break;
 				}
 
-				//m_eBossCurState = CGroar_Boss::BOSS_STATE_FLOOR_ATTACK; // 테스트용
+				m_eBossCurState = CGroar_Boss::BOSS_STATE_WEB; // 테스트용
 				m_bSelectAttackPattern = true;
 			}
 		}
@@ -806,7 +806,7 @@ HRESULT CGroar_Boss::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Groar_Boss"), TEXT("Com_Boss_Model"), reinterpret_cast<CComponent**>(&m_pBossModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Groar_Boss"), TEXT("Com_Boss_Model"), reinterpret_cast<CComponent**>(&m_pBossModelCom), m_pTransformCom)))
 	{
 		return E_FAIL;
 	}

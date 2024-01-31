@@ -744,7 +744,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				ImGui::End();
 
 				ImGui::Begin("TRIGGER MENU");
-				ImGui::PushItemWidth(250.f);
+				ImGui::PushItemWidth(300.f);
 
 				//¿Ã∆Â∆Æ ¿Ã∏ß ∂ÁøÏ±‚
 				vector<TRIGGEREFFECT_DESC> EffectDescs = pCurModel->Get_TriggerEffects();
@@ -906,7 +906,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			if (pCurModel->Get_NumTriggerSound() != 0 && m_eTriggerType == TRIGGER_SOUND)
 			{
 				ImGui::Begin("TRIGGER MENU");
-				ImGui::PushItemWidth(250.f);
+				ImGui::PushItemWidth(300.f);
 
 				vector<TRIGGERSOUND_DESC> SoundDescs = pCurModel->Get_TriggerSounds();
 				//ªÁøÓµÂ ¿Ã∏ß ∂ÁøÏ±‚
@@ -947,6 +947,15 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				
 				TRIGGERSOUND_DESC* pSoundDesc = m_pPlayer->Get_CurrentPlayerModel()->Get_TriggerSound(m_iCurTriggerIndex);
 				ImGui::SeparatorText("SOUND");
+				if (ImGui::Button("START"))
+				{
+					pSoundDesc->iStartAnimIndex = m_pPlayer->Get_CurrentPlayerModel()->Get_CurrentAnimationIndex();
+					_uint iCurrentAnimPos = static_cast<_uint>(m_pPlayer->Get_CurrentPlayerModel()->Get_CurrentAnimPos());
+					pSoundDesc->fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
+				}
+				ImGui::SameLine();
+				ImGui::Text("/");
+				ImGui::SameLine();
 				if (ImGui::Button("ADD##2"))
 				{
 					_uint iSelectSoundFile = m_iSelectFile;
@@ -959,13 +968,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				if (ImGui::Button("DELETE##2"))
 				{
 					pSoundDesc->strSoundNames.pop_back();
-				}
-
-				if (ImGui::Button("START"))
-				{
-					pSoundDesc->iStartAnimIndex = m_pPlayer->Get_CurrentPlayerModel()->Get_CurrentAnimationIndex();
-					_uint iCurrentAnimPos = static_cast<_uint>(m_pPlayer->Get_CurrentPlayerModel()->Get_CurrentAnimPos());
-					pSoundDesc->fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
 				}
 
 				string strStartEffectIndex = "ANIMINDEX : " + to_string(pSoundDesc->iStartAnimIndex);
@@ -1155,7 +1157,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				ImGui::End();
 
 				ImGui::Begin("TRIGGER MENU");
-				ImGui::PushItemWidth(250.f);
+				ImGui::PushItemWidth(300.f);
 
 				//¿Ã∆Â∆Æ ¿Ã∏ß ∂ÁøÏ±‚
 				vector<TRIGGEREFFECT_DESC> EffectDescs = pCurModel->Get_TriggerEffects();
@@ -1317,7 +1319,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			if (pCurModel->Get_NumTriggerSound() != 0 && m_eTriggerType == TRIGGER_SOUND)
 			{
 				ImGui::Begin("TRIGGER MENU");
-				ImGui::PushItemWidth(250.f);
+				ImGui::PushItemWidth(300.f);
 
 				CModel* pCurModel = m_pPlayer->Get_CurrentModel();
 				vector<TRIGGERSOUND_DESC> SoundDescs = pCurModel->Get_TriggerSounds();
@@ -1359,6 +1361,15 @@ HRESULT CImgui_Manager::ImGuiMenu()
 
 				TRIGGERSOUND_DESC* pSoundDesc = m_pPlayer->Get_CurrentModel()->Get_TriggerSound(m_iCurTriggerIndex);
 				ImGui::SeparatorText("SOUND");
+				if (ImGui::Button("START"))
+				{
+					pSoundDesc->iStartAnimIndex = m_pPlayer->Get_CurrentModel()->Get_CurrentAnimationIndex();
+					_uint iCurrentAnimPos = static_cast<_uint>(m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos());
+					pSoundDesc->fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
+				}
+				ImGui::SameLine();
+				ImGui::Text("/");
+				ImGui::SameLine();
 				if (ImGui::Button("ADD##2"))
 				{
 					_uint iSelectSoundFile = m_iSelectFile;
@@ -1371,13 +1382,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				if (ImGui::Button("DELETE##2"))
 				{
 					pSoundDesc->strSoundNames.pop_back();
-				}
-
-				if (ImGui::Button("START"))
-				{
-					pSoundDesc->iStartAnimIndex = m_pPlayer->Get_CurrentModel()->Get_CurrentAnimationIndex();
-					_uint iCurrentAnimPos = static_cast<_uint>(m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos());
-					pSoundDesc->fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
 				}
 
 				string strStartEffectIndex = "ANIMINDEX : " + to_string(pSoundDesc->iStartAnimIndex);
@@ -1697,6 +1701,10 @@ HRESULT CImgui_Manager::ImGuizmoMenu()
 HRESULT CImgui_Manager::SaveFile()
 {
 	CModel* pCurrentModel = m_pPlayer->Get_CurrentModel();
+	if (not pCurrentModel)
+	{
+		return S_OK;
+	}
 	_char szFilePath[MAX_PATH] = "";
 	_char szDirectory[MAX_PATH] = "";
 	_char szFileName[MAX_PATH] = "";
@@ -1909,6 +1917,10 @@ HRESULT CImgui_Manager::SaveFile()
 HRESULT CImgui_Manager::LoadFile()
 {
 	CModel* pCurrentModel = m_pPlayer->Get_CurrentModel();
+	if (not pCurrentModel)
+	{
+		return S_OK;
+	}
 
 	_char szFilePath[MAX_PATH] = "";
 	_char szDirectory[MAX_PATH] = "";
