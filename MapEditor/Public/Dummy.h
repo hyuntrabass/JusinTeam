@@ -5,7 +5,7 @@
 
 BEGIN(MapEditor)
 
-class CDummy final : public CBlendObject
+class CDummy final : public CGameObject
 {
 private:
 	CDummy(_dev pDevice, _context pContext);
