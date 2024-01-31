@@ -265,12 +265,6 @@
     <Filter Include="02.GameObjects\09.Object">
       <UniqueIdentifier>{81af0f87-34df-4131-8061-fdbca3043fe5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\09.Object\Prologue">
-      <UniqueIdentifier>{92ff68df-9a5c-4e12-bcd4-ef818437743e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\09.Object\Village">
-      <UniqueIdentifier>{8b2984b1-580e-4d35-b673-8de40cf2ad2e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Levels\04.Village">
       <UniqueIdentifier>{c2ce56cf-d551-4fb0-b7a8-880ccf58f895}</UniqueIdentifier>
     </Filter>
@@ -358,8 +352,11 @@
     <Filter Include="02.GameObjects\07. NPC\04. Aur">
       <UniqueIdentifier>{fd280966-4c1a-40f4-be13-f7c665463df0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.UI\Shop\ShopWindow">
-      <UniqueIdentifier>{338fdebf-6e70-43be-bc78-0a4fc71ca989}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\09.Object\Environment">
+      <UniqueIdentifier>{8b2984b1-580e-4d35-b673-8de40cf2ad2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\09.Object\ETC">
+      <UniqueIdentifier>{92ff68df-9a5c-4e12-bcd4-ef818437743e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -579,6 +576,9 @@
     <ClInclude Include="..\Public\Riding.h">
       <Filter>02.GameObjects\03.Player\Riding</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Inven.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven</Filter>
+    </ClInclude>
     <ClInclude Include="..\Public\Wearable_Slot.h">
       <Filter>02.GameObjects\00.UI\GameUI\Inven\Wearable Slots</Filter>
     </ClInclude>
@@ -603,11 +603,11 @@
     <ClInclude Include="..\Public\Nastron07.h">
       <Filter>02.GameObjects\04.Monster\03. Nastron\Nastron07</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Village_Object.h">
-      <Filter>02.GameObjects\09.Object\Village</Filter>
+    <ClInclude Include="..\Public\Environment_Object.h">
+      <Filter>02.GameObjects\09.Object\Environment</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Prologue_Object.h">
-      <Filter>02.GameObjects\09.Object\Prologue</Filter>
+    <ClInclude Include="..\Public\Etc_Object.h">
+      <Filter>02.GameObjects\09.Object\ETC</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Objects.h">
       <Filter>02.GameObjects\09.Object</Filter>
@@ -711,14 +711,8 @@
     <ClInclude Include="..\Public\Aur.h">
       <Filter>02.GameObjects\07. NPC\04. Aur</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Inven.h">
-      <Filter>02.GameObjects\00.UI\GameUI\Inven</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\ShopWindow.h">
-      <Filter>02.GameObjects\00.UI\Shop\ShopWindow</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Pop_Alert.h">
-      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    <ClInclude Include="..\Public\WorldMap.h">
+      <Filter>02.GameObjects\12.WorldMap</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -963,11 +957,11 @@
     <ClCompile Include="..\Private\Nastron07.cpp">
       <Filter>02.GameObjects\04.Monster\03. Nastron\Nastron07</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Village_Object.cpp">
-      <Filter>02.GameObjects\09.Object\Village</Filter>
+    <ClCompile Include="..\Private\Environment_Object.cpp">
+      <Filter>02.GameObjects\09.Object\Environment</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Prologue_Object.cpp">
-      <Filter>02.GameObjects\09.Object\Prologue</Filter>
+    <ClCompile Include="..\Private\Etc_Object.cpp">
+      <Filter>02.GameObjects\09.Object\ETC</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Objects.cpp">
       <Filter>02.GameObjects\09.Object</Filter>
@@ -1068,11 +1062,8 @@
     <ClCompile Include="..\Private\Aur.cpp">
       <Filter>02.GameObjects\07. NPC\04. Aur</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\ShopWindow.cpp">
-      <Filter>02.GameObjects\00.UI\Shop\ShopWindow</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Pop_Alert.cpp">
-      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    <ClCompile Include="..\Private\WorldMap.cpp">
+      <Filter>02.GameObjects\12.WorldMap</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1113,6 +1104,9 @@
       <Filter>97.Shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Trail_Surface.hlsl">
+      <Filter>97.Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxStatMesh_Instance.hlsl">
       <Filter>97.Shaders</Filter>
     </FxCompile>
   </ItemGroup>

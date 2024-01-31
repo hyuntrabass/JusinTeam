@@ -27,6 +27,7 @@ public:
 	_uint Get_NumVertexBuffer() { return m_iNumVertexBuffers; }
 	_uint Get_Stride() { return m_iVertexStride; }
 	_uint Get_NumPrimitives() { return m_iNumPrimitives; }
+	_uint Get_NumIndices() { return m_iNumIndices; }
 	_uint Get_IndexSizePrimitives() { return m_iIndexSizePrimitives; }
 	_uint Get_NumIndicesPrimitives() { return m_iNumIndicesPrimitives; }
 	DXGI_FORMAT Get_IndexFormat() { return m_eIndexFormat; }

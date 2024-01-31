@@ -218,7 +218,7 @@
     <ClInclude Include="..\Public\Pop_LevelUp.h" />
     <ClInclude Include="..\Public\Pop_QuestEnd.h" />
     <ClInclude Include="..\Public\Pop_QuestIn.h" />
-    <ClInclude Include="..\Public\Prologue_Object.h" />
+    <ClInclude Include="..\Public\Etc_Object.h" />
     <ClInclude Include="..\Public\Quest.h" />
     <ClInclude Include="..\Public\QuestBox.h" />
     <ClInclude Include="..\Public\Rabbit.h" />
@@ -265,13 +265,14 @@
     <ClInclude Include="..\Public\UI_Manager.h" />
     <ClInclude Include="..\Public\ModelTest.h" />
     <ClInclude Include="..\Public\Terrain.h" />
-    <ClInclude Include="..\Public\Village_Object.h" />
+    <ClInclude Include="..\Public\Environment_Object.h" />
     <ClInclude Include="..\Public\Void01.h" />
     <ClInclude Include="..\Public\Void05.h" />
     <ClInclude Include="..\Public\Void09.h" />
     <ClInclude Include="..\Public\Void20.h" />
     <ClInclude Include="..\Public\Void23.h" />
     <ClInclude Include="..\Public\Wearable_Slot.h" />
+    <ClInclude Include="..\Public\WorldMap.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
@@ -339,7 +340,7 @@
     <ClCompile Include="..\Private\Pop_LevelUp.cpp" />
     <ClCompile Include="..\Private\Pop_QuestEnd.cpp" />
     <ClCompile Include="..\Private\Pop_QuestIn.cpp" />
-    <ClCompile Include="..\Private\Prologue_Object.cpp" />
+    <ClCompile Include="..\Private\Etc_Object.cpp" />
     <ClCompile Include="..\Private\Quest.cpp" />
     <ClCompile Include="..\Private\QuestBox.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />
@@ -383,13 +384,14 @@
     <ClCompile Include="..\Private\UI_Manager.cpp" />
     <ClCompile Include="..\Private\ModelTest.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
-    <ClCompile Include="..\Private\Village_Object.cpp" />
+    <ClCompile Include="..\Private\Environment_Object.cpp" />
     <ClCompile Include="..\Private\Void01.cpp" />
     <ClCompile Include="..\Private\Void05.cpp" />
     <ClCompile Include="..\Private\Void09.cpp" />
     <ClCompile Include="..\Private\Void20.cpp" />
     <ClCompile Include="..\Private\Void23.cpp" />
     <ClCompile Include="..\Private\Wearable_Slot.cpp" />
+    <ClCompile Include="..\Private\WorldMap.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -407,6 +409,7 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxCubeTex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxStatMesh.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxStatMesh_Instance.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxStatMesh_Water.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Instancing.hlsl" />

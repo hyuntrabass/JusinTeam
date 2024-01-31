@@ -14,7 +14,7 @@ protected:
 public:
 	const _bool& isDead() const { return m_isDead; }
 	const _int& Get_HP() const { return m_iHP; }
-
+	_int Get_ID() { return m_iID; }
 	void Kill() { m_isDead = true; }
 	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) { m_iHP -= iDamage; }
 	void InitRendered() { m_isRendered = false; }
@@ -45,6 +45,7 @@ protected:
 	_bool m_isDead{ false };
 	_int m_iHP{};
 	_bool m_isRendered{ false };
+	_int m_iID = 0;
 
 protected:
 	HRESULT Add_Component(_uint iLevelIndex, const wstring& strPrototypeTag, const wstring& strComTag, _Inout_ CComponent** ppComponent, void* pArg = nullptr);

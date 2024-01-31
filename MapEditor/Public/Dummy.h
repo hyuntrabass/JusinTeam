@@ -5,7 +5,7 @@
 
 BEGIN(MapEditor)
 
-class CDummy final : public CBlendObject
+class CDummy final : public CGameObject
 {
 private:
 	CDummy(_dev pDevice, _context pContext);
@@ -60,7 +60,6 @@ private:
 	_bool m_isCreate{false};
 	_bool m_isInstancing{ false };
 	vector<_vec4> m_vInstancePos;
-	_int m_iID = 0;
 
 private:
 	HRESULT Add_Components();

@@ -5,6 +5,7 @@
 #include "Level_Select.h"
 #include "Level_GamePlay.h"
 #include "Level_Village.h"
+#include "Level_Dungeon.h"
 #include "Loading.h"
 #include "Loading_Horse.h"
 
@@ -70,8 +71,8 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 		case Client::LEVEL_VILLAGE:
 			pLevel = CLevel_Village::Create(m_pDevice, m_pContext);
 			break;
-		//case Client::LEVEL_CLOUD:
-		//	pLevel = CLevel_Stage2::Create(m_pDevice, m_pContext);
+		//case Client::LEVEL_DUNGEON:
+		//	pLevel = CLevel_Dungeon::Create(m_pDevice, m_pContext);
 		//	break;
 		}
 		
