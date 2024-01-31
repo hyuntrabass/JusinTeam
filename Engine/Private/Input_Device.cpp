@@ -59,6 +59,14 @@ void CInput_Device::Update_InputDev()
 {
 	if (GetForegroundWindow() != m_hWnd)
 	{
+		for (_uint i = 0; i < UCHAR_MAX + 1; i++)
+		{
+			m_byKeyState[i] = {};
+		}
+		for (_uint i = 0; i < DIM_END; i++)
+		{
+			m_MouseState.rgbButtons[i] = {};
+		}
 		return;
 	}
 
