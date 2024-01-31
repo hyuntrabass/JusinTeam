@@ -167,6 +167,9 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
+	if(FAILED(m_pGameInstance->Add_RenderTarget(L"Target_Emissive", static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
 #pragma endregion
 
 
@@ -317,6 +320,9 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_Lights", L"Target_Emissive")))
+		return E_FAIL;
+
 #pragma endregion
 
 #pragma region MRT_Refraction_Light
@@ -431,6 +437,10 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Depth"), _float2(50.f, 250.f), _float2(100.f, 100.f))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Rim"), _float2(50.f, 350.f), _float2(100.f, 100.f))))
 	{
 		return E_FAIL;
 	}
@@ -915,6 +925,7 @@ HRESULT CRenderer::Render_NonBlend_Instance()
 
 	return S_OK;
 }
+
 HRESULT CRenderer::Render_Refraction()
 {
 	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Refraction"))))
@@ -1310,10 +1321,6 @@ HRESULT CRenderer::Render_Deferred()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_NormalTexture", TEXT("Target_Normal"))))
-	{
-		return E_FAIL;
-	}
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_ShadeTexture", TEXT("Target_Shade"))))
 	{
 		return E_FAIL;
@@ -1335,6 +1342,16 @@ HRESULT CRenderer::Render_Deferred()
 		return E_FAIL;
 	}
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_VelocityTexture", TEXT("Target_Velocity"))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_RimMaskTexture", TEXT("Target_Rim"))))
+		return E_FAIL;
+
+
+	if (m_pGameInstance->Key_Down(DIK_F5))
+		m_TurnOnRim = !m_TurnOnRim;
+
+	if (FAILED(m_pShader->Bind_RawValue("TurnOnRim", &m_TurnOnRim, sizeof(_bool))))
 		return E_FAIL;
 
 	/*_uint iNumViewPorts{ 1 };
@@ -1608,20 +1625,12 @@ HRESULT CRenderer::Render_HDR()
 	if (m_pGameInstance->Key_Down(DIK_F4))
 		m_TurnOnBlur = !m_TurnOnBlur;
 
-	if (m_pGameInstance->Key_Down(DIK_F5)) {
-		m_iChangeToneMap++;
-		if (8 <= m_iChangeToneMap)
-			m_iChangeToneMap = 0;
-	}
-
 	if (FAILED(m_pShader->Bind_RawValue("TurnOnToneMap", &m_TurnOnToneMap, sizeof(_bool))))
 		return E_FAIL;
 
 	if (FAILED(m_pShader->Bind_RawValue("TurnOnBlur", &m_TurnOnBlur, sizeof(_bool))))
 		return E_FAIL;
 
-	if (FAILED(m_pShader->Bind_RawValue("ChangeToneMap", &m_iChangeToneMap, sizeof(_uint))))
-		return E_FAIL;
 
 	if (FAILED(m_pShader->Begin(DefPass_HDR)))
 	{
@@ -1957,6 +1966,7 @@ HRESULT CRenderer::Clear_Instance()
 	}
 	return S_OK;
 }
+
 CRenderer* CRenderer::Create(_dev pDevice, _context pContext)
 {
 	CRenderer* pInstance = new CRenderer(pDevice, pContext);

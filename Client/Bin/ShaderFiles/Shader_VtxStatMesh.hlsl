@@ -27,6 +27,8 @@ float2 g_vUVTransform;
 // ¿ø¸í
 float4 g_vClipPlane;
 
+float4 g_RimColor;
+
 
 struct VS_IN
 {
@@ -147,6 +149,8 @@ struct PS_OUT_DEFERRED
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
     vector vSpecular : SV_Target3;
+    vector vVelocity : SV_Target4;
+    vector vRimMask : SV_Target5;
 };
 
 struct PS_OUT
@@ -176,7 +180,7 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
         vNormal = normalize(Input.vNor.xyz);
     }
     
-    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
+    vector vSpecular = vector(0.1f, 0.1f, 0.1f, 0.1f);
     if (g_HasSpecTex)
     {
         vSpecular = g_SpecTexture.Sample(LinearSampler, Input.vTex);
@@ -405,7 +409,7 @@ PS_OUT_DEFERRED PS_Main_Water(PS_WATER_IN Input)
         vNormal = normalize(Input.vNor.xyz);
     }
     
-    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
+    vector vSpecular = vector(0.1f, 0.1f, 0.1f, 0.1f);
     if (g_HasSpecTex)
     {
         vSpecular = g_SpecTexture.Sample(LinearSampler, Input.vTex);
@@ -415,6 +419,52 @@ PS_OUT_DEFERRED PS_Main_Water(PS_WATER_IN Input)
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
     Output.vSpecular = vSpecular;
+    
+    return Output;
+}
+
+PS_OUT_DEFERRED PS_Main_Rim(PS_IN Input)
+{
+    PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    float3 vNormal;
+    if (g_HasNorTex)
+    {
+        vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
+    
+        vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+        float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
+    
+        vNormal = normalize(mul(normalize(vNormal), WorldMatrix) * -1.f);
+    }
+    else
+    {
+        vNormal = normalize(Input.vNor.xyz);
+    }
+    
+    vector vSpecular = vector(0.1f, 0.1f, 0.1f, 0.1f);
+    if (g_HasSpecTex)
+    {
+        vSpecular = g_SpecTexture.Sample(LinearSampler, Input.vTex);
+    }
+    
+    float3 vToCamera = normalize(g_vCamPos - Input.vWorldPos).xyz;
+    
+    float fRim = smoothstep(0.5f, 1.f, 1.f - max(0.f, dot(vNormal, vToCamera)));
+    
+    vector vRimColor = g_RimColor * fRim;
+    
+    Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
+    Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vSpecular = vSpecular;
+    Output.vVelocity = 0.f;
+    Output.vRimMask = vRimColor;
     
     return Output;
 }
@@ -614,5 +664,18 @@ technique11 DefaultTechniqueShader_VtxNorTex
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Water();
+    }
+
+    pass RimLight
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Rim();
     }
 };

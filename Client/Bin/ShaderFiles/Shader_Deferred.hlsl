@@ -31,6 +31,7 @@ Texture2D g_Texture;
 
 // ¿ø¸í
 Texture2D g_VelocityTexture;
+Texture2D g_RimMaskTexture;
 Texture2D g_SSAONoiseNormal;
 Texture2D g_SSAOTexture;
 Texture2D g_HDRTexture;
@@ -39,7 +40,7 @@ Texture2D g_TestBlurTexture;
 bool TurnOnSSAO;
 bool TurnOnToneMap;
 bool TurnOnBlur;
-uint ChangeToneMap;
+bool TurnOnRim;
 SSAO_DESC g_SSAO;
 HDR_DESC g_HDR;
 
@@ -142,6 +143,7 @@ struct PS_OUT_Light
 {
     vector vShade : SV_Target0;
     vector vSpecular : SV_Target1;
+    vector vEmissive : SV_Target2;
 };
 
 PS_OUT_Light PS_Main_Directional(PS_IN Input)
@@ -150,11 +152,9 @@ PS_OUT_Light PS_Main_Directional(PS_IN Input)
     
     vector vNormal = Get_Normal(Input.vTexcoord);
     
-    vector vSpecDesc = g_ObjectSpecTexture.Sample(PointSampler, Input.vTexcoord);
-    
     //Output.vShade = max(dot(normalize(g_vLightDir) * -1.f, vNormal), 0.f);
     //Output.vShade = g_vLightDiffuse * saturate(ceil(max(dot(normalize(g_vLightDir) * -1.f, vNormal), 0.f) * 2.f) / 2.f + g_vLightAmbient); // Ä«Å÷
-    Output.vShade = g_vLightDiffuse * saturate(max(dot(normalize(g_vLightDir) * -1.f, normalize(vNormal)), 0.f) + g_vLightAmbient); // Ä«Å÷X
+    Output.vShade = g_vLightDiffuse * saturate(max(dot(normalize(g_vLightDir) * -1.f, vNormal), 0.f) + g_vLightAmbient); // Ä«Å÷X
     
     vector vReflect = normalize(reflect(normalize(g_vLightDir), vNormal));
     
@@ -162,7 +162,15 @@ PS_OUT_Light PS_Main_Directional(PS_IN Input)
     
     vector vLook = vWorldPos - g_vCamPosition;
     
+    vector vSpecDesc = g_ObjectSpecTexture.Sample(PointSampler, Input.vTexcoord);
+    
     Output.vSpecular = vSpecDesc * g_vLightSpecular * pow(saturate(dot(normalize(vLook) * -1.f, vReflect)), 30.f);
+    
+    //vector vRimMask = g_RimMaskTexture.Sample(LinearSampler, Input.vTexcoord);
+    
+    //float fRimInensity = dot(vSpecDesc.rgb, vRimMask.rgb);
+    
+    //Output.vEmissive = vRimMask * fRimInensity;
     
     return Output;
 }
@@ -171,11 +179,10 @@ PS_OUT_Light PS_Main_Point(PS_IN Input)
 {
     PS_OUT_Light Output = (PS_OUT_Light) 0;
     
-    vector vNormalDesc = g_NormalTexture.Sample(PointSampler, Input.vTexcoord);
     vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
     float fViewZ = vDepthDesc.y * g_vCamNF.y;
     
-    vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
+    vector vNormal = Get_Normal(Input.vTexcoord);
     
     vector vSpecDesc = g_ObjectSpecTexture.Sample(PointSampler, Input.vTexcoord);
     
@@ -193,6 +200,12 @@ PS_OUT_Light PS_Main_Point(PS_IN Input)
     vector vLook = vWorldPos - g_vCamPosition;
     
     Output.vSpecular = fAtt * (vSpecDesc * g_vLightSpecular * pow(saturate(dot(normalize(vLook) * -1.f, vReflect)), 30.f));
+    
+    //vector vRimMask = g_RimMaskTexture.Sample(LinearSampler, Input.vTexcoord);
+    
+    //float fRimInensity = dot(vSpecDesc.rgb, vRimMask.rgb);
+    
+    //Output.vEmissive = fAtt * vRimMask * fRimInensity;
     
     return Output;
 }
@@ -238,7 +251,13 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     vShade.a = 1.f;
     vector vSpecular = g_SpecularTexture.Sample(LinearSampler, Input.vTexcoord);
     
-    FinalColor = vDiffuse * vShade + vSpecular;
+    vector vRimMask = g_RimMaskTexture.Sample(LinearSampler, Input.vTexcoord);
+    vRimMask.a = 0.f;
+    
+    if (TurnOnRim)
+        vRimMask = 0.f;
+    
+    FinalColor = vDiffuse * vShade + vSpecular + vRimMask;
     
     vector vSsaoDesc = g_SSAOTexture.Sample(LinearSampler, Input.vTexcoord);
     
