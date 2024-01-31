@@ -19,9 +19,9 @@ CVIBuffer_Mesh_Instance::CVIBuffer_Mesh_Instance(const CVIBuffer_Mesh_Instance& 
 HRESULT CVIBuffer_Mesh_Instance::Init_Prototype(_uint iMaxCount)
 {
 	m_iMaxCount = iMaxCount;
-	vector<VTXMESHINSTANCING> MeshInstance(m_iMaxCount);
+	vector<Instance_Data> MeshInstance(m_iMaxCount);
 
-	m_iVertexStride = sizeof(VTXMESHINSTANCING);
+	m_iVertexStride = sizeof(Instance_Data);
 	m_iNumVertexBuffers = 1;
 
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
@@ -75,20 +75,22 @@ HRESULT CVIBuffer_Mesh_Instance::Render(CMesh* pMesh)
 	m_pContext->IASetPrimitiveTopology(pMesh->Get_PrimitiveTopology());
 	const _uint iInstanceCount = static_cast<_uint>(m_vMeshInstance.size());
 	D3D11_MAPPED_SUBRESOURCE SubResource{};
+	SubResource.RowPitch = iInstanceCount;
 	
 	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource);
 	{
-		::memcpy(SubResource.pData, m_vMeshInstance.data(), sizeof(VTXMESHINSTANCING) * iInstanceCount);
+		::memcpy(SubResource.pData, m_vMeshInstance.data(), sizeof(Instance_Data) * iInstanceCount);
 	}
+
 	m_pContext->Unmap(m_pVB, 0);
 	
 	m_pContext->IASetVertexBuffers(1, 1, &m_pVB, &m_iVertexStride, iOffsets);
-	m_pContext->DrawIndexedInstanced(pMesh->Get_NumIndicesPrimitives() * pMesh->Get_NumPrimitives(), iInstanceCount, 0, 0, 0);
+	m_pContext->DrawIndexedInstanced(pMesh->Get_NumIndices(), iInstanceCount, 0, 0, 0);
 
 	return S_OK;
 }
 
-void CVIBuffer_Mesh_Instance::Add_Instance(VTXMESHINSTANCING& MeshData)
+void CVIBuffer_Mesh_Instance::Add_Instance(Instance_Data& MeshData)
 {
 	m_vMeshInstance.push_back(MeshData);
 }

@@ -103,5 +103,5 @@
 #include "Lake.h"
 
 // Object
-#include "Prologue_Object.h"
-#include "Village_Object.h"
+#include "Etc_Object.h"
+#include "Environment_Object.h"

@@ -37,8 +37,6 @@ private:
 	CRenderer* m_pRendererCom = { nullptr };
 	CCollider* m_pColliderCom = { nullptr };
 
-	CModel* m_pModelCom = { nullptr }; // Sphere(Test)
-
 private: // Groar_Boss Component
 	CModel* m_pGroarModel = { nullptr };
 	CTransform* m_pGroarTransform = { nullptr };
@@ -54,6 +52,12 @@ private: // SIX_MISSILE
 	static _uint m_iMissileID;
 	_uint m_iMissileIndex = {};
 	_float m_fDepartTime = {};
+	_float m_fEffectTimer{};
+
+private:
+	_mat m_EffectMatrix{};
+	class CEffect_Dummy* m_pEffect_Ball{};
+	class CEffect_Dummy* m_pEffect_Smoke{};
 
 public:
 	HRESULT Add_Components();
