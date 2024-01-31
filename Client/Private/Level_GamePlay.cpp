@@ -419,7 +419,7 @@ HRESULT CLevel_GamePlay::Ready_Map()
 	CLake::WATER_DESC Desc;
 	Desc.fReflectionScale = 10.f;
 	Desc.fRefractionScale = 10.f;
-	Desc.vPos = _vec3(100.f, -1.f, 100.f);
+	Desc.vPos = _vec3(100.f, 0.1f, 100.f);
 	Desc.vSize = _vec2(200.f,200.f);
 	Desc.fWaterSpeed = 10.f;
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, L"Layer_Map", L"Prototype_GameObject_Water", &Desc)))
