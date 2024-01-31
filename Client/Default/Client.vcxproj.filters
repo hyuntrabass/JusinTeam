@@ -358,6 +358,9 @@
     <Filter Include="02.GameObjects\07. NPC\04. Aur">
       <UniqueIdentifier>{fd280966-4c1a-40f4-be13-f7c665463df0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.UI\Shop\ShopWindow">
+      <UniqueIdentifier>{338fdebf-6e70-43be-bc78-0a4fc71ca989}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -576,9 +579,6 @@
     <ClInclude Include="..\Public\Riding.h">
       <Filter>02.GameObjects\03.Player\Riding</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Inven.h">
-      <Filter>02.GameObjects\00.UI\GameUI\Inven</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Wearable_Slot.h">
       <Filter>02.GameObjects\00.UI\GameUI\Inven\Wearable Slots</Filter>
     </ClInclude>
@@ -710,6 +710,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\Aur.h">
       <Filter>02.GameObjects\07. NPC\04. Aur</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Inven.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ShopWindow.h">
+      <Filter>02.GameObjects\00.UI\Shop\ShopWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Pop_Alert.h">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1058,6 +1067,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Aur.cpp">
       <Filter>02.GameObjects\07. NPC\04. Aur</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ShopWindow.cpp">
+      <Filter>02.GameObjects\00.UI\Shop\ShopWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Pop_Alert.cpp">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

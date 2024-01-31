@@ -31,6 +31,7 @@ private:
 	_bool										m_isPrototype{ false };
 	_bool										m_bNewItemIn{ false };
 	_bool										m_isActive{ false };
+	_bool										m_isReset{ false };
 
 	CGameObject*								m_pMoney{ nullptr };
 	CGameObject*								m_pDiamond{ nullptr };

@@ -4,14 +4,12 @@
 
 BEGIN(Client)
 
-class CJobMark final : public COrthographicObject
+class CPop_Alert final : public COrthographicObject
 {
-public:
-	enum JOBSTATE{ BOW, ASSASSIN, JOBSTATE_END };
 private:
-	CJobMark(_dev pDevice, _context pContext);
-	CJobMark(const CJobMark& rhs);
-	virtual ~CJobMark() = default;
+	CPop_Alert(_dev pDevice, _context pContext);
+	CPop_Alert(const CPop_Alert& rhs);
+	virtual ~CPop_Alert() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -22,24 +20,24 @@ public:
 
 private:
 	CRenderer* m_pRendererCom{ nullptr };
-	CShader* m_pShaderCom{ nullptr };
-	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
-	CTexture* m_pTextureCom{ nullptr };
 
 private:
-	WEAPON_TYPE m_eType = { WP_BOW };
+	_bool			m_isMain{ false };
+	_uint			m_iMoney{ 0 };
+	_float			m_fExp{ 0.f };
+	_float			m_fDir{ -1.f };
 
-	JOBSTATE m_eCurState{ BOW };
-	JOBSTATE m_ePrevState{ BOW };
+	queue<wstring>  m_AlertQueue;
 
-	CGameObject* m_pJob{ nullptr };
+public:
+	void Set_Alert(wstring strText);
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CJobMark* Create(_dev pDevice, _context pContext);
+	static CPop_Alert* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

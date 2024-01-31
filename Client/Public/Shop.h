@@ -31,6 +31,7 @@ private:
 	STATE										m_ePrevShopType{ EXPENDABLE };
 	_bool										m_isPrototype{ false };
 	_bool										m_isActive{ false };
+	_bool										m_isFrameExist{ false };
 
 	CGameObject*								m_pMoney{ nullptr };
 	CGameObject*								m_pDiamond{ nullptr };

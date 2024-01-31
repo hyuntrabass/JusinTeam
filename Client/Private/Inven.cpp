@@ -66,17 +66,16 @@ HRESULT CInven::Init(void* pArg)
 	strItem = TEXT("신화옷");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);
 	
-	/*
-	strItem = TEXT("유니크검");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
-	
-	strItem = TEXT("유니크활");
+	strItem = TEXT("그냥활");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);
 
-	*/
 	strItem = TEXT("그냥옷");
 	ITEM eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
 	m_pWearableSlots[W_CHEST]->Set_WearableItem(eItem);
+
+	strItem = TEXT("그냥검");
+	eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
+	m_pWearableSlots[W_EQUIP]->Set_WearableItem(eItem);
 	return S_OK;
 }
 
@@ -114,6 +113,11 @@ void CInven::Tick(_float fTimeDelta)
 			Init_InvenState();
 		}
 	}
+
+	if (!m_isActive)
+	{
+		return;
+	}
 	if (TRUE == PtInRect(&dynamic_cast<CTextButton*>(m_pExitButton)->Get_Rect(), ptMouse)
 		|| PtInRect(&dynamic_cast<CTextButton*>(m_pTitleButton)->Get_Rect(), ptMouse))
 	{
@@ -150,6 +154,26 @@ void CInven::Tick(_float fTimeDelta)
 					m_pWearableSlots[i]->Delete_Item();
 				}
 				break;
+			}
+		}	
+
+		if (m_isReset)
+		{
+			_bool isReset = false;
+			for (size_t i = 0; i < WEARABLE_TYPE::W_END; i++)
+			{
+				if (m_pWearableSlots[i]->Is_Full())
+				{
+					ITEM Item = m_pWearableSlots[i]->Get_ItemDesc();
+					dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(Item);
+					m_pWearableSlots[i]->Delete_Item();
+					isReset = true;
+					break;
+				}
+			}
+			if (!isReset)
+			{
+				m_isReset = false;
 			}
 		}
 
@@ -258,15 +282,7 @@ HRESULT CInven::Set_WearableItem(WEARABLE_TYPE eType, ITEM eItemDesc)
 
 void CInven::Reset_WearableSlot()
 {
-	for (size_t i = 0; i < WEARABLE_TYPE::W_END; i++)
-	{
-		if (m_pWearableSlots[i]->Is_Full())
-		{
-			ITEM Item = m_pWearableSlots[i]->Get_ItemDesc();
-			dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(Item);
-			m_pWearableSlots[i]->Delete_Item();
-		}
-	}
+	m_isReset = true;
 }
 
 HRESULT CInven::Add_Parts()

@@ -170,6 +170,7 @@ namespace Client
 		D_MOUSE,
 		D_FADE,
 		D_LOADING,
+		D_ALERT,
 		D_INVEN,
 		D_SHOP,
 		D_QUEST,
@@ -279,6 +280,7 @@ namespace Client
 		_uint iPurchase;
 		_uint iSale;
 		_uint iPartIndex{};
+		_uint iLimited;
 
 	}ITEM;
 

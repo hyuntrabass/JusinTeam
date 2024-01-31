@@ -413,7 +413,7 @@ HRESULT CPlayer::Render()
 		Render_Parts(PT_FACE, m_Face_CurrentIndex);
 	if (m_Helmet_CurrentIndex >= 0 && !m_bHelmet_Hide)
 		Render_Parts(PT_HELMET, m_Helmet_CurrentIndex);
-	if (m_Weapon_CurrentIndex != WP_INDEX_END)
+	if (m_Weapon_CurrentIndex < WP_UNEQUIP)
 		Render_Parts(PT_WEAPON, (_uint)m_Weapon_CurrentIndex);
 
 
@@ -770,6 +770,7 @@ void CPlayer::Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex)
 
 		m_Weapon_CurrentIndex = ChangeIndex;
 		m_Current_Weapon = PartsType;
+		m_bWeapon_Unequip = false;
 	}
 }
 

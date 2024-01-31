@@ -528,11 +528,13 @@ void CInvenFrame::Set_Item(ITEM eItem, _uint iNum)
 	{
 		CItem::ITEM_DESC ItemDesc{};
 		ItemDesc.bCanInteract = true;
+		ItemDesc.haveBG = true;
 		ItemDesc.eItemDesc = eItem;
 		ItemDesc.iNum = iNum;
 		ItemDesc.fDepth = m_fDepth - 0.05f;
-		ItemDesc.vSize = _vec2(50.f, 50.f);
+		ItemDesc.vSize = _vec2(66.f, 66.f);
 		ItemDesc.vPosition = _vec2(-50.f, -50.f);
+
 		CItem* pItem = (CItem*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Item"), &ItemDesc);
 		if (pItem == nullptr)
 		{
@@ -543,6 +545,7 @@ void CInvenFrame::Set_Item(ITEM eItem, _uint iNum)
 
 	m_vecItemsSlot[INVEN_ALL].push_back(m_vecItems.back());
 	m_vecItemsSlot[(INVEN_TYPE)eItem.iInvenType].push_back(m_vecItems.back());
+	Set_ItemPosition(m_eCurInvenType);
 }
 
 void CInvenFrame::ItemSlot_Logic(_uint iSlotIdx, _uint iIndex)
@@ -660,6 +663,18 @@ void CInvenFrame::Delete_Item(INVEN_TYPE eInvenType, _uint iIndex)
 	Set_ItemPosition(m_eCurInvenType);
 }
 
+const CItem* CInvenFrame::Find_Item(wstring& strName) const
+{
+	for (auto& iter : m_vecItems)
+	{
+		if (iter->Get_ItemDesc().strName == strName)
+		{
+			return iter;
+		}
+	}
+	return nullptr;
+}
+
 void CInvenFrame::Picking_InvenButton(POINT ptMouse)
 {
 
@@ -677,7 +692,7 @@ void CInvenFrame::Picking_InvenButton(POINT ptMouse)
 				}
 			}
 		}
-		if (m_iCurItemType ==ITEM_BODY || m_iCurItemType == ITEM_TOP || m_iCurItemType == ITEM_SWORD)
+		if (m_iCurItemType ==ITEM_BODY || m_iCurItemType == ITEM_TOP || m_iCurItemType == ITEM_SWORD || m_iCurItemType == ITEM_BOW)
 		{
 			ITEM eItem = m_vecItemsSlot[m_eCurInvenType][m_iCurIndex]->Get_ItemDesc();
 			WEARABLE_TYPE eType{};
@@ -691,6 +706,10 @@ void CInvenFrame::Picking_InvenButton(POINT ptMouse)
 				eType = W_CHEST;
 			}
 			else if (m_iCurItemType == ITEM_SWORD)
+			{
+				eType = W_EQUIP;
+			}
+			else if (m_iCurItemType == ITEM_BOW)
 			{
 				eType = W_EQUIP;
 			}
@@ -754,6 +773,31 @@ void CInvenFrame::Picking_InvenButton(POINT ptMouse)
 void CInvenFrame::Picking_ShopButton(POINT ptMouse)
 {
 
+	for (size_t i = 0; i < m_vecItemsSlot[m_eCurInvenType].size(); i++)
+	{
+		if (PtInRect(&m_vecItemsSlot[m_eCurInvenType][i]->Get_Rect(), ptMouse))
+		{
+			if (m_vecItemsSlot[m_eCurInvenType][i]->Get_ItemDesc().iSale == 0)
+			{
+				//판매불가능 알람 띄우기
+				return;
+			}
+			if (m_vecItemsSlot[m_eCurInvenType][i]->Get_Border())
+			{
+				for (size_t j = 0; j < m_vecSellItems.size(); j++)
+				{
+					m_vecSellItems.erase(m_vecSellItems.begin() + j);
+				}
+				m_vecItemsSlot[m_eCurInvenType][i]->Set_Border(false);
+			}
+			else
+			{
+				m_vecSellItems.push_back(m_vecItemsSlot[m_eCurInvenType][i]);
+				m_vecItemsSlot[m_eCurInvenType][i]->Set_Border(true);
+			}
+			break;
+		}
+	}
 }
 
 void CInvenFrame::Inven_Tick(_float fTimeDelta, POINT ptMouse)
@@ -802,6 +846,22 @@ void CInvenFrame::Inven_Tick(_float fTimeDelta, POINT ptMouse)
 	{
 		m_pSlotSettingButton->Tick(fTimeDelta);
 		m_pWearableClearButton->Tick(fTimeDelta);
+		if (PtInRect(&m_pWearableClearButton->Get_InitialRect(), ptMouse))
+		{
+			m_pWearableClearButton->Set_Size(140.f, 80.f, 0.3f);
+			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
+			{
+				dynamic_cast<CInven*>(m_pParent)->Reset_WearableSlot();
+				Set_ItemPosition(m_eCurInvenType);
+			}
+		}
+		else
+		{
+			m_pWearableClearButton->Set_Size(150.f, 100.f, 0.35f);
+		}
+
+
+
 
 	}
 	if (m_isActiveQuickSlot)
@@ -847,21 +907,7 @@ void CInvenFrame::Inven_Tick(_float fTimeDelta, POINT ptMouse)
 			dynamic_cast<CTextButton*>(m_pResetSymbol)->Set_Size(25.f, 25.f);
 		}
 
-		if (!m_isActiveQuickSlot && PtInRect(&m_pWearableClearButton->Get_InitialRect(), ptMouse))
-		{
-			m_pWearableClearButton->Set_Size(140.f, 80.f, 0.3f);
-			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
-			{
-				dynamic_cast<CInven*>(m_pParent)->Reset_WearableSlot();
-			}
-		}
-		else
-		{
-			m_pWearableClearButton->Set_Size(150.f, 100.f, 0.35f);
-		}
-
-
-
+	
 		for (_uint i = 0; i < 4; i++)
 		{
 			m_pSelectSlot[i]->Tick(fTimeDelta);
@@ -877,7 +923,25 @@ void CInvenFrame::Shop_Tick(_float fTimeDelta, POINT ptMouse)
 		m_pSellButton->Set_Size(140.f, 80.f, 0.3f);
 		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
 		{
-		
+			if (m_vecSellItems.empty())
+			{
+				return;
+			}
+			_int iCoin = 0;
+			for (size_t j = 0; j < m_vecSellItems.size(); j++)
+			{
+				for (size_t i = 0; i < m_vecItemsSlot[m_eCurInvenType].size(); i++)
+				{
+					if (m_vecItemsSlot[m_eCurInvenType][i] == m_vecSellItems[j])
+					{
+						iCoin += m_vecSellItems[j]->Get_ItemDesc().iSale * m_vecSellItems[j]->Get_ItemNum();
+						m_vecSellItems.erase(m_vecSellItems.begin() + j);
+						Delete_Item(m_eCurInvenType, i);
+					}
+				}
+			}
+			m_vecSellItems.clear();
+			CUI_Manager::Get_Instance()->Set_Coin(iCoin);
 		}
 	}
 	else
@@ -891,15 +955,16 @@ void CInvenFrame::Shop_Tick(_float fTimeDelta, POINT ptMouse)
 void CInvenFrame::Set_ItemPosition(INVEN_TYPE eInvenType)
 {
 
-	_float fSize = 50.f;
-	_float fTerm = m_fSizeX / 5.f;
-	_float fStartX = m_fX - (m_fSizeX / 2.f) + (m_fSizeX / 5.f) / 2.f;
-	_float fStartY = m_fY - m_fSizeY / 2.f + fSize / 2.f + 5.f;
+	_float fSize = 66.f;
+	_float fSizeX = m_fSizeX - 6.f;
+	_float fTerm = fSizeX / 5.f;
+	_float fStartX = m_fX - (fSizeX / 2.f) + (fSizeX / 5.f) / 2.f;// + 2.f;
+	_float fStartY = m_fY - m_fSizeY / 2.f + fSize / 2.f + 4.f;
 	for (_uint i = 0; i < m_vecItemsSlot[eInvenType].size(); i++)
 	{
 		_uint iTermY = i / 5;
 		_uint iTermX = i % 5;
-		_vec2 vPos = _vec2(fStartX + fTerm * iTermX, fStartY + fSize * iTermY + 5.f * iTermY);
+		_vec2 vPos = _vec2(fStartX + fTerm * iTermX, fStartY + fSize * iTermY + 4.f * iTermY);
 		m_vecItemsSlot[eInvenType][i]->Set_Position(vPos);
 	}
 }

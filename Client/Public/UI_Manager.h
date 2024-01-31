@@ -86,7 +86,7 @@ public:
 	void Set_FullScreenUI(_bool isShowing) { m_isShowing = isShowing; }
 	void Set_InvenActive(_bool isInvenActive) { if (m_isInvenActive && !isInvenActive) { m_isSetInvenState = false; } m_isInvenActive = isInvenActive;  }
 	void Set_Exp_ByPercent(_float fExp);
-	HRESULT Set_Coin(_uint iCoin);
+	HRESULT Set_Coin(_int iCoin);
 	HRESULT Set_Diamond(_uint iDia);
 	_bool Set_CurrentPlayerPos(_vec4 vPos);
 	void Set_MouseState(MOUSESTATE eState) { m_eMouseState = eState; }
