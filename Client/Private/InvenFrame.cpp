@@ -921,6 +921,8 @@ void CInvenFrame::Shop_Tick(_float fTimeDelta, POINT ptMouse)
 	if (PtInRect(&m_pSellButton->Get_InitialRect(), ptMouse))
 	{
 		m_pSellButton->Set_Size(140.f, 80.f, 0.3f);
+		/*
+		
 		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
 		{
 			if (m_vecSellItems.empty())
@@ -942,7 +944,7 @@ void CInvenFrame::Shop_Tick(_float fTimeDelta, POINT ptMouse)
 			}
 			m_vecSellItems.clear();
 			CUI_Manager::Get_Instance()->Set_Coin(iCoin);
-		}
+		}*/
 	}
 	else
 	{
