@@ -414,7 +414,7 @@ HRESULT CLevel_GamePlay::Ready_Map()
 		MapInfo.Prototype = MapPrototype;
 		MapInfo.m_Matrix = MapWorldMat;
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Map"), &MapInfo)))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Prologue_Map"), &MapInfo)))
 		{
 			MSG_BOX("맵 생성 실패");
 			return E_FAIL;
@@ -469,7 +469,7 @@ HRESULT CLevel_GamePlay::Ready_Environment()
 		EnvirInfo.m_WorldMatrix = EnvirWorldMat;
 		EnvirInfo.eObjectType = Object_Environment;
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Prologue_Envir"), TEXT("Prototype_GameObject_Prologue_Object"), &EnvirInfo)))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Prologue_Envir"), TEXT("Prototype_GameObject_Prologue_Envir"), &EnvirInfo)))
 		{
 			MSG_BOX("맵 생성 실패");
 			return E_FAIL;
