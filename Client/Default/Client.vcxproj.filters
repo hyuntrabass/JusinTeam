@@ -358,6 +358,9 @@
     <Filter Include="02.GameObjects\09.Object\ETC">
       <UniqueIdentifier>{92ff68df-9a5c-4e12-bcd4-ef818437743e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.UI\Shop\ShopWindow">
+      <UniqueIdentifier>{534a9ccd-a949-4ad3-b172-7e71f942c1d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -714,6 +717,12 @@
     <ClInclude Include="..\Public\WorldMap.h">
       <Filter>02.GameObjects\12.WorldMap</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Pop_Alert.h">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ShopWindow.h">
+      <Filter>02.GameObjects\00.UI\Shop\ShopWindow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1064,6 +1073,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\WorldMap.cpp">
       <Filter>02.GameObjects\12.WorldMap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Pop_Alert.cpp">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ShopWindow.cpp">
+      <Filter>02.GameObjects\00.UI\Shop\ShopWindow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
