@@ -100,8 +100,8 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 			pMapTransform->Set_State(State::Pos, ObjPosition);
 		}
 
-		//if (m_eItemType != ItemType::Environment)
-		//{
+		if (m_eItemType != ItemType::Environment)
+		{
 			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))
 			{
 				if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
@@ -111,54 +111,70 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 				FastPicking();
 			}
 
-		//}
-		//else if (m_eItemType == ItemType::Environment)
-		//{
-		//	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))
-		//	{
-		//		if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
-		//		{
-		//			_float CenterX = m_vMousePos.x;
-		//			_float CenterY = m_vMousePos.y;
-		//			_float areaSize = 10.f;
-
-		//			for (_uint y = 0; y < 5; ++y)
-		//			{
-		//				for (_uint x = 0; x < 5; ++x)
-		//				{
-		//					_float fPosX = CenterX - areaSize * 2.0f + areaSize * static_cast<float>(x);
-		//					_float fPosY = CenterY - areaSize * 2.0f + areaSize * static_cast<float>(y);
-
-		//					m_PickingPos = m_pGameInstance->PickingDepth(fPosX, fPosY);
-
-		//					m_vInstancePos.push_back(m_PickingPos);
-		//				}
-		//			}
-		//		}
-		//		FastPicking();
-		//
-		//	}
-		//}
-
-	}
-
-	if (m_pGameInstance->Mouse_Down(DIM_RBUTTON))
-	{
-		if (m_pSelectedDummy)
+		}
+		else if (m_eItemType == ItemType::Environment)
 		{
-			m_pSelectedDummy->Select(false);
-			m_pSelectedDummy = nullptr;
+
+			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))
+			{
+				if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
+				{
+					m_PickingPos = m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y);
+					m_vInstancePos.push_back(m_PickingPos);
+				}
+				FastPicking();
+			}
+
+			if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LSHIFT))
+			{
+				if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
+				{
+					fTimeDeltaAcc += fTimeDelta;
+					if (fTimeDeltaAcc > 0.1f)
+					{
+						m_PickingPos = m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y);
+						m_vInstancePos.push_back(m_PickingPos);
+						fTimeDeltaAcc = 0;
+					}
+				}
+				//FastPicking();
+			}
+
+			/*_float CenterX = m_vMousePos.x;
+			_float CenterY = m_vMousePos.y;
+			_float areaSize = 10.f;
+
+			for (_uint y = 0; y < 5; ++y)
+			{
+				for (_uint x = 0; x < 5; ++x)
+				{
+					_float fPosX = CenterX - areaSize * 2.0f + areaSize * static_cast<float>(x);
+					_float fPosY = CenterY - areaSize * 2.0f + areaSize * static_cast<float>(y);
+
+					m_PickingPos = m_pGameInstance->PickingDepth(fPosX, fPosY);
+
+					m_vInstancePos.push_back(m_PickingPos);
+				}
+			}*/
 		}
 
-		if (m_pSelectMap)
+		if (m_pGameInstance->Mouse_Down(DIM_RBUTTON))
 		{
-			m_pSelectMap->Select(false);
-			m_pSelectMap = nullptr;
-		}
-	}
+			if (m_pSelectedDummy)
+			{
+				m_pSelectedDummy->Select(false);
+				m_pSelectedDummy = nullptr;
+			}
 
+			if (m_pSelectMap)
+			{
+				m_pSelectMap->Select(false);
+				m_pSelectMap = nullptr;
+			}
+		}
+
+	}
 }
-
 HRESULT CImGui_Manager::Render()
 {
 	ImGui_ImplDX11_NewFrame();
@@ -292,9 +308,9 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			}	
 			
 			ImGui::Separator();
-			if (ImGui::InputText("Search", Serch_Name, ImGuiInputTextFlags_EnterReturnsTrue))
+			if (ImGui::InputText("Search", Search_Name, ImGuiInputTextFlags_EnterReturnsTrue))
 			{
-				int foundIdx = FindByName(Serch_Name, Maps[m_eType]);
+				int foundIdx = FindByName(Search_Name, Maps[m_eType]);
 
 				if (foundIdx != -1)
 				{
@@ -372,32 +388,48 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				m_eType = TEXT("Dungeon");
 			}
 
-			if (ImGui::BeginListBox("OBJECTS DIR", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
+			//if (ImGui::BeginListBox("OBJECTS DIR", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
+			//{
+			//	for (int n = 0; n < Objects[m_eType].size(); n++)
+			//	{
+			//		const bool is_selected = (Object_current_idx == n);
+			//		if (ImGui::Selectable(Objects[m_eType][n], is_selected))
+			//		{
+			//			Object_current_idx = n;
+			//			m_iSelectIdx = Object_current_idx;
+			//		}
+			//		if (is_selected)
+			//		{
+			//			ImGui::SetItemDefaultFocus();
+			//		}
+			//	}
+			//	ImGui::EndListBox();
+			//}
+			ImGui::NewLine();
+
+			static ImGuiTextFilter Filter;
+			Filter.Draw("Search##1");
+			ImGui::SameLine();
+			_bool shouldScrollToSelectedItem{};
+			if (ImGui::Button("Scroll##1"))
 			{
-				for (int n = 0; n < Objects[m_eType].size(); n++)
+				shouldScrollToSelectedItem = true;
+			}
+			for (int i = 0; i < Objects[m_eType].size(); ++i)
+			{
+				if (Filter.PassFilter(Objects[m_eType][i]))
 				{
-					const bool is_selected = (Object_current_idx == n);
-					if (ImGui::Selectable(Objects[m_eType][n], is_selected))
+					_bool isSelected = (i == m_iSelectIdx);
+
+					if (ImGui::Selectable(Objects[m_eType][i], isSelected))
 					{
-						Object_current_idx = n;
+						Object_current_idx = i;
 						m_iSelectIdx = Object_current_idx;
 					}
-					if (is_selected)
+					if (isSelected)
 					{
 						ImGui::SetItemDefaultFocus();
 					}
-				}
-				ImGui::EndListBox();
-			}
-
-			ImGui::Separator();
-			if (ImGui::InputText("Search", Serch_Name, ImGuiInputTextFlags_EnterReturnsTrue))
-			{
-				int foundIdx = FindByName(Serch_Name, Objects[m_eType]);
-				if (foundIdx != -1)
-				{
-					Object_current_idx = foundIdx;
-					m_iSelectIdx = Object_current_idx;
 				}
 			}
 			ImGui::Separator();
@@ -450,7 +482,9 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::RadioButton("Rock", &iSelectEnvir, 2);
 
 			_int iEnvirCount = m_EnvirList.size();
+			_int iPickingCount = m_vInstancePos.size();
 			ImGui::InputInt("Count", &iEnvirCount, 14);
+			ImGui::InputInt("Picking Count", &iPickingCount, 14);
 
 			ImGui::SeparatorText("LIST");
 			static int Environment_current_idx = 0;
@@ -460,7 +494,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			else if (iSelectEnvir == 1)	{m_eType = TEXT("Grass");}
 			else if (iSelectEnvir == 2)	{m_eType = TEXT("Rock");}
 
-			if (ImGui::BeginListBox("OBJECTS DIR", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
+		/*	if (ImGui::BeginListBox("OBJECTS DIR", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
 			{
 				for (int n = 0; n < Envirs[m_eType].size(); n++)
 				{
@@ -476,15 +510,33 @@ HRESULT CImGui_Manager::ImGuiMenu()
 					}
 				}
 				ImGui::EndListBox();
-			}
+			}*/
 			ImGui::Separator();
-			if (ImGui::InputText("Search", Serch_Name, ImGuiInputTextFlags_EnterReturnsTrue))
+			ImGui::NewLine();
+
+			static ImGuiTextFilter Filter;
+			Filter.Draw("Search##1");
+			ImGui::SameLine();
+			_bool shouldScrollToSelectedItem{};
+			if (ImGui::Button("Scroll##1"))
 			{
-				int foundIdx = FindByName(Serch_Name, Envirs[m_eType]);
-				if (foundIdx != -1)
+				shouldScrollToSelectedItem = true;
+			}
+			for (int i = 0; i < Envirs[m_eType].size(); ++i)
+			{
+				if (Filter.PassFilter(Envirs[m_eType][i]))
 				{
-					Environment_current_idx = foundIdx;
-					m_iSelectIdx = Environment_current_idx;
+					_bool isSelected = (i == m_iSelectIdx);
+
+					if (ImGui::Selectable(Envirs[m_eType][i], isSelected))
+					{
+						Environment_current_idx = i;
+						m_iSelectIdx = Environment_current_idx;
+					}
+					if (isSelected)
+					{
+						ImGui::SetItemDefaultFocus();
+					}
 				}
 			}
 			ImGui::Separator();
@@ -497,6 +549,8 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			if (ImGui::Button("Delete"))
 			{
 				Delete_Dummy();
+				if (!m_vInstancePos.empty())
+					m_vInstancePos.clear();
 			}
 
 			ImGui::SameLine();
@@ -510,6 +564,21 @@ HRESULT CImGui_Manager::ImGuiMenu()
 						m_vInstancePos.clear();
 				}
 			}
+			ImGui::SeparatorText("Picking Info");
+
+			if (ImGui::Button("Picking Delete"))
+			{
+				if (!m_vInstancePos.empty())
+					m_vInstancePos.clear();
+			}
+			ImGui::SameLine();
+
+			if (ImGui::Button("Picking One_Delete"))
+			{
+				if (!m_vInstancePos.empty())
+					m_vInstancePos.pop_back();
+			}
+
 
 			ImGui::SeparatorText("Save / Load");
 
@@ -548,7 +617,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				m_eType = TEXT("Boss");
 			}
 
-			if (ImGui::BeginListBox("MONSTER DIR", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
+		/*	if (ImGui::BeginListBox("MONSTER DIR", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
 			{
 				for (int n = 0; n < Monsters[m_eType].size(); n++)
 				{
@@ -564,16 +633,32 @@ HRESULT CImGui_Manager::ImGuiMenu()
 					}
 				}
 				ImGui::EndListBox();
-			}
-			ImGui::Separator();
-			if (ImGui::InputText("Search", Serch_Name, ImGuiInputTextFlags_EnterReturnsTrue))
-			{
-				int foundIdx = FindByName(Serch_Name, Monsters[m_eType]);
+			}*/
+			ImGui::NewLine();
 
-				if (foundIdx != -1)
+			static ImGuiTextFilter Filter;
+			Filter.Draw("Search##2");
+			ImGui::SameLine();
+			_bool shouldScrollToSelectedItem{};
+			if (ImGui::Button("Serch##2"))
+			{
+				shouldScrollToSelectedItem = true;
+			}
+			for (int i = 0; i < Monsters[m_eType].size(); ++i)
+			{
+				if (Filter.PassFilter(Monsters[m_eType][i]))
 				{
-					Monster_current_idx = foundIdx;
-					m_iSelectIdx = Monster_current_idx;
+					_bool isSelected = (i == m_iSelectIdx);
+
+					if (ImGui::Selectable(Monsters[m_eType][i], isSelected))
+					{
+						Monster_current_idx = i;
+						m_iSelectIdx = Monster_current_idx;
+					}
+					if (isSelected)
+					{
+						ImGui::SetItemDefaultFocus();
+					}
 				}
 			}
 			ImGui::Separator();
@@ -624,20 +709,47 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::SeparatorText("LIST");
 			static int NPC_current_idx = 0;
 			ImGui::Text("NPC");
-			if (ImGui::BeginListBox("NPC FILE", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
+			//if (ImGui::BeginListBox("NPC FILE", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
+			//{
+			//	for (int n = 0; n < NPCs.size(); n++)
+			//	{
+			//		const bool is_selected = (NPC_current_idx == n);
+			//		if (ImGui::Selectable(NPCs[n], is_selected))
+			//		{
+			//			NPC_current_idx = n;
+			//			m_iSelectIdx = NPC_current_idx;
+			//		}
+			//		if (is_selected)
+			//			ImGui::SetItemDefaultFocus();
+			//	}
+			//	ImGui::EndListBox();
+			//}
+			ImGui::NewLine();
+
+			static ImGuiTextFilter Filter;
+			Filter.Draw("Search##2");
+			ImGui::SameLine();
+			_bool shouldScrollToSelectedItem{};
+			if (ImGui::Button("Serch##2"))
 			{
-				for (int n = 0; n < NPCs.size(); n++)
+				shouldScrollToSelectedItem = true;
+			}
+			for (int i = 0; i < NPCs.size(); ++i)
+			{
+				if (Filter.PassFilter(NPCs[i]))
 				{
-					const bool is_selected = (NPC_current_idx == n);
-					if (ImGui::Selectable(NPCs[n], is_selected))
+					_bool isSelected = (i == m_iSelectIdx);
+
+					if (ImGui::Selectable(NPCs[i], isSelected))
 					{
-						NPC_current_idx = n;
+						NPC_current_idx = i;
 						m_iSelectIdx = NPC_current_idx;
 					}
-					if (is_selected)
+					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+					}
 				}
-				ImGui::EndListBox();
 			}
 			ImGui::Separator();
 			ImGui::SeparatorText("MATRIX : ");
@@ -673,62 +785,6 @@ HRESULT CImGui_Manager::ImGuiMenu()
 		}
 #pragma endregion
 
-#pragma region 상호작용
-		//if (ImGui::BeginTabItem("Interaction"))
-		//{
-		//	/* Interaction */
-		//	m_eItemType = ItemType::Interaction;
-		//	ImGui::SeparatorText("LIST");
-		//	static int NPC_current_idx = 0;
-		//	ImGui::Text("Interaction");
-		//	if (ImGui::BeginListBox("Interaction FILE", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
-		//	{
-		//		for (int n = 0; n < NPCs.size(); n++)
-		//		{
-		//			const bool is_selected = (NPC_current_idx == n);
-		//			if (ImGui::Selectable(NPCs[n], is_selected))
-		//			{
-		//				NPC_current_idx = n;
-		//				m_iSelectIdx = NPC_current_idx;
-		//			}
-		//			if (is_selected)
-		//				ImGui::SetItemDefaultFocus();
-		//		}
-		//		ImGui::EndListBox();
-		//	}
-		//	ImGui::Separator();
-		//	ImGui::SeparatorText("MATRIX : ");
-		//	ImGui::InputFloat4("Right", &m_ObjectMatrix.m[0][0], 0);
-		//	ImGui::InputFloat4("Up", &m_ObjectMatrix.m[1][0], 0);
-		//	ImGui::InputFloat4("Look", &m_ObjectMatrix.m[2][0], 0);
-		//	ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0], 0);
-		//	ImGui::Separator();
-		//	if (ImGui::Button("Delete"))
-		//	{
-		//		Delete_Dummy();
-		//	}
-		//	ImGui::SameLine();
-
-		//	if (ImGui::Button("Create"))
-		//	{
-		//		if (m_iSelectIdx != -1)
-		//		{
-		//			Create_Dummy(NPC_current_idx);
-		//		}
-		//	}
-		//	ImGui::Separator();
-		//	if (ImGui::Button("SAVE"))
-		//	{
-
-		//	}
-		//	ImGui::SameLine();
-		//	if (ImGui::Button("LOAD"))
-		//	{
-
-		//	}
-		//	ImGui::EndTabItem();
-		//}
-#pragma endregion
 #pragma region 카메라
 		if (ImGui::BeginTabItem("Camera"))
 		{
@@ -812,6 +868,14 @@ HRESULT CImGui_Manager::ImGuiPos()
 	ImGui::SeparatorText("Wireframe : ");
 	ImGui::Checkbox("WireFrame", &m_isMode);
 
+	ImGui::SeparatorText("DummyCount : ");
+	_int iDummyCount = m_DummyList.size();
+	ImGui::InputInt("Dummy Size", &iDummyCount, 14);
+
+	if (ImGui::Button("PopBack"))
+	{
+		PopBack_Dummy();
+	}
 	if (m_pTerrain)
 	{
 		m_pTerrain->Mode(m_isMode);
@@ -836,6 +900,7 @@ HRESULT CImGui_Manager::ImGuiPos()
 	{
 		Reset();
 	}
+
 	ImGui::SeparatorText("Pos Save : ");
 
 	if (ImGui::Button("Save_Pos"))
@@ -916,35 +981,35 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 		m_pSelectedDummy = nullptr;
 	}
 
-	//if (m_eItemType == ItemType::Environment)
-	//{
-	//	_uint InstancePos = m_vInstancePos.size();
-	//	for (_uint i = 0; i < InstancePos; i++)
-	//	{
-	//		DummyInfo Info{};
-	//		Info.ppDummy = &m_pSelectedDummy;
-	//		Info.vPos = m_vInstancePos[i];
-	//		//Info.InstancePos = m_vInstancePos;
-	//		XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_vLook)));
-	//		Info.Prototype = L"Prototype_Model_";
-	//		Info.eType = m_eItemType;
+	if (m_eItemType == ItemType::Environment)
+	{
+		_uint InstancePos = m_vInstancePos.size();
+		for (_uint i = 0; i < InstancePos; i++)
+		{
+			DummyInfo Info{};
+			Info.ppDummy = &m_pSelectedDummy;
+			Info.vPos = m_vInstancePos[i];
+			Info.InstancePos = m_vInstancePos;
+			XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_vLook)));
+			Info.Prototype = L"Prototype_Model_";
+			Info.eType = m_eItemType;
 
-	//		_tchar strUnicode[MAX_PATH]{};
-	//		MultiByteToWideChar(CP_ACP, 0, Envirs[m_eType][iListIndex], static_cast<int>(strlen(Envirs[m_eType][iListIndex])), strUnicode, static_cast<int>(strlen(Envirs[m_eType][iListIndex])));
-	//		Info.Prototype += strUnicode;
+			_tchar strUnicode[MAX_PATH]{};
+			MultiByteToWideChar(CP_ACP, 0, Envirs[m_eType][iListIndex], static_cast<int>(strlen(Envirs[m_eType][iListIndex])), strUnicode, static_cast<int>(strlen(Envirs[m_eType][iListIndex])));
+			Info.Prototype += strUnicode;
 
 
-	//		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
-	//		{
-	//			MSG_BOX("Failed to Add Layer : Dummy");
-	//		}
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
+			{
+				MSG_BOX("Failed to Add Layer : Dummy");
+			}
 
-	//		m_EnvirList.push_back(m_pSelectedDummy);
-	//		m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
-	//		m_pSelectedDummy = nullptr;
-	//	}
-	//}
-	//else
+			m_EnvirList.push_back(m_pSelectedDummy);
+			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
+			m_pSelectedDummy = nullptr;
+		}
+	}
+	else
 	{
 		DummyInfo Info{};
 		Info.ppDummy = &m_pSelectedDummy;
@@ -1001,9 +1066,9 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 		case MapEditor::ItemType::NPC:
 			m_NPCList.push_back(m_pSelectedDummy);
 			break;
-		case MapEditor::ItemType::Environment:
-			m_EnvirList.push_back(m_pSelectedDummy);
-			break;
+		//case MapEditor::ItemType::Environment:
+		//	m_EnvirList.push_back(m_pSelectedDummy);
+		//	break;
 		case MapEditor::ItemType::Trigger:
 			m_TriggerList.push_back(m_pSelectedDummy);
 			break;
@@ -1201,6 +1266,39 @@ void CImGui_Manager::Reset()
 	m_EnvirList.clear();
 
 	m_DummyList.clear();
+	if (m_pSelectedDummy)
+		m_pSelectedDummy = nullptr;
+	if (m_pSelectMap)
+		m_pSelectMap = nullptr;
+	if (m_pTerrain)
+		m_pTerrain = nullptr;
+}
+
+void CImGui_Manager::PopBack_Dummy()
+{
+	if (m_eItemType == ItemType::Map)
+	{
+		m_MapsList.pop_back();
+	}
+	if (m_eItemType == ItemType::Objects)
+	{
+		m_ObjectsList.pop_back();
+	}
+	if (m_eItemType == ItemType::Environment)
+	{
+		m_EnvirList.pop_back();
+	}
+	if (m_eItemType == ItemType::Monster)
+	{
+		m_MonsterList.pop_back();
+	}
+
+	if (m_eItemType == ItemType::NPC)
+	{
+		m_NPCList.pop_back();
+	}
+
+
 	if (m_pSelectedDummy)
 		m_pSelectedDummy = nullptr;
 	if (m_pSelectMap)

@@ -147,5 +147,5 @@ void CCamera_Main::Free()
 {
 	__super::Free();
 	//Safe_Release(m_pImGui_Manager);
-	//Safe_Release(m_pPlayerTransform);
+	Safe_Release(m_pPlayerTransform);
 }

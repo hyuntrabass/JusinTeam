@@ -60,7 +60,6 @@ private:
 	_bool m_isCreate{false};
 	_bool m_isInstancing{ false };
 	vector<_vec4> m_vInstancePos;
-	_int m_iID = 0;
 
 private:
 	HRESULT Add_Components();
