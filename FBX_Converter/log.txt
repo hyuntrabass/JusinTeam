@@ -1,53 +1,14 @@
 1. Static Only   2. Anim Only   3. All
 1
 Static Models : Start Converting...
-Converting... Com_SM_Rock_001.fbx
+Converting... ground.fbx
 Read File Succssefully
-Converting... Fol_MidbushPC_SM_001.fbx
+Converting... object.fbx
 Read File Succssefully
-Converting... Fol_MidbushPC_SM_002.fbx
-Read File Succssefully
-Converting... Fol_MidGrassPC_SM_001.fbx
-Read File Succssefully
-Converting... Fol_MidGrassPC_SM_002.fbx
-Read File Succssefully
-Converting... Fol_MidGrassPC_SM_003.fbx
-Read File Succssefully
-Converting... Fol_MidGrassPC_SM_004.fbx
-Read File Succssefully
-Converting... Fol_MidGrassPC_SM_005.fbx
-Read File Succssefully
-Converting... Fol_Mid_SM_Tree_PC_004.fbx
-Read File Succssefully
-Converting... Fol_Moss_PC_SM_001.fbx
-Read File Succssefully
-Converting... Fol_SchmrPC_SM_001.fbx
-Read File Succssefully
-Converting... Fol_SilverGrassPC_SM_001.fbx
-Read File Succssefully
-Converting... Fol_SM_AzaleaPC_002.fbx
-Read File Succssefully
-Converting... Fol_SM_CherrytreePC_001.fbx
-Read File Succssefully
-Converting... Fol_SM_CherrytreePC_002.fbx
-Read File Succssefully
-Converting... Fol_SM_CulveweedPC_002.fbx
-Read File Succssefully
-Converting... Fol_SM_CulveweedPC_003.fbx
-Read File Succssefully
-Converting... Fol_SM_FlowerPC_001.fbx
-Read File Succssefully
-Converting... Fol_SM_MusGrass_PC_001.fbx
-Read File Succssefully
-Converting... Fol_SM_MusGrass_PC_002.fbx
-Read File Succssefully
-Converting... Fol_SM_PlaneGrassPC_001.fbx
-Read File Succssefully
-Converting... Fol_SM_ReedPC_001.fbx
-Read File Succssefully
-Converting... Fol_SM_WeedPC_001.fbx
+Converting... water.fbx
+Converting... Dungeon.fbx
 Read File Succssefully
 Static Models : Convert Success!
 
-23 Static Models
+3 Static Models
 are Successfully Converted as hyuntramesh!!

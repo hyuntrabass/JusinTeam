@@ -133,7 +133,7 @@ struct PS_OUT_DEFERRED
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
     vector vSpecular : SV_Target3;
-    int ID : SV_Target5;
+    int ID : SV_Target6;
 };
 
 struct PS_OUT
