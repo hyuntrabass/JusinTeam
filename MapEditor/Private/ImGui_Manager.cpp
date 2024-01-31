@@ -139,23 +139,6 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 				}
 				//FastPicking();
 			}
-
-			/*_float CenterX = m_vMousePos.x;
-			_float CenterY = m_vMousePos.y;
-			_float areaSize = 10.f;
-
-			for (_uint y = 0; y < 5; ++y)
-			{
-				for (_uint x = 0; x < 5; ++x)
-				{
-					_float fPosX = CenterX - areaSize * 2.0f + areaSize * static_cast<float>(x);
-					_float fPosY = CenterY - areaSize * 2.0f + areaSize * static_cast<float>(y);
-
-					m_PickingPos = m_pGameInstance->PickingDepth(fPosX, fPosY);
-
-					m_vInstancePos.push_back(m_PickingPos);
-				}
-			}*/
 		}
 
 		if (m_pGameInstance->Mouse_Down(DIM_RBUTTON))
@@ -1040,9 +1023,9 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 		case ItemType::NPC:
 			MultiByteToWideChar(CP_ACP, 0, NPCs[iListIndex], static_cast<int>(strlen(NPCs[iListIndex])), strUnicode, static_cast<int>(strlen(NPCs[iListIndex])));
 			break;
-		case ItemType::Environment:
-			MultiByteToWideChar(CP_ACP, 0, Envirs[m_eType][iListIndex], static_cast<int>(strlen(Envirs[m_eType][iListIndex])), strUnicode, static_cast<int>(strlen(Envirs[m_eType][iListIndex])));
-			break;
+		//case ItemType::Environment:
+		//	MultiByteToWideChar(CP_ACP, 0, Envirs[m_eType][iListIndex], static_cast<int>(strlen(Envirs[m_eType][iListIndex])), strUnicode, static_cast<int>(strlen(Envirs[m_eType][iListIndex])));
+		//	break;
 		case ItemType::Trigger:
 			Info.Prototype = L"Prototype_Model_Collider";
 

@@ -223,16 +223,6 @@ HRESULT CDummy::Add_Components()
 		m_iOutLineShaderPass = StaticPass_OutLine;
 	}
 	
-	//if (m_eType == ItemType::Environment && m_isInstancing == true)
-	//{
-
-	//	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Info.Prototype, TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBuffer), &m_Info.InstancePos)))
-	//	{
-	//		return E_FAIL;
-	//	}
-
-	//}
-	//else
 	{
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Info.Prototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		{
@@ -269,7 +259,11 @@ HRESULT CDummy::Bind_ShaderResources()
 		{
 			return E_FAIL;
 		}
-		
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_iID", &m_iID, sizeof _int)))
+		{
+			return E_FAIL;
+		}
+
 
 		if (m_Info.eType == ItemType::Trigger)
 		{
@@ -321,7 +315,6 @@ HRESULT CDummy::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
-
 
 	
 
