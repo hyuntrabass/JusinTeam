@@ -61,7 +61,7 @@
 #include "CommonSurfaceTrail.h"
 #include "Arrow.h"
 #include "Map.h"
-
+#include "WorldMap.h"
 #include "Effect_Dummy.h"
 
 // Monster
@@ -103,5 +103,5 @@
 #include "Lake.h"
 
 // Object
-#include "Prologue_Object.h"
-#include "Village_Object.h"
+#include "Etc_Object.h"
+#include "Environment_Object.h"

@@ -562,10 +562,12 @@ HRESULT CModel::Render(_uint iMeshIndex)
 	return S_OK;
 }
 
-HRESULT CModel::Render_Instancing(_uint iMeshIndex, CVIBuffer_Mesh_Instance*& pInstanceBuffer, CModel*& pModel, CShader*& pShader)
+
+HRESULT CModel::Render_Instancing(CVIBuffer_Mesh_Instance*& pInstanceBuffer, CShader*& pShader)
 {
-	for (_uint i = 0; i < iMeshIndex; i++)
+	for (_uint i = 0; i < m_Meshes.size(); ++i)
 	{
+
 		if (FAILED(Bind_Material(pShader, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
 			return E_FAIL;
@@ -585,18 +587,10 @@ HRESULT CModel::Render_Instancing(_uint iMeshIndex, CVIBuffer_Mesh_Instance*& pI
 		{
 			return E_FAIL;
 		}
-
-		//if (FAILED(pShader->Bind_RawValue("g_bSelected", &m_isSelected, sizeof _bool)))
-		//{
-		//	return E_FAIL;
-		//}
-
-
-		if (FAILED(pShader->Begin(0)))
+		if (FAILED(pShader->Begin(3)))
 		{
 			return E_FAIL;
 		}
-
 		if (FAILED(pInstanceBuffer->Render(m_Meshes[i])))
 			return E_FAIL;
 		}

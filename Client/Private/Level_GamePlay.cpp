@@ -261,8 +261,14 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
 
 		EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Wave_Init");
-		m_WaveMatrix[2] = _mat::CreateTranslation(_vec3(91.f, 4.f, 129.5f));
+		m_WaveMatrix[2] = _mat::CreateTranslation(_vec3(108.f, 4.f, 100.f));
 		EffectDesc.pMatrix = &m_WaveMatrix[2];
+		EffectDesc.isFollow = true;
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
+
+		EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Wave_End");
+		m_WaveMatrix[3] = _mat::CreateTranslation(_vec3(110.f, 4.f, 98.f));
+		EffectDesc.pMatrix = &m_WaveMatrix[3];
 		EffectDesc.isFollow = true;
 		CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
 
@@ -285,6 +291,7 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		m_WaveMatrix[0].Position_vec3(m_WaveMatrix[0].Position_vec3() - _vec3(0.f, m_fWaveGravity, 0.f) * fTimeDelta);
 		m_WaveMatrix[1].Position_vec3(m_WaveMatrix[1].Position_vec3() - _vec3(0.f, m_fWaveGravity, 0.f) * fTimeDelta);
 		m_WaveMatrix[2].Position_vec3(m_WaveMatrix[2].Position_vec3() - _vec3(0.f, m_fWaveGravity, 0.f) * fTimeDelta);
+		m_WaveMatrix[3].Position_vec3(m_WaveMatrix[3].Position_vec3() - _vec3(0.f, m_fWaveGravity, 0.f) * fTimeDelta);
 		m_fWaveGravity += 0.981f;
 
 		m_isWave = true;
@@ -407,7 +414,7 @@ HRESULT CLevel_GamePlay::Ready_Map()
 		MapInfo.Prototype = MapPrototype;
 		MapInfo.m_Matrix = MapWorldMat;
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Map"), &MapInfo)))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Prologue_Map"), &MapInfo)))
 		{
 			MSG_BOX("맵 생성 실패");
 			return E_FAIL;
@@ -419,7 +426,7 @@ HRESULT CLevel_GamePlay::Ready_Map()
 	CLake::WATER_DESC Desc;
 	Desc.fReflectionScale = 10.f;
 	Desc.fRefractionScale = 10.f;
-	Desc.vPos = _vec3(100.f, -1.f, 100.f);
+	Desc.vPos = _vec3(100.f, 0.01f, 100.f);
 	Desc.vSize = _vec2(200.f,200.f);
 	Desc.fWaterSpeed = 10.f;
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, L"Layer_Map", L"Prototype_GameObject_Water", &Desc)))
@@ -462,7 +469,7 @@ HRESULT CLevel_GamePlay::Ready_Environment()
 		EnvirInfo.m_WorldMatrix = EnvirWorldMat;
 		EnvirInfo.eObjectType = Object_Environment;
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Prologue_Envir"), TEXT("Prototype_GameObject_Prologue_Object"), &EnvirInfo)))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Prologue_Envir"), TEXT("Prototype_GameObject_Prologue_Envir"), &EnvirInfo)))
 		{
 			MSG_BOX("맵 생성 실패");
 			return E_FAIL;

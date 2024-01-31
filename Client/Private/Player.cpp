@@ -87,6 +87,10 @@ HRESULT CPlayer::Init(void* pArg)
 void CPlayer::Tick(_float fTimeDelta)
 {
 
+
+	if (m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
+		return;
+
 	if (m_bHide && m_fDissolveRatio <= 1.f)
 	{
 		m_fDissolveRatio += fTimeDelta * 6.f;
@@ -314,6 +318,8 @@ void CPlayer::Tick(_float fTimeDelta)
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
+		return;
 
 	if (m_bIsMount)
 	{
@@ -326,11 +332,10 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	}
 
 	m_pModelCom->Set_Animation(m_Animation);
-
 	if (m_UsingMotionBlur)
-		m_ShaderIndex = 1;
-	else
 		m_ShaderIndex = 2;
+	else
+		m_ShaderIndex = 1;
 
 	if (!m_bStartGame && m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY)
 	{
@@ -414,7 +419,7 @@ HRESULT CPlayer::Render()
 		Render_Parts(PT_FACE, m_Face_CurrentIndex);
 	if (m_Helmet_CurrentIndex >= 0 && !m_bHelmet_Hide)
 		Render_Parts(PT_HELMET, m_Helmet_CurrentIndex);
-	if (m_Weapon_CurrentIndex != WP_INDEX_END)
+	if (m_Weapon_CurrentIndex < WP_UNEQUIP)
 		Render_Parts(PT_WEAPON, (_uint)m_Weapon_CurrentIndex);
 
 
@@ -672,12 +677,12 @@ HRESULT CPlayer::Render_Parts(PART_TYPE Parts, _uint Index)
 
 		if (Parts == PT_HAIR)
 		{
-			if (FAILED(m_pShaderCom->Begin(5)))
+			if (FAILED(m_pShaderCom->Begin(m_ShaderIndex+2)))
 				return E_FAIL;
 		}
 		else
 		{
-			if (FAILED(m_pShaderCom->Begin(5)))
+			if (FAILED(m_pShaderCom->Begin(m_ShaderIndex)))
 				return E_FAIL;
 		}
 		if (FAILED(m_pModelCom->Render_Part((_uint)Parts, (_uint)Index, k)))

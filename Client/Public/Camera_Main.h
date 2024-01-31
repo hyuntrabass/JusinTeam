@@ -46,6 +46,7 @@ private:
 	void Select_Mode(_float fTimeDelta);
 	void Custom_Mode(_float fTimeDelta);
 	void ZOOM_Mode(_float fTimeDelta);
+	void WorldMap_Mode(_float fTimeDelta);
 
 private:
 	_float m_fSceneTimer{};
@@ -53,6 +54,15 @@ private:
 	CUTSCENE* m_pScene{ nullptr };
 	_bool m_bSelect{};
 	_bool m_bZoomEnd{};
+	 _vec4 m_vMapPos = _vec4(990.944f, 1017.16f, 1003.75f, 1.f);
+	 _float m_fMap_RightDistance{};
+	 _float m_fLerp_RightDistance{};
+	 _float m_fMap_LookDistance{};
+	 _float m_fLerp_LookDistance{};
+	 _float m_fMap_UpDistance{};
+	 _float m_fLerp_UpDistance{};
+
+	 _float m_fCurrentMapZoom{ 1017.16f };
 public:
 	static CCamera_Main* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;

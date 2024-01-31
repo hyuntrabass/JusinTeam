@@ -115,6 +115,10 @@ _float4 CPicking::PickingDepth(_float x, _float y)
 
 	vWorldPos = vWorldPos * PickPos.y * m_pGameInstance->Get_CameraNF().y;
 
+	//float fRadius = 5.f;
+
+	//float FinalRadius = fRadius / (PickPos.y * m_pGameInstance->Get_CameraNF().y);
+
 	vWorldPos = XMVector4Transform(vWorldPos, m_pGameInstance->Get_Transform_Inversed(TransformType::Proj));
 
 	vWorldPos = XMVector4Transform(vWorldPos, m_pGameInstance->Get_Transform_Inversed(TransformType::View));

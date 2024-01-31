@@ -44,6 +44,7 @@ namespace Client
 		CS_INVEN,
 		CS_SHOP,
 		CS_ENDFULLSCREEN,
+		CS_WORLDMAP,
 		CS_STATEEND
 	};
 	struct PLAYER_STATUS
