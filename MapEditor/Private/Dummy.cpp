@@ -3,12 +3,12 @@
 static _int iID = 1;
 
 CDummy::CDummy(_dev pDevice, _context pContext)
-	: CBlendObject(pDevice, pContext)
+	: CGameObject(pDevice, pContext)
 {
 }
 
 CDummy::CDummy(const CDummy& rhs)
-	: CBlendObject(rhs)
+	: CGameObject(rhs)
 	//, m_pImGui_Manager(CImGui_Manager::Get_Instance())
 {
 	m_iID = iID++;
