@@ -197,6 +197,18 @@ HRESULT CLoader::Load_Logo()
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Arrow"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Arrow/Mesh/arrow.hyuntrastatmesh"))))
 		return E_FAIL;
+	// WorldMap
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_WorldMap_Ground"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/WorldMap/Mesh/ground.hyuntrastatmesh"))))
+		return E_FAIL;
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_WorldMap_Object"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/WorldMap/Mesh/object.hyuntrastatmesh"))))
+		return E_FAIL;
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_WorldMap_Water"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/WorldMap/Mesh/water.hyuntrastatmesh"))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Texture_WorldMap_Cloud"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/cloud.dds")))))
+		return E_FAIL;
+
 #pragma endregion
 
 	m_strLoadingText = L"Logo : Loading Shader";
@@ -207,6 +219,10 @@ HRESULT CLoader::Load_Logo()
 
 #pragma region Prototype
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Background"), CBackGround::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_WorldMap"), CWorldMap::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

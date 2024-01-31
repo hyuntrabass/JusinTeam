@@ -44,6 +44,10 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_WorldMap"), TEXT("Prototype_GameObject_WorldMap"))))
+	{
+		return E_FAIL;
+	}
 
 	//if (FAILED(Ready_UI()))
 	//{

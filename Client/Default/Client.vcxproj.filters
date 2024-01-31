@@ -711,6 +711,9 @@
     <ClInclude Include="..\Public\Aur.h">
       <Filter>02.GameObjects\07. NPC\04. Aur</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\WorldMap.h">
+      <Filter>02.GameObjects\12.WorldMap</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1058,6 +1061,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Aur.cpp">
       <Filter>02.GameObjects\07. NPC\04. Aur</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\WorldMap.cpp">
+      <Filter>02.GameObjects\12.WorldMap</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

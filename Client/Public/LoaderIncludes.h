@@ -61,7 +61,7 @@
 #include "CommonSurfaceTrail.h"
 #include "Arrow.h"
 #include "Map.h"
-
+#include "WorldMap.h"
 #include "Effect_Dummy.h"
 
 // Monster
