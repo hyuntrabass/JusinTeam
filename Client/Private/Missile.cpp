@@ -75,7 +75,7 @@ HRESULT CMissile::Init(void* pArg)
 
 		switch (m_iMissileID)
 		{
-		case 0:
+		case 0:/*_mat::CreateFromAxisAngle()*/
 			vDir = _vec4::Transform(vGroarUp, _mat::CreateRotationZ(XMConvertToRadians(60.f)));
 			m_iMissileIndex = 1;
 			break;

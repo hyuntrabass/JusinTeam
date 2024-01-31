@@ -30,48 +30,27 @@ private:
 	HRESULT Ready_Player();
 	HRESULT Ready_Map();
 	HRESULT Ready_Environment();
-
 	HRESULT Ready_Object();
-
-	// Monster
-	HRESULT Ready_ModelTest();
-
-	// Monster_Tutorial
-	HRESULT Ready_NPCvsMon();
-	HRESULT Ready_Void01();
-	HRESULT Ready_Void05();
-
-	// Monster_GamePlay
-	HRESULT Ready_Rabbit();
-	HRESULT Ready_Goat();
-	HRESULT Ready_Nastron03();
-	HRESULT Ready_Thief04();
-	HRESULT Ready_TrilobiteA();
-	HRESULT Ready_Imp();
-	HRESULT Ready_Void09();
-	HRESULT Ready_Void20();
-	HRESULT Ready_Void23();
-	HRESULT Ready_Nastron07();
-	HRESULT Ready_Spider();
-
-	// NPC
-	HRESULT Ready_Cat();
-	HRESULT Ready_Dog();
-	HRESULT Ready_NPC_Test();
-	HRESULT Ready_NPC_Dummy_Test();
-
-	// Boss
-	HRESULT Ready_Groar_Boss();
-
-	// Pet
-	HRESULT Ready_Pet();
-
-
-	HRESULT Ready_NpcvsMon();
-
+	HRESULT Ready_Tutorial_Monster(); // ¸ó½ºÅÍ ÆÄ½Ì
 
 	//UI
 	HRESULT Ready_UI();
+
+private:
+	// Monster_Test
+	HRESULT Ready_ModelTest();
+	HRESULT Ready_Monster_Test();
+
+	// NPC_Test
+	HRESULT Ready_NPC_Test();
+	HRESULT Ready_NPC_Dummy_Test();
+
+	// Boss_Test
+	HRESULT Ready_Groar_Boss();
+
+	// Pet_Test
+	HRESULT Ready_Pet();
+
 
 public:
 	static CLevel_GamePlay* Create(_dev pDevice, _context pContext);

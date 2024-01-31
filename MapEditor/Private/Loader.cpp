@@ -305,7 +305,7 @@ HRESULT CLoader::Load_Editor()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Furgoat"),
-		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Goat/Mesh/Furgoat.hyuntraanimmesh"))))
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Furgoat/Mesh/Furgoat.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}

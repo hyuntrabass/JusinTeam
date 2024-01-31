@@ -32,7 +32,6 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
-
 	if (FAILED(Ready_Camera()))
 	{
 		MSG_BOX("Failed to Ready Camera");
@@ -45,163 +44,13 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
-	// Monster
-
-	if (FAILED(Ready_ModelTest()))
-	{
-		MSG_BOX("Failed to Ready ModelTest");
-		return E_FAIL;
-	}
-	
-	/*
-	
-	if (FAILED(Ready_Rabbit()))
-	{
-		MSG_BOX("Failed to Ready Rabbit");
-		return E_FAIL;
-	}
-
-	if (FAILED(Ready_Goat()))
-	{
-		MSG_BOX("Failed to Ready Goat");
-		return E_FAIL;
-	}*/
-
-	/*
-
-	//if (FAILED(Ready_Nastron03()))
-	//{
-	//	MSG_BOX("Failed to Ready Nastron03");
-	//	return E_FAIL;
-	//}
-
-	//if (FAILED(Ready_Thief04()))
-	//{
-	//	MSG_BOX("Failed to Ready Thief04");
-	//	return E_FAIL;
-	//}
-
-	//if (FAILED(Ready_TrilobiteA()))
-	//{
-	//	MSG_BOX("Failed to Ready TrilobiteA");
-	//	return E_FAIL;
-	//}
-
-	//if (FAILED(Ready_Void01()))
-	//{
-	//	MSG_BOX("Failed to Ready Void01");
-	//	return E_FAIL;
-	//}
-
-	//if (FAILED(Ready_Void05()))
-	//{
-	//	MSG_BOX("Failed to Ready Void05");
-	//	return E_FAIL;
-	//}
-
-	//if (FAILED(Ready_Imp()))
-	//{
-	//	MSG_BOX("Failed to Ready Imp");
-	//	return E_FAIL;
-	//}
-
-	//if (FAILED(Ready_Void09()))
-	//{
-	//	MSG_BOX("Failed to Ready Void09");
-	//	return E_FAIL;
-	//}
-
-	if (FAILED(Ready_Void20()))
-	{
-		MSG_BOX("Failed to Ready Void20");
-		return E_FAIL;
-	}
-
-	//if (FAILED(Ready_Void23()))
-	//{
-	//	MSG_BOX("Failed to Ready Void23");
-	//	return E_FAIL;
-	//}
-
-	//if (FAILED(Ready_Nastron07()))
-	//{
-	//	MSG_BOX("Failed to Ready Nastron07");
-	//	return E_FAIL;
-	//}
-
-	//if (FAILED(Ready_Spider()))
-	//{
-	//	MSG_BOX("Failed to Ready Spider");
-	//	return E_FAIL;
-	//}
-
-	if (FAILED(Ready_Dog()))
-	{
-		MSG_BOX("Failed to Ready Dog");
-		return E_FAIL;
-	}
-	if (FAILED(Ready_NPC_Test()))
-	{
-		MSG_BOX("Failed to Ready NPC");
-		return E_FAIL;
-	}
-		*/
-	/*
-	
-	if (FAILED(Ready_NPC_Dummy_Test()))
-	{
-		MSG_BOX("Failed to Ready NPC_Dummy");
-		return E_FAIL;
-	}
-	*/
-
-	//// NPC
-	//if (FAILED(Ready_Cat()))
-	//{
-	//	MSG_BOX("Failed to Ready Cat");
-	//	return E_FAIL;
-	//}
-
-	//if (FAILED(Ready_Dog()))
-	//{
-	//	MSG_BOX("Failed to Ready Dog");
-	//	return E_FAIL;
-	//}
-
-	if (FAILED(Ready_NPC_Test()))
-	{
-		MSG_BOX("Failed to Ready NPC");
-		return E_FAIL;
-	}
-
-
-	//if (FAILED(Ready_NPC_Dummy_Test()))
-	//{
-	//	MSG_BOX("Failed to Ready NPC_Dummy");
-	//	return E_FAIL;
-	//}
-
-
-	// Boss
-	if (FAILED(Ready_Groar_Boss()))
-	{
-		MSG_BOX("Failed to Ready Groar_Boss");
-		return E_FAIL;
-	}
-
-	// Pet
-	if (FAILED(Ready_Pet()))
-	{
-		MSG_BOX("Failed to Ready Pet");
-		return E_FAIL;
-	}
-
 	// Map
 	if (FAILED(Ready_Map()))
 	{
 		MSG_BOX("Failed to Ready Map");
 		return E_FAIL;
 	}
+
 	// Environment
 	if (FAILED(Ready_Environment()))
 	{
@@ -209,23 +58,67 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
-
-	if (FAILED(Ready_UI()))
+	// Object
+	if (FAILED(Ready_Object()))
 	{
-		MSG_BOX("Failed to Ready UI");
+		MSG_BOX("Failed to Ready Object");
 		return E_FAIL;
 	}
+
+	// 몬스터 파싱
+	if (FAILED(Ready_Tutorial_Monster()))
+	{
+		MSG_BOX("Failed to Ready NPCvsMon");
+		return E_FAIL;
+	}
+
+	// Monster_Test
+	if (FAILED(Ready_ModelTest()))
+	{
+		MSG_BOX("Failed to Ready ModelTest");
+		return E_FAIL;
+	}
+	
+	if (FAILED(Ready_Monster_Test()))
+	{
+		MSG_BOX("Failed to Ready Monster_Test");
+		return E_FAIL;
+	}
+
+	// NPC_Test
 	if (FAILED(Ready_NPC_Test()))
 	{
 		MSG_BOX("Failed to Ready NPC");
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_Object()))
+	//if (FAILED(Ready_NPC_Dummy_Test()))
+	//{
+	//	MSG_BOX("Failed to Ready NPC_Dummy");
+	//	return E_FAIL;
+	//}
+
+	// Boss_Test
+	if (FAILED(Ready_Groar_Boss()))
 	{
-		MSG_BOX("Failed to Ready Object");
+		MSG_BOX("Failed to Ready Groar_Boss");
 		return E_FAIL;
 	}
+
+	// Pet_Test
+	if (FAILED(Ready_Pet()))
+	{
+		MSG_BOX("Failed to Ready Pet");
+		return E_FAIL;
+	}
+
+	// UI
+	if (FAILED(Ready_UI()))
+	{
+		MSG_BOX("Failed to Ready UI");
+		return E_FAIL;
+	}
+
 
 	EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Rain");
 	EffectDesc.pMatrix = &m_RainMatrix;
@@ -526,35 +419,17 @@ HRESULT CLevel_GamePlay::Ready_ModelTest()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Cat()
+HRESULT CLevel_GamePlay::Ready_Monster_Test()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Cat"), TEXT("Prototype_GameObject_Cat"))))
-	{
-		return E_FAIL;
-	}
-
-	return S_OK;
-}
-
-HRESULT CLevel_GamePlay::Ready_Dog()
-{
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Dog"), TEXT("Prototype_GameObject_Dog"))))
-	{
-		return E_FAIL;
-	}
-
 	return S_OK;
 }
 
 HRESULT CLevel_GamePlay::Ready_NPC_Test()
 {
-	
-	
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_ItemMerchant"), TEXT("Prototype_GameObject_ItemMerchant"))))
 	{
 		return E_FAIL;
 	}
-
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BlackSmith"), TEXT("Prototype_GameObject_BlackSmith"))))
 	{
@@ -673,11 +548,6 @@ HRESULT CLevel_GamePlay::Ready_Groar_Boss()
 		return E_FAIL;
 	}
 
-	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_Missile"))))
-	//{
-	//	return E_FAIL;
-	//}
-
 	return S_OK;
 }
 
@@ -696,16 +566,16 @@ HRESULT CLevel_GamePlay::Ready_Pet()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_NpcvsMon()
+HRESULT CLevel_GamePlay::Ready_Tutorial_Monster()
 {
 	MonsterInfo Info{};
-	const TCHAR* pGetPath = L"../Bin/Data/Prologue_MonsterData.dat";
+	const TCHAR* pGetPath = L"../Bin/Data/Prologue_MonsterData1.dat";
 
 	std::ifstream inFile(pGetPath, std::ios::binary);
 
 	if (!inFile.is_open())
 	{
-		MSG_BOX("../Bin/Data/Prologue_MonsterData.dat 몬스터 불러오기 실패.");
+		MSG_BOX("../Bin/Data/Prologue_MonsterData1.dat 몬스터 불러오기 실패.");
 		return E_FAIL;
 	}
 
@@ -746,158 +616,17 @@ HRESULT CLevel_GamePlay::Ready_NpcvsMon()
 			}
 
 		}
-
-	}
-	return S_OK;
-}
-
-HRESULT CLevel_GamePlay::Ready_Rabbit()
-{
-	for (size_t i = 0; i < 1; i++)
-	{
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Rabbit"), TEXT("Prototype_GameObject_Rabbit"))))
+		else if (Info.strMonsterPrototype == TEXT("Prototype_Model_Void01"))
 		{
-			return E_FAIL;
-		}
-	}
-	return S_OK;
-}
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Void01"), &Info)))
+			{
+				MSG_BOX("몬스터 생성 실패");
+				return E_FAIL;
+			}
 
-HRESULT CLevel_GamePlay::Ready_Goat()
-{
-	for (size_t i = 0; i < 1; i++)
-	{
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Goat"), TEXT("Prototype_GameObject_Goat"))))
-		{
-			return E_FAIL;
-		}
-	}
-
-	return S_OK;
-}
-
-HRESULT CLevel_GamePlay::Ready_Nastron03()
-{
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Nastron03"), TEXT("Prototype_GameObject_Nastron03"))))
-	{
-		return E_FAIL;
-	}
-
-	return S_OK;
-}
-
-HRESULT CLevel_GamePlay::Ready_NPCvsMon()
-{
-
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPCvsMon"), TEXT("Prototype_GameObject_NPCvsMon"))))
-	{
-		return E_FAIL;
-	}
-
-	return S_OK;
-}
-
-HRESULT CLevel_GamePlay::Ready_Void01()
-{
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void01"), TEXT("Prototype_GameObject_Void01"))))
-	{
-		return E_FAIL;
-	}
-
-	return S_OK;
-}
-
-HRESULT CLevel_GamePlay::Ready_Void05()
-{
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void05"), TEXT("Prototype_GameObject_Void05"))))
-	{
-		return E_FAIL;
-	}
-
-	return S_OK;
-}
-
-HRESULT CLevel_GamePlay::Ready_Thief04()
-{
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Thief04"), TEXT("Prototype_GameObject_Thief04"))))
-	{
-		return E_FAIL;
-	}
-
-	return S_OK;
-}
-
-HRESULT CLevel_GamePlay::Ready_TrilobiteA()
-{
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_TrilobiteA"), TEXT("Prototype_GameObject_TrilobiteA"))))
-	{
-		return E_FAIL;
-	}
-
-	return S_OK;
-}
-
-HRESULT CLevel_GamePlay::Ready_Imp()
-{
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Imp"), TEXT("Prototype_GameObject_Imp"))))
-	{
-		return E_FAIL;
-	}
-
-	return S_OK;
-}
-
-HRESULT CLevel_GamePlay::Ready_Void09()
-{
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void09"), TEXT("Prototype_GameObject_Void09"))))
-	{
-		return E_FAIL;
-	}
-
-	return S_OK;
-}
-
-HRESULT CLevel_GamePlay::Ready_Void20()
-{
-	for (size_t i = 0; i < 1; i++)
-	{
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
-		{
-			return E_FAIL;
 		}
 
 	}
-	return S_OK;
-}
-
-HRESULT CLevel_GamePlay::Ready_Void23()
-{
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void23"), TEXT("Prototype_GameObject_Void23"))))
-	{
-		return E_FAIL;
-	}
-
-	return S_OK;
-}
-
-HRESULT CLevel_GamePlay::Ready_Nastron07()
-{
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Nastron07"), TEXT("Prototype_GameObject_Nastron07"))))
-	{
-		return E_FAIL;
-	}
-
-	return S_OK;
-}
-
-HRESULT CLevel_GamePlay::Ready_Spider()
-{
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Spider"), TEXT("Prototype_GameObject_Spider"))))
-	{
-		return E_FAIL;
-	}
-
 	return S_OK;
 }
 
