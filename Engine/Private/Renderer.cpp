@@ -53,6 +53,11 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Rim"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	{
+		return E_FAIL;
+	}
 	//
 
 #pragma endregion
@@ -226,6 +231,11 @@ HRESULT CRenderer::Init_Prototype()
 
 	// 원명
 	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Velocity"))))
+	{
+		return E_FAIL;
+	}	
+	
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Rim"))))
 	{
 		return E_FAIL;
 	}
@@ -1272,6 +1282,9 @@ HRESULT CRenderer::Render_LightAcc()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pShader->Bind_RawValue("g_SSAO", &m_SSAO, sizeof(SSAO_DESC))))
+		return E_FAIL;
+
 	if (FAILED(m_pNoiseNormal->Bind_ShaderResource(m_pShader, "g_SSAONoiseNormal")))
 		return E_FAIL;
 
@@ -1359,6 +1372,10 @@ HRESULT CRenderer::Render_Deferred()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pShader->Bind_RawValue("g_vFogColor", &m_pGameInstance->Get_FogColor(), sizeof _color)))
+	{
+		return E_FAIL;
+	}
 
 	if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", m_WorldMatrix)))
 	{
@@ -1390,9 +1407,6 @@ HRESULT CRenderer::Render_Deferred()
 
 	// 원명
 	if (FAILED(m_pShader->Bind_RawValue("TurnOnSSAO", &m_TurnOnSSAO, sizeof(_bool))))
-		return E_FAIL;
-
-	if (FAILED(m_pShader->Bind_RawValue("g_SSAO", &m_SSAO, sizeof(SSAO_DESC))))
 		return E_FAIL;
 
 	//if (FAILED(m_pShader->Bind_RawValue("TurnOnThunder", &m_Thunder, sizeof(_bool))))

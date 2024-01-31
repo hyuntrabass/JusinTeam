@@ -1,6 +1,26 @@
 float3 g_fLuminace = float3(0.2126f, 0.7152f, 0.0722f);
 float g_fThreshold;
 
+float3 g_OffSetVector[16] =
+{
+    { -1.0f, -1.0f, -1.0f },
+    { -1.0f, -1.0f, 0.0f },
+    { -1.0f, -1.0f, 1.0f },
+    { -1.0f, 0.0f, -1.0f },
+    { -1.0f, 0.0f, 0.0f },
+    { -1.0f, 0.0f, 1.0f },
+    { -1.0f, 1.0f, -1.0f },
+    { -1.0f, 1.0f, 0.0f },
+    { -1.0f, 1.0f, 1.0f },
+    { 1.0f, -1.0f, -1.0f },
+    { 1.0f, -1.0f, 0.0f },
+    { 1.0f, -1.0f, 1.0f },
+    { 1.0f, 0.0f, -1.0f },
+    { 1.0f, 0.0f, 0.0f },
+    { 1.0f, 0.0f, 1.0f },
+    { 1.0f, 1.0f, -1.0f },
+};
+
 struct SSAO_DESC
 {
     float fIntensity;
@@ -38,6 +58,7 @@ sampler PointMirrorSampler = sampler_state
     AddressV = Mirror;
 };
 
+
 sampler LinearSampler = sampler_state
 {
     Filter = MIN_MAG_MIP_LINEAR;
@@ -57,14 +78,6 @@ sampler LinearMirrorSampler = sampler_state
     Filter = MIN_MAG_MIP_LINEAR;
     AddressU = Mirror;
     AddressV = Mirror;
-};
-
-sampler WaterSampler = sampler_state
-{
-    Filter = MIN_MAG_MIP_LINEAR;
-    AddressU = wrap;
-    AddressV = wrap;
-    AddressW = wrap;
 };
 
 // Rasterizer State

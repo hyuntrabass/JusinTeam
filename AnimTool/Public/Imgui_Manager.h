@@ -21,6 +21,30 @@ public:
     enum MANIPULATETYPE { TYPE_STATE, TYPE_RESET, MANIPULATE_TYPE_END };
     enum SELECT { SELECT_PLAYER, SELECT_EFFECT, SELECT_END };
 
+public:
+    using PRE_TRIGGEREFFECT_DESC = struct tagPreTriggerEffectDesc {
+        int iStartAnimIndex;
+        float fStartAnimPos;
+        std::vector<int> iEndAnimIndices;
+        std::vector<float> fEndAnimPoses;
+        bool IsFollow{};
+        std::wstring strEffectName{};
+        unsigned int iBoneIndex{};
+        SimpleMath::Matrix OffsetMatrix{};
+        bool IsDeleteRotateToBone{};
+        bool IsClientTrigger{};
+    };
+
+    using PRE_TRIGGERSOUND_DESC = struct tagPreTriggerSoundDesc {
+        int iStartAnimIndex{};
+        float fStartAnimPos{};
+        std::vector<int> iEndAnimIndices;
+        std::vector<float> fEndAnimPoses;
+        std::vector<std::wstring> strSoundNames;
+        float fInitVolume{};
+        float fFadeoutSecond;
+    };
+
 private:
     CImgui_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual ~CImgui_Manager() = default;
@@ -43,6 +67,8 @@ public:
 private:
     HRESULT SaveFile();
     HRESULT LoadFile();
+    //트리거 파일 저장 내용 변경 시 사용
+    HRESULT UpdateFile();
 
 private:
     ID3D11Device* m_pDevice = { nullptr };
@@ -83,6 +109,7 @@ private:
 
     _float m_fTimeDelta{};
     _float m_fTimeRatio = 1.f;
+    _float m_fPitch = 1.f;
 
     //ImGuizmo
     SELECT m_eSelect = { SELECT_EFFECT };

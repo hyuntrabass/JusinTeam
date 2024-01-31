@@ -58,9 +58,9 @@ namespace Engine
 	};
 
 	typedef struct tagSSAOValue {
-		float fIntensity = 3.5f;
-		float fRadius = 0.05f;
-		float fScale = 3.f;
+		float fIntensity = 2.f;
+		float fRadius = 0.01f;
+		float fScale = 2.f;
 		float fBias = 0.3f;
 	}SSAO_DESC;
 
@@ -119,6 +119,7 @@ namespace Engine
 		bool isUVLoop{};
 		float fAlphaInit{};
 		float fAlphaDelta{};
+		float fRectRotationAngle{};
 
 		bool hasLight{};
 		LIGHT_DESC Light_Desc{};
@@ -189,6 +190,7 @@ namespace Engine
 		unsigned int iBoneIndex{};
 		SimpleMath::Matrix OffsetMatrix{};
 		bool IsDeleteRotateToBone{};
+		bool IsClientTrigger{};
 
 		bool HasCreated{};
 	};
@@ -283,6 +285,7 @@ namespace Engine
 		SimpleMath::Vector2 vLifeTime{};
 		SimpleMath::Vector4 vOriginPos{};
 		SimpleMath::Vector4 vDirection{};
+		SimpleMath::Vector4 vOriginDir{};
 	};
 
 	using VTXPOINT = struct ENGINE_DLL tagVertex_Point

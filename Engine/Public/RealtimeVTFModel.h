@@ -48,7 +48,7 @@ public:
 	HRESULT Place_Parts(PART_DESC& ePartDesc, _bool isRender = false);
 
 public:
-	HRESULT Play_Animation(_float fTimeDelta);
+	HRESULT Play_Animation(_float fTimeDelta, _bool OnClientTrigger = false);
 
 	void Set_Animation(ANIM_DESC Animation_Desc);
 
@@ -72,7 +72,7 @@ public:
 
 	const _bool& IsAnimationFinished(_uint iAnimIndex) const;
 	const _uint& Get_CurrentAnimationIndex() const;
-	const _float& Get_CurrentAnimPos() const;
+	const _float Get_CurrentAnimPos() const;
 	const _mat* Get_BoneMatrix(const _char* pBoneName) const;
 
 	// 해당 파츠타입에 있는 파츠가 그려야 하는지 알아봅니다

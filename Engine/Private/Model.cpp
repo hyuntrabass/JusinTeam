@@ -88,7 +88,7 @@ const _uint& CModel::Get_CurrentAnimationIndex() const
 	return m_AnimDesc.iAnimIndex;
 }
 
-const _float& CModel::Get_CurrentAnimPos() const
+const _float CModel::Get_CurrentAnimPos() const
 {
 	return m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos();
 }
@@ -371,7 +371,7 @@ HRESULT CModel::Init(void* pArg)
 	return S_OK;
 }
 
-void CModel::Play_Animation(_float fTimeDelta)
+void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 {
 	//트리거 루프
 	if ((m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() + fTimeDelta * m_AnimDesc.fAnimSpeedRatio * m_Animations[m_AnimDesc.iAnimIndex]->Get_TickPerSec()) >=
@@ -408,7 +408,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 		}
 		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iStartAnimIndex &&
 			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fStartAnimPos &&
-			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() <= m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() &&
+			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() <= m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() * m_AnimDesc.fDurationRatio &&
 			not m_TriggerEffects[i].HasCreated)
 		{
 			//초기 매트릭스 세팅
@@ -422,8 +422,18 @@ void CModel::Play_Animation(_float fTimeDelta)
 				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
 			}
 			//이펙트 생성
-			m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
-			m_TriggerEffects[i].HasCreated = true;
+			if (m_TriggerEffects[i].IsClientTrigger)
+			{
+				if (OnClientTrigger)
+				{
+					m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
+				}
+			}
+			else
+			{
+				m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
+				m_TriggerEffects[i].HasCreated = true;
+			}
 		}
 
 		//이펙트 제거
@@ -444,7 +454,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 	{	//사운드 생성
 		if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iStartAnimIndex &&
 			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerSounds[i].fStartAnimPos &&
-			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() <= m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() &&
+			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() <= m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() * m_AnimDesc.fDurationRatio &&
 			not m_TriggerSounds[i].HasPlayed)
 		{
 			_int iMaxSound = m_TriggerSounds[i].strSoundNames.size() - 1;
@@ -469,7 +479,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 				if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iEndAnimIndices[j] &&
 					m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerSounds[i].fEndAnimPoses[j])
 				{
-					if (m_pGameInstance->GetChannelVolume(m_TriggerSounds[i].iChannel) <= 0.f)
+					if (m_pGameInstance->Get_ChannelVolume(m_TriggerSounds[i].iChannel) <= 0.f)
 					{
 						m_pGameInstance->StopSound(m_TriggerSounds[i].iChannel);
 						m_TriggerSounds[i].iChannel = -1;
@@ -478,7 +488,7 @@ void CModel::Play_Animation(_float fTimeDelta)
 					else
 					{
 						m_TriggerSounds[i].fVolume -= (fTimeDelta / (m_TriggerSounds[i].fFadeoutSecond / m_TriggerSounds[i].fInitVolume));
-						m_pGameInstance->SetChannelVolume(m_TriggerSounds[i].iChannel, m_TriggerSounds[i].fVolume);
+						m_pGameInstance->Set_ChannelVolume(m_TriggerSounds[i].iChannel, m_TriggerSounds[i].fVolume);
 					}
 				}
 			}
@@ -744,6 +754,7 @@ HRESULT CModel::Read_TriggerEffects(const string& strFilePath)
 			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.iBoneIndex), sizeof(_uint));
 			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.OffsetMatrix), sizeof(_mat));
 			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.IsDeleteRotateToBone), sizeof(_bool));
+			TriggerFile.read(reinterpret_cast<_char*>(&EffectDesc.IsClientTrigger), sizeof(_bool));
 
 			m_TriggerEffects.push_back(EffectDesc);
 			m_iNumTriggersEffect++;

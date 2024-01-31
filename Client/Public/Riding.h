@@ -152,6 +152,7 @@ private:
 	_float m_fDissolveRatio{};
 	CTexture* m_pDissolveTextureCom{};
 	_bool m_hasJumped{};
+
 public:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

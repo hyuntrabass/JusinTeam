@@ -17,6 +17,7 @@ float g_fLightFar;
 float g_fHellStart;
 
 float2 g_vFogNF;
+vector g_vFogColor;
 
 Texture2D g_DiffuseTexture;
 Texture2D g_NormalTexture;
@@ -44,7 +45,7 @@ HDR_DESC g_HDR;
 
 vector Get_WorldPos(float2 vTex)
 {
-    vector vDepthDesc = g_DepthTexture.Sample(PointMirrorSampler, vTex);
+    vector vDepthDesc = g_DepthTexture.Sample(PointClampSampler, vTex);
     float fViewZ = vDepthDesc.y * g_vCamNF.y;
     
     vector vWorldPos;
@@ -66,7 +67,24 @@ vector Get_Normal(float2 vTex)
     
     vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
     
-    return vNormal;
+    return normalize(vNormal);
+}
+
+vector Get_ViewPos(float2 vTex)
+{
+    vector vDepthDesc = g_DepthTexture.Sample(PointClampSampler, vTex);
+    float fViewZ = vDepthDesc.y * g_vCamNF.y;
+    
+    vector ViewPos;
+    ViewPos.x = vTex.x * 2.f - 1.f;
+    ViewPos.y = vTex.y * -2.f + 1.f;
+    ViewPos.z = vDepthDesc.x;
+    ViewPos.w = 1.f;
+    
+    ViewPos = ViewPos * fViewZ;
+    ViewPos = mul(ViewPos, g_ProjMatrixInv);
+    
+    return ViewPos;
 }
 
 float Get_Luminance(float3 vRGB)
@@ -222,16 +240,20 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     
     FinalColor = vDiffuse * vShade + vSpecular;
     
+    vector vSsaoDesc = g_SSAOTexture.Sample(LinearSampler, Input.vTexcoord);
+    
+    if (TurnOnSSAO)
+        FinalColor.rgb *= (1.f - vSsaoDesc.rgb);
+    
     //if(true == TurnOnThunder)
     //    FinalColor = pow(vShade, 50.f) + vDiffuse * 0.1f;
     
     vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
     float fViewZ = vDepthDesc.y * g_vCamNF.y;
     
-    vector vFogColor = vector(0.9f, 0.9f, 0.9f, 1.f);
     float fFogFactor = saturate((g_vFogNF.y - fViewZ) / (g_vFogNF.y - g_vFogNF.x));
-    
-    
+    vector vFogColor = g_vFogColor;
+    vFogColor.a = 1.f;
     
     float4 vWorldPos = Get_WorldPos(Input.vTexcoord);
     
@@ -258,12 +280,8 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
         FinalColor.xyz = FinalColor.xyz * 0.5f;
     }
 
-    FinalColor = fFogFactor * FinalColor + (1.f - fFogFactor) * vFogColor;
-    
-    vector vSsaoDesc = g_SSAOTexture.Sample(LinearSampler, Input.vTexcoord);
-    
-    if(TurnOnSSAO)
-        FinalColor.rgb *= (1.f - vSsaoDesc.rgb);
+    FinalColor = lerp(fFogFactor * FinalColor, vFogColor, (1.f - fFogFactor));
+    //FinalColor = fFogFactor * FinalColor + (1.f - fFogFactor) * vFogColor;
     
     Output.vColor = FinalColor;
     
@@ -293,6 +311,7 @@ PS_OUT PS_Main_Blur(PS_IN Input)
 }
 
 float Get_AO(float2 vTex, float2 plusTex, vector myPos, float3 myNor)
+//float Get_Occlusion(float distZ)
 {
     vector diff = Get_WorldPos(vTex + plusTex) - myPos;
     vector v = normalize(diff);
@@ -301,6 +320,17 @@ float Get_AO(float2 vTex, float2 plusTex, vector myPos, float3 myNor)
     float final = max(0.f, dot(myNor, v.xyz) - g_SSAO.fBias) * (1.f / (1.f + d)) * g_SSAO.fIntensity;
     
     return final;
+    
+    //float occlusion = 0.f;
+    
+    //if (distZ > 0.05f)
+    //{
+    //    float fadeLength = 2.f - 0.2f;
+        
+    //    occlusion = saturate((2.f - distZ) / fadeLength);
+    //}
+    
+    //return occlusion;
 }
 
 PS_OUT PS_Main_SSAO(PS_IN Input)
@@ -308,6 +338,44 @@ PS_OUT PS_Main_SSAO(PS_IN Input)
     // 완벽하지 않습니당 임시용
     
     PS_OUT Out = (PS_OUT) 0;
+    
+    //vector MyNormal = Get_Normal(Input.vTexcoord);
+    
+    //vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
+    
+    //vector MyViewPos = Get_ViewPos(Input.vTexcoord);
+    
+    //float3 RandVec = 2.f * g_SSAONoiseNormal.Sample(LinearSampler, 4.f * Input.vTexcoord).rgb - 1.f;
+    
+    //float OcclusionSum = 0.f;
+    
+    //for (uint i = 0; i < 16; ++i)
+    //{
+    //    float3 Offset = reflect(g_OffSetVector[i], RandVec);
+        
+    //    float flip = sign(dot(Offset, MyNormal.xyz));
+        
+    //    float3 q = MyViewPos.xyz + flip * g_SSAO.fRadius * Offset;
+        
+    //    //float4 ProjQ = mul(float4(q, 1.f), g_CamProjMatrix);
+    //    //ProjQ /= ProjQ.w;
+        
+    //    float3 r = Get_ViewPos(q.xy);
+        
+    //    float DistZ = MyViewPos.z - r.z;
+    //    float dp = max(dot(MyNormal.xyz, normalize(r - MyViewPos.xyz)), 0.f);
+    //    float Occlusion = dp * Get_Occlusion(DistZ);
+
+    //    OcclusionSum += Occlusion;
+    //}
+    
+    //OcclusionSum /= 16.f;
+    
+    //float occl = saturate(pow(OcclusionSum, 4.f));
+    
+    //Out.vColor = vector(occl, occl, occl, 1.f);
+    
+    //return Out;
     
     vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
     float fViewZ = vDepthDesc.y * g_vCamNF.y;
@@ -337,9 +405,12 @@ PS_OUT PS_Main_SSAO(PS_IN Input)
     }
     ssao = ssao / 16.f;
     
+    ssao = saturate(pow(ssao, 2.f));
+    
     Out.vColor = vector(ssao, ssao, ssao, 1.f);
     
     return Out;
+    
 }
 
 PS_OUT PS_Main_HDR(PS_IN Input)

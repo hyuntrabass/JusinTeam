@@ -738,6 +738,16 @@ HRESULT CGameInstance::Render_Text(const wstring& strFontTag, const wstring& str
 	return m_pFont_Manager->Render(strFontTag, strText, vPosition, fScale, vColor, fRotation, isFront);
 }
 
+_vec2 CGameInstance::Get_TextSize(const wstring& strFontTag, const wstring& strText)
+{
+	if (!m_pFont_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pFont_Manager is NULL");
+	}
+	return m_pFont_Manager->Get_TextSize(strFontTag, strText);
+
+}
+
 _bool CGameInstance::IsIn_Fov_World(_vec4 vPos, _float fRange)
 {
 	if (!m_pFrustum)
@@ -1088,25 +1098,6 @@ void CGameInstance::StopAll()
 
 	return m_pSound_Manager->StopAll();
 }
-void CGameInstance::SetChannelVolume(_uint iChannel, _float fVolume)
-{
-	if (!m_pSound_Manager)
-	{
-		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
-	}
-
-	return m_pSound_Manager->SetChannelVolume(iChannel, fVolume);
-}
-
-_float CGameInstance::GetChannelVolume(_uint iChannel)
-{
-	if (!m_pSound_Manager)
-	{
-		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
-	}
-
-	return m_pSound_Manager->GetChannelVolume(iChannel);
-}
 
 void CGameInstance::Register_CreateEffect_Callback(Func_CreateFX Function)
 {
@@ -1184,6 +1175,11 @@ const _float2& CGameInstance::Get_FogNF() const
 	return m_vFogNF;
 }
 
+const _color& CGameInstance::Get_FogColor() const
+{
+	return m_vFogColor;
+}
+
 const _bool& CGameInstance::Get_ShakeCam() const
 {
 	return m_bShakeCamera;
@@ -1202,6 +1198,16 @@ _bool CGameInstance::Get_IsPlayingSound(_uint iChannel)
 	}
 
 	return m_pSound_Manager->Get_IsPlayingSound(iChannel);
+}
+
+_float CGameInstance::Get_ChannelVolume(_uint iChannel)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->GetChannelVolume(iChannel);
 }
 
 void CGameInstance::Set_CameraModeIndex(const _uint& iIndex)
@@ -1229,6 +1235,11 @@ void CGameInstance::Set_FogNF(const _float2& vFogNF)
 	m_vFogNF = vFogNF;
 }
 
+void CGameInstance::Set_FogColor(const _color& vFogColor)
+{
+	m_vFogColor = vFogColor;
+}
+
 void CGameInstance::Set_ShakeCam(const _bool& bShake, _float fShakePower)
 {
 	m_bShakeCamera = bShake;
@@ -1237,6 +1248,16 @@ void CGameInstance::Set_ShakeCam(const _bool& bShake, _float fShakePower)
 void CGameInstance::Set_HellHeight(const _float& fHeight)
 {
 	m_fHellHeight = fHeight;
+}
+
+void CGameInstance::Set_ChannelVolume(_uint iChannel, _float fVolume)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->SetChannelVolume(iChannel, fVolume);
 }
 
 void CGameInstance::Set_ZoomFactor(const _float fFactor)

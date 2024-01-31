@@ -318,6 +318,11 @@ HRESULT CImgui_Manager::ImGuiMenu()
 		{
 			LoadFile();
 		}
+		ImGui::SameLine();
+		if (ImGui::Button("UPDATE##1"))
+		{
+			UpdateFile();
+		}
 
 		if (ImGui::Button("ADD##1"))
 		{	//트리거 정보 저장
@@ -858,6 +863,27 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				{
 					ImGui::Text("FALSE");
 				}
+
+				if (ImGui::Button("CLIENT TRIGGER"))
+				{
+					if (pEffectDesc->IsClientTrigger == false)
+					{
+						pEffectDesc->IsClientTrigger = true;
+					}
+					else if (pEffectDesc->IsClientTrigger == true)
+					{
+						pEffectDesc->IsClientTrigger = false;
+					}
+				}
+				ImGui::SameLine();
+				if (pEffectDesc->IsClientTrigger)
+				{
+					ImGui::Text("TRUE");
+				}
+				else
+				{
+					ImGui::Text("FALSE");
+				}
 				//알아서 사라지는거 편하게 보기 위해서
 				if (pEffectDesc->HasCreated)
 				{
@@ -999,7 +1025,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				}
 				if (pSoundDesc->iChannel != -1)
 				{
-					m_pGameInstance->SetChannelVolume(pSoundDesc->iChannel, pSoundDesc->fVolume);
+					m_pGameInstance->Set_ChannelVolume(pSoundDesc->iChannel, pSoundDesc->fVolume);
 				}
 				ImGui::InputFloat("FADEOUT SECOND##1", &pSoundDesc->fFadeoutSecond, 0.01f, 0.f, "%.2f");
 				if (pSoundDesc->fFadeoutSecond <= 0.f)
@@ -1007,6 +1033,9 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					pSoundDesc->fFadeoutSecond = 0.1f;
 				}
 
+				ImGui::SeparatorText("CHANNEL");
+				string strChannel = "CHANNEL : " + to_string(pSoundDesc->iChannel);
+				ImGui::Text(strChannel.c_str());
 
 				ImGui::PopItemWidth();
 				ImGui::End();
@@ -1218,6 +1247,27 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				{
 					ImGui::Text("FALSE");
 				}
+
+				if (ImGui::Button("CLIENT TRIGGER"))
+				{
+					if (pEffectDesc->IsClientTrigger == false)
+					{
+						pEffectDesc->IsClientTrigger = true;
+					}
+					else if (pEffectDesc->IsClientTrigger == true)
+					{
+						pEffectDesc->IsClientTrigger = false;
+					}
+				}
+				ImGui::SameLine();
+				if (pEffectDesc->IsClientTrigger)
+				{
+					ImGui::Text("TRUE");
+				}
+				else
+				{
+					ImGui::Text("FALSE");
+				}
 				//알아서 사라지는거 편하게 보기 위해서
 				if (pEffectDesc->HasCreated)
 				{
@@ -1360,13 +1410,17 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				}
 				if (pSoundDesc->iChannel != -1)
 				{
-					m_pGameInstance->SetChannelVolume(pSoundDesc->iChannel, pSoundDesc->fVolume);
+					m_pGameInstance->Set_ChannelVolume(pSoundDesc->iChannel, pSoundDesc->fVolume);
 				}
 				ImGui::InputFloat("FADEOUT SECOND##1", &pSoundDesc->fFadeoutSecond, 0.01f, 0.f, "%.2f");
 				if (pSoundDesc->fFadeoutSecond <= 0.f)
 				{
 					pSoundDesc->fFadeoutSecond = 0.1f;
 				}
+
+				ImGui::SeparatorText("CHANNEL");
+				string strChannel = "CHANNEL : " + to_string(pSoundDesc->iChannel);
+				ImGui::Text(strChannel.c_str());
 
 				ImGui::PopItemWidth();
 				ImGui::End();
@@ -1655,6 +1709,8 @@ HRESULT CImgui_Manager::SaveFile()
 					Fileout.write(reinterpret_cast<_char*>(&OffsetMatrix), sizeof(_mat));
 					_bool IsDeleteRotateToBone = EffectDescs[i].IsDeleteRotateToBone;
 					Fileout.write(reinterpret_cast<_char*>(&IsDeleteRotateToBone), sizeof(_bool));
+					_bool IsClientTrigger = EffectDescs[i].IsClientTrigger;
+					Fileout.write(reinterpret_cast<_char*>(&IsClientTrigger), sizeof(_bool));
 				}
 			}//사운드 트리거 저장
 			else if (m_eTriggerType == TRIGGER_SOUND)
@@ -1736,6 +1792,8 @@ HRESULT CImgui_Manager::SaveFile()
 					Fileout.write(reinterpret_cast<_char*>(&OffsetMatrix), sizeof(_mat));
 					_bool IsDeleteRotateToBone = EffectDescs[i].IsDeleteRotateToBone;
 					Fileout.write(reinterpret_cast<_char*>(&IsDeleteRotateToBone), sizeof(_bool));
+					_bool IsClientTrigger = EffectDescs[i].IsClientTrigger;
+					Fileout.write(reinterpret_cast<_char*>(&IsClientTrigger), sizeof(_bool));
 				}
 			}//사운드 트리거 저장
 			else if (m_eTriggerType == TRIGGER_SOUND)
@@ -1861,6 +1919,7 @@ HRESULT CImgui_Manager::LoadFile()
 					Filein.read(reinterpret_cast<_char*>(&EffectDesc.iBoneIndex), sizeof(_uint));
 					Filein.read(reinterpret_cast<_char*>(&EffectDesc.OffsetMatrix), sizeof(_mat));
 					Filein.read(reinterpret_cast<_char*>(&EffectDesc.IsDeleteRotateToBone), sizeof(_bool));
+					Filein.read(reinterpret_cast<_char*>(&EffectDesc.IsClientTrigger), sizeof(_bool));
 
 					pCurModel->Add_TriggerEffect(EffectDesc);
 				}
@@ -1952,6 +2011,7 @@ HRESULT CImgui_Manager::LoadFile()
 					Filein.read(reinterpret_cast<_char*>(&EffectDesc.iBoneIndex), sizeof(_uint));
 					Filein.read(reinterpret_cast<_char*>(&EffectDesc.OffsetMatrix), sizeof(_mat));
 					Filein.read(reinterpret_cast<_char*>(&EffectDesc.IsDeleteRotateToBone), sizeof(_bool));
+					Filein.read(reinterpret_cast<_char*>(&EffectDesc.IsClientTrigger), sizeof(_bool));
 
 					pCurModel->Add_TriggerEffect(EffectDesc);
 				}
@@ -2005,6 +2065,268 @@ HRESULT CImgui_Manager::LoadFile()
 
 		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
 	}
+
+	return S_OK;
+}
+
+HRESULT CImgui_Manager::UpdateFile()
+{
+	vector<PRE_TRIGGEREFFECT_DESC> PreEffectDescs{};
+	vector<PRE_TRIGGERSOUND_DESC> PreSoundDescs{};
+
+	vector<TRIGGEREFFECT_DESC> EffectDescs{};
+	vector<TRIGGERSOUND_DESC> SoundDescs{};
+
+	string strInputFilePath = "../../Client/Bin/Resources/AnimMesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (m_eTriggerType == TRIGGER_EFFECT)
+			{
+				if (entry.path().extension().string() != ".effecttrigger")
+				{
+					continue;
+				}
+
+				PreEffectDescs.clear();
+				EffectDescs.clear();
+
+				ifstream Filein(entry.path().c_str(), ios::binary);
+
+				if (Filein.is_open())
+				{
+					_uint iNumTriggerEffect = { 0 };
+					Filein.read(reinterpret_cast<char*>(&iNumTriggerEffect), sizeof _uint);
+					for (_uint i = 0; i < iNumTriggerEffect; i++)
+					{
+						PRE_TRIGGEREFFECT_DESC PreEffectDesc{};
+
+						Filein.read(reinterpret_cast<_char*>(&PreEffectDesc.iStartAnimIndex), sizeof(_int));
+						Filein.read(reinterpret_cast<_char*>(&PreEffectDesc.fStartAnimPos), sizeof(_float));
+
+						_uint iNumEnd{};
+						Filein.read(reinterpret_cast<_char*>(&iNumEnd), sizeof(_uint));
+						for (_uint j = 0; j < iNumEnd; j++)
+						{
+							_int iEndAnimIndex{};
+							Filein.read(reinterpret_cast<_char*>(&iEndAnimIndex), sizeof(_int));
+							PreEffectDesc.iEndAnimIndices.push_back(iEndAnimIndex);
+							_float fEndAnimPos{};
+							Filein.read(reinterpret_cast<_char*>(&fEndAnimPos), sizeof(_float));
+							PreEffectDesc.fEndAnimPoses.push_back(fEndAnimPos);
+						}
+						Filein.read(reinterpret_cast<_char*>(&PreEffectDesc.IsFollow), sizeof(_bool));
+
+						size_t iNameSize{};
+						_tchar* pBuffer{};
+						Filein.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+						pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
+						Filein.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
+						PreEffectDesc.strEffectName = pBuffer;
+						Safe_Delete_Array(pBuffer);
+
+						Filein.read(reinterpret_cast<_char*>(&PreEffectDesc.iBoneIndex), sizeof(_uint));
+						Filein.read(reinterpret_cast<_char*>(&PreEffectDesc.OffsetMatrix), sizeof(_mat));
+						Filein.read(reinterpret_cast<_char*>(&PreEffectDesc.IsDeleteRotateToBone), sizeof(_bool));
+						Filein.read(reinterpret_cast<_char*>(&PreEffectDesc.IsClientTrigger), sizeof(_bool));
+
+						PreEffectDescs.push_back(PreEffectDesc);
+					}
+
+					Filein.close();
+				}
+
+				for (size_t i = 0; i < PreEffectDescs.size(); i++)
+				{
+					TRIGGEREFFECT_DESC EffectDesc{};
+
+					EffectDesc.iStartAnimIndex = PreEffectDescs[i].iStartAnimIndex;
+					EffectDesc.fStartAnimPos = PreEffectDescs[i].fStartAnimPos;
+					for (size_t j = 0; j < PreEffectDescs[i].iEndAnimIndices.size(); j++)
+					{
+						EffectDesc.iEndAnimIndices.push_back(PreEffectDescs[i].iEndAnimIndices[j]);
+						EffectDesc.fEndAnimPoses.push_back(PreEffectDescs[i].fEndAnimPoses[j]);
+					}
+					EffectDesc.IsFollow = PreEffectDescs[i].IsFollow;
+					EffectDesc.strEffectName = PreEffectDescs[i].strEffectName;
+					EffectDesc.iBoneIndex = PreEffectDescs[i].iBoneIndex;
+					EffectDesc.OffsetMatrix = PreEffectDescs[i].OffsetMatrix;
+					EffectDesc.IsDeleteRotateToBone = PreEffectDescs[i].IsDeleteRotateToBone;
+					EffectDesc.IsClientTrigger = PreEffectDescs[i].IsClientTrigger;
+
+					EffectDescs.push_back(EffectDesc);
+				}
+
+				filesystem::path strFilePath = entry.path();
+				ofstream Fileout(strFilePath.c_str(), ios::binary);
+
+				if (Fileout.is_open())
+				{
+					_uint iNumTriggerEffect = EffectDescs.size();
+					Fileout.write(reinterpret_cast<_char*>(&iNumTriggerEffect), sizeof(_uint));
+					for (_uint i = 0; i < iNumTriggerEffect; i++)
+					{
+						_int iStartAnimIndex = EffectDescs[i].iStartAnimIndex;
+						Fileout.write(reinterpret_cast<_char*>(&iStartAnimIndex), sizeof(_int));
+						_float fStartAnimPos = EffectDescs[i].fStartAnimPos;
+						Fileout.write(reinterpret_cast<_char*>(&fStartAnimPos), sizeof(_float));
+
+						_uint iNumEnd = static_cast<_uint>(EffectDescs[i].iEndAnimIndices.size());
+						Fileout.write(reinterpret_cast<_char*>(&iNumEnd), sizeof(_uint));
+						for (_uint j = 0; j < iNumEnd; j++)
+						{
+							_int iEndAnimIndex = EffectDescs[i].iEndAnimIndices[j];
+							Fileout.write(reinterpret_cast<_char*>(&iEndAnimIndex), sizeof(_int));
+							_float fEndAnimPos = EffectDescs[i].fEndAnimPoses[j];
+							Fileout.write(reinterpret_cast<_char*>(&fEndAnimPos), sizeof(_float));
+						}
+						_bool IsFollow = EffectDescs[i].IsFollow;
+						Fileout.write(reinterpret_cast<_char*>(&IsFollow), sizeof(_bool));
+
+						size_t iNameSize{};
+						iNameSize = (EffectDescs[i].strEffectName.size() + 1) * sizeof(_tchar);
+						Fileout.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+						Fileout.write(reinterpret_cast<const _char*>(EffectDescs[i].strEffectName.data()), iNameSize);
+
+						_uint iBoneIndex = EffectDescs[i].iBoneIndex;
+						Fileout.write(reinterpret_cast<_char*>(&iBoneIndex), sizeof(_uint));
+						_mat OffsetMatrix = EffectDescs[i].OffsetMatrix;
+						Fileout.write(reinterpret_cast<_char*>(&OffsetMatrix), sizeof(_mat));
+						_bool IsDeleteRotateToBone = EffectDescs[i].IsDeleteRotateToBone;
+						Fileout.write(reinterpret_cast<_char*>(&IsDeleteRotateToBone), sizeof(_bool));
+						_bool IsClientTrigger = EffectDescs[i].IsClientTrigger;
+						Fileout.write(reinterpret_cast<_char*>(&IsClientTrigger), sizeof(_bool));
+					}
+
+					Fileout.close();
+				}
+			}
+			else if (m_eTriggerType == TRIGGER_SOUND)
+			{
+				if (entry.path().extension().string() != ".soundtrigger")
+				{
+					continue;
+				}
+
+				PreSoundDescs.clear();
+				SoundDescs.clear();
+
+				ifstream Filein(entry.path().c_str(), ios::binary);
+
+				if (Filein.is_open())
+				{
+					_uint iNumTriggerSound = { 0 };
+					Filein.read(reinterpret_cast<char*>(&iNumTriggerSound), sizeof _uint);
+					for (_uint i = 0; i < iNumTriggerSound; i++)
+					{
+						PRE_TRIGGERSOUND_DESC PreSoundDesc{};
+
+						Filein.read(reinterpret_cast<_char*>(&PreSoundDesc.iStartAnimIndex), sizeof(_int));
+						Filein.read(reinterpret_cast<_char*>(&PreSoundDesc.fStartAnimPos), sizeof(_float));
+
+						_uint iNumEnd{};
+						Filein.read(reinterpret_cast<_char*>(&iNumEnd), sizeof(_uint));
+						for (_uint j = 0; j < iNumEnd; j++)
+						{
+							_int iEndAnimIndex{};
+							Filein.read(reinterpret_cast<_char*>(&iEndAnimIndex), sizeof(_int));
+							PreSoundDesc.iEndAnimIndices.push_back(iEndAnimIndex);
+							_float fEndAnimPos{};
+							Filein.read(reinterpret_cast<_char*>(&fEndAnimPos), sizeof(_float));
+							PreSoundDesc.fEndAnimPoses.push_back(fEndAnimPos);
+						}
+
+						_uint iNumName{};
+						Filein.read(reinterpret_cast<_char*>(&iNumName), sizeof(_uint));
+						for (_uint i = 0; i < iNumName; i++)
+						{
+							size_t iNameSize{};
+							_tchar* pBuffer{};
+							Filein.read(reinterpret_cast<_char*>(&iNameSize), sizeof size_t);
+							pBuffer = new _tchar[iNameSize / sizeof(_tchar)];
+							Filein.read(reinterpret_cast<_char*>(pBuffer), iNameSize);
+							PreSoundDesc.strSoundNames.push_back(pBuffer);
+							Safe_Delete_Array(pBuffer);
+						}
+
+						Filein.read(reinterpret_cast<_char*>(&PreSoundDesc.fInitVolume), sizeof(_float));
+						Filein.read(reinterpret_cast<_char*>(&PreSoundDesc.fFadeoutSecond), sizeof(_float));
+
+						PreSoundDescs.push_back(PreSoundDesc);
+					}
+
+					Filein.close();
+				}
+
+				for (size_t i = 0; i < PreSoundDescs.size(); i++)
+				{
+					TRIGGERSOUND_DESC SoundDesc{};
+
+					SoundDesc.iStartAnimIndex = PreSoundDescs[i].iStartAnimIndex;
+					SoundDesc.fStartAnimPos = PreSoundDescs[i].fStartAnimPos;
+					for (size_t j = 0; j < PreSoundDescs[i].iEndAnimIndices.size(); j++)
+					{
+						SoundDesc.iEndAnimIndices.push_back(PreSoundDescs[i].iEndAnimIndices[j]);
+						SoundDesc.fEndAnimPoses.push_back(PreSoundDescs[i].fEndAnimPoses[j]);
+					}
+					for (size_t j = 0; j < PreSoundDescs[i].strSoundNames.size(); j++)
+					{
+						SoundDesc.strSoundNames.push_back(PreSoundDescs[i].strSoundNames[j]);
+					}
+					SoundDesc.fInitVolume = PreSoundDescs[i].fInitVolume;
+					SoundDesc.fFadeoutSecond = PreSoundDescs[i].fFadeoutSecond;
+
+					SoundDescs.push_back(SoundDesc);
+				}
+
+				filesystem::path strFilePath = entry.path();
+				ofstream Fileout(strFilePath.c_str(), ios::binary);
+
+				if (Fileout.is_open())
+				{
+					_uint iNumTriggerSound = SoundDescs.size();
+					Fileout.write(reinterpret_cast<_char*>(&iNumTriggerSound), sizeof(_uint));
+					for (_uint i = 0; i < iNumTriggerSound; i++)
+					{
+						_int iStartAnimIndex = SoundDescs[i].iStartAnimIndex;
+						Fileout.write(reinterpret_cast<_char*>(&iStartAnimIndex), sizeof(_int));
+						_float fStartAnimPos = SoundDescs[i].fStartAnimPos;
+						Fileout.write(reinterpret_cast<_char*>(&fStartAnimPos), sizeof(_float));
+
+						_uint iNumEnd = static_cast<_uint>(SoundDescs[i].iEndAnimIndices.size());
+						Fileout.write(reinterpret_cast<_char*>(&iNumEnd), sizeof(_uint));
+						for (_uint j = 0; j < iNumEnd; j++)
+						{
+							_int iEndAnimIndex = SoundDescs[i].iEndAnimIndices[j];
+							Fileout.write(reinterpret_cast<_char*>(&iEndAnimIndex), sizeof(_int));
+							_float fEndAnimPos = SoundDescs[i].fEndAnimPoses[j];
+							Fileout.write(reinterpret_cast<_char*>(&fEndAnimPos), sizeof(_float));
+						}
+
+						_uint iNumName = static_cast<_uint>(SoundDescs[i].strSoundNames.size());
+						Fileout.write(reinterpret_cast<_char*>(&iNumName), sizeof(_uint));
+						for (_uint j = 0; j < iNumName; j++)
+						{
+							size_t iNameSize{};
+							iNameSize = (SoundDescs[i].strSoundNames[j].size() + 1) * sizeof(_tchar);
+							Fileout.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+							Fileout.write(reinterpret_cast<const _char*>(SoundDescs[i].strSoundNames[j].data()), iNameSize);
+						}
+
+						_float fInitVolume = SoundDescs[i].fInitVolume;
+						Fileout.write(reinterpret_cast<_char*>(&fInitVolume), sizeof(_float));
+						_float fFadeoutSecond = SoundDescs[i].fFadeoutSecond;
+						Fileout.write(reinterpret_cast<_char*>(&fFadeoutSecond), sizeof(_float));
+					}
+
+					Fileout.close();
+				}
+			}
+		}
+	}
+
+	MessageBox(g_hWnd, L"파일 저장 완료", L"파일 저장", MB_OK);
 
 	return S_OK;
 }

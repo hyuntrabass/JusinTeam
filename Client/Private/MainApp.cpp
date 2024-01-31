@@ -261,7 +261,7 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 	}
 
 	/* Mouse */
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Mouse"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Mouse/MouseCursor.png")))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Mouse"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Mouse/MouseCursor%d.png"), 2))))
 	{
 		return E_FAIL;
 	}

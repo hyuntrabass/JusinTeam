@@ -8,7 +8,7 @@ BEGIN(Client)
 class CPet_Dragon final : public CPet
 {
 public:
-	enum PET_CAT_ANIM
+	enum PET_DRAGON_ANIM
 	{
 		COLLECT,
 		COLLECT001,
@@ -31,11 +31,12 @@ public:
 		ANIM_END
 	};
 
-	enum PET_CAT_STATE
+	enum PET_DRAGON_STATE
 	{
 		STATE_IDLE,
-		STATE_WALK,
 		STATE_CHASE,
+		STATE_EMOTION,
+		STATE_INVEN,
 		STATE_END
 	};
 
@@ -56,8 +57,14 @@ public:
 	void Tick_State(_float fTimeDelta);
 
 private:
-	PET_CAT_STATE m_ePreState = STATE_END;
-	PET_CAT_STATE m_eCurState = STATE_END;
+	PET_DRAGON_STATE m_ePreState = STATE_END;
+	PET_DRAGON_STATE m_eCurState = STATE_END;
+
+private:
+	_float m_fIdleTime = {};
+
+private:
+	_bool m_bInvenOn = { false };
 
 public:
 	static CPet_Dragon* Create(_dev pDevice, _context pContext);

@@ -43,6 +43,8 @@ namespace Engine
 	using _vec3 = SimpleMath::Vector3;
 	using _vec4 = SimpleMath::Vector4;
 	using _mat = SimpleMath::Matrix;
+	using _quat = SimpleMath::Quaternion;
+	using _color = SimpleMath::Color;
 	
 	using _float44 = XMFLOAT4X4;
 	using _matrix = XMMATRIX;

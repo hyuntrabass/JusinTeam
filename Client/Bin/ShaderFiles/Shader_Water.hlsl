@@ -103,10 +103,10 @@ PS_OUT_WATER PS_MAIN_Water(PS_IN_WATER Input)
     
     vector vReflectionDiffuse;
     
-    vReflectionDiffuse = g_ReflectionTexture.Sample(LinearSampler, vReflectionTexcoord);
+    vReflectionDiffuse = g_ReflectionTexture.Sample(LinearMirrorSampler, vReflectionTexcoord);
     
     vector vRefractionDiffuse;
-    vRefractionDiffuse = g_RefractionTexture.Sample(LinearSampler, vRefractionTexcoord);
+    vRefractionDiffuse = g_RefractionTexture.Sample(LinearMirrorSampler, vRefractionTexcoord);
     
     // 프레넬(반사율과 투과율 계산)
 

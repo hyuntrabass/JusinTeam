@@ -68,7 +68,7 @@ void CSelect::Tick(_float fTimeDelta)
 		}
 	}
 
-	if (m_bShow && PtInRect(&m_pBackButton->Get_Rect(), ptMouse))
+	if (m_bShow && PtInRect(&m_pBackButton->Get_InitialRect(), ptMouse))
 	{
 		m_pBackButton->Set_Size(140.f, 80.f, 0.3f);
 	}
@@ -76,7 +76,8 @@ void CSelect::Tick(_float fTimeDelta)
 	{
 		m_pBackButton->Set_Size(150.f, 100.f, 0.35f);
 	}
-	if (m_bShow && PtInRect(&m_pSelectButton->Get_Rect(), ptMouse))
+
+	if (m_bShow && PtInRect(&m_pSelectButton->Get_InitialRect(), ptMouse))
 	{
 		m_pSelectButton->Set_Size(140.f, 80.f, 0.3f);
 	}
@@ -211,7 +212,7 @@ HRESULT CSelect::Add_Parts()
 	ColButtonDesc.vPosition = _vec2(1125.f, 670.f);
 	ColButtonDesc.vSize = _vec2(150.f,100.f);
 	ColButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	ColButtonDesc.vTextPosition = _vec2(0.f, 17.f);
+	ColButtonDesc.vTextPosition = _vec2(0.f, -2.f);
 
 
 	m_pSelectButton = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);

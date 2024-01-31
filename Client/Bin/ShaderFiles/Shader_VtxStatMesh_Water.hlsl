@@ -125,11 +125,11 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     
         float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
     
-        vNormal = mul(normalize(vNormal), WorldMatrix) * -1.f;
+        vNormal = normalize(mul(normalize(vNormal), WorldMatrix) * -1.f);
     }
     else
     {
-        vNormal = Input.vNor.xyz;
+        vNormal = normalize(Input.vNor.xyz);
     }
     
     vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
@@ -177,11 +177,11 @@ PS_OUT_DEFERRED PS_Ref_Water(PS_WATER_In Input)
     
         float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
     
-        vNormal = mul(normalize(vNormal), WorldMatrix) * -1.f;
+        vNormal = normalize(mul(normalize(vNormal), WorldMatrix) * -1.f);
     }
     else
     {
-        vNormal = Input.vNor.xyz;
+        vNormal = normalize(Input.vNor.xyz);
     }
     
     vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);

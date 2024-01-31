@@ -66,9 +66,11 @@ private:
 	LEVEL_ID m_eLevel;
 
 	RECT				m_rcRect{};
+	RECT				m_rcInitialRect{};
 
 public:
 	const RECT& Get_Rect() const { return m_rcRect; }
+	const RECT& Get_InitialRect() const { return m_rcInitialRect; }
 	void Set_Size(_float fSizeX, _float fSizeY, _float fFontSize = -1.f);
 	void Set_Color(_vec4 vColor) { m_vColor = vColor; }
 	const _vec2& Get_Position() const { return m_vPosition; }

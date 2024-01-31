@@ -73,9 +73,6 @@
     <Filter Include="02.GameObjects\00.UI\01.SelectLevel\CharacterSelect">
       <UniqueIdentifier>{6f2639c5-1725-44f9-9096-e83c37bd1286}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\03.Player\BodyParts">
-      <UniqueIdentifier>{0123b848-788d-47ef-ba20-76c36aaef511}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\05.Select_Object">
       <UniqueIdentifier>{c8a8cb96-af60-446e-b50b-6dfbb4df6a4d}</UniqueIdentifier>
     </Filter>
@@ -340,6 +337,21 @@
     <Filter Include="02.GameObjects\11.Trigger\Manager">
       <UniqueIdentifier>{bc9dd045-dd44-470a-8fbe-c8d5ed7e0b04}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.UI\02.Custom\NameWindow">
+      <UniqueIdentifier>{eea7de1f-cd72-4835-9958-d2604412b273}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\Shop">
+      <UniqueIdentifier>{8543d625-6250-4be5-ad55-baadea9329a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\Shop\ShopDesc">
+      <UniqueIdentifier>{37a8ca72-2b72-457f-931a-134d39c72fc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\12.WorldMap">
+      <UniqueIdentifier>{6c40ed79-665a-45bf-ac56-9bcb324ab06c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07. NPC\04. Aur">
+      <UniqueIdentifier>{fd280966-4c1a-40f4-be13-f7c665463df0}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObjects\09.Object\Environment">
       <UniqueIdentifier>{8b2984b1-580e-4d35-b673-8de40cf2ad2e}</UniqueIdentifier>
     </Filter>
@@ -420,9 +432,6 @@
     <ClInclude Include="..\Public\TextButton.h">
       <Filter>02.GameObjects\00.UI\Texture&amp;Text</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\BodyPart.h">
-      <Filter>02.GameObjects\03.Player\BodyParts</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Terrain.h">
       <Filter>02.GameObjects\02.Terrain</Filter>
     </ClInclude>
@@ -491,9 +500,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\HpBar.h">
       <Filter>02.GameObjects\00.UI\GameUI\HP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Weapon.h">
-      <Filter>02.GameObjects\03.Player\Weapon</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\NPC.h">
       <Filter>02.GameObjects\07. NPC</Filter>
@@ -687,6 +693,24 @@
     <ClInclude Include="..\Public\Map.h">
       <Filter>02.GameObjects\08.Map</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\NameWindow.h">
+      <Filter>02.GameObjects\00.UI\02.Custom\NameWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DialogText.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Pop_LevelUp.h">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ShopDesc.h">
+      <Filter>02.GameObjects\00.UI\Shop\ShopDesc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Shop.h">
+      <Filter>02.GameObjects\00.UI\Shop</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Aur.h">
+      <Filter>02.GameObjects\07. NPC\04. Aur</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -759,9 +783,6 @@
     <ClCompile Include="..\Private\TextButton.cpp">
       <Filter>02.GameObjects\00.UI\Texture&amp;Text</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\BodyPart.cpp">
-      <Filter>02.GameObjects\03.Player\BodyParts</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Terrain.cpp">
       <Filter>02.GameObjects\02.Terrain</Filter>
     </ClCompile>
@@ -833,9 +854,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\HPBar.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\HP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Weapon.cpp">
-      <Filter>02.GameObjects\03.Player\Weapon</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\NPC.cpp">
       <Filter>02.GameObjects\07. NPC</Filter>
@@ -1022,6 +1040,24 @@
     </ClCompile>
     <ClCompile Include="..\Private\Map.cpp">
       <Filter>02.GameObjects\08.Map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NameWindow.cpp">
+      <Filter>02.GameObjects\00.UI\02.Custom\NameWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DialogText.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Pop_LevelUp.cpp">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Shop.cpp">
+      <Filter>02.GameObjects\00.UI\Shop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ShopDesc.cpp">
+      <Filter>02.GameObjects\00.UI\Shop\ShopDesc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Aur.cpp">
+      <Filter>02.GameObjects\07. NPC\04. Aur</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

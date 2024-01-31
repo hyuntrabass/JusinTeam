@@ -48,6 +48,8 @@ private:
 						
 	wstring				m_strNameTag;
 
+public:
+	void Set_Text(const wstring strText) { m_strNameTag = strText; }
 
 public:
 	static CNameTag* Create(_dev pDevice, _context pContext);
