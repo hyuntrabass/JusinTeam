@@ -89,8 +89,8 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 
 	VertexList.sort([&WorldMatrix, &vCamPos](VTXINSTANCING pSrc, VTXINSTANCING pDst)
 	{
-		_float fSrcDist = (_vec4::Transform(_vec4(pSrc.vPos), WorldMatrix) - vCamPos).Length();
-		_float fDstDist = (_vec4::Transform(_vec4(pDst.vPos), WorldMatrix) - vCamPos).Length();
+		_float fSrcDist = (_vec4(pSrc.vPos) - vCamPos).Length();
+		_float fDstDist = (_vec4(pDst.vPos) - vCamPos).Length();
 		return fSrcDist > fDstDist;
 	});
 

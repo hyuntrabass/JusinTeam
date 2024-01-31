@@ -1,6 +1,7 @@
 #include "Missile.h"
-
+#include "Effect_Dummy.h"
 #include "Groar_Boss.h"
+#include "Effect_Manager.h"
 
 _uint CMissile::m_iMissileID = 0;
 
@@ -124,6 +125,13 @@ HRESULT CMissile::Init(void* pArg)
 
 	m_pTransformCom->Set_Scale(_vec3(1.5f, 1.5f, 1.5f));
 
+	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+
+	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Init");
+	Info.pMatrix = &m_EffectMatrix;
+	Info.isFollow = true;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
+
 	return S_OK;
 }
 
@@ -133,15 +141,20 @@ void CMissile::Tick(_float fTimeDelta)
 	{
 	case Client::CMissile::LEFT_THROW:
 	{
-		if (m_fLifeTime >= 1.f /*|| 플레이어와 충돌했을때*/)
+		if (m_fLifeTime >= 1.f || m_pGameInstance->Attack_Player(m_pColliderCom, 10))
 		{
 			Kill();
 		}
 
-		if (m_pGroarModel->Get_CurrentAnimationIndex() == CGroar_Boss::MON_GROAR_ASGARD_ATTACK01 && 
+		if (not m_bShoot and m_pGroarModel->Get_CurrentAnimationIndex() == CGroar_Boss::MON_GROAR_ASGARD_ATTACK01 &&
 			m_pGroarModel->Get_CurrentAnimPos() >= 51.f)
 		{
 			m_bShoot = true;
+
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Smoke");
+			Info.pMatrix = &m_EffectMatrix;
+			Info.isFollow = true;
+			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
 		}
 
 
@@ -156,7 +169,7 @@ void CMissile::Tick(_float fTimeDelta)
 			m_pTransformCom->Set_State(State::Pos, vLeftHandMatrix.Position());
 
 			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
-			_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+			_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
 			m_pTransformCom->LookAt(vPlayerPos);
 
 		}
@@ -166,15 +179,20 @@ void CMissile::Tick(_float fTimeDelta)
 
 	case Client::CMissile::RIGHT_THROW:
 	{
-		if (m_fLifeTime >= 1.f /*|| 플레이어와 충돌했을때*/)
+		if (m_fLifeTime >= 1.f || m_pGameInstance->Attack_Player(m_pColliderCom, 10))
 		{
 			Kill();
 		}
 
-		if (m_pGroarModel->Get_CurrentAnimationIndex() == CGroar_Boss::MON_GROAR_ASGARD_ATTACK00 &&
+		if (not m_bShoot and m_pGroarModel->Get_CurrentAnimationIndex() == CGroar_Boss::MON_GROAR_ASGARD_ATTACK00 &&
 			m_pGroarModel->Get_CurrentAnimPos() >= 38.f)
 		{
 			m_bShoot = true;
+
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Smoke");
+			Info.pMatrix = &m_EffectMatrix;
+			Info.isFollow = true;
+			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
 		}
 
 
@@ -189,7 +207,7 @@ void CMissile::Tick(_float fTimeDelta)
 			m_pTransformCom->Set_State(State::Pos, vRightHandMatrix.Position());
 
 			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
-			_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+			_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
 			m_pTransformCom->LookAt(vPlayerPos);
 		}
 
@@ -198,12 +216,23 @@ void CMissile::Tick(_float fTimeDelta)
 
 	case Client::CMissile::SIX_MISSILE:
 
-		if (m_fLifeTime >= 1.f /*|| 플레이어와 충돌했을때*/)
+		if (m_fLifeTime >= 1.f || m_pGameInstance->Attack_Player(m_pColliderCom, 10))
 		{
 			Kill();
 		}
 
-		if (m_pGroarModel->Get_CurrentAnimationIndex() == CGroar_Boss::MON_GROAR_ASGARD_ATTACK02 &&
+		if (m_fEffectTimer > 0.8f and m_fEffectTimer < 2.f)
+		{
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Smoke");
+			Info.pMatrix = &m_EffectMatrix;
+			Info.isFollow = true;
+			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
+
+			m_fEffectTimer = 3.f;
+		}
+		m_fEffectTimer += fTimeDelta;
+
+		if (not m_bShoot and m_pGroarModel->Get_CurrentAnimationIndex() == CGroar_Boss::MON_GROAR_ASGARD_ATTACK02 &&
 			m_pGroarModel->Get_CurrentAnimPos() >= m_fDepartTime)
 		{
 			m_bShoot = true;
@@ -217,19 +246,45 @@ void CMissile::Tick(_float fTimeDelta)
 		else
 		{
 			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
-			_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+			_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
 			m_pTransformCom->LookAt(vPlayerPos);
 		}
 
 		break;
 	}
 
+	if (m_isDead)
+	{
+		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Explosion");
+		Info.pMatrix = &m_EffectMatrix;
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
+	}
+
+	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+
+	if (m_pEffect_Ball)
+	{
+		m_pEffect_Ball->Tick(fTimeDelta);
+	}
+	if (m_pEffect_Smoke)
+	{
+		m_pEffect_Smoke->Tick(fTimeDelta);
+	}
 	Update_Collider();
 }
 
 void CMissile::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	//m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+
+	if (m_pEffect_Smoke)
+	{
+		m_pEffect_Smoke->Late_Tick(fTimeDelta);
+	}
+	if (m_pEffect_Ball)
+	{
+		m_pEffect_Ball->Late_Tick(fTimeDelta);
+	}
 
 #ifdef _DEBUGTEST
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
@@ -238,47 +293,47 @@ void CMissile::Late_Tick(_float fTimeDelta)
 
 HRESULT CMissile::Render()
 {
-	if (FAILED(Bind_ShaderResources()))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(Bind_ShaderResources()))
+	//{
+	//	return E_FAIL;
+	//}
 
-	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+	//_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-	for (_uint i = 0; i < iNumMeshes; i++)
-	{
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-		{
-			return E_FAIL;
-		}
+	//for (_uint i = 0; i < iNumMeshes; i++)
+	//{
+	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+	//	{
+	//		return E_FAIL;
+	//	}
 
-		_bool HasNorTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-		{
-			HasNorTex = false;
-		}
-		else
-		{
-			HasNorTex = true;
-		}
+	//	_bool HasNorTex{};
+	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+	//	{
+	//		HasNorTex = false;
+	//	}
+	//	else
+	//	{
+	//		HasNorTex = true;
+	//	}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
+	//	if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+	//	{
+	//		return E_FAIL;
+	//	}
 
-		if (FAILED(m_pShaderCom->Begin(StaticPass_Default)))
-		{
-			return E_FAIL;
-		}
+	//	if (FAILED(m_pShaderCom->Begin(StaticPass_Default)))
+	//	{
+	//		return E_FAIL;
+	//	}
 
-		if (FAILED(m_pModelCom->Render(i)))
-		{
-			return E_FAIL;
-		}
+	//	if (FAILED(m_pModelCom->Render(i)))
+	//	{
+	//		return E_FAIL;
+	//	}
 
 
-	}
+	//}
 
 	return S_OK;
 }
@@ -314,11 +369,11 @@ HRESULT CMissile::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Effect_FX_A_Sphere002_SM.mo"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
-	{
-		return E_FAIL;
-	}
-
+	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball");
+	Info.pMatrix = &m_EffectMatrix;
+	Info.isFollow = true;
+	m_pEffect_Ball = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
+	
 	return S_OK;
 }
 
@@ -382,8 +437,9 @@ void CMissile::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pEffect_Ball);
+	Safe_Release(m_pEffect_Smoke);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pColliderCom);
-	Safe_Release(m_pModelCom);
 }
