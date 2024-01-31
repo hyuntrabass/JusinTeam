@@ -6,6 +6,8 @@ CInput_Device::CInput_Device()
 
 HRESULT CInput_Device::Init(HINSTANCE hInst, HWND hWnd)
 {
+	m_hWnd = hWnd;
+
 	if (FAILED(DirectInput8Create(hInst, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_pInputSDK, nullptr)))
 	{
 		return E_FAIL;
@@ -16,7 +18,7 @@ HRESULT CInput_Device::Init(HINSTANCE hInst, HWND hWnd)
 		return E_FAIL;
 	}
 	m_pMouse->SetDataFormat(&c_dfDIMouse);
-	m_pMouse->SetCooperativeLevel(hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
+	m_pMouse->SetCooperativeLevel(m_hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
 	m_pMouse->Acquire();
 
 	if (FAILED(m_pInputSDK->CreateDevice(GUID_SysKeyboard, &m_pKeyboard, nullptr)))
@@ -29,7 +31,7 @@ HRESULT CInput_Device::Init(HINSTANCE hInst, HWND hWnd)
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pKeyboard->SetCooperativeLevel(hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE)))
+	if (FAILED(m_pKeyboard->SetCooperativeLevel(m_hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE)))
 	{
 		return E_FAIL;
 	}
@@ -55,6 +57,11 @@ HRESULT CInput_Device::Init(HINSTANCE hInst, HWND hWnd)
 
 void CInput_Device::Update_InputDev()
 {
+	if (GetForegroundWindow() != m_hWnd)
+	{
+		return;
+	}
+
 	if (FAILED(m_pMouse->GetDeviceState(sizeof m_MouseState, &m_MouseState)))
 	{
 		MSG_BOX("Failed to Get Mouse State");
