@@ -57,6 +57,11 @@ HRESULT CLevel_Village::Init()
 		MSG_BOX("Failed to Ready Object");
 		return E_FAIL;
 	}
+	//if (FAILED(Ready_Environment()))
+	//{
+	//	MSG_BOX("Failed to Ready Object");
+	//	return E_FAIL;
+	//}
 
 	m_pGameInstance->Set_HellHeight(-5000.f);
 
@@ -199,7 +204,7 @@ HRESULT CLevel_Village::Ready_Object()
 		ObjectInfo.strPrototypeTag = ObjectPrototype;
 		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
 		ObjectInfo.eObjectType = Object_Building;
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Village_Object"), &ObjectInfo)))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Village_Etc_Object"), &ObjectInfo)))
 		{
 			MSG_BOX("오브젝트 불러오기 실패");
 			return E_FAIL;
@@ -207,6 +212,50 @@ HRESULT CLevel_Village::Ready_Object()
 	}
 	return S_OK;
 }
+
+
+HRESULT CLevel_Village::Ready_Environment()
+{
+
+	const TCHAR* pGetPath = TEXT("../Bin/Data/Village_EnvirData.dat");
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MSG_BOX("환경오브젝트 파일을 찾지 못했습니다.");
+		return E_FAIL;
+	}
+
+	_uint ObjectListSize;
+	inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
+
+
+	for (_uint i = 0; i < ObjectListSize; ++i)
+	{
+		_ulong ObjectPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
+
+		wstring ObjectPrototype;
+		ObjectPrototype.resize(ObjectPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
+
+		_mat ObjectWorldMat;
+		inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
+
+		ObjectInfo ObjectInfo{};
+		ObjectInfo.strPrototypeTag = ObjectPrototype ;
+		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
+		ObjectInfo.eObjectType = Object_Environment;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Envir_Object"), TEXT("Prototype_GameObject_Village_Envir_Object"), &ObjectInfo)))
+		{
+			MSG_BOX("환경오브젝트 불러오기 실패");
+			return E_FAIL;
+		}
+	}
+	return S_OK;
+}
+
 
 HRESULT CLevel_Village::Ready_NpcvsMon()
 {

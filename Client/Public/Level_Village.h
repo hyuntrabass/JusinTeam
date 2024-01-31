@@ -24,6 +24,8 @@ private:
 
 	HRESULT Ready_Object();
 
+	HRESULT Ready_Environment();
+
 	// Monster
 	HRESULT Ready_Void05();
 	HRESULT Ready_Rabbit();

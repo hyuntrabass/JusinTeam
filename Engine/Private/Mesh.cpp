@@ -67,7 +67,7 @@ HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _mat OffsetM
 #pragma endregion
 
 #pragma region Index
-	m_iNumPrimitives = m_iNumIndices / 3;
+	//m_iNumPrimitives = m_iNumIndices / 3;
 	m_iIndexSizePrimitives = sizeof(_ulong);
 	m_iNumIndicesPrimitives = 3;
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);

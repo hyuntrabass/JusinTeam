@@ -1321,8 +1321,8 @@ HRESULT CLoader::Load_GamePlay()
 
 #pragma endregion
 
-#pragma region Prologue_Object
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Prologue_Object"), CPrologue_Object::Create(m_pDevice, m_pContext))))
+#pragma region Prologue
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Prologue_Object"), CEtc_Object::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -1376,7 +1376,13 @@ HRESULT CLoader::Load_Village()
 	}
 
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Village_Object"), CVillage_Object::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Village_Etc_Object"), CEtc_Object::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Village_Envir_Object"), CEnvironment_Object::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
