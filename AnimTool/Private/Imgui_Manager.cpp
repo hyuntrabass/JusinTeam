@@ -748,23 +748,30 @@ HRESULT CImgui_Manager::ImGuiMenu()
 
 				//이펙트 이름 띄우기
 				vector<TRIGGEREFFECT_DESC> EffectDescs = pCurModel->Get_TriggerEffects();
-				_char** ppEffectNameList = new _char * [EffectDescs.size()] {};
+				_char** ppEffectTriggerList = new _char * [EffectDescs.size()];
 
 				for (size_t i = 0; i < EffectDescs.size(); i++)
 				{
-					ppEffectNameList[i] = new _char[MAX_PATH];
-					int bufferSize = WideCharToMultiByte(CP_UTF8, 0, EffectDescs[i].strEffectName.c_str(), -1, nullptr, 0, nullptr, nullptr);
-					WideCharToMultiByte(CP_UTF8, 0, EffectDescs[i].strEffectName.c_str(), -1, ppEffectNameList[i], bufferSize, nullptr, nullptr);
+					ppEffectTriggerList[i] = new _char[MAX_PATH];
+					strcpy_s(ppEffectTriggerList[i], MAX_PATH, m_AnimationNames[EffectDescs[i].iStartAnimIndex]);
 				}
-				if (ImGui::ListBox("EFFECT##1", &m_iCurTriggerIndex, ppEffectNameList, EffectDescs.size()))
+				if (ImGui::ListBox("EFFECT##1", &m_iCurTriggerIndex, ppEffectTriggerList, EffectDescs.size()))
 				{
 				}
+				//이펙트 파일 이름 띄우기
+				_char* pEffectName = new _char[MAX_PATH];
+				int bufferSize = WideCharToMultiByte(CP_UTF8, 0, EffectDescs[m_iCurTriggerIndex].strEffectName.c_str(), -1, nullptr, 0, nullptr, nullptr);
+				WideCharToMultiByte(CP_UTF8, 0, EffectDescs[m_iCurTriggerIndex].strEffectName.c_str(), -1, pEffectName, bufferSize, nullptr, nullptr);
+				ImGui::SeparatorText("EFFECT");
+				ImGui::Text("NAME :"); ImGui::SameLine();
+				ImGui::Text(pEffectName);
 				//릭 제거
 				for (size_t i = 0; i < EffectDescs.size(); i++)
 				{
-					Safe_Delete_Array(ppEffectNameList[i]);
+					Safe_Delete_Array(ppEffectTriggerList[i]);
 				}
-				Safe_Delete_Array(ppEffectNameList);
+				Safe_Delete_Array(ppEffectTriggerList);
+				Safe_Delete_Array(pEffectName);
 				//
 				TRIGGEREFFECT_DESC* pEffectDesc = m_pPlayer->Get_CurrentPlayerModel()->Get_TriggerEffect(m_iCurTriggerIndex);
 				if (ImGui::Button("START"))
@@ -908,8 +915,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				for (size_t i = 0; i < SoundDescs.size(); i++)
 				{
 					ppSoundTriggerList[i] = new _char[MAX_PATH];
-					int bufferSize = WideCharToMultiByte(CP_UTF8, 0, SoundDescs[i].strSoundNames[0].c_str(), -1, nullptr, 0, nullptr, nullptr);
-					WideCharToMultiByte(CP_UTF8, 0, SoundDescs[i].strSoundNames[0].c_str(), -1, ppSoundTriggerList[i], bufferSize, nullptr, nullptr);
+					strcpy_s(ppSoundTriggerList[i], MAX_PATH, m_AnimationNames[SoundDescs[i].iStartAnimIndex]);
 				}
 				if (ImGui::ListBox("SOUND##1", &m_iCurTriggerIndex, ppSoundTriggerList, SoundDescs.size()))
 				{
@@ -938,7 +944,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					Safe_Delete_Array(ppSoundNameList[i]);
 				}
 				Safe_Delete_Array(ppSoundNameList);
-
+				
 				TRIGGERSOUND_DESC* pSoundDesc = m_pPlayer->Get_CurrentPlayerModel()->Get_TriggerSound(m_iCurTriggerIndex);
 				ImGui::SeparatorText("SOUND");
 				if (ImGui::Button("ADD##2"))
@@ -1153,23 +1159,30 @@ HRESULT CImgui_Manager::ImGuiMenu()
 
 				//이펙트 이름 띄우기
 				vector<TRIGGEREFFECT_DESC> EffectDescs = pCurModel->Get_TriggerEffects();
-				_char** ppEffectNameList = new _char * [EffectDescs.size()] {};
+				_char** ppEffectTriggerList = new _char * [EffectDescs.size()];
 
 				for (size_t i = 0; i < EffectDescs.size(); i++)
 				{
-					ppEffectNameList[i] = new _char[MAX_PATH];
-					int bufferSize = WideCharToMultiByte(CP_UTF8, 0, EffectDescs[i].strEffectName.c_str(), -1, nullptr, 0, nullptr, nullptr);
-					WideCharToMultiByte(CP_UTF8, 0, EffectDescs[i].strEffectName.c_str(), -1, ppEffectNameList[i], bufferSize, nullptr, nullptr);
+					ppEffectTriggerList[i] = new _char[MAX_PATH];
+					strcpy_s(ppEffectTriggerList[i], MAX_PATH, m_AnimationNames[EffectDescs[i].iStartAnimIndex]);
 				}
-				if (ImGui::ListBox("EFFECT##1", &m_iCurTriggerIndex, ppEffectNameList, EffectDescs.size()))
+				if (ImGui::ListBox("EFFECT##1", &m_iCurTriggerIndex, ppEffectTriggerList, EffectDescs.size()))
 				{
 				}
+				//이펙트 파일 이름 띄우기
+				_char* pEffectName = new _char[MAX_PATH];
+				int bufferSize = WideCharToMultiByte(CP_UTF8, 0, EffectDescs[m_iCurTriggerIndex].strEffectName.c_str(), -1, nullptr, 0, nullptr, nullptr);
+				WideCharToMultiByte(CP_UTF8, 0, EffectDescs[m_iCurTriggerIndex].strEffectName.c_str(), -1, pEffectName, bufferSize, nullptr, nullptr);
+				ImGui::SeparatorText("EFFECT");
+				ImGui::Text("NAME :"); ImGui::SameLine();
+				ImGui::Text(pEffectName);
 				//릭 제거
 				for (size_t i = 0; i < EffectDescs.size(); i++)
 				{
-					Safe_Delete_Array(ppEffectNameList[i]);
+					Safe_Delete_Array(ppEffectTriggerList[i]);
 				}
-				Safe_Delete_Array(ppEffectNameList);
+				Safe_Delete_Array(ppEffectTriggerList);
+				Safe_Delete_Array(pEffectName);
 				//
 				TRIGGEREFFECT_DESC* pEffectDesc = m_pPlayer->Get_CurrentModel()->Get_TriggerEffect(m_iCurTriggerIndex);
 				if (ImGui::Button("START"))
@@ -1314,8 +1327,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				for (size_t i = 0; i < SoundDescs.size(); i++)
 				{
 					ppSoundTriggerList[i] = new _char[MAX_PATH];
-					int bufferSize = WideCharToMultiByte(CP_UTF8, 0, SoundDescs[i].strSoundNames[0].c_str(), -1, nullptr, 0, nullptr, nullptr);
-					WideCharToMultiByte(CP_UTF8, 0, SoundDescs[i].strSoundNames[0].c_str(), -1, ppSoundTriggerList[i], bufferSize, nullptr, nullptr);
+					strcpy_s(ppSoundTriggerList[i], MAX_PATH, m_AnimationNames[SoundDescs[i].iStartAnimIndex]);
 				}
 				if (ImGui::ListBox("SOUND##1", &m_iCurTriggerIndex, ppSoundTriggerList, SoundDescs.size()))
 				{
@@ -1501,7 +1513,10 @@ HRESULT CImgui_Manager::ImGuiMenu()
 						_tchar szEffectName[MAX_PATH]{};
 						MultiByteToWideChar(CP_UTF8, 0, m_szSoundFiles[iSelectEffectFile], (_int)strlen(m_szSoundFiles[iSelectEffectFile]), szEffectName, MAX_PATH);
 
-						pSoundDesc->strSoundNames[m_iCurSoundNameIndex] = szEffectName;
+						if (m_iCurSoundNameIndex != 0)
+						{
+							pSoundDesc->strSoundNames[m_iCurSoundNameIndex] = szEffectName;
+						}
 					}
 				}
 #pragma endregion
@@ -1519,7 +1534,10 @@ HRESULT CImgui_Manager::ImGuiMenu()
 						_tchar szEffectName[MAX_PATH]{};
 						MultiByteToWideChar(CP_UTF8, 0, m_szSoundFiles[iSelectEffectFile], (_int)strlen(m_szSoundFiles[iSelectEffectFile]), szEffectName, MAX_PATH);
 
-						pSoundDesc->strSoundNames[m_iCurSoundNameIndex] = szEffectName;
+						if (m_iCurSoundNameIndex != 0)
+						{
+							pSoundDesc->strSoundNames[m_iCurSoundNameIndex] = szEffectName;
+						}
 					}
 				}
 			}
