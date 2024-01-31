@@ -1,5 +1,5 @@
 #pragma once
-#include "Prologue_Object.h"
+#include "Objects.h"
 
 CObjects::CObjects(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
@@ -8,6 +8,7 @@ CObjects::CObjects(_dev pDevice, _context pContext)
 
 CObjects::CObjects(const CObjects& rhs)
 	: CBlendObject(rhs)
+	, m_isInstancing(rhs.m_isInstancing)
 {
 }
 
@@ -30,8 +31,11 @@ void CObjects::Tick(_float fTimeDelta)
 
 void CObjects::Late_Tick(_float fTimeDelta)
 {
-
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
+	// ÀÎ½ºÅÏ½Ì ÇÒ ¸ðµ¨°ú ¾ÈÇÒ ¸ðµ¨À» ³ª´²ÁÜ
+	if(m_isInstancing == false)
+		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	else
+		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
 
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Water_Reflection, this);
 
@@ -80,8 +84,6 @@ HRESULT CObjects::Render()
 		{
 			return E_FAIL;
 		}
-
-
 	}
 
 
@@ -201,10 +203,21 @@ HRESULT CObjects::Add_Components(wstring strPrototype, ObjectType eType )
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxStatMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	if (m_isInstancing == false)
 	{
-		return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxStatMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+		{
+			return E_FAIL;
+		}
 	}
+	else
+	{
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxStatMesh_Instance"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+		{
+			return E_FAIL;
+		}
+	}
+
 	m_iShaderPass = StaticPass_Default;
 	m_iOutLineShaderPass = StaticPass_OutLine;
 
@@ -228,9 +241,12 @@ HRESULT CObjects::Add_Components(wstring strPrototype, ObjectType eType )
 
 HRESULT CObjects::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	if (m_isInstancing == false)
 	{
-		return E_FAIL;
+		if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+		{
+			return E_FAIL;
+		}
 	}
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))

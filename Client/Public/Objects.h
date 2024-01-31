@@ -37,6 +37,7 @@ protected:
 	_bool m_isSelected{};
 	_uint m_iShaderPass{};
 	_uint m_iOutLineShaderPass{};
+	_bool m_isInstancing{ false };
 
 protected:
 	HRESULT Add_Components(wstring strPrototype, ObjectType eType);

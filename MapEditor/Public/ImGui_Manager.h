@@ -92,6 +92,7 @@ private:
 	void Delete_Terrain();
 
 	void Reset();
+	void PopBack_Dummy();
 
 	void Search_Map();
 	void Search_Object();
@@ -163,6 +164,7 @@ private:
 
 	_bool m_isInstancing{false};
 	vector<_vec4> m_vInstancePos;
+	_float fTimeDeltaAcc{0.f};
 
 private:
 	// 파일의 이름 가져와서 저장
@@ -185,7 +187,7 @@ private:
 	class CDummy* m_pSelectedDummy{ nullptr };
 	class CMap* m_pSelectMap{ nullptr };
 	class CTerrain* m_pTerrain{ nullptr };
-	char Serch_Name[MAX_PATH]{};
+	char Search_Name[MAX_PATH]{};
 
 	_mat	m_ObjectMatrix{};
 	_mat	m_MapMatrix{};

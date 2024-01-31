@@ -113,15 +113,18 @@ HRESULT CDummy::Render()
 	{
 		return E_FAIL;
 	}
-	/*if (m_eType == ItemType::Environment && m_isInstancing == true)
+	
+	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+	for (_uint i = 0; i < iNumMeshes; i++)
 	{
-		if (FAILED(m_pVIBuffer->Bind_Material(m_pShaderCom, "g_DiffuseTexture", TextureType::Diffuse)))
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
 			return E_FAIL;
 		}
 
 		_bool HasNorTex{};
-		if (FAILED(m_pVIBuffer->Bind_Material(m_pShaderCom, "g_NormalTexture", TextureType::Normals)))
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
 		{
 			HasNorTex = false;
 		}
@@ -140,76 +143,35 @@ HRESULT CDummy::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(StaticPass_AlphaTestMeshes)))
+		if (m_isAnim)
+		{
+			if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+			{
+				return E_FAIL;
+			}
+		}
+
+
+		if (FAILED(m_pShaderCom->Begin(m_iOutLineShaderPass)))
 		{
 			return E_FAIL;
 		}
-		if (FAILED(m_pVIBuffer->Render()))
+
+		if (FAILED(m_pModelCom->Render(i)))
 		{
 			return E_FAIL;
 		}
 
-	}
-	else*/
-	{
-		_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
-
-		for (_uint i = 0; i < iNumMeshes; i++)
+		if (FAILED(m_pShaderCom->Begin(m_iShaderPass)))
 		{
-			if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-			{
-				return E_FAIL;
-			}
-
-			_bool HasNorTex{};
-			if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-			{
-				HasNorTex = false;
-			}
-			else
-			{
-				HasNorTex = true;
-			}
-
-			if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pShaderCom->Bind_RawValue("g_bSelected", &m_isSelected, sizeof _bool)))
-			{
-				return E_FAIL;
-			}
-
-			if (m_isAnim)
-			{
-				if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-				{
-					return E_FAIL;
-				}
-			}
-
-
-			if (FAILED(m_pShaderCom->Begin(m_iOutLineShaderPass)))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pModelCom->Render(i)))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pShaderCom->Begin(m_iShaderPass)))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pModelCom->Render(i)))
-			{
-				return E_FAIL;
-			}
+			return E_FAIL;
 		}
+
+		if (FAILED(m_pModelCom->Render(i)))
+		{
+			return E_FAIL;
+		}
+		
 	}
 	
 	
