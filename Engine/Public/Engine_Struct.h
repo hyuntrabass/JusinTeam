@@ -203,6 +203,7 @@ namespace Engine
 		std::vector<std::wstring> strSoundNames;
 		float fInitVolume{};
 		float fFadeoutSecond = 1.f;
+		bool IsClientTrigger{};
 		
 		int iChannel = -1;
 		bool HasPlayed{};

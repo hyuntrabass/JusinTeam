@@ -43,6 +43,7 @@ public:
         std::vector<std::wstring> strSoundNames;
         float fInitVolume{};
         float fFadeoutSecond;
+        bool IsClientTrigger{};
     };
 
 private:

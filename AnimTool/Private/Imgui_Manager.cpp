@@ -1033,6 +1033,27 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					pSoundDesc->fFadeoutSecond = 0.1f;
 				}
 
+				if (ImGui::Button("CLIENT TRIGGER"))
+				{
+					if (pSoundDesc->IsClientTrigger == false)
+					{
+						pSoundDesc->IsClientTrigger = true;
+					}
+					else if (pSoundDesc->IsClientTrigger == true)
+					{
+						pSoundDesc->IsClientTrigger = false;
+					}
+				}
+				ImGui::SameLine();
+				if (pSoundDesc->IsClientTrigger)
+				{
+					ImGui::Text("TRUE");
+				}
+				else
+				{
+					ImGui::Text("FALSE");
+				}
+
 				ImGui::SeparatorText("CHANNEL");
 				string strChannel = "CHANNEL : " + to_string(pSoundDesc->iChannel);
 				ImGui::Text(strChannel.c_str());
@@ -1418,6 +1439,27 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					pSoundDesc->fFadeoutSecond = 0.1f;
 				}
 
+				if (ImGui::Button("CLIENT TRIGGER"))
+				{
+					if (pSoundDesc->IsClientTrigger == false)
+					{
+						pSoundDesc->IsClientTrigger = true;
+					}
+					else if (pSoundDesc->IsClientTrigger == true)
+					{
+						pSoundDesc->IsClientTrigger = false;
+					}
+				}
+				ImGui::SameLine();
+				if (pSoundDesc->IsClientTrigger)
+				{
+					ImGui::Text("TRUE");
+				}
+				else
+				{
+					ImGui::Text("FALSE");
+				}
+
 				ImGui::SeparatorText("CHANNEL");
 				string strChannel = "CHANNEL : " + to_string(pSoundDesc->iChannel);
 				ImGui::Text(strChannel.c_str());
@@ -1749,6 +1791,8 @@ HRESULT CImgui_Manager::SaveFile()
 					Fileout.write(reinterpret_cast<_char*>(&fInitVolume), sizeof(_float));
 					_float fFadeoutSecond = SoundDescs[i].fFadeoutSecond;
 					Fileout.write(reinterpret_cast<_char*>(&fFadeoutSecond), sizeof(_float));
+					_bool IsClientTrigger = SoundDescs[i].IsClientTrigger;
+					Fileout.write(reinterpret_cast<_char*>(&IsClientTrigger), sizeof(_bool));
 				}
 			}
 		}
@@ -1832,6 +1876,8 @@ HRESULT CImgui_Manager::SaveFile()
 					Fileout.write(reinterpret_cast<_char*>(&fInitVolume), sizeof(_float));
 					_float fFadeoutSecond = SoundDescs[i].fFadeoutSecond;
 					Fileout.write(reinterpret_cast<_char*>(&fFadeoutSecond), sizeof(_float));
+					_bool IsClientTrigger = SoundDescs[i].IsClientTrigger;
+					Fileout.write(reinterpret_cast<_char*>(&IsClientTrigger), sizeof(_bool));
 				}
 			}
 		}
@@ -1964,6 +2010,7 @@ HRESULT CImgui_Manager::LoadFile()
 
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fInitVolume), sizeof(_float));
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fFadeoutSecond), sizeof(_float));
+					Filein.read(reinterpret_cast<_char*>(&SoundDesc.IsClientTrigger), sizeof(_bool));
 
 					SoundDesc.fVolume = SoundDesc.fInitVolume;
 					pCurModel->Add_TriggerSound(SoundDesc);
@@ -2056,6 +2103,7 @@ HRESULT CImgui_Manager::LoadFile()
 
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fInitVolume), sizeof(_float));
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fFadeoutSecond), sizeof(_float));
+					Filein.read(reinterpret_cast<_char*>(&SoundDesc.IsClientTrigger), sizeof(_bool));
 
 					SoundDesc.fVolume = SoundDesc.fInitVolume;
 					pCurModel->Add_TriggerSound(SoundDesc);
@@ -2252,6 +2300,7 @@ HRESULT CImgui_Manager::UpdateFile()
 
 						Filein.read(reinterpret_cast<_char*>(&PreSoundDesc.fInitVolume), sizeof(_float));
 						Filein.read(reinterpret_cast<_char*>(&PreSoundDesc.fFadeoutSecond), sizeof(_float));
+						Filein.read(reinterpret_cast<_char*>(&PreSoundDesc.IsClientTrigger), sizeof(_bool));
 
 						PreSoundDescs.push_back(PreSoundDesc);
 					}
@@ -2276,6 +2325,7 @@ HRESULT CImgui_Manager::UpdateFile()
 					}
 					SoundDesc.fInitVolume = PreSoundDescs[i].fInitVolume;
 					SoundDesc.fFadeoutSecond = PreSoundDescs[i].fFadeoutSecond;
+					SoundDesc.IsClientTrigger = PreSoundDescs[i].IsClientTrigger;
 
 					SoundDescs.push_back(SoundDesc);
 				}
@@ -2318,6 +2368,8 @@ HRESULT CImgui_Manager::UpdateFile()
 						Fileout.write(reinterpret_cast<_char*>(&fInitVolume), sizeof(_float));
 						_float fFadeoutSecond = SoundDescs[i].fFadeoutSecond;
 						Fileout.write(reinterpret_cast<_char*>(&fFadeoutSecond), sizeof(_float));
+						_bool IsClientTrigger = SoundDescs[i].IsClientTrigger;
+						Fileout.write(reinterpret_cast<_char*>(&IsClientTrigger), sizeof(_bool));
 					}
 
 					Fileout.close();

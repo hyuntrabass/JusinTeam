@@ -67,7 +67,7 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}*/
 
-	/*
+	
 
 	//if (FAILED(Ready_Nastron03()))
 	//{
@@ -111,11 +111,11 @@ HRESULT CLevel_GamePlay::Init()
 	//	return E_FAIL;
 	//}
 
-	if (FAILED(Ready_Void20()))
-	{
-		MSG_BOX("Failed to Ready Void20");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Void20()))
+	//{
+	//	MSG_BOX("Failed to Ready Void20");
+	//	return E_FAIL;
+	//}
 
 	//if (FAILED(Ready_Void23()))
 	//{
@@ -135,17 +135,17 @@ HRESULT CLevel_GamePlay::Init()
 	//	return E_FAIL;
 	//}
 
-	if (FAILED(Ready_Dog()))
-	{
-		MSG_BOX("Failed to Ready Dog");
-		return E_FAIL;
-	}
-	if (FAILED(Ready_NPC_Test()))
-	{
-		MSG_BOX("Failed to Ready NPC");
-		return E_FAIL;
-	}
-		*/
+	//if (FAILED(Ready_Dog()))
+	//{
+	//	MSG_BOX("Failed to Ready Dog");
+	//	return E_FAIL;
+	//}
+	//if (FAILED(Ready_NPC_Test()))
+	//{
+	//	MSG_BOX("Failed to Ready NPC");
+	//	return E_FAIL;
+	//}
+		
 	/*
 	
 	if (FAILED(Ready_NPC_Dummy_Test()))

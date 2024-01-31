@@ -373,7 +373,8 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 #endif // DEBUG
 
-	m_pModelCom->Play_Animation(fTimeDelta);
+	m_pModelCom->Play_Animation(fTimeDelta, m_bAttacked);
+	m_bAttacked = false;
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
 	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
@@ -996,7 +997,7 @@ void CPlayer::Move(_float fTimeDelta)
 			m_eState = Attack;
 			m_ReadyArrow = true;
 			//m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
-			m_bAttacked = false;
+
 			hasMoved = false;
 		}
 		if (m_pGameInstance->Key_Down(DIK_SPACE))
@@ -1087,11 +1088,7 @@ void CPlayer::Move(_float fTimeDelta)
 			}
 
 
-			if (m_eState == Jump_Start)
-			{
-				if (!m_pTransformCom->Is_Jumping())
-					m_eState = Idle;
-			}
+
 			if (m_eState != Attack or (m_eState == Attack && m_fAttTimer > 0.75f))
 				m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
 
@@ -1132,7 +1129,7 @@ void CPlayer::Move(_float fTimeDelta)
 		if (m_eState == Jump_Start)
 		{
 			if (!m_pTransformCom->Is_Jumping())
-				m_eState = Jump_End;
+				m_eState = Idle;
 		}
 	}
 
@@ -1318,7 +1315,7 @@ void CPlayer::Common_Attack()
 		default:
 			break;
 		}
-	}
+	}	
 	else if (m_Current_Weapon == WP_BOW)
 	{
 		switch (m_iAttackCombo)
@@ -1489,7 +1486,7 @@ void CPlayer::Ready_Skill(Skill_Type Type)
 		break;
 	}
 	m_ReadyArrow = true;
-	m_bAttacked = false;
+
 }
 void CPlayer::Cam_AttackZoom(_float fZoom)
 {

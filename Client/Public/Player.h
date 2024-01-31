@@ -419,7 +419,7 @@ private:
 	_bool m_bWeapon_Unequip{};
 	_bool m_bHelmet_Hide{};
 	_bool m_bIsClimb{};
-	_bool m_bReady_Climb{};
+	_bool m_bReady_Climb{}; 
 
 	_float m_StartRegen{};
 
