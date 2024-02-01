@@ -114,7 +114,7 @@ public: // Font
 	_vec2 Get_TextSize(const wstring& strFontTag, const wstring& strText);
 
 public: // Frustum
-	_bool IsIn_Fov_World(_vec4 vPos, _float fRange = 0.f);
+	_bool IsIn_Fov_World(_vec4 vPos, _float fRange = 2.f);
 	void Transform_ToLocalSpace(_mat vWorldInversed);
 	_bool IsIn_Fov_Local(_vec4 vPos, _float fRange = 0.f);
 

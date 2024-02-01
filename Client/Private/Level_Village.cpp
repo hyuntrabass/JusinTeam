@@ -74,11 +74,11 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_NPC()))
-	{
-		MSG_BOX("Failed to Ready NPC");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_NPC()))
+	//{
+	//	MSG_BOX("Failed to Ready NPC");
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(Ready_NPC_Dummy()))
 	{
@@ -459,6 +459,24 @@ HRESULT CLevel_Village::Ready_NPC()
 			}
 
 		}
+		else if (Info.strNPCPrototype == TEXT("Prototype_Model_Cat"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Cat"), TEXT("Prototype_GameObject_Cat"), &Info)))
+			{
+				MSG_BOX("Cat 생성 실패");
+				return E_FAIL;
+			}
+
+		}
+		else if (Info.strNPCPrototype == TEXT("Prototype_Model_Dog"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dog"), TEXT("Prototype_GameObject_Dog"), &Info)))
+			{
+				MSG_BOX("Dog 생성 실패");
+				return E_FAIL;
+			}
+
+		}
 
 	}
 
@@ -467,6 +485,133 @@ HRESULT CLevel_Village::Ready_NPC()
 
 HRESULT CLevel_Village::Ready_NPC_Dummy()
 {
+	NPC_INFO Info{};
+	const TCHAR* pGetPath = L"../Bin/Data/Village_NPCDummyData.dat";
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MSG_BOX("../Bin/Data/Village_NPCDummyData.dat 불러오기 실패.");
+		return E_FAIL;
+	}
+
+	_uint NPCListSize;
+	inFile.read(reinterpret_cast<char*>(&NPCListSize), sizeof(_uint));
+
+	for (_uint i = 0; i < NPCListSize; ++i)
+	{
+		_ulong NPCPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&NPCPrototypeSize), sizeof(_ulong));
+
+		wstring NPCPrototype;
+		NPCPrototype.resize(NPCPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&NPCPrototype[0]), NPCPrototypeSize * sizeof(wchar_t));
+
+		_mat NPCWorldMat;
+		inFile.read(reinterpret_cast<char*>(&NPCWorldMat), sizeof(_mat));
+
+		Info.strNPCPrototype = NPCPrototype;
+		Info.NPCWorldMat = NPCWorldMat;
+
+		if (Info.strNPCPrototype == TEXT("Prototype_Model_BlackSmith"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_BlackSmith"), TEXT("Prototype_GameObject_BlackSmith"), &Info)))
+			{
+				MSG_BOX("BlackSmith 생성 실패");
+				return E_FAIL;
+			}
+
+		}
+		else if (Info.strNPCPrototype == TEXT("Prototype_Model_ItemMerchant"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_ItemMerchant"), TEXT("Prototype_GameObject_ItemMerchant"), &Info)))
+			{
+				MSG_BOX("ItemMerchant 생성 실패");
+				return E_FAIL;
+			}
+
+		}
+		else if (Info.strNPCPrototype == TEXT("Prototype_Model_Roskva"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Roskva"), TEXT("Prototype_GameObject_Roskva"), &Info)))
+			{
+				MSG_BOX("Roskva 생성 실패");
+				return E_FAIL;
+			}
+
+		}
+		else if (Info.strNPCPrototype == TEXT("Prototype_Model_Cat"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Cat"), TEXT("Prototype_GameObject_Cat"), &Info)))
+			{
+				MSG_BOX("Cat 생성 실패");
+				return E_FAIL;
+			}
+
+		}
+		else if (Info.strNPCPrototype == TEXT("Prototype_Model_Dog"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dog"), TEXT("Prototype_GameObject_Dog"), &Info)))
+			{
+				MSG_BOX("Dog 생성 실패");
+				return E_FAIL;
+			}
+
+		}
+
+		string strInputFilePath = "../../Client/Bin/Resources/AnimMesh/NPC/NPC_Dummy/Mesh/";
+		for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+		{
+			if (entry.is_regular_file())
+			{
+				if (!entry.exists())
+				{
+					return S_OK;
+				}
+
+				wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+				if (Info.strNPCPrototype == strPrototypeTag)
+				{
+					if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_") + entry.path().stem().wstring(), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+					{
+						wstring MSG = entry.path().stem().wstring() + L"생성 실패";
+						MessageBox(nullptr, MSG.c_str(), L"error", MB_OK);
+						return E_FAIL;
+					}
+				}
+			}
+		}
+
+		//if (Info.strNPCPrototype == TEXT("Prototype_Model_Dwarf_Male_002"))
+		//{
+		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dwarf_Male_002"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+		//	{
+		//		MSG_BOX("Dwarf_Male_002 생성 실패");
+		//		return E_FAIL;
+		//	}
+		//}
+
+		//else if (Info.strNPCPrototype == TEXT("Prototype_Model_Female_003"))
+		//{
+		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Female_003"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+		//	{
+		//		MSG_BOX("Female_003 생성 실패");
+		//		return E_FAIL;
+		//	}
+		//}
+
+		//else if (Info.strNPCPrototype == TEXT("Prototype_Model_Female_004"))
+		//{
+		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Female_004"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+		//	{
+		//		MSG_BOX("Female_004 생성 실패");
+		//		return E_FAIL;
+		//	}
+		//}
+	}
+
 	return S_OK;
 }
 

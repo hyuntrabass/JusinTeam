@@ -20,7 +20,7 @@ HRESULT CGraphic_Device::Initialize(const GRAPHIC_DESC& GraphicInfo, _Inout_ ID3
 	_uint		iFlag = 0;
 
 #ifdef _DEBUG
-	//iFlag = D3D11_CREATE_DEVICE_DEBUG;
+	iFlag = D3D11_CREATE_DEVICE_DEBUG;
 #endif
 	D3D_FEATURE_LEVEL			FeatureLV;
 

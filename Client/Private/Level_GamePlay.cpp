@@ -92,11 +92,11 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
-	//if (FAILED(Ready_NPC_Dummy_Test()))
-	//{
-	//	MSG_BOX("Failed to Ready NPC_Dummy");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_NPC_Dummy_Test()))
+	{
+		MSG_BOX("Failed to Ready NPC_Dummy");
+		return E_FAIL;
+	}
 
 	// Boss_Test
 	if (FAILED(Ready_Groar_Boss()))
@@ -448,102 +448,119 @@ HRESULT CLevel_GamePlay::Ready_NPC_Test()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Cat"), TEXT("Prototype_GameObject_Cat"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Dog"), TEXT("Prototype_GameObject_Dog"))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
 HRESULT CLevel_GamePlay::Ready_NPC_Dummy_Test()
 {
-	NPC_INFO Info = {};
-	Info.strNPCPrototype = TEXT("Prototype_Model_Dwarf_Male_002");
+	//NPC_INFO Info = {};
+	//Info.strNPCPrototype = TEXT("Prototype_Model_Dwarf_Male_002");
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	//{
+	//	return E_FAIL;
+	//}
 
-	Info.strNPCPrototype = TEXT("Prototype_Model_Female_003");
+	//Info.strNPCPrototype = TEXT("Prototype_Model_Horse");
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	//{
+	//	return E_FAIL;
+	//}
 
-	Info.strNPCPrototype = TEXT("Prototype_Model_Female_004");
+	//Info.strNPCPrototype = TEXT("Prototype_Model_Female_003");
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	//{
+	//	return E_FAIL;
+	//}
 
-	Info.strNPCPrototype = TEXT("Prototype_Model_Female_006");
+	//Info.strNPCPrototype = TEXT("Prototype_Model_Female_004");
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	//{
+	//	return E_FAIL;
+	//}
 
-	Info.strNPCPrototype = TEXT("Prototype_Model_Male_013");
+	//Info.strNPCPrototype = TEXT("Prototype_Model_Female_006");
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	//{
+	//	return E_FAIL;
+	//}
 
-	Info.strNPCPrototype = TEXT("Prototype_Model_Male_015");
+	//Info.strNPCPrototype = TEXT("Prototype_Model_Male_013");
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	//{
+	//	return E_FAIL;
+	//}
 
-	Info.strNPCPrototype = TEXT("Prototype_Model_Male_018");
+	//Info.strNPCPrototype = TEXT("Prototype_Model_Male_015");
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	//{
+	//	return E_FAIL;
+	//}
 
-	Info.strNPCPrototype = TEXT("Prototype_Model_Female_013");
+	//Info.strNPCPrototype = TEXT("Prototype_Model_Male_018");
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	//{
+	//	return E_FAIL;
+	//}
 
-	Info.strNPCPrototype = TEXT("Prototype_Model_Female_027");
+	//Info.strNPCPrototype = TEXT("Prototype_Model_Female_013");
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	//{
+	//	return E_FAIL;
+	//}
 
-	Info.strNPCPrototype = TEXT("Prototype_Model_Male_Chi");
+	//Info.strNPCPrototype = TEXT("Prototype_Model_Female_027");
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	//{
+	//	return E_FAIL;
+	//}
 
-	Info.strNPCPrototype = TEXT("Prototype_Model_Male_016");
+	//Info.strNPCPrototype = TEXT("Prototype_Model_Male_Chi");
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	//{
+	//	return E_FAIL;
+	//}
 
-	Info.strNPCPrototype = TEXT("Prototype_Model_Male_020");
+	//Info.strNPCPrototype = TEXT("Prototype_Model_Male_016");
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	//{
+	//	return E_FAIL;
+	//}
 
-	Info.strNPCPrototype = TEXT("Prototype_Model_Male_027");
+	//Info.strNPCPrototype = TEXT("Prototype_Model_Male_020");
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	//{
+	//	return E_FAIL;
+	//}
+
+	//Info.strNPCPrototype = TEXT("Prototype_Model_Male_027");
+
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_NPC_Dummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+	//{
+	//	return E_FAIL;
+	//}
 
 	return S_OK;
 }
