@@ -140,7 +140,7 @@ PS_OUT PS_MaskTexture(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
-    vector vMask = g_MaskTexture.Sample(LinearSampler, float2(Input.vTex.x + g_fx, Input.vTex.y + g_fy));
+    vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     
     Output.vColor.a = Output.vColor.a * vMask.r;
     
@@ -532,7 +532,7 @@ PS_OUT PS_Main_BLUR(PS_IN Input)
         }
     }
 
-	blurColor /= totalWeight;
+    blurColor /= totalWeight;
 
     blurColor.rgb *= g_vColor.rgb;
 
@@ -570,7 +570,7 @@ PS_OUT PS_ScrollAlpha(PS_IN Input)
             discard;
         }
     }
-    if(g_fScrollRatio > 0)
+    if (g_fScrollRatio > 0)
     {
         if (Input.vTex.y > g_fScrollRatio)
         {
@@ -1036,7 +1036,7 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_HPNoMask();
     }
-pass NineSlice
+    pass NineSlice
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -1048,7 +1048,7 @@ pass NineSlice
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_NineSlice();
     }
-pass FadeVertical
+    pass FadeVertical
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -1060,7 +1060,7 @@ pass FadeVertical
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_FadeVertical();
     }
-pass FadeHorizontal
+    pass FadeHorizontal
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);

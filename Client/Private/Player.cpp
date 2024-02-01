@@ -152,7 +152,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		if (m_pTest_Trail)
 		{
 			_vec3 vCenterforTrail = _vec3(m_pTransformCom->Get_CenterPos());
-			m_pTest_Trail->Tick(vCenterforTrail, vCenterforTrail + _vec3(0.f, 1.f, 0.f));
+			m_pTest_Trail->Tick(vCenterforTrail + _vec3(0.f, 1.f, 0.f), vCenterforTrail);
 		}
 	}
 

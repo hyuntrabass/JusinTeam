@@ -42,7 +42,12 @@ HRESULT CPet_Dragon::Init(void* pArg)
 	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Pet_Dragon_Parti");
 	Info.pMatrix = &m_EffectMatrix;
 	Info.isFollow = true;
-	m_pEffect_Parti = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
+
+	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Pet_Dragon_Light");
+	Info.pMatrix = &m_EffectMatrix;
+	Info.isFollow = true;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
 
 	return S_OK;
 }
@@ -54,7 +59,7 @@ void CPet_Dragon::Tick(_float fTimeDelta)
 
 	m_pModelCom->Set_Animation(m_Animation);
 
-	__super::Tick(fTimeDelta);
+	m_EffectMatrix = *m_pModelCom->Get_BoneMatrix("B_Jaw") * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 }
 
 void CPet_Dragon::Late_Tick(_float fTimeDelta)
