@@ -13,8 +13,6 @@ enum RenderGroup
 	RG_NonLight,
 	RG_Blend,
 	RG_BlendBlur,
-	RG_Water_Refraction,
-	RG_Water_Reflection,
 	RG_Water,
 	RG_UI,
 	RG_Cursor,
@@ -47,7 +45,6 @@ private:
 #ifdef _DEBUGTEST
 	list<class CComponent*> m_DebugComponents{};
 #endif // _DEBUG
-
 
 private:
 	class CVIBuffer_Rect* m_pVIBuffer{ nullptr };

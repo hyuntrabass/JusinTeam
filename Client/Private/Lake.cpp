@@ -28,7 +28,7 @@ HRESULT CLake::Init(void* pArg)
 	m_pTransformCom->Set_Scale(Scale);
 
 	_vec4 vRight = m_pTransformCom->Get_State(State::Right);
-	m_pTransformCom->Rotation(vRight, 90.f);
+	m_pTransformCom->Rotation(vRight, -90.f);
 
 	m_Desc.fReflectionScale = 0.05f;
 	m_Desc.fRefractionScale = 0.05f;
@@ -94,7 +94,7 @@ HRESULT CLake::Add_Component()
 
 
 	// For.Com_VIBuffer
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"),
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect_LookZ"), TEXT("Com_VIBuffer"),
 		(CComponent**)&m_pVIBufferCom)))
 	{
 		return E_FAIL;
@@ -137,8 +137,8 @@ HRESULT CLake::Bind_ShaderResources()
 	//	return E_FAIL;
 
 
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShaderCom, "g_RefractionTexture", L"Target_Refraction_Final")))
-		return E_FAIL;
+	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShaderCom, "g_RefractionTexture", L"Target_Refraction_Final")))
+	//	return E_FAIL;
 
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_NormalTexture")))
 		return E_FAIL;

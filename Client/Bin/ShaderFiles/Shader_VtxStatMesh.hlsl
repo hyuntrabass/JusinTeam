@@ -415,7 +415,7 @@ PS_OUT_DEFERRED PS_Main_Water(PS_WATER_IN Input)
         vSpecular = g_SpecTexture.Sample(LinearSampler, Input.vTex);
     }
     
-    Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
+    Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
     Output.vSpecular = vSpecular;

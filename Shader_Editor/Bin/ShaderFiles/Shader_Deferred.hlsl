@@ -226,8 +226,8 @@ PS_OUT PS_Main_Water(PS_IN Input)
     
     vector vSpecular = g_SpecularTexture.Sample(LinearSampler, Input.vTexcoord);
     
-    FinalColor = vDiffuse * vShade + vSpecular;
-    
+    FinalColor.rgb = vDiffuse.rgb * vShade.rgb; //+ vSpecular;
+    FinalColor.a = vDiffuse.a;
     Output.vColor = FinalColor;
     
     return Output;

@@ -27,8 +27,6 @@ void CTestTree::Tick(_float fTimeDelta)
 void CTestTree::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
-	m_pRendererCom->Add_RenderGroup(RG_Water_Reflection, this);
-	m_pRendererCom->Add_RenderGroup(RG_Water_Refraction, this);
 }
 
 HRESULT CTestTree::Render()
@@ -39,13 +37,6 @@ HRESULT CTestTree::Render()
     return S_OK;
 }
 
-HRESULT CTestTree::Render_Refract(_float4 vClipPlane)
-{
-	if (FAILED(Bind_ShaderResources()))
-		return E_FAIL;
-
-    return S_OK;
-}
 
 HRESULT CTestTree::Render_Reflection(_float4 vClipPlane)
 {
