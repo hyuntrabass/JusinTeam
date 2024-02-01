@@ -94,7 +94,15 @@ void CRiding::Tick(_float fTimeDelta)
 		if (m_fDissolveRatio >= 1.f)
 			m_bDelete = true;
 	}
+	if (m_pGameInstance->Key_Down(DIK_L))
 
+	{
+		if (m_CurrentIndex == Bird)
+		{
+			m_eState = Riding_Landing;
+			m_hasJumped = false;
+		}
+	}
 	Move(fTimeDelta);
 	Init_State();
 	Tick_State(fTimeDelta);
@@ -102,20 +110,37 @@ void CRiding::Tick(_float fTimeDelta)
 	if (m_CurrentIndex == Bird)
 	{
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
-		if (Index >= 88.f && !m_hasJumped)
+		if (m_eState == Riding_Sky)
 		{
-			CFadeBox::FADE_DESC Desc = {};
-			Desc.eState = CFadeBox::FADEIN;
-			Desc.fDuration = 1.f;
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
+			if (Index >= 88.f && !m_hasJumped)
 			{
-				return;
+				CFadeBox::FADE_DESC Desc = {};
+				Desc.eState = CFadeBox::FADEIN;
+				Desc.fDuration = 1.f;
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
+				{
+					return;
+				}
+				m_hasJumped = true;
 			}
-			m_hasJumped = true;
+		}
+		else if (m_eState == Riding_Landing)
+		{
+			if (Index >= 1.f && !m_hasJumped)
+			{
+				CFadeBox::FADE_DESC Desc = {};
+				Desc.eState = CFadeBox::FADEOUT;
+				Desc.fDuration = 1.f;
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
+				{
+					return;
+				}
+				m_hasJumped = true;
+			}
 		}
 	}
-	if(m_CurrentIndex!=Bird)
-	m_pTransformCom->Gravity(fTimeDelta);
+	if (m_CurrentIndex != Bird)
+		m_pTransformCom->Gravity(fTimeDelta);
 
 	//Update_Collider();
 }
@@ -261,7 +286,7 @@ void CRiding::Move(_float fTimeDelta)
 					m_eState == Riding_Idle)
 					m_eState = Riding_Run;
 
-			
+
 
 				m_pTransformCom->Set_Speed(m_fRunSpeed);
 			}
@@ -321,12 +346,15 @@ void CRiding::Init_State()
 		switch (m_eState)
 		{
 		case Client::Riding_Landing:
+			m_Animation.iAnimIndex = Bird_2005_Landing;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+
 			break;
 		case Client::Riding_Idle:
 			switch (m_CurrentIndex)
 			{
 			case Client::Bird:
-
 				break;
 			case Client::Tiger:
 				m_Animation.iAnimIndex = Tiger_1003_Idle;
@@ -663,18 +691,12 @@ HRESULT CRiding::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-
 	if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
 	{
 		return E_FAIL;
 	}
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
 		return E_FAIL;
-
-	/*if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
-	{
-		return E_FAIL;
-	}*/
 
 	return S_OK;
 }

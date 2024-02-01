@@ -283,6 +283,7 @@ HRESULT CMonster::Bind_ShaderResources()
 	}
 
 
+
 	return S_OK;
 }
 
