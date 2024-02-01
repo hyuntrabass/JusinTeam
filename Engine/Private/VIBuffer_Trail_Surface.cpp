@@ -106,6 +106,7 @@ void CVIBuffer_Trail_Surface::Update(_uint iNumVerticesToUse, _vec3* pTopPositio
 		{
 			reinterpret_cast<VTXTRAILSURFACE*>(SubResource.pData)[i].vTopPosition = pTopPositionArray[iNumVerticesToUse - 1];
 			reinterpret_cast<VTXTRAILSURFACE*>(SubResource.pData)[i].vBottomPosition = pBottomPositionArray[iNumVerticesToUse - 1];
+			reinterpret_cast<VTXTRAILSURFACE*>(SubResource.pData)[i].fTexcoordX = 1.f;
 		}
 		else
 		{
@@ -135,6 +136,15 @@ void CVIBuffer_Trail_Surface::Update(_uint iNumVerticesToUse, _vec3* pTopPositio
 			if (pAlphaArray)
 			{
 				reinterpret_cast<VTXTRAILSURFACE*>(SubResource.pData)[i].fAlpha = Lerp(pAlphaArray[iCMRIndex[1]], pAlphaArray[iCMRIndex[2]], fWeight);
+			}
+
+			if (i == 0)
+			{
+				reinterpret_cast<VTXTRAILSURFACE*>(SubResource.pData)[i].fTexcoordX = 0.f;
+			}
+			else
+			{
+				reinterpret_cast<VTXTRAILSURFACE*>(SubResource.pData)[i].fTexcoordX = (1.f / static_cast<_float>(iNumVerticesToUse)) / static_cast<_float>(m_iDetailRatio) * static_cast<_float>(i);
 			}
 
 			fWeight += 1.f / static_cast<_float>(m_iDetailRatio);

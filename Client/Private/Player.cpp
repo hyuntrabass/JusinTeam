@@ -79,6 +79,8 @@ HRESULT CPlayer::Init(void* pArg)
 	SURFACETRAIL_DESC SurfaceDesc{};
 	SurfaceDesc.iNumVertices = 20;
 	SurfaceDesc.vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
+	SurfaceDesc.strMaskTextureTag = L"FX_G_Note_MusicSheet001_Tex";
+	m_pTest_Trail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &SurfaceDesc);
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER);
 	return S_OK;
@@ -147,6 +149,11 @@ void CPlayer::Tick(_float fTimeDelta)
 			}
 		}
 
+		if (m_pTest_Trail)
+		{
+			_vec3 vCenterforTrail = _vec3(m_pTransformCom->Get_CenterPos());
+			m_pTest_Trail->Tick(vCenterforTrail, vCenterforTrail + _vec3(0.f, 1.f, 0.f));
+		}
 	}
 
 
@@ -361,8 +368,10 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		m_pRight_Trail[i]->Late_Tick(fTimeDelta);
 	}
 
-
-
+	if (m_pTest_Trail)
+	{
+		m_pTest_Trail->Late_Tick(fTimeDelta);
+	}
 
 #ifdef _DEBUGTEST
 	m_pRendererCom->Add_DebugComponent(m_pHitCollider);
@@ -3075,6 +3084,7 @@ void CPlayer::Free()
 		Safe_Release(m_pLeft_Trail[i]);
 		Safe_Release(m_pRight_Trail[i]);
 	}
+	Safe_Release(m_pTest_Trail);
 
 	Safe_Release(m_pNameTag);
 	Safe_Release(m_pDissolveTextureCom);

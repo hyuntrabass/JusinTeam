@@ -361,6 +361,9 @@ private:
 	CCommonTrail* m_pLeft_Trail[5]{ nullptr };
 	CCommonTrail* m_pRight_Trail[5]{ nullptr };
 	CTexture* m_pDissolveTextureCom{ nullptr };
+
+	CCommonSurfaceTrail* m_pTest_Trail{ nullptr };
+
 private:
 	_int qq = 0;
 	ANIM_DESC m_Animation{};

@@ -1,5 +1,5 @@
 #include "Pet_Dragon.h"
-
+#include "Effect_Manager.h"
 #include "UI_Manager.h"
 
 CPet_Dragon::CPet_Dragon(_dev pDevice, _context pContext)
@@ -39,6 +39,11 @@ HRESULT CPet_Dragon::Init(void* pArg)
 	m_fPosLerpRatio = 0.02f;
 	m_fLookLerpRatio = 0.04f;
 
+	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Pet_Dragon_Parti");
+	Info.pMatrix = &m_EffectMatrix;
+	Info.isFollow = true;
+	m_pEffect_Parti = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
+
 	return S_OK;
 }
 
@@ -48,6 +53,8 @@ void CPet_Dragon::Tick(_float fTimeDelta)
 	Tick_State(fTimeDelta);
 
 	m_pModelCom->Set_Animation(m_Animation);
+
+	__super::Tick(fTimeDelta);
 }
 
 void CPet_Dragon::Late_Tick(_float fTimeDelta)
