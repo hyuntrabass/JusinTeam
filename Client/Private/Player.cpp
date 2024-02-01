@@ -967,6 +967,7 @@ void CPlayer::Move(_float fTimeDelta)
 		//퀘스트 개수에 따라 bool로 통과하도록 한번 거쳐야할듯 아니면 계속 맵에서 찾아야되니까 
 		if (m_pGameInstance->Key_Pressing(DIK_W))
 		{
+			CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_OPENINVEN);
 			vDirection += vForwardDir;
 
 			hasMoved = true;

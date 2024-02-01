@@ -225,6 +225,14 @@ namespace Client
 		W_PET, 
 		W_END };
 
+	enum TUTO_SEQ 
+	{
+		T_OPENINVEN, 
+		T_EQUIP,
+		T_EXIT,
+		TUTO_END
+	};
+
 #pragma region Objects
 	enum ObjectType
 	{

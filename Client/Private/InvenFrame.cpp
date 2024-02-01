@@ -3,6 +3,8 @@
 #include "TextButton.h"
 #include "UI_Manager.h"
 #include "ItemBlock.h"
+#include "InvenWindow.h"
+#include "Event_Manager.h"
 
 CInvenFrame::CInvenFrame(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -161,6 +163,10 @@ void CInvenFrame::Late_Tick(_float fTimeDelta)
 	break;
 	case F_SHOP:
 	{
+		if (m_pInvenWindow->Is_Active())
+		{
+			m_pInvenWindow->Late_Tick(fTimeDelta);
+		}
 		m_pSellButton->Late_Tick(fTimeDelta);
 	}
 	break;
@@ -432,6 +438,13 @@ HRESULT CInvenFrame::Add_Parts()
 	}
 	
 	//CItemSlot* pItemSlot = (CItemSlot*)CUI_Manager::Get_Instance()->Get_ItemSlots((CItemBlock::ITEMSLOT)0);
+
+	m_pInvenWindow = (CInvenWindow*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_InvenWindow"));
+	if (not m_pInvenWindow)
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -675,11 +688,38 @@ const CItem* CInvenFrame::Find_Item(wstring& strName) const
 	return nullptr;
 }
 
+void CInvenFrame::Init_SellItem()
+{
+	for(size_t i = 0; i < m_vecItemsSlot[m_eCurInvenType].size(); i++)
+	{
+		m_vecItemsSlot[m_eCurInvenType][i]->Set_Border(false);
+	}
+	
+	for (size_t i = 0; i < m_vecSellItems.size();)
+	{
+		if (m_vecSellItems[i] != nullptr)
+		{
+			m_vecSellItems.erase(m_vecSellItems.begin() + i);
+		}
+		else
+		{
+			i++;
+		}
+
+	}
+	
+}
+
 void CInvenFrame::Picking_InvenButton(POINT ptMouse)
 {
 
 	if (m_isPickingDouble && m_fDoubleClick < 0.3f)
 	{
+		if (CEvent_Manager::Get_Instance()->Get_TutorialLevel() == T_EQUIP)
+		{
+			CEvent_Manager::Get_Instance()->Set_TutorialComplete(T_EQUIP);
+			CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_EXIT);
+		}
 		m_isPicking = false;
 		if (m_iCurItemType == (_uint)ITEM_POTION && m_isActiveQuickSlot)
 		{
@@ -921,36 +961,64 @@ void CInvenFrame::Shop_Tick(_float fTimeDelta, POINT ptMouse)
 	if (PtInRect(&m_pSellButton->Get_InitialRect(), ptMouse))
 	{
 		m_pSellButton->Set_Size(140.f, 80.f, 0.3f);
-		/*
+		
 		
 		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
 		{
 			if (m_vecSellItems.empty())
 			{
+
+				CEvent_Manager::Get_Instance()->Set_Alert(TEXT("선택한 아이템이 없습니다."));
 				return;
 			}
-			_int iCoin = 0;
-			for (size_t j = 0; j < m_vecSellItems.size(); j++)
+			if (!m_pInvenWindow->Is_Active())
 			{
-				for (size_t i = 0; i < m_vecItemsSlot[m_eCurInvenType].size(); i++)
+				m_pInvenWindow->Set_Active(true);
+				_uint iCoin{};
+				for (size_t j = 0; j < m_vecSellItems.size(); j++)
 				{
-					if (m_vecItemsSlot[m_eCurInvenType][i] == m_vecSellItems[j])
-					{
-						iCoin += m_vecSellItems[j]->Get_ItemDesc().iSale * m_vecSellItems[j]->Get_ItemNum();
-						m_vecSellItems.erase(m_vecSellItems.begin() + j);
-						Delete_Item(m_eCurInvenType, i);
-					}
+					iCoin += m_vecSellItems[j]->Get_ItemDesc().iSale * m_vecSellItems[j]->Get_ItemNum();
 				}
+				m_pInvenWindow->Set_Cost(iCoin);
 			}
-			m_vecSellItems.clear();
-			CUI_Manager::Get_Instance()->Set_Coin(iCoin);
-		}*/
+		}
 	}
 	else
 	{
 		m_pSellButton->Set_Size(150.f, 100.f, 0.35f);
 	}
 
+	if (m_pInvenWindow->Picked_SellBtn())
+	{
+		_int iCoin = 0;
+		for (size_t j = 0; j < m_vecSellItems.size();)
+		{
+			_bool bErase = false;
+			for (size_t i = 0; i < m_vecItemsSlot[m_eCurInvenType].size(); i++)
+			{
+				if (m_vecItemsSlot[m_eCurInvenType][i] == m_vecSellItems[j])
+				{
+					//iCoin += m_vecSellItems[j]->Get_ItemDesc().iSale * m_vecSellItems[j]->Get_ItemNum();
+					m_vecSellItems.erase(m_vecSellItems.begin() + j);
+					Delete_Item(m_eCurInvenType, i);
+					bErase = true;
+					break;
+				}
+			}
+			if (!bErase)
+			{
+				j++;
+			}
+		}
+		m_vecSellItems.clear();
+		CUI_Manager::Get_Instance()->Set_Coin(iCoin);
+		m_pInvenWindow->Set_SellBtn(false);
+	}
+
+	if (m_pInvenWindow->Is_Active())
+	{
+		m_pInvenWindow->Tick(fTimeDelta);
+	}
 	m_pSellButton->Tick(fTimeDelta);
 }
 
@@ -1005,6 +1073,7 @@ void CInvenFrame::Free()
 	Safe_Release(m_pExitSlotSetting);
 	Safe_Release(m_pSlotSettingButton);
 	Safe_Release(m_pWearableClearButton);
+	Safe_Release(m_pInvenWindow);
 
 
 	/* shop 모드 */

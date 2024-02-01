@@ -80,9 +80,13 @@ void CCamera_Main::Tick(_float fTimeDelta)
 				m_pGameInstance->Set_CameraState(CS_WORLDMAP);
 				m_pTransformCom->Set_Speed(5.f);
 				m_pTransformCom->Set_State(State::Pos, m_vMapPos);
+				CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 			}
 			else
+			{
 				m_pGameInstance->Set_CameraState(CS_DEFAULT);
+				CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
+			}
 
 		}
 
