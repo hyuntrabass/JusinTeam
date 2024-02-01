@@ -70,6 +70,7 @@ HRESULT CMissile::Init(void* pArg)
 
 	{
 		_vec4 vGroarUp = m_pGroarTransform->Get_State(State::Up).Get_Normalized();
+		_vec3 vGroarLook = m_pGroarTransform->Get_State(State::Look).Get_Normalized();
 		_vec4 vGroarPos = m_pGroarTransform->Get_State(State::Pos);
 
 		_vec4 vDir = {};
@@ -77,32 +78,32 @@ HRESULT CMissile::Init(void* pArg)
 		switch (m_iMissileID)
 		{
 		case 0:
-			vDir = _vec4::Transform(vGroarUp, _mat::CreateRotationZ(XMConvertToRadians(60.f)));
+			vDir = _vec4::Transform(vGroarUp, _mat::CreateFromAxisAngle(vGroarLook, XMConvertToRadians(60.f)));
 			m_iMissileIndex = 1;
 			break;
 
 		case 1:
-			vDir = _vec4::Transform(vGroarUp, _mat::CreateRotationZ(XMConvertToRadians(-60.f)));
+			vDir = _vec4::Transform(vGroarUp, _mat::CreateFromAxisAngle(vGroarLook, XMConvertToRadians(-60.f)));
 			m_iMissileIndex = 2;
 			break;
 
 		case 2:
-			vDir = _vec4::Transform(vGroarUp, _mat::CreateRotationZ(XMConvertToRadians(40.f)));
+			vDir = _vec4::Transform(vGroarUp, _mat::CreateFromAxisAngle(vGroarLook, XMConvertToRadians(40.f)));
 			m_iMissileIndex = 3;
 			break;
 
 		case 3:
-			vDir = _vec4::Transform(vGroarUp, _mat::CreateRotationZ(XMConvertToRadians(-40.f)));
+			vDir = _vec4::Transform(vGroarUp, _mat::CreateFromAxisAngle(vGroarLook, XMConvertToRadians(-40.f)));
 			m_iMissileIndex = 4;
 			break;
 
 		case 4:
-			vDir = _vec4::Transform(vGroarUp, _mat::CreateRotationZ(XMConvertToRadians(20.f)));
+			vDir = _vec4::Transform(vGroarUp, _mat::CreateFromAxisAngle(vGroarLook, XMConvertToRadians(20.f)));
 			m_iMissileIndex = 5;
 			break;
 
 		case 5:
-			vDir = _vec4::Transform(vGroarUp, _mat::CreateRotationZ(XMConvertToRadians(-20.f)));
+			vDir = _vec4::Transform(vGroarUp, _mat::CreateFromAxisAngle(vGroarLook, XMConvertToRadians(-20.f)));
 			m_iMissileIndex = 6;
 			break;
 		}
@@ -146,7 +147,7 @@ void CMissile::Tick(_float fTimeDelta)
 			Kill();
 		}
 
-		if (not m_bShoot and m_pGroarModel->Get_CurrentAnimationIndex() == CGroar_Boss::MON_GROAR_ASGARD_ATTACK01 &&
+		if (!m_bShoot && m_pGroarModel->Get_CurrentAnimationIndex() == CGroar_Boss::MON_GROAR_ASGARD_ATTACK01 &&
 			m_pGroarModel->Get_CurrentAnimPos() >= 51.f)
 		{
 			m_bShoot = true;
@@ -184,7 +185,7 @@ void CMissile::Tick(_float fTimeDelta)
 			Kill();
 		}
 
-		if (not m_bShoot and m_pGroarModel->Get_CurrentAnimationIndex() == CGroar_Boss::MON_GROAR_ASGARD_ATTACK00 &&
+		if (!m_bShoot && m_pGroarModel->Get_CurrentAnimationIndex() == CGroar_Boss::MON_GROAR_ASGARD_ATTACK00 &&
 			m_pGroarModel->Get_CurrentAnimPos() >= 38.f)
 		{
 			m_bShoot = true;
@@ -230,9 +231,10 @@ void CMissile::Tick(_float fTimeDelta)
 
 			m_fEffectTimer = 3.f;
 		}
+
 		m_fEffectTimer += fTimeDelta;
 
-		if (not m_bShoot and m_pGroarModel->Get_CurrentAnimationIndex() == CGroar_Boss::MON_GROAR_ASGARD_ATTACK02 &&
+		if (!m_bShoot && m_pGroarModel->Get_CurrentAnimationIndex() == CGroar_Boss::MON_GROAR_ASGARD_ATTACK02 &&
 			m_pGroarModel->Get_CurrentAnimPos() >= m_fDepartTime)
 		{
 			m_bShoot = true;
@@ -248,6 +250,41 @@ void CMissile::Tick(_float fTimeDelta)
 			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
 			_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
 			m_pTransformCom->LookAt(vPlayerPos);
+
+			_vec4 vGroarUp = m_pGroarTransform->Get_State(State::Up).Get_Normalized();
+			_vec3 vGroarLook = m_pGroarTransform->Get_State(State::Look).Get_Normalized();
+			_vec4 vGroarPos = m_pGroarTransform->Get_State(State::Pos);
+
+			_vec4 vDir = {};
+
+			switch (m_iMissileIndex)
+			{
+			case 1:
+				vDir = _vec4::Transform(vGroarUp, _mat::CreateFromAxisAngle(vGroarLook, XMConvertToRadians(60.f)));
+				break;
+
+			case 2:
+				vDir = _vec4::Transform(vGroarUp, _mat::CreateFromAxisAngle(vGroarLook, XMConvertToRadians(-60.f)));
+				break;
+
+			case 3:
+				vDir = _vec4::Transform(vGroarUp, _mat::CreateFromAxisAngle(vGroarLook, XMConvertToRadians(40.f)));
+				break;
+
+			case 4:
+				vDir = _vec4::Transform(vGroarUp, _mat::CreateFromAxisAngle(vGroarLook, XMConvertToRadians(-40.f)));
+				break;
+
+			case 5:
+				vDir = _vec4::Transform(vGroarUp, _mat::CreateFromAxisAngle(vGroarLook, XMConvertToRadians(20.f)));
+				break;
+
+			case 6:
+				vDir = _vec4::Transform(vGroarUp, _mat::CreateFromAxisAngle(vGroarLook, XMConvertToRadians(-20.f)));
+				break;
+			}
+
+			m_pTransformCom->Set_State(State::Pos, vGroarPos + 6 * vDir);
 		}
 
 		break;

@@ -108,7 +108,7 @@ HRESULT CWorldMap::Render()
 						return E_FAIL;
 					}
 				}
-				if (FAILED(m_pShaderCom->Begin(15)))
+				if (FAILED(m_pShaderCom->Begin(StaticPass_Worldmap_Water)))
 				{
 					return E_FAIL;
 				}
@@ -130,7 +130,7 @@ HRESULT CWorldMap::Render()
 				{
 					return E_FAIL;
 				}
-				if (FAILED(m_pShaderCom->Begin(16)))
+				if (FAILED(m_pShaderCom->Begin(StaticPass_Worldmap_Cloud)))
 				{
 					return E_FAIL;
 				}

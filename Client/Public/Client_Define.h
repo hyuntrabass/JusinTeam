@@ -300,9 +300,7 @@ namespace Client
 		AnimPass_OutLine,
 		AnimPass_Shadow,
 		AnimPass_Dissolve,
-		AnimPass_Player, 
-		AnimPass_Test, 
-		AnimPass_LerpColor
+		AnimPass_Rim,
 	};
 
 	enum StaticMeshPass
@@ -322,6 +320,10 @@ namespace Client
 		StaticPass_SingleColoredEffectFrontCull,
 		StaticPass_Shadow,
 		StaticPass_Water,
+		StaticPass_Worldmap_Water,
+		StaticPass_Worldmap_Cloud,
+		StaticPsss_Rim,
+		StaticPass_DiffEffect,
 		StaticPass_End,
 	};
 
