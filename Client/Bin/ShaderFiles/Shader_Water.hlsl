@@ -68,9 +68,12 @@ struct PS_IN_WATER
 
 struct PS_OUT_WATER
 {
-    vector vDiffuse : SV_TARGET0;
-    vector vNormal : SV_TARGET1;
-    vector vDepth : SV_TARGET2;
+    vector vDiffuse : SV_Target0;
+    vector vNormal : SV_Target1;
+    vector vDepth : SV_Target2;
+    vector vSpecular : SV_Target3;
+    vector vVelocity : SV_Target4;
+    vector vRimMask : SV_Target5;
 };
 
 PS_OUT_WATER PS_MAIN_Water(PS_IN_WATER Input)

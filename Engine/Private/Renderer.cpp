@@ -1077,17 +1077,17 @@ HRESULT CRenderer::Render_Reflection()
 
 			_float4 vClipPlane = _float4(0.f, 1.f, 0.f, -(fWaterHeight - 0.1f));
 
-			//for (auto& pGameObject : m_RenderObjects[RG_Priority])
-			//{
-			//	if (pGameObject)
-			//	{
-			//		if (FAILED(pGameObject->Render_Reflection(vClipPlane)))
-			//		{
-			//			MSG_BOX("Failed to Render");
-			//			return E_FAIL;
-			//		}
-			//	}
-			//}
+			for (auto& pGameObject : m_RenderObjects[RG_Priority])
+			{
+				if (pGameObject)
+				{
+					if (FAILED(pGameObject->Render_Reflection(vClipPlane)))
+					{
+						MSG_BOX("Failed to Render");
+						return E_FAIL;
+					}
+				}
+			}
 
 			for (auto& pGameObject : m_RenderObjects[RG_NonBlend])
 			{

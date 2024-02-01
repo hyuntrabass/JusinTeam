@@ -120,6 +120,13 @@ HRESULT CSky::Render_Reflection(_float4 vClipPlane)
 		return S_OK;
 	}
 
+
+	_mat ReflectCamWorldMat = m_pGameInstance->Get_Transform_Inversed(TransformType::View);
+
+	_vec3 vRefelctCamPos = ReflectCamWorldMat.Position_vec3() - _vec4(0.f, 15.f, 0.f, 0.f);
+
+	m_pTransformCom->Set_Position(vRefelctCamPos);
+
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
@@ -147,8 +154,6 @@ HRESULT CSky::Render_Reflection(_float4 vClipPlane)
 			return E_FAIL;
 		}
 	}
-
-	return S_OK;
 
 	return S_OK;
 }
