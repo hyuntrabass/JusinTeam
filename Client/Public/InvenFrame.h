@@ -10,6 +10,7 @@ BEGIN(Client)
 class CItem;
 class CInven;
 class CItemSlot;
+class CInvenWindow;
 class CTextButtonColor;
 class CInvenFrame final : public COrthographicObject
 {
@@ -83,6 +84,7 @@ private:
 	CItemSlot*									m_pSelectSlot[4];
 
 	CTextButtonColor*							m_pSellButton{ nullptr };
+	CInvenWindow*								m_pInvenWindow{ nullptr };
 
 
 public:
@@ -96,6 +98,7 @@ public:
 
 	void Set_Parent(CGameObject* pGameObject) { m_pParent = pGameObject; }
 	const CItem* Find_Item(wstring& strName) const;
+	void Init_SellItem() ;
 
 private:
 	void Picking_InvenButton(POINT ptMouse);

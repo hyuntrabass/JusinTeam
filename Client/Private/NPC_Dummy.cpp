@@ -269,6 +269,7 @@ CGameObject* CNPC_Dummy::Clone(void* pArg)
 
 void CNPC_Dummy::Free()
 {
+	//CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::NPC, m_pTransformCom);
 	__super::Free();
 	Safe_Release(m_pDialog);
 }

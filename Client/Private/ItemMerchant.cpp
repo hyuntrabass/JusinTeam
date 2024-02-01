@@ -184,6 +184,7 @@ CGameObject* CItemMerchant::Clone(void* pArg)
 
 void CItemMerchant::Free()
 {
+//	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::NPC, m_pTransformCom);
 	__super::Free();
 	Safe_Release(m_pShop);
 	Safe_Release(m_pSpeechBubble);

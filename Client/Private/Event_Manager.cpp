@@ -2,6 +2,8 @@
 #include "GameInstance.h"
 #include "Pop_QuestIn.h"
 #include "Pop_QuestEnd.h"
+#include "Pop_Alert.h"
+#include "Tutorial.h"
 #include "Quest.h"
 IMPLEMENT_SINGLETON(CEvent_Manager)
 CEvent_Manager::CEvent_Manager()
@@ -18,6 +20,13 @@ HRESULT CEvent_Manager::Init()
 	{
 		return E_FAIL;
 	}
+
+	m_pAlert = (CPop_Alert*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Pop_Alert"));
+	if (not m_pAlert)
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 void CEvent_Manager::Tick(_float fTimeDelta)
@@ -25,10 +34,15 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 
 	if (m_isEventIn)
 	{
-		if (m_pGameInstance->Get_LayerSize(LEVEL_STATIC, TEXT("Layer_Pop")) == 0)
+		if (m_pGameInstance->Get_LayerSize(LEVEL_STATIC, TEXT("Layer_Pop")) != 0)
+		{
+			m_isWaiting = true;
+		}
+		else
 		{
 			m_isWaiting = false;
 		}
+
 		if (m_vecPopEvents.empty())
 		{
 			m_isEventIn = false;
@@ -71,11 +85,21 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 				m_vecPopEvents.erase(m_vecPopEvents.begin());
 			}
 			break;
+			case TUTORIAL:
+			{
+				CTutorial::TUTO_DESC TutoDesc = {};
+				TutoDesc.eTuto = m_eCurTuto;
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pop"), TEXT("Prototype_GameObject_Tutorial"), &TutoDesc)))
+					return;
+				m_vecPopEvents.erase(m_vecPopEvents.begin());
+			}
+			break;
 			}
 			m_isWaiting = true;
 		}
 	}
 	m_pQuest->Tick(fTimeDelta);
+	m_pAlert->Tick(fTimeDelta);
 }
 
 _bool CEvent_Manager::Find_Quest(const wstring& strQuest)
@@ -144,9 +168,78 @@ HRESULT CEvent_Manager::Update_Quest(const wstring& strQuest)
 	}
 	return S_OK;
 }
+void CEvent_Manager::Set_Alert(const wstring strAlert)
+{
+	m_pAlert->Set_Alert(strAlert);
+}
+
+void CEvent_Manager::Set_TutorialComplete(TUTO_SEQ eTuto)
+{
+	if (eTuto >= TUTO_END || m_eCurTuto >= TUTO_END)
+	{
+		return;
+	}
+
+	if (eTuto != m_eCurTuto)
+	{
+		return;
+	}
+	m_TutoComplete[eTuto] = true;
+}
+
+void CEvent_Manager::Set_TutorialSeq(TUTO_SEQ eTuto)
+{
+	if (m_eCurTuto == eTuto)
+	{
+		return;
+	}
+
+	if (!m_isTutoStarted)
+	{
+		if (eTuto == (TUTO_SEQ)0)
+		{
+			m_eCurTuto = eTuto;
+			m_isEventIn = true;
+			m_isTutoStarted = true;
+			EVENT_DESC Desc = {};
+			Desc.eType = TUTORIAL;
+			m_vecPopEvents.push_back(Desc);
+			return;
+		}
+
+	}
+	if (m_isTutoStarted && eTuto != (TUTO_SEQ)0)
+	{
+		if (m_eCurTuto >= TUTO_END)
+		{
+			return;
+		}
+		if (!m_TutoComplete[(_uint)eTuto - 1])
+		{
+			return;
+		}
+		m_eCurTuto = eTuto;
+		m_isEventIn = true;
+		EVENT_DESC Desc = {};
+		Desc.eType = TUTORIAL;
+		m_vecPopEvents.push_back(Desc);
+	}
+}
+
+_bool CEvent_Manager::Get_TutorialComplete(TUTO_SEQ eTuto)
+{
+	if (eTuto >= TUTO_END || eTuto < 0)
+	{
+		return false;
+	}
+	//current로 해야될수도?
+	return m_TutoComplete[eTuto];
+}
+
 void CEvent_Manager::Late_Tick(_float fTimeDelta)
 {
 	m_pQuest->Late_Tick(fTimeDelta);
+	m_pAlert->Late_Tick(fTimeDelta);
 }
 HRESULT CEvent_Manager::Render()
 {
@@ -190,6 +283,7 @@ HRESULT CEvent_Manager::Set_Event(EVENT_DESC pDesc)
 
 void CEvent_Manager::Free()
 {
+	Safe_Release(m_pAlert);
 	Safe_Release(m_pQuest);
 	Safe_Release(m_pGameInstance);
 }

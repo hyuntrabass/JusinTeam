@@ -4,12 +4,17 @@
 
 BEGIN(Client)
 
-class CPop_Alert final : public COrthographicObject
+class CTutorial final : public COrthographicObject
 {
+public:
+	typedef struct tagTutoDesc
+	{
+		TUTO_SEQ eTuto;
+	}TUTO_DESC;
 private:
-	CPop_Alert(_dev pDevice, _context pContext);
-	CPop_Alert(const CPop_Alert& rhs);
-	virtual ~CPop_Alert() = default;
+	CTutorial(_dev pDevice, _context pContext);
+	CTutorial(const CTutorial& rhs);
+	virtual ~CTutorial() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -20,23 +25,24 @@ public:
 
 private:
 	CRenderer* m_pRendererCom{ nullptr };
+	CShader* m_pShaderCom{ nullptr };
+	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
+	CTexture* m_pTextureCom{ nullptr };
 
 private:
-	_float			m_fTime{};
-	_float			m_fPopTime{};
-	_vec2			m_vFrontAlertPos;
-	vector<wstring> m_vecAlert;
-	vector<_float>  m_vecTime;
+	_float m_fTime{ 0.4f };
+	_float m_fDir{ 1.f };
 
-public:
-	void Set_Alert(wstring strText);
+	TUTO_SEQ m_eTuto{ TUTO_END };
+	class CTextButtonColor* m_pPoint{ nullptr };
 
 private:
+	HRESULT Add_Parts();
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CPop_Alert* Create(_dev pDevice, _context pContext);
+	static CTutorial* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };
