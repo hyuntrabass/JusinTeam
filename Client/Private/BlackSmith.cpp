@@ -33,6 +33,14 @@ HRESULT CBlackSmith::Init(void* pArg)
 	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 2.f;
 
+	if (pArg)
+	{
+		if (FAILED(__super::Init(pArg)))
+		{
+			return E_FAIL;
+		}
+	}
+
 	return S_OK;
 }
 

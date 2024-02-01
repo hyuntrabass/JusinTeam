@@ -40,6 +40,14 @@ HRESULT CItemMerchant::Init(void* pArg)
 
 	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::NPC, m_pTransformCom);
 
+	if (pArg)
+	{
+		if (FAILED(__super::Init(pArg)))
+		{
+			return E_FAIL;
+		}
+	}
+
 	return S_OK;
 }
 

@@ -19,9 +19,9 @@ HRESULT CMonster::Init_Prototype()
 
 HRESULT CMonster::Init(void* pArg)
 {
-	if (not pArg)
+	if (!pArg)
 	{
-		MSG_BOX("no argument!");
+		MSG_BOX("No argument!");
 	}
 
 	m_pInfo = *(MonsterInfo*)pArg;

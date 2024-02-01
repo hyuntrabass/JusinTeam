@@ -2,6 +2,7 @@
 #include "Level_Loading.h"
 #include "Camera.h"
 #include "Monster.h"
+#include "NPC.h"
 #include "NPC_Dummy.h"
 #include "Map.h"
 #include "Player.h"
@@ -23,7 +24,6 @@ HRESULT CLevel_Village::Init()
 		MSG_BOX("Failed to Ready Player");
 		return E_FAIL;
 	}
-
 
 	if (FAILED(Ready_Camera()))
 	{
@@ -67,9 +67,22 @@ HRESULT CLevel_Village::Init()
 		MSG_BOX("Failed to Ready Object");
 		return E_FAIL;
 	}
+
 	if (FAILED(Ready_Environment()))
 	{
-		MSG_BOX("Failed to Ready Object");
+		MSG_BOX("Failed to Ready Environment");
+		return E_FAIL;
+	}
+
+	if (FAILED(Ready_NPC()))
+	{
+		MSG_BOX("Failed to Ready NPC");
+		return E_FAIL;
+	}
+
+	if (FAILED(Ready_NPC_Dummy()))
+	{
+		MSG_BOX("Failed to Ready NPC_Dummy");
 		return E_FAIL;
 	}
 
@@ -385,6 +398,75 @@ HRESULT CLevel_Village::Ready_NpcvsMon()
 		}
 
 	}
+	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_NPC()
+{
+	NPC_INFO Info{};
+	const TCHAR* pGetPath = L"../Bin/Data/Village_NPCData.dat";
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MSG_BOX("../Bin/Data/Village_NPCData.dat 몬스터 불러오기 실패.");
+		return E_FAIL;
+	}
+
+	_uint NPCListSize;
+	inFile.read(reinterpret_cast<char*>(&NPCListSize), sizeof(_uint));
+
+	for (_uint i = 0; i < NPCListSize; ++i)
+	{
+		_ulong NPCPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&NPCPrototypeSize), sizeof(_ulong));
+
+		wstring NPCPrototype;
+		NPCPrototype.resize(NPCPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&NPCPrototype[0]), NPCPrototypeSize * sizeof(wchar_t));
+
+		_mat NPCWorldMat;
+		inFile.read(reinterpret_cast<char*>(&NPCWorldMat), sizeof(_mat));
+
+		Info.strNPCPrototype = NPCPrototype;
+		Info.NPCWorldMat = NPCWorldMat;
+
+		if (Info.strNPCPrototype == TEXT("Prototype_Model_BlackSmith"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_BlackSmith"), TEXT("Prototype_GameObject_BlackSmith"), &Info)))
+			{
+				MSG_BOX("BlackSmith 생성 실패");
+				return E_FAIL;
+			}
+
+		}
+		else if (Info.strNPCPrototype == TEXT("Prototype_Model_ItemMerchant"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_ItemMerchant"), TEXT("Prototype_GameObject_ItemMerchant"), &Info)))
+			{
+				MSG_BOX("ItemMerchant 생성 실패");
+				return E_FAIL;
+			}
+
+		}
+		else if (Info.strNPCPrototype == TEXT("Prototype_Model_Roskva"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Roskva"), TEXT("Prototype_GameObject_Roskva"), &Info)))
+			{
+				MSG_BOX("Roskva 생성 실패");
+				return E_FAIL;
+			}
+
+		}
+
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_NPC_Dummy()
+{
 	return S_OK;
 }
 

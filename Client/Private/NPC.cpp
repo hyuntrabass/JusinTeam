@@ -17,10 +17,15 @@ HRESULT CNPC::Init_Prototype()
 
 HRESULT CNPC::Init(void* pArg)
 {
-	if (FAILED(Add_Components()))
+	if (!pArg)
 	{
-		return E_FAIL;
+		MSG_BOX("No argument!");
 	}
+
+	m_pInfo = *(NPC_INFO*)pArg;
+	_mat WorldPos = m_pInfo.NPCWorldMat;
+	m_pTransformCom->Set_Matrix(WorldPos);
+	m_pTransformCom->Set_Position(WorldPos.Position_vec3());
 
     return S_OK;
 }

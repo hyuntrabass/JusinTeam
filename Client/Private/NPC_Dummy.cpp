@@ -23,9 +23,8 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 {
 	if (pArg)
 	{
-		m_NPCInfo = *(NPC_INFO*)pArg;
-
-		m_strModelTag = m_NPCInfo.strNPCPrototype;
+		m_pInfo = *(NPC_INFO*)pArg;
+		m_strModelTag = m_pInfo.strNPCPrototype;
 	}
 
 	if (FAILED(__super::Add_Components()))
