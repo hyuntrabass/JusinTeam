@@ -49,7 +49,6 @@ struct VS_OUT
     vector vProjPos : Texcoord2;
     float3 vTangent : Tangent;
     float3 vBinormal : Binormal;
-    int iID : ID;
 };
 
 VS_OUT VS_Main(VS_IN Input)
@@ -68,7 +67,6 @@ VS_OUT VS_Main(VS_IN Input)
     Output.vProjPos = Output.vPos;
     Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), Input.mWorld)).xyz;
     Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
-    Output.iID = Input.iID;
     
     return Output;
 }
@@ -146,7 +144,6 @@ struct PS_IN
     vector vProjPos : Texcoord2;
     float3 vTangent : Tangent;
     float3 vBinormal : Binormal;
-    int iID : ID;
     
 };
 
@@ -156,7 +153,8 @@ struct PS_OUT_DEFERRED
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
     vector vSpecular : SV_Target3;
-    int ID : SV_Target5;
+    vector vVelocity : SV_Target4;
+    vector vRimMask : SV_Target5;
 };
 
 struct PS_OUT
@@ -197,7 +195,6 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
     Output.vSpecular = vSpecular;
-    Output.ID = Input.iID;
 
     return Output;
 }
@@ -243,7 +240,6 @@ PS_OUT_DEFERRED PS_Main_AlphaTest(PS_IN Input)
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.ID = Input.iID;
 
     return Output;
 }
@@ -261,7 +257,6 @@ PS_OUT_DEFERRED PS_OutLine(PS_IN Input)
     
     Output.vDiffuse = g_vColor;
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.ID = Input.iID;
 
     return Output;
 }

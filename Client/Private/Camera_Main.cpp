@@ -21,7 +21,6 @@ HRESULT CCamera_Main::Init(void* pArg)
 {
 	for (_int i = 0; i < CM_END; i++)
 	{
-		//카메라는 한번만 부르니까 각 모드 이닛용 ..
 		m_bInitMode[i] = false;
 	}
 
@@ -95,6 +94,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 					m_pGameInstance->Set_CameraState(CS_WORLDMAP);
 					m_pTransformCom->Set_State(State::Pos, m_vMapPos);
+					CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 				}
 				else
 				{
@@ -107,9 +107,9 @@ void CCamera_Main::Tick(_float fTimeDelta)
 					}
 
 					m_pGameInstance->Set_CameraState(CS_DEFAULT);
+					CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 				}
 			}
-
 		}
 
 		if (m_pGameInstance->Get_CameraState() == CS_ZOOM)

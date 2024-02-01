@@ -4,6 +4,7 @@
 #include "TextButtonColor.h"
 #include "ShopDesc.h"
 #include "UI_Manager.h"
+#include "Event_Manager.h"
 
 CShopWindow::CShopWindow(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -95,8 +96,15 @@ void CShopWindow::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
+			if (m_iCurItemNum == 0)
+			{
+				CEvent_Manager::Get_Instance()->Set_Alert(TEXT("수량을 선택해 주세요."));
+				return;
+			}
+
 			if (CUI_Manager::Get_Instance()->Get_Coin() < m_iTotalCost)
 			{
+				CEvent_Manager::Get_Instance()->Set_Alert(TEXT("코인이 부족하여 구매할 수 없습니다."));
 				return;
 			}
 
@@ -123,8 +131,10 @@ void CShopWindow::Tick(_float fTimeDelta)
 	{
 		m_isPickingButton = true;
 	}
+
 	if (m_isPickingButton)
 	{
+		CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_GRAB);
 		_float fMouseSensor = 0.1f;
 		_long dwMouseMove;
 		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))

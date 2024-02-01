@@ -1,5 +1,6 @@
 #include "FadeBox.h"
 #include "GameInstance.h"
+#include "UI_Manager.h"
 
 CFadeBox::CFadeBox(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -55,6 +56,10 @@ HRESULT CFadeBox::Init(void* pArg)
 
 void CFadeBox::Tick(_float fTimeDelta)
 {
+	if (CUI_Manager::Get_Instance()->Get_TimeStop())
+	{
+		fTimeDelta /= m_pGameInstance->Get_TimeRatio();
+	}
 
 	m_fTime += fTimeDelta;
 	switch (m_eState)
