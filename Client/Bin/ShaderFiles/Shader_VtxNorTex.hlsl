@@ -19,10 +19,6 @@ vector g_vMtrlSpecular = vector(0.7f, 1.0f, 0.7f, 1.f);
 vector g_vCamPos;
 float g_fCamFar;
 
-// ¿ø¸í
-matrix g_ReflectionViewMatrix;
-texture2D g_ReflectionTexture;
-
 struct VS_IN
 {
     float3 vPos : Position;

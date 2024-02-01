@@ -87,39 +87,44 @@ PS_OUT_WATER PS_MAIN_Water(PS_IN_WATER Input)
     // 반사와 굴절
     vNormalDesc = g_NormalTexture.Sample(LinearSampler, vWaterTex * 8.f);
     vNormal = normalize(vector(vNormalDesc.xyz * 2.f - 1.f, 0.f) * -1.f);
+    vNormal.a = 0.f;
+    
+    //vNormal = normalize(mul(vNormal, g_WorldMatrix) * -1.f);
     
     float2 vReflectionTexcoord;
     
     vReflectionTexcoord.x = Input.vReflectionPos.x / Input.vReflectionPos.w / 2.f + 0.5f;
     vReflectionTexcoord.y = -Input.vReflectionPos.y / Input.vReflectionPos.w / 2.f + 0.5f;
     
-    float2 vRefractionTexcoord;
+    //float2 vRefractionTexcoord;
     
-    vRefractionTexcoord.x = Input.vRefractionPos.x / Input.vRefractionPos.w / 2.f + 0.5f;
-    vRefractionTexcoord.y = -Input.vRefractionPos.y / Input.vRefractionPos.w / 2.f + 0.5f;
+    //vRefractionTexcoord.x = Input.vRefractionPos.x / Input.vRefractionPos.w / 2.f + 0.5f;
+    //vRefractionTexcoord.y = -Input.vRefractionPos.y / Input.vRefractionPos.w / 2.f + 0.5f;
     
     vReflectionTexcoord += vNormal.xy * g_fReflectionScale;
-    vRefractionTexcoord += vNormal.xy * g_fRefractionScale;
+    //vRefractionTexcoord += vNormal.xy * g_fRefractionScale;
     
     vector vReflectionDiffuse;
     
     vReflectionDiffuse = g_ReflectionTexture.Sample(LinearMirrorSampler, vReflectionTexcoord);
     
-    vector vRefractionDiffuse;
-    vRefractionDiffuse = g_RefractionTexture.Sample(LinearMirrorSampler, vRefractionTexcoord);
+    //vector vRefractionDiffuse;
+    //vRefractionDiffuse = g_RefractionTexture.Sample(LinearMirrorSampler, vRefractionTexcoord);
     
     // 프레넬(반사율과 투과율 계산)
 
-    vector vLook = normalize(Input.vProjPos - g_vCamPos);
+    //vector vLook = normalize(Input.vProjPos - g_vCamPos);
     
-    float fFresnel = 0.02f + 0.97f * pow((1.f - dot(vLook, vNormal)), 5.f);
+    //float fFresnel = 0.02f + 0.97f * pow((1.f - dot(vLook, vNormal)), 5.f);
     
-    vector vMergeDiffuse = (1.f - fFresnel) * vRefractionDiffuse + fFresnel * vReflectionDiffuse;
+    //vector vMergeDiffuse = lerp(vReflectionDiffuse, vRefractionDiffuse, fFresnel);
+    
+   // vector vMergeDiffuse = (1.f - fFresnel) * vRefractionDiffuse + fFresnel * vReflectionDiffuse;
     //float4 vMergeDiffuse = vRefractionDiffuse * (1 - fFresnel) * vRefractionDiffuse.a * vReflectionDiffuse.a + vReflectionDiffuse * fFresnel * vReflectionDiffuse.a * vRefractionDiffuse.a;
     //vMergeDiffuse = saturate(vMergeDiffuse * float4(0.95f, 1.00f, 1.05f, 1.0f) + float4(0.15f, 0.15f, 0.15f, 0.0f));
     
-    Output.vDiffuse = vMergeDiffuse;
-    Output.vNormal = vNormal;
+    Output.vDiffuse = vReflectionDiffuse;
+    Output.vNormal = vector(0.f, 1.f, 0.f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_vCamNF.y, 0.f, 0.f);
     
     return Output;

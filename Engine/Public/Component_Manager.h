@@ -16,6 +16,7 @@
 #include "VIBuffer_Mesh_Instance.h"
 #include "VTFModel.h"
 #include "RealtimeVTFModel.h"
+#include "VIBuffer_Rect_LookZ.h"
 
 BEGIN(Engine)
 

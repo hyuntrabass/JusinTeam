@@ -181,6 +181,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		"StaticPass_MaskEffectClamp",
 		"StaticPass_SingleColoredEffectFrontCull",
 		"StaticPass_Shadow",
+		"StaticPass_Water",
+		"StaticPass_DiffEffect",
 	};
 
 	SeparatorText("Shader Pass");
