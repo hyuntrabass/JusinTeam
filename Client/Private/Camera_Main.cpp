@@ -75,14 +75,16 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 		if (m_pGameInstance->Key_Down(DIK_M))
 		{
-			if (m_pGameInstance->Get_CameraState() != CS_WORLDMAP)
+			if(m_pGameInstance->Get_CurrentLevelIndex()>LEVEL_GAMEPLAY)
 			{
-				m_pGameInstance->Set_CameraState(CS_WORLDMAP);
-				m_pTransformCom->Set_Speed(5.f);
-				m_pTransformCom->Set_State(State::Pos, m_vMapPos);
+				if (m_pGameInstance->Get_CameraState() != CS_WORLDMAP)
+				{
+					m_pGameInstance->Set_CameraState(CS_WORLDMAP);
+					m_pTransformCom->Set_State(State::Pos, m_vMapPos);
+				}
+				else
+					m_pGameInstance->Set_CameraState(CS_DEFAULT);
 			}
-			else
-				m_pGameInstance->Set_CameraState(CS_DEFAULT);
 
 		}
 
@@ -544,12 +546,12 @@ void CCamera_Main::WorldMap_Mode(_float fTimeDelta)
 			if(dwMouseMove<0.f)
 			{
 				if (m_fMap_RightDistance > -11.f +(m_fLerp_LookDistance) * 0.8f)
-					m_fMap_RightDistance -= (0.5f + (m_fLerp_LookDistance * 0.02f));
+					m_fMap_RightDistance -= (0.5f + (m_fLerp_LookDistance * 0.043f));
 			}
 			else if (dwMouseMove > 0.f)
 			{
 				if (m_fMap_RightDistance < 1.f + (m_fLerp_LookDistance)*-0.8f)
-					m_fMap_RightDistance += (0.5f + (m_fLerp_LookDistance * 0.02f));
+					m_fMap_RightDistance += (0.5f + (m_fLerp_LookDistance * 0.043f));
 			}
 
 		}
@@ -560,13 +562,13 @@ void CCamera_Main::WorldMap_Mode(_float fTimeDelta)
 			if (dwMouseMove > 0.f)
 			{
 				if (m_fMap_UpDistance < 0.f + (m_fLerp_LookDistance) * -0.8f)
-					m_fMap_UpDistance += (0.5f + (m_fLerp_LookDistance * 0.02f));
+					m_fMap_UpDistance += (0.5f + (m_fLerp_LookDistance * 0.043f));
 			}
 			else if (dwMouseMove < 0.f)
 			{
 			
 				if (m_fMap_UpDistance > -20.f + (m_fLerp_LookDistance) * 0.8f)
-					m_fMap_UpDistance -= (0.5f +(m_fLerp_LookDistance * 0.02f));
+					m_fMap_UpDistance -= (0.5f +(m_fLerp_LookDistance * 0.043f));
 			}
 		
 		}
