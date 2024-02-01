@@ -314,6 +314,8 @@ namespace Client
 		StaticPass_SingleColoredEffectFrontCull,
 		StaticPass_Shadow,
 		StaticPass_Water,
+		StaticPass_WorldMap_Water,
+		StaticPass_WorldMap_Cloud,
 		StaticPass_End,
 	};
 

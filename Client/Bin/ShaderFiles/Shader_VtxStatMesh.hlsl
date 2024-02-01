@@ -708,7 +708,7 @@ technique11 DefaultTechniqueShader_VtxNorTex
         PixelShader = compile ps_5_0 PS_Main_WorldMap_Water();
     }
 
-    pass WorldMap_Cloud //15
+    pass WorldMap_Cloud //16
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
