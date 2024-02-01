@@ -24,31 +24,15 @@ private:
 	HRESULT Ready_Dungeon();
 
 	HRESULT Ready_Object();
-
 	HRESULT Ready_Environment();
 
 	HRESULT In_To_Dungeon();
 
-
-	// Monster
-	HRESULT Ready_Void05();
-	HRESULT Ready_Rabbit();
-	HRESULT Ready_Goat();
-	HRESULT Ready_Nastron03();
-	HRESULT Ready_NPCvsMon();
-	HRESULT Ready_Thief04();
-	HRESULT Ready_TrilobiteA();
-
-	// NPC
-	HRESULT Ready_Cat();
-	HRESULT Ready_Dog();
-	HRESULT Ready_NPC_Dummy();
-
-	// Boss
-	HRESULT Ready_Groar_Boss();
-
 	HRESULT Ready_NpcvsMon();
 
+private:
+	HRESULT Ready_NPC();
+	HRESULT Ready_NPC_Dummy();
 
 	//UI
 	HRESULT Ready_UI();

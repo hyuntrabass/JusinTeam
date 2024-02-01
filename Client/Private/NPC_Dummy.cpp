@@ -23,9 +23,8 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 {
 	if (pArg)
 	{
-		m_NPCInfo = *(NPC_INFO*)pArg;
-
-		m_strModelTag = m_NPCInfo.strNPCPrototype;
+		m_pInfo = *(NPC_INFO*)pArg;
+		m_strModelTag = m_pInfo.strNPCPrototype;
 	}
 
 	if (FAILED(__super::Add_Components()))
@@ -33,13 +32,22 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(/*75.f - */m_fOffsetX, 0.f, 90.f, 1.f));
 
 	CDialog::DIALOG_DESC DialogDesc = {};
 	DialogDesc.eLevelID = LEVEL_STATIC;
 	DialogDesc.pParentTransform = m_pTransformCom;
 	DialogDesc.vPosition = _vec3(0.f, 1.8f, 0.f);
 	DialogDesc.strText = TEXT("테스트입니다~");
+
+#pragma region Animal
+
+	if (m_strModelTag == TEXT("Prototype_Model_Horse"))
+	{
+		m_Animation.iAnimIndex = 1;
+	}
+
+#pragma endregion Animal
+
 #pragma region IDLE NPC
 
 	if (m_strModelTag == TEXT("Prototype_Model_Dwarf_Male_002"))
@@ -63,6 +71,11 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 		m_Animation.iAnimIndex = 4;
 	}
 
+	if (m_strModelTag == TEXT("Prototype_Model_Male_009"))
+	{
+		m_Animation.iAnimIndex = 1;
+	}
+
 	if (m_strModelTag == TEXT("Prototype_Model_Male_013"))
 	{
 		m_Animation.iAnimIndex = 1;
@@ -74,6 +87,11 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Male_018"))
+	{
+		m_Animation.iAnimIndex = 0;
+	}
+
+	if (m_strModelTag == TEXT("Prototype_Model_SkillMerchant"))
 	{
 		m_Animation.iAnimIndex = 0;
 	}
@@ -110,6 +128,25 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 
 #pragma endregion DANCE NPC
 
+#pragma region TALK NPC
+
+	if (m_strModelTag == TEXT("Prototype_Model_Female_002"))
+	{
+		m_Animation.iAnimIndex = 7;
+	}
+
+	if (m_strModelTag == TEXT("Prototype_Model_Female_005"))
+	{
+		m_Animation.iAnimIndex = 1;
+	}
+
+	if (m_strModelTag == TEXT("Prototype_Model_Female_010"))
+	{
+		m_Animation.iAnimIndex = 10;
+	}
+
+#pragma endregion TALK NPC
+
 #pragma region 기타 치는애
 
 	if (m_strModelTag == TEXT("Prototype_Model_Male_027"))
@@ -133,19 +170,68 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 	
 	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::NPC, m_pTransformCom);
 
+	if (m_strModelTag == TEXT("Prototype_Model_Horse"))
+	{
+		PxCapsuleControllerDesc ControllerDesc{};
+		ControllerDesc.height = 0.7f; // 높이(위 아래의 반구 크기 제외
+		ControllerDesc.radius = 1.f; // 위아래 반구의 반지름
+		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+		ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+		ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+
+		m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+	}
+
+	else if (m_strModelTag == TEXT("Prototype_Model_Dwarf_Male_002"))
+	{
+		PxCapsuleControllerDesc ControllerDesc{};
+		ControllerDesc.height = 0.4f; // 높이(위 아래의 반구 크기 제외
+		ControllerDesc.radius = 0.8f; // 위아래 반구의 반지름
+		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+		ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+		ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+
+		m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+	}
+
+	else
+	{
+		PxCapsuleControllerDesc ControllerDesc{};
+		ControllerDesc.height = 0.8f; // 높이(위 아래의 반구 크기 제외
+		ControllerDesc.radius = 0.6f; // 위아래 반구의 반지름
+		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+		ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+		ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+
+		m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+	}
+
+	if (pArg)
+	{
+		if (FAILED(__super::Init(pArg)))
+		{
+			return E_FAIL;
+		}
+	}
+
     return S_OK;
 }
 
 void CNPC_Dummy::Tick(_float fTimeDelta)
 {	
 	m_pModelCom->Set_Animation(m_Animation);
-	m_pDialog->Tick(fTimeDelta);
+	//m_pDialog->Tick(fTimeDelta);
+
+	m_pTransformCom->Gravity(fTimeDelta);
 }
 
 void CNPC_Dummy::Late_Tick(_float fTimeDelta)
 {
 	__super::Late_Tick(fTimeDelta);
-	m_pDialog->Late_Tick(fTimeDelta);
+	//m_pDialog->Late_Tick(fTimeDelta);
 }
 
 HRESULT CNPC_Dummy::Render()
