@@ -40,7 +40,7 @@ void CShader_Player::Tick(_float fTimeDelta)
 
 void CShader_Player::Late_Tick(_float fTimeDelta)
 {
-	m_pModelCom->Play_Animation(fTimeDelta);
+	m_pModelCom->Play_Animation(0.f);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 }
 
@@ -293,7 +293,7 @@ HRESULT CShader_Player::Render_Parts(PART_TYPE Parts, _uint Index)
 			return E_FAIL;
 
 
-		if (FAILED(m_pShaderCom->Begin(0)))
+		if (FAILED(m_pShaderCom->Begin(5)))
 			return E_FAIL;
 
 		if (FAILED(m_pModelCom->Render_Part((_uint)Parts, (_uint)Index, k)))
@@ -363,6 +363,16 @@ HRESULT CShader_Player::Bind_ShaderResources()
 
 	// »À ¹ÙÀÎµå
 	if (FAILED(m_pModelCom->Bind_Bone(m_pShaderCom)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof(_float4))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Inversed(TransformType::Proj))))
+		return E_FAIL;
+
+	_float4 vColor = _float4(1.f, 1.f, 1.f, 1.f);
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vColor, sizeof(_float4))))
 		return E_FAIL;
 
 	return S_OK;

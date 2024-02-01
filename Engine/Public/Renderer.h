@@ -13,8 +13,6 @@ enum RenderGroup
 	RG_NonLight,
 	RG_Blend,
 	RG_BlendBlur,
-	RG_Water_Refraction,
-	RG_Water_Reflection,
 	RG_Water,
 	RG_UI,
 	RG_Cursor,
@@ -47,7 +45,6 @@ private:
 #ifdef _DEBUGTEST
 	list<class CComponent*> m_DebugComponents{};
 #endif // _DEBUG
-
 
 private:
 	class CVIBuffer_Rect* m_pVIBuffer{ nullptr };
@@ -107,13 +104,13 @@ private:
 	_bool m_TurnOnSSAO = true;
 	_bool m_TurnOnToneMap = true;
 	_bool m_TurnOnBlur = true;
-	_uint m_iChangeToneMap = 0;
+	_bool m_TurnOnRim = false;
 
 	_float m_fSSAOBlurPower = 1.f;
 
 	_float m_fEffectBlurPower = 1.5f;
 
-	_float m_fHDRBloomPower = 1.2f;
+	_float m_fHDRBloomPower = 1.f;
 
 	SSAO_DESC m_SSAO;
 	HDR_DESC m_HDR;
