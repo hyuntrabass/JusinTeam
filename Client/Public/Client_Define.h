@@ -311,6 +311,7 @@ namespace Client
 		StaticPass_SingleColoredEffectFrontCull,
 		StaticPass_Shadow,
 		StaticPass_Water,
+		StaticPass_DiffEffect,
 		StaticPass_End,
 	};
 

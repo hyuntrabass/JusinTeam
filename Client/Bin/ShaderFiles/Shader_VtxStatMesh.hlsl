@@ -419,6 +419,15 @@ PS_OUT_DEFERRED PS_Main_Water(PS_WATER_IN Input)
     return Output;
 }
 
+PS_OUT PS_Main_DiffEffect(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+
+    Output.vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform);
+    
+    return Output;
+}
+
 technique11 DefaultTechniqueShader_VtxNorTex
 {
     pass Default
@@ -614,5 +623,18 @@ technique11 DefaultTechniqueShader_VtxNorTex
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Water();
+    }
+
+    pass DiffEffect
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_DiffEffect();
     }
 };
