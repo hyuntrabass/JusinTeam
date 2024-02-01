@@ -133,6 +133,11 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Reflection_Emissive"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Reflection_Final"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 	{
 		return E_FAIL;
@@ -321,7 +326,7 @@ HRESULT CRenderer::Init_Prototype()
 	}
 
 	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_Lights", L"Target_Emissive")))
-		return E_FAIL;
+		return E_FAIL;	
 
 #pragma endregion
 
@@ -341,6 +346,9 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_Reflection_Light", L"Target_Reflection_Specular")))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_Reflection_Light", L"Target_Reflection_Emissive")))
 		return E_FAIL;
 
 #pragma endregion
@@ -1069,17 +1077,17 @@ HRESULT CRenderer::Render_Reflection()
 
 			_float4 vClipPlane = _float4(0.f, 1.f, 0.f, -(fWaterHeight - 0.1f));
 
-			for (auto& pGameObject : m_RenderObjects[RG_Priority])
-			{
-				if (pGameObject)
-				{
-					if (FAILED(pGameObject->Render_Reflection(vClipPlane)))
-					{
-						MSG_BOX("Failed to Render");
-						return E_FAIL;
-					}
-				}
-			}
+			//for (auto& pGameObject : m_RenderObjects[RG_Priority])
+			//{
+			//	if (pGameObject)
+			//	{
+			//		if (FAILED(pGameObject->Render_Reflection(vClipPlane)))
+			//		{
+			//			MSG_BOX("Failed to Render");
+			//			return E_FAIL;
+			//		}
+			//	}
+			//}
 
 			for (auto& pGameObject : m_RenderObjects[RG_NonBlend])
 			{
@@ -1499,10 +1507,10 @@ HRESULT CRenderer::Render_Deferred()
 
 HRESULT CRenderer::Render_Blur()
 {
-	//if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur"))))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur"))))
+	{
+		return E_FAIL;
+	}
 
 	for (auto& pGameObject : m_RenderObjects[RG_Blur])
 	{
@@ -1519,10 +1527,10 @@ HRESULT CRenderer::Render_Blur()
 
 	m_RenderObjects[RG_Blur].clear();
 
-	//if (FAILED(m_pGameInstance->End_MRT()))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(m_pGameInstance->End_MRT()))
+	{
+		return E_FAIL;
+	}
 
 	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_Bloom"))))
 	//{
@@ -1686,12 +1694,12 @@ HRESULT CRenderer::Render_HDR()
 		m_TurnOnToneMap = !m_TurnOnToneMap;
 
 	if (m_pGameInstance->Key_Down(DIK_F4))
-		m_TurnOnBlur = !m_TurnOnBlur;
+		m_TurnOnBloom = !m_TurnOnBloom;
 
 	if (FAILED(m_pShader->Bind_RawValue("TurnOnToneMap", &m_TurnOnToneMap, sizeof(_bool))))
 		return E_FAIL;
 
-	if (FAILED(m_pShader->Bind_RawValue("TurnOnBlur", &m_TurnOnBlur, sizeof(_bool))))
+	if (FAILED(m_pShader->Bind_RawValue("TurnOnBloom", &m_TurnOnBloom, sizeof(_bool))))
 		return E_FAIL;
 
 

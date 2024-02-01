@@ -34,6 +34,10 @@ public:
 	HRESULT Add_RenderGroup(RenderGroup eRenderGroup, class CGameObject* pRenderObject);
 	HRESULT Draw_RenderGroup();
 
+	const void Set_TurnOneBloom(_bool TurnOnBloom) {
+		m_TurnOnBloom = TurnOnBloom;
+	}
+
 #ifdef _DEBUGTEST
 	HRESULT Add_DebugComponent(class CComponent* pDebugComponent);
 #endif // _DEBUG
@@ -103,7 +107,7 @@ private:
 private:
 	_bool m_TurnOnSSAO = true;
 	_bool m_TurnOnToneMap = true;
-	_bool m_TurnOnBlur = true;
+	_bool m_TurnOnBloom = true;
 	_bool m_TurnOnRim = false;
 
 	_float m_fSSAOBlurPower = 1.f;

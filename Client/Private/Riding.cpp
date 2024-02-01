@@ -664,9 +664,6 @@ HRESULT CRiding::Bind_ShaderResources()
 	}
 
 
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
-		return E_FAIL;
-
 	if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
 	{
 		return E_FAIL;

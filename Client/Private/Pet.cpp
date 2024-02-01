@@ -144,15 +144,6 @@ HRESULT CPet::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
-	{
-		return E_FAIL;
-	}
 
 	return S_OK;
 }
