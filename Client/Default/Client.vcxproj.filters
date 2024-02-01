@@ -361,6 +361,9 @@
     <Filter Include="02.GameObjects\00.UI\Shop\ShopWindow">
       <UniqueIdentifier>{534a9ccd-a949-4ad3-b172-7e71f942c1d1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\04.Monster\00. ModelTest\VTF">
+      <UniqueIdentifier>{ac4eb217-ebae-46b1-9d8a-06454f02fd2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -723,6 +726,9 @@
     <ClInclude Include="..\Public\ShopWindow.h">
       <Filter>02.GameObjects\00.UI\Shop\ShopWindow</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\VTFTest.h">
+      <Filter>02.GameObjects\04.Monster\00. ModelTest\VTF</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1079,6 +1085,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\ShopWindow.cpp">
       <Filter>02.GameObjects\00.UI\Shop\ShopWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VTFTest.cpp">
+      <Filter>02.GameObjects\04.Monster\00. ModelTest\VTF</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
