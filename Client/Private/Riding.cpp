@@ -663,21 +663,12 @@ HRESULT CRiding::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
-		return E_FAIL;
-
 	if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
 	{
 		return E_FAIL;
 	}
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
 		return E_FAIL;
-
-	/*if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
-	{
-		return E_FAIL;
-	}*/
 
 	return S_OK;
 }
