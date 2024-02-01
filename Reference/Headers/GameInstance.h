@@ -250,6 +250,13 @@ public:
 	void Level_ShutDown(_uint iCurrentLevel);
 	_bool Is_Level_ShutDown(_uint iCurrentLevel);
 
+
+public:
+	void Set_GoHome(_bool GoHome) { m_bGoHome = GoHome; }
+	void Set_GoDungeon(_bool GoDungeon) { m_bGoDungeon = GoDungeon; }
+
+	_bool Get_GoHome() {return m_bGoHome;}
+	_bool Get_GoDungeon() {return m_bGoDungeon;}
 private:
 	class CGraphic_Device* m_pGraphic_Device{ nullptr };
 
@@ -291,6 +298,8 @@ private:
 	_bool m_bSkipDebugRender{ true };
 	wstring m_strInput{};
 	_bool m_bFlyCam{};
+	_bool m_bGoHome{};
+	_bool m_bGoDungeon{};
 private:
 	vector<_bool> m_vecLevelInvalid;
 

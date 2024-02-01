@@ -89,9 +89,6 @@ void CRiding::Tick(_float fTimeDelta)
 	{
 		m_fDissolveRatio += fTimeDelta / 1.4f;
 
-		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
-		vPos.y -= 0.5f;
-		m_pTransformCom->Set_State(State::Pos, vPos);
 		if (m_fDissolveRatio >= 1.f)
 			m_bDelete = true;
 	}
@@ -122,7 +119,13 @@ void CRiding::Tick(_float fTimeDelta)
 				{
 					return;
 				}
+				
 				m_hasJumped = true;
+			}
+			else if (Index >= 95.f)
+			{
+				m_bDelete = true;
+			
 			}
 		}
 		else if (m_eState == Riding_Landing)
@@ -648,23 +651,24 @@ HRESULT CRiding::Add_Components()
 	{
 		return E_FAIL;
 	}
-	Collider_Desc BodyCollDesc = {};
-	BodyCollDesc.eType = ColliderType::OBB;
-	BodyCollDesc.vExtents = _vec3(2.f, 2.f, 2.f);
-	BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y, 0.f);
-	BodyCollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
+
+	//Collider_Desc BodyCollDesc = {};
+	//BodyCollDesc.eType = ColliderType::OBB;
+	//BodyCollDesc.vExtents = _vec3(2.f, 2.f, 2.f);
+	//BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y, 0.f);
+	//BodyCollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
 
 	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 	//	TEXT("Com_Collider_OBB"), (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
 	//	return E_FAIL;
 
 	// Frustum
-	Collider_Desc ColDesc{};
-	ColDesc.eType = ColliderType::Frustum;
-	_matrix matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
-	// 1인자 : 절두체 각도(범위), 2인자 : Aspect, 3인자 : Near, 4인자 : Far(절두체 깊이)
-	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(90.f), 1.f, 0.01f, 3.f);
-	XMStoreFloat4x4(&ColDesc.matFrustum, matView * matProj);
+	//Collider_Desc ColDesc{};
+	//ColDesc.eType = ColliderType::Frustum;
+	//_matrix matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
+	//// 1인자 : 절두체 각도(범위), 2인자 : Aspect, 3인자 : Near, 4인자 : Far(절두체 깊이)
+	//_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(90.f), 1.f, 0.01f, 3.f);
+	//XMStoreFloat4x4(&ColDesc.matFrustum, matView * matProj);
 
 	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack"), reinterpret_cast<CComponent**>(&m_pAttackColliderCom), &ColDesc)))
 	//{

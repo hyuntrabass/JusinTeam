@@ -95,6 +95,20 @@ void CLevel_Village::Tick(_float fTimeDelta)
 		return;
 	}
 
+	if (m_pGameInstance->Get_GoDungeon())
+	{
+		In_To_Dungeon();
+		m_pGameInstance->Set_GoDungeon(false);
+		return;
+	}
+	
+	if (m_pGameInstance->Get_GoHome())
+	{
+		Ready_Player();
+		m_pGameInstance->Set_GoHome(false);
+		return;
+	}
+
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 	{
 		DestroyWindow(g_hWnd);
@@ -146,10 +160,11 @@ HRESULT CLevel_Village::Ready_Player()
 
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 	pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 2.f, 0.f));
-
+	pPlayerTransform->LookAt_Dir(_vec4(-0.0531848f, 0.0598536346f, 0.996788f, 1.f));
 
 	return S_OK;
 }
+
 
 HRESULT CLevel_Village::Ready_Map()
 {
@@ -337,12 +352,9 @@ HRESULT CLevel_Village::In_To_Dungeon()
 	inFile.read(reinterpret_cast<char*>(&Player_Pos), sizeof(_vec4));
 
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-	pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 2.f, 0.f));
-
-
+	pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 4.f, 0.f));
+	pPlayerTransform->LookAt_Dir(_vec4(-0.0531848f, 0.0598536346f, 0.996788f, 1.f));
 	return S_OK;
-
-	return E_NOTIMPL;
 }
 
 
@@ -377,7 +389,7 @@ HRESULT CLevel_Village::Ready_NpcvsMon()
 
 		Info.strMonsterPrototype = MonsterPrototype;
 		Info.MonsterWorldMat = MonsterWorldMat;
-
+		 
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), MonsterPrototype, &Info)))
 		{
 			MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);

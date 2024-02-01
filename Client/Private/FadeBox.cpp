@@ -75,7 +75,7 @@ void CFadeBox::Tick(_float fTimeDelta)
 		{
 			m_isDead = true;
 		}
-		m_fAlpha = m_fDuration - Lerp(0.f, 1.f, m_fTime / m_fDuration);
+		m_fAlpha = 1.f - Lerp(0.f, 1.f, m_fTime / m_fDuration);
 		break;
 	}
 
