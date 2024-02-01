@@ -123,7 +123,7 @@ HRESULT CShopDesc::Render()
 	m_pGameInstance->Render_Text(L"Font_Malang", m_strItemName, _vec2(vStartPos.x, +vStartPos.y), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f), 0.f, true);
 	
 	vStartPos = _vec2(m_fX - m_fSizeX / 2.f + 90.f + 25.f, m_fY + 13.f);
-	wstring strCost = to_wstring(m_pItem->Get_ItemDesc().iSale);
+	wstring strCost = to_wstring(m_pItem->Get_ItemDesc().iPurchase);
 	m_pGameInstance->Render_Text(L"Font_Malang", strCost, _vec2(vStartPos.x + 1.f, vStartPos.y), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, true);
 	m_pGameInstance->Render_Text(L"Font_Malang", strCost, _vec2(vStartPos.x, +vStartPos.y + 1.f), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, true);
 	m_pGameInstance->Render_Text(L"Font_Malang", strCost, _vec2(vStartPos.x, +vStartPos.y), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f), 0.f, true);

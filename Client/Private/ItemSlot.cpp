@@ -114,7 +114,15 @@ HRESULT CItemSlot::Set_Item(CItem* pItem, _int* iNum)
 	ItemDesc.fDepth = m_fDepth - 0.1f;
 	ItemDesc.iNum = iItemNum;
 	ItemDesc.vPosition = _vec2(m_fX, m_fY);
-	ItemDesc.vSize = _vec2(m_fSizeX, m_fSizeY);
+	if (m_eSlotMode == ITSLOT_SCREEN)
+	{
+		ItemDesc.vSize = _vec2(m_fSizeX - 20.f, m_fSizeY - 20.f);
+	}
+	else
+	{
+		ItemDesc.vSize = _vec2(m_fSizeX, m_fSizeY);
+	}
+
 	m_pItem = (CItem*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Item"), &ItemDesc);
 
 	m_isFull = true;

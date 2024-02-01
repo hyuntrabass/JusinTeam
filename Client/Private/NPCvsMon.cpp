@@ -24,19 +24,17 @@ HRESULT CNPCvsMon::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(5.f, 0.f, 5.f, 1.f));
-
 	m_Animation.iAnimIndex = 0;
 	m_Animation.isLoop = true;
 	m_Animation.fAnimSpeedRatio = 1.5f;
 
 	if (pArg)
 	{
-		m_pInfo = *(MonsterInfo*)pArg;
-		_mat WorldPos = m_pInfo.MonsterWorldMat;
-		m_pTransformCom->Set_Matrix(WorldPos);
+		if (FAILED(__super::Init(pArg)))
+		{
+			return E_FAIL;
+		}
 	}
-
 
     return S_OK;
 }

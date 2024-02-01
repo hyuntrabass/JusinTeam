@@ -22,7 +22,6 @@ public:
 	virtual HRESULT Render_Instance() override;
 
 	// ¿ø¸í
-	virtual HRESULT Render_Refract(_float4 vClipPlane);
 	virtual HRESULT Render_Reflection(_float4 vClipPlane);
 
 	ObjectInfo Get_Info() const { return m_Info; }

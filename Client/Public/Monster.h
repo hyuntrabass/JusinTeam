@@ -26,6 +26,9 @@ public:
 	virtual HRESULT Render() override;
 
 public:
+
+
+public:
 	virtual _vec4 Compute_PlayerPos();
 	virtual _float Compute_PlayerDistance();
 

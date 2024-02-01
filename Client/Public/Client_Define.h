@@ -44,6 +44,7 @@ namespace Client
 		CS_INVEN,
 		CS_SHOP,
 		CS_ENDFULLSCREEN,
+		CS_WORLDMAP,
 		CS_STATEEND
 	};
 	struct PLAYER_STATUS
@@ -170,6 +171,7 @@ namespace Client
 		D_MOUSE,
 		D_FADE,
 		D_LOADING,
+		D_ALERT,
 		D_INVEN,
 		D_SHOP,
 		D_QUEST,
@@ -279,6 +281,7 @@ namespace Client
 		_uint iPurchase;
 		_uint iSale;
 		_uint iPartIndex{};
+		_uint iLimited;
 
 	}ITEM;
 
@@ -289,9 +292,7 @@ namespace Client
 		AnimPass_OutLine,
 		AnimPass_Shadow,
 		AnimPass_Dissolve,
-		AnimPass_Player, 
-		AnimPass_Test, 
-		AnimPass_LerpColor
+		AnimPass_Rim,
 	};
 
 	enum StaticMeshPass
@@ -311,6 +312,9 @@ namespace Client
 		StaticPass_SingleColoredEffectFrontCull,
 		StaticPass_Shadow,
 		StaticPass_Water,
+		StaticPass_Worldmap_Water,
+		StaticPass_Worldmap_Cloud,
+		StaticPsss_Rim,
 		StaticPass_DiffEffect,
 		StaticPass_End,
 	};

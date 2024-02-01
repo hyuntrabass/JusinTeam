@@ -38,7 +38,7 @@ void CUI_Manager::Set_Exp_ByPercent(_float fExp)
 	}
 }
 
-HRESULT CUI_Manager::Set_Coin(_uint iCoin)
+HRESULT CUI_Manager::Set_Coin(_int iCoin)
 {
 	if ((m_iCoin += iCoin) && m_iCoin < 0)
 	{
@@ -78,6 +78,7 @@ const _uint& CUI_Manager::Get_CustomPart(PART_TYPE eType)
 
 const _uint& CUI_Manager::Get_WeaponType(PART_TYPE eType, WEAPON_TYPE* wpType)
 {
+	m_eChangedPart = PT_END;
 	*wpType = m_eWeaponType;
 	return m_CustomPart[eType];
 }
@@ -144,6 +145,7 @@ HRESULT CUI_Manager::Init_Items()
 		wstring strSale;
 		wstring strStatus;
 		wstring strPartIndex;
+		wstring strLimited;
 		getline(fin, strInvenType, L'|');
 
 		if (i > 0)
@@ -234,12 +236,14 @@ HRESULT CUI_Manager::Init_Items()
 		getline(fin, strPurchase, L'|');
 		getline(fin, strSale, L'|');
 		getline(fin, strPartIndex, L'|');
+		getline(fin, strLimited, L'|');
 
 		Item.iIndex = stoi(strItemIndex);
 		Item.iStatus = stoi(strStatus);
 		Item.iPurchase = stoi(strPurchase);
 		Item.iSale = stoi(strSale);
 		Item.iPartIndex = stoi(strPartIndex);
+		Item.iLimited = stoi(strLimited);
 
 		m_mapItem.emplace(Item.strName, Item);
 		i++;

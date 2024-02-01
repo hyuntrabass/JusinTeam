@@ -56,8 +56,9 @@ HRESULT CJobMark::Init(void* pArg)
 void CJobMark::Tick(_float fTimeDelta)
 {
 
-
-	if (m_eCurState != m_ePrevState)
+	WEAPON_TYPE eType{};
+	_int iIdx = CUI_Manager::Get_Instance()->Get_WeaponType(PT_WEAPON, &eType);
+	if(m_eType != eType)
 	{
 		if (m_pJob)
 		{
@@ -66,17 +67,17 @@ void CJobMark::Tick(_float fTimeDelta)
 
 		CTextButton::TEXTBUTTON_DESC Button = {};
 		Button.eLevelID = LEVEL_STATIC;
-		Button.fDepth = 0.5f;
+		Button.fDepth = m_fDepth - 0.01f;
 		Button.vPosition = _vec2(m_fX, m_fY);
-		Button.vSize = _vec2(60.f, 60.f);
+		Button.vSize = _vec2(140.f, 140.f);
 
-		switch (m_eCurState)
+		switch (eType)
 		{
-		case BOW:
-			Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_basic_bow");
+		case WP_BOW:
+			Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Image_Emblem_01");
 			break;
-		case ASSASSIN:
-			Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_basic_sword");
+		case WP_SWORD:
+			Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Image_Emblem_02");
 			break;
 		}
 		m_pJob = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
@@ -87,6 +88,7 @@ void CJobMark::Tick(_float fTimeDelta)
 
 		}
 		m_ePrevState = m_eCurState;
+		m_eType = eType;
 	}
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }

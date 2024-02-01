@@ -139,6 +139,11 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 				}
 				//FastPicking();
 			}
+			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_SPACE))
+			{
+				FastPicking();
+				Delete_Dummy();
+			}
 		}
 
 		if (m_pGameInstance->Mouse_Down(DIM_RBUTTON))
@@ -290,16 +295,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				ImGui::EndListBox();
 			}	
 			
-			ImGui::Separator();
-			if (ImGui::InputText("Search", Search_Name, ImGuiInputTextFlags_EnterReturnsTrue))
-			{
-				int foundIdx = FindByName(Search_Name, Maps[m_eType]);
-
-				if (foundIdx != -1)
-				{
-					Map_current_idx = foundIdx;
-				}
-			}
+			
 			ImGui::Separator();
 			ImGui::SeparatorText("MATRIX : ");
 			ImGui::InputFloat4("Right", &m_MapMatrix.m[0][0]);

@@ -214,6 +214,7 @@
     <ClInclude Include="..\Public\Pet.h" />
     <ClInclude Include="..\Public\Pet_Cat.h" />
     <ClInclude Include="..\Public\Pet_Dragon.h" />
+    <ClInclude Include="..\Public\Pop_Alert.h" />
     <ClInclude Include="..\Public\Pop_LevelUp.h" />
     <ClInclude Include="..\Public\Pop_QuestEnd.h" />
     <ClInclude Include="..\Public\Pop_QuestIn.h" />
@@ -231,6 +232,7 @@
     <ClInclude Include="..\Public\Select_Npc.h" />
     <ClInclude Include="..\Public\Shop.h" />
     <ClInclude Include="..\Public\ShopDesc.h" />
+    <ClInclude Include="..\Public\ShopWindow.h" />
     <ClInclude Include="..\Public\SkillBlock.h" />
     <ClInclude Include="..\Public\SkillSlot.h" />
     <ClInclude Include="..\Public\Sky.h" />
@@ -270,6 +272,7 @@
     <ClInclude Include="..\Public\Void20.h" />
     <ClInclude Include="..\Public\Void23.h" />
     <ClInclude Include="..\Public\Wearable_Slot.h" />
+    <ClInclude Include="..\Public\WorldMap.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
@@ -333,6 +336,7 @@
     <ClCompile Include="..\Private\Pet.cpp" />
     <ClCompile Include="..\Private\Pet_Cat.cpp" />
     <ClCompile Include="..\Private\Pet_Dragon.cpp" />
+    <ClCompile Include="..\Private\Pop_Alert.cpp" />
     <ClCompile Include="..\Private\Pop_LevelUp.cpp" />
     <ClCompile Include="..\Private\Pop_QuestEnd.cpp" />
     <ClCompile Include="..\Private\Pop_QuestIn.cpp" />
@@ -350,6 +354,7 @@
     <ClCompile Include="..\Private\Select_Npc.cpp" />
     <ClCompile Include="..\Private\Shop.cpp" />
     <ClCompile Include="..\Private\ShopDesc.cpp" />
+    <ClCompile Include="..\Private\ShopWindow.cpp" />
     <ClCompile Include="..\Private\SkillBlock.cpp" />
     <ClCompile Include="..\Private\SkillSlot.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
@@ -386,6 +391,7 @@
     <ClCompile Include="..\Private\Void20.cpp" />
     <ClCompile Include="..\Private\Void23.cpp" />
     <ClCompile Include="..\Private\Wearable_Slot.cpp" />
+    <ClCompile Include="..\Private\WorldMap.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>
   <ItemGroup>
