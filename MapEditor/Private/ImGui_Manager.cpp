@@ -753,12 +753,12 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::Separator();
 			if (ImGui::Button("SAVE"))
 			{
-				Save_Monster();
+				Save_NPC();
 			}
 			ImGui::SameLine();
 			if (ImGui::Button("LOAD"))
 			{
-				Load_Monster();
+				Load_NPC();
 			}
 			ImGui::EndTabItem();
 		}
@@ -1740,6 +1740,8 @@ HRESULT CImGui_Manager::Save_Map()
 		}
 
 		MessageBox(g_hWnd, L"파일 저장 완료", L"파일 저장", MB_OK);
+		outFile.close();
+
 	}
 	return S_OK;
 }
@@ -1812,6 +1814,8 @@ HRESULT CImGui_Manager::Load_Map()
 		}
 
 		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
+		inFile.close();
+
 	}
 	return S_OK;
 }
@@ -1860,6 +1864,8 @@ HRESULT CImGui_Manager::Save_Object()
 		}
 
 		MessageBox(g_hWnd, L"오브젝트 파일 저장 완료", L"파일 저장", MB_OK);
+		outFile.close();
+
 	}
 	return S_OK;
 }
@@ -1932,6 +1938,8 @@ HRESULT CImGui_Manager::Load_Object()
 		}
 
 		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
+		inFile.close();
+
 	}
 	return S_OK;
 }
@@ -1980,6 +1988,8 @@ HRESULT CImGui_Manager::Save_Monster()
 		}
 
 		MessageBox(g_hWnd, L"파일 저장 완료", L"파일 저장", MB_OK);
+		outFile.close();
+
 	}
 	return S_OK;
 }
@@ -2052,6 +2062,8 @@ HRESULT CImGui_Manager::Load_Monster()
 		}
 
 		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
+		inFile.close();
+
 	}
 	return S_OK;
 }
@@ -2097,6 +2109,7 @@ HRESULT CImGui_Manager::Save_NPC()
 		}
 
 		MessageBox(g_hWnd, L"파일 저장 완료", L"파일 저장", MB_OK);
+		outFile.close();
 	}
 	return S_OK;
 }
@@ -2169,6 +2182,8 @@ HRESULT CImGui_Manager::Load_NPC()
 		}
 
 		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
+		inFile.close();
+
 	}
 	return S_OK;
 }
@@ -2214,6 +2229,8 @@ HRESULT CImGui_Manager::Save_Envir()
 		}
 
 		MessageBox(g_hWnd, L"파일 저장 완료", L"파일 저장", MB_OK);
+		outFile.close();
+
 	}
 	return S_OK;
 }
@@ -2286,6 +2303,8 @@ HRESULT CImGui_Manager::Load_Envir()
 		}
 
 		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
+		inFile.close();
+
 	}
 	return S_OK;
 }
@@ -2337,6 +2356,8 @@ HRESULT CImGui_Manager::Save_Trigger()
 		}
 
 		MessageBox(g_hWnd, L"파일 저장 완료", L"파일 저장", MB_OK);
+		outFile.close();
+
 
 	}
 	return S_OK;
@@ -2425,6 +2446,8 @@ HRESULT CImGui_Manager::Load_Trigger()
 		}
 
 		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
+		inFile.close();
+
 	}
 	return S_OK;
 }
@@ -2456,6 +2479,7 @@ HRESULT CImGui_Manager::Save_Pos()
 		outFile.write(reinterpret_cast<const char*>(&vSelectPos), sizeof(_vec4));
 
 		MessageBox(g_hWnd, L"위치 파일 저장 완료", L"파일 저장", MB_OK);
+		outFile.close();
 	}
 	return S_OK;
 }

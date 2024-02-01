@@ -22,12 +22,11 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 
 private:
-	_bool			m_isMain{ false };
-	_uint			m_iMoney{ 0 };
-	_float			m_fExp{ 0.f };
-	_float			m_fDir{ -1.f };
-
-	queue<wstring>  m_AlertQueue;
+	_float			m_fTime{};
+	_float			m_fPopTime{};
+	_vec2			m_vFrontAlertPos;
+	vector<wstring> m_vecAlert;
+	vector<_float>  m_vecTime;
 
 public:
 	void Set_Alert(wstring strText);

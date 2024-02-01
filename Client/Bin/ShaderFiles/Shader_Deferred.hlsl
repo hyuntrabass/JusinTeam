@@ -39,7 +39,7 @@ Texture2D g_Luminance;
 Texture2D g_TestBlurTexture;
 bool TurnOnSSAO;
 bool TurnOnToneMap;
-bool TurnOnBlur;
+bool TurnOnBloom;
 bool TurnOnRim;
 SSAO_DESC g_SSAO;
 HDR_DESC g_HDR;
@@ -250,6 +250,7 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     vector vShade = g_ShadeTexture.Sample(LinearSampler, Input.vTexcoord);
     vShade.a = 1.f;
     vector vSpecular = g_SpecularTexture.Sample(LinearSampler, Input.vTexcoord);
+    vSpecular.a = 0.f;
     
     vector vRimMask = g_RimMaskTexture.Sample(LinearSampler, Input.vTexcoord);
     vRimMask.a = 0.f;
@@ -443,7 +444,7 @@ PS_OUT PS_Main_HDR(PS_IN Input)
     
     float3 vHDRColor = vColor.rgb;
     
-    if (true == TurnOnBlur)
+    if (true == TurnOnBloom)
     {
         vector vBlur = g_TestBlurTexture.Sample(LinearSampler, Input.vTexcoord);
         
@@ -540,7 +541,7 @@ technique11 DefaultTechnique
     pass Debug
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
+        SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();

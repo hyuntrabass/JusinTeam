@@ -2,6 +2,7 @@
 #include "Client_Define.h"
 #include "Base.h"
 
+
 BEGIN(Engine)
 class CGameInstance;
 END
@@ -11,7 +12,8 @@ class CEvent_Manager final : public CBase
 	DECLARE_SINGLETON(CEvent_Manager)
 
 public:
-	enum EVENT_TYPE { QUESTIN, QUESTEND, LEVELUP, TYPE_END};
+	enum EVENT_TYPE { QUESTIN, QUESTEND, LEVELUP, TUTORIAL, TYPE_END};
+
 	typedef struct tagEventDesc
 	{
 		EVENT_TYPE eType;
@@ -30,9 +32,15 @@ private:
 private:
 	CGameInstance*						m_pGameInstance{ nullptr };
 
+	TUTO_SEQ							m_eCurTuto{ TUTO_END };
+
+	_bool								m_TutoComplete[TUTO_END]{};
+	_bool								m_isTutoStarted{ false };
 	_bool								m_isEventIn = { false };
 	_bool								m_isWaiting = { false };
+
 	class CQuest*						m_pQuest{ nullptr };
+	class CPop_Alert*					m_pAlert{ nullptr };
 
 	vector<EVENT_DESC>					m_vecPopEvents;
 	map <const wstring, EVENT_DESC>		m_QuestMap;
@@ -44,15 +52,20 @@ public:
 	HRESULT Render();
 
 private:
-
 	HRESULT Set_Event(EVENT_DESC pDesc);
+	HRESULT Init_Quest();
 
 public:
 	_bool Find_Quest(const wstring& strQuest);
-	HRESULT Init_Quest();
 	HRESULT Set_Quest(const wstring& strQuest);
-	//HRESULT Set_Event_byList(EVENT_LIST eNum);
 	HRESULT Update_Quest(const wstring& strQuest);
+
+	void Set_Alert(const wstring strAlert);
+
+	void Set_TutorialComplete(TUTO_SEQ eTuto);
+	void Set_TutorialSeq(TUTO_SEQ eTuto);
+	_bool Get_TutorialComplete(TUTO_SEQ eTuto);
+	TUTO_SEQ Get_TutorialLevel() { return m_eCurTuto; }
 
 public:
 	virtual void Free() override;

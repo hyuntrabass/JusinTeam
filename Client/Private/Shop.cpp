@@ -72,6 +72,7 @@ void CShop::Tick(_float fTimeDelta)
 	{
 		if (m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
+			dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Init_SellItem();
 			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_isActive = false;

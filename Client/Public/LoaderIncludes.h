@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Tutorial.h"
+#include "Pop_Alert.h"
+#include "InvenWindow.h"
 #include "ShopWindow.h"
 #include "ShopDesc.h"
 #include "Shop.h"

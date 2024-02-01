@@ -18,10 +18,10 @@ HRESULT CVIBuffer_Trail_Surface::Init_Prototype(const _uint iNumVertices)
 	m_iDetailRatio = 4;
 	m_iNumVertexBuffers = 1;
 	m_iVertexStride = sizeof VTXTRAILSURFACE;
-	m_iNumVertices = iNumVertices * m_iDetailRatio;
+	m_iNumVertices = (iNumVertices - 1) * m_iDetailRatio + 1;
 
 	m_iIndexStride = 2;
-	m_iNumIndices = iNumVertices * m_iDetailRatio;
+	m_iNumIndices = (iNumVertices - 1) * m_iDetailRatio + 1;
 
 	m_eIndexFormat = DXGI_FORMAT_R16_UINT;
 	m_ePrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
@@ -102,10 +102,11 @@ void CVIBuffer_Trail_Surface::Update(_uint iNumVerticesToUse, _vec3* pTopPositio
 	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
 	for (_uint i = 0; i < m_iNumVertices; i++)
 	{
-		if (i >= iNumVerticesToUse * m_iDetailRatio)
+		if (i >= (iNumVerticesToUse - 1) * m_iDetailRatio)
 		{
 			reinterpret_cast<VTXTRAILSURFACE*>(SubResource.pData)[i].vTopPosition = pTopPositionArray[iNumVerticesToUse - 1];
 			reinterpret_cast<VTXTRAILSURFACE*>(SubResource.pData)[i].vBottomPosition = pBottomPositionArray[iNumVerticesToUse - 1];
+			reinterpret_cast<VTXTRAILSURFACE*>(SubResource.pData)[i].fTexcoordX = 1.f;
 		}
 		else
 		{
@@ -135,6 +136,15 @@ void CVIBuffer_Trail_Surface::Update(_uint iNumVerticesToUse, _vec3* pTopPositio
 			if (pAlphaArray)
 			{
 				reinterpret_cast<VTXTRAILSURFACE*>(SubResource.pData)[i].fAlpha = Lerp(pAlphaArray[iCMRIndex[1]], pAlphaArray[iCMRIndex[2]], fWeight);
+			}
+
+			if (i == 0)
+			{
+				reinterpret_cast<VTXTRAILSURFACE*>(SubResource.pData)[i].fTexcoordX = 0.f;
+			}
+			else
+			{
+				reinterpret_cast<VTXTRAILSURFACE*>(SubResource.pData)[i].fTexcoordX = (1.f / static_cast<_float>(iNumVerticesToUse)) / static_cast<_float>(m_iDetailRatio) * static_cast<_float>(i);
 			}
 
 			fWeight += 1.f / static_cast<_float>(m_iDetailRatio);

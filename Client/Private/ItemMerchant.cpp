@@ -15,7 +15,7 @@ CItemMerchant::CItemMerchant(const CItemMerchant& rhs)
 
 HRESULT CItemMerchant::Init_Prototype()
 {
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CItemMerchant::Init(void* pArg)
@@ -40,18 +40,36 @@ HRESULT CItemMerchant::Init(void* pArg)
 
 	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::NPC, m_pTransformCom);
 
+	PxCapsuleControllerDesc ControllerDesc{};
+	ControllerDesc.height = 0.8f; // 높이(위 아래의 반구 크기 제외
+	ControllerDesc.radius = 0.6f; // 위아래 반구의 반지름
+	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+
+	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+
+	if (pArg)
+	{
+		if (FAILED(__super::Init(pArg)))
+		{
+			return E_FAIL;
+		}
+	}
+
 	return S_OK;
 }
 
 void CItemMerchant::Tick(_float fTimeDelta)
 {
-	
+
 	if (m_bTalking && !m_pShop->IsActive())
 	{
 		m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 0.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));
 		m_bTalking = false;
 	}
-	
+
 
 	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
 	_bool isColl = m_pColliderCom->Intersect(pCollider);
@@ -81,11 +99,15 @@ void CItemMerchant::Tick(_float fTimeDelta)
 	m_pModelCom->Set_Animation(m_Animation);
 
 	__super::Update_Collider();
+
+	m_pTransformCom->Gravity(fTimeDelta);
+
 }
 
 void CItemMerchant::Late_Tick(_float fTimeDelta)
 {
 	__super::Late_Tick(fTimeDelta);
+
 	if (m_bTalking == true)
 	{
 		m_pShop->Late_Tick(fTimeDelta);
@@ -101,7 +123,7 @@ HRESULT CItemMerchant::Render()
 {
 	__super::Render();
 
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CItemMerchant::Add_Parts()
@@ -162,6 +184,7 @@ CGameObject* CItemMerchant::Clone(void* pArg)
 
 void CItemMerchant::Free()
 {
+//	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::NPC, m_pTransformCom);
 	__super::Free();
 	Safe_Release(m_pShop);
 	Safe_Release(m_pSpeechBubble);

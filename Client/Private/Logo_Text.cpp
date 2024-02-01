@@ -27,7 +27,7 @@ HRESULT CLogo_Text::Init(void* pArg)
 	m_fSizeY = 35.f;
 
 	m_fX = g_iWinSizeX >> 1;
-	m_fY = (g_iWinSizeY >> 1) + 190.f;
+	m_fY = (g_iWinSizeY >> 1) + 160.f;
 
 	m_fDepth = 0.2f;
 

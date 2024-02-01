@@ -313,8 +313,9 @@ namespace Engine
 		XMFLOAT3 vTopPosition{};
 		XMFLOAT3 vBottomPosition{};
 		float fAlpha{};
+		float fTexcoordX{};
 
-		static const unsigned int iNumElements{ 3 };
+		static const unsigned int iNumElements{ 4 };
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	};
 

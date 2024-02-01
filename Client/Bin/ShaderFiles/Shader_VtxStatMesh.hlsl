@@ -386,9 +386,17 @@ struct PS_WATER_IN
     float fClip : SV_ClipDistance0;
 };
 
-PS_OUT_DEFERRED PS_Main_Water(PS_WATER_IN Input)
+struct PS_WATER_OUT
 {
-    PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
+    vector vDiffuse : SV_Target0;
+    vector vNormal : SV_Target1;
+    vector vDepth : SV_Target2;
+    vector vSpecular : SV_Target3;
+};
+
+PS_WATER_OUT PS_Main_Water(PS_WATER_IN Input)
+{
+    PS_WATER_OUT Output = (PS_WATER_OUT) 0;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
     if(vMtrlDiffuse.a < 0.3f)

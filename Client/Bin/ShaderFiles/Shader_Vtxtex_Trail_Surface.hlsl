@@ -9,6 +9,7 @@ struct VS_IN
     float3 vTopPos : TopPosition;
     float3 vBottomPos : BottomPosition;
     float fAlpha : Alpha;
+    float fTexcoordX : TexcoordX;
 };
 
 struct VS_OUT
@@ -16,6 +17,7 @@ struct VS_OUT
     vector vTopPos : TopPosition;
     vector vBottomPos : BottomPosition;
     float fAlpha : Alpha;
+    float fTexcoordX : TexcoordX;
 };
 
 VS_OUT VS_Main(VS_IN Input)
@@ -25,6 +27,7 @@ VS_OUT VS_Main(VS_IN Input)
     Output.vTopPos = vector(Input.vTopPos, 1.f);
     Output.vBottomPos = vector(Input.vBottomPos, 1.f);
     Output.fAlpha = Input.fAlpha;
+    Output.fTexcoordX = Input.fTexcoordX;
     
     return Output;
 }
@@ -34,6 +37,7 @@ struct GS_IN
     vector vTopPos : TopPosition;
     vector vBottomPos : BottomPosition;
     float fAlpha : Alpha;
+    float fTexcoordX : TexcoordX;
 };
 
 struct GS_OUT
@@ -49,19 +53,19 @@ void GS_Main(line GS_IN Input[2], inout TriangleStream<GS_OUT> Triangles)
     GS_OUT Output[8];
     
     Output[0].vPos = Input[0].vTopPos;
-    Output[0].vTex = float2(0.f, 0.f);
+    Output[0].vTex = float2(Input[0].fTexcoordX, 0.f);
     Output[0].fAlpha = Input[0].fAlpha;
 
     Output[1].vPos = Input[1].vTopPos;
-    Output[1].vTex = float2(1.f, 0.f);
+    Output[1].vTex = float2(Input[1].fTexcoordX, 0.f);
     Output[1].fAlpha = Input[1].fAlpha;
 
     Output[2].vPos = Input[1].vBottomPos;
-    Output[2].vTex = float2(1.f, 1.f);
+    Output[2].vTex = float2(Input[1].fTexcoordX, 1.f);
     Output[2].fAlpha = Input[1].fAlpha;
 
     Output[3].vPos = Input[0].vBottomPos;
-    Output[3].vTex = float2(0.f, 1.f);
+    Output[3].vTex = float2(Input[0].fTexcoordX, 1.f);
     Output[3].fAlpha = Input[0].fAlpha;
 
     matrix matVP = mul(g_ViewMatrix, g_ProjMatrix);

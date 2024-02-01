@@ -762,6 +762,11 @@ HRESULT CLoader::Load_GamePlay()
 		}
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Tuto"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Tutorial/Tuto%d.png"), 3))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 #pragma region Terrain
@@ -1189,6 +1194,22 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_InvenWindow"), CInvenWindow::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Pop_Alert"), CPop_Alert::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Tutorial"), CTutorial::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
 
 #pragma endregion
 
@@ -1401,6 +1422,8 @@ HRESULT CLoader::Load_Village()
 			}
 		}
 	}
+
+	_mat DungeonPivot = _mat::CreateScale(0.001f);
 	 strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Map/Dungeon/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -1410,7 +1433,7 @@ HRESULT CLoader::Load_Village()
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, DungeonPivot))))
 			{
 				return E_FAIL;
 			}

@@ -114,7 +114,7 @@ public: // Font
 	_vec2 Get_TextSize(const wstring& strFontTag, const wstring& strText);
 
 public: // Frustum
-	_bool IsIn_Fov_World(_vec4 vPos, _float fRange = 0.f);
+	_bool IsIn_Fov_World(_vec4 vPos, _float fRange = 2.f);
 	void Transform_ToLocalSpace(_mat vWorldInversed);
 	_bool IsIn_Fov_Local(_vec4 vPos, _float fRange = 0.f);
 
@@ -250,6 +250,13 @@ public:
 	void Level_ShutDown(_uint iCurrentLevel);
 	_bool Is_Level_ShutDown(_uint iCurrentLevel);
 
+
+public:
+	void Set_GoHome(_bool GoHome) { m_bGoHome = GoHome; }
+	void Set_GoDungeon(_bool GoDungeon) { m_bGoDungeon = GoDungeon; }
+
+	_bool Get_GoHome() {return m_bGoHome;}
+	_bool Get_GoDungeon() {return m_bGoDungeon;}
 private:
 	class CGraphic_Device* m_pGraphic_Device{ nullptr };
 
@@ -291,6 +298,8 @@ private:
 	_bool m_bSkipDebugRender{ true };
 	wstring m_strInput{};
 	_bool m_bFlyCam{};
+	_bool m_bGoHome{};
+	_bool m_bGoDungeon{};
 private:
 	vector<_bool> m_vecLevelInvalid;
 
