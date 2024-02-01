@@ -193,22 +193,17 @@ void CPlayer::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_8))
 	{
 		if (!m_bIsMount)
-		{	
+		{
 			m_bIsMount = true;
 			m_eState = Mount;
+			m_pGameInstance->Set_FlyCam(true);
 			m_Animation.iAnimIndex = Anim_Mount_Idle;
 			Summon_Riding(Bird);
-
-			
-
-			m_pGameInstance->Set_FlyCam(true);
-
 		}
 		else
 		{
 			m_pRiding->Delete_Riding();
 		}
-
 	}
 	Front_Ray_Check();
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), COORD());
@@ -677,7 +672,7 @@ HRESULT CPlayer::Render_Parts(PART_TYPE Parts, _uint Index)
 
 		if (Parts == PT_HAIR)
 		{
-			if (FAILED(m_pShaderCom->Begin(m_ShaderIndex+2)))
+			if (FAILED(m_pShaderCom->Begin(m_ShaderIndex + 2)))
 				return E_FAIL;
 			//if (FAILED(m_pShaderCom->Begin(5)))
 			//	return E_FAIL;
@@ -972,7 +967,7 @@ void CPlayer::Move(_float fTimeDelta)
 			vDirection += vForwardDir;
 
 			hasMoved = true;
-		
+
 		}
 		else if (m_pGameInstance->Key_Pressing(DIK_S))
 		{
@@ -1323,7 +1318,7 @@ void CPlayer::Common_Attack()
 		default:
 			break;
 		}
-	}	
+	}
 	else if (m_Current_Weapon == WP_BOW)
 	{
 		switch (m_iAttackCombo)

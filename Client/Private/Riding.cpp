@@ -26,6 +26,7 @@ HRESULT CRiding::Init(void* pArg)
 	case Client::Bird:
 		m_Animation.iAnimIndex = Bird_1005_Start;
 		m_eState = Riding_Sky;
+		
 		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Bird");
 		break;
 	case Client::Tiger:
@@ -130,7 +131,7 @@ void CRiding::Tick(_float fTimeDelta)
 			{
 				CFadeBox::FADE_DESC Desc = {};
 				Desc.eState = CFadeBox::FADEOUT;
-				Desc.fDuration = 1.f;
+				Desc.fDuration = 0.7f;
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
 				{
 					return;
@@ -349,7 +350,6 @@ void CRiding::Init_State()
 			m_Animation.iAnimIndex = Bird_2005_Landing;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
-
 			break;
 		case Client::Riding_Idle:
 			switch (m_CurrentIndex)
@@ -506,6 +506,12 @@ void CRiding::Tick_State(_float fTimeDelta)
 	switch (m_eState)
 	{
 	case Client::Riding_Landing:
+		if (m_pModelCom->IsAnimationFinished(Bird_2005_Landing))
+		{
+			m_pGameInstance->Set_FlyCam(false);
+			
+			Delete_Riding();
+		}
 		break;
 	case Client::Riding_Idle:
 		break;
@@ -692,8 +698,6 @@ HRESULT CRiding::Bind_ShaderResources()
 	}
 
 
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
-		return E_FAIL;
 
 	if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
 	{
@@ -702,10 +706,6 @@ HRESULT CRiding::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
 		return E_FAIL;
 
-	/*if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
-	{
-		return E_FAIL;
-	}*/
 
 	return S_OK;
 }
