@@ -73,12 +73,32 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			Safe_AddRef(m_pPlayerTransform);
 		}
 
+		if (m_pGameInstance->Key_Down(DIK_M))
+		{
+			if (m_pGameInstance->Get_CameraState() != CS_WORLDMAP)
+			{
+				m_pGameInstance->Set_CameraState(CS_WORLDMAP);
+				m_pTransformCom->Set_Speed(5.f);
+				m_pTransformCom->Set_State(State::Pos, m_vMapPos);
+			}
+			else
+				m_pGameInstance->Set_CameraState(CS_DEFAULT);
+
+		}
+
 		if (m_pGameInstance->Get_CameraState() == CS_ZOOM)
 		{
 			ZOOM_Mode(fTimeDelta);
 			__super::Tick(fTimeDelta);
 			return;
 		}
+		if (m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
+		{
+			WorldMap_Mode(fTimeDelta);
+			__super::Tick(fTimeDelta);
+			return;
+		}
+
 		if (m_pGameInstance->Get_CameraState() == CS_SHOP)
 		{
 			Shop_Mode(fTimeDelta);
@@ -505,6 +525,87 @@ void CCamera_Main::ZOOM_Mode(_float fTimeDelta)
 	vTargetLook.y = 0.f;
 	_vec4 vNewLook = XMVectorLerp(vCurLook, vTargetLook, fLerpFactor);
 	m_pTransformCom->LookAt(vNewLook);
+}
+
+void CCamera_Main::WorldMap_Mode(_float fTimeDelta)
+{
+	CTransform* worldmap = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_WorldMap"), TEXT("Com_Transform")));
+
+	//m_pTransformCom->Set_State(State::Pos, worldmap->Get_State(State::Pos)+
+	//	PlayerUp * 3);
+
+	m_pTransformCom->LookAt_Dir(_vec4(0.0287023f, -0.910154294f, -0.413268f, 0.f));
+
+	if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON))
+	{
+		_long dwMouseMove;
+		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
+		{
+			if(dwMouseMove<0.f)
+			{
+				if (m_fMap_RightDistance > -11.f +(m_fLerp_LookDistance) * 0.8f)
+					m_fMap_RightDistance -= (0.5f + (m_fLerp_LookDistance * 0.02f));
+			}
+			else if (dwMouseMove > 0.f)
+			{
+				if (m_fMap_RightDistance < 1.f + (m_fLerp_LookDistance)*-0.8f)
+					m_fMap_RightDistance += (0.5f + (m_fLerp_LookDistance * 0.02f));
+			}
+
+		}
+		
+		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
+		{
+
+			if (dwMouseMove > 0.f)
+			{
+				if (m_fMap_UpDistance < 0.f + (m_fLerp_LookDistance) * -0.8f)
+					m_fMap_UpDistance += (0.5f + (m_fLerp_LookDistance * 0.02f));
+			}
+			else if (dwMouseMove < 0.f)
+			{
+			
+				if (m_fMap_UpDistance > -20.f + (m_fLerp_LookDistance) * 0.8f)
+					m_fMap_UpDistance -= (0.5f +(m_fLerp_LookDistance * 0.02f));
+			}
+		
+		}
+
+	
+	}
+	m_fLerp_RightDistance = Lerp(m_fLerp_RightDistance, m_fMap_RightDistance, 0.2f);
+	m_fLerp_UpDistance = Lerp(m_fLerp_UpDistance, m_fMap_UpDistance, 0.2f);
+	m_fLerp_LookDistance = Lerp(m_fLerp_LookDistance, m_fMap_LookDistance, 0.4f);
+
+	if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
+	{
+		if (m_fMap_LookDistance > -6.f)
+			m_fMap_LookDistance -= 0.7f;
+
+		m_pTransformCom->Set_State(State::Pos, m_vMapPos - m_pTransformCom->Get_State(State::Look) * m_fLerp_LookDistance);
+		m_fCurrentMapZoom = m_pTransformCom->Get_State(State::Pos).y;
+	}
+	else if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
+	{
+	
+		if (m_fMap_LookDistance < 0.f)
+			m_fMap_LookDistance += 0.7f;
+		_float m_LerpDistance{};
+
+		m_pTransformCom->Set_State(State::Pos, m_vMapPos -m_pTransformCom->Get_State(State::Look) * m_fLerp_LookDistance);
+		m_fCurrentMapZoom = m_pTransformCom->Get_State(State::Pos).y;
+	}
+
+
+
+	m_pTransformCom->Set_State(State::Pos, m_vMapPos -
+		(m_pTransformCom->Get_State(State::Right) * (m_fLerp_RightDistance)) +
+			(m_pTransformCom->Get_State(State::Up) * m_fLerp_UpDistance)
+			);
+
+	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+	vPos.y = m_fCurrentMapZoom;
+	m_pTransformCom->Set_State(State::Pos, vPos);
 }
 
 CCamera_Main* CCamera_Main::Create(_dev pDevice, _context pContext)

@@ -64,6 +64,7 @@ private:
 
 	vector<CItem*>								m_vecItems;
 	vector<CItem*>								m_vecItemsSlot[INVEN_TYPE::INVEN_END];
+	vector<CItem*>								m_vecSellItems;
 
 	CGameObject*								m_pParent{ nullptr };
 	CGameObject*								m_pUnderBar{ nullptr };
@@ -94,6 +95,8 @@ public:
 	void Delete_Item(INVEN_TYPE eInvenType, _uint iIndex);
 
 	void Set_Parent(CGameObject* pGameObject) { m_pParent = pGameObject; }
+	const CItem* Find_Item(wstring& strName) const;
+
 private:
 	void Picking_InvenButton(POINT ptMouse);
 	void Picking_ShopButton(POINT ptMouse);

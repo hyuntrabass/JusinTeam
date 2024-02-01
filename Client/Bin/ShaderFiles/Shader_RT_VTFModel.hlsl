@@ -530,8 +530,19 @@ technique11 DefaultTechniqueShader_VTF
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main();
     }
+    pass Dissolve // 1
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-    pass Motion_Blur // 1
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Dissolve();
+    }
+    pass Motion_Blur // 2
     {
         SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);
@@ -544,18 +555,7 @@ technique11 DefaultTechniqueShader_VTF
         PixelShader = compile ps_5_0 PS_Motion_Blur();
     }
 
-    pass Dissolve // 2
-    {
-        SetRasterizerState(RS_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-
-        VertexShader = compile vs_5_0 VS_Main();
-        GeometryShader = NULL;
-        HullShader = NULL;
-        DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main_Dissolve();
-    }
+ 
 
     pass LerpDissolve // 3
     {

@@ -60,6 +60,7 @@ using namespace physx;
 #include <list>
 #include <map>
 #include <algorithm>
+#include <queue>
 #include <string>
 #include <unordered_map>
 #include <ctime>

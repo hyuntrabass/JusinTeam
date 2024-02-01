@@ -19,11 +19,15 @@ HRESULT CMonster::Init_Prototype()
 
 HRESULT CMonster::Init(void* pArg)
 {
-	if (FAILED(Add_Components()))
+	if (not pArg)
 	{
-		return E_FAIL;
+		MSG_BOX("no argument!");
 	}
 
+	m_pInfo = *(MonsterInfo*)pArg;
+	_mat WorldPos = m_pInfo.MonsterWorldMat;
+	m_pTransformCom->Set_Matrix(WorldPos);
+	m_pTransformCom->Set_Position(WorldPos.Position_vec3());
 
 	return S_OK;
 }
@@ -243,7 +247,7 @@ HRESULT CMonster::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, m_strModelTag, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, m_strModelTag, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
 	{
 		return E_FAIL;
 	}

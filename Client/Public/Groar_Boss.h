@@ -88,8 +88,24 @@ public:
 		BOSS_STATE_END
 	};
 
-	// BOSS_STATE_THROW_ATTACK 바로 뒤에 BOSS_STATE_SIX_MISSILE 안나오게
-	// 그룹별로 랜덤하게
+	enum GROAR_ATTACK // 랜덤 방지용
+	{
+		ATTACK_THROW,
+		ATTACK_FLOOR,
+		ATTACK_SIX_MISSILE,
+		ATTACK_WEB,
+		ATTACK_SPIDER,
+		ATTACK_END
+	};
+
+	enum GROAR_FLOOR_ATTACK
+	{
+		FLOOR_ATTACK03,
+		FLOOR_ATTACK06,
+		FLOOR_ATTACK07,
+		FLOOR_ATTACK08,
+		FLOOR_ATTACK_END
+	};
 
 private:
 	CGroar_Boss(_dev pDevice, _context pContext);
@@ -130,8 +146,6 @@ private:
 	GROAR_BOSS_STATE m_eBossPreState = BOSS_STATE_END;
 	GROAR_BOSS_STATE m_eBossCurState = BOSS_STATE_END;
 
-	GROAR_BOSS_STATE m_eBossPreAttackState = BOSS_STATE_SPIDER;
-
 private:
 	static const _float m_fChaseRange;
 	static const _float m_fAttackRange;
@@ -144,12 +158,15 @@ private:
 	_bool m_bSelectAttackPattern = { false };
 
 private:
-	_bool m_bSwitchThrow = { false };
 	_bool m_bCreateMissile = { false };
 	_uint m_iThrowAttackCombo = {};
 
 private:
 	_bool m_bCreateSpider = { false };
+
+private:
+	_bool m_bAttack_Selected[ATTACK_END] = { false };
+	_bool m_bFloor_Attack_Selected[FLOOR_ATTACK_END] = { false };
 
 public:
 	HRESULT Add_Components();

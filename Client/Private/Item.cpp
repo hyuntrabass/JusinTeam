@@ -1,6 +1,7 @@
 #include "Item.h"
 #include "GameInstance.h"
 #include "TextButton.h"
+#include "TextButtonColor.h"
 #include "ItemInfo.h"
 
 CItem::CItem(_dev pDevice, _context pContext)
@@ -28,6 +29,7 @@ HRESULT CItem::Init(void* pArg)
 	}
 
 	m_bCanInteract = ((ITEM_DESC*)pArg)->bCanInteract;
+	m_haveBG = ((ITEM_DESC*)pArg)->haveBG;
 
 	m_iNum = ((ITEM_DESC*)pArg)->iNum;
 
@@ -49,7 +51,60 @@ HRESULT CItem::Init(void* pArg)
 		  (LONG)(m_fY + m_fSizeY * 0.5f)
 	};
 
+	if (m_haveBG)
+	{
+		CTextButtonColor::TEXTBUTTON_DESC TextButton = {};
+		TextButton.eLevelID = LEVEL_STATIC;
+		TextButton.fDepth = m_fDepth + 0.005f;
+		TextButton.fAlpha = 0.8f;
+		TextButton.strText = TEXT("");
+		TextButton.vPosition = _vec2(m_fX, m_fY);
+		TextButton.vSize = _vec2(m_fSizeX, m_fSizeY);
+		TextButton.vTextPosition = _vec2(0.f, 0.f);
+		ITEM_TIER eTier = (ITEM_TIER)m_eItemDesc.iItemTier;
+		switch (eTier)
+		{
+		case TIER_COMMON:
+			TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_invenslot");
+			break;
+		case TIER_UNCOMMON:
+			TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_invenslot1");
+			break;
+		case TIER_RARE:
+			TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_invenslot2");
+			break;
+		case TIER_UNIQUE:
+			TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_invenslot3");
+			break;
+		case TIER_LEGENDARY:
+			TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_invenslot4");
+			break;
 
+		}
+
+		m_pBackGround = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+		if (not m_pBackGround)
+		{
+			return E_FAIL;
+		}
+		m_pBackGround->Set_Pass(VTPass_UI);
+	}
+
+	CTextButton::TEXTBUTTON_DESC ButtonDesc = {};
+	ButtonDesc.eLevelID = LEVEL_STATIC;
+	ButtonDesc.fDepth = m_fDepth - 0.01f;
+	ButtonDesc.fFontSize = 0.45f;
+	ButtonDesc.strText = TEXT("");
+	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Border");
+	ButtonDesc.vPosition = _vec2(-50.f, -50.f);
+	ButtonDesc.vSize = _vec2(m_fSizeX, m_fSizeY);
+	ButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	ButtonDesc.vTextPosition = _vec2(20.f, 12.f);
+	m_pBorder = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
+	if (not m_pBorder)
+	{
+		return E_FAIL;
+	}
 	return S_OK;
 }
 
@@ -83,12 +138,35 @@ void CItem::Tick(_float fTimeDelta)
 		}
 	}
 
-
+	if (m_bBorder)
+	{
+		if (m_pBorder != nullptr)
+		{
+			m_pBorder->Set_Position(_vec2(m_fX, m_fY));
+			m_pBorder->Tick(fTimeDelta);
+		}
+	}
+	if (m_pBackGround != nullptr)
+	{
+		m_pBackGround->Set_Position(_vec2(m_fX, m_fY));
+		m_pBackGround->Tick(fTimeDelta);
+	}
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
 
 void CItem::Late_Tick(_float fTimeDelta)
 {
+	if (m_bBorder)
+	{
+		if (m_pBorder != nullptr)
+		{
+			m_pBorder->Late_Tick(fTimeDelta);
+		}
+	}
+	if (m_pBackGround != nullptr)
+	{
+		m_pBackGround->Late_Tick(fTimeDelta);
+	}
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 
 }
@@ -220,6 +298,8 @@ void CItem::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pBorder);
+	Safe_Release(m_pBackGround);
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

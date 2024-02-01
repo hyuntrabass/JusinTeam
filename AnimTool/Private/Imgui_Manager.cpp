@@ -744,27 +744,34 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				ImGui::End();
 
 				ImGui::Begin("TRIGGER MENU");
-				ImGui::PushItemWidth(250.f);
+				ImGui::PushItemWidth(300.f);
 
 				//이펙트 이름 띄우기
 				vector<TRIGGEREFFECT_DESC> EffectDescs = pCurModel->Get_TriggerEffects();
-				_char** ppEffectNameList = new _char * [EffectDescs.size()] {};
+				_char** ppEffectTriggerList = new _char * [EffectDescs.size()];
 
 				for (size_t i = 0; i < EffectDescs.size(); i++)
 				{
-					ppEffectNameList[i] = new _char[MAX_PATH];
-					int bufferSize = WideCharToMultiByte(CP_UTF8, 0, EffectDescs[i].strEffectName.c_str(), -1, nullptr, 0, nullptr, nullptr);
-					WideCharToMultiByte(CP_UTF8, 0, EffectDescs[i].strEffectName.c_str(), -1, ppEffectNameList[i], bufferSize, nullptr, nullptr);
+					ppEffectTriggerList[i] = new _char[MAX_PATH];
+					strcpy_s(ppEffectTriggerList[i], MAX_PATH, m_AnimationNames[EffectDescs[i].iStartAnimIndex]);
 				}
-				if (ImGui::ListBox("EFFECT##1", &m_iCurTriggerIndex, ppEffectNameList, EffectDescs.size()))
+				if (ImGui::ListBox("EFFECT##1", &m_iCurTriggerIndex, ppEffectTriggerList, EffectDescs.size()))
 				{
 				}
+				//이펙트 파일 이름 띄우기
+				_char* pEffectName = new _char[MAX_PATH];
+				int bufferSize = WideCharToMultiByte(CP_UTF8, 0, EffectDescs[m_iCurTriggerIndex].strEffectName.c_str(), -1, nullptr, 0, nullptr, nullptr);
+				WideCharToMultiByte(CP_UTF8, 0, EffectDescs[m_iCurTriggerIndex].strEffectName.c_str(), -1, pEffectName, bufferSize, nullptr, nullptr);
+				ImGui::SeparatorText("EFFECT");
+				ImGui::Text("NAME :"); ImGui::SameLine();
+				ImGui::Text(pEffectName);
 				//릭 제거
 				for (size_t i = 0; i < EffectDescs.size(); i++)
 				{
-					Safe_Delete_Array(ppEffectNameList[i]);
+					Safe_Delete_Array(ppEffectTriggerList[i]);
 				}
-				Safe_Delete_Array(ppEffectNameList);
+				Safe_Delete_Array(ppEffectTriggerList);
+				Safe_Delete_Array(pEffectName);
 				//
 				TRIGGEREFFECT_DESC* pEffectDesc = m_pPlayer->Get_CurrentPlayerModel()->Get_TriggerEffect(m_iCurTriggerIndex);
 				if (ImGui::Button("START"))
@@ -899,7 +906,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			if (pCurModel->Get_NumTriggerSound() != 0 && m_eTriggerType == TRIGGER_SOUND)
 			{
 				ImGui::Begin("TRIGGER MENU");
-				ImGui::PushItemWidth(250.f);
+				ImGui::PushItemWidth(300.f);
 
 				vector<TRIGGERSOUND_DESC> SoundDescs = pCurModel->Get_TriggerSounds();
 				//사운드 이름 띄우기
@@ -908,8 +915,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				for (size_t i = 0; i < SoundDescs.size(); i++)
 				{
 					ppSoundTriggerList[i] = new _char[MAX_PATH];
-					int bufferSize = WideCharToMultiByte(CP_UTF8, 0, SoundDescs[i].strSoundNames[0].c_str(), -1, nullptr, 0, nullptr, nullptr);
-					WideCharToMultiByte(CP_UTF8, 0, SoundDescs[i].strSoundNames[0].c_str(), -1, ppSoundTriggerList[i], bufferSize, nullptr, nullptr);
+					strcpy_s(ppSoundTriggerList[i], MAX_PATH, m_AnimationNames[SoundDescs[i].iStartAnimIndex]);
 				}
 				if (ImGui::ListBox("SOUND##1", &m_iCurTriggerIndex, ppSoundTriggerList, SoundDescs.size()))
 				{
@@ -938,9 +944,18 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					Safe_Delete_Array(ppSoundNameList[i]);
 				}
 				Safe_Delete_Array(ppSoundNameList);
-
+				
 				TRIGGERSOUND_DESC* pSoundDesc = m_pPlayer->Get_CurrentPlayerModel()->Get_TriggerSound(m_iCurTriggerIndex);
 				ImGui::SeparatorText("SOUND");
+				if (ImGui::Button("START"))
+				{
+					pSoundDesc->iStartAnimIndex = m_pPlayer->Get_CurrentPlayerModel()->Get_CurrentAnimationIndex();
+					_uint iCurrentAnimPos = static_cast<_uint>(m_pPlayer->Get_CurrentPlayerModel()->Get_CurrentAnimPos());
+					pSoundDesc->fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
+				}
+				ImGui::SameLine();
+				ImGui::Text("/");
+				ImGui::SameLine();
 				if (ImGui::Button("ADD##2"))
 				{
 					_uint iSelectSoundFile = m_iSelectFile;
@@ -953,13 +968,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				if (ImGui::Button("DELETE##2"))
 				{
 					pSoundDesc->strSoundNames.pop_back();
-				}
-
-				if (ImGui::Button("START"))
-				{
-					pSoundDesc->iStartAnimIndex = m_pPlayer->Get_CurrentPlayerModel()->Get_CurrentAnimationIndex();
-					_uint iCurrentAnimPos = static_cast<_uint>(m_pPlayer->Get_CurrentPlayerModel()->Get_CurrentAnimPos());
-					pSoundDesc->fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
 				}
 
 				string strStartEffectIndex = "ANIMINDEX : " + to_string(pSoundDesc->iStartAnimIndex);
@@ -1031,6 +1039,27 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				if (pSoundDesc->fFadeoutSecond <= 0.f)
 				{
 					pSoundDesc->fFadeoutSecond = 0.1f;
+				}
+
+				if (ImGui::Button("CLIENT TRIGGER"))
+				{
+					if (pSoundDesc->IsClientTrigger == false)
+					{
+						pSoundDesc->IsClientTrigger = true;
+					}
+					else if (pSoundDesc->IsClientTrigger == true)
+					{
+						pSoundDesc->IsClientTrigger = false;
+					}
+				}
+				ImGui::SameLine();
+				if (pSoundDesc->IsClientTrigger)
+				{
+					ImGui::Text("TRUE");
+				}
+				else
+				{
+					ImGui::Text("FALSE");
 				}
 
 				ImGui::SeparatorText("CHANNEL");
@@ -1128,27 +1157,34 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				ImGui::End();
 
 				ImGui::Begin("TRIGGER MENU");
-				ImGui::PushItemWidth(250.f);
+				ImGui::PushItemWidth(300.f);
 
 				//이펙트 이름 띄우기
 				vector<TRIGGEREFFECT_DESC> EffectDescs = pCurModel->Get_TriggerEffects();
-				_char** ppEffectNameList = new _char * [EffectDescs.size()] {};
+				_char** ppEffectTriggerList = new _char * [EffectDescs.size()];
 
 				for (size_t i = 0; i < EffectDescs.size(); i++)
 				{
-					ppEffectNameList[i] = new _char[MAX_PATH];
-					int bufferSize = WideCharToMultiByte(CP_UTF8, 0, EffectDescs[i].strEffectName.c_str(), -1, nullptr, 0, nullptr, nullptr);
-					WideCharToMultiByte(CP_UTF8, 0, EffectDescs[i].strEffectName.c_str(), -1, ppEffectNameList[i], bufferSize, nullptr, nullptr);
+					ppEffectTriggerList[i] = new _char[MAX_PATH];
+					strcpy_s(ppEffectTriggerList[i], MAX_PATH, m_AnimationNames[EffectDescs[i].iStartAnimIndex]);
 				}
-				if (ImGui::ListBox("EFFECT##1", &m_iCurTriggerIndex, ppEffectNameList, EffectDescs.size()))
+				if (ImGui::ListBox("EFFECT##1", &m_iCurTriggerIndex, ppEffectTriggerList, EffectDescs.size()))
 				{
 				}
+				//이펙트 파일 이름 띄우기
+				_char* pEffectName = new _char[MAX_PATH];
+				int bufferSize = WideCharToMultiByte(CP_UTF8, 0, EffectDescs[m_iCurTriggerIndex].strEffectName.c_str(), -1, nullptr, 0, nullptr, nullptr);
+				WideCharToMultiByte(CP_UTF8, 0, EffectDescs[m_iCurTriggerIndex].strEffectName.c_str(), -1, pEffectName, bufferSize, nullptr, nullptr);
+				ImGui::SeparatorText("EFFECT");
+				ImGui::Text("NAME :"); ImGui::SameLine();
+				ImGui::Text(pEffectName);
 				//릭 제거
 				for (size_t i = 0; i < EffectDescs.size(); i++)
 				{
-					Safe_Delete_Array(ppEffectNameList[i]);
+					Safe_Delete_Array(ppEffectTriggerList[i]);
 				}
-				Safe_Delete_Array(ppEffectNameList);
+				Safe_Delete_Array(ppEffectTriggerList);
+				Safe_Delete_Array(pEffectName);
 				//
 				TRIGGEREFFECT_DESC* pEffectDesc = m_pPlayer->Get_CurrentModel()->Get_TriggerEffect(m_iCurTriggerIndex);
 				if (ImGui::Button("START"))
@@ -1283,7 +1319,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			if (pCurModel->Get_NumTriggerSound() != 0 && m_eTriggerType == TRIGGER_SOUND)
 			{
 				ImGui::Begin("TRIGGER MENU");
-				ImGui::PushItemWidth(250.f);
+				ImGui::PushItemWidth(300.f);
 
 				CModel* pCurModel = m_pPlayer->Get_CurrentModel();
 				vector<TRIGGERSOUND_DESC> SoundDescs = pCurModel->Get_TriggerSounds();
@@ -1293,8 +1329,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				for (size_t i = 0; i < SoundDescs.size(); i++)
 				{
 					ppSoundTriggerList[i] = new _char[MAX_PATH];
-					int bufferSize = WideCharToMultiByte(CP_UTF8, 0, SoundDescs[i].strSoundNames[0].c_str(), -1, nullptr, 0, nullptr, nullptr);
-					WideCharToMultiByte(CP_UTF8, 0, SoundDescs[i].strSoundNames[0].c_str(), -1, ppSoundTriggerList[i], bufferSize, nullptr, nullptr);
+					strcpy_s(ppSoundTriggerList[i], MAX_PATH, m_AnimationNames[SoundDescs[i].iStartAnimIndex]);
 				}
 				if (ImGui::ListBox("SOUND##1", &m_iCurTriggerIndex, ppSoundTriggerList, SoundDescs.size()))
 				{
@@ -1326,6 +1361,15 @@ HRESULT CImgui_Manager::ImGuiMenu()
 
 				TRIGGERSOUND_DESC* pSoundDesc = m_pPlayer->Get_CurrentModel()->Get_TriggerSound(m_iCurTriggerIndex);
 				ImGui::SeparatorText("SOUND");
+				if (ImGui::Button("START"))
+				{
+					pSoundDesc->iStartAnimIndex = m_pPlayer->Get_CurrentModel()->Get_CurrentAnimationIndex();
+					_uint iCurrentAnimPos = static_cast<_uint>(m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos());
+					pSoundDesc->fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
+				}
+				ImGui::SameLine();
+				ImGui::Text("/");
+				ImGui::SameLine();
 				if (ImGui::Button("ADD##2"))
 				{
 					_uint iSelectSoundFile = m_iSelectFile;
@@ -1338,13 +1382,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				if (ImGui::Button("DELETE##2"))
 				{
 					pSoundDesc->strSoundNames.pop_back();
-				}
-
-				if (ImGui::Button("START"))
-				{
-					pSoundDesc->iStartAnimIndex = m_pPlayer->Get_CurrentModel()->Get_CurrentAnimationIndex();
-					_uint iCurrentAnimPos = static_cast<_uint>(m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos());
-					pSoundDesc->fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
 				}
 
 				string strStartEffectIndex = "ANIMINDEX : " + to_string(pSoundDesc->iStartAnimIndex);
@@ -1418,6 +1455,27 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					pSoundDesc->fFadeoutSecond = 0.1f;
 				}
 
+				if (ImGui::Button("CLIENT TRIGGER"))
+				{
+					if (pSoundDesc->IsClientTrigger == false)
+					{
+						pSoundDesc->IsClientTrigger = true;
+					}
+					else if (pSoundDesc->IsClientTrigger == true)
+					{
+						pSoundDesc->IsClientTrigger = false;
+					}
+				}
+				ImGui::SameLine();
+				if (pSoundDesc->IsClientTrigger)
+				{
+					ImGui::Text("TRUE");
+				}
+				else
+				{
+					ImGui::Text("FALSE");
+				}
+
 				ImGui::SeparatorText("CHANNEL");
 				string strChannel = "CHANNEL : " + to_string(pSoundDesc->iChannel);
 				ImGui::Text(strChannel.c_str());
@@ -1459,7 +1517,10 @@ HRESULT CImgui_Manager::ImGuiMenu()
 						_tchar szEffectName[MAX_PATH]{};
 						MultiByteToWideChar(CP_UTF8, 0, m_szSoundFiles[iSelectEffectFile], (_int)strlen(m_szSoundFiles[iSelectEffectFile]), szEffectName, MAX_PATH);
 
-						pSoundDesc->strSoundNames[m_iCurSoundNameIndex] = szEffectName;
+						if (m_iCurSoundNameIndex != 0)
+						{
+							pSoundDesc->strSoundNames[m_iCurSoundNameIndex] = szEffectName;
+						}
 					}
 				}
 #pragma endregion
@@ -1477,7 +1538,10 @@ HRESULT CImgui_Manager::ImGuiMenu()
 						_tchar szEffectName[MAX_PATH]{};
 						MultiByteToWideChar(CP_UTF8, 0, m_szSoundFiles[iSelectEffectFile], (_int)strlen(m_szSoundFiles[iSelectEffectFile]), szEffectName, MAX_PATH);
 
-						pSoundDesc->strSoundNames[m_iCurSoundNameIndex] = szEffectName;
+						if (m_iCurSoundNameIndex != 0)
+						{
+							pSoundDesc->strSoundNames[m_iCurSoundNameIndex] = szEffectName;
+						}
 					}
 				}
 			}
@@ -1637,6 +1701,10 @@ HRESULT CImgui_Manager::ImGuizmoMenu()
 HRESULT CImgui_Manager::SaveFile()
 {
 	CModel* pCurrentModel = m_pPlayer->Get_CurrentModel();
+	if (not pCurrentModel)
+	{
+		return S_OK;
+	}
 	_char szFilePath[MAX_PATH] = "";
 	_char szDirectory[MAX_PATH] = "";
 	_char szFileName[MAX_PATH] = "";
@@ -1749,6 +1817,8 @@ HRESULT CImgui_Manager::SaveFile()
 					Fileout.write(reinterpret_cast<_char*>(&fInitVolume), sizeof(_float));
 					_float fFadeoutSecond = SoundDescs[i].fFadeoutSecond;
 					Fileout.write(reinterpret_cast<_char*>(&fFadeoutSecond), sizeof(_float));
+					_bool IsClientTrigger = SoundDescs[i].IsClientTrigger;
+					Fileout.write(reinterpret_cast<_char*>(&IsClientTrigger), sizeof(_bool));
 				}
 			}
 		}
@@ -1832,6 +1902,8 @@ HRESULT CImgui_Manager::SaveFile()
 					Fileout.write(reinterpret_cast<_char*>(&fInitVolume), sizeof(_float));
 					_float fFadeoutSecond = SoundDescs[i].fFadeoutSecond;
 					Fileout.write(reinterpret_cast<_char*>(&fFadeoutSecond), sizeof(_float));
+					_bool IsClientTrigger = SoundDescs[i].IsClientTrigger;
+					Fileout.write(reinterpret_cast<_char*>(&IsClientTrigger), sizeof(_bool));
 				}
 			}
 		}
@@ -1845,6 +1917,10 @@ HRESULT CImgui_Manager::SaveFile()
 HRESULT CImgui_Manager::LoadFile()
 {
 	CModel* pCurrentModel = m_pPlayer->Get_CurrentModel();
+	if (not pCurrentModel)
+	{
+		return S_OK;
+	}
 
 	_char szFilePath[MAX_PATH] = "";
 	_char szDirectory[MAX_PATH] = "";
@@ -1964,6 +2040,7 @@ HRESULT CImgui_Manager::LoadFile()
 
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fInitVolume), sizeof(_float));
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fFadeoutSecond), sizeof(_float));
+					Filein.read(reinterpret_cast<_char*>(&SoundDesc.IsClientTrigger), sizeof(_bool));
 
 					SoundDesc.fVolume = SoundDesc.fInitVolume;
 					pCurModel->Add_TriggerSound(SoundDesc);
@@ -2056,6 +2133,7 @@ HRESULT CImgui_Manager::LoadFile()
 
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fInitVolume), sizeof(_float));
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fFadeoutSecond), sizeof(_float));
+					Filein.read(reinterpret_cast<_char*>(&SoundDesc.IsClientTrigger), sizeof(_bool));
 
 					SoundDesc.fVolume = SoundDesc.fInitVolume;
 					pCurModel->Add_TriggerSound(SoundDesc);
@@ -2252,6 +2330,7 @@ HRESULT CImgui_Manager::UpdateFile()
 
 						Filein.read(reinterpret_cast<_char*>(&PreSoundDesc.fInitVolume), sizeof(_float));
 						Filein.read(reinterpret_cast<_char*>(&PreSoundDesc.fFadeoutSecond), sizeof(_float));
+						Filein.read(reinterpret_cast<_char*>(&PreSoundDesc.IsClientTrigger), sizeof(_bool));
 
 						PreSoundDescs.push_back(PreSoundDesc);
 					}
@@ -2276,6 +2355,7 @@ HRESULT CImgui_Manager::UpdateFile()
 					}
 					SoundDesc.fInitVolume = PreSoundDescs[i].fInitVolume;
 					SoundDesc.fFadeoutSecond = PreSoundDescs[i].fFadeoutSecond;
+					SoundDesc.IsClientTrigger = PreSoundDescs[i].IsClientTrigger;
 
 					SoundDescs.push_back(SoundDesc);
 				}
@@ -2318,6 +2398,8 @@ HRESULT CImgui_Manager::UpdateFile()
 						Fileout.write(reinterpret_cast<_char*>(&fInitVolume), sizeof(_float));
 						_float fFadeoutSecond = SoundDescs[i].fFadeoutSecond;
 						Fileout.write(reinterpret_cast<_char*>(&fFadeoutSecond), sizeof(_float));
+						_bool IsClientTrigger = SoundDescs[i].IsClientTrigger;
+						Fileout.write(reinterpret_cast<_char*>(&IsClientTrigger), sizeof(_bool));
 					}
 
 					Fileout.close();

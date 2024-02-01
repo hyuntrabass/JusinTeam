@@ -1084,7 +1084,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	if (Button("Add"))
 	{
 		CEffect_Dummy* pEffect{};
-		pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Load_Data()));
+		pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Load_Data(true)));
 		m_AddEffect.push_back(pEffect);
 	} SameLine();
 
@@ -1265,7 +1265,7 @@ const _int& CImgui_Manager::Compute_ModelIndex(const string& strModel)
 	return -1;
 }
 
-EffectInfo CImgui_Manager::Load_Data()
+EffectInfo CImgui_Manager::Load_Data(_bool isAdd)
 {
 	EffectInfo Info{};
 
@@ -1287,7 +1287,10 @@ EffectInfo CImgui_Manager::Load_Data()
 		filesystem::path strFilePath = ofn.lpstrFile;
 		ifstream InFile(strFilePath.c_str(), ios::binary);
 
-		m_CurrFilePath = strFilePath;
+		if (not isAdd)
+		{
+			m_CurrFilePath = strFilePath;
+		}
 
 		if (InFile.is_open())
 		{
