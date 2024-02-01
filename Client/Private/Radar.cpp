@@ -249,6 +249,7 @@ HRESULT CRadar::Add_Parts()
 	}
 
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_DirArrow");
+	Button.fDepth = m_fDepth - 0.02f;
 	Button.vPosition = _vec2(m_fX + 90.f, m_fY + 50.f);
 	Button.vSize = _vec2(25.f, 25.f);
 	m_pPlayerIcon = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
@@ -258,7 +259,7 @@ HRESULT CRadar::Add_Parts()
 		return E_FAIL;
 	}
 	
-
+	Button.fDepth = m_fDepth;
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_MonsterIcon");
 	Button.vPosition = _vec2(-10.f, -10.f);//m_fX, m_fY);
 	Button.vSize = _vec2(5.f, 5.f);
@@ -270,7 +271,7 @@ HRESULT CRadar::Add_Parts()
 	}
 	
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_NpcIcon");
-	Button.vPosition = _vec2(m_fX, m_fY);
+	Button.vPosition = _vec2(-10.f, 10.f);
 	Button.vSize = _vec2(20.f, 20.f);
 	m_pNpcIcon = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 

@@ -14,7 +14,7 @@ class CUI_Manager final : public CBase
 	DECLARE_SINGLETON(CUI_Manager)
 public:
 	enum TYPE { MONSTER, NPC, TYPE_END };
-	enum MOUSESTATE { M_DEFAULT, M_TEXT, MOUSESTATE_END };
+	enum MOUSESTATE { M_DEFAULT, M_TEXT, M_GRAB, MOUSESTATE_END };
 private:
 	CUI_Manager();
 	virtual ~CUI_Manager() = default;
@@ -27,6 +27,7 @@ private:
 	_bool			m_isShowing{ false };
 	_bool			m_isInvenActive{ false };
 	_bool			m_isSetInvenState{ false };
+	_bool			m_bTimeStop{ false };
 
 	_uint			m_iCoin{};
 	_uint			m_iDiamond{};
@@ -59,6 +60,8 @@ public:
 	*/
 
 public:
+	void Set_TimeStop(_bool bStop) { m_bTimeStop = bStop; }
+	_bool Get_TimeStop() { return m_bTimeStop; }
 	HRESULT Init_Items();
 	ITEM Find_Item(wstring& strItemName);
 

@@ -124,7 +124,7 @@ PS_OUT_WATER PS_MAIN_Water(PS_IN_WATER Input)
     //vMergeDiffuse = saturate(vMergeDiffuse * float4(0.95f, 1.00f, 1.05f, 1.0f) + float4(0.15f, 0.15f, 0.15f, 0.0f));
     
     Output.vDiffuse = vReflectionDiffuse;
-    Output.vNormal = vNormal;
+    Output.vNormal = vector(0.f, 1.f, 0.f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_vCamNF.y, 0.f, 0.f);
     
     return Output;

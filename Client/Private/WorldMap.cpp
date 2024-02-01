@@ -1,4 +1,5 @@
 #include "WorldMap.h"
+#include "UI_Manager.h"
 
 CWorldMap::CWorldMap(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -32,8 +33,9 @@ HRESULT CWorldMap::Init(void* pArg)
 void CWorldMap::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Get_CameraState() != CS_WORLDMAP)
+	{
 		return;
-
+	}
 	m_fWater_Nomal.x += fTimeDelta * 0.1f;
 	m_fWater_Nomal.y -= fTimeDelta * 0.1f;
 

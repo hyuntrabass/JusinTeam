@@ -7,7 +7,7 @@
 #include "Player.h"
 #include "Effect_Manager.h"
 #include "UI_Manager.h"
-
+#include "FadeBox.h"
 //원명의 꼽사리
 #include "Lake.h"
 
@@ -20,8 +20,9 @@ HRESULT CLevel_GamePlay::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_GAMEPLAY);
 	m_pGameInstance->StopAll();
-	m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.1f);
-	m_pGameInstance->Play_Sound(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.3f, true);
+	m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.2f);
+	m_pGameInstance->Play_Sound(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.6f, true);
+	m_pGameInstance->Play_Sound(TEXT("waves"), 0.6f, true);
 
 	CUI_Manager::Get_Instance()->Init();
 
@@ -128,6 +129,15 @@ HRESULT CLevel_GamePlay::Init()
 	m_pGameInstance->Set_FogNF(_vec2(5.f, 300.f));
 	m_pGameInstance->Set_FogColor(_color(0.1f));
 	CUI_Manager::Get_Instance()->Set_Coin(10000);
+
+	CFadeBox::FADE_DESC Desc = {};
+	Desc.eState = CFadeBox::FADEOUT;
+	Desc.fDuration = 3.f;
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -141,6 +151,18 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 
 	if (m_fWaveTimer > 5.f)
 	{
+	/*	int random = rand() % 3;
+		switch (random)
+		{
+		case 0:m_pGameInstance->Play_Sound(TEXT("waves0"), 0.8f, false);
+			break;
+		case 1:m_pGameInstance->Play_Sound(TEXT("waves1"), 0.8f, false);
+			break;
+		case 2:m_pGameInstance->Play_Sound(TEXT("waves2"), 0.8f, false);
+			break;
+		default:
+			break;
+		}*/
 		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Wave_Init");
 		m_WaveMatrix[0] = _mat::CreateTranslation(_vec3(95.f, 4.f, 127.5f));
 		EffectDesc.pMatrix = &m_WaveMatrix[0];
@@ -262,6 +284,8 @@ HRESULT CLevel_GamePlay::Ready_Player()
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 	pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 2.f, 0.f));
 
+	CTransform* pCameraTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
+	pCameraTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 2.f, 0.f));
 
 	return S_OK;
 }
