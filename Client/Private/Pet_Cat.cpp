@@ -1,5 +1,5 @@
 #include "Pet_Cat.h"
-
+#include "Effect_Manager.h"
 #include "UI_Manager.h"
 
 CPet_Cat::CPet_Cat(_dev pDevice, _context pContext)
@@ -37,6 +37,11 @@ HRESULT CPet_Cat::Init(void* pArg)
 	m_fPosLerpRatio = 0.02f;
 	m_fLookLerpRatio = 0.04f;
 
+	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Pet_Cat_Parti");
+	Info.pMatrix = &m_EffectMatrix;
+	Info.isFollow = true;
+	m_pEffect_Parti = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
+
 	return S_OK;
 }
 
@@ -46,6 +51,8 @@ void CPet_Cat::Tick(_float fTimeDelta)
 	Tick_State(fTimeDelta);
 
 	m_pModelCom->Set_Animation(m_Animation);
+
+	__super::Tick(fTimeDelta);
 }
 
 void CPet_Cat::Late_Tick(_float fTimeDelta)

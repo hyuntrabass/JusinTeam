@@ -126,8 +126,8 @@ HRESULT CPhysX_Manager::Init()
 	//pGround->attachShape(*shape);
 	//shape->release();
 
-	PxRigidStatic* pGround = PxCreatePlane(*m_pPhysics, PxPlane(0.f, 1.f, 0.f, 0.f), *m_pMaterial);
-	m_pScene->addActor(*pGround);
+	//PxRigidStatic* pGround = PxCreatePlane(*m_pPhysics, PxPlane(0.f, 1.f, 0.f, 0.f), *m_pMaterial);
+	//m_pScene->addActor(*pGround);
 
 #ifdef _DEBUG
 	PxPvdSceneClient* pPvdClient = m_pScene->getScenePvdClient();
