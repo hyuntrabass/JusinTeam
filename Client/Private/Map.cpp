@@ -36,7 +36,7 @@ HRESULT CMap::Init(void* pArg)
 
 void CMap::Tick(_float fTimeDelta)
 {
-	
+
 }
 
 void CMap::Late_Tick(_float fTimeDelta)

@@ -1,7 +1,6 @@
 #include "Engine_Shader_Define.hlsli"
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-matrix g_ViewMatrixInv, g_ProjMatrixInv;
 texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
 texture2D g_SpecTexture;
@@ -21,7 +20,6 @@ Texture2DArray g_BoneTexture;
 Texture2DArray g_OldBoneTexture;
 
 vector g_RimColor;
-float fRimPower = 1.f;
 
 struct VS_IN
 {
@@ -138,6 +136,10 @@ VS_OUT VS_Motion_Blur(VS_IN Input)
     
     float2 velocity = (vNewPos.xy / vNewPos.w) - (vOldPos.xy / vOldPos.w);
     
+    //float S = (1.f / g_fDeltaTime) * 1.f;
+    
+    //velocity = (S / 5.f) * velocity;
+    
     vector vCalDir;
     vCalDir.xy = velocity * 0.5f;
     vCalDir.y *= -1.f;
@@ -247,7 +249,7 @@ PS_OUT PS_Main(PS_IN Input)
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
     Output.vSpecular = vSpecular;
-    Output.vVelocity = Input.vDir;
+    Output.vVelocity = 0.f;
     Output.vRimMask = 0.f;
     
     return Output;
@@ -384,33 +386,26 @@ PS_OUT PS_Main_Rim(PS_IN Input)
         vNormal = normalize(Input.vNor.xyz);
     }
     
-    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
+    vector vSpecular = vector(0.1f, 0.1f, 0.1f, 0.1f);
     if (g_HasSpecTex)
     {
         vector vSpecDesc = g_SpecTexture.Sample(LinearSampler, Input.vTex);
         vSpecDesc = vector(vSpecDesc.b, vSpecDesc.b, vSpecDesc.b, vSpecDesc.a);
     }
     
-    float fRim = 0.f;
+    float3 vToCamera = normalize(g_vCamPos - Input.vWorldPos).xyz;
+
+    //fRim = 1.f - saturate(dot(vViewNormal, vToCamera));
+    float fRim = smoothstep(0.5f, 1.f, 1.f - max(0.f, dot(vNormal, vToCamera)));
     
-    float3 vViewNormal = normalize(mul(vNormal, g_ViewMatrix));
-    
-    float3 vViewCamPos = mul(g_vCamPos, g_ViewMatrix).xyz;
-    
-    float3 vViewPos = mul(Input.vProjPos, g_ProjMatrixInv).xyz;
-    
-    float3 vToCamera = normalize(vViewCamPos - vViewPos);
-    
-    fRim = 1.f - saturate(dot(vViewNormal, vToCamera)); //smoothstep(1.f - 0.5f, 1.f, saturate(dot(vViewNormal, vToCamera)));
-    
-    vector vRimColor = g_RimColor * pow(fRim, 3.f);
+    vector vRimColor = g_RimColor * fRim;
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
     Output.vSpecular = vSpecular;
     Output.vVelocity = 0.f;
-    Output.vRimMask = 0.f;
+    Output.vRimMask = vRimColor;
     
     return Output;
 }
@@ -535,8 +530,19 @@ technique11 DefaultTechniqueShader_VTF
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main();
     }
+    pass Dissolve // 1
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-    pass Motion_Blur // 1
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Dissolve();
+    }
+    pass Motion_Blur // 2
     {
         SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);
@@ -549,18 +555,7 @@ technique11 DefaultTechniqueShader_VTF
         PixelShader = compile ps_5_0 PS_Motion_Blur();
     }
 
-    pass Dissolve // 2
-    {
-        SetRasterizerState(RS_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-
-        VertexShader = compile vs_5_0 VS_Main();
-        GeometryShader = NULL;
-        HullShader = NULL;
-        DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main_Dissolve();
-    }
+ 
 
     pass LerpDissolve // 3
     {

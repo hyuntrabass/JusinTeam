@@ -6,6 +6,7 @@
 #include "FadeBox.h"
 #include "InvenFrame.h"
 #include "ShopDesc.h"
+#include "ShopWindow.h"
 CShop::CShop(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
@@ -85,7 +86,18 @@ void CShop::Tick(_float fTimeDelta)
 	{
 		return;
 	}
+	if (!m_isFrameExist)
+	{
+		m_pInvenFrame = CUI_Manager::Get_Instance()->Get_InvenFrame();
+		if (m_pInvenFrame)
+		{
+			dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_FrameMode(CInvenFrame::F_SHOP);
+			dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Init_State();
 
+			m_isFrameExist = true;
+		}
+
+	}
 
 	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 	{
@@ -116,17 +128,53 @@ void CShop::Tick(_float fTimeDelta)
 
 
 
-	/* µ· */
+
 	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
 	dynamic_cast<CTextButton*>(m_pMoney)->Set_Text(to_wstring(iMoney));
 
 	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
 	dynamic_cast<CTextButton*>(m_pDiamond)->Set_Text(to_wstring(iDiamond));
+	
 
 	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
+
+
+
+
+	for (size_t i = 0; i < m_vecShopItems[m_eCurShopState].size(); i++)
+	{
+		if (PtInRect(&m_vecShopItems[m_eCurShopState][i]->Get_Rect(), ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::GamePlay))
+		{
+			if (m_pGameInstance->Get_LayerSize(LEVEL_STATIC, TEXT("Layer_ShopWindow")) == 0)
+			{
+				CShopWindow::SHOPWINDOW_DESC Desc{};
+				ITEM eItem = m_vecShopItems[m_eCurShopState][i]->Get_ItemDesc();
+				CItem* pItem = (CItem*)dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Find_Item(eItem.strName);
+				if (pItem == nullptr)
+				{
+					Desc.iCurItemNum = 0;
+				}
+				else
+				{
+					Desc.iCurItemNum = pItem->Get_ItemNum();
+				}
+				Desc.strShopItem = eItem.strName;
+				//Desc.iCurItemNum = 
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_ShopWindow"), TEXT("Prototype_GameObject_ShopWindow"), &Desc)))
+				{
+					return;
+				}
+			}
+		}
+	}
+
+
 	m_pExitButton->Tick(fTimeDelta);
-	//CUI_Manager::Get_Instance()->Get_InvenFrame()->Tick(fTimeDelta);
-	m_pInvenFrame->Tick(fTimeDelta);
+	if (m_pInvenFrame != nullptr)
+	{
+		m_pInvenFrame->Tick(fTimeDelta);
+	}
+	
 	m_pBackGround->Tick(fTimeDelta);
 	m_pTitleButton->Tick(fTimeDelta);
 	m_pUnderBar->Tick(fTimeDelta);
@@ -153,7 +201,11 @@ void CShop::Late_Tick(_float fTimeDelta)
 	}
 	m_pMoney->Late_Tick(fTimeDelta);
 	m_pDiamond->Late_Tick(fTimeDelta);
-	m_pInvenFrame->Late_Tick(fTimeDelta);
+	if (m_pInvenFrame != nullptr)
+	{
+		m_pInvenFrame->Late_Tick(fTimeDelta);
+	}
+
 	m_pExitButton->Late_Tick(fTimeDelta);
 	m_pBackGround->Late_Tick(fTimeDelta);
 	m_pTitleButton->Late_Tick(fTimeDelta);
@@ -220,11 +272,12 @@ void CShop::Set_ItemPosition(STATE eState)
 
 void CShop::Init_ShopState()
 {
-	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_FrameMode(CInvenFrame::F_SHOP);
-	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Init_State();
-	
+	if (m_pInvenFrame != nullptr)
+	{
+		dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_FrameMode(CInvenFrame::F_SHOP);
+		dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Init_State();
+	}
 
-	
 	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
 	dynamic_cast<CTextButton*>(m_pMoney)->Set_Text(to_wstring(iMoney));
 
@@ -384,10 +437,11 @@ HRESULT CShop::Add_Parts()
 
 	
 	m_pInvenFrame = CUI_Manager::Get_Instance()->Get_InvenFrame();
-	if (not m_pInvenFrame)
+	if (m_pInvenFrame)
 	{
-		//return E_FAIL;
+		m_isFrameExist = true;
 	}
+
 	
 
 	return S_OK;

@@ -19,11 +19,15 @@ HRESULT CMonster::Init_Prototype()
 
 HRESULT CMonster::Init(void* pArg)
 {
-	if (FAILED(Add_Components()))
+	if (not pArg)
 	{
-		return E_FAIL;
+		MSG_BOX("no argument!");
 	}
 
+	m_pInfo = *(MonsterInfo*)pArg;
+	_mat WorldPos = m_pInfo.MonsterWorldMat;
+	m_pTransformCom->Set_Matrix(WorldPos);
+	m_pTransformCom->Set_Position(WorldPos.Position_vec3());
 
 	return S_OK;
 }
@@ -243,7 +247,7 @@ HRESULT CMonster::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, m_strModelTag, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, m_strModelTag, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
 	{
 		return E_FAIL;
 	}
@@ -274,16 +278,6 @@ HRESULT CMonster::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
 	{
 		return E_FAIL;
 	}

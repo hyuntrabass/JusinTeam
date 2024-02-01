@@ -24,17 +24,12 @@ HRESULT CLoading_Horse::Init(void* pArg)
 	}
 
 
-	m_fSizeX = 10.f;
-	m_fSizeY = 10.f;
+	m_fSizeX = 100.f;
+	m_fSizeY = 60.f;
 
-	m_fX = g_iWinSizeX >> 1;
-	m_fY = g_iWinSizeY >> 1;
+	m_fX = 1180.f;
+	m_fY = 620.f;
 
-	/*
-	m_fX = 1080.f;
-	m_fY = 520.f;
-
-	*/
 	m_fDepth = (_float)D_LOADING / (_float)D_END - 0.01f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
@@ -44,11 +39,6 @@ HRESULT CLoading_Horse::Init(void* pArg)
 
 void CLoading_Horse::Tick(_float fTimeDelta)
 {
-	m_fSizeX = 100.f;
-	m_fSizeY = 60.f;
-
-	m_fX = 1180.f;
-	m_fY = 620.f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 

@@ -87,6 +87,10 @@ HRESULT CPlayer::Init(void* pArg)
 void CPlayer::Tick(_float fTimeDelta)
 {
 
+
+	if (m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
+		return;
+
 	if (m_bHide && m_fDissolveRatio <= 1.f)
 	{
 		m_fDissolveRatio += fTimeDelta * 6.f;
@@ -314,6 +318,8 @@ void CPlayer::Tick(_float fTimeDelta)
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
+		return;
 
 	if (m_bIsMount)
 	{
@@ -326,11 +332,10 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	}
 
 	m_pModelCom->Set_Animation(m_Animation);
-
 	if (m_UsingMotionBlur)
-		m_ShaderIndex = 1;
-	else
 		m_ShaderIndex = 2;
+	else
+		m_ShaderIndex = 1;
 
 	if (!m_bStartGame && m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY)
 	{
@@ -373,7 +378,8 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 #endif // DEBUG
 
-	m_pModelCom->Play_Animation(fTimeDelta);
+	m_pModelCom->Play_Animation(fTimeDelta, m_bAttacked);
+	m_bAttacked = false;
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
 	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
@@ -413,7 +419,7 @@ HRESULT CPlayer::Render()
 		Render_Parts(PT_FACE, m_Face_CurrentIndex);
 	if (m_Helmet_CurrentIndex >= 0 && !m_bHelmet_Hide)
 		Render_Parts(PT_HELMET, m_Helmet_CurrentIndex);
-	if (m_Weapon_CurrentIndex != WP_INDEX_END)
+	if (m_Weapon_CurrentIndex < WP_UNEQUIP)
 		Render_Parts(PT_WEAPON, (_uint)m_Weapon_CurrentIndex);
 
 
@@ -671,12 +677,14 @@ HRESULT CPlayer::Render_Parts(PART_TYPE Parts, _uint Index)
 
 		if (Parts == PT_HAIR)
 		{
-			if (FAILED(m_pShaderCom->Begin(5)))
+			if (FAILED(m_pShaderCom->Begin(m_ShaderIndex+2)))
 				return E_FAIL;
+			//if (FAILED(m_pShaderCom->Begin(5)))
+			//	return E_FAIL;
 		}
 		else
 		{
-			if (FAILED(m_pShaderCom->Begin(5)))
+			if (FAILED(m_pShaderCom->Begin(m_ShaderIndex)))
 				return E_FAIL;
 		}
 		if (FAILED(m_pModelCom->Render_Part((_uint)Parts, (_uint)Index, k)))
@@ -770,6 +778,7 @@ void CPlayer::Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex)
 
 		m_Weapon_CurrentIndex = ChangeIndex;
 		m_Current_Weapon = PartsType;
+		m_bWeapon_Unequip = false;
 	}
 }
 
@@ -996,7 +1005,7 @@ void CPlayer::Move(_float fTimeDelta)
 			m_eState = Attack;
 			m_ReadyArrow = true;
 			//m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
-			m_bAttacked = false;
+
 			hasMoved = false;
 		}
 		if (m_pGameInstance->Key_Down(DIK_SPACE))
@@ -1087,11 +1096,7 @@ void CPlayer::Move(_float fTimeDelta)
 			}
 
 
-			if (m_eState == Jump_Start)
-			{
-				if (!m_pTransformCom->Is_Jumping())
-					m_eState = Idle;
-			}
+
 			if (m_eState != Attack or (m_eState == Attack && m_fAttTimer > 0.75f))
 				m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
 
@@ -1132,7 +1137,7 @@ void CPlayer::Move(_float fTimeDelta)
 		if (m_eState == Jump_Start)
 		{
 			if (!m_pTransformCom->Is_Jumping())
-				m_eState = Jump_End;
+				m_eState = Idle;
 		}
 	}
 
@@ -1318,7 +1323,7 @@ void CPlayer::Common_Attack()
 		default:
 			break;
 		}
-	}
+	}	
 	else if (m_Current_Weapon == WP_BOW)
 	{
 		switch (m_iAttackCombo)
@@ -1489,7 +1494,7 @@ void CPlayer::Ready_Skill(Skill_Type Type)
 		break;
 	}
 	m_ReadyArrow = true;
-	m_bAttacked = false;
+
 }
 void CPlayer::Cam_AttackZoom(_float fZoom)
 {
@@ -2969,6 +2974,7 @@ HRESULT CPlayer::Add_Components()
 
 HRESULT CPlayer::Bind_ShaderResources()
 {
+
 	// WorldMatrix 바인드
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 		return E_FAIL;
@@ -3014,12 +3020,11 @@ HRESULT CPlayer::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof(_float4))))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Inversed(TransformType::Proj))))
-		return E_FAIL;
 
 	_float4 vColor = _float4(1.f, 1.f, 1.f, 1.f);
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vColor, sizeof(_float4))))
 		return E_FAIL;
+
 
 	return S_OK;
 }

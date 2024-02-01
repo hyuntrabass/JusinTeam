@@ -185,14 +185,6 @@ HRESULT CArrow::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	//if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
-	//	return E_FAIL;
-
-	//if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
-	//{
-	//	return E_FAIL;
-	//}
-
 	_vec4 Color = _vec4(0.89f, 0.96f, 0.969f, 0.5f);
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &Color, sizeof _vec4)))
 	{

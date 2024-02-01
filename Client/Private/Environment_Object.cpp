@@ -43,6 +43,8 @@ HRESULT CEnvironment_Object::Init(void* pArg)
 
 	m_pModelCom->Apply_TransformToActor(m_Info.m_WorldMatrix);
 
+	
+
 	return S_OK;
 }
 

@@ -27,6 +27,8 @@ private:
 	CTexture* m_pTextureCom{ nullptr };
 
 private:
+	WEAPON_TYPE m_eType = { WP_BOW };
+
 	JOBSTATE m_eCurState{ BOW };
 	JOBSTATE m_ePrevState{ BOW };
 

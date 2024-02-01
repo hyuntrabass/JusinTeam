@@ -109,6 +109,7 @@ HRESULT CWearable_Slot::Set_WearableItem(ITEM eItemDesc)
 	ItemDesc.vSize = _float2(m_fSizeX, m_fSizeY);
 	ItemDesc.vPosition = _float2(m_fX, m_fY);
 	ItemDesc.bCanInteract = false;
+	ItemDesc.haveBG = true;
 	ItemDesc.eItemDesc = eItemDesc;
 	ItemDesc.fDepth = m_fDepth - 0.1f;
 	m_pItem = (CItem*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Item"), &ItemDesc);
@@ -141,17 +142,33 @@ const ITEM& CWearable_Slot::Get_ItemDesc() const
 }
 void CWearable_Slot::Delete_Item()
 {
+	_int iResetIdx = -1;
+
 	if (m_pItem != nullptr)
 	{
+		if (m_ePartType == PT_WEAPON)
+		{
+			ITEM eItem = Get_ItemDesc();
+			if (eItem.iItemType == ITEM_TYPE::ITEM_BOW)
+			{
+				CUI_Manager::Get_Instance()->Set_WeaponType(WP_BOW);
+			}
+			else if (eItem.iItemType == ITEM_TYPE::ITEM_SWORD)
+			{
+				CUI_Manager::Get_Instance()->Set_WeaponType(WP_SWORD);
+			}
+			iResetIdx = 10;
+		}
 		Safe_Release(m_pItem);
 	}
 
 	m_isFull = false;
-	_int iResetIdx = -1;
+
 	if (m_ePartType == PT_BODY)
 	{
 		iResetIdx = 0;
 	}
+
 	CUI_Manager::Get_Instance()->Set_CustomPart(m_ePartType, iResetIdx);
 }
 HRESULT CWearable_Slot::Add_Components()

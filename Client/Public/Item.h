@@ -3,13 +3,15 @@
 #include "OrthographicObject.h"
 
 BEGIN(Client)
-
+class CTextButtonColor;
+class CTextButton;
 class CItem final : public COrthographicObject
 {
 public:
 	typedef struct tagItemSlotDesc
 	{
 		_bool					bCanInteract;
+		_bool					haveBG{ false };
 		_uint					iNum{ 1 };
 		_float					fDepth;
 		_float2					vSize;
@@ -37,10 +39,15 @@ private:
 
 
 private:
+	_bool					m_bBorder{ false };
 	_bool					m_bCanInteract{ false };
+	_bool					m_haveBG{ false };
 	ITEM					m_eItemDesc{};
 	_uint					m_iNum{1};
 	RECT					m_rcRect{};
+	
+	CTextButton*			m_pBorder{ nullptr };
+	CTextButtonColor*		m_pBackGround{ nullptr };
 
 public:
 	const ITEM& Get_ItemDesc() const { return m_eItemDesc; }
@@ -48,7 +55,8 @@ public:
 	void Set_Position(_vec2 vPos);
 	const RECT& Get_Rect() const { return m_rcRect; }
 	const _uint& Get_ItemNum() const { return m_iNum; }
-
+	void Set_Border(_bool isBorder) { m_bBorder = isBorder; }
+	_bool Get_Border() { return m_bBorder; }
 
 private:
 	HRESULT Add_Components();

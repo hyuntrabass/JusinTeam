@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ShopWindow.h"
 #include "ShopDesc.h"
 #include "Shop.h"
 #include "DialogText.h"
@@ -61,7 +62,7 @@
 #include "CommonSurfaceTrail.h"
 #include "Arrow.h"
 #include "Map.h"
-
+#include "WorldMap.h"
 #include "Effect_Dummy.h"
 
 // Monster

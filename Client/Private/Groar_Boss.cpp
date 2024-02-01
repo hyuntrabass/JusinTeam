@@ -2,7 +2,7 @@
 
 #include "Missile.h"
 
-const _float CGroar_Boss::m_fChaseRange = 7.f;
+const _float CGroar_Boss::m_fChaseRange = 10.f;
 const _float CGroar_Boss::m_fAttackRange = 6.f;
 
 CGroar_Boss::CGroar_Boss(_dev pDevice, _context pContext)
@@ -325,38 +325,54 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CGroar_Boss::BOSS_STATE_FLOOR_ATTACK: // 03, 06, 07, 08 
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
 
 		{
-			_uint iFloorAttackPattern = rand() % 4;
-
-			switch (iFloorAttackPattern)
+			_bool bReset = { true };
+			for (size_t i = 0; i < FLOOR_ATTACK_END; i++)
 			{
-			case 0:
+				if (m_bFloor_Attack_Selected[i] == false)
+				{
+					bReset = false;
+					break;
+				}
+			}
+
+			if (bReset == true)
+			{
+				for (auto& it : m_bFloor_Attack_Selected)
+				{
+					it = false;
+				}
+			}
+
+			GROAR_FLOOR_ATTACK eFloorAttackRandom = FLOOR_ATTACK_END;
+			eFloorAttackRandom = static_cast<GROAR_FLOOR_ATTACK>(rand() % FLOOR_ATTACK_END);
+
+			// 랜덤 방지용
+			while (m_bFloor_Attack_Selected[eFloorAttackRandom] == true)
+			{
+				eFloorAttackRandom = static_cast<GROAR_FLOOR_ATTACK>(rand() % FLOOR_ATTACK_END);
+			}
+
+			switch (eFloorAttackRandom)
+			{
+			case Client::CGroar_Boss::FLOOR_ATTACK03:
 				m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK03;
-				m_Animation.isLoop = false;
-				m_Animation.fAnimSpeedRatio = 2.f;
-
+				m_bFloor_Attack_Selected[FLOOR_ATTACK03] = true;
 				break;
-
-			case 1:
+			case Client::CGroar_Boss::FLOOR_ATTACK06:
 				m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK06;
-				m_Animation.isLoop = false;
-				m_Animation.fAnimSpeedRatio = 2.f;
-
+				m_bFloor_Attack_Selected[FLOOR_ATTACK06] = true;
 				break;
-
-			case 2:
+			case Client::CGroar_Boss::FLOOR_ATTACK07:
 				m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK07;
-				m_Animation.isLoop = false;
-				m_Animation.fAnimSpeedRatio = 2.f;
-
+				m_bFloor_Attack_Selected[FLOOR_ATTACK07] = true;
 				break;
-
-			case 3:
+			case Client::CGroar_Boss::FLOOR_ATTACK08:
 				m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK08;
-				m_Animation.isLoop = false;
-				m_Animation.fAnimSpeedRatio = 2.f;
-
+				m_bFloor_Attack_Selected[FLOOR_ATTACK08] = true;
 				break;
 			}
 
@@ -468,110 +484,91 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 		vDir.y = 0.f;
 
-		m_pTransformCom->LookAt_Dir(vDir);
-		m_pTransformCom->Go_Straight(fTimeDelta);
+		GROAR_BOSS_STATE eTempBossCurState = { BOSS_STATE_END };
 
-		if (fDistance <= m_fAttackRange)
+		//if (fDistance <= m_fChaseRange)
 		{
-			//m_eBossCurState = BOSS_STATE_SPIDER; // 패턴 시작
-			m_Animation.isLoop = false;
-
 			if (!m_bSelectAttackPattern)
 			{
-				switch (m_eBossPreAttackState)
+				_bool bReset = { true };
+				for (size_t i = 0; i < ATTACK_END; i++)
 				{
-				case Client::CGroar_Boss::BOSS_STATE_THROW_ATTACK:
-					m_iAttackPattern = rand() % 3;
-					switch (m_iAttackPattern)
+					if (m_bAttack_Selected[i] == false)
 					{
-					case 0:
-						m_eBossCurState = BOSS_STATE_FLOOR_ATTACK;
-						break;
-					case 1:
-						m_eBossCurState = BOSS_STATE_WEB;
-						break;
-					case 2:
-						m_eBossCurState = BOSS_STATE_SPIDER;
+						bReset = false;
 						break;
 					}
+				}
 
-					break;
-				case Client::CGroar_Boss::BOSS_STATE_FLOOR_ATTACK:
-					m_iAttackPattern = rand() % 4;
-					switch (m_iAttackPattern)
+				if (bReset == true)
+				{
+					for (auto& it : m_bAttack_Selected)
 					{
-					case 0:
-						m_eBossCurState = BOSS_STATE_THROW_ATTACK;
-						break;
-					case 1:
-						m_eBossCurState = BOSS_STATE_SIX_MISSILE;
-						break;
-					case 2:
-						m_eBossCurState = BOSS_STATE_WEB;
-						break;
-					case 3:
-						m_eBossCurState = BOSS_STATE_SPIDER;
-						break;
+						it = false;
 					}
+				}
 
+				GROAR_ATTACK eAttackRandom = ATTACK_END;
+				eAttackRandom = static_cast<GROAR_ATTACK>(rand() % ATTACK_END);
+
+				// 랜덤 방지용
+				while (m_bAttack_Selected[eAttackRandom] == true)
+				{
+					eAttackRandom = static_cast<GROAR_ATTACK>(rand() % ATTACK_END);
+				}
+
+				switch (eAttackRandom)
+				{
+				case Client::CGroar_Boss::ATTACK_THROW:
+					eTempBossCurState = BOSS_STATE_THROW_ATTACK;
 					break;
-				case Client::CGroar_Boss::BOSS_STATE_SIX_MISSILE:
-					m_iAttackPattern = rand() % 3;
-					switch (m_iAttackPattern)
-					{
-					case 0:
-						m_eBossCurState = BOSS_STATE_FLOOR_ATTACK;
-						break;
-					case 1:
-						m_eBossCurState = BOSS_STATE_WEB;
-						break;
-					case 2:
-						m_eBossCurState = BOSS_STATE_SPIDER;
-						break;
-					}
+				case Client::CGroar_Boss::ATTACK_FLOOR:
+					eTempBossCurState = BOSS_STATE_FLOOR_ATTACK;
 					break;
-				case Client::CGroar_Boss::BOSS_STATE_WEB:
-					m_iAttackPattern = rand() % 4;
-					switch (m_iAttackPattern)
-					{
-					case 0:
-						m_eBossCurState = BOSS_STATE_THROW_ATTACK;
-						break;
-					case 1:
-						m_eBossCurState = BOSS_STATE_FLOOR_ATTACK;
-						break;
-					case 2:
-						m_eBossCurState = BOSS_STATE_SIX_MISSILE;
-						break;
-					case 3:
-						m_eBossCurState = BOSS_STATE_SPIDER;
-						break;
-					}
+				case Client::CGroar_Boss::ATTACK_SIX_MISSILE:
+					eTempBossCurState = BOSS_STATE_SIX_MISSILE;
 					break;
-				case Client::CGroar_Boss::BOSS_STATE_SPIDER:
-					m_iAttackPattern = rand() % 4;
-					switch (m_iAttackPattern)
-					{
-					case 0:
-						m_eBossCurState = BOSS_STATE_THROW_ATTACK;
-						break;
-					case 1:
-						m_eBossCurState = BOSS_STATE_FLOOR_ATTACK;
-						break;
-					case 2:
-						m_eBossCurState = BOSS_STATE_SIX_MISSILE;
-						break;
-					case 3:
-						m_eBossCurState = BOSS_STATE_WEB;
-						break;
-					}
+				case Client::CGroar_Boss::ATTACK_WEB:
+					eTempBossCurState = BOSS_STATE_WEB;
+					break;
+				case Client::CGroar_Boss::ATTACK_SPIDER:
+					eTempBossCurState = BOSS_STATE_SPIDER;
 					break;
 				}
 
-				//m_eBossCurState = CGroar_Boss::BOSS_STATE_FLOOR_ATTACK; // 테스트용
+				//m_eBossCurState = CGroar_Boss::BOSS_STATE_SIX_MISSILE; // 테스트용
 				m_bSelectAttackPattern = true;
 			}
 		}
+
+		if (eTempBossCurState == BOSS_STATE_THROW_ATTACK || eTempBossCurState == BOSS_STATE_SIX_MISSILE)
+		{
+			if (fDistance >= m_fChaseRange)
+			{
+				m_pTransformCom->LookAt_Dir(vDir);
+				m_pTransformCom->Go_Straight(fTimeDelta);
+				m_bSelectAttackPattern = false;
+			}
+			else
+			{
+				m_eBossCurState = eTempBossCurState;
+			}
+
+		}
+		else 
+		{
+			if (fDistance >= m_fAttackRange)
+			{
+				m_pTransformCom->LookAt_Dir(vDir);
+				m_pTransformCom->Go_Straight(fTimeDelta);
+				m_bSelectAttackPattern = false;
+			}
+			else
+			{
+				m_eBossCurState = eTempBossCurState;
+			}
+		}
+
 	}
 
 	break;
@@ -589,15 +586,23 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 				++m_iThrowAttackCombo;
 			}
 
+			if (m_pBossModelCom->Get_CurrentAnimPos() < 10.f)
+			{
+				m_bCreateMissile = false;
+			}
+
+			if (m_pBossModelCom->Get_CurrentAnimPos() <= 38.f)
+			{
+				CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+				_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
+				m_pTransformCom->LookAt(vPlayerPos);
+			}
+
 			if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK00))
 			{
 				m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK01;
 			}
 
-			if (m_pBossModelCom->Get_CurrentAnimPos() < 10.f)
-			{
-				m_bCreateMissile = false;
-			}
 
 		}
 
@@ -612,15 +617,23 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 				++m_iThrowAttackCombo;
 			}
 
+			if (m_pBossModelCom->Get_CurrentAnimPos() < 15.f)
+			{
+				m_bCreateMissile = false;
+			}
+
+			if (m_pBossModelCom->Get_CurrentAnimPos() <= 51.f)
+			{
+				CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+				_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
+				m_pTransformCom->LookAt(vPlayerPos);
+			}
+
 			if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK01))
 			{
 				m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK00;
 			}
 
-			if (m_pBossModelCom->Get_CurrentAnimPos() < 15.f)
-			{
-				m_bCreateMissile = false;
-			}
 
 		}
 
@@ -630,7 +643,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			{
 				m_iThrowAttackCombo = 0;
 				m_eBossCurState = BOSS_STATE_CHASE;
-				m_eBossPreAttackState = BOSS_STATE_THROW_ATTACK;
+				m_bAttack_Selected[ATTACK_THROW] = true;
 			}
 		}
 
@@ -677,7 +690,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK07) || m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK08))
 		{
 			m_eBossCurState = BOSS_STATE_CHASE;
-			m_eBossPreAttackState = BOSS_STATE_FLOOR_ATTACK;
+			m_bAttack_Selected[ATTACK_FLOOR] = true;
 		}
 
 		break;
@@ -695,6 +708,14 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			m_bCreateMissile = true;
 		}
 
+		if (m_pBossModelCom->Get_CurrentAnimPos() <= 100.f)
+		{
+			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+			_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+			
+			m_pTransformCom->LookAt(vPlayerPos);
+		}
+
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 99.f && m_pBossModelCom->Get_CurrentAnimPos() <= 110.f)
 		{
 			m_pGameInstance->Set_ShakeCam(true);
@@ -703,7 +724,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK02))
 		{
 			m_eBossCurState = BOSS_STATE_CHASE;
-			m_eBossPreAttackState = BOSS_STATE_SIX_MISSILE;
+			m_bAttack_Selected[ATTACK_SIX_MISSILE] = true;
 		}
 
 		break;
@@ -713,7 +734,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK04))
 		{
 			m_eBossCurState = BOSS_STATE_CHASE;
-			m_eBossPreAttackState = BOSS_STATE_WEB;
+			m_bAttack_Selected[ATTACK_WEB] = true;
 		}
 
 		break;
@@ -733,7 +754,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK05))
 		{
 			m_eBossCurState = BOSS_STATE_CHASE;
-			m_eBossPreAttackState = BOSS_STATE_SPIDER;
+			m_bAttack_Selected[ATTACK_SPIDER] = true;
 		}
 
 		break;
@@ -806,7 +827,7 @@ HRESULT CGroar_Boss::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Groar_Boss"), TEXT("Com_Boss_Model"), reinterpret_cast<CComponent**>(&m_pBossModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Groar_Boss"), TEXT("Com_Boss_Model"), reinterpret_cast<CComponent**>(&m_pBossModelCom), m_pTransformCom)))
 	{
 		return E_FAIL;
 	}
@@ -832,14 +853,6 @@ HRESULT CGroar_Boss::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
-		return E_FAIL;
-
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
 	{
 		return E_FAIL;
 	}
