@@ -282,8 +282,6 @@ HRESULT CMonster::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-
-
 	return S_OK;
 }
 
