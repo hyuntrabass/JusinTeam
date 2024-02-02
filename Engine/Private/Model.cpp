@@ -166,6 +166,7 @@ void CModel::Delete_TriggerEffect(_uint iTriggerEffectIndex)
 		Matrix_iter++;
 	}
 	m_pGameInstance->Delete_Effect((*Matrix_iter));
+	Safe_Delete((*Matrix_iter));
 	m_TriggerEffects.erase(Effect_iter);
 	m_EffectMatrices.erase(Matrix_iter);
 }
@@ -271,6 +272,13 @@ void CModel::Set_Animation(ANIM_DESC Animation_Desc)
 		{
 			Animation_Desc.iAnimIndex = 0;
 		}
+
+		if (Animation_Desc.fStartAimPos >= m_Animations[Animation_Desc.iAnimIndex]->Get_Duration())
+		{
+			Animation_Desc.fStartAimPos = 0.f;
+		}
+
+		m_Animations[Animation_Desc.iAnimIndex]->Set_CurrentAnimPos(Animation_Desc.fStartAimPos);
 	}
 	
 	m_AnimDesc = Animation_Desc;
@@ -367,8 +375,6 @@ HRESULT CModel::Init(void* pArg)
 		_mat* pMatrix = new _mat{};
 		m_EffectMatrices.push_back(pMatrix);
 	}
-	
-	
 
 	random_device rand;
 	m_RandomNumber = _randNum(rand());
@@ -388,7 +394,7 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 	}
 
 	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop,
-		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio);
+		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio, m_AnimDesc.fStartAimPos);
 
 	for (auto& pBone : m_Bones)
 	{

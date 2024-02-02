@@ -128,6 +128,7 @@ void CRealtimeVTFModel::Delete_TriggerEffect(_uint iTriggerEffectIndex)
 		Matrix_iter++;
 	}
 	m_pGameInstance->Delete_Effect((*Matrix_iter));
+	Safe_Delete((*Matrix_iter));
 	m_TriggerEffects.erase(Effect_iter);
 	m_EffectMatrices.erase(Matrix_iter);
 }
@@ -327,7 +328,7 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigg
 	}
 
 	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop,
-		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio,m_AnimDesc.fStartAimPos);
+		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio, m_AnimDesc.fStartAimPos);
 
 
 	vector<_mat> CombinedBones;

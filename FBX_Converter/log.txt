@@ -1,12 +1,9 @@
-<<<<<<< HEAD
 1. Static Only   2. Anim Only   3. All
 1
 Static Models : Start Converting...
-Converting... Map.fbx
+Converting... Scarecrow.fbx
 Read File Succssefully
 Static Models : Convert Success!
 
 1 Static Models
 are Successfully Converted as hyuntramesh!!
-=======
->>>>>>> Sub-master

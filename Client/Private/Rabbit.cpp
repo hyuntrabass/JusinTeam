@@ -86,7 +86,6 @@ void CRabbit::Tick(_float fTimeDelta)
 
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
-
 	m_pModelCom->Set_Animation(m_Animation);
 
 	m_HpBar->Tick(fTimeDelta);
