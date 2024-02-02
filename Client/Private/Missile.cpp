@@ -142,6 +142,13 @@ void CMissile::Tick(_float fTimeDelta)
 	{
 	case Client::CMissile::LEFT_THROW:
 	{
+		if (m_pGameInstance->Attack_Player(m_pColliderCom, 10))
+		{
+			_uint iSoundIndex = rand() % 4 + 1;
+			wstring strSoundTag = TEXT("Hit_Large_Acid_SFX_0") + to_wstring(iSoundIndex);
+			m_pGameInstance->Play_Sound(strSoundTag);
+		}
+
 		if (m_fLifeTime >= 1.f || m_pGameInstance->Attack_Player(m_pColliderCom, 10))
 		{
 			Kill();
@@ -180,6 +187,13 @@ void CMissile::Tick(_float fTimeDelta)
 
 	case Client::CMissile::RIGHT_THROW:
 	{
+		if (m_pGameInstance->Attack_Player(m_pColliderCom, 10))
+		{
+			_uint iSoundIndex = rand() % 4 + 1;
+			wstring strSoundTag = TEXT("Hit_Large_Acid_SFX_0") + to_wstring(iSoundIndex);
+			m_pGameInstance->Play_Sound(strSoundTag);
+		}
+
 		if (m_fLifeTime >= 1.f || m_pGameInstance->Attack_Player(m_pColliderCom, 10))
 		{
 			Kill();
@@ -216,6 +230,13 @@ void CMissile::Tick(_float fTimeDelta)
 	break;
 
 	case Client::CMissile::SIX_MISSILE:
+
+		if (m_pGameInstance->Attack_Player(m_pColliderCom, 10))
+		{
+			_uint iSoundIndex = rand() % 4 + 1;
+			wstring strSoundTag = TEXT("Hit_Large_Acid_SFX_0") + to_wstring(iSoundIndex);
+			m_pGameInstance->Play_Sound(strSoundTag);
+		}
 
 		if (m_fLifeTime >= 1.f || m_pGameInstance->Attack_Player(m_pColliderCom, 10))
 		{
