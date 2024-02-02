@@ -253,7 +253,6 @@ public:
 		Jump_Run,
 		Jump_End,
 		Skill1,
-		Skill1_End,
 		Skill2,
 		Skill3,
 		Skill4,
@@ -338,8 +337,8 @@ public:
 	void Return_Attack_IdleForm();
 	void After_CommonAtt(_float fTimeDelta);
 	void After_SkillAtt(_float fTimeDelta);
-	void Sword_Att_Camera_Effect();
-	void Bow_Att_Camera_Effect();
+	void Sword_Att_Camera_Effect(_float fTimeDelta);
+	void Bow_Att_Camera_Effect(_float fTimeDelta);
 	void Create_Arrow(ATTACK_TYPE Att_Type);
 	void Check_Att_Collider(ATTACK_TYPE Att_Type);
 
