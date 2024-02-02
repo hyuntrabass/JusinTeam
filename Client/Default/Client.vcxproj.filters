@@ -373,6 +373,9 @@
     <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Tentacle">
       <UniqueIdentifier>{e6130b2d-99fe-4290-b345-00db4943c384}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\SkillBook">
+      <UniqueIdentifier>{fe049474-188d-47b8-a371-25313a25fab4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -745,6 +748,12 @@
       <Filter>02.GameObjects\00.UI\99.tuto</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Tentacle.h" />
+    <ClInclude Include="..\Public\SkillBook.h">
+      <Filter>02.GameObjects\00.UI\GameUI\SkillBook</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SkillDesc.h">
+      <Filter>02.GameObjects\00.UI\GameUI\SkillBook</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1112,6 +1121,12 @@
       <Filter>02.GameObjects\00.UI\99.tuto</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Tentacle.cpp" />
+    <ClCompile Include="..\Private\SkillBook.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\SkillBook</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SkillDesc.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\SkillBook</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">

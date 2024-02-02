@@ -317,7 +317,7 @@ HRESULT CUI_Manager::Init_Skills()
 	return E_NOTIMPL;
 }
 
-const SKILLINFO& CUI_Manager::Get_SkillInfo(WEAPON_TYPE eType, _uint iIdx) const
+const SKILLINFO& CUI_Manager::Get_SkillInfo(WEAPON_TYPE eType, _uint iIdx)
 {
 	SKILLINFO Info{};
 	if (eType >= WP_END || eType < 0 || iIdx < 0 || iIdx > 4)
