@@ -51,6 +51,9 @@ namespace Effect
 		StaticPass_SingleColoredEffectFrontCull,
 		StaticPass_Shadow,
 		StaticPass_Water,
+		StaticPass_Worldmap_Water,
+		StaticPass_Worldmap_Cloud,
+		StaticPsss_Rim,
 		StaticPass_DiffEffect,
 		StaticPass_End,
 	};
@@ -86,6 +89,16 @@ namespace Effect
 		VTPass_Sprite_Dissolve,
 		VTPass_SpriteMaskTexture_Dissolve,
 		VTPass_SpriteMaskColor_Dissolve,
+		VTPass_Dust,
+		VTPass_Dissolve,
+		VTPass_MP,
+		VTPass_BLUR,
+		VTPass_Bright,
+		VTPass_ScrollAlpha,
+		VTPass_HPNoMask,
+		VTPass_NineSlice,
+		VTPass_FadeVertical,
+		VTPass_FadeHorizontal,
 		VTPass_End
 	};
 

@@ -128,6 +128,7 @@ public:
 	_bool Get_Delete() { return m_bDelete; }
 	void Update_Collider();
 	void Delete_Riding();
+	Riding_Type Get_RidingType() { return m_CurrentIndex; }
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };

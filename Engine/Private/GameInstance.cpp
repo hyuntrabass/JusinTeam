@@ -953,14 +953,14 @@ HRESULT CGameInstance::Render_PhysX()
 }
 #endif // _DEBUG
 
-HRESULT CGameInstance::Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _vec4& vColor)
+HRESULT CGameInstance::Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _vec4& vColor, const _bool isMultiSample)
 {
 	if (!m_pRenderTarget_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pRenderTarget_Manager is NULL");
 	}
 
-	return m_pRenderTarget_Manager->Add_RenderTarget(strTargetTag, iWidth, iHeight, ePixelFormat, vColor);
+	return m_pRenderTarget_Manager->Add_RenderTarget(strTargetTag, iWidth, iHeight, ePixelFormat, vColor, isMultiSample);
 }
 HRESULT CGameInstance::Add_MRT(const wstring& strMRTTag, const wstring& strTargetTag)
 {

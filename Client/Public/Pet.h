@@ -27,7 +27,6 @@ protected:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
-	class CEffect_Dummy* m_pEffect_Parti{ nullptr };
 
 protected:
 	wstring	m_strModelTag = {};

@@ -16,7 +16,7 @@ HRESULT CRenderTarget_Manager::Init()
 	return S_OK;
 }
 
-HRESULT CRenderTarget_Manager::Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor)
+HRESULT CRenderTarget_Manager::Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor, const _bool isMultiSample)
 {
 	if (Find_RenderTarget(strTargetTag))
 	{
@@ -24,7 +24,7 @@ HRESULT CRenderTarget_Manager::Add_RenderTarget(const wstring& strTargetTag, _ui
 		return E_FAIL;
 	}
 
-	CRenderTarget* pRenderTarget = CRenderTarget::Create(m_pDevice, m_pContext, iWidth, iHeight, ePixelFormat, vColor);
+	CRenderTarget* pRenderTarget = CRenderTarget::Create(m_pDevice, m_pContext, iWidth, iHeight, ePixelFormat, vColor, isMultiSample);
 	if (not pRenderTarget)
 	{
 		return E_FAIL;

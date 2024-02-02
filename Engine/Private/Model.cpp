@@ -257,14 +257,19 @@ void CModel::Set_Animation(ANIM_DESC Animation_Desc)
 	{
 		m_isAnimChanged = true;
 
-		for (auto& pAnim : m_Animations)
+		/*for (auto& pAnim : m_Animations)
 		{
 			pAnim->ResetFinished();
-		}
+		}*/
+		m_Animations[m_AnimDesc.iAnimIndex]->ResetFinished();
 
-		if (m_AnimDesc.iAnimIndex >= m_iNumAnimations)
+		if (Animation_Desc.iAnimIndex >= m_iNumAnimations)
 		{
-			m_AnimDesc.iAnimIndex = m_iNumAnimations - 1;
+			Animation_Desc.iAnimIndex = m_iNumAnimations - 1;
+		}
+		else if (Animation_Desc.iAnimIndex < 0)
+		{
+			Animation_Desc.iAnimIndex = 0;
 		}
 	}
 	

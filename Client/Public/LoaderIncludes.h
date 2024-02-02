@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Tutorial.h"
+#include "Pop_Alert.h"
+#include "InvenWindow.h"
 #include "ShopWindow.h"
 #include "ShopDesc.h"
 #include "Shop.h"
@@ -102,6 +105,7 @@
 // Test Model
 #include "TestVTFModel.h"
 #include "Lake.h"
+#include "VTFTest.h"
 
 // Object
 #include "Etc_Object.h"

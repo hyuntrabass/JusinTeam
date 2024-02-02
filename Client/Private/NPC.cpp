@@ -17,10 +17,17 @@ HRESULT CNPC::Init_Prototype()
 
 HRESULT CNPC::Init(void* pArg)
 {
-	if (FAILED(Add_Components()))
+	if (!pArg)
 	{
-		return E_FAIL;
+		MSG_BOX("No argument!");
 	}
+
+	m_pInfo = *(NPC_INFO*)pArg;
+	_mat WorldMat = m_pInfo.NPCWorldMat;
+	m_pTransformCom->Set_Matrix(WorldMat);
+	_vec3 vPos = WorldMat.Position_vec3();
+	vPos.y += 1.f;
+	m_pTransformCom->Set_Position(vPos);
 
     return S_OK;
 }
@@ -31,8 +38,11 @@ void CNPC::Tick(_float fTimeDelta)
 
 void CNPC::Late_Tick(_float fTimeDelta)
 {
-	m_pModelCom->Play_Animation(fTimeDelta);
-	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
+	{
+		m_pModelCom->Play_Animation(fTimeDelta);
+		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	}
 }
 
 HRESULT CNPC::Render()

@@ -238,4 +238,64 @@ END
 //NPC_Roskva_re.ao | Walk
 //Animation Models : Convert Success!
 
+// Ãß°¡
+//Converting... Female_002.fbx
+//Read File Succssefully
+//Animation name list :
+//NPC_female_002.ao | Cheer
+//NPC_female_002.ao | Emo01
+//NPC_female_002.ao | Emo02
+//NPC_female_002.ao | Idle01
+//NPC_female_002.ao | Idle02
+//NPC_female_002.ao | Reaction01
+//NPC_female_002.ao | Sit_Talk01
+//NPC_female_002.ao | Talk01
+//NPC_female_002.ao | Talk02
+//NPC_female_002.ao | Walk
+//Converting... Female_005.fbx
+//Read File Succssefully
+//Animation name list :
+//NPC_female_005.ao | Cheer01
+//NPC_female_005.ao | Emo01
+//NPC_female_005.ao | Emo02
+//NPC_female_005.ao | Idle01
+//NPC_female_005.ao | Idle02
+//NPC_female_005.ao | Sit_Talk01
+//NPC_female_005.ao | Talk01
+//NPC_female_005.ao | Talk02
+//NPC_female_005.ao | Walk
+//Converting... Female_010.fbx
+//Read File Succssefully
+//Animation name list :
+//NPC_female_010.ao | Cheer
+//NPC_female_010.ao | Emo01
+//NPC_female_010.ao | Emo02
+//NPC_female_010.ao | Idle01
+//NPC_female_010.ao | Idle02
+//NPC_female_010.ao | nurse_idle01
+//NPC_female_010.ao | nurse_idle02
+//NPC_female_010.ao | nurse_idle03
+//NPC_female_010.ao | Sit01
+//NPC_female_010.ao | Talk01
+//NPC_female_010.ao | Talk02
+//NPC_female_010.ao | Walk
+//Converting... Horse.fbx
+//Read File Succssefully
+//Animation name list :
+//NPC_Animal_12.ao | idle01
+//NPC_Animal_12.ao | idle02
+//NPC_Animal_12.ao | run
+//NPC_Animal_12.ao | walk
+//Converting... Male_009.fbx
+//Read File Succssefully
+//Animation name list :
+//NPC_male_009.ao | Emo01
+//NPC_male_009.ao | idle01
+//NPC_male_009.ao | idle_02
+//NPC_male_009.ao | talk01
+//NPC_male_009.ao | talk02
+//NPC_male_009.ao | talk03
+//NPC_male_009.ao | walk
+//Animation Models : Convert Success!
+
 #pragma endregion NPC_Dummy Anim List

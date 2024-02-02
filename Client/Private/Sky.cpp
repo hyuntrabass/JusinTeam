@@ -42,20 +42,35 @@ void CSky::Tick(_float fTimeDelta)
 	{
 	case LEVEL_GAMEPLAY:
 		m_fLightning_Time += fTimeDelta;
-		if (m_fLightning_Time > 5.f && m_fLightning_Time<5.1f)
+		if (m_fLightning_Time > 8.f && m_fLightning_Time<8.1f)
 		{
+			if(m_iTextureIndex==10)
+			{
+				int random = rand() % 3;
+				switch (random)
+				{
+				case 0:m_pGameInstance->Play_Sound(TEXT("lightning0"), 0.8f, false);
+					break;
+				case 1:m_pGameInstance->Play_Sound(TEXT("lightning1"), 0.8f, false);
+					break;
+				case 2:m_pGameInstance->Play_Sound(TEXT("lightnin2"), 0.8f, false);
+					break;
+				default:
+					break;
+				}
+				
+			}
 			m_iTextureIndex = 9;
-			
 		}
-		else if(m_fLightning_Time> 5.1f && m_fLightning_Time<5.2f)
+		else if(m_fLightning_Time> 8.1f && m_fLightning_Time<8.2f)
 		{
 			m_iTextureIndex = 10;
 		}
-		else if (m_fLightning_Time>=5.2f && m_fLightning_Time<5.3f)
+		else if (m_fLightning_Time>=8.2f && m_fLightning_Time<8.3f)
 		{
 			m_iTextureIndex = 9;
 		}
-		else if (m_fLightning_Time >= 5.4f)
+		else if (m_fLightning_Time >= 8.4f)
 		{
 			m_fLightning_Time = 0.f;
 			m_iTextureIndex = 10;

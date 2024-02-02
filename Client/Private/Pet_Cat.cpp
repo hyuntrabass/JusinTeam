@@ -40,7 +40,12 @@ HRESULT CPet_Cat::Init(void* pArg)
 	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Pet_Cat_Parti");
 	Info.pMatrix = &m_EffectMatrix;
 	Info.isFollow = true;
-	m_pEffect_Parti = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
+
+	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Pet_Cat_Light");
+	Info.pMatrix = &m_EffectMatrix;
+	Info.isFollow = true;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
 
 	return S_OK;
 }
@@ -52,7 +57,7 @@ void CPet_Cat::Tick(_float fTimeDelta)
 
 	m_pModelCom->Set_Animation(m_Animation);
 
-	__super::Tick(fTimeDelta);
+	m_EffectMatrix = *m_pModelCom->Get_BoneMatrix("Bip001-Spine") * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 }
 
 void CPet_Cat::Late_Tick(_float fTimeDelta)
@@ -62,12 +67,12 @@ void CPet_Cat::Late_Tick(_float fTimeDelta)
 
 HRESULT CPet_Cat::Render()
 {
-	//CTransform* pCameraTransform = GET_TRANSFORM("Layer_Camera", LEVEL_STATIC);
-	//_vec4 vCameraPos = pCameraTransform->Get_State(State::Pos);
+	CTransform* pCameraTransform = GET_TRANSFORM("Layer_Camera", LEVEL_STATIC);
+	_vec4 vCameraPos = pCameraTransform->Get_State(State::Pos);
 
-	//_vec4 vMyPos = m_pTransformCom->Get_State(State::Pos);
+	_vec4 vMyPos = m_pTransformCom->Get_State(State::Pos);
 
-	//if ((vCameraPos - vMyPos).Length() > 3.f)
+	if ((vCameraPos - vMyPos).Length() > 1.f)
 	{
 		__super::Render();
 	}
@@ -202,6 +207,26 @@ void CPet_Cat::Tick_State(_float fTimeDelta)
 
 	case Client::CPet_Cat::STATE_EMOTION:
 
+	{
+		if (fDistance <= 5.f && fDistance >= 2.f)
+		{
+			m_fPosLerpRatio = 0.03f;
+		}
+		else if (fDistance > 5.f)
+		{
+			m_fPosLerpRatio = 0.05f;
+		}
+
+		_vec3 vSetPos = XMVectorLerp(vMyPos, vTargetPos, m_fPosLerpRatio);
+		_vec4 vSetLook = XMVectorLerp(vMyLook, vPlayerLook, m_fLookLerpRatio);
+
+		m_pTransformCom->LookAt_Dir(vSetLook);
+
+		if (fDistance >= 2.f)
+		{
+			m_pTransformCom->Set_Position(vSetPos);
+		}
+
 		if (m_pModelCom->IsAnimationFinished(EMOTION) || m_pModelCom->IsAnimationFinished(TELEPORT_END) || m_pModelCom->IsAnimationFinished(TELEPORT_START))
 		{
 			if (CUI_Manager::Get_Instance()->Is_InvenActive() == true)
@@ -218,12 +243,13 @@ void CPet_Cat::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = STATE_INVEN;
 		}
+	}
 
 		break;
 
 	case Client::CPet_Cat::STATE_INVEN:
 
-		m_pTransformCom->Set_Position(_vec3(vPlayerPos.x + 1.f, vPlayerPos.y + 1.2f, vPlayerPos.z - 1.f));
+		m_pTransformCom->Set_Position(_vec3(vPlayerPos.x + 1.7f, vPlayerPos.y + 1.5f, vPlayerPos.z - 1.5f));
 		m_pTransformCom->LookAt_Dir(_vec4(0.f, 0.f, 1.f, 0.f));
 
 		m_fIdleTime += fTimeDelta;

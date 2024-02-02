@@ -266,6 +266,9 @@ public:
 		Climb_D,
 		Climb_L,
 		Climb_R,
+		Swim_Idle,
+		Swim,
+		Swim_collect,
 		Hit,
 		KnockDown,
 		Collect_Start,
@@ -311,12 +314,12 @@ public:
 	HRESULT Add_Info();
 	HRESULT Render_Parts(PART_TYPE Parts, _uint Index);
 	HRESULT Add_Riding();
-
 public:
 	virtual void Set_Damage(_int iDamage, _uint MonAttType = 0) override;
 	void Change_Parts(PART_TYPE PartsType, _int ChangeIndex);
 	void Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex);
 	void Move(_float fTimeDelta);
+
 
 	void Front_Ray_Check();
 	_bool Turn_Ray_Check(_bool bRight);
@@ -343,7 +346,6 @@ public:
 public:
 	void Summon_Riding(Riding_Type Type);
 	void Tick_Riding();
-	void UnMount_Riding();
 	void Arrow_Rain();
 public:
 	void Init_State();
@@ -365,7 +367,6 @@ private:
 	CCommonSurfaceTrail* m_pTest_Trail{ nullptr };
 
 private:
-	_int qq = 0;
 	ANIM_DESC m_Animation{};
 	PLAYER_STATE m_eState{ Idle };
 	PLAYER_STATE m_ePrevState{ Idle };
@@ -387,6 +388,7 @@ private:
 	_bool m_bAttackStop{};
 	_uint m_iMiningCount{};
 	_uint m_iLoggingCount{};
+	_uint m_iSwimCollectCount{};
 	_float4 m_vPos{};
 	_bool m_bArrowRain_Start{};
 	_bool m_bStartGame{};
@@ -402,7 +404,7 @@ private:
 	_bool m_hasJumped{};
 	_int m_iAttackCombo{};
 	_int m_iCurrentSkill_Index{};
-
+	_bool m_bReadySwim{};
 	_float m_fAttackZoom{};
 	_float m_ReturnZoomTime{};
 	_float m_fSkiilTimer{};

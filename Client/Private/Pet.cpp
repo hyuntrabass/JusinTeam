@@ -28,23 +28,12 @@ HRESULT CPet::Init(void* pArg)
 
 void CPet::Tick(_float fTimeDelta)
 {
-	m_EffectMatrix = m_pTransformCom->Get_World_Matrix();
-
-	if (m_pEffect_Parti)
-	{
-		m_pEffect_Parti->Tick(fTimeDelta);
-	}
 }
 
 void CPet::Late_Tick(_float fTimeDelta)
 {
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
-
-	if (m_pEffect_Parti)
-	{
-		m_pEffect_Parti->Late_Tick(fTimeDelta);
-	}
 }
 
 HRESULT CPet::Render()
@@ -163,7 +152,6 @@ void CPet::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pEffect_Parti);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

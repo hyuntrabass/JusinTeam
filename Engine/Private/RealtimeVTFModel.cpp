@@ -483,18 +483,19 @@ void CRealtimeVTFModel::Set_Animation(ANIM_DESC Animation_Desc)
 	if (m_AnimDesc.iAnimIndex != Animation_Desc.iAnimIndex or
 		Animation_Desc.bRestartAnimation) {
 
-		m_AnimDesc = Animation_Desc;
-
 		m_isAnimChanged = true;
 
-		for (auto& pAnim : m_Animations)
-			pAnim->ResetFinished();
+		/*for (auto& pAnim : m_Animations)
+			pAnim->ResetFinished();*/
+		m_Animations[m_AnimDesc.iAnimIndex]->ResetFinished();
 
-		if (m_AnimDesc.iAnimIndex >= m_iNumAnimations)
-			m_AnimDesc.iAnimIndex = m_iNumAnimations - 1;
-		else if (0 > m_AnimDesc.iAnimIndex)
-			m_AnimDesc.iAnimIndex = 0;
+		if (Animation_Desc.iAnimIndex >= m_iNumAnimations)
+			Animation_Desc.iAnimIndex = m_iNumAnimations - 1;
+		else if (0 > Animation_Desc.iAnimIndex)
+			Animation_Desc.iAnimIndex = 0;
 	}
+
+	m_AnimDesc = Animation_Desc;
 }
 
 const _bool& CRealtimeVTFModel::IsAnimationFinished(_uint iAnimIndex) const
