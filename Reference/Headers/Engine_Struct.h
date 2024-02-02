@@ -120,6 +120,8 @@ namespace Engine
 		float fAlphaInit{};
 		float fAlphaDelta{};
 		float fRectRotationAngle{};
+		bool isBillboard{};
+		SimpleMath::Vector3 vBillboardRotation{};
 
 		bool hasLight{};
 		LIGHT_DESC Light_Desc{};

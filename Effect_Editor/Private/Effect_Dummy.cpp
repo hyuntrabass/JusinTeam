@@ -129,7 +129,10 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 		break;
 	case Effect_Type::ET_RECT:
 	{
-		m_pTransformCom->LookAway(m_pGameInstance->Get_CameraPos());
+		if (m_Effect.isBillboard)
+		{
+			m_pTransformCom->LookAway(m_pGameInstance->Get_CameraPos());
+		}
 		//m_pTransformCom->Rotation(m_pTransformCom->Get_State(State::Look), m_Effect.fRectRotationAngle);
 
 		m_pTransformCom->Set_Scale(m_vScaleAcc);
@@ -154,6 +157,14 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 	}
 	case Effect_Type::ET_MESH:
 	{
+		if (m_Effect.isBillboard)
+		{
+			m_pTransformCom->LookAway(m_pGameInstance->Get_CameraPos());
+			m_pTransformCom->Set_Matrix(_mat::CreateRotationX(XMConvertToRadians(m_Effect.vBillboardRotation.x)) * m_pTransformCom->Get_World_Matrix());
+			m_pTransformCom->Set_Matrix(_mat::CreateRotationY(XMConvertToRadians(m_Effect.vBillboardRotation.y)) * m_pTransformCom->Get_World_Matrix());
+			m_pTransformCom->Set_Matrix(_mat::CreateRotationZ(XMConvertToRadians(m_Effect.vBillboardRotation.z)) * m_pTransformCom->Get_World_Matrix());
+		}
+
 		m_pTransformCom->Set_Scale(m_vScaleAcc);
 		m_vScaleAcc += m_Effect.vSizeDelta * fTimeDelta;
 
