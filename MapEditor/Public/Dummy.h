@@ -34,7 +34,6 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 	virtual HRESULT Render_Instance() override;
-	//virtual HRESULT Render_Instance() override;
 	_int Get_ID() { return m_iID; }
 
 private:
