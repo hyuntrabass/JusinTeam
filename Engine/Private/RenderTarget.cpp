@@ -119,7 +119,7 @@ HRESULT CRenderTarget::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
 		return E_FAIL;
 	}
 
-	if (FAILED(pShader->Bind_ShaderResourceView("g_Texture", m_pShaderResourceView)))
+	if (FAILED(pShader->Bind_ShaderResourceView("g_DebugTexture", m_pShaderResourceView)))
 	{
 		return E_FAIL;
 	}
