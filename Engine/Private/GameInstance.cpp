@@ -130,6 +130,7 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 		}
 	}
 
+	m_pLevel_Manager->Tick(fTimeDelta);
 	m_pObject_Manager->Tick(fTimeDelta);
 	if (m_Function_Tick_FX)
 	{
@@ -137,7 +138,6 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	}
 	m_pPipeLine->Tick();
 	m_pPicking->Tick();
-	m_pLevel_Manager->Tick(fTimeDelta);
 
 	m_pFrustum->Tick();
 
