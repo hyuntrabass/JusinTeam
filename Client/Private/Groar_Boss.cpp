@@ -96,160 +96,218 @@ HRESULT CGroar_Boss::Render()
 		return E_FAIL;
 	}
 
+	CModel* pModel = nullptr;
 	switch (m_eCurState)
 	{
 	case Client::CGroar_Boss::STATE_NPC:
-		for (_uint i = 0; i < m_pNPCModelCom->Get_NumMeshes(); i++)
-		{
-			if (FAILED(m_pNPCModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-			{
-			}
-
-			_bool HasNorTex{};
-			if (FAILED(m_pNPCModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-			{
-				HasNorTex = false;
-			}
-			else
-			{
-				HasNorTex = true;
-			}
-
-			if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pNPCModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pNPCModelCom->Render(i)))
-			{
-				return E_FAIL;
-			}
-		}
+		pModel = m_pNPCModelCom;
 		break;
 	case Client::CGroar_Boss::STATE_SCENE01:
-		for (_uint i = 0; i < m_pScene01ModelCom->Get_NumMeshes(); i++)
-		{
-			if (FAILED(m_pScene01ModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-			{
-			}
-
-			_bool HasNorTex{};
-			if (FAILED(m_pScene01ModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-			{
-				HasNorTex = false;
-			}
-			else
-			{
-				HasNorTex = true;
-			}
-
-			if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pScene01ModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pScene01ModelCom->Render(i)))
-			{
-				return E_FAIL;
-			}
-		}
+		pModel = m_pScene01ModelCom;
 		break;
 	case Client::CGroar_Boss::STATE_SCENE02:
-		for (_uint i = 0; i < m_pScene02ModelCom->Get_NumMeshes(); i++)
-		{
-			if (FAILED(m_pScene02ModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-			{
-			}
-
-			_bool HasNorTex{};
-			if (FAILED(m_pScene02ModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-			{
-				HasNorTex = false;
-			}
-			else
-			{
-				HasNorTex = true;
-			}
-
-			if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pScene02ModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pScene02ModelCom->Render(i)))
-			{
-				return E_FAIL;
-			}
-		}
+		pModel = m_pScene02ModelCom;
 		break;
 	case Client::CGroar_Boss::STATE_BOSS:
-		for (_uint i = 0; i < m_pBossModelCom->Get_NumMeshes(); i++)
-		{
-			if (FAILED(m_pBossModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-			{
-			}
-
-			_bool HasNorTex{};
-			if (FAILED(m_pBossModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-			{
-				HasNorTex = false;
-			}
-			else
-			{
-				HasNorTex = true;
-			}
-
-			if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pBossModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
-			{
-				return E_FAIL;
-			}
-
-			if (FAILED(m_pBossModelCom->Render(i)))
-			{
-				return E_FAIL;
-			}
-		}
+		pModel = m_pBossModelCom;
 		break;
+	}
+
+
+	for (_uint i = 0; i < pModel->Get_NumMeshes(); i++)
+	{
+		if (FAILED(pModel->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		{
+		}
+
+		_bool HasNorTex{};
+		if (FAILED(pModel->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+		{
+			HasNorTex = false;
+		}
+		else
+		{
+			HasNorTex = true;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(pModel->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(pModel->Render(i)))
+		{
+			return E_FAIL;
+		}
+	}
+
+	// 너무길어서 축약했어요...
+	{
+		//switch (m_eCurState)
+		//{
+		//case Client::CGroar_Boss::STATE_NPC:
+		//	for (_uint i = 0; i < m_pNPCModelCom->Get_NumMeshes(); i++)
+		//	{
+		//		if (FAILED(m_pNPCModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		//		{
+		//		}
+
+		//		_bool HasNorTex{};
+		//		if (FAILED(m_pNPCModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+		//		{
+		//			HasNorTex = false;
+		//		}
+		//		else
+		//		{
+		//			HasNorTex = true;
+		//		}
+
+		//		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+		//		{
+		//			return E_FAIL;
+		//		}
+
+		//		if (FAILED(m_pNPCModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		//		{
+		//			return E_FAIL;
+		//		}
+
+		//		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+		//		{
+		//			return E_FAIL;
+		//		}
+
+		//		if (FAILED(m_pNPCModelCom->Render(i)))
+		//		{
+		//			return E_FAIL;
+		//		}
+		//	}
+		//	break;
+		//case Client::CGroar_Boss::STATE_SCENE01:
+		//	for (_uint i = 0; i < m_pScene01ModelCom->Get_NumMeshes(); i++)
+		//	{
+		//		if (FAILED(m_pScene01ModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		//		{
+		//		}
+
+		//		_bool HasNorTex{};
+		//		if (FAILED(m_pScene01ModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+		//		{
+		//			HasNorTex = false;
+		//		}
+		//		else
+		//		{
+		//			HasNorTex = true;
+		//		}
+
+		//		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+		//		{
+		//			return E_FAIL;
+		//		}
+
+		//		if (FAILED(m_pScene01ModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		//		{
+		//			return E_FAIL;
+		//		}
+
+		//		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+		//		{
+		//			return E_FAIL;
+		//		}
+
+		//		if (FAILED(m_pScene01ModelCom->Render(i)))
+		//		{
+		//			return E_FAIL;
+		//		}
+		//	}
+		//	break;
+		//case Client::CGroar_Boss::STATE_SCENE02:
+		//	for (_uint i = 0; i < m_pScene02ModelCom->Get_NumMeshes(); i++)
+		//	{
+		//		if (FAILED(m_pScene02ModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		//		{
+		//		}
+
+		//		_bool HasNorTex{};
+		//		if (FAILED(m_pScene02ModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+		//		{
+		//			HasNorTex = false;
+		//		}
+		//		else
+		//		{
+		//			HasNorTex = true;
+		//		}
+
+		//		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+		//		{
+		//			return E_FAIL;
+		//		}
+
+		//		if (FAILED(m_pScene02ModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		//		{
+		//			return E_FAIL;
+		//		}
+
+		//		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+		//		{
+		//			return E_FAIL;
+		//		}
+
+		//		if (FAILED(m_pScene02ModelCom->Render(i)))
+		//		{
+		//			return E_FAIL;
+		//		}
+		//	}
+		//	break;
+		//case Client::CGroar_Boss::STATE_BOSS:
+		//	for (_uint i = 0; i < m_pBossModelCom->Get_NumMeshes(); i++)
+		//	{
+		//		if (FAILED(m_pBossModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		//		{
+		//		}
+
+		//		_bool HasNorTex{};
+		//		if (FAILED(m_pBossModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+		//		{
+		//			HasNorTex = false;
+		//		}
+		//		else
+		//		{
+		//			HasNorTex = true;
+		//		}
+
+		//		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+		//		{
+		//			return E_FAIL;
+		//		}
+
+		//		if (FAILED(m_pBossModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		//		{
+		//			return E_FAIL;
+		//		}
+
+		//		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+		//		{
+		//			return E_FAIL;
+		//		}
+
+		//		if (FAILED(m_pBossModelCom->Render(i)))
+		//		{
+		//			return E_FAIL;
+		//		}
+		//	}
+		//	break;
+		//}
 	}
 
 	return S_OK;

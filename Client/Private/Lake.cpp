@@ -30,9 +30,6 @@ HRESULT CLake::Init(void* pArg)
 	_vec4 vRight = m_pTransformCom->Get_State(State::Right);
 	m_pTransformCom->Rotation(vRight, -90.f);
 
-	m_Desc.fReflectionScale = 0.05f;
-	m_Desc.fRefractionScale = 0.05f;
-	m_Desc.fWaterSpeed = 0.1f;
 
 	return S_OK;
 }
