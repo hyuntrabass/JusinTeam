@@ -10,6 +10,7 @@
 #include "Model.h"
 #include "VIBuffer_Instancing_Point.h"
 #include "VIBuffer_Instancing_Mesh.h"
+#include "VIBuffer_Curve.h"
 #include "Collider.h"
 #include "VIBuffer_Trail.h"
 #include "VIBuffer_Trail_Surface.h"

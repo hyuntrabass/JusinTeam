@@ -1,6 +1,6 @@
 #pragma once
 #include "MapEditor_Define.h"
-#include "BlendObject.h"
+#include "GameObject.h"
 #include "ImGui_Manager.h"
 
 BEGIN(MapEditor)

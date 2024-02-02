@@ -8,6 +8,7 @@
 #include "Dummy.h"
 #include "Terrain.h"
 #include "Map.h"
+#include "CutScene_Curve.h"
 
 IMPLEMENT_SINGLETON(CImGui_Manager)
 
@@ -99,8 +100,21 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 			pMapTransform->Set_State(State::Look, ObjLook);
 			pMapTransform->Set_State(State::Pos, ObjPosition);
 		}
+		else if (m_pSelectCamera)
+		{
+			CTransform* pMapTransform = (CTransform*)m_pSelectCamera->Find_Component(TEXT("Com_Transform"));
 
-		if (m_eItemType != ItemType::Environment)
+			_vector ObjRight = { m_CameraMatrix._11, m_CameraMatrix._12, m_CameraMatrix._13, m_CameraMatrix._14 };
+			_vector ObjUp = { m_CameraMatrix._21, m_CameraMatrix._22, m_CameraMatrix._23, m_CameraMatrix._24 };
+			_vector ObjLook = { m_CameraMatrix._31, m_CameraMatrix._32, m_CameraMatrix._33, m_CameraMatrix._34 };
+			_vector ObjPosition = { m_CameraMatrix._41, m_CameraMatrix._42, m_CameraMatrix._43, m_CameraMatrix._44 };
+			pMapTransform->Set_State(State::Right, ObjRight);
+			pMapTransform->Set_State(State::Up, ObjUp);
+			pMapTransform->Set_State(State::Look, ObjLook);
+			pMapTransform->Set_State(State::Pos, ObjPosition);
+		}
+
+		if (m_eItemType != ItemType::Environment && m_eItemType != ItemType::Camera)
 		{
 			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))
 			{
@@ -139,10 +153,27 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 				}
 				//FastPicking();
 			}
-			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_SPACE))
+
+		}
+		if (m_eItemType == ItemType::Camera)
+		{
+			const _uint iMaxClick = 2;
+			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))
 			{
+				if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
+				{
+					m_PickingPos = m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y);
+					m_fCameraPos[iClickCount] = _vec4(m_PickingPos.x, m_PickingPos.y + 50.f, m_PickingPos.z, m_PickingPos.w);
+					iClickCount++;
+
+					if (iClickCount >= iMaxClick)
+					{
+						m_fCameraPos[iMaxClick] = {_vec4(0.f, 0.f, 0.f, 1.f)};
+						iClickCount = 0;
+					}
+
+				}
 				FastPicking();
-				Delete_Dummy();
 			}
 		}
 
@@ -158,6 +189,12 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 			{
 				m_pSelectMap->Select(false);
 				m_pSelectMap = nullptr;
+			}
+			if (m_pSelectCamera)
+			{
+				m_pSelectCamera->Select(false);
+				m_pSelectCamera = nullptr;
+				iClickCount = 0;
 			}
 		}
 
@@ -367,23 +404,6 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				m_eType = TEXT("Dungeon");
 			}
 
-			//if (ImGui::BeginListBox("OBJECTS DIR", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
-			//{
-			//	for (int n = 0; n < Objects[m_eType].size(); n++)
-			//	{
-			//		const bool is_selected = (Object_current_idx == n);
-			//		if (ImGui::Selectable(Objects[m_eType][n], is_selected))
-			//		{
-			//			Object_current_idx = n;
-			//			m_iSelectIdx = Object_current_idx;
-			//		}
-			//		if (is_selected)
-			//		{
-			//			ImGui::SetItemDefaultFocus();
-			//		}
-			//	}
-			//	ImGui::EndListBox();
-			//}
 			ImGui::NewLine();
 
 			static ImGuiTextFilter Filter;
@@ -473,23 +493,6 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			else if (iSelectEnvir == 1)	{m_eType = TEXT("Grass");}
 			else if (iSelectEnvir == 2)	{m_eType = TEXT("Rock");}
 
-		/*	if (ImGui::BeginListBox("OBJECTS DIR", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
-			{
-				for (int n = 0; n < Envirs[m_eType].size(); n++)
-				{
-					const bool is_selected = (Environment_current_idx == n);
-					if (ImGui::Selectable(Envirs[m_eType][n], is_selected))
-					{
-						Environment_current_idx = n;
-						m_iSelectIdx = Environment_current_idx;
-					}
-					if (is_selected)
-					{
-						ImGui::SetItemDefaultFocus();
-					}
-				}
-				ImGui::EndListBox();
-			}*/
 			ImGui::Separator();
 			ImGui::NewLine();
 
@@ -596,23 +599,6 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				m_eType = TEXT("Boss");
 			}
 
-		/*	if (ImGui::BeginListBox("MONSTER DIR", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
-			{
-				for (int n = 0; n < Monsters[m_eType].size(); n++)
-				{
-					const bool is_selected = (Monster_current_idx == n);
-					if (ImGui::Selectable(Monsters[m_eType][n], is_selected))
-					{
-						Monster_current_idx = n;
-						m_iSelectIdx = Monster_current_idx;
-					}
-					if (is_selected)
-					{
-						ImGui::SetItemDefaultFocus();
-					}
-				}
-				ImGui::EndListBox();
-			}*/
 			ImGui::NewLine();
 
 			static ImGuiTextFilter Filter;
@@ -688,21 +674,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::SeparatorText("LIST");
 			static int NPC_current_idx = 0;
 			ImGui::Text("NPC");
-			//if (ImGui::BeginListBox("NPC FILE", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
-			//{
-			//	for (int n = 0; n < NPCs.size(); n++)
-			//	{
-			//		const bool is_selected = (NPC_current_idx == n);
-			//		if (ImGui::Selectable(NPCs[n], is_selected))
-			//		{
-			//			NPC_current_idx = n;
-			//			m_iSelectIdx = NPC_current_idx;
-			//		}
-			//		if (is_selected)
-			//			ImGui::SetItemDefaultFocus();
-			//	}
-			//	ImGui::EndListBox();
-			//}
+	
 			ImGui::NewLine();
 
 			static ImGuiTextFilter Filter;
@@ -769,8 +741,40 @@ HRESULT CImGui_Manager::ImGuiMenu()
 		{
 			m_eItemType = ItemType::Camera;
 
+			_int iCameraCount = m_CameraList.size();
+			ImGui::InputInt("Camera Count : ", &iCameraCount, 14);
+			ImGui::Separator();
+			ImGui::SeparatorText("Picking : ");
+			ImGui::InputFloat4("Start Pos", &m_fCameraPos[0].x, 0);
+			ImGui::InputFloat4("End Pos", &m_fCameraPos[1].x, 0);
+			ImGui::Separator();
+			ImGui::SeparatorText("MATRIX : ");
+			ImGui::InputFloat4("Right", &m_CameraMatrix.m[0][0], 0);
+			ImGui::InputFloat4("Up", &m_CameraMatrix.m[1][0], 0);
+			ImGui::InputFloat4("Look", &m_CameraMatrix.m[2][0], 0);
+			ImGui::InputFloat4("Position", &m_CameraMatrix.m[3][0], 0);
+			ImGui::Separator();
+			if (ImGui::Button("Delete"))
+			{
+				Delete_Dummy();
+			}
+			ImGui::SameLine();
 
-			ImGui::Text("Ready for Camera CutScene......");
+			if (ImGui::Button("Create"))
+			{
+				Create_Camera();
+			}
+			ImGui::Separator();
+			if (ImGui::Button("SAVE"))
+			{
+				//Save_NPC();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("LOAD"))
+			{
+				//Load_NPC();
+			}
+
 			ImGui::EndTabItem();
 		}
 #pragma endregion
@@ -1175,6 +1179,10 @@ void CImGui_Manager::Delete_Dummy()
 	}
 }
 
+void CImGui_Manager::Delete_Camera()
+{
+}
+
 void CImGui_Manager::Delete_Map()
 {
 	if (m_pSelectMap)
@@ -1212,6 +1220,26 @@ HRESULT CImGui_Manager::Modify_Terrain()
 	return S_OK;
 }
 
+void CImGui_Manager::Create_Camera()
+{
+	CameraInfo Info{};
+
+	Info.ppCamera = &m_pSelectCamera;
+	Info.vStartCutScene = m_fCameraPos[0];
+	Info.vEndCutScene = m_fCameraPos[1];
+	Info.eType = m_eItemType;
+
+	_tchar strUnicode[MAX_PATH]{};
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_CutScene_Camera"), TEXT("Prototype_GameObject_Camera"), &Info)))
+	{
+		MSG_BOX("Failed to Add Layer : Camera");
+	}
+	m_CameraList.push_back(m_pSelectCamera);
+	m_Camera.emplace(m_pSelectCamera->Get_ID(), m_pSelectCamera);
+	m_pSelectCamera = nullptr;
+}
+
 void CImGui_Manager::Reset()
 {
 	for (auto iter : m_MapsList)
@@ -1244,6 +1272,12 @@ void CImGui_Manager::Reset()
 	}
 	m_EnvirList.clear();
 
+	for (auto iter : m_CameraList)
+	{
+		iter->Set_Dead();
+	}
+	m_CameraList.clear();
+
 	m_DummyList.clear();
 	if (m_pSelectedDummy)
 		m_pSelectedDummy = nullptr;
@@ -1251,6 +1285,8 @@ void CImGui_Manager::Reset()
 		m_pSelectMap = nullptr;
 	if (m_pTerrain)
 		m_pTerrain = nullptr;
+	if (m_pSelectCamera)
+		m_pSelectCamera = nullptr;
 }
 
 void CImGui_Manager::PopBack_Dummy()
@@ -1541,8 +1577,12 @@ void CImGui_Manager::FastPicking()
 		m_pSelectMap->Select(false);
 		return;
 	}
-
-	if (m_eItemType != ItemType::Map)
+	if (m_pSelectCamera)
+	{
+		m_pSelectCamera->Select(false);
+		return;
+	}
+	if (m_eItemType != ItemType::Map && m_eItemType != ItemType::Camera)
 	{
 		DummyIndex = 0;
 
@@ -1561,7 +1601,7 @@ void CImGui_Manager::FastPicking()
 			}
 		}
 	}
-	else
+	else if(m_eItemType == ItemType::Map)
 	{
 		MapIndex = 0;
 
@@ -1576,6 +1616,24 @@ void CImGui_Manager::FastPicking()
 				m_pSelectMap->Select(true);
 				CTransform* pMapTransform = (CTransform*)m_pSelectMap->Find_Component(TEXT("Com_Transform"));
 				m_MapMatrix = pMapTransform->Get_World_Matrix();
+			}
+		}
+	}
+	else if (m_eItemType == ItemType::Camera)
+	{
+		CameraIndex = 0;
+
+		if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
+		{
+			CameraIndex = m_pGameInstance->FastPicking((_uint)m_vMousePos.x, (_uint)m_vMousePos.y);
+
+			auto iter = m_Camera.find(CameraIndex);
+			if (iter != m_Camera.end())
+			{
+				m_pSelectCamera = (*iter).second;
+				m_pSelectCamera->Select(true);
+				CTransform* pMapTransform = (CTransform*)m_pSelectCamera->Find_Component(TEXT("Com_Transform"));
+				m_CameraMatrix = pMapTransform->Get_World_Matrix();
 			}
 		}
 	}

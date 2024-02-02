@@ -64,6 +64,8 @@ protected:
 	_uint m_iIndexSizePrimitives{};
 	_uint m_iNumIndicesPrimitives{};
 
+
+
 protected:
 	HRESULT Create_Buffer(ID3D11Buffer** ppBuffer);
 

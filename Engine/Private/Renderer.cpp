@@ -637,7 +637,7 @@ HRESULT CRenderer::Draw_RenderGroup()
 	}
 	if (FAILED(Render_NonBlend_Instance()))
 	{
-		MSG_BOX("Failed to Render : NonBlend");
+		MSG_BOX("Failed to Render : NonBlend_Instance");
 		return E_FAIL;
 	}
 
