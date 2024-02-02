@@ -158,6 +158,11 @@ private:
 	_bool m_bSelectAttackPattern = { false };
 
 private:
+	_bool m_bAttacked1 = { false };
+	_bool m_bAttacked2 = { false };
+	_bool m_bAttacked3 = { false };
+
+private:
 	_bool m_bCreateMissile = { false };
 	_uint m_iThrowAttackCombo = {};
 

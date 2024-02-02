@@ -363,12 +363,15 @@
     </Filter>
     <Filter Include="02.GameObjects\04.Monster\00. ModelTest\VTF">
       <UniqueIdentifier>{ac4eb217-ebae-46b1-9d8a-06454f02fd2b}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Window">
       <UniqueIdentifier>{b5355508-808b-4166-8998-e320d2cc8744}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\00.UI\99.tuto">
       <UniqueIdentifier>{f002451a-1d54-4f47-bfd8-09740f319e97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Tentacle">
+      <UniqueIdentifier>{e6130b2d-99fe-4290-b345-00db4943c384}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -741,6 +744,7 @@
     <ClInclude Include="..\Public\Tutorial.h">
       <Filter>02.GameObjects\00.UI\99.tuto</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Tentacle.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1107,6 +1111,7 @@
     <ClCompile Include="..\Private\Tutorial.cpp">
       <Filter>02.GameObjects\00.UI\99.tuto</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Tentacle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">

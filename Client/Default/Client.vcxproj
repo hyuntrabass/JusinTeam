@@ -239,6 +239,7 @@
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\Lake.h" />
     <ClInclude Include="..\Public\Spider.h" />
+    <ClInclude Include="..\Public\Tentacle.h" />
     <ClInclude Include="..\Public\TestTree.h" />
     <ClInclude Include="..\Public\TextButton.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
@@ -364,6 +365,7 @@
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Lake.cpp" />
     <ClCompile Include="..\Private\Spider.cpp" />
+    <ClCompile Include="..\Private\Tentacle.cpp" />
     <ClCompile Include="..\Private\TestTree.cpp" />
     <ClCompile Include="..\Private\TextButton.cpp" />
     <ClCompile Include="..\Private\Level_Custom.cpp" />

@@ -316,6 +316,11 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 
 			m_bCreateMissile = false;
 			m_bCreateSpider = false;
+
+			m_bAttacked1 = false;
+			m_bAttacked2 = false;
+			m_bAttacked3 = false;
+
 			break;
 
 		case Client::CGroar_Boss::BOSS_STATE_THROW_ATTACK: // 00, 01
@@ -651,27 +656,65 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 	case Client::CGroar_Boss::BOSS_STATE_FLOOR_ATTACK:
 
+	{
+		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+		_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+
+		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+		_float fDistance = (vPlayerPos - vPos).Length();
+
 		switch (m_Animation.iAnimIndex)
 		{
 		case MON_GROAR_ASGARD_ATTACK03:
 			if (m_pBossModelCom->Get_CurrentAnimPos() >= 69.f && m_pBossModelCom->Get_CurrentAnimPos() <= 72.f)
 			{
 				m_pGameInstance->Set_ShakeCam(true);
+
+				if (fDistance <= 4.f)
+				{
+					if (!m_bAttacked1)
+					{
+						_uint iDamage = 50 + rand() % 20;
+						m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);
+						m_bAttacked1 = true;
+					}
+				}
 			}
 
 			if (m_pBossModelCom->Get_CurrentAnimPos() >= 97.f && m_pBossModelCom->Get_CurrentAnimPos() <= 100.f)
 			{
 				m_pGameInstance->Set_ShakeCam(true);
+
+				if (fDistance <= 4.f)
+				{
+					if (!m_bAttacked2)
+					{
+						_uint iDamage = 50 + rand() % 20;
+						m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);
+						m_bAttacked2 = true;
+					}
+				}
 			}
 
 			if (m_pBossModelCom->Get_CurrentAnimPos() >= 135.f && m_pBossModelCom->Get_CurrentAnimPos() <= 138.f)
 			{
 				m_pGameInstance->Set_ShakeCam(true);
+
+				if (fDistance <= 4.f)
+				{
+					if (!m_bAttacked3)
+					{
+						_uint iDamage = 80 + rand() % 20;
+						m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Stun);
+						m_bAttacked3 = true;
+					}
+				}
 			}
 
 			break;
 
 		case MON_GROAR_ASGARD_ATTACK06:
+
 			break;
 
 		case MON_GROAR_ASGARD_ATTACK07:
@@ -692,6 +735,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			m_eBossCurState = BOSS_STATE_CHASE;
 			m_bAttack_Selected[ATTACK_FLOOR] = true;
 		}
+	}
 
 		break;
 

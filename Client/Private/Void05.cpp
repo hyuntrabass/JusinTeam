@@ -3,6 +3,8 @@
 const _float CVoid05::m_fChaseRange = 7.f;
 const _float CVoid05::m_fAttackRange = 3.f;
 
+_uint CVoid05::m_iIndex = 0;
+
 CVoid05::CVoid05(_dev pDevice, _context pContext)
 	: CMonster(pDevice, pContext)
 {
@@ -31,10 +33,6 @@ HRESULT CVoid05::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-
-	m_Animation.iAnimIndex = IDLE;
-	m_Animation.isLoop = true;
-	m_Animation.bSkipInterpolation = false;
 
 	m_eCurState = STATE_IDLE;
 
@@ -67,6 +65,16 @@ HRESULT CVoid05::Init(void* pArg)
 		}
 	}
 
+	if (m_iIndex % 2 == 0)
+	{
+		m_eIdleAnim = TU02_SC02_MON_ATTACK_LOOP;
+	}
+	else
+	{
+		m_eIdleAnim = TU02_SC02_MON_01;
+	}
+
+	++m_iIndex;
 
 	return S_OK;
 }
@@ -75,7 +83,8 @@ void CVoid05::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_5))
 	{
-		Set_Damage(0, AT_Sword_Common);
+		//Set_Damage(0, AT_Sword_Common);
+		m_iHP = 0;
 	}
 
 	Init_State(fTimeDelta);
@@ -156,7 +165,7 @@ void CVoid05::Init_State(_float fTimeDelta)
 		switch (m_eCurState)
 		{
 		case Client::CVoid05::STATE_IDLE:
-			m_Animation.iAnimIndex = TU02_SC02_MON_ATTACK_LOOP;
+			m_Animation.iAnimIndex = m_eIdleAnim;
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 2.f;
 

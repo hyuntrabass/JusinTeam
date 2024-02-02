@@ -59,6 +59,14 @@ HRESULT CGoat::Init(void* pArg)
 
 	m_pTransformCom->Set_Position(_vec3(100.f, 8.f, 108.f));
 
+	if (pArg)
+	{
+		if (FAILED(__super::Init(pArg)))
+		{
+			return E_FAIL;
+		}
+	}
+
 	return S_OK;
 }
 
