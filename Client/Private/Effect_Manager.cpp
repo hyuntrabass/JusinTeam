@@ -185,6 +185,8 @@ HRESULT CEffect_Manager::Read_EffectFile()
 				File.read(reinterpret_cast<_char*>(&Info.fAlphaInit), sizeof Info.fAlphaInit);
 				File.read(reinterpret_cast<_char*>(&Info.fAlphaDelta), sizeof Info.fAlphaDelta);
 				File.read(reinterpret_cast<_char*>(&Info.fRectRotationAngle), sizeof Info.fRectRotationAngle);
+				File.read(reinterpret_cast<_char*>(&Info.isBillboard), sizeof Info.isBillboard);
+				File.read(reinterpret_cast<_char*>(&Info.vBillboardRotation), sizeof Info.vBillboardRotation);
 
 				size_t iNameSize{};
 

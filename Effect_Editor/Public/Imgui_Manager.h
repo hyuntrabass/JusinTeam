@@ -40,6 +40,8 @@ struct OldEffectInfo
 	bool isUVLoop{};
 	float fAlphaInit{};
 	float fAlphaDelta{};
+	float fRectRotationAngle{};
+	bool isBillboard{};
 
 	bool hasLight{};
 	LIGHT_DESC Light_Desc{};
