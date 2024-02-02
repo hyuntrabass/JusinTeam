@@ -814,7 +814,6 @@ HRESULT CPlayer::Render_Parts(PART_TYPE Parts, _uint Index)
 
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &g_HasMaskTex, sizeof _bool)))
 			return E_FAIL;
-		}
 
 		if (Parts == PT_HAIR)
 		{
