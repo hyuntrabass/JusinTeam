@@ -14,7 +14,7 @@ public:
 	ID3D11Texture2D* Get_Texture2D();
 
 public:
-	HRESULT Init(_uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor);
+	HRESULT Init(_uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor, const _bool isMultiSample);
 	void Clear();
 	HRESULT Bind_ShaderResourceView(class CShader* pShader, const _char* pVariableName);
 
@@ -45,7 +45,7 @@ private:
 
 
 public:
-	static CRenderTarget* Create(_dev pDevice, _context pContext, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor);
+	static CRenderTarget* Create(_dev pDevice, _context pContext, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor, const _bool isMultiSample);
 	virtual void Free() override;
 };
 

@@ -1,4 +1,5 @@
 #include "Void05.h"
+#include "Animation.h"
 
 const _float CVoid05::m_fChaseRange = 7.f;
 const _float CVoid05::m_fAttackRange = 3.f;
@@ -33,6 +34,16 @@ HRESULT CVoid05::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+
+	m_Animation.iAnimIndex = IDLE;
+	m_Animation.isLoop = true;
+	m_Animation.bSkipInterpolation = true;
+
+	random_device rand;
+	_randNum RandomNumber(rand());
+	_float fCurrentAnimDuration = m_pModelCom->Get_Animation(TU02_SC02_MON_ATTACK_LOOP)->Get_Duration();
+	_randFloat RandomAnimPos(0.f, fCurrentAnimDuration);
+	m_Animation.fStartAimPos = RandomAnimPos(RandomNumber);
 
 	m_eCurState = STATE_IDLE;
 
@@ -105,6 +116,8 @@ void CVoid05::Tick(_float fTimeDelta)
 void CVoid05::Late_Tick(_float fTimeDelta)
 {
 	__super::Late_Tick(fTimeDelta);
+	m_Animation.fStartAimPos = 0.f;
+	m_Animation.bSkipInterpolation = false;
 
 #ifdef _DEBUGTEST
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);

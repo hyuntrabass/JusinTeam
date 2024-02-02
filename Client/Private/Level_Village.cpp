@@ -17,7 +17,7 @@ HRESULT CLevel_Village::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_VILLAGE);
 	m_pGameInstance->StopAll();
-	m_pGameInstance->PlayBGM(TEXT("BGM_1st_Village"));
+
 
 	if (FAILED(Ready_Player()))
 	{
@@ -97,6 +97,7 @@ HRESULT CLevel_Village::Init()
 	m_pGameInstance->Set_FogNF(_vec2(50.f, 2000.f));
 	m_pGameInstance->Set_FogColor(_color(1.f));
 
+	m_pGameInstance->PlayBGM(TEXT("BGM_1st_Village"));
 	return S_OK;
 }
 

@@ -191,8 +191,8 @@ HRESULT CVTFModel::Play_Animation(_float fTimeDelta)
 			m_PlayAnimDesc.eCurrent.fRatio = m_PlayAnimDesc.eCurrent.fTime;
 		}
 		
-		if (static_cast<_float>(m_PlayAnimDesc.eCurrent.iCurrFrame) + m_PlayAnimDesc.eCurrent.fTime >= 
-			static_cast<_float>(pPlayingAnim->Get_MaxFrame()) * m_AnimDesc.fDurationRatio)
+		if (static_cast<_float>(m_PlayAnimDesc.eCurrent.iCurrFrame) + m_PlayAnimDesc.eCurrent.fTime >=
+			(static_cast<_float>(pPlayingAnim->Get_MaxFrame()) - 1.f) * m_AnimDesc.fDurationRatio)
 		{
 			if (m_AnimDesc.isLoop)
 			{	
@@ -222,6 +222,7 @@ void CVTFModel::Set_Animation(ANIM_DESC Animation_Desc)
 		Animation_Desc.bRestartAnimation)
 	{
 		m_isAnimChanged = true;
+		m_isFinished = false;
 
 		if (Animation_Desc.iAnimIndex >= m_iNumAnimations)
 		{

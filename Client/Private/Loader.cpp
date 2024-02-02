@@ -1060,7 +1060,7 @@ HRESULT CLoader::Load_GamePlay()
 
 
 	if(FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, L"Prototype_Component_Shader_Water", 
-		CShader::Create(m_pDevice, m_pContext, L"../../Client/Bin/ShaderFiles/Shader_Water.hlsl", VTXPOSTEX::Elements, VTXPOSTEX::iNumElements))))
+		CShader::Create(m_pDevice, m_pContext, L"../../Client/Bin/ShaderFiles/Shader_Water.hlsl", VTXNORTEX::Elements, VTXNORTEX::iNumElements))))
 		return E_FAIL;
 
 #pragma endregion
