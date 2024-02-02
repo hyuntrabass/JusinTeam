@@ -124,6 +124,12 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			__super::Tick(fTimeDelta);
 			return;
 		}
+		if (m_pGameInstance->Get_CameraState() == CS_SKILLBOOK)
+		{
+			SkillBook_Mode(fTimeDelta);
+			__super::Tick(fTimeDelta);
+			return;
+		}
 
 		if (m_pGameInstance->Get_CameraState() == CS_SHOP)
 		{
@@ -557,6 +563,17 @@ void CCamera_Main::ZOOM_Mode(_float fTimeDelta)
 	vTargetLook.y = 0.f;
 	_vec4 vNewLook = XMVectorLerp(vCurLook, vTargetLook, fLerpFactor);
 	m_pTransformCom->LookAt(vNewLook);
+}
+
+void CCamera_Main::SkillBook_Mode(_float fTimeDelta)
+{
+	CTransform* pTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_GAMEPLAY, TEXT("Layer_ItemMerchant"), TEXT("Com_Transform"));
+	_vec4 vShopPos = _vec4(0.f, 1001.4f, 0.f, 1.f);
+
+	m_pTransformCom->Set_State(State::Pos, vShopPos);
+
+	m_pTransformCom->LookAt_Dir(_vec4(0.129203543f, -0.129055128f, -0.983180106f, 0.f));
+
 }
 
 void CCamera_Main::WorldMap_Mode(_float fTimeDelta)

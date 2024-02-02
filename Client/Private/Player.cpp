@@ -946,8 +946,6 @@ void CPlayer::Move(_float fTimeDelta)
 					m_pTransformCom->LookAt_Dir(vDirection);
 				}
 			}
-
-
 		}
 
 		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON))

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SkillDesc.h"
+#include "SkillBook.h"
 #include "Tutorial.h"
 #include "Pop_Alert.h"
 #include "InvenWindow.h"

@@ -35,10 +35,10 @@ private:
 	_float m_AimZoomOutTime{};
 	_float m_fSelectRotation{};
 	_int m_iRotation{1};
-	float m_SwayAmount = 3.0f;  // �ⷷ���� ũ�⸦ �����ϴ� ��. ���ϴ� ũ��� ���� ����
-	float m_SwaySpeed = 3.0f;   // �ⷷ���� �ӵ��� �����ϴ� ��. ���ϴ� �ӵ��� ���� ����
-	float m_TimeOffset = 0.5f;  // �� �ⷷ�� ������ �ð� ��. ���ϴ� �ð� ���� ���� ����
-	float m_CurrentTime{}; // ���� �ð�
+	float m_SwayAmount = 3.0f; 
+	float m_SwaySpeed = 3.0f;  
+	float m_TimeOffset = 0.5f; 
+	float m_CurrentTime{};
 
 private:
 	_bool Inven_Mode(_float fTimeDelta);
@@ -46,6 +46,7 @@ private:
 	void Select_Mode(_float fTimeDelta);
 	void Custom_Mode(_float fTimeDelta);
 	void ZOOM_Mode(_float fTimeDelta);
+	void SkillBook_Mode(_float fTimeDelta);
 	void WorldMap_Mode(_float fTimeDelta);
 
 private:

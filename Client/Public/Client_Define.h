@@ -43,6 +43,7 @@ namespace Client
 		CS_ZOOM,
 		CS_INVEN,
 		CS_SHOP,
+		CS_SKILLBOOK,
 		CS_ENDFULLSCREEN,
 		CS_WORLDMAP,
 		CS_STATEEND
@@ -292,6 +293,17 @@ namespace Client
 		_uint iLimited;
 
 	}ITEM;
+	
+	typedef struct tagSkillInfo
+	{
+		wstring strName;
+		_uint iSkillType;
+		_uint iMp;
+		_uint iCoolTime;
+		_uint iSkillIdx;
+		_bool isSkillIn;
+
+	}SKILLINFO;
 
 #pragma region Shader Passes
 	enum AnimMeshPass

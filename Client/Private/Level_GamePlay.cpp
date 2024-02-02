@@ -731,6 +731,13 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	{
 		return E_FAIL;
 	}
+	/*
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_SkillBook"))))
+	{
+		return E_FAIL;
+	}
+	*/
+	
 
 	return S_OK;
 }

@@ -1,37 +1,39 @@
-#include "Inven.h"
+#include "SkillBook.h"
 #include "GameInstance.h"
 #include "TextButton.h"
 #include "UI_Manager.h"
 #include "FadeBox.h"
 #include "InvenFrame.h"
 #include "Event_Manager.h"
-CInven::CInven(_dev pDevice, _context pContext)
+#include "SkillDesc.h"
+
+CSkillBook::CSkillBook(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
 }
 
-CInven::CInven(const CInven& rhs)
+CSkillBook::CSkillBook(const CSkillBook& rhs)
 	: COrthographicObject(rhs)
 {
 }
 
-HRESULT CInven::Init_Prototype()
+HRESULT CSkillBook::Init_Prototype()
 {
 	m_isPrototype = true;
 	return S_OK;
 }
 
-HRESULT CInven::Init(void* pArg)
+HRESULT CSkillBook::Init(void* pArg)
 {
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
-	
+
 	m_fSizeX = 70.f;
 	m_fSizeY = 70.f;
-	m_fX = 1160.f;
-	m_fY = 45.f;
+	m_fX = 1100.f;
+	m_fY = 47.f;
 	m_fDepth = (_float)D_INVEN / (_float)D_END;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
@@ -41,46 +43,20 @@ HRESULT CInven::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	if (FAILED(Init_SkillDesc()))
+	{
+		return E_FAIL;
+	}
+
 	HRESULT hr = CUI_Manager::Get_Instance()->Set_Inven(this);
 	if (FAILED(hr))
 	{
 		return E_FAIL;
 	}
-	wstring strItem = TEXT("체력 포션");
-	CUI_Manager::Get_Instance()->Set_Item(strItem, 80);
-	
-	strItem = TEXT("마나 포션");
-	CUI_Manager::Get_Instance()->Set_Item(strItem, 60);
-	
-	strItem = TEXT("그냥모자");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
-	
-	strItem = TEXT("안흔한모자");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
-	
-	strItem = TEXT("유니크헬멧");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
-	
-	strItem = TEXT("유니크한옷");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
-	
-	strItem = TEXT("신화옷");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
-	
-	strItem = TEXT("그냥활");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
-
-	strItem = TEXT("그냥옷");
-	ITEM eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
-	m_pWearableSlots[W_CHEST]->Set_WearableItem(eItem);
-
-	strItem = TEXT("그냥검");
-	eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
-	m_pWearableSlots[W_EQUIP]->Set_WearableItem(eItem);
 	return S_OK;
 }
 
-void CInven::Tick(_float fTimeDelta)
+void CSkillBook::Tick(_float fTimeDelta)
 {
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
@@ -100,13 +76,6 @@ void CInven::Tick(_float fTimeDelta)
 			{
 				return;
 			}
-
-			if (CEvent_Manager::Get_Instance()->Get_TutorialLevel() == T_OPENINVEN)
-			{
-				CEvent_Manager::Get_Instance()->Set_TutorialComplete(T_OPENINVEN);
-				CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_EQUIP);
-			}
-
 			CFadeBox::FADE_DESC Desc = {};
 			Desc.eState = CFadeBox::FADEOUT;
 			Desc.fDuration = 0.8f;
@@ -114,12 +83,10 @@ void CInven::Tick(_float fTimeDelta)
 			{
 				return;
 			}
-
-			m_pGameInstance->Set_CameraState(CS_INVEN);
-			CUI_Manager::Get_Instance()->Set_InvenActive(true);
-			m_bNewItemIn = false;
+			m_pGameInstance->Set_CameraState(CS_SKILLBOOK);
+			m_bNewSkillIn = false;
 			m_isActive = true;
-			Init_InvenState();
+			Init_SkillBookState();
 		}
 	}
 
@@ -132,11 +99,6 @@ void CInven::Tick(_float fTimeDelta)
 	{
 		if (m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
-			if (CEvent_Manager::Get_Instance()->Get_TutorialLevel() == T_EXIT)
-			{
-				CEvent_Manager::Get_Instance()->Set_TutorialComplete(T_EXIT);
-				//CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_EXIT);
-			}
 			CFadeBox::FADE_DESC Desc = {};
 			Desc.eState = CFadeBox::FADEOUT;
 			Desc.fDuration = 0.8f;
@@ -146,81 +108,108 @@ void CInven::Tick(_float fTimeDelta)
 			}
 			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
-			CUI_Manager::Get_Instance()->Set_InvenActive(false);
 			m_isActive = false;
+			return;
 		}
 	}
+	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
+	{
+		/* 인벤토리 메뉴 피킹 */
+		for (size_t i = 0; i < TYPE_END; i++)
+		{
+			if (PtInRect(&dynamic_cast<CTextButtonColor*>(m_pSkillType[i])->Get_Rect(), ptMouse))
+			{
+				m_ePrevType = m_eCurType;
+				m_eCurType = (SKILL_TYPE)i;
+
+				if (m_ePrevType != m_eCurType)
+				{
+					dynamic_cast<CTextButtonColor*>(m_pSkillType[m_ePrevType])->Set_Alpha(0.6f);
+				}
+				dynamic_cast<CTextButtonColor*>(m_pSkillType[i])->Set_Alpha(1.f);
+				_vec2 vPos = dynamic_cast<CTextButtonColor*>(m_pSkillType[i])->Get_Position();
+				dynamic_cast<CTextButton*>(m_pSelectButton)->Set_Position(vPos);
+				_vec2 fUnderBarPos = dynamic_cast<CTextButton*>(m_pUnderBar)->Get_Position();
+				dynamic_cast<CTextButton*>(m_pUnderBar)->Set_Position(_vec2(vPos.x, fUnderBarPos.y));
+
+				break;
+			}
+		}
+
+		_bool bSelect = false;
+		size_t i = 0;
+		for (i = 0; i < m_vecSkillDesc[m_eCurType].size(); i++)
+		{
+			if (PtInRect(&m_vecSkillDesc[m_eCurType][i]->Get_Rect(), ptMouse))
+			{
+				m_vecSkillDesc[m_eCurType][i]->Select_Skill(true);
+				bSelect = true;
+				break;
+			}
+		}
+		if (bSelect)
+		{
+			for (size_t j = 0; j < m_vecSkillDesc[m_eCurType].size(); j++)
+			{
+				if (i != j)
+				{
+					m_vecSkillDesc[m_eCurType][j]->Select_Skill(false);
+				}
+			}
+		}
+
+	}
+
+
+	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
+	dynamic_cast<CTextButton*>(m_pMoney)->Set_Text(to_wstring(iMoney));
+
+	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
+	dynamic_cast<CTextButton*>(m_pDiamond)->Set_Text(to_wstring(iDiamond));
+
 
 
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
-	if (m_isActive)
+	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
+
+	for (size_t i = 0; i < TYPE_END; i++)
 	{
-		for (size_t i = 0; i < WEARABLE_TYPE::W_END; i++)
-		{
-			if (PtInRect(&m_pWearableSlots[i]->Get_Rect(), ptMouse) && m_pGameInstance->Mouse_Down(DIM_RBUTTON))
-			{
-				if (m_pWearableSlots[i]->Is_Full())
-				{
-					ITEM Item = m_pWearableSlots[i]->Get_ItemDesc();
-					dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(Item);
-					m_pWearableSlots[i]->Delete_Item();
-				}
-				break;
-			}
-		}	
-
-		if (m_isReset)
-		{
-			_bool isReset = false;
-			for (size_t i = 0; i < WEARABLE_TYPE::W_END; i++)
-			{
-				if (m_pWearableSlots[i]->Is_Full())
-				{
-					ITEM Item = m_pWearableSlots[i]->Get_ItemDesc();
-					dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(Item);
-					m_pWearableSlots[i]->Delete_Item();
-					isReset = true;
-					break;
-				}
-			}
-			if (!isReset)
-			{
-				m_isReset = false;
-			}
-		}
-
-
-		CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
-		m_pExitButton->Tick(fTimeDelta);
-		m_pInvenFrame->Tick(fTimeDelta);
-		m_pBackGround->Tick(fTimeDelta);
-		m_pTitleButton->Tick(fTimeDelta);
-		for (size_t i = 0; i < WEARABLE_TYPE::W_END; i++)
-		{
-			m_pWearableSlots[i]->Tick(fTimeDelta);
-		}
-
+		m_pSkillType[i]->Tick(fTimeDelta);
 	}
+	for (size_t i = 0; i < m_vecSkillDesc[m_eCurType].size(); i++)
+	{
+		m_vecSkillDesc[m_eCurType][i]->Tick(fTimeDelta);
+	}
+	m_pUnderBar->Tick(fTimeDelta);
+	m_pSelectButton->Tick(fTimeDelta);
+	m_pExitButton->Tick(fTimeDelta);
+	m_pBackGround->Tick(fTimeDelta);
+	m_pTitleButton->Tick(fTimeDelta);
 
 }
 
-void CInven::Late_Tick(_float fTimeDelta)
+void CSkillBook::Late_Tick(_float fTimeDelta)
 {
 	if (m_isActive)
 	{
+		for (size_t i = 0; i < TYPE_END; i++)
+		{
+			m_pSkillType[i]->Late_Tick(fTimeDelta);
+		}
+		for (size_t i = 0; i < m_vecSkillDesc[m_eCurType].size(); i++)
+		{
+			m_vecSkillDesc[m_eCurType][i]->Late_Tick(fTimeDelta);
+		}
+		m_pUnderBar->Late_Tick(fTimeDelta);
+		m_pSelectButton->Late_Tick(fTimeDelta);
+
 		m_pMoney->Late_Tick(fTimeDelta);
 		m_pDiamond->Late_Tick(fTimeDelta);
-		m_pSeigeLine->Late_Tick(fTimeDelta);
-		m_pInvenFrame->Late_Tick(fTimeDelta);
 		m_pExitButton->Late_Tick(fTimeDelta);
 		m_pBackGround->Late_Tick(fTimeDelta);
 		m_pTitleButton->Late_Tick(fTimeDelta);
-		for (size_t i = 0; i < WEARABLE_TYPE::W_END; i++)
-		{
-			m_pWearableSlots[i]->Late_Tick(fTimeDelta);
-		}
 	}
 
 
@@ -228,7 +217,7 @@ void CInven::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
-	if (m_bNewItemIn)
+	if (m_bNewSkillIn)
 	{
 		m_pNotify->Late_Tick(fTimeDelta);
 	}
@@ -236,7 +225,7 @@ void CInven::Late_Tick(_float fTimeDelta)
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
-HRESULT CInven::Render()
+HRESULT CSkillBook::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
@@ -257,49 +246,46 @@ HRESULT CInven::Render()
 	return S_OK;
 }
 
-
-void CInven::Init_InvenState()
+void CSkillBook::Init_SkillBookState()
 {
-	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_FrameMode(CInvenFrame::F_INVEN);
-	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Init_State();
-	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Parent(this);
-
 	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
 	dynamic_cast<CTextButton*>(m_pMoney)->Set_Text(to_wstring(iMoney));
 
 	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
 	dynamic_cast<CTextButton*>(m_pDiamond)->Set_Text(to_wstring(iDiamond));
-
 }
 
-HRESULT CInven::Set_Item(ITEM eItem, _uint iNum)
+HRESULT CSkillBook::Init_SkillDesc()
 {
-	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(eItem, iNum);
+	for (size_t i = 0; i < TYPE_END;i++)
+	{
+		_float fStartY = 85.f + 34.f + 2.f + 45.f;
+		_float fTerm = 2.f;
+		_float fDescY = 90.f;
+		for (_uint j = 0; j < 4; j++)
+		{
+			SKILLINFO tInfo = CUI_Manager::Get_Instance()->Get_SkillInfo((WEAPON_TYPE)i, j);
+
+			CSkillDesc::SKILLBOOK_DESC SkillDesc = {};
+			SkillDesc.fDepth = m_fDepth - 0.01f;
+			SkillDesc.tSkillInfo = tInfo;
+			SkillDesc.vPosition = _vec2(950.f + fTerm + 150.f, fStartY + 90.f * j + fTerm * j);
+
+			CSkillDesc* pSkillDesc = (CSkillDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_SkillDesc"), &SkillDesc);
+
+			if (not pSkillDesc)
+			{
+				return E_FAIL;
+			}
+
+			m_vecSkillDesc[i].push_back(pSkillDesc);
+		}
+
+	}
 	return S_OK;
 }
 
-HRESULT CInven::Set_WearableItem(WEARABLE_TYPE eType, ITEM eItemDesc)
-{
-	if (m_pWearableSlots[eType] == nullptr)
-	{
-		return E_FAIL;
-	}
-	if (m_pWearableSlots[eType]->Is_Full())
-	{
-		ITEM Item = m_pWearableSlots[eType]->Get_ItemDesc();
-		dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(Item);
-	}
-	m_pWearableSlots[eType]->Set_WearableItem(eItemDesc);
-
-	return S_OK;
-}
-
-void CInven::Reset_WearableSlot()
-{
-	m_isReset = true;
-}
-
-HRESULT CInven::Add_Parts()
+HRESULT CSkillBook::Add_Parts()
 {
 	CTextButton::TEXTBUTTON_DESC Button = {};
 
@@ -320,9 +306,9 @@ HRESULT CInven::Add_Parts()
 	Button.eLevelID = LEVEL_STATIC;
 	Button.fDepth = m_fDepth - 0.01f;
 	Button.fFontSize = 0.5f;
-	Button.strText = TEXT("가방");
+	Button.strText = TEXT("스킬북");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Back");
-	Button.vPosition = _vec2(20.f, 20.f);
+	Button.vPosition = _vec2(40.f, 20.f);
 	Button.vSize = _vec2(50.f, 50.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	Button.vTextPosition = _vec2(40.f, 0.f);
@@ -345,19 +331,7 @@ HRESULT CInven::Add_Parts()
 	{
 		return E_FAIL;
 	}
-	Button.strText = TEXT("");
-	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SiegeLine");
-	Button.vPosition = _vec2(102.f, 350.f);
-	Button.vSize = _vec2(6.f, 360.f);
 
-	m_pSeigeLine = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
-
-	if (not m_pSeigeLine)
-	{
-		return E_FAIL;
-	}
-
-	
 	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
 	Button.strText = to_wstring(iMoney);
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_coin");
@@ -387,6 +361,35 @@ HRESULT CInven::Add_Parts()
 		return E_FAIL;
 	}
 
+	_float fY = 85.f;
+	_float fTerm = 300.f / (_uint)TYPE_END;
+	_float fStartX = 880.f + fTerm;
+
+
+	Button.fDepth = m_fDepth - 0.01f;
+	Button.strText = TEXT("");
+	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_InvenUnderBar");
+	Button.vSize = _vec2(150.f, 150.f);
+	Button.vPosition = _vec2(fStartX, fY + 12.f);
+	Button.vTextPosition = _vec2(0.f, 0.f);
+	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+
+	m_pUnderBar = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+	if (not m_pUnderBar)
+	{
+		return E_FAIL;
+	}
+
+	Button.fDepth = m_fDepth - 0.02f;
+	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SelecInvenMenu");
+	Button.vSize = _vec2(fTerm, 34.f);
+	Button.vPosition = _vec2(fStartX, fY);
+	m_pSelectButton = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+	if (not m_pSelectButton)
+	{
+		return E_FAIL;
+	}
+
 	UiInfo info{};
 	info.strTexture = TEXT("Prototype_Component_Texture_BackGround_Mask");
 	info.vPos = _vec2((_float)g_iWinSizeX/2.f, (_float)g_iWinSizeY / 2.f);
@@ -399,35 +402,43 @@ HRESULT CInven::Add_Parts()
 		return E_FAIL;
 	}
 
-	for (size_t i = 0; i < WEARABLE_TYPE::W_END; i++)
-	{
-		CWearable_Slot::WEARABLESLOT SlotDesc = {};
-		SlotDesc.eType = (WEARABLE_TYPE)i;
-		SlotDesc.fDepth = m_fDepth - 0.01f;
-		SlotDesc.vSize = _float2(60.f, 60.f);
-		SlotDesc.vPosition = _float2(60.f, 180.f + (SlotDesc.vSize.x * (_uint)i) + (4.f * (_uint)i));
-		m_pWearableSlots[i] = (CWearable_Slot*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Wearable_Slot"), &SlotDesc);
-		if (not m_pWearableSlots[i])
-		{
-			return E_FAIL;
-		}
-	}
 
-	CInvenFrame::INVENFRAME_DESC InvenDesc = {};
-	//InvenDesc.pParent = this;
-	InvenDesc.fDepth = m_fDepth - 0.01f;
-	InvenDesc.vPosition = _float2(1070.f, 400.f);
-	InvenDesc.vSize = _float2(360.f, 580.f);
-	m_pInvenFrame = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_InvenFrame"), &InvenDesc);
-	if (not m_pInvenFrame)
+
+	CTextButtonColor::TEXTBUTTON_DESC TextButton = {};
+	TextButton.eLevelID = LEVEL_STATIC;
+	TextButton.strTexture = TEXT("");
+	TextButton.fDepth = m_fDepth - 0.01f;
+	TextButton.fAlpha = 1.f;
+	TextButton.fFontSize = 0.35f;
+	TextButton.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	TextButton.strText = TEXT("스나이퍼");
+	TextButton.vPosition = _vec2(fStartX, fY);
+	TextButton.vSize = _vec2(m_fSizeX / 2.f, 70.f);
+	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_NoTex");
+	TextButton.vTextPosition = _vec2(0.f, 0.f);
+	m_pSkillType[SNIPER] = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+
+	if (not m_pSkillType[SNIPER])
 	{
 		return E_FAIL;
 	}
-	CUI_Manager::Get_Instance()->Set_InvenFrame(m_pInvenFrame);
+	dynamic_cast<CTextButtonColor*>(m_pSkillType[SNIPER])->Set_Pass(VTPass_UI_Alpha);
+
+	TextButton.strText = TEXT("어쌔신");
+	TextButton.vPosition = _vec2(fStartX + fTerm, fY);
+	TextButton.vSize = _vec2(m_fSizeX / 2.f, 70.f);
+	TextButton.vTextPosition = _vec2(0.f, 0.f);
+	m_pSkillType[ASSASSIN] = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+
+	if (not m_pSkillType[ASSASSIN])
+	{
+		return E_FAIL;
+	}
+	dynamic_cast<CTextButtonColor*>(m_pSkillType[ASSASSIN])->Set_Pass(VTPass_UI_Alpha);
 	return S_OK;
 }
 
-HRESULT CInven::Add_Components()
+HRESULT CSkillBook::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -444,7 +455,7 @@ HRESULT CInven::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_InvenBar"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_SkillbookBar"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -452,7 +463,7 @@ HRESULT CInven::Add_Components()
 	return S_OK;
 }
 
-HRESULT CInven::Bind_ShaderResources()
+HRESULT CSkillBook::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
 		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
@@ -473,53 +484,62 @@ HRESULT CInven::Bind_ShaderResources()
 	return S_OK;
 }
 
-CInven* CInven::Create(_dev pDevice, _context pContext)
+CSkillBook* CSkillBook::Create(_dev pDevice, _context pContext)
 {
-	CInven* pInstance = new CInven(pDevice, pContext);
+	CSkillBook* pInstance = new CSkillBook(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CInven");
+		MSG_BOX("Failed to Create : CSkillBook");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CInven::Clone(void* pArg)
+CGameObject* CSkillBook::Clone(void* pArg)
 {
-	CInven* pInstance = new CInven(*this);
+	CSkillBook* pInstance = new CSkillBook(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CInven");
+		MSG_BOX("Failed to Clone : CSkillBook");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CInven::Free()
+void CSkillBook::Free()
 {
 	__super::Free();
 
+
 	if (!m_isPrototype)
 	{
-		for (size_t i = 0; i < WEARABLE_TYPE::W_END; i++)
+		for (size_t i = 0; i < TYPE_END; i++)
 		{
-			Safe_Release(m_pWearableSlots[i]);
+			Safe_Release(m_pSkillType[i]);
 		}
 	}
 
+	for (size_t i = 0; i < TYPE_END; i++)
+	{
+		for (auto& iter : m_vecSkillDesc[i])
+		{
+			Safe_Release(iter);
+		}
+	}
+
+	Safe_Release(m_pUnderBar);
+	Safe_Release(m_pSelectButton);
 
 	Safe_Release(m_pMoney);
 	Safe_Release(m_pDiamond);
 	Safe_Release(m_pNotify);
-	Safe_Release(m_pSeigeLine);
 	Safe_Release(m_pBackGround);
 	Safe_Release(m_pExitButton);
 	Safe_Release(m_pTitleButton);
-	Safe_Release(m_pInvenFrame);
 
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);

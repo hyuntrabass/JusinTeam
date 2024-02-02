@@ -6,15 +6,14 @@
 
 BEGIN(Client)
 class CWearable_Slot;
-class CShopDesc;
-class CShop final : public COrthographicObject
+class CSkillBook final : public COrthographicObject
 {
+public:
+	enum SKILL_TYPE { SNIPER, ASSASSIN, TYPE_END };
 private:
-	enum STATE { EXPENDABLE, EQUIP, STATE_END };
-private:
-	CShop(_dev pDevice, _context pContext);
-	CShop(const CShop& rhs);
-	virtual ~CShop() = default;
+	CSkillBook(_dev pDevice, _context pContext);
+	CSkillBook(const CSkillBook& rhs);
+	virtual ~CSkillBook() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -25,43 +24,43 @@ public:
 
 private:
 	CRenderer* m_pRendererCom{ nullptr };
+	CShader* m_pShaderCom{ nullptr };
+	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
+	CTexture* m_pTextureCom{ nullptr };
 
 private:
-	STATE										m_eCurShopState{ EXPENDABLE };
-	STATE										m_ePrevShopType{ EXPENDABLE };
+	SKILL_TYPE									m_ePrevType{ SNIPER };
+	SKILL_TYPE									m_eCurType{ SNIPER };
 	_bool										m_isPrototype{ false };
+	_bool										m_bNewSkillIn{ false };
 	_bool										m_isActive{ false };
-	_bool										m_isFrameExist{ false };
 
 	CGameObject*								m_pMoney{ nullptr };
 	CGameObject*								m_pDiamond{ nullptr };
+	CGameObject*								m_pNotify{ nullptr };
 	CGameObject*								m_pTitleButton{ nullptr };
 	CGameObject*								m_pExitButton{ nullptr };
 	CGameObject*								m_pBackGround{ nullptr };
-	CGameObject*								m_pInvenFrame{ nullptr };
 
 	CGameObject*								m_pUnderBar{ nullptr };
 	CGameObject*								m_pSelectButton{ nullptr };
-	CGameObject*								m_pShopMenu[STATE_END];
-	
-	vector<CShopDesc*>							m_vecShopItems[STATE_END];
+	CGameObject*								m_pSkillType[TYPE_END];
 
-public:
-	_bool IsActive() { return m_isActive; }
-	void Set_ItemPosition(STATE eState);
-	void Open_Shop();
+	vector<class CSkillDesc*>					m_vecSkillDesc[TYPE_END];
+
 
 private:
-	void Init_ShopState();
+	void Init_SkillBookState(); 
+	HRESULT Init_SkillDesc(); 
+
 
 private:
-	HRESULT Init_ShopItems();
 	HRESULT Add_Parts();
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CShop* Create(_dev pDevice, _context pContext);
+	static CSkillBook* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

@@ -21,6 +21,11 @@ HRESULT CUI_Manager::Init()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(Init_Skills()))
+	{
+		return E_FAIL;
+	}
+
 
 	return S_OK;
 }
@@ -253,6 +258,76 @@ HRESULT CUI_Manager::Init_Items()
 	return S_OK;
 }
 
+HRESULT CUI_Manager::Init_Skills()
+{
+	SKILLINFO Info = {};
+	Info.strName = TEXT("환영화살");
+	Info.iSkillType = (_uint)WP_BOW;
+	Info.isSkillIn = false;
+
+	Info.iMp = 45;
+	Info.iCoolTime = 20;
+	Info.iSkillIdx = 0;
+	m_SkillInfo[WP_BOW][Info.iSkillIdx] = Info;
+
+	Info.strName = TEXT("화살비");
+	Info.iMp = 30;
+	Info.iCoolTime = 8;
+	Info.iSkillIdx = 1;
+	m_SkillInfo[WP_BOW][Info.iSkillIdx] = Info;
+
+	Info.strName = TEXT("폭발 화살");
+	Info.iMp = 12;
+	Info.iCoolTime = 6;
+	Info.iSkillIdx = 2;
+	m_SkillInfo[WP_BOW][Info.iSkillIdx] = Info;
+	
+	Info.strName = TEXT("삼중 연사");
+	Info.iMp = 8;
+	Info.iCoolTime = 7;
+	Info.iSkillIdx = 3;
+	m_SkillInfo[WP_BOW][Info.iSkillIdx] = Info;
+	
+	Info.iSkillType = (_uint)WP_SWORD;
+	Info.strName = TEXT("전광 석화");
+	Info.iMp = 12;
+	Info.iCoolTime = 8;
+	Info.iSkillIdx = 0;
+	m_SkillInfo[WP_SWORD][Info.iSkillIdx] = Info;
+
+	Info.strName = TEXT("기습 공격");
+	Info.iMp = 8;
+	Info.iCoolTime = 4;
+	Info.iSkillIdx = 1;
+	m_SkillInfo[WP_SWORD][Info.iSkillIdx] = Info;
+	
+	Info.strName = TEXT("인장 각인");
+	Info.iMp = 6;
+	Info.iCoolTime = 8;
+	Info.iSkillIdx = 2;
+	m_SkillInfo[WP_SWORD][Info.iSkillIdx] = Info;
+
+	Info.strName = TEXT("연속 각인");
+	Info.iMp = 8;
+	Info.iCoolTime = 10;
+	Info.iSkillIdx = 3;
+	m_SkillInfo[WP_SWORD][Info.iSkillIdx] = Info;
+
+
+	return E_NOTIMPL;
+}
+
+const SKILLINFO& CUI_Manager::Get_SkillInfo(WEAPON_TYPE eType, _uint iIdx) const
+{
+	SKILLINFO Info{};
+	if (eType >= WP_END || eType < 0 || iIdx < 0 || iIdx > 4)
+	{
+		return Info;
+	}
+
+	return 	m_SkillInfo[eType][iIdx];
+}
+
 ITEM CUI_Manager::Find_Item(wstring& strItemName)
 {	
 	
@@ -270,7 +345,6 @@ ITEM CUI_Manager::Find_Item(wstring& strItemName)
 
 HRESULT CUI_Manager::Set_Item(wstring& strItemName, _uint iNum)
 {
-
 	ITEM Item = Find_Item(strItemName);
 	if (Item.iInvenType == -1)
 	{

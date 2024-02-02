@@ -49,6 +49,7 @@ private:
 	CGameObject*	m_pInvenFrame{ nullptr };
 
 	vector<CTransform*> m_vecRadarPos[TYPE_END];
+	SKILLINFO		m_SkillInfo[WP_END][4];
 
 public:
 	HRESULT Init();
@@ -59,10 +60,17 @@ public:
 	HRESULT Render();
 	*/
 
+private:
+	HRESULT Init_Items();
+	HRESULT Init_Skills();
+
+
 public:
+	const SKILLINFO& Get_SkillInfo(WEAPON_TYPE eType, _uint iIdx) const;
+
 	void Set_TimeStop(_bool bStop) { m_bTimeStop = bStop; }
 	_bool Get_TimeStop() { return m_bTimeStop; }
-	HRESULT Init_Items();
+
 	ITEM Find_Item(wstring& strItemName);
 
 	HRESULT Set_Item(wstring& strItemName, _uint iNum = 1);

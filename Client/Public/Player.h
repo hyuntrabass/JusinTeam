@@ -292,9 +292,9 @@ public:
 		_int Current_Mp{ 1000 };
 		_int Attack{ 100 };
 		_int Critical{};
-		_int Critical_Dmg{ 150 }; // �⺻ ġ��Ÿ������ 150( �⺻ �������� �߰�50�ۼ�Ʈ ����)
-		_int Armor{}; // ������ 10�϶� �޴� ������ 10�ۼ�Ʈ �ٿ���(90�۸� ����)
-		_float Speed{}; // �⺻ �ȴ� �̼� 2+���ǵ�/2,�ٴ� �̼� 4+���ǵ�
+		_int Critical_Dmg{ 150 }; 
+		_int Armor{}; 
+		_float Speed{};
 	};
 
 private:
