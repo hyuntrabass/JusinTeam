@@ -166,6 +166,7 @@ void CModel::Delete_TriggerEffect(_uint iTriggerEffectIndex)
 		Matrix_iter++;
 	}
 	m_pGameInstance->Delete_Effect((*Matrix_iter));
+	Safe_Delete((*Matrix_iter));
 	m_TriggerEffects.erase(Effect_iter);
 	m_EffectMatrices.erase(Matrix_iter);
 }
