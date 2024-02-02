@@ -20,13 +20,15 @@ HRESULT CVTFTest::Init(void* pArg)
     if (FAILED(Add_Components()))
         return E_FAIL;
 
+    m_pTransformCom->Set_Position(_vec3(101.f, 4.f, 108.f));
+
     return S_OK;
 }
 
 void CVTFTest::Tick(_float fTimeDelta)
 {
     m_Animation.iAnimIndex = 1;
-    m_Animation.fAnimSpeedRatio = 2.f;
+    m_Animation.fAnimSpeedRatio = 1.5f;
     m_Animation.isLoop = true;
     m_pModelCom->Set_Animation(m_Animation);
 }
