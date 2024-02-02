@@ -59,6 +59,14 @@ HRESULT CRabbit::Init(void* pArg)
 
 	m_pTransformCom->Set_Position(_vec3(100.f, 8.f, 108.f));
 
+	if (pArg)
+	{
+		if (FAILED(__super::Init(pArg)))
+		{
+			return E_FAIL;
+		}
+	}
+
 	CHPMonster::HP_DESC HpDesc = {};
 	HpDesc.eLevelID = LEVEL_STATIC;
 	HpDesc.iMaxHp = m_iHP;
@@ -86,7 +94,6 @@ void CRabbit::Tick(_float fTimeDelta)
 
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
-
 	m_pModelCom->Set_Animation(m_Animation);
 
 	m_HpBar->Tick(fTimeDelta);

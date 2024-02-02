@@ -92,8 +92,14 @@ private:
 	_uint m_iHitPercentage = {};
 
 private:
+	VOID05_ANIM m_eIdleAnim = { ANIM_END };
+
+private:
 	static const _float m_fChaseRange;
 	static const _float m_fAttackRange;
+
+private:
+	static _uint m_iIndex;
 
 public:
 	virtual HRESULT Add_Collider() override;

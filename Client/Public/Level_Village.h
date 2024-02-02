@@ -31,6 +31,9 @@ private:
 	HRESULT Ready_NpcvsMon();
 
 private:
+	HRESULT Ready_Village_Monster();
+
+private:
 	HRESULT Ready_NPC();
 	HRESULT Ready_NPC_Dummy();
 

@@ -20,9 +20,6 @@ HRESULT CLevel_GamePlay::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_GAMEPLAY);
 	m_pGameInstance->StopAll();
-	m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.2f);
-	m_pGameInstance->Play_Sound(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.6f, true);
-	m_pGameInstance->Play_Sound(TEXT("waves"), 0.6f, true);
 
 	CUI_Manager::Get_Instance()->Init();
 
@@ -137,6 +134,10 @@ HRESULT CLevel_GamePlay::Init()
 	{
 		return E_FAIL;
 	}
+
+	m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.2f);
+	m_pGameInstance->Play_Sound(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.6f, true);
+	m_pGameInstance->Play_Sound(TEXT("waves"), 0.6f, true);
 
 	return S_OK;
 }
@@ -259,8 +260,9 @@ HRESULT CLevel_GamePlay::Ready_Light()
 
 	LightDesc.eType = LIGHT_DESC::Directional;
 	LightDesc.vDirection = _float4(-1.f, -2.f, -1.f, 0.f);
-	LightDesc.vDiffuse = _vec4(1.f);
+	LightDesc.vDiffuse = _vec4(0.2f, 0.2f, 0.2f, 1.f);
 	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
+	LightDesc.vSpecular = _vec4(1.f);
 
 	return m_pGameInstance->Add_Light(LEVEL_GAMEPLAY, TEXT("Light_Main"), LightDesc);
 }
@@ -341,11 +343,11 @@ HRESULT CLevel_GamePlay::Ready_Map()
 	inFile.close();
 
 	CLake::WATER_DESC Desc;
-	Desc.fReflectionScale = 10.f;
-	Desc.fRefractionScale = 10.f;
-	Desc.vPos = _vec3(100.f, 0.01f, 100.f);
+	Desc.fReflectionScale = 0.05f;
+	Desc.fRefractionScale = 0.05f;
+	Desc.vPos = _vec3(100.f, 1.f, 100.f);
 	Desc.vSize = _vec2(200.f,200.f);
-	Desc.fWaterSpeed = 10.f;
+	Desc.fWaterSpeed = 0.1f;
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, L"Layer_Map", L"Prototype_GameObject_Water", &Desc)))
 		return E_FAIL;
 
@@ -457,35 +459,43 @@ HRESULT CLevel_GamePlay::Ready_ModelTest()
 
 HRESULT CLevel_GamePlay::Ready_Monster_Test()
 {
+	for (size_t i = 0; i < 1; i++)
+	{
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Tentacle"), TEXT("Prototype_GameObject_Tentacle"))))
+		{
+			return E_FAIL;
+		}
+
+	}
 	return S_OK;
 }
 
 HRESULT CLevel_GamePlay::Ready_NPC_Test()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_ItemMerchant"), TEXT("Prototype_GameObject_ItemMerchant"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_ItemMerchant"), TEXT("Prototype_GameObject_ItemMerchant"))))
+	//{
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BlackSmith"), TEXT("Prototype_GameObject_BlackSmith"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BlackSmith"), TEXT("Prototype_GameObject_BlackSmith"))))
+	//{
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Aur"), TEXT("Prototype_GameObject_Aur"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Aur"), TEXT("Prototype_GameObject_Aur"))))
+	//{
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Cat"), TEXT("Prototype_GameObject_Cat"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Cat"), TEXT("Prototype_GameObject_Cat"))))
+	//{
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Dog"), TEXT("Prototype_GameObject_Dog"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Dog"), TEXT("Prototype_GameObject_Dog"))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	return S_OK;
 }

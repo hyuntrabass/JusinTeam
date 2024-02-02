@@ -30,9 +30,6 @@ HRESULT CLake::Init(void* pArg)
 	_vec4 vRight = m_pTransformCom->Get_State(State::Right);
 	m_pTransformCom->Rotation(vRight, -90.f);
 
-	m_Desc.fReflectionScale = 0.05f;
-	m_Desc.fRefractionScale = 0.05f;
-	m_Desc.fWaterSpeed = 0.1f;
 
 	return S_OK;
 }
@@ -40,16 +37,16 @@ HRESULT CLake::Init(void* pArg)
 void CLake::Tick(_float fTimeDelta)
 {
 
-	if (m_pGameInstance->Key_Down(DIK_K))
-		m_Desc.fReflectionScale += 0.01f;
-	if (m_pGameInstance->Key_Down(DIK_I))
-		m_Desc.fReflectionScale -= 0.01f;
+	//if (m_pGameInstance->Key_Down(DIK_K))
+	//	m_Desc.fReflectionScale += 0.01f;
+	//if (m_pGameInstance->Key_Down(DIK_I))
+	//	m_Desc.fReflectionScale -= 0.01f;
 
 
-	if (m_pGameInstance->Key_Down(DIK_L))
-		m_Desc.fRefractionScale += 0.01f;
-	if (m_pGameInstance->Key_Down(DIK_O))
-		m_Desc.fRefractionScale -= 0.01f;
+	//if (m_pGameInstance->Key_Down(DIK_L))
+	//	m_Desc.fRefractionScale += 0.01f;
+	//if (m_pGameInstance->Key_Down(DIK_O))
+	//	m_Desc.fRefractionScale -= 0.01f;
 
 
 	m_Desc.fWaterPos += m_Desc.fWaterSpeed * fTimeDelta;

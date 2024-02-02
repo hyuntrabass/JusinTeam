@@ -266,6 +266,9 @@ void CSpider::Init_State(_float fTimeDelta)
 			m_Animation.fAnimSpeedRatio = 3.f;
 			m_Animation.isLoop = false;
 			m_Animation.fDurationRatio = 0.438f;
+
+			_uint iDamage = 30 + rand() % 20;
+			m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);
 			break;
 		}
 

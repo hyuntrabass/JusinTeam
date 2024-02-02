@@ -24,24 +24,28 @@ HRESULT CRiding::Init(void* pArg)
 	switch (m_CurrentIndex)
 	{
 	case Client::Bird:
+	{
 		m_Animation.iAnimIndex = Bird_1005_Start;
 		m_eState = Riding_Sky;
-		
 		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Bird");
+	}
 		break;
 	case Client::Tiger:
+	{
 		m_Animation.iAnimIndex = Tiger_1003_Idle;
 		m_eState = Riding_Idle;
 		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Tiger");
-
 		m_fRunSpeed = 7.5f;
+	}
 		break;
 	case Client::Nihilir:
+	{
 		m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Idle;
 		m_eState = Riding_Idle;
 		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Nihilir");
 		m_fWalkSpeed = 5.f;
 		m_fRunSpeed = 12.f;
+	}
 		break;
 	default:
 		break;
@@ -84,13 +88,17 @@ HRESULT CRiding::Init(void* pArg)
 void CRiding::Tick(_float fTimeDelta)
 {
 	if (m_fDissolveRatio >= 0.f && !m_isDead)
+	{
 		m_fDissolveRatio -= fTimeDelta / 2.f;
+	}
 	else if (m_isDead)
 	{
 		m_fDissolveRatio += fTimeDelta / 1.4f;
 
 		if (m_fDissolveRatio >= 1.f)
+		{
 			m_bDelete = true;
+		}
 	}
 	if (m_pGameInstance->Key_Down(DIK_L))
 
@@ -112,20 +120,22 @@ void CRiding::Tick(_float fTimeDelta)
 		{
 			if (Index >= 88.f && !m_hasJumped)
 			{
-				CFadeBox::FADE_DESC Desc = {};
-				Desc.eState = CFadeBox::FADEIN;
-				Desc.fDuration = 1.f;
-				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
-				{
-					return;
-				}
-				
+
+
 				m_hasJumped = true;
 			}
 			else if (Index >= 95.f)
 			{
+				CFadeBox::FADE_DESC Desc = {};
+				Desc.eState = CFadeBox::FADEOUT;
+				Desc.fDuration = 1.5f;
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
+				{
+					return;
+				}
+
 				m_bDelete = true;
-			
+
 			}
 		}
 		else if (m_eState == Riding_Landing)
@@ -144,7 +154,9 @@ void CRiding::Tick(_float fTimeDelta)
 		}
 	}
 	if (m_CurrentIndex != Bird)
+	{
 		m_pTransformCom->Gravity(fTimeDelta);
+	}
 
 	//Update_Collider();
 }
@@ -219,7 +231,9 @@ void CRiding::Move(_float fTimeDelta)
 
 	_vec4 vDirection{};
 	if (m_CurrentIndex == Bird)
+	{
 		return;
+	}
 
 	if (m_pGameInstance->Key_Pressing(DIK_W))
 	{
@@ -266,7 +280,9 @@ void CRiding::Move(_float fTimeDelta)
 		if (m_pGameInstance->Key_Pressing(DIK_LSHIFT))
 		{
 			if (m_eState == Riding_Jump_End)
+			{
 				m_eState = Riding_Jump_Run;
+			}
 
 			if (m_eState == Riding_Walk or m_eState == Riding_Idle)
 			{
@@ -284,11 +300,15 @@ void CRiding::Move(_float fTimeDelta)
 			if (m_CurrentIndex == Tiger)
 			{
 				if (m_eState == Riding_Jump_End)
+				{
 					m_eState = Riding_Jump_Run;
+				}
 				else if (m_eState == Riding_Run or
 					m_eState == Riding_Walk or
 					m_eState == Riding_Idle)
+				{
 					m_eState = Riding_Run;
+				}
 
 
 
@@ -350,9 +370,11 @@ void CRiding::Init_State()
 		switch (m_eState)
 		{
 		case Client::Riding_Landing:
+		{
 			m_Animation.iAnimIndex = Bird_2005_Landing;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
+		}
 			break;
 		case Client::Riding_Idle:
 			switch (m_CurrentIndex)
@@ -360,14 +382,18 @@ void CRiding::Init_State()
 			case Client::Bird:
 				break;
 			case Client::Tiger:
+			{
 				m_Animation.iAnimIndex = Tiger_1003_Idle;
 				m_Animation.isLoop = true;
 				m_hasJumped = false;
+			}
 				break;
 			case Client::Nihilir:
+			{
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Idle;
 				m_Animation.isLoop = true;
 				m_hasJumped = false;
+			}
 				break;
 			case Client::Riding_End:
 				break;
@@ -381,14 +407,18 @@ void CRiding::Init_State()
 			case Client::Bird:
 				break;
 			case Client::Tiger:
+			{
 				m_Animation.iAnimIndex = Tiger_1003_Run;
 				m_Animation.isLoop = true;
 				m_hasJumped = false;
+			}
 				break;
 			case Client::Nihilir:
+			{
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Run;
 				m_Animation.isLoop = true;
 				m_hasJumped = false;
+			}
 				break;
 			case Client::Riding_End:
 				break;
@@ -402,15 +432,19 @@ void CRiding::Init_State()
 			case Client::Bird:
 				break;
 			case Client::Tiger:
+			{
 				m_Animation.iAnimIndex = Tiger_1003_Walk;
 				m_Animation.bSkipInterpolation = true;
 				m_Animation.isLoop = true;
 				m_hasJumped = false;
+			}
 				break;
 			case Client::Nihilir:
+			{
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Walk;
 				m_Animation.isLoop = true;
 				m_hasJumped = false;
+			}
 				break;
 			case Client::Riding_End:
 				break;
@@ -419,19 +453,24 @@ void CRiding::Init_State()
 			}
 			break;
 		case Client::Riding_Attack:
+		{
 			m_hasJumped = false;
+		}
 			break;
 		case Client::Riding_Jump_Start:
 			switch (m_CurrentIndex)
 			{
 			case Client::Tiger:
+			{
 				m_Animation.iAnimIndex = Tiger_1003_Jump_Start;
 				m_hasJumped = true;
+			}
 				break;
 			case Client::Nihilir:
+			{
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Jump_Start;
-
 				m_hasJumped = true;
+			}
 				break;
 			case Client::Riding_End:
 				break;
@@ -443,14 +482,18 @@ void CRiding::Init_State()
 			switch (m_CurrentIndex)
 			{
 			case Client::Tiger:
+			{
 				m_Animation.iAnimIndex = Tiger_1003_Jump_loop;
 				m_hasJumped = true;
 				m_Animation.isLoop = true;
+			}
 				break;
 			case Client::Nihilir:
+			{
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Jump_Loop;
 				m_hasJumped = true;
 				m_Animation.isLoop = true;
+			}
 				break;
 			case Client::Riding_End:
 				break;
@@ -462,12 +505,16 @@ void CRiding::Init_State()
 			switch (m_CurrentIndex)
 			{
 			case Client::Tiger:
+			{
 				m_Animation.iAnimIndex = Tiger_1003_Jump_End_Run;
 				m_hasJumped = false;
+			}
 				break;
 			case Client::Nihilir:
+			{
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Jump_End_Run;
 				m_hasJumped = false;
+			}
 				break;
 			case Client::Riding_End:
 				break;
@@ -479,12 +526,16 @@ void CRiding::Init_State()
 			switch (m_CurrentIndex)
 			{
 			case Client::Tiger:
+			{
 				m_Animation.iAnimIndex = Tiger_1003_Jump_End;
 				m_hasJumped = false;
+			}
 				break;
 			case Client::Nihilir:
+			{
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Jump_End;
 				m_hasJumped = false;
+			}
 				break;
 			case Client::Riding_End:
 				break;
@@ -493,7 +544,9 @@ void CRiding::Init_State()
 			}
 			break;
 		case Client::Riding_Sky:
+		{
 			m_Animation.iAnimIndex = Bird_1005_Takeoff;
+		}
 			break;
 		case Client::Riding_End:
 			break;
@@ -512,39 +565,56 @@ void CRiding::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(Bird_2005_Landing))
 		{
 			m_pGameInstance->Set_FlyCam(false);
-			
+
+
 			Delete_Riding();
+			CFadeBox::FADE_DESC Desc = {};
+			Desc.eState = CFadeBox::FADEOUT;
+			Desc.fDuration = 1.f;
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
+			{
+				return;
+			}
 		}
 		break;
 	case Client::Riding_Idle:
 		break;
 	case Client::Riding_Jump_Start:
+	{
 		switch (m_CurrentIndex)
 		{
 		case Client::Tiger:
+		{
 			if (m_pModelCom->IsAnimationFinished(Tiger_1003_Jump_Start))
 			{
 				m_eState = Riding_Jump;
 			}
-			break;
+		}
+		break;
 		case Client::Nihilir:
+		{
 			if (m_pModelCom->IsAnimationFinished(Nihilir_VC_Nihilir_5002_Jump_Start))
 			{
 				m_eState = Riding_Jump;
 			}
+		}
 		default:
 			break;
 		}
+	}
 		break;
 	case Client::Riding_Jump_End:
+	{
 		switch (m_CurrentIndex)
 		{
 		case Client::Tiger:
+		{
 			if (m_pModelCom->IsAnimationFinished(Tiger_1003_Jump_End))
 			{
 				m_eState = Riding_Idle;
 			}
-			break;
+		}
+		break;
 		case Client::Nihilir:
 			if (m_pModelCom->IsAnimationFinished(Nihilir_VC_Nihilir_5002_Jump_End))
 			{
@@ -554,8 +624,10 @@ void CRiding::Tick_State(_float fTimeDelta)
 		default:
 			break;
 		}
+	}
 		break;
 	case Client::Riding_Jump_Run:
+	{
 		switch (m_CurrentIndex)
 		{
 		case Client::Tiger:
@@ -572,8 +644,8 @@ void CRiding::Tick_State(_float fTimeDelta)
 		default:
 			break;
 		}
+	}
 		break;
-
 	case Client::Riding_Run:
 		break;
 	case Client::Riding_Walk:
@@ -596,11 +668,17 @@ _mat CRiding::Get_Mat()
 {
 	_mat OffsetMat{};
 	if (m_CurrentIndex == Tiger)
+	{
 		OffsetMat = _mat::CreateRotationY(XMConvertToRadians(-90.f)) * *m_pModelCom->Get_BoneMatrix("saddle");
+	}
 	else if (m_CurrentIndex == Nihilir)
+	{
 		OffsetMat = _mat::CreateRotationY(XMConvertToRadians(-180.f)) * _mat::CreateRotationX(XMConvertToRadians(-90.f)) * *m_pModelCom->Get_BoneMatrix("saddle");
+	}
 	else if (m_CurrentIndex == Bird)
+	{
 		OffsetMat = _mat::CreateTranslation(0.f, 0.8f, 0.f) * _mat::CreateRotationZ(XMConvertToRadians(-180.f)) * _mat::CreateRotationY(XMConvertToRadians(90.f)) * *m_pModelCom->Get_BoneMatrix("Saddle");
+	}
 
 	OffsetMat *= m_pTransformCom->Get_World_Matrix();
 
@@ -684,7 +762,9 @@ HRESULT CRiding::Add_Components()
 HRESULT CRiding::Bind_ShaderResources()
 {
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	{
 		return E_FAIL;
+	}
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
 	{
@@ -708,7 +788,9 @@ HRESULT CRiding::Bind_ShaderResources()
 		return E_FAIL;
 	}
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
+	{
 		return E_FAIL;
+	}
 
 
 	return S_OK;

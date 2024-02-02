@@ -1,12 +1,13 @@
-<<<<<<< HEAD
 1. Static Only   2. Anim Only   3. All
+2
+Animation Models : Start Converting...
+1. Normally Anim Model	2. For VTF Model 3. Part Model
 1
-Static Models : Start Converting...
-Converting... Map.fbx
+Converting... GroarChoksu.fbx
 Read File Succssefully
-Static Models : Convert Success!
+Animation name list: 
+Mon_Groar.ao|Mon_Groar.ao|Mon_Groar.ao|Mon_Groar_Asgard_Attack05
+Animation Models : Convert Success!
 
-1 Static Models
+1 Animation Models
 are Successfully Converted as hyuntramesh!!
-=======
->>>>>>> Sub-master

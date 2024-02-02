@@ -3,8 +3,8 @@
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
-texture2D g_SpecTexture;
 texture2D g_MaskTexture;
+texture2D g_CloudTexture;
 texture2D g_DissolveTexture;
 texture2D g_GradationTexture;
 
@@ -16,7 +16,7 @@ float g_fCamFar;
 float g_fLightFar;
 float g_fDissolveRatio;
 bool g_HasNorTex;
-bool g_HasSpecTex;
+bool g_HasMaskTex;
 bool g_bSelected = false;
 
 
@@ -149,7 +149,7 @@ struct PS_OUT_DEFERRED
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
-    vector vSpecular : SV_Target3;
+    vector vMask : SV_Target3;
     vector vVelocity : SV_Target4;
     vector vRimMask : SV_Target5;
 };
@@ -181,16 +181,16 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
         vNormal = normalize(Input.vNor.xyz);
     }
     
-    vector vSpecular = vector(0.1f, 0.1f, 0.1f, 0.1f);
-    if (g_HasSpecTex)
+    vector vMask = vector(1.f, 0.1f, 0.1f, 0.1f);
+    if (g_HasMaskTex)
     {
-        vSpecular = g_SpecTexture.Sample(LinearSampler, Input.vTex);
+        vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vSpecular = vSpecular;
+    Output.vMask = vMask;
     
     return Output;
 }
@@ -232,10 +232,16 @@ PS_OUT_DEFERRED PS_Main_AlphaTest(PS_IN Input)
     {
         vNormal = normalize(Input.vNor.xyz);
     }
+    vector vMask = vector(1.f, 0.1f, 0.1f, 0.1f);
+    if (g_HasMaskTex)
+    {
+        vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
+    }
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vMask = vMask;
     
     return Output;
 }
@@ -391,7 +397,7 @@ struct PS_WATER_OUT
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
-    vector vSpecular : SV_Target3;
+    vector vMask : SV_Target3;
 };
 
 PS_WATER_OUT PS_Main_Water(PS_WATER_IN Input)
@@ -418,16 +424,16 @@ PS_WATER_OUT PS_Main_Water(PS_WATER_IN Input)
         vNormal = normalize(Input.vNor.xyz);
     }
     
-    vector vSpecular = vector(0.1f, 0.1f, 0.1f, 0.1f);
-    if (g_HasSpecTex)
+    vector vMask = vector(1.f, 0.1f, 0.1f, 0.1f);
+    if (g_HasMaskTex)
     {
-        vSpecular = g_SpecTexture.Sample(LinearSampler, Input.vTex);
+        vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vSpecular = vSpecular;
+    Output.vMask = vMask;
     
     return Output;
 }
@@ -456,10 +462,10 @@ PS_OUT_DEFERRED PS_Main_Rim(PS_IN Input)
         vNormal = normalize(Input.vNor.xyz);
     }
     
-    vector vSpecular = vector(0.1f, 0.1f, 0.1f, 0.1f);
-    if (g_HasSpecTex)
+    vector vMask = vector(1.f, 0.1f, 0.1f, 0.1f);
+    if (g_HasMaskTex)
     {
-        vSpecular = g_SpecTexture.Sample(LinearSampler, Input.vTex);
+        vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
     float3 vToCamera = normalize(g_vCamPos - Input.vWorldPos).xyz;
@@ -471,7 +477,7 @@ PS_OUT_DEFERRED PS_Main_Rim(PS_IN Input)
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vSpecular = vSpecular;
+    Output.vMask = vMask;
     Output.vVelocity = 0.f;
     Output.vRimMask = vRimColor;
     
@@ -500,16 +506,16 @@ PS_OUT_DEFERRED PS_Main_WorldMap_Water(PS_IN Input)
         vNormal = normalize(Input.vNor.xyz);
     }
     
-    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
-    if (g_HasSpecTex)
+    vector vMask = vector(1.f, 0.1f, 0.1f, 0.1f);
+    if (g_HasMaskTex)
     {
-        vSpecular = g_SpecTexture.Sample(LinearSampler, Input.vTex);
+        vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vSpecular = vSpecular;
+    Output.vMask = vMask;
     
     return Output;
 }
@@ -520,7 +526,6 @@ PS_OUT_DEFERRED PS_Main_WorldMap_Cloud(PS_IN Input)
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler,Input.vTex);
     //vector vMask = g_MaskTexture.Sample(LinearClampSampler, (Input.vTex + g_vUVTransform));
-    vector vMask = g_MaskTexture.Sample(LinearSampler, float2(Input.vTex.x - g_fx, Input.vTex.y + g_fy));
     
     float3 vNormal;
     if (g_HasNorTex)
@@ -538,21 +543,22 @@ PS_OUT_DEFERRED PS_Main_WorldMap_Cloud(PS_IN Input)
         vNormal = normalize(Input.vNor.xyz);
     }
     
-    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
-    if (g_HasSpecTex)
+    vector vMask = vector(1.f, 0.1f, 0.1f, 0.1f);
+    if (g_HasMaskTex)
     {
-        vSpecular = g_SpecTexture.Sample(LinearSampler, Input.vTex);
+        vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
 
+    vector vCloud = g_CloudTexture.Sample(LinearSampler, float2(Input.vTex.x - g_fx, Input.vTex.y + g_fy));
 
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
-    Output.vDiffuse.r -= (vMask.r *0.5f);
-    Output.vDiffuse.b -= (vMask.r *0.5f);
-    Output.vDiffuse.g -= (vMask.r *0.5f);
+    Output.vDiffuse.r -= (vCloud.r * 0.5f);
+    Output.vDiffuse.b -= (vCloud.r * 0.5f);
+    Output.vDiffuse.g -= (vCloud.r * 0.5f);
 
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vSpecular = vSpecular;
+    Output.vMask = vMask;
     
     return Output;
 }

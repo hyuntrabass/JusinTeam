@@ -135,11 +135,16 @@ HRESULT CGraphic_Device::Ready_SwapChain(const GRAPHIC_DESC& GraphicInfo)
 	SwapChain.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	SwapChain.BufferCount = 1;
 
+	//_uint NumQualityLevels{};
+	//m_pDevice->CheckMultisampleQualityLevels(DXGI_FORMAT_B8G8R8A8_UNORM, 4, &NumQualityLevels);
+
 	/*스왑하는 형태*/
 	SwapChain.BufferDesc.RefreshRate.Numerator = 60;
 	SwapChain.BufferDesc.RefreshRate.Denominator = 1;
 	SwapChain.SampleDesc.Quality = 0;
 	SwapChain.SampleDesc.Count = 1;	
+	//SwapChain.SampleDesc.Quality = NumQualityLevels - 1;
+	//SwapChain.SampleDesc.Count = 4;	
 
 	SwapChain.OutputWindow = GraphicInfo.hWnd;	
 	SwapChain.Windowed = GraphicInfo.isWindowed;
@@ -202,6 +207,7 @@ HRESULT CGraphic_Device::Ready_DepthStencilRenderTargetView(_uint iWinCX, _uint 
 
 	TextureDesc.SampleDesc.Quality = 0;
 	TextureDesc.SampleDesc.Count = 1;
+	//TextureDesc.SampleDesc.Count = 4;
 
 	TextureDesc.Usage = D3D11_USAGE_DEFAULT;
 	TextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL
@@ -220,6 +226,14 @@ HRESULT CGraphic_Device::Ready_DepthStencilRenderTargetView(_uint iWinCX, _uint 
 	if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, nullptr,
 		&m_pDepthStencilView)))
 		return E_FAIL;	
+	//D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
+	//ZeroMemory(&descDSV, sizeof(descDSV));
+	//descDSV.Format = TextureDesc.Format;
+	//descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+
+	//if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, &descDSV,
+	//	&m_pDepthStencilView)))
+	//	return E_FAIL;	
 
 	Safe_Release(pDepthStencilTexture);
 

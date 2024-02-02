@@ -34,6 +34,15 @@ HRESULT CMonster::Init(void* pArg)
 
 void CMonster::Tick(_float fTimeDelta)
 {
+	//if (m_iHP <= 0)
+	//{
+	//	m_pGameInstance->Delete_CollisionObject(this);
+
+	//	Safe_Release(m_pTransformCom);
+	//	Safe_Release(m_pBodyColliderCom);
+
+	//}
+
 	if (m_fDeadTime >= 2.f)
 	{
 		m_iPassIndex = AnimPass_Dissolve;
@@ -42,7 +51,6 @@ void CMonster::Tick(_float fTimeDelta)
 	if (m_fDissolveRatio >= 1.f)
 	{
 		Kill();
-		m_pGameInstance->Delete_CollisionObject(this);
 	}
 }
 
@@ -97,7 +105,22 @@ HRESULT CMonster::Render()
 			HasNorTex = true;
 		}
 
+		_bool HasMaskTex{};
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
+		{
+			HasMaskTex = false;
+		}
+		else
+		{
+			HasMaskTex = true;
+		}
+
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}
@@ -247,7 +270,7 @@ HRESULT CMonster::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, m_strModelTag, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_strModelTag, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
 	{
 		return E_FAIL;
 	}

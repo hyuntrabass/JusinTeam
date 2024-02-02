@@ -19,23 +19,38 @@ float g_fHellStart;
 float2 g_vFogNF;
 vector g_vFogColor;
 
+//Texture2DMS<vector> g_DiffuseTexture;
+// MRT_Object
 Texture2D g_DiffuseTexture;
 Texture2D g_NormalTexture;
-Texture2D g_ObjectSpecTexture;
+Texture2D g_MaskTexture;
+Texture2D g_RimMaskTexture;
+
+// MRT_Light
 Texture2D g_ShadeTexture;
 Texture2D g_SpecularTexture;
 Texture2D g_DepthTexture;
 Texture2D g_LightDepthTexture;
+
+
 Texture2D g_BlurTexture;
-Texture2D g_Texture;
+
+Texture2D g_DebugTexture;
 
 // 원명
+// 이동량
 Texture2D g_VelocityTexture;
-Texture2D g_RimMaskTexture;
+
+// SSAO
 Texture2D g_SSAONoiseNormal;
 Texture2D g_SSAOTexture;
-Texture2D g_HDRTexture;
+matrix g_CamProjMatrix;
+
+// SSAO
 Texture2D g_Luminance;
+Texture2D g_HDRTexture;
+
+// Blurs
 Texture2D g_TestBlurTexture;
 bool TurnOnSSAO;
 bool TurnOnToneMap;
@@ -134,7 +149,7 @@ PS_OUT PS_Main_Debug(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTexcoord);
+    Output.vColor = g_DebugTexture.Sample(LinearSampler, Input.vTexcoord);
     
     return Output;
 }
@@ -162,9 +177,9 @@ PS_OUT_Light PS_Main_Directional(PS_IN Input)
     
     vector vLook = vWorldPos - g_vCamPosition;
     
-    vector vSpecDesc = g_ObjectSpecTexture.Sample(PointSampler, Input.vTexcoord);
+    vector vMaskDesc = g_MaskTexture.Sample(PointSampler, Input.vTexcoord);
     
-    Output.vSpecular = vSpecDesc * g_vLightSpecular * pow(saturate(dot(normalize(vLook) * -1.f, vReflect)), 30.f);
+    Output.vSpecular = vMaskDesc.b * g_vLightSpecular * pow(saturate(dot(normalize(vLook) * -1.f, vReflect)), 30.f);
     
     //vector vRimMask = g_RimMaskTexture.Sample(LinearSampler, Input.vTexcoord);
     
@@ -184,7 +199,6 @@ PS_OUT_Light PS_Main_Point(PS_IN Input)
     
     vector vNormal = Get_Normal(Input.vTexcoord);
     
-    vector vSpecDesc = g_ObjectSpecTexture.Sample(PointSampler, Input.vTexcoord);
     
     vector vWorldPos = Get_WorldPos(Input.vTexcoord);
     
@@ -199,7 +213,10 @@ PS_OUT_Light PS_Main_Point(PS_IN Input)
     vector vReflect = normalize(reflect(normalize(vLightDir), vNormal));
     vector vLook = vWorldPos - g_vCamPosition;
     
-    Output.vSpecular = fAtt * (vSpecDesc * g_vLightSpecular * pow(saturate(dot(normalize(vLook) * -1.f, vReflect)), 30.f));
+    
+    vector vMaskDesc = g_MaskTexture.Sample(PointSampler, Input.vTexcoord);
+    
+    Output.vSpecular = fAtt * (vMaskDesc.b * g_vLightSpecular * pow(saturate(dot(normalize(vLook) * -1.f, vReflect)), 30.f));
     
     //vector vRimMask = g_RimMaskTexture.Sample(LinearSampler, Input.vTexcoord);
     
@@ -216,7 +233,17 @@ PS_OUT PS_Main_Water(PS_IN Input)
     
     vector FinalColor = 0;
     
+    //int2 vTexcoord = int2(Input.vTexcoord.x, Input.vTexcoord.y);
+    
+    //float4 colorSum = float4(0, 0, 0, 0);
+    //for (int sampleIndex = 0; sampleIndex < 4; ++sampleIndex)
+    //{
+    //    colorSum += g_DiffuseTexture.Load(vTexcoord, sampleIndex);
+    //}
+    //vector vDiffuse = colorSum / 4;
+    
     vector vDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTexcoord);
+
     if(vDiffuse.a == 0.f)
         discard;
     
@@ -239,7 +266,17 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     
     vector FinalColor = 0;
     
+    //int2 vTexcoord = int2(Input.vTexcoord.x, Input.vTexcoord.y);
+    
+    //float4 colorSum = float4(0, 0, 0, 0);
+    //for (int sampleIndex = 0; sampleIndex < 4; ++sampleIndex)
+    //{
+    //    colorSum += g_DiffuseTexture.Load(vTexcoord, sampleIndex);
+    //}
+    //vector vDiffuse = colorSum / 4;
+    
     vector vDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTexcoord);
+    
     if (vDiffuse.a == 0.f)
     {
         discard;
@@ -359,43 +396,44 @@ PS_OUT PS_Main_SSAO(PS_IN Input)
     
     PS_OUT Out = (PS_OUT) 0;
     
-    //vector MyNormal = Get_Normal(Input.vTexcoord);
+    //vector Normal = Get_Normal(Input.vTexcoord);
     
-    //vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
+    //vector ViewPos = Get_ViewPos(Input.vTexcoord);
     
-    //vector MyViewPos = Get_ViewPos(Input.vTexcoord);
+    //float3 vRandomNormal = g_SSAONoiseNormal.Sample(LinearSampler, Input.vTexcoord).xyz;
     
-    //float3 RandVec = 2.f * g_SSAONoiseNormal.Sample(LinearSampler, 4.f * Input.vTexcoord).rgb - 1.f;
+    //vRandomNormal.xyz = normalize(vRandomNormal.xyz * 2.f - 1.f);
     
     //float OcclusionSum = 0.f;
     
     //for (uint i = 0; i < 16; ++i)
     //{
-    //    float3 Offset = reflect(g_OffSetVector[i], RandVec);
-        
-    //    float flip = sign(dot(Offset, MyNormal.xyz));
-        
-    //    float3 q = MyViewPos.xyz + flip * g_SSAO.fRadius * Offset;
-        
-    //    //float4 ProjQ = mul(float4(q, 1.f), g_CamProjMatrix);
-    //    //ProjQ /= ProjQ.w;
-        
-    //    float3 r = Get_ViewPos(q.xy);
-        
-    //    float DistZ = MyViewPos.z - r.z;
-    //    float dp = max(dot(MyNormal.xyz, normalize(r - MyViewPos.xyz)), 0.f);
-    //    float Occlusion = dp * Get_Occlusion(DistZ);
+    //    float3 offset = reflect(normalize(g_OffSetVector[i].xyz), vRandomNormal.xyz);
 
+    //    float flip = sign(dot(offset, Normal.xyz));
+        
+    //    float3 NearPos = ViewPos.xyz + flip * g_SSAO.fRadius * offset;
+
+    //    vector ProjQ = mul(vector(NearPos, 1.f), g_CamProjMatrix);
+    //    ProjQ /= ProjQ.w;
+        
+    //    vector NewViewPos = Get_ViewPos(ProjQ.xy);
+        
+    //    float Dist = ViewPos.z - NewViewPos.z;
+        
+    //    float dp = max(dot(Normal.xyz, normalize(NewViewPos.xyz - ViewPos.xyz)), 0.f);
+        
+    //    float Occlusion = dp * Get_Occlusion(Dist);
+        
     //    OcclusionSum += Occlusion;
+        
     //}
     
     //OcclusionSum /= 16.f;
     
-    //float occl = saturate(pow(OcclusionSum, 4.f));
+    //float SSAO = saturate(pow(OcclusionSum, 6.f));
     
-    //Out.vColor = vector(occl, occl, occl, 1.f);
-    
-    //return Out;
+    //Out.vColor = vector(SSAO, SSAO, SSAO, 1.f);
     
     vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
     float fViewZ = vDepthDesc.y * g_vCamNF.y;

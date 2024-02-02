@@ -202,45 +202,156 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 	if (m_iCurrent_Type == ET_PARTICLE)
 	{
-		if (BeginListBox("Pass##1", ImVec2(-FLT_MIN, 7 * ImGui::GetTextLineHeightWithSpacing())))
-		{
+		//if (BeginListBox("", ImVec2(-FLT_MIN, 7 * ImGui::GetTextLineHeightWithSpacing())))
+		//{
+		//	for (size_t i = 0; i < InstPass_End; i++)
+		//	{
+		//		//ListBox("Pass##1", &iPassIndex, szInstancingPasses, InstPass_End);
+		//		const _bool isSelected = iPassIndex == i;
+		//		if (Selectable(szInstancingPasses[i], isSelected))
+		//		{
+		//			iPassIndex = i;
+		//		}
+		//		if (isSelected)
+		//		{
+		//			SetItemDefaultFocus();
+		//		}
+		//	}
+		//	if (iPassIndex >= InstPass_End)
+		//	{
+		//		iPassIndex = 0;
+		//	}
+		//	EndListBox();
+		//}
 
-			for (size_t i = 0; i < InstPass_End; i++)
+		Text(szInstancingPasses[iPassIndex]);
+		static ImGuiTextFilter Filter_Pass;
+		Filter_Pass.Draw("Pass##1"); SameLine();
+		_bool shouldScrollToSelectedItem{};
+		if (Button("Scroll##6"))
+		{
+			shouldScrollToSelectedItem = true;
+		}
+		ImGui::BeginChild("Instancing Pass", ImVec2(0, 150), true);
+
+		for (int i = 0; i < InstPass_End; ++i)
+		{
+			if (Filter_Pass.PassFilter(szInstancingPasses[i]))
 			{
-				//ListBox("Pass##1", &iPassIndex, szInstancingPasses, InstPass_End);
-				const _bool isSelected = iPassIndex == i;
-				if (Selectable(szInstancingPasses[i], isSelected))
+				_bool isSelected = (i == iPassIndex);
+
+				if (isSelected)
+				{
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+				}
+
+				if (ImGui::Selectable(szInstancingPasses[i], isSelected))
 				{
 					iPassIndex = i;
 				}
 
 				if (isSelected)
 				{
-					SetItemDefaultFocus();
+					if (shouldScrollToSelectedItem)
+					{
+						SetScrollHereY();
+					}
+					PopStyleColor();
 				}
 			}
-			if (iPassIndex >= InstPass_End)
-			{
-				iPassIndex = 0;
-			}
-			EndListBox();
 		}
+		ImGui::EndChild();
 	}
 	else if (m_iCurrent_Type == ET_RECT)
 	{
-		ListBox("Pass##2", &iPassIndex, szVTPasses, VTPass_End);
-		if (iPassIndex >= VTPass_End)
+		//ListBox("Pass##2", &iPassIndex, szVTPasses, VTPass_End);
+		//if (iPassIndex >= VTPass_End)
+		//{
+		//	iPassIndex = 0;
+		//}
+		Text(szVTPasses[iPassIndex]);
+		static ImGuiTextFilter Filter_Pass;
+		Filter_Pass.Draw("Pass##2"); SameLine();
+		_bool shouldScrollToSelectedItem{};
+		if (Button("Scroll##7"))
 		{
-			iPassIndex = 0;
+			shouldScrollToSelectedItem = true;
 		}
+		ImGui::BeginChild("VT Pass", ImVec2(0, 150), true);
+
+		for (int i = 0; i < VTPass_End; ++i)
+		{
+			if (Filter_Pass.PassFilter(szVTPasses[i]))
+			{
+				_bool isSelected = (i == iPassIndex);
+
+				if (isSelected)
+				{
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+				}
+
+				if (ImGui::Selectable(szVTPasses[i], isSelected))
+				{
+					iPassIndex = i;
+				}
+
+				if (isSelected)
+				{
+					if (shouldScrollToSelectedItem)
+					{
+						SetScrollHereY();
+					}
+					PopStyleColor();
+				}
+			}
+		}
+		ImGui::EndChild();
+
 	}
 	else if (m_iCurrent_Type == ET_MESH)
 	{
-		ListBox("Pass##3", &iPassIndex, szStatPasses, StaticPass_End);
-		if (iPassIndex >= StaticPass_End)
+		//ListBox("Pass##3", &iPassIndex, szStatPasses, StaticPass_End);
+		//if (iPassIndex >= StaticPass_End)
+		//{
+		//	iPassIndex = 0;
+		//}
+		Text(szStatPasses[iPassIndex]);
+		static ImGuiTextFilter Filter_Pass;
+		Filter_Pass.Draw("Pass##3"); SameLine();
+		_bool shouldScrollToSelectedItem{};
+		if (Button("Scroll##8"))
 		{
-			iPassIndex = 0;
+			shouldScrollToSelectedItem = true;
 		}
+		ImGui::BeginChild("StatMesh Pass", ImVec2(0, 150), true);
+
+		for (int i = 0; i < StaticPass_End; ++i)
+		{
+			if (Filter_Pass.PassFilter(szStatPasses[i]))
+			{
+				_bool isSelected = (i == iPassIndex);
+
+				if (isSelected)
+				{
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+				}
+
+				if (ImGui::Selectable(szStatPasses[i], isSelected))
+				{
+					iPassIndex = i;
+				}
+
+				if (isSelected)
+				{
+					if (shouldScrollToSelectedItem)
+					{
+						SetScrollHereY();
+					}
+					PopStyleColor();
+				}
+			}
+		}
+		ImGui::EndChild();
 	}
 	Info.iType = m_iCurrent_Type;
 	Info.iPassIndex = iPassIndex;
@@ -704,6 +815,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	static _bool bApplyGravity{};
 	static _vec3 vGravityDir{};
 	static _float fRectRotationAngle{};
+	static _bool isBillboard{};
+	static _vec3 vBillboardRotation{};
 
 	if (m_iCurrent_Type == ET_PARTICLE)
 	{
@@ -780,6 +893,9 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	{
 		SeparatorText("Rect Information");
 
+		Checkbox("Billboard##1", &isBillboard);
+		Info.isBillboard = isBillboard;
+
 		//if (Info.isSprite)
 		//{
 		//	InputFloat("Size##1", &fSizeforSprite);
@@ -814,6 +930,38 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	{
 		SeparatorText("Mesh Information");
 
+		Checkbox("Billboard", &isBillboard);
+		Info.isBillboard = isBillboard;
+		if (isBillboard)
+		{
+			Text("Rotation");
+			SliderAngle("X", &vBillboardRotation.x); SameLine();
+			if (Button("Reset##1"))
+			{
+				vBillboardRotation.x = 0.f;
+			}
+			InputFloat("##3", &vBillboardRotation.x, 45.f, 0.f, "%.2f");
+			Info.vBillboardRotation.x = vBillboardRotation.x;
+			NewLine();
+			SliderAngle("Y", &vBillboardRotation.y); SameLine();
+			if (Button("Reset##2"))
+			{
+				vBillboardRotation.y = 0.f;
+			}
+			InputFloat("##4", &vBillboardRotation.y, 45.f, 0.f, "%.2f");
+			Info.vBillboardRotation.y = vBillboardRotation.y;
+			NewLine();
+			SliderAngle("Z", &vBillboardRotation.z); SameLine();
+			if (Button("Reset##3"))
+			{
+				vBillboardRotation.z = 0.f;
+			}
+			InputFloat("##5", &vBillboardRotation.z, 45.f, 0.f, "%.2f");
+			Info.vBillboardRotation.z = vBillboardRotation.z;
+		}
+
+			Separator();
+			NewLine();
 		InputFloat3("Size##2", reinterpret_cast<_float*>(&vSize), "%.2f");
 		Info.vSize = vSize;
 
@@ -1004,6 +1152,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			vGravityDir = Info.vGravityDir;
 			break;
 		case Effect::ET_RECT:
+			isBillboard = Info.isBillboard;
 			if (Info.isSprite)
 			{
 				fSizeforSprite = Info.vSize.y;
@@ -1017,6 +1166,11 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			fRectRotationAngle = Info.fRectRotationAngle;
 			break;
 		case Effect::ET_MESH:
+			isBillboard = Info.isBillboard;
+			if (isBillboard)
+			{
+				vBillboardRotation = Info.vBillboardRotation;
+			}
 			m_iSelected_Model = Compute_ModelIndex(Info.strModel);
 			vSize = Info.vSize;
 			vSizeDelta = Info.vSizeDelta;
@@ -1337,6 +1491,8 @@ EffectInfo CImgui_Manager::Load_Data(_bool isAdd)
 			InFile.read(reinterpret_cast<_char*>(&Info.fAlphaInit), sizeof Info.fAlphaInit);
 			InFile.read(reinterpret_cast<_char*>(&Info.fAlphaDelta), sizeof Info.fAlphaDelta);
 			InFile.read(reinterpret_cast<_char*>(&Info.fRectRotationAngle), sizeof Info.fRectRotationAngle);
+			InFile.read(reinterpret_cast<_char*>(&Info.isBillboard), sizeof Info.isBillboard);
+			InFile.read(reinterpret_cast<_char*>(&Info.vBillboardRotation), sizeof Info.vBillboardRotation);
 
 			size_t iNameSize{};
 
@@ -1391,7 +1547,8 @@ EffectInfo CImgui_Manager::Load_Data(_bool isAdd)
 
 void CImgui_Manager::Load_OldData()
 {
-	OldEffectInfo OldInfo{};
+	EffectInfo OldInfo{};
+	//OldEffectInfo OldInfo{};
 
 	string strInputFilePath = "../../Client/Bin/EffectData/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
@@ -1436,6 +1593,9 @@ void CImgui_Manager::Load_OldData()
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.isUVLoop), sizeof OldInfo.isUVLoop);
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.fAlphaInit), sizeof OldInfo.fAlphaInit);
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.fAlphaDelta), sizeof OldInfo.fAlphaDelta);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.fRectRotationAngle), sizeof OldInfo.fRectRotationAngle);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.isBillboard), sizeof OldInfo.isBillboard);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.vBillboardRotation), sizeof OldInfo.vBillboardRotation);
 
 				size_t iNameSize{};
 
@@ -1484,42 +1644,48 @@ void CImgui_Manager::Load_OldData()
 				InFile.close();
 			}
 
-			EffectInfo NewInfo{};
+			EffectInfo NewInfo{ OldInfo };
+			if (NewInfo.iType == ET_RECT)
+			{
+				NewInfo.isBillboard = true;
+			}
 
-			NewInfo.iType = OldInfo.iType;
-			NewInfo.isSprite = OldInfo.isSprite;
-			NewInfo.vNumSprites = OldInfo.vNumSprites;
-			NewInfo.fSpriteDuration = OldInfo.fSpriteDuration;
-			NewInfo.PartiDesc = OldInfo.PartiDesc;
-			NewInfo.iNumInstances = OldInfo.iNumInstances;
-			NewInfo.fLifeTime = OldInfo.fLifeTime;
-			NewInfo.vColor = OldInfo.vColor;
-			NewInfo.iPassIndex = OldInfo.iPassIndex;
-			NewInfo.vSize = OldInfo.vSize;
-			NewInfo.vPosOffset = OldInfo.vPosOffset;
-			NewInfo.vSizeDelta = OldInfo.vSizeDelta;
-			NewInfo.bApplyGravity = OldInfo.bApplyGravity;
-			NewInfo.vGravityDir = OldInfo.vGravityDir;
-			NewInfo.fDissolveDuration = OldInfo.fDissolveDuration;
-			NewInfo.bSkipBloom = OldInfo.bSkipBloom;
-			NewInfo.fUnDissolveDuration = OldInfo.fUnDissolveDuration;
-			NewInfo.vUVInit = OldInfo.vUVInit;
-			NewInfo.vUVDelta = OldInfo.vUVDelta;
-			NewInfo.isRandomSprite = OldInfo.isRandomSprite;
-			NewInfo.hasLight = OldInfo.hasLight;
-			NewInfo.Light_Desc = OldInfo.Light_Desc;
-			NewInfo.isFixedIndex = OldInfo.isFixedIndex;
-			NewInfo.iFixedSpriteIndex = OldInfo.iFixedSpriteIndex;
-			NewInfo.isUVLoop = OldInfo.isUVLoop;
-			NewInfo.fAlphaDelta = OldInfo.fAlphaDelta;
-			NewInfo.fAlphaInit = OldInfo.fAlphaInit;
-			NewInfo.fRectRotationAngle = 0.f;
+			//NewInfo.iType = OldInfo.iType;
+			//NewInfo.isSprite = OldInfo.isSprite;
+			//NewInfo.vNumSprites = OldInfo.vNumSprites;
+			//NewInfo.fSpriteDuration = OldInfo.fSpriteDuration;
+			//NewInfo.PartiDesc = OldInfo.PartiDesc;
+			//NewInfo.iNumInstances = OldInfo.iNumInstances;
+			//NewInfo.fLifeTime = OldInfo.fLifeTime;
+			//NewInfo.vColor = OldInfo.vColor;
+			//NewInfo.iPassIndex = OldInfo.iPassIndex;
+			//NewInfo.vSize = OldInfo.vSize;
+			//NewInfo.vPosOffset = OldInfo.vPosOffset;
+			//NewInfo.vSizeDelta = OldInfo.vSizeDelta;
+			//NewInfo.bApplyGravity = OldInfo.bApplyGravity;
+			//NewInfo.vGravityDir = OldInfo.vGravityDir;
+			//NewInfo.fDissolveDuration = OldInfo.fDissolveDuration;
+			//NewInfo.bSkipBloom = OldInfo.bSkipBloom;
+			//NewInfo.fUnDissolveDuration = OldInfo.fUnDissolveDuration;
+			//NewInfo.vUVInit = OldInfo.vUVInit;
+			//NewInfo.vUVDelta = OldInfo.vUVDelta;
+			//NewInfo.isRandomSprite = OldInfo.isRandomSprite;
+			//NewInfo.hasLight = OldInfo.hasLight;
+			//NewInfo.Light_Desc = OldInfo.Light_Desc;
+			//NewInfo.isFixedIndex = OldInfo.isFixedIndex;
+			//NewInfo.iFixedSpriteIndex = OldInfo.iFixedSpriteIndex;
+			//NewInfo.isUVLoop = OldInfo.isUVLoop;
+			//NewInfo.fAlphaDelta = OldInfo.fAlphaDelta;
+			//NewInfo.fAlphaInit = OldInfo.fAlphaInit;
+			//NewInfo.fRectRotationAngle = OldInfo.fRectRotationAngle;
+			//NewInfo.isBillboard = OldInfo.isBillboard;
+			//NewInfo.vBillboardRotation = OldInfo.vBillboardRotation;
 
-			NewInfo.strDiffuseTexture = OldInfo.strDiffuseTexture;
-			NewInfo.strMaskTexture = OldInfo.strMaskTexture;
-			NewInfo.strDissolveTexture = OldInfo.strDissolveTexture;
-			NewInfo.strUnDissolveTexture = OldInfo.strUnDissolveTexture;
-			NewInfo.strModel = OldInfo.strModel;
+			//NewInfo.strDiffuseTexture = OldInfo.strDiffuseTexture;
+			//NewInfo.strMaskTexture = OldInfo.strMaskTexture;
+			//NewInfo.strDissolveTexture = OldInfo.strDissolveTexture;
+			//NewInfo.strUnDissolveTexture = OldInfo.strUnDissolveTexture;
+			//NewInfo.strModel = OldInfo.strModel;
 
 			filesystem::path strFilePath = entry.path();
 			ofstream OutFile(strFilePath.c_str(), ios::binary);
@@ -1554,6 +1720,8 @@ void CImgui_Manager::Load_OldData()
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.fAlphaInit), sizeof NewInfo.fAlphaInit);
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.fAlphaDelta), sizeof NewInfo.fAlphaDelta);
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.fRectRotationAngle), sizeof NewInfo.fRectRotationAngle);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.isBillboard), sizeof NewInfo.isBillboard);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.vBillboardRotation), sizeof NewInfo.vBillboardRotation);
 
 				size_t iNameSize{};
 				iNameSize = (NewInfo.strDiffuseTexture.size() + 1) * sizeof(_tchar);
@@ -1635,6 +1803,8 @@ HRESULT CImgui_Manager::Export_Data(EffectInfo& Info)
 			OutFile.write(reinterpret_cast<const _char*>(&Info.fAlphaInit), sizeof Info.fAlphaInit);
 			OutFile.write(reinterpret_cast<const _char*>(&Info.fAlphaDelta), sizeof Info.fAlphaDelta);
 			OutFile.write(reinterpret_cast<const _char*>(&Info.fRectRotationAngle), sizeof Info.fRectRotationAngle);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.isBillboard), sizeof Info.isBillboard);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.vBillboardRotation), sizeof Info.vBillboardRotation);
 
 			size_t iNameSize{};
 			iNameSize = (Info.strDiffuseTexture.size() + 1) * sizeof(_tchar);
@@ -1703,6 +1873,8 @@ HRESULT CImgui_Manager::Override_Data(EffectInfo& Info)
 		OutFile.write(reinterpret_cast<const _char*>(&Info.fAlphaInit), sizeof Info.fAlphaInit);
 		OutFile.write(reinterpret_cast<const _char*>(&Info.fAlphaDelta), sizeof Info.fAlphaDelta);
 		OutFile.write(reinterpret_cast<const _char*>(&Info.fRectRotationAngle), sizeof Info.fRectRotationAngle);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.isBillboard), sizeof Info.isBillboard);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.vBillboardRotation), sizeof Info.vBillboardRotation);
 
 		size_t iNameSize{};
 		iNameSize = (Info.strDiffuseTexture.size() + 1) * sizeof(_tchar);
