@@ -68,7 +68,22 @@ HRESULT CSelect_Npc::Render()
             HasNorTex = true;
         }
 
+        _bool HasMaskTex{};
+        if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
+        {
+            HasMaskTex = false;
+        }
+        else
+        {
+            HasMaskTex = true;
+        }
+
         if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+        {
+            return E_FAIL;
+        }
+
+        if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
         {
             return E_FAIL;
         }

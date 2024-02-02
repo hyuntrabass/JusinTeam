@@ -116,7 +116,7 @@ HRESULT CWorldMap::Render()
 			else if (j == 1)
 			{
 			
-				if (FAILED(m_pMaskTexture->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+				if (FAILED(m_pMaskTexture->Bind_ShaderResource(m_pShaderCom, "g_CloudTexture")))
 				{
 					return E_FAIL;
 				}

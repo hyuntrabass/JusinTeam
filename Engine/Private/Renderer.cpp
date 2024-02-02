@@ -43,7 +43,7 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Object_Specular"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Mask"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 	{
 		return E_FAIL;
 	}
@@ -118,7 +118,7 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Object_Reflection_Specular"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 0.f, 1.f))))
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Object_Reflection_Mask"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 0.f, 1.f))))
 	{
 		return E_FAIL;
 	}
@@ -232,7 +232,7 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Object_Specular"))))
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Mask"))))
 	{
 		return E_FAIL;
 	}
@@ -291,7 +291,7 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Reflection"), TEXT("Target_Object_Reflection_Specular"))))
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Reflection"), TEXT("Target_Object_Reflection_Mask"))))
 	{
 		return E_FAIL;
 	}
@@ -481,8 +481,8 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
-	//if (FAILED(m_pGameInstance->Ready_Debug_RT(L"Target_Refraction_Final", _float2(ViewportDesc.Width - 250.f, 50.f), _float2(100.f, 100.f))))
-	//	return E_FAIL;
+	if (FAILED(m_pGameInstance->Ready_Debug_RT(L"Target_Mask", _float2(ViewportDesc.Width - 250.f, 50.f), _float2(100.f, 100.f))))
+		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Ready_Debug_RT(L"Target_Reflection_Final", _float2(ViewportDesc.Width - 250.f, 150.f), _float2(100.f, 100.f))))
 		return E_FAIL;
@@ -1079,7 +1079,7 @@ HRESULT CRenderer::Render_Reflection()
 			m_pGameInstance->Set_Transform(TransformType::View, ReflectionViewMat);
 			m_pGameInstance->Update_PipeLine();
 
-			_float4 vClipPlane = _float4(0.f, 1.f, 0.f, -(fWaterHeight - 0.1f));
+			_float4 vClipPlane = _float4(0.f, 1.f, 0.f, -(fWaterHeight - 0.5f));
 
 			for (auto& pGameObject : m_RenderObjects[RG_Priority])
 			{
@@ -1144,7 +1144,7 @@ HRESULT CRenderer::Render_Reflection()
 				pHead->Render_Instance();
 				CModel* pModel = static_cast<CModel*>(pHead->Find_Component(L"Com_Model"));
 				CShader* pShader = static_cast<CShader*>(pHead->Find_Component(L"Com_Shader"));
-				pModel->Render_Instancing(pBuffer, pShader);
+				pModel->Render_Reflection_Instancing(pBuffer, pShader, vClipPlane);
 			}
 
 
@@ -1213,7 +1213,7 @@ HRESULT CRenderer::Render_Reflection()
 			if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DepthTexture", L"Target_Object_Reflection_Depth")))
 				return E_FAIL;
 
-			if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_ObjectSpecTexture", L"Target_Object_Reflection_Specular")))
+			if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_MaskTexture", L"Target_Object_Reflection_Mask")))
 			{
 				return E_FAIL;
 			}
@@ -1296,7 +1296,7 @@ HRESULT CRenderer::Render_LightAcc()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_ObjectSpecTexture", TEXT("Target_Object_Specular"))))
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_MaskTexture", TEXT("Target_Mask"))))
 	{
 		return E_FAIL;
 	}
@@ -1362,6 +1362,9 @@ HRESULT CRenderer::Render_LightAcc()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pShader->Bind_Matrix("g_CamProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
+		return E_FAIL;
+
 	if (FAILED(m_pShader->Bind_RawValue("g_SSAO", &m_SSAO, sizeof(SSAO_DESC))))
 		return E_FAIL;
 
@@ -1384,7 +1387,7 @@ HRESULT CRenderer::Render_LightAcc()
 
 	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_SSAOTEST"), L"MRT_SSAOBlur", m_fSSAOBlurPower)))
 		return E_FAIL;
-	//
+
 #pragma endregion
 
 	return S_OK;

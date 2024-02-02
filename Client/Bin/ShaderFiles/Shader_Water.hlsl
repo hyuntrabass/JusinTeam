@@ -98,7 +98,7 @@ PS_OUT_WATER PS_MAIN_Water(PS_IN_WATER Input)
     
     float3 vNormal;
     // ¹Ý»ç¿Í ±¼Àý
-    vNormalDesc = g_NormalTexture.Sample(LinearSampler, vWaterTex * 8.f);
+    vNormalDesc = g_NormalTexture.Sample(LinearSampler, vWaterTex * 50.f);
     vNormal = normalize(vNormalDesc.xyz * 2.f - 1.f);
     
     float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
@@ -122,7 +122,7 @@ PS_OUT_WATER PS_MAIN_Water(PS_IN_WATER Input)
     
     vector vReflectionDiffuse;
     
-    vReflectionDiffuse = g_ReflectionTexture.Sample(LinearMirrorSampler, vReflectionTexcoord);
+    vReflectionDiffuse = g_ReflectionTexture.Sample(LinearSampler, vReflectionTexcoord);
     
     vReflectionDiffuse.rgb = pow(vReflectionDiffuse.rgb, 1.f / 2.2f);
     
@@ -144,7 +144,7 @@ PS_OUT_WATER PS_MAIN_Water(PS_IN_WATER Input)
     Output.vDiffuse = vReflectionDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_vCamNF.y, 0.f, 0.f);
-    Output.vMask = vector(1.f, 1.f, 1.f, 1.f);
+    Output.vMask = vector(1.f, 1.f, 0.5f, 1.f);
     
     return Output;
 }

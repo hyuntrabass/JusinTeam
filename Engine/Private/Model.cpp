@@ -588,10 +588,26 @@ HRESULT CModel::Render_Instancing(CVIBuffer_Mesh_Instance*& pInstanceBuffer, CSh
 			HasNorTex = true;
 		}
 
+		_bool HasMaskTex{};
+		if (FAILED(Bind_Material(pShader, "g_MaskTexture", i, TextureType::Normals)))
+		{
+			HasMaskTex = false;
+		}
+		else
+		{
+			HasMaskTex = true;
+		}
+
 		if (FAILED(pShader->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}
+
+		if (FAILED(pShader->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
 		if (FAILED(pShader->Begin(3)))
 		{
 			return E_FAIL;
@@ -623,6 +639,16 @@ HRESULT CModel::Render_Reflection_Instancing(CVIBuffer_Mesh_Instance*& pInstance
 			HasNorTex = true;
 		}
 
+		_bool HasMaskTex{};
+		if (FAILED(Bind_Material(pShader, "g_MaskTexture", i, TextureType::Normals)))
+		{
+			HasMaskTex = false;
+		}
+		else
+		{
+			HasMaskTex = true;
+		}
+
 		if (FAILED(pShader->Bind_RawValue("g_vClipPlane", &vClipPlane, sizeof(_float4))))
 			return E_FAIL;
 
@@ -630,7 +656,13 @@ HRESULT CModel::Render_Reflection_Instancing(CVIBuffer_Mesh_Instance*& pInstance
 		{
 			return E_FAIL;
 		}
-		if (FAILED(pShader->Begin(14)))
+
+		if (FAILED(pShader->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(pShader->Begin(5)))
 		{
 			return E_FAIL;
 		}

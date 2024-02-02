@@ -661,22 +661,21 @@ HRESULT CPlayer::Render_Parts(PART_TYPE Parts, _uint Index)
 			HasNorTex = true;
 		}
 
-		_bool HasSpecTex{};
-		if (FAILED(m_pModelCom->Bind_Part_Material(m_pShaderCom, "g_SpecTexture", TextureType::Shininess, (_uint)Parts, (_uint)Index, k)))
+		_bool g_HasMaskTex{};
+		if (FAILED(m_pModelCom->Bind_Part_Material(m_pShaderCom, "g_MaskTexture", TextureType::Shininess, (_uint)Parts, (_uint)Index, k)))
 		{
-			HasSpecTex = false;
+			g_HasMaskTex = false;
 		}
 		else
 		{
-			HasSpecTex = true;
+			g_HasMaskTex = true;
 		}
 
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
 			return E_FAIL;
 
-		HasSpecTex = false;
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasSpecTex", &HasSpecTex, sizeof _bool)))
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &g_HasMaskTex, sizeof _bool)))
 			return E_FAIL;
 
 		if (Parts == PT_HAIR)
