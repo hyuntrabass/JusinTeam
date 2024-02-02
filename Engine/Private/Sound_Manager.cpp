@@ -38,7 +38,8 @@ _int CSound_Manager::Play_Sound(const wstring& strSoundTag, _float fVolume, _boo
 	for (_int i = 1; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 	{
 		_bool bPlay = false;
-		if (m_IsPlayingSounds[i] && not m_pChannelArr[i]->isPlaying(&bPlay))
+		m_pChannelArr[i]->isPlaying(&bPlay);
+		if (not m_IsPlayingSounds[i] && not bPlay)
 		{
 			m_pSystem->playSound(pSound, 0, false, &m_pChannelArr[i]);
 
