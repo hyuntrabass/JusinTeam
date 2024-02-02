@@ -26,7 +26,7 @@ public:
 	virtual HRESULT Render() override;
 
 protected:
-	NPCInfo m_NPCInfo{};
+	NPCInfo m_pInfo{};
 
 //public:
 //	virtual _vec4 Compute_PlayerPos();

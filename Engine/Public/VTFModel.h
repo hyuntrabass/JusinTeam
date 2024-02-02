@@ -25,7 +25,7 @@ public:
 public:
 	HRESULT Play_Animation(_float fTimeDelta);
 
-	HRESULT Set_NextAnimation(_uint iAnimIndex, _bool isLoop);
+	void Set_Animation(ANIM_DESC Animation_Desc);
 
 	void Set_NextAnimationIndex(_int iAnimIndex) {
 		m_iNextAnimIndex = iAnimIndex;
@@ -63,6 +63,10 @@ private:
 	_int m_iNextAnimIndex = -1;
 	_bool m_isLoop = false;
 	_bool m_isFinished = false;
+
+	_bool m_isAnimChanged{};
+	_bool m_isInterpolating{};
+	ANIM_DESC m_AnimDesc{};
 
 private:
 	// For_Animation

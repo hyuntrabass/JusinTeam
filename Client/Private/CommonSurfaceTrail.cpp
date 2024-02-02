@@ -70,6 +70,8 @@ void CCommonSurfaceTrail::Tick(_float3 vTopPos, _float3 vBottomPos)
 		m_BottomPosList.pop_back();
 	}
 	m_BottomPosList.push_front(vBottomPos);
+
+	m_pTransformCom->Set_State(State::Pos, XMVectorSetW(XMLoadFloat3(&vTopPos), 1.f));
 }
 
 void CCommonSurfaceTrail::Late_Tick(_float fTimeDelta)

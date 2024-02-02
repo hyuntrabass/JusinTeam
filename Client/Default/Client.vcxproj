@@ -186,6 +186,7 @@
     <ClInclude Include="..\Public\HpMonster.h" />
     <ClInclude Include="..\Public\Inven.h" />
     <ClInclude Include="..\Public\InvenFrame.h" />
+    <ClInclude Include="..\Public\InvenWindow.h" />
     <ClInclude Include="..\Public\Item.h" />
     <ClInclude Include="..\Public\Imp.h" />
     <ClInclude Include="..\Public\ItemBlock.h" />
@@ -262,6 +263,7 @@
     <ClInclude Include="..\Public\TriggerList.h" />
     <ClInclude Include="..\Public\Trigger_Manager.h" />
     <ClInclude Include="..\Public\TrilobiteA.h" />
+    <ClInclude Include="..\Public\Tutorial.h" />
     <ClInclude Include="..\Public\UI_Manager.h" />
     <ClInclude Include="..\Public\ModelTest.h" />
     <ClInclude Include="..\Public\Terrain.h" />
@@ -271,6 +273,7 @@
     <ClInclude Include="..\Public\Void09.h" />
     <ClInclude Include="..\Public\Void20.h" />
     <ClInclude Include="..\Public\Void23.h" />
+    <ClInclude Include="..\Public\VTFTest.h" />
     <ClInclude Include="..\Public\Wearable_Slot.h" />
     <ClInclude Include="..\Public\WorldMap.h" />
     <ClInclude Include="Client.h" />
@@ -308,6 +311,7 @@
     <ClCompile Include="..\Private\HPMonster.cpp" />
     <ClCompile Include="..\Private\Inven.cpp" />
     <ClCompile Include="..\Private\InvenFrame.cpp" />
+    <ClCompile Include="..\Private\InvenWindow.cpp" />
     <ClCompile Include="..\Private\Item.cpp" />
     <ClCompile Include="..\Private\Imp.cpp" />
     <ClCompile Include="..\Private\ItemBlock.cpp" />
@@ -381,6 +385,7 @@
     <ClCompile Include="..\Private\Trigger.cpp" />
     <ClCompile Include="..\Private\Trigger_Manager.cpp" />
     <ClCompile Include="..\Private\TrilobiteA.cpp" />
+    <ClCompile Include="..\Private\Tutorial.cpp" />
     <ClCompile Include="..\Private\UI_Manager.cpp" />
     <ClCompile Include="..\Private\ModelTest.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
@@ -390,6 +395,7 @@
     <ClCompile Include="..\Private\Void09.cpp" />
     <ClCompile Include="..\Private\Void20.cpp" />
     <ClCompile Include="..\Private\Void23.cpp" />
+    <ClCompile Include="..\Private\VTFTest.cpp" />
     <ClCompile Include="..\Private\Wearable_Slot.cpp" />
     <ClCompile Include="..\Private\WorldMap.cpp" />
     <ClCompile Include="Client.cpp" />

@@ -4,6 +4,7 @@
 #include "UI_Manager.h"
 #include "FadeBox.h"
 #include "InvenFrame.h"
+#include "Event_Manager.h"
 CInven::CInven(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
@@ -95,6 +96,12 @@ void CInven::Tick(_float fTimeDelta)
 	{
 		if (!m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
+			if (CEvent_Manager::Get_Instance()->Get_TutorialLevel() == T_OPENINVEN)
+			{
+				CEvent_Manager::Get_Instance()->Set_TutorialComplete(T_OPENINVEN);
+				CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_EQUIP);
+			}
+
 			CFadeBox::FADE_DESC Desc = {};
 			Desc.eState = CFadeBox::FADEOUT;
 			Desc.fDuration = 0.8f;
@@ -123,6 +130,11 @@ void CInven::Tick(_float fTimeDelta)
 	{
 		if (m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
+			if (CEvent_Manager::Get_Instance()->Get_TutorialLevel() == T_EXIT)
+			{
+				CEvent_Manager::Get_Instance()->Set_TutorialComplete(T_EXIT);
+				//CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_EXIT);
+			}
 			CFadeBox::FADE_DESC Desc = {};
 			Desc.eState = CFadeBox::FADEOUT;
 			Desc.fDuration = 0.8f;

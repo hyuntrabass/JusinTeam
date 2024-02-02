@@ -1,5 +1,6 @@
 #include "TextButtonColor.h"
 #include "GameInstance.h"
+#include "UI_Manager.h"
 
 CTextButtonColor::CTextButtonColor(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -62,6 +63,11 @@ HRESULT CTextButtonColor::Init(void* pArg)
 
 void CTextButtonColor::Tick(_float fTimeDelta)
 {
+	if (CUI_Manager::Get_Instance()->Get_TimeStop())
+	{
+		fTimeDelta /= m_pGameInstance->Get_TimeRatio();
+	}
+
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
 

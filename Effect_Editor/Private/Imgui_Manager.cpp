@@ -163,6 +163,16 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		"VTPass_Sprite_Dissolve",
 		"VTPass_SpriteMaskTexture_Dissolve",
 		"VTPass_SpriteMaskColor_Dissolve",
+		"VTPass_Dust",
+		"VTPass_Dissolve",
+		"VTPass_MP",
+		"VTPass_BLUR",
+		"VTPass_Bright",
+		"VTPass_ScrollAlpha",
+		"VTPass_HPNoMask",
+		"VTPass_NineSlice",
+		"VTPass_FadeVertical",
+		"VTPass_FadeHorizontal",
 	};
 
 	const _char* szStatPasses[StaticPass_End]
@@ -182,6 +192,9 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		"StaticPass_SingleColoredEffectFrontCull",
 		"StaticPass_Shadow",
 		"StaticPass_Water",
+		"StaticPass_Worldmap_Water",
+		"StaticPass_Worldmap_Cloud",
+		"StaticPsss_Rim",
 		"StaticPass_DiffEffect",
 	};
 
@@ -189,7 +202,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 	if (m_iCurrent_Type == ET_PARTICLE)
 	{
-		if (BeginListBox("Pass##1", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+		if (BeginListBox("Pass##1", ImVec2(-FLT_MIN, 7 * ImGui::GetTextLineHeightWithSpacing())))
 		{
 
 			for (size_t i = 0; i < InstPass_End; i++)
@@ -307,7 +320,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		{
 			shouldScrollToSelectedItem = true;
 		}
-		ImGui::BeginChild("Diff Texture", ImVec2(0, 100), true);
+		ImGui::BeginChild("Diff Texture", ImVec2(0, 150), true);
 
 		// ListBox의 각 아이템을 생성합니다.
 		for (int i = 0; i < m_iNumTextures; ++i)
@@ -406,7 +419,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		{
 			shouldScrollToSelectedItem = true;
 		}
-		ImGui::BeginChild("Mask Texture", ImVec2(0, 100), true);
+		ImGui::BeginChild("Mask Texture", ImVec2(0, 150), true);
 
 		for (int i = 0; i < m_iNumTextures; ++i)
 		{
@@ -479,7 +492,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		{
 			shouldScrollToSelectedItem = true;
 		}
-		ImGui::BeginChild("UnDissolve Texture", ImVec2(0, 100), true);
+		ImGui::BeginChild("UnDissolve Texture", ImVec2(0, 150), true);
 
 		for (int i = 0; i < m_iNumTextures; ++i)
 		{
@@ -552,7 +565,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		{
 			shouldScrollToSelectedItem = true;
 		}
-		ImGui::BeginChild("Dissolve Texture", ImVec2(0, 100), true);
+		ImGui::BeginChild("Dissolve Texture", ImVec2(0, 150), true);
 
 		for (int i = 0; i < m_iNumTextures; ++i)
 		{
@@ -814,7 +827,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		{
 			shouldScrollToSelectedItem = true;
 		}
-		ImGui::BeginChild("Model", ImVec2(0, 100), true);
+		ImGui::BeginChild("Model", ImVec2(0, 250), true);
 
 		for (int i = 0; i < m_iNumModels; ++i)
 		{

@@ -714,15 +714,22 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					ImGui::InputFloat("X##1", &vScale.x, 0.01f, 0.f, "%.2f"); ImGui::SameLine();
 					ImGui::InputFloat("Y##1", &vScale.y, 0.01f, 0.f, "%.2f"); ImGui::SameLine();
 					ImGui::InputFloat("Z##1", &vScale.z, 0.01f, 0.f, "%.2f");
+					if (vScale.x <= 0.01f)
+					{
+						vScale.x = 0.1f;
+					}
+					if (vScale.y <= 0.01f)
+					{
+						vScale.y = 0.1f;
+					}
+					if (vScale.z <= 0.01f)
+					{
+						vScale.z = 0.1f;
+					}
 					ImGui::SeparatorText("OFFSET");
 					ImGui::InputFloat("X##2", &vPosition.x, 0.01f, 0.f, "%.2f"); ImGui::SameLine();
 					ImGui::InputFloat("Y##2", &vPosition.y, 0.01f, 0.f, "%.2f"); ImGui::SameLine();
-					ImGui::InputFloat("Z##2", &vPosition.z, 0.01f, 0.f, "%.2f");/*
-					ImGui::SeparatorText("AXIS");
-					ImGui::InputFloat("X##3", &vRotation.x, 1.f, 0.f, "%.1f"); ImGui::SameLine();
-					ImGui::InputFloat("Y##3", &vRotation.y, 1.f, 0.f, "%.1f"); ImGui::SameLine();
-					ImGui::InputFloat("Z##3", &vRotation.z, 1.f, 0.f, "%.1f");
-					ImGui::InputFloat("ANGLE", &vRotation.w, 1.f, 0.f, "%.1f");*/
+					ImGui::InputFloat("Z##2", &vPosition.z, 0.01f, 0.f, "%.2f");
 					ImGui::PopItemWidth();
 					pEffectDesc->OffsetMatrix.Right(pEffectDesc->OffsetMatrix.Right().Get_Normalized() * vScale.x);
 					pEffectDesc->OffsetMatrix.Up(pEffectDesc->OffsetMatrix.Up().Get_Normalized() * vScale.y);
@@ -1124,11 +1131,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					ImGui::InputFloat("X##1", &vScale.x, 0.01f, 0.f, "%.2f"); ImGui::SameLine();
 					ImGui::InputFloat("Y##1", &vScale.y, 0.01f, 0.f, "%.2f"); ImGui::SameLine();
 					ImGui::InputFloat("Z##1", &vScale.z, 0.01f, 0.f, "%.2f");
-					ImGui::SeparatorText("OFFSET");
-					ImGui::InputFloat("X##2", &vPosition.x, 0.01f, 0.f, "%.2f"); ImGui::SameLine();
-					ImGui::InputFloat("Y##2", &vPosition.y, 0.01f, 0.f, "%.2f"); ImGui::SameLine();
-					ImGui::InputFloat("Z##2", &vPosition.z, 0.01f, 0.f, "%.2f");
-					ImGui::PopItemWidth();
 					if (vScale.x <= 0.01f)
 					{
 						vScale.x = 0.1f;
@@ -1137,6 +1139,15 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					{
 						vScale.y = 0.1f;
 					}
+					if (vScale.z <= 0.01f)
+					{
+						vScale.z = 0.1f;
+					}
+					ImGui::SeparatorText("OFFSET");
+					ImGui::InputFloat("X##2", &vPosition.x, 0.01f, 0.f, "%.2f"); ImGui::SameLine();
+					ImGui::InputFloat("Y##2", &vPosition.y, 0.01f, 0.f, "%.2f"); ImGui::SameLine();
+					ImGui::InputFloat("Z##2", &vPosition.z, 0.01f, 0.f, "%.2f");
+					ImGui::PopItemWidth();
 					pEffectDesc->OffsetMatrix.Right(pEffectDesc->OffsetMatrix.Right().Get_Normalized() * vScale.x);
 					pEffectDesc->OffsetMatrix.Up(pEffectDesc->OffsetMatrix.Up().Get_Normalized() * vScale.y);
 					pEffectDesc->OffsetMatrix.Look(pEffectDesc->OffsetMatrix.Look().Get_Normalized() * vScale.z);

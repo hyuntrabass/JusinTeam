@@ -31,6 +31,7 @@ protected:
 protected:
 	wstring	m_strModelTag = {};
 	ANIM_DESC m_Animation{};
+	_mat m_EffectMatrix{};
 
 protected:
 	_float m_fPosLerpRatio = {};

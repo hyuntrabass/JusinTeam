@@ -544,7 +544,7 @@ HRESULT CLoader::Load_Select()
 #pragma region Shader
 
 	// VTF Test
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_SELECT, TEXT("Prototype_Component_Shader_VTF"),
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VTF"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VTFModel.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
 	{
 		return E_FAIL;
@@ -719,6 +719,7 @@ HRESULT CLoader::Load_Custom()
 
 HRESULT CLoader::Load_GamePlay()
 {
+
 	m_strLoadingText = L"CreateCharacter : Loading Sounds";
 	//if (FAILED(m_pGameInstance->Init_SoundManager(SCH_MAX)))
 	//{
@@ -761,6 +762,11 @@ HRESULT CLoader::Load_GamePlay()
 		}
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Tuto"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Tutorial/Tuto%d.png"), 3))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 #pragma region Terrain
@@ -829,6 +835,12 @@ HRESULT CLoader::Load_GamePlay()
 
 
 #pragma endregion
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_VTFTest"),
+		CVTFModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/VTFRabbit/Mesh/Rabbit.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 
 #pragma region Monster
 	strInputFilePath = "../Bin/Resources/AnimMesh/Monster/0_ModelTest/Mesh/";
@@ -1036,7 +1048,6 @@ HRESULT CLoader::Load_GamePlay()
 #pragma endregion
 
 
-
 	m_strLoadingText = L"GamePlay : Loading Shader";
 #pragma region Shader
 
@@ -1183,9 +1194,29 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_InvenWindow"), CInvenWindow::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Pop_Alert"), CPop_Alert::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Tutorial"), CTutorial::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
 
 #pragma endregion
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_VTFTest"), CVTFTest::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 
 #pragma region Monster
 
@@ -1391,6 +1422,8 @@ HRESULT CLoader::Load_Village()
 			}
 		}
 	}
+
+	_mat DungeonPivot = _mat::CreateScale(0.001f);
 	 strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Map/Dungeon/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -1400,7 +1433,7 @@ HRESULT CLoader::Load_Village()
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, DungeonPivot))))
 			{
 				return E_FAIL;
 			}
@@ -1435,7 +1468,6 @@ HRESULT CLoader::Load_Village()
 	{
 		return E_FAIL;
 	}
-
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Village_Envir_Object"), CEnvironment_Object::Create(m_pDevice, m_pContext))))
 	{
