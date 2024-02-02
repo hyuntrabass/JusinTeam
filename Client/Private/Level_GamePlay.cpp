@@ -261,8 +261,9 @@ HRESULT CLevel_GamePlay::Ready_Light()
 
 	LightDesc.eType = LIGHT_DESC::Directional;
 	LightDesc.vDirection = _float4(-1.f, -2.f, -1.f, 0.f);
-	LightDesc.vDiffuse = _vec4(1.f);
+	LightDesc.vDiffuse = _vec4(0.2f, 0.2f, 0.2f, 1.f);
 	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
+	LightDesc.vSpecular = _vec4(1.f);
 
 	return m_pGameInstance->Add_Light(LEVEL_GAMEPLAY, TEXT("Light_Main"), LightDesc);
 }
@@ -343,11 +344,11 @@ HRESULT CLevel_GamePlay::Ready_Map()
 	inFile.close();
 
 	CLake::WATER_DESC Desc;
-	Desc.fReflectionScale = 10.f;
-	Desc.fRefractionScale = 10.f;
-	Desc.vPos = _vec3(100.f, 0.01f, 100.f);
+	Desc.fReflectionScale = 0.05f;
+	Desc.fRefractionScale = 0.05f;
+	Desc.vPos = _vec3(100.f, 1.f, 100.f);
 	Desc.vSize = _vec2(200.f,200.f);
-	Desc.fWaterSpeed = 10.f;
+	Desc.fWaterSpeed = 0.1f;
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, L"Layer_Map", L"Prototype_GameObject_Water", &Desc)))
 		return E_FAIL;
 

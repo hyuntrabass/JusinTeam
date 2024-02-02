@@ -598,8 +598,46 @@ HRESULT CModel::Render_Instancing(CVIBuffer_Mesh_Instance*& pInstanceBuffer, CSh
 		}
 		if (FAILED(pInstanceBuffer->Render(m_Meshes[i])))
 			return E_FAIL;
-		}
+	}
 	
+	return S_OK;
+}
+
+HRESULT CModel::Render_Reflection_Instancing(CVIBuffer_Mesh_Instance*& pInstanceBuffer, CShader*& pShader, _float4 vClipPlane)
+{
+	for (_uint i = 0; i < m_Meshes.size(); ++i)
+	{
+
+		if (FAILED(Bind_Material(pShader, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		{
+			return E_FAIL;
+		}
+
+		_bool HasNorTex{};
+		if (FAILED(Bind_Material(pShader, "g_NormalTexture", i, TextureType::Normals)))
+		{
+			HasNorTex = false;
+		}
+		else
+		{
+			HasNorTex = true;
+		}
+
+		if (FAILED(pShader->Bind_RawValue("g_vClipPlane", &vClipPlane, sizeof(_float4))))
+			return E_FAIL;
+
+		if (FAILED(pShader->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(pShader->Begin(14)))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(pInstanceBuffer->Render(m_Meshes[i])))
+			return E_FAIL;
+	}
+
 	return S_OK;
 }
 

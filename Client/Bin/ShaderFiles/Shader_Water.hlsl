@@ -21,14 +21,18 @@ float2 g_vCamNF;
 struct VS_IN
 {
     float3 vPos : POSITION;
+    float3 vNor : Normal;
     float2 vTex : TEXCOORD0;
 };
 
 struct VS_OUT_WATER
 {
     vector vPos : SV_POSITION;
+    vector vNor : Normal;
     float2 vTex : TEXCOORD0;
     vector vProjPos : PROJPOS;
+    float3 vTangent : Tangent;
+    float3 vBinormal : Binormal;
     vector vReflectionPos : REFLECTION;
     vector vRefractionPos : REFRACTION;
 };
@@ -43,8 +47,11 @@ VS_OUT_WATER VS_MAIN_Water(VS_IN Input)
     matWVP = mul(matWV, g_ProjMatrix);
     
     Output.vPos = mul(vector(Input.vPos, 1.f), matWVP);
+    Output.vNor = normalize(mul(vector(Input.vNor, 0.f), g_WorldMatrix));
     Output.vTex = Input.vTex;
     Output.vProjPos = Output.vPos;
+    Output.vTangent = normalize(mul(vector(1.f, 0.f, .0f, 0.f), g_WorldMatrix)).xyz;
+    Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
     
     matrix matWRV, matWRVP;
     
@@ -60,17 +67,23 @@ VS_OUT_WATER VS_MAIN_Water(VS_IN Input)
 struct PS_IN_WATER
 {
     vector vPos : SV_POSITION;
+    vector vNor : Normal;
     float2 vTex : TEXCOORD0;
     vector vProjPos : PROJPOS;
+    float3 vTangent : Tangent;
+    float3 vBinormal : Binormal;
     vector vReflectionPos : REFLECTION;
     vector vRefractionPos : REFRACTION;
 };
 
 struct PS_OUT_WATER
 {
-    vector vDiffuse : SV_TARGET0;
-    vector vNormal : SV_TARGET1;
-    vector vDepth : SV_TARGET2;
+    vector vDiffuse : SV_Target0;
+    vector vNormal : SV_Target1;
+    vector vDepth : SV_Target2;
+    vector vMask : SV_Target3;
+    vector vVelocity : SV_Target4;
+    vector vRimMask : SV_Target5;
 };
 
 PS_OUT_WATER PS_MAIN_Water(PS_IN_WATER Input)
@@ -79,15 +92,18 @@ PS_OUT_WATER PS_MAIN_Water(PS_IN_WATER Input)
     
     
     vector vNormalDesc;
-    vector vNormal;
     
     float2 vWaterTex = Input.vTex + g_fWaterPos;
     
     
+    float3 vNormal;
     // ¹Ý»ç¿Í ±¼Àý
     vNormalDesc = g_NormalTexture.Sample(LinearSampler, vWaterTex * 8.f);
-    vNormal = normalize(vector(vNormalDesc.xyz * 2.f - 1.f, 0.f) * -1.f);
-    vNormal.a = 0.f;
+    vNormal = normalize(vNormalDesc.xyz * 2.f - 1.f);
+    
+    float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
+    
+    vNormal = normalize(mul(vNormal.xyz, WorldMatrix) * -1.f);
     
     //vNormal = normalize(mul(vNormal, g_WorldMatrix) * -1.f);
     
@@ -108,6 +124,8 @@ PS_OUT_WATER PS_MAIN_Water(PS_IN_WATER Input)
     
     vReflectionDiffuse = g_ReflectionTexture.Sample(LinearMirrorSampler, vReflectionTexcoord);
     
+    vReflectionDiffuse.rgb = pow(vReflectionDiffuse.rgb, 1.f / 2.2f);
+    
     //vector vRefractionDiffuse;
     //vRefractionDiffuse = g_RefractionTexture.Sample(LinearMirrorSampler, vRefractionTexcoord);
     
@@ -124,8 +142,9 @@ PS_OUT_WATER PS_MAIN_Water(PS_IN_WATER Input)
     //vMergeDiffuse = saturate(vMergeDiffuse * float4(0.95f, 1.00f, 1.05f, 1.0f) + float4(0.15f, 0.15f, 0.15f, 0.0f));
     
     Output.vDiffuse = vReflectionDiffuse;
-    Output.vNormal = vector(0.f, 1.f, 0.f, 0.f);
+    Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_vCamNF.y, 0.f, 0.f);
+    Output.vMask = vector(1.f, 1.f, 1.f, 1.f);
     
     return Output;
 }

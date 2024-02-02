@@ -19,6 +19,7 @@ float g_fHellStart;
 float2 g_vFogNF;
 vector g_vFogColor;
 
+//Texture2DMS<vector> g_DiffuseTexture;
 Texture2D g_DiffuseTexture;
 Texture2D g_NormalTexture;
 Texture2D g_ObjectSpecTexture;
@@ -216,7 +217,17 @@ PS_OUT PS_Main_Water(PS_IN Input)
     
     vector FinalColor = 0;
     
+    //int2 vTexcoord = int2(Input.vTexcoord.x, Input.vTexcoord.y);
+    
+    //float4 colorSum = float4(0, 0, 0, 0);
+    //for (int sampleIndex = 0; sampleIndex < 4; ++sampleIndex)
+    //{
+    //    colorSum += g_DiffuseTexture.Load(vTexcoord, sampleIndex);
+    //}
+    //vector vDiffuse = colorSum / 4;
+    
     vector vDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTexcoord);
+
     if(vDiffuse.a == 0.f)
         discard;
     
@@ -239,7 +250,17 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     
     vector FinalColor = 0;
     
+    //int2 vTexcoord = int2(Input.vTexcoord.x, Input.vTexcoord.y);
+    
+    //float4 colorSum = float4(0, 0, 0, 0);
+    //for (int sampleIndex = 0; sampleIndex < 4; ++sampleIndex)
+    //{
+    //    colorSum += g_DiffuseTexture.Load(vTexcoord, sampleIndex);
+    //}
+    //vector vDiffuse = colorSum / 4;
+    
     vector vDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTexcoord);
+    
     if (vDiffuse.a == 0.f)
     {
         discard;
