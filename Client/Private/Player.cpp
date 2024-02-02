@@ -79,6 +79,8 @@ HRESULT CPlayer::Init(void* pArg)
 	SURFACETRAIL_DESC SurfaceDesc{};
 	SurfaceDesc.iNumVertices = 20;
 	SurfaceDesc.vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
+	SurfaceDesc.strMaskTextureTag = L"FX_G_Note_MusicSheet001_Tex";
+	m_pTest_Trail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &SurfaceDesc);
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER);
 	return S_OK;
@@ -87,6 +89,8 @@ HRESULT CPlayer::Init(void* pArg)
 void CPlayer::Tick(_float fTimeDelta)
 {
 
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
+		return;
 
 	if (m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
 		return;
@@ -147,6 +151,11 @@ void CPlayer::Tick(_float fTimeDelta)
 			}
 		}
 
+		if (m_pTest_Trail)
+		{
+			_vec3 vCenterforTrail = _vec3(m_pTransformCom->Get_CenterPos());
+			m_pTest_Trail->Tick(vCenterforTrail + _vec3(0.f, 1.f, 0.f), vCenterforTrail);
+		}
 	}
 
 
@@ -178,8 +187,10 @@ void CPlayer::Tick(_float fTimeDelta)
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD5))
 	{
-		m_eState = Logging;
-		m_iLoggingCount = 0;
+		if (!m_bReadySwim)
+			m_bReadySwim = true;
+		else
+			m_bReadySwim = false;
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD6))
 	{
@@ -193,28 +204,19 @@ void CPlayer::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_8))
 	{
 		if (!m_bIsMount)
-		{	
+		{
 			m_bIsMount = true;
 			m_eState = Mount;
 			m_Animation.iAnimIndex = Anim_Mount_Idle;
 			Summon_Riding(Bird);
-
-			
-
-			m_pGameInstance->Set_FlyCam(true);
-
 		}
 		else
 		{
 			m_pRiding->Delete_Riding();
 		}
-
 	}
 	Front_Ray_Check();
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), COORD());
-	cout << m_bIsClimb << endl;
 
-	cout << endl;
 	if (m_bIsMount)
 	{
 		m_pRiding->Tick(fTimeDelta);
@@ -361,8 +363,10 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		m_pRight_Trail[i]->Late_Tick(fTimeDelta);
 	}
 
-
-
+	if (m_pTest_Trail)
+	{
+		m_pTest_Trail->Late_Tick(fTimeDelta);
+	}
 
 #ifdef _DEBUGTEST
 	m_pRendererCom->Add_DebugComponent(m_pHitCollider);
@@ -677,7 +681,7 @@ HRESULT CPlayer::Render_Parts(PART_TYPE Parts, _uint Index)
 
 		if (Parts == PT_HAIR)
 		{
-			if (FAILED(m_pShaderCom->Begin(m_ShaderIndex+2)))
+			if (FAILED(m_pShaderCom->Begin(m_ShaderIndex + 2)))
 				return E_FAIL;
 			//if (FAILED(m_pShaderCom->Begin(5)))
 			//	return E_FAIL;
@@ -711,20 +715,30 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 {
 	if (m_eState == Aim_Idle or m_eState == SkillR)
 		m_pGameInstance->Set_AimMode(false);
+	m_Status.Current_Hp -= (iDamage - iDamage * (m_Status.Armor / 0.01f));
 
-	m_iHP -= (iDamage - iDamage * (m_Status.Armor / 0.01f));
-	//if (m_iHP < 0)
-	if (MonAttType == 4)
+	
+	if (m_Status.Current_Hp<0)
 	{
 		m_iHP = 0;
 		m_eState = Die;
 	}
 	else
 	{
+		if (m_iSuperArmor > 0)
+			return;
+
 		switch (MonAttType)
 		{
 		case MonAtt_Hit:
 			m_eState = Hit;
+			m_Animation.iAnimIndex = Anim_Stun_start;
+			m_Animation.fDurationRatio = 0.4f;
+			m_Animation.fAnimSpeedRatio = 2.f;
+			m_Animation.bSkipInterpolation = true;
+			m_Animation.fStartAimPos = 18.f;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
 			break;
 		case MonAtt_KnockDown:
 			m_eState = KnockDown;
@@ -857,113 +871,114 @@ void CPlayer::Move(_float fTimeDelta)
 
 	_vec4 vDirection{};
 	_bool go{};
-	if (m_eState == SkillR || m_eState == Aim_Idle)
+	if (!m_bReadySwim && m_Weapon_CurrentIndex < WP_UNEQUIP)
 	{
-		m_pTransformCom->LookAt_Dir(m_pCameraTransform->Get_State(State::Look));
 
-	}
-	if (m_pGameInstance->Key_Down(DIK_1))
-	{
-		if (m_eState != Skill1)
+
+		if (m_eState == SkillR || m_eState == Aim_Idle)
 		{
-			Ready_Skill(ST_Skill1); // 1번창에 있던 스킬 넣어주기
-		}
-	}
+			m_pTransformCom->LookAt_Dir(m_pCameraTransform->Get_State(State::Look));
 
-	if (m_pGameInstance->Key_Down(DIK_2))
-	{
-		if (m_eState != Skill2)
-		{
-			Ready_Skill(ST_Skill2);
-		}
-	}
-
-
-	if (m_pGameInstance->Key_Down(DIK_3))
-	{
-		if (m_eState != Skill3)
-		{
-			Ready_Skill(ST_Skill3);
-		}
-	}
-
-	if (m_pGameInstance->Key_Down(DIK_4))
-	{
-		if (m_eState != Skill4)
-		{
-			Ready_Skill(ST_Skill4);
 		}
 
-	}
-	if (m_pGameInstance->Key_Down(DIK_F9))
-	{
-		Change_Weapon(WP_SWORD, (WEAPON_INDEX)qq);
-		qq++;
-	}
-	if (m_pGameInstance->Key_Down(DIK_5))
-	{
-		if (m_eState == Idle)
+		if (m_pGameInstance->Key_Down(DIK_1))
 		{
-			if (m_Current_Weapon == WP_SWORD)
-				Change_Weapon(WP_BOW, BOW0);
-			else
-				Change_Weapon(WP_SWORD, SWORD0);
+			if (m_eState != Skill1)
+			{
+				Ready_Skill(ST_Skill1); // 1번창에 있던 스킬 넣어주기
+			}
 		}
-	}
 
-	if (m_pGameInstance->Mouse_Down(DIM_RBUTTON))
-	{
-		if (m_Current_Weapon == WP_BOW)
+		if (m_pGameInstance->Key_Down(DIK_2))
+		{
+			if (m_eState != Skill2)
+			{
+				Ready_Skill(ST_Skill2);
+			}
+		}
+
+
+		if (m_pGameInstance->Key_Down(DIK_3))
+		{
+			if (m_eState != Skill3)
+			{
+				Ready_Skill(ST_Skill3);
+			}
+		}
+
+		if (m_pGameInstance->Key_Down(DIK_4))
+		{
+			if (m_eState != Skill4)
+			{
+				Ready_Skill(ST_Skill4);
+			}
+
+		}
+
+		if (m_pGameInstance->Key_Down(DIK_5))
 		{
 			if (m_eState == Idle)
 			{
-				m_eState = Aim_Idle;
-				m_Animation.iAnimIndex = Anim_LoadingScene_Pose_Sniper;
-				m_iCurrentSkill_Index = Aim_Idle;
-				m_pGameInstance->Set_AimMode(true);
+				if (m_Current_Weapon == WP_SWORD)
+					Change_Weapon(WP_BOW, BOW0);
+				else
+					Change_Weapon(WP_SWORD, SWORD0);
 			}
-			else if (m_eState == Aim_Idle)
+		}
+
+		if (m_pGameInstance->Mouse_Down(DIM_RBUTTON))
+		{
+			if (m_Current_Weapon == WP_BOW)
 			{
-				m_eState = Attack_Idle;
-				m_pGameInstance->Set_AimMode(false);
+				if (m_eState == Idle)
+				{
+					m_eState = Aim_Idle;
+					m_Animation.iAnimIndex = Anim_LoadingScene_Pose_Sniper;
+					m_iCurrentSkill_Index = Aim_Idle;
+					m_pGameInstance->Set_AimMode(true);
+				}
+				else if (m_eState == Aim_Idle)
+				{
+					m_eState = Attack_Idle;
+					m_pGameInstance->Set_AimMode(false);
 
-				vDirection += vForwardDir;
-				m_pTransformCom->LookAt_Dir(vDirection);
+					vDirection += vForwardDir;
+					m_pTransformCom->LookAt_Dir(vDirection);
+				}
+			}
+
+
+		}
+
+		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON))
+		{
+			if (m_eState == Aim_Idle)
+			{
+				SkillR_Attack();
+				m_eState = SkillR;
+				m_iCurrentSkill_Index = SkillR;
+				m_fAttTimer = 0.f;
+			}
+			else if (m_fAttTimer > 0.2f and m_eState == SkillR)
+			{
+				SkillR_Attack();
+				m_eState = SkillR;
+				m_iCurrentSkill_Index = SkillR;
+				m_fAttTimer = 0.f;
 			}
 		}
 
 
-	}
-
-	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON))
-	{
-		if (m_eState == Aim_Idle)
+		if (m_eState == Jump)
 		{
-			SkillR_Attack();
-			m_eState = SkillR;
-			m_iCurrentSkill_Index = SkillR;
-			m_fAttTimer = 0.f;
+			if (!m_pTransformCom->Is_Jumping())
+				m_eState = Jump_End;
 		}
-		else if (m_fAttTimer > 0.2f and m_eState == SkillR)
-		{
-			SkillR_Attack();
-			m_eState = SkillR;
-			m_iCurrentSkill_Index = SkillR;
-			m_fAttTimer = 0.f;
-		}
+		if (m_fAttTimer > 0.8f && m_eState == Attack)
+			m_bReady_Move = true;
+		else if (m_eState != Attack)
+			m_bReady_Move = false;
 	}
-
-
-	if (m_eState == Jump)
-	{
-		if (!m_pTransformCom->Is_Jumping())
-			m_eState = Jump_End;
-	}
-	if (m_fAttTimer > 0.8f && m_eState == Attack)
-		m_bReady_Move = true;
-	else if (m_eState != Attack)
-		m_bReady_Move = false;
-
 	if ((m_fSkiilTimer > 1.2f && m_eState != SkillR && m_eState != Aim_Idle))
 	{
 		//퀘스트 개수에 따라 bool로 통과하도록 한번 거쳐야할듯 아니면 계속 맵에서 찾아야되니까 
@@ -973,7 +988,7 @@ void CPlayer::Move(_float fTimeDelta)
 			vDirection += vForwardDir;
 
 			hasMoved = true;
-		
+
 		}
 		else if (m_pGameInstance->Key_Pressing(DIK_S))
 		{
@@ -994,7 +1009,7 @@ void CPlayer::Move(_float fTimeDelta)
 
 		if (m_pGameInstance->Key_Down(DIK_F))
 		{
-			if (m_bIsClimb)
+			if (m_bIsClimb or m_bReadySwim)
 				return;
 
 
@@ -1011,6 +1026,8 @@ void CPlayer::Move(_float fTimeDelta)
 		}
 		if (m_pGameInstance->Key_Down(DIK_SPACE))
 		{
+			if (m_bReadySwim)
+				return;
 			//if (!m_hasJumped)
 			{
 				m_pTransformCom->Jump(8.f);
@@ -1022,9 +1039,48 @@ void CPlayer::Move(_float fTimeDelta)
 				m_bIsClimb = true;
 			}
 		}
+		if (m_bReadySwim && hasMoved)
+		{
+			if (m_eState == Swim_Idle or m_eState == Swim)
+				m_eState = Swim;
+			else
+				return;
+
+			m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed);
+			m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
+			
+			_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
+
+			_float fInterpolTime = 0.4f;
+			m_vOriginalLook = vLook;
+			if (m_fInterpolationRatio < fInterpolTime)
+			{
+				if (not m_isInterpolating)
+				{
+					m_vOriginalLook = vLook;
+					m_isInterpolating = true;
+				}
+
+				m_fInterpolationRatio += fTimeDelta;
 
 
-		if (hasMoved && !m_bIsClimb && m_eState != Attack)
+				_float fRatio = m_fInterpolationRatio / fInterpolTime;
+
+				vDirection = XMVectorLerp(m_vOriginalLook, vDirection, fRatio);
+			}
+			else
+			{
+				m_isInterpolating = false;
+				m_fInterpolationRatio = 0.f;
+			}
+			m_pTransformCom->LookAt_Dir(vDirection);
+		}
+		else if (m_bReadySwim && !hasMoved)
+		{
+			if(m_eState != Swim_collect)
+			m_eState = Swim_Idle;
+		}
+		else if (hasMoved && !m_bIsClimb && m_eState != Attack &&!m_bReadySwim)
 		{
 
 			if (m_pGameInstance->Key_Pressing(DIK_LSHIFT))
@@ -1163,6 +1219,7 @@ void CPlayer::Move(_float fTimeDelta)
 		m_pTransformCom->Gravity(fTimeDelta);
 
 }
+
 void CPlayer::Is_Climb(_float fTimeDelta)
 {
 	m_pTransformCom->Set_Speed(0.9f);
@@ -1324,7 +1381,7 @@ void CPlayer::Common_Attack()
 		default:
 			break;
 		}
-	}	
+	}
 	else if (m_Current_Weapon == WP_BOW)
 	{
 		switch (m_iAttackCombo)
@@ -1363,7 +1420,7 @@ void CPlayer::Skill1_Attack()
 		m_Animation.iAnimIndex = m_SwordSkill[0];
 		m_Animation.isLoop = false;
 		m_hasJumped = false;
-		m_iSuperArmor = {};
+		m_iSuperArmor = {1.f};
 		m_fSkiilTimer = 0.f;
 		m_Status.Current_Mp -= 150;
 	}
@@ -1372,7 +1429,7 @@ void CPlayer::Skill1_Attack()
 		m_Animation.iAnimIndex = m_BowSkill[0];
 		m_Animation.isLoop = false;
 		m_hasJumped = false;
-		m_iSuperArmor = {};
+		m_iSuperArmor = {1.f};
 		m_Animation.fAnimSpeedRatio = 2.7f;
 		m_Animation.fDurationRatio = 0.8f;
 		m_fSkiilTimer = 0.f;
@@ -1387,7 +1444,7 @@ void CPlayer::Skill2_Attack()
 		m_Animation.iAnimIndex = m_SwordSkill[1];
 		m_Animation.isLoop = false;
 		m_hasJumped = false;
-		m_iSuperArmor = {};
+		m_iSuperArmor = { 1.f };
 		m_fSkiilTimer = 0.f;
 		m_fSkillSpeed = 12.f;
 		m_Status.Current_Mp -= 250;
@@ -1398,7 +1455,7 @@ void CPlayer::Skill2_Attack()
 		m_Animation.isLoop = false;
 		m_hasJumped = false;
 
-		m_iSuperArmor = {};
+		m_iSuperArmor = { 1.f };
 		m_fSkiilTimer = 0.f;
 		m_Status.Current_Mp -= 250;
 	}
@@ -1411,7 +1468,7 @@ void CPlayer::Skill3_Attack()
 		m_Animation.iAnimIndex = m_SwordSkill[2];
 		m_Animation.isLoop = false;
 		m_hasJumped = false;
-		m_iSuperArmor = {};
+		m_iSuperArmor = { 1.f };
 		m_fSkiilTimer = 0.f;
 		m_Status.Current_Mp -= 350;
 	}
@@ -1420,7 +1477,7 @@ void CPlayer::Skill3_Attack()
 		m_Animation.iAnimIndex = m_BowSkill[2];
 		m_Animation.isLoop = false;
 		m_hasJumped = false;
-		m_iSuperArmor = {};
+		m_iSuperArmor = { 1.f };
 		m_fSkiilTimer = 0.f;
 		m_Status.Current_Mp -= 350;
 	}
@@ -1436,7 +1493,7 @@ void CPlayer::Skill4_Attack()
 		m_Animation.iAnimIndex = m_SwordSkill[3];
 		m_Animation.isLoop = false;
 		m_hasJumped = false;
-		m_iSuperArmor = {};
+		m_iSuperArmor = { 1.f };
 		m_fSkiilTimer = 0.f;
 		m_Status.Current_Mp -= 500;
 	}
@@ -1445,7 +1502,7 @@ void CPlayer::Skill4_Attack()
 		m_Animation.iAnimIndex = m_BowSkill[3];
 		m_Animation.isLoop = false;
 		m_hasJumped = false;
-		m_iSuperArmor = {};
+		m_iSuperArmor = { 1.f };
 		m_fSkiilTimer = 0.f;
 		m_Status.Current_Mp -= 500;
 	}
@@ -2266,6 +2323,11 @@ void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
 }
 void CPlayer::Summon_Riding(Riding_Type Type)
 {
+
+	if(Type == Bird)
+		m_pGameInstance->Set_FlyCam(true);
+
+
 	Riding_Desc Desc{};
 	Desc.Type = Type;
 	Desc.vSummonPos = m_pTransformCom->Get_State(State::Pos);
@@ -2286,14 +2348,25 @@ void CPlayer::Tick_Riding()
 
 	if (m_pRiding->Get_Delete())
 	{
-		m_pTransformCom->Set_Position(_vec3(m_pRiding->Get_Pos() + _vec3(0.f, 2.f, 0.f)));
+		if(m_pRiding->Get_RidingType()!=Bird)
+		{
+			m_pTransformCom->Set_Position(_vec3(m_pRiding->Get_Pos() + _vec3(0.f, 2.f, 0.f)));
+			m_bIsMount = false;
+			Safe_Release(m_pRiding);
+		}
+		else
+		{
+			Safe_Release(m_pRiding);
+			m_bIsMount = false;
+			m_pGameInstance->Set_FlyCam(false);
+			if(m_pTransformCom->Get_CenterPos().x>1500.f)
+				m_pGameInstance->Set_GoHome(true);
+			else
+			m_pGameInstance->Set_GoDungeon(true);
+		}
+
 		m_eState = Jump_End;
 		m_Animation.iAnimIndex = Anim_jump_end;
-		Safe_Release(m_pRiding);
-		m_bIsMount = false;
-
-		m_eState = Idle;
-
 		return;
 	}
 
@@ -2323,10 +2396,7 @@ void CPlayer::Tick_Riding()
 		m_Riding_State = State;
 	}
 }
-void CPlayer::UnMount_Riding()
-{
-	m_pRiding->Delete_Riding();
-}
+
 
 void CPlayer::Arrow_Rain()
 {
@@ -2372,6 +2442,7 @@ void CPlayer::Init_State()
 		m_Animation.bSkipInterpolation = false;
 		m_Animation.fDurationRatio = 1.f;
 		m_Animation.fStartAimPos = 0.f;
+		m_iSuperArmor = 0;
 		m_Animation.fAnimSpeedRatio = 2.f;
 		if (m_pGameInstance->Get_TimeRatio() < 1.f)
 			m_pGameInstance->Set_TimeRatio(1.f);
@@ -2519,6 +2590,21 @@ void CPlayer::Init_State()
 		case Client::CPlayer::Climb_L:
 			m_Animation.iAnimIndex = Anim_Climb_L;
 			m_Animation.isLoop = true;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Swim_Idle:
+			m_Animation.iAnimIndex = Anim_Swim_Idle;
+			m_Animation.isLoop = true;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Swim:
+			m_Animation.iAnimIndex = Anim_swim_F;
+			m_Animation.isLoop = true;
+			m_hasJumped = false;
+			break;
+		case Client::CPlayer::Swim_collect:
+			m_Animation.iAnimIndex = Anim_swim_collect;
+			m_Animation.isLoop = false;
 			m_hasJumped = false;
 			break;
 		case Client::CPlayer::Stun_Start:
@@ -2799,7 +2885,31 @@ void CPlayer::Tick_State(_float fTimeDelta)
 	case Client::CPlayer::Stun:
 		if (m_pModelCom->IsAnimationFinished(Anim_stun))
 			m_eState = Idle;
-
+		break;
+	case Client::CPlayer::Swim_Idle:
+		break;
+	case Client::CPlayer::Swim:
+		if (!m_bReadySwim)
+			m_eState = Idle;
+		if (m_pModelCom->IsAnimationFinished(Anim_swim_F))
+			m_eState = Swim_Idle;
+		break;
+	case Client::CPlayer::Swim_collect:
+		m_Animation.bRestartAnimation = false;
+		if (m_pModelCom->IsAnimationFinished(Anim_swim_collect))
+		{
+			m_iSwimCollectCount++;
+			if (m_iSwimCollectCount >= 3)
+			{
+				m_eState = Swim_Idle;
+				m_Animation.iAnimIndex = Anim_Swim_Idle;
+			}
+			else
+			{
+				m_Animation.iAnimIndex = Anim_swim_collect;
+				m_Animation.bRestartAnimation = true;
+			}
+		}
 		break;
 	case Client::CPlayer::Hit:
 		if (m_pModelCom->IsAnimationFinished(Anim_Stun_start))
@@ -3076,6 +3186,7 @@ void CPlayer::Free()
 		Safe_Release(m_pLeft_Trail[i]);
 		Safe_Release(m_pRight_Trail[i]);
 	}
+	Safe_Release(m_pTest_Trail);
 
 	Safe_Release(m_pNameTag);
 	Safe_Release(m_pDissolveTextureCom);

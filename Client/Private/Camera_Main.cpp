@@ -61,29 +61,51 @@ void CCamera_Main::Tick(_float fTimeDelta)
 	}
 	else
 	{
-
-		if (m_pPlayerTransform == nullptr)
+		if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY)
 		{
-			m_pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-			if (not m_pPlayerTransform)
+			if (m_pPlayerTransform == nullptr)
 			{
-				return;
+				m_pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+				if (not m_pPlayerTransform)
+				{
+					return;
+				}
+				Safe_AddRef(m_pPlayerTransform);
+				m_pTransformCom->Set_State(State::Pos, _vec4(m_pPlayerTransform->Get_CenterPos() + _vec4(0.f,3.f, 0.f, 0.f)));
+				m_vOriCamPos = _vec4(m_pPlayerTransform->Get_CenterPos()) + _vec4(0.f, 3.f, 0.f, 0.f);
+				m_AimZoomInTime = 2.f;
 			}
-			Safe_AddRef(m_pPlayerTransform);
 		}
-
+		if (m_pPlayerTransform == nullptr)
+			return;
 		if (m_pGameInstance->Key_Down(DIK_M))
 		{
 			if(m_pGameInstance->Get_CurrentLevelIndex()>LEVEL_GAMEPLAY)
 			{
 				if (m_pGameInstance->Get_CameraState() != CS_WORLDMAP)
 				{
+					CFadeBox::FADE_DESC Desc = {};
+					Desc.eState = CFadeBox::FADEOUT;
+					Desc.fDuration = 0.5f;
+					if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
+					{
+						return;
+					}
+
 					m_pGameInstance->Set_CameraState(CS_WORLDMAP);
 					m_pTransformCom->Set_State(State::Pos, m_vMapPos);
 					CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 				}
 				else
 				{
+					CFadeBox::FADE_DESC Desc = {};
+					Desc.eState = CFadeBox::FADEOUT;
+					Desc.fDuration = 0.5f;
+					if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
+					{
+						return;
+					}
+
 					m_pGameInstance->Set_CameraState(CS_DEFAULT);
 					CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 				}
@@ -211,6 +233,12 @@ void CCamera_Main::Tick(_float fTimeDelta)
 				- (m_pTransformCom->Get_State(State::Look) * CamAttackZoom)
 				+ (m_pTransformCom->Get_State(State::Up) * CamAttackZoom * 0.15f);
 
+			/*if (abs(m_vOriCamPos.x - vCamPos.x) >= 10 ||
+				abs(m_vOriCamPos.y - vCamPos.y) >= 10 ||
+				abs(m_vOriCamPos.z - vCamPos.z) >= 10)
+			{
+
+			}*/
 			m_vOriCamPos = XMVectorLerp(m_vOriCamPos, vCamPos, 0.3f);
 			
 			_vec4 OriCam{};

@@ -105,6 +105,7 @@
 // Test Model
 #include "TestVTFModel.h"
 #include "Lake.h"
+#include "VTFTest.h"
 
 // Object
 #include "Etc_Object.h"

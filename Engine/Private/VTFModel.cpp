@@ -136,79 +136,114 @@ HRESULT CVTFModel::Init(void* pArg)
 
 HRESULT CVTFModel::Play_Animation(_float fTimeDelta)
 {
-	CAnimation* pPlayingAnim = m_Animations[m_iCurrentAnimIndex];
-
 	m_OldAnimDesc = m_PlayAnimDesc.eCurrent;
 
-	m_PlayAnimDesc.eCurrent.fTime += fTimeDelta;
-
-	_float fTimePerFrame = 1.f / pPlayingAnim->Get_TickPerSec();
-	if (m_PlayAnimDesc.eCurrent.fTime >= fTimePerFrame) {
-		m_PlayAnimDesc.eCurrent.fTime = 0.f;
-		m_PlayAnimDesc.eCurrent.iCurrFrame = (m_PlayAnimDesc.eCurrent.iCurrFrame + 1);
-		m_PlayAnimDesc.eCurrent.iNextFrame = (m_PlayAnimDesc.eCurrent.iCurrFrame + 1);
-
-		if (true == m_isLoop) {
-			m_PlayAnimDesc.eCurrent.iCurrFrame %= pPlayingAnim->Get_MaxFrame();
-			m_PlayAnimDesc.eCurrent.iNextFrame %= pPlayingAnim->Get_MaxFrame();
-		}
-		/*else {
-			if (pPlayingAnim->Get_MaxFrame() <= m_PlayAnimDesc.eCurrent.iCurrFrame) {
-				m_PlayAnimDesc.eCurrent.iCurrFrame = pPlayingAnim->Get_MaxFrame();
-				m_PlayAnimDesc.eCurrent.iNextFrame = pPlayingAnim->Get_MaxFrame();
-			}
-		}*/
-	}
-
-	m_PlayAnimDesc.eCurrent.fRatio = m_PlayAnimDesc.eCurrent.fTime / fTimePerFrame;
-
-
-	if (m_PlayAnimDesc.eNext.iAnimIndex >= 0) {
-		m_PlayAnimDesc.SwitchTime += fTimeDelta;
-		m_PlayAnimDesc.SwitchRatio = m_PlayAnimDesc.SwitchTime / m_PlayAnimDesc.SwitchDuration;
-
-		if (m_PlayAnimDesc.SwitchRatio >= 1.f) {
+	if (m_isAnimChanged)
+	{
+		if (m_AnimDesc.bSkipInterpolation)
+		{
+			//선형보간 스킵
 			m_PlayAnimDesc.eCurrent = m_PlayAnimDesc.eNext;
-			m_iCurrentAnimIndex = m_PlayAnimDesc.eNext.iAnimIndex;
 			m_PlayAnimDesc.ResetNextAnim();
-
+			m_isAnimChanged = false;
 		}
-		else {
-			CAnimation* pNextAnim = m_Animations[m_PlayAnimDesc.eNext.iAnimIndex];
+		else if (!m_isInterpolating)
+		{
+			//선형보간 중이 아니면 선형보간을 시작한다
+			m_isInterpolating = true;
+		}
+		else
+		{
+			//선형보간 중 애니메이션 동작
+			m_PlayAnimDesc.SwitchTime += (fTimeDelta * m_AnimDesc.fAnimSpeedRatio);
+			m_PlayAnimDesc.SwitchRatio = m_PlayAnimDesc.SwitchTime / m_PlayAnimDesc.SwitchDuration;
 
-			m_PlayAnimDesc.eNext.fTime += fTimeDelta;
+			if (m_PlayAnimDesc.SwitchRatio >= 1.f)
+			{
+				m_PlayAnimDesc.eCurrent = m_PlayAnimDesc.eNext;
+				m_PlayAnimDesc.ResetNextAnim();
+				m_isAnimChanged = false;
+			}
+		}
+	}
+	else
+	{
+		CAnimation* pPlayingAnim = m_Animations[m_PlayAnimDesc.eCurrent.iAnimIndex];
 
-			_float fTimePerFrame = 1.f / pNextAnim->Get_TickPerSec();
+		if (m_isInterpolating)
+		{
+			//선형보간이 끝났으니 false로
+			m_isInterpolating = false;
+		}
 
-			if (m_PlayAnimDesc.eNext.fRatio >= 1.f) {
-				m_PlayAnimDesc.eNext.fTime = 0.f;
+		if (not m_isFinished)
+		{
+			//애니메이션 동작
+			m_PlayAnimDesc.eCurrent.fTime += (fTimeDelta * m_AnimDesc.fAnimSpeedRatio * pPlayingAnim->Get_TickPerSec());
 
-				m_PlayAnimDesc.eNext.iCurrFrame = (m_PlayAnimDesc.eNext.iCurrFrame + 1) % pNextAnim->Get_MaxFrame();
-				m_PlayAnimDesc.eNext.iNextFrame = (m_PlayAnimDesc.eNext.iCurrFrame + 1) % pNextAnim->Get_MaxFrame();
+			if (m_PlayAnimDesc.eCurrent.fTime >= 1.f)
+			{
+				m_PlayAnimDesc.eCurrent.fTime = 0.f;
+				m_PlayAnimDesc.eCurrent.iCurrFrame = (m_PlayAnimDesc.eCurrent.iCurrFrame + 1);
+				m_PlayAnimDesc.eCurrent.iNextFrame = (m_PlayAnimDesc.eCurrent.iCurrFrame + 1);
 			}
 
-			m_PlayAnimDesc.eNext.fRatio = m_PlayAnimDesc.eNext.fTime / fTimePerFrame;
-
+			m_PlayAnimDesc.eCurrent.fRatio = m_PlayAnimDesc.eCurrent.fTime;
+		}
+		
+		if (static_cast<_float>(m_PlayAnimDesc.eCurrent.iCurrFrame) + m_PlayAnimDesc.eCurrent.fTime >= 
+			static_cast<_float>(pPlayingAnim->Get_MaxFrame()) * m_AnimDesc.fDurationRatio)
+		{
+			if (m_AnimDesc.isLoop)
+			{	
+				//애니메이션이 끝났는데 루프면 처음부터 둥작
+				m_PlayAnimDesc.eCurrent.iCurrFrame = static_cast<_uint>(m_AnimDesc.fStartAimPos);
+				m_PlayAnimDesc.eCurrent.iNextFrame = m_PlayAnimDesc.eCurrent.iCurrFrame + 1;
+			}
+			else
+			{
+				//애니메이션이 끝났다
+				m_PlayAnimDesc.eCurrent.iNextFrame = m_PlayAnimDesc.eCurrent.iCurrFrame;
+				m_isFinished = true;
+			}
+		}
+		else
+		{
+			m_isFinished = false;
 		}
 	}
-
-	if (m_iNextAnimIndex >= 0) {
-		m_PlayAnimDesc.ResetNextAnim();
-		m_PlayAnimDesc.eNext.iAnimIndex = m_iNextAnimIndex;
-
-		m_iNextAnimIndex = -1;
-	}
-
 
 	return S_OK;
 }
 
-HRESULT CVTFModel::Set_NextAnimation(_uint iAnimIndex, _bool isLoop)
+void CVTFModel::Set_Animation(ANIM_DESC Animation_Desc)
 {
-	m_iNextAnimIndex = iAnimIndex;
-	m_isLoop = isLoop;
+	if (m_AnimDesc.iAnimIndex != Animation_Desc.iAnimIndex or
+		Animation_Desc.bRestartAnimation)
+	{
+		m_isAnimChanged = true;
 
-	return S_OK;
+		if (Animation_Desc.iAnimIndex >= m_iNumAnimations)
+		{
+			Animation_Desc.iAnimIndex = m_iNumAnimations - 1;
+		}
+		else if (Animation_Desc.iAnimIndex < 0)
+		{
+			Animation_Desc.iAnimIndex = 0;
+		}
+		
+		if (static_cast<_uint>(Animation_Desc.fStartAimPos) >= m_Animations[Animation_Desc.iAnimIndex]->Get_MaxFrame())
+		{
+			Animation_Desc.fStartAimPos = 0.f;
+		}
+
+		m_PlayAnimDesc.eNext.iAnimIndex = Animation_Desc.iAnimIndex;
+		m_PlayAnimDesc.eNext.iCurrFrame = static_cast<_uint>(Animation_Desc.fStartAimPos);
+		m_PlayAnimDesc.eNext.iNextFrame = m_PlayAnimDesc.eNext.iCurrFrame + 1;
+		m_PlayAnimDesc.SwitchDuration = Animation_Desc.fInterpolationTime;
+	}
+
+	m_AnimDesc = Animation_Desc;
 }
 
 HRESULT CVTFModel::Bind_Material(CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType)

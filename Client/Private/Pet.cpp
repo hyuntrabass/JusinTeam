@@ -1,4 +1,5 @@
 #include "Pet.h"
+#include "Effect_Dummy.h"
 
 CPet::CPet(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)

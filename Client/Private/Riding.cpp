@@ -26,6 +26,7 @@ HRESULT CRiding::Init(void* pArg)
 	case Client::Bird:
 		m_Animation.iAnimIndex = Bird_1005_Start;
 		m_eState = Riding_Sky;
+		
 		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Bird");
 		break;
 	case Client::Tiger:
@@ -88,9 +89,6 @@ void CRiding::Tick(_float fTimeDelta)
 	{
 		m_fDissolveRatio += fTimeDelta / 1.4f;
 
-		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
-		vPos.y -= 0.5f;
-		m_pTransformCom->Set_State(State::Pos, vPos);
 		if (m_fDissolveRatio >= 1.f)
 			m_bDelete = true;
 	}
@@ -121,7 +119,13 @@ void CRiding::Tick(_float fTimeDelta)
 				{
 					return;
 				}
+				
 				m_hasJumped = true;
+			}
+			else if (Index >= 95.f)
+			{
+				m_bDelete = true;
+			
 			}
 		}
 		else if (m_eState == Riding_Landing)
@@ -130,7 +134,7 @@ void CRiding::Tick(_float fTimeDelta)
 			{
 				CFadeBox::FADE_DESC Desc = {};
 				Desc.eState = CFadeBox::FADEOUT;
-				Desc.fDuration = 1.f;
+				Desc.fDuration = 0.7f;
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
 				{
 					return;
@@ -349,7 +353,6 @@ void CRiding::Init_State()
 			m_Animation.iAnimIndex = Bird_2005_Landing;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
-
 			break;
 		case Client::Riding_Idle:
 			switch (m_CurrentIndex)
@@ -506,6 +509,12 @@ void CRiding::Tick_State(_float fTimeDelta)
 	switch (m_eState)
 	{
 	case Client::Riding_Landing:
+		if (m_pModelCom->IsAnimationFinished(Bird_2005_Landing))
+		{
+			m_pGameInstance->Set_FlyCam(false);
+			
+			Delete_Riding();
+		}
 		break;
 	case Client::Riding_Idle:
 		break;
@@ -642,23 +651,24 @@ HRESULT CRiding::Add_Components()
 	{
 		return E_FAIL;
 	}
-	Collider_Desc BodyCollDesc = {};
-	BodyCollDesc.eType = ColliderType::OBB;
-	BodyCollDesc.vExtents = _vec3(2.f, 2.f, 2.f);
-	BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y, 0.f);
-	BodyCollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
+
+	//Collider_Desc BodyCollDesc = {};
+	//BodyCollDesc.eType = ColliderType::OBB;
+	//BodyCollDesc.vExtents = _vec3(2.f, 2.f, 2.f);
+	//BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y, 0.f);
+	//BodyCollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
 
 	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 	//	TEXT("Com_Collider_OBB"), (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
 	//	return E_FAIL;
 
 	// Frustum
-	Collider_Desc ColDesc{};
-	ColDesc.eType = ColliderType::Frustum;
-	_matrix matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
-	// 1인자 : 절두체 각도(범위), 2인자 : Aspect, 3인자 : Near, 4인자 : Far(절두체 깊이)
-	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(90.f), 1.f, 0.01f, 3.f);
-	XMStoreFloat4x4(&ColDesc.matFrustum, matView * matProj);
+	//Collider_Desc ColDesc{};
+	//ColDesc.eType = ColliderType::Frustum;
+	//_matrix matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
+	//// 1인자 : 절두체 각도(범위), 2인자 : Aspect, 3인자 : Near, 4인자 : Far(절두체 깊이)
+	//_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(90.f), 1.f, 0.01f, 3.f);
+	//XMStoreFloat4x4(&ColDesc.matFrustum, matView * matProj);
 
 	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack"), reinterpret_cast<CComponent**>(&m_pAttackColliderCom), &ColDesc)))
 	//{
@@ -691,12 +701,15 @@ HRESULT CRiding::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
+
+
 	if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
 	{
 		return E_FAIL;
 	}
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
 		return E_FAIL;
+
 
 	return S_OK;
 }

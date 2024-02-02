@@ -1,14 +1,12 @@
+<<<<<<< HEAD
 1. Static Only   2. Anim Only   3. All
 1
 Static Models : Start Converting...
-Converting... ground.fbx
-Read File Succssefully
-Converting... object.fbx
-Read File Succssefully
-Converting... water.fbx
-Converting... Dungeon.fbx
+Converting... Map.fbx
 Read File Succssefully
 Static Models : Convert Success!
 
-3 Static Models
+1 Static Models
 are Successfully Converted as hyuntramesh!!
+=======
+>>>>>>> Sub-master
