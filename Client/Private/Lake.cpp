@@ -37,16 +37,16 @@ HRESULT CLake::Init(void* pArg)
 void CLake::Tick(_float fTimeDelta)
 {
 
-	if (m_pGameInstance->Key_Down(DIK_K))
-		m_Desc.fReflectionScale += 0.01f;
-	if (m_pGameInstance->Key_Down(DIK_I))
-		m_Desc.fReflectionScale -= 0.01f;
+	//if (m_pGameInstance->Key_Down(DIK_K))
+	//	m_Desc.fReflectionScale += 0.01f;
+	//if (m_pGameInstance->Key_Down(DIK_I))
+	//	m_Desc.fReflectionScale -= 0.01f;
 
 
-	if (m_pGameInstance->Key_Down(DIK_L))
-		m_Desc.fRefractionScale += 0.01f;
-	if (m_pGameInstance->Key_Down(DIK_O))
-		m_Desc.fRefractionScale -= 0.01f;
+	//if (m_pGameInstance->Key_Down(DIK_L))
+	//	m_Desc.fRefractionScale += 0.01f;
+	//if (m_pGameInstance->Key_Down(DIK_O))
+	//	m_Desc.fRefractionScale -= 0.01f;
 
 
 	m_Desc.fWaterPos += m_Desc.fWaterSpeed * fTimeDelta;

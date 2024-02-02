@@ -30,6 +30,7 @@ vector g_vMtrlSpecular = vector(0.8f, 0.8f, 0.8f, 1.f);
 float2 g_vUVTransform;
 
 float4 g_vClipPlane;
+
 struct VS_IN
 {
     float3 vPos : Position;
@@ -394,10 +395,13 @@ PS_OUT_DEFERRED PS_Main_Water(PS_WATER_IN Input)
 {
     PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
     
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
-    if(vMtrlDiffuse.a < 0.3f)
-        discard;
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + 0.3f * g_bSelected;
     
+    if (vMtrlDiffuse.a < 0.5f)
+    {
+        discard;
+    }
+        
     float3 vNormal;
     if (g_HasNorTex)
     {
@@ -414,17 +418,10 @@ PS_OUT_DEFERRED PS_Main_Water(PS_WATER_IN Input)
         vNormal = Input.vNor.xyz;
     }
     
-    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
-    if (g_HasSpecTex)
-    {
-        vSpecular = g_SpecTexture.Sample(LinearSampler, Input.vTex);
-    }
-    
-    Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
+    Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vSpecular = vSpecular;
-    
+
     return Output;
 }
 
@@ -611,6 +608,7 @@ technique11 DefaultTechniqueShader_VtxNorTex
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Shadow();
     }
+
     pass Water
     {
         SetRasterizerState(RS_Default);
