@@ -861,6 +861,9 @@ void CInvenFrame::Inven_Tick(_float fTimeDelta, POINT ptMouse)
 		m_pBackGround->Set_Size(m_fSizeX, m_pBackGround->Get_Size().y + (fTimeDelta * 200.f) * 2.f);
 		if (m_pBackGround->Get_Position().y - m_pBackGround->Get_TransPosition().y >= 40.f)
 		{
+			//_vec2 vPos = m_pBackGround->Get_Size();
+			//_vec2 vPos1 = m_pBackGround->Get_TransPosition();
+			//_vec2 vPos2 = m_pExitSlotSetting->Get_Position();
 			m_isQuickAnim = false;
 			m_isActiveQuickSlot = true;
 		}

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Skill.h"
 #include "SkillDesc.h"
 #include "SkillBook.h"
 #include "Tutorial.h"
