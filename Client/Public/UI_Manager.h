@@ -3,11 +3,13 @@
 #include "Base.h"
 #include "ItemBlock.h"
 #include "InvenFrame.h"
+#include "SkillBlock.h"
 BEGIN(Engine)
 class CGameInstance;
 END
 BEGIN(Client)
 class CItemBlock;
+class CSkillBlock;
 class CInvenFrame;
 class CUI_Manager final : public CBase
 {
@@ -23,17 +25,23 @@ private:
 	PART_TYPE		m_eChangedPart{ PT_END };
 	MOUSESTATE		m_eMouseState { M_DEFAULT };
 	WEAPON_TYPE		m_eWeaponType{ WP_BOW };
+
+	_bool			m_isSetSkillSlot{ false };
 	_bool			m_isPicking{ false };
 	_bool			m_isShowing{ false };
 	_bool			m_isInvenActive{ false };
 	_bool			m_isSetInvenState{ false };
 	_bool			m_bTimeStop{ false };
 
+
 	_uint			m_iCoin{};
 	_uint			m_iDiamond{};
 	_uint			m_CustomPart[PART_TYPE::PT_END];
 
 	_float2			m_fExp{0.f, 1000.f};
+
+	_vec2			m_vHp{1000.f, 1000.f};
+	_vec2			m_vMp{1000.f, 1000.f};
 
 	_vec4			m_vInvenPos{0.f, 1000.f, 0.f, 1.f};
 	_vec4			m_vPlayerPos{0.f, 0.f, 0.f, 0.f};
@@ -43,6 +51,7 @@ private:
 	map<const wstring, ITEM> m_mapItem;
 
 	CGameInstance*	m_pGameInstance{ nullptr };
+	CGameObject*	m_pSkillSlots[WP_END][CSkillBlock::SKILL_END];
 	CGameObject*	m_pItemSlots[CItemBlock::ITEMSLOT_END];
 	CGameObject*	m_pInvenItemSlots[CItemBlock::ITEMSLOT_END];
 	CGameObject*	m_pInven{ nullptr };
@@ -66,7 +75,7 @@ private:
 
 
 public:
-	const SKILLINFO& Get_SkillInfo(WEAPON_TYPE eType, _uint iIdx) const;
+	SKILLINFO Get_SkillInfo(WEAPON_TYPE eType, _uint iIdx);
 
 	void Set_TimeStop(_bool bStop) { m_bTimeStop = bStop; }
 	_bool Get_TimeStop() { return m_bTimeStop; }
@@ -78,8 +87,10 @@ public:
 	HRESULT Set_InvenFrame(CGameObject* pGameObject);
 	HRESULT Set_ItemSlots(CItemBlock::ITEMSLOT eSlot, CGameObject* pGameObject);
 	HRESULT Set_InvenItemSlots(CItemBlock::ITEMSLOT eSlot, CGameObject* pGameObject);
+	HRESULT Set_SkillBookSlots(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot, CGameObject* pGameObject);
 
 	CGameObject* Get_InvenFrame();
+	SKILLINFO Get_SkillSlot(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot);
 	CGameObject* Get_ItemSlots(CItemBlock::ITEMSLOT eSlot);
 	_bool Is_ItemSlotFull(CItemBlock::ITEMSLOT eSlot);
 	HRESULT Set_Item_In_EmptySlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* iItemNum);
@@ -101,6 +112,15 @@ public:
 	HRESULT Set_Diamond(_uint iDia);
 	_bool Set_CurrentPlayerPos(_vec4 vPos);
 	void Set_MouseState(MOUSESTATE eState) { m_eMouseState = eState; }
+	void Set_Hp(_int iHp, _int iMaxHp) { m_vHp = _vec2((_float)iHp, (_float)iMaxHp); }
+	void Set_Mp(_int iMp, _int iMaxMp) { m_vMp = _vec2((_float)iMp, (_float)iMaxMp); }
+
+
+	void Set_SkillSlotChange(_bool isSkillSlotChange) { m_isSetSkillSlot = isSkillSlotChange; }
+	_bool Is_SkillSlotChange() { return m_isSetSkillSlot; }
+
+	const _vec2& Get_Hp() const { return m_vHp; }
+	const _vec2& Get_Mp() const { return m_vMp; }
 
 	const _vec4& Get_HairColor() const { return m_vHairColor; }
 	const _vec4& Get_InvenPos() const { return m_vInvenPos; }

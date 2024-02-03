@@ -119,8 +119,7 @@ void CRoskva::Tick(_float fTimeDelta)
 	if (!m_bTalking && isColl && m_pGameInstance->Key_Down(DIK_E) /* && collider */) // 나중에 조건 추가
 	{
 		m_pGameInstance->Set_CameraState(CS_ZOOM);
-		_vec4 vLook = m_pTransformCom->Get_State(State::Look);
-		vLook.Normalize();
+		_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
 		_vec4 vTargetPos = m_pTransformCom->Get_State(State::Pos) + vLook * 2.f;
 		m_pGameInstance->Set_CameraTargetPos(vTargetPos);
 		if (m_eState == QUEST_ING)

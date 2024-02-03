@@ -864,10 +864,11 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 
 	m_Status.Current_Hp -= (iDamage - iDamage * (m_Status.Armor / 0.01f));
 
+	CUI_Manager::Get_Instance()->Set_Hp(m_Status.Current_Hp, m_Status.Max_Hp);
 
 	if (m_Status.Current_Hp < 0)
 	{
-		m_iHP = 0;
+		m_Status.Current_Hp = 0;
 		m_eState = Die;
 	}
 	else

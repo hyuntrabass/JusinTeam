@@ -1226,6 +1226,10 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Skill"), CSkill::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 	
 
 #pragma endregion

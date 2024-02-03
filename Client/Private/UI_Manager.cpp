@@ -123,6 +123,17 @@ HRESULT CUI_Manager::Set_InvenItemSlots(CItemBlock::ITEMSLOT eSlot, CGameObject*
 	return S_OK;
 }
 
+HRESULT CUI_Manager::Set_SkillBookSlots(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot, CGameObject* pGameObject)
+{
+	if (pGameObject == nullptr)
+	{
+		return E_FAIL;
+	}
+	m_pSkillSlots[eType][eSlot] = pGameObject;
+
+	return S_OK;
+}
+
 
 HRESULT CUI_Manager::Init_Items()
 {
@@ -264,28 +275,31 @@ HRESULT CUI_Manager::Init_Skills()
 	Info.strName = TEXT("환영화살");
 	Info.iSkillType = (_uint)WP_BOW;
 	Info.isSkillIn = false;
-
 	Info.iMp = 45;
 	Info.iCoolTime = 20;
 	Info.iSkillIdx = 0;
+	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon1");
 	m_SkillInfo[WP_BOW][Info.iSkillIdx] = Info;
 
 	Info.strName = TEXT("화살비");
 	Info.iMp = 30;
 	Info.iCoolTime = 8;
 	Info.iSkillIdx = 1;
+	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon2");
 	m_SkillInfo[WP_BOW][Info.iSkillIdx] = Info;
 
 	Info.strName = TEXT("폭발 화살");
 	Info.iMp = 12;
 	Info.iCoolTime = 6;
 	Info.iSkillIdx = 2;
+	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon3");
 	m_SkillInfo[WP_BOW][Info.iSkillIdx] = Info;
 	
 	Info.strName = TEXT("삼중 연사");
 	Info.iMp = 8;
 	Info.iCoolTime = 7;
 	Info.iSkillIdx = 3;
+	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon4");
 	m_SkillInfo[WP_BOW][Info.iSkillIdx] = Info;
 	
 	Info.iSkillType = (_uint)WP_SWORD;
@@ -293,31 +307,35 @@ HRESULT CUI_Manager::Init_Skills()
 	Info.iMp = 12;
 	Info.iCoolTime = 8;
 	Info.iSkillIdx = 0;
+	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon5");
 	m_SkillInfo[WP_SWORD][Info.iSkillIdx] = Info;
 
 	Info.strName = TEXT("기습 공격");
 	Info.iMp = 8;
 	Info.iCoolTime = 4;
 	Info.iSkillIdx = 1;
+	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon6");
 	m_SkillInfo[WP_SWORD][Info.iSkillIdx] = Info;
 	
 	Info.strName = TEXT("인장 각인");
 	Info.iMp = 6;
 	Info.iCoolTime = 8;
 	Info.iSkillIdx = 2;
+	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon7");
 	m_SkillInfo[WP_SWORD][Info.iSkillIdx] = Info;
 
 	Info.strName = TEXT("연속 각인");
 	Info.iMp = 8;
 	Info.iCoolTime = 10;
 	Info.iSkillIdx = 3;
+	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon8");
 	m_SkillInfo[WP_SWORD][Info.iSkillIdx] = Info;
 
 
 	return E_NOTIMPL;
 }
 
-const SKILLINFO& CUI_Manager::Get_SkillInfo(WEAPON_TYPE eType, _uint iIdx) const
+SKILLINFO CUI_Manager::Get_SkillInfo(WEAPON_TYPE eType, _uint iIdx)
 {
 	SKILLINFO Info{};
 	if (eType >= WP_END || eType < 0 || iIdx < 0 || iIdx > 4)
@@ -390,13 +408,26 @@ CGameObject* CUI_Manager::Get_InvenFrame()
 	return m_pInvenFrame;
 }
 
+SKILLINFO CUI_Manager::Get_SkillSlot(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot)
+{
+	SKILLINFO Info{};
+	Info.strTexture = TEXT("");
+	if (m_pSkillSlots[eType][eSlot] == nullptr)
+	{
+		return Info;
+	}
+	CSkillSlot* pSkillSlot = dynamic_cast<CSkillSlot*>(m_pSkillSlots[eType][eSlot]);
+	Info = pSkillSlot->Get_SkillInfo();
+	return Info;
+}
+
 CGameObject* CUI_Manager::Get_ItemSlots(CItemBlock::ITEMSLOT eSlot)
 {
-	if (m_pItemSlots[eSlot] == nullptr)
+	if (m_pInvenItemSlots[eSlot] == nullptr)
 	{
 		return nullptr;
 	}
-	return m_pItemSlots[eSlot];
+	return m_pInvenItemSlots[eSlot];
 }
 
 _bool CUI_Manager::Is_ItemSlotFull(CItemBlock::ITEMSLOT eSlot)
