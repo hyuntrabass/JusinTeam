@@ -490,8 +490,6 @@ void CRealtimeVTFModel::Set_Animation(ANIM_DESC Animation_Desc)
 
 		if (Animation_Desc.iAnimIndex >= m_iNumAnimations)
 			Animation_Desc.iAnimIndex = m_iNumAnimations - 1;
-		else if (0 > Animation_Desc.iAnimIndex)
-			Animation_Desc.iAnimIndex = 0;
 	}
 
 	while (Animation_Desc.fStartAimPos >= m_Animations[Animation_Desc.iAnimIndex]->Get_Duration())

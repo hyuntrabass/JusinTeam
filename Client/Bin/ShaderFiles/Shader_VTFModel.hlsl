@@ -117,16 +117,16 @@ matrix Get_BoneMatrix(VS_IN Input)
         
             CurrentBone = matrix(CurrentBoneVec[0], CurrentBoneVec[1], CurrentBoneVec[2], CurrentBoneVec[3]);
 
-            //NextBoneVec[0] = g_BoneTexture.Load(int4(fIndices[i] * 4 + 0, iNextFrame[1], iAnimIndex[1], 0));
-            //NextBoneVec[1] = g_BoneTexture.Load(int4(fIndices[i] * 4 + 1, iNextFrame[1], iAnimIndex[1], 0));
-            //NextBoneVec[2] = g_BoneTexture.Load(int4(fIndices[i] * 4 + 2, iNextFrame[1], iAnimIndex[1], 0));
-            //NextBoneVec[3] = g_BoneTexture.Load(int4(fIndices[i] * 4 + 3, iNextFrame[1], iAnimIndex[1], 0));
+            NextBoneVec[0] = g_BoneTexture.Load(int4(fIndices[i] * 4 + 0, iNextFrame[1], iAnimIndex[1], 0));
+            NextBoneVec[1] = g_BoneTexture.Load(int4(fIndices[i] * 4 + 1, iNextFrame[1], iAnimIndex[1], 0));
+            NextBoneVec[2] = g_BoneTexture.Load(int4(fIndices[i] * 4 + 2, iNextFrame[1], iAnimIndex[1], 0));
+            NextBoneVec[3] = g_BoneTexture.Load(int4(fIndices[i] * 4 + 3, iNextFrame[1], iAnimIndex[1], 0));
         
-            //NextBone = matrix(NextBoneVec[0], NextBoneVec[1], NextBoneVec[2], NextBoneVec[3]);
+            NextBone = matrix(NextBoneVec[0], NextBoneVec[1], NextBoneVec[2], NextBoneVec[3]);
             
-            //matrix nextLerpBone = lerp(CurrentBone, NextBone, fRatio[1]);
-                                     //nextLerpBone
-            LerpBone = lerp(LerpBone, CurrentBone, g_PlayAnimDesc.SwitchRatio);
+            matrix nextLerpBone = lerp(CurrentBone, NextBone, fRatio[1]);
+            
+            LerpBone = lerp(LerpBone, nextLerpBone, g_PlayAnimDesc.SwitchRatio);
 
         }
         
