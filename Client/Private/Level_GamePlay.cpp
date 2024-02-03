@@ -36,6 +36,14 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Skill_Model"), TEXT("Prototype_GameObject_Skill_Model"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Sl"), TEXT("Prototype_GameObject_Scarecrow"))))
+	{
+		return E_FAIL;
+	}
 	if (FAILED(Ready_Light()))
 	{
 		MSG_BOX("Failed to Ready Light");
@@ -742,12 +750,12 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	{
 		return E_FAIL;
 	}
-	/*
+	
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_SkillBook"))))
 	{
 		return E_FAIL;
 	}
-	*/
+	
 	
 
 	return S_OK;

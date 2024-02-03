@@ -461,7 +461,7 @@ void CEffect_Dummy::Free()
 {
 	if (m_Effect.hasLight)
 	{
-		m_pGameInstance->Delete_Light(m_pGameInstance->Get_CurrentLevelIndex(), m_strLightTag);
+		m_pGameInstance->Delete_Light(LEVEL_STATIC, m_strLightTag);
 	}
 
 	__super::Free();

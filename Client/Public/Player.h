@@ -336,16 +336,15 @@ public:
 	void Cam_AttackZoom(_float fZoom);
 	void Return_Attack_IdleForm();
 	void After_CommonAtt(_float fTimeDelta);
-	void After_SkillAtt(_float fTimeDelta);
-	void Sword_Att_Camera_Effect(_float fTimeDelta);
-	void Bow_Att_Camera_Effect(_float fTimeDelta);
+	void After_SwordAtt(_float fTimeDelta);
+	void After_BowAtt(_float fTimeDelta);
 	void Create_Arrow(ATTACK_TYPE Att_Type);
 	void Check_Att_Collider(ATTACK_TYPE Att_Type);
+	void Arrow_Rain();
 
 public:
 	void Summon_Riding(Riding_Type Type);
 	void Tick_Riding();
-	void Arrow_Rain();
 public:
 	void Init_State();
 	void Tick_State(_float fTimeDelta);
@@ -373,6 +372,7 @@ private:
 	ANIM_LIST m_SwordSkill[5]{};
 	ANIM_LIST m_BowSkill[5]{};
 	_vec4 m_vArrowLook{};
+	_vec4 m_vArrowRainPos{};
 	WEAPON_INDEX m_Weapon_CurrentIndex{ WP_INDEX_END };
 	Riding_State m_Riding_State{};
 	PLAYER_STATUS m_Status{};
@@ -409,6 +409,7 @@ private:
 	_float m_fSkiilTimer{};
 	_mat m_OldWorldMatrix{};
 	_bool m_bHide{};
+	_bool m_bLockOn{};
 	_float m_fHpRegenTime{};
 	_float m_fMpRegenTime{};
 	_int m_Body_CurrentIndex{ -1 };

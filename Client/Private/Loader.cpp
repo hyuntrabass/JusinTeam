@@ -189,25 +189,54 @@ HRESULT CLoader::Load_Logo()
 #pragma region Model
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Riding_Bird"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Riding/Mesh/Bird.hyuntraanimmesh"))))
-				return E_FAIL;
+	{
+		return E_FAIL;
+	}
+	_mat pivot = _mat::CreateRotationY(XMConvertToRadians(90.f));
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Scarecrow"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Scarecrow/Mesh/Scarecrow.hyuntrastatmesh",false , pivot))))
+	{
+		return E_FAIL;
+	}
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Riding_Tiger"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Riding/Mesh/Tiger.hyuntraanimmesh"))))
+	{
 		return E_FAIL;
+	}
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Riding_Nihilir"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Riding/Mesh/Nihilir.hyuntraanimmesh"))))
+	{
 		return E_FAIL;
+	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Arrow"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Arrow/Mesh/arrow.hyuntrastatmesh"))))
+	{
 		return E_FAIL;
+	}
 	// WorldMap
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_WorldMap_Ground"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/WorldMap/Mesh/ground.hyuntrastatmesh"))))
+	{
 		return E_FAIL;
+	}
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_WorldMap_Object"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/WorldMap/Mesh/object.hyuntrastatmesh"))))
+	{
 		return E_FAIL;
+	}
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_WorldMap_Water"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/WorldMap/Mesh/water.hyuntrastatmesh"))))
+	{
 		return E_FAIL;
-
+	}
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Texture_WorldMap_Cloud"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/cloud.dds")))))
+	{
 		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Skill_Model"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Skill_Model/Mesh/bow.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Skill_Model_Weapon"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Skill_Model/Mesh/sword.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
 
 
 	// Load Instance Data
@@ -271,6 +300,10 @@ HRESULT CLoader::Load_Logo()
 
 #pragma region Prototype
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Background"), CBackGround::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Skill_Model"), CSkill_Model::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -600,7 +633,10 @@ HRESULT CLoader::Load_Select()
 	{
 		return E_FAIL;
 	}
-
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Scarecrow"), CScarecrow::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Select_Npc"), CSelect_Npc::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -639,6 +675,11 @@ HRESULT CLoader::Load_Select()
 
 	//나중에 옮길 예정
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_BackGround_Mask"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/BackGround/BackGround.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Skill_Background"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/BackGround/Skill_Background.png")))))
 	{
 		return E_FAIL;
 	}
@@ -1226,6 +1267,10 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Skill"), CSkill::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 	
 
 #pragma endregion
@@ -1361,6 +1406,11 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Missile"), CMissile::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_XBeam"), CXBeam::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

@@ -20,7 +20,6 @@ HRESULT CArrow::Init_Prototype()
 HRESULT CArrow::Init(void* pArg)
 {
 	m_ArrowType = *(Arrow_Type*)pArg;
-	CGameObject* A = this;
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
@@ -73,7 +72,7 @@ void CArrow::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
 	{
-		m_pGameInstance->Attack_Monster(m_pCollider, 20, AT_Bow_Common);
+		m_pGameInstance->Attack_Monster(m_pCollider, 80, AT_Bow_Common);
 		Kill();
 	}
 
@@ -155,7 +154,7 @@ HRESULT CArrow::Add_Components()
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
 	CollDesc.fRadius = 0.25f;
-	CollDesc.vCenter = _vec3(0.f, 0.f, 0.f);
+	CollDesc.vCenter = _vec3(0.f, 0.f, -0.5f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 									  TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))

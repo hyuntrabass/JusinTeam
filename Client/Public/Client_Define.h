@@ -303,6 +303,7 @@ namespace Client
 		_uint iCoolTime;
 		_uint iSkillIdx;
 		_bool isSkillIn;
+		wstring strTexture;
 
 	}SKILLINFO;
 

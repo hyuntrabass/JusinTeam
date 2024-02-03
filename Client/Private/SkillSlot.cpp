@@ -1,6 +1,8 @@
 #include "SkillSlot.h"
 #include "GameInstance.h"
 #include "TextButton.h"
+#include "UI_Manager.h"
+#include "Skill.h"
 
 CSkillSlot::CSkillSlot(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -19,6 +21,17 @@ HRESULT CSkillSlot::Init_Prototype()
 
 HRESULT CSkillSlot::Init(void* pArg)
 {
+	m_eSlotMode = ((SKILLSLOT_DESC*)pArg)->eSlotMode;
+	switch (m_eSlotMode)
+	{
+	case SCREEN:
+		m_strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Slot");
+		break;
+	case SKILLBOOK:
+		m_strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_invenslot");
+		break;
+	}
+
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
@@ -31,21 +44,46 @@ HRESULT CSkillSlot::Init(void* pArg)
 	m_fX = ((SKILLSLOT_DESC*)pArg)->vPosition.x;
 	m_fY = ((SKILLSLOT_DESC*)pArg)->vPosition.y;
 
-	m_fDepth = (_float)D_SCREEN / (_float)D_END;;
+	m_fDepth = ((SKILLSLOT_DESC*)pArg)->fDepth;
+	m_iSlotIdx = ((SKILLSLOT_DESC*)pArg)->iSlotIdx;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+
+
+	m_pSkill = nullptr;
+	m_rcRect = {
+		  (LONG)(m_fX - m_fSizeX * 0.5f),
+		  (LONG)(m_fY - m_fSizeY * 0.5f),
+		  (LONG)(m_fX + m_fSizeX * 0.5f),
+		  (LONG)(m_fY + m_fSizeY * 0.5f)
+	};
 
 	return S_OK;
 }
 
 void CSkillSlot::Tick(_float fTimeDelta)
 {
+	if (m_pSkill == nullptr)
+	{
+		m_isFull = false;
+	}	
 
+	if (m_eSlotMode == SCREEN)
+	{
+
+	}
+
+
+	if (m_pSkill != nullptr)
+	{
+		m_pSkill->Tick(fTimeDelta);
+	}
 }
 
 void CSkillSlot::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
+	
 	if (m_pSkill != nullptr)
 	{
 		m_pSkill->Late_Tick(fTimeDelta);
@@ -73,6 +111,50 @@ HRESULT CSkillSlot::Render()
 	return S_OK;
 }
 
+HRESULT CSkillSlot::Set_Skill(SKILLINFO tSkillInfo)
+{
+	if (m_pSkill != nullptr)
+	{
+		Safe_Release(m_pSkill);
+	}
+
+	CSkill::SKILL_DESC SkillDesc = {};
+	SkillDesc.fDepth = m_fDepth - 0.01;
+	SkillDesc.tSkillInfo = tSkillInfo;
+	SkillDesc.vPosition = _vec2(m_fX, m_fY);
+	SkillDesc.vSize = _vec2(m_fSizeX, m_fSizeY);
+	if (m_eSlotMode == SCREEN)
+	{
+		//SkillDesc.vSize = _vec2(m_fSizeX - 20.f, m_fSizeY - 20.f);
+	}
+	else
+	{
+		//SkillDesc.vSize = _vec2(m_fSizeX, m_fSizeY);
+	}
+
+	m_pSkill = (CSkill*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Skill"), &SkillDesc);
+
+	m_isFull = true;
+	return S_OK;
+}
+
+void CSkillSlot::Delete_Skill()
+{
+	Safe_Release(m_pSkill);
+	m_isFull = false;
+}
+
+SKILLINFO CSkillSlot::Get_SkillInfo()
+{
+	if (m_pSkill == nullptr)
+	{
+		SKILLINFO Info{};
+		Info.strTexture = TEXT("");
+		return Info;
+	}
+	return m_pSkill->Get_SkillInfo();
+}
+
 HRESULT CSkillSlot::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
@@ -90,7 +172,7 @@ HRESULT CSkillSlot::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_Slot"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_strTexture, TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -150,6 +232,7 @@ void CSkillSlot::Free()
 	__super::Free();
 
 	Safe_Release(m_pSkill);
+
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

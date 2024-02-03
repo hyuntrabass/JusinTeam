@@ -108,7 +108,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_DEBUGTEST;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>../Public/;../../Reference/Headers/;../../Reference/Headers/PhysX</AdditionalIncludeDirectories>
@@ -226,6 +226,7 @@
     <ClInclude Include="..\Public\Radar.h" />
     <ClInclude Include="..\Public\Riding.h" />
     <ClInclude Include="..\Public\Roskva.h" />
+    <ClInclude Include="..\Public\Scarecrow.h" />
     <ClInclude Include="..\Public\Select_Map.h" />
     <ClInclude Include="..\Public\Select_Model.h" />
     <ClInclude Include="..\Public\NameTag.h" />
@@ -234,10 +235,12 @@
     <ClInclude Include="..\Public\Shop.h" />
     <ClInclude Include="..\Public\ShopDesc.h" />
     <ClInclude Include="..\Public\ShopWindow.h" />
+    <ClInclude Include="..\Public\Skill.h" />
     <ClInclude Include="..\Public\SkillBlock.h" />
     <ClInclude Include="..\Public\SkillBook.h" />
     <ClInclude Include="..\Public\SkillDesc.h" />
     <ClInclude Include="..\Public\SkillSlot.h" />
+    <ClInclude Include="..\Public\Skill_Model.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\Lake.h" />
     <ClInclude Include="..\Public\Spider.h" />
@@ -279,6 +282,7 @@
     <ClInclude Include="..\Public\VTFTest.h" />
     <ClInclude Include="..\Public\Wearable_Slot.h" />
     <ClInclude Include="..\Public\WorldMap.h" />
+    <ClInclude Include="..\public\XBeam.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
@@ -354,6 +358,7 @@
     <ClCompile Include="..\Private\Radar.cpp" />
     <ClCompile Include="..\Private\Riding.cpp" />
     <ClCompile Include="..\Private\Roskva.cpp" />
+    <ClCompile Include="..\Private\Scarecrow.cpp" />
     <ClCompile Include="..\Private\Select_Map.cpp" />
     <ClCompile Include="..\Private\Select_Model.cpp" />
     <ClCompile Include="..\Private\NameTag.cpp" />
@@ -362,10 +367,12 @@
     <ClCompile Include="..\Private\Shop.cpp" />
     <ClCompile Include="..\Private\ShopDesc.cpp" />
     <ClCompile Include="..\Private\ShopWindow.cpp" />
+    <ClCompile Include="..\Private\Skill.cpp" />
     <ClCompile Include="..\Private\SkillBlock.cpp" />
     <ClCompile Include="..\Private\SkillBook.cpp" />
     <ClCompile Include="..\Private\SkillDesc.cpp" />
     <ClCompile Include="..\Private\SkillSlot.cpp" />
+    <ClCompile Include="..\Private\Skill_Model.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Lake.cpp" />
     <ClCompile Include="..\Private\Spider.cpp" />
@@ -404,6 +411,7 @@
     <ClCompile Include="..\Private\VTFTest.cpp" />
     <ClCompile Include="..\Private\Wearable_Slot.cpp" />
     <ClCompile Include="..\Private\WorldMap.cpp" />
+    <ClCompile Include="..\private\XBeam.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>
   <ItemGroup>

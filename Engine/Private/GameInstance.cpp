@@ -936,7 +936,7 @@ void CGameInstance::PhysXTick(_float fTimeDelta)
 	m_pPhysX_Manager->Tick(fTimeDelta);
 }
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 HRESULT CGameInstance::Render_PhysX()
 {
 	if (m_bSkipDebugRender)
@@ -1020,7 +1020,7 @@ ID3D11ShaderResourceView* CGameInstance::Get_SRV(const wstring& strTargetTag)
 	return m_pRenderTarget_Manager->Get_SRV(strTargetTag);
 }
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 HRESULT CGameInstance::Ready_Debug_RT(const wstring& strTargetTag, _float2 vPos, _float2 vSize)
 {
 	if (!m_pRenderTarget_Manager)

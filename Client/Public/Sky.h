@@ -26,8 +26,8 @@ private:
 
 private:
 	_float m_fLightning_Time{};
-private:
 	_uint m_iTextureIndex{};
+
 
 private:
 	HRESULT Add_Components();
