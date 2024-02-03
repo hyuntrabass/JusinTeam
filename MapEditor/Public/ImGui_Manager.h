@@ -84,10 +84,12 @@ private:
 	HRESULT ImGuizmoMenu();
 
 	void Create_Dummy(const _int& iListIndex);
+	void Create_Camera();
 	void Create_Map(const _int& iListIndex);
 	HRESULT Create_Terrain();
 	HRESULT Modify_Terrain();
 	void Delete_Dummy();
+	void Delete_Camera();
 	void Delete_Map();
 	void Delete_Terrain();
 
@@ -159,12 +161,15 @@ private:
 
 	_int DummyIndex{ 0 };
 	_int MapIndex{ 0 };
+	_int CameraIndex{ 0 };
 	_bool m_isMode{ false };
 	_int iTriggerNum{ -1 };
 
 	_bool m_isInstancing{false};
 	vector<_vec4> m_vInstancePos;
+	_vec4 m_fCameraPos[2];
 	_float fTimeDeltaAcc{0.f};
+	_uint iClickCount{0};
 
 private:
 	// 파일의 이름 가져와서 저장
@@ -180,17 +185,21 @@ private:
 	vector<class CDummy*> m_NPCList;
 	vector<class CDummy*> m_EnvirList;
 	vector<class CDummy*> m_TriggerList;
+	vector<class CCutScene_Curve*> m_CameraList;
 
 	map<int, class CDummy*>m_DummyList;
 	map<int, class CMap*>m_Map{};
+	map<int, class CCutScene_Curve*>m_Camera{};
 
 	class CDummy* m_pSelectedDummy{ nullptr };
 	class CMap* m_pSelectMap{ nullptr };
+	class CCutScene_Curve* m_pSelectCamera{ nullptr };
 	class CTerrain* m_pTerrain{ nullptr };
 	char Search_Name[MAX_PATH]{};
 
 	_mat	m_ObjectMatrix{};
 	_mat	m_MapMatrix{};
+	_mat	m_CameraMatrix{};
 	_mat	m_ViewMatrix = {};
 	_mat	m_ProjMatrix = {};
 

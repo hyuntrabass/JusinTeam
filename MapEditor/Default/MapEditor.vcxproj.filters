@@ -58,6 +58,15 @@
     <Filter Include="02.GameObjects\03.Dummy">
       <UniqueIdentifier>{1d422567-eac4-4b76-b5d4-85fd2f25bbb0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\01.Camera\CutScene">
+      <UniqueIdentifier>{069698c7-1d81-446e-8b8c-25bbd13077b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\01.Camera\CutScene\Section">
+      <UniqueIdentifier>{7170ddd5-ae85-40a1-acbe-16dc5036679f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\01.Camera\CutScene\Point">
+      <UniqueIdentifier>{ad41c511-0e25-4faa-ae92-8942a39c922c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MapEditor_Define.h">
@@ -147,6 +156,15 @@
     <ClInclude Include="..\Public\Map.h">
       <Filter>02.GameObjects\04.Map</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\CutScene_Curve.h">
+      <Filter>02.GameObjects\01.Camera\CutScene\Section</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_CutScene.h">
+      <Filter>02.GameObjects\01.Camera\CutScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CutScene_Point.h">
+      <Filter>02.GameObjects\01.Camera\CutScene\Point</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -218,6 +236,15 @@
     <ClCompile Include="..\Private\Map.cpp">
       <Filter>02.GameObjects\04.Map</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\CutScene_Point.cpp">
+      <Filter>02.GameObjects\01.Camera\CutScene\Point</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CutScene_Curve.cpp">
+      <Filter>02.GameObjects\01.Camera\CutScene\Section</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_CutScene.cpp">
+      <Filter>02.GameObjects\01.Camera\CutScene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MapEditor.rc">
@@ -264,6 +291,9 @@
       <Filter>97.Shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxStatMesh_Instance.hlsl">
+      <Filter>97.Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Curve.hlsl">
       <Filter>97.Shaders</Filter>
     </FxCompile>
   </ItemGroup>

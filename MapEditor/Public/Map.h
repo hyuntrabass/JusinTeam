@@ -5,7 +5,7 @@
 
 BEGIN(MapEditor)
 
-class CMap final : public CBlendObject
+class CMap final : public CGameObject
 {
 private:
 	CMap(_dev pDevice, _context pContext);
@@ -42,7 +42,6 @@ private:
 	_uint m_iShaderPass{};
 	_uint m_iOutLineShaderPass{};
 
-	_int m_iID = 0;
 	_bool m_isMode{ false };
 	_bool m_isCreate{ false };
 private:

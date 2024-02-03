@@ -3,12 +3,12 @@
 static _int iID = 1;
 
 CMap::CMap(_dev pDevice, _context pContext)
-	: CBlendObject(pDevice, pContext)
+	: CGameObject(pDevice, pContext)
 {
 }
 
 CMap::CMap(const CMap& rhs)
-	: CBlendObject(rhs)
+	: CGameObject(rhs)
 	//, m_pImGui_Manager(CImGui_Manager::Get_Instance())
 {
 	//Safe_AddRef(m_pImGui_Manager);
