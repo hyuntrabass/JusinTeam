@@ -136,7 +136,7 @@ public: // PhysX
 	_bool Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer,  PxQueryFilterData Filter);
 	_bool Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer);
 	void PhysXTick(_float fTimeDelta);
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	HRESULT Render_PhysX();
 #endif // _DEBUG
 
@@ -149,7 +149,7 @@ public: // RenderTarget
 	ID3D11Texture2D* Get_Texture2D(const wstring& strTargetTag);
 	ID3D11ShaderResourceView* Get_SRV(const wstring& strTargetTag);
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 public:
 	HRESULT Ready_Debug_RT(const wstring& strTargetTag, _float2 vPos, _float2 vSize);
 	HRESULT Render_Debug_RT(const wstring& strMRTTag, class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);

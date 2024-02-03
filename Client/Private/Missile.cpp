@@ -344,7 +344,7 @@ void CMissile::Late_Tick(_float fTimeDelta)
 		m_pEffect_Ball->Late_Tick(fTimeDelta);
 	}
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
 #endif
 }

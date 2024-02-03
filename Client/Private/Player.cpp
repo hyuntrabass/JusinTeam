@@ -406,7 +406,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		m_pTest_Trail->Late_Tick(fTimeDelta);
 	}
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pHitCollider);
 
 	//for (int i = 0; i < AT_End; i++)

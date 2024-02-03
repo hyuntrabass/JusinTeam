@@ -115,7 +115,7 @@ void CRabbit::Late_Tick(_float fTimeDelta)
 	//}
 
 	m_HpBar->Late_Tick(fTimeDelta);
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
 #endif

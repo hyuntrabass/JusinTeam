@@ -119,7 +119,7 @@ void CVoid05::Late_Tick(_float fTimeDelta)
 	m_Animation.fStartAimPos = 0.f;
 	m_Animation.bSkipInterpolation = false;
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
 #endif

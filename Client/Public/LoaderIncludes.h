@@ -100,6 +100,7 @@
 #include "Groar_Boss.h"
 #include "Missile.h"
 #include "Tentacle.h"
+#include "XBeam.h"
 
 // Pet
 #include "Pet_Cat.h"

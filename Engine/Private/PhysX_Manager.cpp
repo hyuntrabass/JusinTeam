@@ -154,7 +154,7 @@ void CPhysX_Manager::Tick(_float fTimeDelta)
 	m_pScene->fetchResults(true);
 }
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 HRESULT CPhysX_Manager::Render()
 {
 	if (!m_pVIBufferCom)
@@ -270,7 +270,7 @@ void CPhysX_Manager::Init_PhysX_MoveableObject(CTransform* pTransform)
 
 	m_DynamicActors.emplace(pTransform, pActor);
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	//if (m_pVIBufferCom)
 	//{
 	//	const PxRenderBuffer& rb = m_pScene->getRenderBuffer();
@@ -339,7 +339,7 @@ PxRigidStatic* CPhysX_Manager::Cook_StaticMesh(_uint iNumVertices, void* pVertic
 	PxRigidStatic* pActor = PxCreateStatic(*m_pPhysics, PxTransform(PxIdentity), *pShape);
 	m_pScene->addActor(*pActor);
 	pShape->release();
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	//if (m_pVIBufferCom)
 	//{
 	//	const PxRenderBuffer& rb = m_pScene->getRenderBuffer();
@@ -441,7 +441,7 @@ void CPhysX_Manager::Free()
 	PX_RELEASE(m_pTransport);
 	PX_RELEASE(m_pFoundation);
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	Safe_Release(m_pDebugShader);
 	Safe_Release(m_pVIBufferCom);
 #endif // _DEBUG

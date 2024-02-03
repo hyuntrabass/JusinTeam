@@ -42,7 +42,7 @@ void CTrigger::Tick(_float fTimeDelta)
 void CTrigger::Late_Tick(_float fTimeDelta)
 {
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pCollider);
 #endif
 

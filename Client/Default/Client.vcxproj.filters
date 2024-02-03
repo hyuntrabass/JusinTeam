@@ -376,6 +376,9 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\SkillBook">
       <UniqueIdentifier>{fe049474-188d-47b8-a371-25313a25fab4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\X_Beam">
+      <UniqueIdentifier>{506303cf-f24b-4443-ae3e-a5a60c5e5c63}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -754,6 +757,9 @@
     <ClInclude Include="..\Public\SkillDesc.h">
       <Filter>02.GameObjects\00.UI\GameUI\SkillBook</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\XBeam.h">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss\X_Beam</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1126,6 +1132,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\SkillDesc.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\SkillBook</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\XBeam.cpp">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss\X_Beam</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

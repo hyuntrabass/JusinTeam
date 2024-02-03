@@ -108,7 +108,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_DEBUGTEST;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>../Public/;../../Reference/Headers/;../../Reference/Headers/PhysX</AdditionalIncludeDirectories>
@@ -279,6 +279,7 @@
     <ClInclude Include="..\Public\VTFTest.h" />
     <ClInclude Include="..\Public\Wearable_Slot.h" />
     <ClInclude Include="..\Public\WorldMap.h" />
+    <ClInclude Include="..\public\XBeam.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
@@ -404,6 +405,7 @@
     <ClCompile Include="..\Private\VTFTest.cpp" />
     <ClCompile Include="..\Private\Wearable_Slot.cpp" />
     <ClCompile Include="..\Private\WorldMap.cpp" />
+    <ClCompile Include="..\private\XBeam.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>
   <ItemGroup>
