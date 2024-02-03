@@ -121,8 +121,9 @@ void CRoskva::Tick(_float fTimeDelta)
 		m_pGameInstance->Set_CameraState(CS_ZOOM);
 		_vec4 vLook = m_pTransformCom->Get_State(State::Look);
 		vLook.Normalize();
-		_vec4 vTargetPos = m_pTransformCom->Get_State(State::Pos) + vLook * 2.f;
+		_vec4 vTargetPos = m_pTransformCom->Get_State(State::Pos);
 		m_pGameInstance->Set_CameraTargetPos(vTargetPos);
+		m_pGameInstance->Set_CameraTargetLook(vLook);
 		if (m_eState == QUEST_ING)
 		{
 			if (!CEvent_Manager::Get_Instance()->Find_Quest(m_strQuestOngoing))

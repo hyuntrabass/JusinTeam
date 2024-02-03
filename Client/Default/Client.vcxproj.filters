@@ -376,6 +376,12 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\SkillBook">
       <UniqueIdentifier>{fe049474-188d-47b8-a371-25313a25fab4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\13.Skill_Model">
+      <UniqueIdentifier>{aa0ca9b0-3047-42b3-a09b-1dd8eaa89345}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\13.Skill_Model\Scarecrow">
+      <UniqueIdentifier>{39bb1368-c49e-441b-82d5-8e0ba460da46}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -754,6 +760,12 @@
     <ClInclude Include="..\Public\SkillDesc.h">
       <Filter>02.GameObjects\00.UI\GameUI\SkillBook</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Skill_Model.h">
+      <Filter>02.GameObjects\13.Skill_Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Scarecrow.h">
+      <Filter>02.GameObjects\13.Skill_Model\Scarecrow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1126,6 +1138,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\SkillDesc.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\SkillBook</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Skill_Model.cpp">
+      <Filter>02.GameObjects\13.Skill_Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Scarecrow.cpp">
+      <Filter>02.GameObjects\13.Skill_Model\Scarecrow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

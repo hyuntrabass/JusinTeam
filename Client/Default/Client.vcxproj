@@ -226,6 +226,7 @@
     <ClInclude Include="..\Public\Radar.h" />
     <ClInclude Include="..\Public\Riding.h" />
     <ClInclude Include="..\Public\Roskva.h" />
+    <ClInclude Include="..\Public\Scarecrow.h" />
     <ClInclude Include="..\Public\Select_Map.h" />
     <ClInclude Include="..\Public\Select_Model.h" />
     <ClInclude Include="..\Public\NameTag.h" />
@@ -238,6 +239,7 @@
     <ClInclude Include="..\Public\SkillBook.h" />
     <ClInclude Include="..\Public\SkillDesc.h" />
     <ClInclude Include="..\Public\SkillSlot.h" />
+    <ClInclude Include="..\Public\Skill_Model.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\Lake.h" />
     <ClInclude Include="..\Public\Spider.h" />
@@ -354,6 +356,7 @@
     <ClCompile Include="..\Private\Radar.cpp" />
     <ClCompile Include="..\Private\Riding.cpp" />
     <ClCompile Include="..\Private\Roskva.cpp" />
+    <ClCompile Include="..\Private\Scarecrow.cpp" />
     <ClCompile Include="..\Private\Select_Map.cpp" />
     <ClCompile Include="..\Private\Select_Model.cpp" />
     <ClCompile Include="..\Private\NameTag.cpp" />
@@ -366,6 +369,7 @@
     <ClCompile Include="..\Private\SkillBook.cpp" />
     <ClCompile Include="..\Private\SkillDesc.cpp" />
     <ClCompile Include="..\Private\SkillSlot.cpp" />
+    <ClCompile Include="..\Private\Skill_Model.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Lake.cpp" />
     <ClCompile Include="..\Private\Spider.cpp" />
