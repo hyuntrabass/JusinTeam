@@ -30,7 +30,7 @@ HRESULT CPlayer::Init(void* pArg)
 	m_Animation.bSkipInterpolation = false;
 	m_pTransformCom->Set_Scale(_vec3(4.f));
 	Place_PartModels();
-	m_pTransformCom->Set_Speed(1);
+	m_pTransformCom->Set_Speed(5);
 	m_pCameraTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
 	Safe_AddRef(m_pCameraTransform);
 	m_SwordSkill[0] = Anim_RA_9100_Ambush; // x자로 공격하기

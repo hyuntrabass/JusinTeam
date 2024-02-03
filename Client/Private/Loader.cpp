@@ -1003,25 +1003,25 @@ HRESULT CLoader::Load_GamePlay()
 
 #pragma  region Boss
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Groar"),
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Groar/Mesh/Groar.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_GroarScene01"),
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GroarScene01"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/GroarScene01/Mesh/GroarScene01.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_GroarScene02"),
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GroarScene02"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/GroarScene02/Mesh/GroarScene02.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Groar_Boss"),
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar_Boss"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Groar_Boss/Mesh/Groar_Boss.hyuntraanimmesh"))))
 	{
 		return E_FAIL;

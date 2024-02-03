@@ -32,8 +32,8 @@ HRESULT CGroar_Boss::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(71.f, 0.f, 97.f, 1.f));
+	//m_pTransformCom->Set_State(State::Pos, _vec4(2173.f, -20.f, 2095.f, 1.f));
+	m_pTransformCom->Set_Position(_vec3(2173.f, -20.f, 2095.f));
 
 	m_eCurState = STATE_NPC;
 
@@ -56,10 +56,21 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 		m_eBossCurState = BOSS_STATE_ROAR;
 	}
 
+	if (m_pGameInstance->Key_Down(DIK_C))
+	{
+		//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Tentacle"), TEXT("Prototype_GameObject_Tentacle"))))
+		//{
+		//	
+		//}
+		m_pTransformCom->Get_Controller()->
+	}
+
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 
 	Update_Collider();
+
+	m_pTransformCom->Gravity(fTimeDelta);
 }
 
 void CGroar_Boss::Late_Tick(_float fTimeDelta)
@@ -564,7 +575,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 	case Client::CGroar_Boss::BOSS_STATE_CHASE:
 	{
-		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 		_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 
 		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
@@ -671,7 +682,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			if (m_pBossModelCom->Get_CurrentAnimPos() >= 10.f && !m_bCreateMissile)
 			{
 				CMissile::MISSILE_TYPE eType = CMissile::RIGHT_THROW;
-				m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_Missile"), &eType);
+				m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_Missile"), &eType);
 				m_bCreateMissile = true;
 
 				++m_iThrowAttackCombo;
@@ -684,7 +695,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 			if (m_pBossModelCom->Get_CurrentAnimPos() <= 38.f)
 			{
-				CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+				CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 				_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
 				m_pTransformCom->LookAt(vPlayerPos);
 			}
@@ -696,7 +707,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			if (m_pBossModelCom->Get_CurrentAnimPos() >= 15.f && !m_bCreateMissile)
 			{
 				CMissile::MISSILE_TYPE eType = CMissile::LEFT_THROW;
-				m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_Missile"), &eType);
+				m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_Missile"), &eType);
 				m_bCreateMissile = true;
 
 				++m_iThrowAttackCombo;
@@ -709,7 +720,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 			if (m_pBossModelCom->Get_CurrentAnimPos() <= 51.f)
 			{
-				CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+				CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 				_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
 				m_pTransformCom->LookAt(vPlayerPos);
 			}
@@ -732,7 +743,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 	case Client::CGroar_Boss::BOSS_STATE_FLOOR_ATTACK:
 
 	{
-		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 		_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 
 		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
@@ -821,7 +832,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			for (size_t i = 0; i < 6; i++)
 			{
 				CMissile::MISSILE_TYPE eType = CMissile::SIX_MISSILE;
-				m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_Missile"), &eType);
+				m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_Missile"), &eType);
 			}
 
 			m_bCreateMissile = true;
@@ -829,7 +840,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() <= 100.f)
 		{
-			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 			_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 
 			m_pTransformCom->LookAt(vPlayerPos);
@@ -864,7 +875,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 		{
 			for (size_t i = 0; i < 3; i++)
 			{
-				m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Spider"), TEXT("Prototype_GameObject_Spider"));
+				m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Spider"), TEXT("Prototype_GameObject_Spider"));
 			}
 
 			m_bCreateSpider = true;
@@ -893,7 +904,9 @@ HRESULT CGroar_Boss::Add_Collider()
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 		TEXT("Com_Collider_OBB"), (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
+	{
 		return E_FAIL;
+	}
 
 	// Frustum
 	Collider_Desc ColDesc{};
@@ -907,6 +920,16 @@ HRESULT CGroar_Boss::Add_Collider()
 	{
 		return E_FAIL;
 	}
+
+	PxCapsuleControllerDesc ControllerDesc{};
+	ControllerDesc.height = 0.8f; // 높이(위 아래의 반구 크기 제외
+	ControllerDesc.radius = 0.6f; // 위아래 반구의 반지름
+	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+
+	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
 	return S_OK;
 }
@@ -931,22 +954,22 @@ HRESULT CGroar_Boss::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Groar"), TEXT("Com_NPC_Model"), reinterpret_cast<CComponent**>(&m_pNPCModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar"), TEXT("Com_NPC_Model"), reinterpret_cast<CComponent**>(&m_pNPCModelCom))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_GroarScene01"), TEXT("Com_Scene01_Model"), reinterpret_cast<CComponent**>(&m_pScene01ModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_GroarScene01"), TEXT("Com_Scene01_Model"), reinterpret_cast<CComponent**>(&m_pScene01ModelCom))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_GroarScene02"), TEXT("Com_Scene02_Model"), reinterpret_cast<CComponent**>(&m_pScene02ModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_GroarScene02"), TEXT("Com_Scene02_Model"), reinterpret_cast<CComponent**>(&m_pScene02ModelCom))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_Groar_Boss"), TEXT("Com_Boss_Model"), reinterpret_cast<CComponent**>(&m_pBossModelCom), m_pTransformCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar_Boss"), TEXT("Com_Boss_Model"), reinterpret_cast<CComponent**>(&m_pBossModelCom), m_pTransformCom)))
 	{
 		return E_FAIL;
 	}

@@ -80,6 +80,12 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
+	if (FAILED(Ready_Groar_Boss()))
+	{
+		MSG_BOX("Failed to Ready Groar");
+		return E_FAIL;
+	}
+
 	if (FAILED(Ready_NPC()))
 	{
 		MSG_BOX("Failed to Ready NPC");
@@ -372,8 +378,13 @@ HRESULT CLevel_Village::In_To_Dungeon()
 	_vec4 Player_Pos{ 0.f };
 	inFile.read(reinterpret_cast<char*>(&Player_Pos), sizeof(_vec4));
 
+	/*CamPos X :2169.59
+CamPos Y :-26.7111
+CamPos Z :2084.48*/
+
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-	pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 4.f, 0.f));
+	//pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 4.f, 0.f));
+	pPlayerTransform->Set_Position(_vec3(2169.f, -26.f, 2084.f));
 	pPlayerTransform->LookAt_Dir(_vec4(-0.0531848f, 0.0598536346f, 0.996788f, 1.f));
 	return S_OK;
 }
@@ -470,6 +481,16 @@ HRESULT CLevel_Village::Ready_Village_Monster()
 			}
 
 		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_Groar_Boss()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Groar_Boss"), TEXT("Prototype_GameObject_Groar_Boss"))))
+	{
+		return E_FAIL;
 	}
 
 	return S_OK;

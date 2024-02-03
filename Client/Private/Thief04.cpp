@@ -170,7 +170,13 @@ void CThief04::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CThief04::STATE_CHASE:
-			m_Animation.iAnimIndex = RUN;
+		{
+			_float fDistance = __super::Compute_PlayerDistance();
+			if (fDistance >= m_fAttackRange)
+			{
+				m_Animation.iAnimIndex = RUN;
+			}
+
 			m_Animation.isLoop = true;
 			m_pTransformCom->Set_Speed(3.f);
 
@@ -182,6 +188,7 @@ void CThief04::Init_State(_float fTimeDelta)
 			{
 				m_pTransformCom->Set_Speed(4.f);
 			}
+		}
 
 			break;
 
@@ -257,9 +264,6 @@ void CThief04::Tick_State(_float fTimeDelta)
 		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 		vDir.y = 0.f;
 
-		m_pTransformCom->LookAt_Dir(vDir);
-		m_pTransformCom->Go_Straight(fTimeDelta);
-
 		if (fDistance > m_fChaseRange && !m_bDamaged)
 		{
 			m_eCurState = STATE_IDLE;
@@ -271,6 +275,11 @@ void CThief04::Tick_State(_float fTimeDelta)
 			m_eCurState = STATE_ATTACK;
 			m_Animation.isLoop = true;
 			m_bSlow = false;
+		}
+		else
+		{
+			m_pTransformCom->LookAt_Dir(vDir);
+			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
 
 	}

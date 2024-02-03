@@ -1,6 +1,7 @@
 #include "Tentacle.h"
 
-_float CTentacle::m_fOffset = 0.f;
+#include "Effect_Dummy.h"
+#include "Effect_Manager.h"
 
 CTentacle::CTentacle(_dev pDevice, _context pContext)
 	: CMonster(pDevice, pContext)
@@ -35,20 +36,49 @@ HRESULT CTentacle::Init(void* pArg)
 	m_Animation.isLoop = true;
 	m_Animation.fAnimSpeedRatio = 3.f;
 
-	m_pTransformCom->Set_Position(_vec3(80.f, 0.f, 120.f + m_fOffset));
+	_vec4 vPlayerPos = __super::Compute_PlayerPos();
+	m_pTransformCom->Set_Position(_vec3(vPlayerPos));
 
-	m_fOffset += 2.f;
+	_mat EffectMatrix = _mat::CreateScale(3.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(vPlayerPos) + _vec3(0.f, 0.1f, 0.f));
+			
+	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Frame");
+	Info.pMatrix = &EffectMatrix;
+	m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
+
+	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Base");
+	Info.pMatrix = &EffectMatrix;
+	m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
 
     return S_OK;
 }
 
 void CTentacle::Tick(_float fTimeDelta)
 {
+	if (m_pFrameEffect)
+	{
+		m_pFrameEffect->Tick(fTimeDelta);
+	}
+	
+	if (m_pBaseEffect)
+	{
+		m_pBaseEffect->Tick(fTimeDelta);
+	}
+
 	m_pModelCom->Set_Animation(m_Animation);
 }
 
 void CTentacle::Late_Tick(_float fTimeDelta)
 {
+	if (m_pFrameEffect)
+	{
+		m_pFrameEffect->Late_Tick(fTimeDelta);
+	}
+
+	if (m_pBaseEffect)
+	{
+		m_pBaseEffect->Late_Tick(fTimeDelta);
+	}
+
 	__super::Late_Tick(fTimeDelta);
 }
 

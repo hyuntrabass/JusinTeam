@@ -97,11 +97,11 @@ HRESULT CLevel_GamePlay::Init()
 	}
 
 	// Boss_Test
-	if (FAILED(Ready_Groar_Boss()))
-	{
-		MSG_BOX("Failed to Ready Groar_Boss");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Groar_Boss()))
+	//{
+	//	MSG_BOX("Failed to Ready Groar_Boss");
+	//	return E_FAIL;
+	//}
 
 	// Pet_Test
 	if (FAILED(Ready_Pet()))
@@ -459,14 +459,15 @@ HRESULT CLevel_GamePlay::Ready_ModelTest()
 
 HRESULT CLevel_GamePlay::Ready_Monster_Test()
 {
-	for (size_t i = 0; i < 1; i++)
-	{
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Tentacle"), TEXT("Prototype_GameObject_Tentacle"))))
-		{
-			return E_FAIL;
-		}
+	//for (size_t i = 0; i < 1; i++)
+	//{
+	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Tentacle"), TEXT("Prototype_GameObject_Tentacle"))))
+	//	{
+	//		return E_FAIL;
+	//	}
 
-	}
+	//}
+
 	return S_OK;
 }
 

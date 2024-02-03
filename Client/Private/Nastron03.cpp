@@ -169,7 +169,13 @@ void CNastron03::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CNastron03::STATE_CHASE:
-			m_Animation.iAnimIndex = WALK;
+		{
+			_float fDistance = __super::Compute_PlayerDistance();
+			if (fDistance >= m_fAttackRange)
+			{
+				m_Animation.iAnimIndex = WALK;
+			}
+
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 2.f;
 
@@ -181,7 +187,7 @@ void CNastron03::Init_State(_float fTimeDelta)
 			{
 				m_pTransformCom->Set_Speed(4.f);
 			}
-
+		}
 			break;
 
 		case Client::CNastron03::STATE_ATTACK:
@@ -256,9 +262,6 @@ void CNastron03::Tick_State(_float fTimeDelta)
 		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 		vDir.y = 0.f;
 
-		m_pTransformCom->LookAt_Dir(vDir);
-		m_pTransformCom->Go_Straight(fTimeDelta);
-
 		if (fDistance > m_fChaseRange && !m_bDamaged)
 		{
 			m_eCurState = STATE_IDLE;
@@ -270,6 +273,11 @@ void CNastron03::Tick_State(_float fTimeDelta)
 			m_eCurState = STATE_ATTACK;
 			m_Animation.isLoop = true;
 			m_bSlow = false;
+		}
+		else
+		{
+			m_pTransformCom->LookAt_Dir(vDir);
+			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
 	}
 		break;

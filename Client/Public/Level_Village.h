@@ -32,6 +32,7 @@ private:
 
 private:
 	HRESULT Ready_Village_Monster();
+	HRESULT Ready_Groar_Boss();
 
 private:
 	HRESULT Ready_NPC();

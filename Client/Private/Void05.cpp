@@ -2,7 +2,7 @@
 #include "Animation.h"
 
 const _float CVoid05::m_fChaseRange = 7.f;
-const _float CVoid05::m_fAttackRange = 3.f;
+const _float CVoid05::m_fAttackRange = 2.3f;
 
 _uint CVoid05::m_iIndex = 0;
 
@@ -37,7 +37,7 @@ HRESULT CVoid05::Init(void* pArg)
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
-	m_Animation.bSkipInterpolation = true;
+	m_Animation.bSkipInterpolation = false;
 
 	random_device rand;
 	_randNum RandomNumber(rand());
@@ -186,7 +186,13 @@ void CVoid05::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CVoid05::STATE_CHASE:
-			m_Animation.iAnimIndex = RUN;
+		{
+			_float fDistance = __super::Compute_PlayerDistance();
+			if (fDistance >= m_fAttackRange)
+			{
+				m_Animation.iAnimIndex = RUN;
+			}
+
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 2.f;
 
@@ -198,6 +204,7 @@ void CVoid05::Init_State(_float fTimeDelta)
 			{
 				m_pTransformCom->Set_Speed(4.f);
 			}
+		}
 			break;
 
 		case Client::CVoid05::STATE_ATTACK:
@@ -237,9 +244,6 @@ void CVoid05::Tick_State(_float fTimeDelta)
 		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 		vDir.y = 0.f;
 
-		m_pTransformCom->LookAt_Dir(vDir);
-		m_pTransformCom->Go_Straight(fTimeDelta);
-
 		//if (fDistance > m_fChaseRange && !m_bDamaged)
 		//{
 		//	m_eCurState = STATE_IDLE;
@@ -251,6 +255,11 @@ void CVoid05::Tick_State(_float fTimeDelta)
 			m_eCurState = STATE_ATTACK;
 			m_Animation.isLoop = true;
 			m_bSlow = false;
+		}
+		else
+		{
+			m_pTransformCom->LookAt_Dir(vDir);
+			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
 	}
 		break;
