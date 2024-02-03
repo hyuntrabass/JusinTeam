@@ -63,14 +63,19 @@ EffectInfo CEffect_Manager::Get_EffectInformation(const wstring& strEffectTag)
 	return iter->second;
 }
 
-HRESULT CEffect_Manager::Add_Layer_Effect(EffectInfo* pInfo)
+HRESULT CEffect_Manager::Add_Layer_Effect(EffectInfo& pInfo, const _bool isStaticLevel)
 {
-	return m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), L"Layer_Effect", L"Prototype_GameObject_EffectDummy", pInfo);
+	_uint iLevel = LEVEL_STATIC;
+	if (not isStaticLevel)
+	{
+		iLevel = m_pGameInstance->Get_CurrentLevelIndex();
+	}
+	return m_pGameInstance->Add_Layer(iLevel, L"Layer_Effect", L"Prototype_GameObject_EffectDummy", &pInfo);
 }
 
-CEffect_Dummy* CEffect_Manager::Clone_Effect(EffectInfo* pInfo)
+CEffect_Dummy* CEffect_Manager::Clone_Effect(EffectInfo& pInfo)
 {
-	return dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_EffectDummy", pInfo));
+	return dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_EffectDummy", &pInfo));
 }
 
 void CEffect_Manager::Create_Effect(const wstring& strEffectTag, _mat* pMatrix, const _bool& isFollow)
@@ -83,14 +88,14 @@ void CEffect_Manager::Create_Effect(const wstring& strEffectTag, _mat* pMatrix, 
 
 	if (not Info.isFollow)
 	{
-		Add_Layer_Effect(&Info);
+		Add_Layer_Effect(Info);
 	}
 	else
 	{
 		auto iter = m_Effects[iCurrLevel].find(pMatrix);
 		if (iter == m_Effects[iCurrLevel].end())
 		{
-			CEffect_Dummy* pEffect = Clone_Effect(&Info);
+			CEffect_Dummy* pEffect = Clone_Effect(Info);
 
 			m_Effects[iCurrLevel].emplace(pMatrix, pEffect);
 		}

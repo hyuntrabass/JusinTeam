@@ -260,7 +260,7 @@ PS_OUT PS_Main_Sprite_MaskTexture(PS_IN Input)
 
     Output.vColor = g_Texture.Sample(LinearSampler, vUV);
     
-    Output.vColor.a = vMask.r;
+    Output.vColor.a = vMask.r * vMask.a;
     
     return Output;
 }
@@ -421,7 +421,7 @@ PS_OUT PS_Main_Sprite_MaskTexture_Dissolve(PS_IN Input)
 
     Output.vColor = g_Texture.Sample(LinearSampler, vUV);
     
-    Output.vColor.a = vMask.r;
+    Output.vColor.a = vMask.r * vMask.a;
     
     return Output;
 }

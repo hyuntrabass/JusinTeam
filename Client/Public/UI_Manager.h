@@ -76,7 +76,6 @@ private:
 
 public:
 	SKILLINFO Get_SkillInfo(WEAPON_TYPE eType, _uint iIdx);
-
 	void Set_TimeStop(_bool bStop) { m_bTimeStop = bStop; }
 	_bool Get_TimeStop() { return m_bTimeStop; }
 
