@@ -374,7 +374,13 @@
       <UniqueIdentifier>{e6130b2d-99fe-4290-b345-00db4943c384}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\00.UI\GameUI\SkillBook">
-      <UniqueIdentifier>{fe049474-188d-47b8-a371-25313a25fab4}</UniqueIdentifier>
+      <UniqueIdentifier>{c341a31d-5530-47ac-b4cd-ec41f5b970b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\SkillBook\SkillDesc">
+      <UniqueIdentifier>{1d6f6f06-21e5-4762-be82-e90aa505910e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\SkillBook\Skill">
+      <UniqueIdentifier>{ffb4daab-6b13-4dc9-8380-49de62d962c4}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\13.Skill_Model">
       <UniqueIdentifier>{aa0ca9b0-3047-42b3-a09b-1dd8eaa89345}</UniqueIdentifier>
@@ -758,7 +764,10 @@
       <Filter>02.GameObjects\00.UI\GameUI\SkillBook</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\SkillDesc.h">
-      <Filter>02.GameObjects\00.UI\GameUI\SkillBook</Filter>
+      <Filter>02.GameObjects\00.UI\GameUI\SkillBook\SkillDesc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Skill.h">
+      <Filter>02.GameObjects\00.UI\GameUI\SkillBook\Skill</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Skill_Model.h">
       <Filter>02.GameObjects\13.Skill_Model</Filter>
@@ -1137,7 +1146,10 @@
       <Filter>02.GameObjects\00.UI\GameUI\SkillBook</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\SkillDesc.cpp">
-      <Filter>02.GameObjects\00.UI\GameUI\SkillBook</Filter>
+      <Filter>02.GameObjects\00.UI\GameUI\SkillBook\SkillDesc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Skill.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\SkillBook\Skill</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Skill_Model.cpp">
       <Filter>02.GameObjects\13.Skill_Model</Filter>

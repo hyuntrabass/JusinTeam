@@ -129,7 +129,7 @@ HRESULT CLevel_GamePlay::Init()
 	EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Rain");
 	EffectDesc.pMatrix = &m_RainMatrix;
 	EffectDesc.isFollow = true;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 
 	m_pGameInstance->Set_FogNF(_vec2(5.f, 300.f));
 	m_pGameInstance->Set_FogColor(_color(0.1f));
@@ -145,7 +145,7 @@ HRESULT CLevel_GamePlay::Init()
 
 	m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.2f);
 	m_pGameInstance->Play_Sound(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.6f, true);
-	m_pGameInstance->Play_Sound(TEXT("waves"), 0.6f, true);
+	m_pGameInstance->Play_Sound(TEXT("waves"), 0.2f, true);
 
 	return S_OK;
 }
@@ -176,25 +176,25 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		m_WaveMatrix[0] = _mat::CreateTranslation(_vec3(95.f, 4.f, 127.5f));
 		EffectDesc.pMatrix = &m_WaveMatrix[0];
 		EffectDesc.isFollow = true;
-		CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 
 		EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Wave_End");
 		m_WaveMatrix[1] = _mat::CreateTranslation(_vec3(93.f, 4.f, 129.5f));
 		EffectDesc.pMatrix = &m_WaveMatrix[1];
 		EffectDesc.isFollow = true;
-		CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 
 		EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Wave_Init");
 		m_WaveMatrix[2] = _mat::CreateTranslation(_vec3(108.f, 4.f, 100.f));
 		EffectDesc.pMatrix = &m_WaveMatrix[2];
 		EffectDesc.isFollow = true;
-		CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 
 		EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Wave_End");
 		m_WaveMatrix[3] = _mat::CreateTranslation(_vec3(110.f, 4.f, 98.f));
 		EffectDesc.pMatrix = &m_WaveMatrix[3];
 		EffectDesc.isFollow = true;
-		CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 
 		m_isWave = false;
 		m_fWaveTimer = {};
@@ -208,7 +208,7 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		//	EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Wave_End");
 		//	EffectDesc.pMatrix = &m_WaveMatrix;
 		//	EffectDesc.isFollow = true;
-		//	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
+		//	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 		//	m_fWaveGravity = {};
 		//}
 
@@ -749,12 +749,12 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	{
 		return E_FAIL;
 	}
-	/*
+	
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_SkillBook"))))
 	{
 		return E_FAIL;
 	}
-	*/
+	
 	
 
 	return S_OK;

@@ -8,8 +8,6 @@ BEGIN(Client)
 class CWearable_Slot;
 class CSkillBook final : public COrthographicObject
 {
-public:
-	enum SKILL_TYPE { SNIPER, ASSASSIN, TYPE_END };
 private:
 	CSkillBook(_dev pDevice, _context pContext);
 	CSkillBook(const CSkillBook& rhs);
@@ -29,12 +27,18 @@ private:
 	CTexture* m_pTextureCom{ nullptr };
 
 private:
-	SKILL_TYPE									m_ePrevType{ SNIPER };
-	SKILL_TYPE									m_eCurType{ SNIPER };
+	WEAPON_TYPE									m_ePrevType{ WP_BOW };
+	WEAPON_TYPE									m_eCurType{ WP_BOW };
+
+	_uint										m_iCurIndex{};
+
+	_bool										m_isPicking{ false };
 	_bool										m_isPrototype{ false };
 	_bool										m_bNewSkillIn{ false };
 	_bool										m_isActive{ false };
 
+	_float										m_fDir{ 1.f };
+	_float										m_fTime{ 0.4f };
 	CGameObject*								m_pMoney{ nullptr };
 	CGameObject*								m_pDiamond{ nullptr };
 	CGameObject*								m_pNotify{ nullptr };
@@ -44,9 +48,15 @@ private:
 
 	CGameObject*								m_pUnderBar{ nullptr };
 	CGameObject*								m_pSelectButton{ nullptr };
-	CGameObject*								m_pSkillType[TYPE_END];
+	CGameObject*								m_pSkillType[WP_END];
 
-	vector<class CSkillDesc*>					m_vecSkillDesc[TYPE_END];
+	class CTextButtonColor*						m_pSlotBackGround{ nullptr };
+	CTextButtonColor*							m_pResetSlot{ nullptr };
+	CTextButtonColor*							m_pSelectSlot[4];
+
+	class CSkillSlot*							m_pSkillSlot[WP_END][4];
+
+	vector<class CSkillDesc*>					m_vecSkillDesc[WP_END];
 
 
 private:

@@ -872,10 +872,11 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 
 	m_Status.Current_Hp -= (iDamage - iDamage * (_int)(m_Status.Armor / 0.01));
 
+	CUI_Manager::Get_Instance()->Set_Hp(m_Status.Current_Hp, m_Status.Max_Hp);
 
 	if (m_Status.Current_Hp < 0)
 	{
-		m_iHP = 0;
+		m_Status.Current_Hp = 0;
 		m_eState = Die;
 	}
 	else
@@ -893,7 +894,6 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 			m_Animation.iAnimIndex = Anim_Stun_start;
 			m_Animation.fDurationRatio = 0.4f;
 			m_Animation.fAnimSpeedRatio = 2.f;
-			m_Animation.bSkipInterpolation = true;
 			m_Animation.fStartAimPos = 18.f;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
@@ -3081,7 +3081,6 @@ void CPlayer::Init_State()
 			m_Animation.iAnimIndex = Anim_Stun_start;
 			m_Animation.fDurationRatio = 0.4f;
 			m_Animation.fAnimSpeedRatio = 2.f;
-			m_Animation.bSkipInterpolation = true;
 			m_Animation.fStartAimPos = 18.f;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;

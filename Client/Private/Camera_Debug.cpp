@@ -68,6 +68,18 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 		}
 	}
 
+	if (m_pGameInstance->Key_Down(DIK_O))
+	{
+		PxRaycastBuffer Buffer{};
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), m_pTransformCom->Get_State(State::Look).Get_Normalized(), 100.f, Buffer))
+		{
+			_vec3 NewPos = PxVec3ToFloat3(Buffer.block.position);
+			NewPos.y += 1.f;
+
+			dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")))->Set_Position(NewPos);
+		}
+	}
+
 	if (m_pGameInstance->Key_Down(DIK_I))
 	{
 		if (m_bTimeStop)

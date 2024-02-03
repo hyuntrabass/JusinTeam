@@ -235,6 +235,7 @@
     <ClInclude Include="..\Public\Shop.h" />
     <ClInclude Include="..\Public\ShopDesc.h" />
     <ClInclude Include="..\Public\ShopWindow.h" />
+    <ClInclude Include="..\Public\Skill.h" />
     <ClInclude Include="..\Public\SkillBlock.h" />
     <ClInclude Include="..\Public\SkillBook.h" />
     <ClInclude Include="..\Public\SkillDesc.h" />
@@ -365,6 +366,7 @@
     <ClCompile Include="..\Private\Shop.cpp" />
     <ClCompile Include="..\Private\ShopDesc.cpp" />
     <ClCompile Include="..\Private\ShopWindow.cpp" />
+    <ClCompile Include="..\Private\Skill.cpp" />
     <ClCompile Include="..\Private\SkillBlock.cpp" />
     <ClCompile Include="..\Private\SkillBook.cpp" />
     <ClCompile Include="..\Private\SkillDesc.cpp" />
