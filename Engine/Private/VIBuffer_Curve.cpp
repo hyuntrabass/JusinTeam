@@ -9,7 +9,7 @@ CVIBuffer_Curve::CVIBuffer_Curve(_dev pDevice, _context pContext)
 CVIBuffer_Curve::CVIBuffer_Curve(const CVIBuffer_Curve& rhs)
 	: CVIBuffer(rhs)
 	, m_pCurvePos(rhs.m_pCurvePos)
-	, m_mControlPoint(rhs.m_mControlPoint)
+	, m_matControlPoints(rhs.m_matControlPoints)
 {
 }
 
@@ -41,16 +41,16 @@ HRESULT CVIBuffer_Curve::Init_Prototype()
 	m_pCurvePos = new _float3[m_iNumVertices];
 
 
-	ZeroMemory(&m_mControlPoint, sizeof _mat);
+	ZeroMemory(&m_matControlPoints, sizeof _mat);
 	_vec4 vPoint0 = _vec4(-0.5f, 0.5f, 0.f, 1.f);
 	_vec4 vPoint1 = _vec4(-0.5f, 0.5f, 0.f, 1.f);
 	_vec4 vPoint2 = _vec4(1.f, 0.f, 0.f, 1.f);
 	_vec4 vPoint3 = _vec4(1.f, 0.f, 0.f, 1.f);
 
-	m_mControlPoint.Right(vPoint0);
-	m_mControlPoint.Up(vPoint1);
-	m_mControlPoint.Look(vPoint2);
-	m_mControlPoint.Position(vPoint3);
+	m_matControlPoints.Right(vPoint0);
+	m_matControlPoints.Up(vPoint1);
+	m_matControlPoints.Look(vPoint2);
+	m_matControlPoints.Position(vPoint3);
 
 	_float fTime = 0.f;
 	for (_uint i = 0; i < m_iNumVertices; ++i)
@@ -58,7 +58,7 @@ HRESULT CVIBuffer_Curve::Init_Prototype()
 		fTime = _float(i / m_iNumVertices);
 
 		// Catmull-Rom
-		_vec3 vLerpPoint = XMVectorCatmullRom(m_mControlPoint.Right(), m_mControlPoint.Up(), m_mControlPoint.Look(), m_mControlPoint.Position(), fTime);
+		_vec3 vLerpPoint = XMVectorCatmullRom(m_matControlPoints.Right(), m_matControlPoints.Up(), m_matControlPoints.Look(), m_matControlPoints.Position(), fTime);
 	
 		 pVertices[i].vPosition = vLerpPoint;
 		 m_pCurvePos[i] = vLerpPoint;
@@ -116,6 +116,17 @@ HRESULT CVIBuffer_Curve::Render()
 	return S_OK;
 }
 
+void CVIBuffer_Curve::Get_ControlPoints(_mat* pOutPoints)
+{
+	pOutPoints = &m_matControlPoints;
+}
+
+void CVIBuffer_Curve::Set_ControlPoints(_mat& Points)
+{
+	m_matControlPoints = Points;
+
+}
+
 
 
 CVIBuffer_Curve* CVIBuffer_Curve::Create(_dev pDevice, _context pContext)
@@ -155,7 +166,7 @@ void CVIBuffer_Curve::Modify_Line()
 		fTime = _float(i / m_iNumVertices);
 
 		// Catmull-Rom
-		_vec3 vLerpPoint = XMVectorCatmullRom(m_mControlPoint.Right(), m_mControlPoint.Up(), m_mControlPoint.Look(), m_mControlPoint.Position(), fTime);
+		_vec3 vLerpPoint = XMVectorCatmullRom(m_matControlPoints.Right(), m_matControlPoints.Up(), m_matControlPoints.Look(), m_matControlPoints.Position(), fTime);
 		pVertices[i].vPosition = vLerpPoint;
 		//m_vVertices[i].vPosition = _vec3(vLerpPoint);
 	}

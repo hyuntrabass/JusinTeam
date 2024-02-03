@@ -161,13 +161,6 @@ namespace MapEditor
 		InstPass_Particle_MaskColor,
 	};
 
-	struct CameraInfo
-	{
-		_vec4 vStartCutScene{};
-		_vec4 vEndCutScene{};
-		enum class ItemType eType {};
-		class CCutScene_Curve** ppCamera{ nullptr };
-	};
 
 #pragma endregion
 

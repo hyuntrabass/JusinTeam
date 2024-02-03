@@ -2,6 +2,7 @@
 
 #include "Base.h"
 #include "MapEditor_Define.h"
+#include "Camera.h"
 
 BEGIN(Engine)
 class CGameInstance;
@@ -23,6 +24,8 @@ enum class ItemType
 	Camera,
 	End
 };
+
+
 
 struct DummyInfo
 {
@@ -53,6 +56,22 @@ struct TriggerInfo
 	_float fTriggerSize{};
 	_vec4 vPos{};
 	class CTrigger** ppTrigger{ nullptr };
+};
+
+struct CameraInfo
+{
+	wstring strName{};
+	_vec4 vStartCutScene{};
+	_vec4 vEndCutScene{};
+	enum class ItemType eType {};
+	//class CCamera_CutScene** ppCamera{ nullptr };
+	CCamera::Camera_Desc eCamera_Desc{};
+};
+
+struct SectionInfo
+{
+	_vec4 vStartCutScene{};
+	_vec4 vEndCutScene{};
 };
 
 struct TERRAIN_INFO_MAPTOOL : public TERRAIN_INFO
@@ -138,6 +157,9 @@ private:
 	// 현재 위치 저장
 	HRESULT Save_Pos();
 
+	// 카메라 Eye, At 저장
+	//void Set_Camera();
+
 private:
 	CGameInstance* m_pGameInstance{ nullptr };
 	HWND m_hWnd;
@@ -171,6 +193,14 @@ private:
 	_float fTimeDeltaAcc{0.f};
 	_uint iClickCount{0};
 
+	_vec4 m_vEye{};
+	_vec4 m_vAt{};
+	_float m_fFov{0.f};
+	_float m_fAspect{0.f};
+	_float m_fNear{0.f};
+	_float m_fFar{0.f};
+	 
+
 private:
 	// 파일의 이름 가져와서 저장
 	unordered_map<wstring, vector<const char*>> Maps;
@@ -178,6 +208,8 @@ private:
 	unordered_map<wstring, vector<const char*>> Monsters;
 	vector<const char*> NPCs;
 	unordered_map<wstring, vector<const char*>> Envirs;
+	//unordered_map<const char*, SectionInfo> CameraEye;
+	//unordered_map<const char*, SectionInfo> CameraAt;
 
 	vector<class CMap*> m_MapsList;
 	vector<class CDummy*> m_ObjectsList;
@@ -185,15 +217,16 @@ private:
 	vector<class CDummy*> m_NPCList;
 	vector<class CDummy*> m_EnvirList;
 	vector<class CDummy*> m_TriggerList;
-	vector<class CCutScene_Curve*> m_CameraList;
+	vector<class CCamera_CutScene*> m_CameraList;
+
 
 	map<int, class CDummy*>m_DummyList;
 	map<int, class CMap*>m_Map{};
-	map<int, class CCutScene_Curve*>m_Camera{};
+	//map<int, class CCamera_CutScene*>m_Camera{};
 
 	class CDummy* m_pSelectedDummy{ nullptr };
 	class CMap* m_pSelectMap{ nullptr };
-	class CCutScene_Curve* m_pSelectCamera{ nullptr };
+	class CCamera_CutScene* m_pSelectCamera{ nullptr };
 	class CTerrain* m_pTerrain{ nullptr };
 	char Search_Name[MAX_PATH]{};
 
@@ -203,13 +236,15 @@ private:
 	_mat	m_ViewMatrix = {};
 	_mat	m_ProjMatrix = {};
 
+	
 	_int m_iSelectIdx = { -1 };
 	_bool m_iImGuizmoCheck = { false };
 	CTexture* m_pTextures{ nullptr };
 	wstring m_eType{};
 	_float m_fTriggerSize{1.f};
 	_int m_iTriggerNumber{0};
-
+	_char SectionName[MAX_PATH]{};
+	SectionInfo m_eSectionInfo{};
 
 public:
 	static CImGui_Manager* Create(const GRAPHIC_DESC& GraphicDesc);

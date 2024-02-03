@@ -20,20 +20,12 @@ HRESULT CCutScene_Curve::Init_Prototype()
 
 HRESULT CCutScene_Curve::Init(void* pArg)
 {
-	Info = *(CameraInfo*)pArg;
+	Info = *(SectionInfo*)pArg;
 
 	if (FAILED(Add_Components()))
 		return E_FAIL;
 
-	if (Info.ppCamera)
-	{
-		*Info.ppCamera = this;
-		Info.ppCamera = nullptr;
-	}
-
-	m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
-
-	Set_Points();
+	Set_Points(Info);
 
 	return S_OK;
 }
@@ -87,7 +79,8 @@ HRESULT CCutScene_Curve::Add_Components()
 
 HRESULT CCutScene_Curve::Bind_ShaderResources()
 {
-
+	_mat m_WorldMatrix;
+	m_WorldMatrix = XMMatrixIdentity();
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", m_WorldMatrix)))
 		return E_FAIL;
 
@@ -102,26 +95,44 @@ HRESULT CCutScene_Curve::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	_float4 vColor = _float4(0.f, 1.f, 0.f, 1.f);
+
+	_float4 vColor = _float4(0.f, 0.f, 0.f, 1.f);
+	if (m_iSectionType == SECTION_TYPE_EYE)
+		vColor = _float4(0.f, 1.f, 1.f, 1.f);
+	else if (m_iSectionType == SECTION_TYPE_AT)
+		vColor = _float4(1.f, 0.f, 0.f, 1.f);
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
 		return E_FAIL;
 
 	return S_OK;
 }
-
-void CCutScene_Curve::Select(const _bool& isSelected)
+void CCutScene_Curve::Get_ControlPoints(_mat* pOutPoints)
 {
-	m_isSelected = isSelected;
+	if (m_pVIBuffer == nullptr)
+		return;
+
+	pOutPoints = &m_matPoint;
+}
+
+HRESULT CCutScene_Curve::Set_ControlPoints(_mat& Points)
+{
+	if (m_pVIBuffer == nullptr)
+		return E_FAIL;
+
+	m_matPoint = Points;
+
+	m_pVIBuffer->Set_ControlPoints(m_matPoint);
+	return S_OK;
 }
 
 
-void CCutScene_Curve::Set_Points()
-{
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Camera_Point"), TEXT("Prototype_GameObject_Camera_Point"), & Info.vStartCutScene)))
-	{
-		MSG_BOX("Failed to Add Layer : Dummy");
-	}
 
+void CCutScene_Curve::Set_Points(SectionInfo Info)
+{
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Camera_Point"), TEXT("Prototype_GameObject_Camera_Point"), & Info.vStartCutScene)))
+	//{
+	//	MSG_BOX("Failed to Add Layer : CameraPoint");
+	//}
 	m_pStartPoint = static_cast<CCutScene_Point*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Camera_Point"), &Info.vStartCutScene));
 	m_pEndPoint = static_cast<CCutScene_Point*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Camera_Point"), &Info.vEndCutScene));
 }
@@ -157,7 +168,6 @@ void CCutScene_Curve::Free()
 	__super::Free();
 
 	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pVIBuffer);
 	Safe_Release(m_pStartPoint);
