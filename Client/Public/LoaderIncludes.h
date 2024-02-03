@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Skill.h"
 #include "SkillDesc.h"
 #include "SkillBook.h"
 #include "Tutorial.h"
@@ -69,6 +70,8 @@
 #include "Map.h"
 #include "WorldMap.h"
 #include "Effect_Dummy.h"
+#include "Skill_Model.h"
+#include "Scarecrow.h"
 
 // Monster
 #include "NPCvsMon.h"

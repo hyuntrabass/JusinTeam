@@ -229,7 +229,7 @@ public: // Get_Set
 	void Set_CameraTargetPos(const _vec4& vPos);
 	void Set_CameraTargetLook(const _vec4& vLook);
 	void Set_Have_TargetLook(const _bool& bHaveLook);
-	void Set_AimMode(_bool Aim, _vec3 AimPos = _vec3(0.63f, 1.8f, 1.1f));
+	void Set_AimMode(_bool Aim, _vec3 AimPos = _vec3(0.6f, 1.7f, 1.4f));
 	void Set_InputString(const wstring& strInput);
 	void Set_FlyCam(_bool Fly) { m_bFlyCam = Fly; }
 

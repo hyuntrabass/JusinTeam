@@ -258,27 +258,17 @@ void CModel::Set_Animation(ANIM_DESC Animation_Desc)
 	{
 		m_isAnimChanged = true;
 
-		/*for (auto& pAnim : m_Animations)
-		{
-			pAnim->ResetFinished();
-		}*/
 		m_Animations[m_AnimDesc.iAnimIndex]->ResetFinished();
 
 		if (Animation_Desc.iAnimIndex >= m_iNumAnimations)
 		{
 			Animation_Desc.iAnimIndex = m_iNumAnimations - 1;
 		}
-		else if (Animation_Desc.iAnimIndex < 0)
-		{
-			Animation_Desc.iAnimIndex = 0;
-		}
+	}
 
-		if (Animation_Desc.fStartAimPos >= m_Animations[Animation_Desc.iAnimIndex]->Get_Duration())
-		{
-			Animation_Desc.fStartAimPos = 0.f;
-		}
-
-		m_Animations[Animation_Desc.iAnimIndex]->Set_CurrentAnimPos(Animation_Desc.fStartAimPos);
+	while (Animation_Desc.fStartAimPos >= m_Animations[Animation_Desc.iAnimIndex]->Get_Duration())
+	{
+		Animation_Desc.fStartAimPos -= m_Animations[Animation_Desc.iAnimIndex]->Get_Duration();
 	}
 	
 	m_AnimDesc = Animation_Desc;

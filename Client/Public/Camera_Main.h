@@ -62,7 +62,8 @@ private:
 	 _float m_fLerp_LookDistance{};
 	 _float m_fMap_UpDistance{};
 	 _float m_fLerp_UpDistance{};
-
+	 _float m_fCamChangeTime{};
+	 _uint m_iCamChange{};
 	 _float m_fCurrentMapZoom{ 1017.16f };
 public:
 	static CCamera_Main* Create(_dev pDevice, _context pContext);
