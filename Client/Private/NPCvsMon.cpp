@@ -28,6 +28,11 @@ HRESULT CNPCvsMon::Init(void* pArg)
 	m_Animation.isLoop = true;
 	m_Animation.fAnimSpeedRatio = 1.5f;
 
+	random_device rand;
+	_randNum RandomNumber(rand());
+	_randFloat RandomAnimPos(0.f, 1000.f);
+	m_Animation.fStartAimPos = RandomAnimPos(RandomNumber);
+
 	if (pArg)
 	{
 		if (FAILED(__super::Init(pArg)))
@@ -42,14 +47,15 @@ HRESULT CNPCvsMon::Init(void* pArg)
 void CNPCvsMon::Tick(_float fTimeDelta)
 {
 	m_pModelCom->Set_Animation(m_Animation);
+	m_Animation.fStartAimPos = 0.f;
 }
 
 void CNPCvsMon::Late_Tick(_float fTimeDelta)
 {
-	if(m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 3.f))
+	__super::Late_Tick(fTimeDelta);
+	/*if(m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 3.f))
 	{
-		__super::Late_Tick(fTimeDelta);
-	}
+	}*/
 }
 
 HRESULT CNPCvsMon::Render()

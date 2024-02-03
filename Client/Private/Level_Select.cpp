@@ -250,25 +250,25 @@ HRESULT CLevel_Select::Ready_Light()
 	EffectInfo Effect = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BoneFire");
 	_mat EffectMat = _mat::CreateTranslation(_vec3(0.f, 0.85f, -3.3f));
 	Effect.pMatrix = &EffectMat;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Effect);
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Effect);
 	
 	// ÁÂ
 	Effect = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"TorchFire");
 	EffectMat = _mat::CreateTranslation(_vec3(-2.58f, 2.7f, -0.79f));
 	Effect.pMatrix = &EffectMat;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Effect);
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Effect);
 
 	// Áß
 	Effect = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"TorchFire");
 	EffectMat = _mat::CreateTranslation(_vec3(-0.07f, 2.4f, -1.f));
 	Effect.pMatrix = &EffectMat;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Effect);
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Effect);
 
 	// ¿ì
 	Effect = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"TorchFire");
 	EffectMat = _mat::CreateTranslation(_vec3(2.89f, 2.84f, -1.427f));
 	Effect.pMatrix = &EffectMat;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Effect);
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Effect);
 
 	return S_OK;
 }

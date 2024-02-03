@@ -885,7 +885,6 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 			m_Animation.iAnimIndex = Anim_Stun_start;
 			m_Animation.fDurationRatio = 0.4f;
 			m_Animation.fAnimSpeedRatio = 2.f;
-			m_Animation.bSkipInterpolation = true;
 			m_Animation.fStartAimPos = 18.f;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
@@ -3025,7 +3024,6 @@ void CPlayer::Init_State()
 			m_Animation.iAnimIndex = Anim_Stun_start;
 			m_Animation.fDurationRatio = 0.4f;
 			m_Animation.fAnimSpeedRatio = 2.f;
-			m_Animation.bSkipInterpolation = true;
 			m_Animation.fStartAimPos = 18.f;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;

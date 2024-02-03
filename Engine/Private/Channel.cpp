@@ -5,6 +5,60 @@ CChannel::CChannel()
 {
 }
 
+KEYFRAME CChannel::Get_CurrentKeyFrame(_float fCurrentAnimPos) const
+{
+	if (fCurrentAnimPos == 0.f)
+	{
+		return m_KeyFrames.front();
+	}
+	else if (fCurrentAnimPos >= m_KeyFrames.back().fTime)
+	{
+		return m_KeyFrames.back();
+	}
+	else
+	{
+		for (size_t i = 0; i < m_KeyFrames.size(); i++)
+		{
+			if (fCurrentAnimPos < m_KeyFrames[i].fTime)
+			{
+				continue;
+			}
+
+			_vec4 vSrcScaling{}, vDstScaling{};
+			_vec4 vSrcRotation{}, vDstRotation{};
+			_vec4 vSrcPotition{}, vDstPosition{};
+
+			_float fRatio = (fCurrentAnimPos - m_KeyFrames[i].fTime) / (m_KeyFrames[i + 1].fTime - m_KeyFrames[i].fTime);
+
+			vSrcScaling = m_KeyFrames[i].vScaling;
+			vDstScaling = m_KeyFrames[i + 1].vScaling;
+
+			vSrcRotation = m_KeyFrames[i].vRotation;
+			vDstRotation = m_KeyFrames[i + 1].vRotation;
+
+			vSrcPotition = m_KeyFrames[i].vPosition;
+			vDstPosition = m_KeyFrames[i + 1].vPosition;
+
+			_vec4 vScaling{}, vRotation{}, vPosition{};
+
+			vScaling = XMVectorLerp(vSrcScaling, vDstScaling, fRatio);
+			vRotation = XMQuaternionSlerp(vSrcRotation, vDstRotation, fRatio);
+			vPosition = XMVectorLerp(vSrcPotition, vDstPosition, fRatio);
+
+			KEYFRAME KeyFrame{};
+
+			KeyFrame.vScaling = vScaling;
+			KeyFrame.vRotation = vRotation;
+			KeyFrame.vPosition = vPosition;
+	
+			return KeyFrame;
+		}
+	}
+
+	MSG_BOX("Failed to Find KeyFrame");
+	return KEYFRAME{};
+}
+
 HRESULT CChannel::Init(ifstream& ModelFile)
 {
 	_uint iNameSize{};

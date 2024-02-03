@@ -131,7 +131,7 @@ HRESULT CMissile::Init(void* pArg)
 	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Init");
 	Info.pMatrix = &m_EffectMatrix;
 	Info.isFollow = true;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 	return S_OK;
 }
@@ -162,7 +162,7 @@ void CMissile::Tick(_float fTimeDelta)
 			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Smoke");
 			Info.pMatrix = &m_EffectMatrix;
 			Info.isFollow = true;
-			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
+			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 		}
 
 
@@ -207,7 +207,7 @@ void CMissile::Tick(_float fTimeDelta)
 			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Smoke");
 			Info.pMatrix = &m_EffectMatrix;
 			Info.isFollow = true;
-			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
+			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 		}
 
 
@@ -248,7 +248,7 @@ void CMissile::Tick(_float fTimeDelta)
 			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Smoke");
 			Info.pMatrix = &m_EffectMatrix;
 			Info.isFollow = true;
-			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
+			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
 			m_fEffectTimer = 3.f;
 		}
@@ -315,7 +315,7 @@ void CMissile::Tick(_float fTimeDelta)
 	{
 		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Explosion");
 		Info.pMatrix = &m_EffectMatrix;
-		CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 	}
 
 	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
@@ -430,7 +430,7 @@ HRESULT CMissile::Add_Components()
 	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball");
 	Info.pMatrix = &m_EffectMatrix;
 	Info.isFollow = true;
-	m_pEffect_Ball = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
+	m_pEffect_Ball = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 	
 	return S_OK;
 }
