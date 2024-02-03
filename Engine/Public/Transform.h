@@ -47,6 +47,7 @@ public:
 	void Set_Speed(_float fSpeed);
 	void Set_RotationPerSec(_float fAngle);
 	void Set_Controller(PxController* pController);
+	void Delete_Controller();
 
 public:
 	HRESULT Init_Prototype() override;

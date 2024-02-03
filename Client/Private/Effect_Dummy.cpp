@@ -119,11 +119,6 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 		m_OffsetMatrix = *m_Effect.pMatrix;
 	}
 
-	if (m_Effect.iType == ET_RECT)
-	{
-		m_OffsetMatrix.RemoveRotation();
-	}
-
 	m_pTransformCom->Set_Matrix(m_OffsetMatrix);
 
 	switch (m_Effect.iType)

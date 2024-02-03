@@ -42,12 +42,12 @@ HRESULT CPet_Dragon::Init(void* pArg)
 	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Pet_Dragon_Parti");
 	Info.pMatrix = &m_EffectMatrix;
 	Info.isFollow = true;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info, true);
 
 	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Pet_Dragon_Light");
 	Info.pMatrix = &m_EffectMatrix;
 	Info.isFollow = true;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info, true);
 
 	return S_OK;
 }
