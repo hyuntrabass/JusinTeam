@@ -35,20 +35,21 @@ HRESULT CTentacle::Init(void* pArg)
 	m_Animation.iAnimIndex = 0;
 	m_Animation.isLoop = true;
 	m_Animation.fAnimSpeedRatio = 3.f;
-	m_Animation.fStartAimPos = 70.f; // 65 end
+	m_Animation.fStartAnimPos = 70.f; // 65 end
 
 	_vec4 vPlayerPos = __super::Compute_PlayerPos();
-	m_pTransformCom->Set_Position(_vec3(vPlayerPos));
 
-	_mat EffectMatrix = _mat::CreateScale(3.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(vPlayerPos) + _vec3(0.f, 0.1f, 0.f));
+	_mat EffectMatrix = _mat::CreateScale(2.5f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(vPlayerPos) + _vec3(0.f, 0.2f, 0.f));
 			
 	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Frame");
 	Info.pMatrix = &EffectMatrix;
-	m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
+	m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
 	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Base");
 	Info.pMatrix = &EffectMatrix;
-	m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
+	m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+	m_pTransformCom->Set_Position(_vec3(vPlayerPos + _vec3(0.f, -1.8f, 1.2f)));
 
     return S_OK;
 }
@@ -63,8 +64,17 @@ void CTentacle::Tick(_float fTimeDelta)
 		{
 			Safe_Release(m_pFrameEffect);
 			Safe_Release(m_pBaseEffect);
+
+			int a = 0;
 		}
 
+		if (m_pModelCom->Get_CurrentAnimPos() >= 65.f && m_pModelCom->Get_CurrentAnimPos() <= 67.f)
+		{
+			Kill();
+		}
+
+		m_pModelCom->Set_Animation(m_Animation);
+		m_Animation.fStartAnimPos = 0.f;
 
 	}
 
@@ -78,7 +88,7 @@ void CTentacle::Tick(_float fTimeDelta)
 		m_pBaseEffect->Tick(fTimeDelta);
 	}
 
-	m_pModelCom->Set_Animation(m_Animation);
+	Update_Collider();
 }
 
 void CTentacle::Late_Tick(_float fTimeDelta)
@@ -93,7 +103,15 @@ void CTentacle::Late_Tick(_float fTimeDelta)
 		m_pBaseEffect->Late_Tick(fTimeDelta);
 	}
 
-	__super::Late_Tick(fTimeDelta);
+	if (m_fTime >= 1.5f)
+	{
+		__super::Late_Tick(fTimeDelta);
+	}
+
+#ifdef _DEBUG
+	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
+#endif
+
 }
 
 HRESULT CTentacle::Render()
@@ -105,11 +123,26 @@ HRESULT CTentacle::Render()
 
 HRESULT CTentacle::Add_Collider()
 {
+	Collider_Desc BodyCollDesc = {};
+	BodyCollDesc.eType = ColliderType::AABB;
+	BodyCollDesc.vExtents = _vec3(1.f, 2.f, 1.f);
+	BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y, 0.f);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+		TEXT("Com_Collider_AABB"), (CComponent**)&m_pAttackColliderCom, &BodyCollDesc)))
+	{
+		return E_FAIL;
+	}
+
     return S_OK;
 }
 
 void CTentacle::Update_Collider()
 {
+	_vec4 vPlayerPos = __super::Compute_PlayerPos();
+
+	_mat Offset = _mat::CreateTranslation(0.f, 1.2f, 1.2f);
+	m_pAttackColliderCom->Update(Offset * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix());
 }
 
 CTentacle* CTentacle::Create(_dev pDevice, _context pContext)

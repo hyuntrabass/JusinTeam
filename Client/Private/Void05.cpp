@@ -41,7 +41,7 @@ HRESULT CVoid05::Init(void* pArg)
 	random_device rand;
 	_randNum RandomNumber(rand());
 	_randFloat RandomAnimPos(0.f, 1000.f);
-	m_Animation.fStartAimPos = RandomAnimPos(RandomNumber);
+	m_Animation.fStartAnimPos = RandomAnimPos(RandomNumber);
 
 	m_eCurState = STATE_IDLE;
 
@@ -91,7 +91,7 @@ void CVoid05::Tick(_float fTimeDelta)
 	Tick_State(fTimeDelta);
 	
 	m_pModelCom->Set_Animation(m_Animation);
-	m_Animation.fStartAimPos = 0.f;
+	m_Animation.fStartAnimPos = 0.f;
 
 	Update_Collider();
 	__super::Update_MonsterCollider();

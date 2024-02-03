@@ -88,6 +88,7 @@ void CGoat::Tick(_float fTimeDelta)
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
+	__super::Tick(fTimeDelta);
 }
 
 void CGoat::Late_Tick(_float fTimeDelta)

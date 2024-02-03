@@ -106,7 +106,8 @@ HRESULT CGroar_Boss::Render()
 		return E_FAIL;
 	}
 
-	CModel* pModel = nullptr;
+	CModel* pModel = { nullptr };
+
 	switch (m_eCurState)
 	{
 	case Client::CGroar_Boss::STATE_NPC:
@@ -122,7 +123,6 @@ HRESULT CGroar_Boss::Render()
 		pModel = m_pBossModelCom;
 		break;
 	}
-
 
 	for (_uint i = 0; i < pModel->Get_NumMeshes(); i++)
 	{
@@ -150,12 +150,10 @@ HRESULT CGroar_Boss::Render()
 			HasMaskTex = true;
 		}
 
-
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}
-
 
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
 		{
@@ -178,170 +176,14 @@ HRESULT CGroar_Boss::Render()
 		}
 	}
 
-	// 너무길어서 축약했어요...
-	{
-		//switch (m_eCurState)
-		//{
-		//case Client::CGroar_Boss::STATE_NPC:
-		//	for (_uint i = 0; i < m_pNPCModelCom->Get_NumMeshes(); i++)
-		//	{
-		//		if (FAILED(m_pNPCModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-		//		{
-		//		}
-
-		//		_bool HasNorTex{};
-		//		if (FAILED(m_pNPCModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-		//		{
-		//			HasNorTex = false;
-		//		}
-		//		else
-		//		{
-		//			HasNorTex = true;
-		//		}
-
-		//		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-		//		{
-		//			return E_FAIL;
-		//		}
-
-		//		if (FAILED(m_pNPCModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-		//		{
-		//			return E_FAIL;
-		//		}
-
-		//		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
-		//		{
-		//			return E_FAIL;
-		//		}
-
-		//		if (FAILED(m_pNPCModelCom->Render(i)))
-		//		{
-		//			return E_FAIL;
-		//		}
-		//	}
-		//	break;
-		//case Client::CGroar_Boss::STATE_SCENE01:
-		//	for (_uint i = 0; i < m_pScene01ModelCom->Get_NumMeshes(); i++)
-		//	{
-		//		if (FAILED(m_pScene01ModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-		//		{
-		//		}
-
-		//		_bool HasNorTex{};
-		//		if (FAILED(m_pScene01ModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-		//		{
-		//			HasNorTex = false;
-		//		}
-		//		else
-		//		{
-		//			HasNorTex = true;
-		//		}
-
-		//		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-		//		{
-		//			return E_FAIL;
-		//		}
-
-		//		if (FAILED(m_pScene01ModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-		//		{
-		//			return E_FAIL;
-		//		}
-
-		//		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
-		//		{
-		//			return E_FAIL;
-		//		}
-
-		//		if (FAILED(m_pScene01ModelCom->Render(i)))
-		//		{
-		//			return E_FAIL;
-		//		}
-		//	}
-		//	break;
-		//case Client::CGroar_Boss::STATE_SCENE02:
-		//	for (_uint i = 0; i < m_pScene02ModelCom->Get_NumMeshes(); i++)
-		//	{
-		//		if (FAILED(m_pScene02ModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-		//		{
-		//		}
-
-		//		_bool HasNorTex{};
-		//		if (FAILED(m_pScene02ModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-		//		{
-		//			HasNorTex = false;
-		//		}
-		//		else
-		//		{
-		//			HasNorTex = true;
-		//		}
-
-		//		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-		//		{
-		//			return E_FAIL;
-		//		}
-
-		//		if (FAILED(m_pScene02ModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-		//		{
-		//			return E_FAIL;
-		//		}
-
-		//		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
-		//		{
-		//			return E_FAIL;
-		//		}
-
-		//		if (FAILED(m_pScene02ModelCom->Render(i)))
-		//		{
-		//			return E_FAIL;
-		//		}
-		//	}
-		//	break;
-		//case Client::CGroar_Boss::STATE_BOSS:
-		//	for (_uint i = 0; i < m_pBossModelCom->Get_NumMeshes(); i++)
-		//	{
-		//		if (FAILED(m_pBossModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-		//		{
-		//		}
-
-		//		_bool HasNorTex{};
-		//		if (FAILED(m_pBossModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-		//		{
-		//			HasNorTex = false;
-		//		}
-		//		else
-		//		{
-		//			HasNorTex = true;
-		//		}
-
-		//		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-		//		{
-		//			return E_FAIL;
-		//		}
-
-		//		if (FAILED(m_pBossModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-		//		{
-		//			return E_FAIL;
-		//		}
-
-		//		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
-		//		{
-		//			return E_FAIL;
-		//		}
-
-		//		if (FAILED(m_pBossModelCom->Render(i)))
-		//		{
-		//			return E_FAIL;
-		//		}
-		//	}
-		//	break;
-		//}
-	}
-
 	return S_OK;
 }
 
 void CGroar_Boss::Init_State(_float fTimeDelta)
 {
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+
 	if (m_ePreState != m_eCurState)
 	{
 		switch (m_eCurState)
@@ -390,6 +232,7 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
 
+			m_pTransformCom->LookAt(vPlayerPos);
 			break;
 
 		case Client::CGroar_Boss::BOSS_STATE_CHASE:
@@ -401,7 +244,6 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 
 			m_bCreateMissile = false;
 			m_bCreateSpider = false;
-			m_bCreateTentacle = false;
 
 			m_bAttacked1 = false;
 			m_bAttacked2 = false;
@@ -464,6 +306,7 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 					break;
 				case Client::CGroar_Boss::FLOOR_ATTACK06:
 					m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK06;
+					m_Animation.fAnimSpeedRatio = 1.f;
 					m_bFloor_Attack_Selected[FLOOR_ATTACK06] = true;
 					break;
 				case Client::CGroar_Boss::FLOOR_ATTACK07:
@@ -476,7 +319,7 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 					break;
 				}
 
-				//m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK07; // 테스트용
+				m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK06; // 테스트용
 			}
 
 			break;
@@ -639,7 +482,6 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 				eTempBossCurState = BOSS_STATE_THROW_ATTACK;
 			}
 
-			//m_eBossCurState = CGroar_Boss::BOSS_STATE_SIX_MISSILE; // 테스트용
 			m_bSelectAttackPattern = true;
 		}
 
@@ -671,6 +513,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			}
 		}
 
+		//m_eBossCurState = BOSS_STATE_FLOOR_ATTACK; // 테스트용
 	}
 
 	break;
@@ -801,9 +644,19 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		case MON_GROAR_ASGARD_ATTACK06: // 촉수
 
-			if (m_pBossModelCom->Get_CurrentAnimPos() >= 48.f && !m_bCreateTentacle)
+			if (m_pBossModelCom->Get_CurrentAnimPos() >= 48.f)
 			{
-				m_bCreateTentacle = true;
+				//m_bTentacleOn = true;
+				m_fTentacleTime += fTimeDelta;
+			}
+
+			//if (m_bTentacleOn == true)
+			{
+				if (m_fTentacleTime >= 0.7f)
+				{
+					m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Tentacle"), TEXT("Prototype_GameObject_Tentacle"));
+					m_fTentacleTime = 0.f;
+				}
 			}
 
 			break;
@@ -825,10 +678,13 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eBossCurState = BOSS_STATE_CHASE;
 			m_bAttack_Selected[ATTACK_FLOOR] = true;
+
+			//m_bTentacleOn = false;
+			m_fTentacleTime = 0.f;
 		}
 	}
 
-		break;
+	break;
 
 	case Client::CGroar_Boss::BOSS_STATE_SIX_MISSILE:
 

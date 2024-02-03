@@ -1027,7 +1027,7 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
-	_mat TentaclePivot = _mat::CreateRotationX(XMConvertToRadians(270.f));
+	_mat TentaclePivot = _mat::CreateRotationX(XMConvertToRadians(290.f));
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar_Tentacle"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Groar_Tentacle/Mesh/Groar_Tentacle.hyuntraanimmesh", false, TentaclePivot))))
 	{

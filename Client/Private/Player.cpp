@@ -30,7 +30,7 @@ HRESULT CPlayer::Init(void* pArg)
 	m_Animation.bSkipInterpolation = false;
 	m_pTransformCom->Set_Scale(_vec3(4.f));
 	Place_PartModels();
-	m_pTransformCom->Set_Speed(5);
+	m_pTransformCom->Set_Speed(1);
 	m_pCameraTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
 	Safe_AddRef(m_pCameraTransform);
 	m_SwordSkill[0] = Anim_RA_9100_Ambush; // x자로 공격하기
@@ -885,7 +885,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 			m_Animation.iAnimIndex = Anim_Stun_start;
 			m_Animation.fDurationRatio = 0.4f;
 			m_Animation.fAnimSpeedRatio = 2.f;
-			m_Animation.fStartAimPos = 18.f;
+			m_Animation.fStartAnimPos = 18.f;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}
@@ -2797,7 +2797,7 @@ void CPlayer::Init_State()
 		m_Animation.bRestartAnimation = false;
 		m_Animation.bSkipInterpolation = false;
 		m_Animation.fDurationRatio = 1.f;
-		m_Animation.fStartAimPos = 0.f;
+		m_Animation.fStartAnimPos = 0.f;
 		m_iSuperArmor = 0;
 		m_Animation.fAnimSpeedRatio = 2.f;
 		if (m_pGameInstance->Get_TimeRatio() < 1.f)
@@ -3024,7 +3024,7 @@ void CPlayer::Init_State()
 			m_Animation.iAnimIndex = Anim_Stun_start;
 			m_Animation.fDurationRatio = 0.4f;
 			m_Animation.fAnimSpeedRatio = 2.f;
-			m_Animation.fStartAimPos = 18.f;
+			m_Animation.fStartAnimPos = 18.f;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}

@@ -328,7 +328,7 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigg
 	}
 
 	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop,
-		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio, m_AnimDesc.fStartAimPos);
+		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio, m_AnimDesc.fStartAnimPos);
 
 
 	vector<_mat> CombinedBones;
@@ -492,9 +492,9 @@ void CRealtimeVTFModel::Set_Animation(ANIM_DESC Animation_Desc)
 			Animation_Desc.iAnimIndex = m_iNumAnimations - 1;
 	}
 
-	while (Animation_Desc.fStartAimPos >= m_Animations[Animation_Desc.iAnimIndex]->Get_Duration())
+	while (Animation_Desc.fStartAnimPos >= m_Animations[Animation_Desc.iAnimIndex]->Get_Duration())
 	{
-		Animation_Desc.fStartAimPos -= m_Animations[Animation_Desc.iAnimIndex]->Get_Duration();
+		Animation_Desc.fStartAnimPos -= m_Animations[Animation_Desc.iAnimIndex]->Get_Duration();
 	}
 
 	m_AnimDesc = Animation_Desc;
