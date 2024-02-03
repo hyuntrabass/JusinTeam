@@ -35,7 +35,7 @@ HRESULT CArrow::Init(void* pArg)
 		EffectInfo EffectInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"CommonArrowParti");
 		EffectInfo.pMatrix = &m_ParticleMatrix;
 		EffectInfo.isFollow = true;
-		m_pParticle = CEffect_Manager::Get_Instance()->Clone_Effect(&EffectInfo);
+		m_pParticle = CEffect_Manager::Get_Instance()->Clone_Effect(EffectInfo);
 	}
 	else
 	{
