@@ -747,12 +747,14 @@
     <ClInclude Include="..\Public\Tutorial.h">
       <Filter>02.GameObjects\00.UI\99.tuto</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Tentacle.h" />
     <ClInclude Include="..\Public\SkillBook.h">
       <Filter>02.GameObjects\00.UI\GameUI\SkillBook</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\SkillDesc.h">
       <Filter>02.GameObjects\00.UI\GameUI\SkillBook</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Tentacle.h">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss\Tentacle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1120,12 +1122,14 @@
     <ClCompile Include="..\Private\Tutorial.cpp">
       <Filter>02.GameObjects\00.UI\99.tuto</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Tentacle.cpp" />
     <ClCompile Include="..\Private\SkillBook.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\SkillBook</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\SkillDesc.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\SkillBook</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Tentacle.cpp">
+      <Filter>02.GameObjects\08. Boss\Groar_Boss\Tentacle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

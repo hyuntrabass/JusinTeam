@@ -33,9 +33,9 @@ HRESULT CMissile::Init(void* pArg)
 	}
 
 	m_pGroarModel = dynamic_cast<CModel*>
-		(m_pGameInstance->Get_Component(LEVEL_GAMEPLAY, TEXT("Layer_Groar_Boss"), TEXT("Com_Boss_Model")));
+		(m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_Groar_Boss"), TEXT("Com_Boss_Model")));
 
-	m_pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_GAMEPLAY);
+	m_pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_VILLAGE);
 
 	if (pArg)
 	{
@@ -176,7 +176,7 @@ void CMissile::Tick(_float fTimeDelta)
 			_mat vLeftHandMatrix = *(m_pGroarModel->Get_BoneMatrix("Bip002-L-Finger2")) * m_pGroarTransform->Get_World_Matrix();
 			m_pTransformCom->Set_State(State::Pos, vLeftHandMatrix.Position());
 
-			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 			_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
 			m_pTransformCom->LookAt(vPlayerPos);
 
@@ -221,7 +221,7 @@ void CMissile::Tick(_float fTimeDelta)
 			_mat vRightHandMatrix = *(m_pGroarModel->Get_BoneMatrix("Bip002-R-Finger2")) * m_pGroarTransform->Get_World_Matrix();
 			m_pTransformCom->Set_State(State::Pos, vRightHandMatrix.Position());
 
-			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 			_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
 			m_pTransformCom->LookAt(vPlayerPos);
 		}
@@ -268,7 +268,7 @@ void CMissile::Tick(_float fTimeDelta)
 		}
 		else
 		{
-			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 			_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
 			m_pTransformCom->LookAt(vPlayerPos);
 

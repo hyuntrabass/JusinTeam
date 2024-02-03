@@ -34,7 +34,7 @@ HRESULT CMonster::Init(void* pArg)
 
 void CMonster::Tick(_float fTimeDelta)
 {
-	if (m_iHP <= 0)
+	if (m_iHP <= 0 || m_fDeadTime > 0.01f)
 	{
 		m_pGameInstance->Delete_CollisionObject(this);
 

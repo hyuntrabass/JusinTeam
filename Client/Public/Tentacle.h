@@ -27,6 +27,9 @@ private:
 	class CEffect_Dummy* m_pFrameEffect = { nullptr };
 	class CEffect_Dummy* m_pBaseEffect = { nullptr };
 
+private:
+	_float m_fTime = {};
+
 public:
 	static CTentacle* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;

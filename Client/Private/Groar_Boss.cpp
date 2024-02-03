@@ -58,11 +58,10 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_C))
 	{
-		//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Tentacle"), TEXT("Prototype_GameObject_Tentacle"))))
-		//{
-		//	
-		//}
-		m_pTransformCom->Get_Controller()->
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Tentacle"), TEXT("Prototype_GameObject_Tentacle"))))
+		{
+
+		}
 	}
 
 	Init_State(fTimeDelta);
@@ -402,6 +401,7 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 
 			m_bCreateMissile = false;
 			m_bCreateSpider = false;
+			m_bCreateTentacle = false;
 
 			m_bAttacked1 = false;
 			m_bAttacked2 = false;
@@ -799,7 +799,12 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 			break;
 
-		case MON_GROAR_ASGARD_ATTACK06:
+		case MON_GROAR_ASGARD_ATTACK06: // ÃË¼ö
+
+			if (m_pBossModelCom->Get_CurrentAnimPos() >= 48.f && !m_bCreateTentacle)
+			{
+				m_bCreateTentacle = true;
+			}
 
 			break;
 
@@ -832,7 +837,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			for (size_t i = 0; i < 6; i++)
 			{
 				CMissile::MISSILE_TYPE eType = CMissile::SIX_MISSILE;
-				m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_Missile"), &eType);
+				m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_Missile"), &eType);
 			}
 
 			m_bCreateMissile = true;
@@ -875,7 +880,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 		{
 			for (size_t i = 0; i < 3; i++)
 			{
-				m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Spider"), TEXT("Prototype_GameObject_Spider"));
+				m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Spider"), TEXT("Prototype_GameObject_Spider"));
 			}
 
 			m_bCreateSpider = true;

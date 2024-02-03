@@ -35,6 +35,7 @@ HRESULT CTentacle::Init(void* pArg)
 	m_Animation.iAnimIndex = 0;
 	m_Animation.isLoop = true;
 	m_Animation.fAnimSpeedRatio = 3.f;
+	m_Animation.fStartAimPos = 70.f; // 65 end
 
 	_vec4 vPlayerPos = __super::Compute_PlayerPos();
 	m_pTransformCom->Set_Position(_vec3(vPlayerPos));
@@ -54,6 +55,19 @@ HRESULT CTentacle::Init(void* pArg)
 
 void CTentacle::Tick(_float fTimeDelta)
 {
+	m_fTime += fTimeDelta;
+
+	if (m_fTime >= 1.5f)
+	{
+		if (m_pBaseEffect && m_pFrameEffect)
+		{
+			Safe_Release(m_pFrameEffect);
+			Safe_Release(m_pBaseEffect);
+		}
+
+
+	}
+
 	if (m_pFrameEffect)
 	{
 		m_pFrameEffect->Tick(fTimeDelta);

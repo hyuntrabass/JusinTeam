@@ -168,6 +168,7 @@ private:
 
 private:
 	_bool m_bCreateSpider = { false };
+	_bool m_bCreateTentacle = { false };
 
 private:
 	_bool m_bAttack_Selected[ATTACK_END] = { false };

@@ -55,7 +55,7 @@ HRESULT CSpider::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
-	CTransform* pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_GAMEPLAY);
+	CTransform* pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_VILLAGE);
 	_vec4 vGroarPos = pGroarTransform->Get_State(State::Pos);
 	_vec4 vGroarLook = pGroarTransform->Get_State(State::Look).Get_Normalized();
 
@@ -174,7 +174,7 @@ void CSpider::Set_Damage(_int iDamage, _uint iDamageType)
 
 void CSpider::Init_State(_float fTimeDelta)
 {
-	CTransform* pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_GAMEPLAY);
+	CTransform* pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_VILLAGE);
 	_vec4 vGroarPos = pGroarTransform->Get_State(State::Pos);
 
 	if (m_pTransformCom->Get_State(State::Pos).y < vGroarPos.y && m_iHP > 0)
@@ -299,7 +299,7 @@ void CSpider::Tick_State(_float fTimeDelta)
 			m_fIdleTime = 0.f;
 		}
 
-		_float fDistance = __super::Compute_ModelTestDistance();
+		_float fDistance = __super::Compute_PlayerDistance();
 		if (fDistance <= m_fChaseRange)
 		{
 			m_eCurState = STATE_CHASE;
@@ -320,8 +320,8 @@ void CSpider::Tick_State(_float fTimeDelta)
 
 	case Client::CSpider::STATE_CHASE:
 	{
-		_vec4 vPlayerPos = __super::Compute_ModelTestPos();
-		_float fDistance = __super::Compute_ModelTestDistance();
+		_vec4 vPlayerPos = __super::Compute_PlayerPos();
+		_float fDistance = __super::Compute_PlayerDistance();
 		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 		vDir.y = 0.f;
 
