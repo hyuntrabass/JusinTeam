@@ -72,6 +72,9 @@ void CTentacle::Tick(_float fTimeDelta)
 			Safe_Release(m_pFrameEffect);
 			Safe_Release(m_pBaseEffect);
 
+			_uint iDamage = m_iSmallDamage - rand() % 15;
+			m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
+
 			int a = 0;
 		}
 

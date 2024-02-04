@@ -41,6 +41,9 @@ private:
 	//UI
 	HRESULT Ready_UI();
 
+private:
+	HRESULT Ready_Test(); // Test
+
 public:
 	static CLevel_Village* Create(_dev pDevice, _context pContext);
 	virtual void Free() override;

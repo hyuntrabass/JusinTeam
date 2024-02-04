@@ -65,15 +65,18 @@ private:
 	_uint m_iRoamingPattern = {};
 	_uint m_iAttackPattern = {};
 	_bool m_bSelectAttackPattern = { false };
-	CHPMonster* m_HpBar{ nullptr };
 
 private:
+	_bool m_bAttacking = { false };
+
 	_bool m_bAttacked = { false };
 	_bool m_bAttacked2 = { false };
 
 	_bool m_bDamaged = { false };
 	_bool m_bStun = { false };
 
+private:
+	CHPMonster* m_HpBar{ nullptr };
 
 private:
 	static const _float m_fChaseRange;
