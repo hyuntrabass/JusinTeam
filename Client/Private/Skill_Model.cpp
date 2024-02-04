@@ -26,7 +26,7 @@ HRESULT CSkill_Model::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(0.f,50.f,0.f,1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(0.f,-100.f,0.f,1.f));
 
 	m_Animation.iAnimIndex = 0;
 	m_Animation.isLoop = true;
@@ -37,6 +37,11 @@ HRESULT CSkill_Model::Init(void* pArg)
 
 void CSkill_Model::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Get_CameraState() != CS_SKILLBOOK)
+	{
+		return;
+	}
+
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD8))
 	{
 		m_Animation.iAnimIndex = ++aq;
@@ -61,6 +66,10 @@ void CSkill_Model::Tick(_float fTimeDelta)
 
 void CSkill_Model::Late_Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Get_CameraState() != CS_SKILLBOOK)
+	{
+		return;
+	}
 
 	m_pModelCom->Play_Animation(fTimeDelta);
 
@@ -277,10 +286,6 @@ void CSkill_Model::Create_Arrow(SKILLMODEL_ANIM Skill)
 	world = offet * bone * world;
 	Arrow_Type type{};
 
-
-
-
-
 	switch (Skill)
 	{
 	case BOW1:
@@ -365,13 +370,13 @@ void CSkill_Model::Arrow_Rain()
 		}
 		random *= 0.05f;
 		_float  random2 = (_float)(rand() % 51);
-		int randommo = rand() % 2;
+		_int randommo = rand() % 2;
 		if (randommo == 0)
 		{
 			random2 *= -1;
 		}
 		random2 *= 0.05f;
-		Type.vPos = m_pTransformCom->Get_State(State::Pos) + m_vArrowLook * 5.f + _vec4(random, 10.f, random2, 0.f)/* + m_pTransformCom->Get_State(State::Right) * 4.f*/;
+		Type.vPos = m_pTransformCom->Get_State(State::Pos) + m_vArrowLook * 7.f + _vec4(random, 10.f, random2, 0.f)/* + m_pTransformCom->Get_State(State::Right) * 4.f*/;
 		Type.vLook = _vec4(0.01f, -1.f, 0.f, 0.f);
 
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &Type)))

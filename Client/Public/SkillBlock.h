@@ -30,6 +30,9 @@ private:
 	_bool			m_isPrototype{ false };
 	CSkillSlot*		m_pSlots[WP_END][SKILL_END];
 
+public:
+	_bool	Use_Skill(WEAPON_TYPE eType, SKILLSLOT eSlot, _int* iIndex);
+
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

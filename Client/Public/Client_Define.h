@@ -304,7 +304,7 @@ namespace Client
 		_uint iSkillIdx;
 		_bool isSkillIn;
 		wstring strTexture;
-
+		_uint iModelSkillIndex;
 	}SKILLINFO;
 
 #pragma region Shader Passes
@@ -385,6 +385,7 @@ namespace Client
 		VTPass_NineSlice,
 		VTPass_FadeVertical,
 		VTPass_FadeHorizontal,
+		VTPass_LerpColorNAlpha,
 		VTPass_End
 	};
 

@@ -31,7 +31,6 @@ HRESULT CXBeam::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//	m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_XBeam"), 시작 위치);
 
 	_vec3 StartPos = *reinterpret_cast<_vec3*>(pArg);
 

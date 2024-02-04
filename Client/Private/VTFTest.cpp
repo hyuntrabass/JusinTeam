@@ -25,7 +25,7 @@ HRESULT CVTFTest::Init(void* pArg)
     m_Animation.iAnimIndex = 1;
     m_Animation.fAnimSpeedRatio = 1.5f;
     m_Animation.isLoop = true;
-    m_Animation.fStartAimPos = 128.11234f;
+    m_Animation.fStartAnimPos = 128.11234f;
 
     return S_OK;
 }
@@ -63,7 +63,7 @@ void CVTFTest::Tick(_float fTimeDelta)
         }
     }
     m_pModelCom->Set_Animation(m_Animation);
-    m_Animation.fStartAimPos = 0.f;
+    m_Animation.fStartAnimPos = 0.f;
 }
 
 void CVTFTest::Late_Tick(_float fTimeDelta)

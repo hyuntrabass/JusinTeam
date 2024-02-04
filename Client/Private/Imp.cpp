@@ -164,7 +164,13 @@ void CImp::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CImp::STATE_CHASE:
-			m_Animation.iAnimIndex = RUN;
+		{
+			_float fDistance = __super::Compute_PlayerDistance();
+			if (fDistance >= m_fAttackRange)
+			{
+				m_Animation.iAnimIndex = RUN;
+			}
+
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 4.f;
 
@@ -177,12 +183,22 @@ void CImp::Init_State(_float fTimeDelta)
 			{
 				m_pTransformCom->Set_Speed(4.f);
 			}
+		}
 
 			break;
 
 		case Client::CImp::STATE_ATTACK:
+		{
 			m_bDamaged = false;
 			m_Animation.fAnimSpeedRatio = 3.f;
+			m_bAttacking = true;
+
+			_vec4 vPlayerPos = __super::Compute_PlayerPos();
+			_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
+			vDir.y = 0.f;
+			m_pTransformCom->LookAt_Dir(vDir);
+		}
+
 			break;
 
 		case Client::CImp::STATE_HIT:
@@ -215,26 +231,47 @@ void CImp::Init_State(_float fTimeDelta)
 
 void CImp::Tick_State(_float fTimeDelta)
 {
+	_vec4 vPlayerPos = __super::Compute_PlayerPos();
+	_float fDistance = __super::Compute_PlayerDistance();
+
 	switch (m_eCurState)
 	{
 	case Client::CImp::STATE_IDLE:
-
 	{
 		m_fIdleTime += fTimeDelta;
 
-		if (m_fIdleTime >= 2.f)
+		if (m_bAttacking == true)
 		{
-			m_eCurState = STATE_FLY;
-			m_fIdleTime = 0.f;
+			if (m_fIdleTime >= 1.f)
+			{
+				if (fDistance >= m_fAttackRange)
+				{
+					m_eCurState = STATE_CHASE;
+				}
+				else
+				{
+					m_eCurState = STATE_ATTACK;
+				}
+
+				m_fIdleTime = 0.f;
+			}
+
+		}
+		else
+		{
+			if (m_fIdleTime >= 2.f)
+			{
+				m_eCurState = STATE_FLY;
+				m_fIdleTime = 0.f;
+			}
+
 		}
 
-		//_float fDistance = __super::Compute_PlayerDistance();
 		//if (fDistance <= m_fChaseRange)
 		//{
 		//	m_eCurState = STATE_CHASE;
 		//}
 	}
-
 		break;
 
 	case Client::CImp::STATE_FLY:
@@ -249,18 +286,16 @@ void CImp::Tick_State(_float fTimeDelta)
 
 	case Client::CImp::STATE_CHASE:
 	{
-		_vec4 vPlayerPos = __super::Compute_PlayerPos();
-		_float fDistance = __super::Compute_PlayerDistance();
 		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 		vDir.y = 0.f;
-
-		m_pTransformCom->LookAt_Dir(vDir);
-		m_pTransformCom->Go_Straight(fTimeDelta);
 
 		if (fDistance > m_fChaseRange && !m_bDamaged)
 		{
 			m_eCurState = STATE_IDLE;
 			m_bSlow = false;
+			m_bAttacking = false;
+
+			break;
 		}
 
 		if (fDistance <= m_fAttackRange)
@@ -269,7 +304,11 @@ void CImp::Tick_State(_float fTimeDelta)
 			m_Animation.isLoop = true;
 			m_bSlow = false;
 		}
-
+		else
+		{
+			m_pTransformCom->LookAt_Dir(vDir);
+			m_pTransformCom->Go_Straight(fTimeDelta);
+		}
 	}
 		break;
 
@@ -337,7 +376,7 @@ void CImp::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
 			m_pModelCom->IsAnimationFinished(ATTACK04))
 		{
-			m_eCurState = STATE_CHASE;
+			m_eCurState = STATE_IDLE;
 		}
 
 		break;

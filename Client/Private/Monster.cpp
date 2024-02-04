@@ -34,14 +34,23 @@ HRESULT CMonster::Init(void* pArg)
 
 void CMonster::Tick(_float fTimeDelta)
 {
-	//if (m_iHP <= 0)
-	//{
-	//	m_pGameInstance->Delete_CollisionObject(this);
+	if (m_iDamageAcc >= m_iDamageAccMax || m_iDamageAcc == 0)
+	{
+		m_bHit = true;
+		m_iDamageAcc = 0;
+	}
+	else
+	{
+		m_bHit = false;
+	}
 
-	//	Safe_Release(m_pTransformCom);
-	//	Safe_Release(m_pBodyColliderCom);
-
-	//}
+	if (m_iHP <= 0 || m_fDeadTime > 0.01f)
+	{
+		m_pGameInstance->Delete_CollisionObject(this);
+		m_pTransformCom->Delete_Controller();
+		//Safe_Release(m_pTransformCom);
+		//Safe_Release(m_pBodyColliderCom);
+	}
 
 	if (m_fDeadTime >= 2.f)
 	{
@@ -147,9 +156,7 @@ HRESULT CMonster::Render()
 _vec4 CMonster::Compute_PlayerPos()
 {
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-
-	return vPlayerPos;
+	return pPlayerTransform->Get_State(State::Pos);
 }
 
 _float CMonster::Compute_PlayerDistance()

@@ -32,6 +32,7 @@ private:
 
 private:
 	HRESULT Ready_Village_Monster();
+	HRESULT Ready_Groar_Boss();
 
 private:
 	HRESULT Ready_NPC();
@@ -39,6 +40,9 @@ private:
 
 	//UI
 	HRESULT Ready_UI();
+
+private:
+	HRESULT Ready_Test(); // Test
 
 public:
 	static CLevel_Village* Create(_dev pDevice, _context pContext);

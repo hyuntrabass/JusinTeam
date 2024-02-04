@@ -31,7 +31,7 @@ HRESULT CNPCvsMon::Init(void* pArg)
 	random_device rand;
 	_randNum RandomNumber(rand());
 	_randFloat RandomAnimPos(0.f, 1000.f);
-	m_Animation.fStartAimPos = RandomAnimPos(RandomNumber);
+	m_Animation.fStartAnimPos = RandomAnimPos(RandomNumber);
 
 	if (pArg)
 	{
@@ -47,7 +47,7 @@ HRESULT CNPCvsMon::Init(void* pArg)
 void CNPCvsMon::Tick(_float fTimeDelta)
 {
 	m_pModelCom->Set_Animation(m_Animation);
-	m_Animation.fStartAimPos = 0.f;
+	m_Animation.fStartAnimPos = 0.f;
 }
 
 void CNPCvsMon::Late_Tick(_float fTimeDelta)

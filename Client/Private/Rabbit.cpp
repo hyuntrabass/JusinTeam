@@ -57,7 +57,8 @@ HRESULT CRabbit::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
-	m_pTransformCom->Set_Position(_vec3(100.f, 8.f, 108.f));
+	_vec3 vPlayerPos = __super::Compute_PlayerPos();
+	m_pTransformCom->Set_Position(vPlayerPos);
 
 	if (pArg)
 	{
@@ -86,10 +87,9 @@ void CRabbit::Tick(_float fTimeDelta)
 	//Á×À»¶§ ·¹ÀÌ´õ °¨Áö¿¡¼­ Æ®·£½ºÆû »©Áà¾ßÇÔ
 	//CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 
-	if (m_pGameInstance->Key_Down(DIK_R))
+	if (m_pGameInstance->Key_Down(DIK_R, InputChannel::UI))
 	{
-		//Set_Damage(0, AT_Bow_Common);
-		Kill();
+		Set_Damage(0, AT_Bow_Common);
 	}
 
 	Init_State(fTimeDelta);
@@ -221,13 +221,28 @@ void CRabbit::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CRabbit::STATE_CHASE:
-			m_Animation.iAnimIndex = RUN;
+		{
+			_float fDistance = __super::Compute_PlayerDistance();
+			if (fDistance >= m_fAttackRange)
+			{
+				m_Animation.iAnimIndex = RUN;
+			}
+
 			m_Animation.isLoop = true;
 			m_pTransformCom->Set_Speed(4.f);
+		}
 			break;
 
 		case Client::CRabbit::STATE_ATTACK:
+		{
 			m_bDamaged = false;
+			m_bAttacking = true;
+
+			_vec4 vPlayerPos = __super::Compute_PlayerPos();
+			_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
+			vDir.y = 0.f;
+			m_pTransformCom->LookAt_Dir(vDir);
+		}
 			break;
 
 		case Client::CRabbit::STATE_DIE:
@@ -242,24 +257,46 @@ void CRabbit::Init_State(_float fTimeDelta)
 
 void CRabbit::Tick_State(_float fTimeDelta)
 {
+	_vec4 vPlayerPos = __super::Compute_PlayerPos();
+	_float fDistance = __super::Compute_PlayerDistance();
+
 	switch (m_eCurState)
 	{
 	case Client::CRabbit::STATE_IDLE:
 	{
 		m_fIdleTime += fTimeDelta;
 
-		if (m_fIdleTime >= 2.f)
+		if (m_bAttacking == true)
 		{
-			m_eCurState = STATE_ROAM;
-			m_fIdleTime = 0.f;
+			if (m_fIdleTime >= 1.f)
+			{
+				if (fDistance >= m_fAttackRange)
+				{
+					m_eCurState = STATE_CHASE;
+				}
+				else
+				{
+					m_eCurState = STATE_ATTACK;
+				}
+
+				m_fIdleTime = 0.f;
+			}
+
+		}
+		else
+		{
+			if (m_fIdleTime >= 2.f)
+			{
+				m_eCurState = STATE_ROAM;
+				m_fIdleTime = 0.f;
+			}
+
 		}
 
-		//_float fDistance = __super::Compute_PlayerDistance();
 		//if (fDistance <= m_fChaseRange)
 		//{
 		//	m_eCurState = STATE_CHASE;
 		//}
-
 	}
 		break;
 
@@ -279,17 +316,15 @@ void CRabbit::Tick_State(_float fTimeDelta)
 
 	case Client::CRabbit::STATE_CHASE:
 	{
-		_vec4 vPlayerPos = __super::Compute_PlayerPos();
-		_float fDistance = __super::Compute_PlayerDistance();
 		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 		vDir.y = 0.f;
-
-		m_pTransformCom->LookAt_Dir(vDir);
-		m_pTransformCom->Go_Straight(fTimeDelta);
 
 		if (fDistance > m_fChaseRange && !m_bDamaged)
 		{
 			m_eCurState = STATE_IDLE;
+			m_bAttacking = false;
+
+			break;
 		}
 
 		if (fDistance <= m_fAttackRange)
@@ -297,7 +332,11 @@ void CRabbit::Tick_State(_float fTimeDelta)
 			m_eCurState = STATE_ATTACK;
 			m_Animation.isLoop = true;
 		}
-
+		else
+		{
+			m_pTransformCom->LookAt_Dir(vDir);
+			m_pTransformCom->Go_Straight(fTimeDelta);
+		}
 	}
 		break;
 
@@ -355,7 +394,7 @@ void CRabbit::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02))
 		{
-			m_eCurState = STATE_CHASE;
+			m_eCurState = STATE_IDLE;
 		}
 
 		break;

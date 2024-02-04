@@ -25,28 +25,29 @@ public:
 	virtual HRESULT Render() override;
 
 public:
+	void Arrow_Rain();
 	void After_BowAtt();
 	void Create_Arrow(SKILLMODEL_ANIM skill);
-	void Arrow_Rain();
 
 public:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 private:
+	CModel* m_pModelCom = { nullptr };
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
-	CModel* m_pModelCom = { nullptr };
 	CModel* m_pWeapon_ModelCom = { nullptr };
 
 private:
-	SKILLMODEL_ANIM m_eCurAnimState{ SKILL_END };
-	ANIM_DESC m_Animation{};
-	_bool m_ReadyArrow{};
-	_bool m_bArrowRain_Start{};
-	_uint m_iArrowRain = {};
-	_vec4 m_vArrowLook{};
 	_int aq{-1};
+	_bool m_ReadyArrow{};
+	_vec4 m_vArrowLook{};
+	ANIM_DESC m_Animation{};
+	_uint m_iArrowRain = {};
+	_bool m_bArrowRain_Start{};
+	SKILLMODEL_ANIM m_eCurAnimState{ SKILL_END };
+
 public:
 	void Change_AnimState(SKILLMODEL_ANIM eAnim);// { m_eCurAnimState = eAnim; }
 

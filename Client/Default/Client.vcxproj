@@ -182,6 +182,7 @@
     <ClInclude Include="..\Public\FadeBox.h" />
     <ClInclude Include="..\Public\Goat.h" />
     <ClInclude Include="..\Public\Groar_Boss.h" />
+    <ClInclude Include="..\Public\HitEffect.h" />
     <ClInclude Include="..\Public\HpBar.h" />
     <ClInclude Include="..\Public\HpMonster.h" />
     <ClInclude Include="..\Public\Inven.h" />
@@ -314,6 +315,7 @@
     <ClCompile Include="..\Private\FadeBox.cpp" />
     <ClCompile Include="..\Private\Goat.cpp" />
     <ClCompile Include="..\Private\Groar_Boss.cpp" />
+    <ClCompile Include="..\Private\HitEffect.cpp" />
     <ClCompile Include="..\Private\HPBar.cpp" />
     <ClCompile Include="..\Private\HPMonster.cpp" />
     <ClCompile Include="..\Private\Inven.cpp" />
