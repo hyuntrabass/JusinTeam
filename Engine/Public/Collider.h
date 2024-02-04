@@ -43,7 +43,7 @@ public:
 	_vec3 Get_Extents();	
 	_vec3 Get_ColliderPos();
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 public:
 	virtual HRESULT Render() override;
 #endif // _DEBUG
@@ -54,7 +54,7 @@ private:
 	void* m_pBounder_Origin{ nullptr };
 	_bool m_isCollided{};
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 private:
 	PrimitiveBatch<VertexPositionColor>* m_pBatch{ nullptr };
 	BasicEffect* m_pEffect{ nullptr };

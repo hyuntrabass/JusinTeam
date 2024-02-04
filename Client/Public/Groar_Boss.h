@@ -170,6 +170,10 @@ private:
 	_bool m_bCreateSpider = { false };
 
 private:
+	_bool m_bTentacleOn = { false };
+	_float m_fTentacleTime = {};
+
+private:
 	_bool m_bAttack_Selected[ATTACK_END] = { false };
 	_bool m_bFloor_Attack_Selected[FLOOR_ATTACK_END] = { false };
 

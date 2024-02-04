@@ -33,9 +33,9 @@ HRESULT CMissile::Init(void* pArg)
 	}
 
 	m_pGroarModel = dynamic_cast<CModel*>
-		(m_pGameInstance->Get_Component(LEVEL_GAMEPLAY, TEXT("Layer_Groar_Boss"), TEXT("Com_Boss_Model")));
+		(m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_Groar_Boss"), TEXT("Com_Boss_Model")));
 
-	m_pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_GAMEPLAY);
+	m_pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_VILLAGE);
 
 	if (pArg)
 	{
@@ -131,7 +131,7 @@ HRESULT CMissile::Init(void* pArg)
 	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Init");
 	Info.pMatrix = &m_EffectMatrix;
 	Info.isFollow = true;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 	return S_OK;
 }
@@ -162,7 +162,7 @@ void CMissile::Tick(_float fTimeDelta)
 			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Smoke");
 			Info.pMatrix = &m_EffectMatrix;
 			Info.isFollow = true;
-			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
+			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 		}
 
 
@@ -176,7 +176,7 @@ void CMissile::Tick(_float fTimeDelta)
 			_mat vLeftHandMatrix = *(m_pGroarModel->Get_BoneMatrix("Bip002-L-Finger2")) * m_pGroarTransform->Get_World_Matrix();
 			m_pTransformCom->Set_State(State::Pos, vLeftHandMatrix.Position());
 
-			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 			_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
 			m_pTransformCom->LookAt(vPlayerPos);
 
@@ -207,7 +207,7 @@ void CMissile::Tick(_float fTimeDelta)
 			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Smoke");
 			Info.pMatrix = &m_EffectMatrix;
 			Info.isFollow = true;
-			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
+			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 		}
 
 
@@ -221,7 +221,7 @@ void CMissile::Tick(_float fTimeDelta)
 			_mat vRightHandMatrix = *(m_pGroarModel->Get_BoneMatrix("Bip002-R-Finger2")) * m_pGroarTransform->Get_World_Matrix();
 			m_pTransformCom->Set_State(State::Pos, vRightHandMatrix.Position());
 
-			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 			_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
 			m_pTransformCom->LookAt(vPlayerPos);
 		}
@@ -248,7 +248,7 @@ void CMissile::Tick(_float fTimeDelta)
 			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Smoke");
 			Info.pMatrix = &m_EffectMatrix;
 			Info.isFollow = true;
-			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
+			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
 			m_fEffectTimer = 3.f;
 		}
@@ -268,7 +268,7 @@ void CMissile::Tick(_float fTimeDelta)
 		}
 		else
 		{
-			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_ModelTest", LEVEL_GAMEPLAY);
+			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 			_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
 			m_pTransformCom->LookAt(vPlayerPos);
 
@@ -315,7 +315,7 @@ void CMissile::Tick(_float fTimeDelta)
 	{
 		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Explosion");
 		Info.pMatrix = &m_EffectMatrix;
-		CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 	}
 
 	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
@@ -344,7 +344,7 @@ void CMissile::Late_Tick(_float fTimeDelta)
 		m_pEffect_Ball->Late_Tick(fTimeDelta);
 	}
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
 #endif
 }
@@ -400,11 +400,11 @@ HRESULT CMissile::Add_Collider()
 {
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
-	CollDesc.vCenter = _vec3(0.f, CollDesc.fRadius, 0.f);
+	CollDesc.vCenter = _vec3(0.f);
 	CollDesc.fRadius = 0.2f;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-		TEXT("Com_Collider_OBB"), (CComponent**)&m_pColliderCom, &CollDesc)))
+		TEXT("Com_Collider_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -430,7 +430,7 @@ HRESULT CMissile::Add_Components()
 	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball");
 	Info.pMatrix = &m_EffectMatrix;
 	Info.isFollow = true;
-	m_pEffect_Ball = CEffect_Manager::Get_Instance()->Clone_Effect(&Info);
+	m_pEffect_Ball = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 	
 	return S_OK;
 }

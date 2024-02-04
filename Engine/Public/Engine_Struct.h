@@ -145,7 +145,7 @@ namespace Engine
 		float fInterpolationTime{ 0.2f };
 		float fDurationRatio{ 1.f };
 		bool bRestartAnimation{ false };
-		float fStartAimPos{};
+		float fStartAnimPos{};
 	};
 
 

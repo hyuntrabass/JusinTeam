@@ -1,13 +1,9 @@
 1. Static Only   2. Anim Only   3. All
-2
-Animation Models : Start Converting...
-1. Normally Anim Model	2. For VTF Model 3. Part Model
 1
-Converting... GroarChoksu.fbx
+Static Models : Start Converting...
+Converting... Scarecrow.fbx
 Read File Succssefully
-Animation name list: 
-Mon_Groar.ao|Mon_Groar.ao|Mon_Groar.ao|Mon_Groar_Asgard_Attack05
-Animation Models : Convert Success!
+Static Models : Convert Success!
 
-1 Animation Models
+1 Static Models
 are Successfully Converted as hyuntramesh!!

@@ -435,7 +435,7 @@ HRESULT CRenderer::Init_Prototype()
 	//	return E_FAIL;
 	//}
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Diffuse"), _float2(50.f, 50.f), _float2(100.f, 100.f))))
 	{
 		return E_FAIL;
@@ -698,7 +698,7 @@ HRESULT CRenderer::Draw_RenderGroup()
 		return E_FAIL;
 	}
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	if (not m_pGameInstance->IsSkipDebugRendering())
 	{
 		if (FAILED(Render_Debug()))
@@ -713,7 +713,7 @@ HRESULT CRenderer::Draw_RenderGroup()
 	return S_OK;
 }
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 HRESULT CRenderer::Add_DebugComponent(CComponent* pDebugComponent)
 {
 	if (m_pGameInstance->IsSkipDebugRendering())
@@ -1751,7 +1751,7 @@ HRESULT CRenderer::Render_UI()
 	return S_OK;
 }
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 HRESULT CRenderer::Render_Debug()
 {
 	for (auto& pComponent : m_DebugComponents)
@@ -2123,7 +2123,7 @@ void CRenderer::Free()
 	}
 
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	for (auto& pComponent : m_DebugComponents)
 	{
 		Safe_Release(pComponent);

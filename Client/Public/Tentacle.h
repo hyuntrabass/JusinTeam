@@ -24,7 +24,11 @@ public:
 	virtual void Update_Collider() override;
 
 private:
-	static _float m_fOffset;
+	class CEffect_Dummy* m_pFrameEffect = { nullptr };
+	class CEffect_Dummy* m_pBaseEffect = { nullptr };
+
+private:
+	_float m_fTime = {};
 
 public:
 	static CTentacle* Create(_dev pDevice, _context pContext);

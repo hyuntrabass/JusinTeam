@@ -25,6 +25,17 @@ HRESULT CSkillDesc::Init_Prototype()
 HRESULT CSkillDesc::Init(void* pArg)
 {
 	m_tSkillInfo = ((SKILLBOOK_DESC*)pArg)->tSkillInfo;
+
+	m_fSizeX = 300.f;
+	m_fSizeY = 90.f;
+
+	m_fX = ((SKILLBOOK_DESC*)pArg)->vPosition.x;
+	m_fY = ((SKILLBOOK_DESC*)pArg)->vPosition.y;
+
+	m_fDepth = ((SKILLBOOK_DESC*)pArg)->fDepth;
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+	
+
 	if (FAILED(Set_Type()))
 	{
 		return E_FAIL;
@@ -40,29 +51,14 @@ HRESULT CSkillDesc::Init(void* pArg)
 		return E_FAIL;
 	}
 
-
-	m_fSizeX = 300.f;
-	m_fSizeY = 90.f;
-
-	m_fX = ((SKILLBOOK_DESC*)pArg)->vPosition.x;
-	m_fY = ((SKILLBOOK_DESC*)pArg)->vPosition.y;
-
-	m_fDepth = ((SKILLBOOK_DESC*)pArg)->fDepth;
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
-	
-
 	m_rcRect = {
 		  (LONG)(m_fX - m_fSizeX * 0.5f),
 		  (LONG)(m_fY - m_fSizeY * 0.5f),
 		  (LONG)(m_fX + m_fSizeX * 0.5f),
 		  (LONG)(m_fY + m_fSizeY * 0.5f)
 	};
-
-	if (FAILED(Add_Parts()))
-	{
-		return E_FAIL;
-	}
-
+	Unlock_Skill();
+	m_bSkillIn = true;
 	return S_OK;
 }
 
@@ -81,9 +77,13 @@ void CSkillDesc::Tick(_float fTimeDelta)
 
 	if (CUI_Manager::Get_Instance()->Get_SkillInfo((WEAPON_TYPE)m_tSkillInfo.iSkillType, m_tSkillInfo.iSkillIdx).isSkillIn)
 	{
-		m_bSkillIn = true;
-	}
+		if (!m_bSkillIn)
+		{
+			Unlock_Skill();
+			m_bSkillIn = true;
+		}
 
+	}
 
 	if (m_bSelect)
 	{
@@ -100,7 +100,6 @@ void CSkillDesc::Tick(_float fTimeDelta)
 		{
 			m_fAlpha = 1.f;
 		}
-		//_float fAlpha = Lerp(0.f, 1.f, m_fAlpha);
 		m_pDetail->Set_Alpha(m_fAlpha);
 
 		m_pDetail->Tick(fTimeDelta);
@@ -367,7 +366,7 @@ void CSkillDesc::Free()
 
 	Safe_Release(m_pSelect);
 	Safe_Release(m_pDetail);
-
+	
 	if (!m_isPrototype)
 	{
 		for (size_t i = 0; i < TYPE_END; i++)
@@ -375,6 +374,8 @@ void CSkillDesc::Free()
 			Safe_Release(m_pTextureCom[i]);
 		}
 	}
+
+
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pVIBufferCom);

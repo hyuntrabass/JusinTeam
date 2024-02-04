@@ -3,12 +3,17 @@
 #include "OrthographicObject.h"
 
 BEGIN(Client)
-
+class CSkill;
 class CSkillSlot final : public COrthographicObject
 {
 public:
+	enum SLOTMODE { SCREEN, SKILLBOOK, SLOT_END };
+
 	typedef struct tagSkillSlotDesc
 	{
+		SLOTMODE eSlotMode;
+		_uint iSlotIdx;
+		_float fDepth;
 		_float2 vSize;
 		_float2 vPosition;
 	}SKILLSLOT_DESC;
@@ -31,11 +36,28 @@ private:
 	CTexture* m_pTextureCom{ nullptr };
 
 private:
+	SLOTMODE		m_eSlotMode{ SLOT_END };
+
+	wstring			m_strTexture;
+	_uint			m_iSlotIdx{};
 	_bool			m_isFull{};
 	_float			m_fTime{};
 	_float			m_fCoolTime{};
-	CGameObject*	m_pSkill{ nullptr };
+	CSkill*			m_pSkill{ nullptr };
+	RECT			m_rcRect;
 
+public:
+	const _bool& Is_Full() const { return m_isFull; }
+	HRESULT Set_Skill(SKILLINFO tSkillInfo);
+
+
+	void Delete_Skill();
+	//void Set_FullSlot(CItem* pItem, _int* iNum = nullptr);
+	const CSkill* Get_SkillOject() { return m_pSkill; }
+	SKILLINFO Get_SkillInfo();
+	const RECT& Get_Rect() const { return m_rcRect; }
+	const _vec2& Get_Position()const { return _vec2(m_fX, m_fY); }
+	const _vec2& Get_Size() const { return _vec2(m_fSizeX, m_fSizeY); }
 
 private:
 	HRESULT Add_Components();
