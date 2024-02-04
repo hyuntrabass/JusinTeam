@@ -108,6 +108,8 @@ HRESULT CMissile::Init(void* pArg)
 			break;
 		}
 
+		m_pGameInstance->Play_Sound(TEXT("Sorceress_CreateEffect_02"), 0.3f);
+
 		m_pTransformCom->Set_State(State::Pos, vGroarPos + 6 * vDir);
 		m_pTransformCom->Set_Speed(30.f);
 

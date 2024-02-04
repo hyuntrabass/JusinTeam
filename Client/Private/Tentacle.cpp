@@ -64,8 +64,6 @@ void CTentacle::Tick(_float fTimeDelta)
 		{
 			Safe_Release(m_pFrameEffect);
 			Safe_Release(m_pBaseEffect);
-
-			int a = 0;
 		}
 
 		if (m_pModelCom->Get_CurrentAnimPos() >= 65.f && m_pModelCom->Get_CurrentAnimPos() <= 67.f)
@@ -73,6 +71,27 @@ void CTentacle::Tick(_float fTimeDelta)
 			Kill();
 		}
 
+		if (m_Animation.fStartAnimPos == 70.f)
+		{
+			m_pGameInstance->Play_Sound(TEXT("WD_3130_WideBring_01_SFX_01"));
+		}
+
+		if (m_pModelCom->Get_CurrentAnimPos() >= 85.f && m_pModelCom->Get_CurrentAnimPos() <= 160.f)
+		{
+			if (m_iSoundChannel == -1)
+			{
+				_uint iSoundIndex = rand() % 5 + 1;
+				wstring strSoundTag = TEXT("Whip_Whoosh_Base_A_SFX_0") + to_wstring(iSoundIndex);
+				m_iSoundChannel = m_pGameInstance->Play_Sound(strSoundTag, 0.7f);
+			}
+			else
+			{
+				if (not m_pGameInstance->Get_IsPlayingSound(m_iSoundChannel))
+				{
+					m_iSoundChannel = -1;
+				}
+			}
+		}
 		m_pModelCom->Set_Animation(m_Animation);
 		m_Animation.fStartAnimPos = 0.f;
 

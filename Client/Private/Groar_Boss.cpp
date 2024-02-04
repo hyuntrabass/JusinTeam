@@ -319,7 +319,7 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 					break;
 				}
 
-				m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK06; // 테스트용
+				//m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK08; // 테스트용
 			}
 
 			break;
@@ -599,7 +599,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			{
 				m_pGameInstance->Set_ShakeCam(true);
 
-				if (fDistance <= 4.f)
+				if (fDistance <= 7.5f)
 				{
 					if (!m_bAttacked1)
 					{
@@ -614,7 +614,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			{
 				m_pGameInstance->Set_ShakeCam(true);
 
-				if (fDistance <= 4.f)
+				if (fDistance <= 7.5f)
 				{
 					if (!m_bAttacked2)
 					{
@@ -629,7 +629,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			{
 				m_pGameInstance->Set_ShakeCam(true);
 
-				if (fDistance <= 4.f)
+				if (fDistance <= 7.5f)
 				{
 					if (!m_bAttacked3)
 					{

@@ -482,6 +482,7 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 			{
 				m_TriggerSounds[i].iChannel = -1;
 				m_TriggerSounds[i].fVolume = m_TriggerSounds[i].fInitVolume;
+				m_TriggerSounds[i].IsEnding = false;
 			}
 		}
 		//사운드 제거
@@ -492,11 +493,17 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 				if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iEndAnimIndices[j] &&
 					m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerSounds[i].fEndAnimPoses[j])
 				{
+					m_TriggerSounds[i].IsEnding = true;
+				}
+
+				if (m_TriggerSounds[i].IsEnding)
+				{
 					if (m_pGameInstance->Get_ChannelVolume(m_TriggerSounds[i].iChannel) <= 0.f)
 					{
 						m_pGameInstance->StopSound(m_TriggerSounds[i].iChannel);
 						m_TriggerSounds[i].iChannel = -1;
 						m_TriggerSounds[i].fVolume = m_TriggerSounds[i].fInitVolume;
+						m_TriggerSounds[i].IsEnding = false;
 					}
 					else
 					{

@@ -210,6 +210,7 @@ namespace Engine
 		int iChannel = -1;
 		bool HasPlayed{};
 		float fVolume{};
+		bool IsEnding{};
 	};
 
 	using VTXPOSCOLOR = struct ENGINE_DLL tagVertex_Position_Color
