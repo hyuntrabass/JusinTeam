@@ -74,11 +74,11 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_Village_Monster()))
-	{
-		MSG_BOX("Failed to Ready Monster");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Village_Monster()))
+	//{
+	//	MSG_BOX("Failed to Ready Monster");
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(Ready_Groar_Boss()))
 	{
@@ -95,6 +95,12 @@ HRESULT CLevel_Village::Init()
 	if (FAILED(Ready_NPC_Dummy()))
 	{
 		MSG_BOX("Failed to Ready NPC_Dummy");
+		return E_FAIL;
+	}
+
+	if (FAILED(Ready_Test()))
+	{
+		MSG_BOX("Failed to Ready Test");
 		return E_FAIL;
 	}
 
@@ -743,6 +749,16 @@ HRESULT CLevel_Village::Ready_UI()
 		return E_FAIL;
 	}
 	*/
+
+	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_Test()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Rabbit"), TEXT("Prototype_GameObject_Rabbit"))))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }

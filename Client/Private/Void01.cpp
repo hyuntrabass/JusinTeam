@@ -115,6 +115,15 @@ void CVoid01::Set_Damage(_int iDamage, _uint iDamageType)
 	m_iHP -= iDamage;
 	m_bDamaged = true;
 
+	CHitEffect::HITEFFECT_DESC Desc{};
+	Desc.iDamage = iDamage;
+	Desc.pParentTransform = m_pTransformCom;
+	Desc.vTextPosition = _vec2(0.f, 1.5f);
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
+	{
+		return;
+	}
+
 	m_eCurState = STATE_HIT;
 
 	_vec4 vPlayerPos = __super::Compute_PlayerPos();
@@ -212,6 +221,15 @@ void CVoid01::Tick_State(_float fTimeDelta)
 	switch (m_eCurState)
 	{
 	case Client::CVoid01::STATE_IDLE:
+
+		m_fIdleTime += fTimeDelta;
+
+		if (m_fIdleTime >= 1.f)
+		{
+			m_fIdleTime = 0.f;
+			m_eCurState = STATE_CHASE;
+		}
+
 		break;
 
 	case Client::CVoid01::STATE_CHASE:
@@ -325,7 +343,7 @@ void CVoid01::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
 			m_pModelCom->IsAnimationFinished(ATTACK03))
 		{
-			m_eCurState = STATE_CHASE;
+			m_eCurState = STATE_IDLE;
 		}
 
 		break;

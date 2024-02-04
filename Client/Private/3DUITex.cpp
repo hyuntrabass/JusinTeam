@@ -67,7 +67,7 @@ HRESULT C3DUITex::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
+	if (FAILED(m_pShaderCom->Begin(m_ePass)))
 	{
 		return E_FAIL;
 	}
@@ -78,6 +78,12 @@ HRESULT C3DUITex::Render()
 	}
 
 	return S_OK;
+}
+
+void C3DUITex::Set_Size(_float fSizeX, _float fSizeY)
+{
+	m_fSizeX = fSizeX;
+	m_fSizeY = fSizeY;
 }
 
 HRESULT C3DUITex::Add_Components()
@@ -118,11 +124,26 @@ HRESULT C3DUITex::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	if (m_ePass != VTPass_UI)
 	{
-		return E_FAIL;
-	}
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+		{
+			return E_FAIL;
+		}
+		_vec4 vColor = _vec4(1.f, 0.5f, 0.f, 1.f);
 
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _vec4)))
+		{
+			return E_FAIL;
+		}
+	}
+	else
+	{
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+		{
+			return E_FAIL;
+		}
+	}
 	return S_OK;
 }
 

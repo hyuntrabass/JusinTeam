@@ -140,11 +140,39 @@ HRESULT CMissile::Init(void* pArg)
 
 void CMissile::Tick(_float fTimeDelta)
 {
+	if (m_bParryingOk)
+	{
+		m_pTransformCom->Go_Left(fTimeDelta);
+
+		m_fLifeTime += fTimeDelta;
+		if (m_fLifeTime >= 1.f)
+		{
+			Kill();
+		}
+		return;
+	}
+
+
 	switch (m_eType)
 	{
 	case Client::CMissile::LEFT_THROW:
 	{
-		if (m_pGameInstance->Attack_Player(m_pColliderCom, 10))
+		if (m_pGameInstance->CheckCollision_Parrying(m_pColliderCom))
+		{
+			_uint random = rand() % 2;
+			_float RandFloat{ 1.f };
+			m_fLifeTime = 0.f;
+			if (random == 0)
+			{
+				RandFloat = -1.f;
+			}
+
+			//m_pTransformCom->Rotation(_vec4(0.f, 1.f, 0.f, 0.f), 45.f * RandFloat);
+			
+			m_bParryingOk = true;
+			return;
+		}
+		else if (m_pGameInstance->Attack_Player(m_pColliderCom, 10))
 		{
 			_uint iSoundIndex = rand() % 4 + 1;
 			wstring strSoundTag = TEXT("Hit_Large_Acid_SFX_0") + to_wstring(iSoundIndex);
@@ -189,7 +217,22 @@ void CMissile::Tick(_float fTimeDelta)
 
 	case Client::CMissile::RIGHT_THROW:
 	{
-		if (m_pGameInstance->Attack_Player(m_pColliderCom, 10))
+		if (m_pGameInstance->CheckCollision_Parrying(m_pColliderCom))
+		{
+			_uint random = rand() % 2;
+			_float RandFloat{ 1.f };
+			m_fLifeTime = 0.f;
+			if (random == 0)
+			{
+				RandFloat = -1.f;
+			}
+
+			//m_pTransformCom->Rotation(_vec4(0.f, 1.f, 0.f, 0.f), 45.f * RandFloat);
+
+			m_bParryingOk = true;
+			return;
+		}
+		else if (m_pGameInstance->Attack_Player(m_pColliderCom, 10))
 		{
 			_uint iSoundIndex = rand() % 4 + 1;
 			wstring strSoundTag = TEXT("Hit_Large_Acid_SFX_0") + to_wstring(iSoundIndex);
@@ -232,8 +275,22 @@ void CMissile::Tick(_float fTimeDelta)
 	break;
 
 	case Client::CMissile::SIX_MISSILE:
+		if (m_pGameInstance->CheckCollision_Parrying(m_pColliderCom))
+		{
+			_uint random = rand() % 2;
+			_float RandFloat{ 1.f };
+			m_fLifeTime = 0.f;
+			if (random == 0)
+			{
+				RandFloat = -1.f;
+			}
 
-		if (m_pGameInstance->Attack_Player(m_pColliderCom, 10))
+			//m_pTransformCom->Rotation(_vec4(0.f, 1.f, 0.f, 0.f), 45.f * RandFloat);
+
+			m_bParryingOk = true;
+			return;
+		}
+		else if (m_pGameInstance->Attack_Player(m_pColliderCom, 10))
 		{
 			_uint iSoundIndex = rand() % 4 + 1;
 			wstring strSoundTag = TEXT("Hit_Large_Acid_SFX_0") + to_wstring(iSoundIndex);

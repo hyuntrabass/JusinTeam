@@ -1,6 +1,6 @@
 #pragma once
-#include "Client_Define.h"
 #include "GameObject.h"
+#include "Client_Define.h"
 
 #include "Riding.h"
 #include "NameTag.h"
@@ -291,8 +291,8 @@ public:
 		_int Current_Mp{ 1000 };
 		_int Attack{ 100 };
 		_int Critical{};
-		_int Critical_Dmg{ 150 }; 
-		_int Armor{}; 
+		_int Critical_Dmg{ 150 };
+		_int Armor{};
 		_float Speed{};
 	};
 
@@ -309,126 +309,135 @@ public:
 	virtual HRESULT Render() override;
 
 public:
-	HRESULT Place_PartModels();
 	HRESULT Add_Info();
+	HRESULT Place_PartModels();
 	HRESULT Render_Parts(PART_TYPE Parts, _uint Index);
-	HRESULT Add_Riding();
+
 public:
-	virtual void Set_Damage(_int iDamage, _uint MonAttType = 0) override;
+	void Move(_float fTimeDelta);
+	void Is_Climb(_float fTimeDelta);
+	void Health_Regen(_float fTImeDelta);
 	void Change_Parts(PART_TYPE PartsType, _int ChangeIndex);
 	void Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex);
-	void Move(_float fTimeDelta);
+	virtual void Set_Damage(_int iDamage, _uint MonAttType = 0) override;
 
-
+public:
 	void Front_Ray_Check();
 	_bool Turn_Ray_Check(_bool bRight);
 
-	void Health_Regen(_float fTImeDelta);
-	void Is_Climb(_float fTimeDelta);
-
+public:
+	void Arrow_Rain();
 	void Common_Attack();
 	void Skill1_Attack();
 	void Skill2_Attack();
 	void Skill3_Attack();
 	void Skill4_Attack();
 	void SkillR_Attack();
+	void Return_Attack_IdleForm();
 	void Ready_Skill(Skill_Type Type);
 	void Cam_AttackZoom(_float fZoom);
-	void Return_Attack_IdleForm();
-	void After_CommonAtt(_float fTimeDelta);
-	void After_SwordAtt(_float fTimeDelta);
 	void After_BowAtt(_float fTimeDelta);
+	void After_SwordAtt(_float fTimeDelta);
+	void After_CommonAtt(_float fTimeDelta);
 	void Create_Arrow(ATTACK_TYPE Att_Type);
 	void Check_Att_Collider(ATTACK_TYPE Att_Type);
-	void Arrow_Rain();
 
 public:
-	void Summon_Riding(Riding_Type Type);
 	void Tick_Riding();
+	HRESULT Add_Riding();
+	void Summon_Riding(Riding_Type Type);
+
 public:
 	void Init_State();
 	void Tick_State(_float fTimeDelta);
+	void Update_Trail(_float fTimeDelta);
 
 private:
 	CRiding* m_pRiding{ nullptr };
-	CGameObject* m_pNameTag{ nullptr };
-	CRealtimeVTFModel* m_pModelCom = { nullptr };
-	CTransform* m_pCameraTransform{ nullptr };
-	CCollider* m_pAttCollider[AT_End]{ nullptr };
-	CCollider* m_pHitCollider{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
+	CGameObject* m_pNameTag{ nullptr };
 	CRenderer* m_pRendererCom{ nullptr };
-	CCommonTrail* m_pLeft_Trail[5]{ nullptr };
-	CCommonTrail* m_pRight_Trail[5]{ nullptr };
+	CCollider* m_pHitCollider{ nullptr };
+	CCollider* m_pParryingCollider{ nullptr };
+	CTransform* m_pCameraTransform{ nullptr };
 	CTexture* m_pDissolveTextureCom{ nullptr };
-
+	CRealtimeVTFModel* m_pModelCom = { nullptr };
+	CCollider* m_pAttCollider[AT_End]{ nullptr };
 	CCommonSurfaceTrail* m_pTest_Trail{ nullptr };
+	CCommonSurfaceTrail* m_pLeft_Trail[5]{ nullptr };
+	CCommonSurfaceTrail* m_pRight_Trail[5]{ nullptr };
 
 private:
 	ANIM_DESC m_Animation{};
+	PLAYER_STATUS m_Status{};
+	ANIM_LIST m_BowSkill[5]{};
+	ANIM_LIST m_SwordSkill[5]{};
+	Riding_State m_Riding_State{};
 	PLAYER_STATE m_eState{ Idle };
 	PLAYER_STATE m_ePrevState{ Idle };
 	WEAPON_TYPE m_Current_Weapon{ WP_END };
-	ANIM_LIST m_SwordSkill[5]{};
-	ANIM_LIST m_BowSkill[5]{};
-	_vec4 m_vArrowLook{};
-	_vec4 m_vArrowRainPos{};
 	WEAPON_INDEX m_Weapon_CurrentIndex{ WP_INDEX_END };
-	Riding_State m_Riding_State{};
-	PLAYER_STATUS m_Status{};
-	_mat m_Riding_Mat{};
+
+private:
 	_int m_iArrowRain{};
+	_vec4 m_vArrowLook{};
 	_bool m_ReadyArrow{};
-	const _mat* m_Left_Mat{};
-	const _mat* m_Right_Mat{};
-	_float m_fDissolveRatio{};
-	_bool	  m_isInvenActive{ false };
-	_float m_fSkillSpeed{};
-	_bool m_bAttackStop{};
+	_vec4 m_vArrowRainPos{};
+	_bool m_bArrowRain_Start{};
+
+	_bool m_bIsMount{};
+	_mat m_Riding_Mat{};
 	_uint m_iMiningCount{};
 	_uint m_iLoggingCount{};
-	_uint m_iSwimCollectCount{};
-	_float4 m_vPos{};
-	_bool m_bArrowRain_Start{};
+
+	_vec4 m_vPos{};
+	_bool m_bIsClimb{};
 	_bool m_bStartGame{};
-	const _float m_fWalkSpeed{ 1.f };
-	const _float m_fRunSpeed{ 4.f };
-	_bool m_isInterpolating{};
+	_vec4 m_SaveCamPos{};
 	_bool m_bReady_Move{};
-	_float m_fInterpolationRatio{};
+	_uint m_ShaderIndex{};
+	_vec4 m_SaveCamLook{};
+	_bool m_bReady_Climb{};
+	_bool m_bHelmet_Hide{};
 	_vec4 m_vOriginalLook{};
-	_float m_iSuperArmor{};
-	_float m_fAttTimer{};
+	const _mat* m_Left_Mat{};
+	_bool m_UsingMotionBlur{};
+	const _mat* m_Right_Mat{};
+	_bool m_isInterpolating{};
+	_uint m_iSwimCollectCount{};
+	const _float m_fRunSpeed{ 4.f };
+	const _float m_fWalkSpeed{ 1.f };
+	_bool	  m_isInvenActive{ false };
+
 	_bool m_bAttacked{};
-	_bool m_hasJumped{};
+	_bool m_bAttackStop{};
 	_int m_iAttackCombo{};
+	_float m_fSkillSpeed{};
 	_int m_iCurrentSkill_Index{};
-	_bool m_bReadySwim{};
-	_float m_fAttackZoom{};
-	_float m_ReturnZoomTime{};
-	_float m_fSkiilTimer{};
-	_mat m_OldWorldMatrix{};
+
 	_bool m_bHide{};
 	_bool m_bLockOn{};
-	_float m_fHpRegenTime{};
-	_float m_fMpRegenTime{};
+	_bool m_hasJumped{};
+	_bool m_bReadySwim{};
+	_float m_iSuperArmor{};
+	_mat m_OldWorldMatrix{};
+	_bool m_bWeapon_Unequip{};
+	wstring m_strPlayerName{};
+
 	_int m_Body_CurrentIndex{ -1 };
-	_int m_Helmet_CurrentIndex{ -1 };
 	_int m_Hair_CurrentIndex{ -1 };
 	_int m_Face_CurrentIndex{ -1 };
-	_uint m_ShaderIndex{};
-	_bool m_UsingMotionBlur{};
-	_vec4 m_SaveCamPos{};
-	_vec4 m_SaveCamLook{};
-	_bool m_bIsMount{};
-	_bool m_bWeapon_Unequip{};
-	_bool m_bHelmet_Hide{};
-	_bool m_bIsClimb{};
-	_bool m_bReady_Climb{}; 
+	_int m_Helmet_CurrentIndex{ -1 };
 
+	_float m_fAttTimer{};
 	_float m_StartRegen{};
-
-	wstring m_strPlayerName{};
+	_float m_fSkiilTimer{};
+	_float m_fAttackZoom{};
+	_float m_fHpRegenTime{};
+	_float m_fMpRegenTime{};
+	_float m_ReturnZoomTime{};
+	_float m_fDissolveRatio{};
+	_float m_fInterpolationRatio{};
 
 private:
 	HRESULT Add_Components();

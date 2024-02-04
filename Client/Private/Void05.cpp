@@ -34,18 +34,19 @@ HRESULT CVoid05::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_Animation.iAnimIndex = TU02_SC02_MON_ATTACK_LOOP;
-	m_Animation.isLoop = true;
-	m_Animation.bSkipInterpolation = false;
+	//m_Animation.iAnimIndex = TU02_SC02_MON_ATTACK_LOOP;
+	//m_Animation.isLoop = true;
+	//m_Animation.bSkipInterpolation = false;
 
 	random_device rand;
 	_randNum RandomNumber(rand());
 	_randFloat RandomAnimPos(0.f, 1000.f);
 	m_Animation.fStartAnimPos = RandomAnimPos(RandomNumber);
 
-	m_eCurState = STATE_IDLE;
+	m_eCurState = STATE_DIG;
 
 	m_iHP = 1000;
+	m_iDamageAccMax = 200;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
@@ -97,7 +98,7 @@ void CVoid05::Tick(_float fTimeDelta)
 	__super::Update_MonsterCollider();
 
 	Update_Trail(fTimeDelta);
-
+	 
 	m_pTransformCom->Gravity(fTimeDelta);
 
 	__super::Tick(fTimeDelta);
@@ -122,8 +123,18 @@ HRESULT CVoid05::Render()
 
 void CVoid05::Set_Damage(_int iDamage, _uint iDamageType)
 {
+	m_iDamageAcc += iDamage;
 	m_iHP -= iDamage;
 	m_bDamaged = true;
+
+	CHitEffect::HITEFFECT_DESC Desc{};
+	Desc.iDamage = iDamage;
+	Desc.pParentTransform = m_pTransformCom;
+	Desc.vTextPosition = _vec2(0.f, 1.5f);
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
+	{
+		return;
+	}
 
 	m_eCurState = STATE_HIT;
 
@@ -166,11 +177,18 @@ void CVoid05::Init_State(_float fTimeDelta)
 		switch (m_eCurState)
 		{
 		case Client::CVoid05::STATE_IDLE:
-			m_Animation.iAnimIndex = TU02_SC02_MON_ATTACK_LOOP;
+			m_Animation.iAnimIndex = IDLE;
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 2.f;
 
 			m_pTransformCom->Set_Speed(1.5f);
+			break;
+
+		case Client::CVoid05::STATE_DIG:
+			m_Animation.iAnimIndex = TU02_SC02_MON_ATTACK_LOOP;
+			m_Animation.isLoop = true;
+			m_Animation.fAnimSpeedRatio = 3.f;
+
 			break;
 
 		case Client::CVoid05::STATE_CHASE:
@@ -222,7 +240,18 @@ void CVoid05::Tick_State(_float fTimeDelta)
 	switch (m_eCurState)
 	{
 	case Client::CVoid05::STATE_IDLE:
-		m_Animation.fAnimSpeedRatio = 3.f;
+		
+		m_fIdleTime += fTimeDelta;
+
+		if (m_fIdleTime >= 1.f)
+		{
+			m_fIdleTime = 0.f;
+			m_eCurState = STATE_CHASE;
+		}
+
+		break;
+
+	case Client::CVoid05::STATE_DIG:
 		break;
 
 	case Client::CVoid05::STATE_CHASE:
@@ -333,7 +362,7 @@ void CVoid05::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
 			m_pModelCom->IsAnimationFinished(ATTACK03))
 		{
-			m_eCurState = STATE_CHASE;
+			m_eCurState = STATE_IDLE;
 		}
 
 		break;

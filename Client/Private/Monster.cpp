@@ -34,10 +34,20 @@ HRESULT CMonster::Init(void* pArg)
 
 void CMonster::Tick(_float fTimeDelta)
 {
+	if (m_iDamageAcc >= m_iDamageAccMax || m_iDamageAcc == 0)
+	{
+		m_bHit = true;
+		m_iDamageAcc = 0;
+	}
+	else
+	{
+		m_bHit = false;
+	}
+
 	if (m_iHP <= 0 || m_fDeadTime > 0.01f)
 	{
 		m_pGameInstance->Delete_CollisionObject(this);
-
+		m_pTransformCom->Delete_Controller();
 		//Safe_Release(m_pTransformCom);
 		//Safe_Release(m_pBodyColliderCom);
 	}
