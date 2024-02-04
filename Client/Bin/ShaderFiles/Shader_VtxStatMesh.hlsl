@@ -548,7 +548,7 @@ PS_OUT_DEFERRED PS_Main_WorldMap_Cloud(PS_IN Input)
     {
         vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
-
+    
     vector vCloud = g_CloudTexture.Sample(LinearSampler, float2(Input.vTex.x - g_fx, Input.vTex.y + g_fy));
 
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
