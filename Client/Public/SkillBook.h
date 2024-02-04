@@ -2,7 +2,8 @@
 #include "Client_Define.h"
 #include "OrthographicObject.h"
 #include "Wearable_Slot.h"
-
+#include "Skill_Model.h"
+#include "Scarecrow.h"
 
 BEGIN(Client)
 class CWearable_Slot;
@@ -58,6 +59,10 @@ private:
 
 	vector<class CSkillDesc*>					m_vecSkillDesc[WP_END];
 
+	LIGHT_DESC									m_Light_Desc{};
+
+	CSkill_Model*								m_pSkill_Model{ nullptr };
+	CScarecrow*									m_pScarecorw{ nullptr };
 
 private:
 	void Init_SkillBookState(); 

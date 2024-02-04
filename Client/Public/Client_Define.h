@@ -304,7 +304,7 @@ namespace Client
 		_uint iSkillIdx;
 		_bool isSkillIn;
 		wstring strTexture;
-
+		_uint iModelSkillIndex;
 	}SKILLINFO;
 
 #pragma region Shader Passes

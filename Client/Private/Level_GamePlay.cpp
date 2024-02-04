@@ -36,14 +36,6 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Skill_Model"), TEXT("Prototype_GameObject_Skill_Model"))))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Sl"), TEXT("Prototype_GameObject_Scarecrow"))))
-	{
-		return E_FAIL;
-	}
 	if (FAILED(Ready_Light()))
 	{
 		MSG_BOX("Failed to Ready Light");
@@ -157,7 +149,10 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		m_RainMatrix = _mat::CreateTranslation(_vec3(m_pGameInstance->Get_CameraPos()));
 		//m_RainMatrix = _mat::CreateTranslation(_vec3(50.f, 3.f, 50.f));
 	}
-
+	if (m_pGameInstance->Get_CameraState() == CS_SKILLBOOK)
+	{
+		m_RainMatrix = _mat();
+	 }
 	if (m_fWaveTimer > 5.f)
 	{
 	/*	int random = rand() % 3;
@@ -271,6 +266,7 @@ HRESULT CLevel_GamePlay::Ready_Light()
 	LightDesc.vDiffuse = _vec4(0.2f, 0.2f, 0.2f, 1.f);
 	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
 	LightDesc.vSpecular = _vec4(1.f);
+	
 
 	return m_pGameInstance->Add_Light(LEVEL_GAMEPLAY, TEXT("Light_Main"), LightDesc);
 }

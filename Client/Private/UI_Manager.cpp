@@ -279,7 +279,7 @@ HRESULT CUI_Manager::Init_Items()
 }
 
 HRESULT CUI_Manager::Init_Skills()
-{
+{	
 	SKILLINFO Info = {};
 	Info.strName = TEXT("환영화살");
 	Info.iSkillType = (_uint)WP_BOW;
@@ -287,6 +287,7 @@ HRESULT CUI_Manager::Init_Skills()
 	Info.iMp = 45;
 	Info.iCoolTime = 20;
 	Info.iSkillIdx = 3;
+	Info.iModelSkillIndex = 7;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon1");
 	m_SkillInfo[WP_BOW][Info.iSkillIdx] = Info;
 
@@ -294,6 +295,7 @@ HRESULT CUI_Manager::Init_Skills()
 	Info.iMp = 30;
 	Info.iCoolTime = 8;
 	Info.iSkillIdx = 2;
+	Info.iModelSkillIndex = 1;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon2");
 	m_SkillInfo[WP_BOW][Info.iSkillIdx] = Info;
 
@@ -301,6 +303,7 @@ HRESULT CUI_Manager::Init_Skills()
 	Info.iMp = 12;
 	Info.iCoolTime = 6;
 	Info.iSkillIdx = 1;
+	Info.iModelSkillIndex = 6;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon3");
 	m_SkillInfo[WP_BOW][Info.iSkillIdx] = Info;
 	
@@ -308,6 +311,7 @@ HRESULT CUI_Manager::Init_Skills()
 	Info.iMp = 8;
 	Info.iCoolTime = 7;
 	Info.iSkillIdx = 0;
+	Info.iModelSkillIndex = 0;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon4");
 	m_SkillInfo[WP_BOW][Info.iSkillIdx] = Info;
 	
@@ -316,6 +320,7 @@ HRESULT CUI_Manager::Init_Skills()
 	Info.iMp = 12;
 	Info.iCoolTime = 8;
 	Info.iSkillIdx = 2;
+	Info.iModelSkillIndex = 2;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon5");
 	m_SkillInfo[WP_SWORD][Info.iSkillIdx] = Info;
 
@@ -323,6 +328,7 @@ HRESULT CUI_Manager::Init_Skills()
 	Info.iMp = 8;
 	Info.iCoolTime = 4;
 	Info.iSkillIdx = 0;
+	Info.iModelSkillIndex = 5;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon6");
 	m_SkillInfo[WP_SWORD][Info.iSkillIdx] = Info;
 	
@@ -330,6 +336,7 @@ HRESULT CUI_Manager::Init_Skills()
 	Info.iMp = 6;
 	Info.iCoolTime = 8;
 	Info.iSkillIdx = 1;
+	Info.iModelSkillIndex = 4;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon7");
 	m_SkillInfo[WP_SWORD][Info.iSkillIdx] = Info;
 
@@ -337,6 +344,7 @@ HRESULT CUI_Manager::Init_Skills()
 	Info.iMp = 8;
 	Info.iCoolTime = 10;
 	Info.iSkillIdx = 3;
+	Info.iModelSkillIndex = 3;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon8");
 	m_SkillInfo[WP_SWORD][Info.iSkillIdx] = Info;
 
