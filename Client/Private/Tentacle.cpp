@@ -39,7 +39,12 @@ HRESULT CTentacle::Init(void* pArg)
 
 	_vec4 vPlayerPos = __super::Compute_PlayerPos();
 
-	_mat EffectMatrix = _mat::CreateScale(2.5f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(vPlayerPos) + _vec3(0.f, 0.2f, 0.f));
+	CTransform* pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_VILLAGE);
+	_vec4 vGroarPos = pGroarTransform->Get_State(State::Pos);
+
+	vPlayerPos.y = vGroarPos.y + 0.1f;
+
+	_mat EffectMatrix = _mat::CreateScale(2.5f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(vPlayerPos)/* + _vec3(0.f, 0.2f, 0.f)*/);
 			
 	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Frame");
 	Info.pMatrix = &EffectMatrix;
@@ -49,7 +54,9 @@ HRESULT CTentacle::Init(void* pArg)
 	Info.pMatrix = &EffectMatrix;
 	m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
-	m_pTransformCom->Set_Position(_vec3(vPlayerPos + _vec3(0.f, -1.8f, 1.2f)));
+	_vec3 vSetPos = vPlayerPos + _vec3(0.f, -1.8f, 1.2f);
+	vSetPos.y = vGroarPos.y - 1.5f;
+	m_pTransformCom->Set_Position(vSetPos);
 
     return S_OK;
 }

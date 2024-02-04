@@ -38,10 +38,10 @@ public:
 		MON_GROAR_ASGARD_ATTACK03, // 바닥 쾅쾅 찍기
 		MON_GROAR_ASGARD_ATTACK04, // 꼬리치기 -> 거미줄로 땡기기
 		MON_GROAR_ASGARD_ATTACK05, // 거미 소환
-		MON_GROAR_ASGARD_ATTACK06, // 꼬리찍어서 장판데미지
-		MON_GROAR_ASGARD_ATTACK07, // 손 X자하고 바닥에서 초록불(장판 위 계속 데미지)
+		MON_GROAR_ASGARD_ATTACK06, // 꼬리찍어서 촉수
+		MON_GROAR_ASGARD_ATTACK07, // 손 X자
 		MON_GROAR_ASGARD_ATTACK08, // 울부짖기(장판)
-		MON_GROAR_ASGARD_ATTACK_RAGE, // 울부짖기(장판)
+		MON_GROAR_ASGARD_ATTACK_RAGE,
 		// 00, 01, 02, 03, 04, 05, 06, 07, 08
 		MON_GROAR_ASGARD_DIE,
 		MON_GROAR_ASGARD_IDLE,
@@ -80,10 +80,13 @@ public:
 		BOSS_STATE_ROAR,
 		BOSS_STATE_CHASE,
 		BOSS_STATE_THROW_ATTACK, // 00, 01
-		BOSS_STATE_FLOOR_ATTACK, // 03, 06, 07, 08
 		BOSS_STATE_SIX_MISSILE, // 02
+		BOSS_STATE_TAKE_DOWN, // 03
 		BOSS_STATE_WEB, // 04
 		BOSS_STATE_SPIDER, // 05
+		BOSS_STATE_TENTACLE, // 06
+		BOSS_STATE_XBEAM, // 07
+		BOSS_STATE_RAGE, // 08
 		BOSS_STATE_DIE,
 		BOSS_STATE_END
 	};
@@ -91,20 +94,14 @@ public:
 	enum GROAR_ATTACK // 랜덤 방지용
 	{
 		ATTACK_THROW,
-		ATTACK_FLOOR,
 		ATTACK_SIX_MISSILE,
+		ATTACK_TAKE_DOWN,
 		ATTACK_WEB,
 		ATTACK_SPIDER,
+		ATTACK_TENTACLE,
+		ATTACK_XBEAM,
+		ATTACK_YELL,
 		ATTACK_END
-	};
-
-	enum GROAR_FLOOR_ATTACK
-	{
-		FLOOR_ATTACK03,
-		FLOOR_ATTACK06,
-		FLOOR_ATTACK07,
-		FLOOR_ATTACK08,
-		FLOOR_ATTACK_END
 	};
 
 private:
@@ -170,12 +167,14 @@ private:
 	_bool m_bCreateSpider = { false };
 
 private:
+	_bool m_bCreateXBeam = { false };
+
+private:
 	_bool m_bTentacleOn = { false };
 	_float m_fTentacleTime = {};
 
 private:
 	_bool m_bAttack_Selected[ATTACK_END] = { false };
-	_bool m_bFloor_Attack_Selected[FLOOR_ATTACK_END] = { false };
 
 public:
 	HRESULT Add_Components();
