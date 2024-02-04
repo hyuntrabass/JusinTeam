@@ -1,5 +1,6 @@
 #include "Camera_CutScene.h"
-
+#include <locale>
+#include <codecvt>
 CCamera_CutScene::CCamera_CutScene(_dev pDevice, _context pContext)
 	: CCamera(pDevice, pContext)
 {
@@ -29,12 +30,15 @@ HRESULT CCamera_CutScene::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-
-	//if (CamInfo.ppCamera)
-	//{
-	//	*CamInfo.ppCamera = this;
-	//	CamInfo.ppCamera = nullptr;
-	//}
+	_uint size_needed = MultiByteToWideChar(CP_UTF8, 0, CamInfo.strName.c_str(), -1, NULL, 0);
+	wstring wstrName(size_needed -1, 0);
+	MultiByteToWideChar(CP_UTF8, 0, CamInfo.strName.c_str(), -1, &wstrName[0], size_needed - 1);
+	m_strName = wstrName;
+	if (CamInfo.ppCamera)
+	{
+		*CamInfo.ppCamera = this;
+		CamInfo.ppCamera = nullptr;
+	}
 	wstring strLayerTag = TEXT("Layer_Camera");
 
 
@@ -53,8 +57,8 @@ HRESULT CCamera_CutScene::Init(void* pArg)
 	m_vResultEye = _vec4(CamInfo.eCamera_Desc.vCameraPos);
 	m_vResultAt = _vec4(CamInfo.eCamera_Desc.vFocusPos);
 
-	Add_Eye_Curve(CamInfo.vStartCutScene, CamInfo.vEndCutScene);
-	Add_At_Curve(CamInfo.vStartCutScene, CamInfo.vEndCutScene);
+	//Add_Eye_Curve(CamInfo.vStartCutScene, CamInfo.vEndCutScene);
+	//Add_At_Curve(CamInfo.vStartCutScene, CamInfo.vEndCutScene);
 
 	return S_OK;
 }
@@ -76,26 +80,35 @@ void CCamera_CutScene::Late_Tick(_float fTimeDelta)
 HRESULT CCamera_CutScene::Render()
 {
 	
-	if (FAILED(Bind_ShaderResources()))
-		return E_FAIL;
+	//if (FAILED(Bind_ShaderResources()))
+	//	return E_FAIL;
 
-	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+	//_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-	for (_uint i = 0; i < iNumMeshes; ++i)
-	{
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-		{
-			continue;
-		}
+	//for (_uint i = 0; i < iNumMeshes; ++i)
+	//{
+	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+	//	{
+	//		continue;
+	//	}
 
-	
-		m_pShaderCom->Begin(1);
+	//
+	//	m_pShaderCom->Begin(0);
 
-		m_pModelCom->Render(i);
-	}
+	//	m_pModelCom->Render(i);
+	//}
 	return S_OK;
 }
 
+
+string CCamera_CutScene::Get_Name()
+{
+	_uint size_needed = WideCharToMultiByte(CP_UTF8, 0, m_strName.c_str(), -1, NULL, 0, NULL, NULL);
+	string str(size_needed-1, 0);
+	WideCharToMultiByte(CP_UTF8, 0, m_strName.c_str(), -1, &str[0], size_needed, NULL, NULL);
+
+	return str;
+}
 
 HRESULT CCamera_CutScene::Add_Eye_Curve(_vec4 vFirstPoint, _vec4 vSecondPoint)
 {
@@ -103,102 +116,63 @@ HRESULT CCamera_CutScene::Add_Eye_Curve(_vec4 vFirstPoint, _vec4 vSecondPoint)
 	_uint	iCutSceneType = CCutScene_Curve::SECTION_TYPE_EYE;
 
 	SectionInfo SectionInfo;
+	SectionInfo.ppCurve = &m_pEyeCurve;
 	SectionInfo.vStartCutScene = vFirstPoint;
 	SectionInfo.vEndCutScene = vSecondPoint;
+	wstring strCamEyeName = TEXT("Layer_") + m_strName + TEXT("_Section_Eye");
+	strSectionName = m_strName + TEXT("_Curve_Eye_") + to_wstring(m_CameraEyeList.size());
+	SectionInfo.strSectionName = strSectionName;
+	SectionInfo.iSectionType = iCutSceneType;
 
-	wstring strSectionEyeName = CamInfo.strName + L"_Curve_Eye_" + to_wstring(m_CameraEyeList.size());
-	m_pEyeCurve = static_cast<CCutScene_Curve*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Camera_Curve"), &SectionInfo));
+	if (FAILED(m_pGameInstance->Add_Layer(iCurrentLevel, strCamEyeName, TEXT("Prototype_GameObject_Camera_Curve"), &SectionInfo)))
+	{
+		return E_FAIL;
+	}
 
-
-
+	//m_pEyeCurve = static_cast<CCutScene_Curve*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Camera_Curve"), &SectionInfo));
 	_mat	matPoints;
-	ZeroMemory(&matPoints, sizeof _mat);
-
-	/* First Section */
-	if (m_CameraEyeList.empty() || m_CameraEyeList.size() == 1)
-	{
-		matPoints = {
-			vFirstPoint.x, vFirstPoint.y, vFirstPoint.z, 1.f,
-			vFirstPoint.x, vFirstPoint.y, vFirstPoint.z, 1.f,
-			vSecondPoint.x, vSecondPoint.y, vSecondPoint.z, 1.f,
-			vSecondPoint.x, vSecondPoint.y, vSecondPoint.z, 1.f
-		};
-	}
-	/* Not First Section */
-	else if (!m_CameraEyeList.empty() && m_CameraEyeList.size() != 1)
-	{
-		_int iIndex = (_int)m_CameraEyeList.size() - 2;
-		if (iIndex < 0)
-		{
-			return E_FAIL;
-		}
-
-		_mat matPrePoints;
-		static_cast<CCutScene_Curve*>(m_CameraEyeList[iIndex])->Get_ControlPoints(&matPrePoints);
-
-		matPoints = {
-			matPrePoints._11, matPrePoints._12, matPrePoints._13, matPrePoints._14,
-			vFirstPoint.x, vFirstPoint.y, vFirstPoint.z, 1.f,
-			vSecondPoint.x, vSecondPoint.y, vSecondPoint.z, 1.f,
-			vSecondPoint.x, vSecondPoint.y, vSecondPoint.z, 1.f
-		};
-	}
+	//ZeroMemory(&matPoints, sizeof _mat);
+	matPoints.Right(vFirstPoint);
+	matPoints.Up(vFirstPoint);
+	matPoints.Look(vSecondPoint);
+	matPoints.Position(vSecondPoint);
+	
 
 	m_pEyeCurve->Set_ControlPoints(matPoints);
 	m_CameraEyeList.push_back(static_cast<CCutScene_Curve*>(m_pEyeCurve));
-
+	m_pEyeCurve = nullptr;
 	return S_OK;
 }
 
 HRESULT CCamera_CutScene::Add_At_Curve(_vec4 vFirstPoint, _vec4 vSecondPoint)
 {
 	_uint	iCurrentLevel = m_pGameInstance->Get_CurrentLevelIndex();
-	_uint	iCutSceneType = CCutScene_Curve::SECTION_TYPE_EYE;
+	_uint	iCutSceneType = CCutScene_Curve::SECTION_TYPE_AT;
 
 	SectionInfo SectionInfo;
+	SectionInfo.ppCurve = &m_pAtCurve;
 	SectionInfo.vStartCutScene = vFirstPoint;
 	SectionInfo.vEndCutScene = vSecondPoint;
+	wstring strCamAtName = L"Layer_" + m_strName + L"_Section_At";
+	strSectionName = m_strName + L"_Curve_At_" + to_wstring(m_CameraAtList.size());
+	SectionInfo.strSectionName = strSectionName;
+	SectionInfo.iSectionType = iCutSceneType;
 
-	wstring strSectionEyeName = CamInfo.strName + L"_Curve_At_" + to_wstring(m_CameraAtList.size());
-	m_pAtCurve = static_cast<CCutScene_Curve*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Camera_Curve"), &SectionInfo));
-
-
+	if (FAILED(m_pGameInstance->Add_Layer(iCurrentLevel, strCamAtName, TEXT("Prototype_GameObject_Camera_Curve"), &SectionInfo)))
+	{
+		return E_FAIL;
+	}
 
 	_mat	matPoints;
-	ZeroMemory(&matPoints, sizeof _mat);
-
-	/* First Section */
-	if (m_CameraAtList.empty() || m_CameraAtList.size() == 1)
-	{
-		matPoints = {
-			vFirstPoint.x, vFirstPoint.y, vFirstPoint.z, 1.f,
-			vFirstPoint.x, vFirstPoint.y, vFirstPoint.z, 1.f,
-			vSecondPoint.x, vSecondPoint.y, vSecondPoint.z, 1.f,
-			vSecondPoint.x, vSecondPoint.y, vSecondPoint.z, 1.f
-		};
-	}
-	/* Not First Section */
-	else if (!m_CameraAtList.empty() && m_CameraAtList.size() != 1)
-	{
-		_int iIndex = (_int)m_CameraAtList.size() - 2;
-		if (iIndex < 0)
-		{
-			return E_FAIL;
-		}
-
-		_mat matPrePoints;
-		static_cast<CCutScene_Curve*>(m_CameraAtList[iIndex])->Get_ControlPoints(&matPrePoints);
-
-		matPoints = {
-			matPrePoints._11, matPrePoints._12, matPrePoints._13, matPrePoints._14,
-			vFirstPoint.x, vFirstPoint.y, vFirstPoint.z, 1.f,
-			vSecondPoint.x, vSecondPoint.y, vSecondPoint.z, 1.f,
-			vSecondPoint.x, vSecondPoint.y, vSecondPoint.z, 1.f
-		};
-	}
+	//ZeroMemory(&matPoints, sizeof _mat);
+	matPoints.Right(vFirstPoint);
+	matPoints.Up(vFirstPoint);
+	matPoints.Look(vSecondPoint);
+	matPoints.Position(vSecondPoint);
 
 	m_pAtCurve->Set_ControlPoints(matPoints);
 	m_CameraAtList.push_back(static_cast<CCutScene_Curve*>(m_pAtCurve));
+	m_pAtCurve = nullptr;
 
 	return S_OK;
 }
@@ -214,19 +188,25 @@ HRESULT	CCamera_CutScene::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Camera"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Camera"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	return S_OK;
 }
 HRESULT	CCamera_CutScene::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	_mat m_WorldMatrix = XMMatrixIdentity();
+	/*if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	{
+		return E_FAIL;
+	}	*/
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", m_WorldMatrix)))
 	{
 		return E_FAIL;
 	}
+
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof _float4)))
 	{
 		return E_FAIL;

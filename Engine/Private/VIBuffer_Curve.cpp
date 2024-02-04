@@ -23,7 +23,7 @@ HRESULT CVIBuffer_Curve::Init_Prototype()
 	m_iNumVertexBuffers = 1;
 	m_eIndexFormat = DXGI_FORMAT_R16_UINT;
 	m_ePrimitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;
-	m_iVertexStride = sizeof VTXPOSCOLOR;
+	m_iVertexStride = sizeof VTXPOS;
 
 #pragma region VERTEX
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
@@ -35,7 +35,7 @@ HRESULT CVIBuffer_Curve::Init_Prototype()
 	m_BufferDesc.MiscFlags = 0;
 
 	ZeroMemory(&m_InitialData, sizeof m_InitialData);
-	VTXPOSCOLOR* pVertices = new VTXPOSCOLOR[m_iNumVertices];
+	VTXPOS* pVertices = new VTXPOS[m_iNumVertices];
 	ZeroMemory(pVertices, m_iVertexStride * m_iNumVertices);
 
 	m_pCurvePos = new _float3[m_iNumVertices];
@@ -55,13 +55,13 @@ HRESULT CVIBuffer_Curve::Init_Prototype()
 	_float fTime = 0.f;
 	for (_uint i = 0; i < m_iNumVertices; ++i)
 	{
-		fTime = _float(i / m_iNumVertices);
+		fTime = (_float)i / (_float)m_iNumVertices;
 
 		// Catmull-Rom
-		_vec3 vLerpPoint = XMVectorCatmullRom(m_matControlPoints.Right(), m_matControlPoints.Up(), m_matControlPoints.Look(), m_matControlPoints.Position(), fTime);
+		_vec4 vLerpPoint = XMVectorCatmullRom(m_matControlPoints.Right(), m_matControlPoints.Up(), m_matControlPoints.Look(), m_matControlPoints.Position(), fTime);
 	
-		 pVertices[i].vPosition = vLerpPoint;
-		 m_pCurvePos[i] = vLerpPoint;
+		 pVertices[i].vPosition = _vec3(vLerpPoint);
+		 m_pCurvePos[i] = _vec3(vLerpPoint);
 	}
 
 	m_InitialData.pSysMem = pVertices;
@@ -77,15 +77,15 @@ HRESULT CVIBuffer_Curve::Init_Prototype()
 
 #pragma region INDEX
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
-	m_BufferDesc.ByteWidth = sizeof(_ulong) * iNumSegments;  // 두 개의 인덱스
+	m_BufferDesc.ByteWidth = sizeof(_ushort) * iNumSegments;  // 두 개의 인덱스
 	m_BufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	m_BufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	m_BufferDesc.StructureByteStride = 0;
 	m_BufferDesc.CPUAccessFlags = 0;
 	m_BufferDesc.MiscFlags = 0;
-
+	m_iNumIndices = iNumSegments;
 	ZeroMemory(&m_InitialData, sizeof m_InitialData);
-	_ulong* pIndices = new _ulong[iNumSegments];
+	_ushort* pIndices = new _ushort[iNumSegments];
 
 	for (_uint i = 0; i < iNumSegments; ++i)
 	{
@@ -158,16 +158,17 @@ CComponent* CVIBuffer_Curve::Clone(void* pArg)
 void CVIBuffer_Curve::Modify_Line()
 {
 	D3D11_MAPPED_SUBRESOURCE	SubResource{};
-	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource);
-	VTXPOSCOLOR* pVertices = (VTXPOSCOLOR*)SubResource.pData;
+	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
+	//VTXPOS* pVertices = (VTXPOS*)SubResource.pData;
 	_float fTime = 0.f;
 	for (_uint i = 0; i < m_iNumVertices; ++i)
 	{
-		fTime = _float(i / m_iNumVertices);
+		fTime = (_float)i / m_iNumVertices;
 
 		// Catmull-Rom
-		_vec3 vLerpPoint = XMVectorCatmullRom(m_matControlPoints.Right(), m_matControlPoints.Up(), m_matControlPoints.Look(), m_matControlPoints.Position(), fTime);
-		pVertices[i].vPosition = vLerpPoint;
+		_vec4 vLerpPoint = XMVectorCatmullRom(m_matControlPoints.Right(), m_matControlPoints.Up(), m_matControlPoints.Look(), m_matControlPoints.Position(), fTime);
+		//pVertices[i].vPosition = _vec3(vLerpPoint);
+		 ((VTXPOS*)SubResource.pData)[i].vPosition = _vec3(vLerpPoint);
 		//m_vVertices[i].vPosition = _vec3(vLerpPoint);
 	}
 

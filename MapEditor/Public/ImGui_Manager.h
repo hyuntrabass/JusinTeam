@@ -60,11 +60,11 @@ struct TriggerInfo
 
 struct CameraInfo
 {
-	wstring strName{};
-	_vec4 vStartCutScene{};
-	_vec4 vEndCutScene{};
+	string strName{};
+	//_vec4 vStartCutScene{};
+	//_vec4 vEndCutScene{};
 	enum class ItemType eType {};
-	//class CCamera_CutScene** ppCamera{ nullptr };
+	class CCamera_CutScene** ppCamera{ nullptr };
 	CCamera::Camera_Desc eCamera_Desc{};
 };
 
@@ -72,6 +72,9 @@ struct SectionInfo
 {
 	_vec4 vStartCutScene{};
 	_vec4 vEndCutScene{};
+	wstring strSectionName{};
+	class CCutScene_Curve** ppCurve{ nullptr };
+	_uint iSectionType{};
 };
 
 struct TERRAIN_INFO_MAPTOOL : public TERRAIN_INFO
@@ -104,6 +107,7 @@ private:
 
 	void Create_Dummy(const _int& iListIndex);
 	void Create_Camera();
+	void Create_Curve(class CCamera_CutScene* pCamera, _vec4 FirstPos, _vec4 SecondPos);
 	void Create_Map(const _int& iListIndex);
 	HRESULT Create_Terrain();
 	HRESULT Modify_Terrain();
@@ -189,17 +193,10 @@ private:
 
 	_bool m_isInstancing{false};
 	vector<_vec4> m_vInstancePos;
-	_vec4 m_fCameraPos[2];
+	_vec4 m_fCameraPos[4];
+	_vec4 m_fCameraPickingPos[2];
 	_float fTimeDeltaAcc{0.f};
 	_uint iClickCount{0};
-
-	_vec4 m_vEye{};
-	_vec4 m_vAt{};
-	_float m_fFov{0.f};
-	_float m_fAspect{0.f};
-	_float m_fNear{0.f};
-	_float m_fFar{0.f};
-	 
 
 private:
 	// 파일의 이름 가져와서 저장
@@ -218,6 +215,8 @@ private:
 	vector<class CDummy*> m_EnvirList;
 	vector<class CDummy*> m_TriggerList;
 	vector<class CCamera_CutScene*> m_CameraList;
+	vector<class CCutScene_Curve*> m_SectionEyeList;
+	vector<class CCutScene_Curve*> m_SectionAtList;
 
 
 	map<int, class CDummy*>m_DummyList;
@@ -227,6 +226,7 @@ private:
 	class CDummy* m_pSelectedDummy{ nullptr };
 	class CMap* m_pSelectMap{ nullptr };
 	class CCamera_CutScene* m_pSelectCamera{ nullptr };
+	class CCutScene_Curve* m_pSelectSection{ nullptr };
 	class CTerrain* m_pTerrain{ nullptr };
 	char Search_Name[MAX_PATH]{};
 
@@ -243,8 +243,10 @@ private:
 	wstring m_eType{};
 	_float m_fTriggerSize{1.f};
 	_int m_iTriggerNumber{0};
-	_char SectionName[MAX_PATH]{};
+	//_char SectionName[MAX_PATH]{};
+	string SectionName{};
 	SectionInfo m_eSectionInfo{};
+	
 
 public:
 	static CImGui_Manager* Create(const GRAPHIC_DESC& GraphicDesc);

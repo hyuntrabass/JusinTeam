@@ -25,8 +25,17 @@ HRESULT CCutScene_Curve::Init(void* pArg)
 	if (FAILED(Add_Components()))
 		return E_FAIL;
 
+	if (Info.ppCurve)
+	{
+		*Info.ppCurve = this;
+		Info.ppCurve = nullptr;
+	}
+	m_iSectionType = Info.iSectionType;
+	m_strSectionName = Info.strSectionName;
+	ZeroMemory(&m_matPoint, sizeof _mat);
 	Set_Points(Info);
-
+	//m_pVIBuffer->Set_ControlPoints(m_matPoint);
+	//m_pVIBuffer->Modify_Line();
 	return S_OK;
 }
 
@@ -46,6 +55,7 @@ void CCutScene_Curve::Late_Tick(_float TimeDelta)
 
 HRESULT CCutScene_Curve::Render()
 {
+	m_pVIBuffer->Set_ControlPoints(m_matPoint);
 	m_pVIBuffer->Modify_Line();
 
 	if (FAILED(Bind_ShaderResources()))
@@ -95,7 +105,6 @@ HRESULT CCutScene_Curve::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-
 	_float4 vColor = _float4(0.f, 0.f, 0.f, 1.f);
 	if (m_iSectionType == SECTION_TYPE_EYE)
 		vColor = _float4(0.f, 1.f, 1.f, 1.f);
@@ -106,6 +115,7 @@ HRESULT CCutScene_Curve::Bind_ShaderResources()
 
 	return S_OK;
 }
+
 void CCutScene_Curve::Get_ControlPoints(_mat* pOutPoints)
 {
 	if (m_pVIBuffer == nullptr)
@@ -123,6 +133,15 @@ HRESULT CCutScene_Curve::Set_ControlPoints(_mat& Points)
 
 	m_pVIBuffer->Set_ControlPoints(m_matPoint);
 	return S_OK;
+}
+
+string CCutScene_Curve::Get_SectionName()
+{
+	_uint size_needed = WideCharToMultiByte(CP_UTF8, 0, m_strSectionName.c_str(), -1, NULL, 0, NULL, NULL);
+	string str(size_needed - 1, 0);
+	WideCharToMultiByte(CP_UTF8, 0, m_strSectionName.c_str(), -1, &str[0], size_needed, NULL, NULL);
+
+	return str;
 }
 
 

@@ -32,6 +32,7 @@ public:
 
 	void Get_ControlPoints(_mat* pOutPoints);
 	HRESULT Set_ControlPoints(_mat& Points);
+	string Get_SectionName();
 
 private:
 	HRESULT Add_Components();
@@ -53,6 +54,7 @@ private:
 	CCutScene_Point* m_pEndPoint{};
 	SectionInfo Info{};
 	_mat m_matPoint{};
+	wstring m_strSectionName{};
 
 public:
 	static CCutScene_Curve* Create(_dev pDevice, _context pContext);

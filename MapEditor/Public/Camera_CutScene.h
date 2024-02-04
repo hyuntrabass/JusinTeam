@@ -20,8 +20,14 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render();
 	void Set_Dead() { m_isDead = true; }
-
 	void Set_Speed(_float fSpeed) { m_fSpeed = fSpeed; }
+	string Get_Name();
+	
+	HRESULT Add_Eye_Curve(_vec4 vFirstPoint, _vec4 vSecondPoint);
+	HRESULT Add_At_Curve(_vec4 vFirstPoint, _vec4 vSecondPoint);
+
+	vector<class CCutScene_Curve*> Get_EyeCurve() { return m_CameraEyeList; }
+	vector<class CCutScene_Curve*> Get_AtCurve() { return m_CameraAtList; }
 
 private:
 	_bool m_isMoveMode{ true };
@@ -30,15 +36,10 @@ private:
 	_float m_fPlayerDistance{ 4.f };
 	_float m_fShakeAcc{ 100.f };
 
-	HRESULT Add_Eye_Curve(_vec4 vFirstPoint, _vec4 vSecondPoint);
-	HRESULT Add_At_Curve(_vec4 vFirstPoint, _vec4 vSecondPoint);
-
 private:
 	CRenderer* m_pRendererCom = { nullptr };
 	CShader* m_pShaderCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
-
-
 
 private:
 	_float m_fSceneTimer{};
@@ -93,7 +94,8 @@ private:
 	_float					m_fPreCameraLerpTimeAcc = { 0.f };
 	_float					m_fPreCameraLerpTime = { 0.f };
 	CameraInfo				CamInfo{};
-
+	wstring					m_strName{};
+	wstring					strSectionName{};
 private:
 	HRESULT		Add_Components();
 	HRESULT		Bind_ShaderResources();
