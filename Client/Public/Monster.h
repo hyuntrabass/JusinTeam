@@ -2,6 +2,7 @@
 
 #include "Client_Define.h"
 #include "GameObject.h"
+#include "HitEffect.h"
 
 BEGIN(Client)
 

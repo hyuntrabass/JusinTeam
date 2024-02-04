@@ -117,10 +117,12 @@ HRESULT CItemSlot::Set_Item(CItem* pItem, _int* iNum)
 	if (m_eSlotMode == ITSLOT_SCREEN)
 	{
 		ItemDesc.vSize = _vec2(m_fSizeX - 20.f, m_fSizeY - 20.f);
+		ItemDesc.isScreen = true;
 	}
 	else
 	{
 		ItemDesc.vSize = _vec2(m_fSizeX, m_fSizeY);
+		ItemDesc.isScreen = false;
 	}
 
 	m_pItem = (CItem*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Item"), &ItemDesc);

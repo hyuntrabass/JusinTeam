@@ -35,10 +35,16 @@ private:
 
 private:
 	LEVEL_ID		m_eLevel{};
+	VTPass			m_ePass{ VTPass_UI };
 	wstring			m_strTexture;
 	_vec2			m_vSize;
 	_vec3			m_vPosition{};
 	CTransform*		m_pParentTransform{ nullptr };
+
+public:
+	const _vec2& Get_Size() const { return _vec2(m_fSizeX, m_fSizeY); };
+	void Set_Size(_float fSizeX, _float fSizeY);
+	void Set_Pass(VTPass ePass) { m_ePass = ePass; }
 
 private:
 	HRESULT Add_Components();

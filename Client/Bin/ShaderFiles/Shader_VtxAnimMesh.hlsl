@@ -158,6 +158,7 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
         vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
+    
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
@@ -176,6 +177,9 @@ PS_OUT_DEFERRED PS_Main_OutLine(PS_IN Input)
     {
         discard;
     }
+    
+    vector vViewPos = mul(Input.vWorldPos, g_ViewMatrix);
+
     
     Output.vDiffuse = vector(0.f, 0.f, 0.f, 1.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
@@ -225,6 +229,7 @@ PS_OUT_DEFERRED PS_Main_Dissolve(PS_IN Input)
     {
         vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
+    
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);

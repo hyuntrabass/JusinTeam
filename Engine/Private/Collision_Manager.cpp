@@ -2,7 +2,7 @@
 #include "GameObject.h"
 #include "Collider.h"
 
-HRESULT CCollision_Manager::Register_CollisionObject(CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer, class CCollider* AttRangeCollider)
+HRESULT CCollision_Manager::Register_CollisionObject(CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer, class CCollider* AttRangeCollider, class CCollider* ParryingColliderr)
 {
 	if (not pObject or not pHitCollider)
 	{
@@ -19,9 +19,11 @@ HRESULT CCollision_Manager::Register_CollisionObject(CGameObject* pObject, class
 		m_pPlayer = pObject;
 		m_pPlayerHitCollider = pHitCollider;
 		m_pPlayerAttRangeCollider = AttRangeCollider;
+		m_pPlayerParryingCollider = ParryingColliderr;
 		Safe_AddRef(m_pPlayer);
 		Safe_AddRef(m_pPlayerHitCollider);
 		Safe_AddRef(m_pPlayerAttRangeCollider);
+		Safe_AddRef(m_pPlayerParryingCollider);
 	}
 	else
 	{
@@ -86,6 +88,16 @@ _bool CCollision_Manager::CheckCollision_Monster(CCollider* pCollider)
 	return false;
 }
 
+_bool CCollision_Manager::CheckCollision_Parrying(CCollider* pCollider)
+{
+	if (pCollider->Intersect(m_pPlayerParryingCollider))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 _bool CCollision_Manager::Attack_Player(CCollider* pCollider, _uint iDamage, _uint iDamageType)
 {
 	if (not pCollider or pCollider->Intersect(m_pPlayerHitCollider))
@@ -140,6 +152,7 @@ void CCollision_Manager::Free()
 {
 	Safe_Release(m_pPlayer);
 	Safe_Release(m_pPlayerHitCollider);
+	Safe_Release(m_pPlayerParryingCollider);
 	Safe_Release(m_pPlayerAttRangeCollider);
 
 	for (auto& Monster : m_Monsters)
