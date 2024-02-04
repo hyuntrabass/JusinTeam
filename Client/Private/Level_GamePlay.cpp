@@ -235,6 +235,10 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 
 	//m_pGameInstance->PhysXTick(fTimeDelta);
 
+	//if (m_pGameInstance->Key_Down(DIK_U))
+	//{
+	//	m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_XBeam"));
+	//}
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 	{
 		DestroyWindow(g_hWnd);

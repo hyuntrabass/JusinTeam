@@ -338,6 +338,9 @@ namespace Client
 		StaticPass_Worldmap_Cloud,
 		StaticPsss_Rim,
 		StaticPass_DiffEffect,
+		StaticPass_SingleColorAlpha,
+		StaticPass_MaskAlpha,
+		StaticPass_DiffAlpha,
 		StaticPass_End,
 	};
 
