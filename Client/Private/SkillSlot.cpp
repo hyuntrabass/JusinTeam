@@ -119,7 +119,7 @@ HRESULT CSkillSlot::Set_Skill(SKILLINFO tSkillInfo)
 	}
 
 	CSkill::SKILL_DESC SkillDesc = {};
-	SkillDesc.fDepth = m_fDepth - 0.01;
+	SkillDesc.fDepth = m_fDepth - 0.01f;
 	SkillDesc.tSkillInfo = tSkillInfo;
 	SkillDesc.vPosition = _vec2(m_fX, m_fY);
 	SkillDesc.vSize = _vec2(m_fSizeX, m_fSizeY);

@@ -58,6 +58,7 @@ private:
 
 	vector<class CSkillDesc*>					m_vecSkillDesc[WP_END];
 
+	LIGHT_DESC									m_Light_Desc{};
 
 private:
 	void Init_SkillBookState(); 
