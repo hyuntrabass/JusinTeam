@@ -362,20 +362,8 @@ void CPlayer::Tick(_float fTimeDelta)
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
-	/*
-	if (m_pGameInstance->Key_Down(DIK_N, InputChannel::GamePlay))
-	{
-		CHitEffect::HITEFFECT_DESC Desc{};
-		Desc.iDamage = 467;
-		Desc.pParentTransform = m_pTransformCom;
-		Desc.vTextPosition = _vec2(0.f, 1.5f);
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
-		{
-			return;
-		}
 
-	}
-	*/
+	
 	if (m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
 	{
 		return;
@@ -889,6 +877,17 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 
 	m_Status.Current_Hp -= (iDamage - iDamage * (_int)(m_Status.Armor / 0.01));
 
+	CHitEffect::HITEFFECT_DESC Desc{};
+	_int iRandomX = rand() % 100;
+	_int iRandomY = rand() % 50 + 130;
+	Desc.iDamage = iDamage;
+	Desc.pParentTransform = m_pTransformCom;
+	Desc.isPlayer = true;
+	Desc.vTextPosition = _vec2((_float)(iRandomX - 50) * 0.01f, (_float)iRandomY * 0.01f);
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
+	{
+		return;
+	}
 	CUI_Manager::Get_Instance()->Set_Hp(m_Status.Current_Hp, m_Status.Max_Hp);
 
 	if (m_Status.Current_Hp < 0)

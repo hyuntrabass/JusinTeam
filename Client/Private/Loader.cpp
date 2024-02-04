@@ -810,7 +810,7 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_NumDamage"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Num/Num%d.png"), 9))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Num/Num%d.png"), 10))))
 	{
 		return E_FAIL;
 	}

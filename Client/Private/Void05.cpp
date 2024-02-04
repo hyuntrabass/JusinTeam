@@ -125,6 +125,15 @@ void CVoid05::Set_Damage(_int iDamage, _uint iDamageType)
 	m_iHP -= iDamage;
 	m_bDamaged = true;
 
+	CHitEffect::HITEFFECT_DESC Desc{};
+	Desc.iDamage = iDamage;
+	Desc.pParentTransform = m_pTransformCom;
+	Desc.vTextPosition = _vec2(0.f, 1.5f);
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
+	{
+		return;
+	}
+
 	m_eCurState = STATE_HIT;
 
 	_vec4 vPlayerPos = __super::Compute_PlayerPos();

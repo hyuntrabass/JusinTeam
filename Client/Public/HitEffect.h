@@ -9,6 +9,7 @@ class CHitEffect final : public COrthographicObject
 public:
 	typedef struct tagNameTagDesc
 	{
+		_bool isPlayer{ false };
 		_uint	iDamage;
 		_vec2	vTextPosition;
 		class CTransform* pParentTransform;
@@ -37,6 +38,8 @@ private:
 	HRESULT Bind_ShaderResources();
 
 private:
+	_bool				m_isPlayer{ false };
+	_bool				m_isEffect{ true };
 	LEVEL_ID			m_eLevel{};
 
 	_uint				m_iDamage{};
@@ -50,7 +53,8 @@ private:
 	_vec4				m_vColor{ _vec4(1.f, 1.f, 1.f, 1.f) };
 
 	CTransform*			m_pParentTransform{ nullptr };
-
+	class C3DUITex*		m_pEffect{ nullptr };
+	
 
 
 public:

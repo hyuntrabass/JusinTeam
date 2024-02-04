@@ -672,10 +672,17 @@ PS_OUT PS_Main_LerpColorNAlpha(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-   vector vColor = g_Texture.Sample(LinearSampler, Input.vTex);
-    Output.vColor.xyz = lerp(vColor, g_vColor, 0.6f);
+    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    if(g_vColor.a != 0.f)
+    {
+        Output.vColor.xyz = lerp(Output.vColor, g_vColor, 0.6f);
+    }
 
-    Output.vColor.a *= g_fAlpha;
+    if(Output.vColor.a > 0.1f)
+    {
+        Output.vColor.a = g_fAlpha;
+    }
+
     
     return Output;
 }
