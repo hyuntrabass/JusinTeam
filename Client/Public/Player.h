@@ -356,8 +356,9 @@ private:
 	CRiding* m_pRiding{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CGameObject* m_pNameTag{ nullptr };
-	CCollider* m_pHitCollider{ nullptr };
 	CRenderer* m_pRendererCom{ nullptr };
+	CCollider* m_pHitCollider{ nullptr };
+	CCollider* m_pParryingCollider{ nullptr };
 	CTransform* m_pCameraTransform{ nullptr };
 	CTexture* m_pDissolveTextureCom{ nullptr };
 	CRealtimeVTFModel* m_pModelCom = { nullptr };

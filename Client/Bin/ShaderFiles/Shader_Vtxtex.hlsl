@@ -667,6 +667,19 @@ PS_OUT PS_Main_FadeHorizontal(PS_IN Input)
     return Output;
 
 }
+
+PS_OUT PS_Main_LerpColorNAlpha(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+   vector vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    Output.vColor.xyz = lerp(vColor, g_vColor, 0.6f);
+
+    Output.vColor.a *= g_fAlpha;
+    
+    return Output;
+}
+
 technique11 DefaultTechnique
 {
     pass UI
@@ -1071,5 +1084,17 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_FadeHorizontal();
+    }
+    pass LerpColorNAlpha
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_LerpColorNAlpha();
     }
 };

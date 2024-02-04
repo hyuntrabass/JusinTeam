@@ -167,8 +167,6 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-	
-	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::NPC, m_pTransformCom);
 
 	if (m_strModelTag == TEXT("Prototype_Model_Horse"))
 	{

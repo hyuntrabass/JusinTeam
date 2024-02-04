@@ -1,5 +1,6 @@
 #pragma once
 
+#include "HitEffect.h"
 #include "Skill.h"
 #include "SkillDesc.h"
 #include "SkillBook.h"

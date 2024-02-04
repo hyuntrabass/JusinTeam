@@ -10,6 +10,7 @@ class CItem final : public COrthographicObject
 public:
 	typedef struct tagItemSlotDesc
 	{
+		_bool					isScreen;
 		_bool					bCanInteract;
 		_bool					haveBG{ false };
 		_uint					iNum{ 1 };
@@ -41,6 +42,7 @@ private:
 private:
 	_bool					m_bBorder{ false };
 	_bool					m_bCanInteract{ false };
+	_bool					m_isScreen{ false };
 	_bool					m_haveBG{ false };
 	ITEM					m_eItemDesc{};
 	_uint					m_iNum{1};

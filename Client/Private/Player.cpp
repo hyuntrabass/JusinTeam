@@ -1,8 +1,9 @@
-#include "Arrow.h"
 #include "Player.h"
-#include "FadeBox.h"
 #include "UI_Manager.h"
 #include "Event_Manager.h"
+#include "Arrow.h"
+#include "FadeBox.h"
+#include "HitEffect.h"
 
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -49,7 +50,7 @@ HRESULT CPlayer::Init(void* pArg)
 	Change_Parts(PT_HAIR, 0);
 	Change_Parts(PT_FACE, 0);
 
-	m_pGameInstance->Register_CollisionObject(this, m_pHitCollider, true, m_pAttCollider[AT_Bow_Common]);
+	m_pGameInstance->Register_CollisionObject(this, m_pHitCollider, true, m_pAttCollider[AT_Bow_Common], m_pParryingCollider);
 
 	SURFACETRAIL_DESC Desc{};
 	Desc.vColor = Colors::WhiteSmoke;
@@ -320,11 +321,25 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		m_UsingMotionBlur = false;
 	}
-
+	m_pParryingCollider->Update(m_pTransformCom->Get_World_Matrix());
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
+	/*
+	if (m_pGameInstance->Key_Down(DIK_N, InputChannel::GamePlay))
+	{
+		CHitEffect::HITEFFECT_DESC Desc{};
+		Desc.iDamage = 467;
+		Desc.pParentTransform = m_pTransformCom;
+		Desc.vTextPosition = _vec2(0.f, 1.5f);
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
+		{
+			return;
+		}
+
+	}
+	*/
 	if (m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
 	{
 		return;
@@ -364,6 +379,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 		CEvent_Manager::Get_Instance()->Set_Quest(TEXT("����Ʈ!"));
 
+
 		Change_Weapon(WP_SWORD, SWORD0);
 
 	}
@@ -376,14 +392,15 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	}
 
 #ifdef _DEBUG
-	m_pRendererCom->Add_DebugComponent(m_pHitCollider);
+	//m_pRendererCom->Add_DebugComponent(m_pHitCollider);
+	m_pRendererCom->Add_DebugComponent(m_pParryingCollider);
 
 	//for (int i = 0; i < AT_End; i++)
 	{
-		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Sword_Skill1]);
+		/*m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Sword_Skill1]);
 		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Sword_Skill2]);
 		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Sword_Skill3]);
-		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Sword_Skill4]);
+		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Sword_Skill4]);*/
 	}
 
 #endif // DEBUG
@@ -1066,6 +1083,40 @@ void CPlayer::Move(_float fTimeDelta)
 
 		}
 
+
+		/*CSkillBlock::SKILLSLOT eSlotIdx{};
+		_bool isPress = false;
+		if (m_pGameInstance->Key_Down(DIK_1))
+		{
+			eSlotIdx = CSkillBlock::SKILL1;
+			isPress = true;
+		}
+		if (m_pGameInstance->Key_Down(DIK_2))
+		{
+			eSlotIdx = CSkillBlock::SKILL2;
+			isPress = true;
+		}
+		if (m_pGameInstance->Key_Down(DIK_3))
+		{
+			eSlotIdx = CSkillBlock::SKILL3;
+			isPress = true;
+		}
+		if (m_pGameInstance->Key_Down(DIK_4))
+		{
+			eSlotIdx = CSkillBlock::SKILL4;
+			isPress = true;
+		}
+		if (isPress && m_fSkiilTimer > 1.2f)
+		{
+			_int iSkillNum = 0;
+			if (CUI_Manager::Get_Instance()->Use_Skill(m_Current_Weapon, eSlotIdx, &iSkillNum))
+			{
+				Ready_Skill((Skill_Type)iSkillNum);
+				return;
+			}
+
+		}*/
+
 		if (m_pGameInstance->Key_Down(DIK_5))
 		{
 			if (m_eState == Idle)
@@ -1529,7 +1580,7 @@ void CPlayer::Is_Climb(_float fTimeDelta)
 
 void CPlayer::Common_Attack()
 {
-	if (m_fAttTimer < 0.55f)
+	if (m_fAttTimer < 0.75f)
 	{
 		return;
 	}
@@ -1540,7 +1591,7 @@ void CPlayer::Common_Attack()
 	}
 
 	m_Animation.bSkipInterpolation = false;
-	m_Animation.fAnimSpeedRatio = 1.7f;
+	m_Animation.fAnimSpeedRatio = 2.f;
 
 	m_iCurrentSkill_Index = 0;
 	if (m_Current_Weapon == WP_SWORD)
@@ -2186,7 +2237,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			m_pTransformCom->Set_Speed(m_fSkillSpeed / 3);
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
-		if (Index >= 11.f && Index <= 13.f)
+		if (Index >= 30.f && Index <= 32.f)
 		{
 			if (!m_bAttacked)
 			{
@@ -2201,11 +2252,11 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			}
 
 		}
-		else if (Index > 15.f && Index <= 16.f)
+		else if (Index > 33.f && Index <= 35.f)
 		{
 			m_bAttacked = false;
 		}
-		else if (Index >= 30.f && Index <= 32.f)
+		else if (Index >= 36.f && Index <= 40.f)
 		{
 			m_fSkiilTimer = 0;
 			if (!m_bAttacked)
@@ -2221,7 +2272,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 			}
 		}
-		else if (Index > 34.f && Index <= 37.f)
+		else if (Index > 40.f && Index <= 43.f)
 		{
 			m_bAttacked = false;
 		}
@@ -2843,7 +2894,7 @@ void CPlayer::Init_State()
 		m_Animation.fDurationRatio = 1.f;
 		m_Animation.fStartAnimPos = 0.f;
 		m_iSuperArmor = 0;
-		m_Animation.fAnimSpeedRatio = 1.7f;
+		m_Animation.fAnimSpeedRatio = 2.f;
 		if (m_pGameInstance->Get_TimeRatio() < 1.f)
 		{
 			m_pGameInstance->Set_TimeRatio(1.f);
@@ -3559,7 +3610,7 @@ HRESULT CPlayer::Add_Components()
 
 
 
-
+	
 
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
 	CollDesc.vExtents = _vec3(2.f, 2.f, 1.f);
@@ -3569,6 +3620,16 @@ HRESULT CPlayer::Add_Components()
 	{
 		return E_FAIL;
 	}
+
+	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
+	CollDesc.vExtents = _vec3(1.5f,1.5f, 0.14f);
+	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.3f, 1.f);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Parrying"), reinterpret_cast<CComponent**>(&m_pParryingCollider), &CollDesc)))
+	{
+		return E_FAIL;
+	}
+	
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
 	CollDesc.vExtents = _vec3(0.65f, 2.f, 1.5f);
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.2f, 1.f);
@@ -3736,6 +3797,7 @@ void CPlayer::Free()
 
 	Safe_Release(m_pTest_Trail);
 	Safe_Release(m_pNameTag);
+	Safe_Release(m_pParryingCollider);
 	Safe_Release(m_pDissolveTextureCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pModelCom);

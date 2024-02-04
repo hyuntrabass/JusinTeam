@@ -47,6 +47,7 @@ private:
 	_uint m_iArrowRain = {};
 	_bool m_bArrowRain_Start{};
 	SKILLMODEL_ANIM m_eCurAnimState{ SKILL_END };
+
 public:
 	void Change_AnimState(SKILLMODEL_ANIM eAnim);// { m_eCurAnimState = eAnim; }
 

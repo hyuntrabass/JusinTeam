@@ -36,14 +36,6 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Skill_Model"), TEXT("Prototype_GameObject_Skill_Model"))))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Scarecrow"), TEXT("Prototype_GameObject_Scarecrow"))))
-	{
-		return E_FAIL;
-	}
 	if (FAILED(Ready_Light()))
 	{
 		MSG_BOX("Failed to Ready Light");
