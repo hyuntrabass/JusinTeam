@@ -1,24 +1,27 @@
 float3 g_fLuminace = float3(0.2126f, 0.7152f, 0.0722f);
 float g_fThreshold;
 
-float3 g_OffSetVector[16] =
+float3 g_OffSetVector[14] =
 {
-    { -1.0f, -1.0f, -1.0f },
-    { -1.0f, -1.0f, 0.0f },
-    { -1.0f, -1.0f, 1.0f },
-    { -1.0f, 0.0f, -1.0f },
-    { -1.0f, 0.0f, 0.0f },
-    { -1.0f, 0.0f, 1.0f },
-    { -1.0f, 1.0f, -1.0f },
-    { -1.0f, 1.0f, 0.0f },
-    { -1.0f, 1.0f, 1.0f },
-    { 1.0f, -1.0f, -1.0f },
-    { 1.0f, -1.0f, 0.0f },
-    { 1.0f, -1.0f, 1.0f },
-    { 1.0f, 0.0f, -1.0f },
-    { 1.0f, 0.0f, 0.0f },
-    { 1.0f, 0.0f, 1.0f },
-    { 1.0f, 1.0f, -1.0f },
+    { 1.f, 1.f, 1.f },
+    { -1.f, -1.f, -1.f },
+    { -1.f, 1.f, 1.f },
+    { 1.f, -1.f, -1.f },
+    { 1.f, 1.f, -1.f },
+    { -1.f, -1.f, 1.f },
+    { -1.f, 1.f, -1.f },
+    { 1.f, -1.f, 1.f },
+    { -1.f, 0.f, 0.f },
+    { 1.f, 0.f, 0.f },
+    { 0.f, -1.f, 0.f },
+    { 0.f, 1.f, 0.f },
+    { 0.f, 0.f, -1.f },
+    { 0.f, 0.f, 1.f }
+};
+
+float g_Random[14] =
+{
+    0.2758f, 0.4928f, 0.3812f, 0.7589f, 0.9283f, 0.6729f, 0.3438f, 0.8947f, 0.5623f, 0.6829f, 0.7456f, 0.9382f, 0.8274f, 0.9629f
 };
 
 struct SSAO_DESC
@@ -78,6 +81,14 @@ sampler LinearMirrorSampler = sampler_state
     Filter = MIN_MAG_MIP_LINEAR;
     AddressU = Mirror;
     AddressV = Mirror;
+};
+
+sampler LinearBorderSampler = sampler_state
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Border;
+    AddressV = Border;
+    BorderColor = vector(1e5f, 1e5f, 1e5f, 1e5f);
 };
 
 // Rasterizer State
