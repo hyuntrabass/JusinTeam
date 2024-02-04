@@ -382,6 +382,7 @@ namespace Client
 		VTPass_NineSlice,
 		VTPass_FadeVertical,
 		VTPass_FadeHorizontal,
+		VTPass_LerpColorNAlpha,
 		VTPass_End
 	};
 

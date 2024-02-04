@@ -58,6 +58,7 @@ public:
 	const RECT& Get_Rect() const { return m_rcRect; }
 	const _vec2& Get_Position()const { return _vec2(m_fX, m_fY); }
 	const _vec2& Get_Size() const { return _vec2(m_fSizeX, m_fSizeY); }
+	_bool Use_Skill();
 
 private:
 	HRESULT Add_Components();

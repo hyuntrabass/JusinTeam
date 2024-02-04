@@ -8,6 +8,7 @@ BEGIN(Engine)
 class CGameInstance;
 END
 BEGIN(Client)
+class CSkillSlot;
 class CItemBlock;
 class CSkillBlock;
 class CInvenFrame;
@@ -51,7 +52,8 @@ private:
 	map<const wstring, ITEM> m_mapItem;
 
 	CGameInstance*	m_pGameInstance{ nullptr };
-	CGameObject*	m_pSkillSlots[WP_END][CSkillBlock::SKILL_END];
+	CSkillBlock*	m_pSkillBlock{ nullptr };
+	CSkillSlot*		m_pSkillSlots[WP_END][CSkillBlock::SKILL_END];
 	CGameObject*	m_pItemSlots[CItemBlock::ITEMSLOT_END];
 	CGameObject*	m_pInvenItemSlots[CItemBlock::ITEMSLOT_END];
 	CGameObject*	m_pInven{ nullptr };
@@ -86,10 +88,12 @@ public:
 	HRESULT Set_InvenFrame(CGameObject* pGameObject);
 	HRESULT Set_ItemSlots(CItemBlock::ITEMSLOT eSlot, CGameObject* pGameObject);
 	HRESULT Set_InvenItemSlots(CItemBlock::ITEMSLOT eSlot, CGameObject* pGameObject);
-	HRESULT Set_SkillBookSlots(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot, CGameObject* pGameObject);
+	HRESULT Set_SkillBookSlots(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot, CSkillSlot* pGameObject);
+	HRESULT Set_SkillBlock(CSkillBlock* pGameObject);
 
+	_bool Use_Skill(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot, _int* iIndex);
 	CGameObject* Get_InvenFrame();
-	SKILLINFO Get_SkillSlot(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot);
+	CSkillSlot* Get_SkillSlot(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot);
 	CGameObject* Get_ItemSlots(CItemBlock::ITEMSLOT eSlot);
 	_bool Is_ItemSlotFull(CItemBlock::ITEMSLOT eSlot);
 	HRESULT Set_Item_In_EmptySlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* iItemNum);

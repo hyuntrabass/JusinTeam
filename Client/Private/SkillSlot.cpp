@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "TextButton.h"
 #include "UI_Manager.h"
+#include "Event_Manager.h"
 #include "Skill.h"
 
 CSkillSlot::CSkillSlot(_dev pDevice, _context pContext)
@@ -49,8 +50,6 @@ HRESULT CSkillSlot::Init(void* pArg)
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
-
-	m_pSkill = nullptr;
 	m_rcRect = {
 		  (LONG)(m_fX - m_fSizeX * 0.5f),
 		  (LONG)(m_fY - m_fSizeY * 0.5f),
@@ -63,10 +62,6 @@ HRESULT CSkillSlot::Init(void* pArg)
 
 void CSkillSlot::Tick(_float fTimeDelta)
 {
-	if (m_pSkill == nullptr)
-	{
-		m_isFull = false;
-	}	
 
 	if (m_eSlotMode == SCREEN)
 	{
@@ -122,14 +117,15 @@ HRESULT CSkillSlot::Set_Skill(SKILLINFO tSkillInfo)
 	SkillDesc.fDepth = m_fDepth - 0.01;
 	SkillDesc.tSkillInfo = tSkillInfo;
 	SkillDesc.vPosition = _vec2(m_fX, m_fY);
-	SkillDesc.vSize = _vec2(m_fSizeX, m_fSizeY);
 	if (m_eSlotMode == SCREEN)
 	{
-		//SkillDesc.vSize = _vec2(m_fSizeX - 20.f, m_fSizeY - 20.f);
+		SkillDesc.vSize = _vec2(m_fSizeX - 20.f, m_fSizeY - 20.f);
+		SkillDesc.isScreen = true;
 	}
 	else
 	{
-		//SkillDesc.vSize = _vec2(m_fSizeX, m_fSizeY);
+		SkillDesc.vSize = _vec2(m_fSizeX, m_fSizeY);
+		SkillDesc.isScreen = false;
 	}
 
 	m_pSkill = (CSkill*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Skill"), &SkillDesc);
@@ -153,6 +149,21 @@ SKILLINFO CSkillSlot::Get_SkillInfo()
 		return Info;
 	}
 	return m_pSkill->Get_SkillInfo();
+}
+
+_bool CSkillSlot::Use_Skill()
+{
+	if (m_pSkill == nullptr)
+	{	
+		CEvent_Manager::Get_Instance()->Set_Alert(TEXT("스킬이 없습니다."));
+		return false;
+	}
+	if (m_pSkill->Use_Skill())
+	{
+		return true;
+	}
+	
+	return false;
 }
 
 HRESULT CSkillSlot::Add_Components()
