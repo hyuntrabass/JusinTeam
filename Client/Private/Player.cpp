@@ -3,6 +3,7 @@
 #include "Event_Manager.h"
 #include "Arrow.h"
 #include "FadeBox.h"
+#include "HitEffect.h"
 
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -361,6 +362,20 @@ void CPlayer::Tick(_float fTimeDelta)
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
+	/*
+	if (m_pGameInstance->Key_Down(DIK_N, InputChannel::GamePlay))
+	{
+		CHitEffect::HITEFFECT_DESC Desc{};
+		Desc.iDamage = 467;
+		Desc.pParentTransform = m_pTransformCom;
+		Desc.vTextPosition = _vec2(0.f, 1.5f);
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
+		{
+			return;
+		}
+
+	}
+	*/
 	if (m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
 	{
 		return;
@@ -400,10 +415,12 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 		CEvent_Manager::Get_Instance()->Set_Quest(TEXT("����Ʈ!"));
 
+
 		Change_Weapon(WP_SWORD, SWORD0);
 
 	}
 
+	
 	for (int i = 0; i < 5; i++)
 	{
 		m_pLeft_Trail[i]->Late_Tick(fTimeDelta);
@@ -1068,10 +1085,14 @@ void CPlayer::Move(_float fTimeDelta)
 
 		}
 
+
+		/*
+		
 		if (m_pGameInstance->Key_Down(DIK_1))
 		{
 			if (m_eState != Skill1)
 			{
+				
 				Ready_Skill(ST_Skill1); // 1번창에 있던 스킬 넣어주기
 				return;
 			}
@@ -1104,6 +1125,40 @@ void CPlayer::Move(_float fTimeDelta)
 				return;
 			}
 
+		}
+		*/
+
+		CSkillBlock::SKILLSLOT eSlotIdx{};
+		_bool isPress = false;
+		if (m_pGameInstance->Key_Down(DIK_1))
+		{
+			eSlotIdx = CSkillBlock::SKILL1;
+			isPress = true;
+		}
+		if (m_pGameInstance->Key_Down(DIK_2))
+		{
+			eSlotIdx = CSkillBlock::SKILL2;
+			isPress = true;
+		}
+		if (m_pGameInstance->Key_Down(DIK_3))
+		{
+			eSlotIdx = CSkillBlock::SKILL3;
+			isPress = true;
+		}
+		if (m_pGameInstance->Key_Down(DIK_4))
+		{
+			eSlotIdx = CSkillBlock::SKILL4;
+			isPress = true;
+		}
+		if (isPress && m_fSkiilTimer > 1.2f)
+		{
+			_int iSkillNum = 0;
+			if (CUI_Manager::Get_Instance()->Use_Skill(m_Current_Weapon, eSlotIdx, &iSkillNum))
+			{
+				Ready_Skill((Skill_Type)iSkillNum);
+				return;
+			}
+			
 		}
 
 		if (m_pGameInstance->Key_Down(DIK_5))

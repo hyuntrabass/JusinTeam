@@ -382,7 +382,7 @@ _bool CCamera_Main::Inven_Mode(_float fTimeDelta)
 
 void CCamera_Main::Shop_Mode(_float fTimeDelta)
 {
-	CTransform* pTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_GAMEPLAY, TEXT("Layer_ItemMerchant"), TEXT("Com_Transform"));
+	CTransform* pTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_ItemMerchant"), TEXT("Com_Transform"));
 	_vec4 vPos = pTransform->Get_State(State::Pos);
 	_vec4 vShopPos = _vec4(vPos.x - 0.16f, 1001.4f, vPos.z + 1.f, 1.f);
 

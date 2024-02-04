@@ -391,6 +391,12 @@
     <Filter Include="02.GameObjects\08. Boss\Groar_Boss\X_Beam">
       <UniqueIdentifier>{506303cf-f24b-4443-ae3e-a5a60c5e5c63}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\UIEffect">
+      <UniqueIdentifier>{a46a4b97-980d-4a57-863c-226e482fb457}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\UIEffect\Hit">
+      <UniqueIdentifier>{47605e18-940e-42be-842c-9bf301c51a13}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -783,6 +789,9 @@
     <ClInclude Include="..\Public\Tentacle.h">
       <Filter>02.GameObjects\08. Boss\Groar_Boss\Tentacle</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\HitEffect.h">
+      <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Hit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1169,6 +1178,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Tentacle.cpp">
       <Filter>02.GameObjects\08. Boss\Groar_Boss\Tentacle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HitEffect.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Hit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

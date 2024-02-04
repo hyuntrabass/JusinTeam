@@ -38,7 +38,7 @@ private:
 	_bool										m_isActive{ false };
 
 	_float										m_fDir{ 1.f };
-	_float										m_fTime{ 0.4f };
+	_float										m_fTime{ 0.2f };
 	CGameObject*								m_pMoney{ nullptr };
 	CGameObject*								m_pDiamond{ nullptr };
 	CGameObject*								m_pNotify{ nullptr };
