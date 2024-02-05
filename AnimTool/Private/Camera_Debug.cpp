@@ -132,6 +132,10 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
 	{
 		m_fSpeed += fSpeedRatio;
+		if (m_fSpeed >= 10.f)
+		{
+			m_fSpeed = 10.f;
+		}
 	}
 	else if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
 	{

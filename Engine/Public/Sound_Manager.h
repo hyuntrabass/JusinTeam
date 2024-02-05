@@ -18,6 +18,7 @@ public:
 	void StopSound(_uint iChannel);
 	void StopAll();
 	void SetChannelVolume(_uint iChannel, _float fVolume);
+	void SetChannelStartVolume(_uint iChannel);
 	void Update();
 	_bool Get_IsPlayingSound(_uint iChannel);
 	_float GetChannelVolume(_uint iChannel);
@@ -27,6 +28,7 @@ private:
 	FMOD::Channel** m_pChannelArr{};
 	FMOD::System* m_pSystem{ nullptr };
 	vector<_bool> m_IsPlayingSounds;
+	vector<_float> m_StartVolumes;
 	
 private:
 	HRESULT LoadSoundFile();

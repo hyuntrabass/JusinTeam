@@ -23,6 +23,12 @@ HRESULT CSound_Manager::Init()
 		m_IsPlayingSounds.push_back(false);
 	}
 
+	m_StartVolumes.reserve(FMOD_MAX_CHANNEL_WIDTH);
+	for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+	{
+		m_StartVolumes.push_back(0.5f);
+	}
+
 	return S_OK;
 }
 
@@ -53,6 +59,8 @@ _int CSound_Manager::Play_Sound(const wstring& strSoundTag, _float fVolume, _boo
 			}
 
 			m_pChannelArr[i]->setVolume(fVolume);
+			//이전 사운드 저장
+			m_StartVolumes[i] = fVolume;
 
 			m_pSystem->update();
 
@@ -76,6 +84,8 @@ void CSound_Manager::PlayBGM(const wstring& strSoundTag, _float fVolume)
 	m_pChannelArr[0]->setMode(FMOD_LOOP_NORMAL);
 
 	m_pChannelArr[0]->setVolume(fVolume);
+	//이전 사운드 저장
+	m_StartVolumes[0] = fVolume;
 
 	m_pSystem->update();
 }
@@ -100,6 +110,13 @@ void CSound_Manager::SetChannelVolume(_uint iChannel, _float fVolume)
 	m_pSystem->update();
 }
 
+void CSound_Manager::SetChannelStartVolume(_uint iChannel)
+{
+	m_pChannelArr[iChannel]->setVolume(m_StartVolumes[iChannel]);
+
+	m_pSystem->update();
+}
+
 void CSound_Manager::Update()
 {
 	for (int i = 0; i < FMOD_MAX_CHANNEL_WIDTH; ++i)
@@ -107,6 +124,10 @@ void CSound_Manager::Update()
 		_bool bPlay = false;
 		m_pChannelArr[i]->isPlaying(&bPlay);
 		m_IsPlayingSounds[i] = bPlay;
+		if (not m_IsPlayingSounds[i])
+		{
+			m_StartVolumes[i] = 0.5f;
+		}
 	}
 }
 

@@ -1270,6 +1270,16 @@ void CGameInstance::Set_ChannelVolume(_uint iChannel, _float fVolume)
 	return m_pSound_Manager->SetChannelVolume(iChannel, fVolume);
 }
 
+void CGameInstance::Set_ChannelStartVolume(_uint iChannel)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->SetChannelStartVolume(iChannel);
+}
+
 void CGameInstance::Set_ZoomFactor(const _float fFactor)
 {
 	m_fZoomFactor = fFactor;
