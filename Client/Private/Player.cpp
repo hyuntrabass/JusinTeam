@@ -89,7 +89,7 @@ HRESULT CPlayer::Init(void* pArg)
 	SurfaceDesc.iNumVertices = 20;
 	SurfaceDesc.vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
 	SurfaceDesc.strMaskTextureTag = L"FX_G_Note_MusicSheet001_Tex";
-	m_pTest_Trail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &SurfaceDesc);
+
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER);
 	return S_OK;
@@ -140,11 +140,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	m_OldWorldMatrix = m_pTransformCom->Get_World_Matrix();
 
-	if (m_pTest_Trail)
-	{
-		_vec3 vCenterforTrail = _vec3(m_pTransformCom->Get_CenterPos());
-		m_pTest_Trail->Tick(vCenterforTrail + _vec3(0.f, 1.f, 0.f), vCenterforTrail);
-	}
+
 
 
 	if (m_bStartGame)
@@ -384,10 +380,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 
 
-	if (m_pTest_Trail)
-	{
-		m_pTest_Trail->Late_Tick(fTimeDelta);
-	}
+
 
 #ifdef _DEBUG
 	//m_pRendererCom->Add_DebugComponent(m_pHitCollider);
@@ -1239,31 +1232,33 @@ void CPlayer::Move(_float fTimeDelta)
 	if ((m_fSkiilTimer > 1.2f && m_eState != SkillR && m_eState != Aim_Idle))
 	{
 		//퀘스트 개수에 따라 bool로 통과하도록 한번 거쳐야할듯 아니면 계속 맵에서 찾아야되니까 
-		if (m_pGameInstance->Key_Pressing(DIK_W))
-		{
-			CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_OPENINVEN);
-			vDirection += vForwardDir;
+	
+			if (m_pGameInstance->Key_Pressing(DIK_W))
+			{
+				CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_OPENINVEN);
+				vDirection += vForwardDir;
 
-			hasMoved = true;
+				hasMoved = true;
 
-		}
-		else if (m_pGameInstance->Key_Pressing(DIK_S))
-		{
-			vDirection -= vForwardDir;
-			hasMoved = true;
-		}
+			}
+			else if (m_pGameInstance->Key_Pressing(DIK_S))
+			{
+				vDirection -= vForwardDir;
+				hasMoved = true;
+			}
 
-		if (m_pGameInstance->Key_Pressing(DIK_D))
-		{
-			vDirection += vRightDir;
-			hasMoved = true;
-		}
-		else if (m_pGameInstance->Key_Pressing(DIK_A))
-		{
-			vDirection -= vRightDir;
-			hasMoved = true;
-		}
-
+			if (m_pGameInstance->Key_Pressing(DIK_D))
+			{
+				vDirection += vRightDir;
+				hasMoved = true;
+			}
+			else if (m_pGameInstance->Key_Pressing(DIK_A))
+			{
+				vDirection -= vRightDir;
+				hasMoved = true;
+			}
+			vDirection.Normalize();
+		
 		if (m_pGameInstance->Key_Down(DIK_F))
 		{
 			if (m_bIsClimb or m_bReadySwim or m_hasJumped)
@@ -1318,8 +1313,8 @@ void CPlayer::Move(_float fTimeDelta)
 			_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
 
 			_float fInterpolTime = 0.4f;
-			m_vOriginalLook = vLook;
-			if (m_fInterpolationRatio < fInterpolTime)
+
+			if (m_fInterpolationRatio < fInterpolTime or m_vOriginalLook == vLook)
 			{
 				if (not m_isInterpolating)
 				{
@@ -1431,9 +1426,9 @@ void CPlayer::Move(_float fTimeDelta)
 
 			_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
 
-			_float fInterpolTime = 0.4f;
-			m_vOriginalLook = vLook;
-			if (m_fInterpolationRatio < fInterpolTime)
+			_float fInterpolTime = 2.f;
+		
+		/*	if (m_fInterpolationRatio < fInterpolTime)
 			{
 				if (not m_isInterpolating)
 				{
@@ -1446,14 +1441,29 @@ void CPlayer::Move(_float fTimeDelta)
 
 				_float fRatio = m_fInterpolationRatio / fInterpolTime;
 
+				if (fRatio > 1.f)
+				{
+					fRatio = 1.f;
+				}
+
 				vDirection = XMVectorLerp(m_vOriginalLook, vDirection, fRatio);
 			}
 			else
 			{
 				m_isInterpolating = false;
 				m_fInterpolationRatio = 0.f;
+				m_vOriginalLook = vLook;
+			}*/
+			if (vLook.Dot(vDirection) < 0)
+			{
+				vLook = vDirection;
 			}
-			m_pTransformCom->LookAt_Dir(vDirection);
+			else
+			{
+				vLook = XMVectorLerp(vLook, vDirection, 0.15f);
+			}
+
+			m_pTransformCom->LookAt_Dir(vLook);
 
 		}
 		else if (m_eState == Walk or m_eState == Run_Start or
@@ -1629,14 +1639,11 @@ void CPlayer::Common_Attack()
 	m_iCurrentSkill_Index = 0;
 	if (m_Current_Weapon == WP_SWORD)
 	{
-		CCollider* pMonCollider = m_pGameInstance->Get_Nearest_MonsterCollider();
-		if (pMonCollider != nullptr)
-		{
-			_vec4 vMonPos = _vec4(pMonCollider->Get_ColliderPos(), 1.f);
-			vMonPos.y = m_pTransformCom->Get_State(State::Pos).y;
-			m_pTransformCom->LookAt(vMonPos);
-		}
+		_vec4 vCamLook = m_pGameInstance->Get_CameraLook();
+		vCamLook.y = 0.f;
+		m_pTransformCom->LookAt_Dir(vCamLook);
 
+		
 		switch (m_iAttackCombo)
 		{
 		case 0:
@@ -1723,7 +1730,7 @@ void CPlayer::Common_Attack()
 			break;
 		}
 	}
-
+	m_bAttacked = false;
 }
 void CPlayer::Skill1_Attack()
 {
@@ -1731,13 +1738,10 @@ void CPlayer::Skill1_Attack()
 	if (m_Current_Weapon == WP_SWORD)
 	{
 
-		CCollider* pMonCollider = m_pGameInstance->Get_Nearest_MonsterCollider();
-		if (pMonCollider != nullptr)
-		{
-			_vec4 vMonPos = _vec4(pMonCollider->Get_ColliderPos(), 1.f);
-			vMonPos.y = m_pTransformCom->Get_State(State::Pos).y;
-			m_pTransformCom->LookAt(vMonPos);
-		}
+		_vec4 vCamLook = m_pGameInstance->Get_CameraLook();
+		vCamLook.y = 0.f;
+		m_pTransformCom->LookAt_Dir(vCamLook);
+
 		m_pTransformCom->Set_Speed(6.f);
 		m_Animation.iAnimIndex = m_SwordSkill[0];
 		m_Animation.isLoop = false;
@@ -1766,19 +1770,15 @@ void CPlayer::Skill1_Attack()
 		m_Animation.fDurationRatio = 0.8f;
 		m_fSkiilTimer = 0.f;
 	}
-
+	m_bAttacked = false;
 }
 void CPlayer::Skill2_Attack()
 {
 	if (m_Current_Weapon == WP_SWORD)
 	{
-		CCollider* pMonCollider = m_pGameInstance->Get_Nearest_MonsterCollider();
-		if (pMonCollider != nullptr)
-		{
-			_vec4 vMonPos = _vec4(pMonCollider->Get_ColliderPos(), 1.f);
-			vMonPos.y = m_pTransformCom->Get_State(State::Pos).y;
-			m_pTransformCom->LookAt(vMonPos);
-		}
+		_vec4 vCamLook = m_pGameInstance->Get_CameraLook();
+		vCamLook.y = 0.f;
+		m_pTransformCom->LookAt_Dir(vCamLook);
 
 		m_Animation.iAnimIndex = m_SwordSkill[1];
 		m_Animation.isLoop = false;
@@ -1808,20 +1808,16 @@ void CPlayer::Skill2_Attack()
 		m_iSuperArmor = { 1.f };
 		m_fSkiilTimer = 0.f;
 	}
-
+	m_bAttacked = false;
 }
 void CPlayer::Skill3_Attack()
 {
 	if (m_Current_Weapon == WP_SWORD)
 	{
 
-		CCollider* pMonCollider = m_pGameInstance->Get_Nearest_MonsterCollider();
-		if (pMonCollider != nullptr)
-		{
-			_vec4 vMonPos = _vec4(pMonCollider->Get_ColliderPos(), 1.f);
-			vMonPos.y = m_pTransformCom->Get_State(State::Pos).y;
-			m_pTransformCom->LookAt(vMonPos);
-		}
+		_vec4 vCamLook = m_pGameInstance->Get_CameraLook();
+		vCamLook.y = 0.f;
+		m_pTransformCom->LookAt_Dir(vCamLook);
 
 		m_Animation.iAnimIndex = m_SwordSkill[2];
 		m_Animation.isLoop = false;
@@ -1849,7 +1845,7 @@ void CPlayer::Skill3_Attack()
 		m_iSuperArmor = { 1.f };
 		m_fSkiilTimer = 0.f;
 	}
-
+	m_bAttacked = false;
 }
 
 void CPlayer::Skill4_Attack()
@@ -1884,7 +1880,7 @@ void CPlayer::Skill4_Attack()
 		m_iSuperArmor = { 1.f };
 		m_fSkiilTimer = 0.f;
 	}
-
+	m_bAttacked = false;
 }
 void CPlayer::SkillR_Attack()
 {
@@ -2021,7 +2017,7 @@ void CPlayer::After_CommonAtt(_float fTimeDelta)
 			}
 			else if (m_iAttackCombo == 4)
 			{
-				m_pTransformCom->Set_Speed(25.f);
+				m_pTransformCom->Set_Speed(14.f);
 				m_pTransformCom->Go_Straight(fTimeDelta);
 				Cam_AttackZoom(2.2f);
 			}
@@ -2425,16 +2421,10 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		if (Index >= 14.f && Index <= 20.f)
 		{
 			m_pGameInstance->Set_TimeRatio(0.1f);
-			if (!m_bAttacked)
-			{
-				Check_Att_Collider(AT_Sword_Skill4);
-				m_bAttacked = true;
-			}
 		}
 		else if (Index >= 26.f && Index <= 30.f)
 		{
 			m_pGameInstance->Set_TimeRatio(0.1f);
-
 		}
 		else if (Index >= 35.f && Index <= 40.f)
 		{
@@ -2461,7 +2451,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			m_pGameInstance->Set_TimeRatio(1.f);
 		}
 
-		if (Index >= 14.f && Index <= 16.f)
+		if (Index >= 14.f && Index <= 17.f)
 		{
 			if (!m_bAttacked)
 			{
@@ -2478,6 +2468,10 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			m_pGameInstance->Set_AimMode(true, _vec3(-1.f, 2.f, 1.f));
 
 			m_pGameInstance->Set_ShakeCam(true);
+		}
+		else if (Index >= 18.f && Index <= 24.f)
+		{
+			m_bAttacked = false;
 		}
 		else if (Index >= 26.f && Index <= 28.f)
 		{
@@ -2502,7 +2496,11 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			//m_pGameInstance->Set_AimMode(true, _vec3(0.f, 6.f, 0.7f));
 			m_pCameraTransform->LookAt(m_pTransformCom->Get_CenterPos());
 		}
-		else if (Index >= 56.f && Index <= 57.f)
+		else if (Index >= 41.f && Index <= 44.f)
+		{
+			m_bAttacked = false;
+		}
+		else if (Index >= 56.f && Index <= 58.f)
 		{
 			if (!m_bAttacked)
 			{
@@ -2515,6 +2513,10 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 			Cam_AttackZoom(4.f);
 
+		}
+		else if (Index >= 59.f && Index <= 62.f)
+		{
+			m_bAttacked = false;
 		}
 		else if (Index >= 67.f && Index <= 68.f)
 		{
@@ -3589,8 +3591,8 @@ void CPlayer::Update_Trail(_float fTimeDelta)
 	{
 		if (m_pLeft_Trail != nullptr)
 		{
-			_Matrix = _mat::CreateTranslation(0.f, -0.8f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
-			_mat _Matrix2 = _mat::CreateTranslation(0.f, -1.2f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
+			_Matrix = _mat::CreateTranslation(0.f, -0.5f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
+			_mat _Matrix2 = _mat::CreateTranslation(0.f, -0.8f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
 			for (int i = 0; i < 5; i++)
 			{
 				m_pLeft_Trail[i]->Tick(_Matrix2.Position_vec3(), _Matrix.Position_vec3());
@@ -3600,8 +3602,8 @@ void CPlayer::Update_Trail(_float fTimeDelta)
 
 		if (m_pRight_Trail != nullptr)
 		{
-			_Matrix = _mat::CreateTranslation(0.f, 0.8f, 0.f) * *m_Right_Mat * m_pTransformCom->Get_World_Matrix();
-			_mat _Matrix2 = _mat::CreateTranslation(0.f, 1.2f, 0.f) * *m_Right_Mat * m_pTransformCom->Get_World_Matrix();
+			_Matrix = _mat::CreateTranslation(0.f, 0.5f, 0.f) * *m_Right_Mat * m_pTransformCom->Get_World_Matrix();
+			_mat _Matrix2 = _mat::CreateTranslation(0.f, 0.8f, 0.f) * *m_Right_Mat * m_pTransformCom->Get_World_Matrix();
 			for (int i = 0; i < 5; i++)
 			{
 				m_pRight_Trail[i]->Tick(_Matrix2.Position_vec3(), _Matrix.Position_vec3());
@@ -3845,13 +3847,12 @@ void CPlayer::Free()
 	}
 
 
-	Safe_Release(m_pTest_Trail);
 	Safe_Release(m_pNameTag);
 	Safe_Release(m_pParryingCollider);
 	Safe_Release(m_pDissolveTextureCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
-	Safe_Release(m_pCameraTransform);
+
 	Safe_Release(m_pHitCollider);
 }
