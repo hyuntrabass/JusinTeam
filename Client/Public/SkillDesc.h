@@ -60,6 +60,7 @@ public:
 	void Select_Skill(_bool isSelect);
 	_bool Is_Selected() { return m_bSelect; }
 	_bool Is_SkillIn() { return m_bSkillIn; }
+	_bool Is_UnLocked() { return (_uint)m_eCurType; }
 
 private:
 	HRESULT Set_Type();

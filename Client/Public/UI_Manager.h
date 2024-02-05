@@ -33,6 +33,7 @@ private:
 	_bool			m_isInvenActive{ false };
 	_bool			m_isSetInvenState{ false };
 	_bool			m_bTimeStop{ false };
+	_bool			m_isBoss{ false };
 
 
 	_uint			m_iCoin{};
@@ -117,6 +118,7 @@ public:
 	void Set_MouseState(MOUSESTATE eState) { m_eMouseState = eState; }
 	void Set_Hp(_int iHp, _int iMaxHp) { m_vHp = _vec2((_float)iHp, (_float)iMaxHp); }
 	void Set_Mp(_int iMp, _int iMaxMp) { m_vMp = _vec2((_float)iMp, (_float)iMaxMp); }
+	void Set_isBoss(_bool isBoss) { m_isBoss = isBoss; }
 
 
 	void Set_SkillSlotChange(_bool isSkillSlotChange) { m_isSetSkillSlot = isSkillSlotChange; }
@@ -139,6 +141,7 @@ public:
 	const _bool& Is_Picking_UI() const { return m_isPicking; }
 	const _bool& Showing_FullScreenUI() const { return m_isShowing; }
 	const _bool& Is_InvenActive() const { return m_isInvenActive; }
+	const _bool& Is_BossFight() const { return m_isBoss; }
 
 	void Level_Up();
 public:

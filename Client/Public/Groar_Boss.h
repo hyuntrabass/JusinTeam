@@ -136,6 +136,8 @@ private:
 	CCollider* m_pBodyColliderCom = { nullptr };
 	CCollider* m_pAttackColliderCom = { nullptr };
 
+	class CHPBoss* m_pHpBoss{ nullptr };
+
 private:
 	GROAR_STATE m_ePreState = STATE_END;
 	GROAR_STATE m_eCurState = STATE_END;

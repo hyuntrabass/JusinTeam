@@ -4,21 +4,19 @@
 
 BEGIN(Client)
 
-class C3DUITex final : public COrthographicObject
+class CHPBoss final : public COrthographicObject
 {
 public:
 	typedef struct tagNameTagDesc
 	{
-		wstring strTexture;
-		_vec2   vSize;
-		_vec3	vPosition;
-		class CTransform* pParentTransform;
+		wstring strName;
+		_uint iMaxHp;
 		LEVEL_ID eLevelID;
-	}UITEX_DESC;
+	}HPBOSS_DESC;
 private:
-	C3DUITex(_dev pDevice, _context pContext);
-	C3DUITex(const C3DUITex& rhs);
-	virtual ~C3DUITex() = default;
+	CHPBoss(_dev pDevice, _context pContext);
+	CHPBoss(const CHPBoss& rhs);
+	virtual ~CHPBoss() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -32,26 +30,31 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
 	CTexture* m_pTextureCom{ nullptr };
+	CTexture* m_pMaskTextureCom{ nullptr };
+	CTexture* m_pBGTextureCom{ nullptr };
+	CTexture* m_pBorderTextureCom{ nullptr };
 
 private:
 	LEVEL_ID		m_eLevel{};
-	VTPass			m_ePass{ VTPass_UI };
-	wstring			m_strTexture;
-	_vec2			m_vSize;
-	_vec3			m_vPosition{};
-	CTransform*		m_pParentTransform{ nullptr };
 
+	_bool			m_bEffect{false};
+	_uint			m_iCurHp{};
+	_uint			m_iMaxHp{};
+	_uint			m_iTargetHp{};
+
+	_float			m_fTime{};
+	wstring			m_strName;
+
+	CGameObject*	m_pIcon{ nullptr };
 public:
-	const _vec2 Get_Size() const { return _vec2(m_fSizeX, m_fSizeY); };
-	void Set_Size(_float fSizeX, _float fSizeY);
-	void Set_Pass(VTPass ePass) { m_ePass = ePass; }
+	void Set_HP(const _uint iDamage) { m_iTargetHp = m_iCurHp - iDamage; }
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static C3DUITex* Create(_dev pDevice, _context pContext);
+	static CHPBoss* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

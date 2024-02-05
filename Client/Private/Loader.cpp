@@ -802,6 +802,19 @@ HRESULT CLoader::Load_GamePlay()
 			}
 		}
 	}
+	strInputFilePath = "../Bin/Resources/Textures/UI/Boss";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_UI_Boss_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Tuto"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Tutorial/Tuto%d.png"), 3))))
@@ -1236,7 +1249,6 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
-	
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_ShopDesc"), CShopDesc::Create(m_pDevice, m_pContext))))
 	{
@@ -1257,7 +1269,6 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
-	
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Tutorial"), CTutorial::Create(m_pDevice, m_pContext))))
 	{
@@ -1278,6 +1289,10 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_HitEffect"), CHitEffect::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_HPBoss"), CHPBoss::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

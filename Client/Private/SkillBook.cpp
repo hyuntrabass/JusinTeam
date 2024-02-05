@@ -83,6 +83,10 @@ void CSkillBook::Tick(_float fTimeDelta)
 			{
 				if (PtInRect(&m_pSkillSlot[m_eCurType][i]->Get_Rect(), ptMouse))
 				{
+					if (!m_vecSkillDesc[m_eCurType][m_iCurIndex]->Is_UnLocked())
+					{
+						return;
+					}
 					SKILLINFO tInfo = m_vecSkillDesc[m_eCurType][m_iCurIndex]->Get_SkillInfo();
 					for (size_t j = 0; j < 4; j++)
 					{
@@ -152,7 +156,6 @@ void CSkillBook::Tick(_float fTimeDelta)
 				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_GAMEPLAY, TEXT("Light_Main"));
 				*LightDesc = m_Light_Desc;
 			}
-
 			CFadeBox::FADE_DESC Desc = {};
 			Desc.eState = CFadeBox::FADEOUT;
 			Desc.fDuration = 0.8f;
@@ -399,6 +402,13 @@ void CSkillBook::Init_SkillBookState()
 	{
 		m_vecSkillDesc[m_eCurType][j]->Select_Skill(false);
 	}
+
+	dynamic_cast<CTextButtonColor*>(m_pSkillType[WP_BOW])->Set_Alpha(1.f);
+	_vec2 vPos = dynamic_cast<CTextButtonColor*>(m_pSkillType[WP_BOW])->Get_Position();
+	dynamic_cast<CTextButton*>(m_pSelectButton)->Set_Position(vPos);
+	_vec2 fUnderBarPos = dynamic_cast<CTextButton*>(m_pUnderBar)->Get_Position();
+	dynamic_cast<CTextButton*>(m_pUnderBar)->Set_Position(_vec2(vPos.x, fUnderBarPos.y));
+
 }
 
 HRESULT CSkillBook::Init_SkillDesc()

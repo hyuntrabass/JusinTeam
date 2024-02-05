@@ -386,6 +386,7 @@ namespace Client
 		VTPass_FadeVertical,
 		VTPass_FadeHorizontal,
 		VTPass_LerpColorNAlpha,
+		VTPass_HPBoss,
 		VTPass_End
 	};
 

@@ -71,14 +71,6 @@ void CItemMerchant::Tick(_float fTimeDelta)
 	}
 
 
-	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
-	_bool isColl = m_pColliderCom->Intersect(pCollider);
-	if (!m_bTalking && isColl && m_pGameInstance->Key_Down(DIK_E))
-	{
-		m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 1000.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));
-		m_bTalking = true;
-		m_pShop->Open_Shop();
-	}
 
 
 	if (m_bTalking == true)
@@ -91,6 +83,7 @@ void CItemMerchant::Tick(_float fTimeDelta)
 	{
 		m_Animation.iAnimIndex = IDLE;
 		m_pSpeechBubble->Tick(fTimeDelta);
+
 	}
 
 
@@ -108,13 +101,25 @@ void CItemMerchant::Late_Tick(_float fTimeDelta)
 {
 	__super::Late_Tick(fTimeDelta);
 
+	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
+	_bool isColl = m_pColliderCom->Intersect(pCollider);
+	if (!m_bTalking && isColl && m_pGameInstance->Key_Down(DIK_E))
+	{
+		m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 1000.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));
+		m_bTalking = true;
+		m_pShop->Open_Shop();
+	}
+
 	if (m_bTalking == true)
 	{
 		m_pShop->Late_Tick(fTimeDelta);
 	}
 	else
 	{
-		m_pSpeechBubble->Late_Tick(fTimeDelta);
+		if (isColl)
+		{
+			m_pSpeechBubble->Late_Tick(fTimeDelta);
+		}
 	}
 
 }
@@ -135,7 +140,7 @@ HRESULT CItemMerchant::Add_Parts()
 	TexDesc.pParentTransform = m_pTransformCom;
 	TexDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SpeechBubble");
 	TexDesc.vPosition = _vec3(0.f, 2.2f, 0.f);
-	TexDesc.vSize = _vec2(20.f, 20.f);
+	TexDesc.vSize = _vec2(40.f, 40.f);
 
 	m_pSpeechBubble = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &TexDesc);
 	if (not m_pSpeechBubble)
@@ -146,7 +151,7 @@ HRESULT CItemMerchant::Add_Parts()
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::AABB;
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
-	CollDesc.vExtents = _vec3(0.8f, 0.8f, 0.8f);
+	CollDesc.vExtents = _vec3(15.f, 1.f, 15.f);
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.9f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),

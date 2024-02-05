@@ -184,6 +184,7 @@
     <ClInclude Include="..\Public\Groar_Boss.h" />
     <ClInclude Include="..\Public\HitEffect.h" />
     <ClInclude Include="..\Public\HpBar.h" />
+    <ClInclude Include="..\Public\HpBoss.h" />
     <ClInclude Include="..\Public\HpMonster.h" />
     <ClInclude Include="..\Public\Inven.h" />
     <ClInclude Include="..\Public\InvenFrame.h" />
@@ -221,6 +222,7 @@
     <ClInclude Include="..\Public\Pop_QuestEnd.h" />
     <ClInclude Include="..\Public\Pop_QuestIn.h" />
     <ClInclude Include="..\Public\Etc_Object.h" />
+    <ClInclude Include="..\Public\Pop_Skill.h" />
     <ClInclude Include="..\Public\Quest.h" />
     <ClInclude Include="..\Public\QuestBox.h" />
     <ClInclude Include="..\Public\Rabbit.h" />
@@ -317,6 +319,7 @@
     <ClCompile Include="..\Private\Groar_Boss.cpp" />
     <ClCompile Include="..\Private\HitEffect.cpp" />
     <ClCompile Include="..\Private\HPBar.cpp" />
+    <ClCompile Include="..\Private\HPBoss.cpp" />
     <ClCompile Include="..\Private\HPMonster.cpp" />
     <ClCompile Include="..\Private\Inven.cpp" />
     <ClCompile Include="..\Private\InvenFrame.cpp" />
@@ -354,6 +357,7 @@
     <ClCompile Include="..\Private\Pop_QuestEnd.cpp" />
     <ClCompile Include="..\Private\Pop_QuestIn.cpp" />
     <ClCompile Include="..\Private\Etc_Object.cpp" />
+    <ClCompile Include="..\Private\Pop_Skill.cpp" />
     <ClCompile Include="..\Private\Quest.cpp" />
     <ClCompile Include="..\Private\QuestBox.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />

@@ -142,6 +142,7 @@ void CPlayer::Tick(_float fTimeDelta)
 	if (m_bStartGame)
 	{
 		CEvent_Manager::Get_Instance()->Tick(fTimeDelta);
+
 	}
 
 	if (m_pGameInstance->Get_CameraModeIndex() == CM_DEBUG)
@@ -341,6 +342,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	if (m_bStartGame)
 	{
 		CEvent_Manager::Get_Instance()->Late_Tick(fTimeDelta);
+
 	}
 
 	m_pModelCom->Set_Animation(m_Animation);
@@ -839,6 +841,8 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 
 	m_Status.Current_Hp -= (iDamage - iDamage * (_int)(m_Status.Armor / 0.01));
 
+
+
 	CHitEffect::HITEFFECT_DESC Desc{};
 	_int iRandomX = rand() % 100;
 	_int iRandomY = rand() % 50 + 130;
@@ -855,6 +859,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 	if (m_Status.Current_Hp < 0)
 	{
 		m_Status.Current_Hp = 0;
+		CUI_Manager::Get_Instance()->Set_Hp(m_Status.Current_Hp, m_Status.Max_Hp);
 		m_eState = Die;
 	}
 	else
@@ -1043,7 +1048,7 @@ void CPlayer::Move(_float fTimeDelta)
 			m_pTransformCom->LookAt_Dir(m_pCameraTransform->Get_State(State::Look));
 
 		}
-
+		/*
 		if (m_pGameInstance->Key_Down(DIK_1))
 		{
 			if (m_eState != Skill1)
@@ -1082,8 +1087,9 @@ void CPlayer::Move(_float fTimeDelta)
 
 		}
 
+		*/
 
-		/*CSkillBlock::SKILLSLOT eSlotIdx{};
+		CSkillBlock::SKILLSLOT eSlotIdx{};
 		_bool isPress = false;
 		if (m_pGameInstance->Key_Down(DIK_1))
 		{
@@ -1114,7 +1120,7 @@ void CPlayer::Move(_float fTimeDelta)
 				return;
 			}
 
-		}*/
+		}
 
 		if (m_pGameInstance->Key_Down(DIK_5))
 		{
@@ -1260,6 +1266,7 @@ void CPlayer::Move(_float fTimeDelta)
 			{
 				m_pTransformCom->Jump(8.f);
 				m_eState = Jump_Start;
+				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("점프하기"));
 			}
 			if (m_bReady_Climb)
 			{
@@ -3148,6 +3155,7 @@ void CPlayer::Init_State()
 			m_hasJumped = false;
 			m_Status.Current_Hp = m_Status.Max_Hp;
 			m_Status.Current_Mp = m_Status.Max_Mp;
+			CUI_Manager::Get_Instance()->Set_Hp(m_Status.Current_Hp, m_Status.Max_Hp);
 		}
 		break;
 		case Client::CPlayer::Die:
@@ -3793,6 +3801,7 @@ void CPlayer::Free()
 		Safe_Release(m_pLeft_Trail[i]);
 		Safe_Release(m_pRight_Trail[i]);
 	}
+
 
 	Safe_Release(m_pTest_Trail);
 	Safe_Release(m_pNameTag);
