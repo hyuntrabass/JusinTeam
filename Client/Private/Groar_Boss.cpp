@@ -45,17 +45,6 @@ HRESULT CGroar_Boss::Init(void* pArg)
 
 	m_iHP = 100000;
 
-	CHPBoss::HPBOSS_DESC Desc{};
-	Desc.strName = L"Groar";
-	Desc.eLevelID = LEVEL_STATIC;
-	Desc.iMaxHp = m_iHP;
-
-	m_pHpBoss = (CHPBoss*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPBoss"), &Desc);
-	if (not m_pHpBoss)
-	{
-		return E_FAIL;
-	}
-
 	return S_OK;
 }
 
@@ -63,6 +52,21 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_G))
 	{
+		if (m_pHpBoss == nullptr)
+		{
+			CHPBoss::HPBOSS_DESC Desc{};
+			Desc.strName = L"Groar";
+			Desc.eLevelID = LEVEL_STATIC;
+			Desc.iMaxHp = m_iHP;
+
+			m_pHpBoss = (CHPBoss*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPBoss"), &Desc);
+			if (not m_pHpBoss)
+			{
+				return;
+			}
+
+		}
+
 		//m_eCurState = STATE_SCENE01;
 		m_eCurState = STATE_BOSS;
 		m_eBossCurState = BOSS_STATE_ROAR;
@@ -80,7 +84,11 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 	Tick_State(fTimeDelta);
 
 	Update_Collider();
-	m_pHpBoss->Tick(fTimeDelta);
+	if (m_pHpBoss != nullptr)
+	{
+		m_pHpBoss->Tick(fTimeDelta);
+	}
+
 	m_pTransformCom->Gravity(fTimeDelta);
 }
 
@@ -108,7 +116,11 @@ void CGroar_Boss::Late_Tick(_float fTimeDelta)
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
 #endif
-	m_pHpBoss->Late_Tick(fTimeDelta);
+	if (m_pHpBoss != nullptr)
+	{
+		m_pHpBoss->Late_Tick(fTimeDelta);
+	}
+
 }
 
 HRESULT CGroar_Boss::Render()
