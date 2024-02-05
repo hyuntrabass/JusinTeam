@@ -125,9 +125,10 @@ HRESULT CVoid05::Render()
 
 void CVoid05::Set_Damage(_int iDamage, _uint iDamageType)
 {
-	m_iDamageAcc += iDamage;
 	m_iHP -= iDamage;
+	m_iDamageAcc += iDamage;
 	m_bDamaged = true;
+	m_bChangePass = true;
 
 	CHitEffect::HITEFFECT_DESC Desc{};
 	Desc.iDamage = iDamage;

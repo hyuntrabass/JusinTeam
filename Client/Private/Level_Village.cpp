@@ -74,11 +74,11 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	//if (FAILED(Ready_Village_Monster()))
-	//{
-	//	MSG_BOX("Failed to Ready Monster");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Village_Monster()))
+	{
+		MSG_BOX("Failed to Ready Monster");
+		return E_FAIL;
+	}
 
 	if (FAILED(Ready_Groar_Boss()))
 	{
@@ -98,11 +98,11 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_Test()))
-	{
-		MSG_BOX("Failed to Ready Test");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Test()))
+	//{
+	//	MSG_BOX("Failed to Ready Test");
+	//	return E_FAIL;
+	//}
 
 	m_pGameInstance->Set_HellHeight(-5000.f);
 
@@ -486,6 +486,14 @@ HRESULT CLevel_Village::Ready_Village_Monster()
 				return E_FAIL;
 			}
 
+		}
+	}
+
+	for (size_t i = 0; i < 2; i++)
+	{
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void09"), TEXT("Prototype_GameObject_Void09"))))
+		{
+			return E_FAIL;
 		}
 	}
 

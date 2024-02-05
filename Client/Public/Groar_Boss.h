@@ -115,6 +115,9 @@ public:
 	virtual HRESULT Render() override;
 
 public:
+	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) override;
+
+public:
 	void Init_State(_float fTimeDelta);
 	void Tick_State(_float fTimeDelta);
 
@@ -174,7 +177,15 @@ private:
 	_float m_fTentacleTime = {};
 
 private:
+	_float m_fRageTime = {};
+
+private:
 	_bool m_bAttack_Selected[ATTACK_END] = { false };
+
+private:
+	_bool m_bChangePass = { false };
+	_uint m_iPassIndex = {};
+	_float m_fHitTime = {};
 
 public:
 	HRESULT Add_Components();

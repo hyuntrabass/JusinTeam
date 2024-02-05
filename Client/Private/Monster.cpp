@@ -34,6 +34,27 @@ HRESULT CMonster::Init(void* pArg)
 
 void CMonster::Tick(_float fTimeDelta)
 {
+	if (m_bChangePass == true)
+	{
+		m_fHitTime += fTimeDelta;
+
+		if (m_iPassIndex == AnimPass_Default)
+		{
+			m_iPassIndex = AnimPass_Rim;
+		}
+		else
+		{
+			m_iPassIndex = AnimPass_Default;
+		}
+
+		if (m_fHitTime >= 0.3f)
+		{
+			m_fHitTime = 0.f;
+			m_bChangePass = false;
+			m_iPassIndex = AnimPass_Default;
+		}
+	}
+
 	if (m_iDamageAcc >= m_iDamageAccMax/* || m_iDamageAcc == 0*/)
 	{
 		m_bHit = true;
@@ -69,27 +90,6 @@ void CMonster::Late_Tick(_float fTimeDelta)
 
 HRESULT CMonster::Render()
 {
-	if (m_iPassIndex == AnimPass_Dissolve)
-	{
-		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
-		{
-			return E_FAIL;
-		}
-
-		m_fDissolveRatio += 0.02f;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
-		{
-			return E_FAIL;
-		}
-
-		_bool bHasNorTex = true;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &bHasNorTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
-
-	}
-
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
@@ -299,6 +299,36 @@ HRESULT CMonster::Add_Components()
 
 HRESULT CMonster::Bind_ShaderResources()
 {
+	if (m_iPassIndex == AnimPass_Rim)
+	{
+		_vec4 vColor = Colors::Red;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vColor, sizeof vColor)))
+		{
+			return E_FAIL;
+		}
+	}
+
+	if (m_iPassIndex == AnimPass_Dissolve)
+	{
+		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
+		{
+			return E_FAIL;
+		}
+
+		m_fDissolveRatio += 0.02f;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
+		{
+			return E_FAIL;
+		}
+
+		_bool bHasNorTex = true;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &bHasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+	}
+
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
 		return E_FAIL;
