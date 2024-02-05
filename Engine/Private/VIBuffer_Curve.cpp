@@ -127,7 +127,32 @@ void CVIBuffer_Curve::Set_ControlPoints(_mat& Points)
 
 }
 
+_float3 CVIBuffer_Curve::Get_CurvePos(_uint iIndex)
+{
+	return m_pCurvePos[iIndex];
+}
 
+void CVIBuffer_Curve::Modify_Line()
+{
+	D3D11_MAPPED_SUBRESOURCE	SubResource{};
+	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource);
+	//VTXPOS* pVertices = (VTXPOS*)SubResource.pData;
+	_float fTime = 0.f;
+	for (_uint i = 0; i < m_iNumVertices; ++i)
+	{
+		fTime = (_float)i / m_iNumVertices;
+
+		// Catmull-Rom
+		_vec4 vLerpPoint = XMVectorCatmullRom(m_matControlPoints.Right(), m_matControlPoints.Up(), m_matControlPoints.Look(), m_matControlPoints.Position(), fTime);
+		//pVertices[i].vPosition = _vec3(vLerpPoint);
+		((VTXPOS*)SubResource.pData)[i].vPosition = _vec3(vLerpPoint);
+		m_pCurvePos[i] = _vec3(vLerpPoint);
+
+	}
+
+	m_pContext->Unmap(m_pVB, 0);
+
+}
 
 CVIBuffer_Curve* CVIBuffer_Curve::Create(_dev pDevice, _context pContext)
 {
@@ -155,26 +180,6 @@ CComponent* CVIBuffer_Curve::Clone(void* pArg)
 	return pInstance;
 }
 
-void CVIBuffer_Curve::Modify_Line()
-{
-	D3D11_MAPPED_SUBRESOURCE	SubResource{};
-	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
-	//VTXPOS* pVertices = (VTXPOS*)SubResource.pData;
-	_float fTime = 0.f;
-	for (_uint i = 0; i < m_iNumVertices; ++i)
-	{
-		fTime = (_float)i / m_iNumVertices;
-
-		// Catmull-Rom
-		_vec4 vLerpPoint = XMVectorCatmullRom(m_matControlPoints.Right(), m_matControlPoints.Up(), m_matControlPoints.Look(), m_matControlPoints.Position(), fTime);
-		//pVertices[i].vPosition = _vec3(vLerpPoint);
-		 ((VTXPOS*)SubResource.pData)[i].vPosition = _vec3(vLerpPoint);
-		//m_vVertices[i].vPosition = _vec3(vLerpPoint);
-	}
-
-	m_pContext->Unmap(m_pVB, 0);
-
-}
 void CVIBuffer_Curve::Free()
 {
 	__super::Free();

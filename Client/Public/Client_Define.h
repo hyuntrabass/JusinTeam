@@ -35,6 +35,7 @@ namespace Client
 		CM_MAIN,
 		CM_SELECT, 
 		CM_CUSTOM,
+		CM_CUTSCENE,
 		CM_END
 	};
 	enum CAMERA_STATE

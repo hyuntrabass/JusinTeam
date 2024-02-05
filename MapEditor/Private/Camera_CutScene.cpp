@@ -21,7 +21,16 @@ HRESULT CCamera_CutScene::Init_Prototype()
 HRESULT CCamera_CutScene::Init(void* pArg)
 {
 	CamInfo = *(CameraInfo*)pArg;
-	if (FAILED(__super::Init(pArg)))
+
+	CCamera::Camera_Desc CamDesc;
+	CamDesc.vCameraPos =CamInfo.vStartCutScene;
+	CamDesc.vFocusPos = CamInfo.vEndCutScene;
+	CamDesc.fFovY = XMConvertToRadians(60.f);
+	CamDesc.fAspect = static_cast<_float>(g_iWinSizeX) / g_iWinSizeY;
+	CamDesc.fNear = 0.1f;
+	CamDesc.fFar = 1100.f;
+
+	if (FAILED(__super::Init(&CamDesc)))
 	{
 		return E_FAIL;
 	}
@@ -44,7 +53,7 @@ HRESULT CCamera_CutScene::Init(void* pArg)
 
 	m_iNextSectionIndex = 0;
 	m_iCurrentSectionIndex = 0;
-	m_fCutSceneSpeed = 10.f;
+	m_fCutSceneSpeed = CamInfo.fCameraSpeed;
 	m_fTimeDeltaAcc = 0.f;
 	m_iLastFrame = 0;
 	
@@ -54,20 +63,36 @@ HRESULT CCamera_CutScene::Init(void* pArg)
 	m_fPreCameraLerpTimeAcc = 0.f;
 	m_fPreCameraLerpTime = 1.5f;
 
-	m_vResultEye = _vec4(CamInfo.eCamera_Desc.vCameraPos);
-	m_vResultAt = _vec4(CamInfo.eCamera_Desc.vFocusPos);
-
-	//Add_Eye_Curve(CamInfo.vStartCutScene, CamInfo.vEndCutScene);
-	//Add_At_Curve(CamInfo.vStartCutScene, CamInfo.vEndCutScene);
-
 	return S_OK;
 }
 
 void CCamera_CutScene::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Get_CameraModeIndex() != CM_CUTSCENE )
+	{
+		return;
+	}
+	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
 
+	if (m_pGameInstance->Key_Down(DIK_P))
+	{
+		m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
+	}
 
-	//__super::Tick(fTimeDelta);
+	if (m_isPlayCutScene == false)
+	{
+		m_iFrame = 0;
+		m_fTimeDeltaAcc = 0.f;
+		m_iTotalFrame = 0;
+		m_fTotalTimeDeltaAcc = 0.f;
+		m_iCurrentSectionIndex = 0;
+		m_iNextSectionIndex = 0;
+		m_isPlayCutScene = true;
+	}
+	else
+		Play_Camera(fTimeDelta);
+
+	__super::Tick(fTimeDelta);
 }
 
 void CCamera_CutScene::Late_Tick(_float fTimeDelta)
@@ -100,6 +125,13 @@ HRESULT CCamera_CutScene::Render()
 	return S_OK;
 }
 
+void CCamera_CutScene::Set_Delete_Curve()
+{
+	m_CameraAtList.back()->Kill();
+	m_CameraAtList.pop_back();
+	m_CameraEyeList.back()->Kill();
+	m_CameraEyeList.pop_back();
+}
 
 string CCamera_CutScene::Get_Name()
 {
@@ -137,7 +169,7 @@ HRESULT CCamera_CutScene::Add_Eye_Curve(_vec4 vFirstPoint, _vec4 vSecondPoint)
 	matPoints.Look(vSecondPoint);
 	matPoints.Position(vSecondPoint);
 	
-
+	m_pEyeCurve->Set_SectionSpeed(5.f);
 	m_pEyeCurve->Set_ControlPoints(matPoints);
 	m_CameraEyeList.push_back(static_cast<CCutScene_Curve*>(m_pEyeCurve));
 	m_pEyeCurve = nullptr;
@@ -169,13 +201,68 @@ HRESULT CCamera_CutScene::Add_At_Curve(_vec4 vFirstPoint, _vec4 vSecondPoint)
 	matPoints.Up(vFirstPoint);
 	matPoints.Look(vSecondPoint);
 	matPoints.Position(vSecondPoint);
-
+	m_pAtCurve->Set_SectionSpeed(5.f);
 	m_pAtCurve->Set_ControlPoints(matPoints);
 	m_CameraAtList.push_back(static_cast<CCutScene_Curve*>(m_pAtCurve));
 	m_pAtCurve = nullptr;
 
 	return S_OK;
 }
+HRESULT CCamera_CutScene::Delete_Curve()
+{
+	
+
+	return S_OK;
+}
+
+void CCamera_CutScene::Play_Camera(_float fTimeDelta)
+{
+
+	if (m_CameraEyeList.size() > 0)
+	{
+		m_iSectionCount = (_uint)m_CameraEyeList.size();
+		m_iLastFrame = m_CameraEyeList.front()->Get_CurveSize() * m_iSectionCount;
+	}
+
+	if (m_iFrame > m_CameraEyeList.front()->Get_CurveSize() - 2 && !m_CameraEyeList.empty())
+	{
+		m_iFrame = 0;
+		m_fTimeDeltaAcc = 0.f;
+		m_iNextSectionIndex = m_iCurrentSectionIndex + 1;
+
+		if (m_iNextSectionIndex < m_CameraEyeList.size())
+		{
+			m_iCurrentSectionIndex = m_iNextSectionIndex;
+		}
+		else
+		{
+			m_isPlayCutScene = false;
+			m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
+		}
+	}
+	if (m_iCurrentSectionIndex < m_CameraEyeList.size())
+	{
+		_vec4 vFrameEyePos = m_CameraEyeList[m_iCurrentSectionIndex]->Get_CurvePos(m_iFrame);
+		_vec4 vFrameAtPos = m_CameraAtList[m_iCurrentSectionIndex]->Get_CurvePos(m_iFrame);
+
+		_float fSectionSpeed = m_CameraEyeList[m_iCurrentSectionIndex]->Get_SectionSpeed();
+
+		if (fTimeDelta < 1.0)
+		{
+			m_fTimeDeltaAcc += (_float)fTimeDelta * m_fCutSceneSpeed * fSectionSpeed;
+		}
+
+		m_fTotalTimeDeltaAcc += (_float)fTimeDelta * m_fCutSceneSpeed * fSectionSpeed;
+		m_iFrame = (_uint)m_fTimeDeltaAcc;
+		m_iTotalFrame = (_uint)m_fTotalTimeDeltaAcc;
+
+		_vec4 vAt = _vec4(vFrameAtPos.x, vFrameAtPos.y, vFrameAtPos.z, 1.f);
+		m_pTransformCom->Set_State(State::Pos, _vec4(vFrameEyePos.x, vFrameEyePos.y, vFrameEyePos.z, 1.f));
+		m_pTransformCom->LookAt(vAt);
+	}
+
+}
+
 HRESULT	CCamera_CutScene::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
@@ -183,10 +270,10 @@ HRESULT	CCamera_CutScene::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxStatMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxStatMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Camera"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	//{
@@ -197,15 +284,15 @@ HRESULT	CCamera_CutScene::Add_Components()
 }
 HRESULT	CCamera_CutScene::Bind_ShaderResources()
 {
-	_mat m_WorldMatrix = XMMatrixIdentity();
-	/*if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	//_mat m_WorldMatrix = XMMatrixIdentity();
+	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
 		return E_FAIL;
-	}	*/
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", m_WorldMatrix)))
+	}	
+	/*if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", m_WorldMatrix)))
 	{
 		return E_FAIL;
-	}
+	}*/
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof _float4)))
 	{
@@ -262,6 +349,16 @@ void CCamera_CutScene::Free()
 {
 	__super::Free();
 	//Safe_Release(m_pImGui_Manager);
+	for (int i = 0; i < m_CameraAtList.size(); i++) {
+		Safe_Release(m_CameraAtList[i]);
+	}
+	m_CameraAtList.clear();
+
+	for (int i = 0; i < m_CameraEyeList.size(); i++) {
+		Safe_Release(m_CameraEyeList[i]);
+	}
+	m_CameraEyeList.clear();
+
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

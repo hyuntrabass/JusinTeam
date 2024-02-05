@@ -32,6 +32,7 @@ HRESULT CCutScene_Curve::Init(void* pArg)
 	}
 	m_iSectionType = Info.iSectionType;
 	m_strSectionName = Info.strSectionName;
+	
 	ZeroMemory(&m_matPoint, sizeof _mat);
 	Set_Points(Info);
 	//m_pVIBuffer->Set_ControlPoints(m_matPoint);
@@ -41,6 +42,15 @@ HRESULT CCutScene_Curve::Init(void* pArg)
 
 void CCutScene_Curve::Tick(_float TimeDelta)
 {
+	CTransform* pStartPointTransform = static_cast<CTransform*>(m_pStartPoint->Find_Component(TEXT("Com_Transform")));
+	CTransform* pEndPointTransform = static_cast<CTransform*>(m_pEndPoint->Find_Component(TEXT("Com_Transform")));
+	
+	_vec4 vChangeStartPos = m_matPoint.Right();
+	_vec4 vChangeEndPos = m_matPoint.Look();
+
+	pStartPointTransform->Set_Position(_vec3(vChangeStartPos));
+	pEndPointTransform->Set_Position(_vec3(vChangeEndPos));
+
 	m_pStartPoint->Tick(TimeDelta);
 	m_pEndPoint->Tick(TimeDelta);
 
@@ -116,12 +126,12 @@ HRESULT CCutScene_Curve::Bind_ShaderResources()
 	return S_OK;
 }
 
-void CCutScene_Curve::Get_ControlPoints(_mat* pOutPoints)
+void CCutScene_Curve::Get_ControlPoints(_mat** ppOutPoints)
 {
-	if (m_pVIBuffer == nullptr)
+	if (m_pVIBuffer == nullptr || ppOutPoints == nullptr)
 		return;
 
-	pOutPoints = &m_matPoint;
+	*ppOutPoints = &m_matPoint;
 }
 
 HRESULT CCutScene_Curve::Set_ControlPoints(_mat& Points)
@@ -154,6 +164,38 @@ void CCutScene_Curve::Set_Points(SectionInfo Info)
 	//}
 	m_pStartPoint = static_cast<CCutScene_Point*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Camera_Point"), &Info.vStartCutScene));
 	m_pEndPoint = static_cast<CCutScene_Point*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Camera_Point"), &Info.vEndCutScene));
+}
+
+void CCutScene_Curve::Set_SectionSpeed(_float fSpeed)
+{
+	m_fSectionSpeed = fSpeed;
+}
+
+_vec4 CCutScene_Curve::Get_CurvePos(_uint iIndex)
+{
+	if (m_pVIBuffer == nullptr)
+		return _float3(-1, -1, -1);
+
+	m_pVIBuffer->Modify_Line();
+
+	_vec4 vLocalPos = _vec4(m_pVIBuffer->Get_CurvePos(iIndex).x, m_pVIBuffer->Get_CurvePos(iIndex).y, m_pVIBuffer->Get_CurvePos(iIndex).z, 1.f);
+
+	_vec4 vWorldPos = XMVector3TransformCoord(vLocalPos, m_pTransformCom->Get_World_Matrix());
+
+	return vWorldPos;
+}
+
+_float CCutScene_Curve::Get_SectionSpeed()
+{
+	return m_fSectionSpeed;
+}
+
+_uint CCutScene_Curve::Get_CurveSize()
+{
+	if (m_pVIBuffer == nullptr)
+		return 0;
+
+	return m_pVIBuffer->Get_NumVertices();
 }
 
 CCutScene_Curve* CCutScene_Curve::Create(_dev pDevice, _context pContext)

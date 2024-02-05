@@ -44,6 +44,7 @@ HRESULT CImGui_Manager::Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc)
 
 void CImGui_Manager::Tick(_float fTimeDelta)
 {
+	m_fTimeDelta = fTimeDelta;
 	Mouse_Pos();
 
 	if (m_eItemType == ItemType::Terrain)
@@ -747,32 +748,26 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			static int item_current = 0;
 			ImGui::Separator();
 
+			ImGui::InputFloat4("Picking Start", &m_fCameraPickingPos[0].x, 0);
+			ImGui::InputFloat4("Picking End", &m_fCameraPickingPos[1].x, 0);
 
 			ImGui::Separator();
 			ImGui::SeparatorText("Eye : ");
-			
-
-			m_fCameraPos[0] = m_fCameraPos[1] = m_fCameraPickingPos[0];
-			m_fCameraPos[2] = m_fCameraPos[3] = m_fCameraPickingPos[1];
-
-			ImGui::InputFloat4("Start Curved", &m_fCameraPos[0].x, nullptr, 0);
-			ImGui::InputFloat4("Start Pos", &m_fCameraPos[1].x, 0);
-			ImGui::InputFloat4("End Pos", &m_fCameraPos[2].x, 0);
-			ImGui::InputFloat4("End Curved", &m_fCameraPos[3].x, nullptr, 0);
+			ImGui::InputFloat4("Start Eye Curved", &vEyeStartCurved.x, nullptr, 0);
+			ImGui::InputFloat4("Start Eye Pos", &vEyeStartPos.x, 0);
+			ImGui::InputFloat4("End Eye Pos", &vEyeEndPos.x, 0);
+			ImGui::InputFloat4("End Eye Curved", &vEyeEndCurved.x, nullptr, 0);
 
 			ImGui::SeparatorText("At : ");
+			ImGui::InputFloat4("Start At Curved", &vAtStartCurved.x, nullptr, 0);
+			ImGui::InputFloat4("Start At Pos", &vAtStartPos.x, 0);
+			ImGui::InputFloat4("End At Pos", &vAtEndPos.x, 0);
+			ImGui::InputFloat4("End At Curved", &vAtEndCurved.x, nullptr, 0);
 
-			ImGui::InputFloat4("Start Curved", &m_fCameraPos[0].x, nullptr, 0);
-			ImGui::InputFloat4("Start Pos", &m_fCameraPos[1].x, 0);
-			ImGui::InputFloat4("End Pos", &m_fCameraPos[2].x, 0);
-			ImGui::InputFloat4("End Curved", &m_fCameraPos[3].x, nullptr, 0);
-
-			//ImGui::Separator();
-			//ImGui::SeparatorText("MATRIX : ");
-
-			//ImGui::InputFloat4("Position", &m_CameraMatrix.m[3][0], 0);
 			ImGui::Separator();
 			ImGui::InputText("Section Name", &SectionName[0], SectionName.size());
+			ImGui::InputFloat("CameraSpeed : ", &fCameraSpeed, 0);
+
 			if (ImGui::Button("Create Camera"))
 			{
 				Create_Camera();
@@ -780,7 +775,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::SameLine();
 			if (ImGui::Button("Delete Camera"))
 			{
-				Delete_Dummy();
+				Delete_Camera();
 			}
 
 			ImGui::Separator();
@@ -788,53 +783,139 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			_int iCameraSize = m_CameraList.size();
 			for (_uint i = 0; i < iCameraSize; i++)
 			{
-				//string strName = SectionName + to_string(i);
 				if (!m_CameraList.empty())
 				{
 					string strName = m_CameraList[i]->Get_Name();
 					if (ImGui::TreeNode(strName.c_str()))
 					{
-						if (ImGui::Button("Curve Add"))
-						{
-							Create_Curve(m_CameraList[i], m_fCameraPickingPos[0], m_fCameraPickingPos[1]);
-							//m_CameraList[i]->Add_Eye_Curve(m_fCameraPos[0], m_fCameraPos[1]);
-						}
-						ImGui::SameLine();
-						if (ImGui::Button("Curve Delete"))
-						{
+					
+						ImGui::Separator();
 
-						}
 						static int iEye_Count = 0;
 						vector<CCutScene_Curve*> pEyeCurve = m_CameraList[i]->Get_EyeCurve();
 						vector<string> pCurveEyeName;
-						for (auto iter = pEyeCurve.begin(); iter != pEyeCurve.end(); iter++)
+						if (!pEyeCurve.empty())
 						{
-							pCurveEyeName.push_back((*iter)->Get_SectionName());
+							for (auto iter = pEyeCurve.begin(); iter != pEyeCurve.end(); iter++)
+							{
+								pCurveEyeName.push_back((*iter)->Get_SectionName());
+							}
+							vector<const char*> pEyeCurveName;
+							for (const auto& str : pCurveEyeName)
+							{
+								pEyeCurveName.push_back(str.c_str());
+							}
+							for (int n = 0; n < pEyeCurveName.size(); n++)
+							{
+								const bool is_selected = (iEye_Count == n);
+								if (ImGui::Selectable(pEyeCurveName[n], is_selected))
+									iEye_Count = n;
+
+								if (is_selected)
+								{
+									ImGui::SetItemDefaultFocus();
+
+								}
+							}
 						}
-						vector<const char*> pEyeCurveName;
-						for (const auto& str : pCurveEyeName)
-						{
-							pEyeCurveName.push_back(str.c_str());
-						}
-						ImGui::ListBox("Eye Curve", &iEye_Count, pEyeCurveName.data(), pEyeCurveName.size(), 3);
-						ImGui::EndListBox;
+						ImGui::Separator();
 
 						static int iAt_Count = 0;
 						vector<CCutScene_Curve*> pAtCurve = m_CameraList[i]->Get_AtCurve();
 						vector<string> pCurveAtName;
-						for (auto iter = pAtCurve.begin(); iter != pAtCurve.end(); iter++)
+						if (!pAtCurve.empty())
 						{
-							pCurveAtName.push_back((*iter)->Get_SectionName());
+							for (auto iter = pAtCurve.begin(); iter != pAtCurve.end(); iter++)
+							{
+								pCurveAtName.push_back((*iter)->Get_SectionName());
+							}
+							vector<const char*> pAtCurveName;
+							for (const auto& str : pCurveAtName)
+							{
+								pAtCurveName.push_back(str.c_str());
+							}
+
+							for (int n = 0; n < pAtCurveName.size(); n++)
+							{
+								const bool is_selected = (iAt_Count == n);
+								if (ImGui::Selectable(pAtCurveName[n], is_selected))
+									iAt_Count = n;
+
+								if (is_selected)
+								{
+									ImGui::SetItemDefaultFocus();
+								}
+							}
 						}
-						vector<const char*> pAtCurveName;
-						for (const auto& str : pCurveAtName)
-						{
-							pAtCurveName.push_back(str.c_str());
-						}
-						ImGui::ListBox("At Curve", &iAt_Count, pAtCurveName.data(), pAtCurveName.size(), 3);
-						ImGui::EndListBox;
+							ImGui::Separator();
+							if (!pEyeCurve.empty() && !pAtCurve.empty())
+							{
+								if (ImGui::SmallButton("Get Point"))
+								{
+									_mat* pOutPoints = nullptr;
+									pEyeCurve[iEye_Count]->Get_ControlPoints(&pOutPoints);
+									m_mCameraEyePoint = *pOutPoints;
+
+									vEyeStartCurved = m_mCameraEyePoint.Right();
+									vEyeStartPos = m_mCameraEyePoint.Up();
+									vEyeEndPos = m_mCameraEyePoint.Look();
+									vEyeEndCurved = m_mCameraEyePoint.Position();
+
+									pAtCurve[iAt_Count]->Get_ControlPoints(&pOutPoints);
+									m_mCameraAtPoint = *pOutPoints;
+
+									vAtStartCurved = m_mCameraAtPoint.Right();
+									vAtStartPos = m_mCameraAtPoint.Up();
+									vAtEndPos = m_mCameraAtPoint.Look();
+									vAtEndCurved = m_mCameraAtPoint.Position();
+								}
+								ImGui::SameLine();
+								if (ImGui::SmallButton("Set Point"))
+								{
+									m_mCameraEyePoint.Right(vEyeStartCurved);
+									m_mCameraEyePoint.Up(vEyeStartPos);
+									m_mCameraEyePoint.Look(vEyeEndPos);
+									m_mCameraEyePoint.Position(vEyeEndCurved);
+
+									m_mCameraAtPoint.Right(vAtStartCurved);
+									m_mCameraAtPoint.Up(vAtStartPos);
+									m_mCameraAtPoint.Look(vAtEndPos);
+									m_mCameraAtPoint.Position(vAtEndCurved);
+
+									pEyeCurve[iEye_Count]->Set_ControlPoints(m_mCameraEyePoint);
+									pAtCurve[iAt_Count]->Set_ControlPoints(m_mCameraAtPoint);
+								}
+							}
+							
+							if (ImGui::Button("Curve Add"))
+							{
+								Create_Curve(m_CameraList[i], m_fCameraPickingPos[0], m_fCameraPickingPos[1]);
+							}
+							ImGui::SameLine();
+							if (ImGui::Button("Curve Delete"))
+							{
+								if (!pEyeCurve.empty() && !pAtCurve.empty())
+								{
+									Delete_Curve(pEyeCurve, pAtCurve);
+								}
+							}
 
 						ImGui::TreePop();
+						ImGui::Separator();
+
+						if (m_CameraList.size() != 0)
+						{
+							if (ImGui::Button("Play Camera"))
+							{
+								m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+/*								pEyeCurve[iEye_Count]->Set_SectionSpeed(fEyeSpeed);
+								pAtCurve[iAt_Count]->Set_SectionSpeed(fAtSpeed);	*/							
+							}
+							m_iFrame = m_CameraList[i]->Get_Frame();
+							ImGui::SliderInt("Frame : ", &m_iFrame, 0, 100);
+							ImGui::InputFloat("EyeSpeed : ", &fEyeSpeed, 0);
+						}
+
 					}
 				}
 				
@@ -1270,7 +1351,13 @@ void CImGui_Manager::Delete_Dummy()
 
 void CImGui_Manager::Delete_Camera()
 {
+	if (!m_CameraList.empty())
+	{
+		m_CameraList.back()->Kill();
+		m_CameraList.pop_back();
+	}
 }
+
 
 void CImGui_Manager::Delete_Map()
 {
@@ -1301,6 +1388,17 @@ void CImGui_Manager::Delete_Terrain()
 	}
 }
 
+void CImGui_Manager::Delete_Curve(vector<CCutScene_Curve*>& pEyeCurve, vector<CCutScene_Curve*>& pAtCurve)
+{
+	if (!pEyeCurve.empty() && !pAtCurve.empty())
+	{
+		pEyeCurve.back()->Kill();
+		pEyeCurve.pop_back();
+		pAtCurve.back()->Kill();
+		pAtCurve.pop_back();
+	}
+}
+
 HRESULT CImGui_Manager::Modify_Terrain()
 {
 	CVIBuffer_Terrain* pVIBuffer = (CVIBuffer_Terrain*)m_pTerrain->Find_Component(TEXT("Com_VIBuffer"));
@@ -1317,12 +1415,24 @@ void CImGui_Manager::Create_Camera()
 		MessageBox(g_hWnd, L"Empty is Section Name", L"Error", MB_OK);
 		return;
 	}
+	if (!m_CameraList.empty())
+	{
+		for (auto iter = m_CameraList.begin(); iter != m_CameraList.end(); iter++)
+		{
+			if ((*iter)->Get_Name() == InputName)
+			{
+				MessageBox(g_hWnd, L"The same name already exists.", L"Error", MB_OK);
+				return;
+			}
+		}
+	}
 	CameraInfo Info{};
 	Info.strName = InputName;
 	Info.ppCamera = &m_pSelectCamera;
 	Info.eType = ItemType::Camera;
-	//Info.vStartCutScene = m_fCameraPos[0];
-	//Info.vEndCutScene = m_fCameraPos[1];
+	Info.vStartCutScene = m_fCameraPickingPos[0];
+	Info.vEndCutScene = m_fCameraPickingPos[1];
+	Info.fCameraSpeed = fCameraSpeed;
 	//_tchar strUnicode[MAX_PATH]{};
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_CutScene_Camera"), TEXT("Prototype_GameObject_Camera_CutScene"), &Info)))
@@ -1337,28 +1447,10 @@ void CImGui_Manager::Create_Curve(CCamera_CutScene* pCamera, _vec4 FirstPos, _ve
 {
 	pCamera->Add_Eye_Curve(FirstPos, SecondPos);
 
-	_vec4 vFixedFirstPos = _vec4(FirstPos.x, FirstPos.y, FirstPos.z, FirstPos.w);
-	_vec4 vFixedSecondPos = _vec4(SecondPos.x, SecondPos.y, SecondPos.z, SecondPos.w);
+	_vec4 vFixedFirstPos = _vec4(FirstPos.x + 10.f, FirstPos.y-10.f, FirstPos.z + 10.f, 1.f);
+	_vec4 vFixedSecondPos = _vec4(SecondPos.x + 10.f, SecondPos.y - 10.f, SecondPos.z + 10.f, 1.f);
 	pCamera->Add_At_Curve(vFixedFirstPos, vFixedSecondPos);
 }
-
-
-
-//void CImGui_Manager::Set_Camera()
-//{
-//	m_eSectionInfo.vStartCutScene = m_fCameraPos[0];
-//	m_eSectionInfo.vEndCutScene = m_fCameraPos[1];
-//
-//	if (m_eSection == SECTIONTYPE::SECTION_TYPE_EYE)
-//	{
-//		CameraEye.emplace(SectionName, m_eSectionInfo);
-//		
-//	}
-//	else if (m_eSection == SECTIONTYPE::SECTION_TYPE_AT)
-//	{
-//		CameraAt.emplace(SectionName, m_eSectionInfo);
-//	}
-//}
 
 void CImGui_Manager::Reset()
 {
@@ -1528,11 +1620,7 @@ void CImGui_Manager::Search_Object()
 			}
 		}
 	}
-
-	
 }
-
-
 
 void CImGui_Manager::Search_Monster()
 {

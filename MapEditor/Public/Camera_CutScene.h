@@ -19,15 +19,19 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render();
-	void Set_Dead() { m_isDead = true; }
-	void Set_Speed(_float fSpeed) { m_fSpeed = fSpeed; }
+	void Set_Delete_Curve();
+	void Set_Speed(_float fSpeed) { m_fCutSceneSpeed = fSpeed;} 
 	string Get_Name();
 	
 	HRESULT Add_Eye_Curve(_vec4 vFirstPoint, _vec4 vSecondPoint);
 	HRESULT Add_At_Curve(_vec4 vFirstPoint, _vec4 vSecondPoint);
+	HRESULT Delete_Curve();
 
+	_int Get_Frame() { return m_iFrame; }
 	vector<class CCutScene_Curve*> Get_EyeCurve() { return m_CameraEyeList; }
 	vector<class CCutScene_Curve*> Get_AtCurve() { return m_CameraAtList; }
+
+	void Play_Camera(_float fTimeDelta);
 
 private:
 	_bool m_isMoveMode{ true };
@@ -53,15 +57,7 @@ private:
 	vector<class CCutScene_Curve*> m_CameraAtList;
 	vector<class CCutScene_Curve*> m_CameraEyeList;
 
-	_vec4                 m_vOriginalEye = { };
-	_vec4                 m_vOriginalAt = { };
-
-	_vec4                 m_vResultEye = { };
-	_vec4                 m_vResultAt = { };
-
-	_bool					m_isMouseMove = { true };
 	_float					m_fCutSceneSpeed = { 1.f };
-
 	_uint					m_iCurrentSectionIndex = { 0 };
 	_uint					m_iNextSectionIndex = { 0 };
 	_uint					m_iFrame = { 0 };
@@ -72,11 +68,6 @@ private:
 
 	_float					m_fTimeDeltaAcc = { 0.f };
 	_float					m_fTotalTimeDeltaAcc = { 0.f };
-	_bool					m_isPlayCutScene = { false };
-	_bool					m_isPlayEnd = { false };
-	_bool					m_isPlayerMove = { false };
-
-	CCamera* m_pPreCamera = { nullptr };
 
 	_bool					m_isShaking = { false };
 	_bool                   m_isShakeBasic = { false };
@@ -96,6 +87,7 @@ private:
 	CameraInfo				CamInfo{};
 	wstring					m_strName{};
 	wstring					strSectionName{};
+
 private:
 	HRESULT		Add_Components();
 	HRESULT		Bind_ShaderResources();

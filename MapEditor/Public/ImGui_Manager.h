@@ -25,8 +25,6 @@ enum class ItemType
 	End
 };
 
-
-
 struct DummyInfo
 {
 	wstring Prototype{};
@@ -61,8 +59,9 @@ struct TriggerInfo
 struct CameraInfo
 {
 	string strName{};
-	//_vec4 vStartCutScene{};
-	//_vec4 vEndCutScene{};
+	_vec4 vStartCutScene{};
+	_vec4 vEndCutScene{};
+	_float fCameraSpeed{};
 	enum class ItemType eType {};
 	class CCamera_CutScene** ppCamera{ nullptr };
 	CCamera::Camera_Desc eCamera_Desc{};
@@ -115,7 +114,7 @@ private:
 	void Delete_Camera();
 	void Delete_Map();
 	void Delete_Terrain();
-
+	void Delete_Curve(vector<CCutScene_Curve*>& pAtCurve, vector<CCutScene_Curve*>& pEyeCurve);
 	void Reset();
 	void PopBack_Dummy();
 
@@ -161,9 +160,6 @@ private:
 	// 현재 위치 저장
 	HRESULT Save_Pos();
 
-	// 카메라 Eye, At 저장
-	//void Set_Camera();
-
 private:
 	CGameInstance* m_pGameInstance{ nullptr };
 	HWND m_hWnd;
@@ -193,7 +189,9 @@ private:
 
 	_bool m_isInstancing{false};
 	vector<_vec4> m_vInstancePos;
-	_vec4 m_fCameraPos[4];
+	//_vec4 m_fCameraPos[4];
+	_mat m_mCameraEyePoint{};
+	_mat m_mCameraAtPoint{};
 	_vec4 m_fCameraPickingPos[2];
 	_float fTimeDeltaAcc{0.f};
 	_uint iClickCount{0};
@@ -247,7 +245,22 @@ private:
 	string SectionName{};
 	SectionInfo m_eSectionInfo{};
 	
+	// 카메라 Eye
+	_vec4 vEyeStartCurved{};
+	_vec4 vEyeStartPos{};
+	_vec4 vEyeEndPos{};
+	_vec4 vEyeEndCurved{};
+	// 카메라 At
+	_vec4 vAtStartCurved{};
+	_vec4 vAtStartPos{};
+	_vec4 vAtEndPos{};
+	_vec4 vAtEndCurved{};
 
+	// 컷씬카메라
+	_int m_iFrame{0};
+	_float fEyeSpeed{1.f};
+	_float fCameraSpeed{10.f};
+	_float m_fTimeDelta{ 0.f };
 public:
 	static CImGui_Manager* Create(const GRAPHIC_DESC& GraphicDesc);
 	virtual void Free() override;

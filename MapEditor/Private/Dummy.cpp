@@ -55,7 +55,7 @@ HRESULT CDummy::Init(void* pArg)
 		m_iTrigger = m_Info.iTriggerNum;
 		m_fTriggerSize = m_Info.fTriggerSize;
 
-		m_iShaderPass = StaticPass_AlphaTestMeshes;
+		m_iShaderPass = StaticPass_Default;
 
 	}
 	else

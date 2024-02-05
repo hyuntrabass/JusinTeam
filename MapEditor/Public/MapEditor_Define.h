@@ -27,6 +27,7 @@ namespace MapEditor
 	{
 		CM_DEBUG,
 		CM_MAIN,
+		CM_CUTSCENE,
 		CM_END
 	};
 

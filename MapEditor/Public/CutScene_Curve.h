@@ -28,11 +28,17 @@ public:
 	virtual void Tick(_float TimeDelta) override;
 	virtual void Late_Tick(_float TimeDelta) override;
 	virtual HRESULT Render() override;
-	void Set_Dead() { m_isDead = true; }
-
-	void Get_ControlPoints(_mat* pOutPoints);
 	HRESULT Set_ControlPoints(_mat& Points);
+	void	Set_Points(SectionInfo Info);
+	void	Set_SectionSpeed(_float fSpeed);
+
+	void Get_ControlPoints(_mat** ppOutPoints);
 	string Get_SectionName();
+	_uint Get_CurveSize();
+	_vec4	Get_CurvePos(_uint iIndex);
+	_float	Get_SectionSpeed();
+
+	void Set_Dead();
 
 private:
 	HRESULT Add_Components();
@@ -49,12 +55,17 @@ private:
 	_uint m_iSectionType = { SECTION_TYPE_END };
 
 private:
-	void Set_Points(SectionInfo Info);
+
 	CCutScene_Point* m_pStartPoint{};
 	CCutScene_Point* m_pEndPoint{};
+
+	_vec4 m_vStartPoint{};
+	_vec4 m_vEndPoint{};
+
 	SectionInfo Info{};
 	_mat m_matPoint{};
 	wstring m_strSectionName{};
+	_float	m_fSectionSpeed = { 0.f };
 
 public:
 	static CCutScene_Curve* Create(_dev pDevice, _context pContext);
