@@ -7,6 +7,7 @@
 #include "SkillBook.h"
 #include "Tutorial.h"
 #include "Pop_Alert.h"
+#include "Pop_Skill.h"
 #include "InvenWindow.h"
 #include "ShopWindow.h"
 #include "ShopDesc.h"

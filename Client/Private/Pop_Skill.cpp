@@ -58,13 +58,14 @@ void CPop_Skill::Tick(_float fTimeDelta)
 	{
 		m_isDead = true;
 	}
-	m_fIndex += 36.f * fTimeDelta * 2.f;
+	m_fIndex += 36.f * fTimeDelta * 0.6f;
 	if (m_fIndex >= 36.f)
 		m_fIndex = 0.f;
 
 	m_fTime += fTimeDelta * 0.2f;
 	m_fDeadTime += fTimeDelta;
-
+	m_fX = (_float)g_iWinSizeX / 2.f;
+	m_fY = 300.f;
 	if (dynamic_cast<CTextButton*>(m_pButton)->Get_TransPosition().y <= dynamic_cast<CTextButton*>(m_pButton)->Get_Position().y - 5.f)
 	{
 		m_fDir = 0.6f;
@@ -80,10 +81,13 @@ void CPop_Skill::Tick(_float fTimeDelta)
 
 
 
+	m_fSizeX = g_iWinSizeX;
+	m_fSizeY = 600.f;
 
 	m_pBackground->Tick(fTimeDelta);
 	m_pButton->Tick(fTimeDelta);
 
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 }
 
@@ -104,7 +108,7 @@ HRESULT CPop_Skill::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(VTPass_SpriteMaskTexture)))
+	if (FAILED(m_pShaderCom->Begin(VTPass_Bright)))
 	{
 		return E_FAIL;
 	}
@@ -146,11 +150,11 @@ HRESULT CPop_Skill::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_FX_C_Smoke001_Tex"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_FX_C_SmokeTrail001_Tex"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_FX_C_Smoke001_Tex"), TEXT("Com_Texture1"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_FX_C_SmokeTrail001_Tex"), TEXT("Com_Texture1"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -240,6 +244,9 @@ HRESULT CPop_Skill::Bind_ShaderResources()
 		return E_FAIL;
 	}	
 	*/
+
+	/*
+	
 	_int2 vNumSprite = { 6, 6 };
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vNumSprite", &vNumSprite, sizeof(_int2))))
 	{
@@ -250,7 +257,7 @@ HRESULT CPop_Skill::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
-
+	*/
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fx", &m_fTime, sizeof(_float))))
 	{
 		return E_FAIL;
@@ -260,7 +267,7 @@ HRESULT CPop_Skill::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
-
+	
 	return S_OK;
 }
 

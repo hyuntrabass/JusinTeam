@@ -377,12 +377,10 @@ void CCamera_Main::Shop_Mode(_float fTimeDelta)
 {
 	CTransform* pTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_ItemMerchant"), TEXT("Com_Transform"));
 	_vec4 vPos = pTransform->Get_State(State::Pos);
-	_vec4 vShopPos = _vec4(vPos.x - 0.16f, 1001.4f, vPos.z + 1.f, 1.f);
+	_vec4 vShopPos = _vec4(vPos.x + 0.05f, 1001.4f, vPos.z + 0.9f, 1.f);
 
 	m_pTransformCom->Set_State(State::Pos, vShopPos);
-	_vec4 vLookPos = vPos;
-	vLookPos.y += 3.f;
-	m_pTransformCom->LookAt_Dir(_vec4(0.129203543f, -0.129055128f, -0.983180106f, 0.f));
+	m_pTransformCom->LookAt_Dir(_vec4(-0.0949012339f, -0.0923041627f, -0.991196573f, 0.f));
 
 }
 

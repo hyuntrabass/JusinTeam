@@ -74,6 +74,7 @@ void CMPBar::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
+
 	m_pBorder->Late_Tick(fTimeDelta);
 	m_pBackground->Late_Tick(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
