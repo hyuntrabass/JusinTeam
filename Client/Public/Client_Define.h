@@ -257,6 +257,7 @@ namespace Client
 		MonAtt_KnockDown,
 		MonAtt_Stun,
 		GROAR_PULL,
+		Parrying_Succescc,
 		MonAtt_End
 	};
 #pragma endregion

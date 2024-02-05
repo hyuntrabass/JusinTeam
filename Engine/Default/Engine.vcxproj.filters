@@ -196,6 +196,9 @@
     <Filter Include="01.Utility\03.Components\VIBuffer\Rect\VIBuffer_Rect_LookZ">
       <UniqueIdentifier>{c61c4e3e-ad68-479c-b1fe-0cdbf92da91c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Components\VIBuffer\Curve">
+      <UniqueIdentifier>{eb38c04f-f1e6-4935-839c-1b0accdb7d87}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -377,6 +380,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Rect_LookZ.cpp">
       <Filter>01.Utility\03.Components\VIBuffer\Rect\VIBuffer_Rect_LookZ</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Curve.cpp">
+      <Filter>01.Utility\03.Components\VIBuffer\Curve</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -566,6 +572,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Rect_LookZ.h">
       <Filter>01.Utility\03.Components\VIBuffer\Rect\VIBuffer_Rect_LookZ</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Curve.h">
+      <Filter>01.Utility\03.Components\VIBuffer\Curve</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

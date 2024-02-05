@@ -40,8 +40,8 @@ private:
 	CModel* m_pWeapon_ModelCom = { nullptr };
 
 private:
-	_int aq{-1};
 	_bool m_ReadyArrow{};
+	_bool m_bView{};
 	_vec4 m_vArrowLook{};
 	ANIM_DESC m_Animation{};
 	_uint m_iArrowRain = {};

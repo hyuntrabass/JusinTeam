@@ -140,8 +140,8 @@ HRESULT CLoader::Load_Editor()
 	//_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(90.f));
 
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Collider"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Model/Collider/Mesh/SM_EFF_Sphere_01.mo.hyuntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sphere"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Model/Sphere/Mesh/SM_EFF_Sphere_01.mo.hyuntrastatmesh"))))
 	{
 		return E_FAIL;
 	}
@@ -474,23 +474,13 @@ HRESULT CLoader::Load_Editor()
 
 #pragma  endregion Boss
 
+#pragma region ETC
+	 Pivot = _mat::CreateScale(0.01f);
 
-	m_strLoadingText = L"Editor : Loading Shader";
-#pragma region Shader
-#pragma endregion
-
-	m_strLoadingText = L"Editor : Loading Prototype";
-#pragma region Prototype
-
-#pragma region Texture
-
-#pragma region UI
-
-#pragma endregion
-
-#pragma region Effect
-#pragma endregion
-
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Camera"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Model/Etc/Mesh/Camera.hyuntrastatmesh", false, Pivot))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 
@@ -518,6 +508,14 @@ HRESULT CLoader::Load_Editor()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Map"), CMap::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Point"), CCutScene_Point::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera"), CCutScene_Curve::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
