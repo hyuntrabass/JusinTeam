@@ -93,9 +93,6 @@ private:
 	_bool m_bSlow = { false };
 
 private:
-	_uint m_iHitPercentage = {};
-
-private:
 	VOID05_ANIM m_eIdleAnim = { ANIM_END };
 
 private:

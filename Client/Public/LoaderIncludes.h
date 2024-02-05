@@ -91,6 +91,8 @@
 #include "Nastron07.h"
 #include "Spider.h"
 
+#include "Dead.h"
+
 // NPC
 #include "Cat.h"
 #include "Dog.h"

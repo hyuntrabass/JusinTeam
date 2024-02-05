@@ -281,13 +281,6 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			m_Animation.fAnimSpeedRatio = 2.f;
 			break;
 
-		case Client::CGroar_Boss::BOSS_STATE_WEB: // 04
-			m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK04;
-			m_Animation.isLoop = false;
-			m_Animation.fAnimSpeedRatio = 2.f;
-
-			break;
-
 		case Client::CGroar_Boss::BOSS_STATE_SPIDER: // 05
 			m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK05;
 			m_Animation.isLoop = false;
@@ -440,9 +433,6 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			case Client::CGroar_Boss::ATTACK_TAKE_DOWN:
 				eTempBossCurState = BOSS_STATE_TAKE_DOWN;
 				break;
-			case Client::CGroar_Boss::ATTACK_WEB:
-				eTempBossCurState = BOSS_STATE_WEB;
-				break;
 			case Client::CGroar_Boss::ATTACK_SPIDER:
 				eTempBossCurState = BOSS_STATE_SPIDER;
 				break;
@@ -493,7 +483,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			}
 		}
 
-		//m_eBossCurState = BOSS_STATE_FLOOR_ATTACK; // 테스트용
+		m_eBossCurState = BOSS_STATE_SPIDER; // 테스트용
 	}
 
 	break;
@@ -641,16 +631,6 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eBossCurState = BOSS_STATE_CHASE;
 			m_bAttack_Selected[ATTACK_TAKE_DOWN] = true;
-		}
-
-		break;
-
-	case Client::CGroar_Boss::BOSS_STATE_WEB:
-
-		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK04))
-		{
-			m_eBossCurState = BOSS_STATE_CHASE;
-			m_bAttack_Selected[ATTACK_WEB] = true;
 		}
 
 		break;
