@@ -48,7 +48,7 @@ private:
 	_float m_fFirstDistance{ 4.f };
 	_float m_fMouseSensor{ 0.08f };
 	_float m_fPlayerDistance{ 4.f };
-	_bool  m_bInitMode[CAMERA_MODE::CM_END];
+	_bool  m_bInitMode[CAMERA_MODE::CM_END]{};
 	CTransform* m_pPlayerTransform{ nullptr };
 
 private:

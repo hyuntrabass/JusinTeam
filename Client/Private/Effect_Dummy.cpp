@@ -353,7 +353,7 @@ HRESULT CEffect_Dummy::Bind_ShaderResources()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fUnDissolveRatio, sizeof m_fDissolveRatio)))
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fUnDissolveRatio, sizeof m_fUnDissolveRatio)))
 		{
 			return E_FAIL;
 		}
