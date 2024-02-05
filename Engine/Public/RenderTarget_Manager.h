@@ -11,7 +11,7 @@ private:
 
 public:
 	HRESULT Init();
-	HRESULT Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor);
+	HRESULT Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor, const _bool isMultiSample);
 	HRESULT Add_MRT(const wstring& strMRTTag, const wstring& strTargetTag);
 
 	HRESULT Begin_MRT(const wstring& strMRTTag, ID3D11DepthStencilView* pDepthStencillView);
@@ -22,7 +22,7 @@ public:
 	ID3D11Texture2D* Get_Texture2D(const wstring& strTargetTag);
 
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 public:
 	HRESULT Ready_Debug(const wstring& strTargetTag, _float2 vPos, _float2 vSize);
 	HRESULT Render_Debug(const wstring& strMRTTag, class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);

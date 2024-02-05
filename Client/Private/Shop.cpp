@@ -30,7 +30,7 @@ HRESULT CShop::Init(void* pArg)
 		return E_FAIL;
 	}
 	
-	m_fX = 310.f;
+	m_fX = 300.f;
 	m_fY = (_float)g_ptCenter.y;
 
 	m_fSizeX = 300.f;
@@ -107,7 +107,6 @@ void CShop::Tick(_float fTimeDelta)
 		{
 			if (PtInRect(&dynamic_cast<CTextButtonColor*>(m_pShopMenu[i])->Get_Rect(), ptMouse))
 			{
-
 				m_ePrevShopType = m_eCurShopState;
 				m_eCurShopState = (STATE)i;
 
@@ -304,7 +303,7 @@ HRESULT CShop::Add_Parts()
 {
 	_float fY = 85.f;
 	_float fTerm = m_fSizeX / (_uint)STATE_END;
-	_float fStartX = 10.f + fTerm;
+	_float fStartX = fTerm;
 
 
 	CTextButton::TEXTBUTTON_DESC Button = {};

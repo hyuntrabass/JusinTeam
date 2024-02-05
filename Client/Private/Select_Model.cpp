@@ -91,14 +91,14 @@ HRESULT CSelect_Model::Render()
 			HasNorTex = true;
 		}
 
-		_bool HasSpecTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_SpecTexture", i, TextureType::Shininess)))
+		_bool HasMaskTex{};
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
 		{
-			HasSpecTex = false;
+			HasMaskTex = false;
 		}
 		else
 		{
-			HasSpecTex = true;
+			HasMaskTex = true;
 		}
 
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
@@ -106,7 +106,7 @@ HRESULT CSelect_Model::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasSpecTex", &HasSpecTex, sizeof _bool)))
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}

@@ -51,7 +51,7 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 	if (m_Effect.hasLight)
 	{
 		m_strLightTag = L"Light_Effect_" + to_wstring(m_iLightID++);
-		if (FAILED(m_pGameInstance->Add_Light(m_pGameInstance->Get_CurrentLevelIndex(), m_strLightTag, m_Effect.Light_Desc)))
+		if (FAILED(m_pGameInstance->Add_Light(LEVEL_STATIC, m_strLightTag, m_Effect.Light_Desc)))
 		{
 			return E_FAIL;
 		}
@@ -119,11 +119,6 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 		m_OffsetMatrix = *m_Effect.pMatrix;
 	}
 
-	if (m_Effect.iType == ET_RECT)
-	{
-		m_OffsetMatrix.RemoveRotation();
-	}
-
 	m_pTransformCom->Set_Matrix(m_OffsetMatrix);
 
 	switch (m_Effect.iType)
@@ -134,7 +129,7 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 		break;
 	case Effect_Type::ET_RECT:
 	{
-		/*_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
 
 		_vec4 vRightDir = m_WorldMatrix.Right().Get_Normalized();
 		_vec4 vUpDir = m_WorldMatrix.Up().Get_Normalized();
@@ -144,16 +139,19 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 		vPos += vUpDir * m_Effect.vPosOffset.y;
 		vPos += vLookDir * m_Effect.vPosOffset.z;
 
-		m_pTransformCom->Set_State(State::Pos, vPos);*/
+		m_pTransformCom->Set_State(State::Pos, vPos);
 
-		m_pTransformCom->LookAway(m_pGameInstance->Get_CameraPos());
+		if (m_Effect.isBillboard)
+		{
+			m_pTransformCom->LookAway(m_pGameInstance->Get_CameraPos());
+		}
 		//m_pTransformCom->Rotation(m_pTransformCom->Get_State(State::Look), m_Effect.fRectRotationAngle);
 
 		m_pTransformCom->Set_Scale(m_vScaleAcc * m_OffsetMatrix.Get_Scale());
 		m_vScaleAcc += m_Effect.vSizeDelta * fTimeDelta;
 
 		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
-		_vec4 vPos = m_WorldMatrix.Position();
+		vPos = m_WorldMatrix.Position();
 		m_WorldMatrix.Position(_vec4(0.f, 0.f, 0.f, 1.f));
 		m_WorldMatrix *= _mat::CreateFromAxisAngle(_vec3(m_pTransformCom->Get_State(State::Look)), XMConvertToRadians(m_Effect.fRectRotationAngle));
 		m_WorldMatrix.Position(vPos);
@@ -162,7 +160,20 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 	}
 	case Effect_Type::ET_MESH:
 	{
-		/*_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+		if (m_Effect.isBillboard)
+		{
+			m_pTransformCom->LookAway(m_pGameInstance->Get_CameraPos());
+			m_pTransformCom->Set_Matrix(_mat::CreateRotationX(XMConvertToRadians(m_Effect.vBillboardRotation.x)) * m_pTransformCom->Get_World_Matrix());
+			m_pTransformCom->Set_Matrix(_mat::CreateRotationY(XMConvertToRadians(m_Effect.vBillboardRotation.y)) * m_pTransformCom->Get_World_Matrix());
+			m_pTransformCom->Set_Matrix(_mat::CreateRotationZ(XMConvertToRadians(m_Effect.vBillboardRotation.z)) * m_pTransformCom->Get_World_Matrix());
+		}
+
+		m_pTransformCom->Set_Scale(m_vScaleAcc * m_OffsetMatrix.Get_Scale());
+		m_vScaleAcc += m_Effect.vSizeDelta * fTimeDelta;
+
+		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
+
+		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
 
 		_vec4 vRightDir = m_WorldMatrix.Right().Get_Normalized();
 		_vec4 vUpDir = m_WorldMatrix.Up().Get_Normalized();
@@ -172,19 +183,15 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 		vPos += vUpDir * m_Effect.vPosOffset.y;
 		vPos += vLookDir * m_Effect.vPosOffset.z;
 
-		m_pTransformCom->Set_State(State::Pos, vPos);*/
+		m_WorldMatrix.Position(vPos);
 
-		m_pTransformCom->Set_Scale(m_vScaleAcc * m_OffsetMatrix.Get_Scale());
-		m_vScaleAcc += m_Effect.vSizeDelta * fTimeDelta;
-
-		m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
 		break;
 	}
 	}
 
 	if (m_Effect.hasLight)
 	{
-		LIGHT_DESC* pLightInfo = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), m_strLightTag);
+		LIGHT_DESC* pLightInfo = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, m_strLightTag);
 		pLightInfo->vPosition = m_WorldMatrix.Position();
 	}
 	__super::Compute_CamDistance();

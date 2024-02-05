@@ -41,6 +41,7 @@ public:
 	enum VOID05_STATE
 	{
 		STATE_IDLE,
+		STATE_DIG,
 		STATE_CHASE,
 		STATE_ATTACK,
 		STATE_HIT,
@@ -79,6 +80,9 @@ private:
 	CCommonTrail* m_pRightTrail = { nullptr };
 
 private:
+	_float m_fIdleTime = {};
+
+private:
 	_uint m_iAttackPattern = {};
 	_bool m_bSelectAttackPattern = { false };
 
@@ -92,8 +96,14 @@ private:
 	_uint m_iHitPercentage = {};
 
 private:
+	VOID05_ANIM m_eIdleAnim = { ANIM_END };
+
+private:
 	static const _float m_fChaseRange;
 	static const _float m_fAttackRange;
+
+private:
+	static _uint m_iIndex;
 
 public:
 	virtual HRESULT Add_Collider() override;

@@ -48,7 +48,6 @@ private:
 
 public:
 	_bool IsActive() { return m_isActive; }
-	//HRESULT Set_Item(ITEM eItem, _uint iNum = 1);
 	void Set_ItemPosition(STATE eState);
 	void Open_Shop();
 

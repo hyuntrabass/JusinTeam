@@ -42,12 +42,12 @@ HRESULT CPet_Dragon::Init(void* pArg)
 	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Pet_Dragon_Parti");
 	Info.pMatrix = &m_EffectMatrix;
 	Info.isFollow = true;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info, true);
 
 	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Pet_Dragon_Light");
 	Info.pMatrix = &m_EffectMatrix;
 	Info.isFollow = true;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&Info);
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info, true);
 
 	return S_OK;
 }
@@ -210,23 +210,26 @@ void CPet_Dragon::Tick_State(_float fTimeDelta)
 	case Client::CPet_Dragon::STATE_EMOTION:
 
 	{
-		if (fDistance <= 5.f && fDistance >= 2.f)
+		if (CUI_Manager::Get_Instance()->Is_InvenActive() == false)
 		{
-			m_fPosLerpRatio = 0.03f;
-		}
-		else if (fDistance > 5.f)
-		{
-			m_fPosLerpRatio = 0.05f;
-		}
+			if (fDistance <= 5.f && fDistance >= 2.f)
+			{
+				m_fPosLerpRatio = 0.03f;
+			}
+			else if (fDistance > 5.f)
+			{
+				m_fPosLerpRatio = 0.05f;
+			}
 
-		_vec3 vSetPos = XMVectorLerp(vMyPos, vTargetPos, m_fPosLerpRatio);
-		_vec4 vSetLook = XMVectorLerp(vMyLook, vPlayerLook, m_fLookLerpRatio);
+			_vec3 vSetPos = XMVectorLerp(vMyPos, vTargetPos, m_fPosLerpRatio);
+			_vec4 vSetLook = XMVectorLerp(vMyLook, vPlayerLook, m_fLookLerpRatio);
 
-		m_pTransformCom->LookAt_Dir(vSetLook);
+			m_pTransformCom->LookAt_Dir(vSetLook);
 
-		if (fDistance >= 2.f)
-		{
-			m_pTransformCom->Set_Position(vSetPos);
+			if (fDistance >= 2.f)
+			{
+				m_pTransformCom->Set_Position(vSetPos);
+			}
 		}
 
 		if (m_pModelCom->IsAnimationFinished(PET_04_EMOTION) || m_pModelCom->IsAnimationFinished(PET_05_EMOTION) || m_pModelCom->IsAnimationFinished(PET_06_EMOTION))

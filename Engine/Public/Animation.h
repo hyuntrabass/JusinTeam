@@ -40,6 +40,7 @@ private:
 	_float m_fDuration{};
 	_float m_fTickPerSec{};
 	_float m_fCurrentAnimPos{};
+	_float m_fLerpAnimPos{};
 	_mat* m_pPrevTransformation{};
 	//vector<_uint> m_CurrentKeyFrames{};
 	//vector<_float4x4> m_PrevTransformations{};

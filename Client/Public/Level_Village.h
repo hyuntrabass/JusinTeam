@@ -31,11 +31,18 @@ private:
 	HRESULT Ready_NpcvsMon();
 
 private:
+	HRESULT Ready_Village_Monster();
+	HRESULT Ready_Groar_Boss();
+
+private:
 	HRESULT Ready_NPC();
 	HRESULT Ready_NPC_Dummy();
 
 	//UI
 	HRESULT Ready_UI();
+
+private:
+	HRESULT Ready_Test(); // Test
 
 public:
 	static CLevel_Village* Create(_dev pDevice, _context pContext);

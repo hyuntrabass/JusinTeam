@@ -23,7 +23,7 @@ HRESULT CShader::Init_Prototype(const wstring& strShaderFilePath, const D3D11_IN
 {
     _uint iHlslFlag{};
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
     iHlslFlag = D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_DEBUG;
 #else  
     iHlslFlag = D3DCOMPILE_OPTIMIZATION_LEVEL1;

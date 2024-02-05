@@ -226,17 +226,21 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	ImGui::RadioButton("SELECT", &m_eModelType, TYPE_SELECT); ImGui::SameLine();
 	ImGui::RadioButton("PLAYER", &m_eModelType, TYPE_PLAYER);
 
+	if (m_ePreModelType != m_eModelType)
+	{
+		m_ePreModelType = m_eModelType;
+		m_iCurrentModelIndex = 0;
+		m_iCurTriggerIndex = 0;
+		m_iCurSoundNameIndex = 0;
+	}
+
 	if (m_eModelType == TYPE_MONSTER)
 	{
 		static const char* szCurrentModel = m_szMonsterNames[0];
 
 		if (m_ePreModelType != m_eModelType)
 		{
-			m_ePreModelType = m_eModelType;
-			m_iCurrentModelIndex = 0;
 			szCurrentModel = m_szMonsterNames[0];
-			m_iCurTriggerIndex = 0;
-			m_iCurSoundNameIndex = 0;
 		}
 
 		if (ImGui::BeginCombo("LIST", szCurrentModel))
@@ -262,11 +266,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 		static const char* szCurrentModel = "Select_Priest";
 		if (m_ePreModelType != m_eModelType)
 		{
-			m_ePreModelType = m_eModelType;
-			m_iCurrentModelIndex = 0;
 			szCurrentModel = "Select_Priest";
-			m_iCurTriggerIndex = 0;
-			m_iCurSoundNameIndex = 0;
 		}
 
 		if (ImGui::BeginCombo("LIST", szCurrentModel))
@@ -283,16 +283,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				}
 			}
 			ImGui::EndCombo();
-		}
-	}
-	else if (m_eModelType == TYPE_SELECT)
-	{
-		if (m_ePreModelType != m_eModelType)
-		{
-			m_ePreModelType = m_eModelType;
-			m_iCurrentModelIndex = 0;
-			m_iCurTriggerIndex = 0;
-			m_iCurSoundNameIndex = 0;
 		}
 	}
 
@@ -316,6 +306,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 		ImGui::SameLine();
 		if (ImGui::Button("LOAD##1"))
 		{
+			m_iCurTriggerIndex = 0;
 			LoadFile();
 		}
 		ImGui::SameLine();
@@ -554,7 +545,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					if (ImGui::ListBox("ANIMATION", &m_iCurrentAnimIndex, m_AnimationNames.data(), m_AnimationNames.size()))
 					{
 						m_AnimDesc.iAnimIndex = m_iCurrentAnimIndex;
-						m_AnimDesc.bSkipInterpolation = false;
+						m_AnimDesc.bSkipInterpolation = true;
 						m_AnimDesc.fAnimSpeedRatio = 1.7f;
 						pCurModel->Set_Animation(m_AnimDesc);
 					}
@@ -984,10 +975,13 @@ HRESULT CImgui_Manager::ImGuiMenu()
 
 				if (ImGui::Button("END"))
 				{
-					_uint iEndIndex = static_cast<_uint>(pSoundDesc->iEndAnimIndices.size()) - 1;
-					pSoundDesc->iEndAnimIndices[iEndIndex] = m_pPlayer->Get_CurrentPlayerModel()->Get_CurrentAnimationIndex();
-					_uint iCurrentAnimPos = static_cast<_uint>(m_pPlayer->Get_CurrentPlayerModel()->Get_CurrentAnimPos());
-					pSoundDesc->fEndAnimPoses[iEndIndex] = static_cast<_float>(iCurrentAnimPos);
+					if (pSoundDesc->iEndAnimIndices.size() > 0)
+					{
+						_uint iEndIndex = static_cast<_uint>(pSoundDesc->iEndAnimIndices.size()) - 1;
+						pSoundDesc->iEndAnimIndices[iEndIndex] = m_pPlayer->Get_CurrentModel()->Get_CurrentAnimationIndex();
+						_uint iCurrentAnimPos = static_cast<_uint>(m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos());
+						pSoundDesc->fEndAnimPoses[iEndIndex] = static_cast<_float>(iCurrentAnimPos);
+					}
 				}
 				ImGui::SameLine();
 				if (ImGui::Button("ADD##3"))
@@ -1402,10 +1396,13 @@ HRESULT CImgui_Manager::ImGuiMenu()
 
 				if (ImGui::Button("END"))
 				{
-					_uint iEndIndex = static_cast<_uint>(pSoundDesc->iEndAnimIndices.size()) - 1;
-					pSoundDesc->iEndAnimIndices[iEndIndex] = m_pPlayer->Get_CurrentModel()->Get_CurrentAnimationIndex();
-					_uint iCurrentAnimPos = static_cast<_uint>(m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos());
-					pSoundDesc->fEndAnimPoses[iEndIndex] = static_cast<_float>(iCurrentAnimPos);
+					if (pSoundDesc->iEndAnimIndices.size() > 0)
+					{
+						_uint iEndIndex = static_cast<_uint>(pSoundDesc->iEndAnimIndices.size()) - 1;
+						pSoundDesc->iEndAnimIndices[iEndIndex] = m_pPlayer->Get_CurrentModel()->Get_CurrentAnimationIndex();
+						_uint iCurrentAnimPos = static_cast<_uint>(m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos());
+						pSoundDesc->fEndAnimPoses[iEndIndex] = static_cast<_float>(iCurrentAnimPos);
+					}
 				}
 				ImGui::SameLine();
 				if (ImGui::Button("ADD##3"))

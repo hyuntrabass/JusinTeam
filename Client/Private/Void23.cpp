@@ -91,7 +91,7 @@ void CVoid23::Late_Tick(_float fTimeDelta)
 {
 	__super::Late_Tick(fTimeDelta);
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
 #endif
@@ -171,7 +171,13 @@ void CVoid23::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CVoid23::STATE_CHASE:
-			m_Animation.iAnimIndex = RUN;
+		{
+			_float fDistance = __super::Compute_PlayerDistance();
+			if (fDistance >= m_fAttackRange)
+			{
+				m_Animation.iAnimIndex = RUN;
+			}
+
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 4.f;
 
@@ -184,12 +190,22 @@ void CVoid23::Init_State(_float fTimeDelta)
 			{
 				m_pTransformCom->Set_Speed(4.f);
 			}
+		}
 
 			break;
 
 		case Client::CVoid23::STATE_ATTACK:
+		{
 			m_bDamaged = false;
 			m_Animation.fAnimSpeedRatio = 3.f;
+			m_bAttacking = true;
+
+			_vec4 vPlayerPos = __super::Compute_PlayerPos();
+			_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
+			vDir.y = 0.f;
+			m_pTransformCom->LookAt_Dir(vDir);
+		}
+
 			break;
 
 		case Client::CVoid23::STATE_HIT:
@@ -222,23 +238,47 @@ void CVoid23::Init_State(_float fTimeDelta)
 
 void CVoid23::Tick_State(_float fTimeDelta)
 {
+	_vec4 vPlayerPos = __super::Compute_PlayerPos();
+	_float fDistance = __super::Compute_PlayerDistance();
+
 	switch (m_eCurState)
 	{
 	case Client::CVoid23::STATE_IDLE:
+	{
 		m_fIdleTime += fTimeDelta;
 
-		if (m_fIdleTime >= 2.f)
+		if (m_bAttacking == true)
 		{
-			m_eCurState = STATE_WALK;
-			m_fIdleTime = 0.f;
+			if (m_fIdleTime >= 1.f)
+			{
+				if (fDistance >= m_fAttackRange)
+				{
+					m_eCurState = STATE_CHASE;
+				}
+				else
+				{
+					m_eCurState = STATE_ATTACK;
+				}
+
+				m_fIdleTime = 0.f;
+			}
+
+		}
+		else
+		{
+			if (m_fIdleTime >= 2.f)
+			{
+				m_eCurState = STATE_WALK;
+				m_fIdleTime = 0.f;
+			}
+
 		}
 
-		//_float fDistance = __super::Compute_PlayerDistance();
 		//if (fDistance <= m_fChaseRange)
 		//{
 		//	m_eCurState = STATE_CHASE;
 		//}
-
+	}
 		break;
 
 	case Client::CVoid23::STATE_WALK:
@@ -253,18 +293,16 @@ void CVoid23::Tick_State(_float fTimeDelta)
 
 	case Client::CVoid23::STATE_CHASE:
 	{
-		_vec4 vPlayerPos = __super::Compute_PlayerPos();
-		_float fDistance = __super::Compute_PlayerDistance();
 		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 		vDir.y = 0.f;
-
-		m_pTransformCom->LookAt_Dir(vDir);
-		m_pTransformCom->Go_Straight(fTimeDelta);
 
 		if (fDistance > m_fChaseRange && !m_bDamaged)
 		{
 			m_eCurState = STATE_IDLE;
 			m_bSlow = false;
+			m_bAttacking = false;
+
+			break;
 		}
 
 		if (fDistance <= m_fAttackRange)
@@ -273,7 +311,11 @@ void CVoid23::Tick_State(_float fTimeDelta)
 			m_Animation.isLoop = true;
 			m_bSlow = false;
 		}
-
+		else
+		{
+			m_pTransformCom->LookAt_Dir(vDir);
+			m_pTransformCom->Go_Straight(fTimeDelta);
+		}
 	}
 		break;
 
@@ -417,7 +459,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 			m_pModelCom->IsAnimationFinished(B_ATTACK03) || m_pModelCom->IsAnimationFinished(B_ATTACK04) ||
 			m_pModelCom->IsAnimationFinished(B_ATTACK05))
 		{
-			m_eCurState = STATE_CHASE;
+			m_eCurState = STATE_IDLE;
 		}
 
 		break;

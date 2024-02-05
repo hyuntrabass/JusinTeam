@@ -1,5 +1,9 @@
 #pragma once
 
+#include "HitEffect.h"
+#include "Skill.h"
+#include "SkillDesc.h"
+#include "SkillBook.h"
 #include "Tutorial.h"
 #include "Pop_Alert.h"
 #include "InvenWindow.h"
@@ -67,6 +71,8 @@
 #include "Map.h"
 #include "WorldMap.h"
 #include "Effect_Dummy.h"
+#include "Skill_Model.h"
+#include "Scarecrow.h"
 
 // Monster
 #include "NPCvsMon.h"
@@ -97,6 +103,8 @@
 // Boss
 #include "Groar_Boss.h"
 #include "Missile.h"
+#include "Tentacle.h"
+#include "XBeam.h"
 
 // Pet
 #include "Pet_Cat.h"

@@ -97,7 +97,7 @@ void CVoid01::Late_Tick(_float fTimeDelta)
 {
 	__super::Late_Tick(fTimeDelta);
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
 #endif
@@ -114,6 +114,15 @@ void CVoid01::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_iHP -= iDamage;
 	m_bDamaged = true;
+
+	CHitEffect::HITEFFECT_DESC Desc{};
+	Desc.iDamage = iDamage;
+	Desc.pParentTransform = m_pTransformCom;
+	Desc.vTextPosition = _vec2(0.f, 1.5f);
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
+	{
+		return;
+	}
 
 	m_eCurState = STATE_HIT;
 
@@ -164,7 +173,13 @@ void CVoid01::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CVoid01::STATE_CHASE:
-			m_Animation.iAnimIndex = RUN;
+		{
+			_float fDistance = __super::Compute_PlayerDistance();
+			if (fDistance >= m_fAttackRange)
+			{
+				m_Animation.iAnimIndex = RUN;
+			}
+
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 2.f;
 
@@ -176,6 +191,7 @@ void CVoid01::Init_State(_float fTimeDelta)
 			{
 				m_pTransformCom->Set_Speed(3.f);
 			}
+		}
 			break;
 
 		case Client::CVoid01::STATE_ATTACK:
@@ -205,6 +221,15 @@ void CVoid01::Tick_State(_float fTimeDelta)
 	switch (m_eCurState)
 	{
 	case Client::CVoid01::STATE_IDLE:
+
+		m_fIdleTime += fTimeDelta;
+
+		if (m_fIdleTime >= 1.f)
+		{
+			m_fIdleTime = 0.f;
+			m_eCurState = STATE_CHASE;
+		}
+
 		break;
 
 	case Client::CVoid01::STATE_CHASE:
@@ -213,9 +238,6 @@ void CVoid01::Tick_State(_float fTimeDelta)
 		_float fDistance = __super::Compute_PlayerDistance();
 		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 		vDir.y = 0.f;
-
-		m_pTransformCom->LookAt_Dir(vDir);
-		m_pTransformCom->Go_Straight(fTimeDelta);
 
 		//if (fDistance > m_fChaseRange && !m_bDamaged)
 		//{
@@ -228,6 +250,11 @@ void CVoid01::Tick_State(_float fTimeDelta)
 			m_eCurState = STATE_ATTACK;
 			m_Animation.isLoop = true;
 			m_bSlow = false;
+		}
+		else
+		{
+			m_pTransformCom->LookAt_Dir(vDir);
+			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
 	}
 		break;
@@ -316,7 +343,7 @@ void CVoid01::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
 			m_pModelCom->IsAnimationFinished(ATTACK03))
 		{
-			m_eCurState = STATE_CHASE;
+			m_eCurState = STATE_IDLE;
 		}
 
 		break;

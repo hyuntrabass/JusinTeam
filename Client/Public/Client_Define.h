@@ -43,6 +43,7 @@ namespace Client
 		CS_ZOOM,
 		CS_INVEN,
 		CS_SHOP,
+		CS_SKILLBOOK,
 		CS_ENDFULLSCREEN,
 		CS_WORLDMAP,
 		CS_STATEEND
@@ -255,6 +256,7 @@ namespace Client
 		MonAtt_Hit,
 		MonAtt_KnockDown,
 		MonAtt_Stun,
+		GROAR_PULL,
 		MonAtt_End
 	};
 #pragma endregion
@@ -292,6 +294,18 @@ namespace Client
 		_uint iLimited;
 
 	}ITEM;
+	
+	typedef struct tagSkillInfo
+	{
+		wstring strName;
+		_uint iSkillType;
+		_uint iMp;
+		_uint iCoolTime;
+		_uint iSkillIdx;
+		_bool isSkillIn;
+		wstring strTexture;
+		_uint iModelSkillIndex;
+	}SKILLINFO;
 
 #pragma region Shader Passes
 	enum AnimMeshPass
@@ -324,6 +338,9 @@ namespace Client
 		StaticPass_Worldmap_Cloud,
 		StaticPsss_Rim,
 		StaticPass_DiffEffect,
+		StaticPass_SingleColorAlpha,
+		StaticPass_MaskAlpha,
+		StaticPass_DiffAlpha,
 		StaticPass_End,
 	};
 
@@ -368,6 +385,7 @@ namespace Client
 		VTPass_NineSlice,
 		VTPass_FadeVertical,
 		VTPass_FadeHorizontal,
+		VTPass_LerpColorNAlpha,
 		VTPass_End
 	};
 

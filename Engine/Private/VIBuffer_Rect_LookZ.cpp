@@ -13,7 +13,7 @@ CVIBuffer_Rect_LookZ::CVIBuffer_Rect_LookZ(const CVIBuffer_Rect_LookZ& rhs)
 HRESULT CVIBuffer_Rect_LookZ::Init_Prototype()
 {
 	m_iNumVertexBuffers = 1;
-	m_iVertexStride = sizeof VTXPOSTEX;
+	m_iVertexStride = sizeof VTXNORTEX;
 	m_iNumVertices = 4;
 
 	m_iIndexStride = 2;
@@ -33,19 +33,23 @@ HRESULT CVIBuffer_Rect_LookZ::Init_Prototype()
 
 	ZeroMemory(&m_InitialData, sizeof m_InitialData);
 
-	VTXPOSTEX* pVertices = new VTXPOSTEX[m_iNumVertices];
-	ZeroMemory(pVertices, sizeof(VTXPOSTEX) * m_iNumVertices);
+	VTXNORTEX* pVertices = new VTXNORTEX[m_iNumVertices];
+	ZeroMemory(pVertices, sizeof(VTXNORTEX) * m_iNumVertices);
 
 	pVertices[0].vPosition = _float3(0.5f, 0.5f, 0.f);
+	pVertices[0].vNormal = _float3(0.f, 0.f, 1.f);
 	pVertices[0].vTexcoord = _float2(0.f, 0.f);
 
 	pVertices[1].vPosition = _float3(-0.5f, 0.5f, 0.f);
+	pVertices[1].vNormal = _float3(0.f, 0.f, 1.f);
 	pVertices[1].vTexcoord = _float2(1.f, 0.f);
 
 	pVertices[2].vPosition = _float3(-0.5f, -0.5f, 0.f);
+	pVertices[2].vNormal = _float3(0.f, 0.f, 1.f);
 	pVertices[2].vTexcoord = _float2(1.f, 1.f);
 
 	pVertices[3].vPosition = _float3(0.5f, -0.5f, 0.f);
+	pVertices[3].vNormal = _float3(0.f, 0.f, 1.f);
 	pVertices[3].vTexcoord = _float2(0.f, 1.f);
 
 	m_InitialData.pSysMem = pVertices;

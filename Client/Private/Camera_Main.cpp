@@ -42,12 +42,15 @@ void CCamera_Main::Tick(_float fTimeDelta)
 {
 
 	if (m_pGameInstance->Get_CameraModeIndex() != CM_MAIN)
+	{
 		return;
+	}
 
 	if (m_pGameInstance->Key_Down(DIK_P))
 	{
 		m_pGameInstance->Set_CameraModeIndex(CM_DEBUG);
 	}
+
 
 	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
 
@@ -71,16 +74,22 @@ void CCamera_Main::Tick(_float fTimeDelta)
 					return;
 				}
 				Safe_AddRef(m_pPlayerTransform);
-				m_pTransformCom->Set_State(State::Pos, _vec4(m_pPlayerTransform->Get_CenterPos() + _vec4(0.f,3.f, 0.f, 0.f)));
+				m_pTransformCom->Set_State(State::Pos, _vec4(m_pPlayerTransform->Get_CenterPos() + _vec4(0.f, 3.f, 0.f, 0.f)));
 				m_vOriCamPos = _vec4(m_pPlayerTransform->Get_CenterPos()) + _vec4(0.f, 3.f, 0.f, 0.f);
 				m_AimZoomInTime = 2.f;
 			}
 		}
 		if (m_pPlayerTransform == nullptr)
+		{
 			return;
+		}
 		if (m_pGameInstance->Key_Down(DIK_M))
 		{
-			if(m_pGameInstance->Get_CurrentLevelIndex()>LEVEL_GAMEPLAY)
+			if (m_pGameInstance->Get_CameraState() == CS_ZOOM)
+			{
+				return;
+			}
+			if (m_pGameInstance->Get_CurrentLevelIndex() > LEVEL_GAMEPLAY)
 			{
 				if (m_pGameInstance->Get_CameraState() != CS_WORLDMAP)
 				{
@@ -121,6 +130,12 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		if (m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
 		{
 			WorldMap_Mode(fTimeDelta);
+			__super::Tick(fTimeDelta);
+			return;
+		}
+		if (m_pGameInstance->Get_CameraState() == CS_SKILLBOOK)
+		{
+			SkillBook_Mode(fTimeDelta);
 			__super::Tick(fTimeDelta);
 			return;
 		}
@@ -189,7 +204,9 @@ void CCamera_Main::Tick(_float fTimeDelta)
 				if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
 				{
 					if (m_fPlayerDistance > 2.f)
+					{
 						m_fPlayerDistance -= 0.8f;
+					}
 
 					if (m_fLerpTime >= 1.f)
 					{
@@ -199,7 +216,9 @@ void CCamera_Main::Tick(_float fTimeDelta)
 				else if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
 				{
 					if (m_fPlayerDistance < 10.f)
+					{
 						m_fPlayerDistance += 0.8f;
+					}
 
 					if (m_fLerpTime >= 1.f)
 					{
@@ -233,19 +252,17 @@ void CCamera_Main::Tick(_float fTimeDelta)
 				- (m_pTransformCom->Get_State(State::Look) * CamAttackZoom)
 				+ (m_pTransformCom->Get_State(State::Up) * CamAttackZoom * 0.15f);
 
-			/*if (abs(m_vOriCamPos.x - vCamPos.x) >= 10 ||
-				abs(m_vOriCamPos.y - vCamPos.y) >= 10 ||
-				abs(m_vOriCamPos.z - vCamPos.z) >= 10)
-			{
-
-			}*/
 			m_vOriCamPos = XMVectorLerp(m_vOriCamPos, vCamPos, 0.3f);
-			
+
 			_vec4 OriCam{};
 			if (m_AimZoomInTime < 1.f)
+			{
 				OriCam = XMVectorLerp(m_vAimCamPos, m_vOriCamPos, m_AimZoomInTime);
+			}
 			else
+			{
 				OriCam = m_vOriCamPos;
+			}
 
 			m_pTransformCom->Set_State(State::Pos, OriCam);
 
@@ -257,7 +274,9 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			_vec4 PlayerCenter = m_pPlayerTransform->Get_CenterPos();
 			_float ps = vMyPos.y - PlayerCenter.y;
 			if (ps < 0.f)
+			{
 				ps = 0.f;
+			}
 
 			ps *= 0.2f;
 			vRayDir = vMyPos - PlayerCenter;
@@ -302,9 +321,13 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 			_vec4 OriCam{};
 			if (m_AimZoomOutTime < 1.f)
+			{
 				OriCam = XMVectorLerp(m_vOriCamPos, m_vAimCamPos, m_AimZoomOutTime);
+			}
 			else
+			{
 				OriCam = m_vAimCamPos;
+			}
 			_float fShakeAmount = sin(m_fShakeAcc * 15.f) * powf(0.5f, m_fShakeAcc) * 0.2f;
 			m_pTransformCom->Set_State(State::Pos, OriCam);
 			_vec4 vShakePos = m_pTransformCom->Get_State(State::Pos);
@@ -343,21 +366,16 @@ void CCamera_Main::Camera_Zoom(_float fTimeDelta)
 
 _bool CCamera_Main::Inven_Mode(_float fTimeDelta)
 {
-	_vec4 vInvenPos = { -0.4f, 1000.7f, 2.2f, 1.f };
+	_vec4 vInvenPos = { -0.3f, 1001.2f, 2.1f, 1.f };
 	m_pTransformCom->Set_State(State::Pos, vInvenPos);
-	_vec4 vLookPos = m_pPlayerTransform->Get_State(State::Pos);
-	vLookPos.y += 3.f;
-
-	m_pTransformCom->LookAt_Dir(_vec4(-0.0550712906f, 0.0767828003f, -0.995446920f, 0.f));
-	//m_pTransformCom->LookAt(vLookPos);
-
+	m_pTransformCom->LookAt_Dir(_vec4(-0.0467762f, -0.07077519f, -0.996398f, 0.f));
 
 	return true;
 }
 
 void CCamera_Main::Shop_Mode(_float fTimeDelta)
 {
-	CTransform* pTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_GAMEPLAY, TEXT("Layer_ItemMerchant"), TEXT("Com_Transform"));
+	CTransform* pTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_ItemMerchant"), TEXT("Com_Transform"));
 	_vec4 vPos = pTransform->Get_State(State::Pos);
 	_vec4 vShopPos = _vec4(vPos.x - 0.16f, 1001.4f, vPos.z + 1.f, 1.f);
 
@@ -543,20 +561,86 @@ void CCamera_Main::ZOOM_Mode(_float fTimeDelta)
 
 	_vec4 vCurrentPos = m_pTransformCom->Get_State(State::Pos);
 	_vec4 vTargetPos = m_pGameInstance->Get_CameraTargetPos();
+	_vec4 vTargetLook = m_pGameInstance->Get_CameraTargetLook();
+	_vec4 vPlayerRight = m_pPlayerTransform->Get_State(State::Right);
+	_vec4 vPlayerUp = m_pPlayerTransform->Get_State(State::Up);
+	_vec4 vPlayerLook = m_pPlayerTransform->Get_State(State::Look);
 
-	_float fLerpFactor = 0.1f;
-	_float fZoomFactor = m_pGameInstance->Get_ZoomFactor();
+	_vec4 vPlayerPos = vTargetPos + vTargetLook * 1.5f;
 
-	vTargetPos.y = vTargetPos.y + 1.5f;
-	//vTargetPos.z = vTargetPos.z - fZoomFactor;
+	float swayX = (sin(m_CurrentTime * m_SwaySpeed) * m_SwayAmount) * 0.003f;
+	float swayY = (sin((m_CurrentTime + m_TimeOffset) * m_SwaySpeed) * m_SwayAmount) * 0.003f;
 
-	_vec4 vNewPos = XMVectorLerp(vCurrentPos, vTargetPos, fLerpFactor);
-	m_pTransformCom->Set_State(State::Pos, vNewPos);
+	m_fCamChangeTime += fTimeDelta;
+	if (m_fCamChangeTime > 5.f)
+	{
+		m_fCamChangeTime = 0;
+		++m_iCamChange;
+		if (m_iCamChange >= 3)
+			m_iCamChange = 0;
+	}
+	if (m_iCamChange == 2)
+	{
+		m_pPlayerTransform->Set_State(State::Pos, vPlayerPos);
+		m_pPlayerTransform->LookAt(vTargetPos + vPlayerRight * -0.1f);
 
-	_vec4 vTargetLook = m_pGameInstance->Get_CameraTargetPos();
-	vTargetLook.y = 0.f;
-	_vec4 vNewLook = XMVectorLerp(vCurLook, vTargetLook, fLerpFactor);
-	m_pTransformCom->LookAt(vNewLook);
+
+		m_pTransformCom->Set_State(State::Pos, vPlayerPos +
+			vPlayerRight * 1.4f +
+			vPlayerUp * 1.2f -
+			vPlayerLook * 0.2f);
+
+		m_pTransformCom->LookAt(vTargetPos + vTargetLook + vTargetLook * -swayX + vPlayerUp * 1.5f + vPlayerUp * swayY);
+	}
+	else if (m_iCamChange == 1)
+	{
+		m_pPlayerTransform->Set_State(State::Pos, vPlayerPos);
+		m_pPlayerTransform->LookAt(vTargetPos);
+
+
+		m_pTransformCom->Set_State(State::Pos, vPlayerPos +
+			vPlayerRight * -0.4f +
+			vPlayerUp * 1.6f -
+			vPlayerLook * 0.2f);
+
+		m_pTransformCom->LookAt(vTargetPos + vTargetLook + vTargetLook * -swayX + vPlayerUp * 1.5f + vPlayerUp * swayY);
+	}
+	else
+	{
+		m_pPlayerTransform->Set_State(State::Pos, vPlayerPos);
+		m_pPlayerTransform->LookAt(vTargetPos + vPlayerRight * -0.1f);
+
+
+		m_pTransformCom->Set_State(State::Pos, vPlayerPos +
+			vPlayerRight * 1.f +
+			vPlayerUp * 1.8f -
+			vPlayerLook * 0.47f);
+
+		m_pTransformCom->LookAt(vTargetPos + vTargetLook + vTargetLook * -swayX + vPlayerUp * 1.7f + vPlayerUp * swayY);
+	}
+	m_CurrentTime = GetTickCount() * 0.001f;
+	m_fSelectRotation += (fTimeDelta * 0.8f * m_iRotation);
+
+	_vec4 OriPos = m_pTransformCom->Get_State(State::Pos);
+
+	if (m_fSelectRotation > 2.f)
+		m_iRotation *= -1;
+	else if (m_fSelectRotation < -2.f)
+	{
+		m_iRotation *= -1;
+	}
+
+	m_pTransformCom->Set_State(State::Pos, OriPos + (m_pTransformCom->Get_State(State::Right) * swayX));
+
+}
+
+void CCamera_Main::SkillBook_Mode(_float fTimeDelta)
+{
+	_vec4 vShopPos = _vec4(2.25f, -98.26f, -2.5f, 1.f);
+
+	m_pTransformCom->Set_State(State::Pos, vShopPos);
+
+	m_pTransformCom->LookAt_Dir(_vec4(-0.447532f, -0.161538f, 0.879555f, 0.f));
 }
 
 void CCamera_Main::WorldMap_Mode(_float fTimeDelta)
@@ -573,19 +657,19 @@ void CCamera_Main::WorldMap_Mode(_float fTimeDelta)
 		_long dwMouseMove;
 		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
 		{
-			if(dwMouseMove<0.f)
+			if (dwMouseMove < 0.f)
 			{
-				if (m_fMap_RightDistance > -11.f +(m_fLerp_LookDistance) * 0.8f)
+				if (m_fMap_RightDistance > -11.f + (m_fLerp_LookDistance) * 0.8f)
 					m_fMap_RightDistance -= (0.5f + (m_fLerp_LookDistance * 0.043f));
 			}
 			else if (dwMouseMove > 0.f)
 			{
-				if (m_fMap_RightDistance < 1.f + (m_fLerp_LookDistance)*-0.8f)
+				if (m_fMap_RightDistance < 1.f + (m_fLerp_LookDistance) * -0.8f)
 					m_fMap_RightDistance += (0.5f + (m_fLerp_LookDistance * 0.043f));
 			}
 
 		}
-		
+
 		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
 		{
 
@@ -596,14 +680,14 @@ void CCamera_Main::WorldMap_Mode(_float fTimeDelta)
 			}
 			else if (dwMouseMove < 0.f)
 			{
-			
+
 				if (m_fMap_UpDistance > -20.f + (m_fLerp_LookDistance) * 0.8f)
-					m_fMap_UpDistance -= (0.5f +(m_fLerp_LookDistance * 0.043f));
+					m_fMap_UpDistance -= (0.5f + (m_fLerp_LookDistance * 0.043f));
 			}
-		
+
 		}
 
-	
+
 	}
 	m_fLerp_RightDistance = Lerp(m_fLerp_RightDistance, m_fMap_RightDistance, 0.2f);
 	m_fLerp_UpDistance = Lerp(m_fLerp_UpDistance, m_fMap_UpDistance, 0.2f);
@@ -619,12 +703,12 @@ void CCamera_Main::WorldMap_Mode(_float fTimeDelta)
 	}
 	else if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
 	{
-	
+
 		if (m_fMap_LookDistance < 0.f)
 			m_fMap_LookDistance += 0.7f;
 		_float m_LerpDistance{};
 
-		m_pTransformCom->Set_State(State::Pos, m_vMapPos -m_pTransformCom->Get_State(State::Look) * m_fLerp_LookDistance);
+		m_pTransformCom->Set_State(State::Pos, m_vMapPos - m_pTransformCom->Get_State(State::Look) * m_fLerp_LookDistance);
 		m_fCurrentMapZoom = m_pTransformCom->Get_State(State::Pos).y;
 	}
 
@@ -632,8 +716,8 @@ void CCamera_Main::WorldMap_Mode(_float fTimeDelta)
 
 	m_pTransformCom->Set_State(State::Pos, m_vMapPos -
 		(m_pTransformCom->Get_State(State::Right) * (m_fLerp_RightDistance)) +
-			(m_pTransformCom->Get_State(State::Up) * m_fLerp_UpDistance)
-			);
+		(m_pTransformCom->Get_State(State::Up) * m_fLerp_UpDistance)
+	);
 
 	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
 	vPos.y = m_fCurrentMapZoom;

@@ -28,7 +28,7 @@ HRESULT CRenderer::Init_Prototype()
 
 #pragma region For_MRT_GameObject
 
-	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Diffuse"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Diffuse"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f), true)))
 	{
 		return E_FAIL;
 	}
@@ -43,7 +43,7 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Object_Specular"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Mask"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 	{
 		return E_FAIL;
 	}
@@ -118,7 +118,7 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Object_Reflection_Specular"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 0.f, 1.f))))
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Object_Reflection_Mask"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 0.f, 1.f))))
 	{
 		return E_FAIL;
 	}
@@ -202,11 +202,11 @@ HRESULT CRenderer::Init_Prototype()
 	//{
 	//	return E_FAIL;
 	//}
-	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LightDepth"), D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION, D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION / 2, DXGI_FORMAT_R32G32B32A32_FLOAT,
-		_float4(1.f, 1.f, 1.f, 1.f))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LightDepth"), D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION, D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION / 2, DXGI_FORMAT_R32G32B32A32_FLOAT,
+	//	_float4(1.f, 1.f, 1.f, 1.f))))
+	//{
+	//	return E_FAIL;
+	//}
 
 #pragma region For_MRT_HDR
 
@@ -232,7 +232,7 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Object_Specular"))))
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Mask"))))
 	{
 		return E_FAIL;
 	}
@@ -291,7 +291,7 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Reflection"), TEXT("Target_Object_Reflection_Specular"))))
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Reflection"), TEXT("Target_Object_Reflection_Mask"))))
 	{
 		return E_FAIL;
 	}
@@ -368,10 +368,10 @@ HRESULT CRenderer::Init_Prototype()
 #pragma endregion
 
 
-	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Shadow"), TEXT("Target_LightDepth"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Shadow"), TEXT("Target_LightDepth"))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Blur"), TEXT("Target_Bloom"))))
 	{
@@ -430,12 +430,12 @@ HRESULT CRenderer::Init_Prototype()
 #pragma endregion
 
 
-	if (FAILED(Ready_ShadowDSV()))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_ShadowDSV()))
+	//{
+	//	return E_FAIL;
+	//}
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Diffuse"), _float2(50.f, 50.f), _float2(100.f, 100.f))))
 	{
 		return E_FAIL;
@@ -460,10 +460,10 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_LightDepth"), _float2(ViewportDesc.Width - 50.f, 50.f), _float2(100.f, 100.f))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_LightDepth"), _float2(ViewportDesc.Width - 50.f, 50.f), _float2(100.f, 100.f))))
+	//{
+	//	return E_FAIL;
+	//}
 	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Bloom"), _float2(ViewportDesc.Width - 50.f, 150.f), _float2(100.f, 100.f))))
 	{
 		return E_FAIL;
@@ -481,8 +481,8 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
-	//if (FAILED(m_pGameInstance->Ready_Debug_RT(L"Target_Refraction_Final", _float2(ViewportDesc.Width - 250.f, 50.f), _float2(100.f, 100.f))))
-	//	return E_FAIL;
+	if (FAILED(m_pGameInstance->Ready_Debug_RT(L"Target_Mask", _float2(ViewportDesc.Width - 250.f, 50.f), _float2(100.f, 100.f))))
+		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Ready_Debug_RT(L"Target_Reflection_Final", _float2(ViewportDesc.Width - 250.f, 150.f), _float2(100.f, 100.f))))
 		return E_FAIL;
@@ -590,7 +590,8 @@ HRESULT CRenderer::Add_RenderGroup(RenderGroup eRenderGroup, CGameObject* pRende
 
 HRESULT CRenderer::Draw_RenderGroup()
 {
-	Clear_Instance();
+	if (FAILED(Clear_Instance()))
+		return E_FAIL;
 
 	if (FAILED(Render_Priority()))
 	{
@@ -618,6 +619,9 @@ HRESULT CRenderer::Draw_RenderGroup()
 		Safe_Release(pGameObject);
 
 	m_RenderObjects[RG_Priority].clear();
+
+	if (FAILED(Clear_Instance()))
+		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_GameObjects"))))
 	{
@@ -694,7 +698,7 @@ HRESULT CRenderer::Draw_RenderGroup()
 		return E_FAIL;
 	}
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	if (not m_pGameInstance->IsSkipDebugRendering())
 	{
 		if (FAILED(Render_Debug()))
@@ -709,7 +713,7 @@ HRESULT CRenderer::Draw_RenderGroup()
 	return S_OK;
 }
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 HRESULT CRenderer::Add_DebugComponent(CComponent* pDebugComponent)
 {
 	if (m_pGameInstance->IsSkipDebugRendering())
@@ -1075,19 +1079,19 @@ HRESULT CRenderer::Render_Reflection()
 			m_pGameInstance->Set_Transform(TransformType::View, ReflectionViewMat);
 			m_pGameInstance->Update_PipeLine();
 
-			_float4 vClipPlane = _float4(0.f, 1.f, 0.f, -(fWaterHeight - 0.1f));
+			_float4 vClipPlane = _float4(0.f, 1.f, 0.f, -(fWaterHeight - 0.5f));
 
-			//for (auto& pGameObject : m_RenderObjects[RG_Priority])
-			//{
-			//	if (pGameObject)
-			//	{
-			//		if (FAILED(pGameObject->Render_Reflection(vClipPlane)))
-			//		{
-			//			MSG_BOX("Failed to Render");
-			//			return E_FAIL;
-			//		}
-			//	}
-			//}
+			for (auto& pGameObject : m_RenderObjects[RG_Priority])
+			{
+				if (pGameObject)
+				{
+					if (FAILED(pGameObject->Render_Reflection(vClipPlane)))
+					{
+						MSG_BOX("Failed to Render");
+						return E_FAIL;
+					}
+				}
+			}
 
 			for (auto& pGameObject : m_RenderObjects[RG_NonBlend])
 			{
@@ -1101,47 +1105,47 @@ HRESULT CRenderer::Render_Reflection()
 			}
 
 
-			//map<_int, vector<CGameObject*>> InstanceData;
+			map<_int, vector<CGameObject*>> InstanceData;
 
-			//for (auto& pGameObject : m_RenderObjects[RG_NonBlend_Instance])
-			//{
-			//	if (pGameObject->Find_Component(L"Com_Model") == nullptr)
-			//		continue;
+			for (auto& pGameObject : m_RenderObjects[RG_NonBlend_Instance])
+			{
+				if (pGameObject->Find_Component(L"Com_Model") == nullptr)
+					continue;
 
-			//	const _int iInstanceID = static_cast<CModel*>(pGameObject->Find_Component(L"Com_Model"))->Get_InstanceID();
-			//	InstanceData[iInstanceID].push_back(pGameObject);
-			//}
+				const _int iInstanceID = static_cast<CModel*>(pGameObject->Find_Component(L"Com_Model"))->Get_InstanceID();
+				InstanceData[iInstanceID].push_back(pGameObject);
+			}
 
-			//for (auto& Pair : InstanceData)
-			//{
-			//	vector<CGameObject*>& vInstances = Pair.second;
-			//	const _uint instanceId = Pair.first;
-			//	CGameObject*& pHead = vInstances[0];
+			for (auto& Pair : InstanceData)
+			{
+				vector<CGameObject*>& vInstances = Pair.second;
+				const _uint instanceId = Pair.first;
+				CGameObject*& pHead = vInstances[0];
 
-			//	for (_uint i = 0; i < vInstances.size(); i++)
-			//	{
-			//		CGameObject*& pGameObject = vInstances[i];
-			//		Instance_Data MeshInstancing;
-			//		CTransform* pTransform = static_cast<CTransform*>(pGameObject->Find_Component(L"Com_Transform"));
-			//		//MeshInstancing.vRight = pTransform->Get_State(State::Right);
-			//		//MeshInstancing.vUp = pTransform->Get_State(State::Up);
-			//		//MeshInstancing.vLook = pTransform->Get_State(State::Look);
-			//		//MeshInstancing.vPos = pTransform->Get_State(State::Pos);
-			//		MeshInstancing.mMatrix = pTransform->Get_World_Matrix();
-			//		MeshInstancing.m_iID = pGameObject->Get_ID();
-			//		Add_Instance(instanceId, MeshInstancing);
-			//	}
+				for (_uint i = 0; i < vInstances.size(); i++)
+				{
+					CGameObject*& pGameObject = vInstances[i];
+					Instance_Data MeshInstancing;
+					CTransform* pTransform = static_cast<CTransform*>(pGameObject->Find_Component(L"Com_Transform"));
+					//MeshInstancing.vRight = pTransform->Get_State(State::Right);
+					//MeshInstancing.vUp = pTransform->Get_State(State::Up);
+					//MeshInstancing.vLook = pTransform->Get_State(State::Look);
+					//MeshInstancing.vPos = pTransform->Get_State(State::Pos);
+					MeshInstancing.mMatrix = pTransform->Get_World_Matrix();
+					MeshInstancing.m_iID = pGameObject->Get_ID();
+					Add_Instance(instanceId, MeshInstancing);
+				}
 
-			//	for (auto& iter : vInstances)
-			//	{
-			//		iter->InitRendered();
-			//	}
-			//	CVIBuffer_Mesh_Instance*& pBuffer = m_InstanceBuffers[instanceId];
-			//	pHead->Render_Instance();
-			//	CModel* pModel = static_cast<CModel*>(pHead->Find_Component(L"Com_Model"));
-			//	CShader* pShader = static_cast<CShader*>(pHead->Find_Component(L"Com_Shader"));
-			//	pModel->Render_Instancing(pBuffer, pShader);
-			//}
+				for (auto& iter : vInstances)
+				{
+					iter->InitRendered();
+				}
+				CVIBuffer_Mesh_Instance*& pBuffer = m_InstanceBuffers[instanceId];
+				pHead->Render_Instance();
+				CModel* pModel = static_cast<CModel*>(pHead->Find_Component(L"Com_Model"));
+				CShader* pShader = static_cast<CShader*>(pHead->Find_Component(L"Com_Shader"));
+				pModel->Render_Reflection_Instancing(pBuffer, pShader, vClipPlane);
+			}
 
 
 			m_pGameInstance->Set_Transform(TransformType::View, OriginView);
@@ -1209,7 +1213,7 @@ HRESULT CRenderer::Render_Reflection()
 			if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DepthTexture", L"Target_Object_Reflection_Depth")))
 				return E_FAIL;
 
-			if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_ObjectSpecTexture", L"Target_Object_Reflection_Specular")))
+			if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_MaskTexture", L"Target_Object_Reflection_Mask")))
 			{
 				return E_FAIL;
 			}
@@ -1292,7 +1296,7 @@ HRESULT CRenderer::Render_LightAcc()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_ObjectSpecTexture", TEXT("Target_Object_Specular"))))
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_MaskTexture", TEXT("Target_Mask"))))
 	{
 		return E_FAIL;
 	}
@@ -1358,6 +1362,12 @@ HRESULT CRenderer::Render_LightAcc()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pShader->Bind_Matrix("g_CamViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Bind_Matrix("g_CamProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
+		return E_FAIL;
+
 	if (FAILED(m_pShader->Bind_RawValue("g_SSAO", &m_SSAO, sizeof(SSAO_DESC))))
 		return E_FAIL;
 
@@ -1380,7 +1390,7 @@ HRESULT CRenderer::Render_LightAcc()
 
 	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_SSAOTEST"), L"MRT_SSAOBlur", m_fSSAOBlurPower)))
 		return E_FAIL;
-	//
+
 #pragma endregion
 
 	return S_OK;
@@ -1404,10 +1414,10 @@ HRESULT CRenderer::Render_Deferred()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_LightDepthTexture", TEXT("Target_LightDepth"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_LightDepthTexture", TEXT("Target_LightDepth"))))
+	//{
+	//	return E_FAIL;
+	//}
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_SSAOTexture", TEXT("Target_SSAOBlur"))))
 	{
 		return E_FAIL;
@@ -1599,7 +1609,7 @@ HRESULT CRenderer::Render_Blend()
 HRESULT CRenderer::Render_BlendBlur()
 {
 	//
-	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur"))))
+	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur")/*, m_pBlurDSV*/)))
 	{
 		return E_FAIL;
 	}
@@ -1630,7 +1640,9 @@ HRESULT CRenderer::Render_BlendBlur()
 	}
 
 	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Bloom"), L"MRT_BlurTest", m_fEffectBlurPower)))
+	{
 		return E_FAIL;
+	}
 
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_BlurTest"))))
 	{
@@ -1741,7 +1753,7 @@ HRESULT CRenderer::Render_UI()
 	return S_OK;
 }
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 HRESULT CRenderer::Render_Debug()
 {
 	for (auto& pComponent : m_DebugComponents)
@@ -1772,10 +1784,10 @@ HRESULT CRenderer::Render_Debug()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_Shadow"), m_pShader, m_pVIBuffer)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_Shadow"), m_pShader, m_pVIBuffer)))
+	//{
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_Blur"), m_pShader, m_pVIBuffer)))
 	{
@@ -2113,7 +2125,7 @@ void CRenderer::Free()
 	}
 
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	for (auto& pComponent : m_DebugComponents)
 	{
 		Safe_Release(pComponent);

@@ -25,7 +25,7 @@ HRESULT CMainApp::Init()
 
 
 	srand(static_cast<_uint>(time(nullptr)));
-//#ifdef _DEBUGTEST
+//#ifdef _DEBUG
 //#ifdef UNICODE
 //#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
 //#else

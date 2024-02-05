@@ -20,9 +20,6 @@ HRESULT CLevel_GamePlay::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_GAMEPLAY);
 	m_pGameInstance->StopAll();
-	m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.2f);
-	m_pGameInstance->Play_Sound(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.6f, true);
-	m_pGameInstance->Play_Sound(TEXT("waves"), 0.6f, true);
 
 	CUI_Manager::Get_Instance()->Init();
 
@@ -100,11 +97,11 @@ HRESULT CLevel_GamePlay::Init()
 	}
 
 	// Boss_Test
-	if (FAILED(Ready_Groar_Boss()))
-	{
-		MSG_BOX("Failed to Ready Groar_Boss");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Groar_Boss()))
+	//{
+	//	MSG_BOX("Failed to Ready Groar_Boss");
+	//	return E_FAIL;
+	//}
 
 	// Pet_Test
 	if (FAILED(Ready_Pet()))
@@ -124,7 +121,7 @@ HRESULT CLevel_GamePlay::Init()
 	EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Rain");
 	EffectDesc.pMatrix = &m_RainMatrix;
 	EffectDesc.isFollow = true;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 
 	m_pGameInstance->Set_FogNF(_vec2(5.f, 300.f));
 	m_pGameInstance->Set_FogColor(_color(0.1f));
@@ -138,6 +135,10 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
+	m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.2f);
+	m_pGameInstance->Play_Sound(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.6f, true);
+	m_pGameInstance->Play_Sound(TEXT("waves"), 0.2f, true);
+
 	return S_OK;
 }
 
@@ -148,7 +149,10 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		m_RainMatrix = _mat::CreateTranslation(_vec3(m_pGameInstance->Get_CameraPos()));
 		//m_RainMatrix = _mat::CreateTranslation(_vec3(50.f, 3.f, 50.f));
 	}
-
+	if (m_pGameInstance->Get_CameraState() == CS_SKILLBOOK)
+	{
+		m_RainMatrix = _mat();
+	 }
 	if (m_fWaveTimer > 5.f)
 	{
 	/*	int random = rand() % 3;
@@ -167,25 +171,25 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		m_WaveMatrix[0] = _mat::CreateTranslation(_vec3(95.f, 4.f, 127.5f));
 		EffectDesc.pMatrix = &m_WaveMatrix[0];
 		EffectDesc.isFollow = true;
-		CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 
 		EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Wave_End");
 		m_WaveMatrix[1] = _mat::CreateTranslation(_vec3(93.f, 4.f, 129.5f));
 		EffectDesc.pMatrix = &m_WaveMatrix[1];
 		EffectDesc.isFollow = true;
-		CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 
 		EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Wave_Init");
 		m_WaveMatrix[2] = _mat::CreateTranslation(_vec3(108.f, 4.f, 100.f));
 		EffectDesc.pMatrix = &m_WaveMatrix[2];
 		EffectDesc.isFollow = true;
-		CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 
 		EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Wave_End");
 		m_WaveMatrix[3] = _mat::CreateTranslation(_vec3(110.f, 4.f, 98.f));
 		EffectDesc.pMatrix = &m_WaveMatrix[3];
 		EffectDesc.isFollow = true;
-		CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 
 		m_isWave = false;
 		m_fWaveTimer = {};
@@ -199,7 +203,7 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		//	EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Wave_End");
 		//	EffectDesc.pMatrix = &m_WaveMatrix;
 		//	EffectDesc.isFollow = true;
-		//	CEffect_Manager::Get_Instance()->Add_Layer_Effect(&EffectDesc);
+		//	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 		//	m_fWaveGravity = {};
 		//}
 
@@ -226,6 +230,10 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 
 	//m_pGameInstance->PhysXTick(fTimeDelta);
 
+	//if (m_pGameInstance->Key_Down(DIK_U))
+	//{
+	//	m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_XBeam"));
+	//}
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 	{
 		DestroyWindow(g_hWnd);
@@ -259,8 +267,10 @@ HRESULT CLevel_GamePlay::Ready_Light()
 
 	LightDesc.eType = LIGHT_DESC::Directional;
 	LightDesc.vDirection = _float4(-1.f, -2.f, -1.f, 0.f);
-	LightDesc.vDiffuse = _vec4(1.f);
+	LightDesc.vDiffuse = _vec4(0.2f, 0.2f, 0.2f, 1.f);
 	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
+	LightDesc.vSpecular = _vec4(1.f);
+	
 
 	return m_pGameInstance->Add_Light(LEVEL_GAMEPLAY, TEXT("Light_Main"), LightDesc);
 }
@@ -341,11 +351,11 @@ HRESULT CLevel_GamePlay::Ready_Map()
 	inFile.close();
 
 	CLake::WATER_DESC Desc;
-	Desc.fReflectionScale = 10.f;
-	Desc.fRefractionScale = 10.f;
-	Desc.vPos = _vec3(100.f, 0.01f, 100.f);
+	Desc.fReflectionScale = 0.05f;
+	Desc.fRefractionScale = 0.05f;
+	Desc.vPos = _vec3(100.f, 1.f, 100.f);
 	Desc.vSize = _vec2(200.f,200.f);
-	Desc.fWaterSpeed = 10.f;
+	Desc.fWaterSpeed = 0.1f;
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, L"Layer_Map", L"Prototype_GameObject_Water", &Desc)))
 		return E_FAIL;
 
@@ -447,45 +457,54 @@ HRESULT CLevel_GamePlay::Ready_ModelTest()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_VTFTest"), TEXT("Prototype_GameObject_VTFTest"))))
+	/*if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_VTFTest"), TEXT("Prototype_GameObject_VTFTest"))))
 	{
 		return E_FAIL;
-	}
+	}*/
 
 	return S_OK;
 }
 
 HRESULT CLevel_GamePlay::Ready_Monster_Test()
 {
+	//for (size_t i = 0; i < 1; i++)
+	//{
+	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Tentacle"), TEXT("Prototype_GameObject_Tentacle"))))
+	//	{
+	//		return E_FAIL;
+	//	}
+
+	//}
+
 	return S_OK;
 }
 
 HRESULT CLevel_GamePlay::Ready_NPC_Test()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_ItemMerchant"), TEXT("Prototype_GameObject_ItemMerchant"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_ItemMerchant"), TEXT("Prototype_GameObject_ItemMerchant"))))
+	//{
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BlackSmith"), TEXT("Prototype_GameObject_BlackSmith"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BlackSmith"), TEXT("Prototype_GameObject_BlackSmith"))))
+	//{
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Aur"), TEXT("Prototype_GameObject_Aur"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Aur"), TEXT("Prototype_GameObject_Aur"))))
+	//{
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Cat"), TEXT("Prototype_GameObject_Cat"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Cat"), TEXT("Prototype_GameObject_Cat"))))
+	//{
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Dog"), TEXT("Prototype_GameObject_Dog"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Dog"), TEXT("Prototype_GameObject_Dog"))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	return S_OK;
 }
@@ -731,6 +750,13 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	{
 		return E_FAIL;
 	}
+	
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_SkillBook"))))
+	{
+		return E_FAIL;
+	}
+	
+	
 
 	return S_OK;
 }

@@ -17,7 +17,7 @@ HRESULT CLevel_Village::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_VILLAGE);
 	m_pGameInstance->StopAll();
-	m_pGameInstance->PlayBGM(TEXT("BGM_1st_Village"));
+
 
 	if (FAILED(Ready_Player()))
 	{
@@ -74,15 +74,33 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	//if (FAILED(Ready_NPC()))
+	//if (FAILED(Ready_Village_Monster()))
 	//{
-	//	MSG_BOX("Failed to Ready NPC");
+	//	MSG_BOX("Failed to Ready Monster");
 	//	return E_FAIL;
 	//}
+
+	if (FAILED(Ready_Groar_Boss()))
+	{
+		MSG_BOX("Failed to Ready Groar");
+		return E_FAIL;
+	}
+
+	if (FAILED(Ready_NPC()))
+	{
+		MSG_BOX("Failed to Ready NPC");
+		return E_FAIL;
+	}
 
 	if (FAILED(Ready_NPC_Dummy()))
 	{
 		MSG_BOX("Failed to Ready NPC_Dummy");
+		return E_FAIL;
+	}
+
+	if (FAILED(Ready_Test()))
+	{
+		MSG_BOX("Failed to Ready Test");
 		return E_FAIL;
 	}
 
@@ -91,6 +109,7 @@ HRESULT CLevel_Village::Init()
 	m_pGameInstance->Set_FogNF(_vec2(50.f, 2000.f));
 	m_pGameInstance->Set_FogColor(_color(1.f));
 
+	m_pGameInstance->PlayBGM(TEXT("BGM_1st_Village"));
 	return S_OK;
 }
 
@@ -151,6 +170,7 @@ HRESULT CLevel_Village::Ready_Light()
 	LightDesc.vDirection = _float4(-1.f, -2.f, -1.f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	LightDesc.vSpecular = _vec4(0.5f);
 
 	return m_pGameInstance->Add_Light(LEVEL_VILLAGE, TEXT("Light_Main"), LightDesc);
 }
@@ -364,8 +384,13 @@ HRESULT CLevel_Village::In_To_Dungeon()
 	_vec4 Player_Pos{ 0.f };
 	inFile.read(reinterpret_cast<char*>(&Player_Pos), sizeof(_vec4));
 
+	/*CamPos X :2169.59
+CamPos Y :-26.7111
+CamPos Z :2084.48*/
+
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-	pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 4.f, 0.f));
+	//pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 4.f, 0.f));
+	pPlayerTransform->Set_Position(_vec3(2169.f, -26.f, 2084.f));
 	pPlayerTransform->LookAt_Dir(_vec4(-0.0531848f, 0.0598536346f, 0.996788f, 1.f));
 	return S_OK;
 }
@@ -410,6 +435,70 @@ HRESULT CLevel_Village::Ready_NpcvsMon()
 		}
 
 	}
+	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_Village_Monster()
+{
+	MonsterInfo Info{};
+	const TCHAR* pGetPath = L"../Bin/Data/Village_MonsterData.dat";
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MSG_BOX("../Bin/Data/Village_MonsterData.dat 몬스터 불러오기 실패.");
+		return E_FAIL;
+	}
+
+	_uint MonsterListSize;
+	inFile.read(reinterpret_cast<char*>(&MonsterListSize), sizeof(_uint));
+
+	for (_uint i = 0; i < MonsterListSize; ++i)
+	{
+		_ulong MonsterPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&MonsterPrototypeSize), sizeof(_ulong));
+
+		wstring MonsterPrototype;
+		MonsterPrototype.resize(MonsterPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&MonsterPrototype[0]), MonsterPrototypeSize * sizeof(wchar_t));
+
+		_mat MonsterWorldMat;
+		inFile.read(reinterpret_cast<char*>(&MonsterWorldMat), sizeof(_mat));
+
+		Info.strMonsterPrototype = MonsterPrototype;
+		Info.MonsterWorldMat = MonsterWorldMat;
+
+		if (Info.strMonsterPrototype == TEXT("Prototype_Model_Rabbit"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Rabbit"), TEXT("Prototype_GameObject_Rabbit"), &Info)))
+			{
+				MSG_BOX("Rabbit 생성 실패");
+				return E_FAIL;
+			}
+
+		}
+		else if (Info.strMonsterPrototype == TEXT("Prototype_Model_Furgoat"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Goat"), TEXT("Prototype_GameObject_Goat"), &Info)))
+			{
+				MSG_BOX("Furgoat 생성 실패");
+				return E_FAIL;
+			}
+
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_Groar_Boss()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Groar_Boss"), TEXT("Prototype_GameObject_Groar_Boss"))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -526,51 +615,51 @@ HRESULT CLevel_Village::Ready_NPC_Dummy()
 		Info.strNPCPrototype = NPCPrototype;
 		Info.NPCWorldMat = NPCWorldMat;
 
-		if (Info.strNPCPrototype == TEXT("Prototype_Model_BlackSmith"))
-		{
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_BlackSmith"), TEXT("Prototype_GameObject_BlackSmith"), &Info)))
-			{
-				MSG_BOX("BlackSmith 생성 실패");
-				return E_FAIL;
-			}
+		//if (Info.strNPCPrototype == TEXT("Prototype_Model_BlackSmith"))
+		//{
+		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_BlackSmith"), TEXT("Prototype_GameObject_BlackSmith"), &Info)))
+		//	{
+		//		MSG_BOX("BlackSmith 생성 실패");
+		//		return E_FAIL;
+		//	}
 
-		}
-		else if (Info.strNPCPrototype == TEXT("Prototype_Model_ItemMerchant"))
-		{
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_ItemMerchant"), TEXT("Prototype_GameObject_ItemMerchant"), &Info)))
-			{
-				MSG_BOX("ItemMerchant 생성 실패");
-				return E_FAIL;
-			}
+		//}
+		//else if (Info.strNPCPrototype == TEXT("Prototype_Model_ItemMerchant"))
+		//{
+		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_ItemMerchant"), TEXT("Prototype_GameObject_ItemMerchant"), &Info)))
+		//	{
+		//		MSG_BOX("ItemMerchant 생성 실패");
+		//		return E_FAIL;
+		//	}
 
-		}
-		else if (Info.strNPCPrototype == TEXT("Prototype_Model_Roskva"))
-		{
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Roskva"), TEXT("Prototype_GameObject_Roskva"), &Info)))
-			{
-				MSG_BOX("Roskva 생성 실패");
-				return E_FAIL;
-			}
+		//}
+		//else if (Info.strNPCPrototype == TEXT("Prototype_Model_Roskva"))
+		//{
+		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Roskva"), TEXT("Prototype_GameObject_Roskva"), &Info)))
+		//	{
+		//		MSG_BOX("Roskva 생성 실패");
+		//		return E_FAIL;
+		//	}
 
-		}
-		else if (Info.strNPCPrototype == TEXT("Prototype_Model_Cat"))
-		{
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Cat"), TEXT("Prototype_GameObject_Cat"), &Info)))
-			{
-				MSG_BOX("Cat 생성 실패");
-				return E_FAIL;
-			}
+		//}
+		//else if (Info.strNPCPrototype == TEXT("Prototype_Model_Cat"))
+		//{
+		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Cat"), TEXT("Prototype_GameObject_Cat"), &Info)))
+		//	{
+		//		MSG_BOX("Cat 생성 실패");
+		//		return E_FAIL;
+		//	}
 
-		}
-		else if (Info.strNPCPrototype == TEXT("Prototype_Model_Dog"))
-		{
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dog"), TEXT("Prototype_GameObject_Dog"), &Info)))
-			{
-				MSG_BOX("Dog 생성 실패");
-				return E_FAIL;
-			}
+		//}
+		//else if (Info.strNPCPrototype == TEXT("Prototype_Model_Dog"))
+		//{
+		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dog"), TEXT("Prototype_GameObject_Dog"), &Info)))
+		//	{
+		//		MSG_BOX("Dog 생성 실패");
+		//		return E_FAIL;
+		//	}
 
-		}
+		//}
 
 		string strInputFilePath = "../../Client/Bin/Resources/AnimMesh/NPC/NPC_Dummy/Mesh/";
 		for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
@@ -660,6 +749,16 @@ HRESULT CLevel_Village::Ready_UI()
 		return E_FAIL;
 	}
 	*/
+
+	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_Test()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Rabbit"), TEXT("Prototype_GameObject_Rabbit"))))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }

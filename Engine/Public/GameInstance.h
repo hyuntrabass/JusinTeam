@@ -119,10 +119,11 @@ public: // Frustum
 	_bool IsIn_Fov_Local(_vec4 vPos, _float fRange = 0.f);
 
 public: // Collision
-	HRESULT Register_CollisionObject(class CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer = false,class CCollider* AttRangeCollider = nullptr );
+	HRESULT Register_CollisionObject(class CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer = false,class CCollider* AttRangeCollider = nullptr ,class CCollider* ParryingCollider = nullptr);
 	void Delete_CollisionObject(class CGameObject* pObject, _bool IsPlayer = false);
 	void Attack_Monster(class CCollider* pCollider, _uint iDamage, _uint iDamageType = 0);
 	_bool CheckCollision_Monster(class CCollider* pCollider);
+	_bool CheckCollision_Parrying(class CCollider* pCollider);
 	_bool Attack_Player(class CCollider* pCollider, _uint iDamage, _uint iDamageType = 0);
 	_bool CheckCollision_Player(class CCollider* pCollider); // 필요없음
 	 CCollider* Get_Nearest_MonsterCollider();
@@ -136,12 +137,12 @@ public: // PhysX
 	_bool Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer,  PxQueryFilterData Filter);
 	_bool Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer);
 	void PhysXTick(_float fTimeDelta);
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	HRESULT Render_PhysX();
 #endif // _DEBUG
 
 public: // RenderTarget
-	HRESULT Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _vec4& vColor);
+	HRESULT Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _vec4& vColor, const _bool isMultiSample = false);
 	HRESULT Add_MRT(const wstring& strMRTTag, const wstring& strTargetTag);
 	HRESULT Begin_MRT(const wstring& strMRTTag, ID3D11DepthStencilView* pDepthStencillView = nullptr);
 	HRESULT End_MRT();
@@ -149,7 +150,7 @@ public: // RenderTarget
 	ID3D11Texture2D* Get_Texture2D(const wstring& strTargetTag);
 	ID3D11ShaderResourceView* Get_SRV(const wstring& strTargetTag);
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 public:
 	HRESULT Ready_Debug_RT(const wstring& strTargetTag, _float2 vPos, _float2 vSize);
 	HRESULT Render_Debug_RT(const wstring& strMRTTag, class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
@@ -229,7 +230,7 @@ public: // Get_Set
 	void Set_CameraTargetPos(const _vec4& vPos);
 	void Set_CameraTargetLook(const _vec4& vLook);
 	void Set_Have_TargetLook(const _bool& bHaveLook);
-	void Set_AimMode(_bool Aim, _vec3 AimPos = _vec3(0.63f, 1.8f, 1.1f));
+	void Set_AimMode(_bool Aim, _vec3 AimPos = _vec3(0.6f, 1.7f, 1.4f));
 	void Set_InputString(const wstring& strInput);
 	void Set_FlyCam(_bool Fly) { m_bFlyCam = Fly; }
 

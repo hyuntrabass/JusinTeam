@@ -166,6 +166,7 @@ void CModel::Delete_TriggerEffect(_uint iTriggerEffectIndex)
 		Matrix_iter++;
 	}
 	m_pGameInstance->Delete_Effect((*Matrix_iter));
+	Safe_Delete((*Matrix_iter));
 	m_TriggerEffects.erase(Effect_iter);
 	m_EffectMatrices.erase(Matrix_iter);
 }
@@ -257,20 +258,17 @@ void CModel::Set_Animation(ANIM_DESC Animation_Desc)
 	{
 		m_isAnimChanged = true;
 
-		/*for (auto& pAnim : m_Animations)
-		{
-			pAnim->ResetFinished();
-		}*/
 		m_Animations[m_AnimDesc.iAnimIndex]->ResetFinished();
 
 		if (Animation_Desc.iAnimIndex >= m_iNumAnimations)
 		{
 			Animation_Desc.iAnimIndex = m_iNumAnimations - 1;
 		}
-		else if (Animation_Desc.iAnimIndex < 0)
-		{
-			Animation_Desc.iAnimIndex = 0;
-		}
+	}
+
+	while (Animation_Desc.fStartAnimPos >= m_Animations[Animation_Desc.iAnimIndex]->Get_Duration())
+	{
+		Animation_Desc.fStartAnimPos -= m_Animations[Animation_Desc.iAnimIndex]->Get_Duration();
 	}
 	
 	m_AnimDesc = Animation_Desc;
@@ -367,8 +365,6 @@ HRESULT CModel::Init(void* pArg)
 		_mat* pMatrix = new _mat{};
 		m_EffectMatrices.push_back(pMatrix);
 	}
-	
-	
 
 	random_device rand;
 	m_RandomNumber = _randNum(rand());
@@ -388,7 +384,7 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 	}
 
 	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop,
-		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio);
+		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio, m_AnimDesc.fStartAnimPos);
 
 	for (auto& pBone : m_Bones)
 	{
@@ -486,6 +482,7 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 			{
 				m_TriggerSounds[i].iChannel = -1;
 				m_TriggerSounds[i].fVolume = m_TriggerSounds[i].fInitVolume;
+				m_TriggerSounds[i].IsEnding = false;
 			}
 		}
 		//사운드 제거
@@ -496,11 +493,17 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 				if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iEndAnimIndices[j] &&
 					m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerSounds[i].fEndAnimPoses[j])
 				{
+					m_TriggerSounds[i].IsEnding = true;
+				}
+
+				if (m_TriggerSounds[i].IsEnding)
+				{
 					if (m_pGameInstance->Get_ChannelVolume(m_TriggerSounds[i].iChannel) <= 0.f)
 					{
 						m_pGameInstance->StopSound(m_TriggerSounds[i].iChannel);
 						m_TriggerSounds[i].iChannel = -1;
 						m_TriggerSounds[i].fVolume = m_TriggerSounds[i].fInitVolume;
+						m_TriggerSounds[i].IsEnding = false;
 					}
 					else
 					{
@@ -588,18 +591,88 @@ HRESULT CModel::Render_Instancing(CVIBuffer_Mesh_Instance*& pInstanceBuffer, CSh
 			HasNorTex = true;
 		}
 
+		_bool HasMaskTex{};
+		if (FAILED(Bind_Material(pShader, "g_MaskTexture", i, TextureType::Normals)))
+		{
+			HasMaskTex = false;
+		}
+		else
+		{
+			HasMaskTex = true;
+		}
+
 		if (FAILED(pShader->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}
+
+		if (FAILED(pShader->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
 		if (FAILED(pShader->Begin(3)))
 		{
 			return E_FAIL;
 		}
 		if (FAILED(pInstanceBuffer->Render(m_Meshes[i])))
 			return E_FAIL;
-		}
+	}
 	
+	return S_OK;
+}
+
+HRESULT CModel::Render_Reflection_Instancing(CVIBuffer_Mesh_Instance*& pInstanceBuffer, CShader*& pShader, _float4 vClipPlane)
+{
+	for (_uint i = 0; i < m_Meshes.size(); ++i)
+	{
+
+		if (FAILED(Bind_Material(pShader, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		{
+			return E_FAIL;
+		}
+
+		_bool HasNorTex{};
+		if (FAILED(Bind_Material(pShader, "g_NormalTexture", i, TextureType::Normals)))
+		{
+			HasNorTex = false;
+		}
+		else
+		{
+			HasNorTex = true;
+		}
+
+		_bool HasMaskTex{};
+		if (FAILED(Bind_Material(pShader, "g_MaskTexture", i, TextureType::Normals)))
+		{
+			HasMaskTex = false;
+		}
+		else
+		{
+			HasMaskTex = true;
+		}
+
+		if (FAILED(pShader->Bind_RawValue("g_vClipPlane", &vClipPlane, sizeof(_float4))))
+			return E_FAIL;
+
+		if (FAILED(pShader->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(pShader->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(pShader->Begin(5)))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(pInstanceBuffer->Render(m_Meshes[i])))
+			return E_FAIL;
+	}
+
 	return S_OK;
 }
 

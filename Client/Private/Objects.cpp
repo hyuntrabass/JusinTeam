@@ -31,6 +31,11 @@ void CObjects::Tick(_float fTimeDelta)
 
 void CObjects::Late_Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Get_CameraState() == CS_SKILLBOOK or m_pGameInstance->Get_CameraState() == CS_INVEN or m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
+	{
+		return;
+	}
+
 	// ÀÎ½ºÅÏ½Ì ÇÒ ¸ðµ¨°ú ¾ÈÇÒ ¸ðµ¨À» ³ª´²ÁÜ
 	if(m_isInstancing == false)
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
@@ -66,7 +71,22 @@ HRESULT CObjects::Render()
 			HasNorTex = true;
 		}
 
+		_bool HasMaskTex{};
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
+		{
+			HasMaskTex = false;
+		}
+		else
+		{
+			HasMaskTex = true;
+		}
+
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}
@@ -126,7 +146,23 @@ HRESULT CObjects::Render_Reflection(_float4 vClipPlane)
 			HasNorTex = true;
 		}
 
+		_bool HasMaskTex{};
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
+		{
+			HasMaskTex = false;
+		}
+		else
+		{
+			HasMaskTex = true;
+		}
+
+
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}

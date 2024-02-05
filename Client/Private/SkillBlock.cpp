@@ -30,15 +30,46 @@ HRESULT CSkillBlock::Init(void* pArg)
 		return E_FAIL;
 	}
 
-
+	CUI_Manager::Get_Instance()->Set_SkillBlock(this);
 	return S_OK;
 }
 
 void CSkillBlock::Tick(_float fTimeDelta)
 {
+	
+	_int iIdx = CUI_Manager::Get_Instance()->Get_WeaponType(PT_WEAPON, &m_eCurType);
+
+	/* 스킬북에서 장착한스킬 받아옴 */
+	if (CUI_Manager::Get_Instance()->Is_SkillSlotChange())
+	{
+		CUI_Manager::Get_Instance()->Set_SkillSlotChange(false);
+
+		for (size_t j = 0; j < WP_END; j++)
+		{
+			for (size_t i = 0; i < SKILL_END; i++)
+			{
+				CSkillSlot* pSkillSlot = CUI_Manager::Get_Instance()->Get_SkillSlot((WEAPON_TYPE)j, (SKILLSLOT)i);
+				if (pSkillSlot == nullptr)
+				{
+					continue;
+				}
+				if (!pSkillSlot->Is_Full())
+				{
+					m_pSlots[j][i]->Delete_Skill();
+					continue;
+				}
+				SKILLINFO tInfo = pSkillSlot->Get_SkillInfo();
+				m_pSlots[j][i]->Set_Skill(tInfo);
+			}
+		}
+	
+	}
+
+	
+
 	for (size_t i = 0; i < SKILL_END; i++)
 	{
-		m_pSlots[i]->Tick(fTimeDelta);
+		m_pSlots[m_eCurType][i]->Tick(fTimeDelta);
 	}
 }
 
@@ -50,7 +81,7 @@ void CSkillBlock::Late_Tick(_float fTimeDelta)
 	}
 	for (size_t i = 0; i < SKILL_END; i++)
 	{
-		m_pSlots[i]->Late_Tick(fTimeDelta);
+		m_pSlots[m_eCurType][i]->Late_Tick(fTimeDelta);
 	}
 }
 
@@ -59,6 +90,20 @@ HRESULT CSkillBlock::Render()
 	
 
 	return S_OK;
+}
+
+_bool CSkillBlock::Use_Skill(WEAPON_TYPE eType, SKILLSLOT eSlot, _int* iIndex)
+{
+
+	if (m_pSlots[eType][eSlot]->Use_Skill())
+	{
+		//마나 빼고
+		*iIndex = m_pSlots[m_eCurType][eSlot]->Get_SkillInfo().iSkillIdx;
+		return true;
+	}
+	*iIndex = -1;
+
+	return false;
 }
 
 HRESULT CSkillBlock::Add_Components()
@@ -80,21 +125,23 @@ HRESULT CSkillBlock::Bind_ShaderResources()
 
 HRESULT CSkillBlock::Add_Slots()
 {
-	for (size_t i = 0; i < SKILL_END; i++)
+	for (size_t j = 0; j < WP_END; j++)
 	{
-		CSkillSlot::SKILLSLOT_DESC SkillSlotDesc = {};
-		SkillSlotDesc.vSize = _float2(60.f, 60.f);
-		SkillSlotDesc.vPosition = _float2((_float)g_iWinSizeX/2.f - 250.f + (SkillSlotDesc.vSize.x / 2.f) + (SkillSlotDesc.vSize.x * i) + (-15.f * i), 675.f);
-
-		m_pSlots[i] = (CSkillSlot*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_SkillSlot"), &SkillSlotDesc);
-		if (m_pSlots[i] == nullptr)
+		for (size_t i = 0; i < SKILL_END; i++)
 		{
-			return E_FAIL;
+			CSkillSlot::SKILLSLOT_DESC SkillSlotDesc = {};
+			SkillSlotDesc.eSlotMode = CSkillSlot::SCREEN;
+			SkillSlotDesc.fDepth = (_float)D_SCREEN / (_float)D_END - 0.1f;
+			SkillSlotDesc.vSize = _float2(60.f, 60.f);
+			SkillSlotDesc.vPosition = _float2((_float)g_iWinSizeX / 2.f - 250.f + (SkillSlotDesc.vSize.x / 2.f) + (SkillSlotDesc.vSize.x * i) + (-15.f * i), 675.f);
+			SkillSlotDesc.iSlotIdx = (_uint)i;
+			m_pSlots[j][i] = (CSkillSlot*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_SkillSlot"), &SkillSlotDesc);
+			if (m_pSlots[j][i] == nullptr)
+			{
+				return E_FAIL;
+			}
 		}
 	}
-	//반대편 시작위치는  pos = (_float)g_iWinSizeX/2.f - 250.f + (SkillSlotDesc.vSize.x / 2.f) + (SkillSlotDesc.vSize.x * 3) + (-15.f * 3)
-	//g_iWinSizeX/2 + (g_iWinSizeX/2 - pos) 
-
 
 	return S_OK;
 }
@@ -131,10 +178,14 @@ void CSkillBlock::Free()
 
 	if (!m_isPrototype)
 	{
-		for (size_t i = 0; i < SKILL_END; i++)
+		for (size_t j = 0; j < WP_END; j++)
 		{
-			Safe_Release(m_pSlots[i]);
+			for (size_t i = 0; i < SKILL_END; i++)
+			{
+				Safe_Release(m_pSlots[j][i]);
+			}
 		}
+
 	}
 
 	Safe_Release(m_pRendererCom);

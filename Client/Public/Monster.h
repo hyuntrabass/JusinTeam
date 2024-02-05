@@ -2,6 +2,7 @@
 
 #include "Client_Define.h"
 #include "GameObject.h"
+#include "HitEffect.h"
 
 BEGIN(Client)
 
@@ -65,6 +66,10 @@ protected:
 	_uint m_iDefaultDamage2 = { 200 };
 	_uint m_iDefaultDamage3 = { 300 };
 
+protected:
+	_bool m_bHit = { false };
+	_uint m_iDamageAcc = {};
+	_uint m_iDamageAccMax = {};
 
 private: // Collier 사이즈 조절용
 	_float m_fSizeX = {}, m_fSizeY = {}, m_fSizeZ = {};

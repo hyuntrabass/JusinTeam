@@ -3,15 +3,16 @@
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
-texture2D g_SpecTexture;
+texture2D g_MaskTexture;
 texture2D g_DissolveTexture;
+
 vector g_vColor = { 1.f, 1.f, 1.f, 0.f };
 float g_fCamFar;
 vector g_vCamPos;
 float g_fDissolveRatio;
 
 bool g_HasNorTex;
-bool g_HasSpecTex;
+bool g_HasMaskTex;
 
 matrix g_OldWorldMatrix, g_OldViewMatrix;
 
@@ -206,7 +207,7 @@ struct PS_OUT
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
-    vector vSpecular : SV_Target3;
+    vector vMask : SV_Target3;
     vector vVelocity : SV_Target4;
     vector vRimMask : SV_Target5;
 };
@@ -238,17 +239,16 @@ PS_OUT PS_Main(PS_IN Input)
         vNormal = normalize(Input.vNor.xyz);
     }
     
-    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
-    if (g_HasSpecTex)
+    vector vMask = vector(1.f, 0.1f, 0.1f, 0.f);
+    if (g_HasMaskTex)
     {
-        vector vSpecDesc = g_SpecTexture.Sample(LinearSampler, Input.vTex);
-        vSpecDesc = vector(vSpecDesc.b, vSpecDesc.b, vSpecDesc.b, vSpecDesc.a);
+        vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vSpecular = vSpecular;
+    Output.vMask = vMask;
     Output.vVelocity = 0.f;
     Output.vRimMask = 0.f;
     
@@ -288,17 +288,16 @@ PS_OUT PS_Main_Dissolve(PS_IN Input)
         vNormal = normalize(Input.vNor.xyz);
     }
     
-    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
-    if (g_HasSpecTex)
+    vector vMask = vector(1.f, 0.1f, 0.1f, 0.f);
+    if (g_HasMaskTex)
     {
-        vector vSpecDesc = g_SpecTexture.Sample(LinearSampler, Input.vTex);
-        vSpecDesc = vector(vSpecDesc.b, vSpecDesc.b, vSpecDesc.b, vSpecDesc.a);
+        vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vSpecular = vSpecular;
+    Output.vMask = vMask;
     Output.vVelocity = 0.f;
     Output.vRimMask = 0.f;
     
@@ -341,17 +340,16 @@ PS_OUT PS_Main_LerpDissolve(PS_IN Input)
         vNormal = normalize(Input.vNor.xyz);
     }
     
-    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
-    if (g_HasSpecTex)
+    vector vMask = vector(1.f, 0.1f, 0.1f, 0.f);
+    if (g_HasMaskTex)
     {
-        vector vSpecDesc = g_SpecTexture.Sample(LinearSampler, Input.vTex);
-        vSpecDesc = vector(vSpecDesc.b, vSpecDesc.b, vSpecDesc.b, vSpecDesc.a);
+        vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vSpecular = vSpecular;
+    Output.vMask = vMask;
     Output.vVelocity = 0.f;
     Output.vRimMask = 0.f;
     
@@ -386,11 +384,10 @@ PS_OUT PS_Main_Rim(PS_IN Input)
         vNormal = normalize(Input.vNor.xyz);
     }
     
-    vector vSpecular = vector(0.1f, 0.1f, 0.1f, 0.1f);
-    if (g_HasSpecTex)
+    vector vMask = vector(1.f, 0.1f, 0.1f, 0.1f);
+    if (g_HasMaskTex)
     {
-        vector vSpecDesc = g_SpecTexture.Sample(LinearSampler, Input.vTex);
-        vSpecDesc = vector(vSpecDesc.b, vSpecDesc.b, vSpecDesc.b, vSpecDesc.a);
+        vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
     float3 vToCamera = normalize(g_vCamPos - Input.vWorldPos).xyz;
@@ -403,7 +400,7 @@ PS_OUT PS_Main_Rim(PS_IN Input)
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vSpecular = vSpecular;
+    Output.vMask = vMask;
     Output.vVelocity = 0.f;
     Output.vRimMask = vRimColor;
     
@@ -444,18 +441,17 @@ PS_OUT PS_Motion_Blur(PS_IN Input)
         vNormal = normalize(Input.vNor.xyz);
     }
     
-    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
-    if (g_HasSpecTex)
+    vector vMask = vector(1.f, 0.1f, 0.1f, 0.1f);
+    if (g_HasMaskTex)
     {
-        vector vSpecDesc = g_SpecTexture.Sample(LinearSampler, Input.vTex);
-        vSpecDesc = vector(vSpecDesc.b, vSpecDesc.b, vSpecDesc.b, vSpecDesc.a);
+        vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vSpecular = vSpecular;
+    Output.vMask = vMask;
     Output.vVelocity = Input.vDir;
     Output.vRimMask = 0.f;
     
@@ -498,18 +494,17 @@ PS_OUT PS_LerpBlur(PS_IN Input)
         vNormal = normalize(Input.vNor.xyz);
     }
     
-    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
-    if (g_HasSpecTex)
+    vector vMask = vector(1.f, 0.1f, 0.1f, 0.1f);
+    if (g_HasMaskTex)
     {
-        vector vSpecDesc = g_SpecTexture.Sample(LinearSampler, Input.vTex);
-        vSpecDesc = vector(vSpecDesc.b, vSpecDesc.b, vSpecDesc.b, vSpecDesc.a);
+        vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vSpecular = vSpecular;
+    Output.vMask = vMask;
     Output.vVelocity = Input.vDir;
     Output.vRimMask = 0.f;
     
