@@ -206,7 +206,10 @@ void CInven::Tick(_float fTimeDelta)
 				m_isReset = false;
 			}
 		}
-
+		if (m_pInvenFrame == nullptr)
+		{
+			int a = 10;
+		}
 
 		CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 		m_pExitButton->Tick(fTimeDelta);

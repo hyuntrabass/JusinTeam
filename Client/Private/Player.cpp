@@ -34,17 +34,17 @@ HRESULT CPlayer::Init(void* pArg)
 	m_pTransformCom->Set_Speed(1);
 	m_pCameraTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
 	Safe_AddRef(m_pCameraTransform);
-	m_SwordSkill[0] = Anim_RA_9100_Ambush; // xìë¡œ ê³µê²©í•˜ê¸°
-	m_SwordSkill[1] = Anim_RA_9060_SealChain; // ì•ìœ¼ë¡œ ì í”„í•˜ë©´ì„œ ë•Œë¦¬ê¸°
-	m_SwordSkill[2] = Anim_RA_9040_RapidAttack; // ì‚¬ë¼ì¡Œë‹¤ê°€ ì°Œë¥´ê¸°
-	m_SwordSkill[3] = Anim_RA_9050_SealStack; // ë‚œíƒ€(ì¿¨ê¹€)
-	m_SwordSkill[4] = Anim_RA_9080_Hiding; // ì€ì‹ (ìš°í´ë¦­)
+	m_SwordSkill[0] = Anim_RA_9100_Ambush; // xÀÚ·Î °ø°İÇÏ±â
+	m_SwordSkill[1] = Anim_RA_9060_SealChain; // ¾ÕÀ¸·Î Á¡ÇÁÇÏ¸é¼­ ¶§¸®±â
+	m_SwordSkill[2] = Anim_RA_9040_RapidAttack; // »ç¶óÁ³´Ù°¡ Âî¸£±â
+	m_SwordSkill[3] = Anim_RA_9050_SealStack; // ³­Å¸(Äğ±è)
+	m_SwordSkill[4] = Anim_RA_9080_Hiding; // Àº½Å(¿ìÅ¬¸¯)
 
-	m_BowSkill[0] = Anim_ID_8070_TripleStrike; // íŠ¸ë¦¬í”Œ ìƒ· (ì£¼ë ¥ê¸°)
-	m_BowSkill[1] = Anim_ID_8080_BackTumbling; // ë°±ë¤ë¸”ë§
-	m_BowSkill[2] = Anim_ID_8120_RainArrow; // í™”ì‚´ë¹„
-	m_BowSkill[3] = Anim_ID_8130_IllusionArrow; // ë¶„ì‹  ë‚˜ì™€ì„œ í™”ì‚´(ì¿¨ê¹€)
-	m_BowSkill[4] = Anim_RS_8110_DodgeAttack; // ì—ì„ëª¨ë“œ ë³€ê²½(ìš°í´ë¦­)
+	m_BowSkill[0] = Anim_ID_8070_TripleStrike; // Æ®¸®ÇÃ ¼¦ (ÁÖ·Â±â)
+	m_BowSkill[1] = Anim_ID_8080_BackTumbling; // ¹é´ıºí¸µ
+	m_BowSkill[2] = Anim_ID_8120_RainArrow; // È­»ìºñ
+	m_BowSkill[3] = Anim_ID_8130_IllusionArrow; // ºĞ½Å ³ª¿Í¼­ È­»ì(Äğ±è)
+	m_BowSkill[4] = Anim_RS_8110_DodgeAttack; // ¿¡ÀÓ¸ğµå º¯°æ(¿ìÅ¬¸¯)
 
 	Change_Parts(PT_BODY, 1);
 	Change_Parts(PT_HAIR, 0);
@@ -122,7 +122,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		m_fDissolveRatio = 0.f;
 	}
 
-	if (m_fBoostSpeed > 0.f && m_fBoostSpeedTimmer>0.f)
+	if (m_fBoostSpeed > 0.f && m_fBoostSpeedTimmer > 0.f)
 	{
 		m_fBoostSpeedTimmer -= fTimeDelta;
 	}
@@ -336,7 +336,7 @@ void CPlayer::Tick(_float fTimeDelta)
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
 
-	
+
 	if (m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
 	{
 		return;
@@ -375,7 +375,6 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		m_bStartGame = true;
 		CEvent_Manager::Get_Instance()->Init();
 
-		CEvent_Manager::Get_Instance()->Set_Quest(TEXT("ï¿½ï¿½ï¿½ï¿½Æ®!"));
 
 
 		Change_Weapon(WP_SWORD, SWORD0);
@@ -841,7 +840,7 @@ HRESULT CPlayer::Add_Riding()
 
 void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 {
-	if (m_eState == Revival_Start or m_eState == Revival_End or  m_eState == Die)
+	if (m_eState == Revival_Start or m_eState == Revival_End or m_eState == Die)
 	{
 		return;
 	}
@@ -853,11 +852,11 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 	if (m_iShield > 0)
 	{
 		m_iShield--;
-		// ë³´í˜¸ë§‰ ê¹¨ì§€ëŠ” ì´í™íŠ¸
+		// º¸È£¸· ±úÁö´Â ÀÌÆåÆ®
 		return;
 
 	}
-	
+
 
 	m_Status.Current_Hp -= (iDamage - iDamage * (_int)(m_Status.Armor / 0.01));
 
@@ -917,7 +916,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 			m_iShield++;
 			m_fBoostSpeedTimmer = 5.f;
 			m_fBoostSpeed = 3.f;
-			//ë³´í˜¸ë§‰ ìƒì„±
+			//º¸È£¸· »ı¼º
 		}
 		default:
 			break;
@@ -1081,7 +1080,7 @@ void CPlayer::Move(_float fTimeDelta)
 		//{
 		//	if (m_eState != Skill1)
 		//	{
-		//		Ready_Skill(ST_Skill1); // 1ë²ˆì°½ì— ìˆë˜ ìŠ¤í‚¬ ë„£ì–´ì£¼ê¸°
+		//		Ready_Skill(ST_Skill1); // 1¹øÃ¢¿¡ ÀÖ´ø ½ºÅ³ ³Ö¾îÁÖ±â
 		//		return;
 		//	}
 		//}
@@ -1238,7 +1237,7 @@ void CPlayer::Move(_float fTimeDelta)
 	}
 	if ((m_fSkiilTimer > 1.2f && m_eState != SkillR && m_eState != Aim_Idle))
 	{
-		//í€˜ìŠ¤íŠ¸ ê°œìˆ˜ì— ë”°ë¼ boolë¡œ í†µê³¼í•˜ë„ë¡ í•œë²ˆ ê±°ì³ì•¼í• ë“¯ ì•„ë‹ˆë©´ ê³„ì† ë§µì—ì„œ ì°¾ì•„ì•¼ë˜ë‹ˆê¹Œ 
+		//Äù½ºÆ® °³¼ö¿¡ µû¶ó bool·Î Åë°úÇÏµµ·Ï ÇÑ¹ø °ÅÃÄ¾ßÇÒµí ¾Æ´Ï¸é °è¼Ó ¸Ê¿¡¼­ Ã£¾Æ¾ßµÇ´Ï±î 
 		if (m_pGameInstance->Key_Pressing(DIK_W))
 		{
 			CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_OPENINVEN);
@@ -1293,7 +1292,7 @@ void CPlayer::Move(_float fTimeDelta)
 			{
 				m_pTransformCom->Jump(8.f);
 				m_eState = Jump_Start;
-				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("ì í”„í•˜ê¸°"));
+				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("Á¡ÇÁÇÏ±â"));
 			}
 			if (m_bReady_Climb)
 			{
@@ -1934,7 +1933,7 @@ void CPlayer::Ready_Skill(Skill_Type Type)
 	}
 	break;
 
-	default: // ì¿¨íƒì´ê±°ë‚˜ ì–»ì§€ ëª»í•œ ìŠ¤í‚¬ì¼ë•Œ ì²˜ë¦¬
+	default: // ÄğÅ½ÀÌ°Å³ª ¾òÁö ¸øÇÑ ½ºÅ³ÀÏ¶§ Ã³¸®
 		break;
 	}
 	m_ReadyArrow = true;
@@ -3658,7 +3657,7 @@ HRESULT CPlayer::Add_Components()
 
 
 
-	
+
 
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
 	CollDesc.vExtents = _vec3(2.f, 2.f, 1.2f);
@@ -3670,14 +3669,14 @@ HRESULT CPlayer::Add_Components()
 	}
 
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
-	CollDesc.vExtents = _vec3(1.5f,2.0f, 0.3f);
+	CollDesc.vExtents = _vec3(1.5f, 2.0f, 0.3f);
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.3f, 0.8f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Parrying"), reinterpret_cast<CComponent**>(&m_pParryingCollider), &CollDesc)))
 	{
 		return E_FAIL;
 	}
-	
+
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
 	CollDesc.vExtents = _vec3(0.65f, 2.f, 1.5f);
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.2f, 1.f);
@@ -3720,25 +3719,25 @@ HRESULT CPlayer::Add_Components()
 HRESULT CPlayer::Bind_ShaderResources()
 {
 
-	// WorldMatrix ë°”ì¸ë“œ
+	// WorldMatrix ¹ÙÀÎµå
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
 		return E_FAIL;
 	}
 
-	// ViewMatrix ë°”ì¸ë“œ
+	// ViewMatrix ¹ÙÀÎµå
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
 	{
 		return E_FAIL;
 	}
 
-	// ProjMatrix ë°”ì¸ë“œ
+	// ProjMatrix ¹ÙÀÎµå
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
 	{
 		return E_FAIL;
 	}
 
-	// ì¹´ë©”ë¼ Far ë°”ì¸ë“œ
+	// Ä«¸Ş¶ó Far ¹ÙÀÎµå
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
 	{
 		return E_FAIL;
@@ -3759,13 +3758,13 @@ HRESULT CPlayer::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	// ëª¨ì…˜ë¸”ëŸ¬ìš© ì´ì „í”„ë ˆì„ WorldMatrix ë°”ì¸ë“œ
+	// ¸ğ¼Çºí·¯¿ë ÀÌÀüÇÁ·¹ÀÓ WorldMatrix ¹ÙÀÎµå
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldWorldMatrix", m_OldWorldMatrix)))
 	{
 		return E_FAIL;
 	}
 
-	// ëª¨ì…˜ë¸”ëŸ¬ìš© ì´ì „í”„ë ˆì„ ViewMatrix ë°”ì¸ë“œ
+	// ¸ğ¼Çºí·¯¿ë ÀÌÀüÇÁ·¹ÀÓ ViewMatrix ¹ÙÀÎµå
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix_vec4x4())))
 	{
 		return E_FAIL;
@@ -3773,7 +3772,7 @@ HRESULT CPlayer::Bind_ShaderResources()
 
 	m_pModelCom->Set_UsingMotionBlur(m_UsingMotionBlur);
 
-	// ë¼ˆ ë°”ì¸ë“œ
+	// »À ¹ÙÀÎµå
 	if (FAILED(m_pModelCom->Bind_Bone(m_pShaderCom)))
 	{
 		return E_FAIL;
