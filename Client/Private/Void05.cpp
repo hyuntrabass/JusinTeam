@@ -47,7 +47,7 @@ HRESULT CVoid05::Init(void* pArg)
 
 	m_eCurState = STATE_DIG;
 
-	m_iHP = 100000;
+	m_iHP = 1000;
 	m_iDamageAccMax = 200;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);

@@ -35,6 +35,9 @@ public:
 	virtual HRESULT Render() override;
 
 private:
+	_float m_fLifeTime = {};
+
+private:
 	DEAD_MONSTER m_eDead = { DEAD_END };
 
 public:

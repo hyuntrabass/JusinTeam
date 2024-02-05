@@ -57,6 +57,13 @@ HRESULT CDead::Init(void* pArg)
 
 void CDead::Tick(_float fTimeDelta)
 {
+	m_fLifeTime += fTimeDelta;
+
+	if (m_fLifeTime >= 30.f)
+	{
+		Kill();
+	}
+
 	if (m_pModelCom->IsAnimationFinished(0))
 	{
 		m_pTransformCom->Go_Down(fTimeDelta * 0.05f);

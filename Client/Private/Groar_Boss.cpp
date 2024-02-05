@@ -483,7 +483,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			}
 		}
 
-		m_eBossCurState = BOSS_STATE_SPIDER; // 테스트용
+		//m_eBossCurState = BOSS_STATE_SPIDER; // 테스트용
 	}
 
 	break;
