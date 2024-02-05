@@ -83,6 +83,10 @@ void CSkillBook::Tick(_float fTimeDelta)
 			{
 				if (PtInRect(&m_pSkillSlot[m_eCurType][i]->Get_Rect(), ptMouse))
 				{
+					if (!m_vecSkillDesc[m_eCurType][m_iCurIndex]->Is_UnLocked())
+					{
+						return;
+					}
 					SKILLINFO tInfo = m_vecSkillDesc[m_eCurType][m_iCurIndex]->Get_SkillInfo();
 					for (size_t j = 0; j < 4; j++)
 					{
@@ -152,7 +156,6 @@ void CSkillBook::Tick(_float fTimeDelta)
 				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_GAMEPLAY, TEXT("Light_Main"));
 				*LightDesc = m_Light_Desc;
 			}
-
 			CFadeBox::FADE_DESC Desc = {};
 			Desc.eState = CFadeBox::FADEOUT;
 			Desc.fDuration = 0.8f;
@@ -399,6 +402,13 @@ void CSkillBook::Init_SkillBookState()
 	{
 		m_vecSkillDesc[m_eCurType][j]->Select_Skill(false);
 	}
+
+	dynamic_cast<CTextButtonColor*>(m_pSkillType[WP_BOW])->Set_Alpha(1.f);
+	_vec2 vPos = dynamic_cast<CTextButtonColor*>(m_pSkillType[WP_BOW])->Get_Position();
+	dynamic_cast<CTextButton*>(m_pSelectButton)->Set_Position(vPos);
+	_vec2 fUnderBarPos = dynamic_cast<CTextButton*>(m_pUnderBar)->Get_Position();
+	dynamic_cast<CTextButton*>(m_pUnderBar)->Set_Position(_vec2(vPos.x, fUnderBarPos.y));
+
 }
 
 HRESULT CSkillBook::Init_SkillDesc()
@@ -481,10 +491,10 @@ HRESULT CSkillBook::Add_Parts()
 	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
 	Button.strText = to_wstring(iMoney);
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_coin");
-	Button.vPosition = _vec2(1100.f, 30.f);
+	Button.vPosition = _vec2(1080.f, 30.f);
 	Button.vSize = _vec2(25.f, 25.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	Button.vTextPosition = _vec2(Button.vSize.x + 10.f, Button.vSize.y - 26.f);
+	Button.vTextPosition = _vec2(Button.vSize.x + 30.f, Button.vSize.y - 26.f);
 
 	m_pMoney = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
@@ -495,7 +505,7 @@ HRESULT CSkillBook::Add_Parts()
 	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
 	Button.strText = to_wstring(iDiamond);
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Diamond");
-	Button.vPosition = _vec2(1010.f, 30.f);
+	Button.vPosition = _vec2(990.f, 30.f);
 	Button.vSize = _vec2(25.f, 25.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	Button.vTextPosition = _vec2(Button.vSize.x + 10.f, Button.vSize.y - 26.f);
