@@ -5,7 +5,9 @@
 #include "HPMonster.h"
 
 BEGIN(Client)
+
 class CHPMonster;
+
 class CRabbit final : public CMonster
 {
 public:
