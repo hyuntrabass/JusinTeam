@@ -53,6 +53,12 @@ void CQuest::Tick(_float fTimeDelta)
 	{
 		return;
 	}
+	if (m_vecQuest.empty())
+	{
+		m_bNewQuestIn = false;
+	}
+
+
 	CUI_Manager::Get_Instance()->Set_Picking_UI(false);
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
@@ -86,6 +92,7 @@ void CQuest::Tick(_float fTimeDelta)
 
 	if (m_isActive)
 	{
+
 		RECT rectUI = {
 		  (LONG)(m_fX - 200.f * 0.5f),
 		  (LONG)(m_fY - 200.f * 0.5f),

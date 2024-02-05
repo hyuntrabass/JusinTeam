@@ -86,6 +86,15 @@ void CItemMerchant::Tick(_float fTimeDelta)
 
 	}
 
+	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
+	_bool isColl = m_pColliderCom->Intersect(pCollider);
+	m_isColl = isColl;
+	if (!m_bTalking && isColl && m_pGameInstance->Key_Down(DIK_E))
+	{
+		m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 1000.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));
+		m_bTalking = true;
+		m_pShop->Open_Shop();
+	}
 
 
 
@@ -99,29 +108,22 @@ void CItemMerchant::Tick(_float fTimeDelta)
 
 void CItemMerchant::Late_Tick(_float fTimeDelta)
 {
-	__super::Late_Tick(fTimeDelta);
 
-	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
-	_bool isColl = m_pColliderCom->Intersect(pCollider);
-	if (!m_bTalking && isColl && m_pGameInstance->Key_Down(DIK_E))
-	{
-		m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 1000.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));
-		m_bTalking = true;
-		m_pShop->Open_Shop();
-	}
 
 	if (m_bTalking == true)
 	{
+		m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 1000.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));
 		m_pShop->Late_Tick(fTimeDelta);
 	}
 	else
 	{
-		if (isColl)
+		if (m_isColl)
 		{
 			m_pSpeechBubble->Late_Tick(fTimeDelta);
 		}
 	}
 
+	__super::Late_Tick(fTimeDelta);
 }
 
 HRESULT CItemMerchant::Render()
