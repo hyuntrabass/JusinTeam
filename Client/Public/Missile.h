@@ -53,6 +53,7 @@ private: // SIX_MISSILE
 	_uint m_iMissileIndex = {};
 	_float m_fDepartTime = {};
 	_float m_fEffectTimer{};
+	_bool m_bParryingOk{};
 
 private:
 	_mat m_EffectMatrix{};

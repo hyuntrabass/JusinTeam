@@ -303,7 +303,8 @@ namespace Client
 		_uint iCoolTime;
 		_uint iSkillIdx;
 		_bool isSkillIn;
-
+		wstring strTexture;
+		_uint iModelSkillIndex;
 	}SKILLINFO;
 
 #pragma region Shader Passes
@@ -337,6 +338,9 @@ namespace Client
 		StaticPass_Worldmap_Cloud,
 		StaticPsss_Rim,
 		StaticPass_DiffEffect,
+		StaticPass_SingleColorAlpha,
+		StaticPass_MaskAlpha,
+		StaticPass_DiffAlpha,
 		StaticPass_End,
 	};
 
@@ -381,6 +385,7 @@ namespace Client
 		VTPass_NineSlice,
 		VTPass_FadeVertical,
 		VTPass_FadeHorizontal,
+		VTPass_LerpColorNAlpha,
 		VTPass_End
 	};
 

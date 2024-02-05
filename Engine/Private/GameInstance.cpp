@@ -778,14 +778,14 @@ _bool CGameInstance::IsIn_Fov_Local(_vec4 vPos, _float fRange)
 	return m_pFrustum->IsIn_Fov_Local(vPos, fRange);
 }
 
-HRESULT CGameInstance::Register_CollisionObject(CGameObject* pObject, CCollider* pHitCollider, _bool IsPlayer, class CCollider* AttRangeCollider)
+HRESULT CGameInstance::Register_CollisionObject(CGameObject* pObject, CCollider* pHitCollider, _bool IsPlayer,  CCollider* AttRangeCollider,  CCollider* ParryingCollider)
 {
 	if (!m_pCollision_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
 	}
 
-	return m_pCollision_Manager->Register_CollisionObject(pObject, pHitCollider, IsPlayer , AttRangeCollider);
+	return m_pCollision_Manager->Register_CollisionObject(pObject, pHitCollider, IsPlayer , AttRangeCollider, ParryingCollider);
 }
 
 void CGameInstance::Delete_CollisionObject(CGameObject* pObject, _bool IsPlayer)
@@ -816,6 +816,16 @@ _bool CGameInstance::CheckCollision_Monster(CCollider* pCollider)
 	}
 
 	return m_pCollision_Manager->CheckCollision_Monster(pCollider);
+}
+
+_bool CGameInstance::CheckCollision_Parrying(CCollider* pCollider)
+{
+	if (!m_pCollision_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
+	}
+
+	return m_pCollision_Manager->CheckCollision_Parrying(pCollider);
 }
 
 _bool CGameInstance::Attack_Player(CCollider* pCollider, _uint iDamage, _uint iDamageType)
@@ -936,7 +946,7 @@ void CGameInstance::PhysXTick(_float fTimeDelta)
 	m_pPhysX_Manager->Tick(fTimeDelta);
 }
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 HRESULT CGameInstance::Render_PhysX()
 {
 	if (m_bSkipDebugRender)
@@ -1020,7 +1030,7 @@ ID3D11ShaderResourceView* CGameInstance::Get_SRV(const wstring& strTargetTag)
 	return m_pRenderTarget_Manager->Get_SRV(strTargetTag);
 }
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 HRESULT CGameInstance::Ready_Debug_RT(const wstring& strTargetTag, _float2 vPos, _float2 vSize)
 {
 	if (!m_pRenderTarget_Manager)

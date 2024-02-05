@@ -68,6 +68,8 @@ private:
 	_bool m_bSelectAttackPattern = { false };
 
 private:
+	_bool m_bAttacking = { false };
+
 	_bool m_bAttacked = { false };
 
 	_bool m_bDamaged = { false };

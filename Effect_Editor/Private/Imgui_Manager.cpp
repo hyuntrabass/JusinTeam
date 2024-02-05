@@ -196,6 +196,9 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		"StaticPass_Worldmap_Cloud",
 		"StaticPsss_Rim",
 		"StaticPass_DiffEffect",
+		"StaticPass_SingleColorAlpha",
+		"StaticPass_MaskAlpha",
+		"StaticPass_DiffAlpha",
 	};
 
 	SeparatorText("Shader Pass");

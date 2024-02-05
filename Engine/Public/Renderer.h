@@ -38,7 +38,7 @@ public:
 		m_TurnOnBloom = TurnOnBloom;
 	}
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	HRESULT Add_DebugComponent(class CComponent* pDebugComponent);
 #endif // _DEBUG
 
@@ -46,7 +46,7 @@ public:
 private:
 	list<class CGameObject*> m_RenderObjects[RG_End]{};
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	list<class CComponent*> m_DebugComponents{};
 #endif // _DEBUG
 
@@ -183,7 +183,7 @@ private:
 	HRESULT Render_BlendBlur();
 	HRESULT Render_HDR();
 	HRESULT Render_UI();
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 private:
 	HRESULT Render_Debug();
 #endif // _DEBUG

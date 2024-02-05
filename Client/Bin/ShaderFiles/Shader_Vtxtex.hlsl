@@ -260,7 +260,7 @@ PS_OUT PS_Main_Sprite_MaskTexture(PS_IN Input)
 
     Output.vColor = g_Texture.Sample(LinearSampler, vUV);
     
-    Output.vColor.a = vMask.r;
+    Output.vColor.a = vMask.r * vMask.a;
     
     return Output;
 }
@@ -286,7 +286,7 @@ PS_OUT PS_Main_Sprite_MaskColor(PS_IN Input)
 
     Output.vColor = g_vColor;
     
-    Output.vColor.a = vMask.r;
+    Output.vColor.a = vMask.r * vMask.a;
     
     return Output;
 }
@@ -421,7 +421,7 @@ PS_OUT PS_Main_Sprite_MaskTexture_Dissolve(PS_IN Input)
 
     Output.vColor = g_Texture.Sample(LinearSampler, vUV);
     
-    Output.vColor.a = vMask.r;
+    Output.vColor.a = vMask.r * vMask.a;
     
     return Output;
 }
@@ -454,7 +454,7 @@ PS_OUT PS_Main_Sprite_MaskColor_Dissolve(PS_IN Input)
 
     Output.vColor = g_vColor;
     
-    Output.vColor.a = vMask.r;
+    Output.vColor.a = vMask.r * vMask.a;
     
     return Output;
 }
@@ -667,6 +667,26 @@ PS_OUT PS_Main_FadeHorizontal(PS_IN Input)
     return Output;
 
 }
+
+PS_OUT PS_Main_LerpColorNAlpha(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    if(g_vColor.a != 0.f)
+    {
+        Output.vColor.xyz = lerp(Output.vColor, g_vColor, 0.6f);
+    }
+
+    if(Output.vColor.a > 0.1f)
+    {
+        Output.vColor.a = g_fAlpha;
+    }
+
+    
+    return Output;
+}
+
 technique11 DefaultTechnique
 {
     pass UI
@@ -1071,5 +1091,17 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_FadeHorizontal();
+    }
+    pass LerpColorNAlpha
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_LerpColorNAlpha();
     }
 };

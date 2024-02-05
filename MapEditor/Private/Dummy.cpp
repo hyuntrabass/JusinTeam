@@ -95,7 +95,7 @@ void CDummy::Tick(_float fTimeDelta)
 
 void CDummy::Late_Tick(_float fTimeDelta)
 {
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 if(m_eType == ItemType::Trigger)
 	m_pRendererCom->Add_DebugComponent(m_pCollider);
 #endif

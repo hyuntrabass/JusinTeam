@@ -1,8 +1,7 @@
 #include "Void05.h"
-#include "Animation.h"
 
 const _float CVoid05::m_fChaseRange = 7.f;
-const _float CVoid05::m_fAttackRange = 3.f;
+const _float CVoid05::m_fAttackRange = 2.3f;
 
 _uint CVoid05::m_iIndex = 0;
 
@@ -35,19 +34,19 @@ HRESULT CVoid05::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_Animation.iAnimIndex = IDLE;
-	m_Animation.isLoop = true;
-	m_Animation.bSkipInterpolation = true;
+	//m_Animation.iAnimIndex = TU02_SC02_MON_ATTACK_LOOP;
+	//m_Animation.isLoop = true;
+	//m_Animation.bSkipInterpolation = false;
 
 	random_device rand;
 	_randNum RandomNumber(rand());
-	_float fCurrentAnimDuration = m_pModelCom->Get_Animation(TU02_SC02_MON_ATTACK_LOOP)->Get_Duration();
-	_randFloat RandomAnimPos(0.f, fCurrentAnimDuration);
-	m_Animation.fStartAimPos = RandomAnimPos(RandomNumber);
+	_randFloat RandomAnimPos(0.f, 1000.f);
+	m_Animation.fStartAnimPos = RandomAnimPos(RandomNumber);
 
-	m_eCurState = STATE_IDLE;
+	m_eCurState = STATE_DIG;
 
 	m_iHP = 1000;
+	m_iDamageAccMax = 200;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
@@ -76,15 +75,6 @@ HRESULT CVoid05::Init(void* pArg)
 		}
 	}
 
-	if (m_iIndex % 2 == 0)
-	{
-		m_eIdleAnim = TU02_SC02_MON_ATTACK_LOOP;
-	}
-	else
-	{
-		m_eIdleAnim = TU02_SC02_MON_01;
-	}
-
 	++m_iIndex;
 
 	return S_OK;
@@ -102,12 +92,13 @@ void CVoid05::Tick(_float fTimeDelta)
 	Tick_State(fTimeDelta);
 	
 	m_pModelCom->Set_Animation(m_Animation);
+	m_Animation.fStartAnimPos = 0.f;
 
 	Update_Collider();
 	__super::Update_MonsterCollider();
 
 	Update_Trail(fTimeDelta);
-
+	 
 	m_pTransformCom->Gravity(fTimeDelta);
 
 	__super::Tick(fTimeDelta);
@@ -116,10 +107,8 @@ void CVoid05::Tick(_float fTimeDelta)
 void CVoid05::Late_Tick(_float fTimeDelta)
 {
 	__super::Late_Tick(fTimeDelta);
-	m_Animation.fStartAimPos = 0.f;
-	m_Animation.bSkipInterpolation = false;
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
 #endif
@@ -134,8 +123,18 @@ HRESULT CVoid05::Render()
 
 void CVoid05::Set_Damage(_int iDamage, _uint iDamageType)
 {
+	m_iDamageAcc += iDamage;
 	m_iHP -= iDamage;
 	m_bDamaged = true;
+
+	CHitEffect::HITEFFECT_DESC Desc{};
+	Desc.iDamage = iDamage;
+	Desc.pParentTransform = m_pTransformCom;
+	Desc.vTextPosition = _vec2(0.f, 1.5f);
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
+	{
+		return;
+	}
 
 	m_eCurState = STATE_HIT;
 
@@ -178,15 +177,28 @@ void CVoid05::Init_State(_float fTimeDelta)
 		switch (m_eCurState)
 		{
 		case Client::CVoid05::STATE_IDLE:
-			m_Animation.iAnimIndex = m_eIdleAnim;
+			m_Animation.iAnimIndex = IDLE;
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 2.f;
 
 			m_pTransformCom->Set_Speed(1.5f);
 			break;
 
+		case Client::CVoid05::STATE_DIG:
+			m_Animation.iAnimIndex = TU02_SC02_MON_ATTACK_LOOP;
+			m_Animation.isLoop = true;
+			m_Animation.fAnimSpeedRatio = 3.f;
+
+			break;
+
 		case Client::CVoid05::STATE_CHASE:
-			m_Animation.iAnimIndex = RUN;
+		{
+			_float fDistance = __super::Compute_PlayerDistance();
+			if (fDistance >= m_fAttackRange)
+			{
+				m_Animation.iAnimIndex = RUN;
+			}
+
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 2.f;
 
@@ -198,6 +210,7 @@ void CVoid05::Init_State(_float fTimeDelta)
 			{
 				m_pTransformCom->Set_Speed(4.f);
 			}
+		}
 			break;
 
 		case Client::CVoid05::STATE_ATTACK:
@@ -227,7 +240,18 @@ void CVoid05::Tick_State(_float fTimeDelta)
 	switch (m_eCurState)
 	{
 	case Client::CVoid05::STATE_IDLE:
-		m_Animation.fAnimSpeedRatio = 3.f;
+		
+		m_fIdleTime += fTimeDelta;
+
+		if (m_fIdleTime >= 1.f)
+		{
+			m_fIdleTime = 0.f;
+			m_eCurState = STATE_CHASE;
+		}
+
+		break;
+
+	case Client::CVoid05::STATE_DIG:
 		break;
 
 	case Client::CVoid05::STATE_CHASE:
@@ -236,9 +260,6 @@ void CVoid05::Tick_State(_float fTimeDelta)
 		_float fDistance = __super::Compute_PlayerDistance();
 		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 		vDir.y = 0.f;
-
-		m_pTransformCom->LookAt_Dir(vDir);
-		m_pTransformCom->Go_Straight(fTimeDelta);
 
 		//if (fDistance > m_fChaseRange && !m_bDamaged)
 		//{
@@ -251,6 +272,11 @@ void CVoid05::Tick_State(_float fTimeDelta)
 			m_eCurState = STATE_ATTACK;
 			m_Animation.isLoop = true;
 			m_bSlow = false;
+		}
+		else
+		{
+			m_pTransformCom->LookAt_Dir(vDir);
+			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
 	}
 		break;
@@ -336,7 +362,7 @@ void CVoid05::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
 			m_pModelCom->IsAnimationFinished(ATTACK03))
 		{
-			m_eCurState = STATE_CHASE;
+			m_eCurState = STATE_IDLE;
 		}
 
 		break;

@@ -9,14 +9,14 @@ CCollider::CCollider(_dev pDevice, _context pContext)
 
 CCollider::CCollider(const CCollider& rhs)
 	: CComponent(rhs)
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	, m_pBatch(rhs.m_pBatch)
 	, m_pEffect(rhs.m_pEffect)
 	, m_pInputLayout(rhs.m_pInputLayout)
 #endif // _DEBUG
 
 {
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	Safe_AddRef(m_pInputLayout);
 #endif // _DEBUG
 
@@ -24,7 +24,7 @@ CCollider::CCollider(const CCollider& rhs)
 
 HRESULT CCollider::Init_Prototype()
 {
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	m_pBatch = new PrimitiveBatch<VertexPositionColor>(m_pContext);
 	m_pEffect = new BasicEffect(m_pDevice);
 	m_pEffect->SetVertexColorEnabled(true);
@@ -227,7 +227,7 @@ _vec3 CCollider::Get_ColliderPos()
 	return _vec3();
 }
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 HRESULT CCollider::Render()
 {
 	m_pEffect->SetWorld(XMMatrixIdentity());
@@ -306,7 +306,7 @@ void CCollider::Free()
 
 	Safe_Delete(m_pBounder);
 	Safe_Delete(m_pBounder_Origin);
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	Safe_Release(m_pInputLayout);
 
 	if (not m_hasCloned)

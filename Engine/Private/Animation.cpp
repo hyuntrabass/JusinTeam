@@ -60,6 +60,7 @@ void CAnimation::ResetFinished()
 	{
 		pChannel->Reset_CurrentKeyFrame();
 	}
+	m_isInterpolating = false;
 }
 
 void CAnimation::Set_CurrentAnimPos(_float fCurrentAnimPos)
@@ -114,20 +115,21 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 		else if (!m_isInterpolating)
 		{
 			m_fCurrentAnimPos = fStartAnimPos;
+			m_fLerpAnimPos = 0.f;
 			m_isInterpolating = true;
 		}
 		else
 		{
-			m_fCurrentAnimPos += fTimeDelta;
+			m_fLerpAnimPos += fTimeDelta;
 		}
 	}
 	else
 	{
-		if (m_isInterpolating)
+		if (m_fCurrentAnimPos == 0.f)
 		{
-			m_isInterpolating = false;
+			m_fCurrentAnimPos = fStartAnimPos;
 		}
-
+		
 		if (not m_isFinished)
 		{
 			m_fCurrentAnimPos += m_fTickPerSec * fTimeDelta;
@@ -171,7 +173,7 @@ void CAnimation::Update_Lerp_TransformationMatrix(const vector<class CBone*>& Bo
 
 	_uint iNumPrevTransformation{};
 
-	if (m_fCurrentAnimPos == 0.f)
+	if (m_fLerpAnimPos == 0.f)
 	{
 		for (auto& pBone : Bones)
 		{
@@ -195,7 +197,7 @@ void CAnimation::Update_Lerp_TransformationMatrix(const vector<class CBone*>& Bo
 		_vec4 vSrcScaling{}, vDstScaling{};
 		_vec4 vDstRotation{};
 		_vec4 vSrcPotition{}, vDstPosition{};
-		_float fRatio = m_fCurrentAnimPos / fInterpolationTime;
+		_float fRatio = m_fLerpAnimPos / fInterpolationTime;
 
 		XMMatrixDecompose(&vTmpScaling, &vSrcRotation, &vTmpPosition, PrevTransformation);
 		vSrcScaling.x = PrevTransformation.Right().Length();
@@ -211,7 +213,7 @@ void CAnimation::Update_Lerp_TransformationMatrix(const vector<class CBone*>& Bo
 		auto iter = find_if(m_Channels.begin(), m_Channels.end(), [&](CChannel* pChannel)->_bool {
 			if (0 == strcmp(pChannel->Get_ChannelName(), szBoneName))
 			{
-				DestKeyFrame = pChannel->Get_FirstKeyFrame();
+				DestKeyFrame = pChannel->Get_CurrentKeyFrame(m_fCurrentAnimPos);
 				return true;
 			}
 			DestKeyFrame.vScaling = vSrcScaling;
@@ -235,10 +237,11 @@ void CAnimation::Update_Lerp_TransformationMatrix(const vector<class CBone*>& Bo
 		++iNumPrevTransformation;
 	}
 
-	if (m_fCurrentAnimPos >= fInterpolationTime)
+	if (m_fLerpAnimPos >= fInterpolationTime)
 	{
 		isAnimChanged = false;
-		m_fCurrentAnimPos = 0.f;
+		m_fLerpAnimPos = 0.f;
+		m_isInterpolating = false;
 	}
 }
 

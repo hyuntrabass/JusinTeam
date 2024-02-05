@@ -31,6 +31,11 @@ void CObjects::Tick(_float fTimeDelta)
 
 void CObjects::Late_Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Get_CameraState() == CS_SKILLBOOK or m_pGameInstance->Get_CameraState() == CS_INVEN or m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
+	{
+		return;
+	}
+
 	// ÀÎ½ºÅÏ½Ì ÇÒ ¸ðµ¨°ú ¾ÈÇÒ ¸ðµ¨À» ³ª´²ÁÜ
 	if(m_isInstancing == false)
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);

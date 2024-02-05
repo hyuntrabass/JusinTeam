@@ -136,7 +136,7 @@ ID3D11Texture2D* CRenderTarget_Manager::Get_Texture2D(const wstring& strTargetTa
 	return pTarget->Get_Texture2D();
 }
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 HRESULT CRenderTarget_Manager::Ready_Debug(const wstring& strTargetTag, _float2 vPos, _float2 vSize)
 {
 	CRenderTarget* pRenderTarget = Find_RenderTarget(strTargetTag);

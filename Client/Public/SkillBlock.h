@@ -8,7 +8,7 @@ class CSkillSlot;
 class CSkillBlock final : public CGameObject
 {
 public: 
-	enum SKILLSLOT{ SKILL_Q, SKILL_W, SKILL_E, SKILL_R, SKILL_END };
+	enum SKILLSLOT{ SKILL1, SKILL2, SKILL3, SKILL4, SKILL_END };
 
 private:
 	CSkillBlock(_dev pDevice, _context pContext);
@@ -26,8 +26,12 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 
 private:
+	WEAPON_TYPE		m_eCurType{ WP_BOW };
 	_bool			m_isPrototype{ false };
-	CSkillSlot*		m_pSlots[SKILL_END];
+	CSkillSlot*		m_pSlots[WP_END][SKILL_END];
+
+public:
+	_bool	Use_Skill(WEAPON_TYPE eType, SKILLSLOT eSlot, _int* iIndex);
 
 private:
 	HRESULT Add_Components();

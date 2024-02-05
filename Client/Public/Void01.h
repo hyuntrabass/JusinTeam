@@ -67,6 +67,9 @@ private:
 	CCommonTrail* m_pRightTrail = { nullptr };
 
 private:
+	_float m_fIdleTime = {};
+
+private:
 	_uint m_iAttackPattern = {};
 	_bool m_bSelectAttackPattern = { false };
 

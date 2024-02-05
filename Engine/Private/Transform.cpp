@@ -180,6 +180,16 @@ void CTransform::Set_Controller(PxController* pController)
 	m_pScene = m_pController->getScene();
 }
 
+void CTransform::Delete_Controller()
+{
+	if (m_pController)
+	{
+		m_pController->release();
+	}
+
+	m_pController = nullptr;
+}
+
 HRESULT CTransform::Init_Prototype()
 {
 	m_WorldMatrix = _mat::Identity;
@@ -202,6 +212,11 @@ HRESULT CTransform::Init(void* pArg)
 
 void CTransform::Gravity(_float fTimeDelta, _vec4 vUpDir)
 {
+	if (not m_pController)
+	{
+		return;
+	}
+
 	_float Gravity{ -19.81f };
 	PxVec3 UpDir = VectorToPxVec3(XMVector3Normalize(vUpDir));
 

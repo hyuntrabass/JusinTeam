@@ -202,11 +202,11 @@ HRESULT CRenderer::Init_Prototype()
 	//{
 	//	return E_FAIL;
 	//}
-	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LightDepth"), D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION, D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION / 2, DXGI_FORMAT_R32G32B32A32_FLOAT,
-		_float4(1.f, 1.f, 1.f, 1.f))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LightDepth"), D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION, D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION / 2, DXGI_FORMAT_R32G32B32A32_FLOAT,
+	//	_float4(1.f, 1.f, 1.f, 1.f))))
+	//{
+	//	return E_FAIL;
+	//}
 
 #pragma region For_MRT_HDR
 
@@ -368,10 +368,10 @@ HRESULT CRenderer::Init_Prototype()
 #pragma endregion
 
 
-	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Shadow"), TEXT("Target_LightDepth"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Shadow"), TEXT("Target_LightDepth"))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Blur"), TEXT("Target_Bloom"))))
 	{
@@ -430,12 +430,12 @@ HRESULT CRenderer::Init_Prototype()
 #pragma endregion
 
 
-	if (FAILED(Ready_ShadowDSV()))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_ShadowDSV()))
+	//{
+	//	return E_FAIL;
+	//}
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Diffuse"), _float2(50.f, 50.f), _float2(100.f, 100.f))))
 	{
 		return E_FAIL;
@@ -460,10 +460,10 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_LightDepth"), _float2(ViewportDesc.Width - 50.f, 50.f), _float2(100.f, 100.f))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_LightDepth"), _float2(ViewportDesc.Width - 50.f, 50.f), _float2(100.f, 100.f))))
+	//{
+	//	return E_FAIL;
+	//}
 	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Bloom"), _float2(ViewportDesc.Width - 50.f, 150.f), _float2(100.f, 100.f))))
 	{
 		return E_FAIL;
@@ -698,7 +698,7 @@ HRESULT CRenderer::Draw_RenderGroup()
 		return E_FAIL;
 	}
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	if (not m_pGameInstance->IsSkipDebugRendering())
 	{
 		if (FAILED(Render_Debug()))
@@ -713,7 +713,7 @@ HRESULT CRenderer::Draw_RenderGroup()
 	return S_OK;
 }
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 HRESULT CRenderer::Add_DebugComponent(CComponent* pDebugComponent)
 {
 	if (m_pGameInstance->IsSkipDebugRendering())
@@ -1362,6 +1362,9 @@ HRESULT CRenderer::Render_LightAcc()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pShader->Bind_Matrix("g_CamViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
+		return E_FAIL;
+
 	if (FAILED(m_pShader->Bind_Matrix("g_CamProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
 		return E_FAIL;
 
@@ -1411,10 +1414,10 @@ HRESULT CRenderer::Render_Deferred()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_LightDepthTexture", TEXT("Target_LightDepth"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_LightDepthTexture", TEXT("Target_LightDepth"))))
+	//{
+	//	return E_FAIL;
+	//}
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_SSAOTexture", TEXT("Target_SSAOBlur"))))
 	{
 		return E_FAIL;
@@ -1606,7 +1609,7 @@ HRESULT CRenderer::Render_Blend()
 HRESULT CRenderer::Render_BlendBlur()
 {
 	//
-	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur"))))
+	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur")/*, m_pBlurDSV*/)))
 	{
 		return E_FAIL;
 	}
@@ -1637,7 +1640,9 @@ HRESULT CRenderer::Render_BlendBlur()
 	}
 
 	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Bloom"), L"MRT_BlurTest", m_fEffectBlurPower)))
+	{
 		return E_FAIL;
+	}
 
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_BlurTest"))))
 	{
@@ -1748,7 +1753,7 @@ HRESULT CRenderer::Render_UI()
 	return S_OK;
 }
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 HRESULT CRenderer::Render_Debug()
 {
 	for (auto& pComponent : m_DebugComponents)
@@ -1779,10 +1784,10 @@ HRESULT CRenderer::Render_Debug()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_Shadow"), m_pShader, m_pVIBuffer)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_Shadow"), m_pShader, m_pVIBuffer)))
+	//{
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_Blur"), m_pShader, m_pVIBuffer)))
 	{
@@ -2120,7 +2125,7 @@ void CRenderer::Free()
 	}
 
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	for (auto& pComponent : m_DebugComponents)
 	{
 		Safe_Release(pComponent);

@@ -1,114 +1,110 @@
-#include "BodyPart.h"
-#include "UI_Manager.h"
-#include "Player.h"
+#include "Skill_Model.h"
+#include "Effect_Manager.h"
+#include "Effect_Dummy.h"
+#include "Arrow.h"
 
-CBodyPart::CBodyPart(_dev pDevice, _context pContext)
-	: CPartObject(pDevice, pContext)
+CSkill_Model::CSkill_Model(_dev pDevice, _context pContext)
+	: CGameObject(pDevice, pContext)
 {
 }
 
-CBodyPart::CBodyPart(const CBodyPart& rhs)
-	: CPartObject(rhs)
+CSkill_Model::CSkill_Model(const CSkill_Model& rhs)
+	: CGameObject(rhs)
 {
 }
 
-HRESULT CBodyPart::Init_Prototype()
+HRESULT CSkill_Model::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CBodyPart::Init(void* pArg)
+HRESULT CSkill_Model::Init(void* pArg)
 {
-	BODYPART_DESC Desc = *reinterpret_cast<BODYPART_DESC*>(pArg);
-
-	m_eType = Desc.eType;
-	m_iNumVariations = Desc.iNumVariations;
-	m_vecModel.resize(m_iNumVariations, nullptr);
-	m_Animation = Desc.Animation;
-	m_iSelectedModelIndex = 0;
-	if (FAILED(__super::Init(Desc.pParentTransform)))
-	{
-		return E_FAIL;
-	}
 
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
 
+	m_pTransformCom->Set_State(State::Pos, _vec4(0.f,-100.f,0.f,1.f));
+
+	m_Animation.iAnimIndex = 0;
+	m_Animation.isLoop = true;
+	m_Animation.bSkipInterpolation = true;
+	m_Animation.fAnimSpeedRatio = 2.f;
 	return S_OK;
 }
 
-void CBodyPart::Tick(_float fTimeDelta)
+void CSkill_Model::Tick(_float fTimeDelta)
 {
-
-
-	if (m_iSelectedModelIndex > m_iNumVariations)
+	if (m_pGameInstance->Get_CameraState() != CS_SKILLBOOK)
 	{
 		return;
 	}
 
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD8))
+	{
+		m_Animation.iAnimIndex = ++aq;
+		m_eCurAnimState =(SKILLMODEL_ANIM)aq;
+		m_ReadyArrow = true;
+	}
+	m_pModelCom->Set_Animation(m_Animation);
 
-	if (m_pGameInstance->Get_CurrentLevelIndex() == 0/*캐릭 생성시*/)
+	if (m_eCurAnimState == SWORD1 or m_eCurAnimState == SWORD2 or m_eCurAnimState == SWORD3 or m_eCurAnimState == SWORD4)
 	{
-		for (size_t i = 0; i < m_iNumVariations; i++)
-		{
-			m_vecModel[i]->Set_Animation(*m_Animation);
-			m_vecModel[i]->Play_Animation(fTimeDelta);
-		}
+		m_pWeapon_ModelCom->Set_Animation(m_Animation);
 	}
-	else
+
+	After_BowAtt();
+	
+	if (m_bArrowRain_Start)
 	{
-		m_vecModel[m_iSelectedModelIndex]->Set_Animation(*m_Animation);
-		m_vecModel[m_iSelectedModelIndex]->Play_Animation(fTimeDelta);
+		Arrow_Rain();
 	}
+
 }
 
-void CBodyPart::Late_Tick(_float fTimeDelta)
+void CSkill_Model::Late_Tick(_float fTimeDelta)
 {
-	if (m_iSelectedModelIndex > m_iNumVariations)
+	if (m_pGameInstance->Get_CameraState() != CS_SKILLBOOK)
 	{
 		return;
 	}
 
-	m_Worldmatrix = m_pParentTransform->Get_World_Matrix();
+	m_pModelCom->Play_Animation(fTimeDelta);
 
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	if (m_eCurAnimState == SWORD1 or m_eCurAnimState == SWORD2 or m_eCurAnimState == SWORD3 or m_eCurAnimState == SWORD4)
+	{
+		m_pWeapon_ModelCom->Play_Animation(fTimeDelta);
+	}
+
+	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 }
 
-HRESULT CBodyPart::Render()
+HRESULT CSkill_Model::Render()
 {
-	if (m_bHide)
-		return S_OK;
-
-	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
-	{
-		return S_OK;
-	}
-
-	if (m_iSelectedModelIndex > m_iNumVariations)
-	{
-		return S_OK;
-	}
-
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
 	}
 
-	for (_uint i = 0; i < m_vecModel[m_iSelectedModelIndex]->Get_NumMeshes(); i++)
+	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
 	{
-		if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_CUSTOM/*캐릭 생성시*/)
+		
+		if (i == 0)
 		{
-			if (m_iSelectedModelIndex == 8 && i < 3)
+			if (m_eCurAnimState == SWORD1 or m_eCurAnimState == SWORD2 or m_eCurAnimState == SWORD3 or m_eCurAnimState == SWORD4)
+			{
 				continue;
+			}
 		}
-		if (FAILED(m_vecModel[m_iSelectedModelIndex]->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
 		}
 
 		_bool HasNorTex{};
-		if (FAILED(m_vecModel[m_iSelectedModelIndex]->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
 		{
 			HasNorTex = false;
 		}
@@ -116,145 +112,286 @@ HRESULT CBodyPart::Render()
 		{
 			HasNorTex = true;
 		}
+		
+		_bool HasMaskTex{};
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
+		{
+			HasMaskTex = false;
+		}
+		else
+		{
+			HasMaskTex = true;
+		}
 
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}
 
-		if (FAILED(m_vecModel[m_iSelectedModelIndex]->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}
 
-		//if (FAILED(m_pShaderCom->Begin(AnimPass_OutLine)))
-		//{
-		//	return E_FAIL;
-		//}
-
-		//if (FAILED(m_vecModel[m_iSelectedModelIndex]->Render(i)))
-		//{
-		//	return E_FAIL;
-		//}
-
-
-		if (m_eType == PT_HAIR)
+		if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
 		{
-			if (FAILED(m_pShaderCom->Begin(AnimPass_LerpColor)))
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pModelCom->Render(i)))
+		{
+			return E_FAIL;
+		}
+	}
+
+	if (m_eCurAnimState == SWORD1 or m_eCurAnimState == SWORD2 or m_eCurAnimState == SWORD3 or m_eCurAnimState == SWORD4)
+	{
+
+		for (_uint i = 0; i < m_pWeapon_ModelCom->Get_NumMeshes(); i++)
+		{
+			if (FAILED(m_pWeapon_ModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+			{
+			}
+
+			_bool HasNorTex{};
+			if (FAILED(m_pWeapon_ModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+			{
+				HasNorTex = false;
+			}
+			else
+			{
+				HasNorTex = true;
+			}
+
+			_bool HasMaskTex{};
+			if (FAILED(m_pWeapon_ModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
+			{
+				HasMaskTex = false;
+			}
+			else
+			{
+				HasMaskTex = true;
+			}
+
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
 			{
 				return E_FAIL;
 			}
-		}
-		else
-		{
+
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pWeapon_ModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+			{
+				return E_FAIL;
+			}
+
 			if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
 			{
 				return E_FAIL;
 			}
-		}
 
-
-		if (FAILED(m_vecModel[m_iSelectedModelIndex]->Render(i)))
-		{
-			return E_FAIL;
+			if (FAILED(m_pWeapon_ModelCom->Render(i)))
+			{
+				return E_FAIL;
+			}
 		}
 	}
-
 	return S_OK;
 }
 
-HRESULT CBodyPart::Render_Shadow()
+void CSkill_Model::After_BowAtt()
 {
-	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
-	{
-		return S_OK;
-	}
+	_float Index = m_pModelCom->Get_CurrentAnimPos();
 
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", m_Worldmatrix)))
+	if (m_eCurAnimState == BOW1)
 	{
-		return E_FAIL;
-	}
-
-	LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"));
-	XMStoreFloat4(&Light->vPosition, m_pParentTransform->Get_State(State::Pos));
-
-	if (FAILED(m_pGameInstance->Bind_Light_ViewProjMatrix(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"), m_pShaderCom, "g_ViewMatrix", "g_ProjMatrix")))
-	{
-		return E_FAIL;
-	}
-
-	for (_uint i = 0; i < m_vecModel[m_iSelectedModelIndex]->Get_NumMeshes(); i++)
-	{
-		if (FAILED(m_vecModel[m_iSelectedModelIndex]->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		if (Index > 2.f && Index < 4.f)
 		{
-			return E_FAIL;
+			m_ReadyArrow = true;
 		}
-
-		if (FAILED(m_pShaderCom->Begin(AnimPass_Shadow)))
+		if (Index >= 16.f && Index <= 19.f && m_ReadyArrow)
 		{
-			return E_FAIL;
+			Create_Arrow(BOW1);
+			m_ReadyArrow = false;
 		}
-
-		if (FAILED(m_vecModel[m_iSelectedModelIndex]->Render(i)))
+		else if (Index > 20.f && Index <= 24.f && !m_ReadyArrow)
 		{
-			return E_FAIL;
+			m_ReadyArrow = true;
+		}
+		else if (Index >= 30.f && Index <= 32.f && m_ReadyArrow)
+		{
+			Create_Arrow(BOW1);
+			m_ReadyArrow = false;
+		}
+		else if (Index > 33.f && Index <= 35.f && !m_ReadyArrow)
+		{
+			m_ReadyArrow = true;
+		}
+		else if (Index >= 47.f && Index <= 49.f && m_ReadyArrow)
+		{
+			Create_Arrow(BOW1);
+			m_ReadyArrow = false;
 		}
 	}
-
-	return S_OK;
-}
-
-_bool CBodyPart::IsAnimationFinished(_uint iAnimIndex)
-{
-	return m_vecModel[m_iSelectedModelIndex]->IsAnimationFinished(iAnimIndex);
-}
-
-_uint CBodyPart::Get_CurrentAnimationIndex()
-{
-	return m_vecModel[m_iSelectedModelIndex]->Get_CurrentAnimationIndex();
-}
-
-_float CBodyPart::Get_CurrentAnimPos()
-{
-	return m_vecModel[m_iSelectedModelIndex]->Get_CurrentAnimPos();
-}
-
-const _mat* CBodyPart::Get_BoneMatrix(const _char* pBoneName)
-{
-	return m_vecModel[m_iSelectedModelIndex]->Get_BoneMatrix(pBoneName);
-}
-
-void CBodyPart::All_Reset_Anim()
-{
-	for (int i = 0; i < m_vecModel.size(); i++)
+	else if (m_eCurAnimState == BOW2)
 	{
-		m_Animation->bRestartAnimation = true;
-		m_vecModel[i]->Set_Animation(*m_Animation);
-		m_Animation->bRestartAnimation = false;
+		if (Index > 2.f && Index < 4.f)
+		{
+			m_ReadyArrow = true;
+		}
+
+		if (Index >= 5.f && Index <= 6.f)
+		{
+			m_pTransformCom->Jump(7.f);
+		}
+		else if (Index >= 34.f && Index <= 36.f && m_ReadyArrow)
+		{
+			Create_Arrow(BOW2);
+			m_ReadyArrow = false;
+		}
+	}
+	else if (m_eCurAnimState == BOW3)
+	{
+		if (Index > 2.f && Index < 4.f)
+		{
+			m_ReadyArrow = true;
+		}
+
+		if (Index >= 19.f && Index <= 20.f)
+		{
+			Create_Arrow(SWORD4);
+
+		}
+		else if (Index >= 50.f && m_ReadyArrow)
+		{
+			Create_Arrow(BOW3);
+			m_ReadyArrow = false;
+		}
 	}
 }
 
-//void CBodyPart::
-// (_uint iIndex)
-//{
-//	if (iIndex > m_iNumVariations)
-//	{
-//		m_iSelectedModelIndex = m_iNumVariations - 1;
-//	}
-//	else
-//	{
-//		m_iSelectedModelIndex = iIndex;
-//	}
-//}
-
-void CBodyPart::Reset_Model()
+void CSkill_Model::Create_Arrow(SKILLMODEL_ANIM Skill)
 {
-	m_Animation->bRestartAnimation = true;
-	m_vecModel[m_iSelectedModelIndex]->Set_Animation(*m_Animation);
-	m_Animation->bRestartAnimation = false;
+	_mat offet = _mat::CreateTranslation(_vec3(0.f, 0.9f, 0.f));
+	_mat bone = (*m_pModelCom->Get_BoneMatrix("bowstring"));
+	_mat world = m_pTransformCom->Get_World_Matrix();
+	world = offet * bone * world;
+	Arrow_Type type{};
+
+	switch (Skill)
+	{
+	case BOW1:
+	{
+		type.world = world;
+		type.vLook = m_pTransformCom->Get_State(State::Look);
+		type.Att_Type = AT_Bow_Skill1;
+		type.MonCollider = nullptr;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
+		{
+			return;
+		}
+	}
+	break;
+	case BOW2:
+	{
+		type.world = world;
+		type.vLook = m_pTransformCom->Get_State(State::Look);
+		type.Att_Type = AT_Bow_Skill2;
+		type.MonCollider = nullptr;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
+		{
+			return;
+		}
+	}
+	break;
+	case SWORD4:
+	{
+		type.world = world;
+		type.vLook = m_pTransformCom->Get_State(State::Look);
+		type.vLook.y += 0.6f;
+		type.Att_Type = AT_Bow_Skill3_Start;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
+		{
+			return;
+		}
+	}
+	break;
+	case BOW3:
+	{
+		m_bArrowRain_Start = true;
+		m_iArrowRain = 0;
+	}
+	break;
+	case BOW4:
+	{
+		type.world = world;
+		type.vLook = m_pTransformCom->Get_State(State::Look);
+		type.vLook.y -= 0.25f;
+		type.Att_Type = AT_Bow_Skill4;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
+		{
+			return;
+		}
+	}
+	break;
+	default:
+		break;
+	}
+
+
 }
 
-HRESULT CBodyPart::Add_Components()
+void CSkill_Model::Arrow_Rain()
+{
+	if (m_iArrowRain == 0)
+	{
+		m_vArrowLook = m_pTransformCom->Get_State(State::Look);
+	}
+
+	if (m_iArrowRain < 40)
+	{
+		Arrow_Type Type{};
+		Type.Att_Type = AT_Bow_Skill3;
+		_float random = (_float)(rand() % 50);
+		_int randommos = rand() % 2;
+		if (randommos == 0)
+		{
+			random *= -1;
+		}
+		random *= 0.05f;
+		_float  random2 = (_float)(rand() % 51);
+		_int randommo = rand() % 2;
+		if (randommo == 0)
+		{
+			random2 *= -1;
+		}
+		random2 *= 0.05f;
+		Type.vPos = m_pTransformCom->Get_State(State::Pos) + m_vArrowLook * 7.f + _vec4(random, 10.f, random2, 0.f)/* + m_pTransformCom->Get_State(State::Right) * 4.f*/;
+		Type.vLook = _vec4(0.01f, -1.f, 0.f, 0.f);
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &Type)))
+		{
+			return;
+		}
+		m_iArrowRain++;
+	}
+	else
+	{
+		m_bArrowRain_Start = false;
+	}
+}
+
+HRESULT CSkill_Model::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -266,23 +403,22 @@ HRESULT CBodyPart::Add_Components()
 		return E_FAIL;
 	}
 
-	for (size_t i = 0; i < m_vecModel.size(); i++)
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Skill_Model"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
 	{
-		wstring PrototypeTag = TEXT("Prototype_Model_") + to_wstring(m_eType) + L"" + to_wstring(i);
-		wstring ComTag = TEXT("Com_Model_") + to_wstring(i);
+		return E_FAIL;
+	}
 
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, PrototypeTag, ComTag, reinterpret_cast<CComponent**>(&m_vecModel[i]))))
-		{
-			return E_FAIL;
-		}
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Skill_Model_Weapon"), TEXT("Com_Model1"), reinterpret_cast<CComponent**>(&m_pWeapon_ModelCom), m_pTransformCom)))
+	{
+		return E_FAIL;
 	}
 
 	return S_OK;
 }
 
-HRESULT CBodyPart::Bind_ShaderResources()
+HRESULT CSkill_Model::Bind_ShaderResources()
 {
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", m_Worldmatrix)))
+	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
 		return E_FAIL;
 	}
@@ -297,65 +433,56 @@ HRESULT CBodyPart::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
 	{
 		return E_FAIL;
 	}
 
-	if (m_eType == PT_HAIR)
-	{
-		_vec4 vColor = CUI_Manager::Get_Instance()->Get_HairColor();
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _vec4)))
-		{
-			return E_FAIL;
-		}
-	}
 	return S_OK;
 }
 
-CBodyPart* CBodyPart::Create(_dev pDevice, _context pContext)
+void CSkill_Model::Change_AnimState(SKILLMODEL_ANIM eAnim)
 {
-	CBodyPart* pInstance = new CBodyPart(pDevice, pContext);
+	m_eCurAnimState = eAnim;
+	m_Animation.isLoop = true;
+	m_Animation.bSkipInterpolation = true;
+	m_Animation.fAnimSpeedRatio = 1.7f;
+	m_Animation.iAnimIndex = eAnim;
+}
+
+CSkill_Model* CSkill_Model::Create(_dev pDevice, _context pContext)
+{
+	CSkill_Model* pInstance = new CSkill_Model(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CBodyPart");
+		MSG_BOX("Failed to Create : CSkill_Model");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CBodyPart::Clone(void* pArg)
+CGameObject* CSkill_Model::Clone(void* pArg)
 {
-	CBodyPart* pInstance = new CBodyPart(*this);
+	CSkill_Model* pInstance = new CSkill_Model(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CBodyPart");
+		MSG_BOX("Failed to Clone : CSkill_Model");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CBodyPart::Free()
+void CSkill_Model::Free()
 {
+
 	__super::Free();
 
-	for (auto& pModel : m_vecModel)
-	{
-		Safe_Release(pModel);
-	}
-	m_vecModel.clear();
-
-
-
+	Safe_Release(m_pModelCom);
+	Safe_Release(m_pWeapon_ModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 }

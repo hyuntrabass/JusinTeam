@@ -14,13 +14,11 @@ public:
 		return m_szName;
 	}
 
-	KEYFRAME Get_FirstKeyFrame() const {
-		return m_KeyFrames.front();
-	}
-
 	void Reset_CurrentKeyFrame() {
 		m_iCurrentKeyFrame = 0;
 	}
+
+	KEYFRAME Get_CurrentKeyFrame(_float fCurrentAnimPos) const;
 
 public:
 	HRESULT Init(ifstream& ModelFile);

@@ -135,22 +135,22 @@ HRESULT CPlayer::Render()
 					HasNorTex = true;
 				}
 
-				_bool HasSpecTex{};
-				if (FAILED(m_pPlayerModelCom->Bind_Part_Material(m_pPlayerShaderCom, "g_SpecTexture", TextureType::Shininess, (_uint)i, (_uint)0, k)))
+				_bool HasMaskTex{};
+				if (FAILED(m_pPlayerModelCom->Bind_Part_Material(m_pPlayerShaderCom, "g_MaskTexture", TextureType::Shininess, (_uint)i, (_uint)0, k)))
 				{
-					HasSpecTex = false;
+					HasMaskTex = false;
 				}
 				else
 				{
-					HasSpecTex = true;
+					HasMaskTex = true;
 				}
 
 				if (FAILED(m_pPlayerShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
 					return E_FAIL;
 
-				HasSpecTex = false;
+				HasMaskTex = false;
 
-				if (FAILED(m_pPlayerShaderCom->Bind_RawValue("g_HasSpecTex", &HasSpecTex, sizeof _bool)))
+				if (FAILED(m_pPlayerShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
 					return E_FAIL;
 
 

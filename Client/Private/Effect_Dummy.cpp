@@ -51,7 +51,7 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 	if (m_Effect.hasLight)
 	{
 		m_strLightTag = L"Light_Effect_" + to_wstring(m_iLightID++);
-		if (FAILED(m_pGameInstance->Add_Light(m_pGameInstance->Get_CurrentLevelIndex(), m_strLightTag, m_Effect.Light_Desc)))
+		if (FAILED(m_pGameInstance->Add_Light(LEVEL_STATIC, m_strLightTag, m_Effect.Light_Desc)))
 		{
 			return E_FAIL;
 		}
@@ -117,11 +117,6 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 	if (m_Effect.isFollow)
 	{
 		m_OffsetMatrix = *m_Effect.pMatrix;
-	}
-
-	if (m_Effect.iType == ET_RECT)
-	{
-		m_OffsetMatrix.RemoveRotation();
 	}
 
 	m_pTransformCom->Set_Matrix(m_OffsetMatrix);
@@ -196,7 +191,7 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 
 	if (m_Effect.hasLight)
 	{
-		LIGHT_DESC* pLightInfo = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), m_strLightTag);
+		LIGHT_DESC* pLightInfo = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, m_strLightTag);
 		pLightInfo->vPosition = m_WorldMatrix.Position();
 	}
 	__super::Compute_CamDistance();
@@ -466,7 +461,7 @@ void CEffect_Dummy::Free()
 {
 	if (m_Effect.hasLight)
 	{
-		m_pGameInstance->Delete_Light(m_pGameInstance->Get_CurrentLevelIndex(), m_strLightTag);
+		m_pGameInstance->Delete_Light(LEVEL_STATIC, m_strLightTag);
 	}
 
 	__super::Free();

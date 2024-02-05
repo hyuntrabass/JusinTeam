@@ -166,7 +166,7 @@ void CRiding::Late_Tick(_float fTimeDelta)
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
-#ifdef _DEBUGTEST
+#ifdef _DEBUG
 	/*m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);*/
 #endif

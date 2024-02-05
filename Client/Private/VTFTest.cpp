@@ -22,15 +22,48 @@ HRESULT CVTFTest::Init(void* pArg)
 
     m_pTransformCom->Set_Position(_vec3(101.f, 4.f, 108.f));
 
+    m_Animation.iAnimIndex = 1;
+    m_Animation.fAnimSpeedRatio = 1.5f;
+    m_Animation.isLoop = true;
+    m_Animation.fStartAnimPos = 128.11234f;
+
     return S_OK;
 }
 
 void CVTFTest::Tick(_float fTimeDelta)
 {
-    m_Animation.iAnimIndex = 1;
-    m_Animation.fAnimSpeedRatio = 1.5f;
-    m_Animation.isLoop = true;
+    if (m_pGameInstance->Key_Down(DIK_LEFT, InputChannel::UI))
+    {
+        m_Animation.iAnimIndex -= 1;
+    }
+    else if (m_pGameInstance->Key_Down(DIK_RIGHT, InputChannel::UI))
+    {
+        m_Animation.iAnimIndex += 1;
+    }
+    else if (m_pGameInstance->Key_Down(DIK_UP, InputChannel::UI))
+    {
+        if(m_Animation.isLoop)
+        {
+            m_Animation.isLoop = false;
+        }
+        else if (not m_Animation.isLoop)
+        {
+            m_Animation.isLoop = true;
+        }
+    }
+    else if (m_pGameInstance->Key_Down(DIK_DOWN, InputChannel::UI))
+    {
+        if (m_Animation.bSkipInterpolation)
+        {
+            m_Animation.bSkipInterpolation = false;
+        }
+        else if (not m_Animation.bSkipInterpolation)
+        {
+            m_Animation.bSkipInterpolation = true;
+        }
+    }
     m_pModelCom->Set_Animation(m_Animation);
+    m_Animation.fStartAnimPos = 0.f;
 }
 
 void CVTFTest::Late_Tick(_float fTimeDelta)

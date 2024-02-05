@@ -6,6 +6,9 @@
 #include "InvenFrame.h"
 #include "Event_Manager.h"
 #include "SkillDesc.h"
+#include "SkillSlot.h"
+#include "SkillBlock.h"
+#include "Skill.h"
 
 CSkillBook::CSkillBook(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -42,11 +45,12 @@ HRESULT CSkillBook::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-
+	
 	if (FAILED(Init_SkillDesc()))
 	{
 		return E_FAIL;
 	}
+	
 
 	HRESULT hr = CUI_Manager::Get_Instance()->Set_Inven(this);
 	if (FAILED(hr))
@@ -61,13 +65,48 @@ void CSkillBook::Tick(_float fTimeDelta)
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
-
+	
 	RECT rectUI = {
 			  (LONG)(m_fX - m_fSizeX * 0.5f),
 			  (LONG)(m_fY - m_fSizeY * 0.5f),
 			  (LONG)(m_fX + m_fSizeX * 0.5f),
 			  (LONG)(m_fY + m_fSizeY * 0.5f)
 	};
+
+	if (m_isActive)
+	{
+		if (m_isPicking && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
+		{
+			m_isPicking = false;
+			_bool isExist = false;
+			for (size_t i = 0; i < 4; i++)
+			{
+				if (PtInRect(&m_pSkillSlot[m_eCurType][i]->Get_Rect(), ptMouse))
+				{
+					SKILLINFO tInfo = m_vecSkillDesc[m_eCurType][m_iCurIndex]->Get_SkillInfo();
+					for (size_t j = 0; j < 4; j++)
+					{
+						if (m_pSkillSlot[m_eCurType][j]->Is_Full())
+						{
+							if (m_pSkillSlot[m_eCurType][j]->Get_SkillInfo().strName == tInfo.strName)
+							{
+								isExist = true;
+								break;
+							}
+						}
+					}
+					if (!isExist)
+					{
+						m_pSkillSlot[m_eCurType][i]->Set_Skill(tInfo);
+						break;
+					}
+				}
+			}
+		}
+
+	}
+
+
 	if (TRUE == PtInRect(&rectUI, ptMouse))
 	{
 		if (!m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
@@ -76,6 +115,15 @@ void CSkillBook::Tick(_float fTimeDelta)
 			{
 				return;
 			}
+			LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_GAMEPLAY, TEXT("Light_Main"));
+
+			m_Light_Desc = *LightDesc;
+			LightDesc->eType = LIGHT_DESC::Directional;
+			LightDesc->vDirection = _float4(0.f, 0.f, -1.f, 0.f);
+			LightDesc->vDiffuse = _vec4(0.8f, 0.8f, 0.8f, 1.f);
+			LightDesc->vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
+			LightDesc->vSpecular = _vec4(1.f);
+
 			CFadeBox::FADE_DESC Desc = {};
 			Desc.eState = CFadeBox::FADEOUT;
 			Desc.fDuration = 0.8f;
@@ -99,6 +147,12 @@ void CSkillBook::Tick(_float fTimeDelta)
 	{
 		if (m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
+			if (m_Light_Desc.eType != LIGHT_DESC::TYPE::End)
+			{
+				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_GAMEPLAY, TEXT("Light_Main"));
+				*LightDesc = m_Light_Desc;
+			}
+
 			CFadeBox::FADE_DESC Desc = {};
 			Desc.eState = CFadeBox::FADEOUT;
 			Desc.fDuration = 0.8f;
@@ -107,6 +161,7 @@ void CSkillBook::Tick(_float fTimeDelta)
 				return;
 			}
 			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
+			CUI_Manager::Get_Instance()->Set_SkillSlotChange(true);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_isActive = false;
 			return;
@@ -115,12 +170,12 @@ void CSkillBook::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 	{
 		/* 인벤토리 메뉴 피킹 */
-		for (size_t i = 0; i < TYPE_END; i++)
+		for (size_t i = 0; i < WP_END; i++)
 		{
 			if (PtInRect(&dynamic_cast<CTextButtonColor*>(m_pSkillType[i])->Get_Rect(), ptMouse))
 			{
 				m_ePrevType = m_eCurType;
-				m_eCurType = (SKILL_TYPE)i;
+				m_eCurType = (WEAPON_TYPE)i;
 
 				if (m_ePrevType != m_eCurType)
 				{
@@ -132,6 +187,10 @@ void CSkillBook::Tick(_float fTimeDelta)
 				_vec2 fUnderBarPos = dynamic_cast<CTextButton*>(m_pUnderBar)->Get_Position();
 				dynamic_cast<CTextButton*>(m_pUnderBar)->Set_Position(_vec2(vPos.x, fUnderBarPos.y));
 
+				for (size_t j = 0; j < m_vecSkillDesc[m_eCurType].size(); j++)
+				{
+					m_vecSkillDesc[m_eCurType][j]->Select_Skill(false);
+				}
 				break;
 			}
 		}
@@ -142,7 +201,20 @@ void CSkillBook::Tick(_float fTimeDelta)
 		{
 			if (PtInRect(&m_vecSkillDesc[m_eCurType][i]->Get_Rect(), ptMouse))
 			{
+				if (m_vecSkillDesc[m_eCurType][i]->Is_Selected())
+				{
+					m_vecSkillDesc[m_eCurType][i]->Select_Skill(false);
+					break;
+				}
 				m_vecSkillDesc[m_eCurType][i]->Select_Skill(true);
+				if (m_vecSkillDesc[m_eCurType][i]->Is_SkillIn())
+				{
+					
+					m_isPicking = true;
+					m_iCurIndex = i;
+					m_pSkill_Model->Change_AnimState((CSkill_Model::SKILLMODEL_ANIM)m_vecSkillDesc[m_eCurType][i]->Get_SkillInfo().iModelSkillIndex);
+				}
+
 				bSelect = true;
 				break;
 			}
@@ -161,6 +233,50 @@ void CSkillBook::Tick(_float fTimeDelta)
 	}
 
 
+	if (m_pGameInstance->Mouse_Down(DIM_RBUTTON, InputChannel::UI))
+	{
+		for (size_t i = 0; i < 4; i++)
+		{
+			if (PtInRect(&m_pSkillSlot[m_eCurType][i]->Get_Rect(), ptMouse))
+			{
+				m_pSkillSlot[m_eCurType][i]->Delete_Skill();
+				break;
+			}
+		}
+	}
+
+	if (PtInRect(&m_pResetSlot->Get_Rect(), ptMouse))
+	{
+		m_pResetSlot->Set_Size(140.f, 80.f, 0.3f);
+		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
+		{
+			for (size_t i = 0; i < 4; i++)
+			{
+				m_pSkillSlot[m_eCurType][i]->Delete_Skill();
+			}
+		}
+	}
+	else
+	{
+		m_pResetSlot->Set_Size(150.f, 100.f, 0.35f);
+	}
+
+	if (m_isPicking)
+	{
+		if (m_fTime > 0.6f || m_fTime < 0.2f)
+		{
+			m_fDir *= -1.f;
+		}
+
+		m_fTime += fTimeDelta * m_fDir * 0.8f;
+
+		for (size_t i = 0; i < 4; i++)
+		{
+			m_pSelectSlot[i]->Set_Alpha(m_fTime);
+			m_pSelectSlot[i]->Tick(fTimeDelta);
+		}
+	}
+
 	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
 	dynamic_cast<CTextButton*>(m_pMoney)->Set_Text(to_wstring(iMoney));
 
@@ -168,13 +284,11 @@ void CSkillBook::Tick(_float fTimeDelta)
 	dynamic_cast<CTextButton*>(m_pDiamond)->Set_Text(to_wstring(iDiamond));
 
 
-
-
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 
-	for (size_t i = 0; i < TYPE_END; i++)
+	for (size_t i = 0; i < WP_END; i++)
 	{
 		m_pSkillType[i]->Tick(fTimeDelta);
 	}
@@ -182,25 +296,45 @@ void CSkillBook::Tick(_float fTimeDelta)
 	{
 		m_vecSkillDesc[m_eCurType][i]->Tick(fTimeDelta);
 	}
+	for (size_t i = 0; i < 4; i++)
+	{
+		m_pSkillSlot[m_eCurType][i]->Tick(fTimeDelta);
+	}
 	m_pUnderBar->Tick(fTimeDelta);
 	m_pSelectButton->Tick(fTimeDelta);
 	m_pExitButton->Tick(fTimeDelta);
 	m_pBackGround->Tick(fTimeDelta);
 	m_pTitleButton->Tick(fTimeDelta);
-
+	m_pSlotBackGround->Tick(fTimeDelta);
+	m_pResetSlot->Tick(fTimeDelta);
+	m_pSkill_Model->Tick(fTimeDelta);
+	m_pScarecorw->Tick(fTimeDelta);
 }
 
 void CSkillBook::Late_Tick(_float fTimeDelta)
 {
+
+
 	if (m_isActive)
 	{
-		for (size_t i = 0; i < TYPE_END; i++)
+		for (size_t i = 0; i < WP_END; i++)
 		{
 			m_pSkillType[i]->Late_Tick(fTimeDelta);
 		}
 		for (size_t i = 0; i < m_vecSkillDesc[m_eCurType].size(); i++)
 		{
 			m_vecSkillDesc[m_eCurType][i]->Late_Tick(fTimeDelta);
+		}
+		for (size_t i = 0; i < 4; i++)
+		{
+			m_pSkillSlot[m_eCurType][i]->Late_Tick(fTimeDelta);
+		}
+		if (m_isPicking)
+		{
+			for (size_t i = 0; i < 4; i++)
+			{
+				m_pSelectSlot[i]->Late_Tick(fTimeDelta);
+			}
 		}
 		m_pUnderBar->Late_Tick(fTimeDelta);
 		m_pSelectButton->Late_Tick(fTimeDelta);
@@ -210,6 +344,10 @@ void CSkillBook::Late_Tick(_float fTimeDelta)
 		m_pExitButton->Late_Tick(fTimeDelta);
 		m_pBackGround->Late_Tick(fTimeDelta);
 		m_pTitleButton->Late_Tick(fTimeDelta);
+		m_pSlotBackGround->Late_Tick(fTimeDelta);
+		m_pResetSlot->Late_Tick(fTimeDelta);
+		m_pSkill_Model->Late_Tick(fTimeDelta);
+		m_pScarecorw->Late_Tick(fTimeDelta);
 	}
 
 
@@ -248,18 +386,26 @@ HRESULT CSkillBook::Render()
 
 void CSkillBook::Init_SkillBookState()
 {
+	m_eCurType = WP_BOW;
+	m_ePrevType = WP_BOW;
+
 	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
 	dynamic_cast<CTextButton*>(m_pMoney)->Set_Text(to_wstring(iMoney));
 
 	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
 	dynamic_cast<CTextButton*>(m_pDiamond)->Set_Text(to_wstring(iDiamond));
+
+	for (size_t j = 0; j < m_vecSkillDesc[WP_BOW].size(); j++)
+	{
+		m_vecSkillDesc[m_eCurType][j]->Select_Skill(false);
+	}
 }
 
 HRESULT CSkillBook::Init_SkillDesc()
 {
-	for (size_t i = 0; i < TYPE_END;i++)
+	for (size_t i = 0; i < WP_END; i++)
 	{
-		_float fStartY = 85.f + 34.f + 2.f + 45.f;
+		_float fStartY = 166.f;
 		_float fTerm = 2.f;
 		_float fDescY = 90.f;
 		for (_uint j = 0; j < 4; j++)
@@ -269,7 +415,7 @@ HRESULT CSkillBook::Init_SkillDesc()
 			CSkillDesc::SKILLBOOK_DESC SkillDesc = {};
 			SkillDesc.fDepth = m_fDepth - 0.01f;
 			SkillDesc.tSkillInfo = tInfo;
-			SkillDesc.vPosition = _vec2(950.f + fTerm + 150.f, fStartY + 90.f * j + fTerm * j);
+			SkillDesc.vPosition = _vec2(1105.f, fStartY + 85.f * j);
 
 			CSkillDesc* pSkillDesc = (CSkillDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_SkillDesc"), &SkillDesc);
 
@@ -362,7 +508,7 @@ HRESULT CSkillBook::Add_Parts()
 	}
 
 	_float fY = 85.f;
-	_float fTerm = 300.f / (_uint)TYPE_END;
+	_float fTerm = 300.f / (_uint)WP_END;
 	_float fStartX = 880.f + fTerm;
 
 
@@ -391,7 +537,7 @@ HRESULT CSkillBook::Add_Parts()
 	}
 
 	UiInfo info{};
-	info.strTexture = TEXT("Prototype_Component_Texture_BackGround_Mask");
+	info.strTexture = TEXT("Prototype_Component_Texture_Skill_Background");
 	info.vPos = _vec2((_float)g_iWinSizeX/2.f, (_float)g_iWinSizeY / 2.f);
 	info.vSize = _vec2((_float)g_iWinSizeX, (_float)g_iWinSizeY);
 	info.iLevel = (_uint)LEVEL_CUSTOM;
@@ -416,25 +562,95 @@ HRESULT CSkillBook::Add_Parts()
 	TextButton.vSize = _vec2(m_fSizeX / 2.f, 70.f);
 	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_NoTex");
 	TextButton.vTextPosition = _vec2(0.f, 0.f);
-	m_pSkillType[SNIPER] = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+	m_pSkillType[WP_BOW] = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
 
-	if (not m_pSkillType[SNIPER])
+	if (not m_pSkillType[WP_BOW])
 	{
 		return E_FAIL;
 	}
-	dynamic_cast<CTextButtonColor*>(m_pSkillType[SNIPER])->Set_Pass(VTPass_UI_Alpha);
+	dynamic_cast<CTextButtonColor*>(m_pSkillType[WP_BOW])->Set_Pass(VTPass_UI_Alpha);
 
 	TextButton.strText = TEXT("어쌔신");
 	TextButton.vPosition = _vec2(fStartX + fTerm, fY);
 	TextButton.vSize = _vec2(m_fSizeX / 2.f, 70.f);
 	TextButton.vTextPosition = _vec2(0.f, 0.f);
-	m_pSkillType[ASSASSIN] = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+	m_pSkillType[WP_SWORD] = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
 
-	if (not m_pSkillType[ASSASSIN])
+	if (not m_pSkillType[WP_SWORD])
 	{
 		return E_FAIL;
 	}
-	dynamic_cast<CTextButtonColor*>(m_pSkillType[ASSASSIN])->Set_Pass(VTPass_UI_Alpha);
+	dynamic_cast<CTextButtonColor*>(m_pSkillType[WP_SWORD])->Set_Pass(VTPass_UI_Alpha);
+
+
+
+	TextButton.fDepth = m_fDepth - 0.01f;
+	TextButton.strText = TEXT("");
+	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Select_BG_BoxEfc_WhiteBlur");
+	TextButton.vSize = _vec2(300.f, 132.f);
+	TextButton.vColor = _vec4(0.125f, 0.153f, 0.169f, 0.6f);
+	TextButton.fAlpha = 0.6f;
+	TextButton.vPosition = _vec2(1107.5f, 623.f);
+	m_pSlotBackGround = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+	if (not m_pSlotBackGround)
+	{
+		return E_FAIL;
+	}
+
+	TextButton.fDepth = m_fDepth - 0.02f;
+	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_buttonRed");
+	TextButton.strText = TEXT("초기화");
+	TextButton.vPosition = _vec2(1160.f, 665.f);
+	m_pResetSlot = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+	if (not m_pResetSlot)
+	{
+		return E_FAIL;
+	}
+	m_pResetSlot->Set_Pass(VTPass_UI_Alpha);
+
+
+	TextButton.fDepth = m_fDepth - 0.05f;
+	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BloomRect");
+	TextButton.strText = TEXT("");
+	TextButton.vPosition = _vec2(1160.f, 665.f);
+	TextButton.vSize = _vec2(80.f, 80.f);
+
+	for (_uint i = 0; i < 4; i++)
+	{
+		TextButton.vPosition = _vec2(fStartX - 30.f + 70.f * i, 665.f - 62.5f);
+		m_pSelectSlot[i] = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+		if (not m_pSelectSlot)
+		{
+			return E_FAIL;
+		}
+		m_pSelectSlot[i]->Set_Pass(VTPass_UI_Alpha);
+	}
+
+	
+	for (size_t j = 0; j < WP_END; j++)
+	{
+		for (_uint i = 0; i < 4; i++)
+		{
+			CSkillSlot::SKILLSLOT_DESC SkillSlotDesc = {};
+			SkillSlotDesc.eSlotMode = CSkillSlot::SKILLBOOK;
+			SkillSlotDesc.vSize = _vec2(60.f, 60.f);
+			SkillSlotDesc.fDepth = m_fDepth - 0.03f;
+			SkillSlotDesc.vPosition = _vec2(fStartX - 30.f + 70.f * i, 665.f - 62.5f);
+			m_pSkillSlot[j][i] = (CSkillSlot*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_SkillSlot"), &SkillSlotDesc);
+			if (m_pSkillSlot[j][i] == nullptr)
+			{
+				return E_FAIL;
+			}
+			if (FAILED(CUI_Manager::Get_Instance()->Set_SkillBookSlots((WEAPON_TYPE)j, (CSkillBlock::SKILLSLOT)i, m_pSkillSlot[j][i])))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+	m_pSkill_Model = (CSkill_Model*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Skill_Model"));
+	m_pScarecorw = (CScarecrow*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Scarecrow"));
+
 	return S_OK;
 }
 
@@ -517,22 +733,45 @@ void CSkillBook::Free()
 
 	if (!m_isPrototype)
 	{
-		for (size_t i = 0; i < TYPE_END; i++)
+		for (size_t i = 0; i < WP_END; i++)
 		{
 			Safe_Release(m_pSkillType[i]);
 		}
-	}
 
-	for (size_t i = 0; i < TYPE_END; i++)
-	{
-		for (auto& iter : m_vecSkillDesc[i])
+		for (size_t i = 0; i < WP_END; i++)
 		{
-			Safe_Release(iter);
+			for (_uint j = 0; j < 4; j++)
+			{
+				Safe_Release(m_pSkillSlot[i][j]);
+			}
+		}
+
+		for (size_t i = 0; i < 4; i++)
+		{
+			Safe_Release(m_pSelectSlot[i]);
 		}
 	}
+	
+	for (auto& iter : m_vecSkillDesc[WP_BOW])
+	{
+		Safe_Release(iter);
+	}
+	m_vecSkillDesc[WP_BOW].clear();
+
+	for (auto& iter : m_vecSkillDesc[WP_SWORD])
+	{
+		Safe_Release(iter);
+	}
+	m_vecSkillDesc[WP_SWORD].clear();
+
+
+	Safe_Release(m_pScarecorw);
+	Safe_Release(m_pSkill_Model);
 
 	Safe_Release(m_pUnderBar);
+	Safe_Release(m_pResetSlot);
 	Safe_Release(m_pSelectButton);
+	Safe_Release(m_pSlotBackGround);
 
 	Safe_Release(m_pMoney);
 	Safe_Release(m_pDiamond);
