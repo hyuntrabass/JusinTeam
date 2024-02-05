@@ -36,7 +36,7 @@ public:
 		MON_GROAR_ASGARD_ATTACK01, // 왼손에서 초록색 투사체 던지기
 		MON_GROAR_ASGARD_ATTACK02, // 초록색 투사체 6개 날리기
 		MON_GROAR_ASGARD_ATTACK03, // 바닥 쾅쾅 찍기
-		MON_GROAR_ASGARD_ATTACK04, // 꼬리치기 -> 거미줄로 땡기기
+		MON_GROAR_ASGARD_ATTACK04, // X
 		MON_GROAR_ASGARD_ATTACK05, // 거미 소환
 		MON_GROAR_ASGARD_ATTACK06, // 꼬리찍어서 촉수
 		MON_GROAR_ASGARD_ATTACK07, // 손 X자
@@ -82,7 +82,6 @@ public:
 		BOSS_STATE_THROW_ATTACK, // 00, 01
 		BOSS_STATE_SIX_MISSILE, // 02
 		BOSS_STATE_TAKE_DOWN, // 03
-		BOSS_STATE_WEB, // 04
 		BOSS_STATE_SPIDER, // 05
 		BOSS_STATE_TENTACLE, // 06
 		BOSS_STATE_XBEAM, // 07
@@ -96,7 +95,6 @@ public:
 		ATTACK_THROW,
 		ATTACK_SIX_MISSILE,
 		ATTACK_TAKE_DOWN,
-		ATTACK_WEB,
 		ATTACK_SPIDER,
 		ATTACK_TENTACLE,
 		ATTACK_XBEAM,
@@ -115,6 +113,9 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+
+public:
+	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) override;
 
 public:
 	void Init_State(_float fTimeDelta);
@@ -176,7 +177,15 @@ private:
 	_float m_fTentacleTime = {};
 
 private:
+	_float m_fRageTime = {};
+
+private:
 	_bool m_bAttack_Selected[ATTACK_END] = { false };
+
+private:
+	_bool m_bChangePass = { false };
+	_uint m_iPassIndex = {};
+	_float m_fHitTime = {};
 
 public:
 	HRESULT Add_Components();

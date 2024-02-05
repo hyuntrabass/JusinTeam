@@ -1,5 +1,7 @@
 #include "Void05.h"
 
+#include "Dead.h"
+
 const _float CVoid05::m_fChaseRange = 7.f;
 const _float CVoid05::m_fAttackRange = 2.3f;
 
@@ -123,9 +125,10 @@ HRESULT CVoid05::Render()
 
 void CVoid05::Set_Damage(_int iDamage, _uint iDamageType)
 {
-	m_iDamageAcc += iDamage;
 	m_iHP -= iDamage;
+	m_iDamageAcc += iDamage;
 	m_bDamaged = true;
+	m_bChangePass = true;
 
 	CHitEffect::HITEFFECT_DESC Desc{};
 	Desc.iDamage = iDamage;
@@ -137,6 +140,15 @@ void CVoid05::Set_Damage(_int iDamage, _uint iDamageType)
 	}
 
 	m_eCurState = STATE_HIT;
+
+	//if (m_bHit == true)
+	//{
+	//	m_eCurState = STATE_HIT;
+	//}
+	//else
+	//{
+	//	m_eCurState = STATE_CHASE;
+	//}
 
 	_vec4 vPlayerPos = __super::Compute_PlayerPos();
 	m_pTransformCom->LookAt(vPlayerPos);
@@ -169,7 +181,13 @@ void CVoid05::Init_State(_float fTimeDelta)
 {
 	if (m_iHP <= 0)
 	{
-		m_eCurState = STATE_DIE;
+		//m_eCurState = STATE_DIE;
+		Kill();
+
+		CDead::DEAD_DESC Desc = {};
+		Desc.eDead = CDead::VOID05;
+		Desc.vPos = m_pTransformCom->Get_State(State::Pos);
+		m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void05_Die"), TEXT("Prototype_GameObject_Dead"), &Desc);
 	}
 
 	if (m_ePreState != m_eCurState)
@@ -222,7 +240,6 @@ void CVoid05::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 10.f;
 
-			//m_iHitPercentage = rand() % 3;
 			break;
 
 		case Client::CVoid05::STATE_DIE:
@@ -372,6 +389,7 @@ void CVoid05::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
 		{
 			m_eCurState = STATE_CHASE;
+			//m_bHit = false;
 		}
 
 		break;

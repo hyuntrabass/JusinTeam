@@ -385,7 +385,7 @@ HRESULT CUI_Manager::Set_Item(wstring& strItemName, _uint iNum)
 	{
 		return E_FAIL;
 	}
-
+	
 	dynamic_cast<CInven*>(m_pInven)->Set_Item(Item, iNum);
 
 	return S_OK;

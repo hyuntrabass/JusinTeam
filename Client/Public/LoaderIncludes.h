@@ -7,6 +7,7 @@
 #include "SkillBook.h"
 #include "Tutorial.h"
 #include "Pop_Alert.h"
+#include "Pop_Skill.h"
 #include "InvenWindow.h"
 #include "ShopWindow.h"
 #include "ShopDesc.h"
@@ -91,6 +92,8 @@
 #include "Void23.h"
 #include "Nastron07.h"
 #include "Spider.h"
+
+#include "Dead.h"
 
 // NPC
 #include "Cat.h"

@@ -36,7 +36,7 @@ HRESULT CInvenWindow::Init(void* pArg)
 	
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	
-	CGameInstance::Get_Instance()->Set_InputString(L"");
+	//CGameInstance::Get_Instance()->Set_InputString(L"");
 
 	//CGameInstance::Get_Instance()->Set_InputString(CompleteString + composingString);
 

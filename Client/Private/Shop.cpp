@@ -74,6 +74,14 @@ void CShop::Tick(_float fTimeDelta)
 		{
 			dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Init_SellItem();
 			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
+
+			CFadeBox::FADE_DESC Desc = {};
+			Desc.eState = CFadeBox::FADEOUT;
+			Desc.fDuration = 1.f;
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
+			{
+				return;
+			}
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_isActive = false;
 		}

@@ -33,9 +33,9 @@ HRESULT CGroar_Boss::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pTransformCom->Set_State(State::Pos, _vec4(2173.f, -20.f, 2095.f, 1.f));
-	m_pTransformCom->Set_Position(_vec3(2173.f, -20.f, 2095.f));
+	m_pTransformCom->Set_Position(_vec3(2179.f, -20.f, 2083.f));
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
+
 	m_eCurState = STATE_NPC;
 
 	m_Animation.iAnimIndex = NPC_IDLE;
@@ -52,6 +52,10 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_G))
 	{
+		//m_eCurState = STATE_SCENE01;
+		m_eCurState = STATE_BOSS;
+		m_eBossCurState = BOSS_STATE_ROAR;
+
 		if (m_pHpBoss == nullptr)
 		{
 			CHPBoss::HPBOSS_DESC Desc{};
@@ -64,12 +68,7 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 			{
 				return;
 			}
-
 		}
-
-		//m_eCurState = STATE_SCENE01;
-		m_eCurState = STATE_BOSS;
-		m_eBossCurState = BOSS_STATE_ROAR;
 	}
 
 	if (m_pGameInstance->Key_Down(DIK_C))
@@ -84,6 +83,7 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 	Tick_State(fTimeDelta);
 
 	Update_Collider();
+
 	if (m_pHpBoss != nullptr)
 	{
 		m_pHpBoss->Tick(fTimeDelta);
@@ -189,7 +189,7 @@ HRESULT CGroar_Boss::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+		if (FAILED(m_pShaderCom->Begin(m_iPassIndex)))
 		{
 			return E_FAIL;
 		}
@@ -203,12 +203,62 @@ HRESULT CGroar_Boss::Render()
 	return S_OK;
 }
 
+void CGroar_Boss::Set_Damage(_int iDamage, _uint iDamageType)
+{
+	m_iHP -= iDamage;
+	m_bChangePass = true;
+
+	//if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
+	//	iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
+	//{
+	//	// 경직
+	//	//m_Animation.fAnimSpeedRatio = 4.f;
+	//}
+
+	//if (iDamageType == AT_Bow_Common || iDamageType == AT_Bow_Skill1)
+	//{
+	//	// 밀려나게
+	//	_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
+	//	m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
+
+	//	//m_Animation.fAnimSpeedRatio = 3.f;
+	//}
+
+	//if (iDamageType == AT_Bow_Skill3)
+	//{
+	//	// 이속 느려지게
+	//	m_bSlow = true;
+	//	//m_Animation.fAnimSpeedRatio = 0.8f;
+	//}
+}
+
 void CGroar_Boss::Init_State(_float fTimeDelta)
 {
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 	_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 	vDir.y = 0.f;
+
+	if (m_bChangePass == true)
+	{
+		m_fHitTime += fTimeDelta;
+
+		if (m_iPassIndex == AnimPass_Default)
+		{
+			m_iPassIndex = AnimPass_Rim;
+		}
+		else
+		{
+			m_iPassIndex = AnimPass_Default;
+		}
+
+		if (m_fHitTime >= 0.3f)
+		{
+			m_fHitTime = 0.f;
+			m_bChangePass = false;
+			m_iPassIndex = AnimPass_Default;
+		}
+	}
 
 	if (m_ePreState != m_eCurState)
 	{
@@ -222,6 +272,7 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 1.5f;
 
+			m_pTransformCom->Delete_Controller();
 			break;
 
 		case Client::CGroar_Boss::STATE_SCENE02:
@@ -232,6 +283,16 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CGroar_Boss::STATE_BOSS:
+			PxCapsuleControllerDesc ControllerDesc{};
+			ControllerDesc.height = 2.f; // 높이(위 아래의 반구 크기 제외
+			ControllerDesc.radius = 2.2f; // 위아래 반구의 반지름
+			ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+			ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+			ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+			ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+
+			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+
 			break;
 		}
 
@@ -303,13 +364,6 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK03;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
-			break;
-
-		case Client::CGroar_Boss::BOSS_STATE_WEB: // 04
-			m_Animation.iAnimIndex = MON_GROAR_ASGARD_ATTACK04;
-			m_Animation.isLoop = false;
-			m_Animation.fAnimSpeedRatio = 2.f;
-
 			break;
 
 		case Client::CGroar_Boss::BOSS_STATE_SPIDER: // 05
@@ -464,9 +518,6 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			case Client::CGroar_Boss::ATTACK_TAKE_DOWN:
 				eTempBossCurState = BOSS_STATE_TAKE_DOWN;
 				break;
-			case Client::CGroar_Boss::ATTACK_WEB:
-				eTempBossCurState = BOSS_STATE_WEB;
-				break;
 			case Client::CGroar_Boss::ATTACK_SPIDER:
 				eTempBossCurState = BOSS_STATE_SPIDER;
 				break;
@@ -517,7 +568,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			}
 		}
 
-		//m_eBossCurState = BOSS_STATE_FLOOR_ATTACK; // 테스트용
+		//m_eBossCurState = BOSS_STATE_SPIDER; // 테스트용
 	}
 
 	break;
@@ -669,16 +720,6 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		break;
 
-	case Client::CGroar_Boss::BOSS_STATE_WEB:
-
-		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK04))
-		{
-			m_eBossCurState = BOSS_STATE_CHASE;
-			m_bAttack_Selected[ATTACK_WEB] = true;
-		}
-
-		break;
-
 	case Client::CGroar_Boss::BOSS_STATE_SPIDER:
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 80.f && !m_bCreateSpider)
@@ -750,6 +791,23 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 		break;
 
 	case Client::CGroar_Boss::BOSS_STATE_RAGE:
+
+		if (m_pBossModelCom->Get_CurrentAnimPos() >= 98.f)
+		{
+			m_fRageTime += fTimeDelta;
+
+			if (m_fRageTime >= 0.5f)
+			{
+				if (fDistance <= 7.5f)
+				{
+					_uint iDamage = 20 + rand() % 10;
+					m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);
+				}
+
+				m_fRageTime = 0.f;
+			}
+		}
+
 		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK08))
 		{
 			m_eBossCurState = BOSS_STATE_CHASE;
@@ -848,6 +906,15 @@ HRESULT CGroar_Boss::Add_Components()
 
 HRESULT CGroar_Boss::Bind_ShaderResources()
 {
+	if (m_iPassIndex == AnimPass_Rim)
+	{
+		_vec4 vColor = Colors::Red;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vColor, sizeof vColor)))
+		{
+			return E_FAIL;
+		}
+	}
+
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
 		return E_FAIL;

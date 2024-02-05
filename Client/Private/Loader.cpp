@@ -1011,6 +1011,26 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	// Dead
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void01_Die"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Dead/Void01/Mesh/Void01_Die.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void05_Die"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Dead/Void05/Mesh/Void05_Die.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void09_Die"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Dead/Void09/Mesh/Void09_Die.hyuntraanimmesh", false, Pivot1))))
+	{
+		return E_FAIL;
+	}
+
+
 #pragma endregion Monster
 
 #pragma region NPC
@@ -1305,6 +1325,10 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_PopSkill"), CPop_Skill::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 	
 
 #pragma endregion
@@ -1387,6 +1411,11 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Spider"), CSpider::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Dead"), CDead::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

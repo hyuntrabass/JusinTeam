@@ -71,13 +71,17 @@ protected:
 	_uint m_iDamageAcc = {};
 	_uint m_iDamageAccMax = {};
 
+protected:
+	_bool m_bChangePass = { false };
+	_float m_fHitTime = {};
+
 private: // Collier 사이즈 조절용
 	_float m_fSizeX = {}, m_fSizeY = {}, m_fSizeZ = {};
 	_float m_fScale = { 0.2f };
 
 protected:
-	virtual HRESULT Add_Collider() = 0;
-	virtual void Update_Collider() = 0;
+	virtual HRESULT Add_Collider();
+	virtual void Update_Collider();
 
 	void Update_MonsterCollider();
 

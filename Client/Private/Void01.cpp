@@ -1,5 +1,7 @@
 #include "Void01.h"
 
+#include "Dead.h"
+
 const _float CVoid01::m_fChaseRange = 7.f;
 const _float CVoid01::m_fAttackRange = 3.f;
 
@@ -114,6 +116,7 @@ void CVoid01::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_iHP -= iDamage;
 	m_bDamaged = true;
+	m_bChangePass = true;
 
 	CHitEffect::HITEFFECT_DESC Desc{};
 	Desc.iDamage = iDamage;
@@ -157,7 +160,13 @@ void CVoid01::Init_State(_float fTimeDelta)
 {
 	if (m_iHP <= 0)
 	{
-		m_eCurState = STATE_DIE;
+		//m_eCurState = STATE_DIE;
+		Kill();
+
+		CDead::DEAD_DESC Desc = {};
+		Desc.eDead = CDead::VOID01;
+		Desc.vPos = m_pTransformCom->Get_State(State::Pos);
+		m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void01_Die"), TEXT("Prototype_GameObject_Dead"), &Desc);
 	}
 
 	if (m_ePreState != m_eCurState)
