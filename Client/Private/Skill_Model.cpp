@@ -39,22 +39,22 @@ void CSkill_Model::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Get_CameraState() != CS_SKILLBOOK)
 	{
+		m_bView = false;
 		return;
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD8))
-	{
-		m_Animation.iAnimIndex = ++aq;
-		m_eCurAnimState =(SKILLMODEL_ANIM)aq;
-		m_ReadyArrow = true;
-	}
+
 	m_pModelCom->Set_Animation(m_Animation);
 
 	if (m_eCurAnimState == SWORD1 or m_eCurAnimState == SWORD2 or m_eCurAnimState == SWORD3 or m_eCurAnimState == SWORD4)
 	{
+		m_pTransformCom->Set_State(State::Pos, _vec4(0.f, -100.f, 2.f, 1.f));
 		m_pWeapon_ModelCom->Set_Animation(m_Animation);
 	}
-
+	else
+	{
+		m_pTransformCom->Set_State(State::Pos, _vec4(0.f, -100.f, 0.f, 1.f));
+	}
 	After_BowAtt();
 	
 	if (m_bArrowRain_Start)
@@ -67,6 +67,11 @@ void CSkill_Model::Tick(_float fTimeDelta)
 void CSkill_Model::Late_Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Get_CameraState() != CS_SKILLBOOK)
+	{
+		return;
+	}
+
+	if (!m_bView)
 	{
 		return;
 	}
@@ -443,6 +448,7 @@ HRESULT CSkill_Model::Bind_ShaderResources()
 
 void CSkill_Model::Change_AnimState(SKILLMODEL_ANIM eAnim)
 {
+	m_bView = true;
 	m_eCurAnimState = eAnim;
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = true;

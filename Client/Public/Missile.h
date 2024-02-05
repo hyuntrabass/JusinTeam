@@ -32,6 +32,8 @@ public:
 	HRESULT Add_Collider();
 	void Update_Collider();
 
+public:
+	void Parry_Success();
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };

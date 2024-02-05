@@ -409,7 +409,9 @@ private:
 	const _float m_fWalkSpeed{ 1.f };
 	_bool	  m_isInvenActive{ false };
 
+	_uint m_iShield{};
 	_bool m_bAttacked{};
+	_float m_fBoostSpeed{};
 	_bool m_bAttackStop{};
 	_int m_iAttackCombo{};
 	_float m_fSkillSpeed{};
@@ -437,6 +439,7 @@ private:
 	_float m_fMpRegenTime{};
 	_float m_ReturnZoomTime{};
 	_float m_fDissolveRatio{};
+	_float m_fBoostSpeedTimmer{};
 	_float m_fInterpolationRatio{};
 
 private:

@@ -107,19 +107,64 @@ HRESULT CArrow::Render()
 	{
 		return E_FAIL;
 	}
-
-
-	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
+	
+	else
 	{
-
-		if (FAILED(m_pShaderCom->Begin(StaticPass_SingleColorFx)))
+		for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
 		{
-			return E_FAIL;
-		}
 
-		if (FAILED(m_pModelCom->Render(i)))
-		{
-			return E_FAIL;
+			if (m_ArrowType.Att_Type == AT_Bow_Skill2)
+			{
+				if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+				{
+				}
+
+				_bool HasNorTex{};
+				if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+				{
+					HasNorTex = false;
+				}
+				else
+				{
+					HasNorTex = true;
+				}
+
+				_bool HasMaskTex{};
+				if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
+				{
+					HasMaskTex = false;
+				}
+				else
+				{
+					HasMaskTex = true;
+				}
+
+				if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+				{
+					return E_FAIL;
+				}
+
+				if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
+				{
+					return E_FAIL;
+				}
+				if (FAILED(m_pShaderCom->Begin(StaticPass_Default)))
+				{
+					return E_FAIL;
+				}
+			}
+			else
+			{
+				if (FAILED(m_pShaderCom->Begin(StaticPass_SingleColorFx)))
+				{
+					return E_FAIL;
+				}
+			}
+
+			if (FAILED(m_pModelCom->Render(i)))
+			{
+				return E_FAIL;
+			}
 		}
 	}
 
@@ -136,10 +181,20 @@ HRESULT CArrow::Add_Components()
 	{
 		return E_FAIL;
 	}
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Arrow"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (m_ArrowType.Att_Type == AT_Bow_Skill2)
 	{
-		return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_BoomArrow"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+		{
+			return E_FAIL;
+		}
+	}
+	else
+	{
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Arrow"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+		{
+			return E_FAIL;
+		}
+
 	}
 
 	//Collider_Desc CollDesc = {};
