@@ -832,10 +832,17 @@ HRESULT CPlayer::Add_Riding()
 
 void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 {
+	if (m_eState == Revival_Start or m_eState == Revival_End)
+	{
+		return;
+	}
+
 	if (m_eState == Aim_Idle or m_eState == SkillR)
 	{
 		m_pGameInstance->Set_AimMode(false);
 	}
+
+	
 
 	m_Status.Current_Hp -= (iDamage - iDamage * (_int)(m_Status.Armor / 0.01));
 
@@ -2171,6 +2178,15 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 	else if (m_eState == Skill1)
 	{
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
+		if (Index >= 10.f && Index <= 15.f)
+		{
+			m_iHP = 1;
+		}
+		else
+		{
+			m_iHP = 0;
+		}
+
 		if (Index >= 5.f && Index < 15.f)
 		{
 
@@ -2382,6 +2398,11 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		if (Index >= 14.f && Index <= 20.f)
 		{
 			m_pGameInstance->Set_TimeRatio(0.1f);
+			if (!m_bAttacked)
+			{
+				Check_Att_Collider(AT_Sword_Skill4);
+				m_bAttacked = true;
+			}
 		}
 		else if (Index >= 26.f && Index <= 30.f)
 		{
@@ -2413,7 +2434,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			m_pGameInstance->Set_TimeRatio(1.f);
 		}
 
-		if (Index >= 14.f && Index <= 15.f)
+		if (Index >= 14.f && Index <= 16.f)
 		{
 			if (!m_bAttacked)
 			{
@@ -2431,7 +2452,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 			m_pGameInstance->Set_ShakeCam(true);
 		}
-		else if (Index >= 23.f && Index <= 24.f)
+		else if (Index >= 26.f && Index <= 28.f)
 		{
 			if (!m_bAttacked)
 			{
@@ -3621,7 +3642,7 @@ HRESULT CPlayer::Add_Components()
 	}
 
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
-	CollDesc.vExtents = _vec3(1.5f,1.5f, 0.14f);
+	CollDesc.vExtents = _vec3(1.5f,2.0f, 0.14f);
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.3f, 1.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Parrying"), reinterpret_cast<CComponent**>(&m_pParryingCollider), &CollDesc)))

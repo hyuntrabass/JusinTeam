@@ -92,7 +92,7 @@ _bool CCollision_Manager::CheckCollision_Parrying(CCollider* pCollider)
 {
 	if (pCollider->Intersect(m_pPlayerParryingCollider))
 	{
-		return true;
+		return (_bool)m_pPlayer->Get_HP();
 	}
 
 	return false;

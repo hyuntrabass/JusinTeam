@@ -142,13 +142,25 @@ void CMissile::Tick(_float fTimeDelta)
 {
 	if (m_bParryingOk)
 	{
-		m_pTransformCom->Go_Left(fTimeDelta);
+		m_pTransformCom->Go_Straight(fTimeDelta);
 
 		m_fLifeTime += fTimeDelta;
 		if (m_fLifeTime >= 1.f)
 		{
 			Kill();
 		}
+
+		m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+
+		if (m_pEffect_Ball)
+		{
+			m_pEffect_Ball->Tick(fTimeDelta);
+		}
+		if (m_pEffect_Smoke)
+		{
+			m_pEffect_Smoke->Tick(fTimeDelta);
+		}
+
 		return;
 	}
 
@@ -167,7 +179,7 @@ void CMissile::Tick(_float fTimeDelta)
 				RandFloat = -1.f;
 			}
 
-			//m_pTransformCom->Rotation(_vec4(0.f, 1.f, 0.f, 0.f), 45.f * RandFloat);
+			m_pTransformCom->Rotation(_vec4(0.f, 1.f, 0.f, 0.f), 45.f * RandFloat);
 			
 			m_bParryingOk = true;
 			return;
@@ -227,7 +239,7 @@ void CMissile::Tick(_float fTimeDelta)
 				RandFloat = -1.f;
 			}
 
-			//m_pTransformCom->Rotation(_vec4(0.f, 1.f, 0.f, 0.f), 45.f * RandFloat);
+			m_pTransformCom->Rotation(_vec4(0.f, 1.f, 0.f, 0.f), 45.f * RandFloat);
 
 			m_bParryingOk = true;
 			return;
@@ -285,7 +297,7 @@ void CMissile::Tick(_float fTimeDelta)
 				RandFloat = -1.f;
 			}
 
-			//m_pTransformCom->Rotation(_vec4(0.f, 1.f, 0.f, 0.f), 45.f * RandFloat);
+			m_pTransformCom->Rotation(_vec4(0.f, 1.f, 0.f, 0.f), 45.f * RandFloat);
 
 			m_bParryingOk = true;
 			return;
