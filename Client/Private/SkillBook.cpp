@@ -134,6 +134,11 @@ void CSkillBook::Tick(_float fTimeDelta)
 			m_bNewSkillIn = false;
 			m_isActive = true;
 			Init_SkillBookState();
+
+			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+			{
+				m_pGameInstance->FadeoutSound(i, fTimeDelta, 1.f);
+			}
 		}
 	}
 
@@ -162,6 +167,11 @@ void CSkillBook::Tick(_float fTimeDelta)
 			CUI_Manager::Get_Instance()->Set_SkillSlotChange(true);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_isActive = false;
+
+			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+			{
+				m_pGameInstance->FadeinSound(i, fTimeDelta, 1.f);
+			}
 			return;
 		}
 	}

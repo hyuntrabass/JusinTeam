@@ -169,6 +169,7 @@
     <ClInclude Include="..\Public\Aur.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
     <ClInclude Include="..\Public\Coin.h" />
+    <ClInclude Include="..\Public\Dead.h" />
     <ClInclude Include="..\Public\Dialog.h" />
     <ClInclude Include="..\Public\CommonSurfaceTrail.h" />
     <ClInclude Include="..\Public\DialogText.h" />
@@ -304,6 +305,7 @@
     <ClCompile Include="..\Private\Aur.cpp" />
     <ClCompile Include="..\Private\CharacterSelect.cpp" />
     <ClCompile Include="..\Private\Coin.cpp" />
+    <ClCompile Include="..\Private\Dead.cpp" />
     <ClCompile Include="..\Private\Dialog.cpp" />
     <ClCompile Include="..\Private\CommonSurfaceTrail.cpp" />
     <ClCompile Include="..\Private\DialogText.cpp" />

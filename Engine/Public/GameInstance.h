@@ -163,6 +163,8 @@ public: // Sound Manager
 	void PlayBGM(const wstring& strSoundTag, float fVolume = 0.3f);
 	void StopSound(_uint iChannel);
 	void StopAll();
+	HRESULT FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond);
+	HRESULT FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond);
 
 public: // Effect Callback
 	using Func_CreateFX = function<void(const wstring&, _mat*, const _bool&)>;
@@ -222,6 +224,8 @@ public: // Get_Set
 	void Set_HellHeight(const _float& fHeight);
 	// 사운드 채널의 볼륨을 지정함.
 	void Set_ChannelVolume(_uint iChannel, _float fVolume);
+	// 사운드 채널의 볼륨을 초기 볼륨으로 되돌림.
+	void Set_ChannelStartVolume(_uint iChannel);
 
 	_float Get_ShakePower() { return m_fShakePower; }
 	_bool Get_FlyCam() { return m_bFlyCam; }

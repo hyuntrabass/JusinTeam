@@ -45,18 +45,10 @@ HRESULT CSpider::Init(void* pArg)
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
-	PxCapsuleControllerDesc ControllerDesc{};
-	ControllerDesc.height = 0.5f; // 높이(위 아래의 반구 크기 제외
-	ControllerDesc.radius = 1.4f; // 위아래 반구의 반지름
-	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
-	ControllerDesc.slopeLimit = cosf(PxDegToRad(10.f)); // 캐릭터가 오를 수 있는 최대 각도
-	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
-	ControllerDesc.stepOffset = 0.f; // 캐릭터가 오를 수 있는 계단의 최대 높이
-
-	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
 	CTransform* pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_VILLAGE);
 	_vec4 vGroarPos = pGroarTransform->Get_State(State::Pos);
+	//vGroarPos.y -= 0.1f;
 	_vec4 vGroarLook = pGroarTransform->Get_State(State::Look).Get_Normalized();
 
 	_vec4 vDir[8] = {};
@@ -176,19 +168,14 @@ void CSpider::Init_State(_float fTimeDelta)
 	CTransform* pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_VILLAGE);
 	_vec4 vGroarPos = pGroarTransform->Get_State(State::Pos);
 
-	if (m_pTransformCom->Get_State(State::Pos).y <= vGroarPos.y && m_iHP > 0)
-	{
-		m_pTransformCom->Go_Up(fTimeDelta * 0.1f);
-	}
-
-	if (m_pTransformCom->Get_State(State::Pos).y >= vGroarPos.y)
-	{
-		m_pTransformCom->Gravity(fTimeDelta);
-	}
-
 	if (m_iHP <= 0)
 	{
 		m_eCurState = STATE_DIE;
+	}
+
+	if (m_bAppeared == true)
+	{
+		m_pTransformCom->Gravity(fTimeDelta);
 	}
 
 	if (m_ePreState != m_eCurState)
@@ -271,8 +258,14 @@ void CSpider::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = false;
 			m_Animation.fDurationRatio = 0.438f;
 
-			_uint iDamage = 30 + rand() % 20;
-			m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);
+			_float fDistance = __super::Compute_PlayerDistance();
+
+			if (fDistance <= 5.f)
+			{
+				_uint iDamage = 30 + rand() % 20;
+				m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);
+			}		
+
 			break;
 		}
 
@@ -282,15 +275,35 @@ void CSpider::Init_State(_float fTimeDelta)
 
 void CSpider::Tick_State(_float fTimeDelta)
 {
+	CTransform* pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_VILLAGE);
+	_vec4 vGroarPos = pGroarTransform->Get_State(State::Pos);
+
 	switch (m_eCurState)
 	{
 	case Client::CSpider::STATE_RAGE:
 
-		if (m_pModelCom->IsAnimationFinished(SALEROBIA_RAGE))
+		if (m_pTransformCom->Get_State(State::Pos).y < vGroarPos.y + 0.2f)
 		{
+			if (m_iHP > 0 && !m_bAppeared)
+			{
+				m_pTransformCom->Go_Up(fTimeDelta * 0.1f);
+			}
+		}
+		else if (m_pTransformCom->Get_State(State::Pos).y >= vGroarPos.y and m_pModelCom->IsAnimationFinished(SALEROBIA_RAGE))
+		{
+			m_bAppeared = true;
+			PxCapsuleControllerDesc ControllerDesc{};
+			ControllerDesc.height = 0.5f; // 높이(위 아래의 반구 크기 제외
+			ControllerDesc.radius = 1.4f; // 위아래 반구의 반지름
+			ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+			ControllerDesc.slopeLimit = cosf(PxDegToRad(10.f)); // 캐릭터가 오를 수 있는 최대 각도
+			ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+			ControllerDesc.stepOffset = 0.f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+
+			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+
 			m_eCurState = STATE_CHASE;
 		}
-
 		break;
 
 	case Client::CSpider::STATE_IDLE:

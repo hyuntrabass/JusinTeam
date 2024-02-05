@@ -1109,6 +1109,26 @@ void CGameInstance::StopAll()
 	return m_pSound_Manager->StopAll();
 }
 
+HRESULT CGameInstance::FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->FadeoutSound(iChannel, fTimeDelta, fFadeoutSecond);
+}
+
+HRESULT CGameInstance::FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->FadeinSound(iChannel, fTimeDelta, fFadeinSecond);
+}
+
 void CGameInstance::Register_CreateEffect_Callback(Func_CreateFX Function)
 {
 	m_Function_Create_FX = Function;
@@ -1268,6 +1288,16 @@ void CGameInstance::Set_ChannelVolume(_uint iChannel, _float fVolume)
 	}
 
 	return m_pSound_Manager->SetChannelVolume(iChannel, fVolume);
+}
+
+void CGameInstance::Set_ChannelStartVolume(_uint iChannel)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->SetChannelStartVolume(iChannel);
 }
 
 void CGameInstance::Set_ZoomFactor(const _float fFactor)

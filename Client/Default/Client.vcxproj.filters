@@ -397,6 +397,9 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\UIEffect\Hit">
       <UniqueIdentifier>{47605e18-940e-42be-842c-9bf301c51a13}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\04.Monster\99. Dead">
+      <UniqueIdentifier>{3b7bdf7a-faaa-4479-8d3e-d2cca283a7d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -788,6 +791,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\HitEffect.h">
       <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Dead.h">
+      <Filter>02.GameObjects\04.Monster\99. Dead</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\HpBoss.h">
       <Filter>02.GameObjects\00.UI\GameUI\HP</Filter>
@@ -1184,6 +1190,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\HitEffect.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Dead.cpp">
+      <Filter>02.GameObjects\04.Monster\99. Dead</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\HPBoss.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\HP</Filter>

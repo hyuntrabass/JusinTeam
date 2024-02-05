@@ -324,7 +324,7 @@ public:
 public:
 	void Front_Ray_Check();
 	_bool Turn_Ray_Check(_bool bRight);
-
+	
 public:
 	void Arrow_Rain();
 	void Common_Attack();
