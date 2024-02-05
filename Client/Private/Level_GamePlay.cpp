@@ -230,20 +230,20 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 
 	//m_pGameInstance->PhysXTick(fTimeDelta);
 
-	//if (m_pGameInstance->Key_Down(DIK_U))
-	//{
-	//	m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_XBeam"));
-	//}
+	if (m_pGameInstance->Key_Down(DIK_U))
+	{
+		//m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_XBeam"));
+
+		//CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+		//_mat EffectMat = _mat::CreateTranslation(_vec3(pPlayerTransform->Get_State(State::Pos)));
+		//EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Shield");
+		//Info.pMatrix = &EffectMat;
+		//CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+	}
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 	{
 		DestroyWindow(g_hWnd);
 	}
-
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-
-	cout << "Player Pos" << endl;
-	cout << vPlayerPos.x << endl << vPlayerPos.y << endl << vPlayerPos.z << endl;
 }
 
 HRESULT CLevel_GamePlay::Render()

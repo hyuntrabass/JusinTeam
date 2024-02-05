@@ -141,12 +141,12 @@ HRESULT CEvent_Manager::Init_Quest()
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	tDesc.eType = QUESTIN;
-	tDesc.fExp = 2;
-	tDesc.iNum = 3;
+	tDesc.fExp = 5.6f;
+	tDesc.iNum = 1;
 	tDesc.iMoney = 1000;
 	tDesc.isMain = true;
-	tDesc.strQuestTitle = TEXT("펫 라이딩");
-	tDesc.strText = TEXT("펫 타고 이동해보기");
+	tDesc.strQuestTitle = TEXT("점프하기");
+	tDesc.strText = TEXT("스페이스바를 눌러 쩜프해봐");
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	return S_OK;

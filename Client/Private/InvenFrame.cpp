@@ -780,12 +780,13 @@ void CInvenFrame::Picking_InvenButton(POINT ptMouse)
 
 	if (m_isPicking)
 	{
-		_bool isPicking = false;
+		m_vecItemsSlot[m_eCurInvenType][m_iCurIndex]->Set_Border(false);
+		//_bool isPicking = false;
 		for (_uint j = 0; j < 4; j++)
 		{
 			if (PtInRect(&m_pSelectSlot[j]->Get_Rect(), ptMouse))
 			{
-				isPicking = true;
+				//isPicking = true;
 				ItemSlot_Logic(j, m_iCurIndex);
 				break;
 			}

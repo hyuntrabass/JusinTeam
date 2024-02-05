@@ -59,9 +59,9 @@ void CHitEffect::Tick(_float fTimeDelta)
 	if (m_fSizeX <= 30.f)
 	{
 		m_fTime += fTimeDelta;
-		if (m_fTime >= 2.f)
+		if (m_fTime >= 0.5f && m_fAlpha <= 0.f)
 		{
-			m_isDead;
+			m_isDead = true;
 		}
 		if (m_fTime >= 0.5f)
 		{

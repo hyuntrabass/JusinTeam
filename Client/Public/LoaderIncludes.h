@@ -1,5 +1,6 @@
 #pragma once
 
+#include "HPBoss.h"
 #include "HitEffect.h"
 #include "Skill.h"
 #include "SkillDesc.h"

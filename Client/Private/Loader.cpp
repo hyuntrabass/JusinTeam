@@ -188,6 +188,10 @@ HRESULT CLoader::Load_Logo()
 	m_strLoadingText = L"Logo : Loading Model";
 #pragma region Model
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Riding_Horse"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Riding/Mesh/Horse.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Riding_Bird"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Riding/Mesh/Bird.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
@@ -207,6 +211,11 @@ HRESULT CLoader::Load_Logo()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Arrow"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Arrow/Mesh/arrow.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+	pivot = _mat::CreateRotationY(XMConvertToRadians(-90.f));
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_BoomArrow"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Arrow/Mesh/boomarrow.hyuntrastatmesh",false , pivot))))
 	{
 		return E_FAIL;
 	}
@@ -802,6 +811,19 @@ HRESULT CLoader::Load_GamePlay()
 			}
 		}
 	}
+	strInputFilePath = "../Bin/Resources/Textures/UI/Boss";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_UI_Boss_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Tuto"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Tutorial/Tuto%d.png"), 3))))
@@ -1236,7 +1258,6 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
-	
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_ShopDesc"), CShopDesc::Create(m_pDevice, m_pContext))))
 	{
@@ -1257,7 +1278,6 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
-	
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Tutorial"), CTutorial::Create(m_pDevice, m_pContext))))
 	{
@@ -1278,6 +1298,10 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_HitEffect"), CHitEffect::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_HPBoss"), CHPBoss::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

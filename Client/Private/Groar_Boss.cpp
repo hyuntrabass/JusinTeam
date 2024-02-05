@@ -1,6 +1,7 @@
 #include "Groar_Boss.h"
 
 #include "Missile.h"
+#include "HPBoss.h"
 
 const _float CGroar_Boss::m_fChaseRange = 10.f;
 const _float CGroar_Boss::m_fAttackRange = 6.f;
@@ -34,7 +35,7 @@ HRESULT CGroar_Boss::Init(void* pArg)
 
 	//m_pTransformCom->Set_State(State::Pos, _vec4(2173.f, -20.f, 2095.f, 1.f));
 	m_pTransformCom->Set_Position(_vec3(2173.f, -20.f, 2095.f));
-
+	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 	m_eCurState = STATE_NPC;
 
 	m_Animation.iAnimIndex = NPC_IDLE;
@@ -51,6 +52,21 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_G))
 	{
+		if (m_pHpBoss == nullptr)
+		{
+			CHPBoss::HPBOSS_DESC Desc{};
+			Desc.strName = L"Groar";
+			Desc.eLevelID = LEVEL_STATIC;
+			Desc.iMaxHp = m_iHP;
+
+			m_pHpBoss = (CHPBoss*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPBoss"), &Desc);
+			if (not m_pHpBoss)
+			{
+				return;
+			}
+
+		}
+
 		//m_eCurState = STATE_SCENE01;
 		m_eCurState = STATE_BOSS;
 		m_eBossCurState = BOSS_STATE_ROAR;
@@ -68,6 +84,10 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 	Tick_State(fTimeDelta);
 
 	Update_Collider();
+	if (m_pHpBoss != nullptr)
+	{
+		m_pHpBoss->Tick(fTimeDelta);
+	}
 
 	m_pTransformCom->Gravity(fTimeDelta);
 }
@@ -96,6 +116,10 @@ void CGroar_Boss::Late_Tick(_float fTimeDelta)
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
 #endif
+	if (m_pHpBoss != nullptr)
+	{
+		m_pHpBoss->Late_Tick(fTimeDelta);
+	}
 
 }
 
@@ -877,6 +901,7 @@ void CGroar_Boss::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pHpBoss);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 

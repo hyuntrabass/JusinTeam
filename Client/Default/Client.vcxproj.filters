@@ -792,6 +792,12 @@
     <ClInclude Include="..\Public\HitEffect.h">
       <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Hit</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\HpBoss.h">
+      <Filter>02.GameObjects\00.UI\GameUI\HP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Pop_Skill.h">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1181,6 +1187,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\HitEffect.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HPBoss.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\HP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Pop_Skill.cpp">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
