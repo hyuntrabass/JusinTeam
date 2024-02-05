@@ -35,7 +35,7 @@ HRESULT CGroar_Boss::Init(void* pArg)
 
 	//m_pTransformCom->Set_State(State::Pos, _vec4(2173.f, -20.f, 2095.f, 1.f));
 	m_pTransformCom->Set_Position(_vec3(2173.f, -20.f, 2095.f));
-
+	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 	m_eCurState = STATE_NPC;
 
 	m_Animation.iAnimIndex = NPC_IDLE;
