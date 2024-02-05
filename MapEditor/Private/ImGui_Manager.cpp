@@ -1337,8 +1337,8 @@ void CImGui_Manager::Create_Curve(CCamera_CutScene* pCamera, _vec4 FirstPos, _ve
 {
 	pCamera->Add_Eye_Curve(FirstPos, SecondPos);
 
-	_vec4 vFixedFirstPos = _vec4(FirstPos.x + 5.f, FirstPos.y, FirstPos.z, FirstPos.w);
-	_vec4 vFixedSecondPos = _vec4(SecondPos.x + 5.f, SecondPos.y, SecondPos.z, SecondPos.w);
+	_vec4 vFixedFirstPos = _vec4(FirstPos.x, FirstPos.y, FirstPos.z, FirstPos.w);
+	_vec4 vFixedSecondPos = _vec4(SecondPos.x, SecondPos.y, SecondPos.z, SecondPos.w);
 	pCamera->Add_At_Curve(vFixedFirstPos, vFixedSecondPos);
 }
 
