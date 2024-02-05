@@ -1072,46 +1072,46 @@ void CPlayer::Move(_float fTimeDelta)
 
 		}
 
-		if (m_pGameInstance->Key_Down(DIK_1))
-		{
-			if (m_eState != Skill1)
-			{
-				Ready_Skill(ST_Skill1); // 1번창에 있던 스킬 넣어주기
-				return;
-			}
-		}
+		//if (m_pGameInstance->Key_Down(DIK_1))
+		//{
+		//	if (m_eState != Skill1)
+		//	{
+		//		Ready_Skill(ST_Skill1); // 1번창에 있던 스킬 넣어주기
+		//		return;
+		//	}
+		//}
 
-		if (m_pGameInstance->Key_Down(DIK_2))
-		{
-			if (m_eState != Skill2)
-			{
-				Ready_Skill(ST_Skill2);
-				return;
-			}
-		}
-
-
-		if (m_pGameInstance->Key_Down(DIK_3))
-		{
-			if (m_eState != Skill3)
-			{
-				Ready_Skill(ST_Skill3);
-				return;
-			}
-		}
-
-		if (m_pGameInstance->Key_Down(DIK_4))
-		{
-			if (m_eState != Skill4)
-			{
-				Ready_Skill(ST_Skill4);
-				return;
-			}
-
-		}
+		//if (m_pGameInstance->Key_Down(DIK_2))
+		//{
+		//	if (m_eState != Skill2)
+		//	{
+		//		Ready_Skill(ST_Skill2);
+		//		return;
+		//	}
+		//}
 
 
-		/*CSkillBlock::SKILLSLOT eSlotIdx{};
+		//if (m_pGameInstance->Key_Down(DIK_3))
+		//{
+		//	if (m_eState != Skill3)
+		//	{
+		//		Ready_Skill(ST_Skill3);
+		//		return;
+		//	}
+		//}
+
+		//if (m_pGameInstance->Key_Down(DIK_4))
+		//{
+		//	if (m_eState != Skill4)
+		//	{
+		//		Ready_Skill(ST_Skill4);
+		//		return;
+		//	}
+
+		//}
+
+
+		CSkillBlock::SKILLSLOT eSlotIdx{};
 		_bool isPress = false;
 		if (m_pGameInstance->Key_Down(DIK_1))
 		{
@@ -1142,7 +1142,7 @@ void CPlayer::Move(_float fTimeDelta)
 				return;
 			}
 
-		}*/
+		}
 
 		if (m_pGameInstance->Key_Down(DIK_5))
 		{
