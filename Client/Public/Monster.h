@@ -76,8 +76,8 @@ private: // Collier 사이즈 조절용
 	_float m_fScale = { 0.2f };
 
 protected:
-	virtual HRESULT Add_Collider() = 0;
-	virtual void Update_Collider() = 0;
+	virtual HRESULT Add_Collider();
+	virtual void Update_Collider();
 
 	void Update_MonsterCollider();
 
