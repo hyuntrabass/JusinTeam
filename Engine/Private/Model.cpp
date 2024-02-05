@@ -428,6 +428,7 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 				if (OnClientTrigger)
 				{
 					m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
+					m_TriggerEffects[i].HasCreated = true;
 				}
 			}
 			else
@@ -472,6 +473,7 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 					_int iMaxSound = m_TriggerSounds[i].strSoundNames.size() - 1;
 					_randInt RandomSound(0, iMaxSound);
 					m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[RandomSound(m_RandomNumber)], m_TriggerSounds[i].fVolume);
+					m_TriggerSounds[i].HasPlayed = true;
 				}
 			}
 			else
@@ -507,17 +509,14 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 
 			if (m_TriggerSounds[i].IsEnding)
 			{
+				m_pGameInstance->FadeoutSound(m_TriggerSounds[i].iChannel, fTimeDelta, m_TriggerSounds[i].fFadeoutSecond);
+
 				if (m_pGameInstance->Get_ChannelVolume(m_TriggerSounds[i].iChannel) <= 0.f)
 				{
 					m_pGameInstance->StopSound(m_TriggerSounds[i].iChannel);
 					m_TriggerSounds[i].iChannel = -1;
 					m_TriggerSounds[i].fVolume = m_TriggerSounds[i].fInitVolume;
 					m_TriggerSounds[i].IsEnding = false;
-				}
-				else
-				{
-					m_TriggerSounds[i].fVolume -= (fTimeDelta / (m_TriggerSounds[i].fFadeoutSecond / m_TriggerSounds[i].fInitVolume));
-					m_pGameInstance->Set_ChannelVolume(m_TriggerSounds[i].iChannel, m_TriggerSounds[i].fVolume);
 				}
 			}
 		}

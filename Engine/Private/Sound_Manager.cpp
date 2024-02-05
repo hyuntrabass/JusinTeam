@@ -29,6 +29,24 @@ HRESULT CSound_Manager::Init()
 		m_StartVolumes.push_back(0.5f);
 	}
 
+	m_IsFadingoutSounds.reserve(FMOD_MAX_CHANNEL_WIDTH);
+	for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+	{
+		m_IsFadingoutSounds.push_back(false);
+	}
+
+	m_IsFadinginSounds.reserve(FMOD_MAX_CHANNEL_WIDTH);
+	for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+	{
+		m_IsFadinginSounds.push_back(false);
+	}
+
+	m_FadeSeconds.reserve(FMOD_MAX_CHANNEL_WIDTH);
+	for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+	{
+		m_FadeSeconds.push_back(1.f);
+	}
+
 	return S_OK;
 }
 
@@ -124,11 +142,74 @@ void CSound_Manager::Update()
 		_bool bPlay = false;
 		m_pChannelArr[i]->isPlaying(&bPlay);
 		m_IsPlayingSounds[i] = bPlay;
-		if (not m_IsPlayingSounds[i])
+
+		if (m_IsFadingoutSounds[i])
 		{
-			m_StartVolumes[i] = 0.5f;
+			if (Get_IsPlayingSound(i))
+			{
+				FadingoutSound(i);
+	
+				if (GetChannelVolume(i) <= 0.f)
+				{
+					m_IsFadingoutSounds[i] = false;
+				}
+			}
+			else
+			{
+				m_IsFadingoutSounds[i] = false;
+			}
+		}
+		else if (m_IsFadinginSounds[i])
+		{
+			if (Get_IsPlayingSound(i))
+			{
+				FadinginSound(i);
+
+				if (GetChannelVolume(i) >= m_StartVolumes[i])
+				{
+					m_IsFadinginSounds[i] = false;
+					SetChannelVolume(i, m_StartVolumes[i]);
+				}
+			}
+			else
+			{
+				m_IsFadinginSounds[i] = false;
+			}
 		}
 	}
+}
+
+HRESULT CSound_Manager::FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond)
+{
+	if (iChannel < 0)
+	{
+		return E_FAIL;
+	}
+
+	m_IsFadingoutSounds[iChannel] = true;
+	m_fFadeTimeDelta = fTimeDelta;
+	m_FadeSeconds[iChannel] = fFadeoutSecond;
+
+	return S_OK;
+}
+
+HRESULT CSound_Manager::FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond)
+{
+	if (iChannel < 0)
+	{
+		return E_FAIL;
+	}
+
+	if (not m_IsFadinginSounds[iChannel])
+	{
+		m_pChannelArr[iChannel]->setVolume(0.f);
+	}
+
+	m_IsFadinginSounds[iChannel] = true;
+	m_fFadeTimeDelta = fTimeDelta;
+	m_FadeSeconds[iChannel] = fFadeinSecond;
+
+	return S_OK;
 }
 
 _bool CSound_Manager::Get_IsPlayingSound(_uint eChannel)
@@ -179,6 +260,22 @@ FMOD::Sound* CSound_Manager::Find_Sound(const wstring& strSoundTag)
 	}
 
 	return it->second;
+}
+
+void CSound_Manager::FadingoutSound(_uint iChannel)
+{
+	_float fVolume = GetChannelVolume(iChannel);
+	fVolume -= (m_fFadeTimeDelta / (m_FadeSeconds[iChannel] / m_StartVolumes[iChannel]));
+
+	SetChannelVolume(iChannel, fVolume);
+}
+
+void CSound_Manager::FadinginSound(_uint iChannel)
+{
+	_float fVolume = GetChannelVolume(iChannel);
+	fVolume += (m_fFadeTimeDelta / (m_FadeSeconds[iChannel] / m_StartVolumes[iChannel]));
+
+	SetChannelVolume(iChannel, fVolume);
 }
 
 CSound_Manager* CSound_Manager::Create()

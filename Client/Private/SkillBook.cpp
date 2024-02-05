@@ -138,7 +138,7 @@ void CSkillBook::Tick(_float fTimeDelta)
 
 			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 			{
-				m_pGameInstance->Set_ChannelVolume(i, 0.f);
+				m_pGameInstance->FadeoutSound(i, fTimeDelta, 1.f);
 			}
 		}
 	}
@@ -172,7 +172,7 @@ void CSkillBook::Tick(_float fTimeDelta)
 
 			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 			{
-				m_pGameInstance->Set_ChannelStartVolume(i);
+				m_pGameInstance->FadeinSound(i, fTimeDelta, 1.f);
 			}
 			return;
 		}

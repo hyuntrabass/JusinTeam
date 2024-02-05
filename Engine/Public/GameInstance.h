@@ -163,6 +163,8 @@ public: // Sound Manager
 	void PlayBGM(const wstring& strSoundTag, float fVolume = 0.3f);
 	void StopSound(_uint iChannel);
 	void StopAll();
+	HRESULT FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond);
+	HRESULT FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond);
 
 public: // Effect Callback
 	using Func_CreateFX = function<void(const wstring&, _mat*, const _bool&)>;
