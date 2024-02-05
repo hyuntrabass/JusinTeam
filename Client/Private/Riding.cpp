@@ -29,13 +29,23 @@ HRESULT CRiding::Init(void* pArg)
 		m_eState = Riding_Sky;
 		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Bird");
 	}
-		break;
+	break;
+
+	case Client::Horse:
+	{
+		m_Animation.iAnimIndex = Horse_1004_Idle;
+		m_eState = Riding_Idle;
+		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Horse");
+		m_fRunSpeed = 8.f;
+	}
+	break;
+
 	case Client::Tiger:
 	{
 		m_Animation.iAnimIndex = Tiger_1003_Idle;
 		m_eState = Riding_Idle;
 		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Tiger");
-		m_fRunSpeed = 7.5f;
+		m_fRunSpeed = 10.f;
 	}
 		break;
 	case Client::Nihilir:
@@ -57,8 +67,8 @@ HRESULT CRiding::Init(void* pArg)
 	if (m_CurrentIndex == Nihilir)
 	{
 		PxCapsuleControllerDesc ControllerDesc{};
-		ControllerDesc.height = 3.08f; // 높이(위 아래의 반구 크기 제외
-		ControllerDesc.radius = 2.24f; // 위아래 반구의 반지름
+		ControllerDesc.height = 3.0f; // 높이(위 아래의 반구 크기 제외
+		ControllerDesc.radius = 2.2f; // 위아래 반구의 반지름
 		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
 		ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
 		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
@@ -72,6 +82,18 @@ HRESULT CRiding::Init(void* pArg)
 		PxCapsuleControllerDesc ControllerDesc{};
 		ControllerDesc.height = 1.176f; // 높이(위 아래의 반구 크기 제외
 		ControllerDesc.radius = 0.65f; // 위아래 반구의 반지름
+		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+		ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f)); // 캐릭터가 오를 수 있는 최대 각도
+		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+		ControllerDesc.stepOffset = 0.3f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+		m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
+
+	}
+	else if (m_CurrentIndex == Horse)
+	{
+		PxCapsuleControllerDesc ControllerDesc{};
+		ControllerDesc.height = 1.176f; // 높이(위 아래의 반구 크기 제외
+		ControllerDesc.radius = 0.6f; // 위아래 반구의 반지름
 		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
 		ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f)); // 캐릭터가 오를 수 있는 최대 각도
 		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
@@ -261,7 +283,7 @@ void CRiding::Move(_float fTimeDelta)
 		if (!m_hasJumped)
 		{
 			m_eState = Riding_Jump_Start;
-			m_pTransformCom->Jump(9.f);
+			m_pTransformCom->Jump(10.f);
 		}
 	}
 	if (m_eState == Riding_Jump_Start or
@@ -395,8 +417,14 @@ void CRiding::Init_State()
 				m_hasJumped = false;
 			}
 				break;
-			case Client::Riding_End:
+			case Client::Horse:
+			{
+				m_Animation.iAnimIndex = Horse_1004_Idle;
+				m_Animation.isLoop = true;
+				m_hasJumped = false;
+			}
 				break;
+
 			default:
 				break;
 			}
@@ -419,8 +447,13 @@ void CRiding::Init_State()
 				m_Animation.isLoop = true;
 				m_hasJumped = false;
 			}
-				break;
-			case Client::Riding_End:
+			break;
+			case Client::Horse:
+			{
+				m_Animation.iAnimIndex = Horse_1004_Run_F;
+				m_Animation.isLoop = true;
+				m_hasJumped = false;
+			}
 				break;
 			default:
 				break;
@@ -446,8 +479,14 @@ void CRiding::Init_State()
 				m_hasJumped = false;
 			}
 				break;
-			case Client::Riding_End:
-				break;
+			case Client::Horse:
+			{
+				m_Animation.iAnimIndex = Horse_1004_Run_F;
+				m_Animation.isLoop = true;
+				m_hasJumped = false;
+			}
+			break;
+
 			default:
 				break;
 			}
@@ -472,8 +511,12 @@ void CRiding::Init_State()
 				m_hasJumped = true;
 			}
 				break;
-			case Client::Riding_End:
-				break;
+			case Client::Horse:
+			{
+				m_Animation.iAnimIndex = Horse_1004_jump_start;
+				m_hasJumped = true;
+			}
+			break;
 			default:
 				break;
 			}
@@ -495,8 +538,13 @@ void CRiding::Init_State()
 				m_Animation.isLoop = true;
 			}
 				break;
-			case Client::Riding_End:
-				break;
+			case Client::Horse:
+			{
+				m_Animation.iAnimIndex = Horse_1004_jump_loop;
+				m_hasJumped = true;
+				m_Animation.isLoop = true;
+			}
+			break;
 			default:
 				break;
 			}
@@ -516,8 +564,13 @@ void CRiding::Init_State()
 				m_hasJumped = false;
 			}
 				break;
-			case Client::Riding_End:
-				break;
+			case Client::Horse:
+			{
+				m_Animation.iAnimIndex = Horse_1004_jump_End_Run;
+				m_hasJumped = true;
+				m_Animation.isLoop = true;
+			}
+			break;
 			default:
 				break;
 			}
@@ -537,8 +590,13 @@ void CRiding::Init_State()
 				m_hasJumped = false;
 			}
 				break;
-			case Client::Riding_End:
-				break;
+			case Client::Horse:
+			{
+				m_Animation.iAnimIndex = Horse_1004_jump_End;
+				m_hasJumped = true;
+				m_Animation.isLoop = true;
+			}
+			break;
 			default:
 				break;
 			}
@@ -598,6 +656,14 @@ void CRiding::Tick_State(_float fTimeDelta)
 				m_eState = Riding_Jump;
 			}
 		}
+		case Client::Horse:
+		{
+			if (m_pModelCom->IsAnimationFinished(Horse_1004_jump_start))
+			{
+				m_eState = Riding_Jump;
+			}
+		}
+		break;
 		default:
 			break;
 		}
@@ -621,6 +687,14 @@ void CRiding::Tick_State(_float fTimeDelta)
 				m_eState = Riding_Idle;
 			}
 			break;
+		case Client::Horse:
+		{
+			if (m_pModelCom->IsAnimationFinished(Horse_1004_jump_End))
+			{
+				m_eState = Riding_Jump;
+			}
+		}
+		break;
 		default:
 			break;
 		}
@@ -641,6 +715,15 @@ void CRiding::Tick_State(_float fTimeDelta)
 			{
 				m_eState = Riding_Run;
 			}
+			break;
+		case Client::Horse:
+		{
+			if (m_pModelCom->IsAnimationFinished(Horse_1004_jump_End_Run))
+			{
+				m_eState = Riding_Jump;
+			}
+		}
+		break;
 		default:
 			break;
 		}
@@ -679,7 +762,10 @@ _mat CRiding::Get_Mat()
 	{
 		OffsetMat = _mat::CreateTranslation(0.f, 0.8f, 0.f) * _mat::CreateRotationZ(XMConvertToRadians(-180.f)) * _mat::CreateRotationY(XMConvertToRadians(90.f)) * *m_pModelCom->Get_BoneMatrix("Saddle");
 	}
-
+	else if (m_CurrentIndex == Horse)
+	{
+		OffsetMat = _mat::CreateRotationY(XMConvertToRadians(-180.f)) * _mat::CreateRotationX(XMConvertToRadians(-90.f)) * *m_pModelCom->Get_BoneMatrix("saddle");
+	}
 	OffsetMat *= m_pTransformCom->Get_World_Matrix();
 
 	return (OffsetMat);

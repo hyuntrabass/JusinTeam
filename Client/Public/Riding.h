@@ -8,6 +8,7 @@ BEGIN(Client)
 enum Riding_Type
 {
 	Bird,
+	Horse,
 	Tiger,
 	Nihilir,
 	Type_End
@@ -50,6 +51,48 @@ enum Bird_Anim
 	Bird_2005_Landing,
 	Bird_2005_Start,
 	Bird_2005_Takeoff
+};
+enum Horse_Anim
+{
+	Horse_1004_Attack01,
+	Horse_1004_Idle,
+	Horse_1004_jump_End,
+	Horse_1004_jump_End_Run,
+	Horse_1004_jump_loop,
+	Horse_1004_jump_start,
+	Horse_1004_Run_Add_L,
+	Horse_1004_Run_Add_R,
+	Horse_1004_Run_F,
+	Horse_1004_Run_F_start,
+	Horse_1004_Run_L,
+	Horse_1004_Run_R,
+	Horse_1004_walk,
+	Horse_2004_Attack01,
+	Horse_2004_Idle,
+	Horse_2004_jump_End,
+	Horse_2004_jump_End_Run,
+	Horse_2004_jump_loop,
+	Horse_2004_jump_start,
+	Horse_2004_Run_Add_L,
+	Horse_2004_Run_Add_R,
+	Horse_2004_Run_F,
+	Horse_2004_Run_F_start,
+	Horse_2004_Run_L,
+	Horse_2004_Run_R,
+	Horse_4004_Attack01,
+	Horse_4004_Attack02,
+	Horse_4004_Attack03,
+	Horse_4004_Idle,
+	Horse_4004_jump_End,
+	Horse_4004_jump_End_Run,
+	Horse_4004_jump_loop,
+	Horse_4004_jump_start,
+	Horse_4004_Run_Add_L,
+	Horse_4004_Run_Add_R,
+	Horse_4004_Run_F,
+	Horse_4004_Run_F_start,
+	Horse_4004_Run_L,
+	Horse_4004_Run_R
 };
 enum Tiger_Anim
 {
