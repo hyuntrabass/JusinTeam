@@ -32,6 +32,7 @@ private:
 	WEAPON_TYPE									m_eCurType{ WP_BOW };
 
 	_uint										m_iCurIndex{};
+	_int										m_iSoundChannel = -1;
 
 	_bool										m_isPicking{ false };
 	_bool										m_isPrototype{ false };

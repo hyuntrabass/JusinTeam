@@ -65,14 +65,6 @@ HRESULT CMPBar::Init(void* pArg)
 
 void CMPBar::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Pressing(DIK_1))
-		m_vRatio.x -= 1.f;
-	if (m_pGameInstance->Key_Pressing(DIK_2))
-	{
-		if (m_vRatio.x <= m_vRatio.y)
-			m_vRatio.x += 0.1f;;
-	}
-
 	m_fTime += fTimeDelta;
 }
 
@@ -82,6 +74,7 @@ void CMPBar::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
+
 	m_pBorder->Late_Tick(fTimeDelta);
 	m_pBackground->Late_Tick(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);

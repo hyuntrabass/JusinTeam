@@ -74,6 +74,14 @@ void CShop::Tick(_float fTimeDelta)
 		{
 			dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Init_SellItem();
 			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
+
+			CFadeBox::FADE_DESC Desc = {};
+			Desc.eState = CFadeBox::FADEOUT;
+			Desc.fDuration = 1.f;
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
+			{
+				return;
+			}
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_isActive = false;
 		}
@@ -364,10 +372,10 @@ HRESULT CShop::Add_Parts()
 	Button.fFontSize = 0.45f;
 	Button.strText = to_wstring(iMoney);
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_coin");
-	Button.vPosition = _vec2(1100.f, 30.f);
+	Button.vPosition = _vec2(1080.f, 30.f);
 	Button.vSize = _vec2(25.f, 25.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	Button.vTextPosition = _vec2(Button.vSize.x + 10.f, Button.vSize.y - 26.f);
+	Button.vTextPosition = _vec2(Button.vSize.x + 30.f, Button.vSize.y - 26.f);
 
 	m_pMoney = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
@@ -378,7 +386,7 @@ HRESULT CShop::Add_Parts()
 	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
 	Button.strText = to_wstring(iDiamond);
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Diamond");
-	Button.vPosition = _vec2(1010.f, 30.f);
+	Button.vPosition = _vec2(990.f, 30.f);
 	Button.vSize = _vec2(25.f, 25.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	Button.vTextPosition = _vec2(Button.vSize.x + 10.f, Button.vSize.y - 26.f);

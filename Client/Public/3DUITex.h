@@ -42,7 +42,7 @@ private:
 	CTransform*		m_pParentTransform{ nullptr };
 
 public:
-	const _vec2& Get_Size() const { return _vec2(m_fSizeX, m_fSizeY); };
+	const _vec2 Get_Size() const { return _vec2(m_fSizeX, m_fSizeY); };
 	void Set_Size(_float fSizeX, _float fSizeY);
 	void Set_Pass(VTPass ePass) { m_ePass = ePass; }
 

@@ -324,7 +324,7 @@ public:
 public:
 	void Front_Ray_Check();
 	_bool Turn_Ray_Check(_bool bRight);
-
+	
 public:
 	void Arrow_Rain();
 	void Common_Attack();
@@ -363,9 +363,9 @@ private:
 	CTexture* m_pDissolveTextureCom{ nullptr };
 	CRealtimeVTFModel* m_pModelCom = { nullptr };
 	CCollider* m_pAttCollider[AT_End]{ nullptr };
-	CCommonSurfaceTrail* m_pTest_Trail{ nullptr };
 	CCommonSurfaceTrail* m_pLeft_Trail[5]{ nullptr };
 	CCommonSurfaceTrail* m_pRight_Trail[5]{ nullptr };
+	class CEffect_Dummy* m_pEffect_Shield{ nullptr };
 
 private:
 	ANIM_DESC m_Animation{};
@@ -399,17 +399,18 @@ private:
 	_vec4 m_SaveCamLook{};
 	_bool m_bReady_Climb{};
 	_bool m_bHelmet_Hide{};
-	_vec4 m_vOriginalLook{};
 	const _mat* m_Left_Mat{};
 	_bool m_UsingMotionBlur{};
 	const _mat* m_Right_Mat{};
-	_bool m_isInterpolating{};
 	_uint m_iSwimCollectCount{};
 	const _float m_fRunSpeed{ 4.f };
 	const _float m_fWalkSpeed{ 1.f };
 	_bool	  m_isInvenActive{ false };
 
+	_uint m_iShield{};
 	_bool m_bAttacked{};
+	_bool m_bReadyMove{};
+	_float m_fBoostSpeed{};
 	_bool m_bAttackStop{};
 	_int m_iAttackCombo{};
 	_float m_fSkillSpeed{};
@@ -437,7 +438,9 @@ private:
 	_float m_fMpRegenTime{};
 	_float m_ReturnZoomTime{};
 	_float m_fDissolveRatio{};
-	_float m_fInterpolationRatio{};
+	_float m_fBoostSpeedTimmer{};
+
+	_mat m_ShieldMatrix{};
 
 private:
 	HRESULT Add_Components();

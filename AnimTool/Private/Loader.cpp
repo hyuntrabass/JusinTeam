@@ -290,6 +290,23 @@ HRESULT CLoader::Load_Tool()
 			}
 		}
 	}
+	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/Skill_Model/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (entry.path().extension().string() != ".hyuntraanimmesh")
+			{
+				continue;
+			}
+			wstring strPrototypeTag = TEXT("Prototype_Model_Monster_") + to_wstring(m_iNumMonsterModels++);
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 	////Player
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, TEXT("Prototype_Model_Select_0"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Select_Model/Mesh/Select_Priest.hyuntraanimmesh", false, Pivot))))
 	{

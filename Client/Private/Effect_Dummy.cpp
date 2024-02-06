@@ -124,7 +124,7 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 	switch (m_Effect.iType)
 	{
 	case Effect_Type::ET_PARTICLE:
-		m_pParticle->Update(fTimeDelta, m_pTransformCom->Get_World_Matrix(), m_Effect.iNumInstances, m_Effect.bApplyGravity, m_Effect.vGravityDir);
+		m_pParticle->Update(fTimeDelta, m_pTransformCom->Get_World_Matrix(), m_Effect.iNumInstances, m_Effect.bApplyGravity, m_Effect.vGravityDir, m_Effect.fPartiAppearRatio, m_Effect.fPartiDissolveRatio);
 		//m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
 		break;
 	case Effect_Type::ET_RECT:
@@ -353,7 +353,7 @@ HRESULT CEffect_Dummy::Bind_ShaderResources()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fUnDissolveRatio, sizeof m_fDissolveRatio)))
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fUnDissolveRatio, sizeof m_fUnDissolveRatio)))
 		{
 			return E_FAIL;
 		}

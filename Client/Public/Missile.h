@@ -32,6 +32,8 @@ public:
 	HRESULT Add_Collider();
 	void Update_Collider();
 
+public:
+	void Parry_Success();
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
@@ -58,7 +60,7 @@ private: // SIX_MISSILE
 private:
 	_mat m_EffectMatrix{};
 	class CEffect_Dummy* m_pEffect_Ball{};
-	class CEffect_Dummy* m_pEffect_Smoke{};
+	//class CEffect_Dummy* m_pEffect_Smoke{};
 
 public:
 	HRESULT Add_Components();

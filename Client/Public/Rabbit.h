@@ -2,10 +2,11 @@
 
 #include "Client_Define.h"
 #include "Monster.h"
-#include "HPMonster.h"
 
 BEGIN(Client)
+
 class CHPMonster;
+
 class CRabbit final : public CMonster
 {
 public:
@@ -74,9 +75,6 @@ private:
 
 	_bool m_bDamaged = { false };
 	_bool m_bStun = { false };
-
-private:
-	CHPMonster* m_HpBar{ nullptr };
 
 private:
 	static const _float m_fChaseRange;

@@ -614,7 +614,7 @@ void CInvenFrame::ItemSlot_Logic(_uint iSlotIdx, _uint iIndex)
 			Set_ItemPosition(m_eCurInvenType);
 		}
 	}
-
+	m_pGameInstance->Play_Sound(TEXT("ItemEquip"), 1.f);
 }
 
 void CInvenFrame::ItemSlot_Delete_Logic(_uint iSlotIdx)
@@ -780,12 +780,13 @@ void CInvenFrame::Picking_InvenButton(POINT ptMouse)
 
 	if (m_isPicking)
 	{
-		_bool isPicking = false;
+		m_vecItemsSlot[m_eCurInvenType][m_iCurIndex]->Set_Border(false);
+		//_bool isPicking = false;
 		for (_uint j = 0; j < 4; j++)
 		{
 			if (PtInRect(&m_pSelectSlot[j]->Get_Rect(), ptMouse))
 			{
-				isPicking = true;
+				//isPicking = true;
 				ItemSlot_Logic(j, m_iCurIndex);
 				break;
 			}
@@ -983,6 +984,7 @@ void CInvenFrame::Shop_Tick(_float fTimeDelta, POINT ptMouse)
 					iCoin += m_vecSellItems[j]->Get_ItemDesc().iSale * m_vecSellItems[j]->Get_ItemNum();
 				}
 				m_pInvenWindow->Set_Cost(iCoin);
+				m_pGameInstance->Play_Sound(TEXT("Sell_Item"));
 			}
 		}
 	}

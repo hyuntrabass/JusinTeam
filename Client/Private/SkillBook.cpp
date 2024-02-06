@@ -52,11 +52,6 @@ HRESULT CSkillBook::Init(void* pArg)
 	}
 	
 
-	HRESULT hr = CUI_Manager::Get_Instance()->Set_Inven(this);
-	if (FAILED(hr))
-	{
-		return E_FAIL;
-	}
 	return S_OK;
 }
 
@@ -75,7 +70,7 @@ void CSkillBook::Tick(_float fTimeDelta)
 
 	if (m_isActive)
 	{
-		if (m_isPicking && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
+		if (m_isPicking && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine) && !PtInRect(&m_vecSkillDesc[m_eCurType][m_iCurIndex]->Get_Rect(), ptMouse))
 		{
 			m_isPicking = false;
 			_bool isExist = false;
@@ -83,6 +78,10 @@ void CSkillBook::Tick(_float fTimeDelta)
 			{
 				if (PtInRect(&m_pSkillSlot[m_eCurType][i]->Get_Rect(), ptMouse))
 				{
+					if (!m_vecSkillDesc[m_eCurType][m_iCurIndex]->Is_UnLocked())
+					{
+						return;
+					}
 					SKILLINFO tInfo = m_vecSkillDesc[m_eCurType][m_iCurIndex]->Get_SkillInfo();
 					for (size_t j = 0; j < 4; j++)
 					{
@@ -135,6 +134,16 @@ void CSkillBook::Tick(_float fTimeDelta)
 			m_bNewSkillIn = false;
 			m_isActive = true;
 			Init_SkillBookState();
+
+			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+			{
+				if (m_pGameInstance->Get_IsLoopingSound(i))
+				{
+					m_pGameInstance->FadeoutSound(i, fTimeDelta);
+				}
+			}
+			m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("BGM_Night_Field_01"), 0.3f, true);
+			m_pGameInstance->FadeinSound(m_iSoundChannel, fTimeDelta);
 		}
 	}
 
@@ -152,7 +161,6 @@ void CSkillBook::Tick(_float fTimeDelta)
 				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_GAMEPLAY, TEXT("Light_Main"));
 				*LightDesc = m_Light_Desc;
 			}
-
 			CFadeBox::FADE_DESC Desc = {};
 			Desc.eState = CFadeBox::FADEOUT;
 			Desc.fDuration = 0.8f;
@@ -164,6 +172,15 @@ void CSkillBook::Tick(_float fTimeDelta)
 			CUI_Manager::Get_Instance()->Set_SkillSlotChange(true);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_isActive = false;
+
+			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+			{
+				if (m_pGameInstance->Get_IsLoopingSound(i))
+				{
+					m_pGameInstance->FadeinSound(i, fTimeDelta, 1.f);
+				}
+			}
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
 			return;
 		}
 	}
@@ -207,9 +224,12 @@ void CSkillBook::Tick(_float fTimeDelta)
 					break;
 				}
 				m_vecSkillDesc[m_eCurType][i]->Select_Skill(true);
-				if (m_vecSkillDesc[m_eCurType][i]->Is_SkillIn())
+				if (!m_vecSkillDesc[m_eCurType][i]->Is_UnLocked())
 				{
-					
+					m_isPicking = false;
+				}
+				else if (m_vecSkillDesc[m_eCurType][i]->Is_SkillIn())
+				{
 					m_isPicking = true;
 					m_iCurIndex = i;
 					m_pSkill_Model->Change_AnimState((CSkill_Model::SKILLMODEL_ANIM)m_vecSkillDesc[m_eCurType][i]->Get_SkillInfo().iModelSkillIndex);
@@ -263,10 +283,17 @@ void CSkillBook::Tick(_float fTimeDelta)
 
 	if (m_isPicking)
 	{
-		if (m_fTime > 0.6f || m_fTime < 0.2f)
+		if (m_fTime > 0.6f )
 		{
-			m_fDir *= -1.f;
+			m_fTime = 0.6f;
+			m_fDir = -1.f;
 		}
+		
+		if (m_fTime < 0.2f )
+		{
+			m_fDir = 1.f;
+		}
+
 
 		m_fTime += fTimeDelta * m_fDir * 0.8f;
 
@@ -399,6 +426,13 @@ void CSkillBook::Init_SkillBookState()
 	{
 		m_vecSkillDesc[m_eCurType][j]->Select_Skill(false);
 	}
+
+	dynamic_cast<CTextButtonColor*>(m_pSkillType[WP_BOW])->Set_Alpha(1.f);
+	_vec2 vPos = dynamic_cast<CTextButtonColor*>(m_pSkillType[WP_BOW])->Get_Position();
+	dynamic_cast<CTextButton*>(m_pSelectButton)->Set_Position(vPos);
+	_vec2 fUnderBarPos = dynamic_cast<CTextButton*>(m_pUnderBar)->Get_Position();
+	dynamic_cast<CTextButton*>(m_pUnderBar)->Set_Position(_vec2(vPos.x, fUnderBarPos.y));
+
 }
 
 HRESULT CSkillBook::Init_SkillDesc()
@@ -481,10 +515,10 @@ HRESULT CSkillBook::Add_Parts()
 	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
 	Button.strText = to_wstring(iMoney);
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_coin");
-	Button.vPosition = _vec2(1100.f, 30.f);
+	Button.vPosition = _vec2(1080.f, 30.f);
 	Button.vSize = _vec2(25.f, 25.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	Button.vTextPosition = _vec2(Button.vSize.x + 10.f, Button.vSize.y - 26.f);
+	Button.vTextPosition = _vec2(Button.vSize.x + 30.f, Button.vSize.y - 26.f);
 
 	m_pMoney = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
@@ -495,7 +529,7 @@ HRESULT CSkillBook::Add_Parts()
 	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
 	Button.strText = to_wstring(iDiamond);
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Diamond");
-	Button.vPosition = _vec2(1010.f, 30.f);
+	Button.vPosition = _vec2(990.f, 30.f);
 	Button.vSize = _vec2(25.f, 25.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	Button.vTextPosition = _vec2(Button.vSize.x + 10.f, Button.vSize.y - 26.f);

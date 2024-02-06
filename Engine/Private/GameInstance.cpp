@@ -116,6 +116,16 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 		MSG_BOX("FATAL ERROR : m_pObject_Manager is NULL");
 	}
 
+	if (m_isPlayingVideo)
+	{
+		m_fVideoTimmer += fTimeDelta;
+		if (m_fVideoTimmer > m_fVideoDuration)
+		{
+			m_isPlayingVideo = false;
+		}
+		return;
+	}
+
 	m_pInput_Manager->Update_InputDev();
 
 	if (Key_Down(DIK_F1, InputChannel::Engine))
@@ -1109,6 +1119,26 @@ void CGameInstance::StopAll()
 	return m_pSound_Manager->StopAll();
 }
 
+HRESULT CGameInstance::FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond, _bool IsReusable)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->FadeoutSound(iChannel, fTimeDelta, fFadeoutSecond, IsReusable);
+}
+
+HRESULT CGameInstance::FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->FadeinSound(iChannel, fTimeDelta, fFadeinSecond);
+}
+
 void CGameInstance::Register_CreateEffect_Callback(Func_CreateFX Function)
 {
 	m_Function_Create_FX = Function;
@@ -1220,6 +1250,16 @@ _float CGameInstance::Get_ChannelVolume(_uint iChannel)
 	return m_pSound_Manager->GetChannelVolume(iChannel);
 }
 
+_bool CGameInstance::Get_IsLoopingSound(_uint iChannel)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->Get_IsLoopingSound(iChannel);
+}
+
 void CGameInstance::Set_CameraModeIndex(const _uint& iIndex)
 {
 	m_iCameraModeIndex = iIndex;
@@ -1268,6 +1308,16 @@ void CGameInstance::Set_ChannelVolume(_uint iChannel, _float fVolume)
 	}
 
 	return m_pSound_Manager->SetChannelVolume(iChannel, fVolume);
+}
+
+void CGameInstance::Set_ChannelStartVolume(_uint iChannel)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->SetChannelStartVolume(iChannel);
 }
 
 void CGameInstance::Set_ZoomFactor(const _float fFactor)
@@ -1340,6 +1390,12 @@ const _bool& CGameInstance::IsSkipDebugRendering() const
 const wstring& CGameInstance::Get_InputString() const
 {
 	return m_strInput;
+}
+
+void CGameInstance::Video_Start(_float fVideoDuration)
+{
+	m_fVideoDuration = fVideoDuration;
+	m_isPlayingVideo = true;
 }
 
 void CGameInstance::Initialize_Level(_uint iLevelNum)

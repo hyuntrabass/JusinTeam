@@ -163,6 +163,8 @@ public: // Sound Manager
 	void PlayBGM(const wstring& strSoundTag, float fVolume = 0.3f);
 	void StopSound(_uint iChannel);
 	void StopAll();
+	HRESULT FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond = 1.f, _bool IsReusable = true);
+	HRESULT FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond = 1.f);
 
 public: // Effect Callback
 	using Func_CreateFX = function<void(const wstring&, _mat*, const _bool&)>;
@@ -203,6 +205,8 @@ public: // Get_Set
 	_bool Get_IsPlayingSound(_uint iChannel);
 	// 사운드 채널의 볼륨을 반환 함.
 	_float Get_ChannelVolume(_uint iChannel);
+	// 사운드 채널이 루프중인지를 반환 함.
+	_bool Get_IsLoopingSound(_uint iChannel);
 
 	// 카메라 모드를 지정함. 카메라에서 말고는 쓰지 말것.
 	void Set_CameraModeIndex(const _uint& iIndex);
@@ -222,6 +226,8 @@ public: // Get_Set
 	void Set_HellHeight(const _float& fHeight);
 	// 사운드 채널의 볼륨을 지정함.
 	void Set_ChannelVolume(_uint iChannel, _float fVolume);
+	// 사운드 채널의 볼륨을 초기 볼륨으로 되돌림.
+	void Set_ChannelStartVolume(_uint iChannel);
 
 	_float Get_ShakePower() { return m_fShakePower; }
 	_bool Get_FlyCam() { return m_bFlyCam; }
@@ -245,6 +251,9 @@ public: // Get_Set
 	const _bool& Get_AimMode() { return m_AimMode; }
 	const _bool& IsSkipDebugRendering() const;
 	const wstring& Get_InputString() const;
+
+	void Video_Start(_float fVideoDuration);
+	_bool Is_VideoPlaying() { return m_isPlayingVideo; }
 
 public:
 	void Initialize_Level(_uint iLevelNum);
@@ -301,6 +310,9 @@ private:
 	_bool m_bFlyCam{};
 	_bool m_bGoHome{};
 	_bool m_bGoDungeon{};
+	_bool m_isPlayingVideo{};
+	_float m_fVideoTimmer{};
+	_float m_fVideoDuration{};
 private:
 	vector<_bool> m_vecLevelInvalid;
 

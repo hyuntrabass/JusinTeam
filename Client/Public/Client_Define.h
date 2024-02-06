@@ -258,6 +258,7 @@ namespace Client
 		MonAtt_KnockDown,
 		MonAtt_Stun,
 		GROAR_PULL,
+		Parrying_Succescc,
 		MonAtt_End
 	};
 #pragma endregion
@@ -387,6 +388,8 @@ namespace Client
 		VTPass_FadeVertical,
 		VTPass_FadeHorizontal,
 		VTPass_LerpColorNAlpha,
+		VTPass_HPBoss,
+		VTPass_MaskColorMove,
 		VTPass_End
 	};
 
@@ -416,6 +419,14 @@ namespace Client
 		InstPass_Particle_Sprite_Texture_RandomIndex_Dissolve_Trail,
 		InstPass_Particle_Sprite_Color_RandomIndex_Trail,
 		InstPass_Particle_Sprite_Color_RandomIndex_Dissolve_Trail,
+		InstPass_Particle_Sprite_DiffMask,
+		InstPass_Particle_Sprite_DiffMask_Dissolve,
+		InstPass_Particle_Sprite_DiffMask_RandomIndex,
+		InstPass_Particle_Sprite_DiffMask_RandomIndex_Dissolve,
+		InstPass_Particle_Sprite_DiffMask_Trail,
+		InstPass_Particle_Sprite_DiffMask_Dissolve_Trail,
+		InstPass_Particle_Sprite_DiffMask_RandomIndex_Trail,
+		InstPass_Particle_Sprite_DiffMask_RandomIndex_Dissolve_Trail,
 		InstPass_End,
 	};
 #pragma endregion

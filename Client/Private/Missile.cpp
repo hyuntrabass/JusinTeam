@@ -32,8 +32,7 @@ HRESULT CMissile::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pGroarModel = dynamic_cast<CModel*>
-		(m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_Groar_Boss"), TEXT("Com_Boss_Model")));
+	m_pGroarModel = dynamic_cast<CModel*>(m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_Groar_Boss"), TEXT("Com_Boss_Model")));
 
 	m_pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_VILLAGE);
 
@@ -142,13 +141,22 @@ void CMissile::Tick(_float fTimeDelta)
 {
 	if (m_bParryingOk)
 	{
-		m_pTransformCom->Go_Left(fTimeDelta);
+		m_pGameInstance->Set_TimeRatio(1.0f);
+		m_pTransformCom->Go_Straight(fTimeDelta);
 
 		m_fLifeTime += fTimeDelta;
 		if (m_fLifeTime >= 1.f)
 		{
 			Kill();
 		}
+
+		m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+
+		if (m_pEffect_Ball)
+		{
+			m_pEffect_Ball->Tick(fTimeDelta);
+		}
+
 		return;
 	}
 
@@ -159,28 +167,14 @@ void CMissile::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->CheckCollision_Parrying(m_pColliderCom))
 		{
-			_uint random = rand() % 2;
-			_float RandFloat{ 1.f };
-			m_fLifeTime = 0.f;
-			if (random == 0)
-			{
-				RandFloat = -1.f;
-			}
-
-			//m_pTransformCom->Rotation(_vec4(0.f, 1.f, 0.f, 0.f), 45.f * RandFloat);
-			
-			m_bParryingOk = true;
+			Parry_Success();
 			return;
 		}
-		else if (m_pGameInstance->Attack_Player(m_pColliderCom, 10))
+		else if (m_fLifeTime >= 1.f || m_pGameInstance->Attack_Player(m_pColliderCom, 30 + rand() % 10))
 		{
 			_uint iSoundIndex = rand() % 4 + 1;
 			wstring strSoundTag = TEXT("Hit_Large_Acid_SFX_0") + to_wstring(iSoundIndex);
 			m_pGameInstance->Play_Sound(strSoundTag);
-		}
-
-		if (m_fLifeTime >= 1.f || m_pGameInstance->Attack_Player(m_pColliderCom, 30 + rand() % 10))
-		{
 			Kill();
 		}
 
@@ -192,7 +186,7 @@ void CMissile::Tick(_float fTimeDelta)
 			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Smoke");
 			Info.pMatrix = &m_EffectMatrix;
 			Info.isFollow = true;
-			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 		}
 
 
@@ -219,28 +213,14 @@ void CMissile::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->CheckCollision_Parrying(m_pColliderCom))
 		{
-			_uint random = rand() % 2;
-			_float RandFloat{ 1.f };
-			m_fLifeTime = 0.f;
-			if (random == 0)
-			{
-				RandFloat = -1.f;
-			}
-
-			//m_pTransformCom->Rotation(_vec4(0.f, 1.f, 0.f, 0.f), 45.f * RandFloat);
-
-			m_bParryingOk = true;
+			Parry_Success();
 			return;
 		}
-		else if (m_pGameInstance->Attack_Player(m_pColliderCom, 10))
+		else if (m_fLifeTime >= 1.f || m_pGameInstance->Attack_Player(m_pColliderCom, 30 + rand() % 10))
 		{
 			_uint iSoundIndex = rand() % 4 + 1;
 			wstring strSoundTag = TEXT("Hit_Large_Acid_SFX_0") + to_wstring(iSoundIndex);
 			m_pGameInstance->Play_Sound(strSoundTag);
-		}
-
-		if (m_fLifeTime >= 1.f || m_pGameInstance->Attack_Player(m_pColliderCom, 30 + rand() % 10))
-		{
 			Kill();
 		}
 
@@ -252,7 +232,7 @@ void CMissile::Tick(_float fTimeDelta)
 			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Smoke");
 			Info.pMatrix = &m_EffectMatrix;
 			Info.isFollow = true;
-			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 		}
 
 
@@ -277,28 +257,14 @@ void CMissile::Tick(_float fTimeDelta)
 	case Client::CMissile::SIX_MISSILE:
 		if (m_pGameInstance->CheckCollision_Parrying(m_pColliderCom))
 		{
-			_uint random = rand() % 2;
-			_float RandFloat{ 1.f };
-			m_fLifeTime = 0.f;
-			if (random == 0)
-			{
-				RandFloat = -1.f;
-			}
-
-			//m_pTransformCom->Rotation(_vec4(0.f, 1.f, 0.f, 0.f), 45.f * RandFloat);
-
-			m_bParryingOk = true;
+			Parry_Success();
 			return;
 		}
-		else if (m_pGameInstance->Attack_Player(m_pColliderCom, 10))
+		else if (m_fLifeTime >= 1.f || m_pGameInstance->Attack_Player(m_pColliderCom, 30 + rand() % 10))
 		{
 			_uint iSoundIndex = rand() % 4 + 1;
 			wstring strSoundTag = TEXT("Hit_Large_Acid_SFX_0") + to_wstring(iSoundIndex);
 			m_pGameInstance->Play_Sound(strSoundTag);
-		}
-
-		if (m_fLifeTime >= 1.f || m_pGameInstance->Attack_Player(m_pColliderCom, 30 + rand() % 10))
-		{
 			Kill();
 		}
 
@@ -307,7 +273,7 @@ void CMissile::Tick(_float fTimeDelta)
 			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Smoke");
 			Info.pMatrix = &m_EffectMatrix;
 			Info.isFollow = true;
-			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 			m_fEffectTimer = 3.f;
 		}
@@ -383,10 +349,6 @@ void CMissile::Tick(_float fTimeDelta)
 	{
 		m_pEffect_Ball->Tick(fTimeDelta);
 	}
-	if (m_pEffect_Smoke)
-	{
-		m_pEffect_Smoke->Tick(fTimeDelta);
-	}
 	Update_Collider();
 }
 
@@ -394,10 +356,6 @@ void CMissile::Late_Tick(_float fTimeDelta)
 {
 	//m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 
-	if (m_pEffect_Smoke)
-	{
-		m_pEffect_Smoke->Late_Tick(fTimeDelta);
-	}
 	if (m_pEffect_Ball)
 	{
 		m_pEffect_Ball->Late_Tick(fTimeDelta);
@@ -472,6 +430,39 @@ HRESULT CMissile::Add_Collider()
 void CMissile::Update_Collider()
 {
 	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+}
+
+void CMissile::Parry_Success()
+{
+	_uint random = rand() % 2;
+	_float RandFloat{ 1.f };
+	m_fLifeTime = 0.f;
+	if (random == 0)
+	{
+		RandFloat = -1.f;
+	}
+
+	_uint randomsound = rand() % 3;
+	if (randomsound == 0) 
+	{
+	m_pGameInstance->Play_Sound(TEXT("Parry1"), 0.6f);
+	}
+	else if (randomsound == 1)
+	{
+		m_pGameInstance->Play_Sound(TEXT("Parry2"), 0.6f);
+	}
+	else
+	{
+		m_pGameInstance->Play_Sound(TEXT("Parry3"), 0.6f);
+	}
+
+	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"hitSpark_Right");
+	_mat EffectMat = m_pTransformCom->Get_World_Matrix();
+	Info.pMatrix = &EffectMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+	m_pTransformCom->Rotation(_vec4(0.f, 1.f, 0.f, 0.f), 45.f * RandFloat);
+	m_pGameInstance->Set_TimeRatio(0.05f);
+	m_bParryingOk = true;
 }
 
 HRESULT CMissile::Add_Components()
@@ -555,7 +546,6 @@ void CMissile::Free()
 	__super::Free();
 
 	Safe_Release(m_pEffect_Ball);
-	Safe_Release(m_pEffect_Smoke);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pColliderCom);

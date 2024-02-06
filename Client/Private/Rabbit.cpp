@@ -59,24 +59,13 @@ HRESULT CRabbit::Init(void* pArg)
 
 	_vec3 vPlayerPos = __super::Compute_PlayerPos();
 	m_pTransformCom->Set_Position(vPlayerPos);
-
+	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
 	if (pArg)
 	{
 		if (FAILED(__super::Init(pArg)))
 		{
 			return E_FAIL;
 		}
-	}
-
-	CHPMonster::HP_DESC HpDesc = {};
-	HpDesc.eLevelID = LEVEL_STATIC;
-	HpDesc.iMaxHp = m_iHP;
-	HpDesc.pParentTransform = m_pTransformCom;
-	HpDesc.vPosition = _vec3(0.f, 1.2f, 0.f);
-	m_HpBar = (CHPMonster*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPMonster"), &HpDesc);
-	if (m_HpBar == nullptr)
-	{
-		return E_FAIL;
 	}
 
 	return S_OK;
@@ -96,7 +85,7 @@ void CRabbit::Tick(_float fTimeDelta)
 	Tick_State(fTimeDelta);
 	m_pModelCom->Set_Animation(m_Animation);
 
-	m_HpBar->Tick(fTimeDelta);
+	
 	Update_Collider();
 	__super::Update_MonsterCollider();
 
@@ -114,7 +103,7 @@ void CRabbit::Late_Tick(_float fTimeDelta)
 	//	m_pModelCom->Play_Animation(fTimeDelta);
 	//}
 
-	m_HpBar->Late_Tick(fTimeDelta);
+
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
@@ -130,8 +119,11 @@ HRESULT CRabbit::Render()
 
 void CRabbit::Set_Damage(_int iDamage, _uint iDamageType)
 {
+	m_fHittedTime = 6.f;
 	m_iHP -= iDamage;
 	m_bDamaged = true;
+	m_bChangePass = true;
+
 	m_eCurState = STATE_CHASE;
 
 	_vec4 vPlayerPos = __super::Compute_PlayerPos();
@@ -475,5 +467,5 @@ CGameObject* CRabbit::Clone(void* pArg)
 void CRabbit::Free()
 {
 	__super::Free();
-	Safe_Release(m_HpBar);
+
 }

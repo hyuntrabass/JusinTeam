@@ -9,6 +9,7 @@
 #include "Trigger_Manager.h"
 #include "UI_Manager.h"
 #include "FadeBox.h"
+#include "Pop_Skill.h"
 //원명의 꼽사리
 #include "Lake.h"
 
@@ -105,11 +106,11 @@ HRESULT CLevel_GamePlay::Init()
 	//}
 
 	// Pet_Test
-	if (FAILED(Ready_Pet()))
-	{
-		MSG_BOX("Failed to Ready Pet");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Pet()))
+	//{
+	//	MSG_BOX("Failed to Ready Pet");
+	//	return E_FAIL;
+	//}
 
 	// UI
 	if (FAILED(Ready_UI()))
@@ -132,6 +133,7 @@ HRESULT CLevel_GamePlay::Init()
 	m_pGameInstance->Set_FogColor(_color(0.1f));
 	CUI_Manager::Get_Instance()->Set_Coin(10000);
 
+	/*
 	CFadeBox::FADE_DESC Desc = {};
 	Desc.eState = CFadeBox::FADEOUT;
 	Desc.fDuration = 3.f;
@@ -139,16 +141,53 @@ HRESULT CLevel_GamePlay::Init()
 	{
 		return E_FAIL;
 	}
+	*/
+	//m_DC = GetDC(g_hWnd);
 
-	m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.2f);
-	m_pGameInstance->Play_Sound(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.6f, true);
-	m_pGameInstance->Play_Sound(TEXT("waves"), 0.2f, true);
+	//m_BackDC = CreateCompatibleDC(m_DC);
+
+	//m_hBackBit = CreateCompatibleBitmap(m_DC, g_iWinSizeX, g_iWinSizeY);
+
+	//m_hOldBackBit = (HBITMAP)SelectObject(m_BackDC, m_hBackBit);
+
+	//m_hVideo = MCIWndCreate(g_hWnd, NULL, WS_CHILD | WS_VISIBLE | MCIWNDF_NOPLAYBAR
+	//	, L"../Bin/Resources/Video/Tutorial0.wmv");
+
+	//MCIWndSetVolume(g_hWnd, 0.5f);
+
+
+	//MoveWindow(m_hVideo, 0, 0, g_iWinSizeX, g_iWinSizeY, FALSE);
+
+	//MCIWndPlay(m_hVideo);
+
+	//m_pGameInstance->Video_Start(40.f);
+	
 
 	return S_OK;
 }
 
 void CLevel_GamePlay::Tick(_float fTimeDelta)
 {
+	if (!m_bReadyTutorial)
+	{
+		m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.2f);
+		m_pGameInstance->Play_Sound(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.6f, true);
+		m_pGameInstance->Play_Sound(TEXT("waves"), 0.2f, true);
+		m_bReadyTutorial = true;
+	}
+
+	
+
+	if (m_pGameInstance->Key_Down(DIK_B))
+	{
+		CPop_Skill::SKILLIN_DESC Desc{};
+		Desc.iSkillLevel = 0;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_PopSkill"), &Desc)))
+		{
+			return;
+		}
+
+	}
 	if (!CUI_Manager::Get_Instance()->Is_InvenActive())
 	{
 		m_RainMatrix = _mat::CreateTranslation(_vec3(m_pGameInstance->Get_CameraPos()));
@@ -172,6 +211,8 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		default:
 			break;
 		}*/
+
+
 		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Wave_Init");
 		m_WaveMatrix[0] = _mat::CreateTranslation(_vec3(95.f, 4.f, 127.5f));
 		EffectDesc.pMatrix = &m_WaveMatrix[0];
@@ -235,20 +276,20 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 
 	//m_pGameInstance->PhysXTick(fTimeDelta);
 
-	//if (m_pGameInstance->Key_Down(DIK_U))
-	//{
-	//	m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_XBeam"));
-	//}
+	if (m_pGameInstance->Key_Down(DIK_U))
+	{
+		//m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Missile"), TEXT("Prototype_GameObject_XBeam"));
+
+		//CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+		//_mat EffectMat = _mat::CreateTranslation(_vec3(pPlayerTransform->Get_State(State::Pos)));
+		//EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Shield");
+		//Info.pMatrix = &EffectMat;
+		//CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+	}
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 	{
 		DestroyWindow(g_hWnd);
 	}
-
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-
-	cout << "Player Pos" << endl;
-	cout << vPlayerPos.x << endl << vPlayerPos.y << endl << vPlayerPos.z << endl;
 }
 
 HRESULT CLevel_GamePlay::Render()
@@ -776,6 +817,13 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	}
 	
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_SkillBook"))))
+	{
+		return E_FAIL;
+	}
+
+	CPop_Skill::SKILLIN_DESC Desc{};
+	Desc.iSkillLevel = 0;
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_PopSkill"), &Desc)))
 	{
 		return E_FAIL;
 	}

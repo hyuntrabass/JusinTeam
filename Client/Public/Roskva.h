@@ -42,6 +42,7 @@ private:
 	ROSKVA_STATE				m_eState{ TALK };
 	_bool						m_bTalking = { false };
 	_bool						m_bNextDialog = { false };
+	_bool						m_isColl = { false };
 
 	_float						m_fDir{ -1.f };
 	_float						m_fButtonTime{};

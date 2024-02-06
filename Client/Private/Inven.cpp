@@ -206,7 +206,10 @@ void CInven::Tick(_float fTimeDelta)
 				m_isReset = false;
 			}
 		}
-
+		if (m_pInvenFrame == nullptr)
+		{
+			int a = 10;
+		}
 
 		CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 		m_pExitButton->Tick(fTimeDelta);
@@ -306,7 +309,7 @@ HRESULT CInven::Set_WearableItem(WEARABLE_TYPE eType, ITEM eItemDesc)
 		dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(Item);
 	}
 	m_pWearableSlots[eType]->Set_WearableItem(eItemDesc);
-
+	m_pGameInstance->Play_Sound(TEXT("WeaponEquip"));
 	return S_OK;
 }
 
@@ -377,10 +380,10 @@ HRESULT CInven::Add_Parts()
 	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
 	Button.strText = to_wstring(iMoney);
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_coin");
-	Button.vPosition = _vec2(1100.f, 30.f);
+	Button.vPosition = _vec2(1080.f, 30.f);
 	Button.vSize = _vec2(25.f, 25.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	Button.vTextPosition = _vec2(Button.vSize.x + 10.f, Button.vSize.y - 26.f);
+	Button.vTextPosition = _vec2(Button.vSize.x + 30.f, Button.vSize.y - 26.f);
 
 	m_pMoney = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
@@ -391,7 +394,7 @@ HRESULT CInven::Add_Parts()
 	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
 	Button.strText = to_wstring(iDiamond);
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Diamond");
-	Button.vPosition = _vec2(1010.f, 30.f);
+	Button.vPosition = _vec2(990.f, 30.f);
 	Button.vSize = _vec2(25.f, 25.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	Button.vTextPosition = _vec2(Button.vSize.x + 10.f, Button.vSize.y - 26.f);

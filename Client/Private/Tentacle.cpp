@@ -54,7 +54,7 @@ HRESULT CTentacle::Init(void* pArg)
 	Info.pMatrix = &EffectMatrix;
 	m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
-	_vec3 vSetPos = vPlayerPos + _vec3(0.f, -1.8f, 1.2f);
+	_vec3 vSetPos = vPlayerPos + _vec3(0.f, 0.f, 1.2f);
 	vSetPos.y = vGroarPos.y - 1.5f;
 	m_pTransformCom->Set_Position(vSetPos);
 
@@ -71,6 +71,18 @@ void CTentacle::Tick(_float fTimeDelta)
 		{
 			Safe_Release(m_pFrameEffect);
 			Safe_Release(m_pBaseEffect);
+
+			EffectInfo Info{};
+			_vec4 vTargetPos = m_pTransformCom->Get_State(State::Pos);
+			vTargetPos -= _vec3(0.f, -1.55f, 1.2f);
+
+			_mat EffectMatrix = _mat::CreateScale(2.5f) * _mat::CreateTranslation(_vec3(vTargetPos));
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Small_Crack_Stone");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Rock_Frag");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 			_uint iDamage = m_iSmallDamage - rand() % 15;
 			m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
