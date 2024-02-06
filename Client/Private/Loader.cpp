@@ -671,6 +671,11 @@ HRESULT CLoader::Load_Select()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Hell"), CHell::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	//if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Map"), CMap::Create(m_pDevice, m_pContext))))
 	//{
 	//	return E_FAIL;

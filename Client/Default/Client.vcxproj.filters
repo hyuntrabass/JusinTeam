@@ -400,6 +400,9 @@
     <Filter Include="02.GameObjects\04.Monster\99. Dead">
       <UniqueIdentifier>{3b7bdf7a-faaa-4479-8d3e-d2cca283a7d9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\06.Sky\Hell">
+      <UniqueIdentifier>{33adb1d1-a5eb-44d1-8260-3a45e1e43819}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -804,6 +807,9 @@
     <ClInclude Include="..\Public\Player.h">
       <Filter>02.GameObjects\03.Player</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Hell.h">
+      <Filter>02.GameObjects\06.Sky\Hell</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1202,6 +1208,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Player.cpp">
       <Filter>02.GameObjects\03.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Hell.cpp">
+      <Filter>02.GameObjects\06.Sky\Hell</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

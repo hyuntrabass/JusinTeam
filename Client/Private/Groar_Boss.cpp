@@ -272,7 +272,6 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 1.5f;
 
-			m_pTransformCom->Delete_Controller();
 			break;
 
 		case Client::CGroar_Boss::STATE_SCENE02:
@@ -283,6 +282,8 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CGroar_Boss::STATE_BOSS:
+			m_pTransformCom->Delete_Controller();
+
 			PxCapsuleControllerDesc ControllerDesc{};
 			ControllerDesc.height = 2.f; // 높이(위 아래의 반구 크기 제외
 			ControllerDesc.radius = 2.2f; // 위아래 반구의 반지름

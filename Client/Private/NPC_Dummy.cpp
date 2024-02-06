@@ -41,7 +41,7 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 
 #pragma region Animal
 
-	if (m_strModelTag == TEXT("Prototype_Model_Horse"))
+	if (m_strModelTag == TEXT("Prototype_Model_Donkey"))
 	{
 		m_Animation.iAnimIndex = 1;
 	}
@@ -168,7 +168,7 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	if (m_strModelTag == TEXT("Prototype_Model_Horse"))
+	if (m_strModelTag == TEXT("Prototype_Model_Donkey"))
 	{
 		PxCapsuleControllerDesc ControllerDesc{};
 		ControllerDesc.height = 0.7f; // 높이(위 아래의 반구 크기 제외
