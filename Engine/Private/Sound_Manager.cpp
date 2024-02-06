@@ -192,8 +192,9 @@ HRESULT CSound_Manager::FadeinSound(_uint iChannel, _float fTimeDelta, _float fF
 		return E_FAIL;
 	}
 
-	if (not m_SoundDescs[iChannel].IsFadingin)
+	if (not m_SoundDescs[iChannel].IsFadingin && GetChannelVolume(iChannel) == m_SoundDescs[iChannel].fStartVolume)
 	{
+		SetChannelVolume(iChannel, 0.f);
 	}
 
 	m_SoundDescs[iChannel].IsFadingout = false;

@@ -18,11 +18,6 @@ HRESULT CLevel_Loading::Init(LEVEL_ID eNextLevel)
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_LOADING);
 
-	if (m_pGameInstance->Is_SoundManager_Ready())
-	{
-		m_pGameInstance->StopAll();
-	}
-
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOADING, TEXT("Layer_Loading"), TEXT("Prototype_GameObject_Loading"))))
 	{
 		return E_FAIL;
@@ -43,6 +38,17 @@ HRESULT CLevel_Loading::Init(LEVEL_ID eNextLevel)
 void CLevel_Loading::Tick(_float fTimeDelta)
 {
 	m_pLoader->Show_LoadingText();
+
+	if (m_pGameInstance->Is_SoundManager_Ready())
+	{
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+		{
+			if (m_pGameInstance->Get_IsPlayingSound(i))
+			{
+				m_pGameInstance->FadeoutSound(i, fTimeDelta, 1.f, false);
+			}
+		}
+	}
 
 	if (m_pLoader->isFinished())// && m_pGameInstance->Key_Down(DIK_SPACE))
 	{
@@ -74,6 +80,14 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 		//case Client::LEVEL_DUNGEON:
 		//	pLevel = CLevel_Dungeon::Create(m_pDevice, m_pContext);
 		//	break;
+		}
+
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+		{
+			if (m_pGameInstance->Get_IsPlayingSound(i))
+			{
+				m_pGameInstance->FadeinSound(i, fTimeDelta);
+			}
 		}
 		
 		if (not pLevel)

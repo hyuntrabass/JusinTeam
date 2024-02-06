@@ -343,7 +343,7 @@ public:
 	void Check_Att_Collider(ATTACK_TYPE Att_Type);
 
 public:
-	void Tick_Riding();
+	void Tick_Riding(_float fTimeDelta);
 	HRESULT Add_Riding();
 	void Summon_Riding(Riding_Type Type);
 
