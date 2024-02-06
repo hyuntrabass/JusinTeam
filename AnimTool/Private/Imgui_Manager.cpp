@@ -362,7 +362,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					SoundDesc.iStartAnimIndex = m_AnimDesc.iAnimIndex;
 					SoundDesc.fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
 					SoundDesc.fInitVolume = 0.5f;
-					SoundDesc.fVolume = SoundDesc.fInitVolume;
 					pCurModel->Add_TriggerSound(SoundDesc);
 				}
 			}
@@ -398,7 +397,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					SoundDesc.iStartAnimIndex = m_AnimDesc.iAnimIndex;
 					SoundDesc.fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
 					SoundDesc.fInitVolume = 0.5f;
-					SoundDesc.fVolume = SoundDesc.fInitVolume;
 					pCurModel->Add_TriggerSound(SoundDesc);
 				}
 			}
@@ -1047,7 +1045,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				}
 				if (pSoundDesc->iChannel != -1)
 				{
-					m_pGameInstance->Set_ChannelVolume(pSoundDesc->iChannel, pSoundDesc->fVolume);
+					m_pGameInstance->Set_ChannelVolume(pSoundDesc->iChannel, pSoundDesc->fInitVolume);
 				}
 				ImGui::InputFloat("FADEOUT SECOND##1", &pSoundDesc->fFadeoutSecond, 0.01f, 0.f, "%.2f");
 				if (pSoundDesc->fFadeoutSecond <= 0.f)
@@ -1468,7 +1466,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				}
 				if (pSoundDesc->iChannel != -1)
 				{
-					m_pGameInstance->Set_ChannelVolume(pSoundDesc->iChannel, pSoundDesc->fVolume);
+					m_pGameInstance->Set_ChannelVolume(pSoundDesc->iChannel, pSoundDesc->fInitVolume);
 				}
 				ImGui::InputFloat("FADEOUT SECOND##1", &pSoundDesc->fFadeoutSecond, 0.01f, 0.f, "%.2f");
 				if (pSoundDesc->fFadeoutSecond <= 0.f)
@@ -2063,7 +2061,6 @@ HRESULT CImgui_Manager::LoadFile()
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fFadeoutSecond), sizeof(_float));
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.IsClientTrigger), sizeof(_bool));
 
-					SoundDesc.fVolume = SoundDesc.fInitVolume;
 					pCurModel->Add_TriggerSound(SoundDesc);
 				}
 			}
@@ -2156,7 +2153,6 @@ HRESULT CImgui_Manager::LoadFile()
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fFadeoutSecond), sizeof(_float));
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.IsClientTrigger), sizeof(_bool));
 
-					SoundDesc.fVolume = SoundDesc.fInitVolume;
 					pCurModel->Add_TriggerSound(SoundDesc);
 				}
 			}

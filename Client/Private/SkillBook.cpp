@@ -137,8 +137,13 @@ void CSkillBook::Tick(_float fTimeDelta)
 
 			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 			{
-				m_pGameInstance->FadeoutSound(i, fTimeDelta, 1.f);
+				if (m_pGameInstance->Get_IsLoopingSound(i))
+				{
+					m_pGameInstance->FadeoutSound(i, fTimeDelta);
+				}
 			}
+			m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("BGM_Night_Field_01"), 0.3f, true);
+			m_pGameInstance->FadeinSound(m_iSoundChannel, fTimeDelta);
 		}
 	}
 
@@ -170,8 +175,12 @@ void CSkillBook::Tick(_float fTimeDelta)
 
 			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 			{
-				m_pGameInstance->FadeinSound(i, fTimeDelta, 1.f);
+				if (m_pGameInstance->Get_IsLoopingSound(i))
+				{
+					m_pGameInstance->FadeinSound(i, fTimeDelta, 1.f);
+				}
 			}
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
 			return;
 		}
 	}

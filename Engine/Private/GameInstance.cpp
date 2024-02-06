@@ -1109,14 +1109,14 @@ void CGameInstance::StopAll()
 	return m_pSound_Manager->StopAll();
 }
 
-HRESULT CGameInstance::FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond)
+HRESULT CGameInstance::FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond, _bool IsReusable)
 {
 	if (!m_pSound_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
 	}
 
-	return m_pSound_Manager->FadeoutSound(iChannel, fTimeDelta, fFadeoutSecond);
+	return m_pSound_Manager->FadeoutSound(iChannel, fTimeDelta, fFadeoutSecond, IsReusable);
 }
 
 HRESULT CGameInstance::FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond)
@@ -1238,6 +1238,16 @@ _float CGameInstance::Get_ChannelVolume(_uint iChannel)
 	}
 
 	return m_pSound_Manager->GetChannelVolume(iChannel);
+}
+
+_bool CGameInstance::Get_IsLoopingSound(_uint iChannel)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->Get_IsLoopingSound(iChannel);
 }
 
 void CGameInstance::Set_CameraModeIndex(const _uint& iIndex)
