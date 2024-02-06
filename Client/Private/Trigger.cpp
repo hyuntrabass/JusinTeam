@@ -2,12 +2,15 @@
 
 CTrigger::CTrigger(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
+
 {
 }
 
 CTrigger::CTrigger(const CTrigger& rhs)
 	: CGameObject(rhs)
+	, m_pTrigger_Manager(CTrigger_Manager::Get_Instance())
 {
+	Safe_AddRef(m_pTrigger_Manager);
 }
 
 HRESULT CTrigger::Init_Prototype()
@@ -28,8 +31,8 @@ HRESULT CTrigger::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-
-	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_vPos));
+	m_pTransformCom->Set_Scale(_vec3(0.01f, 0.01f, 0.01f));
+	m_pTransformCom->Set_State(State::Pos, m_vPos);
 
 	return S_OK;
 }
@@ -37,6 +40,9 @@ HRESULT CTrigger::Init(void* pArg)
 void CTrigger::Tick(_float fTimeDelta)
 {
 	m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
+
+	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
+	_bool isColl = m_pCollider->Intersect(pCollider);
 }
 
 void CTrigger::Late_Tick(_float fTimeDelta)
@@ -46,7 +52,8 @@ void CTrigger::Late_Tick(_float fTimeDelta)
 	m_pRendererCom->Add_DebugComponent(m_pCollider);
 #endif
 
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	//m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+
 }
 
 HRESULT CTrigger::Render()
@@ -66,7 +73,7 @@ HRESULT CTrigger::Add_Components()
 	// Com_Collider
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
-	CollDesc.fRadius = m_iColliderSize;
+	CollDesc.fRadius = 100.f;
 	CollDesc.vCenter = _vec3(m_vPos.x, m_vPos.y, m_vPos.z);
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 		TEXT("Com_Trigger_Sphere"), (CComponent**)&m_pCollider, &CollDesc)))
@@ -106,6 +113,7 @@ void CTrigger::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pTrigger_Manager);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pCollider);
 }

@@ -5,8 +5,10 @@
 
 BEGIN(Client)
 
+
 class CTrigger final : public CGameObject
 {
+
 private:
 	CTrigger(_dev pDevice, _context pContext);
 	CTrigger(const CTrigger& rhs);
@@ -24,12 +26,14 @@ public:
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CCollider* m_pCollider{ nullptr };
+	CTrigger_Manager* m_pTrigger_Manager{ nullptr };
 
 private:
 	_vec4 m_vPos{};
 	_float m_iColliderSize{};
 	_int 	m_iTriggerNumber{};
 	_bool	m_isCollision{false};
+
 
 private:
 	HRESULT Add_Components();

@@ -397,6 +397,12 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\UIEffect\Hit">
       <UniqueIdentifier>{47605e18-940e-42be-842c-9bf301c51a13}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\01.Camera\CutScene">
+      <UniqueIdentifier>{bf729dcd-21e7-4473-a536-26057a726c1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\01.Camera\CutScene\Curve">
+      <UniqueIdentifier>{3ed5c41d-0372-425d-9eb7-aa5417122c3e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -792,6 +798,12 @@
     <ClInclude Include="..\Public\HitEffect.h">
       <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Hit</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\CutScene_Curve.h">
+      <Filter>02.GameObjects\01.Camera\CutScene\Curve</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_CutScene.h">
+      <Filter>02.GameObjects\01.Camera\CutScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1181,6 +1193,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\HitEffect.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_CutScene.cpp">
+      <Filter>02.GameObjects\01.Camera\CutScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CutScene_Curve.cpp">
+      <Filter>02.GameObjects\01.Camera\CutScene\Curve</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

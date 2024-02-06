@@ -227,6 +227,10 @@ HRESULT CLevel_Select::Ready_Camera()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, strLayerTag, TEXT("Prototype_GameObject_Camera_CutScene"), &CamDesc)))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }

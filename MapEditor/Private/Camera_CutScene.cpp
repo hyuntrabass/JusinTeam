@@ -24,6 +24,7 @@ HRESULT CCamera_CutScene::Init(void* pArg)
 
 	CCamera::Camera_Desc CamDesc;
 	CamDesc.vCameraPos =CamInfo.vStartCutScene;
+
 	CamDesc.vFocusPos = CamInfo.vEndCutScene;
 	CamDesc.fFovY = XMConvertToRadians(60.f);
 	CamDesc.fAspect = static_cast<_float>(g_iWinSizeX) / g_iWinSizeY;

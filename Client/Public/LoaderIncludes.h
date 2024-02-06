@@ -118,3 +118,6 @@
 // Object
 #include "Etc_Object.h"
 #include "Environment_Object.h"
+
+// Trigger
+#include "Trigger.h"

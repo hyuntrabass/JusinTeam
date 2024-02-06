@@ -419,9 +419,25 @@ namespace Client
 		InstPass_End,
 	};
 #pragma endregion
-
-
+#pragma region ÄÆ¾À
+	struct SectionInfo
+	{
+		_vec4 vStartCutScene{};
+		_vec4 vEndCutScene{};
+		_uint iSectionType{};
+	};
 }
+#pragma endregion
+
+#pragma region Æ®¸®°Å
+struct TriggerInfo
+{
+	_int iIndex{};
+	_float fSize{};
+	_mat WorldMat{};
+};
+
+#pragma endregion
 
 extern HWND g_hWnd;
 extern HINSTANCE g_hInst;

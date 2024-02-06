@@ -3,15 +3,9 @@
 #include "Base.h"
 #include "GameInstance.h"
 
-struct TriggerInfo
-{
-	_int iIndex{};
-	_float fSize{};
-	_mat WorldMat{};
-};
 
 BEGIN(Client)
-
+class CTrigger;
 class CTrigger_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CTrigger_Manager)
@@ -20,8 +14,15 @@ private:
 	virtual ~CTrigger_Manager() = default;
 
 public:
-	HRESULT Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc);
+	HRESULT Init();
+	void Tick(_float fTimeDelta);
 	void Late_Tick(_float fTimeDelta);
+	HRESULT Add_Layer_Trigger(TriggerInfo& pInfo, const _bool isStaticLevel = false);
+	void Create_Trigger(const wstring& strTriggerTag, _mat pMatrix);
+	class CTrigger* Clone(TriggerInfo& pInfo);
+	void Delete_Trigger(const void* pMatrix);
+
+	void Clear(_uint iLevelIndex);
 
 
 private:
@@ -31,6 +32,10 @@ private:
 	HWND m_hWnd;
 	_uint m_iWinSizeX = { 0 };
 	_uint m_iWinSizeY = { 0 };
+
+private:
+	map<const void*, class CTrigger*> m_pTrigger[LEVEL_END]{};
+
 
 public:
 	virtual void Free() override;

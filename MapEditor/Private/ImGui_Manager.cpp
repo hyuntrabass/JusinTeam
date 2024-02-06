@@ -45,6 +45,7 @@ HRESULT CImGui_Manager::Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc)
 void CImGui_Manager::Tick(_float fTimeDelta)
 {
 	m_fTimeDelta = fTimeDelta;
+
 	Mouse_Pos();
 
 	if (m_eItemType == ItemType::Terrain)
@@ -160,7 +161,7 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 			}
 
 		}
-		if (m_eItemType == ItemType::Camera)
+		else if (m_eItemType == ItemType::Camera)
 		{
 			const _uint iMaxClick = 2;
 			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))

@@ -365,6 +365,11 @@ HRESULT CLoader::Load_Logo()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Trigger"), CTrigger::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 	CEffect_Manager::Get_Instance()->Read_EffectFile();

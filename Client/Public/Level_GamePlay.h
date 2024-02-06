@@ -36,6 +36,8 @@ private:
 	//UI
 	HRESULT Ready_UI();
 
+	HRESULT Ready_TestTrigger();
+
 private:
 	// Monster_Test
 	HRESULT Ready_ModelTest();

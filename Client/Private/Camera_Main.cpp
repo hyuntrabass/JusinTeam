@@ -51,6 +51,10 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		m_pGameInstance->Set_CameraModeIndex(CM_DEBUG);
 	}
 
+	if (m_pGameInstance->Key_Down(DIK_L))
+	{
+		m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+	}
 
 	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
 

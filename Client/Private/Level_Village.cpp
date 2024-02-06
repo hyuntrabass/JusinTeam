@@ -1,6 +1,7 @@
 #include "Level_Village.h"
 #include "Level_Loading.h"
 #include "Camera.h"
+#include "Camera_CutScene.h"
 #include "Monster.h"
 #include "NPC.h"
 #include "NPC_Dummy.h"
@@ -762,6 +763,70 @@ HRESULT CLevel_Village::Ready_Test()
 
 	return S_OK;
 }
+//
+//HRESULT CLevel_Village::Ready_Trigger()
+//{
+//	TriggerInfo Info{};
+//	const TCHAR* pGetPath = L"../Bin/Data/Village_Trigger.dat";
+//
+//	std::ifstream inFile(pGetPath, std::ios::binary);
+//
+//	if (!inFile.is_open())
+//	{
+//		MSG_BOX("../Bin/Data/Village_Trigger.dat 트리거 불러오기 실패.");
+//		return E_FAIL;
+//	}
+//		_uint TriggerListSize;
+//		inFile.read(reinterpret_cast<char*>(&TriggerListSize), sizeof(_uint));
+//
+//
+//		for (_uint i = 0; i < TriggerListSize; ++i)
+//		{
+//			TriggerInfo TriggerInfo{};
+//
+//			_uint iIndex{};
+//			inFile.read(reinterpret_cast<char*>(&iIndex), sizeof(_uint));
+//
+//			TriggerInfo.iTriggerNum = iIndex;
+//
+//			_ulong TriggerPrototypeSize;
+//			inFile.read(reinterpret_cast<char*>(&TriggerPrototypeSize), sizeof(_ulong));
+//
+//			wstring TriggerPrototype;
+//			TriggerPrototype.resize(TriggerPrototypeSize);
+//			inFile.read(reinterpret_cast<char*>(&TriggerPrototype[0]), TriggerPrototypeSize * sizeof(wchar_t));
+//
+//			_float TriggerSize{};
+//			inFile.read(reinterpret_cast<char*>(&TriggerSize), sizeof(_float));
+//			TriggerInfo.fTriggerSize = TriggerSize;
+//
+//			_mat TriggerWorldMat;
+//			inFile.read(reinterpret_cast<char*>(&TriggerWorldMat), sizeof(_mat));
+//
+//			TriggerInfo.vPos = _float4(TriggerWorldMat._41, TriggerWorldMat._42, TriggerWorldMat._43, TriggerWorldMat._44);
+//			TriggerInfo.fTriggerSize = TriggerSize;
+//			TriggerInfo.iTriggerNum = iIndex;
+//
+//			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &TriggerInfo)))
+//			{
+//				MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
+//				return E_FAIL;
+//			}
+//
+//			CTransform* pEnvirTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
+//
+//			pEnvirTransform->Set_State(State::Right, TriggerWorldMat.Right());
+//			pEnvirTransform->Set_State(State::Up, TriggerWorldMat.Up());
+//			pEnvirTransform->Set_State(State::Look, TriggerWorldMat.Look());
+//			pEnvirTransform->Set_State(State::Pos, TriggerWorldMat.Position());
+//
+//		}
+//
+//		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
+//		inFile.close();
+//
+//	return S_OK;
+//}
 
 CLevel_Village* CLevel_Village::Create(_dev pDevice, _context pContext)
 {
