@@ -841,7 +841,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 	{
 		// º¸È£¸· ±úÁö´Â ÀÌÆåÆ®
 		Safe_Release(m_pEffect_Shield);
-
+		m_pGameInstance->Play_Sound(TEXT("ShieldBreak"));
 		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Shield_Diss");
 		Info.pMatrix = &m_ShieldMatrix;
 		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);

@@ -61,6 +61,7 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 			break;
 			case QUESTIN:
 			{
+				m_pGameInstance->Play_Sound(TEXT("Quest_Start"), 0.6f);
 				CPop_QuestIn::QUESTIN_DESC PopQuestInDesc = {};
 				PopQuestInDesc.isMain = m_vecPopEvents.front().isMain;
 				PopQuestInDesc.fExp = m_vecPopEvents.front().fExp;
@@ -75,6 +76,7 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 			break;
 			case QUESTEND:
 			{
+				m_pGameInstance->Play_Sound(TEXT("Quest_Complete"), 0.6f);
 				CPop_QuestEnd::QUESTEND_DESC PopQuestEndDesc = {};
 				PopQuestEndDesc.fExp = m_vecPopEvents.front().fExp;
 				PopQuestEndDesc.iMoney = m_vecPopEvents.front().iMoney;

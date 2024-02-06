@@ -30,17 +30,14 @@ HRESULT CRiding::Init(void* pArg)
 		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Bird");
 	}
 	break;
-
 	case Client::Horse:
 	{
 		m_Animation.iAnimIndex = Horse_1004_Idle;
 		m_eState = Riding_Idle;
 		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Horse");
 		m_fRunSpeed = 10.f;
-
 	}
 	break;
-
 	case Client::Tiger:
 	{
 		m_Animation.iAnimIndex = Tiger_1003_Idle;

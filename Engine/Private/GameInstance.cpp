@@ -116,6 +116,16 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 		MSG_BOX("FATAL ERROR : m_pObject_Manager is NULL");
 	}
 
+	if (m_isPlayingVideo)
+	{
+		m_fVideoTimmer += fTimeDelta;
+		if (m_fVideoTimmer > m_fVideoDuration)
+		{
+			m_isPlayingVideo = false;
+		}
+		return;
+	}
+
 	m_pInput_Manager->Update_InputDev();
 
 	if (Key_Down(DIK_F1, InputChannel::Engine))
@@ -1380,6 +1390,12 @@ const _bool& CGameInstance::IsSkipDebugRendering() const
 const wstring& CGameInstance::Get_InputString() const
 {
 	return m_strInput;
+}
+
+void CGameInstance::Video_Start(_float fVideoDuration)
+{
+	m_fVideoDuration = fVideoDuration;
+	m_isPlayingVideo = true;
 }
 
 void CGameInstance::Initialize_Level(_uint iLevelNum)

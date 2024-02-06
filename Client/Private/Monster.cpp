@@ -95,13 +95,13 @@ void CMonster::Tick(_float fTimeDelta)
 		m_fHittedTime -= fTimeDelta;
 		m_HpBar->Tick(fTimeDelta);
 	}
-
 }
 
 void CMonster::Late_Tick(_float fTimeDelta)
 {
 	if (m_fHittedTime > 0.f)
 	{
+		m_HpBar->Set_HP(m_iHP);
 		m_HpBar->Late_Tick(fTimeDelta);
 	}
 	m_pModelCom->Play_Animation(fTimeDelta);
