@@ -365,6 +365,7 @@ private:
 	CCollider* m_pAttCollider[AT_End]{ nullptr };
 	CCommonSurfaceTrail* m_pLeft_Trail[5]{ nullptr };
 	CCommonSurfaceTrail* m_pRight_Trail[5]{ nullptr };
+	class CEffect_Dummy* m_pEffect_Shield{ nullptr };
 
 private:
 	ANIM_DESC m_Animation{};
@@ -440,6 +441,8 @@ private:
 	_float m_fDissolveRatio{};
 	_float m_fBoostSpeedTimmer{};
 	_float m_fInterpolationRatio{};
+
+	_mat m_ShieldMatrix{};
 
 private:
 	HRESULT Add_Components();

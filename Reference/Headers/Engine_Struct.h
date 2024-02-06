@@ -122,6 +122,8 @@ namespace Engine
 		float fRectRotationAngle{};
 		bool isBillboard{};
 		SimpleMath::Vector3 vBillboardRotation{};
+		float fPartiAppearRatio{};
+		float fPartiDissolveRatio{};
 
 		bool hasLight{};
 		LIGHT_DESC Light_Desc{};
@@ -283,6 +285,7 @@ namespace Engine
 		SimpleMath::Vector4 vPos{};
 		SimpleMath::Vector4 vPrevPos{};
 		unsigned int iInstanceID{};
+		float fDissolveRatio{};
 
 		float fSpeed{};
 		SimpleMath::Vector2 vLifeTime{};
@@ -323,7 +326,7 @@ namespace Engine
 
 	using VTXPOINT_INSTANCING = struct ENGINE_DLL tagVertex_Point_Instancing
 	{
-		static const unsigned int iNumElements{ 8 };
+		static const unsigned int iNumElements{ 9 };
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	};
 
