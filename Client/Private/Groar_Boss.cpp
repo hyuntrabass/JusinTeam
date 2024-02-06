@@ -889,20 +889,11 @@ void CGroar_Boss::Update_Collider()
 
 HRESULT CGroar_Boss::Init_Dialog()
 {
-	m_vecDialog.push_back(TEXT("여보.."));
-	m_vecDialog.push_back(TEXT("놀라게 해서 죄송해요 저는 그로아 마나하임의 신녀입니다."));
-	m_vecDialog.push_back(TEXT("다름이 아니라 돌아오지 않는 남편을 찾고 있었어요."));
-	m_vecDialog.push_back(TEXT("모르겠어요 무슨일인지.. 돌아올시간이 훌쩍 지났는데도.."));
-	m_vecDialog.push_back(TEXT("아무런 연락이 없어요.. 절대 그럴사람이 아닌데.."));
-	m_vecDialog.push_back(TEXT("분명 무슨 일이 생긴것이 틀림없어요"));
-	m_vecDialog.push_back(TEXT("도움을 부탁드려도 될까요? 여보.."));
-	m_vecDialog.push_back(TEXT("!그로아의 부탁"));
-	m_vecDialog.push_back(TEXT("오셨군요! 혹시 제 남편은?"));
-	m_vecDialog.push_back(TEXT("이..이건..어째서 이 팔찌만? 제.. 제 남편은.. 제 남편은요?"));
-	m_vecDialog.push_back(TEXT("저는 괜찮아요. 다만 남편의 마지막을 확인하고 싶을 뿐이에요. 얼굴이라도 손끝이라도 보고싶을 뿐이에요.."));
-	m_vecDialog.push_back(TEXT("염치없지만 꼭 부탁드릴게요. 남편의 흔적을 찾는동안 저 끔찍한 마물들을 막아주세요. 부탁드립니다."));
-	m_vecDialog.push_back(TEXT("!그로아를 지켜라"));
-	m_vecDialog.push_back(TEXT("END"));
+	for (size_t i = 0; i < size(m_strLines); i++)
+	{
+		m_vecDialog.push_back(m_strLines[i]);
+	}
+	size_t i = size(m_strLines);
 
 	m_vecChatt.push_back(TEXT("제 남편은 어디에 있나요.."));
 	m_vecChatt.push_back(TEXT("신을 저주한다"));
@@ -949,7 +940,7 @@ HRESULT CGroar_Boss::Add_Parts()
 	{
 		return E_FAIL;
 	}
-	ButtonDesc.strText = TEXT("로스크바");
+	ButtonDesc.strText = TEXT("그로아");
 	ButtonDesc.fFontSize = 0.5f;
 	ButtonDesc.vTextPosition = _vec2(0.f, -30.f);
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SiegeQuest");
@@ -1150,7 +1141,6 @@ void CGroar_Boss::Set_Text(GROAR_NPCSTATE eState)
 			return;
 		}
 
-
 		CDialogText::DIALOGTEXT_DESC TextDesc = {};
 		TextDesc.eLevelID = LEVEL_STATIC;
 		TextDesc.fDepth = (_float)D_TALK / (_float)D_END - 0.01f;
@@ -1201,13 +1191,13 @@ void CGroar_Boss::Set_Text(GROAR_NPCSTATE eState)
 
 void CGroar_Boss::Play_TalkSound(const wstring& strTalkText)
 {
-	if (strTalkText == m_strLine[0]) ||
-		strTalkText == TEXT("놀라게 해서 죄송해요 저는 그로아 마나하임의 신녀입니다.") ||
-		strTalkText == TEXT("아무런 연락이 없어요.. 절대 그럴사람이 아닌데..") ||
-		strTalkText == TEXT("오셨군요! 혹시 제 남편은?") ||
-		strTalkText == TEXT("이..이건..어째서 이 팔찌만? 제.. 제 남편은.. 제 남편은요?") ||
-		strTalkText == TEXT("저는 괜찮아요. 다만 남편의 마지막을 확인하고 싶을 뿐이에요. 얼굴이라도 손끝이라도 보고싶을 뿐이에요..") ||
-		strTalkText == TEXT("염치없지만 꼭 부탁드릴게요. 남편의 흔적을 찾는동안 저 끔찍한 마물들을 막아주세요. 부탁드립니다."))
+	if (strTalkText == m_strLines[0] ||
+		strTalkText == m_strLines[1] ||
+		strTalkText == m_strLines[4] ||
+		strTalkText == m_strLines[8] ||
+		strTalkText == m_strLines[9] ||
+		strTalkText == m_strLines[10] ||
+		strTalkText == m_strLines[11])
 	{
 		if (m_iSoundChannel != -1)
 		{
