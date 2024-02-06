@@ -893,7 +893,6 @@ HRESULT CGroar_Boss::Init_Dialog()
 	{
 		m_vecDialog.push_back(m_strLines[i]);
 	}
-	size_t i = size(m_strLines);
 
 	m_vecChatt.push_back(TEXT("제 남편은 어디에 있나요.."));
 	m_vecChatt.push_back(TEXT("신을 저주한다"));
