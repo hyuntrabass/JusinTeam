@@ -192,6 +192,8 @@ HRESULT CEffect_Manager::Read_EffectFile()
 				File.read(reinterpret_cast<_char*>(&Info.fRectRotationAngle), sizeof Info.fRectRotationAngle);
 				File.read(reinterpret_cast<_char*>(&Info.isBillboard), sizeof Info.isBillboard);
 				File.read(reinterpret_cast<_char*>(&Info.vBillboardRotation), sizeof Info.vBillboardRotation);
+				File.read(reinterpret_cast<_char*>(&Info.fPartiDissolveRatio), sizeof Info.fPartiDissolveRatio);
+				File.read(reinterpret_cast<_char*>(&Info.fPartiAppearRatio), sizeof Info.fPartiAppearRatio);
 
 				size_t iNameSize{};
 

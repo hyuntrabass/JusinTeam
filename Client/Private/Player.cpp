@@ -4,6 +4,8 @@
 #include "Arrow.h"
 #include "FadeBox.h"
 #include "HitEffect.h"
+#include "Effect_Dummy.h"
+#include "Effect_Manager.h"
 
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -85,11 +87,11 @@ HRESULT CPlayer::Init(void* pArg)
 	m_Right_Mat = m_pModelCom->Get_BoneMatrix("B_Weapon_R");
 
 
-	SURFACETRAIL_DESC SurfaceDesc{};
-	SurfaceDesc.iNumVertices = 20;
-	SurfaceDesc.vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
-	SurfaceDesc.strMaskTextureTag = L"FX_G_Note_MusicSheet001_Tex";
-
+	//SURFACETRAIL_DESC SurfaceDesc{};
+	//SurfaceDesc.iNumVertices = 20;
+	//SurfaceDesc.vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
+	//SurfaceDesc.strMaskTextureTag = L"FX_G_Note_MusicSheet001_Tex";
+	//m_pTest_Trail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &SurfaceDesc);
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER);
 	m_bReadyMove = true;
@@ -275,7 +277,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 			if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
 			{
-				m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * dwMouseMove * -1.f * fMouseSensor);
+				m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * dwMouseMove * -10.f * fMouseSensor);
 			}
 		}
 	}
@@ -308,6 +310,13 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		m_UsingMotionBlur = false;
 	}
+
+	if (m_pEffect_Shield)
+	{
+		m_ShieldMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+		m_pEffect_Shield->Tick(fTimeDelta);
+	}
+
 	m_pParryingCollider->Update(m_pTransformCom->Get_World_Matrix());
 }
 
@@ -362,6 +371,10 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 
 
+	if (m_pEffect_Shield)
+	{
+		m_pEffect_Shield->Late_Tick(fTimeDelta);
+	}
 
 #ifdef _DEBUG
 	//m_pRendererCom->Add_DebugComponent(m_pHitCollider);
@@ -824,10 +837,15 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 	{
 		m_pGameInstance->Set_AimMode(false);
 	}
-	if (m_iShield > 0)
+	if (m_pEffect_Shield)
 	{
-		m_iShield--;
 		// 보호막 깨지는 이펙트
+		Safe_Release(m_pEffect_Shield);
+
+		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Shield_Diss");
+		Info.pMatrix = &m_ShieldMatrix;
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
 		return;
 
 	}
@@ -888,13 +906,18 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 		break;
 		case Parrying_Succescc:
 		{
-			m_iShield++;
 			m_fBoostSpeedTimmer = 5.f;
 			m_fBoostSpeed = 3.f;
 			//보호막 생성
+			if (not m_pEffect_Shield)
+			{
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Shield");
+				Info.isFollow = true;
+				Info.pMatrix = &m_ShieldMatrix;
+				m_pEffect_Shield = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+			}
 		}
-		default:
-			break;
+		break;
 		}
 	}
 
@@ -1274,6 +1297,7 @@ void CPlayer::Move(_float fTimeDelta)
 				m_pTransformCom->Jump(8.f);
 				m_eState = Jump_Start;
 				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("점프하기"));
+				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("그로아의 부탁"));
 			}
 			if (m_bReady_Climb)
 			{
@@ -1329,17 +1353,17 @@ void CPlayer::Move(_float fTimeDelta)
 
 				}
 				else if (m_eState == Attack or
-					m_eState == Skill1 or
-					m_eState == Skill2 or
-					m_eState == Skill3 or
-					m_eState == Skill4)
+						 m_eState == Skill1 or
+						 m_eState == Skill2 or
+						 m_eState == Skill3 or
+						 m_eState == Skill4)
 				{
 					m_eState = Attack_Run;
 				}
 				else if (/*m_pTransformCom->Is_OnGround() and*/
-					m_eState == Run or
-					m_eState == Run_End or
-					m_pModelCom->IsAnimationFinished(Anim_Normal_run_start))
+						 m_eState == Run or
+						 m_eState == Run_End or
+						 m_pModelCom->IsAnimationFinished(Anim_Normal_run_start))
 				{
 					m_eState = Run;
 
@@ -1426,7 +1450,7 @@ void CPlayer::Move(_float fTimeDelta)
 
 		}
 		else if (m_eState == Walk or m_eState == Run_Start or
-			m_pModelCom->IsAnimationFinished(Anim_B_idle_end))
+				 m_pModelCom->IsAnimationFinished(Anim_B_idle_end))
 		{
 			m_eState = Idle;
 		}
@@ -3622,7 +3646,7 @@ HRESULT CPlayer::Add_Components()
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.8f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-		TEXT("Com_Player_Hit_OBB"), (CComponent**)&m_pHitCollider, &CollDesc)))
+									  TEXT("Com_Player_Hit_OBB"), (CComponent**)&m_pHitCollider, &CollDesc)))
 	{
 		return E_FAIL;
 	}
@@ -3632,7 +3656,7 @@ HRESULT CPlayer::Add_Components()
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.2f, 0.4f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-		TEXT("Com_Collider_Common_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Common]), &CollDesc)))
+									  TEXT("Com_Collider_Common_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Common]), &CollDesc)))
 	{
 		return E_FAIL;
 	}
