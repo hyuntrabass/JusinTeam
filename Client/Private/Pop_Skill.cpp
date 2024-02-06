@@ -3,6 +3,7 @@
 #include "TextButton.h"
 #include "TextButtonColor.h"
 #include "UI_Manager.h"
+#include "Event_Manager.h"
 #include "BlurTexture.h"
 #include "FadeBox.h"
 #include "Skill.h"
@@ -39,8 +40,8 @@ HRESULT CPop_Skill::Init(void* pArg)
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
-	_uint iSkillNum{};
-	iSkillNum = ((SKILLIN_DESC*)pArg)->iSkillLevel;
+
+	m_iSkillNum = ((SKILLIN_DESC*)pArg)->iSkillLevel;
 
 	if (FAILED(Add_Parts()))
 	{
@@ -48,7 +49,7 @@ HRESULT CPop_Skill::Init(void* pArg)
 	}
 
 
-	SKILLINFO tInfo = CUI_Manager::Get_Instance()->Get_SkillInfo(WP_BOW,iSkillNum );
+	SKILLINFO tInfo = CUI_Manager::Get_Instance()->Get_SkillInfo(WP_BOW, m_iSkillNum);
 	CSkill::SKILL_DESC Desc{};
 	Desc.fDepth = m_fDepth - 0.01f;
 	Desc.isScreen = false;
@@ -61,7 +62,7 @@ HRESULT CPop_Skill::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	tInfo = CUI_Manager::Get_Instance()->Get_SkillInfo(WP_SWORD, iSkillNum);
+	tInfo = CUI_Manager::Get_Instance()->Get_SkillInfo(WP_SWORD, m_iSkillNum);
 	Desc.tSkillInfo = tInfo;
 	Desc.vPosition = m_pBoxSword->Get_Position();
 	Desc.vSize = _vec2(50.f, 50.f);
@@ -70,7 +71,7 @@ HRESULT CPop_Skill::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-	if (FAILED(CUI_Manager::Get_Instance()->Unlock_Skill(iSkillNum)))
+	if (FAILED(CUI_Manager::Get_Instance()->Unlock_Skill(m_iSkillNum)))
 	{
 		return E_FAIL;
 	}
@@ -83,6 +84,13 @@ void CPop_Skill::Tick(_float fTimeDelta)
 	
 	if (m_fDeadTime >= 5.f)
 	{
+		if (m_iSkillNum == 0)
+		{
+			if (CEvent_Manager::Get_Instance()->Get_TutorialLevel() == T_EXIT)
+			{
+				CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_OPENSKILL);
+			}
+		}
 		m_isDead = true;
 	}
 
@@ -402,7 +410,6 @@ CGameObject* CPop_Skill::Clone(void* pArg)
 void CPop_Skill::Free()
 {
 	__super::Free();
-
 
 	Safe_Release(m_pParticle);
 	Safe_Release(m_pBorder);

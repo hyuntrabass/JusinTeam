@@ -231,6 +231,9 @@ namespace Client
 		T_OPENINVEN, 
 		T_EQUIP,
 		T_EXIT,
+		T_OPENSKILL,
+		T_EQUIPSKILL,
+		T_SKILLEXIT,
 		TUTO_END
 	};
 

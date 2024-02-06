@@ -40,6 +40,7 @@ private:
 	wstring			m_strQuestTitle;
 	wstring			m_strText;
 
+	_uint			m_iSkillNum{};
 
 	_float			m_fIndex{};
 	_float			m_fTime{10.f};
