@@ -1,5 +1,7 @@
 #include "Dead.h"
 
+#include "Effect_Manager.h"
+
 CDead::CDead(_dev pDevice, _context pContext)
 	: CMonster(pDevice, pContext)
 {
@@ -51,6 +53,12 @@ HRESULT CDead::Init(void* pArg)
 	vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
 
 	m_pTransformCom->LookAt(vPlayerPos);
+
+	_mat m_EffectMatrix = _mat::CreateScale(4.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 1.f, 0.f));
+
+	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BloodPop04");
+	Info.pMatrix = &m_EffectMatrix;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
     return S_OK;
 }

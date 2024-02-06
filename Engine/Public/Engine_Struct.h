@@ -211,7 +211,6 @@ namespace Engine
 		
 		int iChannel = -1;
 		bool HasPlayed{};
-		float fVolume{};
 		bool IsEnding{};
 	};
 

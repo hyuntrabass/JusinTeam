@@ -5,6 +5,8 @@
 const _float CVoid09::m_fChaseRange = 7.f;
 const _float CVoid09::m_fAttackRange = 2.f;
 
+_uint CVoid09::m_iIndex = 0;
+
 CVoid09::CVoid09(_dev pDevice, _context pContext)
 	: CMonster(pDevice, pContext)
 {
@@ -62,7 +64,18 @@ HRESULT CVoid09::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
-	m_pTransformCom->Set_Position(_vec3(100.f, 8.f, 108.f));
+
+	switch (m_iIndex)
+	{
+	case 0:
+		m_pTransformCom->Set_Position(_vec3(2102.f, -16.f, 2091.f));
+		break;
+	case 1:
+		m_pTransformCom->Set_Position(_vec3(2102.f, -16.f, 2081.f));
+		break;
+	}
+
+	++m_iIndex;
 
 	return S_OK;
 }
@@ -110,6 +123,7 @@ void CVoid09::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_iHP -= iDamage;
 	m_bDamaged = true;
+	m_bChangePass = true;
 
 	m_eCurState = STATE_HIT;
 

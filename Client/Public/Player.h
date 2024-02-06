@@ -363,7 +363,6 @@ private:
 	CTexture* m_pDissolveTextureCom{ nullptr };
 	CRealtimeVTFModel* m_pModelCom = { nullptr };
 	CCollider* m_pAttCollider[AT_End]{ nullptr };
-	CCommonSurfaceTrail* m_pTest_Trail{ nullptr };
 	CCommonSurfaceTrail* m_pLeft_Trail[5]{ nullptr };
 	CCommonSurfaceTrail* m_pRight_Trail[5]{ nullptr };
 	class CEffect_Dummy* m_pEffect_Shield{ nullptr };

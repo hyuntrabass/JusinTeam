@@ -8,6 +8,7 @@
 #include "Effect_Manager.h"
 #include "UI_Manager.h"
 #include "FadeBox.h"
+#include "Pop_Skill.h"
 //원명의 꼽사리
 #include "Lake.h"
 
@@ -755,7 +756,16 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	{
 		return E_FAIL;
 	}
+	/*
 	
+
+	CPop_Skill::SKILLIN_DESC Desc{};
+	Desc.iSkillLevel = 0;
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_PopSkill"), &Desc)))
+	{
+		return E_FAIL;
+	}
+	*/
 	
 
 	return S_OK;

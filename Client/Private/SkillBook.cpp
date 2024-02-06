@@ -52,11 +52,6 @@ HRESULT CSkillBook::Init(void* pArg)
 	}
 	
 
-	HRESULT hr = CUI_Manager::Get_Instance()->Set_Inven(this);
-	if (FAILED(hr))
-	{
-		return E_FAIL;
-	}
 	return S_OK;
 }
 
@@ -142,8 +137,13 @@ void CSkillBook::Tick(_float fTimeDelta)
 
 			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 			{
-				m_pGameInstance->FadeoutSound(i, fTimeDelta, 1.f);
+				if (m_pGameInstance->Get_IsLoopingSound(i))
+				{
+					m_pGameInstance->FadeoutSound(i, fTimeDelta);
+				}
 			}
+			m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("BGM_Night_Field_01"), 0.3f, true);
+			m_pGameInstance->FadeinSound(m_iSoundChannel, fTimeDelta);
 		}
 	}
 
@@ -175,8 +175,12 @@ void CSkillBook::Tick(_float fTimeDelta)
 
 			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 			{
-				m_pGameInstance->FadeinSound(i, fTimeDelta, 1.f);
+				if (m_pGameInstance->Get_IsLoopingSound(i))
+				{
+					m_pGameInstance->FadeinSound(i, fTimeDelta, 1.f);
+				}
 			}
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
 			return;
 		}
 	}
@@ -220,9 +224,12 @@ void CSkillBook::Tick(_float fTimeDelta)
 					break;
 				}
 				m_vecSkillDesc[m_eCurType][i]->Select_Skill(true);
-				if (m_vecSkillDesc[m_eCurType][i]->Is_SkillIn())
+				if (!m_vecSkillDesc[m_eCurType][i]->Is_UnLocked())
 				{
-					
+					m_isPicking = false;
+				}
+				else if (m_vecSkillDesc[m_eCurType][i]->Is_SkillIn())
+				{
 					m_isPicking = true;
 					m_iCurIndex = i;
 					m_pSkill_Model->Change_AnimState((CSkill_Model::SKILLMODEL_ANIM)m_vecSkillDesc[m_eCurType][i]->Get_SkillInfo().iModelSkillIndex);
@@ -276,10 +283,17 @@ void CSkillBook::Tick(_float fTimeDelta)
 
 	if (m_isPicking)
 	{
-		if (m_fTime > 0.6f || m_fTime < 0.2f)
+		if (m_fTime > 0.6f )
 		{
-			m_fDir *= -1.f;
+			m_fTime = 0.6f;
+			m_fDir = -1.f;
 		}
+		
+		if (m_fTime < 0.2f )
+		{
+			m_fDir = 1.f;
+		}
+
 
 		m_fTime += fTimeDelta * m_fDir * 0.8f;
 

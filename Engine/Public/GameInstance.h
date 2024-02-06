@@ -163,8 +163,8 @@ public: // Sound Manager
 	void PlayBGM(const wstring& strSoundTag, float fVolume = 0.3f);
 	void StopSound(_uint iChannel);
 	void StopAll();
-	HRESULT FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond);
-	HRESULT FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond);
+	HRESULT FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond = 1.f, _bool IsReusable = true);
+	HRESULT FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond = 1.f);
 
 public: // Effect Callback
 	using Func_CreateFX = function<void(const wstring&, _mat*, const _bool&)>;
@@ -205,6 +205,8 @@ public: // Get_Set
 	_bool Get_IsPlayingSound(_uint iChannel);
 	// 사운드 채널의 볼륨을 반환 함.
 	_float Get_ChannelVolume(_uint iChannel);
+	// 사운드 채널이 루프중인지를 반환 함.
+	_bool Get_IsLoopingSound(_uint iChannel);
 
 	// 카메라 모드를 지정함. 카메라에서 말고는 쓰지 말것.
 	void Set_CameraModeIndex(const _uint& iIndex);

@@ -110,6 +110,7 @@ void CVoid20::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_iHP -= iDamage;
 	m_bDamaged = true;
+	m_bChangePass = true;
 
 	m_eCurState = STATE_HIT;
 
