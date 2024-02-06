@@ -57,10 +57,21 @@ HRESULT CBackGround_Mask::Render()
 	{
 		return E_FAIL;
 	}
-
-	if (FAILED(m_pShaderCom->Begin(VTPass_Background_Mask)))
+	if (m_strTexture == TEXT("Prototype_Component_Texture_Skill_Background"))
 	{
-		return E_FAIL;
+		if (FAILED(m_pShaderCom->Begin(VTPass_Background)))
+		{
+			return E_FAIL;
+		}
+	}
+	else
+	{
+		if (FAILED(m_pShaderCom->Begin(VTPass_Background_Mask)))
+		{
+			return E_FAIL;
+		}
+
+
 	}
 
 	if (FAILED(m_pVIBufferCom->Render()))

@@ -46,6 +46,10 @@ void CSky::Tick(_float fTimeDelta)
 		{
 			if(m_iTextureIndex==10)
 			{
+				if (m_pGameInstance->Get_CameraState() == CS_SKILLBOOK or m_pGameInstance->Get_CameraState() == CS_INVEN)
+				{
+					return;
+				}
 				int random = rand() % 3;
 				switch (random)
 				{

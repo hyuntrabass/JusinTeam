@@ -614,7 +614,7 @@ void CInvenFrame::ItemSlot_Logic(_uint iSlotIdx, _uint iIndex)
 			Set_ItemPosition(m_eCurInvenType);
 		}
 	}
-
+	m_pGameInstance->Play_Sound(TEXT("ItemEquip"), 1.f);
 }
 
 void CInvenFrame::ItemSlot_Delete_Logic(_uint iSlotIdx)
@@ -984,6 +984,7 @@ void CInvenFrame::Shop_Tick(_float fTimeDelta, POINT ptMouse)
 					iCoin += m_vecSellItems[j]->Get_ItemDesc().iSale * m_vecSellItems[j]->Get_ItemNum();
 				}
 				m_pInvenWindow->Set_Cost(iCoin);
+				m_pGameInstance->Play_Sound(TEXT("Sell_Item"));
 			}
 		}
 	}

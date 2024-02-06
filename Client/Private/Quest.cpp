@@ -75,11 +75,13 @@ void CQuest::Tick(_float fTimeDelta)
 	{
 		if (m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
+			m_pGameInstance->Play_Sound(TEXT("Quest_Click"));
 			Sort_Quest();
 			m_isActive = false;
 		}
 		if (!m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
+			m_pGameInstance->Play_Sound(TEXT("Quest_Click"));
 			Sort_Quest();
 			m_bNewQuestIn = false;
 			m_isActive = true;

@@ -325,7 +325,7 @@ HRESULT CInven::Set_WearableItem(WEARABLE_TYPE eType, ITEM eItemDesc)
 		dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(Item);
 	}
 	m_pWearableSlots[eType]->Set_WearableItem(eItemDesc);
-
+	m_pGameInstance->Play_Sound(TEXT("WeaponEquip"));
 	return S_OK;
 }
 

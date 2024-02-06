@@ -43,7 +43,7 @@ private:
 	CTransform* m_pParentTransform{ nullptr };
 
 public:
-	void Set_HP(const _uint iDamage) { m_iCurHp -= iDamage; }
+	void Set_HP(const _uint iHp) { m_iCurHp = iHp; }
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

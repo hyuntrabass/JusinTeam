@@ -31,7 +31,7 @@ HRESULT CSkill_Model::Init(void* pArg)
 	m_Animation.iAnimIndex = 0;
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = true;
-	m_Animation.fAnimSpeedRatio = 2.f;
+	m_Animation.fAnimSpeedRatio = 1.7f;
 	return S_OK;
 }
 
@@ -44,17 +44,22 @@ void CSkill_Model::Tick(_float fTimeDelta)
 	}
 
 
-	m_pModelCom->Set_Animation(m_Animation);
+	
+	
 
 	if (m_eCurAnimState == SWORD1 or m_eCurAnimState == SWORD2 or m_eCurAnimState == SWORD3 or m_eCurAnimState == SWORD4)
 	{
 		m_pTransformCom->Set_State(State::Pos, _vec4(0.f, -100.f, 2.f, 1.f));
 		m_pWeapon_ModelCom->Set_Animation(m_Animation);
+		m_pModelCom->Set_Animation(m_Animation);
+	
 	}
 	else
 	{
 		m_pTransformCom->Set_State(State::Pos, _vec4(0.f, -100.f, 0.f, 1.f));
+		m_pModelCom->Set_Animation(m_Animation);
 	}
+	m_Animation.bRestartAnimation = false;
 	After_BowAtt();
 	
 	if (m_bArrowRain_Start)
@@ -76,13 +81,18 @@ void CSkill_Model::Late_Tick(_float fTimeDelta)
 		return;
 	}
 
-	m_pModelCom->Play_Animation(fTimeDelta);
 
 	if (m_eCurAnimState == SWORD1 or m_eCurAnimState == SWORD2 or m_eCurAnimState == SWORD3 or m_eCurAnimState == SWORD4)
 	{
+	
 		m_pWeapon_ModelCom->Play_Animation(fTimeDelta);
+		m_pModelCom->Play_Animation(fTimeDelta);
 	}
-
+	else
+	{
+		m_pModelCom->Play_Animation(fTimeDelta);
+	}
+	
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 }
 
@@ -454,6 +464,7 @@ void CSkill_Model::Change_AnimState(SKILLMODEL_ANIM eAnim)
 	m_Animation.bSkipInterpolation = true;
 	m_Animation.fAnimSpeedRatio = 1.7f;
 	m_Animation.iAnimIndex = eAnim;
+	m_Animation.bRestartAnimation = true;
 }
 
 CSkill_Model* CSkill_Model::Create(_dev pDevice, _context pContext)

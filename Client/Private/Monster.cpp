@@ -19,15 +19,24 @@ HRESULT CMonster::Init_Prototype()
 
 HRESULT CMonster::Init(void* pArg)
 {
-	if (!pArg)
+	if (pArg)
 	{
-		MSG_BOX("No argument!");
+		m_pInfo = *(MonsterInfo*)pArg;
+		_mat WorldPos = m_pInfo.MonsterWorldMat;
+		m_pTransformCom->Set_Matrix(WorldPos);
+		m_pTransformCom->Set_Position(WorldPos.Position_vec3());
 	}
 
-	m_pInfo = *(MonsterInfo*)pArg;
-	_mat WorldPos = m_pInfo.MonsterWorldMat;
-	m_pTransformCom->Set_Matrix(WorldPos);
-	m_pTransformCom->Set_Position(WorldPos.Position_vec3());
+	CHPMonster::HP_DESC HpDesc = {};
+	HpDesc.eLevelID = LEVEL_STATIC;
+	HpDesc.iMaxHp = m_iHP;
+	HpDesc.pParentTransform = m_pTransformCom;
+	HpDesc.vPosition = m_MonsterHpBarPos;
+	m_HpBar = (CHPMonster*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPMonster"), &HpDesc);
+	if (m_HpBar == nullptr)
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -55,14 +64,10 @@ void CMonster::Tick(_float fTimeDelta)
 		}
 	}
 
-	if (m_iDamageAcc >= m_iDamageAccMax/* || m_iDamageAcc == 0*/)
+
+	if (m_iDamageAcc >= m_iDamageAccMax)
 	{
 		m_bHit = true;
-		m_iDamageAcc = 0;
-	}
-	else
-	{
-		//m_bHit = false;
 	}
 
 	if (m_iHP <= 0 || m_fDeadTime > 0.01f)
@@ -80,10 +85,21 @@ void CMonster::Tick(_float fTimeDelta)
 	{
 		Kill();
 	}
+
+	if (m_fHittedTime > 0.f)
+	{
+		m_fHittedTime -= fTimeDelta;
+		m_HpBar->Tick(fTimeDelta);
+	}
 }
 
 void CMonster::Late_Tick(_float fTimeDelta)
 {
+	if (m_fHittedTime > 0.f)
+	{
+		m_HpBar->Set_HP(m_iHP);
+		m_HpBar->Late_Tick(fTimeDelta);
+	}
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 }
@@ -151,6 +167,7 @@ HRESULT CMonster::Render()
 	return S_OK;
 }
 
+
 _vec4 CMonster::Compute_PlayerPos()
 {
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
@@ -198,7 +215,7 @@ void CMonster::Update_Collider()
 {
 }
 
-void CMonster::Update_MonsterCollider()
+void CMonster::Update_BodyCollider()
 {
 	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 }
@@ -299,7 +316,7 @@ HRESULT CMonster::Add_Components()
 
 HRESULT CMonster::Bind_ShaderResources()
 {
-	if (m_iPassIndex == AnimPass_Rim)
+	if (m_iPassIndex == AnimPass_Rim && m_bChangePass == true)
 	{
 		_vec4 vColor = Colors::Red;
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vColor, sizeof vColor)))
@@ -355,6 +372,8 @@ HRESULT CMonster::Bind_ShaderResources()
 void CMonster::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_HpBar);
 
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);

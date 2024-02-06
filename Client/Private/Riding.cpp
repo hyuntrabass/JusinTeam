@@ -30,22 +30,20 @@ HRESULT CRiding::Init(void* pArg)
 		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Bird");
 	}
 	break;
-
 	case Client::Horse:
 	{
 		m_Animation.iAnimIndex = Horse_1004_Idle;
 		m_eState = Riding_Idle;
 		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Horse");
-		m_fRunSpeed = 8.f;
+		m_fRunSpeed = 10.f;
 	}
 	break;
-
 	case Client::Tiger:
 	{
 		m_Animation.iAnimIndex = Tiger_1003_Idle;
 		m_eState = Riding_Idle;
 		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Tiger");
-		m_fRunSpeed = 10.f;
+		m_fRunSpeed = 12.f;
 	}
 		break;
 	case Client::Nihilir:
@@ -54,7 +52,7 @@ HRESULT CRiding::Init(void* pArg)
 		m_eState = Riding_Idle;
 		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Nihilir");
 		m_fWalkSpeed = 5.f;
-		m_fRunSpeed = 12.f;
+		m_fRunSpeed = 14.f;
 	}
 		break;
 	default:
@@ -101,7 +99,7 @@ HRESULT CRiding::Init(void* pArg)
 		m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
 
 	}
-	m_pTransformCom->Set_Position(_vec3(Desc->vSummonPos));
+	m_pTransformCom->Set_Position(_vec3(Desc->vSummonPos + _vec3(0.f,1.f,0.f)));
 	m_Animation.fAnimSpeedRatio = 2.f;
 	m_fDissolveRatio = 1.f;
 	return S_OK;
@@ -109,19 +107,38 @@ HRESULT CRiding::Init(void* pArg)
 
 void CRiding::Tick(_float fTimeDelta)
 {
-	if (m_fDissolveRatio >= 0.f && !m_isDead)
+	if (m_CurrentIndex == Horse)
 	{
-		m_fDissolveRatio -= fTimeDelta / 2.f;
-	}
-	else if (m_isDead)
-	{
-		m_fDissolveRatio += fTimeDelta / 1.4f;
-
-		if (m_fDissolveRatio >= 1.f)
+		if (!m_isDead)
 		{
+			m_fDissolveRatio = 0.f;
+		}
+		else
+		{
+			_vec3 vPos = m_pTransformCom->Get_State(State::Pos) + _vec4(0.f, 1.f, 0.f, 0.f);
+			m_pTransformCom->Set_Position(vPos);
 			m_bDelete = true;
 		}
 	}
+	else
+	{
+		if (m_fDissolveRatio >= 0.f && !m_isDead)
+		{
+			m_fDissolveRatio -= fTimeDelta / 2.f;
+		}
+		else if (m_isDead)
+		{
+			m_fDissolveRatio += fTimeDelta / 1.4f;
+
+			if (m_fDissolveRatio >= 1.f)
+			{
+				_vec3 vPos = m_pTransformCom->Get_State(State::Pos) + _vec4(0.f, 1.f, 0.f, 0.f);
+				m_pTransformCom->Set_Position(vPos);
+				m_bDelete = true;
+			}
+		}
+	}
+	
 	if (m_pGameInstance->Key_Down(DIK_L))
 
 	{
@@ -278,14 +295,7 @@ void CRiding::Move(_float fTimeDelta)
 		vDirection -= vRightDir;
 		hasMoved = true;
 	}
-	if (m_pGameInstance->Key_Down(DIK_SPACE, InputChannel::GamePlay))
-	{
-		if (!m_hasJumped)
-		{
-			m_eState = Riding_Jump_Start;
-			m_pTransformCom->Jump(10.f);
-		}
-	}
+	
 	if (m_eState == Riding_Jump_Start or
 		m_eState == Riding_Jump)
 	{
@@ -295,6 +305,8 @@ void CRiding::Move(_float fTimeDelta)
 			m_hasJumped = false;
 		}
 	}
+
+	
 
 	if (hasMoved)
 	{
@@ -319,7 +331,7 @@ void CRiding::Move(_float fTimeDelta)
 		}
 		else
 		{
-			if (m_CurrentIndex == Tiger)
+			if (m_CurrentIndex == Tiger or m_CurrentIndex == Horse)
 			{
 				if (m_eState == Riding_Jump_End)
 				{
@@ -350,36 +362,29 @@ void CRiding::Move(_float fTimeDelta)
 		m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
 		_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
 
-		_float fInterpolTime = 0.4f;
-		m_vOriginalLook = vLook;
-		if (m_fInterpolationRatio < fInterpolTime)
+		if (vLook.Dot(vDirection) < 0)
 		{
-			if (not m_isInterpolating)
-			{
-				m_vOriginalLook = vLook;
-				m_isInterpolating = true;
-			}
-
-			m_fInterpolationRatio += fTimeDelta;
-
-
-			_float fRatio = m_fInterpolationRatio / fInterpolTime;
-
-			vDirection = XMVectorLerp(m_vOriginalLook, vDirection, fRatio);
+			vLook = vDirection;
 		}
 		else
 		{
-			m_isInterpolating = false;
-			m_fInterpolationRatio = 0.f;
+			vLook = XMVectorLerp(vLook, vDirection, 0.15f);
 		}
-		m_pTransformCom->LookAt_Dir(vDirection);
 
+		m_pTransformCom->LookAt_Dir(vLook);
 	}
 	else if (m_eState == Riding_Walk or m_eState == Riding_Run)
 	{
 		m_eState = Riding_Idle;
 	}
-
+	if (m_pGameInstance->Key_Down(DIK_SPACE, InputChannel::GamePlay))
+	{
+		if (!m_hasJumped)
+		{
+			m_eState = Riding_Jump_Start;
+			m_pTransformCom->Jump(10.f);
+		}
+	}
 }
 void CRiding::Init_State()
 {
@@ -567,8 +572,7 @@ void CRiding::Init_State()
 			case Client::Horse:
 			{
 				m_Animation.iAnimIndex = Horse_1004_jump_End_Run;
-				m_hasJumped = true;
-				m_Animation.isLoop = true;
+				m_hasJumped = false;
 			}
 			break;
 			default:
@@ -593,8 +597,8 @@ void CRiding::Init_State()
 			case Client::Horse:
 			{
 				m_Animation.iAnimIndex = Horse_1004_jump_End;
-				m_hasJumped = true;
-				m_Animation.isLoop = true;
+				m_hasJumped = false;
+				m_Animation.isLoop = false;
 			}
 			break;
 			default:
@@ -691,7 +695,7 @@ void CRiding::Tick_State(_float fTimeDelta)
 		{
 			if (m_pModelCom->IsAnimationFinished(Horse_1004_jump_End))
 			{
-				m_eState = Riding_Jump;
+				m_eState = Riding_Idle;
 			}
 		}
 		break;
@@ -720,7 +724,7 @@ void CRiding::Tick_State(_float fTimeDelta)
 		{
 			if (m_pModelCom->IsAnimationFinished(Horse_1004_jump_End_Run))
 			{
-				m_eState = Riding_Jump;
+				m_eState = Riding_Run;
 			}
 		}
 		break;
