@@ -768,31 +768,37 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::InputText("Section Name", &SectionName[0], SectionName.size());
 			ImGui::InputFloat("CameraSpeed : ", &fCameraSpeed, 0);
 
-			if (ImGui::Button("Create Camera"))
+			if (!m_pSelectCamera)
 			{
-				Create_Camera();
+				if (ImGui::Button("Create Camera"))
+				{
+					Create_Camera();
+				}
 			}
-			ImGui::SameLine();
-			if (ImGui::Button("Delete Camera"))
+			else
 			{
-				Delete_Camera();
+				if (ImGui::Button("Delete Camera"))
+				{
+					Delete_Camera();
+				}
 			}
 
 			ImGui::Separator();
 
-			_int iCameraSize = m_CameraList.size();
-			for (_uint i = 0; i < iCameraSize; i++)
-			{
-				if (!m_CameraList.empty())
+			//_int iCameraSize = m_CameraList.size();
+			//for (_uint i = 0; i < iCameraSize; i++)
+			//{
+				//if (!m_CameraList.empty())
+				if (m_pSelectCamera)
 				{
-					string strName = m_CameraList[i]->Get_Name();
+					//string strName = m_CameraList[i]->Get_Name();
+					string strName = m_pSelectCamera->Get_Name();
 					if (ImGui::TreeNode(strName.c_str()))
 					{
-					
-						ImGui::Separator();
 
 						static int iEye_Count = 0;
-						vector<CCutScene_Curve*>& pEyeCurve = m_CameraList[i]->Get_EyeCurve();
+						//vector<CCutScene_Curve*>& pEyeCurve = m_CameraList[i]->Get_EyeCurve();
+						vector<CCutScene_Curve*>& pEyeCurve = m_pSelectCamera->Get_EyeCurve();
 						vector<string> pCurveEyeName;
 						if (!pEyeCurve.empty())
 						{
@@ -821,7 +827,8 @@ HRESULT CImGui_Manager::ImGuiMenu()
 						ImGui::Separator();
 
 						static int iAt_Count = 0;
-						vector<CCutScene_Curve*>& pAtCurve = m_CameraList[i]->Get_AtCurve();
+						//vector<CCutScene_Curve*>& pAtCurve = m_CameraList[i]->Get_AtCurve();
+						vector<CCutScene_Curve*>& pAtCurve = m_pSelectCamera->Get_AtCurve();
 						vector<string> pCurveAtName;
 						if (!pAtCurve.empty())
 						{
@@ -850,7 +857,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 							ImGui::Separator();
 							if (!pEyeCurve.empty() && !pAtCurve.empty())
 							{
-								if (ImGui::SmallButton("Get Point"))
+								if (ImGui::Button("Get Point"))
 								{
 									_mat* pOutPoints = nullptr;
 									pEyeCurve[iEye_Count]->Get_ControlPoints(&pOutPoints);
@@ -870,7 +877,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 									vAtEndCurved = m_mCameraAtPoint.Position();
 								}
 								ImGui::SameLine();
-								if (ImGui::SmallButton("Set Point"))
+								if (ImGui::Button("Set Point"))
 								{
 									m_mCameraEyePoint.Right(vEyeStartCurved);
 									m_mCameraEyePoint.Up(vEyeStartPos);
@@ -886,10 +893,12 @@ HRESULT CImGui_Manager::ImGuiMenu()
 									pAtCurve[iAt_Count]->Set_ControlPoints(m_mCameraAtPoint);
 								}
 							}
-							
+							ImGui::Separator();
+
 							if (ImGui::Button("Curve Add"))
 							{
-								Create_Curve(m_CameraList[i], m_fCameraPickingPos[0], m_fCameraPickingPos[1]);
+								//Create_Curve(m_CameraList[i], m_fCameraPickingPos[0], m_fCameraPickingPos[1]);
+								Create_Curve(m_pSelectCamera, m_fCameraPickingPos[0], m_fCameraPickingPos[1]);
 							}
 							ImGui::SameLine();
 							if (ImGui::Button("Curve Delete"))
@@ -899,39 +908,48 @@ HRESULT CImGui_Manager::ImGuiMenu()
 									Delete_Curve(pEyeCurve, pAtCurve);
 								}
 							}
+							ImGui::Separator();
+							string SpeedButtonName = "Speed";
+							ImGui::InputFloat(SpeedButtonName.c_str(), &fEyeSpeed, 0);
 
 						ImGui::TreePop();
 						ImGui::Separator();
 
-						if (m_CameraList.size() != 0)
-						{
-							if (ImGui::Button("Play Camera"))
-							{
-								m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
-								pEyeCurve[iEye_Count]->Set_SectionSpeed(fEyeSpeed);
-								//pAtCurve[iAt_Count]->Set_SectionSpeed(fAtSpeed);								
-							}
-							m_iFrame = m_CameraList[i]->Get_Frame();
-							ImGui::SliderInt("Frame : ", &m_iFrame, 0, 100);
-							ImGui::InputFloat("EyeSpeed : ", &fEyeSpeed, 0);
-						}
+						//vector<_bool> isCameraPlaying(m_CameraList.size(), false);
 
+						//if (m_CameraList.size() != 0)
+						//{
+							string PlayButtonName = "Play Camera";
+							if (ImGui::Button(PlayButtonName.c_str()))
+							{
+								if (!pEyeCurve.empty() && !pAtCurve.empty())
+								{
+									m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+									fEyeSpeed = pEyeCurve[iEye_Count]->Get_SectionSpeed();
+									pEyeCurve[iEye_Count]->Set_SectionSpeed(fEyeSpeed);
+									//pAtCurve[iAt_Count]->Set_SectionSpeed(fAtSpeed);
+								}
+							}
+							m_iFrame = m_pSelectCamera->Get_Frame();
+							string FrameButtonName = "Frame";
+
+							ImGui::SliderInt(FrameButtonName.c_str(), &m_iFrame, 0, 100);
+						//}
+						ImGui::Separator();
+						if (ImGui::Button("SAVE"))
+						{
+							Save_CutScene(m_pSelectCamera);
+						}
+						ImGui::SameLine();
+						if (ImGui::Button("LOAD"))
+						{
+							Load_CutScene();
+						}
 					}
-				}
+				//}
 				
 			}
-
-			ImGui::Separator();
-			if (ImGui::Button("SAVE"))
-			{
-				//Save_NPC();
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("LOAD"))
-			{
-				//Load_NPC();
-			}
-			ImGui::EndTabItem();
+				ImGui::EndTabItem();
 		}
 #pragma endregion
 
@@ -1257,7 +1275,6 @@ void CImGui_Manager::Create_Map(const _int& iListIndex)
 
 }
 
-
 HRESULT CImGui_Manager::Create_Terrain()
 {
 	TERRAIN_INFO_MAPTOOL pTerrainInfo{};
@@ -1351,13 +1368,14 @@ void CImGui_Manager::Delete_Dummy()
 
 void CImGui_Manager::Delete_Camera()
 {
-	if (!m_CameraList.empty())
+	/*if (!m_CameraList.empty())
 	{
 		m_CameraList.back()->Kill();
 		m_CameraList.pop_back();
-	}
+	}*/
+	m_pSelectCamera->Kill();
+	m_pSelectCamera = nullptr;
 }
-
 
 void CImGui_Manager::Delete_Map()
 {
@@ -1439,17 +1457,16 @@ void CImGui_Manager::Create_Camera()
 	{
 		MSG_BOX("Failed to Add Layer : CutScene_Camera");
 	}
-	m_CameraList.push_back(m_pSelectCamera);
-	m_pSelectCamera = nullptr;
+
 }
 
 void CImGui_Manager::Create_Curve(CCamera_CutScene* pCamera, _vec4 FirstPos, _vec4 SecondPos)
 {
-	pCamera->Add_Eye_Curve(FirstPos, SecondPos);
+	pCamera->Add_Eye_Curve(FirstPos, SecondPos, fEyeSpeed);
 
 	_vec4 vFixedFirstPos = _vec4(FirstPos.x + 10.f, FirstPos.y-10.f, FirstPos.z + 10.f, 1.f);
 	_vec4 vFixedSecondPos = _vec4(SecondPos.x + 10.f, SecondPos.y - 10.f, SecondPos.z + 10.f, 1.f);
-	pCamera->Add_At_Curve(vFixedFirstPos, vFixedSecondPos);
+	pCamera->Add_At_Curve(vFixedFirstPos, vFixedSecondPos, fEyeSpeed);
 }
 
 void CImGui_Manager::Reset()
@@ -2332,6 +2349,8 @@ HRESULT CImGui_Manager::Load_Monster()
 	}
 	return S_OK;
 }
+#pragma endregion
+#pragma region NPC
 HRESULT CImGui_Manager::Save_NPC()
 {
 	OPENFILENAME OFN;
@@ -2452,6 +2471,8 @@ HRESULT CImGui_Manager::Load_NPC()
 	}
 	return S_OK;
 }
+#pragma endregion
+#pragma region 환경 저장 / 불러오기
 HRESULT CImGui_Manager::Save_Envir()
 {
 	OPENFILENAME OFN;
@@ -2573,6 +2594,8 @@ HRESULT CImGui_Manager::Load_Envir()
 	}
 	return S_OK;
 }
+#pragma endregion
+#pragma region 트리거 저장 / 불러오기
 HRESULT CImGui_Manager::Save_Trigger()
 {
 	OPENFILENAME OFN;
@@ -2716,13 +2739,189 @@ HRESULT CImGui_Manager::Load_Trigger()
 	}
 	return S_OK;
 }
+#pragma endregion
 #pragma region 컷씬 저장 / 불러오기
-HRESULT CImGui_Manager::Save_CutScene()
+HRESULT CImGui_Manager::Save_CutScene(CCamera_CutScene* pCamera)
 {
-	return S_OK;
+	OPENFILENAME OFN;
+	TCHAR filePathName[MAX_PATH] = L"";
+	TCHAR lpstrFile[MAX_PATH] = L"_CutScene.dat";
+	static TCHAR filter[] = L"모든 파일\0*.*\0텍스트 파일\0*.txt\0dat 파일\0*.dat";
+
+	memset(&OFN, 0, sizeof(OPENFILENAME));
+	OFN.lStructSize = sizeof(OPENFILENAME);
+	OFN.hwndOwner = g_hWnd;
+	OFN.lpstrFilter = filter;
+	OFN.lpstrFile = lpstrFile;
+	OFN.nMaxFile = 256;
+	OFN.lpstrInitialDir = L"..\\Bin\\Data";
+
+	if (GetSaveFileName(&OFN) != 0)
+	{
+		const TCHAR* pGetPath = OFN.lpstrFile;
+
+		std::ofstream outFile(pGetPath, std::ios::binary);
+
+		if (!outFile.is_open())
+			return E_FAIL;
+		
+
+		_uint NameSize = m_pSelectCamera->Get_Name().size();
+		string CameraName = m_pSelectCamera->Get_Name();
+
+		outFile.write(reinterpret_cast<const char*>(&NameSize), sizeof(_uint));
+		outFile.write(reinterpret_cast<const char*>(CameraName.c_str()), sizeof(NameSize));
+
+		vector<CCutScene_Curve*>& pEyeCurve = pCamera->Get_EyeCurve();
+		vector<CCutScene_Curve*>& pAtCurve = pCamera->Get_AtCurve();
+
+		_uint iEyeSize = pEyeCurve.size();
+		_uint iAtSize = pAtCurve.size();
+
+		outFile.write(reinterpret_cast<const char*>(&iEyeSize), sizeof(_uint));
+		outFile.write(reinterpret_cast<const char*>(&iAtSize), sizeof(_uint));
+
+
+
+		_mat* pOutPoints = nullptr;
+
+		for (_uint i = 0; i < iEyeSize; i++)
+		{
+			pEyeCurve[i]->Get_ControlPoints(&pOutPoints);
+			m_mCameraEyePoint = *pOutPoints;
+
+			vEyeStartCurved = m_mCameraEyePoint.Right();
+			vEyeStartPos = m_mCameraEyePoint.Up();
+			vEyeEndPos = m_mCameraEyePoint.Look();
+			vEyeEndCurved = m_mCameraEyePoint.Position();
+
+			outFile.write(reinterpret_cast<const char*>(&vEyeStartCurved), sizeof(_vec4));
+			outFile.write(reinterpret_cast<const char*>(&vEyeStartPos), sizeof(_vec4));
+			outFile.write(reinterpret_cast<const char*>(&vEyeEndPos), sizeof(_vec4));
+			outFile.write(reinterpret_cast<const char*>(&vEyeEndCurved), sizeof(_vec4));
+
+			_float fSectionSpeed = pEyeCurve[i]->Get_SectionSpeed();
+			outFile.write(reinterpret_cast<const char*>(&fSectionSpeed), sizeof(_float));
+
+		}
+		for (_uint i = 0; i < iAtSize; i++)
+		{
+			pAtCurve[i]->Get_ControlPoints(&pOutPoints);
+			m_mCameraAtPoint = *pOutPoints;
+
+			vAtStartCurved = m_mCameraAtPoint.Right();
+			vAtStartPos = m_mCameraAtPoint.Up();
+			vAtEndPos = m_mCameraAtPoint.Look();
+			vAtEndCurved = m_mCameraAtPoint.Position();
+
+			outFile.write(reinterpret_cast<const char*>(&vAtStartCurved), sizeof(_vec4));
+			outFile.write(reinterpret_cast<const char*>(&vAtStartPos), sizeof(_vec4));
+			outFile.write(reinterpret_cast<const char*>(&vAtEndPos), sizeof(_vec4));
+			outFile.write(reinterpret_cast<const char*>(&vAtEndCurved), sizeof(_vec4));
+		}
+
+		_float fCameraSpeed = pCamera->Get_Speed();
+		outFile.write(reinterpret_cast<const char*>(&fCameraSpeed), sizeof(_float));
+
+
+		MessageBox(g_hWnd, L"파일 저장 완료", L"파일 저장", MB_OK);
+		outFile.close();
+		return S_OK;
+	}
 }
 HRESULT CImGui_Manager::Load_CutScene()
 {
+	OPENFILENAME OFN;
+	TCHAR filePathName[MAX_PATH] = L"";
+	static TCHAR filter[] = L"모두(*.*)\0*.*\0데이터 파일(*.dat)\0*.dat";
+
+	memset(&OFN, 0, sizeof(OPENFILENAME));
+	OFN.lStructSize = sizeof(OPENFILENAME);
+	OFN.hwndOwner = g_hWnd;
+	OFN.lpstrFilter = filter;
+	OFN.lpstrFile = filePathName;
+	OFN.nMaxFile = 256;
+	OFN.lpstrInitialDir = L"..\\Bin\\Data\\";
+
+	if (GetOpenFileName(&OFN) != 0)
+	{
+		const TCHAR* pGetPath = OFN.lpstrFile;
+
+		std::ifstream inFile(pGetPath, std::ios::binary);
+
+		if (!inFile.is_open())
+		{
+			MessageBox(g_hWnd, L"파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+			return E_FAIL;
+		}
+
+		_uint InputNameSize;
+		string InputName;
+		inFile.read(reinterpret_cast<char*>(&InputNameSize), sizeof(_uint));
+		inFile.read(reinterpret_cast<char*>(&InputName[0]), sizeof(InputNameSize));
+
+		if (!m_pSelectCamera)
+		{
+			CameraInfo Info{};
+			Info.strName = InputName;
+			Info.ppCamera = &m_pSelectCamera;
+			Info.eType = ItemType::Camera;
+			Info.vStartCutScene = m_fCameraPickingPos[0];
+			Info.vEndCutScene = m_fCameraPickingPos[1];
+			Info.fCameraSpeed = fCameraSpeed;
+
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_CutScene_Camera"), TEXT("Prototype_GameObject_Camera_CutScene"), &Info)))
+			{
+				MSG_BOX("Failed to Add Layer : CutScene_Camera");
+			}
+		}
+
+		_uint iEyeSize;
+		_uint iAtSize;
+		inFile.read(reinterpret_cast<char*>(&iEyeSize), sizeof(_uint));
+		inFile.read(reinterpret_cast<char*>(&iAtSize), sizeof(_uint));
+
+		for (_uint i = 0; i < iEyeSize; i++)
+		{
+
+			inFile.read(reinterpret_cast<char*>(&vEyeStartCurved), sizeof(_vec4));
+			m_mCameraEyePoint.Right(vEyeStartCurved);
+			inFile.read(reinterpret_cast<char*>(&vEyeStartPos), sizeof(_vec4));
+			m_mCameraEyePoint.Up(vEyeStartPos);
+			inFile.read(reinterpret_cast<char*>(&vEyeEndPos), sizeof(_vec4));
+			m_mCameraEyePoint.Look(vEyeEndPos);
+			inFile.read(reinterpret_cast<char*>(&vEyeEndCurved), sizeof(_vec4));
+			m_mCameraEyePoint.Position(vEyeEndCurved);
+
+			inFile.read(reinterpret_cast<char*>(&fCameraSpeed), sizeof(_float));
+
+			if (FAILED(m_pSelectCamera->Add_Eye_Curve(m_mCameraEyePoint, fCameraSpeed)))
+			{
+				return E_FAIL;
+			}
+
+		}
+		for (_uint i = 0; i < iAtSize; ++i)
+		{
+			inFile.read(reinterpret_cast<char*>(&vAtStartCurved), sizeof(_vec4));
+			m_mCameraAtPoint.Right(vAtStartCurved);
+			inFile.read(reinterpret_cast<char*>(&vAtStartPos), sizeof(_vec4));
+			m_mCameraAtPoint.Up(vAtStartPos);
+			inFile.read(reinterpret_cast<char*>(&vAtEndPos), sizeof(_vec4));
+			m_mCameraAtPoint.Look(vAtEndPos);
+			inFile.read(reinterpret_cast<char*>(&vAtEndCurved), sizeof(_vec4));
+			m_mCameraAtPoint.Position(vAtEndCurved);
+
+			if (FAILED(m_pSelectCamera->Add_At_Curve(m_mCameraAtPoint)))
+			{
+				return E_FAIL;
+			}
+		}
+
+		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
+		inFile.close();
+
+	}
 	return S_OK;
 }
 #pragma endregion

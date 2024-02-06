@@ -21,10 +21,13 @@ public:
 	virtual HRESULT Render();
 	void Set_Delete_Curve();
 	void Set_Speed(_float fSpeed) { m_fCutSceneSpeed = fSpeed;} 
+	_float Get_Speed() { return m_fCutSceneSpeed;} 
 	string Get_Name();
 	
-	HRESULT Add_Eye_Curve(_vec4 vFirstPoint, _vec4 vSecondPoint);
-	HRESULT Add_At_Curve(_vec4 vFirstPoint, _vec4 vSecondPoint);
+	HRESULT Add_Eye_Curve(_vec4 vFirstPoint, _vec4 vSecondPoint, _float fSectionSpeed = 5.f);
+	HRESULT Add_Eye_Curve(_mat matPoints, _float fCurveSpeed);
+	HRESULT Add_At_Curve(_vec4 vFirstPoint, _vec4 vSecondPoint, _float fSectionSpeed = 5.f);
+	HRESULT Add_At_Curve(_mat matPoints);
 	HRESULT Delete_Curve();
 
 	_int Get_Frame() { return m_iFrame; }

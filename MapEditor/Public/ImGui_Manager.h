@@ -158,7 +158,7 @@ private:
 	HRESULT Load_Trigger();
 
 	// 카메라
-	HRESULT Save_CutScene();
+	HRESULT Save_CutScene(class CCamera_CutScene* pCamera);
 	HRESULT Load_CutScene();
 
 	// 현재 위치 저장
