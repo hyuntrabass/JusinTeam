@@ -93,6 +93,8 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			{
 				if (m_pGameInstance->Get_CameraState() != CS_WORLDMAP)
 				{
+					m_pGameInstance->Play_Sound(TEXT("WorldMap_Click"), 0.6f);
+
 					CFadeBox::FADE_DESC Desc = {};
 					Desc.eState = CFadeBox::FADEOUT;
 					Desc.fDuration = 0.5f;
@@ -107,6 +109,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 				}
 				else
 				{
+					m_pGameInstance->Play_Sound(TEXT("WorldMap_Click"), 0.6f);
 					CFadeBox::FADE_DESC Desc = {};
 					Desc.eState = CFadeBox::FADEOUT;
 					Desc.fDuration = 0.5f;

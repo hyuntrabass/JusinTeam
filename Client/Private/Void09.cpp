@@ -82,7 +82,14 @@ HRESULT CVoid09::Init(void* pArg)
 	}
 
 	++m_iIndex;
-
+	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
+	if (pArg)
+	{
+		if (FAILED(__super::Init(pArg)))
+		{
+			return E_FAIL;
+		}
+	}
 	return S_OK;
 }
 
@@ -130,6 +137,7 @@ HRESULT CVoid09::Render()
 
 void CVoid09::Set_Damage(_int iDamage, _uint iDamageType)
 {
+	m_fHittedTime = 6.f;
 	m_eCurState = STATE_HIT;
 
 	m_iHP -= iDamage;

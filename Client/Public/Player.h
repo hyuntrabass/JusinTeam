@@ -365,6 +365,7 @@ private:
 	CCollider* m_pAttCollider[AT_End]{ nullptr };
 	CCommonSurfaceTrail* m_pLeft_Trail[5]{ nullptr };
 	CCommonSurfaceTrail* m_pRight_Trail[5]{ nullptr };
+	class CEffect_Dummy* m_pEffect_Shield{ nullptr };
 
 private:
 	ANIM_DESC m_Animation{};
@@ -398,11 +399,9 @@ private:
 	_vec4 m_SaveCamLook{};
 	_bool m_bReady_Climb{};
 	_bool m_bHelmet_Hide{};
-	_vec4 m_vOriginalLook{};
 	const _mat* m_Left_Mat{};
 	_bool m_UsingMotionBlur{};
 	const _mat* m_Right_Mat{};
-	_bool m_isInterpolating{};
 	_uint m_iSwimCollectCount{};
 	const _float m_fRunSpeed{ 4.f };
 	const _float m_fWalkSpeed{ 1.f };
@@ -410,6 +409,7 @@ private:
 
 	_uint m_iShield{};
 	_bool m_bAttacked{};
+	_bool m_bReadyMove{};
 	_float m_fBoostSpeed{};
 	_bool m_bAttackStop{};
 	_int m_iAttackCombo{};
@@ -439,7 +439,8 @@ private:
 	_float m_ReturnZoomTime{};
 	_float m_fDissolveRatio{};
 	_float m_fBoostSpeedTimmer{};
-	_float m_fInterpolationRatio{};
+
+	_mat m_ShieldMatrix{};
 
 private:
 	HRESULT Add_Components();

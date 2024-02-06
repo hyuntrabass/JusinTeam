@@ -27,6 +27,17 @@ HRESULT CMonster::Init(void* pArg)
 		m_pTransformCom->Set_Position(WorldPos.Position_vec3());
 	}
 
+	CHPMonster::HP_DESC HpDesc = {};
+	HpDesc.eLevelID = LEVEL_STATIC;
+	HpDesc.iMaxHp = m_iHP;
+	HpDesc.pParentTransform = m_pTransformCom;
+	HpDesc.vPosition = m_MonsterHpBarPos;
+	m_HpBar = (CHPMonster*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPMonster"), &HpDesc);
+	if (m_HpBar == nullptr)
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -74,10 +85,21 @@ void CMonster::Tick(_float fTimeDelta)
 	{
 		Kill();
 	}
+
+	if (m_fHittedTime > 0.f)
+	{
+		m_fHittedTime -= fTimeDelta;
+		m_HpBar->Tick(fTimeDelta);
+	}
 }
 
 void CMonster::Late_Tick(_float fTimeDelta)
 {
+	if (m_fHittedTime > 0.f)
+	{
+		m_HpBar->Set_HP(m_iHP);
+		m_HpBar->Late_Tick(fTimeDelta);
+	}
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 }
@@ -144,6 +166,7 @@ HRESULT CMonster::Render()
 
 	return S_OK;
 }
+
 
 _vec4 CMonster::Compute_PlayerPos()
 {
@@ -349,6 +372,8 @@ HRESULT CMonster::Bind_ShaderResources()
 void CMonster::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_HpBar);
 
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);

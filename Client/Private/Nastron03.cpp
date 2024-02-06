@@ -64,6 +64,14 @@ HRESULT CNastron03::Init(void* pArg)
 	_vec3 vPlayerPos = __super::Compute_PlayerPos();
 	m_pTransformCom->Set_Position(vPlayerPos);
 
+	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
+	if (pArg)
+	{
+		if (FAILED(__super::Init(pArg)))
+		{
+			return E_FAIL;
+		}
+	}
 	return S_OK;
 }
 
@@ -109,6 +117,7 @@ HRESULT CNastron03::Render()
 
 void CNastron03::Set_Damage(_int iDamage, _uint iDamageType)
 {
+	m_fHittedTime = 6.f;
 	m_eCurState = STATE_HIT;
 
 	m_iHP -= iDamage;

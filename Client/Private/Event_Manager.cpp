@@ -61,6 +61,7 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 			break;
 			case QUESTIN:
 			{
+				m_pGameInstance->Play_Sound(TEXT("Quest_Start"), 0.6f);
 				CPop_QuestIn::QUESTIN_DESC PopQuestInDesc = {};
 				PopQuestInDesc.isMain = m_vecPopEvents.front().isMain;
 				PopQuestInDesc.fExp = m_vecPopEvents.front().fExp;
@@ -75,6 +76,7 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 			break;
 			case QUESTEND:
 			{
+				m_pGameInstance->Play_Sound(TEXT("Quest_Complete"), 0.6f);
 				CPop_QuestEnd::QUESTEND_DESC PopQuestEndDesc = {};
 				PopQuestEndDesc.fExp = m_vecPopEvents.front().fExp;
 				PopQuestEndDesc.iMoney = m_vecPopEvents.front().iMoney;
@@ -147,6 +149,24 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.isMain = true;
 	tDesc.strQuestTitle = TEXT("점프하기");
 	tDesc.strText = TEXT("스페이스바를 눌러 쩜프해봐");
+	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
+	
+	tDesc.eType = QUESTIN;
+	tDesc.fExp = 14.6f;
+	tDesc.iNum = 1;
+	tDesc.iMoney = 10000;
+	tDesc.isMain = true;
+	tDesc.strQuestTitle = TEXT("그로아의 부탁");
+	tDesc.strText = TEXT("그로아 남편의 흔적찾기");
+	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
+	
+	tDesc.eType = QUESTIN;
+	tDesc.fExp = 20.3f;
+	tDesc.iNum = 3;//몬스터 수만큼? 
+	tDesc.iMoney = 100000;
+	tDesc.isMain = true;
+	tDesc.strQuestTitle = TEXT("그로아를 지켜라");
+	tDesc.strText = TEXT("몬스터로부터 그로아 지키기");
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	return S_OK;

@@ -58,9 +58,8 @@ HRESULT CGoat::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
-	_vec3 vPlayerPos = __super::Compute_PlayerPos();
-	m_pTransformCom->Set_Position(vPlayerPos);
-
+	m_pTransformCom->Set_Position(_vec3(100.f, 8.f, 108.f));
+	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
 	if (pArg)
 	{
 		if (FAILED(__super::Init(pArg)))
@@ -112,6 +111,7 @@ HRESULT CGoat::Render()
 
 void CGoat::Set_Damage(_int iDamage, _uint iDamageType)
 {
+	m_fHittedTime = 6.f;
 	m_eCurState = STATE_HIT;
 
 	m_iHP -= iDamage;

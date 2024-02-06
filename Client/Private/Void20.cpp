@@ -62,6 +62,15 @@ HRESULT CVoid20::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
+
+	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
+	if (pArg)
+	{
+		if (FAILED(__super::Init(pArg)))
+		{
+			return E_FAIL;
+		}
+	}
 	m_pTransformCom->Set_Position(_vec3(2102.f, -16.f, 2085.f));
 
 	return S_OK;
@@ -110,6 +119,7 @@ HRESULT CVoid20::Render()
 
 void CVoid20::Set_Damage(_int iDamage, _uint iDamageType)
 {
+	m_fHittedTime = 6.f;
 	m_eCurState = STATE_HIT;
 
 	m_iHP -= iDamage;

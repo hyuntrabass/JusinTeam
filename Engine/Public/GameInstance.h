@@ -252,6 +252,9 @@ public: // Get_Set
 	const _bool& IsSkipDebugRendering() const;
 	const wstring& Get_InputString() const;
 
+	void Video_Start(_float fVideoDuration);
+	_bool Is_VideoPlaying() { return m_isPlayingVideo; }
+
 public:
 	void Initialize_Level(_uint iLevelNum);
 	void Level_ShutDown(_uint iCurrentLevel);
@@ -307,6 +310,9 @@ private:
 	_bool m_bFlyCam{};
 	_bool m_bGoHome{};
 	_bool m_bGoDungeon{};
+	_bool m_isPlayingVideo{};
+	_float m_fVideoTimmer{};
+	_float m_fVideoDuration{};
 private:
 	vector<_bool> m_vecLevelInvalid;
 

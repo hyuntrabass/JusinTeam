@@ -706,6 +706,19 @@ PS_OUT PS_Main_HPBoss(PS_IN Input)
     }
     return Output;
 }
+
+PS_OUT PS_Main_MaskColorMove(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    vector vMask = g_MaskTexture.Sample(LinearSampler, float2(Input.vTex.x + g_fx, Input.vTex.y + g_fy));
+    
+    Output.vColor = g_vColor;
+    
+    Output.vColor.a = Output.vColor.a * vMask.r;
+    
+    return Output;
+}
 technique11 DefaultTechnique
 {
     pass UI
@@ -1134,5 +1147,17 @@ pass HPBoss
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_HPBoss();
+    }
+pass MaskColorMove
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_MaskColorMove();
     }
 };

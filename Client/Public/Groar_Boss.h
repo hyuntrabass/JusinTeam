@@ -102,6 +102,9 @@ public:
 		ATTACK_END
 	};
 
+	enum GROAR_NPCSTATE { NPC_TALK, NPC_QUEST, NPC_END };
+
+
 private:
 	CGroar_Boss(_dev pDevice, _context pContext);
 	CGroar_Boss(const CGroar_Boss& rhs);
@@ -126,6 +129,14 @@ public:
 	void Update_Collider();
 
 private:
+	HRESULT Init_Dialog();
+	HRESULT Add_Parts();
+	void NPC_Tick(_float fTimeDelta);
+	void NPC_LateTick(_float fTimeDelta);
+	void Set_Text(GROAR_NPCSTATE eState);
+
+
+private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
 
@@ -136,6 +147,7 @@ private:
 
 	CCollider* m_pBodyColliderCom = { nullptr };
 	CCollider* m_pAttackColliderCom = { nullptr };
+	CCollider* m_pNpcColliderCom = { nullptr };
 
 	class CHPBoss* m_pHpBoss{ nullptr };
 
@@ -186,6 +198,26 @@ private:
 	_bool m_bChangePass = { false };
 	_uint m_iPassIndex = {};
 	_float m_fHitTime = {};
+
+private:
+	GROAR_NPCSTATE				m_eState{ NPC_TALK };
+	_bool						m_bTalking = { false };
+	_bool						m_bNextDialog = { false };
+	_bool						m_isColl = { false };
+
+	_float						m_fDir{ -1.f };
+	_float						m_fButtonTime{};
+
+	wstring						m_strQuestOngoing{};
+	vector<wstring>				m_vecDialog;
+	vector<wstring>				m_vecChatt;
+
+	class CTextButton*			m_pLine{ nullptr };
+	CTextButton*				m_pArrow{ nullptr };
+	CTextButton*				m_pSkipButton{ nullptr };
+	class CDialogText*			m_pDialogText{ nullptr };
+	class CTextButtonColor*		m_pBackGround{ nullptr };
+	class C3DUITex*				m_pSpeechBubble{ nullptr };
 
 public:
 	HRESULT Add_Components();

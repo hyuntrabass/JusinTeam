@@ -58,6 +58,7 @@ HRESULT CVoid01::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
+	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
 	m_pTransformCom->Set_Position(_vec3(100.f, 5.f, 127.f));
 	m_pTransformCom->LookAt_Dir(_vec4(0.f, 0.f, -1.f, 0.f));
 
@@ -123,6 +124,7 @@ HRESULT CVoid01::Render()
 
 void CVoid01::Set_Damage(_int iDamage, _uint iDamageType)
 {
+	m_fHittedTime = 6.f;
 	//m_iPassIndex = AnimPass_Default;
 
 	m_eCurState = STATE_HIT;
