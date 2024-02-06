@@ -2879,7 +2879,7 @@ void CPlayer::Tick_Riding(_float fTimeDelta)
 					}
 				}
 				m_pGameInstance->PlayBGM(TEXT("BGM_1st_Village"));
-				m_pGameInstance->FadeinSound(0, fTimeDelta);
+				m_pGameInstance->FadeinSound(0, fTimeDelta, 0.5f);
 			}
 			else
 			{
@@ -2892,7 +2892,7 @@ void CPlayer::Tick_Riding(_float fTimeDelta)
 					}
 				}
 				m_pGameInstance->PlayBGM(TEXT("BGM_6th_Field_01"));
-				m_pGameInstance->FadeinSound(0, fTimeDelta);
+				m_pGameInstance->FadeinSound(0, fTimeDelta, 0.5f);
 			}
 		}
 

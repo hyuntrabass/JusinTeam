@@ -86,7 +86,7 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 		{
 			if (m_pGameInstance->Get_IsPlayingSound(i))
 			{
-				m_pGameInstance->FadeinSound(i, fTimeDelta);
+				m_pGameInstance->FadeinSound(i, fTimeDelta, 0.5f);
 			}
 		}
 		

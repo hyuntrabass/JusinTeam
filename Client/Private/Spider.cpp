@@ -1,7 +1,7 @@
 #include "Spider.h"
 
 const _float CSpider::m_fChaseRange = 7.f;
-const _float CSpider::m_fAttackRange = 5.f;
+const _float CSpider::m_fAttackRange = 4.f;
 
 _uint CSpider::m_iSpiderID = 0;
 _bool CSpider::m_bDirSelected[8] = { false };
@@ -260,7 +260,7 @@ void CSpider::Init_State(_float fTimeDelta)
 
 			_float fDistance = __super::Compute_PlayerDistance();
 
-			if (fDistance <= 5.f)
+			if (fDistance <= 4.f)
 			{
 				_uint iDamage = 30 + rand() % 20;
 				m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);

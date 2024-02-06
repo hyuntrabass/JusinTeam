@@ -63,10 +63,13 @@ EffectInfo CEffect_Manager::Get_EffectInformation(const wstring& strEffectTag)
 	return iter->second;
 }
 
-HRESULT CEffect_Manager::Add_Layer_Effect(EffectInfo& pInfo)
+HRESULT CEffect_Manager::Add_Layer_Effect(EffectInfo& pInfo, const _bool isStaticLevel)
 {
 	_uint iLevel = LEVEL_STATIC;
-	iLevel = m_pGameInstance->Get_CurrentLevelIndex();
+	if (not isStaticLevel)
+	{
+		iLevel = m_pGameInstance->Get_CurrentLevelIndex();
+	}
 	return m_pGameInstance->Add_Layer(iLevel, L"Layer_Effect", L"Prototype_GameObject_EffectDummy", &pInfo);
 }
 
