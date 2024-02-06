@@ -32,32 +32,32 @@ private:
 	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
-	_bool			m_isMain{ false };
+	_bool			m_isSkillIn{ false };
 
 	_float			m_fDir{ -1.f };
+	_float			m_fDirEffect{ 1.f };
 
 	wstring			m_strQuestTitle;
 	wstring			m_strText;
 
 
 	_float			m_fIndex{};
-	_float			m_fTime{};
+	_float			m_fTime{10.f};
 	_float			m_fDeadTime{};
 	_float			m_fButtonTime{};
 	_float2			m_fStartButtonPos{};
 
 
 	CGameObject*	m_pBackground{ nullptr };
-	CGameObject*	m_pBorder{ nullptr };
 	CGameObject*	m_pButton{ nullptr };
-	/*
+	CGameObject*	m_pSkillBow{ nullptr };
+	CGameObject*	m_pSkillSword{ nullptr };
 	
 	class CTextButton* m_pLeft{ nullptr };
 	CTextButton* m_pRight{ nullptr };
 	CTextButton* m_pBoxBow{ nullptr };
 	CTextButton* m_pBoxSword{ nullptr };
-	class CTextButtonColor* m_pEffect{ nullptr };
-	*/
+
 private:
 	HRESULT Add_Parts();
 	HRESULT Add_Components();

@@ -293,7 +293,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 			if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
 			{
-				m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * dwMouseMove * -1.f * fMouseSensor);
+				m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * dwMouseMove * -10.f * fMouseSensor);
 			}
 		}
 	}
@@ -1288,6 +1288,7 @@ void CPlayer::Move(_float fTimeDelta)
 				m_pTransformCom->Jump(8.f);
 				m_eState = Jump_Start;
 				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("점프하기"));
+				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("그로아의 부탁"));
 			}
 			if (m_bReady_Climb)
 			{

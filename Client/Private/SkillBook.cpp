@@ -70,7 +70,7 @@ void CSkillBook::Tick(_float fTimeDelta)
 
 	if (m_isActive)
 	{
-		if (m_isPicking && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
+		if (m_isPicking && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine) && !PtInRect(&m_vecSkillDesc[m_eCurType][m_iCurIndex]->Get_Rect(), ptMouse))
 		{
 			m_isPicking = false;
 			_bool isExist = false;
