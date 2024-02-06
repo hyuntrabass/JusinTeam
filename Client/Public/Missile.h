@@ -60,7 +60,7 @@ private: // SIX_MISSILE
 private:
 	_mat m_EffectMatrix{};
 	class CEffect_Dummy* m_pEffect_Ball{};
-	class CEffect_Dummy* m_pEffect_Smoke{};
+	//class CEffect_Dummy* m_pEffect_Smoke{};
 
 public:
 	HRESULT Add_Components();

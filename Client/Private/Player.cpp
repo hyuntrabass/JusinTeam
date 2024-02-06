@@ -1747,7 +1747,7 @@ void CPlayer::Common_Attack()
 			break;
 		}
 	}
-
+	m_bAttacked = false;
 }
 void CPlayer::Skill1_Attack()
 {
