@@ -157,6 +157,10 @@ private:
 	HRESULT Save_Trigger();
 	HRESULT Load_Trigger();
 
+	// 카메라
+	HRESULT Save_CutScene();
+	HRESULT Load_CutScene();
+
 	// 현재 위치 저장
 	HRESULT Save_Pos();
 

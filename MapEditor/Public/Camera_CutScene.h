@@ -28,8 +28,8 @@ public:
 	HRESULT Delete_Curve();
 
 	_int Get_Frame() { return m_iFrame; }
-	vector<class CCutScene_Curve*> Get_EyeCurve() { return m_CameraEyeList; }
-	vector<class CCutScene_Curve*> Get_AtCurve() { return m_CameraAtList; }
+	vector<class CCutScene_Curve*>& Get_EyeCurve() { return m_CameraEyeList; }
+	vector<class CCutScene_Curve*>& Get_AtCurve() { return m_CameraAtList; }
 
 	void Play_Camera(_float fTimeDelta);
 

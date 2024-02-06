@@ -792,7 +792,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 						ImGui::Separator();
 
 						static int iEye_Count = 0;
-						vector<CCutScene_Curve*> pEyeCurve = m_CameraList[i]->Get_EyeCurve();
+						vector<CCutScene_Curve*>& pEyeCurve = m_CameraList[i]->Get_EyeCurve();
 						vector<string> pCurveEyeName;
 						if (!pEyeCurve.empty())
 						{
@@ -821,7 +821,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 						ImGui::Separator();
 
 						static int iAt_Count = 0;
-						vector<CCutScene_Curve*> pAtCurve = m_CameraList[i]->Get_AtCurve();
+						vector<CCutScene_Curve*>& pAtCurve = m_CameraList[i]->Get_AtCurve();
 						vector<string> pCurveAtName;
 						if (!pAtCurve.empty())
 						{
@@ -908,8 +908,8 @@ HRESULT CImGui_Manager::ImGuiMenu()
 							if (ImGui::Button("Play Camera"))
 							{
 								m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
-/*								pEyeCurve[iEye_Count]->Set_SectionSpeed(fEyeSpeed);
-								pAtCurve[iAt_Count]->Set_SectionSpeed(fAtSpeed);	*/							
+								pEyeCurve[iEye_Count]->Set_SectionSpeed(fEyeSpeed);
+								//pAtCurve[iAt_Count]->Set_SectionSpeed(fAtSpeed);								
 							}
 							m_iFrame = m_CameraList[i]->Get_Frame();
 							ImGui::SliderInt("Frame : ", &m_iFrame, 0, 100);
@@ -2716,6 +2716,16 @@ HRESULT CImGui_Manager::Load_Trigger()
 	}
 	return S_OK;
 }
+#pragma region ÄÆ¾À ÀúÀå / ºÒ·¯¿À±â
+HRESULT CImGui_Manager::Save_CutScene()
+{
+	return S_OK;
+}
+HRESULT CImGui_Manager::Load_CutScene()
+{
+	return S_OK;
+}
+#pragma endregion
 HRESULT CImGui_Manager::Save_Pos()
 {
 	OPENFILENAME OFN;
