@@ -700,6 +700,12 @@ HRESULT CLevel_GamePlay::Ready_Tutorial_Monster()
 		}
 
 	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void01"), TEXT("Prototype_GameObject_Void01"))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 

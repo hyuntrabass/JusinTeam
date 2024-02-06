@@ -98,11 +98,11 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	//if (FAILED(Ready_Test()))
-	//{
-	//	MSG_BOX("Failed to Ready Test");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Test()))
+	{
+		MSG_BOX("Failed to Ready Test");
+		return E_FAIL;
+	}
 
 	m_pGameInstance->Set_HellHeight(-5000.f);
 
@@ -497,6 +497,11 @@ HRESULT CLevel_Village::Ready_Village_Monster()
 		}
 	}
 
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -763,10 +768,10 @@ HRESULT CLevel_Village::Ready_UI()
 
 HRESULT CLevel_Village::Ready_Test()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Rabbit"), TEXT("Prototype_GameObject_Rabbit"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Test"), TEXT("Prototype_GameObject_Nastron03"))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	return S_OK;
 }
