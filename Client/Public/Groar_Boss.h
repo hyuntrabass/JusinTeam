@@ -134,6 +134,7 @@ private:
 	void NPC_Tick(_float fTimeDelta);
 	void NPC_LateTick(_float fTimeDelta);
 	void Set_Text(GROAR_NPCSTATE eState);
+	void Play_TalkSound(const wstring& strTalkText);
 
 
 private:
@@ -164,6 +165,7 @@ private:
 
 private:
 	ANIM_DESC m_Animation{};
+	_int m_iSoundChannel = -1;
 
 private:
 	_uint m_iAttackPattern = {};
@@ -209,8 +211,9 @@ private:
 	_float						m_fButtonTime{};
 
 	wstring						m_strQuestOngoing{};
-	vector<wstring>				m_vecDialog;
+	list<wstring>				m_vecDialog;
 	vector<wstring>				m_vecChatt;
+	list<wstring>				m_TalkSounds;
 
 	class CTextButton*			m_pLine{ nullptr };
 	CTextButton*				m_pArrow{ nullptr };
@@ -218,6 +221,13 @@ private:
 	class CDialogText*			m_pDialogText{ nullptr };
 	class CTextButtonColor*		m_pBackGround{ nullptr };
 	class C3DUITex*				m_pSpeechBubble{ nullptr };
+
+private:
+	const wstring m_strLine[1]
+	{
+		TEXT("¿©º¸.."),
+
+	};
 
 public:
 	HRESULT Add_Components();
