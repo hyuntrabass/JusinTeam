@@ -1,4 +1,5 @@
 #include "Monster.h"
+#include "UI_Manager.h"
 
 
 CMonster::CMonster(_dev pDevice, _context pContext)
@@ -355,6 +356,9 @@ HRESULT CMonster::Bind_ShaderResources()
 void CMonster::Free()
 {
 	__super::Free();
+
+	_uint iRandomExp = rand() % 100;
+	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(iRandomExp * 0.01f);
 
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);

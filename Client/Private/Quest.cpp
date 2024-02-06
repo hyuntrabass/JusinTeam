@@ -78,7 +78,7 @@ void CQuest::Tick(_float fTimeDelta)
 			Sort_Quest();
 			m_isActive = false;
 		}
-		if (!m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
+		else if (!m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
 			Sort_Quest();
 			m_bNewQuestIn = false;

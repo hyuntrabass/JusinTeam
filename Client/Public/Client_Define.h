@@ -389,6 +389,7 @@ namespace Client
 		VTPass_LerpColorNAlpha,
 		VTPass_HPBoss,
 		VTPass_MaskColorMove,
+		VTPass_ChangeBright,
 		VTPass_End
 	};
 

@@ -942,7 +942,7 @@ HRESULT CGroar_Boss::Add_Parts()
 	{
 		return E_FAIL;
 	}
-	ButtonDesc.strText = TEXT("로스크바");
+	ButtonDesc.strText = TEXT("그로아");
 	ButtonDesc.fFontSize = 0.5f;
 	ButtonDesc.vTextPosition = _vec2(0.f, -30.f);
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SiegeQuest");

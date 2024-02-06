@@ -47,9 +47,9 @@ private:
 	_float			m_fButtonTime{};
 	_float2			m_fStartButtonPos{};
 
-
-	CGameObject*	m_pBackground{ nullptr };
-	CGameObject*	m_pButton{ nullptr };
+	CGameObject*	m_pBorder{ nullptr };
+	class CTextButtonColor*	m_pBackground{ nullptr };
+	class CTextButtonColor*	m_pParticle{ nullptr };
 	CGameObject*	m_pSkillBow{ nullptr };
 	CGameObject*	m_pSkillSword{ nullptr };
 	

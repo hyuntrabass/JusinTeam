@@ -6,6 +6,7 @@
 #include "SkillDesc.h"
 #include "SkillBook.h"
 #include "Tutorial.h"
+#include "Pop_LevelUp.h"
 #include "Pop_Alert.h"
 #include "Pop_Skill.h"
 #include "InvenWindow.h"

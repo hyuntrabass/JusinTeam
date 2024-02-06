@@ -50,7 +50,8 @@ HRESULT CSkillBook::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-	
+
+	CUI_Manager::Get_Instance()->Set_SkillBook(this);
 
 	return S_OK;
 }
@@ -407,6 +408,23 @@ HRESULT CSkillBook::Render()
 		return E_FAIL;
 	}
 
+
+	return S_OK;
+}
+
+HRESULT CSkillBook::Unlock_Skill(_uint iIndex)
+{
+	for (size_t j = 0; j < WP_END; j++)
+	{
+		for (size_t i = 0; i < m_vecSkillDesc[j].size(); i++)
+		{
+			if (m_vecSkillDesc[j][i]->Get_SkillInfo().iSkillIdx == iIndex)
+			{
+				m_vecSkillDesc[j][i]->Unlock_Skill();
+				break;
+			}
+		}
+	}
 
 	return S_OK;
 }

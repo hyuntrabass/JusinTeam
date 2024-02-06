@@ -65,10 +65,12 @@ private:
 	CSkill_Model*								m_pSkill_Model{ nullptr };
 	CScarecrow*									m_pScarecorw{ nullptr };
 
+public:
+	HRESULT Unlock_Skill(_uint iIndex);
+
 private:
 	void Init_SkillBookState(); 
 	HRESULT Init_SkillDesc(); 
-
 
 private:
 	HRESULT Add_Parts();
