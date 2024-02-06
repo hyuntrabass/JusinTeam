@@ -61,6 +61,7 @@ HRESULT CVoid01::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
+	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
 	if (pArg)
 	{
 		if (FAILED(__super::Init(pArg)))
@@ -114,6 +115,7 @@ HRESULT CVoid01::Render()
 
 void CVoid01::Set_Damage(_int iDamage, _uint iDamageType)
 {
+	m_fHittedTime = 6.f;
 	m_iHP -= iDamage;
 	m_bDamaged = true;
 	m_bChangePass = true;
