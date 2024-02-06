@@ -104,8 +104,6 @@ HRESULT CLevel_Village::Init()
 	//	return E_FAIL;
 	//}
 
-	m_pGameInstance->Set_HellHeight(-5000.f);
-
 	m_pGameInstance->Set_FogNF(_vec2(50.f, 2000.f));
 	m_pGameInstance->Set_FogColor(_color(1.f));
 
@@ -194,6 +192,8 @@ HRESULT CLevel_Village::Ready_Player()
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 	pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 2.f, 0.f));
 	pPlayerTransform->LookAt_Dir(_vec4(-0.0531848f, 0.0598536346f, 0.996788f, 1.f));
+
+	m_pGameInstance->Set_HellHeight(-70.f);
 
 	return S_OK;
 }
@@ -392,6 +392,9 @@ CamPos Z :2084.48*/
 	//pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 4.f, 0.f));
 	pPlayerTransform->Set_Position(_vec3(2169.f, -26.f, 2084.f));
 	pPlayerTransform->LookAt_Dir(_vec4(-0.0531848f, 0.0598536346f, 0.996788f, 1.f));
+
+	m_pGameInstance->Set_HellHeight(-30.f);
+
 	return S_OK;
 }
 
