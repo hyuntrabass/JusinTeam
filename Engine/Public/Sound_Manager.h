@@ -14,6 +14,7 @@ public:
 		_bool IsFadingin{};
 		_float fFadeSecond = 1.f;
 		_bool IsReusable{};
+		_float fFadeSoundRatio{};
 
 	}SOUND_DESC;
 
@@ -32,8 +33,8 @@ public:
 	void SetChannelVolume(_uint iChannel, _float fVolume);
 	void SetChannelStartVolume(_uint iChannel);
 	void Update();
-	HRESULT FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond, _bool IsReusable);
-	HRESULT FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond);
+	HRESULT FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond, _bool IsReusable, _float fFadeSoundRatio);
+	HRESULT FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond, _float fFadeSoundRatio);
 	_bool Get_IsPlayingSound(_uint iChannel);
 	_float GetChannelVolume(_uint iChannel);
 	_bool Get_IsLoopingSound(_uint iChannel);

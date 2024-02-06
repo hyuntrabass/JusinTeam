@@ -507,14 +507,7 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 
 			if (m_TriggerSounds[i].IsEnding)
 			{
-				m_pGameInstance->FadeoutSound(m_TriggerSounds[i].iChannel, fTimeDelta, m_TriggerSounds[i].fFadeoutSecond);
-
-				if (m_pGameInstance->Get_ChannelVolume(m_TriggerSounds[i].iChannel) <= 0.f)
-				{
-					m_pGameInstance->StopSound(m_TriggerSounds[i].iChannel);
-					m_TriggerSounds[i].iChannel = -1;
-					m_TriggerSounds[i].IsEnding = false;
-				}
+				m_pGameInstance->FadeoutSound(m_TriggerSounds[i].iChannel, fTimeDelta, m_TriggerSounds[i].fFadeoutSecond, false);
 			}
 		}
 	}

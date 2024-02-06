@@ -1109,24 +1109,24 @@ void CGameInstance::StopAll()
 	return m_pSound_Manager->StopAll();
 }
 
-HRESULT CGameInstance::FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond, _bool IsReusable)
+HRESULT CGameInstance::FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond, _bool IsReusable, _float fFadeSoundRatio)
 {
 	if (!m_pSound_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
 	}
 
-	return m_pSound_Manager->FadeoutSound(iChannel, fTimeDelta, fFadeoutSecond, IsReusable);
+	return m_pSound_Manager->FadeoutSound(iChannel, fTimeDelta, fFadeoutSecond, IsReusable, fFadeSoundRatio);
 }
 
-HRESULT CGameInstance::FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond)
+HRESULT CGameInstance::FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond, _float fFadeSoundRatio)
 {
 	if (!m_pSound_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
 	}
 
-	return m_pSound_Manager->FadeinSound(iChannel, fTimeDelta, fFadeinSecond);
+	return m_pSound_Manager->FadeinSound(iChannel, fTimeDelta, fFadeinSecond, fFadeSoundRatio);
 }
 
 void CGameInstance::Register_CreateEffect_Callback(Func_CreateFX Function)

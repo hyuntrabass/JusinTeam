@@ -116,6 +116,14 @@ void CInven::Tick(_float fTimeDelta)
 			LightDesc->vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
 			LightDesc->vSpecular = _vec4(1.f);
 
+			for (size_t i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+			{
+				if (m_pGameInstance->Get_IsLoopingSound(i))
+				{
+					m_pGameInstance->FadeoutSound(i, fTimeDelta, 1.f, true, 0.3f);
+				}
+			}
+
 			CFadeBox::FADE_DESC Desc = {};
 			Desc.eState = CFadeBox::FADEOUT;
 			Desc.fDuration = 0.8f;
@@ -151,6 +159,14 @@ void CInven::Tick(_float fTimeDelta)
 			{
 				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_GAMEPLAY, TEXT("Light_Main"));
 				*LightDesc = m_Light_Desc;
+			}
+			
+			for (size_t i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+			{
+				if (m_pGameInstance->Get_IsLoopingSound(i))
+				{
+					m_pGameInstance->FadeinSound(i, fTimeDelta);
+				}
 			}
 
 			CFadeBox::FADE_DESC Desc = {};

@@ -92,6 +92,17 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pop"), TEXT("Prototype_GameObject_Tutorial"), &TutoDesc)))
 					return;
 				m_vecPopEvents.erase(m_vecPopEvents.begin());
+
+				if (m_eCurTuto == T_OPENINVEN)
+				{
+					for (size_t i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+					{
+						if (m_pGameInstance->Get_IsLoopingSound(i))
+						{
+							m_pGameInstance->FadeoutSound(i, fTimeDelta, 1.f, true, 0.3f);
+						}
+					}
+				}
 			}
 			break;
 			}

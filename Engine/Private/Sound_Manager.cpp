@@ -125,13 +125,17 @@ void CSound_Manager::Update()
 			{
 				FadingoutSound(i);
 	
-				if (GetChannelVolume(i) <= 0.f)
+				if (GetChannelVolume(i) <= (m_SoundDescs[i].fStartVolume * m_SoundDescs[i].fFadeSoundRatio))
 				{
 					m_SoundDescs[i].IsFadingout = false;
 					if (not m_SoundDescs[i].IsReusable)
 					{
 						m_SoundDescs[i].IsReusable = true;
 						m_pChannelArr[i]->stop();
+					}
+					else
+					{
+						SetChannelVolume(i, (m_SoundDescs[i].fStartVolume * m_SoundDescs[i].fFadeSoundRatio));
 					}
 				}
 			}
@@ -146,10 +150,10 @@ void CSound_Manager::Update()
 			{
 				FadinginSound(i);
 
-				if (GetChannelVolume(i) >= m_SoundDescs[i].fStartVolume)
+				if (GetChannelVolume(i) >= (m_SoundDescs[i].fStartVolume * m_SoundDescs[i].fFadeSoundRatio))
 				{
 					m_SoundDescs[i].IsFadingin = false;
-					SetChannelVolume(i, m_SoundDescs[i].fStartVolume);
+					SetChannelVolume(i, (m_SoundDescs[i].fStartVolume * m_SoundDescs[i].fFadeSoundRatio));
 				}
 			}
 			else
@@ -160,7 +164,7 @@ void CSound_Manager::Update()
 	}
 }
 
-HRESULT CSound_Manager::FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond, _bool IsReusable)
+HRESULT CSound_Manager::FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond, _bool IsReusable, _float fFadeSoundRatio)
 {
 	if (iChannel < 0)
 	{
@@ -169,19 +173,19 @@ HRESULT CSound_Manager::FadeoutSound(_uint iChannel, _float fTimeDelta, _float f
 
 	if (not m_SoundDescs[iChannel].IsFadingout)
 	{
-		m_pChannelArr[iChannel]->setVolume(m_SoundDescs[iChannel].fStartVolume);
-		m_SoundDescs[iChannel].IsFadingin = false;
 	}
 
+	m_SoundDescs[iChannel].IsFadingin = false;
 	m_SoundDescs[iChannel].IsFadingout = true;
 	m_fFadeTimeDelta = fTimeDelta;
 	m_SoundDescs[iChannel].fFadeSecond = fFadeoutSecond;
 	m_SoundDescs[iChannel].IsReusable = IsReusable;
+	m_SoundDescs[iChannel].fFadeSoundRatio = fFadeSoundRatio;
 
 	return S_OK;
 }
 
-HRESULT CSound_Manager::FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond)
+HRESULT CSound_Manager::FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond, _float fFadeSoundRatio)
 {
 	if (iChannel < 0)
 	{
@@ -190,13 +194,13 @@ HRESULT CSound_Manager::FadeinSound(_uint iChannel, _float fTimeDelta, _float fF
 
 	if (not m_SoundDescs[iChannel].IsFadingin)
 	{
-		m_pChannelArr[iChannel]->setVolume(0.f);
-		m_SoundDescs[iChannel].IsFadingout = false;
 	}
 
+	m_SoundDescs[iChannel].IsFadingout = false;
 	m_SoundDescs[iChannel].IsFadingin = true;
 	m_fFadeTimeDelta = fTimeDelta;
 	m_SoundDescs[iChannel].fFadeSecond = fFadeinSecond;
+	m_SoundDescs[iChannel].fFadeSoundRatio = fFadeSoundRatio;
 
 	return S_OK;
 }
@@ -270,7 +274,8 @@ void CSound_Manager::FadingoutSound(_uint iChannel)
 {
 	_float fVolume = GetChannelVolume(iChannel);
 	fVolume -= (m_fFadeTimeDelta / (m_SoundDescs[iChannel].fFadeSecond / m_SoundDescs[iChannel].fStartVolume));
-
+		//(m_SoundDescs[iChannel].fStartVolume * (1.f - m_SoundDescs[iChannel].fFadeSoundRatio))));
+	
 	SetChannelVolume(iChannel, fVolume);
 }
 
@@ -278,6 +283,7 @@ void CSound_Manager::FadinginSound(_uint iChannel)
 {
 	_float fVolume = GetChannelVolume(iChannel);
 	fVolume += (m_fFadeTimeDelta / (m_SoundDescs[iChannel].fFadeSecond / m_SoundDescs[iChannel].fStartVolume));
+		//(m_SoundDescs[iChannel].fStartVolume * m_SoundDescs[iChannel].fFadeSoundRatio)));
 
 	SetChannelVolume(iChannel, fVolume);
 }
