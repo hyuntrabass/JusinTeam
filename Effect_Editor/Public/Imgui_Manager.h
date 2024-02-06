@@ -42,6 +42,8 @@ struct OldEffectInfo
 	float fAlphaDelta{};
 	float fRectRotationAngle{};
 	bool isBillboard{};
+	SimpleMath::Vector3 vBillboardRotation{};
+	float fPartiDissolveRatio{};
 
 	bool hasLight{};
 	LIGHT_DESC Light_Desc{};

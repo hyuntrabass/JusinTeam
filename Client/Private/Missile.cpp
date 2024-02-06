@@ -156,10 +156,6 @@ void CMissile::Tick(_float fTimeDelta)
 		{
 			m_pEffect_Ball->Tick(fTimeDelta);
 		}
-		if (m_pEffect_Smoke)
-		{
-			m_pEffect_Smoke->Tick(fTimeDelta);
-		}
 
 		return;
 	}
@@ -190,7 +186,7 @@ void CMissile::Tick(_float fTimeDelta)
 			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Smoke");
 			Info.pMatrix = &m_EffectMatrix;
 			Info.isFollow = true;
-			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 		}
 
 
@@ -236,7 +232,7 @@ void CMissile::Tick(_float fTimeDelta)
 			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Smoke");
 			Info.pMatrix = &m_EffectMatrix;
 			Info.isFollow = true;
-			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 		}
 
 
@@ -277,7 +273,7 @@ void CMissile::Tick(_float fTimeDelta)
 			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Smoke");
 			Info.pMatrix = &m_EffectMatrix;
 			Info.isFollow = true;
-			m_pEffect_Smoke = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 			m_fEffectTimer = 3.f;
 		}
@@ -353,10 +349,6 @@ void CMissile::Tick(_float fTimeDelta)
 	{
 		m_pEffect_Ball->Tick(fTimeDelta);
 	}
-	if (m_pEffect_Smoke)
-	{
-		m_pEffect_Smoke->Tick(fTimeDelta);
-	}
 	Update_Collider();
 }
 
@@ -364,10 +356,6 @@ void CMissile::Late_Tick(_float fTimeDelta)
 {
 	//m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 
-	if (m_pEffect_Smoke)
-	{
-		m_pEffect_Smoke->Late_Tick(fTimeDelta);
-	}
 	if (m_pEffect_Ball)
 	{
 		m_pEffect_Ball->Late_Tick(fTimeDelta);
@@ -558,7 +546,6 @@ void CMissile::Free()
 	__super::Free();
 
 	Safe_Release(m_pEffect_Ball);
-	Safe_Release(m_pEffect_Smoke);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pColliderCom);

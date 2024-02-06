@@ -105,11 +105,11 @@ HRESULT CLevel_GamePlay::Init()
 	//}
 
 	// Pet_Test
-	if (FAILED(Ready_Pet()))
-	{
-		MSG_BOX("Failed to Ready Pet");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Pet()))
+	//{
+	//	MSG_BOX("Failed to Ready Pet");
+	//	return E_FAIL;
+	//}
 
 	// UI
 	if (FAILED(Ready_UI()))
