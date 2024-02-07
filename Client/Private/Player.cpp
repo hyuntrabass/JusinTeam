@@ -120,6 +120,69 @@ void CPlayer::Tick(_float fTimeDelta)
 		m_fDissolveRatio -= fTimeDelta * 4.f;
 	}
 
+	if (m_bHitted)
+	{
+		m_fRimRightTimmer += fTimeDelta;
+		if (m_ShaderIndex == VTFPass_Dissolve)
+		{
+			m_ShaderIndex = VTFPass_Main_Rim;
+			m_HairShaderIndex = VTFPass_Main_Rim;
+
+		}
+		else if (m_ShaderIndex == VTFPass_Main_Rim)
+		{
+			m_ShaderIndex = VTFPass_Dissolve;
+			m_HairShaderIndex = VTFPass_LerpDissolve;
+		}
+		if (m_fRimRightTimmer >= 0.4f)
+		{
+			m_fRimRightTimmer = 0.f;
+			m_bHitted = false;
+			m_ShaderIndex = VTFPass_Dissolve;
+			m_HairShaderIndex = VTFPass_LerpDissolve;
+		}
+	}
+
+	if (m_bPoison)
+	{
+		if(m_fRimTick>0.3f)
+		{
+			if (m_iPoisonCount < 8)
+			{
+				m_fRimRightTimmer += fTimeDelta;
+				if (m_ShaderIndex == VTFPass_Dissolve)
+				{
+					m_ShaderIndex = VTFPass_Main_Rim;
+					m_HairShaderIndex = VTFPass_Main_Rim;
+					Set_Damage(m_iPoisionDamage, MonAtt_Poison);
+				}
+				else if (m_ShaderIndex == VTFPass_Main_Rim)
+				{
+					m_ShaderIndex = VTFPass_Dissolve;
+					m_HairShaderIndex = VTFPass_LerpDissolve;
+				}
+				if (m_fRimRightTimmer >= 0.5f)
+				{
+					m_fRimRightTimmer = 0.f;
+					m_ShaderIndex = VTFPass_Dissolve;
+					m_HairShaderIndex = VTFPass_LerpDissolve;
+				}
+				m_iPoisonCount++;
+				m_fRimTick = 0.f;
+			}
+			else
+			{
+				m_bPoison = false;
+				m_iPoisonCount = 0;
+				m_fRimTick = 0.f;
+			}
+		}
+		else
+		{
+			m_fRimTick += fTimeDelta;
+		}
+	}
+
 	if (m_fDissolveRatio < 0.f)
 	{
 		m_fDissolveRatio = 0.f;
@@ -217,6 +280,11 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		if (CUI_Manager::Get_Instance()->Is_InvenActive())
 		{
+			m_Animation.iAnimIndex = Anim_idle_00;
+			m_Animation.isLoop = true;
+			m_hasJumped = false;
+			m_pModelCom->Set_Animation(m_Animation);
+			m_pModelCom->Play_Animation(fTimeDelta);
 			m_isInvenActive = true;
 			if (CUI_Manager::Get_Instance()->Set_CurrentPlayerPos(m_pTransformCom->Get_State(State::Pos)))
 			{
@@ -341,14 +409,17 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	}
 
 	m_pModelCom->Set_Animation(m_Animation);
-	if (m_UsingMotionBlur)
+
+	/*if (m_UsingMotionBlur)
 	{
-		m_ShaderIndex = 2;
+		m_ShaderIndex = VTFPass_Motion_Blur;
+		m_HairShaderIndex = VTFPass_LerpBlur;
 	}
 	else
 	{
-		m_ShaderIndex = 1;
-	}
+		m_ShaderIndex = VTFPass_Dissolve;
+		m_HairShaderIndex = VTFPass_LerpDissolve;
+	}*/
 
 	if (!m_bStartGame && m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY)
 	{
@@ -788,7 +859,7 @@ HRESULT CPlayer::Render_Parts(PART_TYPE Parts, _uint Index)
 
 		if (Parts == PT_HAIR)
 		{
-			if (FAILED(m_pShaderCom->Begin(m_ShaderIndex + 2)))
+			if (FAILED(m_pShaderCom->Begin(m_HairShaderIndex)))
 			{
 				return E_FAIL;
 			}
@@ -881,6 +952,19 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 			return;
 		}
 
+		if (m_eState == Stun_Start or m_eState == Stun)
+		{
+			if (MonAttType == MonAtt_Stun)
+			{
+				return;
+			}
+		}
+
+		if ((m_eState == KnockDown))
+		{
+			return;
+		}
+
 		switch (MonAttType)
 		{
 		case MonAtt_Hit:
@@ -892,6 +976,8 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 			m_Animation.fStartAnimPos = 18.f;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
+			m_bHitted = true;
+			m_vRimColor = _vec4(1.f, 1.f, 1.f, 1.f);
 		}
 		break;
 		case MonAtt_KnockDown:
@@ -902,6 +988,16 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 		case MonAtt_Stun:
 		{
 			m_eState = Stun_Start;
+		}
+		break;
+		case MonAtt_Poison:
+		{
+			if(!m_bPoison)
+			{
+				m_iPoisionDamage = iDamage;
+				m_bPoison = true;
+				m_vRimColor = _vec4(0.f, 1.f, 0.f, 1.f);
+			}
 		}
 		break;
 		case Parrying_Succescc:
@@ -918,6 +1014,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 			}
 		}
 		break;
+
 		}
 	}
 
@@ -1058,6 +1155,7 @@ void CPlayer::Move(_float fTimeDelta)
 		or m_eState == KnockDown or m_eState == Stun_Start
 		or m_eState == Stun or m_eState == Die)
 	{
+		m_pTransformCom->Gravity(fTimeDelta);
 		return;
 	}
 
@@ -2173,6 +2271,11 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimationIndex() == Anim_Assassin_Attack04_A)
 			{
+				if (Index >= 15.5f && Index <= 30.f)
+				{
+					m_pLeft_Trail[m_Weapon_CurrentIndex - 5]->Late_Tick(fTimeDelta);
+				}
+
 				if (Index >= 19.f && Index <= 22.f)
 				{
 					if (!m_bAttacked)
@@ -2255,15 +2358,13 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		}
 
 	}
-	if (m_eState == Skill2)
+	else if (m_eState == Skill2)
 	{
-
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
 		if (Index >= 5.f && Index <= 31.f)
 		{
 			m_pTransformCom->Set_Speed(m_fSkillSpeed);
 			m_pTransformCom->Go_Straight(fTimeDelta);
-			m_fSkiilTimer = 1.f;
 		}
 
 		if (Index >= 55.f && Index <= 67.f)
@@ -2447,7 +2548,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			m_pGameInstance->Set_TimeRatio(1.f);
 		}
 
-		if (Index >= 14.f && Index <= 17.f)
+		if (Index >= 10.f && Index <= 17.f)
 		{
 			if (!m_bAttacked)
 			{
@@ -3094,7 +3195,6 @@ void CPlayer::Init_State()
 			Skill1_Attack();
 			break;
 		case Client::CPlayer::Skill2:
-
 			Skill2_Attack();
 			break;
 		case Client::CPlayer::Skill3:
@@ -3743,6 +3843,14 @@ HRESULT CPlayer::Add_Components()
 HRESULT CPlayer::Bind_ShaderResources()
 {
 
+	if(m_ShaderIndex == VTFPass_Main_Rim)
+	{
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &m_vRimColor, sizeof _vec4)))
+		{
+			return E_FAIL;
+		}
+	}
+
 	// WorldMatrix ¹ÙÀÎµå
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
@@ -3807,11 +3915,7 @@ HRESULT CPlayer::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	_float4 vColor = _float4(1.f, 1.f, 1.f, 1.f);
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vColor, sizeof(_float4))))
-	{
-		return E_FAIL;
-	}
+
 
 
 

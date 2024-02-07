@@ -637,11 +637,11 @@ void CCamera_Main::ZOOM_Mode(_float fTimeDelta)
 
 void CCamera_Main::SkillBook_Mode(_float fTimeDelta)
 {
-	_vec4 vShopPos = _vec4(2.25f, -98.26f, -2.5f, 1.f);
+	_vec4 vShopPos = _vec4(2.38035f, 202.068f, -2.18231f, 1.f);
 
 	m_pTransformCom->Set_State(State::Pos, vShopPos);
 
-	m_pTransformCom->LookAt_Dir(_vec4(-0.447532f, -0.161538f, 0.879555f, 0.f));
+	m_pTransformCom->LookAt_Dir(_vec4(-0.514929f, -0.221083f, 0.828224f, 0.f));
 }
 
 void CCamera_Main::WorldMap_Mode(_float fTimeDelta)
