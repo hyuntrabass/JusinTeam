@@ -163,6 +163,7 @@ void CRabbit::Init_State(_float fTimeDelta)
 
 	if (m_iHP <= 0)
 	{
+	
 		m_eCurState = STATE_DIE;
 	}
 

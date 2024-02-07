@@ -321,7 +321,7 @@ namespace Client
 		AnimPass_Dissolve,
 		AnimPass_Rim,
 	};
-
+	
 	enum StaticMeshPass
 	{
 		StaticPass_Default,
@@ -348,7 +348,17 @@ namespace Client
 		StaticPass_DiffAlpha,
 		StaticPass_End,
 	};
+	
+	enum VTFModelPass
+	{
+		VTFPass_Default,
+		VTFPass_Dissolve,
+		VTFPass_Motion_Blur,
+		VTFPass_LerpDissolve,
+		VTFPass_LerpBlur,
+		VTFPass_Main_Rim,
 
+	};
 	enum VNTPass
 	{
 		VNTPass_Terrain,

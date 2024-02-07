@@ -51,15 +51,15 @@ void CTrigger::Tick(_float fTimeDelta)
 
 	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
 	m_isCollision = m_pCollider->Intersect(pCollider);
-	
+#ifdef _DEBUG
+	m_pRendererCom->Add_DebugComponent(m_pCollider);
+#endif
+
+
 }
 
 void CTrigger::Late_Tick(_float fTimeDelta)
 {
-
-#ifdef _DEBUG
-	m_pRendererCom->Add_DebugComponent(m_pCollider);
-#endif
 
 	//m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 

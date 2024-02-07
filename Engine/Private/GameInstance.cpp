@@ -122,6 +122,12 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 		if (m_fVideoTimmer > m_fVideoDuration)
 		{
 			m_isPlayingVideo = false;
+			if (m_bVideoAfterSkip)
+			{
+				m_bReady_NextLevel = true;
+				m_bVideoAfterSkip = false;
+			}
+			
 		}
 		return;
 	}
@@ -1392,10 +1398,11 @@ const wstring& CGameInstance::Get_InputString() const
 	return m_strInput;
 }
 
-void CGameInstance::Video_Start(_float fVideoDuration)
+void CGameInstance::Video_Start(_float fVideoDuration ,_bool bSkip)
 {
 	m_fVideoDuration = fVideoDuration;
 	m_isPlayingVideo = true;
+	m_bVideoAfterSkip = bSkip;
 }
 
 void CGameInstance::Initialize_Level(_uint iLevelNum)

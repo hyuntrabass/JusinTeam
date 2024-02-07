@@ -1130,7 +1130,6 @@ void CGroar_Boss::NPC_Tick(_float fTimeDelta)
 		m_pDialogText->Tick(fTimeDelta);
 	}
 	m_pSkipButton->Tick(fTimeDelta);
-	m_pArrow->Tick(fTimeDelta);
 	m_pLine->Tick(fTimeDelta);
 	m_pBackGround->Tick(fTimeDelta);
 	m_pTransformCom->Gravity(fTimeDelta);
@@ -1141,6 +1140,10 @@ void CGroar_Boss::NPC_Tick(_float fTimeDelta)
 		{
 			m_iSoundChannel = -1;
 		}
+	}
+	if (m_bTalking == true)
+	{
+		m_pArrow->Tick(fTimeDelta);
 	}
 }
 
