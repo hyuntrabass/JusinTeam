@@ -143,25 +143,25 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 	*/
-	//m_DC = GetDC(g_hWnd);
 
-	//m_BackDC = CreateCompatibleDC(m_DC);
+	/*m_DC = GetDC(g_hWnd);
 
-	//m_hBackBit = CreateCompatibleBitmap(m_DC, g_iWinSizeX, g_iWinSizeY);
+	m_BackDC = CreateCompatibleDC(m_DC);
 
-	//m_hOldBackBit = (HBITMAP)SelectObject(m_BackDC, m_hBackBit);
+	m_hBackBit = CreateCompatibleBitmap(m_DC, g_iWinSizeX, g_iWinSizeY);
 
-	//m_hVideo = MCIWndCreate(g_hWnd, NULL, WS_CHILD | WS_VISIBLE | MCIWNDF_NOPLAYBAR
-	//	, L"../Bin/Resources/Video/Tutorial0.wmv");
+	m_hOldBackBit = (HBITMAP)SelectObject(m_BackDC, m_hBackBit);
 
-	//MCIWndSetVolume(g_hWnd, 0.5f);
+	m_hVideo = MCIWndCreate(g_hWnd, NULL, WS_CHILD | WS_VISIBLE | MCIWNDF_NOPLAYBAR
+		, L"../Bin/Resources/Video/Tutorial0.wmv");
 
+	MCIWndSetVolume(g_hWnd, 1.f);
 
-	//MoveWindow(m_hVideo, 0, 0, g_iWinSizeX, g_iWinSizeY, FALSE);
+	MoveWindow(m_hVideo, 0, 0, g_iWinSizeX, g_iWinSizeY, FALSE);
 
-	//MCIWndPlay(m_hVideo);
+	MCIWndPlay(m_hVideo);
 
-	//m_pGameInstance->Video_Start(40.f);
+	m_pGameInstance->Video_Start(35.f);*/
 	
 
 	return S_OK;
@@ -175,6 +175,11 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		m_pGameInstance->Play_Sound(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.6f, true);
 		m_pGameInstance->Play_Sound(TEXT("waves"), 0.2f, true);
 		m_bReadyTutorial = true;
+		MCIWndClose(m_hVideo);
+		SelectObject(m_BackDC, m_hOldBackBit); //DC에 원래 설정을 돌려줍니다.
+		DeleteDC(m_BackDC);  // 메모리를 반환합니다.
+		DeleteObject(m_hBackBit); // 메모리를 반환합니다.
+		ReleaseDC(g_hWnd, m_DC); // 윈도우에 DC 해제를 요청합니다.
 	}
 
 	
@@ -283,7 +288,15 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		return;
 	}
 
-	//m_pGameInstance->PhysXTick(fTimeDelta);
+	if (m_pGameInstance->Ready_NextLevel())
+	{
+		m_pGameInstance->Set_NextLevel(false);
+		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_VILLAGE))))
+		{
+			return;
+		}
+		return;
+	}
 
 	if (m_pGameInstance->Key_Down(DIK_U))
 	{
@@ -919,4 +932,5 @@ CLevel_GamePlay* CLevel_GamePlay::Create(_dev pDevice, _context pContext)
 void CLevel_GamePlay::Free()
 {
 	__super::Free();
+	
 }
