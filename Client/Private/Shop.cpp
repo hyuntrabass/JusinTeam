@@ -467,6 +467,7 @@ HRESULT CShop::Init_ShopItems()
 	_float fTerm = 2.f;
 	_float fShopDescY = 90.f;
 	_uint iIndex = 0;
+	_uint iEquipIndex = 0;
 	CShopDesc::SHOPITEM_DESC ShopDesc = {};
 	ShopDesc.fDepth = m_fDepth - 0.01f;
 	ShopDesc.strItemName = TEXT("체력 포션");
@@ -491,7 +492,7 @@ HRESULT CShop::Init_ShopItems()
 
 
 	ShopDesc.strItemName = TEXT("안흔한옷");
-	ShopDesc.vPosition = _vec2(235.f, fStartY + fShopDescY * iIndex + fTerm * iIndex);
+	ShopDesc.vPosition = _vec2(235.f, fStartY + fShopDescY * iEquipIndex + fTerm * iEquipIndex);
 	pShopDesc = (CShopDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_ShopDesc"), &ShopDesc);
 	if (not pShopDesc)
 	{
@@ -499,10 +500,10 @@ HRESULT CShop::Init_ShopItems()
 	}
 	m_vecShopItems[EQUIP].push_back(pShopDesc);
 
-	iIndex++;
+	iEquipIndex++;
 
 	ShopDesc.strItemName = TEXT("그냥모자");
-	ShopDesc.vPosition = _vec2(235.f, fStartY + fShopDescY * iIndex + fTerm * iIndex);
+	ShopDesc.vPosition = _vec2(235.f, fStartY + fShopDescY * iEquipIndex + fTerm * iEquipIndex);
 	pShopDesc = (CShopDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_ShopDesc"), &ShopDesc);
 	if (not pShopDesc)
 	{
