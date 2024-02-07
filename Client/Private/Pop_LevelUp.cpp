@@ -50,7 +50,7 @@ HRESULT CPop_LevelUp::Init(void* pArg)
 void CPop_LevelUp::Tick(_float fTimeDelta)
 {
 	
-	if (m_fDeadTime >= 5.f)
+	if (m_fDeadTime >= 3.f)
 	{
 		m_fTime = 3.f;
 		m_isDead = true;

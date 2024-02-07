@@ -82,7 +82,7 @@ HRESULT CPop_Skill::Init(void* pArg)
 void CPop_Skill::Tick(_float fTimeDelta)
 {
 	
-	if (m_fDeadTime >= 5.f)
+	if (m_fDeadTime >= 4.f)
 	{
 		if (m_iSkillNum == 0)
 		{
