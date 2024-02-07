@@ -89,7 +89,7 @@ protected:
 	virtual HRESULT Add_Collider();
 	virtual void Update_Collider();
 
-	void Update_MonsterCollider();
+	void Update_BodyCollider();
 
 	// Collier 사이즈 조절용
 	void Change_Extents(_vec3 vStartSize);

@@ -19,7 +19,7 @@ CVoid05::CVoid05(const CVoid05& rhs)
 
 HRESULT CVoid05::Init_Prototype()
 {
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CVoid05::Init(void* pArg)
@@ -48,7 +48,7 @@ HRESULT CVoid05::Init(void* pArg)
 	m_eCurState = STATE_DIG;
 
 	m_iHP = 1000;
-	m_iDamageAccMax = 200;
+	m_iDamageAccMax = 250;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
@@ -60,16 +60,18 @@ HRESULT CVoid05::Init(void* pArg)
 	m_pRightTrail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
 
 	PxCapsuleControllerDesc ControllerDesc{};
-	ControllerDesc.height = 0.5f; // 높이(위 아래의 반구 크기 제외
-	ControllerDesc.radius = 1.1f; // 위아래 반구의 반지름
+	ControllerDesc.height = 0.1f; // 높이(위 아래의 반구 크기 제외
+	ControllerDesc.radius = 0.8f; // 위아래 반구의 반지름
 	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
 	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
 	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
 	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+
 	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
-	if (pArg)
+
+	//if (pArg)
 	{
 		if (FAILED(__super::Init(pArg)))
 		{
@@ -84,31 +86,33 @@ HRESULT CVoid05::Init(void* pArg)
 
 void CVoid05::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_5))
-	{
-		//Set_Damage(0, AT_Sword_Common);
-		m_iHP = 0;
-	}
+	//if (m_pGameInstance->Key_Down(DIK_5))
+	//{
+	//	//Set_Damage(0, AT_Sword_Common);
+	//	m_iHP = 0;
+	//}
+
+	__super::Tick(fTimeDelta);
 
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
-	
+
 	m_pModelCom->Set_Animation(m_Animation);
-	m_Animation.fStartAnimPos = 0.f;
 
 	Update_Collider();
-	__super::Update_MonsterCollider();
+	__super::Update_BodyCollider();
 
 	Update_Trail(fTimeDelta);
-	 
+
 	m_pTransformCom->Gravity(fTimeDelta);
 
-	__super::Tick(fTimeDelta);
 }
 
 void CVoid05::Late_Tick(_float fTimeDelta)
 {
 	__super::Late_Tick(fTimeDelta);
+
+	m_Animation.fStartAnimPos = 0.f;
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
@@ -120,16 +124,23 @@ HRESULT CVoid05::Render()
 {
 	__super::Render();
 
-    return S_OK;
+	return S_OK;
 }
 
 void CVoid05::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_fHittedTime = 6.f;
+	m_eCurState = STATE_HIT;
+
 	m_iHP -= iDamage;
-	m_iDamageAcc += iDamage;
 	m_bDamaged = true;
 	m_bChangePass = true;
+	if (m_bHit == false)
+	{
+		m_iDamageAcc += iDamage;
+	}
+
+	m_fIdleTime = 0.f;
 
 	CHitEffect::HITEFFECT_DESC Desc{};
 	Desc.iDamage = iDamage;
@@ -139,17 +150,6 @@ void CVoid05::Set_Damage(_int iDamage, _uint iDamageType)
 	{
 		return;
 	}
-
-	m_eCurState = STATE_HIT;
-
-	//if (m_bHit == true)
-	//{
-	//	m_eCurState = STATE_HIT;
-	//}
-	//else
-	//{
-	//	m_eCurState = STATE_CHASE;
-	//}
 
 	_vec4 vPlayerPos = __super::Compute_PlayerPos();
 	m_pTransformCom->LookAt(vPlayerPos);
@@ -180,6 +180,11 @@ void CVoid05::Set_Damage(_int iDamage, _uint iDamageType)
 
 void CVoid05::Init_State(_float fTimeDelta)
 {
+	_vec4 vPlayerPos = __super::Compute_PlayerPos();
+	_float fDistance = __super::Compute_PlayerDistance();
+	_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
+	vDir.y = 0.f;
+
 	if (m_iHP <= 0)
 	{
 		//m_eCurState = STATE_DIE;
@@ -220,6 +225,8 @@ void CVoid05::Init_State(_float fTimeDelta)
 
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 2.f;
+			m_Animation.fInterpolationTime = 0.2f;
+			m_Animation.fDurationRatio = 1.f;
 
 			if (m_bSlow == true)
 			{
@@ -230,16 +237,28 @@ void CVoid05::Init_State(_float fTimeDelta)
 				m_pTransformCom->Set_Speed(4.f);
 			}
 		}
-			break;
+		break;
 
 		case Client::CVoid05::STATE_ATTACK:
 			m_bDamaged = false;
+			m_pTransformCom->LookAt_Dir(vDir);
+
 			break;
 
 		case Client::CVoid05::STATE_HIT:
-			m_Animation.iAnimIndex = ROAR;
+			m_Animation.iAnimIndex = KNOCKDOWN;
 			m_Animation.isLoop = false;
-			m_Animation.fAnimSpeedRatio = 10.f;
+
+			if (m_bHit == true)
+			{
+				m_Animation.fDurationRatio = 1.f;
+				m_Animation.fAnimSpeedRatio = 3.f;
+			}
+			else
+			{
+				m_Animation.fDurationRatio = 0.026f;
+				m_Animation.fAnimSpeedRatio = 2.f;
+			}
 
 			break;
 
@@ -258,7 +277,7 @@ void CVoid05::Tick_State(_float fTimeDelta)
 	switch (m_eCurState)
 	{
 	case Client::CVoid05::STATE_IDLE:
-		
+
 		m_fIdleTime += fTimeDelta;
 
 		if (m_fIdleTime >= 1.f)
@@ -316,6 +335,7 @@ void CVoid05::Tick_State(_float fTimeDelta)
 				//m_iAttackPattern = rand() % 3;
 				m_bSelectAttackPattern = true;
 				m_bAttacked = false;
+				m_bAttacked2 = false;
 			}
 		}
 
@@ -368,6 +388,12 @@ void CVoid05::Tick_State(_float fTimeDelta)
 					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
 				}
+				if (fAnimpos >= 43.f && fAnimpos <= 45.f && !m_bAttacked2)
+				{
+					_uint iDamage = m_iSmallDamage / 2 + rand() % 10;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
+					m_bAttacked2 = true;
+				}
 				if (fAnimpos >= 17.f && fAnimpos <= 50.f)
 				{
 					m_pLeftTrail->Late_Tick(fTimeDelta);
@@ -390,7 +416,13 @@ void CVoid05::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
 		{
 			m_eCurState = STATE_CHASE;
-			//m_bHit = false;
+			m_fIdleTime = 0.f;
+
+			if (m_bHit == true)
+			{
+				m_iDamageAcc = 0;
+				m_bHit = false;
+			}
 		}
 
 		break;

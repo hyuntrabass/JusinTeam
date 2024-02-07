@@ -104,13 +104,11 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	//if (FAILED(Ready_Test()))
-	//{
-	//	MSG_BOX("Failed to Ready Test");
-	//	return E_FAIL;
-	//}
-
-	m_pGameInstance->Set_HellHeight(-5000.f);
+	if (FAILED(Ready_Test()))
+	{
+		MSG_BOX("Failed to Ready Test");
+		return E_FAIL;
+	}
 
 	m_pGameInstance->Set_FogNF(_vec2(50.f, 2000.f));
 	m_pGameInstance->Set_FogColor(_color(1.f));
@@ -201,6 +199,8 @@ HRESULT CLevel_Village::Ready_Player()
 	pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 2.f, 0.f));
 	pPlayerTransform->LookAt_Dir(_vec4(-0.0531848f, 0.0598536346f, 0.996788f, 0.f));
 
+	m_pGameInstance->Set_HellHeight(-70.f);
+
 	return S_OK;
 }
 
@@ -248,42 +248,42 @@ HRESULT CLevel_Village::Ready_Map()
 
 HRESULT CLevel_Village::Ready_Dungeon()
 {
-	const TCHAR* pGetPath = TEXT("../Bin/Data/Dungeon.dat");
+	//const TCHAR* pGetPath = TEXT("../Bin/Data/Dungeon.dat");
 
-	std::ifstream inFile(pGetPath, std::ios::binary);
+	//std::ifstream inFile(pGetPath, std::ios::binary);
 
-	if (!inFile.is_open())
-	{
-		MSG_BOX("던전 데이터 파일 불러오기 실패.");
-		return E_FAIL;
-	}
+	//if (!inFile.is_open())
+	//{
+	//	MSG_BOX("던전 데이터 파일 불러오기 실패.");
+	//	return E_FAIL;
+	//}
 
-	_uint MapListSize;
-	inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+	//_uint MapListSize;
+	//inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
 
 
-	for (_uint i = 0; i < MapListSize; ++i)
-	{
-		_ulong MapPrototypeSize;
-		inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+	//for (_uint i = 0; i < MapListSize; ++i)
+	//{
+	//	_ulong MapPrototypeSize;
+	//	inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
 
-		wstring MapPrototype;
-		MapPrototype.resize(MapPrototypeSize);
-		inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+	//	wstring MapPrototype;
+	//	MapPrototype.resize(MapPrototypeSize);
+	//	inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
 
-		_mat MapWorldMat;
-		inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+	//	_mat MapWorldMat;
+	//	inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
 
-		MapInfo MapInfo{};
-		MapInfo.Prototype = MapPrototype;
-		MapInfo.m_Matrix = MapWorldMat;
+	//	MapInfo MapInfo{};
+	//	MapInfo.Prototype = MapPrototype;
+	//	MapInfo.m_Matrix = MapWorldMat;
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Dungeon"), &MapInfo)))
-		{
-			MSG_BOX("던전 생성 실패");
-			return E_FAIL;
-		}
-	}
+	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Dungeon"), &MapInfo)))
+	//	{
+	//		MSG_BOX("던전 생성 실패");
+	//		return E_FAIL;
+	//	}
+	//}
 
 	return S_OK;
 }
@@ -292,42 +292,42 @@ HRESULT CLevel_Village::Ready_Dungeon()
 HRESULT CLevel_Village::Ready_Object()
 {
 
-	const TCHAR* pGetPath = TEXT("../Bin/Data/Village_ObjectData.dat");
+	//const TCHAR* pGetPath = TEXT("../Bin/Data/Village_ObjectData.dat");
 
-	std::ifstream inFile(pGetPath, std::ios::binary);
+	//std::ifstream inFile(pGetPath, std::ios::binary);
 
-	if (!inFile.is_open())
-	{
-		MSG_BOX("오브젝트 파일을 찾지 못했습니다.");
-		return E_FAIL;
-	}
+	//if (!inFile.is_open())
+	//{
+	//	MSG_BOX("오브젝트 파일을 찾지 못했습니다.");
+	//	return E_FAIL;
+	//}
 
-	_uint ObjectListSize;
-	inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
+	//_uint ObjectListSize;
+	//inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
 
 
-	for (_uint i = 0; i < ObjectListSize; ++i)
-	{
-		_ulong ObjectPrototypeSize;
-		inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
+	//for (_uint i = 0; i < ObjectListSize; ++i)
+	//{
+	//	_ulong ObjectPrototypeSize;
+	//	inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
 
-		wstring ObjectPrototype;
-		ObjectPrototype.resize(ObjectPrototypeSize);
-		inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
+	//	wstring ObjectPrototype;
+	//	ObjectPrototype.resize(ObjectPrototypeSize);
+	//	inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
 
-		_mat ObjectWorldMat;
-		inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
+	//	_mat ObjectWorldMat;
+	//	inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
 
-		ObjectInfo ObjectInfo{};
-		ObjectInfo.strPrototypeTag = ObjectPrototype;
-		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
-		ObjectInfo.eObjectType = Object_Building;
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Village_Etc_Object"), &ObjectInfo)))
-		{
-			MSG_BOX("오브젝트 불러오기 실패");
-			return E_FAIL;
-		}
-	}
+	//	ObjectInfo ObjectInfo{};
+	//	ObjectInfo.strPrototypeTag = ObjectPrototype;
+	//	ObjectInfo.m_WorldMatrix = ObjectWorldMat;
+	//	ObjectInfo.eObjectType = Object_Building;
+	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Village_Etc_Object"), &ObjectInfo)))
+	//	{
+	//		MSG_BOX("오브젝트 불러오기 실패");
+	//		return E_FAIL;
+	//	}
+	//}
 	return S_OK;
 }
 
@@ -398,6 +398,9 @@ CamPos Z :2084.48*/
 	//pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 4.f, 0.f));
 	pPlayerTransform->Set_Position(_vec3(2169.f, -26.f, 2084.f));
 	pPlayerTransform->LookAt_Dir(_vec4(-0.0531848f, 0.0598536346f, 0.996788f, 1.f));
+
+	m_pGameInstance->Set_HellHeight(-30.f);
+
 	return S_OK;
 }
 
@@ -501,6 +504,11 @@ HRESULT CLevel_Village::Ready_Village_Monster()
 		{
 			return E_FAIL;
 		}
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
+	{
+		return E_FAIL;
 	}
 
 	return S_OK;
@@ -825,10 +833,10 @@ HRESULT CLevel_Village::Ready_Trigger()
 
 HRESULT CLevel_Village::Ready_Test()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Rabbit"), TEXT("Prototype_GameObject_Rabbit"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Test"), TEXT("Prototype_GameObject_Nastron03"))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	return S_OK;
 }

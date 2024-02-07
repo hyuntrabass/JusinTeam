@@ -38,6 +38,8 @@ HRESULT CXBeam::Init(void* pArg)
 	m_pTransformCom->Set_Speed(30.f);
 	m_pTransformCom->LookAt(dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")))->Get_CenterPos());
 
+	m_pGameInstance->Play_Sound(TEXT("SE_5130_Meteor_SFX_01"));
+
 	return S_OK;
 }
 
@@ -59,6 +61,8 @@ void CXBeam::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Attack_Player(m_pColliderCom, 100))
 	{
 		Kill();
+
+		m_pGameInstance->Play_Sound(TEXT("SD_4062_FireBall_SFX_01"));
 
 		CEffect_Manager* pEffect_Manager = CEffect_Manager::Get_Instance();
 		Safe_AddRef(pEffect_Manager);

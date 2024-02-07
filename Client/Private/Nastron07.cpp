@@ -15,7 +15,7 @@ CNastron07::CNastron07(const CNastron07& rhs)
 
 HRESULT CNastron07::Init_Prototype()
 {
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CNastron07::Init(void* pArg)
@@ -41,6 +41,7 @@ HRESULT CNastron07::Init(void* pArg)
 	m_eCurState = STATE_IDLE;
 
 	m_iHP = 5000;
+	m_iDamageAccMax = 700;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
@@ -67,7 +68,8 @@ HRESULT CNastron07::Init(void* pArg)
 
 	m_pTransformCom->Set_Position( _vec3(5.f, 0.f, 0.f));
 	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
-	if (pArg)
+
+	//if (pArg)
 	{
 		if (FAILED(__super::Init(pArg)))
 		{
@@ -84,17 +86,18 @@ void CNastron07::Tick(_float fTimeDelta)
 		Set_Damage(0, AT_Bow_Common);
 	}
 
+	__super::Tick(fTimeDelta);
+
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 
 	m_pModelCom->Set_Animation(m_Animation);
 
 	Update_Collider();
-	__super::Update_MonsterCollider();
+	__super::Update_BodyCollider();
 
 	Update_Trail(fTimeDelta);
 
-	__super::Tick(fTimeDelta);
 }
 
 void CNastron07::Late_Tick(_float fTimeDelta)
@@ -117,11 +120,17 @@ HRESULT CNastron07::Render()
 void CNastron07::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_fHittedTime = 6.f;
+	m_eCurState = STATE_HIT;
+
 	m_iHP -= iDamage;
 	m_bDamaged = true;
 	m_bChangePass = true;
+	if (m_bHit == false)
+	{
+		m_iDamageAcc += iDamage;
+	}
 
-	m_eCurState = STATE_HIT;
+	m_fIdleTime = 0.f;
 
 	_vec4 vPlayerPos = __super::Compute_PlayerPos();
 	m_pTransformCom->LookAt(vPlayerPos);
@@ -152,6 +161,11 @@ void CNastron07::Set_Damage(_int iDamage, _uint iDamageType)
 
 void CNastron07::Init_State(_float fTimeDelta)
 {
+	_vec4 vPlayerPos = __super::Compute_PlayerPos();
+	_float fDistance = __super::Compute_PlayerDistance();
+	_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
+	vDir.y = 0.f;
+
 	if (m_iHP <= 0)
 	{
 		m_eCurState = STATE_DIE;
@@ -182,8 +196,6 @@ void CNastron07::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CNastron07::STATE_CHASE:
-		{
-			_float fDistance = __super::Compute_PlayerDistance();
 			if (fDistance >= m_fAttackRange)
 			{
 				m_Animation.iAnimIndex = RUN;
@@ -200,39 +212,41 @@ void CNastron07::Init_State(_float fTimeDelta)
 			{
 				m_pTransformCom->Set_Speed(5.f);
 			}
-		}
+
 			break;
 
 		case Client::CNastron07::STATE_ATTACK:
-		{
 			m_bDamaged = false;
 			m_Animation.fAnimSpeedRatio = 3.f;
 			m_bAttacking = true;
 
-			_vec4 vPlayerPos = __super::Compute_PlayerPos();
-			_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
-			vDir.y = 0.f;
 			m_pTransformCom->LookAt_Dir(vDir);
-		}
 
 			break;
 
 		case Client::CNastron07::STATE_HIT:
-		{
-			_uint iHitPattern = rand() % 2;
-
-			switch (iHitPattern)
+			if (m_bHit == true)
 			{
-			case 0:
-				m_Animation.iAnimIndex = HIT_L;
-				m_Animation.isLoop = false;
-				break;
-			case 1:
-				m_Animation.iAnimIndex = HIT_R;
-				m_Animation.isLoop = false;
-				break;
+				m_Animation.iAnimIndex = KNOCKDOWN;
 			}
-		}
+
+			else
+			{
+				_uint iHitPattern = rand() % 2;
+				switch (iHitPattern)
+				{
+				case 0:
+					m_Animation.iAnimIndex = HIT_L;
+					break;
+				case 1:
+					m_Animation.iAnimIndex = HIT_R;
+					break;
+				}
+			}
+
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
 			break;
 
 		case Client::CNastron07::STATE_DIE:
@@ -288,7 +302,7 @@ void CNastron07::Tick_State(_float fTimeDelta)
 		//	m_eCurState = STATE_CHASE;
 		//}
 	}
-		break;
+	break;
 
 	case Client::CNastron07::STATE_WALK:
 		m_pTransformCom->Go_Straight(fTimeDelta);
@@ -326,7 +340,7 @@ void CNastron07::Tick_State(_float fTimeDelta)
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
 	}
-		break;
+	break;
 
 	case Client::CNastron07::STATE_ATTACK:
 
@@ -451,6 +465,13 @@ void CNastron07::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
 		{
 			m_eCurState = STATE_CHASE;
+			m_fIdleTime = 0.f;
+
+			if (m_bHit == true)
+			{
+				m_iDamageAcc = 0;
+				m_bHit = false;
+			}
 		}
 
 		break;

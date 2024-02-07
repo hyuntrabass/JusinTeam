@@ -49,7 +49,7 @@ HRESULT CGroar_Boss::Init(void* pArg)
 	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 1.5f;
 
-	m_iHP = 100000;
+	m_iHP = 30000;
 
 	if (FAILED(Init_Dialog()))
 	{
@@ -288,7 +288,6 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 1.5f;
 
-			m_pTransformCom->Delete_Controller();
 			break;
 
 		case Client::CGroar_Boss::STATE_SCENE02:
@@ -299,6 +298,10 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CGroar_Boss::STATE_BOSS:
+			m_pTransformCom->Set_Position(_vec3(0.f));
+
+			m_pTransformCom->Delete_Controller();
+
 			PxCapsuleControllerDesc ControllerDesc{};
 			ControllerDesc.height = 2.f; // 높이(위 아래의 반구 크기 제외
 			ControllerDesc.radius = 2.2f; // 위아래 반구의 반지름
@@ -308,6 +311,8 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 
 			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+			
+			m_pTransformCom->Set_Position(_vec3(2179.f, -20.f, 2083.f));
 
 			break;
 		}
@@ -515,13 +520,27 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 				}
 			}
 
+			if (m_bAttack_Selected[ATTACK_THROW] == true && m_bAttack_Selected[ATTACK_XBEAM] == false)
+			{
+				m_eBossCurState = BOSS_STATE_XBEAM;
+
+				if (m_iThrowAttackCombo > 0)
+				{
+					eTempBossCurState = BOSS_STATE_THROW_ATTACK;
+				}
+
+				m_bSelectAttackPattern = true;
+
+				break;
+			}
+
 			GROAR_ATTACK eAttackRandom = ATTACK_END;
-			eAttackRandom = static_cast<GROAR_ATTACK>(rand() % ATTACK_END);
+			eAttackRandom = static_cast<GROAR_ATTACK>(rand() % ATTACK_XBEAM);
 
 			// 랜덤 방지용
 			while (m_bAttack_Selected[eAttackRandom] == true)
 			{
-				eAttackRandom = static_cast<GROAR_ATTACK>(rand() % ATTACK_END);
+				eAttackRandom = static_cast<GROAR_ATTACK>(rand() % ATTACK_XBEAM);
 			}
 
 			switch (eAttackRandom)
@@ -723,7 +742,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 				if (!m_bAttacked3)
 				{
 					_uint iDamage = 80 + rand() % 20;
-					m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Stun);
+					m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_KnockDown);
 					m_bAttacked3 = true;
 				}
 			}
@@ -813,12 +832,12 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_fRageTime += fTimeDelta;
 
-			if (m_fRageTime >= 0.5f)
+			if (m_fRageTime >= 0.25f)
 			{
 				if (fDistance <= 7.5f)
 				{
 					_uint iDamage = 20 + rand() % 10;
-					m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);
+					m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Stun);
 				}
 
 				m_fRageTime = 0.f;
@@ -889,24 +908,21 @@ void CGroar_Boss::Update_Collider()
 
 HRESULT CGroar_Boss::Init_Dialog()
 {
-	m_vecDialog.push_back(TEXT("여보.."));
-	m_vecDialog.push_back(TEXT("놀라게 해서 죄송해요 저는 그로아 마나하임의 신녀입니다."));
-	m_vecDialog.push_back(TEXT("다름이 아니라 돌아오지 않는 남편을 찾고 있었어요."));
-	m_vecDialog.push_back(TEXT("모르겠어요 무슨일인지.."));
-	m_vecDialog.push_back(TEXT("돌아올시간이 훌쩍 지났는데도 연락이 없어요.. 절대 그럴사람이 아닌데.."));
-	m_vecDialog.push_back(TEXT("분명 무슨 일이 생긴것이 틀림없어요"));
-	m_vecDialog.push_back(TEXT("도움을 부탁드려도 될까요?"));
-	m_vecDialog.push_back(TEXT("여보.."));
-	m_vecDialog.push_back(TEXT("!그로아의 부탁"));
-	m_vecDialog.push_back(TEXT("오셨군요! 혹시 제 남편은?"));
-	m_vecDialog.push_back(TEXT("이..이건..어째서 이 팔찌만? 제.. 제 남편은.. 제 남편은요?"));
-	m_vecDialog.push_back(TEXT("괜찮아요. 다만 남편의 마지막을 확인하고 싶을 뿐이에요. 얼굴이라도 손끝이라도 보고싶을 뿐이에요.."));
-	m_vecDialog.push_back(TEXT("염치없지만 꼭 부탁드릴게요. 남편의 흔적을 찾는동안 저 끔찍한 마물들을 막아주세요. 부탁드립니다."));
-	m_vecDialog.push_back(TEXT("!그로아를 지켜라"));
-	m_vecDialog.push_back(TEXT("END"));
+	for (size_t i = 0; i < size(m_strLines); i++)
+	{
+		m_vecDialog.push_back(m_strLines[i]);
+	}
 
 	m_vecChatt.push_back(TEXT("제 남편은 어디에 있나요.."));
 	m_vecChatt.push_back(TEXT("신을 저주한다"));
+
+	m_TalkSounds.push_back(TEXT("10044_3_EndTalk"));
+	m_TalkSounds.push_back(TEXT("10043_1_StartTalk_1"));
+	m_TalkSounds.push_back(TEXT("10043_1_StartTalk_2"));
+	m_TalkSounds.push_back(TEXT("10053_3_EndTalk_cut"));
+	m_TalkSounds.push_back(TEXT("10054_1_StartTalk_1_cut"));
+	m_TalkSounds.push_back(TEXT("10056_1_StartTalk_1"));
+	m_TalkSounds.push_back(TEXT("10056_1_StartTalk_2"));
 
 	return S_OK;
 }
@@ -942,7 +958,7 @@ HRESULT CGroar_Boss::Add_Parts()
 	{
 		return E_FAIL;
 	}
-	ButtonDesc.strText = TEXT("로스크바");
+	ButtonDesc.strText = TEXT("그로아");
 	ButtonDesc.fFontSize = 0.5f;
 	ButtonDesc.vTextPosition = _vec2(0.f, -30.f);
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SiegeQuest");
@@ -1071,6 +1087,14 @@ void CGroar_Boss::NPC_Tick(_float fTimeDelta)
 	m_pLine->Tick(fTimeDelta);
 	m_pBackGround->Tick(fTimeDelta);
 	m_pTransformCom->Gravity(fTimeDelta);
+	//사운드 채널 갱신 / 그로아 사운드 나오는 도중에 사운드 넘어가기 위해
+	if (m_iSoundChannel != -1)
+	{
+		if (not m_pGameInstance->Get_IsPlayingSound(m_iSoundChannel))
+		{
+			m_iSoundChannel = -1;
+		}
+	}
 }
 
 void CGroar_Boss::NPC_LateTick(_float fTimeDelta)
@@ -1131,10 +1155,9 @@ void CGroar_Boss::Set_Text(GROAR_NPCSTATE eState)
 			CEvent_Manager::Get_Instance()->Set_Quest(strQuest);
 			m_eState = NPC_QUEST;
 			m_strQuestOngoing = strQuest;
-			m_vecDialog.erase(m_vecDialog.begin());
+			m_vecDialog.pop_front();
 			return;
 		}
-
 
 		CDialogText::DIALOGTEXT_DESC TextDesc = {};
 		TextDesc.eLevelID = LEVEL_STATIC;
@@ -1146,7 +1169,11 @@ void CGroar_Boss::Set_Text(GROAR_NPCSTATE eState)
 		{
 			return;
 		}
-		m_vecDialog.erase(m_vecDialog.begin());
+		else
+		{
+			Play_TalkSound(m_vecDialog.front());
+		}
+		m_vecDialog.pop_front();
 	}
 	break;
 	case NPC_QUEST:
@@ -1177,6 +1204,25 @@ void CGroar_Boss::Set_Text(GROAR_NPCSTATE eState)
 		}
 	}
 	break;
+	}
+}
+
+void CGroar_Boss::Play_TalkSound(const wstring& strTalkText)
+{
+	if (strTalkText == m_strLines[0] ||
+		strTalkText == m_strLines[1] ||
+		strTalkText == m_strLines[4] ||
+		strTalkText == m_strLines[8] ||
+		strTalkText == m_strLines[9] ||
+		strTalkText == m_strLines[10] ||
+		strTalkText == m_strLines[11])
+	{
+		if (m_iSoundChannel != -1)
+		{
+			m_pGameInstance->StopSound(m_iSoundChannel);
+		}
+		m_iSoundChannel = m_pGameInstance->Play_Sound(m_TalkSounds.front());
+		m_TalkSounds.pop_front();
 	}
 }
 

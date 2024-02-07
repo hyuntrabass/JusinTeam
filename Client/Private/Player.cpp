@@ -183,7 +183,7 @@ void CPlayer::Tick(_float fTimeDelta)
 			m_bIsMount = true;
 			m_eState = Mount;
 			m_Animation.iAnimIndex = Anim_Mount_Idle;
-			Summon_Riding(Horse);
+			Summon_Riding(Bird);
 		}
 		else
 		{
@@ -195,7 +195,7 @@ void CPlayer::Tick(_float fTimeDelta)
 	if (m_bIsMount)
 	{
 		m_pRiding->Tick(fTimeDelta);
-		Tick_Riding();
+		Tick_Riding(fTimeDelta);
 	}
 
 	if (m_bIsClimb)
@@ -2821,7 +2821,7 @@ void CPlayer::Summon_Riding(Riding_Type Type)
 		return;
 	}
 }
-void CPlayer::Tick_Riding()
+void CPlayer::Tick_Riding(_float fTimeDelta)
 {
 	if (m_pRiding == nullptr)
 	{
@@ -2844,10 +2844,28 @@ void CPlayer::Tick_Riding()
 			if (m_pTransformCom->Get_CenterPos().x > 1500.f)
 			{
 				m_pGameInstance->Set_GoHome(true);
+				for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+				{
+					if (m_pGameInstance->Get_IsLoopingSound(i))
+					{
+						m_pGameInstance->StopSound(i);
+					}
+				}
+				m_pGameInstance->PlayBGM(TEXT("BGM_1st_Village"));
+				m_pGameInstance->FadeinSound(0, fTimeDelta, 0.5f);
 			}
 			else
 			{
 				m_pGameInstance->Set_GoDungeon(true);
+				for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+				{
+					if (m_pGameInstance->Get_IsLoopingSound(i))
+					{
+						m_pGameInstance->StopSound(i);
+					}
+				}
+				m_pGameInstance->PlayBGM(TEXT("BGM_6th_Field_01"));
+				m_pGameInstance->FadeinSound(0, fTimeDelta, 0.5f);
 			}
 		}
 

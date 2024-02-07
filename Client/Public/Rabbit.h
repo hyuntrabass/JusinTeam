@@ -15,9 +15,9 @@ public:
 		ATTACK01,
 		ATTACK02,
 		DIE,
-		HIT_ADD, // 고장
-		HIT_ADD_L, // 고장
-		HIT_ADD_R, // 고장
+		HIT_ADD,
+		HIT_ADD_L,
+		HIT_ADD_R,
 		IDLE,
 		KNOCKDOWN,
 		ROAR,
@@ -33,6 +33,7 @@ public:
 		STATE_ROAM,
 		STATE_CHASE,
 		STATE_ATTACK,
+		STATE_HIT,
 		STATE_DIE,
 		STATE_END
 	};

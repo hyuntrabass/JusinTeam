@@ -1,5 +1,5 @@
 #include "Monster.h"
-
+#include "UI_Manager.h"
 
 CMonster::CMonster(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -26,6 +26,8 @@ HRESULT CMonster::Init(void* pArg)
 		m_pTransformCom->Set_Matrix(WorldPos);
 		m_pTransformCom->Set_Position(WorldPos.Position_vec3());
 	}
+
+	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 
 	CHPMonster::HP_DESC HpDesc = {};
 	HpDesc.eLevelID = LEVEL_STATIC;
@@ -64,14 +66,10 @@ void CMonster::Tick(_float fTimeDelta)
 		}
 	}
 
-	if (m_iDamageAcc >= m_iDamageAccMax/* || m_iDamageAcc == 0*/)
+
+	if (m_iDamageAcc >= m_iDamageAccMax)
 	{
 		m_bHit = true;
-		m_iDamageAcc = 0;
-	}
-	else
-	{
-		//m_bHit = false;
 	}
 
 	if (m_iHP <= 0 || m_fDeadTime > 0.01f)
@@ -219,7 +217,7 @@ void CMonster::Update_Collider()
 {
 }
 
-void CMonster::Update_MonsterCollider()
+void CMonster::Update_BodyCollider()
 {
 	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 }
@@ -320,7 +318,7 @@ HRESULT CMonster::Add_Components()
 
 HRESULT CMonster::Bind_ShaderResources()
 {
-	if (m_iPassIndex == AnimPass_Rim)
+	if (m_iPassIndex == AnimPass_Rim && m_bChangePass == true)
 	{
 		_vec4 vColor = Colors::Red;
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vColor, sizeof vColor)))

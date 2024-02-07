@@ -313,7 +313,9 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     
     if (vWorldPos.y < g_fHellStart)
     {
-        float fHell = (vWorldPos.y + 15.f) / 35.f;
+        //float fHell = (vWorldPos.y + 15.f) / 35.f;
+        float fHell = 1.f - ((g_fHellStart - vWorldPos.y) / 20.f);
+        fHell = max(fHell, 0.f);
         FinalColor *= vector(fHell, fHell, fHell, 1.f);
         vFogColor *= fHell;
     }

@@ -63,9 +63,14 @@ EffectInfo CEffect_Manager::Get_EffectInformation(const wstring& strEffectTag)
 	return iter->second;
 }
 
-HRESULT CEffect_Manager::Add_Layer_Effect(EffectInfo& pInfo)
+HRESULT CEffect_Manager::Add_Layer_Effect(EffectInfo& pInfo, const _bool isStaticLevel)
 {
-	return m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), L"Layer_Effect", L"Prototype_GameObject_EffectDummy", &pInfo);
+	_uint iLevel = LEVEL_STATIC;
+	if (not isStaticLevel)
+	{
+		iLevel = m_pGameInstance->Get_CurrentLevelIndex();
+	}
+	return m_pGameInstance->Add_Layer(iLevel, L"Layer_Effect", L"Prototype_GameObject_EffectDummy", &pInfo);
 }
 
 CEffect_Dummy* CEffect_Manager::Clone_Effect(EffectInfo& pInfo)
@@ -187,6 +192,8 @@ HRESULT CEffect_Manager::Read_EffectFile()
 				File.read(reinterpret_cast<_char*>(&Info.fRectRotationAngle), sizeof Info.fRectRotationAngle);
 				File.read(reinterpret_cast<_char*>(&Info.isBillboard), sizeof Info.isBillboard);
 				File.read(reinterpret_cast<_char*>(&Info.vBillboardRotation), sizeof Info.vBillboardRotation);
+				File.read(reinterpret_cast<_char*>(&Info.fPartiDissolveRatio), sizeof Info.fPartiDissolveRatio);
+				File.read(reinterpret_cast<_char*>(&Info.fPartiAppearRatio), sizeof Info.fPartiAppearRatio);
 
 				size_t iNameSize{};
 
