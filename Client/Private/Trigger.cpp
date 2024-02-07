@@ -40,7 +40,6 @@ HRESULT CTrigger::Init(void* pArg)
 	m_pTransformCom->Set_Scale(_vec3(0.01f, 0.01f, 0.01f));
 	m_pTransformCom->Set_State(State::Pos, m_vPos);
 
-	m_pTrigger_Manager->Set_Trigger(this);
 	m_pTrigger_Manager->Limited_CutScene(m_isLimited);
 	return S_OK;
 }
@@ -51,24 +50,10 @@ void CTrigger::Tick(_float fTimeDelta)
 
 	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
 	m_isCollision = m_pCollider->Intersect(pCollider);
+
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pCollider);
 #endif
-
-
-}
-
-void CTrigger::Late_Tick(_float fTimeDelta)
-{
-
-	//m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
-
-}
-
-HRESULT CTrigger::Render()
-{
-
-	return S_OK;
 }
 
 HRESULT CTrigger::Add_Components()

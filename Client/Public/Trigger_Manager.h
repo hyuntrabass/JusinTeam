@@ -18,11 +18,13 @@ public:
 
 	void Limited_CutScene(_bool isLimited);
 
-	void Set_Trigger(class CTrigger* pTrigger);
 	void Set_PlayCutScene(_bool isPlayCutScene) { m_isPlayCutScene = isPlayCutScene; }
 	_bool Get_Limited() { return m_isLimited; }
 	_bool Get_PlayCutScene() { return m_isPlayCutScene; }
 	wstring Get_CutScene_Path() { return m_strFilePath; }
+
+public:
+	HRESULT Ready_Trigger_Village();
 	
 public:
 	_bool Is_Coll_BossTrigger() { return m_isCollBossTrigger; }

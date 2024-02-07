@@ -18,6 +18,8 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 {
 	for (auto& iter : m_pTrigger)
 	{
+		iter->Tick(fTimeDelta);
+
 		//m_pGameInstance->Get_CurrentLevelIndex();
 		m_isColl = iter->Get_Collision();
 		//m_isPlayCutScene = false;
@@ -59,9 +61,64 @@ void CTrigger_Manager::Limited_CutScene(_bool isLimited)
 	m_isLimited = isLimited;
 }
 
-void CTrigger_Manager::Set_Trigger(CTrigger* pTrigger)
+HRESULT CTrigger_Manager::Ready_Trigger_Village()
 {
-	m_pTrigger.push_back(pTrigger);
+	TriggerInfo Info{};
+	const TCHAR* pGetPath = L"../Bin/Data/Village_Trigger.dat";
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MSG_BOX("../Bin/Data/Village_Trigger.dat 트리거 불러오기 실패.");
+		return E_FAIL;
+	}
+	_uint TriggerListSize;
+	inFile.read(reinterpret_cast<char*>(&TriggerListSize), sizeof(_uint));
+
+
+	for (_uint i = 0; i < TriggerListSize; ++i)
+	{
+		TriggerInfo TriggerInfo{};
+
+		_uint iIndex{};
+		inFile.read(reinterpret_cast<char*>(&iIndex), sizeof(_uint));
+		TriggerInfo.iIndex = iIndex;
+
+		_bool bCheck{};
+		inFile.read(reinterpret_cast<char*>(&bCheck), sizeof(_bool));
+		TriggerInfo.bLimited = bCheck;
+
+		_ulong TriggerPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&TriggerPrototypeSize), sizeof(_ulong));
+
+		wstring TriggerPrototype;
+		TriggerPrototype.resize(TriggerPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&TriggerPrototype[0]), TriggerPrototypeSize * sizeof(wchar_t));
+
+		_float TriggerSize{};
+		inFile.read(reinterpret_cast<char*>(&TriggerSize), sizeof(_float));
+		TriggerInfo.fSize = TriggerSize;
+
+		_mat TriggerWorldMat;
+		inFile.read(reinterpret_cast<char*>(&TriggerWorldMat), sizeof(_mat));
+
+		TriggerInfo.WorldMat = TriggerWorldMat;
+
+		CTrigger* pTrigger = dynamic_cast<CTrigger*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Trigger"), &TriggerInfo));
+		
+		if (not pTrigger)
+		{
+			MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
+			return E_FAIL;
+		}
+
+		m_pTrigger.push_back(pTrigger);
+	}
+
+	inFile.close();
+
+	return S_OK;
 }
 
 void CTrigger_Manager::Free()
