@@ -33,7 +33,6 @@ HRESULT CRabbit::Init(void* pArg)
 		return E_FAIL;
 	}
 
-
 	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
 
 	m_Animation.iAnimIndex = IDLE;
@@ -75,6 +74,9 @@ HRESULT CRabbit::Init(void* pArg)
 
 void CRabbit::Tick(_float fTimeDelta)
 {
+	//Á×À»¶§ ·¹ÀÌ´õ °¨Áö¿¡¼­ Æ®·£½ºÆû »©Áà¾ßÇÔ
+	//CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
+
 	if (m_pGameInstance->Key_Down(DIK_R, InputChannel::UI))
 	{
 		Set_Damage(0, AT_Bow_Common);

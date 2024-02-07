@@ -1,7 +1,6 @@
 #include "Monster.h"
 #include "UI_Manager.h"
 
-
 CMonster::CMonster(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -28,6 +27,8 @@ HRESULT CMonster::Init(void* pArg)
 		m_pTransformCom->Set_Position(WorldPos.Position_vec3());
 	}
 
+	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
+
 	CHPMonster::HP_DESC HpDesc = {};
 	HpDesc.eLevelID = LEVEL_STATIC;
 	HpDesc.iMaxHp = m_iHP;
@@ -38,7 +39,7 @@ HRESULT CMonster::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
+
 	return S_OK;
 }
 
@@ -87,25 +88,19 @@ void CMonster::Tick(_float fTimeDelta)
 		Kill();
 	}
 
-	if (m_HpBar)
+	if (m_fHittedTime > 0.f)
 	{
-		if (m_fHittedTime > 0.f)
-		{
-			m_fHittedTime -= fTimeDelta;
-			m_HpBar->Tick(fTimeDelta);
-		}
+		m_fHittedTime -= fTimeDelta;
+		m_HpBar->Tick(fTimeDelta);
 	}
 }
 
 void CMonster::Late_Tick(_float fTimeDelta)
 {
-	if (m_HpBar)
+	if (m_fHittedTime > 0.f)
 	{
-		if (m_fHittedTime > 0.f)
-		{
-			m_HpBar->Set_HP(m_iHP);
-			m_HpBar->Late_Tick(fTimeDelta);
-		}
+		m_HpBar->Set_HP(m_iHP);
+		m_HpBar->Late_Tick(fTimeDelta);
 	}
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
@@ -380,10 +375,6 @@ void CMonster::Free()
 {
 	__super::Free();
 
-	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
-
-	_uint iRandomExp = rand() % 100;
-	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(iRandomExp * 0.01f);
 	Safe_Release(m_HpBar);
 
 	Safe_Release(m_pModelCom);
