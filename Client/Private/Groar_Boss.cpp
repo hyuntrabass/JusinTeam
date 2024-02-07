@@ -868,6 +868,11 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 	case Client::CGroar_Boss::BOSS_STATE_RAGE:
 
+		if (m_pBossModelCom->Get_CurrentAnimPos() >= 95.f && m_pBossModelCom->Get_CurrentAnimPos() <= 175.f)
+		{
+			m_pGameInstance->Set_ShakeCam(true, 0.5f);
+		}
+
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 98.f)
 		{
 			m_fRageTime += fTimeDelta;
