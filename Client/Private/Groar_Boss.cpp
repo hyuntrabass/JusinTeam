@@ -8,6 +8,7 @@
 #include "TextButton.h"
 #include "DialogText.h"
 #include "TextButtonColor.h"
+#include "HitEffect.h"
 
 const _float CGroar_Boss::m_fChaseRange = 10.f;
 const _float CGroar_Boss::m_fAttackRange = 6.f;
@@ -224,6 +225,14 @@ void CGroar_Boss::Set_Damage(_int iDamage, _uint iDamageType)
 	m_iHP -= iDamage;
 	m_bChangePass = true;
 
+	CHitEffect::HITEFFECT_DESC Desc{};
+	Desc.iDamage = iDamage;
+	Desc.pParentTransform = m_pTransformCom;
+	Desc.vTextPosition = _vec2(0.f, 1.5f);
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
+	{
+		return;
+	}
 	//if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
 	//	iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
 	//{
@@ -1018,19 +1027,21 @@ HRESULT CGroar_Boss::Add_Parts()
 
 void CGroar_Boss::NPC_Tick(_float fTimeDelta)
 {
-	if (m_pArrow->Get_TransPosition().y < m_pArrow->Get_Position().y - 5.f)
+	if (m_bTalking == true)
 	{
-		m_fDir = 0.6f;
-		m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_pArrow->Get_Position().y - 5.f));
+		if (m_pArrow->Get_TransPosition().y < m_pArrow->Get_Position().y - 5.f)
+		{
+			m_fDir = 0.6f;
+			m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_pArrow->Get_Position().y - 5.f));
+		}
+		if (m_pArrow->Get_TransPosition().y > m_pArrow->Get_Position().y)
+		{
+			m_fDir = -1.f;
+			m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_pArrow->Get_Position().y));
+		}
+		m_fButtonTime += fTimeDelta * m_fDir * 10.f;
+		m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_fButtonTime));
 	}
-	if (m_pArrow->Get_TransPosition().y > m_pArrow->Get_Position().y)
-	{
-		m_fDir = -1.f;
-		m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_pArrow->Get_Position().y));
-	}
-	m_fButtonTime += fTimeDelta * m_fDir * 10.f;
-	m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_fButtonTime));
-
 
 	if (m_bTalking == true)
 	{

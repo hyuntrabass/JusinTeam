@@ -58,10 +58,7 @@ HRESULT CSkillDesc::Init(void* pArg)
 		  (LONG)(m_fY + m_fSizeY * 0.5f)
 	};
 
-	if (m_tSkillInfo.strName != TEXT("환영화살"))
-	{
-		Unlock_Skill();
-	}
+
 
 	m_bSkillIn = true;
 	return S_OK;
@@ -225,12 +222,12 @@ HRESULT CSkillDesc::Set_Type()
 	}
 	else if (strName == TEXT("기습 공격"))
 	{
-		m_strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_sk6");
+		m_strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_sk7");
 		m_strDetailTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skill2");
 	}	
 	else if (strName == TEXT("인장 각인"))
 	{
-		m_strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_sk7");
+		m_strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_sk6");
 		m_strDetailTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skill3");
 	}
 	else if (strName == TEXT("연속 각인"))

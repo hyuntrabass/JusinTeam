@@ -35,6 +35,7 @@ namespace Client
 		CM_MAIN,
 		CM_SELECT, 
 		CM_CUSTOM,
+		CM_CUTSCENE,
 		CM_END
 	};
 	enum CAMERA_STATE
@@ -231,6 +232,9 @@ namespace Client
 		T_OPENINVEN, 
 		T_EQUIP,
 		T_EXIT,
+		T_OPENSKILL,
+		T_EQUIPSKILL,
+		T_SKILLEXIT,
 		TUTO_END
 	};
 
@@ -399,6 +403,7 @@ namespace Client
 		VTPass_LerpColorNAlpha,
 		VTPass_HPBoss,
 		VTPass_MaskColorMove,
+		VTPass_ChangeBright,
 		VTPass_End
 	};
 
@@ -439,9 +444,40 @@ namespace Client
 		InstPass_End,
 	};
 #pragma endregion
-
-
+#pragma region ÄÆ¾À
+	struct SectionInfo
+	{
+		//_vec4 vStartCutScene{};
+		//_vec4 vEndCutScene{};
+		_mat mCutSceneMatrix{};
+		_uint iSectionType{};
+		class CCutScene_Curve** ppCurve{ nullptr };
+	};
 }
+#pragma endregion
+
+#pragma region Æ®¸®°Å
+struct TriggerInfo
+{
+	_bool bLimited{};
+	_int iIndex{};
+	_float fSize{};
+	_mat WorldMat{};
+};
+
+enum TriggerType
+{
+	VILLAGE_TRIGGER,
+	FRONTDOOR_IN_TRIGGER,
+	FRONTDOOR_OUT_TRIGGER,
+	BACKDOOR_IN_TRIGGER,
+	BACKDOOR_OUT_TRIGGER,
+	BOSS_TRIGGER,
+	TRIGGER_END
+};
+#pragma endregion
+
+
 
 extern HWND g_hWnd;
 extern HINSTANCE g_hInst;

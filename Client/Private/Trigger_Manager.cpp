@@ -1,32 +1,76 @@
 #include "Trigger_Manager.h"
 #include "Trigger.h"
+#include "Camera_CutScene.h"
 
 IMPLEMENT_SINGLETON(CTrigger_Manager)
-
-// TODO : 필요한 기능 작성하기
 
 CTrigger_Manager::CTrigger_Manager()
 	: m_pGameInstance(CGameInstance::Get_Instance())
 {
 	Safe_AddRef(m_pGameInstance);
 }
-HRESULT CTrigger_Manager::Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc)
+HRESULT CTrigger_Manager::Init()
 {
-	m_hWnd = GraphicDesc.hWnd;
-	m_iWinSizeX = GraphicDesc.iWinSizeX;
-	m_iWinSizeY = GraphicDesc.iWinSizeY;
-
 	return S_OK;
 }
 
-void CTrigger_Manager::Late_Tick(_float fTimeDelta)
+void CTrigger_Manager::Tick(_float fTimeDelta)
 {
+	for (auto& iter : m_pTrigger)
+	{
+		//m_pGameInstance->Get_CurrentLevelIndex();
+		m_isColl = iter->Get_Collision();
+		//m_isPlayCutScene = false;
+		if (m_isColl == true)
+		{
+			if (iter->Get_TriggerType() == VILLAGE_TRIGGER && iter->Get_Limited() == true)
+			{
+				m_isPlayCutScene = true;
+				m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+				m_strFilePath = L"../Bin/Data/Village_CutScene.dat";
+				iter->Set_Limited(false);
+			}
+			else if (iter->Get_TriggerType() == FRONTDOOR_IN_TRIGGER && iter->Get_Limited() == false)
+			{
 
+			}
+			else if (iter->Get_TriggerType() == FRONTDOOR_OUT_TRIGGER && iter->Get_Limited() == false)
+			{
 
+			}
+			else if (iter->Get_TriggerType() == BACKDOOR_IN_TRIGGER && iter->Get_Limited() == false)
+			{
+
+			}
+			else if (iter->Get_TriggerType() == BACKDOOR_OUT_TRIGGER && iter->Get_Limited() == false)
+			{
+
+			}
+			else if (iter->Get_TriggerType() == BOSS_TRIGGER && iter->Get_Limited() == true)
+			{
+
+			}
+		}
+	}
 }
 
+void CTrigger_Manager::Limited_CutScene(_bool isLimited)
+{
+	m_isLimited = isLimited;
+}
+
+void CTrigger_Manager::Set_Trigger(CTrigger* pTrigger)
+{
+	m_pTrigger.push_back(pTrigger);
+}
 
 void CTrigger_Manager::Free()
 {
+	for (auto& iter : m_pTrigger)
+	{
+		Safe_Release(iter);
+	}
+	m_pTrigger.clear();
+
 	Safe_Release(m_pGameInstance);
 }

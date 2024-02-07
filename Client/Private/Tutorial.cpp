@@ -56,10 +56,12 @@ void CTutorial::Tick(_float fTimeDelta)
 		m_pGameInstance->Set_TimeRatio(1.f);
 		m_isDead = true;
 	}	
-	if (m_eTuto == T_OPENINVEN)
+	if (m_eTuto == T_OPENINVEN || m_eTuto == T_OPENSKILL)
 	{
 		m_pGameInstance->Set_TimeRatio(0.001f);
+
 	}
+
 
 
 	if (m_pPoint != nullptr)
@@ -107,19 +109,34 @@ HRESULT CTutorial::Render()
 	{
 	case T_OPENINVEN:
 	{
-		m_pGameInstance->Render_Text(L"Font_Malang",TEXT("인벤토리를 눌러보세여"), _vec2(1160.f, 170.f), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang",TEXT("인벤토리에서 무기를 장착할 수 있습니다."), _vec2(1160.f, 170.f), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f));
 	}
 		break;
 	case T_EQUIP:
 	{
-		m_pGameInstance->Render_Text(L"Font_Malang", TEXT("더블클릭해서 무기를 장착해보세여"), _vec2(1000.f, 300.f), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang", TEXT("더블클릭하여 기본 무기를 장착합니다."), _vec2(1000.f, 300.f), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f));
 	}
 		break;
 	case T_EXIT:
 	{
-		m_pGameInstance->Render_Text(L"Font_Malang", TEXT("자..이제 곧 전투가 시작될걸세!!"), _vec2(1150.f, 120.f), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang", TEXT("이제 곧 전투가 시작됩니다."), _vec2(1150.f, 120.f), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f));
 		m_pGameInstance->Render_Text(L"Font_Malang", TEXT("F키"), _vec2(1065.f, 140.f), 0.4f, _vec4(1.f, 0.8f, 0.f, 1.f));
-		m_pGameInstance->Render_Text(L"Font_Malang", TEXT("를 눌러 공격을 할 수 있단다"), _vec2(1165.f, 140.f), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang", TEXT("를 눌러 몬스터를 공격하세요!"), _vec2(1165.f, 140.f), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f));
+	}
+		break;
+	case T_OPENSKILL:
+	{
+		m_pGameInstance->Render_Text(L"Font_Malang", TEXT("스킬북에서 획득한 스킬을 확인할 수 있습니다."), _vec2(1120.f, 170.f), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f));
+	}
+		break;
+	case T_EQUIPSKILL:
+	{
+		m_pGameInstance->Render_Text(L"Font_Malang", TEXT("잠금해제된 스킬을 눌러 장착할 수 있습니다."), _vec2(700.f, 160.f), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f));
+	}
+		break;
+	case T_SKILLEXIT:
+	{
+		m_pGameInstance->Render_Text(L"Font_Malang", TEXT("스킬을 사용하여 몬스터를 공격하세요!"), _vec2(1150.f, 120.f), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f));
 	}
 		break;
 	}
@@ -152,6 +169,21 @@ HRESULT CTutorial::Add_Parts()
 		Button.vSize = _vec2(120.f, 120.f);
 		break;
 	case T_EXIT:
+		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BloomRect");
+		Button.vPosition = _vec2(1225.f, 30.f);
+		Button.vSize = _vec2(75.f, 75.f);
+		break;
+	case T_OPENSKILL:
+		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BloomCircle");
+		Button.vPosition = _vec2(1105.f, 42.f);
+		Button.vSize = _vec2(90.f, 90.f);
+		break;
+	case T_EQUIPSKILL:
+		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_TutoBoxBigpng");
+		Button.vPosition = _vec2(_vec2(1090.f, (_float)g_iWinSizeY / 2.f + 25.f));
+		Button.vSize = _vec2(680.f, 680.f);
+		break;
+	case T_SKILLEXIT:
 		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BloomRect");
 		Button.vPosition = _vec2(1225.f, 30.f);
 		Button.vSize = _vec2(75.f, 75.f);

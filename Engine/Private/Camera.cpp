@@ -7,6 +7,7 @@ CCamera::CCamera(_dev pDevice, _context pContext)
 
 CCamera::CCamera(const CCamera& rhs)
 	: CGameObject(rhs)
+	, m_isPlayCutScene(rhs.m_isPlayCutScene)
 {
 }
 

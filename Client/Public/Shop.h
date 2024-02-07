@@ -29,6 +29,8 @@ private:
 private:
 	STATE										m_eCurShopState{ EXPENDABLE };
 	STATE										m_ePrevShopType{ EXPENDABLE };
+
+	_bool										m_bQuestTrigger{ false };
 	_bool										m_isPrototype{ false };
 	_bool										m_isActive{ false };
 	_bool										m_isFrameExist{ false };

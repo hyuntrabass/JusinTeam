@@ -462,6 +462,7 @@ void CCamera_Main::Select_Mode(_float fTimeDelta)
 
 			vTargetLook = m_pGameInstance->Get_CameraTargetPos();
 			vTargetLook.y = 0.f;
+			vTargetLook.w = 0.f;
 			_vec4 vNewLook = XMVectorLerp(vCurLook, vTargetLook, fLerpFactor);
 			m_pTransformCom->LookAt_Dir(vNewLook);
 			if (vNewLook == vTargetLook)

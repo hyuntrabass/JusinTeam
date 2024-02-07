@@ -59,6 +59,7 @@ void CNameWindow::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
+			CGameInstance::Get_Instance()->Set_InputString(L"");
 			CUI_Manager::Get_Instance()->Set_Picking_UI(false);
 			m_isDead = true;
 			return;

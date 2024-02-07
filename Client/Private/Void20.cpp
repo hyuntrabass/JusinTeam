@@ -538,7 +538,7 @@ CGameObject* CVoid20::Clone(void* pArg)
 void CVoid20::Free()
 {
 	__super::Free();
-
+	CEvent_Manager::Get_Instance()->Update_Quest(TEXT("그로아를 지켜라"));
 	Safe_Release(m_pSwordTrailL);
 	Safe_Release(m_pSwordTrailR);
 }

@@ -8,3 +8,4 @@
 #include "Map.h"
 #include "CutScene_Point.h"
 #include "CutScene_Curve.h"
+#include "Camera_CutScene.h"

@@ -1,5 +1,6 @@
 #include "Rabbit.h"
 #include "UI_Manager.h"
+#include "Event_Manager.h"
 
 const _float CRabbit::m_fChaseRange = 5.f;
 const _float CRabbit::m_fAttackRange = 2.f;
@@ -48,12 +49,12 @@ HRESULT CRabbit::Init(void* pArg)
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
 	PxCapsuleControllerDesc ControllerDesc{};
-	ControllerDesc.height = 0.4f; // 높이(위 아래의 반구 크기 제외
-	ControllerDesc.radius = 0.6f; // 위아래 반구의 반지름
-	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
-	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
-	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
-	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+	ControllerDesc.height = 0.4f;
+	ControllerDesc.radius = 0.6f;
+	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f);
+	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f));
+	ControllerDesc.contactOffset = 0.1f;
+	ControllerDesc.stepOffset = 0.2f;
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
@@ -74,9 +75,6 @@ HRESULT CRabbit::Init(void* pArg)
 
 void CRabbit::Tick(_float fTimeDelta)
 {
-	//죽을때 레이더 감지에서 트랜스폼 빼줘야함
-	//CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
-
 	if (m_pGameInstance->Key_Down(DIK_R, InputChannel::UI))
 	{
 		Set_Damage(0, AT_Bow_Common);
@@ -89,7 +87,7 @@ void CRabbit::Tick(_float fTimeDelta)
 
 	m_pModelCom->Set_Animation(m_Animation);
 
-	
+
 	Update_Collider();
 	__super::Update_BodyCollider();
 
@@ -141,14 +139,14 @@ void CRabbit::Set_Damage(_int iDamage, _uint iDamageType)
 	if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
 		iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
 	{
-		// 경직
+
 		//m_bStun = true;
 		m_fStunTime += (1.f / 60.f);
 	}
 
 	if (iDamageType == AT_Bow_Common || iDamageType == AT_Bow_Skill1)
 	{
-		// 밀려나게
+
 		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
 
 		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
@@ -156,7 +154,7 @@ void CRabbit::Set_Damage(_int iDamage, _uint iDamageType)
 
 	if (iDamageType == AT_Bow_Skill3)
 	{
-		// 이속 느려지게
+
 		m_pTransformCom->Set_Speed(0.5f);
 	}
 }
@@ -470,7 +468,6 @@ HRESULT CRabbit::Add_Collider()
 	ColDesc.eType = ColliderType::Frustum;
 	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
 	_matrix matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
-	// 1인자 : 절두체 각도(범위), 2인자 : Aspect, 3인자 : Near, 4인자 : Far(절두체 깊이)
 	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.f), 1.f / 2.f, 0.01f, 2.f);
 	XMStoreFloat4x4(&ColDesc.matFrustum, matView * matProj);
 
@@ -517,5 +514,6 @@ CGameObject* CRabbit::Clone(void* pArg)
 void CRabbit::Free()
 {
 	__super::Free();
+	CEvent_Manager::Get_Instance()->Update_Quest(TEXT("로스크바의 부탁"));
 
 }

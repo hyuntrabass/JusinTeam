@@ -52,12 +52,13 @@ public:
 	//HRESULT Set_Item(class CItem::ITEM_DESC eItemDesc);
 	HRESULT Set_Item(CItem* pItem, _int* iNum = nullptr);
 
-
+	void Use_Item();
 	void Delete_Item();
 	void Set_FullSlot(CItem* pItem, _int* iNum = nullptr);
 	const wstring Get_ItemName();
 	const CItem* Get_ItemObject() { return m_pItem; }
 	const RECT& Get_Rect() const { return m_rcRect; }
+	const _vec2 Get_Position() { return _vec2(m_fX, m_fY); }
 
 private: 
 	HRESULT Add_Components();
