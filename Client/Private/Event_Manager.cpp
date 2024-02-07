@@ -131,6 +131,7 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 			m_isWaiting = true;
 		}
 	}
+
 	m_pQuest->Tick(fTimeDelta);
 	m_pAlert->Tick(fTimeDelta);
 }
@@ -218,6 +219,15 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.strQuestTitle = TEXT("그로아를 지켜라");
 	tDesc.strText = TEXT("몬스터로부터 그로아 지키기");
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
+	
+	tDesc.eType = QUESTIN;
+	tDesc.fExp = 10.2f;// 몬스터 수만큼 ?
+	tDesc.iNum = 1;
+	tDesc.iMoney = 1000;
+	tDesc.isMain = true;
+	tDesc.strQuestTitle = TEXT("그로아를 찾아서");
+	tDesc.strText = TEXT("남편 흔적 찾는 그로아 찾기");
+	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	return S_OK;
 }
@@ -235,6 +245,12 @@ HRESULT CEvent_Manager::Update_Quest(const wstring& strQuest)
 		tDesc.eType = QUESTEND;
 		Set_Event(tDesc);
 		m_QuestMap.erase(strQuest);
+
+		if (!m_QuestTrigger[GROAR_MONSTER] && strQuest == TEXT("그로아를 지켜라"))
+		{
+			m_QuestTrigger[GROAR_MONSTER] = true;
+			Set_Quest(TEXT("그로아를 찾아서"));
+		}
 	}
 	return S_OK;
 }

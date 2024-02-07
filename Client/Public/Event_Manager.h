@@ -13,7 +13,7 @@ class CEvent_Manager final : public CBase
 
 public:
 	enum EVENT_TYPE { QUESTIN, QUESTEND, LEVELUP, TUTORIAL, UNLOCKSKILL, TYPE_END};
-	enum QUEST_TRIGGER { POTION, TRIGGER_END};
+	enum QUEST_TRIGGER { POTION, GROAR_MONSTER, TRIGGER_END};
 
 	typedef struct tagEventDesc
 	{
