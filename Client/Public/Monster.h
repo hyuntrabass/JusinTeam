@@ -4,6 +4,8 @@
 #include "GameObject.h"
 #include "HitEffect.h"
 #include "HpMonster.h"
+#include "Event_Manager.h"
+
 BEGIN(Client)
 
 typedef struct MonsterInfo
