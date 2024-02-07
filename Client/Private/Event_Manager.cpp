@@ -28,6 +28,10 @@ HRESULT CEvent_Manager::Init()
 	{
 		return E_FAIL;
 	}
+	for (size_t i = 0; i < TRIGGER_END; i++)
+	{
+		m_QuestTrigger[i] = false;
+	}
 
 	return S_OK;
 }
