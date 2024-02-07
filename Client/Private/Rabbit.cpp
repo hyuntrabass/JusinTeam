@@ -329,6 +329,16 @@ void CRabbit::Tick_State(_float fTimeDelta)
 
 		if (m_iRoamingPattern == 1)
 		{
+			_float fDist = 1.2f;
+			PxRaycastBuffer Buffer{};
+
+			if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(),
+				m_pTransformCom->Get_State(State::Look).Get_Normalized(),
+				fDist, Buffer))
+			{
+				m_pTransformCom->LookAt_Dir(PxVec3ToVector(Buffer.block.normal));
+			}
+
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
 

@@ -39,7 +39,8 @@ HRESULT CGroar_Boss::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_Position(_vec3(2179.f, -20.f, 2083.f));
+	//m_pTransformCom->Set_Position(_vec3(2179.f, -20.f, 2083.f));
+	m_pTransformCom->Set_Position(_vec3(2109.f, -15.f, 2092.f));
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
 	m_eCurState = STATE_NPC;
@@ -65,11 +66,29 @@ HRESULT CGroar_Boss::Init(void* pArg)
 
 void CGroar_Boss::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_G))
+	if (m_pGameInstance->Key_Down(DIK_Q, InputChannel::UI)) // 괴물들 잡아달라 하고 보스방으로 순간이동 하는 타이밍(한번만 들어와야 함)
 	{
-		//m_eCurState = STATE_SCENE01;
-		m_eCurState = STATE_BOSS;
-		m_eBossCurState = BOSS_STATE_ROAR;
+		m_pTransformCom->Set_Position(_vec3(2179.f, -20.f, 2083.f));
+
+		for (size_t i = 0; i < 2; i++)
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void09"), TEXT("Prototype_GameObject_Void09"))))
+			{
+				
+			}
+		}
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
+		{
+			
+		}
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_G)) // 자살 시작(보스로 변하는 타이밍)
+	{
+		m_eCurState = STATE_SCENE01;
+		//m_eCurState = STATE_BOSS;
+		//m_eBossCurState = BOSS_STATE_ROAR;
 
 		if (m_pHpBoss == nullptr)
 		{
@@ -86,13 +105,14 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 		}
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_C))
-	{
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Tentacle"), TEXT("Prototype_GameObject_Tentacle"))))
-		{
 
-		}
-	}
+	//if (m_pGameInstance->Key_Down(DIK_C))
+	//{
+	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Tentacle"), TEXT("Prototype_GameObject_Tentacle"))))
+	//	{
+
+	//	}
+	//}
 
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
@@ -299,6 +319,9 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CGroar_Boss::STATE_BOSS:
+
+			_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
+
 			m_pTransformCom->Set_Position(_vec3(0.f));
 
 			m_pTransformCom->Delete_Controller();
@@ -313,7 +336,7 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 
 			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 			
-			m_pTransformCom->Set_Position(_vec3(2179.f, -20.f, 2083.f));
+			m_pTransformCom->Set_Position(vPos);
 
 			break;
 		}
