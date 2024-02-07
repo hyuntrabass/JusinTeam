@@ -14,6 +14,7 @@ CMonster::CMonster(const CMonster& rhs)
 
 HRESULT CMonster::Init_Prototype()
 {
+	m_isPrototype = true;
 	return S_OK;
 }
 
@@ -26,8 +27,11 @@ HRESULT CMonster::Init(void* pArg)
 		m_pTransformCom->Set_Matrix(WorldPos);
 		m_pTransformCom->Set_Position(WorldPos.Position_vec3());
 	}
+	if (!m_isPrototype)
+	{
+		CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
+	}
 
-	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 
 	CHPMonster::HP_DESC HpDesc = {};
 	HpDesc.eLevelID = LEVEL_STATIC;
@@ -381,7 +385,16 @@ HRESULT CMonster::Bind_ShaderResources()
 void CMonster::Free()
 {
 	__super::Free();
+	if (!m_isPrototype)
+	{
+		CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
+	}
 
+
+	_uint iRandomExp = rand() % 100;
+	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(15.f + (_float)iRandomExp / 2.f * 0.1f);
+	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(iRandomExp * 0.01f);
+	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(iRandomExp * 0.01f);
 	Safe_Release(m_HpBar);
 
 	Safe_Release(m_pModelCom);

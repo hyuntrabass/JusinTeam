@@ -9,6 +9,7 @@
 #include "CutScene_Curve.h"
 #include "UI_Manager.h"
 #include "Effect_Manager.h"
+#include "Event_Manager.h"
 #include "Trigger_Manager.h"
 
 CMainApp::CMainApp()
@@ -372,6 +373,7 @@ void CMainApp::Free()
 
 	CGameInstance::Release_Engine();
 
+	CEvent_Manager::Destroy_Instance();
 	CUI_Manager::Destroy_Instance();
 
 	if (_heapchk() != _HEAPOK)

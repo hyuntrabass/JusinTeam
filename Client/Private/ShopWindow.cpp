@@ -102,6 +102,12 @@ void CShopWindow::Tick(_float fTimeDelta)
 				return;
 			}
 
+			if (m_iAvailable - m_iItemNum == 0)
+			{
+				CEvent_Manager::Get_Instance()->Set_Alert(TEXT("구매 가능한 수량이 없습니다."));
+				return;
+			}		
+			
 			if (CUI_Manager::Get_Instance()->Get_Coin() < m_iTotalCost)
 			{
 				CEvent_Manager::Get_Instance()->Set_Alert(TEXT("코인이 부족하여 구매할 수 없습니다."));
@@ -113,6 +119,10 @@ void CShopWindow::Tick(_float fTimeDelta)
 			CUI_Manager::Get_Instance()->Set_Coin(iCoin);
 			ITEM eItem = m_pShopDesc->Get_ItemDesc();
 			CUI_Manager::Get_Instance()->Set_Item(eItem.strName, m_iCurItemNum);
+			if (eItem.strName == TEXT("체력 포션") && CEvent_Manager::Get_Instance()->Find_Quest(TEXT("체력포션 구매")))
+			{
+				CEvent_Manager::Get_Instance()->Set_QuestTrigger(CEvent_Manager::POTION);
+			}
 			m_isDead = true;
 
 			m_pGameInstance->Play_Sound(TEXT("btn_purchase"));

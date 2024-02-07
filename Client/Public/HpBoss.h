@@ -38,7 +38,7 @@ private:
 	LEVEL_ID		m_eLevel{};
 
 	_bool			m_bEffect{false};
-	_uint			m_iCurHp{};
+	_int			m_iCurHp{};
 	_uint			m_iMaxHp{};
 	_uint			m_iTargetHp{};
 

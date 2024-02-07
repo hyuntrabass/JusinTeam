@@ -91,6 +91,58 @@ _bool CUI_Manager::Set_CurrentPlayerPos(_vec4 vPos)
 	return false;
 }
 
+void CUI_Manager::Set_MpState(_bool isMp, _uint iMp)
+{
+	if (isMp)
+	{
+		m_isMpState = true;
+		m_iMpState = iMp;
+	}
+	else
+	{
+		m_isMpState = false;
+	}
+}
+
+void CUI_Manager::Set_Heal(_bool isHeal, _uint iHeal)
+{
+	if (isHeal)
+	{
+		m_isHeal = true;
+		m_iHeal = iHeal;
+	}
+	else
+	{
+		m_isHeal = false;
+	}
+}
+
+_bool CUI_Manager::Get_Heal(_uint* iHeal)
+{
+	if (m_isHeal)
+	{
+		if (iHeal != nullptr)
+		{
+			*iHeal = m_iHeal;
+		}
+		return true;
+	}
+	return false;
+}
+
+_bool CUI_Manager::Get_MpState(_uint* iMp)
+{
+	if (m_isMpState)
+	{
+		if (iMp != nullptr)
+		{
+			*iMp = m_iMpState;
+		}
+		return true;
+	}
+	return false;
+}
+
 
 const _uint& CUI_Manager::Get_CustomPart(PART_TYPE eType)
 {
@@ -356,7 +408,7 @@ HRESULT CUI_Manager::Init_Skills()
 	Info.iCoolTime = 4;
 	Info.iSkillIdx = 0;
 	Info.iModelSkillIndex = 5;
-	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon6");
+	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon7");
 	m_SkillInfo[WP_SWORD][Info.iSkillIdx] = Info;
 	
 	Info.strName = TEXT("인장 각인");
@@ -364,7 +416,7 @@ HRESULT CUI_Manager::Init_Skills()
 	Info.iCoolTime = 8;
 	Info.iSkillIdx = 1;
 	Info.iModelSkillIndex = 4;
-	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon7");
+	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon6");
 	m_SkillInfo[WP_SWORD][Info.iSkillIdx] = Info;
 
 	Info.strName = TEXT("연속 각인");
@@ -453,14 +505,14 @@ HRESULT CUI_Manager::Unlock_Skill(_uint iIndex)
 	return S_OK;
 }
 
-_bool CUI_Manager::Use_Skill(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot, _int* iIndex)
+_bool CUI_Manager::Use_Skill(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot, _int* iIndex, _int* iMp)
 {
 	if (m_pSkillBlock == nullptr)
 	{
 		return false;
 	}
 	
-	return m_pSkillBlock->Use_Skill(eType, eSlot, iIndex);
+	return m_pSkillBlock->Use_Skill(eType, eSlot, iIndex, iMp);
 }
 
 CGameObject* CUI_Manager::Get_InvenFrame()
@@ -539,6 +591,12 @@ void CUI_Manager::Delete_Item_In_Slot(CItemBlock::ITEMSLOT eSlot)
 {
 	dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Delete_Item();
 	dynamic_cast<CItemSlot*>(m_pItemSlots[eSlot])->Delete_Item();
+}
+
+void CUI_Manager::Use_Item_In_Slot(CItemBlock::ITEMSLOT eSlot)
+{
+	dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Use_Item();
+	dynamic_cast<CItemSlot*>(m_pItemSlots[eSlot])->Use_Item();
 }
 
 void CUI_Manager::Set_RadarPos(TYPE eType, CTransform* pTransform)

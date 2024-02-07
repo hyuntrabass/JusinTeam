@@ -571,6 +571,6 @@ CGameObject* CVoid09::Clone(void* pArg)
 void CVoid09::Free()
 {
 	__super::Free();
-
+	CEvent_Manager::Get_Instance()->Update_Quest(TEXT("그로아를 지켜라"));
 	Safe_Release(m_pSwordTrail);
 }

@@ -8,6 +8,8 @@
 #include "TextButton.h"
 #include "DialogText.h"
 #include "TextButtonColor.h"
+#include "Trigger_Manager.h"
+#include "HitEffect.h"
 
 const _float CGroar_Boss::m_fChaseRange = 10.f;
 const _float CGroar_Boss::m_fAttackRange = 6.f;
@@ -66,25 +68,37 @@ HRESULT CGroar_Boss::Init(void* pArg)
 
 void CGroar_Boss::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_Q, InputChannel::UI)) // 괴물들 잡아달라 하고 보스방으로 순간이동 하는 타이밍(한번만 들어와야 함)
+	//if (m_pGameInstance->Key_Down(DIK_Q, InputChannel::UI)) // 괴물들 잡아달라 하고 보스방으로 순간이동 하는 타이밍(한번만 들어와야 함)
+	if (m_strQuestOngoing == TEXT("그로아를 지켜라") || m_pGameInstance->Key_Down(DIK_Q, InputChannel::UI))
 	{
-		m_pTransformCom->Set_Position(_vec3(2179.f, -20.f, 2083.f));
-
-		for (size_t i = 0; i < 2; i++)
+		if (!m_bChangePos)
 		{
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void09"), TEXT("Prototype_GameObject_Void09"))))
+			m_pTransformCom->Set_Position(_vec3(2179.f, -20.f, 2083.f));
+
+			//CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+			//_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+			//pPlayerTransform->Set_Position(vPlayerPos + _vec3(100.f));
+
+			for (size_t i = 0; i < 2; i++)
 			{
-				
-			}
-		}
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void09"), TEXT("Prototype_GameObject_Void09"))))
+				{
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
-		{
-			
+				}
+			}
+
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
+			{
+
+			}
+			//pPlayerTransform->Set_Position(vPlayerPos);
+
+			m_bChangePos = true;
 		}
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_G)) // 자살 시작(보스로 변하는 타이밍)
+	//if (m_pGameInstance->Key_Down(DIK_G)) // 자살 시작(보스로 변하는 타이밍)
+	if (CTrigger_Manager::Get_Instance()->Is_Coll_BossTrigger() == true || m_pGameInstance->Key_Down(DIK_G))
 	{
 		m_eCurState = STATE_SCENE01;
 		//m_eCurState = STATE_BOSS;
@@ -104,15 +118,6 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 			}
 		}
 	}
-
-
-	//if (m_pGameInstance->Key_Down(DIK_C))
-	//{
-	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Tentacle"), TEXT("Prototype_GameObject_Tentacle"))))
-	//	{
-
-	//	}
-	//}
 
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
@@ -245,6 +250,14 @@ void CGroar_Boss::Set_Damage(_int iDamage, _uint iDamageType)
 	m_bChangePass = true;
 	m_pHpBoss->Set_HP(m_iHP);
 
+	CHitEffect::HITEFFECT_DESC Desc{};
+	Desc.iDamage = iDamage;
+	Desc.pParentTransform = m_pTransformCom;
+	Desc.vTextPosition = _vec2(0.f, 1.5f);
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
+	{
+		return;
+	}
 	//if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
 	//	iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
 	//{
@@ -1042,19 +1055,21 @@ HRESULT CGroar_Boss::Add_Parts()
 
 void CGroar_Boss::NPC_Tick(_float fTimeDelta)
 {
-	if (m_pArrow->Get_TransPosition().y < m_pArrow->Get_Position().y - 5.f)
+	if (m_bTalking == true)
 	{
-		m_fDir = 0.6f;
-		m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_pArrow->Get_Position().y - 5.f));
+		if (m_pArrow->Get_TransPosition().y < m_pArrow->Get_Position().y - 5.f)
+		{
+			m_fDir = 0.6f;
+			m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_pArrow->Get_Position().y - 5.f));
+		}
+		if (m_pArrow->Get_TransPosition().y > m_pArrow->Get_Position().y)
+		{
+			m_fDir = -1.f;
+			m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_pArrow->Get_Position().y));
+		}
+		m_fButtonTime += fTimeDelta * m_fDir * 10.f;
+		m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_fButtonTime));
 	}
-	if (m_pArrow->Get_TransPosition().y > m_pArrow->Get_Position().y)
-	{
-		m_fDir = -1.f;
-		m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_pArrow->Get_Position().y));
-	}
-	m_fButtonTime += fTimeDelta * m_fDir * 10.f;
-	m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_fButtonTime));
-
 
 	if (m_bTalking == true)
 	{
@@ -1107,7 +1122,6 @@ void CGroar_Boss::NPC_Tick(_float fTimeDelta)
 		m_pDialogText->Tick(fTimeDelta);
 	}
 	m_pSkipButton->Tick(fTimeDelta);
-	m_pArrow->Tick(fTimeDelta);
 	m_pLine->Tick(fTimeDelta);
 	m_pBackGround->Tick(fTimeDelta);
 	m_pTransformCom->Gravity(fTimeDelta);
@@ -1118,6 +1132,10 @@ void CGroar_Boss::NPC_Tick(_float fTimeDelta)
 		{
 			m_iSoundChannel = -1;
 		}
+	}
+	if (m_bTalking == true)
+	{
+		m_pArrow->Tick(fTimeDelta);
 	}
 }
 

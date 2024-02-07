@@ -116,7 +116,7 @@ HRESULT CItemSlot::Set_Item(CItem* pItem, _int* iNum)
 	ItemDesc.vPosition = _vec2(m_fX, m_fY);
 	if (m_eSlotMode == ITSLOT_SCREEN)
 	{
-		ItemDesc.vSize = _vec2(m_fSizeX - 10.f, m_fSizeY - 10.f);
+		ItemDesc.vSize = _vec2(m_fSizeX - 20.f, m_fSizeY - 20.f);
 		ItemDesc.isScreen = true;
 	}
 	else
@@ -132,6 +132,19 @@ HRESULT CItemSlot::Set_Item(CItem* pItem, _int* iNum)
 }
 
 
+
+void CItemSlot::Use_Item()
+{
+	if (m_pItem == nullptr)
+	{
+		return;
+	}
+	m_pItem->Set_ItemNum(-1);
+	if (m_pItem->Get_ItemNum() <= 0)
+	{
+		Delete_Item();
+	}
+}
 
 void CItemSlot::Delete_Item()
 {

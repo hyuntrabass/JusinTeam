@@ -65,6 +65,7 @@ HRESULT CMPBar::Init(void* pArg)
 
 void CMPBar::Tick(_float fTimeDelta)
 {
+	m_vRatio = CUI_Manager::Get_Instance()->Get_Mp();
 	m_fTime += fTimeDelta;
 }
 

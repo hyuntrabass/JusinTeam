@@ -32,7 +32,7 @@ HRESULT CVoid20::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(__super::Compute_PlayerPos()));
+	//m_pTransformCom->Set_State(State::Pos, _vec4(__super::Compute_PlayerPos()));
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
@@ -559,7 +559,7 @@ CGameObject* CVoid20::Clone(void* pArg)
 void CVoid20::Free()
 {
 	__super::Free();
-
+	CEvent_Manager::Get_Instance()->Update_Quest(TEXT("그로아를 지켜라"));
 	Safe_Release(m_pSwordTrailL);
 	Safe_Release(m_pSwordTrailR);
 }

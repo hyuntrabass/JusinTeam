@@ -48,7 +48,7 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 			}
 			else if (iter->Get_TriggerType() == BOSS_TRIGGER && iter->Get_Limited() == true)
 			{
-
+				m_isCollBossTrigger = true;
 			}
 		}
 	}
