@@ -42,7 +42,7 @@ HRESULT CCamera_Main::Init(void* pArg)
 void CCamera_Main::Tick(_float fTimeDelta)
 {
 
-	if (m_pGameInstance->Get_CameraModeIndex() != CM_MAIN)
+	if (m_pGameInstance->Get_CameraModeIndex() != CM_MAIN )
 	{
 		return;
 	}
@@ -52,6 +52,12 @@ void CCamera_Main::Tick(_float fTimeDelta)
 	{
 		m_pGameInstance->Set_CameraModeIndex(CM_DEBUG);
 	}
+
+	//if (m_isPlayCutScene)
+	//{
+	//	m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+
+	//}
 
 	_long dwMouseMove;
 

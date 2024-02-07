@@ -517,25 +517,25 @@ namespace DirectX
 
             // Properties
             Vector4 Right() const noexcept { return Vector4(_11, _12, _13, _14); }
-            void Right(const Vector4& v) noexcept { _11 = v.x; _12 = v.y; _13 = v.z; }
+            void Right(const Vector4& v) noexcept { _11 = v.x; _12 = v.y; _13 = v.z; _14 = v.w; }
 
-            Vector4 Left() const noexcept { return Vector4(-_11, -_12, -_13, -_14); }
-            void Left(const Vector4& v) noexcept { _11 = -v.x; _12 = -v.y; _13 = -v.z; }
+            Vector4 Left() const noexcept { return Vector4(-_11, -_12, -_13, _14); }
+            void Left(const Vector4& v) noexcept { _11 = -v.x; _12 = -v.y; _13 = -v.z; _14 = v.w; }
 
             Vector4 Up() const noexcept { return Vector4(_21, _22, _23, _24); }
-            void Up(const Vector4& v) noexcept { _21 = v.x; _22 = v.y; _23 = v.z; }
+            void Up(const Vector4& v) noexcept { _21 = v.x; _22 = v.y; _23 = v.z;  _24 = v.w;}
 
-            Vector4 Down() const  noexcept { return Vector4(-_21, -_22, -_23, -_24); }
-            void Down(const Vector4& v) noexcept { _21 = -v.x; _22 = -v.y; _23 = -v.z; }
+            Vector4 Down() const  noexcept { return Vector4(-_21, -_22, -_23, _24); }
+            void Down(const Vector4& v) noexcept { _21 = -v.x; _22 = -v.y; _23 = -v.z; _24 = v.w; }
 
             Vector4 Look() const noexcept { return Vector4(_31, _32, _33, _34); }
-            void Look(const Vector4& v) noexcept { _31 = v.x; _32 = v.y; _33 = v.z; }
+            void Look(const Vector4& v) noexcept { _31 = v.x; _32 = v.y; _33 = v.z; _34 = v.w; }
 
-            Vector4 Backward() const noexcept { return Vector4(-_31, -_32, -_33, -_34); }
-            void Backward(const Vector4& v) noexcept { _31 = -v.x; _32 = -v.y; _33 = -v.z; }
+            Vector4 Backward() const noexcept { return Vector4(-_31, -_32, -_33, _34); }
+            void Backward(const Vector4& v) noexcept { _31 = -v.x; _32 = -v.y; _33 = -v.z; _34 = v.w; }
 
             Vector4 Position() const  noexcept { return Vector4(_41, _42, _43, _44); }
-            void Position(const Vector4& v) noexcept { _41 = v.x; _42 = v.y; _43 = v.z; }
+            void Position(const Vector4& v) noexcept { _41 = v.x; _42 = v.y; _43 = v.z; _44 = v.w; }
 
             Vector3 Right_vec3() const noexcept { return Vector3(_11, _12, _13); }
             void Right_vec3(const Vector3& v) noexcept { _11 = v.x; _12 = v.y; _13 = v.z; }

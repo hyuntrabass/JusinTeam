@@ -1,6 +1,7 @@
 #include "Level_Village.h"
 #include "Level_Loading.h"
 #include "Camera.h"
+#include "Camera_CutScene.h"
 #include "Monster.h"
 #include "NPC.h"
 #include "NPC_Dummy.h"
@@ -97,6 +98,11 @@ HRESULT CLevel_Village::Init()
 		MSG_BOX("Failed to Ready NPC_Dummy");
 		return E_FAIL;
 	}
+	if (FAILED(Ready_Trigger()))
+	{
+		MSG_BOX("Failed to Ready Trigger");
+		return E_FAIL;
+	}
 
 	if (FAILED(Ready_Test()))
 	{
@@ -191,7 +197,7 @@ HRESULT CLevel_Village::Ready_Player()
 
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 	pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 2.f, 0.f));
-	pPlayerTransform->LookAt_Dir(_vec4(-0.0531848f, 0.0598536346f, 0.996788f, 1.f));
+	pPlayerTransform->LookAt_Dir(_vec4(-0.0531848f, 0.0598536346f, 0.996788f, 0.f));
 
 	m_pGameInstance->Set_HellHeight(-70.f);
 
@@ -242,42 +248,42 @@ HRESULT CLevel_Village::Ready_Map()
 
 HRESULT CLevel_Village::Ready_Dungeon()
 {
-	const TCHAR* pGetPath = TEXT("../Bin/Data/Dungeon.dat");
+	//const TCHAR* pGetPath = TEXT("../Bin/Data/Dungeon.dat");
 
-	std::ifstream inFile(pGetPath, std::ios::binary);
+	//std::ifstream inFile(pGetPath, std::ios::binary);
 
-	if (!inFile.is_open())
-	{
-		MSG_BOX("던전 데이터 파일 불러오기 실패.");
-		return E_FAIL;
-	}
+	//if (!inFile.is_open())
+	//{
+	//	MSG_BOX("던전 데이터 파일 불러오기 실패.");
+	//	return E_FAIL;
+	//}
 
-	_uint MapListSize;
-	inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+	//_uint MapListSize;
+	//inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
 
 
-	for (_uint i = 0; i < MapListSize; ++i)
-	{
-		_ulong MapPrototypeSize;
-		inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+	//for (_uint i = 0; i < MapListSize; ++i)
+	//{
+	//	_ulong MapPrototypeSize;
+	//	inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
 
-		wstring MapPrototype;
-		MapPrototype.resize(MapPrototypeSize);
-		inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+	//	wstring MapPrototype;
+	//	MapPrototype.resize(MapPrototypeSize);
+	//	inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
 
-		_mat MapWorldMat;
-		inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+	//	_mat MapWorldMat;
+	//	inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
 
-		MapInfo MapInfo{};
-		MapInfo.Prototype = MapPrototype;
-		MapInfo.m_Matrix = MapWorldMat;
+	//	MapInfo MapInfo{};
+	//	MapInfo.Prototype = MapPrototype;
+	//	MapInfo.m_Matrix = MapWorldMat;
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Dungeon"), &MapInfo)))
-		{
-			MSG_BOX("던전 생성 실패");
-			return E_FAIL;
-		}
-	}
+	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Dungeon"), &MapInfo)))
+	//	{
+	//		MSG_BOX("던전 생성 실패");
+	//		return E_FAIL;
+	//	}
+	//}
 
 	return S_OK;
 }
@@ -286,42 +292,42 @@ HRESULT CLevel_Village::Ready_Dungeon()
 HRESULT CLevel_Village::Ready_Object()
 {
 
-	const TCHAR* pGetPath = TEXT("../Bin/Data/Village_ObjectData.dat");
+	//const TCHAR* pGetPath = TEXT("../Bin/Data/Village_ObjectData.dat");
 
-	std::ifstream inFile(pGetPath, std::ios::binary);
+	//std::ifstream inFile(pGetPath, std::ios::binary);
 
-	if (!inFile.is_open())
-	{
-		MSG_BOX("오브젝트 파일을 찾지 못했습니다.");
-		return E_FAIL;
-	}
+	//if (!inFile.is_open())
+	//{
+	//	MSG_BOX("오브젝트 파일을 찾지 못했습니다.");
+	//	return E_FAIL;
+	//}
 
-	_uint ObjectListSize;
-	inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
+	//_uint ObjectListSize;
+	//inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
 
 
-	for (_uint i = 0; i < ObjectListSize; ++i)
-	{
-		_ulong ObjectPrototypeSize;
-		inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
+	//for (_uint i = 0; i < ObjectListSize; ++i)
+	//{
+	//	_ulong ObjectPrototypeSize;
+	//	inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
 
-		wstring ObjectPrototype;
-		ObjectPrototype.resize(ObjectPrototypeSize);
-		inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
+	//	wstring ObjectPrototype;
+	//	ObjectPrototype.resize(ObjectPrototypeSize);
+	//	inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
 
-		_mat ObjectWorldMat;
-		inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
+	//	_mat ObjectWorldMat;
+	//	inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
 
-		ObjectInfo ObjectInfo{};
-		ObjectInfo.strPrototypeTag = ObjectPrototype;
-		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
-		ObjectInfo.eObjectType = Object_Building;
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Village_Etc_Object"), &ObjectInfo)))
-		{
-			MSG_BOX("오브젝트 불러오기 실패");
-			return E_FAIL;
-		}
-	}
+	//	ObjectInfo ObjectInfo{};
+	//	ObjectInfo.strPrototypeTag = ObjectPrototype;
+	//	ObjectInfo.m_WorldMatrix = ObjectWorldMat;
+	//	ObjectInfo.eObjectType = Object_Building;
+	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Village_Etc_Object"), &ObjectInfo)))
+	//	{
+	//		MSG_BOX("오브젝트 불러오기 실패");
+	//		return E_FAIL;
+	//	}
+	//}
 	return S_OK;
 }
 
@@ -769,6 +775,62 @@ HRESULT CLevel_Village::Ready_UI()
 	return S_OK;
 }
 
+HRESULT CLevel_Village::Ready_Trigger()
+{
+	TriggerInfo Info{};
+	const TCHAR* pGetPath = L"../Bin/Data/Village_Trigger.dat";
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MSG_BOX("../Bin/Data/Village_Trigger.dat 트리거 불러오기 실패.");
+		return E_FAIL;
+	}
+	_uint TriggerListSize;
+	inFile.read(reinterpret_cast<char*>(&TriggerListSize), sizeof(_uint));
+
+
+	for (_uint i = 0; i < TriggerListSize; ++i)
+	{
+		TriggerInfo TriggerInfo{};
+
+		_uint iIndex{};
+		inFile.read(reinterpret_cast<char*>(&iIndex), sizeof(_uint));
+		TriggerInfo.iIndex = iIndex;
+
+		_bool bCheck{};
+		inFile.read(reinterpret_cast<char*>(&bCheck), sizeof(_bool));
+		TriggerInfo.bLimited = bCheck;
+
+		_ulong TriggerPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&TriggerPrototypeSize), sizeof(_ulong));
+
+		wstring TriggerPrototype;
+		TriggerPrototype.resize(TriggerPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&TriggerPrototype[0]), TriggerPrototypeSize * sizeof(wchar_t));
+
+		_float TriggerSize{};
+		inFile.read(reinterpret_cast<char*>(&TriggerSize), sizeof(_float));
+		TriggerInfo.fSize = TriggerSize;
+
+		_mat TriggerWorldMat;
+		inFile.read(reinterpret_cast<char*>(&TriggerWorldMat), sizeof(_mat));
+
+		TriggerInfo.WorldMat = TriggerWorldMat;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Trigger"), TEXT("Prototype_GameObject_Trigger"), &TriggerInfo)))
+		{
+			MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
+			return E_FAIL;
+		}
+	}
+
+	inFile.close();
+
+	return S_OK;
+}
+
 HRESULT CLevel_Village::Ready_Test()
 {
 	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Test"), TEXT("Prototype_GameObject_Nastron03"))))
@@ -778,6 +840,70 @@ HRESULT CLevel_Village::Ready_Test()
 
 	return S_OK;
 }
+//
+//HRESULT CLevel_Village::Ready_Trigger()
+//{
+//	TriggerInfo Info{};
+//	const TCHAR* pGetPath = L"../Bin/Data/Village_Trigger.dat";
+//
+//	std::ifstream inFile(pGetPath, std::ios::binary);
+//
+//	if (!inFile.is_open())
+//	{
+//		MSG_BOX("../Bin/Data/Village_Trigger.dat 트리거 불러오기 실패.");
+//		return E_FAIL;
+//	}
+//		_uint TriggerListSize;
+//		inFile.read(reinterpret_cast<char*>(&TriggerListSize), sizeof(_uint));
+//
+//
+//		for (_uint i = 0; i < TriggerListSize; ++i)
+//		{
+//			TriggerInfo TriggerInfo{};
+//
+//			_uint iIndex{};
+//			inFile.read(reinterpret_cast<char*>(&iIndex), sizeof(_uint));
+//
+//			TriggerInfo.iTriggerNum = iIndex;
+//
+//			_ulong TriggerPrototypeSize;
+//			inFile.read(reinterpret_cast<char*>(&TriggerPrototypeSize), sizeof(_ulong));
+//
+//			wstring TriggerPrototype;
+//			TriggerPrototype.resize(TriggerPrototypeSize);
+//			inFile.read(reinterpret_cast<char*>(&TriggerPrototype[0]), TriggerPrototypeSize * sizeof(wchar_t));
+//
+//			_float TriggerSize{};
+//			inFile.read(reinterpret_cast<char*>(&TriggerSize), sizeof(_float));
+//			TriggerInfo.fTriggerSize = TriggerSize;
+//
+//			_mat TriggerWorldMat;
+//			inFile.read(reinterpret_cast<char*>(&TriggerWorldMat), sizeof(_mat));
+//
+//			TriggerInfo.vPos = _float4(TriggerWorldMat._41, TriggerWorldMat._42, TriggerWorldMat._43, TriggerWorldMat._44);
+//			TriggerInfo.fTriggerSize = TriggerSize;
+//			TriggerInfo.iTriggerNum = iIndex;
+//
+//			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &TriggerInfo)))
+//			{
+//				MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
+//				return E_FAIL;
+//			}
+//
+//			CTransform* pEnvirTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
+//
+//			pEnvirTransform->Set_State(State::Right, TriggerWorldMat.Right());
+//			pEnvirTransform->Set_State(State::Up, TriggerWorldMat.Up());
+//			pEnvirTransform->Set_State(State::Look, TriggerWorldMat.Look());
+//			pEnvirTransform->Set_State(State::Pos, TriggerWorldMat.Position());
+//
+//		}
+//
+//		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
+//		inFile.close();
+//
+//	return S_OK;
+//}
 
 CLevel_Village* CLevel_Village::Create(_dev pDevice, _context pContext)
 {

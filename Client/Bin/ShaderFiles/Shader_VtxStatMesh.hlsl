@@ -729,7 +729,7 @@ technique11 DefaultTechniqueShader_VtxNorTex
 
     pass MaskEffect
     {
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -742,7 +742,7 @@ technique11 DefaultTechniqueShader_VtxNorTex
 
     pass MaskEffectDissolve
     {
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
