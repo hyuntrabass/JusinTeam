@@ -202,6 +202,9 @@ private:
 	_float m_fHitTime = {};
 
 private:
+	_bool m_bChangePos = { false };
+
+private:
 	GROAR_NPCSTATE				m_eState{ NPC_TALK };
 	_bool						m_bTalking = { false };
 	_bool						m_bNextDialog = { false };
@@ -215,12 +218,12 @@ private:
 	vector<wstring>				m_vecChatt;
 	list<wstring>				m_TalkSounds;
 
-	class CTextButton*			m_pLine{ nullptr };
-	CTextButton*				m_pArrow{ nullptr };
-	CTextButton*				m_pSkipButton{ nullptr };
-	class CDialogText*			m_pDialogText{ nullptr };
-	class CTextButtonColor*		m_pBackGround{ nullptr };
-	class C3DUITex*				m_pSpeechBubble{ nullptr };
+	class CTextButton* m_pLine{ nullptr };
+	CTextButton* m_pArrow{ nullptr };
+	CTextButton* m_pSkipButton{ nullptr };
+	class CDialogText* m_pDialogText{ nullptr };
+	class CTextButtonColor* m_pBackGround{ nullptr };
+	class C3DUITex* m_pSpeechBubble{ nullptr };
 
 private:
 	const wstring m_strLines[14]

@@ -8,6 +8,7 @@
 #include "TextButton.h"
 #include "DialogText.h"
 #include "TextButtonColor.h"
+#include "Trigger_Manager.h"
 
 const _float CGroar_Boss::m_fChaseRange = 10.f;
 const _float CGroar_Boss::m_fAttackRange = 6.f;
@@ -66,25 +67,37 @@ HRESULT CGroar_Boss::Init(void* pArg)
 
 void CGroar_Boss::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_Q, InputChannel::UI)) // 괴물들 잡아달라 하고 보스방으로 순간이동 하는 타이밍(한번만 들어와야 함)
+	//if (m_pGameInstance->Key_Down(DIK_Q, InputChannel::UI)) // 괴물들 잡아달라 하고 보스방으로 순간이동 하는 타이밍(한번만 들어와야 함)
+	if (m_strQuestOngoing == TEXT("그로아를 지켜라") || m_pGameInstance->Key_Down(DIK_Q, InputChannel::UI))
 	{
-		m_pTransformCom->Set_Position(_vec3(2179.f, -20.f, 2083.f));
-
-		for (size_t i = 0; i < 2; i++)
+		if (!m_bChangePos)
 		{
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void09"), TEXT("Prototype_GameObject_Void09"))))
+			m_pTransformCom->Set_Position(_vec3(2179.f, -20.f, 2083.f));
+
+			//CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+			//_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+			//pPlayerTransform->Set_Position(vPlayerPos + _vec3(100.f));
+
+			for (size_t i = 0; i < 2; i++)
 			{
-				
-			}
-		}
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void09"), TEXT("Prototype_GameObject_Void09"))))
+				{
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
-		{
-			
+				}
+			}
+
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
+			{
+
+			}
+			//pPlayerTransform->Set_Position(vPlayerPos);
+
+			m_bChangePos = true;
 		}
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_G)) // 자살 시작(보스로 변하는 타이밍)
+	//if (m_pGameInstance->Key_Down(DIK_G)) // 자살 시작(보스로 변하는 타이밍)
+	if (CTrigger_Manager::Get_Instance()->Is_Coll_BossTrigger() == true || m_pGameInstance->Key_Down(DIK_G))
 	{
 		m_eCurState = STATE_SCENE01;
 		//m_eCurState = STATE_BOSS;
@@ -104,15 +117,6 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 			}
 		}
 	}
-
-
-	//if (m_pGameInstance->Key_Down(DIK_C))
-	//{
-	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Tentacle"), TEXT("Prototype_GameObject_Tentacle"))))
-	//	{
-
-	//	}
-	//}
 
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
