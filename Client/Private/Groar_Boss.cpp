@@ -49,7 +49,7 @@ HRESULT CGroar_Boss::Init(void* pArg)
 	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 1.5f;
 
-	m_iHP = 10000;
+	m_iHP = 30000;
 
 	if (FAILED(Init_Dialog()))
 	{
