@@ -492,18 +492,18 @@ HRESULT CLevel_Village::Ready_Village_Monster()
 		}
 	}
 
-	for (size_t i = 0; i < 2; i++)
-	{
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void09"), TEXT("Prototype_GameObject_Void09"))))
-		{
-			return E_FAIL;
-		}
-	}
+	//for (size_t i = 0; i < 2; i++)
+	//{
+	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void09"), TEXT("Prototype_GameObject_Void09"))))
+	//	{
+	//		return E_FAIL;
+	//	}
+	//}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	return S_OK;
 }
