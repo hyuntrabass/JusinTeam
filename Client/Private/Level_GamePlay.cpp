@@ -137,7 +137,8 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 	*/
-	m_DC = GetDC(g_hWnd);
+
+	/*m_DC = GetDC(g_hWnd);
 
 	m_BackDC = CreateCompatibleDC(m_DC);
 
@@ -154,7 +155,7 @@ HRESULT CLevel_GamePlay::Init()
 
 	MCIWndPlay(m_hVideo);
 
-	m_pGameInstance->Video_Start(35.f);
+	m_pGameInstance->Video_Start(35.f);*/
 	
 
 	return S_OK;

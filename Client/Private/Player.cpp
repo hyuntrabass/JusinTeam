@@ -439,10 +439,6 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		m_bStartGame = true;
 		CEvent_Manager::Get_Instance()->Init();
 
-
-
-		Change_Weapon(WP_SWORD, SWORD0);
-
 	}
 
 
@@ -1177,7 +1173,14 @@ void CPlayer::Move(_float fTimeDelta)
 			m_pTransformCom->LookAt_Dir(m_pCameraTransform->Get_State(State::Look));
 		}
 
+		if (m_pGameInstance->Key_Down(DIK_L))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
+			{
+				return;
+			}
 
+		}
 		//if (m_pGameInstance->Key_Down(DIK_1))
 		//{
 		//	if (m_eState != Skill1)
@@ -1380,7 +1383,10 @@ void CPlayer::Move(_float fTimeDelta)
 			{
 				return;
 			}
-
+			if (m_Current_Weapon >= WP_UNEQUIP)
+			{
+				return;
+			}
 
 
 			if (vDirection != _vec4())

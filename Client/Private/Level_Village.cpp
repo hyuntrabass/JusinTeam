@@ -118,7 +118,7 @@ void CLevel_Village::Tick(_float fTimeDelta)
 		In_To_Dungeon();
 		return;
 	}
-
+	//m_pGameInstance->PhysXTick(fTimeDelta);
 	if (m_pGameInstance->Key_Down(DIK_HOME))
 	{
 		Ready_Player();
@@ -190,7 +190,7 @@ HRESULT CLevel_Village::Ready_Player()
 	inFile.read(reinterpret_cast<char*>(&Player_Pos), sizeof(_vec4));
 
 	CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
-	pCamTransform->Set_Position(_vec3(-17.9027f,18.f, 125.f));
+	pCamTransform->Set_State(State::Pos, _vec4(-17.9027f, 18.f, 125.f, 1.f));
 	pCamTransform->LookAt_Dir(_vec4(-0.541082f, 0.548757f, 0.637257f, 0.f));
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 	pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 2.f, 0.f));
