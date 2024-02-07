@@ -157,6 +157,7 @@ namespace Engine
 	enum DeferredPass
 	{
 		DefPass_Debug,
+		DefPass_DebugArray,
 		DefPass_Light_Directional,
 		DefPass_Light_Point,
 		DefPass_Water,

@@ -11,6 +11,7 @@ public:
 		_float4 vCameraPos{}, vFocusPos{};
 		_float fFovY{}, fAspect{}, fNear{}, fFar{};
 	};
+
 protected:
 	CCamera(_dev pDevice, _context pContext);
 	CCamera(const CCamera& rhs);

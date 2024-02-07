@@ -92,7 +92,6 @@ public: // PipeLine
 	_mat ChagneViewForReflection(_float fWaterHeight);
 	void Update_PipeLine();
 
-
 public: // Picking
 
 	void TransformRay_ToLocal(_mat WorldMatrix);
@@ -180,6 +179,11 @@ public: // Effect Callback
 	void Create_Effect(const wstring& strEffectTag, _mat* pMatrix, const _bool& isFollow);
 	void Delete_Effect(const void* pMatrix);
 	_bool Has_Created_Effect(const void* pMatrixKey);
+
+public: // Cascade Mananger
+	CASCADE_DESC Get_CascadeDesc();
+
+
 
 public: // Get_Set
 	// 현재 카메라가 메인 카메라인지 디버그 카메라인지 반환함. client define에 이넘 있음.
@@ -276,6 +280,9 @@ private:
 	class CPipeLine* m_pPipeLine{ nullptr };
 	class CPicking* m_pPicking{ nullptr };
 	class CPhysX_Manager* m_pPhysX_Manager{ nullptr };
+
+	// 원명
+	class CCascade_Manager* m_pCascade_Manager{ nullptr };
 
 private:
 	_uint m_iCameraState{};

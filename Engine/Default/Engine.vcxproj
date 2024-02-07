@@ -118,6 +118,8 @@ call UpdateLib.bat</Command>
     <ClCompile Include="..\private\BlendObject.cpp" />
     <ClCompile Include="..\private\Bone.cpp" />
     <ClCompile Include="..\private\Camera.cpp" />
+    <ClCompile Include="..\Private\Cascade.cpp" />
+    <ClCompile Include="..\Private\Cascade_Manager.cpp" />
     <ClCompile Include="..\private\Channel.cpp" />
     <ClCompile Include="..\private\Collider.cpp" />
     <ClCompile Include="..\private\Collision_Manager.cpp" />
@@ -153,6 +155,7 @@ call UpdateLib.bat</Command>
     <ClCompile Include="..\private\RenderTarget_Manager.cpp" />
     <ClCompile Include="..\private\Shader.cpp" />
     <ClCompile Include="..\private\Mesh.cpp" />
+    <ClCompile Include="..\Private\ShadowMap.cpp" />
     <ClCompile Include="..\Private\Sound_Manager.cpp" />
     <ClCompile Include="..\private\Texture.cpp" />
     <ClCompile Include="..\private\Timer.cpp" />
@@ -181,6 +184,8 @@ call UpdateLib.bat</Command>
     <ClInclude Include="..\public\BlendObject.h" />
     <ClInclude Include="..\public\Bone.h" />
     <ClInclude Include="..\public\Camera.h" />
+    <ClInclude Include="..\Public\Cascade.h" />
+    <ClInclude Include="..\Public\Cascade_Manager.h" />
     <ClInclude Include="..\public\Channel.h" />
     <ClInclude Include="..\public\Collider.h" />
     <ClInclude Include="..\public\Collision_Manager.h" />
@@ -220,6 +225,7 @@ call UpdateLib.bat</Command>
     <ClInclude Include="..\public\RenderTarget_Manager.h" />
     <ClInclude Include="..\public\Shader.h" />
     <ClInclude Include="..\public\Mesh.h" />
+    <ClInclude Include="..\Public\ShadowMap.h" />
     <ClInclude Include="..\Public\SimpleMath.h" />
     <ClInclude Include="..\Public\Sound_Manager.h" />
     <ClInclude Include="..\public\Texture.h" />

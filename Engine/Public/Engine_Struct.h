@@ -212,6 +212,12 @@ namespace Engine
 		float fVolume{};
 	};
 
+	using CASCADE_DESC = struct tagCascadeDesc {
+		SimpleMath::Matrix LightView[3];
+		SimpleMath::Matrix LightProj[3];
+		float ClipZ[4];
+	};
+
 	using VTXPOSCOLOR = struct ENGINE_DLL tagVertex_Position_Color
 	{
 		XMFLOAT3 vPosition{};
