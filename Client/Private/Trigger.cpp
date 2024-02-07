@@ -122,7 +122,8 @@ void CTrigger::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pTrigger_Manager);
+	if (m_pTrigger_Manager)
+		Safe_Release(m_pTrigger_Manager);
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pCollider);

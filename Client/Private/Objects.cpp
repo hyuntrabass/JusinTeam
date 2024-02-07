@@ -37,10 +37,20 @@ void CObjects::Late_Tick(_float fTimeDelta)
 	}
 
 	// ÀÎ½ºÅÏ½Ì ÇÒ ¸ðµ¨°ú ¾ÈÇÒ ¸ðµ¨À» ³ª´²ÁÜ
-	if(m_isInstancing == false)
-		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	if (m_isInstancing == false)
+	{
+		//if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
+		//{
+			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+		//}
+	}
 	else
-		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
+	{
+		//if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
+		//{
+			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
+		//}
+	}
 
 }
 

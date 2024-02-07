@@ -28,6 +28,8 @@ public:
 
 	void Play_Camera(_float fTimeDelta);
 
+	HRESULT CutScene_Registration(const wstring& strDataPath);
+
 private:
 	_bool m_isMoveMode{ true };
 	_float m_fSpeed{ 10.f };

@@ -19,10 +19,10 @@ public:
 	void Limited_CutScene(_bool isLimited);
 
 	void Set_Trigger(class CTrigger* pTrigger);
-	void Set_CutSceneCamera(class CCamera_CutScene* pCutScene);
+	void Set_PlayCutScene(_bool isPlayCutScene) { m_isPlayCutScene = isPlayCutScene; }
 	_bool Get_Limited() { return m_isLimited; }
-
-	HRESULT CutScene_Registration(const wstring& strDataPath);
+	_bool Get_PlayCutScene() { return m_isPlayCutScene; }
+	wstring Get_CutScene_Path() { return m_strFilePath; }
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };
@@ -32,11 +32,11 @@ private:
 private:
 	_bool m_isColl{ false };
 	_bool m_isLimited{ false };
-
+	_bool m_isPlayCutScene{ false };
+	wstring m_strFilePath{};
 
 private:
 	vector<class CTrigger*> m_pTrigger{};
-	class CCamera_CutScene* m_pCutScene{ nullptr };
 
 public:
 	virtual void Free() override;
