@@ -49,7 +49,7 @@ HRESULT CGroar_Boss::Init(void* pArg)
 	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 1.5f;
 
-	m_iHP = 100000;
+	m_iHP = 30000;
 
 	if (FAILED(Init_Dialog()))
 	{
@@ -298,6 +298,8 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CGroar_Boss::STATE_BOSS:
+			m_pTransformCom->Set_Position(_vec3(0.f));
+
 			m_pTransformCom->Delete_Controller();
 
 			PxCapsuleControllerDesc ControllerDesc{};
@@ -309,6 +311,8 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 
 			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+			
+			m_pTransformCom->Set_Position(_vec3(2179.f, -20.f, 2083.f));
 
 			break;
 		}
@@ -516,13 +520,27 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 				}
 			}
 
+			if (m_bAttack_Selected[ATTACK_THROW] == true && m_bAttack_Selected[ATTACK_XBEAM] == false)
+			{
+				m_eBossCurState = BOSS_STATE_XBEAM;
+
+				if (m_iThrowAttackCombo > 0)
+				{
+					eTempBossCurState = BOSS_STATE_THROW_ATTACK;
+				}
+
+				m_bSelectAttackPattern = true;
+
+				break;
+			}
+
 			GROAR_ATTACK eAttackRandom = ATTACK_END;
-			eAttackRandom = static_cast<GROAR_ATTACK>(rand() % ATTACK_END);
+			eAttackRandom = static_cast<GROAR_ATTACK>(rand() % ATTACK_XBEAM);
 
 			// 랜덤 방지용
 			while (m_bAttack_Selected[eAttackRandom] == true)
 			{
-				eAttackRandom = static_cast<GROAR_ATTACK>(rand() % ATTACK_END);
+				eAttackRandom = static_cast<GROAR_ATTACK>(rand() % ATTACK_XBEAM);
 			}
 
 			switch (eAttackRandom)
@@ -724,7 +742,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 				if (!m_bAttacked3)
 				{
 					_uint iDamage = 80 + rand() % 20;
-					m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Stun);
+					m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_KnockDown);
 					m_bAttacked3 = true;
 				}
 			}
@@ -814,12 +832,12 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_fRageTime += fTimeDelta;
 
-			if (m_fRageTime >= 0.5f)
+			if (m_fRageTime >= 0.25f)
 			{
 				if (fDistance <= 7.5f)
 				{
 					_uint iDamage = 20 + rand() % 10;
-					m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);
+					m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Stun);
 				}
 
 				m_fRageTime = 0.f;

@@ -64,13 +64,15 @@ HRESULT CVoid20::Init(void* pArg)
 
 
 	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
-	if (pArg)
+
+	//if (pArg)
 	{
 		if (FAILED(__super::Init(pArg)))
 		{
 			return E_FAIL;
 		}
 	}
+
 	m_pTransformCom->Set_Position(_vec3(2102.f, -16.f, 2085.f));
 
 	return S_OK;

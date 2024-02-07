@@ -68,8 +68,10 @@ HRESULT CVoid05::Init(void* pArg)
 	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+
 	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
-	if (pArg)
+
+	//if (pArg)
 	{
 		if (FAILED(__super::Init(pArg)))
 		{
