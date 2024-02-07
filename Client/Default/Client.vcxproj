@@ -318,6 +318,7 @@
     <ClCompile Include="..\private\Effect_Manager.cpp" />
     <ClCompile Include="..\Private\Event_Manager.cpp" />
     <ClCompile Include="..\Private\ExpBar.cpp" />
+    <ClCompile Include="..\Private\Rabbit.cpp" />
     <ClCompile Include="..\Private\FadeBox.cpp" />
     <ClCompile Include="..\Private\Goat.cpp" />
     <ClCompile Include="..\Private\Groar_Boss.cpp" />
@@ -365,7 +366,6 @@
     <ClCompile Include="..\Private\Pop_Skill.cpp" />
     <ClCompile Include="..\Private\Quest.cpp" />
     <ClCompile Include="..\Private\QuestBox.cpp" />
-    <ClCompile Include="..\Private\Rabbit.cpp" />
     <ClCompile Include="..\Private\Radar.cpp" />
     <ClCompile Include="..\Private\Riding.cpp" />
     <ClCompile Include="..\Private\Roskva.cpp" />

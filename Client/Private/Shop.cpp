@@ -490,8 +490,25 @@ HRESULT CShop::Init_ShopItems()
 	m_vecShopItems[EXPENDABLE].push_back(pShopDesc);
 
 
-	ShopDesc.strItemName = TEXT("마나 포션");
+	ShopDesc.strItemName = TEXT("안흔한옷");
+	ShopDesc.vPosition = _vec2(235.f, fStartY + fShopDescY * iIndex + fTerm * iIndex);
+	pShopDesc = (CShopDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_ShopDesc"), &ShopDesc);
+	if (not pShopDesc)
+	{
+		return E_FAIL;
+	}
+	m_vecShopItems[EQUIP].push_back(pShopDesc);
 
+	iIndex++;
+
+	ShopDesc.strItemName = TEXT("그냥모자");
+	ShopDesc.vPosition = _vec2(235.f, fStartY + fShopDescY * iIndex + fTerm * iIndex);
+	pShopDesc = (CShopDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_ShopDesc"), &ShopDesc);
+	if (not pShopDesc)
+	{
+		return E_FAIL;
+	}
+	m_vecShopItems[EQUIP].push_back(pShopDesc);
 	return S_OK;
 }
 

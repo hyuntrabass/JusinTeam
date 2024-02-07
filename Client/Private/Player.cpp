@@ -156,6 +156,31 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		return;
 	}
+	if (CUI_Manager::Get_Instance()->Get_Heal())
+	{
+		_uint iHeal = 0;
+		CUI_Manager::Get_Instance()->Get_Heal(&iHeal);
+		CUI_Manager::Get_Instance()->Set_Heal(false);
+		m_Status.Current_Hp += iHeal;
+		if (m_Status.Current_Hp > m_Status.Max_Hp)
+		{
+			m_Status.Current_Hp = m_Status.Max_Hp;
+		}
+		CUI_Manager::Get_Instance()->Set_Hp(m_Status.Current_Hp, m_Status.Max_Hp);
+	}
+
+	if (CUI_Manager::Get_Instance()->Get_MpState())
+	{
+		_uint iMp = 0;
+		CUI_Manager::Get_Instance()->Get_MpState(&iMp);
+		CUI_Manager::Get_Instance()->Set_MpState(false);
+		m_Status.Current_Mp += iMp;
+		if (m_Status.Current_Mp > m_Status.Max_Mp)
+		{
+			m_Status.Current_Mp = m_Status.Max_Mp;
+		}
+		CUI_Manager::Get_Instance()->Set_Mp(m_Status.Current_Mp, m_Status.Max_Mp);
+	}
 
 	PART_TYPE eType = CUI_Manager::Get_Instance()->Is_CustomPartChanged();
 
@@ -368,7 +393,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 	}
 
-
+	
 
 
 	if (m_pEffect_Shield)
@@ -1152,10 +1177,12 @@ void CPlayer::Move(_float fTimeDelta)
 			{
 				if (m_Current_Weapon == WP_SWORD)
 				{
+					CUI_Manager::Get_Instance()->Set_WeaponType(WP_BOW);
 					Change_Weapon(WP_BOW, BOW0);
 				}
 				else
 				{
+					CUI_Manager::Get_Instance()->Set_WeaponType(WP_SWORD);
 					Change_Weapon(WP_SWORD, SWORD0);
 				}
 			}

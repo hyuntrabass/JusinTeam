@@ -27,6 +27,8 @@ private:
 	MOUSESTATE		m_eMouseState { M_DEFAULT };
 	WEAPON_TYPE		m_eWeaponType{ WP_BOW };
 
+	_bool			m_isMpState{ false };
+	_bool			m_isHeal{ false };
 	_bool			m_isTargeting{ false };
 	_bool			m_isFirstKill{ false };
 	_bool			m_isSetSkillSlot{ false };
@@ -38,6 +40,8 @@ private:
 	_bool			m_isBoss{ false };
 
 	_uint			m_iLevel{ 1 };
+	_uint			m_iHeal{  };
+	_uint			m_iMpState{  };
 
 
 	_uint			m_iCoin{};
@@ -108,6 +112,7 @@ public:
 	HRESULT Set_Item_In_EmptySlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* iItemNum);
 	ITEM Set_Item_In_FullSlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* iItemNum, _int* iChangeItemNum = nullptr);
 	void Delete_Item_In_Slot(CItemBlock::ITEMSLOT eSlot);
+	void Use_Item_In_Slot(CItemBlock::ITEMSLOT eSlot);
 
 	void Set_RadarPos(TYPE eType, CTransform* pTransform);
 	void Delete_RadarPos(TYPE eType, CTransform* pTransform);
@@ -130,6 +135,10 @@ public:
 	void Set_isTargeting(_bool isTargeting) { m_isTargeting = isTargeting; }
 	void Set_TargetPos(_vec4 vTargetPos) { m_vTargetPos = vTargetPos; }
 
+	void Set_MpState(_bool isMp, _uint iMp = 0);
+	void Set_Heal(_bool isHeal, _uint iHeal = 0);
+	_bool Get_Heal(_uint* iHeal = nullptr);
+	_bool Get_MpState(_uint* iMp = nullptr);
 
 	void Set_SkillSlotChange(_bool isSkillSlotChange) { m_isSetSkillSlot = isSkillSlotChange; }
 	_bool Is_SkillSlotChange() { return m_isSetSkillSlot; }

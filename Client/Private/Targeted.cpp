@@ -37,6 +37,8 @@ HRESULT CTargeted::Init(void* pArg)
 
 void CTargeted::Tick(_float fTimeDelta)
 {
+	/*
+	
 	if (CUI_Manager::Get_Instance()->Is_Targeting())
 	{
 		_vec4 vTargetPos = CUI_Manager::Get_Instance()->Get_TargetPos();
@@ -52,7 +54,7 @@ void CTargeted::Tick(_float fTimeDelta)
 
 		__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	}
-
+	*/
 
 }
 
@@ -62,11 +64,13 @@ void CTargeted::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
+	/*
+	
 	if (CUI_Manager::Get_Instance()->Is_Targeting())
 	{
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 	}
-
+	*/
 }
 
 HRESULT CTargeted::Render()

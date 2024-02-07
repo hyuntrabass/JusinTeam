@@ -133,6 +133,19 @@ HRESULT CItemSlot::Set_Item(CItem* pItem, _int* iNum)
 
 
 
+void CItemSlot::Use_Item()
+{
+	if (m_pItem == nullptr)
+	{
+		return;
+	}
+	m_pItem->Set_ItemNum(-1);
+	if (m_pItem->Get_ItemNum() <= 0)
+	{
+		Delete_Item();
+	}
+}
+
 void CItemSlot::Delete_Item()
 {
 	Safe_Release(m_pItem);

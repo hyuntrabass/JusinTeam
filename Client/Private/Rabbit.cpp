@@ -49,12 +49,12 @@ HRESULT CRabbit::Init(void* pArg)
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
 	PxCapsuleControllerDesc ControllerDesc{};
-	ControllerDesc.height = 0.4f; 
-	ControllerDesc.radius = 0.6f; 
-	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); 
-	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); 
+	ControllerDesc.height = 0.4f;
+	ControllerDesc.radius = 0.6f;
+	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f);
+	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f));
 	ControllerDesc.contactOffset = 0.1f;
-	ControllerDesc.stepOffset = 0.2f; 
+	ControllerDesc.stepOffset = 0.2f;
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
@@ -87,7 +87,7 @@ void CRabbit::Tick(_float fTimeDelta)
 
 	m_pModelCom->Set_Animation(m_Animation);
 
-	
+
 	Update_Collider();
 	__super::Update_BodyCollider();
 
@@ -139,14 +139,14 @@ void CRabbit::Set_Damage(_int iDamage, _uint iDamageType)
 	if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
 		iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
 	{
-		// ÔøΩÔøΩÔøΩÔøΩ
+
 		//m_bStun = true;
 		m_fStunTime += (1.f / 60.f);
 	}
 
 	if (iDamageType == AT_Bow_Common || iDamageType == AT_Bow_Skill1)
 	{
-		// ÔøΩ–∑ÔøΩÔøΩÔøΩÔøΩÔøΩ
+
 		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
 
 		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
@@ -154,7 +154,7 @@ void CRabbit::Set_Damage(_int iDamage, _uint iDamageType)
 
 	if (iDamageType == AT_Bow_Skill3)
 	{
-		// ÔøΩÃºÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ
+
 		m_pTransformCom->Set_Speed(0.5f);
 	}
 }
@@ -467,7 +467,6 @@ HRESULT CRabbit::Add_Collider()
 	ColDesc.eType = ColliderType::Frustum;
 	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
 	_matrix matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
-	// 1ÔøΩÔøΩÔøΩÔøΩ : ÔøΩÔøΩÔøΩÔøΩ√º ÔøΩÔøΩÔøΩÔøΩ(ÔøΩÔøΩÔøΩÔøΩ), 2ÔøΩÔøΩÔøΩÔøΩ : Aspect, 3ÔøΩÔøΩÔøΩÔøΩ : Near, 4ÔøΩÔøΩÔøΩÔøΩ : Far(ÔøΩÔøΩÔøΩÔøΩ√º ÔøΩÔøΩÔøΩÔøΩ)
 	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.f), 1.f / 2.f, 0.01f, 2.f);
 	XMStoreFloat4x4(&ColDesc.matFrustum, matView * matProj);
 
@@ -514,6 +513,6 @@ CGameObject* CRabbit::Clone(void* pArg)
 void CRabbit::Free()
 {
 	__super::Free();
-	CEvent_Manager::Get_Instance()->Update_Quest(TEXT("ÔøΩŒΩÔøΩ≈©ÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩ≈π"));
+	CEvent_Manager::Get_Instance()->Update_Quest(TEXT("∑ŒΩ∫≈©πŸ¿« ∫Œ≈π"));
 
 }

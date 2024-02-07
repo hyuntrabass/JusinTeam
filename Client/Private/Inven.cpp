@@ -74,14 +74,15 @@ HRESULT CInven::Init(void* pArg)
 	ITEM eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
 	m_pWearableSlots[W_CHEST]->Set_WearableItem(eItem);
 
+	strItem = TEXT("그냥검");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);
 
 	strItem = TEXT("그냥활");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);
 
 
-	strItem = TEXT("그냥검");
-	eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
-	m_pWearableSlots[W_EQUIP]->Set_WearableItem(eItem);
+
+	//m_pWearableSlots[W_EQUIP]->Set_WearableItem(eItem);
 	return S_OK;
 }
 

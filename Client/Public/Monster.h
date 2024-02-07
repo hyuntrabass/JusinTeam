@@ -85,6 +85,10 @@ protected:
 	_float m_fHittedTime{};
 	_vec3  m_MonsterHpBarPos{};
 	CHPMonster* m_HpBar{ nullptr };
+
+protected:
+	_bool m_isPrototype{ false };
+
 protected:
 	virtual HRESULT Add_Collider();
 	virtual void Update_Collider();

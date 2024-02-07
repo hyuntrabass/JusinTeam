@@ -102,6 +102,12 @@ void CShopWindow::Tick(_float fTimeDelta)
 				return;
 			}
 
+			if (m_iAvailable - m_iItemNum == 0)
+			{
+				CEvent_Manager::Get_Instance()->Set_Alert(TEXT("구매 가능한 수량이 없습니다."));
+				return;
+			}		
+			
 			if (CUI_Manager::Get_Instance()->Get_Coin() < m_iTotalCost)
 			{
 				CEvent_Manager::Get_Instance()->Set_Alert(TEXT("코인이 부족하여 구매할 수 없습니다."));
