@@ -822,6 +822,7 @@ void CInvenFrame::Picking_ShopButton(POINT ptMouse)
 			if (m_vecItemsSlot[m_eCurInvenType][i]->Get_ItemDesc().iSale == 0)
 			{
 				CEvent_Manager::Get_Instance()->Set_Alert(TEXT("판매할 수 없는 아이템입니다."));
+				m_pGameInstance->Play_Sound(TEXT("Auto_Item_Fail"));
 				return;
 			}
 			if (m_vecItemsSlot[m_eCurInvenType][i]->Get_Border())
@@ -974,6 +975,7 @@ void CInvenFrame::Shop_Tick(_float fTimeDelta, POINT ptMouse)
 			{
 
 				CEvent_Manager::Get_Instance()->Set_Alert(TEXT("선택한 아이템이 없습니다."));
+				m_pGameInstance->Play_Sound(TEXT("Auto_Item_Fail"));
 				return;
 			}
 			if (!m_pInvenWindow->Is_Active())
@@ -985,7 +987,6 @@ void CInvenFrame::Shop_Tick(_float fTimeDelta, POINT ptMouse)
 					iCoin += m_vecSellItems[j]->Get_ItemDesc().iSale * m_vecSellItems[j]->Get_ItemNum();
 				}
 				m_pInvenWindow->Set_Cost(iCoin);
-				m_pGameInstance->Play_Sound(TEXT("Sell_Item"));
 			}
 		}
 	}
@@ -1019,6 +1020,7 @@ void CInvenFrame::Shop_Tick(_float fTimeDelta, POINT ptMouse)
 		m_vecSellItems.clear();
 		CUI_Manager::Get_Instance()->Set_Coin(iCoin);
 		m_pInvenWindow->Set_SellBtn(false);
+		m_pGameInstance->Play_Sound(TEXT("Sell_Item"));
 	}
 
 	if (m_pInvenWindow->Is_Active())
