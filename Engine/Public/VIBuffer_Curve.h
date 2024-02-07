@@ -14,12 +14,17 @@ public:
 	virtual HRESULT Init(void* pArg) override;
 	HRESULT Render();
 
+	void		Get_ControlPoints(_mat* pOutPoints);
+	void		Set_ControlPoints(_mat& Points);
+
+	_float3		Get_CurvePos(_uint iIndex);
+
 
 public:
 	void Modify_Line();
 
 private:
-	_mat m_mControlPoint{};
+	_mat m_matControlPoints{};
 	_float3* m_pCurvePos{};
 
 public:

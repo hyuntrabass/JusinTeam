@@ -6,6 +6,7 @@
 #include "Map.h"
 #include "Player.h"
 #include "Effect_Manager.h"
+#include "Trigger_Manager.h"
 #include "UI_Manager.h"
 #include "FadeBox.h"
 #include "Pop_Skill.h"
@@ -118,7 +119,11 @@ HRESULT CLevel_GamePlay::Init()
 		MSG_BOX("Failed to Ready UI");
 		return E_FAIL;
 	}
-
+	//if (FAILED(Ready_TestTrigger()))
+	//{
+	//	MSG_BOX("Failed to Ready TestTrigger");
+	//	return E_FAIL;
+	//}
 
 	EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Rain");
 	EffectDesc.pMatrix = &m_RainMatrix;
@@ -303,7 +308,26 @@ HRESULT CLevel_GamePlay::Render()
 
 HRESULT CLevel_GamePlay::Ready_Camera()
 {
+	/*if (not m_pGameInstance)
+	{
+		return E_FAIL;
+	}*/
 	if (not m_pGameInstance)
+	{
+		return E_FAIL;
+	}
+
+	wstring strLayerTag = TEXT("Layer_Camera");
+
+	CCamera::Camera_Desc CamDesc;
+	CamDesc.vCameraPos = _float4(0.f, 5.f, -5.f, 1.f);
+	CamDesc.vFocusPos = _float4(0.f, 0.f, 0.f, 1.f);
+	CamDesc.fFovY = XMConvertToRadians(60.f);
+	CamDesc.fAspect = static_cast<_float>(g_iWinSizeX) / g_iWinSizeY;
+	CamDesc.fNear = 0.1f;
+	CamDesc.fFar = 1100.f;
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, strLayerTag, TEXT("Prototype_GameObject_Camera_CutScene"), &CamDesc)))
 	{
 		return E_FAIL;
 	}
@@ -820,6 +844,62 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	
 	
 
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_TestTrigger()
+{
+	TriggerInfo Info{};
+	const TCHAR* pGetPath = L"../Bin/Data/test_Trigger.dat";
+	
+	std::ifstream inFile(pGetPath, std::ios::binary);
+	
+	if (!inFile.is_open())
+	{
+		MSG_BOX("../Bin/Data/test_Trigger.dat 트리거 불러오기 실패.");
+		return E_FAIL;
+	}
+		_uint TriggerListSize;
+		inFile.read(reinterpret_cast<char*>(&TriggerListSize), sizeof(_uint));
+	
+	
+		for (_uint i = 0; i < TriggerListSize; ++i)
+		{
+			TriggerInfo TriggerInfo{};
+	
+			_uint iIndex{};
+			inFile.read(reinterpret_cast<char*>(&iIndex), sizeof(_uint));
+			TriggerInfo.iIndex = iIndex;
+		
+			_bool bCheck{};
+			inFile.read(reinterpret_cast<char*>(&bCheck), sizeof(_bool));
+			TriggerInfo.bLimited = bCheck;
+
+			_ulong TriggerPrototypeSize;
+			inFile.read(reinterpret_cast<char*>(&TriggerPrototypeSize), sizeof(_ulong));
+	
+			wstring TriggerPrototype;
+			TriggerPrototype.resize(TriggerPrototypeSize);
+			inFile.read(reinterpret_cast<char*>(&TriggerPrototype[0]), TriggerPrototypeSize * sizeof(wchar_t));
+	
+			_float TriggerSize{};
+			inFile.read(reinterpret_cast<char*>(&TriggerSize), sizeof(_float));
+			TriggerInfo.fSize = TriggerSize;
+	
+			_mat TriggerWorldMat;
+			inFile.read(reinterpret_cast<char*>(&TriggerWorldMat), sizeof(_mat));
+	
+			TriggerInfo.WorldMat = TriggerWorldMat;
+	
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Trigger"), TEXT("Prototype_GameObject_Trigger"), &TriggerInfo)))
+			{
+				MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
+				return E_FAIL;
+			}
+		}
+	
+		inFile.close();
+	
 	return S_OK;
 }
 

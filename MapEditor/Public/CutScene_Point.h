@@ -16,6 +16,8 @@ public:
 	virtual void Tick(_float TimeDelta) override;
 	virtual void Late_Tick(_float TimeDelta) override;
 	virtual HRESULT Render() override;
+	void Select(const _bool& isSelected);
+	void Set_Dead() { m_isDead = true; }
 
 private:
 	HRESULT Add_Components();
@@ -28,6 +30,7 @@ private:
 	
 	_uint m_iShaderPass{};
 	_uint m_iOutLineShaderPass{};
+	_bool m_isSelected{};
 
 public:
 	static CCutScene_Point* Create(_dev pDevice, _context pContext);

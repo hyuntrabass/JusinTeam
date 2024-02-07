@@ -400,6 +400,12 @@
     <Filter Include="02.GameObjects\04.Monster\99. Dead">
       <UniqueIdentifier>{3b7bdf7a-faaa-4479-8d3e-d2cca283a7d9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\01.Camera\CutScene">
+      <UniqueIdentifier>{bf729dcd-21e7-4473-a536-26057a726c1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\01.Camera\CutScene\Curve">
+      <UniqueIdentifier>{3ed5c41d-0372-425d-9eb7-aa5417122c3e}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObjects\06.Sky\Hell">
       <UniqueIdentifier>{33adb1d1-a5eb-44d1-8260-3a45e1e43819}</UniqueIdentifier>
     </Filter>
@@ -810,8 +816,11 @@
     <ClInclude Include="..\Public\Player.h">
       <Filter>02.GameObjects\03.Player</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Hell.h">
-      <Filter>02.GameObjects\06.Sky\Hell</Filter>
+    <ClInclude Include="..\Public\CutScene_Curve.h">
+      <Filter>02.GameObjects\01.Camera\CutScene\Curve</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_CutScene.h">
+      <Filter>02.GameObjects\01.Camera\CutScene</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Targeted.h">
       <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Target</Filter>
@@ -1212,8 +1221,11 @@
     <ClCompile Include="..\Private\Player.cpp">
       <Filter>02.GameObjects\03.Player</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Hell.cpp">
-      <Filter>02.GameObjects\06.Sky\Hell</Filter>
+    <ClCompile Include="..\Private\Camera_CutScene.cpp">
+      <Filter>02.GameObjects\01.Camera\CutScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CutScene_Curve.cpp">
+      <Filter>02.GameObjects\01.Camera\CutScene\Curve</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Targeted.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Target</Filter>

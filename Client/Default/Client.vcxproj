@@ -163,6 +163,7 @@
     <ClInclude Include="..\Public\BackGround_Mask.h" />
     <ClInclude Include="..\Public\BlackSmith.h" />
     <ClInclude Include="..\Public\BlurTexture.h" />
+    <ClInclude Include="..\Public\Camera_CutScene.h" />
     <ClInclude Include="..\Public\Camera_Debug.h" />
     <ClInclude Include="..\Public\Camera_Main.h" />
     <ClInclude Include="..\Public\Cat.h" />
@@ -170,6 +171,7 @@
     <ClInclude Include="..\Public\CharacterSelect.h" />
     <ClInclude Include="..\Public\Coin.h" />
     <ClInclude Include="..\Public\Dead.h" />
+    <ClInclude Include="..\Public\CutScene_Curve.h" />
     <ClInclude Include="..\Public\Dialog.h" />
     <ClInclude Include="..\Public\CommonSurfaceTrail.h" />
     <ClInclude Include="..\Public\DialogText.h" />
@@ -301,12 +303,14 @@
     <ClCompile Include="..\Private\BackGround_Mask.cpp" />
     <ClCompile Include="..\Private\BlackSmith.cpp" />
     <ClCompile Include="..\Private\BlurTexture.cpp" />
+    <ClCompile Include="..\Private\Camera_CutScene.cpp" />
     <ClCompile Include="..\Private\Camera_Debug.cpp" />
     <ClCompile Include="..\Private\Camera_Main.cpp" />
     <ClCompile Include="..\Private\Cat.cpp" />
     <ClCompile Include="..\Private\Aur.cpp" />
     <ClCompile Include="..\Private\CharacterSelect.cpp" />
     <ClCompile Include="..\Private\Coin.cpp" />
+    <ClCompile Include="..\Private\CutScene_Curve.cpp" />
     <ClCompile Include="..\Private\Dead.cpp" />
     <ClCompile Include="..\Private\Dialog.cpp" />
     <ClCompile Include="..\Private\CommonSurfaceTrail.cpp" />
