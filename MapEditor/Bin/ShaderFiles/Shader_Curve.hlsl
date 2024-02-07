@@ -2,7 +2,7 @@
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
-vector g_vColor = vector(0.f, 0.f, 0.f, 1.f);
+vector g_vColor;
 
 
 struct VS_IN
