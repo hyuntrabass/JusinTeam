@@ -231,6 +231,9 @@ namespace Client
 		T_OPENINVEN, 
 		T_EQUIP,
 		T_EXIT,
+		T_OPENSKILL,
+		T_EQUIPSKILL,
+		T_SKILLEXIT,
 		TUTO_END
 	};
 
@@ -389,6 +392,7 @@ namespace Client
 		VTPass_LerpColorNAlpha,
 		VTPass_HPBoss,
 		VTPass_MaskColorMove,
+		VTPass_ChangeBright,
 		VTPass_End
 	};
 

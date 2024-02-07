@@ -12,7 +12,7 @@ class CEvent_Manager final : public CBase
 	DECLARE_SINGLETON(CEvent_Manager)
 
 public:
-	enum EVENT_TYPE { QUESTIN, QUESTEND, LEVELUP, TUTORIAL, TYPE_END};
+	enum EVENT_TYPE { QUESTIN, QUESTEND, LEVELUP, TUTORIAL, UNLOCKSKILL, TYPE_END};
 
 	typedef struct tagEventDesc
 	{
@@ -59,6 +59,9 @@ public:
 	_bool Find_Quest(const wstring& strQuest);
 	HRESULT Set_Quest(const wstring& strQuest);
 	HRESULT Update_Quest(const wstring& strQuest);
+
+	void Set_LevelUp(_uint iLevel);
+	void Set_SkillUnlock(_uint iIndex);
 
 	void Set_Alert(const wstring strAlert);
 

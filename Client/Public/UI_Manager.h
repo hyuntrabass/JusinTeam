@@ -27,6 +27,7 @@ private:
 	MOUSESTATE		m_eMouseState { M_DEFAULT };
 	WEAPON_TYPE		m_eWeaponType{ WP_BOW };
 
+	_bool			m_isFirstKill{ false };
 	_bool			m_isSetSkillSlot{ false };
 	_bool			m_isPicking{ false };
 	_bool			m_isShowing{ false };
@@ -34,6 +35,8 @@ private:
 	_bool			m_isSetInvenState{ false };
 	_bool			m_bTimeStop{ false };
 	_bool			m_isBoss{ false };
+
+	_uint			m_iLevel{ 1 };
 
 
 	_uint			m_iCoin{};
@@ -59,6 +62,7 @@ private:
 	CGameObject*	m_pInvenItemSlots[CItemBlock::ITEMSLOT_END];
 	CGameObject*	m_pInven{ nullptr };
 	CGameObject*	m_pInvenFrame{ nullptr };
+	CGameObject*	m_pSkillBook{ nullptr };
 
 	vector<CTransform*> m_vecRadarPos[TYPE_END];
 	SKILLINFO		m_SkillInfo[WP_END][4];
@@ -91,7 +95,9 @@ public:
 	HRESULT Set_InvenItemSlots(CItemBlock::ITEMSLOT eSlot, CGameObject* pGameObject);
 	HRESULT Set_SkillBookSlots(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot, CSkillSlot* pGameObject);
 	HRESULT Set_SkillBlock(CSkillBlock* pGameObject);
+	HRESULT Set_SkillBook(CGameObject* pGameObject);
 
+	HRESULT Unlock_Skill(_uint iIndex);
 	_bool Use_Skill(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot, _int* iIndex);
 	CGameObject* Get_InvenFrame();
 	CSkillSlot* Get_SkillSlot(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot);
@@ -135,6 +141,7 @@ public:
 	const _uint& Get_Coin() const { return m_iCoin; }
 	const _uint& Get_Diamond() const { return m_iDiamond; }
 	const _float2& Get_Exp() const { return m_fExp; }
+	const _uint& Get_Level() const { return m_iLevel; }
 	const MOUSESTATE& Get_MouseState() const { return m_eMouseState; }
 
 	const PART_TYPE& Is_CustomPartChanged() const { return m_eChangedPart; }

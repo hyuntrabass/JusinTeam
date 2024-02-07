@@ -345,7 +345,6 @@ CMainApp* CMainApp::Create()
 
 void CMainApp::Free()
 {
-	CUI_Manager::Destroy_Instance();
 	CEffect_Manager::Destroy_Instance();
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pGameInstance);
@@ -353,7 +352,9 @@ void CMainApp::Free()
 	Safe_Release(m_pContext);
 
 	CGameInstance::Release_Engine();
-	
+
+	CUI_Manager::Destroy_Instance();
+
 	if (_heapchk() != _HEAPOK)
 	{
 		MSG_BOX("Heap currupted");

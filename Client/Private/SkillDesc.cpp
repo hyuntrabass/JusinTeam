@@ -58,10 +58,7 @@ HRESULT CSkillDesc::Init(void* pArg)
 		  (LONG)(m_fY + m_fSizeY * 0.5f)
 	};
 
-	if (m_tSkillInfo.strName != TEXT("환영화살"))
-	{
-		Unlock_Skill();
-	}
+
 
 	m_bSkillIn = true;
 	return S_OK;

@@ -1,4 +1,5 @@
 #include "Monster.h"
+#include "UI_Manager.h"
 
 
 CMonster::CMonster(_dev pDevice, _context pContext)
@@ -37,7 +38,7 @@ HRESULT CMonster::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-
+	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 	return S_OK;
 }
 
@@ -379,6 +380,10 @@ void CMonster::Free()
 {
 	__super::Free();
 
+	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
+
+	_uint iRandomExp = rand() % 100;
+	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(iRandomExp * 0.01f);
 	Safe_Release(m_HpBar);
 
 	Safe_Release(m_pModelCom);

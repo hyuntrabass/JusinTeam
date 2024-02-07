@@ -1,6 +1,8 @@
 ﻿#include "UI_Manager.h"
 #include "GameInstance.h"
 #include "Inven.h"
+#include "SkillBook.h"
+#include "Event_Manager.h"
 IMPLEMENT_SINGLETON(CUI_Manager)
 
 CUI_Manager::CUI_Manager()
@@ -33,12 +35,27 @@ HRESULT CUI_Manager::Init()
 void CUI_Manager::Set_Exp_ByPercent(_float fExp)
 {
 
+	if (!m_isFirstKill)
+	{
+		m_isFirstKill = true;
+		m_fExp.x = m_fExp.y;
+	}
+	else
+	{
+		m_fExp.x += m_fExp.y * fExp / 100.f;
+	}
 
-	m_fExp.x += m_fExp.y * fExp / 100.f;
 	if (m_fExp.x >= m_fExp.y)
 	{
+		m_iLevel++;
+		CEvent_Manager::Get_Instance()->Set_LevelUp(m_iLevel);
+		if (m_iLevel == 2 || m_iLevel == 3 || m_iLevel == 4|| m_iLevel == 5)
+		{
+			CEvent_Manager::Get_Instance()->Set_SkillUnlock(m_iLevel - 2);
+		}
 		Level_Up();
 		m_fExp.x = 0.f;
+		m_fExp.y += 20.f * m_iLevel;
 		//스탯바꾸는곳에서 처리하는게 나을듯 레벨업함수에서
 	}
 }
@@ -141,6 +158,16 @@ HRESULT CUI_Manager::Set_SkillBlock(CSkillBlock* pGameObject)
 		return E_FAIL;
 	}
 	m_pSkillBlock = pGameObject;
+	return S_OK;
+}
+
+HRESULT CUI_Manager::Set_SkillBook(CGameObject* pGameObject)
+{
+	if (pGameObject == nullptr)
+	{
+		return E_FAIL;
+	}
+	m_pSkillBook = pGameObject;
 	return S_OK;
 }
 
@@ -413,6 +440,16 @@ HRESULT CUI_Manager::Set_InvenFrame(CGameObject* pGameObject)
 
 	m_pInvenFrame = pGameObject;
 
+	return S_OK;
+}
+
+HRESULT CUI_Manager::Unlock_Skill(_uint iIndex)
+{
+	if (m_pSkillBook == nullptr)
+	{
+		return E_FAIL;
+	}
+	dynamic_cast<CSkillBook*>(m_pSkillBook)->Unlock_Skill(iIndex);
 	return S_OK;
 }
 

@@ -3,6 +3,7 @@
 #include "TextButton.h"
 #include "TextButtonColor.h"
 #include "UI_Manager.h"
+#include "Event_Manager.h"
 
 CExpBar::CExpBar(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -69,6 +70,7 @@ HRESULT CExpBar::Init(void* pArg)
 void CExpBar::Tick(_float fTimeDelta)
 {
 	m_vRatio = CUI_Manager::Get_Instance()->Get_Exp();
+	m_iLevel = CUI_Manager::Get_Instance()->Get_Level();
 	m_fTime += fTimeDelta;
 }
 

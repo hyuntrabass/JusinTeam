@@ -2,6 +2,8 @@
 #include "GameInstance.h"
 #include "Pop_QuestIn.h"
 #include "Pop_QuestEnd.h"
+#include "Pop_LevelUp.h"
+#include "Pop_Skill.h"
 #include "Pop_Alert.h"
 #include "Tutorial.h"
 #include "Quest.h"
@@ -56,6 +58,13 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 			{
 			case LEVELUP:
 			{
+				CPop_LevelUp::LEVELUP_DESC Desc{};
+				Desc.iLevel = m_vecPopEvents.front().iNum;
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pop"), TEXT("Prototype_GameObject_PopLevelUp"), &Desc)))
+				{
+					return;
+				}
+
 				m_vecPopEvents.erase(m_vecPopEvents.begin());
 			}
 			break;
@@ -105,6 +114,17 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 						}
 					}
 				}
+			}
+			break;
+			case UNLOCKSKILL:
+			{
+				CPop_Skill::SKILLIN_DESC Desc{};
+				Desc.iSkillLevel = m_vecPopEvents.front().iNum;
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pop"), TEXT("Prototype_GameObject_PopSkill"), &Desc)))
+				{
+					return;
+				}
+				m_vecPopEvents.erase(m_vecPopEvents.begin());
 			}
 			break;
 			}
@@ -198,6 +218,25 @@ HRESULT CEvent_Manager::Update_Quest(const wstring& strQuest)
 		m_QuestMap.erase(strQuest);
 	}
 	return S_OK;
+}
+void CEvent_Manager::Set_LevelUp(_uint iLevel)
+{
+	EVENT_DESC Desc = {};
+	Desc.eType = LEVELUP;
+	Desc.iNum = iLevel;
+
+	m_vecPopEvents.push_back(Desc);
+	m_isEventIn = true;
+
+}
+void CEvent_Manager::Set_SkillUnlock(_uint iIndex)
+{
+	EVENT_DESC Desc = {};
+	Desc.eType = UNLOCKSKILL;
+	Desc.iNum = iIndex;
+
+	m_vecPopEvents.push_back(Desc);
+	m_isEventIn = true;
 }
 void CEvent_Manager::Set_Alert(const wstring strAlert)
 {

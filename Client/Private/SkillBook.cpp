@@ -50,13 +50,19 @@ HRESULT CSkillBook::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-	
+
+	CUI_Manager::Get_Instance()->Set_SkillBook(this);
 
 	return S_OK;
 }
 
 void CSkillBook::Tick(_float fTimeDelta)
 {
+	if (CUI_Manager::Get_Instance()->Get_TimeStop())
+	{
+		fTimeDelta /= m_pGameInstance->Get_TimeRatio();
+	}
+
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
@@ -96,6 +102,11 @@ void CSkillBook::Tick(_float fTimeDelta)
 					}
 					if (!isExist)
 					{
+						if (CEvent_Manager::Get_Instance()->Get_TutorialLevel() == T_EQUIPSKILL)
+						{
+							CEvent_Manager::Get_Instance()->Set_TutorialComplete(T_EQUIPSKILL);
+							CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_SKILLEXIT);
+						}
 						m_pSkillSlot[m_eCurType][i]->Set_Skill(tInfo);
 						break;
 					}
@@ -135,6 +146,11 @@ void CSkillBook::Tick(_float fTimeDelta)
 			m_isActive = true;
 			Init_SkillBookState();
 
+			if (CEvent_Manager::Get_Instance()->Get_TutorialLevel() == T_OPENSKILL)
+			{
+				CEvent_Manager::Get_Instance()->Set_TutorialComplete(T_OPENSKILL);
+				CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_EQUIPSKILL);
+			}
 			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 			{
 				if (m_pGameInstance->Get_IsLoopingSound(i))
@@ -172,7 +188,10 @@ void CSkillBook::Tick(_float fTimeDelta)
 			CUI_Manager::Get_Instance()->Set_SkillSlotChange(true);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_isActive = false;
-
+			if (CEvent_Manager::Get_Instance()->Get_TutorialLevel() == T_SKILLEXIT)
+			{
+				CEvent_Manager::Get_Instance()->Set_TutorialComplete(T_SKILLEXIT);
+			}
 			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 			{
 				if (m_pGameInstance->Get_IsLoopingSound(i))
@@ -407,6 +426,23 @@ HRESULT CSkillBook::Render()
 		return E_FAIL;
 	}
 
+
+	return S_OK;
+}
+
+HRESULT CSkillBook::Unlock_Skill(_uint iIndex)
+{
+	for (size_t j = 0; j < WP_END; j++)
+	{
+		for (size_t i = 0; i < m_vecSkillDesc[j].size(); i++)
+		{
+			if (m_vecSkillDesc[j][i]->Get_SkillInfo().iSkillIdx == iIndex)
+			{
+				m_vecSkillDesc[j][i]->Unlock_Skill();
+				break;
+			}
+		}
+	}
 
 	return S_OK;
 }

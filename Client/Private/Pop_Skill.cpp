@@ -3,6 +3,7 @@
 #include "TextButton.h"
 #include "TextButtonColor.h"
 #include "UI_Manager.h"
+#include "Event_Manager.h"
 #include "BlurTexture.h"
 #include "FadeBox.h"
 #include "Skill.h"
@@ -33,14 +34,14 @@ HRESULT CPop_Skill::Init(void* pArg)
 	m_fSizeY = 10.f;
 
 	m_fX = (_float)g_iWinSizeX / 2.f;
-	m_fY = 300.f;
+	m_fY = 100.f;
 
 	m_fDepth = (_float)D_QUEST / (_float)D_END;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
-	_uint iSkillNum{};
-	iSkillNum = ((SKILLIN_DESC*)pArg)->iSkillLevel;
+
+	m_iSkillNum = ((SKILLIN_DESC*)pArg)->iSkillLevel;
 
 	if (FAILED(Add_Parts()))
 	{
@@ -48,40 +49,48 @@ HRESULT CPop_Skill::Init(void* pArg)
 	}
 
 
-	SKILLINFO tInfo = CUI_Manager::Get_Instance()->Get_SkillInfo(WP_BOW,iSkillNum );
+	SKILLINFO tInfo = CUI_Manager::Get_Instance()->Get_SkillInfo(WP_BOW, m_iSkillNum);
 	CSkill::SKILL_DESC Desc{};
 	Desc.fDepth = m_fDepth - 0.01f;
 	Desc.isScreen = false;
 	Desc.tSkillInfo = tInfo;
 	Desc.vPosition = m_pBoxBow->Get_Position();
-	Desc.vSize = _vec2(100.f, 100.f);
+	Desc.vSize = _vec2(50.f, 50.f);
 	m_pSkillBow = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Skill"), &Desc);
 	if (not m_pSkillBow)
 	{
 		return E_FAIL;
 	}
 
-	tInfo = CUI_Manager::Get_Instance()->Get_SkillInfo(WP_SWORD, iSkillNum);
+	tInfo = CUI_Manager::Get_Instance()->Get_SkillInfo(WP_SWORD, m_iSkillNum);
 	Desc.tSkillInfo = tInfo;
 	Desc.vPosition = m_pBoxSword->Get_Position();
-	Desc.vSize = _vec2(100.f, 100.f);
+	Desc.vSize = _vec2(50.f, 50.f);
 	m_pSkillSword = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Skill"), &Desc);
 	if (not m_pSkillSword)
 	{
 		return E_FAIL;
 	}
+	if (FAILED(CUI_Manager::Get_Instance()->Unlock_Skill(m_iSkillNum)))
+	{
+		return E_FAIL;
+	}
 
-
-	m_fStartButtonPos = dynamic_cast<CTextButton*>(m_pButton)->Get_Position();
-	m_fButtonTime = m_fStartButtonPos.y;
 	return S_OK;
 }
 
 void CPop_Skill::Tick(_float fTimeDelta)
 {
 	
-	if (m_fDeadTime >= 0.8f && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
+	if (m_fDeadTime >= 4.f)
 	{
+		if (m_iSkillNum == 0)
+		{
+			if (CEvent_Manager::Get_Instance()->Get_TutorialLevel() == T_EXIT)
+			{
+				CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_OPENSKILL);
+			}
+		}
 		m_isDead = true;
 	}
 
@@ -90,31 +99,20 @@ void CPop_Skill::Tick(_float fTimeDelta)
 		m_fTime += fTimeDelta *1500.f * m_fDirEffect;
 	}
 
-	m_fDeadTime += fTimeDelta;
-
-	if (dynamic_cast<CTextButton*>(m_pButton)->Get_TransPosition().y <= dynamic_cast<CTextButton*>(m_pButton)->Get_Position().y - 5.f)
-	{
-		m_fDir = 0.6f;
-		dynamic_cast<CTextButton*>(m_pButton)->Set_Position(_float2(dynamic_cast<CTextButton*>(m_pButton)->Get_Position().x, dynamic_cast<CTextButton*>(m_pButton)->Get_Position().y - 5.f));
-	}
-	if (dynamic_cast<CTextButton*>(m_pButton)->Get_TransPosition().y >= dynamic_cast<CTextButton*>(m_pButton)->Get_Position().y)
-	{
-		m_fDir = -1.f;
-		dynamic_cast<CTextButton*>(m_pButton)->Set_Position(_float2(dynamic_cast<CTextButton*>(m_pButton)->Get_Position().x, dynamic_cast<CTextButton*>(m_pButton)->Get_Position().y));
-	}
-	m_fButtonTime += fTimeDelta * m_fDir * 10.f;
-	dynamic_cast<CTextButton*>(m_pButton)->Set_Position(_float2(dynamic_cast<CTextButton*>(m_pButton)->Get_Position().x, m_fButtonTime));
-
-
+	m_fDeadTime += fTimeDelta * 2.f;
 
 	if (m_isSkillIn)
 	{
-		if (m_pBoxBow->Get_TransPosition().x > m_fX - 60.f)
+		if (m_pBackground->Get_Size().x <= 220.f)
 		{
-			dynamic_cast<CSkill*>(m_pSkillBow)->Set_Position(_vec2(m_pBoxBow->Get_TransPosition().x - fTimeDelta * 100.f, m_fY));
-			dynamic_cast<CSkill*>(m_pSkillSword)->Set_Position(_vec2(m_pBoxSword->Get_TransPosition().x + fTimeDelta * 100.f, m_fY));
-			m_pBoxBow->Set_Position(_vec2(m_pBoxBow->Get_TransPosition().x - fTimeDelta * 100.f, m_fY));
-			m_pBoxSword->Set_Position(_vec2(m_pBoxSword->Get_TransPosition().x + fTimeDelta * 100.f, m_fY));
+			m_pBackground->Set_Size(m_pBackground->Get_Size().x + fTimeDelta * 700.f, m_pBackground->Get_Size().y);
+		}
+		if (m_pBoxBow->Get_TransPosition().x > m_fX - 30.f)
+		{
+			dynamic_cast<CSkill*>(m_pSkillBow)->Set_Position(_vec2(m_pBoxBow->Get_TransPosition().x - fTimeDelta * 100.f, 100.f));
+			dynamic_cast<CSkill*>(m_pSkillSword)->Set_Position(_vec2(m_pBoxSword->Get_TransPosition().x + fTimeDelta * 100.f, 100.f));
+			m_pBoxBow->Set_Position(_vec2(m_pBoxBow->Get_TransPosition().x - fTimeDelta * 100.f, m_pBoxBow->Get_Position().y));
+			m_pBoxSword->Set_Position(_vec2(m_pBoxSword->Get_TransPosition().x + fTimeDelta * 100.f, m_pBoxSword->Get_Position().y));
 		}
 		m_pBoxBow->Tick(fTimeDelta);
 		m_pBoxSword->Tick(fTimeDelta);
@@ -122,10 +120,17 @@ void CPop_Skill::Tick(_float fTimeDelta)
 		m_pSkillSword->Tick(fTimeDelta);
 	}
 
+	if (m_fDeadTime <= 0.8f)
+	{
+		m_pBackground->Set_Alpha(m_fDeadTime);
+	}
+
+
+	m_pBorder->Tick(fTimeDelta);
 	m_pLeft->Tick(fTimeDelta);
 	m_pRight->Tick(fTimeDelta);
+
 	m_pBackground->Tick(fTimeDelta);
-	m_pButton->Tick(fTimeDelta);
 //	m_pTransformCom->Rotation(_vec4(0.f, 0.f, 1.f, 0.f), m_fTime / 16.f);
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
@@ -140,23 +145,23 @@ void CPop_Skill::Late_Tick(_float fTimeDelta)
 		m_pBoxSword->Late_Tick(fTimeDelta);
 	}
 
+	m_pBorder->Late_Tick(fTimeDelta);
 	m_pLeft->Late_Tick(fTimeDelta);
 	m_pRight->Late_Tick(fTimeDelta);
 
-	m_pButton->Late_Tick(fTimeDelta);
 	m_pBackground->Late_Tick(fTimeDelta);
-	if (m_fSizeX >= 500.f)
+	if (m_fSizeX >= 300.f)
 	{
 		m_fDirEffect = -1.f;
 	}
 	if (m_fDirEffect == -1.f)
 	{
-		if (m_pLeft->Get_TransPosition().x > m_fX - 180.f)
+		if (m_pLeft->Get_TransPosition().x > m_fX - 90.f)
 		{
-			m_pLeft->Set_Position(_vec2(m_pLeft->Get_TransPosition().x - fTimeDelta * 120.f, m_fY));
-			m_pRight->Set_Position(_vec2(m_pRight->Get_TransPosition().x + fTimeDelta * 120.f, m_fY));
+			m_pLeft->Set_Position(_vec2(m_pLeft->Get_TransPosition().x - fTimeDelta * 300.f, m_pLeft->Get_Position().y));
+			m_pRight->Set_Position(_vec2(m_pRight->Get_TransPosition().x + fTimeDelta * 300.f, m_pRight->Get_Position().y));
 		}
-		if (m_pLeft->Get_TransPosition().x < m_fX - 140.f && !m_isSkillIn)
+		if (m_pLeft->Get_TransPosition().x < m_fX - 70.f && !m_isSkillIn)
 		{
 			m_isSkillIn = true;
 		}
@@ -184,17 +189,11 @@ HRESULT CPop_Skill::Render()
 		return E_FAIL;
 	}
 
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("스킬 개방!"), _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 200.f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("스킬 개방!"), _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 200.f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("스킬 개방!"), _vec2((_float)g_iWinSizeX / 2.f, 200.f - 0.2f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("스킬 개방!"), _vec2((_float)g_iWinSizeX / 2.f, 200.f + 0.2f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("스킬 개방!"), _vec2((_float)g_iWinSizeX / 2.f, 200.f), 0.7f, _vec4(1.f, 1.f, 1.f, 1.f));
-
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 수락하세요."), _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 580.f), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 수락하세요."), _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 580.f), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 수락하세요."), _vec2((_float)g_iWinSizeX / 2.f, 580.f - 0.2f), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 수락하세요."), _vec2((_float)g_iWinSizeX / 2.f, 580.f + 0.2f), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("화면을 눌러 수락하세요."), _vec2((_float)g_iWinSizeX / 2.f, 580.f), 0.4f, _vec4(0.6f, 0.6f, 0.6f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("스킬 개방!"), _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 60.f), 0.35f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("스킬 개방!"), _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 60.f), 0.35f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("스킬 개방!"), _vec2((_float)g_iWinSizeX / 2.f, 60.f - 0.2f), 0.35f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("스킬 개방!"), _vec2((_float)g_iWinSizeX / 2.f, 60.f + 0.2f), 0.35f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("스킬 개방!"), _vec2((_float)g_iWinSizeX / 2.f, 60.f), 0.35f, _vec4(1.f, 1.f, 1.f, 1.f));
 
 	return S_OK;
 }
@@ -233,25 +232,12 @@ HRESULT CPop_Skill::Add_Parts()
 	//FX_A_Shine014_Tex
 	CTextButton::TEXTBUTTON_DESC ButtonDesc = {};
 	ButtonDesc.eLevelID = LEVEL_STATIC;
-	ButtonDesc.fDepth = m_fDepth;
-	ButtonDesc.fFontSize = 0.45f;
 	ButtonDesc.strText = TEXT("");
-	ButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	ButtonDesc.vTextPosition = _vec2(20.f, 12.f);
-	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_ClickArrow");
-	ButtonDesc.vPosition = _vec2(780.f, 585.f);
-	ButtonDesc.vSize = _vec2(30.f, 30.f);
-
-	m_pButton = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
-	if (not m_pButton)
-	{
-		return E_FAIL;
-	}
 	ButtonDesc.fDepth = m_fDepth - 0.03f;
 	
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_triangle1");
-	ButtonDesc.vPosition = _vec2(m_fX - 30.f, m_fY);
-	ButtonDesc.vSize = _vec2(100.f, 100.f);
+	ButtonDesc.vPosition = _vec2(m_fX - 15.f, 100.f);
+	ButtonDesc.vSize = _vec2(30.f, 30.f);
 
 	m_pLeft = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
 	if (not m_pLeft)
@@ -259,8 +245,8 @@ HRESULT CPop_Skill::Add_Parts()
 		return E_FAIL;
 	}
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_triangle2");
-	ButtonDesc.vPosition = _vec2(m_fX + 30.f, m_fY);
-	ButtonDesc.vSize = _vec2(100.f, 100.f);
+	ButtonDesc.vPosition = _vec2(m_fX + 15.f, 100.f);
+	ButtonDesc.vSize = _vec2(30.f, 30.f);
 
 	m_pRight = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
 	if (not m_pRight)
@@ -268,8 +254,8 @@ HRESULT CPop_Skill::Add_Parts()
 		return E_FAIL;
 	}
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_bluerect");
-	ButtonDesc.vPosition = _vec2(m_fX - 40.f, m_fY);
-	ButtonDesc.vSize = _vec2(156.f, 156.f);
+	ButtonDesc.vPosition = _vec2(m_fX - 20.f, 100.f);
+	ButtonDesc.vSize = _vec2(78.f, 78.f);
 
 	m_pBoxBow = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
 	if (not m_pBoxBow)
@@ -277,8 +263,8 @@ HRESULT CPop_Skill::Add_Parts()
 		return E_FAIL;
 	}
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_bluerect");
-	ButtonDesc.vPosition = _vec2(m_fX + 40.f, m_fY);
-	ButtonDesc.vSize = _vec2(156.f, 156.f);
+	ButtonDesc.vPosition = _vec2(m_fX + 20.f, 100.f);
+	ButtonDesc.vSize = _vec2(78.f, 78.f);
 
 	m_pBoxSword = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
 	if (not m_pBoxSword)
@@ -287,14 +273,53 @@ HRESULT CPop_Skill::Add_Parts()
 	}
 
 
-	CFadeBox::FADE_DESC Desc = {};
-	Desc.eState = CFadeBox::FADELOOP;
-	Desc.fDuration = 0.f;
-	m_pBackground = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_FadeBox"), &Desc);
+	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SiegeQuest");
+	ButtonDesc.vPosition = _vec2((_float)g_iWinSizeX / 2.f, 135.f);
+	ButtonDesc.vSize = _vec2(360.f, 8.f);
+	m_pBorder = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
+	if (not m_pBorder)
+	{
+		return E_FAIL;
+	}
+
+	CTextButtonColor::TEXTBUTTON_DESC TextButton = {};
+	TextButton.eLevelID = LEVEL_STATIC;
+	TextButton.strTexture = TEXT("");
+	TextButton.fDepth = m_fDepth + 0.01f;
+	TextButton.fAlpha = 0.f;
+	TextButton.fFontSize = 0.35f;
+	TextButton.vColor = _vec4(0.f, 0.8f, 1.f, 1.f);
+	//.vColor = _vec4(0.f, 0.f, 0.f, 1.f);
+	TextButton.vTextColor = _vec4(0.8f, 0.8f, 1.f, 1.f);
+	TextButton.strText = TEXT("");
+	TextButton.vPosition = _vec2(m_fX, 38.f);
+	TextButton.vSize = _vec2(350.f, 200.f);
+	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_AlertMask");
+	//TextButton.strTexture2 = TEXT("Prototype_Component_Texture_UI_Gameplay_GradBlue");
+	TextButton.vTextPosition = _vec2(0.f, 0.f);
+	m_pBackground = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+
 	if (not m_pBackground)
 	{
 		return E_FAIL;
 	}
+	m_pBackground->Set_Pass(VTPass_Mask_Color);
+
+	TextButton.fDepth = m_fDepth - 0.01f;
+	TextButton.fAlpha = 0.f;
+	TextButton.fFontSize = 0.35f;
+	TextButton.vColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	TextButton.vPosition = _vec2(m_fX, 100.f);
+	TextButton.vSize = _vec2(200.f, 100.f);
+	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Noise_08");
+	TextButton.vTextPosition = _vec2(0.f, 0.f);
+	m_pParticle = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+
+	if (not m_pParticle)
+	{
+		return E_FAIL;
+	}
+	m_pParticle->Set_Pass(VTPass_MaskColorMove);
 
 	return S_OK;
 }
@@ -386,7 +411,8 @@ void CPop_Skill::Free()
 {
 	__super::Free();
 
-
+	Safe_Release(m_pParticle);
+	Safe_Release(m_pBorder);
 	Safe_Release(m_pSkillBow);
 	Safe_Release(m_pSkillSword);
 	Safe_Release(m_pLeft);
@@ -395,7 +421,6 @@ void CPop_Skill::Free()
 	Safe_Release(m_pBoxSword);
 
 	Safe_Release(m_pBackground);
-	Safe_Release(m_pButton);
 
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pMaskTextureCom);
