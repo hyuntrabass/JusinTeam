@@ -49,7 +49,7 @@ HRESULT CGroar_Boss::Init(void* pArg)
 	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 1.5f;
 
-	m_iHP = 30000;
+	m_iHP = 10000;
 
 	if (FAILED(Init_Dialog()))
 	{
@@ -223,6 +223,7 @@ void CGroar_Boss::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_iHP -= iDamage;
 	m_bChangePass = true;
+	m_pHpBoss->Set_HP(m_iHP);
 
 	//if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
 	//	iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)

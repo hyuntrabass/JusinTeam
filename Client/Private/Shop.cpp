@@ -82,6 +82,15 @@ void CShop::Tick(_float fTimeDelta)
 			{
 				return;
 			}
+
+			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+			{
+				if (m_pGameInstance->Get_IsLoopingSound(i))
+				{
+					m_pGameInstance->FadeinSound(i, fTimeDelta);
+				}
+			}
+
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_isActive = false;
 		}
