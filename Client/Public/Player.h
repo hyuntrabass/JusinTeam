@@ -354,6 +354,8 @@ public:
 
 private:
 	CRiding* m_pRiding{ nullptr };
+	class CEffect_Dummy* m_pFrameEffect{ nullptr };
+	class CEffect_Dummy* m_pBaseEffect{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CGameObject* m_pNameTag{ nullptr };
 	CRenderer* m_pRendererCom{ nullptr };

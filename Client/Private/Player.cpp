@@ -148,7 +148,15 @@ void CPlayer::Tick(_float fTimeDelta)
 			m_HairShaderIndex = VTFPass_LerpDissolve;
 		}
 	}
+	if (m_pFrameEffect)
+	{
+		m_pFrameEffect->Tick(fTimeDelta);
+	}
 
+	if (m_pBaseEffect)
+	{
+		m_pBaseEffect->Tick(fTimeDelta);
+	}
 	if (m_bPoison)
 	{
 		if(m_fRimTick>0.3f)
@@ -421,7 +429,15 @@ void CPlayer::Tick(_float fTimeDelta)
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
+	if (m_pFrameEffect)
+	{
+		m_pFrameEffect->Late_Tick(fTimeDelta);
+	}
 
+	if (m_pBaseEffect)
+	{
+		m_pBaseEffect->Late_Tick(fTimeDelta);
+	}
 
 	if (m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
 	{
@@ -1207,46 +1223,46 @@ void CPlayer::Move(_float fTimeDelta)
 			}
 
 		}
-		//if (m_pGameInstance->Key_Down(DIK_1))
-		//{
-		//	if (m_eState != Skill1)
-		//	{
-		//		Ready_Skill(ST_Skill1); // 1번창에 있던 스킬 넣어주기
-		//		return;
-		//	}
-		//}
+		if (m_pGameInstance->Key_Down(DIK_1))
+		{
+			if (m_eState != Skill1)
+			{
+				Ready_Skill(ST_Skill1); // 1번창에 있던 스킬 넣어주기
+				return;
+			}
+		}
 
-		//if (m_pGameInstance->Key_Down(DIK_2))
-		//{
-		//	if (m_eState != Skill2)
-		//	{
-		//		Ready_Skill(ST_Skill2);
-		//		return;
-		//	}
-		//}
-
-
-		//if (m_pGameInstance->Key_Down(DIK_3))
-		//{
-		//	if (m_eState != Skill3)
-		//	{
-		//		Ready_Skill(ST_Skill3);
-		//		return;
-		//	}
-		//}
-
-		//if (m_pGameInstance->Key_Down(DIK_4))
-		//{
-		//	if (m_eState != Skill4)
-		//	{
-		//		Ready_Skill(ST_Skill4);
-		//		return;
-		//	}
-
-		//}
+		if (m_pGameInstance->Key_Down(DIK_2))
+		{
+			if (m_eState != Skill2)
+			{
+				Ready_Skill(ST_Skill2);
+				return;
+			}
+		}
 
 
-		CSkillBlock::SKILLSLOT eSlotIdx{};
+		if (m_pGameInstance->Key_Down(DIK_3))
+		{
+			if (m_eState != Skill3)
+			{
+				Ready_Skill(ST_Skill3);
+				return;
+			}
+		}
+
+		if (m_pGameInstance->Key_Down(DIK_4))
+		{
+			if (m_eState != Skill4)
+			{
+				Ready_Skill(ST_Skill4);
+				return;
+			}
+
+		}
+
+
+		/*CSkillBlock::SKILLSLOT eSlotIdx{};
 		_bool isPress = false;
 		if (m_pGameInstance->Key_Down(DIK_1))
 		{
@@ -1280,7 +1296,7 @@ void CPlayer::Move(_float fTimeDelta)
 				return;
 			}
 
-		}
+		}*/
 
 		if (m_pGameInstance->Key_Down(DIK_5))
 		{
@@ -3081,21 +3097,39 @@ void CPlayer::Arrow_Rain()
 
 	if (m_iArrowRain == 0)
 	{
+		_mat EffectMatrix{};
 		m_vArrowLook = m_pTransformCom->Get_State(State::Look);
+
+		if (m_vArrowRainPos == _vec4())
+		{
+			 EffectMatrix = _mat::CreateScale(10.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + m_vArrowLook * 10.f) + _vec3(0.f, 0.2f, 0.f));
+		}
+		else
+		{
+			 EffectMatrix = _mat::CreateScale(10.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(m_vArrowRainPos) + _vec3(0.f, 0.2f, 0.f));
+		}
+		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Player_Circle_Frame");
+		Info.pMatrix = &EffectMatrix;
+		m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Player_Circle_Base");
+		Info.pMatrix = &EffectMatrix;
+		m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+		
 	}
 
 	if (m_iArrowRain < 80)
 	{
 		Arrow_Type Type{};
 		Type.Att_Type = AT_Bow_Skill3;
-		_float random = (_float)(rand() % 100);
+		_float random = (_float)(rand() % 70);
 		_int randommos = rand() % 2;
 		if (randommos == 0)
 		{
 			random *= -1;
 		}
 		random *= 0.05f;
-		_float  random2 = (_float)(rand() % 101);
+		_float  random2 = (_float)(rand() % 70);
 		int randommo = rand() % 2;
 		if (randommo == 0)
 		{
@@ -3122,6 +3156,8 @@ void CPlayer::Arrow_Rain()
 	{
 		m_vArrowRainPos = _vec4();
 		m_bArrowRain_Start = false;
+		Safe_Release(m_pFrameEffect);
+		Safe_Release(m_pBaseEffect);
 	}
 }
 

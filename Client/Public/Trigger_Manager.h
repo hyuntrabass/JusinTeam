@@ -23,6 +23,9 @@ public:
 	_bool Get_Limited() { return m_isLimited; }
 	_bool Get_PlayCutScene() { return m_isPlayCutScene; }
 	wstring Get_CutScene_Path() { return m_strFilePath; }
+	
+public:
+	_bool Is_Coll_BossTrigger() { return m_isCollBossTrigger; }
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };
@@ -34,6 +37,9 @@ private:
 	_bool m_isLimited{ false };
 	_bool m_isPlayCutScene{ false };
 	wstring m_strFilePath{};
+
+private:
+	_bool m_isCollBossTrigger = { false };
 
 private:
 	vector<class CTrigger*> m_pTrigger{};
