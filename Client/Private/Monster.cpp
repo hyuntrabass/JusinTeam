@@ -38,7 +38,7 @@ HRESULT CMonster::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-
+	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 	return S_OK;
 }
 
@@ -373,6 +373,8 @@ HRESULT CMonster::Bind_ShaderResources()
 void CMonster::Free()
 {
 	__super::Free();
+
+	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 
 	_uint iRandomExp = rand() % 100;
 	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(iRandomExp * 0.01f);

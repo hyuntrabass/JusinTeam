@@ -56,10 +56,12 @@ void CTutorial::Tick(_float fTimeDelta)
 		m_pGameInstance->Set_TimeRatio(1.f);
 		m_isDead = true;
 	}	
-	if (m_eTuto == T_OPENINVEN)
+	if (m_eTuto == T_OPENINVEN || m_eTuto == T_OPENSKILL)
 	{
 		m_pGameInstance->Set_TimeRatio(0.001f);
+
 	}
+
 
 
 	if (m_pPoint != nullptr)
@@ -124,12 +126,12 @@ HRESULT CTutorial::Render()
 		break;
 	case T_OPENSKILL:
 	{
-		m_pGameInstance->Render_Text(L"Font_Malang", TEXT("스킬북에서 획득한 스킬을 확인할 수 있습니다."), _vec2(1140.f, 170.f), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang", TEXT("스킬북에서 획득한 스킬을 확인할 수 있습니다."), _vec2(1120.f, 170.f), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f));
 	}
 		break;
 	case T_EQUIPSKILL:
 	{
-		m_pGameInstance->Render_Text(L"Font_Malang", TEXT("잠금해제된 스킬을 눌러 장착할 수 있습니다."), _vec2(800.f, 270.f), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang", TEXT("잠금해제된 스킬을 눌러 장착할 수 있습니다."), _vec2(700.f, 160.f), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f));
 	}
 		break;
 	case T_SKILLEXIT:
@@ -167,6 +169,21 @@ HRESULT CTutorial::Add_Parts()
 		Button.vSize = _vec2(120.f, 120.f);
 		break;
 	case T_EXIT:
+		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BloomRect");
+		Button.vPosition = _vec2(1225.f, 30.f);
+		Button.vSize = _vec2(75.f, 75.f);
+		break;
+	case T_OPENSKILL:
+		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BloomCircle");
+		Button.vPosition = _vec2(1105.f, 42.f);
+		Button.vSize = _vec2(90.f, 90.f);
+		break;
+	case T_EQUIPSKILL:
+		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_TutoBoxBigpng");
+		Button.vPosition = _vec2(_vec2(1090.f, (_float)g_iWinSizeY / 2.f + 25.f));
+		Button.vSize = _vec2(680.f, 680.f);
+		break;
+	case T_SKILLEXIT:
 		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BloomRect");
 		Button.vPosition = _vec2(1225.f, 30.f);
 		Button.vSize = _vec2(75.f, 75.f);

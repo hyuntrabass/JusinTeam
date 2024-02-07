@@ -58,6 +58,11 @@ HRESULT CSkillBook::Init(void* pArg)
 
 void CSkillBook::Tick(_float fTimeDelta)
 {
+	if (CUI_Manager::Get_Instance()->Get_TimeStop())
+	{
+		fTimeDelta /= m_pGameInstance->Get_TimeRatio();
+	}
+
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
