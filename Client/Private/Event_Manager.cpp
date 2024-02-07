@@ -181,6 +181,25 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.strQuestTitle = TEXT("점프하기");
 	tDesc.strText = TEXT("스페이스바를 눌러 쩜프해봐");
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
+		
+	
+	tDesc.eType = QUESTIN;
+	tDesc.fExp = 100.f;
+	tDesc.iNum = 1;
+	tDesc.iMoney = 1000;
+	tDesc.isMain = true;
+	tDesc.strQuestTitle = TEXT("체력포션 구매");
+	tDesc.strText = TEXT("마을 상인에게 체력포션 구매하기");
+	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
+	
+	tDesc.eType = QUESTIN;
+	tDesc.fExp = 100.f;
+	tDesc.iNum = 3;
+	tDesc.iMoney = 10000;
+	tDesc.isMain = false;
+	tDesc.strQuestTitle = TEXT("로스크바의 부탁");
+	tDesc.strText = TEXT("토끼 세마리 잡기");
+	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 	
 	tDesc.eType = QUESTIN;
 	tDesc.fExp = 14.6f;
@@ -193,7 +212,7 @@ HRESULT CEvent_Manager::Init_Quest()
 	
 	tDesc.eType = QUESTIN;
 	tDesc.fExp = 20.3f;
-	tDesc.iNum = 3;//몬스터 수만큼? 
+	tDesc.iNum = 5;//몬스터 수만큼? 
 	tDesc.iMoney = 100000;
 	tDesc.isMain = true;
 	tDesc.strQuestTitle = TEXT("그로아를 지켜라");

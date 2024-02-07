@@ -46,6 +46,8 @@ HRESULT CInven::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+	/*
+	
 	wstring strItem = TEXT("체력 포션");
 	CUI_Manager::Get_Instance()->Set_Item(strItem, 80);
 	
@@ -66,13 +68,16 @@ HRESULT CInven::Init(void* pArg)
 	
 	strItem = TEXT("신화옷");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);
-	
+	*/
+
+	wstring strItem = TEXT("그냥옷");
+	ITEM eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
+	m_pWearableSlots[W_CHEST]->Set_WearableItem(eItem);
+
+
 	strItem = TEXT("그냥활");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);
 
-	strItem = TEXT("그냥옷");
-	ITEM eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
-	m_pWearableSlots[W_CHEST]->Set_WearableItem(eItem);
 
 	strItem = TEXT("그냥검");
 	eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);

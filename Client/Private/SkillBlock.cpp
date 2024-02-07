@@ -92,13 +92,14 @@ HRESULT CSkillBlock::Render()
 	return S_OK;
 }
 
-_bool CSkillBlock::Use_Skill(WEAPON_TYPE eType, SKILLSLOT eSlot, _int* iIndex)
+_bool CSkillBlock::Use_Skill(WEAPON_TYPE eType, SKILLSLOT eSlot, _int* iIndex, _int* iMp)
 {
 
 	if (m_pSlots[eType][eSlot]->Use_Skill())
 	{
 		//¸¶³ª »©°í
 		*iIndex = m_pSlots[m_eCurType][eSlot]->Get_SkillInfo().iSkillIdx;
+		*iMp = m_pSlots[m_eCurType][eSlot]->Get_SkillInfo().iMp;
 		return true;
 	}
 	*iIndex = -1;

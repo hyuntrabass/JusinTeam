@@ -453,14 +453,14 @@ HRESULT CUI_Manager::Unlock_Skill(_uint iIndex)
 	return S_OK;
 }
 
-_bool CUI_Manager::Use_Skill(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot, _int* iIndex)
+_bool CUI_Manager::Use_Skill(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot, _int* iIndex, _int* iMp)
 {
 	if (m_pSkillBlock == nullptr)
 	{
 		return false;
 	}
 	
-	return m_pSkillBlock->Use_Skill(eType, eSlot, iIndex);
+	return m_pSkillBlock->Use_Skill(eType, eSlot, iIndex, iMp);
 }
 
 CGameObject* CUI_Manager::Get_InvenFrame()

@@ -38,7 +38,7 @@ private:
 	LEVEL_ID		m_eLevel{};
 
 	_bool			m_bEffect{false};
-	_uint			m_iCurHp{};
+	_int			m_iCurHp{};
 	_uint			m_iMaxHp{};
 	_uint			m_iTargetHp{};
 
@@ -47,7 +47,7 @@ private:
 
 	CGameObject*	m_pIcon{ nullptr };
 public:
-	void Set_HP(const _uint iDamage) { m_iTargetHp = m_iCurHp - iDamage; }
+	void Set_HP(const _int iDamage) { m_iTargetHp = m_iCurHp - iDamage; }
 
 private:
 	HRESULT Add_Components();

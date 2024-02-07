@@ -112,6 +112,10 @@ void CShopWindow::Tick(_float fTimeDelta)
 			CUI_Manager::Get_Instance()->Set_Coin(iCoin);
 			ITEM eItem = m_pShopDesc->Get_ItemDesc();
 			CUI_Manager::Get_Instance()->Set_Item(eItem.strName, m_iCurItemNum);
+			if (eItem.strName == TEXT("체력 포션") && CEvent_Manager::Get_Instance()->Find_Quest(TEXT("체력포션 구매")))
+			{
+				CEvent_Manager::Get_Instance()->Set_QuestTrigger(CEvent_Manager::POTION);
+			}
 			m_isDead = true;
 
 			return;

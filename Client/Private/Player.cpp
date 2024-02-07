@@ -1135,9 +1135,12 @@ void CPlayer::Move(_float fTimeDelta)
 		if (isPress && m_fSkiilTimer > 1.2f)
 		{
 			_int iSkillNum = 0;
-			if (CUI_Manager::Get_Instance()->Use_Skill(m_Current_Weapon, eSlotIdx, &iSkillNum))
+			_int iMp = 0;
+			if (CUI_Manager::Get_Instance()->Use_Skill(m_Current_Weapon, eSlotIdx, &iSkillNum, &iMp))
 			{
 				Ready_Skill((Skill_Type)iSkillNum);
+				m_Status.Current_Mp -= iMp;
+				CUI_Manager::Get_Instance()->Set_Mp(m_Status.Current_Mp, m_Status.Max_Mp);
 				return;
 			}
 
@@ -1739,7 +1742,9 @@ void CPlayer::Skill1_Attack()
 				_vec4 vMonPos = _vec4(pMonCollider->Get_ColliderPos(), 1.f);
 				vMonPos.y = m_pTransformCom->Get_State(State::Pos).y;
 				m_pTransformCom->LookAt(vMonPos);
+				CUI_Manager::Get_Instance()->Set_TargetPos(vMonPos);
 			}
+			//CUI_Manager::Get_Instance()->Set_TargetPos(vMonPos);
 		}
 
 		m_Animation.iAnimIndex = m_BowSkill[0];
@@ -1776,7 +1781,8 @@ void CPlayer::Skill2_Attack()
 			{
 				_vec4 vMonPos = _vec4(pMonCollider->Get_ColliderPos(), 1.f);
 				vMonPos.y = m_pTransformCom->Get_State(State::Pos).y;
-				m_pTransformCom->LookAt(vMonPos);
+				m_pTransformCom->LookAt(vMonPos);				
+				CUI_Manager::Get_Instance()->Set_TargetPos(vMonPos);
 			}
 		}
 
@@ -1815,6 +1821,7 @@ void CPlayer::Skill3_Attack()
 				_vec4 vMonPos = _vec4(pMonCollider->Get_ColliderPos(), 1.f);
 				vMonPos.y = m_pTransformCom->Get_State(State::Pos).y;
 				m_pTransformCom->LookAt(vMonPos);
+				CUI_Manager::Get_Instance()->Set_TargetPos(vMonPos);
 			}
 		}
 
@@ -1855,6 +1862,7 @@ void CPlayer::Skill4_Attack()
 				_vec4 vMonPos = _vec4(pMonCollider->Get_ColliderPos(), 1.f);
 				vMonPos.y = m_pTransformCom->Get_State(State::Pos).y;
 				m_pTransformCom->LookAt(vMonPos);
+				CUI_Manager::Get_Instance()->Set_TargetPos(vMonPos);
 			}
 		}
 
@@ -3271,6 +3279,14 @@ void CPlayer::Init_State()
 		m_ePrevState = m_eState;
 	}
 
+	if (m_bLockOn)
+	{
+		CUI_Manager::Get_Instance()->Set_isTargeting(true);
+	}
+	else
+	{
+		CUI_Manager::Get_Instance()->Set_isTargeting(false);
+	}
 }
 
 void CPlayer::Tick_State(_float fTimeDelta)
@@ -3848,7 +3864,6 @@ void CPlayer::Free()
 {
 	__super::Free();
 
-	CEvent_Manager::Destroy_Instance();
 
 
 	for (int i = 0; i < AT_End; i++)

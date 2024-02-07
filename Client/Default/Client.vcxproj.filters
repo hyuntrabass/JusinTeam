@@ -196,8 +196,20 @@
     <Filter Include="02.GameObjects\04.Monster\05. Trilobite">
       <UniqueIdentifier>{8897b6e8-1e7f-4027-bc76-b8ca8403c326}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\04.Monster\06. Void">
+      <UniqueIdentifier>{3fa7b5a0-0b1a-44e8-9f3a-a8e819b027f3}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObjects\03.Player\Riding">
       <UniqueIdentifier>{073d72ed-ee94-48c7-98cd-dce26867b879}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Monster\06. Void\Void09">
+      <UniqueIdentifier>{708cdd65-d615-4fef-b8a3-5eb67028c4ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Monster\06. Void\Void20">
+      <UniqueIdentifier>{003eae17-dbfe-4be7-895f-7f1fd99a9dd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Monster\06. Void\Void23">
+      <UniqueIdentifier>{dd18462f-f63e-461d-bb94-cf13ddd980dc}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\04.Monster\07. Imp">
       <UniqueIdentifier>{29051842-1671-42b2-a983-c0712f3f2e64}</UniqueIdentifier>
@@ -391,17 +403,8 @@
     <Filter Include="02.GameObjects\06.Sky\Hell">
       <UniqueIdentifier>{33adb1d1-a5eb-44d1-8260-3a45e1e43819}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\04.Monster\06. Void">
-      <UniqueIdentifier>{3fa7b5a0-0b1a-44e8-9f3a-a8e819b027f3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\04.Monster\06. Void\Void09">
-      <UniqueIdentifier>{708cdd65-d615-4fef-b8a3-5eb67028c4ea}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\04.Monster\06. Void\Void20">
-      <UniqueIdentifier>{003eae17-dbfe-4be7-895f-7f1fd99a9dd2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\04.Monster\06. Void\Void23">
-      <UniqueIdentifier>{dd18462f-f63e-461d-bb94-cf13ddd980dc}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\00.UI\GameUI\UIEffect\Target">
+      <UniqueIdentifier>{6ebcc380-0108-4b70-8ee2-43a716264acd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -810,6 +813,9 @@
     <ClInclude Include="..\public\Hell.h">
       <Filter>02.GameObjects\06.Sky\Hell</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Targeted.h">
+      <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Target</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1211,6 +1217,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Hell.cpp">
       <Filter>02.GameObjects\06.Sky\Hell</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Targeted.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Target</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

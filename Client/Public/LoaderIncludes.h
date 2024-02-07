@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Targeted.h"
 #include "HPBoss.h"
 #include "HitEffect.h"
 #include "Skill.h"

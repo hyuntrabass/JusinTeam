@@ -1,5 +1,6 @@
 #include "Rabbit.h"
 #include "UI_Manager.h"
+#include "Event_Manager.h"
 
 const _float CRabbit::m_fChaseRange = 5.f;
 const _float CRabbit::m_fAttackRange = 2.f;
@@ -514,5 +515,6 @@ CGameObject* CRabbit::Clone(void* pArg)
 void CRabbit::Free()
 {
 	__super::Free();
+	CEvent_Manager::Get_Instance()->Update_Quest(TEXT("로스크바의 부탁"));
 
 }

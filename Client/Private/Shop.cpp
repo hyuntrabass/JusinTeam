@@ -7,6 +7,7 @@
 #include "InvenFrame.h"
 #include "ShopDesc.h"
 #include "ShopWindow.h"
+#include "Event_Manager.h"
 CShop::CShop(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
@@ -83,6 +84,10 @@ void CShop::Tick(_float fTimeDelta)
 				return;
 			}
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
+			if (!m_bQuestTrigger && CEvent_Manager::Get_Instance()->Get_QuestTrigger(CEvent_Manager::POTION))
+			{
+				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("체력포션 구매"));
+			}
 			m_isActive = false;
 		}
 	}
