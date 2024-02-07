@@ -256,6 +256,7 @@ namespace Client
 		MonAtt_Hit,
 		MonAtt_KnockDown,
 		MonAtt_Stun,
+		MonAtt_Poison,
 		Parrying_Succescc,
 		MonAtt_End
 	};

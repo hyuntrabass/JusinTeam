@@ -49,7 +49,7 @@ HRESULT CGroar_Boss::Init(void* pArg)
 	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 1.5f;
 
-	m_iHP = 100000;
+	m_iHP = 10000;
 
 	if (FAILED(Init_Dialog()))
 	{
@@ -520,13 +520,27 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 				}
 			}
 
+			if (m_bAttack_Selected[ATTACK_THROW] == true && m_bAttack_Selected[ATTACK_XBEAM] == false)
+			{
+				m_eBossCurState = BOSS_STATE_XBEAM;
+
+				if (m_iThrowAttackCombo > 0)
+				{
+					eTempBossCurState = BOSS_STATE_THROW_ATTACK;
+				}
+
+				m_bSelectAttackPattern = true;
+
+				break;
+			}
+
 			GROAR_ATTACK eAttackRandom = ATTACK_END;
-			eAttackRandom = static_cast<GROAR_ATTACK>(rand() % ATTACK_END);
+			eAttackRandom = static_cast<GROAR_ATTACK>(rand() % ATTACK_XBEAM);
 
 			// ·£´ý ¹æÁö¿ë
 			while (m_bAttack_Selected[eAttackRandom] == true)
 			{
-				eAttackRandom = static_cast<GROAR_ATTACK>(rand() % ATTACK_END);
+				eAttackRandom = static_cast<GROAR_ATTACK>(rand() % ATTACK_XBEAM);
 			}
 
 			switch (eAttackRandom)
