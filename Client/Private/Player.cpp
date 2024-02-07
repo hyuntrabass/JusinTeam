@@ -388,9 +388,6 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		CEvent_Manager::Get_Instance()->Init();
 
 
-
-		Change_Weapon(WP_SWORD, SWORD0);
-
 	}
 
 	
