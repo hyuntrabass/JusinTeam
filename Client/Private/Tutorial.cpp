@@ -175,7 +175,7 @@ HRESULT CTutorial::Add_Parts()
 		break;
 	case T_OPENSKILL:
 		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BloomCircle");
-		Button.vPosition = _vec2(1105.f, 42.f);
+		Button.vPosition = _vec2(1100.f, 42.f);
 		Button.vSize = _vec2(90.f, 90.f);
 		break;
 	case T_EQUIPSKILL:
