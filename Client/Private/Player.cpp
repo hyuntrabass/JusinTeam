@@ -2568,7 +2568,11 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			if (!m_bAttacked)
 			{
 				Check_Att_Collider(AT_Sword_Skill4);
-				m_bAttacked = true;
+				if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Skill4]))
+				{		
+					m_bAttacked = true;		
+				}
+			
 			}
 
 			if (!m_pGameInstance->Get_AimMode())
@@ -2590,7 +2594,10 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			if (!m_bAttacked)
 			{
 				Check_Att_Collider(AT_Sword_Skill4);
-				m_bAttacked = true;
+				if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Skill4]))
+				{
+					m_bAttacked = true;
+				}
 			}
 
 			m_pGameInstance->Set_AimMode(true, _vec3(1.f, 2.f, 1.f));
@@ -2617,7 +2624,10 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			if (!m_bAttacked)
 			{
 				Check_Att_Collider(AT_Sword_Skill4);
-				m_bAttacked = true;
+				if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Skill4]))
+				{
+					m_bAttacked = true;
+				}
 			}
 
 			m_pGameInstance->Set_AimMode(false);
@@ -2635,7 +2645,10 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			if (!m_bAttacked)
 			{
 				Check_Att_Collider(AT_Sword_Skill4);
-				m_bAttacked = true;
+				if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Skill4]))
+				{
+					m_bAttacked = true;
+				}
 			}
 
 			m_pGameInstance->Set_ShakeCam(true);
@@ -2649,7 +2662,6 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			_vec4 vLerpLook{};
 			vLerpLook = XMVectorLerp(m_pCameraTransform->Get_State(State::Look), m_SaveCamLook, 0.2f);
 			m_pCameraTransform->LookAt_Dir(vLerpLook);
-
 		}
 		else
 		{

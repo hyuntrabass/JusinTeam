@@ -517,21 +517,7 @@ CGameObject* CVoid01::Clone(void* pArg)
 
 void CVoid01::Free()
 {
-	if(m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY)
-	{
-		HWND hVideo = MCIWndCreate(g_hWnd, NULL, WS_CHILD | WS_VISIBLE | MCIWNDF_NOPLAYBAR
-			, L"../Bin/Resources/Video/Tutorial1.wmv");
-
-		MCIWndSetVolume(g_hWnd, 1.f);
-
-
-		MoveWindow(hVideo, 0, 0, g_iWinSizeX, g_iWinSizeY, FALSE);
-
-		MCIWndPlay(hVideo);
-
-		m_pGameInstance->Video_Start(11.f, true);
-	}
-
+	
 	
 	__super::Free();
 
