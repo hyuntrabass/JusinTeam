@@ -384,7 +384,7 @@ private:
 	_bool m_ReadyArrow{};
 	_vec4 m_vArrowRainPos{};
 	_bool m_bArrowRain_Start{};
-
+	_bool m_bFirstVillage{};
 	_bool m_bIsMount{};
 	_mat m_Riding_Mat{};
 	_uint m_iMiningCount{};

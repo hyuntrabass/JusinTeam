@@ -137,25 +137,25 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 	*/
-	/*m_DC = GetDC(g_hWnd);
+	/*HDC DC = GetDC(g_hWnd);
 
-	m_BackDC = CreateCompatibleDC(m_DC);
+	HDC BackDC = CreateCompatibleDC(DC);
 
-	m_hBackBit = CreateCompatibleBitmap(m_DC, g_iWinSizeX, g_iWinSizeY);
+	HBITMAP hBackBit = CreateCompatibleBitmap(DC, g_iWinSizeX, g_iWinSizeY);*/
 
-	m_hOldBackBit = (HBITMAP)SelectObject(m_BackDC, m_hBackBit);
+	//(HBITMAP)SelectObject(BackDC, hBackBit);
 
-	m_hVideo = MCIWndCreate(g_hWnd, NULL, WS_CHILD | WS_VISIBLE | MCIWNDF_NOPLAYBAR
+	/*HWND hVideo = MCIWndCreate(g_hWnd, NULL, WS_CHILD | WS_VISIBLE | MCIWNDF_NOPLAYBAR
 		, L"../Bin/Resources/Video/Tutorial0.wmv");
 
-	MCIWndSetVolume(g_hWnd, 0.5f);
+	MCIWndSetVolume(g_hWnd, 1.f);
 
 
-	MoveWindow(m_hVideo, 0, 0, g_iWinSizeX, g_iWinSizeY, FALSE);
+	MoveWindow(hVideo, 0, 0, g_iWinSizeX, g_iWinSizeY, FALSE);
 
-	MCIWndPlay(m_hVideo);
+	MCIWndPlay(hVideo);
 
-	m_pGameInstance->Video_Start(40.f);*/
+	m_pGameInstance->Video_Start(35.f);*/
 	
 
 	return S_OK;
@@ -269,7 +269,15 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		return;
 	}
 
-	//m_pGameInstance->PhysXTick(fTimeDelta);
+	if (m_pGameInstance->Ready_NextLevel())
+	{
+		m_pGameInstance->Set_NextLevel(false);
+		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_VILLAGE))))
+		{
+			return;
+		}
+		return;
+	}
 
 	if (m_pGameInstance->Key_Down(DIK_U))
 	{

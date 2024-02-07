@@ -34,7 +34,7 @@ HRESULT CPlayer::Init(void* pArg)
 	m_pTransformCom->Set_Scale(_vec3(4.f));
 	Place_PartModels();
 	m_pTransformCom->Set_Speed(1);
-	m_pCameraTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
+	m_pCameraTransform = GET_TRANSFORM("Layer_Camera", LEVEL_STATIC);
 	Safe_AddRef(m_pCameraTransform);
 	m_SwordSkill[0] = Anim_RA_9100_Ambush; // x자로 공격하기
 	m_SwordSkill[1] = Anim_RA_9060_SealChain; // 앞으로 점프하면서 때리기
@@ -92,7 +92,9 @@ HRESULT CPlayer::Init(void* pArg)
 	//SurfaceDesc.vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
 	//SurfaceDesc.strMaskTextureTag = L"FX_G_Note_MusicSheet001_Tex";
 	//m_pTest_Trail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &SurfaceDesc);
-
+	m_ShaderIndex = VTFPass_Dissolve;
+	m_HairShaderIndex = VTFPass_LerpDissolve;
+	
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER);
 	m_bReadyMove = true;
 	return S_OK;
@@ -110,7 +112,11 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		return;
 	}
-
+	if (!m_bFirstVillage && m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_VILLAGE)
+	{
+		m_eState = Idle;
+		m_bFirstVillage = true;
+	}
 	if (m_bHide && m_fDissolveRatio < 1.f)
 	{
 		m_fDissolveRatio += fTimeDelta * 5.f;
@@ -976,8 +982,11 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 			m_Animation.fStartAnimPos = 18.f;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
-			m_bHitted = true;
-			m_vRimColor = _vec4(1.f, 1.f, 1.f, 1.f);
+			if(!m_bPoison)
+			{
+				m_bHitted = true;
+				m_vRimColor = _vec4(1.f, 1.f, 1.f, 1.f);
+			}
 		}
 		break;
 		case MonAtt_KnockDown:
@@ -1720,7 +1729,8 @@ void CPlayer::Common_Attack()
 	_vec4 vCamLook = m_pGameInstance->Get_CameraLook();
 	vCamLook.y = 0.f;
 	m_pTransformCom->LookAt_Dir(vCamLook);
-
+	_mat offset = _mat::CreateTranslation(_vec3(0.f, 1.f, 0.f));
+	m_pAttCollider[AT_Bow_Common]->Update(offset * m_pTransformCom->Get_World_Matrix());
 	if (m_Current_Weapon == WP_SWORD)
 	{
 	
@@ -1818,6 +1828,8 @@ void CPlayer::Skill1_Attack()
 	_vec4 vCamLook = m_pGameInstance->Get_CameraLook();
 	vCamLook.y = 0.f;
 	m_pTransformCom->LookAt_Dir(vCamLook);
+	_mat offset =_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f));
+	m_pAttCollider[AT_Bow_Common]->Update(offset * m_pTransformCom->Get_World_Matrix());
 	if (m_Current_Weapon == WP_SWORD)
 	{
 		m_pTransformCom->Set_Speed(6.f);
@@ -1855,7 +1867,8 @@ void CPlayer::Skill2_Attack()
 	_vec4 vCamLook = m_pGameInstance->Get_CameraLook();
 	vCamLook.y = 0.f;
 	m_pTransformCom->LookAt_Dir(vCamLook);
-
+	_mat offset = _mat::CreateTranslation(_vec3(0.f, 1.f, 0.f));
+	m_pAttCollider[AT_Bow_Common]->Update(offset * m_pTransformCom->Get_World_Matrix());
 	if (m_Current_Weapon == WP_SWORD)
 	{
 		m_Animation.iAnimIndex = m_SwordSkill[1];
@@ -1893,7 +1906,8 @@ void CPlayer::Skill3_Attack()
 	_vec4 vCamLook = m_pGameInstance->Get_CameraLook();
 	vCamLook.y = 0.f;
 	m_pTransformCom->LookAt_Dir(vCamLook);
-
+	_mat offset = _mat::CreateTranslation(_vec3(0.f, 1.f, 0.f));
+	m_pAttCollider[AT_Bow_Common]->Update(offset * m_pTransformCom->Get_World_Matrix());
 	if (m_Current_Weapon == WP_SWORD)
 	{
 		m_Animation.iAnimIndex = m_SwordSkill[2];
@@ -1943,7 +1957,8 @@ void CPlayer::Skill4_Attack()
 		_vec4 vCamLook = m_pGameInstance->Get_CameraLook();
 		vCamLook.y = 0.f;
 		m_pTransformCom->LookAt_Dir(vCamLook);
-
+		_mat offset = _mat::CreateTranslation(_vec3(0.f, 1.f, 0.f));
+		m_pAttCollider[AT_Bow_Common]->Update(offset * m_pTransformCom->Get_World_Matrix());
 		if (m_bLockOn)
 		{
 

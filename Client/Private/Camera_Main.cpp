@@ -68,7 +68,8 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		{
 			if (m_pPlayerTransform == nullptr)
 			{
-				m_pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+				m_pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+					
 				if (not m_pPlayerTransform)
 				{
 					return;
