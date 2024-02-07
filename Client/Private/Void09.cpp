@@ -103,11 +103,6 @@ HRESULT CVoid09::Init(void* pArg)
 
 void CVoid09::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_9))
-	{
-		Set_Damage(0, AT_Sword_Common);
-	}
-
 	__super::Tick(fTimeDelta);
 
 	Init_State(fTimeDelta);
@@ -154,6 +149,15 @@ void CVoid09::Set_Damage(_int iDamage, _uint iDamageType)
 	if (m_bHit == false)
 	{
 		m_iDamageAcc += iDamage;
+	}
+
+	CHitEffect::HITEFFECT_DESC Desc{};
+	Desc.iDamage = iDamage;
+	Desc.pParentTransform = m_pTransformCom;
+	Desc.vTextPosition = _vec2(0.f, 1.5f);
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
+	{
+		return;
 	}
 
 	m_fIdleTime = 0.f;

@@ -29,6 +29,15 @@ public:
 public:
 	_bool Is_Coll_BossTrigger() { return m_isCollBossTrigger; }
 
+public:
+	void Set_StartSuicide() { m_bStartSuicide = true; }
+	void Set_AfterSuicide() { m_bAfterSuicide = true; }
+	void Set_BossStart() { m_bBossStart = true; }
+
+	//_bool Get_StartSuicide() { return m_bStartSuicide; }
+	//_bool Get_AfterSuicide() { return m_bAfterSuicide; }
+	//_bool Get_BossStart() { return m_bBossStart; }
+
 private:
 	CGameInstance* m_pGameInstance = { nullptr };
 
@@ -40,6 +49,11 @@ private:
 
 private:
 	_bool m_isCollBossTrigger = { false };
+
+private: // Cutscene
+	_bool m_bStartSuicide = { false };
+	_bool m_bAfterSuicide = { false };
+	_bool m_bBossStart = { false };
 
 private:
 	vector<class CTrigger*> m_pTrigger{};
