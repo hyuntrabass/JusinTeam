@@ -324,6 +324,28 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     ClipZ[2] = g_ClipZ.w;
     
     
+    vector vLightPos;
+    for (uint i = 0; i < 3; ++i)
+    {
+        float Z = ClipZ[i] * (g_vCamNF.y - g_vCamNF.x) - g_vCamNF.y * g_vCamNF.x / g_vCamNF.y;
+        vLightPos = mul(vWorldPos, g_LightViewMatrix[i]);
+        vLightPos = mul(vLightPos, g_LightProjMatrix[i]);
+        
+        if (fViewZ <= Z)
+        {
+            float fLightDepth = CalcCascadeShadowFactor(i, vLightPos);
+            if (vLightPos.z - 0.001f > fLightDepth)
+            {
+                FinalColor.rgb = FinalColor.rgb * 0.5f;
+            }
+            break;
+        }
+    }
+    
+    float fFogFactor = saturate((g_vFogNF.y - fViewZ) / (g_vFogNF.y - g_vFogNF.x));
+    vector vFogColor = g_vFogColor;
+    vFogColor.a = 1.f;
+    
     if (vWorldPos.y < g_fHellStart)
     {
         //float fHell = (vWorldPos.y + 15.f) / 35.f;
@@ -332,36 +354,7 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
         FinalColor *= vector(fHell, fHell, fHell, 1.f);
         vFogColor *= fHell;
     }
-    //vWorldPos = mul(vWorldPos, g_LightViewMatrix);
-    //vWorldPos = mul(vWorldPos, g_LightProjMatrix);
-    
-    //float2 vLightDepthUV;
-    //vLightDepthUV.x = vWorldPos.x / vWorldPos.w * 0.5f + 0.5f;
-    //vLightDepthUV.y = vWorldPos.y / vWorldPos.w * -0.5f + 0.5f;
-    
-    //vector vLightDepthDesc = g_LightDepthTexture.Sample(LinearClampSampler, vLightDepthUV);
-    
-    //float fLightDepth = vLightDepthDesc.x * g_fLightFar;
-    
-    //if (vWorldPos.w - 0.001f > fLightDepth)
-    //{
-    //    FinalColor.xyz = FinalColor.xyz * 0.5f;
-    //}
-    
-    //if(true == TurnOnThunder)
-    //    FinalColor = pow(vShade, 50.f) + vDiffuse * 0.1f;
-    
-    float fFogFactor = saturate((g_vFogNF.y - fViewZ) / (g_vFogNF.y - g_vFogNF.x));
-    vector vFogColor = g_vFogColor;
-    vFogColor.a = 1.f;
-    
-    if (vWorldPos.y < g_fHellStart)
-    {
-        float fHell = (vWorldPos.y + 15.f) / 35.f;
-        FinalColor *= vector(fHell, fHell, fHell, 1.f);
-        vFogColor *= fHell;
-    }
-    
+       
 
     FinalColor = lerp(fFogFactor * FinalColor, vFogColor, (1.f - fFogFactor));
     //FinalColor = fFogFactor * FinalColor + (1.f - fFogFactor) * vFogColor;

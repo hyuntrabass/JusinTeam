@@ -610,6 +610,9 @@ HRESULT CRenderer::Draw_RenderGroup()
 		return E_FAIL;
 	}
 
+	if (FAILED(Clear_Instance()))
+		return E_FAIL;
+
 	//if (FAILED(Render_Refraction()))
 	//{
 	//	MSG_BOX("Failed to Render : Refraction");
@@ -628,6 +631,7 @@ HRESULT CRenderer::Draw_RenderGroup()
 
 	if (FAILED(Clear_Instance()))
 		return E_FAIL;
+
 
 	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_GameObjects"))))
 	{
@@ -874,6 +878,49 @@ HRESULT CRenderer::Render_Shadow()
 	}
 
 	m_RenderObjects[RG_Shadow].clear();
+
+	map<_int, vector<CGameObject*>> InstanceData;
+
+	for (auto& pGameObject : m_RenderObjects[RG_NonBlend_Instance])
+	{
+		if (pGameObject->Find_Component(L"Com_Model") == nullptr)
+			continue;
+
+		const _int iInstanceID = static_cast<CModel*>(pGameObject->Find_Component(L"Com_Model"))->Get_InstanceID();
+		InstanceData[iInstanceID].push_back(pGameObject);
+	}
+
+	for (auto& Pair : InstanceData)
+	{
+		vector<CGameObject*>& vInstances = Pair.second;
+		const _uint instanceId = Pair.first;
+		CGameObject*& pHead = vInstances[0];
+
+		for (_uint i = 0; i < vInstances.size(); i++)
+		{
+			CGameObject*& pGameObject = vInstances[i];
+			Instance_Data MeshInstancing;
+			CTransform* pTransform = static_cast<CTransform*>(pGameObject->Find_Component(L"Com_Transform"));
+			//MeshInstancing.vRight = pTransform->Get_State(State::Right);
+			//MeshInstancing.vUp = pTransform->Get_State(State::Up);
+			//MeshInstancing.vLook = pTransform->Get_State(State::Look);
+			//MeshInstancing.vPos = pTransform->Get_State(State::Pos);
+			MeshInstancing.mMatrix = pTransform->Get_World_Matrix();
+			MeshInstancing.m_iID = pGameObject->Get_ID();
+			Add_Instance(instanceId, MeshInstancing);
+		}
+
+		for (auto& iter : vInstances)
+		{
+			iter->InitRendered();
+		}
+		CVIBuffer_Mesh_Instance*& pBuffer = m_InstanceBuffers[instanceId];
+		pHead->Render_Instance();
+		CModel* pModel = static_cast<CModel*>(pHead->Find_Component(L"Com_Model"));
+		CShader* pShader = static_cast<CShader*>(pHead->Find_Component(L"Com_Shader"));
+		pModel->Render_Shadow_Instancing(pBuffer, pShader);
+	}
+
 
 	if (FAILED(m_pShadowMap->End_ShadowMap()))
 		return E_FAIL;

@@ -190,6 +190,66 @@ VS_OUT VS_Main_OutLine(VS_IN Input)
     return Output;
 }
 
+struct VS_SHADOW_OUT
+{
+    vector vPos : Position; // == float4
+    float2 vTex : Texcoord0;
+};
+
+VS_SHADOW_OUT VS_Shadow(VS_IN Input)
+{
+    VS_SHADOW_OUT Output = (VS_SHADOW_OUT) 0;
+    
+    matrix Bone = Get_BoneMatrix(Input, g_BoneTexture);
+    
+    vector vPos = mul(vector(Input.vPos, 1.f), Bone);
+    
+    Output.vPos = mul(vPos, g_WorldMatrix);
+    Output.vTex = Input.vTex;
+    
+    return Output;
+}
+
+
+struct GS_SHADOW_IN
+{
+    vector vPos : Position; // == float4
+    float2 vTex : Texcoord0;
+};
+
+struct GS_SHADOW_OUT
+{
+    vector vPos : SV_Position;
+    float2 vTex : Texcoord0;
+    uint RTIndex : SV_RenderTargetArrayIndex;
+};
+
+matrix g_CascadeView[3];
+matrix g_CascadeProj[3];
+
+[maxvertexcount(9)]
+void GS_Shadow(triangle GS_SHADOW_IN Input[3], inout TriangleStream<GS_SHADOW_OUT> Output)
+{
+    
+    for (uint Face = 0; Face < 3; ++Face)
+    {
+        GS_SHADOW_OUT Elements = (GS_SHADOW_OUT) 0;
+        
+        Elements.RTIndex = Face;
+        matrix matVP = mul(g_CascadeView[Face], g_CascadeProj[Face]);
+        
+        for (uint i = 0; i < 3; ++i)
+        {
+            Elements.vPos = mul(Input[i].vPos, matVP);
+
+            Elements.vTex = Input[i].vTex;
+            Output.Append(Elements);
+        }
+        Output.RestartStrip();
+    }
+}
+
+
 struct PS_IN
 {
     vector vPos : SV_Position; // == float4
@@ -511,7 +571,22 @@ PS_OUT PS_LerpBlur(PS_IN Input)
     return Output;
 }
 
-technique11 DefaultTechniqueShader_VTF
+struct PS_SHADOW_IN
+{
+    vector vPos : SV_Position;
+    float2 vTex : Texcoord0;
+};
+
+void PS_Shadow(PS_SHADOW_IN Input)
+{
+    vector vDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
+    
+    if (0.3f > vDiffuse.a)
+        discard;
+
+}
+
+technique11 DefaultTechnique_Shader_RTVTF
 {
     pass Default // 0
     {
@@ -591,6 +666,32 @@ technique11 DefaultTechniqueShader_VTF
         PixelShader = compile ps_5_0 PS_Main_Rim();
     }
 
+    pass Shadow
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Shadow();
+        GeometryShader = compile gs_5_0 GS_Shadow();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Shadow();
+    }
+
+    //pass Lerp_RimLighting // 6
+    //{
+    //    SetRasterizerState(RS_None);
+    //    SetDepthStencilState(DSS_Default, 0);
+    //    SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+    //    VertexShader = compile vs_5_0 VS_Main();
+    //    GeometryShader = NULL;
+    //    HullShader = NULL;
+    //    DomainShader = NULL;
+    //    PixelShader = compile ps_5_0 PS_Lerp_Rim();
+    //}
+
     //pass Blur_Rim
     //{
     //    SetRasterizerState(RS_None);
@@ -604,16 +705,4 @@ technique11 DefaultTechniqueShader_VTF
     //    PixelShader = compile ps_5_0 PS_Blur_Rim();
     //}
 
-    //pass Lerp_RimLighting
-    //{
-    //    SetRasterizerState(RS_None);
-    //    SetDepthStencilState(DSS_Default, 0);
-    //    SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-
-    //    VertexShader = compile vs_5_0 VS_Main();
-    //    GeometryShader = NULL;
-    //    HullShader = NULL;
-    //    DomainShader = NULL;
-    //    PixelShader = compile ps_5_0 PS_Lerp_Rim();
-    //}
 };

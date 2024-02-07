@@ -666,7 +666,7 @@ PS_OUT PS_Main_DiffEffect_Alpha(PS_IN Input)
     return Output;
 }
 
-technique11 DefaultTechniqueShader_VtxNorTex
+technique11 DefaultTechnique_Shader_StatMesh
 {
     pass Default
     {
@@ -840,7 +840,7 @@ technique11 DefaultTechniqueShader_VtxNorTex
     pass Shadow
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_None, 0);
+        SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Shadow();

@@ -307,11 +307,13 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+	virtual HRESULT Render_Shadow() override;
 
 public:
 	HRESULT Add_Info();
 	HRESULT Place_PartModels();
 	HRESULT Render_Parts(PART_TYPE Parts, _uint Index);
+	HRESULT Render_Shadow_Parts(PART_TYPE Parts, _uint Index);
 
 public:
 	void Move(_float fTimeDelta);

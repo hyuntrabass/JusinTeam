@@ -355,7 +355,8 @@ PS_OUT_DEFERRED PS_Main_Rim(PS_IN Input)
     return Output;
 }
 
-technique11 DefaultTechniqueShader_VtxNorTex
+
+technique11 DefaultTechnique_Shader_AnimMesh
 {
     pass Default
     {

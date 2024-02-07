@@ -218,7 +218,7 @@ HRESULT CLevel_Select::Ready_Camera()
 	CamDesc.fFovY = XMConvertToRadians(60.f);
 	CamDesc.fAspect = static_cast<_float>(g_iWinSizeX) / g_iWinSizeY;
 	CamDesc.fNear = 0.1f;
-	CamDesc.fFar = 200.f;
+	CamDesc.fFar = 350.f;
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, strLayerTag, TEXT("Prototype_GameObject_Camera_Main"), &CamDesc)))
 	{
