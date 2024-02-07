@@ -724,7 +724,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 				if (!m_bAttacked3)
 				{
 					_uint iDamage = 80 + rand() % 20;
-					m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Stun);
+					m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_KnockDown);
 					m_bAttacked3 = true;
 				}
 			}
@@ -814,12 +814,12 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_fRageTime += fTimeDelta;
 
-			if (m_fRageTime >= 0.5f)
+			if (m_fRageTime >= 0.25f)
 			{
 				if (fDistance <= 7.5f)
 				{
 					_uint iDamage = 20 + rand() % 10;
-					m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);
+					m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Stun);
 				}
 
 				m_fRageTime = 0.f;
