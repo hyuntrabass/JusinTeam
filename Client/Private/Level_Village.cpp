@@ -380,7 +380,7 @@ HRESULT CLevel_Village::In_To_Dungeon()
 	const TCHAR* pGetPath = TEXT("../Bin/Data/DungeonPos.dat");
 
 	std::ifstream inFile(pGetPath, std::ios::binary);
-
+	
 	if (!inFile.is_open())
 	{
 		MessageBox(g_hWnd, L"../Bin/Data/DungeonPos.dat 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
@@ -397,7 +397,7 @@ CamPos Z :2084.48*/
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 	//pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 4.f, 0.f));
 	pPlayerTransform->Set_Position(_vec3(2169.f, -26.f, 2084.f));
-	pPlayerTransform->LookAt_Dir(_vec4(-0.0531848f, 0.0598536346f, 0.996788f, 1.f));
+	pPlayerTransform->LookAt_Dir(_vec4(-0.0531848f, 0.0598536346f, 0.996788f, 0.f));
 
 	m_pGameInstance->Set_HellHeight(-30.f);
 
@@ -498,18 +498,18 @@ HRESULT CLevel_Village::Ready_Village_Monster()
 		}
 	}
 
-	for (size_t i = 0; i < 2; i++)
-	{
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void09"), TEXT("Prototype_GameObject_Void09"))))
-		{
-			return E_FAIL;
-		}
-	}
+	//for (size_t i = 0; i < 2; i++)
+	//{
+	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void09"), TEXT("Prototype_GameObject_Void09"))))
+	//	{
+	//		return E_FAIL;
+	//	}
+	//}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	return S_OK;
 }

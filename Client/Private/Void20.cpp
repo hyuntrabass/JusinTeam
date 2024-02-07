@@ -32,7 +32,7 @@ HRESULT CVoid20::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(__super::Compute_PlayerPos()));
+	//m_pTransformCom->Set_State(State::Pos, _vec4(__super::Compute_PlayerPos()));
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
@@ -63,7 +63,7 @@ HRESULT CVoid20::Init(void* pArg)
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
 
-	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
+	m_MonsterHpBarPos = _vec3(0.f, 3.f, 0.f);
 
 	//if (pArg)
 	{
@@ -308,12 +308,31 @@ void CVoid20::Tick_State(_float fTimeDelta)
 		break;
 
 	case Client::CVoid20::STATE_WALK:
-		m_pTransformCom->Go_Straight(fTimeDelta);
+	{
+		_float fDist = 1.2f;
+		PxRaycastBuffer Buffer{};
+
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(),
+			m_pTransformCom->Get_State(State::Look).Get_Normalized(),
+			fDist, Buffer))
+		{
+			m_pTransformCom->LookAt_Dir(PxVec3ToVector(Buffer.block.normal));
+		}
+
+		_float fHeight = 3.f;
+		PxRaycastBuffer Buffer2{};
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos() + 0.2f * m_pTransformCom->Get_State(State::Look).Get_Normalized(),
+			_vec4(0.f, -1.f, 0.f, 0.f),
+			fHeight, Buffer2))
+		{
+			m_pTransformCom->Go_Straight(fTimeDelta);
+		}
 
 		if (m_pModelCom->IsAnimationFinished(WALK))
 		{
 			m_eCurState = STATE_IDLE;
 		}
+	}
 
 		break;
 
