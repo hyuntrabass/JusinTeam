@@ -868,7 +868,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 	}
 	CUI_Manager::Get_Instance()->Set_Hp(m_Status.Current_Hp, m_Status.Max_Hp);
 
-	if (m_Status.Current_Hp < 0)
+	if (m_Status.Current_Hp <= 0)
 	{
 		m_Status.Current_Hp = 0;
 		CUI_Manager::Get_Instance()->Set_Hp(m_Status.Current_Hp, m_Status.Max_Hp);
@@ -1478,7 +1478,7 @@ void CPlayer::Move(_float fTimeDelta)
 
 	}
 
-	if (!m_bIsClimb or m_eState == Jump_Start)
+	if (!m_bIsClimb)
 	{
 		m_pTransformCom->Gravity(fTimeDelta);
 	}

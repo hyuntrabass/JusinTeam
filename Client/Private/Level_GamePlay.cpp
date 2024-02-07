@@ -137,25 +137,25 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 	*/
-	//m_DC = GetDC(g_hWnd);
+	/*m_DC = GetDC(g_hWnd);
 
-	//m_BackDC = CreateCompatibleDC(m_DC);
+	m_BackDC = CreateCompatibleDC(m_DC);
 
-	//m_hBackBit = CreateCompatibleBitmap(m_DC, g_iWinSizeX, g_iWinSizeY);
+	m_hBackBit = CreateCompatibleBitmap(m_DC, g_iWinSizeX, g_iWinSizeY);
 
-	//m_hOldBackBit = (HBITMAP)SelectObject(m_BackDC, m_hBackBit);
+	m_hOldBackBit = (HBITMAP)SelectObject(m_BackDC, m_hBackBit);
 
-	//m_hVideo = MCIWndCreate(g_hWnd, NULL, WS_CHILD | WS_VISIBLE | MCIWNDF_NOPLAYBAR
-	//	, L"../Bin/Resources/Video/Tutorial0.wmv");
+	m_hVideo = MCIWndCreate(g_hWnd, NULL, WS_CHILD | WS_VISIBLE | MCIWNDF_NOPLAYBAR
+		, L"../Bin/Resources/Video/Tutorial0.wmv");
 
-	//MCIWndSetVolume(g_hWnd, 0.5f);
+	MCIWndSetVolume(g_hWnd, 0.5f);
 
 
-	//MoveWindow(m_hVideo, 0, 0, g_iWinSizeX, g_iWinSizeY, FALSE);
+	MoveWindow(m_hVideo, 0, 0, g_iWinSizeX, g_iWinSizeY, FALSE);
 
-	//MCIWndPlay(m_hVideo);
+	MCIWndPlay(m_hVideo);
 
-	//m_pGameInstance->Video_Start(40.f);
+	m_pGameInstance->Video_Start(40.f);*/
 	
 
 	return S_OK;
