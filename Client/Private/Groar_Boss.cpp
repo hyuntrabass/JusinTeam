@@ -468,6 +468,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 		if (m_pScene01ModelCom->IsAnimationFinished(0))
 		{
 			m_eCurState = STATE_SCENE02;
+			CTrigger_Manager::Get_Instance()->Set_AfterSuicide();
 		}
 
 		m_pScene01ModelCom->Set_Animation(m_Animation);
@@ -499,6 +500,14 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 	switch (m_eBossCurState)
 	{
 	case Client::CGroar_Boss::BOSS_STATE_IDLE:
+
+		m_fIdleTime += fTimeDelta;
+
+		if (m_fIdleTime >= 3.f)
+		{
+			m_eBossCurState = BOSS_STATE_CHASE;
+		}
+
 		break;
 
 	case Client::CGroar_Boss::BOSS_STATE_ROAR:
@@ -510,7 +519,8 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK_RAGE))
 		{
-			m_eBossCurState = BOSS_STATE_CHASE;
+			m_eBossCurState = BOSS_STATE_IDLE;
+			CTrigger_Manager::Get_Instance()->Set_BossStart();
 		}
 
 		break;
@@ -940,15 +950,15 @@ HRESULT CGroar_Boss::Init_Dialog()
 	m_vecChatt.push_back(TEXT("제 남편은 어디에 있나요.."));
 	m_vecChatt.push_back(TEXT("신을 저주한다"));
 
-	m_TalkSounds.push_back(TEXT("10044_3_EndTalk"));
-	m_TalkSounds.push_back(TEXT("10043_1_StartTalk_1"));
-	m_TalkSounds.push_back(TEXT("10043_1_StartTalk_2"));
-	m_TalkSounds.push_back(TEXT("10053_3_EndTalk_cut"));
-	m_TalkSounds.push_back(TEXT("10054_1_StartTalk_1_cut"));
-	m_TalkSounds.push_back(TEXT("10056_1_StartTalk_1"));
-	m_TalkSounds.push_back(TEXT("10056_1_StartTalk_2"));
-	m_TalkSounds.push_back(TEXT("10056_2_InformTalk"));
-	m_TalkSounds.push_back(TEXT("10058_2_InformTalk_1"));
+	//m_TalkSounds.push_back(TEXT("10044_3_EndTalk"));
+	//m_TalkSounds.push_back(TEXT("10043_1_StartTalk_1"));
+	//m_TalkSounds.push_back(TEXT("10043_1_StartTalk_2"));
+	//m_TalkSounds.push_back(TEXT("10053_3_EndTalk_cut"));
+	//m_TalkSounds.push_back(TEXT("10054_1_StartTalk_1_cut"));
+	//m_TalkSounds.push_back(TEXT("10056_1_StartTalk_1"));
+	//m_TalkSounds.push_back(TEXT("10056_1_StartTalk_2"));
+	//m_TalkSounds.push_back(TEXT("10056_2_InformTalk"));
+	//m_TalkSounds.push_back(TEXT("10058_2_InformTalk_1"));
 	m_TalkSounds.push_back(TEXT("10058_2_InformTalk_2"));
 
 	return S_OK;
@@ -1173,12 +1183,14 @@ void CGroar_Boss::NPC_LateTick(_float fTimeDelta)
 
 			CFadeBox::FADE_DESC FadeBoxDesc = {};
 			FadeBoxDesc.eState = CFadeBox::FADEOUT;
-			FadeBoxDesc.fDuration = 1.f;
+			FadeBoxDesc.fDuration = 3.f;
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &FadeBoxDesc)))
 			{
 				return;
 			}
+
+			CTrigger_Manager::Get_Instance()->Set_StartSuicide();
 		}
 	}
 	//사운드 채널 갱신 / 그로아 사운드 나오는 도중에 사운드 넘어가기 위해
