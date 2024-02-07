@@ -118,13 +118,14 @@ public: // Frustum
 	_bool IsIn_Fov_Local(_vec4 vPos, _float fRange = 0.f);
 
 public: // Collision
-	HRESULT Register_CollisionObject(class CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer = false,class CCollider* AttRangeCollider = nullptr );
+	HRESULT Register_CollisionObject(class CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer = false, class CCollider* AttRangeCollider = nullptr, class CCollider* ParryingCollider = nullptr);
 	void Delete_CollisionObject(class CGameObject* pObject, _bool IsPlayer = false);
 	void Attack_Monster(class CCollider* pCollider, _uint iDamage, _uint iDamageType = 0);
 	_bool CheckCollision_Monster(class CCollider* pCollider);
+	_bool CheckCollision_Parrying(class CCollider* pCollider);
 	_bool Attack_Player(class CCollider* pCollider, _uint iDamage, _uint iDamageType = 0);
 	_bool CheckCollision_Player(class CCollider* pCollider); // 필요없음
-	 CCollider* Get_Nearest_MonsterCollider();
+	CCollider* Get_Nearest_MonsterCollider();
 public: // PhysX
 	void Init_PhysX_Character(class CTransform* pTransform, CollisionGroup eGroup, PxCapsuleControllerDesc* pDesc = nullptr);
 	void Init_PhysX_MoveableObject(class CTransform* pTransform);
@@ -132,7 +133,7 @@ public: // PhysX
 	void Update_PhysX(class CTransform* pTransform);
 	PxRigidStatic* Cook_StaticMesh(_uint iNumVertices, void* pVertices, _uint iNumIndices, void* pIndices);
 	_bool Raycast(_vec3 vOrigin, _vec3 vDir, _float fDist, PxRaycastBuffer& Buffer);
-	_bool Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer,  PxQueryFilterData Filter);
+	_bool Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer, PxQueryFilterData Filter);
 	_bool Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer);
 	void PhysXTick(_float fTimeDelta);
 #ifdef _DEBUG
@@ -161,6 +162,9 @@ public: // Sound Manager
 	void PlayBGM(const wstring& strSoundTag, float fVolume = 0.3f);
 	void StopSound(_uint iChannel);
 	void StopAll();
+	//fFadeSoundRatio 0.f ~ 2.f
+	HRESULT FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond = 1.f, _bool IsReusable = true, _float fFadeSoundRatio = 0.f);
+	HRESULT FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond = 1.f, _float fFadeSoundRatio = 1.f);
 
 public: // Effect Callback
 	using Func_CreateFX = function<void(const wstring&, _mat*, const _bool&)>;
@@ -206,6 +210,8 @@ public: // Get_Set
 	_bool Get_IsPlayingSound(_uint iChannel);
 	// 사운드 채널의 볼륨을 반환 함.
 	_float Get_ChannelVolume(_uint iChannel);
+	// 사운드 채널이 루프중인지를 반환 함.
+	_bool Get_IsLoopingSound(_uint iChannel);
 
 	// 카메라 모드를 지정함. 카메라에서 말고는 쓰지 말것.
 	void Set_CameraModeIndex(const _uint& iIndex);
@@ -220,11 +226,13 @@ public: // Get_Set
 	// 안개의 색을 정함.
 	void Set_FogColor(const _color& vFogColor);
 	// 카메라 쉐이크 기능. true 던지면 카메라가 한번 흔들림.
-	void Set_ShakeCam(const _bool& bShake , _float fShakePower = 0.1f);
+	void Set_ShakeCam(const _bool& bShake, _float fShakePower = 0.1f);
 	// hell 높이를 지정한다.
 	void Set_HellHeight(const _float& fHeight);
 	// 사운드 채널의 볼륨을 지정함.
 	void Set_ChannelVolume(_uint iChannel, _float fVolume);
+	// 사운드 채널의 볼륨을 초기 볼륨으로 되돌림.
+	void Set_ChannelStartVolume(_uint iChannel);
 
 	_float Get_ShakePower() { return m_fShakePower; }
 	_bool Get_FlyCam() { return m_bFlyCam; }
@@ -249,6 +257,10 @@ public: // Get_Set
 	const _bool& IsSkipDebugRendering() const;
 	const wstring& Get_InputString() const;
 
+	void Video_Start(_float fVideoDuration, _bool bSkip = false);
+	_bool Is_VideoPlaying() { return m_isPlayingVideo; }
+	_bool Ready_NextLevel() { return m_bReady_NextLevel; }
+	void Set_NextLevel(_bool NextLevel) { m_bReady_NextLevel = NextLevel; }
 public:
 	void Initialize_Level(_uint iLevelNum);
 	void Level_ShutDown(_uint iCurrentLevel);
@@ -259,8 +271,8 @@ public:
 	void Set_GoHome(_bool GoHome) { m_bGoHome = GoHome; }
 	void Set_GoDungeon(_bool GoDungeon) { m_bGoDungeon = GoDungeon; }
 
-	_bool Get_GoHome() {return m_bGoHome;}
-	_bool Get_GoDungeon() {return m_bGoDungeon;}
+	_bool Get_GoHome() { return m_bGoHome; }
+	_bool Get_GoDungeon() { return m_bGoDungeon; }
 private:
 	class CGraphic_Device* m_pGraphic_Device{ nullptr };
 
@@ -307,6 +319,11 @@ private:
 	_bool m_bFlyCam{};
 	_bool m_bGoHome{};
 	_bool m_bGoDungeon{};
+	_bool m_isPlayingVideo{};
+	_float m_fVideoTimmer{};
+	_float m_fVideoDuration{};
+	_bool m_bVideoAfterSkip{};
+	_bool m_bReady_NextLevel{};
 private:
 	vector<_bool> m_vecLevelInvalid;
 

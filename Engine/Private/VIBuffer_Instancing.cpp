@@ -26,7 +26,7 @@ HRESULT CVIBuffer_Instancing::Init(void* pArg)
 	return S_OK;
 }
 
-void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNumUse, _bool bApplyGravity, _vec3 vGravityDir)
+void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNumUse, _bool bApplyGravity, _vec3 vGravityDir, _float fAppearRatio, _float fDissolveRatio)
 {
 	if (iNumUse == -1)
 	{
@@ -56,6 +56,21 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 		{
 			_float fAlpha = (pVertex->vLifeTime.x / pVertex->vLifeTime.y) * 0.7f;
 			pVertex->vDirection = _vec4::Lerp(pVertex->vDirection, _vec4(vGravityDir), fAlpha);
+		}
+
+		if (fAppearRatio > 0.f and pVertex->vLifeTime.x <= pVertex->vLifeTime.y * fAppearRatio)
+		{
+			pVertex->fDissolveRatio = 1.f - (pVertex->vLifeTime.x / (pVertex->vLifeTime.y * fAppearRatio));
+			pVertex->fDissolveRatio = min(pVertex->fDissolveRatio, 1.f);
+		}
+		else if (pVertex->vLifeTime.x > pVertex->vLifeTime.y * fDissolveRatio)
+		{
+			pVertex->fDissolveRatio = (pVertex->vLifeTime.x - (pVertex->vLifeTime.y * fDissolveRatio)) / (pVertex->vLifeTime.y * (1.f - fDissolveRatio));
+			pVertex->fDissolveRatio = min(pVertex->fDissolveRatio, 1.f);
+		}
+		else
+		{
+			pVertex->fDissolveRatio = 0.f;
 		}
 
 		pVertex->vPrevPos = pVertex->vPos;

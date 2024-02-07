@@ -35,6 +35,7 @@ namespace Client
 		CM_MAIN,
 		CM_SELECT, 
 		CM_CUSTOM,
+		CM_CUTSCENE,
 		CM_END
 	};
 	enum CAMERA_STATE
@@ -231,6 +232,9 @@ namespace Client
 		T_OPENINVEN, 
 		T_EQUIP,
 		T_EXIT,
+		T_OPENSKILL,
+		T_EQUIPSKILL,
+		T_SKILLEXIT,
 		TUTO_END
 	};
 
@@ -256,7 +260,8 @@ namespace Client
 		MonAtt_Hit,
 		MonAtt_KnockDown,
 		MonAtt_Stun,
-		GROAR_PULL,
+		MonAtt_Poison,
+		Parrying_Succescc,
 		MonAtt_End
 	};
 #pragma endregion
@@ -304,7 +309,7 @@ namespace Client
 		_uint iSkillIdx;
 		_bool isSkillIn;
 		wstring strTexture;
-
+		_uint iModelSkillIndex;
 	}SKILLINFO;
 
 #pragma region Shader Passes
@@ -316,7 +321,7 @@ namespace Client
 		AnimPass_Dissolve,
 		AnimPass_Rim,
 	};
-
+	
 	enum StaticMeshPass
 	{
 		StaticPass_Default,
@@ -338,9 +343,22 @@ namespace Client
 		StaticPass_Worldmap_Cloud,
 		StaticPsss_Rim,
 		StaticPass_DiffEffect,
+		StaticPass_SingleColorAlpha,
+		StaticPass_MaskAlpha,
+		StaticPass_DiffAlpha,
 		StaticPass_End,
 	};
+	
+	enum VTFModelPass
+	{
+		VTFPass_Default,
+		VTFPass_Dissolve,
+		VTFPass_Motion_Blur,
+		VTFPass_LerpDissolve,
+		VTFPass_LerpBlur,
+		VTFPass_Main_Rim,
 
+	};
 	enum VNTPass
 	{
 		VNTPass_Terrain,
@@ -382,6 +400,10 @@ namespace Client
 		VTPass_NineSlice,
 		VTPass_FadeVertical,
 		VTPass_FadeHorizontal,
+		VTPass_LerpColorNAlpha,
+		VTPass_HPBoss,
+		VTPass_MaskColorMove,
+		VTPass_ChangeBright,
 		VTPass_End
 	};
 
@@ -411,12 +433,51 @@ namespace Client
 		InstPass_Particle_Sprite_Texture_RandomIndex_Dissolve_Trail,
 		InstPass_Particle_Sprite_Color_RandomIndex_Trail,
 		InstPass_Particle_Sprite_Color_RandomIndex_Dissolve_Trail,
+		InstPass_Particle_Sprite_DiffMask,
+		InstPass_Particle_Sprite_DiffMask_Dissolve,
+		InstPass_Particle_Sprite_DiffMask_RandomIndex,
+		InstPass_Particle_Sprite_DiffMask_RandomIndex_Dissolve,
+		InstPass_Particle_Sprite_DiffMask_Trail,
+		InstPass_Particle_Sprite_DiffMask_Dissolve_Trail,
+		InstPass_Particle_Sprite_DiffMask_RandomIndex_Trail,
+		InstPass_Particle_Sprite_DiffMask_RandomIndex_Dissolve_Trail,
 		InstPass_End,
 	};
 #pragma endregion
-
-
+#pragma region ÄÆ¾À
+	struct SectionInfo
+	{
+		//_vec4 vStartCutScene{};
+		//_vec4 vEndCutScene{};
+		_mat mCutSceneMatrix{};
+		_uint iSectionType{};
+		class CCutScene_Curve** ppCurve{ nullptr };
+	};
 }
+#pragma endregion
+
+#pragma region Æ®¸®°Å
+struct TriggerInfo
+{
+	_bool bLimited{};
+	_int iIndex{};
+	_float fSize{};
+	_mat WorldMat{};
+};
+
+enum TriggerType
+{
+	VILLAGE_TRIGGER,
+	FRONTDOOR_IN_TRIGGER,
+	FRONTDOOR_OUT_TRIGGER,
+	BACKDOOR_IN_TRIGGER,
+	BACKDOOR_OUT_TRIGGER,
+	BOSS_TRIGGER,
+	TRIGGER_END
+};
+#pragma endregion
+
+
 
 extern HWND g_hWnd;
 extern HINSTANCE g_hInst;

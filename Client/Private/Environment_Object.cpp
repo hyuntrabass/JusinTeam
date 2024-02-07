@@ -55,7 +55,10 @@ void CEnvironment_Object::Tick(_float fTimeDelta)
 
 void CEnvironment_Object::Late_Tick(_float fTimeDelta)
 {
-
+	if (m_pGameInstance->Get_CameraState() == CS_SKILLBOOK or m_pGameInstance->Get_CameraState() == CS_INVEN or m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
+	{
+		return;
+	}
 	__super::Late_Tick(fTimeDelta);
 }
 

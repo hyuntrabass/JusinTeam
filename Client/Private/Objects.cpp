@@ -31,11 +31,36 @@ void CObjects::Tick(_float fTimeDelta)
 
 void CObjects::Late_Tick(_float fTimeDelta)
 {
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Camera", LEVEL_STATIC);
+
+	_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
+	_vec4 vPos = m_pTransformCom->Get_CenterPos();
+
+	if (abs(vPlayerPos.x - vPos.x) > 500.f)
+	{
+		return;
+	}
+
+	if (m_pGameInstance->Get_CameraState() == CS_SKILLBOOK or m_pGameInstance->Get_CameraState() == CS_INVEN or m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
+	{
+		return;
+	}
+
 	// ÀÎ½ºÅÏ½Ì ÇÒ ¸ðµ¨°ú ¾ÈÇÒ ¸ðµ¨À» ³ª´²ÁÜ
-	if(m_isInstancing == false)
-		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	if (m_isInstancing == false)
+	{
+		//if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
+		//{
+			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+		//}
+	}
 	else
-		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
+	{
+		//if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
+		//{
+			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
+		//}
+	}
 
 }
 

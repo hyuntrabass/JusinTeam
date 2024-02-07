@@ -14,9 +14,9 @@ public:
 		ATTACK02,
 		ATTACK03,
 		DIE,
-		HIT_ADD, // 고장
-		HIT_L, // 고장
-		HIT_R, // 고장
+		HIT_ADD,
+		HIT_L,
+		HIT_R,
 		IDLE,
 		INTERACTION01,
 		INTERACTION02,
@@ -34,6 +34,7 @@ public:
 		STATE_ROAM,
 		STATE_CHASE,
 		STATE_ATTACK,
+		STATE_HIT,
 		STATE_DIE,
 		STATE_END
 	};
@@ -68,6 +69,8 @@ private:
 	_bool m_bSelectAttackPattern = { false };
 
 private:
+	_bool m_bAttacking = { false };
+
 	_bool m_bAttacked = { false };
 
 	_bool m_bDamaged = { false };

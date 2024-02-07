@@ -2,6 +2,8 @@
 #include "GameInstance.h"
 #include "Pop_QuestIn.h"
 #include "Pop_QuestEnd.h"
+#include "Pop_LevelUp.h"
+#include "Pop_Skill.h"
 #include "Pop_Alert.h"
 #include "Tutorial.h"
 #include "Quest.h"
@@ -25,6 +27,10 @@ HRESULT CEvent_Manager::Init()
 	if (not m_pAlert)
 	{
 		return E_FAIL;
+	}
+	for (size_t i = 0; i < TRIGGER_END; i++)
+	{
+		m_QuestTrigger[i] = false;
 	}
 
 	return S_OK;
@@ -56,11 +62,19 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 			{
 			case LEVELUP:
 			{
+				CPop_LevelUp::LEVELUP_DESC Desc{};
+				Desc.iLevel = m_vecPopEvents.front().iNum;
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pop"), TEXT("Prototype_GameObject_PopLevelUp"), &Desc)))
+				{
+					return;
+				}
+				m_pGameInstance->Play_Sound(TEXT("LevelUp"));
 				m_vecPopEvents.erase(m_vecPopEvents.begin());
 			}
 			break;
 			case QUESTIN:
 			{
+				m_pGameInstance->Play_Sound(TEXT("Quest_Start"), 0.6f);
 				CPop_QuestIn::QUESTIN_DESC PopQuestInDesc = {};
 				PopQuestInDesc.isMain = m_vecPopEvents.front().isMain;
 				PopQuestInDesc.fExp = m_vecPopEvents.front().fExp;
@@ -75,6 +89,7 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 			break;
 			case QUESTEND:
 			{
+				m_pGameInstance->Play_Sound(TEXT("Quest_Complete"), 0.6f);
 				CPop_QuestEnd::QUESTEND_DESC PopQuestEndDesc = {};
 				PopQuestEndDesc.fExp = m_vecPopEvents.front().fExp;
 				PopQuestEndDesc.iMoney = m_vecPopEvents.front().iMoney;
@@ -92,12 +107,36 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pop"), TEXT("Prototype_GameObject_Tutorial"), &TutoDesc)))
 					return;
 				m_vecPopEvents.erase(m_vecPopEvents.begin());
+
+				if (m_eCurTuto == T_OPENINVEN|| m_eCurTuto == T_OPENSKILL)
+				{
+					for (size_t i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+					{
+						if (m_pGameInstance->Get_IsLoopingSound(i))
+						{
+							m_pGameInstance->FadeoutSound(i, fTimeDelta, 1.f, true, 0.3f);
+						}
+					}
+				}
+			}
+			break;
+			case UNLOCKSKILL:
+			{
+				CPop_Skill::SKILLIN_DESC Desc{};
+				Desc.iSkillLevel = m_vecPopEvents.front().iNum;
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pop"), TEXT("Prototype_GameObject_PopSkill"), &Desc)))
+				{
+					return;
+				}
+				m_pGameInstance->Play_Sound(TEXT("UI_Synthesis_Success_SFX_01"));
+				m_vecPopEvents.erase(m_vecPopEvents.begin());
 			}
 			break;
 			}
 			m_isWaiting = true;
 		}
 	}
+
 	m_pQuest->Tick(fTimeDelta);
 	m_pAlert->Tick(fTimeDelta);
 }
@@ -141,12 +180,58 @@ HRESULT CEvent_Manager::Init_Quest()
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	tDesc.eType = QUESTIN;
-	tDesc.fExp = 2;
-	tDesc.iNum = 3;
+	tDesc.fExp = 5.6f;
+	tDesc.iNum = 1;
 	tDesc.iMoney = 1000;
 	tDesc.isMain = true;
-	tDesc.strQuestTitle = TEXT("펫 라이딩");
-	tDesc.strText = TEXT("펫 타고 이동해보기");
+	tDesc.strQuestTitle = TEXT("점프하기");
+	tDesc.strText = TEXT("스페이스바를 눌러 쩜프해봐");
+	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
+		
+	
+	tDesc.eType = QUESTIN;
+	tDesc.fExp = 100.f;
+	tDesc.iNum = 1;
+	tDesc.iMoney = 1000;
+	tDesc.isMain = true;
+	tDesc.strQuestTitle = TEXT("체력포션 구매");
+	tDesc.strText = TEXT("마을 상인에게 체력포션 구매하기");
+	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
+	
+	tDesc.eType = QUESTIN;
+	tDesc.fExp = 100.f;
+	tDesc.iNum = 3;
+	tDesc.iMoney = 10000;
+	tDesc.isMain = false;
+	tDesc.strQuestTitle = TEXT("로스크바의 부탁");
+	tDesc.strText = TEXT("토끼 세마리 잡기");
+	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
+	
+	tDesc.eType = QUESTIN;
+	tDesc.fExp = 14.6f;
+	tDesc.iNum = 1;
+	tDesc.iMoney = 10000;
+	tDesc.isMain = true;
+	tDesc.strQuestTitle = TEXT("그로아의 부탁");
+	tDesc.strText = TEXT("그로아 남편의 흔적찾기");
+	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
+	
+	tDesc.eType = QUESTIN;
+	tDesc.fExp = 20.3f;
+	tDesc.iNum = 3;//몬스터 수만큼? 
+	tDesc.iMoney = 100000; 
+	tDesc.isMain = true;
+	tDesc.strQuestTitle = TEXT("그로아를 지켜라");
+	tDesc.strText = TEXT("몬스터로부터 그로아 지키기");
+	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
+	
+	tDesc.eType = QUESTIN;
+	tDesc.fExp = 10.2f;// 몬스터 수만큼 ?
+	tDesc.iNum = 1;
+	tDesc.iMoney = 1000;
+	tDesc.isMain = true;
+	tDesc.strQuestTitle = TEXT("그로아를 찾아서");
+	tDesc.strText = TEXT("남편 흔적 찾는 그로아 찾기");
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	return S_OK;
@@ -165,8 +250,33 @@ HRESULT CEvent_Manager::Update_Quest(const wstring& strQuest)
 		tDesc.eType = QUESTEND;
 		Set_Event(tDesc);
 		m_QuestMap.erase(strQuest);
+
+		if (!m_QuestTrigger[GROAR_MONSTER] && strQuest == TEXT("그로아를 지켜라"))
+		{
+			m_QuestTrigger[GROAR_MONSTER] = true;
+			Set_Quest(TEXT("그로아를 찾아서"));
+		}
 	}
 	return S_OK;
+}
+void CEvent_Manager::Set_LevelUp(_uint iLevel)
+{
+	EVENT_DESC Desc = {};
+	Desc.eType = LEVELUP;
+	Desc.iNum = iLevel;
+
+	m_vecPopEvents.push_back(Desc);
+	m_isEventIn = true;
+
+}
+void CEvent_Manager::Set_SkillUnlock(_uint iIndex)
+{
+	EVENT_DESC Desc = {};
+	Desc.eType = UNLOCKSKILL;
+	Desc.iNum = iIndex;
+
+	m_vecPopEvents.push_back(Desc);
+	m_isEventIn = true;
 }
 void CEvent_Manager::Set_Alert(const wstring strAlert)
 {

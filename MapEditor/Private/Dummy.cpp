@@ -55,7 +55,7 @@ HRESULT CDummy::Init(void* pArg)
 		m_iTrigger = m_Info.iTriggerNum;
 		m_fTriggerSize = m_Info.fTriggerSize;
 
-		m_iShaderPass = StaticPass_AlphaTestMeshes;
+		m_iShaderPass = StaticPass_Default;
 
 	}
 	else
@@ -99,7 +99,7 @@ void CDummy::Late_Tick(_float fTimeDelta)
 if(m_eType == ItemType::Trigger)
 	m_pRendererCom->Add_DebugComponent(m_pCollider);
 #endif
-else if (m_eType == ItemType::Environment)
+if (m_eType == ItemType::Environment)
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
 else
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
@@ -315,10 +315,6 @@ HRESULT CDummy::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
-
-	
-
-	
 
 	return S_OK;
 }

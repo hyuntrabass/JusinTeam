@@ -53,6 +53,12 @@ void CQuest::Tick(_float fTimeDelta)
 	{
 		return;
 	}
+	if (m_vecQuest.empty())
+	{
+		m_bNewQuestIn = false;
+	}
+
+
 	CUI_Manager::Get_Instance()->Set_Picking_UI(false);
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
@@ -69,11 +75,13 @@ void CQuest::Tick(_float fTimeDelta)
 	{
 		if (m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
+			m_pGameInstance->Play_Sound(TEXT("Quest_Click"));
 			Sort_Quest();
 			m_isActive = false;
 		}
-		if (!m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
+		else if (!m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
+			m_pGameInstance->Play_Sound(TEXT("Quest_Click"));
 			Sort_Quest();
 			m_bNewQuestIn = false;
 			m_isActive = true;
@@ -86,6 +94,7 @@ void CQuest::Tick(_float fTimeDelta)
 
 	if (m_isActive)
 	{
+
 		RECT rectUI = {
 		  (LONG)(m_fX - 200.f * 0.5f),
 		  (LONG)(m_fY - 200.f * 0.5f),

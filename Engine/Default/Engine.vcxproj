@@ -163,6 +163,7 @@ call UpdateLib.bat</Command>
     <ClCompile Include="..\private\Transform.cpp" />
     <ClCompile Include="..\private\VIBuffer.cpp" />
     <ClCompile Include="..\private\VIBuffer_Cube.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Curve.cpp" />
     <ClCompile Include="..\private\VIBuffer_Instancing.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Instancing_Point.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Mesh_Instance.cpp" />
@@ -234,6 +235,7 @@ call UpdateLib.bat</Command>
     <ClInclude Include="..\public\Transform.h" />
     <ClInclude Include="..\public\VIBuffer.h" />
     <ClInclude Include="..\public\VIBuffer_Cube.h" />
+    <ClInclude Include="..\Public\VIBuffer_Curve.h" />
     <ClInclude Include="..\public\VIBuffer_Instancing.h" />
     <ClInclude Include="..\Public\VIBuffer_Instancing_Point.h" />
     <ClInclude Include="..\Public\VIBuffer_Mesh_Instance.h" />

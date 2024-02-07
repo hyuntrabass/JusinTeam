@@ -1,5 +1,5 @@
 #include "Monster.h"
-
+#include "UI_Manager.h"
 
 CMonster::CMonster(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -14,32 +14,72 @@ CMonster::CMonster(const CMonster& rhs)
 
 HRESULT CMonster::Init_Prototype()
 {
+	m_isPrototype = true;
 	return S_OK;
 }
 
 HRESULT CMonster::Init(void* pArg)
 {
-	if (!pArg)
+	if (pArg)
 	{
-		MSG_BOX("No argument!");
+		m_pInfo = *(MonsterInfo*)pArg;
+		_mat WorldPos = m_pInfo.MonsterWorldMat;
+		m_pTransformCom->Set_Matrix(WorldPos);
+		m_pTransformCom->Set_Position(WorldPos.Position_vec3());
+	}
+	if (!m_isPrototype)
+	{
+		CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 	}
 
-	m_pInfo = *(MonsterInfo*)pArg;
-	_mat WorldPos = m_pInfo.MonsterWorldMat;
-	m_pTransformCom->Set_Matrix(WorldPos);
-	m_pTransformCom->Set_Position(WorldPos.Position_vec3());
+
+	CHPMonster::HP_DESC HpDesc = {};
+	HpDesc.eLevelID = LEVEL_STATIC;
+	HpDesc.iMaxHp = m_iHP;
+	HpDesc.pParentTransform = m_pTransformCom;
+	HpDesc.vPosition = m_MonsterHpBarPos;
+	m_HpBar = (CHPMonster*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPMonster"), &HpDesc);
+	if (m_HpBar == nullptr)
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
 
 void CMonster::Tick(_float fTimeDelta)
 {
+	if (m_bChangePass == true)
+	{
+		m_fHitTime += fTimeDelta;
+
+		if (m_iPassIndex == AnimPass_Default)
+		{
+			m_iPassIndex = AnimPass_Rim;
+		}
+		else
+		{
+			m_iPassIndex = AnimPass_Default;
+		}
+
+		if (m_fHitTime >= 0.3f)
+		{
+			m_fHitTime = 0.f;
+			m_bChangePass = false;
+			m_iPassIndex = AnimPass_Default;
+		}
+	}
+
+
+	if (m_iDamageAcc >= m_iDamageAccMax)
+	{
+		m_bHit = true;
+	}
+
 	if (m_iHP <= 0 || m_fDeadTime > 0.01f)
 	{
 		m_pGameInstance->Delete_CollisionObject(this);
-
-		//Safe_Release(m_pTransformCom);
-		//Safe_Release(m_pBodyColliderCom);
+		m_pTransformCom->Delete_Controller();
 	}
 
 	if (m_fDeadTime >= 2.f)
@@ -51,37 +91,34 @@ void CMonster::Tick(_float fTimeDelta)
 	{
 		Kill();
 	}
+
+	if (m_HpBar)
+	{
+		if (m_fHittedTime > 0.f)
+		{
+			m_fHittedTime -= fTimeDelta;
+			m_HpBar->Tick(fTimeDelta);
+		}
+	}
 }
 
 void CMonster::Late_Tick(_float fTimeDelta)
 {
+	if (m_HpBar)
+	{
+		if (m_fHittedTime > 0.f)
+		{
+			m_HpBar->Set_HP(m_iHP);
+			m_HpBar->Late_Tick(fTimeDelta);
+		}
+	}
+
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 }
 
 HRESULT CMonster::Render()
 {
-	if (m_iPassIndex == AnimPass_Dissolve)
-	{
-		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
-		{
-			return E_FAIL;
-		}
-
-		m_fDissolveRatio += 0.02f;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
-		{
-			return E_FAIL;
-		}
-
-		_bool bHasNorTex = true;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &bHasNorTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
-
-	}
-
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
@@ -143,6 +180,7 @@ HRESULT CMonster::Render()
 	return S_OK;
 }
 
+
 _vec4 CMonster::Compute_PlayerPos()
 {
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
@@ -181,7 +219,16 @@ _float CMonster::Compute_ModelTestDistance()
 	return fDistance;
 }
 
-void CMonster::Update_MonsterCollider()
+HRESULT CMonster::Add_Collider()
+{
+	return S_OK;
+}
+
+void CMonster::Update_Collider()
+{
+}
+
+void CMonster::Update_BodyCollider()
 {
 	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 }
@@ -282,6 +329,36 @@ HRESULT CMonster::Add_Components()
 
 HRESULT CMonster::Bind_ShaderResources()
 {
+	if (m_iPassIndex == AnimPass_Rim && m_bChangePass == true)
+	{
+		_vec4 vColor = Colors::Red;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vColor, sizeof vColor)))
+		{
+			return E_FAIL;
+		}
+	}
+
+	if (m_iPassIndex == AnimPass_Dissolve)
+	{
+		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
+		{
+			return E_FAIL;
+		}
+
+		m_fDissolveRatio += 0.02f;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
+		{
+			return E_FAIL;
+		}
+
+		_bool bHasNorTex = true;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &bHasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+	}
+
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
 		return E_FAIL;
@@ -311,6 +388,17 @@ HRESULT CMonster::Bind_ShaderResources()
 void CMonster::Free()
 {
 	__super::Free();
+	if (!m_isPrototype)
+	{
+		CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
+	}
+
+
+	_uint iRandomExp = rand() % 100;
+	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(15.f + (_float)iRandomExp / 2.f * 0.1f);
+	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(iRandomExp * 0.01f);
+	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(iRandomExp * 0.01f);
+	Safe_Release(m_HpBar);
 
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);

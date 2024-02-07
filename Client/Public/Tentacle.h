@@ -29,6 +29,7 @@ private:
 
 private:
 	_float m_fTime = {};
+	_int m_iSoundChannel = -1;
 
 public:
 	static CTentacle* Create(_dev pDevice, _context pContext);

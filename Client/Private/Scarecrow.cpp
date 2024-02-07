@@ -25,19 +25,29 @@ HRESULT CScarecrow::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(0.f,50.f,3.f,1.f));
-	m_pTransformCom->LookAt(_vec4(0.f,50.f,0.f,1.f));
-
+	m_pTransformCom->Set_State(State::Pos, _vec4(0.f,200.f,4.7f,1.f));
+	m_pTransformCom->LookAt(_vec4(0.f,200.f,0.f,1.f));
+	m_pGameInstance->Register_CollisionObject(this, m_pHitCollider);
+	m_pHitCollider->Update(m_pTransformCom->Get_World_Matrix());
 	return S_OK;
 }
 
 void CScarecrow::Tick(_float fTimeDelta)
 {
-
+	if (m_pGameInstance->Get_CameraState() != CS_SKILLBOOK)
+	{
+		return;
+	}
 }
 
 void CScarecrow::Late_Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Get_CameraState() != CS_SKILLBOOK)
+	{
+		return;
+	}
+
+	//m_pRendererCom->Add_DebugComponent(m_pHitCollider);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 }
 
@@ -100,7 +110,17 @@ HRESULT CScarecrow::Add_Components()
 	{
 		return E_FAIL;
 	}
+	Collider_Desc CollDesc = {};
+	CollDesc.eType = ColliderType::OBB;
+	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
+	CollDesc.vExtents = _vec3(0.4f, 1.f, 0.4f);
+	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.6f, -0.6f);
 
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+		TEXT("Com_Player_Hit_OBB"), (CComponent**)&m_pHitCollider, &CollDesc)))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -161,7 +181,10 @@ void CScarecrow::Free()
 
 	__super::Free();
 
+	//m_pGameInstance->Delete_CollisionObject(this);
+
 	Safe_Release(m_pModelCom);
-	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pRendererCom);
+	Safe_Release(m_pHitCollider);
 }

@@ -579,6 +579,7 @@ void CInvenFrame::ItemSlot_Logic(_uint iSlotIdx, _uint iIndex)
 		{
 			Delete_Item(m_eCurInvenType, iIndex);
 		}
+
 	}
 	else
 	{	//m_iItemNum이 0보다 클경우 그 수만큼 빼주면되고, 0이면 다없애면되고 -1이면 없애면안됨
@@ -614,7 +615,7 @@ void CInvenFrame::ItemSlot_Logic(_uint iSlotIdx, _uint iIndex)
 			Set_ItemPosition(m_eCurInvenType);
 		}
 	}
-
+	m_pGameInstance->Play_Sound(TEXT("ItemEquip"), 1.f);
 }
 
 void CInvenFrame::ItemSlot_Delete_Logic(_uint iSlotIdx)
@@ -780,12 +781,13 @@ void CInvenFrame::Picking_InvenButton(POINT ptMouse)
 
 	if (m_isPicking)
 	{
-		_bool isPicking = false;
+		m_vecItemsSlot[m_eCurInvenType][m_iCurIndex]->Set_Border(false);
+		//_bool isPicking = false;
 		for (_uint j = 0; j < 4; j++)
 		{
 			if (PtInRect(&m_pSelectSlot[j]->Get_Rect(), ptMouse))
 			{
-				isPicking = true;
+				//isPicking = true;
 				ItemSlot_Logic(j, m_iCurIndex);
 				break;
 			}
@@ -819,7 +821,8 @@ void CInvenFrame::Picking_ShopButton(POINT ptMouse)
 		{
 			if (m_vecItemsSlot[m_eCurInvenType][i]->Get_ItemDesc().iSale == 0)
 			{
-				//판매불가능 알람 띄우기
+				CEvent_Manager::Get_Instance()->Set_Alert(TEXT("판매할 수 없는 아이템입니다."));
+				m_pGameInstance->Play_Sound(TEXT("Auto_Item_Fail"));
 				return;
 			}
 			if (m_vecItemsSlot[m_eCurInvenType][i]->Get_Border())
@@ -972,6 +975,7 @@ void CInvenFrame::Shop_Tick(_float fTimeDelta, POINT ptMouse)
 			{
 
 				CEvent_Manager::Get_Instance()->Set_Alert(TEXT("선택한 아이템이 없습니다."));
+				m_pGameInstance->Play_Sound(TEXT("Auto_Item_Fail"));
 				return;
 			}
 			if (!m_pInvenWindow->Is_Active())
@@ -1016,6 +1020,7 @@ void CInvenFrame::Shop_Tick(_float fTimeDelta, POINT ptMouse)
 		m_vecSellItems.clear();
 		CUI_Manager::Get_Instance()->Set_Coin(iCoin);
 		m_pInvenWindow->Set_SellBtn(false);
+		m_pGameInstance->Play_Sound(TEXT("Sell_Item"));
 	}
 
 	if (m_pInvenWindow->Is_Active())

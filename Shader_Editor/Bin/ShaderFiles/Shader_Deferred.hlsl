@@ -324,24 +324,13 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     ClipZ[2] = g_ClipZ.w;
     
     
-    vector vLightPos;
-    [unroll]
-    for (uint i = 0; i < 3; ++i)
+    if (vWorldPos.y < g_fHellStart)
     {
-        vector vClip = vector(0.f, 0.f, ClipZ[i], 1.f);
-        vClip = mul(vClip, g_ProjMatrixInv);
-        vLightPos = mul(vWorldPos, g_LightViewMatrix[i]);
-        vLightPos = mul(vLightPos, g_LightProjMatrix[i]);
-        
-        if (fViewZ <= vClip.z)
-        {
-            float fLightDepth = CalcCascadeShadowFactor(i, vLightPos);
-            if (vLightPos.w - 0.05f > fLightDepth)
-            {
-                FinalColor.rgb = FinalColor.rgb * 0.5f;
-            }
-            break;
-        }
+        //float fHell = (vWorldPos.y + 15.f) / 35.f;
+        float fHell = 1.f - ((g_fHellStart - vWorldPos.y) / 20.f);
+        fHell = max(fHell, 0.f);
+        FinalColor *= vector(fHell, fHell, fHell, 1.f);
+        vFogColor *= fHell;
     }
     //vWorldPos = mul(vWorldPos, g_LightViewMatrix);
     //vWorldPos = mul(vWorldPos, g_LightProjMatrix);

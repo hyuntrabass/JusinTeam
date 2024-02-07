@@ -2,10 +2,11 @@
 
 #include "Client_Define.h"
 #include "Monster.h"
-#include "HPMonster.h"
 
 BEGIN(Client)
+
 class CHPMonster;
+
 class CRabbit final : public CMonster
 {
 public:
@@ -14,9 +15,9 @@ public:
 		ATTACK01,
 		ATTACK02,
 		DIE,
-		HIT_ADD, // 고장
-		HIT_ADD_L, // 고장
-		HIT_ADD_R, // 고장
+		HIT_ADD,
+		HIT_ADD_L,
+		HIT_ADD_R,
 		IDLE,
 		KNOCKDOWN,
 		ROAR,
@@ -32,6 +33,7 @@ public:
 		STATE_ROAM,
 		STATE_CHASE,
 		STATE_ATTACK,
+		STATE_HIT,
 		STATE_DIE,
 		STATE_END
 	};
@@ -65,15 +67,15 @@ private:
 	_uint m_iRoamingPattern = {};
 	_uint m_iAttackPattern = {};
 	_bool m_bSelectAttackPattern = { false };
-	CHPMonster* m_HpBar{ nullptr };
 
 private:
+	_bool m_bAttacking = { false };
+
 	_bool m_bAttacked = { false };
 	_bool m_bAttacked2 = { false };
 
 	_bool m_bDamaged = { false };
 	_bool m_bStun = { false };
-
 
 private:
 	static const _float m_fChaseRange;

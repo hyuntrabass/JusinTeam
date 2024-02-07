@@ -10,6 +10,7 @@ class CSkill final : public COrthographicObject
 public:
 	typedef struct tagItemSlotDesc
 	{
+		_bool					isScreen{ false };
 		_float					fDepth;
 		_float2					vSize;
 		_float2					vPosition;
@@ -36,17 +37,24 @@ private:
 
 
 private:
-	_bool					m_haveBG{ false };
+	_bool					m_isScreen{ false };
+	_bool					m_isUsingSkill{ false };
+	_float					m_fCoolTime{};
+	_float					m_fAlpha{};
+	_float					m_fDir{1.f};
+
 	SKILLINFO				m_tSkillInfo{};
 	RECT					m_rcRect{};
-	
-	//CTextButton*			m_pBorder{ nullptr };
-	//CTextButtonColor*		m_pBackGround{ nullptr };
+
+	CTextButton*			m_pBackGround{ nullptr };
+	CTextButtonColor*		m_pBorder{ nullptr };
 
 public:
 	const SKILLINFO& Get_SkillInfo() const { return m_tSkillInfo; }
 	void Set_Position(_vec2 vPos);
 	const RECT& Get_Rect() const { return m_rcRect; }
+	_bool Use_Skill();
+	_bool Is_Skill_Running() { return m_isUsingSkill; }
 
 private:
 	HRESULT Add_Components();

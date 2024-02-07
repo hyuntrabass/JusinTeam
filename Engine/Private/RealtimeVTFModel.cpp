@@ -381,6 +381,7 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigg
 				if (OnClientTrigger)
 				{
 					m_pGameInstance->Create_Effect(m_TriggerEffects[i].strEffectName, m_EffectMatrices[i], m_TriggerEffects[i].IsFollow);
+					m_TriggerEffects[i].HasCreated = true;
 				}
 			}
 			else
@@ -411,20 +412,27 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigg
 			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() <= m_Animations[m_AnimDesc.iAnimIndex]->Get_Duration() * m_AnimDesc.fDurationRatio &&
 			not m_TriggerSounds[i].HasPlayed)
 		{
+			if (m_TriggerSounds[i].iChannel != -1)
+			{
+				m_pGameInstance->StopSound(m_TriggerSounds[i].iChannel);
+				m_TriggerSounds[i].IsEnding = false;
+			}
+
 			if (m_TriggerSounds[i].IsClientTrigger)
 			{
 				if (OnClientTrigger)
 				{
 					_int iMaxSound = m_TriggerSounds[i].strSoundNames.size() - 1;
 					_randInt RandomSound(0, iMaxSound);
-					m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[RandomSound(m_RandomNumber)], m_TriggerSounds[i].fVolume);
+					m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[RandomSound(m_RandomNumber)], m_TriggerSounds[i].fInitVolume);
+					m_TriggerSounds[i].HasPlayed = true;
 				}
 			}
 			else
 			{
 				_int iMaxSound = m_TriggerSounds[i].strSoundNames.size() - 1;
 				_randInt RandomSound(0, iMaxSound);
-				m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[RandomSound(m_RandomNumber)], m_TriggerSounds[i].fVolume);
+				m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[RandomSound(m_RandomNumber)], m_TriggerSounds[i].fInitVolume);
 				m_TriggerSounds[i].HasPlayed = true;
 			}
 		}
@@ -434,7 +442,7 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigg
 			if (not m_pGameInstance->Get_IsPlayingSound(m_TriggerSounds[i].iChannel))
 			{
 				m_TriggerSounds[i].iChannel = -1;
-				m_TriggerSounds[i].fVolume = m_TriggerSounds[i].fInitVolume;
+				m_TriggerSounds[i].IsEnding = false;
 			}
 		}
 		//사운드 제거
@@ -445,18 +453,14 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigg
 				if (m_AnimDesc.iAnimIndex == m_TriggerSounds[i].iEndAnimIndices[j] &&
 					m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerSounds[i].fEndAnimPoses[j])
 				{
-					if (m_pGameInstance->Get_ChannelVolume(m_TriggerSounds[i].iChannel) <= 0.f)
-					{
-						m_pGameInstance->StopSound(m_TriggerSounds[i].iChannel);
-						m_TriggerSounds[i].iChannel = -1;
-						m_TriggerSounds[i].fVolume = m_TriggerSounds[i].fInitVolume;
-					}
-					else
-					{
-						m_TriggerSounds[i].fVolume -= (fTimeDelta / (m_TriggerSounds[i].fFadeoutSecond / m_TriggerSounds[i].fInitVolume));
-						m_pGameInstance->Set_ChannelVolume(m_TriggerSounds[i].iChannel, m_TriggerSounds[i].fVolume);
-					}
+					m_TriggerSounds[i].IsEnding = true;
+					break;
 				}
+			}
+
+			if (m_TriggerSounds[i].IsEnding)
+			{
+				m_pGameInstance->FadeoutSound(m_TriggerSounds[i].iChannel, fTimeDelta, m_TriggerSounds[i].fFadeoutSecond, false);
 			}
 		}
 	}
@@ -945,7 +949,6 @@ HRESULT CRealtimeVTFModel::Read_TriggerSounds(const string& strFilePath)
 			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fFadeoutSecond), sizeof(_float));
 			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.IsClientTrigger), sizeof(_bool));
 
-			SoundDesc.fVolume = SoundDesc.fInitVolume;
 			m_TriggerSounds.push_back(SoundDesc);
 			m_iNumTriggersSound++;
 		}

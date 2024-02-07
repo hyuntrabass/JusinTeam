@@ -7,6 +7,7 @@
 #include "InvenFrame.h"
 #include "ShopDesc.h"
 #include "ShopWindow.h"
+#include "Event_Manager.h"
 CShop::CShop(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
@@ -74,7 +75,28 @@ void CShop::Tick(_float fTimeDelta)
 		{
 			dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Init_SellItem();
 			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
+
+			CFadeBox::FADE_DESC Desc = {};
+			Desc.eState = CFadeBox::FADEOUT;
+			Desc.fDuration = 1.f;
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
+			{
+				return;
+			}
+
+			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+			{
+				if (m_pGameInstance->Get_IsLoopingSound(i))
+				{
+					m_pGameInstance->FadeinSound(i, fTimeDelta);
+				}
+			}
+
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
+			if (!m_bQuestTrigger && CEvent_Manager::Get_Instance()->Get_QuestTrigger(CEvent_Manager::POTION))
+			{
+				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("체력포션 구매"));
+			}
 			m_isActive = false;
 		}
 	}
@@ -364,10 +386,10 @@ HRESULT CShop::Add_Parts()
 	Button.fFontSize = 0.45f;
 	Button.strText = to_wstring(iMoney);
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_coin");
-	Button.vPosition = _vec2(1100.f, 30.f);
+	Button.vPosition = _vec2(1080.f, 30.f);
 	Button.vSize = _vec2(25.f, 25.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	Button.vTextPosition = _vec2(Button.vSize.x + 10.f, Button.vSize.y - 26.f);
+	Button.vTextPosition = _vec2(Button.vSize.x + 30.f, Button.vSize.y - 26.f);
 
 	m_pMoney = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
@@ -378,7 +400,7 @@ HRESULT CShop::Add_Parts()
 	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
 	Button.strText = to_wstring(iDiamond);
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Diamond");
-	Button.vPosition = _vec2(1010.f, 30.f);
+	Button.vPosition = _vec2(990.f, 30.f);
 	Button.vSize = _vec2(25.f, 25.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	Button.vTextPosition = _vec2(Button.vSize.x + 10.f, Button.vSize.y - 26.f);
@@ -454,6 +476,7 @@ HRESULT CShop::Init_ShopItems()
 	_float fTerm = 2.f;
 	_float fShopDescY = 90.f;
 	_uint iIndex = 0;
+	_uint iEquipIndex = 0;
 	CShopDesc::SHOPITEM_DESC ShopDesc = {};
 	ShopDesc.fDepth = m_fDepth - 0.01f;
 	ShopDesc.strItemName = TEXT("체력 포션");
@@ -477,8 +500,25 @@ HRESULT CShop::Init_ShopItems()
 	m_vecShopItems[EXPENDABLE].push_back(pShopDesc);
 
 
-	ShopDesc.strItemName = TEXT("마나 포션");
+	ShopDesc.strItemName = TEXT("안흔한옷");
+	ShopDesc.vPosition = _vec2(235.f, fStartY + fShopDescY * iEquipIndex + fTerm * iEquipIndex);
+	pShopDesc = (CShopDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_ShopDesc"), &ShopDesc);
+	if (not pShopDesc)
+	{
+		return E_FAIL;
+	}
+	m_vecShopItems[EQUIP].push_back(pShopDesc);
 
+	iEquipIndex++;
+
+	ShopDesc.strItemName = TEXT("그냥모자");
+	ShopDesc.vPosition = _vec2(235.f, fStartY + fShopDescY * iEquipIndex + fTerm * iEquipIndex);
+	pShopDesc = (CShopDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_ShopDesc"), &ShopDesc);
+	if (not pShopDesc)
+	{
+		return E_FAIL;
+	}
+	m_vecShopItems[EQUIP].push_back(pShopDesc);
 	return S_OK;
 }
 

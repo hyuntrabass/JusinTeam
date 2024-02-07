@@ -2,7 +2,8 @@
 #include "Client_Define.h"
 #include "OrthographicObject.h"
 #include "Wearable_Slot.h"
-
+#include "Skill_Model.h"
+#include "Scarecrow.h"
 
 BEGIN(Client)
 class CWearable_Slot;
@@ -31,6 +32,7 @@ private:
 	WEAPON_TYPE									m_eCurType{ WP_BOW };
 
 	_uint										m_iCurIndex{};
+	_int										m_iSoundChannel = -1;
 
 	_bool										m_isPicking{ false };
 	_bool										m_isPrototype{ false };
@@ -38,7 +40,7 @@ private:
 	_bool										m_isActive{ false };
 
 	_float										m_fDir{ 1.f };
-	_float										m_fTime{ 0.4f };
+	_float										m_fTime{ 0.2f };
 	CGameObject*								m_pMoney{ nullptr };
 	CGameObject*								m_pDiamond{ nullptr };
 	CGameObject*								m_pNotify{ nullptr };
@@ -58,11 +60,17 @@ private:
 
 	vector<class CSkillDesc*>					m_vecSkillDesc[WP_END];
 
+	LIGHT_DESC									m_Light_Desc{};
+
+	CSkill_Model*								m_pSkill_Model{ nullptr };
+	CScarecrow*									m_pScarecorw{ nullptr };
+
+public:
+	HRESULT Unlock_Skill(_uint iIndex);
 
 private:
 	void Init_SkillBookState(); 
 	HRESULT Init_SkillDesc(); 
-
 
 private:
 	HRESULT Add_Parts();

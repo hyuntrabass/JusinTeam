@@ -122,6 +122,22 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 		MSG_BOX("FATAL ERROR : m_pObject_Manager is NULL");
 	}
 
+	if (m_isPlayingVideo)
+	{
+		m_fVideoTimmer += fTimeDelta;
+		if (m_fVideoTimmer > m_fVideoDuration)
+		{
+			m_isPlayingVideo = false;
+			if (m_bVideoAfterSkip)
+			{
+				m_bReady_NextLevel = true;
+				m_bVideoAfterSkip = false;
+			}
+			
+		}
+		return;
+	}
+
 	m_pInput_Manager->Update_InputDev();
 
 	if (Key_Down(DIK_F1, InputChannel::Engine))
@@ -786,14 +802,14 @@ _bool CGameInstance::IsIn_Fov_Local(_vec4 vPos, _float fRange)
 	return m_pFrustum->IsIn_Fov_Local(vPos, fRange);
 }
 
-HRESULT CGameInstance::Register_CollisionObject(CGameObject* pObject, CCollider* pHitCollider, _bool IsPlayer, class CCollider* AttRangeCollider)
+HRESULT CGameInstance::Register_CollisionObject(CGameObject* pObject, CCollider* pHitCollider, _bool IsPlayer,  CCollider* AttRangeCollider,  CCollider* ParryingCollider)
 {
 	if (!m_pCollision_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
 	}
 
-	return m_pCollision_Manager->Register_CollisionObject(pObject, pHitCollider, IsPlayer , AttRangeCollider);
+	return m_pCollision_Manager->Register_CollisionObject(pObject, pHitCollider, IsPlayer , AttRangeCollider, ParryingCollider);
 }
 
 void CGameInstance::Delete_CollisionObject(CGameObject* pObject, _bool IsPlayer)
@@ -824,6 +840,16 @@ _bool CGameInstance::CheckCollision_Monster(CCollider* pCollider)
 	}
 
 	return m_pCollision_Manager->CheckCollision_Monster(pCollider);
+}
+
+_bool CGameInstance::CheckCollision_Parrying(CCollider* pCollider)
+{
+	if (!m_pCollision_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
+	}
+
+	return m_pCollision_Manager->CheckCollision_Parrying(pCollider);
 }
 
 _bool CGameInstance::Attack_Player(CCollider* pCollider, _uint iDamage, _uint iDamageType)
@@ -1107,6 +1133,26 @@ void CGameInstance::StopAll()
 	return m_pSound_Manager->StopAll();
 }
 
+HRESULT CGameInstance::FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond, _bool IsReusable, _float fFadeSoundRatio)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->FadeoutSound(iChannel, fTimeDelta, fFadeoutSecond, IsReusable, fFadeSoundRatio);
+}
+
+HRESULT CGameInstance::FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond, _float fFadeSoundRatio)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->FadeinSound(iChannel, fTimeDelta, fFadeinSecond, fFadeSoundRatio);
+}
+
 void CGameInstance::Register_CreateEffect_Callback(Func_CreateFX Function)
 {
 	m_Function_Create_FX = Function;
@@ -1228,6 +1274,16 @@ _float CGameInstance::Get_ChannelVolume(_uint iChannel)
 	return m_pSound_Manager->GetChannelVolume(iChannel);
 }
 
+_bool CGameInstance::Get_IsLoopingSound(_uint iChannel)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->Get_IsLoopingSound(iChannel);
+}
+
 void CGameInstance::Set_CameraModeIndex(const _uint& iIndex)
 {
 	m_iCameraModeIndex = iIndex;
@@ -1276,6 +1332,16 @@ void CGameInstance::Set_ChannelVolume(_uint iChannel, _float fVolume)
 	}
 
 	return m_pSound_Manager->SetChannelVolume(iChannel, fVolume);
+}
+
+void CGameInstance::Set_ChannelStartVolume(_uint iChannel)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->SetChannelStartVolume(iChannel);
 }
 
 void CGameInstance::Set_ZoomFactor(const _float fFactor)
@@ -1348,6 +1414,13 @@ const _bool& CGameInstance::IsSkipDebugRendering() const
 const wstring& CGameInstance::Get_InputString() const
 {
 	return m_strInput;
+}
+
+void CGameInstance::Video_Start(_float fVideoDuration ,_bool bSkip)
+{
+	m_fVideoDuration = fVideoDuration;
+	m_isPlayingVideo = true;
+	m_bVideoAfterSkip = bSkip;
 }
 
 void CGameInstance::Initialize_Level(_uint iLevelNum)

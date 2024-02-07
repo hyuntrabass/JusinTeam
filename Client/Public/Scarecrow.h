@@ -24,9 +24,10 @@ public:
 	HRESULT Bind_ShaderResources();
 
 private:
-	CShader* m_pShaderCom = { nullptr };
-	CRenderer* m_pRendererCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
+	CShader* m_pShaderCom = { nullptr };
+	CCollider* m_pHitCollider{ nullptr };
+	CRenderer* m_pRendererCom = { nullptr };
 
 public:
 	static CScarecrow* Create(_dev pDevice, _context pContext);

@@ -5,8 +5,11 @@
 #include "Loading_Horse.h"
 #include "Mouse.h"
 #include "Camera_Main.h"
+#include "Camera_CutScene.h"
+#include "CutScene_Curve.h"
 #include "UI_Manager.h"
 #include "Effect_Manager.h"
+#include "Event_Manager.h"
 #include "Trigger_Manager.h"
 
 CMainApp::CMainApp()
@@ -86,6 +89,7 @@ void CMainApp::Tick(_float fTimeDelta)
 	m_fTimeAcc += fFinalTimeDelta;
 
 	m_pGameInstance->Tick_Engine(fFinalTimeDelta);
+	CTrigger_Manager::Get_Instance()->Tick(fTimeDelta);
 }
 
 HRESULT CMainApp::Render()
@@ -187,6 +191,12 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Curve"), CVIBuffer_Curve::Create(m_pDevice, m_pContext))))
+
+	{
+		return E_FAIL;
+	}
+	
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail_50"), CVIBuffer_Trail::Create(m_pDevice, m_pContext, 50, _float2(0.01f, 0.01f)))))
 
 	{
@@ -281,6 +291,15 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 	{
 		return E_FAIL;
 	}
+	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_CutScene"), CCamera_CutScene::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Curve"), CCutScene_Curve::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 	return S_OK;
 }
 
@@ -344,15 +363,18 @@ CMainApp* CMainApp::Create()
 
 void CMainApp::Free()
 {
-	CUI_Manager::Destroy_Instance();
 	CEffect_Manager::Destroy_Instance();
+	CTrigger_Manager::Destroy_Instance();
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 
 	CGameInstance::Release_Engine();
-	
+
+	CEvent_Manager::Destroy_Instance();
+	CUI_Manager::Destroy_Instance();
+
 	if (_heapchk() != _HEAPOK)
 	{
 		MSG_BOX("Heap currupted");

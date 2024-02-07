@@ -32,15 +32,14 @@ HRESULT CVoid20::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(__super::Compute_PlayerPos()));
-
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = false;
 
 	m_eCurState = STATE_IDLE;
 
-	m_iHP = 5000;
+	m_iHP = 3000;
+	m_iDamageAccMax = 700;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
@@ -61,18 +60,25 @@ HRESULT CVoid20::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
-	m_pTransformCom->Set_Position(_vec3(100.f, 8.f, 108.f));
+
+	m_MonsterHpBarPos = _vec3(0.f, 3.f, 0.f);
+
+	//if (pArg)
+	{
+		if (FAILED(__super::Init(pArg)))
+		{
+			return E_FAIL;
+		}
+	}
+
+	m_pTransformCom->Set_Position(_vec3(2102.f, -16.f, 2085.f));
 
 	return S_OK;
 }
 
 void CVoid20::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_0))
-	{
-		Set_Damage(0, AT_Sword_Common);
-		//m_eCurState = STATE_DIE;
-	}
+	__super::Tick(fTimeDelta);
 
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
@@ -80,13 +86,12 @@ void CVoid20::Tick(_float fTimeDelta)
 	m_pModelCom->Set_Animation(m_Animation);
 
 	Update_Collider();
-	__super::Update_MonsterCollider();
+	__super::Update_BodyCollider();
 
 	Update_Trail(fTimeDelta);
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
-	__super::Tick(fTimeDelta);
 }
 
 void CVoid20::Late_Tick(_float fTimeDelta)
@@ -108,10 +113,25 @@ HRESULT CVoid20::Render()
 
 void CVoid20::Set_Damage(_int iDamage, _uint iDamageType)
 {
+	m_fHittedTime = 6.f;
+	m_eCurState = STATE_HIT;
+
 	m_iHP -= iDamage;
 	m_bDamaged = true;
-
-	m_eCurState = STATE_HIT;
+	m_bChangePass = true;
+	if (m_bHit == false)
+	{
+		m_iDamageAcc += iDamage;
+	}
+	CHitEffect::HITEFFECT_DESC Desc{};
+	Desc.iDamage = iDamage;
+	Desc.pParentTransform = m_pTransformCom;
+	Desc.vTextPosition = _vec2(0.f, 1.5f);
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
+	{
+		return;
+	}
+	m_fIdleTime = 0.f;
 
 	_vec4 vPlayerPos = __super::Compute_PlayerPos();
 	m_pTransformCom->LookAt(vPlayerPos);
@@ -142,6 +162,11 @@ void CVoid20::Set_Damage(_int iDamage, _uint iDamageType)
 
 void CVoid20::Init_State(_float fTimeDelta)
 {
+	_vec4 vPlayerPos = __super::Compute_PlayerPos();
+	_float fDistance = __super::Compute_PlayerDistance();
+	_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
+	vDir.y = 0.f;
+
 	if (m_iHP <= 0)
 	{
 		m_eCurState = STATE_DIE;
@@ -174,8 +199,6 @@ void CVoid20::Init_State(_float fTimeDelta)
 
 		case Client::CVoid20::STATE_CHASE:
 
-		{
-			_float fDistance = __super::Compute_PlayerDistance();
 			if (fDistance >= m_fAttackRange)
 			{
 				m_Animation.iAnimIndex = RUN;
@@ -193,35 +216,45 @@ void CVoid20::Init_State(_float fTimeDelta)
 			{
 				m_pTransformCom->Set_Speed(4.f);
 			}
-		}
 			break;
 
 		case Client::CVoid20::STATE_ATTACK:
 			m_bDamaged = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
+			m_bAttacking = true;
+
+			m_pTransformCom->LookAt_Dir(vDir);
 			break;
 
 		case Client::CVoid20::STATE_HIT:
-		{
-			_uint iHitPattern = rand() % 2;
-
-			switch (iHitPattern)
+			if (m_bHit == true)
 			{
-			case 0:
-				m_Animation.iAnimIndex = HIT_L;
-				m_Animation.isLoop = false;
-				break;
-			case 1:
-				m_Animation.iAnimIndex = HIT_R;
-				m_Animation.isLoop = false;
-				break;
+				m_Animation.iAnimIndex = KNOCKDOWN;
 			}
-		}
+
+			else
+			{
+				_uint iHitPattern = rand() % 2;
+				switch (iHitPattern)
+				{
+				case 0:
+					m_Animation.iAnimIndex = HIT_L;
+					break;
+				case 1:
+					m_Animation.iAnimIndex = HIT_R;
+					break;
+				}
+			}
+
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.5f;
 			break;
 
 		case Client::CVoid20::STATE_DIE:
 			m_Animation.iAnimIndex = DIE;
 			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 3.f;
+
 			break;
 		}
 
@@ -231,39 +264,81 @@ void CVoid20::Init_State(_float fTimeDelta)
 
 void CVoid20::Tick_State(_float fTimeDelta)
 {
+	_vec4 vPlayerPos = __super::Compute_PlayerPos();
+	_float fDistance = __super::Compute_PlayerDistance();
+
 	switch (m_eCurState)
 	{
 	case Client::CVoid20::STATE_IDLE:
+	{
 		m_fIdleTime += fTimeDelta;
 
-		if (m_fIdleTime >= 2.f)
+		if (m_bAttacking == true)
 		{
-			m_eCurState = STATE_WALK;
-			m_fIdleTime = 0.f;
+			if (m_fIdleTime >= 1.f)
+			{
+				if (fDistance >= m_fAttackRange)
+				{
+					m_eCurState = STATE_CHASE;
+				}
+				else
+				{
+					m_eCurState = STATE_ATTACK;
+				}
+
+				m_fIdleTime = 0.f;
+			}
+
+		}
+		else
+		{
+			if (m_fIdleTime >= 2.f)
+			{
+				m_eCurState = STATE_WALK;
+				m_fIdleTime = 0.f;
+			}
+
 		}
 
-		//_float fDistance = __super::Compute_PlayerDistance();
 		//if (fDistance <= m_fChaseRange)
 		//{
 		//	m_eCurState = STATE_CHASE;
 		//}
+	}
 
 		break;
 
 	case Client::CVoid20::STATE_WALK:
-		m_pTransformCom->Go_Straight(fTimeDelta);
+	{
+		_float fDist = 1.2f;
+		PxRaycastBuffer Buffer{};
+
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(),
+			m_pTransformCom->Get_State(State::Look).Get_Normalized(),
+			fDist, Buffer))
+		{
+			m_pTransformCom->LookAt_Dir(PxVec3ToVector(Buffer.block.normal));
+		}
+
+		_float fHeight = 3.f;
+		PxRaycastBuffer Buffer2{};
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos() + 0.2f * m_pTransformCom->Get_State(State::Look).Get_Normalized(),
+			_vec4(0.f, -1.f, 0.f, 0.f),
+			fHeight, Buffer2))
+		{
+			m_pTransformCom->Go_Straight(fTimeDelta);
+		}
 
 		if (m_pModelCom->IsAnimationFinished(WALK))
 		{
 			m_eCurState = STATE_IDLE;
 		}
+	}
 
 		break;
 
 	case Client::CVoid20::STATE_CHASE:
 	{
-		_vec4 vPlayerPos = __super::Compute_PlayerPos();
-		_float fDistance = __super::Compute_PlayerDistance();
 		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 		vDir.y = 0.f;
 
@@ -271,6 +346,9 @@ void CVoid20::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = STATE_IDLE;
 			m_bSlow = false;
+			m_bAttacking = false;
+
+			break;
 		}
 
 		if (fDistance <= m_fAttackRange)
@@ -363,7 +441,7 @@ void CVoid20::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(ATTACK01) || m_pModelCom->IsAnimationFinished(ATTACK02) ||
 			m_pModelCom->IsAnimationFinished(ATTACK03))
 		{
-			m_eCurState = STATE_CHASE;
+			m_eCurState = STATE_IDLE;
 		}
 
 		break;
@@ -373,6 +451,13 @@ void CVoid20::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
 		{
 			m_eCurState = STATE_CHASE;
+			m_fIdleTime = 0.f;
+
+			if (m_bHit == true)
+			{
+				m_iDamageAcc = 0;
+				m_bHit = false;
+			}
 		}
 
 		break;
@@ -475,7 +560,7 @@ CGameObject* CVoid20::Clone(void* pArg)
 void CVoid20::Free()
 {
 	__super::Free();
-
+	CEvent_Manager::Get_Instance()->Update_Quest(TEXT("그로아를 지켜라"));
 	Safe_Release(m_pSwordTrailL);
 	Safe_Release(m_pSwordTrailR);
 }

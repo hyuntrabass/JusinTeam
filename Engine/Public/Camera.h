@@ -12,6 +12,9 @@ public:
 		_float fFovY{}, fAspect{}, fNear{}, fFar{};
 	};
 
+	_bool Get_PlayCutScene() { return m_isPlayCutScene; }
+	void Set_PlayCutScene(_bool isPlayCutScene) { m_isPlayCutScene = isPlayCutScene; }
+
 protected:
 	CCamera(_dev pDevice, _context pContext);
 	CCamera(const CCamera& rhs);
@@ -25,6 +28,7 @@ public:
 
 protected:
 	_float m_fFovY{}, m_fAspect{}, m_fNear{}, m_fFar{};
+	_bool					m_isPlayCutScene = { false };
 
 public:
 	virtual CGameObject* Clone(void*) = 0;

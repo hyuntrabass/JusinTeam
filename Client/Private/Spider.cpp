@@ -1,7 +1,7 @@
 #include "Spider.h"
 
 const _float CSpider::m_fChaseRange = 7.f;
-const _float CSpider::m_fAttackRange = 5.f;
+const _float CSpider::m_fAttackRange = 4.f;
 
 _uint CSpider::m_iSpiderID = 0;
 _bool CSpider::m_bDirSelected[8] = { false };
@@ -45,18 +45,10 @@ HRESULT CSpider::Init(void* pArg)
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
-	PxCapsuleControllerDesc ControllerDesc{};
-	ControllerDesc.height = 0.5f; // 높이(위 아래의 반구 크기 제외
-	ControllerDesc.radius = 1.4f; // 위아래 반구의 반지름
-	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
-	ControllerDesc.slopeLimit = cosf(PxDegToRad(10.f)); // 캐릭터가 오를 수 있는 최대 각도
-	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
-	ControllerDesc.stepOffset = 0.f; // 캐릭터가 오를 수 있는 계단의 최대 높이
-
-	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
 	CTransform* pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_VILLAGE);
 	_vec4 vGroarPos = pGroarTransform->Get_State(State::Pos);
+	//vGroarPos.y -= 0.1f;
 	_vec4 vGroarLook = pGroarTransform->Get_State(State::Look).Get_Normalized();
 
 	_vec4 vDir[8] = {};
@@ -115,7 +107,7 @@ void CSpider::Tick(_float fTimeDelta)
 	m_pModelCom->Set_Animation(m_Animation);
 
 	Update_Collider();
-	__super::Update_MonsterCollider();
+	__super::Update_BodyCollider();
 
 	__super::Tick(fTimeDelta);
 
@@ -139,36 +131,36 @@ HRESULT CSpider::Render()
 
 void CSpider::Set_Damage(_int iDamage, _uint iDamageType)
 {
-	m_iHP -= iDamage;
-	m_bDamaged = true;
+	//m_iHP = 0;
+	m_eCurState = STATE_DIE;
 
-	//m_eCurState = STATE_HIT;
+	//m_bDamaged = true;
 
-	_vec4 vPlayerPos = __super::Compute_PlayerPos();
-	m_pTransformCom->LookAt(vPlayerPos);
+	//_vec4 vPlayerPos = __super::Compute_PlayerPos();
+	//m_pTransformCom->LookAt(vPlayerPos);
 
-	if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
-		iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
-	{
-		// 경직
-		m_Animation.fAnimSpeedRatio = 1.f;
-	}
+	//if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
+	//	iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
+	//{
+	//	// 경직
+	//	m_Animation.fAnimSpeedRatio = 1.f;
+	//}
 
-	if (iDamageType == AT_Bow_Common || iDamageType == AT_Bow_Skill1)
-	{
-		// 밀려나게
-		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
-		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
+	//if (iDamageType == AT_Bow_Common || iDamageType == AT_Bow_Skill1)
+	//{
+	//	// 밀려나게
+	//	_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
+	//	m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
 
-		m_Animation.fAnimSpeedRatio = 2.f;
-	}
+	//	m_Animation.fAnimSpeedRatio = 2.f;
+	//}
 
-	if (iDamageType == AT_Bow_Skill3)
-	{
-		// 이속 느려지게
-		m_bSlow = true;
-		m_Animation.fAnimSpeedRatio = 0.8f;
-	}
+	//if (iDamageType == AT_Bow_Skill3)
+	//{
+	//	// 이속 느려지게
+	//	m_bSlow = true;
+	//	m_Animation.fAnimSpeedRatio = 0.8f;
+	//}
 }
 
 void CSpider::Init_State(_float fTimeDelta)
@@ -176,19 +168,14 @@ void CSpider::Init_State(_float fTimeDelta)
 	CTransform* pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_VILLAGE);
 	_vec4 vGroarPos = pGroarTransform->Get_State(State::Pos);
 
-	if (m_pTransformCom->Get_State(State::Pos).y <= vGroarPos.y && m_iHP > 0)
-	{
-		m_pTransformCom->Go_Up(fTimeDelta * 0.1f);
-	}
+	//if (m_iHP <= 0)
+	//{
+	//	m_eCurState = STATE_SUICIDE;
+	//}
 
-	if (m_pTransformCom->Get_State(State::Pos).y >= vGroarPos.y)
+	if (m_bAppeared == true)
 	{
 		m_pTransformCom->Gravity(fTimeDelta);
-	}
-
-	if (m_iHP <= 0)
-	{
-		m_eCurState = STATE_DIE;
 	}
 
 	if (m_ePreState != m_eCurState)
@@ -265,14 +252,28 @@ void CSpider::Init_State(_float fTimeDelta)
 			//}
 			break;
 
-		case Client::CSpider::STATE_DIE:
+		case Client::CSpider::STATE_SUICIDE:
+		{
 			m_Animation.iAnimIndex = KNOCKDOWN;
 			m_Animation.fAnimSpeedRatio = 3.f;
 			m_Animation.isLoop = false;
 			m_Animation.fDurationRatio = 0.438f;
 
-			_uint iDamage = 30 + rand() % 20;
-			m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);
+			_float fDistance = __super::Compute_PlayerDistance();
+
+			if (fDistance <= 4.f)
+			{
+				m_pGameInstance->Attack_Player(nullptr, 10, MonAtt_Poison);
+			}
+		}
+
+			break;
+
+		case Client::CSpider::STATE_DIE:
+			m_Animation.iAnimIndex = DIE;
+			m_Animation.fAnimSpeedRatio = 3.f;
+			m_Animation.isLoop = false;
+
 			break;
 		}
 
@@ -282,15 +283,36 @@ void CSpider::Init_State(_float fTimeDelta)
 
 void CSpider::Tick_State(_float fTimeDelta)
 {
+	CTransform* pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_VILLAGE);
+	_vec4 vGroarPos = pGroarTransform->Get_State(State::Pos);
+
 	switch (m_eCurState)
 	{
 	case Client::CSpider::STATE_RAGE:
 
-		if (m_pModelCom->IsAnimationFinished(SALEROBIA_RAGE))
+		if (m_pTransformCom->Get_State(State::Pos).y < vGroarPos.y + 0.2f)
 		{
+			if (m_iHP > 0 && !m_bAppeared)
+			{
+				m_pTransformCom->Go_Up(fTimeDelta * 0.1f);
+			}
+		}
+		else if (m_pTransformCom->Get_State(State::Pos).y >= vGroarPos.y and m_pModelCom->IsAnimationFinished(SALEROBIA_RAGE))
+		{
+			m_bAppeared = true;
+
+			PxCapsuleControllerDesc ControllerDesc{};
+			ControllerDesc.height = 0.8f; // 높이(위 아래의 반구 크기 제외
+			ControllerDesc.radius = 0.35f; // 위아래 반구의 반지름
+			ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+			ControllerDesc.slopeLimit = cosf(PxDegToRad(10.f)); // 캐릭터가 오를 수 있는 최대 각도
+			ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+			ControllerDesc.stepOffset = 0.f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+
+			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+
 			m_eCurState = STATE_CHASE;
 		}
-
 		break;
 
 	case Client::CSpider::STATE_IDLE:
@@ -351,7 +373,7 @@ void CSpider::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->IsAnimationFinished(ROAR))
 		{
-			m_eCurState = STATE_DIE;
+			m_eCurState = STATE_SUICIDE;
 		}
 
 		break;
@@ -365,9 +387,18 @@ void CSpider::Tick_State(_float fTimeDelta)
 
 		break;
 
-	case Client::CSpider::STATE_DIE:
+	case Client::CSpider::STATE_SUICIDE:
 
 		if (m_pModelCom->IsAnimationFinished(KNOCKDOWN))
+		{
+			m_fDeadTime += fTimeDelta;
+		}
+
+		break;
+
+	case Client::CSpider::STATE_DIE:
+		
+		if (m_pModelCom->IsAnimationFinished(DIE))
 		{
 			m_fDeadTime += fTimeDelta;
 		}

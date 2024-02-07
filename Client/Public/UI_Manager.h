@@ -8,6 +8,7 @@ BEGIN(Engine)
 class CGameInstance;
 END
 BEGIN(Client)
+class CSkillSlot;
 class CItemBlock;
 class CSkillBlock;
 class CInvenFrame;
@@ -26,12 +27,21 @@ private:
 	MOUSESTATE		m_eMouseState { M_DEFAULT };
 	WEAPON_TYPE		m_eWeaponType{ WP_BOW };
 
+	_bool			m_isMpState{ false };
+	_bool			m_isHeal{ false };
+	_bool			m_isTargeting{ false };
+	_bool			m_isFirstKill{ false };
 	_bool			m_isSetSkillSlot{ false };
 	_bool			m_isPicking{ false };
 	_bool			m_isShowing{ false };
 	_bool			m_isInvenActive{ false };
 	_bool			m_isSetInvenState{ false };
 	_bool			m_bTimeStop{ false };
+	_bool			m_isBoss{ false };
+
+	_uint			m_iLevel{ 1 };
+	_uint			m_iHeal{  };
+	_uint			m_iMpState{  };
 
 
 	_uint			m_iCoin{};
@@ -46,16 +56,19 @@ private:
 	_vec4			m_vInvenPos{0.f, 1000.f, 0.f, 1.f};
 	_vec4			m_vPlayerPos{0.f, 0.f, 0.f, 0.f};
 	_vec4			m_vCameraPos{0.f, 0.f, 0.f, 0.f};
+	_vec4			m_vTargetPos{0.f, 0.f, 0.f, 0.f};
 	_vec4			m_vHairColor{0.f, 0.f, 0.f, 0.f};
 	
 	map<const wstring, ITEM> m_mapItem;
 
 	CGameInstance*	m_pGameInstance{ nullptr };
-	CGameObject*	m_pSkillSlots[WP_END][CSkillBlock::SKILL_END];
+	CSkillBlock*	m_pSkillBlock{ nullptr };
+	CSkillSlot*		m_pSkillSlots[WP_END][CSkillBlock::SKILL_END];
 	CGameObject*	m_pItemSlots[CItemBlock::ITEMSLOT_END];
 	CGameObject*	m_pInvenItemSlots[CItemBlock::ITEMSLOT_END];
 	CGameObject*	m_pInven{ nullptr };
 	CGameObject*	m_pInvenFrame{ nullptr };
+	CGameObject*	m_pSkillBook{ nullptr };
 
 	vector<CTransform*> m_vecRadarPos[TYPE_END];
 	SKILLINFO		m_SkillInfo[WP_END][4];
@@ -86,15 +99,20 @@ public:
 	HRESULT Set_InvenFrame(CGameObject* pGameObject);
 	HRESULT Set_ItemSlots(CItemBlock::ITEMSLOT eSlot, CGameObject* pGameObject);
 	HRESULT Set_InvenItemSlots(CItemBlock::ITEMSLOT eSlot, CGameObject* pGameObject);
-	HRESULT Set_SkillBookSlots(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot, CGameObject* pGameObject);
+	HRESULT Set_SkillBookSlots(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot, CSkillSlot* pGameObject);
+	HRESULT Set_SkillBlock(CSkillBlock* pGameObject);
+	HRESULT Set_SkillBook(CGameObject* pGameObject);
 
+	HRESULT Unlock_Skill(_uint iIndex);
+	_bool Use_Skill(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot, _int* iIndex, _int* iMp);
 	CGameObject* Get_InvenFrame();
-	SKILLINFO Get_SkillSlot(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot);
+	CSkillSlot* Get_SkillSlot(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot);
 	CGameObject* Get_ItemSlots(CItemBlock::ITEMSLOT eSlot);
 	_bool Is_ItemSlotFull(CItemBlock::ITEMSLOT eSlot);
 	HRESULT Set_Item_In_EmptySlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* iItemNum);
 	ITEM Set_Item_In_FullSlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* iItemNum, _int* iChangeItemNum = nullptr);
 	void Delete_Item_In_Slot(CItemBlock::ITEMSLOT eSlot);
+	void Use_Item_In_Slot(CItemBlock::ITEMSLOT eSlot);
 
 	void Set_RadarPos(TYPE eType, CTransform* pTransform);
 	void Delete_RadarPos(TYPE eType, CTransform* pTransform);
@@ -113,7 +131,14 @@ public:
 	void Set_MouseState(MOUSESTATE eState) { m_eMouseState = eState; }
 	void Set_Hp(_int iHp, _int iMaxHp) { m_vHp = _vec2((_float)iHp, (_float)iMaxHp); }
 	void Set_Mp(_int iMp, _int iMaxMp) { m_vMp = _vec2((_float)iMp, (_float)iMaxMp); }
+	void Set_isBoss(_bool isBoss) { m_isBoss = isBoss; }
+	void Set_isTargeting(_bool isTargeting) { m_isTargeting = isTargeting; }
+	void Set_TargetPos(_vec4 vTargetPos) { m_vTargetPos = vTargetPos; }
 
+	void Set_MpState(_bool isMp, _uint iMp = 0);
+	void Set_Heal(_bool isHeal, _uint iHeal = 0);
+	_bool Get_Heal(_uint* iHeal = nullptr);
+	_bool Get_MpState(_uint* iMp = nullptr);
 
 	void Set_SkillSlotChange(_bool isSkillSlotChange) { m_isSetSkillSlot = isSkillSlotChange; }
 	_bool Is_SkillSlotChange() { return m_isSetSkillSlot; }
@@ -121,6 +146,7 @@ public:
 	const _vec2& Get_Hp() const { return m_vHp; }
 	const _vec2& Get_Mp() const { return m_vMp; }
 
+	const _vec4& Get_TargetPos() const { return m_vTargetPos; }
 	const _vec4& Get_HairColor() const { return m_vHairColor; }
 	const _vec4& Get_InvenPos() const { return m_vInvenPos; }
 	const _vec4& Get_LastPlayerPos() const { return m_vPlayerPos; }
@@ -129,12 +155,15 @@ public:
 	const _uint& Get_Coin() const { return m_iCoin; }
 	const _uint& Get_Diamond() const { return m_iDiamond; }
 	const _float2& Get_Exp() const { return m_fExp; }
+	const _uint& Get_Level() const { return m_iLevel; }
 	const MOUSESTATE& Get_MouseState() const { return m_eMouseState; }
 
 	const PART_TYPE& Is_CustomPartChanged() const { return m_eChangedPart; }
 	const _bool& Is_Picking_UI() const { return m_isPicking; }
 	const _bool& Showing_FullScreenUI() const { return m_isShowing; }
 	const _bool& Is_InvenActive() const { return m_isInvenActive; }
+	const _bool& Is_BossFight() const { return m_isBoss; }
+	const _bool& Is_Targeting() const { return m_isTargeting; }
 
 	void Level_Up();
 public:

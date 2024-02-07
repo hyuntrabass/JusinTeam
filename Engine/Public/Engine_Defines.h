@@ -24,6 +24,7 @@ using namespace DirectX;
 #include <SimpleMath.h>
 
 #include <Xinput.h>
+#include <vfw.h>
 
 #include <PxPhysicsAPI.h>
 using namespace physx;
@@ -47,7 +48,7 @@ using namespace physx;
 #pragma comment(lib, "PhysX_64.lib")
 #pragma comment(lib, "PhysXFoundation_64.lib")
 #pragma comment(lib, "PhysXCooking_64.lib")
-
+#pragma comment (lib, "Vfw32.lib")
 
 #ifdef _DEBUG
 #pragma comment(lib, "Effects11d.lib")

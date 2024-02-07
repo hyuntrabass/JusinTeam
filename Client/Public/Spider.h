@@ -41,6 +41,7 @@ public:
 		STATE_CHASE,
 		STATE_ATTACK,
 		STATE_HIT,
+		STATE_SUICIDE,
 		STATE_DIE,
 		STATE_END
 	};
@@ -72,6 +73,9 @@ private:
 
 	_uint m_iAttackPattern = {};
 	_bool m_bSelectAttackPattern = { false };
+
+private:
+	_bool m_bAppeared = { false };
 
 private:
 	_bool m_bAttacked = { false };

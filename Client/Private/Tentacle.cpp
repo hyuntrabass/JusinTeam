@@ -39,7 +39,12 @@ HRESULT CTentacle::Init(void* pArg)
 
 	_vec4 vPlayerPos = __super::Compute_PlayerPos();
 
-	_mat EffectMatrix = _mat::CreateScale(2.5f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(vPlayerPos) + _vec3(0.f, 0.2f, 0.f));
+	CTransform* pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_VILLAGE);
+	_vec4 vGroarPos = pGroarTransform->Get_State(State::Pos);
+
+	vPlayerPos.y = vGroarPos.y + 0.1f;
+
+	_mat EffectMatrix = _mat::CreateScale(2.5f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(vPlayerPos)/* + _vec3(0.f, 0.2f, 0.f)*/);
 			
 	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Frame");
 	Info.pMatrix = &EffectMatrix;
@@ -49,7 +54,9 @@ HRESULT CTentacle::Init(void* pArg)
 	Info.pMatrix = &EffectMatrix;
 	m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
-	m_pTransformCom->Set_Position(_vec3(vPlayerPos + _vec3(0.f, -1.8f, 1.2f)));
+	_vec3 vSetPos = vPlayerPos + _vec3(0.f, 0.f, 1.2f);
+	vSetPos.y = vGroarPos.y - 1.5f;
+	m_pTransformCom->Set_Position(vSetPos);
 
     return S_OK;
 }
@@ -65,7 +72,20 @@ void CTentacle::Tick(_float fTimeDelta)
 			Safe_Release(m_pFrameEffect);
 			Safe_Release(m_pBaseEffect);
 
-			int a = 0;
+			EffectInfo Info{};
+			_vec4 vTargetPos = m_pTransformCom->Get_State(State::Pos);
+			vTargetPos -= _vec3(0.f, -1.55f, 1.2f);
+
+			_mat EffectMatrix = _mat::CreateScale(2.5f) * _mat::CreateTranslation(_vec3(vTargetPos));
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Small_Crack_Stone");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Rock_Frag");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			_uint iDamage = m_iSmallDamage - rand() % 15;
+			m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 		}
 
 		if (m_pModelCom->Get_CurrentAnimPos() >= 65.f && m_pModelCom->Get_CurrentAnimPos() <= 67.f)
@@ -73,6 +93,27 @@ void CTentacle::Tick(_float fTimeDelta)
 			Kill();
 		}
 
+		if (m_Animation.fStartAnimPos == 70.f)
+		{
+			m_pGameInstance->Play_Sound(TEXT("WD_3130_WideBring_01_SFX_01"));
+		}
+
+		if (m_pModelCom->Get_CurrentAnimPos() >= 85.f && m_pModelCom->Get_CurrentAnimPos() <= 160.f)
+		{
+			if (m_iSoundChannel == -1)
+			{
+				_uint iSoundIndex = rand() % 5 + 1;
+				wstring strSoundTag = TEXT("Whip_Whoosh_Base_A_SFX_0") + to_wstring(iSoundIndex);
+				m_iSoundChannel = m_pGameInstance->Play_Sound(strSoundTag, 0.7f);
+			}
+			else
+			{
+				if (not m_pGameInstance->Get_IsPlayingSound(m_iSoundChannel))
+				{
+					m_iSoundChannel = -1;
+				}
+			}
+		}
 		m_pModelCom->Set_Animation(m_Animation);
 		m_Animation.fStartAnimPos = 0.f;
 

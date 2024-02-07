@@ -30,7 +30,7 @@ HRESULT CSkillBlock::Init(void* pArg)
 		return E_FAIL;
 	}
 
-
+	CUI_Manager::Get_Instance()->Set_SkillBlock(this);
 	return S_OK;
 }
 
@@ -39,22 +39,33 @@ void CSkillBlock::Tick(_float fTimeDelta)
 	
 	_int iIdx = CUI_Manager::Get_Instance()->Get_WeaponType(PT_WEAPON, &m_eCurType);
 
-
+	/* ½ºÅ³ºÏ¿¡¼­ ÀåÂøÇÑ½ºÅ³ ¹Þ¾Æ¿È */
 	if (CUI_Manager::Get_Instance()->Is_SkillSlotChange())
 	{
 		CUI_Manager::Get_Instance()->Set_SkillSlotChange(false);
-		/*
-		
-		for (size_t i = 0; i < SKILL_END; i++)
+
+		for (size_t j = 0; j < WP_END; j++)
 		{
-			SKILLINFO tInfo = CUI_Manager::Get_Instance()->Get_SkillInfo(m_eCurType, i);
-			if (tInfo.strTexture == TEXT(""))
+			for (size_t i = 0; i < SKILL_END; i++)
 			{
-				continue;
+				CSkillSlot* pSkillSlot = CUI_Manager::Get_Instance()->Get_SkillSlot((WEAPON_TYPE)j, (SKILLSLOT)i);
+				if (pSkillSlot == nullptr)
+				{
+					continue;
+				}
+				if (!pSkillSlot->Is_Full())
+				{
+					m_pSlots[j][i]->Delete_Skill();
+					continue;
+				}
+				SKILLINFO tInfo = pSkillSlot->Get_SkillInfo();
+				m_pSlots[j][i]->Set_Skill(tInfo);
 			}
-			m_pSlots[m_eCurType][i]->Set_Skill(tInfo);
-		}*/
+		}
+	
 	}
+
+	
 
 	for (size_t i = 0; i < SKILL_END; i++)
 	{
@@ -79,6 +90,21 @@ HRESULT CSkillBlock::Render()
 	
 
 	return S_OK;
+}
+
+_bool CSkillBlock::Use_Skill(WEAPON_TYPE eType, SKILLSLOT eSlot, _int* iIndex, _int* iMp)
+{
+
+	if (m_pSlots[eType][eSlot]->Use_Skill())
+	{
+		//¸¶³ª »©°í
+		*iIndex = m_pSlots[m_eCurType][eSlot]->Get_SkillInfo().iSkillIdx;
+		*iMp = m_pSlots[m_eCurType][eSlot]->Get_SkillInfo().iMp;
+		return true;
+	}
+	*iIndex = -1;
+
+	return false;
 }
 
 HRESULT CSkillBlock::Add_Components()

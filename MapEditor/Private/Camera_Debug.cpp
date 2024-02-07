@@ -33,7 +33,7 @@ HRESULT CCamera_Debug::Init(void* pArg)
 
 void CCamera_Debug::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Get_CameraModeIndex() != CM_DEBUG)
+	if (m_pGameInstance->Get_CameraModeIndex() != CM_DEBUG )
 	{
 		m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_pGameInstance->Get_CameraPos()));
 		m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()));

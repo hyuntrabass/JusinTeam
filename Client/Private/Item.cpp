@@ -28,6 +28,7 @@ HRESULT CItem::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	m_isScreen = ((ITEM_DESC*)pArg)->isScreen;
 	m_bCanInteract = ((ITEM_DESC*)pArg)->bCanInteract;
 	m_haveBG = ((ITEM_DESC*)pArg)->haveBG;
 
@@ -190,6 +191,11 @@ HRESULT CItem::Render()
 	if (m_iNum > 1)
 	{
 		_vec2 vStartPos = _vec2(m_fX + 14.f, m_fY + 20.f);
+		if (m_isScreen)
+		{
+			vStartPos.x -= 5.f;
+			vStartPos.y -= 8.f;
+		}
 		m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(m_iNum), _vec2(vStartPos.x + 1.f, vStartPos.y), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
 		m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(m_iNum), _vec2(vStartPos.x, +vStartPos.y + 1.f), 0.3f, _vec4(0.f, 0.f, 0.f, 1.f));
 		m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(m_iNum), _vec2(vStartPos.x, +vStartPos.y), 0.3f, _vec4(1.f, 1.f, 1.f, 1.f));

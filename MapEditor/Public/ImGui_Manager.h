@@ -2,6 +2,7 @@
 
 #include "Base.h"
 #include "MapEditor_Define.h"
+#include "Camera.h"
 
 BEGIN(Engine)
 class CGameInstance;
@@ -33,6 +34,7 @@ struct DummyInfo
 	_float fTriggerSize{};
 	_float4 vPos{};
 	_float4 vLook{};
+	_bool bCheck{};
 	vector<_vec4> InstancePos;
 	class CDummy** ppDummy{ nullptr };
 };
@@ -53,6 +55,26 @@ struct TriggerInfo
 	_float fTriggerSize{};
 	_vec4 vPos{};
 	class CTrigger** ppTrigger{ nullptr };
+};
+
+struct CameraInfo
+{
+	string strName{};
+	_vec4 vStartCutScene{};
+	_vec4 vEndCutScene{};
+	_float fCameraSpeed{};
+	enum class ItemType eType {};
+	class CCamera_CutScene** ppCamera{ nullptr };
+	CCamera::Camera_Desc eCamera_Desc{};
+};
+
+struct SectionInfo
+{
+	_vec4 vStartCutScene{};
+	_vec4 vEndCutScene{};
+	wstring strSectionName{};
+	class CCutScene_Curve** ppCurve{ nullptr };
+	_uint iSectionType{};
 };
 
 struct TERRAIN_INFO_MAPTOOL : public TERRAIN_INFO
@@ -84,13 +106,16 @@ private:
 	HRESULT ImGuizmoMenu();
 
 	void Create_Dummy(const _int& iListIndex);
+	void Create_Camera();
+	void Create_Curve(class CCamera_CutScene* pCamera, _vec4 FirstPos, _vec4 SecondPos);
 	void Create_Map(const _int& iListIndex);
 	HRESULT Create_Terrain();
 	HRESULT Modify_Terrain();
 	void Delete_Dummy();
+	void Delete_Camera();
 	void Delete_Map();
 	void Delete_Terrain();
-
+	void Delete_Curve(vector<CCutScene_Curve*>& pAtCurve, vector<CCutScene_Curve*>& pEyeCurve);
 	void Reset();
 	void PopBack_Dummy();
 
@@ -133,6 +158,10 @@ private:
 	HRESULT Save_Trigger();
 	HRESULT Load_Trigger();
 
+	// 카메라
+	HRESULT Save_CutScene(class CCamera_CutScene* pCamera);
+	HRESULT Load_CutScene();
+
 	// 현재 위치 저장
 	HRESULT Save_Pos();
 
@@ -159,12 +188,18 @@ private:
 
 	_int DummyIndex{ 0 };
 	_int MapIndex{ 0 };
+	_int CameraIndex{ 0 };
 	_bool m_isMode{ false };
 	_int iTriggerNum{ -1 };
 
 	_bool m_isInstancing{false};
 	vector<_vec4> m_vInstancePos;
+	//_vec4 m_fCameraPos[4];
+	_mat m_mCameraEyePoint{};
+	_mat m_mCameraAtPoint{};
+	_vec4 m_fCameraPickingPos[2];
 	_float fTimeDeltaAcc{0.f};
+	_uint iClickCount{0};
 
 private:
 	// 파일의 이름 가져와서 저장
@@ -173,6 +208,8 @@ private:
 	unordered_map<wstring, vector<const char*>> Monsters;
 	vector<const char*> NPCs;
 	unordered_map<wstring, vector<const char*>> Envirs;
+	//unordered_map<const char*, SectionInfo> CameraEye;
+	//unordered_map<const char*, SectionInfo> CameraAt;
 
 	vector<class CMap*> m_MapsList;
 	vector<class CDummy*> m_ObjectsList;
@@ -180,28 +217,56 @@ private:
 	vector<class CDummy*> m_NPCList;
 	vector<class CDummy*> m_EnvirList;
 	vector<class CDummy*> m_TriggerList;
+	vector<class CCamera_CutScene*> m_CameraList;
+	vector<class CCutScene_Curve*> m_SectionEyeList;
+	vector<class CCutScene_Curve*> m_SectionAtList;
+
 
 	map<int, class CDummy*>m_DummyList;
 	map<int, class CMap*>m_Map{};
+	//map<int, class CCamera_CutScene*>m_Camera{};
 
 	class CDummy* m_pSelectedDummy{ nullptr };
 	class CMap* m_pSelectMap{ nullptr };
+	class CCamera_CutScene* m_pSelectCamera{ nullptr };
+	class CCutScene_Curve* m_pSelectSection{ nullptr };
 	class CTerrain* m_pTerrain{ nullptr };
 	char Search_Name[MAX_PATH]{};
 
 	_mat	m_ObjectMatrix{};
 	_mat	m_MapMatrix{};
+	_mat	m_CameraMatrix{};
 	_mat	m_ViewMatrix = {};
 	_mat	m_ProjMatrix = {};
 
+	
 	_int m_iSelectIdx = { -1 };
 	_bool m_iImGuizmoCheck = { false };
 	CTexture* m_pTextures{ nullptr };
 	wstring m_eType{};
 	_float m_fTriggerSize{1.f};
 	_int m_iTriggerNumber{0};
+	//_char SectionName[MAX_PATH]{};
+	string SectionName{};
+	SectionInfo m_eSectionInfo{};
+	_bool m_isTriggerCheck{ false };
 
+	// 카메라 Eye
+	_vec4 vEyeStartCurved{};
+	_vec4 vEyeStartPos{};
+	_vec4 vEyeEndPos{};
+	_vec4 vEyeEndCurved{};
+	// 카메라 At
+	_vec4 vAtStartCurved{};
+	_vec4 vAtStartPos{};
+	_vec4 vAtEndPos{};
+	_vec4 vAtEndCurved{};
 
+	// 컷씬카메라
+	_int m_iFrame{0};
+	_float fEyeSpeed{1.f};
+	_float fCameraSpeed{10.f};
+	_float m_fTimeDelta{ 0.f };
 public:
 	static CImGui_Manager* Create(const GRAPHIC_DESC& GraphicDesc);
 	virtual void Free() override;

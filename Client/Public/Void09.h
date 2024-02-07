@@ -84,6 +84,8 @@ private:
 	_bool m_bSelectAttackPattern = { false };
 
 private:
+	_bool m_bAttacking = { false };
+
 	_bool m_bAttacked = { false };
 
 	_bool m_bDamaged = { false };
@@ -92,6 +94,8 @@ private:
 private:
 	static const _float m_fChaseRange;
 	static const _float m_fAttackRange;
+
+	static _uint m_iIndex;
 
 public:
 	virtual HRESULT Add_Collider() override;

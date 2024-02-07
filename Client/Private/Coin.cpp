@@ -47,7 +47,7 @@ void CCoin::Tick(_float fTimeDelta)
 
 void CCoin::Late_Tick(_float fTimeDelta)
 {
-	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
+	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI() || CUI_Manager::Get_Instance()->Is_BossFight())
 	{
 		return;
 	}

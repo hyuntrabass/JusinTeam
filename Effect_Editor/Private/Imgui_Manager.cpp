@@ -137,6 +137,14 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		"InstPass_Particle_Sprite_Texture_RandomIndex_Dissolve_Trail",
 		"InstPass_Particle_Sprite_Color_RandomIndex_Trail",
 		"InstPass_Particle_Sprite_Color_RandomIndex_Dissolve_Trail",
+		"InstPass_Particle_Sprite_DiffMask",
+		"InstPass_Particle_Sprite_DiffMask_Dissolve",
+		"InstPass_Particle_Sprite_DiffMask_RandomIndex",
+		"InstPass_Particle_Sprite_DiffMask_RandomIndex_Dissolve",
+		"InstPass_Particle_Sprite_DiffMask_Trail",
+		"InstPass_Particle_Sprite_DiffMask_Dissolve_Trail",
+		"InstPass_Particle_Sprite_DiffMask_RandomIndex_Trail",
+		"InstPass_Particle_Sprite_DiffMask_RandomIndex_Dissolve_Trail",
 	};
 
 	const _char* szVTPasses[VTPass_End]
@@ -196,6 +204,9 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		"StaticPass_Worldmap_Cloud",
 		"StaticPsss_Rim",
 		"StaticPass_DiffEffect",
+		"StaticPass_SingleColorAlpha",
+		"StaticPass_MaskAlpha",
+		"StaticPass_DiffAlpha",
 	};
 
 	SeparatorText("Shader Pass");
@@ -817,6 +828,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	static _float fRectRotationAngle{};
 	static _bool isBillboard{};
 	static _vec3 vBillboardRotation{};
+	static _float fPartiAppearRatio{};
+	static _float fPartiDissolveRatio{ 0.8f };
 
 	if (m_iCurrent_Type == ET_PARTICLE)
 	{
@@ -881,6 +894,24 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			InputFloat3("Gravity Dir", reinterpret_cast<_float*>(&vGravityDir), "%.2f");
 		}
 
+		NewLine();
+		if (SliderFloat("Appearance", &fPartiAppearRatio, 0.f, 1.f, "Ratio: %.2f"))
+		{
+			if (fPartiDissolveRatio < fPartiAppearRatio)
+			{
+				fPartiDissolveRatio = fPartiAppearRatio;
+			}
+		}
+		if (SliderFloat("Dissolve", &fPartiDissolveRatio, 0.f, 1.f, "Ratio: %.2f"))
+		{
+			if (fPartiDissolveRatio < fPartiAppearRatio)
+			{
+				fPartiAppearRatio = fPartiDissolveRatio;
+			}
+		}
+
+		Info.fPartiAppearRatio = fPartiAppearRatio;
+		Info.fPartiDissolveRatio = fPartiDissolveRatio;
 		Info.iNumInstances = m_iNumInstance;
 		Info.PartiDesc = m_ParticleInfo;
 		Info.vSize = _vec3(1.f);
@@ -960,8 +991,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			Info.vBillboardRotation.z = vBillboardRotation.z;
 		}
 
-			Separator();
-			NewLine();
+		Separator();
+		NewLine();
 		InputFloat3("Size##2", reinterpret_cast<_float*>(&vSize), "%.2f");
 		Info.vSize = vSize;
 
@@ -1150,6 +1181,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			m_iNumInstance = Info.iNumInstances;
 			bApplyGravity = Info.bApplyGravity;
 			vGravityDir = Info.vGravityDir;
+			fPartiDissolveRatio = Info.fPartiDissolveRatio;
+			fPartiAppearRatio = Info.fPartiAppearRatio;
 			break;
 		case Effect::ET_RECT:
 			isBillboard = Info.isBillboard;
@@ -1493,6 +1526,8 @@ EffectInfo CImgui_Manager::Load_Data(_bool isAdd)
 			InFile.read(reinterpret_cast<_char*>(&Info.fRectRotationAngle), sizeof Info.fRectRotationAngle);
 			InFile.read(reinterpret_cast<_char*>(&Info.isBillboard), sizeof Info.isBillboard);
 			InFile.read(reinterpret_cast<_char*>(&Info.vBillboardRotation), sizeof Info.vBillboardRotation);
+			InFile.read(reinterpret_cast<_char*>(&Info.fPartiDissolveRatio), sizeof Info.fPartiDissolveRatio);
+			InFile.read(reinterpret_cast<_char*>(&Info.fPartiAppearRatio), sizeof Info.fPartiAppearRatio);
 
 			size_t iNameSize{};
 
@@ -1547,7 +1582,7 @@ EffectInfo CImgui_Manager::Load_Data(_bool isAdd)
 
 void CImgui_Manager::Load_OldData()
 {
-	EffectInfo OldInfo{};
+	OldEffectInfo OldInfo{};
 	//OldEffectInfo OldInfo{};
 
 	string strInputFilePath = "../../Client/Bin/EffectData/";
@@ -1596,6 +1631,7 @@ void CImgui_Manager::Load_OldData()
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.fRectRotationAngle), sizeof OldInfo.fRectRotationAngle);
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.isBillboard), sizeof OldInfo.isBillboard);
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.vBillboardRotation), sizeof OldInfo.vBillboardRotation);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.fPartiDissolveRatio), sizeof OldInfo.fPartiDissolveRatio);
 
 				size_t iNameSize{};
 
@@ -1644,48 +1680,46 @@ void CImgui_Manager::Load_OldData()
 				InFile.close();
 			}
 
-			EffectInfo NewInfo{ OldInfo };
-			if (NewInfo.iType == ET_RECT)
-			{
-				NewInfo.isBillboard = true;
-			}
+			EffectInfo NewInfo{ };
 
-			//NewInfo.iType = OldInfo.iType;
-			//NewInfo.isSprite = OldInfo.isSprite;
-			//NewInfo.vNumSprites = OldInfo.vNumSprites;
-			//NewInfo.fSpriteDuration = OldInfo.fSpriteDuration;
-			//NewInfo.PartiDesc = OldInfo.PartiDesc;
-			//NewInfo.iNumInstances = OldInfo.iNumInstances;
-			//NewInfo.fLifeTime = OldInfo.fLifeTime;
-			//NewInfo.vColor = OldInfo.vColor;
-			//NewInfo.iPassIndex = OldInfo.iPassIndex;
-			//NewInfo.vSize = OldInfo.vSize;
-			//NewInfo.vPosOffset = OldInfo.vPosOffset;
-			//NewInfo.vSizeDelta = OldInfo.vSizeDelta;
-			//NewInfo.bApplyGravity = OldInfo.bApplyGravity;
-			//NewInfo.vGravityDir = OldInfo.vGravityDir;
-			//NewInfo.fDissolveDuration = OldInfo.fDissolveDuration;
-			//NewInfo.bSkipBloom = OldInfo.bSkipBloom;
-			//NewInfo.fUnDissolveDuration = OldInfo.fUnDissolveDuration;
-			//NewInfo.vUVInit = OldInfo.vUVInit;
-			//NewInfo.vUVDelta = OldInfo.vUVDelta;
-			//NewInfo.isRandomSprite = OldInfo.isRandomSprite;
-			//NewInfo.hasLight = OldInfo.hasLight;
-			//NewInfo.Light_Desc = OldInfo.Light_Desc;
-			//NewInfo.isFixedIndex = OldInfo.isFixedIndex;
-			//NewInfo.iFixedSpriteIndex = OldInfo.iFixedSpriteIndex;
-			//NewInfo.isUVLoop = OldInfo.isUVLoop;
-			//NewInfo.fAlphaDelta = OldInfo.fAlphaDelta;
-			//NewInfo.fAlphaInit = OldInfo.fAlphaInit;
-			//NewInfo.fRectRotationAngle = OldInfo.fRectRotationAngle;
-			//NewInfo.isBillboard = OldInfo.isBillboard;
-			//NewInfo.vBillboardRotation = OldInfo.vBillboardRotation;
+			NewInfo.iType = OldInfo.iType;
+			NewInfo.isSprite = OldInfo.isSprite;
+			NewInfo.vNumSprites = OldInfo.vNumSprites;
+			NewInfo.fSpriteDuration = OldInfo.fSpriteDuration;
+			NewInfo.PartiDesc = OldInfo.PartiDesc;
+			NewInfo.iNumInstances = OldInfo.iNumInstances;
+			NewInfo.fLifeTime = OldInfo.fLifeTime;
+			NewInfo.vColor = OldInfo.vColor;
+			NewInfo.iPassIndex = OldInfo.iPassIndex;
+			NewInfo.vSize = OldInfo.vSize;
+			NewInfo.vPosOffset = OldInfo.vPosOffset;
+			NewInfo.vSizeDelta = OldInfo.vSizeDelta;
+			NewInfo.bApplyGravity = OldInfo.bApplyGravity;
+			NewInfo.vGravityDir = OldInfo.vGravityDir;
+			NewInfo.fDissolveDuration = OldInfo.fDissolveDuration;
+			NewInfo.bSkipBloom = OldInfo.bSkipBloom;
+			NewInfo.fUnDissolveDuration = OldInfo.fUnDissolveDuration;
+			NewInfo.vUVInit = OldInfo.vUVInit;
+			NewInfo.vUVDelta = OldInfo.vUVDelta;
+			NewInfo.isRandomSprite = OldInfo.isRandomSprite;
+			NewInfo.hasLight = OldInfo.hasLight;
+			NewInfo.Light_Desc = OldInfo.Light_Desc;
+			NewInfo.isFixedIndex = OldInfo.isFixedIndex;
+			NewInfo.iFixedSpriteIndex = OldInfo.iFixedSpriteIndex;
+			NewInfo.isUVLoop = OldInfo.isUVLoop;
+			NewInfo.fAlphaDelta = OldInfo.fAlphaDelta;
+			NewInfo.fAlphaInit = OldInfo.fAlphaInit;
+			NewInfo.fRectRotationAngle = OldInfo.fRectRotationAngle;
+			NewInfo.isBillboard = OldInfo.isBillboard;
+			NewInfo.vBillboardRotation = OldInfo.vBillboardRotation;
+			NewInfo.fPartiDissolveRatio = OldInfo.fPartiDissolveRatio;
+			NewInfo.fPartiAppearRatio = 0.f;
 
-			//NewInfo.strDiffuseTexture = OldInfo.strDiffuseTexture;
-			//NewInfo.strMaskTexture = OldInfo.strMaskTexture;
-			//NewInfo.strDissolveTexture = OldInfo.strDissolveTexture;
-			//NewInfo.strUnDissolveTexture = OldInfo.strUnDissolveTexture;
-			//NewInfo.strModel = OldInfo.strModel;
+			NewInfo.strDiffuseTexture = OldInfo.strDiffuseTexture;
+			NewInfo.strMaskTexture = OldInfo.strMaskTexture;
+			NewInfo.strDissolveTexture = OldInfo.strDissolveTexture;
+			NewInfo.strUnDissolveTexture = OldInfo.strUnDissolveTexture;
+			NewInfo.strModel = OldInfo.strModel;
 
 			filesystem::path strFilePath = entry.path();
 			ofstream OutFile(strFilePath.c_str(), ios::binary);
@@ -1722,6 +1756,8 @@ void CImgui_Manager::Load_OldData()
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.fRectRotationAngle), sizeof NewInfo.fRectRotationAngle);
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.isBillboard), sizeof NewInfo.isBillboard);
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.vBillboardRotation), sizeof NewInfo.vBillboardRotation);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.fPartiDissolveRatio), sizeof NewInfo.fPartiDissolveRatio);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.fPartiAppearRatio), sizeof NewInfo.fPartiAppearRatio);
 
 				size_t iNameSize{};
 				iNameSize = (NewInfo.strDiffuseTexture.size() + 1) * sizeof(_tchar);
@@ -1805,6 +1841,8 @@ HRESULT CImgui_Manager::Export_Data(EffectInfo& Info)
 			OutFile.write(reinterpret_cast<const _char*>(&Info.fRectRotationAngle), sizeof Info.fRectRotationAngle);
 			OutFile.write(reinterpret_cast<const _char*>(&Info.isBillboard), sizeof Info.isBillboard);
 			OutFile.write(reinterpret_cast<const _char*>(&Info.vBillboardRotation), sizeof Info.vBillboardRotation);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.fPartiDissolveRatio), sizeof Info.fPartiDissolveRatio);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.fPartiAppearRatio), sizeof Info.fPartiAppearRatio);
 
 			size_t iNameSize{};
 			iNameSize = (Info.strDiffuseTexture.size() + 1) * sizeof(_tchar);
@@ -1875,6 +1913,8 @@ HRESULT CImgui_Manager::Override_Data(EffectInfo& Info)
 		OutFile.write(reinterpret_cast<const _char*>(&Info.fRectRotationAngle), sizeof Info.fRectRotationAngle);
 		OutFile.write(reinterpret_cast<const _char*>(&Info.isBillboard), sizeof Info.isBillboard);
 		OutFile.write(reinterpret_cast<const _char*>(&Info.vBillboardRotation), sizeof Info.vBillboardRotation);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.fPartiDissolveRatio), sizeof Info.fPartiDissolveRatio);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.fPartiAppearRatio), sizeof Info.fPartiAppearRatio);
 
 		size_t iNameSize{};
 		iNameSize = (Info.strDiffuseTexture.size() + 1) * sizeof(_tchar);

@@ -190,10 +190,16 @@ HRESULT CLevel_Select::Ready_Map()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Sky"), TEXT("Prototype_GameObject_Hell"))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Sky"), TEXT("Prototype_GameObject_Sky"))))
 	{
 		return E_FAIL;
 	}
+
 	return S_OK;
 }
 
@@ -226,7 +232,6 @@ HRESULT CLevel_Select::Ready_Camera()
 	{
 		return E_FAIL;
 	}
-
 
 	return S_OK;
 }

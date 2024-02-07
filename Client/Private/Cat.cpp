@@ -134,23 +134,24 @@ void CCat::Tick_State(_float fTimeDelta)
 
 		if (m_fIdleTime >= 4.f)
 		{
-			//if (!m_bSelectPattern)
-			//{
-			//	m_iPattern = rand() % 3;
+			if (!m_bSelectPattern)
+			{
+				m_iPattern = rand() % 3;
 
-			//	switch (m_iPattern)
-			//	{
-			//	case 0:
-			//		m_eCurState = STATE_SIT;
-			//		break;
-			//	case 1:
-			//		m_eCurState = STATE_WALK;
-			//		break;
-			//	case 2:
-			//		m_eCurState = STATE_RUN;
-			//		break;
-			//	}
-			//}
+				switch (m_iPattern)
+				{
+				case 0:
+					m_eCurState = STATE_SIT;
+					break;
+				case 1:
+					m_eCurState = STATE_WALK;
+					break;
+				case 2:
+					m_eCurState = STATE_RUN;
+					break;
+				}
+			}
+
 			m_fIdleTime = 0.f;
 		}
 
@@ -158,12 +159,36 @@ void CCat::Tick_State(_float fTimeDelta)
 	case Client::CCat::STATE_SIT:
 		break;
 	case Client::CCat::STATE_WALK:
+	{
+		_float fDist = 1.2f;
+		PxRaycastBuffer Buffer{};
+
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(),
+			m_pTransformCom->Get_State(State::Look).Get_Normalized(),
+			fDist, Buffer))
+		{
+			m_pTransformCom->LookAt_Dir(PxVec3ToVector(Buffer.block.normal));
+		}
+
 		m_pTransformCom->Go_Straight(fTimeDelta);
 		m_pTransformCom->Set_Speed(1.5f);
+	}
 		break;
 	case Client::CCat::STATE_RUN:
+	{
+		_float fDist = 1.2f;
+		PxRaycastBuffer Buffer{};
+
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(),
+			m_pTransformCom->Get_State(State::Look).Get_Normalized(),
+			fDist, Buffer))
+		{
+			m_pTransformCom->LookAt_Dir(PxVec3ToVector(Buffer.block.normal));
+		}
+
 		m_pTransformCom->Go_Straight(fTimeDelta);
 		m_pTransformCom->Set_Speed(1.8f);
+	}
 		break;
 	}
 }

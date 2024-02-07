@@ -8,6 +8,7 @@ BEGIN(Client)
 enum Riding_Type
 {
 	Bird,
+	Horse,
 	Tiger,
 	Nihilir,
 	Type_End
@@ -50,6 +51,48 @@ enum Bird_Anim
 	Bird_2005_Landing,
 	Bird_2005_Start,
 	Bird_2005_Takeoff
+};
+enum Horse_Anim
+{
+	Horse_1004_Attack01,
+	Horse_1004_Idle,
+	Horse_1004_jump_End,
+	Horse_1004_jump_End_Run,
+	Horse_1004_jump_loop,
+	Horse_1004_jump_start,
+	Horse_1004_Run_Add_L,
+	Horse_1004_Run_Add_R,
+	Horse_1004_Run_F,
+	Horse_1004_Run_F_start,
+	Horse_1004_Run_L,
+	Horse_1004_Run_R,
+	Horse_1004_walk,
+	Horse_2004_Attack01,
+	Horse_2004_Idle,
+	Horse_2004_jump_End,
+	Horse_2004_jump_End_Run,
+	Horse_2004_jump_loop,
+	Horse_2004_jump_start,
+	Horse_2004_Run_Add_L,
+	Horse_2004_Run_Add_R,
+	Horse_2004_Run_F,
+	Horse_2004_Run_F_start,
+	Horse_2004_Run_L,
+	Horse_2004_Run_R,
+	Horse_4004_Attack01,
+	Horse_4004_Attack02,
+	Horse_4004_Attack03,
+	Horse_4004_Idle,
+	Horse_4004_jump_End,
+	Horse_4004_jump_End_Run,
+	Horse_4004_jump_loop,
+	Horse_4004_jump_start,
+	Horse_4004_Run_Add_L,
+	Horse_4004_Run_Add_R,
+	Horse_4004_Run_F,
+	Horse_4004_Run_F_start,
+	Horse_4004_Run_L,
+	Horse_4004_Run_R
 };
 enum Tiger_Anim
 {
@@ -119,40 +162,37 @@ public:
 	virtual HRESULT Render() override;
 
 public:
-	void Move(_float fTimeDelta);
-	void Init_State();
-	void Tick_State(_float fTimeDelta);
 	_mat Get_Mat();
 	_vec4 Get_Pos();
-	Riding_State Get_State() { return m_eState; }
-	_bool Get_Delete() { return m_bDelete; }
-	void Update_Collider();
+	void Init_State();
 	void Delete_Riding();
+	void Update_Collider();
+	void Move(_float fTimeDelta);
+	void Tick_State(_float fTimeDelta);
+	_bool Get_Delete() { return m_bDelete; }
+	Riding_State Get_State() { return m_eState; }
 	Riding_Type Get_RidingType() { return m_CurrentIndex; }
+
 private:
+	CModel* m_pModelCom = { nullptr };
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
-	CModel* m_pModelCom = { nullptr };
-
 	CCollider* m_pBodyColliderCom = { nullptr };
 	CCollider* m_pAttackColliderCom = { nullptr };
 
 private:
-	ANIM_DESC m_Animation{};
-	Riding_Type m_CurrentIndex{ Type_End };
-	Riding_State m_eState{};
-	Riding_State m_ePrevState{};
-	_mat m_Worldmatrix{};
-	wstring m_strPrototypeTag{};
 	_bool m_bDelete{};
+	_bool m_hasJumped{};
+	_mat m_Worldmatrix{};
+	Riding_State m_eState{};
+	ANIM_DESC m_Animation{};
+	_float m_fDissolveRatio{};
 	_float m_fRunSpeed{ 7.f };
 	_float m_fWalkSpeed{ 3.f };
-	_vec4 m_vOriginalLook{};
-	_float m_fInterpolationRatio{};
-	_bool m_isInterpolating{};
-	_float m_fDissolveRatio{};
+	Riding_State m_ePrevState{};
+	wstring m_strPrototypeTag{};
 	CTexture* m_pDissolveTextureCom{};
-	_bool m_hasJumped{};
+	Riding_Type m_CurrentIndex{ Type_End };
 
 public:
 	HRESULT Add_Components();

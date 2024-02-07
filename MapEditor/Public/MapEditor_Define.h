@@ -27,6 +27,7 @@ namespace MapEditor
 	{
 		CM_DEBUG,
 		CM_MAIN,
+		CM_CUTSCENE,
 		CM_END
 	};
 
@@ -160,6 +161,7 @@ namespace MapEditor
 		InstPass_Particle_Sprite_Color,
 		InstPass_Particle_MaskColor,
 	};
+
 
 #pragma endregion
 

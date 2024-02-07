@@ -26,7 +26,6 @@ HRESULT CMap::Init(void* pArg)
 		return E_FAIL;
 	}
 
-
 	m_iShaderPass = 0;
 	
 	m_pTransformCom->Set_Matrix(m_Info.m_Matrix);
@@ -41,6 +40,19 @@ void CMap::Tick(_float fTimeDelta)
 
 void CMap::Late_Tick(_float fTimeDelta)
 {
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Camera", LEVEL_STATIC);
+
+	_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
+	_vec4 vPos = m_pTransformCom->Get_CenterPos();
+
+	if (abs(vPlayerPos.x - vPos.x) > 500.f)
+	{
+		return;
+	}
+	if (m_pGameInstance->Get_CameraState() == CS_SKILLBOOK or m_pGameInstance->Get_CameraState() == CS_INVEN or m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
+	{
+		return;
+	}
 
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 

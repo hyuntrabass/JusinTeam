@@ -8,6 +8,7 @@ texture2D g_SkillReadyTexture;
 texture2D g_TextureArray[12];
 texture2D g_DissolveTexture;
 
+bool g_bOn = { false };
 int g_TexIndex;
 vector g_vColor;
 vector g_vSliceRect;
@@ -667,6 +668,70 @@ PS_OUT PS_Main_FadeHorizontal(PS_IN Input)
     return Output;
 
 }
+
+PS_OUT PS_Main_LerpColorNAlpha(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    if(g_vColor.a != 0.f)
+    {
+        Output.vColor.xyz = lerp(Output.vColor, g_vColor, 0.6f);
+    }
+
+    if(Output.vColor.a > 0.1f)
+    {
+        Output.vColor.a = g_fAlpha;
+    }
+
+    
+    return Output;
+}
+
+PS_OUT PS_Main_HPBoss(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    Output.vColor = g_Texture.Sample(LinearSampler, float2(Input.vTex));
+    vector vMask = g_MaskTexture.Sample(LinearSampler, float2(Input.vTex.x + g_fTime, Input.vTex.y));
+    Output.vColor.a = Output.vColor.a * vMask.r;
+    if (Input.vTex.x > g_fHpRatio)
+    {
+        discard;
+    }
+    if (g_bOn)
+    {
+        Output.vColor.xyz *= 1.5f;
+
+    }
+    return Output;
+}
+
+PS_OUT PS_Main_MaskColorMove(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    vector vMask = g_MaskTexture.Sample(LinearSampler, float2(Input.vTex.x + g_fx, Input.vTex.y + g_fy));
+    
+    Output.vColor = g_vColor;
+    
+    Output.vColor.a = Output.vColor.a * vMask.r;
+    
+    return Output;
+}
+
+PS_OUT PS_Main_ChangeBright(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+
+    Output.vColor *= g_fTime;
+        
+    Output.vColor.a *= g_fAlpha;
+    
+    return Output;
+}
 technique11 DefaultTechnique
 {
     pass UI
@@ -1071,5 +1136,53 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_FadeHorizontal();
+    }
+    pass LerpColorNAlpha
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_LerpColorNAlpha();
+    }
+pass HPBoss
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_HPBoss();
+    }
+pass MaskColorMove
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_MaskColorMove();
+    }
+pass ChangeBright
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_ChangeBright();
     }
 };

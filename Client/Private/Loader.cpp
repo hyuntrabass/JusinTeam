@@ -188,6 +188,10 @@ HRESULT CLoader::Load_Logo()
 	m_strLoadingText = L"Logo : Loading Model";
 #pragma region Model
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Riding_Horse"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Riding/Mesh/Horse.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Riding_Bird"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Riding/Mesh/Bird.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
@@ -207,6 +211,11 @@ HRESULT CLoader::Load_Logo()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Arrow"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Arrow/Mesh/arrow.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+	pivot = _mat::CreateRotationY(XMConvertToRadians(-90.f));
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_BoomArrow"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Arrow/Mesh/boomarrow.hyuntrastatmesh",false , pivot))))
 	{
 		return E_FAIL;
 	}
@@ -362,6 +371,11 @@ HRESULT CLoader::Load_Logo()
 		return E_FAIL;
 	}
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_CommonSurfaceTrail"), CCommonSurfaceTrail::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Trigger"), CTrigger::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -662,6 +676,11 @@ HRESULT CLoader::Load_Select()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Hell"), CHell::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	//if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Map"), CMap::Create(m_pDevice, m_pContext))))
 	//{
 	//	return E_FAIL;
@@ -802,9 +821,28 @@ HRESULT CLoader::Load_GamePlay()
 			}
 		}
 	}
+	strInputFilePath = "../Bin/Resources/Textures/UI/Boss";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_UI_Boss_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Tuto"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Tutorial/Tuto%d.png"), 3))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Tutorial/Tuto%d.png"), 6))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_NumDamage"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Num/Num%d.png"), 10))))
 	{
 		return E_FAIL;
 	}
@@ -898,32 +936,32 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Rabbit"),
-														CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Rabbit/Mesh/Rabbit.hyuntraanimmesh"))))
+														CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Rabbit/Hit/Mesh/Rabbit.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Furgoat"),
-														CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Furgoat/Mesh/Furgoat.hyuntraanimmesh"))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Furgoat/Hit/Mesh/Furgoat.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Nastron03"),
-														CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Nastron03/Mesh/Nastron03.hyuntraanimmesh"))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Nastron03/Mesh/Nastron03.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
 
 	Pivot = _mat::CreateScale(0.01f) * _mat::CreateRotationX(XMConvertToRadians(-90.f));
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_NPCvsMon"),
-														CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/NPCvsMon/Mesh/NPCvsMon.hyuntraanimmesh", false, Pivot))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/NPCvsMon/Mesh/NPCvsMon.hyuntraanimmesh", false, Pivot))))
 	{
 		return E_FAIL;
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Thief04"),
-														CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Thief04/Mesh/Thief04.hyuntraanimmesh"))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Thief04/Mesh/Thief04.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
@@ -934,8 +972,9 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	Pivot = _mat::CreateScale(1.5f);
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void01"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Void01/Mesh/Void01.hyuntraanimmesh"))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Void01/Hit/Mesh/Void01.hyuntraanimmesh", false, Pivot))))
 	{
 		return E_FAIL;
 	}
@@ -982,6 +1021,26 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
+
+	// Dead
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void01_Die"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Dead/Void01/Mesh/Void01_Die.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void05_Die"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Dead/Void05/Mesh/Void05_Die.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void09_Die"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Dead/Void09/Mesh/Void09_Die.hyuntraanimmesh", false, Pivot1))))
+	{
+		return E_FAIL;
+	}
+
 
 #pragma endregion Monster
 
@@ -1230,7 +1289,6 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
-	
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_ShopDesc"), CShopDesc::Create(m_pDevice, m_pContext))))
 	{
@@ -1251,7 +1309,6 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
-	
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Tutorial"), CTutorial::Create(m_pDevice, m_pContext))))
 	{
@@ -1268,6 +1325,27 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Skill"), CSkill::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_HitEffect"), CHitEffect::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_HPBoss"), CHPBoss::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_PopSkill"), CPop_Skill::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_PopLevelUp"), CPop_LevelUp::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Targeted"), CTargeted::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -1353,6 +1431,11 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Spider"), CSpider::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Dead"), CDead::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -1467,6 +1550,7 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 
 #pragma endregion
+#pragma endregion
 
 	m_strLoadingText = L"GamePlay : Loading Complete!";
 	m_isFinished = true;
@@ -1544,6 +1628,88 @@ HRESULT CLoader::Load_Village()
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Village_Envir_Object"), CEnvironment_Object::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
+	}
+
+	{
+		m_pGameInstance->Set_CurrentLevelIndex(LEVEL_VILLAGE);
+
+		{
+			const TCHAR* pGetPath = TEXT("../Bin/Data/Dungeon.dat");
+
+			std::ifstream inFile(pGetPath, std::ios::binary);
+
+			if (!inFile.is_open())
+			{
+				MSG_BOX("던전 데이터 파일 불러오기 실패.");
+				return E_FAIL;
+			}
+
+			_uint MapListSize;
+			inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+
+
+			for (_uint i = 0; i < MapListSize; ++i)
+			{
+				_ulong MapPrototypeSize;
+				inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+
+				wstring MapPrototype;
+				MapPrototype.resize(MapPrototypeSize);
+				inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+
+				_mat MapWorldMat;
+				inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+
+				MapInfo MapInfo{};
+				MapInfo.Prototype = MapPrototype;
+				MapInfo.m_Matrix = MapWorldMat;
+
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Dungeon"), &MapInfo)))
+				{
+					MSG_BOX("던전 생성 실패");
+					return E_FAIL;
+				}
+			}
+		}
+
+		{
+			const TCHAR* pGetPath = TEXT("../Bin/Data/Village_ObjectData.dat");
+
+			std::ifstream inFile(pGetPath, std::ios::binary);
+
+			if (!inFile.is_open())
+			{
+				MSG_BOX("오브젝트 파일을 찾지 못했습니다.");
+				return E_FAIL;
+			}
+
+			_uint ObjectListSize;
+			inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
+
+
+			for (_uint i = 0; i < ObjectListSize; ++i)
+			{
+				_ulong ObjectPrototypeSize;
+				inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
+
+				wstring ObjectPrototype;
+				ObjectPrototype.resize(ObjectPrototypeSize);
+				inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
+
+				_mat ObjectWorldMat;
+				inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
+
+				ObjectInfo ObjectInfo{};
+				ObjectInfo.strPrototypeTag = ObjectPrototype;
+				ObjectInfo.m_WorldMatrix = ObjectWorldMat;
+				ObjectInfo.eObjectType = Object_Building;
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Village_Etc_Object"), &ObjectInfo)))
+				{
+					MSG_BOX("오브젝트 불러오기 실패");
+					return E_FAIL;
+				}
+			}
+		}
 	}
 
 	m_isFinished = true;

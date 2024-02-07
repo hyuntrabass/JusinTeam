@@ -116,6 +116,7 @@ void CRoskva::Tick(_float fTimeDelta)
 
 	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
 	_bool isColl = m_pColliderCom->Intersect(pCollider);
+	m_isColl = isColl;
 	if (!m_bTalking && isColl && m_pGameInstance->Key_Down(DIK_E) /* && collider */) // 나중에 조건 추가
 	{
 		m_pGameInstance->Set_CameraState(CS_ZOOM);
@@ -156,7 +157,10 @@ void CRoskva::Late_Tick(_float fTimeDelta)
 {
 	if (!m_bTalking)
 	{
-		m_pSpeechBubble->Late_Tick(fTimeDelta);
+		if (m_isColl)
+		{
+			m_pSpeechBubble->Late_Tick(fTimeDelta);
+		}
 	}
 	else
 	{
@@ -267,12 +271,16 @@ void CRoskva::Set_Text(ROSKVA_STATE eState)
 
 HRESULT CRoskva::Init_Dialog()
 {
-	m_vecDialog.push_back(TEXT("안녕 내이름은 로스크바"));
-	m_vecDialog.push_back(TEXT("퀘스트를 주겠다"));
-	m_vecDialog.push_back(TEXT("동물을 타봐"));
-	m_vecDialog.push_back(TEXT("!펫 라이딩"));
-	m_vecDialog.push_back(TEXT("굿굿"));
-	m_vecDialog.push_back(TEXT("이것은 긴 텍스트이고 이제 더 할말은 없다"));
+	m_vecDialog.push_back(TEXT("안녕 나는 로스크바야~"));
+	m_vecDialog.push_back(TEXT("부탁이 있는데 들어줄래?"));
+	m_vecDialog.push_back(TEXT("거대 토끼들이 자꾸 성문근처에 돌아다녀서 고민이야"));
+	m_vecDialog.push_back(TEXT("이걸 어쩐담"));
+	m_vecDialog.push_back(TEXT("!로스크바의 부탁"));
+	m_vecDialog.push_back(TEXT("고마워"));
+	m_vecDialog.push_back(TEXT("덕분에 한시름 덜었어"));
+	m_vecDialog.push_back(TEXT("거대 토끼와 싸우느라 체력이 많이 떨어졌네"));
+	m_vecDialog.push_back(TEXT("마을에 있는 상인에게 체력포션을 구매할 수 있어!"));
+	m_vecDialog.push_back(TEXT("!체력포션 구매"));
 	m_vecDialog.push_back(TEXT("END"));
 
 	m_vecChatt.push_back(TEXT("머야 퀘스트 하고 와"));
@@ -348,7 +356,7 @@ HRESULT CRoskva::Add_Parts()
 	TexDesc.pParentTransform = m_pTransformCom;
 	TexDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SpeechBubble");
 	TexDesc.vPosition = _vec3(0.f, 2.2f, 0.f);
-	TexDesc.vSize = _vec2(20.f, 20.f);
+	TexDesc.vSize = _vec2(40.f, 40.f);
 
 	m_pSpeechBubble = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &TexDesc);
 	if (not m_pSpeechBubble)
@@ -359,7 +367,7 @@ HRESULT CRoskva::Add_Parts()
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::AABB;
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
-	CollDesc.vExtents = _vec3(0.8f, 0.8f, 0.8f);
+	CollDesc.vExtents = _vec3(10.f, 1.f, 10.f);
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.9f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),

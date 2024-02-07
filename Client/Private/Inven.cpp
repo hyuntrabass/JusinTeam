@@ -46,6 +46,8 @@ HRESULT CInven::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+	/*
+	
 	wstring strItem = TEXT("체력 포션");
 	CUI_Manager::Get_Instance()->Set_Item(strItem, 80);
 	
@@ -66,17 +68,21 @@ HRESULT CInven::Init(void* pArg)
 	
 	strItem = TEXT("신화옷");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);
-	
-	strItem = TEXT("그냥활");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
+	*/
 
-	strItem = TEXT("그냥옷");
+	wstring strItem = TEXT("그냥옷");
 	ITEM eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
 	m_pWearableSlots[W_CHEST]->Set_WearableItem(eItem);
 
 	strItem = TEXT("그냥검");
-	eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
-	m_pWearableSlots[W_EQUIP]->Set_WearableItem(eItem);
+	CUI_Manager::Get_Instance()->Set_Item(strItem);
+
+	strItem = TEXT("그냥활");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);
+
+
+
+	//m_pWearableSlots[W_EQUIP]->Set_WearableItem(eItem);
 	return S_OK;
 }
 
@@ -105,6 +111,23 @@ void CInven::Tick(_float fTimeDelta)
 			{
 				CEvent_Manager::Get_Instance()->Set_TutorialComplete(T_OPENINVEN);
 				CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_EQUIP);
+			}
+
+			LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_GAMEPLAY, TEXT("Light_Main"));
+
+			m_Light_Desc = *LightDesc;
+			LightDesc->eType = LIGHT_DESC::Directional;
+			LightDesc->vDirection = _float4(0.f, 0.f, -1.f, 0.f);
+			LightDesc->vDiffuse = _vec4(0.8f, 0.8f, 0.8f, 1.f);
+			LightDesc->vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
+			LightDesc->vSpecular = _vec4(1.f);
+
+			for (size_t i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+			{
+				if (m_pGameInstance->Get_IsLoopingSound(i))
+				{
+					m_pGameInstance->FadeoutSound(i, fTimeDelta, 1.f, true, 0.3f);
+				}
 			}
 
 			CFadeBox::FADE_DESC Desc = {};
@@ -137,6 +160,21 @@ void CInven::Tick(_float fTimeDelta)
 				CEvent_Manager::Get_Instance()->Set_TutorialComplete(T_EXIT);
 				//CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_EXIT);
 			}
+
+			if (m_Light_Desc.eType != LIGHT_DESC::TYPE::End)
+			{
+				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_GAMEPLAY, TEXT("Light_Main"));
+				*LightDesc = m_Light_Desc;
+			}
+			
+			for (size_t i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+			{
+				if (m_pGameInstance->Get_IsLoopingSound(i))
+				{
+					m_pGameInstance->FadeinSound(i, fTimeDelta);
+				}
+			}
+
 			CFadeBox::FADE_DESC Desc = {};
 			Desc.eState = CFadeBox::FADEOUT;
 			Desc.fDuration = 0.8f;
@@ -190,7 +228,10 @@ void CInven::Tick(_float fTimeDelta)
 				m_isReset = false;
 			}
 		}
-
+		if (m_pInvenFrame == nullptr)
+		{
+			int a = 10;
+		}
 
 		CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 		m_pExitButton->Tick(fTimeDelta);
@@ -290,7 +331,7 @@ HRESULT CInven::Set_WearableItem(WEARABLE_TYPE eType, ITEM eItemDesc)
 		dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(Item);
 	}
 	m_pWearableSlots[eType]->Set_WearableItem(eItemDesc);
-
+	m_pGameInstance->Play_Sound(TEXT("WeaponEquip"));
 	return S_OK;
 }
 
@@ -361,10 +402,10 @@ HRESULT CInven::Add_Parts()
 	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
 	Button.strText = to_wstring(iMoney);
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_coin");
-	Button.vPosition = _vec2(1100.f, 30.f);
+	Button.vPosition = _vec2(1080.f, 30.f);
 	Button.vSize = _vec2(25.f, 25.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	Button.vTextPosition = _vec2(Button.vSize.x + 10.f, Button.vSize.y - 26.f);
+	Button.vTextPosition = _vec2(Button.vSize.x + 30.f, Button.vSize.y - 26.f);
 
 	m_pMoney = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
@@ -375,7 +416,7 @@ HRESULT CInven::Add_Parts()
 	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
 	Button.strText = to_wstring(iDiamond);
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Diamond");
-	Button.vPosition = _vec2(1010.f, 30.f);
+	Button.vPosition = _vec2(990.f, 30.f);
 	Button.vSize = _vec2(25.f, 25.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	Button.vTextPosition = _vec2(Button.vSize.x + 10.f, Button.vSize.y - 26.f);

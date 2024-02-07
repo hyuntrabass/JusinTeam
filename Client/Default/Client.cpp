@@ -92,10 +92,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		fTimeAcc += pGameInstance->Compute_TimeDelta(TEXT("Timer_Default"));
 
-		//if (fTimeAcc > 1.f / 60.f)
+		if (fTimeAcc > 1.f / 60.f)
 		{
 			pMainApp->Tick(pGameInstance->Compute_TimeDelta(TEXT("Timer_60")));
-			pMainApp->Render();
+			if (not pGameInstance->Is_VideoPlaying())
+			{
+				pMainApp->Render();
+			}
 
 			fTimeAcc = 0.f;
 		}

@@ -41,6 +41,7 @@ public:
 	enum VOID05_STATE
 	{
 		STATE_IDLE,
+		STATE_DIG,
 		STATE_CHASE,
 		STATE_ATTACK,
 		STATE_HIT,
@@ -79,17 +80,18 @@ private:
 	CCommonTrail* m_pRightTrail = { nullptr };
 
 private:
+	_float m_fIdleTime = {};
+
+private:
 	_uint m_iAttackPattern = {};
 	_bool m_bSelectAttackPattern = { false };
 
 private:
 	_bool m_bAttacked = { false };
+	_bool m_bAttacked2 = { false };
 
 	_bool m_bDamaged = { false };
 	_bool m_bSlow = { false };
-
-private:
-	_uint m_iHitPercentage = {};
 
 private:
 	VOID05_ANIM m_eIdleAnim = { ANIM_END };

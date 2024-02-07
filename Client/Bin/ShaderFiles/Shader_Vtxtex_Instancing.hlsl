@@ -17,6 +17,7 @@ struct VS_IN
     row_major matrix TransformMatrix : World;
     vector vPrevPos : PrevPosition;
     uint iInstanceID : InstanceID;
+    float fDissolveRatio : Dissolve;
 };
 
 struct VS_OUT
@@ -25,6 +26,7 @@ struct VS_OUT
     float2 vPSize : PSize;
     uint iIndex : Index;
     vector vPrevPos : PrevPosition;
+    float fDissolveRatio : Dissolve;
 };
 
 VS_OUT VS_Main(VS_IN Input)
@@ -39,6 +41,7 @@ VS_OUT VS_Main(VS_IN Input)
     Output.vPSize = float2(Input.vPSize.x * Input.TransformMatrix._11, Input.vPSize.y * Input.TransformMatrix._22);
     Output.iIndex = g_iIndex;
     Output.vPrevPos = Input.vPrevPos;
+    Output.fDissolveRatio = 1.f - Input.fDissolveRatio;
     
     return Output;
 }
@@ -55,6 +58,7 @@ VS_OUT VS_Main_RandomIndex(VS_IN Input)
     Output.vPSize = float2(Input.vPSize.x * Input.TransformMatrix._11, Input.vPSize.y * Input.TransformMatrix._22);
     Output.iIndex = Input.iInstanceID;
     Output.vPrevPos = Input.vPrevPos;
+    Output.fDissolveRatio = 1.f - Input.fDissolveRatio;
     
     return Output;
 }
@@ -65,6 +69,7 @@ struct GS_IN
     float2 vPSize : PSize;
     uint iIndex : Index;
     vector vPrevPos : PrevPosition;
+    float fDissolveRatio : Dissolve;
 };
 
 struct GS_OUT
@@ -72,6 +77,7 @@ struct GS_OUT
     vector vPos : SV_Position;
     float2 vTex : Texcoord0;
     uint iIndex : Index;
+    float fDissolveRatio : Dissolve;
 };
 
 [maxvertexcount(6)]
@@ -106,6 +112,11 @@ void GS_MAIN(point GS_IN Input[1], inout TriangleStream<GS_OUT> Triangles)
     Output[1].iIndex = Input[0].iIndex;
     Output[2].iIndex = Input[0].iIndex;
     Output[3].iIndex = Input[0].iIndex;
+
+    Output[0].fDissolveRatio = Input[0].fDissolveRatio;
+    Output[1].fDissolveRatio = Input[0].fDissolveRatio;
+    Output[2].fDissolveRatio = Input[0].fDissolveRatio;
+    Output[3].fDissolveRatio = Input[0].fDissolveRatio;
 
     Triangles.Append(Output[0]);
     Triangles.Append(Output[1]);
@@ -151,6 +162,11 @@ void GS_MAIN_Trail(point GS_IN Input[1], inout TriangleStream<GS_OUT> Triangles)
     Output[2].iIndex = Input[0].iIndex;
     Output[3].iIndex = Input[0].iIndex;
 
+    Output[0].fDissolveRatio = Input[0].fDissolveRatio;
+    Output[1].fDissolveRatio = Input[0].fDissolveRatio;
+    Output[2].fDissolveRatio = Input[0].fDissolveRatio;
+    Output[3].fDissolveRatio = Input[0].fDissolveRatio;
+
     Triangles.Append(Output[0]);
     Triangles.Append(Output[1]);
     Triangles.Append(Output[2]);
@@ -166,7 +182,9 @@ struct PS_IN
     vector vPos : SV_Position;
     float2 vTex : Texcoord0;
     uint iIndex : Index;
+    float fDissolveRatio : Dissolve;
 };
+
 
 struct PS_OUT
 {
@@ -180,7 +198,7 @@ PS_OUT PS_Main(PS_IN Input)
     Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     
-    Output.vColor.a = vMask.r;
+    Output.vColor.a = vMask.r * Input.fDissolveRatio;
     
     return Output;
 }
@@ -203,7 +221,7 @@ PS_OUT PS_Main_Sprite(PS_IN Input)
 
     Output.vColor = g_vColor;
     
-    Output.vColor.a = vMask.r;
+    Output.vColor.a = vMask.r * Input.fDissolveRatio;
     
     return Output;
 }
@@ -219,7 +237,7 @@ PS_OUT PS_Main_Color(PS_IN Input)
         discard;
     }
     
-    Output.vColor.a = vMask.r;
+    Output.vColor.a = vMask.r * Input.fDissolveRatio;
     
     return Output;
 }
@@ -230,7 +248,7 @@ PS_OUT PS_Main_Dissolve(PS_IN Input)
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
     
-    if (g_fDissolveRatio > fDissolve)
+    if (g_fDissolveRatio + 1.f - Input.fDissolveRatio > fDissolve)
     {
         discard;
     }
@@ -249,7 +267,7 @@ PS_OUT PS_Main_Sprite_Dissolve(PS_IN Input)
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
     
-    if (g_fDissolveRatio > fDissolve)
+    if (g_fDissolveRatio + 1.f - Input.fDissolveRatio > fDissolve)
     {
         discard;
     }
@@ -279,7 +297,7 @@ PS_OUT PS_Main_Color_Dissolve(PS_IN Input)
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
     
-    if (g_fDissolveRatio > fDissolve)
+    if (g_fDissolveRatio + 1.f - Input.fDissolveRatio > fDissolve)
     {
         discard;
     }
@@ -307,6 +325,7 @@ PS_OUT PS_Main_Sprite_Texture(PS_IN Input)
     float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
     
     Output.vColor = g_Texture.Sample(LinearSampler, vUV);
+    Output.vColor.a *= Input.fDissolveRatio;
     
     return Output;
 }
@@ -317,7 +336,7 @@ PS_OUT PS_Main_Sprite_Texture_Dissolve(PS_IN Input)
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
     
-    if (g_fDissolveRatio > fDissolve)
+    if (g_fDissolveRatio + 1.f - Input.fDissolveRatio > fDissolve)
     {
         discard;
     }
@@ -330,6 +349,60 @@ PS_OUT PS_Main_Sprite_Texture_Dissolve(PS_IN Input)
     
     Output.vColor = g_Texture.Sample(LinearSampler, vUV);
     
+    return Output;
+}
+
+PS_OUT PS_Main_Sprite_Diff_Mask(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    float2 vSpriteSize = float2(1.f, 1.f) / g_vNumSprite;
+    int2 vSpriteCoord;
+    vSpriteCoord.x = Input.iIndex % g_vNumSprite.x;
+    vSpriteCoord.y = Input.iIndex / g_vNumSprite.x;
+    float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
+    
+    vector vMask = g_MaskTexture.Sample(LinearSampler, vUV);
+    if (vMask.r < 0.1f)
+    {
+        discard;
+    }
+
+    Output.vColor.xyz = g_Texture.Sample(LinearSampler, vUV).xyz;
+    
+    Output.vColor.a = vMask.r;
+    Output.vColor.a *= Input.fDissolveRatio;
+
+    return Output;
+}
+
+PS_OUT PS_Main_Sprite_Diff_Mask_Dissolve(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
+    
+    if (g_fDissolveRatio + 1.f - Input.fDissolveRatio > fDissolve)
+    {
+        discard;
+    }
+    
+    float2 vSpriteSize = float2(1.f, 1.f) / g_vNumSprite;
+    int2 vSpriteCoord;
+    vSpriteCoord.x = Input.iIndex % g_vNumSprite.x;
+    vSpriteCoord.y = Input.iIndex / g_vNumSprite.x;
+    float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
+    
+    vector vMask = g_MaskTexture.Sample(LinearSampler, vUV);
+    if (vMask.r < 0.1f)
+    {
+        discard;
+    }
+
+    Output.vColor.xyz = g_Texture.Sample(LinearSampler, vUV).xyz;
+    
+    Output.vColor.a = vMask.r;
+
     return Output;
 }
 
@@ -645,6 +718,110 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Sprite_Dissolve();
+    }
+
+    pass Particle_Sprite_Diff_Mask
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = compile gs_5_0 GS_MAIN();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Sprite_Diff_Mask();
+    }
+
+    pass Particle_Sprite_Diff_Mask_Dissolve
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = compile gs_5_0 GS_MAIN();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Sprite_Diff_Mask_Dissolve();
+    }
+
+    pass Particle_Sprite_Diff_Mask_RandomIndex
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main_RandomIndex();
+        GeometryShader = compile gs_5_0 GS_MAIN();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Sprite_Diff_Mask();
+    }
+
+    pass Particle_Sprite_Diff_Mask_RandomIndex_Dissolve
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main_RandomIndex();
+        GeometryShader = compile gs_5_0 GS_MAIN();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Sprite_Diff_Mask_Dissolve();
+    }
+
+    pass Particle_Sprite_Diff_Mask_Trail
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = compile gs_5_0 GS_MAIN_Trail();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Sprite_Diff_Mask();
+    }
+
+    pass Particle_Sprite_Diff_Mask_Dissolve_Trail
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = compile gs_5_0 GS_MAIN_Trail();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Sprite_Diff_Mask_Dissolve();
+    }
+
+    pass Particle_Sprite_Diff_Mask_RandomIndex_Trail
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main_RandomIndex();
+        GeometryShader = compile gs_5_0 GS_MAIN_Trail();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Sprite_Diff_Mask();
+    }
+
+    pass Particle_Sprite_Diff_Mask_RandomIndex_Dissolve_Trail
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main_RandomIndex();
+        GeometryShader = compile gs_5_0 GS_MAIN_Trail();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Sprite_Diff_Mask_Dissolve();
     }
 
 };

@@ -205,6 +205,9 @@
     <Filter Include="01.Utility\12. Cascades\Manager">
       <UniqueIdentifier>{7a0a221a-a881-4b3c-8ab6-41b9ce1932fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Components\VIBuffer\Curve">
+      <UniqueIdentifier>{eb38c04f-f1e6-4935-839c-1b0accdb7d87}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -395,6 +398,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Cascade.cpp">
       <Filter>01.Utility\12. Cascades</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Curve.cpp">
+      <Filter>01.Utility\03.Components\VIBuffer\Curve</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -593,6 +599,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Cascade.h">
       <Filter>01.Utility\12. Cascades</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Curve.h">
+      <Filter>01.Utility\03.Components\VIBuffer\Curve</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

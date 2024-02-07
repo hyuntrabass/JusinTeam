@@ -127,41 +127,11 @@
     <Filter Include="02.GameObjects\00.UI\FadeBox">
       <UniqueIdentifier>{02b4a4e2-0a72-4bdc-8658-86e2f4bab2a7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI">
-      <UniqueIdentifier>{7b7a7b62-d272-4f13-befe-cf110bc6e9ab}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\HP">
-      <UniqueIdentifier>{28597315-d375-4f4d-ad05-c4f2fcb6b563}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\MP">
-      <UniqueIdentifier>{16bcb1ca-f0d7-47b3-b794-1589037cc28f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\LEVEL">
-      <UniqueIdentifier>{8ef1c73b-ba30-4ab1-a17b-f1a7ae8e4cb1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\JOBMARK">
-      <UniqueIdentifier>{15f6b44f-7460-4190-917f-cd327a720c70}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\03.Player\Weapon">
       <UniqueIdentifier>{713b4ec7-bd75-4f8c-a806-3b00cf5e713f}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\07. NPC">
       <UniqueIdentifier>{897af39d-fd9a-46e6-b7f1-eb5be95ebd16}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\ItemBlock">
-      <UniqueIdentifier>{1c6a9727-3e73-4eb5-b65f-8f868161884b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\ItemBlock\Slot">
-      <UniqueIdentifier>{ea401f40-795b-4de8-ae6e-f811248b7802}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\SkillBlock">
-      <UniqueIdentifier>{035e699b-1aef-4ab2-a3bc-5c4b384cf13a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\SkillBlock\Slot">
-      <UniqueIdentifier>{05317b15-69d7-4c48-b656-4c0f5a1dd27d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\EXP">
-      <UniqueIdentifier>{ee5645a6-aaff-4259-ab47-4b4d8b9bbfb0}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\08. Boss">
       <UniqueIdentifier>{c61f29d7-c959-47df-8a82-3a02726afaf2}</UniqueIdentifier>
@@ -183,12 +153,6 @@
     </Filter>
     <Filter Include="02.GameObjects\00.UI\Texture&amp;Text">
       <UniqueIdentifier>{e433917e-0435-4307-a9c2-4229c403b1c9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Quest">
-      <UniqueIdentifier>{5bc3acdf-901a-4a18-a41b-de1e6afdec75}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Quest\QuestBox">
-      <UniqueIdentifier>{2da81de6-d6ce-459f-87a1-7a17217f00b1}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\04.Monster\00. ModelTest">
       <UniqueIdentifier>{0e66fe14-e7ce-411d-974f-08f8c5cae5d8}</UniqueIdentifier>
@@ -238,15 +202,6 @@
     <Filter Include="02.GameObjects\03.Player\Riding">
       <UniqueIdentifier>{073d72ed-ee94-48c7-98cd-dce26867b879}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Inven">
-      <UniqueIdentifier>{a3563dd2-4399-4fd0-b2ef-4ec038b98d67}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Wearable Slots">
-      <UniqueIdentifier>{b373fc29-646c-4bd3-8638-6561ec5c16ef}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Item">
-      <UniqueIdentifier>{b5de1188-8dfd-4cce-be30-4873c65ba985}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\04.Monster\06. Void\Void09">
       <UniqueIdentifier>{708cdd65-d615-4fef-b8a3-5eb67028c4ea}</UniqueIdentifier>
     </Filter>
@@ -267,15 +222,6 @@
     </Filter>
     <Filter Include="01.Levels\04.Village">
       <UniqueIdentifier>{c2ce56cf-d551-4fb0-b7a8-880ccf58f895}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Frame">
-      <UniqueIdentifier>{001bd6e9-6120-4b88-82ae-b6fa21e64e57}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Money">
-      <UniqueIdentifier>{622305e8-95d7-491a-8205-5e2949cc44b8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Menu">
-      <UniqueIdentifier>{ee0bd121-9652-4824-9ef1-c2d380c11fbf}</UniqueIdentifier>
     </Filter>
     <Filter Include="98.Default">
       <UniqueIdentifier>{6ef1e47a-756a-4482-9f45-993c308095c3}</UniqueIdentifier>
@@ -309,18 +255,6 @@
     </Filter>
     <Filter Include="02.GameObjects\08. Boss\Dragon_Boss">
       <UniqueIdentifier>{c85e57aa-99ca-447a-b20f-843b04b33165}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Radar">
-      <UniqueIdentifier>{3c6e6f3b-917a-4046-8c56-468ff11e4ee0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\ItemInfo">
-      <UniqueIdentifier>{9243a5dc-24e7-4b3f-af5a-176532212fb8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\00.3DUITex">
-      <UniqueIdentifier>{a14d2aee-5dc3-409f-abf7-2d9316c77608}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Dialog">
-      <UniqueIdentifier>{8bbd3cf3-05ec-4392-a70b-e8cdc3ab6750}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\03.Player\Weapon\Arrow">
       <UniqueIdentifier>{3c9caad4-a7e8-48db-a836-c8c8b3ca4edd}</UniqueIdentifier>
@@ -364,14 +298,89 @@
     <Filter Include="02.GameObjects\04.Monster\00. ModelTest\VTF">
       <UniqueIdentifier>{ac4eb217-ebae-46b1-9d8a-06454f02fd2b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Window">
-      <UniqueIdentifier>{b5355508-808b-4166-8998-e320d2cc8744}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\00.UI\99.tuto">
       <UniqueIdentifier>{f002451a-1d54-4f47-bfd8-09740f319e97}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Tentacle">
       <UniqueIdentifier>{e6130b2d-99fe-4290-b345-00db4943c384}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\13.Skill_Model">
+      <UniqueIdentifier>{aa0ca9b0-3047-42b3-a09b-1dd8eaa89345}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\13.Skill_Model\Scarecrow">
+      <UniqueIdentifier>{39bb1368-c49e-441b-82d5-8e0ba460da46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\X_Beam">
+      <UniqueIdentifier>{506303cf-f24b-4443-ae3e-a5a60c5e5c63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI">
+      <UniqueIdentifier>{7b7a7b62-d272-4f13-befe-cf110bc6e9ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\HP">
+      <UniqueIdentifier>{28597315-d375-4f4d-ad05-c4f2fcb6b563}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\MP">
+      <UniqueIdentifier>{16bcb1ca-f0d7-47b3-b794-1589037cc28f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\LEVEL">
+      <UniqueIdentifier>{8ef1c73b-ba30-4ab1-a17b-f1a7ae8e4cb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\JOBMARK">
+      <UniqueIdentifier>{15f6b44f-7460-4190-917f-cd327a720c70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\ItemBlock">
+      <UniqueIdentifier>{1c6a9727-3e73-4eb5-b65f-8f868161884b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\ItemBlock\Slot">
+      <UniqueIdentifier>{ea401f40-795b-4de8-ae6e-f811248b7802}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\SkillBlock">
+      <UniqueIdentifier>{035e699b-1aef-4ab2-a3bc-5c4b384cf13a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\SkillBlock\Slot">
+      <UniqueIdentifier>{05317b15-69d7-4c48-b656-4c0f5a1dd27d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\EXP">
+      <UniqueIdentifier>{ee5645a6-aaff-4259-ab47-4b4d8b9bbfb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Quest">
+      <UniqueIdentifier>{5bc3acdf-901a-4a18-a41b-de1e6afdec75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Quest\QuestBox">
+      <UniqueIdentifier>{2da81de6-d6ce-459f-87a1-7a17217f00b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven">
+      <UniqueIdentifier>{a3563dd2-4399-4fd0-b2ef-4ec038b98d67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Wearable Slots">
+      <UniqueIdentifier>{b373fc29-646c-4bd3-8638-6561ec5c16ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Item">
+      <UniqueIdentifier>{b5de1188-8dfd-4cce-be30-4873c65ba985}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Frame">
+      <UniqueIdentifier>{001bd6e9-6120-4b88-82ae-b6fa21e64e57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\ItemInfo">
+      <UniqueIdentifier>{9243a5dc-24e7-4b3f-af5a-176532212fb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Window">
+      <UniqueIdentifier>{b5355508-808b-4166-8998-e320d2cc8744}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Money">
+      <UniqueIdentifier>{622305e8-95d7-491a-8205-5e2949cc44b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Menu">
+      <UniqueIdentifier>{ee0bd121-9652-4824-9ef1-c2d380c11fbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Radar">
+      <UniqueIdentifier>{3c6e6f3b-917a-4046-8c56-468ff11e4ee0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\00.3DUITex">
+      <UniqueIdentifier>{a14d2aee-5dc3-409f-abf7-2d9316c77608}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Dialog">
+      <UniqueIdentifier>{8bbd3cf3-05ec-4392-a70b-e8cdc3ab6750}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\00.UI\GameUI\SkillBook">
       <UniqueIdentifier>{c341a31d-5530-47ac-b4cd-ec41f5b970b9}</UniqueIdentifier>
@@ -382,14 +391,26 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\SkillBook\Skill">
       <UniqueIdentifier>{ffb4daab-6b13-4dc9-8380-49de62d962c4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\13.Skill_Model">
-      <UniqueIdentifier>{aa0ca9b0-3047-42b3-a09b-1dd8eaa89345}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\00.UI\GameUI\UIEffect">
+      <UniqueIdentifier>{a46a4b97-980d-4a57-863c-226e482fb457}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\13.Skill_Model\Scarecrow">
-      <UniqueIdentifier>{39bb1368-c49e-441b-82d5-8e0ba460da46}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\00.UI\GameUI\UIEffect\Hit">
+      <UniqueIdentifier>{47605e18-940e-42be-842c-9bf301c51a13}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\X_Beam">
-      <UniqueIdentifier>{506303cf-f24b-4443-ae3e-a5a60c5e5c63}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\04.Monster\99. Dead">
+      <UniqueIdentifier>{3b7bdf7a-faaa-4479-8d3e-d2cca283a7d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\01.Camera\CutScene">
+      <UniqueIdentifier>{bf729dcd-21e7-4473-a536-26057a726c1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\01.Camera\CutScene\Curve">
+      <UniqueIdentifier>{3ed5c41d-0372-425d-9eb7-aa5417122c3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\06.Sky\Hell">
+      <UniqueIdentifier>{33adb1d1-a5eb-44d1-8260-3a45e1e43819}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\UIEffect\Target">
+      <UniqueIdentifier>{6ebcc380-0108-4b70-8ee2-43a716264acd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -419,9 +440,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\Level_Logo.h">
       <Filter>01.Levels\00.Logo</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\Player.h">
-      <Filter>02.GameObjects\03.Player</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Camera_Main.h">
       <Filter>02.GameObjects\01.Camera\Main</Filter>
@@ -783,6 +801,30 @@
     <ClInclude Include="..\Public\Tentacle.h">
       <Filter>02.GameObjects\08. Boss\Groar_Boss\Tentacle</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\HitEffect.h">
+      <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Dead.h">
+      <Filter>02.GameObjects\04.Monster\99. Dead</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\HpBoss.h">
+      <Filter>02.GameObjects\00.UI\GameUI\HP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Pop_Skill.h">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Player.h">
+      <Filter>02.GameObjects\03.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CutScene_Curve.h">
+      <Filter>02.GameObjects\01.Camera\CutScene\Curve</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_CutScene.h">
+      <Filter>02.GameObjects\01.Camera\CutScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Targeted.h">
+      <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Target</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -812,9 +854,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\Level_Logo.cpp">
       <Filter>01.Levels\00.Logo</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\Player.cpp">
-      <Filter>02.GameObjects\03.Player</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Main.cpp">
       <Filter>02.GameObjects\01.Camera\Main</Filter>
@@ -872,9 +911,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\NameTag.cpp">
       <Filter>02.GameObjects\00.UI\NameTag</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Rabbit.cpp">
-      <Filter>02.GameObjects\04.Monster\02. Animal\00. Rabbit</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Select_Npc.cpp">
       <Filter>02.GameObjects\05.Select_Object\Npc</Filter>
@@ -1169,6 +1205,33 @@
     </ClCompile>
     <ClCompile Include="..\Private\Tentacle.cpp">
       <Filter>02.GameObjects\08. Boss\Groar_Boss\Tentacle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HitEffect.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Dead.cpp">
+      <Filter>02.GameObjects\04.Monster\99. Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HPBoss.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\HP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Pop_Skill.cpp">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Player.cpp">
+      <Filter>02.GameObjects\03.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_CutScene.cpp">
+      <Filter>02.GameObjects\01.Camera\CutScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CutScene_Curve.cpp">
+      <Filter>02.GameObjects\01.Camera\CutScene\Curve</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Targeted.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Target</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Rabbit.cpp">
+      <Filter>02.GameObjects\04.Monster\02. Animal\00. Rabbit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -647,7 +647,7 @@ HRESULT CRenderer::Draw_RenderGroup()
 	}
 	if (FAILED(Render_NonBlend_Instance()))
 	{
-		MSG_BOX("Failed to Render : NonBlend");
+		MSG_BOX("Failed to Render : NonBlend_Instance");
 		return E_FAIL;
 	}
 
@@ -1635,7 +1635,7 @@ HRESULT CRenderer::Render_Blend()
 HRESULT CRenderer::Render_BlendBlur()
 {
 	//
-	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur"))))
+	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur")/*, m_pBlurDSV*/)))
 	{
 		return E_FAIL;
 	}
@@ -1666,7 +1666,9 @@ HRESULT CRenderer::Render_BlendBlur()
 	}
 
 	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Bloom"), L"MRT_BlurTest", m_fEffectBlurPower)))
+	{
 		return E_FAIL;
+	}
 
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_BlurTest"))))
 	{

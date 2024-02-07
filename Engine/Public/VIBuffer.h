@@ -28,6 +28,7 @@ public:
 	_uint Get_Stride() { return m_iVertexStride; }
 	_uint Get_NumPrimitives() { return m_iNumPrimitives; }
 	_uint Get_NumIndices() { return m_iNumIndices; }
+	_uint Get_NumVertices() { return m_iNumVertices; }
 	_uint Get_IndexSizePrimitives() { return m_iIndexSizePrimitives; }
 	_uint Get_NumIndicesPrimitives() { return m_iNumIndicesPrimitives; }
 	DXGI_FORMAT Get_IndexFormat() { return m_eIndexFormat; }
@@ -63,6 +64,8 @@ protected:
 	_uint m_iNumPrimitives{};
 	_uint m_iIndexSizePrimitives{};
 	_uint m_iNumIndicesPrimitives{};
+
+
 
 protected:
 	HRESULT Create_Buffer(ID3D11Buffer** ppBuffer);
