@@ -103,11 +103,6 @@ HRESULT CVoid09::Init(void* pArg)
 
 void CVoid09::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_9))
-	{
-		Set_Damage(0, AT_Sword_Common);
-	}
-
 	__super::Tick(fTimeDelta);
 
 	Init_State(fTimeDelta);

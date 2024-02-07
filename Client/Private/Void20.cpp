@@ -38,7 +38,7 @@ HRESULT CVoid20::Init(void* pArg)
 
 	m_eCurState = STATE_IDLE;
 
-	m_iHP = 5000;
+	m_iHP = 3000;
 	m_iDamageAccMax = 700;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
@@ -78,12 +78,6 @@ HRESULT CVoid20::Init(void* pArg)
 
 void CVoid20::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_0))
-	{
-		Set_Damage(0, AT_Sword_Common);
-		//m_eCurState = STATE_DIE;
-	}
-
 	__super::Tick(fTimeDelta);
 
 	Init_State(fTimeDelta);
@@ -253,12 +247,14 @@ void CVoid20::Init_State(_float fTimeDelta)
 			}
 
 			m_Animation.isLoop = false;
-			m_Animation.fAnimSpeedRatio = 2.f;
+			m_Animation.fAnimSpeedRatio = 2.5f;
 			break;
 
 		case Client::CVoid20::STATE_DIE:
 			m_Animation.iAnimIndex = DIE;
 			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 3.f;
+
 			break;
 		}
 
