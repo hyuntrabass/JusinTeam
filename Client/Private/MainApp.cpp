@@ -90,7 +90,6 @@ void CMainApp::Tick(_float fTimeDelta)
 
 	m_pGameInstance->Tick_Engine(fFinalTimeDelta);
 	CTrigger_Manager::Get_Instance()->Tick(fTimeDelta);
-	CTrigger_Manager::Get_Instance()->Late_Tick(fTimeDelta);
 }
 
 HRESULT CMainApp::Render()
@@ -192,6 +191,12 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Curve"), CVIBuffer_Curve::Create(m_pDevice, m_pContext))))
+
+	{
+		return E_FAIL;
+	}
+	
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail_50"), CVIBuffer_Trail::Create(m_pDevice, m_pContext, 50, _float2(0.01f, 0.01f)))))
 
 	{

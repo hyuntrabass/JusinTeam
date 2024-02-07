@@ -971,7 +971,8 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::Separator();
 			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0], 0);
 			ImGui::Separator();
-
+			ImGui::Checkbox("Limited", &m_isTriggerCheck);
+			ImGui::Separator();
 			if (ImGui::Button("Create"))
 			{
 				Create_Dummy(0);
@@ -1193,6 +1194,7 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 		{
 			Info.iTriggerNum = m_TriggerList.size();
 			Info.fTriggerSize = m_fTriggerSize;
+			Info.bCheck = m_isTriggerCheck;
 		}
 		else
 		{
@@ -2632,6 +2634,9 @@ HRESULT CImGui_Manager::Save_Trigger()
 			wstring TriggerPrototype = Trigger->Get_Info().Prototype;
 			_ulong TriggerPrototypeSize = (_ulong)TriggerPrototype.size();
 
+			_bool TriggerCheck = Trigger->Get_Info().bCheck;
+			outFile.write(reinterpret_cast<const char*>(&TriggerCheck), sizeof(_bool));
+
 			outFile.write(reinterpret_cast<const char*>(&TriggerPrototypeSize), sizeof(_ulong));
 			outFile.write(reinterpret_cast<const char*>(TriggerPrototype.c_str()), TriggerPrototypeSize * sizeof(wchar_t));
 
@@ -2683,15 +2688,15 @@ HRESULT CImGui_Manager::Load_Trigger()
 
 		for (_uint i = 0; i < TriggerListSize; ++i)
 		{
-
-
 			DummyInfo TriggerInfo{};
-
 
 			_uint iIndex{};
 			inFile.read(reinterpret_cast<char*>(&iIndex), sizeof(_uint));
 
 			TriggerInfo.iTriggerNum = iIndex;
+
+			_bool bCheck{};
+			inFile.read(reinterpret_cast<char*>(&bCheck), sizeof(_bool));
 
 			_ulong TriggerPrototypeSize;
 			inFile.read(reinterpret_cast<char*>(&TriggerPrototypeSize), sizeof(_ulong));
@@ -2710,6 +2715,7 @@ HRESULT CImGui_Manager::Load_Trigger()
 			TriggerInfo.eType = ItemType::Trigger;
 			TriggerInfo.vLook = _float4(TriggerWorldMat._31, TriggerWorldMat._32, TriggerWorldMat._33, TriggerWorldMat._34);
 			TriggerInfo.vPos = _float4(TriggerWorldMat._41, TriggerWorldMat._42, TriggerWorldMat._43, TriggerWorldMat._44);
+			TriggerInfo.bCheck = bCheck;
 			TriggerInfo.fTriggerSize = TriggerSize;
 			TriggerInfo.iTriggerNum = iIndex;
 			TriggerInfo.Prototype = TriggerPrototype;

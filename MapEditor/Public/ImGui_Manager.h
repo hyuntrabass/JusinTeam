@@ -34,6 +34,7 @@ struct DummyInfo
 	_float fTriggerSize{};
 	_float4 vPos{};
 	_float4 vLook{};
+	_bool bCheck{};
 	vector<_vec4> InstancePos;
 	class CDummy** ppDummy{ nullptr };
 };
@@ -248,7 +249,8 @@ private:
 	//_char SectionName[MAX_PATH]{};
 	string SectionName{};
 	SectionInfo m_eSectionInfo{};
-	
+	_bool m_isTriggerCheck{ false };
+
 	// Ä«¸Þ¶ó Eye
 	_vec4 vEyeStartCurved{};
 	_vec4 vEyeStartPos{};

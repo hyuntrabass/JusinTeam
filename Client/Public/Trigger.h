@@ -22,7 +22,8 @@ public:
 	virtual HRESULT Render() override;
 
 	_uint Get_TriggerNum() { return m_iTriggerNumber; }
-
+	TriggerType Get_TriggerType() { return m_eTriggerType; }
+	_bool Get_Collision() { return m_isCollision; }
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CCollider* m_pCollider{ nullptr };
@@ -33,7 +34,8 @@ private:
 	_float m_iColliderSize{};
 	_int 	m_iTriggerNumber{};
 	_bool	m_isCollision{false};
-
+	TriggerType m_eTriggerType{ TRIGGER_END };
+	_bool	m_isLimited{ false };
 
 private:
 	HRESULT Add_Components();

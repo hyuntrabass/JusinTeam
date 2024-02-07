@@ -1,5 +1,6 @@
 #include "Trigger_Manager.h"
 #include "Trigger.h"
+#include "Camera_CutScene.h"
 
 IMPLEMENT_SINGLETON(CTrigger_Manager)
 
@@ -15,84 +16,150 @@ HRESULT CTrigger_Manager::Init()
 
 void CTrigger_Manager::Tick(_float fTimeDelta)
 {
-	_uint iCurrLevel = m_pGameInstance->Get_CurrentLevelIndex();
-
-	for (auto iter = m_pTrigger[iCurrLevel].begin(); iter != m_pTrigger[iCurrLevel].end();)
+	for (auto& iter : m_pTrigger)
 	{
-		iter->second->Tick(fTimeDelta);
-
-		if (iter->second->isDead())
+		//m_pGameInstance->Get_CurrentLevelIndex();
+		m_isColl = iter->Get_Collision();
+		if (m_isColl == true)
 		{
-			Safe_Release(iter->second);
-			iter = m_pTrigger[iCurrLevel].erase(iter);
+			if (iter->Get_TriggerType() == VILLAGE_TRIGGER && m_isLimited == true)
+			{
+				CutScene_Registration(L"../Bin/Data/test_CutScene.dat");
+				m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+				m_isLimited = false;
+			}
+			else if (iter->Get_TriggerType() == FRONTDOOR_IN_TRIGGER && m_isLimited == true)
+			{
+
+			}
+			else if (iter->Get_TriggerType() == FRONTDOOR_OUT_TRIGGER && m_isLimited == false)
+			{
+
+			}
+			else if (iter->Get_TriggerType() == BACKDOOR_IN_TRIGGER && m_isLimited == false)
+			{
+
+			}
+			else if (iter->Get_TriggerType() == BACKDOOR_OUT_TRIGGER && m_isLimited == false)
+			{
+
+			}
+			else if (iter->Get_TriggerType() == BOSS_TRIGGER && m_isLimited == true)
+			{
+				CutScene_Registration(L"../Bin/Data/test_CutScene.dat");
+				m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+				m_isLimited = false;
+			}
 		}
-		else
+	}
+}
+
+void CTrigger_Manager::Limited_CutScene(_bool isLimited)
+{
+	m_isLimited = isLimited;
+}
+
+void CTrigger_Manager::Set_Trigger(CTrigger* pTrigger)
+{
+	m_pTrigger.push_back(pTrigger);
+}
+
+void CTrigger_Manager::Set_CutSceneCamera(CCamera_CutScene* pCutScene)
+{
+	m_pCutScene = pCutScene;
+}
+
+HRESULT CTrigger_Manager::CutScene_Registration(const wstring& strDataPath)
+{
+	//const TCHAR* pGetPath = L"../Bin/Data/test_CutScene.dat";
+	const TCHAR* pGetPath = strDataPath.c_str();
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MessageBox(g_hWnd, L"../Bin/Data/Village_CutScene.dat 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+		return E_FAIL;
+	}
+
+	_uint InputNameSize;
+	string InputName;
+	inFile.read(reinterpret_cast<char*>(&InputNameSize), sizeof(_uint));
+	inFile.read(reinterpret_cast<char*>(&InputName[0]), sizeof(InputNameSize));
+
+	_uint iEyeSize;
+	_uint iAtSize;
+	inFile.read(reinterpret_cast<char*>(&iEyeSize), sizeof(_uint));
+	inFile.read(reinterpret_cast<char*>(&iAtSize), sizeof(_uint));
+
+	_mat m_mCameraEyePoint{};
+	_mat m_mCameraAtPoint{};
+	// 카메라 Eye
+	_vec4 vEyeStartCurved{};
+	_vec4 vEyeStartPos{};
+	_vec4 vEyeEndPos{};
+	_vec4 vEyeEndCurved{};
+	// 카메라 At
+	_vec4 vAtStartCurved{};
+	_vec4 vAtStartPos{};
+	_vec4 vAtEndPos{};
+	_vec4 vAtEndCurved{};
+	_float fEyeSpeed{};
+	_float fCameraSpeed{};
+
+	for (_uint i = 0; i < iEyeSize; i++)
+	{
+
+		inFile.read(reinterpret_cast<char*>(&vEyeStartCurved), sizeof(_vec4));
+		m_mCameraEyePoint.Right(vEyeStartCurved);
+		inFile.read(reinterpret_cast<char*>(&vEyeStartPos), sizeof(_vec4));
+		m_mCameraEyePoint.Up(vEyeStartPos);
+		inFile.read(reinterpret_cast<char*>(&vEyeEndPos), sizeof(_vec4));
+		m_mCameraEyePoint.Look(vEyeEndPos);
+		inFile.read(reinterpret_cast<char*>(&vEyeEndCurved), sizeof(_vec4));
+		m_mCameraEyePoint.Position(vEyeEndCurved);
+
+		inFile.read(reinterpret_cast<char*>(&fCameraSpeed), sizeof(_float));
+
+		if (FAILED(m_pCutScene->Add_Eye_Curve(m_mCameraEyePoint, fCameraSpeed)))
 		{
-			++iter;
+			return E_FAIL;
+		}
+
+	}
+	for (_uint i = 0; i < iAtSize; ++i)
+	{
+		inFile.read(reinterpret_cast<char*>(&vAtStartCurved), sizeof(_vec4));
+		m_mCameraAtPoint.Right(vAtStartCurved);
+		inFile.read(reinterpret_cast<char*>(&vAtStartPos), sizeof(_vec4));
+		m_mCameraAtPoint.Up(vAtStartPos);
+		inFile.read(reinterpret_cast<char*>(&vAtEndPos), sizeof(_vec4));
+		m_mCameraAtPoint.Look(vAtEndPos);
+		inFile.read(reinterpret_cast<char*>(&vAtEndCurved), sizeof(_vec4));
+		m_mCameraAtPoint.Position(vAtEndCurved);
+
+		if (FAILED(m_pCutScene->Add_At_Curve(m_mCameraAtPoint)))
+		{
+			return E_FAIL;
 		}
 	}
-}
 
-void CTrigger_Manager::Late_Tick(_float fTimeDelta)
-{
-	_uint iCurrLevel = m_pGameInstance->Get_CurrentLevelIndex();
+	inFile.close();
 
-	for (auto& pTrigger : m_pTrigger[iCurrLevel])
-	{
-		pTrigger.second->Late_Tick(fTimeDelta);
-	}
-}
+	m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
 
-HRESULT CTrigger_Manager::Add_Layer_Trigger(TriggerInfo& pInfo, const _bool isStaticLevel)
-{
-	_uint iLevel = LEVEL_STATIC;
-	if (not isStaticLevel)
-	{
-		iLevel = m_pGameInstance->Get_CurrentLevelIndex();
-	}
-	return m_pGameInstance->Add_Layer(iLevel, L"Layer_Trigger", L"Prototype_GameObject_Trigger", &pInfo);
-}
+	return S_OK;
 
-void CTrigger_Manager::Create_Trigger(const wstring& strTriggerTag, _mat pMatrix)
-{
-	_uint iCurrLevel = m_pGameInstance->Get_CurrentLevelIndex();
-
-	TriggerInfo Info;
-	Info.WorldMat = pMatrix;
-
-	Add_Layer_Trigger(Info);
-	auto iter = m_pTrigger[iCurrLevel].find(&Info);
-	if (iter == m_pTrigger[iCurrLevel].end())
-	{
-		CTrigger* pTrigger = Clone(Info);
-
-		m_pTrigger[iCurrLevel].emplace(&pMatrix, pTrigger);
-	}
-}
-
-CTrigger* CTrigger_Manager::Clone(TriggerInfo& pInfo)
-{
-	return dynamic_cast<CTrigger*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Trigger", &pInfo));
-}
-
-void CTrigger_Manager::Delete_Trigger(const void* pMatrix)
-{
-}
-
-void CTrigger_Manager::Clear(_uint iLevelIndex)
-{
 }
 
 void CTrigger_Manager::Free()
 {
-	for (size_t i = 0; i < LEVEL_END; i++)
+	for (auto& iter : m_pTrigger)
 	{
-		for (auto& pTrigger : m_pTrigger[i])
-		{
-			Safe_Release(pTrigger.second);
-		}
-		m_pTrigger[i].clear();
+		Safe_Release(iter);
 	}
+	m_pTrigger.clear();
 
+	Safe_Release(m_pCutScene);
 	Safe_Release(m_pGameInstance);
 }

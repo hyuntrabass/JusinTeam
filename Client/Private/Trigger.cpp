@@ -2,13 +2,14 @@
 
 CTrigger::CTrigger(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
-
+	, m_pTrigger_Manager(CTrigger_Manager::Get_Instance())
 {
+	Safe_AddRef(m_pTrigger_Manager);
 }
 
 CTrigger::CTrigger(const CTrigger& rhs)
 	: CGameObject(rhs)
-	, m_pTrigger_Manager(CTrigger_Manager::Get_Instance())
+	, m_pTrigger_Manager(rhs.m_pTrigger_Manager)
 {
 	Safe_AddRef(m_pTrigger_Manager);
 }
@@ -26,7 +27,8 @@ HRESULT CTrigger::Init(void* pArg)
 	m_vPos = _vec4(m_Info.WorldMat._41, m_Info.WorldMat._42, m_Info.WorldMat._43, m_Info.WorldMat._44);
 	m_iColliderSize = m_Info.fSize;
 	m_iTriggerNumber = m_Info.iIndex;
-
+	m_eTriggerType = (TriggerType)m_iTriggerNumber;
+	m_isLimited = m_Info.bLimited;
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
@@ -34,6 +36,8 @@ HRESULT CTrigger::Init(void* pArg)
 	m_pTransformCom->Set_Scale(_vec3(0.01f, 0.01f, 0.01f));
 	m_pTransformCom->Set_State(State::Pos, m_vPos);
 
+	m_pTrigger_Manager->Set_Trigger(this);
+	m_pTrigger_Manager->Limited_CutScene(m_isLimited);
 	return S_OK;
 }
 
@@ -42,7 +46,8 @@ void CTrigger::Tick(_float fTimeDelta)
 	m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
 
 	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
-	_bool isColl = m_pCollider->Intersect(pCollider);
+	m_isCollision = m_pCollider->Intersect(pCollider);
+	
 }
 
 void CTrigger::Late_Tick(_float fTimeDelta)
@@ -114,6 +119,7 @@ void CTrigger::Free()
 	__super::Free();
 
 	Safe_Release(m_pTrigger_Manager);
+
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pCollider);
 }

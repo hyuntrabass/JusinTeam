@@ -855,9 +855,12 @@ HRESULT CLevel_GamePlay::Ready_TestTrigger()
 	
 			_uint iIndex{};
 			inFile.read(reinterpret_cast<char*>(&iIndex), sizeof(_uint));
-	
 			TriggerInfo.iIndex = iIndex;
-	
+		
+			_bool bCheck{};
+			inFile.read(reinterpret_cast<char*>(&bCheck), sizeof(_bool));
+			TriggerInfo.bLimited = bCheck;
+
 			_ulong TriggerPrototypeSize;
 			inFile.read(reinterpret_cast<char*>(&TriggerPrototypeSize), sizeof(_ulong));
 	
@@ -874,13 +877,11 @@ HRESULT CLevel_GamePlay::Ready_TestTrigger()
 	
 			TriggerInfo.WorldMat = TriggerWorldMat;
 	
-			CTrigger_Manager::Get_Instance()->Add_Layer_Trigger(TriggerInfo);
-
-	/*		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Trigger"), TEXT("Prototype_GameObject_Trigger"), &TriggerInfo)))
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Trigger"), TEXT("Prototype_GameObject_Trigger"), &TriggerInfo)))
 			{
 				MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
 				return E_FAIL;
-			}*/
+			}
 		}
 	
 		inFile.close();

@@ -26,8 +26,6 @@ public:
 	HRESULT Add_At_Curve(_mat matPoints);
 	HRESULT Delete_Curve();
 
-	HRESULT Village_CutScene();
-
 	void Play_Camera(_float fTimeDelta);
 
 private:

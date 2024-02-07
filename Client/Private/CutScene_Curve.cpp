@@ -24,13 +24,22 @@ HRESULT CCutScene_Curve::Init(void* pArg)
 
 	m_iSectionType = Info.iSectionType;
 	
-	ZeroMemory(&m_matPoint, sizeof _mat);
+	if (Info.ppCurve)
+	{
+		*Info.ppCurve = this;
+		Info.ppCurve = nullptr;
+	}
+	m_matPoint = Info.mCutSceneMatrix;
+	m_pVIBuffer->Set_ControlPoints(m_matPoint);
+	m_pVIBuffer->Modify_Line();
 
 	return S_OK;
 }
 
 void CCutScene_Curve::Tick(_float TimeDelta)
 {
+	m_pVIBuffer->Set_ControlPoints(m_matPoint);
+	m_pVIBuffer->Modify_Line();
 }
 
 void CCutScene_Curve::Late_Tick(_float TimeDelta)
@@ -40,8 +49,7 @@ void CCutScene_Curve::Late_Tick(_float TimeDelta)
 
 HRESULT CCutScene_Curve::Render()
 {
-	m_pVIBuffer->Set_ControlPoints(m_matPoint);
-	m_pVIBuffer->Modify_Line();
+
 
 	//if (FAILED(Bind_ShaderResources()))
 	//{
