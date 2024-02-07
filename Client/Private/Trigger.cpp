@@ -10,6 +10,8 @@ CTrigger::CTrigger(_dev pDevice, _context pContext)
 CTrigger::CTrigger(const CTrigger& rhs)
 	: CGameObject(rhs)
 	, m_pTrigger_Manager(rhs.m_pTrigger_Manager)
+	, m_isLimited(rhs.m_isLimited)
+	, m_eTriggerType(rhs.m_eTriggerType)
 {
 	Safe_AddRef(m_pTrigger_Manager);
 }
@@ -29,6 +31,8 @@ HRESULT CTrigger::Init(void* pArg)
 	m_iTriggerNumber = m_Info.iIndex;
 	m_eTriggerType = (TriggerType)m_iTriggerNumber;
 	m_isLimited = m_Info.bLimited;
+	TriggerType test = m_eTriggerType;
+	_bool tests = m_isLimited;
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
@@ -78,7 +82,7 @@ HRESULT CTrigger::Add_Components()
 	// Com_Collider
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
-	CollDesc.fRadius = 100.f;
+	CollDesc.fRadius = 100.f * m_iColliderSize;
 	CollDesc.vCenter = _vec3(m_vPos.x, m_vPos.y, m_vPos.z);
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 		TEXT("Com_Trigger_Sphere"), (CComponent**)&m_pCollider, &CollDesc)))

@@ -22,33 +22,35 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 		m_isColl = iter->Get_Collision();
 		if (m_isColl == true)
 		{
-			if (iter->Get_TriggerType() == VILLAGE_TRIGGER && m_isLimited == true)
+			TriggerType test = iter->Get_TriggerType();
+			_bool tests = iter->Get_Limited();
+			if (iter->Get_TriggerType() == VILLAGE_TRIGGER && iter->Get_Limited() == true)
+			{
+				CutScene_Registration(L"../Bin/Data/Village_CutScene.dat");
+				m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+				iter->Set_Limited(false);
+			}
+			else if (iter->Get_TriggerType() == FRONTDOOR_IN_TRIGGER && iter->Get_Limited() == false)
+			{
+
+			}
+			else if (iter->Get_TriggerType() == FRONTDOOR_OUT_TRIGGER && iter->Get_Limited() == false)
+			{
+
+			}
+			else if (iter->Get_TriggerType() == BACKDOOR_IN_TRIGGER && iter->Get_Limited() == false)
+			{
+
+			}
+			else if (iter->Get_TriggerType() == BACKDOOR_OUT_TRIGGER && iter->Get_Limited() == false)
+			{
+
+			}
+			else if (iter->Get_TriggerType() == BOSS_TRIGGER && iter->Get_Limited() == true)
 			{
 				CutScene_Registration(L"../Bin/Data/test_CutScene.dat");
 				m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
-				m_isLimited = false;
-			}
-			else if (iter->Get_TriggerType() == FRONTDOOR_IN_TRIGGER && m_isLimited == true)
-			{
-
-			}
-			else if (iter->Get_TriggerType() == FRONTDOOR_OUT_TRIGGER && m_isLimited == false)
-			{
-
-			}
-			else if (iter->Get_TriggerType() == BACKDOOR_IN_TRIGGER && m_isLimited == false)
-			{
-
-			}
-			else if (iter->Get_TriggerType() == BACKDOOR_OUT_TRIGGER && m_isLimited == false)
-			{
-
-			}
-			else if (iter->Get_TriggerType() == BOSS_TRIGGER && m_isLimited == true)
-			{
-				CutScene_Registration(L"../Bin/Data/test_CutScene.dat");
-				m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
-				m_isLimited = false;
+				iter->Set_Limited(false);
 			}
 		}
 	}

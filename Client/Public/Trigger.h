@@ -21,9 +21,13 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+	void Set_Limited(_bool bLimited) { m_isLimited = bLimited; }
+
 	_uint Get_TriggerNum() { return m_iTriggerNumber; }
 	TriggerType Get_TriggerType() { return m_eTriggerType; }
 	_bool Get_Collision() { return m_isCollision; }
+	_bool Get_Limited() { return m_isLimited; }
+
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CCollider* m_pCollider{ nullptr };

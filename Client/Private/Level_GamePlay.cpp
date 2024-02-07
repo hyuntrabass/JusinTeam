@@ -118,11 +118,11 @@ HRESULT CLevel_GamePlay::Init()
 		MSG_BOX("Failed to Ready UI");
 		return E_FAIL;
 	}
-	if (FAILED(Ready_TestTrigger()))
-	{
-		MSG_BOX("Failed to Ready TestTrigger");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_TestTrigger()))
+	//{
+	//	MSG_BOX("Failed to Ready TestTrigger");
+	//	return E_FAIL;
+	//}
 
 	EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Rain");
 	EffectDesc.pMatrix = &m_RainMatrix;
