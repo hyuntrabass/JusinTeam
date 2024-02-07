@@ -18,8 +18,6 @@ public:
 	virtual HRESULT Init_Prototype() override;
 	virtual HRESULT Init(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
-	virtual void Late_Tick(_float fTimeDelta) override;
-	virtual HRESULT Render() override;
 
 	void Set_Limited(_bool bLimited) { m_isLimited = bLimited; }
 
@@ -31,7 +29,6 @@ public:
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CCollider* m_pCollider{ nullptr };
-	CTrigger_Manager* m_pTrigger_Manager{ nullptr };
 
 private:
 	_vec4 m_vPos{};

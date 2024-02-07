@@ -73,12 +73,6 @@ HRESULT CGoat::Init(void* pArg)
 
 void CGoat::Tick(_float fTimeDelta)
 {
-	//if (m_pGameInstance->Key_Down(DIK_O))
-	//{
-	//	//Set_Damage(4, WP_BOW);
-	//	Kill();
-	//}
-
 	__super::Tick(fTimeDelta);
 
 	Init_State(fTimeDelta);

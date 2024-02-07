@@ -86,12 +86,6 @@ HRESULT CVoid05::Init(void* pArg)
 
 void CVoid05::Tick(_float fTimeDelta)
 {
-	//if (m_pGameInstance->Key_Down(DIK_5))
-	//{
-	//	//Set_Damage(0, AT_Sword_Common);
-	//	m_iHP = 0;
-	//}
-
 	__super::Tick(fTimeDelta);
 
 	Init_State(fTimeDelta);
