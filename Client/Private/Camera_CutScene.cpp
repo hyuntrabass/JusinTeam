@@ -47,11 +47,14 @@ void CCamera_CutScene::Tick(_float fTimeDelta)
 	}
 	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
 
-	if (m_pTrigger_Manager->Get_PlayCutScene() == true)
+	// ¹è°æ ÄÆ¾À ÇÑ¹ø¸¸ µ¹°Ô²û
+	if (m_pTrigger_Manager->Get_VillageCutScene() == true)
 	{
 		CutScene_Registration(m_pTrigger_Manager->Get_CutScene_Path());
-		m_pTrigger_Manager->Set_PlayCutScene(false);
+		m_pTrigger_Manager->Set_VillageCutScene(false);
 	}
+
+
 	if (m_isPlayCutScene == false)
 	{
 		m_iFrame = 0;

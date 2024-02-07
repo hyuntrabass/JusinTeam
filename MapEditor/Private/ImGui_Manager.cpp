@@ -201,12 +201,6 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 				m_pSelectMap->Select(false);
 				m_pSelectMap = nullptr;
 			}
-			if (m_pSelectCamera)
-			{
-				//m_pSelectCamera->Select(false);
-				m_pSelectCamera = nullptr;
-				iClickCount = 0;
-			}
 		}
 
 	}
@@ -931,8 +925,8 @@ HRESULT CImGui_Manager::ImGuiMenu()
 								if (!pEyeCurve.empty() && !pAtCurve.empty())
 								{
 									m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
-									fEyeSpeed = pEyeCurve[iEye_Count]->Get_SectionSpeed();
 									pEyeCurve[iEye_Count]->Set_SectionSpeed(fEyeSpeed);
+									fEyeSpeed = pEyeCurve[iEye_Count]->Get_SectionSpeed();
 									//pAtCurve[iAt_Count]->Set_SectionSpeed(fAtSpeed);
 								}
 							}

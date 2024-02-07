@@ -18,9 +18,9 @@ public:
 
 	void Limited_CutScene(_bool isLimited);
 
-	void Set_PlayCutScene(_bool isPlayCutScene) { m_isPlayCutScene = isPlayCutScene; }
+	void Set_VillageCutScene(_bool isPlayCutScene) { m_isPlayCutScene = isPlayCutScene; }
 	_bool Get_Limited() { return m_isLimited; }
-	_bool Get_PlayCutScene() { return m_isPlayCutScene; }
+	_bool Get_VillageCutScene() { return m_isPlayCutScene; }
 	wstring Get_CutScene_Path() { return m_strFilePath; }
 
 public:

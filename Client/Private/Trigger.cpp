@@ -19,10 +19,8 @@ HRESULT CTrigger::Init(void* pArg)
 {
 
 	TriggerInfo m_Info = *(TriggerInfo*)pArg;
-	_vector		vLocalPos = XMVector3TransformCoord(_vec4(m_Info.WorldMat._41, m_Info.WorldMat._42, m_Info.WorldMat._43, m_Info.WorldMat._44), XMMatrixInverse(nullptr, m_pTransformCom->Get_World_Matrix()));
 
 	m_vPos = _vec4(m_Info.WorldMat._41, m_Info.WorldMat._42, m_Info.WorldMat._43, m_Info.WorldMat._44);
-	m_vPos = vLocalPos;
 	m_iColliderSize = m_Info.fSize;
 	m_iTriggerNumber = m_Info.iIndex;
 	m_eTriggerType = (TriggerType)m_iTriggerNumber;
@@ -33,8 +31,7 @@ HRESULT CTrigger::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-	//m_pTransformCom->Set_Scale(_vec3(0.01f, 0.01f, 0.01f));
-	//m_pTransformCom->Set_State(State::Pos, m_vPos);
+	m_pTransformCom->Set_State(State::Pos, m_vPos);
 
 	CTrigger_Manager::Get_Instance()->Limited_CutScene(m_isLimited);
 
@@ -66,11 +63,10 @@ HRESULT CTrigger::Add_Components()
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
 	CollDesc.fRadius = m_iColliderSize;
-
-
 	CollDesc.vCenter = _vec3(0.f,0.f,0.f);
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-		TEXT("Com_Trigger_Sphere"), (CComponent**)&m_pCollider, &CollDesc)))
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Trigger_Sphere"), (CComponent**)&m_pCollider, &CollDesc)))
+	{
 		return E_FAIL;
 	}
 
