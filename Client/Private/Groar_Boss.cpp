@@ -246,17 +246,21 @@ HRESULT CGroar_Boss::Render()
 
 void CGroar_Boss::Set_Damage(_int iDamage, _uint iDamageType)
 {
-	m_iHP -= iDamage;
-	m_bChangePass = true;
-
-	CHitEffect::HITEFFECT_DESC Desc{};
-	Desc.iDamage = iDamage;
-	Desc.pParentTransform = m_pTransformCom;
-	Desc.vTextPosition = _vec2(0.f, 1.5f);
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
+	if (m_eCurState == STATE_BOSS)
 	{
-		return;
-	}
+		m_iHP -= iDamage;
+		m_bChangePass = true;
+
+		CHitEffect::HITEFFECT_DESC Desc{};
+		Desc.iDamage = iDamage;
+		Desc.pParentTransform = m_pTransformCom;
+		Desc.vTextPosition = _vec2(0.f, 1.5f);
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
+		{
+			return;
+		}
+	}	
+	
 	//if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
 	//	iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
 	//{

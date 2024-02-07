@@ -75,11 +75,6 @@ HRESULT CRabbit::Init(void* pArg)
 
 void CRabbit::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_R, InputChannel::UI))
-	{
-		Set_Damage(0, AT_Bow_Common);
-	}
-
 	__super::Tick(fTimeDelta);
 
 	Init_State(fTimeDelta);
