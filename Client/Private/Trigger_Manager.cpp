@@ -106,10 +106,9 @@ HRESULT CTrigger_Manager::Ready_Trigger_Village()
 		TriggerInfo.WorldMat = TriggerWorldMat;
 
 		CTrigger* pTrigger = dynamic_cast<CTrigger*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Trigger"), &TriggerInfo));
-		
 		if (not pTrigger)
 		{
-			MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
+			MSG_BOX("트리거 생성 실패.");
 			return E_FAIL;
 		}
 
@@ -123,9 +122,9 @@ HRESULT CTrigger_Manager::Ready_Trigger_Village()
 
 void CTrigger_Manager::Free()
 {
-	for (auto& iter : m_pTrigger)
+	for (auto& pTrigger : m_pTrigger)
 	{
-		Safe_Release(iter);
+		Safe_Release(pTrigger);
 	}
 	m_pTrigger.clear();
 

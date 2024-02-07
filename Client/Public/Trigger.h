@@ -29,7 +29,6 @@ public:
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CCollider* m_pCollider{ nullptr };
-	CTrigger_Manager* m_pTrigger_Manager{ nullptr };
 
 private:
 	_vec4 m_vPos{};
