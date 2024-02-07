@@ -82,8 +82,10 @@ HRESULT CVoid09::Init(void* pArg)
 	}
 
 	++m_iIndex;
+
 	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
-	if (pArg)
+
+	//if (pArg)
 	{
 		if (FAILED(__super::Init(pArg)))
 		{
@@ -269,6 +271,10 @@ void CVoid09::Init_State(_float fTimeDelta)
 					break;
 				}
 			}
+
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
 			break;
 
 		case Client::CVoid09::STATE_DIE:
