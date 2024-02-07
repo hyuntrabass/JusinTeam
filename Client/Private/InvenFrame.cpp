@@ -579,6 +579,7 @@ void CInvenFrame::ItemSlot_Logic(_uint iSlotIdx, _uint iIndex)
 		{
 			Delete_Item(m_eCurInvenType, iIndex);
 		}
+
 	}
 	else
 	{	//m_iItemNum이 0보다 클경우 그 수만큼 빼주면되고, 0이면 다없애면되고 -1이면 없애면안됨
@@ -820,7 +821,7 @@ void CInvenFrame::Picking_ShopButton(POINT ptMouse)
 		{
 			if (m_vecItemsSlot[m_eCurInvenType][i]->Get_ItemDesc().iSale == 0)
 			{
-				//판매불가능 알람 띄우기
+				CEvent_Manager::Get_Instance()->Set_Alert(TEXT("판매할 수 없는 아이템입니다."));
 				return;
 			}
 			if (m_vecItemsSlot[m_eCurInvenType][i]->Get_Border())

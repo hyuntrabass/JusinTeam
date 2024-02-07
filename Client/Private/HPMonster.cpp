@@ -44,20 +44,7 @@ HRESULT CHPMonster::Init(void* pArg)
 
 void CHPMonster::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Pressing(DIK_5))
-	{
-		if (m_iCurHp > 0)
-		{
-			m_iCurHp -= 1;
-		}
-	}
-	if (m_pGameInstance->Key_Pressing(DIK_6))
-	{
-		if (m_iCurHp <= m_iMaxHp)
-		{
-			m_iCurHp += 1;
-		}
-	}
+
 
 	if (m_iCurHp <= 0)
 	{
