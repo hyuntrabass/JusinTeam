@@ -68,8 +68,10 @@ HRESULT CVoid05::Init(void* pArg)
 	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+
 	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
-	if (pArg)
+
+	//if (pArg)
 	{
 		if (FAILED(__super::Init(pArg)))
 		{
@@ -333,6 +335,7 @@ void CVoid05::Tick_State(_float fTimeDelta)
 				//m_iAttackPattern = rand() % 3;
 				m_bSelectAttackPattern = true;
 				m_bAttacked = false;
+				m_bAttacked2 = false;
 			}
 		}
 
@@ -384,6 +387,12 @@ void CVoid05::Tick_State(_float fTimeDelta)
 					_uint iDamage = m_iSmallDamage / 2 + rand() % 10;
 					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
+				}
+				if (fAnimpos >= 43.f && fAnimpos <= 45.f && !m_bAttacked2)
+				{
+					_uint iDamage = m_iSmallDamage / 2 + rand() % 10;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
+					m_bAttacked2 = true;
 				}
 				if (fAnimpos >= 17.f && fAnimpos <= 50.f)
 				{

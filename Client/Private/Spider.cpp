@@ -263,8 +263,7 @@ void CSpider::Init_State(_float fTimeDelta)
 
 			if (fDistance <= 4.f)
 			{
-				_uint iDamage = 30 + rand() % 20;
-				m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);
+				m_pGameInstance->Attack_Player(nullptr, 10, MonAtt_Poison);
 			}
 		}
 
