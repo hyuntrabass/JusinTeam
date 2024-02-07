@@ -61,7 +61,8 @@ HRESULT CRabbit::Init(void* pArg)
 	_vec3 vPlayerPos = __super::Compute_PlayerPos();
 	m_pTransformCom->Set_Position(vPlayerPos);
 	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
-	if (pArg)
+
+	//if (pArg)
 	{
 		if (FAILED(__super::Init(pArg)))
 		{

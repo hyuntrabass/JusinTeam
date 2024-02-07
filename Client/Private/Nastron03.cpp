@@ -65,7 +65,8 @@ HRESULT CNastron03::Init(void* pArg)
 	m_pTransformCom->Set_Position(vPlayerPos);
 
 	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
-	if (pArg)
+
+	//if (pArg)
 	{
 		if (FAILED(__super::Init(pArg)))
 		{
