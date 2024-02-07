@@ -134,23 +134,24 @@ void CCat::Tick_State(_float fTimeDelta)
 
 		if (m_fIdleTime >= 4.f)
 		{
-			//if (!m_bSelectPattern)
-			//{
-			//	m_iPattern = rand() % 3;
+			if (!m_bSelectPattern)
+			{
+				m_iPattern = rand() % 3;
 
-			//	switch (m_iPattern)
-			//	{
-			//	case 0:
-			//		m_eCurState = STATE_SIT;
-			//		break;
-			//	case 1:
-			//		m_eCurState = STATE_WALK;
-			//		break;
-			//	case 2:
-			//		m_eCurState = STATE_RUN;
-			//		break;
-			//	}
-			//}
+				switch (m_iPattern)
+				{
+				case 0:
+					m_eCurState = STATE_SIT;
+					break;
+				case 1:
+					m_eCurState = STATE_WALK;
+					break;
+				case 2:
+					m_eCurState = STATE_RUN;
+					break;
+				}
+			}
+
 			m_fIdleTime = 0.f;
 		}
 
