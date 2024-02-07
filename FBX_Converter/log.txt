@@ -56,3 +56,11 @@ Animation Models : Convert Success!
 
 3 Animation Models
 are Successfully Converted as hyuntramesh!!
+1
+Static Models : Start Converting...
+Converting... Village.fbx
+Read File Succssefully
+Static Models : Convert Success!
+
+1 Static Models
+are Successfully Converted as hyuntramesh!!

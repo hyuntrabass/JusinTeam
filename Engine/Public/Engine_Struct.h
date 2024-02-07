@@ -214,6 +214,15 @@ namespace Engine
 		bool IsEnding{};
 	};
 
+	using VTXPOS = struct ENGINE_DLL tagVertex_Position
+	{
+		XMFLOAT3		vPosition{};
+
+		static const unsigned int iNumElements = 1;
+		static const D3D11_INPUT_ELEMENT_DESC	Elements[iNumElements];
+
+	};
+
 	using VTXPOSCOLOR = struct ENGINE_DLL tagVertex_Position_Color
 	{
 		XMFLOAT3 vPosition{};

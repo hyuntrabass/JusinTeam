@@ -233,7 +233,6 @@ HRESULT CLevel_Select::Ready_Camera()
 		return E_FAIL;
 	}
 
-
 	return S_OK;
 }
 

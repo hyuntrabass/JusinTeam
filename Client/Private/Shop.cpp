@@ -7,6 +7,7 @@
 #include "InvenFrame.h"
 #include "ShopDesc.h"
 #include "ShopWindow.h"
+#include "Event_Manager.h"
 CShop::CShop(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
@@ -83,6 +84,10 @@ void CShop::Tick(_float fTimeDelta)
 				return;
 			}
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
+			if (!m_bQuestTrigger && CEvent_Manager::Get_Instance()->Get_QuestTrigger(CEvent_Manager::POTION))
+			{
+				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("체력포션 구매"));
+			}
 			m_isActive = false;
 		}
 	}
@@ -462,6 +467,7 @@ HRESULT CShop::Init_ShopItems()
 	_float fTerm = 2.f;
 	_float fShopDescY = 90.f;
 	_uint iIndex = 0;
+	_uint iEquipIndex = 0;
 	CShopDesc::SHOPITEM_DESC ShopDesc = {};
 	ShopDesc.fDepth = m_fDepth - 0.01f;
 	ShopDesc.strItemName = TEXT("체력 포션");
@@ -485,8 +491,25 @@ HRESULT CShop::Init_ShopItems()
 	m_vecShopItems[EXPENDABLE].push_back(pShopDesc);
 
 
-	ShopDesc.strItemName = TEXT("마나 포션");
+	ShopDesc.strItemName = TEXT("안흔한옷");
+	ShopDesc.vPosition = _vec2(235.f, fStartY + fShopDescY * iEquipIndex + fTerm * iEquipIndex);
+	pShopDesc = (CShopDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_ShopDesc"), &ShopDesc);
+	if (not pShopDesc)
+	{
+		return E_FAIL;
+	}
+	m_vecShopItems[EQUIP].push_back(pShopDesc);
 
+	iEquipIndex++;
+
+	ShopDesc.strItemName = TEXT("그냥모자");
+	ShopDesc.vPosition = _vec2(235.f, fStartY + fShopDescY * iEquipIndex + fTerm * iEquipIndex);
+	pShopDesc = (CShopDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_ShopDesc"), &ShopDesc);
+	if (not pShopDesc)
+	{
+		return E_FAIL;
+	}
+	m_vecShopItems[EQUIP].push_back(pShopDesc);
 	return S_OK;
 }
 

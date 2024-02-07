@@ -5,8 +5,10 @@
 
 BEGIN(Client)
 
+
 class CTrigger final : public CGameObject
 {
+
 private:
 	CTrigger(_dev pDevice, _context pContext);
 	CTrigger(const CTrigger& rhs);
@@ -19,17 +21,25 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+	void Set_Limited(_bool bLimited) { m_isLimited = bLimited; }
+
 	_uint Get_TriggerNum() { return m_iTriggerNumber; }
+	TriggerType Get_TriggerType() { return m_eTriggerType; }
+	_bool Get_Collision() { return m_isCollision; }
+	_bool Get_Limited() { return m_isLimited; }
 
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CCollider* m_pCollider{ nullptr };
+	CTrigger_Manager* m_pTrigger_Manager{ nullptr };
 
 private:
 	_vec4 m_vPos{};
 	_float m_iColliderSize{};
 	_int 	m_iTriggerNumber{};
 	_bool	m_isCollision{false};
+	TriggerType m_eTriggerType{ TRIGGER_END };
+	_bool	m_isLimited{ false };
 
 private:
 	HRESULT Add_Components();

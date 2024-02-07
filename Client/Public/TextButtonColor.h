@@ -22,6 +22,7 @@ public:
 		_vec4	vTextColor{ _vec4(1.f, 1.f, 1.f, 1.f) };
 
 		wstring strTexture;
+		wstring strTexture2;
 
 		LEVEL_ID eLevelID;
 	}TEXTBUTTON_DESC;
@@ -42,6 +43,7 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
 	CTexture* m_pTextureCom{ nullptr };
+	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
 	HRESULT Add_Components();
@@ -51,6 +53,8 @@ private:
 	VTPass				m_ePass{ VTPass_Mask_Color };
 	_float				m_fDuration{ 0.f };
 	_float				m_fAlpha{ 1.f };
+	_float				m_fMoveX{ 0.f };
+	_float				m_fMoveY{ 0.f };
 
 	_vec2	m_vSize;
 	_vec2	m_vPosition;
@@ -62,6 +66,7 @@ private:
 	_vec4	m_vTextColor;
 
 	wstring m_strTexture;
+	wstring m_strTexture2;
 
 	LEVEL_ID m_eLevel;
 
@@ -81,6 +86,7 @@ public:
 	void Set_Text(const wstring strText) { m_strText = strText; }
 	void Set_Alpha(const _float fAlpha) { m_fAlpha = fAlpha; }
 	void Set_Pass(VTPass ePass) { m_ePass = ePass; }
+	void Set_UV(_float fX, _float fY) { m_fMoveX = fX; m_fMoveY = fY; }
 
 public:
 	static CTextButtonColor* Create(_dev pDevice, _context pContext);

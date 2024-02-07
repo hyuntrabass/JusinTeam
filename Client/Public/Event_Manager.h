@@ -12,7 +12,8 @@ class CEvent_Manager final : public CBase
 	DECLARE_SINGLETON(CEvent_Manager)
 
 public:
-	enum EVENT_TYPE { QUESTIN, QUESTEND, LEVELUP, TUTORIAL, TYPE_END};
+	enum EVENT_TYPE { QUESTIN, QUESTEND, LEVELUP, TUTORIAL, UNLOCKSKILL, TYPE_END};
+	enum QUEST_TRIGGER { POTION, GROAR_MONSTER, TRIGGER_END};
 
 	typedef struct tagEventDesc
 	{
@@ -39,6 +40,8 @@ private:
 	_bool								m_isEventIn = { false };
 	_bool								m_isWaiting = { false };
 
+	_bool								m_QuestTrigger[TRIGGER_END];
+
 	class CQuest*						m_pQuest{ nullptr };
 	class CPop_Alert*					m_pAlert{ nullptr };
 
@@ -56,9 +59,15 @@ private:
 	HRESULT Init_Quest();
 
 public:
+	void Set_QuestTrigger(QUEST_TRIGGER eTrigger) { m_QuestTrigger[eTrigger] = true; }
+
+	_bool Get_QuestTrigger(QUEST_TRIGGER eTrigger) { return m_QuestTrigger[eTrigger]; }
 	_bool Find_Quest(const wstring& strQuest);
 	HRESULT Set_Quest(const wstring& strQuest);
 	HRESULT Update_Quest(const wstring& strQuest);
+
+	void Set_LevelUp(_uint iLevel);
+	void Set_SkillUnlock(_uint iIndex);
 
 	void Set_Alert(const wstring strAlert);
 

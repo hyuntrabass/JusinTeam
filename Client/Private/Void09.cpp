@@ -75,15 +75,21 @@ HRESULT CVoid09::Init(void* pArg)
 	{
 	case 0:
 		m_pTransformCom->Set_Position(_vec3(2102.f, -16.f, 2091.f));
+		//m_pTransformCom->Set_Position(_vec3(2087.f, -10.f, 2086.f));
 		break;
 	case 1:
 		m_pTransformCom->Set_Position(_vec3(2102.f, -16.f, 2081.f));
+		//m_pTransformCom->Set_Position(_vec3(2087.f, -10.f, 2086.f));
 		break;
 	}
 
+	/*CamPos X :2084.06
+	CamPos Y :-11.7101
+	CamPos Z :2086.98*/
+
 	++m_iIndex;
 
-	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
+	m_MonsterHpBarPos = _vec3(0.f, 1.5f, 0.f);
 
 	//if (pArg)
 	{
@@ -334,13 +340,31 @@ void CVoid09::Tick_State(_float fTimeDelta)
 		break;
 
 	case Client::CVoid09::STATE_WALK:
-		m_pTransformCom->Go_Straight(fTimeDelta);
+	{
+		_float fDist = 1.2f;
+		PxRaycastBuffer Buffer1{};
+
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(),
+			m_pTransformCom->Get_State(State::Look).Get_Normalized(),
+			fDist, Buffer1))
+		{
+			m_pTransformCom->LookAt_Dir(PxVec3ToVector(Buffer1.block.normal));
+		}
+
+		_float fHeight = 3.f;
+		PxRaycastBuffer Buffer2{};
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos() + 0.2f * m_pTransformCom->Get_State(State::Look).Get_Normalized(),
+			_vec4(0.f, -1.f, 0.f, 0.f),
+			fHeight, Buffer2))
+		{
+			m_pTransformCom->Go_Straight(fTimeDelta);
+		}
 
 		if (m_pModelCom->IsAnimationFinished(WALK))
 		{
 			m_eCurState = STATE_IDLE;
 		}
-
+	}
 		break;
 
 	case Client::CVoid09::STATE_CHASE:
@@ -547,6 +571,6 @@ CGameObject* CVoid09::Clone(void* pArg)
 void CVoid09::Free()
 {
 	__super::Free();
-
+	CEvent_Manager::Get_Instance()->Update_Quest(TEXT("그로아를 지켜라"));
 	Safe_Release(m_pSwordTrail);
 }
