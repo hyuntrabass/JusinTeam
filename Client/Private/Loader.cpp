@@ -1536,6 +1536,7 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 
 #pragma endregion
+#pragma endregion
 
 	m_strLoadingText = L"GamePlay : Loading Complete!";
 	m_isFinished = true;
