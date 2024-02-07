@@ -138,16 +138,42 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 	*/
+	//m_DC = GetDC(g_hWnd);
 
-	m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.2f);
-	m_pGameInstance->Play_Sound(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.6f, true);
-	m_pGameInstance->Play_Sound(TEXT("waves"), 0.2f, true);
+	//m_BackDC = CreateCompatibleDC(m_DC);
+
+	//m_hBackBit = CreateCompatibleBitmap(m_DC, g_iWinSizeX, g_iWinSizeY);
+
+	//m_hOldBackBit = (HBITMAP)SelectObject(m_BackDC, m_hBackBit);
+
+	//m_hVideo = MCIWndCreate(g_hWnd, NULL, WS_CHILD | WS_VISIBLE | MCIWNDF_NOPLAYBAR
+	//	, L"../Bin/Resources/Video/Tutorial0.wmv");
+
+	//MCIWndSetVolume(g_hWnd, 0.5f);
+
+
+	//MoveWindow(m_hVideo, 0, 0, g_iWinSizeX, g_iWinSizeY, FALSE);
+
+	//MCIWndPlay(m_hVideo);
+
+	//m_pGameInstance->Video_Start(40.f);
+	
 
 	return S_OK;
 }
 
 void CLevel_GamePlay::Tick(_float fTimeDelta)
 {
+	if (!m_bReadyTutorial)
+	{
+		m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.2f);
+		m_pGameInstance->Play_Sound(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.6f, true);
+		m_pGameInstance->Play_Sound(TEXT("waves"), 0.2f, true);
+		m_bReadyTutorial = true;
+	}
+
+	
+
 	if (m_pGameInstance->Key_Down(DIK_B))
 	{
 		/*
@@ -723,6 +749,12 @@ HRESULT CLevel_GamePlay::Ready_Tutorial_Monster()
 		}
 
 	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Void01"), TEXT("Prototype_GameObject_Void01"))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 

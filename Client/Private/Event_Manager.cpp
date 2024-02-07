@@ -70,6 +70,7 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 			break;
 			case QUESTIN:
 			{
+				m_pGameInstance->Play_Sound(TEXT("Quest_Start"), 0.6f);
 				CPop_QuestIn::QUESTIN_DESC PopQuestInDesc = {};
 				PopQuestInDesc.isMain = m_vecPopEvents.front().isMain;
 				PopQuestInDesc.fExp = m_vecPopEvents.front().fExp;
@@ -84,6 +85,7 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 			break;
 			case QUESTEND:
 			{
+				m_pGameInstance->Play_Sound(TEXT("Quest_Complete"), 0.6f);
 				CPop_QuestEnd::QUESTEND_DESC PopQuestEndDesc = {};
 				PopQuestEndDesc.fExp = m_vecPopEvents.front().fExp;
 				PopQuestEndDesc.iMoney = m_vecPopEvents.front().iMoney;
@@ -101,6 +103,17 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pop"), TEXT("Prototype_GameObject_Tutorial"), &TutoDesc)))
 					return;
 				m_vecPopEvents.erase(m_vecPopEvents.begin());
+
+				if (m_eCurTuto == T_OPENINVEN)
+				{
+					for (size_t i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+					{
+						if (m_pGameInstance->Get_IsLoopingSound(i))
+						{
+							m_pGameInstance->FadeoutSound(i, fTimeDelta, 1.f, true, 0.3f);
+						}
+					}
+				}
 			}
 			break;
 			case UNLOCKSKILL:

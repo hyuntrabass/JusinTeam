@@ -116,6 +116,16 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 		MSG_BOX("FATAL ERROR : m_pObject_Manager is NULL");
 	}
 
+	if (m_isPlayingVideo)
+	{
+		m_fVideoTimmer += fTimeDelta;
+		if (m_fVideoTimmer > m_fVideoDuration)
+		{
+			m_isPlayingVideo = false;
+		}
+		return;
+	}
+
 	m_pInput_Manager->Update_InputDev();
 
 	if (Key_Down(DIK_F1, InputChannel::Engine))
@@ -1109,24 +1119,24 @@ void CGameInstance::StopAll()
 	return m_pSound_Manager->StopAll();
 }
 
-HRESULT CGameInstance::FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond, _bool IsReusable)
+HRESULT CGameInstance::FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond, _bool IsReusable, _float fFadeSoundRatio)
 {
 	if (!m_pSound_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
 	}
 
-	return m_pSound_Manager->FadeoutSound(iChannel, fTimeDelta, fFadeoutSecond, IsReusable);
+	return m_pSound_Manager->FadeoutSound(iChannel, fTimeDelta, fFadeoutSecond, IsReusable, fFadeSoundRatio);
 }
 
-HRESULT CGameInstance::FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond)
+HRESULT CGameInstance::FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond, _float fFadeSoundRatio)
 {
 	if (!m_pSound_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
 	}
 
-	return m_pSound_Manager->FadeinSound(iChannel, fTimeDelta, fFadeinSecond);
+	return m_pSound_Manager->FadeinSound(iChannel, fTimeDelta, fFadeinSecond, fFadeSoundRatio);
 }
 
 void CGameInstance::Register_CreateEffect_Callback(Func_CreateFX Function)
@@ -1380,6 +1390,12 @@ const _bool& CGameInstance::IsSkipDebugRendering() const
 const wstring& CGameInstance::Get_InputString() const
 {
 	return m_strInput;
+}
+
+void CGameInstance::Video_Start(_float fVideoDuration)
+{
+	m_fVideoDuration = fVideoDuration;
+	m_isPlayingVideo = true;
 }
 
 void CGameInstance::Initialize_Level(_uint iLevelNum)

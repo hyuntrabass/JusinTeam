@@ -3,7 +3,7 @@
 #include "Client_Define.h"
 #include "GameObject.h"
 #include "HitEffect.h"
-
+#include "HpMonster.h"
 BEGIN(Client)
 
 typedef struct MonsterInfo
@@ -26,12 +26,14 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+
 public:
 	virtual _vec4 Compute_PlayerPos();
 	virtual _float Compute_PlayerDistance();
 
 	virtual _vec4 Compute_ModelTestPos();
 	virtual _float Compute_ModelTestDistance();
+
 
 protected:
 	MonsterInfo m_pInfo{};
@@ -80,10 +82,14 @@ private: // Collier 사이즈 조절용
 	_float m_fScale = { 0.2f };
 
 protected:
+	_float m_fHittedTime{};
+	_vec3  m_MonsterHpBarPos{};
+	CHPMonster* m_HpBar{ nullptr };
+protected:
 	virtual HRESULT Add_Collider();
 	virtual void Update_Collider();
 
-	void Update_MonsterCollider();
+	void Update_BodyCollider();
 
 	// Collier 사이즈 조절용
 	void Change_Extents(_vec3 vStartSize);

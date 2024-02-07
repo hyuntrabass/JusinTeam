@@ -1,7 +1,7 @@
 #include "Spider.h"
 
 const _float CSpider::m_fChaseRange = 7.f;
-const _float CSpider::m_fAttackRange = 5.f;
+const _float CSpider::m_fAttackRange = 4.f;
 
 _uint CSpider::m_iSpiderID = 0;
 _bool CSpider::m_bDirSelected[8] = { false };
@@ -107,7 +107,7 @@ void CSpider::Tick(_float fTimeDelta)
 	m_pModelCom->Set_Animation(m_Animation);
 
 	Update_Collider();
-	__super::Update_MonsterCollider();
+	__super::Update_BodyCollider();
 
 	__super::Tick(fTimeDelta);
 
@@ -131,36 +131,36 @@ HRESULT CSpider::Render()
 
 void CSpider::Set_Damage(_int iDamage, _uint iDamageType)
 {
-	m_iHP -= iDamage;
-	m_bDamaged = true;
+	//m_iHP = 0;
+	m_eCurState = STATE_DIE;
 
-	//m_eCurState = STATE_HIT;
+	//m_bDamaged = true;
 
-	_vec4 vPlayerPos = __super::Compute_PlayerPos();
-	m_pTransformCom->LookAt(vPlayerPos);
+	//_vec4 vPlayerPos = __super::Compute_PlayerPos();
+	//m_pTransformCom->LookAt(vPlayerPos);
 
-	if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
-		iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
-	{
-		// 경직
-		m_Animation.fAnimSpeedRatio = 1.f;
-	}
+	//if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
+	//	iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
+	//{
+	//	// 경직
+	//	m_Animation.fAnimSpeedRatio = 1.f;
+	//}
 
-	if (iDamageType == AT_Bow_Common || iDamageType == AT_Bow_Skill1)
-	{
-		// 밀려나게
-		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
-		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
+	//if (iDamageType == AT_Bow_Common || iDamageType == AT_Bow_Skill1)
+	//{
+	//	// 밀려나게
+	//	_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
+	//	m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
 
-		m_Animation.fAnimSpeedRatio = 2.f;
-	}
+	//	m_Animation.fAnimSpeedRatio = 2.f;
+	//}
 
-	if (iDamageType == AT_Bow_Skill3)
-	{
-		// 이속 느려지게
-		m_bSlow = true;
-		m_Animation.fAnimSpeedRatio = 0.8f;
-	}
+	//if (iDamageType == AT_Bow_Skill3)
+	//{
+	//	// 이속 느려지게
+	//	m_bSlow = true;
+	//	m_Animation.fAnimSpeedRatio = 0.8f;
+	//}
 }
 
 void CSpider::Init_State(_float fTimeDelta)
@@ -168,10 +168,10 @@ void CSpider::Init_State(_float fTimeDelta)
 	CTransform* pGroarTransform = GET_TRANSFORM("Layer_Groar_Boss", LEVEL_VILLAGE);
 	_vec4 vGroarPos = pGroarTransform->Get_State(State::Pos);
 
-	if (m_iHP <= 0)
-	{
-		m_eCurState = STATE_DIE;
-	}
+	//if (m_iHP <= 0)
+	//{
+	//	m_eCurState = STATE_SUICIDE;
+	//}
 
 	if (m_bAppeared == true)
 	{
@@ -252,7 +252,8 @@ void CSpider::Init_State(_float fTimeDelta)
 			//}
 			break;
 
-		case Client::CSpider::STATE_DIE:
+		case Client::CSpider::STATE_SUICIDE:
+		{
 			m_Animation.iAnimIndex = KNOCKDOWN;
 			m_Animation.fAnimSpeedRatio = 3.f;
 			m_Animation.isLoop = false;
@@ -260,11 +261,19 @@ void CSpider::Init_State(_float fTimeDelta)
 
 			_float fDistance = __super::Compute_PlayerDistance();
 
-			if (fDistance <= 5.f)
+			if (fDistance <= 4.f)
 			{
 				_uint iDamage = 30 + rand() % 20;
 				m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);
-			}		
+			}
+		}
+
+			break;
+
+		case Client::CSpider::STATE_DIE:
+			m_Animation.iAnimIndex = DIE;
+			m_Animation.fAnimSpeedRatio = 3.f;
+			m_Animation.isLoop = false;
 
 			break;
 		}
@@ -364,7 +373,7 @@ void CSpider::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->IsAnimationFinished(ROAR))
 		{
-			m_eCurState = STATE_DIE;
+			m_eCurState = STATE_SUICIDE;
 		}
 
 		break;
@@ -378,9 +387,18 @@ void CSpider::Tick_State(_float fTimeDelta)
 
 		break;
 
-	case Client::CSpider::STATE_DIE:
+	case Client::CSpider::STATE_SUICIDE:
 
 		if (m_pModelCom->IsAnimationFinished(KNOCKDOWN))
+		{
+			m_fDeadTime += fTimeDelta;
+		}
+
+		break;
+
+	case Client::CSpider::STATE_DIE:
+		
+		if (m_pModelCom->IsAnimationFinished(DIE))
 		{
 			m_fDeadTime += fTimeDelta;
 		}

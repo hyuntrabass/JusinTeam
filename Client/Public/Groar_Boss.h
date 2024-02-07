@@ -134,6 +134,7 @@ private:
 	void NPC_Tick(_float fTimeDelta);
 	void NPC_LateTick(_float fTimeDelta);
 	void Set_Text(GROAR_NPCSTATE eState);
+	void Play_TalkSound(const wstring& strTalkText);
 
 
 private:
@@ -164,6 +165,7 @@ private:
 
 private:
 	ANIM_DESC m_Animation{};
+	_int m_iSoundChannel = -1;
 
 private:
 	_uint m_iAttackPattern = {};
@@ -209,8 +211,9 @@ private:
 	_float						m_fButtonTime{};
 
 	wstring						m_strQuestOngoing{};
-	vector<wstring>				m_vecDialog;
+	list<wstring>				m_vecDialog;
 	vector<wstring>				m_vecChatt;
+	list<wstring>				m_TalkSounds;
 
 	class CTextButton*			m_pLine{ nullptr };
 	CTextButton*				m_pArrow{ nullptr };
@@ -218,6 +221,25 @@ private:
 	class CDialogText*			m_pDialogText{ nullptr };
 	class CTextButtonColor*		m_pBackGround{ nullptr };
 	class C3DUITex*				m_pSpeechBubble{ nullptr };
+
+private:
+	const wstring m_strLines[14]
+	{
+		TEXT("여보.."),
+		TEXT("놀라게 해서 죄송해요 저는 그로아 마나하임의 신녀입니다."),
+		TEXT("다름이 아니라 돌아오지 않는 남편을 찾고 있었어요."),
+		TEXT("모르겠어요 무슨일인지.. 돌아올시간이 훌쩍 지났는데도.."),
+		TEXT("아무런 연락이 없어요.. 절대 그럴사람이 아닌데.."),
+		TEXT("분명 무슨 일이 생긴것이 틀림없어요"),
+		TEXT("도움을 부탁드려도 될까요? 여보.."),
+		TEXT("!그로아의 부탁"),
+		TEXT("오셨군요! 혹시 제 남편은?"),
+		TEXT("이..이건..어째서 이 팔찌만? 제.. 제 남편은.. 제 남편은요?"),
+		TEXT("저는 괜찮아요. 다만 남편의 마지막을 확인하고 싶을 뿐이에요. 얼굴이라도 손끝이라도 보고싶을 뿐이에요.."),
+		TEXT("염치없지만 꼭 부탁드릴게요. 남편의 흔적을 찾는동안 저 끔찍한 마물들을 막아주세요. 부탁드립니다."),
+		TEXT("!그로아를 지켜라"),
+		TEXT("END")
+	};
 
 public:
 	HRESULT Add_Components();

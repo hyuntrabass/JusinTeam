@@ -163,8 +163,9 @@ public: // Sound Manager
 	void PlayBGM(const wstring& strSoundTag, float fVolume = 0.3f);
 	void StopSound(_uint iChannel);
 	void StopAll();
-	HRESULT FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond = 1.f, _bool IsReusable = true);
-	HRESULT FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond = 1.f);
+	//fFadeSoundRatio 0.f ~ 2.f
+	HRESULT FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond = 1.f, _bool IsReusable = true, _float fFadeSoundRatio = 0.f);
+	HRESULT FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond = 1.f, _float fFadeSoundRatio = 1.f);
 
 public: // Effect Callback
 	using Func_CreateFX = function<void(const wstring&, _mat*, const _bool&)>;
@@ -252,6 +253,9 @@ public: // Get_Set
 	const _bool& IsSkipDebugRendering() const;
 	const wstring& Get_InputString() const;
 
+	void Video_Start(_float fVideoDuration);
+	_bool Is_VideoPlaying() { return m_isPlayingVideo; }
+
 public:
 	void Initialize_Level(_uint iLevelNum);
 	void Level_ShutDown(_uint iCurrentLevel);
@@ -307,6 +311,9 @@ private:
 	_bool m_bFlyCam{};
 	_bool m_bGoHome{};
 	_bool m_bGoDungeon{};
+	_bool m_isPlayingVideo{};
+	_float m_fVideoTimmer{};
+	_float m_fVideoDuration{};
 private:
 	vector<_bool> m_vecLevelInvalid;
 
