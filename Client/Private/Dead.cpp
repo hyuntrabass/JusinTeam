@@ -66,7 +66,7 @@ HRESULT CDead::Init(void* pArg)
 void CDead::Tick(_float fTimeDelta)
 {
 	m_fLifeTime += fTimeDelta;
-
+	
 	if (m_fLifeTime >= 30.f)
 	{
 		Kill();
@@ -74,6 +74,31 @@ void CDead::Tick(_float fTimeDelta)
 
 	if (m_pModelCom->IsAnimationFinished(0))
 	{
+		if (m_eDead == VOID01)
+		{
+			if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY)
+			{
+
+				m_DC = GetDC(g_hWnd);
+
+				m_BackDC = CreateCompatibleDC(m_DC);
+
+				m_hBackBit = CreateCompatibleBitmap(m_DC, g_iWinSizeX, g_iWinSizeY);
+
+				m_hOldBackBit = (HBITMAP)SelectObject(m_BackDC, m_hBackBit);
+
+				m_hVideo = MCIWndCreate(g_hWnd, NULL, WS_CHILD | WS_VISIBLE | MCIWNDF_NOPLAYBAR
+					, L"../Bin/Resources/Video/Tutorial0.wmv");
+
+				MCIWndSetVolume(g_hWnd, 1.f);
+
+				MoveWindow(m_hVideo, 0, 0, g_iWinSizeX, g_iWinSizeY, FALSE);
+
+				MCIWndPlay(m_hVideo);
+				m_pGameInstance->Video_Start(11.f, true);
+			}
+
+		}
 		m_pTransformCom->Go_Down(fTimeDelta * 0.05f);
 	}
 
@@ -121,23 +146,10 @@ CGameObject* CDead::Clone(void* pArg)
 
 void CDead::Free()
 {
-	if (m_eDead == VOID01)
-	{
-		if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY)
-		{
-			HWND hVideo = MCIWndCreate(g_hWnd, NULL, WS_CHILD | WS_VISIBLE | MCIWNDF_NOPLAYBAR
-				, L"../Bin/Resources/Video/Tutorial1.wmv");
-
-			MCIWndSetVolume(g_hWnd, 1.f);
-
-
-			MoveWindow(hVideo, 0, 0, g_iWinSizeX, g_iWinSizeY, FALSE);
-
-			MCIWndPlay(hVideo);
-
-			m_pGameInstance->Video_Start(11.f, true);
-		}
-
-	}
 	__super::Free();
+	MCIWndClose(m_hVideo);
+	SelectObject(m_BackDC, m_hOldBackBit); //DC에 원래 설정을 돌려줍니다.
+	DeleteDC(m_BackDC);  // 메모리를 반환합니다.
+	DeleteObject(m_hBackBit); // 메모리를 반환합니다.
+	ReleaseDC(g_hWnd, m_DC); // 윈도우에 DC 해제를 요청합니다.
 }

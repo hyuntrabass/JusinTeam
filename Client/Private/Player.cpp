@@ -1529,6 +1529,10 @@ void CPlayer::Move(_float fTimeDelta)
 					{
 						m_pTransformCom->Set_Speed(m_fWalkSpeed + m_Status.Speed / 3.f);
 					}
+					else
+					{
+						m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed);
+					}
 				}
 
 

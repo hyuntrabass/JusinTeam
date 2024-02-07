@@ -137,25 +137,24 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 	*/
-	/*HDC DC = GetDC(g_hWnd);
+	m_DC = GetDC(g_hWnd);
 
-	HDC BackDC = CreateCompatibleDC(DC);
+	m_BackDC = CreateCompatibleDC(m_DC);
 
-	HBITMAP hBackBit = CreateCompatibleBitmap(DC, g_iWinSizeX, g_iWinSizeY);*/
+	m_hBackBit = CreateCompatibleBitmap(m_DC, g_iWinSizeX, g_iWinSizeY);
 
-	//(HBITMAP)SelectObject(BackDC, hBackBit);
+	m_hOldBackBit = (HBITMAP)SelectObject(m_BackDC, m_hBackBit);
 
-	/*HWND hVideo = MCIWndCreate(g_hWnd, NULL, WS_CHILD | WS_VISIBLE | MCIWNDF_NOPLAYBAR
+	m_hVideo = MCIWndCreate(g_hWnd, NULL, WS_CHILD | WS_VISIBLE | MCIWNDF_NOPLAYBAR
 		, L"../Bin/Resources/Video/Tutorial0.wmv");
 
 	MCIWndSetVolume(g_hWnd, 1.f);
 
+	MoveWindow(m_hVideo, 0, 0, g_iWinSizeX, g_iWinSizeY, FALSE);
 
-	MoveWindow(hVideo, 0, 0, g_iWinSizeX, g_iWinSizeY, FALSE);
+	MCIWndPlay(m_hVideo);
 
-	MCIWndPlay(hVideo);
-
-	m_pGameInstance->Video_Start(35.f);*/
+	m_pGameInstance->Video_Start(35.f);
 	
 
 	return S_OK;
@@ -169,6 +168,11 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		m_pGameInstance->Play_Sound(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.6f, true);
 		m_pGameInstance->Play_Sound(TEXT("waves"), 0.2f, true);
 		m_bReadyTutorial = true;
+		MCIWndClose(m_hVideo);
+		SelectObject(m_BackDC, m_hOldBackBit); //DC에 원래 설정을 돌려줍니다.
+		DeleteDC(m_BackDC);  // 메모리를 반환합니다.
+		DeleteObject(m_hBackBit); // 메모리를 반환합니다.
+		ReleaseDC(g_hWnd, m_DC); // 윈도우에 DC 해제를 요청합니다.
 	}
 
 	
@@ -839,4 +843,5 @@ CLevel_GamePlay* CLevel_GamePlay::Create(_dev pDevice, _context pContext)
 void CLevel_GamePlay::Free()
 {
 	__super::Free();
+	
 }
