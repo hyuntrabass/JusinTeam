@@ -25,8 +25,10 @@ public:
 	CRenderer* m_pRendererCom{ nullptr };
 #endif // _DEBUG
 
-public:
+private:
 	_mat m_EffectMatrices[2]{};
+	_float m_fLifeTimer{};
+	_float m_fLifeTimeLimit{};
 
 public:
 	HRESULT Add_Components();
