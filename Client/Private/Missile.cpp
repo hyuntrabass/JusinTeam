@@ -139,6 +139,7 @@ HRESULT CMissile::Init(void* pArg)
 
 void CMissile::Tick(_float fTimeDelta)
 {
+
 	if (m_bParryingOk)
 	{
 		m_pGameInstance->Set_TimeRatio(1.0f);
@@ -348,6 +349,8 @@ void CMissile::Tick(_float fTimeDelta)
 		break;
 	}
 
+	RayCast();
+
 	if (m_isDead)
 	{
 		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Groar_Ball_Explosion");
@@ -361,6 +364,7 @@ void CMissile::Tick(_float fTimeDelta)
 	{
 		m_pEffect_Ball->Tick(fTimeDelta);
 	}
+
 	Update_Collider();
 }
 
@@ -475,6 +479,19 @@ void CMissile::Parry_Success()
 	m_pTransformCom->Rotation(_vec4(0.f, 1.f, 0.f, 0.f), 45.f * RandFloat);
 	m_pGameInstance->Set_TimeRatio(0.05f);
 	m_bParryingOk = true;
+}
+
+void CMissile::RayCast()
+{
+	_float fDist = 0.5f;
+	PxRaycastBuffer Buffer{};
+
+	if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), 
+		m_pTransformCom->Get_State(State::Look).Get_Normalized(),
+		fDist, Buffer))
+	{
+		Kill();
+	}
 }
 
 HRESULT CMissile::Add_Components()

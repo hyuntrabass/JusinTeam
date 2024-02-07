@@ -1,7 +1,6 @@
 #include "Monster.h"
 #include "UI_Manager.h"
 
-
 CMonster::CMonster(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -27,6 +26,8 @@ HRESULT CMonster::Init(void* pArg)
 		m_pTransformCom->Set_Matrix(WorldPos);
 		m_pTransformCom->Set_Position(WorldPos.Position_vec3());
 	}
+
+	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 
 	CHPMonster::HP_DESC HpDesc = {};
 	HpDesc.eLevelID = LEVEL_STATIC;

@@ -335,6 +335,7 @@ void CVoid05::Tick_State(_float fTimeDelta)
 				//m_iAttackPattern = rand() % 3;
 				m_bSelectAttackPattern = true;
 				m_bAttacked = false;
+				m_bAttacked2 = false;
 			}
 		}
 
@@ -386,6 +387,12 @@ void CVoid05::Tick_State(_float fTimeDelta)
 					_uint iDamage = m_iSmallDamage / 2 + rand() % 10;
 					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
+				}
+				if (fAnimpos >= 43.f && fAnimpos <= 45.f && !m_bAttacked2)
+				{
+					_uint iDamage = m_iSmallDamage / 2 + rand() % 10;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
+					m_bAttacked2 = true;
 				}
 				if (fAnimpos >= 17.f && fAnimpos <= 50.f)
 				{
