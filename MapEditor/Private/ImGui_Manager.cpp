@@ -159,6 +159,11 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 				}
 				//FastPicking();
 			}
+			if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_SPACE))
+			{
+				FastPicking();
+				Delete_Dummy();
+			}
 
 		}
 		else if (m_eItemType == ItemType::Camera)

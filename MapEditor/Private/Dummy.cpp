@@ -237,7 +237,7 @@ HRESULT CDummy::Add_Components()
 		Collider_Desc CollDesc = {};
 		CollDesc.eType = ColliderType::Sphere;
 		CollDesc.fRadius = m_fTriggerSize;
-		CollDesc.vCenter = _vec3(m_pTransformCom->Get_State(State::Pos));
+		CollDesc.vCenter = _vec3(0.f);
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Trigger_Sphere"), (CComponent**)&m_pCollider, &CollDesc)))
 			return E_FAIL;
 	}

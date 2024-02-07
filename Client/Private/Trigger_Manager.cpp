@@ -1,6 +1,7 @@
 #include "Trigger_Manager.h"
 #include "Trigger.h"
 #include "Camera_CutScene.h"
+#include "Event_Manager.h"
 
 IMPLEMENT_SINGLETON(CTrigger_Manager)
 
@@ -49,6 +50,8 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 			else if (iter->Get_TriggerType() == BOSS_TRIGGER && iter->Get_Limited() == true)
 			{
 
+				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("그로아를 찾아서"));
+				iter->Set_Limited(false);
 			}
 		}
 	}

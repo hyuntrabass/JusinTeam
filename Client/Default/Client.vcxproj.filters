@@ -729,9 +729,6 @@
     <ClInclude Include="..\Public\Trigger.h">
       <Filter>02.GameObjects\11.Trigger</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\TriggerList.h">
-      <Filter>02.GameObjects\11.Trigger</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Trigger_Manager.h">
       <Filter>02.GameObjects\11.Trigger\Manager</Filter>
     </ClInclude>
@@ -819,6 +816,7 @@
     <ClInclude Include="..\Public\Camera_CutScene.h">
       <Filter>02.GameObjects\01.Camera\CutScene</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Hell.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1224,6 +1222,7 @@
     <ClCompile Include="..\Private\CutScene_Curve.cpp">
       <Filter>02.GameObjects\01.Camera\CutScene\Curve</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Hell.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
