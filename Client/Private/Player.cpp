@@ -285,6 +285,21 @@ void CPlayer::Tick(_float fTimeDelta)
 			m_bIsMount = true;
 			m_eState = Mount;
 			m_Animation.iAnimIndex = Anim_Mount_Idle;
+			Summon_Riding(Horse);
+		}
+		else
+		{
+			m_pRiding->Delete_Riding();
+		}
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_V))
+	{
+		if (!m_bIsMount)
+		{
+			m_bIsMount = true;
+			m_eState = Mount;
+			m_Animation.iAnimIndex = Anim_Mount_Idle;
 			Summon_Riding(Bird);
 		}
 		else
@@ -292,6 +307,7 @@ void CPlayer::Tick(_float fTimeDelta)
 			m_pRiding->Delete_Riding();
 		}
 	}
+
 	Front_Ray_Check();
 	Health_Regen(fTimeDelta);
 	if (m_bIsMount)
@@ -1216,54 +1232,47 @@ void CPlayer::Move(_float fTimeDelta)
 			m_pTransformCom->LookAt_Dir(m_pCameraTransform->Get_State(State::Look));
 		}
 
-		if (m_pGameInstance->Key_Down(DIK_L))
-		{
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
-			{
-				return;
-			}
 
-		}
-		if (m_pGameInstance->Key_Down(DIK_1))
-		{
-			if (m_eState != Skill1)
-			{
-				Ready_Skill(ST_Skill1); // 1번창에 있던 스킬 넣어주기
-				return;
-			}
-		}
+		//if (m_pGameInstance->Key_Down(DIK_1))
+		//{
+		//	if (m_eState != Skill1)
+		//	{
+		//		Ready_Skill(ST_Skill1); // 1번창에 있던 스킬 넣어주기
+		//		return;
+		//	}
+		//}
 
-		if (m_pGameInstance->Key_Down(DIK_2))
-		{
-			if (m_eState != Skill2)
-			{
-				Ready_Skill(ST_Skill2);
-				return;
-			}
-		}
+		//if (m_pGameInstance->Key_Down(DIK_2))
+		//{
+		//	if (m_eState != Skill2)
+		//	{
+		//		Ready_Skill(ST_Skill2);
+		//		return;
+		//	}
+		//}
 
 
-		if (m_pGameInstance->Key_Down(DIK_3))
-		{
-			if (m_eState != Skill3)
-			{
-				Ready_Skill(ST_Skill3);
-				return;
-			}
-		}
+		//if (m_pGameInstance->Key_Down(DIK_3))
+		//{
+		//	if (m_eState != Skill3)
+		//	{
+		//		Ready_Skill(ST_Skill3);
+		//		return;
+		//	}
+		//}
 
-		if (m_pGameInstance->Key_Down(DIK_4))
-		{
-			if (m_eState != Skill4)
-			{
-				Ready_Skill(ST_Skill4);
-				return;
-			}
+		//if (m_pGameInstance->Key_Down(DIK_4))
+		//{
+		//	if (m_eState != Skill4)
+		//	{
+		//		Ready_Skill(ST_Skill4);
+		//		return;
+		//	}
 
-		}
+		//}
 
 
-		/*CSkillBlock::SKILLSLOT eSlotIdx{};
+		CSkillBlock::SKILLSLOT eSlotIdx{};
 		_bool isPress = false;
 		if (m_pGameInstance->Key_Down(DIK_1))
 		{
@@ -1297,7 +1306,7 @@ void CPlayer::Move(_float fTimeDelta)
 				return;
 			}
 
-		}*/
+		}
 
 		if (m_pGameInstance->Key_Down(DIK_5))
 		{
@@ -1453,7 +1462,7 @@ void CPlayer::Move(_float fTimeDelta)
 			{
 				return;
 			}
-			//if (!m_hasJumped)
+			if (!m_hasJumped)
 			{
 				m_pTransformCom->Jump(8.f);
 				m_eState = Jump_Start;
