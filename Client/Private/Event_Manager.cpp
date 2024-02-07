@@ -64,7 +64,7 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 				{
 					return;
 				}
-
+				m_pGameInstance->Play_Sound(TEXT("LevelUp"));
 				m_vecPopEvents.erase(m_vecPopEvents.begin());
 			}
 			break;
@@ -104,7 +104,7 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 					return;
 				m_vecPopEvents.erase(m_vecPopEvents.begin());
 
-				if (m_eCurTuto == T_OPENINVEN)
+				if (m_eCurTuto == T_OPENINVEN|| m_eCurTuto == T_OPENSKILL)
 				{
 					for (size_t i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 					{
@@ -124,6 +124,7 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 				{
 					return;
 				}
+				m_pGameInstance->Play_Sound(TEXT("UI_Synthesis_Success_SFX_01"));
 				m_vecPopEvents.erase(m_vecPopEvents.begin());
 			}
 			break;
