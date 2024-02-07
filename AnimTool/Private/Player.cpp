@@ -27,7 +27,7 @@ CAnimation* CPlayer::Get_CurrentAnim()
 {
 	if (m_eType == TYPE_PLAYER)
 	{
-		m_pPlayerModelCom->Get_Animation(m_pPlayerModelCom->Get_CurrentAnimationIndex());
+		return m_pPlayerModelCom->Get_Animation(m_pPlayerModelCom->Get_CurrentAnimationIndex());
 	}
 	else
 	{

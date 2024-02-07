@@ -47,7 +47,7 @@ private:
 
 	CGameObject*	m_pIcon{ nullptr };
 public:
-	void Set_HP(const _int iDamage) { m_iTargetHp = m_iCurHp - iDamage; }
+	void Set_HP(const _uint iHp) { m_iTargetHp = iHp; }
 
 private:
 	HRESULT Add_Components();
