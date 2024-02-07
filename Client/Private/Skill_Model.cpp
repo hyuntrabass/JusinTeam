@@ -26,7 +26,7 @@ HRESULT CSkill_Model::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(0.f,-100.f,0.f,1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(0.f,200.f,0.f,1.f));
 
 	m_Animation.iAnimIndex = 0;
 	m_Animation.isLoop = true;
@@ -49,14 +49,14 @@ void CSkill_Model::Tick(_float fTimeDelta)
 
 	if (m_eCurAnimState == SWORD1 or m_eCurAnimState == SWORD2 or m_eCurAnimState == SWORD3 or m_eCurAnimState == SWORD4)
 	{
-		m_pTransformCom->Set_State(State::Pos, _vec4(0.f, -100.f, 2.f, 1.f));
+		m_pTransformCom->Set_State(State::Pos, _vec4(0.f, 200.f, 2.f, 1.f));
 		m_pWeapon_ModelCom->Set_Animation(m_Animation);
 		m_pModelCom->Set_Animation(m_Animation);
 	
 	}
 	else
 	{
-		m_pTransformCom->Set_State(State::Pos, _vec4(0.f, -100.f, 0.f, 1.f));
+		m_pTransformCom->Set_State(State::Pos, _vec4(0.f, 200.f, 0.f, 1.f));
 		m_pModelCom->Set_Animation(m_Animation);
 	}
 	m_Animation.bRestartAnimation = false;

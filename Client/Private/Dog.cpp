@@ -164,12 +164,36 @@ void CDog::Tick_State(_float fTimeDelta)
 	case Client::CDog::STATE_SIT:
 		break;
 	case Client::CDog::STATE_WALK:
+	{
+		_float fDist = 1.2f;
+		PxRaycastBuffer Buffer{};
+
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(),
+			m_pTransformCom->Get_State(State::Look).Get_Normalized(),
+			fDist, Buffer))
+		{
+			m_pTransformCom->LookAt_Dir(PxVec3ToVector(Buffer.block.normal));
+		}
+
 		m_pTransformCom->Go_Straight(fTimeDelta);
 		m_pTransformCom->Set_Speed(1.5f);
+	}
 		break;
 	case Client::CDog::STATE_RUN:
+	{
+		_float fDist = 1.2f;
+		PxRaycastBuffer Buffer{};
+
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(),
+			m_pTransformCom->Get_State(State::Look).Get_Normalized(),
+			fDist, Buffer))
+		{
+			m_pTransformCom->LookAt_Dir(PxVec3ToVector(Buffer.block.normal));
+		}
+
 		m_pTransformCom->Go_Straight(fTimeDelta);
 		m_pTransformCom->Set_Speed(1.8f);
+	}
 		break;
 	}
 }

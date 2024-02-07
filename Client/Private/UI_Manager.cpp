@@ -1,6 +1,8 @@
 ﻿#include "UI_Manager.h"
 #include "GameInstance.h"
 #include "Inven.h"
+#include "SkillBook.h"
+#include "Event_Manager.h"
 IMPLEMENT_SINGLETON(CUI_Manager)
 
 CUI_Manager::CUI_Manager()
@@ -33,12 +35,27 @@ HRESULT CUI_Manager::Init()
 void CUI_Manager::Set_Exp_ByPercent(_float fExp)
 {
 
+	if (!m_isFirstKill)
+	{
+		m_isFirstKill = true;
+		m_fExp.x = m_fExp.y;
+	}
+	else
+	{
+		m_fExp.x += m_fExp.y * fExp / 100.f;
+	}
 
-	m_fExp.x += m_fExp.y * fExp / 100.f;
 	if (m_fExp.x >= m_fExp.y)
 	{
+		m_iLevel++;
+		CEvent_Manager::Get_Instance()->Set_LevelUp(m_iLevel);
+		if (m_iLevel == 2 || m_iLevel == 3 || m_iLevel == 4|| m_iLevel == 5)
+		{
+			CEvent_Manager::Get_Instance()->Set_SkillUnlock(m_iLevel - 2);
+		}
 		Level_Up();
 		m_fExp.x = 0.f;
+		m_fExp.y += 20.f * m_iLevel;
 		//스탯바꾸는곳에서 처리하는게 나을듯 레벨업함수에서
 	}
 }
@@ -70,6 +87,58 @@ _bool CUI_Manager::Set_CurrentPlayerPos(_vec4 vPos)
 		m_vPlayerPos = vPos; 
 		m_isSetInvenState = true;
 		return true; 
+	}
+	return false;
+}
+
+void CUI_Manager::Set_MpState(_bool isMp, _uint iMp)
+{
+	if (isMp)
+	{
+		m_isMpState = true;
+		m_iMpState = iMp;
+	}
+	else
+	{
+		m_isMpState = false;
+	}
+}
+
+void CUI_Manager::Set_Heal(_bool isHeal, _uint iHeal)
+{
+	if (isHeal)
+	{
+		m_isHeal = true;
+		m_iHeal = iHeal;
+	}
+	else
+	{
+		m_isHeal = false;
+	}
+}
+
+_bool CUI_Manager::Get_Heal(_uint* iHeal)
+{
+	if (m_isHeal)
+	{
+		if (iHeal != nullptr)
+		{
+			*iHeal = m_iHeal;
+		}
+		return true;
+	}
+	return false;
+}
+
+_bool CUI_Manager::Get_MpState(_uint* iMp)
+{
+	if (m_isMpState)
+	{
+		if (iMp != nullptr)
+		{
+			*iMp = m_iMpState;
+		}
+		return true;
 	}
 	return false;
 }
@@ -141,6 +210,16 @@ HRESULT CUI_Manager::Set_SkillBlock(CSkillBlock* pGameObject)
 		return E_FAIL;
 	}
 	m_pSkillBlock = pGameObject;
+	return S_OK;
+}
+
+HRESULT CUI_Manager::Set_SkillBook(CGameObject* pGameObject)
+{
+	if (pGameObject == nullptr)
+	{
+		return E_FAIL;
+	}
+	m_pSkillBook = pGameObject;
 	return S_OK;
 }
 
@@ -329,7 +408,7 @@ HRESULT CUI_Manager::Init_Skills()
 	Info.iCoolTime = 4;
 	Info.iSkillIdx = 0;
 	Info.iModelSkillIndex = 5;
-	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon6");
+	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon7");
 	m_SkillInfo[WP_SWORD][Info.iSkillIdx] = Info;
 	
 	Info.strName = TEXT("인장 각인");
@@ -337,7 +416,7 @@ HRESULT CUI_Manager::Init_Skills()
 	Info.iCoolTime = 8;
 	Info.iSkillIdx = 1;
 	Info.iModelSkillIndex = 4;
-	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon7");
+	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon6");
 	m_SkillInfo[WP_SWORD][Info.iSkillIdx] = Info;
 
 	Info.strName = TEXT("연속 각인");
@@ -416,14 +495,24 @@ HRESULT CUI_Manager::Set_InvenFrame(CGameObject* pGameObject)
 	return S_OK;
 }
 
-_bool CUI_Manager::Use_Skill(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot, _int* iIndex)
+HRESULT CUI_Manager::Unlock_Skill(_uint iIndex)
+{
+	if (m_pSkillBook == nullptr)
+	{
+		return E_FAIL;
+	}
+	dynamic_cast<CSkillBook*>(m_pSkillBook)->Unlock_Skill(iIndex);
+	return S_OK;
+}
+
+_bool CUI_Manager::Use_Skill(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot, _int* iIndex, _int* iMp)
 {
 	if (m_pSkillBlock == nullptr)
 	{
 		return false;
 	}
 	
-	return m_pSkillBlock->Use_Skill(eType, eSlot, iIndex);
+	return m_pSkillBlock->Use_Skill(eType, eSlot, iIndex, iMp);
 }
 
 CGameObject* CUI_Manager::Get_InvenFrame()
@@ -502,6 +591,12 @@ void CUI_Manager::Delete_Item_In_Slot(CItemBlock::ITEMSLOT eSlot)
 {
 	dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Delete_Item();
 	dynamic_cast<CItemSlot*>(m_pItemSlots[eSlot])->Delete_Item();
+}
+
+void CUI_Manager::Use_Item_In_Slot(CItemBlock::ITEMSLOT eSlot)
+{
+	dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Use_Item();
+	dynamic_cast<CItemSlot*>(m_pItemSlots[eSlot])->Use_Item();
 }
 
 void CUI_Manager::Set_RadarPos(TYPE eType, CTransform* pTransform)

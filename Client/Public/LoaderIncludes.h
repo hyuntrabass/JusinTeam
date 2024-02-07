@@ -1,11 +1,13 @@
 #pragma once
 
+#include "Targeted.h"
 #include "HPBoss.h"
 #include "HitEffect.h"
 #include "Skill.h"
 #include "SkillDesc.h"
 #include "SkillBook.h"
 #include "Tutorial.h"
+#include "Pop_LevelUp.h"
 #include "Pop_Alert.h"
 #include "Pop_Skill.h"
 #include "InvenWindow.h"

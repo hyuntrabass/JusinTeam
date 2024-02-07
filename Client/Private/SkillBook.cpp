@@ -50,13 +50,19 @@ HRESULT CSkillBook::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-	
+
+	CUI_Manager::Get_Instance()->Set_SkillBook(this);
 
 	return S_OK;
 }
 
 void CSkillBook::Tick(_float fTimeDelta)
 {
+	if (CUI_Manager::Get_Instance()->Get_TimeStop())
+	{
+		fTimeDelta /= m_pGameInstance->Get_TimeRatio();
+	}
+
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
@@ -96,6 +102,11 @@ void CSkillBook::Tick(_float fTimeDelta)
 					}
 					if (!isExist)
 					{
+						if (CEvent_Manager::Get_Instance()->Get_TutorialLevel() == T_EQUIPSKILL)
+						{
+							CEvent_Manager::Get_Instance()->Set_TutorialComplete(T_EQUIPSKILL);
+							CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_SKILLEXIT);
+						}
 						m_pSkillSlot[m_eCurType][i]->Set_Skill(tInfo);
 						break;
 					}
@@ -135,6 +146,11 @@ void CSkillBook::Tick(_float fTimeDelta)
 			m_isActive = true;
 			Init_SkillBookState();
 
+			if (CEvent_Manager::Get_Instance()->Get_TutorialLevel() == T_OPENSKILL)
+			{
+				CEvent_Manager::Get_Instance()->Set_TutorialComplete(T_OPENSKILL);
+				CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_EQUIPSKILL);
+			}
 			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 			{
 				if (m_pGameInstance->Get_IsLoopingSound(i))
@@ -172,7 +188,10 @@ void CSkillBook::Tick(_float fTimeDelta)
 			CUI_Manager::Get_Instance()->Set_SkillSlotChange(true);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_isActive = false;
-
+			if (CEvent_Manager::Get_Instance()->Get_TutorialLevel() == T_SKILLEXIT)
+			{
+				CEvent_Manager::Get_Instance()->Set_TutorialComplete(T_SKILLEXIT);
+			}
 			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 			{
 				if (m_pGameInstance->Get_IsLoopingSound(i))
@@ -411,10 +430,27 @@ HRESULT CSkillBook::Render()
 	return S_OK;
 }
 
+HRESULT CSkillBook::Unlock_Skill(_uint iIndex)
+{
+	for (size_t j = 0; j < WP_END; j++)
+	{
+		for (size_t i = 0; i < m_vecSkillDesc[j].size(); i++)
+		{
+			if (m_vecSkillDesc[j][i]->Get_SkillInfo().iSkillIdx == iIndex)
+			{
+				m_vecSkillDesc[j][i]->Unlock_Skill();
+				break;
+			}
+		}
+	}
+
+	return S_OK;
+}
+
 void CSkillBook::Init_SkillBookState()
 {
-	m_eCurType = WP_BOW;
-	m_ePrevType = WP_BOW;
+	_int iTemp = CUI_Manager::Get_Instance()->Get_WeaponType(PT_WEAPON, &m_eCurType);
+	m_ePrevType = m_eCurType;
 
 	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
 	dynamic_cast<CTextButton*>(m_pMoney)->Set_Text(to_wstring(iMoney));
@@ -422,13 +458,13 @@ void CSkillBook::Init_SkillBookState()
 	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
 	dynamic_cast<CTextButton*>(m_pDiamond)->Set_Text(to_wstring(iDiamond));
 
-	for (size_t j = 0; j < m_vecSkillDesc[WP_BOW].size(); j++)
+	for (size_t j = 0; j < m_vecSkillDesc[m_eCurType].size(); j++)
 	{
 		m_vecSkillDesc[m_eCurType][j]->Select_Skill(false);
 	}
 
-	dynamic_cast<CTextButtonColor*>(m_pSkillType[WP_BOW])->Set_Alpha(1.f);
-	_vec2 vPos = dynamic_cast<CTextButtonColor*>(m_pSkillType[WP_BOW])->Get_Position();
+	dynamic_cast<CTextButtonColor*>(m_pSkillType[m_eCurType])->Set_Alpha(1.f);
+	_vec2 vPos = dynamic_cast<CTextButtonColor*>(m_pSkillType[m_eCurType])->Get_Position();
 	dynamic_cast<CTextButton*>(m_pSelectButton)->Set_Position(vPos);
 	_vec2 fUnderBarPos = dynamic_cast<CTextButton*>(m_pUnderBar)->Get_Position();
 	dynamic_cast<CTextButton*>(m_pUnderBar)->Set_Position(_vec2(vPos.x, fUnderBarPos.y));

@@ -94,12 +94,19 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 {
 	if (m_Effect.isSprite)
 	{
-		m_iSpriteIndex = static_cast<_int>(m_fSpriteTimer);
-		m_fSpriteTimer += (fTimeDelta * m_Effect.vNumSprites.x * m_Effect.vNumSprites.y) / m_Effect.fSpriteDuration;
-		if (m_iSpriteIndex >= m_Effect.vNumSprites.x * m_Effect.vNumSprites.y)
+		if (m_Effect.isFixedIndex)
 		{
-			m_iSpriteIndex = 0;
-			m_fSpriteTimer = {};
+			m_iSpriteIndex = m_Effect.iFixedSpriteIndex;
+		}
+		else
+		{
+			m_iSpriteIndex = static_cast<_int>(m_fSpriteTimer);
+			m_fSpriteTimer += (fTimeDelta * m_Effect.vNumSprites.x * m_Effect.vNumSprites.y) / m_Effect.fSpriteDuration;
+			if (m_iSpriteIndex >= m_Effect.vNumSprites.x * m_Effect.vNumSprites.y)
+			{
+				m_iSpriteIndex = 0;
+				m_fSpriteTimer = {};
+			}
 		}
 	}
 

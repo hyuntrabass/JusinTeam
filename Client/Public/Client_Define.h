@@ -232,6 +232,9 @@ namespace Client
 		T_OPENINVEN, 
 		T_EQUIP,
 		T_EXIT,
+		T_OPENSKILL,
+		T_EQUIPSKILL,
+		T_SKILLEXIT,
 		TUTO_END
 	};
 
@@ -318,7 +321,7 @@ namespace Client
 		AnimPass_Dissolve,
 		AnimPass_Rim,
 	};
-
+	
 	enum StaticMeshPass
 	{
 		StaticPass_Default,
@@ -345,7 +348,17 @@ namespace Client
 		StaticPass_DiffAlpha,
 		StaticPass_End,
 	};
+	
+	enum VTFModelPass
+	{
+		VTFPass_Default,
+		VTFPass_Dissolve,
+		VTFPass_Motion_Blur,
+		VTFPass_LerpDissolve,
+		VTFPass_LerpBlur,
+		VTFPass_Main_Rim,
 
+	};
 	enum VNTPass
 	{
 		VNTPass_Terrain,
@@ -390,6 +403,7 @@ namespace Client
 		VTPass_LerpColorNAlpha,
 		VTPass_HPBoss,
 		VTPass_MaskColorMove,
+		VTPass_ChangeBright,
 		VTPass_End
 	};
 

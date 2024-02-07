@@ -252,6 +252,7 @@
     <ClInclude Include="..\Public\Lake.h" />
     <ClInclude Include="..\Public\Spider.h" />
     <ClInclude Include="..\Public\Player.h" />
+    <ClInclude Include="..\Public\Targeted.h" />
     <ClInclude Include="..\Public\Tentacle.h" />
     <ClInclude Include="..\Public\TestTree.h" />
     <ClInclude Include="..\Public\TextButton.h" />
@@ -320,6 +321,7 @@
     <ClCompile Include="..\private\Effect_Manager.cpp" />
     <ClCompile Include="..\Private\Event_Manager.cpp" />
     <ClCompile Include="..\Private\ExpBar.cpp" />
+    <ClCompile Include="..\Private\Rabbit.cpp" />
     <ClCompile Include="..\Private\FadeBox.cpp" />
     <ClCompile Include="..\Private\Goat.cpp" />
     <ClCompile Include="..\Private\Groar_Boss.cpp" />
@@ -367,7 +369,6 @@
     <ClCompile Include="..\Private\Pop_Skill.cpp" />
     <ClCompile Include="..\Private\Quest.cpp" />
     <ClCompile Include="..\Private\QuestBox.cpp" />
-    <ClCompile Include="..\Private\Rabbit.cpp" />
     <ClCompile Include="..\Private\Radar.cpp" />
     <ClCompile Include="..\Private\Riding.cpp" />
     <ClCompile Include="..\Private\Roskva.cpp" />
@@ -389,6 +390,7 @@
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Lake.cpp" />
     <ClCompile Include="..\Private\Spider.cpp" />
+    <ClCompile Include="..\Private\Targeted.cpp" />
     <ClCompile Include="..\Private\Tentacle.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\TestTree.cpp" />

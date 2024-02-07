@@ -36,14 +36,14 @@ private:
 private:
 	LEVEL_ID		m_eLevel{};
 
-	_uint			m_iCurHp{};
+	_int			m_iCurHp{};
 	_uint			m_iMaxHp{};
 
 	_vec3			m_vPosition{};
 	CTransform* m_pParentTransform{ nullptr };
 
 public:
-	void Set_HP(const _uint iHp) { m_iCurHp = iHp; }
+	void Set_HP(const _int iHp) { m_iCurHp = iHp; }
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

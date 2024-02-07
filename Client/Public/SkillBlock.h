@@ -31,7 +31,7 @@ private:
 	CSkillSlot*		m_pSlots[WP_END][SKILL_END];
 
 public:
-	_bool	Use_Skill(WEAPON_TYPE eType, SKILLSLOT eSlot, _int* iIndex);
+	_bool	Use_Skill(WEAPON_TYPE eType, SKILLSLOT eSlot, _int* iIndex, _int* iMp);
 
 private:
 	HRESULT Add_Components();

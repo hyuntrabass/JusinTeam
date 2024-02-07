@@ -1,7 +1,6 @@
 #include "Trigger_Manager.h"
 #include "Trigger.h"
 #include "Camera_CutScene.h"
-#include "Event_Manager.h"
 
 IMPLEMENT_SINGLETON(CTrigger_Manager)
 
@@ -19,6 +18,8 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 {
 	for (auto& iter : m_pTrigger)
 	{
+		iter->Tick(fTimeDelta);
+
 		//m_pGameInstance->Get_CurrentLevelIndex();
 		m_isColl = iter->Get_Collision();
 		//m_isPlayCutScene = false;
@@ -49,9 +50,7 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 			}
 			else if (iter->Get_TriggerType() == BOSS_TRIGGER && iter->Get_Limited() == true)
 			{
-
-				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("그로아를 찾아서"));
-				iter->Set_Limited(false);
+				m_isCollBossTrigger = true;
 			}
 		}
 	}
@@ -62,16 +61,70 @@ void CTrigger_Manager::Limited_CutScene(_bool isLimited)
 	m_isLimited = isLimited;
 }
 
-void CTrigger_Manager::Set_Trigger(CTrigger* pTrigger)
+HRESULT CTrigger_Manager::Ready_Trigger_Village()
 {
-	m_pTrigger.push_back(pTrigger);
+	TriggerInfo Info{};
+	const TCHAR* pGetPath = L"../Bin/Data/Village_Trigger.dat";
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MSG_BOX("../Bin/Data/Village_Trigger.dat 트리거 불러오기 실패.");
+		return E_FAIL;
+	}
+	_uint TriggerListSize;
+	inFile.read(reinterpret_cast<char*>(&TriggerListSize), sizeof(_uint));
+
+
+	for (_uint i = 0; i < TriggerListSize; ++i)
+	{
+		TriggerInfo TriggerInfo{};
+
+		_uint iIndex{};
+		inFile.read(reinterpret_cast<char*>(&iIndex), sizeof(_uint));
+		TriggerInfo.iIndex = iIndex;
+
+		_bool bCheck{};
+		inFile.read(reinterpret_cast<char*>(&bCheck), sizeof(_bool));
+		TriggerInfo.bLimited = bCheck;
+
+		_ulong TriggerPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&TriggerPrototypeSize), sizeof(_ulong));
+
+		wstring TriggerPrototype;
+		TriggerPrototype.resize(TriggerPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&TriggerPrototype[0]), TriggerPrototypeSize * sizeof(wchar_t));
+
+		_float TriggerSize{};
+		inFile.read(reinterpret_cast<char*>(&TriggerSize), sizeof(_float));
+		TriggerInfo.fSize = TriggerSize;
+
+		_mat TriggerWorldMat;
+		inFile.read(reinterpret_cast<char*>(&TriggerWorldMat), sizeof(_mat));
+
+		TriggerInfo.WorldMat = TriggerWorldMat;
+
+		CTrigger* pTrigger = dynamic_cast<CTrigger*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Trigger"), &TriggerInfo));
+		if (not pTrigger)
+		{
+			MSG_BOX("트리거 생성 실패.");
+			return E_FAIL;
+		}
+
+		m_pTrigger.push_back(pTrigger);
+	}
+
+	inFile.close();
+
+	return S_OK;
 }
 
 void CTrigger_Manager::Free()
 {
-	for (auto& iter : m_pTrigger)
+	for (auto& pTrigger : m_pTrigger)
 	{
-		Safe_Release(iter);
+		Safe_Release(pTrigger);
 	}
 	m_pTrigger.clear();
 

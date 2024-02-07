@@ -26,9 +26,12 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 
 private:
+
+	_uint			m_iSelect{};
 	_bool			m_isPrototype{ false };
 	CItemSlot*		m_pSlots[ITEMSLOT_END];
 
+	CTextButton*	m_pSelect{ nullptr };
 
 private:
 	HRESULT Add_Components();

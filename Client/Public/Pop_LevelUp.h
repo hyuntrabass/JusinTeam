@@ -6,6 +6,11 @@ BEGIN(Client)
 
 class CPop_LevelUp final : public COrthographicObject
 {
+public:
+	typedef struct tagLevelUpDesc
+	{
+		_uint iLevel;
+	}LEVELUP_DESC;
 
 private:
 	CPop_LevelUp(_dev pDevice, _context pContext);
@@ -24,31 +29,32 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
 	CTexture* m_pTextureCom{ nullptr };
-	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
-	_bool			m_isMain{ false };
+	_uint			m_iLevel{ };
 	_uint			m_iMoney{ 0 };
 	_float			m_fExp{ 0.f };
 	_float			m_fDir{ -1.f };
+	_float			m_fAlpha{ 1.f };
 
 	wstring			m_strQuestTitle;
 	wstring			m_strText;
 
 
-	_float			m_fTime{};
+	_float			m_fTime{3.f};
 	_float			m_fDeadTime{};
 	_float			m_fButtonTime{};
 	_float2			m_fStartButtonPos{};
 
-
+	/*
+	
 	CGameObject*	m_pBackground{ nullptr };
 	CGameObject*	m_pBorder{ nullptr };
 	CGameObject*	m_pButton{ nullptr };
 	CGameObject*	m_pExclamationMark{ nullptr };
 	CGameObject*	m_pMoney{ nullptr };
 	CGameObject*	m_pExp{ nullptr };
-
+	*/
 private:
 	HRESULT Add_Parts();
 	HRESULT Add_Components();
