@@ -23,6 +23,7 @@ HRESULT CHell::Init(void* pArg)
 	}
 
 	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), 90.f);
+	m_pTransformCom->Set_Scale(_vec3(3.f));
 
 	return S_OK;
 }
@@ -34,7 +35,6 @@ void CHell::Tick(_float fTimeDelta)
 void CHell::Late_Tick(_float fTimeDelta)
 {
 	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_pGameInstance->Get_CameraPos()) - XMVectorSet(0.f, 0.15f, 0.f, 0.f));
-	m_pTransformCom->Set_Scale(_vec3(3.f));
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Priority, this);
 }
 

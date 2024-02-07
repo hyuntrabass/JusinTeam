@@ -298,6 +298,8 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CGroar_Boss::STATE_BOSS:
+			m_pTransformCom->Set_Position(_vec3(0.f));
+
 			m_pTransformCom->Delete_Controller();
 
 			PxCapsuleControllerDesc ControllerDesc{};
@@ -309,6 +311,8 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 
 			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+			
+			m_pTransformCom->Set_Position(_vec3(2179.f, -20.f, 2083.f));
 
 			break;
 		}
