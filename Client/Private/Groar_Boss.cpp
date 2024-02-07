@@ -1027,19 +1027,21 @@ HRESULT CGroar_Boss::Add_Parts()
 
 void CGroar_Boss::NPC_Tick(_float fTimeDelta)
 {
-	if (m_pArrow->Get_TransPosition().y < m_pArrow->Get_Position().y - 5.f)
+	if (m_bTalking == true)
 	{
-		m_fDir = 0.6f;
-		m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_pArrow->Get_Position().y - 5.f));
+		if (m_pArrow->Get_TransPosition().y < m_pArrow->Get_Position().y - 5.f)
+		{
+			m_fDir = 0.6f;
+			m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_pArrow->Get_Position().y - 5.f));
+		}
+		if (m_pArrow->Get_TransPosition().y > m_pArrow->Get_Position().y)
+		{
+			m_fDir = -1.f;
+			m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_pArrow->Get_Position().y));
+		}
+		m_fButtonTime += fTimeDelta * m_fDir * 10.f;
+		m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_fButtonTime));
 	}
-	if (m_pArrow->Get_TransPosition().y > m_pArrow->Get_Position().y)
-	{
-		m_fDir = -1.f;
-		m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_pArrow->Get_Position().y));
-	}
-	m_fButtonTime += fTimeDelta * m_fDir * 10.f;
-	m_pArrow->Set_Position(_float2(m_pArrow->Get_Position().x, m_fButtonTime));
-
 
 	if (m_bTalking == true)
 	{

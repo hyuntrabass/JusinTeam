@@ -214,7 +214,7 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.eType = QUESTIN;
 	tDesc.fExp = 20.3f;
 	tDesc.iNum = 3;//몬스터 수만큼? 
-	tDesc.iMoney = 100000;
+	tDesc.iMoney = 100000; 
 	tDesc.isMain = true;
 	tDesc.strQuestTitle = TEXT("그로아를 지켜라");
 	tDesc.strText = TEXT("몬스터로부터 그로아 지키기");
