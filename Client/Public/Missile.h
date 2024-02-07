@@ -34,6 +34,8 @@ public:
 
 public:
 	void Parry_Success();
+	void RayCast();
+
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
