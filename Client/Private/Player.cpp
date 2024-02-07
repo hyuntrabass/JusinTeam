@@ -216,7 +216,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		}
 	}
 	Front_Ray_Check();
-
+	Health_Regen(fTimeDelta);
 	if (m_bIsMount)
 	{
 		m_pRiding->Tick(fTimeDelta);
@@ -1065,6 +1065,7 @@ void CPlayer::Health_Regen(_float fTImeDelta)
 	{
 		m_Status.Current_Mp = m_Status.Max_Mp;
 	}
+	CUI_Manager::Get_Instance()->Set_Mp(m_Status.Current_Mp, m_Status.Max_Mp);
 }
 
 void CPlayer::Move(_float fTimeDelta)
