@@ -482,6 +482,7 @@ void CRiding::Init_State()
 			case Client::Tiger:
 			{
 				m_Animation.iAnimIndex = Tiger_1003_Run;
+				m_Animation.bSkipInterpolation = true;
 				m_Animation.isLoop = true;
 				m_hasJumped = false;
 			}
@@ -489,6 +490,7 @@ void CRiding::Init_State()
 			case Client::Nihilir:
 			{
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Run;
+				m_Animation.bSkipInterpolation = true;
 				m_Animation.isLoop = true;
 				m_hasJumped = false;
 			}
@@ -497,6 +499,7 @@ void CRiding::Init_State()
 			{
 				m_Animation.iAnimIndex = Horse_1004_Run_F;
 				m_Animation.isLoop = true;
+				m_Animation.bSkipInterpolation = true;
 				m_hasJumped = false;
 			}
 				break;
@@ -600,18 +603,21 @@ void CRiding::Init_State()
 			case Client::Tiger:
 			{
 				m_Animation.iAnimIndex = Tiger_1003_Jump_End_Run;
+				m_Animation.bSkipInterpolation = true;
 				m_hasJumped = false;
 			}
 				break;
 			case Client::Nihilir:
 			{
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Jump_End_Run;
+				m_Animation.bSkipInterpolation = true;
 				m_hasJumped = false;
 			}
 				break;
 			case Client::Horse:
 			{
 				m_Animation.iAnimIndex = Horse_1004_jump_End_Run;
+				m_Animation.bSkipInterpolation = true;
 				m_hasJumped = false;
 			}
 			break;
