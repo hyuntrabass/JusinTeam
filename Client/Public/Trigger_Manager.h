@@ -35,10 +35,12 @@ public:
 	void Set_StartSuicide() { m_bStartSuicide = true; }
 	void Set_AfterSuicide() { m_bAfterSuicide = true; }
 	void Set_BossStart() { m_bBossStart = true; }
+	void LoopBroken() { m_isBreakLoop = false; }
 
 	_bool Get_StartSuicide() { return m_bStartSuicide; }
 	_bool Get_AfterSuicide() { return m_bAfterSuicide; }
 	_bool Get_BossStart() { return m_bBossStart; }
+	_bool Is_BreakLoop() { return m_isBreakLoop; }
 
 private:
 	CGameInstance* m_pGameInstance = { nullptr };
@@ -49,6 +51,7 @@ private:
 	_bool m_isPlayCutScene{ false };
 	_bool m_isInfinite{ false };
 	wstring m_strFilePath{};
+	_bool m_isBreakLoop{};
 
 private:
 	_bool m_isCollBossTrigger = { false };
