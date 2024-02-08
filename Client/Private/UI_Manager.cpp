@@ -431,6 +431,16 @@ HRESULT CUI_Manager::Init_Skills()
 	return E_NOTIMPL;
 }
 
+void CUI_Manager::Set_Symbol(CSymbol::TYPE eType)
+{
+	CSymbol::SYMBOL_DESC Desc{};
+	Desc.eType = eType;
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Symbol"), &Desc)))
+	{
+		return;
+	}
+}
+
 SKILLINFO CUI_Manager::Get_SkillInfo(WEAPON_TYPE eType, _uint iIdx)
 {
 	SKILLINFO Info{};

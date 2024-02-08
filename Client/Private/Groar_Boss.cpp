@@ -242,6 +242,8 @@ void CGroar_Boss::Set_Damage(_int iDamage, _uint iDamageType)
 		m_iHP -= iDamage;
 		m_bChangePass = true;
 
+		m_pHpBoss->Set_HP(m_iHP);
+
 		CHitEffect::HITEFFECT_DESC Desc{};
 		Desc.iDamage = iDamage;
 		Desc.pParentTransform = m_pTransformCom;

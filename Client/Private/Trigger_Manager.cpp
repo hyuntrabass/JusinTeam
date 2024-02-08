@@ -1,6 +1,8 @@
 #include "Trigger_Manager.h"
 #include "Trigger.h"
 #include "Camera_CutScene.h"
+#include "UI_Manager.h"
+#include "Symbol.h"
 
 IMPLEMENT_SINGLETON(CTrigger_Manager)
 
@@ -16,6 +18,8 @@ HRESULT CTrigger_Manager::Init()
 
 void CTrigger_Manager::Tick(_float fTimeDelta)
 {
+	CTrigger* pTrigger = nullptr;
+	_bool bColl = false;
 	for (auto& iter : m_pTrigger)
 	{
 		iter->Tick(fTimeDelta);
@@ -25,32 +29,55 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 		//m_isPlayCutScene = false;
 		if (m_isColl == true)
 		{
+			bColl = true;
 			if (iter->Get_TriggerType() == VILLAGE_TRIGGER && iter->Get_Limited() == true)
 			{
 				m_isPlayCutScene = true;
 				m_isInfinite = false;
 				m_strFilePath = L"../Bin/Data/Village_CutScene.dat";
 				m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+				CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
 				iter->Set_Limited(false);
 			}
-			else if (iter->Get_TriggerType() == FRONTDOOR_IN_TRIGGER && iter->Get_Limited() == false)
+			else if (iter->Get_TriggerType() == FRONTDOOR_IN_TRIGGER)
 			{
-				// 정문으로 들어올 시
+				pTrigger = iter;
+				if (iter->Get_Limited() == false)
+				{
+					CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::FIELDEAST);
+					iter->Set_Limited(true);
+				}
 			}
-			else if (iter->Get_TriggerType() == FRONTDOOR_OUT_TRIGGER && iter->Get_Limited() == false)
+			else if (iter->Get_TriggerType() == FRONTDOOR_OUT_TRIGGER)
 			{
-				// 정문으로 나갈 시
+				pTrigger = iter;
+				if (iter->Get_Limited() == false)
+				{
+					CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
+					iter->Set_Limited(true);
+				}
 			}
-			else if (iter->Get_TriggerType() == BACKDOOR_IN_TRIGGER && iter->Get_Limited() == false)
+			else if (iter->Get_TriggerType() == BACKDOOR_IN_TRIGGER)
 			{
-				// 후문으로 들어올 시
+				pTrigger = iter;
+				if (iter->Get_Limited() == false)
+				{
+					CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::FIELDSOUTH);
+					iter->Set_Limited(true);
+				}
 			}
-			else if (iter->Get_TriggerType() == BACKDOOR_OUT_TRIGGER && iter->Get_Limited() == false)
+			else if (iter->Get_TriggerType() == BACKDOOR_OUT_TRIGGER)
 			{
-				// 후문으로 나갈 시
+				pTrigger = iter;
+				if (iter->Get_Limited() == false)
+				{
+					CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
+					iter->Set_Limited(true);
+				}
 			}
 			else if (iter->Get_TriggerType() == BOSS_TRIGGER && iter->Get_Limited() == true)
 			{
+				pTrigger = iter;	
 				m_isCollBossTrigger = true;
 				m_isPlayCutScene = true;
 				m_strFilePath = L"../Bin/Data/Boss_First_CutScene.dat";
@@ -74,6 +101,7 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 
 	if (m_bAfterSuicide)
 	{
+		CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::GROAR);
 		m_isBreakLoop = true;
 		m_isPlayCutScene = false;
 		m_isInfinite = false;
@@ -81,6 +109,24 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 		m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
 		m_bAfterSuicide = false;
 	}
+
+
+	if (bColl && pTrigger != nullptr)
+	{
+		for (auto& iter : m_pTrigger)
+		{
+			if (iter->Get_TriggerType() == BOSS_TRIGGER || iter->Get_TriggerType() == VILLAGE_TRIGGER)
+			{
+				continue;
+			}
+			if (iter != pTrigger)
+			{
+				iter->Set_Limited(false);
+			}
+		}
+	}
+
+
 }
 
 void CTrigger_Manager::Limited_CutScene(_bool isLimited)
