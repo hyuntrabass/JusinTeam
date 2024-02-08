@@ -393,14 +393,15 @@ HRESULT CLevel_Village::In_To_Dungeon()
 	_vec4 Player_Pos{ 0.f };
 	inFile.read(reinterpret_cast<char*>(&Player_Pos), sizeof(_vec4));
 
-	/*CamPos X :2169.59
-CamPos Y :-26.7111
-CamPos Z :2084.48*/
+
+	CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
+	pCamTransform->Set_State(State::Pos, _vec4(2067.11f, -12.8557f, 2086.95f, 1.f));
+	pCamTransform->LookAt_Dir(_vec4(0.97706846f, -0.21286753f, 0.004882995, 0.f));
 
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 	//pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 4.f, 0.f));
-	pPlayerTransform->Set_Position(_vec3(2169.f, -26.f, 2084.f));
-	pPlayerTransform->LookAt_Dir(_vec4(-0.0531848f, 0.0598536346f, 0.996788f, 0.f));
+	pPlayerTransform->Set_Position(_vec3(2070.81f, -14.8443f, 2086.87f));
+	pPlayerTransform->LookAt_Dir(_vec4(0.99763946f, 0.014162573f, 0.067186668f, 0.f));
 
 	m_pGameInstance->Set_HellHeight(-30.f);
 
