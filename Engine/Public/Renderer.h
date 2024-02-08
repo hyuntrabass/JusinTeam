@@ -100,6 +100,8 @@ private:
 
 	class CTexture* m_pNoiseNormal = nullptr;
 
+	class CShadowMap* m_pShadowMap = nullptr;
+
 	_uint2 m_WinSize{};
 
 #pragma region 쉐이더 수치조절

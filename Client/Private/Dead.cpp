@@ -88,7 +88,7 @@ void CDead::Tick(_float fTimeDelta)
 				m_hOldBackBit = (HBITMAP)SelectObject(m_BackDC, m_hBackBit);
 
 				m_hVideo = MCIWndCreate(g_hWnd, NULL, WS_CHILD | WS_VISIBLE | MCIWNDF_NOPLAYBAR
-					, L"../Bin/Resources/Video/Tutorial0.wmv");
+					, L"../Bin/Resources/Video/Tutorial1.wmv");
 
 				MCIWndSetVolume(g_hWnd, 1.f);
 

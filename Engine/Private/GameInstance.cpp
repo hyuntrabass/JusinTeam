@@ -9,6 +9,7 @@
 #include "Frustum.h"
 #include "Collision_Manager.h"
 #include "RenderTarget_Manager.h"
+#include "Cascade_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance);
 
@@ -102,6 +103,11 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 		return E_FAIL;
 	}
 
+	m_pCascade_Manager = CCascade_Manager::Create(*ppDevice, *ppContext);
+	if (!m_pCascade_Manager) {
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -156,6 +162,8 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	m_pPicking->Tick();
 
 	m_pFrustum->Tick();
+
+	m_pCascade_Manager->Update_Cascade();
 
 	m_pObject_Manager->Release_DeadObjects();
 	m_pObject_Manager->Late_Tick(fTimeDelta);
@@ -1196,6 +1204,16 @@ _bool CGameInstance::Has_Created_Effect(const void* pMatrixKey)
 	return m_Function_HasCreated(pMatrixKey);
 }
 
+CASCADE_DESC CGameInstance::Get_CascadeDesc()
+{
+	if (not m_pCascade_Manager) {
+		MSG_BOX("FATAL ERROR : m_pCascade_Manager is NULL");
+		return CASCADE_DESC();
+	}
+
+	return m_pCascade_Manager->Get_CascadeDesc();
+}
+
 const _uint& CGameInstance::Get_CameraModeIndex() const
 {
 	return m_iCameraModeIndex;
@@ -1403,6 +1421,7 @@ void CGameInstance::Video_Start(_float fVideoDuration ,_bool bSkip)
 	m_fVideoDuration = fVideoDuration;
 	m_isPlayingVideo = true;
 	m_bVideoAfterSkip = bSkip;
+	m_fVideoTimmer = 0.f;
 }
 
 void CGameInstance::Initialize_Level(_uint iLevelNum)
@@ -1444,6 +1463,7 @@ void CGameInstance::Clear_Managers()
 	Safe_Release(m_pFrustum);
 	Safe_Release(m_pRenderTarget_Manager);
 	Safe_Release(m_pPhysX_Manager);
+	Safe_Release(m_pCascade_Manager);
 }
 
 void CGameInstance::Release_Engine()

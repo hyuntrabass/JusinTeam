@@ -626,7 +626,7 @@ HRESULT CModel::Render_Reflection_Instancing(CVIBuffer_Mesh_Instance*& pInstance
 
 		if (FAILED(Bind_Material(pShader, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
-			return E_FAIL;
+			continue;
 		}
 
 		_bool HasNorTex{};
@@ -670,6 +670,27 @@ HRESULT CModel::Render_Reflection_Instancing(CVIBuffer_Mesh_Instance*& pInstance
 			return E_FAIL;
 	}
 
+	return S_OK;
+}
+
+HRESULT CModel::Render_Shadow_Instancing(CVIBuffer_Mesh_Instance*& pInstanceBuffer, CShader*& pShader)
+{
+	for (_uint i = 0; i < m_Meshes.size(); ++i)
+	{
+
+		if (FAILED(Bind_Material(pShader, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		{
+			continue;
+		}
+
+		if (FAILED(pShader->Begin(4)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(pInstanceBuffer->Render(m_Meshes[i])))
+			return E_FAIL;
+	}
 	return S_OK;
 }
 

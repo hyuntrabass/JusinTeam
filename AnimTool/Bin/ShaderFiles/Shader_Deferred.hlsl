@@ -2,7 +2,6 @@
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 matrix g_ViewMatrixInv, g_ProjMatrixInv;
-matrix g_LightViewMatrix, g_LightProjMatrix;
 
 vector g_vLightDir;
 vector g_vLightPos;
@@ -30,16 +29,24 @@ Texture2D g_RimMaskTexture;
 Texture2D g_ShadeTexture;
 Texture2D g_SpecularTexture;
 Texture2D g_DepthTexture;
-Texture2D g_LightDepthTexture;
 
 
 Texture2D g_BlurTexture;
 
 Texture2D g_DebugTexture;
+Texture2DArray g_DebugArrayTexture;
 
 // 원명
 // 이동량
 Texture2D g_VelocityTexture;
+
+// 그림자
+Texture2DArray g_LightDepthTexture;
+matrix g_LightViewMatrix[3];
+matrix g_LightProjMatrix[3];
+vector g_ClipZ;
+uint g_hi;
+
 
 // SSAO
 Texture2D g_SSAONoiseNormal;
@@ -106,7 +113,22 @@ vector Get_ViewPos(float2 vTex)
 
 float Get_Luminance(float3 vRGB)
 {
-    return dot(vRGB, g_fLuminace);
+    return max(dot(vRGB, g_fLuminace), 0.001f);
+}
+
+float CalcCascadeShadowFactor(uint lightIndex, vector vLightPos)
+{
+    float3 ProjPos = vLightPos.xyz / vLightPos.w;
+    
+    ProjPos.x = (ProjPos.x + 1.f) * 0.5f;
+    ProjPos.y = (ProjPos.y - 1.f) * -0.5f;
+    
+    if(1.f < ProjPos.z)
+        return 1.f;
+    
+    float3 LightUV = float3(ProjPos.x, ProjPos.y, lightIndex);
+    
+    return g_LightDepthTexture.Sample(LinearSampler, LightUV).r;
 }
 
 struct VS_IN
@@ -151,6 +173,15 @@ PS_OUT PS_Main_Debug(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     Output.vColor = g_DebugTexture.Sample(LinearSampler, Input.vTexcoord);
+    
+    return Output;
+}
+
+PS_OUT PS_Main_DebugArray(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+
+    Output.vColor = g_DebugArrayTexture.Sample(LinearSampler, float3(Input.vTexcoord, (float) g_hi));
     
     return Output;
 }
@@ -230,15 +261,6 @@ PS_OUT PS_Main_Water(PS_IN Input)
     
     vector FinalColor = 0;
     
-    //int2 vTexcoord = int2(Input.vTexcoord.x, Input.vTexcoord.y);
-    
-    //float4 colorSum = float4(0, 0, 0, 0);
-    //for (int sampleIndex = 0; sampleIndex < 4; ++sampleIndex)
-    //{
-    //    colorSum += g_DiffuseTexture.Load(vTexcoord, sampleIndex);
-    //}
-    //vector vDiffuse = colorSum / 4;
-    
     vector vDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTexcoord);
 
     if(vDiffuse.a == 0.f)
@@ -262,15 +284,6 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     vector FinalColor = 0;
-    
-    //int2 vTexcoord = int2(Input.vTexcoord.x, Input.vTexcoord.y);
-    
-    //float4 colorSum = float4(0, 0, 0, 0);
-    //for (int sampleIndex = 0; sampleIndex < 4; ++sampleIndex)
-    //{
-    //    colorSum += g_DiffuseTexture.Load(vTexcoord, sampleIndex);
-    //}
-    //vector vDiffuse = colorSum / 4;
     
     vector vDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTexcoord);
     
@@ -299,17 +312,39 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     if (TurnOnSSAO)
         FinalColor.rgb *= vSsaoDesc.rgb;
     
-    //if(true == TurnOnThunder)
-    //    FinalColor = pow(vShade, 50.f) + vDiffuse * 0.1f;
+    vector vWorldPos = Get_WorldPos(Input.vTexcoord);
+    
     
     vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
     float fViewZ = vDepthDesc.y * g_vCamNF.y;
     
+    float ClipZ[3];
+    ClipZ[0] = g_ClipZ.y;
+    ClipZ[1] = g_ClipZ.z;
+    ClipZ[2] = g_ClipZ.w;
+    
+    
+    vector vLightPos;
+    for (uint i = 0; i < 3; ++i)
+    {
+        float Z = ClipZ[i] * (g_vCamNF.y - g_vCamNF.x) - g_vCamNF.y * g_vCamNF.x / g_vCamNF.y;
+        vLightPos = mul(vWorldPos, g_LightViewMatrix[i]);
+        vLightPos = mul(vLightPos, g_LightProjMatrix[i]);
+        
+        if (fViewZ <= Z)
+        {
+            float fLightDepth = CalcCascadeShadowFactor(i, vLightPos);
+            if (vLightPos.z - 0.005f > fLightDepth)
+            {
+                FinalColor.rgb = FinalColor.rgb * 0.5f;
+            }
+            break;
+        }
+    }
+    
     float fFogFactor = saturate((g_vFogNF.y - fViewZ) / (g_vFogNF.y - g_vFogNF.x));
     vector vFogColor = g_vFogColor;
     vFogColor.a = 1.f;
-    
-    float4 vWorldPos = Get_WorldPos(Input.vTexcoord);
     
     if (vWorldPos.y < g_fHellStart)
     {
@@ -319,22 +354,7 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
         FinalColor *= vector(fHell, fHell, fHell, 1.f);
         vFogColor *= fHell;
     }
-    
-    //vWorldPos = mul(vWorldPos, g_LightViewMatrix);
-    //vWorldPos = mul(vWorldPos, g_LightProjMatrix);
-    
-    //float2 vLightDepthUV;
-    //vLightDepthUV.x = vWorldPos.x / vWorldPos.w * 0.5f + 0.5f;
-    //vLightDepthUV.y = vWorldPos.y / vWorldPos.w * -0.5f + 0.5f;
-    
-    //vector vLightDepthDesc = g_LightDepthTexture.Sample(LinearClampSampler, vLightDepthUV);
-    
-    //float fLightDepth = vLightDepthDesc.x * g_fLightFar;
-    
-    //if (vWorldPos.w - 0.001f > fLightDepth)
-    //{
-    //    FinalColor.xyz = FinalColor.xyz * 0.5f;
-    //}
+       
 
     FinalColor = lerp(fFogFactor * FinalColor, vFogColor, (1.f - fFogFactor));
     //FinalColor = fFogFactor * FinalColor + (1.f - fFogFactor) * vFogColor;
@@ -373,42 +393,9 @@ struct VS_SSAO_OUT
     float2 vTexcoord : Texcoord0;
 };
 
-VS_SSAO_OUT VS_SSAO(VS_IN Input)
-{
-    VS_SSAO_OUT Output = (VS_SSAO_OUT) 0;
-	
-    matrix matWV = mul(g_WorldMatrix, g_ViewMatrix);
-    matrix matWVP = mul(matWV, g_ProjMatrix);
-
-    Output.vPos = mul(vector(Input.vPos, 1.f), matWVP);
-    
-    float4 ph = mul(Output.vPos, g_ProjMatrixInv);
-    
-    Output.Plane = ph.xyz / ph.w;
-    Output.vTexcoord = Input.vTexcoord;
-    
-    
-    return Output;
-}
-
-struct PS_SSAO_IN
-{
-    vector vPos : SV_Position;
-    float3 Plane : Plane;
-    float2 vTexcoord : Texcoord0;
-};
-
 //float Get_AO(float2 vTex, float2 plusTex, vector myPos, float3 myNor)
 float Get_Occlusion(float distZ)
 {
-    //vector diff = Get_WorldPos(vTex + plusTex) - myPos;
-    //vector v = normalize(diff);
-    //float d = length(diff) * g_SSAO.fScale;
-    
-    //float final = max(0.f, dot(myNor, v.xyz) - g_SSAO.fBias) * (1.f / (1.f + d)) * g_SSAO.fIntensity;
-    
-    //return final;
-    
     float occlusion = 0.f;
     
     if (distZ > 0.05f)
@@ -421,55 +408,11 @@ float Get_Occlusion(float distZ)
     return occlusion;
 }
 
-PS_OUT PS_Main_SSAO(PS_SSAO_IN Input)
+PS_OUT PS_Main_SSAO(PS_IN Input)
 {
-    // 완벽하지 않습니당 임시용
+    // 완벽한듯?
     
     PS_OUT Out = (PS_OUT) 0;
-    
-    //float3 MyViewNormal = normalize(mul(Get_Normal(Input.vTexcoord), g_CamViewMatrix).xyz);
-    
-    //float3 MyViewPos = Get_ViewPos(Input.vTexcoord).xyz;
-    
-    //vector vNoiseNormal = g_SSAONoiseNormal.Sample(LinearSampler, Input.vTexcoord);
-    
-    //vNoiseNormal.xyz = normalize(vNoiseNormal.xyz * 2.f - 1.f);
-    
-    //float OcclusionSum = 0.f;
-    
-    //for (uint i = 0; i < 14; ++i)
-    //{
-    //    //float3 OffsetVector = normalize(g_OffSetVector[i]) * g_Random[i];
-        
-    //    float3 Offset = reflect(normalize(g_OffSetVector[i]), vNoiseNormal.xyz);
-        
-    //    float flip = sign(dot(Offset, MyViewNormal));
-        
-    //    float3 Q = MyViewPos + flip * 0.5f * Offset;
-        
-    //    vector ProjQ = mul(vector(Q, 1.f), g_CamProjMatrix);
-    //    ProjQ /= ProjQ.w;
-        
-    //    ProjQ.xy = (ProjQ.xy + 1.f) / 2.f;
-        
-    //    float3 R = Get_ViewPos(ProjQ.xy).xyz;
-        
-    //    float DistZ = MyViewPos.z - R.z;
-        
-    //    float dp = max(dot(MyViewNormal, normalize(R - MyViewPos)), 0.f);
-        
-    //    float Occlusion = dp * Get_Occlusion(DistZ);
-        
-    //    OcclusionSum += Occlusion;
-
-    //}
-    //OcclusionSum /= 14.f;
-    
-    //float access = 1.f - OcclusionSum;
-    
-    //access = pow(access, 4.f);
-    
-    //Out.vColor = vector(access, access, access, 1.f);
     
     //////////////////
     float3 MyViewNormal = normalize(mul(Get_Normal(Input.vTexcoord), g_CamViewMatrix).xyz);
@@ -478,7 +421,7 @@ PS_OUT PS_Main_SSAO(PS_SSAO_IN Input)
     
     float fViewZ = DepthDesc.y * g_vCamNF.y;
     
-    float3 P = Get_ViewPos(Input.vTexcoord); //fViewZ * Input.Plane;
+    float3 P = Get_ViewPos(Input.vTexcoord).xyz; //fViewZ * Input.Plane;
     
     vector vNoiseNormal = g_SSAONoiseNormal.Sample(LinearSampler, Input.vTexcoord);
     
@@ -494,7 +437,7 @@ PS_OUT PS_Main_SSAO(PS_SSAO_IN Input)
         
         float flip = sign(dot(Offset, MyViewNormal));
         
-        float3 Q = P + flip * 0.5f * Offset;
+        float3 Q = P + flip * 0.25f * Offset;
         
         vector ProjQ = mul(vector(Q, 1.f), g_CamProjMatrix);
         ProjQ /= ProjQ.w;
@@ -502,11 +445,7 @@ PS_OUT PS_Main_SSAO(PS_SSAO_IN Input)
         ProjQ.x = (ProjQ.x + 1.f) * 0.5f;
         ProjQ.y = (ProjQ.y - 1.f) * -0.5f;
         
-        vector QDepthDesc = g_DepthTexture.Sample(LinearBorderSampler, ProjQ.xy);
-        
-        float rz = QDepthDesc.y * g_vCamNF.y;
-        
-        float3 R = Get_ViewPos(ProjQ.xy); //(rz / Q.z) * Q;
+        float3 R = Get_ViewPos(ProjQ.xy).xyz; //(rz / Q.z) * Q;
         
         float DistZ = P.z - R.z;
         
@@ -525,39 +464,7 @@ PS_OUT PS_Main_SSAO(PS_SSAO_IN Input)
     
     Out.vColor = vector(Access, Access, Access, 1.f);
     
-    ///////////////
-    //vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
-    //float fViewZ = vDepthDesc.y * g_vCamNF.y;
-    
-    //vector MyWorldPos = Get_WorldPos(Input.vTexcoord);
-    
-    //vector MyNormal = Get_Normal(Input.vTexcoord);
-    
-    //float ssao = 0.f;
-    //float fRadius = g_SSAO.fRadius / fViewZ;
-    //for (uint i = 0; i < 16; ++i)
-    //{
-    //    vector vRandomNormal = g_SSAONoiseNormal.Sample(LinearSampler, Input.vTexcoord + (0.5f * i));
-        
-    //    float3 vReflectedLight = reflect(normalize(MyNormal.xyz), normalize(vRandomNormal.xyz));
-        
-    //    float Dot = dot(normalize(MyNormal.xyz), normalize(vReflectedLight));
-        
-    //    if (0.f > Dot)
-    //    {
-    //        vReflectedLight = reflect(normalize(MyNormal.xyz), normalize(-vRandomNormal.xyz));
-    //    }
-        
-    //    float2 vReflect = vReflectedLight.xy * fRadius;
-        
-    //    ssao += Get_AO(Input.vTexcoord, vReflect, MyWorldPos, MyNormal.xyz);
-    //}
-    //ssao = ssao / 16.f;
-    
-    //ssao = saturate(pow(ssao, 2.f));
-    
-    //Out.vColor = vector(ssao, ssao, ssao, 1.f);
-        return Out;
+    return Out;
 }
 
 PS_OUT PS_Main_HDR(PS_IN Input)
@@ -678,6 +585,19 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main_Debug();
     }
 
+    pass DebugArray
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_DebugArray();
+    }
+
     pass Light_Directional
     {
         SetRasterizerState(RS_Default);
@@ -749,7 +669,7 @@ technique11 DefaultTechnique
         SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-        VertexShader = compile vs_5_0 VS_SSAO();
+        VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;

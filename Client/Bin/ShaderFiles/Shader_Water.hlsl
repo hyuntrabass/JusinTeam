@@ -98,7 +98,7 @@ PS_OUT_WATER PS_MAIN_Water(PS_IN_WATER Input)
     
     float3 vNormal;
     // ¹Ý»ç¿Í ±¼Àý
-    vNormalDesc = g_NormalTexture.Sample(LinearSampler, vWaterTex * 50.f);
+    vNormalDesc = g_NormalTexture.Sample(LinearSampler, vWaterTex * 2.f);
     vNormal = normalize(vNormalDesc.xyz * 2.f - 1.f);
     
     float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
@@ -122,7 +122,7 @@ PS_OUT_WATER PS_MAIN_Water(PS_IN_WATER Input)
     
     vector vReflectionDiffuse;
     
-    vReflectionDiffuse = g_ReflectionTexture.Sample(LinearSampler, vReflectionTexcoord);
+    vReflectionDiffuse = g_ReflectionTexture.Sample(LinearMirrorSampler, vReflectionTexcoord);
     
     vReflectionDiffuse.rgb = pow(vReflectionDiffuse.rgb, 1.f / 2.2f);
     

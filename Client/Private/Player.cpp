@@ -523,6 +523,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 	m_pModelCom->Play_Animation(fTimeDelta, m_bAttacked);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	m_pRendererCom->Add_RenderGroup(RG_Shadow, this);
 
 	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
 	{
@@ -540,8 +541,6 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 HRESULT CPlayer::Render()
 {
-
-
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
@@ -582,6 +581,63 @@ HRESULT CPlayer::Render()
 	if (m_Weapon_CurrentIndex < WP_UNEQUIP)
 	{
 		Render_Parts(PT_WEAPON, (_uint)m_Weapon_CurrentIndex);
+	}
+
+
+	return S_OK;
+}
+
+HRESULT CPlayer::Render_Shadow()
+{
+	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+		return E_FAIL;
+
+	if (FAILED(m_pModelCom->Bind_Bone(m_pShaderCom)))
+		return E_FAIL;
+
+	CASCADE_DESC Desc = m_pGameInstance->Get_CascadeDesc();
+
+	if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeView", Desc.LightView, 3)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeProj", Desc.LightProj, 3)))
+		return E_FAIL;
+
+	if (m_Body_CurrentIndex >= 0)
+	{
+		Render_Shadow_Parts(PT_BODY, m_Body_CurrentIndex);
+	}
+	if (m_Hair_CurrentIndex >= 0 and m_bHelmet_Hide)
+	{
+		Render_Shadow_Parts(PT_HAIR, m_Hair_CurrentIndex);
+	}
+	else if (m_Hair_CurrentIndex >= 0 and m_Helmet_CurrentIndex <= 0)
+	{
+		Render_Shadow_Parts(PT_HAIR, m_Hair_CurrentIndex);
+	}
+	if (m_Face_CurrentIndex >= 0 and m_bHelmet_Hide)
+	{
+		Render_Shadow_Parts(PT_FACE, m_Face_CurrentIndex);
+	}
+	else if (m_Hair_CurrentIndex >= 0 and m_Helmet_CurrentIndex <= 0)
+	{
+		Render_Shadow_Parts(PT_FACE, m_Face_CurrentIndex);
+	}
+	else if (m_Hair_CurrentIndex >= 0 and m_Helmet_CurrentIndex == 1)
+	{
+		Render_Shadow_Parts(PT_FACE, m_Face_CurrentIndex);
+	}
+	else if (m_Hair_CurrentIndex >= 0 and m_Helmet_CurrentIndex == 2)
+	{
+		Render_Shadow_Parts(PT_FACE, m_Face_CurrentIndex);
+	}
+	if (m_Helmet_CurrentIndex >= 0 && !m_bHelmet_Hide)
+	{
+		Render_Shadow_Parts(PT_HELMET, m_Helmet_CurrentIndex);
+	}
+	if (m_Weapon_CurrentIndex < WP_UNEQUIP)
+	{
+		Render_Shadow_Parts(PT_WEAPON, (_uint)m_Weapon_CurrentIndex);
 	}
 
 
@@ -932,6 +988,33 @@ HRESULT CPlayer::Render_Parts(PART_TYPE Parts, _uint Index)
 			{
 				return E_FAIL;
 			}
+		}
+		if (FAILED(m_pModelCom->Render_Part((_uint)Parts, (_uint)Index, k)))
+		{
+			return E_FAIL;
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CPlayer::Render_Shadow_Parts(PART_TYPE Parts, _uint Index)
+{
+	if (m_bWeapon_Unequip && Parts == PT_WEAPON)
+	{
+		return S_OK;
+	}
+
+	for (size_t k = 0; k < m_pModelCom->Get_Num_PartMeshes(Parts, Index); k++)
+	{
+		if (FAILED(m_pModelCom->Bind_Part_Material(m_pShaderCom, "g_DiffuseTexture", TextureType::Diffuse, (_uint)Parts, (_uint)Index, k)))
+		{
+			continue;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(6)))
+		{
+			return E_FAIL;
 		}
 		if (FAILED(m_pModelCom->Render_Part((_uint)Parts, (_uint)Index, k)))
 		{

@@ -44,6 +44,7 @@ HRESULT CGroar_Boss::Init(void* pArg)
 
 	//m_pTransformCom->Set_Position(_vec3(2179.f, -20.f, 2083.f));
 	m_pTransformCom->Set_Position(_vec3(2109.f, -15.f, 2092.f));
+	m_pTransformCom->LookAt_Dir(_vec4(-1.f, 0.f, 0.f, 0.f));
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
 	m_eCurState = STATE_NPC;
@@ -332,6 +333,7 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 			
 			m_pTransformCom->Set_Position(vPos);
+			//m_pTransformCom->LookAt_Dir(_vec4(-1.f, 0.f, 0.f, 0.f));
 
 			break;
 		}
@@ -950,13 +952,13 @@ HRESULT CGroar_Boss::Init_Dialog()
 	m_vecChatt.push_back(TEXT("제 남편은 어디에 있나요.."));
 	m_vecChatt.push_back(TEXT("신을 저주한다"));
 
-	//m_TalkSounds.push_back(TEXT("10044_3_EndTalk"));
-	//m_TalkSounds.push_back(TEXT("10043_1_StartTalk_1"));
-	//m_TalkSounds.push_back(TEXT("10043_1_StartTalk_2"));
-	//m_TalkSounds.push_back(TEXT("10053_3_EndTalk_cut"));
-	//m_TalkSounds.push_back(TEXT("10054_1_StartTalk_1_cut"));
-	//m_TalkSounds.push_back(TEXT("10056_1_StartTalk_1"));
-	//m_TalkSounds.push_back(TEXT("10056_1_StartTalk_2"));
+	m_TalkSounds.push_back(TEXT("10044_3_EndTalk"));
+	m_TalkSounds.push_back(TEXT("10043_1_StartTalk_1"));
+	m_TalkSounds.push_back(TEXT("10043_1_StartTalk_2"));
+	m_TalkSounds.push_back(TEXT("10053_3_EndTalk_cut"));
+	m_TalkSounds.push_back(TEXT("10054_1_StartTalk_1_cut"));
+	m_TalkSounds.push_back(TEXT("10056_1_StartTalk_1"));
+	m_TalkSounds.push_back(TEXT("10056_1_StartTalk_2"));
 	m_TalkSounds.push_back(TEXT("10056_2_InformTalk"));
 	m_TalkSounds.push_back(TEXT("10058_2_InformTalk_1"));
 	m_TalkSounds.push_back(TEXT("10058_2_InformTalk_2"));
@@ -1097,6 +1099,7 @@ void CGroar_Boss::NPC_Tick(_float fTimeDelta)
 	m_isColl = isColl;
 	if (!m_bTalking && isColl && m_pGameInstance->Key_Down(DIK_E))
 	{
+		m_pArrow->Set_Position(_vec2(1100.f, 600.f));
 		m_pGameInstance->Set_CameraState(CS_ZOOM);
 		_vec4 vLook = m_pTransformCom->Get_State(State::Look);
 		vLook.Normalize();
@@ -1370,6 +1373,11 @@ HRESULT CGroar_Boss::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof _float4)))
 	{
 		return E_FAIL;
 	}

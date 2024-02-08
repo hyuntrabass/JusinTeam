@@ -21,10 +21,10 @@ CShader::CShader(const CShader& rhs)
 
 HRESULT CShader::Init_Prototype(const wstring& strShaderFilePath, const D3D11_INPUT_ELEMENT_DESC* pElements, _uint iNumElements)
 {
-    _uint iHlslFlag{};
+    DWORD iHlslFlag{};
 
 #ifdef _DEBUG
-    iHlslFlag = D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_DEBUG;
+    iHlslFlag = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #else  
     iHlslFlag = D3DCOMPILE_OPTIMIZATION_LEVEL1;
 #endif // _DEBUG

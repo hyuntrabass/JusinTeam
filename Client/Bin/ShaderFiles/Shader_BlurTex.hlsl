@@ -84,7 +84,7 @@ PS_OUT PS_Main_Lum(PS_IN Input)
     
     float fLum = Get_Luminance(vHDRColor.rgb);
     
-    float fAvgLum = g_Luminance.Sample(PointSampler, float2(0.f, 0.f));
+    float fAvgLum = g_Luminance.Sample(PointSampler, float2(0.f, 0.f)).r;
     
     float fColorScale = saturate(fLum - fAvgLum * Get_BloomCurve(fLum));
     
