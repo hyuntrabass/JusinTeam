@@ -44,6 +44,7 @@ HRESULT CGroar_Boss::Init(void* pArg)
 
 	//m_pTransformCom->Set_Position(_vec3(2179.f, -20.f, 2083.f));
 	m_pTransformCom->Set_Position(_vec3(2109.f, -15.f, 2092.f));
+	m_pTransformCom->LookAt_Dir(_vec4(-1.f, 0.f, 0.f, 0.f));
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
 	m_eCurState = STATE_NPC;
@@ -332,6 +333,7 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 			
 			m_pTransformCom->Set_Position(vPos);
+			//m_pTransformCom->LookAt_Dir(_vec4(-1.f, 0.f, 0.f, 0.f));
 
 			break;
 		}
