@@ -503,11 +503,14 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 95.f && m_pBossModelCom->Get_CurrentAnimPos() <= 175.f)
 		{
 			m_pGameInstance->Set_ShakeCam(true, 0.5f);
+			m_pGameInstance->FadeoutSound(0, fTimeDelta, 1.f, false);
 		}
 
 		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK_RAGE))
 		{
 			m_eBossCurState = BOSS_STATE_CHASE;
+			m_pGameInstance->PlayBGM(TEXT("BGM_GuildDungeon_01"));
+			m_pGameInstance->FadeinSound(0, fTimeDelta);
 		}
 
 		break;
@@ -1231,10 +1234,7 @@ void CGroar_Boss::Set_Text(GROAR_NPCSTATE eState)
 		{
 			return;
 		}
-		else
-		{
-			Play_TalkSound(m_vecDialog.front());
-		}
+		Play_TalkSound(m_vecDialog.front());
 		m_vecDialog.pop_front();
 	}
 	break;
