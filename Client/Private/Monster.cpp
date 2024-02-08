@@ -404,6 +404,7 @@ void CMonster::Free()
 	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(iRandomExp * 0.01f);
 	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(iRandomExp * 0.01f);
 
+	Safe_Release(m_HpBar);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
