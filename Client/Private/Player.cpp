@@ -3154,6 +3154,7 @@ void CPlayer::Tick_Riding(_float fTimeDelta)
 
 		m_eState = Jump_Long_End;
 		m_Animation.iAnimIndex = Anim_jump_end;
+		m_Animation.isLoop = false;
 		return;
 	}
 
@@ -3768,7 +3769,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 	case Client::CPlayer::Jump_Long_End:
 		if (m_pModelCom->IsAnimationFinished(Anim_jump_end_long))
 		{
-			m_eState = Run;
+			m_eState = Idle;
 		}
 		break;
 	case Client::CPlayer::Jump_Run:

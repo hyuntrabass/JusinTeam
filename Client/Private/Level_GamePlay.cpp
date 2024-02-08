@@ -174,6 +174,13 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.2f);
 		m_pGameInstance->Play_Sound(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.6f, true);
 		m_pGameInstance->Play_Sound(TEXT("waves"), 0.2f, true);
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+		{
+			if (m_pGameInstance->Get_IsLoopingSound(i))
+			{
+				m_pGameInstance->FadeinSound(i, fTimeDelta);
+			}
+		}
 		m_bReadyTutorial = true;
 		MCIWndClose(m_hVideo);
 		SelectObject(m_BackDC, m_hOldBackBit); //DC에 원래 설정을 돌려줍니다.
