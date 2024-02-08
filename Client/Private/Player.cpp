@@ -1297,10 +1297,10 @@ void CPlayer::Move(_float fTimeDelta)
 	_vec4 vRightDir = XMVector3Cross(m_pTransformCom->Get_State(State::Up), vForwardDir);
 	vRightDir.Normalize();
 	_vec4 vDirection{};
-
+	
 	if (m_eState == Revival_Start or m_eState == Revival_End
 		or m_eState == KnockDown or m_eState == Stun_Start
-		or m_eState == Stun or m_eState == Die)
+		or m_eState == Stun or m_eState == Die or m_eState == Jump_Long_End)
 	{
 		m_pTransformCom->Gravity(fTimeDelta);
 		return;
@@ -2984,7 +2984,14 @@ void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
 	{
 		type.world = world;
 		type.vLook = m_pTransformCom->Get_State(State::Look);
+		if (m_iAttackCombo == 4)
+		{
+			type.Att_Type = AT_Bow_SkillR;
+		}
+		else
+		{
 		type.Att_Type = AT_Bow_Common;
+		}
 		if (m_bLockOn)
 		{
 			type.MonCollider = m_pGameInstance->Get_Nearest_MonsterCollider();
