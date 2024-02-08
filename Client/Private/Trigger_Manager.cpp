@@ -77,7 +77,7 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 		m_isBreakLoop = true;
 		m_isPlayCutScene = false;
 		m_isInfinite = false;
-		m_strFilePath = L"../Bin/Data/Village_CutScene.dat";
+		m_strFilePath = L"../Bin/Data/Boss_Final_CutScene.dat";
 		m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
 		m_bAfterSuicide = false;
 	}
