@@ -334,7 +334,7 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
         if (fViewZ <= Z)
         {
             float fLightDepth = CalcCascadeShadowFactor(i, vLightPos);
-            if (vLightPos.z - 0.001f > fLightDepth)
+            if (vLightPos.z - 0.005f > fLightDepth)
             {
                 FinalColor.rgb = FinalColor.rgb * 0.5f;
             }
