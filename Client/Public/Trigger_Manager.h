@@ -62,6 +62,9 @@ private: // Cutscene
 	_bool m_bBossStart = { false };
 
 private:
+	_int m_iSoundChannel = -1;
+
+private:
 	vector<class CTrigger*> m_pTrigger{};
 
 public:

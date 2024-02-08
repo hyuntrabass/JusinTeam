@@ -45,6 +45,9 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 				if (iter->Get_Limited() == false)
 				{
 					CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::FIELDEAST);
+					m_pGameInstance->FadeoutSound(0, fTimeDelta);
+					m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("Midgard_Field"), 0.3f, true);
+					m_pGameInstance->FadeinSound(m_iSoundChannel, fTimeDelta);
 					iter->Set_Limited(true);
 				}
 			}
@@ -54,6 +57,12 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 				if (iter->Get_Limited() == false)
 				{
 					CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
+					if (m_iSoundChannel != -1)
+					{
+						m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+						m_iSoundChannel = -1;
+					}
+					m_pGameInstance->FadeinSound(0, fTimeDelta);
 					iter->Set_Limited(true);
 				}
 			}
@@ -63,6 +72,9 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 				if (iter->Get_Limited() == false)
 				{
 					CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::FIELDSOUTH);
+					m_pGameInstance->FadeoutSound(0, fTimeDelta);
+					m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("Midgard_Field"), 0.3f, true);
+					m_pGameInstance->FadeinSound(m_iSoundChannel, fTimeDelta);
 					iter->Set_Limited(true);
 				}
 			}
@@ -72,6 +84,12 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 				if (iter->Get_Limited() == false)
 				{
 					CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
+					if (m_iSoundChannel != -1)
+					{
+						m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+						m_iSoundChannel = -1;
+					}
+					m_pGameInstance->FadeinSound(0, fTimeDelta);
 					iter->Set_Limited(true);
 				}
 			}
