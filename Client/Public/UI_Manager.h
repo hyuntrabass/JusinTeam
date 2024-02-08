@@ -4,6 +4,7 @@
 #include "ItemBlock.h"
 #include "InvenFrame.h"
 #include "SkillBlock.h"
+#include "Symbol.h"
 BEGIN(Engine)
 class CGameInstance;
 END
@@ -88,6 +89,7 @@ private:
 
 
 public:
+	void Set_Symbol(CSymbol::TYPE eType);
 	SKILLINFO Get_SkillInfo(WEAPON_TYPE eType, _uint iIdx);
 	void Set_TimeStop(_bool bStop) { m_bTimeStop = bStop; }
 	_bool Get_TimeStop() { return m_bTimeStop; }

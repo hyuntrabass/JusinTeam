@@ -161,7 +161,7 @@ HRESULT CLevel_GamePlay::Init()
 
 	MCIWndPlay(m_hVideo);
 
-	m_pGameInstance->Video_Start(35.f);
+	//m_pGameInstance->Video_Start(35.f);
 	
 
 	return S_OK;
@@ -186,21 +186,7 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_B))
 	{
-		/*
-		CPop_Skill::SKILLIN_DESC Desc{};
-		Desc.iSkillLevel = 0;
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_PopSkill"), &Desc)))
-		{
-			return;
-		}		
-		*/
-		CPop_LevelUp::LEVELUP_DESC Desc{};
-		Desc.iLevel = 1;
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_PopLevelUp"), &Desc)))
-		{
-			return;
-		}
-
+		CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
 	}
 	if (!CUI_Manager::Get_Instance()->Is_InvenActive())
 	{
