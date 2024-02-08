@@ -18,9 +18,11 @@ public:
 
 	void Limited_CutScene(_bool isLimited);
 
-	void Set_VillageCutScene(_bool isPlayCutScene) { m_isPlayCutScene = isPlayCutScene; }
+	void Set_PlayCutScene(_bool isPlayCutScene) { m_isPlayCutScene = isPlayCutScene; }
+	void Set_Inifinite(_bool isInfinite) { m_isInfinite = isInfinite; }
+	_bool Get_PlayCutScene() { return m_isPlayCutScene; }
 	_bool Get_Limited() { return m_isLimited; }
-	_bool Get_VillageCutScene() { return m_isPlayCutScene; }
+	_bool Get_Infinite() { return m_isInfinite; }
 	wstring Get_CutScene_Path() { return m_strFilePath; }
 
 public:
@@ -34,9 +36,9 @@ public:
 	void Set_AfterSuicide() { m_bAfterSuicide = true; }
 	void Set_BossStart() { m_bBossStart = true; }
 
-	//_bool Get_StartSuicide() { return m_bStartSuicide; }
-	//_bool Get_AfterSuicide() { return m_bAfterSuicide; }
-	//_bool Get_BossStart() { return m_bBossStart; }
+	_bool Get_StartSuicide() { return m_bStartSuicide; }
+	_bool Get_AfterSuicide() { return m_bAfterSuicide; }
+	_bool Get_BossStart() { return m_bBossStart; }
 
 private:
 	CGameInstance* m_pGameInstance = { nullptr };
@@ -45,6 +47,7 @@ private:
 	_bool m_isColl{ false };
 	_bool m_isLimited{ false };
 	_bool m_isPlayCutScene{ false };
+	_bool m_isInfinite{ false };
 	wstring m_strFilePath{};
 
 private:

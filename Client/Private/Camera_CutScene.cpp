@@ -47,16 +47,14 @@ void CCamera_CutScene::Tick(_float fTimeDelta)
 	}
 	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
 
-	// ¹è°æ ÄÆ¾À ÇÑ¹ø¸¸ µ¹°Ô²û
-	if (m_pTrigger_Manager->Get_VillageCutScene() == true)
-	{
-		CutScene_Registration(m_pTrigger_Manager->Get_CutScene_Path());
-		m_pTrigger_Manager->Set_VillageCutScene(false);
-	}
-
+	//if (m_pTrigger_Manager->Get_PlayCutScene() == true)
+	//{
+	//	m_pTrigger_Manager->Set_PlayCutScene(false);
+	//}
 
 	if (m_isPlayCutScene == false)
 	{
+		CutScene_Registration(m_pTrigger_Manager->Get_CutScene_Path());
 		m_iFrame = 0;
 		m_fTimeDeltaAcc = 0.f;
 		m_iTotalFrame = 0;
@@ -64,6 +62,7 @@ void CCamera_CutScene::Tick(_float fTimeDelta)
 		m_iCurrentSectionIndex = 0;
 		m_iNextSectionIndex = 0;
 		m_isPlayCutScene = true;
+		
 	}
 	else
 		Play_Camera(fTimeDelta);
@@ -146,7 +145,22 @@ void CCamera_CutScene::Play_Camera(_float fTimeDelta)
 		else
 		{
 			m_isPlayCutScene = false;
-			m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
+			if (m_pTrigger_Manager->Get_Infinite() == false)
+			{
+				if (!m_CameraAtList.empty())
+				{
+					m_CameraAtList.clear();
+				}
+				if (!m_CameraEyeList.empty())
+				{
+					m_CameraEyeList.clear();
+				}
+				m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
+			}
+			else
+			{
+
+			}
 		}
 	}
 	if (m_iCurrentSectionIndex < m_CameraEyeList.size())
@@ -249,7 +263,7 @@ HRESULT CCamera_CutScene::CutScene_Registration(const wstring& strDataPath)
 
 	inFile.close();
 
-	m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+	//m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
 
 	return S_OK;
 
@@ -285,15 +299,21 @@ CGameObject* CCamera_CutScene::Clone(void* pArg)
 void CCamera_CutScene::Free()
 {
 	__super::Free();
-	for (int i = 0; i < m_CameraAtList.size(); i++) {
-		Safe_Release(m_CameraAtList[i]);
-	}
-	m_CameraAtList.clear();
 
-	for (int i = 0; i < m_CameraEyeList.size(); i++) {
-		Safe_Release(m_CameraEyeList[i]);
+	if (!m_CameraAtList.empty())
+	{
+		for (int i = 0; i < m_CameraAtList.size(); i++) {
+			Safe_Release(m_CameraAtList[i]);
+		}
+		m_CameraAtList.clear();
 	}
-	m_CameraEyeList.clear();
+	if (!m_CameraEyeList.empty())
+	{
+		for (int i = 0; i < m_CameraEyeList.size(); i++) {
+			Safe_Release(m_CameraEyeList[i]);
+		}
+		m_CameraEyeList.clear();
+	}
 
 	//Safe_Release(m_pEyeCurve);
 	//Safe_Release(m_pAtCurve);

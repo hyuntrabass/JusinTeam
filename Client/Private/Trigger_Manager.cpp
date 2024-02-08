@@ -28,29 +28,57 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 			if (iter->Get_TriggerType() == VILLAGE_TRIGGER && iter->Get_Limited() == true)
 			{
 				m_isPlayCutScene = true;
-				m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+				m_isInfinite = false;
 				m_strFilePath = L"../Bin/Data/Village_CutScene.dat";
+				m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
 				iter->Set_Limited(false);
 			}
 			else if (iter->Get_TriggerType() == FRONTDOOR_IN_TRIGGER && iter->Get_Limited() == false)
 			{
-
+				// 정문으로 들어올 시
 			}
 			else if (iter->Get_TriggerType() == FRONTDOOR_OUT_TRIGGER && iter->Get_Limited() == false)
 			{
-
+				// 정문으로 나갈 시
 			}
 			else if (iter->Get_TriggerType() == BACKDOOR_IN_TRIGGER && iter->Get_Limited() == false)
 			{
-
+				// 후문으로 들어올 시
 			}
 			else if (iter->Get_TriggerType() == BACKDOOR_OUT_TRIGGER && iter->Get_Limited() == false)
 			{
-
+				// 후문으로 나갈 시
 			}
 			else if (iter->Get_TriggerType() == BOSS_TRIGGER && iter->Get_Limited() == true)
 			{
 				m_isCollBossTrigger = true;
+				m_isPlayCutScene = true;
+				m_strFilePath = L"../Bin/Data/Boss_First_CutScene.dat";
+				m_isInfinite = true;
+				m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+
+				if (m_bStartSuicide == true)
+				{
+					m_isInfinite = false;
+					m_strFilePath = L"../Bin/Data/Boss_Second_CutScene.dat";
+					m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+					iter->Set_Limited(false);
+				}
+				else
+				{
+					//m_isInfinite = false;
+				}
+
+				if (m_bAfterSuicide == true)
+				{
+					//m_isInfinite = true;
+				}
+				else
+				{
+					//m_isInfinite = false;
+				}
+
+				//iter->Set_Limited(false);
 			}
 		}
 	}

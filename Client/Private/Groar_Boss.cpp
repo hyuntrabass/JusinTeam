@@ -957,8 +957,8 @@ HRESULT CGroar_Boss::Init_Dialog()
 	//m_TalkSounds.push_back(TEXT("10054_1_StartTalk_1_cut"));
 	//m_TalkSounds.push_back(TEXT("10056_1_StartTalk_1"));
 	//m_TalkSounds.push_back(TEXT("10056_1_StartTalk_2"));
-	//m_TalkSounds.push_back(TEXT("10056_2_InformTalk"));
-	//m_TalkSounds.push_back(TEXT("10058_2_InformTalk_1"));
+	m_TalkSounds.push_back(TEXT("10056_2_InformTalk"));
+	m_TalkSounds.push_back(TEXT("10058_2_InformTalk_1"));
 	m_TalkSounds.push_back(TEXT("10058_2_InformTalk_2"));
 
 	return S_OK;

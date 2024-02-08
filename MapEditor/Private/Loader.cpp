@@ -472,6 +472,7 @@ HRESULT CLoader::Load_Editor()
 
 #pragma  region Boss
 
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Groar/Mesh/Groar.hyuntraanimmesh"))))
 	{
@@ -495,6 +496,14 @@ HRESULT CLoader::Load_Editor()
 	{
 		return E_FAIL;
 	}
+
+	_mat TentaclePivot = _mat::CreateRotationX(XMConvertToRadians(290.f));
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar_Tentacle"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/Groar_Tentacle/Mesh/Groar_Tentacle.hyuntraanimmesh", false, TentaclePivot))))
+	{
+		return E_FAIL;
+	}
+
 
 #pragma  endregion Boss
 
