@@ -1099,6 +1099,7 @@ void CGroar_Boss::NPC_Tick(_float fTimeDelta)
 	m_isColl = isColl;
 	if (!m_bTalking && isColl && m_pGameInstance->Key_Down(DIK_E))
 	{
+		m_pArrow->Set_Position(_vec2(1100.f, 600.f));
 		m_pGameInstance->Set_CameraState(CS_ZOOM);
 		_vec4 vLook = m_pTransformCom->Get_State(State::Look);
 		vLook.Normalize();

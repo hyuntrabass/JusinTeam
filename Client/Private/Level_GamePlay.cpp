@@ -132,7 +132,7 @@ HRESULT CLevel_GamePlay::Init()
 
 	m_pGameInstance->Set_FogNF(_vec2(5.f, 300.f));
 	m_pGameInstance->Set_FogColor(_color(0.1f));
-	CUI_Manager::Get_Instance()->Set_Coin(10000);
+	CUI_Manager::Get_Instance()->Set_Coin(100000);
 
 	/*
 	CFadeBox::FADE_DESC Desc = {};
@@ -144,7 +144,7 @@ HRESULT CLevel_GamePlay::Init()
 	}
 	*/
 
-	/*m_DC = GetDC(g_hWnd);
+	m_DC = GetDC(g_hWnd);
 
 	m_BackDC = CreateCompatibleDC(m_DC);
 
@@ -161,7 +161,7 @@ HRESULT CLevel_GamePlay::Init()
 
 	MCIWndPlay(m_hVideo);
 
-	m_pGameInstance->Video_Start(35.f);*/
+	m_pGameInstance->Video_Start(35.f);
 	
 
 	return S_OK;
