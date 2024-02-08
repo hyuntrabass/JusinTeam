@@ -457,6 +457,7 @@ void CRiding::Init_State()
 			{
 				m_Animation.iAnimIndex = Horse_1004_Run_F;
 				m_Animation.isLoop = true;
+				m_Animation.bSkipInterpolation = true;
 				m_hasJumped = false;
 			}
 				break;
@@ -572,6 +573,7 @@ void CRiding::Init_State()
 			case Client::Horse:
 			{
 				m_Animation.iAnimIndex = Horse_1004_jump_End_Run;
+				m_Animation.bSkipInterpolation = true;
 				m_hasJumped = false;
 			}
 			break;
