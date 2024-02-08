@@ -252,6 +252,7 @@
     <ClInclude Include="..\Public\Lake.h" />
     <ClInclude Include="..\Public\Spider.h" />
     <ClInclude Include="..\Public\Player.h" />
+    <ClInclude Include="..\Public\Symbol.h" />
     <ClInclude Include="..\Public\Targeted.h" />
     <ClInclude Include="..\Public\Tentacle.h" />
     <ClInclude Include="..\Public\TestTree.h" />
@@ -274,7 +275,6 @@
     <ClInclude Include="..\Public\TextButtonColor.h" />
     <ClInclude Include="..\Public\Thief04.h" />
     <ClInclude Include="..\Public\Trigger.h" />
-    <ClInclude Include="..\Public\TriggerList.h" />
     <ClInclude Include="..\Public\Trigger_Manager.h" />
     <ClInclude Include="..\Public\TrilobiteA.h" />
     <ClInclude Include="..\Public\Tutorial.h" />
@@ -391,6 +391,7 @@
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Lake.cpp" />
     <ClCompile Include="..\Private\Spider.cpp" />
+    <ClCompile Include="..\Private\Symbol.cpp" />
     <ClCompile Include="..\Private\Targeted.cpp" />
     <ClCompile Include="..\Private\Tentacle.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />

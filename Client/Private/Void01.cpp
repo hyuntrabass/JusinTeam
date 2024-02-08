@@ -512,8 +512,6 @@ CGameObject* CVoid01::Clone(void* pArg)
 
 void CVoid01::Free()
 {
-	
-	
 	__super::Free();
 
 	Safe_Release(m_pLeftTrail);

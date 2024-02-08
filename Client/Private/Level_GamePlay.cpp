@@ -132,7 +132,7 @@ HRESULT CLevel_GamePlay::Init()
 
 	m_pGameInstance->Set_FogNF(_vec2(5.f, 300.f));
 	m_pGameInstance->Set_FogColor(_color(0.1f));
-	CUI_Manager::Get_Instance()->Set_Coin(10000);
+	CUI_Manager::Get_Instance()->Set_Coin(100000);
 
 	/*
 	CFadeBox::FADE_DESC Desc = {};
@@ -161,7 +161,7 @@ HRESULT CLevel_GamePlay::Init()
 
 	MCIWndPlay(m_hVideo);
 
-	m_pGameInstance->Video_Start(35.f);
+	//m_pGameInstance->Video_Start(35.f);
 	
 
 	return S_OK;
@@ -191,24 +191,7 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 
 	
 
-	if (m_pGameInstance->Key_Down(DIK_B))
-	{
-		/*
-		CPop_Skill::SKILLIN_DESC Desc{};
-		Desc.iSkillLevel = 0;
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_PopSkill"), &Desc)))
-		{
-			return;
-		}		
-		*/
-		CPop_LevelUp::LEVELUP_DESC Desc{};
-		Desc.iLevel = 1;
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_PopLevelUp"), &Desc)))
-		{
-			return;
-		}
 
-	}
 	if (!CUI_Manager::Get_Instance()->Is_InvenActive())
 	{
 		m_RainMatrix = _mat::CreateTranslation(_vec3(m_pGameInstance->Get_CameraPos()));

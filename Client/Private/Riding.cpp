@@ -204,6 +204,7 @@ void CRiding::Late_Tick(_float fTimeDelta)
 {
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	m_pRendererCom->Add_RenderGroup(RG_Shadow, this);
 
 #ifdef _DEBUG
 	/*m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
@@ -247,6 +248,45 @@ HRESULT CRiding::Render()
 		}
 
 		if (FAILED(m_pShaderCom->Begin(AnimPass_Dissolve)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pModelCom->Render(i)))
+		{
+			return E_FAIL;
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CRiding::Render_Shadow()
+{
+	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+		return E_FAIL;
+
+	CASCADE_DESC Desc = m_pGameInstance->Get_CascadeDesc();
+
+	if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeView", Desc.LightView, 3)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeProj", Desc.LightProj, 3)))
+		return E_FAIL;
+
+	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
+	{
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		{
+			continue;
+		}
+
+		if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(AnimPass_Shadow)))
 		{
 			return E_FAIL;
 		}
@@ -442,6 +482,7 @@ void CRiding::Init_State()
 			case Client::Tiger:
 			{
 				m_Animation.iAnimIndex = Tiger_1003_Run;
+				m_Animation.bSkipInterpolation = true;
 				m_Animation.isLoop = true;
 				m_hasJumped = false;
 			}
@@ -449,6 +490,7 @@ void CRiding::Init_State()
 			case Client::Nihilir:
 			{
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Run;
+				m_Animation.bSkipInterpolation = true;
 				m_Animation.isLoop = true;
 				m_hasJumped = false;
 			}
@@ -561,12 +603,14 @@ void CRiding::Init_State()
 			case Client::Tiger:
 			{
 				m_Animation.iAnimIndex = Tiger_1003_Jump_End_Run;
+				m_Animation.bSkipInterpolation = true;
 				m_hasJumped = false;
 			}
 				break;
 			case Client::Nihilir:
 			{
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Jump_End_Run;
+				m_Animation.bSkipInterpolation = true;
 				m_hasJumped = false;
 			}
 				break;
