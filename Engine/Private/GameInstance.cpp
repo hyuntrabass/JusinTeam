@@ -1403,6 +1403,7 @@ void CGameInstance::Video_Start(_float fVideoDuration ,_bool bSkip)
 	m_fVideoDuration = fVideoDuration;
 	m_isPlayingVideo = true;
 	m_bVideoAfterSkip = bSkip;
+	m_fVideoTimmer = 0.f;
 }
 
 void CGameInstance::Initialize_Level(_uint iLevelNum)
