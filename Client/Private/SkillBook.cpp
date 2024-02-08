@@ -108,6 +108,7 @@ void CSkillBook::Tick(_float fTimeDelta)
 							CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_SKILLEXIT);
 						}
 						m_pSkillSlot[m_eCurType][i]->Set_Skill(tInfo);
+						m_pGameInstance->Play_Sound(TEXT("UI_GambleSelect_SFX_01"));
 						break;
 					}
 				}

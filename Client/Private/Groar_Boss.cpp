@@ -10,6 +10,7 @@
 #include "TextButtonColor.h"
 #include "Trigger_Manager.h"
 #include "HitEffect.h"
+#include "FadeBox.h"
 
 const _float CGroar_Boss::m_fChaseRange = 10.f;
 const _float CGroar_Boss::m_fAttackRange = 6.f;
@@ -52,7 +53,7 @@ HRESULT CGroar_Boss::Init(void* pArg)
 	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 1.5f;
 
-	m_iHP = 30000;
+	m_iHP = 10000;
 
 	if (FAILED(Init_Dialog()))
 	{
@@ -94,28 +95,6 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 			//pPlayerTransform->Set_Position(vPlayerPos);
 
 			m_bChangePos = true;
-		}
-	}
-
-	//if (m_pGameInstance->Key_Down(DIK_G)) // 자살 시작(보스로 변하는 타이밍)
-	if (CTrigger_Manager::Get_Instance()->Is_Coll_BossTrigger() == true || m_pGameInstance->Key_Down(DIK_G))
-	{
-		m_eCurState = STATE_SCENE01;
-		//m_eCurState = STATE_BOSS;
-		//m_eBossCurState = BOSS_STATE_ROAR;
-
-		if (m_pHpBoss == nullptr)
-		{
-			CHPBoss::HPBOSS_DESC Desc{};
-			Desc.strName = L"Groar";
-			Desc.eLevelID = LEVEL_STATIC;
-			Desc.iMaxHp = m_iHP;
-
-			m_pHpBoss = (CHPBoss*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPBoss"), &Desc);
-			if (not m_pHpBoss)
-			{
-				return;
-			}
 		}
 	}
 
@@ -489,6 +468,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 		if (m_pScene01ModelCom->IsAnimationFinished(0))
 		{
 			m_eCurState = STATE_SCENE02;
+			CTrigger_Manager::Get_Instance()->Set_AfterSuicide();
 		}
 
 		m_pScene01ModelCom->Set_Animation(m_Animation);
@@ -520,6 +500,14 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 	switch (m_eBossCurState)
 	{
 	case Client::CGroar_Boss::BOSS_STATE_IDLE:
+
+		m_fIdleTime += fTimeDelta;
+
+		if (m_fIdleTime >= 3.f)
+		{
+			m_eBossCurState = BOSS_STATE_CHASE;
+		}
+
 		break;
 
 	case Client::CGroar_Boss::BOSS_STATE_ROAR:
@@ -531,7 +519,8 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK_RAGE))
 		{
-			m_eBossCurState = BOSS_STATE_CHASE;
+			m_eBossCurState = BOSS_STATE_IDLE;
+			CTrigger_Manager::Get_Instance()->Set_BossStart();
 		}
 
 		break;
@@ -961,13 +950,16 @@ HRESULT CGroar_Boss::Init_Dialog()
 	m_vecChatt.push_back(TEXT("제 남편은 어디에 있나요.."));
 	m_vecChatt.push_back(TEXT("신을 저주한다"));
 
-	m_TalkSounds.push_back(TEXT("10044_3_EndTalk"));
-	m_TalkSounds.push_back(TEXT("10043_1_StartTalk_1"));
-	m_TalkSounds.push_back(TEXT("10043_1_StartTalk_2"));
-	m_TalkSounds.push_back(TEXT("10053_3_EndTalk_cut"));
-	m_TalkSounds.push_back(TEXT("10054_1_StartTalk_1_cut"));
-	m_TalkSounds.push_back(TEXT("10056_1_StartTalk_1"));
-	m_TalkSounds.push_back(TEXT("10056_1_StartTalk_2"));
+	//m_TalkSounds.push_back(TEXT("10044_3_EndTalk"));
+	//m_TalkSounds.push_back(TEXT("10043_1_StartTalk_1"));
+	//m_TalkSounds.push_back(TEXT("10043_1_StartTalk_2"));
+	//m_TalkSounds.push_back(TEXT("10053_3_EndTalk_cut"));
+	//m_TalkSounds.push_back(TEXT("10054_1_StartTalk_1_cut"));
+	//m_TalkSounds.push_back(TEXT("10056_1_StartTalk_1"));
+	//m_TalkSounds.push_back(TEXT("10056_1_StartTalk_2"));
+	//m_TalkSounds.push_back(TEXT("10056_2_InformTalk"));
+	//m_TalkSounds.push_back(TEXT("10058_2_InformTalk_1"));
+	m_TalkSounds.push_back(TEXT("10058_2_InformTalk_2"));
 
 	return S_OK;
 }
@@ -1133,14 +1125,7 @@ void CGroar_Boss::NPC_Tick(_float fTimeDelta)
 	m_pLine->Tick(fTimeDelta);
 	m_pBackGround->Tick(fTimeDelta);
 	m_pTransformCom->Gravity(fTimeDelta);
-	//사운드 채널 갱신 / 그로아 사운드 나오는 도중에 사운드 넘어가기 위해
-	if (m_iSoundChannel != -1)
-	{
-		if (not m_pGameInstance->Get_IsPlayingSound(m_iSoundChannel))
-		{
-			m_iSoundChannel = -1;
-		}
-	}
+
 	if (m_bTalking == true)
 	{
 		m_pArrow->Tick(fTimeDelta);
@@ -1168,7 +1153,54 @@ void CGroar_Boss::NPC_LateTick(_float fTimeDelta)
 		}
 	}
 
+	//if (m_pGameInstance->Key_Down(DIK_G)) // 자살 시작(보스로 변하는 타이밍)
+	if (CTrigger_Manager::Get_Instance()->Is_Coll_BossTrigger() == true || m_pGameInstance->Key_Down(DIK_G))
+	{
+		if (m_TalkSounds.size() != 0 && m_iSoundChannel == -1)
+		{
+			m_iSoundChannel = m_pGameInstance->Play_Sound(m_TalkSounds.front());
+			m_TalkSounds.pop_front();
+		}
+	}
+	if (m_iSoundChannel == -1 && m_TalkSounds.size() == 0)
+	{
+		m_eCurState = STATE_SCENE01;
+		//m_eCurState = STATE_BOSS;
+		//m_eBossCurState = BOSS_STATE_ROAR;
 
+		if (m_pHpBoss == nullptr)
+		{
+			CHPBoss::HPBOSS_DESC Desc{};
+			Desc.strName = L"Groar";
+			Desc.eLevelID = LEVEL_STATIC;
+			Desc.iMaxHp = m_iHP;
+
+			m_pHpBoss = (CHPBoss*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPBoss"), &Desc);
+			if (not m_pHpBoss)
+			{
+				return;
+			}
+
+			CFadeBox::FADE_DESC FadeBoxDesc = {};
+			FadeBoxDesc.eState = CFadeBox::FADEOUT;
+			FadeBoxDesc.fDuration = 3.f;
+
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &FadeBoxDesc)))
+			{
+				return;
+			}
+
+			CTrigger_Manager::Get_Instance()->Set_StartSuicide();
+		}
+	}
+	//사운드 채널 갱신 / 그로아 사운드 나오는 도중에 사운드 넘어가기 위해
+	if (m_iSoundChannel != -1)
+	{
+		if (not m_pGameInstance->Get_IsPlayingSound(m_iSoundChannel))
+		{
+			m_iSoundChannel = -1;
+		}
+	}
 }
 
 void CGroar_Boss::Set_Text(GROAR_NPCSTATE eState)
@@ -1338,6 +1370,11 @@ HRESULT CGroar_Boss::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof _float4)))
 	{
 		return E_FAIL;
 	}

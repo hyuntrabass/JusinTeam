@@ -111,6 +111,7 @@ void CShopWindow::Tick(_float fTimeDelta)
 			if (CUI_Manager::Get_Instance()->Get_Coin() < m_iTotalCost)
 			{
 				CEvent_Manager::Get_Instance()->Set_Alert(TEXT("코인이 부족하여 구매할 수 없습니다."));
+				m_pGameInstance->Play_Sound(TEXT("Auto_Item_Fail"));
 				return;
 			}
 
@@ -123,6 +124,8 @@ void CShopWindow::Tick(_float fTimeDelta)
 				CEvent_Manager::Get_Instance()->Set_QuestTrigger(CEvent_Manager::POTION);
 			}
 			m_isDead = true;
+
+			m_pGameInstance->Play_Sound(TEXT("btn_purchase"));
 
 			return;
 		}

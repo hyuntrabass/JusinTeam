@@ -63,15 +63,11 @@ HRESULT CItemMerchant::Init(void* pArg)
 
 void CItemMerchant::Tick(_float fTimeDelta)
 {
-
 	if (m_bTalking && !m_pShop->IsActive())
 	{
 		m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 0.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));
 		m_bTalking = false;
 	}
-
-
-
 
 	if (m_bTalking == true)
 	{
@@ -94,22 +90,25 @@ void CItemMerchant::Tick(_float fTimeDelta)
 		m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 1000.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));
 		m_bTalking = true;
 		m_pShop->Open_Shop();
+
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+		{
+			if (m_pGameInstance->Get_IsLoopingSound(i))
+			{
+				m_pGameInstance->FadeoutSound(i, fTimeDelta, 1.f, true, 0.3f);
+			}
+		}
 	}
-
-
 
 	m_pModelCom->Set_Animation(m_Animation);
 
 	__super::Update_Collider();
 
 	m_pTransformCom->Gravity(fTimeDelta);
-
 }
 
 void CItemMerchant::Late_Tick(_float fTimeDelta)
 {
-
-
 	if (m_bTalking == true)
 	{
 		m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 1000.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));

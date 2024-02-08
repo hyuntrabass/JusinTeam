@@ -92,20 +92,27 @@ void CMonster::Tick(_float fTimeDelta)
 		Kill();
 	}
 
-	if (m_fHittedTime > 0.f)
+	if (m_HpBar)
 	{
-		m_fHittedTime -= fTimeDelta;
-		m_HpBar->Tick(fTimeDelta);
+		if (m_fHittedTime > 0.f)
+		{
+			m_fHittedTime -= fTimeDelta;
+			m_HpBar->Tick(fTimeDelta);
+		}
 	}
 }
 
 void CMonster::Late_Tick(_float fTimeDelta)
 {
-	if (m_fHittedTime > 0.f)
+	if (m_HpBar)
 	{
-		m_HpBar->Set_HP(m_iHP);
-		m_HpBar->Late_Tick(fTimeDelta);
+		if (m_fHittedTime > 0.f)
+		{
+			m_HpBar->Set_HP(m_iHP);
+			m_HpBar->Late_Tick(fTimeDelta);
+		}
 	}
+
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 }
@@ -372,6 +379,9 @@ HRESULT CMonster::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof(_float4))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -386,6 +396,8 @@ void CMonster::Free()
 
 	_uint iRandomExp = rand() % 100;
 	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(15.f + (_float)iRandomExp / 2.f * 0.1f);
+	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(iRandomExp * 0.01f);
+	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(iRandomExp * 0.01f);
 	Safe_Release(m_HpBar);
 
 	Safe_Release(m_pModelCom);

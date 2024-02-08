@@ -168,6 +168,9 @@ private:
 	_int m_iSoundChannel = -1;
 
 private:
+	_float m_fIdleTime = {};
+
+private:
 	_uint m_iAttackPattern = {};
 	_bool m_bSelectAttackPattern = { false };
 

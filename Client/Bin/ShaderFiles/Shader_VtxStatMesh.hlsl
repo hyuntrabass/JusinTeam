@@ -133,6 +133,58 @@ VS_WATER_OUT VS_Main_Water(VS_IN Input)
 
 }
 
+struct VS_SHADOW_OUT
+{
+    vector vPos : SV_Position; // == float4
+    float2 vTex : Texcoord0;
+};
+
+VS_SHADOW_OUT VS_Shadow(VS_IN Input)
+{
+    VS_SHADOW_OUT Output = (VS_SHADOW_OUT) 0;
+
+    Output.vPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
+    Output.vTex = Input.vTex;
+    
+    return Output;
+}
+
+struct GS_SHADOW_IN
+{
+    vector vPos : SV_Position; // == float4
+    float2 vTex : Texcoord0;
+};
+
+struct GS_SHADOW_OUT
+{
+    vector vPos : SV_Position;
+    float2 vTex : Texcoord0;
+    uint RTIndex : SV_RenderTargetArrayIndex;
+};
+
+matrix g_CascadeView[3];
+matrix g_CascadeProj[3];
+
+[maxvertexcount(9)]
+void GS_Main_Shadow(triangle GS_SHADOW_IN Input[3], inout TriangleStream<GS_SHADOW_OUT> Output)
+{
+    for (uint Face = 0; Face < 3; ++Face)
+    {
+        GS_SHADOW_OUT Elements = (GS_SHADOW_OUT) 0;
+        Elements.RTIndex = Face;
+        matrix matVP = mul(g_CascadeView[Face], g_CascadeProj[Face]);
+        
+        for (uint i = 0; i < 3; ++i)
+        {
+            Elements.vPos = mul(Input[i].vPos, matVP);
+
+            Elements.vTex = Input[i].vTex;
+            Output.Append(Elements);
+        }
+        Output.RestartStrip();
+    }
+}
+
 struct PS_IN
 {
     vector vPos : SV_Position;
@@ -370,13 +422,19 @@ PS_OUT PS_Main_MaskEffect_Clamp(PS_IN Input)
     return Output;
 }
 
-vector PS_Main_Shadow(PS_IN Input) : SV_Target0
+struct PS_SHADOW_IN
 {
-    vector Output = (vector) 0;
+    vector vPos : SV_Position;
+    float2 vTex : Texcoord0;
+};
+
+void PS_Main_Shadow(PS_SHADOW_IN Input)
+{
+    vector vDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
     
-    Output.x = Input.vProjPos.w / g_fLightFar;
-    
-    return Output;
+    if(0.5f > vDiffuse.a)
+        discard;
+
 }
 
 struct PS_WATER_IN
@@ -608,7 +666,7 @@ PS_OUT PS_Main_DiffEffect_Alpha(PS_IN Input)
     return Output;
 }
 
-technique11 DefaultTechniqueShader_VtxNorTex
+technique11 DefaultTechnique_Shader_StatMesh
 {
     pass Default
     {
@@ -782,11 +840,11 @@ technique11 DefaultTechniqueShader_VtxNorTex
     pass Shadow
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_None, 0);
+        SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-        VertexShader = compile vs_5_0 VS_Main();
-        GeometryShader = NULL;
+        VertexShader = compile vs_5_0 VS_Shadow();
+        GeometryShader = compile gs_5_0 GS_Main_Shadow();
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Shadow();
