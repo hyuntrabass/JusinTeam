@@ -950,15 +950,15 @@ HRESULT CGroar_Boss::Init_Dialog()
 	m_vecChatt.push_back(TEXT("제 남편은 어디에 있나요.."));
 	m_vecChatt.push_back(TEXT("신을 저주한다"));
 
-	//m_TalkSounds.push_back(TEXT("10044_3_EndTalk"));
-	//m_TalkSounds.push_back(TEXT("10043_1_StartTalk_1"));
-	//m_TalkSounds.push_back(TEXT("10043_1_StartTalk_2"));
-	//m_TalkSounds.push_back(TEXT("10053_3_EndTalk_cut"));
-	//m_TalkSounds.push_back(TEXT("10054_1_StartTalk_1_cut"));
-	//m_TalkSounds.push_back(TEXT("10056_1_StartTalk_1"));
-	//m_TalkSounds.push_back(TEXT("10056_1_StartTalk_2"));
-	//m_TalkSounds.push_back(TEXT("10056_2_InformTalk"));
-	//m_TalkSounds.push_back(TEXT("10058_2_InformTalk_1"));
+	m_TalkSounds.push_back(TEXT("10044_3_EndTalk"));
+	m_TalkSounds.push_back(TEXT("10043_1_StartTalk_1"));
+	m_TalkSounds.push_back(TEXT("10043_1_StartTalk_2"));
+	m_TalkSounds.push_back(TEXT("10053_3_EndTalk_cut"));
+	m_TalkSounds.push_back(TEXT("10054_1_StartTalk_1_cut"));
+	m_TalkSounds.push_back(TEXT("10056_1_StartTalk_1"));
+	m_TalkSounds.push_back(TEXT("10056_1_StartTalk_2"));
+	m_TalkSounds.push_back(TEXT("10056_2_InformTalk"));
+	m_TalkSounds.push_back(TEXT("10058_2_InformTalk_1"));
 	m_TalkSounds.push_back(TEXT("10058_2_InformTalk_2"));
 
 	return S_OK;
@@ -1097,6 +1097,7 @@ void CGroar_Boss::NPC_Tick(_float fTimeDelta)
 	m_isColl = isColl;
 	if (!m_bTalking && isColl && m_pGameInstance->Key_Down(DIK_E))
 	{
+		m_pArrow->Set_Position(_vec2(1100.f, 600.f));
 		m_pGameInstance->Set_CameraState(CS_ZOOM);
 		_vec4 vLook = m_pTransformCom->Get_State(State::Look);
 		vLook.Normalize();
