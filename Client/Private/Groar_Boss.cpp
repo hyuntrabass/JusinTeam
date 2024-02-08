@@ -329,11 +329,23 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 
 		case Client::CGroar_Boss::STATE_BOSS:
 
-			//_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
+			CHPBoss::HPBOSS_DESC Desc{};
+			Desc.strName = L"Groar";
+			Desc.eLevelID = LEVEL_STATIC;
+			Desc.iMaxHp = m_iHP;
 
-			//m_pTransformCom->Set_Position(_vec3(0.f));
+			m_pHpBoss = (CHPBoss*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPBoss"), &Desc);
+			if (not m_pHpBoss)
+			{
+				return;
+			}
+			_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
 
-			//m_pTransformCom->Delete_Controller();
+			CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::GROAR);
+
+			m_pTransformCom->Set_Position(_vec3(0.f));
+
+			m_pTransformCom->Delete_Controller();
 
 			PxCapsuleControllerDesc ControllerDesc{};
 			ControllerDesc.height = 2.f; // 높이(위 아래의 반구 크기 제외
@@ -345,8 +357,8 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 
 			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 			
-			//m_pTransformCom->Set_Position(vPos + _vec3(10.f, 0.5f, 0.f));
-			//m_pTransformCom->LookAt_Dir(_vec4(-1.f, 0.f, 0.f, 0.f));
+			m_pTransformCom->Set_Position(vPos + _vec3(10.f, 0.5f, 0.f));
+			m_pTransformCom->LookAt_Dir(_vec4(-1.f, 0.f, 0.f, 0.f));
 
 			break;
 		}
@@ -453,6 +465,9 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = MON_GROAR_ASGARD_DIE;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
+
+			_uint iRandomExp = rand() % 100;
+			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(1000.f + (_float)iRandomExp / 2.f * 0.1f);
 
 			break;
 		}
@@ -1187,19 +1202,8 @@ void CGroar_Boss::NPC_LateTick(_float fTimeDelta)
 		//m_eCurState = STATE_BOSS;
 		//m_eBossCurState = BOSS_STATE_ROAR;
 
-		if (m_pHpBoss == nullptr)
+		if (not CTrigger_Manager::Get_Instance()->Get_StartSuicide())
 		{
-			CHPBoss::HPBOSS_DESC Desc{};
-			Desc.strName = L"Groar";
-			Desc.eLevelID = LEVEL_STATIC;
-			Desc.iMaxHp = m_iHP;
-
-			m_pHpBoss = (CHPBoss*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPBoss"), &Desc);
-			if (not m_pHpBoss)
-			{
-				return;
-			}
-
 			CFadeBox::FADE_DESC FadeBoxDesc = {};
 			FadeBoxDesc.eState = CFadeBox::FADEOUT;
 			FadeBoxDesc.fDuration = 3.f;

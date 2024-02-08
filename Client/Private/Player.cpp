@@ -1300,7 +1300,7 @@ void CPlayer::Move(_float fTimeDelta)
 
 	if (m_eState == Revival_Start or m_eState == Revival_End
 		or m_eState == KnockDown or m_eState == Stun_Start
-		or m_eState == Stun or m_eState == Die)
+		or m_eState == Stun or m_eState == Die or m_eState == Jump_Long_End)
 	{
 		m_pTransformCom->Gravity(fTimeDelta);
 		return;

@@ -1,4 +1,5 @@
 #include "Spider.h"
+#include "UI_Manager.h"
 
 const _float CSpider::m_fChaseRange = 7.f;
 const _float CSpider::m_fAttackRange = 4.f;
@@ -273,6 +274,9 @@ void CSpider::Init_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = DIE;
 			m_Animation.fAnimSpeedRatio = 3.f;
 			m_Animation.isLoop = false;
+
+			_uint iRandomExp = rand() % 100;
+			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(15.f + (_float)iRandomExp / 2.f * 0.1f);
 
 			break;
 		}

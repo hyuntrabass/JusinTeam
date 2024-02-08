@@ -161,7 +161,7 @@ HRESULT CLevel_GamePlay::Init()
 
 	MCIWndPlay(m_hVideo);
 
-	//m_pGameInstance->Video_Start(35.f);
+	m_pGameInstance->Video_Start(35.f);
 	
 
 	return S_OK;

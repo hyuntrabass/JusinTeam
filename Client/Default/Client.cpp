@@ -162,7 +162,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	//AdjustWindowRect(&rc, WS_POPUP, TRUE);
 
 	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_POPUP,
-		CW_USEDEFAULT, 0, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
+		100, 100, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
 
 	if (!hWnd)
 	{

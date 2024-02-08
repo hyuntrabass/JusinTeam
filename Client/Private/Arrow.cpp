@@ -96,6 +96,8 @@ void CArrow::Late_Tick(_float fTimeDelta)
 	}
 
 	__super::Compute_CamDistance();
+
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
 }
 
 HRESULT CArrow::Render()

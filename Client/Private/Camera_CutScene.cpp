@@ -28,7 +28,7 @@ HRESULT CCamera_CutScene::Init(void* pArg)
 
 	m_iNextSectionIndex = 0;
 	m_iCurrentSectionIndex = 0;
-	m_fCutSceneSpeed = 10.f;
+	m_fCutSceneSpeed = 5.f;
 	m_fTimeDeltaAcc = 0.f;
 	m_iLastFrame = 0;
 

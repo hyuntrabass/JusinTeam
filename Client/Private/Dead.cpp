@@ -1,5 +1,5 @@
 #include "Dead.h"
-
+#include "UI_Manager.h"
 #include "Effect_Manager.h"
 
 CDead::CDead(_dev pDevice, _context pContext)
@@ -59,6 +59,9 @@ HRESULT CDead::Init(void* pArg)
 	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BloodPop04");
 	Info.pMatrix = &m_EffectMatrix;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+	_uint iRandomExp = rand() % 100;
+	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(15.f + (_float)iRandomExp / 2.f * 0.1f);
 
     return S_OK;
 }

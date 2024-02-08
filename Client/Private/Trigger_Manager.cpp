@@ -119,7 +119,6 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 
 	if (m_bAfterSuicide)
 	{
-		CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::GROAR);
 		m_isBreakLoop = true;
 		m_isPlayCutScene = false;
 		m_isInfinite = false;
