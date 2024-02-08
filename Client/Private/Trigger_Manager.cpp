@@ -33,8 +33,10 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 			if (iter->Get_TriggerType() == VILLAGE_TRIGGER && iter->Get_Limited() == true)
 			{
 				m_isPlayCutScene = true;
-				m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+				m_isInfinite = false;
 				m_strFilePath = L"../Bin/Data/Village_CutScene.dat";
+				m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+				CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
 				iter->Set_Limited(false);
 			}
 			else if (iter->Get_TriggerType() == FRONTDOOR_IN_TRIGGER)
@@ -75,13 +77,37 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 			}
 			else if (iter->Get_TriggerType() == BOSS_TRIGGER && iter->Get_Limited() == true)
 			{
-				pTrigger = iter;
-				CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::GROAR);
+				pTrigger = iter;	
 				m_isCollBossTrigger = true;
-				//iter->Set_Limited(false);
+				m_isPlayCutScene = true;
+				m_strFilePath = L"../Bin/Data/Boss_First_CutScene.dat";
+				m_isInfinite = true;
+				m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+				iter->Set_Limited(false);
 			}
-		}
 
+		}
+	}
+
+	if (m_bStartSuicide == true)
+	{
+		m_isBreakLoop = true;
+		m_isPlayCutScene = false;
+		m_isInfinite = false;
+		m_strFilePath = L"../Bin/Data/Boss_Second_CutScene.dat";
+		m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+		m_bStartSuicide = false;
+	}
+
+	if (m_bAfterSuicide)
+	{
+		CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::GROAR);
+		m_isBreakLoop = true;
+		m_isPlayCutScene = false;
+		m_isInfinite = false;
+		m_strFilePath = L"../Bin/Data/Boss_Final_CutScene.dat";
+		m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+		m_bAfterSuicide = false;
 	}
 
 

@@ -184,10 +184,7 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 
 	
 
-	if (m_pGameInstance->Key_Down(DIK_B))
-	{
-		CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
-	}
+
 	if (!CUI_Manager::Get_Instance()->Is_InvenActive())
 	{
 		m_RainMatrix = _mat::CreateTranslation(_vec3(m_pGameInstance->Get_CameraPos()));

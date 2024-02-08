@@ -275,7 +275,6 @@
     <ClInclude Include="..\Public\TextButtonColor.h" />
     <ClInclude Include="..\Public\Thief04.h" />
     <ClInclude Include="..\Public\Trigger.h" />
-    <ClInclude Include="..\Public\TriggerList.h" />
     <ClInclude Include="..\Public\Trigger_Manager.h" />
     <ClInclude Include="..\Public\TrilobiteA.h" />
     <ClInclude Include="..\Public\Tutorial.h" />

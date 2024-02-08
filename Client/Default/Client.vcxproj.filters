@@ -735,9 +735,6 @@
     <ClInclude Include="..\Public\Trigger.h">
       <Filter>02.GameObjects\11.Trigger</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\TriggerList.h">
-      <Filter>02.GameObjects\11.Trigger</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Trigger_Manager.h">
       <Filter>02.GameObjects\11.Trigger\Manager</Filter>
     </ClInclude>

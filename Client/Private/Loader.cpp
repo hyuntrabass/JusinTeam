@@ -1636,7 +1636,44 @@ HRESULT CLoader::Load_Village()
 
 	{
 		m_pGameInstance->Set_CurrentLevelIndex(LEVEL_VILLAGE);
+		{
+			const TCHAR* pGetPath = TEXT("../Bin/Data/Village_MapData.dat");
 
+			std::ifstream inFile(pGetPath, std::ios::binary);
+
+			if (!inFile.is_open())
+			{
+				MSG_BOX("맵 데이터 파일 불러오기 실패.");
+				return E_FAIL;
+			}
+
+			_uint MapListSize;
+			inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+
+
+			for (_uint i = 0; i < MapListSize; ++i)
+			{
+				_ulong MapPrototypeSize;
+				inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+
+				wstring MapPrototype;
+				MapPrototype.resize(MapPrototypeSize);
+				inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+
+				_mat MapWorldMat;
+				inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+
+				MapInfo MapInfo{};
+				MapInfo.Prototype = MapPrototype;
+				MapInfo.m_Matrix = MapWorldMat;
+
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Village_Map"), &MapInfo)))
+				{
+					MSG_BOX("맵 생성 실패");
+					return E_FAIL;
+				}
+			}
+		}
 		{
 			const TCHAR* pGetPath = TEXT("../Bin/Data/Dungeon.dat");
 

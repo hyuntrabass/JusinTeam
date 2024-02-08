@@ -124,6 +124,7 @@ void CLevel_Village::Tick(_float fTimeDelta)
 		In_To_Dungeon();
 		return;
 	}
+
 	//m_pGameInstance->PhysXTick(fTimeDelta);
 	if (m_pGameInstance->Key_Down(DIK_HOME))
 	{

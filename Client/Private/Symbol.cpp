@@ -137,7 +137,7 @@ HRESULT CSymbol::Add_Components()
 		break;
 	case GROAR:
 		strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_ImageText_Chapter1_01");
-		m_fSizeX = 2564.f;
+		m_fSizeX = 256.f;
 		m_fSizeY = 128.f;
 		break;
 	}
