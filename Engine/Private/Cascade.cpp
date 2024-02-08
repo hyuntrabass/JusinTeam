@@ -88,9 +88,7 @@ HRESULT CCascade::Update(_vec3* FrustumCorners, _float* ClipZ)
 
 	m_ShadowCamPos.w = 1.f;
 
-	_vec4 vLookAt = _vec4(FrustumCenter);
-
-	vLookAt.w = 1.f;
+	_vec3 vLookAt = FrustumCenter;
 
 	m_ViewMat = XMMatrixLookAtLH(m_ShadowCamPos, vLookAt, _vec3(0.f, 1.f, 0.f));
 

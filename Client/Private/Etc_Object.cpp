@@ -44,8 +44,9 @@ void CEtc_Object::Tick(_float fTimeDelta)
 
 void CEtc_Object::Late_Tick(_float fTimeDelta)
 {
-
-	__super::Late_Tick(fTimeDelta);
+	_vec4 vPos = _vec4(-23.f, 11.f, 128.f, 1.f);
+	if (m_pGameInstance->IsIn_Fov_World(vPos,100.f))
+		__super::Late_Tick(fTimeDelta);
 }
 
 HRESULT CEtc_Object::Render()
