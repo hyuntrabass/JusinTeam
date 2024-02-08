@@ -119,6 +119,17 @@ RasterizerState RS_Wire
     FrontCounterClockWise = false;
 };
 
+RasterizerState RS_Depth
+{
+    FillMode = Solid;
+    CullMode = Back;
+    FrontCounterClockWise = false;
+
+    DepthBias = 100000;
+    DepthBiasClamp = 0.f;
+    SlopeScaledDepthBias = 1.f;
+};
+
 // Depth Stencil State
 DepthStencilState DSS_Default
 {

@@ -18,18 +18,27 @@ public:
 
 	void Limited_CutScene(_bool isLimited);
 
-	void Set_Trigger(class CTrigger* pTrigger);
 	void Set_PlayCutScene(_bool isPlayCutScene) { m_isPlayCutScene = isPlayCutScene; }
 	_bool Get_Limited() { return m_isLimited; }
 	_bool Get_PlayCutScene() { return m_isPlayCutScene; }
 	wstring Get_CutScene_Path() { return m_strFilePath; }
+
+public:
+	HRESULT Ready_Trigger_Village();
 	
 public:
 	_bool Is_Coll_BossTrigger() { return m_isCollBossTrigger; }
 
+public:
+	void Set_StartSuicide() { m_bStartSuicide = true; }
+	void Set_AfterSuicide() { m_bAfterSuicide = true; }
+	void Set_BossStart() { m_bBossStart = true; }
+
+	//_bool Get_StartSuicide() { return m_bStartSuicide; }
+	//_bool Get_AfterSuicide() { return m_bAfterSuicide; }
+	//_bool Get_BossStart() { return m_bBossStart; }
+
 private:
-	ID3D11Device* m_pDevice = { nullptr };
-	ID3D11DeviceContext* m_pContext = { nullptr };
 	CGameInstance* m_pGameInstance = { nullptr };
 
 private:
@@ -40,6 +49,11 @@ private:
 
 private:
 	_bool m_isCollBossTrigger = { false };
+
+private: // Cutscene
+	_bool m_bStartSuicide = { false };
+	_bool m_bAfterSuicide = { false };
+	_bool m_bBossStart = { false };
 
 private:
 	vector<class CTrigger*> m_pTrigger{};

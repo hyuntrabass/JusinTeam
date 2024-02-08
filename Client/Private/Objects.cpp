@@ -31,6 +31,16 @@ void CObjects::Tick(_float fTimeDelta)
 
 void CObjects::Late_Tick(_float fTimeDelta)
 {
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Camera", LEVEL_STATIC);
+
+	_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
+	_vec4 vPos = m_pTransformCom->Get_CenterPos();
+
+	if (abs(vPlayerPos.x - vPos.x) > 500.f)
+	{
+		return;
+	}
+
 	if (m_pGameInstance->Get_CameraState() == CS_SKILLBOOK or m_pGameInstance->Get_CameraState() == CS_INVEN or m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
 	{
 		return;
@@ -42,6 +52,7 @@ void CObjects::Late_Tick(_float fTimeDelta)
 		//if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
 		//{
 			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Shadow, this);
 		//}
 	}
 	else
@@ -116,12 +127,59 @@ HRESULT CObjects::Render()
 	return S_OK;
 }
 
+HRESULT CObjects::Render_Shadow()
+{
+	if (FAILED(Bind_ShaderResources()))
+	{
+		return E_FAIL;
+	}
+
+	CASCADE_DESC Desc = m_pGameInstance->Get_CascadeDesc();
+
+	if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeView", Desc.LightView, 3)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeProj", Desc.LightProj, 3)))
+		return E_FAIL;
+
+	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+	for (_uint i = 0; i < iNumMeshes; i++)
+	{
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		{
+			continue;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(StaticPass_Shadow)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pModelCom->Render(i)))
+		{
+			return E_FAIL;
+		}
+	}
+
+	return S_OK;
+}
+
 HRESULT CObjects::Render_Instance()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
 	}
+
+	CASCADE_DESC Desc = m_pGameInstance->Get_CascadeDesc();
+
+	if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeView", Desc.LightView, 3)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeProj", Desc.LightProj, 3)))
+		return E_FAIL;
+
 
 	return S_OK;
 }

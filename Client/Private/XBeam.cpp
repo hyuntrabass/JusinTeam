@@ -34,9 +34,21 @@ HRESULT CXBeam::Init(void* pArg)
 
 	_vec3 StartPos = *reinterpret_cast<_vec3*>(pArg);
 
+	_float fSpeed{ 30.f };
+
 	m_pTransformCom->Set_Position(StartPos);
-	m_pTransformCom->Set_Speed(30.f);
+	m_pTransformCom->Set_Speed(fSpeed);
 	m_pTransformCom->LookAt(dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")))->Get_CenterPos());
+
+	PxRaycastBuffer Buffer{};
+	_float fDistance{ 45.f };
+
+	if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDistance, Buffer))
+	{
+		fDistance = (_vec3(PxVec3ToFloat3(Buffer.block.position)) - m_pTransformCom->Get_World_Matrix().Position_vec3()).Length();
+	}
+
+	m_fLifeTimeLimit = fDistance / fSpeed;
 
 	m_pGameInstance->Play_Sound(TEXT("SE_5130_Meteor_SFX_01"));
 
@@ -46,6 +58,12 @@ HRESULT CXBeam::Init(void* pArg)
 void CXBeam::Tick(_float fTimeDelta)
 {
 	m_pTransformCom->Go_Straight(fTimeDelta);
+
+	m_fLifeTimer += fTimeDelta;
+	if (m_fLifeTimer > m_fLifeTimeLimit)
+	{
+		Kill();
+	}
 
 	m_EffectMatrices[0] = _mat::CreateRotationX(XMConvertToRadians(35.f)) * _mat::CreateRotationY(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix();
 	m_EffectMatrices[1] = _mat::CreateRotationX(XMConvertToRadians(-35.f)) * _mat::CreateRotationY(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix();
@@ -61,7 +79,10 @@ void CXBeam::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Attack_Player(m_pColliderCom, 100))
 	{
 		Kill();
+	}
 
+	if (m_isDead)
+	{
 		m_pGameInstance->Play_Sound(TEXT("SD_4062_FireBall_SFX_01"));
 
 		CEffect_Manager* pEffect_Manager = CEffect_Manager::Get_Instance();

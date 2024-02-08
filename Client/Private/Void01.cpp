@@ -76,11 +76,6 @@ HRESULT CVoid01::Init(void* pArg)
 
 void CVoid01::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_V))
-	{
-		Set_Damage(0, AT_Bow_Common);
-	}
-
 	__super::Tick(fTimeDelta);
 
 	Init_State(fTimeDelta);
@@ -517,6 +512,8 @@ CGameObject* CVoid01::Clone(void* pArg)
 
 void CVoid01::Free()
 {
+	
+	
 	__super::Free();
 
 	Safe_Release(m_pLeftTrail);

@@ -32,15 +32,13 @@ HRESULT CVoid20::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pTransformCom->Set_State(State::Pos, _vec4(__super::Compute_PlayerPos()));
-
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = false;
 
 	m_eCurState = STATE_IDLE;
 
-	m_iHP = 5000;
+	m_iHP = 3000;
 	m_iDamageAccMax = 700;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
@@ -80,12 +78,6 @@ HRESULT CVoid20::Init(void* pArg)
 
 void CVoid20::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_0))
-	{
-		Set_Damage(0, AT_Sword_Common);
-		//m_eCurState = STATE_DIE;
-	}
-
 	__super::Tick(fTimeDelta);
 
 	Init_State(fTimeDelta);
@@ -131,7 +123,14 @@ void CVoid20::Set_Damage(_int iDamage, _uint iDamageType)
 	{
 		m_iDamageAcc += iDamage;
 	}
-
+	CHitEffect::HITEFFECT_DESC Desc{};
+	Desc.iDamage = iDamage;
+	Desc.pParentTransform = m_pTransformCom;
+	Desc.vTextPosition = _vec2(0.f, 1.5f);
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
+	{
+		return;
+	}
 	m_fIdleTime = 0.f;
 
 	_vec4 vPlayerPos = __super::Compute_PlayerPos();
@@ -248,12 +247,14 @@ void CVoid20::Init_State(_float fTimeDelta)
 			}
 
 			m_Animation.isLoop = false;
-			m_Animation.fAnimSpeedRatio = 2.f;
+			m_Animation.fAnimSpeedRatio = 2.5f;
 			break;
 
 		case Client::CVoid20::STATE_DIE:
 			m_Animation.iAnimIndex = DIE;
 			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 3.f;
+
 			break;
 		}
 

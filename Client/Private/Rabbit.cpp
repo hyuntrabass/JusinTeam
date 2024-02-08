@@ -75,14 +75,6 @@ HRESULT CRabbit::Init(void* pArg)
 
 void CRabbit::Tick(_float fTimeDelta)
 {
-	//Á×À»¶§ ·¹ÀÌ´õ °¨Áö¿¡¼­ Æ®·£½ºÆû »©Áà¾ßÇÔ
-	//CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
-
-	if (m_pGameInstance->Key_Down(DIK_R, InputChannel::UI))
-	{
-		Set_Damage(0, AT_Bow_Common);
-	}
-
 	__super::Tick(fTimeDelta);
 
 	Init_State(fTimeDelta);
@@ -171,6 +163,7 @@ void CRabbit::Init_State(_float fTimeDelta)
 
 	if (m_iHP <= 0)
 	{
+	
 		m_eCurState = STATE_DIE;
 	}
 

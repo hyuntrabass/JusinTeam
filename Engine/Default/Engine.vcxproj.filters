@@ -196,6 +196,15 @@
     <Filter Include="01.Utility\03.Components\VIBuffer\Rect\VIBuffer_Rect_LookZ">
       <UniqueIdentifier>{c61c4e3e-ad68-479c-b1fe-0cdbf92da91c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Components\Renderer\ShadowMap">
+      <UniqueIdentifier>{66bb5fb3-8b82-4728-bc08-989f1142870f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\12. Cascades">
+      <UniqueIdentifier>{d4f5830c-5036-47d1-add8-063e4091aab0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\12. Cascades\Manager">
+      <UniqueIdentifier>{7a0a221a-a881-4b3c-8ab6-41b9ce1932fc}</UniqueIdentifier>
+    </Filter>
     <Filter Include="01.Utility\03.Components\VIBuffer\Curve">
       <UniqueIdentifier>{eb38c04f-f1e6-4935-839c-1b0accdb7d87}</UniqueIdentifier>
     </Filter>
@@ -380,6 +389,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Rect_LookZ.cpp">
       <Filter>01.Utility\03.Components\VIBuffer\Rect\VIBuffer_Rect_LookZ</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ShadowMap.cpp">
+      <Filter>01.Utility\03.Components\Renderer\ShadowMap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Cascade_Manager.cpp">
+      <Filter>01.Utility\12. Cascades\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Cascade.cpp">
+      <Filter>01.Utility\12. Cascades</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Curve.cpp">
       <Filter>01.Utility\03.Components\VIBuffer\Curve</Filter>
@@ -572,6 +590,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Rect_LookZ.h">
       <Filter>01.Utility\03.Components\VIBuffer\Rect\VIBuffer_Rect_LookZ</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ShadowMap.h">
+      <Filter>01.Utility\03.Components\Renderer\ShadowMap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Cascade_Manager.h">
+      <Filter>01.Utility\12. Cascades\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Cascade.h">
+      <Filter>01.Utility\12. Cascades</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Curve.h">
       <Filter>01.Utility\03.Components\VIBuffer\Curve</Filter>

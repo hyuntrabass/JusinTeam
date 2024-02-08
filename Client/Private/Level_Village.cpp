@@ -124,7 +124,7 @@ void CLevel_Village::Tick(_float fTimeDelta)
 		In_To_Dungeon();
 		return;
 	}
-
+	//m_pGameInstance->PhysXTick(fTimeDelta);
 	if (m_pGameInstance->Key_Down(DIK_HOME))
 	{
 		Ready_Player();
@@ -195,9 +195,12 @@ HRESULT CLevel_Village::Ready_Player()
 	_vec4 Player_Pos{ 0.f };
 	inFile.read(reinterpret_cast<char*>(&Player_Pos), sizeof(_vec4));
 
+	CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
+	pCamTransform->Set_State(State::Pos, _vec4(-17.9027f, 18.f, 125.f, 1.f));
+	pCamTransform->LookAt_Dir(_vec4(-0.541082f, 0.548757f, 0.637257f, 0.f));
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 	pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 2.f, 0.f));
-	pPlayerTransform->LookAt_Dir(_vec4(-0.0531848f, 0.0598536346f, 0.996788f, 0.f));
+	pPlayerTransform->LookAt_Dir(_vec4(-0.541082f, 0.f, 0.637257f, 0.f));
 
 	m_pGameInstance->Set_HellHeight(-70.f);
 
@@ -777,58 +780,7 @@ HRESULT CLevel_Village::Ready_UI()
 
 HRESULT CLevel_Village::Ready_Trigger()
 {
-	TriggerInfo Info{};
-	const TCHAR* pGetPath = L"../Bin/Data/Village_Trigger.dat";
-
-	std::ifstream inFile(pGetPath, std::ios::binary);
-
-	if (!inFile.is_open())
-	{
-		MSG_BOX("../Bin/Data/Village_Trigger.dat 트리거 불러오기 실패.");
-		return E_FAIL;
-	}
-	_uint TriggerListSize;
-	inFile.read(reinterpret_cast<char*>(&TriggerListSize), sizeof(_uint));
-
-
-	for (_uint i = 0; i < TriggerListSize; ++i)
-	{
-		TriggerInfo TriggerInfo{};
-
-		_uint iIndex{};
-		inFile.read(reinterpret_cast<char*>(&iIndex), sizeof(_uint));
-		TriggerInfo.iIndex = iIndex;
-
-		_bool bCheck{};
-		inFile.read(reinterpret_cast<char*>(&bCheck), sizeof(_bool));
-		TriggerInfo.bLimited = bCheck;
-
-		_ulong TriggerPrototypeSize;
-		inFile.read(reinterpret_cast<char*>(&TriggerPrototypeSize), sizeof(_ulong));
-
-		wstring TriggerPrototype;
-		TriggerPrototype.resize(TriggerPrototypeSize);
-		inFile.read(reinterpret_cast<char*>(&TriggerPrototype[0]), TriggerPrototypeSize * sizeof(wchar_t));
-
-		_float TriggerSize{};
-		inFile.read(reinterpret_cast<char*>(&TriggerSize), sizeof(_float));
-		TriggerInfo.fSize = TriggerSize;
-
-		_mat TriggerWorldMat;
-		inFile.read(reinterpret_cast<char*>(&TriggerWorldMat), sizeof(_mat));
-
-		TriggerInfo.WorldMat = TriggerWorldMat;
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Trigger"), TEXT("Prototype_GameObject_Trigger"), &TriggerInfo)))
-		{
-			MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
-			return E_FAIL;
-		}
-	}
-
-	inFile.close();
-
-	return S_OK;
+	return CTrigger_Manager::Get_Instance()->Ready_Trigger_Village();
 }
 
 HRESULT CLevel_Village::Ready_Test()

@@ -92,7 +92,6 @@ public: // PipeLine
 	_mat ChagneViewForReflection(_float fWaterHeight);
 	void Update_PipeLine();
 
-
 public: // Picking
 
 	void TransformRay_ToLocal(_mat WorldMatrix);
@@ -119,14 +118,14 @@ public: // Frustum
 	_bool IsIn_Fov_Local(_vec4 vPos, _float fRange = 0.f);
 
 public: // Collision
-	HRESULT Register_CollisionObject(class CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer = false,class CCollider* AttRangeCollider = nullptr ,class CCollider* ParryingCollider = nullptr);
+	HRESULT Register_CollisionObject(class CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer = false, class CCollider* AttRangeCollider = nullptr, class CCollider* ParryingCollider = nullptr);
 	void Delete_CollisionObject(class CGameObject* pObject, _bool IsPlayer = false);
 	void Attack_Monster(class CCollider* pCollider, _uint iDamage, _uint iDamageType = 0);
 	_bool CheckCollision_Monster(class CCollider* pCollider);
 	_bool CheckCollision_Parrying(class CCollider* pCollider);
 	_bool Attack_Player(class CCollider* pCollider, _uint iDamage, _uint iDamageType = 0);
 	_bool CheckCollision_Player(class CCollider* pCollider); // 필요없음
-	 CCollider* Get_Nearest_MonsterCollider();
+	CCollider* Get_Nearest_MonsterCollider();
 public: // PhysX
 	void Init_PhysX_Character(class CTransform* pTransform, CollisionGroup eGroup, PxCapsuleControllerDesc* pDesc = nullptr);
 	void Init_PhysX_MoveableObject(class CTransform* pTransform);
@@ -134,7 +133,7 @@ public: // PhysX
 	void Update_PhysX(class CTransform* pTransform);
 	PxRigidStatic* Cook_StaticMesh(_uint iNumVertices, void* pVertices, _uint iNumIndices, void* pIndices);
 	_bool Raycast(_vec3 vOrigin, _vec3 vDir, _float fDist, PxRaycastBuffer& Buffer);
-	_bool Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer,  PxQueryFilterData Filter);
+	_bool Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer, PxQueryFilterData Filter);
 	_bool Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer);
 	void PhysXTick(_float fTimeDelta);
 #ifdef _DEBUG
@@ -185,6 +184,11 @@ public: // Effect Callback
 	void Delete_Effect(const void* pMatrix);
 	_bool Has_Created_Effect(const void* pMatrixKey);
 
+public: // Cascade Mananger
+	CASCADE_DESC Get_CascadeDesc();
+
+
+
 public: // Get_Set
 	// 현재 카메라가 메인 카메라인지 디버그 카메라인지 반환함. client define에 이넘 있음.
 	const _uint& Get_CameraModeIndex() const;
@@ -222,7 +226,7 @@ public: // Get_Set
 	// 안개의 색을 정함.
 	void Set_FogColor(const _color& vFogColor);
 	// 카메라 쉐이크 기능. true 던지면 카메라가 한번 흔들림.
-	void Set_ShakeCam(const _bool& bShake , _float fShakePower = 0.1f);
+	void Set_ShakeCam(const _bool& bShake, _float fShakePower = 0.1f);
 	// hell 높이를 지정한다.
 	void Set_HellHeight(const _float& fHeight);
 	// 사운드 채널의 볼륨을 지정함.
@@ -253,9 +257,10 @@ public: // Get_Set
 	const _bool& IsSkipDebugRendering() const;
 	const wstring& Get_InputString() const;
 
-	void Video_Start(_float fVideoDuration);
+	void Video_Start(_float fVideoDuration, _bool bSkip = false);
 	_bool Is_VideoPlaying() { return m_isPlayingVideo; }
-
+	_bool Ready_NextLevel() { return m_bReady_NextLevel; }
+	void Set_NextLevel(_bool NextLevel) { m_bReady_NextLevel = NextLevel; }
 public:
 	void Initialize_Level(_uint iLevelNum);
 	void Level_ShutDown(_uint iCurrentLevel);
@@ -266,8 +271,8 @@ public:
 	void Set_GoHome(_bool GoHome) { m_bGoHome = GoHome; }
 	void Set_GoDungeon(_bool GoDungeon) { m_bGoDungeon = GoDungeon; }
 
-	_bool Get_GoHome() {return m_bGoHome;}
-	_bool Get_GoDungeon() {return m_bGoDungeon;}
+	_bool Get_GoHome() { return m_bGoHome; }
+	_bool Get_GoDungeon() { return m_bGoDungeon; }
 private:
 	class CGraphic_Device* m_pGraphic_Device{ nullptr };
 
@@ -287,6 +292,9 @@ private:
 	class CPipeLine* m_pPipeLine{ nullptr };
 	class CPicking* m_pPicking{ nullptr };
 	class CPhysX_Manager* m_pPhysX_Manager{ nullptr };
+
+	// 원명
+	class CCascade_Manager* m_pCascade_Manager{ nullptr };
 
 private:
 	_uint m_iCameraState{};
@@ -314,6 +322,8 @@ private:
 	_bool m_isPlayingVideo{};
 	_float m_fVideoTimmer{};
 	_float m_fVideoDuration{};
+	_bool m_bVideoAfterSkip{};
+	_bool m_bReady_NextLevel{};
 private:
 	vector<_bool> m_vecLevelInvalid;
 

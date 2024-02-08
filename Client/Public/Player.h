@@ -307,11 +307,13 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+	virtual HRESULT Render_Shadow() override;
 
 public:
 	HRESULT Add_Info();
 	HRESULT Place_PartModels();
 	HRESULT Render_Parts(PART_TYPE Parts, _uint Index);
+	HRESULT Render_Shadow_Parts(PART_TYPE Parts, _uint Index);
 
 public:
 	void Move(_float fTimeDelta);
@@ -343,8 +345,8 @@ public:
 	void Check_Att_Collider(ATTACK_TYPE Att_Type);
 
 public:
-	void Tick_Riding(_float fTimeDelta);
 	HRESULT Add_Riding();
+	void Tick_Riding(_float fTimeDelta);
 	void Summon_Riding(Riding_Type Type);
 
 public:
@@ -354,6 +356,8 @@ public:
 
 private:
 	CRiding* m_pRiding{ nullptr };
+	class CEffect_Dummy* m_pFrameEffect{ nullptr };
+	class CEffect_Dummy* m_pBaseEffect{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CGameObject* m_pNameTag{ nullptr };
 	CRenderer* m_pRendererCom{ nullptr };
@@ -384,7 +388,7 @@ private:
 	_bool m_ReadyArrow{};
 	_vec4 m_vArrowRainPos{};
 	_bool m_bArrowRain_Start{};
-
+	_bool m_bFirstVillage{};
 	_bool m_bIsMount{};
 	_mat m_Riding_Mat{};
 	_uint m_iMiningCount{};
@@ -396,6 +400,7 @@ private:
 	_vec4 m_SaveCamPos{};
 	_bool m_bReady_Move{};
 	_uint m_ShaderIndex{};
+	_uint m_HairShaderIndex{};
 	_vec4 m_SaveCamLook{};
 	_bool m_bReady_Climb{};
 	_bool m_bHelmet_Hide{};
@@ -407,13 +412,19 @@ private:
 	const _float m_fWalkSpeed{ 1.f };
 	_bool	  m_isInvenActive{ false };
 
+	_bool m_bPoison{};
+	_float m_fRimTick{};
+	_bool m_bHitted{};
 	_uint m_iShield{};
+	_vec4 m_vRimColor{1.f};
 	_bool m_bAttacked{};
 	_bool m_bReadyMove{};
-	_float m_fBoostSpeed{};
 	_bool m_bAttackStop{};
 	_int m_iAttackCombo{};
+	_uint m_iPoisonCount{};
+	_float m_fBoostSpeed{};
 	_float m_fSkillSpeed{};
+	_uint m_iPoisionDamage{};
 	_int m_iCurrentSkill_Index{};
 
 	_bool m_bHide{};
@@ -431,6 +442,7 @@ private:
 	_int m_Helmet_CurrentIndex{ -1 };
 
 	_float m_fAttTimer{};
+	_float m_fRimRightTimmer{};
 	_float m_StartRegen{};
 	_float m_fSkiilTimer{};
 	_float m_fAttackZoom{};
