@@ -1,66 +1,91 @@
 1. Static Only   2. Anim Only   3. All
-2
-Animation Models : Start Converting...
-1. Normally Anim Model	2. For VTF Model 3. Part Model
-1
-Converting... Furgoat.fbx
-Read File Succssefully
-Animation name list: 
-Mon_Furgoat_B.ao|Attack01
-Mon_Furgoat_B.ao|Attack02
-Mon_Furgoat_B.ao|Attack03
-Mon_Furgoat_B.ao|Die
-Mon_Furgoat_B.ao|Hit_add
-Mon_Furgoat_B.ao|Hit_L
-Mon_Furgoat_B.ao|Hit_R
-Mon_Furgoat_B.ao|Idle
-Mon_Furgoat_B.ao|Interaction01
-Mon_Furgoat_B.ao|Interaction02
-Mon_Furgoat_B.ao|Knockdown
-Mon_Furgoat_B.ao|Roar
-Mon_Furgoat_B.ao|Run
-Mon_Furgoat_B.ao|Stun
-Mon_Furgoat_B.ao|Walk
-Converting... Rabbit.fbx
-Read File Succssefully
-Animation name list: 
-Mon_rabbit_A.ao|Mon_rabbit_attack01
-Mon_rabbit_A.ao|Mon_rabbit_attack02
-Mon_rabbit_A.ao|Mon_rabbit_die
-Mon_rabbit_A.ao|Mon_Rabbit_Hit_Add
-Mon_rabbit_A.ao|Mon_Rabbit_Hit_Add_L
-Mon_rabbit_A.ao|Mon_Rabbit_Hit_Add_R
-Mon_rabbit_A.ao|Mon_rabbit_idle
-Mon_rabbit_A.ao|Mon_rabbit_knockdown
-Mon_rabbit_A.ao|Mon_rabbit_roar
-Mon_rabbit_A.ao|Mon_rabbit_run
-Mon_rabbit_A.ao|Mon_rabbit_stun
-Mon_rabbit_A.ao|Mon_Rabbit_walk
-Converting... Void01.fbx
-Read File Succssefully
-Animation name list: 
-Mon_Void.ao|attack01
-Mon_Void.ao|attack02
-Mon_Void.ao|attack03
-Mon_Void.ao|hit_add
-Mon_Void.ao|Hit_L
-Mon_Void.ao|Hit_R
-Mon_Void.ao|idle
-Mon_Void.ao|knockback
-Mon_Void.ao|knockback_hold
-Mon_Void.ao|roar
-Mon_Void.ao|run
-Mon_Void.ao|stun
-Mon_Void.ao|walk
-Animation Models : Convert Success!
-
-3 Animation Models
-are Successfully Converted as hyuntramesh!!
 1
 Static Models : Start Converting...
-Converting... Village.fbx
+Converting... 02_02_DungeonWall_001-Floor.fbx
+Read File Succssefully
+Converting... 02_02_DungeonWall_001.fbx
+Read File Succssefully
+Converting... 02_02_DungeonWall_002-Floor.fbx
+Read File Succssefully
+Converting... 02_02_DungeonWall_002.fbx
+Read File Succssefully
+Converting... 02_02_DungeonWall_003-Bridge.fbx
+Read File Succssefully
+Converting... 02_02_DungeonWall_003-Floor.fbx
+Read File Succssefully
+Converting... 02_02_DungeonWall_003.fbx
+Read File Succssefully
+Converting... 02_02_DungeonWall_004-Floor.fbx
+Read File Succssefully
+Converting... 02_02_DungeonWall_004.fbx
+Read File Succssefully
+Converting... 02_02_DungeonWall_005-Floor.fbx
+Read File Succssefully
+Converting... 02_02_DungeonWall_005.fbx
+Read File Succssefully
+Converting... 02_02_DungeonWall_006-Bridge.fbx
+Read File Succssefully
+Converting... 02_02_DungeonWall_006-Floor_001.fbx
+Read File Succssefully
+Converting... 02_02_DungeonWall_006-Floor_002.fbx
+Read File Succssefully
+Converting... 02_02_DungeonWall_006.fbx
+Read File Succssefully
+Converting... 02_02_DungeonWall_006_Passage.fbx
+Read File Succssefully
+Converting... 02_02_DungeonWall_007-Floor.fbx
+Read File Succssefully
+Converting... 02_02_DungeonWall_007.fbx
+Read File Succssefully
+Converting... 02_02_DungeonWall_008_OuterBuildings.fbx
+Read File Succssefully
+Converting... 02_02_Dungeon_ShadowWall.fbx
+Read File Succssefully
+Converting... 02_02_Fol_SM_Weed_009.fbx
+Read File Succssefully
+Converting... 02_02_SM_BloodBone_001.fbx
+Read File Succssefully
+Converting... 02_02_SM_Brazier_001.fbx
+Read File Succssefully
+Converting... 02_02_SM_BreakWall_001.fbx
+Read File Succssefully
+Converting... 02_02_SM_BreakWall_002.fbx
+Read File Succssefully
+Converting... 02_02_SM_Chain_001.fbx
+Read File Succssefully
+Converting... 02_02_SM_Deads.fbx
+Read File Succssefully
+Converting... 02_02_SM_FenrirZone_001.fbx
+Read File Succssefully
+Converting... 02_02_SM_Rocks_001.fbx
+Read File Succssefully
+Converting... 02_02_SM_Rocks_002.fbx
+Read File Succssefully
+Converting... 02_02_SM_Stair_001.fbx
+Read File Succssefully
+Converting... 02_02_SM_TileFloor_001.fbx
+Read File Succssefully
+Converting... 02_02_SM_TileFloor_002.fbx
+Read File Succssefully
+Converting... 02_02_SM_WoodRail_001.fbx
+Read File Succssefully
+Converting... 02_02_SM_WoodRail_002.fbx
+Read File Succssefully
+Converting... 02_02_SM_WoodRail_003.fbx
+Read File Succssefully
+Converting... Dun_SM_Portal_001.fbx
+Read File Succssefully
+Converting... Dun_SM_Portal_002.fbx
+Read File Succssefully
+Converting... Dun_SM_Statue_001.fbx
+Read File Succssefully
+Converting... Dun_SM_Statue_002.fbx
+Read File Succssefully
+Converting... Dun_SM_Statue_003.fbx
+Read File Succssefully
+Converting... Dun_SM_Statue_004.fbx
 Read File Succssefully
 Static Models : Convert Success!
 
-1 Static Models
+42 Static Models
 are Successfully Converted as hyuntramesh!!

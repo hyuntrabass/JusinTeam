@@ -15,7 +15,7 @@ CVIBuffer_Curve::CVIBuffer_Curve(const CVIBuffer_Curve& rhs)
 
 HRESULT CVIBuffer_Curve::Init_Prototype()
 {
-	_uint iNumSegments = 100;
+	_uint iNumSegments = 300;
 
 	m_iNumVertices = iNumSegments;
 	m_iNumPrimitives = 1;

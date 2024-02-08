@@ -164,7 +164,7 @@ HRESULT CLoader::Load_Editor()
 			}
 		}
 	}
-
+	Pivot = _mat::CreateScale(0.001f);
 	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Map/Dungeon/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -231,6 +231,22 @@ HRESULT CLoader::Load_Editor()
 			}
 		}
 	}
+	/*strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Object/Dungeon/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (!entry.exists())
+				return S_OK;
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
+			{
+				return E_FAIL;
+			}
+		}
+	}*/
+
 	Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Environment/Tree/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
@@ -456,6 +472,7 @@ HRESULT CLoader::Load_Editor()
 
 #pragma  region Boss
 
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Groar/Mesh/Groar.hyuntraanimmesh"))))
 	{
@@ -479,6 +496,14 @@ HRESULT CLoader::Load_Editor()
 	{
 		return E_FAIL;
 	}
+
+	_mat TentaclePivot = _mat::CreateRotationX(XMConvertToRadians(290.f));
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar_Tentacle"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/Groar_Tentacle/Mesh/Groar_Tentacle.hyuntraanimmesh", false, TentaclePivot))))
+	{
+		return E_FAIL;
+	}
+
 
 #pragma  endregion Boss
 

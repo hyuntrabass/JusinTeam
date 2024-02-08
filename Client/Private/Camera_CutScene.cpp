@@ -37,7 +37,7 @@ HRESULT CCamera_CutScene::Init(void* pArg)
 
 void CCamera_CutScene::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Get_CameraModeIndex() != CM_CUTSCENE )
+	if (m_pGameInstance->Get_CameraModeIndex() != CM_CUTSCENE)
 	{
 		return;
 	}
@@ -47,13 +47,14 @@ void CCamera_CutScene::Tick(_float fTimeDelta)
 	}
 	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
 
-	if (m_pTrigger_Manager->Get_PlayCutScene() == true)
-	{
-		CutScene_Registration(m_pTrigger_Manager->Get_CutScene_Path());
-		m_pTrigger_Manager->Set_PlayCutScene(false);
-	}
+	//if (m_pTrigger_Manager->Get_PlayCutScene() == true)
+	//{
+	//	m_pTrigger_Manager->Set_PlayCutScene(false);
+	//}
+
 	if (m_isPlayCutScene == false)
 	{
+		CutScene_Registration(m_pTrigger_Manager->Get_CutScene_Path());
 		m_iFrame = 0;
 		m_fTimeDeltaAcc = 0.f;
 		m_iTotalFrame = 0;
@@ -74,7 +75,7 @@ void CCamera_CutScene::Late_Tick(_float fTimeDelta)
 }
 
 
-HRESULT CCamera_CutScene::Add_Eye_Curve(_mat matPoints,  _float fCurveSpeed)
+HRESULT CCamera_CutScene::Add_Eye_Curve(_mat matPoints, _float fCurveSpeed)
 {
 	_uint	iCutSceneType = CCutScene_Curve::SECTION_TYPE_EYE;
 
@@ -130,7 +131,29 @@ void CCamera_CutScene::Play_Camera(_float fTimeDelta)
 		m_iLastFrame = m_CameraEyeList.front()->Get_CurveSize() * m_iSectionCount;
 	}
 
-	if (m_iFrame > m_CameraEyeList.front()->Get_CurveSize() - 2 && !m_CameraEyeList.empty())
+	if (m_pTrigger_Manager->Is_BreakLoop())
+	{
+		for (auto pCurve : m_CameraAtList)
+		{
+			pCurve->Kill();
+		}
+		m_CameraAtList.clear();
+
+		for (auto pCurve : m_CameraEyeList)
+		{
+			pCurve->Kill();
+		}
+		m_CameraEyeList.clear();
+
+		//m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
+
+		m_pTrigger_Manager->LoopBroken();
+		m_isPlayCutScene = false;
+
+		return;
+	}
+
+	if (!m_CameraEyeList.empty() && m_iFrame > m_CameraEyeList.front()->Get_CurveSize() - 2)
 	{
 		m_iFrame = 0;
 		m_fTimeDeltaAcc = 0.f;
@@ -143,7 +166,18 @@ void CCamera_CutScene::Play_Camera(_float fTimeDelta)
 		else
 		{
 			m_isPlayCutScene = false;
-			m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
+			if (m_pTrigger_Manager->Get_Infinite() == false)
+			{
+				if (!m_CameraAtList.empty())
+				{
+					m_CameraAtList.clear();
+				}
+				if (!m_CameraEyeList.empty())
+				{
+					m_CameraEyeList.clear();
+				}
+				m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
+			}
 		}
 	}
 	if (m_iCurrentSectionIndex < m_CameraEyeList.size())
@@ -246,7 +280,7 @@ HRESULT CCamera_CutScene::CutScene_Registration(const wstring& strDataPath)
 
 	inFile.close();
 
-	m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+	//m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
 
 	return S_OK;
 
@@ -282,18 +316,26 @@ CGameObject* CCamera_CutScene::Clone(void* pArg)
 void CCamera_CutScene::Free()
 {
 	__super::Free();
-	for (int i = 0; i < m_CameraAtList.size(); i++) {
-		Safe_Release(m_CameraAtList[i]);
-	}
-	m_CameraAtList.clear();
 
-	for (int i = 0; i < m_CameraEyeList.size(); i++) {
-		Safe_Release(m_CameraEyeList[i]);
+	if (!m_CameraAtList.empty())
+	{
+		for (int i = 0; i < m_CameraAtList.size(); i++)
+		{
+			Safe_Release(m_CameraAtList[i]);
+		}
+		m_CameraAtList.clear();
 	}
-	m_CameraEyeList.clear();
+	if (!m_CameraEyeList.empty())
+	{
+		for (int i = 0; i < m_CameraEyeList.size(); i++)
+		{
+			Safe_Release(m_CameraEyeList[i]);
+		}
+		m_CameraEyeList.clear();
+	}
 
 	//Safe_Release(m_pEyeCurve);
 	//Safe_Release(m_pAtCurve);
-	if(m_pTrigger_Manager)
+	if (m_pTrigger_Manager)
 		Safe_Release(m_pTrigger_Manager);
 }
