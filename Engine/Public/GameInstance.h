@@ -185,16 +185,18 @@ public: // Effect Callback
 	_bool Has_Created_Effect(const void* pMatrixKey);
 
 public: // Video Manager
+	// 비디오를 재생 합니다. 파일명에 확장자까지 붙여야 됨.
 	HRESULT Play_Video(const wstring& strVideoFilePath);
+	// 비디오를 정지 합니다. 왠만하면 클라에서 쓰지 말것.
 	void Stop_Video();
+	// 비디오가 재생중인지 반환 됩니다.
 	const _bool Is_Playing_Video();
 
+	// 비디오를 중단시킬 키를 지정합니다.
 	void Set_StopKey(_ubyte iKey);
 
 public: // Cascade Mananger
 	CASCADE_DESC Get_CascadeDesc();
-
-
 
 public: // Get_Set
 	// 현재 카메라가 메인 카메라인지 디버그 카메라인지 반환함. client define에 이넘 있음.
