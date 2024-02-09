@@ -115,6 +115,8 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 		return E_FAIL;
 	}
 
+	m_vecLevelInvalid.resize(iNumLevels);
+
 	return S_OK;
 }
 
@@ -172,6 +174,11 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	{
 		m_Function_LateTick_FX(fTimeDelta);
 	}
+
+#ifdef _DEBUG
+	Print_StringStream();
+#endif // _DEBUG
+
 }
 
 void CGameInstance::Clear(_uint iLevelIndex)
@@ -1250,11 +1257,6 @@ CASCADE_DESC CGameInstance::Get_CascadeDesc()
 	return m_pCascade_Manager->Get_CascadeDesc();
 }
 
-const _uint& CGameInstance::Get_CameraModeIndex() const
-{
-	return m_iCameraModeIndex;
-}
-
 const _float2& CGameInstance::Get_CameraNF() const
 {
 	return m_vCameraNF;
@@ -1280,15 +1282,17 @@ const _color& CGameInstance::Get_FogColor() const
 	return m_vFogColor;
 }
 
-const _bool& CGameInstance::Get_ShakeCam() const
-{
-	return m_bShakeCamera;
-}
-
 const _float& CGameInstance::Get_HellHeight() const
 {
 	return m_fHellHeight;
 }
+
+#ifdef _DEBUG
+ostringstream& CGameInstance::Get_StringStream()
+{
+	return m_OutputStream;
+}
+#endif
 
 _bool CGameInstance::Get_IsPlayingSound(_uint iChannel)
 {
@@ -1320,11 +1324,6 @@ _bool CGameInstance::Get_IsLoopingSound(_uint iChannel)
 	return m_pSound_Manager->Get_IsLoopingSound(iChannel);
 }
 
-void CGameInstance::Set_CameraModeIndex(const _uint& iIndex)
-{
-	m_iCameraModeIndex = iIndex;
-}
-
 void CGameInstance::Set_CameraNF(const _float2& vCamNF)
 {
 	m_vCameraNF = vCamNF;
@@ -1348,11 +1347,6 @@ void CGameInstance::Set_FogNF(const _float2& vFogNF)
 void CGameInstance::Set_FogColor(const _color& vFogColor)
 {
 	m_vFogColor = vFogColor;
-}
-
-void CGameInstance::Set_ShakeCam(const _bool& bShake, _float fShakePower)
-{
-	m_bShakeCamera = bShake;
 }
 
 void CGameInstance::Set_HellHeight(const _float& fHeight)
@@ -1380,66 +1374,9 @@ void CGameInstance::Set_ChannelStartVolume(_uint iChannel)
 	return m_pSound_Manager->SetChannelStartVolume(iChannel);
 }
 
-void CGameInstance::Set_ZoomFactor(const _float fFactor)
-{
-	m_fZoomFactor = fFactor;
-}
-
-void CGameInstance::Set_CameraState(const _uint& iIndex)
-{
-	m_iCameraState = iIndex;
-}
-
-void CGameInstance::Set_CameraTargetPos(const _vec4& vPos)
-{
-	m_vTarget = vPos;
-}
-
-void CGameInstance::Set_CameraTargetLook(const _vec4& vLook)
-{
-	m_vTargetLook = vLook;
-	m_bTargetLook = true;
-}
-
-void CGameInstance::Set_Have_TargetLook(const _bool& bHaveLook)
-{
-	m_bTargetLook = bHaveLook;
-}
-
-void CGameInstance::Set_AimMode(_bool Aim, _vec3 AimPos)
-{
-	m_AimMode = Aim;
-	m_AimPos = AimPos;
-}
-
 void CGameInstance::Set_InputString(const wstring& strInput)
 {
 	m_strInput = strInput;
-}
-
-const _uint& CGameInstance::Get_CameraState() const
-{
-	return m_iCameraState;
-}
-
-const _vec4& CGameInstance::Get_CameraTargetPos() const
-{
-	return m_vTarget;
-}
-
-const _float& CGameInstance::Get_ZoomFactor() const
-{
-	return m_fZoomFactor;
-}
-
-const _vec4& CGameInstance::Get_CameraTargetLook()
-{
-	return 	m_vTargetLook;
-}
-
-const _bool& CGameInstance::Have_TargetLook() const
-{
-	return m_bTargetLook;
 }
 
 const _bool& CGameInstance::IsSkipDebugRendering() const
@@ -1452,34 +1389,67 @@ const wstring& CGameInstance::Get_InputString() const
 	return m_strInput;
 }
 
-void CGameInstance::Initialize_Level(_uint iLevelNum)
-{
-	m_vecLevelInvalid.reserve(iLevelNum);
-
-	for (_uint i = 0; i < iLevelNum; i++)
-	{
-		m_vecLevelInvalid.push_back(false);
-	}
-}
-
 void CGameInstance::Level_ShutDown(_uint iCurrentLevel)
 {
-	if (iCurrentLevel >= m_vecLevelInvalid.size() || iCurrentLevel < 0)
+	if (iCurrentLevel >= m_vecLevelInvalid.size())
+	{
+		MSG_BOX("Wrong Level Index");
 		return;
+	}
+
 	m_vecLevelInvalid[iCurrentLevel] = true;
 }
 
 _bool CGameInstance::Is_Level_ShutDown(_uint iCurrentLevel)
 {
-	if (iCurrentLevel >= m_vecLevelInvalid.size() || iCurrentLevel < 0)
+	if (iCurrentLevel >= m_vecLevelInvalid.size())
+	{
+		MSG_BOX("Wrong Level Index");
 		return false;
+	}
+
 	return m_vecLevelInvalid[iCurrentLevel];
 }
+
+#ifdef _DEBUG
+void CGameInstance::Print_StringStream()
+{
+	//HANDLE hBuffer[0] = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
+	//									   0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL); // 버퍼 생성
+	//SetConsoleScreenBufferSize(hBuffer[0], size);
+	//SetConsoleWindowInfo(hBuffer[0], TRUE, &rect);
+
+	//// 두번째 버퍼
+	//hBuffer[1] = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
+	//									   0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL); // 버퍼 생성
+	//SetConsoleScreenBufferSize(hBuffer[1], size);
+	//SetConsoleWindowInfo(hBuffer[1], TRUE, &rect);
+
+	//cursor.dwSize = 1;
+	//cursor.bVisible = false;
+	//SetConsoleCursorInfo(hBuffer[0], &cursor);
+	//SetConsoleCursorInfo(hBuffer[1], &cursor);
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD cursorPos = { 0, 0 };
+	string blank(50, ' ');
+
+	for (int i = 0; i < 20; i++)
+	{
+		SetConsoleCursorPosition(hConsole, cursorPos);
+		cout << blank << endl;
+		cursorPos.Y++;
+	}
+
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), COORD());
+	cout << m_OutputStream.str() << flush;
+	m_OutputStream = {};
+	m_OutputStream.clear();
+}
+#endif
 
 void CGameInstance::Clear_Managers()
 {
 	Safe_Release(m_pSound_Manager);
-	Safe_Release(m_pInput_Manager);
 	Safe_Release(m_pCollision_Manager);
 	Safe_Release(m_pObject_Manager);
 	Safe_Release(m_pComponent_Manager);
@@ -1492,6 +1462,8 @@ void CGameInstance::Clear_Managers()
 	Safe_Release(m_pRenderTarget_Manager);
 	Safe_Release(m_pPhysX_Manager);
 	Safe_Release(m_pCascade_Manager);
+	Safe_Release(m_pVideo_Manager);
+	Safe_Release(m_pInput_Manager);
 }
 
 void CGameInstance::Release_Engine()

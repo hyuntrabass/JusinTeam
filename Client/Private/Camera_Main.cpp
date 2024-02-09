@@ -1,6 +1,7 @@
 #include "Camera_Main.h"
 #include "UI_Manager.h"
 #include "FadeBox.h"
+#include "Camera_Manager.h"
 
 CCamera_Main::CCamera_Main(_dev pDevice, _context pContext)
 	: CCamera(pDevice, pContext)
@@ -35,24 +36,26 @@ HRESULT CCamera_Main::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	m_pCam_Manager = CCamera_Manager::Get_Instance();
+	Safe_AddRef(m_pCam_Manager);
+
 	return S_OK;
 }
 
 void CCamera_Main::Tick(_float fTimeDelta)
 {
-
-	if (m_pGameInstance->Get_CameraModeIndex() != CM_MAIN)
+	if (m_pCam_Manager->Get_CameraModeIndex() != CM_MAIN)
 	{
 		return;
 	}
 
 	if (m_pGameInstance->Key_Down(DIK_P))
 	{
-		m_pGameInstance->Set_CameraModeIndex(CM_DEBUG);
+		m_pCam_Manager->Set_CameraModeIndex(CM_DEBUG);
 	}
 
-
 	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
+	m_eCurrState = m_pCam_Manager->Get_CameraState();
 
 	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_SELECT)
 	{
@@ -86,13 +89,13 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		}
 		if (m_pGameInstance->Key_Down(DIK_M))
 		{
-			if (m_pGameInstance->Get_CameraState() == CS_ZOOM)
+			if (m_eCurrState == CS_ZOOM)
 			{
 				return;
 			}
 			if (m_pGameInstance->Get_CurrentLevelIndex() > LEVEL_GAMEPLAY)
 			{
-				if (m_pGameInstance->Get_CameraState() != CS_WORLDMAP)
+				if (m_eCurrState != CS_WORLDMAP)
 				{
 					m_pGameInstance->Play_Sound(TEXT("WorldMap_Click"), 1.f);
 
@@ -104,7 +107,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 						return;
 					}
 
-					m_pGameInstance->Set_CameraState(CS_WORLDMAP);
+					m_pCam_Manager->Set_CameraState(CS_WORLDMAP);
 					m_pTransformCom->Set_State(State::Pos, m_vMapPos);
 					CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 				}
@@ -119,46 +122,33 @@ void CCamera_Main::Tick(_float fTimeDelta)
 						return;
 					}
 
-					m_pGameInstance->Set_CameraState(CS_DEFAULT);
+					m_pCam_Manager->Set_CameraState(CS_DEFAULT); 
 					CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 				}
 			}
 		}
 
-		if (m_pGameInstance->Get_CameraState() == CS_ZOOM)
+		switch (m_eCurrState)
 		{
+		case Client::CS_ZOOM:
 			ZOOM_Mode(fTimeDelta);
 			__super::Tick(fTimeDelta);
 			return;
-		}
-		if (m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
-		{
-			WorldMap_Mode(fTimeDelta);
-			__super::Tick(fTimeDelta);
-			return;
-		}
-		if (m_pGameInstance->Get_CameraState() == CS_SKILLBOOK)
-		{
-			SkillBook_Mode(fTimeDelta);
-			__super::Tick(fTimeDelta);
-			return;
-		}
-
-		if (m_pGameInstance->Get_CameraState() == CS_SHOP)
-		{
-			Shop_Mode(fTimeDelta);
-			__super::Tick(fTimeDelta);
-			return;
-		}
-		if (m_pGameInstance->Get_CameraState() == CS_INVEN)
-		{
+		case Client::CS_INVEN:
 			Inven_Mode(fTimeDelta);
 			__super::Tick(fTimeDelta);
 			return;
-		}
-		if (m_pGameInstance->Get_CameraState() == CS_ENDFULLSCREEN)
+		case Client::CS_SHOP:
+			Shop_Mode(fTimeDelta);
+			__super::Tick(fTimeDelta);
+			return;
+		case Client::CS_SKILLBOOK:
+			SkillBook_Mode(fTimeDelta);
+			__super::Tick(fTimeDelta);
+			return;
+		case Client::CS_ENDFULLSCREEN:
 		{
-			m_pGameInstance->Set_CameraState(CS_DEFAULT);
+			m_pCam_Manager->Set_CameraState(CS_DEFAULT);
 
 			CFadeBox::FADE_DESC Desc = {};
 			Desc.eState = CFadeBox::FADEOUT;
@@ -175,17 +165,25 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			__super::Tick(fTimeDelta);
 			return;
 		}
-
-		if (m_fShakeAcc > 2.f and m_pGameInstance->Get_ShakeCam())
-		{
-			m_fShakeAcc = m_pGameInstance->Get_ShakePower();
-			m_pGameInstance->Set_ShakeCam(false);
+		case Client::CS_WORLDMAP:
+			WorldMap_Mode(fTimeDelta);
+			__super::Tick(fTimeDelta);
+			return;
+		case Client::CS_STATEEND:
+			break;
 		}
-		if (m_pGameInstance->Get_FlyCam())
+
+		if (m_fShakeAcc > 2.f and m_pCam_Manager->Get_ShakeCam())
+		{
+			m_fShakeAcc = m_pCam_Manager->Get_ShakePower();
+			m_pCam_Manager->Set_ShakeCam(false);
+		}
+
+		if (m_pCam_Manager->Get_FlyCam())
 		{
 			m_pTransformCom->LookAt(m_pPlayerTransform->Get_State(State::Pos));
 		}
-		else if (!m_pGameInstance->Get_AimMode())
+		else if (!m_pCam_Manager->Get_AimMode())
 		{
 			if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON))
 			{
@@ -249,7 +247,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 			m_AimZoomInTime += fTimeDelta * 1.5f;
 
-			_float CamAttackZoom = m_fLerpDistance - m_pGameInstance->Get_CameraAttackZoom();
+			_float CamAttackZoom = m_fLerpDistance - m_pCam_Manager->Get_CameraAttackZoom();
 
 			_float vZoomY = 1.3f - (CamAttackZoom * 0.25f);
 			_vec4 vCamPos = (m_pPlayerTransform->Get_CenterPos()) + _vec4(0.f, vZoomY, 0.f, 0.f)
@@ -319,7 +317,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			_vec4 vMeLook = m_pTransformCom->Get_State(State::Look);
 			_vec4 PlayerRight = m_pPlayerTransform->Get_State(State::Right).Get_Normalized();
 			_vec4 PlayerUp = m_pPlayerTransform->Get_State(State::Up).Get_Normalized();
-			_vec3 AimPos = m_pGameInstance->Get_AimPos();
+			_vec3 AimPos = m_pCam_Manager->Get_AimPos();
 			m_vAimCamPos = m_pPlayerTransform->Get_CenterPos() - (vMeLook * AimPos.z * 1.3f)
 				+ (PlayerUp * AimPos.y * 0.5f) + (PlayerRight * AimPos.x);
 
@@ -357,7 +355,7 @@ void CCamera_Main::Camera_Zoom(_float fTimeDelta)
 
 	float lerpFactor = 0.1f;
 
-	_vec3 vTargetPos = m_pGameInstance->Get_CameraTargetPos();
+	_vec3 vTargetPos = m_pCam_Manager->Get_CameraTargetPos();
 	vTargetPos.z = vTargetPos.z - 3.f;
 
 	_vec4 vNewPos = XMVectorLerp(vCurrentPos, vTargetPos, lerpFactor);
@@ -365,8 +363,6 @@ void CCamera_Main::Camera_Zoom(_float fTimeDelta)
 	m_pTransformCom->Set_State(State::Pos, vNewPos);
 
 }
-
-
 
 _bool CCamera_Main::Inven_Mode(_float fTimeDelta)
 {
@@ -399,8 +395,7 @@ void CCamera_Main::Select_Mode(_float fTimeDelta)
 		return;
 	}
 
-	CAMERA_STATE eState = (CAMERA_STATE)m_pGameInstance->Get_CameraState();
-	switch (eState)
+	switch (m_eCurrState)
 	{
 	case CAMERA_STATE::CS_DEFAULT:
 	{
@@ -425,18 +420,18 @@ void CCamera_Main::Select_Mode(_float fTimeDelta)
 
 		_vec4 vCurLook = m_pTransformCom->Get_State(State::Look);
 		_vec4 vTargetLook = {};
-		if (m_pGameInstance->Have_TargetLook())
+		if (m_pCam_Manager->Have_TargetLook())
 		{
 			_vec4 vCurrentPos = m_pTransformCom->Get_State(State::Pos);
-			_vec4 vTargetPos = m_pGameInstance->Get_CameraTargetPos();
+			_vec4 vTargetPos = m_pCam_Manager->Get_CameraTargetPos();
 
 			_float fLerpFactor = 0.1f;
-			_float fZoomFactor = m_pGameInstance->Get_ZoomFactor();
+			_float fZoomFactor = m_pCam_Manager->Get_ZoomFactor();
 
 			_vec4 vNewPos = XMVectorLerp(vCurrentPos, vTargetPos, fLerpFactor);
 			m_pTransformCom->Set_State(State::Pos, vNewPos);
 
-			vTargetLook = m_pGameInstance->Get_CameraTargetLook();
+			vTargetLook = m_pCam_Manager->Get_CameraTargetLook();
 			_vec4 vNewLook = XMVectorLerp(vCurLook, vTargetLook, fLerpFactor);
 			m_pTransformCom->LookAt_Dir(vNewLook);
 			if (vNewLook == vTargetLook)
@@ -449,10 +444,10 @@ void CCamera_Main::Select_Mode(_float fTimeDelta)
 		else
 		{
 			_vec4 vCurrentPos = m_pTransformCom->Get_State(State::Pos);
-			_vec4 vTargetPos = m_pGameInstance->Get_CameraTargetPos();
+			_vec4 vTargetPos = m_pCam_Manager->Get_CameraTargetPos();
 
 			_float fLerpFactor = 0.1f;
-			_float fZoomFactor = m_pGameInstance->Get_ZoomFactor();
+			_float fZoomFactor = m_pCam_Manager->Get_ZoomFactor();
 
 			vTargetPos.y = vTargetPos.y + 1.5f;
 			vTargetPos.z = vTargetPos.z - fZoomFactor;
@@ -460,7 +455,7 @@ void CCamera_Main::Select_Mode(_float fTimeDelta)
 			_vec4 vNewPos = XMVectorLerp(vCurrentPos, vTargetPos, fLerpFactor);
 			m_pTransformCom->Set_State(State::Pos, vNewPos);
 
-			vTargetLook = m_pGameInstance->Get_CameraTargetPos();
+			vTargetLook = m_pCam_Manager->Get_CameraTargetPos();
 			vTargetLook.y = 0.f;
 			vTargetLook.w = 0.f;
 			_vec4 vNewLook = XMVectorLerp(vCurLook, vTargetLook, fLerpFactor);
@@ -470,13 +465,13 @@ void CCamera_Main::Select_Mode(_float fTimeDelta)
 				m_bZoomEnd = true;
 			}
 			else
+			{
 				m_bZoomEnd = false;
+			}
 		}
 
 		break;
 	}
-	default:
-		break;
 	}
 
 
@@ -501,7 +496,7 @@ void CCamera_Main::Select_Mode(_float fTimeDelta)
 	_vec4 vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 	_vec4 vLook = XMVectorSet(0.f, 0.f, 1.f, 0.f);
 
-	if (eState == CAMERA_STATE::CS_DEFAULT)
+	if (m_eCurrState == CAMERA_STATE::CS_DEFAULT)
 		m_pTransformCom->Rotation(_vec4(0.f, 0.f, 1.f, 0.f), m_fSelectRotation);
 	else if (m_bZoomEnd)
 		m_pTransformCom->Rotation(_vec4(0.f, 0.f, 1.f, 0.f), m_fSelectRotation);
@@ -521,8 +516,7 @@ void CCamera_Main::Custom_Mode(_float fTimeDelta)
 		m_bInitMode[CM_CUSTOM] = true;
 		return;
 	}
-	CAMERA_STATE eState = (CAMERA_STATE)m_pGameInstance->Get_CameraState();
-	switch (eState)
+	switch (m_eCurrState)
 	{
 	case CAMERA_STATE::CS_DEFAULT:
 	{
@@ -540,9 +534,9 @@ void CCamera_Main::Custom_Mode(_float fTimeDelta)
 
 		_float fLerpFactor = 0.1f;
 
-		_vec4 vTargetPos = m_pGameInstance->Get_CameraTargetPos();
+		_vec4 vTargetPos = m_pCam_Manager->Get_CameraTargetPos();
 
-		_float fZoomFactor = m_pGameInstance->Get_ZoomFactor();
+		_float fZoomFactor = m_pCam_Manager->Get_ZoomFactor();
 
 		vTargetPos.y = vTargetPos.y + 1.5f;
 		vTargetPos.z = vTargetPos.z - fZoomFactor;
@@ -563,8 +557,8 @@ void CCamera_Main::ZOOM_Mode(_float fTimeDelta)
 	_vec4 vCurLook = m_pTransformCom->Get_State(State::Look);;
 
 	_vec4 vCurrentPos = m_pTransformCom->Get_State(State::Pos);
-	_vec4 vTargetPos = m_pGameInstance->Get_CameraTargetPos();
-	_vec4 vTargetLook = m_pGameInstance->Get_CameraTargetLook();
+	_vec4 vTargetPos = m_pCam_Manager->Get_CameraTargetPos();
+	_vec4 vTargetLook = m_pCam_Manager->Get_CameraTargetLook();
 	_vec4 vPlayerRight = m_pPlayerTransform->Get_State(State::Right);
 	_vec4 vPlayerUp = m_pPlayerTransform->Get_State(State::Up);
 	_vec4 vPlayerLook = m_pPlayerTransform->Get_State(State::Look);
@@ -758,4 +752,5 @@ void CCamera_Main::Free()
 	__super::Free();
 
 	Safe_Release(m_pPlayerTransform);
+	Safe_Release(m_pCam_Manager);
 }

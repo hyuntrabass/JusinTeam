@@ -28,6 +28,8 @@ private: // CAM_MODE
 	void WorldMap_Mode(_float fTimeDelta);
 	void SkillBook_Mode(_float fTimeDelta);
 
+private:
+	class CCamera_Manager* m_pCam_Manager{ nullptr };
 
 private:
 	_int m_iRotation{ 1 };
@@ -49,6 +51,7 @@ private:
 	_float m_fMouseSensor{ 0.08f };
 	_float m_fPlayerDistance{ 4.f };
 	_bool  m_bInitMode[CAMERA_MODE::CM_END]{};
+	CAMERA_STATE m_eCurrState{};
 	CTransform* m_pPlayerTransform{ nullptr };
 
 private:

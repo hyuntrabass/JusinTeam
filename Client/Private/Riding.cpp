@@ -1,5 +1,7 @@
 #include "Riding.h"
 #include "FadeBox.h"
+#include "Camera_Manager.h"
+
 CRiding::CRiding(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -672,7 +674,7 @@ void CRiding::Tick_State(_float fTimeDelta)
 	case Client::Riding_Landing:
 		if (m_pModelCom->IsAnimationFinished(Bird_2005_Landing))
 		{
-			m_pGameInstance->Set_FlyCam(false);
+			CCamera_Manager::Get_Instance()->Set_FlyCam(false);
 
 
 			Delete_Riding();

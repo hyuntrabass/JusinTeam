@@ -1,5 +1,6 @@
 #include "WorldMap.h"
 #include "UI_Manager.h"
+#include "Camera_Manager.h"
 
 CWorldMap::CWorldMap(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -32,7 +33,7 @@ HRESULT CWorldMap::Init(void* pArg)
 
 void CWorldMap::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Get_CameraState() != CS_WORLDMAP)
+	if (CCamera_Manager::Get_Instance()->Get_CameraState() != CS_WORLDMAP)
 	{
 		return;
 	}
@@ -43,7 +44,7 @@ void CWorldMap::Tick(_float fTimeDelta)
 
 void CWorldMap::Late_Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Get_CameraState() != CS_WORLDMAP)
+	if (CCamera_Manager::Get_Instance()->Get_CameraState() != CS_WORLDMAP)
 		return;
 
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);

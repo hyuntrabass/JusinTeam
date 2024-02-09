@@ -1,4 +1,5 @@
 #include "Camera_Debug.h"
+#include "Camera_Manager.h"
 
 CCamera_Debug::CCamera_Debug(_dev pDevice, _context pContext)
 	: CCamera(pDevice, pContext)
@@ -28,12 +29,15 @@ HRESULT CCamera_Debug::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	m_pCam_Manager = CCamera_Manager::Get_Instance();
+	Safe_AddRef(m_pCam_Manager);
+
 	return S_OK;
 }
 
 void CCamera_Debug::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Get_CameraModeIndex() != CM_DEBUG)
+	if (m_pCam_Manager->Get_CameraModeIndex() != CM_DEBUG)
 	{
 		m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_pGameInstance->Get_CameraPos()));
 		m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()));
@@ -45,22 +49,28 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 #ifdef _DEBUG
 	_vector Pos = m_pTransformCom->Get_State(State::Pos);
 	_vector Look = m_pTransformCom->Get_State(State::Look);
-	//0.1<-n방향 -0.1 -0.08?? 0.05
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), COORD());
-	cout << "CamPos X :" << Pos.m128_f32[0] << endl;
-	cout << "CamPos Y :" << Pos.m128_f32[1] << endl;
-	cout << "CamPos Z :" << Pos.m128_f32[2] << endl;
-	cout << endl;
-	cout << "CamLook X :" << Look.m128_f32[0] << endl;
-	cout << "CamLook Y :" << Look.m128_f32[1] << endl;
-	cout << "CamLook Z :" << Look.m128_f32[2] << endl;
-	cout << endl;
+	m_pGameInstance->Get_StringStream() << "카메라 전환 : P" << endl;
+	m_pGameInstance->Get_StringStream() << "플레이어 소환 : O" << endl;
+	m_pGameInstance->Get_StringStream() << "슬로우 모드 : I" << endl;
+	m_pGameInstance->Get_StringStream() << "카메라 속도 초기화 : U" << endl;
+	m_pGameInstance->Get_StringStream() << "디버그 랜더 On/Off : F1" << endl;
+	m_pGameInstance->Get_StringStream() << endl;
+	m_pGameInstance->Get_StringStream() << "카메라 이동속도 :" << m_fSpeed << endl;
+	m_pGameInstance->Get_StringStream() << endl;
+	m_pGameInstance->Get_StringStream() << "카메라 위치 X :" << Pos.m128_f32[0] << endl;
+	m_pGameInstance->Get_StringStream() << "카메라 위치 Y :" << Pos.m128_f32[1] << endl;
+	m_pGameInstance->Get_StringStream() << "카메라 위치 Z :" << Pos.m128_f32[2] << endl;
+	m_pGameInstance->Get_StringStream() << endl;
+	m_pGameInstance->Get_StringStream() << "카메라 룩 X :" << Look.m128_f32[0] << endl;
+	m_pGameInstance->Get_StringStream() << "카메라 룩 Y :" << Look.m128_f32[1] << endl;
+	m_pGameInstance->Get_StringStream() << "카메라 룩 Z :" << Look.m128_f32[2] << endl;
+	m_pGameInstance->Get_StringStream() << endl;
 
 #endif // _DEBUG
 
 	if (m_pGameInstance->Key_Down(DIK_P))
 	{
-		m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
+		m_pCam_Manager->Set_CameraModeIndex(CM_MAIN);
 		if (m_bTimeStop)
 		{
 			m_bTimeStop = false;
@@ -92,6 +102,11 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 			m_bTimeStop = true;
 			m_fOriginTimeRatio = m_pGameInstance->Get_TimeRatio();
 		}
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_U))
+	{
+		m_fSpeed = { 10.f };
 	}
 
 	if (m_bTimeStop)
@@ -223,4 +238,6 @@ CGameObject* CCamera_Debug::Clone(void* pArg)
 void CCamera_Debug::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pCam_Manager);
 }

@@ -8,6 +8,8 @@
 #include "ShopDesc.h"
 #include "ShopWindow.h"
 #include "Event_Manager.h"
+#include "Camera_Manager.h"
+
 CShop::CShop(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
@@ -74,7 +76,7 @@ void CShop::Tick(_float fTimeDelta)
 		if (m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
 			dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Init_SellItem();
-			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
+			CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
 
 			CFadeBox::FADE_DESC Desc = {};
 			Desc.eState = CFadeBox::FADEOUT;
@@ -281,7 +283,7 @@ void CShop::Open_Shop()
 		{
 			return;
 		}
-		m_pGameInstance->Set_CameraState(CS_SHOP);
+		CCamera_Manager::Get_Instance()->Set_CameraState(CS_SHOP);
 		m_isActive = true;
 		Init_ShopState();
 	}

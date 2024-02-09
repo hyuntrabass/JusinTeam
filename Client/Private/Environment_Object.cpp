@@ -1,5 +1,6 @@
 #pragma once
 #include "Environment_Object.h"
+#include "Camera_Manager.h"
 
 CEnvironment_Object::CEnvironment_Object(_dev pDevice, _context pContext)
 	: CObjects(pDevice, pContext)
@@ -55,7 +56,8 @@ void CEnvironment_Object::Tick(_float fTimeDelta)
 
 void CEnvironment_Object::Late_Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Get_CameraState() == CS_SKILLBOOK or m_pGameInstance->Get_CameraState() == CS_INVEN or m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
+	CAMERA_STATE CamState = CCamera_Manager::Get_Instance()->Get_CameraState();
+	if (CamState == CS_SKILLBOOK or CamState == CS_INVEN or CamState == CS_WORLDMAP)
 	{
 		return;
 	}

@@ -69,6 +69,8 @@ using namespace physx;
 #include <filesystem>
 #include <random>
 #include <functional>
+#include <sstream>
+#include <iostream>
 
 #include "Engine_Macro.h"
 #include "Engine_Struct.h"

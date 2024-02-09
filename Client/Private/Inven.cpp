@@ -5,6 +5,8 @@
 #include "FadeBox.h"
 #include "InvenFrame.h"
 #include "Event_Manager.h"
+#include "Camera_Manager.h"
+
 CInven::CInven(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
@@ -138,7 +140,7 @@ void CInven::Tick(_float fTimeDelta)
 				return;
 			}
 
-			m_pGameInstance->Set_CameraState(CS_INVEN);
+			CCamera_Manager::Get_Instance()->Set_CameraState(CS_INVEN);
 			CUI_Manager::Get_Instance()->Set_InvenActive(true);
 			m_bNewItemIn = false;
 			m_isActive = true;
@@ -182,7 +184,7 @@ void CInven::Tick(_float fTimeDelta)
 			{
 				return;
 			}
-			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
+			CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			CUI_Manager::Get_Instance()->Set_InvenActive(false);
 			m_isActive = false;

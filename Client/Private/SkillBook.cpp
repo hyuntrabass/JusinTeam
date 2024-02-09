@@ -9,6 +9,7 @@
 #include "SkillSlot.h"
 #include "SkillBlock.h"
 #include "Skill.h"
+#include "Camera_Manager.h"
 
 CSkillBook::CSkillBook(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -142,7 +143,7 @@ void CSkillBook::Tick(_float fTimeDelta)
 			{
 				return;
 			}
-			m_pGameInstance->Set_CameraState(CS_SKILLBOOK);
+			CCamera_Manager::Get_Instance()->Set_CameraState(CS_SKILLBOOK);
 			m_bNewSkillIn = false;
 			m_isActive = true;
 			Init_SkillBookState();
@@ -185,7 +186,7 @@ void CSkillBook::Tick(_float fTimeDelta)
 			{
 				return;
 			}
-			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
+			CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
 			CUI_Manager::Get_Instance()->Set_SkillSlotChange(true);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_isActive = false;

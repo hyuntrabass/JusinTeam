@@ -6,6 +6,8 @@
 #include "HitEffect.h"
 #include "Effect_Dummy.h"
 #include "Effect_Manager.h"
+#include "Camera_Manager.h"
+#include "Trigger_Manager.h"
 
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -97,6 +99,9 @@ HRESULT CPlayer::Init(void* pArg)
 	
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER);
 	m_bReadyMove = true;
+
+	m_pCam_Manager = CCamera_Manager::Get_Instance();
+
 	return S_OK;
 }
 
@@ -108,7 +113,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		return;
 	}
 
-	if (m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
+	if (m_pCam_Manager->Get_CameraState() == CS_WORLDMAP)
 	{
 		return;
 	}
@@ -229,7 +234,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	}
 
-	if (m_pGameInstance->Get_CameraModeIndex() == CM_DEBUG)
+	if (m_pCam_Manager->Get_CameraModeIndex() == CM_DEBUG)
 	{
 		return;
 	}
@@ -321,12 +326,12 @@ void CPlayer::Tick(_float fTimeDelta)
 		Is_Climb(fTimeDelta);
 	}
 
-	if (m_pGameInstance->Get_CameraState() == CS_ZOOM && m_Animation.iAnimIndex != Anim_Talk_reaction)
+	if (m_pCam_Manager->Get_CameraState() == CS_ZOOM && m_Animation.iAnimIndex != Anim_Talk_reaction)
 	{
 		m_Animation.iAnimIndex = Anim_Talk_reaction;
 		m_Animation.isLoop = true;
 	}
-	else if (m_Animation.iAnimIndex == Anim_Talk_reaction && m_pGameInstance->Get_CameraState() != CS_ZOOM)
+	else if (m_Animation.iAnimIndex == Anim_Talk_reaction && m_pCam_Manager->Get_CameraState() != CS_ZOOM)
 	{
 		m_eState = Idle;
 	}
@@ -455,7 +460,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		m_pBaseEffect->Late_Tick(fTimeDelta);
 	}
 
-	if (m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
+	if (m_pCam_Manager->Get_CameraState() == CS_WORLDMAP)
 	{
 		return;
 	}
@@ -1049,7 +1054,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 
 	if (m_eState == Aim_Idle or m_eState == SkillR)
 	{
-		m_pGameInstance->Set_AimMode(false);
+		m_pCam_Manager->Set_AimMode(false);
 	}
 	if (m_pEffect_Shield)
 	{
@@ -1421,11 +1426,11 @@ void CPlayer::Move(_float fTimeDelta)
 
 				if (m_bLockOn)
 				{
-					m_pGameInstance->Set_AimMode(true);
+					m_pCam_Manager->Set_AimMode(true);
 				}
 				else
 				{
-					m_pGameInstance->Set_AimMode(false);
+					m_pCam_Manager->Set_AimMode(false);
 				}
 				/*if (m_eState == Idle)
 				{
@@ -1725,13 +1730,13 @@ void CPlayer::Move(_float fTimeDelta)
 	if (m_iCurrentSkill_Index == 0 && m_fAttTimer > 1.0f)
 	{
 		_float fZoom = Lerp(m_fAttackZoom, 0.f, m_ReturnZoomTime);
-		m_pGameInstance->Set_CameraAttackZoom(fZoom);
+		m_pCam_Manager->Set_CameraAttackZoom(fZoom);
 
 	}
 	else if (m_iCurrentSkill_Index != 0 && m_fSkiilTimer > 1.0f)
 	{
 		_float fZoom = Lerp(m_fAttackZoom, 0.f, m_ReturnZoomTime);
-		m_pGameInstance->Set_CameraAttackZoom(fZoom);
+		m_pCam_Manager->Set_CameraAttackZoom(fZoom);
 
 	}
 
@@ -2195,7 +2200,7 @@ void CPlayer::Cam_AttackZoom(_float fZoom)
 
 
 
-	m_pGameInstance->Set_CameraAttackZoom(m_fAttackZoom);
+	m_pCam_Manager->Set_CameraAttackZoom(m_fAttackZoom);
 
 	m_ReturnZoomTime = 0.f;
 
@@ -2367,7 +2372,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						{
 							m_pGameInstance->Set_TimeRatio(0.7f);
 							m_bAttacked = true;
-							m_pGameInstance->Set_ShakeCam(true);
+							m_pCam_Manager->Set_ShakeCam(true);
 						}
 					}
 				}
@@ -2396,7 +2401,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						{
 							m_pGameInstance->Set_TimeRatio(0.7f);
 							m_bAttacked = true;
-							m_pGameInstance->Set_ShakeCam(true);
+							m_pCam_Manager->Set_ShakeCam(true);
 						}			
 						m_fAttTimer = 0.45f;
 
@@ -2427,7 +2432,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						{
 							m_pGameInstance->Set_TimeRatio(0.7f);
 							m_bAttacked = true;
-							m_pGameInstance->Set_ShakeCam(true);
+							m_pCam_Manager->Set_ShakeCam(true);
 						}
 					}
 				}
@@ -2455,7 +2460,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						{
 							m_pGameInstance->Set_TimeRatio(0.2f);
 							m_bAttacked = true;
-							m_pGameInstance->Set_ShakeCam(true);
+							m_pCam_Manager->Set_ShakeCam(true);
 						}
 					}
 				}
@@ -2499,7 +2504,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					m_pGameInstance->Set_TimeRatio(0.4f);
 					m_bAttacked = true;
-					m_pGameInstance->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true);
 
 				}
 			}
@@ -2517,7 +2522,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					m_pGameInstance->Set_TimeRatio(0.4f);
 					m_bAttacked = true;
-					m_pGameInstance->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true);
 				}
 
 			}
@@ -2551,7 +2556,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					m_pGameInstance->Set_TimeRatio(0.4f);
 					m_bAttacked = true;
-					m_pGameInstance->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true);
 					m_fSkillSpeed = 3.f;
 				}
 			}
@@ -2572,7 +2577,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					m_pGameInstance->Set_TimeRatio(0.4f);
 					m_bAttacked = true;
 					m_fSkillSpeed = 3.f;
-					m_pGameInstance->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true);
 				}
 
 			}
@@ -2591,7 +2596,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					m_pGameInstance->Set_TimeRatio(0.4f);
 					m_bAttacked = true;
 					m_fSkillSpeed = 3.f;
-					m_pGameInstance->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true);
 				}
 
 			}
@@ -2610,7 +2615,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					m_pGameInstance->Set_TimeRatio(0.4f);
 					m_bAttacked = true;
 					m_fSkillSpeed = 3.f;
-					m_pGameInstance->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true);
 				}
 
 			}
@@ -2651,7 +2656,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					m_pGameInstance->Set_TimeRatio(0.2f);
 					m_bAttacked = true;
-					m_pGameInstance->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true);
 				}
 
 			}
@@ -2671,7 +2676,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					m_pGameInstance->Set_TimeRatio(0.2f);
 					m_bAttacked = true;
-					m_pGameInstance->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true);
 				}
 
 			}
@@ -2730,15 +2735,15 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			
 			}
 
-			if (!m_pGameInstance->Get_AimMode())
+			if (!m_pCam_Manager->Get_AimMode())
 			{
 				m_SaveCamPos = m_pCameraTransform->Get_State(State::Pos);
 				m_SaveCamLook = m_pCameraTransform->Get_State(State::Look);
 			}
 
-			m_pGameInstance->Set_AimMode(true, _vec3(-1.f, 2.f, 1.f));
+			m_pCam_Manager->Set_AimMode(true, _vec3(-1.f, 2.f, 1.f));
 
-			m_pGameInstance->Set_ShakeCam(true);
+			m_pCam_Manager->Set_ShakeCam(true);
 		}
 		else if (Index >= 18.f && Index <= 24.f)
 		{
@@ -2755,9 +2760,9 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				}
 			}
 
-			m_pGameInstance->Set_AimMode(true, _vec3(1.f, 2.f, 1.f));
+			m_pCam_Manager->Set_AimMode(true, _vec3(1.f, 2.f, 1.f));
 			m_pCameraTransform->LookAt(m_pTransformCom->Get_CenterPos());
-			m_pGameInstance->Set_ShakeCam(true);
+			m_pCam_Manager->Set_ShakeCam(true);
 		}
 		else if (Index >= 33.f && Index <= 34.f)
 		{
@@ -2785,8 +2790,8 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				}
 			}
 
-			m_pGameInstance->Set_AimMode(false);
-			m_pGameInstance->Set_ShakeCam(true);
+			m_pCam_Manager->Set_AimMode(false);
+			m_pCam_Manager->Set_ShakeCam(true);
 
 			Cam_AttackZoom(4.f);
 
@@ -2806,7 +2811,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				}
 			}
 
-			m_pGameInstance->Set_ShakeCam(true);
+			m_pCam_Manager->Set_ShakeCam(true);
 			Cam_AttackZoom(5.f);
 		}
 		else if (Index > 40.f)
@@ -2820,7 +2825,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		}
 		else
 		{
-			m_pGameInstance->Set_AimMode(false);
+			m_pCam_Manager->Set_AimMode(false);
 		}
 	}
 
@@ -2845,7 +2850,7 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		{
 			if (!m_bLockOn)
 			{
-				m_pGameInstance->Set_AimMode(true, _vec3(0.5f, 1.1f, 1.7f));
+				m_pCam_Manager->Set_AimMode(true, _vec3(0.5f, 1.1f, 1.7f));
 			}
 		}
 		if (Index >= 16.f && Index <= 19.f && m_ReadyArrow)
@@ -2876,7 +2881,7 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		{
 			if (!m_bLockOn)
 			{
-				m_pGameInstance->Set_AimMode(false);
+				m_pCam_Manager->Set_AimMode(false);
 			}
 		}
 	}
@@ -2903,7 +2908,7 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		}
 		else if (Index >= 44.f && Index <= 45.f)
 		{
-			m_pGameInstance->Set_ShakeCam(true);
+			m_pCam_Manager->Set_ShakeCam(true);
 
 		}
 		else
@@ -2945,7 +2950,7 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		}
 		if (Index >= 26.f && Index <= 27.f)
 		{
-			m_pGameInstance->Set_ShakeCam(true);
+			m_pCam_Manager->Set_ShakeCam(true);
 			m_pGameInstance->Set_TimeRatio(0.1f);
 			m_UsingMotionBlur = true;
 		}
@@ -2961,7 +2966,7 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		{
 			Create_Arrow(AT_Bow_SkillR);
 			Cam_AttackZoom(2.f);
-			m_pGameInstance->Set_ShakeCam(true, 0.1f);
+			m_pCam_Manager->Set_ShakeCam(true, 0.1f);
 		}
 	}
 
@@ -3092,7 +3097,7 @@ void CPlayer::Summon_Riding(Riding_Type Type)
 
 	if (Type == Bird)
 	{
-		m_pGameInstance->Set_FlyCam(true);
+		m_pCam_Manager->Set_FlyCam(true);
 	}
 
 
@@ -3130,10 +3135,10 @@ void CPlayer::Tick_Riding(_float fTimeDelta)
 		{
 			Safe_Release(m_pRiding);
 			m_bIsMount = false;
-			m_pGameInstance->Set_FlyCam(false);
+			m_pCam_Manager->Set_FlyCam(false);
 			if (m_pTransformCom->Get_CenterPos().x > 1500.f)
 			{
-				m_pGameInstance->Set_GoHome(true);
+				CTrigger_Manager::Get_Instance()->Teleport(TS_Village);
 				for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 				{
 					if (m_pGameInstance->Get_IsLoopingSound(i))
@@ -3146,7 +3151,7 @@ void CPlayer::Tick_Riding(_float fTimeDelta)
 			}
 			else
 			{
-				m_pGameInstance->Set_GoDungeon(true);
+				CTrigger_Manager::Get_Instance()->Teleport(TS_Dungeon);
 				for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 				{
 					if (m_pGameInstance->Get_IsLoopingSound(i))
@@ -3926,7 +3931,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 void CPlayer::Update_Trail(_float fTimeDelta)
 {
 	_mat _Matrix{};
-	if (m_pGameInstance->Get_CameraModeIndex() == CM_MAIN)
+	if (m_pCam_Manager->Get_CameraModeIndex() == CM_MAIN)
 	{
 		if (m_pLeft_Trail != nullptr)
 		{

@@ -166,6 +166,18 @@ public: // Sound Manager
 	HRESULT FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond = 1.f, _bool IsReusable = true, _float fFadeSoundRatio = 0.f);
 	HRESULT FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond = 1.f, _float fFadeSoundRatio = 1.f);
 
+	// 사운드 채널이 재생중인지를 반환 함.
+	_bool Get_IsPlayingSound(_uint iChannel);
+	// 사운드 채널의 볼륨을 반환 함.
+	_float Get_ChannelVolume(_uint iChannel);
+	// 사운드 채널이 루프중인지를 반환 함.
+	_bool Get_IsLoopingSound(_uint iChannel);
+
+	// 사운드 채널의 볼륨을 지정함.
+	void Set_ChannelVolume(_uint iChannel, _float fVolume);
+	// 사운드 채널의 볼륨을 초기 볼륨으로 되돌림.
+	void Set_ChannelStartVolume(_uint iChannel);
+
 public: // Effect Callback
 	using Func_CreateFX = function<void(const wstring&, _mat*, const _bool&)>;
 	using Func_DeleteFX = function<void(const void*)>;
@@ -199,8 +211,6 @@ public: // Cascade Mananger
 	CASCADE_DESC Get_CascadeDesc();
 
 public: // Get_Set
-	// 현재 카메라가 메인 카메라인지 디버그 카메라인지 반환함. client define에 이넘 있음.
-	const _uint& Get_CameraModeIndex() const;
 	// 카메라의 near와 far를 반환 함. x가 near, y가 far.
 	const _float2& Get_CameraNF() const;
 	// 현재 레벨을 반환함. client define에 이넘 있음.
@@ -211,19 +221,13 @@ public: // Get_Set
 	const _float2& Get_FogNF() const;
 	// 현재 안개의 색을 반환 함.
 	const _color& Get_FogColor() const;
-	// 카메라에서 쉐이킹 해야되는지 받는 함수.
-	const _bool& Get_ShakeCam() const;
 	// 지옥이 시작되는 높이를 반환 함. (일정 높이부터 내려갈 수록 어두워지는걸 hell이라고 해놨음.)
 	const _float& Get_HellHeight() const;
-	// 사운드 채널이 재생중인지를 반환 함.
-	_bool Get_IsPlayingSound(_uint iChannel);
-	// 사운드 채널의 볼륨을 반환 함.
-	_float Get_ChannelVolume(_uint iChannel);
-	// 사운드 채널이 루프중인지를 반환 함.
-	_bool Get_IsLoopingSound(_uint iChannel);
+#ifdef _DEBUG
+	// 콘솔에 출력할 스트림을 가져옴.
+	ostringstream& Get_StringStream();
+#endif
 
-	// 카메라 모드를 지정함. 카메라에서 말고는 쓰지 말것.
-	void Set_CameraModeIndex(const _uint& iIndex);
 	// 카메라의 near, far를 지정함. 이것도 카메라에서만 호출 할것.
 	void Set_CameraNF(const _float2& vCamNF);
 	// 현재 레벨을 지정함. 각 레벨의 Init()함수에 넣어주세요.
@@ -234,50 +238,20 @@ public: // Get_Set
 	void Set_FogNF(const _float2& vFogNF);
 	// 안개의 색을 정함.
 	void Set_FogColor(const _color& vFogColor);
-	// 카메라 쉐이크 기능. true 던지면 카메라가 한번 흔들림.
-	void Set_ShakeCam(const _bool& bShake, _float fShakePower = 0.1f);
 	// hell 높이를 지정한다.
 	void Set_HellHeight(const _float& fHeight);
-	// 사운드 채널의 볼륨을 지정함.
-	void Set_ChannelVolume(_uint iChannel, _float fVolume);
-	// 사운드 채널의 볼륨을 초기 볼륨으로 되돌림.
-	void Set_ChannelStartVolume(_uint iChannel);
 
-	_float Get_ShakePower() { return m_fShakePower; }
-	_bool Get_FlyCam() { return m_bFlyCam; }
-	void Set_ZoomFactor(const _float fFactor);
-	void Set_CameraState(const _uint& iIndex);
-	void Set_CameraTargetPos(const _vec4& vPos);
-	void Set_CameraTargetLook(const _vec4& vLook);
-	void Set_Have_TargetLook(const _bool& bHaveLook);
-	void Set_AimMode(_bool Aim, _vec3 AimPos = _vec3(0.6f, 1.7f, 1.4f));
 	void Set_InputString(const wstring& strInput);
-	void Set_FlyCam(_bool Fly) { m_bFlyCam = Fly; }
 
-	void Set_CameraAttackZoom(_float fAttackZoom) { m_fCameraAttackZoom = fAttackZoom; }
-	const _float& Get_CameraAttackZoom() { return m_fCameraAttackZoom; }
-	const _uint& Get_CameraState()  const;
-	const _float& Get_ZoomFactor() const;
-	const _vec4& Get_CameraTargetPos() const;
-	const _vec4& Get_CameraTargetLook();
-	const _bool& Have_TargetLook() const;
-	const _vec3& Get_AimPos() { return m_AimPos; }
-	const _bool& Get_AimMode() { return m_AimMode; }
+	//void Set_CameraAttackZoom(_float fAttackZoom) { m_fCameraAttackZoom = fAttackZoom; }
+	//const _float& Get_CameraAttackZoom() { return m_fCameraAttackZoom; }
 	const _bool& IsSkipDebugRendering() const;
 	const wstring& Get_InputString() const;
 
 public:
-	void Initialize_Level(_uint iLevelNum);
 	void Level_ShutDown(_uint iCurrentLevel);
 	_bool Is_Level_ShutDown(_uint iCurrentLevel);
 
-
-public:
-	void Set_GoHome(_bool GoHome) { m_bGoHome = GoHome; }
-	void Set_GoDungeon(_bool GoDungeon) { m_bGoDungeon = GoDungeon; }
-
-	_bool Get_GoHome() { return m_bGoHome; }
-	_bool Get_GoDungeon() { return m_bGoDungeon; }
 private:
 	class CGraphic_Device* m_pGraphic_Device{ nullptr };
 
@@ -303,35 +277,20 @@ private:
 	class CCascade_Manager* m_pCascade_Manager{ nullptr };
 
 private:
-	_uint m_iCameraState{};
-	_uint m_iCameraModeIndex{};
 	_uint m_iLevelIndex{};
 	_float m_fTimeRatio{ 1.f };
-	_float m_fZoomFactor{ 3.f };
 	_float2 m_vCameraNF{};
-	_float m_fCameraAttackZoom{};
 	_float2 m_vFogNF{ 2000.f, 2000.f };
 	_color m_vFogColor{ 0.9f };
-	_bool m_bShakeCamera{};
-	_bool m_bTargetLook{ false };
 	_float m_fHellHeight{ -1000.f };
-	_vec4 m_vTarget{};
-	_vec4 m_vTargetLook{};
-	_bool m_AimMode{};
-	_float m_fShakePower{};
-	_vec3 m_AimPos{};
 	_bool m_bSkipDebugRender{ true };
 	wstring m_strInput{};
-	_bool m_bFlyCam{};
-	_bool m_bGoHome{};
-	_bool m_bGoDungeon{};
-	_bool m_isPlayingVideo{};
-	_float m_fVideoTimmer{};
-	_float m_fVideoDuration{};
-	_bool m_bVideoAfterSkip{};
-	_bool m_bReady_NextLevel{};
+#ifdef _DEBUG
+	ostringstream m_OutputStream{};
+#endif
+
 private:
-	vector<_bool> m_vecLevelInvalid;
+	vector<_bool> m_vecLevelInvalid{};
 
 private:
 	Func_CreateFX m_Function_Create_FX{};
@@ -345,6 +304,9 @@ public:
 	static void Release_Engine();
 
 private:
+#ifdef _DEBUG
+	void Print_StringStream();
+#endif
 	void Clear_Managers();
 
 public:

@@ -1,5 +1,7 @@
 #include "Camera_CutScene.h"
+#include "Camera_Manager.h"
 //#include "Trigger_Manager.h"
+
 CCamera_CutScene::CCamera_CutScene(_dev pDevice, _context pContext)
 	: CCamera(pDevice, pContext)
 {
@@ -32,18 +34,21 @@ HRESULT CCamera_CutScene::Init(void* pArg)
 	m_fTimeDeltaAcc = 0.f;
 	m_iLastFrame = 0;
 
+	m_pCam_Manager = CCamera_Manager::Get_Instance();
+	Safe_AddRef(m_pCam_Manager);
+
 	return S_OK;
 }
 
 void CCamera_CutScene::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Get_CameraModeIndex() != CM_CUTSCENE)
+	if (m_pCam_Manager->Get_CameraModeIndex() != CM_CUTSCENE)
 	{
 		return;
 	}
 	if (m_pGameInstance->Key_Down(DIK_L))
 	{
-		m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
+		m_pCam_Manager->Set_CameraModeIndex(CM_MAIN);
 	}
 	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
 
@@ -176,7 +181,7 @@ void CCamera_CutScene::Play_Camera(_float fTimeDelta)
 				{
 					m_CameraEyeList.clear();
 				}
-				m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
+				m_pCam_Manager->Set_CameraModeIndex(CM_MAIN);
 			}
 		}
 	}
@@ -336,6 +341,7 @@ void CCamera_CutScene::Free()
 
 	//Safe_Release(m_pEyeCurve);
 	//Safe_Release(m_pAtCurve);
-	if (m_pTrigger_Manager)
-		Safe_Release(m_pTrigger_Manager);
+	Safe_Release(m_pTrigger_Manager);
+
+	Safe_Release(m_pCam_Manager);
 }

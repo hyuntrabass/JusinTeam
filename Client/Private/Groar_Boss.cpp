@@ -11,6 +11,7 @@
 #include "Trigger_Manager.h"
 #include "HitEffect.h"
 #include "FadeBox.h"
+#include "Camera_Manager.h"
 
 const _float CGroar_Boss::m_fChaseRange = 10.f;
 const _float CGroar_Boss::m_fAttackRange = 6.f;
@@ -544,7 +545,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 95.f && m_pBossModelCom->Get_CurrentAnimPos() <= 175.f)
 		{
-			m_pGameInstance->Set_ShakeCam(true, 0.5f);
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 0.5f);
 			m_pGameInstance->FadeoutSound(0, fTimeDelta, 1.f, false);
 		}
 
@@ -752,7 +753,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 99.f && m_pBossModelCom->Get_CurrentAnimPos() <= 110.f)
 		{
-			m_pGameInstance->Set_ShakeCam(true);
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true);
 		}
 
 		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK02))
@@ -767,7 +768,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 69.f && m_pBossModelCom->Get_CurrentAnimPos() <= 72.f)
 		{
-			m_pGameInstance->Set_ShakeCam(true);
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true);
 
 			if (fDistance <= 7.5f)
 			{
@@ -782,7 +783,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 97.f && m_pBossModelCom->Get_CurrentAnimPos() <= 100.f)
 		{
-			m_pGameInstance->Set_ShakeCam(true);
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true);
 
 			if (fDistance <= 7.5f)
 			{
@@ -797,7 +798,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 135.f && m_pBossModelCom->Get_CurrentAnimPos() <= 138.f)
 		{
-			m_pGameInstance->Set_ShakeCam(true);
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true);
 
 			if (fDistance <= 7.5f)
 			{
@@ -876,7 +877,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 108.f && m_pBossModelCom->Get_CurrentAnimPos() <= 115.f)
 		{
-			m_pGameInstance->Set_ShakeCam(true);
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true);
 		}
 
 		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK07))
@@ -892,7 +893,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 95.f && m_pBossModelCom->Get_CurrentAnimPos() <= 175.f)
 		{
-			m_pGameInstance->Set_ShakeCam(true, 0.5f);
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 0.5f);
 		}
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 98.f)
@@ -1111,7 +1112,7 @@ void CGroar_Boss::NPC_Tick(_float fTimeDelta)
 		{
 			if (m_eState != NPC_TALK)
 			{
-				m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
+				CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
 				CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 				m_bTalking = false;
 				return;
@@ -1131,12 +1132,12 @@ void CGroar_Boss::NPC_Tick(_float fTimeDelta)
 	if (!m_bTalking && isColl && m_pGameInstance->Key_Down(DIK_E))
 	{
 		m_pArrow->Set_Position(_vec2(1100.f, 600.f));
-		m_pGameInstance->Set_CameraState(CS_ZOOM);
+		CCamera_Manager::Get_Instance()->Set_CameraState(CS_ZOOM);
 		_vec4 vLook = m_pTransformCom->Get_State(State::Look);
 		vLook.Normalize();
 		_vec4 vTargetPos = m_pTransformCom->Get_State(State::Pos);
-		m_pGameInstance->Set_CameraTargetPos(vTargetPos);
-		m_pGameInstance->Set_CameraTargetLook(vLook);
+		CCamera_Manager::Get_Instance()->Set_CameraTargetPos(vTargetPos);
+		CCamera_Manager::Get_Instance()->Set_CameraTargetLook(vLook);
 		if (m_eState == NPC_QUEST)
 		{
 			if (!CEvent_Manager::Get_Instance()->Find_Quest(m_strQuestOngoing))
@@ -1244,7 +1245,7 @@ void CGroar_Boss::Set_Text(GROAR_NPCSTATE eState)
 		wstring strText = m_vecDialog.front();
 		if (strText == TEXT("END"))
 		{
-			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
+			CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_bTalking = false;
 			m_eState = NPC_END;
@@ -1253,7 +1254,7 @@ void CGroar_Boss::Set_Text(GROAR_NPCSTATE eState)
 
 		if (strText[0] == L'!')
 		{
-			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
+			CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_bTalking = false;
 			wstring strQuest = strText.substr(1, strText.length());
