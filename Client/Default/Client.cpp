@@ -95,7 +95,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		if (fTimeAcc > 1.f / 60.f)
 		{
 			pMainApp->Tick(pGameInstance->Compute_TimeDelta(TEXT("Timer_60")));
-			if (not pGameInstance->Is_VideoPlaying())
+			if (not pGameInstance->Is_Playing_Video())
 			{
 				pMainApp->Render();
 			}

@@ -10,6 +10,7 @@
 #include "Collision_Manager.h"
 #include "RenderTarget_Manager.h"
 #include "Cascade_Manager.h"
+#include "Video_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance);
 
@@ -103,6 +104,12 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 		return E_FAIL;
 	}
 
+	m_pVideo_Manager = CVideo_Manager::Create(GraphicDesc.hWnd, _uint2(GraphicDesc.iWinSizeX, GraphicDesc.iWinSizeY));
+	if (!m_pVideo_Manager)
+	{
+		return E_FAIL;
+	}
+
 	m_pCascade_Manager = CCascade_Manager::Create(*ppDevice, *ppContext);
 	if (!m_pCascade_Manager) {
 		return E_FAIL;
@@ -122,22 +129,6 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 		MSG_BOX("FATAL ERROR : m_pObject_Manager is NULL");
 	}
 
-	if (m_isPlayingVideo)
-	{
-		m_fVideoTimmer += fTimeDelta;
-		if (m_fVideoTimmer > m_fVideoDuration)
-		{
-			m_isPlayingVideo = false;
-			if (m_bVideoAfterSkip)
-			{
-				m_bReady_NextLevel = true;
-				m_bVideoAfterSkip = false;
-			}
-			
-		}
-		return;
-	}
-
 	m_pInput_Manager->Update_InputDev();
 
 	if (Key_Down(DIK_F1, InputChannel::Engine))
@@ -150,6 +141,11 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 		{
 			m_bSkipDebugRender = true;
 		}
+	}
+
+	if (Is_Playing_Video())
+	{
+		return;
 	}
 
 	m_pLevel_Manager->Tick(fTimeDelta);
@@ -1204,6 +1200,46 @@ _bool CGameInstance::Has_Created_Effect(const void* pMatrixKey)
 	return m_Function_HasCreated(pMatrixKey);
 }
 
+HRESULT CGameInstance::Play_Video(const wstring& strVideoFilePath)
+{
+	if (!m_pVideo_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pVideo_Manager is NULL");
+	}
+
+	return m_pVideo_Manager->Play_Video(strVideoFilePath);
+}
+
+void CGameInstance::Stop_Video()
+{
+	if (!m_pVideo_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pVideo_Manager is NULL");
+	}
+
+	return m_pVideo_Manager->Stop_Video();
+}
+
+const _bool CGameInstance::Is_Playing_Video()
+{
+	if (!m_pVideo_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pVideo_Manager is NULL");
+	}
+
+	return m_pVideo_Manager->Is_Playing_Video();
+}
+
+void CGameInstance::Set_StopKey(_ubyte iKey)
+{
+	if (!m_pVideo_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pVideo_Manager is NULL");
+	}
+
+	return m_pVideo_Manager->Set_StopKey(iKey);
+}
+
 CASCADE_DESC CGameInstance::Get_CascadeDesc()
 {
 	if (not m_pCascade_Manager) {
@@ -1414,14 +1450,6 @@ const _bool& CGameInstance::IsSkipDebugRendering() const
 const wstring& CGameInstance::Get_InputString() const
 {
 	return m_strInput;
-}
-
-void CGameInstance::Video_Start(_float fVideoDuration ,_bool bSkip)
-{
-	m_fVideoDuration = fVideoDuration;
-	m_isPlayingVideo = true;
-	m_bVideoAfterSkip = bSkip;
-	m_fVideoTimmer = 0.f;
 }
 
 void CGameInstance::Initialize_Level(_uint iLevelNum)

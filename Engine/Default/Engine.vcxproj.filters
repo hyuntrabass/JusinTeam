@@ -208,6 +208,9 @@
     <Filter Include="01.Utility\03.Components\VIBuffer\Curve">
       <UniqueIdentifier>{eb38c04f-f1e6-4935-839c-1b0accdb7d87}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\13.Video">
+      <UniqueIdentifier>{7883a1cc-13fd-45ae-acaa-e0252c30eb13}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -401,6 +404,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Curve.cpp">
       <Filter>01.Utility\03.Components\VIBuffer\Curve</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Video_Manager.cpp">
+      <Filter>01.Utility\13.Video</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -602,6 +608,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Curve.h">
       <Filter>01.Utility\03.Components\VIBuffer\Curve</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Video_Manager.h">
+      <Filter>01.Utility\13.Video</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

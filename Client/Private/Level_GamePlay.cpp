@@ -144,25 +144,8 @@ HRESULT CLevel_GamePlay::Init()
 	}
 	*/
 
-	m_DC = GetDC(g_hWnd);
-
-	m_BackDC = CreateCompatibleDC(m_DC);
-
-	m_hBackBit = CreateCompatibleBitmap(m_DC, g_iWinSizeX, g_iWinSizeY);
-
-	m_hOldBackBit = (HBITMAP)SelectObject(m_BackDC, m_hBackBit);
-
-	m_hVideo = MCIWndCreate(g_hWnd, NULL, WS_CHILD | WS_VISIBLE | MCIWNDF_NOPLAYBAR
-		, L"../Bin/Resources/Video/Tutorial0.wmv");
-
-	MCIWndSetVolume(g_hWnd, 1.f);
-
-	MoveWindow(m_hVideo, 0, 0, g_iWinSizeX, g_iWinSizeY, FALSE);
-
-	MCIWndPlay(m_hVideo);
-
-	m_pGameInstance->Video_Start(35.f);
-	
+	m_pGameInstance->Play_Video(TEXT("Tutorial0.wmv"));
+	m_pGameInstance->Set_StopKey(DIK_RETURN);
 
 	return S_OK;
 }
@@ -182,11 +165,6 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 			}
 		}
 		m_bReadyTutorial = true;
-		MCIWndClose(m_hVideo);
-		SelectObject(m_BackDC, m_hOldBackBit); //DC에 원래 설정을 돌려줍니다.
-		DeleteDC(m_BackDC);  // 메모리를 반환합니다.
-		DeleteObject(m_hBackBit); // 메모리를 반환합니다.
-		ReleaseDC(g_hWnd, m_DC); // 윈도우에 DC 해제를 요청합니다.
 	}
 
 	
@@ -268,23 +246,13 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 
 	m_fWaveTimer += fTimeDelta;
 
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD9) or m_pGameInstance->Key_Down(DIK_PRIOR))
+	if (m_pGameInstance->Is_Level_ShutDown(LEVEL_GAMEPLAY) or m_pGameInstance->Key_Down(DIK_NUMPAD9) or m_pGameInstance->Key_Down(DIK_PRIOR))
 	{
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_VILLAGE))))
 		{
 			return;
 		}
 
-		return;
-	}
-
-	if (m_pGameInstance->Ready_NextLevel())
-	{
-		m_pGameInstance->Set_NextLevel(false);
-		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_VILLAGE))))
-		{
-			return;
-		}
 		return;
 	}
 

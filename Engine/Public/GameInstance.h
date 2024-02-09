@@ -184,6 +184,13 @@ public: // Effect Callback
 	void Delete_Effect(const void* pMatrix);
 	_bool Has_Created_Effect(const void* pMatrixKey);
 
+public: // Video Manager
+	HRESULT Play_Video(const wstring& strVideoFilePath);
+	void Stop_Video();
+	const _bool Is_Playing_Video();
+
+	void Set_StopKey(_ubyte iKey);
+
 public: // Cascade Mananger
 	CASCADE_DESC Get_CascadeDesc();
 
@@ -257,10 +264,6 @@ public: // Get_Set
 	const _bool& IsSkipDebugRendering() const;
 	const wstring& Get_InputString() const;
 
-	void Video_Start(_float fVideoDuration, _bool bSkip = false);
-	_bool Is_VideoPlaying() { return m_isPlayingVideo; }
-	_bool Ready_NextLevel() { return m_bReady_NextLevel; }
-	void Set_NextLevel(_bool NextLevel) { m_bReady_NextLevel = NextLevel; }
 public:
 	void Initialize_Level(_uint iLevelNum);
 	void Level_ShutDown(_uint iCurrentLevel);
@@ -292,6 +295,7 @@ private:
 	class CPipeLine* m_pPipeLine{ nullptr };
 	class CPicking* m_pPicking{ nullptr };
 	class CPhysX_Manager* m_pPhysX_Manager{ nullptr };
+	class CVideo_Manager* m_pVideo_Manager{ nullptr };
 
 	// ¿ø¸í
 	class CCascade_Manager* m_pCascade_Manager{ nullptr };

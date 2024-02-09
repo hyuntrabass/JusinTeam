@@ -39,11 +39,8 @@ private:
 
 private:
 	DEAD_MONSTER m_eDead = { DEAD_END };
-	HWND m_hVideo;
-	HDC m_DC;
-	HDC m_BackDC;
-	HBITMAP m_hBackBit;
-	HBITMAP m_hOldBackBit;
+	_bool m_hasVideoStarted{};
+
 public:
 	static CDead* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
