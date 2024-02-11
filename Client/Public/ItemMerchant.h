@@ -32,6 +32,7 @@ public:
 private:
 	_bool		m_bTalking = { false };
 	_bool		m_isColl = { false };
+	_bool		m_isFadeReady{};
 
 	CShop*		m_pShop{ nullptr };
 	C3DUITex*	m_pSpeechBubble{ nullptr };

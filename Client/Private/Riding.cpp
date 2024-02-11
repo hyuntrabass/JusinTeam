@@ -1,5 +1,5 @@
 #include "Riding.h"
-#include "FadeBox.h"
+#include "UI_Manager.h"
 #include "Camera_Manager.h"
 
 CRiding::CRiding(_dev pDevice, _context pContext)
@@ -168,12 +168,8 @@ void CRiding::Tick(_float fTimeDelta)
 			else if (Index >= 95.f)
 			{
 				CFadeBox::FADE_DESC Desc = {};
-				Desc.eState = CFadeBox::FADEOUT;
-				Desc.fDuration = 1.5f;
-				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
-				{
-					return;
-				}
+				Desc.fOut_Duration = 1.5f;
+				CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
 
 				m_bDelete = true;
 
@@ -184,12 +180,8 @@ void CRiding::Tick(_float fTimeDelta)
 			if (Index >= 1.f && !m_hasJumped)
 			{
 				CFadeBox::FADE_DESC Desc = {};
-				Desc.eState = CFadeBox::FADEOUT;
-				Desc.fDuration = 0.7f;
-				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
-				{
-					return;
-				}
+				Desc.fOut_Duration = 0.7f;
+				CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
 				m_hasJumped = true;
 			}
 		}
@@ -679,12 +671,8 @@ void CRiding::Tick_State(_float fTimeDelta)
 
 			Delete_Riding();
 			CFadeBox::FADE_DESC Desc = {};
-			Desc.eState = CFadeBox::FADEOUT;
-			Desc.fDuration = 1.f;
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
-			{
-				return;
-			}
+			Desc.fOut_Duration = 1.f;
+			CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
 		}
 		break;
 	case Client::Riding_Idle:

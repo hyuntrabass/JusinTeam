@@ -137,12 +137,9 @@ void CSkillBook::Tick(_float fTimeDelta)
 			LightDesc->vSpecular = _vec4(1.f);
 
 			CFadeBox::FADE_DESC Desc = {};
-			Desc.eState = CFadeBox::FADEOUT;
-			Desc.fDuration = 0.8f;
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
-			{
-				return;
-			}
+			Desc.fOut_Duration = 0.8f;
+			CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
+
 			CCamera_Manager::Get_Instance()->Set_CameraState(CS_SKILLBOOK);
 			m_bNewSkillIn = false;
 			m_isActive = true;
@@ -180,12 +177,9 @@ void CSkillBook::Tick(_float fTimeDelta)
 				*LightDesc = m_Light_Desc;
 			}
 			CFadeBox::FADE_DESC Desc = {};
-			Desc.eState = CFadeBox::FADEOUT;
-			Desc.fDuration = 0.8f;
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
-			{
-				return;
-			}
+			Desc.fOut_Duration = 0.8f;
+			CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
+
 			CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
 			CUI_Manager::Get_Instance()->Set_SkillSlotChange(true);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);

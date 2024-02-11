@@ -98,6 +98,7 @@ HRESULT CCamera_CutScene::Add_Eye_Curve(_mat matPoints, _float fCurveSpeed)
 	m_pEyeCurve->Set_SectionSpeed(fCurveSpeed);
 	m_pEyeCurve->Set_ControlPoints(matPoints);
 	m_CameraEyeList.push_back(static_cast<CCutScene_Curve*>(m_pEyeCurve));
+	Safe_AddRef(m_pEyeCurve);
 	m_pEyeCurve = nullptr;
 	return S_OK;
 }
@@ -122,6 +123,7 @@ HRESULT CCamera_CutScene::Add_At_Curve(_mat matPoints)
 	m_pAtCurve->Set_SectionSpeed(5.f);
 	m_pAtCurve->Set_ControlPoints(matPoints);
 	m_CameraAtList.push_back(static_cast<CCutScene_Curve*>(m_pAtCurve));
+	Safe_AddRef(m_pAtCurve);
 	m_pAtCurve = nullptr;
 
 	return S_OK;

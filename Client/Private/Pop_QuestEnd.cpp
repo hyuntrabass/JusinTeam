@@ -2,7 +2,6 @@
 #include "GameInstance.h"
 #include "TextButton.h"
 #include "BlurTexture.h"
-#include "FadeBox.h"
 #include "UI_Manager.h"
 
 CPop_QuestEnd::CPop_QuestEnd(_dev pDevice, _context pContext)
@@ -213,9 +212,9 @@ HRESULT CPop_QuestEnd::Add_Parts()
 
 
 	CFadeBox::FADE_DESC Desc = {};
-	Desc.eState = CFadeBox::FADELOOP;
-	Desc.fDuration = 0.f;
-	m_pBackground = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_FadeBox"), &Desc);
+	Desc.fMaxAlpha = 0.7f;
+	Desc.isInfiniteLoop = true;
+	m_pBackground = CUI_Manager::Get_Instance()->Clone_FadeBox(Desc);
 	if (not m_pBackground)
 	{
 		return E_FAIL;

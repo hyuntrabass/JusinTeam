@@ -8,7 +8,6 @@
 #include "Effect_Manager.h"
 #include "Trigger_Manager.h"
 #include "UI_Manager.h"
-#include "FadeBox.h"
 #include "Pop_Skill.h"
 #include "Pop_LevelUp.h"
 #include "Camera_Manager.h"
@@ -136,15 +135,11 @@ HRESULT CLevel_GamePlay::Init()
 	m_pGameInstance->Set_FogColor(_color(0.1f));
 	CUI_Manager::Get_Instance()->Set_Coin(100000);
 
-	/*
+
 	CFadeBox::FADE_DESC Desc = {};
-	Desc.eState = CFadeBox::FADEOUT;
-	Desc.fDuration = 3.f;
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
-	{
-		return E_FAIL;
-	}
-	*/
+	Desc.fOut_Duration = 3.f;
+	CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
+
 
 	m_pGameInstance->Play_Video(TEXT("Tutorial0.wmv"));
 	m_pGameInstance->Set_StopKey(DIK_RETURN);

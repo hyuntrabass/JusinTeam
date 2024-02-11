@@ -10,7 +10,6 @@
 #include "TextButtonColor.h"
 #include "Trigger_Manager.h"
 #include "HitEffect.h"
-#include "FadeBox.h"
 #include "Camera_Manager.h"
 
 const _float CGroar_Boss::m_fChaseRange = 10.f;
@@ -1206,13 +1205,8 @@ void CGroar_Boss::NPC_LateTick(_float fTimeDelta)
 		if (not CTrigger_Manager::Get_Instance()->Get_StartSuicide())
 		{
 			CFadeBox::FADE_DESC FadeBoxDesc = {};
-			FadeBoxDesc.eState = CFadeBox::FADEOUT;
-			FadeBoxDesc.fDuration = 3.f;
-
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &FadeBoxDesc)))
-			{
-				return;
-			}
+			FadeBoxDesc.fOut_Duration = 3.f;
+			CUI_Manager::Get_Instance()->Add_FadeBox(FadeBoxDesc);
 
 			CTrigger_Manager::Get_Instance()->Set_StartSuicide();
 		}
