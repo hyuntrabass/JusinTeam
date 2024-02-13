@@ -1,33 +1,30 @@
-#include "SkillBook.h"
+#include "VehicleBook.h"
 #include "GameInstance.h"
 #include "TextButton.h"
 #include "UI_Manager.h"
 #include "FadeBox.h"
-#include "InvenFrame.h"
 #include "Event_Manager.h"
-#include "SkillDesc.h"
-#include "SkillSlot.h"
-#include "SkillBlock.h"
-#include "Skill.h"
+#include "VehicleDesc.h"
+#include "Vehicle.h"
 #include "Camera_Manager.h"
 
-CSkillBook::CSkillBook(_dev pDevice, _context pContext)
+CVehicleBook::CVehicleBook(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
 }
 
-CSkillBook::CSkillBook(const CSkillBook& rhs)
+CVehicleBook::CVehicleBook(const CVehicleBook& rhs)
 	: COrthographicObject(rhs)
 {
 }
 
-HRESULT CSkillBook::Init_Prototype()
+HRESULT CVehicleBook::Init_Prototype()
 {
 	m_isPrototype = true;
 	return S_OK;
 }
 
-HRESULT CSkillBook::Init(void* pArg)
+HRESULT CVehicleBook::Init(void* pArg)
 {
 	if (FAILED(Add_Components()))
 	{
@@ -36,7 +33,7 @@ HRESULT CSkillBook::Init(void* pArg)
 
 	m_fSizeX = 70.f;
 	m_fSizeY = 70.f;
-	m_fX = 1100.f;
+	m_fX = 1040.f;
 	m_fY = 47.f;
 	m_fDepth = (_float)D_INVEN / (_float)D_END;
 
@@ -46,22 +43,29 @@ HRESULT CSkillBook::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(Set_Vehicle((Riding_Type)0)))
+	{
+		return E_FAIL;
+	}
 	
-	if (FAILED(Init_SkillDesc()))
+	if (FAILED(Set_Vehicle((Riding_Type)1)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(Set_Vehicle((Riding_Type)2)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(Set_Vehicle((Riding_Type)3)))
 	{
 		return E_FAIL;
 	}
 
-	CUI_Manager::Get_Instance()->Set_SkillBook(this);
-
-	Unlock_Skill(0);
-	Unlock_Skill(1);
-	Unlock_Skill(2);
-	Unlock_Skill(3);
 	return S_OK;
 }
 
-void CSkillBook::Tick(_float fTimeDelta)
+void CVehicleBook::Tick(_float fTimeDelta)
 {
 	if (CUI_Manager::Get_Instance()->Get_TimeStop())
 	{
@@ -78,49 +82,6 @@ void CSkillBook::Tick(_float fTimeDelta)
 			  (LONG)(m_fX + m_fSizeX * 0.5f),
 			  (LONG)(m_fY + m_fSizeY * 0.5f)
 	};
-
-	if (m_isActive)
-	{
-		if (m_isPicking && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine) && !PtInRect(&m_vecSkillDesc[m_eCurType][m_iCurIndex]->Get_Rect(), ptMouse))
-		{
-			m_isPicking = false;
-			_bool isExist = false;
-			for (size_t i = 0; i < 4; i++)
-			{
-				if (PtInRect(&m_pSkillSlot[m_eCurType][i]->Get_Rect(), ptMouse))
-				{
-					if (!m_vecSkillDesc[m_eCurType][m_iCurIndex]->Is_UnLocked())
-					{
-						return;
-					}
-					SKILLINFO tInfo = m_vecSkillDesc[m_eCurType][m_iCurIndex]->Get_SkillInfo();
-					for (size_t j = 0; j < 4; j++)
-					{
-						if (m_pSkillSlot[m_eCurType][j]->Is_Full())
-						{
-							if (m_pSkillSlot[m_eCurType][j]->Get_SkillInfo().strName == tInfo.strName)
-							{
-								isExist = true;
-								break;
-							}
-						}
-					}
-					if (!isExist)
-					{
-						if (CEvent_Manager::Get_Instance()->Get_TutorialLevel() == T_EQUIPSKILL)
-						{
-							CEvent_Manager::Get_Instance()->Set_TutorialComplete(T_EQUIPSKILL);
-							CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_SKILLEXIT);
-						}
-						m_pSkillSlot[m_eCurType][i]->Set_Skill(tInfo);
-						m_pGameInstance->Play_Sound(TEXT("UI_GambleSelect_SFX_01"));
-						break;
-					}
-				}
-			}
-		}
-
-	}
 
 
 	if (TRUE == PtInRect(&rectUI, ptMouse))
@@ -145,15 +106,10 @@ void CSkillBook::Tick(_float fTimeDelta)
 			CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
 
 			CCamera_Manager::Get_Instance()->Set_CameraState(CS_SKILLBOOK);
-			m_bNewSkillIn = false;
+			m_bNewVehicleIn = false;
 			m_isActive = true;
-			Init_SkillBookState();
+			Init_VehicleBookState();
 
-			if (CEvent_Manager::Get_Instance()->Get_TutorialLevel() == T_OPENSKILL)
-			{
-				CEvent_Manager::Get_Instance()->Set_TutorialComplete(T_OPENSKILL);
-				CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_EQUIPSKILL);
-			}
 			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 			{
 				if (m_pGameInstance->Get_IsLoopingSound(i))
@@ -170,6 +126,7 @@ void CSkillBook::Tick(_float fTimeDelta)
 	{
 		return;
 	}
+
 	if (TRUE == PtInRect(&dynamic_cast<CTextButton*>(m_pExitButton)->Get_Rect(), ptMouse)
 		|| PtInRect(&dynamic_cast<CTextButton*>(m_pTitleButton)->Get_Rect(), ptMouse))
 	{
@@ -185,13 +142,9 @@ void CSkillBook::Tick(_float fTimeDelta)
 			CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
 
 			CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
-			CUI_Manager::Get_Instance()->Set_SkillSlotChange(true);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_isActive = false;
-			if (CEvent_Manager::Get_Instance()->Get_TutorialLevel() == T_SKILLEXIT)
-			{
-				CEvent_Manager::Get_Instance()->Set_TutorialComplete(T_SKILLEXIT);
-			}
+
 			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 			{
 				if (m_pGameInstance->Get_IsLoopingSound(i))
@@ -206,122 +159,85 @@ void CSkillBook::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 	{
 		/* 인벤토리 메뉴 피킹 */
-		for (size_t i = 0; i < WP_END; i++)
+		for (size_t i = 0; i < VC_END; i++)
 		{
-			if (PtInRect(&dynamic_cast<CTextButtonColor*>(m_pSkillType[i])->Get_Rect(), ptMouse))
+			if (PtInRect(&dynamic_cast<CTextButtonColor*>(m_pVehicleType[i])->Get_Rect(), ptMouse))
 			{
 				m_ePrevType = m_eCurType;
-				m_eCurType = (WEAPON_TYPE)i;
+				m_eCurType = (VEHICLE_TYPE)i;
 
 				if (m_ePrevType != m_eCurType)
 				{
-					dynamic_cast<CTextButtonColor*>(m_pSkillType[m_ePrevType])->Set_Alpha(0.6f);
+					dynamic_cast<CTextButtonColor*>(m_pVehicleType[m_ePrevType])->Set_Alpha(0.6f);
 				}
-				dynamic_cast<CTextButtonColor*>(m_pSkillType[i])->Set_Alpha(1.f);
-				_vec2 vPos = dynamic_cast<CTextButtonColor*>(m_pSkillType[i])->Get_Position();
+				dynamic_cast<CTextButtonColor*>(m_pVehicleType[i])->Set_Alpha(1.f);
+				_vec2 vPos = dynamic_cast<CTextButtonColor*>(m_pVehicleType[i])->Get_Position();
 				dynamic_cast<CTextButton*>(m_pSelectButton)->Set_Position(vPos);
 				_vec2 fUnderBarPos = dynamic_cast<CTextButton*>(m_pUnderBar)->Get_Position();
 				dynamic_cast<CTextButton*>(m_pUnderBar)->Set_Position(_vec2(vPos.x, fUnderBarPos.y));
 
-				for (size_t j = 0; j < m_vecSkillDesc[m_eCurType].size(); j++)
+				for (size_t j = 0; j < m_vecVehicle[m_eCurType].size(); j++)
 				{
-					m_vecSkillDesc[m_eCurType][j]->Select_Skill(false);
+					m_vecVehicle[m_eCurType][j]->Set_SelectVehicle(false);
 				}
 				break;
 			}
 		}
 
-		_bool bSelect = false;
+
 		size_t i = 0;
-		for (i = 0; i < m_vecSkillDesc[m_eCurType].size(); i++)
+		for (i = 0; i < m_vecVehicle[m_eCurType].size(); i++)
 		{
-			if (PtInRect(&m_vecSkillDesc[m_eCurType][i]->Get_Rect(), ptMouse))
+			if (PtInRect(&m_vecVehicle[m_eCurType][i]->Get_Rect(), ptMouse))
 			{
-				m_pSkill_Model->Change_AnimState((CSkill_Model::SKILLMODEL_ANIM)m_vecSkillDesc[m_eCurType][i]->Get_SkillInfo().iModelSkillIndex);
-				if (m_vecSkillDesc[m_eCurType][i]->Is_Selected())
+				if (m_vecVehicle[m_eCurType][i]->Is_Selected())
 				{
-					m_vecSkillDesc[m_eCurType][i]->Select_Skill(false);
+					m_vecVehicle[m_eCurType][i]->Set_SelectVehicle(false);
 					break;
 				}
-				m_vecSkillDesc[m_eCurType][i]->Select_Skill(true);
-				if (!m_vecSkillDesc[m_eCurType][i]->Is_UnLocked())
+				m_vecVehicle[m_eCurType][i]->Set_SelectVehicle(true);
+				m_isPicking = true;
+				m_iCurIndex = i;
+				for (size_t j = 0; j < m_vecVehicle[m_eCurType].size(); j++)
 				{
-					m_isPicking = false;
+					if (m_iCurIndex != j)
+					{
+						m_vecVehicle[m_eCurType][j]->Set_SelectVehicle(false);
+					}
 				}
-				else if (m_vecSkillDesc[m_eCurType][i]->Is_SkillIn())
-				{
-					m_isPicking = true;
-					m_iCurIndex = i;
-				}
-
-				bSelect = true;
-				break;
-			}
-		}
-		if (bSelect)
-		{
-			for (size_t j = 0; j < m_vecSkillDesc[m_eCurType].size(); j++)
-			{
-				if (i != j)
-				{
-					m_vecSkillDesc[m_eCurType][j]->Select_Skill(false);
-				}
-			}
-		}
-
-	}
-
-
-	if (m_pGameInstance->Mouse_Down(DIM_RBUTTON, InputChannel::UI))
-	{
-		for (size_t i = 0; i < 4; i++)
-		{
-			if (PtInRect(&m_pSkillSlot[m_eCurType][i]->Get_Rect(), ptMouse))
-			{
-				m_pSkillSlot[m_eCurType][i]->Delete_Skill();
 				break;
 			}
 		}
 	}
 
-	if (PtInRect(&m_pResetSlot->Get_Rect(), ptMouse))
+
+
+	if (PtInRect(&m_pEquipButton->Get_InitialRect(), ptMouse))
 	{
-		m_pResetSlot->Set_Size(140.f, 80.f, 0.3f);
-		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine))
+		m_pEquipButton->Set_Size(140.f, 80.f, 0.3f);
+		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine) && m_isPicking)
 		{
-			for (size_t i = 0; i < 4; i++)
+			m_isPicking = false;
+			m_vecVehicle[m_eCurType][m_iCurIndex]->Set_Equip(true);
+			m_pSelectedVehicle[m_eCurType] = m_vecVehicle[m_eCurType][m_iCurIndex];
+			for (size_t i = 0; i < m_vecVehicle[m_eCurType].size(); i++)
 			{
-				m_pSkillSlot[m_eCurType][i]->Delete_Skill();
+				if (m_iCurIndex != i)
+				{
+					m_vecVehicle[m_eCurType][i]->Set_Equip(false);
+				}
 			}
 		}
 	}
 	else
 	{
-		m_pResetSlot->Set_Size(150.f, 100.f, 0.35f);
+		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine) && m_isPicking)
+		{
+			m_isPicking = false;
+		}
+		m_pEquipButton->Set_Size(150.f, 100.f, 0.35f);
 	}
 
-	if (m_isPicking)
-	{
-		if (m_fTime > 0.6f )
-		{
-			m_fTime = 0.6f;
-			m_fDir = -1.f;
-		}
-		
-		if (m_fTime < 0.2f )
-		{
-			m_fDir = 1.f;
-		}
-
-
-		m_fTime += fTimeDelta * m_fDir * 0.8f;
-
-		for (size_t i = 0; i < 4; i++)
-		{
-			m_pSelectSlot[i]->Set_Alpha(m_fTime);
-			m_pSelectSlot[i]->Tick(fTimeDelta);
-		}
-	}
 
 	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
 	dynamic_cast<CTextButton*>(m_pMoney)->Set_Text(to_wstring(iMoney));
@@ -334,53 +250,37 @@ void CSkillBook::Tick(_float fTimeDelta)
 
 	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 
-	for (size_t i = 0; i < WP_END; i++)
+	for (size_t i = 0; i < VC_END; i++)
 	{
-		m_pSkillType[i]->Tick(fTimeDelta);
+		m_pVehicleType[i]->Tick(fTimeDelta);
 	}
-	for (size_t i = 0; i < m_vecSkillDesc[m_eCurType].size(); i++)
+	for (size_t i = 0; i < m_vecVehicle[m_eCurType].size(); i++)
 	{
-		m_vecSkillDesc[m_eCurType][i]->Tick(fTimeDelta);
+		m_vecVehicle[m_eCurType][i]->Tick(fTimeDelta);
 	}
-	for (size_t i = 0; i < 4; i++)
-	{
-		m_pSkillSlot[m_eCurType][i]->Tick(fTimeDelta);
-	}
+
 	m_pUnderBar->Tick(fTimeDelta);
 	m_pSelectButton->Tick(fTimeDelta);
 	m_pExitButton->Tick(fTimeDelta);
 	m_pBackGround->Tick(fTimeDelta);
 	m_pTitleButton->Tick(fTimeDelta);
 	m_pSlotBackGround->Tick(fTimeDelta);
-	m_pResetSlot->Tick(fTimeDelta);
-	m_pSkill_Model->Tick(fTimeDelta);
-	m_pScarecorw->Tick(fTimeDelta);
+	m_pEquipButton->Tick(fTimeDelta);
 }
 
-void CSkillBook::Late_Tick(_float fTimeDelta)
+void CVehicleBook::Late_Tick(_float fTimeDelta)
 {
 
 
 	if (m_isActive)
 	{
-		for (size_t i = 0; i < WP_END; i++)
+		for (size_t i = 0; i < VC_END; i++)
 		{
-			m_pSkillType[i]->Late_Tick(fTimeDelta);
+			m_pVehicleType[i]->Late_Tick(fTimeDelta);
 		}
-		for (size_t i = 0; i < m_vecSkillDesc[m_eCurType].size(); i++)
+		for (size_t i = 0; i < m_vecVehicle[m_eCurType].size(); i++)
 		{
-			m_vecSkillDesc[m_eCurType][i]->Late_Tick(fTimeDelta);
-		}
-		for (size_t i = 0; i < 4; i++)
-		{
-			m_pSkillSlot[m_eCurType][i]->Late_Tick(fTimeDelta);
-		}
-		if (m_isPicking)
-		{
-			for (size_t i = 0; i < 4; i++)
-			{
-				m_pSelectSlot[i]->Late_Tick(fTimeDelta);
-			}
+			m_vecVehicle[m_eCurType][i]->Late_Tick(fTimeDelta);
 		}
 		m_pUnderBar->Late_Tick(fTimeDelta);
 		m_pSelectButton->Late_Tick(fTimeDelta);
@@ -391,9 +291,8 @@ void CSkillBook::Late_Tick(_float fTimeDelta)
 		m_pBackGround->Late_Tick(fTimeDelta);
 		m_pTitleButton->Late_Tick(fTimeDelta);
 		m_pSlotBackGround->Late_Tick(fTimeDelta);
-		m_pResetSlot->Late_Tick(fTimeDelta);
-		m_pSkill_Model->Late_Tick(fTimeDelta);
-		m_pScarecorw->Late_Tick(fTimeDelta);
+		m_pEquipButton->Late_Tick(fTimeDelta);
+
 	}
 
 
@@ -401,7 +300,7 @@ void CSkillBook::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
-	if (m_bNewSkillIn)
+	if (m_bNewVehicleIn)
 	{
 		m_pNotify->Late_Tick(fTimeDelta);
 	}
@@ -409,7 +308,7 @@ void CSkillBook::Late_Tick(_float fTimeDelta)
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
-HRESULT CSkillBook::Render()
+HRESULT CVehicleBook::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
@@ -430,27 +329,11 @@ HRESULT CSkillBook::Render()
 	return S_OK;
 }
 
-HRESULT CSkillBook::Unlock_Skill(_uint iIndex)
-{
-	for (size_t j = 0; j < WP_END; j++)
-	{
-		for (size_t i = 0; i < m_vecSkillDesc[j].size(); i++)
-		{
-			if (m_vecSkillDesc[j][i]->Get_SkillInfo().iSkillIdx == iIndex)
-			{
-				m_vecSkillDesc[j][i]->Unlock_Skill();
-				break;
-			}
-		}
-	}
 
-	return S_OK;
-}
-
-void CSkillBook::Init_SkillBookState()
+void CVehicleBook::Init_VehicleBookState()
 {
-	_int iTemp = CUI_Manager::Get_Instance()->Get_WeaponType(PT_WEAPON, &m_eCurType);
-	m_ePrevType = m_eCurType;
+	m_eCurType = VC_GROUND;
+	m_ePrevType = VC_GROUND;
 
 	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;
 	dynamic_cast<CTextButton*>(m_pMoney)->Set_Text(to_wstring(iMoney));
@@ -458,50 +341,65 @@ void CSkillBook::Init_SkillBookState()
 	_uint iDiamond = CUI_Manager::Get_Instance()->Get_Diamond();;
 	dynamic_cast<CTextButton*>(m_pDiamond)->Set_Text(to_wstring(iDiamond));
 
-	for (size_t j = 0; j < m_vecSkillDesc[m_eCurType].size(); j++)
+	for (size_t j = 0; j < m_vecVehicle[m_eCurType].size(); j++)
 	{
-		m_vecSkillDesc[m_eCurType][j]->Select_Skill(false);
+		//m_vecVehicle[m_eCurType][j]->Select_Skill(false);
 	}
 
-	dynamic_cast<CTextButtonColor*>(m_pSkillType[m_eCurType])->Set_Alpha(1.f);
-	_vec2 vPos = dynamic_cast<CTextButtonColor*>(m_pSkillType[m_eCurType])->Get_Position();
+	dynamic_cast<CTextButtonColor*>(m_pVehicleType[m_eCurType])->Set_Alpha(1.f);
+	_vec2 vPos = dynamic_cast<CTextButtonColor*>(m_pVehicleType[m_eCurType])->Get_Position();
 	dynamic_cast<CTextButton*>(m_pSelectButton)->Set_Position(vPos);
 	_vec2 fUnderBarPos = dynamic_cast<CTextButton*>(m_pUnderBar)->Get_Position();
 	dynamic_cast<CTextButton*>(m_pUnderBar)->Set_Position(_vec2(vPos.x, fUnderBarPos.y));
 
 }
 
-HRESULT CSkillBook::Init_SkillDesc()
+HRESULT CVehicleBook::Set_Vehicle(Riding_Type eType)
 {
-	for (size_t i = 0; i < WP_END; i++)
+	_bool isExist = false;
+	for (size_t i = 0; i < VC_END; i++)
 	{
-		_float fStartY = 166.f;
-		_float fTerm = 2.f;
-		_float fDescY = 90.f;
-		for (_uint j = 0; j < 4; j++)
+		for (size_t j = 0; j < m_vecVehicle[i].size(); j++)
 		{
-			SKILLINFO tInfo = CUI_Manager::Get_Instance()->Get_SkillInfo((WEAPON_TYPE)i, j);
-
-			CSkillDesc::SKILLBOOK_DESC SkillDesc = {};
-			SkillDesc.fDepth = m_fDepth - 0.01f;
-			SkillDesc.tSkillInfo = tInfo;
-			SkillDesc.vPosition = _vec2(1105.f, fStartY + 85.f * j);
-
-			CSkillDesc* pSkillDesc = (CSkillDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_SkillDesc"), &SkillDesc);
-
-			if (not pSkillDesc)
+			if (m_vecVehicle[i][j]->Get_VehicleInfo().eRidingType == eType)
 			{
-				return E_FAIL;
+				isExist = true;
+				break;
 			}
-
-			m_vecSkillDesc[i].push_back(pSkillDesc);
+		}
+	}
+	if (!isExist)
+	{
+		CVehicle::VEHICLE_DESC Desc{};
+		Desc.eRidingType = eType;
+		Desc.fDepth = m_fDepth - 0.01f;
+		Desc.vSize = _vec2(300.f, 90.f);
+		CVehicle* pVehicle = (CVehicle*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Vehicle"), &Desc);
+		if (pVehicle == nullptr)
+		{
+			return E_FAIL;
+		}
+		VEHICLE_TYPE eVehicleType = pVehicle->Get_VehicleInfo().eType;
+		_float fStartY = 166.f;
+		_float fIdx = 0.f;
+		if (m_vecVehicle[eVehicleType].empty())
+		{
+			fIdx = 0;
+		}
+		else
+		{
+			fIdx = (float)m_vecVehicle[eVehicleType].size();
 		}
 
+		pVehicle->Set_Position(_vec2(1105.f, fStartY + 85.f * fIdx));
+		m_vecVehicle[eVehicleType].push_back(pVehicle);
 	}
+
+	
 	return S_OK;
 }
 
-HRESULT CSkillBook::Add_Parts()
+HRESULT CVehicleBook::Add_Parts()
 {
 	CTextButton::TEXTBUTTON_DESC Button = {};
 
@@ -522,7 +420,7 @@ HRESULT CSkillBook::Add_Parts()
 	Button.eLevelID = LEVEL_STATIC;
 	Button.fDepth = m_fDepth - 0.01f;
 	Button.fFontSize = 0.5f;
-	Button.strText = TEXT("스킬북");
+	Button.strText = TEXT("탈 것");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Back");
 	Button.vPosition = _vec2(40.f, 20.f);
 	Button.vSize = _vec2(50.f, 50.f);
@@ -627,30 +525,30 @@ HRESULT CSkillBook::Add_Parts()
 	TextButton.fAlpha = 1.f;
 	TextButton.fFontSize = 0.35f;
 	TextButton.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	TextButton.strText = TEXT("스나이퍼");
+	TextButton.strText = TEXT("지상");
 	TextButton.vPosition = _vec2(fStartX, fY);
 	TextButton.vSize = _vec2(m_fSizeX / 2.f, 70.f);
 	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_NoTex");
 	TextButton.vTextPosition = _vec2(0.f, 0.f);
-	m_pSkillType[WP_BOW] = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+	m_pVehicleType[VC_GROUND] = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
 
-	if (not m_pSkillType[WP_BOW])
+	if (not m_pVehicleType[VC_GROUND])
 	{
 		return E_FAIL;
 	}
-	dynamic_cast<CTextButtonColor*>(m_pSkillType[WP_BOW])->Set_Pass(VTPass_UI_Alpha);
+	dynamic_cast<CTextButtonColor*>(m_pVehicleType[VC_GROUND])->Set_Pass(VTPass_UI_Alpha);
 
-	TextButton.strText = TEXT("어쌔신");
+	TextButton.strText = TEXT("공중");
 	TextButton.vPosition = _vec2(fStartX + fTerm, fY);
 	TextButton.vSize = _vec2(m_fSizeX / 2.f, 70.f);
 	TextButton.vTextPosition = _vec2(0.f, 0.f);
-	m_pSkillType[WP_SWORD] = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+	m_pVehicleType[VC_FLY] = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
 
-	if (not m_pSkillType[WP_SWORD])
+	if (not m_pVehicleType[VC_FLY])
 	{
 		return E_FAIL;
 	}
-	dynamic_cast<CTextButtonColor*>(m_pSkillType[WP_SWORD])->Set_Pass(VTPass_UI_Alpha);
+	dynamic_cast<CTextButtonColor*>(m_pVehicleType[VC_FLY])->Set_Pass(VTPass_UI_Alpha);
 
 
 
@@ -668,63 +566,27 @@ HRESULT CSkillBook::Add_Parts()
 	}
 
 	TextButton.fDepth = m_fDepth - 0.02f;
-	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_buttonRed");
-	TextButton.strText = TEXT("초기화");
+	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Button_Blue");
+	TextButton.strText = TEXT("탈 것 장착");
 	TextButton.vPosition = _vec2(1160.f, 665.f);
-	m_pResetSlot = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
-	if (not m_pResetSlot)
+	m_pEquipButton = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+	if (not m_pEquipButton)
 	{
 		return E_FAIL;
 	}
-	m_pResetSlot->Set_Pass(VTPass_UI_Alpha);
-
-
-	TextButton.fDepth = m_fDepth - 0.05f;
-	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BloomRect");
-	TextButton.strText = TEXT("");
-	TextButton.vPosition = _vec2(1160.f, 665.f);
-	TextButton.vSize = _vec2(80.f, 80.f);
-
-	for (_uint i = 0; i < 4; i++)
-	{
-		TextButton.vPosition = _vec2(fStartX - 30.f + 70.f * i, 665.f - 62.5f);
-		m_pSelectSlot[i] = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
-		if (not m_pSelectSlot)
-		{
-			return E_FAIL;
-		}
-		m_pSelectSlot[i]->Set_Pass(VTPass_UI_Alpha);
-	}
+	m_pEquipButton->Set_Pass(VTPass_UI_Alpha);
 
 	
-	for (size_t j = 0; j < WP_END; j++)
-	{
-		for (_uint i = 0; i < 4; i++)
-		{
-			CSkillSlot::SKILLSLOT_DESC SkillSlotDesc = {};
-			SkillSlotDesc.eSlotMode = CSkillSlot::SKILLBOOK;
-			SkillSlotDesc.vSize = _vec2(60.f, 60.f);
-			SkillSlotDesc.fDepth = m_fDepth - 0.03f;
-			SkillSlotDesc.vPosition = _vec2(fStartX - 30.f + 70.f * i, 665.f - 62.5f);
-			m_pSkillSlot[j][i] = (CSkillSlot*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_SkillSlot"), &SkillSlotDesc);
-			if (m_pSkillSlot[j][i] == nullptr)
-			{
-				return E_FAIL;
-			}
-			if (FAILED(CUI_Manager::Get_Instance()->Set_SkillBookSlots((WEAPON_TYPE)j, (CSkillBlock::SKILLSLOT)i, m_pSkillSlot[j][i])))
-			{
-				return E_FAIL;
-			}
-		}
-	}
 
+	/*
+	
 	m_pSkill_Model = (CSkill_Model*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Skill_Model"));
 	m_pScarecorw = (CScarecrow*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Scarecrow"));
-
+	*/
 	return S_OK;
 }
 
-HRESULT CSkillBook::Add_Components()
+HRESULT CVehicleBook::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -741,7 +603,7 @@ HRESULT CSkillBook::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_SkillbookBar"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_VehicleBar"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -749,7 +611,7 @@ HRESULT CSkillBook::Add_Components()
 	return S_OK;
 }
 
-HRESULT CSkillBook::Bind_ShaderResources()
+HRESULT CVehicleBook::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
 		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
@@ -770,76 +632,67 @@ HRESULT CSkillBook::Bind_ShaderResources()
 	return S_OK;
 }
 
-CSkillBook* CSkillBook::Create(_dev pDevice, _context pContext)
+CVehicleBook* CVehicleBook::Create(_dev pDevice, _context pContext)
 {
-	CSkillBook* pInstance = new CSkillBook(pDevice, pContext);
+	CVehicleBook* pInstance = new CVehicleBook(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CSkillBook");
+		MSG_BOX("Failed to Create : CVehicleBook");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CSkillBook::Clone(void* pArg)
+CGameObject* CVehicleBook::Clone(void* pArg)
 {
-	CSkillBook* pInstance = new CSkillBook(*this);
+	CVehicleBook* pInstance = new CVehicleBook(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CSkillBook");
+		MSG_BOX("Failed to Clone : CVehicleBook");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CSkillBook::Free()
+void CVehicleBook::Free()
 {
 	__super::Free();
 
 
 	if (!m_isPrototype)
 	{
-		for (size_t i = 0; i < WP_END; i++)
+		for (size_t i = 0; i < VC_END; i++)
 		{
-			Safe_Release(m_pSkillType[i]);
+			Safe_Release(m_pVehicleType[i]);
 		}
 
-		for (size_t i = 0; i < WP_END; i++)
+		for (size_t i = 0; i < VC_END; i++)
 		{
-			for (_uint j = 0; j < 4; j++)
-			{
-				Safe_Release(m_pSkillSlot[i][j]);
-			}
+
+			//Safe_Release(m_pSelectedVehicle[i]);
 		}
 
-		for (size_t i = 0; i < 4; i++)
-		{
-			Safe_Release(m_pSelectSlot[i]);
-		}
+
 	}
 	
-	for (auto& iter : m_vecSkillDesc[WP_BOW])
+	for (auto& iter : m_vecVehicle[VC_GROUND])
 	{
 		Safe_Release(iter);
 	}
-	m_vecSkillDesc[WP_BOW].clear();
+	m_vecVehicle[VC_GROUND].clear();
 
-	for (auto& iter : m_vecSkillDesc[WP_SWORD])
+	for (auto& iter : m_vecVehicle[VC_FLY])
 	{
 		Safe_Release(iter);
 	}
-	m_vecSkillDesc[WP_SWORD].clear();
-
-
-	Safe_Release(m_pScarecorw);
-	Safe_Release(m_pSkill_Model);
+	m_vecVehicle[VC_FLY].clear();
 
 	Safe_Release(m_pUnderBar);
-	Safe_Release(m_pResetSlot);
+	Safe_Release(m_pEquipButton);
 	Safe_Release(m_pSelectButton);
 	Safe_Release(m_pSlotBackGround);
 

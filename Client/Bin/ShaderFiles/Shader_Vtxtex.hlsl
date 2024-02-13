@@ -597,10 +597,31 @@ PS_OUT PS_Main_HPNoMask(PS_IN Input)
 PS_OUT PS_Main_NineSlice(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    //Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    float2 newTexCoord = Input.vTex;
+    if (Input.vTex.x < g_vSliceRect.x / (g_vRatio.x / g_vRatio.y))
+    {
+        newTexCoord.x = Input.vTex.x * g_vRatio.x;
+    }
+    else if (Input.vTex.x > 1.f - (g_vSliceRect.x / (g_vRatio.x / g_vRatio.y)))
+    {
+        newTexCoord.x = Input.vTex.x * g_vRatio.x;
+    }
+    
+    if (Input.vTex.y < g_vSliceRect.y)
+    {
+        newTexCoord.y = Input.vTex.y * (1.f / g_vRatio.y);
+    }
+    else if (Input.vTex.y > g_vSliceRect.w)
+    {
+        newTexCoord.y = Input.vTex.y * (1.f / g_vRatio.y);
+    }
+    
+    Output.vColor = g_Texture.Sample(LinearSampler, newTexCoord);
 
 /*
-
+    
+	float2 newTexCoord = In.vTexcoord * float2(4.1f, 4.1f / g_fRatio); 커진 비율만큼 곱해줘야하나? 
     if (Input.vTex.x < g_vSliceRect.x)
     {
         Input.vTex.x = lerp(0, g_vSliceRect.x, Input.vTex.x / g_vSliceRect.x);

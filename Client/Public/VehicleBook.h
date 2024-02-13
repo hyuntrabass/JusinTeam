@@ -1,16 +1,15 @@
 #pragma once
 #include "Client_Define.h"
 #include "OrthographicObject.h"
-#include "Skill_Model.h"
-#include "Scarecrow.h"
+#include "Riding.h"
 
 BEGIN(Client)
-class CSkillBook final : public COrthographicObject
+class CVehicleBook final : public COrthographicObject
 {
 private:
-	CSkillBook(_dev pDevice, _context pContext);
-	CSkillBook(const CSkillBook& rhs);
-	virtual ~CSkillBook() = default;
+	CVehicleBook(_dev pDevice, _context pContext);
+	CVehicleBook(const CVehicleBook& rhs);
+	virtual ~CVehicleBook() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -26,19 +25,17 @@ private:
 	CTexture* m_pTextureCom{ nullptr };
 
 private:
-	WEAPON_TYPE									m_ePrevType{ WP_BOW };
-	WEAPON_TYPE									m_eCurType{ WP_BOW };
+	VEHICLE_TYPE								m_ePrevType{ VC_GROUND };
+	VEHICLE_TYPE								m_eCurType{ VC_GROUND };
 
 	_uint										m_iCurIndex{};
 	_int										m_iSoundChannel = -1;
 
 	_bool										m_isPicking{ false };
 	_bool										m_isPrototype{ false };
-	_bool										m_bNewSkillIn{ false };
+	_bool										m_bNewVehicleIn{ false };
 	_bool										m_isActive{ false };
 
-	_float										m_fDir{ 1.f };
-	_float										m_fTime{ 0.2f };
 	CGameObject*								m_pMoney{ nullptr };
 	CGameObject*								m_pDiamond{ nullptr };
 	CGameObject*								m_pNotify{ nullptr };
@@ -48,27 +45,22 @@ private:
 
 	CGameObject*								m_pUnderBar{ nullptr };
 	CGameObject*								m_pSelectButton{ nullptr };
-	CGameObject*								m_pSkillType[WP_END];
+	CGameObject*								m_pVehicleType[VC_END];
 
 	class CTextButtonColor*						m_pSlotBackGround{ nullptr };
-	CTextButtonColor*							m_pResetSlot{ nullptr };
-	CTextButtonColor*							m_pSelectSlot[4];
+	CTextButtonColor*							m_pEquipButton{ nullptr };
 
-	class CSkillSlot*							m_pSkillSlot[WP_END][4];
+	class CVehicle*								m_pSelectedVehicle[VC_END];
 
-	vector<class CSkillDesc*>					m_vecSkillDesc[WP_END];
+	vector<CVehicle*>							m_vecVehicle[VC_END];
 
 	LIGHT_DESC									m_Light_Desc{};
 
-	CSkill_Model*								m_pSkill_Model{ nullptr };
-	CScarecrow*									m_pScarecorw{ nullptr };
-
 public:
-	HRESULT Unlock_Skill(_uint iIndex);
+	HRESULT Set_Vehicle(Riding_Type eType);
 
 private:
-	void Init_SkillBookState(); 
-	HRESULT Init_SkillDesc(); 
+	void Init_VehicleBookState(); 
 
 private:
 	HRESULT Add_Parts();
@@ -76,7 +68,7 @@ private:
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CSkillBook* Create(_dev pDevice, _context pContext);
+	static CVehicleBook* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };
