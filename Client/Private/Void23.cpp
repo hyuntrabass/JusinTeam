@@ -1,7 +1,7 @@
 #include "Void23.h"
 
 const _float CVoid23::m_fChaseRange = 7.f;
-const _float CVoid23::m_fAttackRange = 4.f;
+const _float CVoid23::m_fAttackRange = 5.f;
 
 CVoid23::CVoid23(_dev pDevice, _context pContext)
 	: CMonster(pDevice, pContext)
@@ -15,7 +15,7 @@ CVoid23::CVoid23(const CVoid23& rhs)
 
 HRESULT CVoid23::Init_Prototype()
 {
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CVoid23::Init(void* pArg)
@@ -31,8 +31,6 @@ HRESULT CVoid23::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-
-	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
@@ -61,7 +59,7 @@ HRESULT CVoid23::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
-	m_pTransformCom->Set_Position(_vec3(100.f, 8.f, 108.f));
+	//m_pTransformCom->Set_Position(_vec3(100.f, 8.f, 108.f));
 
 	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
 
@@ -72,6 +70,11 @@ HRESULT CVoid23::Init(void* pArg)
 			return E_FAIL;
 		}
 	}
+
+	_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
+	vPos.y += 3.f;
+
+	m_pTransformCom->Set_Position(vPos);
 
 	return S_OK;
 }
@@ -113,7 +116,7 @@ HRESULT CVoid23::Render()
 {
 	__super::Render();
 
-    return S_OK;
+	return S_OK;
 }
 
 void CVoid23::Set_Damage(_int iDamage, _uint iDamageType)
@@ -178,6 +181,7 @@ void CVoid23::Init_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = IDLE;
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 2.f;
+			m_Animation.fInterpolationTime = 0.2f;
 
 			m_pTransformCom->Set_Speed(1.5f);
 			break;
@@ -185,7 +189,7 @@ void CVoid23::Init_State(_float fTimeDelta)
 		case Client::CVoid23::STATE_WALK:
 			m_Animation.iAnimIndex = WALK;
 			m_Animation.isLoop = false;
-			m_Animation.fAnimSpeedRatio = 4.f;
+			m_Animation.fAnimSpeedRatio = 3.f;
 
 			{
 				random_device rd;
@@ -202,7 +206,8 @@ void CVoid23::Init_State(_float fTimeDelta)
 			}
 
 			m_Animation.isLoop = true;
-			m_Animation.fAnimSpeedRatio = 4.f;
+			m_Animation.fAnimSpeedRatio = 3.f;
+			m_Animation.fInterpolationTime = 0.2f;
 
 			if (m_bSlow == true)
 			{
@@ -214,11 +219,18 @@ void CVoid23::Init_State(_float fTimeDelta)
 				m_pTransformCom->Set_Speed(4.f);
 			}
 
+			// Test
+			++m_iAttackPattern;
+			if (m_iAttackPattern == 5)
+			{
+				m_iAttackPattern = 0;
+			}
+
 			break;
 
 		case Client::CVoid23::STATE_ATTACK:
 			m_bDamaged = false;
-			m_Animation.fAnimSpeedRatio = 3.f;
+			m_Animation.fAnimSpeedRatio = 2.5f;
 			m_bAttacking = true;
 
 			m_pTransformCom->LookAt_Dir(vDir);
@@ -247,6 +259,13 @@ void CVoid23::Init_State(_float fTimeDelta)
 
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
+			break;
+
+		case Client::CVoid23::STATE_KNOCKDOWN:
+			m_Animation.iAnimIndex = KNOCKDOWN;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
+			m_Animation.fInterpolationTime = 0.4f;
 			break;
 
 		case Client::CVoid23::STATE_DIE:
@@ -289,11 +308,11 @@ void CVoid23::Tick_State(_float fTimeDelta)
 		}
 		else
 		{
-			if (m_fIdleTime >= 2.f)
-			{
-				m_eCurState = STATE_WALK;
-				m_fIdleTime = 0.f;
-			}
+			//if (m_fIdleTime >= 2.f)
+			//{
+			//	m_eCurState = STATE_WALK;
+			//	m_fIdleTime = 0.f;
+			//}
 
 		}
 
@@ -302,7 +321,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 		//	m_eCurState = STATE_CHASE;
 		//}
 	}
-		break;
+	break;
 
 	case Client::CVoid23::STATE_WALK:
 	{
@@ -324,21 +343,21 @@ void CVoid23::Tick_State(_float fTimeDelta)
 		}
 	}
 
-		break;
+	break;
 
 	case Client::CVoid23::STATE_CHASE:
 	{
 		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 		vDir.y = 0.f;
 
-		if (fDistance > m_fChaseRange && !m_bDamaged)
-		{
-			m_eCurState = STATE_IDLE;
-			m_bSlow = false;
-			m_bAttacking = false;
+		//if (fDistance > m_fChaseRange && !m_bDamaged)
+		//{
+		//	m_eCurState = STATE_IDLE;
+		//	m_bSlow = false;
+		//	m_bAttacking = false;
 
-			break;
-		}
+		//	break;
+		//}
 
 		if (fDistance <= m_fAttackRange)
 		{
@@ -352,7 +371,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
 	}
-		break;
+	break;
 
 	case Client::CVoid23::STATE_ATTACK:
 
@@ -377,22 +396,37 @@ void CVoid23::Tick_State(_float fTimeDelta)
 			m_bSelectAttackPattern = false;
 			{
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
-				if (fAnimpos >= 66.f && fAnimpos <= 68.f && !m_bAttacked)
+				if (fAnimpos >= 66.f && fAnimpos <= 68.f)
 				{
-					_uint iDamage = m_iDefaultDamage2 + rand() % 50;
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
-					m_bAttacked = true;
+					if (m_pGameInstance->CheckCollision_Parrying(m_pAttackColliderCom))
+					{
+						m_eCurState = STATE_KNOCKDOWN;
+						break;
+					}
+
+					if (!m_bAttacked)
+					{
+						_uint iDamage = m_iDefaultDamage2 + rand() % 50;
+						m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
+						m_bAttacked = true;
+					}
 				}
-				if (fAnimpos >= 117.f && fAnimpos <= 119.f && !m_bAttacked2)
+
+				if (fAnimpos >= 117.f && fAnimpos <= 119.f)
 				{
-					_uint iDamage = m_iDefaultDamage2 + rand() % 50;
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
-					m_bAttacked2 = true;
+					if (!m_bAttacked2)
+					{
+						_uint iDamage = m_iDefaultDamage2 + rand() % 50;
+						m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
+						m_bAttacked2 = true;
+					}
 				}
+
 				if (fAnimpos >= 60.f && fAnimpos <= 76.f)
 				{
 					m_pSwordTrail->Late_Tick(fTimeDelta);
 				}
+
 				if (fAnimpos >= 110.f && fAnimpos <= 124.f)
 				{
 					m_pSwordTrail->Late_Tick(fTimeDelta);
@@ -406,17 +440,29 @@ void CVoid23::Tick_State(_float fTimeDelta)
 			m_bSelectAttackPattern = false;
 			{
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
-				if (fAnimpos >= 55.f && fAnimpos <= 57.f && !m_bAttacked)
+				if (fAnimpos >= 55.f && fAnimpos <= 57.f)
 				{
-					_uint iDamage = m_iDefaultDamage2 + rand() % 50;
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Stun);
-					m_bAttacked = true;
+					if (m_pGameInstance->CheckCollision_Parrying(m_pAttackColliderCom))
+					{
+						m_eCurState = STATE_KNOCKDOWN;
+						break;
+					}
+
+					if (!m_bAttacked)
+					{
+						_uint iDamage = m_iDefaultDamage2 + rand() % 50;
+						m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Stun);
+						m_bAttacked = true;
+					}
 				}
-				if (fAnimpos >= 98.f && fAnimpos <= 100.f && !m_bAttacked2)
+				if (fAnimpos >= 98.f && fAnimpos <= 100.f)
 				{
-					_uint iDamage = m_iDefaultDamage2 + rand() % 50;
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
-					m_bAttacked2 = true;
+					if (!m_bAttacked2)
+					{
+						_uint iDamage = m_iDefaultDamage2 + rand() % 50;
+						m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
+						m_bAttacked2 = true;
+					}
 				}
 				if (fAnimpos >= 49.f && fAnimpos <= 57.f)
 				{
@@ -431,11 +477,20 @@ void CVoid23::Tick_State(_float fTimeDelta)
 			m_bSelectAttackPattern = false;
 			{
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
-				if (fAnimpos >= 110.f && fAnimpos <= 112.f && !m_bAttacked)
+				if (fAnimpos >= 110.f && fAnimpos <= 112.f)
 				{
-					_uint iDamage = m_iDefaultDamage2 + rand() % 50;
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_KnockDown);
-					m_bAttacked = true;
+					if (m_pGameInstance->CheckCollision_Parrying(m_pAttackColliderCom))
+					{
+						m_eCurState = STATE_KNOCKDOWN;
+						break;
+					}
+
+					if (!m_bAttacked)
+					{
+						_uint iDamage = m_iDefaultDamage2 + rand() % 50;
+						m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_KnockDown);
+						m_bAttacked = true;
+					}
 				}
 				if (fAnimpos >= 101.f && fAnimpos <= 109.f)
 				{
@@ -450,11 +505,20 @@ void CVoid23::Tick_State(_float fTimeDelta)
 			m_bSelectAttackPattern = false;
 			{
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
-				if (fAnimpos >= 70.f && fAnimpos <= 72.f && !m_bAttacked)
+				if (fAnimpos >= 70.f && fAnimpos <= 72.f)
 				{
-					_uint iDamage = m_iDefaultDamage2 + rand() % 50;
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
-					m_bAttacked = true;
+					if (m_pGameInstance->CheckCollision_Parrying(m_pAttackColliderCom))
+					{
+						m_eCurState = STATE_KNOCKDOWN;
+						break;
+					}
+
+					if (!m_bAttacked)
+					{
+						_uint iDamage = m_iDefaultDamage2 + rand() % 50;
+						m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
+						m_bAttacked = true;
+					}
 				}
 				if (fAnimpos >= 60.f && fAnimpos <= 80.f)
 				{
@@ -469,17 +533,23 @@ void CVoid23::Tick_State(_float fTimeDelta)
 			m_bSelectAttackPattern = false;
 			{
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
-				if (fAnimpos >= 65.f && fAnimpos <= 67.f && !m_bAttacked)
+				if (fAnimpos >= 65.f && fAnimpos <= 67.f)
 				{
-					_uint iDamage = m_iDefaultDamage2 + rand() % 50;
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
-					m_bAttacked = true;
+					if (!m_bAttacked)
+					{
+						_uint iDamage = m_iDefaultDamage2 + rand() % 50;
+						m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
+						m_bAttacked = true;
+					}
 				}
-				if (fAnimpos >= 118.f && fAnimpos <= 120.f && !m_bAttacked2)
+				if (fAnimpos >= 118.f && fAnimpos <= 120.f)
 				{
-					_uint iDamage = m_iDefaultDamage2 + rand() % 50;
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
-					m_bAttacked2 = true;
+					if (!m_bAttacked2)
+					{
+						_uint iDamage = m_iDefaultDamage2 + rand() % 50;
+						m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
+						m_bAttacked2 = true;
+					}
 				}
 				if (fAnimpos >= 58.f && fAnimpos <= 125.f)
 				{
@@ -495,6 +565,14 @@ void CVoid23::Tick_State(_float fTimeDelta)
 			m_pModelCom->IsAnimationFinished(B_ATTACK05))
 		{
 			m_eCurState = STATE_IDLE;
+
+			//// Test
+			//++m_iAttackPattern;
+
+			//if (m_iAttackPattern == 5)
+			//{
+			//	m_iAttackPattern = 0;
+			//}
 		}
 
 		break;
@@ -511,6 +589,15 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				m_iDamageAcc = 0;
 				m_bHit = false;
 			}
+		}
+
+		break;
+
+	case Client::CVoid23::STATE_KNOCKDOWN:
+
+		if (m_pModelCom->IsAnimationFinished(KNOCKDOWN))
+		{
+			m_eCurState = STATE_CHASE;
 		}
 
 		break;

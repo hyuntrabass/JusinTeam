@@ -118,8 +118,11 @@ void CMonster::Late_Tick(_float fTimeDelta)
 		}
 	}
 
-	m_pModelCom->Play_Animation(fTimeDelta);
-	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 2.f))
+	{
+		m_pModelCom->Play_Animation(fTimeDelta);
+		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	}
 }
 
 HRESULT CMonster::Render()
