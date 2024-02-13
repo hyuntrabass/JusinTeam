@@ -43,6 +43,9 @@ HRESULT CCamera_Main::Init(void* pArg)
 
 void CCamera_Main::Tick(_float fTimeDelta)
 {
+	
+	//fTimeDelta /= (m_pGameInstance->Get_TimeRatio());
+
 	if (m_pCam_Manager->Get_CameraModeIndex() != CM_MAIN)
 	{
 		return;

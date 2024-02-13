@@ -115,6 +115,8 @@ void CRadar::Late_Tick(_float fTimeDelta)
 	{
 		m_pRadar->Late_Tick(fTimeDelta);
 		m_pPlayerIcon->Late_Tick(fTimeDelta);
+		m_pMonsterIcon->Late_Tick(fTimeDelta);
+		m_pNpcIcon->Late_Tick(fTimeDelta);
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 	}
 	else
@@ -122,8 +124,6 @@ void CRadar::Late_Tick(_float fTimeDelta)
 		m_pButton->Late_Tick(fTimeDelta);
 	}
 
-	m_pMonsterIcon->Late_Tick(fTimeDelta);
-	m_pNpcIcon->Late_Tick(fTimeDelta);
 }
 
 HRESULT CRadar::Render()
