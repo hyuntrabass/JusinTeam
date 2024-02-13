@@ -1,5 +1,6 @@
 #include "Level_Editor.h"
 #include "Camera.h"
+#include "Camera_Manager.h"
 
 CLevel_Editor::CLevel_Editor(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -59,10 +60,12 @@ HRESULT CLevel_Editor::Ready_Camera()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, strLayerTag, TEXT("Prototype_GameObject_Camera_Debug"), &CamDesc)))
-	{
-		return E_FAIL;
-	}
+	CCamera_Manager::Get_Instance()->Set_CameraModeIndex(CM_MAIN);
+
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, strLayerTag, TEXT("Prototype_GameObject_Camera_Debug"), &CamDesc)))
+	//{
+	//	return E_FAIL;
+	//}
 
 	return S_OK;
 }

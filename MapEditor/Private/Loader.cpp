@@ -456,24 +456,26 @@ HRESULT CLoader::Load_Editor()
 	//}	
 
 #pragma endregion
-#pragma  region Boss/*
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar"),
-		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Groar/Mesh/Groar.hyuntraanimmesh"))))
-	{
-		return E_FAIL;
-	}
+#pragma  region Boss
+	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar"),
+	//	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Groar/Mesh/Groar.hyuntraanimmesh"))))
+	//{
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GroarScene01"),
-		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/GroarScene01/Mesh/GroarScene01.hyuntraanimmesh"))))
-	{
-		return E_FAIL;
-	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GroarScene02"),
-		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/GroarScene02/Mesh/GroarScene02.hyuntraanimmesh"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GroarScene01"),
+	//	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/GroarScene01/Mesh/GroarScene01.hyuntraanimmesh"))))
+	//{
+	//	return E_FAIL;
+	//}
+
+	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GroarScene02"),
+	//	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/GroarScene02/Mesh/GroarScene02.hyuntraanimmesh"))))
+	//{
+	//	return E_FAIL;
+	//}
+
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar_Boss"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/Groar_Boss/Mesh/Groar_Boss.hyuntraanimmesh"))))
@@ -481,13 +483,12 @@ HRESULT CLoader::Load_Editor()
 		return E_FAIL;
 	}
 
-	_mat TentaclePivot = _mat::CreateRotationX(XMConvertToRadians(290.f));
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar_Tentacle"),
-		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/Groar_Tentacle/Mesh/Groar_Tentacle.hyuntraanimmesh", false, TentaclePivot))))
-	{
-		return E_FAIL;
-	}
-*/
+	//_mat TentaclePivot = _mat::CreateRotationX(XMConvertToRadians(290.f));
+	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar_Tentacle"),
+	//	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/Groar_Tentacle/Mesh/Groar_Tentacle.hyuntraanimmesh", false, TentaclePivot))))
+	//{
+	//	return E_FAIL;
+	//}
 
 #pragma  endregion Boss
 

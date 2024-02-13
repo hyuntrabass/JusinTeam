@@ -38,6 +38,7 @@ public:
 
 	void Start_Play();
 	void Stop_Play();
+	void Reset_Play();
 
 private:
 	_bool m_isMoveMode{ true };
@@ -83,6 +84,7 @@ private:
 	_bool                   m_isShakeEye = { false };
 	_bool                   m_isShakeAt = { false };
 	_bool                   m_isShakePower = { false };
+	_bool                   m_isStop = { false };
 
 	_float                  m_fShakePower = { 0.f };
 	_float                  m_fShakeDuration = { 0.f };

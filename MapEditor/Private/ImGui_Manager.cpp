@@ -81,7 +81,6 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 	{
 		if (m_pSelectedDummy)
 		{
-
 			CTransform* pObjectsTransform = (CTransform*)m_pSelectedDummy->Find_Component(TEXT("Com_Transform"));
 
 			_vector ObjRight = { m_ObjectMatrix._11, m_ObjectMatrix._12, m_ObjectMatrix._13, m_ObjectMatrix._14 };
@@ -915,7 +914,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 
 						//if (m_CameraList.size() != 0)
 						//{
-							string PlayButtonName = "Play Camera";
+							string PlayButtonName = "Play";
 							if (ImGui::Button(PlayButtonName.c_str()))
 							{
 								if (!pEyeCurve.empty() && !pAtCurve.empty())
@@ -925,6 +924,25 @@ HRESULT CImGui_Manager::ImGuiMenu()
 										m_pSelectCamera->Start_Play();
 								}
 							}
+							ImGui::SameLine();
+							if (ImGui::Button("Stop"))
+							{
+								if (!pEyeCurve.empty() && !pAtCurve.empty())
+								{
+									if (m_pSelectCamera)
+										m_pSelectCamera->Stop_Play();
+								}
+							}
+							ImGui::SameLine();
+							if (ImGui::Button("Reset Play"))
+							{
+								if (!pEyeCurve.empty() && !pAtCurve.empty())
+								{
+									if (m_pSelectCamera)
+										m_pSelectCamera->Reset_Play();
+								}
+							}
+
 							m_iFrame = m_pSelectCamera->Get_Frame();
 							string FrameButtonName = "Frame";
 							ImGui::SliderInt(FrameButtonName.c_str(), &m_iFrame, 0, 300);
@@ -1481,31 +1499,31 @@ void CImGui_Manager::Reset()
 {
 	for (auto iter : m_MapsList)
 	{
-		iter->Set_Dead();
+		iter->Kill();
 	}
 	m_MapsList.clear();
 
 	for (auto iter : m_ObjectsList)
 	{
-		iter->Set_Dead();
+		iter->Kill();
 	}
 	m_ObjectsList.clear();
 
 	for (auto iter : m_MonsterList)
 	{
-		iter->Set_Dead();
+		iter->Kill();
 	}
 	m_MonsterList.clear();
 
 	for (auto iter : m_NPCList)
 	{
-		iter->Set_Dead();
+		iter->Kill();
 	}
 	m_NPCList.clear();
 
 	for (auto iter : m_EnvirList)
 	{
-		iter->Set_Dead();
+		iter->Kill();
 	}
 	m_EnvirList.clear();
 
