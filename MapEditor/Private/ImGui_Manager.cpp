@@ -665,7 +665,6 @@ HRESULT CImGui_Manager::ImGuiMenu()
 		}
 
 #pragma endregion
-
 #pragma region 엔피씨
 		if (ImGui::BeginTabItem("NPC"))
 		{
@@ -740,7 +739,6 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::EndTabItem();
 		}
 #pragma endregion
-
 #pragma region 카메라
 		if (ImGui::BeginTabItem("Camera"))
 		{
@@ -765,8 +763,8 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::InputFloat4("End At Curved", &vAtEndCurved.x, nullptr, 0);
 
 			ImGui::Separator();
-			ImGui::InputText("Section Name", &SectionName[0], SectionName.size());
-			ImGui::InputFloat("CameraSpeed : ", &fCameraSpeed, 0);
+			//ImGui::InputText("Section Name", &SectionName[0], SectionName.size());
+			//ImGui::InputFloat("CameraSpeed : ", &fCameraSpeed, 0);
 
 			if (!m_pSelectCamera)
 			{
@@ -792,10 +790,9 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				if (m_pSelectCamera)
 				{
 					//string strName = m_CameraList[i]->Get_Name();
-					string strName = m_pSelectCamera->Get_Name();
-					if (ImGui::TreeNode(strName.c_str()))
+					//string strName = m_pSelectCamera->Get_Name();
+					if (ImGui::TreeNode("Camera"/*strName.c_str()*/))
 					{
-
 						static int iEye_Count = 0;
 						//vector<CCutScene_Curve*>& pEyeCurve = m_CameraList[i]->Get_EyeCurve();
 						vector<CCutScene_Curve*>& pEyeCurve = m_pSelectCamera->Get_EyeCurve();
@@ -923,7 +920,9 @@ HRESULT CImGui_Manager::ImGuiMenu()
 							{
 								if (!pEyeCurve.empty() && !pAtCurve.empty())
 								{
-									m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+									//m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+									if(m_pSelectCamera)
+										m_pSelectCamera->Start_Play();
 								}
 							}
 							m_iFrame = m_pSelectCamera->Get_Frame();
@@ -960,7 +959,6 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				ImGui::EndTabItem();
 		}
 #pragma endregion
-
 #pragma region 트리거
 		if (ImGui::BeginTabItem("Trigger"))
 		{
@@ -1437,7 +1435,7 @@ HRESULT CImGui_Manager::Modify_Terrain()
 
 void CImGui_Manager::Create_Camera()
 {
-	string InputName = SectionName.c_str();
+	/*string InputName = SectionName.c_str();
 	if (InputName.empty())
 	{
 		MessageBox(g_hWnd, L"Empty is Section Name", L"Error", MB_OK);
@@ -1453,9 +1451,9 @@ void CImGui_Manager::Create_Camera()
 				return;
 			}
 		}
-	}
+	}*/
 	CameraInfo Info{};
-	Info.strName = InputName;
+	//Info.strName = InputName;
 	Info.ppCamera = &m_pSelectCamera;
 	Info.eType = ItemType::Camera;
 	Info.vStartCutScene = m_fCameraPickingPos[0];
@@ -2877,7 +2875,7 @@ HRESULT CImGui_Manager::Load_CutScene()
 		if (!m_pSelectCamera)
 		{
 			CameraInfo Info{};
-			Info.strName = InputName;
+			//Info.strName = InputName;
 			Info.ppCamera = &m_pSelectCamera;
 			Info.eType = ItemType::Camera;
 			Info.vStartCutScene = m_fCameraPickingPos[0];
