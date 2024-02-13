@@ -54,7 +54,7 @@ public:
 	HRESULT Init(void* pArg) override;
 
 public:
-	void Gravity(_float fTimeDelta, _vec4 vUpDir = XMVectorSet(0.f, 1.f, 0.f, 0.f));
+	void Gravity(_float fTimeDelta, _float fGravity = -19.81f);
 	void Reset_Gravity();
 
 	void Go_Straight(_float fTimeDelta);

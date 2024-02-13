@@ -176,7 +176,7 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	}
 
 #ifdef _DEBUG
-	Print_StringStream();
+	//Print_StringStream();
 #endif // _DEBUG
 
 }
@@ -1435,12 +1435,14 @@ void CGameInstance::Print_StringStream()
 
 	for (int i = 0; i < 20; i++)
 	{
-		SetConsoleCursorPosition(hConsole, cursorPos);
-		cout << blank << endl;
+		//SetConsoleCursorPosition(hConsole, cursorPos);
+		//cout << blank << endl;
+		DWORD dw{};
+		FillConsoleOutputCharacter(hConsole, ' ', 40, cursorPos, &dw);
 		cursorPos.Y++;
 	}
 
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), COORD());
+	SetConsoleCursorPosition(hConsole, COORD());
 	cout << m_OutputStream.str() << flush;
 	m_OutputStream = {};
 	m_OutputStream.clear();

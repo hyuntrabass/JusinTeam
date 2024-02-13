@@ -47,24 +47,24 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 	fTimeDelta /= m_pGameInstance->Get_TimeRatio();
 
 #ifdef _DEBUG
-	_vector Pos = m_pTransformCom->Get_State(State::Pos);
-	_vector Look = m_pTransformCom->Get_State(State::Look);
-	m_pGameInstance->Get_StringStream() << "카메라 전환 : P" << endl;
-	m_pGameInstance->Get_StringStream() << "플레이어 소환 : O" << endl;
-	m_pGameInstance->Get_StringStream() << "슬로우 모드 : I" << endl;
-	m_pGameInstance->Get_StringStream() << "카메라 속도 초기화 : U" << endl;
-	m_pGameInstance->Get_StringStream() << "디버그 랜더 On/Off : F1" << endl;
-	m_pGameInstance->Get_StringStream() << endl;
-	m_pGameInstance->Get_StringStream() << "카메라 이동속도 :" << m_fSpeed << endl;
-	m_pGameInstance->Get_StringStream() << endl;
-	m_pGameInstance->Get_StringStream() << "카메라 위치 X :" << Pos.m128_f32[0] << endl;
-	m_pGameInstance->Get_StringStream() << "카메라 위치 Y :" << Pos.m128_f32[1] << endl;
-	m_pGameInstance->Get_StringStream() << "카메라 위치 Z :" << Pos.m128_f32[2] << endl;
-	m_pGameInstance->Get_StringStream() << endl;
-	m_pGameInstance->Get_StringStream() << "카메라 룩 X :" << Look.m128_f32[0] << endl;
-	m_pGameInstance->Get_StringStream() << "카메라 룩 Y :" << Look.m128_f32[1] << endl;
-	m_pGameInstance->Get_StringStream() << "카메라 룩 Z :" << Look.m128_f32[2] << endl;
-	m_pGameInstance->Get_StringStream() << endl;
+	//_vector Pos = m_pTransformCom->Get_State(State::Pos);
+	//_vector Look = m_pTransformCom->Get_State(State::Look);
+	//m_pGameInstance->Get_StringStream() << "카메라 전환 : P" << endl;
+	//m_pGameInstance->Get_StringStream() << "플레이어 소환 : O" << endl;
+	//m_pGameInstance->Get_StringStream() << "슬로우 모드 : I" << endl;
+	//m_pGameInstance->Get_StringStream() << "카메라 속도 초기화 : U" << endl;
+	//m_pGameInstance->Get_StringStream() << "디버그 랜더 On/Off : F1" << endl;
+	//m_pGameInstance->Get_StringStream() << endl;
+	//m_pGameInstance->Get_StringStream() << "카메라 이동속도 :" << m_fSpeed << endl;
+	//m_pGameInstance->Get_StringStream() << endl;
+	//m_pGameInstance->Get_StringStream() << "카메라 위치 X :" << Pos.m128_f32[0] << endl;
+	//m_pGameInstance->Get_StringStream() << "카메라 위치 Y :" << Pos.m128_f32[1] << endl;
+	//m_pGameInstance->Get_StringStream() << "카메라 위치 Z :" << Pos.m128_f32[2] << endl;
+	//m_pGameInstance->Get_StringStream() << endl;
+	//m_pGameInstance->Get_StringStream() << "카메라 룩 X :" << Look.m128_f32[0] << endl;
+	//m_pGameInstance->Get_StringStream() << "카메라 룩 Y :" << Look.m128_f32[1] << endl;
+	//m_pGameInstance->Get_StringStream() << "카메라 룩 Z :" << Look.m128_f32[2] << endl;
+	//m_pGameInstance->Get_StringStream() << endl;
 
 #endif // _DEBUG
 

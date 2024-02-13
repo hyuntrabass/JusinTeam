@@ -61,6 +61,7 @@ private:
 	_bool m_isInfinite{ false };
 	wstring m_strFilePath{};
 	_bool m_isBreakLoop{};
+	_bool m_isInVillage{};
 
 private:
 	_bool m_isCollBossTrigger = { false };

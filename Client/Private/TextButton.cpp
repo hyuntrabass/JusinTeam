@@ -27,6 +27,7 @@ HRESULT CTextButton::Init(void* pArg)
 	m_vTextPosition = ((TEXTBUTTON_DESC*)pArg)->vTextPosition;
 	m_strText = ((TEXTBUTTON_DESC*)pArg)->strText;
 	m_vTextColor = ((TEXTBUTTON_DESC*)pArg)->vTextColor;
+	m_vTextBorderColor = ((TEXTBUTTON_DESC*)pArg)->vTextBorderColor;
 	m_eLevel = ((TEXTBUTTON_DESC*)pArg)->eLevelID;
 
 	m_strTexture = ((TEXTBUTTON_DESC*)pArg)->strTexture;
@@ -91,10 +92,10 @@ HRESULT CTextButton::Render()
 
 	if (m_strText != TEXT(""))
 	{
-		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x + 1.f, m_fY + m_vTextPosition.y), m_fFontSize,  _vec4(0.f, 0.f, 0.f, 1.f));
-		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y), m_fFontSize,  _vec4(0.f, 0.f, 0.f, 1.f));
-		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y + 1.f), m_fFontSize,  _vec4(0.f, 0.f, 0.f, 1.f));
-		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y), m_fFontSize,  _vec4(0.f, 0.f, 0.f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x + 1.f, m_fY + m_vTextPosition.y), m_fFontSize, m_vTextBorderColor);
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y), m_fFontSize, m_vTextBorderColor);
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y + 1.f), m_fFontSize, m_vTextBorderColor);
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y), m_fFontSize, m_vTextBorderColor);
 		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y), m_fFontSize, m_vTextColor);
 	}
 

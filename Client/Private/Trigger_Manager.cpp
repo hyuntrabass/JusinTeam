@@ -38,6 +38,7 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 				m_strFilePath = L"../Bin/Data/Village_CutScene.dat";
 				CCamera_Manager::Get_Instance()->Set_CameraModeIndex(CM_CUTSCENE);
 				CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
+				m_isInVillage = true;
 				iter->Set_Limited(false);
 			}
 			else if (iter->Get_TriggerType() == FRONTDOOR_IN_TRIGGER)
@@ -45,11 +46,18 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 				pTrigger = iter;
 				if (iter->Get_Limited() == false)
 				{
-					CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::FIELDEAST);
-					m_pGameInstance->FadeoutSound(0, fTimeDelta);
-					m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("Midgard_Field"), 0.3f, true);
-					m_pGameInstance->FadeinSound(m_iSoundChannel, fTimeDelta);
+					if (m_isInVillage)
+					{
+						CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::FIELDSOUTH);
+						m_pGameInstance->FadeoutSound(0, fTimeDelta, 1.f, false);
+					}
 					iter->Set_Limited(true);
+				}
+				if (not m_pGameInstance->Get_IsPlayingSound(0))
+				{
+					m_pGameInstance->PlayBGM(TEXT("Midgard_Field"));
+					m_pGameInstance->FadeinSound(0, fTimeDelta);
+					m_isInVillage = false;
 				}
 			}
 			else if (iter->Get_TriggerType() == FRONTDOOR_OUT_TRIGGER)
@@ -57,14 +65,18 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 				pTrigger = iter;
 				if (iter->Get_Limited() == false)
 				{
-					CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
-					if (m_iSoundChannel != -1)
+					if (not m_isInVillage)
 					{
-						m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
-						m_iSoundChannel = -1;
+						CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
+						m_pGameInstance->FadeoutSound(0, fTimeDelta, 1.f, false);
 					}
-					m_pGameInstance->FadeinSound(0, fTimeDelta);
 					iter->Set_Limited(true);
+				}
+				if (not m_pGameInstance->Get_IsPlayingSound(0))
+				{
+					m_pGameInstance->PlayBGM(TEXT("BGM_1st_Village"));
+					m_pGameInstance->FadeinSound(0, fTimeDelta);
+					m_isInVillage = true;
 				}
 			}
 			else if (iter->Get_TriggerType() == BACKDOOR_IN_TRIGGER)
@@ -72,11 +84,18 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 				pTrigger = iter;
 				if (iter->Get_Limited() == false)
 				{
-					CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::FIELDSOUTH);
-					m_pGameInstance->FadeoutSound(0, fTimeDelta);
-					m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("Midgard_Field"), 0.3f, true);
-					m_pGameInstance->FadeinSound(m_iSoundChannel, fTimeDelta);
+					if (m_isInVillage)
+					{
+						CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::FIELDEAST);
+						m_pGameInstance->FadeoutSound(0, fTimeDelta, 1.f, false);
+					}
 					iter->Set_Limited(true);
+				}
+				if (not m_pGameInstance->Get_IsPlayingSound(0))
+				{
+					m_pGameInstance->PlayBGM(TEXT("Midgard_Field"));
+					m_pGameInstance->FadeinSound(0, fTimeDelta);
+					m_isInVillage = false;
 				}
 			}
 			else if (iter->Get_TriggerType() == BACKDOOR_OUT_TRIGGER)
@@ -84,14 +103,18 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 				pTrigger = iter;
 				if (iter->Get_Limited() == false)
 				{
-					CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
-					if (m_iSoundChannel != -1)
+					if (not m_isInVillage)
 					{
-						m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
-						m_iSoundChannel = -1;
+						CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
+						m_pGameInstance->FadeoutSound(0, fTimeDelta, 1.f, false);
 					}
-					m_pGameInstance->FadeinSound(0, fTimeDelta);
 					iter->Set_Limited(true);
+				}
+				if (not m_pGameInstance->Get_IsPlayingSound(0))
+				{
+					m_pGameInstance->PlayBGM(TEXT("BGM_1st_Village"));
+					m_pGameInstance->FadeinSound(0, fTimeDelta);
+					m_isInVillage = true;
 				}
 			}
 			else if (iter->Get_TriggerType() == BOSS_TRIGGER && iter->Get_Limited() == true)
@@ -143,8 +166,6 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 			}
 		}
 	}
-
-
 }
 
 void CTrigger_Manager::Limited_CutScene(_bool isLimited)

@@ -418,6 +418,15 @@
     <Filter Include="02.GameObjects\01.Camera\Manager">
       <UniqueIdentifier>{4b35df5d-87da-449a-96d1-924dbbb6a5a2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Vehicle">
+      <UniqueIdentifier>{8ae8111f-3a1d-46db-a063-c11629d8671e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Vehicle\VehicleDesc">
+      <UniqueIdentifier>{1092602c-b25d-4d3c-9c35-8d48463bb177}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Vehicle\Vehicle">
+      <UniqueIdentifier>{0d9cfe46-b184-4484-a323-3a20f496c6c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -835,6 +844,18 @@
     <ClInclude Include="..\public\Camera_Manager.h">
       <Filter>02.GameObjects\01.Camera\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\VehicleBook.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VehicleDesc.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Vehicle\VehicleDesc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Vehicle.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Vehicle\Vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NineSlice.h">
+      <Filter>02.GameObjects\00.UI\Texture&amp;Text</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1249,6 +1270,18 @@
     </ClCompile>
     <ClCompile Include="..\private\Camera_Manager.cpp">
       <Filter>02.GameObjects\01.Camera\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VehicleBook.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Vehicle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VehicleDesc.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Vehicle\VehicleDesc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Vehicle.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Vehicle\Vehicle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NineSlice.cpp">
+      <Filter>02.GameObjects\00.UI\Texture&amp;Text</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

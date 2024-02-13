@@ -115,6 +115,13 @@ namespace Client
 		PT_WEAPON,
 		PT_END
 	};
+	
+	enum VEHICLE_TYPE
+	{
+		VC_GROUND,
+		VC_FLY,
+		VC_END
+	};
 
 	/*enum SoundChannel
 	{
@@ -165,7 +172,7 @@ namespace Client
 		SCH_EFFECT_MONSTER18,
 		SCH_EFFECT_MONSTER19,
 		SCH_MAX
-	};*/
+	}; */
 
 	enum SortDepth
 	{
