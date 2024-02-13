@@ -38,7 +38,7 @@ public:
 	_vec4	Get_CurvePos(_uint iIndex);
 	_float	Get_SectionSpeed();
 
-	void Set_Dead();
+	//void Set_Dead();
 
 private:
 	HRESULT Add_Components();

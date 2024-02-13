@@ -36,6 +36,9 @@ public:
 
 	void Play_Camera(_float fTimeDelta);
 
+	void Start_Play();
+	void Stop_Play();
+
 private:
 	_bool m_isMoveMode{ true };
 	_float m_fMouseSensor{ 0.08f };
@@ -47,6 +50,9 @@ private:
 	CRenderer* m_pRendererCom = { nullptr };
 	CShader* m_pShaderCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
+
+private:
+	class CCamera_Manager* m_pCam_Manager{ nullptr };
 
 private:
 	_float m_fSceneTimer{};

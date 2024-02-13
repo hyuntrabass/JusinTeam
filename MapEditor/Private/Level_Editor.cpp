@@ -64,8 +64,6 @@ HRESULT CLevel_Editor::Ready_Camera()
 		return E_FAIL;
 	}
 
-	m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
-
 	return S_OK;
 }
 
