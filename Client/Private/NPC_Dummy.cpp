@@ -32,11 +32,19 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	Collider_Desc CollDesc = {};
+	CollDesc.eType = ColliderType::Sphere;
+	CollDesc.vCenter = _vec3(0.f, 0.f, 0.f);
+	CollDesc.fRadius = 12.f;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+		TEXT("Com_NpcCol"), (CComponent**)&m_pColliderCom, &CollDesc)))
+		return E_FAIL;
+
 
 	CDialog::DIALOG_DESC DialogDesc = {};
 	DialogDesc.eLevelID = LEVEL_STATIC;
 	DialogDesc.pParentTransform = m_pTransformCom;
-	DialogDesc.vPosition = _vec3(0.f, 1.8f, 0.f);
+	DialogDesc.vPosition = _vec3(0.f, 2.2f, 0.f);
 	DialogDesc.strText = TEXT("테스트입니다~");
 
 #pragma region Animal
@@ -59,6 +67,7 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 	if (m_strModelTag == TEXT("Prototype_Model_Female_003"))
 	{
 		m_Animation.iAnimIndex = 2;
+		DialogDesc.strText = TEXT("날씨가 참 좋네~날씨가 참 좋네~날씨가 참 좋네~");
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Female_004"))
@@ -69,11 +78,13 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 	if (m_strModelTag == TEXT("Prototype_Model_Female_006"))
 	{
 		m_Animation.iAnimIndex = 4;
+		DialogDesc.strText = TEXT("임시로 띄운 텍스트입니다~ 임시로 띄운 텍스트입니다~ 임시로 띄운 텍스트입니다~ ");
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Male_009"))
 	{
 		m_Animation.iAnimIndex = 1;
+		DialogDesc.strText = TEXT("임시로 띄운 텍스트입니다~ 여기에 /n을 넣으면 당연히 엔터가 안되겠지?");
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Male_013"))
@@ -103,7 +114,7 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 	if (m_strModelTag == TEXT("Prototype_Model_Female_013"))
 	{
 		m_Animation.iAnimIndex = 1;
-		DialogDesc.strText = TEXT("춤추는 사람 춤추는 사람 춤추는 사람 긴 텍스트");
+		DialogDesc.strText = TEXT("춤추는 사람 춤추는 사람 춤추는 사람 춤추는 사람");
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Female_027"))
@@ -119,6 +130,7 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 	if (m_strModelTag == TEXT("Prototype_Model_Male_016"))
 	{
 		m_Animation.iAnimIndex = 0;
+		DialogDesc.strText = TEXT("임시로 띄운 텍스트입니다~ ");
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Male_020"))
@@ -143,6 +155,7 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 	if (m_strModelTag == TEXT("Prototype_Model_Female_010"))
 	{
 		m_Animation.iAnimIndex = 10;
+		DialogDesc.strText = TEXT("임시로 띄운 텍스트입니다~ 수군거리는 엔피씨 ");
 	}
 
 #pragma endregion TALK NPC
@@ -221,15 +234,22 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 void CNPC_Dummy::Tick(_float fTimeDelta)
 {	
 	m_pModelCom->Set_Animation(m_Animation);
-	//m_pDialog->Tick(fTimeDelta);
+	m_pDialog->Tick(fTimeDelta);
 
+	__super::Update_Collider();
 	m_pTransformCom->Gravity(fTimeDelta);
+
 }
 
 void CNPC_Dummy::Late_Tick(_float fTimeDelta)
 {
 	__super::Late_Tick(fTimeDelta);
-	//m_pDialog->Late_Tick(fTimeDelta);
+	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
+	_bool isColl = m_pColliderCom->Intersect(pCollider);
+	if (isColl)
+	{
+		m_pDialog->Late_Tick(fTimeDelta);
+	}
 }
 
 HRESULT CNPC_Dummy::Render()

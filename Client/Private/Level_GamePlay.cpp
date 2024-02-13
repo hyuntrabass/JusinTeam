@@ -100,19 +100,12 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
-	// Boss_Test
-	//if (FAILED(Ready_Groar_Boss()))
-	//{
-	//	MSG_BOX("Failed to Ready Groar_Boss");
-	//	return E_FAIL;
-	//}
-
 	// Pet_Test
-	//if (FAILED(Ready_Pet()))
-	//{
-	//	MSG_BOX("Failed to Ready Pet");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Pet()))
+	{
+		MSG_BOX("Failed to Ready Pet");
+		return E_FAIL;
+	}
 
 	// UI
 	if (FAILED(Ready_UI()))
@@ -804,6 +797,10 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Targeted"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_VehicleBook"))))
 	{
 		return E_FAIL;
 	}

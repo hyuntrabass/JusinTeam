@@ -166,11 +166,9 @@ HRESULT CItemMerchant::Add_Parts()
 	}
 
 	Collider_Desc CollDesc = {};
-	CollDesc.eType = ColliderType::AABB;
-	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
-	CollDesc.vExtents = _vec3(15.f, 1.f, 15.f);
-	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.9f, 0.f);
-
+	CollDesc.eType = ColliderType::Sphere;
+	CollDesc.vCenter = _vec3(0.f, 0.f, 0.f);
+	CollDesc.fRadius = 8.f;
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 		TEXT("Com_Roskva"), (CComponent**)&m_pColliderCom, &CollDesc)))
 		return E_FAIL;

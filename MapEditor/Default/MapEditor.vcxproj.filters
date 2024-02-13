@@ -67,6 +67,9 @@
     <Filter Include="02.GameObjects\01.Camera\CutScene\Point">
       <UniqueIdentifier>{ad41c511-0e25-4faa-ae92-8942a39c922c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\01.Camera\Manager">
+      <UniqueIdentifier>{3eb84866-2142-479e-ba39-d31d38a191ac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MapEditor_Define.h">
@@ -165,6 +168,9 @@
     <ClInclude Include="..\Public\CutScene_Point.h">
       <Filter>02.GameObjects\01.Camera\CutScene\Point</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Camera_Manager.h">
+      <Filter>02.GameObjects\01.Camera\Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -244,6 +250,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Camera_CutScene.cpp">
       <Filter>02.GameObjects\01.Camera\CutScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Manager.cpp">
+      <Filter>02.GameObjects\01.Camera\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
