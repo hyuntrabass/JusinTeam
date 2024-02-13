@@ -46,9 +46,9 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 				pTrigger = iter;
 				if (iter->Get_Limited() == false)
 				{
-					CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::FIELDEAST);
 					if (m_isInVillage)
 					{
+						CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::FIELDEAST);
 						m_pGameInstance->FadeoutSound(0, fTimeDelta, 1.f, false);
 					}
 					iter->Set_Limited(true);
@@ -65,9 +65,9 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 				pTrigger = iter;
 				if (iter->Get_Limited() == false)
 				{
-					CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
 					if (not m_isInVillage)
 					{
+						CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
 						m_pGameInstance->FadeoutSound(0, fTimeDelta, 1.f, false);
 					}
 					iter->Set_Limited(true);
@@ -84,9 +84,9 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 				pTrigger = iter;
 				if (iter->Get_Limited() == false)
 				{
-					CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::FIELDSOUTH);
 					if (m_isInVillage)
 					{
+						CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::FIELDSOUTH);
 						m_pGameInstance->FadeoutSound(0, fTimeDelta, 1.f, false);
 					}
 					iter->Set_Limited(true);
@@ -103,9 +103,9 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 				pTrigger = iter;
 				if (iter->Get_Limited() == false)
 				{
-					CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
 					if (not m_isInVillage)
 					{
+						CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
 						m_pGameInstance->FadeoutSound(0, fTimeDelta, 1.f, false);
 					}
 					iter->Set_Limited(true);
