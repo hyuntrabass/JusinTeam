@@ -8,6 +8,8 @@ BEGIN(Client)
 enum Riding_Type
 {
 	Bird,
+	Wyvern,
+	Falar,
 	Horse,
 	Tiger,
 	Nihilir,
@@ -17,6 +19,7 @@ struct Riding_Desc
 {
 	Riding_Type Type{ Type_End };
 	_vec4 vSummonPos{};
+	_bool bGlide{};
 };
 enum Riding_State
 {
@@ -30,6 +33,7 @@ enum Riding_State
 	Riding_Jump_Run,
 	Riding_Jump_End,
 	Riding_Sky,
+	Riding_Glide,
 	Riding_End
 
 };
@@ -51,6 +55,21 @@ enum Bird_Anim
 	Bird_2005_Landing,
 	Bird_2005_Start,
 	Bird_2005_Takeoff
+};
+enum Wyvern_Anim
+{
+	Wyvern_3004_Fly,
+	Wyvern_3004_Landing,
+	Wyvern_3004_Start,
+	Wyvern_3004_TakeOff
+};
+enum Falar_Anim
+{
+	Falar_5002_fly,
+	Falar_5002_landing,
+	Falar_5002_roar,
+	Falar_5002_start,
+	Falar_5002_TakeOff
 };
 enum Horse_Anim
 {
