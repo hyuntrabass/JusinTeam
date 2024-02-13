@@ -54,11 +54,7 @@ private:
 
 private:
 	_bool m_bReadyTutorial{};
-	HWND m_hVideo;
-	HDC m_DC;
-	HDC m_BackDC;
-	HBITMAP m_hBackBit;
-	HBITMAP m_hOldBackBit;
+
 public:
 	static CLevel_GamePlay* Create(_dev pDevice, _context pContext);
 	virtual void Free() override;

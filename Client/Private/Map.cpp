@@ -1,4 +1,5 @@
 #include "Map.h"
+#include "Camera_Manager.h"
 
 CMap::CMap(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
@@ -49,7 +50,9 @@ void CMap::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
-	if (m_pGameInstance->Get_CameraState() == CS_SKILLBOOK or m_pGameInstance->Get_CameraState() == CS_INVEN or m_pGameInstance->Get_CameraState() == CS_WORLDMAP)
+
+	CAMERA_STATE CamState = CCamera_Manager::Get_Instance()->Get_CameraState();
+	if (CamState == CS_SKILLBOOK or CamState == CS_INVEN or CamState == CS_WORLDMAP)
 	{
 		return;
 	}

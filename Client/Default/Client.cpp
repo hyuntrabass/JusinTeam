@@ -95,7 +95,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		if (fTimeAcc > 1.f / 60.f)
 		{
 			pMainApp->Tick(pGameInstance->Compute_TimeDelta(TEXT("Timer_60")));
-			if (not pGameInstance->Is_VideoPlaying())
+			if (not pGameInstance->Is_Playing_Video())
 			{
 				pMainApp->Render();
 			}
@@ -162,7 +162,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	//AdjustWindowRect(&rc, WS_POPUP, TRUE);
 
 	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_POPUP,
-		CW_USEDEFAULT, 0, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
+		100, 100, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
 
 	if (!hWnd)
 	{

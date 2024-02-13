@@ -1,6 +1,7 @@
 #include "Scarecrow.h"
 #include "Effect_Manager.h"
 #include "Effect_Dummy.h"
+#include "Camera_Manager.h"
 
 CScarecrow::CScarecrow(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -34,7 +35,7 @@ HRESULT CScarecrow::Init(void* pArg)
 
 void CScarecrow::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Get_CameraState() != CS_SKILLBOOK)
+	if (CCamera_Manager::Get_Instance()->Get_CameraState() != CS_SKILLBOOK)
 	{
 		return;
 	}
@@ -42,7 +43,7 @@ void CScarecrow::Tick(_float fTimeDelta)
 
 void CScarecrow::Late_Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Get_CameraState() != CS_SKILLBOOK)
+	if (CCamera_Manager::Get_Instance()->Get_CameraState() != CS_SKILLBOOK)
 	{
 		return;
 	}

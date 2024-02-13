@@ -86,11 +86,11 @@ HRESULT CModelTest::Render()
 {
     __super::Render();
 
-    wstring strTotalAnim = L"¾Ö´Ô °³¼ö : " + to_wstring(m_pModelCom->Get_NumAnim());
-    wstring strCurrAnim = L"ÇöÀç ¾Ö´Ô : " + to_wstring(m_Animation.iAnimIndex);
+    //wstring strTotalAnim = L"¾Ö´Ô °³¼ö : " + to_wstring(m_pModelCom->Get_NumAnim());
+    //wstring strCurrAnim = L"ÇöÀç ¾Ö´Ô : " + to_wstring(m_Animation.iAnimIndex);
 
-    m_pGameInstance->Render_Text(L"Font_Dialogue", strTotalAnim, _vec2(100.f, 650.f), 0.5f, _vec4(1.f, 1.f, 1.f, 1.f));
-    m_pGameInstance->Render_Text(L"Font_Dialogue", strCurrAnim, _vec2(100.f, 680.f), 0.5f, _vec4(1.f, 1.f, 1.f, 1.f));
+    //m_pGameInstance->Render_Text(L"Font_Dialogue", strTotalAnim, _vec2(100.f, 650.f), 0.5f, _vec4(1.f, 1.f, 1.f, 1.f));
+    //m_pGameInstance->Render_Text(L"Font_Dialogue", strCurrAnim, _vec2(100.f, 680.f), 0.5f, _vec4(1.f, 1.f, 1.f, 1.f));
 
     return S_OK;
 }

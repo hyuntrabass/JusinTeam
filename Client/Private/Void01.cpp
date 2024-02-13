@@ -1,5 +1,5 @@
 #include "Void01.h"
-
+#include "UI_Manager.h"
 #include "Dead.h"
 
 const _float CVoid01::m_fChaseRange = 7.f;
@@ -267,6 +267,10 @@ void CVoid01::Init_State(_float fTimeDelta)
 		case Client::CVoid01::STATE_DIE:
 			m_Animation.iAnimIndex = KNOCKBACK;
 			m_Animation.isLoop = false;
+
+			_uint iRandomExp = rand() % 100;
+			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(15.f + (_float)iRandomExp / 2.f * 0.1f);
+
 			break;
 		}
 

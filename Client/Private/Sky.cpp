@@ -1,4 +1,5 @@
 #include "Sky.h"
+#include "Camera_Manager.h"
 
 CSky::CSky(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -27,6 +28,11 @@ HRESULT CSky::Init(void* pArg)
 
 void CSky::Tick(_float fTimeDelta)
 {
+	if (CCamera_Manager::Get_Instance()->Get_CameraState() == CS_SKILLBOOK or CCamera_Manager::Get_Instance()->Get_CameraState() == CS_INVEN)
+	{
+		return;
+	}
+	
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
 	{
 		m_iTextureIndex++;
@@ -42,14 +48,10 @@ void CSky::Tick(_float fTimeDelta)
 	{
 	case LEVEL_GAMEPLAY:
 		m_fLightning_Time += fTimeDelta;
-		if (m_fLightning_Time > 8.f && m_fLightning_Time<8.1f)
+		if (m_fLightning_Time > 8.f && m_fLightning_Time < 8.1f)
 		{
-			if(m_iTextureIndex==10)
+			if (m_iTextureIndex == 10)
 			{
-				if (m_pGameInstance->Get_CameraState() == CS_SKILLBOOK or m_pGameInstance->Get_CameraState() == CS_INVEN)
-				{
-					return;
-				}
 				int random = rand() % 3;
 				switch (random)
 				{
@@ -62,15 +64,15 @@ void CSky::Tick(_float fTimeDelta)
 				default:
 					break;
 				}
-				
+
 			}
 			m_iTextureIndex = 9;
 		}
-		else if(m_fLightning_Time> 8.1f && m_fLightning_Time<8.2f)
+		else if (m_fLightning_Time > 8.1f && m_fLightning_Time < 8.2f)
 		{
 			m_iTextureIndex = 10;
 		}
-		else if (m_fLightning_Time>=8.2f && m_fLightning_Time<8.3f)
+		else if (m_fLightning_Time >= 8.2f && m_fLightning_Time < 8.3f)
 		{
 			m_iTextureIndex = 9;
 		}
@@ -90,7 +92,12 @@ void CSky::Tick(_float fTimeDelta)
 
 void CSky::Late_Tick(_float fTimeDelta)
 {
-	_vec4 vPos = m_pGameInstance->Get_CameraPos() - _vec4(0.f,15.f, 0.f, 0.f);
+	if (CCamera_Manager::Get_Instance()->Get_CameraState() == CS_SKILLBOOK or CCamera_Manager::Get_Instance()->Get_CameraState() == CS_INVEN)
+	{
+		return;
+	}
+	
+	_vec4 vPos = m_pGameInstance->Get_CameraPos() - _vec4(0.f, 15.f, 0.f, 0.f);
 
 	m_pTransformCom->Set_State(State::Pos, vPos);
 
@@ -275,7 +282,7 @@ void CSky::Free()
 
 	for (int i = 0; i < 19; i++)
 	{
-	Safe_Release(m_Textures[i]);
+		Safe_Release(m_Textures[i]);
 	}
 
 	Safe_Release(m_pModelCom);

@@ -8,9 +8,10 @@
 #include "Effect_Manager.h"
 #include "Trigger_Manager.h"
 #include "UI_Manager.h"
-#include "FadeBox.h"
 #include "Pop_Skill.h"
 #include "Pop_LevelUp.h"
+#include "Camera_Manager.h"
+
 //원명의 꼽사리
 #include "Lake.h"
 
@@ -79,7 +80,7 @@ HRESULT CLevel_GamePlay::Init()
 		MSG_BOX("Failed to Ready ModelTest");
 		return E_FAIL;
 	}
-	
+
 	if (FAILED(Ready_Monster_Test()))
 	{
 		MSG_BOX("Failed to Ready Monster_Test");
@@ -134,35 +135,14 @@ HRESULT CLevel_GamePlay::Init()
 	m_pGameInstance->Set_FogColor(_color(0.1f));
 	CUI_Manager::Get_Instance()->Set_Coin(100000);
 
-	/*
+
 	CFadeBox::FADE_DESC Desc = {};
-	Desc.eState = CFadeBox::FADEOUT;
-	Desc.fDuration = 3.f;
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
-	{
-		return E_FAIL;
-	}
-	*/
+	Desc.fOut_Duration = 3.f;
+	CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
 
-	m_DC = GetDC(g_hWnd);
 
-	m_BackDC = CreateCompatibleDC(m_DC);
-
-	m_hBackBit = CreateCompatibleBitmap(m_DC, g_iWinSizeX, g_iWinSizeY);
-
-	m_hOldBackBit = (HBITMAP)SelectObject(m_BackDC, m_hBackBit);
-
-	m_hVideo = MCIWndCreate(g_hWnd, NULL, WS_CHILD | WS_VISIBLE | MCIWNDF_NOPLAYBAR
-		, L"../Bin/Resources/Video/Tutorial0.wmv");
-
-	MCIWndSetVolume(g_hWnd, 1.f);
-
-	MoveWindow(m_hVideo, 0, 0, g_iWinSizeX, g_iWinSizeY, FALSE);
-
-	MCIWndPlay(m_hVideo);
-
-	//m_pGameInstance->Video_Start(35.f);
-	
+	m_pGameInstance->Play_Video(TEXT("Tutorial0.wmv"));
+	m_pGameInstance->Set_StopKey(DIK_RETURN);
 
 	return S_OK;
 }
@@ -182,39 +162,33 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 			}
 		}
 		m_bReadyTutorial = true;
-		MCIWndClose(m_hVideo);
-		SelectObject(m_BackDC, m_hOldBackBit); //DC에 원래 설정을 돌려줍니다.
-		DeleteDC(m_BackDC);  // 메모리를 반환합니다.
-		DeleteObject(m_hBackBit); // 메모리를 반환합니다.
-		ReleaseDC(g_hWnd, m_DC); // 윈도우에 DC 해제를 요청합니다.
 	}
-
-	
-
 
 	if (!CUI_Manager::Get_Instance()->Is_InvenActive())
 	{
 		m_RainMatrix = _mat::CreateTranslation(_vec3(m_pGameInstance->Get_CameraPos()));
 		//m_RainMatrix = _mat::CreateTranslation(_vec3(50.f, 3.f, 50.f));
 	}
-	if (m_pGameInstance->Get_CameraState() == CS_SKILLBOOK)
+
+	if (CCamera_Manager::Get_Instance()->Get_CameraState() == CS_SKILLBOOK)
 	{
 		m_RainMatrix = _mat();
-	 }
+	}
+
 	if (m_fWaveTimer > 5.f)
 	{
-	/*	int random = rand() % 3;
-		switch (random)
-		{
-		case 0:m_pGameInstance->Play_Sound(TEXT("waves0"), 0.8f, false);
-			break;
-		case 1:m_pGameInstance->Play_Sound(TEXT("waves1"), 0.8f, false);
-			break;
-		case 2:m_pGameInstance->Play_Sound(TEXT("waves2"), 0.8f, false);
-			break;
-		default:
-			break;
-		}*/
+		/*	int random = rand() % 3;
+			switch (random)
+			{
+			case 0:m_pGameInstance->Play_Sound(TEXT("waves0"), 0.8f, false);
+				break;
+			case 1:m_pGameInstance->Play_Sound(TEXT("waves1"), 0.8f, false);
+				break;
+			case 2:m_pGameInstance->Play_Sound(TEXT("waves2"), 0.8f, false);
+				break;
+			default:
+				break;
+			}*/
 
 
 		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Wave_Init");
@@ -268,23 +242,13 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 
 	m_fWaveTimer += fTimeDelta;
 
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD9) or m_pGameInstance->Key_Down(DIK_PRIOR))
+	if (m_pGameInstance->Is_Level_ShutDown(LEVEL_GAMEPLAY) or m_pGameInstance->Key_Down(DIK_NUMPAD9) or m_pGameInstance->Key_Down(DIK_PRIOR))
 	{
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_VILLAGE))))
 		{
 			return;
 		}
 
-		return;
-	}
-
-	if (m_pGameInstance->Ready_NextLevel())
-	{
-		m_pGameInstance->Set_NextLevel(false);
-		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_VILLAGE))))
-		{
-			return;
-		}
 		return;
 	}
 
@@ -347,7 +311,7 @@ HRESULT CLevel_GamePlay::Ready_Light()
 	LightDesc.vDiffuse = _vec4(0.2f, 0.2f, 0.2f, 1.f);
 	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
 	LightDesc.vSpecular = _vec4(1.f);
-	
+
 
 	return m_pGameInstance->Add_Light(LEVEL_GAMEPLAY, TEXT("Light_Main"), LightDesc);
 }
@@ -431,7 +395,7 @@ HRESULT CLevel_GamePlay::Ready_Map()
 	Desc.fReflectionScale = 0.05f;
 	Desc.fRefractionScale = 0.05f;
 	Desc.vPos = _vec3(100.f, 1.f, 100.f);
-	Desc.vSize = _vec2(200.f,200.f);
+	Desc.vSize = _vec2(200.f, 200.f);
 	Desc.fWaterSpeed = 0.01f;
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, L"Layer_Map", L"Prototype_GameObject_Water", &Desc)))
 		return E_FAIL;
@@ -833,7 +797,7 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	{
 		return E_FAIL;
 	}
-	
+
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_SkillBook"))))
 	{
 		return E_FAIL;
@@ -844,8 +808,8 @@ HRESULT CLevel_GamePlay::Ready_UI()
 		return E_FAIL;
 	}
 
-	
-	
+
+
 
 	return S_OK;
 }
@@ -854,55 +818,55 @@ HRESULT CLevel_GamePlay::Ready_TestTrigger()
 {
 	TriggerInfo Info{};
 	const TCHAR* pGetPath = L"../Bin/Data/test_Trigger.dat";
-	
+
 	std::ifstream inFile(pGetPath, std::ios::binary);
-	
+
 	if (!inFile.is_open())
 	{
 		MSG_BOX("../Bin/Data/test_Trigger.dat 트리거 불러오기 실패.");
 		return E_FAIL;
 	}
-		_uint TriggerListSize;
-		inFile.read(reinterpret_cast<char*>(&TriggerListSize), sizeof(_uint));
-	
-	
-		for (_uint i = 0; i < TriggerListSize; ++i)
-		{
-			TriggerInfo TriggerInfo{};
-	
-			_uint iIndex{};
-			inFile.read(reinterpret_cast<char*>(&iIndex), sizeof(_uint));
-			TriggerInfo.iIndex = iIndex;
-		
-			_bool bCheck{};
-			inFile.read(reinterpret_cast<char*>(&bCheck), sizeof(_bool));
-			TriggerInfo.bLimited = bCheck;
+	_uint TriggerListSize;
+	inFile.read(reinterpret_cast<char*>(&TriggerListSize), sizeof(_uint));
 
-			_ulong TriggerPrototypeSize;
-			inFile.read(reinterpret_cast<char*>(&TriggerPrototypeSize), sizeof(_ulong));
-	
-			wstring TriggerPrototype;
-			TriggerPrototype.resize(TriggerPrototypeSize);
-			inFile.read(reinterpret_cast<char*>(&TriggerPrototype[0]), TriggerPrototypeSize * sizeof(wchar_t));
-	
-			_float TriggerSize{};
-			inFile.read(reinterpret_cast<char*>(&TriggerSize), sizeof(_float));
-			TriggerInfo.fSize = TriggerSize;
-	
-			_mat TriggerWorldMat;
-			inFile.read(reinterpret_cast<char*>(&TriggerWorldMat), sizeof(_mat));
-	
-			TriggerInfo.WorldMat = TriggerWorldMat;
-	
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Trigger"), TEXT("Prototype_GameObject_Trigger"), &TriggerInfo)))
-			{
-				MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
-				return E_FAIL;
-			}
+
+	for (_uint i = 0; i < TriggerListSize; ++i)
+	{
+		TriggerInfo TriggerInfo{};
+
+		_uint iIndex{};
+		inFile.read(reinterpret_cast<char*>(&iIndex), sizeof(_uint));
+		TriggerInfo.iIndex = iIndex;
+
+		_bool bCheck{};
+		inFile.read(reinterpret_cast<char*>(&bCheck), sizeof(_bool));
+		TriggerInfo.bLimited = bCheck;
+
+		_ulong TriggerPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&TriggerPrototypeSize), sizeof(_ulong));
+
+		wstring TriggerPrototype;
+		TriggerPrototype.resize(TriggerPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&TriggerPrototype[0]), TriggerPrototypeSize * sizeof(wchar_t));
+
+		_float TriggerSize{};
+		inFile.read(reinterpret_cast<char*>(&TriggerSize), sizeof(_float));
+		TriggerInfo.fSize = TriggerSize;
+
+		_mat TriggerWorldMat;
+		inFile.read(reinterpret_cast<char*>(&TriggerWorldMat), sizeof(_mat));
+
+		TriggerInfo.WorldMat = TriggerWorldMat;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Trigger"), TEXT("Prototype_GameObject_Trigger"), &TriggerInfo)))
+		{
+			MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
+			return E_FAIL;
 		}
-	
-		inFile.close();
-	
+	}
+
+	inFile.close();
+
 	return S_OK;
 }
 
@@ -922,5 +886,5 @@ CLevel_GamePlay* CLevel_GamePlay::Create(_dev pDevice, _context pContext)
 void CLevel_GamePlay::Free()
 {
 	__super::Free();
-	
+
 }
