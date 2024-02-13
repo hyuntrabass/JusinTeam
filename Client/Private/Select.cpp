@@ -317,6 +317,7 @@ void CSelect::Set_CameraState(_uint iSelect)
 		CCamera_Manager::Get_Instance()->Set_ZoomFactor(3.5f);
 		vTargetPos = _vec4(-0.904127300f, 1.48444211f, -3.65620041f, 1.f);
 		CCamera_Manager::Get_Instance()->Set_CameraTargetLook(_vec4(-0.658045292f, -0.0125071695f, 0.752852142f, 0.f));
+		CCamera_Manager::Get_Instance()->Set_Have_TargetLook(true);
 		break;
 	case 1:
 		CCamera_Manager::Get_Instance()->Set_ZoomFactor(3.5f);
@@ -327,9 +328,9 @@ void CSelect::Set_CameraState(_uint iSelect)
 		vTargetPos = _vec4(0.1f, 0.f, 0.2f, 1.f);
 		break;
 	case 3:
-		//m_pGameInstance->Set_ZoomFactor(4.f);
 		vTargetPos = _vec4(0.323398888f, 1.49999952f, -3.6651926f, 1.f);
 		CCamera_Manager::Get_Instance()->Set_CameraTargetLook(_vec4(0.287743211f, -0.0157100987f, 0.957573771f, 0.0f));
+		CCamera_Manager::Get_Instance()->Set_Have_TargetLook(true);
 		break;
 	}
 	CCamera_Manager::Get_Instance()->Set_CameraTargetPos(vTargetPos);
