@@ -1695,15 +1695,11 @@ void CPlayer::Move(_float fTimeDelta)
 							m_eState == Walk)
 					{
 						m_eState = Walk;
+						m_pTransformCom->Set_Speed(m_fWalkSpeed + m_Status.Speed / 3.f);
 					}
-					if (m_eState == Jump or
+					else if (m_eState == Jump or
 						m_eState == Jump_Start)
 					{
-						m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed);
-					}
-					else if (m_eState != Attack)
-					{
-						//m_pTransformCom->Set_Speed(m_fWalkSpeed + m_Status.Speed / 3.f);
 						m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed);
 					}
 					else
@@ -2544,7 +2540,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 	else if (m_eState == Skill1)
 	{
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
-		if (Index >= 8.f && Index <= 16.f)
+		if (Index >= 7.f && Index <= 16.f)
 		{
 			m_iHP = 1;
 		}
