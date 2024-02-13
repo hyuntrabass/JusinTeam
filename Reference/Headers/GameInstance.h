@@ -324,6 +324,8 @@ private:
 	_float m_fVideoDuration{};
 	_bool m_bVideoAfterSkip{};
 	_bool m_bReady_NextLevel{};
+
+
 private:
 	vector<_bool> m_vecLevelInvalid;
 
