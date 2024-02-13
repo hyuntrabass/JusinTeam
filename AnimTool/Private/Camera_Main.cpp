@@ -45,16 +45,7 @@ HRESULT CCamera_Main::Init(void* pArg)
 
 void CCamera_Main::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Get_CameraModeIndex() != CM_MAIN)
-	{
-		return;
-	}
 	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
-
-	if (m_pGameInstance->Key_Down(DIK_P))
-	{
-		m_pGameInstance->Set_CameraModeIndex(CM_DEBUG);
-	}
 
 	_long dwMouseMove;
 
@@ -89,12 +80,6 @@ void CCamera_Main::Tick(_float fTimeDelta)
 	}
 
 	// 	y = sin(x * 10.0f) * powf(0.5f, x)
-
-	if (m_pGameInstance->Get_ShakeCam())
-	{
-		m_fShakeAcc = { 0.1f };
-		m_pGameInstance->Set_ShakeCam(false);
-	}
 
 	_float fShakeAmount = sin(m_fShakeAcc * 15.f) * powf(0.5f, m_fShakeAcc) * 0.2f;
 
