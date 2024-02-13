@@ -24,6 +24,9 @@ private:
 	_bool m_bTimeStop{};
 	_float m_fOriginTimeRatio{};
 
+private:
+	class CCamera_Manager* m_pCam_Manager{ nullptr };
+
 public:
 	static CCamera_Debug* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;

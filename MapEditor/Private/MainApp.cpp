@@ -8,6 +8,7 @@
 #include "MainApp.h"
 #include "GameInstance.h"
 #include "Level_Loading.h"
+#include "Camera_Manager.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -289,7 +290,7 @@ void CMainApp::Free()
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 	Safe_Release(m_pImGui_Manager);
-
+	CCamera_Manager::Destroy_Instance();
 	CGameInstance::Release_Engine();
 
 	if (_heapchk() != _HEAPOK)
