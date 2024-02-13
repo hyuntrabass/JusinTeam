@@ -32,14 +32,19 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
 	CTexture* m_pTextureCom{ nullptr };
+	CTexture* m_pTextureTailCom{ nullptr };
 
 private:
 	LEVEL_ID		m_eLevel{};
 	wstring			m_strText{};
 
 	_vec2			m_vTextPos{};
+	_vec2			m_vTextSize{};
 	_vec3			m_vPosition{};
-	CTransform* m_pParentTransform{ nullptr };
+	CTransform*		m_pParentTransform{ nullptr };
+
+private:
+	HRESULT Render_Texture();
 
 private:
 	HRESULT Add_Components();

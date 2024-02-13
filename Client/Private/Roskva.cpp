@@ -309,7 +309,8 @@ HRESULT CRoskva::Add_Parts()
 		return E_FAIL;
 	}
 	ButtonDesc.vTextPosition = _vec2(40.f, 0.f);
-	ButtonDesc.vTextColor = _vec4(0.f, 0.6f, 1.f, 1.f);
+	ButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	ButtonDesc.vTextBorderColor = _vec4(0.3f, 0.75f, 0.87f, 1.f);
 	ButtonDesc.strText = TEXT("SKIP");
 	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BlueArrow");
 	ButtonDesc.vPosition = _vec2(1180.f, 40.f);
@@ -320,6 +321,8 @@ HRESULT CRoskva::Add_Parts()
 	{
 		return E_FAIL;
 	}
+	ButtonDesc.vTextBorderColor = _vec4(0.f, 0.f, 0.f, 1.f);
+	ButtonDesc.vTextColor = _vec4(1.f, 0.95f, 0.87f, 1.f);
 	ButtonDesc.strText = TEXT("로스크바");
 	ButtonDesc.fFontSize = 0.5f;
 	ButtonDesc.vTextPosition = _vec2(0.f, - 30.f);

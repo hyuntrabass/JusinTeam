@@ -8,7 +8,7 @@
 #include "Effect_Manager.h"
 #include "Camera_Manager.h"
 #include "Trigger_Manager.h"
-
+#include "Dialog.h"
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -500,8 +500,6 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 		m_bStartGame = true;
 		CEvent_Manager::Get_Instance()->Init();
-
-
 	}
 
 	
@@ -4192,7 +4190,6 @@ void CPlayer::Free()
 		Safe_Release(m_pLeft_Trail[i]);
 		Safe_Release(m_pRight_Trail[i]);
 	}
-
 
 	Safe_Release(m_pNameTag);
 	Safe_Release(m_pParryingCollider);

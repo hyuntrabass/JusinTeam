@@ -4,10 +4,10 @@
 
 
 BEGIN(Client)
-class CTextButton final : public COrthographicObject
+class CNineSlice final : public COrthographicObject
 {
 public:
-	typedef struct tagTextButtonDesc
+	typedef struct tagSliceDesc
 	{
 		_float  fDepth{1.f};
 		_vec2	vSize;
@@ -22,11 +22,11 @@ public:
 		wstring strTexture;
 
 		LEVEL_ID eLevelID;
-	}TEXTBUTTON_DESC;
+	}SLICE_DESC;
 private:
-	CTextButton(_dev pDevice, _context pContext);
-	CTextButton(const CTextButton& rhs);
-	virtual ~CTextButton() = default;
+	CNineSlice(_dev pDevice, _context pContext);
+	CNineSlice(const CNineSlice& rhs);
+	virtual ~CNineSlice() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -74,8 +74,11 @@ public:
 	void Set_Text(const wstring strText) { m_strText = strText; }
 	CTransform* Get_Transform() { return m_pTransformCom; }
 
+private:
+	HRESULT Render_Texture();
+
 public:
-	static CTextButton* Create(_dev pDevice, _context pContext);
+	static CNineSlice* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };
