@@ -2890,21 +2890,21 @@ HRESULT CImGui_Manager::Load_CutScene()
 		inFile.read(reinterpret_cast<char*>(&InputNameSize), sizeof(_uint));
 		inFile.read(reinterpret_cast<char*>(&InputName[0]), sizeof(InputNameSize));
 
-		if (!m_pSelectCamera)
-		{
-			CameraInfo Info{};
-			//Info.strName = InputName;
-			Info.ppCamera = &m_pSelectCamera;
-			Info.eType = ItemType::Camera;
-			Info.vStartCutScene = m_fCameraPickingPos[0];
-			Info.vEndCutScene = m_fCameraPickingPos[1];
-			Info.fCameraSpeed = fCameraSpeed;
+		//if (!m_pSelectCamera)
+		//{
+		//	CameraInfo Info{};
+		//	//Info.strName = InputName;
+		//	Info.ppCamera = &m_pSelectCamera;
+		//	Info.eType = ItemType::Camera;
+		//	Info.vStartCutScene = m_fCameraPickingPos[0];
+		//	Info.vEndCutScene = m_fCameraPickingPos[1];
+		//	Info.fCameraSpeed = fCameraSpeed;
 
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_CutScene_Camera"), TEXT("Prototype_GameObject_Camera_CutScene"), &Info)))
-			{
-				MSG_BOX("Failed to Add Layer : CutScene_Camera");
-			}
-		}
+		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_CutScene_Camera"), TEXT("Prototype_GameObject_Camera_CutScene"), &Info)))
+		//	{
+		//		MSG_BOX("Failed to Add Layer : CutScene_Camera");
+		//	}
+		//}
 
 		_uint iEyeSize;
 		_uint iAtSize;

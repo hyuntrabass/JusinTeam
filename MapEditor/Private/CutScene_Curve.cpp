@@ -33,7 +33,7 @@ HRESULT CCutScene_Curve::Init(void* pArg)
 	m_iSectionType = (SECTIONTYPE)Info.iSectionType;
 	m_strSectionName = Info.strSectionName;
 	
-	ZeroMemory(&m_matPoint, sizeof _mat);
+	//ZeroMemory(&m_matPoint, sizeof _mat);
 	if (m_iSectionType == SECTION_TYPE_EYE)
 		Set_Points(Info);
 	else
@@ -154,6 +154,7 @@ HRESULT CCutScene_Curve::Set_ControlPoints(_mat& Points)
 	m_matPoint = Points;
 
 	m_pVIBuffer->Set_ControlPoints(m_matPoint);
+	m_pVIBuffer->Modify_Line();
 	return S_OK;
 }
 

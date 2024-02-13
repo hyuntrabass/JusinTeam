@@ -65,9 +65,7 @@ void CCamera_CutScene::Tick(_float fTimeDelta)
 				Safe_Release(pCurve);
 			}
 			m_CameraEyeList.clear();
-
 		}
-		
 		return;
 	}
 	if (m_pGameInstance->Key_Down(DIK_RETURN))
@@ -350,26 +348,33 @@ void CCamera_CutScene::Free()
 {
 	__super::Free();
 
-	if (!m_CameraAtList.empty())
-	{
-		for (int i = 0; i < m_CameraAtList.size(); i++)
+	//if (!m_CameraAtList.empty())
+	//{
+		//for (int i = 0; i < m_CameraAtList.size(); i++)
+		//{
+		//	Safe_Release(m_CameraAtList[i]);
+		//}
+		for (auto iter : m_CameraAtList)
 		{
-			Safe_Release(m_CameraAtList[i]);
+			Safe_Release(iter);
 		}
 		m_CameraAtList.clear();
-	}
-	if (!m_CameraEyeList.empty())
-	{
-		for (int i = 0; i < m_CameraEyeList.size(); i++)
+	//}
+	//if (!m_CameraEyeList.empty())
+	//{
+		//for (int i = 0; i < m_CameraEyeList.size(); i++)
+		//{
+		//	Safe_Release(m_CameraEyeList[i]);
+		//}
+		for (auto iter : m_CameraEyeList)
 		{
-			Safe_Release(m_CameraEyeList[i]);
+			Safe_Release(iter);
 		}
 		m_CameraEyeList.clear();
-	}
+	//}
 
 	Safe_Release(m_pEyeCurve);
 	Safe_Release(m_pAtCurve);
 	Safe_Release(m_pTrigger_Manager);
-
 	Safe_Release(m_pCam_Manager);
 }

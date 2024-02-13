@@ -182,15 +182,10 @@ HRESULT CCamera_CutScene::Add_Eye_Curve(_vec4 vFirstPoint, _vec4 vSecondPoint, _
 	//SectionInfo.ppCurve = &m_pEyeCurve;
 	SectionInfo.vStartCutScene = vFirstPoint;
 	SectionInfo.vEndCutScene = vSecondPoint;
-	wstring strCamEyeName = TEXT("Layer_") + m_strName + TEXT("_Section_Eye");
-	strSectionName = m_strName + TEXT("_Curve_Eye_") + to_wstring(m_CameraEyeList.size());
+	wstring strCamEyeName = TEXT("Layer_Section_Eye");
+	strSectionName = TEXT("Curve_Eye_") + to_wstring(m_CameraEyeList.size());
 	SectionInfo.strSectionName = strSectionName;
 	SectionInfo.iSectionType = iCutSceneType;
-
-	//if (FAILED(m_pGameInstance->Add_Layer(iCurrentLevel, strCamEyeName, TEXT("Prototype_GameObject_Camera_Curve"), &SectionInfo)))
-	//{
-	//	return E_FAIL;
-	//}
 
 	m_pEyeCurve = static_cast<class CCutScene_Curve*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Camera_Curve"), &SectionInfo));
 	_mat	matPoints;
@@ -215,14 +210,14 @@ HRESULT CCamera_CutScene::Add_Eye_Curve(_mat matPoints,  _float fCurveSpeed)
 	//SectionInfo.ppCurve = &m_pEyeCurve;
 	SectionInfo.vStartCutScene = matPoints.Up();
 	SectionInfo.vEndCutScene = matPoints.Look();
-	wstring strCamEyeName = TEXT("Layer_") + m_strName + TEXT("_Section_Eye");
-	strSectionName = m_strName + TEXT("_Curve_Eye_") + to_wstring(m_CameraEyeList.size());
+	wstring strCamEyeName = TEXT("Layer_Section_Eye");
+	strSectionName = + TEXT("Curve_Eye_") + to_wstring(m_CameraEyeList.size());
 	SectionInfo.strSectionName = strSectionName;
 	SectionInfo.iSectionType = iCutSceneType;
 
 	m_pEyeCurve = dynamic_cast<class CCutScene_Curve*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Camera_Curve"), &SectionInfo));
 
-	m_pEyeCurve->Set_SectionSpeed(5.f);
+	m_pEyeCurve->Set_SectionSpeed(fCurveSpeed);
 	m_pEyeCurve->Set_ControlPoints(matPoints);
 	m_CameraEyeList.push_back(static_cast<class CCutScene_Curve*>(m_pEyeCurve));
 	m_pEyeCurve = nullptr;
@@ -238,8 +233,8 @@ HRESULT CCamera_CutScene::Add_At_Curve(_vec4 vFirstPoint, _vec4 vSecondPoint, _f
 	//SectionInfo.ppCurve = &m_pAtCurve;
 	SectionInfo.vStartCutScene = vFirstPoint;
 	SectionInfo.vEndCutScene = vSecondPoint;
-	wstring strCamAtName = L"Layer_" + m_strName + L"_Section_At";
-	strSectionName = m_strName + L"_Curve_At_" + to_wstring(m_CameraAtList.size());
+	wstring strCamAtName = L"Layer_Section_At";
+	strSectionName =  L"Curve_At_" + to_wstring(m_CameraAtList.size());
 	SectionInfo.strSectionName = strSectionName;
 	SectionInfo.iSectionType = iCutSceneType;
 
@@ -267,8 +262,8 @@ HRESULT CCamera_CutScene::Add_At_Curve(_mat matPoints)
 	//SectionInfo.ppCurve = &m_pAtCurve;
 	SectionInfo.vStartCutScene = matPoints.Up();
 	SectionInfo.vEndCutScene = matPoints.Look();
-	wstring strCamAtName = L"Layer_" + m_strName + L"_Section_At";
-	strSectionName = m_strName + L"_Curve_At_" + to_wstring(m_CameraAtList.size());
+	wstring strCamAtName = L"Layer_Section_At";
+	strSectionName = L"Curve_At_" + to_wstring(m_CameraAtList.size());
 	SectionInfo.strSectionName = strSectionName;
 	SectionInfo.iSectionType = iCutSceneType;
 	m_pAtCurve = dynamic_cast<class CCutScene_Curve*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Camera_Curve"), &SectionInfo));
