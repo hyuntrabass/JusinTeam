@@ -909,8 +909,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 								}
 							}
 							ImGui::Separator();
-							string SpeedButtonName = "Speed";
-							ImGui::InputFloat(SpeedButtonName.c_str(), &fEyeSpeed, 0);
+						
 
 						ImGui::TreePop();
 						ImGui::Separator();
@@ -925,16 +924,25 @@ HRESULT CImGui_Manager::ImGuiMenu()
 								if (!pEyeCurve.empty() && !pAtCurve.empty())
 								{
 									m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
-									pEyeCurve[iEye_Count]->Set_SectionSpeed(fEyeSpeed);
-									fEyeSpeed = pEyeCurve[iEye_Count]->Get_SectionSpeed();
-									//pAtCurve[iAt_Count]->Set_SectionSpeed(fAtSpeed);
 								}
 							}
 							m_iFrame = m_pSelectCamera->Get_Frame();
 							string FrameButtonName = "Frame";
-
-							ImGui::SliderInt(FrameButtonName.c_str(), &m_iFrame, 0, 100);
+							ImGui::SliderInt(FrameButtonName.c_str(), &m_iFrame, 0, 300);
 						//}
+							string SpeedButtonName = "Speed";
+							ImGui::InputFloat(SpeedButtonName.c_str(), &fEyeSpeed, 0);
+
+							if (ImGui::Button("Set Speed"))
+							{
+								pEyeCurve[iEye_Count]->Set_SectionSpeed(fEyeSpeed);
+							}
+							ImGui::SameLine();
+
+							if (ImGui::Button("Get Speed"))
+							{
+								fEyeSpeed = pEyeCurve[iEye_Count]->Get_SectionSpeed();
+							}
 						ImGui::Separator();
 						if (ImGui::Button("SAVE"))
 						{
