@@ -21,9 +21,9 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-	_In_opt_ HINSTANCE hPrevInstance,
-	_In_ LPWSTR    lpCmdLine,
-	_In_ int       nCmdShow)
+					  _In_opt_ HINSTANCE hPrevInstance,
+					  _In_ LPWSTR    lpCmdLine,
+					  _In_ int       nCmdShow)
 {
 #ifdef _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -162,7 +162,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	//AdjustWindowRect(&rc, WS_POPUP, TRUE);
 
 	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_POPUP,
-		100, 100, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
+							  100, 100, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
 
 	if (!hWnd)
 	{
@@ -190,7 +190,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	wstring composingString{};
-	static wstring CompleteString{};
+	wstring CompleteString{ CGameInstance::Get_Instance()->Get_CompleteInputString() };
+	_bool ClearComposingString{};
 
 	switch (message)
 	{
@@ -222,7 +223,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	break;
 	case WM_IME_COMPOSITION:
 	{
-		if (CGameInstance::Get_Instance()->Get_CurrentLevelIndex() >= LEVEL_GAMEPLAY)
+		if (CGameInstance::Get_Instance()->Get_CurrentLevelIndex() != LEVEL_CUSTOM)
 		{
 			break;
 		}
@@ -242,7 +243,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				std::vector<wchar_t> buffer(len / sizeof(wchar_t) + 1);
 				::ImmGetCompositionString(hIMC, GCS_RESULTSTR, buffer.data(), len);
 				CompleteString += buffer.data();
-				composingString.clear(); // 조합 완료된 문자열을 저장
+				composingString.clear();
+				//ClearComposingString = true;
 			}
 			::ImmReleaseContext(hWnd, hIMC);
 		}
@@ -255,8 +257,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	//	CGameInstance::Get_Instance()->Set_InputString(L"");
-	CGameInstance::Get_Instance()->Set_InputString(CompleteString + composingString);
-	
+	CGameInstance::Get_Instance()->Set_ComposingState(not composingString.empty());
+	//if (ClearComposingString)
+	//{
+	//	composingString.clear();
+	//}
+	CGameInstance::Get_Instance()->Set_CompleteInputString(CompleteString);
+	CGameInstance::Get_Instance()->Set_ComposingInputString(composingString);
+
 	return 0;
 }
 

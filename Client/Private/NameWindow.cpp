@@ -36,7 +36,7 @@ HRESULT CNameWindow::Init(void* pArg)
 	
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	
-	CGameInstance::Get_Instance()->Set_InputString(L"");
+	m_pGameInstance->Set_InputString(L"");
 
 	//CGameInstance::Get_Instance()->Set_InputString(CompleteString + composingString);
 
@@ -59,7 +59,7 @@ void CNameWindow::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
-			CGameInstance::Get_Instance()->Set_InputString(L"");
+			m_pGameInstance->Set_InputString(L"");
 			CUI_Manager::Get_Instance()->Set_Picking_UI(false);
 			m_isDead = true;
 			return;
@@ -86,6 +86,14 @@ void CNameWindow::Tick(_float fTimeDelta)
 	{
 		m_pSelectButton->Set_Size(150.f, 100.f, 0.35f);
 	}
+
+	if (m_pGameInstance->Key_Down(DIK_RETURN, InputChannel::UI))
+	{
+		CUI_Manager::Get_Instance()->Set_Picking_UI(false);
+		m_isDead = true;
+		m_pGameInstance->Level_ShutDown(LEVEL_CUSTOM);
+		return;
+	}
 	RECT rcNameSpace = {};
 
 	rcNameSpace = {
@@ -111,6 +119,11 @@ void CNameWindow::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Get_InputString() == L"" && !PtInRect(&rcNameSpace, ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Default))
 	{
 		m_bStartInput = false;
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_BACKSPACE, InputChannel::UI))
+	{
+		m_pGameInstance->Popback_InputString();
 	}
 
 	m_pExitButton->Tick(fTimeDelta);

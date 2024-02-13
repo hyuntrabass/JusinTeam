@@ -150,7 +150,7 @@ private:
 
 	_uint			m_iCoin{};
 	_uint			m_iDiamond{};
-	_uint			m_CustomPart[PART_TYPE::PT_END];
+	_uint			m_CustomPart[PART_TYPE::PT_END]{};
 
 	_float2			m_fExp{ 0.f, 1000.f };
 
@@ -163,19 +163,19 @@ private:
 	_vec4			m_vTargetPos{ 0.f, 0.f, 0.f, 0.f };
 	_vec4			m_vHairColor{ 0.f, 0.f, 0.f, 0.f };
 
-	map<const wstring, ITEM> m_mapItem;
+	map<const wstring, ITEM> m_mapItem{};
 
 	CGameInstance* m_pGameInstance{ nullptr };
 	CSkillBlock* m_pSkillBlock{ nullptr };
-	CSkillSlot* m_pSkillSlots[WP_END][CSkillBlock::SKILL_END];
-	CGameObject* m_pItemSlots[CItemBlock::ITEMSLOT_END];
-	CGameObject* m_pInvenItemSlots[CItemBlock::ITEMSLOT_END];
+	CSkillSlot* m_pSkillSlots[WP_END][CSkillBlock::SKILL_END]{};
+	CGameObject* m_pItemSlots[CItemBlock::ITEMSLOT_END]{};
+	CGameObject* m_pInvenItemSlots[CItemBlock::ITEMSLOT_END]{};
 	CGameObject* m_pInven{ nullptr };
 	CGameObject* m_pInvenFrame{ nullptr };
 	CGameObject* m_pSkillBook{ nullptr };
 
-	vector<CTransform*> m_vecRadarPos[TYPE_END];
-	SKILLINFO		m_SkillInfo[WP_END][4];
+	vector<CTransform*> m_vecRadarPos[TYPE_END]{};
+	SKILLINFO		m_SkillInfo[WP_END][4]{};
 
 public:
 	virtual void Free() override;
