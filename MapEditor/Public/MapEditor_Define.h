@@ -2,7 +2,6 @@
 
 #include "../Default/framework.h"
 #include <process.h>
-#include <iostream>
 #include "Engine_Defines.h"
 #include "Transform.h"
 
@@ -162,7 +161,26 @@ namespace MapEditor
 		InstPass_Particle_MaskColor,
 	};
 
+	enum CAMERA_STATE
+	{
+		CS_DEFAULT,
+		CS_ZOOM,
+		CS_INVEN,
+		CS_SHOP,
+		CS_SKILLBOOK,
+		CS_ENDFULLSCREEN,
+		CS_WORLDMAP,
+		CS_STATEEND
+	};
 
+	struct SectionInfo
+	{
+		_vec4 vStartCutScene{};
+		_vec4 vEndCutScene{};
+		wstring strSectionName{};
+		//class CCutScene_Curve** ppCurve{ nullptr };
+		_uint iSectionType{};
+	};
 #pragma endregion
 
 }

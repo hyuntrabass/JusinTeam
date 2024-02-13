@@ -61,12 +61,14 @@ void CItemBlock::Tick(_float fTimeDelta)
 				ITEM eItem = m_pSlots[(ITEMSLOT)iIndex]->Get_ItemObject()->Get_ItemDesc();
 				CUI_Manager::Get_Instance()->Use_Item_In_Slot((ITEMSLOT)iIndex);
 				CUI_Manager::Get_Instance()->Set_Heal(true, eItem.iStatus);
+				m_pGameInstance->Play_Sound(L"Potion");
 			}
 			else if (m_pSlots[(ITEMSLOT)iIndex]->Get_ItemName() == TEXT("마나 포션"))
 			{
 				ITEM eItem = m_pSlots[(ITEMSLOT)iIndex]->Get_ItemObject()->Get_ItemDesc();
 				CUI_Manager::Get_Instance()->Use_Item_In_Slot((ITEMSLOT)iIndex);
 				CUI_Manager::Get_Instance()->Set_MpState(true, eItem.iStatus);
+				m_pGameInstance->Play_Sound(L"Potion");
 			}
 		}
 	}

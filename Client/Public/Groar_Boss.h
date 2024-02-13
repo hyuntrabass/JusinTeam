@@ -214,7 +214,7 @@ private:
 	_bool						m_isColl = { false };
 
 	_float						m_fDir{ -1.f };
-	_float						m_fButtonTime{};
+	_float						m_fButtonTime{ 600.f };
 
 	wstring						m_strQuestOngoing{};
 	list<wstring>				m_vecDialog;

@@ -8,6 +8,7 @@
 #include "Tutorial.h"
 #include "Quest.h"
 IMPLEMENT_SINGLETON(CEvent_Manager)
+
 CEvent_Manager::CEvent_Manager()
 {
 

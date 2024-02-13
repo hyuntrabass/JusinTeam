@@ -63,7 +63,12 @@ HRESULT CItemMerchant::Init(void* pArg)
 
 void CItemMerchant::Tick(_float fTimeDelta)
 {
-	if (m_bTalking && !m_pShop->IsActive())
+	if (m_pShop->IsActive())
+	{
+		m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 1000.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));
+		m_isFadeReady = false;
+	}
+	else if (m_bTalking)
 	{
 		m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 0.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));
 		m_bTalking = false;
@@ -87,9 +92,11 @@ void CItemMerchant::Tick(_float fTimeDelta)
 	m_isColl = isColl;
 	if (!m_bTalking && isColl && m_pGameInstance->Key_Down(DIK_E))
 	{
-		m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 1000.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));
-		m_bTalking = true;
-		m_pShop->Open_Shop();
+		CFadeBox::FADE_DESC Desc = {};
+		Desc.fIn_Duration = 0.5f;
+		Desc.fOut_Duration = 1.f;
+		Desc.phasFadeCompleted = &m_isFadeReady;
+		CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
 
 		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 		{
@@ -98,6 +105,11 @@ void CItemMerchant::Tick(_float fTimeDelta)
 				m_pGameInstance->FadeoutSound(i, fTimeDelta, 1.f, true, 0.3f);
 			}
 		}
+	}
+	if (m_isFadeReady and not m_bTalking)
+	{
+		m_pShop->Open_Shop();
+		m_bTalking = true;
 	}
 
 	m_pModelCom->Set_Animation(m_Animation);
@@ -121,6 +133,10 @@ void CItemMerchant::Late_Tick(_float fTimeDelta)
 			m_pSpeechBubble->Late_Tick(fTimeDelta);
 		}
 	}
+
+#ifdef _DEBUG
+	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
+#endif // _DEBUG
 
 	__super::Late_Tick(fTimeDelta);
 }

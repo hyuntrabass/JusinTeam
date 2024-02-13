@@ -2,7 +2,6 @@
 #include "GameInstance.h"
 #include "TextButton.h"
 #include "BlurTexture.h"
-#include "FadeBox.h"
 
 CPop_LevelUp::CPop_LevelUp(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)

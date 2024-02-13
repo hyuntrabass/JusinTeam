@@ -1,4 +1,5 @@
 #include "Void20.h"
+#include "UI_Manager.h"
 
 const _float CVoid20::m_fChaseRange = 7.f;
 const _float CVoid20::m_fAttackRange = 2.f;
@@ -255,6 +256,9 @@ void CVoid20::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 3.f;
 
+			_uint iRandomExp = rand() % 100;
+			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(15.f + (_float)iRandomExp / 2.f * 0.1f);
+
 			break;
 		}
 
@@ -273,7 +277,7 @@ void CVoid20::Tick_State(_float fTimeDelta)
 	{
 		m_fIdleTime += fTimeDelta;
 
-		if (m_bAttacking == true)
+		//if (m_bAttacking == true)
 		{
 			if (m_fIdleTime >= 1.f)
 			{
@@ -290,15 +294,15 @@ void CVoid20::Tick_State(_float fTimeDelta)
 			}
 
 		}
-		else
-		{
-			if (m_fIdleTime >= 2.f)
-			{
-				m_eCurState = STATE_WALK;
-				m_fIdleTime = 0.f;
-			}
+		//else
+		//{
+		//	if (m_fIdleTime >= 2.f)
+		//	{
+		//		m_eCurState = STATE_WALK;
+		//		m_fIdleTime = 0.f;
+		//	}
 
-		}
+		//}
 
 		//if (fDistance <= m_fChaseRange)
 		//{
@@ -342,14 +346,14 @@ void CVoid20::Tick_State(_float fTimeDelta)
 		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 		vDir.y = 0.f;
 
-		if (fDistance > m_fChaseRange && !m_bDamaged)
-		{
-			m_eCurState = STATE_IDLE;
-			m_bSlow = false;
-			m_bAttacking = false;
+		//if (fDistance > m_fChaseRange && !m_bDamaged)
+		//{
+		//	m_eCurState = STATE_IDLE;
+		//	m_bSlow = false;
+		//	m_bAttacking = false;
 
-			break;
-		}
+		//	break;
+		//}
 
 		if (fDistance <= m_fAttackRange)
 		{

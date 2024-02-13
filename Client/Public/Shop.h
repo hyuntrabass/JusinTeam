@@ -48,6 +48,9 @@ private:
 	
 	vector<CShopDesc*>							m_vecShopItems[STATE_END];
 
+	_bool m_isReadytoDeactivate{};
+	_bool m_isReadytoActivate{};
+
 public:
 	_bool IsActive() { return m_isActive; }
 	void Set_ItemPosition(STATE eState);

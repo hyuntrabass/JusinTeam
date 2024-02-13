@@ -4,14 +4,20 @@
 #include "ItemBlock.h"
 #include "InvenFrame.h"
 #include "SkillBlock.h"
+#include "Symbol.h"
+#include "FadeBox.h"
+
 BEGIN(Engine)
 class CGameInstance;
 END
+
 BEGIN(Client)
+
 class CSkillSlot;
 class CItemBlock;
 class CSkillBlock;
 class CInvenFrame;
+
 class CUI_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CUI_Manager)
@@ -21,57 +27,6 @@ public:
 private:
 	CUI_Manager();
 	virtual ~CUI_Manager() = default;
-
-private:
-	PART_TYPE		m_eChangedPart{ PT_END };
-	MOUSESTATE		m_eMouseState { M_DEFAULT };
-	WEAPON_TYPE		m_eWeaponType{ WP_BOW };
-
-	_bool			m_isMpState{ false };
-	_bool			m_isHeal{ false };
-	_bool			m_isTargeting{ false };
-	_bool			m_isFirstKill{ false };
-	_bool			m_isSetSkillSlot{ false };
-	_bool			m_isPicking{ false };
-	_bool			m_isShowing{ false };
-	_bool			m_isInvenActive{ false };
-	_bool			m_isSetInvenState{ false };
-	_bool			m_bTimeStop{ false };
-	_bool			m_isBoss{ false };
-
-	_uint			m_iLevel{ 1 };
-	_uint			m_iHeal{  };
-	_uint			m_iMpState{  };
-
-
-	_uint			m_iCoin{};
-	_uint			m_iDiamond{};
-	_uint			m_CustomPart[PART_TYPE::PT_END];
-
-	_float2			m_fExp{0.f, 1000.f};
-
-	_vec2			m_vHp{1000.f, 1000.f};
-	_vec2			m_vMp{1000.f, 1000.f};
-
-	_vec4			m_vInvenPos{0.f, 1000.f, 0.f, 1.f};
-	_vec4			m_vPlayerPos{0.f, 0.f, 0.f, 0.f};
-	_vec4			m_vCameraPos{0.f, 0.f, 0.f, 0.f};
-	_vec4			m_vTargetPos{0.f, 0.f, 0.f, 0.f};
-	_vec4			m_vHairColor{0.f, 0.f, 0.f, 0.f};
-	
-	map<const wstring, ITEM> m_mapItem;
-
-	CGameInstance*	m_pGameInstance{ nullptr };
-	CSkillBlock*	m_pSkillBlock{ nullptr };
-	CSkillSlot*		m_pSkillSlots[WP_END][CSkillBlock::SKILL_END];
-	CGameObject*	m_pItemSlots[CItemBlock::ITEMSLOT_END];
-	CGameObject*	m_pInvenItemSlots[CItemBlock::ITEMSLOT_END];
-	CGameObject*	m_pInven{ nullptr };
-	CGameObject*	m_pInvenFrame{ nullptr };
-	CGameObject*	m_pSkillBook{ nullptr };
-
-	vector<CTransform*> m_vecRadarPos[TYPE_END];
-	SKILLINFO		m_SkillInfo[WP_END][4];
 
 public:
 	HRESULT Init();
@@ -88,6 +43,7 @@ private:
 
 
 public:
+	void Set_Symbol(CSymbol::TYPE eType);
 	SKILLINFO Get_SkillInfo(WEAPON_TYPE eType, _uint iIdx);
 	void Set_TimeStop(_bool bStop) { m_bTimeStop = bStop; }
 	_bool Get_TimeStop() { return m_bTimeStop; }
@@ -166,6 +122,61 @@ public:
 	const _bool& Is_Targeting() const { return m_isTargeting; }
 
 	void Level_Up();
+
+	HRESULT Add_FadeBox(CFadeBox::FADE_DESC& Description);
+	CFadeBox* Clone_FadeBox(CFadeBox::FADE_DESC& Description);
+
+private:
+	PART_TYPE		m_eChangedPart{ PT_END };
+	MOUSESTATE		m_eMouseState{ M_DEFAULT };
+	WEAPON_TYPE		m_eWeaponType{ WP_BOW };
+
+	_bool			m_isMpState{ false };
+	_bool			m_isHeal{ false };
+	_bool			m_isTargeting{ false };
+	_bool			m_isFirstKill{ false };
+	_bool			m_isSetSkillSlot{ false };
+	_bool			m_isPicking{ false };
+	_bool			m_isShowing{ false };
+	_bool			m_isInvenActive{ false };
+	_bool			m_isSetInvenState{ false };
+	_bool			m_bTimeStop{ false };
+	_bool			m_isBoss{ false };
+
+	_uint			m_iLevel{ 1 };
+	_uint			m_iHeal{  };
+	_uint			m_iMpState{  };
+
+
+	_uint			m_iCoin{};
+	_uint			m_iDiamond{};
+	_uint			m_CustomPart[PART_TYPE::PT_END];
+
+	_float2			m_fExp{ 0.f, 1000.f };
+
+	_vec2			m_vHp{ 1000.f, 1000.f };
+	_vec2			m_vMp{ 1000.f, 1000.f };
+
+	_vec4			m_vInvenPos{ 0.f, 1000.f, 0.f, 1.f };
+	_vec4			m_vPlayerPos{ 0.f, 0.f, 0.f, 0.f };
+	_vec4			m_vCameraPos{ 0.f, 0.f, 0.f, 0.f };
+	_vec4			m_vTargetPos{ 0.f, 0.f, 0.f, 0.f };
+	_vec4			m_vHairColor{ 0.f, 0.f, 0.f, 0.f };
+
+	map<const wstring, ITEM> m_mapItem;
+
+	CGameInstance* m_pGameInstance{ nullptr };
+	CSkillBlock* m_pSkillBlock{ nullptr };
+	CSkillSlot* m_pSkillSlots[WP_END][CSkillBlock::SKILL_END];
+	CGameObject* m_pItemSlots[CItemBlock::ITEMSLOT_END];
+	CGameObject* m_pInvenItemSlots[CItemBlock::ITEMSLOT_END];
+	CGameObject* m_pInven{ nullptr };
+	CGameObject* m_pInvenFrame{ nullptr };
+	CGameObject* m_pSkillBook{ nullptr };
+
+	vector<CTransform*> m_vecRadarPos[TYPE_END];
+	SKILLINFO		m_SkillInfo[WP_END][4];
+
 public:
 	virtual void Free() override;
 };

@@ -10,7 +10,7 @@
 #include "TextButtonColor.h"
 #include "Trigger_Manager.h"
 #include "HitEffect.h"
-#include "FadeBox.h"
+#include "Camera_Manager.h"
 
 const _float CGroar_Boss::m_fChaseRange = 10.f;
 const _float CGroar_Boss::m_fAttackRange = 6.f;
@@ -44,6 +44,13 @@ HRESULT CGroar_Boss::Init(void* pArg)
 
 	//m_pTransformCom->Set_Position(_vec3(2179.f, -20.f, 2083.f));
 	m_pTransformCom->Set_Position(_vec3(2109.f, -15.f, 2092.f));
+	PxRaycastBuffer RayBuff{};
+	if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), _vec4(0.f, -1.f, 0.f, 0.f), 50.f, RayBuff))
+	{
+		m_pTransformCom->Set_Position(_vec3(PxVec3ToVector(RayBuff.block.position)));
+	}
+
+	m_pTransformCom->LookAt_Dir(_vec4(-1.f, 0.f, 0.f, 0.f));
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
 	m_eCurState = STATE_NPC;
@@ -75,6 +82,11 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 		if (!m_bChangePos)
 		{
 			m_pTransformCom->Set_Position(_vec3(2179.f, -20.f, 2083.f));
+			PxRaycastBuffer RayBuff{};
+			if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), _vec4(0.f, -1.f, 0.f, 0.f), 50.f, RayBuff))
+			{
+				m_pTransformCom->Set_Position(_vec3(PxVec3ToVector(RayBuff.block.position)));
+			}
 
 			//CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 			//_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
@@ -230,6 +242,8 @@ void CGroar_Boss::Set_Damage(_int iDamage, _uint iDamageType)
 		m_iHP -= iDamage;
 		m_bChangePass = true;
 
+		m_pHpBoss->Set_HP(m_iHP);
+
 		CHitEffect::HITEFFECT_DESC Desc{};
 		Desc.iDamage = iDamage;
 		Desc.pParentTransform = m_pTransformCom;
@@ -315,7 +329,19 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 
 		case Client::CGroar_Boss::STATE_BOSS:
 
+			CHPBoss::HPBOSS_DESC Desc{};
+			Desc.strName = L"Groar";
+			Desc.eLevelID = LEVEL_STATIC;
+			Desc.iMaxHp = m_iHP;
+
+			m_pHpBoss = (CHPBoss*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPBoss"), &Desc);
+			if (not m_pHpBoss)
+			{
+				return;
+			}
 			_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
+
+			CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::GROAR);
 
 			m_pTransformCom->Set_Position(_vec3(0.f));
 
@@ -331,7 +357,8 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 
 			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 			
-			m_pTransformCom->Set_Position(vPos);
+			m_pTransformCom->Set_Position(vPos + _vec3(10.f, 0.5f, 0.f));
+			m_pTransformCom->LookAt_Dir(_vec4(-1.f, 0.f, 0.f, 0.f));
 
 			break;
 		}
@@ -439,6 +466,9 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
 
+			_uint iRandomExp = rand() % 100;
+			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(1000.f + (_float)iRandomExp / 2.f * 0.1f);
+
 			break;
 		}
 
@@ -514,13 +544,16 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 95.f && m_pBossModelCom->Get_CurrentAnimPos() <= 175.f)
 		{
-			m_pGameInstance->Set_ShakeCam(true, 0.5f);
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 0.5f);
+			m_pGameInstance->FadeoutSound(0, fTimeDelta, 1.f, false);
 		}
 
 		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK_RAGE))
 		{
 			m_eBossCurState = BOSS_STATE_IDLE;
 			CTrigger_Manager::Get_Instance()->Set_BossStart();
+			m_pGameInstance->PlayBGM(TEXT("BGM_GuildDungeon_01"));
+			m_pGameInstance->FadeinSound(0, fTimeDelta);
 		}
 
 		break;
@@ -719,7 +752,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 99.f && m_pBossModelCom->Get_CurrentAnimPos() <= 110.f)
 		{
-			m_pGameInstance->Set_ShakeCam(true);
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true);
 		}
 
 		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK02))
@@ -734,7 +767,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 69.f && m_pBossModelCom->Get_CurrentAnimPos() <= 72.f)
 		{
-			m_pGameInstance->Set_ShakeCam(true);
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true);
 
 			if (fDistance <= 7.5f)
 			{
@@ -749,7 +782,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 97.f && m_pBossModelCom->Get_CurrentAnimPos() <= 100.f)
 		{
-			m_pGameInstance->Set_ShakeCam(true);
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true);
 
 			if (fDistance <= 7.5f)
 			{
@@ -764,7 +797,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 135.f && m_pBossModelCom->Get_CurrentAnimPos() <= 138.f)
 		{
-			m_pGameInstance->Set_ShakeCam(true);
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true);
 
 			if (fDistance <= 7.5f)
 			{
@@ -843,7 +876,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 108.f && m_pBossModelCom->Get_CurrentAnimPos() <= 115.f)
 		{
-			m_pGameInstance->Set_ShakeCam(true);
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true);
 		}
 
 		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_ATTACK07))
@@ -859,7 +892,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 95.f && m_pBossModelCom->Get_CurrentAnimPos() <= 175.f)
 		{
-			m_pGameInstance->Set_ShakeCam(true, 0.5f);
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 0.5f);
 		}
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 98.f)
@@ -918,15 +951,15 @@ HRESULT CGroar_Boss::Add_Collider()
 		return E_FAIL;
 	}
 
-	PxCapsuleControllerDesc ControllerDesc{};
-	ControllerDesc.height = 0.8f; // 높이(위 아래의 반구 크기 제외
-	ControllerDesc.radius = 0.6f; // 위아래 반구의 반지름
-	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
-	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
-	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
-	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+	//PxCapsuleControllerDesc ControllerDesc{};
+	//ControllerDesc.height = 0.8f; // 높이(위 아래의 반구 크기 제외
+	//ControllerDesc.radius = 0.6f; // 위아래 반구의 반지름
+	//ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+	//ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+	//ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+	//ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 
-	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+	//m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
 	return S_OK;
 }
@@ -950,15 +983,15 @@ HRESULT CGroar_Boss::Init_Dialog()
 	m_vecChatt.push_back(TEXT("제 남편은 어디에 있나요.."));
 	m_vecChatt.push_back(TEXT("신을 저주한다"));
 
-	//m_TalkSounds.push_back(TEXT("10044_3_EndTalk"));
-	//m_TalkSounds.push_back(TEXT("10043_1_StartTalk_1"));
-	//m_TalkSounds.push_back(TEXT("10043_1_StartTalk_2"));
-	//m_TalkSounds.push_back(TEXT("10053_3_EndTalk_cut"));
-	//m_TalkSounds.push_back(TEXT("10054_1_StartTalk_1_cut"));
-	//m_TalkSounds.push_back(TEXT("10056_1_StartTalk_1"));
-	//m_TalkSounds.push_back(TEXT("10056_1_StartTalk_2"));
-	//m_TalkSounds.push_back(TEXT("10056_2_InformTalk"));
-	//m_TalkSounds.push_back(TEXT("10058_2_InformTalk_1"));
+	m_TalkSounds.push_back(TEXT("10044_3_EndTalk"));
+	m_TalkSounds.push_back(TEXT("10043_1_StartTalk_1"));
+	m_TalkSounds.push_back(TEXT("10043_1_StartTalk_2"));
+	m_TalkSounds.push_back(TEXT("10053_3_EndTalk_cut"));
+	m_TalkSounds.push_back(TEXT("10054_1_StartTalk_1_cut"));
+	m_TalkSounds.push_back(TEXT("10056_1_StartTalk_1"));
+	m_TalkSounds.push_back(TEXT("10056_1_StartTalk_2"));
+	m_TalkSounds.push_back(TEXT("10056_2_InformTalk"));
+	m_TalkSounds.push_back(TEXT("10058_2_InformTalk_1"));
 	m_TalkSounds.push_back(TEXT("10058_2_InformTalk_2"));
 
 	return S_OK;
@@ -1078,7 +1111,7 @@ void CGroar_Boss::NPC_Tick(_float fTimeDelta)
 		{
 			if (m_eState != NPC_TALK)
 			{
-				m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
+				CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
 				CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 				m_bTalking = false;
 				return;
@@ -1097,12 +1130,13 @@ void CGroar_Boss::NPC_Tick(_float fTimeDelta)
 	m_isColl = isColl;
 	if (!m_bTalking && isColl && m_pGameInstance->Key_Down(DIK_E))
 	{
-		m_pGameInstance->Set_CameraState(CS_ZOOM);
+		m_pArrow->Set_Position(_vec2(1100.f, 600.f));
+		CCamera_Manager::Get_Instance()->Set_CameraState(CS_ZOOM);
 		_vec4 vLook = m_pTransformCom->Get_State(State::Look);
 		vLook.Normalize();
 		_vec4 vTargetPos = m_pTransformCom->Get_State(State::Pos);
-		m_pGameInstance->Set_CameraTargetPos(vTargetPos);
-		m_pGameInstance->Set_CameraTargetLook(vLook);
+		CCamera_Manager::Get_Instance()->Set_CameraTargetPos(vTargetPos);
+		CCamera_Manager::Get_Instance()->Set_CameraTargetLook(vLook);
 		if (m_eState == NPC_QUEST)
 		{
 			if (!CEvent_Manager::Get_Instance()->Find_Quest(m_strQuestOngoing))
@@ -1168,27 +1202,11 @@ void CGroar_Boss::NPC_LateTick(_float fTimeDelta)
 		//m_eCurState = STATE_BOSS;
 		//m_eBossCurState = BOSS_STATE_ROAR;
 
-		if (m_pHpBoss == nullptr)
+		if (not CTrigger_Manager::Get_Instance()->Get_StartSuicide())
 		{
-			CHPBoss::HPBOSS_DESC Desc{};
-			Desc.strName = L"Groar";
-			Desc.eLevelID = LEVEL_STATIC;
-			Desc.iMaxHp = m_iHP;
-
-			m_pHpBoss = (CHPBoss*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPBoss"), &Desc);
-			if (not m_pHpBoss)
-			{
-				return;
-			}
-
 			CFadeBox::FADE_DESC FadeBoxDesc = {};
-			FadeBoxDesc.eState = CFadeBox::FADEOUT;
-			FadeBoxDesc.fDuration = 3.f;
-
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &FadeBoxDesc)))
-			{
-				return;
-			}
+			FadeBoxDesc.fOut_Duration = 3.f;
+			CUI_Manager::Get_Instance()->Add_FadeBox(FadeBoxDesc);
 
 			CTrigger_Manager::Get_Instance()->Set_StartSuicide();
 		}
@@ -1221,7 +1239,7 @@ void CGroar_Boss::Set_Text(GROAR_NPCSTATE eState)
 		wstring strText = m_vecDialog.front();
 		if (strText == TEXT("END"))
 		{
-			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
+			CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_bTalking = false;
 			m_eState = NPC_END;
@@ -1230,7 +1248,7 @@ void CGroar_Boss::Set_Text(GROAR_NPCSTATE eState)
 
 		if (strText[0] == L'!')
 		{
-			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
+			CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_bTalking = false;
 			wstring strQuest = strText.substr(1, strText.length());
@@ -1251,10 +1269,7 @@ void CGroar_Boss::Set_Text(GROAR_NPCSTATE eState)
 		{
 			return;
 		}
-		else
-		{
-			Play_TalkSound(m_vecDialog.front());
-		}
+		Play_TalkSound(m_vecDialog.front());
 		m_vecDialog.pop_front();
 	}
 	break;

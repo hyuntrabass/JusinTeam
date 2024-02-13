@@ -1,5 +1,5 @@
 #include "Void05.h"
-
+#include "UI_Manager.h"
 #include "Dead.h"
 
 const _float CVoid05::m_fChaseRange = 7.f;
