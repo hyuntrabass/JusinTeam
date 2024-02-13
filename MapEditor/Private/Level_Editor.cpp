@@ -1,5 +1,6 @@
 #include "Level_Editor.h"
 #include "Camera.h"
+#include "Camera_Manager.h"
 
 CLevel_Editor::CLevel_Editor(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -52,7 +53,7 @@ HRESULT CLevel_Editor::Ready_Camera()
 	CamDesc.fFovY = XMConvertToRadians(60.f);
 	CamDesc.fAspect = static_cast<_float>(g_iWinSizeX) / g_iWinSizeY;
 	CamDesc.fNear = 0.1f;
-	CamDesc.fFar = 1100.f;
+	CamDesc.fFar = 3000.f;
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, strLayerTag, TEXT("Prototype_GameObject_Camera_Main"), &CamDesc)))
 	{
@@ -64,7 +65,7 @@ HRESULT CLevel_Editor::Ready_Camera()
 		return E_FAIL;
 	}
 
-	m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
+	CCamera_Manager::Get_Instance()->Set_CameraModeIndex(CM_MAIN);
 
 	return S_OK;
 }

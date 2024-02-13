@@ -32,8 +32,6 @@ HRESULT CNastron03::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
-
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = false;
@@ -60,9 +58,6 @@ HRESULT CNastron03::Init(void* pArg)
 	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
-
-	_vec3 vPlayerPos = __super::Compute_PlayerPos();
-	m_pTransformCom->Set_Position(vPlayerPos);
 
 	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
 

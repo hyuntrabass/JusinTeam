@@ -82,11 +82,10 @@ HRESULT CDummy::Init(void* pArg)
 void CDummy::Tick(_float fTimeDelta)
 {
 	
-	//if (m_isAnim)
-	//{
-
-	//	m_pModelCom->Play_Animation(fTimeDelta);
-	//}
+	if (m_isAnim)
+	{
+		m_pModelCom->Play_Animation(fTimeDelta);
+	}
 	if (m_eType == ItemType::Trigger)
 	{
 		m_pCollider->Update(m_pTransformCom->Get_World_Matrix());

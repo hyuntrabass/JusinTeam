@@ -30,6 +30,9 @@ private:
 	_float m_fShakeAcc{ 100.f };
 
 private:
+	class CCamera_Manager* m_pCam_Manager{ nullptr };
+
+private:
 	_float m_fSceneTimer{};
 	_uint m_iSceneIndex{};
 	CUTSCENE* m_pScene{ nullptr };

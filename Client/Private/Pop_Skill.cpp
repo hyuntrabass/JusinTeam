@@ -71,10 +71,12 @@ HRESULT CPop_Skill::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+	/* 나중에 주석 풀어야 할 부분
 	if (FAILED(CUI_Manager::Get_Instance()->Unlock_Skill(m_iSkillNum)))
 	{
 		return E_FAIL;
 	}
+	*/
 
 	return S_OK;
 }

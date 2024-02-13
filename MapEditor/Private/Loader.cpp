@@ -401,10 +401,6 @@ HRESULT CLoader::Load_Editor()
 	}
 #pragma endregion
 
-#pragma region Map
-
-#pragma endregion
-
 #pragma region NPC
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Cat"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Cat/Mesh/Cat.hyuntraanimmesh"))))
@@ -460,19 +456,7 @@ HRESULT CLoader::Load_Editor()
 	}	
 
 #pragma endregion
-
-#pragma region Map
-
-#pragma endregion
-
-#pragma region NPC
-	
-#pragma endregion NPC
-
-
-#pragma  region Boss
-
-
+#pragma  region Boss/*
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Groar/Mesh/Groar.hyuntraanimmesh"))))
 	{
@@ -503,7 +487,7 @@ HRESULT CLoader::Load_Editor()
 	{
 		return E_FAIL;
 	}
-
+*/
 
 #pragma  endregion Boss
 
