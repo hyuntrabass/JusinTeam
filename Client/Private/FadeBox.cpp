@@ -32,23 +32,7 @@ HRESULT CFadeBox::Init(void* pArg)
 
 	m_fDepth = (_float)D_FADE / (_float)D_END;
 
-
-	m_fDuration = ((FADE_DESC*)pArg)->fDuration;
-	m_eState = ((FADE_DESC*)pArg)->eState;
-
-	switch (m_eState)
-	{
-	case FADEIN:
-		m_fAlpha = 0.f;
-		break;
-	case FADELOOP:
-		m_fDepth = (_float)D_QUEST / (_float)D_END + 0.01f;
-		m_fAlpha = 0.f;
-		break;
-	case FADEOUT:
-		m_fAlpha = 1.f;
-		break;
-	}
+	m_Desc = *reinterpret_cast<FADE_DESC*>(pArg);
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	return S_OK;
@@ -56,35 +40,47 @@ HRESULT CFadeBox::Init(void* pArg)
 
 void CFadeBox::Tick(_float fTimeDelta)
 {
-	if (CUI_Manager::Get_Instance()->Get_TimeStop())
+	//if (CUI_Manager::Get_Instance()->Get_TimeStop())
 	{
 		fTimeDelta /= m_pGameInstance->Get_TimeRatio();
 	}
 
-	m_fTime += fTimeDelta;
-	switch (m_eState)
+	if (m_Desc.fIn_Duration > 0.f)
 	{
-	case FADEIN:
-		if (m_fAlpha >= 1.f)
+		m_fAlpha = Lerp(0.f, m_Desc.fMaxAlpha, m_fTime / m_Desc.fIn_Duration);
+		if (m_fAlpha >= m_Desc.fMaxAlpha)
 		{
-			m_isDead = true;
+			m_fAlpha = m_Desc.fMaxAlpha;
+			m_Desc.fIn_Duration = {};
+			m_fTime = {};
 		}
-		m_fAlpha = Lerp(0.f, 1.f, m_fTime / m_fDuration);
-		break;
-	case FADELOOP:
-		if (m_fAlpha < 0.7f)
-			m_fAlpha += fTimeDelta;
-		break;
-	case FADEOUT:	
+	}
+	else if (m_Desc.fMid_Duration > 0.f)
+	{
+		if (m_fTime > m_Desc.fMid_Duration)
+		{
+			m_Desc.fMid_Duration = {};
+			m_fTime = {};
+		}
+	}
+	else if (not m_Desc.isInfiniteLoop)
+	{
+		m_fAlpha = Lerp(0.f, m_Desc.fMaxAlpha, 1.f - m_fTime / m_Desc.fOut_Duration);
 		if (m_fAlpha <= 0.f)
 		{
-			m_isDead = true;
+			Kill();
 		}
-		m_fAlpha = 1.f - Lerp(0.f, 1.f, m_fTime / m_fDuration);
-		break;
 	}
 
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+	if (m_Desc.phasFadeCompleted)
+	{
+		if (m_fAlpha >= m_Desc.fMaxAlpha)
+		{
+			*m_Desc.phasFadeCompleted = true;
+		}
+	}
+
+	m_fTime += fTimeDelta;
 }
 
 void CFadeBox::Late_Tick(_float fTimeDelta)
@@ -99,7 +95,7 @@ HRESULT CFadeBox::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(VTPass_UI_Alpha)))
+	if (FAILED(m_pShaderCom->Begin(VTPass_UI_Color_Alpha)))
 	{
 		return E_FAIL;
 	}
@@ -108,8 +104,6 @@ HRESULT CFadeBox::Render()
 	{
 		return E_FAIL;
 	}
-
-
 
 	return S_OK;
 }
@@ -131,10 +125,10 @@ HRESULT CFadeBox::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_FadeBox"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_FadeBox"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	return S_OK;
 }
@@ -152,12 +146,17 @@ HRESULT CFadeBox::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	//if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	//{
+	//	return E_FAIL;
+	//}
+	
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof m_fAlpha)))
 	{
 		return E_FAIL;
 	}
-	
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float))))
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_Desc.vColor, sizeof m_Desc.vColor)))
 	{
 		return E_FAIL;
 	}
@@ -195,7 +194,7 @@ void CFadeBox::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pTextureCom);
+	//Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pVIBufferCom);

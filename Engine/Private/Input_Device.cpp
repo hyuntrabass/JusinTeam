@@ -1,5 +1,4 @@
 #include "Input_Device.h"
-#include <iostream>
 CInput_Device::CInput_Device()
 {
 }

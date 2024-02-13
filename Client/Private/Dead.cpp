@@ -1,5 +1,5 @@
 #include "Dead.h"
-
+#include "UI_Manager.h"
 #include "Effect_Manager.h"
 
 CDead::CDead(_dev pDevice, _context pContext)
@@ -60,6 +60,9 @@ HRESULT CDead::Init(void* pArg)
 	Info.pMatrix = &m_EffectMatrix;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
+	_uint iRandomExp = rand() % 100;
+	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(15.f + (_float)iRandomExp / 2.f * 0.1f);
+
     return S_OK;
 }
 
@@ -78,30 +81,20 @@ void CDead::Tick(_float fTimeDelta)
 		{
 			if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY)
 			{
+				if (not m_hasVideoStarted)
+				{
+					m_pGameInstance->Play_Video(TEXT("Tutorial1.wmv"));
+					m_hasVideoStarted = true;
+				}
 
-				m_DC = GetDC(g_hWnd);
-
-				m_BackDC = CreateCompatibleDC(m_DC);
-
-				m_hBackBit = CreateCompatibleBitmap(m_DC, g_iWinSizeX, g_iWinSizeY);
-
-				m_hOldBackBit = (HBITMAP)SelectObject(m_BackDC, m_hBackBit);
-
-				m_hVideo = MCIWndCreate(g_hWnd, NULL, WS_CHILD | WS_VISIBLE | MCIWNDF_NOPLAYBAR
-					, L"../Bin/Resources/Video/Tutorial1.wmv");
-
-				MCIWndSetVolume(g_hWnd, 1.f);
-
-				MoveWindow(m_hVideo, 0, 0, g_iWinSizeX, g_iWinSizeY, FALSE);
-
-				MCIWndPlay(m_hVideo);
-				m_pGameInstance->Video_Start(11.f, true);
+				if (not m_pGameInstance->Is_Playing_Video())
+				{
+					m_pGameInstance->Level_ShutDown(LEVEL_GAMEPLAY);
+				}
 			}
-
 		}
 		m_pTransformCom->Go_Down(fTimeDelta * 0.05f);
 	}
-
 
 	m_pModelCom->Set_Animation(m_Animation);
 }
@@ -147,9 +140,4 @@ CGameObject* CDead::Clone(void* pArg)
 void CDead::Free()
 {
 	__super::Free();
-	MCIWndClose(m_hVideo);
-	SelectObject(m_BackDC, m_hOldBackBit); //DC에 원래 설정을 돌려줍니다.
-	DeleteDC(m_BackDC);  // 메모리를 반환합니다.
-	DeleteObject(m_hBackBit); // 메모리를 반환합니다.
-	ReleaseDC(g_hWnd, m_DC); // 윈도우에 DC 해제를 요청합니다.
 }

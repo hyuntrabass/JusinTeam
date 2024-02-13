@@ -5,6 +5,7 @@
 #include "TextButton.h"
 #include "Event_Manager.h"
 #include "TextButtonColor.h"
+#include "Camera_Manager.h"
 
 CRoskva::CRoskva(_dev pDevice, _context pContext)
 	: CNPC(pDevice, pContext)
@@ -97,7 +98,7 @@ void CRoskva::Tick(_float fTimeDelta)
 		{
 			if (m_eState != TALK)
 			{
-				m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
+				CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
 				CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 				m_bTalking = false;
 				return;
@@ -119,12 +120,12 @@ void CRoskva::Tick(_float fTimeDelta)
 	m_isColl = isColl;
 	if (!m_bTalking && isColl && m_pGameInstance->Key_Down(DIK_E) /* && collider */) // 나중에 조건 추가
 	{
-		m_pGameInstance->Set_CameraState(CS_ZOOM);
+		CCamera_Manager::Get_Instance()->Set_CameraState(CS_ZOOM);
 		_vec4 vLook = m_pTransformCom->Get_State(State::Look);
 		vLook.Normalize();
 		_vec4 vTargetPos = m_pTransformCom->Get_State(State::Pos);
-		m_pGameInstance->Set_CameraTargetPos(vTargetPos);
-		m_pGameInstance->Set_CameraTargetLook(vLook);
+		CCamera_Manager::Get_Instance()->Set_CameraTargetPos(vTargetPos);
+		CCamera_Manager::Get_Instance()->Set_CameraTargetLook(vLook);
 		if (m_eState == QUEST_ING)
 		{
 			if (!CEvent_Manager::Get_Instance()->Find_Quest(m_strQuestOngoing))
@@ -204,7 +205,7 @@ void CRoskva::Set_Text(ROSKVA_STATE eState)
 		wstring strText = m_vecDialog.front();
 		if (strText == TEXT("END"))
 		{
-			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
+			CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_bTalking = false;
 			m_eState = ROSKVA_END;
@@ -213,7 +214,7 @@ void CRoskva::Set_Text(ROSKVA_STATE eState)
 
 		if (strText[0] == L'!')
 		{
-			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
+			CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_bTalking = false;
 			wstring strQuest = strText.substr(1, strText.length());

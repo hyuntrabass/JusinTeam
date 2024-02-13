@@ -267,6 +267,9 @@ void CRabbit::Init_State(_float fTimeDelta)
 		case Client::CRabbit::STATE_DIE:
 			m_Animation.iAnimIndex = DIE;
 			m_Animation.isLoop = false;
+
+			_uint iRandomExp = rand() % 100;
+			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(15.f + (_float)iRandomExp / 2.f * 0.1f);
 			break;
 		}
 

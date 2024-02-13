@@ -74,6 +74,8 @@ private:
 	_float                  m_fShakeDuration = { 0.f };
 	_float                  m_fShakeTimeAcc = { 0.f };
 
+private:
+	class CCamera_Manager* m_pCam_Manager{ nullptr };
 
 public:
 	static CCamera_CutScene* Create(_dev pDevice, _context pContext);

@@ -3,6 +3,7 @@
 #include "Camera_CutScene.h"
 #include "UI_Manager.h"
 #include "Symbol.h"
+#include "Camera_Manager.h"
 
 IMPLEMENT_SINGLETON(CTrigger_Manager)
 
@@ -35,7 +36,7 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 				m_isPlayCutScene = true;
 				m_isInfinite = false;
 				m_strFilePath = L"../Bin/Data/Village_CutScene.dat";
-				m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+				CCamera_Manager::Get_Instance()->Set_CameraModeIndex(CM_CUTSCENE);
 				CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
 				iter->Set_Limited(false);
 			}
@@ -95,12 +96,12 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 			}
 			else if (iter->Get_TriggerType() == BOSS_TRIGGER && iter->Get_Limited() == true)
 			{
-				pTrigger = iter;	
+				pTrigger = iter;
 				m_isCollBossTrigger = true;
 				m_isPlayCutScene = true;
 				m_strFilePath = L"../Bin/Data/Boss_First_CutScene.dat";
 				m_isInfinite = true;
-				m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+				CCamera_Manager::Get_Instance()->Set_CameraModeIndex(CM_CUTSCENE);
 				iter->Set_Limited(false);
 			}
 
@@ -113,18 +114,17 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 		m_isPlayCutScene = false;
 		m_isInfinite = false;
 		m_strFilePath = L"../Bin/Data/Boss_Second_CutScene.dat";
-		m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+		CCamera_Manager::Get_Instance()->Set_CameraModeIndex(CM_CUTSCENE);
 		m_bStartSuicide = false;
 	}
 
 	if (m_bAfterSuicide)
 	{
-		CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::GROAR);
 		m_isBreakLoop = true;
 		m_isPlayCutScene = false;
 		m_isInfinite = false;
 		m_strFilePath = L"../Bin/Data/Boss_Final_CutScene.dat";
-		m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
+		CCamera_Manager::Get_Instance()->Set_CameraModeIndex(CM_CUTSCENE);
 		m_bAfterSuicide = false;
 	}
 
@@ -150,6 +150,80 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 void CTrigger_Manager::Limited_CutScene(_bool isLimited)
 {
 	m_isLimited = isLimited;
+}
+
+void CTrigger_Manager::Teleport(const TeleportSpot eSpot)
+{
+	const TCHAR* pGetPath{};
+
+	switch (eSpot)
+	{
+	case Client::TS_Dungeon:
+	{
+		pGetPath = TEXT("../Bin/Data/DungeonPos.dat");
+
+		// 임시
+		CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
+		pCamTransform->Set_State(State::Pos, _vec4(2067.11f, -12.8557f, 2086.95f, 1.f));
+		pCamTransform->LookAt_Dir(_vec4(0.97706846f, -0.21286753f, 0.004882995f, 0.f));
+
+		CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+		//pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 4.f, 0.f));
+		pPlayerTransform->Set_Position(_vec3(2070.81f, -14.8443f, 2086.87f));
+		pPlayerTransform->LookAt_Dir(_vec4(0.99763946f, 0.014162573f, 0.067186668f, 0.f));
+
+		m_pGameInstance->Set_HellHeight(-30.f);
+		break;
+	}
+	case Client::TS_Village:
+	{
+		pGetPath = TEXT("../Bin/Data/Village_Player_Pos.dat");
+
+		// 임시
+		std::ifstream inFile(pGetPath, std::ios::binary);
+
+		if (!inFile.is_open())
+		{
+			MSG_BOX("파일을 찾지 못했습니다.");
+			return;
+		}
+
+		_vec4 Player_Pos{ 0.f };
+		inFile.read(reinterpret_cast<char*>(&Player_Pos), sizeof(_vec4));
+
+		CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
+		pCamTransform->Set_State(State::Pos, _vec4(-17.9027f, 18.f, 125.f, 1.f));
+		pCamTransform->LookAt_Dir(_vec4(-0.541082f, 0.548757f, 0.637257f, 0.f));
+		CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+		pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 2.f, 0.f));
+		pPlayerTransform->LookAt_Dir(_vec4(-0.541082f, 0.f, 0.637257f, 0.f));
+
+		m_pGameInstance->Set_HellHeight(-70.f);
+		break;
+	}
+	}
+
+	// 파일을 읽어서 위치, 룩을 세팅하는 코드를 넣습니당
+
+	//std::ifstream inFile(pGetPath, std::ios::binary);
+
+	//if (!inFile.is_open())
+	//{
+	//	MSG_BOX("파일을 찾지 못했습니다.");
+	//	return;
+	//}
+
+	//_vec4 Player_Pos{ 0.f };
+	//inFile.read(reinterpret_cast<char*>(&Player_Pos), sizeof(_vec4));
+
+	//CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
+	//pCamTransform->Set_State(State::Pos, _vec4(-17.9027f, 18.f, 125.f, 1.f));
+	//pCamTransform->LookAt_Dir(_vec4(-0.541082f, 0.548757f, 0.637257f, 0.f));
+	//CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+	//pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 2.f, 0.f));
+	//pPlayerTransform->LookAt_Dir(_vec4(-0.541082f, 0.f, 0.637257f, 0.f));
+
+	return;
 }
 
 HRESULT CTrigger_Manager::Ready_Trigger_Village()

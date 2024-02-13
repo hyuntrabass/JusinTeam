@@ -166,6 +166,7 @@
     <ClInclude Include="..\Public\Camera_CutScene.h" />
     <ClInclude Include="..\Public\Camera_Debug.h" />
     <ClInclude Include="..\Public\Camera_Main.h" />
+    <ClInclude Include="..\public\Camera_Manager.h" />
     <ClInclude Include="..\Public\Cat.h" />
     <ClInclude Include="..\Public\Aur.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
@@ -306,6 +307,7 @@
     <ClCompile Include="..\Private\Camera_CutScene.cpp" />
     <ClCompile Include="..\Private\Camera_Debug.cpp" />
     <ClCompile Include="..\Private\Camera_Main.cpp" />
+    <ClCompile Include="..\private\Camera_Manager.cpp" />
     <ClCompile Include="..\Private\Cat.cpp" />
     <ClCompile Include="..\Private\Aur.cpp" />
     <ClCompile Include="..\Private\CharacterSelect.cpp" />

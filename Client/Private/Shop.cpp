@@ -8,6 +8,8 @@
 #include "ShopDesc.h"
 #include "ShopWindow.h"
 #include "Event_Manager.h"
+#include "Camera_Manager.h"
+
 CShop::CShop(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
@@ -73,16 +75,11 @@ void CShop::Tick(_float fTimeDelta)
 	{
 		if (m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
-			dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Init_SellItem();
-			m_pGameInstance->Set_CameraState(CS_ENDFULLSCREEN);
-
 			CFadeBox::FADE_DESC Desc = {};
-			Desc.eState = CFadeBox::FADEOUT;
-			Desc.fDuration = 1.f;
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
-			{
-				return;
-			}
+			Desc.fIn_Duration = 0.5f;
+			Desc.fOut_Duration = 1.f;
+			Desc.phasFadeCompleted = &m_isReadytoDeactivate;
+			CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
 
 			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 			{
@@ -92,16 +89,25 @@ void CShop::Tick(_float fTimeDelta)
 				}
 			}
 
-			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
-			if (!m_bQuestTrigger && CEvent_Manager::Get_Instance()->Get_QuestTrigger(CEvent_Manager::POTION))
-			{
-				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("체력포션 구매"));
-			}
-			m_isActive = false;
 		}
 	}
 	
+	if (m_isReadytoDeactivate)
+	{
+		dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Init_SellItem();
+		CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
 
+		CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
+		if (!m_bQuestTrigger && CEvent_Manager::Get_Instance()->Get_QuestTrigger(CEvent_Manager::POTION))
+		{
+			CEvent_Manager::Get_Instance()->Update_Quest(TEXT("체력포션 구매"));
+		}
+		m_isActive = false;
+	}
+
+	if (m_isReadytoActivate)
+	{
+	}
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
@@ -270,20 +276,17 @@ void CShop::Open_Shop()
 {
 	if (!m_isActive)
 	{
-		CFadeBox::FADE_DESC Desc = {};
-		Desc.eState = CFadeBox::FADEOUT;
-		Desc.fDuration = 1.f;
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Desc)))
-		{
-			return;
-		}
 		if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
 		{
 			return;
 		}
-		m_pGameInstance->Set_CameraState(CS_SHOP);
+		CCamera_Manager::Get_Instance()->Set_CameraState(CS_SHOP);
 		m_isActive = true;
 		Init_ShopState();
+
+		m_isReadytoActivate = false;
+		m_isReadytoDeactivate = false;
+
 	}
 }
 

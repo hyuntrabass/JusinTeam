@@ -8,8 +8,6 @@
 
 #include "../Default/framework.h"
 #include <process.h>
-#include <iostream>
-
 #pragma comment(lib, "Engine.lib")
 
 namespace ShaderEdit

@@ -6,8 +6,7 @@
 #include "NPC.h"
 #include "NPC_Dummy.h"
 #include "Map.h"
-#include "Player.h"
-
+#include "Trigger_Manager.h"
 
 CLevel_Village::CLevel_Village(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -20,11 +19,12 @@ HRESULT CLevel_Village::Init()
 	m_pGameInstance->StopAll();
 
 
-	if (FAILED(Ready_Player()))
-	{
-		MSG_BOX("Failed to Ready Player");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Player()))
+	//{
+	//	MSG_BOX("Failed to Ready Player");
+	//	return E_FAIL;
+	//}
+	CTrigger_Manager::Get_Instance()->Teleport(TS_Village);
 
 	if (FAILED(Ready_Camera()))
 	{
@@ -121,28 +121,14 @@ void CLevel_Village::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_END))
 	{
-		In_To_Dungeon();
+		CTrigger_Manager::Get_Instance()->Teleport(TS_Dungeon);
 		return;
 	}
 
 	//m_pGameInstance->PhysXTick(fTimeDelta);
 	if (m_pGameInstance->Key_Down(DIK_HOME))
 	{
-		Ready_Player();
-		return;
-	}
-
-	if (m_pGameInstance->Get_GoDungeon())
-	{
-		In_To_Dungeon();
-		m_pGameInstance->Set_GoDungeon(false);
-		return;
-	}
-	
-	if (m_pGameInstance->Get_GoHome())
-	{
-		Ready_Player();
-		m_pGameInstance->Set_GoHome(false);
+		CTrigger_Manager::Get_Instance()->Teleport(TS_Village);
 		return;
 	}
 
@@ -180,33 +166,33 @@ HRESULT CLevel_Village::Ready_Light()
 	return m_pGameInstance->Add_Light(LEVEL_VILLAGE, TEXT("Light_Main"), LightDesc);
 }
 
-HRESULT CLevel_Village::Ready_Player()
-{
-	// 플레이어 위치 설정
-	const TCHAR* pGetPath = TEXT("../Bin/Data/Village_Player_Pos.dat");
-
-	std::ifstream inFile(pGetPath, std::ios::binary);
-
-	if (!inFile.is_open())
-	{
-		MessageBox(g_hWnd, L"../Bin/Data/Player_Pos.dat 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
-		return E_FAIL;
-	}
-
-	_vec4 Player_Pos{ 0.f };
-	inFile.read(reinterpret_cast<char*>(&Player_Pos), sizeof(_vec4));
-
-	CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
-	pCamTransform->Set_State(State::Pos, _vec4(-17.9027f, 18.f, 125.f, 1.f));
-	pCamTransform->LookAt_Dir(_vec4(-0.541082f, 0.548757f, 0.637257f, 0.f));
-	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-	pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 2.f, 0.f));
-	pPlayerTransform->LookAt_Dir(_vec4(-0.541082f, 0.f, 0.637257f, 0.f));
-
-	m_pGameInstance->Set_HellHeight(-70.f);
-
-	return S_OK;
-}
+//HRESULT CLevel_Village::Ready_Player()
+//{
+//	// 플레이어 위치 설정
+//	const TCHAR* pGetPath = TEXT("../Bin/Data/Village_Player_Pos.dat");
+//
+//	std::ifstream inFile(pGetPath, std::ios::binary);
+//
+//	if (!inFile.is_open())
+//	{
+//		MessageBox(g_hWnd, L"../Bin/Data/Player_Pos.dat 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+//		return E_FAIL;
+//	}
+//
+//	_vec4 Player_Pos{ 0.f };
+//	inFile.read(reinterpret_cast<char*>(&Player_Pos), sizeof(_vec4));
+//
+//	CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
+//	pCamTransform->Set_State(State::Pos, _vec4(-17.9027f, 18.f, 125.f, 1.f));
+//	pCamTransform->LookAt_Dir(_vec4(-0.541082f, 0.548757f, 0.637257f, 0.f));
+//	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+//	pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 2.f, 0.f));
+//	pPlayerTransform->LookAt_Dir(_vec4(-0.541082f, 0.f, 0.637257f, 0.f));
+//
+//	m_pGameInstance->Set_HellHeight(-70.f);
+//
+//	return S_OK;
+//}
 
 
 HRESULT CLevel_Village::Ready_Map()
@@ -378,36 +364,36 @@ HRESULT CLevel_Village::Ready_Environment()
 	return S_OK;
 }
 
-HRESULT CLevel_Village::In_To_Dungeon()
-{
-	// 플레이어 위치 설정
-	const TCHAR* pGetPath = TEXT("../Bin/Data/DungeonPos.dat");
-
-	std::ifstream inFile(pGetPath, std::ios::binary);
-	
-	if (!inFile.is_open())
-	{
-		MessageBox(g_hWnd, L"../Bin/Data/DungeonPos.dat 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
-		return E_FAIL;
-	}
-
-	_vec4 Player_Pos{ 0.f };
-	inFile.read(reinterpret_cast<char*>(&Player_Pos), sizeof(_vec4));
-
-
-	CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
-	pCamTransform->Set_State(State::Pos, _vec4(2067.11f, -12.8557f, 2086.95f, 1.f));
-	pCamTransform->LookAt_Dir(_vec4(0.97706846f, -0.21286753f, 0.004882995, 0.f));
-
-	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-	//pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 4.f, 0.f));
-	pPlayerTransform->Set_Position(_vec3(2070.81f, -14.8443f, 2086.87f));
-	pPlayerTransform->LookAt_Dir(_vec4(0.99763946f, 0.014162573f, 0.067186668f, 0.f));
-
-	m_pGameInstance->Set_HellHeight(-30.f);
-
-	return S_OK;
-}
+//HRESULT CLevel_Village::In_To_Dungeon()
+//{
+//	// 플레이어 위치 설정
+//	const TCHAR* pGetPath = TEXT("../Bin/Data/DungeonPos.dat");
+//
+//	std::ifstream inFile(pGetPath, std::ios::binary);
+//	
+//	if (!inFile.is_open())
+//	{
+//		MessageBox(g_hWnd, L"../Bin/Data/DungeonPos.dat 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+//		return E_FAIL;
+//	}
+//
+//	_vec4 Player_Pos{ 0.f };
+//	inFile.read(reinterpret_cast<char*>(&Player_Pos), sizeof(_vec4));
+//
+//
+//	CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
+//	pCamTransform->Set_State(State::Pos, _vec4(2067.11f, -12.8557f, 2086.95f, 1.f));
+//	pCamTransform->LookAt_Dir(_vec4(0.97706846f, -0.21286753f, 0.004882995, 0.f));
+//
+//	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+//	//pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 4.f, 0.f));
+//	pPlayerTransform->Set_Position(_vec3(2070.81f, -14.8443f, 2086.87f));
+//	pPlayerTransform->LookAt_Dir(_vec4(0.99763946f, 0.014162573f, 0.067186668f, 0.f));
+//
+//	m_pGameInstance->Set_HellHeight(-30.f);
+//
+//	return S_OK;
+//}
 
 
 HRESULT CLevel_Village::Ready_NpcvsMon()

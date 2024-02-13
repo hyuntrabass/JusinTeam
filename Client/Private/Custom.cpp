@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "Level_Loading.h"
 #include "UI_Manager.h"
+#include "Camera_Manager.h"
 
 CCustom::CCustom(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -517,8 +518,8 @@ HRESULT CCustom::Bind_ShaderResources()
 
 void CCustom::Set_CameraState(_uint iSelect)
 {
-	m_pGameInstance->Set_CameraState(CS_ZOOM);
-	m_pGameInstance->Set_ZoomFactor(3.5f);
+	CCamera_Manager::Get_Instance()->Set_CameraState(CS_ZOOM);
+	CCamera_Manager::Get_Instance()->Set_ZoomFactor(3.5f);
 }
 
 _bool CCustom::Set_PickingRange(POINT& ptMouse)

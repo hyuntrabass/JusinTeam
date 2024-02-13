@@ -2,10 +2,10 @@
 #include "Client_Define.h"
 #include "Base.h"
 
-
 BEGIN(Engine)
 class CGameInstance;
 END
+
 BEGIN(Client)
 class CEvent_Manager final : public CBase
 {
