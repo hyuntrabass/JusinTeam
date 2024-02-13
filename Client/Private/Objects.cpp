@@ -58,7 +58,7 @@ void CObjects::Late_Tick(_float fTimeDelta)
 	}
 	else
 	{
-		//if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
+		//if(m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY)
 		//{
 			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
 		//}
