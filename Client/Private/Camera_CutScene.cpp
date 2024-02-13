@@ -143,12 +143,14 @@ void CCamera_CutScene::Play_Camera(_float fTimeDelta)
 		for (auto pCurve : m_CameraAtList)
 		{
 			pCurve->Kill();
+			Safe_Release(pCurve);
 		}
 		m_CameraAtList.clear();
 
 		for (auto pCurve : m_CameraEyeList)
 		{
 			pCurve->Kill();
+			Safe_Release(pCurve);
 		}
 		m_CameraEyeList.clear();
 
@@ -175,14 +177,19 @@ void CCamera_CutScene::Play_Camera(_float fTimeDelta)
 			m_isPlayCutScene = false;
 			if (m_pTrigger_Manager->Get_Infinite() == false)
 			{
-				if (!m_CameraAtList.empty())
+				for (auto pCurve : m_CameraAtList)
 				{
-					m_CameraAtList.clear();
+					pCurve->Kill();
+					Safe_Release(pCurve);
 				}
-				if (!m_CameraEyeList.empty())
+				m_CameraAtList.clear();
+
+				for (auto pCurve : m_CameraEyeList)
 				{
-					m_CameraEyeList.clear();
+					pCurve->Kill();
+					Safe_Release(pCurve);
 				}
+				m_CameraEyeList.clear();
 				m_pCam_Manager->Set_CameraModeIndex(CM_MAIN);
 			}
 		}
