@@ -103,7 +103,7 @@ void CVIBuffer_Trail::Update(_uint iNumVerticesToUse, _vec3* pPositions, _vec4* 
 	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
 	for (_uint i = 0; i < m_iNumVertices; i++)
 	{
-		if (i >= iNumVerticesToUse * m_iDetailRatio)
+		if (i >= (iNumVerticesToUse - 1) * m_iDetailRatio)
 		{
 			reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPosition = pPositions[iNumVerticesToUse - 1];
 			reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vColor = _float4();

@@ -11,6 +11,7 @@
 #include "Effect_Manager.h"
 #include "Event_Manager.h"
 #include "Trigger_Manager.h"
+#include "Camera_Manager.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -26,6 +27,7 @@ HRESULT CMainApp::Init()
 	}
 
 	srand(static_cast<_uint>(time(nullptr)));
+
 #ifdef _DEBUG
 #ifdef UNICODE
 #pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
@@ -65,10 +67,6 @@ HRESULT CMainApp::Init()
 	{
 		return E_FAIL;
 	}
-
-	m_pGameInstance->Initialize_Level(LEVEL_END);
-
-	srand((unsigned)time(NULL));
 
 	CEffect_Manager::Get_Instance()->Register_Callback();
 
@@ -363,6 +361,7 @@ CMainApp* CMainApp::Create()
 
 void CMainApp::Free()
 {
+	CCamera_Manager::Destroy_Instance();
 	CEffect_Manager::Destroy_Instance();
 	CTrigger_Manager::Destroy_Instance();
 	Safe_Release(m_pRenderer);

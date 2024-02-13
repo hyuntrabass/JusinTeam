@@ -2,6 +2,7 @@
 #include "Effect_Manager.h"
 #include "Effect_Dummy.h"
 #include "Arrow.h"
+#include "Camera_Manager.h"
 
 CSkill_Model::CSkill_Model(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -37,7 +38,7 @@ HRESULT CSkill_Model::Init(void* pArg)
 
 void CSkill_Model::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Get_CameraState() != CS_SKILLBOOK)
+	if (CCamera_Manager::Get_Instance()->Get_CameraState() != CS_SKILLBOOK)
 	{
 		m_bView = false;
 		return;
@@ -71,7 +72,7 @@ void CSkill_Model::Tick(_float fTimeDelta)
 
 void CSkill_Model::Late_Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Get_CameraState() != CS_SKILLBOOK)
+	if (CCamera_Manager::Get_Instance()->Get_CameraState() != CS_SKILLBOOK)
 	{
 		return;
 	}

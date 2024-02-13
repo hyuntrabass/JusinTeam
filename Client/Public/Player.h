@@ -326,7 +326,7 @@ public:
 public:
 	void Front_Ray_Check();
 	_bool Turn_Ray_Check(_bool bRight);
-	
+
 public:
 	void Arrow_Rain();
 	void Common_Attack();
@@ -370,6 +370,7 @@ private:
 	CCommonSurfaceTrail* m_pLeft_Trail[5]{ nullptr };
 	CCommonSurfaceTrail* m_pRight_Trail[5]{ nullptr };
 	class CEffect_Dummy* m_pEffect_Shield{ nullptr };
+	class CCamera_Manager* m_pCam_Manager{ nullptr };
 
 private:
 	ANIM_DESC m_Animation{};

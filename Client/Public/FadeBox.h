@@ -7,11 +7,15 @@ BEGIN(Client)
 class CFadeBox final : public COrthographicObject
 {
 public:
-	enum STATE { FADEIN, FADELOOP, FADEOUT, STATE_END };
 	typedef struct tagFadeDesc
 	{
-		_float fDuration;
-		STATE eState;
+		_float fIn_Duration{};
+		_float fMid_Duration{};
+		_float fOut_Duration{};
+		_vec4 vColor{};
+		_float fMaxAlpha{ 1.f };
+		_bool isInfiniteLoop{};
+		_bool* phasFadeCompleted{};
 	}FADE_DESC;
 
 private:
@@ -30,13 +34,12 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
-	CTexture* m_pTextureCom{ nullptr };
+	//CTexture* m_pTextureCom{ nullptr };
 
 private:
 	_float m_fAlpha{ 0.f };
 	_float m_fTime{ 0.f };
-	_float m_fDuration{ 0.f };
-	STATE  m_eState{ STATE_END };
+	FADE_DESC m_Desc{ 0.f };
 
 private:
 	HRESULT Add_Components();

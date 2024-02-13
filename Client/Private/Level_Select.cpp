@@ -2,6 +2,7 @@
 #include "Level_Loading.h"
 #include "Camera.h"
 #include "Effect_Manager.h"
+#include "Camera_Manager.h"
 
 CLevel_Select::CLevel_Select(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -225,7 +226,7 @@ HRESULT CLevel_Select::Ready_Camera()
 		return E_FAIL;
 	}
 
-	m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
+	CCamera_Manager::Get_Instance()->Set_CameraModeIndex(CM_MAIN);
 
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, L"Layer_Camera_Debug", TEXT("Prototype_GameObject_Camera_Debug"), &CamDesc)))

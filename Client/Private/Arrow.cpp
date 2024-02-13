@@ -27,7 +27,15 @@ HRESULT CArrow::Init(void* pArg)
 
 	if (m_ArrowType.Att_Type != AT_Bow_Skill3)
 	{
+		if (m_ArrowType.Att_Type == AT_Bow_SkillR)
+		{
+		_mat fourComboMat = m_ArrowType.world * _mat::CreateTranslation(_vec3(0.f, -1.5f, 0.f));
+			m_pTransformCom->Set_Matrix(fourComboMat);
+		}
+		else
+		{
 		m_pTransformCom->Set_Matrix(m_ArrowType.world);
+		}
 		m_pTransformCom->Set_Speed(25.f);
 		m_pTransformCom->Set_Scale(_vec3(1.5f));
 
@@ -94,8 +102,10 @@ void CArrow::Late_Tick(_float fTimeDelta)
 	{
 		m_pParticle->Late_Tick(fTimeDelta);
 	}
-
+	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 	__super::Compute_CamDistance();
+
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
 }
 
 HRESULT CArrow::Render()

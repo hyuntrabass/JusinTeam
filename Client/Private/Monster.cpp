@@ -104,6 +104,11 @@ void CMonster::Tick(_float fTimeDelta)
 
 void CMonster::Late_Tick(_float fTimeDelta)
 {
+	if (m_iHP <= 0)
+	{
+		Safe_Release(m_HpBar);
+	}
+
 	if (m_HpBar)
 	{
 		if (m_fHittedTime > 0.f)
@@ -394,12 +399,8 @@ void CMonster::Free()
 	}
 
 
-	_uint iRandomExp = rand() % 100;
-	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(15.f + (_float)iRandomExp / 2.f * 0.1f);
-	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(iRandomExp * 0.01f);
-	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(iRandomExp * 0.01f);
-	Safe_Release(m_HpBar);
 
+	Safe_Release(m_HpBar);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

@@ -49,7 +49,7 @@ void CUI_Manager::Set_Exp_ByPercent(_float fExp)
 	{
 		m_iLevel++;
 		CEvent_Manager::Get_Instance()->Set_LevelUp(m_iLevel);
-		if (m_iLevel == 2 || m_iLevel == 3 || m_iLevel == 4|| m_iLevel == 5)
+		if (m_iLevel == 2 || m_iLevel == 3 || m_iLevel == 4 || m_iLevel == 5)
 		{
 			CEvent_Manager::Get_Instance()->Set_SkillUnlock(m_iLevel - 2);
 		}
@@ -82,11 +82,11 @@ HRESULT CUI_Manager::Set_Diamond(_uint iDia)
 
 _bool CUI_Manager::Set_CurrentPlayerPos(_vec4 vPos)
 {
-	if (!m_isSetInvenState) 
+	if (!m_isSetInvenState)
 	{
-		m_vPlayerPos = vPos; 
+		m_vPlayerPos = vPos;
 		m_isSetInvenState = true;
-		return true; 
+		return true;
 	}
 	return false;
 }
@@ -303,7 +303,7 @@ HRESULT CUI_Manager::Init_Items()
 		{
 			Item.iItemType = (_uint)ITEM_SWORD;
 		}
-		
+
 		else if (strItemType == TEXT("BOW"))
 		{
 			Item.iItemType = (_uint)ITEM_BOW;
@@ -332,7 +332,7 @@ HRESULT CUI_Manager::Init_Items()
 			Item.iItemTier = (_uint)TIER_LEGENDARY;
 		}
 
-		getline(fin, Item.strName, L'|');		
+		getline(fin, Item.strName, L'|');
 		getline(fin, Item.strTexture, L'|');
 
 		getline(fin, strItemIndex, L'|');
@@ -358,7 +358,7 @@ HRESULT CUI_Manager::Init_Items()
 }
 
 HRESULT CUI_Manager::Init_Skills()
-{	
+{
 	SKILLINFO Info = {};
 	Info.strName = TEXT("환영화살");
 	Info.iSkillType = (_uint)WP_BOW;
@@ -385,7 +385,7 @@ HRESULT CUI_Manager::Init_Skills()
 	Info.iModelSkillIndex = 6;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon3");
 	m_SkillInfo[WP_BOW][Info.iSkillIdx] = Info;
-	
+
 	Info.strName = TEXT("삼중 연사");
 	Info.iMp = 8;
 	Info.iCoolTime = 7;
@@ -393,7 +393,7 @@ HRESULT CUI_Manager::Init_Skills()
 	Info.iModelSkillIndex = 0;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon4");
 	m_SkillInfo[WP_BOW][Info.iSkillIdx] = Info;
-	
+
 	Info.iSkillType = (_uint)WP_SWORD;
 	Info.strName = TEXT("전광 석화");
 	Info.iMp = 12;
@@ -410,7 +410,7 @@ HRESULT CUI_Manager::Init_Skills()
 	Info.iModelSkillIndex = 5;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon7");
 	m_SkillInfo[WP_SWORD][Info.iSkillIdx] = Info;
-	
+
 	Info.strName = TEXT("인장 각인");
 	Info.iMp = 6;
 	Info.iCoolTime = 8;
@@ -431,6 +431,16 @@ HRESULT CUI_Manager::Init_Skills()
 	return E_NOTIMPL;
 }
 
+void CUI_Manager::Set_Symbol(CSymbol::TYPE eType)
+{
+	CSymbol::SYMBOL_DESC Desc{};
+	Desc.eType = eType;
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Symbol"), &Desc)))
+	{
+		return;
+	}
+}
+
 SKILLINFO CUI_Manager::Get_SkillInfo(WEAPON_TYPE eType, _uint iIdx)
 {
 	SKILLINFO Info{};
@@ -443,8 +453,8 @@ SKILLINFO CUI_Manager::Get_SkillInfo(WEAPON_TYPE eType, _uint iIdx)
 }
 
 ITEM CUI_Manager::Find_Item(wstring& strItemName)
-{	
-	
+{
+
 	auto	iter = m_mapItem.find(strItemName);
 
 	if (iter == m_mapItem.end())
@@ -464,7 +474,7 @@ HRESULT CUI_Manager::Set_Item(wstring& strItemName, _uint iNum)
 	{
 		return E_FAIL;
 	}
-	
+
 	dynamic_cast<CInven*>(m_pInven)->Set_Item(Item, iNum);
 
 	return S_OK;
@@ -511,7 +521,7 @@ _bool CUI_Manager::Use_Skill(WEAPON_TYPE eType, CSkillBlock::SKILLSLOT eSlot, _i
 	{
 		return false;
 	}
-	
+
 	return m_pSkillBlock->Use_Skill(eType, eSlot, iIndex, iMp);
 }
 
@@ -559,11 +569,11 @@ HRESULT CUI_Manager::Set_Item_In_EmptySlot(CItemBlock::ITEMSLOT eSlot, CItem* pI
 	{
 		return E_FAIL;
 	}
-	
+
 	return S_OK;
 }
 
-ITEM CUI_Manager::Set_Item_In_FullSlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* iItemNum, _int* iChangeItemNum )
+ITEM CUI_Manager::Set_Item_In_FullSlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* iItemNum, _int* iChangeItemNum)
 {
 	ITEM eDefItem = {};
 	eDefItem.iInvenType = -1;
@@ -571,7 +581,7 @@ ITEM CUI_Manager::Set_Item_In_FullSlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem,
 	if (dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Get_ItemName() != pItem->Get_ItemDesc().strName)
 	{
 		*iChangeItemNum = dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Get_ItemObject()->Get_ItemNum();
-		 ITEM eItem = dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Get_ItemObject()->Get_ItemDesc();
+		ITEM eItem = dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Get_ItemObject()->Get_ItemDesc();
 
 		if (FAILED(Set_Item_In_EmptySlot(eSlot, pItem, iItemNum)))
 		{
@@ -623,6 +633,21 @@ const vector<CTransform*> CUI_Manager::Get_RadarPosition(TYPE eType) const
 
 void CUI_Manager::Level_Up()
 {
+}
+
+HRESULT CUI_Manager::Add_FadeBox(CFadeBox::FADE_DESC& Description)
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_FadeBox"), &Description)))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+CFadeBox* CUI_Manager::Clone_FadeBox(CFadeBox::FADE_DESC& Description)
+{
+	return dynamic_cast<CFadeBox*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_FadeBox"), &Description));
 }
 
 void CUI_Manager::Free()

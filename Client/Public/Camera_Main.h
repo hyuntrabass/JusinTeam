@@ -20,6 +20,7 @@ public:
 	void Camera_Zoom(_float fTimeDelta);
 
 private: // CAM_MODE
+	void Default_Mode(_float fTimeDelta);
 	void Shop_Mode(_float fTimeDelta);
 	void ZOOM_Mode(_float fTimeDelta);
 	void Custom_Mode(_float fTimeDelta);
@@ -28,6 +29,8 @@ private: // CAM_MODE
 	void WorldMap_Mode(_float fTimeDelta);
 	void SkillBook_Mode(_float fTimeDelta);
 
+private:
+	class CCamera_Manager* m_pCam_Manager{ nullptr };
 
 private:
 	_int m_iRotation{ 1 };
@@ -49,7 +52,12 @@ private:
 	_float m_fMouseSensor{ 0.08f };
 	_float m_fPlayerDistance{ 4.f };
 	_bool  m_bInitMode[CAMERA_MODE::CM_END]{};
+	CAMERA_STATE m_eCurrState{};
+	CAMERA_STATE m_ePrevState{};
 	CTransform* m_pPlayerTransform{ nullptr };
+
+	_bool m_isFadeReady{};
+	_vec4 m_vOriginalLook{};
 
 private:
 	_bool m_bSelect{};
@@ -67,6 +75,10 @@ private:
 	 _float m_fLerp_RightDistance{};
 	 _float m_fCurrentMapZoom{ 1017.16f };
 	 _vec4 m_vMapPos{ 990.944f, 1017.16f, 1003.75f, 1.f	};
+
+private:
+	void Init_State(_float fTimeDelta);
+	void Tick_State(_float fTimeDelta);
 
 public:
 	static CCamera_Main* Create(_dev pDevice, _context pContext);
