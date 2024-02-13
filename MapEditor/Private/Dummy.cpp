@@ -120,7 +120,7 @@ HRESULT CDummy::Render()
 	{
 		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
-			return E_FAIL;
+			continue;
 		}
 
 		_bool HasNorTex{};

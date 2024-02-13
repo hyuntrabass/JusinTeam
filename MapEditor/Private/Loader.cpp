@@ -312,169 +312,169 @@ HRESULT CLoader::Load_Editor()
 #pragma endregion
 
 	m_strLoadingText = L"Editor : Loading Monster Model";
-//#pragma region Monster
-//
-//	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Rabbit"),
-//		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Rabbit/Mesh/Rabbit.hyuntraanimmesh"))))
-//	{
-//		return E_FAIL;
-//	}
-//
-//	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Furgoat"),
-//		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Furgoat/Mesh/Furgoat.hyuntraanimmesh"))))
-//	{
-//		return E_FAIL;
-//	}
-//
-//	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Nastron03"),
-//		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Nastron03/Mesh/Nastron03.hyuntraanimmesh"))))
-//	{
-//		return E_FAIL;
-//	}
-//
-//	Pivot = _mat::CreateScale(0.01f) * _mat::CreateRotationX(XMConvertToRadians(-90.f));
-//	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_NPCvsMon"),
-//		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/NPCvsMon/Mesh/NPCvsMon.hyuntraanimmesh", false, Pivot))))
-//	{
-//		return E_FAIL;
-//	}
-//
-//	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Thief04"),
-//		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Thief04/Mesh/Thief04.hyuntraanimmesh"))))
-//	{
-//		return E_FAIL;
-//	}
-//
-//	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_TrilobiteA"),
-//		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/TrilobiteA/Mesh/TrilobiteA.hyuntraanimmesh"))))
-//	{
-//		return E_FAIL;
-//	}
-//
-//	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void01"),
-//		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Void01/Mesh/Void01.hyuntraanimmesh"))))
-//	{
-//		return E_FAIL;
-//	}
-//
-//	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void05"),
-//		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Void05/Mesh/Void05.hyuntraanimmesh"))))
-//	{
-//		return E_FAIL;
-//	}
-//
-//	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Imp"),
-//		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Imp/Mesh/Imp.hyuntraanimmesh"))))
-//	{
-//		return E_FAIL;
-//	}
-//
-//	_mat Pivot1 = _mat::CreateScale(0.5f);
-//	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void09"),
-//		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Void09/Mesh/Void09.hyuntraanimmesh", false, Pivot1))))
-//	{
-//		return E_FAIL;
-//	}
-//
-//	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void20"),
-//		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Void20/Mesh/Void20.hyuntraanimmesh", false, Pivot1))))
-//	{
-//		return E_FAIL;
-//	}
-//
-//	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void23"),
-//		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Void23/Mesh/Void23.hyuntraanimmesh", false, Pivot1))))
-//	{
-//		return E_FAIL;
-//	}
-//
-//	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Nastron07"),
-//		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Nastron07/Mesh/Nastron07.hyuntraanimmesh", false, Pivot1))))
-//	{
-//		return E_FAIL;
-//	}
-//
-//	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Spider"),
-//		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Spider/Mesh/Spider.hyuntraanimmesh"))))
-//	{
-//		return E_FAIL;
-//	}
+#pragma region Monster
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Rabbit"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Rabbit/Mesh/Rabbit.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Furgoat"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Furgoat/Mesh/Furgoat.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Nastron03"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Nastron03/Mesh/Nastron03.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	Pivot = _mat::CreateScale(0.01f) * _mat::CreateRotationX(XMConvertToRadians(-90.f));
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_NPCvsMon"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/NPCvsMon/Mesh/NPCvsMon.hyuntraanimmesh", false, Pivot))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Thief04"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Thief04/Mesh/Thief04.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_TrilobiteA"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/TrilobiteA/Mesh/TrilobiteA.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void01"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Void01/Mesh/Void01.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void05"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Void05/Mesh/Void05.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Imp"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Imp/Mesh/Imp.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	_mat Pivot1 = _mat::CreateScale(0.5f);
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void09"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Void09/Mesh/Void09.hyuntraanimmesh", false, Pivot1))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void20"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Void20/Mesh/Void20.hyuntraanimmesh", false, Pivot1))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void23"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Void23/Mesh/Void23.hyuntraanimmesh", false, Pivot1))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Nastron07"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Nastron07/Mesh/Nastron07.hyuntraanimmesh", false, Pivot1))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Spider"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Spider/Mesh/Spider.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 #pragma region NPC
-	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Cat"),
-	//	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Cat/Mesh/Cat.hyuntraanimmesh"))))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Cat"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Cat/Mesh/Cat.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 
-	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Dog"),
-	//	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Dog/Mesh/Dog.hyuntraanimmesh"))))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Dog"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Dog/Mesh/Dog.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 
-	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_ItemMerchant"),
-	//	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/ItemMerchant/Mesh/ItemMerchant.hyuntraanimmesh"))))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_ItemMerchant"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/ItemMerchant/Mesh/ItemMerchant.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 
-	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_BlackSmith"),
-	//	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/BlackSmith/Mesh/BlackSmith.hyuntraanimmesh"))))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_BlackSmith"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/BlackSmith/Mesh/BlackSmith.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 
-	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Roskva"),
-	//	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Roskva/Mesh/Roskva.hyuntraanimmesh"))))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Roskva"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Roskva/Mesh/Roskva.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 
-	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Aur"),
-	//	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Aur/Mesh/Aur.hyuntraanimmesh"))))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Aur"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Aur/Mesh/Aur.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 
-	//strInputFilePath = "../../Client/Bin/Resources/AnimMesh/NPC/NPC_Dummy/Mesh/";
-	//for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
-	//{
-	//	if (entry.is_regular_file())
-	//	{
-	//		if (!entry.exists())
-	//			return S_OK;
+	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/NPC/NPC_Dummy/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (!entry.exists())
+				return S_OK;
 
-	//		wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 
-	//		if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
-	//		{
-	//			return E_FAIL;
-	//		}
-	//	}
-	//}	
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}	
 
 #pragma endregion
 #pragma  region Boss
-	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar"),
-	//	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Groar/Mesh/Groar.hyuntraanimmesh"))))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Groar/Mesh/Groar.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 
 
-	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GroarScene01"),
-	//	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/GroarScene01/Mesh/GroarScene01.hyuntraanimmesh"))))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GroarScene01"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/GroarScene01/Mesh/GroarScene01.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 
-	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GroarScene02"),
-	//	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/GroarScene02/Mesh/GroarScene02.hyuntraanimmesh"))))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GroarScene02"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/GroarScene02/Mesh/GroarScene02.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar_Boss"),
@@ -483,22 +483,22 @@ HRESULT CLoader::Load_Editor()
 		return E_FAIL;
 	}
 
-	//_mat TentaclePivot = _mat::CreateRotationX(XMConvertToRadians(290.f));
-	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar_Tentacle"),
-	//	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/Groar_Tentacle/Mesh/Groar_Tentacle.hyuntraanimmesh", false, TentaclePivot))))
-	//{
-	//	return E_FAIL;
-	//}
+	_mat TentaclePivot = _mat::CreateRotationX(XMConvertToRadians(290.f));
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar_Tentacle"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/Groar_Tentacle/Mesh/Groar_Tentacle.hyuntraanimmesh", false, TentaclePivot))))
+	{
+		return E_FAIL;
+	}
 
 #pragma  endregion Boss
 
 #pragma region ETC
-	 Pivot = _mat::CreateScale(0.01f) * _mat::CreateRotationY(90.f);
+	// Pivot = _mat::CreateScale(0.01f) * _mat::CreateRotationY(90.f);
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Camera"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Model/Etc/Mesh/Camera.hyuntrastatmesh", false, Pivot))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Camera"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Model/Etc/Mesh/Camera.hyuntrastatmesh", false, Pivot))))
+	//{
+	//	return E_FAIL;
+	//}
 #pragma endregion
 
 

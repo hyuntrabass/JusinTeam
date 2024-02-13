@@ -469,6 +469,8 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				Load_Object();
 			}
 			ImGui::EndTabItem();
+
+
 		}
 
 #pragma endregion
@@ -1089,6 +1091,13 @@ HRESULT CImGui_Manager::ImGuiPos()
 	{
 		Save_Pos();
 	}
+
+	if (ImGui::Button("Save_WorldMatrix"))
+	{
+		Save_WorldMatrix();
+	}
+	ImGui::SameLine();
+
 	ImGui::End();
 	return S_OK;
 }
@@ -2955,6 +2964,8 @@ HRESULT CImGui_Manager::Load_CutScene()
 	return S_OK;
 }
 #pragma endregion
+
+#pragma region 위치 저장
 HRESULT CImGui_Manager::Save_Pos()
 {
 	OPENFILENAME OFN;
@@ -2989,6 +3000,49 @@ HRESULT CImGui_Manager::Save_Pos()
 }
 #pragma endregion
 
+#pragma region 월드 저장
+HRESULT CImGui_Manager::Save_WorldMatrix()
+{
+	OPENFILENAME OFN;
+	TCHAR filePathName[MAX_PATH] = L"";
+	TCHAR lpstrFile[MAX_PATH] = L"_WorldPos.dat";
+	static TCHAR filter[] = L"모든 파일\0*.*\0텍스트 파일\0*.txt\0dat 파일\0*.dat";
+
+	memset(&OFN, 0, sizeof(OPENFILENAME));
+	OFN.lStructSize = sizeof(OPENFILENAME);
+	OFN.hwndOwner = g_hWnd;
+	OFN.lpstrFilter = filter;
+	OFN.lpstrFile = lpstrFile;
+	OFN.nMaxFile = 256;
+	OFN.lpstrInitialDir = L"..\\Bin\\Data";
+
+	if (GetSaveFileName(&OFN) != 0)
+	{
+		const TCHAR* pGetPath = OFN.lpstrFile;
+
+		std::ofstream outFile(pGetPath, std::ios::binary);
+
+		if (m_pSelectedDummy)
+		{
+		if (!outFile.is_open())
+			return E_FAIL;
+
+		_mat mMatrix{};
+			CTransform* pTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(L"Com_Transform"));
+			mMatrix = pTransform->Get_World_Matrix();
+
+			outFile.write(reinterpret_cast<const char*>(&mMatrix), sizeof(_mat));
+			MessageBox(g_hWnd, L"위치 파일 저장 완료", L"파일 저장", MB_OK);
+		}
+		else
+		{
+			MessageBox(g_hWnd, L"저장할 객체를 선택해주세요", L"저장 실패", MB_OK);
+		}
+		outFile.close();
+	}
+	return S_OK;
+}
+#pragma endregion
 CImGui_Manager* CImGui_Manager::Create(const GRAPHIC_DESC& GraphicDesc)
 {
 	CImGui_Manager* pInstance = new CImGui_Manager();

@@ -193,24 +193,29 @@ void CCamera_CutScene::Play_Camera(_float fTimeDelta)
 		}
 		else
 		{
+			m_iFrame = 0;
+			m_fTimeDeltaAcc = 0.f;
+			m_iTotalFrame = 0;
+			m_fTotalTimeDeltaAcc = 0.f;
+			m_iCurrentSectionIndex = 0;
+			m_iNextSectionIndex = 0;
 			m_isPlayCutScene = false;
-			if (m_pTrigger_Manager->Get_Infinite() == false)
-			{
-				for (auto pCurve : m_CameraAtList)
-				{
-					pCurve->Kill();
-					Safe_Release(pCurve);
-				}
-				m_CameraAtList.clear();
 
-				for (auto pCurve : m_CameraEyeList)
-				{
-					pCurve->Kill();
-					Safe_Release(pCurve);
-				}
-				m_CameraEyeList.clear();
-				m_pCam_Manager->Set_CameraModeIndex(CM_MAIN);
+			for (auto pCurve : m_CameraAtList)
+			{
+				pCurve->Kill();
+				Safe_Release(pCurve);
 			}
+			m_CameraAtList.clear();
+
+			for (auto pCurve : m_CameraEyeList)
+			{
+				pCurve->Kill();
+				Safe_Release(pCurve);
+			}
+			m_CameraEyeList.clear();
+			m_pCam_Manager->Set_CameraModeIndex(CM_MAIN);
+			
 		}
 	}
 	if (m_iCurrentSectionIndex < m_CameraEyeList.size())
