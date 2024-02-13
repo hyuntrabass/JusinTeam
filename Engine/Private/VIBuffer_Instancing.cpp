@@ -42,13 +42,18 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 	{
 		VTXINSTANCING* pVertex = &reinterpret_cast<VTXINSTANCING*>(SubResource.pData)[i];
 
-
 		if (pVertex->vLifeTime.x == 0)
 		{
 			pVertex->vPos = _vec4::Transform(pVertex->vOriginPos, WorldMatrix);
 			pVertex->vPrevPos = pVertex->vPos;
 
 			pVertex->vDirection = _vec4::Transform(pVertex->vOriginDir, WorldMatrix.Get_Rotation());
+		}
+
+		if (m_isLoop and m_isFirstUpdate)
+		{
+			pVertex->vPos = _float4(0.f, -10000.f, 0.f, 1.f);
+			pVertex->vPrevPos = pVertex->vPos;
 		}
 
 		//pVertex->vPos.y += pVertex->fSpeed * fTimeDelta;
@@ -116,6 +121,8 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 	}
 
 	m_pContext->Unmap(m_pVBInstance, 0);
+
+	m_isFirstUpdate = false;
 }
 
 HRESULT CVIBuffer_Instancing::Render()
