@@ -248,6 +248,11 @@ public: // Get_Set
 	const _bool& IsSkipDebugRendering() const;
 	const wstring& Get_InputString() const;
 
+	//원명
+	_bool Get_TurnOnShadow() const {
+		return m_bTurnOnShadow;
+	}
+
 public:
 	void Level_ShutDown(_uint iCurrentLevel);
 	_bool Is_Level_ShutDown(_uint iCurrentLevel);
@@ -285,6 +290,10 @@ private:
 	_float m_fHellHeight{ -1000.f };
 	_bool m_bSkipDebugRender{ true };
 	wstring m_strInput{};
+
+	// 원명
+	_bool m_bTurnOnShadow{ false };
+
 #ifdef _DEBUG
 	ostringstream m_OutputStream{};
 #endif

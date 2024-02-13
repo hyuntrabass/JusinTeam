@@ -184,9 +184,7 @@ struct PS_OUT_DEFERRED
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
-    vector vMask : SV_Target3;
-    vector vVelocity : SV_Target4;
-    vector vRimMask : SV_Target5;
+    vector vRimMask : SV_Target3;
 };
 
 PS_OUT_DEFERRED PS_Main(PS_IN Input)
@@ -222,9 +220,8 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     
     
     Output.vDiffuse = vMtrlDiffuse;
-    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vMask = vMask;
     
     return Output;
 }
@@ -300,9 +297,8 @@ PS_OUT_DEFERRED PS_Main_Dissolve(PS_IN Input)
     
     
     Output.vDiffuse = vMtrlDiffuse;
-    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vMask = vMask;
     
     return Output;
 }
@@ -346,10 +342,8 @@ PS_OUT_DEFERRED PS_Main_Rim(PS_IN Input)
     vector vRimColor = g_RimColor * fRim;
     
     Output.vDiffuse = vMtrlDiffuse;
-    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vMask = vMask;
-    Output.vVelocity = 0.f;
     Output.vRimMask = vRimColor;
     
     return Output;

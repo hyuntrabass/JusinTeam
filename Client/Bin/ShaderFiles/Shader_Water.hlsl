@@ -81,9 +81,7 @@ struct PS_OUT_WATER
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
-    vector vMask : SV_Target3;
-    vector vVelocity : SV_Target4;
-    vector vRimMask : SV_Target5;
+    vector vRimMask : SV_Target3;
 };
 
 PS_OUT_WATER PS_MAIN_Water(PS_IN_WATER Input)
@@ -142,9 +140,8 @@ PS_OUT_WATER PS_MAIN_Water(PS_IN_WATER Input)
     //vMergeDiffuse = saturate(vMergeDiffuse * float4(0.95f, 1.00f, 1.05f, 1.0f) + float4(0.15f, 0.15f, 0.15f, 0.0f));
     
     Output.vDiffuse = vReflectionDiffuse;
-    Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Output.vNormal = vector(vNormal * 0.5f + 0.5f, 1.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_vCamNF.y, 0.f, 0.f);
-    Output.vMask = vector(1.f, 1.f, 0.5f, 1.f);
     
     return Output;
 }

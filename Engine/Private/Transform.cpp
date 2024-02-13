@@ -69,9 +69,19 @@ _mat CTransform::Get_World_Matrix() const
 	return m_WorldMatrix;
 }
 
+_mat CTransform::Get_OldWorld_Matrix() const
+{
+	return m_OldWorldMatrix;
+}
+
 _mat CTransform::Get_World_Inverse() const
 {
 	return m_WorldMatrix.Invert();
+}
+
+void CTransform::Set_OldMatrix()
+{
+	m_OldWorldMatrix = m_WorldMatrix;
 }
 
 void CTransform::Set_Position(_vec3 vPosition)
@@ -547,6 +557,11 @@ void CTransform::Set_Rotation(_vec4 vQuaternion)
 HRESULT CTransform::Bind_WorldMatrix(CShader* pShader, const _char* pVariableName)
 {
 	return pShader->Bind_Matrix(pVariableName, m_WorldMatrix);
+}
+
+HRESULT CTransform::Bind_OldWorldMatrix(CShader* pShader, const _char* pVariableName)
+{
+	return pShader->Bind_Matrix(pVariableName, m_OldWorldMatrix);
 }
 
 CTransform* CTransform::Create(_dev pDevice, _context pContext)

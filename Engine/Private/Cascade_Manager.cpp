@@ -23,9 +23,10 @@ HRESULT CCascade_Manager::Init()
 	}
 
 	m_CascadeDesc.ClipZ[0] = 0.f;
-	m_CascadeDesc.ClipZ[1] = 0.1f;
-	m_CascadeDesc.ClipZ[2] = 0.25f;
+	m_CascadeDesc.ClipZ[1] = 0.025f;
+	m_CascadeDesc.ClipZ[2] = 0.075f;
 	m_CascadeDesc.ClipZ[3] = 1.f;
+
 	return S_OK;
 }
 
