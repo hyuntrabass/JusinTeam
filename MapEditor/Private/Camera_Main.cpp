@@ -1,4 +1,5 @@
 #include "Camera_Main.h"
+#include "Camera_Manager.h"
 
 CCamera_Main::CCamera_Main(_dev pDevice, _context pContext)
 	: CCamera(pDevice, pContext)
@@ -7,9 +8,7 @@ CCamera_Main::CCamera_Main(_dev pDevice, _context pContext)
 
 CCamera_Main::CCamera_Main(const CCamera_Main& rhs)
 	: CCamera(rhs)
-	//, m_pImGui_Manager(CImGui_Manager::Get_Instance())
 {
-	//Safe_AddRef(m_pImGui_Manager);
 }
 
 HRESULT CCamera_Main::Init_Prototype()
@@ -36,13 +35,16 @@ HRESULT CCamera_Main::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	m_pCam_Manager = CCamera_Manager::Get_Instance();
+	Safe_AddRef(m_pCam_Manager);
+
 	return S_OK;
 }
 
 void CCamera_Main::Tick(_float fTimeDelta)
 {
 
-	if (m_pGameInstance->Get_CameraModeIndex() != CM_MAIN )
+	if (m_pCam_Manager->Get_CameraModeIndex() != CM_MAIN )
 	{
 		return;
 	}
@@ -50,14 +52,8 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_P))
 	{
-		m_pGameInstance->Set_CameraModeIndex(CM_DEBUG);
+		m_pCam_Manager->Set_CameraModeIndex(CM_DEBUG);
 	}
-
-	//if (m_isPlayCutScene)
-	//{
-	//	m_pGameInstance->Set_CameraModeIndex(CM_CUTSCENE);
-
-	//}
 
 	_long dwMouseMove;
 
@@ -154,4 +150,6 @@ void CCamera_Main::Free()
 	__super::Free();
 	//Safe_Release(m_pImGui_Manager);
 	Safe_Release(m_pPlayerTransform);
+	Safe_Release(m_pCam_Manager);
+
 }

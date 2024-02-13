@@ -3,6 +3,7 @@
 #include "Base.h"
 #include "MapEditor_Define.h"
 #include "Camera.h"
+#include "CutScene_Curve.h"
 
 BEGIN(Engine)
 class CGameInstance;
@@ -59,7 +60,7 @@ struct TriggerInfo
 
 struct CameraInfo
 {
-	string strName{};
+	//string strName{};
 	_vec4 vStartCutScene{};
 	_vec4 vEndCutScene{};
 	_float fCameraSpeed{};
@@ -68,14 +69,7 @@ struct CameraInfo
 	CCamera::Camera_Desc eCamera_Desc{};
 };
 
-struct SectionInfo
-{
-	_vec4 vStartCutScene{};
-	_vec4 vEndCutScene{};
-	wstring strSectionName{};
-	class CCutScene_Curve** ppCurve{ nullptr };
-	_uint iSectionType{};
-};
+
 
 struct TERRAIN_INFO_MAPTOOL : public TERRAIN_INFO
 {
@@ -115,7 +109,7 @@ private:
 	void Delete_Camera();
 	void Delete_Map();
 	void Delete_Terrain();
-	void Delete_Curve(vector<CCutScene_Curve*>& pAtCurve, vector<CCutScene_Curve*>& pEyeCurve);
+	void Delete_Curve(vector<class CCutScene_Curve*>& pAtCurve, vector<class CCutScene_Curve*>& pEyeCurve);
 	void Reset();
 	void PopBack_Dummy();
 
