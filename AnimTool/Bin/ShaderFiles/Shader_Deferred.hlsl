@@ -21,14 +21,13 @@ vector g_vFogColor;
 //Texture2DMS<vector> g_DiffuseTexture;
 // MRT_Object
 Texture2D g_DiffuseTexture;
-Texture2D g_NormalTexture;
-Texture2D g_MaskTexture;
+Texture2D g_Normal_Spec_Texture;
+Texture2D g_Depth_Velocity_Texture;
 Texture2D g_RimMaskTexture;
 
 // MRT_Light
 Texture2D g_ShadeTexture;
 Texture2D g_SpecularTexture;
-Texture2D g_DepthTexture;
 
 
 Texture2D g_BlurTexture;
@@ -36,15 +35,13 @@ Texture2D g_BlurTexture;
 Texture2D g_DebugTexture;
 Texture2DArray g_DebugArrayTexture;
 
-// 원명
-// 이동량
-Texture2D g_VelocityTexture;
 
 // 그림자
 Texture2DArray g_LightDepthTexture;
 matrix g_LightViewMatrix[3];
 matrix g_LightProjMatrix[3];
 vector g_ClipZ;
+bool g_TurnOnShadow;
 uint g_hi;
 
 
@@ -69,13 +66,13 @@ HDR_DESC g_HDR;
 
 vector Get_WorldPos(float2 vTex)
 {
-    vector vDepthDesc = g_DepthTexture.Sample(PointClampSampler, vTex);
-    float fViewZ = vDepthDesc.y * g_vCamNF.y;
+    vector vDepth_Velocity_Desc = g_Depth_Velocity_Texture.Sample(PointClampSampler, vTex);
+    float fViewZ = vDepth_Velocity_Desc.y * g_vCamNF.y;
     
     vector vWorldPos;
     vWorldPos.x = vTex.x * 2.f - 1.f;
     vWorldPos.y = vTex.y * -2.f + 1.f;
-    vWorldPos.z = vDepthDesc.x;
+    vWorldPos.z = vDepth_Velocity_Desc.x;
     vWorldPos.w = 1.f;
     
     vWorldPos = vWorldPos * fViewZ;
@@ -85,24 +82,22 @@ vector Get_WorldPos(float2 vTex)
     return vWorldPos;
 }
 
-vector Get_Normal(float2 vTex)
+vector Get_Normal(vector vNormal_Spec)
 {
-    vector vNormalDesc = g_NormalTexture.Sample(PointClampSampler, vTex);
-    
-    vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
+    vector vNormal = vector(vNormal_Spec.xyz * 2.f - 1.f, 0.f);
     
     return normalize(vNormal);
 }
 
 vector Get_ViewPos(float2 vTex)
 {
-    vector vDepthDesc = g_DepthTexture.Sample(PointClampSampler, vTex);
-    float fViewZ = vDepthDesc.y * g_vCamNF.y;
+    vector vDepth_Velocity_Desc = g_Depth_Velocity_Texture.Sample(PointClampSampler, vTex);
+    float fViewZ = vDepth_Velocity_Desc.y * g_vCamNF.y;
     
     vector ViewPos;
     ViewPos.x = vTex.x * 2.f - 1.f;
     ViewPos.y = vTex.y * -2.f + 1.f;
-    ViewPos.z = vDepthDesc.x;
+    ViewPos.z = vDepth_Velocity_Desc.x;
     ViewPos.w = 1.f;
     
     ViewPos = ViewPos * fViewZ;
@@ -197,7 +192,9 @@ PS_OUT_Light PS_Main_Directional(PS_IN Input)
 {
     PS_OUT_Light Output = (PS_OUT_Light) 0;
     
-    vector vNormal = Get_Normal(Input.vTexcoord);
+    vector vNormal_Spec = g_Normal_Spec_Texture.Sample(PointSampler, Input.vTexcoord);
+    
+    vector vNormal = Get_Normal(vNormal_Spec);
     
     //Output.vShade = max(dot(normalize(g_vLightDir) * -1.f, vNormal), 0.f);
     //Output.vShade = g_vLightDiffuse * saturate(ceil(max(dot(normalize(g_vLightDir) * -1.f, vNormal), 0.f) * 2.f) / 2.f + g_vLightAmbient); // 카툰
@@ -209,9 +206,7 @@ PS_OUT_Light PS_Main_Directional(PS_IN Input)
     
     vector vLook = vWorldPos - g_vCamPosition;
     
-    vector vMaskDesc = g_MaskTexture.Sample(PointSampler, Input.vTexcoord);
-    
-    Output.vSpecular = vMaskDesc.b * g_vLightSpecular * pow(saturate(dot(normalize(vLook) * -1.f, vReflect)), 30.f);
+    Output.vSpecular = vNormal_Spec.a * g_vLightSpecular * pow(saturate(dot(normalize(vLook) * -1.f, vReflect)), 30.f);
     
     //vector vRimMask = g_RimMaskTexture.Sample(LinearSampler, Input.vTexcoord);
     
@@ -228,7 +223,9 @@ PS_OUT_Light PS_Main_Point(PS_IN Input)
     
     vector vWorldPos = Get_WorldPos(Input.vTexcoord);
 
-    vector vNormal = Get_Normal(Input.vTexcoord);
+    vector vNormal_Spec = g_Normal_Spec_Texture.Sample(PointSampler, Input.vTexcoord);
+    
+    vector vNormal = Get_Normal(vNormal_Spec);
     
     vector vLightDir = vWorldPos - g_vLightPos;
     float fDistance = length(vLightDir);
@@ -241,10 +238,7 @@ PS_OUT_Light PS_Main_Point(PS_IN Input)
     vector vReflect = normalize(reflect(normalize(vLightDir), vNormal));
     vector vLook = vWorldPos - g_vCamPosition;
     
-    
-    vector vMaskDesc = g_MaskTexture.Sample(PointSampler, Input.vTexcoord);
-    
-    Output.vSpecular = fAtt * (vMaskDesc.b * g_vLightSpecular * pow(saturate(dot(normalize(vLook) * -1.f, vReflect)), 30.f));
+    Output.vSpecular = fAtt * (vNormal_Spec.a * g_vLightSpecular * pow(saturate(dot(normalize(vLook) * -1.f, vReflect)), 30.f));
     
     //vector vRimMask = g_RimMaskTexture.Sample(LinearSampler, Input.vTexcoord);
     
@@ -302,9 +296,6 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     vector vRimMask = g_RimMaskTexture.Sample(LinearSampler, Input.vTexcoord);
     vRimMask.a = 0.f;
     
-    if (TurnOnRim)
-        vRimMask = 0.f;
-    
     FinalColor = vDiffuse * vShade + vSpecular + vRimMask;
     
     vector vSsaoDesc = g_SSAOTexture.Sample(LinearSampler, Input.vTexcoord);
@@ -315,30 +306,32 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     vector vWorldPos = Get_WorldPos(Input.vTexcoord);
     
     
-    vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
-    float fViewZ = vDepthDesc.y * g_vCamNF.y;
+    vector vDepth_Velocity_Desc = g_Depth_Velocity_Texture.Sample(PointSampler, Input.vTexcoord);
+    float fViewZ = vDepth_Velocity_Desc.y * g_vCamNF.y;
     
-    float ClipZ[3];
-    ClipZ[0] = g_ClipZ.y;
-    ClipZ[1] = g_ClipZ.z;
-    ClipZ[2] = g_ClipZ.w;
-    
-    
-    vector vLightPos;
-    for (uint i = 0; i < 3; ++i)
+    if (true == g_TurnOnShadow)
     {
-        float Z = ClipZ[i] * (g_vCamNF.y - g_vCamNF.x) - g_vCamNF.y * g_vCamNF.x / g_vCamNF.y;
-        vLightPos = mul(vWorldPos, g_LightViewMatrix[i]);
-        vLightPos = mul(vLightPos, g_LightProjMatrix[i]);
-        
-        if (fViewZ <= Z)
+        float ClipZ[3];
+        ClipZ[0] = g_ClipZ.y;
+        ClipZ[1] = g_ClipZ.z;
+        ClipZ[2] = g_ClipZ.w;
+    
+        vector vLightPos;
+        for (uint i = 0; i < 3; ++i)
         {
-            float fLightDepth = CalcCascadeShadowFactor(i, vLightPos);
-            if (vLightPos.z - 0.005f > fLightDepth)
+            float Z = ClipZ[i] * (g_vCamNF.y - g_vCamNF.x) - g_vCamNF.y * g_vCamNF.x / g_vCamNF.y;
+            vLightPos = mul(vWorldPos, g_LightViewMatrix[i]);
+            vLightPos = mul(vLightPos, g_LightProjMatrix[i]);
+        
+            if (fViewZ <= Z)
             {
-                FinalColor.rgb = FinalColor.rgb * 0.5f;
+                float fLightDepth = CalcCascadeShadowFactor(i, vLightPos);
+                if (vLightPos.z - 0.01f > fLightDepth)
+                {
+                    FinalColor.rgb = FinalColor.rgb * 0.5f;
+                }
+                break;
             }
-            break;
         }
     }
     
@@ -386,13 +379,6 @@ PS_OUT PS_Main_Blur(PS_IN Input)
     return Output;
 }
 
-struct VS_SSAO_OUT
-{
-    vector vPos : SV_Position;
-    float3 Plane : Plane;
-    float2 vTexcoord : Texcoord0;
-};
-
 //float Get_AO(float2 vTex, float2 plusTex, vector myPos, float3 myNor)
 float Get_Occlusion(float distZ)
 {
@@ -414,14 +400,11 @@ PS_OUT PS_Main_SSAO(PS_IN Input)
     
     PS_OUT Out = (PS_OUT) 0;
     
-    //////////////////
-    float3 MyViewNormal = normalize(mul(Get_Normal(Input.vTexcoord), g_CamViewMatrix).xyz);
+    vector vNormal_Spec = g_Normal_Spec_Texture.Sample(PointSampler, Input.vTexcoord);
     
-    vector DepthDesc = g_DepthTexture.Sample(LinearBorderSampler, Input.vTexcoord);
+    float3 MyViewNormal = normalize(mul(Get_Normal(vNormal_Spec), g_CamViewMatrix).xyz);
     
-    float fViewZ = DepthDesc.y * g_vCamNF.y;
-    
-    float3 P = Get_ViewPos(Input.vTexcoord).xyz; //fViewZ * Input.Plane;
+    float3 P = Get_ViewPos(Input.vTexcoord).xyz;
     
     vector vNoiseNormal = g_SSAONoiseNormal.Sample(LinearSampler, Input.vTexcoord);
     
@@ -487,81 +470,14 @@ PS_OUT PS_Main_HDR(PS_IN Input)
     
     if (true == TurnOnToneMap)
     {
-        //if (ChangeToneMap == 0)
-        //{
-        //    //SimpleReinhardToneMapping
-        //    vHDRColor *= 1.5f / (1.f + vHDRColor / 1.5f);
-            
-        //}
-        //else if (ChangeToneMap == 1)
-        //{
-        //    //LuminanceBasedReinhardTonMapping
-        //    float fLum = Get_Luminance(vHDRColor);
-        //    float ToneMappedLum = fLum / (1.f + fLum);
-        //    vHDRColor *= ToneMappedLum / fLum;
-            
-        //}
-        //else if (ChangeToneMap == 2)
-        //{
-        //    //WhitePreservingLuminanceBasedReinhardToneMapping
-        //    float White = 2.f;
-        //    float fLum = Get_Luminance(vHDRColor);
-        //    float ToneMappedLum = fLum * (1.f + fLum / (White * White)) / (1.f + fLum);
-        //    vHDRColor *= ToneMappedLum / fLum;
-            
-        //}
-        //else if (ChangeToneMap == 3)
-        //{
-        //    //RomBinDaHouseToneMapping
-        //    vHDRColor = exp(-1.f / (2.72f * vHDRColor + 0.15f));
-            
-        //}
-        //else if (ChangeToneMap == 4)
-        //{
-        //    //FilmicToneMapping
-        //    vHDRColor = max(0.f, vHDRColor - 0.004f);
-        //    vHDRColor = (vHDRColor * (62.f * vHDRColor + 0.5f)) / (vHDRColor * (6.2f * vHDRColor + 1.7f) + 0.06f);
-        //}
-        //else if (ChangeToneMap == 5)
-        //{
-        //    // Uncharted2ToneMapping
-        //    float A = 0.15f;
-        //    float B = 0.5f;
-        //    float C = 0.1f;
-        //    float D = 0.2f;
-        //    float E = 0.02f;
-        //    float F = 0.3f;
-        //    float W = 11.2f;
-        //    float exposure = 2.f;
-            
-        //    vHDRColor *= exposure;
-        //    vHDRColor = ((vHDRColor * (A * vHDRColor + C * B) + D * E) / (vHDRColor * (A * vHDRColor + B) + D * F)) - E / F;
-        //    float White = ((W * (A * W + C * B) + D * E) / (W * (A * W + B) + D * F)) - E / F;
-        //    vHDRColor /= White;
-
-        //}
-        //else if (ChangeToneMap == 6)
-        //{
-        //    float fAvgLum = g_Luminance.Sample(PointClampSampler, float2(0.f, 0.f)).r;
-        
-        //    float fLScale = Get_Luminance(vHDRColor);
-        //    fLScale *= g_HDR.fMiddleGray / fAvgLum;
-        //    fLScale = (fLScale + fLScale * fLScale / g_HDR.fLumWhiteSqr) / (1.f + fLScale);
-        
-        //    vHDRColor *= fLScale;
-        //}
-        //else if (ChangeToneMap == 7)
-        //{
-            float a = 2.51f;
-            float b = 0.03f;
-            float c = 2.43f;
-            float d = 0.59f;
-            float e = 0.14f;
-            vHDRColor = saturate((vHDRColor * (a * vHDRColor + b)) / (vHDRColor * (c * vHDRColor + d) + e));
-        //}
+        float a = 2.51f;
+        float b = 0.03f;
+        float c = 2.43f;
+        float d = 0.59f;
+        float e = 0.14f;
+        vHDRColor = saturate((vHDRColor * (a * vHDRColor + b)) / (vHDRColor * (c * vHDRColor + d) + e));
         
     }
-    
     
     vHDRColor = pow(vHDRColor, 1.f / 2.2f);
         

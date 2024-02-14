@@ -27,10 +27,13 @@ public:
 
 	void Set_PlayCutScene(_bool isPlayCutScene) { m_isPlayCutScene = isPlayCutScene; }
 	void Set_Inifinite(_bool isInfinite) { m_isInfinite = isInfinite; }
+	void Set_SkyTextureIndex(const _uint iIndex);
+
 	_bool Get_PlayCutScene() { return m_isPlayCutScene; }
 	_bool Get_Limited() { return m_isLimited; }
 	_bool Get_Infinite() { return m_isInfinite; }
 	wstring Get_CutScene_Path() { return m_strFilePath; }
+	const _uint& Get_SkyTextureIndex() const;
 
 	void Teleport(const TeleportSpot eSpot);
 
@@ -76,6 +79,8 @@ private:
 
 private:
 	vector<class CTrigger*> m_pTrigger{};
+
+	_uint m_iSkyTextureIndex{};
 
 public:
 	virtual void Free() override;

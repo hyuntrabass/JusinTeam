@@ -639,6 +639,8 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::InputFloat4("Look", &m_ObjectMatrix.m[2][0]);
 			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0]);
 			ImGui::Separator();
+
+			ImGui::Separator();
 			if (ImGui::Button("Delete"))
 			{
 				Delete_Dummy();
@@ -1462,23 +1464,7 @@ HRESULT CImGui_Manager::Modify_Terrain()
 
 void CImGui_Manager::Create_Camera()
 {
-	/*string InputName = SectionName.c_str();
-	if (InputName.empty())
-	{
-		MessageBox(g_hWnd, L"Empty is Section Name", L"Error", MB_OK);
-		return;
-	}
-	if (!m_CameraList.empty())
-	{
-		for (auto iter = m_CameraList.begin(); iter != m_CameraList.end(); iter++)
-		{
-			if ((*iter)->Get_Name() == InputName)
-			{
-				MessageBox(g_hWnd, L"The same name already exists.", L"Error", MB_OK);
-				return;
-			}
-		}
-	}*/
+
 	CameraInfo Info{};
 	//Info.strName = InputName;
 	Info.ppCamera = &m_pSelectCamera;
@@ -2898,22 +2884,6 @@ HRESULT CImGui_Manager::Load_CutScene()
 		string InputName;
 		inFile.read(reinterpret_cast<char*>(&InputNameSize), sizeof(_uint));
 		inFile.read(reinterpret_cast<char*>(&InputName[0]), sizeof(InputNameSize));
-
-		//if (!m_pSelectCamera)
-		//{
-		//	CameraInfo Info{};
-		//	//Info.strName = InputName;
-		//	Info.ppCamera = &m_pSelectCamera;
-		//	Info.eType = ItemType::Camera;
-		//	Info.vStartCutScene = m_fCameraPickingPos[0];
-		//	Info.vEndCutScene = m_fCameraPickingPos[1];
-		//	Info.fCameraSpeed = fCameraSpeed;
-
-		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_CutScene_Camera"), TEXT("Prototype_GameObject_Camera_CutScene"), &Info)))
-		//	{
-		//		MSG_BOX("Failed to Add Layer : CutScene_Camera");
-		//	}
-		//}
 
 		_uint iEyeSize;
 		_uint iAtSize;

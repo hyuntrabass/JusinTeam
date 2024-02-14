@@ -72,7 +72,7 @@ HRESULT CCascade::Update(_vec3* FrustumCorners, _float* ClipZ)
 
 	_uint iLevel = m_pGameInstance->Get_CurrentLevelIndex();
 
-	LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(iLevel, L"Light_Main");
+	LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(0, L"Light_Main");
 
 	_vec3 CascadeExtents = vMaxes - vMins;
 
@@ -88,9 +88,7 @@ HRESULT CCascade::Update(_vec3* FrustumCorners, _float* ClipZ)
 
 	m_ShadowCamPos.w = 1.f;
 
-	_vec4 vLookAt = _vec4(FrustumCenter);
-
-	vLookAt.w = 1.f;
+	_vec3 vLookAt = FrustumCenter;
 
 	m_ViewMat = XMMatrixLookAtLH(m_ShadowCamPos, vLookAt, _vec3(0.f, 1.f, 0.f));
 

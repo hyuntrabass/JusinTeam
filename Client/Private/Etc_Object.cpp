@@ -44,7 +44,6 @@ void CEtc_Object::Tick(_float fTimeDelta)
 
 void CEtc_Object::Late_Tick(_float fTimeDelta)
 {
-
 	__super::Late_Tick(fTimeDelta);
 }
 

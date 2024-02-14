@@ -35,6 +35,11 @@ void CDummy::Get_State(_float4& vPos, _float4& vLook)
 }
 
 
+_uint CDummy::Get_AnimIndex()
+{
+	return m_pModelCom->Get_NumAnim();
+}
+
 HRESULT CDummy::Init_Prototype()
 {
 	return S_OK;
@@ -81,11 +86,6 @@ HRESULT CDummy::Init(void* pArg)
 
 void CDummy::Tick(_float fTimeDelta)
 {
-	
-	if (m_isAnim)
-	{
-		m_pModelCom->Play_Animation(fTimeDelta);
-	}
 	if (m_eType == ItemType::Trigger)
 	{
 		m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
@@ -94,7 +94,10 @@ void CDummy::Tick(_float fTimeDelta)
 
 void CDummy::Late_Tick(_float fTimeDelta)
 {
+	if (m_eType == ItemType::Monster || m_eType == ItemType::NPC)
+		m_pModelCom->Play_Animation(fTimeDelta);
 #ifdef _DEBUG
+
 if(m_eType == ItemType::Trigger)
 	m_pRendererCom->Add_DebugComponent(m_pCollider);
 #endif

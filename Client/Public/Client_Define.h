@@ -16,6 +16,54 @@ namespace Client
 	static const unsigned int g_iWinSizeY = 720;
 	static const POINT g_ptCenter = { static_cast<signed long>(g_iWinSizeX * 0.5f), static_cast<signed long>(g_iWinSizeY * 0.5f) };
 
+	static const LIGHT_DESC g_Light_Custom
+	{
+		LIGHT_DESC::Directional,
+		_vec4(0.f, 0.f, -1.f, 0.f), // Direction
+		_vec4(), // Position
+		_vec4(), // Attenuation
+
+		_vec4(1.f), // Diffuse
+		_vec4(0.5f), // Ambient
+		_vec4(0.2f) // Specular
+	};
+
+	static const LIGHT_DESC g_Light_Tutorial
+	{
+		LIGHT_DESC::Directional,
+		_vec4(-1.f, -2.f, -1.f, 0.f), // Direction
+		_vec4(), // Position
+		_vec4(), // Attenuation
+
+		_vec4(0.2f), // Diffuse
+		_vec4(0.01f), // Ambient
+		_vec4(1.f) // Specular
+	};
+
+	static const LIGHT_DESC g_Light_Village
+	{
+		LIGHT_DESC::Directional,
+		_vec4(-1.f, -2.f, -1.f, 0.f), // Direction
+		_vec4(), // Position
+		_vec4(), // Attenuation
+
+		_vec4(1.f), // Diffuse
+		_vec4(0.3f), // Ambient
+		_vec4(0.5f) // Specular
+	};
+
+	static const LIGHT_DESC g_Light_Dungeon
+	{
+		LIGHT_DESC::Directional,
+		_vec4(-1.f, -2.f, -1.f, 0.f), // Direction
+		_vec4(), // Position
+		_vec4(), // Attenuation
+
+		_vec4(0.2f), // Diffuse
+		_vec4(0.05f), // Ambient
+		_vec4(1.f) // Specular
+	};
+
 	enum LEVEL_ID
 	{
 		LEVEL_STATIC,
@@ -32,7 +80,7 @@ namespace Client
 	{
 		CM_DEBUG,
 		CM_MAIN,
-		CM_SELECT, 
+		CM_SELECT,
 		CM_CUSTOM,
 		CM_CUTSCENE,
 		CM_END
@@ -115,7 +163,7 @@ namespace Client
 		PT_WEAPON,
 		PT_END
 	};
-	
+
 	enum VEHICLE_TYPE
 	{
 		VC_GROUND,
@@ -194,48 +242,49 @@ namespace Client
 
 	enum INVEN_TYPE
 	{
-		INVEN_ALL, 
+		INVEN_ALL,
 		INVEN_WEARABLE,
-		INVEN_EQUIP, 
+		INVEN_EQUIP,
 		INVEN_EXPENDABLES,
 		INVEN_END
 	};
 	enum ITEM_TYPE
 	{
-		ITEM_TOP, 
+		ITEM_TOP,
 		ITEM_BODY,
 		ITEM_HAND,
-		ITEM_FOOT, 
+		ITEM_FOOT,
 		ITEM_POTION,
 		ITEM_SWORD,
 		ITEM_BOW,
 		ITEM_INGREDIENT,
 		ITEMTYPEEND
 	};
-	
+
 	enum ITEM_TIER
 	{
-		TIER_COMMON, 
-		TIER_UNCOMMON, 
+		TIER_COMMON,
+		TIER_UNCOMMON,
 		TIER_RARE,
 		TIER_UNIQUE,
 		TIER_LEGENDARY,
 		TIER_END
 	};
 
-	enum WEARABLE_TYPE 
+	enum WEARABLE_TYPE
 	{
-		W_TOP, 
-		W_CHEST, 
-		W_HAND, 
-		W_FOOT, 
-		W_EQUIP, 
-		W_PET, 
-		W_END };
+		W_TOP,
+		W_CHEST,
+		W_HAND,
+		W_FOOT,
+		W_EQUIP,
+		W_PET,
+		W_END
+	};
 
-	enum TUTO_SEQ 
+	enum TUTO_SEQ
 	{
-		T_OPENINVEN, 
+		T_OPENINVEN,
 		T_EQUIP,
 		T_EXIT,
 		T_OPENSKILL,
@@ -305,7 +354,7 @@ namespace Client
 		_uint iLimited;
 
 	}ITEM;
-	
+
 	typedef struct tagSkillInfo
 	{
 		wstring strName;
@@ -327,7 +376,7 @@ namespace Client
 		AnimPass_Dissolve,
 		AnimPass_Rim,
 	};
-	
+
 	enum StaticMeshPass
 	{
 		StaticPass_Default,
@@ -354,7 +403,7 @@ namespace Client
 		StaticPass_DiffAlpha,
 		StaticPass_End,
 	};
-	
+
 	enum VTFModelPass
 	{
 		VTFPass_Default,
