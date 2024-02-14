@@ -31,11 +31,17 @@ public:
 		return m_iNumMeshes;
 	}
 
+	_int Get_InstanceID() { return m_iInstanceID; }
+	PLAYANIM_DESC& Get_PlayAnimDesc() { return m_PlayAnimDesc; }
+
 	HRESULT Bind_Material(class CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType);
 	HRESULT Bind_Animation(class CShader* pShader);
 	HRESULT Bind_OldAnimation(class CShader* pShader);
+	//HRESULT Bind_InstancedPlayAnimDesc(const INSTANCED_PLAYANIM_DESC& InstancedPlayAnimDesc, class CShader* pShader);
 
 	HRESULT Render(_uint iMeshIndex);
+
+	HRESULT Render_Instancing(class CVIBuffer_Mesh_Instance*& pInstanceBuffer, class CShader*& pShader);
 
 private:
 	ModelType m_eType = ModelType::End;

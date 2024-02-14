@@ -20,12 +20,17 @@ HRESULT CVTFTest::Init(void* pArg)
     if (FAILED(Add_Components()))
         return E_FAIL;
 
-    m_pTransformCom->Set_Position(_vec3(101.f, 4.f, 108.f));
+    //m_pTransformCom->Set_Position(_vec3(101.f, 4.f, 108.f));
+    m_pTransformCom->Set_Position(_vec3(rand() % 100, 4.f, rand() % 100));
 
-    m_Animation.iAnimIndex = 1;
+    m_Animation.iAnimIndex = rand() % 20;
     m_Animation.fAnimSpeedRatio = 1.5f;
     m_Animation.isLoop = true;
-    m_Animation.fStartAnimPos = 128.11234f;
+
+    random_device rand;
+    _randNum RandomNumber(rand());
+    _randFloat RandomAnimPos(0.f, 1000.f);
+    m_Animation.fStartAnimPos = RandomAnimPos(RandomNumber);
 
     return S_OK;
 }
@@ -70,7 +75,7 @@ void CVTFTest::Late_Tick(_float fTimeDelta)
 {
     m_pModelCom->Play_Animation(fTimeDelta);
 
-    m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+    m_pRendererCom->Add_RenderGroup(RG_AnimNonBlend_Instance, this);
 }
 
 HRESULT CVTFTest::Render()
@@ -111,6 +116,16 @@ HRESULT CVTFTest::Render()
     return S_OK;
 }
 
+HRESULT CVTFTest::Render_Instance()
+{
+    if (FAILED(Bind_ShaderResources()))
+    {
+        return E_FAIL;
+    }
+
+    return S_OK;
+}
+
 HRESULT CVTFTest::Add_Components()
 {
     if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
@@ -123,6 +138,8 @@ HRESULT CVTFTest::Add_Components()
         return E_FAIL;
     }
 
+    m_pShaderCom->Set_PassIndex(0);
+
     if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Model_VTFTest"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
     {
          return E_FAIL;
@@ -133,11 +150,6 @@ HRESULT CVTFTest::Add_Components()
 
 HRESULT CVTFTest::Bind_ShaderResources()
 {
-    if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
-    {
-        return E_FAIL;
-    }
-
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
     {
         return E_FAIL;
@@ -152,9 +164,6 @@ HRESULT CVTFTest::Bind_ShaderResources()
     {
         return E_FAIL;
     }
-
-    if (FAILED(m_pModelCom->Bind_Animation(m_pShaderCom)))
-        return E_FAIL;
 
     return S_OK;
 }

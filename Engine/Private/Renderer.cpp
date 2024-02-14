@@ -1018,12 +1018,12 @@ HRESULT CRenderer::Render_AnimNonBlend_Instance()
 {
 	map<_int, vector<CGameObject*>> InstanceData;
 
-	for (auto& pGameObject : m_RenderObjects[RG_NonBlend_Instance])
+	for (auto& pGameObject : m_RenderObjects[RG_AnimNonBlend_Instance])
 	{
 		if (pGameObject->Find_Component(L"Com_Model") == nullptr)
 			continue;
 
-		const _int iInstanceID = static_cast<CModel*>(pGameObject->Find_Component(L"Com_Model"))->Get_InstanceID();
+		const _int iInstanceID = static_cast<CVTFModel*>(pGameObject->Find_Component(L"Com_Model"))->Get_InstanceID();
 		InstanceData[iInstanceID].push_back(pGameObject);
 	}
 
@@ -1033,30 +1033,34 @@ HRESULT CRenderer::Render_AnimNonBlend_Instance()
 		const _uint instanceId = Pair.first;
 		CGameObject*& pHead = vInstances[0];
 
+		INSTANCED_PLAYANIM_DESC* PlayAnimDescs = new INSTANCED_PLAYANIM_DESC;
 		for (_uint i = 0; i < vInstances.size(); i++)
 		{
 			CGameObject*& pGameObject = vInstances[i];
 			Instance_Data MeshInstancing;
 			CTransform* pTransform = static_cast<CTransform*>(pGameObject->Find_Component(L"Com_Transform"));
 			MeshInstancing.mMatrix = pTransform->Get_World_Matrix();
-			MeshInstancing.m_iID = pGameObject->Get_ID();
+			MeshInstancing.m_iID = i;
 			Add_Instance(instanceId, MeshInstancing);
+
+			CVTFModel* pModel = static_cast<CVTFModel*>(pGameObject->Find_Component(L"Com_Model"));
+			PlayAnimDescs->PlayAnim[i] = pModel->Get_PlayAnimDesc();
 		}
 
-		for (auto& iter : vInstances)
-		{
-			iter->InitRendered();
-		}
+		CVTFModel* pHeadModel = static_cast<CVTFModel*>(pHead->Find_Component(L"Com_Model"));
+		CShader* pHeadShader = static_cast<CShader*>(pHead->Find_Component(L"Com_Shader"));
+		pHeadShader->Bind_RawValue("g_PlayAnimInstances", &*PlayAnimDescs, MAX_INSTANCE * sizeof(PLAYANIM_DESC));
+
+		Safe_Delete(PlayAnimDescs);
+
 		CVIBuffer_Mesh_Instance*& pBuffer = m_InstanceBuffers[instanceId];
-		pHead->Render_Instance();
-		CModel* pModel = static_cast<CModel*>(pHead->Find_Component(L"Com_Model"));
-		CShader* pShader = static_cast<CShader*>(pHead->Find_Component(L"Com_Shader"));
-		pModel->Render_Instancing(pBuffer, pShader);
+		pHead->Render_Instance(); //셰이더 바인딩 리소스
+		pHeadModel->Render_Instancing(pBuffer, pHeadShader);
 	}
 
-	for (auto& pGameObject : m_RenderObjects[RG_NonBlend_Instance])
+	for (auto& pGameObject : m_RenderObjects[RG_AnimNonBlend_Instance])
 		Safe_Release(pGameObject);
-	m_RenderObjects[RG_NonBlend_Instance].clear();
+	m_RenderObjects[RG_AnimNonBlend_Instance].clear();
 
 	return S_OK;
 }

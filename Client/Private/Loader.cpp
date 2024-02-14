@@ -606,7 +606,7 @@ HRESULT CLoader::Load_Select()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VTF_Instance"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VTFModel_Instance.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VTFModel_Instance.hlsl"), VTXANIMMESH_INSTANCING::Elements, VTXANIMMESH_INSTANCING::iNumElements))))
 	{
 		return E_FAIL;
 	}

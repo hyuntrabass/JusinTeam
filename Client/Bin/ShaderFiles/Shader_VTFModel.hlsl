@@ -3,12 +3,12 @@
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
-texture2D g_SpecTexture;
+texture2D g_MaskTexture;
 
 float g_fCamFar;
 
 bool g_HasNorTex;
-bool g_HasSpecTex;
+bool g_HasMaskTex;
 
 matrix g_OldWorldMatrix, g_OldViewMatrix;
 

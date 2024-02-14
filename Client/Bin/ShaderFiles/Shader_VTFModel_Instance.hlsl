@@ -1,14 +1,16 @@
 #include "Engine_Shader_Define.hlsli"
 
-matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
+#define MAX_INSTANCE 300
+
+matrix g_ViewMatrix, g_ProjMatrix;
 texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
-texture2D g_SpecTexture;
+texture2D g_MaskTexture;
 
 float g_fCamFar;
 
 bool g_HasNorTex;
-bool g_HasSpecTex;
+bool g_HasMaskTex;
 
 matrix g_OldWorldMatrix, g_OldViewMatrix;
 
@@ -33,10 +35,14 @@ struct tagPlayAnimDesc
     tagAnimTimeDesc eNext;
 };
 
+struct tagPlayAnimBuffer
+{
+    tagPlayAnimDesc PlayAnimFrames[MAX_INSTANCE];
+};
+
 tagAnimTimeDesc g_OldAnimDesc;
 
-tagPlayAnimDesc g_PlayAnimDesc;
-
+tagPlayAnimBuffer g_PlayAnimInstances;
 
 Texture2DArray g_BoneTexture;
 
@@ -48,6 +54,9 @@ struct VS_IN
     float3 vTan : Tangent;
     uint4 vBlendIndices : BlendIndex;
     float4 vBlendWeight : BlendWeight;
+        
+    row_major matrix mWorld : World;
+    int iID : ID;
 };
 
 struct VS_OUT
@@ -72,15 +81,15 @@ matrix Get_BoneMatrix(VS_IN Input)
     int iNextFrame[2];
     float fRatio[2];
     
-    iAnimIndex[0] = g_PlayAnimDesc.eCurrent.iAnimIndex;
-    iCurrentFrame[0] = g_PlayAnimDesc.eCurrent.iCurrFrame;
-    iNextFrame[0] = g_PlayAnimDesc.eCurrent.iNextFrame;
-    fRatio[0] = g_PlayAnimDesc.eCurrent.fRatio;
+    iAnimIndex[0] = g_PlayAnimInstances.PlayAnimFrames[Input.iID].eCurrent.iAnimIndex;
+    iCurrentFrame[0] = g_PlayAnimInstances.PlayAnimFrames[Input.iID].eCurrent.iCurrFrame;
+    iNextFrame[0] = g_PlayAnimInstances.PlayAnimFrames[Input.iID].eCurrent.iNextFrame;
+    fRatio[0] = g_PlayAnimInstances.PlayAnimFrames[Input.iID].eCurrent.fRatio;
     
-    iAnimIndex[1] = g_PlayAnimDesc.eNext.iAnimIndex;
-    iCurrentFrame[1] = g_PlayAnimDesc.eNext.iCurrFrame;
-    iNextFrame[1] = g_PlayAnimDesc.eNext.iNextFrame;
-    fRatio[1] = g_PlayAnimDesc.eNext.fRatio;
+    iAnimIndex[1] = g_PlayAnimInstances.PlayAnimFrames[Input.iID].eNext.iAnimIndex;
+    iCurrentFrame[1] = g_PlayAnimInstances.PlayAnimFrames[Input.iID].eNext.iCurrFrame;
+    iNextFrame[1] = g_PlayAnimInstances.PlayAnimFrames[Input.iID].eNext.iNextFrame;
+    fRatio[1] = g_PlayAnimInstances.PlayAnimFrames[Input.iID].eNext.fRatio;
     
     float4 CurrentBoneVec[4];
     float4 NextBoneVec[4];
@@ -126,7 +135,7 @@ matrix Get_BoneMatrix(VS_IN Input)
             
             matrix nextLerpBone = lerp(CurrentBone, NextBone, fRatio[1]);
             
-            LerpBone = lerp(LerpBone, nextLerpBone, g_PlayAnimDesc.SwitchRatio);
+            LerpBone = lerp(LerpBone, nextLerpBone, g_PlayAnimInstances.PlayAnimFrames[Input.iID].SwitchRatio);
 
         }
         
@@ -188,7 +197,7 @@ VS_OUT VS_Main(VS_IN Input)
 	
     matrix matWV, matWVP;
     
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWV = mul(Input.mWorld, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
     
     matrix BoneMatrix = Get_BoneMatrix(Input);
@@ -197,11 +206,11 @@ VS_OUT VS_Main(VS_IN Input)
     vector vNormal = mul(vector(Input.vNor, 0.f), BoneMatrix);
     
     Output.vPos = mul(vPos, matWVP);
-    Output.vNor = normalize(mul(vNormal, g_WorldMatrix));
+    Output.vNor = normalize(mul(vNormal, Input.mWorld));
     Output.vTex = Input.vTex;
-    Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
+    Output.vWorldPos = mul(vector(Input.vPos, 1.f), Input.mWorld);
     Output.vProjPos = Output.vPos;
-    Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), g_WorldMatrix)).xyz;
+    Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), Input.mWorld)).xyz;
     Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
     
     return Output;
@@ -225,7 +234,7 @@ VS_Motion_Blur_Out VS_Motion_Blur(VS_IN Input)
 	
     matrix matWV, matWVP;
     
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWV = mul(Input.mWorld, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
     
     matrix matOldWV, matOldWVP;
@@ -267,11 +276,11 @@ VS_Motion_Blur_Out VS_Motion_Blur(VS_IN Input)
     vCalDir.w = vPos.w;
     
     Output.vPos = vPos;
-    Output.vNor = normalize(mul(vNormal, g_WorldMatrix));
+    Output.vNor = normalize(mul(vNormal, Input.mWorld));
     Output.vTex = Input.vTex;
-    Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
+    Output.vWorldPos = mul(vector(Input.vPos, 1.f), Input.mWorld);
     Output.vProjPos = Output.vPos;
-    Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), g_WorldMatrix)).xyz;
+    Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), Input.mWorld)).xyz;
     Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
     Output.vDir = vCalDir;
     
