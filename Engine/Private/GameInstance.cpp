@@ -177,7 +177,7 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	}
 
 #ifdef _DEBUG
-	//Print_StringStream();
+	Print_StringStream();
 #endif // _DEBUG
 
 }
