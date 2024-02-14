@@ -34,7 +34,7 @@ protected:
 	_uint m_iIndexCountPerInstance{};
 	_uint m_iInstanceStride{};
 
-
+	_bool m_isFirstUpdate{ true };
 	_bool m_isLoop{};
 
 public:

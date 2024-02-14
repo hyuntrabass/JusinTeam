@@ -69,7 +69,7 @@ HRESULT CLevel_AnimTool::Ready_Camera()
 		return E_FAIL;
 	}
 
-	m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
+	//m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
 
 	return S_OK;
 }

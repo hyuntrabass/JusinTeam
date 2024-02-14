@@ -173,6 +173,16 @@ void CTrigger_Manager::Limited_CutScene(_bool isLimited)
 	m_isLimited = isLimited;
 }
 
+void CTrigger_Manager::Set_SkyTextureIndex(const _uint iIndex)
+{
+	m_iSkyTextureIndex = iIndex;
+}
+
+const _uint& CTrigger_Manager::Get_SkyTextureIndex() const
+{
+	return m_iSkyTextureIndex;
+}
+
 void CTrigger_Manager::Teleport(const TeleportSpot eSpot)
 {
 	const TCHAR* pGetPath{};
@@ -194,6 +204,9 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot)
 			pPlayerTransform->LookAt_Dir(_vec4(0.99763946f, 0.014162573f, 0.067186668f, 0.f));
 
 			m_pGameInstance->Set_HellHeight(-30.f);
+			LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+			*Light = g_Light_Dungeon;
+			m_iSkyTextureIndex = 10;
 			break;
 		}
 		case Client::TS_Village:
@@ -230,6 +243,9 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot)
 			pPlayerTransform->LookAt_Dir(Player_Matrix.Look());
 
 			m_pGameInstance->Set_HellHeight(-70.f);
+			LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+			*Light = g_Light_Village;
+			m_iSkyTextureIndex = 12;
 			break;
 		}
 

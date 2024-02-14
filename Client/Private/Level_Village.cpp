@@ -161,15 +161,10 @@ HRESULT CLevel_Village::Ready_Camera()
 
 HRESULT CLevel_Village::Ready_Light()
 {
-	LIGHT_DESC LightDesc{};
+	LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+	*Light = g_Light_Village;
 
-	LightDesc.eType = LIGHT_DESC::Directional;
-	LightDesc.vDirection = _float4(-1.f, -2.f, -1.f, 0.f);
-	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
-	LightDesc.vSpecular = _vec4(0.5f);
-
-	return m_pGameInstance->Add_Light(LEVEL_VILLAGE, TEXT("Light_Main"), LightDesc);
+	return S_OK;
 }
 
 //HRESULT CLevel_Village::Ready_Player()
@@ -366,6 +361,9 @@ HRESULT CLevel_Village::Ready_Environment()
 			return E_FAIL;
 		}
 	}
+
+	CTrigger_Manager::Get_Instance()->Set_SkyTextureIndex(12);
+
 	return S_OK;
 }
 
