@@ -127,8 +127,8 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 		_randFloat RandomY = _randFloat(Desc.vMinPos.y, Desc.vMaxPos.y);
 		_randFloat RandomZ = _randFloat(Desc.vMinPos.z, Desc.vMaxPos.z);
 
-		_float fMaxRange = max(Desc.vMaxPos.x, Desc.vMaxPos.z);
-		fMaxRange = max(fMaxRange, Desc.vMaxPos.y);
+		_float fMaxRange = max(fabs(Desc.vMaxPos.x), fabs(Desc.vMaxPos.z));
+		fMaxRange = max(fMaxRange, fabs(Desc.vMaxPos.y));
 
 		_randFloat RandomDirX = _randFloat(Desc.vMinDir.x, Desc.vMaxDir.x);
 		_randFloat RandomDirY = _randFloat(Desc.vMinDir.y, Desc.vMaxDir.y);

@@ -177,7 +177,7 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	}
 
 #ifdef _DEBUG
-	//Print_StringStream();
+	Print_StringStream();
 #endif // _DEBUG
 
 }
@@ -1292,11 +1292,14 @@ const _float& CGameInstance::Get_HellHeight() const
 #ifdef _DEBUG
 stringstream& CGameInstance::Get_StringStream()
 {
+	m_iNumStreamLines++;
 	return m_OutputStream;
 }
+
 void CGameInstance::Add_String_to_Stream(const string& strText)
 {
 	m_OutputStream << strText << endl;
+	m_iNumStreamLines++;
 }
 #endif
 
@@ -1467,17 +1470,17 @@ void CGameInstance::Print_StringStream()
 	{
 		m_OutputStream = {};
 		m_OutputStream.clear();
+		m_iNumStreamLines = {};
 		return;
 	}
 
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	COORD cursorPos = { 0, 0 };
-	string blank(50, ' ');
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < m_iNumStreamLines; i++)
 	{
 		DWORD dw{};
-		FillConsoleOutputCharacter(hConsole, ' ', 40, cursorPos, &dw);
+		FillConsoleOutputCharacter(hConsole, ' ', 50, cursorPos, &dw);
 		cursorPos.Y++;
 	}
 	SetConsoleCursorPosition(hConsole, COORD());
@@ -1485,6 +1488,7 @@ void CGameInstance::Print_StringStream()
 	cout << m_strPrevStream << flush;
 	m_OutputStream = {};
 	m_OutputStream.clear();
+	m_iNumStreamLines = {};
 }
 #endif
 

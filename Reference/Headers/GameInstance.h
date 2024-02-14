@@ -298,6 +298,7 @@ private:
 #ifdef _DEBUG
 	stringstream m_OutputStream{};
 	string m_strPrevStream{};
+	_uint m_iNumStreamLines{};
 #endif
 
 private:
