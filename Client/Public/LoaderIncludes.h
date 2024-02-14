@@ -118,6 +118,8 @@
 #include "Tentacle.h"
 #include "XBeam.h"
 
+#include "Dragon_Boss.h"
+
 // Pet
 #include "Pet_Cat.h"
 #include "Pet_Dragon.h"
