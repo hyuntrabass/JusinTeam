@@ -913,7 +913,7 @@ HRESULT CLoader::Load_GamePlay()
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
 			{
 				return E_FAIL;
 			}
@@ -1658,7 +1658,10 @@ HRESULT CLoader::Load_Village()
 	{
 		return E_FAIL;
 	}
-
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Torch_Object"), CTorch_Object::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 	{
 		m_pGameInstance->Set_CurrentLevelIndex(LEVEL_VILLAGE);
 		{

@@ -224,7 +224,7 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot)
 
 			CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
 			pCamTransform->Set_State(State::Pos, Player_Matrix.Position() + _vec4(0.0f, 3.f, 0.f, 1.f));
-			pCamTransform->LookAt_Dir(Player_Matrix.Look() + _vec4(0.f, 0.5f, 0.f, 1.f));
+			pCamTransform->LookAt_Dir(Player_Matrix.Look() + _vec4(0.f, 0.5f, 0.f, 0.f));
 			CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 			pPlayerTransform->Set_Position(_vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
 			pPlayerTransform->LookAt_Dir(Player_Matrix.Look());

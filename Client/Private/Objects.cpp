@@ -293,7 +293,7 @@ HRESULT CObjects::Add_Components(wstring strPrototype, ObjectType eType )
 	}
 	else
 	{
-		if (FAILED(__super::Add_Component(m_pGameInstance->Get_CurrentLevelIndex(), strPrototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, strPrototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		{
 			return E_FAIL;
 		}

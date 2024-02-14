@@ -639,6 +639,8 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::InputFloat4("Look", &m_ObjectMatrix.m[2][0]);
 			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0]);
 			ImGui::Separator();
+
+			ImGui::Separator();
 			if (ImGui::Button("Delete"))
 			{
 				Delete_Dummy();
