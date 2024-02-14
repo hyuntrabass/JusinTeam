@@ -72,7 +72,7 @@ public: // Input Manager
 public: // Light Manager
 	LIGHT_DESC* Get_LightDesc(_uint iLevelIndex, const wstring& strLightTag);
 	HRESULT Add_Light(_uint iLevelIndex, const wstring& strLightTag, const LIGHT_DESC& LightDesc);
-	HRESULT Delete_Light(_uint iLevelIndex, const wstring& strLightTag);
+	HRESULT Delete_Light(_uint iLevelIndex, const wstring& strLightTag, _float fDimmerDuration = 0.5f);
 	HRESULT Render_Lights(_uint iLevelIndex, class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
 	HRESULT Bind_Light_ViewProjMatrix(_uint iLevelIndex, const wstring& strLightTag, class CShader* pShader, const _char* pViewVariableName, const _char* pProjVariableName);
 
@@ -296,11 +296,10 @@ private:
 	_float m_fHellHeight{ -1000.f };
 	_bool m_bSkipDebugRender{ true };
 	wstring m_strInput{};
-
 	wstring m_strCompleteInput{};
 	wstring m_strComposingInput{};
-	_bool m_isComposing{ false };
-	_bool m_isPopInput{ false };
+	_bool m_isComposing{};
+	_bool m_isPopInput{};
 
 	// ¿ø¸í
 	_bool m_bTurnOnShadow{ false };
@@ -308,7 +307,6 @@ private:
 #ifdef _DEBUG
 	stringstream m_OutputStream{};
 	string m_strPrevStream{};
-	_uint m_iNumStreamLines{};
 #endif
 
 private:

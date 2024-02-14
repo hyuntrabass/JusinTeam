@@ -472,10 +472,58 @@ void CPlayer::Tick(_float fTimeDelta)
 	}
 	m_pModelCom->Set_Animation(m_Animation);
 	m_pParryingCollider->Update(m_pTransformCom->Get_World_Matrix());
-	
+
 	LIGHT_DESC* pLight = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Player");
-	pLight->vDiffuse = _vec4(0.4f);
-	pLight->vPosition = m_pTransformCom->Get_CenterPos();
+	if (pLight)
+	{
+		pLight->vDiffuse = _vec4(0.4f);
+		pLight->vSpecular = _vec4(0.f);
+		pLight->vPosition = m_pTransformCom->Get_CenterPos();
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_J))
+	{
+		m_pGameInstance->Delete_Light(LEVEL_STATIC, L"Light_Player", 0.5f);
+	}
+	if (m_pGameInstance->Key_Down(DIK_H))
+	{
+		LIGHT_DESC LightDesc{};
+
+		LightDesc.eType = LIGHT_DESC::Point;
+		LightDesc.vAttenuation = LIGHT_RANGE_32;
+		LightDesc.vDiffuse = _vec4(0.15f);
+		LightDesc.vAmbient = _vec4(0.05f);
+		LightDesc.vSpecular = _vec4(1.f);
+		LightDesc.vPosition = m_pTransformCom->Get_CenterPos();
+
+		if (FAILED(m_pGameInstance->Add_Light(LEVEL_STATIC, TEXT("Light_Player"), LightDesc)))
+		{
+		}
+	}
+
+#ifdef _DEBUG
+	m_pGameInstance->Get_StringStream() << "카메라 전환 : P" << endl;
+	m_pGameInstance->Get_StringStream() << "디버그 랜더 On/Off : F1" << endl;
+	m_pGameInstance->Get_StringStream() << "플레이어 위치 등은 성능 문제로 디버그 랜더시에만 니오게 함." << endl;
+	m_pGameInstance->Get_StringStream() << endl;
+
+	if (not m_pGameInstance->IsSkipDebugRendering())
+	{
+		_vector Pos = m_pTransformCom->Get_State(State::Pos);
+		_vector Look = m_pTransformCom->Get_State(State::Look);
+		m_pGameInstance->Get_StringStream() << "플레이어 이동속도 :" << m_pTransformCom->Get_Speed() << endl;
+		m_pGameInstance->Get_StringStream() << "플레이어 애니메이션 인덱스 :" << m_pModelCom->Get_CurrentAnimationIndex() << endl;
+		m_pGameInstance->Get_StringStream() << endl;
+		m_pGameInstance->Get_StringStream() << "플레이어 위치 X :" << Pos.m128_f32[0] << endl;
+		m_pGameInstance->Get_StringStream() << "플레이어 위치 Y :" << Pos.m128_f32[1] << endl;
+		m_pGameInstance->Get_StringStream() << "플레이어 위치 Z :" << Pos.m128_f32[2] << endl;
+		m_pGameInstance->Get_StringStream() << endl;
+		m_pGameInstance->Get_StringStream() << "플레이어 룩 X :" << Look.m128_f32[0] << endl;
+		m_pGameInstance->Get_StringStream() << "플레이어 룩 Y :" << Look.m128_f32[1] << endl;
+		m_pGameInstance->Get_StringStream() << "플레이어 룩 Z :" << Look.m128_f32[2] << endl;
+		m_pGameInstance->Get_StringStream() << endl;
+	}
+#endif // _DEBUG
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)
@@ -556,7 +604,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	m_pModelCom->Play_Animation(fTimeDelta, m_bAttacked);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
-	if(true == m_pGameInstance->Get_TurnOnShadow())
+	if (true == m_pGameInstance->Get_TurnOnShadow())
 		m_pRendererCom->Add_RenderGroup(RG_Shadow, this);
 
 	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())

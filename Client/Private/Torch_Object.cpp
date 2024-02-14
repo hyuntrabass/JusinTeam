@@ -1,6 +1,8 @@
 #pragma once
 #include "Torch_Object.h"
 #include "Camera_Manager.h"
+#include "Effect_Manager.h"
+#include "Effect_Dummy.h"
 
 CTorch_Object::CTorch_Object(_dev pDevice, _context pContext)
 	: CObjects(pDevice, pContext)
@@ -44,12 +46,22 @@ HRESULT CTorch_Object::Init(void* pArg)
 
 	m_pModelCom->Apply_TransformToActor(m_Info.m_WorldMatrix);
 
+	EffectInfo Effect = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"TorchFire_Dun");
+	Effect.pMatrix = &m_FireMat;
+	Effect.isFollow = true;
+	m_pFire = CEffect_Manager::Get_Instance()->Clone_Effect(Effect);
+
 	return S_OK;
 }
 
 void CTorch_Object::Tick(_float fTimeDelta)
 {
+	m_FireMat = _mat::CreateTranslation(m_Info.m_WorldMatrix.Position_vec3() + _vec3(0.f, 1.f, 0.f));
 
+	if (m_pFire)
+	{
+		m_pFire->Tick(fTimeDelta);
+	}
 }
 
 void CTorch_Object::Late_Tick(_float fTimeDelta)
@@ -60,6 +72,11 @@ void CTorch_Object::Late_Tick(_float fTimeDelta)
 		return;
 	}
 	__super::Late_Tick(fTimeDelta);
+
+	if (m_pFire)
+	{
+		m_pFire->Late_Tick(fTimeDelta);
+	}
 }
 
 HRESULT CTorch_Object::Render()
@@ -100,4 +117,6 @@ CGameObject* CTorch_Object::Clone(void* pArg)
 void CTorch_Object::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pFire);
 }

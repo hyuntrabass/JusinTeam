@@ -11,11 +11,44 @@ LIGHT_DESC* CLight::Get_LightDesc()
 	return &m_LightDesc;
 }
 
+void CLight::Dim(_float fDuration)
+{
+	m_shouldDim = true;
+	m_fDimmerDuration = fDuration;
+}
+
+const _bool& CLight::Is_Dead()
+{
+	return m_isDead;
+}
+
 HRESULT CLight::Init(const LIGHT_DESC& LightDeesc)
 {
 	m_LightDesc = LightDeesc;
 
 	return S_OK;
+}
+
+void CLight::Tick(_float fTimeDelta)
+{
+	if (m_shouldDim)
+	{
+		_float fAlpha = m_fDimmerTimer / m_fDimmerDuration;
+		m_LightDesc.vDiffuse = _vec4::Lerp(vOriginDiffuse, _vec4(), fAlpha);
+		m_LightDesc.vAmbient = _vec4::Lerp(vOriginAmbient, _vec4(), fAlpha);
+		m_LightDesc.vSpecular = _vec4::Lerp(vOriginSpecular, _vec4(), fAlpha);
+		m_fDimmerTimer += fTimeDelta;
+		if (fAlpha >= 1.f)
+		{
+			m_isDead = true;
+		}
+	}
+	else
+	{
+		vOriginDiffuse = m_LightDesc.vDiffuse;
+		vOriginAmbient = m_LightDesc.vAmbient;
+		vOriginSpecular = m_LightDesc.vSpecular;
+	}
 }
 
 HRESULT CLight::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)

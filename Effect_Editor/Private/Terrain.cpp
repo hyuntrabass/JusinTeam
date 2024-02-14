@@ -47,7 +47,7 @@ void CTerrain::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
-	m_pRendererCom->Add_RenderGroup(RG_NonLight, this);
+	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 }
 
 HRESULT CTerrain::Render()
