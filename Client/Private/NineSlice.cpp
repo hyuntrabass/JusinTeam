@@ -153,6 +153,7 @@ HRESULT CNineSlice::Bind_ShaderResources()
 
 void CNineSlice::Set_Position(_vec2 vPos)
 {
+	m_vPosition = vPos;
 	m_fX = vPos.x;
 	m_fY = vPos.y;
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
@@ -182,7 +183,7 @@ void CNineSlice::Set_Size(_float fSizeX, _float fSizeY, _float fFontSize)
 
 HRESULT CNineSlice::Render_Texture()
 {
-	_float2 vTexPos = _float2(m_fX, m_fY);
+	_float2 vTexPos = m_vPosition;
 	_float fSmallSpriteSize = 6.f;
 
 	_uint iIndex = 4;

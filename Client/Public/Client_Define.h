@@ -210,7 +210,16 @@ namespace Client
 		ITEM_SWORD,
 		ITEM_BOW,
 		ITEM_INGREDIENT,
+		ITEM_NOTYPE,
 		ITEMTYPEEND
+	};
+	enum ITEM_USAGE
+	{
+		IT_NOUSAGE,
+		IT_HPPOTION, 
+		IT_MPPOTION,
+		IT_VEHICLECARD,
+		USAGE_END
 	};
 	
 	enum ITEM_TIER
@@ -290,7 +299,7 @@ namespace Client
 	typedef struct tagItemInfo
 	{
 		wstring strName;
-
+		ITEM_USAGE eItemUsage;
 		_uint iInvenType;
 		_uint iItemType;
 		_uint iItemTier;

@@ -73,12 +73,13 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 	if (m_strModelTag == TEXT("Prototype_Model_Female_004"))
 	{
 		m_Animation.iAnimIndex = 2;
+		DialogDesc.strText = TEXT("임시로 띄운 텍스트입니다~ 임시로 띄운 텍스트입니다~ 임시로 띄운 텍스트입니다~ ");
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Female_006"))
 	{
 		m_Animation.iAnimIndex = 4;
-		DialogDesc.strText = TEXT("임시로 띄운 텍스트입니다~ 임시로 띄운 텍스트입니다~ 임시로 띄운 텍스트입니다~ ");
+		DialogDesc.strText = TEXT("아니 얘는 5시에 보자면서 왜 안와");
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Male_009"))
@@ -95,6 +96,7 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 	if (m_strModelTag == TEXT("Prototype_Model_Male_015"))
 	{
 		m_Animation.iAnimIndex = 2;
+		DialogDesc.strText = TEXT("지나다니는 사람이 많구만");
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Male_018"))
@@ -114,7 +116,7 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 	if (m_strModelTag == TEXT("Prototype_Model_Female_013"))
 	{
 		m_Animation.iAnimIndex = 1;
-		DialogDesc.strText = TEXT("춤추는 사람 춤추는 사람 춤추는 사람 춤추는 사람");
+		DialogDesc.strText = TEXT("신난다~");
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Female_027"))
@@ -145,17 +147,19 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 	if (m_strModelTag == TEXT("Prototype_Model_Female_002"))
 	{
 		m_Animation.iAnimIndex = 7;
+		DialogDesc.strText = TEXT("놀라운 사실이야"); 
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Female_005"))
 	{
 		m_Animation.iAnimIndex = 1;
+		DialogDesc.strText = TEXT("어머 세상에 정말이야?");
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Female_010"))
 	{
 		m_Animation.iAnimIndex = 10;
-		DialogDesc.strText = TEXT("임시로 띄운 텍스트입니다~ 수군거리는 엔피씨 ");
+		DialogDesc.strText = TEXT("걔가 그랬다니까~ ");
 	}
 
 #pragma endregion TALK NPC
@@ -248,6 +252,7 @@ void CNPC_Dummy::Late_Tick(_float fTimeDelta)
 	_bool isColl = m_pColliderCom->Intersect(pCollider);
 	if (isColl)
 	{
+		wstring strTest = m_strModelTag;
 		m_pDialog->Late_Tick(fTimeDelta);
 	}
 }

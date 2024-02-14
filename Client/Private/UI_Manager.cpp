@@ -298,6 +298,10 @@ HRESULT CUI_Manager::Init_Items()
 		{
 			Item.iItemType = (_uint)ITEM_POTION;
 		}
+		else if (strItemType == TEXT("NOTYPE"))
+		{
+			Item.iItemType = (_uint)ITEM_NOTYPE;
+		}
 		else if (strItemType == TEXT("INGREDIENT"))
 		{
 			Item.iItemType = (_uint)ITEM_INGREDIENT;
@@ -306,7 +310,6 @@ HRESULT CUI_Manager::Init_Items()
 		{
 			Item.iItemType = (_uint)ITEM_SWORD;
 		}
-
 		else if (strItemType == TEXT("BOW"))
 		{
 			Item.iItemType = (_uint)ITEM_BOW;
@@ -335,9 +338,27 @@ HRESULT CUI_Manager::Init_Items()
 			Item.iItemTier = (_uint)TIER_LEGENDARY;
 		}
 
+
+
 		getline(fin, Item.strName, L'|');
 		getline(fin, Item.strTexture, L'|');
 
+		if (Item.strName == TEXT("체력 포션"))
+		{
+			Item.eItemUsage = IT_HPPOTION;
+		}
+		else if (Item.strName == TEXT("마나 포션"))
+		{
+			Item.eItemUsage = IT_MPPOTION;
+		}
+		else if (Item.strName == TEXT("[일반]탈 것 소환 카드")|| Item.strName == TEXT("[희귀]탈 것 소환 카드")|| Item.strName == TEXT("[신화]탈 것 소환 카드"))
+		{
+			Item.eItemUsage = IT_VEHICLECARD;
+		}
+		else
+		{
+			Item.eItemUsage = IT_NOUSAGE;
+		}
 		getline(fin, strItemIndex, L'|');
 		getline(fin, strStatus, L'|');
 		getline(fin, strPurchase, L'|');
@@ -359,7 +380,6 @@ HRESULT CUI_Manager::Init_Items()
 
 	return S_OK;
 }
-
 HRESULT CUI_Manager::Init_Skills()
 {
 	SKILLINFO Info = {};
