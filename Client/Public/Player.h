@@ -356,21 +356,21 @@ public:
 
 private:
 	CRiding* m_pRiding{ nullptr };
-	class CEffect_Dummy* m_pFrameEffect{ nullptr };
-	class CEffect_Dummy* m_pBaseEffect{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CGameObject* m_pNameTag{ nullptr };
-	CRenderer* m_pRendererCom{ nullptr };
 	CCollider* m_pHitCollider{ nullptr };
+	CRenderer* m_pRendererCom{ nullptr };
 	CCollider* m_pParryingCollider{ nullptr };
 	CTransform* m_pCameraTransform{ nullptr };
 	CTexture* m_pDissolveTextureCom{ nullptr };
-	CRealtimeVTFModel* m_pModelCom = { nullptr };
 	CCollider* m_pAttCollider[AT_End]{ nullptr };
-	CCommonSurfaceTrail* m_pLeft_Trail[5]{ nullptr };
-	CCommonSurfaceTrail* m_pRight_Trail[5]{ nullptr };
+	CRealtimeVTFModel* m_pModelCom = { nullptr };
+	class CEffect_Dummy* m_pBaseEffect{ nullptr };
+	class CEffect_Dummy* m_pFrameEffect{ nullptr };
 	class CEffect_Dummy* m_pEffect_Shield{ nullptr };
 	class CCamera_Manager* m_pCam_Manager{ nullptr };
+	CCommonSurfaceTrail* m_pLeft_Trail[5]{ nullptr };
+	CCommonSurfaceTrail* m_pRight_Trail[5]{ nullptr };
 
 private:
 	ANIM_DESC m_Animation{};

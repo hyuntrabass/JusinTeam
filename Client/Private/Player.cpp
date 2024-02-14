@@ -1999,6 +1999,7 @@ void CPlayer::Common_Attack()
 	}
 	m_bAttacked = false;
 	m_bReadyMove = false;
+	m_Animation.isLoop = false;
 }
 void CPlayer::Skill1_Attack()
 {
@@ -4254,10 +4255,6 @@ void CPlayer::Free()
 		Safe_Release(m_pAttCollider[i]);
 	}
 
-	if (m_pRiding != nullptr)
-	{
-		Safe_Release(m_pRiding);
-	}
 
 	for (int i = 0; i < 5; i++)
 	{
@@ -4265,12 +4262,16 @@ void CPlayer::Free()
 		Safe_Release(m_pRight_Trail[i]);
 	}
 
+	Safe_Release(m_pRiding);
 	Safe_Release(m_pNameTag);
+	Safe_Release(m_pModelCom);
+	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pBaseEffect);
+	Safe_Release(m_pRendererCom);
+	Safe_Release(m_pHitCollider);
+	Safe_Release(m_pFrameEffect);
+	Safe_Release(m_pEffect_Shield);
+	Safe_Release(m_pCameraTransform);
 	Safe_Release(m_pParryingCollider);
 	Safe_Release(m_pDissolveTextureCom);
-	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pModelCom);
-	Safe_Release(m_pRendererCom);
-	Safe_Release(m_pCameraTransform);
-	Safe_Release(m_pHitCollider);
 }
