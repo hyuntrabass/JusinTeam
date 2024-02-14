@@ -20,6 +20,7 @@ struct Riding_Desc
 	Riding_Type Type{ Type_End };
 	_vec4 vSummonPos{};
 	_bool bGlide{};
+	_uint iMode{ 0 };
 };
 enum Riding_State
 {
@@ -167,6 +168,7 @@ enum Nihilir
 class CRiding final : public CGameObject
 {
 public:
+	enum MODE { PLAYER, VEHICLEBOOK, MODE_END };
 
 private:
 	CRiding(_dev pDevice, _context pContext);
@@ -205,6 +207,7 @@ private:
 	_bool m_hasJumped{};
 	_mat m_Worldmatrix{};
 	Riding_State m_eState{};
+	MODE	m_eCurMode{ PLAYER };
 	ANIM_DESC m_Animation{};
 	_float m_fDissolveRatio{};
 	_float m_fRunSpeed{ 7.f };

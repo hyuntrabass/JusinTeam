@@ -4,7 +4,6 @@
 #include "UI_Manager.h"
 #include "FadeBox.h"
 #include "Event_Manager.h"
-#include "VehicleDesc.h"
 #include "Vehicle.h"
 #include "Camera_Manager.h"
 
@@ -44,20 +43,28 @@ HRESULT CVehicleBook::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	if (FAILED(Set_Vehicle((Riding_Type)0)))
+
+	if (FAILED(Set_Vehicle(Bird)))
 	{
 		return E_FAIL;
 	}
-	
-	if (FAILED(Set_Vehicle((Riding_Type)1)))
+	if (FAILED(Set_Vehicle(Horse)))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(Set_Vehicle((Riding_Type)2)))
+	if (FAILED(Set_Vehicle(Wyvern)))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(Set_Vehicle((Riding_Type)3)))
+	if (FAILED(Set_Vehicle(Falar)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(Set_Vehicle(Tiger)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(Set_Vehicle(Nihilir)))
 	{
 		return E_FAIL;
 	}
@@ -96,7 +103,7 @@ void CVehicleBook::Tick(_float fTimeDelta)
 
 			m_Light_Desc = *LightDesc;
 			LightDesc->eType = LIGHT_DESC::Directional;
-			LightDesc->vDirection = _float4(0.f, 0.f, -1.f, 0.f);
+			LightDesc->vDirection = _float4(0.f, 0.f, 1.f, 0.f);
 			LightDesc->vDiffuse = _vec4(0.8f, 0.8f, 0.8f, 1.f);
 			LightDesc->vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
 			LightDesc->vSpecular = _vec4(1.f);
@@ -193,6 +200,7 @@ void CVehicleBook::Tick(_float fTimeDelta)
 				if (m_vecVehicle[m_eCurType][i]->Is_Selected())
 				{
 					m_vecVehicle[m_eCurType][i]->Set_SelectVehicle(false);
+					m_isPicking = false;
 					break;
 				}
 				m_vecVehicle[m_eCurType][i]->Set_SelectVehicle(true);
@@ -215,11 +223,12 @@ void CVehicleBook::Tick(_float fTimeDelta)
 	if (PtInRect(&m_pEquipButton->Get_InitialRect(), ptMouse))
 	{
 		m_pEquipButton->Set_Size(140.f, 80.f, 0.3f);
-		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine) && m_isPicking)
+		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI) && m_isPicking)
 		{
 			m_isPicking = false;
 			m_vecVehicle[m_eCurType][m_iCurIndex]->Set_Equip(true);
 			m_pSelectedVehicle[m_eCurType] = m_vecVehicle[m_eCurType][m_iCurIndex];
+			CUI_Manager::Get_Instance()->Set_Riding(m_eCurType, m_vecVehicle[m_eCurType][m_iCurIndex]->Get_VehicleInfo().eRidingType);
 			for (size_t i = 0; i < m_vecVehicle[m_eCurType].size(); i++)
 			{
 				if (m_iCurIndex != i)
@@ -231,10 +240,6 @@ void CVehicleBook::Tick(_float fTimeDelta)
 	}
 	else
 	{
-		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine) && m_isPicking)
-		{
-			m_isPicking = false;
-		}
 		m_pEquipButton->Set_Size(150.f, 100.f, 0.35f);
 	}
 
@@ -550,15 +555,13 @@ HRESULT CVehicleBook::Add_Parts()
 	}
 	dynamic_cast<CTextButtonColor*>(m_pVehicleType[VC_FLY])->Set_Pass(VTPass_UI_Alpha);
 
-
-
-	TextButton.fDepth = m_fDepth - 0.01f;
+	TextButton.fDepth = m_fDepth + 0.01f;
 	TextButton.strText = TEXT("");
 	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Select_BG_BoxEfc_WhiteBlur");
-	TextButton.vSize = _vec2(300.f, 132.f);
+	TextButton.vSize = _vec2(300.f, 580.f);
 	TextButton.vColor = _vec4(0.125f, 0.153f, 0.169f, 0.6f);
 	TextButton.fAlpha = 0.6f;
-	TextButton.vPosition = _vec2(1107.5f, 623.f);
+	TextButton.vPosition = _vec2(1107.5f, (_float)g_iWinSizeY / 2.f + 50.f);
 	m_pSlotBackGround = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
 	if (not m_pSlotBackGround)
 	{

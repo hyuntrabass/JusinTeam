@@ -72,7 +72,8 @@ HRESULT CVoid20::Init(void* pArg)
 		}
 	}
 
-	m_pTransformCom->Set_Position(_vec3(2102.f, -16.f, 2085.f));
+	//m_pTransformCom->Set_Position(_vec3(2102.f, -16.f, 2085.f));
+	m_pTransformCom->Set_Position(_vec3(__super::Compute_PlayerPos())); // Test
 
 	return S_OK;
 }
@@ -251,6 +252,13 @@ void CVoid20::Init_State(_float fTimeDelta)
 			m_Animation.fAnimSpeedRatio = 2.5f;
 			break;
 
+		case Client::CVoid20::STATE_KNOCKDOWN:
+			m_Animation.iAnimIndex = KNOCKDOWN;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
+			m_Animation.fInterpolationTime = 0.4f;
+			break;
+
 		case Client::CVoid20::STATE_DIE:
 			m_Animation.iAnimIndex = DIE;
 			m_Animation.isLoop = false;
@@ -314,21 +322,15 @@ void CVoid20::Tick_State(_float fTimeDelta)
 
 	case Client::CVoid20::STATE_WALK:
 	{
-		_float fDist = 1.2f;
-		PxRaycastBuffer Buffer{};
-
-		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(),
-			m_pTransformCom->Get_State(State::Look).Get_Normalized(),
-			fDist, Buffer))
+		_float fDist = 1.2f; PxRaycastBuffer Buffer1{};
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer1))
 		{
-			m_pTransformCom->LookAt_Dir(PxVec3ToVector(Buffer.block.normal));
+			m_pTransformCom->LookAt_Dir(PxVec3ToVector(Buffer1.block.normal));
 		}
 
-		_float fHeight = 3.f;
-		PxRaycastBuffer Buffer2{};
+		_float fHeight = 3.f; PxRaycastBuffer Buffer2{};
 		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos() + 0.2f * m_pTransformCom->Get_State(State::Look).Get_Normalized(),
-			_vec4(0.f, -1.f, 0.f, 0.f),
-			fHeight, Buffer2))
+			_vec4(0.f, -1.f, 0.f, 0.f), fHeight, Buffer2))
 		{
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
@@ -364,7 +366,13 @@ void CVoid20::Tick_State(_float fTimeDelta)
 		else
 		{
 			m_pTransformCom->LookAt_Dir(vDir);
-			m_pTransformCom->Go_Straight(fTimeDelta);
+
+			_float fHeight = 3.f; PxRaycastBuffer Buffer2{};
+			if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos() + 0.2f * m_pTransformCom->Get_State(State::Look).Get_Normalized(),
+				_vec4(0.f, -1.f, 0.f, 0.f), fHeight, Buffer2))
+			{
+				m_pTransformCom->Go_Straight(fTimeDelta);
+			}
 		}
 
 	}
@@ -393,6 +401,12 @@ void CVoid20::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 36.f && fAnimpos <= 38.f && !m_bAttacked)
 				{
+					if (m_pGameInstance->CheckCollision_Parrying(m_pAttackColliderCom))
+					{
+						m_eCurState = STATE_KNOCKDOWN;
+						break;
+					}
+
 					_uint iDamage = m_iDefaultDamage2 - rand() % 30;
 					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
@@ -412,6 +426,12 @@ void CVoid20::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 64.f && fAnimpos <= 66.f && !m_bAttacked)
 				{
+					if (m_pGameInstance->CheckCollision_Parrying(m_pAttackColliderCom))
+					{
+						m_eCurState = STATE_KNOCKDOWN;
+						break;
+					}
+
 					_uint iDamage = m_iDefaultDamage2 - rand() % 10;
 					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_KnockDown);
 					m_bAttacked = true;
@@ -430,6 +450,12 @@ void CVoid20::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 39.f && fAnimpos <= 41.f && !m_bAttacked)
 				{
+					if (m_pGameInstance->CheckCollision_Parrying(m_pAttackColliderCom))
+					{
+						m_eCurState = STATE_KNOCKDOWN;
+						break;
+					}
+
 					_uint iDamage = m_iDefaultDamage2 - rand() % 30;
 					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 					m_bAttacked = true;
@@ -462,6 +488,15 @@ void CVoid20::Tick_State(_float fTimeDelta)
 				m_iDamageAcc = 0;
 				m_bHit = false;
 			}
+		}
+
+		break;
+
+	case Client::CVoid20::STATE_KNOCKDOWN:
+
+		if (m_pModelCom->IsAnimationFinished(KNOCKDOWN))
+		{
+			m_eCurState = STATE_CHASE;
 		}
 
 		break;

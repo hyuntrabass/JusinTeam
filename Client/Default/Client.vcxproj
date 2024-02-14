@@ -170,6 +170,7 @@
     <ClInclude Include="..\Public\Cat.h" />
     <ClInclude Include="..\Public\Aur.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
+    <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Coin.h" />
     <ClInclude Include="..\Public\Dead.h" />
     <ClInclude Include="..\Public\CutScene_Curve.h" />
@@ -259,7 +260,6 @@
     <ClInclude Include="..\Public\Tentacle.h" />
     <ClInclude Include="..\Public\TestTree.h" />
     <ClInclude Include="..\Public\TextButton.h" />
-    <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Level_Custom.h" />
     <ClInclude Include="..\Public\Level_GamePlay.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
@@ -287,7 +287,6 @@
     <ClInclude Include="..\Public\Environment_Object.h" />
     <ClInclude Include="..\Public\Vehicle.h" />
     <ClInclude Include="..\Public\VehicleBook.h" />
-    <ClInclude Include="..\Public\VehicleDesc.h" />
     <ClInclude Include="..\Public\Void01.h" />
     <ClInclude Include="..\Public\Void05.h" />
     <ClInclude Include="..\Public\Void09.h" />
@@ -431,7 +430,6 @@
     <ClCompile Include="..\Private\Environment_Object.cpp" />
     <ClCompile Include="..\Private\Vehicle.cpp" />
     <ClCompile Include="..\Private\VehicleBook.cpp" />
-    <ClCompile Include="..\Private\VehicleDesc.cpp" />
     <ClCompile Include="..\Private\Void01.cpp" />
     <ClCompile Include="..\Private\Void05.cpp" />
     <ClCompile Include="..\Private\Void09.cpp" />

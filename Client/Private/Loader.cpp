@@ -1142,6 +1142,14 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	_mat DragonPivot = _mat::CreateScale(0.5f);
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Dragon"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Dragon_Boss/Mesh/Dragon.hyuntraanimmesh", false, DragonPivot))))
+	{
+		return E_FAIL;
+	}
+
+
 #pragma  endregion Boss
 
 #pragma region Pet
@@ -1365,11 +1373,6 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
-	
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_VehicleDesc"), CVehicleDesc::Create(m_pDevice, m_pContext))))
-	{
-		return E_FAIL;
-	}
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Vehicle"), CVehicle::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -1528,6 +1531,11 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Tentacle"), CTentacle::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Dragon_Boss"), CDragon_Boss::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

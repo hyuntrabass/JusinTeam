@@ -27,10 +27,6 @@ public:
 
 private:
 	CRenderer* m_pRendererCom{ nullptr };
-	CShader* m_pShaderCom{ nullptr };
-	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
-	CTexture* m_pTextureCom{ nullptr };
-
 
 private:
 	ITEM					m_eItemDesc{};
@@ -38,7 +34,9 @@ private:
 	RECT					m_rcRect{};
 
 	CGameObject*			m_pItemTex{ nullptr };
+	class CNineSlice*		m_pBackGround{ nullptr };
 	class CTextButton*		m_pExitButton{ nullptr };
+	CTextButton*			m_SelectButton{ nullptr };
 
 
 private:

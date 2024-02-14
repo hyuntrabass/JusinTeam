@@ -142,6 +142,12 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	{
 		DestroyWindow(g_hWnd);
 	}
+
+	// Test
+	if (m_pGameInstance->Key_Down(DIK_RSHIFT))
+	{
+		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"));
+	}
 }
 
 HRESULT CLevel_Village::Render()
@@ -564,11 +570,11 @@ HRESULT CLevel_Village::Ready_Dungeon_Monster()
 		}
 		else if (Info.strMonsterPrototype == TEXT("Prototype_Model_Void23"))
 		{
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void23"), TEXT("Prototype_GameObject_Void23"), &Info)))
-			{
-				MSG_BOX("Void23 积己 角菩");
-				return E_FAIL;
-			}
+			//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void23"), TEXT("Prototype_GameObject_Void23"), &Info)))
+			//{
+			//	MSG_BOX("Void23 积己 角菩");
+			//	return E_FAIL;
+			//}
 
 		}
 

@@ -15,7 +15,7 @@ HRESULT CShadowMap::Init(_uint2 iSize, const _float4& vColor)
 {
 	D3D11_TEXTURE2D_DESC TexDesc{};
 	TexDesc.Width = iSize.x * 2;
-	TexDesc.Height = iSize.y * 2;
+	TexDesc.Height = iSize.x * 2;
 	TexDesc.MipLevels = 1;
 	TexDesc.ArraySize = 3;
 	TexDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
@@ -53,7 +53,7 @@ HRESULT CShadowMap::Init(_uint2 iSize, const _float4& vColor)
 	m_ViewPort.TopLeftX = 0.f;
 	m_ViewPort.TopLeftY = 0.f;
 	m_ViewPort.Width = static_cast<_float>(iSize.x * 2);
-	m_ViewPort.Height = static_cast<_float>(iSize.y * 2);
+	m_ViewPort.Height = static_cast<_float>(iSize.x * 2);
 	m_ViewPort.MinDepth = 0.f;
 	m_ViewPort.MaxDepth = 1.f;
 

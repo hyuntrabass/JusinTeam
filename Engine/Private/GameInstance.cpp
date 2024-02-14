@@ -146,9 +146,9 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 		}
 	}
 
-	if (Key_Down(DIK_F5, InputChannel::Engine))
+	if (Key_Down(DIK_F5, InputChannel::Engine)) 
 	{
-		m_bTurnOnShadow = m_bTurnOnShadow;
+		m_bTurnOnShadow = !m_bTurnOnShadow;
 	}
 
 	if (Is_Playing_Video())

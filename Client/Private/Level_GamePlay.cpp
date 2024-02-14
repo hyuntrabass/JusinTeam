@@ -25,7 +25,10 @@ HRESULT CLevel_GamePlay::Init()
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_GAMEPLAY);
 	m_pGameInstance->StopAll();
 
-	CUI_Manager::Get_Instance()->Init();
+	if (FAILED(CUI_Manager::Get_Instance()->Init()))
+	{
+		return E_FAIL;
+	}
 
 
 	if (FAILED(Ready_Player()))
