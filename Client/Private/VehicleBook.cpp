@@ -215,7 +215,7 @@ void CVehicleBook::Tick(_float fTimeDelta)
 	if (PtInRect(&m_pEquipButton->Get_InitialRect(), ptMouse))
 	{
 		m_pEquipButton->Set_Size(140.f, 80.f, 0.3f);
-		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine) && m_isPicking)
+		if (m_pGameInstance->Mouse_Down(DIM_RBUTTON, InputChannel::UI))// && m_isPicking)
 		{
 			m_isPicking = false;
 			m_vecVehicle[m_eCurType][m_iCurIndex]->Set_Equip(true);
@@ -231,10 +231,7 @@ void CVehicleBook::Tick(_float fTimeDelta)
 	}
 	else
 	{
-		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine) && m_isPicking)
-		{
-			m_isPicking = false;
-		}
+
 		m_pEquipButton->Set_Size(150.f, 100.f, 0.35f);
 	}
 
