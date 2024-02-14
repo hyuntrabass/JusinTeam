@@ -122,43 +122,48 @@ HRESULT CVoid23::Render()
 void CVoid23::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_fHittedTime = 6.f;
-	m_eCurState = STATE_HIT;
+
+	if (iDamage >= 300)
+	{
+		m_eCurState = STATE_HIT;
+	}
 
 	m_iHP -= iDamage;
 	m_bDamaged = true;
 	m_bChangePass = true;
-	if (m_bHit == false)
-	{
-		m_iDamageAcc += iDamage;
-	}
+
+	//if (m_bHit == false)
+	//{
+	//	m_iDamageAcc += iDamage;
+	//}
 
 	m_fIdleTime = 0.f;
 
 	_vec4 vPlayerPos = __super::Compute_PlayerPos();
 	m_pTransformCom->LookAt(vPlayerPos);
 
-	if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
-		iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
-	{
-		// 경직
-		m_Animation.fAnimSpeedRatio = 1.5f;
-	}
+	//if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
+	//	iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
+	//{
+	//	// 경직
+	//	m_Animation.fAnimSpeedRatio = 1.5f;
+	//}
 
-	if (iDamageType == AT_Bow_Common || iDamageType == AT_Bow_Skill1)
-	{
-		// 밀려나게
-		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
-		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
+	//if (iDamageType == AT_Bow_Common || iDamageType == AT_Bow_Skill1)
+	//{
+	//	// 밀려나게
+	//	_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
+	//	m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
 
-		m_Animation.fAnimSpeedRatio = 2.5f;
-	}
+	//	m_Animation.fAnimSpeedRatio = 2.5f;
+	//}
 
-	if (iDamageType == AT_Bow_Skill3)
-	{
-		// 이속 느려지게
-		m_bSlow = true;
-		m_Animation.fAnimSpeedRatio = 1.f;
-	}
+	//if (iDamageType == AT_Bow_Skill3)
+	//{
+	//	// 이속 느려지게
+	//	m_bSlow = true;
+	//	m_Animation.fAnimSpeedRatio = 1.f;
+	//}
 }
 
 void CVoid23::Init_State(_float fTimeDelta)
