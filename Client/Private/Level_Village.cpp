@@ -282,43 +282,42 @@ HRESULT CLevel_Village::Ready_Dungeon()
 
 HRESULT CLevel_Village::Ready_Object()
 {
+	const TCHAR* pGetPath = TEXT("../Bin/Data/Dungeon_Torch.dat");
 
-	//const TCHAR* pGetPath = TEXT("../Bin/Data/Village_ObjectData.dat");
+	std::ifstream inFile(pGetPath, std::ios::binary);
 
-	//std::ifstream inFile(pGetPath, std::ios::binary);
+	if (!inFile.is_open())
+	{
+		MSG_BOX("오브젝트 파일을 찾지 못했습니다.");
+		return E_FAIL;
+	}
 
-	//if (!inFile.is_open())
-	//{
-	//	MSG_BOX("오브젝트 파일을 찾지 못했습니다.");
-	//	return E_FAIL;
-	//}
-
-	//_uint ObjectListSize;
-	//inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
+	_uint ObjectListSize;
+	inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
 
 
-	//for (_uint i = 0; i < ObjectListSize; ++i)
-	//{
-	//	_ulong ObjectPrototypeSize;
-	//	inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
+	for (_uint i = 0; i < ObjectListSize; ++i)
+	{
+		_ulong ObjectPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
 
-	//	wstring ObjectPrototype;
-	//	ObjectPrototype.resize(ObjectPrototypeSize);
-	//	inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
+		wstring ObjectPrototype;
+		ObjectPrototype.resize(ObjectPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
 
-	//	_mat ObjectWorldMat;
-	//	inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
+		_mat ObjectWorldMat;
+		inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
 
-	//	ObjectInfo ObjectInfo{};
-	//	ObjectInfo.strPrototypeTag = ObjectPrototype;
-	//	ObjectInfo.m_WorldMatrix = ObjectWorldMat;
-	//	ObjectInfo.eObjectType = Object_Building;
-	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Village_Etc_Object"), &ObjectInfo)))
-	//	{
-	//		MSG_BOX("오브젝트 불러오기 실패");
-	//		return E_FAIL;
-	//	}
-	//}
+		ObjectInfo ObjectInfo{};
+		ObjectInfo.strPrototypeTag = ObjectPrototype;
+		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
+		ObjectInfo.eObjectType = Object_Building;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Torch_Object"), &ObjectInfo)))
+		{
+			MSG_BOX("오브젝트 불러오기 실패");
+			return E_FAIL;
+		}
+	}
 	return S_OK;
 }
 
