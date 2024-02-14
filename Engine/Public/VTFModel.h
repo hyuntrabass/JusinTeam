@@ -27,10 +27,6 @@ public:
 
 	void Set_Animation(ANIM_DESC Animation_Desc);
 
-	void Set_NextAnimationIndex(_int iAnimIndex) {
-		m_iNextAnimIndex = iAnimIndex;
-	}
-
 	const _uint& Get_NumMeshes() const {
 		return m_iNumMeshes;
 	}
@@ -59,14 +55,14 @@ private:
 
 	PLAYANIM_DESC m_PlayAnimDesc;
 	ANIMTIME_DESC m_OldAnimDesc;
-	_int m_iCurrentAnimIndex = 0;
-	_int m_iNextAnimIndex = -1;
-	_bool m_isLoop = false;
 	_bool m_isFinished = false;
 
 	_bool m_isAnimChanged{};
 	_bool m_isInterpolating{};
 	ANIM_DESC m_AnimDesc{};
+
+	static _int	m_iNextInstanceID;
+	_int m_iInstanceID{};
 
 private:
 	// For_Animation

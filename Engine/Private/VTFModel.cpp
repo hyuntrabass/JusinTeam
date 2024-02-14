@@ -5,6 +5,8 @@
 #include "Animation.h"
 #include "Shader.h"
 
+_int CVTFModel::m_iNextInstanceID = 0;
+
 CVTFModel::CVTFModel(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
 {
@@ -122,14 +124,14 @@ HRESULT CVTFModel::Init_Prototype(const string& strFilePath, const _bool& isCOLM
 		return E_FAIL;
 	}
 
+	m_iInstanceID = m_iNextInstanceID++;
+
 	return S_OK;
 }
 
 HRESULT CVTFModel::Init(void* pArg)
 {
 	m_PlayAnimDesc.PLAYANIM_DESC();
-
-	m_isLoop = true;
 
 	return S_OK;
 }

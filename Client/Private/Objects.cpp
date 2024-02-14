@@ -281,6 +281,7 @@ HRESULT CObjects::Add_Components(wstring strPrototype, ObjectType eType )
 		}
 	}
 
+	m_pShaderCom->Set_PassIndex(3);
 	m_iShaderPass = StaticPass_Default;
 	m_iOutLineShaderPass = StaticPass_OutLine;
 

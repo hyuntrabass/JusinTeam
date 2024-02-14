@@ -491,10 +491,10 @@ HRESULT CLevel_GamePlay::Ready_ModelTest()
 		return E_FAIL;
 	}
 
-	/*if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_VTFTest"), TEXT("Prototype_GameObject_VTFTest"))))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_VTFTest"), TEXT("Prototype_GameObject_VTFTest"))))
 	{
 		return E_FAIL;
-	}*/
+	}
 
 	return S_OK;
 }

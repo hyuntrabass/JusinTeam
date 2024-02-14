@@ -610,7 +610,7 @@ HRESULT CModel::Render_Instancing(CVIBuffer_Mesh_Instance*& pInstanceBuffer, CSh
 			return E_FAIL;
 		}
 
-		if (FAILED(pShader->Begin(3)))
+		if (FAILED(pShader->Begin(pShader->Get_PassIndex())))
 		{
 			return E_FAIL;
 		}
