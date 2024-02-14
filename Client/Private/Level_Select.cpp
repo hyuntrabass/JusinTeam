@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Effect_Manager.h"
 #include "Camera_Manager.h"
+#include "Trigger_Manager.h"
 
 CLevel_Select::CLevel_Select(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -200,6 +201,8 @@ HRESULT CLevel_Select::Ready_Map()
 	{
 		return E_FAIL;
 	}
+
+	CTrigger_Manager::Get_Instance()->Set_SkyTextureIndex(10);
 
 	return S_OK;
 }

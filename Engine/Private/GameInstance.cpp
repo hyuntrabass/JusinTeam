@@ -146,6 +146,10 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 		}
 	}
 
+	if (Key_Down(DIK_F5, InputChannel::Engine)) {
+		m_bTurnOnShadow = !m_bTurnOnShadow;
+	}
+
 	if (Is_Playing_Video())
 	{
 		return;
@@ -162,7 +166,8 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 
 	m_pFrustum->Tick();
 
-	m_pCascade_Manager->Update_Cascade();
+	if(true == m_bTurnOnShadow)
+		m_pCascade_Manager->Update_Cascade();
 
 	m_pObject_Manager->Release_DeadObjects();
 	m_pObject_Manager->Late_Tick(fTimeDelta);
@@ -177,7 +182,7 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	}
 
 #ifdef _DEBUG
-	//Print_StringStream();
+	Print_StringStream();
 #endif // _DEBUG
 
 }
@@ -1292,11 +1297,14 @@ const _float& CGameInstance::Get_HellHeight() const
 #ifdef _DEBUG
 stringstream& CGameInstance::Get_StringStream()
 {
+	m_iNumStreamLines++;
 	return m_OutputStream;
 }
+
 void CGameInstance::Add_String_to_Stream(const string& strText)
 {
 	m_OutputStream << strText << endl;
+	m_iNumStreamLines++;
 }
 #endif
 
@@ -1467,19 +1475,17 @@ void CGameInstance::Print_StringStream()
 	{
 		m_OutputStream = {};
 		m_OutputStream.clear();
+		m_iNumStreamLines = {};
 		return;
 	}
 
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	COORD cursorPos = { 0, 0 };
-	string blank(50, ' ');
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < m_iNumStreamLines; i++)
 	{
-		//SetConsoleCursorPosition(hConsole, cursorPos);
-		//cout << blank << endl;
 		DWORD dw{};
-		FillConsoleOutputCharacter(hConsole, ' ', 40, cursorPos, &dw);
+		FillConsoleOutputCharacter(hConsole, ' ', 50, cursorPos, &dw);
 		cursorPos.Y++;
 	}
 	SetConsoleCursorPosition(hConsole, COORD());
@@ -1487,23 +1493,7 @@ void CGameInstance::Print_StringStream()
 	cout << m_strPrevStream << flush;
 	m_OutputStream = {};
 	m_OutputStream.clear();
-
-	//HANDLE hBuffer[0] = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
-//									   0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL); // 버퍼 생성
-//SetConsoleScreenBufferSize(hBuffer[0], size);
-//SetConsoleWindowInfo(hBuffer[0], TRUE, &rect);
-
-//// 두번째 버퍼
-//hBuffer[1] = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
-//									   0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL); // 버퍼 생성
-//SetConsoleScreenBufferSize(hBuffer[1], size);
-//SetConsoleWindowInfo(hBuffer[1], TRUE, &rect);
-
-//cursor.dwSize = 1;
-//cursor.bVisible = false;
-//SetConsoleCursorInfo(hBuffer[0], &cursor);
-//SetConsoleCursorInfo(hBuffer[1], &cursor);
-
+	m_iNumStreamLines = {};
 }
 #endif
 

@@ -276,6 +276,7 @@
     <ClInclude Include="..\Public\Select.h" />
     <ClInclude Include="..\Public\TextButtonColor.h" />
     <ClInclude Include="..\Public\Thief04.h" />
+    <ClInclude Include="..\Public\Torch_Object.h" />
     <ClInclude Include="..\Public\Trigger.h" />
     <ClInclude Include="..\Public\Trigger_Manager.h" />
     <ClInclude Include="..\Public\TrilobiteA.h" />
@@ -418,6 +419,7 @@
     <ClCompile Include="..\Private\Select.cpp" />
     <ClCompile Include="..\Private\TextButtonColor.cpp" />
     <ClCompile Include="..\Private\Thief04.cpp" />
+    <ClCompile Include="..\Private\Torch_Object.cpp" />
     <ClCompile Include="..\Private\Trigger.cpp" />
     <ClCompile Include="..\Private\Trigger_Manager.cpp" />
     <ClCompile Include="..\Private\TrilobiteA.cpp" />

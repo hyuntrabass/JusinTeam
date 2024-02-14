@@ -28,6 +28,7 @@ private:
 
 public:
 	_mat Get_World_Matrix() const;
+	_mat Get_OldWorld_Matrix() const;
 	_mat Get_World_Inverse() const;
 	_vec4 Get_State(State eState) const;
 	_vec3 Get_Scale() const;
@@ -37,6 +38,7 @@ public:
 	_vec4 Get_CenterPos() const;
 	const _bool Is_OnGround() const;
 
+	void Set_OldMatrix();
 	void Set_Position(_vec3 vPosition);
 	void Set_FootPosition(_vec3 vPosition);
 	void Set_FootPosition(PxVec3 vPosition);
@@ -77,9 +79,11 @@ public:
 
 public:
 	HRESULT Bind_WorldMatrix(class CShader* pShader, const _char* pVariableName);
+	HRESULT Bind_OldWorldMatrix(class CShader* pShader, const _char* pVariableName);
 
 private:
 	_mat m_WorldMatrix{};
+	_mat m_OldWorldMatrix{};
 
 	PxScene* m_pScene{ nullptr };
 	PxController* m_pController{ nullptr };

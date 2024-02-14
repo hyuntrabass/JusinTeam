@@ -3,12 +3,12 @@
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
-texture2D g_SpecTexture;
+texture2D g_MaskTexture;
 
 float g_fCamFar;
 
 bool g_HasNorTex;
-bool g_HasSpecTex;
+bool g_HasMaskTex;
 
 matrix g_OldWorldMatrix, g_OldViewMatrix;
 
@@ -59,6 +59,7 @@ struct VS_OUT
     vector vProjPos : Texcoord2;
     float3 vTangent : Tangent;
     float3 vBinormal : Binormal;
+    float4 vDir : DIRECTION;
 };
 
 matrix Get_BoneMatrix(VS_IN Input)
@@ -182,46 +183,10 @@ matrix Get_OldBoneMatrix(VS_IN Input)
     return BoneMatrix;
 }
 
+
 VS_OUT VS_Main(VS_IN Input)
 {
     VS_OUT Output = (VS_OUT) 0;
-	
-    matrix matWV, matWVP;
-    
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
-    matWVP = mul(matWV, g_ProjMatrix);
-    
-    matrix BoneMatrix = Get_BoneMatrix(Input);
-    
-    vector vPos = mul(vector(Input.vPos, 1.f), BoneMatrix);
-    vector vNormal = mul(vector(Input.vNor, 0.f), BoneMatrix);
-    
-    Output.vPos = mul(vPos, matWVP);
-    Output.vNor = normalize(mul(vNormal, g_WorldMatrix));
-    Output.vTex = Input.vTex;
-    Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
-    Output.vProjPos = Output.vPos;
-    Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), g_WorldMatrix)).xyz;
-    Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
-    
-    return Output;
-}
-
-struct VS_Motion_Blur_Out
-{
-    vector vPos : SV_Position; // == float4
-    vector vNor : Normal;
-    float2 vTex : Texcoord0;
-    vector vWorldPos : Texcoord1;
-    vector vProjPos : Texcoord2;
-    float3 vTangent : Tangent;
-    float3 vBinormal : Binormal;
-    float4 vDir : DIRECTION;
-};
-
-VS_Motion_Blur_Out VS_Motion_Blur(VS_IN Input)
-{
-    VS_Motion_Blur_Out Output = (VS_Motion_Blur_Out) 0;
 	
     matrix matWV, matWVP;
     
@@ -280,13 +245,14 @@ VS_Motion_Blur_Out VS_Motion_Blur(VS_IN Input)
 
 struct PS_IN
 {
-    vector vPos : SV_Position;
+    vector vPos : SV_Position; // == float4
     vector vNor : Normal;
     float2 vTex : Texcoord0;
     vector vWorldPos : Texcoord1;
     vector vProjPos : Texcoord2;
     float3 vTangent : Tangent;
     float3 vBinormal : Binormal;
+    float4 vDir : DIRECTION;
 };
 
 struct PS_OUT
@@ -294,7 +260,6 @@ struct PS_OUT
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
-    vector vSpecular : SV_Target3;
 };
 
 PS_OUT PS_Main(PS_IN Input)
@@ -324,67 +289,15 @@ PS_OUT PS_Main(PS_IN Input)
         vNormal = Input.vNor.xyz;
     }
     
-    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
-    
-    Output.vDiffuse = vMtrlDiffuse;
-    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vSpecular = vSpecular;
-    
-    return Output;
-}
-
-struct PS_Blur_IN
-{
-    vector vPos : SV_Position; // == float4
-    vector vNor : Normal;
-    float2 vTex : Texcoord0;
-    vector vWorldPos : Texcoord1;
-    vector vProjPos : Texcoord2;
-    float3 vTangent : Tangent;
-    float3 vBinormal : Binormal;
-    float4 vDir : DIRECTION;
-};
-
-struct PS_Blur_OUT
-{
-    vector vDiffuse : SV_Target0;
-    vector vNormal : SV_Target1;
-    vector vDepth : SV_Target2;
-    vector vVelocity : SV_Target4;
-};
-
-PS_Blur_OUT PS_Motion_Blur(PS_Blur_IN Input)
-{
-    PS_Blur_OUT Output = (PS_Blur_OUT) 0;
-    
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
-    
-    if (0.3f > vMtrlDiffuse.a)
+    vector vMask = vector(1.f, 0.1f, 0.1f, 0.f);
+    if (g_HasMaskTex)
     {
-        discard;
-    }
-    
-    float3 vNormal;
-    if (g_HasNorTex)
-    {
-        vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
-        
-        vNormal = vNormalDesc.xyz * 2.f - 1.f;
-        
-        float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
-        
-        vNormal = mul(normalize(vNormal), WorldMatrix) * -1.f;
-    }
-    else
-    {
-        vNormal = Input.vNor.xyz;
+        vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
     Output.vDiffuse = vMtrlDiffuse;
-    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vVelocity = Input.vDir;
+    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, Input.vDir.x, Input.vDir.y);
     
     return Output;
 }
@@ -402,18 +315,5 @@ technique11 DefaultTechniqueShader_VTF
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main();
-    }
-
-    pass Motion_Blur
-    {
-        SetRasterizerState(RS_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-
-        VertexShader = compile vs_5_0 VS_Motion_Blur();
-        GeometryShader = NULL;
-        HullShader = NULL;
-        DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Motion_Blur();
     }
 };

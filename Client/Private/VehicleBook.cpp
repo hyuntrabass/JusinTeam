@@ -99,7 +99,7 @@ void CVehicleBook::Tick(_float fTimeDelta)
 			{
 				return;
 			}
-			LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_GAMEPLAY, TEXT("Light_Main"));
+			LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
 
 			m_Light_Desc = *LightDesc;
 			LightDesc->eType = LIGHT_DESC::Directional;
@@ -141,7 +141,7 @@ void CVehicleBook::Tick(_float fTimeDelta)
 		{
 			if (m_Light_Desc.eType != LIGHT_DESC::TYPE::End)
 			{
-				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_GAMEPLAY, TEXT("Light_Main"));
+				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
 				*LightDesc = m_Light_Desc;
 			}
 			CFadeBox::FADE_DESC Desc = {};

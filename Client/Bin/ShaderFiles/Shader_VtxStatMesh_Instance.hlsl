@@ -18,15 +18,6 @@ bool g_HasNorTex;
 bool g_HasMaskTex;
 bool g_bSelected = false;
 
-vector g_vLightDir;
-
-vector g_vLightDiffuse;
-
-vector g_vMtrlAmbient = vector(0.3f, 0.3f, 0.3f, 1.f);
-vector g_vMtrlSpecular = vector(0.8f, 0.8f, 0.8f, 1.f);
-
-float2 g_vUVTransform;
-
 float4 g_vClipPlane;
 
 struct VS_IN
@@ -36,6 +27,7 @@ struct VS_IN
     float2 vTex : Texcoord0;
     float3 vTan : Tangent;
     row_major matrix mWorld : World;
+    
     int iID : ID;
 };
 
@@ -206,9 +198,7 @@ struct PS_OUT_DEFERRED
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
-    vector vMask : SV_Target3;
-    vector vVelocity : SV_Target4;
-    vector vRimMask : SV_Target5;
+    vector vRimMask : SV_Target3;
 };
 
 struct PS_OUT
@@ -246,9 +236,8 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     }
     
     Output.vDiffuse = vMtrlDiffuse;
-    Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vMask = vMask;
 
     return Output;
 }
@@ -298,9 +287,8 @@ PS_OUT_DEFERRED PS_Main_AlphaTest(PS_IN Input)
     }
     
     Output.vDiffuse = vMtrlDiffuse;
-    Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vMask = vMask;
 
     return Output;
 }
@@ -355,7 +343,6 @@ struct PS_WATER_OUT
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
-    vector vMask : SV_Target3;
 };
 
 PS_WATER_OUT PS_Main_Water(PS_WATER_IN Input)
@@ -392,9 +379,8 @@ PS_WATER_OUT PS_Main_Water(PS_WATER_IN Input)
     }
     
     Output.vDiffuse = vMtrlDiffuse;
-    Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vMask = vMask;
 
     return Output;
 }
