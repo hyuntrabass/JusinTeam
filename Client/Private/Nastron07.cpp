@@ -32,8 +32,6 @@ HRESULT CNastron07::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
-
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = false;
@@ -66,7 +64,8 @@ HRESULT CNastron07::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
-	m_pTransformCom->Set_Position( _vec3(5.f, 0.f, 0.f));
+	//m_pTransformCom->Set_Position( _vec3(5.f, 0.f, 0.f));
+
 	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
 
 	//if (pArg)
@@ -76,6 +75,12 @@ HRESULT CNastron07::Init(void* pArg)
 			return E_FAIL;
 		}
 	}
+
+	_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
+	vPos.y += 3.f;
+
+	m_pTransformCom->Set_Position(vPos);
+
     return S_OK;
 }
 
@@ -97,6 +102,8 @@ void CNastron07::Tick(_float fTimeDelta)
 	__super::Update_BodyCollider();
 
 	Update_Trail(fTimeDelta);
+
+	m_pTransformCom->Gravity(fTimeDelta);
 
 }
 
@@ -289,11 +296,11 @@ void CNastron07::Tick_State(_float fTimeDelta)
 		}
 		else
 		{
-			if (m_fIdleTime >= 4.f)
-			{
-				m_eCurState = STATE_WALK;
-				m_fIdleTime = 0.f;
-			}
+			//if (m_fIdleTime >= 4.f)
+			//{
+			//	m_eCurState = STATE_WALK;
+			//	m_fIdleTime = 0.f;
+			//}
 
 		}
 

@@ -127,6 +127,9 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 		_randFloat RandomY = _randFloat(Desc.vMinPos.y, Desc.vMaxPos.y);
 		_randFloat RandomZ = _randFloat(Desc.vMinPos.z, Desc.vMaxPos.z);
 
+		_float fMaxRange = max(fabs(Desc.vMaxPos.x), fabs(Desc.vMaxPos.z));
+		fMaxRange = max(fMaxRange, fabs(Desc.vMaxPos.y));
+
 		_randFloat RandomDirX = _randFloat(Desc.vMinDir.x, Desc.vMaxDir.x);
 		_randFloat RandomDirY = _randFloat(Desc.vMinDir.y, Desc.vMaxDir.y);
 		_randFloat RandomDirZ = _randFloat(Desc.vMinDir.z, Desc.vMaxDir.z);
@@ -146,6 +149,10 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 			pVertexInstance[i].vUp = _float4(0.f, fScale, 0.f, 0.f);
 			pVertexInstance[i].vLook = _float4(0.f, 0.f, 1.f, 0.f);
 			pVertexInstance[i].vPos = _float4(RandomX(RandomNumber), RandomY(RandomNumber), RandomZ(RandomNumber), 1.f);
+			while (_vec3(pVertexInstance[i].vPos).Length() > fMaxRange)
+			{
+				pVertexInstance[i].vPos = _float4(RandomX(RandomNumber), RandomY(RandomNumber), RandomZ(RandomNumber), 1.f);
+			}
 			pVertexInstance[i].vOriginPos = pVertexInstance[i].vPos;
 			pVertexInstance[i].fSpeed = RandomSpeed(RandomNumber);
 			pVertexInstance[i].vLifeTime.y = RandomLifeTime(RandomNumber);

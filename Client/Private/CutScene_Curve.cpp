@@ -24,11 +24,11 @@ HRESULT CCutScene_Curve::Init(void* pArg)
 
 	m_iSectionType = Info.iSectionType;
 	
-	if (Info.ppCurve)
-	{
-		*Info.ppCurve = this;
-		Info.ppCurve = nullptr;
-	}
+	//if (Info.ppCurve)
+	//{
+	//	*Info.ppCurve = this;
+	//	Info.ppCurve = nullptr;
+	//}
 	m_matPoint = Info.mCutSceneMatrix;
 	m_pVIBuffer->Set_ControlPoints(m_matPoint);
 	m_pVIBuffer->Modify_Line();
@@ -36,42 +36,8 @@ HRESULT CCutScene_Curve::Init(void* pArg)
 	return S_OK;
 }
 
-void CCutScene_Curve::Tick(_float TimeDelta)
-{
-	m_pVIBuffer->Set_ControlPoints(m_matPoint);
-	m_pVIBuffer->Modify_Line();
-}
-
-void CCutScene_Curve::Late_Tick(_float TimeDelta)
-{
-	//m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
-}
-
-HRESULT CCutScene_Curve::Render()
-{
-
-
-	//if (FAILED(Bind_ShaderResources()))
-	//{
-	//	return E_FAIL;
-	//}
-	//m_pShaderCom->Begin(0);
-	//m_pVIBuffer->Render();
-	return S_OK;
-}
-
 HRESULT CCutScene_Curve::Add_Components()
 {
-	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
-	//{
-	//	return E_FAIL;
-	//}
-	
-	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Curve"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
-	//{
-	//	return E_FAIL;
-	//}
-	
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Curve"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBuffer))))
 	{
 		return E_FAIL;
@@ -80,35 +46,6 @@ HRESULT CCutScene_Curve::Add_Components()
 	return S_OK;
 }
 
-HRESULT CCutScene_Curve::Bind_ShaderResources()
-{
-	_mat m_WorldMatrix;
-	m_WorldMatrix = XMMatrixIdentity();
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", m_WorldMatrix)))
-		return E_FAIL;
-
-
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
-	{
-		return E_FAIL;
-	}
-
-	_float4 vColor = _float4(0.f, 0.f, 0.f, 1.f);
-	if (m_iSectionType == SECTION_TYPE_EYE)
-		vColor = _float4(0.f, 1.f, 1.f, 1.f);
-	else if (m_iSectionType == SECTION_TYPE_AT)
-		vColor = _float4(1.f, 0.f, 0.f, 1.f);
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
-		return E_FAIL;
-
-	return S_OK;
-}
 
 void CCutScene_Curve::Get_ControlPoints(_mat** ppOutPoints)
 {
@@ -137,7 +74,7 @@ void CCutScene_Curve::Set_SectionSpeed(_float fSpeed)
 _vec4 CCutScene_Curve::Get_CurvePos(_uint iIndex)
 {
 	if (m_pVIBuffer == nullptr)
-		return _float3(-1, -1, -1);
+		return _float3(-1.f, -1.f, -1.f);
 
 	m_pVIBuffer->Modify_Line();
 
@@ -191,7 +128,5 @@ void CCutScene_Curve::Free()
 {
 	__super::Free();
 
-	//Safe_Release(m_pShaderCom);
-	//Safe_Release(m_pRendererCom);
 	Safe_Release(m_pVIBuffer);
 }

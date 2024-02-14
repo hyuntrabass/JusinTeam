@@ -1,12 +1,10 @@
 #pragma once
 #include "Client_Define.h"
 #include "OrthographicObject.h"
-#include "Wearable_Slot.h"
 #include "Skill_Model.h"
 #include "Scarecrow.h"
 
 BEGIN(Client)
-class CWearable_Slot;
 class CSkillBook final : public COrthographicObject
 {
 private:

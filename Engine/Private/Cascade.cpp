@@ -72,7 +72,7 @@ HRESULT CCascade::Update(_vec3* FrustumCorners, _float* ClipZ)
 
 	_uint iLevel = m_pGameInstance->Get_CurrentLevelIndex();
 
-	LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(iLevel, L"Light_Main");
+	LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(0, L"Light_Main");
 
 	_vec3 CascadeExtents = vMaxes - vMins;
 

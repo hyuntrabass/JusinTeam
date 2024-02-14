@@ -50,10 +50,10 @@ void CCamera_Main::Tick(_float fTimeDelta)
 	}
 	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
 
-	if (m_pGameInstance->Key_Down(DIK_P))
-	{
-		m_pCam_Manager->Set_CameraModeIndex(CM_DEBUG);
-	}
+	//if (m_pGameInstance->Key_Down(DIK_P))
+	//{
+	//	m_pCam_Manager->Set_CameraModeIndex(CM_DEBUG);
+	//}
 
 	_long dwMouseMove;
 

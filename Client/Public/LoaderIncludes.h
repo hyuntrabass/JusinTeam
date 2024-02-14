@@ -1,5 +1,9 @@
 #pragma once
 
+#include "NineSlice.h"
+#include "VehicleDesc.h"
+#include "Vehicle.h"
+#include "VehicleBook.h"
 #include "Symbol.h"
 #include "Targeted.h"
 #include "HPBoss.h"

@@ -212,6 +212,7 @@
     <ClInclude Include="..\Public\NameWindow.h" />
     <ClInclude Include="..\Public\Nastron03.h" />
     <ClInclude Include="..\Public\Nastron07.h" />
+    <ClInclude Include="..\Public\NineSlice.h" />
     <ClInclude Include="..\Public\NPC.h" />
     <ClInclude Include="..\Public\NPCvsMon.h" />
     <ClInclude Include="..\Public\Custom.h" />
@@ -283,6 +284,9 @@
     <ClInclude Include="..\Public\ModelTest.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\Public\Environment_Object.h" />
+    <ClInclude Include="..\Public\Vehicle.h" />
+    <ClInclude Include="..\Public\VehicleBook.h" />
+    <ClInclude Include="..\Public\VehicleDesc.h" />
     <ClInclude Include="..\Public\Void01.h" />
     <ClInclude Include="..\Public\Void05.h" />
     <ClInclude Include="..\Public\Void09.h" />
@@ -324,6 +328,7 @@
     <ClCompile Include="..\private\Effect_Manager.cpp" />
     <ClCompile Include="..\Private\Event_Manager.cpp" />
     <ClCompile Include="..\Private\ExpBar.cpp" />
+    <ClCompile Include="..\Private\NineSlice.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />
     <ClCompile Include="..\Private\FadeBox.cpp" />
     <ClCompile Include="..\Private\Goat.cpp" />
@@ -422,6 +427,9 @@
     <ClCompile Include="..\Private\ModelTest.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\Private\Environment_Object.cpp" />
+    <ClCompile Include="..\Private\Vehicle.cpp" />
+    <ClCompile Include="..\Private\VehicleBook.cpp" />
+    <ClCompile Include="..\Private\VehicleDesc.cpp" />
     <ClCompile Include="..\Private\Void01.cpp" />
     <ClCompile Include="..\Private\Void05.cpp" />
     <ClCompile Include="..\Private\Void09.cpp" />

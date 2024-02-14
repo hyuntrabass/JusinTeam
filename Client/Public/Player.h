@@ -347,7 +347,7 @@ public:
 public:
 	HRESULT Add_Riding();
 	void Tick_Riding(_float fTimeDelta);
-	void Summon_Riding(Riding_Type Type);
+	void Summon_Riding(Riding_Desc Type);
 
 public:
 	void Init_State();
@@ -381,6 +381,8 @@ private:
 	PLAYER_STATE m_eState{ Idle };
 	PLAYER_STATE m_ePrevState{ Idle };
 	WEAPON_TYPE m_Current_Weapon{ WP_END };
+	Riding_Type m_Current_AirRiding{ Type_End };
+	Riding_Type m_Current_GroundRiding{ Type_End };
 	WEAPON_INDEX m_Weapon_CurrentIndex{ WP_INDEX_END };
 
 private:

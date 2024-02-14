@@ -29,6 +29,7 @@ HRESULT CCutScene_Point::Init(void* pArg)
 
 void CCutScene_Point::Tick(_float TimeDelta)
 {
+
 }
 
 void CCutScene_Point::Late_Tick(_float TimeDelta)

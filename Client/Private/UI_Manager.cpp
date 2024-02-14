@@ -6,14 +6,12 @@
 IMPLEMENT_SINGLETON(CUI_Manager)
 
 CUI_Manager::CUI_Manager()
+: m_pGameInstance(CGameInstance::Get_Instance())
 {
-
+	Safe_AddRef(m_pGameInstance);
 }
 HRESULT CUI_Manager::Init()
 {
-	m_pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(m_pGameInstance);
-
 	for (size_t i = 0; i < PART_TYPE::PT_END; i++)
 	{
 		m_CustomPart[i] = 0;

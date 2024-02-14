@@ -54,6 +54,10 @@ HRESULT CSkillBook::Init(void* pArg)
 
 	CUI_Manager::Get_Instance()->Set_SkillBook(this);
 
+	Unlock_Skill(0);
+	Unlock_Skill(1);
+	Unlock_Skill(2);
+	Unlock_Skill(3);
 	return S_OK;
 }
 
@@ -127,7 +131,7 @@ void CSkillBook::Tick(_float fTimeDelta)
 			{
 				return;
 			}
-			LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_GAMEPLAY, TEXT("Light_Main"));
+			LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
 
 			m_Light_Desc = *LightDesc;
 			LightDesc->eType = LIGHT_DESC::Directional;
@@ -173,7 +177,7 @@ void CSkillBook::Tick(_float fTimeDelta)
 		{
 			if (m_Light_Desc.eType != LIGHT_DESC::TYPE::End)
 			{
-				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_GAMEPLAY, TEXT("Light_Main"));
+				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
 				*LightDesc = m_Light_Desc;
 			}
 			CFadeBox::FADE_DESC Desc = {};
@@ -233,6 +237,7 @@ void CSkillBook::Tick(_float fTimeDelta)
 		{
 			if (PtInRect(&m_vecSkillDesc[m_eCurType][i]->Get_Rect(), ptMouse))
 			{
+				m_pSkill_Model->Change_AnimState((CSkill_Model::SKILLMODEL_ANIM)m_vecSkillDesc[m_eCurType][i]->Get_SkillInfo().iModelSkillIndex);
 				if (m_vecSkillDesc[m_eCurType][i]->Is_Selected())
 				{
 					m_vecSkillDesc[m_eCurType][i]->Select_Skill(false);
@@ -247,7 +252,6 @@ void CSkillBook::Tick(_float fTimeDelta)
 				{
 					m_isPicking = true;
 					m_iCurIndex = i;
-					m_pSkill_Model->Change_AnimState((CSkill_Model::SKILLMODEL_ANIM)m_vecSkillDesc[m_eCurType][i]->Get_SkillInfo().iModelSkillIndex);
 				}
 
 				bSelect = true;

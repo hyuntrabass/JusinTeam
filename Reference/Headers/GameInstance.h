@@ -225,7 +225,8 @@ public: // Get_Set
 	const _float& Get_HellHeight() const;
 #ifdef _DEBUG
 	// 콘솔에 출력할 스트림을 가져옴.
-	ostringstream& Get_StringStream();
+	stringstream& Get_StringStream();
+	void Add_String_to_Stream(const string& strText);
 #endif
 
 	// 카메라의 near, far를 지정함. 이것도 카메라에서만 호출 할것.
@@ -242,16 +243,16 @@ public: // Get_Set
 	void Set_HellHeight(const _float& fHeight);
 
 	void Set_InputString(const wstring& strInput);
+	void Set_CompleteInputString(const wstring& strInput);
+	void Set_ComposingInputString(const wstring& strInput);
+	void Set_ComposingState(const _bool isComposing);
+	void Popback_InputString();
 
 	//void Set_CameraAttackZoom(_float fAttackZoom) { m_fCameraAttackZoom = fAttackZoom; }
 	//const _float& Get_CameraAttackZoom() { return m_fCameraAttackZoom; }
 	const _bool& IsSkipDebugRendering() const;
-	const wstring& Get_InputString() const;
-
-	//원명
-	_bool Get_TurnOnShadow() const {
-		return m_bTurnOnShadow;
-	}
+	const wstring& Get_InputString();
+	const wstring& Get_CompleteInputString() const;
 
 public:
 	void Level_ShutDown(_uint iCurrentLevel);
@@ -290,12 +291,14 @@ private:
 	_float m_fHellHeight{ -1000.f };
 	_bool m_bSkipDebugRender{ true };
 	wstring m_strInput{};
-
-	// 원명
-	_bool m_bTurnOnShadow{ false };
-
+	wstring m_strCompleteInput{};
+	wstring m_strComposingInput{};
+	_bool m_isComposing{};
+	_bool m_isPopInput{};
 #ifdef _DEBUG
-	ostringstream m_OutputStream{};
+	stringstream m_OutputStream{};
+	string m_strPrevStream{};
+	_uint m_iNumStreamLines{};
 #endif
 
 private:

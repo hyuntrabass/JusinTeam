@@ -33,38 +33,30 @@ HRESULT CCamera_Debug::Init(void* pArg)
 
 void CCamera_Debug::Tick(_float fTimeDelta)
 {
-	/*if (m_pGameInstance->Get_CameraModeIndex() != CM_DEBUG)
-	{
-		m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_pGameInstance->Get_CameraPos()));
-		m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()));
-		return;
-	}*/
 	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
 	fTimeDelta /= m_pGameInstance->Get_TimeRatio();
 
 #ifdef _DEBUG
 	_vector Pos = m_pTransformCom->Get_State(State::Pos);
 	_vector Look = m_pTransformCom->Get_State(State::Look);
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), COORD());
-	cout << "CamPos X :" << Pos.m128_f32[0] << endl;
-	cout << "CamPos Y :" << Pos.m128_f32[1] << endl;
-	cout << "CamPos Z :" << Pos.m128_f32[2] << endl;
-	cout << endl;
-	cout << "CamLook X :" << Look.m128_f32[0] << endl;
-	cout << "CamLook Y :" << Look.m128_f32[1] << endl;
-	cout << "CamLook Z :" << Look.m128_f32[2] << endl;
-	cout << endl;
-#endif // _DEBUG
+	m_pGameInstance->Get_StringStream() << "카메라 전환 : P" << endl;
+	m_pGameInstance->Get_StringStream() << "플레이어 소환 : O" << endl;
+	m_pGameInstance->Get_StringStream() << "슬로우 모드 : I" << endl;
+	m_pGameInstance->Get_StringStream() << "카메라 속도 초기화 : U" << endl;
+	m_pGameInstance->Get_StringStream() << "디버그 랜더 On/Off : F1" << endl;
+	m_pGameInstance->Get_StringStream() << endl;
+	m_pGameInstance->Get_StringStream() << "카메라 이동속도 :" << m_fSpeed << endl;
+	m_pGameInstance->Get_StringStream() << endl;
+	m_pGameInstance->Get_StringStream() << "카메라 위치 X :" << Pos.m128_f32[0] << endl;
+	m_pGameInstance->Get_StringStream() << "카메라 위치 Y :" << Pos.m128_f32[1] << endl;
+	m_pGameInstance->Get_StringStream() << "카메라 위치 Z :" << Pos.m128_f32[2] << endl;
+	m_pGameInstance->Get_StringStream() << endl;
+	m_pGameInstance->Get_StringStream() << "카메라 룩 X :" << Look.m128_f32[0] << endl;
+	m_pGameInstance->Get_StringStream() << "카메라 룩 Y :" << Look.m128_f32[1] << endl;
+	m_pGameInstance->Get_StringStream() << "카메라 룩 Z :" << Look.m128_f32[2] << endl;
+	m_pGameInstance->Get_StringStream() << endl;
 
-	if (m_pGameInstance->Key_Down(DIK_P))
-	{
-		m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
-		if (m_bTimeStop)
-		{
-			m_bTimeStop = false;
-			m_pGameInstance->Set_TimeRatio(m_fOriginTimeRatio);
-		}
-	}
+#endif // _DEBUG
 
 	if (m_pGameInstance->Key_Down(DIK_I))
 	{
@@ -78,6 +70,11 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 			m_bTimeStop = true;
 			m_fOriginTimeRatio = m_pGameInstance->Get_TimeRatio();
 		}
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_U))
+	{
+		m_fSpeed = { 10.f };
 	}
 
 	if (m_bTimeStop)
@@ -132,10 +129,6 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
 	{
 		m_fSpeed += fSpeedRatio;
-		if (m_fSpeed >= 10.f)
-		{
-			m_fSpeed = 10.f;
-		}
 	}
 	else if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
 	{
@@ -144,19 +137,6 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 		{
 			m_fSpeed = 0.7f;
 		}
-	}
-
-	if (m_pGameInstance->Key_Pressing(DIK_LSHIFT) || m_pGameInstance->Gamepad_Pressing(XINPUT_B))
-	{
-		m_pTransformCom->Set_Speed(m_fSpeed * 2.f);
-	}
-	else if (m_pGameInstance->Key_Pressing(DIK_LCONTROL) || m_pGameInstance->Gamepad_Pressing(XINPUT_A))
-	{
-		m_pTransformCom->Set_Speed(m_fSpeed * 0.2f);
-	}
-	else
-	{
-		m_pTransformCom->Set_Speed(m_fSpeed);
 	}
 
 	if (m_pGameInstance->Key_Pressing(DIK_W) || m_pGameInstance->Gamepad_LStick().y > 0.5f)

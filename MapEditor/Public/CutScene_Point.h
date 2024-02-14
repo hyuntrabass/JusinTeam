@@ -17,7 +17,6 @@ public:
 	virtual void Late_Tick(_float TimeDelta) override;
 	virtual HRESULT Render() override;
 	void Select(const _bool& isSelected);
-	void Set_Dead() { m_isDead = true; }
 
 private:
 	HRESULT Add_Components();

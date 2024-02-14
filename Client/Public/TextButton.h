@@ -17,6 +17,7 @@ public:
 		_vec2	vTextPosition;
 		wstring strText;
 		_vec4	vTextColor{ _vec4(1.f, 1.f, 1.f, 1.f) };
+		_vec4	vTextBorderColor{ _vec4(0.f, 0.f, 0.f, 1.f) };
 
 		wstring strTexture;
 
@@ -45,16 +46,17 @@ private:
 	HRESULT Bind_ShaderResources();
 
 private:
-	_float				m_fDuration{ 0.f };
+	_float	m_fDuration{ 0.f };
+	_float	m_fFontSize;
 
 	_vec2	m_vSize;
 	_vec2	m_vPosition;
-
-	_float	m_fFontSize;
 	_vec2	m_vTextPosition;
-	wstring m_strText;
-	_vec4	m_vTextColor;
 
+	_vec4	m_vTextColor;
+	_vec4	m_vTextBorderColor;
+
+	wstring m_strText;
 	wstring m_strTexture;
 
 	LEVEL_ID m_eLevel;

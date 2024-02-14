@@ -77,7 +77,13 @@ HRESULT CLevel_Village::Init()
 
 	if (FAILED(Ready_Village_Monster()))
 	{
-		MSG_BOX("Failed to Ready Monster");
+		MSG_BOX("Failed to Ready Village Monster");
+		return E_FAIL;
+	}
+
+	if (FAILED(Ready_Dungeon_Monster()))
+	{
+		MSG_BOX("Failed to Ready Dungeon Monster");
 		return E_FAIL;
 	}
 
@@ -155,15 +161,10 @@ HRESULT CLevel_Village::Ready_Camera()
 
 HRESULT CLevel_Village::Ready_Light()
 {
-	LIGHT_DESC LightDesc{};
+	LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+	*Light = g_Light_Village;
 
-	LightDesc.eType = LIGHT_DESC::Directional;
-	LightDesc.vDirection = _float4(-1.f, -2.f, -1.f, 0.f);
-	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
-	LightDesc.vSpecular = _vec4(0.5f);
-
-	return m_pGameInstance->Add_Light(LEVEL_VILLAGE, TEXT("Light_Main"), LightDesc);
+	return S_OK;
 }
 
 //HRESULT CLevel_Village::Ready_Player()
@@ -361,6 +362,9 @@ HRESULT CLevel_Village::Ready_Environment()
 			return E_FAIL;
 		}
 	}
+
+	CTrigger_Manager::Get_Instance()->Set_SkyTextureIndex(12);
+
 	return S_OK;
 }
 
@@ -489,18 +493,87 @@ HRESULT CLevel_Village::Ready_Village_Monster()
 		}
 	}
 
-	//for (size_t i = 0; i < 2; i++)
-	//{
-	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void09"), TEXT("Prototype_GameObject_Void09"))))
-	//	{
-	//		return E_FAIL;
-	//	}
-	//}
+	return S_OK;
+}
 
-	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
-	//{
-	//	return E_FAIL;
-	//}
+HRESULT CLevel_Village::Ready_Dungeon_Monster()
+{
+	MonsterInfo Info{};
+	const TCHAR* pGetPath = L"../Bin/Data/Dungeon_MonsterData.dat";
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MSG_BOX("../Bin/Data/Dungeon_MonsterData.dat 몬스터 불러오기 실패.");
+		return E_FAIL;
+	}
+
+	_uint MonsterListSize;
+	inFile.read(reinterpret_cast<char*>(&MonsterListSize), sizeof(_uint));
+
+	for (_uint i = 0; i < MonsterListSize; ++i)
+	{
+		_ulong MonsterPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&MonsterPrototypeSize), sizeof(_ulong));
+
+		wstring MonsterPrototype;
+		MonsterPrototype.resize(MonsterPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&MonsterPrototype[0]), MonsterPrototypeSize * sizeof(wchar_t));
+
+		_mat MonsterWorldMat;
+		inFile.read(reinterpret_cast<char*>(&MonsterWorldMat), sizeof(_mat));
+
+		Info.strMonsterPrototype = MonsterPrototype;
+		Info.MonsterWorldMat = MonsterWorldMat;
+
+		if (Info.strMonsterPrototype == TEXT("Prototype_Model_TrilobiteA"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_TrilobiteA"), TEXT("Prototype_GameObject_TrilobiteA"), &Info)))
+			{
+				MSG_BOX("TrilobiteA 생성 실패");
+				return E_FAIL;
+			}
+
+		}
+		else if (Info.strMonsterPrototype == TEXT("Prototype_Model_Nastron03"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Nastron03"), TEXT("Prototype_GameObject_Nastron03"), &Info)))
+			{
+				MSG_BOX("Nastron03 생성 실패");
+				return E_FAIL;
+			}
+
+		}
+		else if (Info.strMonsterPrototype == TEXT("Prototype_Model_Imp"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Imp"), TEXT("Prototype_GameObject_Imp"), &Info)))
+			{
+				MSG_BOX("Imp 생성 실패");
+				return E_FAIL;
+			}
+
+		}
+		else if (Info.strMonsterPrototype == TEXT("Prototype_Model_Nastron07"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Nastron07"), TEXT("Prototype_GameObject_Nastron07"), &Info)))
+			{
+				MSG_BOX("Nastron07 생성 실패");
+				return E_FAIL;
+			}
+
+		}
+		else if (Info.strMonsterPrototype == TEXT("Prototype_Model_Void23"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void23"), TEXT("Prototype_GameObject_Void23"), &Info)))
+			{
+				MSG_BOX("Void23 생성 실패");
+				return E_FAIL;
+			}
+
+		}
+
+	}
 
 	return S_OK;
 }

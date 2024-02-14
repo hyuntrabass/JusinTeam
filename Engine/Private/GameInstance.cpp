@@ -111,7 +111,8 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 	}
 
 	m_pCascade_Manager = CCascade_Manager::Create(*ppDevice, *ppContext);
-	if (!m_pCascade_Manager) {
+	if (!m_pCascade_Manager)
+	{
 		return E_FAIL;
 	}
 
@@ -196,7 +197,7 @@ void CGameInstance::Clear(_uint iLevelIndex)
 
 	m_pObject_Manager->Clear(iLevelIndex);
 	m_pComponent_Manager->Clear(iLevelIndex);
-	if(m_Function_Clear_FX)
+	if (m_Function_Clear_FX)
 		m_Function_Clear_FX(iLevelIndex);
 }
 
@@ -806,14 +807,14 @@ _bool CGameInstance::IsIn_Fov_Local(_vec4 vPos, _float fRange)
 	return m_pFrustum->IsIn_Fov_Local(vPos, fRange);
 }
 
-HRESULT CGameInstance::Register_CollisionObject(CGameObject* pObject, CCollider* pHitCollider, _bool IsPlayer,  CCollider* AttRangeCollider,  CCollider* ParryingCollider)
+HRESULT CGameInstance::Register_CollisionObject(CGameObject* pObject, CCollider* pHitCollider, _bool IsPlayer, CCollider* AttRangeCollider, CCollider* ParryingCollider)
 {
 	if (!m_pCollision_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
 	}
 
-	return m_pCollision_Manager->Register_CollisionObject(pObject, pHitCollider, IsPlayer , AttRangeCollider, ParryingCollider);
+	return m_pCollision_Manager->Register_CollisionObject(pObject, pHitCollider, IsPlayer, AttRangeCollider, ParryingCollider);
 }
 
 void CGameInstance::Delete_CollisionObject(CGameObject* pObject, _bool IsPlayer)
@@ -951,7 +952,7 @@ _bool CGameInstance::Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastB
 		MSG_BOX("FATAL ERROR : m_pPhysX_Manager is NULL");
 	}
 
-	return m_pPhysX_Manager->Raycast(vOrigin, vDir, fDist, Buffer,Filter);
+	return m_pPhysX_Manager->Raycast(vOrigin, vDir, fDist, Buffer, Filter);
 }
 
 _bool CGameInstance::Raycast(_vec4 vOrigin, _vec4 vDir, _float fDist, PxRaycastBuffer& Buffer)
@@ -1250,7 +1251,8 @@ void CGameInstance::Set_StopKey(_ubyte iKey)
 
 CASCADE_DESC CGameInstance::Get_CascadeDesc()
 {
-	if (not m_pCascade_Manager) {
+	if (not m_pCascade_Manager)
+	{
 		MSG_BOX("FATAL ERROR : m_pCascade_Manager is NULL");
 		return CASCADE_DESC();
 	}
@@ -1289,15 +1291,22 @@ const _float& CGameInstance::Get_HellHeight() const
 }
 
 #ifdef _DEBUG
-ostringstream& CGameInstance::Get_StringStream()
+stringstream& CGameInstance::Get_StringStream()
 {
+	m_iNumStreamLines++;
 	return m_OutputStream;
+}
+
+void CGameInstance::Add_String_to_Stream(const string& strText)
+{
+	m_OutputStream << strText << endl;
+	m_iNumStreamLines++;
 }
 #endif
 
 _bool CGameInstance::Get_IsPlayingSound(_uint iChannel)
 {
-	if(!m_pSound_Manager)
+	if (!m_pSound_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
 	}
@@ -1380,14 +1389,57 @@ void CGameInstance::Set_InputString(const wstring& strInput)
 	m_strInput = strInput;
 }
 
+void CGameInstance::Set_CompleteInputString(const wstring& strInput)
+{
+	m_strCompleteInput = strInput;
+}
+
+void CGameInstance::Set_ComposingInputString(const wstring& strInput)
+{
+	m_strComposingInput = strInput;
+}
+
+void CGameInstance::Set_ComposingState(const _bool isComposing)
+{
+	m_isComposing = isComposing;
+
+	if (not m_strComposingInput.empty())
+	{
+		m_isPopInput = false;
+	}
+}
+
+void CGameInstance::Popback_InputString()
+{
+	if (m_isPopInput and not m_strCompleteInput.empty())
+	{
+		m_strCompleteInput.pop_back();
+	}
+
+	if (not m_isComposing)
+	{
+		m_isPopInput = true;
+	}
+	else
+	{
+		m_isPopInput = false;
+	}
+}
+
 const _bool& CGameInstance::IsSkipDebugRendering() const
 {
 	return m_bSkipDebugRender;
 }
 
-const wstring& CGameInstance::Get_InputString() const
+const wstring& CGameInstance::Get_InputString()
 {
+	m_strInput = m_strCompleteInput + m_strComposingInput;
 	return m_strInput;
+}
+
+const wstring& CGameInstance::Get_CompleteInputString() const
+{
+	return m_strCompleteInput;
 }
 
 void CGameInstance::Level_ShutDown(_uint iCurrentLevel)
@@ -1415,38 +1467,29 @@ _bool CGameInstance::Is_Level_ShutDown(_uint iCurrentLevel)
 #ifdef _DEBUG
 void CGameInstance::Print_StringStream()
 {
-	//HANDLE hBuffer[0] = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
-	//									   0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL); // 버퍼 생성
-	//SetConsoleScreenBufferSize(hBuffer[0], size);
-	//SetConsoleWindowInfo(hBuffer[0], TRUE, &rect);
-
-	//// 두번째 버퍼
-	//hBuffer[1] = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
-	//									   0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL); // 버퍼 생성
-	//SetConsoleScreenBufferSize(hBuffer[1], size);
-	//SetConsoleWindowInfo(hBuffer[1], TRUE, &rect);
-
-	//cursor.dwSize = 1;
-	//cursor.bVisible = false;
-	//SetConsoleCursorInfo(hBuffer[0], &cursor);
-	//SetConsoleCursorInfo(hBuffer[1], &cursor);
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	COORD cursorPos = { 0, 0 };
-	string blank(50, ' ');
-
-	for (int i = 0; i < 20; i++)
+	if (m_strPrevStream == m_OutputStream.str())
 	{
-		//SetConsoleCursorPosition(hConsole, cursorPos);
-		//cout << blank << endl;
-		DWORD dw{};
-		FillConsoleOutputCharacter(hConsole, ' ', 40, cursorPos, &dw);
-		cursorPos.Y++;
+		m_OutputStream = {};
+		m_OutputStream.clear();
+		m_iNumStreamLines = {};
+		return;
 	}
 
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD cursorPos = { 0, 0 };
+
+	for (int i = 0; i < m_iNumStreamLines; i++)
+	{
+		DWORD dw{};
+		FillConsoleOutputCharacter(hConsole, ' ', 50, cursorPos, &dw);
+		cursorPos.Y++;
+	}
 	SetConsoleCursorPosition(hConsole, COORD());
-	cout << m_OutputStream.str() << flush;
+	m_strPrevStream = m_OutputStream.str();
+	cout << m_strPrevStream << flush;
 	m_OutputStream = {};
 	m_OutputStream.clear();
+	m_iNumStreamLines = {};
 }
 #endif
 
