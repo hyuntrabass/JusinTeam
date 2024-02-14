@@ -297,6 +297,11 @@ private:
 	_bool m_bSkipDebugRender{ true };
 	wstring m_strInput{};
 
+	wstring m_strCompleteInput{};
+	wstring m_strComposingInput{};
+	_bool m_isComposing{ false };
+	_bool m_isPopInput{ false };
+
 	// ¿ø¸í
 	_bool m_bTurnOnShadow{ false };
 
