@@ -231,7 +231,7 @@ HRESULT CLoader::Load_Editor()
 			}
 		}
 	}
-	/*strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Object/Dungeon/Mesh/";
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Object/Dungeon/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -245,7 +245,7 @@ HRESULT CLoader::Load_Editor()
 				return E_FAIL;
 			}
 		}
-	}*/
+	}
 
 	Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Environment/Tree/Mesh/";

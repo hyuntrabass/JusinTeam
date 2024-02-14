@@ -11,7 +11,7 @@ CTorch_Object::CTorch_Object(const CTorch_Object& rhs)
 	: CObjects(rhs)
 	,m_Info(rhs.m_Info)
 {
-	m_isInstancing = true;
+	m_isInstancing = false;
 }
 
 
@@ -43,8 +43,6 @@ HRESULT CTorch_Object::Init(void* pArg)
 	m_pTransformCom->Set_State(State::Pos, vPos);
 
 	m_pModelCom->Apply_TransformToActor(m_Info.m_WorldMatrix);
-
-	
 
 	return S_OK;
 }
