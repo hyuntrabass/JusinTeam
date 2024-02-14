@@ -1,5 +1,6 @@
 #include "Sky.h"
 #include "Camera_Manager.h"
+#include "Trigger_Manager.h"
 
 CSky::CSky(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -32,21 +33,39 @@ void CSky::Tick(_float fTimeDelta)
 	{
 		return;
 	}
-	
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
-	{
-		m_iTextureIndex++;
 
+	if (CCamera_Manager::Get_Instance()->Get_CameraModeIndex() == CM_DEBUG)
+	{
+		if (m_pGameInstance->Key_Down(DIK_NUMPAD3))
+		{
+			m_iTextureIndex++;
+			if (m_iTextureIndex >= 19)
+			{
+				m_iTextureIndex = 18;
+			}
+		}
+		if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
+		{
+			if (m_iTextureIndex > 0)
+			{
+				m_iTextureIndex--;
+			}
+		}
+
+	#ifdef _DEBUG
+		m_pGameInstance->Get_StringStream() << "= 스카이 텍스쳐 ========================" << endl;
+		m_pGameInstance->Get_StringStream() << "다음 텍스쳐 : NUM_3" << endl;
+		m_pGameInstance->Get_StringStream() << "이전 텍스쳐 : NUM_2" << endl;
+		m_pGameInstance->Get_StringStream() << "현재 텍스쳐 : " << m_iTextureIndex << "번" << endl;
+		m_pGameInstance->Get_StringStream() << endl;
+	#endif // _DEBUG
+
+
+		return;
 	}
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD3))
-	{
-		m_iTextureIndex--;
 
-	}
-
-	switch (m_pGameInstance->Get_CurrentLevelIndex())
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY)
 	{
-	case LEVEL_GAMEPLAY:
 		m_fLightning_Time += fTimeDelta;
 		if (m_fLightning_Time > 8.f && m_fLightning_Time < 8.1f)
 		{
@@ -81,12 +100,10 @@ void CSky::Tick(_float fTimeDelta)
 			m_fLightning_Time = 0.f;
 			m_iTextureIndex = 10;
 		}
-		break;
-	case LEVEL_VILLAGE:
-		m_iTextureIndex = 12;
-		break;
-	default:
-		break;
+	}
+	else
+	{
+		m_iTextureIndex = CTrigger_Manager::Get_Instance()->Get_SkyTextureIndex();
 	}
 }
 
@@ -96,7 +113,7 @@ void CSky::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
-	
+
 	_vec4 vPos = m_pGameInstance->Get_CameraPos() - _vec4(0.f, 15.f, 0.f, 0.f);
 
 	m_pTransformCom->Set_State(State::Pos, vPos);

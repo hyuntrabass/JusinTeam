@@ -25,7 +25,10 @@ HRESULT CLevel_GamePlay::Init()
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_GAMEPLAY);
 	m_pGameInstance->StopAll();
 
-	CUI_Manager::Get_Instance()->Init();
+	if (FAILED(CUI_Manager::Get_Instance()->Init()))
+	{
+		return E_FAIL;
+	}
 
 
 	if (FAILED(Ready_Player()))
@@ -302,16 +305,10 @@ HRESULT CLevel_GamePlay::Ready_Camera()
 
 HRESULT CLevel_GamePlay::Ready_Light()
 {
-	LIGHT_DESC LightDesc{};
+	LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+	*Light = g_Light_Tutorial;
 
-	LightDesc.eType = LIGHT_DESC::Directional;
-	LightDesc.vDirection = _float4(-1.f, -2.f, -1.f, 0.f);
-	LightDesc.vDiffuse = _vec4(0.2f, 0.2f, 0.2f, 1.f);
-	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
-	LightDesc.vSpecular = _vec4(1.f);
-
-
-	return m_pGameInstance->Add_Light(LEVEL_GAMEPLAY, TEXT("Light_Main"), LightDesc);
+	return S_OK;
 }
 
 HRESULT CLevel_GamePlay::Ready_Player()
@@ -480,7 +477,7 @@ HRESULT CLevel_GamePlay::Ready_Object()
 		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
 		ObjectInfo.eObjectType = Object_Etc;
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Prologue_Object"), TEXT("Prototype_GameObject_Prologue_Object"), &ObjectInfo)))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Prologue_Object"), TEXT("Prototype_GameObject_Prologue_Object"), &ObjectInfo)))
 		{
 			MSG_BOX("오브젝트 생성 실패");
 			return E_FAIL;

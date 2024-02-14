@@ -1,4 +1,5 @@
 1. Static Only   2. Anim Only   3. All
+<<<<<<< HEAD
 2
 Animation Models : Start Converting...
 1. Normally Anim Model	2. For VTF Model 3. Part Model
@@ -42,4 +43,19 @@ Mon_Skjaldmaer.ao|Walk_A
 Animation Models : Convert Success!
 
 1 Animation Models
+=======
+1
+Static Models : Start Converting...
+Converting... Stand_Torch1.fbx
+Read File Succssefully
+Converting... Stand_Torch2.fbx
+Read File Succssefully
+Converting... Torch.fbx
+Read File Succssefully
+Converting... Wall_Torch.fbx
+Read File Succssefully
+Static Models : Convert Success!
+
+4 Static Models
+>>>>>>> ab903a7def4ff391cfebf09241b11491f9427499
 are Successfully Converted as hyuntramesh!!

@@ -29,6 +29,7 @@ private:
 	CRenderer* m_pRenderer{ nullptr };
 	_float m_fTimeAcc{};
 	_uint m_iFrameCount{};
+	_uint m_iFPS{};
 
 private:
 	HRESULT Open_Level(LEVEL_ID eLevelID);

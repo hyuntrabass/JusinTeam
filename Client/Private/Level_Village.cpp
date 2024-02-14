@@ -142,6 +142,12 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	{
 		DestroyWindow(g_hWnd);
 	}
+
+	// Test
+	if (m_pGameInstance->Key_Down(DIK_RSHIFT))
+	{
+		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"));
+	}
 }
 
 HRESULT CLevel_Village::Render()
@@ -161,15 +167,10 @@ HRESULT CLevel_Village::Ready_Camera()
 
 HRESULT CLevel_Village::Ready_Light()
 {
-	LIGHT_DESC LightDesc{};
+	LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+	*Light = g_Light_Village;
 
-	LightDesc.eType = LIGHT_DESC::Directional;
-	LightDesc.vDirection = _float4(-1.f, -2.f, -1.f, 0.f);
-	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
-	LightDesc.vSpecular = _vec4(0.5f);
-
-	return m_pGameInstance->Add_Light(LEVEL_VILLAGE, TEXT("Light_Main"), LightDesc);
+	return S_OK;
 }
 
 //HRESULT CLevel_Village::Ready_Player()
@@ -287,43 +288,42 @@ HRESULT CLevel_Village::Ready_Dungeon()
 
 HRESULT CLevel_Village::Ready_Object()
 {
+	const TCHAR* pGetPath = TEXT("../Bin/Data/Dungeon_Torch.dat");
 
-	//const TCHAR* pGetPath = TEXT("../Bin/Data/Village_ObjectData.dat");
+	std::ifstream inFile(pGetPath, std::ios::binary);
 
-	//std::ifstream inFile(pGetPath, std::ios::binary);
+	if (!inFile.is_open())
+	{
+		MSG_BOX("오브젝트 파일을 찾지 못했습니다.");
+		return E_FAIL;
+	}
 
-	//if (!inFile.is_open())
-	//{
-	//	MSG_BOX("오브젝트 파일을 찾지 못했습니다.");
-	//	return E_FAIL;
-	//}
-
-	//_uint ObjectListSize;
-	//inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
+	_uint ObjectListSize;
+	inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
 
 
-	//for (_uint i = 0; i < ObjectListSize; ++i)
-	//{
-	//	_ulong ObjectPrototypeSize;
-	//	inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
+	for (_uint i = 0; i < ObjectListSize; ++i)
+	{
+		_ulong ObjectPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
 
-	//	wstring ObjectPrototype;
-	//	ObjectPrototype.resize(ObjectPrototypeSize);
-	//	inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
+		wstring ObjectPrototype;
+		ObjectPrototype.resize(ObjectPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
 
-	//	_mat ObjectWorldMat;
-	//	inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
+		_mat ObjectWorldMat;
+		inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
 
-	//	ObjectInfo ObjectInfo{};
-	//	ObjectInfo.strPrototypeTag = ObjectPrototype;
-	//	ObjectInfo.m_WorldMatrix = ObjectWorldMat;
-	//	ObjectInfo.eObjectType = Object_Building;
-	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Village_Etc_Object"), &ObjectInfo)))
-	//	{
-	//		MSG_BOX("오브젝트 불러오기 실패");
-	//		return E_FAIL;
-	//	}
-	//}
+		ObjectInfo ObjectInfo{};
+		ObjectInfo.strPrototypeTag = ObjectPrototype;
+		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
+		ObjectInfo.eObjectType = Object_Building;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Torch_Object"), &ObjectInfo)))
+		{
+			MSG_BOX("오브젝트 불러오기 실패");
+			return E_FAIL;
+		}
+	}
 	return S_OK;
 }
 
@@ -367,6 +367,9 @@ HRESULT CLevel_Village::Ready_Environment()
 			return E_FAIL;
 		}
 	}
+
+	CTrigger_Manager::Get_Instance()->Set_SkyTextureIndex(12);
+
 	return S_OK;
 }
 
@@ -567,11 +570,11 @@ HRESULT CLevel_Village::Ready_Dungeon_Monster()
 		}
 		else if (Info.strMonsterPrototype == TEXT("Prototype_Model_Void23"))
 		{
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void23"), TEXT("Prototype_GameObject_Void23"), &Info)))
-			{
-				MSG_BOX("Void23 생성 실패");
-				return E_FAIL;
-			}
+			//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void23"), TEXT("Prototype_GameObject_Void23"), &Info)))
+			//{
+			//	MSG_BOX("Void23 생성 실패");
+			//	return E_FAIL;
+			//}
 
 		}
 

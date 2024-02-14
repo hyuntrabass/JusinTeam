@@ -13,6 +13,16 @@ enum Effect_Type
 	ET_END
 };
 
+struct OldParticleDesc
+{
+	SimpleMath::Vector3 vMinPos{}, vMaxPos;
+	SimpleMath::Vector2 vSpeedRange{};
+	SimpleMath::Vector2 vLifeTime{};
+	SimpleMath::Vector2 vScaleRange{};
+	SimpleMath::Vector3 vMinDir{}, vMaxDir{};
+	bool isLoop{};
+};
+
 struct OldEffectInfo
 {
 	unsigned int iType{};

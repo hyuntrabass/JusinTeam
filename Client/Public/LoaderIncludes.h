@@ -1,7 +1,6 @@
 #pragma once
 
 #include "NineSlice.h"
-#include "VehicleDesc.h"
 #include "Vehicle.h"
 #include "VehicleBook.h"
 #include "Symbol.h"
@@ -118,6 +117,8 @@
 #include "Tentacle.h"
 #include "XBeam.h"
 #include "Human_Boss.h"
+#include "Dragon_Boss.h"
+
 // Pet
 #include "Pet_Cat.h"
 #include "Pet_Dragon.h"
@@ -130,6 +131,7 @@
 // Object
 #include "Etc_Object.h"
 #include "Environment_Object.h"
+#include "Torch_Object.h"
 
 // Trigger
 #include "Trigger.h"

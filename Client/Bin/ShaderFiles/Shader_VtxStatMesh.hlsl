@@ -20,15 +20,14 @@ bool g_HasMaskTex;
 bool g_bSelected = false;
 
 
-
 vector g_vLightDiffuse;
 
 float2 g_vUVTransform;
 
 // ¿ø¸í
 float4 g_vClipPlane;
-
 float4 g_RimColor;
+vector g_OldWorldMatrix, g_OldViewMatrix;
 
 
 struct VS_IN
@@ -48,6 +47,7 @@ struct VS_OUT
     vector vProjPos : Texcoord2;
     float3 vTangent : Tangent;
     float3 vBinormal : Binormal;
+    float2 vDir : DIRECTION;
 };
 
 VS_OUT VS_Main(VS_IN Input)
@@ -58,14 +58,41 @@ VS_OUT VS_Main(VS_IN Input)
     
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
+    
+    //matrix matOldWV, matOldWVP;
+    
+    //matOldWV = mul(g_OldWorldMatrix, g_OldViewMatrix);
+    //matOldWVP = mul(matOldWV, g_ProjMatrix);
+    
+    vector vNewPos = mul(vector(Input.vPos, 1.f), matWVP);
+    //vector vOldPos = mul(vector(Input.vPos, 1.f), matOldWVP);
+    
+    //vector vCalNor = mul(vector(Input.vNor, 0.f), matWV);
+    
+    //vector vDir = vNewPos - vOldPos;
+    
+    //float a = dot(normalize(vDir), normalize(vCalNor));
+    
+    //vector vPos;
+    //if(a < 0.f)
+    //    vPos = vOldPos;
+    //else
+    //    vPos = vNewPos;
+    
+    //float2 velocity = (vNewPos.xy / vNewPos.w) - (vOldPos.xy / vOldPos.w);
+    
+    //vector vCalDir;
+    //vCalDir.xy = velocity * 0.5f;
+    //vCalDir.y *= -1.f;
 	
-    Output.vPos = mul(vector(Input.vPos, 1.f), matWVP);
+    Output.vPos = vNewPos;
     Output.vNor = normalize(mul(vector(Input.vNor, 0.f), g_WorldMatrix));
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
     Output.vProjPos = Output.vPos;
     Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), g_WorldMatrix)).xyz;
     Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
+    Output.vDir = 0.f;
     
     return Output;
 }
@@ -106,6 +133,7 @@ struct VS_WATER_OUT
     vector vProjPos : Texcoord2;
     float3 vTangent : Tangent;
     float3 vBinormal : Binormal;
+    float2 vDir : DIRECTION;
     
     float fClip : SV_ClipDistance0;
 };
@@ -194,6 +222,8 @@ struct PS_IN
     vector vProjPos : Texcoord2;
     float3 vTangent : Tangent;
     float3 vBinormal : Binormal;
+    float2 vDir : DIRECTION;
+    
 };
 
 struct PS_OUT_DEFERRED
@@ -201,9 +231,7 @@ struct PS_OUT_DEFERRED
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
-    vector vMask : SV_Target3;
-    vector vVelocity : SV_Target4;
-    vector vRimMask : SV_Target5;
+    vector vRimMask : SV_Target3;
 };
 
 struct PS_OUT
@@ -240,9 +268,8 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     }
     
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
-    Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vMask = vMask;
+    Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, Input.vDir.x, Input.vDir.y);
     
     return Output;
 }
@@ -291,9 +318,8 @@ PS_OUT_DEFERRED PS_Main_AlphaTest(PS_IN Input)
     }
     
     Output.vDiffuse = vMtrlDiffuse;
-    Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vMask = vMask;
+    Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, Input.vDir.x, Input.vDir.y);
     
     return Output;
 }
@@ -446,6 +472,7 @@ struct PS_WATER_IN
     vector vProjPos : Texcoord2;
     float3 vTangent : Tangent;
     float3 vBinormal : Binormal;
+    float2 vDir : DIRECTION;
     
     float fClip : SV_ClipDistance0;
 };
@@ -455,7 +482,6 @@ struct PS_WATER_OUT
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
-    vector vMask : SV_Target3;
 };
 
 PS_WATER_OUT PS_Main_Water(PS_WATER_IN Input)
@@ -489,9 +515,8 @@ PS_WATER_OUT PS_Main_Water(PS_WATER_IN Input)
     }
     
     Output.vDiffuse = vMtrlDiffuse;
-    Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vMask = vMask;
+    Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, Input.vDir.x, Input.vDir.y);
     
     return Output;
 }
@@ -533,10 +558,8 @@ PS_OUT_DEFERRED PS_Main_Rim(PS_IN Input)
     vector vRimColor = g_RimColor * fRim;
     
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
-    Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vMask = vMask;
-    Output.vVelocity = 0.f;
+    Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, Input.vDir.x, Input.vDir.y);
     Output.vRimMask = vRimColor;
     
     return Output;
@@ -571,9 +594,8 @@ PS_OUT_DEFERRED PS_Main_WorldMap_Water(PS_IN Input)
     }
     
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
-    Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vMask = vMask;
+    Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, Input.vDir.x, Input.vDir.y);
     
     return Output;
 }
@@ -614,9 +636,8 @@ PS_OUT_DEFERRED PS_Main_WorldMap_Cloud(PS_IN Input)
     Output.vDiffuse.b -= (vCloud.r * 0.5f);
     Output.vDiffuse.g -= (vCloud.r * 0.5f);
 
-    Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    Output.vMask = vMask;
+    Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, Input.vDir.x, Input.vDir.y);
     
     return Output;
 }

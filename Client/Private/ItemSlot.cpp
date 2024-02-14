@@ -184,6 +184,24 @@ const wstring CItemSlot::Get_ItemName()
 	return m_pItem->Get_ItemDesc().strName;
 }
 
+const ITEM_USAGE& CItemSlot::Get_ItemUsage()
+{
+	if (m_pItem == nullptr)
+	{
+		return USAGE_END;
+	}
+	return m_pItem->Get_ItemDesc().eItemUsage;
+}
+
+const CItem* CItemSlot::Get_ItemObject()
+{
+	if (m_pItem == nullptr)
+	{
+		return nullptr;
+	}
+
+	return m_pItem;
+}
 HRESULT CItemSlot::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))

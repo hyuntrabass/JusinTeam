@@ -103,7 +103,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			fSpeedRatio = 30.f;
 		}
 
-		if (m_pGameInstance->Key_Pressing(DIK_LALT))
+		if (m_pGameInstance->Key_Pressing(DIK_LCONTROL))
 		{
 			if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
 			{

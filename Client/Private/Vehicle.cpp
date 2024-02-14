@@ -65,7 +65,7 @@ HRESULT CVehicle::Init(void* pArg)
 	TextButton.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	TextButton.strText = TEXT("");
 	TextButton.vSize = _vec2(513.f, 513.f);
-	TextButton.vPosition = _vec2(TextButton.vSize.x / 2.f - 10.f, TextButton.vSize.x / 2.f + 20.f);
+	TextButton.vPosition = _vec2(TextButton.vSize.x / 2.f - 10.f, TextButton.vSize.x / 2.f + 50.f);
 	TextButton.vTextPosition = _vec2(0.f, 0.f);
 	TextButton.strTexture = m_tVehicleInfo.strDescName;
 	m_pDetail = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
@@ -75,15 +75,44 @@ HRESULT CVehicle::Init(void* pArg)
 		return E_FAIL;
 	}
 	m_pDetail->Set_Pass(VTPass_UI_Alpha);
+	
+
+	TextButton.fDepth = m_fDepth - 0.03f;
+	TextButton.vSize = _vec2(20.f, 20.f);
+	TextButton.vPosition = _vec2(m_fX, m_fX);
+
+	if (m_tVehicleInfo.eType == VC_GROUND)
+	{
+		TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_EquipButtonC");
+		m_pEquipButton = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+
+		if (not m_pEquipButton)
+		{
+			return E_FAIL;
+		}
+	}
+	else
+	{
+		TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_EquipButtonV");
+		m_pEquipButton = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+
+		if (not m_pEquipButton)
+		{
+			return E_FAIL;
+		}
+	}
+
+	m_pEquipButton->Set_Pass(VTPass_UI);
+
 
 	CNineSlice::SLICE_DESC SliceDesc{};
-	TextButton.eLevelID = LEVEL_STATIC;
-	TextButton.fDepth = m_fDepth - 0.02f;
-	TextButton.strText = TEXT("");
-	TextButton.vPosition = _vec2(m_fX, m_fY);
-	TextButton.vSize = _vec2(m_fSizeX, m_fSizeY);
-	TextButton.vTextPosition = _vec2(0.f, 0.f);
-	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Border");
+	SliceDesc.eLevelID = LEVEL_STATIC;
+	SliceDesc.fDepth = m_fDepth - 0.02f;
+	SliceDesc.strText = TEXT("");
+	SliceDesc.vPosition = _vec2(m_fX, m_fY);
+	SliceDesc.vSize = _vec2(m_fSizeX, m_fSizeY);
+	SliceDesc.vTextPosition = _vec2(0.f, 0.f);
+	SliceDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Border");
 	m_pEquip = (CNineSlice*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_NineSlice"), &SliceDesc);
 	if (not m_pEquip)
 	{
@@ -133,10 +162,16 @@ void CVehicle::Tick(_float fTimeDelta)
 
 		m_pDetail->Tick(fTimeDelta);
 		m_pSelected->Tick(fTimeDelta);
+		m_pRiding->Tick(fTimeDelta);
 	}
 	if (m_isEquip)
 	{
+
+		m_pEquipButton->Set_Position(_vec2(m_fX - 120.f, m_fY - 15.f));
+		m_pEquipButton->Tick(fTimeDelta);
+
 		m_pEquip->Set_Position(_vec2(m_fX, m_fY));
+		m_pEquip->Set_Size(m_fSizeX - 20.f, m_fSizeY - 16.f);
 		m_pEquip->Tick(fTimeDelta);
 	}
 
@@ -149,10 +184,12 @@ void CVehicle::Late_Tick(_float fTimeDelta)
 	{
 		m_pDetail->Late_Tick(fTimeDelta);
 		m_pSelected->Late_Tick(fTimeDelta);
+		m_pRiding->Late_Tick(fTimeDelta);
 	}
 	if (m_isEquip)
 	{
 		m_pEquip->Late_Tick(fTimeDelta);
+		m_pEquipButton->Late_Tick(fTimeDelta);
 	}
 
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
@@ -205,41 +242,63 @@ void CVehicle::Set_SelectVehicle(_bool isSelect)
 }
 HRESULT CVehicle::Init_Info()
 {
-	enum Riding_Type
-	{
-		Bird,
-		Horse,
-		Tiger,
-		Nihilir,
-		Type_End
-	};
+
+	Riding_Desc riding_desc{};
+
+
 	switch (m_eRidingType)
 	{
 	case Bird:
 		m_tVehicleInfo.eRidingType = m_eRidingType;
 		m_tVehicleInfo.eType = VC_FLY;
-		m_tVehicleInfo.strDescName = TEXT("Prototype_Component_Texture_UI_Gameplay_bowskill1");
+		m_tVehicleInfo.strDescName = TEXT("Prototype_Component_Texture_UI_Gameplay_DescBird");
 		m_strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Bird");
+		riding_desc.Type = Bird;
+		break;
+	case Wyvern:
+		m_tVehicleInfo.eRidingType = m_eRidingType;
+		m_tVehicleInfo.eType = VC_FLY;
+		m_tVehicleInfo.strDescName = TEXT("Prototype_Component_Texture_UI_Gameplay_DescWyvern");
+		m_strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Wyvern");
+		riding_desc.Type = Wyvern;
+		break;
+	case Falar:
+		m_tVehicleInfo.eRidingType = m_eRidingType;
+		m_tVehicleInfo.eType = VC_FLY;
+		m_tVehicleInfo.strDescName = TEXT("Prototype_Component_Texture_UI_Gameplay_DescFalar");
+		m_strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Falar");
+		riding_desc.Type = Falar;
 		break;
 	case Horse:
 		m_tVehicleInfo.eRidingType = m_eRidingType;
 		m_tVehicleInfo.eType = VC_GROUND;
-		m_tVehicleInfo.strDescName = TEXT("Prototype_Component_Texture_UI_Gameplay_bowskill1");
+		m_tVehicleInfo.strDescName = TEXT("Prototype_Component_Texture_UI_Gameplay_DescHorse");
 		m_strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Horse");
+		riding_desc.Type = Horse;
 		break;
 	case Tiger:
 		m_tVehicleInfo.eRidingType = m_eRidingType;
 		m_tVehicleInfo.eType = VC_GROUND;
-		m_tVehicleInfo.strDescName = TEXT("Prototype_Component_Texture_UI_Gameplay_bowskill1");
+		m_tVehicleInfo.strDescName = TEXT("Prototype_Component_Texture_UI_Gameplay_DescTiger");
 		m_strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Tiger");
+		riding_desc.Type = Tiger;
 		break;
 	case Nihilir:
 		m_tVehicleInfo.eRidingType = m_eRidingType;
-		m_tVehicleInfo.eType = VC_FLY;
-		m_tVehicleInfo.strDescName = TEXT("Prototype_Component_Texture_UI_Gameplay_bowskill1");
-		m_strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Horse");
+		m_tVehicleInfo.eType = VC_GROUND;
+		m_tVehicleInfo.strDescName = TEXT("Prototype_Component_Texture_UI_Gameplay_DescNihilir");
+		m_strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Nihilir");
+		riding_desc.Type = Nihilir;
 		break;
 	}
+
+	riding_desc.iMode = 1;
+	m_pRiding = (CRiding*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Riding"), &riding_desc);
+	if (not m_pRiding)
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -319,9 +378,11 @@ CGameObject* CVehicle::Clone(void* pArg)
 void CVehicle::Free()
 {
 	__super::Free();
+	Safe_Release(m_pRiding);
 	Safe_Release(m_pEquip);
 	Safe_Release(m_pDetail);
 	Safe_Release(m_pSelected);
+	Safe_Release(m_pEquipButton);
 
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);

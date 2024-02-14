@@ -593,7 +593,7 @@ void CCamera_Main::ZOOM_Mode(_float fTimeDelta)
 
 void CCamera_Main::SkillBook_Mode(_float fTimeDelta)
 {
-	_vec4 vShopPos = _vec4(2.38035f, 202.068f, -2.18231f, 1.f);
+	_vec4 vShopPos = _vec4(2.38035f, 302.068f, -2.18231f, 1.f);
 
 	m_pTransformCom->Set_State(State::Pos, vShopPos);
 

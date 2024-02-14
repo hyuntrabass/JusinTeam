@@ -146,8 +146,17 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 		}
 	}
 
+	if (Key_Down(DIK_F5, InputChannel::Engine)) 
+	{
+		m_bTurnOnShadow = !m_bTurnOnShadow;
+	}
+
 	if (Is_Playing_Video())
 	{
+	#ifdef _DEBUG
+		Print_StringStream();
+	#endif // _DEBUG
+
 		return;
 	}
 
@@ -162,7 +171,8 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 
 	m_pFrustum->Tick();
 
-	m_pCascade_Manager->Update_Cascade();
+	if (true == m_bTurnOnShadow)
+		m_pCascade_Manager->Update_Cascade();
 
 	m_pObject_Manager->Release_DeadObjects();
 	m_pObject_Manager->Late_Tick(fTimeDelta);
@@ -175,6 +185,8 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	{
 		m_Function_LateTick_FX(fTimeDelta);
 	}
+
+	m_pLight_Manager->Tick(m_iLevelIndex, fTimeDelta);
 
 #ifdef _DEBUG
 	Print_StringStream();
@@ -527,14 +539,14 @@ HRESULT CGameInstance::Add_Light(_uint iLevelIndex, const wstring& strLightTag, 
 	return m_pLight_Manager->Add_Light(iLevelIndex, strLightTag, LightDesc);
 }
 
-HRESULT CGameInstance::Delete_Light(_uint iLevelIndex, const wstring& strLightTag)
+HRESULT CGameInstance::Delete_Light(_uint iLevelIndex, const wstring& strLightTag, _float fDimmerDuration)
 {
 	if (!m_pLight_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pLight_Manager is NULL");
 	}
 
-	return m_pLight_Manager->Delete_Light(iLevelIndex, strLightTag);
+	return m_pLight_Manager->Delete_Light(iLevelIndex, strLightTag, fDimmerDuration);
 }
 
 HRESULT CGameInstance::Render_Lights(_uint iLevelIndex, CShader* pShader, CVIBuffer_Rect* pVIBuffer)
@@ -1294,6 +1306,7 @@ stringstream& CGameInstance::Get_StringStream()
 {
 	return m_OutputStream;
 }
+
 void CGameInstance::Add_String_to_Stream(const string& strText)
 {
 	m_OutputStream << strText << endl;
@@ -1471,39 +1484,25 @@ void CGameInstance::Print_StringStream()
 	}
 
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	COORD cursorPos = { 0, 0 };
-	string blank(50, ' ');
+	COORD coordScreen = { 0, 0 };
+	DWORD cCharsWritten;
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	DWORD dwConSize;
 
-	for (int i = 0; i < 20; i++)
-	{
-		//SetConsoleCursorPosition(hConsole, cursorPos);
-		//cout << blank << endl;
-		DWORD dw{};
-		FillConsoleOutputCharacter(hConsole, ' ', 40, cursorPos, &dw);
-		cursorPos.Y++;
-	}
-	SetConsoleCursorPosition(hConsole, COORD());
+	GetConsoleScreenBufferInfo(hConsole, &csbi);
+	dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
+
+	FillConsoleOutputCharacter(hConsole, (TCHAR)' ', dwConSize, coordScreen, &cCharsWritten);
+
+	GetConsoleScreenBufferInfo(hConsole, &csbi);
+	FillConsoleOutputAttribute(hConsole, csbi.wAttributes, dwConSize, coordScreen, &cCharsWritten);
+
+	SetConsoleCursorPosition(hConsole, coordScreen);
+
 	m_strPrevStream = m_OutputStream.str();
 	cout << m_strPrevStream << flush;
 	m_OutputStream = {};
 	m_OutputStream.clear();
-
-	//HANDLE hBuffer[0] = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
-//									   0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL); // 버퍼 생성
-//SetConsoleScreenBufferSize(hBuffer[0], size);
-//SetConsoleWindowInfo(hBuffer[0], TRUE, &rect);
-
-//// 두번째 버퍼
-//hBuffer[1] = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
-//									   0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL); // 버퍼 생성
-//SetConsoleScreenBufferSize(hBuffer[1], size);
-//SetConsoleWindowInfo(hBuffer[1], TRUE, &rect);
-
-//cursor.dwSize = 1;
-//cursor.bVisible = false;
-//SetConsoleCursorInfo(hBuffer[0], &cursor);
-//SetConsoleCursorInfo(hBuffer[1], &cursor);
-
 }
 #endif
 

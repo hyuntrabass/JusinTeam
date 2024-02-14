@@ -42,7 +42,9 @@ void CNPC::Late_Tick(_float fTimeDelta)
 	{
 		m_pModelCom->Play_Animation(fTimeDelta);
 		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
-		m_pRendererCom->Add_RenderGroup(RG_Shadow, this);
+
+		if(true == m_pGameInstance->Get_TurnOnShadow())
+			m_pRendererCom->Add_RenderGroup(RG_Shadow, this);
 	}
 }
 
