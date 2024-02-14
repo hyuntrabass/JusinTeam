@@ -82,13 +82,11 @@ vector Get_WorldPos(float2 vTex)
     return vWorldPos;
 }
 
-void Get_Normal(float2 vTex, out vector vNormal, out float Spec)
+vector Get_Normal(vector vNormal_Spec)
 {
-    vector vNormal_Spec = g_Normal_Spec_Texture.Sample(PointSampler, vTex);
+    vector vNormal = vector(vNormal_Spec.xyz * 2.f - 1.f, 0.f);
     
-    vNormal = normalize(vector(vNormal_Spec.xyz * 2.f - 1.f, 0.f));
-    
-    Spec = vNormal_Spec.a;
+    return normalize(vNormal);
 }
 
 vector Get_ViewPos(float2 vTex)
@@ -194,10 +192,9 @@ PS_OUT_Light PS_Main_Directional(PS_IN Input)
 {
     PS_OUT_Light Output = (PS_OUT_Light) 0;
     
-    vector vNormal;
-    float Spec;
+    vector vNormal_Spec = g_Normal_Spec_Texture.Sample(PointSampler, Input.vTexcoord);
     
-    Get_Normal(Input.vTexcoord, vNormal, Spec);
+    vector vNormal = Get_Normal(vNormal_Spec);
     
     //Output.vShade = max(dot(normalize(g_vLightDir) * -1.f, vNormal), 0.f);
     //Output.vShade = g_vLightDiffuse * saturate(ceil(max(dot(normalize(g_vLightDir) * -1.f, vNormal), 0.f) * 2.f) / 2.f + g_vLightAmbient); // Ä«Å÷
@@ -209,7 +206,7 @@ PS_OUT_Light PS_Main_Directional(PS_IN Input)
     
     vector vLook = vWorldPos - g_vCamPosition;
     
-    Output.vSpecular = Spec * g_vLightSpecular * pow(saturate(dot(normalize(vLook) * -1.f, vReflect)), 30.f);
+    Output.vSpecular = vNormal_Spec.a * g_vLightSpecular * pow(saturate(dot(normalize(vLook) * -1.f, vReflect)), 30.f);
     
     //vector vRimMask = g_RimMaskTexture.Sample(LinearSampler, Input.vTexcoord);
     
@@ -226,10 +223,9 @@ PS_OUT_Light PS_Main_Point(PS_IN Input)
     
     vector vWorldPos = Get_WorldPos(Input.vTexcoord);
 
-    vector vNormal;
-    float Spec;
+    vector vNormal_Spec = g_Normal_Spec_Texture.Sample(PointSampler, Input.vTexcoord);
     
-    Get_Normal(Input.vTexcoord, vNormal, Spec);
+    vector vNormal = Get_Normal(vNormal_Spec);
     
     vector vLightDir = vWorldPos - g_vLightPos;
     float fDistance = length(vLightDir);
@@ -242,7 +238,7 @@ PS_OUT_Light PS_Main_Point(PS_IN Input)
     vector vReflect = normalize(reflect(normalize(vLightDir), vNormal));
     vector vLook = vWorldPos - g_vCamPosition;
     
-    Output.vSpecular = fAtt * (Spec * g_vLightSpecular * pow(saturate(dot(normalize(vLook) * -1.f, vReflect)), 30.f));
+    Output.vSpecular = fAtt * (vNormal_Spec.a * g_vLightSpecular * pow(saturate(dot(normalize(vLook) * -1.f, vReflect)), 30.f));
     
     //vector vRimMask = g_RimMaskTexture.Sample(LinearSampler, Input.vTexcoord);
     
@@ -404,12 +400,9 @@ PS_OUT PS_Main_SSAO(PS_IN Input)
     
     PS_OUT Out = (PS_OUT) 0;
     
-    vector vNormal;
-    float Spec;
+    vector vNormal_Spec = g_Normal_Spec_Texture.Sample(PointSampler, Input.vTexcoord);
     
-    Get_Normal(Input.vTexcoord, vNormal, Spec);
-    
-    float3 MyViewNormal = normalize(mul(vNormal, g_CamViewMatrix).xyz);
+    float3 MyViewNormal = normalize(mul(Get_Normal(vNormal_Spec), g_CamViewMatrix).xyz);
     
     float3 P = Get_ViewPos(Input.vTexcoord).xyz;
     
