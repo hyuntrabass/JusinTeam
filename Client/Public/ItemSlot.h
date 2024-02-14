@@ -56,7 +56,8 @@ public:
 	void Delete_Item();
 	void Set_FullSlot(CItem* pItem, _int* iNum = nullptr);
 	const wstring Get_ItemName();
-	const CItem* Get_ItemObject() { return m_pItem; }
+	const ITEM_USAGE& Get_ItemUsage();
+	const CItem* Get_ItemObject();
 	const RECT& Get_Rect() const { return m_rcRect; }
 	const _vec2 Get_Position() { return _vec2(m_fX, m_fY); }
 

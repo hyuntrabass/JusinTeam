@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "../Default/framework.h"
 #include <process.h>
@@ -16,6 +16,54 @@ namespace Client
 	static const unsigned int g_iWinSizeY = 720;
 	static const POINT g_ptCenter = { static_cast<signed long>(g_iWinSizeX * 0.5f), static_cast<signed long>(g_iWinSizeY * 0.5f) };
 
+	static const LIGHT_DESC g_Light_Custom
+	{
+		LIGHT_DESC::Directional,
+		_vec4(0.f, 0.f, -1.f, 0.f), // Direction
+		_vec4(), // Position
+		_vec4(), // Attenuation
+
+		_vec4(1.f), // Diffuse
+		_vec4(0.5f), // Ambient
+		_vec4(0.2f) // Specular
+	};
+
+	static const LIGHT_DESC g_Light_Tutorial
+	{
+		LIGHT_DESC::Directional,
+		_vec4(-1.f, -2.f, -1.f, 0.f), // Direction
+		_vec4(), // Position
+		_vec4(), // Attenuation
+
+		_vec4(0.2f), // Diffuse
+		_vec4(0.01f), // Ambient
+		_vec4(1.f) // Specular
+	};
+
+	static const LIGHT_DESC g_Light_Village
+	{
+		LIGHT_DESC::Directional,
+		_vec4(-1.f, -2.f, -1.f, 0.f), // Direction
+		_vec4(), // Position
+		_vec4(), // Attenuation
+
+		_vec4(1.f), // Diffuse
+		_vec4(0.3f), // Ambient
+		_vec4(0.5f) // Specular
+	};
+
+	static const LIGHT_DESC g_Light_Dungeon
+	{
+		LIGHT_DESC::Directional,
+		_vec4(-1.f, -2.f, -1.f, 0.f), // Direction
+		_vec4(), // Position
+		_vec4(), // Attenuation
+
+		_vec4(0.2f), // Diffuse
+		_vec4(0.05f), // Ambient
+		_vec4(1.f) // Specular
+	};
+
 	enum LEVEL_ID
 	{
 		LEVEL_STATIC,
@@ -32,7 +80,7 @@ namespace Client
 	{
 		CM_DEBUG,
 		CM_MAIN,
-		CM_SELECT, 
+		CM_SELECT,
 		CM_CUSTOM,
 		CM_CUTSCENE,
 		CM_END
@@ -56,9 +104,9 @@ namespace Client
 		_int Current_Mp{ 1000 };
 		_int Attack{ 100 };
 		_int Critical{};
-		_int Critical_Dmg{ 150 }; // ±âº» Ä¡¸íÅ¸µ¥¹ÌÁö 150( ±âº» µ¥¹ÌÁö¿¡ Ãß°¡50ÆÛ¼¾Æ® ÇÇÇØ)
-		_int Armor{}; // ¹æ¾î·ÂÀÌ 10ÀÏ¶§ ¹Ş´Â µ¥¹ÌÁö 10ÆÛ¼¾Æ® ÁÙ¿©ÁÜ(90ÆÛ¸¸ ¹ŞÀ½)
-		_float Speed{}; // ±âº» °È´Â ÀÌ¼Ó 2+½ºÇÇµå/2,¶Ù´Â ÀÌ¼Ó 4+½ºÇÇµå
+		_int Critical_Dmg{ 150 }; // ê¸°ë³¸ ì¹˜ëª…íƒ€ë°ë¯¸ì§€ 150( ê¸°ë³¸ ë°ë¯¸ì§€ì— ì¶”ê°€50í¼ì„¼íŠ¸ í”¼í•´)
+		_int Armor{}; // ë°©ì–´ë ¥ì´ 10ì¼ë•Œ ë°›ëŠ” ë°ë¯¸ì§€ 10í¼ì„¼íŠ¸ ì¤„ì—¬ì¤Œ(90í¼ë§Œ ë°›ìŒ)
+		_float Speed{}; // ê¸°ë³¸ ê±·ëŠ” ì´ì† 2+ìŠ¤í”¼ë“œ/2,ë›°ëŠ” ì´ì† 4+ìŠ¤í”¼ë“œ
 	};
 	enum WEAPON_TYPE
 	{
@@ -82,20 +130,20 @@ namespace Client
 		WP_INDEX_END
 	};
 
-	enum ATTACK_TYPE  //µ¥¹ÌÁöÁÖ´Â Å¸ÀÔ
+	enum ATTACK_TYPE  //ë°ë¯¸ì§€ì£¼ëŠ” íƒ€ì…
 	{
-		AT_Sword_Common,// °æÁ÷
-		AT_Sword_Skill1,// °æÁ÷
-		AT_Sword_Skill2,// °æÁ÷
-		AT_Sword_Skill3,// °æÁ÷
-		AT_Sword_Skill4,// °æÁ÷
-		AT_Bow_Common,// ¹Ğ·Á³ª°Ô
-		AT_Bow_Skill1,// ¹Ğ·Á³ª°Ô
-		AT_Bow_Skill2,// °æÁ÷
+		AT_Sword_Common,// ê²½ì§
+		AT_Sword_Skill1,// ê²½ì§
+		AT_Sword_Skill2,// ê²½ì§
+		AT_Sword_Skill3,// ê²½ì§
+		AT_Sword_Skill4,// ê²½ì§
+		AT_Bow_Common,// ë°€ë ¤ë‚˜ê²Œ
+		AT_Bow_Skill1,// ë°€ë ¤ë‚˜ê²Œ
+		AT_Bow_Skill2,// ê²½ì§
 		AT_Bow_Skill3_Start,
-		AT_Bow_Skill3,// ÀÌ¼Ó ´À·ÁÁö°Ô
-		AT_Bow_Skill4,// °æÁ÷
-		AT_Bow_SkillR,// °æÁ÷
+		AT_Bow_Skill3,// ì´ì† ëŠë ¤ì§€ê²Œ
+		AT_Bow_Skill4,// ê²½ì§
+		AT_Bow_SkillR,// ê²½ì§
 
 		AT_End
 	};
@@ -115,7 +163,7 @@ namespace Client
 		PT_WEAPON,
 		PT_END
 	};
-	
+
 	enum VEHICLE_TYPE
 	{
 		VC_GROUND,
@@ -194,48 +242,59 @@ namespace Client
 
 	enum INVEN_TYPE
 	{
-		INVEN_ALL, 
+		INVEN_ALL,
 		INVEN_WEARABLE,
-		INVEN_EQUIP, 
+		INVEN_EQUIP,
 		INVEN_EXPENDABLES,
 		INVEN_END
 	};
 	enum ITEM_TYPE
 	{
-		ITEM_TOP, 
+		ITEM_TOP,
 		ITEM_BODY,
 		ITEM_HAND,
-		ITEM_FOOT, 
+		ITEM_FOOT,
 		ITEM_POTION,
 		ITEM_SWORD,
 		ITEM_BOW,
 		ITEM_INGREDIENT,
+		ITEM_NOTYPE,
 		ITEMTYPEEND
 	};
-	
+
+	enum ITEM_USAGE
+	{
+		IT_NOUSAGE,
+		IT_HPPOTION,
+		IT_MPPOTION,
+		IT_VEHICLECARD,
+		USAGE_END
+	};
+
 	enum ITEM_TIER
 	{
-		TIER_COMMON, 
-		TIER_UNCOMMON, 
+		TIER_COMMON,
+		TIER_UNCOMMON,
 		TIER_RARE,
 		TIER_UNIQUE,
 		TIER_LEGENDARY,
 		TIER_END
 	};
 
-	enum WEARABLE_TYPE 
+	enum WEARABLE_TYPE
 	{
-		W_TOP, 
-		W_CHEST, 
-		W_HAND, 
-		W_FOOT, 
-		W_EQUIP, 
-		W_PET, 
-		W_END };
+		W_TOP,
+		W_CHEST,
+		W_HAND,
+		W_FOOT,
+		W_EQUIP,
+		W_PET,
+		W_END
+	};
 
-	enum TUTO_SEQ 
+	enum TUTO_SEQ
 	{
-		T_OPENINVEN, 
+		T_OPENINVEN,
 		T_EQUIP,
 		T_EXIT,
 		T_OPENSKILL,
@@ -290,7 +349,7 @@ namespace Client
 	typedef struct tagItemInfo
 	{
 		wstring strName;
-
+		ITEM_USAGE eItemUsage;
 		_uint iInvenType;
 		_uint iItemType;
 		_uint iItemTier;
@@ -305,7 +364,7 @@ namespace Client
 		_uint iLimited;
 
 	}ITEM;
-	
+
 	typedef struct tagSkillInfo
 	{
 		wstring strName;
@@ -327,7 +386,7 @@ namespace Client
 		AnimPass_Dissolve,
 		AnimPass_Rim,
 	};
-	
+
 	enum StaticMeshPass
 	{
 		StaticPass_Default,
@@ -354,7 +413,7 @@ namespace Client
 		StaticPass_DiffAlpha,
 		StaticPass_End,
 	};
-	
+
 	enum VTFModelPass
 	{
 		VTFPass_Default,
@@ -450,7 +509,7 @@ namespace Client
 		InstPass_End,
 	};
 #pragma endregion
-#pragma region ÄÆ¾À
+#pragma region ï¿½Æ¾ï¿½
 	struct SectionInfo
 	{
 		//_vec4 vStartCutScene{};
@@ -462,7 +521,7 @@ namespace Client
 }
 #pragma endregion
 
-#pragma region Æ®¸®°Å
+#pragma region Æ®ï¿½ï¿½ï¿½ï¿½
 struct TriggerInfo
 {
 	_bool bLimited{};

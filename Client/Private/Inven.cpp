@@ -76,12 +76,29 @@ HRESULT CInven::Init(void* pArg)
 	m_pWearableSlots[W_CHEST]->Set_WearableItem(eItem);
 
 	strItem = TEXT("그냥검");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
+	eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
+	m_pWearableSlots[W_EQUIP]->Set_WearableItem(eItem);
 
 	strItem = TEXT("그냥활");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);	
+	
+	strItem = TEXT("신화활");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);	
+	
+	strItem = TEXT("유니크검");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);	
+	
+	strItem = TEXT("로브");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);	
+	
+	strItem = TEXT("체력 포션");
+	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
+	
+	strItem = TEXT("[희귀]탈 것 소환 카드");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);
-
-
+	
+	strItem = TEXT("[일반]탈 것 소환 카드");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);
 
 	//m_pWearableSlots[W_EQUIP]->Set_WearableItem(eItem);
 	return S_OK;
@@ -114,7 +131,7 @@ void CInven::Tick(_float fTimeDelta)
 				CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_EQUIP);
 			}
 
-			LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_GAMEPLAY, TEXT("Light_Main"));
+			LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
 
 			m_Light_Desc = *LightDesc;
 			LightDesc->eType = LIGHT_DESC::Directional;
@@ -160,7 +177,7 @@ void CInven::Tick(_float fTimeDelta)
 
 			if (m_Light_Desc.eType != LIGHT_DESC::TYPE::End)
 			{
-				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_GAMEPLAY, TEXT("Light_Main"));
+				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
 				*LightDesc = m_Light_Desc;
 			}
 			

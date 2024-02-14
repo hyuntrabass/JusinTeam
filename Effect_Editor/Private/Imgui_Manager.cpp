@@ -764,8 +764,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		SameLine();
 		SeparatorText("Light Description");
 		ColorPicker4("Diffuse", reinterpret_cast<_float*>(&Light_Desc.vDiffuse), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_DisplayRGB);
-		InputFloat4("Ambient", reinterpret_cast<_float*>(&Light_Desc.vAmbient), "%.1f");
-		InputFloat4("Specular", reinterpret_cast<_float*>(&Light_Desc.vSpecular), "%.1f");
+		InputFloat4("Ambient", reinterpret_cast<_float*>(&Light_Desc.vAmbient), "%.2f");
+		InputFloat4("Specular", reinterpret_cast<_float*>(&Light_Desc.vSpecular), "%.2f");
 		Combo("Attenuation", &iAttenuation, szAttenuations, IM_ARRAYSIZE(szAttenuations));
 
 		switch (iAttenuation)

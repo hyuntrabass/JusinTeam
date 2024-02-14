@@ -254,6 +254,11 @@ public: // Get_Set
 	const wstring& Get_InputString();
 	const wstring& Get_CompleteInputString() const;
 
+	//원명
+	_bool Get_TurnOnShadow() const {
+		return m_bTurnOnShadow;
+	}
+
 public:
 	void Level_ShutDown(_uint iCurrentLevel);
 	_bool Is_Level_ShutDown(_uint iCurrentLevel);
@@ -295,9 +300,14 @@ private:
 	wstring m_strComposingInput{};
 	_bool m_isComposing{};
 	_bool m_isPopInput{};
+
+	// 원명
+	_bool m_bTurnOnShadow{ false };
+
 #ifdef _DEBUG
 	stringstream m_OutputStream{};
 	string m_strPrevStream{};
+	_uint m_iNumStreamLines{};
 #endif
 
 private:

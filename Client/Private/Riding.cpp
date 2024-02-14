@@ -21,7 +21,7 @@ HRESULT CRiding::Init(void* pArg)
 {
 	Riding_Desc* Desc = (Riding_Desc*)pArg;
 	m_CurrentIndex = Desc->Type;
-
+	m_eCurMode = (MODE)Desc->iMode;
 
 	switch (m_CurrentIndex)
 	{
@@ -111,6 +111,37 @@ HRESULT CRiding::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+	if (m_eCurMode == VEHICLEBOOK)
+	{
+		m_pTransformCom->Set_State(State::Pos, _vec4(-1.f, 299.f, 3.f, 1.f));
+		m_pTransformCom->Rotation(_vec4(0.f, 1.f, 0.f, 0.f), 160.f);
+
+		switch (m_CurrentIndex)
+		{
+		case Bird:
+			m_Animation.iAnimIndex = Bird_1005_Fly;
+			m_pTransformCom->Set_State(State::Pos, _vec4(-1.f, 299.f, 2.f, 1.f));
+			break;
+		case Nihilir:
+			m_pTransformCom->Set_State(State::Pos, _vec4(-1.2f, 297.2f, 2.2f, 1.f));
+			break;
+		case Wyvern:
+			m_Animation.iAnimIndex = Wyvern_3004_Fly;
+			break;
+		case Falar:
+			m_Animation.iAnimIndex = Falar_5002_fly;
+			m_pTransformCom->Set_State(State::Pos, _vec4(-1.f, 299.f, 3.5f, 1.f));
+			break;
+		case Tiger:
+			m_pTransformCom->Set_State(State::Pos, _vec4(-0.6f, 299.5f, 2.f, 1.f));
+			break;
+		}
+
+		m_Animation.isLoop = true;
+		m_Animation.bSkipInterpolation = true;
+		m_Animation.fAnimSpeedRatio = 2.f;
+		return S_OK;
+	}
 	if (m_CurrentIndex == Nihilir)
 	{
 		PxCapsuleControllerDesc ControllerDesc{};
@@ -167,6 +198,12 @@ HRESULT CRiding::Init(void* pArg)
 
 void CRiding::Tick(_float fTimeDelta)
 {
+	if (m_eCurMode == VEHICLEBOOK)
+	{
+		m_pModelCom->Set_Animation(m_Animation);
+		return;
+	}
+
 	if (m_CurrentIndex == Horse or m_eState == Riding_Glide)
 	{
 		if (!m_isDead)
@@ -257,7 +294,9 @@ void CRiding::Late_Tick(_float fTimeDelta)
 {
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
-	m_pRendererCom->Add_RenderGroup(RG_Shadow, this);
+
+	if(true == m_pGameInstance->Get_TurnOnShadow())
+		m_pRendererCom->Add_RenderGroup(RG_Shadow, this);
 
 #ifdef _DEBUG
 	/*m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);

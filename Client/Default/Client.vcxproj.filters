@@ -421,11 +421,11 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\Vehicle">
       <UniqueIdentifier>{8ae8111f-3a1d-46db-a063-c11629d8671e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Vehicle\VehicleDesc">
-      <UniqueIdentifier>{1092602c-b25d-4d3c-9c35-8d48463bb177}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\00.UI\GameUI\Vehicle\Vehicle">
       <UniqueIdentifier>{0d9cfe46-b184-4484-a323-3a20f496c6c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\09.Object\Torch">
+      <UniqueIdentifier>{b81bd7e5-ba31-4ee3-962d-a9f6c2f09f29}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -440,9 +440,6 @@
     </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>98.Default</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Client_Define.h">
-      <Filter>99.Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\MainApp.h">
       <Filter>00,MainApp</Filter>
@@ -847,14 +844,17 @@
     <ClInclude Include="..\Public\VehicleBook.h">
       <Filter>02.GameObjects\00.UI\GameUI\Vehicle</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\VehicleDesc.h">
-      <Filter>02.GameObjects\00.UI\GameUI\Vehicle\VehicleDesc</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Vehicle.h">
       <Filter>02.GameObjects\00.UI\GameUI\Vehicle\Vehicle</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\NineSlice.h">
       <Filter>02.GameObjects\00.UI\Texture&amp;Text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Torch_Object.h">
+      <Filter>02.GameObjects\09.Object\Torch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Client_Define.h">
+      <Filter>99.Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1274,14 +1274,14 @@
     <ClCompile Include="..\Private\VehicleBook.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\Vehicle</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\VehicleDesc.cpp">
-      <Filter>02.GameObjects\00.UI\GameUI\Vehicle\VehicleDesc</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Vehicle.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\Vehicle\Vehicle</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\NineSlice.cpp">
       <Filter>02.GameObjects\00.UI\Texture&amp;Text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Torch_Object.cpp">
+      <Filter>02.GameObjects\09.Object\Torch</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

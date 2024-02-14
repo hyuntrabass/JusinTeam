@@ -41,7 +41,7 @@ HRESULT CLevel_Custom::Init()
 void CLevel_Custom::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Is_Level_ShutDown(LEVEL_CUSTOM))
-	{		
+	{
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_GAMEPLAY))))
 		{
 			return;
@@ -87,20 +87,9 @@ HRESULT CLevel_Custom::Ready_UI()
 
 HRESULT CLevel_Custom::Ready_Light()
 {
-	LIGHT_DESC LightDesc{};
-
-	LightDesc.eType = LIGHT_DESC::Directional;
-	LightDesc.vDirection = _float4(0.f, 0.f, -1.f, 0.f);
-	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
-	LightDesc.vSpecular = _vec4(0.2f);
-
-	for (size_t i = 0; i < 1; i++)
+	if (FAILED(m_pGameInstance->Add_Light(LEVEL_STATIC, L"Light_Main", g_Light_Custom)))
 	{
-		if (FAILED(m_pGameInstance->Add_Light(LEVEL_CUSTOM, TEXT("Light_Custom") + to_wstring(i), LightDesc)))
-		{
-			return E_FAIL;
-		}
+		return E_FAIL;
 	}
 
 	return S_OK;

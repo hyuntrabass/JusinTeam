@@ -53,7 +53,9 @@ void CObjects::Late_Tick(_float fTimeDelta)
 		//if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
 		//{
 			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
-			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Shadow, this);
+
+			if(true == m_pGameInstance->Get_TurnOnShadow())
+				m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Shadow, this);
 		//}
 	}
 	else
@@ -182,14 +184,17 @@ HRESULT CObjects::Render_Instance()
 		return E_FAIL;
 	}
 
-	CASCADE_DESC Desc = m_pGameInstance->Get_CascadeDesc();
+	if (true == m_pGameInstance->Get_TurnOnShadow()) {
 
-	if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeView", Desc.LightView, 3)))
-		return E_FAIL;
+		CASCADE_DESC Desc = m_pGameInstance->Get_CascadeDesc();
 
-	if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeProj", Desc.LightProj, 3)))
-		return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeView", Desc.LightView, 3)))
+			return E_FAIL;
 
+		if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeProj", Desc.LightProj, 3)))
+			return E_FAIL;
+
+	}
 
 	return S_OK;
 }
