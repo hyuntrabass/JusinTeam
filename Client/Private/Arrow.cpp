@@ -74,15 +74,53 @@ void CArrow::Tick(_float fTimeDelta)
 		m_pTransformCom->Go_To(_vec4(m_ArrowType.MonCollider->Get_ColliderPos(), 1.f), fTimeDelta, 0.f);
 	}
 	else
+	{
 		m_pTransformCom->Go_Straight(fTimeDelta);
+	}
 
 	m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
-
-	if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
+	switch (m_ArrowType.Att_Type)
 	{
-		m_pGameInstance->Attack_Monster(m_pCollider, 80, AT_Bow_Common);
-		Kill();
+	case AT_Bow_Common:
+	{
+		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
+		{
+			m_pGameInstance->Attack_Monster(m_pCollider, 120, AT_Bow_Common);
+			Kill();
+		}
+		break;
 	}
+	case AT_Bow_Skill1:
+	{
+		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
+		{
+			m_pGameInstance->Attack_Monster(m_pCollider, 150, AT_Bow_Skill1);
+			Kill();
+		}
+		break;
+	}
+	case AT_Bow_Skill2:
+	{
+		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
+		{
+			m_pGameInstance->Attack_Monster(m_pCollider, 200, AT_Bow_Skill2);
+			Kill();
+		}
+		break;
+	}
+	case AT_Bow_Skill3:
+	{
+		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
+		{
+			m_pGameInstance->Attack_Monster(m_pCollider, 130, AT_Bow_Skill3);
+			Kill();
+		}
+		break;
+	}
+	default:
+		break;
+	}
+	
 
 	_mat world{};
 	world = m_pTransformCom->Get_World_Matrix();

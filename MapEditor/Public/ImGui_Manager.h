@@ -158,6 +158,7 @@ private:
 
 	// 현재 위치 저장
 	HRESULT Save_Pos();
+	HRESULT Save_WorldMatrix();
 
 private:
 	CGameInstance* m_pGameInstance{ nullptr };

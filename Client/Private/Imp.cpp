@@ -32,8 +32,6 @@ HRESULT CImp::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 30) + 60.f, 0.f, static_cast<_float>(rand() % 30) + 60.f, 1.f));
-
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = false;
@@ -56,7 +54,7 @@ HRESULT CImp::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
-	m_pTransformCom->Set_Position(_vec3(100.f, 8.f, 108.f));
+	//m_pTransformCom->Set_Position(_vec3(100.f, 8.f, 108.f));
 
 	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
 

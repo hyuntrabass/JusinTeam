@@ -178,6 +178,7 @@ namespace MapEditor
 		_vec4 vStartCutScene{};
 		_vec4 vEndCutScene{};
 		wstring strSectionName{};
+		_float fCurveSpeed{ 0.f };
 		//class CCutScene_Curve** ppCurve{ nullptr };
 		_uint iSectionType{};
 	};

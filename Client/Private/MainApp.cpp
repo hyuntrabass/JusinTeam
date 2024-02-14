@@ -88,6 +88,13 @@ void CMainApp::Tick(_float fTimeDelta)
 
 	m_pGameInstance->Tick_Engine(fFinalTimeDelta);
 	CTrigger_Manager::Get_Instance()->Tick(fTimeDelta);
+
+	//m_pGameInstance->Get_StringStream() << L"시발" << endl;
+	//m_pGameInstance->Get_StringStream() << "시발" << endl;
+	//m_pGameInstance->Get_StringStream() << m_pGameInstance->Get_CompleteInputString().c_str() << endl;
+	//m_pGameInstance->Add_String_to_Stream(m_pGameInstance->Get_CompleteInputString());
+	//m_pGameInstance->Add_String_to_Stream(m_pGameInstance->Get_ComposingInputString());
+
 }
 
 HRESULT CMainApp::Render()

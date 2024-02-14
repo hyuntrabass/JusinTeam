@@ -81,7 +81,6 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 	{
 		if (m_pSelectedDummy)
 		{
-
 			CTransform* pObjectsTransform = (CTransform*)m_pSelectedDummy->Find_Component(TEXT("Com_Transform"));
 
 			_vector ObjRight = { m_ObjectMatrix._11, m_ObjectMatrix._12, m_ObjectMatrix._13, m_ObjectMatrix._14 };
@@ -470,6 +469,8 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				Load_Object();
 			}
 			ImGui::EndTabItem();
+
+
 		}
 
 #pragma endregion
@@ -915,7 +916,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 
 						//if (m_CameraList.size() != 0)
 						//{
-							string PlayButtonName = "Play Camera";
+							string PlayButtonName = "Play";
 							if (ImGui::Button(PlayButtonName.c_str()))
 							{
 								if (!pEyeCurve.empty() && !pAtCurve.empty())
@@ -925,6 +926,25 @@ HRESULT CImGui_Manager::ImGuiMenu()
 										m_pSelectCamera->Start_Play();
 								}
 							}
+							ImGui::SameLine();
+							if (ImGui::Button("Stop"))
+							{
+								if (!pEyeCurve.empty() && !pAtCurve.empty())
+								{
+									if (m_pSelectCamera)
+										m_pSelectCamera->Stop_Play();
+								}
+							}
+							ImGui::SameLine();
+							if (ImGui::Button("Reset Play"))
+							{
+								if (!pEyeCurve.empty() && !pAtCurve.empty())
+								{
+									if (m_pSelectCamera)
+										m_pSelectCamera->Reset_Play();
+								}
+							}
+
 							m_iFrame = m_pSelectCamera->Get_Frame();
 							string FrameButtonName = "Frame";
 							ImGui::SliderInt(FrameButtonName.c_str(), &m_iFrame, 0, 300);
@@ -1071,6 +1091,13 @@ HRESULT CImGui_Manager::ImGuiPos()
 	{
 		Save_Pos();
 	}
+
+	if (ImGui::Button("Save_WorldMatrix"))
+	{
+		Save_WorldMatrix();
+	}
+	ImGui::SameLine();
+
 	ImGui::End();
 	return S_OK;
 }
@@ -1481,31 +1508,31 @@ void CImGui_Manager::Reset()
 {
 	for (auto iter : m_MapsList)
 	{
-		iter->Set_Dead();
+		iter->Kill();
 	}
 	m_MapsList.clear();
 
 	for (auto iter : m_ObjectsList)
 	{
-		iter->Set_Dead();
+		iter->Kill();
 	}
 	m_ObjectsList.clear();
 
 	for (auto iter : m_MonsterList)
 	{
-		iter->Set_Dead();
+		iter->Kill();
 	}
 	m_MonsterList.clear();
 
 	for (auto iter : m_NPCList)
 	{
-		iter->Set_Dead();
+		iter->Kill();
 	}
 	m_NPCList.clear();
 
 	for (auto iter : m_EnvirList)
 	{
-		iter->Set_Dead();
+		iter->Kill();
 	}
 	m_EnvirList.clear();
 
@@ -2872,21 +2899,21 @@ HRESULT CImGui_Manager::Load_CutScene()
 		inFile.read(reinterpret_cast<char*>(&InputNameSize), sizeof(_uint));
 		inFile.read(reinterpret_cast<char*>(&InputName[0]), sizeof(InputNameSize));
 
-		if (!m_pSelectCamera)
-		{
-			CameraInfo Info{};
-			//Info.strName = InputName;
-			Info.ppCamera = &m_pSelectCamera;
-			Info.eType = ItemType::Camera;
-			Info.vStartCutScene = m_fCameraPickingPos[0];
-			Info.vEndCutScene = m_fCameraPickingPos[1];
-			Info.fCameraSpeed = fCameraSpeed;
+		//if (!m_pSelectCamera)
+		//{
+		//	CameraInfo Info{};
+		//	//Info.strName = InputName;
+		//	Info.ppCamera = &m_pSelectCamera;
+		//	Info.eType = ItemType::Camera;
+		//	Info.vStartCutScene = m_fCameraPickingPos[0];
+		//	Info.vEndCutScene = m_fCameraPickingPos[1];
+		//	Info.fCameraSpeed = fCameraSpeed;
 
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_CutScene_Camera"), TEXT("Prototype_GameObject_Camera_CutScene"), &Info)))
-			{
-				MSG_BOX("Failed to Add Layer : CutScene_Camera");
-			}
-		}
+		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_CutScene_Camera"), TEXT("Prototype_GameObject_Camera_CutScene"), &Info)))
+		//	{
+		//		MSG_BOX("Failed to Add Layer : CutScene_Camera");
+		//	}
+		//}
 
 		_uint iEyeSize;
 		_uint iAtSize;
@@ -2937,6 +2964,8 @@ HRESULT CImGui_Manager::Load_CutScene()
 	return S_OK;
 }
 #pragma endregion
+
+#pragma region 위치 저장
 HRESULT CImGui_Manager::Save_Pos()
 {
 	OPENFILENAME OFN;
@@ -2971,6 +3000,49 @@ HRESULT CImGui_Manager::Save_Pos()
 }
 #pragma endregion
 
+#pragma region 월드 저장
+HRESULT CImGui_Manager::Save_WorldMatrix()
+{
+	OPENFILENAME OFN;
+	TCHAR filePathName[MAX_PATH] = L"";
+	TCHAR lpstrFile[MAX_PATH] = L"_WorldPos.dat";
+	static TCHAR filter[] = L"모든 파일\0*.*\0텍스트 파일\0*.txt\0dat 파일\0*.dat";
+
+	memset(&OFN, 0, sizeof(OPENFILENAME));
+	OFN.lStructSize = sizeof(OPENFILENAME);
+	OFN.hwndOwner = g_hWnd;
+	OFN.lpstrFilter = filter;
+	OFN.lpstrFile = lpstrFile;
+	OFN.nMaxFile = 256;
+	OFN.lpstrInitialDir = L"..\\Bin\\Data";
+
+	if (GetSaveFileName(&OFN) != 0)
+	{
+		const TCHAR* pGetPath = OFN.lpstrFile;
+
+		std::ofstream outFile(pGetPath, std::ios::binary);
+
+		if (m_pSelectedDummy)
+		{
+		if (!outFile.is_open())
+			return E_FAIL;
+
+		_mat mMatrix{};
+			CTransform* pTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(L"Com_Transform"));
+			mMatrix = pTransform->Get_World_Matrix();
+
+			outFile.write(reinterpret_cast<const char*>(&mMatrix), sizeof(_mat));
+			MessageBox(g_hWnd, L"위치 파일 저장 완료", L"파일 저장", MB_OK);
+		}
+		else
+		{
+			MessageBox(g_hWnd, L"저장할 객체를 선택해주세요", L"저장 실패", MB_OK);
+		}
+		outFile.close();
+	}
+	return S_OK;
+}
+#pragma endregion
 CImGui_Manager* CImGui_Manager::Create(const GRAPHIC_DESC& GraphicDesc)
 {
 	CImGui_Manager* pInstance = new CImGui_Manager();

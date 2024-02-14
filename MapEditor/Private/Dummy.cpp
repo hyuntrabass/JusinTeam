@@ -82,11 +82,10 @@ HRESULT CDummy::Init(void* pArg)
 void CDummy::Tick(_float fTimeDelta)
 {
 	
-	//if (m_isAnim)
-	//{
-
-	//	m_pModelCom->Play_Animation(fTimeDelta);
-	//}
+	if (m_isAnim)
+	{
+		m_pModelCom->Play_Animation(fTimeDelta);
+	}
 	if (m_eType == ItemType::Trigger)
 	{
 		m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
@@ -120,7 +119,7 @@ HRESULT CDummy::Render()
 	{
 		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
-			return E_FAIL;
+			continue;
 		}
 
 		_bool HasNorTex{};

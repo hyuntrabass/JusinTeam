@@ -52,7 +52,7 @@ private:
 
 	_uint m_iShaderPass{};
 	_uint m_iOutLineShaderPass{};
-	_uint m_iSectionType = { SECTION_TYPE_END };
+	SECTIONTYPE m_iSectionType = { SECTION_TYPE_END };
 
 private:
 

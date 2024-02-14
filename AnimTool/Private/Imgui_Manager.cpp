@@ -342,6 +342,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					MultiByteToWideChar(CP_UTF8, 0, m_szEffectFiles[iSelectEffectFile], (_int)strlen(m_szEffectFiles[iSelectEffectFile]), szEffectName, MAX_PATH);
 
 					TRIGGEREFFECT_DESC EffectDesc{};
+					EffectDesc.OffsetMatrix = _mat::Identity;
 					EffectDesc.strEffectName = szEffectName;
 					EffectDesc.iStartAnimIndex = m_AnimDesc.iAnimIndex;
 					EffectDesc.fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
@@ -377,6 +378,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					MultiByteToWideChar(CP_UTF8, 0, m_szEffectFiles[iSelectEffectFile], (_int)strlen(m_szEffectFiles[iSelectEffectFile]), szEffectName, MAX_PATH);
 
 					TRIGGEREFFECT_DESC EffectDesc{};
+					EffectDesc.OffsetMatrix = _mat::Identity;
 					EffectDesc.strEffectName = szEffectName;
 					EffectDesc.iStartAnimIndex = m_AnimDesc.iAnimIndex;
 					EffectDesc.fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
@@ -736,7 +738,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					pEffectDesc->OffsetMatrix.Right(pEffectDesc->OffsetMatrix.Right().Get_Normalized() * vScale.x);
 					pEffectDesc->OffsetMatrix.Up(pEffectDesc->OffsetMatrix.Up().Get_Normalized() * vScale.y);
 					pEffectDesc->OffsetMatrix.Look(pEffectDesc->OffsetMatrix.Look().Get_Normalized() * vScale.z);
-					pEffectDesc->OffsetMatrix.Position(vPosition);
+					pEffectDesc->OffsetMatrix.Position_vec3(vPosition);
 
 					ImGui::SeparatorText("OFFSET");
 					if (ImGui::Button("SAVE##2"))
@@ -1156,7 +1158,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					pEffectDesc->OffsetMatrix.Right(pEffectDesc->OffsetMatrix.Right().Get_Normalized() * vScale.x);
 					pEffectDesc->OffsetMatrix.Up(pEffectDesc->OffsetMatrix.Up().Get_Normalized() * vScale.y);
 					pEffectDesc->OffsetMatrix.Look(pEffectDesc->OffsetMatrix.Look().Get_Normalized() * vScale.z);
-					pEffectDesc->OffsetMatrix.Position(vPosition);
+					pEffectDesc->OffsetMatrix.Position_vec3(vPosition);
 
 					ImGui::SeparatorText("OFFSET");
 					if (ImGui::Button("SAVE##2"))

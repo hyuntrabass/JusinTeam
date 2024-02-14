@@ -30,11 +30,15 @@ HRESULT CCutScene_Curve::Init(void* pArg)
 	//	*Info.ppCurve = this;
 	//	Info.ppCurve = nullptr;
 	//}
-	m_iSectionType = Info.iSectionType;
+	m_iSectionType = (SECTIONTYPE)Info.iSectionType;
 	m_strSectionName = Info.strSectionName;
 	
-	ZeroMemory(&m_matPoint, sizeof _mat);
-	Set_Points(Info);
+	//ZeroMemory(&m_matPoint, sizeof _mat);
+	if (m_iSectionType == SECTION_TYPE_EYE)
+		Set_Points(Info);
+	else
+		Set_Points(Info);
+
 	//m_pVIBuffer->Set_ControlPoints(m_matPoint);
 	//m_pVIBuffer->Modify_Line();
 	return S_OK;
@@ -48,11 +52,12 @@ void CCutScene_Curve::Tick(_float TimeDelta)
 	_vec4 vChangeStartPos = m_matPoint.Right();
 	_vec4 vChangeEndPos = m_matPoint.Look();
 
-	pStartPointTransform->Set_Position(_vec3(vChangeStartPos));
-	pEndPointTransform->Set_Position(_vec3(vChangeEndPos));
+	_vec4 test1 = Get_CurvePos(0);
+	_vec4 test2 = Get_CurvePos(299);
 
-	m_pStartPoint->Tick(TimeDelta);
-	m_pEndPoint->Tick(TimeDelta);
+	pStartPointTransform->Set_Position(_vec3(Get_CurvePos(0)));
+	pEndPointTransform->Set_Position(_vec3(Get_CurvePos(299)));
+
 
 }
 
@@ -70,7 +75,7 @@ HRESULT CCutScene_Curve::Render()
 
 	m_pVIBuffer->Set_ControlPoints(m_matPoint);
 	m_pVIBuffer->Modify_Line();
-
+	
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
@@ -149,6 +154,7 @@ HRESULT CCutScene_Curve::Set_ControlPoints(_mat& Points)
 	m_matPoint = Points;
 
 	m_pVIBuffer->Set_ControlPoints(m_matPoint);
+	m_pVIBuffer->Modify_Line();
 	return S_OK;
 }
 
@@ -181,7 +187,7 @@ void CCutScene_Curve::Set_SectionSpeed(_float fSpeed)
 _vec4 CCutScene_Curve::Get_CurvePos(_uint iIndex)
 {
 	if (m_pVIBuffer == nullptr)
-		return _float3(-1, -1, -1);
+		return _float3(-1.f, -1.f, -1.f);
 
 	m_pVIBuffer->Modify_Line();
 

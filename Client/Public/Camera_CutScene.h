@@ -17,7 +17,6 @@ public:
 	virtual HRESULT Init_Prototype() override;
 	virtual HRESULT Init(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
-	virtual void Late_Tick(_float fTimeDelta) override;
 	void Set_Delete_Curve();
 	void Set_Speed(_float fSpeed) { m_fCutSceneSpeed = fSpeed;} 
 	_float Get_Speed() { return m_fCutSceneSpeed;} 

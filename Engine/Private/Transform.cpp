@@ -59,7 +59,7 @@ const _bool CTransform::Is_OnGround() const
 	}
 	PxRaycastBuffer HitBuffer{};
 
-	_bool HasCollided = m_pScene->raycast(PxExVec3ToPxVec3(m_pController->getFootPosition()), PxVec3(0.f, -1.f, 0.f), 1.f, HitBuffer);
+	_bool HasCollided = m_pScene->raycast(PxExVec3ToPxVec3(m_pController->getFootPosition()), PxVec3(0.f, -1.f, 0.f), 2.f, HitBuffer);
 
 	return HasCollided;
 }
@@ -210,28 +210,28 @@ HRESULT CTransform::Init(void* pArg)
 	return S_OK;
 }
 
-void CTransform::Gravity(_float fTimeDelta, _vec4 vUpDir)
+void CTransform::Gravity(_float fTimeDelta, _float fGravity)
 {
 	if (not m_pController)
 	{
 		return;
 	}
 
-	_float Gravity{ -19.81f };
-	PxVec3 UpDir = VectorToPxVec3(XMVector3Normalize(vUpDir));
+
+	PxVec3 UpDir = { 0.f,1.f,0.f };
 
 	//WallTest();
 
 	if (m_fJumpForce > 0.f)
 	{
-		m_fJumpForce += Gravity * fTimeDelta;
+		m_fJumpForce += fGravity * fTimeDelta;
 		m_fGravity = m_fJumpForce;
 		//m_fGravity = 25 * sin(40.f * XM_PI / 180.f) - 9.8f * fTimeDelta;
 		//Gravity.y = m_fGravity;
 	}
 	else if (!m_CollisionFlags.isSet(PxControllerCollisionFlag::eCOLLISION_DOWN))
 	{
-		m_fGravity += Gravity * fTimeDelta;
+		m_fGravity += fGravity * fTimeDelta;
 	}
 
 	m_CollisionFlags = m_pController->move(UpDir * m_fGravity * fTimeDelta, 0.0001f, fTimeDelta, 0);

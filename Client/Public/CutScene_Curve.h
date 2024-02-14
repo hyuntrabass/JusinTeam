@@ -22,9 +22,6 @@ private:
 public:
 	virtual HRESULT Init_Prototype();
 	virtual HRESULT Init(void* pArg);
-	virtual void Tick(_float TimeDelta) override;
-	virtual void Late_Tick(_float TimeDelta) override;
-	virtual HRESULT Render() override;
 	HRESULT Set_ControlPoints(_mat& Points);
 	void	Set_Points(SectionInfo Info);
 	void	Set_SectionSpeed(_float fSpeed);
@@ -36,7 +33,6 @@ public:
 
 private:
 	HRESULT Add_Components();
-	HRESULT Bind_ShaderResources();
 
 private:
 	CRenderer* m_pRendererCom{};

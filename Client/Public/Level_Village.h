@@ -30,19 +30,21 @@ private:
 
 	HRESULT Ready_NpcvsMon();
 
-private:
+private: // Monster, Boss
 	HRESULT Ready_Village_Monster();
+	HRESULT Ready_Dungeon_Monster();
+
 	HRESULT Ready_Groar_Boss();
 
-private:
+private: // NPC
 	HRESULT Ready_NPC();
 	HRESULT Ready_NPC_Dummy();
 
-	//UI
+private: //UI
 	HRESULT Ready_UI();
 
-private:
-	HRESULT Ready_Test(); // Test
+private: // Test
+	HRESULT Ready_Test(); 
 
 private:
 	HRESULT Ready_Trigger();
