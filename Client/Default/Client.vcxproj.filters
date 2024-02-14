@@ -441,9 +441,6 @@
     <ClInclude Include="targetver.h">
       <Filter>98.Default</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Client_Define.h">
-      <Filter>99.Headers</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\MainApp.h">
       <Filter>00,MainApp</Filter>
     </ClInclude>
@@ -855,6 +852,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Torch_Object.h">
       <Filter>02.GameObjects\09.Object\Torch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Client_Define.h">
+      <Filter>99.Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

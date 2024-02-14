@@ -170,6 +170,7 @@
     <ClInclude Include="..\Public\Cat.h" />
     <ClInclude Include="..\Public\Aur.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
+    <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Coin.h" />
     <ClInclude Include="..\Public\Dead.h" />
     <ClInclude Include="..\Public\CutScene_Curve.h" />
@@ -259,7 +260,6 @@
     <ClInclude Include="..\Public\Tentacle.h" />
     <ClInclude Include="..\Public\TestTree.h" />
     <ClInclude Include="..\Public\TextButton.h" />
-    <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Level_Custom.h" />
     <ClInclude Include="..\Public\Level_GamePlay.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />

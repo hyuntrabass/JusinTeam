@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "../Default/framework.h"
 #include <process.h>
@@ -265,7 +265,7 @@ namespace Client
 	enum ITEM_USAGE
 	{
 		IT_NOUSAGE,
-		IT_HPPOTION, 
+		IT_HPPOTION,
 		IT_MPPOTION,
 		IT_VEHICLECARD,
 		USAGE_END
