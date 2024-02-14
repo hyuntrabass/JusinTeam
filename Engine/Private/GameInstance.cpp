@@ -1476,8 +1476,6 @@ void CGameInstance::Print_StringStream()
 
 	for (int i = 0; i < 20; i++)
 	{
-		//SetConsoleCursorPosition(hConsole, cursorPos);
-		//cout << blank << endl;
 		DWORD dw{};
 		FillConsoleOutputCharacter(hConsole, ' ', 40, cursorPos, &dw);
 		cursorPos.Y++;
@@ -1487,23 +1485,6 @@ void CGameInstance::Print_StringStream()
 	cout << m_strPrevStream << flush;
 	m_OutputStream = {};
 	m_OutputStream.clear();
-
-	//HANDLE hBuffer[0] = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
-//									   0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL); // 버퍼 생성
-//SetConsoleScreenBufferSize(hBuffer[0], size);
-//SetConsoleWindowInfo(hBuffer[0], TRUE, &rect);
-
-//// 두번째 버퍼
-//hBuffer[1] = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
-//									   0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL); // 버퍼 생성
-//SetConsoleScreenBufferSize(hBuffer[1], size);
-//SetConsoleWindowInfo(hBuffer[1], TRUE, &rect);
-
-//cursor.dwSize = 1;
-//cursor.bVisible = false;
-//SetConsoleCursorInfo(hBuffer[0], &cursor);
-//SetConsoleCursorInfo(hBuffer[1], &cursor);
-
 }
 #endif
 
