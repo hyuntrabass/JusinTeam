@@ -146,6 +146,10 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 		}
 	}
 
+	if (Key_Down(DIK_F5, InputChannel::Engine)) {
+		m_bTurnOnShadow = m_bTurnOnShadow;
+	}
+
 	if (Is_Playing_Video())
 	{
 		return;
@@ -162,7 +166,8 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 
 	m_pFrustum->Tick();
 
-	m_pCascade_Manager->Update_Cascade();
+	if(true == m_bTurnOnShadow)
+		m_pCascade_Manager->Update_Cascade();
 
 	m_pObject_Manager->Release_DeadObjects();
 	m_pObject_Manager->Late_Tick(fTimeDelta);

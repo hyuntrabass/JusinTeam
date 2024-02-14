@@ -254,6 +254,11 @@ public: // Get_Set
 	const wstring& Get_InputString();
 	const wstring& Get_CompleteInputString() const;
 
+	//원명
+	_bool Get_TurnOnShadow() const {
+		return m_bTurnOnShadow;
+	}
+
 public:
 	void Level_ShutDown(_uint iCurrentLevel);
 	_bool Is_Level_ShutDown(_uint iCurrentLevel);
@@ -291,10 +296,15 @@ private:
 	_float m_fHellHeight{ -1000.f };
 	_bool m_bSkipDebugRender{ true };
 	wstring m_strInput{};
+
 	wstring m_strCompleteInput{};
 	wstring m_strComposingInput{};
-	_bool m_isComposing{};
-	_bool m_isPopInput{};
+	_bool m_isComposing{ false };
+	_bool m_isPopInput{ false };
+
+	// 원명
+	_bool m_bTurnOnShadow{ false };
+
 #ifdef _DEBUG
 	stringstream m_OutputStream{};
 	string m_strPrevStream{};
