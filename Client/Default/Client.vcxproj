@@ -191,6 +191,7 @@
     <ClInclude Include="..\Public\HpBar.h" />
     <ClInclude Include="..\Public\HpBoss.h" />
     <ClInclude Include="..\Public\HpMonster.h" />
+    <ClInclude Include="..\Public\Human_Boss.h" />
     <ClInclude Include="..\Public\Inven.h" />
     <ClInclude Include="..\Public\InvenFrame.h" />
     <ClInclude Include="..\Public\InvenWindow.h" />
@@ -328,6 +329,7 @@
     <ClCompile Include="..\private\Effect_Manager.cpp" />
     <ClCompile Include="..\Private\Event_Manager.cpp" />
     <ClCompile Include="..\Private\ExpBar.cpp" />
+    <ClCompile Include="..\Private\Human_Boss.cpp" />
     <ClCompile Include="..\Private\NineSlice.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />
     <ClCompile Include="..\Private\FadeBox.cpp" />

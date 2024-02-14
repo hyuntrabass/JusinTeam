@@ -427,6 +427,9 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\Vehicle\Vehicle">
       <UniqueIdentifier>{0d9cfe46-b184-4484-a323-3a20f496c6c0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Human_Boss">
+      <UniqueIdentifier>{ca41e229-ff6d-4b8d-a622-f84b5234450a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -856,6 +859,9 @@
     <ClInclude Include="..\Public\NineSlice.h">
       <Filter>02.GameObjects\00.UI\Texture&amp;Text</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Human_Boss.h">
+      <Filter>02.GameObjects\08. Boss\Human_Boss</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1282,6 +1288,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\NineSlice.cpp">
       <Filter>02.GameObjects\00.UI\Texture&amp;Text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Human_Boss.cpp">
+      <Filter>02.GameObjects\08. Boss\Human_Boss</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

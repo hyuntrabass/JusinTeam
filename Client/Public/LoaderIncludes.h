@@ -117,7 +117,7 @@
 #include "Missile.h"
 #include "Tentacle.h"
 #include "XBeam.h"
-
+#include "Human_Boss.h"
 // Pet
 #include "Pet_Cat.h"
 #include "Pet_Dragon.h"
