@@ -296,11 +296,10 @@ private:
 	_float m_fHellHeight{ -1000.f };
 	_bool m_bSkipDebugRender{ true };
 	wstring m_strInput{};
-
 	wstring m_strCompleteInput{};
 	wstring m_strComposingInput{};
-	_bool m_isComposing{ false };
-	_bool m_isPopInput{ false };
+	_bool m_isComposing{};
+	_bool m_isPopInput{};
 
 	// ¿ø¸í
 	_bool m_bTurnOnShadow{ false };
