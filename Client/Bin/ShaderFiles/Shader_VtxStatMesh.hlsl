@@ -59,40 +59,40 @@ VS_OUT VS_Main(VS_IN Input)
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
     
-    matrix matOldWV, matOldWVP;
+    //matrix matOldWV, matOldWVP;
     
-    matOldWV = mul(g_OldWorldMatrix, g_OldViewMatrix);
-    matOldWVP = mul(matOldWV, g_ProjMatrix);
+    //matOldWV = mul(g_OldWorldMatrix, g_OldViewMatrix);
+    //matOldWVP = mul(matOldWV, g_ProjMatrix);
     
     vector vNewPos = mul(vector(Input.vPos, 1.f), matWVP);
-    vector vOldPos = mul(vector(Input.vPos, 1.f), matOldWVP);
+    //vector vOldPos = mul(vector(Input.vPos, 1.f), matOldWVP);
     
-    vector vCalNor = mul(vector(Input.vNor, 0.f), matWV);
+    //vector vCalNor = mul(vector(Input.vNor, 0.f), matWV);
     
-    vector vDir = vNewPos - vOldPos;
+    //vector vDir = vNewPos - vOldPos;
     
-    float a = dot(normalize(vDir), normalize(vCalNor));
+    //float a = dot(normalize(vDir), normalize(vCalNor));
     
-    vector vPos;
-    if(a < 0.f)
-        vPos = vOldPos;
-    else
-        vPos = vNewPos;
+    //vector vPos;
+    //if(a < 0.f)
+    //    vPos = vOldPos;
+    //else
+    //    vPos = vNewPos;
     
-    float2 velocity = (vNewPos.xy / vNewPos.w) - (vOldPos.xy / vOldPos.w);
+    //float2 velocity = (vNewPos.xy / vNewPos.w) - (vOldPos.xy / vOldPos.w);
     
-    vector vCalDir;
-    vCalDir.xy = velocity * 0.5f;
-    vCalDir.y *= -1.f;
+    //vector vCalDir;
+    //vCalDir.xy = velocity * 0.5f;
+    //vCalDir.y *= -1.f;
 	
-    Output.vPos = vPos;
+    Output.vPos = vNewPos;
     Output.vNor = normalize(mul(vector(Input.vNor, 0.f), g_WorldMatrix));
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
     Output.vProjPos = Output.vPos;
     Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), g_WorldMatrix)).xyz;
     Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
-    Output.vDir = vCalDir;
+    Output.vDir = 0.f;
     
     return Output;
 }
