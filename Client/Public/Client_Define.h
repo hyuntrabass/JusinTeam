@@ -104,9 +104,9 @@ namespace Client
 		_int Current_Mp{ 1000 };
 		_int Attack{ 100 };
 		_int Critical{};
-		_int Critical_Dmg{ 150 }; // �⺻ ġ��Ÿ������ 150( �⺻ �������� �߰�50�ۼ�Ʈ ����)
-		_int Armor{}; // ������ 10�϶� �޴� ������ 10�ۼ�Ʈ �ٿ���(90�۸� ����)
-		_float Speed{}; // �⺻ �ȴ� �̼� 2+���ǵ�/2,�ٴ� �̼� 4+���ǵ�
+		_int Critical_Dmg{ 150 }; // 기본 치명타데미지 150( 기본 데미지에 추가50퍼센트 피해)
+		_int Armor{}; // 방어력이 10일때 받는 데미지 10퍼센트 줄여줌(90퍼만 받음)
+		_float Speed{}; // 기본 걷는 이속 2+스피드/2,뛰는 이속 4+스피드
 	};
 	enum WEAPON_TYPE
 	{
@@ -130,20 +130,20 @@ namespace Client
 		WP_INDEX_END
 	};
 
-	enum ATTACK_TYPE  //�������ִ� Ÿ��
+	enum ATTACK_TYPE  //데미지주는 타입
 	{
-		AT_Sword_Common,// ����
-		AT_Sword_Skill1,// ����
-		AT_Sword_Skill2,// ����
-		AT_Sword_Skill3,// ����
-		AT_Sword_Skill4,// ����
-		AT_Bow_Common,// �з�����
-		AT_Bow_Skill1,// �з�����
-		AT_Bow_Skill2,// ����
+		AT_Sword_Common,// 경직
+		AT_Sword_Skill1,// 경직
+		AT_Sword_Skill2,// 경직
+		AT_Sword_Skill3,// 경직
+		AT_Sword_Skill4,// 경직
+		AT_Bow_Common,// 밀려나게
+		AT_Bow_Skill1,// 밀려나게
+		AT_Bow_Skill2,// 경직
 		AT_Bow_Skill3_Start,
-		AT_Bow_Skill3,// �̼� ��������
-		AT_Bow_Skill4,// ����
-		AT_Bow_SkillR,// ����
+		AT_Bow_Skill3,// 이속 느려지게
+		AT_Bow_Skill4,// 경직
+		AT_Bow_SkillR,// 경직
 
 		AT_End
 	};
