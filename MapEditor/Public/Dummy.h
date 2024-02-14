@@ -26,6 +26,7 @@ public:
 	_float Get_Size() { return m_fTriggerSize; }
 	_int Get_ID() const {return m_iID;}
 	_uint Get_TriggerNum() { return m_iTrigger; }
+	_uint Get_AnimIndex();
 
 public:
 	virtual HRESULT Init_Prototype() override;
