@@ -292,12 +292,16 @@ void CPlayer::Tick(_float fTimeDelta)
 			
 			if (!m_bIsMount)
 			{
-				m_bIsMount = true;
-				m_eState = Mount;
-				m_Animation.iAnimIndex = Anim_Mount_Idle;
-				Riding_Desc Desc{};
-				Desc.Type = m_Current_GroundRiding;
-				Summon_Riding(Desc);
+				m_Current_GroundRiding = CUI_Manager::Get_Instance()->Get_Riding(VC_GROUND);
+				if (m_Current_GroundRiding != Type_End)
+				{
+					m_bIsMount = true;
+					m_eState = Mount;
+					m_Animation.iAnimIndex = Anim_Mount_Idle;
+					Riding_Desc Desc{};
+					Desc.Type = m_Current_GroundRiding;
+					Summon_Riding(Desc);
+				}
 			}
 			else
 			{
@@ -310,12 +314,16 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		if (!m_bIsMount)
 		{
-			m_bIsMount = true;
-			m_eState = Mount;
-			m_Animation.iAnimIndex = Anim_Mount_Idle;
-			Riding_Desc Desc{};
-			Desc.Type = m_Current_AirRiding;
-			Summon_Riding(Desc);
+			m_Current_AirRiding = CUI_Manager::Get_Instance()->Get_Riding(VC_FLY);
+			if (m_Current_AirRiding != Type_End)
+			{
+				m_bIsMount = true;
+				m_eState = Mount;
+				m_Animation.iAnimIndex = Anim_Mount_Idle;
+				Riding_Desc Desc{};
+				Desc.Type = m_Current_AirRiding;
+				Summon_Riding(Desc);
+			}
 		}
 		else
 		{
@@ -1577,13 +1585,18 @@ void CPlayer::Move(_float fTimeDelta)
 				{
 					if (!m_bIsMount)
 					{
-						m_bIsMount = true;
-						m_eState = Mount;
-						m_Animation.iAnimIndex = Anim_Mount_Idle;
-						Riding_Desc Desc{};
-						Desc.Type = m_Current_AirRiding;
-						Desc.bGlide = true;
-						Summon_Riding(Desc);
+						m_Current_AirRiding = CUI_Manager::Get_Instance()->Get_Riding(VC_FLY);
+						if (m_Current_AirRiding != Type_End)
+						{
+							m_bIsMount = true;
+							m_eState = Mount;
+							m_Animation.iAnimIndex = Anim_Mount_Idle;
+							Riding_Desc Desc{};
+							Desc.Type = m_Current_AirRiding;
+							Desc.bGlide = true;
+							Summon_Riding(Desc);
+						}
+
 					}
 				}
 			}

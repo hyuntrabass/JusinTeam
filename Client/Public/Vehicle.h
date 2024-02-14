@@ -60,6 +60,9 @@ private:
 	CTextButton*			m_pSelected{ nullptr };
 	CNineSlice*				m_pEquip{ nullptr };
 	CTextButtonColor*		m_pDetail{ nullptr };
+	CTextButtonColor*		m_pEquipButton{ nullptr };
+
+	class CRiding*			m_pRiding{ nullptr };
 
 public:
 	const VEHICLE_INFO& Get_VehicleInfo() const { return m_tVehicleInfo; }

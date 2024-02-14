@@ -16,6 +16,11 @@ HRESULT CUI_Manager::Init()
 	{
 		m_CustomPart[i] = 0;
 	}
+	
+	for (size_t i = 0; i < VC_END; i++)
+	{
+		m_CurRidingType[i] = (Riding_Type)Type_End;
+	}
 
 	if (FAILED(Init_Items()))
 	{
@@ -426,7 +431,7 @@ HRESULT CUI_Manager::Init_Skills()
 	m_SkillInfo[WP_SWORD][Info.iSkillIdx] = Info;
 
 
-	return E_NOTIMPL;
+	return S_OK;
 }
 
 void CUI_Manager::Set_Symbol(CSymbol::TYPE eType)

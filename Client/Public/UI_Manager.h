@@ -6,6 +6,7 @@
 #include "SkillBlock.h"
 #include "Symbol.h"
 #include "FadeBox.h"
+#include "Riding.h"
 
 BEGIN(Engine)
 class CGameInstance;
@@ -90,6 +91,9 @@ public:
 	void Set_isBoss(_bool isBoss) { m_isBoss = isBoss; }
 	void Set_isTargeting(_bool isTargeting) { m_isTargeting = isTargeting; }
 	void Set_TargetPos(_vec4 vTargetPos) { m_vTargetPos = vTargetPos; }
+	void Set_Riding(VEHICLE_TYPE eVCType, Riding_Type eRidingRype) { m_CurRidingType[eVCType] = eRidingRype; }
+
+	const Riding_Type& Get_Riding(VEHICLE_TYPE eVCType) const { return m_CurRidingType[eVCType]; }
 
 	void Set_MpState(_bool isMp, _uint iMp = 0);
 	void Set_Heal(_bool isHeal, _uint iHeal = 0);
@@ -143,6 +147,7 @@ private:
 	_bool			m_bTimeStop{ false };
 	_bool			m_isBoss{ false };
 
+	Riding_Type     m_CurRidingType[VC_END];
 	_uint			m_iLevel{ 1 };
 	_uint			m_iHeal{  };
 	_uint			m_iMpState{  };

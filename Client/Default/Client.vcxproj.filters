@@ -421,9 +421,6 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\Vehicle">
       <UniqueIdentifier>{8ae8111f-3a1d-46db-a063-c11629d8671e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.UI\GameUI\Vehicle\VehicleDesc">
-      <UniqueIdentifier>{1092602c-b25d-4d3c-9c35-8d48463bb177}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\00.UI\GameUI\Vehicle\Vehicle">
       <UniqueIdentifier>{0d9cfe46-b184-4484-a323-3a20f496c6c0}</UniqueIdentifier>
     </Filter>
@@ -846,9 +843,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\VehicleBook.h">
       <Filter>02.GameObjects\00.UI\GameUI\Vehicle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\VehicleDesc.h">
-      <Filter>02.GameObjects\00.UI\GameUI\Vehicle\VehicleDesc</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Vehicle.h">
       <Filter>02.GameObjects\00.UI\GameUI\Vehicle\Vehicle</Filter>
@@ -1273,9 +1267,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\VehicleBook.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\Vehicle</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\VehicleDesc.cpp">
-      <Filter>02.GameObjects\00.UI\GameUI\Vehicle\VehicleDesc</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Vehicle.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\Vehicle\Vehicle</Filter>

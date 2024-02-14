@@ -138,6 +138,11 @@ HRESULT CNineSlice::Bind_ShaderResources()
 		{
 			return E_FAIL;
 		}
+		_int2 vNumSprite = { 3, 3 };
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vNumSprite", &vNumSprite, sizeof(_int2))))
+		{
+			return E_FAIL;
+		}
 	}
 
 
@@ -162,6 +167,7 @@ void CNineSlice::Set_Position(_vec2 vPos)
 
 void CNineSlice::Set_Size(_float fSizeX, _float fSizeY, _float fFontSize)
 {
+	m_vSize = _vec2(fSizeX, fSizeY);
 	m_fSizeX = fSizeX;
 	m_fSizeY = fSizeY;
 	if (m_fFontSize != -1.f)

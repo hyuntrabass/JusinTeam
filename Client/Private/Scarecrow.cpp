@@ -26,8 +26,8 @@ HRESULT CScarecrow::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(0.f,200.f,4.7f,1.f));
-	m_pTransformCom->LookAt(_vec4(0.f,200.f,0.f,1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(0.f,300.f,4.7f,1.f));
+	m_pTransformCom->LookAt(_vec4(0.f,300.f,0.f,1.f));
 	m_pGameInstance->Register_CollisionObject(this, m_pHitCollider);
 	m_pHitCollider->Update(m_pTransformCom->Get_World_Matrix());
 	return S_OK;
@@ -39,6 +39,8 @@ void CScarecrow::Tick(_float fTimeDelta)
 	{
 		return;
 	}
+	m_pTransformCom->Set_State(State::Pos, _vec4(0.f, 300.f, 4.7f, 1.f));
+	m_pTransformCom->LookAt(_vec4(0.f, 300.f, 0.f, 1.f));
 }
 
 void CScarecrow::Late_Tick(_float fTimeDelta)

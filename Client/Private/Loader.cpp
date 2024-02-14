@@ -1365,11 +1365,6 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
-	
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_VehicleDesc"), CVehicleDesc::Create(m_pDevice, m_pContext))))
-	{
-		return E_FAIL;
-	}
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Vehicle"), CVehicle::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
