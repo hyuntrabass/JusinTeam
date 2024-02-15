@@ -303,20 +303,20 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			static int Map_current_idx = -1;
 			ImGui::Text("Map");
 			static int iSelectMap = 0;
-			ImGui::RadioButton("Tutorial", &iSelectMap, 0); ImGui::SameLine();
-			ImGui::RadioButton("Midgard", &iSelectMap, 1); ImGui::SameLine();
-			ImGui::RadioButton("Deongeon", &iSelectMap, 2);
+			ImGui::RadioButton("ETC", &iSelectMap, 0); ImGui::SameLine();
+			ImGui::RadioButton("Build", &iSelectMap, 1); ImGui::SameLine();
+			ImGui::RadioButton("Decoration", &iSelectMap, 2);
 			if (iSelectMap == 0)
 			{
-				m_eType = TEXT("Tutorial");
+				m_eType = TEXT("ETC");
 			}
 			else if (iSelectMap == 1)
 			{
-				m_eType = TEXT("Midgard");
+				m_eType = TEXT("Build");
 			}
 			else if (iSelectMap == 2)
 			{
-				m_eType = TEXT("Dungeon");
+				m_eType = TEXT("Decoration");
 			}
 
 			if (ImGui::BeginListBox("MAPS PATH", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
@@ -385,27 +385,26 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			m_eItemType = ItemType::Objects;
 			/* 오브젝트 */
 			static int iSelectObject = 0;
-			ImGui::RadioButton("Tutorial", &iSelectObject, 0); ImGui::SameLine();
-			ImGui::RadioButton("Midgard", &iSelectObject, 1); ImGui::SameLine();
-			ImGui::RadioButton("Dungeon", &iSelectObject, 2);
+			ImGui::RadioButton("ETC", &iSelectObject, 0); ImGui::SameLine();
+			ImGui::RadioButton("Build", &iSelectObject, 1); ImGui::SameLine();
+			ImGui::RadioButton("Decoration", &iSelectObject, 2);
 			_int iObjectCount = m_ObjectsList.size();
 			ImGui::InputInt("Count", &iObjectCount, 14);
 
-			ImGui::SeparatorText("LIST");
 			static int Object_current_idx = 0;
 			ImGui::Text("Objects");
 
 			if (iSelectObject == 0)
 			{
-				m_eType = TEXT("Tutorial");
+				m_eType = TEXT("ETC");
 			}
 			else if (iSelectObject == 1)
 			{
-				m_eType = TEXT("Midgard");
+				m_eType = TEXT("Build");
 			}
 			else if (iSelectObject == 2)
 			{
-				m_eType = TEXT("Dungeon");
+				m_eType = TEXT("Decoration");
 			}
 
 			ImGui::NewLine();
@@ -476,7 +475,6 @@ HRESULT CImGui_Manager::ImGuiMenu()
 #pragma endregion
 
 #pragma region 환경
-
 		if (ImGui::BeginTabItem("Environment"))
 		{
 			m_eItemType = ItemType::Environment;
@@ -672,11 +670,6 @@ HRESULT CImGui_Manager::ImGuiMenu()
 		if (ImGui::BeginTabItem("NPC"))
 		{
 			/* NPC */
-			static int iSelectNPC = 0;
-			ImGui::RadioButton("Midgard", &iSelectNPC, 0); ImGui::SameLine();
-			ImGui::RadioButton("Deongeon", &iSelectNPC, 1); ImGui::SameLine();
-			ImGui::RadioButton("Village", &iSelectNPC, 2);
-
 			m_eItemType = ItemType::NPC;
 			ImGui::SeparatorText("LIST");
 			static int NPC_current_idx = 0;
@@ -1584,7 +1577,7 @@ void CImGui_Manager::Search_Map()
 			if (extension == ".hyuntrastatmesh") {
 				char* cstr = new char[strName.length() + 1];
 				strcpy_s(cstr, strName.length() + 1, strName.c_str());
-				Maps[TEXT("Tutorial")].push_back(cstr);
+				Maps[TEXT("ETC")].push_back(cstr);
 			}
 		}
 	}
@@ -1600,7 +1593,7 @@ void CImGui_Manager::Search_Map()
 			if (extension == ".hyuntrastatmesh") {
 				char* cstr = new char[strName.length() + 1];
 				strcpy_s(cstr, strName.length() + 1, strName.c_str());
-				Maps[TEXT("Midgard")].push_back(cstr);
+				Maps[TEXT("Build")].push_back(cstr);
 			}
 		}
 	}
@@ -1616,7 +1609,7 @@ void CImGui_Manager::Search_Map()
 			if (extension == ".hyuntrastatmesh") {
 				char* cstr = new char[strName.length() + 1];
 				strcpy_s(cstr, strName.length() + 1, strName.c_str());
-				Maps[TEXT("Dungeon")].push_back(cstr);
+				Maps[TEXT("Decoration")].push_back(cstr);
 			}
 		}
 	}
@@ -1637,7 +1630,7 @@ void CImGui_Manager::Search_Object()
 
 				char* cstr = new char[strName.length() + 1];
 				strcpy_s(cstr, strName.length() + 1, strName.c_str());
-				Objects[L"Tutorial"].push_back(cstr);
+				Objects[L"ETC"].push_back(cstr);
 			}
 		}
 
@@ -1654,7 +1647,23 @@ void CImGui_Manager::Search_Object()
 
 				char* cstr = new char[strName.length() + 1];
 				strcpy_s(cstr, strName.length() + 1, strName.c_str());
-				Objects[L"Midgard"].push_back(cstr);
+				Objects[L"Build"].push_back(cstr);
+			}
+		}
+	}
+	strFilePath = "../../Client/Bin/Resources/StaticMesh/Object/Dungeon/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			string strName = entry.path().stem().string();
+			string extension = entry.path().extension().string();
+
+			if (extension == ".hyuntrastatmesh") {
+
+				char* cstr = new char[strName.length() + 1];
+				strcpy_s(cstr, strName.length() + 1, strName.c_str());
+				Objects[L"Decoration"].push_back(cstr);
 			}
 		}
 	}
