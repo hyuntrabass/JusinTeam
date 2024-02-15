@@ -275,6 +275,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		{
 			WEAPON_TYPE eWpType{};
 			_uint iWpIdx = CUI_Manager::Get_Instance()->Get_WeaponType(eType, &eWpType);
+
 			Change_Weapon(eWpType, (WEAPON_INDEX)iWpIdx);
 
 		}
@@ -1290,6 +1291,8 @@ void CPlayer::Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex)
 		m_Current_Weapon = PartsType;
 		m_bWeapon_Unequip = false;
 	}
+
+	m_Status.Attack = m_EquipStatus.Attack + 100;
 }
 
 
@@ -2472,7 +2475,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 					if (m_bAttacked)
 					{
-						m_pCam_Manager->Set_ShakeCam(true, 0.2f);
+						m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 					}
 
 				}
@@ -2505,7 +2508,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						}
 						if (m_bAttacked)
 						{
-							m_pCam_Manager->Set_ShakeCam(true, 0.2f);
+							m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 						}
 						m_fAttTimer = 0.45f;
 
@@ -2535,7 +2538,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						Check_Att_Collider(AT_Sword_Common);
 						if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Common]))
 						{
-							m_pGameInstance->Set_TimeRatio(0.3f);
+							m_pGameInstance->Set_TimeRatio(0.01f);
 							m_bAttacked = true;
 
 						}
@@ -2548,7 +2551,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				}
 				if (m_bAttacked)
 				{
-					m_pCam_Manager->Set_ShakeCam(true, 0.2f);
+					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 				}
 			}
 		}
@@ -2579,7 +2582,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					}
 					if (m_bAttacked)
 					{
-						m_pCam_Manager->Set_ShakeCam(true, 0.2f);
+						m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 					}
 				}
 
@@ -2600,7 +2603,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 						}
 					}
-					m_pCam_Manager->Set_ShakeCam(true, 2.f);
+					m_pCam_Manager->Set_ShakeCam(true,2.0f);
 				}
 				else
 				{
@@ -2642,7 +2645,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					m_pGameInstance->Set_TimeRatio(0.4f);
 					m_bAttacked = true;
-					m_pCam_Manager->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 
 				}
 			}
@@ -2660,7 +2663,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					m_pGameInstance->Set_TimeRatio(0.4f);
 					m_bAttacked = true;
-					m_pCam_Manager->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 				}
 
 			}
@@ -2694,7 +2697,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					m_pGameInstance->Set_TimeRatio(0.4f);
 					m_bAttacked = true;
-					m_pCam_Manager->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 					m_fSkillSpeed = 3.f;
 				}
 			}
@@ -2715,7 +2718,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					m_pGameInstance->Set_TimeRatio(0.4f);
 					m_bAttacked = true;
 					m_fSkillSpeed = 3.f;
-					m_pCam_Manager->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 				}
 
 			}
@@ -2734,7 +2737,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					m_pGameInstance->Set_TimeRatio(0.4f);
 					m_bAttacked = true;
 					m_fSkillSpeed = 3.f;
-					m_pCam_Manager->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 				}
 
 			}
@@ -2753,7 +2756,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					m_pGameInstance->Set_TimeRatio(0.4f);
 					m_bAttacked = true;
 					m_fSkillSpeed = 3.f;
-					m_pCam_Manager->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 				}
 
 			}
@@ -2794,7 +2797,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					m_pGameInstance->Set_TimeRatio(0.2f);
 					m_bAttacked = true;
-					m_pCam_Manager->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 				}
 
 			}
@@ -2814,7 +2817,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					m_pGameInstance->Set_TimeRatio(0.2f);
 					m_bAttacked = true;
-					m_pCam_Manager->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 				}
 
 			}
@@ -2877,7 +2880,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 			//if (m_bAttacked)
 			{
-				m_pCam_Manager->Set_ShakeCam(true, 0.2f);
+				m_pCam_Manager->Set_ShakeCam(true, 0.5f);
 			}
 			m_pCam_Manager->Set_AimMode(true, _vec3(-0.8f, 2.0f, 1.2f));
 
@@ -2900,7 +2903,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			}
 			//if (m_bAttacked)
 			{
-				m_pCam_Manager->Set_ShakeCam(true, 0.2f);
+				m_pCam_Manager->Set_ShakeCam(true, 0.5f);
 			}
 			m_pCam_Manager->Set_AimMode(true, _vec3(0.8f, 2.0f, 1.2f));
 			//m_pCameraTransform->LookAt(m_pTransformCom->Get_CenterPos());
@@ -2926,7 +2929,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			}
 			//if (m_bAttacked)
 			{
-				m_pCam_Manager->Set_ShakeCam(true, 0.2f);
+				m_pCam_Manager->Set_ShakeCam(true, 0.5f);
 			}
 			m_pCam_Manager->Set_AimMode(false);
 			Cam_AttackZoom(3.6f);
@@ -2947,7 +2950,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			}
 			//if (m_bAttacked)
 			{
-				m_pCam_Manager->Set_ShakeCam(true, 0.2f);
+				m_pCam_Manager->Set_ShakeCam(true, 0.5f);
 			}
 			Cam_AttackZoom(4.4f);
 		}
@@ -3122,6 +3125,7 @@ void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
 	{
 		type.world = world;
 		type.vLook = m_pTransformCom->Get_State(State::Look);
+		type.iDamage = m_Status.Attack + rand() % 30;
 		if (m_iAttackCombo == 4)
 		{
 			type.Att_Type = AT_Bow_SkillR;
@@ -3150,6 +3154,7 @@ void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
 		type.world = world;
 		type.vLook = m_pTransformCom->Get_State(State::Look);
 		type.Att_Type = AT_Bow_Skill1;
+		type.iDamage = m_Status.Attack + rand() % 30 + 30;
 		if (m_bLockOn)
 		{
 			type.MonCollider = m_pGameInstance->Get_Nearest_MonsterCollider();
@@ -3168,8 +3173,12 @@ void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
 	{
 		type.world = world;
 		type.vLook = m_pTransformCom->Get_State(State::Look);
-		type.vLook.y -= 0.2f;
+		if (!m_bLockOn)
+		{
+			type.vLook.y -= 0.2f;
+		}
 		type.Att_Type = AT_Bow_Skill2;
+		type.iDamage = m_Status.Attack + rand() % 30 + 30;
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
 		{
 			return;
@@ -3190,6 +3199,7 @@ void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
 	break;
 	case Client::AT_Bow_Skill3:
 	{
+
 		m_bArrowRain_Start = true;
 		m_iArrowRain = 0;
 	}
@@ -3364,6 +3374,7 @@ void CPlayer::Arrow_Rain()
 	if (m_iArrowRain < 80)
 	{
 		Arrow_Type Type{};
+		Type.iDamage = m_Status.Attack + rand() % 50 + 30;
 		Type.Att_Type = AT_Bow_Skill3;
 		_float random = (_float)(rand() % 70);
 		_int randommos = rand() % 2;

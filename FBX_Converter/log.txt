@@ -1,61 +1,46 @@
 1. Static Only   2. Anim Only   3. All
-<<<<<<< HEAD
 2
 Animation Models : Start Converting...
 1. Normally Anim Model	2. For VTF Model 3. Part Model
 1
-Converting... 123.fbx
+Converting... boss.fbx
 Read File Succssefully
 Animation name list: 
-Mon_Skjaldmaer.ao|Attack01
-Mon_Skjaldmaer.ao|Attack01_A
-Mon_Skjaldmaer.ao|Attack02
-Mon_Skjaldmaer.ao|Attack02_A
-Mon_Skjaldmaer.ao|Attack03
-Mon_Skjaldmaer.ao|Attack03_A
-Mon_Skjaldmaer.ao|Attack04
-Mon_Skjaldmaer.ao|Attack04_A
-Mon_Skjaldmaer.ao|Attack05
-Mon_Skjaldmaer.ao|Attack05_A
-Mon_Skjaldmaer.ao|Attack06
-Mon_Skjaldmaer.ao|Attack06_A
-Mon_Skjaldmaer.ao|Attack07
-Mon_Skjaldmaer.ao|Attack07_A
-Mon_Skjaldmaer.ao|Attack08
-Mon_Skjaldmaer.ao|Attack08_A
-Mon_Skjaldmaer.ao|Attack09
-Mon_Skjaldmaer.ao|Attack09_A
-Mon_Skjaldmaer.ao|Attack10
-Mon_Skjaldmaer.ao|Die
-Mon_Skjaldmaer.ao|Die_A
-Mon_Skjaldmaer.ao|Idle
-Mon_Skjaldmaer.ao|Idle_A
-Mon_Skjaldmaer.ao|Roar
-Mon_Skjaldmaer.ao|Roar_A
-Mon_Skjaldmaer.ao|Run
-Mon_Skjaldmaer.ao|Run_A
-Mon_Skjaldmaer.ao|Spawn
-Mon_Skjaldmaer.ao|Spawn_A
-Mon_Skjaldmaer.ao|Talk
-Mon_Skjaldmaer.ao|Talk_A
-Mon_Skjaldmaer.ao|Walk
-Mon_Skjaldmaer.ao|Walk_A
+Mon_Angrboda.ao|attack01
+Mon_Angrboda.ao|attack02
+Mon_Angrboda.ao|attack03
+Mon_Angrboda.ao|attack04
+Mon_Angrboda.ao|attack05
+Mon_Angrboda.ao|attack06_End
+Mon_Angrboda.ao|attack06_Loop
+Mon_Angrboda.ao|attack06_Start
+Mon_Angrboda.ao|attack06_Start.001
+Mon_Angrboda.ao|attack07
+Mon_Angrboda.ao|attack08
+Mon_Angrboda.ao|attack08_2
+Mon_Angrboda.ao|attack09_A
+Mon_Angrboda.ao|attack09_B
+Mon_Angrboda.ao|attack10_A
+Mon_Angrboda.ao|attack10_B
+Mon_Angrboda.ao|attack11_A
+Mon_Angrboda.ao|attack11_B
+Mon_Angrboda.ao|attack12_A
+Mon_Angrboda.ao|attack12_B
+Mon_Angrboda.ao|attack13
+Mon_Angrboda.ao|BossView_Idle
+Mon_Angrboda.ao|CardTestattack01
+Mon_Angrboda.ao|CardTestattack02
+Mon_Angrboda.ao|CardTestattack03
+Mon_Angrboda.ao|Die
+Mon_Angrboda.ao|Idle
+Mon_Angrboda.ao|Rage
+Mon_Angrboda.ao|Roar
+Mon_Angrboda.ao|Run
+Mon_Angrboda.ao|Run2
+Mon_Angrboda.ao|Spawn
+Mon_Angrboda.ao|Spawn_Idle
+Mon_Angrboda.ao|Walk
 Animation Models : Convert Success!
 
 1 Animation Models
-=======
-1
-Static Models : Start Converting...
-Converting... Stand_Torch1.fbx
-Read File Succssefully
-Converting... Stand_Torch2.fbx
-Read File Succssefully
-Converting... Torch.fbx
-Read File Succssefully
-Converting... Wall_Torch.fbx
-Read File Succssefully
-Static Models : Convert Success!
-
-4 Static Models
->>>>>>> ab903a7def4ff391cfebf09241b11491f9427499
 are Successfully Converted as hyuntramesh!!

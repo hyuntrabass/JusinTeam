@@ -24,7 +24,7 @@ HRESULT CArrow::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-
+	m_iDamage = m_ArrowType.iDamage;
 	if (m_ArrowType.Att_Type != AT_Bow_Skill3)
 	{
 		if (m_ArrowType.Att_Type == AT_Bow_SkillR)
@@ -85,7 +85,7 @@ void CArrow::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
-			m_pGameInstance->Attack_Monster(m_pCollider, 120, AT_Bow_Common);
+			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Common);
 			Kill();
 		}
 		break;
@@ -94,7 +94,7 @@ void CArrow::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
-			m_pGameInstance->Attack_Monster(m_pCollider, 150, AT_Bow_Skill1);
+			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill1);
 			Kill();
 		}
 		break;
@@ -103,7 +103,7 @@ void CArrow::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
-			m_pGameInstance->Attack_Monster(m_pCollider, 200, AT_Bow_Skill2);
+			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
 			Kill();
 		}
 		break;
@@ -112,7 +112,7 @@ void CArrow::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
-			m_pGameInstance->Attack_Monster(m_pCollider, 130, AT_Bow_Skill3);
+			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill3);
 			Kill();
 		}
 		break;

@@ -1144,7 +1144,7 @@ HRESULT CLoader::Load_GamePlay()
 
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Human_Boss"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Human_Boss/Mesh/LASTBOSS.hyuntraanimmesh"))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Human_Boss/Mesh/boss.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
