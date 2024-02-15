@@ -1022,7 +1022,8 @@ HRESULT CRenderer::Render_AnimNonBlend_Instance()
 
 		CVTFModel* pHeadModel = static_cast<CVTFModel*>(pHead->Find_Component(L"Com_Model"));
 		CShader* pHeadShader = static_cast<CShader*>(pHead->Find_Component(L"Com_Shader"));
-		pHeadShader->Bind_RawValue("g_PlayAnimInstances", &*PlayAnimDescs, MAX_INSTANCE * sizeof(PLAYANIM_DESC));
+		if (FAILED(pHeadShader->Bind_RawValue("g_PlayAnimInstances", PlayAnimDescs, MAX_INSTANCE * sizeof(PLAYANIM_DESC))))
+			return E_FAIL;
 
 		Safe_Delete(PlayAnimDescs);
 

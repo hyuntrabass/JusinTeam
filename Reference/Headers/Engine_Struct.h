@@ -184,7 +184,7 @@ namespace Engine
 		ANIMTIME_DESC eNext;
 	};
 
-#define MAX_INSTANCE 300
+#define MAX_INSTANCE 800
 	using INSTANCED_PLAYANIM_DESC = struct tagInstancedPlayAnimDesc
 	{
 		PLAYANIM_DESC PlayAnim[MAX_INSTANCE];
@@ -361,7 +361,7 @@ namespace Engine
 	struct Instance_Data
 	{
 		SimpleMath::Matrix mMatrix{};
-		SimpleMath::Matrix mOldMatrix{};
+		//SimpleMath::Matrix mOldMatrix{};
 		unsigned int m_iID{};
 	};
 

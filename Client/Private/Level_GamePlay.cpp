@@ -494,6 +494,11 @@ HRESULT CLevel_GamePlay::Ready_ModelTest()
 		{
 			return E_FAIL;
 		}
+		/*if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Rabbit"), TEXT("Prototype_GameObject_Rabbit"))))
+		{
+			MSG_BOX("Rabbit 생성 실패");
+			return E_FAIL;
+		}*/
 	}
 
 	return S_OK;
