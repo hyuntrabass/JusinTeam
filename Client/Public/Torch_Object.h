@@ -2,9 +2,11 @@
 #include "Client_Define.h"
 #include "Objects.h"
 /*
-	Wall_Torch
-	Stand_Torch1
-	Stand_Torch2
+	Prototype_Model_Wall_Torch
+	Prototype_Model_Stand_Torch1
+	Prototype_Model_Stand_Torch2
+	Prototype_Model_Torch
+	Prototype_Model_Brazier
 */
 BEGIN(Client)
 

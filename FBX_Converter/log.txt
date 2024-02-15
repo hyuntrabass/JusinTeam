@@ -1,61 +1,9 @@
 1. Static Only   2. Anim Only   3. All
-<<<<<<< HEAD
-2
-Animation Models : Start Converting...
-1. Normally Anim Model	2. For VTF Model 3. Part Model
-1
-Converting... 123.fbx
-Read File Succssefully
-Animation name list: 
-Mon_Skjaldmaer.ao|Attack01
-Mon_Skjaldmaer.ao|Attack01_A
-Mon_Skjaldmaer.ao|Attack02
-Mon_Skjaldmaer.ao|Attack02_A
-Mon_Skjaldmaer.ao|Attack03
-Mon_Skjaldmaer.ao|Attack03_A
-Mon_Skjaldmaer.ao|Attack04
-Mon_Skjaldmaer.ao|Attack04_A
-Mon_Skjaldmaer.ao|Attack05
-Mon_Skjaldmaer.ao|Attack05_A
-Mon_Skjaldmaer.ao|Attack06
-Mon_Skjaldmaer.ao|Attack06_A
-Mon_Skjaldmaer.ao|Attack07
-Mon_Skjaldmaer.ao|Attack07_A
-Mon_Skjaldmaer.ao|Attack08
-Mon_Skjaldmaer.ao|Attack08_A
-Mon_Skjaldmaer.ao|Attack09
-Mon_Skjaldmaer.ao|Attack09_A
-Mon_Skjaldmaer.ao|Attack10
-Mon_Skjaldmaer.ao|Die
-Mon_Skjaldmaer.ao|Die_A
-Mon_Skjaldmaer.ao|Idle
-Mon_Skjaldmaer.ao|Idle_A
-Mon_Skjaldmaer.ao|Roar
-Mon_Skjaldmaer.ao|Roar_A
-Mon_Skjaldmaer.ao|Run
-Mon_Skjaldmaer.ao|Run_A
-Mon_Skjaldmaer.ao|Spawn
-Mon_Skjaldmaer.ao|Spawn_A
-Mon_Skjaldmaer.ao|Talk
-Mon_Skjaldmaer.ao|Talk_A
-Mon_Skjaldmaer.ao|Walk
-Mon_Skjaldmaer.ao|Walk_A
-Animation Models : Convert Success!
-
-1 Animation Models
-=======
 1
 Static Models : Start Converting...
-Converting... Stand_Torch1.fbx
-Read File Succssefully
-Converting... Stand_Torch2.fbx
-Read File Succssefully
-Converting... Torch.fbx
-Read File Succssefully
-Converting... Wall_Torch.fbx
+Converting... Brazier.fbx
 Read File Succssefully
 Static Models : Convert Success!
 
-4 Static Models
->>>>>>> ab903a7def4ff391cfebf09241b11491f9427499
+1 Static Models
 are Successfully Converted as hyuntramesh!!
