@@ -1001,8 +1001,12 @@ HRESULT CRenderer::Render_AnimNonBlend_Instance()
 		vector<CGameObject*>& vInstances = Pair.second;
 		const _uint instanceId = Pair.first;
 		CGameObject*& pHead = vInstances[0];
+		//Late_Tick 2번 들어와서 터지는거 방지
+		if (vInstances.size() > MAX_INSTANCE)
+			break;
 
 		INSTANCED_PLAYANIM_DESC* PlayAnimDescs = new INSTANCED_PLAYANIM_DESC;
+
 		for (_uint i = 0; i < vInstances.size(); i++)
 		{
 			CGameObject*& pGameObject = vInstances[i];

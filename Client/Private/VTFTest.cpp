@@ -85,6 +85,21 @@ HRESULT CVTFTest::Render()
         return E_FAIL;
     }
 
+    if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+    {
+        return E_FAIL;
+    }
+
+    if (FAILED(m_pModelCom->Bind_Animation(m_pShaderCom)))
+    {
+        return E_FAIL;
+    }
+
+    if (FAILED(m_pModelCom->Bind_PlayAnimation(m_pShaderCom)))
+    {
+        return E_FAIL;
+    }
+
     for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
     {
         if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))

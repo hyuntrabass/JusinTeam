@@ -289,6 +289,14 @@ HRESULT CVTFModel::Bind_OldAnimation(CShader* pShader)
 	return S_OK;
 }
 
+HRESULT CVTFModel::Bind_PlayAnimation(CShader* pShader)
+{
+	if (FAILED(pShader->Bind_RawValue("g_PlayAnimDesc", &m_PlayAnimDesc, sizeof(ANIMTIME_DESC))))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 HRESULT CVTFModel::Render(_uint iMeshIndex)
 {
 	if (FAILED(m_Meshes[iMeshIndex]->Render()))
