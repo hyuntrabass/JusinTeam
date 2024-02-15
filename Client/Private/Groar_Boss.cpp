@@ -42,7 +42,6 @@ HRESULT CGroar_Boss::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pTransformCom->Set_Position(_vec3(2179.f, -20.f, 2083.f));
 	m_pTransformCom->Set_Position(_vec3(2109.f, -15.f, 2092.f));
 	PxRaycastBuffer RayBuff{};
 	if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), _vec4(0.f, -1.f, 0.f, 0.f), 50.f, RayBuff))

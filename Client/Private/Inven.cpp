@@ -76,12 +76,29 @@ HRESULT CInven::Init(void* pArg)
 	m_pWearableSlots[W_CHEST]->Set_WearableItem(eItem);
 
 	strItem = TEXT("그냥검");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
+	eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
+	m_pWearableSlots[W_EQUIP]->Set_WearableItem(eItem);
 
 	strItem = TEXT("그냥활");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);	
+	
+	strItem = TEXT("신화활");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);	
+	
+	strItem = TEXT("유니크검");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);	
+	
+	strItem = TEXT("로브");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);	
+	
+	strItem = TEXT("체력 포션");
+	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
+	
+	strItem = TEXT("[희귀]탈 것 소환 카드");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);
-
-
+	
+	strItem = TEXT("[일반]탈 것 소환 카드");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);
 
 	//m_pWearableSlots[W_EQUIP]->Set_WearableItem(eItem);
 	return S_OK;
