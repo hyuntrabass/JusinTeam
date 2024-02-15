@@ -28,7 +28,7 @@ HRESULT CEtc_Object::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_iShaderPass = 0;
+	m_iShaderPass = StaticPass_OutLine;
 
 	m_pTransformCom->Set_Matrix(m_Info.m_WorldMatrix);
 	m_pModelCom->Apply_TransformToActor(m_Info.m_WorldMatrix);

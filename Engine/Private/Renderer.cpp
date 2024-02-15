@@ -198,6 +198,16 @@ HRESULT CRenderer::Init_Prototype()
 
 #pragma endregion
 
+#pragma region For_Outline
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Outline"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	{
+		return E_FAIL;
+	}
+
+#pragma endregion
+
+
 #pragma region MRT_GameObjects
 
 	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Diffuse"))))
@@ -372,6 +382,14 @@ HRESULT CRenderer::Init_Prototype()
 
 #pragma endregion
 
+#pragma region MRT_Outline
+
+	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_Outline", L"Target_Outline")))
+		return E_FAIL;
+
+#pragma endregion
+
+
 #pragma region VIBuffer & Shader & Shadow Ready
 
 
@@ -447,6 +465,9 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Ready_Debug_RT(L"Target_Outline", _float2(ViewportDesc.Width - 250.f, 50.f), _float2(100.f, 100.f))))
+		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Ready_Debug_RT(L"Target_Reflection_Final", _float2(ViewportDesc.Width - 250.f, 150.f), _float2(100.f, 100.f))))
 		return E_FAIL;
@@ -566,6 +587,8 @@ HRESULT CRenderer::Draw_RenderGroup()
 		MSG_BOX("Failed to Render : Priority");
 		return E_FAIL;
 	}
+
+
 	if (FAILED(Render_Shadow()))
 	{
 		MSG_BOX("Failed to Render : Shadow");
@@ -575,11 +598,6 @@ HRESULT CRenderer::Draw_RenderGroup()
 	if (FAILED(Clear_Instance()))
 		return E_FAIL;
 
-	//if (FAILED(Render_Refraction()))
-	//{
-	//	MSG_BOX("Failed to Render : Refraction");
-	//	return E_FAIL;
-	//}
 	if (FAILED(Render_Reflection()))
 	{
 		MSG_BOX("Failed to Render : Reflection");
@@ -635,24 +653,16 @@ HRESULT CRenderer::Draw_RenderGroup()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR")))
-		return E_FAIL;
-
 	if (FAILED(Render_Deferred()))
 	{
 		MSG_BOX("Failed to Render : Deferred");
 		return E_FAIL;
 	}
-	if (FAILED(Render_NonLight()))
-	{
-		MSG_BOX("Failed to Render : NonLight");
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->End_MRT()))
-		return E_FAIL;
 
 	if (FAILED(Render_HDR()))
+		return E_FAIL;
+
+	if (FAILED(Render_Outline()))
 		return E_FAIL;
 
 	if (FAILED(Render_Blend()))
@@ -661,11 +671,6 @@ HRESULT CRenderer::Draw_RenderGroup()
 		return E_FAIL;
 	}
 
-	if (FAILED(Render_Blur()))
-	{
-		MSG_BOX("Failed to Render : Blur");
-		return E_FAIL;
-	}
 	if (FAILED(Render_BlendBlur()))
 	{
 		MSG_BOX("Failed to Render : BlenderBlur");
@@ -806,6 +811,7 @@ HRESULT CRenderer::Render_Priority()
 
 	return S_OK;
 }
+
 
 HRESULT CRenderer::Render_Shadow()
 {
@@ -1163,6 +1169,9 @@ HRESULT CRenderer::Render_Refraction()
 
 HRESULT CRenderer::Render_Reflection()
 {
+	if (m_RenderObjects[RG_Water].empty())
+		return S_OK;
+
 	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Reflection"))))
 		return E_FAIL;
 
@@ -1488,6 +1497,9 @@ HRESULT CRenderer::Render_LightAcc()
 
 HRESULT CRenderer::Render_Deferred()
 {
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR")))
+		return E_FAIL;
+
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DiffuseTexture", TEXT("Target_Diffuse"))))
 	{
 		return E_FAIL;
@@ -1538,22 +1550,6 @@ HRESULT CRenderer::Render_Deferred()
 		if (FAILED(m_pShader->Bind_RawValue("g_ClipZ", &ClipZ, sizeof(_vec4))))
 			return E_FAIL;
 	}
-
-	/*_uint iNumViewPorts{ 1 };
-
-	D3D11_VIEWPORT ViewportDesc{};
-
-	m_pContext->RSGetViewports(&iNumViewPorts, &ViewportDesc);*/
-
-
-	//if (FAILED(m_pShader->Bind_RawValue("g_fScreenWidth", &ViewportDesc.Width, sizeof _float)))
-	//{
-	//	return E_FAIL;
-	//}
-	//if (FAILED(m_pShader->Bind_RawValue("g_fScreenHeight", &ViewportDesc.Height, sizeof _float)))
-	//{
-	//	return E_FAIL;
-	//}
 
 	if (FAILED(m_pShader->Bind_RawValue("g_fHellStart", &m_pGameInstance->Get_HellHeight(), sizeof _float)))
 	{
@@ -1613,70 +1609,93 @@ HRESULT CRenderer::Render_Deferred()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->End_MRT()))
+		return E_FAIL;
+
 	return S_OK;
 }
 
-HRESULT CRenderer::Render_Blur()
+HRESULT CRenderer::Render_Outline()
 {
-	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur"))))
+	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Outline"))))
 	{
 		return E_FAIL;
 	}
 
-	for (auto& pGameObject : m_RenderObjects[RG_Blur])
+	_vec4 CheckColor;
+	for (size_t i = OutlineColor_White; i < OutlineColor_End; i++)
 	{
-		if (pGameObject)
+		switch (i)
 		{
-			if (FAILED(pGameObject->Render()))
-			{
-				MSG_BOX("Failed to Render");
-			}
+		case OutlineColor_White:
+			CheckColor = _vec4(0.f, 0.f, 1.f, 1.f);
+			break;
+		case OutlineColor_Yellow:
+			CheckColor = _vec4(0.f, 1.f, 0.f, 1.f);
+			break;
+		case OutlineColor_Red:
+			CheckColor = _vec4(1.f, 0.f, 0.f, 1.f);
+			break;
 		}
+		if (FAILED(m_pShader->Bind_RawValue("g_OutlineColorIndex", &i, sizeof(_uint))))
+			return E_FAIL;
 
-		Safe_Release(pGameObject);
+		if (FAILED(m_pShader->Bind_RawValue("g_OutlineColor", &CheckColor, sizeof(_vec4))))
+			return E_FAIL;
+
+		if (FAILED(m_pShader->Begin(DefPass_Stencil)))
+			return E_FAIL;
+
+		if (FAILED(m_pVIBuffer->Render()))
+			return E_FAIL;
 	}
 
-	m_RenderObjects[RG_Blur].clear();
 
 	if (FAILED(m_pGameInstance->End_MRT()))
 	{
 		return E_FAIL;
 	}
 
-	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_Bloom"))))
-	//{
-	//	return E_FAIL;
-	//}
-
-	//if (FAILED(m_pShader->Begin(DefPass_Blur)))
-	//{
-	//	return E_FAIL;
-	//}
-	//if (FAILED(m_pVIBuffer->Render()))
-	//{
-	//	return E_FAIL;
-	//}
-
-	return S_OK;
-}
-
-HRESULT CRenderer::Render_NonLight()
-{
-
-	for (auto& pGameObject : m_RenderObjects[RG_NonLight])
+	_vec4 vColor;
+	for (size_t i = OutlineColor_White; i < OutlineColor_End; i++)
 	{
-		if (pGameObject)
+		switch (i)
 		{
-			if (FAILED(pGameObject->Render()))
-			{
-				MSG_BOX("Failed to Render");
-			}
+		case OutlineColor_White:
+			CheckColor = _vec4(0.f, 0.f, 1.f, 1.f);
+			vColor = _vec4(1.f, 1.f, 1.f, 1.f);
+			break;
+		case OutlineColor_Yellow:
+			CheckColor = _vec4(0.f, 1.f, 0.f, 1.f);
+			vColor = _vec4(1.f, 1.f, 0.f, 1.f);
+			break;
+		case OutlineColor_Red:
+			CheckColor = _vec4(1.f, 0.f, 0.f, 1.f);
+			vColor = _vec4(1.f, 0.f, 0.f, 1.f);
+			break;
 		}
 
-		Safe_Release(pGameObject);
+		if (FAILED(m_pShader->Bind_RawValue("g_OutlineColorIndex", &i, sizeof(_uint))))
+			return E_FAIL;
+
+		if (FAILED(m_pShader->Bind_RawValue("g_CheckColor", &CheckColor, sizeof(_vec4))))
+			return E_FAIL;
+
+		if (FAILED(m_pShader->Bind_RawValue("g_OutlineColor", &vColor, sizeof(_vec4))))
+			return E_FAIL;
+
+		if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_StencilTexture", L"Target_Outline")))
+			return E_FAIL;
+
+		if (FAILED(m_pShader->Begin(DefPass_Outline)))
+			return E_FAIL;
+
+		if (FAILED(m_pVIBuffer->Render()))
+			return E_FAIL;
+
 	}
 
-	m_RenderObjects[RG_NonLight].clear();
 
 	return S_OK;
 }
@@ -1916,6 +1935,9 @@ HRESULT CRenderer::Render_Debug()
 	}
 
 	if (FAILED(m_pShadowMap->Render(m_pShader, m_pVIBuffer)))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Render_Debug_RT(L"MRT_Outline", m_pShader, m_pVIBuffer)))
 		return E_FAIL;
 
 	return S_OK;

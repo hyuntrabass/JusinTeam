@@ -32,15 +32,6 @@ void CObjects::Tick(_float fTimeDelta)
 
 void CObjects::Late_Tick(_float fTimeDelta)
 {
-	//CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Camera", LEVEL_STATIC);
-
-	//_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
-	//_vec4 vPos = m_pTransformCom->Get_CenterPos();
-
-	//if (abs(vPlayerPos.x - vPos.x) > 500.f)
-	//{
-	//	return;
-	//}
 
 	CAMERA_STATE CamState = CCamera_Manager::Get_Instance()->Get_CameraState();
 	if (CamState == CS_SKILLBOOK or CamState == CS_INVEN or CamState == CS_WORLDMAP)
@@ -317,6 +308,7 @@ HRESULT CObjects::Bind_ShaderResources()
 		{
 			return E_FAIL;
 		}
+
 	}
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
