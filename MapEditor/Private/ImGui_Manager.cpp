@@ -1830,7 +1830,6 @@ void CImGui_Manager::FastPicking()
 	if (m_pSelectMap)
 	{
 		m_pSelectMap->Select(false);
-		return;
 	}
 	if (m_pSelectCamera)
 	{
@@ -1838,7 +1837,7 @@ void CImGui_Manager::FastPicking()
 	}
 	if (m_eItemType != ItemType::Map && m_eItemType != ItemType::Camera)
 	{
-		DummyIndex = 0;
+		DummyIndex = -1;
 
 		if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
 		{
@@ -1857,7 +1856,7 @@ void CImGui_Manager::FastPicking()
 	}
 	else if(m_eItemType == ItemType::Map)
 	{
-		MapIndex = 0;
+		MapIndex = -1;
 
 		if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
 		{
@@ -2860,8 +2859,8 @@ HRESULT CImGui_Manager::Save_CutScene(CCamera_CutScene* pCamera)
 
 		MessageBox(g_hWnd, L"파일 저장 완료", L"파일 저장", MB_OK);
 		outFile.close();
-		return S_OK;
 	}
+		return S_OK;
 }
 HRESULT CImGui_Manager::Load_CutScene()
 {
