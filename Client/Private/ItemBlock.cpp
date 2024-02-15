@@ -56,14 +56,14 @@ void CItemBlock::Tick(_float fTimeDelta)
 		}
 		else
 		{
-			if (m_pSlots[(ITEMSLOT)iIndex]->Get_ItemName() == TEXT("체력 포션"))
+			if (m_pSlots[(ITEMSLOT)iIndex]->Get_ItemUsage() == IT_HPPOTION)
 			{
 				ITEM eItem = m_pSlots[(ITEMSLOT)iIndex]->Get_ItemObject()->Get_ItemDesc();
 				CUI_Manager::Get_Instance()->Use_Item_In_Slot((ITEMSLOT)iIndex);
 				CUI_Manager::Get_Instance()->Set_Heal(true, eItem.iStatus);
 				m_pGameInstance->Play_Sound(L"Potion");
 			}
-			else if (m_pSlots[(ITEMSLOT)iIndex]->Get_ItemName() == TEXT("마나 포션"))
+			else if (m_pSlots[(ITEMSLOT)iIndex]->Get_ItemUsage() == IT_MPPOTION)
 			{
 				ITEM eItem = m_pSlots[(ITEMSLOT)iIndex]->Get_ItemObject()->Get_ItemDesc();
 				CUI_Manager::Get_Instance()->Use_Item_In_Slot((ITEMSLOT)iIndex);

@@ -1,15 +1,9 @@
 1. Static Only   2. Anim Only   3. All
 1
 Static Models : Start Converting...
-Converting... Stand_Torch1.fbx
-Read File Succssefully
-Converting... Stand_Torch2.fbx
-Read File Succssefully
-Converting... Torch.fbx
-Read File Succssefully
-Converting... Wall_Torch.fbx
+Converting... Brazier.fbx
 Read File Succssefully
 Static Models : Convert Success!
 
-4 Static Models
+1 Static Models
 are Successfully Converted as hyuntramesh!!

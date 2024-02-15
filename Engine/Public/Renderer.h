@@ -6,11 +6,12 @@ BEGIN(Engine)
 enum RenderGroup
 {
 	RG_Priority,
-	RG_Remain,
 	RG_Shadow,
 	RG_NonBlend,
 	RG_NonBlend_Instance,
-	RG_Remain1,
+	RG_AnimNonBlend_Instance,
+	RG_Blur,
+	RG_NonLight,
 	RG_Blend,
 	RG_BlendBlur,
 	RG_Water,
@@ -173,6 +174,7 @@ private:
 	HRESULT Render_Shadow();
 	HRESULT Render_NonBlend();
 	HRESULT Render_NonBlend_Instance();
+	HRESULT Render_AnimNonBlend_Instance();
 	HRESULT Render_Refraction();
 	HRESULT Render_Reflection();
 	HRESULT Render_Water();

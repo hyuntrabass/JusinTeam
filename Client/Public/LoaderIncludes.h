@@ -1,7 +1,6 @@
 #pragma once
 
 #include "NineSlice.h"
-#include "VehicleDesc.h"
 #include "Vehicle.h"
 #include "VehicleBook.h"
 #include "Symbol.h"
@@ -117,6 +116,8 @@
 #include "Missile.h"
 #include "Tentacle.h"
 #include "XBeam.h"
+#include "Human_Boss.h"
+#include "Dragon_Boss.h"
 
 // Pet
 #include "Pet_Cat.h"

@@ -184,6 +184,13 @@ namespace Engine
 		ANIMTIME_DESC eNext;
 	};
 
+#define MAX_INSTANCE 300
+	using INSTANCED_PLAYANIM_DESC = struct tagInstancedPlayAnimDesc
+	{
+		PLAYANIM_DESC PlayAnim[MAX_INSTANCE];
+
+	};
+
 	using TRIGGEREFFECT_DESC = struct tagTriggerEffectDesc {
 		int iStartAnimIndex;
 		float fStartAnimPos;
@@ -372,4 +379,20 @@ namespace Engine
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	};
 
+	using VTXANIMMESH_INSTANCING = struct ENGINE_DLL tagVertex_Anim_Mesh_Instancing
+	{
+		XMFLOAT3 vPosition{};
+		XMFLOAT3 vNormal{};
+		XMFLOAT2 vTexcoord{};
+		XMFLOAT3 vTangent{};
+
+		XMUINT4 vBlendIndices{};
+		XMFLOAT4 vBlendWeights{};
+		XMMATRIX mMatrix{};
+
+		unsigned int iInstanceID{};
+
+		static const unsigned int iNumElements{ 11 };
+		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
+	};
 }

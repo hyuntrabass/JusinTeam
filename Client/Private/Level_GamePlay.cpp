@@ -25,7 +25,10 @@ HRESULT CLevel_GamePlay::Init()
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_GAMEPLAY);
 	m_pGameInstance->StopAll();
 
-	CUI_Manager::Get_Instance()->Init();
+	if (FAILED(CUI_Manager::Get_Instance()->Init()))
+	{
+		return E_FAIL;
+	}
 
 
 	if (FAILED(Ready_Player()))
@@ -106,6 +109,11 @@ HRESULT CLevel_GamePlay::Init()
 		MSG_BOX("Failed to Ready Pet");
 		return E_FAIL;
 	}
+
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Boss"), TEXT("Prototype_GameObject_Human_Boss"))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	// UI
 	if (FAILED(Ready_UI()))
@@ -485,10 +493,18 @@ HRESULT CLevel_GamePlay::Ready_ModelTest()
 		return E_FAIL;
 	}
 
-	/*if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_VTFTest"), TEXT("Prototype_GameObject_VTFTest"))))
-	{
-		return E_FAIL;
-	}*/
+	//for (size_t i = 0; i < 300; i++)
+	//{
+	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_VTFTest"), TEXT("Prototype_GameObject_VTFTest"))))
+	//	{
+	//		return E_FAIL;
+	//	}
+	//	/*if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Rabbit"), TEXT("Prototype_GameObject_Rabbit"))))
+	//	{
+	//		MSG_BOX("Rabbit 생성 실패");
+	//		return E_FAIL;
+	//	}*/
+	//}
 
 	return S_OK;
 }
