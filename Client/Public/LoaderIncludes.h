@@ -116,8 +116,13 @@
 #include "Missile.h"
 #include "Tentacle.h"
 #include "XBeam.h"
-#include "Human_Boss.h"
+
 #include "Dragon_Boss.h"
+#include "Blackhole.h"
+#include "FirePillar.h"
+
+#include "Human_Boss.h"
+
 
 // Pet
 #include "Pet_Cat.h"

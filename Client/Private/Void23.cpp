@@ -123,7 +123,7 @@ void CVoid23::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_fHittedTime = 6.f;
 
-	if (iDamage >= 300)
+	//if (iDamage >= 300)
 	{
 		m_eCurState = STATE_HIT;
 	}

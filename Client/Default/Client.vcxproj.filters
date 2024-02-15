@@ -426,9 +426,18 @@
     </Filter>
     <Filter Include="02.GameObjects\08. Boss\Human_Boss">
       <UniqueIdentifier>{ca41e229-ff6d-4b8d-a622-f84b5234450a}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="02.GameObjects\09.Object\Torch">
       <UniqueIdentifier>{b81bd7e5-ba31-4ee3-962d-a9f6c2f09f29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Dragon_Boss\Meteor">
+      <UniqueIdentifier>{0ee90f49-919e-462f-8451-438b8d3a3a9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Dragon_Boss\FirePillar">
+      <UniqueIdentifier>{6115e5ab-1239-482f-adca-e55a0de643ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Dragon_Boss\Blackhole">
+      <UniqueIdentifier>{c37b6025-3c60-4797-a44e-138555399924}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -855,12 +864,21 @@
     </ClInclude>
     <ClInclude Include="..\Public\Human_Boss.h">
       <Filter>02.GameObjects\08. Boss\Human_Boss</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="..\Public\Torch_Object.h">
       <Filter>02.GameObjects\09.Object\Torch</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Client_Define.h">
       <Filter>99.Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Blackhole.h">
+      <Filter>02.GameObjects\08. Boss\Dragon_Boss\Blackhole</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FirePillar.h">
+      <Filter>02.GameObjects\08. Boss\Dragon_Boss\FirePillar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Meteor.h">
+      <Filter>02.GameObjects\08. Boss\Dragon_Boss\Meteor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1288,9 +1306,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\Human_Boss.cpp">
       <Filter>02.GameObjects\08. Boss\Human_Boss</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="..\Private\Torch_Object.cpp">
       <Filter>02.GameObjects\09.Object\Torch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Blackhole.cpp">
+      <Filter>02.GameObjects\08. Boss\Dragon_Boss\Blackhole</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FirePillar.cpp">
+      <Filter>02.GameObjects\08. Boss\Dragon_Boss\FirePillar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Meteor.cpp">
+      <Filter>02.GameObjects\08. Boss\Dragon_Boss\Meteor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

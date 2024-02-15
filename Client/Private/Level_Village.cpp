@@ -40,11 +40,11 @@ HRESULT CLevel_Village::Init()
 
 
 	// Map
-	if (FAILED(Ready_Map()))
-	{
-		MSG_BOX("Failed to Ready Map");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Map()))
+	//{
+	//	MSG_BOX("Failed to Ready Map");
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_WorldMap"), TEXT("Prototype_GameObject_WorldMap"))))
 	{
@@ -147,6 +147,10 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_RSHIFT))
 	{
 		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"));
+	}
+	if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
+	{
+		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Test"), TEXT("Prototype_GameObject_Void09"));
 	}
 }
 
@@ -568,15 +572,15 @@ HRESULT CLevel_Village::Ready_Dungeon_Monster()
 			}
 
 		}
-		else if (Info.strMonsterPrototype == TEXT("Prototype_Model_Void23"))
-		{
-			//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void23"), TEXT("Prototype_GameObject_Void23"), &Info)))
-			//{
-			//	MSG_BOX("Void23 积己 角菩");
-			//	return E_FAIL;
-			//}
+		//else if (Info.strMonsterPrototype == TEXT("Prototype_Model_Void23"))
+		//{
+		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void23"), TEXT("Prototype_GameObject_Void23"), &Info)))
+		//	{
+		//		MSG_BOX("Void23 积己 角菩");
+		//		return E_FAIL;
+		//	}
 
-		}
+		//}
 
 	}
 
