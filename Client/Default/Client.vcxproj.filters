@@ -426,9 +426,15 @@
     </Filter>
     <Filter Include="02.GameObjects\08. Boss\Human_Boss">
       <UniqueIdentifier>{ca41e229-ff6d-4b8d-a622-f84b5234450a}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="02.GameObjects\09.Object\Torch">
       <UniqueIdentifier>{b81bd7e5-ba31-4ee3-962d-a9f6c2f09f29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Window\Sell">
+      <UniqueIdentifier>{9d08a87c-abad-499f-948f-54d5ebc7dc7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Window\Summon">
+      <UniqueIdentifier>{c6e00d6a-2521-443e-a6d7-c8892e42bc41}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -783,9 +789,6 @@
     <ClInclude Include="..\Public\VTFTest.h">
       <Filter>02.GameObjects\04.Monster\00. ModelTest\VTF</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\InvenWindow.h">
-      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Item.h">
       <Filter>02.GameObjects\00.UI\GameUI\Inven\Item</Filter>
     </ClInclude>
@@ -855,12 +858,18 @@
     </ClInclude>
     <ClInclude Include="..\Public\Human_Boss.h">
       <Filter>02.GameObjects\08. Boss\Human_Boss</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="..\Public\Torch_Object.h">
       <Filter>02.GameObjects\09.Object\Torch</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Client_Define.h">
       <Filter>99.Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\InvenWindow.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window\Sell</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SummonWindow.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window\Summon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1216,9 +1225,6 @@
     <ClCompile Include="..\Private\VTFTest.cpp">
       <Filter>02.GameObjects\04.Monster\00. ModelTest\VTF</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\InvenWindow.cpp">
-      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Tutorial.cpp">
       <Filter>02.GameObjects\00.UI\99.tuto</Filter>
     </ClCompile>
@@ -1288,9 +1294,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Human_Boss.cpp">
       <Filter>02.GameObjects\08. Boss\Human_Boss</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="..\Private\Torch_Object.cpp">
       <Filter>02.GameObjects\09.Object\Torch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\InvenWindow.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window\Sell</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SummonWindow.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window\Summon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

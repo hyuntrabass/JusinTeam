@@ -661,10 +661,10 @@ HRESULT CLevel_GamePlay::Ready_Groar_Boss()
 
 HRESULT CLevel_GamePlay::Ready_Pet()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pet_Cat"), TEXT("Prototype_GameObject_Pet_Cat"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pet_Cat"), TEXT("Prototype_GameObject_Pet_Cat"))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pet_Dragon"), TEXT("Prototype_GameObject_Pet_Dragon"))))
 	//{

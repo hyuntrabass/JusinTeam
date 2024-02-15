@@ -95,6 +95,7 @@ public:
 	void ItemSlot_Logic(_uint iSlotIdx, _uint iIndex);
 	void ItemSlot_Delete_Logic(_uint iSlotIdx);
 	void Delete_Item(INVEN_TYPE eInvenType, _uint iIndex);
+	void Delete_Item(INVEN_TYPE eInvenType, wstring& strName);
 
 	void Set_Parent(CGameObject* pGameObject) { m_pParent = pGameObject; }
 	const CItem* Find_Item(wstring& strName) const;
