@@ -856,21 +856,23 @@ HRESULT CRenderer::Render_Shadow()
 	if (true == m_pGameInstance->Get_TurnOnShadow()) {
 
 
-		map<_int, vector<CGameObject*>> InstanceData;
+		map<InstanceID, vector<CGameObject*>> InstanceData;
 
 		for (auto& pGameObject : m_RenderObjects[RG_NonBlend_Instance])
 		{
 			if (pGameObject->Find_Component(L"Com_Model") == nullptr)
 				continue;
 
+			const _int iPassIndex = static_cast<CShader*>(pGameObject->Find_Component(L"Com_Shader"))->Get_PassIndex();
 			const _int iInstanceID = static_cast<CModel*>(pGameObject->Find_Component(L"Com_Model"))->Get_InstanceID();
-			InstanceData[iInstanceID].push_back(pGameObject);
+			InstanceID ID(iPassIndex, iInstanceID);
+			InstanceData[ID].push_back(pGameObject);
 		}
 
 		for (auto& Pair : InstanceData)
 		{
 			vector<CGameObject*>& vInstances = Pair.second;
-			const _uint instanceId = Pair.first;
+			const InstanceID instanceId = Pair.first;
 			CGameObject*& pHead = vInstances[0];
 
 			for (_uint i = 0; i < vInstances.size(); i++)
@@ -934,21 +936,23 @@ HRESULT CRenderer::Render_NonBlend()
 
 HRESULT CRenderer::Render_NonBlend_Instance()
 {
-	map<_int, vector<CGameObject*>> InstanceData;
+	map<InstanceID, vector<CGameObject*>> InstanceData;
 
 	for (auto& pGameObject : m_RenderObjects[RG_NonBlend_Instance])
 	{
 		if (pGameObject->Find_Component(L"Com_Model") == nullptr)
 			continue;
 
+		const _int iPassIndex = static_cast<CShader*>(pGameObject->Find_Component(L"Com_Shader"))->Get_PassIndex();
 		const _int iInstanceID = static_cast<CModel*>(pGameObject->Find_Component(L"Com_Model"))->Get_InstanceID();
-		InstanceData[iInstanceID].push_back(pGameObject);
+		InstanceID ID(iPassIndex, iInstanceID);
+		InstanceData[ID].push_back(pGameObject);
 	}
 
 	for (auto& Pair : InstanceData)
 	{
 		vector<CGameObject*>& vInstances = Pair.second;
-		const _uint instanceId = Pair.first;
+		const InstanceID instanceId = Pair.first;
 		CGameObject*& pHead = vInstances[0];
 
 		for (_uint i = 0; i < vInstances.size(); i++)
@@ -985,21 +989,23 @@ HRESULT CRenderer::Render_NonBlend_Instance()
 
 HRESULT CRenderer::Render_AnimNonBlend_Instance()
 {
-	map<_int, vector<CGameObject*>> InstanceData;
+	map<InstanceID, vector<CGameObject*>> InstanceData;
 
 	for (auto& pGameObject : m_RenderObjects[RG_AnimNonBlend_Instance])
 	{
 		if (pGameObject->Find_Component(L"Com_Model") == nullptr)
 			continue;
 
+		const _int iPassIndex = static_cast<CShader*>(pGameObject->Find_Component(L"Com_Shader"))->Get_PassIndex();
 		const _int iInstanceID = static_cast<CVTFModel*>(pGameObject->Find_Component(L"Com_Model"))->Get_InstanceID();
-		InstanceData[iInstanceID].push_back(pGameObject);
+		InstanceID ID(iPassIndex, iInstanceID);
+		InstanceData[ID].push_back(pGameObject);
 	}
 
 	for (auto& Pair : InstanceData)
 	{
 		vector<CGameObject*>& vInstances = Pair.second;
-		const _uint instanceId = Pair.first;
+		const InstanceID instanceId = Pair.first;;
 		CGameObject*& pHead = vInstances[0];
 		//Late_Tick 2번 들어와서 터지는거 방지
 		if (vInstances.size() > MAX_INSTANCE)
@@ -1197,21 +1203,23 @@ HRESULT CRenderer::Render_Reflection()
 			}
 
 
-			map<_int, vector<CGameObject*>> InstanceData;
+			map<InstanceID, vector<CGameObject*>> InstanceData;
 
 			for (auto& pGameObject : m_RenderObjects[RG_NonBlend_Instance])
 			{
 				if (pGameObject->Find_Component(L"Com_Model") == nullptr)
 					continue;
 
+				const _int iPassIndex = static_cast<CShader*>(pGameObject->Find_Component(L"Com_Shader"))->Get_PassIndex();
 				const _int iInstanceID = static_cast<CModel*>(pGameObject->Find_Component(L"Com_Model"))->Get_InstanceID();
-				InstanceData[iInstanceID].push_back(pGameObject);
+				InstanceID ID(iPassIndex, iInstanceID);
+				InstanceData[ID].push_back(pGameObject);
 			}
 
 			for (auto& Pair : InstanceData)
 			{
 				vector<CGameObject*>& vInstances = Pair.second;
-				const _uint instanceId = Pair.first;
+				const InstanceID instanceId = Pair.first;
 				CGameObject*& pHead = vInstances[0];
 
 				for (_uint i = 0; i < vInstances.size(); i++)
@@ -2120,13 +2128,13 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 	return S_OK;
 }
 
-HRESULT CRenderer::Add_Instance(_int iInstanceID, Instance_Data& pMeshInstancing)
+HRESULT CRenderer::Add_Instance(InstanceID InstanceID, Instance_Data& pMeshInstancing)
 {
-	if (m_InstanceBuffers.find(iInstanceID) == m_InstanceBuffers.end())
+	if (m_InstanceBuffers.find(InstanceID) == m_InstanceBuffers.end())
 	{
-		m_InstanceBuffers[iInstanceID] = CVIBuffer_Mesh_Instance::Create(m_pDevice, m_pContext);
+		m_InstanceBuffers[InstanceID] = CVIBuffer_Mesh_Instance::Create(m_pDevice, m_pContext);
 	}
-	m_InstanceBuffers[iInstanceID]->Add_Instance(pMeshInstancing);
+	m_InstanceBuffers[InstanceID]->Add_Instance(pMeshInstancing);
 	return S_OK;
 }
 

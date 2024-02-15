@@ -195,9 +195,9 @@ private:
 private:
 	HRESULT Get_AvgLuminance();
 	HRESULT Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MRT_Tag, _float fBlurPower, _bool isBloom = false);
-	HRESULT Add_Instance(_int iInstanceID, Instance_Data& pMeshInstancing);
+	HRESULT Add_Instance(InstanceID InstanceID, Instance_Data& pMeshInstancing);
 	HRESULT Clear_Instance();
-	map<_int, class CVIBuffer_Mesh_Instance*>	m_InstanceBuffers;
+	map<InstanceID, class CVIBuffer_Mesh_Instance*>	m_InstanceBuffers;
 
 public:
 	static CRenderer* Create(_dev pDevice, _context pContext);
