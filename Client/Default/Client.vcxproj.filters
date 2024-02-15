@@ -136,9 +136,6 @@
     <Filter Include="02.GameObjects\08. Boss">
       <UniqueIdentifier>{c61f29d7-c959-47df-8a82-3a02726afaf2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\08. Boss\Groar_Boss">
-      <UniqueIdentifier>{a36f29cf-4d64-4404-b599-15a6ac076134}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\07. StatObject">
       <UniqueIdentifier>{7811bd56-9a30-483e-9b39-d9f2375daa1e}</UniqueIdentifier>
     </Filter>
@@ -259,12 +256,6 @@
     <Filter Include="02.GameObjects\03.Player\Weapon\Arrow">
       <UniqueIdentifier>{3c9caad4-a7e8-48db-a836-c8c8b3ca4edd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Spider">
-      <UniqueIdentifier>{f363281d-5323-407d-80fa-91b4b26af4c3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Missile">
-      <UniqueIdentifier>{60d859ff-77f1-4b49-be0b-495060f838c9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\11.Trigger">
       <UniqueIdentifier>{e34cfd3d-cd3e-4a9c-a182-3c577c5cdb93}</UniqueIdentifier>
     </Filter>
@@ -301,17 +292,11 @@
     <Filter Include="02.GameObjects\00.UI\99.tuto">
       <UniqueIdentifier>{f002451a-1d54-4f47-bfd8-09740f319e97}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Tentacle">
-      <UniqueIdentifier>{e6130b2d-99fe-4290-b345-00db4943c384}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\13.Skill_Model">
       <UniqueIdentifier>{aa0ca9b0-3047-42b3-a09b-1dd8eaa89345}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\13.Skill_Model\Scarecrow">
       <UniqueIdentifier>{39bb1368-c49e-441b-82d5-8e0ba460da46}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\X_Beam">
-      <UniqueIdentifier>{506303cf-f24b-4443-ae3e-a5a60c5e5c63}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\00.UI\GameUI">
       <UniqueIdentifier>{7b7a7b62-d272-4f13-befe-cf110bc6e9ab}</UniqueIdentifier>
@@ -426,9 +411,24 @@
     </Filter>
     <Filter Include="02.GameObjects\08. Boss\Human_Boss">
       <UniqueIdentifier>{ca41e229-ff6d-4b8d-a622-f84b5234450a}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="02.GameObjects\09.Object\Torch">
       <UniqueIdentifier>{b81bd7e5-ba31-4ee3-962d-a9f6c2f09f29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss">
+      <UniqueIdentifier>{a36f29cf-4d64-4404-b599-15a6ac076134}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Spider">
+      <UniqueIdentifier>{f363281d-5323-407d-80fa-91b4b26af4c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Missile">
+      <UniqueIdentifier>{60d859ff-77f1-4b49-be0b-495060f838c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Tentacle">
+      <UniqueIdentifier>{e6130b2d-99fe-4290-b345-00db4943c384}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\X_Beam">
+      <UniqueIdentifier>{506303cf-f24b-4443-ae3e-a5a60c5e5c63}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -855,7 +855,7 @@
     </ClInclude>
     <ClInclude Include="..\Public\Human_Boss.h">
       <Filter>02.GameObjects\08. Boss\Human_Boss</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="..\Public\Torch_Object.h">
       <Filter>02.GameObjects\09.Object\Torch</Filter>
     </ClInclude>
@@ -1288,7 +1288,7 @@
     </ClCompile>
     <ClCompile Include="..\Private\Human_Boss.cpp">
       <Filter>02.GameObjects\08. Boss\Human_Boss</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="..\Private\Torch_Object.cpp">
       <Filter>02.GameObjects\09.Object\Torch</Filter>
     </ClCompile>

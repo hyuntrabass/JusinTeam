@@ -493,18 +493,18 @@ HRESULT CLevel_GamePlay::Ready_ModelTest()
 		return E_FAIL;
 	}
 
-	//for (size_t i = 0; i < 300; i++)
-	//{
-	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_VTFTest"), TEXT("Prototype_GameObject_VTFTest"))))
-	//	{
-	//		return E_FAIL;
-	//	}
-	//	/*if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Rabbit"), TEXT("Prototype_GameObject_Rabbit"))))
-	//	{
-	//		MSG_BOX("Rabbit 생성 실패");
-	//		return E_FAIL;
-	//	}*/
-	//}
+	for (size_t i = 0; i < 300; i++)
+	{
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_VTFTest"), TEXT("Prototype_GameObject_VTFTest"))))
+		{
+			return E_FAIL;
+		}
+		/*if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Rabbit"), TEXT("Prototype_GameObject_Rabbit"))))
+		{
+			MSG_BOX("Rabbit 생성 실패");
+			return E_FAIL;
+		}*/
+	}
 
 	return S_OK;
 }

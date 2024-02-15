@@ -4,8 +4,8 @@
 BEGIN(Engine)
 
 typedef struct tagAnimTransArray {
-	using TransformArrayType = array<_mat, 500>;
-	array<TransformArrayType, 4000> TransformArray;
+	using TransformArrayType = array<_mat, 300>;
+	array<TransformArrayType, 1000> TransformArray;
 }ANIMTRANS_ARRAY;
 
 // 이 VTF는 Prototype 단계에서 애니메이션을 미리 계산합니다

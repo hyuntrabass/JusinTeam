@@ -36,7 +36,7 @@ protected:
 protected:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
-	CVTFModel* m_pModelCom = { nullptr };
+	CModel* m_pModelCom = { nullptr };
 	CCollider* m_pColliderCom = { nullptr };
 
 protected:

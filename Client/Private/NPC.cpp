@@ -43,8 +43,8 @@ void CNPC::Late_Tick(_float fTimeDelta)
 		m_pModelCom->Play_Animation(fTimeDelta);
 		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
-		/*if(true == m_pGameInstance->Get_TurnOnShadow())
-			m_pRendererCom->Add_RenderGroup(RG_Shadow, this);*/
+		if(true == m_pGameInstance->Get_TurnOnShadow())
+			m_pRendererCom->Add_RenderGroup(RG_Shadow, this);
 	}
 }
 
@@ -91,10 +91,10 @@ HRESULT CNPC::Render()
 			return E_FAIL;
 		}
 
-		/*if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
 		{
 			return E_FAIL;
-		}*/
+		}
 
 		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
 		{
@@ -130,10 +130,10 @@ HRESULT CNPC::Render_Shadow()
 		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 			continue;
 
-		/*if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
 		{
 			return E_FAIL;
-		}*/
+		}
 
 		if (FAILED(m_pShaderCom->Begin(AnimPass_Shadow)))
 		{
@@ -160,7 +160,7 @@ HRESULT CNPC::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VTF"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 	{
 		return E_FAIL;
 	}
@@ -195,7 +195,7 @@ HRESULT CNPC::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pModelCom->Bind_Animation(m_pShaderCom)))
+	/*if (FAILED(m_pModelCom->Bind_Animation(m_pShaderCom)))
 	{
 		return E_FAIL;
 	}
@@ -203,7 +203,7 @@ HRESULT CNPC::Bind_ShaderResources()
 	if (FAILED(m_pModelCom->Bind_PlayAnimation(m_pShaderCom)))
 	{
 		return E_FAIL;
-	}
+	}*/
 
 	return S_OK;
 }

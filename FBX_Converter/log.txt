@@ -3,312 +3,82 @@
 Animation Models : Start Converting...
 1. Normally Anim Model	2. For VTF Model 3. Part Model
 2
-Converting... Aur.fbx
+Converting... BlackSmith.fbx
 Read File Succssefully
 Animation name list: 
-NPC_male_012.ao|Cheer
-NPC_male_012.ao|Emo01
-NPC_male_012.ao|hanging01
-NPC_male_012.ao|hanging02
-NPC_male_012.ao|Idle01
-NPC_male_012.ao|Idle02
-NPC_male_012.ao|Sit01
-NPC_male_012.ao|Talk01
-NPC_male_012.ao|Talk02
-NPC_male_012.ao|Walk
-Converting... Cat.fbx
-Read File Succssefully
-Animation name list: 
-Npc_animal_01.ao|Idle01
-Npc_animal_01.ao|Idle02
-Npc_animal_01.ao|Run
-Npc_animal_01.ao|Walk
-Converting... Dog.fbx
-Read File Succssefully
-Animation name list: 
-NPC_Animal_08.ao|idle01
-NPC_Animal_08.ao|idle02
-NPC_Animal_08.ao|run
-NPC_Animal_08.ao|walk
-Converting... Dwarf_Male_001.fbx
-Read File Succssefully
-Animation name list: 
-NPC_Dwarf_male_001.ao|idle
-NPC_Dwarf_male_001.ao|idle02
-NPC_Dwarf_male_001.ao|Reaction01
-NPC_Dwarf_male_001.ao|Reaction02
-NPC_Dwarf_male_001.ao|Talk01
-NPC_Dwarf_male_001.ao|walk01
-Converting... Dwarf_Male_002.fbx
-Read File Succssefully
-Animation name list: 
-NPC_Dwarf_male_002.ao|Idle01
-NPC_Dwarf_male_002.ao|talk01
-NPC_Dwarf_male_002.ao|walk
+NPC_Dwarf_male_001.ao|NPC_Dwarf_male_001.ao|NPC_Dwarf_male_001.ao|idle
+NPC_Dwarf_male_001.ao|NPC_Dwarf_male_001.ao|NPC_Dwarf_male_001.ao|idle02
+NPC_Dwarf_male_001.ao|NPC_Dwarf_male_001.ao|NPC_Dwarf_male_001.ao|Talk01
+NPC_Dwarf_male_001.ao|NPC_Dwarf_male_001.ao|NPC_Dwarf_male_001.ao|walk01
 Converting... Female_002.fbx
 Read File Succssefully
 Animation name list: 
-NPC_female_002.ao|Cheer
-NPC_female_002.ao|Emo01
-NPC_female_002.ao|Emo02
-NPC_female_002.ao|Idle01
-NPC_female_002.ao|Idle02
-NPC_female_002.ao|Reaction01
-NPC_female_002.ao|Sit_Talk01
-NPC_female_002.ao|Talk01
-NPC_female_002.ao|Talk02
-NPC_female_002.ao|Walk
+NPC_female_002.ao|NPC_female_002.ao|NPC_female_002.ao|Talk02
 Converting... Female_003.fbx
 Read File Succssefully
 Animation name list: 
-NPC_female_003.ao|Cheer01
-NPC_female_003.ao|Emo01
-NPC_female_003.ao|idle01
-NPC_female_003.ao|idle02
-NPC_female_003.ao|idle02_end
-NPC_female_003.ao|idle02_loop
-NPC_female_003.ao|idle02_start
-NPC_female_003.ao|idle03
-NPC_female_003.ao|pose01
-NPC_female_003.ao|pose02
-NPC_female_003.ao|pose03
-NPC_female_003.ao|pose04
-NPC_female_003.ao|pose05
-NPC_female_003.ao|Sit_Talk01
-NPC_female_003.ao|sitIdle_01
-NPC_female_003.ao|sitIdle_02
-NPC_female_003.ao|talk01
-NPC_female_003.ao|talk02
-NPC_female_003.ao|talk03
-NPC_female_003.ao|walk01
+NPC_female_003.ao|NPC_female_003.ao|NPC_female_003.ao|idle01
 Converting... Female_004.fbx
 Read File Succssefully
 Animation name list: 
-NPC_female_004.ao|Cheer
-NPC_female_004.ao|Emo01
-NPC_female_004.ao|Idle01
-NPC_female_004.ao|Idle02
-NPC_female_004.ao|Reaction02
-NPC_female_004.ao|Sit_Talk01
-NPC_female_004.ao|sitIdle_01
-NPC_female_004.ao|sitIdle_02
-NPC_female_004.ao|Talk01
-NPC_female_004.ao|Talk02
-NPC_female_004.ao|Walk01
-NPC_female_004.ao|Walk02
+NPC_female_004.ao|NPC_female_004.ao|NPC_female_004.ao|Idle01
 Converting... Female_005.fbx
 Read File Succssefully
 Animation name list: 
-NPC_female_005.ao|Cheer01
-NPC_female_005.ao|Emo01
-NPC_female_005.ao|Emo02
-NPC_female_005.ao|Idle01
-NPC_female_005.ao|Idle02
-NPC_female_005.ao|Sit_Talk01
-NPC_female_005.ao|Talk01
-NPC_female_005.ao|Talk02
-NPC_female_005.ao|Walk
+NPC_female_005.ao|NPC_female_005.ao|NPC_female_005.ao|Emo01
 Converting... Female_006.fbx
 Read File Succssefully
 Animation name list: 
-NPC_female_006.ao|Cheer
-NPC_female_006.ao|Emo01
-NPC_female_006.ao|Emo02
-NPC_female_006.ao|Emo03
-NPC_female_006.ao|idle01
-NPC_female_006.ao|idle02
-NPC_female_006.ao|idle02_End
-NPC_female_006.ao|idle02_loop
-NPC_female_006.ao|idle02_Start
-NPC_female_006.ao|nurse_idle01
-NPC_female_006.ao|nurse_idle02
-NPC_female_006.ao|nurse_idle03
-NPC_female_006.ao|pose01
-NPC_female_006.ao|pose02
-NPC_female_006.ao|pose03
-NPC_female_006.ao|pose04
-NPC_female_006.ao|pose05
-NPC_female_006.ao|Reaction01
-NPC_female_006.ao|talk01
-NPC_female_006.ao|talk02
-NPC_female_006.ao|talk03
-NPC_female_006.ao|walk01
+NPC_female_006.ao|NPC_female_006.ao|NPC_female_006.ao|idle01
 Converting... Female_010.fbx
 Read File Succssefully
 Animation name list: 
-NPC_female_010.ao|Cheer
-NPC_female_010.ao|Emo01
-NPC_female_010.ao|Emo02
-NPC_female_010.ao|Idle01
-NPC_female_010.ao|Idle02
-NPC_female_010.ao|nurse_idle01
-NPC_female_010.ao|nurse_idle02
-NPC_female_010.ao|nurse_idle03
-NPC_female_010.ao|Sit01
-NPC_female_010.ao|Talk01
-NPC_female_010.ao|Talk02
-NPC_female_010.ao|Walk
+NPC_female_010.ao|NPC_female_010.ao|NPC_female_010.ao|Talk01
 Converting... Female_013.fbx
 Read File Succssefully
 Animation name list: 
-NPC_female_013.ao|Emo01
-NPC_female_013.ao|Emo02
-NPC_female_013.ao|Idle01
-NPC_female_013.ao|Talk01
-NPC_female_013.ao|Walk01
+NPC_female_013.ao|NPC_female_013.ao|NPC_female_013.ao|Emo02
 Converting... Female_027.fbx
 Read File Succssefully
 Animation name list: 
-NPC_female_027.ao|Cheer
-NPC_female_027.ao|Emo01
-NPC_female_027.ao|Emo02
-NPC_female_027.ao|Emo03
-NPC_female_027.ao|idle01
-NPC_female_027.ao|idle02
-NPC_female_027.ao|idle02_End
-NPC_female_027.ao|idle02_loop
-NPC_female_027.ao|idle02_Start
-NPC_female_027.ao|nurse_idle01
-NPC_female_027.ao|nurse_idle02
-NPC_female_027.ao|nurse_idle03
-NPC_female_027.ao|pose01
-NPC_female_027.ao|pose02
-NPC_female_027.ao|pose03
-NPC_female_027.ao|pose04
-NPC_female_027.ao|pose05
-NPC_female_027.ao|Reaction01
-NPC_female_027.ao|talk01
-NPC_female_027.ao|talk02
-NPC_female_027.ao|talk03
-NPC_female_027.ao|walk01
-Converting... Groar.fbx
-Read File Succssefully
-Animation name list: 
-Npc_female_groar.ao|die_Anim
-Npc_female_groar.ao|Idle
-Npc_female_groar.ao|Talk
-Converting... GroarScene01.fbx
-Read File Succssefully
-Animation name list: 
-Scene_Groar01.ao|Scene_Groar01_Anim
-Converting... GroarScene02.fbx
-Read File Succssefully
-Animation name list: 
-Scene_Groar02.ao|Scene_Groar02_Anim
-Converting... Horse.fbx
-Read File Succssefully
-Animation name list: 
-NPC_Animal_12.ao|idle01
-NPC_Animal_12.ao|idle02
-NPC_Animal_12.ao|run
-NPC_Animal_12.ao|walk
-Converting... ItemMerchant.fbx
-Read File Succssefully
-Animation name list: 
-NPC_female_024.ao|Idle01
-NPC_female_024.ao|Talk01
+NPC_female_027.ao|NPC_female_027.ao|NPC_female_027.ao|Emo02
 Converting... Male_009.fbx
 Read File Succssefully
 Animation name list: 
-NPC_male_009.ao|Emo01
-NPC_male_009.ao|idle01
-NPC_male_009.ao|idle_02
-NPC_male_009.ao|talk01
-NPC_male_009.ao|talk02
-NPC_male_009.ao|talk03
-NPC_male_009.ao|walk
+NPC_male_009.ao|NPC_male_009.ao|NPC_male_009.ao|idle01
 Converting... Male_013.fbx
 Read File Succssefully
 Animation name list: 
-NPC_Male_013.ao|Emo01
-NPC_Male_013.ao|idle01
-NPC_Male_013.ao|idle02
-NPC_Male_013.ao|talk01
-NPC_Male_013.ao|talk02
-NPC_Male_013.ao|talk03
-NPC_Male_013.ao|walk
+NPC_Male_013.ao|NPC_Male_013.ao|NPC_Male_013.ao|idle01
 Converting... Male_015.fbx
 Read File Succssefully
 Animation name list: 
-NPC_Male_015.ao|Emo01
-NPC_Male_015.ao|Fire
-NPC_Male_015.ao|Idle01
-NPC_Male_015.ao|Idle02
-NPC_Male_015.ao|Reaction01
-NPC_Male_015.ao|Sit01
-NPC_Male_015.ao|Talk01
-NPC_Male_015.ao|Talk02
-NPC_Male_015.ao|Tu02_SC04_NPC_01
-NPC_Male_015.ao|Walk
+NPC_Male_015.ao|NPC_Male_015.ao|NPC_Male_015.ao|Idle01
 Converting... Male_016.fbx
 Read File Succssefully
 Animation name list: 
-NPC_male_016.ao|Dance01
-NPC_male_016.ao|Dance02
-NPC_male_016.ao|Emo01
-NPC_male_016.ao|idle
-NPC_male_016.ao|Panic
-NPC_male_016.ao|Reaction02
-NPC_male_016.ao|talk
-NPC_male_016.ao|walk
+NPC_male_016.ao|NPC_male_016.ao|NPC_male_016.ao|Dance01
 Converting... Male_018.fbx
 Read File Succssefully
 Animation name list: 
-NPC_male_018.ao|Emo01
-NPC_male_018.ao|Idle01
-NPC_male_018.ao|Idle02
-NPC_male_018.ao|Idle03
-NPC_male_018.ao|Reaction01
-NPC_male_018.ao|Talk01
-NPC_male_018.ao|Talk02
-NPC_male_018.ao|Talk03
-NPC_male_018.ao|Walk
+NPC_male_018.ao|NPC_male_018.ao|NPC_male_018.ao|Emo01
 Converting... Male_020.fbx
 Read File Succssefully
 Animation name list: 
-NPC_Male_020.ao|Emo01
-NPC_Male_020.ao|Idle
-NPC_Male_020.ao|Talk
-NPC_Male_020.ao|Walk
+NPC_Male_020.ao|NPC_Male_020.ao|NPC_Male_020.ao|Emo01
 Converting... Male_027.fbx
 Read File Succssefully
 Animation name list: 
-Npc_male_027.ao|Idle
-Npc_male_027.ao|Play
+Npc_male_027.ao|Npc_male_027.ao|Npc_male_027.ao|Play
 Converting... Male_Chi.fbx
 Read File Succssefully
 Animation name list: 
-NPC_male_004.ao|Cheer
-NPC_male_004.ao|Complain
-NPC_male_004.ao|Emo01
-NPC_male_004.ao|Emo02
-NPC_male_004.ao|Idle01
-NPC_male_004.ao|Idle02
-NPC_male_004.ao|Idle03
-NPC_male_004.ao|Talk01
-NPC_male_004.ao|Talk02
-NPC_male_004.ao|Talk03
-NPC_male_004.ao|Walk01
-NPC_male_004.ao|Walk02
-NPC_male_004.ao|Walk03
-Converting... Roskva.fbx
-Read File Succssefully
-Animation name list: 
-NPC_Roskva_re.ao|Coast02_SC02_NPC_Roskva
-NPC_Roskva_re.ao|Idle01
-NPC_Roskva_re.ao|LoadingScene_Pose_roskva
-NPC_Roskva_re.ao|Talk01_old
-NPC_Roskva_re.ao|Talk02
-NPC_Roskva_re.ao|Talk03
-NPC_Roskva_re.ao|Walk
+NPC_male_004.ao|NPC_male_004.ao|NPC_male_004.ao|Emo02
 Converting... SkillMerchant.fbx
 Read File Succssefully
 Animation name list: 
-NPC_female_020.ao|Idle
-NPC_female_020.ao|Talk
-NPC_female_020.ao|Talk02
-NPC_female_020.ao|Walk
+NPC_female_020.ao|NPC_female_020.ao|NPC_female_020.ao|Idle
 Animation Models : Convert Success!
 
-28 Animation Models
+18 Animation Models
 are Successfully Converted as hyuntramesh!!
