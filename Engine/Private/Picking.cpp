@@ -75,7 +75,7 @@ _float4 CPicking::PickingDepth(_float x, _float y)
 {
 	ID3D11Texture2D* pTexture = nullptr;
 
-	pTexture = m_pGameInstance->Get_Texture2D(L"Target_Depth");
+	pTexture = m_pGameInstance->Get_Texture2D(L"Target_Depth_Velocity");
 
 	if (nullptr == pTexture) {
 		MSG_BOX("Get Target_Depth FAILED");

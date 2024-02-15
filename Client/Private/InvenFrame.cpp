@@ -677,6 +677,51 @@ void CInvenFrame::Delete_Item(INVEN_TYPE eInvenType, _uint iIndex)
 	Set_ItemPosition(m_eCurInvenType);
 }
 
+void CInvenFrame::Delete_Item(INVEN_TYPE eInvenType, wstring& strName)
+{
+	for (size_t i = 0; i < m_vecItems.size(); i++)
+	{
+		if (m_vecItems[i]->Get_ItemDesc().strName == strName)
+		{
+			if (m_vecItems[i]->Get_ItemNum() > 1)
+			{
+				m_vecItems[i]->Set_ItemNum(-1);
+				return;
+			}
+			break;
+		}
+	}
+
+
+	for (size_t i = 0; i < m_vecItemsSlot[eInvenType].size(); i++)
+	{
+		if (m_vecItemsSlot[eInvenType][i]->Get_ItemDesc().strName == strName)
+		{
+			m_vecItemsSlot[eInvenType].erase(m_vecItemsSlot[eInvenType].begin() + i);
+			break;
+		}
+	}
+	for (size_t i = 0; i < m_vecItemsSlot[INVEN_ALL].size(); i++)
+	{
+		if (m_vecItemsSlot[INVEN_ALL][i]->Get_ItemDesc().strName == strName)
+		{
+			m_vecItemsSlot[INVEN_ALL].erase(m_vecItemsSlot[INVEN_ALL].begin() + i);
+			break;
+		}
+	}
+
+	for (size_t i = 0; i < m_vecItems.size(); i++)
+	{
+		if (m_vecItems[i]->Get_ItemDesc().strName == strName)
+		{
+			Safe_Release(m_vecItems[i]);
+			m_vecItems.erase(m_vecItems.begin() + i);
+			break;
+		}
+	}
+	Set_ItemPosition(m_eCurInvenType);
+}
+
 const CItem* CInvenFrame::Find_Item(wstring& strName) const
 {
 	for (auto& iter : m_vecItems)
@@ -733,7 +778,7 @@ void CInvenFrame::Picking_InvenButton(POINT ptMouse)
 				}
 			}
 		}
-		if (m_iCurItemType ==ITEM_BODY || m_iCurItemType == ITEM_TOP || m_iCurItemType == ITEM_SWORD || m_iCurItemType == ITEM_BOW)
+		if (m_iCurItemType ==ITEM_BODY || m_iCurItemType == ITEM_TOP || m_iCurItemType == ITEM_SWORD || m_iCurItemType == ITEM_BOW || m_iCurItemType ==ITEM_PET)
 		{
 			ITEM eItem = m_vecItemsSlot[m_eCurInvenType][m_iCurIndex]->Get_ItemDesc();
 			WEARABLE_TYPE eType{};
@@ -753,6 +798,10 @@ void CInvenFrame::Picking_InvenButton(POINT ptMouse)
 			else if (m_iCurItemType == ITEM_BOW)
 			{
 				eType = W_EQUIP;
+			}
+			else if (m_iCurItemType == ITEM_PET)
+			{
+				eType = W_PET;
 			}
 			if (FAILED(dynamic_cast<CInven*>(m_pParent)->Set_WearableItem(eType, eItem)))
 			{

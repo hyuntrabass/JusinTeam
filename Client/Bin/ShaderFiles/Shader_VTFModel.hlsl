@@ -231,7 +231,7 @@ VS_OUT VS_Main(VS_IN Input)
     vCalDir.z = vPos.z;
     vCalDir.w = vPos.w;
     
-    Output.vPos = vPos;
+    Output.vPos = vNewPos;
     Output.vNor = normalize(mul(vNormal, g_WorldMatrix));
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);

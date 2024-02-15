@@ -1,61 +1,128 @@
 1. Static Only   2. Anim Only   3. All
-<<<<<<< HEAD
 2
 Animation Models : Start Converting...
 1. Normally Anim Model	2. For VTF Model 3. Part Model
+<<<<<<< HEAD
 1
-Converting... 123.fbx
+Converting... boss.fbx
 Read File Succssefully
 Animation name list: 
-Mon_Skjaldmaer.ao|Attack01
-Mon_Skjaldmaer.ao|Attack01_A
-Mon_Skjaldmaer.ao|Attack02
-Mon_Skjaldmaer.ao|Attack02_A
-Mon_Skjaldmaer.ao|Attack03
-Mon_Skjaldmaer.ao|Attack03_A
-Mon_Skjaldmaer.ao|Attack04
-Mon_Skjaldmaer.ao|Attack04_A
-Mon_Skjaldmaer.ao|Attack05
-Mon_Skjaldmaer.ao|Attack05_A
-Mon_Skjaldmaer.ao|Attack06
-Mon_Skjaldmaer.ao|Attack06_A
-Mon_Skjaldmaer.ao|Attack07
-Mon_Skjaldmaer.ao|Attack07_A
-Mon_Skjaldmaer.ao|Attack08
-Mon_Skjaldmaer.ao|Attack08_A
-Mon_Skjaldmaer.ao|Attack09
-Mon_Skjaldmaer.ao|Attack09_A
-Mon_Skjaldmaer.ao|Attack10
-Mon_Skjaldmaer.ao|Die
-Mon_Skjaldmaer.ao|Die_A
-Mon_Skjaldmaer.ao|Idle
-Mon_Skjaldmaer.ao|Idle_A
-Mon_Skjaldmaer.ao|Roar
-Mon_Skjaldmaer.ao|Roar_A
-Mon_Skjaldmaer.ao|Run
-Mon_Skjaldmaer.ao|Run_A
-Mon_Skjaldmaer.ao|Spawn
-Mon_Skjaldmaer.ao|Spawn_A
-Mon_Skjaldmaer.ao|Talk
-Mon_Skjaldmaer.ao|Talk_A
-Mon_Skjaldmaer.ao|Walk
-Mon_Skjaldmaer.ao|Walk_A
+Mon_Angrboda.ao|attack01
+Mon_Angrboda.ao|attack02
+Mon_Angrboda.ao|attack03
+Mon_Angrboda.ao|attack04
+Mon_Angrboda.ao|attack05
+Mon_Angrboda.ao|attack06_End
+Mon_Angrboda.ao|attack06_Loop
+Mon_Angrboda.ao|attack06_Start
+Mon_Angrboda.ao|attack06_Start.001
+Mon_Angrboda.ao|attack07
+Mon_Angrboda.ao|attack08
+Mon_Angrboda.ao|attack08_2
+Mon_Angrboda.ao|attack09_A
+Mon_Angrboda.ao|attack09_B
+Mon_Angrboda.ao|attack10_A
+Mon_Angrboda.ao|attack10_B
+Mon_Angrboda.ao|attack11_A
+Mon_Angrboda.ao|attack11_B
+Mon_Angrboda.ao|attack12_A
+Mon_Angrboda.ao|attack12_B
+Mon_Angrboda.ao|attack13
+Mon_Angrboda.ao|BossView_Idle
+Mon_Angrboda.ao|CardTestattack01
+Mon_Angrboda.ao|CardTestattack02
+Mon_Angrboda.ao|CardTestattack03
+Mon_Angrboda.ao|Die
+Mon_Angrboda.ao|Idle
+Mon_Angrboda.ao|Rage
+Mon_Angrboda.ao|Roar
+Mon_Angrboda.ao|Run
+Mon_Angrboda.ao|Run2
+Mon_Angrboda.ao|Spawn
+Mon_Angrboda.ao|Spawn_Idle
+Mon_Angrboda.ao|Walk
 Animation Models : Convert Success!
 
 1 Animation Models
 =======
-1
-Static Models : Start Converting...
-Converting... Stand_Torch1.fbx
+2
+Converting... BlackSmith.fbx
 Read File Succssefully
-Converting... Stand_Torch2.fbx
+Animation name list: 
+NPC_Dwarf_male_001.ao|NPC_Dwarf_male_001.ao|NPC_Dwarf_male_001.ao|idle
+NPC_Dwarf_male_001.ao|NPC_Dwarf_male_001.ao|NPC_Dwarf_male_001.ao|idle02
+NPC_Dwarf_male_001.ao|NPC_Dwarf_male_001.ao|NPC_Dwarf_male_001.ao|Talk01
+NPC_Dwarf_male_001.ao|NPC_Dwarf_male_001.ao|NPC_Dwarf_male_001.ao|walk01
+Converting... Female_002.fbx
 Read File Succssefully
-Converting... Torch.fbx
+Animation name list: 
+NPC_female_002.ao|NPC_female_002.ao|NPC_female_002.ao|Talk02
+Converting... Female_003.fbx
 Read File Succssefully
-Converting... Wall_Torch.fbx
+Animation name list: 
+NPC_female_003.ao|NPC_female_003.ao|NPC_female_003.ao|idle01
+Converting... Female_004.fbx
 Read File Succssefully
-Static Models : Convert Success!
+Animation name list: 
+NPC_female_004.ao|NPC_female_004.ao|NPC_female_004.ao|Idle01
+Converting... Female_005.fbx
+Read File Succssefully
+Animation name list: 
+NPC_female_005.ao|NPC_female_005.ao|NPC_female_005.ao|Emo01
+Converting... Female_006.fbx
+Read File Succssefully
+Animation name list: 
+NPC_female_006.ao|NPC_female_006.ao|NPC_female_006.ao|idle01
+Converting... Female_010.fbx
+Read File Succssefully
+Animation name list: 
+NPC_female_010.ao|NPC_female_010.ao|NPC_female_010.ao|Talk01
+Converting... Female_013.fbx
+Read File Succssefully
+Animation name list: 
+NPC_female_013.ao|NPC_female_013.ao|NPC_female_013.ao|Emo02
+Converting... Female_027.fbx
+Read File Succssefully
+Animation name list: 
+NPC_female_027.ao|NPC_female_027.ao|NPC_female_027.ao|Emo02
+Converting... Male_009.fbx
+Read File Succssefully
+Animation name list: 
+NPC_male_009.ao|NPC_male_009.ao|NPC_male_009.ao|idle01
+Converting... Male_013.fbx
+Read File Succssefully
+Animation name list: 
+NPC_Male_013.ao|NPC_Male_013.ao|NPC_Male_013.ao|idle01
+Converting... Male_015.fbx
+Read File Succssefully
+Animation name list: 
+NPC_Male_015.ao|NPC_Male_015.ao|NPC_Male_015.ao|Idle01
+Converting... Male_016.fbx
+Read File Succssefully
+Animation name list: 
+NPC_male_016.ao|NPC_male_016.ao|NPC_male_016.ao|Dance01
+Converting... Male_018.fbx
+Read File Succssefully
+Animation name list: 
+NPC_male_018.ao|NPC_male_018.ao|NPC_male_018.ao|Emo01
+Converting... Male_020.fbx
+Read File Succssefully
+Animation name list: 
+NPC_Male_020.ao|NPC_Male_020.ao|NPC_Male_020.ao|Emo01
+Converting... Male_027.fbx
+Read File Succssefully
+Animation name list: 
+Npc_male_027.ao|Npc_male_027.ao|Npc_male_027.ao|Play
+Converting... Male_Chi.fbx
+Read File Succssefully
+Animation name list: 
+NPC_male_004.ao|NPC_male_004.ao|NPC_male_004.ao|Emo02
+Converting... SkillMerchant.fbx
+Read File Succssefully
+Animation name list: 
+NPC_female_020.ao|NPC_female_020.ao|NPC_female_020.ao|Idle
+Animation Models : Convert Success!
 
-4 Static Models
->>>>>>> ab903a7def4ff391cfebf09241b11491f9427499
+18 Animation Models
+>>>>>>> 74f44640c8fe3980bfd5509dead6517d3013d7f0
 are Successfully Converted as hyuntramesh!!

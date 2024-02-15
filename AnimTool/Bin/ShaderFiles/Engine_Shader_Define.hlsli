@@ -136,12 +136,46 @@ DepthStencilState DSS_Default
     DepthEnable = true;
     DepthWriteMask = all;
     DepthFunc = Less_Equal;
+    StencilEnable = true;
+    FrontfaceStencilFail = KEEP;
+    FrontfaceStencilDepthFail = KEEP;
+    FrontfaceStencilPass = REPLACE;
 };
 
 DepthStencilState DSS_None
 {
     DepthEnable = false;
     DepthWriteMask = Zero;
+};
+
+DepthStencilState DSS_DrawStencil
+{
+    DepthEnable = true;
+    DepthWriteMask = all;
+    StencilEnable = true;
+    FrontfaceStencilFunc = ALWAYS;
+    FrontfaceStencilFail = KEEP;
+    FrontfaceStencilDepthFail = KEEP;
+    FrontfaceStencilPass = REPLACE;
+};
+
+DepthStencilState DSS_StencilEqual
+{
+    DepthEnable = false;
+    DepthWriteMask = Zero;
+    StencilEnable = true;
+    FrontfaceStencilFunc = EQUAL;
+    FrontfaceStencilFail = KEEP;
+    FrontfaceStencilDepthFail = KEEP;
+    FrontfaceStencilPass = KEEP;
+};
+
+DepthStencilState DSS_StencilNotEqual
+{
+    DepthEnable = false;
+    DepthWriteMask = Zero;
+    StencilEnable = true;
+    FrontFaceStencilFunc = NOT_EQUAL;
 };
 
 // Blend State
@@ -175,4 +209,16 @@ BlendState BS_Half
     SrcBlend = Inv_Dest_Alpha;
     DestBlend = Dest_Alpha;
     BlendOp = Add;
+};
+
+BlendState BS_Outline
+{
+    BlendEnable[0] = true;
+
+    SrcBlend = Src_Alpha;
+    DestBlend = Inv_Src_Alpha;
+    BlendOp = Add;
+    SrcBlendAlpha = Zero;
+    DestBlendAlpha = One;
+    BlendOpAlpha = Add;
 };

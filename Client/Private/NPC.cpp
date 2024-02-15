@@ -195,6 +195,15 @@ HRESULT CNPC::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
+	/*if (FAILED(m_pModelCom->Bind_Animation(m_pShaderCom)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pModelCom->Bind_PlayAnimation(m_pShaderCom)))
+	{
+		return E_FAIL;
+	}*/
 
 	return S_OK;
 }

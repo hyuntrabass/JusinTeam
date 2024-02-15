@@ -226,6 +226,7 @@ namespace Client
 	{
 		D_MOUSE,
 		D_FADE,
+		D_WINDOW,
 		D_LOADING,
 		D_ALERT,
 		D_INVEN,
@@ -258,6 +259,7 @@ namespace Client
 		ITEM_SWORD,
 		ITEM_BOW,
 		ITEM_INGREDIENT,
+		ITEM_PET,
 		ITEM_NOTYPE,
 		ITEMTYPEEND
 	};
@@ -469,6 +471,7 @@ namespace Client
 		VTPass_HPBoss,
 		VTPass_MaskColorMove,
 		VTPass_ChangeBright,
+		VTPass_Move,
 		VTPass_End
 	};
 

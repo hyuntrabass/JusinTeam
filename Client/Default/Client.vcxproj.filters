@@ -439,6 +439,12 @@
     <Filter Include="02.GameObjects\08. Boss\Dragon_Boss\Blackhole">
       <UniqueIdentifier>{c37b6025-3c60-4797-a44e-138555399924}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Window\Sell">
+      <UniqueIdentifier>{9d08a87c-abad-499f-948f-54d5ebc7dc7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Window\Summon">
+      <UniqueIdentifier>{c6e00d6a-2521-443e-a6d7-c8892e42bc41}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -792,9 +798,6 @@
     <ClInclude Include="..\Public\VTFTest.h">
       <Filter>02.GameObjects\04.Monster\00. ModelTest\VTF</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\InvenWindow.h">
-      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Item.h">
       <Filter>02.GameObjects\00.UI\GameUI\Inven\Item</Filter>
     </ClInclude>
@@ -879,6 +882,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Meteor.h">
       <Filter>02.GameObjects\08. Boss\Dragon_Boss\Meteor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\InvenWindow.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window\Sell</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SummonWindow.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window\Summon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1234,9 +1243,6 @@
     <ClCompile Include="..\Private\VTFTest.cpp">
       <Filter>02.GameObjects\04.Monster\00. ModelTest\VTF</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\InvenWindow.cpp">
-      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Tutorial.cpp">
       <Filter>02.GameObjects\00.UI\99.tuto</Filter>
     </ClCompile>
@@ -1319,6 +1325,12 @@
     <ClCompile Include="..\Private\Meteor.cpp">
       <Filter>02.GameObjects\08. Boss\Dragon_Boss\Meteor</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\InvenWindow.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window\Sell</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SummonWindow.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window\Summon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
@@ -1361,6 +1373,9 @@
       <Filter>97.Shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxStatMesh_Instance.hlsl">
+      <Filter>97.Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VTFModel_Instance.hlsl">
       <Filter>97.Shaders</Filter>
     </FxCompile>
   </ItemGroup>

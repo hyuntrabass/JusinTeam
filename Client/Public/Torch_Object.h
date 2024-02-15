@@ -2,9 +2,11 @@
 #include "Client_Define.h"
 #include "Objects.h"
 /*
-	Wall_Torch
-	Stand_Torch1
-	Stand_Torch2
+	Prototype_Model_Wall_Torch
+	Prototype_Model_Stand_Torch1
+	Prototype_Model_Stand_Torch2
+	Prototype_Model_Torch
+	Prototype_Model_Brazier
 */
 BEGIN(Client)
 
@@ -22,16 +24,7 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
-	ObjectInfo Get_Info() const { return m_Info; }
-
-
 private:
-
-	ObjectInfo m_Info{};
-	_bool m_isSelected{};
-	_uint m_iShaderPass{};
-	_uint m_iOutLineShaderPass{};
-
 	class CEffect_Dummy* m_pFire{ nullptr };
 	_mat m_FireMat{};
 

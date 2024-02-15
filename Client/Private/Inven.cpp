@@ -94,10 +94,19 @@ HRESULT CInven::Init(void* pArg)
 	strItem = TEXT("체력 포션");
 	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
 	
+	strItem = TEXT("[신화]탈 것 소환 카드");
+	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
+	
 	strItem = TEXT("[희귀]탈 것 소환 카드");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
+	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
 	
 	strItem = TEXT("[일반]탈 것 소환 카드");
+	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
+	
+	strItem = TEXT("고양이");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);
+
+	strItem = TEXT("드래곤");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);
 
 	//m_pWearableSlots[W_EQUIP]->Set_WearableItem(eItem);
@@ -339,6 +348,10 @@ HRESULT CInven::Set_WearableItem(WEARABLE_TYPE eType, ITEM eItemDesc)
 	if (m_pWearableSlots[eType]->Is_Full())
 	{
 		ITEM Item = m_pWearableSlots[eType]->Get_ItemDesc();
+		if (eItemDesc.strName == Item.strName)
+		{
+			return E_FAIL;
+		}
 		dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(Item);
 	}
 	m_pWearableSlots[eType]->Set_WearableItem(eItemDesc);

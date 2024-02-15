@@ -55,6 +55,12 @@ matrix g_CamProjMatrix;
 Texture2D g_Luminance;
 Texture2D g_HDRTexture;
 
+// Outline
+Texture2D g_StencilTexture;
+vector g_OutlineColor;
+vector g_CheckColor;
+uint g_OutlineColorIndex;
+
 // Blurs
 Texture2D g_TestBlurTexture;
 bool TurnOnSSAO;
@@ -486,9 +492,61 @@ PS_OUT PS_Main_HDR(PS_IN Input)
     return Output;
 }
 
+PS_OUT PS_Main_Check(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    Output.vColor = g_OutlineColor;
+    
+    return Output;
+}
+
+PS_OUT PS_Main_Outline(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    float xFilter[9] = { -1.f, 0.f, 1.f, -2.f, 0.f, 2.f, -1.f, 0.f, 1.f };
+    float yFilter[9] = { 1.f, 2.f, 1.f, 0.f, 0.f, 0.f, -1.f, -2.f, -1.f };
+    
+    float2 tX = float2(1.f / 1280.f, 0.f);
+    float2 tY = float2(0.f, 1.f / 720.f);
+    
+    float grid[9];
+    float3 GreyScale = g_CheckColor.xyz;
+    
+    grid[0] = dot(g_StencilTexture.Sample(PointClampSampler, Input.vTexcoord - tX + tY).rgb, GreyScale);
+    grid[1] = dot(g_StencilTexture.Sample(PointClampSampler, Input.vTexcoord + tY).rgb, GreyScale);
+    grid[2] = dot(g_StencilTexture.Sample(PointClampSampler, Input.vTexcoord + tX + tY).rgb, GreyScale);
+    grid[3] = dot(g_StencilTexture.Sample(PointClampSampler, Input.vTexcoord - tX).rgb, GreyScale);
+    grid[4] = dot(g_StencilTexture.Sample(PointClampSampler, Input.vTexcoord).rgb, GreyScale);
+    grid[5] = dot(g_StencilTexture.Sample(PointClampSampler, Input.vTexcoord + tX).rgb, GreyScale);
+    grid[6] = dot(g_StencilTexture.Sample(PointClampSampler, Input.vTexcoord - tX - tY).rgb, GreyScale);
+    grid[7] = dot(g_StencilTexture.Sample(PointClampSampler, Input.vTexcoord - tY).rgb, GreyScale);
+    grid[8] = dot(g_StencilTexture.Sample(PointClampSampler, Input.vTexcoord + tX - tY).rgb, GreyScale);
+    
+    float sX = 0.f;
+    float sY = 0.f;
+    
+    for (uint i = 0; i < 9; ++i)
+    {
+        sX += grid[i] * xFilter[i];
+        sY += grid[i] * yFilter[i];
+    }
+    
+    float dist = sqrt(sX * sX + sY * sY);
+    float edge = dist >= 0.5f ? 1.f : 0.f;
+    
+    vector vColor = g_OutlineColor;
+    vColor.a *= edge;
+    
+    Output.vColor = vColor;
+    
+    return Output;
+}
+
 technique11 DefaultTechnique
 {
-    pass Debug
+    pass Debug // 0
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -501,7 +559,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main_Debug();
     }
 
-    pass DebugArray
+    pass DebugArray // 1
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -514,7 +572,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main_DebugArray();
     }
 
-    pass Light_Directional
+    pass Light_Directional // 2
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -527,7 +585,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main_Directional();
     }
 
-    pass Light_Point
+    pass Light_Point // 3
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -540,7 +598,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main_Point();
     }
 
-    pass Water
+    pass Water // 4
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -553,7 +611,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main_Water();
     }
 
-    pass Deferrd
+    pass Deferrd // 5
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -566,11 +624,11 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main_Deferred();
     }
 
-    pass Blur
+    pass Blur // 6
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
-        SetBlendState(BS_OnebyOne, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -579,7 +637,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main_Blur();
     }
 
-    pass SSAO
+    pass SSAO // 7
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -592,7 +650,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main_SSAO();
     }
 
-    pass HDR
+    pass HDR // 8
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -605,5 +663,29 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main_HDR();
     }
 
+    pass CheckStencil // 9
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_StencilEqual, g_OutlineColorIndex);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Check();
+    }
+
+    pass DrawOutline // 10
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_StencilNotEqual, g_OutlineColorIndex);
+        SetBlendState(BS_Outline, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Outline();
+    }
 };

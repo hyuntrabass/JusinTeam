@@ -52,6 +52,7 @@ HRESULT CPet_Cat::Init(void* pArg)
 
 void CPet_Cat::Tick(_float fTimeDelta)
 {
+	__super::Tick(fTimeDelta);
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 

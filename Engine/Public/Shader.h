@@ -25,10 +25,14 @@ public:
 
 	HRESULT Bind_RawValue(const _char* pVariableName, const void* pData, _uint iDataSize);
 
+	_int Get_PassIndex() { return m_iPassIndex; }
+	void Set_PassIndex(_int iPassIndex) { m_iPassIndex = iPassIndex; }
+
 private:
 	ID3DX11Effect* m_pEffect{ nullptr };
 	_uint m_iNumPasses{};
 	vector<ID3D11InputLayout*> m_InputLayouts{};
+	_int m_iPassIndex = -1;
 
 public:
 	static CShader* Create(_dev pDevice, _context pContext, const wstring& strShaderFilePath, const D3D11_INPUT_ELEMENT_DESC* pElements, _uint iNumElements);

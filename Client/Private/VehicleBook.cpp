@@ -42,32 +42,15 @@ HRESULT CVehicleBook::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+	for (size_t i = 0; i < Type_End; i++)
+	{
+		if (FAILED(Set_Vehicle((Riding_Type)i)))
+		{
+			return E_FAIL;
+		}
+	}
 
 
-	if (FAILED(Set_Vehicle(Bird)))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(Set_Vehicle(Horse)))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(Set_Vehicle(Wyvern)))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(Set_Vehicle(Falar)))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(Set_Vehicle(Tiger)))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(Set_Vehicle(Nihilir)))
-	{
-		return E_FAIL;
-	}
 
 	return S_OK;
 }
@@ -83,6 +66,17 @@ void CVehicleBook::Tick(_float fTimeDelta)
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
 	
+	Riding_Type eType = CUI_Manager::Get_Instance()->Get_NewRiding();
+	if (eType != Type_End)
+	{
+		if (FAILED(Set_Vehicle(eType)))
+		{
+			return;
+		}
+		CUI_Manager::Get_Instance()->Set_NewRiding(Type_End);
+		return;
+	}
+
 	RECT rectUI = {
 			  (LONG)(m_fX - m_fSizeX * 0.5f),
 			  (LONG)(m_fY - m_fSizeY * 0.5f),
@@ -579,13 +573,6 @@ HRESULT CVehicleBook::Add_Parts()
 	}
 	m_pEquipButton->Set_Pass(VTPass_UI_Alpha);
 
-	
-
-	/*
-	
-	m_pSkill_Model = (CSkill_Model*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Skill_Model"));
-	m_pScarecorw = (CScarecrow*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Scarecrow"));
-	*/
 	return S_OK;
 }
 
@@ -672,14 +659,6 @@ void CVehicleBook::Free()
 		{
 			Safe_Release(m_pVehicleType[i]);
 		}
-
-		for (size_t i = 0; i < VC_END; i++)
-		{
-
-			//Safe_Release(m_pSelectedVehicle[i]);
-		}
-
-
 	}
 	
 	for (auto& iter : m_vecVehicle[VC_GROUND])

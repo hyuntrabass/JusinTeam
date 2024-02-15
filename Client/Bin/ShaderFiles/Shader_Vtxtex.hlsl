@@ -12,14 +12,15 @@ bool g_bOn = { false };
 int g_TexIndex;
 vector g_vColor;
 vector g_vSliceRect;
-float g_fx;
-float g_fy;
+float g_fx = { 0.f };
+float g_fy = { 0.f };
 float g_fScrollRatio;
 float g_fHpRatio;
 float g_fAlpha;
 float g_fTime;
 float g_fDissolveRatio;
 float g_fAmount;
+float g_fBrightFactor = { 3.f };
 float2 g_vRatio;
 int2 g_vNumSprite;
 uint g_iIndex;
@@ -552,7 +553,7 @@ PS_OUT PS_Bright(PS_IN Input)
     Output.vColor.a = Output.vColor.a * vMask.r;
 
 
-    Output.vColor *= 3.f;
+    Output.vColor *= g_fBrightFactor;
   
     
     return Output;
@@ -753,6 +754,15 @@ PS_OUT PS_Main_ChangeBright(PS_IN Input)
     
     return Output;
 }
+PS_OUT PS_Main_Move(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    Output.vColor = g_Texture.Sample(LinearSampler, float2(Input.vTex.x + g_fx, Input.vTex.y + g_fy));
+    
+    return Output;
+}
+
 technique11 DefaultTechnique
 {
     pass UI
@@ -1205,5 +1215,17 @@ pass ChangeBright
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_ChangeBright();
+    }
+pass Move
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Move();
     }
 };
