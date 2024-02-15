@@ -35,7 +35,6 @@ HRESULT CPlayer::Init(void* pArg)
 	m_Animation.bSkipInterpolation = false;
 	m_pTransformCom->Set_Scale(_vec3(4.f));
 	Place_PartModels();
-	m_pTransformCom->Set_Speed(1);
 	m_pCameraTransform = GET_TRANSFORM("Layer_Camera", LEVEL_STATIC);
 	Safe_AddRef(m_pCameraTransform);
 	m_SwordSkill[0] = Anim_RA_9100_Ambush; // x자로 공격하기
@@ -59,7 +58,6 @@ HRESULT CPlayer::Init(void* pArg)
 	SURFACETRAIL_DESC Desc{};
 	Desc.vColor = Colors::WhiteSmoke;
 	Desc.iNumVertices = 8;
-	//Desc.strMaskTextureTag = L"FX_I_WaveGraMasksRGB_Clamp001_Tex";
 	m_pLeft_Trail[0] = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 	m_pRight_Trail[0] = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 
@@ -79,24 +77,12 @@ HRESULT CPlayer::Init(void* pArg)
 	m_pLeft_Trail[4] = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 	m_pRight_Trail[4] = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 
-	//trail_desc.vColor = _vec4(0.929f, 0.929f, 0.886f, 1.f);
-	//trail_desc.vColor = _vec4(0.98f, 0.965f, 0.11f, 1.f);
-	//trail_desc.vColor = _vec4(0.467f, 0.949f, 0.416f, 1.f);
-	//trail_desc.vColor = _vec4(0.569f, 0.176f, 0.769f, 1.f);
-	//trail_desc.vColor = _vec4(0.631f, 0.043f, 0.125f, 1.f);
-
 	m_Left_Mat = m_pModelCom->Get_BoneMatrix("B_Weapon_L");
 	m_Right_Mat = m_pModelCom->Get_BoneMatrix("B_Weapon_R");
 
-
-	//SURFACETRAIL_DESC SurfaceDesc{};
-	//SurfaceDesc.iNumVertices = 20;
-	//SurfaceDesc.vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
-	//SurfaceDesc.strMaskTextureTag = L"FX_G_Note_MusicSheet001_Tex";
-	//m_pTest_Trail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &SurfaceDesc);
 	m_ShaderIndex = VTFPass_Dissolve;
 	m_HairShaderIndex = VTFPass_LerpDissolve;
-
+	
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER);
 	m_bReadyMove = true;
 	m_Current_GroundRiding = Horse;
@@ -301,17 +287,17 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_C))
 	{
+		
 		if (m_eState == Idle or m_eState == Mount or m_eState == Run_Start or m_eState == Run or m_eState == Run_End)
 		{
 
 			if (!m_bIsMount)
 			{
+
 				m_Current_GroundRiding = CUI_Manager::Get_Instance()->Get_Riding(VC_GROUND);
 				if (m_Current_GroundRiding != Type_End)
 				{
 					m_bIsMount = true;
-					m_eState = Mount;
-					m_Animation.iAnimIndex = Anim_Mount_Idle;
 					Riding_Desc Desc{};
 					Desc.Type = m_Current_GroundRiding;
 					Summon_Riding(Desc);
@@ -332,8 +318,7 @@ void CPlayer::Tick(_float fTimeDelta)
 			if (m_Current_AirRiding != Type_End)
 			{
 				m_bIsMount = true;
-				m_eState = Mount;
-				m_Animation.iAnimIndex = Anim_Mount_Idle;
+
 				Riding_Desc Desc{};
 				Desc.Type = m_Current_AirRiding;
 				Summon_Riding(Desc);
@@ -411,12 +396,19 @@ void CPlayer::Tick(_float fTimeDelta)
 		return;
 	}
 
-	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CUSTOM && !m_bIsMount)
+	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CUSTOM)
 	{
+		if (!m_bIsMount)
+		{
 		Move(fTimeDelta);
+		}
+		
 		Init_State();
 
-		Tick_State(fTimeDelta);
+		if (!m_bIsMount)
+		{
+			Tick_State(fTimeDelta);
+		}
 		if (m_Current_Weapon == WP_SWORD)
 		{
 			After_SwordAtt(fTimeDelta);
@@ -480,10 +472,58 @@ void CPlayer::Tick(_float fTimeDelta)
 	}
 	m_pModelCom->Set_Animation(m_Animation);
 	m_pParryingCollider->Update(m_pTransformCom->Get_World_Matrix());
-	
+
 	LIGHT_DESC* pLight = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Player");
-	pLight->vDiffuse = _vec4(0.4f);
-	pLight->vPosition = m_pTransformCom->Get_CenterPos();
+	if (pLight)
+	{
+		pLight->vDiffuse = _vec4(0.4f);
+		pLight->vSpecular = _vec4(0.f);
+		pLight->vPosition = m_pTransformCom->Get_CenterPos();
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_J))
+	{
+		m_pGameInstance->Delete_Light(LEVEL_STATIC, L"Light_Player", 0.5f);
+	}
+	if (m_pGameInstance->Key_Down(DIK_H))
+	{
+		LIGHT_DESC LightDesc{};
+
+		LightDesc.eType = LIGHT_DESC::Point;
+		LightDesc.vAttenuation = LIGHT_RANGE_32;
+		LightDesc.vDiffuse = _vec4(0.15f);
+		LightDesc.vAmbient = _vec4(0.05f);
+		LightDesc.vSpecular = _vec4(1.f);
+		LightDesc.vPosition = m_pTransformCom->Get_CenterPos();
+
+		if (FAILED(m_pGameInstance->Add_Light(LEVEL_STATIC, TEXT("Light_Player"), LightDesc)))
+		{
+		}
+	}
+
+#ifdef _DEBUG
+	m_pGameInstance->Get_StringStream() << "카메라 전환 : P" << endl;
+	m_pGameInstance->Get_StringStream() << "디버그 랜더 On/Off : F1" << endl;
+	m_pGameInstance->Get_StringStream() << "플레이어 위치 등은 성능 문제로 디버그 랜더시에만 니오게 함." << endl;
+	m_pGameInstance->Get_StringStream() << endl;
+
+	if (not m_pGameInstance->IsSkipDebugRendering())
+	{
+		_vector Pos = m_pTransformCom->Get_State(State::Pos);
+		_vector Look = m_pTransformCom->Get_State(State::Look);
+		m_pGameInstance->Get_StringStream() << "플레이어 이동속도 :" << m_pTransformCom->Get_Speed() << endl;
+		m_pGameInstance->Get_StringStream() << "플레이어 애니메이션 인덱스 :" << m_pModelCom->Get_CurrentAnimationIndex() << endl;
+		m_pGameInstance->Get_StringStream() << endl;
+		m_pGameInstance->Get_StringStream() << "플레이어 위치 X :" << Pos.m128_f32[0] << endl;
+		m_pGameInstance->Get_StringStream() << "플레이어 위치 Y :" << Pos.m128_f32[1] << endl;
+		m_pGameInstance->Get_StringStream() << "플레이어 위치 Z :" << Pos.m128_f32[2] << endl;
+		m_pGameInstance->Get_StringStream() << endl;
+		m_pGameInstance->Get_StringStream() << "플레이어 룩 X :" << Look.m128_f32[0] << endl;
+		m_pGameInstance->Get_StringStream() << "플레이어 룩 Y :" << Look.m128_f32[1] << endl;
+		m_pGameInstance->Get_StringStream() << "플레이어 룩 Z :" << Look.m128_f32[2] << endl;
+		m_pGameInstance->Get_StringStream() << endl;
+	}
+#endif // _DEBUG
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)
@@ -564,7 +604,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	m_pModelCom->Play_Animation(fTimeDelta, m_bAttacked);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
-	if(true == m_pGameInstance->Get_TurnOnShadow())
+	if (true == m_pGameInstance->Get_TurnOnShadow())
 		m_pRendererCom->Add_RenderGroup(RG_Shadow, this);
 
 	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
@@ -1565,21 +1605,20 @@ void CPlayer::Move(_float fTimeDelta)
 			{
 				return;
 			}
-			if (m_Current_Weapon >= WP_UNEQUIP)
+			if (m_Weapon_CurrentIndex < WP_UNEQUIP)
 			{
-				return;
-			}
 
-
-			if (vDirection != _vec4())
-			{
-				m_pTransformCom->LookAt_Dir(vDirection);
-			}
+				if (vDirection != _vec4())
+				{
+					m_pTransformCom->LookAt_Dir(vDirection);
+				}
 
 			Common_Attack();
 			m_eState = Attack;
 			m_ReadyArrow = true;
 			hasMoved = false;
+			}
+		
 		}
 		if (m_pGameInstance->Key_Down(DIK_SPACE))
 		{
@@ -1604,19 +1643,17 @@ void CPlayer::Move(_float fTimeDelta)
 				if (!m_pTransformCom->Is_OnGround())
 				{
 					if (!m_bIsMount)
-					{
+					{	
 						m_Current_AirRiding = CUI_Manager::Get_Instance()->Get_Riding(VC_FLY);
 						if (m_Current_AirRiding != Type_End)
 						{
 							m_bIsMount = true;
-							m_eState = Mount;
-							m_Animation.iAnimIndex = Anim_Mount_Idle;
+
 							Riding_Desc Desc{};
 							Desc.Type = m_Current_AirRiding;
 							Desc.bGlide = true;
 							Summon_Riding(Desc);
 						}
-
 					}
 				}
 			}
@@ -1975,6 +2012,7 @@ void CPlayer::Common_Attack()
 			m_Animation.iAnimIndex = Anim_Assassin_Attack04_A;
 			m_fAttTimer = 0.f;
 			m_iAttackCombo++;
+			m_fAttackZoom = 2.f;
 		}
 
 		break;
@@ -2032,6 +2070,7 @@ void CPlayer::Common_Attack()
 	}
 	m_bAttacked = false;
 	m_bReadyMove = false;
+	m_Animation.isLoop = false;
 }
 void CPlayer::Skill1_Attack()
 {
@@ -2547,6 +2586,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				else if (Index > 18.f && Index < 21.f)
 				{
 					m_bAttacked = false;
+				
 				}
 				else if (Index >= 22.f && Index <= 24.f)
 				{
@@ -2795,15 +2835,11 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		else if (Index >= 26.f && Index <= 30.f)
 		{
 			m_pGameInstance->Set_TimeRatio(0.1f);
+			m_fSkiilTimer = 0.f;
 		}
 		else if (Index >= 35.f && Index <= 40.f)
 		{
 			m_pGameInstance->Set_TimeRatio(0.5f);
-
-		}
-		else if (Index >= 39.f && Index <= 44.f)
-		{
-			//m_pGameInstance->Set_TimeRatio(0.1f);
 
 		}
 		else if (Index >= 56.f && Index <= 59.f)
@@ -3273,26 +3309,27 @@ void CPlayer::Tick_Riding(_float fTimeDelta)
 	m_pTransformCom->Set_Matrix(m_pRiding->Get_Mat());
 	//m_pTransformCom->Set_Position(_vec3(m_pRiding->Get_Pos()));
 	Riding_State State = m_pRiding->Get_State();
-	m_Animation.isLoop = true;
-	m_Animation.fAnimSpeedRatio = 2.f;
+
 	if (m_Riding_State != State)
 	{
-		if (State == Riding_Run)
+		if (State == Riding_Glide)
 		{
-			m_Animation.iAnimIndex = Anim_Mount_Run;
-			m_Animation.isLoop = true;
-
+			m_eState = Mount_Fly;
 		}
-		else if (State == Riding_Idle)
+		else if (State == Riding_Run )
 		{
-			m_Animation.iAnimIndex = Anim_Mount_Idle;
-			m_Animation.isLoop = true;
+			m_eState = Mount_Run;
+
 		}
 		else if (State == Riding_Walk)
 		{
-			m_Animation.iAnimIndex = Anim_Mount_Walk;
-			m_Animation.isLoop = true;
+			m_eState = Mount_Walk;
 		}
+		else
+		{
+			m_eState = Mount;
+		}
+
 		m_Riding_State = State;
 	}
 }
@@ -3681,6 +3718,30 @@ void CPlayer::Init_State()
 			m_Animation.iAnimIndex = Anim_logging;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
+		}
+		break;
+		case Client::CPlayer::Mount:
+		{
+			m_Animation.iAnimIndex = Anim_Mount_Idle;
+			m_Animation.isLoop = true;
+		}
+		break;
+		case Client::CPlayer::Mount_Run:
+		{
+			m_Animation.iAnimIndex = Anim_Mount_Run;
+			m_Animation.isLoop = true;
+		}
+		break;
+		case Client::CPlayer::Mount_Walk:
+		{
+			m_Animation.iAnimIndex = Anim_Mount_Walk;
+			m_Animation.isLoop = true;
+		}
+		break;
+		case Client::CPlayer::Mount_Fly:
+		{
+			m_Animation.iAnimIndex = Anim_Mount_fly_run;
+			m_Animation.isLoop = true;
 		}
 		break;
 		default:
@@ -4287,10 +4348,6 @@ void CPlayer::Free()
 		Safe_Release(m_pAttCollider[i]);
 	}
 
-	if (m_pRiding != nullptr)
-	{
-		Safe_Release(m_pRiding);
-	}
 
 	for (int i = 0; i < 5; i++)
 	{
@@ -4298,12 +4355,16 @@ void CPlayer::Free()
 		Safe_Release(m_pRight_Trail[i]);
 	}
 
+	Safe_Release(m_pRiding);
 	Safe_Release(m_pNameTag);
+	Safe_Release(m_pModelCom);
+	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pBaseEffect);
+	Safe_Release(m_pRendererCom);
+	Safe_Release(m_pHitCollider);
+	Safe_Release(m_pFrameEffect);
+	Safe_Release(m_pEffect_Shield);
+	Safe_Release(m_pCameraTransform);
 	Safe_Release(m_pParryingCollider);
 	Safe_Release(m_pDissolveTextureCom);
-	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pModelCom);
-	Safe_Release(m_pRendererCom);
-	Safe_Release(m_pCameraTransform);
-	Safe_Release(m_pHitCollider);
 }

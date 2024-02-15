@@ -146,12 +146,17 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 		}
 	}
 
-	if (Key_Down(DIK_F5, InputChannel::Engine)) {
+	if (Key_Down(DIK_F5, InputChannel::Engine)) 
+	{
 		m_bTurnOnShadow = !m_bTurnOnShadow;
 	}
 
 	if (Is_Playing_Video())
 	{
+	#ifdef _DEBUG
+		Print_StringStream();
+	#endif // _DEBUG
+
 		return;
 	}
 
@@ -166,7 +171,7 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 
 	m_pFrustum->Tick();
 
-	if(true == m_bTurnOnShadow)
+	if (true == m_bTurnOnShadow)
 		m_pCascade_Manager->Update_Cascade();
 
 	m_pObject_Manager->Release_DeadObjects();
@@ -180,6 +185,8 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	{
 		m_Function_LateTick_FX(fTimeDelta);
 	}
+
+	m_pLight_Manager->Tick(m_iLevelIndex, fTimeDelta);
 
 #ifdef _DEBUG
 	Print_StringStream();
@@ -532,14 +539,14 @@ HRESULT CGameInstance::Add_Light(_uint iLevelIndex, const wstring& strLightTag, 
 	return m_pLight_Manager->Add_Light(iLevelIndex, strLightTag, LightDesc);
 }
 
-HRESULT CGameInstance::Delete_Light(_uint iLevelIndex, const wstring& strLightTag)
+HRESULT CGameInstance::Delete_Light(_uint iLevelIndex, const wstring& strLightTag, _float fDimmerDuration)
 {
 	if (!m_pLight_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pLight_Manager is NULL");
 	}
 
-	return m_pLight_Manager->Delete_Light(iLevelIndex, strLightTag);
+	return m_pLight_Manager->Delete_Light(iLevelIndex, strLightTag, fDimmerDuration);
 }
 
 HRESULT CGameInstance::Render_Lights(_uint iLevelIndex, CShader* pShader, CVIBuffer_Rect* pVIBuffer)
@@ -1297,14 +1304,12 @@ const _float& CGameInstance::Get_HellHeight() const
 #ifdef _DEBUG
 stringstream& CGameInstance::Get_StringStream()
 {
-	m_iNumStreamLines++;
 	return m_OutputStream;
 }
 
 void CGameInstance::Add_String_to_Stream(const string& strText)
 {
 	m_OutputStream << strText << endl;
-	m_iNumStreamLines++;
 }
 #endif
 
@@ -1475,25 +1480,29 @@ void CGameInstance::Print_StringStream()
 	{
 		m_OutputStream = {};
 		m_OutputStream.clear();
-		m_iNumStreamLines = {};
 		return;
 	}
 
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	COORD cursorPos = { 0, 0 };
+	COORD coordScreen = { 0, 0 };
+	DWORD cCharsWritten;
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	DWORD dwConSize;
 
-	for (int i = 0; i < m_iNumStreamLines; i++)
-	{
-		DWORD dw{};
-		FillConsoleOutputCharacter(hConsole, ' ', 50, cursorPos, &dw);
-		cursorPos.Y++;
-	}
-	SetConsoleCursorPosition(hConsole, COORD());
+	GetConsoleScreenBufferInfo(hConsole, &csbi);
+	dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
+
+	FillConsoleOutputCharacter(hConsole, (TCHAR)' ', dwConSize, coordScreen, &cCharsWritten);
+
+	GetConsoleScreenBufferInfo(hConsole, &csbi);
+	FillConsoleOutputAttribute(hConsole, csbi.wAttributes, dwConSize, coordScreen, &cCharsWritten);
+
+	SetConsoleCursorPosition(hConsole, coordScreen);
+
 	m_strPrevStream = m_OutputStream.str();
 	cout << m_strPrevStream << flush;
 	m_OutputStream = {};
 	m_OutputStream.clear();
-	m_iNumStreamLines = {};
 }
 #endif
 

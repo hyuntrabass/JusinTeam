@@ -110,6 +110,11 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Boss"), TEXT("Prototype_GameObject_Human_Boss"))))
+	//{
+	//	return E_FAIL;
+	//}
+
 	// UI
 	if (FAILED(Ready_UI()))
 	{

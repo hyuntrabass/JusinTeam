@@ -35,7 +35,7 @@ HRESULT CLight_Manager::Add_Light(_uint iLevelIndex, const wstring& strLightTag,
 	return S_OK;
 }
 
-HRESULT CLight_Manager::Delete_Light(_uint iLevelIndex, const wstring& strLightTag)
+HRESULT CLight_Manager::Delete_Light(_uint iLevelIndex, const wstring& strLightTag, _float fDimmerDuration)
 {
 	if (iLevelIndex >= m_iNumLevels)
 	{
@@ -48,8 +48,7 @@ HRESULT CLight_Manager::Delete_Light(_uint iLevelIndex, const wstring& strLightT
 		return E_FAIL;
 	}
 
-	Safe_Release(iter->second);
-	m_pLights[iLevelIndex].erase(iter);
+	iter->second->Dim(fDimmerDuration);
 
 	return S_OK;
 }
@@ -77,6 +76,42 @@ HRESULT CLight_Manager::Init(_uint iNumLevels)
 	m_iNumLevels = iNumLevels;
 
 	return S_OK;
+}
+
+void CLight_Manager::Tick(_uint iLevelIndex, _float fTimeDelta)
+{
+	if (iLevelIndex >= m_iNumLevels)
+	{
+		MSG_BOX("Wrong Level Index");
+		return;
+	}
+
+	for (auto iter = m_pLights[0].begin(); iter != m_pLights[0].end();)
+	{
+		iter->second->Tick(fTimeDelta);
+		if (iter->second->Is_Dead())
+		{
+			Safe_Release(iter->second);
+			iter = m_pLights[0].erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+	for (auto iter = m_pLights[iLevelIndex].begin(); iter != m_pLights[iLevelIndex].end();)
+	{
+		iter->second->Tick(fTimeDelta);
+		if (iter->second->Is_Dead())
+		{
+			Safe_Release(iter->second);
+			iter = m_pLights[iLevelIndex].erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
 }
 
 void CLight_Manager::Clear(_uint iLevelIndex)

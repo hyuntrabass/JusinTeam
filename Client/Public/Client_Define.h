@@ -59,9 +59,9 @@ namespace Client
 		_vec4(), // Position
 		_vec4(), // Attenuation
 
-		_vec4(0.2f), // Diffuse
-		_vec4(0.05f), // Ambient
-		_vec4(1.f) // Specular
+		_vec4(0.05f), // Diffuse
+		_vec4(0.01f), // Ambient
+		_vec4(0.1f) // Specular
 	};
 
 	enum LEVEL_ID
