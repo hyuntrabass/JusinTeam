@@ -38,29 +38,10 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-
-	// Map
-	if (FAILED(Ready_Map()))
-	{
-		MSG_BOX("Failed to Ready Map");
-		return E_FAIL;
-	}
-
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_WorldMap"), TEXT("Prototype_GameObject_WorldMap"))))
 	{
 		return E_FAIL;
 	}
-
-	if (FAILED(Ready_Dungeon()))
-	{
-		MSG_BOX("Failed to Ready Dungeon");
-		return E_FAIL;
-	}
-	//if (FAILED(Ready_UI()))
-	//{
-	//	MSG_BOX("Failed to Ready UI");
-	//	return E_FAIL;
-	//}
 
 
 	if (FAILED(Ready_Object()))

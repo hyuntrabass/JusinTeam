@@ -6,11 +6,11 @@ BEGIN(Engine)
 enum RenderGroup
 {
 	RG_Priority,
+	RG_Remain,
 	RG_Shadow,
 	RG_NonBlend,
 	RG_NonBlend_Instance,
-	RG_Blur,
-	RG_NonLight,
+	RG_Remain1,
 	RG_Blend,
 	RG_BlendBlur,
 	RG_Water,
@@ -57,7 +57,6 @@ private:
 	_float44 m_WorldMatrix{}, m_ViewMatrix{}, m_ProjMatrix{};
 
 	ID3D11DepthStencilView* m_pShadowDSV{ nullptr };
-	//ID3D11DepthStencilView* m_pBlurDSV{ nullptr };
 
 #pragma region Æò±Õ ÈÖµµ ±¸ÇÏ´Â ½¦ÀÌ´õ¶û ·£´õÅ¸°Ùµé
 
@@ -177,13 +176,12 @@ private:
 	HRESULT Render_Refraction();
 	HRESULT Render_Reflection();
 	HRESULT Render_Water();
-	HRESULT Render_Blur();
 	HRESULT Render_LightAcc();
 	HRESULT Render_Deferred();
-	HRESULT Render_NonLight();
+	HRESULT Render_HDR();
+	HRESULT Render_Outline();
 	HRESULT Render_Blend();
 	HRESULT Render_BlendBlur();
-	HRESULT Render_HDR();
 	HRESULT Render_UI();
 #ifdef _DEBUG
 private:

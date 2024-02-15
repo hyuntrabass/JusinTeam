@@ -28,6 +28,7 @@ float2 g_vUVTransform;
 float4 g_vClipPlane;
 float4 g_RimColor;
 vector g_OldWorldMatrix, g_OldViewMatrix;
+uint g_OutlineColor;
 
 
 struct VS_IN
@@ -94,33 +95,6 @@ VS_OUT VS_Main(VS_IN Input)
     Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
     Output.vDir = 0.f;
     
-    return Output;
-}
-
-VS_OUT VS_OutLine(VS_IN Input)
-{
-    VS_OUT Output = (VS_OUT) 0;
-	
-    matrix matWV, matWVP;
-    
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
-    matWVP = mul(matWV, g_ProjMatrix);
-	
-    vector vPos = vector(Input.vPos, 1.f);
-    vector vNor = vector(Input.vNor, 0.f);
-    
-    float fDist = length(g_vCamPos - mul(vPos, g_WorldMatrix));
-    
-    float fThickness = clamp(fDist / 300.f, 0.03f, 0.2f);
-    
-    vPos += normalize(vNor) * (fThickness + 0.5 * g_bSelected);
-    
-    Output.vPos = mul(vPos, matWVP);
-    Output.vNor = normalize(mul(vNor, g_WorldMatrix));
-    Output.vTex = Input.vTex;
-    Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
-    Output.vProjPos = Output.vPos;
-	
     return Output;
 }
 
@@ -324,22 +298,22 @@ PS_OUT_DEFERRED PS_Main_AlphaTest(PS_IN Input)
     return Output;
 }
 
-PS_OUT_DEFERRED PS_OutLine(PS_IN Input)
-{
-    PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
+//PS_OUT_DEFERRED PS_OutLine(PS_IN Input)
+//{
+//    PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
     
-    vector vLook = g_vCamPos - Input.vWorldPos;
-    float DotProduct = dot(normalize(vLook), normalize(Input.vNor));
-    if (DotProduct > 0.f)
-    {
-        discard;
-    }
+//    vector vLook = g_vCamPos - Input.vWorldPos;
+//    float DotProduct = dot(normalize(vLook), normalize(Input.vNor));
+//    if (DotProduct > 0.f)
+//    {
+//        discard;
+//    }
     
-    Output.vDiffuse = g_vColor;
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+//    Output.vDiffuse = g_vColor;
+//    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
 
-    return Output;
-}
+//    return Output;
+//}
 
 PS_OUT PS_Main_Sky(PS_IN Input)
 {
@@ -689,7 +663,7 @@ PS_OUT PS_Main_DiffEffect_Alpha(PS_IN Input)
 
 technique11 DefaultTechnique_Shader_StatMesh
 {
-    pass Default
+    pass Default // 0
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -702,7 +676,7 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main();
     }
 
-    pass NonLight
+    pass NonLight // 1
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -715,24 +689,24 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_NonLight();
     }
 
-    pass OutLine
+    pass OutLine // 2
     {
-        SetRasterizerState(RS_CCW);
-        SetDepthStencilState(DSS_Default, 0);
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_DrawStencil, g_OutlineColor);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-        VertexShader = compile vs_5_0 VS_OutLine();
+        VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_OutLine();
+        PixelShader = compile ps_5_0 PS_Main();
     }
 
-    pass AlphaTestMeshes
+    pass AlphaTestMeshes // 3
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -741,7 +715,7 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_AlphaTest();
     }
 
-    pass Sky
+    pass Sky // 4
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -754,7 +728,7 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_Sky();
     }
 
-    pass COLMesh
+    pass COLMesh // 5
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -767,7 +741,7 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_COL();
     }
 
-    pass SingleColoredEffect
+    pass SingleColoredEffect // 6
     {
         SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);
@@ -780,7 +754,7 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_Effect();
     }
 
-    pass SingleColoredEffectDissolve
+    pass SingleColoredEffectDissolve // 7
     {
         SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);
@@ -793,7 +767,7 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_Effect_Dissolve();
     }
 
-    pass Fireball
+    pass Fireball // 8
     {
         SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);
@@ -806,7 +780,7 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_Fireball();
     }
 
-    pass MaskEffect
+    pass MaskEffect // 9
     {
         SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);
@@ -819,7 +793,7 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_MaskEffect();
     }
 
-    pass MaskEffectDissolve
+    pass MaskEffectDissolve // 10
     {
         SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);
@@ -832,7 +806,7 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_MaskEffect_Dissolve();
     }
 
-    pass MaskEffectClamp
+    pass MaskEffectClamp // 11
     {
         SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);
@@ -845,7 +819,7 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_MaskEffect_Clamp();
     }
 
-    pass SingleColoredEffectFrontCull
+    pass SingleColoredEffectFrontCull // 12
     {
         SetRasterizerState(RS_CCW);
         SetDepthStencilState(DSS_Default, 0);
@@ -858,7 +832,7 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_Effect();
     }
 
-    pass Shadow
+    pass Shadow // 13
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -871,7 +845,7 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_Shadow();
     }
 
-    pass Water
+    pass Water // 14
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -910,7 +884,7 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_WorldMap_Cloud();
     }
 
-    pass RimLight
+    pass RimLight // 17
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -923,7 +897,7 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_Rim();
     }
 
-    pass DiffEffect
+    pass DiffEffect // 18
     {
         SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);
@@ -936,7 +910,7 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_DiffEffect();
     }
 
-    pass SingleColoredAlpha
+    pass SingleColoredAlpha // 19
     {
         SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);
@@ -949,7 +923,7 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_Effect_Alpha();
     }
 
-    pass MaskAlpha
+    pass MaskAlpha // 20
     {
         SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);
@@ -962,7 +936,7 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_MaskEffect_Alpha();
     }
 
-    pass DiffEffectAlpha
+    pass DiffEffectAlpha // 21
     {
         SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);

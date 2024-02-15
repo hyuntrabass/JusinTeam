@@ -354,7 +354,7 @@ namespace Engine
 	struct Instance_Data
 	{
 		SimpleMath::Matrix mMatrix{};
-		SimpleMath::Matrix mOldMatrix{};
+		//SimpleMath::Matrix mOldMatrix{};
 		unsigned int m_iID{};
 	};
 
