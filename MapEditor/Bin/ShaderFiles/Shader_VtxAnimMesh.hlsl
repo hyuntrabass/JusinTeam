@@ -124,9 +124,7 @@ struct PS_OUT_DEFERRED
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
-    vector vSpecular : SV_Target3;
-    int ID : SV_Target6;
-    
+    vector vRimMask : SV_Target3;
 };
 
 PS_OUT_DEFERRED PS_Main(PS_IN Input)
