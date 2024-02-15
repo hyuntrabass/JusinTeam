@@ -40,11 +40,11 @@ HRESULT CLevel_Village::Init()
 
 
 	// Map
-	if (FAILED(Ready_Map()))
+	/*if (FAILED(Ready_Map()))
 	{
 		MSG_BOX("Failed to Ready Map");
 		return E_FAIL;
-	}
+	}*/
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_WorldMap"), TEXT("Prototype_GameObject_WorldMap"))))
 	{

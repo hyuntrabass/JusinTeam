@@ -255,6 +255,18 @@ void CVTFModel::Set_Animation(ANIM_DESC Animation_Desc)
 	m_AnimDesc = Animation_Desc;
 }
 
+const _bool CVTFModel::IsAnimationFinished(_uint iAnimIndex) const
+{
+	if (m_PlayAnimDesc.eCurrent.iAnimIndex == iAnimIndex)
+	{
+		return m_isFinished;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 HRESULT CVTFModel::Bind_Material(CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType)
 {
 	_uint iMatIndex = m_Meshes[iMeshIndex]->Get_MatIndex();

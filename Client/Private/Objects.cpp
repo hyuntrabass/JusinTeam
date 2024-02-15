@@ -8,6 +8,7 @@ CObjects::CObjects(_dev pDevice, _context pContext)
 
 CObjects::CObjects(const CObjects& rhs)
 	: CBlendObject(rhs)
+	, m_Info(rhs.m_Info)
 	, m_isInstancing(rhs.m_isInstancing)
 {
 }
@@ -31,15 +32,15 @@ void CObjects::Tick(_float fTimeDelta)
 
 void CObjects::Late_Tick(_float fTimeDelta)
 {
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Camera", LEVEL_STATIC);
+	//CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Camera", LEVEL_STATIC);
 
-	_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
-	_vec4 vPos = m_pTransformCom->Get_CenterPos();
+	//_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
+	//_vec4 vPos = m_pTransformCom->Get_CenterPos();
 
-	if (abs(vPlayerPos.x - vPos.x) > 500.f)
-	{
-		return;
-	}
+	//if (abs(vPlayerPos.x - vPos.x) > 500.f)
+	//{
+	//	return;
+	//}
 
 	CAMERA_STATE CamState = CCamera_Manager::Get_Instance()->Get_CameraState();
 	if (CamState == CS_SKILLBOOK or CamState == CS_INVEN or CamState == CS_WORLDMAP)

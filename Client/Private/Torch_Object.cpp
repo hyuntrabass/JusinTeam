@@ -11,7 +11,6 @@ CTorch_Object::CTorch_Object(_dev pDevice, _context pContext)
 
 CTorch_Object::CTorch_Object(const CTorch_Object& rhs)
 	: CObjects(rhs)
-	,m_Info(rhs.m_Info)
 {
 	m_isInstancing = true;
 }
