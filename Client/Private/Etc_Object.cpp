@@ -8,7 +8,6 @@ CEtc_Object::CEtc_Object(_dev pDevice, _context pContext)
 
 CEtc_Object::CEtc_Object(const CEtc_Object& rhs)
 	: CObjects(rhs)
-	,m_Info(rhs.m_Info)
 {
 	m_isInstancing = false;
 }
@@ -29,7 +28,7 @@ HRESULT CEtc_Object::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_iShaderPass = 0;
+	m_iShaderPass = StaticPass_OutLine;
 
 	m_pTransformCom->Set_Matrix(m_Info.m_WorldMatrix);
 	m_pModelCom->Apply_TransformToActor(m_Info.m_WorldMatrix);

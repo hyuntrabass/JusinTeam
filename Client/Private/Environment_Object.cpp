@@ -9,7 +9,6 @@ CEnvironment_Object::CEnvironment_Object(_dev pDevice, _context pContext)
 
 CEnvironment_Object::CEnvironment_Object(const CEnvironment_Object& rhs)
 	: CObjects(rhs)
-	,m_Info(rhs.m_Info)
 {
 	m_isInstancing = true;
 }
