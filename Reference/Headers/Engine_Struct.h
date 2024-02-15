@@ -184,7 +184,7 @@ namespace Engine
 		ANIMTIME_DESC eNext;
 	};
 
-#define MAX_INSTANCE 800
+#define MAX_INSTANCE 300
 	using INSTANCED_PLAYANIM_DESC = struct tagInstancedPlayAnimDesc
 	{
 		PLAYANIM_DESC PlayAnim[MAX_INSTANCE];
