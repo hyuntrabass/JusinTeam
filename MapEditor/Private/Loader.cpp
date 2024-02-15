@@ -197,7 +197,7 @@ HRESULT CLoader::Load_Editor()
 			}
 		}
 	}
-
+	Pivot = _mat::CreateScale(0.003f);
 	 //Object Model
 	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Object/Tutorial/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
@@ -214,7 +214,6 @@ HRESULT CLoader::Load_Editor()
 			}
 		}
 	}
-	Pivot = _mat::CreateScale(0.003f);
 
 	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Object/Midgard/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))

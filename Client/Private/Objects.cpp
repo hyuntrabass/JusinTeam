@@ -8,6 +8,7 @@ CObjects::CObjects(_dev pDevice, _context pContext)
 
 CObjects::CObjects(const CObjects& rhs)
 	: CBlendObject(rhs)
+	, m_Info(rhs.m_Info)
 	, m_isInstancing(rhs.m_isInstancing)
 {
 }
@@ -277,6 +278,7 @@ HRESULT CObjects::Add_Components(wstring strPrototype, ObjectType eType )
 		}
 	}
 
+	m_pShaderCom->Set_PassIndex(3);
 	m_iShaderPass = StaticPass_Default;
 	m_iOutLineShaderPass = StaticPass_OutLine;
 
@@ -306,6 +308,7 @@ HRESULT CObjects::Bind_ShaderResources()
 		{
 			return E_FAIL;
 		}
+
 	}
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))

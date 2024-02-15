@@ -117,6 +117,29 @@ HRESULT CWearable_Slot::Set_WearableItem(ITEM eItemDesc)
 		return E_FAIL;
 
 	m_isFull = true;
+	if (m_eType == W_PET)
+	{
+		if (m_pGameInstance->Get_LayerSize(LEVEL_STATIC, TEXT("Layer_Pet")) != 0)
+		{
+			CUI_Manager::Get_Instance()->Set_Pet(true);
+		}
+		if (eItemDesc.strName == TEXT("고양이"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pet"), TEXT("Prototype_GameObject_Pet_Cat"))))
+			{
+				return E_FAIL;
+			}
+		}
+		else if (eItemDesc.strName == TEXT("드래곤"))
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pet"), TEXT("Prototype_GameObject_Pet_Dragon"))))
+			{
+				return E_FAIL;
+			}
+		}
+		return S_OK;
+	}
+
 	_int iIndex = eItemDesc.iPartIndex;
 	if (m_ePartType == PT_WEAPON)
 	{
@@ -146,6 +169,17 @@ void CWearable_Slot::Delete_Item()
 
 	if (m_pItem != nullptr)
 	{
+		if (m_eType == W_PET)
+		{
+			if (m_pGameInstance->Get_LayerSize(LEVEL_STATIC, TEXT("Layer_Pet")) != 0)
+			{
+				CUI_Manager::Get_Instance()->Set_Pet(true);
+			}
+			m_isFull = false;
+			Safe_Release(m_pItem);
+			return;
+		}
+		
 		if (m_ePartType == PT_WEAPON)
 		{
 			ITEM eItem = Get_ItemDesc();

@@ -55,6 +55,7 @@ private:
 	_float				m_fAlpha{ 1.f };
 	_float				m_fMoveX{ 0.f };
 	_float				m_fMoveY{ 0.f };
+	_float				m_fFactor{ 1.f };
 
 	_vec2	m_vSize;
 	_vec2	m_vPosition;
@@ -87,6 +88,8 @@ public:
 	void Set_Alpha(const _float fAlpha) { m_fAlpha = fAlpha; }
 	void Set_Pass(VTPass ePass) { m_ePass = ePass; }
 	void Set_UV(_float fX, _float fY) { m_fMoveX = fX; m_fMoveY = fY; }
+	void Set_Factor(_float fFactor) { m_fFactor = fFactor; }
+	void Rotate_Button(_vec4 vAxis, _float fAngle);
 
 public:
 	static CTextButtonColor* Create(_dev pDevice, _context pContext);

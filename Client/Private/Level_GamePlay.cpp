@@ -493,10 +493,18 @@ HRESULT CLevel_GamePlay::Ready_ModelTest()
 		return E_FAIL;
 	}
 
-	/*if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_VTFTest"), TEXT("Prototype_GameObject_VTFTest"))))
+	for (size_t i = 0; i < 300; i++)
 	{
-		return E_FAIL;
-	}*/
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_VTFTest"), TEXT("Prototype_GameObject_VTFTest"))))
+		{
+			return E_FAIL;
+		}
+		/*if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Rabbit"), TEXT("Prototype_GameObject_Rabbit"))))
+		{
+			MSG_BOX("Rabbit 생성 실패");
+			return E_FAIL;
+		}*/
+	}
 
 	return S_OK;
 }
@@ -661,10 +669,10 @@ HRESULT CLevel_GamePlay::Ready_Groar_Boss()
 
 HRESULT CLevel_GamePlay::Ready_Pet()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pet_Cat"), TEXT("Prototype_GameObject_Pet_Cat"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pet_Cat"), TEXT("Prototype_GameObject_Pet_Cat"))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pet_Dragon"), TEXT("Prototype_GameObject_Pet_Dragon"))))
 	//{

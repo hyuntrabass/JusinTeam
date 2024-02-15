@@ -4,6 +4,9 @@
 #include "Texture.h"
 #include "Animation.h"
 #include "Shader.h"
+#include "VIBuffer_Mesh_Instance.h"
+
+_int CVTFModel::m_iNextInstanceID = 0;
 
 CVTFModel::CVTFModel(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
@@ -22,6 +25,7 @@ CVTFModel::CVTFModel(const CVTFModel& rhs)
 	, m_Animations(rhs.m_Animations)
 	, m_pTexture(rhs.m_pTexture)
 	, m_pSRV(rhs.m_pSRV)
+	, m_iInstanceID(rhs.m_iInstanceID)
 {
 	for (auto& pPrototypeAnim : m_Animations)
 	{
@@ -122,14 +126,14 @@ HRESULT CVTFModel::Init_Prototype(const string& strFilePath, const _bool& isCOLM
 		return E_FAIL;
 	}
 
+	m_iInstanceID = m_iNextInstanceID++;
+
 	return S_OK;
 }
 
 HRESULT CVTFModel::Init(void* pArg)
 {
 	m_PlayAnimDesc.PLAYANIM_DESC();
-
-	m_isLoop = true;
 
 	return S_OK;
 }
@@ -251,6 +255,18 @@ void CVTFModel::Set_Animation(ANIM_DESC Animation_Desc)
 	m_AnimDesc = Animation_Desc;
 }
 
+const _bool CVTFModel::IsAnimationFinished(_uint iAnimIndex) const
+{
+	if (m_PlayAnimDesc.eCurrent.iAnimIndex == iAnimIndex)
+	{
+		return m_isFinished;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 HRESULT CVTFModel::Bind_Material(CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType)
 {
 	_uint iMatIndex = m_Meshes[iMeshIndex]->Get_MatIndex();
@@ -271,9 +287,6 @@ HRESULT CVTFModel::Bind_Material(CShader* pShader, const _char* pVariableName, _
 
 HRESULT CVTFModel::Bind_Animation(CShader* pShader)
 {
-	if (FAILED(pShader->Bind_RawValue("g_PlayAnimDesc", &m_PlayAnimDesc, sizeof(PLAYANIM_DESC))))
-		return E_FAIL;
-
 	if (FAILED(pShader->Bind_ShaderResourceView("g_BoneTexture", m_pSRV)))
 		return E_FAIL;
 
@@ -288,10 +301,72 @@ HRESULT CVTFModel::Bind_OldAnimation(CShader* pShader)
 	return S_OK;
 }
 
+HRESULT CVTFModel::Bind_PlayAnimation(CShader* pShader)
+{
+	if (FAILED(pShader->Bind_RawValue("g_PlayAnimDesc", &m_PlayAnimDesc, sizeof(ANIMTIME_DESC))))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 HRESULT CVTFModel::Render(_uint iMeshIndex)
 {
 	if (FAILED(m_Meshes[iMeshIndex]->Render()))
 		return E_FAIL;
+	return S_OK;
+}
+
+HRESULT CVTFModel::Render_Instancing(CVIBuffer_Mesh_Instance*& pInstanceBuffer, CShader*& pShader)
+{
+	if (FAILED(Bind_Animation(pShader)))
+		return E_FAIL;
+
+	for (_uint i = 0; i < m_Meshes.size(); ++i)
+	{
+		if (FAILED(Bind_Material(pShader, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		{
+			return E_FAIL;
+		}
+
+		_bool HasNorTex{};
+		if (FAILED(Bind_Material(pShader, "g_NormalTexture", i, TextureType::Normals)))
+		{
+			HasNorTex = false;
+		}
+		else
+		{
+			HasNorTex = true;
+		}
+
+		_bool HasMaskTex{};
+		if (FAILED(Bind_Material(pShader, "g_MaskTexture", i, TextureType::Normals)))
+		{
+			HasMaskTex = false;
+		}
+		else
+		{
+			HasMaskTex = true;
+		}
+
+		if (FAILED(pShader->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(pShader->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(pShader->Begin(pShader->Get_PassIndex())))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(pInstanceBuffer->Render(m_Meshes[i])))
+			return E_FAIL;
+	}
+
 	return S_OK;
 }
 

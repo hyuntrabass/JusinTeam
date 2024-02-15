@@ -9,6 +9,7 @@ enum RenderGroup
 	RG_Shadow,
 	RG_NonBlend,
 	RG_NonBlend_Instance,
+	RG_AnimNonBlend_Instance,
 	RG_Blur,
 	RG_NonLight,
 	RG_Blend,
@@ -57,7 +58,6 @@ private:
 	_float44 m_WorldMatrix{}, m_ViewMatrix{}, m_ProjMatrix{};
 
 	ID3D11DepthStencilView* m_pShadowDSV{ nullptr };
-	//ID3D11DepthStencilView* m_pBlurDSV{ nullptr };
 
 #pragma region Æò±Õ ÈÖµµ ±¸ÇÏ´Â ½¦ÀÌ´õ¶û ·£´õÅ¸°Ùµé
 
@@ -174,16 +174,16 @@ private:
 	HRESULT Render_Shadow();
 	HRESULT Render_NonBlend();
 	HRESULT Render_NonBlend_Instance();
+	HRESULT Render_AnimNonBlend_Instance();
 	HRESULT Render_Refraction();
 	HRESULT Render_Reflection();
 	HRESULT Render_Water();
-	HRESULT Render_Blur();
 	HRESULT Render_LightAcc();
 	HRESULT Render_Deferred();
-	HRESULT Render_NonLight();
+	HRESULT Render_HDR();
+	HRESULT Render_Outline();
 	HRESULT Render_Blend();
 	HRESULT Render_BlendBlur();
-	HRESULT Render_HDR();
 	HRESULT Render_UI();
 #ifdef _DEBUG
 private:
@@ -193,9 +193,9 @@ private:
 private:
 	HRESULT Get_AvgLuminance();
 	HRESULT Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MRT_Tag, _float fBlurPower, _bool isBloom = false);
-	HRESULT Add_Instance(_int iInstanceID, Instance_Data& pMeshInstancing);
+	HRESULT Add_Instance(InstanceID InstanceID, Instance_Data& pMeshInstancing);
 	HRESULT Clear_Instance();
-	map<_int, class CVIBuffer_Mesh_Instance*>	m_InstanceBuffers;
+	map<InstanceID, class CVIBuffer_Mesh_Instance*>	m_InstanceBuffers;
 
 public:
 	static CRenderer* Create(_dev pDevice, _context pContext);
