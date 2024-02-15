@@ -37,7 +37,7 @@ HRESULT CSkill::Init(void* pArg)
 	m_fY = ((SKILL_DESC*)pArg)->vPosition.y;
 
 	m_fDepth = ((SKILL_DESC*)pArg)->fDepth;
-	m_fCoolTime = m_tSkillInfo.iCoolTime;
+	m_fCoolTime = (_float)m_tSkillInfo.iCoolTime;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	
@@ -186,7 +186,7 @@ _bool CSkill::Use_Skill()
 	if (!m_isUsingSkill)
 	{
 		m_isUsingSkill = true;
-		m_fCoolTime = m_tSkillInfo.iCoolTime;
+		m_fCoolTime = (_float)m_tSkillInfo.iCoolTime;
 		return true;
 	}
 	return false;

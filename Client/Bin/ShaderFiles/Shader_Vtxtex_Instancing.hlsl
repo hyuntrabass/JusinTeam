@@ -370,7 +370,7 @@ PS_OUT PS_Main_Sprite_Diff_Mask(PS_IN Input)
 
     Output.vColor.xyz = g_Texture.Sample(LinearSampler, vUV).xyz;
     
-    Output.vColor.a = vMask.r;
+    Output.vColor.a = vMask.r * vMask.a;
     Output.vColor.a *= Input.fDissolveRatio;
 
     return Output;
@@ -401,7 +401,7 @@ PS_OUT PS_Main_Sprite_Diff_Mask_Dissolve(PS_IN Input)
 
     Output.vColor.xyz = g_Texture.Sample(LinearSampler, vUV).xyz;
     
-    Output.vColor.a = vMask.r;
+    Output.vColor.a = vMask.r * vMask.a;
 
     return Output;
 }

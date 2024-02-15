@@ -54,6 +54,7 @@ HRESULT CPet_Dragon::Init(void* pArg)
 
 void CPet_Dragon::Tick(_float fTimeDelta)
 {
+	__super::Tick(fTimeDelta);
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 

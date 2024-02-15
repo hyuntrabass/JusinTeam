@@ -94,6 +94,15 @@ _bool CUI_Manager::Set_CurrentPlayerPos(_vec4 vPos)
 	return false;
 }
 
+HRESULT CUI_Manager::Set_WearableItem(WEARABLE_TYPE eType, ITEM eItemDesc)
+{
+	if (FAILED(dynamic_cast<CInven*>(m_pInven)->Set_WearableItem(eType, eItemDesc)))
+	{
+		return E_FAIL;
+	}
+	return S_OK;
+}
+
 void CUI_Manager::Set_MpState(_bool isMp, _uint iMp)
 {
 	if (isMp)
@@ -153,10 +162,11 @@ const _uint& CUI_Manager::Get_CustomPart(PART_TYPE eType)
 	return m_CustomPart[eType];
 }
 
-const _uint& CUI_Manager::Get_WeaponType(PART_TYPE eType, WEAPON_TYPE* wpType)
+const _uint& CUI_Manager::Get_WeaponType(PART_TYPE eType, WEAPON_TYPE* wpType, _uint* iExtraStatus)
 {
 	m_eChangedPart = PT_END;
 	*wpType = m_eWeaponType;
+	//Find_Item()
 	return m_CustomPart[eType];
 }
 
@@ -313,6 +323,10 @@ HRESULT CUI_Manager::Init_Items()
 		else if (strItemType == TEXT("BOW"))
 		{
 			Item.iItemType = (_uint)ITEM_BOW;
+		}
+		else if (strItemType == TEXT("PET"))
+		{
+			Item.iItemType = (_uint)ITEM_PET;
 		}
 
 		getline(fin, strItemTier, L'|');
@@ -630,6 +644,12 @@ void CUI_Manager::Use_Item_In_Slot(CItemBlock::ITEMSLOT eSlot)
 {
 	dynamic_cast<CItemSlot*>(m_pInvenItemSlots[eSlot])->Use_Item();
 	dynamic_cast<CItemSlot*>(m_pItemSlots[eSlot])->Use_Item();
+}
+
+void CUI_Manager::Delete_Item(INVEN_TYPE eInvenType, wstring& strName)
+{
+	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Delete_Item(eInvenType, strName);
+	return;
 }
 
 void CUI_Manager::Set_RadarPos(TYPE eType, CTransform* pTransform)

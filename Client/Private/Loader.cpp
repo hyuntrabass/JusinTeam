@@ -1150,7 +1150,7 @@ HRESULT CLoader::Load_GamePlay()
 
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Human_Boss"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Human_Boss/Mesh/LASTBOSS.hyuntraanimmesh"))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Human_Boss/Mesh/boss.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
@@ -1397,6 +1397,11 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_SummonWindow"), CSummonWindow::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
 
 #pragma endregion
 
@@ -1557,7 +1562,16 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Dragon_Boss"), CDragon_Boss::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Blackhole"), CBlackhole::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_FirePillar"), CFirePillar::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

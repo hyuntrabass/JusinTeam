@@ -136,6 +136,9 @@
     <Filter Include="02.GameObjects\08. Boss">
       <UniqueIdentifier>{c61f29d7-c959-47df-8a82-3a02726afaf2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss">
+      <UniqueIdentifier>{a36f29cf-4d64-4404-b599-15a6ac076134}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObjects\07. StatObject">
       <UniqueIdentifier>{7811bd56-9a30-483e-9b39-d9f2375daa1e}</UniqueIdentifier>
     </Filter>
@@ -256,6 +259,12 @@
     <Filter Include="02.GameObjects\03.Player\Weapon\Arrow">
       <UniqueIdentifier>{3c9caad4-a7e8-48db-a836-c8c8b3ca4edd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Spider">
+      <UniqueIdentifier>{f363281d-5323-407d-80fa-91b4b26af4c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Missile">
+      <UniqueIdentifier>{60d859ff-77f1-4b49-be0b-495060f838c9}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObjects\11.Trigger">
       <UniqueIdentifier>{e34cfd3d-cd3e-4a9c-a182-3c577c5cdb93}</UniqueIdentifier>
     </Filter>
@@ -292,11 +301,17 @@
     <Filter Include="02.GameObjects\00.UI\99.tuto">
       <UniqueIdentifier>{f002451a-1d54-4f47-bfd8-09740f319e97}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Tentacle">
+      <UniqueIdentifier>{e6130b2d-99fe-4290-b345-00db4943c384}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObjects\13.Skill_Model">
       <UniqueIdentifier>{aa0ca9b0-3047-42b3-a09b-1dd8eaa89345}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\13.Skill_Model\Scarecrow">
       <UniqueIdentifier>{39bb1368-c49e-441b-82d5-8e0ba460da46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\X_Beam">
+      <UniqueIdentifier>{506303cf-f24b-4443-ae3e-a5a60c5e5c63}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\00.UI\GameUI">
       <UniqueIdentifier>{7b7a7b62-d272-4f13-befe-cf110bc6e9ab}</UniqueIdentifier>
@@ -415,20 +430,20 @@
     <Filter Include="02.GameObjects\09.Object\Torch">
       <UniqueIdentifier>{b81bd7e5-ba31-4ee3-962d-a9f6c2f09f29}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\08. Boss\Groar_Boss">
-      <UniqueIdentifier>{a36f29cf-4d64-4404-b599-15a6ac076134}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\08. Boss\Dragon_Boss\Meteor">
+      <UniqueIdentifier>{0ee90f49-919e-462f-8451-438b8d3a3a9d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Spider">
-      <UniqueIdentifier>{f363281d-5323-407d-80fa-91b4b26af4c3}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\08. Boss\Dragon_Boss\FirePillar">
+      <UniqueIdentifier>{6115e5ab-1239-482f-adca-e55a0de643ab}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Missile">
-      <UniqueIdentifier>{60d859ff-77f1-4b49-be0b-495060f838c9}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\08. Boss\Dragon_Boss\Blackhole">
+      <UniqueIdentifier>{c37b6025-3c60-4797-a44e-138555399924}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Tentacle">
-      <UniqueIdentifier>{e6130b2d-99fe-4290-b345-00db4943c384}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Window\Sell">
+      <UniqueIdentifier>{9d08a87c-abad-499f-948f-54d5ebc7dc7f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\X_Beam">
-      <UniqueIdentifier>{506303cf-f24b-4443-ae3e-a5a60c5e5c63}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Window\Summon">
+      <UniqueIdentifier>{c6e00d6a-2521-443e-a6d7-c8892e42bc41}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -783,9 +798,6 @@
     <ClInclude Include="..\Public\VTFTest.h">
       <Filter>02.GameObjects\04.Monster\00. ModelTest\VTF</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\InvenWindow.h">
-      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Item.h">
       <Filter>02.GameObjects\00.UI\GameUI\Inven\Item</Filter>
     </ClInclude>
@@ -861,6 +873,21 @@
     </ClInclude>
     <ClInclude Include="..\Public\Client_Define.h">
       <Filter>99.Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Blackhole.h">
+      <Filter>02.GameObjects\08. Boss\Dragon_Boss\Blackhole</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FirePillar.h">
+      <Filter>02.GameObjects\08. Boss\Dragon_Boss\FirePillar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Meteor.h">
+      <Filter>02.GameObjects\08. Boss\Dragon_Boss\Meteor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\InvenWindow.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window\Sell</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SummonWindow.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window\Summon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1216,9 +1243,6 @@
     <ClCompile Include="..\Private\VTFTest.cpp">
       <Filter>02.GameObjects\04.Monster\00. ModelTest\VTF</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\InvenWindow.cpp">
-      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Tutorial.cpp">
       <Filter>02.GameObjects\00.UI\99.tuto</Filter>
     </ClCompile>
@@ -1291,6 +1315,21 @@
     </ClCompile>
     <ClCompile Include="..\Private\Torch_Object.cpp">
       <Filter>02.GameObjects\09.Object\Torch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Blackhole.cpp">
+      <Filter>02.GameObjects\08. Boss\Dragon_Boss\Blackhole</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FirePillar.cpp">
+      <Filter>02.GameObjects\08. Boss\Dragon_Boss\FirePillar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Meteor.cpp">
+      <Filter>02.GameObjects\08. Boss\Dragon_Boss\Meteor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\InvenWindow.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window\Sell</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SummonWindow.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window\Summon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

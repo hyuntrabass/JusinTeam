@@ -81,7 +81,9 @@ void CHPBoss::Tick(_float fTimeDelta)
 	if (m_iTargetHp < m_iCurHp)
 	{
 		m_bEffect = true;
-		m_iCurHp -= fTimeDelta * 500.f;
+		_float fHp = fTimeDelta * 500.f;
+		m_iCurHp -= (_int)fHp;
+		
 	}
 
 	if (m_iCurHp <= 0)

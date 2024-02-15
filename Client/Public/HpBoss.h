@@ -40,7 +40,7 @@ private:
 	_bool			m_bEffect{false};
 	_int			m_iCurHp{};
 	_uint			m_iMaxHp{};
-	_uint			m_iTargetHp{};
+	_int			m_iTargetHp{};
 
 	_float			m_fTime{};
 	wstring			m_strName;

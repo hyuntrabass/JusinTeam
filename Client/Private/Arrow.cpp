@@ -24,9 +24,14 @@ HRESULT CArrow::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-
+	m_iDamage = m_ArrowType.iDamage;
 	if (m_ArrowType.Att_Type != AT_Bow_Skill3)
 	{
+		wstring strPartiFxTag{ L"CommonArrowParti" };
+		if (m_ArrowType.Att_Type == AT_Bow_Skill2)
+		{
+			strPartiFxTag = L"ExplosiveArrowParti";
+		}
 		if (m_ArrowType.Att_Type == AT_Bow_SkillR)
 		{
 		_mat fourComboMat = m_ArrowType.world * _mat::CreateTranslation(_vec3(0.f, -1.5f, 0.f));
@@ -39,7 +44,7 @@ HRESULT CArrow::Init(void* pArg)
 		m_pTransformCom->Set_Speed(25.f);
 		m_pTransformCom->Set_Scale(_vec3(1.5f));
 
-		EffectInfo EffectInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"CommonArrowParti");
+		EffectInfo EffectInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(strPartiFxTag);
 		EffectInfo.pMatrix = &m_ParticleMatrix;
 		EffectInfo.isFollow = true;
 		m_pParticle = CEffect_Manager::Get_Instance()->Clone_Effect(EffectInfo);
@@ -56,6 +61,10 @@ HRESULT CArrow::Init(void* pArg)
 
 	TRAIL_DESC trail_desc{};
 	trail_desc.vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
+	if (m_ArrowType.Att_Type == AT_Bow_Skill2)
+	{
+		trail_desc.vColor = _color(1.f, 0.5f, 0.f);
+	}
 	trail_desc.vPSize = _vec2(0.02f, 0.02f);
 	trail_desc.iNumVertices = 10;
 	m_pTrail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &trail_desc);
@@ -85,7 +94,7 @@ void CArrow::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
-			m_pGameInstance->Attack_Monster(m_pCollider, 120, AT_Bow_Common);
+			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Common);
 			Kill();
 		}
 		break;
@@ -94,7 +103,7 @@ void CArrow::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
-			m_pGameInstance->Attack_Monster(m_pCollider, 150, AT_Bow_Skill1);
+			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill1);
 			Kill();
 		}
 		break;
@@ -104,6 +113,17 @@ void CArrow::Tick(_float fTimeDelta)
 		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
 			m_pGameInstance->Attack_Monster(m_pCollider, 200, AT_Bow_Skill2);
+			_mat EffectMat = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Spark");
+			Info.pMatrix = &EffectMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion");
+			Info.pMatrix = &EffectMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Impact");
+			Info.pMatrix = &EffectMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
 			Kill();
 		}
 		break;
@@ -112,7 +132,7 @@ void CArrow::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
-			m_pGameInstance->Attack_Monster(m_pCollider, 130, AT_Bow_Skill3);
+			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill3);
 			Kill();
 		}
 		break;
