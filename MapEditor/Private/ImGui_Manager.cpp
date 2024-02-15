@@ -305,7 +305,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			static int iSelectMap = 0;
 			ImGui::RadioButton("ETC", &iSelectMap, 0); ImGui::SameLine();
 			ImGui::RadioButton("Build", &iSelectMap, 1); ImGui::SameLine();
-			ImGui::RadioButton("Decoration", &iSelectMap, 2);
+			ImGui::RadioButton("Dungeon", &iSelectMap, 2);
 			if (iSelectMap == 0)
 			{
 				m_eType = TEXT("ETC");
@@ -316,7 +316,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			}
 			else if (iSelectMap == 2)
 			{
-				m_eType = TEXT("Decoration");
+				m_eType = TEXT("Dungeon");
 			}
 
 			if (ImGui::BeginListBox("MAPS PATH", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
@@ -387,7 +387,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			static int iSelectObject = 0;
 			ImGui::RadioButton("ETC", &iSelectObject, 0); ImGui::SameLine();
 			ImGui::RadioButton("Build", &iSelectObject, 1); ImGui::SameLine();
-			ImGui::RadioButton("Decoration", &iSelectObject, 2);
+			ImGui::RadioButton("Dungeon", &iSelectObject, 2);
 			_int iObjectCount = m_ObjectsList.size();
 			ImGui::InputInt("Count", &iObjectCount, 14);
 
@@ -404,7 +404,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			}
 			else if (iSelectObject == 2)
 			{
-				m_eType = TEXT("Decoration");
+				m_eType = TEXT("Dungeon");
 			}
 
 			ImGui::NewLine();
@@ -1609,7 +1609,7 @@ void CImGui_Manager::Search_Map()
 			if (extension == ".hyuntrastatmesh") {
 				char* cstr = new char[strName.length() + 1];
 				strcpy_s(cstr, strName.length() + 1, strName.c_str());
-				Maps[TEXT("Decoration")].push_back(cstr);
+				Maps[TEXT("Dungeon")].push_back(cstr);
 			}
 		}
 	}
@@ -1663,7 +1663,7 @@ void CImGui_Manager::Search_Object()
 
 				char* cstr = new char[strName.length() + 1];
 				strcpy_s(cstr, strName.length() + 1, strName.c_str());
-				Objects[L"Decoration"].push_back(cstr);
+				Objects[L"Dungeon"].push_back(cstr);
 			}
 		}
 	}
