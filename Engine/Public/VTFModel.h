@@ -27,19 +27,22 @@ public:
 
 	void Set_Animation(ANIM_DESC Animation_Desc);
 
-	void Set_NextAnimationIndex(_int iAnimIndex) {
-		m_iNextAnimIndex = iAnimIndex;
-	}
-
 	const _uint& Get_NumMeshes() const {
 		return m_iNumMeshes;
 	}
+	const _bool IsAnimationFinished(_uint iAnimIndex) const;
+
+	_int Get_InstanceID() { return m_iInstanceID; }
+	PLAYANIM_DESC& Get_PlayAnimDesc() { return m_PlayAnimDesc; }
 
 	HRESULT Bind_Material(class CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType);
 	HRESULT Bind_Animation(class CShader* pShader);
 	HRESULT Bind_OldAnimation(class CShader* pShader);
+	HRESULT Bind_PlayAnimation(class CShader* pShader);
 
 	HRESULT Render(_uint iMeshIndex);
+
+	HRESULT Render_Instancing(class CVIBuffer_Mesh_Instance*& pInstanceBuffer, class CShader*& pShader);
 
 private:
 	ModelType m_eType = ModelType::End;
@@ -59,14 +62,14 @@ private:
 
 	PLAYANIM_DESC m_PlayAnimDesc;
 	ANIMTIME_DESC m_OldAnimDesc;
-	_int m_iCurrentAnimIndex = 0;
-	_int m_iNextAnimIndex = -1;
-	_bool m_isLoop = false;
 	_bool m_isFinished = false;
 
 	_bool m_isAnimChanged{};
 	_bool m_isInterpolating{};
 	ANIM_DESC m_AnimDesc{};
+
+	static _int	m_iNextInstanceID;
+	_int m_iInstanceID{};
 
 private:
 	// For_Animation

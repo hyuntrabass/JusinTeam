@@ -1,5 +1,6 @@
 #include "Pet.h"
 #include "Effect_Dummy.h"
+#include "UI_Manager.h"
 
 CPet::CPet(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -28,6 +29,11 @@ HRESULT CPet::Init(void* pArg)
 
 void CPet::Tick(_float fTimeDelta)
 {
+	if (CUI_Manager::Get_Instance()->Get_IsPetDie())
+	{
+		CUI_Manager::Get_Instance()->Set_Pet(false);
+		m_isDead = true;
+	}
 }
 
 void CPet::Late_Tick(_float fTimeDelta)

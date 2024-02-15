@@ -59,4 +59,6 @@ namespace Engine
 	using _randInt = std::uniform_int_distribution<int>;
 
 	using CUTSCENE = std::vector<std::pair<XMFLOAT4, XMFLOAT4>>;
+
+	using InstanceID = std::pair<_int, _int>;
 }

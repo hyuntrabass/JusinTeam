@@ -27,17 +27,17 @@ public:
 		HIT_R,
 		IDLE,
 		KNOCKDOWN,
-		OUROBOROS_ATTACK01, // 01 오른발 후려치기
-		OUROBOROS_ATTACK02, // 02 양발로 내려찍기
-		OUROBOROS_ATTACK03, // 짧게 울부짖기
-		OUROBOROS_ATTACK04, // 왼발로 쿵
-		OUROBOROS_ATTACK05, // 04 날개치기
+		OUROBOROS_ATTACK01, // 오른발 후려치기
+		OUROBOROS_ATTACK02, // 양발로 내려찍기
+		OUROBOROS_ATTACK03, // 불 여러개 떨구기
+		OUROBOROS_ATTACK04, // 블랙홀
+		OUROBOROS_ATTACK05, // 끌어당기기
 		OUROBOROS_ATTACK06_END,
-		OUROBOROS_ATTACK06_LOOP, // 하늘 날아서 불쏘기
+		OUROBOROS_ATTACK06_LOOP, // ?
 		OUROBOROS_ATTACK06_START,
-		OUROBOROS_ATTACK07, // 00 울부짖기_불기둥
-		OUROBOROS_ATTACK08, // 05 불쏘는거
-		OUROBOROS_ATTACK09, // 사라졌다가 땅찍으면서 내려오기(내려올때 바닥데미지)
+		OUROBOROS_ATTACK07, // 울부짖기
+		OUROBOROS_ATTACK08, // 불기둥으로 대체
+		OUROBOROS_ATTACK09, // 사라지고 바닥에 불쏘기
 		OUROBOROS_ATTACK_NO_USE,
 		OUROBOROS_RAGE,
 		ROAR,
@@ -56,15 +56,15 @@ public:
 		STATE_IDLE,
 		STATE_ROAR,
 		STATE_CHASE,
-		STATE_RIGHT_ATTACK, // 01
+		STATE_RIGHT_SLASH, // 01
 		STATE_TAKE_DOWN, // 02
-		STATE_SHORT_ROAR, // 03
-		STATE_LEFT_ATTACK, // 04
+		STATE_SHOOT_FIRE, // 03
+		STATE_BLACKHOLE, // 04
 		STATE_WING_ATTACK, // 05
-		STATE_FLY_FIRE, // 06
-		STATE_FIRE_PILLAR, // 07
-		STATE_SHOOT_FIRE, // 08
-		STATE_SOAR, // 09
+		STATE_UNKNOWN, // 06
+		STATE_RAGE, // 07
+		STATE_FIRE_PILLAR, // 08
+		STATE_FLY_FIRE, // 09
 		STATE_DOUBLE_SLASH, // 10
 		STATE_HIT,
 		STATE_DIE,
@@ -73,15 +73,15 @@ public:
 
 	enum DRAGON_ATTACK // 랜덤 방지용
 	{
-		RIGHT_ATTACK,
+		RIGHT_SLASH,
 		TAKE_DOWN,
-		SHORT_ROAR,
-		LEFT_ATTACK,
-		WING_ATTACK,
-		FLY_FIRE,
-		FIRE_PILLAR,
 		SHOOT_FIRE,
-		SOAR,
+		BLACKHOLE,
+		WING_ATTACK,
+		UNKNOWN,
+		RAGE,
+		FIRE_PILLAR,
+		FLY_FIRE,
 		DOUBLE_SLASH,
 		ATTACK_END
 	};
@@ -149,10 +149,16 @@ private:
 	_bool m_bAttack_Selected[ATTACK_END] = { false };
 
 private:
+	_bool m_bAttacked1 = { false };
+	_bool m_bAttacked2 = { false };
+
+private:
 	_bool m_bChangePass = { false };
 	_uint m_iPassIndex = {};
 	_float m_fHitTime = {};
 
+private:
+	_bool m_bCreateObject = { false };
 
 public:
 	HRESULT Add_Components();

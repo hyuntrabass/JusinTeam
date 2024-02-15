@@ -99,6 +99,13 @@ HRESULT CVoid09::Init(void* pArg)
 
 void CVoid09::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_EQUALS))
+	{
+		Kill();
+		m_pGameInstance->Delete_CollisionObject(this);
+		m_pTransformCom->Delete_Controller();
+	}
+
 	__super::Tick(fTimeDelta);
 
 	Init_State(fTimeDelta);

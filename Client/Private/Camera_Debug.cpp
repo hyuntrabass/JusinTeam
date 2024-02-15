@@ -171,12 +171,11 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 			m_fSpeed = 0.7f;
 		}
 	}
-
-
 	else
 	{
 		m_pTransformCom->Set_Speed(m_fSpeed);
 	}
+
 
 	if (m_pGameInstance->Key_Pressing(DIK_W) || m_pGameInstance->Gamepad_LStick().y > 0.5f)
 	{

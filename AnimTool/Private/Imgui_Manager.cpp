@@ -59,6 +59,19 @@ HRESULT CImgui_Manager::Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc)
 			m_MonsterNames.push_back(entry.path().stem().string());
 		}
 	}
+	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/Monster_NoUse/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (entry.path().extension().string() != ".hyuntraanimmesh")
+			{
+				continue;
+			}
+			iNumMonsterModels++;
+			m_MonsterNames.push_back(entry.path().stem().string());
+		}
+	}
 	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/NPC/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{

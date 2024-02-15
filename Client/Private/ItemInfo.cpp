@@ -2,6 +2,8 @@
 #include "GameInstance.h"
 #include "TextButton.h"
 #include "NineSlice.h"
+#include "UI_Manager.h"
+#include "SummonWindow.h"
 #include "Item.h"
 
 CItemInfo::CItemInfo(_dev pDevice, _context pContext)
@@ -70,6 +72,54 @@ void CItemInfo::Tick(_float fTimeDelta)
 	if (PtInRect(&m_SelectButton->Get_InitialRect(), ptMouse))
 	{
 		m_SelectButton->Set_Size(140.f, 80.f, 0.3f);
+		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
+		{
+			_bool isOtherItemExist = false;
+			if (m_eItemDesc.iItemType == (_uint)ITEM_BOW || m_eItemDesc.iItemType == (_uint)ITEM_SWORD)
+			{
+				if (FAILED(CUI_Manager::Get_Instance()->Set_WearableItem(W_EQUIP, m_eItemDesc)))
+				{
+					m_isDead = true;
+					return;
+				}
+				isOtherItemExist = true;
+			}
+			else if (m_eItemDesc.iItemType == (_uint)ITEM_BODY)
+			{
+				if (FAILED(CUI_Manager::Get_Instance()->Set_WearableItem(W_CHEST, m_eItemDesc)))
+				{
+					m_isDead = true;
+					return;
+				}
+				isOtherItemExist = true;
+			}
+			else if (m_eItemDesc.iItemType == (_uint)ITEM_TOP)
+			{
+				if (FAILED(CUI_Manager::Get_Instance()->Set_WearableItem(W_TOP, m_eItemDesc)))
+				{
+					m_isDead = true;
+					return;
+				}
+				isOtherItemExist = true;
+			}
+			if (m_eItemDesc.eItemUsage == IT_VEHICLECARD)
+			{
+				CSummonWindow::SUMMON_DESC Desc{};
+				Desc.iItemTier = (ITEM_TIER)m_eItemDesc.iItemTier;
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_SummonWindow"), &Desc)))
+				{
+					m_isDead = true;
+					return;
+				}
+				isOtherItemExist = true;
+			}
+			if (isOtherItemExist)
+			{
+				CUI_Manager::Get_Instance()->Delete_Item((INVEN_TYPE)m_eItemDesc.iInvenType, m_eItemDesc.strName);
+			}
+			m_isDead = true;
+			return;
+		}
 	}
 	else
 	{

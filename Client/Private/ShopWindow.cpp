@@ -171,7 +171,7 @@ void CShopWindow::Tick(_float fTimeDelta)
 				}
 			}
 
-			m_iCurItemNum = (m_pNumButtom->Get_TransPosition().x - (m_pNumBar->Get_Position().x - m_pNumBar->Get_Size().x / 2.f)) / fPercent;
+			m_iCurItemNum = (_uint)((m_pNumButtom->Get_TransPosition().x - (m_pNumBar->Get_Position().x - m_pNumBar->Get_Size().x / 2.f)) / fPercent);
 			if (m_iCurItemNum <= 0)
 			{
 				m_iCurItemNum = 0;

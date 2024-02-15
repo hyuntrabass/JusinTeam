@@ -260,6 +260,9 @@ public:
 		Aim_Idle,
 		Jump_Long_End,
 		Mount,
+		Mount_Run,
+		Mount_Walk,
+		Mount_Fly,
 		Climb,
 		Climb_U,
 		Climb_D,
@@ -289,7 +292,7 @@ public:
 		_int Max_Hp{ 1000 };
 		_int Max_Mp{ 1000 };
 		_int Current_Mp{ 1000 };
-		_int Attack{ 100 };
+		_int Attack{ 100 } ;
 		_int Critical{};
 		_int Critical_Dmg{ 150 };
 		_int Armor{};
@@ -356,46 +359,47 @@ public:
 
 private:
 	CRiding* m_pRiding{ nullptr };
-	class CEffect_Dummy* m_pFrameEffect{ nullptr };
-	class CEffect_Dummy* m_pBaseEffect{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CGameObject* m_pNameTag{ nullptr };
-	CRenderer* m_pRendererCom{ nullptr };
 	CCollider* m_pHitCollider{ nullptr };
+	CRenderer* m_pRendererCom{ nullptr };
 	CCollider* m_pParryingCollider{ nullptr };
 	CTransform* m_pCameraTransform{ nullptr };
 	CTexture* m_pDissolveTextureCom{ nullptr };
-	CRealtimeVTFModel* m_pModelCom = { nullptr };
 	CCollider* m_pAttCollider[AT_End]{ nullptr };
-	CCommonSurfaceTrail* m_pLeft_Trail[5]{ nullptr };
-	CCommonSurfaceTrail* m_pRight_Trail[5]{ nullptr };
+	CRealtimeVTFModel* m_pModelCom = { nullptr };
+	class CEffect_Dummy* m_pBaseEffect{ nullptr };
+	class CEffect_Dummy* m_pFrameEffect{ nullptr };
 	class CEffect_Dummy* m_pEffect_Shield{ nullptr };
 	class CCamera_Manager* m_pCam_Manager{ nullptr };
+	CCommonSurfaceTrail* m_pLeft_Trail[5]{ nullptr };
+	CCommonSurfaceTrail* m_pRight_Trail[5]{ nullptr };
 
 private:
 	ANIM_DESC m_Animation{};
 	PLAYER_STATUS m_Status{};
+	PLAYER_STATUS m_EquipStatus{};
 	ANIM_LIST m_BowSkill[5]{};
 	ANIM_LIST m_SwordSkill[5]{};
 	Riding_State m_Riding_State{};
 	PLAYER_STATE m_eState{ Idle };
-	PLAYER_STATE m_ePrevState{ Idle };
+	PLAYER_STATE m_ePrevState{ State_End };
 	WEAPON_TYPE m_Current_Weapon{ WP_END };
 	Riding_Type m_Current_AirRiding{ Type_End };
 	Riding_Type m_Current_GroundRiding{ Type_End };
 	WEAPON_INDEX m_Weapon_CurrentIndex{ WP_INDEX_END };
 
 private:
+	_bool m_bIsMount{};
 	_int m_iArrowRain{};
+	_mat m_Riding_Mat{};
 	_vec4 m_vArrowLook{};
 	_bool m_ReadyArrow{};
-	_vec4 m_vArrowRainPos{};
-	_bool m_bArrowRain_Start{};
-	_bool m_bFirstVillage{};
-	_bool m_bIsMount{};
-	_mat m_Riding_Mat{};
 	_uint m_iMiningCount{};
+	_vec4 m_vArrowRainPos{};
+	_bool m_bFirstVillage{};
 	_uint m_iLoggingCount{};
+	_bool m_bArrowRain_Start{};
 
 	_vec4 m_vPos{};
 	_bool m_bIsClimb{};
@@ -403,11 +407,11 @@ private:
 	_vec4 m_SaveCamPos{};
 	_bool m_bReady_Move{};
 	_uint m_ShaderIndex{};
-	_uint m_HairShaderIndex{};
 	_vec4 m_SaveCamLook{};
 	_bool m_bReady_Climb{};
 	_bool m_bHelmet_Hide{};
 	const _mat* m_Left_Mat{};
+	_uint m_HairShaderIndex{};
 	_bool m_UsingMotionBlur{};
 	const _mat* m_Right_Mat{};
 	_uint m_iSwimCollectCount{};
@@ -416,14 +420,14 @@ private:
 	_bool	  m_isInvenActive{ false };
 
 	_bool m_bPoison{};
-	_float m_fRimTick{};
 	_bool m_bHitted{};
 	_uint m_iShield{};
-	_vec4 m_vRimColor{1.f};
+	_float m_fRimTick{};
 	_bool m_bAttacked{};
 	_bool m_bReadyMove{};
 	_bool m_bAttackStop{};
 	_int m_iAttackCombo{};
+	_vec4 m_vRimColor{1.f};
 	_uint m_iPoisonCount{};
 	_float m_fBoostSpeed{};
 	_float m_fSkillSpeed{};
@@ -434,6 +438,7 @@ private:
 	_bool m_bLockOn{};
 	_bool m_hasJumped{};
 	_bool m_bReadySwim{};
+	_mat m_ShieldMatrix{};
 	_float m_iSuperArmor{};
 	_mat m_OldWorldMatrix{};
 	_bool m_bWeapon_Unequip{};
@@ -445,7 +450,6 @@ private:
 	_int m_Helmet_CurrentIndex{ -1 };
 
 	_float m_fAttTimer{};
-	_float m_fRimRightTimmer{};
 	_float m_StartRegen{};
 	_float m_fSkiilTimer{};
 	_float m_fAttackZoom{};
@@ -453,9 +457,9 @@ private:
 	_float m_fMpRegenTime{};
 	_float m_ReturnZoomTime{};
 	_float m_fDissolveRatio{};
+	_float m_fRimRightTimmer{};
 	_float m_fBoostSpeedTimmer{};
 
-	_mat m_ShieldMatrix{};
 
 private:
 	HRESULT Add_Components();

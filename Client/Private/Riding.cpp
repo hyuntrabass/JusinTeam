@@ -145,8 +145,8 @@ HRESULT CRiding::Init(void* pArg)
 	if (m_CurrentIndex == Nihilir)
 	{
 		PxCapsuleControllerDesc ControllerDesc{};
-		ControllerDesc.height = 3.0f; // 높이(위 아래의 반구 크기 제외
-		ControllerDesc.radius = 2.2f; // 위아래 반구의 반지름
+		ControllerDesc.height = 2.0f; // 높이(위 아래의 반구 크기 제외
+		ControllerDesc.radius = 1.5f; // 위아래 반구의 반지름
 		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
 		ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
 		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
@@ -182,12 +182,12 @@ HRESULT CRiding::Init(void* pArg)
 	else
 	{
 		PxCapsuleControllerDesc ControllerDesc{};
-		ControllerDesc.height = 0.8f; // 높이(위 아래의 반구 크기 제외
-		ControllerDesc.radius = 0.6f; // 위아래 반구의 반지름
-		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
-		ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f)); // 캐릭터가 오를 수 있는 최대 각도
-		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
-		ControllerDesc.stepOffset = 0.3f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+		ControllerDesc.height = 0.8f;
+		ControllerDesc.radius = 0.6f;
+		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); 
+		ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f)); 
+		ControllerDesc.contactOffset = 0.1f; 
+		ControllerDesc.stepOffset = 0.3f;
 		m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
 	}
 	m_pTransformCom->Set_Position(_vec3(Desc->vSummonPos + _vec3(0.f,1.f,0.f)));
@@ -198,26 +198,34 @@ HRESULT CRiding::Init(void* pArg)
 
 void CRiding::Tick(_float fTimeDelta)
 {
+	
 	if (m_eCurMode == VEHICLEBOOK)
 	{
 		m_pModelCom->Set_Animation(m_Animation);
 		return;
 	}
 
-	if (m_CurrentIndex == Horse or m_eState == Riding_Glide)
-	{
+	
 		if (!m_isDead)
 		{
 			m_fDissolveRatio = 0.f;
 		}
 		else
 		{
-			_vec3 vPos = m_pTransformCom->Get_State(State::Pos) + _vec4(0.f, 1.f, 0.f, 0.f);
-			m_pTransformCom->Set_Position(vPos);
+			if(m_CurrentIndex==Nihilir)
+			{
+				_vec3 vPos = m_pTransformCom->Get_State(State::Pos) + _vec4(0.f, 2.5f, 0.f, 0.f);
+				m_pTransformCom->Set_Position(vPos);
+			}
+			else
+			{
+				_vec3 vPos = m_pTransformCom->Get_State(State::Pos) + _vec4(0.f, 1.f, 0.f, 0.f);
+				m_pTransformCom->Set_Position(vPos);
+			}
 			m_bDelete = true;
 		}
-	}
-	else
+	
+	/*else
 	{
 		if (m_fDissolveRatio >= 0.f && !m_isDead)
 		{
@@ -234,7 +242,7 @@ void CRiding::Tick(_float fTimeDelta)
 				m_bDelete = true;
 			}
 		}
-	}
+	}*/
 
 	Move(fTimeDelta);
 	Init_State();
@@ -801,12 +809,12 @@ void CRiding::Init_State()
 				break;
 			case Client::Wyvern:
 				m_Animation.iAnimIndex = Wyvern_3004_Fly;
-				m_Animation.isLoop = false;
+				m_Animation.isLoop = true;
 				m_hasJumped = false;
 				break;
 			case Client::Falar:
 				m_Animation.iAnimIndex = Falar_5002_fly;
-				m_Animation.isLoop = false;
+				m_Animation.isLoop = true;
 				m_hasJumped = false;
 				break;
 			default:
