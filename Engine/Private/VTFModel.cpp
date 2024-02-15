@@ -370,6 +370,30 @@ HRESULT CVTFModel::Render_Instancing(CVIBuffer_Mesh_Instance*& pInstanceBuffer, 
 	return S_OK;
 }
 
+HRESULT CVTFModel::Render_Shadow_Instancing(CVIBuffer_Mesh_Instance*& pInstanceBuffer, CShader*& pShader)
+{
+	if (FAILED(Bind_Animation(pShader)))
+		return E_FAIL;
+
+	for (_uint i = 0; i < m_Meshes.size(); ++i)
+	{
+		if (FAILED(Bind_Material(pShader, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(pShader->Begin(2)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(pInstanceBuffer->Render(m_Meshes[i])))
+			return E_FAIL;
+	}
+
+	return S_OK;
+}
+
 HRESULT CVTFModel::Read_Bones(ifstream& File)
 {
 	_uint iNumBones{};

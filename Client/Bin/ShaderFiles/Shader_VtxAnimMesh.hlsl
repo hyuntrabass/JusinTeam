@@ -303,7 +303,7 @@ technique11 DefaultTechnique_Shader_AnimMesh
 {
     pass Default
     {
-        SetRasterizerState(RS_None);
+        SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -316,7 +316,7 @@ technique11 DefaultTechnique_Shader_AnimMesh
 
     pass OutLine
     {
-        SetRasterizerState(RS_None);
+        SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_DrawStencil, 1);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -329,7 +329,7 @@ technique11 DefaultTechnique_Shader_AnimMesh
 
     pass Shadow
     {
-        SetRasterizerState(RS_None);
+        SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -342,7 +342,7 @@ technique11 DefaultTechnique_Shader_AnimMesh
 
     pass Dissolve
     {
-        SetRasterizerState(RS_None);
+        SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -355,7 +355,7 @@ technique11 DefaultTechnique_Shader_AnimMesh
 
     pass RimLight
     {
-        SetRasterizerState(RS_None);
+        SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 

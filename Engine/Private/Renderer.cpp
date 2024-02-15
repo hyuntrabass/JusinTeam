@@ -906,6 +906,55 @@ HRESULT CRenderer::Render_Shadow()
 			pModel->Render_Shadow_Instancing(pBuffer, pShader);
 		}
 
+		InstanceData.clear();
+
+		for (auto& pGameObject : m_RenderObjects[RG_AnimNonBlend_Instance])
+		{
+			if (pGameObject->Find_Component(L"Com_Model") == nullptr)
+				continue;
+
+			const _int iPassIndex = static_cast<CShader*>(pGameObject->Find_Component(L"Com_Shader"))->Get_PassIndex();
+			const _int iInstanceID = static_cast<CVTFModel*>(pGameObject->Find_Component(L"Com_Model"))->Get_InstanceID();
+			InstanceID ID(iPassIndex, iInstanceID);
+			InstanceData[ID].push_back(pGameObject);
+		}
+
+		for (auto& Pair : InstanceData)
+		{
+			vector<CGameObject*>& vInstances = Pair.second;
+			const InstanceID instanceId = Pair.first;;
+			CGameObject*& pHead = vInstances[0];
+			//Late_Tick 2번 들어와서 터지는거 방지
+			if (vInstances.size() > MAX_INSTANCE)
+				break;
+
+			INSTANCED_PLAYANIM_DESC* PlayAnimDescs = new INSTANCED_PLAYANIM_DESC;
+
+			for (_uint i = 0; i < vInstances.size(); i++)
+			{
+				CGameObject*& pGameObject = vInstances[i];
+				Instance_Data MeshInstancing;
+				CTransform* pTransform = static_cast<CTransform*>(pGameObject->Find_Component(L"Com_Transform"));
+				MeshInstancing.mMatrix = pTransform->Get_World_Matrix();
+				MeshInstancing.m_iID = i;
+				Add_Instance(instanceId, MeshInstancing);
+
+				CVTFModel* pModel = static_cast<CVTFModel*>(pGameObject->Find_Component(L"Com_Model"));
+				PlayAnimDescs->PlayAnim[i] = pModel->Get_PlayAnimDesc();
+			}
+
+			CVTFModel* pHeadModel = static_cast<CVTFModel*>(pHead->Find_Component(L"Com_Model"));
+			CShader* pHeadShader = static_cast<CShader*>(pHead->Find_Component(L"Com_Shader"));
+			if (FAILED(pHeadShader->Bind_RawValue("g_PlayAnimInstances", PlayAnimDescs, MAX_INSTANCE * sizeof(PLAYANIM_DESC))))
+				return E_FAIL;
+
+			Safe_Delete(PlayAnimDescs);
+
+			CVIBuffer_Mesh_Instance*& pBuffer = m_InstanceBuffers[instanceId];
+			pHead->Render_Instance(); //셰이더 바인딩 리소스
+			pHeadModel->Render_Shadow_Instancing(pBuffer, pHeadShader);
+		}
+
 	}
 	if (FAILED(m_pShadowMap->End_ShadowMap()))
 		return E_FAIL;

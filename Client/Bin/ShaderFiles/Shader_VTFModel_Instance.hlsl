@@ -287,6 +287,71 @@ VS_Motion_Blur_Out VS_Motion_Blur(VS_IN Input)
     return Output;
 }
 
+struct VS_SHADOW_OUT
+{
+    vector vPos : Position;
+    float2 vTex : Texcoord0;
+};
+
+VS_SHADOW_OUT VS_Shadow(VS_IN Input)
+{
+    VS_SHADOW_OUT Output = (VS_SHADOW_OUT) 0;
+    
+    matrix matWV, matWVP;
+    
+    matWV = mul(Input.mWorld, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+    
+    matrix BoneMatrix = Get_BoneMatrix(Input);
+    
+    vector vPos = mul(vector(Input.vPos, 1.f), BoneMatrix);
+    
+    Output.vPos = mul(vPos, Input.mWorld);
+    Output.vTex = Input.vTex;
+    
+    return Output;
+}
+
+
+struct GS_SHADOW_IN
+{
+    vector vPos : Position; // == float4
+    float2 vTex : Texcoord0;
+};
+
+struct GS_SHADOW_OUT
+{
+    vector vPos : SV_Position;
+    float2 vTex : Texcoord0;
+    uint RTIndex : SV_RenderTargetArrayIndex;
+};
+
+matrix g_CascadeView[3];
+matrix g_CascadeProj[3];
+
+[maxvertexcount(9)]
+void GS_Main_Shadow(triangle GS_SHADOW_IN Input[3], inout TriangleStream<GS_SHADOW_OUT> Output)
+{
+    
+    for (uint Face = 0; Face < 3; ++Face)
+    {
+        GS_SHADOW_OUT Elements = (GS_SHADOW_OUT) 0;
+        
+        Elements.RTIndex = Face;
+        matrix matVP = mul(g_CascadeView[Face], g_CascadeProj[Face]);
+        
+        for (uint i = 0; i < 3; ++i)
+        {
+            Elements.vPos = mul(Input[i].vPos, matVP);
+
+            Elements.vTex = Input[i].vTex;
+            Output.Append(Elements);
+        }
+        Output.RestartStrip();
+    }
+}
+
+
 struct PS_IN
 {
     vector vPos : SV_Position;
@@ -398,11 +463,26 @@ PS_Blur_OUT PS_Motion_Blur(PS_Blur_IN Input)
     return Output;
 }
 
+struct PS_SHADOW_IN
+{
+    vector vPos : SV_Position;
+    float2 vTex : Texcoord0;
+};
+
+void PS_Main_Shadow(PS_SHADOW_IN Input)
+{
+    vector vDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
+    
+    if (0.1f > vDiffuse.a)
+        discard;
+
+}
+
 technique11 DefaultTechniqueShader_VTF
 {
     pass Default
     {
-        SetRasterizerState(RS_None);
+        SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -415,7 +495,7 @@ technique11 DefaultTechniqueShader_VTF
 
     pass Motion_Blur
     {
-        SetRasterizerState(RS_None);
+        SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -424,5 +504,18 @@ technique11 DefaultTechniqueShader_VTF
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Motion_Blur();
+    }
+
+    pass Shadow
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Shadow();
+        GeometryShader = compile gs_5_0 GS_Main_Shadow();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Shadow();
     }
 };

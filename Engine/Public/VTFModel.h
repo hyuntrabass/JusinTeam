@@ -43,6 +43,7 @@ public:
 	HRESULT Render(_uint iMeshIndex);
 
 	HRESULT Render_Instancing(class CVIBuffer_Mesh_Instance*& pInstanceBuffer, class CShader*& pShader);
+	HRESULT Render_Shadow_Instancing(class CVIBuffer_Mesh_Instance*& pInstanceBuffer, class CShader*& pShader);
 
 private:
 	ModelType m_eType = ModelType::End;

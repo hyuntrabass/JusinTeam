@@ -180,6 +180,18 @@ HRESULT CVTFTest::Bind_ShaderResources()
         return E_FAIL;
     }
 
+    if (true == m_pGameInstance->Get_TurnOnShadow()) {
+
+        CASCADE_DESC Desc = m_pGameInstance->Get_CascadeDesc();
+
+        if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeView", Desc.LightView, 3)))
+            return E_FAIL;
+
+        if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeProj", Desc.LightProj, 3)))
+            return E_FAIL;
+
+    }
+
     return S_OK;
 }
 
