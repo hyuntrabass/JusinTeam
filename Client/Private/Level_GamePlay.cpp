@@ -238,6 +238,9 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 
 	m_fWaveTimer += fTimeDelta;
 
+	m_TornadoMatrix.Position_vec3(_vec3());
+	m_TornadoMatrix *= _mat::CreateRotationY(fTimeDelta * -5.f) * _mat::CreateTranslation(_vec3(141.f, 0.f, 200.f));
+
 	if (m_pGameInstance->Is_Level_ShutDown(LEVEL_GAMEPLAY) or m_pGameInstance->Key_Down(DIK_NUMPAD9) or m_pGameInstance->Key_Down(DIK_PRIOR))
 	{
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_VILLAGE))))
@@ -433,8 +436,14 @@ HRESULT CLevel_GamePlay::Ready_Environment()
 			return E_FAIL;
 		}
 	}
-	return S_OK;
 
+	EffectInfo Tornado = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Tornado");
+	m_TornadoMatrix = _mat::CreateScale(2.f);
+	Tornado.pMatrix = &m_TornadoMatrix;
+	Tornado.isFollow = true;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Tornado);
+
+	return S_OK;
 }
 
 

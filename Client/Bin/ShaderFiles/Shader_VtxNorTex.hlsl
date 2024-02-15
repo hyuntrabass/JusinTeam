@@ -121,7 +121,7 @@ PS_OUT PS_Main_Effect(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    vector vMtrlDiffuse = g_Texture.Sample(LinearSampler, Input.vTex * 3.f);
+    vector vMtrlDiffuse = g_Texture.Sample(LinearSampler, Input.vTex);
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = Input.vNor;
@@ -160,7 +160,7 @@ technique11 DefaultTechniqueShader_VtxNorTex
 
     pass Terrain_Effect
     {
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 

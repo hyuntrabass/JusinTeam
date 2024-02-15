@@ -39,11 +39,15 @@ HRESULT CTerrain::Init(void* pArg)
 
 void CTerrain::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_O))
+	{
+		m_shouldSkipRender = !m_shouldSkipRender;
+	}
 }
 
 void CTerrain::Late_Tick(_float fTimeDelta)
 {
-	if (CImgui_Manager::Get_Instance()->Has_Light())
+	if (CImgui_Manager::Get_Instance()->Has_Light() or m_shouldSkipRender)
 	{
 		return;
 	}

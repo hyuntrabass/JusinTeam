@@ -24,6 +24,12 @@ private:
 	_bool m_bTimeStop{};
 	_float m_fOriginTimeRatio{};
 
+#ifdef _DEBUG
+	_vec3 m_vPosforConsole{};
+	_vec3 m_vLookforConsole{};
+#endif // _DEBUG
+
+
 private:
 	class CCamera_Manager* m_pCam_Manager{ nullptr };
 

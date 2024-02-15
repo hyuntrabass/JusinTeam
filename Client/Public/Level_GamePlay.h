@@ -23,6 +23,8 @@ private:
 
 	_mat m_RainMatrix{};
 
+	_mat m_TornadoMatrix{};
+
 private:
 	HRESULT Ready_Camera();
 	HRESULT Ready_Light();

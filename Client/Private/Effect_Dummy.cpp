@@ -479,6 +479,8 @@ CGameObject* CEffect_Dummy::Clone(void* pArg)
 
 void CEffect_Dummy::Free()
 {
+	m_pGameInstance->Delete_Light(LEVEL_STATIC, m_strLightTag);
+
 	__super::Free();
 
 	Safe_Release(m_pUnDissolveTextureCom);

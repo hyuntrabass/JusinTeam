@@ -26,6 +26,7 @@ private:
 
 private:
 	TERRAIN_INFO TerrainInfo{};
+	_bool m_shouldSkipRender{};
 
 private:
 	HRESULT Add_Component();
