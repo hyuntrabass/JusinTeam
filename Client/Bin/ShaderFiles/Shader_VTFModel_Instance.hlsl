@@ -1,6 +1,8 @@
 #include "Engine_Shader_Define.hlsli"
 
-matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
+#define MAX_INSTANCE 300
+
+matrix g_ViewMatrix, g_ProjMatrix;
 texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
 texture2D g_MaskTexture;
@@ -33,10 +35,14 @@ struct tagPlayAnimDesc
     tagAnimTimeDesc eNext;
 };
 
+struct tagPlayAnimBuffer
+{
+    tagPlayAnimDesc PlayAnimFrames[MAX_INSTANCE];
+};
+
 tagAnimTimeDesc g_OldAnimDesc;
 
-tagPlayAnimDesc g_PlayAnimDesc;
-
+tagPlayAnimBuffer g_PlayAnimInstances;
 
 Texture2DArray g_BoneTexture;
 
@@ -48,6 +54,9 @@ struct VS_IN
     float3 vTan : Tangent;
     uint4 vBlendIndices : BlendIndex;
     float4 vBlendWeight : BlendWeight;
+        
+    row_major matrix mWorld : World;
+    int iID : ID;
 };
 
 struct VS_OUT
@@ -59,7 +68,6 @@ struct VS_OUT
     vector vProjPos : Texcoord2;
     float3 vTangent : Tangent;
     float3 vBinormal : Binormal;
-    float4 vDir : DIRECTION;
 };
 
 matrix Get_BoneMatrix(VS_IN Input)
@@ -73,15 +81,15 @@ matrix Get_BoneMatrix(VS_IN Input)
     int iNextFrame[2];
     float fRatio[2];
     
-    iAnimIndex[0] = g_PlayAnimDesc.eCurrent.iAnimIndex;
-    iCurrentFrame[0] = g_PlayAnimDesc.eCurrent.iCurrFrame;
-    iNextFrame[0] = g_PlayAnimDesc.eCurrent.iNextFrame;
-    fRatio[0] = g_PlayAnimDesc.eCurrent.fRatio;
+    iAnimIndex[0] = g_PlayAnimInstances.PlayAnimFrames[Input.iID].eCurrent.iAnimIndex;
+    iCurrentFrame[0] = g_PlayAnimInstances.PlayAnimFrames[Input.iID].eCurrent.iCurrFrame;
+    iNextFrame[0] = g_PlayAnimInstances.PlayAnimFrames[Input.iID].eCurrent.iNextFrame;
+    fRatio[0] = g_PlayAnimInstances.PlayAnimFrames[Input.iID].eCurrent.fRatio;
     
-    iAnimIndex[1] = g_PlayAnimDesc.eNext.iAnimIndex;
-    iCurrentFrame[1] = g_PlayAnimDesc.eNext.iCurrFrame;
-    iNextFrame[1] = g_PlayAnimDesc.eNext.iNextFrame;
-    fRatio[1] = g_PlayAnimDesc.eNext.fRatio;
+    iAnimIndex[1] = g_PlayAnimInstances.PlayAnimFrames[Input.iID].eNext.iAnimIndex;
+    iCurrentFrame[1] = g_PlayAnimInstances.PlayAnimFrames[Input.iID].eNext.iCurrFrame;
+    iNextFrame[1] = g_PlayAnimInstances.PlayAnimFrames[Input.iID].eNext.iNextFrame;
+    fRatio[1] = g_PlayAnimInstances.PlayAnimFrames[Input.iID].eNext.fRatio;
     
     float4 CurrentBoneVec[4];
     float4 NextBoneVec[4];
@@ -127,7 +135,7 @@ matrix Get_BoneMatrix(VS_IN Input)
             
             matrix nextLerpBone = lerp(CurrentBone, NextBone, fRatio[1]);
             
-            LerpBone = lerp(LerpBone, nextLerpBone, g_PlayAnimDesc.SwitchRatio);
+            LerpBone = lerp(LerpBone, nextLerpBone, g_PlayAnimInstances.PlayAnimFrames[Input.iID].SwitchRatio);
 
         }
         
@@ -183,14 +191,50 @@ matrix Get_OldBoneMatrix(VS_IN Input)
     return BoneMatrix;
 }
 
-
 VS_OUT VS_Main(VS_IN Input)
 {
     VS_OUT Output = (VS_OUT) 0;
 	
     matrix matWV, matWVP;
     
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWV = mul(Input.mWorld, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+    
+    matrix BoneMatrix = Get_BoneMatrix(Input);
+    
+    vector vPos = mul(vector(Input.vPos, 1.f), BoneMatrix);
+    vector vNormal = mul(vector(Input.vNor, 0.f), BoneMatrix);
+    
+    Output.vPos = mul(vPos, matWVP);
+    Output.vNor = normalize(mul(vNormal, Input.mWorld));
+    Output.vTex = Input.vTex;
+    Output.vWorldPos = mul(vector(Input.vPos, 1.f), Input.mWorld);
+    Output.vProjPos = Output.vPos;
+    Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), Input.mWorld)).xyz;
+    Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
+    
+    return Output;
+}
+
+struct VS_Motion_Blur_Out
+{
+    vector vPos : SV_Position; // == float4
+    vector vNor : Normal;
+    float2 vTex : Texcoord0;
+    vector vWorldPos : Texcoord1;
+    vector vProjPos : Texcoord2;
+    float3 vTangent : Tangent;
+    float3 vBinormal : Binormal;
+    float4 vDir : DIRECTION;
+};
+
+VS_Motion_Blur_Out VS_Motion_Blur(VS_IN Input)
+{
+    VS_Motion_Blur_Out Output = (VS_Motion_Blur_Out) 0;
+	
+    matrix matWV, matWVP;
+    
+    matWV = mul(Input.mWorld, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
     
     matrix matOldWV, matOldWVP;
@@ -231,12 +275,12 @@ VS_OUT VS_Main(VS_IN Input)
     vCalDir.z = vPos.z;
     vCalDir.w = vPos.w;
     
-    Output.vPos = vNewPos;
-    Output.vNor = normalize(mul(vNormal, g_WorldMatrix));
+    Output.vPos = vPos;
+    Output.vNor = normalize(mul(vNormal, Input.mWorld));
     Output.vTex = Input.vTex;
-    Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
+    Output.vWorldPos = mul(vector(Input.vPos, 1.f), Input.mWorld);
     Output.vProjPos = Output.vPos;
-    Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), g_WorldMatrix)).xyz;
+    Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), Input.mWorld)).xyz;
     Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
     Output.vDir = vCalDir;
     
@@ -245,14 +289,13 @@ VS_OUT VS_Main(VS_IN Input)
 
 struct PS_IN
 {
-    vector vPos : SV_Position; // == float4
+    vector vPos : SV_Position;
     vector vNor : Normal;
     float2 vTex : Texcoord0;
     vector vWorldPos : Texcoord1;
     vector vProjPos : Texcoord2;
     float3 vTangent : Tangent;
     float3 vBinormal : Binormal;
-    float4 vDir : DIRECTION;
 };
 
 struct PS_OUT
@@ -260,6 +303,7 @@ struct PS_OUT
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
+    vector vSpecular : SV_Target3;
 };
 
 PS_OUT PS_Main(PS_IN Input)
@@ -289,15 +333,67 @@ PS_OUT PS_Main(PS_IN Input)
         vNormal = Input.vNor.xyz;
     }
     
-    vector vMask = vector(1.f, 0.1f, 0.1f, 0.f);
-    if (g_HasMaskTex)
+    vector vSpecular = vector(0.f, 0.f, 0.f, 0.f);
+    
+    Output.vDiffuse = vMtrlDiffuse;
+    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vSpecular = vSpecular;
+    
+    return Output;
+}
+
+struct PS_Blur_IN
+{
+    vector vPos : SV_Position; // == float4
+    vector vNor : Normal;
+    float2 vTex : Texcoord0;
+    vector vWorldPos : Texcoord1;
+    vector vProjPos : Texcoord2;
+    float3 vTangent : Tangent;
+    float3 vBinormal : Binormal;
+    float4 vDir : DIRECTION;
+};
+
+struct PS_Blur_OUT
+{
+    vector vDiffuse : SV_Target0;
+    vector vNormal : SV_Target1;
+    vector vDepth : SV_Target2;
+    vector vVelocity : SV_Target4;
+};
+
+PS_Blur_OUT PS_Motion_Blur(PS_Blur_IN Input)
+{
+    PS_Blur_OUT Output = (PS_Blur_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
+    
+    if (0.3f > vMtrlDiffuse.a)
     {
-        vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
+        discard;
+    }
+    
+    float3 vNormal;
+    if (g_HasNorTex)
+    {
+        vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
+        
+        vNormal = vNormalDesc.xyz * 2.f - 1.f;
+        
+        float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
+        
+        vNormal = mul(normalize(vNormal), WorldMatrix) * -1.f;
+    }
+    else
+    {
+        vNormal = Input.vNor.xyz;
     }
     
     Output.vDiffuse = vMtrlDiffuse;
-    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, Input.vDir.x, Input.vDir.y);
+    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vVelocity = Input.vDir;
     
     return Output;
 }
@@ -315,5 +411,18 @@ technique11 DefaultTechniqueShader_VTF
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main();
+    }
+
+    pass Motion_Blur
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Motion_Blur();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Motion_Blur();
     }
 };

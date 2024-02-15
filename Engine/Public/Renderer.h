@@ -9,6 +9,7 @@ enum RenderGroup
 	RG_Shadow,
 	RG_NonBlend,
 	RG_NonBlend_Instance,
+	RG_AnimNonBlend_Instance,
 	RG_Blur,
 	RG_NonLight,
 	RG_Blend,
@@ -174,6 +175,7 @@ private:
 	HRESULT Render_Shadow();
 	HRESULT Render_NonBlend();
 	HRESULT Render_NonBlend_Instance();
+	HRESULT Render_AnimNonBlend_Instance();
 	HRESULT Render_Refraction();
 	HRESULT Render_Reflection();
 	HRESULT Render_Water();
