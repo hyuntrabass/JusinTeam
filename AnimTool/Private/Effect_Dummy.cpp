@@ -75,6 +75,12 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 
 	if (m_fUnDissolveRatio <= 0.f and m_Effect.fLifeTime >= 0.f and m_fTimer > m_Effect.fLifeTime)
 	{
+		if (m_Effect.hasLight)
+		{
+			m_pGameInstance->Delete_Light(LEVEL_STATIC, m_strLightTag);
+			m_Effect.hasLight = false;
+		}
+
 		if (m_Effect.strDissolveTexture.size())
 		{
 			m_fDissolveRatio += fTimeDelta / m_Effect.fDissolveDuration;
@@ -94,12 +100,19 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 {
 	if (m_Effect.isSprite)
 	{
-		m_iSpriteIndex = static_cast<_int>(m_fSpriteTimer);
-		m_fSpriteTimer += (fTimeDelta * m_Effect.vNumSprites.x * m_Effect.vNumSprites.y) / m_Effect.fSpriteDuration;
-		if (m_iSpriteIndex >= m_Effect.vNumSprites.x * m_Effect.vNumSprites.y)
+		if (m_Effect.isFixedIndex)
 		{
-			m_iSpriteIndex = 0;
-			m_fSpriteTimer = {};
+			m_iSpriteIndex = m_Effect.iFixedSpriteIndex;
+		}
+		else
+		{
+			m_iSpriteIndex = static_cast<_int>(m_fSpriteTimer);
+			m_fSpriteTimer += (fTimeDelta * m_Effect.vNumSprites.x * m_Effect.vNumSprites.y) / m_Effect.fSpriteDuration;
+			if (m_iSpriteIndex >= m_Effect.vNumSprites.x * m_Effect.vNumSprites.y)
+			{
+				m_iSpriteIndex = 0;
+				m_fSpriteTimer = {};
+			}
 		}
 	}
 
@@ -192,13 +205,21 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 	if (m_Effect.hasLight)
 	{
 		LIGHT_DESC* pLightInfo = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, m_strLightTag);
-		pLightInfo->vPosition = m_WorldMatrix.Position();
+		if (m_Effect.iType == ET_PARTICLE)
+		{
+			pLightInfo->vPosition = m_OffsetMatrix.Position();
+		}
+		else
+		{
+			pLightInfo->vPosition = m_WorldMatrix.Position();
+		}
 	}
 	__super::Compute_CamDistance();
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 	if (not m_Effect.bSkipBloom)
 	{
-		m_pRendererCom->Add_RenderGroup(RG_BlendBlur, this);
+		//m_pRendererCom->Add_RenderGroup(RG_BlendBlur, this);
+		m_shouldRenderBlur = true;
 	}
 }
 
@@ -459,10 +480,7 @@ CGameObject* CEffect_Dummy::Clone(void* pArg)
 
 void CEffect_Dummy::Free()
 {
-	if (m_Effect.hasLight)
-	{
-		m_pGameInstance->Delete_Light(LEVEL_STATIC, m_strLightTag);
-	}
+	m_pGameInstance->Delete_Light(LEVEL_STATIC, m_strLightTag);
 
 	__super::Free();
 

@@ -218,7 +218,8 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 	if (not m_Effect.bSkipBloom)
 	{
-		m_pRendererCom->Add_RenderGroup(RG_BlendBlur, this);
+		//m_pRendererCom->Add_RenderGroup(RG_BlendBlur, this);
+		m_shouldRenderBlur = true;
 	}
 }
 
