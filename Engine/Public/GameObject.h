@@ -33,7 +33,7 @@ public:
 	virtual HRESULT Render_Reflection(_float4 vClipPlane);
 
 public:
-	class CComponent* Find_Component(const wstring& strComTag);
+	virtual class CComponent* Find_Component(const wstring& strComTag);
 
 protected:
 	_dev m_pDevice{ nullptr };

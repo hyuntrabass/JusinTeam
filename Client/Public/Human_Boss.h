@@ -116,6 +116,7 @@ private:
 	_bool m_bChangePass{};
 	_float m_fHitTime{};
 	_uint m_iPassIndex{};
+	_uint m_iWeaponPassIndex{};
 	_bool m_bViewWeapon{};
 	_bool m_bAttacked{};
 	_float m_fDissolveRatio{};
