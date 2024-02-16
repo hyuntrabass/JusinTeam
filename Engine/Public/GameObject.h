@@ -18,7 +18,7 @@ public:
 	void Kill() { m_isDead = true; }
 	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) { m_iHP -= iDamage; }
 	void InitRendered() { m_isRendered = false; }
-
+	const _bool& Is_Blur();
 
 public:
 	virtual HRESULT Init_Prototype();
@@ -45,6 +45,7 @@ protected:
 	_int m_iHP{};
 	_bool m_isRendered{ false };
 	_int m_iID = 0;
+	_bool m_shouldRenderBlur{};
 
 protected:
 	HRESULT Add_Component(_uint iLevelIndex, const wstring& strPrototypeTag, const wstring& strComTag, _Inout_ CComponent** ppComponent, void* pArg = nullptr);
