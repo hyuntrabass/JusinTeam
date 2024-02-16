@@ -328,6 +328,7 @@ namespace Client
 		MonAtt_KnockDown,
 		MonAtt_Stun,
 		MonAtt_Poison,
+		MonAtt_Pull,
 		Parrying_Succescc,
 		MonAtt_End
 	};

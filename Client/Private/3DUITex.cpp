@@ -30,6 +30,12 @@ HRESULT C3DUITex::Init(void* pArg)
 
 	m_fSizeX = ((UITEX_DESC*)pArg)->vSize.x;
 	m_fSizeY = ((UITEX_DESC*)pArg)->vSize.y;
+	
+	m_fFontSize = ((UITEX_DESC*)pArg)->fFontSize;
+	m_vTextPosition = ((UITEX_DESC*)pArg)->vTextPosition;
+	m_strText = ((UITEX_DESC*)pArg)->strText;
+	m_vTextColor = ((UITEX_DESC*)pArg)->vTextColor;
+	
 	m_fDepth = (_float)D_NAMETAG / (_float)D_END + 0.1f;
 
 	if (FAILED(Add_Components()))
@@ -45,18 +51,28 @@ HRESULT C3DUITex::Init(void* pArg)
 void C3DUITex::Tick(_float fTimeDelta)
 {
 	m_pTransformCom->Set_State(State::Pos, m_pParentTransform->Get_State(State::Pos) + m_vPosition);	
-	_vec2 v2DPos = __super::Convert_To_2D(m_pTransformCom);
-	m_fX = v2DPos.x;
-	m_fY = v2DPos.y;
+	m_vTextPos = __super::Convert_To_2D(m_pTransformCom);
+	m_fX = m_vTextPos.x;
+	m_fY = m_vTextPos.y;
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+
+
+	m_rcRect = {
+		  (LONG)(m_vTextPos.x - m_fSizeX * 0.5f),
+		  (LONG)(m_vTextPos.y - m_fSizeY * 0.5f),
+		  (LONG)(m_vTextPos.x + m_fSizeX * 0.5f),
+		  (LONG)(m_vTextPos.y + m_fSizeY * 0.5f)
+	};
 }
 
 void C3DUITex::Late_Tick(_float fTimeDelta)
 {
+	/*
+	
 	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
 	{
 		return;
-	}
+	}*/
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
@@ -77,6 +93,16 @@ HRESULT C3DUITex::Render()
 		return E_FAIL;
 	}
 
+	if (m_strText != TEXT(""))
+	{
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_vTextPos.x + m_vTextPosition.x + 1.f, m_vTextPos.y + m_vTextPosition.y), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_vTextPos.x + m_vTextPosition.x, m_vTextPos.y + m_vTextPosition.y), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_vTextPos.x + m_vTextPosition.x, m_vTextPos.y + m_vTextPosition.y + 1.f), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_vTextPos.x + m_vTextPosition.x, m_vTextPos.y + m_vTextPosition.y/*  - 0.5f*/), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_vTextPos.x + m_vTextPosition.x, m_vTextPos.y + m_vTextPosition.y), m_fFontSize, m_vTextColor);
+
+	}
+
 	return S_OK;
 }
 
@@ -84,6 +110,11 @@ void C3DUITex::Set_Size(_float fSizeX, _float fSizeY)
 {
 	m_fSizeX = fSizeX;
 	m_fSizeY = fSizeY;
+}
+
+void C3DUITex::Set_Position(_vec3 vPos)
+{
+	m_vPosition = vPos;
 }
 
 HRESULT C3DUITex::Add_Components()
