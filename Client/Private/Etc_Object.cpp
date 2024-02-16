@@ -8,7 +8,6 @@ CEtc_Object::CEtc_Object(_dev pDevice, _context pContext)
 
 CEtc_Object::CEtc_Object(const CEtc_Object& rhs)
 	: CObjects(rhs)
-	,m_Info(rhs.m_Info)
 {
 	m_isInstancing = false;
 }

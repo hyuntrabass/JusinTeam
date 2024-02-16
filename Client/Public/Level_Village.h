@@ -20,10 +20,8 @@ private:
 	HRESULT Ready_Camera();
 	HRESULT Ready_Light();
 	//HRESULT Ready_Player();
-	HRESULT Ready_Map();
-	HRESULT Ready_Dungeon();
 
-	HRESULT Ready_Object();
+	HRESULT Ready_Torch();
 	HRESULT Ready_Environment();
 
 	//HRESULT In_To_Dungeon();

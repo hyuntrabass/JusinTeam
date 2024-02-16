@@ -27,15 +27,11 @@ public:
 	ObjectInfo Get_Info() const { return m_Info; }
 
 
-private:
-
-	ObjectInfo m_Info{};
-	_bool m_isSelected{};
-	_uint m_iShaderPass{};
-	_uint m_iOutLineShaderPass{};
-
+private:;
 	class CEffect_Dummy* m_pFire{ nullptr };
 	_mat m_FireMat{};
+	wstring strPrototype{};
+	_vec3 vFire_Hight{};
 
 public:
 	static CTorch_Object* Create(_dev pDevice, _context pContext);

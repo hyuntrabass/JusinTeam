@@ -18,17 +18,6 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
-	ObjectInfo Get_Info() const { return m_Info; }
-
-
-private:
-
-	ObjectInfo m_Info{};
-	_bool m_isSelected{};
-	_uint m_iShaderPass{};
-	_uint m_iOutLineShaderPass{};
-
-
 public:
 	static CEnvironment_Object* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
