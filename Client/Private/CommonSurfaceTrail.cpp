@@ -54,6 +54,8 @@ HRESULT CCommonSurfaceTrail::Init(void* pArg)
 	m_BottomPosArray = new _vec3[m_Info.iNumVertices];
 	m_AlphaArray = new _float[m_Info.iNumVertices];
 
+	m_shouldRenderBlur = true;
+
 	return S_OK;
 }
 
@@ -101,7 +103,6 @@ void CCommonSurfaceTrail::Late_Tick(_float fTimeDelta)
 
 	__super::Compute_CamDistance();
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
-	m_pRendererCom->Add_RenderGroup(RG_BlendBlur, this);
 }
 
 HRESULT CCommonSurfaceTrail::Render()
