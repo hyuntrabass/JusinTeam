@@ -184,6 +184,7 @@ private:
 	HRESULT Render_Outline();
 	HRESULT Render_Blend();
 	HRESULT Render_BlendBlur();
+	HRESULT Render_Final();
 	HRESULT Render_UI();
 #ifdef _DEBUG
 private:

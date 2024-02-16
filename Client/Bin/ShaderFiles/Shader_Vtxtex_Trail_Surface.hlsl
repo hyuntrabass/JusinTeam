@@ -96,6 +96,8 @@ struct PS_IN
 struct PS_OUT
 {
     vector vColor : SV_Target0;
+    vector vBlurColor : SV_Target1;
+    vector vDistortion : SV_Target2;
 };
 
 PS_OUT PS_Main_Color(PS_IN Input)
@@ -106,8 +108,8 @@ PS_OUT PS_Main_Color(PS_IN Input)
     
     //vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     
-    Output.vColor = g_vColor;
-    Output.vColor.a = Input.fAlpha;
+    Output.vBlurColor = g_vColor;
+    Output.vBlurColor.a = Input.fAlpha;
     
     return Output;
 }
@@ -118,9 +120,9 @@ PS_OUT PS_Main_Mask(PS_IN Input)
     
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     
-    Output.vColor = g_vColor;
+    Output.vBlurColor = g_vColor;
         
-    Output.vColor.a = vMask.r * Input.fAlpha;
+    Output.vBlurColor.a = vMask.r * Input.fAlpha;
     
     return Output;
 }

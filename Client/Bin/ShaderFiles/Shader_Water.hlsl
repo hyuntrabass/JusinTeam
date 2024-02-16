@@ -120,7 +120,7 @@ PS_OUT_WATER PS_MAIN_Water(PS_IN_WATER Input)
     
     vector vReflectionDiffuse;
     
-    vReflectionDiffuse = g_ReflectionTexture.Sample(LinearMirrorSampler, vReflectionTexcoord);
+    vReflectionDiffuse = g_ReflectionTexture.Sample(LinearClampSampler, vReflectionTexcoord);
     
     vReflectionDiffuse.rgb = pow(vReflectionDiffuse.rgb, 1.f / 2.2f);
     

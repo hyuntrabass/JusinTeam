@@ -213,6 +213,13 @@ struct PS_OUT
     vector vColor : SV_Target0;
 };
 
+struct PS_OUT_EFFECT
+{
+    vector vColor : SV_Target0;
+    vector vBlurColor : SV_Target1;
+    vector vDistortion : SV_Target2;
+};
+
 PS_OUT_DEFERRED PS_Main(PS_IN Input)
 {
     PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
@@ -321,6 +328,7 @@ PS_OUT PS_Main_Sky(PS_IN Input)
     
     Output.vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
     Output.vColor = 0.7f * Output.vColor + (1.f - 0.7f) * g_vLightDiffuse;
+    Output.vColor.a = 1.f;
 
     return Output;
 }
@@ -332,18 +340,18 @@ PS_OUT PS_Main_COL(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_Main_Effect(PS_IN Input)
+PS_OUT_EFFECT PS_Main_Effect(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     Output.vColor = g_vColor;
     
     return Output;
 }
 
-PS_OUT PS_Main_Effect_Dissolve(PS_IN Input)
+PS_OUT_EFFECT PS_Main_Effect_Dissolve(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
     
@@ -357,9 +365,9 @@ PS_OUT PS_Main_Effect_Dissolve(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_Main_Fireball(PS_IN Input)
+PS_OUT_EFFECT PS_Main_Fireball(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     float fUV = 1.f - g_MaskTexture.Sample(LinearSampler, Input.vTex).x;
     Output.vColor = g_GradationTexture.Sample(LinearSampler, float2(fUV, 0.4f));
@@ -367,9 +375,9 @@ PS_OUT PS_Main_Fireball(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_Main_MaskEffect(PS_IN Input)
+PS_OUT_EFFECT PS_Main_MaskEffect(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform);
     if (vMask.r < 0.1f)
@@ -383,9 +391,9 @@ PS_OUT PS_Main_MaskEffect(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_Main_MaskEffect_Dissolve(PS_IN Input)
+PS_OUT_EFFECT PS_Main_MaskEffect_Dissolve(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
     
@@ -406,9 +414,9 @@ PS_OUT PS_Main_MaskEffect_Dissolve(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_Main_MaskEffect_Clamp(PS_IN Input)
+PS_OUT_EFFECT PS_Main_MaskEffect_Clamp(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     vector vMask = g_MaskTexture.Sample(LinearClampSampler, Input.vTex + g_vUVTransform);
     if (vMask.r < 0.1f)
@@ -616,18 +624,18 @@ PS_OUT_DEFERRED PS_Main_WorldMap_Cloud(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_Main_DiffEffect(PS_IN Input)
+PS_OUT_EFFECT PS_Main_DiffEffect(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     Output.vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform);
     
     return Output;
 }
 
-PS_OUT PS_Main_Effect_Alpha(PS_IN Input)
+PS_OUT_EFFECT PS_Main_Effect_Alpha(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     Output.vColor.rgb = g_vColor.rgb;
     Output.vColor.a = g_fAlpha;
@@ -635,9 +643,9 @@ PS_OUT PS_Main_Effect_Alpha(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_Main_MaskEffect_Alpha(PS_IN Input)
+PS_OUT_EFFECT PS_Main_MaskEffect_Alpha(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform);
     if (vMask.r < 0.1f)
@@ -651,9 +659,9 @@ PS_OUT PS_Main_MaskEffect_Alpha(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_Main_DiffEffect_Alpha(PS_IN Input)
+PS_OUT_EFFECT PS_Main_DiffEffect_Alpha(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     Output.vColor.rgb = g_DiffuseTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform).rgb;
     Output.vColor.a = g_fAlpha;

@@ -8,6 +8,8 @@ texture2D g_SkillReadyTexture;
 texture2D g_TextureArray[12];
 texture2D g_DissolveTexture;
 
+bool g_isBlur;
+
 bool g_bOn = { false };
 int g_TexIndex;
 vector g_vColor;
@@ -706,6 +708,10 @@ PS_OUT PS_Main_LerpColorNAlpha(PS_IN Input)
         Output.vColor.a = g_fAlpha;
     }
 
+    //if (g_isBlur)
+    //    Output.vBlurColor;
+    //else
+    //    Output.vColor;
     
     return Output;
 }
@@ -842,6 +848,7 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main();
     }
+
     pass Mask_Texture
     {
         SetRasterizerState(RS_Default);

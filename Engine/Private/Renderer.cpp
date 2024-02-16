@@ -171,6 +171,8 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
+#pragma region For_MRT_SSAO
+
 	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_SSAOTEST"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 	{
 		return E_FAIL;
@@ -180,6 +182,22 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
+
+#pragma endregion
+
+#pragma region For_Effect
+
+	if(FAILED(m_pGameInstance->Add_RenderTarget(L"Target_Effect_NoBlur", static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f,0.f,0.f,0.f))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(L"Target_Effect_DoBlur", static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(L"Target_Effect_Distortion", static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
+#pragma endregion
+
 
 	//if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LightDepth"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
 	//{
@@ -191,12 +209,20 @@ HRESULT CRenderer::Init_Prototype()
 	//	return E_FAIL;
 	//}
 
-#pragma region For_MRT_HDR
+#pragma region For_MRT_Deferred
 
-	if (FAILED(m_pGameInstance->Add_RenderTarget(L"Target_HDR", static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	if (FAILED(m_pGameInstance->Add_RenderTarget(L"Target_Deferrd", static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
 #pragma endregion
+
+#pragma region For_MRT_HDR
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(L"Target_HDR", static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_B8G8R8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
+#pragma endregion
+
 
 #pragma region For_Outline
 
@@ -206,6 +232,7 @@ HRESULT CRenderer::Init_Prototype()
 	}
 
 #pragma endregion
+
 
 
 #pragma region MRT_GameObjects
@@ -288,7 +315,6 @@ HRESULT CRenderer::Init_Prototype()
 	}
 
 #pragma endregion
-
 
 #pragma region MRT_Lights
 
@@ -375,6 +401,13 @@ HRESULT CRenderer::Init_Prototype()
 
 #pragma endregion
 
+#pragma region MRT_Deferred
+
+	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_Deferred", L"Target_Deferrd")))
+		return E_FAIL;
+
+#pragma endregion
+
 #pragma region MRT_HDR
 
 	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_HDR", L"Target_HDR")))
@@ -382,9 +415,23 @@ HRESULT CRenderer::Init_Prototype()
 
 #pragma endregion
 
+
 #pragma region MRT_Outline
 
 	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_Outline", L"Target_Outline")))
+		return E_FAIL;
+
+#pragma endregion
+
+#pragma region MRT_Effect
+
+	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_Effect", L"Target_Effect_NoBlur")))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_Effect", L"Target_Effect_DoBlur")))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_Effect", L"Target_Effect_Distortion")))
 		return E_FAIL;
 
 #pragma endregion
@@ -449,11 +496,15 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Bloom"), _float2(ViewportDesc.Width - 50.f, 50.f), _float2(100.f, 100.f))))
+	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Effect_NoBlur"), _float2(ViewportDesc.Width - 50.f, 50.f), _float2(100.f, 100.f))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_BlurTest"), _float2(ViewportDesc.Width - 50.f, 150.f), _float2(100.f, 100.f))))
+	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Effect_DoBlur"), _float2(ViewportDesc.Width - 50.f, 150.f), _float2(100.f, 100.f))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Effect_Distortion"), _float2(ViewportDesc.Width - 50.f, 250.f), _float2(100.f, 100.f))))
 	{
 		return E_FAIL;
 	}
@@ -677,6 +728,12 @@ HRESULT CRenderer::Draw_RenderGroup()
 		return E_FAIL;
 	}
 
+	if (FAILED(Render_Final()))
+	{
+		MSG_BOX("Failed to Render : Final");
+		return E_FAIL;
+	}
+
 	if (FAILED(Render_UI()))
 	{
 		MSG_BOX("Failed to Render : UI");
@@ -811,7 +868,6 @@ HRESULT CRenderer::Render_Priority()
 
 	return S_OK;
 }
-
 
 HRESULT CRenderer::Render_Shadow()
 {
@@ -1546,7 +1602,7 @@ HRESULT CRenderer::Render_LightAcc()
 
 HRESULT CRenderer::Render_Deferred()
 {
-	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR")))
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_Deferred")))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DiffuseTexture", TEXT("Target_Diffuse"))))
@@ -1757,15 +1813,18 @@ HRESULT CRenderer::Render_Blend()
 			return dynamic_cast<CBlendObject*>(pSrc)->Get_CamDistance() > dynamic_cast<CBlendObject*>(pDst)->Get_CamDistance();
 		});
 
-	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur"))))
+	//{
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(m_pGameInstance->End_MRT()))
-	{
+	//if (FAILED(m_pGameInstance->End_MRT()))
+	//{
+	//	return E_FAIL;
+	//}
+
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_Effect")))
 		return E_FAIL;
-	}
 
 	for (auto& pGameObject : m_RenderObjects[RG_Blend])
 	{
@@ -1776,23 +1835,23 @@ HRESULT CRenderer::Render_Blend()
 				MSG_BOX("Failed to Render");
 			}
 
-			if (pGameObject->Is_Blur())
-			{
-				if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur"), nullptr, false)))
-				{
-					return E_FAIL;
-				}
+			//if (pGameObject->Is_Blur())
+			//{
+			//	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur"), nullptr, false)))
+			//	{
+			//		return E_FAIL;
+			//	}
 
-				if (FAILED(pGameObject->Render()))
-				{
-					MSG_BOX("Failed to Render");
-				}
+			//	if (FAILED(pGameObject->Render()))
+			//	{
+			//		MSG_BOX("Failed to Render");
+			//	}
 
-				if (FAILED(m_pGameInstance->End_MRT()))
-				{
-					return E_FAIL;
-				}
-			}
+			//	if (FAILED(m_pGameInstance->End_MRT()))
+			//	{
+			//		return E_FAIL;
+			//	}
+			//}
 		}
 
 		Safe_Release(pGameObject);
@@ -1800,12 +1859,15 @@ HRESULT CRenderer::Render_Blend()
 
 	m_RenderObjects[RG_Blend].clear();
 
+	if (FAILED(m_pGameInstance->End_MRT()))
+		return E_FAIL;
+
 	return S_OK;
 }
 
 HRESULT CRenderer::Render_BlendBlur()
 {
-	//
+	
 	//if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur")/*, m_pBlurDSV*/)))
 	//{
 	//	return E_FAIL;
@@ -1836,10 +1898,13 @@ HRESULT CRenderer::Render_BlendBlur()
 	//	return E_FAIL;
 	//}
 
-	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Bloom"), L"MRT_BlurTest", m_fEffectBlurPower)))
+	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Effect_DoBlur"), L"MRT_BlurTest", m_fEffectBlurPower)))
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_Effect", nullptr, false)))
+		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_BlurTest"))))
 	{
@@ -1855,6 +1920,9 @@ HRESULT CRenderer::Render_BlendBlur()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->End_MRT()))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -1864,8 +1932,11 @@ HRESULT CRenderer::Render_HDR()
 	if (FAILED(Get_AvgLuminance()))
 		return E_FAIL;
 
-	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_HDR"), L"MRT_BLURTEX", m_fHDRBloomPower, true)))
+	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Deferrd"), L"MRT_BLURTEX", m_fHDRBloomPower, true)))
 		return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR")))
+	//	return E_FAIL;
 
 	if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", m_WorldMatrix)))
 	{
@@ -1880,7 +1951,7 @@ HRESULT CRenderer::Render_HDR()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_HDRTexture", TEXT("Target_HDR"))))
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DeferredTexture", TEXT("Target_Deferrd"))))
 	{
 		return E_FAIL;
 	}
@@ -1921,9 +1992,50 @@ HRESULT CRenderer::Render_HDR()
 		return E_FAIL;
 	}
 
+	//if (FAILED(m_pGameInstance->End_MRT()))
+	//	return E_FAIL;
 
 	return S_OK;
 }
+
+HRESULT CRenderer::Render_Final()
+{
+	if (FAILED(m_pGameInstance->Copy_Texture(L"Target_HDR", m_pGameInstance->Get_BackBufferTexture())))
+		return E_FAIL;
+
+	//if (FAILED(m_pNoiseNormal->Bind_ShaderResource(m_pShader, "g_DistortionTexture")))
+	//	return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DistortionTexture", L"Target_Effect_Distortion")))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_HDRTexture", L"Target_HDR")))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Begin(11)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pVIBuffer->Render()))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlendTexture", L"Target_Effect_NoBlur")))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Begin(12)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pVIBuffer->Render()))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
 
 HRESULT CRenderer::Render_UI()
 {
@@ -1986,15 +2098,15 @@ HRESULT CRenderer::Render_Debug()
 	//	return E_FAIL;
 	//}
 
-	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_Blur"), m_pShader, m_pVIBuffer)))
+	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_Effect"), m_pShader, m_pVIBuffer)))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_BlurTest"), m_pShader, m_pVIBuffer)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_BlurTest"), m_pShader, m_pVIBuffer)))
+	//{
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_SSAOTEST"), m_pShader, m_pVIBuffer)))
 	{
@@ -2029,7 +2141,7 @@ HRESULT CRenderer::Get_AvgLuminance()
 
 	{
 		iSlot = _uint2(0, 0);
-		ID3D11ShaderResourceView* pSRV = m_pGameInstance->Get_SRV(L"Target_HDR");;
+		ID3D11ShaderResourceView* pSRV = m_pGameInstance->Get_SRV(L"Target_Deferrd");;
 
 		if (FAILED(m_pLumShader->Set_Shader()))
 			return E_FAIL;
@@ -2109,7 +2221,7 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 		if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_BLURTEX")))
 			return E_FAIL;
 
-		if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pGetBlurShader, "g_HDRTex", L"Target_HDR")))
+		if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pGetBlurShader, "g_DeferredTexture", L"Target_Deferrd")))
 			return E_FAIL;
 
 		if (FAILED(m_pGetBlurShader->Bind_ShaderResourceView("g_Luminance", m_pLumValue->Get_SRV())))

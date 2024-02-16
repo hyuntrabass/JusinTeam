@@ -32,17 +32,18 @@ Texture2D g_SpecularTexture;
 
 Texture2D g_BlurTexture;
 
+// Debugs
 Texture2D g_DebugTexture;
 Texture2DArray g_DebugArrayTexture;
+uint g_DebugArrayIndex;
 
 
-// ±×¸²ÀÚ
+// Shadow
 Texture2DArray g_LightDepthTexture;
 matrix g_LightViewMatrix[3];
 matrix g_LightProjMatrix[3];
 vector g_ClipZ;
 bool g_TurnOnShadow;
-uint g_hi;
 
 
 // SSAO
@@ -53,7 +54,7 @@ matrix g_CamProjMatrix;
 
 // HDR
 Texture2D g_Luminance;
-Texture2D g_HDRTexture;
+Texture2D g_DeferredTexture;
 
 // Outline
 Texture2D g_StencilTexture;
@@ -69,6 +70,11 @@ bool TurnOnBloom;
 bool TurnOnRim;
 SSAO_DESC g_SSAO;
 HDR_DESC g_HDR;
+
+// Final
+Texture2D g_HDRTexture;
+Texture2D g_BlendTexture;
+Texture2D g_DistortionTexture;
 
 vector Get_WorldPos(float2 vTex)
 {
@@ -182,7 +188,7 @@ PS_OUT PS_Main_DebugArray(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
 
-    Output.vColor = g_DebugArrayTexture.Sample(LinearSampler, float3(Input.vTexcoord, (float) g_hi));
+    Output.vColor = g_DebugArrayTexture.Sample(LinearSampler, float3(Input.vTexcoord, (float) g_DebugArrayIndex));
     
     return Output;
 }
@@ -460,7 +466,7 @@ PS_OUT PS_Main_HDR(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    vector vColor = g_HDRTexture.Sample(LinearSampler, Input.vTexcoord);
+    vector vColor = g_DeferredTexture.Sample(LinearSampler, Input.vTexcoord);
     
     if(0.f == vColor.a)
         discard;
@@ -487,7 +493,7 @@ PS_OUT PS_Main_HDR(PS_IN Input)
     
     vHDRColor = pow(vHDRColor, 1.f / 2.2f);
         
-    Output.vColor = vector(vHDRColor, vColor.a);
+    Output.vColor = vector(vHDRColor, 1.f);
     
     return Output;
 }
@@ -538,6 +544,32 @@ PS_OUT PS_Main_Outline(PS_IN Input)
     
     vector vColor = g_OutlineColor;
     vColor.a *= edge;
+    
+    Output.vColor = vColor;
+    
+    return Output;
+}
+
+PS_OUT PS_Main_Distortion(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    float2 vDistortion = g_DistortionTexture.Sample(LinearSampler, Input.vTexcoord).rg * 0.05f;
+    
+    float2 vTex = Input.vTexcoord + vDistortion;
+    
+    vector vColor = g_HDRTexture.Sample(LinearClampSampler, vTex);
+    
+    Output.vColor = vColor;
+    
+    return Output;
+}
+
+PS_OUT PS_Draw_Effect_To_BackBuffer(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    vector vColor = g_BlendTexture.Sample(LinearSampler, Input.vTexcoord);
     
     Output.vColor = vColor;
     
@@ -687,5 +719,31 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Outline();
+    }
+
+    pass NoBlend_Final // 11
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Distortion();
+    }
+
+    pass BlendFinal // 12
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Draw_Effect_To_BackBuffer();
     }
 };
