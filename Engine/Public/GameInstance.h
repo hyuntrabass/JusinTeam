@@ -143,7 +143,7 @@ public: // PhysX
 public: // RenderTarget
 	HRESULT Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _vec4& vColor, const _bool isMultiSample = false);
 	HRESULT Add_MRT(const wstring& strMRTTag, const wstring& strTargetTag);
-	HRESULT Begin_MRT(const wstring& strMRTTag, ID3D11DepthStencilView* pDepthStencillView = nullptr);
+	HRESULT Begin_MRT(const wstring& strMRTTag, ID3D11DepthStencilView* pDepthStencillView = nullptr, const _bool shouldClear = true);
 	HRESULT End_MRT();
 	HRESULT Bind_ShaderResourceView(class CShader* pShader, const _char* pVariableName, const wstring& strTargetTag);
 	ID3D11Texture2D* Get_Texture2D(const wstring& strTargetTag);

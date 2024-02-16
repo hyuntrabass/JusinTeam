@@ -1190,8 +1190,15 @@ void CGroar_Boss::NPC_LateTick(_float fTimeDelta)
 		}
 	}
 
-	//if (m_pGameInstance->Key_Down(DIK_G)) // 자살 시작(보스로 변하는 타이밍)
-	if (CTrigger_Manager::Get_Instance()->Is_Coll_BossTrigger() == true || m_pGameInstance->Key_Down(DIK_G))
+	if (m_pGameInstance->Key_Down(DIK_G)) // 치트키 변신 빨리하게
+	{
+		if (not m_TalkSounds.empty())
+		{
+			m_TalkSounds.clear();
+			m_iSoundChannel = -1;
+		}
+	}
+	if (CTrigger_Manager::Get_Instance()->Is_Coll_BossTrigger() == true)
 	{
 		if (m_TalkSounds.size() != 0 && m_iSoundChannel == -1)
 		{

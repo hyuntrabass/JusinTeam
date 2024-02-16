@@ -406,7 +406,6 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 			{
 				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
 			}
-			m_EffectMatrices[i]->_44 = 1.f;
 		}
 		if (m_AnimDesc.iAnimIndex == m_TriggerEffects[i].iStartAnimIndex &&
 			m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fStartAnimPos &&
@@ -423,7 +422,6 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 			{
 				*m_EffectMatrices[i] = m_TriggerEffects[i].OffsetMatrix * *m_Bones[m_TriggerEffects[i].iBoneIndex]->Get_CombinedMatrix() * m_PivotMatrix * m_pOwnerTransform->Get_World_Matrix();
 			}
-			m_EffectMatrices[i]->_44 = 1.f;
 			//이펙트 생성
 			if (m_TriggerEffects[i].IsClientTrigger)
 			{

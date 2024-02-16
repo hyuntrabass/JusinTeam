@@ -220,7 +220,7 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 	{
 		if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON))
 		{
-			_long dwMouseMove;
+			_long dwMouseMove{};
 			if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
 			{
 				m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
@@ -228,7 +228,30 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 
 			if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
 			{
-				m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
+				_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
+				_vec4 vFrontLook = vLook;
+				vFrontLook.y = 0.f;
+				_float fResult = vLook.Dot(vFrontLook);
+				_float fTurnValue = fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor;
+
+				if (fResult < 0.97f && fResult > 0.72f)
+				{
+					m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right) , fTurnValue);
+				}
+				else if(fResult >=0.97f)
+				{
+					if(fTurnValue>0.f)
+					{
+						m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
+					}
+				}
+				else if (fResult <= 0.72f)
+				{
+					if (fTurnValue < 0.f)
+					{
+						m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
+					}
+				}
 			}
 
 		}
@@ -238,7 +261,7 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 		{
 			if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
 			{
-				if (m_fPlayerDistance > 2.f)
+				if (m_fPlayerDistance > 4.f)
 				{
 					m_fPlayerDistance -= 0.8f;
 				}
@@ -250,7 +273,7 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 			}
 			else if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
 			{
-				if (m_fPlayerDistance < 10.f)
+				if (m_fPlayerDistance < 6.f)
 				{
 					m_fPlayerDistance += 0.8f;
 				}
@@ -261,8 +284,14 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 				}
 			}
 		}
-
-
+		if (m_fPlayerDistance < 4.f)
+		{
+			m_fPlayerDistance = 4.f;
+		}
+		else if (m_fPlayerDistance > 6.f)
+		{
+			m_fPlayerDistance = 6.f;
+		}
 		// 	y = sin(x * 10.0f) * powf(0.5f, x)
 
 		_float fShakeAmount = sin(m_fShakeAcc * 15.f) * powf(0.5f, m_fShakeAcc) * 0.2f;
@@ -334,7 +363,7 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 	}
 	else
 	{
-		m_fPlayerDistance = 7.f;
+		m_fPlayerDistance = 6.f;
 		_long dwMouseMove;
 		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
 		{
