@@ -130,6 +130,10 @@ private:
 	CCommonTrail* m_pRightTrail3 = { nullptr };
 
 private:
+	class CEffect_Dummy* m_pFrameEffect = { nullptr };
+	class CEffect_Dummy* m_pBaseEffect = { nullptr };
+
+private:
 	DRAGON_STATE m_ePreState = STATE_END;
 	DRAGON_STATE m_eCurState = STATE_END;
 
@@ -142,6 +146,8 @@ private:
 
 private:
 	_float m_fIdleTime = {};
+	_float m_fTime = {};
+	_float m_fMeteorTime = {};
 
 private:
 	_uint m_iAttackPattern = {};

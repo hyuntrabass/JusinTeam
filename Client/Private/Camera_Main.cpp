@@ -91,6 +91,14 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		}
 		if (m_pGameInstance->Key_Down(DIK_M))
 		{
+			if (m_eCurrState == CS_WORLDMAP)
+			{
+				m_isWorldMap = false;
+			}
+			else if (m_eCurrState == CS_DEFAULT)
+			{
+				m_isWorldMap = true;
+			}
 			if (m_eCurrState == CS_ZOOM)
 			{
 				return;
@@ -111,7 +119,16 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		{
 			if (m_eCurrState != CS_WORLDMAP)
 			{
-				m_pCam_Manager->Set_CameraState(CS_WORLDMAP);
+				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
+
+				m_Original_Light_Desc = *LightDesc;
+				LightDesc->eType = LIGHT_DESC::Directional;
+				LightDesc->vDirection = _float4(-1.f, 0.f, -1.f, 0.f);
+				LightDesc->vDiffuse = _vec4(0.8f, 0.8f, 0.8f, 1.f);
+				LightDesc->vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
+				LightDesc->vSpecular = _vec4(1.f);
+
+				m_pCam_Manager->Set_CameraState(CS_WORLDMAP); 
 				m_eCurrState = CS_WORLDMAP;
 				m_pTransformCom->Set_State(State::Pos, m_vMapPos);
 				CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
@@ -119,13 +136,38 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			}
 			else
 			{
+				if (!m_isWorldMap)
+				{
+					if (m_Original_Light_Desc.eType != LIGHT_DESC::TYPE::End)
+					{
+						LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
+						*LightDesc = m_Original_Light_Desc;
+					}
+				}
 				m_pCam_Manager->Set_CameraState(CS_DEFAULT);
 				m_eCurrState = CS_DEFAULT;
 				CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 				m_isFadeReady = false;
 			}
+
+
+
+			if (m_isWorldMap && m_eCurrState == CS_DEFAULT)
+			{
+				if (m_Original_Light_Desc.eType != LIGHT_DESC::TYPE::End)
+				{
+					LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
+					*LightDesc = m_Original_Light_Desc;
+				}				CFadeBox::FADE_DESC Desc = {};
+				Desc.fIn_Duration = 0.5f;
+				Desc.fOut_Duration = 0.5f;
+				Desc.phasFadeCompleted = &m_isFadeReady;
+				CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
+				m_isWorldMap = false;
+			}
 		}
 
+		
 		Init_State(fTimeDelta);
 		Tick_State(fTimeDelta);
 	}

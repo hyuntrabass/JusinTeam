@@ -141,6 +141,7 @@ class CCollider* CCollision_Manager::Get_Nearest_MonsterCollider()
 			{
 				minDistance = distance;
 				nearestMonsterCollider = Monster.second;
+
 			}
 		}
 	}
