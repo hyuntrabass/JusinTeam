@@ -129,10 +129,6 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	{
 		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"));
 	}
-	if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
-	{
-		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Test"), TEXT("Prototype_GameObject_Void09"));
-	}
 }
 
 HRESULT CLevel_Village::Render()

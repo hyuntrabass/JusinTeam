@@ -28,7 +28,20 @@ private:
 	CRenderer* m_pRendererCom = { nullptr };
 	CCollider* m_pColliderCom = { nullptr };
 
-	CModel* m_pTestModelCom = { nullptr };
+	CModel* m_pModelCom = { nullptr };
+
+private: // Dragon_Boss Component
+	CTransform* m_pDragonTransform = { nullptr };
+
+private:
+	class CEffect_Dummy* m_pFrameEffect = { nullptr };
+	class CEffect_Dummy* m_pBaseEffect = { nullptr };
+
+private:
+	_vec3 m_vTargetPos = {};
+
+private:
+	_float m_fTime = {}; // Test
 
 public:
 	HRESULT Add_Components();
