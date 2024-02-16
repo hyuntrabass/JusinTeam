@@ -2377,6 +2377,8 @@ void CPlayer::Return_Attack_IdleForm()
 }
 void CPlayer::After_CommonAtt(_float fTimeDelta)
 {
+	_float Index = m_pModelCom->Get_CurrentAnimPos();
+
 	if (m_Current_Weapon == WP_SWORD)
 	{
 		if (m_fAttTimer > 0.2f && m_fAttTimer < 0.35f)
@@ -2385,26 +2387,25 @@ void CPlayer::After_CommonAtt(_float fTimeDelta)
 			{
 				m_pTransformCom->Set_Speed(5.f);
 				m_pTransformCom->Go_Straight(fTimeDelta);
-				Cam_AttackZoom(0.7f);
-
+				Cam_AttackZoom(1.5f);
 			}
 			else if (m_iAttackCombo == 2)
 			{
 				m_pTransformCom->Set_Speed(3.f);
 				m_pTransformCom->Go_Straight(fTimeDelta);
-				Cam_AttackZoom(1.2f);
+				Cam_AttackZoom(1.5f);
 			}
 			else if (m_iAttackCombo == 3)
 			{
 				m_pTransformCom->Set_Speed(3.f);
 				m_pTransformCom->Go_Straight(fTimeDelta);
-				Cam_AttackZoom(1.7f);
+				Cam_AttackZoom(1.5f);
 			}
 			else if (m_iAttackCombo == 4)
 			{
 				m_pTransformCom->Set_Speed(14.f);
 				m_pTransformCom->Go_Straight(fTimeDelta);
-				Cam_AttackZoom(2.2f);
+				Cam_AttackZoom(1.5f);
 			}
 		}
 		else
@@ -2660,13 +2661,13 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
-		if (Index >= 5.f && Index < 9.f)
+		if (Index >= 5.f && Index < 17.f)
 		{
-			Cam_AttackZoom(1.3f);
+			Cam_AttackZoom(2.6f);
 		}
 		if (Index >= 11.f && Index <= 13.f)
 		{
-			Cam_AttackZoom(2.6f);
+			//Cam_AttackZoom(2.6f);
 			m_fSkiilTimer = 0.8f;
 			if (!m_bAttacked)
 			{
@@ -2802,7 +2803,6 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 		if (Index >= 2.f && Index < 12.f)
 		{
-			Cam_AttackZoom(0.5f);
 			m_bHide = true;
 		}
 		else if (Index >= 13.f && Index < 15.f)
@@ -2811,7 +2811,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		}
 		else if (Index >= 15.f && Index <= 27.f)
 		{
-			
+			Cam_AttackZoom(2.5f);
 			m_pTransformCom->Set_Speed(m_fSkillSpeed);
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
@@ -2827,13 +2827,9 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					m_pGameInstance->Set_TimeRatio(0.5f);
 					m_bAttacked = true;
 					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
-					Cam_AttackZoom(3.f);
 					m_fSkillSpeed = 0.f;
 				}
-
 			}
-
-
 		}
 		else if (Index > 29.f && Index <= 31.f)
 		{
@@ -2865,11 +2861,11 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
 		if (Index >= 14.f && Index <= 20.f)
 		{
-			//m_pGameInstance->Set_TimeRatio(0.1f);
+			m_pGameInstance->Set_TimeRatio(0.3f);
 		}
 		else if (Index >= 26.f && Index <= 30.f)
 		{
-			m_pGameInstance->Set_TimeRatio(0.1f);
+			m_pGameInstance->Set_TimeRatio(0.3f);
 			m_fSkiilTimer = 0.f;
 		}
 		else if (Index >= 35.f && Index <= 40.f)
@@ -2879,12 +2875,12 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		}
 		else if (Index >= 56.f && Index <= 59.f)
 		{
-			m_pGameInstance->Set_TimeRatio(0.1f);
+			m_pGameInstance->Set_TimeRatio(0.3f);
 
 		}
 		else if (Index >= 67.f && Index <= 70.f)
 		{
-			m_pGameInstance->Set_TimeRatio(0.1f);
+			m_pGameInstance->Set_TimeRatio(0.3f);
 
 		}
 		else
@@ -3110,7 +3106,6 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		if (Index >= 2.f && Index < 50.f)
 		{
 			Cam_AttackZoom(-2.f);
-
 		}
 		if (Index >= 26.f && Index <= 27.f)
 		{
