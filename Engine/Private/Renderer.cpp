@@ -1757,6 +1757,16 @@ HRESULT CRenderer::Render_Blend()
 			return dynamic_cast<CBlendObject*>(pSrc)->Get_CamDistance() > dynamic_cast<CBlendObject*>(pDst)->Get_CamDistance();
 		});
 
+	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->End_MRT()))
+	{
+		return E_FAIL;
+	}
+
 	for (auto& pGameObject : m_RenderObjects[RG_Blend])
 	{
 		if (pGameObject)
@@ -1764,6 +1774,24 @@ HRESULT CRenderer::Render_Blend()
 			if (FAILED(pGameObject->Render()))
 			{
 				MSG_BOX("Failed to Render");
+			}
+
+			if (pGameObject->Is_Blur())
+			{
+				if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur"), nullptr, false)))
+				{
+					return E_FAIL;
+				}
+
+				if (FAILED(pGameObject->Render()))
+				{
+					MSG_BOX("Failed to Render");
+				}
+
+				if (FAILED(m_pGameInstance->End_MRT()))
+				{
+					return E_FAIL;
+				}
 			}
 		}
 
@@ -1778,35 +1806,35 @@ HRESULT CRenderer::Render_Blend()
 HRESULT CRenderer::Render_BlendBlur()
 {
 	//
-	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur")/*, m_pBlurDSV*/)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur")/*, m_pBlurDSV*/)))
+	//{
+	//	return E_FAIL;
+	//}
 
-	m_RenderObjects[RG_BlendBlur].sort([](CGameObject* pSrc, CGameObject* pDst)
-		{
-			return dynamic_cast<CBlendObject*>(pSrc)->Get_CamDistance() > dynamic_cast<CBlendObject*>(pDst)->Get_CamDistance();
-		});
+	//m_RenderObjects[RG_BlendBlur].sort([](CGameObject* pSrc, CGameObject* pDst)
+	//	{
+	//		return dynamic_cast<CBlendObject*>(pSrc)->Get_CamDistance() > dynamic_cast<CBlendObject*>(pDst)->Get_CamDistance();
+	//	});
 
-	for (auto& pGameObject : m_RenderObjects[RG_BlendBlur])
-	{
-		if (pGameObject)
-		{
-			if (FAILED(pGameObject->Render()))
-			{
-				MSG_BOX("Failed to Render");
-			}
-		}
+	//for (auto& pGameObject : m_RenderObjects[RG_BlendBlur])
+	//{
+	//	if (pGameObject)
+	//	{
+	//		if (FAILED(pGameObject->Render()))
+	//		{
+	//			MSG_BOX("Failed to Render");
+	//		}
+	//	}
 
-		Safe_Release(pGameObject);
-	}
+	//	Safe_Release(pGameObject);
+	//}
 
-	m_RenderObjects[RG_BlendBlur].clear();
+	//m_RenderObjects[RG_BlendBlur].clear();
 
-	if (FAILED(m_pGameInstance->End_MRT()))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->End_MRT()))
+	//{
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Bloom"), L"MRT_BlurTest", m_fEffectBlurPower)))
 	{
