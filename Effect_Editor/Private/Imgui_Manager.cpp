@@ -145,6 +145,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		"InstPass_Particle_Sprite_DiffMask_Dissolve_Trail",
 		"InstPass_Particle_Sprite_DiffMask_RandomIndex_Trail",
 		"InstPass_Particle_Sprite_DiffMask_RandomIndex_Dissolve_Trail",
+		"InstPass_Particle_MaskColor_Alpha",
 	};
 
 	const _char* szVTPasses[VTPass_End]
