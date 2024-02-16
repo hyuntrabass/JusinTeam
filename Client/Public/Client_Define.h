@@ -388,6 +388,7 @@ namespace Client
 		AnimPass_Shadow,
 		AnimPass_Dissolve,
 		AnimPass_Rim,
+		AnimPass_DefaultNoCull,
 	};
 
 	enum StaticMeshPass

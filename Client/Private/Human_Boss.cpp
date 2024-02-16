@@ -44,7 +44,8 @@ HRESULT CHuman_Boss::Init(void* pArg)
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 1.5f;
-	m_iPassIndex = AnimPass_Dissolve;
+	m_iPassIndex = AnimPass_DefaultNoCull;
+	m_iWeaponPassIndex = AnimPass_Dissolve;
 	m_iHP = 100;
 
 	return S_OK;
@@ -185,11 +186,23 @@ HRESULT CHuman_Boss::Render()
 				return E_FAIL;
 			}
 
-			if (FAILED(m_pShaderCom->Begin(m_iPassIndex)))
+			if (i == 3)
 			{
-				return E_FAIL;
-			}
+				if (FAILED(m_pShaderCom->Begin(m_iWeaponPassIndex)))
+				{
+					return E_FAIL;
+				}
 
+			}
+			else
+			{
+				if (FAILED(m_pShaderCom->Begin(m_iPassIndex)))
+				{
+					return E_FAIL;
+				}
+
+			}
+			
 			if (FAILED(m_pModelCom->Render(i)))
 			{
 				return E_FAIL;
@@ -206,20 +219,22 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 	{
 		m_fHitTime += fTimeDelta;
 
-		if (m_iPassIndex == AnimPass_Dissolve)
+		if (m_iPassIndex == AnimPass_DefaultNoCull)
 		{
 			m_iPassIndex = AnimPass_Rim;
+			m_iWeaponPassIndex = AnimPass_Rim;
 		}
 		else
 		{
-			m_iPassIndex = AnimPass_Dissolve;
+			m_iPassIndex = AnimPass_DefaultNoCull;
+			m_iWeaponPassIndex = AnimPass_Dissolve;
 		}
-
 		if (m_fHitTime >= 0.3f)
 		{
 			m_fHitTime = 0.f;
 			m_bChangePass = false;
-			m_iPassIndex = AnimPass_Dissolve;
+			m_iPassIndex = AnimPass_DefaultNoCull;
+			m_iWeaponPassIndex = AnimPass_Dissolve;
 		}
 	}
 

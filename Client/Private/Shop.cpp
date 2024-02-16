@@ -503,7 +503,7 @@ HRESULT CShop::Init_ShopItems()
 	m_vecShopItems[EXPENDABLE].push_back(pShopDesc);
 
 
-	ShopDesc.strItemName = TEXT("¾ÈÈçÇÑ¿Ê");
+	ShopDesc.strItemName = TEXT("¸¶³ªÇÏÀÓÀÇ °©¿Ê");
 	ShopDesc.vPosition = _vec2(235.f, fStartY + fShopDescY * iEquipIndex + fTerm * iEquipIndex);
 	pShopDesc = (CShopDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_ShopDesc"), &ShopDesc);
 	if (not pShopDesc)
@@ -514,7 +514,7 @@ HRESULT CShop::Init_ShopItems()
 
 	iEquipIndex++;
 
-	ShopDesc.strItemName = TEXT("±×³É¸ðÀÚ");
+	ShopDesc.strItemName = TEXT("°¡Á× ¸¶½ºÅ©");
 	ShopDesc.vPosition = _vec2(235.f, fStartY + fShopDescY * iEquipIndex + fTerm * iEquipIndex);
 	pShopDesc = (CShopDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_ShopDesc"), &ShopDesc);
 	if (not pShopDesc)

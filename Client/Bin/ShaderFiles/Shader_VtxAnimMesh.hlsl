@@ -221,7 +221,7 @@ PS_OUT_DEFERRED PS_Main_Dissolve(PS_IN Input)
     {
         discard;
     }
-    
+  
     float3 vNormal;
     if (g_HasNorTex)
     {
@@ -261,6 +261,7 @@ PS_OUT_DEFERRED PS_Main_Rim(PS_IN Input)
     {
         discard;
     }
+
     
     float3 vNormal;
     if (g_HasNorTex)
@@ -297,6 +298,7 @@ PS_OUT_DEFERRED PS_Main_Rim(PS_IN Input)
     
     return Output;
 }
+
 
 
 technique11 DefaultTechnique_Shader_AnimMesh
@@ -366,4 +368,16 @@ technique11 DefaultTechnique_Shader_AnimMesh
         PixelShader = compile ps_5_0 PS_Main_Rim();
     }
 
+    pass DefaultNoCull
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main();
+    }
 };

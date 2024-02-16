@@ -87,8 +87,8 @@ void CMainApp::Tick(_float fTimeDelta)
 	m_fTimeAcc += fFinalTimeDelta;
 
 #ifdef _DEBUG
-	m_pGameInstance->Get_StringStream() << "FPS: " << m_iFPS << endl;
-	m_pGameInstance->Get_StringStream() << endl;
+	/*m_pGameInstance->Get_StringStream() << "FPS: " << m_iFPS << endl;
+	m_pGameInstance->Get_StringStream() << endl;*/
 #endif // _DEBUG
 
 

@@ -313,6 +313,8 @@ public:
 	virtual HRESULT Render_Shadow() override;
 
 public:
+	class CComponent* Find_Component(const wstring& strComTag) override;
+public:
 	HRESULT Add_Info();
 	HRESULT Place_PartModels();
 	HRESULT Render_Parts(PART_TYPE Parts, _uint Index);

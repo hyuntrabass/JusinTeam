@@ -49,6 +49,8 @@ HRESULT CCommonTrail::Init(void* pArg)
 	m_ColorArray = new _vec4[m_Info.iNumVertices];
 	m_PSizeArray = new _vec2[m_Info.iNumVertices];
 
+	m_shouldRenderBlur = true;
+
 	return S_OK;
 }
 
@@ -90,7 +92,6 @@ void CCommonTrail::Late_Tick(_float fTimeDelta)
 
 	__super::Compute_CamDistance();
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
-	m_pRendererCom->Add_RenderGroup(RG_BlendBlur, this);
 }
 
 HRESULT CCommonTrail::Render()

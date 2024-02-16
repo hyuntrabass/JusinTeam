@@ -29,6 +29,11 @@ CGameObject::CGameObject(const CGameObject& rhs)
 
 }
 
+const _bool& CGameObject::Is_Blur()
+{
+	return m_shouldRenderBlur;
+}
+
 HRESULT CGameObject::Init_Prototype()
 {
 	return S_OK;
