@@ -122,6 +122,7 @@ void CPlayer::Tick(_float fTimeDelta)
 	if (!m_bFirstVillage && m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_VILLAGE)
 	{
 		m_eState = Idle;
+		m_bIsClimb = false;
 		m_bFirstVillage = true;
 	}
 	if (m_bHide && m_fDissolveRatio < 1.f)
@@ -2573,6 +2574,10 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					{
 						m_pGameInstance->Set_TimeRatio(1.f);
 					}
+				}
+				else
+				{
+					m_pGameInstance->Set_TimeRatio(1.f);
 				}
 				if (m_bAttacked)
 				{
