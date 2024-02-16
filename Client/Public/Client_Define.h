@@ -509,6 +509,7 @@ namespace Client
 		InstPass_Particle_Sprite_DiffMask_Dissolve_Trail,
 		InstPass_Particle_Sprite_DiffMask_RandomIndex_Trail,
 		InstPass_Particle_Sprite_DiffMask_RandomIndex_Dissolve_Trail,
+		InstPass_Particle_MaskColor_Alpha,
 		InstPass_End,
 	};
 #pragma endregion
