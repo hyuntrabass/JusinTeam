@@ -927,6 +927,8 @@ void CDragon_Boss::Free()
 
 	Safe_Release(m_pBodyColliderCom);
 	Safe_Release(m_pAttackColliderCom);
+	Safe_Release(m_pBaseEffect);
+	Safe_Release(m_pFrameEffect);
 
 	Safe_Release(m_pLeftTrail1);
 	Safe_Release(m_pLeftTrail2);

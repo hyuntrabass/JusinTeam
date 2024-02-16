@@ -29,7 +29,8 @@ HRESULT CHuman_Boss::Init(void* pArg)
 	}
 
 	m_pTransformCom->Set_State(State::Pos, _vec4(0.f, 0.f, 0.f, 1.f));
-
+	m_pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	//Safe_AddRef(m_pPlayerTransform);
 	PxCapsuleControllerDesc ControllerDesc{};
 	ControllerDesc.height = 2.f; // 높이(위 아래의 반구 크기 제외
 	ControllerDesc.radius = 1.f; // 위아래 반구의 반지름
@@ -86,6 +87,7 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 	After_Attack(fTimeDelta);
 	Update_Collider();
 	m_pModelCom->Set_Animation(m_Animation);
+	m_pTransformCom->Gravity(fTimeDelta);
 }
 
 void CHuman_Boss::Late_Tick(_float fTimeDelta)
@@ -366,7 +368,7 @@ HRESULT CHuman_Boss::Add_Collider()
 	Collider_Desc ColDesc{};
 	ColDesc.eType = ColliderType::Sphere;
 	ColDesc.vCenter = {};
-	ColDesc.fRadius = 10.f;
+	ColDesc.fRadius = 12.f;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack"), reinterpret_cast<CComponent**>(&m_pCommonAttCollider), &ColDesc)))
 	{
@@ -480,7 +482,10 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 		{
 			if (!m_bAttacked)
 			{
-
+				if (Compute_Angle(135.f))
+				{
+					m_pGameInstance->Attack_Player(m_pCommonAttCollider, 200, MonAtt_KnockDown);
+				}
 			}
 		}
 		else if (Index >= 127.f && m_bViewWeapon)
@@ -514,7 +519,10 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 		{
 			if (!m_bAttacked)
 			{
-
+				if (Compute_Angle(135.f))
+				{
+					m_pGameInstance->Attack_Player(m_pCommonAttCollider, 200, MonAtt_KnockDown);
+				}
 			}
 		}
 		else if (Index >= 116.f && m_bViewWeapon)
@@ -548,7 +556,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 		{
 			if (!m_bAttacked)
 			{
-
+				m_pGameInstance->Attack_Player(m_pCommonAttCollider, 200, MonAtt_KnockDown);
 			}
 		}
 		else if (Index >= 186.f && m_bViewWeapon)
@@ -559,6 +567,32 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			}
 		}
 	}
+}
+
+_bool CHuman_Boss::Compute_Angle(_float fAngle)
+{
+	fAngle -= 90.f;
+	fAngle = abs(fAngle);
+	_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
+	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+
+	_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
+	vPlayerPos -= vPos;
+	vPlayerPos.Normalize();
+	_float fResult = vLook.Dot(vPlayerPos);
+	_float angleInRadians = acos(fResult);
+	_float angleInDegrees = angleInRadians * (180.0f / XM_PI);
+
+	
+	if (angleInDegrees <= fAngle)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
 }
 
 HRESULT CHuman_Boss::Add_Components()
@@ -658,6 +692,7 @@ void CHuman_Boss::Free()
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pFrameEffect);
 	Safe_Release(m_pBodyCollider);
+	Safe_Release(m_pPlayerTransform);
 	Safe_Release(m_pCommonAttCollider);
 	Safe_Release(m_pDissolveTextureCom);
 
