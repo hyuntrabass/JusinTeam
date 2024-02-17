@@ -314,6 +314,7 @@ public:
 
 public:
 	class CComponent* Find_Component(const wstring& strComTag) override;
+
 public:
 	HRESULT Add_Info();
 	HRESULT Place_PartModels();
