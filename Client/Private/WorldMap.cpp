@@ -4,7 +4,7 @@
 #include "TextButton.h"
 #include "3DUITEX.h"
 #include "Trigger_Manager.h"
-#include "Camera_Manager.h".h"
+#include "Camera_Manager.h"
 
 CWorldMap::CWorldMap(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)

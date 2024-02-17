@@ -1649,7 +1649,7 @@ HRESULT CLoader::Load_Village()
 	// ¸Ê
 
 	_mat Pivot = _mat::CreateScale(0.003f);
-	string strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Map/Midgard/Mesh/";
+	string strInputFilePath = "../Bin/Resources/StaticMesh/Map/Midgard/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -1666,7 +1666,7 @@ HRESULT CLoader::Load_Village()
 	}
 
 	_mat DungeonPivot = _mat::CreateScale(0.001f);
-	 strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Map/Dungeon/Mesh/";
+	 strInputFilePath = "../Bin/Resources/StaticMesh/Map/Dungeon/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -1681,7 +1681,7 @@ HRESULT CLoader::Load_Village()
 			}
 		}
 	}
-	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Object/Midgard/Mesh/";
+	strInputFilePath = "../Bin/Resources/StaticMesh/Object/Midgard/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -1700,7 +1700,7 @@ HRESULT CLoader::Load_Village()
 	//_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(90.f));
 
 	// Prologue Object Model
-	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Object/Tutorial/Mesh/";
+	strInputFilePath = "../Bin/Resources/StaticMesh/Object/Tutorial/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -1716,7 +1716,7 @@ HRESULT CLoader::Load_Village()
 		}
 	}
 
-	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Object/Dungeon/Mesh/";
+	strInputFilePath = "../Bin/Resources/StaticMesh/Object/Dungeon/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())

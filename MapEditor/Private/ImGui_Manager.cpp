@@ -305,7 +305,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			static int iSelectMap = 0;
 			ImGui::RadioButton("ETC", &iSelectMap, 0); ImGui::SameLine();
 			ImGui::RadioButton("Build", &iSelectMap, 1); ImGui::SameLine();
-			ImGui::RadioButton("Decoration", &iSelectMap, 2);
+			ImGui::RadioButton("Dungeon", &iSelectMap, 2);
 			if (iSelectMap == 0)
 			{
 				m_eType = TEXT("ETC");
@@ -316,7 +316,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			}
 			else if (iSelectMap == 2)
 			{
-				m_eType = TEXT("Decoration");
+				m_eType = TEXT("Dungeon");
 			}
 
 			if (ImGui::BeginListBox("MAPS PATH", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
@@ -387,7 +387,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			static int iSelectObject = 0;
 			ImGui::RadioButton("ETC", &iSelectObject, 0); ImGui::SameLine();
 			ImGui::RadioButton("Build", &iSelectObject, 1); ImGui::SameLine();
-			ImGui::RadioButton("Decoration", &iSelectObject, 2);
+			ImGui::RadioButton("Dungeon", &iSelectObject, 2);
 			_int iObjectCount = m_ObjectsList.size();
 			ImGui::InputInt("Count", &iObjectCount, 14);
 
@@ -404,7 +404,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			}
 			else if (iSelectObject == 2)
 			{
-				m_eType = TEXT("Decoration");
+				m_eType = TEXT("Dungeon");
 			}
 
 			ImGui::NewLine();
@@ -482,7 +482,8 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			static int iSelectEnvir = 0;
 			ImGui::RadioButton("Tree", &iSelectEnvir, 0); ImGui::SameLine();
 			ImGui::RadioButton("Grass", &iSelectEnvir, 1); ImGui::SameLine();
-			ImGui::RadioButton("Rock", &iSelectEnvir, 2);
+			ImGui::RadioButton("Rock", &iSelectEnvir, 2); ImGui::SameLine();
+			ImGui::RadioButton("Interaction", &iSelectEnvir, 3);
 
 			_int iEnvirCount = m_EnvirList.size();
 			_int iPickingCount = m_vInstancePos.size();
@@ -496,6 +497,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			if(iSelectEnvir == 0){m_eType = TEXT("Tree");}
 			else if (iSelectEnvir == 1)	{m_eType = TEXT("Grass");}
 			else if (iSelectEnvir == 2)	{m_eType = TEXT("Rock");}
+			else if (iSelectEnvir == 3)	{m_eType = TEXT("Interaction");}
 
 			ImGui::Separator();
 			ImGui::NewLine();
@@ -1118,7 +1120,7 @@ HRESULT CImGui_Manager::ImGuizmoMenu()
 		{
 			CTransform* pObjectsTransform = (CTransform*)m_pSelectedDummy->Find_Component(TEXT("Com_Transform"));
 			m_ObjectMatrix = pObjectsTransform->Get_World_Matrix();
-			ImGuizmo::Manipulate(&m_ViewMatrix.m[0][0], &m_ProjMatrix.m[0][0], ImGuizmo::OPERATION::SCALE, ImGuizmo::MODE::WORLD, &m_ObjectMatrix.m[0][0]);
+			//ImGuizmo::Manipulate(&m_ViewMatrix.m[0][0], &m_ProjMatrix.m[0][0], ImGuizmo::OPERATION::SCALE, ImGuizmo::MODE::WORLD, &m_ObjectMatrix.m[0][0]);
 			ImGuizmo::Manipulate(&m_ViewMatrix.m[0][0], &m_ProjMatrix.m[0][0], ImGuizmo::OPERATION::ROTATE, ImGuizmo::MODE::WORLD, &m_ObjectMatrix.m[0][0]);
 			ImGuizmo::Manipulate(&m_ViewMatrix.m[0][0], &m_ProjMatrix.m[0][0], ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::MODE::WORLD, &m_ObjectMatrix.m[0][0]);
 			if (ImGuizmo::IsUsing() == true)
@@ -1140,7 +1142,7 @@ HRESULT CImGui_Manager::ImGuizmoMenu()
 		{
 			CTransform* pMapTransform = (CTransform*)m_pSelectMap->Find_Component(TEXT("Com_Transform"));
 			m_MapMatrix = pMapTransform->Get_World_Matrix();
-			ImGuizmo::Manipulate(&m_ViewMatrix.m[0][0], &m_ProjMatrix.m[0][0], ImGuizmo::OPERATION::SCALE, ImGuizmo::MODE::WORLD, &m_MapMatrix.m[0][0]);
+			//ImGuizmo::Manipulate(&m_ViewMatrix.m[0][0], &m_ProjMatrix.m[0][0], ImGuizmo::OPERATION::SCALE, ImGuizmo::MODE::WORLD, &m_MapMatrix.m[0][0]);
 			ImGuizmo::Manipulate(&m_ViewMatrix.m[0][0], &m_ProjMatrix.m[0][0], ImGuizmo::OPERATION::ROTATE, ImGuizmo::MODE::WORLD, &m_MapMatrix.m[0][0]);
 			ImGuizmo::Manipulate(&m_ViewMatrix.m[0][0], &m_ProjMatrix.m[0][0], ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::MODE::WORLD, &m_MapMatrix.m[0][0]);
 			if (ImGuizmo::IsUsing() == true)
@@ -1609,7 +1611,7 @@ void CImGui_Manager::Search_Map()
 			if (extension == ".hyuntrastatmesh") {
 				char* cstr = new char[strName.length() + 1];
 				strcpy_s(cstr, strName.length() + 1, strName.c_str());
-				Maps[TEXT("Decoration")].push_back(cstr);
+				Maps[TEXT("Dungeon")].push_back(cstr);
 			}
 		}
 	}
@@ -1663,7 +1665,7 @@ void CImGui_Manager::Search_Object()
 
 				char* cstr = new char[strName.length() + 1];
 				strcpy_s(cstr, strName.length() + 1, strName.c_str());
-				Objects[L"Decoration"].push_back(cstr);
+				Objects[L"Dungeon"].push_back(cstr);
 			}
 		}
 	}
@@ -1780,6 +1782,23 @@ void CImGui_Manager::Search_Envir()
 				char* cstr = new char[strName.length() + 1];
 				strcpy_s(cstr, strName.length() + 1, strName.c_str());
 				Envirs[L"Rock"].push_back(cstr);
+
+			}
+		}
+	}
+
+	strFilePath = "../../Client/Bin/Resources/StaticMesh/Environment/Interaction/Mesh";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			string strName = entry.path().stem().string();
+			string extension = entry.path().extension().string();
+
+			if (extension == ".hyuntrastatmesh") {
+				char* cstr = new char[strName.length() + 1];
+				strcpy_s(cstr, strName.length() + 1, strName.c_str());
+				Envirs[L"Interaction"].push_back(cstr);
 
 			}
 		}

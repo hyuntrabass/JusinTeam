@@ -314,6 +314,7 @@ public:
 
 public:
 	class CComponent* Find_Component(const wstring& strComTag) override;
+
 public:
 	HRESULT Add_Info();
 	HRESULT Place_PartModels();
@@ -405,6 +406,7 @@ private:
 
 	_vec4 m_vPos{};
 	_bool m_bIsClimb{};
+	_bool m_bComboZoom{};
 	_bool m_bStartGame{};
 	_vec4 m_SaveCamPos{};
 	_bool m_bReady_Move{};
@@ -421,6 +423,8 @@ private:
 	const _float m_fWalkSpeed{ 1.f };
 	_bool	  m_isInvenActive{ false };
 
+	_bool m_ViewLeftTrail{};
+	_bool m_ViewRightTrail{};
 	_bool m_bPoison{};
 	_bool m_bHitted{};
 	_uint m_iShield{};

@@ -12,6 +12,7 @@ private:
 
 public:
 	const _float& Get_CameraAttackZoom() { return m_fCameraAttackZoom; }
+	const _bool& Get_DirectZoom() { return m_bDirectZoom; }
 	const CAMERA_STATE& Get_CameraState()  const;
 	const _float& Get_ZoomFactor() const;
 	const _vec4& Get_CameraTargetPos() const;
@@ -27,6 +28,7 @@ public:
 	const CAMERA_MODE& Get_CameraModeIndex() const;
 
 	void Set_ZoomFactor(const _float fFactor);
+	void Set_DirectZoom(_bool DirecZoom);
 	void Set_CameraState(const CAMERA_STATE& iIndex);
 	void Set_CameraTargetPos(const _vec4& vPos);
 	void Set_CameraTargetLook(const _vec4& vLook);
@@ -45,6 +47,7 @@ private:
 	_float m_fZoomFactor{ 3.f };
 	_float m_fCameraAttackZoom{};
 	_bool m_bTargetLook{ false };
+	_bool m_bDirectZoom{};
 	_vec4 m_vTarget{};
 	_vec4 m_vTargetLook{};
 	_bool m_AimMode{};
