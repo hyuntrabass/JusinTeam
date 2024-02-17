@@ -68,6 +68,10 @@ void CInfinityTower::Tick(_float fTimeDelta)
 
 	if (PtInRect(&m_pExitButton->Get_Rect(), ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::GamePlay))
 	{
+		for (size_t i = 0; i < TOWER_END; i++)
+		{
+			m_pTowers[i]->Select_Object(false);
+		}
 		m_isActive = false;
 		return;
 	}
@@ -177,7 +181,7 @@ void CInfinityTower::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
-
+	m_pLeftBg->Late_Tick(fTimeDelta);
 
 	for (_uint i = 0; i < 3; i++)
 	{
@@ -192,9 +196,10 @@ void CInfinityTower::Late_Tick(_float fTimeDelta)
 		m_pTowers[i]->Late_Tick(fTimeDelta);
 	}
 	m_pTitle->Late_Tick(fTimeDelta);
-	m_pLeftBg->Late_Tick(fTimeDelta);
+
 	m_pRoundEffect->Late_Tick(fTimeDelta);
 	m_pCloud->Late_Tick(fTimeDelta);
+	m_pExitButton->Late_Tick(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
@@ -275,8 +280,8 @@ HRESULT CInfinityTower::Add_Parts()
 	Button.fDepth = m_fDepth - 0.06f;
 	Button.strText = TEXT("");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Img_Cloud01");
-	Button.vPosition = _vec2(200.f, 40.f);
-	Button.vSize = _vec2(312.f, 190.f);
+	Button.vPosition = _vec2(170.f, 40.f);
+	Button.vSize = _vec2(350.f, 220.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	Button.vTextPosition = _vec2(60.f, 0.f);
 
