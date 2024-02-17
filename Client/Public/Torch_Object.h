@@ -27,6 +27,8 @@ public:
 private:
 	class CEffect_Dummy* m_pFire{ nullptr };
 	_mat m_FireMat{};
+	wstring strPrototype{};
+	_vec3 vFire_Hight{};
 
 public:
 	static CTorch_Object* Create(_dev pDevice, _context pContext);

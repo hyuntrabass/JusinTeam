@@ -24,7 +24,7 @@ HRESULT CTorch_Object::Init_Prototype()
 HRESULT CTorch_Object::Init(void* pArg)
 {
 	m_Info = *(ObjectInfo*)pArg;
-	wstring strPrototype = m_Info.strPrototypeTag;
+	strPrototype = m_Info.strPrototypeTag;
 
 	if (FAILED(__super::Add_Components(strPrototype, m_Info.eObjectType)))
 	{
@@ -46,17 +46,37 @@ HRESULT CTorch_Object::Init(void* pArg)
 	m_pModelCom->Apply_TransformToActor(m_Info.m_WorldMatrix);
 
 	EffectInfo Effect = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"TorchFire_Dun");
-	Effect.pMatrix = &m_FireMat;
+	Effect.pMatrix =  & m_FireMat;
 	Effect.isFollow = true;
 	m_pFire = CEffect_Manager::Get_Instance()->Clone_Effect(Effect);
+
+	if (strPrototype == L"Prototype_Model_Wall_Torch")
+	{
+		vFire_Hight = _vec3(0.f, 1.5f, 0.f);
+	}
+	else if (strPrototype == L"Prototype_Model_Stand_Torch1")
+	{
+		vFire_Hight = _vec3(0.f, 2.f, 0.f);
+	}
+	else if (strPrototype == L"Prototype_Model_Stand_Torch2")
+	{
+		vFire_Hight = _vec3(0.f, 1.f, 0.f);
+	}
+	else if (strPrototype == L"Prototype_Model_Torch")
+	{
+		vFire_Hight = _vec3(0.f, 2.f, 0.f);
+	}
+	else if (strPrototype == L"Prototype_Model_Brazier")
+	{
+		vFire_Hight = _vec3(0.f, 0.5f, 0.f);
+	}
 
 	return S_OK;
 }
 
 void CTorch_Object::Tick(_float fTimeDelta)
 {
-	m_FireMat = _mat::CreateTranslation(m_Info.m_WorldMatrix.Position_vec3() + _vec3(0.f, 1.f, 0.f));
-
+	m_FireMat = _mat::CreateTranslation(m_Info.m_WorldMatrix.Position_vec3());
 	if (m_pFire)
 	{
 		m_pFire->Tick(fTimeDelta);
