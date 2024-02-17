@@ -1838,20 +1838,20 @@ void CPlayer::Move(_float fTimeDelta)
 		}
 	}
 
-	m_ReturnZoomTime += (fTimeDelta * 0.5f);
+	m_ReturnZoomTime += (fTimeDelta);
 
-	if (m_iCurrentSkill_Index == 0 && m_fAttTimer > 0.6f)
+	//if (m_iCurrentSkill_Index == 0 && m_ReturnZoomTime > 0.6f)
+	{
+		m_fAttackZoom = Lerp(m_fAttackZoom, 0.f, 0.02f);
+		m_pCam_Manager->Set_CameraAttackZoom(m_fAttackZoom);
+
+	}
+	/*else if (m_iCurrentSkill_Index != 0 && m_ReturnZoomTime > 1.0f)
 	{
 		m_fAttackZoom = Lerp(m_fAttackZoom, 0.f, 0.04f);
 		m_pCam_Manager->Set_CameraAttackZoom(m_fAttackZoom);
 
-	}
-	else if (m_iCurrentSkill_Index != 0 && m_fSkiilTimer > 1.0f)
-	{
-		m_fAttackZoom = Lerp(m_fAttackZoom, 0.f, 0.04f);
-		m_pCam_Manager->Set_CameraAttackZoom(m_fAttackZoom);
-
-	}
+	}*/
 
 	if (!m_bIsClimb)
 	{
@@ -1991,9 +1991,14 @@ void CPlayer::Common_Attack()
 
 	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 3.f;
-
+	//if (m_fAttackZoom > 0.f)
+	{
+		//m_fAttackZoom -= 0.3f;
+		
+		//m_ReturnZoomTime = 0.7f;
+	}
 	m_iCurrentSkill_Index = 0;
-
+	m_bComboZoom = false;
 	_vec4 vCamLook = m_pGameInstance->Get_CameraLook();
 	vCamLook.y = 0.f;
 	m_pTransformCom->LookAt_Dir(vCamLook);
@@ -2015,7 +2020,6 @@ void CPlayer::Common_Attack()
 			m_Animation.iAnimIndex = Anim_Assassin_Attack02_A;
 			m_fAttTimer = 0.f;
 			m_iAttackCombo++;
-			m_fAttackZoom = 1.f;
 		}
 		break;
 		case 2:
@@ -2023,7 +2027,6 @@ void CPlayer::Common_Attack()
 			m_Animation.iAnimIndex = Anim_Assassin_Attack03_A;
 			m_fAttTimer = 0.f;
 			m_iAttackCombo++;
-			m_fAttackZoom = 1.5f;
 		}
 		break;
 		case 3:
@@ -2032,7 +2035,6 @@ void CPlayer::Common_Attack()
 			m_Animation.iAnimIndex = Anim_Assassin_Attack04_A;
 			m_fAttTimer = 0.f;
 			m_iAttackCombo++;
-			m_fAttackZoom = 2.f;
 		}
 
 		break;
@@ -2310,8 +2312,6 @@ void CPlayer::Cam_AttackZoom(_float fZoom)
 
 	m_fAttackZoom = fZoom;
 
-
-
 	m_pCam_Manager->Set_CameraAttackZoom(m_fAttackZoom);
 
 	m_ReturnZoomTime = 0.f;
@@ -2449,7 +2449,9 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			{
 				if (Index >= 13.f && Index <= 20.f)
 				{
-					Cam_AttackZoom(1.5f);
+					m_fAttackZoom = 1.5;
+					Cam_AttackZoom(m_fAttackZoom);
+					//m_pCam_Manager->Set_DirectZoom(true);
 				}
 
 				if (Index >= 13.f && Index <= 32.f)
@@ -2490,7 +2492,15 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			{
 				if (Index >= 12.5f && Index <= 20.f)
 				{
-					Cam_AttackZoom(1.5f);
+					if (!m_bComboZoom)
+					{
+						/*m_fAttackZoom += 0.9f;
+						Cam_AttackZoom(m_fAttackZoom);*/
+						m_fAttackZoom += 1.f;
+						//Cam_AttackZoom(m_fAttackZoom);
+						m_bComboZoom = true;
+					}
+					//m_pCam_Manager->Set_DirectZoom(true);
 				}
 				if (Index >= 20.5f && Index <= 34.f)
 				{
@@ -2532,7 +2542,13 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			{
 				if (Index >= 13.f && Index <= 20.f)
 				{
-					Cam_AttackZoom(1.5f);
+					if (!m_bComboZoom)
+					{
+						m_fAttackZoom += 1.f;
+						//Cam_AttackZoom(m_fAttackZoom);
+						m_bComboZoom = true;
+					}
+					//m_pCam_Manager->Set_DirectZoom(true);
 				}
 				if (Index >= 15.5f && Index <= 27.f)
 				{
@@ -2575,7 +2591,13 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					m_pTransformCom->Set_Speed(14.f);
 					m_pTransformCom->Go_Straight(fTimeDelta);
-					Cam_AttackZoom(1.5f);
+					if(!m_bComboZoom)
+					{
+						m_fAttackZoom += 1.f;
+						//Cam_AttackZoom(m_fAttackZoom);
+						m_bComboZoom = true;
+					}
+					//m_pCam_Manager->Set_DirectZoom(true);
 				
 				}
 				if (Index >= 15.5f && Index <= 40.f)
@@ -2866,7 +2888,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 	else if (m_eState == Skill4)
 	{
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
-		if (Index >= 10.f && Index < 69.f)
+		if (Index >= 10.f && Index < 75.f)
 		{
 			m_ViewRightTrail = true;
 			m_ViewLeftTrail = true;

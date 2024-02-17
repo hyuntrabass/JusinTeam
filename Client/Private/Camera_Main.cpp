@@ -178,6 +178,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 void CCamera_Main::Late_Tick(_float fTimeDelta)
 {
+	
 }
 
 void CCamera_Main::Camera_Zoom(_float fTimeDelta)
@@ -309,6 +310,7 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 
 		m_AimZoomInTime += fTimeDelta * 1.5f;
 
+		
 		_float CamAttackZoom = m_fLerpDistance - m_pCam_Manager->Get_CameraAttackZoom();
 
 		_float vZoomY = 1.3f - (CamAttackZoom * 0.25f);
@@ -316,7 +318,15 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 			- (m_pTransformCom->Get_State(State::Look) * CamAttackZoom)
 			+ (m_pTransformCom->Get_State(State::Up) * CamAttackZoom * 0.15f);
 
+		if (m_pCam_Manager->Get_DirectZoom())
+		{
+			m_vOriCamPos = vCamPos;
+			m_pCam_Manager->Set_DirectZoom(false);
+		}
+		else
+		{
 		m_vOriCamPos = XMVectorLerp(m_vOriCamPos, vCamPos, 0.3f);
+		}
 
 		_vec4 OriCam{};
 		if (m_AimZoomInTime < 1.f)
