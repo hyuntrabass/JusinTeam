@@ -40,11 +40,11 @@ private:
 	_vec2						m_vDefaultPoint{};
 
 	CGameObject*				m_pTitle{nullptr};
-	CGameObject*				m_pLeftBg{nullptr};
 	CGameObject*				m_pCloud{nullptr};
 	class CTextButton*			m_pExitButton{nullptr};
 
 	class CTextButtonColor*		m_pRoundEffect{ nullptr };
+	CTextButtonColor*			m_pLeftBg{nullptr};
 	CTextButtonColor*			m_pLightening[3];
 
 	class CTower*				m_pTowers[TOWER_END];

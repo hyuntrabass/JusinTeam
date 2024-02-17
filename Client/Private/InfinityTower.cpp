@@ -291,7 +291,7 @@ HRESULT CInfinityTower::Add_Parts()
 	Button.vPosition = _vec2(1230.f, 30.f);
 	Button.vSize = _vec2(70.f, 70.f);
 
-	m_pExitButton = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+	m_pExitButton = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
 	if (not m_pExitButton)
 	{
@@ -307,12 +307,12 @@ HRESULT CInfinityTower::Add_Parts()
 	ColButtonDesc.vSize = _vec2((_float)g_iWinSizeX / 2.f, (_float)g_iWinSizeY);
 	ColButtonDesc.vPosition = _vec2(100.f, (_float)g_ptCenter.y);
 
-	m_pLeftBg = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+	m_pLeftBg = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
 	if (not m_pLeftBg)
 	{
 		return E_FAIL;
 	}
-	dynamic_cast<CTextButtonColor*>(m_pLeftBg)->Set_Pass(VTPass_FadeHorizontal);
+	m_pLeftBg->Set_Pass(VTPass_FadeHorizontal);
 	
 	ColButtonDesc.fDepth = m_fDepth - 0.01f;
 	ColButtonDesc.fAlpha = 0.8f;
