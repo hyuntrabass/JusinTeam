@@ -121,6 +121,7 @@
 #include "Dragon_Boss.h"
 #include "Blackhole.h"
 #include "FirePillar.h"
+#include "Meteor.h"
 
 #include "Human_Boss.h"
 

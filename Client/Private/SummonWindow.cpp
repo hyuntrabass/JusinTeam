@@ -69,7 +69,13 @@ void CSummonWindow::Tick(_float fTimeDelta)
 		m_pButton->Set_Size(140.f, 80.f, 0.3f);
 		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
-			m_isDead = true;
+			if (m_bSetResult)
+			{
+				m_isDead = true;
+				return;
+			}
+			m_bSetResult = true;
+			return;
 		}
 	}
 	else

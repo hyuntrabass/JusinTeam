@@ -92,7 +92,7 @@ public:
 public:
 	void View_Attack_Range();
 	void After_Attack(_float fTimedelta);
-
+	_bool Compute_Angle(_float fAngle);
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
@@ -101,7 +101,10 @@ private:
 	CCollider* m_pCommonAttCollider = { nullptr };
 	class CEffect_Dummy* m_pBaseEffect{ nullptr };
 	class CEffect_Dummy* m_pFrameEffect{ nullptr };
+	class CEffect_Dummy* m_pDimEffect{ nullptr };
 	CTexture* m_pDissolveTextureCom{ nullptr };
+	CTransform* m_pPlayerTransform{ nullptr };
+
 private:
 	STATE m_ePreState = BOSS_STATE_END;
 	STATE m_eState = BOSS_STATE_END;
@@ -116,6 +119,7 @@ private:
 	_bool m_bChangePass{};
 	_float m_fHitTime{};
 	_uint m_iPassIndex{};
+	_uint m_iWeaponPassIndex{};
 	_bool m_bViewWeapon{};
 	_bool m_bAttacked{};
 	_float m_fDissolveRatio{};

@@ -33,6 +33,7 @@ private:
 	class CCamera_Manager* m_pCam_Manager{ nullptr };
 
 private:
+	_bool m_isWorldMap{};
 	_int m_iRotation{ 1 };
 	_float m_fLerpTime{};
 	_vec4 m_vAimCamPos{};
@@ -58,7 +59,7 @@ private:
 
 	_bool m_isFadeReady{};
 	_vec4 m_vOriginalLook{};
-
+	LIGHT_DESC m_Original_Light_Desc{};
 private:
 	_bool m_bSelect{};
 	_bool m_bZoomEnd{};
