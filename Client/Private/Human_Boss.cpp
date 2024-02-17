@@ -27,7 +27,7 @@ HRESULT CHuman_Boss::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-
+	
 	m_pTransformCom->Set_State(State::Pos, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	Safe_AddRef(m_pPlayerTransform);
@@ -74,6 +74,10 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 	{
 		m_pBaseEffect->Tick(fTimeDelta);
 	}
+	if (m_pDimEffect)
+	{
+		m_pDimEffect->Tick(fTimeDelta);
+	}
 	if (!m_bViewWeapon && m_fDissolveRatio < 1.f)
 	{
 		m_fDissolveRatio += fTimeDelta *2.f;
@@ -101,7 +105,10 @@ void CHuman_Boss::Late_Tick(_float fTimeDelta)
 	{
 		m_pBaseEffect->Late_Tick(fTimeDelta);
 	}
-
+	if (m_pDimEffect)
+	{
+		m_pDimEffect->Late_Tick(fTimeDelta);
+	}
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
@@ -255,12 +262,13 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 		{
 			m_Animation.iAnimIndex = BossAnim_attack02;
 			m_Animation.isLoop = false;
-			View_Attack_Range();
+			
 			_vec4 vLook = m_pTransformCom->Get_State(State::Look);
 			vLook.x *= -1;
 			vLook.y = 0;
 			vLook.z *= -1;
 			m_pTransformCom->LookAt_Dir(vLook);
+			View_Attack_Range();
 		}
 			break;
 		case Client::CHuman_Boss::CommonAtt2:
@@ -396,7 +404,10 @@ void CHuman_Boss::View_Attack_Range()
 	{
 		Safe_Release(m_pBaseEffect);
 	}
-
+	if (m_pDimEffect)
+	{
+		Safe_Release(m_pDimEffect);
+	}
 	if (m_pFrameEffect)
 	{
 		Safe_Release(m_pFrameEffect);
@@ -413,21 +424,38 @@ void CHuman_Boss::View_Attack_Range()
 		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_135_Frame");
 		Info.pMatrix = &EffectMatrix;
 		m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_135_Base");
+
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_135_Dim");
 		Info.pMatrix = &EffectMatrix;
+		m_pDimEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		m_fBaseEffectScale = 1.f;
+		m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.24f, 0.f));
+		m_BaseEffectMat = m_BaseEffectOriMat;
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_135_Base");
+		Info.pMatrix = &m_BaseEffectMat;
+		Info.isFollow = true;
 		m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 		break;
 	}
 	case CommonAtt1:
 	{
 		_vec3 vLook = m_pTransformCom->Get_State(State::Look);
-		vLook *= -1.f;
-		EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(180.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.2f, 0.f));
+		EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.2f, 0.f));
 		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_135_Frame");
 		Info.pMatrix = &EffectMatrix;
-		m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_135_Base");
+		//m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_135_Dim");
 		Info.pMatrix = &EffectMatrix;
+		m_pDimEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		m_fBaseEffectScale = 1.f;
+		m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.24f, 0.f));
+		m_BaseEffectMat = m_BaseEffectOriMat;
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_135_Base");
+		Info.pMatrix = &m_BaseEffectMat;
+		Info.isFollow = true;
 		m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 		break;
 	}
@@ -460,6 +488,16 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 	if (m_eState == CommonAtt0)
 	{
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
+		if (Index >= 0.f && Index <= 49.f)
+		{
+	
+			if (m_fBaseEffectScale<30.f)
+			{
+				m_fBaseEffectScale += fTimedelta * 30.f;
+			}
+
+			m_BaseEffectMat = _mat::CreateScale(m_fBaseEffectScale) * m_BaseEffectOriMat;
+		}
 
 		
 		if (Index >= 20.f && Index < 22.f && !m_bViewWeapon)
@@ -472,7 +510,10 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			{
 				Safe_Release(m_pBaseEffect);
 			}
-
+			if (m_pDimEffect)
+			{
+				Safe_Release(m_pDimEffect);
+			}
 			if (m_pFrameEffect)
 			{
 				Safe_Release(m_pFrameEffect);
@@ -499,6 +540,16 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 	else if (m_eState == CommonAtt1)
 	{
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
+		if (Index >= 0.f && Index <= 57.f)
+		{
+
+			if (m_fBaseEffectScale < 30.f)
+			{
+				m_fBaseEffectScale += fTimedelta * 30.f;
+			}
+
+			m_BaseEffectMat = _mat::CreateScale(m_fBaseEffectScale) * m_BaseEffectOriMat;
+		}
 		if (Index >= 8.f && Index < 10.f && !m_bViewWeapon)
 		{
 			m_bViewWeapon = true;
@@ -509,7 +560,10 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			{
 				Safe_Release(m_pBaseEffect);
 			}
-
+			if (m_pDimEffect)
+			{
+				Safe_Release(m_pDimEffect);
+			}
 			if (m_pFrameEffect)
 			{
 				Safe_Release(m_pFrameEffect);
@@ -571,8 +625,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 
 _bool CHuman_Boss::Compute_Angle(_float fAngle)
 {
-	fAngle -= 90.f;
-	fAngle = abs(fAngle);
+	fAngle -= 85.f;
 	_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
 	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
 
@@ -687,6 +740,7 @@ void CHuman_Boss::Free()
 	__super::Free();
 
 	Safe_Release(m_pModelCom);
+	Safe_Release(m_pDimEffect);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pBaseEffect);
 	Safe_Release(m_pRendererCom);

@@ -118,6 +118,9 @@ private:
 	_bool m_bSecondPattern{};
 	_bool m_bChangePass{};
 	_float m_fHitTime{};
+	_mat m_BaseEffectMat{};
+	_mat m_BaseEffectOriMat{};
+	_float m_fBaseEffectScale{};
 	_uint m_iPassIndex{};
 	_uint m_iWeaponPassIndex{};
 	_bool m_bViewWeapon{};
