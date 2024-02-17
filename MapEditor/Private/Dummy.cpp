@@ -213,6 +213,8 @@ HRESULT CDummy::Add_Components()
 			{
 				return E_FAIL;
 			}
+			m_pShaderCom->Set_PassIndex(3);
+
 		}
 		else
 		{

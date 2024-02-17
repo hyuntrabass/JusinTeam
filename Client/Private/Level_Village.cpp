@@ -38,15 +38,74 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_WorldMap"), TEXT("Prototype_GameObject_WorldMap"))))
+
+	// Map
+
 	{
+		MSG_BOX("Failed to Ready Map");
 		return E_FAIL;
 	}
+
+	//if (FAILED(Ready_UI()))
+	//{
+	//	MSG_BOX("Failed to Ready UI");
+	//	return E_FAIL;
+	//}
+	if (FAILED(Ready_Dungeon()))
+
+	if (FAILED(Ready_Torch()))
+		return E_FAIL;
+	}
+	//if (FAILED(Ready_UI()))
+	//{
+	//	MSG_BOX("Failed to Ready UI");
+	//	return E_FAIL;
+	//}
+	if (FAILED(Ready_Dungeon()))
+
+	if (FAILED(Ready_Object()))
+		return E_FAIL;
+	}
+	//if (FAILED(Ready_UI()))
+	//{
+	//	MSG_BOX("Failed to Ready UI");
+	//	return E_FAIL;
+	//}
+	if (FAILED(Ready_Dungeon()))
+
+	if (FAILED(Ready_Torch()))
+		return E_FAIL;
+	}
+	//if (FAILED(Ready_UI()))
+	//{
+	//	MSG_BOX("Failed to Ready UI");
+	//	return E_FAIL;
+	//}
+	if (FAILED(Ready_Dungeon()))
+
+	if (FAILED(Ready_Object()))
+		return E_FAIL;
+	}
+	//if (FAILED(Ready_UI()))
+	//{
+	//	MSG_BOX("Failed to Ready UI");
+	//	return E_FAIL;
+	//}
+	if (FAILED(Ready_Dungeon()))
+
+	if (FAILED(Ready_Torch()))
+		return E_FAIL;
+	}
+	//if (FAILED(Ready_UI()))
+	//{
+	//	MSG_BOX("Failed to Ready UI");
+	//	return E_FAIL;
+	//}
 
 
 	if (FAILED(Ready_Object()))
 	{
-		MSG_BOX("Failed to Ready Object");
+		MSG_BOX("Failed to Ready Torch");
 		return E_FAIL;
 	}
 
@@ -131,9 +190,9 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	}
 }
 
-HRESULT CLevel_Village::Render()
-{
-	return S_OK;
+
+
+HRESULT CLevel_Village::Ready_Torch()
 }
 
 HRESULT CLevel_Village::Ready_Camera()
@@ -141,9 +200,93 @@ HRESULT CLevel_Village::Ready_Camera()
 	if (not m_pGameInstance)
 	{
 		return E_FAIL;
+
+
+HRESULT CLevel_Village::Ready_Map()
+{
+	const TCHAR* pGetPath = TEXT("../Bin/Data/Village_MapData.dat");
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MessageBox(g_hWnd, L"맵 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+		return E_FAIL;
 	}
 
+	_uint MapListSize;
+	inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+
+
+	for (_uint i = 0; i < MapListSize; ++i)
+	{
+		_ulong MapPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+
+		wstring MapPrototype;
+		MapPrototype.resize(MapPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+
+		_mat MapWorldMat;
+		inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+
+		MapInfo MapInfo{};
+		MapInfo.Prototype = MapPrototype;
+		MapInfo.m_Matrix = MapWorldMat;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Village_Map"), &MapInfo)))
+		{
+			MessageBox(g_hWnd, L"맵 불러오기 실패", L"파일 로드", MB_OK);
+			return E_FAIL;
+		}
+	}
 	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_Dungeon()
+{
+	//const TCHAR* pGetPath = TEXT("../Bin/Data/Dungeon.dat");
+
+	//std::ifstream inFile(pGetPath, std::ios::binary);
+
+	//if (!inFile.is_open())
+	//{
+	//	MSG_BOX("던전 데이터 파일 불러오기 실패.");
+	//	return E_FAIL;
+	//}
+
+	//_uint MapListSize;
+	//inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+
+
+	//for (_uint i = 0; i < MapListSize; ++i)
+	//{
+	//	_ulong MapPrototypeSize;
+	//	inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+
+	//	wstring MapPrototype;
+	//	MapPrototype.resize(MapPrototypeSize);
+	//	inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+
+	//	_mat MapWorldMat;
+	//	inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+
+	//	MapInfo MapInfo{};
+	//	MapInfo.Prototype = MapPrototype;
+	//	MapInfo.m_Matrix = MapWorldMat;
+
+	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Dungeon"), &MapInfo)))
+	//	{
+	//		MSG_BOX("던전 생성 실패");
+	//		return E_FAIL;
+	//	}
+	//}
+
+	return S_OK;
+}
+
+
+HRESULT CLevel_Village::Ready_Object()
 }
 
 HRESULT CLevel_Village::Ready_Light()
@@ -151,9 +294,9 @@ HRESULT CLevel_Village::Ready_Light()
 	LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
 	*Light = g_Light_Village;
 
-	return S_OK;
-}
 
+
+HRESULT CLevel_Village::Ready_Torch()
 //HRESULT CLevel_Village::Ready_Player()
 //{
 //	// 플레이어 위치 설정
@@ -161,9 +304,93 @@ HRESULT CLevel_Village::Ready_Light()
 //
 //	std::ifstream inFile(pGetPath, std::ios::binary);
 //
-//	if (!inFile.is_open())
-//	{
-//		MessageBox(g_hWnd, L"../Bin/Data/Player_Pos.dat 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+
+
+HRESULT CLevel_Village::Ready_Map()
+{
+	const TCHAR* pGetPath = TEXT("../Bin/Data/Village_MapData.dat");
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MessageBox(g_hWnd, L"맵 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+		return E_FAIL;
+	}
+
+	_uint MapListSize;
+	inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+
+
+	for (_uint i = 0; i < MapListSize; ++i)
+	{
+		_ulong MapPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+
+		wstring MapPrototype;
+		MapPrototype.resize(MapPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+
+		_mat MapWorldMat;
+		inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+
+		MapInfo MapInfo{};
+		MapInfo.Prototype = MapPrototype;
+		MapInfo.m_Matrix = MapWorldMat;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Village_Map"), &MapInfo)))
+		{
+			MessageBox(g_hWnd, L"맵 불러오기 실패", L"파일 로드", MB_OK);
+			return E_FAIL;
+		}
+	}
+	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_Dungeon()
+{
+	//const TCHAR* pGetPath = TEXT("../Bin/Data/Dungeon.dat");
+
+	//std::ifstream inFile(pGetPath, std::ios::binary);
+
+	//if (!inFile.is_open())
+	//{
+	//	MSG_BOX("던전 데이터 파일 불러오기 실패.");
+	//	return E_FAIL;
+	//}
+
+	//_uint MapListSize;
+	//inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+
+
+	//for (_uint i = 0; i < MapListSize; ++i)
+	//{
+	//	_ulong MapPrototypeSize;
+	//	inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+
+	//	wstring MapPrototype;
+	//	MapPrototype.resize(MapPrototypeSize);
+	//	inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+
+	//	_mat MapWorldMat;
+	//	inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+
+	//	MapInfo MapInfo{};
+	//	MapInfo.Prototype = MapPrototype;
+	//	MapInfo.m_Matrix = MapWorldMat;
+
+	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Dungeon"), &MapInfo)))
+	//	{
+	//		MSG_BOX("던전 생성 실패");
+	//		return E_FAIL;
+	//	}
+	//}
+
+	return S_OK;
+}
+
+
+HRESULT CLevel_Village::Ready_Object()
 //		return E_FAIL;
 //	}
 //
@@ -171,9 +398,9 @@ HRESULT CLevel_Village::Ready_Light()
 //	inFile.read(reinterpret_cast<char*>(&Player_Pos), sizeof(_vec4));
 //
 //	CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
-//	pCamTransform->Set_State(State::Pos, _vec4(-17.9027f, 18.f, 125.f, 1.f));
-//	pCamTransform->LookAt_Dir(_vec4(-0.541082f, 0.548757f, 0.637257f, 0.f));
-//	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+
+
+HRESULT CLevel_Village::Ready_Torch()
 //	pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 2.f, 0.f));
 //	pPlayerTransform->LookAt_Dir(_vec4(-0.541082f, 0.f, 0.637257f, 0.f));
 //
@@ -181,6 +408,91 @@ HRESULT CLevel_Village::Ready_Light()
 //
 //	return S_OK;
 //}
+
+
+HRESULT CLevel_Village::Ready_Map()
+{
+	const TCHAR* pGetPath = TEXT("../Bin/Data/Village_MapData.dat");
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MessageBox(g_hWnd, L"맵 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+		return E_FAIL;
+	}
+
+	_uint MapListSize;
+	inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+
+
+	for (_uint i = 0; i < MapListSize; ++i)
+	{
+		_ulong MapPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+
+		wstring MapPrototype;
+		MapPrototype.resize(MapPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+
+		_mat MapWorldMat;
+		inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+
+		MapInfo MapInfo{};
+		MapInfo.Prototype = MapPrototype;
+		MapInfo.m_Matrix = MapWorldMat;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Village_Map"), &MapInfo)))
+		{
+			MessageBox(g_hWnd, L"맵 불러오기 실패", L"파일 로드", MB_OK);
+			return E_FAIL;
+		}
+	}
+	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_Dungeon()
+{
+	//const TCHAR* pGetPath = TEXT("../Bin/Data/Dungeon.dat");
+
+	//std::ifstream inFile(pGetPath, std::ios::binary);
+
+	//if (!inFile.is_open())
+	//{
+	//	MSG_BOX("던전 데이터 파일 불러오기 실패.");
+	//	return E_FAIL;
+	//}
+
+	//_uint MapListSize;
+	//inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+
+
+	//for (_uint i = 0; i < MapListSize; ++i)
+	//{
+	//	_ulong MapPrototypeSize;
+	//	inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+
+	//	wstring MapPrototype;
+	//	MapPrototype.resize(MapPrototypeSize);
+	//	inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+
+	//	_mat MapWorldMat;
+	//	inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+
+	//	MapInfo MapInfo{};
+	//	MapInfo.Prototype = MapPrototype;
+	//	MapInfo.m_Matrix = MapWorldMat;
+
+	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Dungeon"), &MapInfo)))
+	//	{
+	//		MSG_BOX("던전 생성 실패");
+	//		return E_FAIL;
+	//	}
+	//}
+
+	return S_OK;
+}
+
 
 HRESULT CLevel_Village::Ready_Object()
 {
@@ -190,7 +502,7 @@ HRESULT CLevel_Village::Ready_Object()
 
 	if (!inFile.is_open())
 	{
-		MSG_BOX("오브젝트 파일을 찾지 못했습니다.");
+		MSG_BOX("Torch 파일을 찾지 못했습니다.");
 		return E_FAIL;
 	}
 
@@ -216,7 +528,7 @@ HRESULT CLevel_Village::Ready_Object()
 		ObjectInfo.eObjectType = Object_Building;
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Torch_Object"), &ObjectInfo)))
 		{
-			MSG_BOX("오브젝트 불러오기 실패");
+			MSG_BOX("Torch 불러오기 실패");
 			return E_FAIL;
 		}
 	}
