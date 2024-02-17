@@ -98,6 +98,8 @@ public:
 	void Set_Riding(VEHICLE_TYPE eVCType, Riding_Type eRidingType) { m_CurRidingType[eVCType] = eRidingType; }
 	void Set_NewRiding(Riding_Type eRidingType) { m_eRidingType = eRidingType; }
 	void Set_Pet(_bool isPet) { m_isPet = isPet; }
+	void Open_InfinityTower(_bool isOpen) { m_isInfinityTower = isOpen; }
+	_bool IsInfinityTower() { return m_isInfinityTower; }
 
 	const _bool& Get_IsPetDie() const { return m_isPet; }
 
@@ -144,6 +146,7 @@ private:
 	MOUSESTATE		m_eMouseState{ M_DEFAULT };
 	WEAPON_TYPE		m_eWeaponType{ WP_BOW };
 
+	_bool			m_isInfinityTower{ false };
 	_bool			m_isPet{ false };
 	_bool			m_isMpState{ false };
 	_bool			m_isHeal{ false };

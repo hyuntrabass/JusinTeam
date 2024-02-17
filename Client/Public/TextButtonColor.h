@@ -83,6 +83,7 @@ public:
 	const _vec2 Get_TransPosition() const { return _vec2(m_fX, m_fY); }
 	const _vec2 Get_Size() const { return _vec2(m_fSizeX, m_fSizeY); }
 	const _vec4& Get_Color() const { return m_vColor; }
+	const _float& Get_Alpha() const { return m_fAlpha; }
 	void Set_Position(_vec2 vPos);
 	void Set_Text(const wstring strText) { m_strText = strText; }
 	void Set_Alpha(const _float fAlpha) { m_fAlpha = fAlpha; }

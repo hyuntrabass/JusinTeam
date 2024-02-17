@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -195,6 +195,7 @@
     <ClInclude Include="..\Public\HpBoss.h" />
     <ClInclude Include="..\Public\HpMonster.h" />
     <ClInclude Include="..\Public\Human_Boss.h" />
+    <ClInclude Include="..\Public\InfinityTower.h" />
     <ClInclude Include="..\Public\Inven.h" />
     <ClInclude Include="..\Public\InvenFrame.h" />
     <ClInclude Include="..\Public\InvenWindow.h" />
@@ -282,6 +283,7 @@
     <ClInclude Include="..\Public\TextButtonColor.h" />
     <ClInclude Include="..\Public\Thief04.h" />
     <ClInclude Include="..\Public\Torch_Object.h" />
+    <ClInclude Include="..\Public\Tower.h" />
     <ClInclude Include="..\Public\Trigger.h" />
     <ClInclude Include="..\Public\Trigger_Manager.h" />
     <ClInclude Include="..\Public\TrilobiteA.h" />
@@ -336,6 +338,7 @@
     <ClCompile Include="..\Private\ExpBar.cpp" />
     <ClCompile Include="..\Private\FirePillar.cpp" />
     <ClCompile Include="..\Private\Human_Boss.cpp" />
+    <ClCompile Include="..\Private\InfinityTower.cpp" />
     <ClCompile Include="..\Private\Meteor.cpp" />
     <ClCompile Include="..\Private\NineSlice.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />
@@ -430,6 +433,7 @@
     <ClCompile Include="..\Private\TextButtonColor.cpp" />
     <ClCompile Include="..\Private\Thief04.cpp" />
     <ClCompile Include="..\Private\Torch_Object.cpp" />
+    <ClCompile Include="..\Private\Tower.cpp" />
     <ClCompile Include="..\Private\Trigger.cpp" />
     <ClCompile Include="..\Private\Trigger_Manager.cpp" />
     <ClCompile Include="..\Private\TrilobiteA.cpp" />
