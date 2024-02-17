@@ -93,6 +93,7 @@ public:
 	void View_Attack_Range();
 	void After_Attack(_float fTimedelta);
 	_bool Compute_Angle(_float fAngle);
+
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
@@ -102,6 +103,7 @@ private:
 	class CEffect_Dummy* m_pBaseEffect{ nullptr };
 	class CEffect_Dummy* m_pFrameEffect{ nullptr };
 	class CEffect_Dummy* m_pDimEffect{ nullptr };
+	class CEffect_Dummy* m_pAttackEffect{ nullptr };
 	CTexture* m_pDissolveTextureCom{ nullptr };
 	CTransform* m_pPlayerTransform{ nullptr };
 
@@ -119,6 +121,8 @@ private:
 	_bool m_bChangePass{};
 	_float m_fHitTime{};
 	_mat m_BaseEffectMat{};
+	_mat m_AttEffectMat{};
+	_mat m_AttEffectOriMat{};
 	_mat m_BaseEffectOriMat{};
 	_float m_fBaseEffectScale{};
 	_uint m_iPassIndex{};
