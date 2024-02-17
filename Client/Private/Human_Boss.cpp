@@ -30,7 +30,7 @@ HRESULT CHuman_Boss::Init(void* pArg)
 
 	m_pTransformCom->Set_State(State::Pos, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-	//Safe_AddRef(m_pPlayerTransform);
+	Safe_AddRef(m_pPlayerTransform);
 	PxCapsuleControllerDesc ControllerDesc{};
 	ControllerDesc.height = 2.f; // 높이(위 아래의 반구 크기 제외
 	ControllerDesc.radius = 1.f; // 위아래 반구의 반지름
