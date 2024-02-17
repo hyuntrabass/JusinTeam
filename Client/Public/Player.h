@@ -406,6 +406,7 @@ private:
 
 	_vec4 m_vPos{};
 	_bool m_bIsClimb{};
+	_bool m_bComboZoom{};
 	_bool m_bStartGame{};
 	_vec4 m_SaveCamPos{};
 	_bool m_bReady_Move{};
