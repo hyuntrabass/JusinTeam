@@ -116,7 +116,7 @@ void CArrow::Tick(_float fTimeDelta)
 		if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer) or 
 			m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
-			m_pCollider->Change_Radius(3.f);
+			m_pCollider->Set_Radius(3.f);
 			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
 
 			_mat EffectMat = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
