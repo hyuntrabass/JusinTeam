@@ -255,6 +255,18 @@ void CVTFModel::Set_Animation(ANIM_DESC Animation_Desc)
 	m_AnimDesc = Animation_Desc;
 }
 
+const _bool CVTFModel::IsAnimationFinished(_uint iAnimIndex) const
+{
+	if (m_PlayAnimDesc.eCurrent.iAnimIndex == iAnimIndex)
+	{
+		return m_isFinished;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 HRESULT CVTFModel::Bind_Material(CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType)
 {
 	_uint iMatIndex = m_Meshes[iMeshIndex]->Get_MatIndex();
@@ -347,6 +359,30 @@ HRESULT CVTFModel::Render_Instancing(CVIBuffer_Mesh_Instance*& pInstanceBuffer, 
 		}
 
 		if (FAILED(pShader->Begin(pShader->Get_PassIndex())))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(pInstanceBuffer->Render(m_Meshes[i])))
+			return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CVTFModel::Render_Shadow_Instancing(CVIBuffer_Mesh_Instance*& pInstanceBuffer, CShader*& pShader)
+{
+	if (FAILED(Bind_Animation(pShader)))
+		return E_FAIL;
+
+	for (_uint i = 0; i < m_Meshes.size(); ++i)
+	{
+		if (FAILED(Bind_Material(pShader, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(pShader->Begin(2)))
 		{
 			return E_FAIL;
 		}

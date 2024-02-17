@@ -1021,14 +1021,14 @@ HRESULT CGameInstance::Add_MRT(const wstring& strMRTTag, const wstring& strTarge
 
 	return m_pRenderTarget_Manager->Add_MRT(strMRTTag, strTargetTag);
 }
-HRESULT CGameInstance::Begin_MRT(const wstring& strMRTTag, ID3D11DepthStencilView* pDepthStencillView)
+HRESULT CGameInstance::Begin_MRT(const wstring& strMRTTag, ID3D11DepthStencilView* pDepthStencillView, const _bool shouldClear)
 {
 	if (!m_pRenderTarget_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pRenderTarget_Manager is NULL");
 	}
 
-	return m_pRenderTarget_Manager->Begin_MRT(strMRTTag, pDepthStencillView);
+	return m_pRenderTarget_Manager->Begin_MRT(strMRTTag, pDepthStencillView, shouldClear);
 }
 HRESULT CGameInstance::End_MRT()
 {

@@ -50,6 +50,7 @@ public:
 	_bool Get_TimeStop() { return m_bTimeStop; }
 
 	ITEM Find_Item(wstring& strItemName);
+	//ITEM Find_Item(WEAPON_TYPE eType, _uint iPartIndex);
 
 	HRESULT Set_Item(wstring& strItemName, _uint iNum = 1);
 	HRESULT Set_Inven(CGameObject* pGameObject);
@@ -70,13 +71,12 @@ public:
 	ITEM Set_Item_In_FullSlot(CItemBlock::ITEMSLOT eSlot, CItem* pItem, _int* iItemNum, _int* iChangeItemNum = nullptr);
 	void Delete_Item_In_Slot(CItemBlock::ITEMSLOT eSlot);
 	void Use_Item_In_Slot(CItemBlock::ITEMSLOT eSlot);
+	void Delete_Item(INVEN_TYPE eInvenType, wstring& strName);
 
 	void Set_RadarPos(TYPE eType, CTransform* pTransform);
 	void Delete_RadarPos(TYPE eType, CTransform* pTransform);
 	const vector<CTransform*> Get_RadarPosition(TYPE eType) const;
 
-	HRESULT Set_CustomPart(PART_TYPE eType, _uint iIndex);
-	HRESULT Set_WeaponType(WEAPON_TYPE eWpType);
 	void Set_HairColor(_vec4 vColor) { m_vHairColor = vColor; }
 	void Set_Picking_UI(_bool isPicking) { m_isPicking = isPicking; }
 	void Set_FullScreenUI(_bool isShowing) { m_isShowing = isShowing; }
@@ -84,6 +84,9 @@ public:
 	void Set_Exp_ByPercent(_float fExp);
 	HRESULT Set_Coin(_int iCoin);
 	HRESULT Set_Diamond(_uint iDia);
+	HRESULT Set_WeaponType(WEAPON_TYPE eWpType);
+	HRESULT Set_CustomPart(PART_TYPE eType, _uint iIndex);
+	HRESULT Set_WearableItem(WEARABLE_TYPE eType, ITEM eItemDesc);
 	_bool Set_CurrentPlayerPos(_vec4 vPos);
 	void Set_MouseState(MOUSESTATE eState) { m_eMouseState = eState; }
 	void Set_Hp(_int iHp, _int iMaxHp) { m_vHp = _vec2((_float)iHp, (_float)iMaxHp); }
@@ -91,9 +94,15 @@ public:
 	void Set_isBoss(_bool isBoss) { m_isBoss = isBoss; }
 	void Set_isTargeting(_bool isTargeting) { m_isTargeting = isTargeting; }
 	void Set_TargetPos(_vec4 vTargetPos) { m_vTargetPos = vTargetPos; }
-	void Set_Riding(VEHICLE_TYPE eVCType, Riding_Type eRidingRype) { m_CurRidingType[eVCType] = eRidingRype; }
+
+	void Set_Riding(VEHICLE_TYPE eVCType, Riding_Type eRidingType) { m_CurRidingType[eVCType] = eRidingType; }
+	void Set_NewRiding(Riding_Type eRidingType) { m_eRidingType = eRidingType; }
+	void Set_Pet(_bool isPet) { m_isPet = isPet; }
+
+	const _bool& Get_IsPetDie() const { return m_isPet; }
 
 	const Riding_Type& Get_Riding(VEHICLE_TYPE eVCType) const { return m_CurRidingType[eVCType]; }
+	const Riding_Type& Get_NewRiding() const { return m_eRidingType; }
 
 	void Set_MpState(_bool isMp, _uint iMp = 0);
 	void Set_Heal(_bool isHeal, _uint iHeal = 0);
@@ -111,7 +120,7 @@ public:
 	const _vec4& Get_InvenPos() const { return m_vInvenPos; }
 	const _vec4& Get_LastPlayerPos() const { return m_vPlayerPos; }
 	const _uint& Get_CustomPart (PART_TYPE eType);
-	const _uint& Get_WeaponType(PART_TYPE eType, WEAPON_TYPE* wpType);
+	const _uint& Get_WeaponType(PART_TYPE eType, WEAPON_TYPE* wpType, _uint* iExtraStatus = nullptr);
 	const _uint& Get_Coin() const { return m_iCoin; }
 	const _uint& Get_Diamond() const { return m_iDiamond; }
 	const _float2& Get_Exp() const { return m_fExp; }
@@ -135,6 +144,7 @@ private:
 	MOUSESTATE		m_eMouseState{ M_DEFAULT };
 	WEAPON_TYPE		m_eWeaponType{ WP_BOW };
 
+	_bool			m_isPet{ false };
 	_bool			m_isMpState{ false };
 	_bool			m_isHeal{ false };
 	_bool			m_isTargeting{ false };
@@ -147,6 +157,8 @@ private:
 	_bool			m_bTimeStop{ false };
 	_bool			m_isBoss{ false };
 
+
+	Riding_Type		m_eRidingType{ Type_End };
 	Riding_Type     m_CurRidingType[VC_END];
 	_uint			m_iLevel{ 1 };
 	_uint			m_iHeal{  };

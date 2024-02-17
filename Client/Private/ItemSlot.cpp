@@ -184,7 +184,7 @@ const wstring CItemSlot::Get_ItemName()
 	return m_pItem->Get_ItemDesc().strName;
 }
 
-const ITEM_USAGE& CItemSlot::Get_ItemUsage()
+const ITEM_USAGE CItemSlot::Get_ItemUsage()
 {
 	if (m_pItem == nullptr)
 	{

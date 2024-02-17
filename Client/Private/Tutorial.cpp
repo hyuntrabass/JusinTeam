@@ -38,7 +38,7 @@ HRESULT CTutorial::Init(void* pArg)
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
-	CUI_Manager::Get_Instance()->Set_TimeStop(true);
+	//CUI_Manager::Get_Instance()->Set_TimeStop(true);
 	if (FAILED(Add_Parts()))
 	{
 		return E_FAIL;

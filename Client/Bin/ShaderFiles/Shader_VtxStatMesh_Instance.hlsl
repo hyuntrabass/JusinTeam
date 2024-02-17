@@ -62,33 +62,6 @@ VS_OUT VS_Main(VS_IN Input)
     return Output;
 }
 
-VS_OUT VS_OutLine(VS_IN Input)
-{
-    VS_OUT Output = (VS_OUT) 0;
-	
-    matrix matWV, matWVP;
-    
-    matWV = mul(Input.mWorld, g_ViewMatrix);
-    matWVP = mul(matWV, g_ProjMatrix);
-	
-    vector vPos = vector(Input.vPos, 1.f);
-    vector vNor = vector(Input.vNor, 0.f);
-    
-    float fDist = length(g_vCamPos - mul(vPos, Input.mWorld));
-    
-    float fThickness = clamp(fDist / 300.f, 0.03f, 0.2f);
-    
-    vPos += normalize(vNor) * (fThickness + 0.5 * g_bSelected);
-    
-    Output.vPos = mul(vPos, matWVP);
-    Output.vNor = normalize(mul(vNor, Input.mWorld));
-    Output.vTex = Input.vTex;
-    Output.vWorldPos = mul(vector(Input.vPos, 1.f), Input.mWorld);
-    Output.vProjPos = Output.vPos;
-	
-    return Output;
-}
-
 struct VS_WATER_OUT
 {
     vector vPos : SV_Position; // == float4
@@ -293,23 +266,6 @@ PS_OUT_DEFERRED PS_Main_AlphaTest(PS_IN Input)
     return Output;
 }
 
-PS_OUT_DEFERRED PS_OutLine(PS_IN Input)
-{
-    PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
-    
-    vector vLook = g_vCamPos - Input.vWorldPos;
-    float DotProduct = dot(normalize(vLook), normalize(Input.vNor));
-    if (DotProduct > 0.f)
-    {
-        discard;
-    }
-    
-    Output.vDiffuse = g_vColor;
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-
-    return Output;
-}
-
 struct PS_SHADOW_IN
 {
     vector vPos : SV_Position;
@@ -416,15 +372,15 @@ technique11 DefaultTechnique_Shader_StatInstance
 
     pass OutLine
     {
-        SetRasterizerState(RS_CCW);
-        SetDepthStencilState(DSS_Default, 0);
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_DrawStencil, 1);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-        VertexShader = compile vs_5_0 VS_OutLine();
+        VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_OutLine();
+        PixelShader = compile ps_5_0 PS_Main();
     }
 
     pass AlphaTestMeshes

@@ -11,55 +11,59 @@ public:
 
 	enum HUMANBOSS_ANIM
 	{
-	HumanBoss_Attack01, // 창으로 정면 2번 치기
-	HumanBoss_Attack01_A,
-	HumanBoss_Attack02, // 철퇴로 3연타 
-	HumanBoss_Attack02_A,
-	HumanBoss_Attack03, // 창 빙빙 돌리고 때리기
-	HumanBoss_Attack03_A,
-	HumanBoss_Attack04, //철퇴로 멀리 때리기
-	HumanBoss_Attack04_A, // 앞쪽에 뭐 소환하는 느낌
-	HumanBoss_Attack05, // 공중에 소리지름 
-	HumanBoss_Attack05_A, //창던지기
-	HumanBoss_Attack06, // 점프후 주변 휘두름
-	HumanBoss_Attack06_A,
-	HumanBoss_Attack07,
-	HumanBoss_Attack07_A,
-	HumanBoss_Attack08,
-	HumanBoss_Attack08_A,
-	HumanBoss_Attack09, //주변 창으로 공격
-	HumanBoss_Attack09_A,
-	HumanBoss_Attack10, //철퇴 돌리고 위로 휘두름
-	HumanBoss_Die,
-	HumanBoss_Die_A,
-	HumanBoss_Idle,
-	HumanBoss_Idle_A,
-	HumanBoss_Roar,
-	HumanBoss_Roar_A,
-	HumanBoss_Run,
-	HumanBoss_Run_A,
-	HumanBoss_Spawn,
-	HumanBoss_Spawn_A,
-	HumanBoss_Talk,
-	HumanBoss_Talk_A,
-	HumanBoss_Walk,
-	HumanBoss_Walk_A,
-	HumanBoss_AnimEnd
+	BossAnim_attack01, // 전방 낫으로 공격
+	BossAnim_attack02,	// 반대 방향으로 공격
+	BossAnim_attack03,	// 2연속 공격
+	BossAnim_attack04, // 주변 전부 공격
+	BossAnim_attack05, // 카운터?
+	BossAnim_attack06_End,
+	BossAnim_attack06_Loop,
+	BossAnim_attack06_Start,
+	BossAnim_attack06_Start001,
+	BossAnim_attack07,
+	BossAnim_attack08,
+	BossAnim_attack08_2,
+	BossAnim_attack09_A, //반 장판
+	BossAnim_attack09_B,
+	BossAnim_attack10_A,
+	BossAnim_attack10_B,
+	BossAnim_attack11_A,
+	BossAnim_attack11_B,
+	BossAnim_attack12_A,
+	BossAnim_attack12_B,
+	BossAnim_attack13,
+	BossAnim_BossView_Idle,	//레이저
+	BossAnim_CardTestattack01,
+	BossAnim_CardTestattack02,
+	BossAnim_CardTestattack03,
+	BossAnim_Die,
+	BossAnim_Idle, 
+	BossAnim_Rage,
+	BossAnim_Roar,
+	BossAnim_Run,
+	BossAnim_Run2,
+	BossAnim_Spawn,
+	BossAnim_Spawn_Idle,
+	BossAnim_Walk,
+	BossAnim_End
 	};
 
 	enum STATE
 	{
-		SPEAR1, // 창 정면 2연타
-		SPEAR2, // 창 돌리면서 주변 공격
-		SPEAR3,	// 창 꽂고 전방에 전기? 공격
-		SPEAR4,	// 창 던지기
-		MACE1,	// 철퇴 정면 3연타
-		MACE2,	// 철퇴로 플레이어쪽 중거리 공격
-		MACE3, //
-		IDLE,
-		WALK,
-		RUN,
-		DIE,
+		CommonAtt0,	// 전방
+		CommonAtt1,	// 후방
+		CommonAtt2,	// 전후방
+		CounterAtt,
+		Hide_Start,
+		Hide,
+		HideAtt,
+		Razer,
+		Hit,
+		Idle,
+		Walk,
+		Roar,
+		Run,
+		Die,
 		Spwan,
 		BOSS_STATE_END
 	};
@@ -84,13 +88,23 @@ public:
 	HRESULT Add_Collider();
 	void Update_Collider();
 	virtual void Set_Damage(_int iDamage, _uint MonAttType = 0) override;
+
+public:
+	void View_Attack_Range();
+	void After_Attack(_float fTimedelta);
+	_bool Compute_Angle(_float fAngle);
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
-	CCollider* m_pBodyColliderCom = { nullptr };
-	CCollider* m_pAttackColliderCom = { nullptr };
-																																																																
+	CCollider* m_pBodyCollider = { nullptr };
+	CCollider* m_pCommonAttCollider = { nullptr };
+	class CEffect_Dummy* m_pBaseEffect{ nullptr };
+	class CEffect_Dummy* m_pFrameEffect{ nullptr };
+	class CEffect_Dummy* m_pDimEffect{ nullptr };
+	CTexture* m_pDissolveTextureCom{ nullptr };
+	CTransform* m_pPlayerTransform{ nullptr };
+
 private:
 	STATE m_ePreState = BOSS_STATE_END;
 	STATE m_eState = BOSS_STATE_END;
@@ -105,6 +119,10 @@ private:
 	_bool m_bChangePass{};
 	_float m_fHitTime{};
 	_uint m_iPassIndex{};
+	_uint m_iWeaponPassIndex{};
+	_bool m_bViewWeapon{};
+	_bool m_bAttacked{};
+	_float m_fDissolveRatio{};
 public:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

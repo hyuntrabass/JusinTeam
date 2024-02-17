@@ -292,7 +292,7 @@ public:
 		_int Max_Hp{ 1000 };
 		_int Max_Mp{ 1000 };
 		_int Current_Mp{ 1000 };
-		_int Attack{ 100 };
+		_int Attack{ 100 } ;
 		_int Critical{};
 		_int Critical_Dmg{ 150 };
 		_int Armor{};
@@ -312,6 +312,8 @@ public:
 	virtual HRESULT Render() override;
 	virtual HRESULT Render_Shadow() override;
 
+public:
+	class CComponent* Find_Component(const wstring& strComTag) override;
 public:
 	HRESULT Add_Info();
 	HRESULT Place_PartModels();
@@ -378,6 +380,7 @@ private:
 private:
 	ANIM_DESC m_Animation{};
 	PLAYER_STATUS m_Status{};
+	PLAYER_STATUS m_EquipStatus{};
 	ANIM_LIST m_BowSkill[5]{};
 	ANIM_LIST m_SwordSkill[5]{};
 	Riding_State m_Riding_State{};

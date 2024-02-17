@@ -59,6 +59,11 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 
 	m_fAlpha = m_Effect.fAlphaInit;
 
+	if (not m_Effect.bSkipBloom)
+	{
+		m_shouldRenderBlur = true;
+	}
+
 	return S_OK;
 }
 
@@ -216,10 +221,6 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 	}
 	__super::Compute_CamDistance();
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
-	if (not m_Effect.bSkipBloom)
-	{
-		m_pRendererCom->Add_RenderGroup(RG_BlendBlur, this);
-	}
 }
 
 HRESULT CEffect_Dummy::Render()
@@ -479,6 +480,8 @@ CGameObject* CEffect_Dummy::Clone(void* pArg)
 
 void CEffect_Dummy::Free()
 {
+	m_pGameInstance->Delete_Light(LEVEL_STATIC, m_strLightTag);
+
 	__super::Free();
 
 	Safe_Release(m_pUnDissolveTextureCom);

@@ -69,37 +69,6 @@ VS_OUT VS_Main(VS_IN Input)
     return Output;
 }
 
-VS_OUT VS_Main_OutLine(VS_IN Input)
-{
-    VS_OUT Output = (VS_OUT) 0;
-	
-    matrix matWV, matWVP;
-    float fW = 1.f - (Input.vBlendWeight.x + Input.vBlendWeight.y + Input.vBlendWeight.z);
-    matrix Bone = g_BoneMatrices[Input.vBlendIndices.x] * Input.vBlendWeight.x +
-    g_BoneMatrices[Input.vBlendIndices.y] * Input.vBlendWeight.y +
-    g_BoneMatrices[Input.vBlendIndices.z] * Input.vBlendWeight.z +
-    g_BoneMatrices[Input.vBlendIndices.w] * fW;
-    
-    vector vPos = mul(vector(Input.vPos, 1.f), Bone);
-    vector vNor = mul(vector(Input.vNor, 0.f), Bone);
-    
-    float fDist = length(g_vCamPos - mul(vPos, g_WorldMatrix));
-    
-    float fThickness = clamp(fDist / 300.f, 0.001f, 0.05f);
-    
-    vPos += normalize(vNor) * fThickness;
-    
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
-    matWVP = mul(matWV, g_ProjMatrix);
-	
-    Output.vPos = mul(vPos, matWVP);
-    Output.vNor = normalize(mul(vNor, g_WorldMatrix));
-    Output.vTex = Input.vTex;
-    Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
-    Output.vProjPos = Output.vPos;
-   
-    return Output;
-}
 
 struct VS_SHADOW_OUT
 {
@@ -226,26 +195,6 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     return Output;
 }
 
-PS_OUT_DEFERRED PS_Main_OutLine(PS_IN Input)
-{
-    PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
-    
-    vector vLook = g_vCamPos - Input.vWorldPos;
-    float DotProduct = dot(normalize(vLook), normalize(Input.vNor));
-    if (DotProduct > 0.f)
-    {
-        discard;
-    }
-    
-    vector vViewPos = mul(Input.vWorldPos, g_ViewMatrix);
-
-    
-    Output.vDiffuse = vector(0.f, 0.f, 0.f, 1.f);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
-    
-    return Output;
-}
-
 struct PS_SHADOW_IN
 {
     vector vPos : SV_Position;
@@ -272,7 +221,7 @@ PS_OUT_DEFERRED PS_Main_Dissolve(PS_IN Input)
     {
         discard;
     }
-    
+  
     float3 vNormal;
     if (g_HasNorTex)
     {
@@ -312,6 +261,7 @@ PS_OUT_DEFERRED PS_Main_Rim(PS_IN Input)
     {
         discard;
     }
+
     
     float3 vNormal;
     if (g_HasNorTex)
@@ -350,11 +300,12 @@ PS_OUT_DEFERRED PS_Main_Rim(PS_IN Input)
 }
 
 
+
 technique11 DefaultTechnique_Shader_AnimMesh
 {
     pass Default
     {
-        SetRasterizerState(RS_None);
+        SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -367,20 +318,20 @@ technique11 DefaultTechnique_Shader_AnimMesh
 
     pass OutLine
     {
-        SetRasterizerState(RS_None);
-        SetDepthStencilState(DSS_Default, 0);
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_DrawStencil, 1);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-        VertexShader = compile vs_5_0 VS_Main_OutLine();
+        VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main_OutLine();
+        PixelShader = compile ps_5_0 PS_Main();
     }
 
     pass Shadow
     {
-        SetRasterizerState(RS_None);
+        SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -393,7 +344,7 @@ technique11 DefaultTechnique_Shader_AnimMesh
 
     pass Dissolve
     {
-        SetRasterizerState(RS_None);
+        SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -406,7 +357,7 @@ technique11 DefaultTechnique_Shader_AnimMesh
 
     pass RimLight
     {
-        SetRasterizerState(RS_None);
+        SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -417,4 +368,16 @@ technique11 DefaultTechnique_Shader_AnimMesh
         PixelShader = compile ps_5_0 PS_Main_Rim();
     }
 
+    pass DefaultNoCull
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main();
+    }
 };

@@ -370,7 +370,7 @@ PS_OUT PS_Main_Sprite_Diff_Mask(PS_IN Input)
 
     Output.vColor.xyz = g_Texture.Sample(LinearSampler, vUV).xyz;
     
-    Output.vColor.a = vMask.r;
+    Output.vColor.a = vMask.r * vMask.a;
     Output.vColor.a *= Input.fDissolveRatio;
 
     return Output;
@@ -401,8 +401,24 @@ PS_OUT PS_Main_Sprite_Diff_Mask_Dissolve(PS_IN Input)
 
     Output.vColor.xyz = g_Texture.Sample(LinearSampler, vUV).xyz;
     
-    Output.vColor.a = vMask.r;
+    Output.vColor.a = vMask.r * vMask.a;
 
+    return Output;
+}
+
+PS_OUT PS_Main_Color_Alpha(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    Output.vColor = g_vColor;
+    vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
+    if (vMask.r < 0.1f)
+    {
+        discard;
+    }
+    
+    Output.vColor.a = vMask.r * Input.fDissolveRatio * saturate(g_fAlpha);
+    
     return Output;
 }
 
@@ -822,6 +838,19 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Sprite_Diff_Mask_Dissolve();
+    }
+
+    pass Particle_Color_Alpha
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = compile gs_5_0 GS_MAIN();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Color_Alpha();
     }
 
 };

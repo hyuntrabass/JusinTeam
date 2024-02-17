@@ -1807,6 +1807,7 @@ HRESULT CImgui_Manager::SaveFile()
 
 					_uint iBoneIndex = EffectDescs[i].iBoneIndex;
 					Fileout.write(reinterpret_cast<_char*>(&iBoneIndex), sizeof(_uint));
+					EffectDescs[i].OffsetMatrix._44 = 1.f;
 					_mat OffsetMatrix = EffectDescs[i].OffsetMatrix;
 					Fileout.write(reinterpret_cast<_char*>(&OffsetMatrix), sizeof(_mat));
 					_bool IsDeleteRotateToBone = EffectDescs[i].IsDeleteRotateToBone;
@@ -1892,6 +1893,7 @@ HRESULT CImgui_Manager::SaveFile()
 
 					_uint iBoneIndex = EffectDescs[i].iBoneIndex;
 					Fileout.write(reinterpret_cast<_char*>(&iBoneIndex), sizeof(_uint));
+					EffectDescs[i].OffsetMatrix._44 = 1.f;
 					_mat OffsetMatrix = EffectDescs[i].OffsetMatrix;
 					Fileout.write(reinterpret_cast<_char*>(&OffsetMatrix), sizeof(_mat));
 					_bool IsDeleteRotateToBone = EffectDescs[i].IsDeleteRotateToBone;
@@ -2301,6 +2303,7 @@ HRESULT CImgui_Manager::UpdateFile()
 
 						_uint iBoneIndex = EffectDescs[i].iBoneIndex;
 						Fileout.write(reinterpret_cast<_char*>(&iBoneIndex), sizeof(_uint));
+						EffectDescs[i].OffsetMatrix._44 = 1.f;
 						_mat OffsetMatrix = EffectDescs[i].OffsetMatrix;
 						Fileout.write(reinterpret_cast<_char*>(&OffsetMatrix), sizeof(_mat));
 						_bool IsDeleteRotateToBone = EffectDescs[i].IsDeleteRotateToBone;

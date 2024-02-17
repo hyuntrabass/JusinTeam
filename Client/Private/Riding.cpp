@@ -145,8 +145,8 @@ HRESULT CRiding::Init(void* pArg)
 	if (m_CurrentIndex == Nihilir)
 	{
 		PxCapsuleControllerDesc ControllerDesc{};
-		ControllerDesc.height = 3.0f; // 높이(위 아래의 반구 크기 제외
-		ControllerDesc.radius = 2.2f; // 위아래 반구의 반지름
+		ControllerDesc.height = 2.0f; // 높이(위 아래의 반구 크기 제외
+		ControllerDesc.radius = 1.5f; // 위아래 반구의 반지름
 		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
 		ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
 		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
@@ -205,19 +205,26 @@ void CRiding::Tick(_float fTimeDelta)
 		return;
 	}
 
-	if (m_CurrentIndex == Horse or m_eState == Riding_Glide)
-	{
+	
 		if (!m_isDead)
 		{
 			m_fDissolveRatio = 0.f;
 		}
 		else
 		{
-			_vec3 vPos = m_pTransformCom->Get_State(State::Pos) + _vec4(0.f, 1.f, 0.f, 0.f);
-			m_pTransformCom->Set_Position(vPos);
+			if(m_CurrentIndex==Nihilir)
+			{
+				_vec3 vPos = m_pTransformCom->Get_State(State::Pos) + _vec4(0.f, 2.5f, 0.f, 0.f);
+				m_pTransformCom->Set_Position(vPos);
+			}
+			else
+			{
+				_vec3 vPos = m_pTransformCom->Get_State(State::Pos) + _vec4(0.f, 1.f, 0.f, 0.f);
+				m_pTransformCom->Set_Position(vPos);
+			}
 			m_bDelete = true;
 		}
-	}
+	
 	/*else
 	{
 		if (m_fDissolveRatio >= 0.f && !m_isDead)
@@ -330,7 +337,22 @@ HRESULT CRiding::Render()
 			HasNorTex = true;
 		}
 
+		_bool HasMaskTex{};
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Normals)))
+		{
+			HasNorTex = false;
+		}
+		else
+		{
+			HasNorTex = true;
+		}
+
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}

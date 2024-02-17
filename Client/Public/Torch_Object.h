@@ -24,10 +24,7 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
-	ObjectInfo Get_Info() const { return m_Info; }
-
-
-private:;
+private:
 	class CEffect_Dummy* m_pFire{ nullptr };
 	_mat m_FireMat{};
 	wstring strPrototype{};

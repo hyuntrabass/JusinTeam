@@ -73,7 +73,7 @@ HRESULT CPlayer::Init(void* pArg)
 	m_pLeft_Trail[3] = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 	m_pRight_Trail[3] = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 
-	Desc.vColor = Colors::MediumVioletRed;
+	Desc.vColor = _vec4(1.f, 0.5f, 0.1f, 1.f);
 	m_pLeft_Trail[4] = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 	m_pRight_Trail[4] = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 
@@ -122,6 +122,7 @@ void CPlayer::Tick(_float fTimeDelta)
 	if (!m_bFirstVillage && m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_VILLAGE)
 	{
 		m_eState = Idle;
+		m_bIsClimb = false;
 		m_bFirstVillage = true;
 	}
 	if (m_bHide && m_fDissolveRatio < 1.f)
@@ -275,6 +276,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		{
 			WEAPON_TYPE eWpType{};
 			_uint iWpIdx = CUI_Manager::Get_Instance()->Get_WeaponType(eType, &eWpType);
+
 			Change_Weapon(eWpType, (WEAPON_INDEX)iWpIdx);
 
 		}
@@ -301,6 +303,7 @@ void CPlayer::Tick(_float fTimeDelta)
 					Riding_Desc Desc{};
 					Desc.Type = m_Current_GroundRiding;
 					Summon_Riding(Desc);
+					m_eState = Mount;
 				}
 			}
 			else
@@ -312,13 +315,13 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_V))
 	{
+		
 		if (!m_bIsMount)
 		{
 			m_Current_AirRiding = CUI_Manager::Get_Instance()->Get_Riding(VC_FLY);
 			if (m_Current_AirRiding != Type_End)
 			{
 				m_bIsMount = true;
-
 				Riding_Desc Desc{};
 				Desc.Type = m_Current_AirRiding;
 				Summon_Riding(Desc);
@@ -724,6 +727,24 @@ HRESULT CPlayer::Render_Shadow()
 
 
 	return S_OK;
+}
+
+CComponent* CPlayer::Find_Component(const wstring& strComTag)
+{
+	if(!m_bIsMount)
+	{
+		auto& it = m_Components.find(strComTag);
+		if (it == m_Components.end())
+		{
+			return nullptr;
+		}
+
+		return it->second;
+	}
+	else
+	{
+		return m_pRiding->Find_Component(strComTag);
+	}
 }
 
 HRESULT CPlayer::Add_Info()
@@ -1185,11 +1206,11 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 			}
 		}
 
-		if ((m_eState == KnockDown))
+		if (m_eState == KnockDown or m_bIsMount)
 		{
 			return;
 		}
-
+		
 		switch (MonAttType)
 		{
 		case MonAtt_Hit:
@@ -1290,6 +1311,8 @@ void CPlayer::Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex)
 		m_Current_Weapon = PartsType;
 		m_bWeapon_Unequip = false;
 	}
+
+	m_Status.Attack = m_EquipStatus.Attack + 100;
 }
 
 
@@ -1652,6 +1675,7 @@ void CPlayer::Move(_float fTimeDelta)
 							Riding_Desc Desc{};
 							Desc.Type = m_Current_AirRiding;
 							Desc.bGlide = true;
+							m_eState = Mount_Fly;
 							Summon_Riding(Desc);
 						}
 					}
@@ -1821,14 +1845,14 @@ void CPlayer::Move(_float fTimeDelta)
 
 	if (m_iCurrentSkill_Index == 0 && m_fAttTimer > 1.0f)
 	{
-		_float fZoom = Lerp(m_fAttackZoom, 0.f, m_ReturnZoomTime);
-		m_pCam_Manager->Set_CameraAttackZoom(fZoom);
+		m_fAttackZoom = Lerp(m_fAttackZoom, 0.f, 0.1f);
+		m_pCam_Manager->Set_CameraAttackZoom(m_fAttackZoom);
 
 	}
 	else if (m_iCurrentSkill_Index != 0 && m_fSkiilTimer > 1.0f)
 	{
-		_float fZoom = Lerp(m_fAttackZoom, 0.f, m_ReturnZoomTime);
-		m_pCam_Manager->Set_CameraAttackZoom(fZoom);
+		m_fAttackZoom = Lerp(m_fAttackZoom, 0.f, 0.1f);
+		m_pCam_Manager->Set_CameraAttackZoom(m_fAttackZoom);
 
 	}
 
@@ -2167,6 +2191,7 @@ void CPlayer::Skill3_Attack()
 		m_hasJumped = false;
 		m_iSuperArmor = { 1.f };
 		m_fSkiilTimer = 0.f;
+		m_fSkillSpeed = 15.f;
 	}
 	else if (m_Current_Weapon == WP_BOW)
 	{
@@ -2352,6 +2377,8 @@ void CPlayer::Return_Attack_IdleForm()
 }
 void CPlayer::After_CommonAtt(_float fTimeDelta)
 {
+	_float Index = m_pModelCom->Get_CurrentAnimPos();
+
 	if (m_Current_Weapon == WP_SWORD)
 	{
 		if (m_fAttTimer > 0.2f && m_fAttTimer < 0.35f)
@@ -2360,27 +2387,30 @@ void CPlayer::After_CommonAtt(_float fTimeDelta)
 			{
 				m_pTransformCom->Set_Speed(5.f);
 				m_pTransformCom->Go_Straight(fTimeDelta);
-				Cam_AttackZoom(0.7f);
-
+				Cam_AttackZoom(1.5f);
 			}
 			else if (m_iAttackCombo == 2)
 			{
 				m_pTransformCom->Set_Speed(3.f);
 				m_pTransformCom->Go_Straight(fTimeDelta);
-				Cam_AttackZoom(1.2f);
+				Cam_AttackZoom(1.5f);
 			}
 			else if (m_iAttackCombo == 3)
 			{
 				m_pTransformCom->Set_Speed(3.f);
 				m_pTransformCom->Go_Straight(fTimeDelta);
-				Cam_AttackZoom(1.7f);
+				Cam_AttackZoom(1.5f);
 			}
 			else if (m_iAttackCombo == 4)
 			{
 				m_pTransformCom->Set_Speed(14.f);
 				m_pTransformCom->Go_Straight(fTimeDelta);
-				Cam_AttackZoom(2.2f);
+				Cam_AttackZoom(1.5f);
 			}
+		}
+		else
+		{
+			
 		}
 	}
 	else if (m_Current_Weapon == WP_BOW)
@@ -2472,7 +2502,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 					if (m_bAttacked)
 					{
-						m_pCam_Manager->Set_ShakeCam(true, 0.2f);
+						m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 					}
 
 				}
@@ -2505,7 +2535,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						}
 						if (m_bAttacked)
 						{
-							m_pCam_Manager->Set_ShakeCam(true, 0.2f);
+							m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 						}
 						m_fAttTimer = 0.45f;
 
@@ -2535,7 +2565,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						Check_Att_Collider(AT_Sword_Common);
 						if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Common]))
 						{
-							m_pGameInstance->Set_TimeRatio(0.3f);
+							m_pGameInstance->Set_TimeRatio(0.01f);
 							m_bAttacked = true;
 
 						}
@@ -2546,9 +2576,13 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						m_pGameInstance->Set_TimeRatio(1.f);
 					}
 				}
+				else
+				{
+					m_pGameInstance->Set_TimeRatio(1.f);
+				}
 				if (m_bAttacked)
 				{
-					m_pCam_Manager->Set_ShakeCam(true, 0.2f);
+					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 				}
 			}
 		}
@@ -2579,7 +2613,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					}
 					if (m_bAttacked)
 					{
-						m_pCam_Manager->Set_ShakeCam(true, 0.2f);
+						m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 					}
 				}
 
@@ -2600,7 +2634,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 						}
 					}
-					m_pCam_Manager->Set_ShakeCam(true, 2.f);
+					m_pCam_Manager->Set_ShakeCam(true,2.0f);
 				}
 				else
 				{
@@ -2627,13 +2661,13 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
-		if (Index >= 5.f && Index < 9.f)
+		if (Index >= 5.f && Index < 17.f)
 		{
-			Cam_AttackZoom(1.3f);
+			Cam_AttackZoom(2.6f);
 		}
 		if (Index >= 11.f && Index <= 13.f)
 		{
-			Cam_AttackZoom(2.6f);
+			//Cam_AttackZoom(2.6f);
 			m_fSkiilTimer = 0.8f;
 			if (!m_bAttacked)
 			{
@@ -2642,7 +2676,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					m_pGameInstance->Set_TimeRatio(0.4f);
 					m_bAttacked = true;
-					m_pCam_Manager->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 
 				}
 			}
@@ -2660,7 +2694,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					m_pGameInstance->Set_TimeRatio(0.4f);
 					m_bAttacked = true;
-					m_pCam_Manager->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 				}
 
 			}
@@ -2694,7 +2728,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					m_pGameInstance->Set_TimeRatio(0.4f);
 					m_bAttacked = true;
-					m_pCam_Manager->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 					m_fSkillSpeed = 3.f;
 				}
 			}
@@ -2715,7 +2749,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					m_pGameInstance->Set_TimeRatio(0.4f);
 					m_bAttacked = true;
 					m_fSkillSpeed = 3.f;
-					m_pCam_Manager->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 				}
 
 			}
@@ -2734,7 +2768,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					m_pGameInstance->Set_TimeRatio(0.4f);
 					m_bAttacked = true;
 					m_fSkillSpeed = 3.f;
-					m_pCam_Manager->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 				}
 
 			}
@@ -2753,7 +2787,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					m_pGameInstance->Set_TimeRatio(0.4f);
 					m_bAttacked = true;
 					m_fSkillSpeed = 3.f;
-					m_pCam_Manager->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true, 1.0f);
 				}
 
 			}
@@ -2763,14 +2797,12 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			m_pGameInstance->Set_TimeRatio(1.f);
 		}
 	}
-
 	else if (m_eState == Skill3)
 	{
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
 
 		if (Index >= 2.f && Index < 12.f)
 		{
-			Cam_AttackZoom(0.5f);
 			m_bHide = true;
 		}
 		else if (Index >= 13.f && Index < 15.f)
@@ -2779,8 +2811,8 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		}
 		else if (Index >= 15.f && Index <= 27.f)
 		{
-
-			m_pTransformCom->Set_Speed(15.f);
+			Cam_AttackZoom(2.5f);
+			m_pTransformCom->Set_Speed(m_fSkillSpeed);
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
 
@@ -2792,14 +2824,12 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				Check_Att_Collider(AT_Sword_Skill3);
 				if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Skill3]))
 				{
-					m_pGameInstance->Set_TimeRatio(0.2f);
+					m_pGameInstance->Set_TimeRatio(0.5f);
 					m_bAttacked = true;
-					m_pCam_Manager->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
+					m_fSkillSpeed = 0.f;
 				}
-
 			}
-
-
 		}
 		else if (Index > 29.f && Index <= 31.f)
 		{
@@ -2812,9 +2842,10 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				Check_Att_Collider(AT_Sword_Skill3);
 				if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Skill3]))
 				{
-					m_pGameInstance->Set_TimeRatio(0.2f);
 					m_bAttacked = true;
-					m_pCam_Manager->Set_ShakeCam(true);
+					m_pCam_Manager->Set_ShakeCam(true, 1.5f);
+					Cam_AttackZoom(3.f);
+					m_fSkillSpeed = 0.f;
 				}
 
 			}
@@ -2830,11 +2861,11 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
 		if (Index >= 14.f && Index <= 20.f)
 		{
-			m_pGameInstance->Set_TimeRatio(0.1f);
+			m_pGameInstance->Set_TimeRatio(0.3f);
 		}
 		else if (Index >= 26.f && Index <= 30.f)
 		{
-			m_pGameInstance->Set_TimeRatio(0.1f);
+			m_pGameInstance->Set_TimeRatio(0.3f);
 			m_fSkiilTimer = 0.f;
 		}
 		else if (Index >= 35.f && Index <= 40.f)
@@ -2844,12 +2875,12 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		}
 		else if (Index >= 56.f && Index <= 59.f)
 		{
-			m_pGameInstance->Set_TimeRatio(0.1f);
+			m_pGameInstance->Set_TimeRatio(0.3f);
 
 		}
 		else if (Index >= 67.f && Index <= 70.f)
 		{
-			m_pGameInstance->Set_TimeRatio(0.1f);
+			m_pGameInstance->Set_TimeRatio(0.3f);
 
 		}
 		else
@@ -2868,7 +2899,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				}
 
 			}
-
+												
 			if (!m_pCam_Manager->Get_AimMode())
 			{
 				m_SaveCamPos = m_pCameraTransform->Get_State(State::Pos);
@@ -2877,7 +2908,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 			//if (m_bAttacked)
 			{
-				m_pCam_Manager->Set_ShakeCam(true, 0.2f);
+				m_pCam_Manager->Set_ShakeCam(true, 0.5f);
 			}
 			m_pCam_Manager->Set_AimMode(true, _vec3(-0.8f, 2.0f, 1.2f));
 
@@ -2900,16 +2931,12 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			}
 			//if (m_bAttacked)
 			{
-				m_pCam_Manager->Set_ShakeCam(true, 0.2f);
+				m_pCam_Manager->Set_ShakeCam(true, 0.5f);
 			}
 			m_pCam_Manager->Set_AimMode(true, _vec3(0.8f, 2.0f, 1.2f));
 			//m_pCameraTransform->LookAt(m_pTransformCom->Get_CenterPos());
 		}
-		else if (Index >= 33.f && Index <= 34.f)
-		{
-			m_pCam_Manager->Set_AimMode(false);
-		}
-		else if (Index >= 41.f && Index <= 44.f)
+		else if (Index >= 33.f && Index <= 35.f)
 		{
 			m_pCam_Manager->Set_AimMode(false);
 			m_bAttacked = false;
@@ -2926,16 +2953,15 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			}
 			//if (m_bAttacked)
 			{
-				m_pCam_Manager->Set_ShakeCam(true, 0.2f);
+				m_pCam_Manager->Set_ShakeCam(true, 0.5f);
 			}
-			m_pCam_Manager->Set_AimMode(false);
 			Cam_AttackZoom(3.6f);
 		}
 		else if (Index >= 59.f && Index <= 62.f)
 		{
 			m_bAttacked = false;
 		}
-		else if (Index >= 67.f && Index <= 68.f)
+		else if (Index >= 67.f && Index <= 69.f)
 		{
 			if (!m_bAttacked)
 			{
@@ -2947,11 +2973,12 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			}
 			//if (m_bAttacked)
 			{
-				m_pCam_Manager->Set_ShakeCam(true, 0.2f);
+				m_pCam_Manager->Set_ShakeCam(true, 0.5f);
 			}
 			Cam_AttackZoom(4.4f);
 		}
-		else if (Index > 40.f)
+
+		/*if (Index > 40.f)
 		{
 			_vec4 vLerpPos{};
 			vLerpPos = XMVectorLerp(m_pCameraTransform->Get_State(State::Pos), m_SaveCamPos, 0.1f);
@@ -2959,7 +2986,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			_vec4 vLerpLook{};
 			vLerpLook = XMVectorLerp(m_pCameraTransform->Get_State(State::Look), m_SaveCamLook, 0.2f);
 			m_pCameraTransform->LookAt_Dir(vLerpLook);
-		}
+		}*/
 	}
 
 }
@@ -3079,7 +3106,6 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		if (Index >= 2.f && Index < 50.f)
 		{
 			Cam_AttackZoom(-2.f);
-
 		}
 		if (Index >= 26.f && Index <= 27.f)
 		{
@@ -3122,6 +3148,7 @@ void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
 	{
 		type.world = world;
 		type.vLook = m_pTransformCom->Get_State(State::Look);
+		type.iDamage = m_Status.Attack + rand() % 30;
 		if (m_iAttackCombo == 4)
 		{
 			type.Att_Type = AT_Bow_SkillR;
@@ -3150,6 +3177,7 @@ void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
 		type.world = world;
 		type.vLook = m_pTransformCom->Get_State(State::Look);
 		type.Att_Type = AT_Bow_Skill1;
+		type.iDamage = m_Status.Attack + rand() % 30 + 30;
 		if (m_bLockOn)
 		{
 			type.MonCollider = m_pGameInstance->Get_Nearest_MonsterCollider();
@@ -3168,8 +3196,12 @@ void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
 	{
 		type.world = world;
 		type.vLook = m_pTransformCom->Get_State(State::Look);
-		type.vLook.y -= 0.2f;
+		if (!m_bLockOn)
+		{
+			type.vLook.y -= 0.2f;
+		}
 		type.Att_Type = AT_Bow_Skill2;
+		type.iDamage = m_Status.Attack + rand() % 30 + 30;
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
 		{
 			return;
@@ -3190,6 +3222,7 @@ void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
 	break;
 	case Client::AT_Bow_Skill3:
 	{
+
 		m_bArrowRain_Start = true;
 		m_iArrowRain = 0;
 	}
@@ -3364,6 +3397,7 @@ void CPlayer::Arrow_Rain()
 	if (m_iArrowRain < 80)
 	{
 		Arrow_Type Type{};
+		Type.iDamage = m_Status.Attack + rand() % 50 + 30;
 		Type.Att_Type = AT_Bow_Skill3;
 		_float random = (_float)(rand() % 70);
 		_int randommos = rand() % 2;
@@ -4159,7 +4193,7 @@ HRESULT CPlayer::Add_Components()
 	}
 
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
-	CollDesc.vExtents = _vec3(1.2f, 2.f, 1.2f);
+	CollDesc.vExtents = _vec3(1.4f, 2.f, 1.4f);
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.2f, 0.4f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
@@ -4173,26 +4207,24 @@ HRESULT CPlayer::Add_Components()
 
 
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
-	CollDesc.vExtents = _vec3(2.f, 2.f, 1.2f);
-	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.2f, 1.f);
+	CollDesc.vExtents = _vec3(2.f, 2.f, 1.6f);
+	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.2f, 0.6f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Skill1_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Skill1]), &CollDesc)))
 	{
 		return E_FAIL;
 	}
 
-	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
-	CollDesc.vExtents = _vec3(1.5f, 2.0f, 0.6f);
-	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.3f, 0.6f);
+	CollDesc.vExtents = _vec3(1.5f, 2.0f, 0.7f);
+	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.3f, 0.5f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Parrying"), reinterpret_cast<CComponent**>(&m_pParryingCollider), &CollDesc)))
 	{
 		return E_FAIL;
 	}
 
-	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
-	CollDesc.vExtents = _vec3(0.65f, 2.f, 1.5f);
-	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.2f, 1.f);
+	CollDesc.vExtents = _vec3(0.8f, 2.f, 1.8f);
+	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.2f, 0.5f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Skill3_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Skill3]), &CollDesc)))
 	{
@@ -4205,7 +4237,7 @@ HRESULT CPlayer::Add_Components()
 	{
 		return E_FAIL;
 	}
-	CollDesc.vExtents = _vec3(2.3f, 2.f, 2.3f);
+	CollDesc.vExtents = _vec3(3.f, 2.f, 3.f);
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.2f, 0.2f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Skill4_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Skill4]), &CollDesc)))

@@ -168,6 +168,8 @@ namespace Engine
 		DefPass_Blur,
 		DefPass_SSAO,
 		DefPass_HDR,
+		DefPass_Stencil,
+		DefPass_Outline,
 	};
 
 	enum Effect_Type
@@ -176,6 +178,15 @@ namespace Engine
 		ET_RECT,
 		ET_MESH,
 		ET_END
+	};
+
+	enum OutlineColor 
+	{
+		OutlineColor_None,
+		OutlineColor_White,
+		OutlineColor_Yellow,
+		OutlineColor_Red,
+		OutlineColor_End
 	};
 }
 

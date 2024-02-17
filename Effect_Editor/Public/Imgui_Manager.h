@@ -127,7 +127,7 @@ private:
 	const _int& Compute_TextureIndex(const wstring& strTexture);
 	const _int& Compute_ModelIndex(const string& strModel);
 
-	EffectInfo Load_Data(_bool isAdd = false);
+	EffectInfo Load_Data(_bool isAdd = false, _bool isQuick = false);
 	void Load_OldData();
 	HRESULT Export_Data(EffectInfo& Info);
 	HRESULT Override_Data(EffectInfo& Info);

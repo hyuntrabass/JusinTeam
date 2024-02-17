@@ -226,6 +226,7 @@ namespace Client
 	{
 		D_MOUSE,
 		D_FADE,
+		D_WINDOW,
 		D_LOADING,
 		D_ALERT,
 		D_INVEN,
@@ -258,6 +259,7 @@ namespace Client
 		ITEM_SWORD,
 		ITEM_BOW,
 		ITEM_INGREDIENT,
+		ITEM_PET,
 		ITEM_NOTYPE,
 		ITEMTYPEEND
 	};
@@ -326,6 +328,7 @@ namespace Client
 		MonAtt_KnockDown,
 		MonAtt_Stun,
 		MonAtt_Poison,
+		MonAtt_Pull,
 		Parrying_Succescc,
 		MonAtt_End
 	};
@@ -385,6 +388,7 @@ namespace Client
 		AnimPass_Shadow,
 		AnimPass_Dissolve,
 		AnimPass_Rim,
+		AnimPass_DefaultNoCull,
 	};
 
 	enum StaticMeshPass
@@ -469,6 +473,7 @@ namespace Client
 		VTPass_HPBoss,
 		VTPass_MaskColorMove,
 		VTPass_ChangeBright,
+		VTPass_Move,
 		VTPass_End
 	};
 
@@ -506,6 +511,7 @@ namespace Client
 		InstPass_Particle_Sprite_DiffMask_Dissolve_Trail,
 		InstPass_Particle_Sprite_DiffMask_RandomIndex_Trail,
 		InstPass_Particle_Sprite_DiffMask_RandomIndex_Dissolve_Trail,
+		InstPass_Particle_MaskColor_Alpha,
 		InstPass_End,
 	};
 #pragma endregion

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SummonWindow.h"
 #include "NineSlice.h"
 #include "Vehicle.h"
 #include "VehicleBook.h"
@@ -116,8 +117,14 @@
 #include "Missile.h"
 #include "Tentacle.h"
 #include "XBeam.h"
-#include "Human_Boss.h"
+
 #include "Dragon_Boss.h"
+#include "Blackhole.h"
+#include "FirePillar.h"
+#include "Meteor.h"
+
+#include "Human_Boss.h"
+
 
 // Pet
 #include "Pet_Cat.h"

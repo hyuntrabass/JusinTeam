@@ -30,6 +30,7 @@ public:
 	const _uint& Get_NumMeshes() const {
 		return m_iNumMeshes;
 	}
+	const _bool IsAnimationFinished(_uint iAnimIndex) const;
 
 	_int Get_InstanceID() { return m_iInstanceID; }
 	PLAYANIM_DESC& Get_PlayAnimDesc() { return m_PlayAnimDesc; }
@@ -42,6 +43,7 @@ public:
 	HRESULT Render(_uint iMeshIndex);
 
 	HRESULT Render_Instancing(class CVIBuffer_Mesh_Instance*& pInstanceBuffer, class CShader*& pShader);
+	HRESULT Render_Shadow_Instancing(class CVIBuffer_Mesh_Instance*& pInstanceBuffer, class CShader*& pShader);
 
 private:
 	ModelType m_eType = ModelType::End;

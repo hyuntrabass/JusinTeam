@@ -95,12 +95,16 @@ HRESULT CTextButtonColor::Render()
 	{
 		return E_FAIL;
 	}
-	m_vTextColor.w = m_fAlpha;
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x + 1.f, m_fY + m_vTextPosition.y), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y + 1.f), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y/*  - 0.5f*/), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y), m_fFontSize, m_vTextColor);
+	if (m_strText != TEXT(""))
+	{
+		m_vTextColor.w = m_fAlpha;
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x + 1.f, m_fY + m_vTextPosition.y), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y + 1.f), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y/*  - 0.5f*/), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y), m_fFontSize, m_vTextColor);
+
+	}
 
 	return S_OK;
 }
@@ -166,6 +170,25 @@ HRESULT CTextButtonColor::Bind_ShaderResources()
 				return E_FAIL;
 			}
 		}
+	}	
+	else if (m_ePass == VTPass_Move)
+	{
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fx", &m_fMoveX, sizeof(_float))))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fy", &m_fMoveY, sizeof(_float))))
+		{
+			return E_FAIL;
+		}
+
+		if (m_strTexture != TEXT(""))
+		{
+			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+			{
+				return E_FAIL;
+			}
+		}
 	}
 	if (m_ePass == VTPass_UI_Alpha)
 	{
@@ -222,6 +245,35 @@ HRESULT CTextButtonColor::Bind_ShaderResources()
 			}
 		}
 	}
+	else  if (m_ePass == VTPass_Bright)
+	{
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fx", &m_fMoveX, sizeof(_float))))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fy", &m_fMoveY, sizeof(_float))))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fBrightFactor", &m_fFactor, sizeof(_float))))
+		{
+			return E_FAIL;
+		}
+		if (m_strTexture != TEXT(""))
+		{
+			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+			{
+				return E_FAIL;
+			}
+		}
+		if (m_strTexture2 != TEXT(""))
+		{
+			if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 	else  if (m_ePass == VTPass_MaskColorMove)
 	{
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_fx", &m_fMoveX, sizeof(_float))))
@@ -233,6 +285,24 @@ HRESULT CTextButtonColor::Bind_ShaderResources()
 			return E_FAIL;
 		}
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof(_vec4))))
+		{
+			return E_FAIL;
+		}
+		if (m_strTexture != TEXT(""))
+		{
+			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+	else  if (m_ePass == VTPass_Background_Mask)
+	{
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fx", &m_fMoveX, sizeof(_float))))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fy", &m_fMoveY, sizeof(_float))))
 		{
 			return E_FAIL;
 		}
@@ -269,9 +339,6 @@ HRESULT CTextButtonColor::Bind_ShaderResources()
 		}
 	}
 
-
-
-
 	return S_OK;
 }
 
@@ -299,6 +366,11 @@ void CTextButtonColor::Set_Position(_vec2 vPos)
   (LONG)(m_fX + m_fSizeX * 0.5f),
   (LONG)(m_fY + m_fSizeY * 0.5f)
 	};
+}
+
+void CTextButtonColor::Rotate_Button(_vec4 vAxis, _float fAngle)
+{
+	m_pTransformCom->Rotation(vAxis, fAngle);
 }
 
 CTextButtonColor* CTextButtonColor::Create(_dev pDevice, _context pContext)

@@ -1,8 +1,10 @@
 #include "Dragon_Boss.h"
 
 #include "Camera_Manager.h"
+#include "Effect_Manager.h"
+#include "Effect_Dummy.h"
 
-const _float CDragon_Boss::m_fAttackRange = 8.f;
+const _float CDragon_Boss::m_fAttackRange = 10.f;
 
 CDragon_Boss::CDragon_Boss(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -63,6 +65,11 @@ void CDragon_Boss::Tick(_float fTimeDelta)
 		Kill();
 		m_pGameInstance->Delete_CollisionObject(this);
 		m_pTransformCom->Delete_Controller();
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_RIGHT))
+	{
+		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Blackhole"), TEXT("Prototype_GameObject_Blackhole"));
 	}
 
 	Init_State(fTimeDelta);
@@ -192,8 +199,15 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 			m_Animation.fAnimSpeedRatio = 2.f;
 
 			m_fIdleTime = 0.f;
+			m_fTime = 0.f;
+			m_fMeteorTime = 0.f;
+
 			m_bSelectAttackPattern = false;
 
+			m_bAttacked1 = false;
+			m_bAttacked2 = false;
+
+			m_bCreateObject = false;
 			break;
 
 		case Client::CDragon_Boss::STATE_ROAR:
@@ -212,7 +226,7 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 
 			break;
 
-		case Client::CDragon_Boss::STATE_RIGHT_ATTACK:
+		case Client::CDragon_Boss::STATE_RIGHT_SLASH:
 			m_Animation.iAnimIndex = OUROBOROS_ATTACK01;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
@@ -226,17 +240,32 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 
 			break;
 
-		case Client::CDragon_Boss::STATE_SHORT_ROAR:
+		case Client::CDragon_Boss::STATE_SHOOT_FIRE:
 			m_Animation.iAnimIndex = OUROBOROS_ATTACK03;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
 
+			{
+				_mat EffectMatrix = _mat::CreateScale(25.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) 
+					* _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.2f, 0.f)));
+
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Frame");
+				Info.pMatrix = &EffectMatrix;
+				m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Base");
+				Info.pMatrix = &EffectMatrix;
+				m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+			}
+
 			break;
 
-		case Client::CDragon_Boss::STATE_LEFT_ATTACK:
+		case Client::CDragon_Boss::STATE_BLACKHOLE:
 			m_Animation.iAnimIndex = OUROBOROS_ATTACK04;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
+
+			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Blackhole"), TEXT("Prototype_GameObject_Blackhole"));
 
 			break;
 
@@ -247,31 +276,46 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 
 			break;
 
-		case Client::CDragon_Boss::STATE_FLY_FIRE:
+		case Client::CDragon_Boss::STATE_UNKNOWN:
 			m_Animation.iAnimIndex = OUROBOROS_ATTACK06_START;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
 
 			break;
 
-		case Client::CDragon_Boss::STATE_FIRE_PILLAR:
+		case Client::CDragon_Boss::STATE_RAGE:
 			m_Animation.iAnimIndex = OUROBOROS_ATTACK07;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
 
 			break;
 
-		case Client::CDragon_Boss::STATE_SHOOT_FIRE:
+		case Client::CDragon_Boss::STATE_FIRE_PILLAR:
 			m_Animation.iAnimIndex = OUROBOROS_ATTACK08;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
 
+			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_FirePillar"), TEXT("Prototype_GameObject_FirePillar"));
+
 			break;
 
-		case Client::CDragon_Boss::STATE_SOAR:
+		case Client::CDragon_Boss::STATE_FLY_FIRE:
 			m_Animation.iAnimIndex = OUROBOROS_ATTACK09;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
+
+			{
+				_mat EffectMatrix = _mat::CreateScale(15.f) * _mat::CreateRotationX(XMConvertToRadians(90.f))
+					* _mat::CreateTranslation(_vec3(vPlayerPos + _vec3(0.f, 0.2f, 0.f)));
+
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Frame");
+				Info.pMatrix = &EffectMatrix;
+				m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Base");
+				Info.pMatrix = &EffectMatrix;
+				m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+			}
 
 			break;
 
@@ -376,7 +420,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 					it = false;
 				}
 			}
-
+			
 			DRAGON_ATTACK eAttackRandom = static_cast<DRAGON_ATTACK>(rand() % ATTACK_END);
 
 			while (m_bAttack_Selected[eAttackRandom] == true)
@@ -386,32 +430,32 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 			switch (eAttackRandom)
 			{
-			case Client::CDragon_Boss::RIGHT_ATTACK:
-				eTempDragonState = STATE_RIGHT_ATTACK;
+			case Client::CDragon_Boss::RIGHT_SLASH:
+				eTempDragonState = STATE_RIGHT_SLASH;
 				break;
 			case Client::CDragon_Boss::TAKE_DOWN:
 				eTempDragonState = STATE_TAKE_DOWN;
 				break;
-			case Client::CDragon_Boss::SHORT_ROAR:
-				eTempDragonState = STATE_SHORT_ROAR;
+			case Client::CDragon_Boss::SHOOT_FIRE:
+				eTempDragonState = STATE_SHOOT_FIRE;
 				break;
-			case Client::CDragon_Boss::LEFT_ATTACK:
-				eTempDragonState = STATE_LEFT_ATTACK;
+			case Client::CDragon_Boss::BLACKHOLE:
+				eTempDragonState = STATE_BLACKHOLE;
 				break;
 			case Client::CDragon_Boss::WING_ATTACK:
 				eTempDragonState = STATE_WING_ATTACK;
 				break;
-			case Client::CDragon_Boss::FLY_FIRE:
-				eTempDragonState = STATE_FLY_FIRE;
+			case Client::CDragon_Boss::UNKNOWN:
+				eTempDragonState = STATE_UNKNOWN;
+				break;
+			case Client::CDragon_Boss::RAGE:
+				eTempDragonState = STATE_RAGE;
 				break;
 			case Client::CDragon_Boss::FIRE_PILLAR:
 				eTempDragonState = STATE_FIRE_PILLAR;
 				break;
-			case Client::CDragon_Boss::SHOOT_FIRE:
-				eTempDragonState = STATE_SHOOT_FIRE;
-				break;
-			case Client::CDragon_Boss::SOAR:
-				eTempDragonState = STATE_SOAR;
+			case Client::CDragon_Boss::FLY_FIRE:
+				eTempDragonState = STATE_FLY_FIRE;
 				break;
 			case Client::CDragon_Boss::DOUBLE_SLASH:
 				eTempDragonState = STATE_DOUBLE_SLASH;
@@ -419,9 +463,11 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 			}
 
 			m_bSelectAttackPattern = true;
+
+
 		}
 
-		if (fDistance >= m_fAttackRange)
+		if (fDistance >= 7.f)
 		{
 			m_pTransformCom->LookAt_Dir(vDir);
 			m_pTransformCom->Go_Straight(fTimeDelta);
@@ -430,14 +476,24 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		else
 		{
 			m_eCurState = eTempDragonState;
-		}
 
-		//m_eCurState = STATE_DOUBLE_SLASH; // 테스트용
+			m_eCurState = STATE_FLY_FIRE; // 테스트용
+		}
 	}
 
 		break;
 
-	case Client::CDragon_Boss::STATE_RIGHT_ATTACK:
+	case Client::CDragon_Boss::STATE_RIGHT_SLASH:
+
+		if (m_pModelCom->Get_CurrentAnimPos() >= 41.f && m_pModelCom->Get_CurrentAnimPos() <= 43.f)
+		{
+			 if (!m_bAttacked1)
+			 {
+				 _uint iDamage = 60 + rand() % 20;
+				 m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
+				 m_bAttacked1 = true;
+			 }
+		}
 
 		if (m_pModelCom->Get_CurrentAnimPos() >= 37.f && m_pModelCom->Get_CurrentAnimPos() <= 43.f)
 		{
@@ -449,12 +505,22 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK01))
 		{
 			m_eCurState = STATE_IDLE;
-			m_bAttack_Selected[RIGHT_ATTACK] = true;
+			m_bAttack_Selected[RIGHT_SLASH] = true;
 		}
 
 		break;
 
 	case Client::CDragon_Boss::STATE_TAKE_DOWN:
+
+		if (m_pModelCom->Get_CurrentAnimPos() >= 82.f && m_pModelCom->Get_CurrentAnimPos() <= 84.f)
+		{
+			if (!m_bAttacked1)
+			{
+				_uint iDamage = 80 + rand() % 20;
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
+				m_bAttacked1 = true;
+			}
+		}
 
 		if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK02))
 		{
@@ -464,34 +530,69 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 		break;
 
-	case Client::CDragon_Boss::STATE_SHORT_ROAR:
+	case Client::CDragon_Boss::STATE_SHOOT_FIRE:
+
+		m_fTime += fTimeDelta;
+
+		if (m_fTime >= 1.2f)
+		{
+			Safe_Release(m_pFrameEffect);
+			Safe_Release(m_pBaseEffect);
+
+			m_fMeteorTime += fTimeDelta;
+
+			if (m_fMeteorTime >= 0.05f)
+			{
+				m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Meteor"), TEXT("Prototype_GameObject_Meteor"));
+				m_fMeteorTime = 0.f;
+			}
+		}
+
+		if (m_pFrameEffect && m_pBaseEffect)
+		{
+			m_pFrameEffect->Tick(fTimeDelta);
+			m_pBaseEffect->Tick(fTimeDelta);
+		}
+
+		if (m_pFrameEffect && m_pBaseEffect)
+		{
+			m_pFrameEffect->Late_Tick(fTimeDelta);
+			m_pBaseEffect->Late_Tick(fTimeDelta);
+		}
+
 
 		if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK03))
 		{
 			m_eCurState = STATE_IDLE;
-			m_bAttack_Selected[SHORT_ROAR] = true;
+			m_bAttack_Selected[SHOOT_FIRE] = true;
 		}
 
 		break;
 
-	case Client::CDragon_Boss::STATE_LEFT_ATTACK:
-
-		if (m_pModelCom->Get_CurrentAnimPos() >= 50.f && m_pModelCom->Get_CurrentAnimPos() <= 60.f)
-		{
-			m_pLeftTrail1->Late_Tick(fTimeDelta);
-			m_pLeftTrail2->Late_Tick(fTimeDelta);
-			m_pLeftTrail3->Late_Tick(fTimeDelta);
-		}
+	case Client::CDragon_Boss::STATE_BLACKHOLE:
 
 		if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK04))
 		{
 			m_eCurState = STATE_IDLE;
-			m_bAttack_Selected[LEFT_ATTACK] = true;
+			m_bAttack_Selected[BLACKHOLE] = true;
 		}
 
 		break;
 
 	case Client::CDragon_Boss::STATE_WING_ATTACK:
+
+		if (m_pModelCom->Get_CurrentAnimPos() >= 69.f && m_pModelCom->Get_CurrentAnimPos() <= 71.f)
+		{
+			if (fDistance <= 5.f)
+			{
+				if (!m_bAttacked1)
+				{
+					_uint iDamage = 100 + rand() % 20;
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Pull);
+					m_bAttacked1 = true;
+				}
+			}
+		}
 
 		if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK05))
 		{
@@ -501,7 +602,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 		break;
 
-	case Client::CDragon_Boss::STATE_FLY_FIRE:
+	case Client::CDragon_Boss::STATE_UNKNOWN:
 
 		if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK06_START))
 		{
@@ -516,22 +617,27 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK06_END))
 		{
 			m_eCurState = STATE_IDLE;
-			m_bAttack_Selected[FLY_FIRE] = true;
+			m_bAttack_Selected[UNKNOWN] = true;
+		}
+
+		break;
+
+	case Client::CDragon_Boss::STATE_RAGE:
+
+		if (m_pModelCom->Get_CurrentAnimPos() >= 129.f && m_pModelCom->Get_CurrentAnimPos() <= 245.f)
+		{
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 0.5f);
+		}
+
+		if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK07))
+		{
+			m_eCurState = STATE_IDLE;
+			m_bAttack_Selected[RAGE] = true;
 		}
 
 		break;
 
 	case Client::CDragon_Boss::STATE_FIRE_PILLAR:
-
-		if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK07))
-		{
-			m_eCurState = STATE_IDLE;
-			m_bAttack_Selected[FIRE_PILLAR] = true;
-		}
-
-		break;
-
-	case Client::CDragon_Boss::STATE_SHOOT_FIRE:
 
 		if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK08))
 		{
@@ -541,17 +647,62 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 		break;
 
-	case Client::CDragon_Boss::STATE_SOAR:
+	case Client::CDragon_Boss::STATE_FLY_FIRE:
+
+		m_fTime += fTimeDelta;
+
+		if (m_fTime >= 2.5f)
+		{
+			Safe_Release(m_pFrameEffect);
+			Safe_Release(m_pBaseEffect);
+		}
+
+		if (m_pFrameEffect && m_pBaseEffect)
+		{
+			m_pFrameEffect->Tick(fTimeDelta);
+			m_pBaseEffect->Tick(fTimeDelta);
+		}
+
+		if (m_pFrameEffect && m_pBaseEffect)
+		{
+			m_pFrameEffect->Late_Tick(fTimeDelta);
+			m_pBaseEffect->Late_Tick(fTimeDelta);
+		}
+
+		if (m_pModelCom->Get_CurrentAnimPos() >= 326.f && m_pModelCom->Get_CurrentAnimPos() <= 330.f)
+		{
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 0.3f);
+		}
 
 		if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK09))
 		{
 			m_eCurState = STATE_IDLE;
-			m_bAttack_Selected[SOAR] = true;
+			m_bAttack_Selected[FLY_FIRE] = true;
 		}
 
 		break;
 
 	case Client::CDragon_Boss::STATE_DOUBLE_SLASH:
+
+		if (m_pModelCom->Get_CurrentAnimPos() >= 38.f && m_pModelCom->Get_CurrentAnimPos() <= 40.f)
+		{
+			if (!m_bAttacked1)
+			{
+				_uint iDamage = 60 + rand() % 20;
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
+				m_bAttacked1 = true;
+			}
+		}
+
+		if (m_pModelCom->Get_CurrentAnimPos() >= 51.f && m_pModelCom->Get_CurrentAnimPos() <= 53.f)
+		{
+			if (!m_bAttacked2)
+			{
+				_uint iDamage = 60 + rand() % 20;
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
+				m_bAttacked2 = true;
+			}
+		}
 
 		if (m_pModelCom->Get_CurrentAnimPos() >= 32.f && m_pModelCom->Get_CurrentAnimPos() <= 41.f)
 		{
@@ -595,7 +746,7 @@ HRESULT CDragon_Boss::Add_Collider()
 {
 	Collider_Desc BodyCollDesc = {};
 	BodyCollDesc.eType = ColliderType::OBB;
-	BodyCollDesc.vExtents = _vec3(2.f, 2.f, 2.f);
+	BodyCollDesc.vExtents = _vec3(1.5f, 1.5f, 2.5f);
 	BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y, 0.f);
 	BodyCollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
 
@@ -608,7 +759,7 @@ HRESULT CDragon_Boss::Add_Collider()
 	ColDesc.eType = ColliderType::Frustum;
 	_matrix matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
 	// 1인자 : 절두체 각도(범위), 2인자 : Aspect, 3인자 : Near, 4인자 : Far(절두체 깊이)
-	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(90.f), 1.f, 0.01f, 3.f);
+	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(90.f), 1.f, 0.01f, 4.f);
 	XMStoreFloat4x4(&ColDesc.matFrustum, matView * matProj);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack"), reinterpret_cast<CComponent**>(&m_pAttackColliderCom), &ColDesc)))
@@ -631,9 +782,10 @@ HRESULT CDragon_Boss::Add_Collider()
 
 void CDragon_Boss::Update_Collider()
 {
-	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+	_mat Offset = _mat::CreateTranslation(0.f, 2.f, 0.f);
+	m_pBodyColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
 
-	_mat Offset = _mat::CreateTranslation(0.f, 2.f, 1.f);
+	Offset = _mat::CreateTranslation(0.f, 4.f, 2.f);
 	m_pAttackColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
 }
 
@@ -775,6 +927,8 @@ void CDragon_Boss::Free()
 
 	Safe_Release(m_pBodyColliderCom);
 	Safe_Release(m_pAttackColliderCom);
+	Safe_Release(m_pBaseEffect);
+	Safe_Release(m_pFrameEffect);
 
 	Safe_Release(m_pLeftTrail1);
 	Safe_Release(m_pLeftTrail2);

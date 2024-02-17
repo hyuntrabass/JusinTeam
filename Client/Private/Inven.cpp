@@ -71,33 +71,54 @@ HRESULT CInven::Init(void* pArg)
 	CUI_Manager::Get_Instance()->Set_Item(strItem);
 	*/
 
-	wstring strItem = TEXT("±×³É¿Ê");
+	wstring strItem = TEXT("°¡Á× ¿Ê");
 	ITEM eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
 	m_pWearableSlots[W_CHEST]->Set_WearableItem(eItem);
 
-	strItem = TEXT("±×³É°Ë");
+	strItem = TEXT("¹«½º »Ô ´Ü°Ë");
 	eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
 	m_pWearableSlots[W_EQUIP]->Set_WearableItem(eItem);
 
-	strItem = TEXT("±×³ÉÈ°");
+	strItem = TEXT("¹«½º »Ô È°");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);	
 	
-	strItem = TEXT("½ÅÈ­È°");
+	strItem = TEXT("¿ÀµòÀÇ ±Ã´Ï¸£ È°");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);	
 	
-	strItem = TEXT("À¯´ÏÅ©°Ë");
+	strItem = TEXT("¿ÀµòÀÇ ±Ã´Ï¸£ ´Ü°Ë");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);	
-	
-	strItem = TEXT("·Îºê");
+
+	strItem = TEXT("°ÅÀÎÀÇ °­Ã¶ ´Ü°Ë");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);
+
+	strItem = TEXT("Æø±º ¼öµå¸®ÀÇ ´Ü°Ë");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);
+
+	strItem = TEXT("ÇìÀÓ´ÞÀÇ ´Ü°Ë");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);
+
+	strItem = TEXT("·¹±ä·¹ÀÌÇÁÀÇ ºÒ¸ê °©¿Ê");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);	
+
+	strItem = TEXT("¿¤µå·éÀÇ ¼öÈ£ °©¿Ê");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);	
 	
 	strItem = TEXT("Ã¼·Â Æ÷¼Ç");
 	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
 	
+	strItem = TEXT("[½ÅÈ­]Å» °Í ¼ÒÈ¯ Ä«µå");
+	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
+	
 	strItem = TEXT("[Èñ±Í]Å» °Í ¼ÒÈ¯ Ä«µå");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
+	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
 	
 	strItem = TEXT("[ÀÏ¹Ý]Å» °Í ¼ÒÈ¯ Ä«µå");
+	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
+	
+	strItem = TEXT("°í¾çÀÌ");
+	CUI_Manager::Get_Instance()->Set_Item(strItem);
+
+	strItem = TEXT("µå·¡°ï");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);
 
 	//m_pWearableSlots[W_EQUIP]->Set_WearableItem(eItem);
@@ -169,6 +190,11 @@ void CInven::Tick(_float fTimeDelta)
 	{
 		if (m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
+			if (m_bNewItemIn)
+			{
+				m_bNewItemIn = false;
+			}
+
 			if (CEvent_Manager::Get_Instance()->Get_TutorialLevel() == T_EXIT)
 			{
 				CEvent_Manager::Get_Instance()->Set_TutorialComplete(T_EXIT);
@@ -326,6 +352,7 @@ void CInven::Init_InvenState()
 
 HRESULT CInven::Set_Item(ITEM eItem, _uint iNum)
 {
+	m_bNewItemIn = true;
 	dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(eItem, iNum);
 	return S_OK;
 }
@@ -339,6 +366,10 @@ HRESULT CInven::Set_WearableItem(WEARABLE_TYPE eType, ITEM eItemDesc)
 	if (m_pWearableSlots[eType]->Is_Full())
 	{
 		ITEM Item = m_pWearableSlots[eType]->Get_ItemDesc();
+		if (eItemDesc.strName == Item.strName)
+		{
+			return E_FAIL;
+		}
 		dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(Item);
 	}
 	m_pWearableSlots[eType]->Set_WearableItem(eItemDesc);
@@ -359,7 +390,7 @@ HRESULT CInven::Add_Parts()
 	Button.fDepth = m_fDepth - 0.03f;
 	Button.strText = TEXT("");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Notify");
-	Button.vPosition = _vec2(m_fX + 7.f, m_fY - 14.f);
+	Button.vPosition = _vec2(m_fX + 17.f, m_fY - 14.f);
 	Button.vSize = _vec2(40.f, 40.f);
 
 	m_pNotify = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
