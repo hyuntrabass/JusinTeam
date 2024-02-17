@@ -285,7 +285,7 @@ HRESULT CArrow::Add_Components()
 
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
-	CollDesc.fRadius = 0.05f;
+	CollDesc.fRadius = 0.1f;
 	CollDesc.vCenter = _vec3(0.f, 0.f, -0.3f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
