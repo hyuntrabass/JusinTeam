@@ -390,8 +390,8 @@ HRESULT CLevel_GamePlay::Ready_Map()
 	inFile.close();
 
 	CLake::WATER_DESC Desc;
-	Desc.fReflectionScale = 0.05f;
-	Desc.fRefractionScale = 0.05f;
+	Desc.fReflectionScale = 0.1f;
+	Desc.fRefractionScale = 0.1f;
 	Desc.vPos = _vec3(100.f, 1.f, 100.f);
 	Desc.vSize = _vec2(200.f, 200.f);
 	Desc.fWaterSpeed = 0.01f;
@@ -820,6 +820,11 @@ HRESULT CLevel_GamePlay::Ready_UI()
 		return E_FAIL;
 	}
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_VehicleBook"))))
+	{
+		return E_FAIL;
+	}
+	
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_InfinityTower"))))
 	{
 		return E_FAIL;
 	}

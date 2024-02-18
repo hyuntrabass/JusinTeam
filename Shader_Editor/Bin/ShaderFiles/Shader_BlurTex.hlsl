@@ -2,7 +2,7 @@
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
-Texture2D g_HDRTex;
+Texture2D g_DeferredTexture;
 Texture2D g_Luminance;
 
 Texture2D g_HalfTex;
@@ -80,7 +80,7 @@ PS_OUT PS_Main_Lum(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    vector vHDRColor = g_HDRTex.Sample(PointSampler, Input.vTexcoord);
+    vector vHDRColor = g_DeferredTexture.Sample(PointSampler, Input.vTexcoord);
     
     float fLum = Get_Luminance(vHDRColor.rgb);
     

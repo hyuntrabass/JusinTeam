@@ -12,7 +12,7 @@ vector g_vColor;
 float g_fAlpha;
 float g_fx, g_fy;
 vector g_vCamPos;
-float g_fCamFar;
+float2 g_CamNF;
 float g_fLightFar;
 float g_fDissolveRatio;
 bool g_HasNorTex;
@@ -29,6 +29,8 @@ float4 g_vClipPlane;
 float4 g_RimColor;
 vector g_OldWorldMatrix, g_OldViewMatrix;
 uint g_OutlineColor;
+
+bool g_isBlur;
 
 
 struct VS_IN
@@ -151,6 +153,30 @@ VS_SHADOW_OUT VS_Shadow(VS_IN Input)
     return Output;
 }
 
+struct VS_EFFECT_OUT
+{
+    vector vPos : SV_Position; // == float4
+    float2 vTex : Texcoord0;
+    float LinearZ : LINEARZ;
+};
+
+VS_EFFECT_OUT VS_Effect(VS_IN Input)
+{
+    VS_EFFECT_OUT Output = (VS_EFFECT_OUT) 0;
+	
+    matrix matWV, matWVP;
+    
+    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+    	
+    Output.vPos = mul(vector(Input.vPos, 1.f), matWVP);;
+    Output.vTex = Input.vTex;
+    Output.LinearZ = Output.vPos.w;
+    
+    
+    return Output;
+}
+
 struct GS_SHADOW_IN
 {
     vector vPos : SV_Position; // == float4
@@ -213,6 +239,19 @@ struct PS_OUT
     vector vColor : SV_Target0;
 };
 
+struct PS_IN_EFFECT
+{
+    vector vPos : SV_Position; // == float4
+    float2 vTex : Texcoord0;
+    float LinearZ : LINEARZ;
+};
+
+struct PS_OUT_EFFECT
+{
+    vector vColor : SV_Target0;
+    vector vAlpha : SV_Target1;
+};
+
 PS_OUT_DEFERRED PS_Main(PS_IN Input)
 {
     PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
@@ -243,7 +282,7 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, Input.vDir.x, Input.vDir.y);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
     
     return Output;
 }
@@ -293,7 +332,7 @@ PS_OUT_DEFERRED PS_Main_AlphaTest(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, Input.vDir.x, Input.vDir.y);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
     
     return Output;
 }
@@ -310,7 +349,7 @@ PS_OUT_DEFERRED PS_Main_AlphaTest(PS_IN Input)
 //    }
     
 //    Output.vDiffuse = g_vColor;
-//    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+//    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
 
 //    return Output;
 //}
@@ -321,6 +360,7 @@ PS_OUT PS_Main_Sky(PS_IN Input)
     
     Output.vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
     Output.vColor = 0.7f * Output.vColor + (1.f - 0.7f) * g_vLightDiffuse;
+    Output.vColor.a = 1.f;
 
     return Output;
 }
@@ -332,34 +372,35 @@ PS_OUT PS_Main_COL(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_Main_Effect(PS_IN Input)
+PS_OUT_EFFECT PS_Main_Effect(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     Output.vColor = g_vColor;
     
     return Output;
 }
 
-PS_OUT PS_Main_Effect_Dissolve(PS_IN Input)
+PS_OUT_EFFECT PS_Main_Effect_Dissolve(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - g_fDissolveRatio) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
-    
+
     Output.vColor = g_vColor;
+    Output.vColor.a = fAlpha;
     
     return Output;
 }
 
-PS_OUT PS_Main_Fireball(PS_IN Input)
+PS_OUT_EFFECT PS_Main_Fireball(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     float fUV = 1.f - g_MaskTexture.Sample(LinearSampler, Input.vTex).x;
     Output.vColor = g_GradationTexture.Sample(LinearSampler, float2(fUV, 0.4f));
@@ -367,9 +408,9 @@ PS_OUT PS_Main_Fireball(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_Main_MaskEffect(PS_IN Input)
+PS_OUT_EFFECT PS_Main_MaskEffect(PS_IN_EFFECT Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform);
     if (vMask.r < 0.1f)
@@ -377,19 +418,29 @@ PS_OUT PS_Main_MaskEffect(PS_IN Input)
         discard;
     }
     
-    Output.vColor = g_vColor;
-    Output.vColor.a *= vMask.r;
+    float3 Color = g_vColor.rgb;
+    float fAlpha = g_vColor.a * vMask.r;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    
+    
+    //Output.vColor = g_vColor;
+    //Output.vColor.a *= vMask.r;
     
     return Output;
 }
 
-PS_OUT PS_Main_MaskEffect_Dissolve(PS_IN Input)
+PS_OUT_EFFECT PS_Main_MaskEffect_Dissolve(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - g_fDissolveRatio) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
@@ -401,14 +452,14 @@ PS_OUT PS_Main_MaskEffect_Dissolve(PS_IN Input)
     }
     
     Output.vColor = g_vColor;
-    Output.vColor.a = vMask.r;
+    Output.vColor.a = vMask.r * fAlpha;
     
     return Output;
 }
 
-PS_OUT PS_Main_MaskEffect_Clamp(PS_IN Input)
+PS_OUT_EFFECT PS_Main_MaskEffect_Clamp(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     vector vMask = g_MaskTexture.Sample(LinearClampSampler, Input.vTex + g_vUVTransform);
     if (vMask.r < 0.1f)
@@ -490,7 +541,7 @@ PS_WATER_OUT PS_Main_Water(PS_WATER_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, Input.vDir.x, Input.vDir.y);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
     
     return Output;
 }
@@ -533,7 +584,7 @@ PS_OUT_DEFERRED PS_Main_Rim(PS_IN Input)
     
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, Input.vDir.x, Input.vDir.y);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
     Output.vRimMask = vRimColor;
     
     return Output;
@@ -569,7 +620,7 @@ PS_OUT_DEFERRED PS_Main_WorldMap_Water(PS_IN Input)
     
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, Input.vDir.x, Input.vDir.y);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
     
     return Output;
 }
@@ -611,23 +662,23 @@ PS_OUT_DEFERRED PS_Main_WorldMap_Cloud(PS_IN Input)
     Output.vDiffuse.g -= (vCloud.r * 0.5f);
 
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, Input.vDir.x, Input.vDir.y);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
     
     return Output;
 }
 
-PS_OUT PS_Main_DiffEffect(PS_IN Input)
+PS_OUT_EFFECT PS_Main_DiffEffect(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     Output.vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform);
     
     return Output;
 }
 
-PS_OUT PS_Main_Effect_Alpha(PS_IN Input)
+PS_OUT_EFFECT PS_Main_Effect_Alpha(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     Output.vColor.rgb = g_vColor.rgb;
     Output.vColor.a = g_fAlpha;
@@ -635,9 +686,9 @@ PS_OUT PS_Main_Effect_Alpha(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_Main_MaskEffect_Alpha(PS_IN Input)
+PS_OUT_EFFECT PS_Main_MaskEffect_Alpha(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform);
     if (vMask.r < 0.1f)
@@ -651,9 +702,9 @@ PS_OUT PS_Main_MaskEffect_Alpha(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_Main_DiffEffect_Alpha(PS_IN Input)
+PS_OUT_EFFECT PS_Main_DiffEffect_Alpha(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     Output.vColor.rgb = g_DiffuseTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform).rgb;
     Output.vColor.a = g_fAlpha;
@@ -784,9 +835,9 @@ technique11 DefaultTechnique_Shader_StatMesh
     {
         SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-        VertexShader = compile vs_5_0 VS_Main();
+        VertexShader = compile vs_5_0 VS_Effect();
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;

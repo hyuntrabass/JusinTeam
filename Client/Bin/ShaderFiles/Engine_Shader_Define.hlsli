@@ -142,6 +142,18 @@ DepthStencilState DSS_Default
     FrontfaceStencilPass = REPLACE;
 };
 
+DepthStencilState DSS_Effect
+{
+    DepthEnable = true;
+    DepthWriteMask = Zero; // 깊이 버퍼에 쓰기를 비활성화합니다.
+    DepthFunc = Less_Equal; // 깊이 테스트는 Less_Equal로 유지합니다.
+    
+    //StencilEnable = true;
+    //FrontfaceStencilFail = KEEP;
+    //FrontfaceStencilDepthFail = KEEP;
+    //FrontfaceStencilPass = REPLACE;
+};
+
 DepthStencilState DSS_None
 {
     DepthEnable = false;
@@ -192,6 +204,18 @@ BlendState BS_AlphaBlend
     DestBlend = Inv_Src_Alpha;
     BlendOp = Add;
 };
+
+BlendState BS_InvAlphaBlend
+{
+    BlendEnable[0] = true;
+    
+    SrcBlend = Inv_Src_Alpha;
+    DestBlend = Src_Alpha;
+    SrcBlendAlpha = Inv_Src_Alpha;
+    DestBlendAlpha = Src_Alpha;
+    BlendOp = Add;
+};
+
 BlendState BS_OnebyOne
 {
     BlendEnable[0] = true;
@@ -221,4 +245,35 @@ BlendState BS_Outline
     SrcBlendAlpha = Zero;
     DestBlendAlpha = One;
     BlendOpAlpha = Add;
+};
+
+BlendState BS_Effect
+{
+    BlendEnable[0] = true;
+    BlendEnable[1] = true;
+    BlendEnable[2] = true;
+
+    BlendOp = Add;
+
+    SrcBlend[0] = One;
+    DestBlend[0] = One;
+    SrcBlendAlpha[0] = One;
+    DestBlendAlpha[0] = One;
+    
+    SrcBlend[1] = Zero;
+    DestBlend[1] = Inv_Src_Alpha;
+
+    SrcBlend[2] = Src_Alpha;
+    DestBlend[2] = Inv_Src_Alpha;
+};
+
+BlendState BS_BlurEffect
+{
+    BlendEnable[0] = true;
+
+    BlendOp[0] = Add;
+    SrcBlend[0] = One;
+    DestBlend[0] = One;
+    SrcBlendAlpha[0] = One;
+    DestBlendAlpha[0] = One;
 };

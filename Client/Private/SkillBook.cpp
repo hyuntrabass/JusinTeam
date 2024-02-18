@@ -449,7 +449,7 @@ HRESULT CSkillBook::Unlock_Skill(_uint iIndex)
 
 void CSkillBook::Init_SkillBookState()
 {
-	_int iTemp = CUI_Manager::Get_Instance()->Get_WeaponType(PT_WEAPON, &m_eCurType);
+	_int iTemp = CUI_Manager::Get_Instance()->Get_WeaponType(PT_SWORD, &m_eCurType);
 	m_ePrevType = m_eCurType;
 
 	_uint iMoney = CUI_Manager::Get_Instance()->Get_Coin();;

@@ -165,11 +165,13 @@ namespace Engine
 		DefPass_Light_Point,
 		DefPass_Water,
 		DefPass_Deferred,
-		DefPass_Blur,
+		DefPass_Blend,
 		DefPass_SSAO,
 		DefPass_HDR,
 		DefPass_Stencil,
 		DefPass_Outline,
+		DefPass_Blur,
+		DefPass_Distortion,
 	};
 
 	enum Effect_Type

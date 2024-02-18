@@ -31,7 +31,7 @@ HRESULT CMouse::Init(void* pArg)
 	m_fX = g_iWinSizeX >> 1;
 	m_fY = g_iWinSizeY >> 1;
 
-	m_fDepth = (_float)D_MOUSE / (_float)D_END;
+	m_fDepth = (_float)D_MOUSE / (_float)D_END + 0.001f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
@@ -42,6 +42,7 @@ HRESULT CMouse::Init(void* pArg)
 
 void CMouse::Tick(_float fTimeDelta)
 {
+
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);

@@ -135,7 +135,7 @@ HRESULT CShadowMap::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
 			return E_FAIL;
 		}
 
-		if (FAILED(pShader->Bind_RawValue("g_hi", &i, sizeof(_uint))))
+		if (FAILED(pShader->Bind_RawValue("g_DebugArrayIndex", &i, sizeof(_uint))))
 			return E_FAIL;
 
 		if (FAILED(pShader->Bind_ShaderResourceView("g_DebugArrayTexture", m_pSRV)))

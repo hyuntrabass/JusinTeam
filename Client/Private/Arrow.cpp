@@ -75,9 +75,11 @@ void CArrow::Tick(_float fTimeDelta)
 {
 	m_fDeadTime += fTimeDelta;
 	if (m_fDeadTime > 2.5f)
+	{
 		Kill();
+	}
 
-	if (m_ArrowType.Att_Type == AT_Bow_Common && m_ArrowType.MonCollider != nullptr)
+	if (m_ArrowType.MonCollider != nullptr && (m_ArrowType.Att_Type == AT_Bow_Common or m_ArrowType.Att_Type == AT_Bow_SkillR or m_ArrowType.Att_Type == AT_Bow_Skill2))
 	{
 		m_pTransformCom->LookAt(_vec4(m_ArrowType.MonCollider->Get_ColliderPos(), 1.f));
 		m_pTransformCom->Go_To(_vec4(m_ArrowType.MonCollider->Get_ColliderPos(), 1.f), fTimeDelta, 0.f);
@@ -113,23 +115,39 @@ void CArrow::Tick(_float fTimeDelta)
 		PxRaycastBuffer Buffer{};
 		//m_pCollider->Change_Radius(3.f);
 
-		if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer) or 
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), 
+			m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer) or 
 			m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
-			m_pCollider->Set_Radius(3.f);
+			m_pCollider->Set_Radius(4.f);
 			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
 
 			_mat EffectMat = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Spark");
 			Info.pMatrix = &EffectMat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
-			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion");
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_test");
 			Info.pMatrix = &EffectMat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Impact");
 			Info.pMatrix = &EffectMat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Smoke");
+			Info.pMatrix = &EffectMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Smoke2");
+			Info.pMatrix = &EffectMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Smoke3");
+			Info.pMatrix = &EffectMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Boom");
+			Info.pMatrix = &EffectMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
+			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
+			m_pGameInstance->Play_Sound(TEXT("SE_5130_Meteor_SFX_02"), 0.3f);
+			m_pGameInstance->Play_Sound(TEXT("Draug_Attack03_SFX_01"));
 			m_ArrowType.Att_Type = AT_End;
 			//Kill();
 		}
@@ -140,6 +158,15 @@ void CArrow::Tick(_float fTimeDelta)
 		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
 			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill3);
+			Kill();
+		}
+		break;
+	}
+	case AT_Bow_SkillR:
+	{
+		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
+		{
+			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Common);
 			Kill();
 		}
 		break;
@@ -285,7 +312,7 @@ HRESULT CArrow::Add_Components()
 
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
-	CollDesc.fRadius = 0.1f;
+	CollDesc.fRadius = 0.05f;
 	CollDesc.vCenter = _vec3(0.f, 0.f, -0.3f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
@@ -311,7 +338,7 @@ HRESULT CArrow::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_CamNF", &m_pGameInstance->Get_CameraNF(), sizeof _float2)))
 	{
 		return E_FAIL;
 	}

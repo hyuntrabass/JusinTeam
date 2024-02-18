@@ -21,7 +21,7 @@ void DownScaleFirst(uint3 DTID : SV_DispatchThreadID)
         [unroll]
         for (uint j = 0; j < 4; ++j)
         {
-            vDownScaled += log(dot(InputTexture[inPixel.xy + uint2(j, i)].rgb, LUM_FACTOR));
+            vDownScaled += dot(InputTexture[inPixel.xy + uint2(j, i)].rgb, LUM_FACTOR);
         }
     }
     
@@ -120,10 +120,8 @@ void LastDownScaled(uint3 DTID : SV_DispatchThreadID)
 {
     float avgLum = 0.f;
     
-    [unroll]
     for (uint i = 0; i < 4; ++i)
     {
-        [unroll]
         for (uint j = 0; j < 4; ++j)
         {
             avgLum += Input2x2Tex[uint2(j, i)];
@@ -131,8 +129,6 @@ void LastDownScaled(uint3 DTID : SV_DispatchThreadID)
     }
     
     avgLum /= 16.f;
-    
-    avgLum = exp(avgLum);
     
     AvgLum[DTID.xy] = max(avgLum, 0.0001f);
 }

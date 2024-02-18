@@ -48,6 +48,13 @@ void CBlackhole::Tick(_float fTimeDelta)
 {
 	m_fLifeTime += fTimeDelta;
 
+	if (m_fLifeTime >= 12.f)
+	{
+		m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+		Kill();
+		return;
+	}
+
 	if (m_fLifeTime >= 1.5f)
 	{
 		if (m_pBaseEffect && m_pFrameEffect)
@@ -91,10 +98,34 @@ void CBlackhole::Tick(_float fTimeDelta)
 			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Blackhole_Spread_Circle");
 			Info.pMatrix = &EffectMatrix;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
-
 		}
+	}
 
+	if (m_fLifeTime >= 2.6f)
+	{
+		if (m_iSoundChannel == -1)
+		{
+			m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("BP_Skill_10059_SFX_01"));
+		}
+	}
+	else if (m_fLifeTime >= 1.2f)
+	{
+		if (m_iSoundChannel == -1)
+		{
+			m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("Sfx_Boss_IdunDark_Atk_06"));
+		}
+		else if (m_fLifeTime >= 2.5f)
+		{
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 0.3f, false);
+		}
+	}
 
+	if (m_iSoundChannel != -1)
+	{
+		if (not m_pGameInstance->Get_IsPlayingSound(m_iSoundChannel))
+		{
+			m_iSoundChannel = -1;
+		}
 	}
 
 	if (m_pFrameEffect && m_pBaseEffect)
@@ -152,7 +183,7 @@ HRESULT CBlackhole::Bind_ShaderResources()
 	//	return E_FAIL;
 	//}
 
-	//if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
+	//if (FAILED(m_pShaderCom->Bind_RawValue("g_CamNF.y", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
 	//{
 	//	return E_FAIL;
 	//}

@@ -56,11 +56,12 @@ public:
 		CounterAtt,
 		Hide_Start,
 		Hide,
-		HideAtt,
+		Hide_Att,
 		Razer,
 		Hit,
 		Idle,
 		Walk,
+		Reflect,
 		Roar,
 		Run,
 		Die,
@@ -93,36 +94,54 @@ public:
 	void View_Attack_Range();
 	void After_Attack(_float fTimedelta);
 	_bool Compute_Angle(_float fAngle);
+
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
 	CCollider* m_pBodyCollider = { nullptr };
 	CCollider* m_pCommonAttCollider = { nullptr };
-	class CEffect_Dummy* m_pBaseEffect{ nullptr };
-	class CEffect_Dummy* m_pFrameEffect{ nullptr };
-	class CEffect_Dummy* m_pDimEffect{ nullptr };
 	CTexture* m_pDissolveTextureCom{ nullptr };
 	CTransform* m_pPlayerTransform{ nullptr };
 
-private:
-	STATE m_ePreState = BOSS_STATE_END;
-	STATE m_eState = BOSS_STATE_END;
+	class CEffect_Dummy* m_pBaseEffect{ nullptr };
+	class CEffect_Dummy* m_pFrameEffect{ nullptr };
+	class CEffect_Dummy* m_pDimEffect{ nullptr };
+	class CEffect_Dummy* m_pAttackEffect{ nullptr };
+	class CEffect_Dummy* m_pShieldEffect{ nullptr };
+	class CEffect_Dummy* m_pRingEffect{ nullptr };
 
 private:
 	ANIM_DESC m_Animation{};
+	STATE m_eState = BOSS_STATE_END;
+	STATE m_ePreState = BOSS_STATE_END;
 
 private:
+	
+	_bool m_bSecondPattern{};
 	_uint m_iAttackPattern = {};
 	_bool m_bSelectAttackPattern = { false };
-	_bool m_bSecondPattern{};
-	_bool m_bChangePass{};
+	
 	_float m_fHitTime{};
-	_uint m_iPassIndex{};
-	_uint m_iWeaponPassIndex{};
-	_bool m_bViewWeapon{};
+	_float m_fHideTimmer{};
+	_bool m_bChangePass{};
+	_bool m_bHide{};
 	_bool m_bAttacked{};
+	_uint m_iPassIndex{};
+	_bool m_bViewWeapon{};
 	_float m_fDissolveRatio{};
+	_uint m_iWeaponPassIndex{};
+
+	_bool m_bShieldOn{};
+	_mat m_AttEffectMat{};
+	_mat m_BaseEffectMat{};
+	_mat m_ShieldEffectMat{};
+	_mat m_RingEffectMat{};
+	_mat m_AttEffectOriMat{};
+	_float m_fShiledTimmer{};
+	_mat m_BaseEffectOriMat{};
+	_float m_fBaseEffectScale{};
+
 public:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

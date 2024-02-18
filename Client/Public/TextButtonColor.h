@@ -56,7 +56,9 @@ private:
 	_float				m_fMoveX{ 0.f };
 	_float				m_fMoveY{ 0.f };
 	_float				m_fFactor{ 1.f };
+	_float				m_fIndex{ 1.f };
 
+	_int2				m_vNumSprite{};
 	_vec2	m_vSize;
 	_vec2	m_vPosition;
 	_vec4	m_vColor;
@@ -83,12 +85,15 @@ public:
 	const _vec2 Get_TransPosition() const { return _vec2(m_fX, m_fY); }
 	const _vec2 Get_Size() const { return _vec2(m_fSizeX, m_fSizeY); }
 	const _vec4& Get_Color() const { return m_vColor; }
+	const _float& Get_Alpha() const { return m_fAlpha; }
 	void Set_Position(_vec2 vPos);
 	void Set_Text(const wstring strText) { m_strText = strText; }
 	void Set_Alpha(const _float fAlpha) { m_fAlpha = fAlpha; }
 	void Set_Pass(VTPass ePass) { m_ePass = ePass; }
 	void Set_UV(_float fX, _float fY) { m_fMoveX = fX; m_fMoveY = fY; }
 	void Set_Factor(_float fFactor) { m_fFactor = fFactor; }
+	void Set_Index(_float fIndex) { m_fIndex = fIndex; }
+	void Set_Sprite(_int2 vNumSprite) { m_vNumSprite = vNumSprite; }
 	void Rotate_Button(_vec4 vAxis, _float fAngle);
 
 public:
