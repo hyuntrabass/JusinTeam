@@ -478,7 +478,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = eTempDragonState;
 
-			m_eCurState = STATE_FIRE_PILLAR; // 테스트용
+			m_eCurState = STATE_BLACKHOLE; // 테스트용
 		}
 	}
 
