@@ -193,6 +193,16 @@ void CCollider::Change_Extents(_vec3 vExtents)
 	}
 }
 
+void CCollider::Set_Radius(const _float fRadius) const
+{
+	if (m_eType != ColliderType::Sphere)
+	{
+		return;
+	}
+
+	reinterpret_cast<BoundingSphere*>(m_pBounder)->Radius = fRadius;
+}
+
 _vec3 CCollider::Get_Extents()
 {
 	switch (m_eType)

@@ -1,10 +1,10 @@
 #pragma once
 #include "Effect_Define.h"
-#include "GameObject.h"
+#include "BlendObject.h"
 
 BEGIN(Effect)
 
-class CTerrain final : public CGameObject
+class CTerrain final : public CBlendObject
 {
 private:
 	CTerrain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
