@@ -58,6 +58,7 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 	}
 
 	m_fAlpha = m_Effect.fAlphaInit;
+	m_vUV = m_Effect.vUVInit;
 
 	if (not m_Effect.bSkipBloom)
 	{

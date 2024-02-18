@@ -116,19 +116,32 @@ void CArrow::Tick(_float fTimeDelta)
 		if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer) or 
 			m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
-			m_pCollider->Set_Radius(3.f);
+			m_pCollider->Set_Radius(4.f);
 			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
 
 			_mat EffectMat = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Spark");
 			Info.pMatrix = &EffectMat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
-			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion");
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_test");
 			Info.pMatrix = &EffectMat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Impact");
 			Info.pMatrix = &EffectMat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Smoke");
+			Info.pMatrix = &EffectMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Smoke2");
+			Info.pMatrix = &EffectMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Smoke3");
+			Info.pMatrix = &EffectMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Boom");
+			Info.pMatrix = &EffectMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
 			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
 			m_pGameInstance->Play_Sound(TEXT("SE_5130_Meteor_SFX_02"), 0.3f);
 			m_pGameInstance->Play_Sound(TEXT("Draug_Attack03_SFX_01"));
