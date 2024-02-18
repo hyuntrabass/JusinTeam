@@ -85,7 +85,7 @@ public:
 	HRESULT Set_Coin(_int iCoin);
 	HRESULT Set_Diamond(_uint iDia);
 	HRESULT Set_WeaponType(WEAPON_TYPE eWpType);
-	HRESULT Set_CustomPart(PART_TYPE eType, _uint iIndex);
+	HRESULT Set_CustomPart(PART_TYPE eType, _uint iIndex, _uint iStatus);
 	HRESULT Set_WearableItem(WEARABLE_TYPE eType, ITEM eItemDesc);
 	_bool Set_CurrentPlayerPos(_vec4 vPos);
 	void Set_MouseState(MOUSESTATE eState) { m_eMouseState = eState; }
@@ -122,12 +122,13 @@ public:
 	const _vec4& Get_InvenPos() const { return m_vInvenPos; }
 	const _vec4& Get_LastPlayerPos() const { return m_vPlayerPos; }
 	const _uint& Get_CustomPart (PART_TYPE eType);
-	const _uint& Get_WeaponType(PART_TYPE eType, WEAPON_TYPE* wpType, _uint* iExtraStatus = nullptr);
+	const _uint& Get_WeaponType(PART_TYPE eType, WEAPON_TYPE* wpType);
 	const _uint& Get_Coin() const { return m_iCoin; }
 	const _uint& Get_Diamond() const { return m_iDiamond; }
 	const _float2& Get_Exp() const { return m_fExp; }
 	const _uint& Get_Level() const { return m_iLevel; }
 	const MOUSESTATE& Get_MouseState() const { return m_eMouseState; }
+	const PLAYER_STATUS& Get_ExtraStatus() const { return m_tExtraStaus; }
 
 	const PART_TYPE& Is_CustomPartChanged() const { return m_eChangedPart; }
 	const _bool& Is_Picking_UI() const { return m_isPicking; }
@@ -171,6 +172,7 @@ private:
 	_uint			m_iCoin{};
 	_uint			m_iDiamond{};
 	_uint			m_CustomPart[PART_TYPE::PT_END]{};
+	PLAYER_STATUS   m_tExtraStaus{};
 
 	_float2			m_fExp{ 0.f, 1000.f };
 

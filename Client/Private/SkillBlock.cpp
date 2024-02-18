@@ -37,7 +37,7 @@ HRESULT CSkillBlock::Init(void* pArg)
 void CSkillBlock::Tick(_float fTimeDelta)
 {
 	
-	_int iIdx = CUI_Manager::Get_Instance()->Get_WeaponType(PT_WEAPON, &m_eCurType);
+	_int iIdx = CUI_Manager::Get_Instance()->Get_WeaponType(PT_SWORD, &m_eCurType);
 
 	/* ½ºÅ³ºÏ¿¡¼­ ÀåÂøÇÑ½ºÅ³ ¹Þ¾Æ¿È */
 	if (CUI_Manager::Get_Instance()->Is_SkillSlotChange())

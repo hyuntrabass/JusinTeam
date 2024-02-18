@@ -37,11 +37,14 @@ private:
 	_float						m_fTime{ 0.f };
 	_float						m_fAlpha{ 0.f };
 
+	_vec2						m_vInitialPoint{};
 	_vec2						m_vDefaultPoint{};
 
 	CGameObject*				m_pTitle{nullptr};
 	CGameObject*				m_pCloud{nullptr};
+	CGameObject*				m_pCloudBottom{nullptr};
 	class CTextButton*			m_pExitButton{nullptr};
+	CTextButton*				m_pStartButton{nullptr};
 
 	class CTextButtonColor*		m_pRoundEffect{ nullptr };
 	CTextButtonColor*			m_pLeftBg{nullptr};
@@ -58,6 +61,9 @@ private:
 public:
 	void Set_Active(_bool isActive);
 
+private:
+	void Effect_Tick(_float fTimeDelta);
+	void Tower_Tick(_float fTimeDelta, POINT& ptMouse);
 
 public:
 	static CInfinityTower* Create(_dev pDevice, _context pContext);

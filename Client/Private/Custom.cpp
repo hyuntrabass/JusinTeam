@@ -102,7 +102,7 @@ void CCustom::Tick(_float fTimeDelta)
 					CUI_Manager::Get_Instance()->Set_Picking_UI(true);
 					m_vCurSelect[C_FACE] = m_Face[i].first;
 					m_pSelectCustomEffect->Set_Position(m_Face[i].first);
-					CUI_Manager::Get_Instance()->Set_CustomPart(PART_TYPE::PT_FACE, m_Face[i].second);
+					CUI_Manager::Get_Instance()->Set_CustomPart(PART_TYPE::PT_FACE, m_Face[i].second, 0);
 
 					break;
 				}
@@ -130,7 +130,7 @@ void CCustom::Tick(_float fTimeDelta)
 					CUI_Manager::Get_Instance()->Set_Picking_UI(true);
 					m_vCurSelect[C_HAIR] = m_Hair[i].first;
 					m_pSelectCustomEffect->Set_Position(m_Hair[i].first);
-					CUI_Manager::Get_Instance()->Set_CustomPart(PART_TYPE::PT_HAIR, m_Hair[i].second);
+					CUI_Manager::Get_Instance()->Set_CustomPart(PART_TYPE::PT_HAIR, m_Hair[i].second, 0);
 					break;
 				}
 

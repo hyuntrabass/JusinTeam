@@ -35,7 +35,7 @@ HRESULT CTextButtonColor::Init(void* pArg)
 	m_eLevel = ((TEXTBUTTON_DESC*)pArg)->eLevelID;
 
 	m_strTexture = ((TEXTBUTTON_DESC*)pArg)->strTexture;
-	m_strTexture2= ((TEXTBUTTON_DESC*)pArg)->strTexture;
+	m_strTexture2= ((TEXTBUTTON_DESC*)pArg)->strTexture2;
 
 
 	if (FAILED(Add_Components()))
@@ -323,6 +323,95 @@ HRESULT CTextButtonColor::Bind_ShaderResources()
 		if (m_strTexture != TEXT(""))
 		{
 			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+	else if (m_ePass == VTPass_SpriteMaskTexture)
+	{
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vNumSprite", &m_vNumSprite, sizeof(_int2))))
+		{
+			return E_FAIL;
+		}
+		int iIndex = static_cast<_int>(m_fIndex);
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_iIndex", &iIndex, sizeof(_int))))
+		{
+			return E_FAIL;
+		}
+
+		if (m_strTexture != TEXT(""))
+		{
+			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+			{
+				return E_FAIL;
+			}
+		}
+		if (m_strTexture2 != TEXT(""))
+		{
+			if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+	else if (m_ePass == VTPass_SpriteMaskColor)
+	{
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vNumSprite", &m_vNumSprite, sizeof(_int2))))
+		{
+			return E_FAIL;
+		}
+		int iIndex = static_cast<_int>(m_fIndex);
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_iIndex", &iIndex, sizeof(_int))))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_iIndex", &iIndex, sizeof(_int))))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof(_vec4))))
+		{
+			return E_FAIL;
+		}
+		if (m_strTexture != TEXT(""))
+		{
+			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+	else if (m_ePass == VTPass_SpriteMaskColor_Dissolve)
+	{
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vNumSprite", &m_vNumSprite, sizeof(_int2))))
+		{
+			return E_FAIL;
+		}
+		int iIndex = static_cast<_int>(m_fIndex);
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_iIndex", &iIndex, sizeof(_int))))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof(_vec4))))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fFactor, sizeof(_float))))
+		{
+			return E_FAIL;
+		}
+		if (m_strTexture != TEXT(""))
+		{
+			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+			{
+				return E_FAIL;
+			}
+		}
+		if (m_strTexture2 != TEXT(""))
+		{
+			if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
 			{
 				return E_FAIL;
 			}

@@ -269,10 +269,11 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	PART_TYPE eType = CUI_Manager::Get_Instance()->Is_CustomPartChanged();
 
+
 	if (PART_TYPE::PT_END != eType)
 	{
 		m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), 0.f);
-		if (eType == PT_WEAPON)
+		if (eType == PT_SWORD || eType == PT_BOW)
 		{
 			WEAPON_TYPE eWpType{};
 			_uint iWpIdx = CUI_Manager::Get_Instance()->Get_WeaponType(eType, &eWpType);
@@ -591,6 +592,14 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 		m_bStartGame = true;
 		CEvent_Manager::Get_Instance()->Init();
+
+		CUI_Manager::Get_Instance()->Set_WeaponType(WP_SWORD);
+		WEAPON_TYPE eWpType{};
+		_uint iWpIdx = CUI_Manager::Get_Instance()->Get_WeaponType(PT_SWORD, &eWpType);
+		Change_Weapon(eWpType, (WEAPON_INDEX)iWpIdx);
+		m_Weapon_CurrentIndex = SWORD_UNEQUIP;
+		m_Current_Weapon = WP_SWORD;
+		m_bWeapon_Unequip = false;
 	}
 
 
@@ -674,11 +683,14 @@ HRESULT CPlayer::Render()
 	{
 		Render_Parts(PT_HELMET, m_Helmet_CurrentIndex);
 	}
-	if (m_Weapon_CurrentIndex < WP_UNEQUIP)
+	if (m_Current_Weapon == WP_SWORD && m_Weapon_CurrentIndex != SWORD_UNEQUIP)
 	{
-		Render_Parts(PT_WEAPON, (_uint)m_Weapon_CurrentIndex);
+		Render_Parts(PT_SWORD, (_uint)m_Weapon_CurrentIndex - 7);
 	}
-
+	else if (m_Current_Weapon == WP_BOW && m_Weapon_CurrentIndex != BOW_UNEQUIP )
+	{
+		Render_Parts(PT_BOW, (_uint)m_Weapon_CurrentIndex);
+	}
 
 	return S_OK;
 }
@@ -731,9 +743,14 @@ HRESULT CPlayer::Render_Shadow()
 	{
 		Render_Shadow_Parts(PT_HELMET, m_Helmet_CurrentIndex);
 	}
-	if (m_Weapon_CurrentIndex < WP_UNEQUIP)
+
+	if (m_Current_Weapon == WP_SWORD && m_Weapon_CurrentIndex != SWORD_UNEQUIP)
 	{
-		Render_Shadow_Parts(PT_WEAPON, (_uint)m_Weapon_CurrentIndex);
+		Render_Shadow_Parts(PT_SWORD, (_uint)m_Weapon_CurrentIndex - 7);
+	}
+	else if (m_Current_Weapon == WP_BOW && m_Weapon_CurrentIndex != BOW_UNEQUIP)
+	{
+		Render_Shadow_Parts(PT_BOW, (_uint)m_Weapon_CurrentIndex);
 	}
 
 
@@ -742,7 +759,12 @@ HRESULT CPlayer::Render_Shadow()
 
 CComponent* CPlayer::Find_Component(const wstring& strComTag)
 {
-	if(!m_bIsMount)
+	if (strComTag == TEXT("Com_Transform") && m_bIsMount)
+	{
+
+		return m_pRiding->Find_Component(strComTag);
+	}
+	else
 	{
 		auto& it = m_Components.find(strComTag);
 		if (it == m_Components.end())
@@ -751,10 +773,6 @@ CComponent* CPlayer::Find_Component(const wstring& strComTag)
 		}
 
 		return it->second;
-	}
-	else
-	{
-		return m_pRiding->Find_Component(strComTag);
 	}
 }
 
@@ -968,7 +986,7 @@ HRESULT CPlayer::Place_PartModels()
 		return E_FAIL;
 	}
 
-	Desc.ePartType = PT_WEAPON;
+	Desc.ePartType = PT_BOW;
 
 	Desc.FileName = "bow0";
 
@@ -1004,6 +1022,8 @@ HRESULT CPlayer::Place_PartModels()
 	{
 		return E_FAIL;
 	}
+
+	Desc.ePartType = PT_SWORD;
 
 	Desc.FileName = "sword0";
 
@@ -1044,10 +1064,6 @@ HRESULT CPlayer::Place_PartModels()
 
 HRESULT CPlayer::Render_Parts(PART_TYPE Parts, _uint Index)
 {
-	if (m_bWeapon_Unequip && Parts == PT_WEAPON)
-	{
-		return S_OK;
-	}
 
 	for (size_t k = 0; k < m_pModelCom->Get_Num_PartMeshes(Parts, Index); k++)
 	{
@@ -1114,10 +1130,7 @@ HRESULT CPlayer::Render_Parts(PART_TYPE Parts, _uint Index)
 
 HRESULT CPlayer::Render_Shadow_Parts(PART_TYPE Parts, _uint Index)
 {
-	if (m_bWeapon_Unequip && Parts == PT_WEAPON)
-	{
-		return S_OK;
-	}
+
 
 	for (size_t k = 0; k < m_pModelCom->Get_Num_PartMeshes(Parts, Index); k++)
 	{
@@ -1311,18 +1324,20 @@ void CPlayer::Change_Parts(PART_TYPE PartsType, _int ChangeIndex)
 }
 
 void CPlayer::Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex)
-{
-	if (ChangeIndex == WP_UNEQUIP)
+{/*
+ 
+	if (ChangeIndex == SWORD_UNEQUIP)
 	{
 		m_bWeapon_Unequip = true;
 	}
 	else
 	{
-		m_Weapon_CurrentIndex = ChangeIndex;
-		m_Current_Weapon = PartsType;
-		m_bWeapon_Unequip = false;
+		
 	}
-
+	*/
+	m_Weapon_CurrentIndex = ChangeIndex;
+	m_Current_Weapon = PartsType;
+	m_bWeapon_Unequip = false;
 	m_Status.Attack = m_EquipStatus.Attack + 100;
 }
 
@@ -1422,7 +1437,17 @@ void CPlayer::Move(_float fTimeDelta)
 		return;
 	}
 
-	if (!m_bReadySwim && m_Weapon_CurrentIndex < WP_UNEQUIP)
+	_bool isUnequip{};
+	if (m_Current_Weapon == WP_SWORD && m_Weapon_CurrentIndex == SWORD_UNEQUIP)
+	{
+		isUnequip = true;
+	}
+	else if (m_Current_Weapon == WP_BOW && m_Weapon_CurrentIndex == BOW_UNEQUIP)
+	{
+		isUnequip = true;
+	}
+
+	if (!m_bReadySwim && !isUnequip)
 	{
 
 
@@ -1514,12 +1539,24 @@ void CPlayer::Move(_float fTimeDelta)
 				if (m_Current_Weapon == WP_SWORD)
 				{
 					CUI_Manager::Get_Instance()->Set_WeaponType(WP_BOW);
+					WEAPON_TYPE eWpType{};
+					_uint iWpIdx = CUI_Manager::Get_Instance()->Get_WeaponType(PT_BOW, &eWpType);
+					Change_Weapon(eWpType, (WEAPON_INDEX)iWpIdx);
+					/*
+					CUI_Manager::Get_Instance()->Set_WeaponType(WP_BOW);
 					Change_Weapon(WP_BOW, BOW0);
+					*/
 				}
 				else
 				{
 					CUI_Manager::Get_Instance()->Set_WeaponType(WP_SWORD);
+					WEAPON_TYPE eWpType{};
+					_uint iWpIdx = CUI_Manager::Get_Instance()->Get_WeaponType(PT_SWORD, &eWpType);
+					Change_Weapon(eWpType, (WEAPON_INDEX)iWpIdx);
+					/*
+					CUI_Manager::Get_Instance()->Set_WeaponType(WP_SWORD);
 					Change_Weapon(WP_SWORD, SWORD0);
+					*/
 				}
 			}
 		}
@@ -1625,9 +1662,8 @@ void CPlayer::Move(_float fTimeDelta)
 			{
 				return;
 			}
-			if (m_Weapon_CurrentIndex < WP_UNEQUIP)
+			if (!isUnequip)
 			{
-
 				if (vDirection != _vec4())
 				{
 					m_pTransformCom->LookAt_Dir(vDirection);

@@ -121,12 +121,13 @@ namespace Client
 		BOW2,
 		BOW3,
 		BOW4,
+		BOW_UNEQUIP,
 		SWORD0,
 		SWORD1,
 		SWORD2,
 		SWORD3,
 		SWORD4,
-		WP_UNEQUIP,
+		SWORD_UNEQUIP,
 		WP_INDEX_END
 	};
 
@@ -160,7 +161,8 @@ namespace Client
 		PT_FACE,
 		PT_BODY,
 		PT_HELMET,
-		PT_WEAPON,
+		PT_SWORD,
+		PT_BOW,
 		PT_END
 	};
 
@@ -289,7 +291,8 @@ namespace Client
 		W_CHEST,
 		W_HAND,
 		W_FOOT,
-		W_EQUIP,
+		W_SWORD,
+		W_BOW,
 		W_PET,
 		W_END
 	};

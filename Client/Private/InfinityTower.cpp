@@ -61,118 +61,29 @@ void CInfinityTower::Tick(_float fTimeDelta)
 	{
 		return;
 	}
-
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
 
+	/* 나가기 */
 	if (PtInRect(&m_pExitButton->Get_Rect(), ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::GamePlay))
 	{
 		for (size_t i = 0; i < TOWER_END; i++)
 		{
 			m_pTowers[i]->Select_Object(false);
 		}
+		m_vDefaultPoint = m_vInitialPoint;
 		m_isActive = false;
 		return;
 	}
 
-	m_fTime += fTimeDelta;
+	Effect_Tick(fTimeDelta);
+	Tower_Tick(fTimeDelta, ptMouse);
 
-	if (!m_isPlaying && m_fTime >= 4.f)
-	{
-		m_isPlaying = true;
-		for (_uint i = 0; i < 3; i++)
-		{
-			m_bLightening[i] = false;
-			m_pLightening[i]->Set_Alpha(0.4f);
-		}
-		m_fTime = 0.f;
-	}
-	if (!m_isPlaying)
-	{
-		for (_uint i = 0; i < 3; i++)
-		{
-			if (m_bLightening[i] == true)
-			{
-				if (m_pLightening[i]->Get_Alpha() < 0.05f)
-				{
-					m_pLightening[i]->Set_Alpha(0.f);
-					m_bLightening[i] = false;
-					break;
-				}
-				m_pLightening[i]->Set_Alpha(m_pLightening[i]->Get_Alpha() - fTimeDelta);
-			}
-
-		}
-	}
-
-	if (m_isPlaying)
-	{
-		if (m_pRoundEffect->Get_Alpha() >= 0.8f)
-		{
-			m_fDir = -1.f;
-		}
-		if (m_pRoundEffect->Get_Alpha() <= 0.2f)
-		{
-			if (m_fTime >= 1.f)
-			{
-				m_isPlaying = false;
-			}
-			m_fDir = 1.f;
-		}
-		if (m_fTime >= 0.2)
-		{
-			m_bLightening[0] = true;
-		}
-		if (m_fTime >= 0.25)
-		{
-			m_bLightening[1] = true;
-		}
-		if (m_fTime >= 0.28)
-		{
-			m_bLightening[2] = true;
-		}
-		m_pRoundEffect->Set_Alpha(m_pRoundEffect->Get_Alpha() + fTimeDelta * m_fDir * 10.f);
-	}
-
-
-	for (_uint i = 0; i < 3; i++)
-	{
-		if (m_bLightening[i] == true)
-		{
-			m_pLightening[i]->Tick(fTimeDelta);
-		}
-	}
-
-	_bool isSelect{ false };
-	_uint iCurIdx{};
-
-	for (size_t i = 0; i < TOWER_END; i++)
-	{
-		_float a = m_pTowers[i]->Get_Rect().bottom;
-		if (PtInRect(&m_pTowers[i]->Get_Rect(), ptMouse))
-		{
-			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
-			{
-				m_pTowers[i]->Select_Object(true);
-				isSelect = true;
-				iCurIdx = i;
-				break;
-			}
-		}
-	}
-
-	for (size_t i = 0; i < TOWER_END; i++)
-	{
-		if (isSelect && iCurIdx != i)
-		{
-			m_pTowers[i]->Select_Object(false);
-		}
-		m_pTowers[i]->Tick(fTimeDelta);
-	}
+	
 	m_pTitle->Tick(fTimeDelta);
 	m_pLeftBg->Tick(fTimeDelta);
-	m_pRoundEffect->Tick(fTimeDelta);
+	m_pStartButton->Tick(fTimeDelta);
 }
 
 void CInfinityTower::Late_Tick(_float fTimeDelta)
@@ -200,6 +111,7 @@ void CInfinityTower::Late_Tick(_float fTimeDelta)
 	m_pRoundEffect->Late_Tick(fTimeDelta);
 	m_pCloud->Late_Tick(fTimeDelta);
 	m_pExitButton->Late_Tick(fTimeDelta);
+	m_pStartButton->Late_Tick(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
@@ -226,8 +138,9 @@ HRESULT CInfinityTower::Render()
 HRESULT CInfinityTower::Ready_Tower()
 {
 	m_vDefaultPoint = _vec2(200.f, (_float)g_iWinSizeY - 100.f);
-	_float fTermX = 137.f;
+	m_vInitialPoint = m_vDefaultPoint;
 
+	_float fTermX = 137.f;
 
 	CTower::TOWER_DESC Desc{};
 
@@ -277,11 +190,12 @@ HRESULT CInfinityTower::Add_Parts()
 	{
 		return E_FAIL;
 	}
+
 	Button.fDepth = m_fDepth - 0.06f;
 	Button.strText = TEXT("");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Img_Cloud01");
-	Button.vPosition = _vec2(170.f, 40.f);
-	Button.vSize = _vec2(350.f, 220.f);
+	Button.vPosition = _vec2(180.f, 20.f);
+	Button.vSize = _vec2(450.f, 300.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	Button.vTextPosition = _vec2(60.f, 0.f);
 
@@ -302,6 +216,21 @@ HRESULT CInfinityTower::Add_Parts()
 	{
 		return E_FAIL;
 	}
+
+	Button.fDepth = m_fDepth - 0.01f;
+	Button.strText = TEXT("입장하기");
+	Button.fFontSize = 0.4f;
+	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	Button.vTextPosition = _vec2(0.f, -2.f);
+	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_buttonRed");
+	Button.vPosition = _vec2(1150.f, 660.f);
+	Button.vSize = _vec2(150.f, 100.f);
+	m_pStartButton = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+	if (not m_pStartButton)
+	{
+		return E_FAIL;
+	}
+
 	CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
 	ColButtonDesc.eLevelID = LEVEL_STATIC;
 	ColButtonDesc.fDepth = m_fDepth - 0.01f;
@@ -429,6 +358,142 @@ void CInfinityTower::Set_Active(_bool isActive)
 	}
 }
 
+void CInfinityTower::Effect_Tick(_float fTimeDelta)
+{
+	m_fTime += fTimeDelta;
+
+	if (!m_isPlaying && m_fTime >= 4.f)
+	{
+		m_isPlaying = true;
+		for (_uint i = 0; i < 3; i++)
+		{
+			m_bLightening[i] = false;
+			m_pLightening[i]->Set_Alpha(0.4f);
+		}
+		m_fTime = 0.f;
+	}
+	if (!m_isPlaying)
+	{
+		for (_uint i = 0; i < 3; i++)
+		{
+			if (m_bLightening[i] == true)
+			{
+				if (m_pLightening[i]->Get_Alpha() < 0.05f)
+				{
+					m_pLightening[i]->Set_Alpha(0.f);
+					m_bLightening[i] = false;
+					break;
+				}
+				m_pLightening[i]->Set_Alpha(m_pLightening[i]->Get_Alpha() - fTimeDelta);
+			}
+
+		}
+	}
+
+	if (m_isPlaying)
+	{
+		if (m_pRoundEffect->Get_Alpha() >= 0.8f)
+		{
+			m_fDir = -1.f;
+		}
+		if (m_pRoundEffect->Get_Alpha() <= 0.2f)
+		{
+			if (m_fTime >= 1.f)
+			{
+				m_isPlaying = false;
+			}
+			m_fDir = 1.f;
+		}
+		if (m_fTime >= 0.2)
+		{
+			m_bLightening[0] = true;
+		}
+		if (m_fTime >= 0.25)
+		{
+			m_bLightening[1] = true;
+		}
+		if (m_fTime >= 0.28)
+		{
+			m_bLightening[2] = true;
+		}
+		m_pRoundEffect->Set_Alpha(m_pRoundEffect->Get_Alpha() + fTimeDelta * m_fDir * 10.f);
+	}
+
+
+	for (_uint i = 0; i < 3; i++)
+	{
+		if (m_bLightening[i] == true)
+		{
+			m_pLightening[i]->Tick(fTimeDelta);
+		}
+	}
+	m_pRoundEffect->Tick(fTimeDelta);
+}
+
+void CInfinityTower::Tower_Tick(_float fTimeDelta, POINT& ptMouse)
+{
+	_float fTermX = 137.f;
+	if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
+	{
+		if (m_pTowers[MINI1]->Get_Position().y > m_vInitialPoint.y)
+		{
+			m_vDefaultPoint.y -= fTimeDelta * 500.f;
+		}
+		if (m_pTowers[MINI1]->Get_Position().y <= m_vInitialPoint.y)
+		{
+			m_vDefaultPoint.y = m_vInitialPoint.y;
+		}
+
+	}
+	if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
+	{
+			m_vDefaultPoint.y += fTimeDelta * 500.f;
+	}
+
+	/* 입장 버튼 */
+	if (PtInRect(&m_pStartButton->Get_InitialRect(), ptMouse))
+	{
+		m_pStartButton->Set_Size(140.f, 80.f, 0.3f);
+		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
+		{
+		}
+	}
+	else
+	{
+		m_pStartButton->Set_Size(150.f, 100.f, 0.35f);
+	}
+
+
+
+	/* 타워 선택 */
+	_bool isSelect{ false };
+	_uint iCurIdx{};
+
+	for (size_t i = 0; i < TOWER_END; i++)
+	{
+		_float a = m_pTowers[i]->Get_Rect().bottom;
+		if (PtInRect(&m_pTowers[i]->Get_Rect(), ptMouse))
+		{
+			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
+			{
+				m_pTowers[i]->Select_Object(true);
+				isSelect = true;
+				iCurIdx = i;
+				break;
+			}
+		}
+	}
+
+	for (size_t i = 0; i < TOWER_END; i++)
+	{
+		if (isSelect && iCurIdx != i)
+		{
+			m_pTowers[i]->Select_Object(false);
+		}
+		m_pTowers[i]->Tick(fTimeDelta);
+	}
+}
+
 CInfinityTower* CInfinityTower::Create(_dev pDevice, _context pContext)
 {
 	CInfinityTower* pInstance = new CInfinityTower(pDevice, pContext);
@@ -474,6 +539,8 @@ void CInfinityTower::Free()
 	Safe_Release(m_pLeftBg);
 	Safe_Release(m_pRoundEffect);
 	Safe_Release(m_pExitButton);
+	Safe_Release(m_pStartButton);
+	Safe_Release(m_pCloudBottom);
 
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);

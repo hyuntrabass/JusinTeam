@@ -66,7 +66,7 @@ void CTower::Tick(_float fTimeDelta)
 	}
 	if (m_isSelected)
 	{
-		//m_pSelectMask->Set_Position(_vec2(m_fX, m_fY));
+		m_pSelectMask->Set_Position(_vec2(m_fX, m_fY));
 		m_pSelectMask->Tick(fTimeDelta);
 	}
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
@@ -103,6 +103,11 @@ HRESULT CTower::Render()
 	}
 
 	return S_OK;
+}
+
+const _vec2 CTower::Get_Position()
+{
+	return _vec2(m_fX, m_fY);
 }
 
 void CTower::Select_Object(_bool isSelect)
