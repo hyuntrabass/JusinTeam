@@ -3,12 +3,12 @@
 #include "Imgui_Manager.h"
 
 CTerrain::CTerrain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	:CGameObject(pDevice, pContext)
+	:CBlendObject(pDevice, pContext)
 {
 }
 
 CTerrain::CTerrain(const CTerrain& rhs)
-	:CGameObject(rhs)
+	:CBlendObject(rhs)
 {
 }
 
@@ -51,6 +51,7 @@ void CTerrain::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
+	__super::Compute_CamDistance();
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 }
 

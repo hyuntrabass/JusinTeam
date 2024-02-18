@@ -104,6 +104,7 @@ private:
 	class CEffect_Dummy* m_pFrameEffect{ nullptr };
 	class CEffect_Dummy* m_pDimEffect{ nullptr };
 	class CEffect_Dummy* m_pAttackEffect{ nullptr };
+	class CEffect_Dummy* m_pShieldEffect{ nullptr };
 	CTexture* m_pDissolveTextureCom{ nullptr };
 	CTransform* m_pPlayerTransform{ nullptr };
 
@@ -119,9 +120,11 @@ private:
 	_bool m_bSelectAttackPattern = { false };
 	_bool m_bSecondPattern{};
 	_bool m_bChangePass{};
+	_bool m_bShieldOn{};
 	_float m_fHitTime{};
 	_mat m_BaseEffectMat{};
 	_mat m_AttEffectMat{};
+	_mat m_ShieldEffectMat{};
 	_mat m_AttEffectOriMat{};
 	_mat m_BaseEffectOriMat{};
 	_float m_fBaseEffectScale{};

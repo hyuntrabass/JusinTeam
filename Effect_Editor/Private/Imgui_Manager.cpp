@@ -67,6 +67,10 @@ HRESULT CImgui_Manager::Init(_dev pDevice, _context pContext, vector<string>* pT
 	m_ParticleInfo.vMaxDir = _float3(0.f, 1.f, 0.f);
 	m_ParticleInfo.isLoop = true;
 
+	CGameInstance::Func_TickFX func_Tick = [this](auto... args) { return Effect_Tick(args...); };
+	CGameInstance::Func_TickFX func_LateTick = [this](auto... args) { return Effect_LateTick(args...); };
+	m_pGameInstance->Register_Tick_LateTick_Callback(func_Tick, func_LateTick);
+
 	//Load_OldData();
 
 	return S_OK;
@@ -1499,16 +1503,6 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	}
 
 
-	if (m_pEffect)
-	{
-		m_pEffect->Tick(fTimeDelta);
-	}
-
-	for (auto& pEffect : m_AddEffect)
-	{
-		pEffect->Tick(fTimeDelta);
-	}
-
 	if (not m_pEffect or m_pEffect->isDead() or m_pGameInstance->Key_Down(DIK_RETURN) or m_pGameInstance->Key_Down(DIK_E))
 	{
 		Safe_Release(m_pEffect);
@@ -1523,30 +1517,56 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 		Info.pMatrix = &m_DummyMatrix;
 		m_pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Info));
-		m_pEffect->Tick(fTimeDelta);
+		//m_pEffect->Tick(fTimeDelta);
 	}
 
 	End();
 #pragma endregion
 }
 
-HRESULT CImgui_Manager::Render()
+void CImgui_Manager::Effect_Tick(_float fTimeDelta)
 {
 	if (m_pEffect)
 	{
-		if (FAILED(m_pEffect->Render()))
-		{
-			return E_FAIL;
-		}
+		m_pEffect->Tick(fTimeDelta);
 	}
 
 	for (auto& pEffect : m_AddEffect)
 	{
-		if (FAILED(pEffect->Render()))
-		{
-			return E_FAIL;
-		}
+		pEffect->Tick(fTimeDelta);
 	}
+}
+
+void CImgui_Manager::Effect_LateTick(_float fTimeDelta)
+{
+	if (m_pEffect)
+	{
+		m_pEffect->Late_Tick(fTimeDelta);
+	}
+
+	for (auto& pEffect : m_AddEffect)
+	{
+		pEffect->Late_Tick(fTimeDelta);
+	}
+}
+
+HRESULT CImgui_Manager::Render()
+{
+	//if (m_pEffect)
+	//{
+	//	if (FAILED(m_pEffect->Render()))
+	//	{
+	//		return E_FAIL;
+	//	}
+	//}
+
+	//for (auto& pEffect : m_AddEffect)
+	//{
+	//	if (FAILED(pEffect->Render()))
+	//	{
+	//		return E_FAIL;
+	//	}
+	//}
 
 
 	ImGui::Render();

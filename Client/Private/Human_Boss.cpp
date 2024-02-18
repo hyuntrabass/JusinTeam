@@ -82,6 +82,11 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 	{
 		m_pAttackEffect->Tick(fTimeDelta);
 	}
+	if (m_pShieldEffect)
+	{
+		m_pShieldEffect->Tick(fTimeDelta);
+
+	}
 	if (!m_bViewWeapon && m_fDissolveRatio < 1.f)
 	{
 		m_fDissolveRatio += fTimeDelta *2.f;
@@ -112,6 +117,11 @@ void CHuman_Boss::Late_Tick(_float fTimeDelta)
 	if (m_pDimEffect)
 	{
 		m_pDimEffect->Late_Tick(fTimeDelta);
+	}
+	if (m_pShieldEffect)
+	{
+		m_pShieldEffect->Late_Tick(fTimeDelta);
+
 	}
 	if (m_pAttackEffect)
 	{
@@ -501,7 +511,7 @@ void CHuman_Boss::View_Attack_Range()
 
 void CHuman_Boss::After_Attack(_float fTimedelta)
 {
-
+	m_ShieldEffectMat = _mat::CreateRotationY(1.f) * m_ShieldEffectMat;
 	if (m_eState == CommonAtt0)
 	{
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
@@ -546,18 +556,24 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 				}
 
 				Safe_Release(m_pAttackEffect);
+				Safe_Release(m_pShieldEffect);
 				EffectInfo Info{};
 				m_AttEffectMat = _mat::CreateScale(10.f)*_mat::CreateRotationX(135.f) * _mat::CreateTranslation(_vec3(0.f, 0.7f, 0.f)) * m_pTransformCom->Get_World_Matrix();
 				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Boss_Sword");
 				Info.pMatrix = &m_AttEffectMat;
 				Info.isFollow = true;
-				m_pAttackEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+				//m_pAttackEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+				m_ShieldEffectMat = _mat::CreateScale(1.f)* _mat::CreateTranslation(_vec3(0.f,1.8f, 0.f)) *m_pTransformCom->Get_World_Matrix();
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Boss_Shield");
+				Info.pMatrix = &m_ShieldEffectMat;
+				Info.isFollow = true;
+				m_pShieldEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 				m_bAttacked = true;
 			}
 			if (m_bAttacked)
 			{
 				_vec3 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
-			
+				m_ShieldEffectMat = _mat::CreateRotationY(5.f) * m_ShieldEffectMat;
 				m_AttEffectMat *= (_mat::CreateTranslation(vLook)*0.5f);
 			}
 		}
