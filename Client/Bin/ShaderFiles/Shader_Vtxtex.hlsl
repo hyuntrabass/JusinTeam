@@ -484,7 +484,7 @@ PS_OUT PS_Main_Dissolve(PS_IN Input)
     }
 
     Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
-    Output.vColor.a = fAlpha;
+    Output.vColor.a *= fAlpha;
     
     return Output;
 }
