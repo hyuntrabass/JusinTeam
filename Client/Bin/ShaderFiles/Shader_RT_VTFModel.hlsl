@@ -7,7 +7,7 @@ texture2D g_MaskTexture;
 texture2D g_DissolveTexture;
 
 vector g_vColor = { 1.f, 1.f, 1.f, 0.f };
-float g_fCamFar;
+float2 g_CamNF;
 vector g_vCamPos;
 float g_fDissolveRatio;
 
@@ -172,7 +172,7 @@ VS_OUT VS_Main_OutLine(VS_IN Input)
     
     float fDist = length(g_vCamPos - mul(vPos, g_WorldMatrix));
     
-    float fThickness = clamp(fDist / g_fCamFar, 0.001f, 0.05f);
+    float fThickness = clamp(fDist / g_CamNF.y, 0.001f, 0.05f);
     
     vPos += normalize(vNor) * fThickness;
     
@@ -305,7 +305,7 @@ PS_OUT PS_Main(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
     Output.vRimMask = 0.f;
     
     return Output;
@@ -352,7 +352,7 @@ PS_OUT PS_Main_Dissolve(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
     Output.vRimMask = 0.f;
     
     return Output;
@@ -402,7 +402,7 @@ PS_OUT PS_Main_LerpDissolve(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
     Output.vRimMask = 0.f;
     
     return Output;
@@ -451,7 +451,7 @@ PS_OUT PS_Main_Rim(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
     Output.vRimMask = vRimColor;
     
     return Output;
@@ -500,7 +500,7 @@ PS_OUT PS_Motion_Blur(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
     Output.vRimMask = 0.f;
     
     return Output;
@@ -551,7 +551,7 @@ PS_OUT PS_LerpBlur(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
     Output.vRimMask = 0.f;
     
     return Output;

@@ -40,6 +40,7 @@ struct VS_OUT
 {
     vector vPos : SV_Position; // == float4
     float2 vTex : Texcoord0;
+    float LinearZ : LINEARZ;
 };
 
 VS_OUT VS_Main(VS_IN Input)
@@ -52,6 +53,7 @@ VS_OUT VS_Main(VS_IN Input)
 	
     Output.vPos = vPosition;
     Output.vTex = Input.vTex;
+    Output.LinearZ = Output.vPos.w;
 	
     return Output;
 }
@@ -68,6 +70,7 @@ VS_OUT VS_Main_Mask(VS_IN Input)
     
     Output.vPos = vPosition;
     Output.vTex = vTex;
+    Output.LinearZ = Output.vPos.w;
 	
     return Output;
 }
@@ -86,19 +89,24 @@ VS_OUT VS_Main_Dust(VS_IN Input)
     
     Output.vPos = vPosition;
     Output.vTex = vTex;
+    Output.LinearZ = Output.vPos.w;
 	
     return Output;
 }
+
 
 struct PS_IN
 {
     vector vPos : SV_Position;
     float2 vTex : Texcoord0;
+    float LinearZ : LINEARZ;
 };
 
 struct PS_OUT
 {
     vector vColor : SV_Target0;
+    vector vAlpha : SV_Target1;
+    vector vBlur : SV_Target2;
 };
 
 
@@ -106,7 +114,18 @@ PS_OUT PS_Main(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+    
     
     return Output;
 }
@@ -115,9 +134,19 @@ PS_OUT PS_Main_Alpha(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTex);
     
-    Output.vColor.a *= g_fAlpha;
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a * g_fAlpha;
+    
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -126,9 +155,16 @@ PS_OUT PS_Main_Color_Alpha(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor.xyz = g_vColor.xyz;
-    Output.vColor.a = g_fAlpha;
+    float3 Color = g_vColor.rgb;
+    float fAlpha = g_fAlpha;
 
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+    
     return Output;
 }
 
@@ -139,7 +175,17 @@ PS_OUT PS_Main_Button(PS_IN Input)
     vector vHighlight = g_TextureArray[1].Sample(LinearSampler, Input.vTex) * g_TexIndex;
     vHighlight.a = 0.f;
     
-    Output.vColor = g_TextureArray[0].Sample(LinearSampler, Input.vTex) + vHighlight;
+    vector vColor = g_TextureArray[0].Sample(LinearSampler, Input.vTex) + vHighlight;
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -148,10 +194,19 @@ PS_OUT PS_MaskTexture(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     
-    Output.vColor.a = Output.vColor.a * vMask.r;
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a * vMask.r;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -160,16 +215,26 @@ PS_OUT PS_InvMaskTexture(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTex);
     
     if (Input.vTex.y < g_fHpRatio + 0.5f)
     {
-        Output.vColor.xyz -= 0.9f;
+        vColor.rgb -= 0.9f;
     }
-    Output.vColor.xyz += g_SkillReadyTexture.Sample(LinearClampSampler, Input.vTex - float2(0.f, g_fHpRatio)).xyz;
-    float fMask = g_MaskTexture.Sample(LinearSampler, Input.vTex).r;
     
-    Output.vColor.a = Output.vColor.a * 1.f - fMask;
+    vColor.rgb += g_SkillReadyTexture.Sample(LinearClampSampler, Input.vTex - float2(0.f, g_fHpRatio)).rgb;
+    
+    float fMask = g_MaskTexture.Sample(LinearSampler, Input.vTex).r;
+    float fAlpha = vColor.a * 1.f - fMask;
+    
+    float3 Color = vColor.rgb;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -180,26 +245,17 @@ PS_OUT PS_MaskColor(PS_IN Input)
     
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     
-    //float3 Color = g_vColor.rgb;
-    //float fAlpha = g_vColor.a * vMask.r;
+    vector vColor = g_vColor;
     
-    ////float fWeight = pow(Input.LinearZ, -2.5f);
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a * vMask.r;
     
-    ////float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 6.f)), 0.01f, 3e3); // 1e-5 = 0.00001, 3e3 = 3000
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
     
-    ////fWeight = max(fWeight, 1.f);
-    
-    //float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
-    //fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
-    
-    //Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
-    //Output.vAlpha = vector(fAlpha, fAlpha, fAlpha, fAlpha);
-    
-    
-    //Output.vBlur = vector(Color, fAlpha);
-    Output.vColor = g_vColor;
-    
-    Output.vColor.a = Output.vColor.a * vMask.r;
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -210,9 +266,17 @@ PS_OUT PS_MaskColorAlpha(PS_IN Input)
     
     float vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex).a * g_MaskTexture.Sample(LinearSampler, Input.vTex).r;
     
-    Output.vColor = g_vColor;
+    vector vColor = g_vColor;
     
-    Output.vColor.a = Output.vColor.a * vMask * g_fAlpha;
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a * vMask * g_fAlpha;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -221,13 +285,22 @@ PS_OUT PS_Main_HP(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, float2(Input.vTex));
+    vector vColor = g_Texture.Sample(LinearSampler, float2(Input.vTex));
     vector vMask = g_MaskTexture.Sample(LinearSampler, float2(Input.vTex.x + g_fTime, Input.vTex.y));
-    Output.vColor.a = Output.vColor.a * vMask.r;
+    float fAlpha = vColor.a * vMask.r;
     if (Input.vTex.x > g_fHpRatio)
     {
         discard;
     }
+    
+    float3 Color = vColor.rgb;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
 
     return Output;
 }
@@ -236,9 +309,18 @@ PS_OUT PS_Main_Hit(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTex);
     
-    Output.vColor.a = Output.vColor.a * g_fAlpha;
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a * g_fAlpha;
+    
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -253,14 +335,24 @@ PS_OUT PS_Main_Sprite(PS_IN Input)
     vSpriteCoord.y = g_iIndex / g_vNumSprite.x;
     float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
     
-    Output.vColor = g_Texture.Sample(LinearSampler, vUV);
+    vector vColor = g_Texture.Sample(LinearSampler, vUV);
     
     //Output.vColor.a = Output.vColor.r
     
-    if (Output.vColor.a < 0.1f)
+    if (vColor.a < 0.1f)
     {
         discard;
     }
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
 
     return Output;
 }
@@ -284,9 +376,17 @@ PS_OUT PS_Main_Sprite_MaskTexture(PS_IN Input)
         discard;
     }
 
-    Output.vColor = g_Texture.Sample(LinearSampler, vUV);
+    vector vColor = g_Texture.Sample(LinearSampler, vUV);
     
-    Output.vColor.a = vMask.r * vMask.a;
+    float3 Color = vColor.rgb;
+    float fAlpha = vMask.r * vMask.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -310,9 +410,17 @@ PS_OUT PS_Main_Sprite_MaskColor(PS_IN Input)
         discard;
     }
 
-    Output.vColor = g_vColor;
+    vector vColor = g_vColor;
     
-    Output.vColor.a = vMask.r * vMask.a;
+    float3 Color = vColor.rgb;
+    float fAlpha = vMask.r * vMask.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -321,7 +429,18 @@ PS_OUT PS_Main_Hell(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_vColor;
+    vector vColor = g_vColor;
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+    
     
     return Output;
 }
@@ -338,10 +457,20 @@ PS_OUT PS_MaskTexture_Dissolve(PS_IN Input)
         discard;
     }
     
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTex);
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     
-    Output.vColor.a = Output.vColor.a * vMask.r;
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a * vMask.r;
+    
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+    
     
     return Output;
 }
@@ -357,15 +486,24 @@ PS_OUT PS_InvMaskTexture_Dissolve(PS_IN Input)
         discard;
     }
     
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTex);
     if (Input.vTex.y < g_fHpRatio + 0.5f)
     {
-        Output.vColor.xyz -= 0.9f;
+        vColor.rgb -= 0.9f;
     }
-    Output.vColor.xyz += g_SkillReadyTexture.Sample(LinearClampSampler, Input.vTex - float2(0.f, g_fHpRatio)).xyz;
+    vColor.rgb += g_SkillReadyTexture.Sample(LinearClampSampler, Input.vTex - float2(0.f, g_fHpRatio)).rgb;
+    
     float fMask = g_MaskTexture.Sample(LinearSampler, Input.vTex).r;
     
-    Output.vColor.a = Output.vColor.a * 1.f - fMask;
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a * 1.f - fMask;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -383,9 +521,17 @@ PS_OUT PS_MaskColor_Dissolve(PS_IN Input)
     
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     
-    Output.vColor = g_vColor;
+    vector vColor = g_vColor;
     
-    Output.vColor.a = Output.vColor.a * vMask.r;
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a * vMask.r;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -407,14 +553,24 @@ PS_OUT PS_Main_Sprite_Dissolve(PS_IN Input)
     vSpriteCoord.y = g_iIndex / g_vNumSprite.x;
     float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
     
-    Output.vColor = g_Texture.Sample(LinearSampler, vUV);
+    vector vColor = g_Texture.Sample(LinearSampler, vUV);
     
     //Output.vColor.a = Output.vColor.r
     
-    if (Output.vColor.a < 0.1f)
+    if (vColor.a < 0.1f)
     {
         discard;
     }
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
 
     return Output;
 }
@@ -445,9 +601,17 @@ PS_OUT PS_Main_Sprite_MaskTexture_Dissolve(PS_IN Input)
         discard;
     }
 
-    Output.vColor = g_Texture.Sample(LinearSampler, vUV);
+    vector vColor = g_Texture.Sample(LinearSampler, vUV);
     
-    Output.vColor.a = vMask.r * vMask.a;
+    float3 Color = vColor.rgb;
+    float fAlpha = vMask.r * vMask.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -478,9 +642,17 @@ PS_OUT PS_Main_Sprite_MaskColor_Dissolve(PS_IN Input)
         discard;
     }
 
-    Output.vColor = g_vColor;
+    vector vColor = g_vColor;
     
-    Output.vColor.a = vMask.r * vMask.a;
+    float3 Color = vColor.rgb;
+    float fAlpha = vMask.r * vMask.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -489,7 +661,17 @@ PS_OUT PS_Main_Dust(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -505,7 +687,17 @@ PS_OUT PS_Main_Dissolve(PS_IN Input)
         discard;
     }
     
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -513,14 +705,25 @@ PS_OUT PS_Main_MP(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
-    vector vMask = g_MaskTexture.Sample(LinearSampler, float2(Input.vTex.x + g_fTime, Input.vTex.y));
-    Output.vColor.a = Output.vColor.a * vMask.r;
     if (Input.vTex.x < 1.f - g_fHpRatio)
     {
         discard;
     }
+    
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    
+    vector vMask = g_MaskTexture.Sample(LinearSampler, float2(Input.vTex.x + g_fTime, Input.vTex.y));
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a * vMask.r;
 
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+    
     return Output;
 }
 
@@ -563,7 +766,17 @@ PS_OUT PS_Main_BLUR(PS_IN Input)
     blurColor.rgb *= g_vColor.rgb;
 
 
-    Output.vColor = lerp(texColor, blurColor, edge);
+    vector vColor = lerp(texColor, blurColor, edge);
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
 
     return Output;
 }
@@ -571,24 +784,33 @@ PS_OUT PS_Bright(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
-    vector vMask = g_MaskTexture.Sample(LinearSampler, float2(Input.vTex.x + g_fx, Input.vTex.y + g_fy));
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTex);
     
-    Output.vColor.a = Output.vColor.a * vMask.r;
+    vector vMask = g_MaskTexture.Sample(LinearSampler, float2(Input.vTex.x + g_fx, Input.vTex.y + g_fy));
 
-
-    Output.vColor *= g_fBrightFactor;
-  
+    vColor.a = Output.vColor.a * vMask.r;
+    vColor *= g_fBrightFactor;
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
+
 PS_OUT PS_ScrollAlpha(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTex);
     
-    Output.vColor.a *= g_fAlpha;
+    vColor.a *= g_fAlpha;
     if (g_fScrollRatio < 0)
     {
         if (Input.vTex.y < (g_fScrollRatio * -1.f))
@@ -603,18 +825,40 @@ PS_OUT PS_ScrollAlpha(PS_IN Input)
             discard;
         }
     }
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
 
     return Output;
 }
+
 PS_OUT PS_Main_HPNoMask(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
     if (Input.vTex.x > g_fHpRatio)
     {
         discard;
     }
+    
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
 
     return Output;
 }
@@ -642,8 +886,17 @@ PS_OUT PS_Main_NineSlice(PS_IN Input)
         newTexCoord.y = Input.vTex.y * (1.f / g_vRatio.y);
     }
     
-    Output.vColor = g_Texture.Sample(LinearSampler, newTexCoord);
+    vector vColor = g_Texture.Sample(LinearSampler, newTexCoord);
 
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
 /*
     
 	float2 newTexCoord = In.vTexcoord * float2(4.1f, 4.1f / g_fRatio); 커진 비율만큼 곱해줘야하나? 
@@ -676,20 +929,30 @@ PS_OUT PS_Main_FadeVertical(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     float fBaseAlpha = 0.9f;
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex) * vector(0.f, 0.f, 0.f, 1.f);
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTex) * vector(0.f, 0.f, 0.f, 1.f);
 
     if (Input.vTex.y < 0.3f)
     {
-        Output.vColor.a = Input.vTex.y * (3.f);
+        vColor.a = Input.vTex.y * (3.f);
     }
     else if (Input.vTex.y > 0.6f)
     {
-        Output.vColor.a = fBaseAlpha + (fBaseAlpha - Input.vTex.y * (3.f / 2.f));
+        vColor.a = fBaseAlpha + (fBaseAlpha - Input.vTex.y * (3.f / 2.f));
     }
     else
-        Output.vColor.a = fBaseAlpha;
+        vColor.a = fBaseAlpha;
 
-    Output.vColor.a *= 2.f / 3.f;
+    vColor.a *= 2.f / 3.f;
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 
@@ -698,37 +961,57 @@ PS_OUT PS_Main_FadeHorizontal(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     float fBaseAlpha = 0.9f;
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex) * vector(0.f, 0.f, 0.f, 1.f);
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTex) * vector(0.f, 0.f, 0.f, 1.f);
 
     if (Input.vTex.x < 0.3f)
     {
-        Output.vColor.a = Input.vTex.x * (0.9f / 0.2f);
+        vColor.a = Input.vTex.x * (0.9f / 0.2f);
     }
     else if (Input.vTex.x > 0.8f)
     {
-        Output.vColor.a = fBaseAlpha + (fBaseAlpha / 0.2f) * (0.8f - Input.vTex.x);
+        vColor.a = fBaseAlpha + (fBaseAlpha / 0.2f) * (0.8f - Input.vTex.x);
     }
     else
-        Output.vColor.a = fBaseAlpha;
+        vColor.a = fBaseAlpha;
 
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+    
     return Output;
-
 }
 
 PS_OUT PS_Main_LerpColorNAlpha(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
-    if(g_vColor.a != 0.f)
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    if (g_vColor.a != 0.f)
     {
-        Output.vColor.xyz = lerp(Output.vColor, g_vColor, 0.6f);
+        vColor.xyz = lerp(vColor, g_vColor, 0.6f);
     }
 
-    if(Output.vColor.a > 0.1f)
+    if (vColor.a > 0.1f)
     {
-        Output.vColor.a = g_fAlpha;
+        vColor.a = g_fAlpha;
     }
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
 
     //if (g_isBlur)
     //    Output.vBlurColor;
@@ -742,18 +1025,29 @@ PS_OUT PS_Main_HPBoss(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, float2(Input.vTex));
+    vector vColor = g_Texture.Sample(LinearSampler, float2(Input.vTex));
     vector vMask = g_MaskTexture.Sample(LinearSampler, float2(Input.vTex.x + g_fTime, Input.vTex.y));
-    Output.vColor.a = Output.vColor.a * vMask.r;
+    vColor.a = Output.vColor.a * vMask.r;
     if (Input.vTex.x > g_fHpRatio)
     {
         discard;
     }
     if (g_bOn)
     {
-        Output.vColor.xyz *= 1.5f;
-
+        vColor.xyz *= 1.5f;
     }
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+    
+    
     return Output;
 }
 
@@ -763,9 +1057,19 @@ PS_OUT PS_Main_MaskColorMove(PS_IN Input)
     
     vector vMask = g_MaskTexture.Sample(LinearSampler, float2(Input.vTex.x + g_fx, Input.vTex.y + g_fy));
     
-    Output.vColor = g_vColor;
+    vector vColor = g_vColor;
     
-    Output.vColor.a = Output.vColor.a * vMask.r;
+    vColor.a = vColor.a * vMask.r;
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -774,11 +1078,21 @@ PS_OUT PS_Main_ChangeBright(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTex);
 
-    Output.vColor *= g_fTime;
-        
-    Output.vColor.a *= g_fAlpha;
+    vColor *= g_fTime;
+    
+    vColor.a *= g_fAlpha;
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -786,7 +1100,17 @@ PS_OUT PS_Main_Move(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, float2(Input.vTex.x + g_fx, Input.vTex.y + g_fy));
+    vector vColor = g_Texture.Sample(LinearSampler, float2(Input.vTex.x + g_fx, Input.vTex.y + g_fy));
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -796,8 +1120,8 @@ technique11 DefaultTechnique
     pass UI
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -809,8 +1133,8 @@ technique11 DefaultTechnique
     pass UI_Alpha
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -822,8 +1146,8 @@ technique11 DefaultTechnique
     pass UI_Color_Alpha
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -835,8 +1159,8 @@ technique11 DefaultTechnique
     pass Button
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -848,7 +1172,7 @@ technique11 DefaultTechnique
     pass Background
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_None, 0);
+        SetDepthStencilState(DSS_Effect, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
@@ -861,7 +1185,7 @@ technique11 DefaultTechnique
     pass BackgroundMask
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_None, 0);
+        SetDepthStencilState(DSS_Effect, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main_Mask();
@@ -874,8 +1198,8 @@ technique11 DefaultTechnique
     pass Mask_Texture
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -887,8 +1211,8 @@ technique11 DefaultTechnique
     pass Inv_Mask_Texture
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -900,8 +1224,8 @@ technique11 DefaultTechnique
     pass Mask_Color
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -913,8 +1237,8 @@ technique11 DefaultTechnique
     pass Mask_ColorAlpha
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -926,8 +1250,8 @@ technique11 DefaultTechnique
     pass HP
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -939,8 +1263,8 @@ technique11 DefaultTechnique
     pass Hit
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -952,8 +1276,8 @@ technique11 DefaultTechnique
     pass Sprite
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -964,8 +1288,8 @@ technique11 DefaultTechnique
     pass SpriteMaskTexture
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -976,8 +1300,8 @@ technique11 DefaultTechnique
     pass SpriteMaskColor
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -988,7 +1312,7 @@ technique11 DefaultTechnique
     pass Hell
     {
         SetRasterizerState(RS_None);
-        SetDepthStencilState(DSS_None, 0);
+        SetDepthStencilState(DSS_Effect, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
@@ -1001,8 +1325,8 @@ technique11 DefaultTechnique
     pass Mask_Texture_Dissolve
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -1014,8 +1338,8 @@ technique11 DefaultTechnique
     pass Inv_Mask_Texture_Dissolve
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -1027,8 +1351,8 @@ technique11 DefaultTechnique
     pass Mask_Color_Dissolve
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -1040,8 +1364,8 @@ technique11 DefaultTechnique
     pass Sprite_Dissolve
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -1052,8 +1376,8 @@ technique11 DefaultTechnique
     pass SpriteMaskTexture_Dissolve
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -1064,8 +1388,8 @@ technique11 DefaultTechnique
     pass SpriteMaskColor_Dissolve
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -1077,8 +1401,8 @@ technique11 DefaultTechnique
     pass Dust
     {
         SetRasterizerState(RS_None);
-        SetDepthStencilState(DSS_None, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main_Dust();
         GeometryShader = NULL;
@@ -1090,8 +1414,8 @@ technique11 DefaultTechnique
     pass Dissolve
     {
         SetRasterizerState(RS_None);
-        SetDepthStencilState(DSS_None, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -1103,8 +1427,8 @@ technique11 DefaultTechnique
     pass MP
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -1116,8 +1440,8 @@ technique11 DefaultTechnique
     pass BLUR
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -1128,8 +1452,8 @@ technique11 DefaultTechnique
     pass Bright
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -1140,8 +1464,8 @@ technique11 DefaultTechnique
     pass ScrollAlpha
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -1152,8 +1476,8 @@ technique11 DefaultTechnique
     pass HPNoMask
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -1164,8 +1488,8 @@ technique11 DefaultTechnique
     pass NineSlice
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -1176,8 +1500,8 @@ technique11 DefaultTechnique
     pass FadeVertical
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -1188,8 +1512,8 @@ technique11 DefaultTechnique
     pass FadeHorizontal
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -1200,8 +1524,8 @@ technique11 DefaultTechnique
     pass LerpColorNAlpha
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -1209,11 +1533,11 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_LerpColorNAlpha();
     }
-pass HPBoss
+    pass HPBoss
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -1221,11 +1545,11 @@ pass HPBoss
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_HPBoss();
     }
-pass MaskColorMove
+    pass MaskColorMove
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -1233,11 +1557,11 @@ pass MaskColorMove
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_MaskColorMove();
     }
-pass ChangeBright
+    pass ChangeBright
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -1245,11 +1569,11 @@ pass ChangeBright
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_ChangeBright();
     }
-pass Move
+    pass Move
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;

@@ -51,6 +51,7 @@ struct VS_OUT
     float3 vTangent : Tangent;
     float3 vBinormal : Binormal;
     float2 vDir : DIRECTION;
+    float LinearZ : LINEARZ;
 };
 
 VS_OUT VS_Main(VS_IN Input)
@@ -62,31 +63,7 @@ VS_OUT VS_Main(VS_IN Input)
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
     
-    //matrix matOldWV, matOldWVP;
-    
-    //matOldWV = mul(g_OldWorldMatrix, g_OldViewMatrix);
-    //matOldWVP = mul(matOldWV, g_ProjMatrix);
-    
     vector vNewPos = mul(vector(Input.vPos, 1.f), matWVP);
-    //vector vOldPos = mul(vector(Input.vPos, 1.f), matOldWVP);
-    
-    //vector vCalNor = mul(vector(Input.vNor, 0.f), matWV);
-    
-    //vector vDir = vNewPos - vOldPos;
-    
-    //float a = dot(normalize(vDir), normalize(vCalNor));
-    
-    //vector vPos;
-    //if(a < 0.f)
-    //    vPos = vOldPos;
-    //else
-    //    vPos = vNewPos;
-    
-    //float2 velocity = (vNewPos.xy / vNewPos.w) - (vOldPos.xy / vOldPos.w);
-    
-    //vector vCalDir;
-    //vCalDir.xy = velocity * 0.5f;
-    //vCalDir.y *= -1.f;
 	
     Output.vPos = vNewPos;
     Output.vNor = normalize(mul(vector(Input.vNor, 0.f), g_WorldMatrix));
@@ -96,6 +73,7 @@ VS_OUT VS_Main(VS_IN Input)
     Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), g_WorldMatrix)).xyz;
     Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
     Output.vDir = 0.f;
+    Output.LinearZ = Output.vPos.w;
     
     return Output;
 }
@@ -223,6 +201,7 @@ struct PS_IN
     float3 vTangent : Tangent;
     float3 vBinormal : Binormal;
     float2 vDir : DIRECTION;
+    float LinearZ : LINEARZ;
     
 };
 
@@ -250,6 +229,7 @@ struct PS_OUT_EFFECT
 {
     vector vColor : SV_Target0;
     vector vAlpha : SV_Target1;
+    vector vBlur : SV_Target2;
 };
 
 PS_OUT_DEFERRED PS_Main(PS_IN Input)
@@ -376,7 +356,17 @@ PS_OUT_EFFECT PS_Main_Effect(PS_IN Input)
 {
     PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
-    Output.vColor = g_vColor;
+    vector vColor = g_vColor;
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = vector(fAlpha, fAlpha, fAlpha, fAlpha);
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -392,7 +382,17 @@ PS_OUT_EFFECT PS_Main_Effect_Dissolve(PS_IN Input)
         discard;
     }
     
-    Output.vColor = g_vColor;
+    vector vColor = g_vColor;
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = vector(fAlpha, fAlpha, fAlpha, fAlpha);
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -402,7 +402,17 @@ PS_OUT_EFFECT PS_Main_Fireball(PS_IN Input)
     PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     float fUV = 1.f - g_MaskTexture.Sample(LinearSampler, Input.vTex).x;
-    Output.vColor = g_GradationTexture.Sample(LinearSampler, float2(fUV, 0.4f));
+    vector vColor = g_GradationTexture.Sample(LinearSampler, float2(fUV, 0.4f));
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = vector(fAlpha, fAlpha, fAlpha, fAlpha);
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -424,7 +434,8 @@ PS_OUT_EFFECT PS_Main_MaskEffect(PS_IN_EFFECT Input)
     fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
     
     Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
-    Output.vAlpha = fAlpha;
+    Output.vAlpha = vector(fAlpha, fAlpha, fAlpha, fAlpha);
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     
     //Output.vColor = g_vColor;
@@ -450,8 +461,15 @@ PS_OUT_EFFECT PS_Main_MaskEffect_Dissolve(PS_IN Input)
         discard;
     }
     
-    Output.vColor = g_vColor;
-    Output.vColor.a = vMask.r;
+    float3 Color = g_vColor.rgb;
+    float fAlpha = vMask.r;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = vector(fAlpha, fAlpha, fAlpha, fAlpha);
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -466,8 +484,15 @@ PS_OUT_EFFECT PS_Main_MaskEffect_Clamp(PS_IN Input)
         discard;
     }
     
-    Output.vColor = g_vColor;
-    Output.vColor.a = vMask.r;
+    float3 Color = g_vColor.rgb;
+    float fAlpha = vMask.r;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = vector(fAlpha, fAlpha, fAlpha, fAlpha);
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -482,7 +507,7 @@ void PS_Main_Shadow(PS_SHADOW_IN Input)
 {
     vector vDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
     
-    if(0.5f > vDiffuse.a)
+    if (0.5f > vDiffuse.a)
         discard;
 
 }
@@ -513,7 +538,7 @@ PS_WATER_OUT PS_Main_Water(PS_WATER_IN Input)
     PS_WATER_OUT Output = (PS_WATER_OUT) 0;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
-    if(vMtrlDiffuse.a < 0.3f)
+    if (vMtrlDiffuse.a < 0.3f)
         discard;
     
     float3 vNormal;
@@ -593,7 +618,7 @@ PS_OUT_DEFERRED PS_Main_WorldMap_Water(PS_IN Input)
 {
     PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
     
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, float2(Input.vTex.x, (Input.vTex.y + g_fy*0.5f))) + 0.3f * g_bSelected;
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, float2(Input.vTex.x, (Input.vTex.y + g_fy * 0.5f))) + 0.3f * g_bSelected;
     
     float3 vNormal;
     if (g_HasNorTex)
@@ -628,7 +653,7 @@ PS_OUT_DEFERRED PS_Main_WorldMap_Cloud(PS_IN Input)
 {
     PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
     
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler,Input.vTex);
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
     //vector vMask = g_MaskTexture.Sample(LinearClampSampler, (Input.vTex + g_vUVTransform));
     
     float3 vNormal;
@@ -670,7 +695,17 @@ PS_OUT_EFFECT PS_Main_DiffEffect(PS_IN Input)
 {
     PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
-    Output.vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform);
+    vector vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform);
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = vector(fAlpha, fAlpha, fAlpha, fAlpha);
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -679,8 +714,15 @@ PS_OUT_EFFECT PS_Main_Effect_Alpha(PS_IN Input)
 {
     PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
-    Output.vColor.rgb = g_vColor.rgb;
-    Output.vColor.a = g_fAlpha;
+    float3 Color = g_vColor.rgb;
+    float fAlpha = g_fAlpha;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = vector(fAlpha, fAlpha, fAlpha, fAlpha);
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -695,8 +737,18 @@ PS_OUT_EFFECT PS_Main_MaskEffect_Alpha(PS_IN Input)
         discard;
     }
     
-    Output.vColor = g_vColor;
-    Output.vColor.a *= vMask.r * g_fAlpha;
+    vector vColor = g_vColor;
+    vColor.a *= vMask.r * g_fAlpha;
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = vector(fAlpha, fAlpha, fAlpha, fAlpha);
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -705,8 +757,17 @@ PS_OUT_EFFECT PS_Main_DiffEffect_Alpha(PS_IN Input)
 {
     PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
-    Output.vColor.rgb = g_DiffuseTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform).rgb;
-    Output.vColor.a = g_fAlpha;
+    vector vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform);
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = g_fAlpha;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = vector(fAlpha, fAlpha, fAlpha, fAlpha);
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -716,8 +777,8 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass Default // 0
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -729,8 +790,8 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass NonLight // 1
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -743,7 +804,7 @@ technique11 DefaultTechnique_Shader_StatMesh
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_DrawStencil, g_OutlineColor);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -755,8 +816,8 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass AlphaTestMeshes // 3
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -769,7 +830,7 @@ technique11 DefaultTechnique_Shader_StatMesh
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -781,8 +842,8 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass COLMesh // 5
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -794,8 +855,8 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass SingleColoredEffect // 6
     {
         SetRasterizerState(RS_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -807,8 +868,8 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass SingleColoredEffectDissolve // 7
     {
         SetRasterizerState(RS_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -820,8 +881,8 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass Fireball // 8
     {
         SetRasterizerState(RS_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -833,7 +894,7 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass MaskEffect // 9
     {
         SetRasterizerState(RS_None);
-        SetDepthStencilState(DSS_Default, 0);
+        SetDepthStencilState(DSS_Effect, 0);
         SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Effect();
@@ -846,8 +907,8 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass MaskEffectDissolve // 10
     {
         SetRasterizerState(RS_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -859,8 +920,8 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass MaskEffectClamp // 11
     {
         SetRasterizerState(RS_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -872,8 +933,8 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass SingleColoredEffectFrontCull // 12
     {
         SetRasterizerState(RS_CCW);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -885,8 +946,8 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass Shadow // 13
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Shadow();
         GeometryShader = compile gs_5_0 GS_Main_Shadow();
@@ -898,8 +959,8 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass Water // 14
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main_Water();
         GeometryShader = NULL;
@@ -911,8 +972,8 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass WorldMap_Water //15
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -924,8 +985,8 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass WorldMap_Cloud //16
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -937,8 +998,8 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass RimLight // 17
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -950,8 +1011,8 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass DiffEffect // 18
     {
         SetRasterizerState(RS_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -963,8 +1024,8 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass SingleColoredAlpha // 19
     {
         SetRasterizerState(RS_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -976,8 +1037,8 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass MaskAlpha // 20
     {
         SetRasterizerState(RS_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -989,8 +1050,8 @@ technique11 DefaultTechnique_Shader_StatMesh
     pass DiffEffectAlpha // 21
     {
         SetRasterizerState(RS_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;

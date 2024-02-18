@@ -4,6 +4,9 @@ matrix g_ViewMatrix, g_ProjMatrix;
 texture2D g_MaskTexture;
 vector g_vCamPos;
 
+bool g_isBlur;
+
+
 struct VS_IN
 {
     float3 vPos : Position;
@@ -41,6 +44,7 @@ struct GS_OUT
     vector vPos : SV_Position;
     float2 vTex : Texcoord0;
     vector vColor : Color;
+    float LinearZ : LINEARZ;
 };
 
 [maxvertexcount(12)]
@@ -91,13 +95,28 @@ void GS_Main(line GS_IN Input[2], inout TriangleStream<GS_OUT> Triangles)
     matrix matVP = mul(g_ViewMatrix, g_ProjMatrix);
     
     Output[0].vPos = mul(Output[0].vPos, matVP);
+    Output[0].LinearZ = Output[0].vPos.w;
+    
     Output[1].vPos = mul(Output[1].vPos, matVP);
+    Output[1].LinearZ = Output[1].vPos.w;
+    
     Output[2].vPos = mul(Output[2].vPos, matVP);
+    Output[2].LinearZ = Output[2].vPos.w;
+    
     Output[3].vPos = mul(Output[3].vPos, matVP);
+    Output[3].LinearZ = Output[3].vPos.w;
+    
     Output[4].vPos = mul(Output[4].vPos, matVP);
+    Output[4].LinearZ = Output[4].vPos.w;
+    
     Output[5].vPos = mul(Output[5].vPos, matVP);
+    Output[5].LinearZ = Output[5].vPos.w;
+    
     Output[6].vPos = mul(Output[6].vPos, matVP);
+    Output[6].LinearZ = Output[6].vPos.w;
+    
     Output[7].vPos = mul(Output[7].vPos, matVP);
+    Output[7].LinearZ = Output[7].vPos.w;
 
     Triangles.Append(Output[0]);
     Triangles.Append(Output[4]);
@@ -125,13 +144,14 @@ struct PS_IN
     vector vPos : SV_Position;
     float2 vTex : Texcoord0;
     vector vColor : Color;
+    float LinearZ : LINEARZ;
 };
 
 struct PS_OUT
 {
     vector vColor : SV_Target0;
-    vector vBlurColor : SV_Target1;
-    vector vDistortion : SV_Target2;
+    vector vAlpha : SV_Target1;
+    vector vBlur : SV_Target2;
 };
 
 PS_OUT PS_Main(PS_IN Input)
@@ -142,7 +162,15 @@ PS_OUT PS_Main(PS_IN Input)
     
     //vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     
-    Output.vBlurColor = Input.vColor;
+    float3 Color = Input.vColor.rgb;
+    float fAlpha = Input.vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = vector(fAlpha, fAlpha, fAlpha, fAlpha);
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -152,8 +180,8 @@ technique11 DefaultTechnique
     pass SingleColorTrail
     {
         SetRasterizerState(RS_None);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_Main();
