@@ -309,9 +309,16 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 		}
 
 		m_AimZoomInTime += fTimeDelta * 1.5f;
-
-		
-		_float CamAttackZoom = m_fLerpDistance - m_pCam_Manager->Get_CameraAttackZoom();
+		_float fCamZoom = m_pCam_Manager->Get_CameraAttackZoom();
+		_float CamAttackZoom{};
+		if (fCamZoom > 0.2f)
+		{
+			CamAttackZoom = 6.f - fCamZoom;
+		}
+		else
+		{
+			 CamAttackZoom = m_fLerpDistance - fCamZoom;
+		}
 
 		_float vZoomY = 1.3f - (CamAttackZoom * 0.25f);
 		_vec4 vCamPos = (m_pPlayerTransform->Get_CenterPos()) + _vec4(0.f, vZoomY, 0.f, 0.f)

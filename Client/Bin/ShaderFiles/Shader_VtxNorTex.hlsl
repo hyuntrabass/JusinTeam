@@ -17,7 +17,7 @@ vector g_vMtrlAmbient = vector(0.3f, 0.3f, 0.3f, 1.f);
 vector g_vMtrlSpecular = vector(0.7f, 1.0f, 0.7f, 1.f);
 
 vector g_vCamPos;
-float g_fCamFar;
+float2 g_CamNF;
 
 struct VS_IN
 {
@@ -84,7 +84,7 @@ PS_OUT PS_Main(PS_IN Input)
 
     Output.vDiffuse = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular);
     Output.vNormal = Input.vNor;
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
     
     return Output;
 }
@@ -113,7 +113,7 @@ PS_OUT PS_Main_Editor(PS_IN Input)
 
     Output.vDiffuse = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular) + vCursorDiffuse;
     Output.vNormal = Input.vNor;
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
     return Output;
 }
 
@@ -125,7 +125,7 @@ PS_OUT PS_Main_Effect(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = Input.vNor;
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
     
     return Output;
 }

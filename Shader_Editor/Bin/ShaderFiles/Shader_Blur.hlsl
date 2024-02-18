@@ -49,7 +49,9 @@ void Blur(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID, ui
         {
             uint cIndex = (uint) (i + radius);
             //accumulatedValue += coefficients[cIndex >> 2][cIndex & 3] * inputTexture[mad(i, dir, pixel)];
-            accumulatedValue += Gaussian[cIndex] * inputTexture[mad(i, dir, pixel)] * fBlurPower;
+            int2 iIndex = mad(i, dir, pixel);
+            if (iIndex.x <= iWinSize.x && iIndex.y <= iWinSize.y && iIndex.x >= 0 && iIndex.y >=0)
+                accumulatedValue += Gaussian[cIndex] * inputTexture[iIndex] * fBlurPower;
         }
         
         outputTexture[pixel] = accumulatedValue;
