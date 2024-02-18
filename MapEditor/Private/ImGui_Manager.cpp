@@ -3418,12 +3418,10 @@ void CImGui_Manager::Free()
 	}
 	m_CameraList.clear();
 
-	if (!m_DummyList.empty())
+
+	for (auto& Pair : m_DummyList)
 	{
-		for (auto& Pair : m_DummyList)
-		{
-			Safe_Release(Pair.second);
-		}
+		Safe_Release(Pair.second);
 	}
 	m_DummyList.clear();
 

@@ -1,6 +1,6 @@
 #include "Dummy.h"
 
-static _int iID = 0;
+static _int iID = -1;
 
 CDummy::CDummy(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
