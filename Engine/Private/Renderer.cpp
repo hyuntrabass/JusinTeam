@@ -750,18 +750,11 @@ HRESULT CRenderer::Draw_RenderGroup()
 		return E_FAIL;
 	}
 
-	if (FAILED(Render_BlendBlur()))
-	{
-		MSG_BOX("Failed to Render : BlenderBlur");
-		return E_FAIL;
-	}
-
 	if (FAILED(Render_Final()))
 	{
 		MSG_BOX("Failed to Render : Final");
 		return E_FAIL;
 	}
-
 
 	if (FAILED(Render_UI()))
 	{
@@ -1860,34 +1853,6 @@ HRESULT CRenderer::Render_Blend()
 
 	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Effect_Blur"), L"MRT_Blur", m_fEffectBlurPower)))
 		return E_FAIL;
-
-	return S_OK;
-}
-
-HRESULT CRenderer::Render_BlendBlur()
-{
-	/*if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_Effect_Blur")))
-		return E_FAIL;
-
-	for (auto& pGameObject : m_RenderObjects[RG_BlendBlur])
-	{
-		if (pGameObject)
-		{
-			if (FAILED(pGameObject->Render()))
-			{
-				MSG_BOX("Failed to Render");
-			}
-		}
-
-		Safe_Release(pGameObject);
-	}
-
-	m_RenderObjects[RG_BlendBlur].clear();
-
-	if (FAILED(m_pGameInstance->End_MRT()))
-		return E_FAIL;*/
-
-
 
 	return S_OK;
 }
