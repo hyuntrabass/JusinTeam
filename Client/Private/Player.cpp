@@ -2584,7 +2584,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			{
 				if (Index >= 7.5f && Index <= 25.f)
 				{
-					m_pTransformCom->Set_Speed(14.f);
+					m_pTransformCom->Set_Speed(12.f);
 					m_pTransformCom->Go_Straight(fTimeDelta);
 					if(!m_bComboZoom)
 					{
