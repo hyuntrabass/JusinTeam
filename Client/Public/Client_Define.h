@@ -324,12 +324,12 @@ namespace Client
 	};
 	enum Monster_AttType
 	{
+		Parrying_Succescc,
 		MonAtt_Hit,
 		MonAtt_KnockDown,
 		MonAtt_Stun,
 		MonAtt_Poison,
 		MonAtt_Pull,
-		Parrying_Succescc,
 		MonAtt_End
 	};
 #pragma endregion

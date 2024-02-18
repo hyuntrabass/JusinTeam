@@ -292,7 +292,7 @@ public:
 		_int Max_Hp{ 1000 };
 		_int Max_Mp{ 1000 };
 		_int Current_Mp{ 1000 };
-		_int Attack{ 100 } ;
+		_int Attack{ 80 };
 		_int Critical{};
 		_int Critical_Dmg{ 150 };
 		_int Armor{};
@@ -381,7 +381,6 @@ private:
 private:
 	ANIM_DESC m_Animation{};
 	PLAYER_STATUS m_Status{};
-	PLAYER_STATUS m_EquipStatus{};
 	ANIM_LIST m_BowSkill[5]{};
 	ANIM_LIST m_SwordSkill[5]{};
 	Riding_State m_Riding_State{};
@@ -419,9 +418,9 @@ private:
 	_bool m_UsingMotionBlur{};
 	const _mat* m_Right_Mat{};
 	_uint m_iSwimCollectCount{};
-	const _float m_fRunSpeed{ 4.f };
+	const _float m_fRunSpeed{ 5.f };
 	const _float m_fWalkSpeed{ 1.f };
-	_bool	  m_isInvenActive{ false };
+	_bool m_isInvenActive{ false };
 
 	_bool m_ViewLeftTrail{};
 	_bool m_ViewRightTrail{};
@@ -433,7 +432,7 @@ private:
 	_bool m_bReadyMove{};
 	_bool m_bAttackStop{};
 	_int m_iAttackCombo{};
-	_vec4 m_vRimColor{1.f};
+	_vec4 m_vRimColor{ 1.f };
 	_uint m_iPoisonCount{};
 	_float m_fBoostSpeed{};
 	_float m_fSkillSpeed{};
