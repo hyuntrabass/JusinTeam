@@ -247,16 +247,16 @@ PS_OUT PS_Main_Dissolve(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio + 1.f - Input.fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - (g_fDissolveRatio + 1.f - Input.fDissolveRatio)) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
-    
+
     Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     
-    Output.vColor.a = vMask.r;
+    Output.vColor.a = vMask.r * fAlpha;
     
     return Output;
 }
@@ -266,12 +266,12 @@ PS_OUT PS_Main_Sprite_Dissolve(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio + 1.f - Input.fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - (g_fDissolveRatio + 1.f - Input.fDissolveRatio)) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
-    
+
     float2 vSpriteSize = float2(1.f, 1.f) / g_vNumSprite;
     int2 vSpriteCoord;
     vSpriteCoord.x = Input.iIndex % g_vNumSprite.x;
@@ -286,7 +286,7 @@ PS_OUT PS_Main_Sprite_Dissolve(PS_IN Input)
 
     Output.vColor = g_vColor;
     
-    Output.vColor.a = vMask.r;
+    Output.vColor.a = vMask.r * fAlpha;
     
     return Output;
 }
@@ -296,12 +296,12 @@ PS_OUT PS_Main_Color_Dissolve(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio + 1.f - Input.fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - (g_fDissolveRatio + 1.f - Input.fDissolveRatio)) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
-    
+
     Output.vColor = g_vColor;
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     if (vMask.r < 0.1f)
@@ -309,7 +309,7 @@ PS_OUT PS_Main_Color_Dissolve(PS_IN Input)
         discard;
     }
     
-    Output.vColor.a = vMask.r;
+    Output.vColor.a = vMask.r * fAlpha;
     
     return Output;
 }
@@ -335,12 +335,12 @@ PS_OUT PS_Main_Sprite_Texture_Dissolve(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio + 1.f - Input.fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - (g_fDissolveRatio + 1.f - Input.fDissolveRatio)) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
-    
+
     float2 vSpriteSize = float2(1.f, 1.f) / g_vNumSprite;
     int2 vSpriteCoord;
     vSpriteCoord.x = Input.iIndex % g_vNumSprite.x;
@@ -348,6 +348,7 @@ PS_OUT PS_Main_Sprite_Texture_Dissolve(PS_IN Input)
     float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
     
     Output.vColor = g_Texture.Sample(LinearSampler, vUV);
+    Output.vColor.a *= fAlpha;
     
     return Output;
 }
@@ -381,8 +382,8 @@ PS_OUT PS_Main_Sprite_Diff_Mask_Dissolve(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio + 1.f - Input.fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - (g_fDissolveRatio + 1.f - Input.fDissolveRatio)) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
@@ -401,7 +402,7 @@ PS_OUT PS_Main_Sprite_Diff_Mask_Dissolve(PS_IN Input)
 
     Output.vColor.xyz = g_Texture.Sample(LinearSampler, vUV).xyz;
     
-    Output.vColor.a = vMask.r * vMask.a;
+    Output.vColor.a = vMask.r * vMask.a * fAlpha;
 
     return Output;
 }

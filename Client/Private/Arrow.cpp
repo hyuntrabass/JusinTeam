@@ -135,6 +135,12 @@ void CArrow::Tick(_float fTimeDelta)
 			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Smoke2");
 			Info.pMatrix = &EffectMat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Smoke3");
+			Info.pMatrix = &EffectMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Boom");
+			Info.pMatrix = &EffectMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 			m_ArrowType.Att_Type = AT_End;
 			//Kill();

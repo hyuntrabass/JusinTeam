@@ -308,16 +308,16 @@ PS_OUT PS_MaskTexture_Dissolve(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - g_fDissolveRatio) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
-    
+
     Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     
-    Output.vColor.a = Output.vColor.a * vMask.r;
+    Output.vColor.a = Output.vColor.a * vMask.r * fAlpha;
     
     return Output;
 }
@@ -327,12 +327,12 @@ PS_OUT PS_InvMaskTexture_Dissolve(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - g_fDissolveRatio) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
-    
+
     Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
     if (Input.vTex.y < g_fHpRatio + 0.5f)
     {
@@ -341,7 +341,7 @@ PS_OUT PS_InvMaskTexture_Dissolve(PS_IN Input)
     Output.vColor.xyz += g_SkillReadyTexture.Sample(LinearClampSampler, Input.vTex - float2(0.f, g_fHpRatio)).xyz;
     float fMask = g_MaskTexture.Sample(LinearSampler, Input.vTex).r;
     
-    Output.vColor.a = Output.vColor.a * 1.f - fMask;
+    Output.vColor.a = Output.vColor.a * (1.f - fMask) * fAlpha;
     
     return Output;
 }
@@ -351,17 +351,17 @@ PS_OUT PS_MaskColor_Dissolve(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - g_fDissolveRatio) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
-    
+
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     
     Output.vColor = g_vColor;
     
-    Output.vColor.a = Output.vColor.a * vMask.r;
+    Output.vColor.a = Output.vColor.a * vMask.r * fAlpha;
     
     return Output;
 }
@@ -371,12 +371,12 @@ PS_OUT PS_Main_Sprite_Dissolve(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - g_fDissolveRatio) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
-    
+
     float2 vSpriteSize = float2(1.f, 1.f) / g_vNumSprite;
     int2 vSpriteCoord;
     vSpriteCoord.x = g_iIndex % g_vNumSprite.x;
@@ -386,6 +386,8 @@ PS_OUT PS_Main_Sprite_Dissolve(PS_IN Input)
     Output.vColor = g_Texture.Sample(LinearSampler, vUV);
     
     //Output.vColor.a = Output.vColor.r
+    
+    Output.vColor.a = fAlpha;
     
     if (Output.vColor.a < 0.1f)
     {
@@ -400,12 +402,12 @@ PS_OUT PS_Main_Sprite_MaskTexture_Dissolve(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - g_fDissolveRatio) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
-    
+
     float2 vSpriteSize = float2(1.f, 1.f) / g_vNumSprite;
     int2 vSpriteCoord;
     vSpriteCoord.x = g_iIndex % g_vNumSprite.x;
@@ -423,7 +425,7 @@ PS_OUT PS_Main_Sprite_MaskTexture_Dissolve(PS_IN Input)
 
     Output.vColor = g_Texture.Sample(LinearSampler, vUV);
     
-    Output.vColor.a = vMask.r * vMask.a;
+    Output.vColor.a = vMask.r * vMask.a * fAlpha;
     
     return Output;
 }
@@ -433,12 +435,12 @@ PS_OUT PS_Main_Sprite_MaskColor_Dissolve(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - g_fDissolveRatio) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
-    
+
     float2 vSpriteSize = float2(1.f, 1.f) / g_vNumSprite;
     int2 vSpriteCoord;
     vSpriteCoord.x = g_iIndex % g_vNumSprite.x;
@@ -456,7 +458,7 @@ PS_OUT PS_Main_Sprite_MaskColor_Dissolve(PS_IN Input)
 
     Output.vColor = g_vColor;
     
-    Output.vColor.a = vMask.r * vMask.a;
+    Output.vColor.a = vMask.r * vMask.a * fAlpha;
     
     return Output;
 }
@@ -475,13 +477,14 @@ PS_OUT PS_Main_Dissolve(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - g_fDissolveRatio) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
-    
+
     Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    Output.vColor.a = fAlpha;
     
     return Output;
 }
@@ -696,12 +699,12 @@ PS_OUT PS_Main_LerpColorNAlpha(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
-    if(g_vColor.a != 0.f)
+    if (g_vColor.a != 0.f)
     {
         Output.vColor.xyz = lerp(Output.vColor, g_vColor, 0.6f);
     }
 
-    if(Output.vColor.a > 0.1f)
+    if (Output.vColor.a > 0.1f)
     {
         Output.vColor.a = g_fAlpha;
     }
@@ -1180,7 +1183,7 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_LerpColorNAlpha();
     }
-pass HPBoss
+    pass HPBoss
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -1192,7 +1195,7 @@ pass HPBoss
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_HPBoss();
     }
-pass MaskColorMove
+    pass MaskColorMove
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -1204,7 +1207,7 @@ pass MaskColorMove
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_MaskColorMove();
     }
-pass ChangeBright
+    pass ChangeBright
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -1216,7 +1219,7 @@ pass ChangeBright
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_ChangeBright();
     }
-pass Move
+    pass Move
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
