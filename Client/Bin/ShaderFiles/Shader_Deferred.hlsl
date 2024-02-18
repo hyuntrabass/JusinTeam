@@ -32,17 +32,18 @@ Texture2D g_SpecularTexture;
 
 Texture2D g_BlurTexture;
 
+// Debugs
 Texture2D g_DebugTexture;
 Texture2DArray g_DebugArrayTexture;
+uint g_DebugArrayIndex;
 
 
-// ±×¸²ÀÚ
+// Shadow
 Texture2DArray g_LightDepthTexture;
 matrix g_LightViewMatrix[3];
 matrix g_LightProjMatrix[3];
 vector g_ClipZ;
 bool g_TurnOnShadow;
-uint g_hi;
 
 
 // SSAO
@@ -53,7 +54,8 @@ matrix g_CamProjMatrix;
 
 // HDR
 Texture2D g_Luminance;
-Texture2D g_HDRTexture;
+Texture2D g_DeferredTexture;
+Texture2D g_BloomTexture;
 
 // Outline
 Texture2D g_StencilTexture;
@@ -62,13 +64,22 @@ vector g_CheckColor;
 uint g_OutlineColorIndex;
 
 // Blurs
-Texture2D g_TestBlurTexture;
 bool TurnOnSSAO;
 bool TurnOnToneMap;
 bool TurnOnBloom;
 bool TurnOnRim;
 SSAO_DESC g_SSAO;
 HDR_DESC g_HDR;
+
+// Final
+Texture2D g_Texture;
+Texture2D g_BlendTexture;
+Texture2D g_BlendAlphaTexture;
+Texture2D g_DistortionTexture;
+
+// Effect
+Texture2D g_EffectColorTexture;
+Texture2D g_AlphaTexture;
 
 vector Get_WorldPos(float2 vTex)
 {
@@ -182,7 +193,7 @@ PS_OUT PS_Main_DebugArray(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
 
-    Output.vColor = g_DebugArrayTexture.Sample(LinearSampler, float3(Input.vTexcoord, (float) g_hi));
+    Output.vColor = g_DebugArrayTexture.Sample(LinearSampler, float3(Input.vTexcoord, (float) g_DebugArrayIndex));
     
     return Output;
 }
@@ -358,18 +369,25 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     FinalColor = lerp(fFogFactor * FinalColor, vFogColor, (1.f - fFogFactor));
     //FinalColor = fFogFactor * FinalColor + (1.f - fFogFactor) * vFogColor;
     
+    FinalColor.a = 1.f;
     Output.vColor = FinalColor;
     
     return Output;
 }
 
-PS_OUT PS_Main_Blur(PS_IN Input)
+PS_OUT PS_Main_Blend(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = vector(0.f, 0.f, 0.f, 0.f);
+    vector vAccum = g_EffectColorTexture.Sample(PointSampler, Input.vTexcoord);
+    float fAlpha = g_AlphaTexture.Sample(PointSampler, Input.vTexcoord).r;
     
-    Output.vColor = g_BlurTexture.Sample(LinearSampler, Input.vTexcoord);
+    float3 vColor = vAccum / max(vAccum.a, 1e-5);
+    Output.vColor = vector(vColor, fAlpha);
+    
+    //Output.vColor = vector(0.f, 0.f, 0.f, 0.f);
+    
+    //Output.vColor = g_BlurTexture.Sample(LinearSampler, Input.vTexcoord);
     
     //float2 fTexelSize = 1.f / float2(g_fScreenWidth, g_fScreenHeight);
     
@@ -460,7 +478,7 @@ PS_OUT PS_Main_HDR(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    vector vColor = g_HDRTexture.Sample(LinearSampler, Input.vTexcoord);
+    vector vColor = g_DeferredTexture.Sample(LinearSampler, Input.vTexcoord);
     
     if(0.f == vColor.a)
         discard;
@@ -469,7 +487,7 @@ PS_OUT PS_Main_HDR(PS_IN Input)
     
     if (true == TurnOnBloom)
     {
-        vector vBlur = g_TestBlurTexture.Sample(LinearSampler, Input.vTexcoord);
+        vector vBlur = g_BloomTexture.Sample(LinearSampler, Input.vTexcoord);
         
         vHDRColor += vBlur.rgb;
     }
@@ -487,7 +505,7 @@ PS_OUT PS_Main_HDR(PS_IN Input)
     
     vHDRColor = pow(vHDRColor, 1.f / 2.2f);
         
-    Output.vColor = vector(vHDRColor, vColor.a);
+    Output.vColor = vector(vHDRColor, 1.f);
     
     return Output;
 }
@@ -538,6 +556,44 @@ PS_OUT PS_Main_Outline(PS_IN Input)
     
     vector vColor = g_OutlineColor;
     vColor.a *= edge;
+    
+    Output.vColor = vColor;
+    
+    return Output;
+}
+
+
+PS_OUT PS_Main_Blur(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    Output.vColor = g_BlendTexture.Sample(LinearClampSampler, Input.vTexcoord);    
+    
+    return Output;
+}
+
+PS_OUT PS_Main_Distortion(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    float2 vDistortion = g_DistortionTexture.Sample(LinearSampler, Input.vTexcoord).rg * 0.05f;
+    
+    float2 vTex = Input.vTexcoord + vDistortion;
+    
+    vector vColor = g_Texture.Sample(LinearClampSampler, vTex);
+    
+    Output.vColor = vColor;
+    
+    return Output;
+}
+
+PS_OUT PS_Draw(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTexcoord);
+    if(0.f == vColor.a)
+        discard;
     
     Output.vColor = vColor;
     
@@ -624,17 +680,17 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main_Deferred();
     }
 
-    pass Blur // 6
+    pass Blend // 6
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
-        SetBlendState(BS_OnebyOne, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_InvAlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main_Blur();
+        PixelShader = compile ps_5_0 PS_Main_Blend();
     }
 
     pass SSAO // 7
@@ -687,5 +743,44 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Outline();
+    }
+
+    pass Draw_Blur // 11
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_OnebyOne, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Blur();
+    }
+
+    pass Draw_Final // 12
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Distortion();
+    }
+    
+    pass Just_Draw // 13
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Draw();
     }
 };

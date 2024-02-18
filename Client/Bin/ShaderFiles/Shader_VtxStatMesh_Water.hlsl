@@ -4,7 +4,7 @@ matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
 vector g_vCamPos;
 
-float g_fCamFar;
+float2 g_CamNF;
 
 float4 g_vClipPlane;
 
@@ -141,7 +141,7 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
     Output.vSpecular = vSpecular;
     
     return Output;
@@ -192,7 +192,7 @@ PS_OUT_DEFERRED PS_Ref_Water(PS_WATER_In Input)
     
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
     Output.vSpecular = vSpecular;
 
     

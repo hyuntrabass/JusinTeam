@@ -102,23 +102,23 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 				pVertex->vPrevPos = pVertex->vPos;
 			}
 		}
-		VertexList.push_back(*pVertex);
+		//VertexList.push_back(*pVertex);
 	}
 
-	_vec4 vCamPos = CGameInstance::Get_Instance()->Get_CameraPos();
+	//_vec4 vCamPos = CGameInstance::Get_Instance()->Get_CameraPos();
 
-	VertexList.sort([&WorldMatrix, &vCamPos](VTXINSTANCING pSrc, VTXINSTANCING pDst)
-	{
-		_float fSrcDist = (_vec4(pSrc.vPos) - vCamPos).Length();
-		_float fDstDist = (_vec4(pDst.vPos) - vCamPos).Length();
-		return fSrcDist > fDstDist;
-	});
+	//VertexList.sort([&WorldMatrix, &vCamPos](VTXINSTANCING pSrc, VTXINSTANCING pDst)
+	//{
+	//	_float fSrcDist = (_vec4(pSrc.vPos) - vCamPos).Length();
+	//	_float fDstDist = (_vec4(pDst.vPos) - vCamPos).Length();
+	//	return fSrcDist > fDstDist;
+	//});
 
-	for (size_t i = 0; i < iNumUse; i++)
-	{
-		reinterpret_cast<VTXINSTANCING*>(SubResource.pData)[i] = VertexList.front();
-		VertexList.pop_front();
-	}
+	//for (size_t i = 0; i < iNumUse; i++)
+	//{
+	//	reinterpret_cast<VTXINSTANCING*>(SubResource.pData)[i] = VertexList.front();
+	//	VertexList.pop_front();
+	//}
 
 	m_pContext->Unmap(m_pVBInstance, 0);
 

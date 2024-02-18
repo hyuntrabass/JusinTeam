@@ -5,7 +5,7 @@ texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
 texture2D g_MaskTexture;
 
-float g_fCamFar;
+float2 g_CamNF;
 
 bool g_HasNorTex;
 bool g_HasMaskTex;
@@ -297,7 +297,7 @@ PS_OUT PS_Main(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, Input.vDir.x, Input.vDir.y);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
     
     return Output;
 }

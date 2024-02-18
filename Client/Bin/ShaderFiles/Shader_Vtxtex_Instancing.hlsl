@@ -9,6 +9,10 @@ uint g_iIndex;
 float g_fDissolveRatio;
 float g_fAlpha;
 
+float2 g_CamNF;
+
+bool g_isBlur;
+
 struct VS_IN
 {
     float3 vPos : Position;
@@ -78,6 +82,7 @@ struct GS_OUT
     float2 vTex : Texcoord0;
     uint iIndex : Index;
     float fDissolveRatio : Dissolve;
+    float LinearZ : LINEARZ;
 };
 
 [maxvertexcount(6)]
@@ -103,10 +108,21 @@ void GS_MAIN(point GS_IN Input[1], inout TriangleStream<GS_OUT> Triangles)
     
     matrix matVP = mul(g_ViewMatrix, g_ProjMatrix);
     
+    /////////////////////
     Output[0].vPos = mul(Output[0].vPos, matVP);
+    Output[0].LinearZ = Output[0].vPos.w;
+    
+    /////////////////////
     Output[1].vPos = mul(Output[1].vPos, matVP);
+    Output[1].LinearZ = Output[1].vPos.w;
+    
+    /////////////////////
     Output[2].vPos = mul(Output[2].vPos, matVP);
+    Output[2].LinearZ = Output[2].vPos.w;
+    
+    /////////////////////
     Output[3].vPos = mul(Output[3].vPos, matVP);
+    Output[3].LinearZ = Output[3].vPos.w;
 
     Output[0].iIndex = Input[0].iIndex;
     Output[1].iIndex = Input[0].iIndex;
@@ -152,10 +168,21 @@ void GS_MAIN_Trail(point GS_IN Input[1], inout TriangleStream<GS_OUT> Triangles)
     
     matrix matVP = mul(g_ViewMatrix, g_ProjMatrix);
     
+    /////////////////////
     Output[0].vPos = mul(Output[0].vPos, matVP);
+    Output[0].LinearZ = Output[0].vPos.w;
+    
+    /////////////////////
     Output[1].vPos = mul(Output[1].vPos, matVP);
+    Output[1].LinearZ = Output[1].vPos.w;
+    
+    /////////////////////
     Output[2].vPos = mul(Output[2].vPos, matVP);
+    Output[2].LinearZ = Output[2].vPos.w;
+    
+    /////////////////////
     Output[3].vPos = mul(Output[3].vPos, matVP);
+    Output[3].LinearZ = Output[3].vPos.w;
 
     Output[0].iIndex = Input[0].iIndex;
     Output[1].iIndex = Input[0].iIndex;
@@ -183,22 +210,40 @@ struct PS_IN
     float2 vTex : Texcoord0;
     uint iIndex : Index;
     float fDissolveRatio : Dissolve;
+    float LinearZ : LINEARZ;
 };
 
 
 struct PS_OUT
 {
     vector vColor : SV_Target0;
+    vector vAlpha : SV_Target1;
+    vector vBlur : SV_Target2;
 };
 
 PS_OUT PS_Main(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTex);
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     
-    Output.vColor.a = vMask.r * Input.fDissolveRatio;
+    float3 Color = vColor.rgb;
+    float fAlpha = vMask.r * Input.fDissolveRatio;
+    
+    //float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 6.f)), 0.01f, 3e3); // 1e-5 = 0.00001, 3e3 = 3000
+    
+    //fWeight = max(fWeight, 1.f);
+    
+    //float fWeight = pow(Input.LinearZ, -2.5f);
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+    
+    //Output.vColor.a = vMask.r * Input.fDissolveRatio;
     
     return Output;
 }
@@ -218,10 +263,27 @@ PS_OUT PS_Main_Sprite(PS_IN Input)
     {
         discard;
     }
-
-    Output.vColor = g_vColor;
     
-    Output.vColor.a = vMask.r * Input.fDissolveRatio;
+    float3 Color = g_vColor.rgb;
+    float fAlpha = vMask.r * Input.fDissolveRatio;
+    
+    //float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 6.f)), 0.01f, 3e3); // 1e-5 = 0.00001, 3e3 = 3000
+    
+    //fWeight = max(fWeight, 1.f);
+    
+    //float fWeight = pow(Input.LinearZ, -2.5f);
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+    
+
+    //Output.vColor = g_vColor;
+    
+    //Output.vColor.a = vMask.r * Input.fDissolveRatio;
     
     return Output;
 }
@@ -230,14 +292,31 @@ PS_OUT PS_Main_Color(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_vColor;
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     if (vMask.r < 0.1f)
     {
         discard;
     }
     
-    Output.vColor.a = vMask.r * Input.fDissolveRatio;
+    float3 Color = g_vColor.rgb;
+    float fAlpha = vMask.r * Input.fDissolveRatio;
+    
+    //float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 6.f)), 0.01f, 3e3); // 1e-5 = 0.00001, 3e3 = 3000
+    
+    //fWeight = max(fWeight, 1.f);
+    
+    //float fWeight = pow(Input.LinearZ, -2.5f);
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+    
+        
+    //Output.vColor = g_vColor;
+    //Output.vColor.a = vMask.r * Input.fDissolveRatio;
     
     return Output;
 }
@@ -247,16 +326,34 @@ PS_OUT PS_Main_Dissolve(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio + 1.f - Input.fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - (g_fDissolveRatio + 1.f - Input.fDissolveRatio)) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
     
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vColor = g_Texture.Sample(LinearSampler, Input.vTex);
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     
-    Output.vColor.a = vMask.r;
+    float3 Color = vColor.rgb;
+    fAlpha = vMask.r * fAlpha;
+    
+    //float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 6.f)), 0.01f, 3e3); // 1e-5 = 0.00001, 3e3 = 3000
+    
+    //fWeight = max(fWeight, 1.f);
+    
+    //float fWeight = pow(Input.LinearZ, -2.5f);
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+    
+    
+    
+    //Output.vColor.a = vMask.r;
     
     return Output;
 }
@@ -266,12 +363,12 @@ PS_OUT PS_Main_Sprite_Dissolve(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio + 1.f - Input.fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - (g_fDissolveRatio + 1.f - Input.fDissolveRatio)) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
-    
+
     float2 vSpriteSize = float2(1.f, 1.f) / g_vNumSprite;
     int2 vSpriteCoord;
     vSpriteCoord.x = Input.iIndex % g_vNumSprite.x;
@@ -284,9 +381,27 @@ PS_OUT PS_Main_Sprite_Dissolve(PS_IN Input)
         discard;
     }
 
-    Output.vColor = g_vColor;
+    float3 Color = g_vColor.rgb;
+    fAlpha = vMask.r * fAlpha;
     
-    Output.vColor.a = vMask.r;
+    //float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 6.f)), 0.01f, 3e3); // 1e-5 = 0.00001, 3e3 = 3000
+    
+    //fWeight = max(fWeight, 1.f);
+    
+    //float fWeight = pow(Input.LinearZ, -2.5f);
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+    
+    
+    
+    //Output.vColor = g_vColor;
+    
+    //Output.vColor.a = vMask.r;
     
     return Output;
 }
@@ -296,20 +411,37 @@ PS_OUT PS_Main_Color_Dissolve(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio + 1.f - Input.fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - (g_fDissolveRatio + 1.f - Input.fDissolveRatio)) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
     
-    Output.vColor = g_vColor;
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     if (vMask.r < 0.1f)
     {
         discard;
     }
     
-    Output.vColor.a = vMask.r;
+    float3 Color = g_vColor.rgb;
+    fAlpha = vMask.r * fAlpha;
+    
+    //float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 6.f)), 0.01f, 3e3); // 1e-5 = 0.00001, 3e3 = 3000
+    
+    //fWeight = max(fWeight, 1.f);
+    
+    //float fWeight = pow(Input.LinearZ, -2.5f);
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+        
+    
+    //Output.vColor = g_vColor;
+    //Output.vColor.a = vMask.r;
     
     return Output;
 }
@@ -324,8 +456,26 @@ PS_OUT PS_Main_Sprite_Texture(PS_IN Input)
     vSpriteCoord.y = Input.iIndex / g_vNumSprite.x;
     float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
     
-    Output.vColor = g_Texture.Sample(LinearSampler, vUV);
-    Output.vColor.a *= Input.fDissolveRatio;
+    vector vColor = g_Texture.Sample(LinearSampler, vUV);
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a * Input.fDissolveRatio;
+    
+    //float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 6.f)), 0.01f, 3e3); // 1e-5 = 0.00001, 3e3 = 3000
+    
+    //fWeight = max(fWeight, 1.f);
+    
+    //float fWeight = pow(Input.LinearZ, -2.5f);
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+    
+    
+    //Output.vColor.a *= Input.fDissolveRatio;
     
     return Output;
 }
@@ -335,19 +485,36 @@ PS_OUT PS_Main_Sprite_Texture_Dissolve(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio + 1.f - Input.fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - (g_fDissolveRatio + 1.f - Input.fDissolveRatio)) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
-    
+
     float2 vSpriteSize = float2(1.f, 1.f) / g_vNumSprite;
     int2 vSpriteCoord;
     vSpriteCoord.x = Input.iIndex % g_vNumSprite.x;
     vSpriteCoord.y = Input.iIndex / g_vNumSprite.x;
     float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
     
-    Output.vColor = g_Texture.Sample(LinearSampler, vUV);
+    vector vColor = g_Texture.Sample(LinearSampler, vUV);
+    
+    float3 Color = vColor.rgb;
+    fAlpha = vColor.a * fAlpha;
+    
+    //float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 6.f)), 0.01f, 3e3); // 1e-5 = 0.00001, 3e3 = 3000
+    
+    //fWeight = max(fWeight, 1.f);
+    
+    //float fWeight = pow(Input.LinearZ, -2.5f);
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+    
     
     return Output;
 }
@@ -368,10 +535,28 @@ PS_OUT PS_Main_Sprite_Diff_Mask(PS_IN Input)
         discard;
     }
 
-    Output.vColor.xyz = g_Texture.Sample(LinearSampler, vUV).xyz;
+    vector vColor = g_Texture.Sample(LinearSampler, vUV);
     
-    Output.vColor.a = vMask.r * vMask.a;
-    Output.vColor.a *= Input.fDissolveRatio;
+    float3 Color = vColor.rgb;
+    float fAlpha = vMask.r * vMask.a * Input.fDissolveRatio;
+    
+    //float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 6.f)), 0.01f, 3e3); // 1e-5 = 0.00001, 3e3 = 3000
+    
+    //fWeight = max(fWeight, 1.f);
+    
+    //float fWeight = pow(Input.LinearZ, -2.5f);
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+       
+    
+    
+    //Output.vColor.a = vMask.r * vMask.a;
+    //Output.vColor.a *= Input.fDissolveRatio;
 
     return Output;
 }
@@ -381,8 +566,8 @@ PS_OUT PS_Main_Sprite_Diff_Mask_Dissolve(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio + 1.f - Input.fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - (g_fDissolveRatio + 1.f - Input.fDissolveRatio)) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
@@ -399,9 +584,26 @@ PS_OUT PS_Main_Sprite_Diff_Mask_Dissolve(PS_IN Input)
         discard;
     }
 
-    Output.vColor.xyz = g_Texture.Sample(LinearSampler, vUV).xyz;
+    vector vColor = g_Texture.Sample(LinearSampler, vUV);
     
-    Output.vColor.a = vMask.r * vMask.a;
+    
+    float3 Color = vColor.rgb;
+    fAlpha = vMask.r * vMask.a * fAlpha;
+    
+    //float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 6.f)), 0.01f, 3e3); // 1e-5 = 0.00001, 3e3 = 3000
+    
+    //fWeight = max(fWeight, 1.f);
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+    
+    
+   // Output.vColor.a = vMask.r * vMask.a;
+
 
     return Output;
 }
@@ -410,14 +612,23 @@ PS_OUT PS_Main_Color_Alpha(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_vColor;
+    vector vColor = g_vColor;
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     if (vMask.r < 0.1f)
     {
         discard;
     }
     
-    Output.vColor.a = vMask.r * Input.fDissolveRatio * saturate(g_fAlpha);
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vMask.r * Input.fDissolveRatio * saturate(g_fAlpha);
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = fAlpha;
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
     
     return Output;
 }
@@ -427,8 +638,8 @@ technique11 DefaultTechnique
     pass Particle_Texture_Mask
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN();
@@ -440,8 +651,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Color
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN();
@@ -453,8 +664,8 @@ technique11 DefaultTechnique
     pass Particle_Color
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN();
@@ -466,8 +677,8 @@ technique11 DefaultTechnique
     pass Particle_Texture_Mask_Dissolve
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN();
@@ -479,8 +690,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Color_Dissolve
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN();
@@ -492,8 +703,8 @@ technique11 DefaultTechnique
     pass Particle_Color_Dissolve
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN();
@@ -505,8 +716,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Texture
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN();
@@ -518,8 +729,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Texture_Dissolve
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN();
@@ -531,8 +742,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Texture_RandomIndex
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main_RandomIndex();
         GeometryShader = compile gs_5_0 GS_MAIN();
@@ -544,8 +755,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Texture_RandomIndex_Dissolve
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main_RandomIndex();
         GeometryShader = compile gs_5_0 GS_MAIN();
@@ -557,8 +768,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Color_RandomIndex
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main_RandomIndex();
         GeometryShader = compile gs_5_0 GS_MAIN();
@@ -570,8 +781,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Color_RandomIndex_Dissolve
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main_RandomIndex();
         GeometryShader = compile gs_5_0 GS_MAIN();
@@ -583,8 +794,8 @@ technique11 DefaultTechnique
     pass Particle_Texture_Mask_Trail
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN_Trail();
@@ -596,8 +807,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Color_Trail
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN_Trail();
@@ -609,8 +820,8 @@ technique11 DefaultTechnique
     pass Particle_Color_Trail
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN_Trail();
@@ -622,8 +833,8 @@ technique11 DefaultTechnique
     pass Particle_Texture_Mask_Dissolve_Trail
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN_Trail();
@@ -635,8 +846,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Color_Dissolve_Trail
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN_Trail();
@@ -648,8 +859,8 @@ technique11 DefaultTechnique
     pass Particle_Color_Dissolve_Trail
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN_Trail();
@@ -661,8 +872,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Texture_Trail
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN_Trail();
@@ -674,8 +885,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Texture_Dissolve_Trail
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN_Trail();
@@ -687,8 +898,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Texture_RandomIndex_Trail
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main_RandomIndex();
         GeometryShader = compile gs_5_0 GS_MAIN_Trail();
@@ -700,8 +911,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Texture_RandomIndex_Dissolve_Trail
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main_RandomIndex();
         GeometryShader = compile gs_5_0 GS_MAIN_Trail();
@@ -713,8 +924,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Color_RandomIndex_Trail
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main_RandomIndex();
         GeometryShader = compile gs_5_0 GS_MAIN_Trail();
@@ -726,8 +937,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Color_RandomIndex_Dissolve_Trail
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main_RandomIndex();
         GeometryShader = compile gs_5_0 GS_MAIN_Trail();
@@ -739,8 +950,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Diff_Mask
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN();
@@ -752,8 +963,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Diff_Mask_Dissolve
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN();
@@ -765,8 +976,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Diff_Mask_RandomIndex
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main_RandomIndex();
         GeometryShader = compile gs_5_0 GS_MAIN();
@@ -778,8 +989,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Diff_Mask_RandomIndex_Dissolve
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main_RandomIndex();
         GeometryShader = compile gs_5_0 GS_MAIN();
@@ -791,8 +1002,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Diff_Mask_Trail
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN_Trail();
@@ -804,8 +1015,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Diff_Mask_Dissolve_Trail
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN_Trail();
@@ -817,8 +1028,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Diff_Mask_RandomIndex_Trail
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main_RandomIndex();
         GeometryShader = compile gs_5_0 GS_MAIN_Trail();
@@ -830,8 +1041,8 @@ technique11 DefaultTechnique
     pass Particle_Sprite_Diff_Mask_RandomIndex_Dissolve_Trail
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main_RandomIndex();
         GeometryShader = compile gs_5_0 GS_MAIN_Trail();
@@ -843,8 +1054,8 @@ technique11 DefaultTechnique
     pass Particle_Color_Alpha
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN();

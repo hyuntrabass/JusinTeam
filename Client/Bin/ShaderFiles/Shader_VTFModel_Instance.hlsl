@@ -7,7 +7,7 @@ texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
 texture2D g_MaskTexture;
 
-float g_fCamFar;
+float2 g_CamNF;
 
 bool g_HasNorTex;
 bool g_HasMaskTex;
@@ -402,7 +402,7 @@ PS_OUT PS_Main(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
     Output.vSpecular = vSpecular;
     
     return Output;
@@ -457,7 +457,7 @@ PS_Blur_OUT PS_Motion_Blur(PS_Blur_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
     Output.vVelocity = Input.vDir;
     
     return Output;

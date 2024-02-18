@@ -18,6 +18,8 @@ public:
 	void Clear();
 	HRESULT Bind_ShaderResourceView(class CShader* pShader, const _char* pVariableName);
 
+	HRESULT Copy_Texture(ID3D11Resource* pTexture);
+
 #ifdef _DEBUG
 	HRESULT Ready_Debug(_float2 vPos, _float2 vSize);
 	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);

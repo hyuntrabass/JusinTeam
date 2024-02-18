@@ -10,7 +10,7 @@ texture2D g_DissolveTexture;
 
 vector g_vColor = {1.f, 1.f, 1.f, 0.f};
 vector g_vCamPos;
-float g_fCamFar;
+float2 g_CamNF;
 float g_fLightFar;
 float g_fDissolveRatio;
 
@@ -190,7 +190,7 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
     
     return Output;
 }
@@ -247,7 +247,7 @@ PS_OUT_DEFERRED PS_Main_Dissolve(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
     
     return Output;
 }
@@ -293,7 +293,7 @@ PS_OUT_DEFERRED PS_Main_Rim(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
     Output.vRimMask = vRimColor;
     
     return Output;

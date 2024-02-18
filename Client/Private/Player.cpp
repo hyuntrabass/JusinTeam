@@ -272,10 +272,11 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	PART_TYPE eType = CUI_Manager::Get_Instance()->Is_CustomPartChanged();
 
+
 	if (PART_TYPE::PT_END != eType)
 	{
 		m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), 0.f);
-		if (eType == PT_WEAPON)
+		if (eType == PT_SWORD || eType == PT_BOW)
 		{
 			WEAPON_TYPE eWpType{};
 			_uint iWpIdx = CUI_Manager::Get_Instance()->Get_WeaponType(eType, &eWpType);
@@ -633,6 +634,14 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 		m_bStartGame = true;
 		CEvent_Manager::Get_Instance()->Init();
+
+		CUI_Manager::Get_Instance()->Set_WeaponType(WP_SWORD);
+		WEAPON_TYPE eWpType{};
+		_uint iWpIdx = CUI_Manager::Get_Instance()->Get_WeaponType(PT_SWORD, &eWpType);
+		Change_Weapon(eWpType, (WEAPON_INDEX)iWpIdx);
+		m_Weapon_CurrentIndex = SWORD_UNEQUIP;
+		m_Current_Weapon = WP_SWORD;
+		m_bWeapon_Unequip = false;
 	}
 
 
@@ -716,11 +725,14 @@ HRESULT CPlayer::Render()
 	{
 		Render_Parts(PT_HELMET, m_Helmet_CurrentIndex);
 	}
-	if (m_Weapon_CurrentIndex < WP_UNEQUIP)
+	if (m_Current_Weapon == WP_SWORD && m_Weapon_CurrentIndex != SWORD_UNEQUIP)
 	{
-		Render_Parts(PT_WEAPON, (_uint)m_Weapon_CurrentIndex);
+		Render_Parts(PT_SWORD, (_uint)m_Weapon_CurrentIndex - 7);
 	}
-
+	else if (m_Current_Weapon == WP_BOW && m_Weapon_CurrentIndex != BOW_UNEQUIP )
+	{
+		Render_Parts(PT_BOW, (_uint)m_Weapon_CurrentIndex);
+	}
 
 	return S_OK;
 }
@@ -773,9 +785,14 @@ HRESULT CPlayer::Render_Shadow()
 	{
 		Render_Shadow_Parts(PT_HELMET, m_Helmet_CurrentIndex);
 	}
-	if (m_Weapon_CurrentIndex < WP_UNEQUIP)
+
+	if (m_Current_Weapon == WP_SWORD && m_Weapon_CurrentIndex != SWORD_UNEQUIP)
 	{
-		Render_Shadow_Parts(PT_WEAPON, (_uint)m_Weapon_CurrentIndex);
+		Render_Shadow_Parts(PT_SWORD, (_uint)m_Weapon_CurrentIndex - 7);
+	}
+	else if (m_Current_Weapon == WP_BOW && m_Weapon_CurrentIndex != BOW_UNEQUIP)
+	{
+		Render_Shadow_Parts(PT_BOW, (_uint)m_Weapon_CurrentIndex);
 	}
 
 
@@ -1010,7 +1027,7 @@ HRESULT CPlayer::Place_PartModels()
 		return E_FAIL;
 	}
 
-	Desc.ePartType = PT_WEAPON;
+	Desc.ePartType = PT_BOW;
 
 	Desc.FileName = "bow0";
 
@@ -1046,6 +1063,8 @@ HRESULT CPlayer::Place_PartModels()
 	{
 		return E_FAIL;
 	}
+
+	Desc.ePartType = PT_SWORD;
 
 	Desc.FileName = "sword0";
 
@@ -1086,10 +1105,6 @@ HRESULT CPlayer::Place_PartModels()
 
 HRESULT CPlayer::Render_Parts(PART_TYPE Parts, _uint Index)
 {
-	if (m_bWeapon_Unequip && Parts == PT_WEAPON)
-	{
-		return S_OK;
-	}
 
 	for (size_t k = 0; k < m_pModelCom->Get_Num_PartMeshes(Parts, Index); k++)
 	{
@@ -1156,10 +1171,7 @@ HRESULT CPlayer::Render_Parts(PART_TYPE Parts, _uint Index)
 
 HRESULT CPlayer::Render_Shadow_Parts(PART_TYPE Parts, _uint Index)
 {
-	if (m_bWeapon_Unequip && Parts == PT_WEAPON)
-	{
-		return S_OK;
-	}
+
 
 	for (size_t k = 0; k < m_pModelCom->Get_Num_PartMeshes(Parts, Index); k++)
 	{
@@ -1353,18 +1365,23 @@ void CPlayer::Change_Parts(PART_TYPE PartsType, _int ChangeIndex)
 }
 
 void CPlayer::Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex)
-{
-	if (ChangeIndex == WP_UNEQUIP)
+{/*
+ 
+	if (ChangeIndex == SWORD_UNEQUIP)
 	{
 		m_bWeapon_Unequip = true;
 	}
 	else
 	{
-		m_Weapon_CurrentIndex = ChangeIndex;
-		m_Current_Weapon = PartsType;
-		m_bWeapon_Unequip = false;
+		
 	}
+<<<<<<< HEAD
 
+=======
+	*/
+	m_Weapon_CurrentIndex = ChangeIndex;
+	m_Current_Weapon = PartsType;
+	m_bWeapon_Unequip = false;
 }
 
 
@@ -1463,7 +1480,17 @@ void CPlayer::Move(_float fTimeDelta)
 		return;
 	}
 
-	if (!m_bReadySwim && m_Weapon_CurrentIndex < WP_UNEQUIP)
+	_bool isUnequip{};
+	if (m_Current_Weapon == WP_SWORD && m_Weapon_CurrentIndex == SWORD_UNEQUIP)
+	{
+		isUnequip = true;
+	}
+	else if (m_Current_Weapon == WP_BOW && m_Weapon_CurrentIndex == BOW_UNEQUIP)
+	{
+		isUnequip = true;
+	}
+
+	if (!m_bReadySwim && !isUnequip)
 	{
 
 
@@ -1554,12 +1581,24 @@ void CPlayer::Move(_float fTimeDelta)
 				if (m_Current_Weapon == WP_SWORD)
 				{
 					CUI_Manager::Get_Instance()->Set_WeaponType(WP_BOW);
+					WEAPON_TYPE eWpType{};
+					_uint iWpIdx = CUI_Manager::Get_Instance()->Get_WeaponType(PT_BOW, &eWpType);
+					Change_Weapon(eWpType, (WEAPON_INDEX)iWpIdx);
+					/*
+					CUI_Manager::Get_Instance()->Set_WeaponType(WP_BOW);
 					Change_Weapon(WP_BOW, BOW0);
+					*/
 				}
 				else
 				{
 					CUI_Manager::Get_Instance()->Set_WeaponType(WP_SWORD);
+					WEAPON_TYPE eWpType{};
+					_uint iWpIdx = CUI_Manager::Get_Instance()->Get_WeaponType(PT_SWORD, &eWpType);
+					Change_Weapon(eWpType, (WEAPON_INDEX)iWpIdx);
+					/*
+					CUI_Manager::Get_Instance()->Set_WeaponType(WP_SWORD);
 					Change_Weapon(WP_SWORD, SWORD0);
+					*/
 				}
 			}
 		}
@@ -1665,9 +1704,8 @@ void CPlayer::Move(_float fTimeDelta)
 			{
 				return;
 			}
-			if (m_Weapon_CurrentIndex < WP_UNEQUIP)
+			if (!isUnequip)
 			{
-
 				if (vDirection != _vec4())
 				{
 					m_pTransformCom->LookAt_Dir(vDirection);
@@ -2491,7 +2529,6 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					m_fAttackZoom = 1.5;
 					Cam_AttackZoom(m_fAttackZoom);
-
 				}
 
 				if (Index >= 13.f && Index <= 32.f)
@@ -2534,9 +2571,13 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					if (!m_bComboZoom)
 					{
+						/*m_fAttackZoom += 0.9f;
+						Cam_AttackZoom(m_fAttackZoom);*/
 						m_fAttackZoom += 1.f;
+						//Cam_AttackZoom(m_fAttackZoom);
 						m_bComboZoom = true;
 					}
+					//m_pCam_Manager->Set_DirectZoom(true);
 				}
 				if (Index >= 20.5f && Index <= 34.f)
 				{
@@ -2564,6 +2605,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 
 					}
+
 				}
 				else
 				{
@@ -2580,6 +2622,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					if (!m_bComboZoom)
 					{
 						m_fAttackZoom += 1.f;
+						//Cam_AttackZoom(m_fAttackZoom);
 						m_bComboZoom = true;
 					}
 					//m_pCam_Manager->Set_RidingZoom(true);
@@ -2597,13 +2640,12 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						Check_Att_Collider(AT_Sword_Common);
 						if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Common]))
 						{
-							m_pGameInstance->Set_TimeRatio(0.3f);
+							m_pGameInstance->Set_TimeRatio(0.1f);
 							m_bAttacked = true;
 
 						}
 
 					}
-
 					if (m_bAttacked)
 					{
 						m_pTransformCom->Set_Speed(5.f);
@@ -2667,6 +2709,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 					}
 				}
+
 				else if (Index > 18.f && Index < 21.f)
 				{
 					m_bAttacked = false;
@@ -2734,6 +2777,24 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 
 				}
+			}
+		}
+		else if (Index > 13.5f && Index <= 15.5f)
+		{
+			m_bAttacked = false;
+		}
+		else if (Index >= 15.5f && Index <= 17.5f)
+		{
+			if (!m_bAttacked)
+			{
+				Check_Att_Collider(AT_Sword_Skill1);
+				if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Skill1]))
+				{
+					m_pGameInstance->Set_TimeRatio(0.4f);
+					m_bAttacked = true;
+					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
+				}
+
 			}
 		}
 		else
@@ -3189,6 +3250,10 @@ void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
 	_mat ArrowMat = OffsetMat * BoneMat * m_pTransformCom->Get_World_Matrix();
 	Arrow_Type type{};
 
+
+
+
+
 	switch (Att_Type)
 	{
 	case Client::AT_Bow_Common:
@@ -3422,7 +3487,7 @@ void CPlayer::Arrow_Rain()
 	{
 		_mat EffectMatrix{};
 		m_vArrowLook = m_pTransformCom->Get_State(State::Look);
-		m_vArrowLook = m_pTransformCom->Get_State(State::Pos) + m_vArrowLook * 10.f;
+
 		if (m_vArrowRainPos == _vec4())
 		{
 			EffectMatrix = _mat::CreateScale(10.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + m_vArrowLook * 10.f) + _vec3(0.f, 0.2f, 0.f));
@@ -3462,7 +3527,7 @@ void CPlayer::Arrow_Rain()
 		random2 *= 0.05f;
 		if (m_vArrowRainPos == _vec4())
 		{
-			Type.vPos = m_vArrowLook + _vec4(random, 13.f, random2, 0.f)/* + m_pTransformCom->Get_State(State::Right) * 4.f*/;
+			Type.vPos = m_pTransformCom->Get_State(State::Pos) + m_vArrowLook * 10.f + _vec4(random, 13.f, random2, 0.f)/* + m_pTransformCom->Get_State(State::Right) * 4.f*/;
 		}
 		else
 		{
@@ -4336,7 +4401,7 @@ HRESULT CPlayer::Bind_ShaderResources()
 	}
 
 	// 카메라 Far 바인드
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_CamNF", &m_pGameInstance->Get_CameraNF(), sizeof _float2)))
 	{
 		return E_FAIL;
 	}
