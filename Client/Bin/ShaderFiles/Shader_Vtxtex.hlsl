@@ -8,6 +8,8 @@ texture2D g_SkillReadyTexture;
 texture2D g_TextureArray[12];
 texture2D g_DissolveTexture;
 
+bool g_isBlur;
+
 bool g_bOn = { false };
 int g_TexIndex;
 vector g_vColor;
@@ -24,6 +26,9 @@ float g_fBrightFactor = { 3.f };
 float2 g_vRatio;
 int2 g_vNumSprite;
 uint g_iIndex;
+
+float2 g_CamNF;
+
 
 struct VS_IN
 {
@@ -84,6 +89,7 @@ VS_OUT VS_Main_Dust(VS_IN Input)
 	
     return Output;
 }
+
 struct PS_IN
 {
     vector vPos : SV_Position;
@@ -94,6 +100,7 @@ struct PS_OUT
 {
     vector vColor : SV_Target0;
 };
+
 
 PS_OUT PS_Main(PS_IN Input)
 {
@@ -173,6 +180,23 @@ PS_OUT PS_MaskColor(PS_IN Input)
     
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     
+    //float3 Color = g_vColor.rgb;
+    //float fAlpha = g_vColor.a * vMask.r;
+    
+    ////float fWeight = pow(Input.LinearZ, -2.5f);
+    
+    ////float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 6.f)), 0.01f, 3e3); // 1e-5 = 0.00001, 3e3 = 3000
+    
+    ////fWeight = max(fWeight, 1.f);
+    
+    //float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    //fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    //Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    //Output.vAlpha = vector(fAlpha, fAlpha, fAlpha, fAlpha);
+    
+    
+    //Output.vBlur = vector(Color, fAlpha);
     Output.vColor = g_vColor;
     
     Output.vColor.a = Output.vColor.a * vMask.r;
@@ -598,56 +622,23 @@ PS_OUT PS_Main_HPNoMask(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_Main_NineSlice(PS_IN Input)
+PS_OUT PS_MaskTexture_DissolveMove(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
-    //Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
-    float2 newTexCoord = Input.vTex;
-    if (Input.vTex.x < g_vSliceRect.x / (g_vRatio.x / g_vRatio.y))
+    
+    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
+    
+    if (g_fDissolveRatio > fDissolve)
     {
-        newTexCoord.x = Input.vTex.x * g_vRatio.x;
-    }
-    else if (Input.vTex.x > 1.f - (g_vSliceRect.x / (g_vRatio.x / g_vRatio.y)))
-    {
-        newTexCoord.x = Input.vTex.x * g_vRatio.x;
+        discard;
     }
     
-    if (Input.vTex.y < g_vSliceRect.y)
-    {
-        newTexCoord.y = Input.vTex.y * (1.f / g_vRatio.y);
-    }
-    else if (Input.vTex.y > g_vSliceRect.w)
-    {
-        newTexCoord.y = Input.vTex.y * (1.f / g_vRatio.y);
-    }
+    Output.vColor = g_Texture.Sample(LinearSampler, float2(Input.vTex.x + g_fx, Input.vTex.y + g_fy));
+    vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     
-    Output.vColor = g_Texture.Sample(LinearSampler, newTexCoord);
-
-/*
+    Output.vColor.a = Output.vColor.a * vMask.r;
     
-	float2 newTexCoord = In.vTexcoord * float2(4.1f, 4.1f / g_fRatio); 커진 비율만큼 곱해줘야하나? 
-    if (Input.vTex.x < g_vSliceRect.x)
-    {
-        Input.vTex.x = lerp(0, g_vSliceRect.x, Input.vTex.x / g_vSliceRect.x);
-        Input.vTex *= _float2(
-    }
-    else if (Input.vTex.x > g_vSliceRect.z)
-    {
-        float ratioX = 1.0 / (1.0 - g_vSliceRect.z);
-        Input.vTex.x = lerp(g_vSliceRect.z, 1, (Input.vTex.x - g_vSliceRect.z) * ratioX);
-    }
-
-    if (Input.vTex.y < g_vSliceRect.y)
-    {
-        Input.vTex.y = lerp(0, g_vSliceRect.y, Input.vTex.y / g_vSliceRect.y);
-    }
-    else if (Input.vTex.y > g_vSliceRect.w)
-    {
-        float ratioY = 1.0 / (1.0 - g_vSliceRect.w);
-        Input.vTex.y = lerp(g_vSliceRect.w, 1, (Input.vTex.y - g_vSliceRect.w) * ratioY);
-    }*/
     return Output;
-
 }
 
 PS_OUT PS_Main_FadeVertical(PS_IN Input)
@@ -709,6 +700,10 @@ PS_OUT PS_Main_LerpColorNAlpha(PS_IN Input)
         Output.vColor.a = g_fAlpha;
     }
 
+    //if (g_isBlur)
+    //    Output.vBlurColor;
+    //else
+    //    Output.vColor;
     
     return Output;
 }
@@ -845,6 +840,7 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main();
     }
+
     pass Mask_Texture
     {
         SetRasterizerState(RS_Default);
@@ -1135,7 +1131,7 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_HPNoMask();
     }
-    pass NineSlice
+    pass MaskDissolveMove
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -1145,7 +1141,7 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main_NineSlice();
+        PixelShader = compile ps_5_0 PS_MaskTexture_DissolveMove();
     }
     pass FadeVertical
     {

@@ -47,7 +47,7 @@ HRESULT CDragon_Boss::Init(void* pArg)
 	m_pRightTrail3 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
 
 	//m_eCurState = STATE_ROAR;
-	m_eCurState = STATE_BLACKHOLE;
+	m_eCurState = STATE_FLY_FIRE;
 
 	m_iHP = 20000;
 
@@ -208,7 +208,12 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 			m_bAttacked1 = false;
 			m_bAttacked2 = false;
 
+			m_bCanPull = false;
+
 			m_bCreateObject = false;
+			m_bCreateEffect[0] = false;
+			m_bCreateEffect[1] = false;
+
 			break;
 
 		case Client::CDragon_Boss::STATE_ROAR:
@@ -275,6 +280,13 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
 
+			{
+				_mat EffectMatrix = _mat::CreateScale(5.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.1f, 0.f)));
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Pull_Out");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			}
+
 			break;
 
 		case Client::CDragon_Boss::STATE_UNKNOWN:
@@ -306,8 +318,10 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 			m_Animation.fAnimSpeedRatio = 2.f;
 
 			{
+				m_vPlayerOldPos = vPlayerPos;
+
 				_mat EffectMatrix = _mat::CreateScale(15.f) * _mat::CreateRotationX(XMConvertToRadians(90.f))
-					* _mat::CreateTranslation(_vec3(vPlayerPos + _vec3(0.f, 0.2f, 0.f)));
+					* _mat::CreateTranslation(_vec3(m_vPlayerOldPos + _vec3(0.f, 0.2f, 0.f)));
 
 				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Frame");
 				Info.pMatrix = &EffectMatrix;
@@ -478,7 +492,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = eTempDragonState;
 
-			m_eCurState = STATE_BLACKHOLE; // 테스트용
+			m_eCurState = STATE_FLY_FIRE; // 테스트용
 		}
 	}
 
@@ -582,15 +596,80 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 	case Client::CDragon_Boss::STATE_WING_ATTACK:
 
+		if (m_pModelCom->Get_CurrentAnimPos() >= 38.f)
+		{
+			//if (!m_bCreateEffect[0])
+			//{
+			//	_mat EffectMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 5.f, 0.f)));
+			//	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Pull_Parti1");
+			//	Info.pMatrix = &EffectMatrix;
+			//	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			//	EffectMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 4.f, 0.f)));
+			//	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Pull_Parti2");
+			//	Info.pMatrix = &EffectMatrix;
+			//	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			//	EffectMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 6.f, 0.f)));
+			//	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Pull_Parti3");
+			//	Info.pMatrix = &EffectMatrix;
+			//	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			//	m_bCreateEffect[0] = true;
+			//}
+		}
+
 		if (m_pModelCom->Get_CurrentAnimPos() >= 69.f && m_pModelCom->Get_CurrentAnimPos() <= 71.f)
 		{
-			if (fDistance <= 5.f)
+			if (!m_bCreateEffect[1])
 			{
+				_mat EffectMatrix = _mat::CreateScale(3.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.1f, 0.f)));
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Pull_In");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				EffectMatrix = _mat::CreateScale(5.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)/* + _vec3(0.f, -0.1f, 0.f)*/));
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Pull_Magnet_Effect");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				//EffectMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + -2.f * m_pTransformCom->Get_State(State::Look).Get_Normalized()));
+				//Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Pull_Magnet_Effect2");
+				//Info.pMatrix = &EffectMatrix;
+				//CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				//Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Pull_Magnet_Effect3");
+				//Info.pMatrix = &EffectMatrix;
+				//CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				EffectMatrix = _mat::CreateScale(3.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)/* + _vec3(0.f, -0.1f, 0.f)*/));
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Pull_Magnet_Effect4");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				m_bCreateEffect[1] = true;
+			}
+
+			if (fDistance <= 10.f)
+			{
+				m_bCanPull = true;
+
 				if (!m_bAttacked1)
 				{
 					_uint iDamage = 100 + rand() % 20;
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Pull);
+					m_pGameInstance->Attack_Player(nullptr, iDamage);
 					m_bAttacked1 = true;
+				}
+
+			}
+
+			if (m_bCanPull == true)
+			{
+				m_fTime += fTimeDelta;
+
+				if (m_fTime <= 1.5f)
+				{
+					pPlayerTransform->Go_To_Dir(-vDir, fTimeDelta * 30.f);
 				}
 			}
 		}
@@ -650,12 +729,46 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 	case Client::CDragon_Boss::STATE_FLY_FIRE:
 
+	{
 		m_fTime += fTimeDelta;
 
-		if (m_fTime >= 2.5f)
+		if (m_fTime >= 2.f)
 		{
-			Safe_Release(m_pFrameEffect);
-			Safe_Release(m_pBaseEffect);
+			if (m_pBaseEffect && m_pFrameEffect)
+			{
+				Safe_Release(m_pFrameEffect);
+				Safe_Release(m_pBaseEffect);
+
+				m_fDragonHeadTime += fTimeDelta;
+
+				//m_vDragonHeadPos = vPlayerPos;
+				_mat EffectMatrix = _mat::CreateScale(2.f) * _mat::CreateTranslation(_vec3(m_vPlayerOldPos));
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Head");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				EffectMatrix = _mat::CreateScale(2.3f) * _mat::CreateTranslation(_vec3(m_vPlayerOldPos + _vec3(0.f, 0.1f, 0.f)));
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Head_Fire_Floor");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			}
+
+			m_fDragonHeadTime += fTimeDelta;
+
+			if (m_fTime <= 6.f)
+			{
+				if (m_fDragonHeadTime >= 0.2f)
+				{
+					_mat EffectMatrix = _mat::CreateScale(1.f, 2.f, 1.f) * _mat::CreateRotationX(XMConvertToRadians(180.f)) * _mat::CreateTranslation(_vec3(m_vPlayerOldPos + _vec3(0.f, 5.f, 0.f)));
+					EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Head_Fire");
+					Info.pMatrix = &EffectMatrix;
+					CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+					m_fDragonHeadTime = 0.f;
+				}
+
+			}
 		}
 
 		if (m_pFrameEffect && m_pBaseEffect)
@@ -680,6 +793,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 			m_eCurState = STATE_IDLE;
 			m_bAttack_Selected[FLY_FIRE] = true;
 		}
+	}
 
 		break;
 
@@ -879,7 +993,7 @@ HRESULT CDragon_Boss::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_CamNF", &m_pGameInstance->Get_CameraNF(), sizeof _float2)))
 	{
 		return E_FAIL;
 	}

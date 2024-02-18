@@ -221,6 +221,7 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 		}
 	}
 	__super::Compute_CamDistance();
+
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 }
 
@@ -283,7 +284,7 @@ HRESULT CEffect_Dummy::Add_Components()
 		{
 			return E_FAIL;
 		}
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTexEffect"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		{
 			return E_FAIL;
 		}
@@ -299,7 +300,7 @@ HRESULT CEffect_Dummy::Add_Components()
 		{
 			return E_FAIL;
 		}
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxStatMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxMeshEffect"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		{
 			return E_FAIL;
 		}
@@ -437,6 +438,9 @@ HRESULT CEffect_Dummy::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_CamNF", &m_pGameInstance->Get_CameraNF(), sizeof(_float2))))
+		return E_FAIL;
+
 	if (m_Effect.isSprite)
 	{
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_iIndex", &m_iSpriteIndex, sizeof m_iSpriteIndex)))
@@ -448,6 +452,11 @@ HRESULT CEffect_Dummy::Bind_ShaderResources()
 		{
 			return E_FAIL;
 		}
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_isBlur", &m_shouldRenderBlur, sizeof _bool)))
+	{
+		return E_FAIL;
 	}
 
 	return S_OK;

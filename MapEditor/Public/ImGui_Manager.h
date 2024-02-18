@@ -118,6 +118,7 @@ private:
 	void Search_Monster();
 	void Search_NPC();
 	void Search_Envir();
+	void Search_Inter();
 
 	void Mouse_Pos();
 	void FastPicking();
@@ -147,6 +148,10 @@ private:
 	// 환경
 	HRESULT Save_Envir();
 	HRESULT Load_Envir();
+
+	// 상호작용
+	HRESULT Save_Interaction();
+	HRESULT Load_Interaction();
 
 	// 트리거
 	HRESULT Save_Trigger();
@@ -189,7 +194,6 @@ private:
 
 	_bool m_isInstancing{false};
 	vector<_vec4> m_vInstancePos;
-	//_vec4 m_fCameraPos[4];
 	_mat m_mCameraEyePoint{};
 	_mat m_mCameraAtPoint{};
 	_vec4 m_fCameraPickingPos[2];
@@ -203,8 +207,7 @@ private:
 	unordered_map<wstring, vector<const char*>> Monsters;
 	vector<const char*> NPCs;
 	unordered_map<wstring, vector<const char*>> Envirs;
-	//unordered_map<const char*, SectionInfo> CameraEye;
-	//unordered_map<const char*, SectionInfo> CameraAt;
+	unordered_map<wstring, vector<const char*>> Interactions;
 
 	vector<class CMap*> m_MapsList;
 	vector<class CDummy*> m_ObjectsList;
@@ -212,6 +215,7 @@ private:
 	vector<class CDummy*> m_NPCList;
 	vector<class CDummy*> m_EnvirList;
 	vector<class CDummy*> m_TriggerList;
+	vector<class CDummy*> m_InteractionList;
 	vector<class CCamera_CutScene*> m_CameraList;
 	vector<class CCutScene_Curve*> m_SectionEyeList;
 	vector<class CCutScene_Curve*> m_SectionAtList;
@@ -226,7 +230,6 @@ private:
 	class CCamera_CutScene* m_pSelectCamera{ nullptr };
 	class CCutScene_Curve* m_pSelectSection{ nullptr };
 	class CTerrain* m_pTerrain{ nullptr };
-	char Search_Name[MAX_PATH]{};
 
 	_mat	m_ObjectMatrix{};
 	_mat	m_MapMatrix{};
@@ -241,7 +244,6 @@ private:
 	wstring m_eType{};
 	_float m_fTriggerSize{1.f};
 	_int m_iTriggerNumber{0};
-	//_char SectionName[MAX_PATH]{};
 	string SectionName{};
 	SectionInfo m_eSectionInfo{};
 	_bool m_isTriggerCheck{ false };

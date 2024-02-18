@@ -75,9 +75,9 @@ HRESULT CInven::Init(void* pArg)
 	ITEM eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
 	m_pWearableSlots[W_CHEST]->Set_WearableItem(eItem);
 
-	strItem = TEXT("¹«½º »Ô ´Ü°Ë");
-	eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
-	m_pWearableSlots[W_EQUIP]->Set_WearableItem(eItem);
+	//strItem = TEXT("¹«½º »Ô ´Ü°Ë");
+	//eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
+	//m_pWearableSlots[W_SWORD]->Set_WearableItem(eItem);
 
 	strItem = TEXT("¹«½º »Ô È°");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);	
@@ -487,7 +487,7 @@ HRESULT CInven::Add_Parts()
 		CWearable_Slot::WEARABLESLOT SlotDesc = {};
 		SlotDesc.eType = (WEARABLE_TYPE)i;
 		SlotDesc.fDepth = m_fDepth - 0.01f;
-		SlotDesc.vSize = _float2(60.f, 60.f);
+		SlotDesc.vSize = _float2(50.f, 50.f);
 		SlotDesc.vPosition = _float2(60.f, 180.f + (SlotDesc.vSize.x * (_uint)i) + (4.f * (_uint)i));
 		m_pWearableSlots[i] = (CWearable_Slot*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Wearable_Slot"), &SlotDesc);
 		if (not m_pWearableSlots[i])

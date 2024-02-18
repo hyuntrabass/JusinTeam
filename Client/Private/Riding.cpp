@@ -22,6 +22,8 @@ HRESULT CRiding::Init(void* pArg)
 	Riding_Desc* Desc = (Riding_Desc*)pArg;
 	m_CurrentIndex = Desc->Type;
 	m_eCurMode = (MODE)Desc->iMode;
+	m_pCam_Manager = CCamera_Manager::Get_Instance();
+	m_pCam_Manager->Set_RidingZoom(true);
 
 	switch (m_CurrentIndex)
 	{
@@ -287,6 +289,7 @@ void CRiding::Tick(_float fTimeDelta)
 				_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
 				vPos.y += 1.f;
 				m_pTransformCom->Set_Position(vPos);
+				
 				m_bDelete = true;
 			}
 	}
@@ -536,6 +539,7 @@ void CRiding::Move(_float fTimeDelta)
 	{
 		if (m_eState == Riding_Glide)
 		{
+			m_isDead = true;
 			return;
 		}
 		if (!m_hasJumped)
@@ -740,21 +744,18 @@ void CRiding::Init_State()
 			case Client::Tiger:
 			{
 				m_Animation.iAnimIndex = Tiger_1003_Jump_End_Run;
-				m_Animation.bSkipInterpolation = true;
 				m_hasJumped = false;
 			}
 				break;
 			case Client::Nihilir:
 			{
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Jump_End_Run;
-				m_Animation.bSkipInterpolation = true;
 				m_hasJumped = false;
 			}
 				break;
 			case Client::Horse:
 			{
 				m_Animation.iAnimIndex = Horse_1004_jump_End_Run;
-				m_Animation.bSkipInterpolation = true;
 				m_hasJumped = false;
 			}
 			break;
@@ -781,7 +782,6 @@ void CRiding::Init_State()
 			{
 				m_Animation.iAnimIndex = Horse_1004_jump_End;
 				m_hasJumped = false;
-				m_Animation.isLoop = false;
 			}
 			break;
 			default:
@@ -1126,7 +1126,7 @@ HRESULT CRiding::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_CamNF", &m_pGameInstance->Get_CameraNF(), sizeof _float2)))
 	{
 		return E_FAIL;
 	}

@@ -75,7 +75,9 @@ void CArrow::Tick(_float fTimeDelta)
 {
 	m_fDeadTime += fTimeDelta;
 	if (m_fDeadTime > 2.5f)
+	{
 		Kill();
+	}
 
 	if (m_ArrowType.MonCollider != nullptr && (m_ArrowType.Att_Type == AT_Bow_Common or m_ArrowType.Att_Type == AT_Bow_SkillR or m_ArrowType.Att_Type == AT_Bow_Skill2))
 	{
@@ -113,7 +115,8 @@ void CArrow::Tick(_float fTimeDelta)
 		PxRaycastBuffer Buffer{};
 		//m_pCollider->Change_Radius(3.f);
 
-		if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer) or 
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), 
+			m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer) or 
 			m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
 			m_pCollider->Set_Radius(4.f);
@@ -142,7 +145,9 @@ void CArrow::Tick(_float fTimeDelta)
 			Info.pMatrix = &EffectMat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
-			//m_ArrowType.Att_Type = AT_End;
+			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
+			m_pGameInstance->Play_Sound(TEXT("SE_5130_Meteor_SFX_02"), 0.3f);
+			m_pGameInstance->Play_Sound(TEXT("Draug_Attack03_SFX_01"));
 			Kill();
 		}
 		break;
@@ -152,6 +157,15 @@ void CArrow::Tick(_float fTimeDelta)
 		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
 			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill3);
+			Kill();
+		}
+		break;
+	}
+	case AT_Bow_SkillR:
+	{
+		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
+		{
+			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Common);
 			Kill();
 		}
 		break;
@@ -323,7 +337,7 @@ HRESULT CArrow::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_CamNF", &m_pGameInstance->Get_CameraNF(), sizeof _float2)))
 	{
 		return E_FAIL;
 	}
