@@ -54,9 +54,49 @@ void CBlackhole::Tick(_float fTimeDelta)
 		{
 			Safe_Release(m_pFrameEffect);
 			Safe_Release(m_pBaseEffect);
+
+			// 喉发圈 捞棋飘 积己
+			_mat EffectMatrix = _mat::CreateScale(2.7f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, -0.1f, 0.f)));
+
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Blackhole_Base");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			EffectMatrix = _mat::CreateScale(2.7f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.05f, 0.f)));
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Blackhole_Base2");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Blackhole_Frame");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Blackhole_Frame_Inner");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Blackhole_Frame_Ring");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			//
+			EffectMatrix = _mat::CreateScale(3.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)/* + _vec3(0.f, -0.1f, 0.f)*/));
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Blackhole_Shine");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Blackhole_Shine_White");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Blackhole_Spread_Circle");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
 		}
 
-		// 喉发圈 捞棋飘 积己
 
 	}
 

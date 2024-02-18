@@ -77,7 +77,7 @@ void CArrow::Tick(_float fTimeDelta)
 	if (m_fDeadTime > 2.5f)
 		Kill();
 
-	if (m_ArrowType.Att_Type == AT_Bow_Common && m_ArrowType.MonCollider != nullptr)
+	if (m_ArrowType.MonCollider != nullptr && (m_ArrowType.Att_Type == AT_Bow_Common or m_ArrowType.Att_Type == AT_Bow_SkillR or m_ArrowType.Att_Type == AT_Bow_Skill2))
 	{
 		m_pTransformCom->LookAt(_vec4(m_ArrowType.MonCollider->Get_ColliderPos(), 1.f));
 		m_pTransformCom->Go_To(_vec4(m_ArrowType.MonCollider->Get_ColliderPos(), 1.f), fTimeDelta, 0.f);
