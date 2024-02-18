@@ -87,7 +87,6 @@ void CArrow::Tick(_float fTimeDelta)
 		m_pTransformCom->Go_Straight(fTimeDelta);
 	}
 
-	m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
 	switch (m_ArrowType.Att_Type)
 	{
 	case AT_Bow_Common:
@@ -110,9 +109,16 @@ void CArrow::Tick(_float fTimeDelta)
 	}
 	case AT_Bow_Skill2:
 	{
-		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
+		_float fDist = 0.3f;
+		PxRaycastBuffer Buffer{};
+		//m_pCollider->Change_Radius(3.f);
+
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer) or 
+			m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
-			m_pGameInstance->Attack_Monster(m_pCollider, 200, AT_Bow_Skill2);
+			m_pCollider->Set_Radius(3.f);
+			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
+
 			_mat EffectMat = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Spark");
 			Info.pMatrix = &EffectMat;
@@ -126,7 +132,8 @@ void CArrow::Tick(_float fTimeDelta)
 			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
 			m_pGameInstance->Play_Sound(TEXT("SE_5130_Meteor_SFX_02"), 0.3f);
 			m_pGameInstance->Play_Sound(TEXT("SD_6135_SmokeScreen_SFX_01"), 0.3f);
-			Kill();
+			m_ArrowType.Att_Type = AT_End;
+			//Kill();
 		}
 		break;
 	}
@@ -143,6 +150,7 @@ void CArrow::Tick(_float fTimeDelta)
 		break;
 	}
 	
+	m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
 
 	_mat world{};
 	world = m_pTransformCom->Get_World_Matrix();
@@ -166,6 +174,10 @@ void CArrow::Late_Tick(_float fTimeDelta)
 	__super::Compute_CamDistance();
 
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
+#ifdef _DEBUG
+	m_pRendererCom->Add_DebugComponent(m_pCollider);
+#endif // _DEBUG
+
 }
 
 HRESULT CArrow::Render()

@@ -81,6 +81,8 @@ public:
 public:
 	HRESULT Init(_dev pDevice, _context pContext, vector<string>* pTextureList, vector<string>* pModelList);
 	void Tick(_float fTimeDelta);
+	void Effect_Tick(_float fTimeDelta);
+	void Effect_LateTick(_float fTimeDelta);
 	HRESULT Render();
 
 private:

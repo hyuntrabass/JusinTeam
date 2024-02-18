@@ -40,6 +40,7 @@ public:
 
 public:
 	void Change_Extents(_vec3 vExtents);
+	void Set_Radius(const _float fRadius) const;
 	_vec3 Get_Extents();	
 	_vec3 Get_ColliderPos();
 
