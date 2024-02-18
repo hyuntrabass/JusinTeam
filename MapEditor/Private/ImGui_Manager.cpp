@@ -1438,6 +1438,9 @@ void CImGui_Manager::Delete_Dummy()
 		if (!m_DummyList.empty())
 			m_DummyList.erase(DummyIndex);
 
+		m_pSelectedDummy->Kill();
+		m_pSelectedDummy = nullptr;
+
 		if (m_eItemType == ItemType::Objects)
 		{
 
@@ -1512,8 +1515,7 @@ void CImGui_Manager::Delete_Dummy()
 
 		}
 	
-		m_pSelectedDummy->Set_Dead();
-		m_pSelectedDummy = nullptr;
+	
 	}
 }
 
