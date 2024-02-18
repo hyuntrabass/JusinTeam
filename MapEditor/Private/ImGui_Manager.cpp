@@ -137,9 +137,14 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 
 			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))
 			{
+				if (m_pSelectedDummy)
+				{
+					m_pSelectedDummy->Select(false);
+					m_pSelectedDummy = nullptr;
+				}
 				if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
 				{
-					m_PickingPos = m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y);
+					m_PickingPos = _vec4(m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y).x, m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y).y, m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y).z, 1.f); ;
 					m_vInstancePos.push_back(m_PickingPos);
 				}
 				FastPicking();
@@ -147,21 +152,25 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 
 			if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LSHIFT))
 			{
+
 				if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
 				{
 					fTimeDeltaAcc += fTimeDelta;
 					if (fTimeDeltaAcc > 0.1f)
 					{
-						m_PickingPos = m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y);
+						m_PickingPos = _vec4(m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y).x, m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y).y, m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y).z, 1.f); ;
 						m_vInstancePos.push_back(m_PickingPos);
 						fTimeDeltaAcc = 0;
 					}
 				}
-				//FastPicking();
 			}
 			if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_SPACE))
 			{
-
+				if (m_pSelectedDummy)
+				{
+					m_pSelectedDummy->Select(false);
+					m_pSelectedDummy = nullptr;
+				}
 				FastPicking();
 				Delete_Dummy();
 			}
@@ -1322,7 +1331,7 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	{
 		DummyInfo Info{};
 		Info.ppDummy = &m_pSelectedDummy;
-		Info.vPos = m_PickingPos;
+		Info.vPos = _vec4(m_PickingPos.x, m_PickingPos.y, m_PickingPos.z, 1.f);
 		XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_vLook)));
 		Info.Prototype = L"Prototype_Model_";
 		Info.eType = m_eItemType;
@@ -2262,7 +2271,7 @@ HRESULT CImGui_Manager::Load_Map()
 			MapInfo MapInfo{};
 			MapInfo.eType = ItemType::Map;
 			MapInfo.Prototype = MapPrototype;
-			MapInfo.vPos = _float4(MapWorldMat._41, MapWorldMat._42, MapWorldMat._43, MapWorldMat._44);
+			MapInfo.vPos = _float4(MapWorldMat._41, MapWorldMat._42, MapWorldMat._43, 1.f);
 			MapInfo.ppMap = &m_pSelectMap;
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Map"), &MapInfo)))
@@ -2386,7 +2395,7 @@ HRESULT CImGui_Manager::Load_Object()
 			ObjectsInfo.eType = ItemType::Objects;
 			ObjectsInfo.Prototype = ObjectsPrototype;
 			ObjectsInfo.vLook = _float4(ObjectsWorldMat._31, ObjectsWorldMat._32, ObjectsWorldMat._33, ObjectsWorldMat._34);
-			ObjectsInfo.vPos = _float4(ObjectsWorldMat._41, ObjectsWorldMat._42, ObjectsWorldMat._43, ObjectsWorldMat._44);
+			ObjectsInfo.vPos = _float4(ObjectsWorldMat._41, ObjectsWorldMat._42, ObjectsWorldMat._43, 1.f);
 			ObjectsInfo.ppDummy = &m_pSelectedDummy;
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &ObjectsInfo)))
@@ -2510,7 +2519,7 @@ HRESULT CImGui_Manager::Load_Monster()
 			MonsterInfo.eType = ItemType::Monster;
 			MonsterInfo.Prototype = MonsterPrototype;
 			MonsterInfo.vLook = _float4(MonsterWorldMat._31, MonsterWorldMat._32, MonsterWorldMat._33, MonsterWorldMat._34);
-			MonsterInfo.vPos = _float4(MonsterWorldMat._41, MonsterWorldMat._42, MonsterWorldMat._43, MonsterWorldMat._44);
+			MonsterInfo.vPos = _float4(MonsterWorldMat._41, MonsterWorldMat._42, MonsterWorldMat._43, 1.f);
 			MonsterInfo.ppDummy = &m_pSelectedDummy;
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &MonsterInfo)))
@@ -2632,7 +2641,7 @@ HRESULT CImGui_Manager::Load_NPC()
 			NPCInfo.eType = ItemType::NPC;
 			NPCInfo.Prototype = NPCPrototype;
 			NPCInfo.vLook = _float4(NPCWorldMat._31, NPCWorldMat._32, NPCWorldMat._33, NPCWorldMat._34);
-			NPCInfo.vPos = _float4(NPCWorldMat._41, NPCWorldMat._42, NPCWorldMat._43, NPCWorldMat._44);
+			NPCInfo.vPos = _float4(NPCWorldMat._41, NPCWorldMat._42, NPCWorldMat._43, 1.f);
 			NPCInfo.ppDummy = &m_pSelectedDummy;
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &NPCInfo)))
@@ -2755,7 +2764,7 @@ HRESULT CImGui_Manager::Load_Envir()
 			EnvirInfo.eType = ItemType::Environment;
 			EnvirInfo.Prototype = EnvirPrototype;
 			EnvirInfo.vLook = _float4(EnvirWorldMat._31, EnvirWorldMat._32, EnvirWorldMat._33, EnvirWorldMat._34);
-			EnvirInfo.vPos = _float4(EnvirWorldMat._41, EnvirWorldMat._42, EnvirWorldMat._43, EnvirWorldMat._44);
+			EnvirInfo.vPos = _float4(EnvirWorldMat._41, EnvirWorldMat._42, EnvirWorldMat._43, 1.f);
 			EnvirInfo.ppDummy = &m_pSelectedDummy;
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &EnvirInfo)))
@@ -2879,7 +2888,7 @@ HRESULT CImGui_Manager::Load_Interaction()
 			EnvirInfo.eType = ItemType::Interaction;
 			EnvirInfo.Prototype = InteractionPrototype;
 			EnvirInfo.vLook = _float4(InteractionWorldMat._31, InteractionWorldMat._32, InteractionWorldMat._33, InteractionWorldMat._34);
-			EnvirInfo.vPos = _float4(InteractionWorldMat._41, InteractionWorldMat._42, InteractionWorldMat._43, InteractionWorldMat._44);
+			EnvirInfo.vPos = _float4(InteractionWorldMat._41, InteractionWorldMat._42, InteractionWorldMat._43, 1.f);
 			EnvirInfo.ppDummy = &m_pSelectedDummy;
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &EnvirInfo)))
