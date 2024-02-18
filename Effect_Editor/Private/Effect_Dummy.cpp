@@ -50,6 +50,11 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 
 	m_fAlpha = m_Effect.fAlphaInit;
 
+	if (not m_Effect.bSkipBloom)
+	{
+		m_shouldRenderBlur = true;
+	}
+
 	return S_OK;
 }
 
@@ -186,17 +191,12 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 		LIGHT_DESC* pLightInfo = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), m_strLightTag);
 		pLightInfo->vPosition = m_WorldMatrix.Position();
 	}
-
-	if (m_Effect.bSkipBloom)
-	{
-		return;
-	}
-
-	m_pRendererCom->Add_RenderGroup(RG_BlendBlur, this);
 }
 
 void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 {
+	__super::Compute_CamDistance();
+	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 }
 
 HRESULT CEffect_Dummy::Render()

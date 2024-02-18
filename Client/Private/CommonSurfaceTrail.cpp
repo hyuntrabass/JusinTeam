@@ -103,7 +103,6 @@ void CCommonSurfaceTrail::Late_Tick(_float fTimeDelta)
 
 	__super::Compute_CamDistance();
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
-	//m_pRendererCom->Add_RenderGroup(RG_BlendBlur, this);
 }
 
 HRESULT CCommonSurfaceTrail::Render()
@@ -184,7 +183,6 @@ HRESULT CCommonSurfaceTrail::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	//if(FAILED(m_pShaderCom->Bind_RawValue()))
 
 	return S_OK;
 }

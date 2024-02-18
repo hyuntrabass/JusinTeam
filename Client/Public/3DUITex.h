@@ -14,6 +14,12 @@ public:
 		_vec3	vPosition;
 		class CTransform* pParentTransform;
 		LEVEL_ID eLevelID;
+
+		_float	fFontSize{};
+		_vec2	vTextPosition{};
+		wstring strText{TEXT("")};
+		_vec4	vTextColor{ _vec4(1.f, 1.f, 1.f, 1.f) };
+
 	}UITEX_DESC;
 private:
 	C3DUITex(_dev pDevice, _context pContext);
@@ -41,10 +47,20 @@ private:
 	_vec3			m_vPosition{};
 	CTransform*		m_pParentTransform{ nullptr };
 
+	_vec2			m_vTextPos{};
+	_float			m_fFontSize{};
+	_vec2			m_vTextPosition{};
+	wstring			m_strText{ TEXT("") };
+	_vec4			m_vTextColor{ _vec4(1.f, 1.f, 1.f, 1.f) };
+
+	RECT				m_rcRect{};
+
 public:
 	const _vec2 Get_Size() const { return _vec2(m_fSizeX, m_fSizeY); };
 	void Set_Size(_float fSizeX, _float fSizeY);
 	void Set_Pass(VTPass ePass) { m_ePass = ePass; }
+	void Set_Position(_vec3 vPos);
+	const RECT& Get_Rect() const { return m_rcRect; }
 
 private:
 	HRESULT Add_Components();

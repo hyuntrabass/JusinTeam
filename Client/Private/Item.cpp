@@ -280,7 +280,7 @@ CItem* CItem::Create(_dev pDevice, _context pContext)
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CItemBlock");
+		MSG_BOX("Failed to Create : CItem");
 		Safe_Release(pInstance);
 	}
 
@@ -293,7 +293,7 @@ CGameObject* CItem::Clone(void* pArg)
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CItemBlock");
+		MSG_BOX("Failed to Clone : CItem");
 		Safe_Release(pInstance);
 	}
 

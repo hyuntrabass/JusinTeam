@@ -259,6 +259,8 @@ void CNastron07::Init_State(_float fTimeDelta)
 		case Client::CNastron07::STATE_DIE:
 			m_Animation.iAnimIndex = DIE;
 			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 3.f;
+
 			break;
 		}
 

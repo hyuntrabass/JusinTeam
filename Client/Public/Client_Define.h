@@ -328,6 +328,7 @@ namespace Client
 		MonAtt_KnockDown,
 		MonAtt_Stun,
 		MonAtt_Poison,
+		MonAtt_Pull,
 		Parrying_Succescc,
 		MonAtt_End
 	};
@@ -387,6 +388,7 @@ namespace Client
 		AnimPass_Shadow,
 		AnimPass_Dissolve,
 		AnimPass_Rim,
+		AnimPass_DefaultNoCull,
 	};
 
 	enum StaticMeshPass
@@ -509,6 +511,7 @@ namespace Client
 		InstPass_Particle_Sprite_DiffMask_Dissolve_Trail,
 		InstPass_Particle_Sprite_DiffMask_RandomIndex_Trail,
 		InstPass_Particle_Sprite_DiffMask_RandomIndex_Dissolve_Trail,
+		InstPass_Particle_MaskColor_Alpha,
 		InstPass_End,
 	};
 #pragma endregion

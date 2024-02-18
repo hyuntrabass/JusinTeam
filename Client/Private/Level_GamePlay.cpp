@@ -110,10 +110,10 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Boss"), TEXT("Prototype_GameObject_Human_Boss"))))
+	/*if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Boss"), TEXT("Prototype_GameObject_Human_Boss"))))
 	{
 		return E_FAIL;
-	}
+	}*/
 
 	// UI
 	if (FAILED(Ready_UI()))
@@ -486,7 +486,7 @@ HRESULT CLevel_GamePlay::Ready_Object()
 		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
 		ObjectInfo.eObjectType = Object_Etc;
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Prologue_Object"), TEXT("Prototype_GameObject_Prologue_Object"), &ObjectInfo)))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Prologue_Object"), TEXT("Prototype_GameObject_Prologue_Object"), &ObjectInfo)))
 		{
 			MSG_BOX("오브젝트 생성 실패");
 			return E_FAIL;
@@ -502,18 +502,18 @@ HRESULT CLevel_GamePlay::Ready_ModelTest()
 		return E_FAIL;
 	}
 
-	for (size_t i = 0; i < 300; i++)
-	{
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_VTFTest"), TEXT("Prototype_GameObject_VTFTest"))))
-		{
-			return E_FAIL;
-		}
-		/*if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Rabbit"), TEXT("Prototype_GameObject_Rabbit"))))
-		{
-			MSG_BOX("Rabbit 생성 실패");
-			return E_FAIL;
-		}*/
-	}
+	//for (size_t i = 0; i < 300; i++)
+	//{
+	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_VTFTest"), TEXT("Prototype_GameObject_VTFTest"))))
+	//	{
+	//		return E_FAIL;
+	//	}
+	//	/*if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Rabbit"), TEXT("Prototype_GameObject_Rabbit"))))
+	//	{
+	//		MSG_BOX("Rabbit 생성 실패");
+	//		return E_FAIL;
+	//	}*/
+	//}
 
 	return S_OK;
 }

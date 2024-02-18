@@ -38,15 +38,24 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
+
+	// Map
+
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_WorldMap"), TEXT("Prototype_GameObject_WorldMap"))))
 	{
 		return E_FAIL;
 	}
 
+	//if (FAILED(Ready_UI()))
+	//{
+	//	MSG_BOX("Failed to Ready UI");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_Object()))
+
+	if (FAILED(Ready_Torch()))
 	{
-		MSG_BOX("Failed to Ready Object");
+		MSG_BOX("Failed to Ready Torch");
 		return E_FAIL;
 	}
 
@@ -129,10 +138,6 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	{
 		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"));
 	}
-	if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
-	{
-		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Test"), TEXT("Prototype_GameObject_Void09"));
-	}
 }
 
 HRESULT CLevel_Village::Render()
@@ -186,7 +191,8 @@ HRESULT CLevel_Village::Ready_Light()
 //	return S_OK;
 //}
 
-HRESULT CLevel_Village::Ready_Object()
+
+HRESULT CLevel_Village::Ready_Torch()
 {
 	const TCHAR* pGetPath = TEXT("../Bin/Data/Dungeon_Torch.dat");
 
@@ -194,7 +200,7 @@ HRESULT CLevel_Village::Ready_Object()
 
 	if (!inFile.is_open())
 	{
-		MSG_BOX("오브젝트 파일을 찾지 못했습니다.");
+		MSG_BOX("Torch 파일을 찾지 못했습니다.");
 		return E_FAIL;
 	}
 
@@ -220,7 +226,7 @@ HRESULT CLevel_Village::Ready_Object()
 		ObjectInfo.eObjectType = Object_Building;
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Torch_Object"), &ObjectInfo)))
 		{
-			MSG_BOX("오브젝트 불러오기 실패");
+			MSG_BOX("Torch 불러오기 실패");
 			return E_FAIL;
 		}
 	}
@@ -258,7 +264,7 @@ HRESULT CLevel_Village::Ready_Environment()
 		inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
 
 		ObjectInfo ObjectInfo{};
-		ObjectInfo.strPrototypeTag = ObjectPrototype ;
+		ObjectInfo.strPrototypeTag = ObjectPrototype;
 		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
 		ObjectInfo.eObjectType = Object_Environment;
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Envir_Object"), TEXT("Prototype_GameObject_Village_Envir_Object"), &ObjectInfo)))
@@ -336,7 +342,7 @@ HRESULT CLevel_Village::Ready_NpcvsMon()
 
 		Info.strMonsterPrototype = MonsterPrototype;
 		Info.MonsterWorldMat = MonsterWorldMat;
-		 
+
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), MonsterPrototype, &Info)))
 		{
 			MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
@@ -468,15 +474,15 @@ HRESULT CLevel_Village::Ready_Dungeon_Monster()
 			}
 
 		}
-		//else if (Info.strMonsterPrototype == TEXT("Prototype_Model_Void23"))
-		//{
-		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void23"), TEXT("Prototype_GameObject_Void23"), &Info)))
-		//	{
-		//		MSG_BOX("Void23 생성 실패");
-		//		return E_FAIL;
-		//	}
+		else if (Info.strMonsterPrototype == TEXT("Prototype_Model_Void23"))
+		{
+			//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void23"), TEXT("Prototype_GameObject_Void23"), &Info)))
+			//{
+			//	MSG_BOX("Void23 생성 실패");
+			//	return E_FAIL;
+			//}
 
-		//}
+		}
 
 	}
 

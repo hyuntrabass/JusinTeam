@@ -91,6 +91,14 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		}
 		if (m_pGameInstance->Key_Down(DIK_M))
 		{
+			if (m_eCurrState == CS_WORLDMAP)
+			{
+				m_isWorldMap = false;
+			}
+			else if (m_eCurrState == CS_DEFAULT)
+			{
+				m_isWorldMap = true;
+			}
 			if (m_eCurrState == CS_ZOOM)
 			{
 				return;
@@ -111,7 +119,16 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		{
 			if (m_eCurrState != CS_WORLDMAP)
 			{
-				m_pCam_Manager->Set_CameraState(CS_WORLDMAP);
+				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
+
+				m_Original_Light_Desc = *LightDesc;
+				LightDesc->eType = LIGHT_DESC::Directional;
+				LightDesc->vDirection = _float4(-1.f, 0.f, -1.f, 0.f);
+				LightDesc->vDiffuse = _vec4(0.8f, 0.8f, 0.8f, 1.f);
+				LightDesc->vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
+				LightDesc->vSpecular = _vec4(1.f);
+
+				m_pCam_Manager->Set_CameraState(CS_WORLDMAP); 
 				m_eCurrState = CS_WORLDMAP;
 				m_pTransformCom->Set_State(State::Pos, m_vMapPos);
 				CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
@@ -119,13 +136,38 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			}
 			else
 			{
+				if (!m_isWorldMap)
+				{
+					if (m_Original_Light_Desc.eType != LIGHT_DESC::TYPE::End)
+					{
+						LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
+						*LightDesc = m_Original_Light_Desc;
+					}
+				}
 				m_pCam_Manager->Set_CameraState(CS_DEFAULT);
 				m_eCurrState = CS_DEFAULT;
 				CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 				m_isFadeReady = false;
 			}
+
+
+
+			if (m_isWorldMap && m_eCurrState == CS_DEFAULT)
+			{
+				if (m_Original_Light_Desc.eType != LIGHT_DESC::TYPE::End)
+				{
+					LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
+					*LightDesc = m_Original_Light_Desc;
+				}				CFadeBox::FADE_DESC Desc = {};
+				Desc.fIn_Duration = 0.5f;
+				Desc.fOut_Duration = 0.5f;
+				Desc.phasFadeCompleted = &m_isFadeReady;
+				CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
+				m_isWorldMap = false;
+			}
 		}
 
+		
 		Init_State(fTimeDelta);
 		Tick_State(fTimeDelta);
 	}
@@ -136,6 +178,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 void CCamera_Main::Late_Tick(_float fTimeDelta)
 {
+	
 }
 
 void CCamera_Main::Camera_Zoom(_float fTimeDelta)
@@ -178,7 +221,7 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 	{
 		if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON))
 		{
-			_long dwMouseMove;
+			_long dwMouseMove{};
 			if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
 			{
 				m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
@@ -186,7 +229,30 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 
 			if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
 			{
-				m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
+				_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
+				_vec4 vFrontLook = vLook;
+				vFrontLook.y = 0.f;
+				_float fResult = vLook.Dot(vFrontLook);
+				_float fTurnValue = fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor;
+
+				if (fResult < 0.97f && fResult > 0.72f)
+				{
+					m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right) , fTurnValue);
+				}
+				else if(fResult >=0.97f)
+				{
+					if(fTurnValue>0.f)
+					{
+						m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
+					}
+				}
+				else if (fResult <= 0.72f)
+				{
+					if (fTurnValue < 0.f)
+					{
+						m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
+					}
+				}
 			}
 
 		}
@@ -196,7 +262,7 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 		{
 			if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
 			{
-				if (m_fPlayerDistance > 2.f)
+				if (m_fPlayerDistance > 4.f)
 				{
 					m_fPlayerDistance -= 0.8f;
 				}
@@ -208,7 +274,7 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 			}
 			else if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
 			{
-				if (m_fPlayerDistance < 10.f)
+				if (m_fPlayerDistance < 6.f)
 				{
 					m_fPlayerDistance += 0.8f;
 				}
@@ -219,8 +285,14 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 				}
 			}
 		}
-
-
+		if (m_fPlayerDistance < 4.f)
+		{
+			m_fPlayerDistance = 4.f;
+		}
+		else if (m_fPlayerDistance > 6.f)
+		{
+			m_fPlayerDistance = 6.f;
+		}
 		// 	y = sin(x * 10.0f) * powf(0.5f, x)
 
 		_float fShakeAmount = sin(m_fShakeAcc * 15.f) * powf(0.5f, m_fShakeAcc) * 0.2f;
@@ -237,15 +309,31 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 		}
 
 		m_AimZoomInTime += fTimeDelta * 1.5f;
-
-		_float CamAttackZoom = m_fLerpDistance - m_pCam_Manager->Get_CameraAttackZoom();
+		_float fCamZoom = m_pCam_Manager->Get_CameraAttackZoom();
+		_float CamAttackZoom{};
+		if (fCamZoom > 0.2f)
+		{
+			CamAttackZoom = 6.f - fCamZoom;
+		}
+		else
+		{
+			 CamAttackZoom = m_fLerpDistance - fCamZoom;
+		}
 
 		_float vZoomY = 1.3f - (CamAttackZoom * 0.25f);
 		_vec4 vCamPos = (m_pPlayerTransform->Get_CenterPos()) + _vec4(0.f, vZoomY, 0.f, 0.f)
 			- (m_pTransformCom->Get_State(State::Look) * CamAttackZoom)
 			+ (m_pTransformCom->Get_State(State::Up) * CamAttackZoom * 0.15f);
 
+		if (m_pCam_Manager->Get_DirectZoom())
+		{
+			m_vOriCamPos = vCamPos;
+			m_pCam_Manager->Set_DirectZoom(false);
+		}
+		else
+		{
 		m_vOriCamPos = XMVectorLerp(m_vOriCamPos, vCamPos, 0.3f);
+		}
 
 		_vec4 OriCam{};
 		if (m_AimZoomInTime < 1.f)
@@ -292,7 +380,7 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 	}
 	else
 	{
-		m_fPlayerDistance = 7.f;
+		m_fPlayerDistance = 6.f;
 		_long dwMouseMove;
 		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
 		{

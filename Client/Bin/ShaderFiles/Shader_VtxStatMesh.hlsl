@@ -386,13 +386,14 @@ PS_OUT_EFFECT PS_Main_Effect_Dissolve(PS_IN Input)
     PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - g_fDissolveRatio) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
-    
+
     Output.vColor = g_vColor;
+    Output.vColor.a = fAlpha;
     
     return Output;
 }
@@ -438,8 +439,8 @@ PS_OUT_EFFECT PS_Main_MaskEffect_Dissolve(PS_IN Input)
     PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio > fDissolve)
+    float fAlpha = saturate((fDissolve - g_fDissolveRatio) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
@@ -451,7 +452,7 @@ PS_OUT_EFFECT PS_Main_MaskEffect_Dissolve(PS_IN Input)
     }
     
     Output.vColor = g_vColor;
-    Output.vColor.a = vMask.r;
+    Output.vColor.a = vMask.r * fAlpha;
     
     return Output;
 }

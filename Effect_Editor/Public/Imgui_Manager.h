@@ -81,6 +81,8 @@ public:
 public:
 	HRESULT Init(_dev pDevice, _context pContext, vector<string>* pTextureList, vector<string>* pModelList);
 	void Tick(_float fTimeDelta);
+	void Effect_Tick(_float fTimeDelta);
+	void Effect_LateTick(_float fTimeDelta);
 	HRESULT Render();
 
 private:
@@ -127,7 +129,7 @@ private:
 	const _int& Compute_TextureIndex(const wstring& strTexture);
 	const _int& Compute_ModelIndex(const string& strModel);
 
-	EffectInfo Load_Data(_bool isAdd = false);
+	EffectInfo Load_Data(_bool isAdd = false, _bool isQuick = false);
 	void Load_OldData();
 	HRESULT Export_Data(EffectInfo& Info);
 	HRESULT Override_Data(EffectInfo& Info);

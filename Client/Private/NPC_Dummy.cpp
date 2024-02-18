@@ -61,19 +61,19 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 	if (m_strModelTag == TEXT("Prototype_Model_Dwarf_Male_002"))
 	{
 		m_Animation.iAnimIndex = 0;
-		DialogDesc.strText = TEXT("나는 드워프다");
+		DialogDesc.strText = TEXT("우리 강아지 귀엽죠?");
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Female_003"))
 	{
 		m_Animation.iAnimIndex = 2;
-		DialogDesc.strText = TEXT("날씨가 참 좋네~날씨가 참 좋네~날씨가 참 좋네~");
+		DialogDesc.strText = TEXT("날씨가 참 좋네~");
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Female_004"))
 	{
 		m_Animation.iAnimIndex = 2;
-		DialogDesc.strText = TEXT("임시로 띄운 텍스트입니다~ 임시로 띄운 텍스트입니다~ 임시로 띄운 텍스트입니다~ ");
+		DialogDesc.strText = TEXT("마나하임은 참 살기 좋은 곳이야");
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Female_006"))
@@ -85,11 +85,12 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 	if (m_strModelTag == TEXT("Prototype_Model_Male_009"))
 	{
 		m_Animation.iAnimIndex = 1;
-		DialogDesc.strText = TEXT("임시로 띄운 텍스트입니다~ 여기에 /n을 넣으면 당연히 엔터가 안되겠지?");
+		DialogDesc.strText = TEXT("심심하다");
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Male_013"))
 	{
+		DialogDesc.strText = TEXT("오늘 장터 반찬 뭐야?");
 		m_Animation.iAnimIndex = 1;
 	}
 
@@ -101,11 +102,13 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 
 	if (m_strModelTag == TEXT("Prototype_Model_Male_018"))
 	{
+		DialogDesc.strText = TEXT("우리집 고양이가 어디갔지?");
 		m_Animation.iAnimIndex = 0;
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_SkillMerchant"))
 	{
+		DialogDesc.strText = TEXT("안녕하세요");
 		m_Animation.iAnimIndex = 0;
 	}
 
@@ -121,22 +124,25 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 
 	if (m_strModelTag == TEXT("Prototype_Model_Female_027"))
 	{
+		DialogDesc.strText = TEXT("난 슬플 때 힙합을 춰");
 		m_Animation.iAnimIndex = 2;
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Male_Chi"))
 	{
+		DialogDesc.strText = TEXT("나랑 같이 춤추자");
 		m_Animation.iAnimIndex = 3;
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Male_016"))
 	{
+		DialogDesc.strText = TEXT("내 춤을 좀 멈춰줘");
 		m_Animation.iAnimIndex = 0;
-		DialogDesc.strText = TEXT("임시로 띄운 텍스트입니다~ ");
 	}
 
 	if (m_strModelTag == TEXT("Prototype_Model_Male_020"))
 	{
+		DialogDesc.strText = TEXT("IDLE 상태로 바꿔주세요 ㅠㅠ");
 		m_Animation.iAnimIndex = 0;
 	}
 
@@ -168,6 +174,7 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 
 	if (m_strModelTag == TEXT("Prototype_Model_Male_027"))
 	{
+		DialogDesc.strText = TEXT("내 멋진 기타를 봐");
 		m_Animation.iAnimIndex = 1;
 	}
 
@@ -247,12 +254,18 @@ void CNPC_Dummy::Tick(_float fTimeDelta)
 
 void CNPC_Dummy::Late_Tick(_float fTimeDelta)
 {
+
 	__super::Late_Tick(fTimeDelta);
 	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
 	_bool isColl = m_pColliderCom->Intersect(pCollider);
 	if (isColl)
 	{
-		wstring strTest = m_strModelTag;
+		if (m_strModelTag == TEXT("Prototype_Model_Male_009"))
+		{
+			_int a = 10;
+		}
+
+		//wstring strTest = m_strModelTag;
 		m_pDialog->Late_Tick(fTimeDelta);
 	}
 }

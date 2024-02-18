@@ -1,6 +1,10 @@
 #include "WorldMap.h"
 #include "UI_Manager.h"
 #include "Camera_Manager.h"
+#include "TextButton.h"
+#include "3DUITEX.h"
+#include "Trigger_Manager.h"
+#include "Camera_Manager.h"
 
 CWorldMap::CWorldMap(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -15,6 +19,7 @@ CWorldMap::CWorldMap(const CWorldMap& rhs)
 
 HRESULT CWorldMap::Init_Prototype()
 {
+	m_isPrototype = true;
 	return S_OK;
 }
 
@@ -28,6 +33,11 @@ HRESULT CWorldMap::Init(void* pArg)
 
 	m_pTransformCom->Set_State(State::Pos, _vec4(1000.f,1000.f,1000.f, 1.f));
 
+	if (FAILED(Add_Points()))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -37,8 +47,60 @@ void CWorldMap::Tick(_float fTimeDelta)
 	{
 		return;
 	}
+	POINT ptMouse;
+	GetCursorPos(&ptMouse);
+	ScreenToClient(g_hWnd, &ptMouse);
+
 	m_fWater_Nomal.x += fTimeDelta * 0.1f;
 	m_fWater_Nomal.y -= fTimeDelta * 0.1f;
+
+	if (m_bSelect)
+	{
+		switch (m_eCurPoint)
+		{
+		case VILLAGE:
+			CTrigger_Manager::Get_Instance()->Teleport(TS_Village);
+			break;
+		case DUNGEON:
+			CTrigger_Manager::Get_Instance()->Teleport(TS_Dungeon);
+			break;
+		case TOWER:
+			break;
+		}
+		m_bSelect = false;
+
+		CFadeBox::FADE_DESC Desc = {};
+		Desc.fIn_Duration = 0.5f;
+		Desc.fOut_Duration = 0.5f;
+		Desc.phasFadeCompleted = &m_isFadeReady;
+		CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
+
+		return;
+	}
+
+	if (m_isFadeReady)
+	{
+		CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
+		CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
+		m_isFadeReady = false;
+	}
+
+	for (size_t i = 0; i < MAP_END; i++)
+	{
+		if (m_Points[i] != nullptr)
+		{
+			if (PtInRect(&m_Points[i]->Get_Rect(), ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
+			{
+				m_bSelect = true;
+				m_eCurPoint = (MAPPOINT)i;
+				return;
+			}
+
+			m_Points[i]->Tick(fTimeDelta);
+		}
+	}
+	m_pTitle->Tick(fTimeDelta);
+
 
 }             
 
@@ -48,7 +110,14 @@ void CWorldMap::Late_Tick(_float fTimeDelta)
 		return;
 
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
-
+	for (size_t i = 0; i < MAP_END; i++)
+	{
+		if (m_Points[i] != nullptr)
+		{
+			m_Points[i]->Late_Tick(fTimeDelta);
+		}
+	}
+	m_pTitle->Late_Tick(fTimeDelta);
 }
 
 HRESULT CWorldMap::Render()
@@ -157,6 +226,80 @@ HRESULT CWorldMap::Render()
 	return S_OK;
 }
 
+HRESULT CWorldMap::Add_Points()
+{
+	C3DUITex::UITEX_DESC Desc{};
+
+	Desc.eLevelID = LEVEL_STATIC;
+	Desc.strText = TEXT("마나하임");
+	Desc.vTextColor = _vec4(1.f, 0.7f, 0.1f, 1.f);
+	Desc.vTextPosition = _vec2(0.f, 60.f);
+	Desc.fFontSize = 0.4f;
+	Desc.pParentTransform = m_pTransformCom;
+	Desc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_World_Village");
+	Desc.vPosition = _vec3(-10.f, 4.f, -3.f);
+	Desc.vSize = _vec2(60.f, 60.f);
+
+
+	m_Points[VILLAGE] = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &Desc);
+	if (not m_Points[VILLAGE])
+	{
+		return E_FAIL;
+	}
+
+	Desc.strText = TEXT("던전");
+	Desc.eLevelID = LEVEL_STATIC;
+	Desc.pParentTransform = m_pTransformCom;
+	Desc.vTextColor = _vec4(1.f, 0.9f, 0.8f, 1.f);
+	Desc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_World_Dungeon");
+	Desc.vPosition = _vec3(-25.f, 4.f, 8.f);
+	Desc.vSize = _vec2(60.f, 60.f);
+
+
+	m_Points[DUNGEON] = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &Desc);
+	if (not m_Points[DUNGEON])
+	{
+		return E_FAIL;
+	}
+
+	Desc.strText = TEXT("무한의 탑");
+	Desc.eLevelID = LEVEL_STATIC;
+	Desc.pParentTransform = m_pTransformCom;
+	Desc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_World_Tower");
+	Desc.vPosition = _vec3(-2.f, 4.f, 8.f);
+	Desc.vSize = _vec2(60.f, 60.f);
+
+
+	m_Points[TOWER] = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &Desc);
+	if (not m_Points[TOWER])
+	{
+		return E_FAIL;
+	}
+
+
+	CTextButton::TEXTBUTTON_DESC Button = {};
+
+	Button.eLevelID = LEVEL_STATIC;
+	Button.fDepth = (_float)D_WINDOW / (_float)D_END;
+	Button.eLevelID = LEVEL_STATIC;
+	Button.fFontSize = 0.5f;
+	Button.strText = TEXT("월드맵 / 미드가르드");
+	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Back");
+	Button.vPosition = _vec2(20.f, 25.f);
+	Button.vSize = _vec2(50.f, 50.f);
+	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	Button.vTextPosition = _vec2(100.f, 0.f);
+
+	m_pTitle = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+
+	if (not m_pTitle)
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
 HRESULT CWorldMap::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
@@ -256,12 +399,21 @@ void CWorldMap::Free()
 {
 	__super::Free();
 
+	if (!m_isPrototype)
+	{
+		for (size_t i = 0; i < MAP_END; i++)
+		{
+			Safe_Release(m_Points[i]);
+		}
+	}
+
 	for (int i = 0; i < 3; i++)
 	{
 
 	Safe_Release(m_pModelCom[i]);
 	}
 
+	Safe_Release(m_pTitle);
 	Safe_Release(m_pMaskTexture);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

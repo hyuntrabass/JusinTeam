@@ -67,6 +67,10 @@ HRESULT CImgui_Manager::Init(_dev pDevice, _context pContext, vector<string>* pT
 	m_ParticleInfo.vMaxDir = _float3(0.f, 1.f, 0.f);
 	m_ParticleInfo.isLoop = true;
 
+	CGameInstance::Func_TickFX func_Tick = [this](auto... args) { return Effect_Tick(args...); };
+	CGameInstance::Func_TickFX func_LateTick = [this](auto... args) { return Effect_LateTick(args...); };
+	m_pGameInstance->Register_Tick_LateTick_Callback(func_Tick, func_LateTick);
+
 	//Load_OldData();
 
 	return S_OK;
@@ -77,6 +81,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	static _bool bDemo{ true };
 	ShowDemoWindow(&bDemo);
 	EffectInfo Info{};
+	static _bool shouldScrollToSelectedItem{};
 #pragma region Main Window
 	Begin("Effect_Tool");
 
@@ -145,6 +150,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		"InstPass_Particle_Sprite_DiffMask_Dissolve_Trail",
 		"InstPass_Particle_Sprite_DiffMask_RandomIndex_Trail",
 		"InstPass_Particle_Sprite_DiffMask_RandomIndex_Dissolve_Trail",
+		"InstPass_Particle_MaskColor_Alpha",
 	};
 
 	const _char* szVTPasses[VTPass_End]
@@ -238,7 +244,6 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		Text(szInstancingPasses[iPassIndex]);
 		static ImGuiTextFilter Filter_Pass;
 		Filter_Pass.Draw("Pass##1"); SameLine();
-		_bool shouldScrollToSelectedItem{};
 		if (Button("Scroll##6"))
 		{
 			shouldScrollToSelectedItem = true;
@@ -283,7 +288,6 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		Text(szVTPasses[iPassIndex]);
 		static ImGuiTextFilter Filter_Pass;
 		Filter_Pass.Draw("Pass##2"); SameLine();
-		_bool shouldScrollToSelectedItem{};
 		if (Button("Scroll##7"))
 		{
 			shouldScrollToSelectedItem = true;
@@ -329,7 +333,6 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		Text(szStatPasses[iPassIndex]);
 		static ImGuiTextFilter Filter_Pass;
 		Filter_Pass.Draw("Pass##3"); SameLine();
-		_bool shouldScrollToSelectedItem{};
 		if (Button("Scroll##8"))
 		{
 			shouldScrollToSelectedItem = true;
@@ -437,7 +440,6 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		Text(m_pItemList_Texture[m_iSelected_Texture]);
 		static ImGuiTextFilter Filter_Diff;
 		Filter_Diff.Draw("Search##1"); SameLine();
-		_bool shouldScrollToSelectedItem{};
 		if (Button("Scroll##1"))
 		{
 			shouldScrollToSelectedItem = true;
@@ -536,7 +538,6 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 		static ImGuiTextFilter Filter_Mask;
 		Filter_Mask.Draw("Search##2"); SameLine();
-		_bool shouldScrollToSelectedItem{};
 		if (Button("Scroll##2"))
 		{
 			shouldScrollToSelectedItem = true;
@@ -609,7 +610,6 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 		static ImGuiTextFilter Filter_UnDiss;
 		Filter_UnDiss.Draw("Search##3"); SameLine();
-		_bool shouldScrollToSelectedItem{};
 		if (Button("Scroll##3"))
 		{
 			shouldScrollToSelectedItem = true;
@@ -682,7 +682,6 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 		static ImGuiTextFilter Filter_Diss;
 		Filter_Diss.Draw("Search##4"); SameLine();
-		_bool shouldScrollToSelectedItem{};
 		if (Button("Scroll##4"))
 		{
 			shouldScrollToSelectedItem = true;
@@ -1001,7 +1000,6 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 		static ImGuiTextFilter Filter_Diss;
 		Filter_Diss.Draw("Search##5"); SameLine();
-		_bool shouldScrollToSelectedItem{};
 		if (Button("Scroll##5"))
 		{
 			shouldScrollToSelectedItem = true;
@@ -1068,6 +1066,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	End();
 
 #pragma endregion
+
+	shouldScrollToSelectedItem = false;
 
 #pragma region Files
 	Begin("Files");
@@ -1276,6 +1276,209 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 				iAttenuation = 0;
 			}
 		}
+
+		shouldScrollToSelectedItem = true;
+	} SameLine();
+
+	if (Button("Quick Load"))
+	{
+		EffectInfo Info = Load_Data(false, true);
+
+		Safe_Release(m_pEffect);
+		if (Info.vSize.z == 0.f)
+		{
+			Info.vSize.z = 1.f;
+		}
+		m_pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Info));
+
+		m_iCurrent_Type = Info.iType;
+
+		if (Info.fLifeTime < 0)
+		{
+			hasLifeTime = false;
+			m_fEffectLifeTime = -1.f;
+		}
+		else
+		{
+			hasLifeTime = true;
+			m_fEffectLifeTime = Info.fLifeTime;
+		}
+
+		vPosOffset = Info.vPosOffset;
+
+		iPassIndex = Info.iPassIndex;
+
+		bSkipBloom = Info.bSkipBloom;
+
+		if (Info.strDiffuseTexture.size())
+		{
+			iIsColor = 0;
+			m_hasDiffTexture = true;
+			m_iSelected_Texture = Compute_TextureIndex(Info.strDiffuseTexture);
+		}
+		else
+		{
+			iIsColor = 1;
+			m_hasDiffTexture = false;
+			m_vColor = Info.vColor;
+		}
+
+		isSprite = Info.isSprite;
+		if (Info.isSprite)
+		{
+			vNumSprites = Info.vNumSprites;
+			isFixedIndex = Info.isFixedIndex;
+			if (isFixedIndex)
+			{
+				iFixedSpriteIndex = Info.iFixedSpriteIndex;
+			}
+			else
+			{
+				fSpriteDuration = Info.fSpriteDuration;
+			}
+		}
+
+		if (Info.strMaskTexture.size())
+		{
+			m_hasMask = true;
+			m_iSelected_MaskTexture = Compute_TextureIndex(Info.strMaskTexture);
+			vUVDelta = Info.vUVDelta;
+			vUVInit = Info.vUVInit;
+			isUVLoop = Info.isUVLoop;
+			fAlphaInit = Info.fAlphaInit;
+			fAlphaDelta = Info.fAlphaDelta;
+		}
+		else
+		{
+			m_hasMask = false;
+		}
+
+		if (Info.strUnDissolveTexture.size())
+		{
+			hasUnDissolve = true;
+			iSelectd_UnDissolve = Compute_TextureIndex(Info.strUnDissolveTexture);
+			fUnDissolveDuration = Info.fUnDissolveDuration;
+		}
+		else
+		{
+			hasUnDissolve = false;
+		}
+
+		if (Info.strDissolveTexture.size())
+		{
+			hasDissolve = true;
+			iSelectd_Dissolve = Compute_TextureIndex(Info.strDissolveTexture);
+			fDissolveDuration = Info.fDissolveDuration;
+		}
+		else
+		{
+			hasDissolve = false;
+		}
+
+		switch (Info.iType)
+		{
+		case Effect::ET_PARTICLE:
+			m_ParticleInfo = Info.PartiDesc;
+			m_iNumInstance = Info.iNumInstances;
+			bApplyGravity = Info.bApplyGravity;
+			vGravityDir = Info.vGravityDir;
+			fPartiDissolveRatio = Info.fPartiDissolveRatio;
+			fPartiAppearRatio = Info.fPartiAppearRatio;
+			break;
+		case Effect::ET_RECT:
+			isBillboard = Info.isBillboard;
+			if (Info.isSprite)
+			{
+				fSizeforSprite = Info.vSize.y;
+			}
+			vSize = Info.vSize;
+			if (vSize.z == 0.f)
+			{
+				vSize.z = 1.f;
+			}
+			vSizeDelta = Info.vSizeDelta;
+			fRectRotationAngle = Info.fRectRotationAngle;
+			break;
+		case Effect::ET_MESH:
+			isBillboard = Info.isBillboard;
+			if (isBillboard)
+			{
+				vBillboardRotation = Info.vBillboardRotation;
+			}
+			m_iSelected_Model = Compute_ModelIndex(Info.strModel);
+			vSize = Info.vSize;
+			vSizeDelta = Info.vSizeDelta;
+			break;
+		}
+
+		m_hasLight = Info.hasLight;
+
+		//"LIGHT_RANGE_7",
+		//"LIGHT_RANGE_13",
+		//"LIGHT_RANGE_20",
+		//"LIGHT_RANGE_32",
+		//"LIGHT_RANGE_50",
+		//"LIGHT_RANGE_65",
+		//"LIGHT_RANGE_100",
+		//"LIGHT_RANGE_160",
+		//"LIGHT_RANGE_200",
+		//"LIGHT_RANGE_325",
+		//"LIGHT_RANGE_600",
+		//"LIGHT_RANGE_3250",
+		if (m_hasLight)
+		{
+			Light_Desc = Info.Light_Desc;
+			if (Light_Desc.vAttenuation.x > 600.f)
+			{
+				iAttenuation = 11;
+			}
+			else if (Light_Desc.vAttenuation.x > 325.f)
+			{
+				iAttenuation = 10;
+			}
+			else if (Light_Desc.vAttenuation.x > 200.f)
+			{
+				iAttenuation = 9;
+			}
+			else if (Light_Desc.vAttenuation.x > 160.f)
+			{
+				iAttenuation = 8;
+			}
+			else if (Light_Desc.vAttenuation.x > 100.f)
+			{
+				iAttenuation = 7;
+			}
+			else if (Light_Desc.vAttenuation.x > 65.f)
+			{
+				iAttenuation = 6;
+			}
+			else if (Light_Desc.vAttenuation.x > 50.f)
+			{
+				iAttenuation = 5;
+			}
+			else if (Light_Desc.vAttenuation.x > 32.f)
+			{
+				iAttenuation = 4;
+			}
+			else if (Light_Desc.vAttenuation.x > 20.f)
+			{
+				iAttenuation = 3;
+			}
+			else if (Light_Desc.vAttenuation.x > 13.f)
+			{
+				iAttenuation = 2;
+			}
+			else if (Light_Desc.vAttenuation.x > 7.f)
+			{
+				iAttenuation = 1;
+			}
+			else
+			{
+				iAttenuation = 0;
+			}
+		}
+
+		shouldScrollToSelectedItem = true;
 	} SameLine();
 
 	if (Button("Override"))
@@ -1300,16 +1503,6 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	}
 
 
-	if (m_pEffect)
-	{
-		m_pEffect->Tick(fTimeDelta);
-	}
-
-	for (auto& pEffect : m_AddEffect)
-	{
-		pEffect->Tick(fTimeDelta);
-	}
-
 	if (not m_pEffect or m_pEffect->isDead() or m_pGameInstance->Key_Down(DIK_RETURN) or m_pGameInstance->Key_Down(DIK_E))
 	{
 		Safe_Release(m_pEffect);
@@ -1324,30 +1517,56 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 		Info.pMatrix = &m_DummyMatrix;
 		m_pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Info));
-		m_pEffect->Tick(fTimeDelta);
+		//m_pEffect->Tick(fTimeDelta);
 	}
 
 	End();
 #pragma endregion
 }
 
-HRESULT CImgui_Manager::Render()
+void CImgui_Manager::Effect_Tick(_float fTimeDelta)
 {
 	if (m_pEffect)
 	{
-		if (FAILED(m_pEffect->Render()))
-		{
-			return E_FAIL;
-		}
+		m_pEffect->Tick(fTimeDelta);
 	}
 
 	for (auto& pEffect : m_AddEffect)
 	{
-		if (FAILED(pEffect->Render()))
-		{
-			return E_FAIL;
-		}
+		pEffect->Tick(fTimeDelta);
 	}
+}
+
+void CImgui_Manager::Effect_LateTick(_float fTimeDelta)
+{
+	if (m_pEffect)
+	{
+		m_pEffect->Late_Tick(fTimeDelta);
+	}
+
+	for (auto& pEffect : m_AddEffect)
+	{
+		pEffect->Late_Tick(fTimeDelta);
+	}
+}
+
+HRESULT CImgui_Manager::Render()
+{
+	//if (m_pEffect)
+	//{
+	//	if (FAILED(m_pEffect->Render()))
+	//	{
+	//		return E_FAIL;
+	//	}
+	//}
+
+	//for (auto& pEffect : m_AddEffect)
+	//{
+	//	if (FAILED(pEffect->Render()))
+	//	{
+	//		return E_FAIL;
+	//	}
+	//}
 
 
 	ImGui::Render();
@@ -1467,7 +1686,7 @@ const _int& CImgui_Manager::Compute_ModelIndex(const string& strModel)
 	return -1;
 }
 
-EffectInfo CImgui_Manager::Load_Data(_bool isAdd)
+EffectInfo CImgui_Manager::Load_Data(_bool isAdd, _bool isQuick)
 {
 	EffectInfo Info{};
 
@@ -1484,9 +1703,13 @@ EffectInfo CImgui_Manager::Load_Data(_bool isAdd)
 	ofn.nMaxFile = 256;
 	ofn.lpstrInitialDir = L"..\\..\\Client\\Bin\\EffectData";
 
-	if (GetOpenFileName(&ofn))
+	if (isQuick or GetOpenFileName(&ofn))
 	{
 		filesystem::path strFilePath = ofn.lpstrFile;
+		if (isQuick)
+		{
+			strFilePath = m_CurrFilePath;
+		}
 		ifstream InFile(strFilePath.c_str(), ios::binary);
 
 		if (not isAdd)
