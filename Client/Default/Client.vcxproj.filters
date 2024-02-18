@@ -1393,5 +1393,11 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VTFModel_Instance.hlsl">
       <Filter>97.Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxStatMesh_Effect.hlsl">
+      <Filter>97.Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Effect.hlsl">
+      <Filter>97.Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

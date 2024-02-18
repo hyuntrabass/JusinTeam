@@ -68,10 +68,9 @@ void CJobMark::Tick(_float fTimeDelta)
 	_int iIdx = CUI_Manager::Get_Instance()->Get_WeaponType(PT_SWORD, &eType);
 	if(m_eType != eType)
 	{
-		if (m_pJob)
-		{
-			Safe_Release(m_pJob);
-		}
+
+		Safe_Release(m_pJob);
+		Safe_Release(m_pAlphaJob);
 
 		CTextButtonColor::TEXTBUTTON_DESC Button = {};
 		Button.eLevelID = LEVEL_STATIC;
