@@ -103,6 +103,14 @@ void CXBeam::Tick(_float fTimeDelta)
 		Info.pMatrix = &EffectMat;
 		pEffect_Manager->Add_Layer_Effect(Info);
 
+		Info = pEffect_Manager->Get_EffectInformation(L"Arrow_Explosion_Smoke");
+		Info.pMatrix = &EffectMat;
+		pEffect_Manager->Add_Layer_Effect(Info);
+
+		Info = pEffect_Manager->Get_EffectInformation(L"Arrow_Explosion_Smoke2");
+		Info.pMatrix = &EffectMat;
+		pEffect_Manager->Add_Layer_Effect(Info);
+
 		Safe_Release(pEffect_Manager);
 	}
 }

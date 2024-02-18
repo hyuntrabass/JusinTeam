@@ -42,6 +42,11 @@ void CCamera_Manager::Set_ZoomFactor(const _float fFactor)
 	m_fZoomFactor = fFactor;
 }
 
+void CCamera_Manager::Set_DirectZoom(_bool DirecZoom)
+{
+	m_bDirectZoom = DirecZoom;
+}
+
 void CCamera_Manager::Set_CameraState(const CAMERA_STATE& iIndex)
 {
 	m_iCameraState = iIndex;

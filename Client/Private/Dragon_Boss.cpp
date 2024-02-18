@@ -46,7 +46,8 @@ HRESULT CDragon_Boss::Init(void* pArg)
 	m_pRightTrail2 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
 	m_pRightTrail3 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
 
-	m_eCurState = STATE_ROAR;
+	//m_eCurState = STATE_ROAR;
+	m_eCurState = STATE_FIRE_PILLAR;
 
 	m_iHP = 20000;
 
@@ -477,7 +478,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = eTempDragonState;
 
-			m_eCurState = STATE_FLY_FIRE; // 테스트용
+			m_eCurState = STATE_BLACKHOLE; // 테스트용
 		}
 	}
 
@@ -878,7 +879,7 @@ HRESULT CDragon_Boss::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_CamNF", &m_pGameInstance->Get_CameraNF(), sizeof _float2)))
 	{
 		return E_FAIL;
 	}

@@ -110,10 +110,10 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Boss"), TEXT("Prototype_GameObject_Human_Boss"))))
+	/*if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Boss"), TEXT("Prototype_GameObject_Human_Boss"))))
 	{
 		return E_FAIL;
-	}
+	}*/
 
 	// UI
 	if (FAILED(Ready_UI()))
@@ -390,8 +390,8 @@ HRESULT CLevel_GamePlay::Ready_Map()
 	inFile.close();
 
 	CLake::WATER_DESC Desc;
-	Desc.fReflectionScale = 0.05f;
-	Desc.fRefractionScale = 0.05f;
+	Desc.fReflectionScale = 0.1f;
+	Desc.fRefractionScale = 0.1f;
 	Desc.vPos = _vec3(100.f, 1.f, 100.f);
 	Desc.vSize = _vec2(200.f, 200.f);
 	Desc.fWaterSpeed = 0.01f;

@@ -50,7 +50,7 @@ HRESULT CTutorial::Init(void* pArg)
 void CTutorial::Tick(_float fTimeDelta)
 {
 	m_isDead = true;
-
+	return;
 	fTimeDelta /= m_pGameInstance->Get_TimeRatio();
 	if (CEvent_Manager::Get_Instance()->Get_TutorialComplete(m_eTuto))
 	{

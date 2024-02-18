@@ -127,9 +127,6 @@
     <Filter Include="02.GameObjects\00.UI\FadeBox">
       <UniqueIdentifier>{02b4a4e2-0a72-4bdc-8658-86e2f4bab2a7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\03.Player\Weapon">
-      <UniqueIdentifier>{713b4ec7-bd75-4f8c-a806-3b00cf5e713f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\07. NPC">
       <UniqueIdentifier>{897af39d-fd9a-46e6-b7f1-eb5be95ebd16}</UniqueIdentifier>
     </Filter>
@@ -255,9 +252,6 @@
     </Filter>
     <Filter Include="02.GameObjects\08. Boss\Dragon_Boss">
       <UniqueIdentifier>{c85e57aa-99ca-447a-b20f-843b04b33165}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03.Player\Weapon\Arrow">
-      <UniqueIdentifier>{3c9caad4-a7e8-48db-a836-c8c8b3ca4edd}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Spider">
       <UniqueIdentifier>{f363281d-5323-407d-80fa-91b4b26af4c3}</UniqueIdentifier>
@@ -444,6 +438,9 @@
     </Filter>
     <Filter Include="02.GameObjects\00.UI\GameUI\Inven\Window\Summon">
       <UniqueIdentifier>{c6e00d6a-2521-443e-a6d7-c8892e42bc41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\03.Player\Arrow">
+      <UniqueIdentifier>{3c9caad4-a7e8-48db-a836-c8c8b3ca4edd}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\09.Object\Interaction">
       <UniqueIdentifier>{4770deaa-494c-4578-93b3-10cd291c3481}</UniqueIdentifier>
@@ -760,7 +757,7 @@
       <Filter>03.Effect\Common_Effect</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Arrow.h">
-      <Filter>02.GameObjects\03.Player\Weapon\Arrow</Filter>
+      <Filter>02.GameObjects\03.Player\Arrow</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Spider.h">
       <Filter>02.GameObjects\08. Boss\Groar_Boss\Spider</Filter>
@@ -1205,7 +1202,7 @@
       <Filter>03.Effect\Common_Effect</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Arrow.cpp">
-      <Filter>02.GameObjects\03.Player\Weapon\Arrow</Filter>
+      <Filter>02.GameObjects\03.Player\Arrow</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Spider.cpp">
       <Filter>02.GameObjects\08. Boss\Groar_Boss\Spider</Filter>
@@ -1385,6 +1382,12 @@
       <Filter>97.Shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VTFModel_Instance.hlsl">
+      <Filter>97.Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Effect.hlsl">
+      <Filter>97.Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxStatMesh_Effect.hlsl">
       <Filter>97.Shaders</Filter>
     </FxCompile>
   </ItemGroup>

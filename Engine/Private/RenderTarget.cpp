@@ -93,6 +93,15 @@ HRESULT CRenderTarget::Bind_ShaderResourceView(CShader* pShader, const _char* pV
 	return S_OK;
 }
 
+HRESULT CRenderTarget::Copy_Texture(ID3D11Resource* pTexture)
+{
+	m_pContext->CopyResource(m_pTexture, pTexture);
+
+	Safe_Release(pTexture);
+
+	return S_OK;
+}
+
 #ifdef _DEBUG
 HRESULT CRenderTarget::Ready_Debug(_float2 vPos, _float2 vSize)
 {

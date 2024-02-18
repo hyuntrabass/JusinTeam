@@ -18,6 +18,7 @@ public:
 	HRESULT End_MRT();
 
 	HRESULT Bind_ShaderResourceView(class CShader* pShader, const _char* pVariableName, const wstring& strTargetTag);
+	HRESULT Copy_Texture(const wstring& strTargetTag, ID3D11Resource* pTexture);
 
 	ID3D11Texture2D* Get_Texture2D(const wstring& strTargetTag);
 
