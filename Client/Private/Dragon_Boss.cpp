@@ -47,7 +47,7 @@ HRESULT CDragon_Boss::Init(void* pArg)
 	m_pRightTrail3 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
 
 	//m_eCurState = STATE_ROAR;
-	m_eCurState = STATE_BLACKHOLE;
+	m_eCurState = STATE_FIRE_PILLAR;
 
 	m_iHP = 20000;
 
@@ -478,7 +478,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = eTempDragonState;
 
-			m_eCurState = STATE_BLACKHOLE; // 테스트용
+			m_eCurState = STATE_FIRE_PILLAR; // 테스트용
 		}
 	}
 
