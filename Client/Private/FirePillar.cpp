@@ -38,7 +38,6 @@ HRESULT CFirePillar::Init(void* pArg)
 	Info.pMatrix = &EffectMatrix;
 	m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
-
 	m_pTransformCom->Set_Position(vPlayerPos + _vec3(0.f, 0.1f, 0.f));
 
 	return S_OK;
@@ -54,9 +53,58 @@ void CFirePillar::Tick(_float fTimeDelta)
 		{
 			Safe_Release(m_pFrameEffect);
 			Safe_Release(m_pBaseEffect);
-		}
 
-		// 阂扁嫡 积己
+			// 阂扁嫡 积己
+			_mat EffectMatrix = _mat::CreateScale(2.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)/* + _vec3(0.f, -0.1f, 0.f)*/));
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_FirePillar_Explosion");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_FirePillar_Explosion_Effect");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_FirePillar_FireEffect");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_FirePillar_Floor_Explosion");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_FirePillar_Loop");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_FirePillar_Shine");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_FirePillar_Tornado_Loop");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			EffectMatrix = _mat::CreateScale(1.5f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)/* + _vec3(0.f, -0.1f, 0.f)*/));
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_MiniFirePillar_Loop");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			EffectMatrix = _mat::CreateScale(1.5f) * _mat::CreateRotationY(XMConvertToRadians(30.f)) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)/* + _vec3(0.f, -0.1f, 0.f)*/));
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_MiniFirePillar_Loop");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			EffectMatrix = _mat::CreateScale(1.5f) * _mat::CreateRotationY(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)/* + _vec3(0.f, -0.1f, 0.f)*/));
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_MiniFirePillar_Loop");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			EffectMatrix = _mat::CreateScale(2.5f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)/* + _vec3(0.f, -0.1f, 0.f)*/));
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_FirePillar_Floor_Loop");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+		}
 
 	}
 
