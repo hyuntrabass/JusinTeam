@@ -80,6 +80,10 @@ void CWorldMap::Tick(_float fTimeDelta)
 
 	if (m_isFadeReady)
 	{
+		if (m_eCurPoint == TOWER)
+		{
+			CUI_Manager::Get_Instance()->Open_InfinityTower(true);
+		}
 		CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
 		CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 		m_isFadeReady = false;

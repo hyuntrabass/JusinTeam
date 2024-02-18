@@ -141,20 +141,19 @@ HRESULT CWearable_Slot::Set_WearableItem(ITEM eItemDesc)
 	}
 
 	_int iIndex = eItemDesc.iPartIndex;
-	if (m_ePartType == PT_WEAPON)
+	if (m_ePartType == PT_BOW)
 	{
-		if (eItemDesc.iItemType == ITEM_TYPE::ITEM_BOW)
-		{
-			CUI_Manager::Get_Instance()->Set_WeaponType(WP_BOW);
-		}
-		else if (eItemDesc.iItemType == ITEM_TYPE::ITEM_SWORD)
-		{
-			CUI_Manager::Get_Instance()->Set_WeaponType(WP_SWORD);
-			iIndex += 5;
-		}
 
+		CUI_Manager::Get_Instance()->Set_WeaponType(WP_BOW);
 	}
-	CUI_Manager::Get_Instance()->Set_CustomPart(m_ePartType, iIndex);
+	else if (m_ePartType == PT_SWORD)
+	{
+		CUI_Manager::Get_Instance()->Set_WeaponType(WP_SWORD);
+		iIndex += 6;
+	}
+
+
+	CUI_Manager::Get_Instance()->Set_CustomPart(m_ePartType, iIndex, eItemDesc.iStatus);
 
 	return S_OK;
 }
@@ -179,20 +178,19 @@ void CWearable_Slot::Delete_Item()
 			Safe_Release(m_pItem);
 			return;
 		}
-		
-		if (m_ePartType == PT_WEAPON)
+
+		ITEM eItem = Get_ItemDesc();
+		if (m_ePartType == PT_BOW)
 		{
-			ITEM eItem = Get_ItemDesc();
-			if (eItem.iItemType == ITEM_TYPE::ITEM_BOW)
-			{
-				CUI_Manager::Get_Instance()->Set_WeaponType(WP_BOW);
-			}
-			else if (eItem.iItemType == ITEM_TYPE::ITEM_SWORD)
-			{
-				CUI_Manager::Get_Instance()->Set_WeaponType(WP_SWORD);
-			}
-			iResetIdx = 10;
+			CUI_Manager::Get_Instance()->Set_WeaponType(WP_BOW);
+			iResetIdx = (_uint)BOW_UNEQUIP;
 		}
+		else if (m_ePartType == PT_SWORD)
+		{
+			CUI_Manager::Get_Instance()->Set_WeaponType(WP_SWORD);
+			iResetIdx = (_uint)SWORD_UNEQUIP;
+		}
+
 		Safe_Release(m_pItem);
 	}
 
@@ -203,7 +201,7 @@ void CWearable_Slot::Delete_Item()
 		iResetIdx = 0;
 	}
 
-	CUI_Manager::Get_Instance()->Set_CustomPart(m_ePartType, iResetIdx);
+	CUI_Manager::Get_Instance()->Set_CustomPart(m_ePartType, iResetIdx, 0);
 }
 HRESULT CWearable_Slot::Add_Components()
 {
@@ -279,9 +277,13 @@ HRESULT CWearable_Slot::Add_Slots()
 	case W_FOOT:
 		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Inven_Foot");
 		break;
-	case W_EQUIP:
+	case W_SWORD:
 		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Inven_Equip");
-		m_ePartType = PT_WEAPON;
+		m_ePartType = PT_SWORD;
+		break;
+	case W_BOW:
+		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Inven_Equip");
+		m_ePartType = PT_BOW;
 		break;
 	case W_PET:
 		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Inven_Pet");

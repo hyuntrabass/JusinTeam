@@ -793,11 +793,11 @@ void CInvenFrame::Picking_InvenButton(POINT ptMouse)
 			}
 			else if (m_iCurItemType == ITEM_SWORD)
 			{
-				eType = W_EQUIP;
+				eType = W_SWORD;
 			}
 			else if (m_iCurItemType == ITEM_BOW)
 			{
-				eType = W_EQUIP;
+				eType = W_BOW;
 			}
 			else if (m_iCurItemType == ITEM_PET)
 			{

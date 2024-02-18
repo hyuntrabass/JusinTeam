@@ -75,9 +75,18 @@ void CItemInfo::Tick(_float fTimeDelta)
 		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
 			_bool isOtherItemExist = false;
-			if (m_eItemDesc.iItemType == (_uint)ITEM_BOW || m_eItemDesc.iItemType == (_uint)ITEM_SWORD)
+			if (m_eItemDesc.iItemType == (_uint)ITEM_BOW)
 			{
-				if (FAILED(CUI_Manager::Get_Instance()->Set_WearableItem(W_EQUIP, m_eItemDesc)))
+				if (FAILED(CUI_Manager::Get_Instance()->Set_WearableItem(W_BOW, m_eItemDesc)))
+				{
+					m_isDead = true;
+					return;
+				}
+				isOtherItemExist = true;
+			}
+			else if (m_eItemDesc.iItemType == (_uint)ITEM_SWORD)
+			{
+				if (FAILED(CUI_Manager::Get_Instance()->Set_WearableItem(W_SWORD, m_eItemDesc)))
 				{
 					m_isDead = true;
 					return;

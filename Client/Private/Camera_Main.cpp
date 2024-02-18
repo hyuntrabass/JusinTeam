@@ -325,10 +325,13 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 			- (m_pTransformCom->Get_State(State::Look) * CamAttackZoom)
 			+ (m_pTransformCom->Get_State(State::Up) * CamAttackZoom * 0.15f);
 
-		if (m_pCam_Manager->Get_DirectZoom())
+		if (m_pCam_Manager->Get_RidingZoom())
 		{
-			m_vOriCamPos = vCamPos;
-			m_pCam_Manager->Set_DirectZoom(false);
+			vCamPos = (m_pPlayerTransform->Get_CenterPos()) + _vec4(0.f, -1.1, 0.f, 0.f)
+				- (m_pTransformCom->Get_State(State::Look) * 11.f)
+				+ (m_pTransformCom->Get_State(State::Up) * 11.f * 0.15f);
+
+			m_vOriCamPos = XMVectorLerp(m_vOriCamPos, vCamPos, 0.3f);
 		}
 		else
 		{

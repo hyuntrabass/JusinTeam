@@ -32,9 +32,19 @@ private:
 	JOBSTATE m_eCurState{ BOW };
 	JOBSTATE m_ePrevState{ BOW };
 
-	CGameObject* m_pJob{ nullptr };
+	_bool m_bStartEffect{};
+	_float m_fTime{};
+	_float m_fIndex{};
+	_float m_fBright{};
+
+	class CTextButtonColor* m_pJob{ nullptr };
+	CTextButtonColor* m_pSmoke{ nullptr };
+	CTextButtonColor* m_pAlphaJob{ nullptr };
+	CTextButtonColor* m_pRay{nullptr};
+	CTextButtonColor* m_pRaySec{nullptr};
 
 private:
+	HRESULT Add_Parts();
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
