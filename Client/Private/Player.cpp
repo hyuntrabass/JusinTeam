@@ -742,7 +742,11 @@ HRESULT CPlayer::Render_Shadow()
 
 CComponent* CPlayer::Find_Component(const wstring& strComTag)
 {
-	if(!m_bIsMount)
+	if (strComTag == TEXT("Com_Transform") && m_bIsMount)
+	{	
+		return m_pRiding->Find_Component(strComTag);
+	}
+	else
 	{
 		auto& it = m_Components.find(strComTag);
 		if (it == m_Components.end())
@@ -751,10 +755,6 @@ CComponent* CPlayer::Find_Component(const wstring& strComTag)
 		}
 
 		return it->second;
-	}
-	else
-	{
-		return m_pRiding->Find_Component(strComTag);
 	}
 }
 
@@ -2451,7 +2451,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					m_fAttackZoom = 1.5;
 					Cam_AttackZoom(m_fAttackZoom);
-					//m_pCam_Manager->Set_DirectZoom(true);
+					
 				}
 
 				if (Index >= 13.f && Index <= 32.f)
@@ -2494,13 +2494,9 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					if (!m_bComboZoom)
 					{
-						/*m_fAttackZoom += 0.9f;
-						Cam_AttackZoom(m_fAttackZoom);*/
 						m_fAttackZoom += 1.f;
-						//Cam_AttackZoom(m_fAttackZoom);
 						m_bComboZoom = true;
 					}
-					//m_pCam_Manager->Set_DirectZoom(true);
 				}
 				if (Index >= 20.5f && Index <= 34.f)
 				{
@@ -2528,7 +2524,6 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						
 
 					}
-
 				}
 				else
 				{
@@ -2545,7 +2540,6 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					if (!m_bComboZoom)
 					{
 						m_fAttackZoom += 1.f;
-						//Cam_AttackZoom(m_fAttackZoom);
 						m_bComboZoom = true;
 					}
 					//m_pCam_Manager->Set_DirectZoom(true);
@@ -2563,12 +2557,13 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						Check_Att_Collider(AT_Sword_Common);
 						if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Common]))
 						{
-							m_pGameInstance->Set_TimeRatio(0.01f);
+							m_pGameInstance->Set_TimeRatio(0.3f);
 							m_bAttacked = true;
 
 						}
 
 					}
+
 					if (m_bAttacked)
 					{
 						m_pTransformCom->Set_Speed(5.f);
@@ -2632,7 +2627,6 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 					}
 				}
-
 				else if (Index > 18.f && Index < 21.f)
 				{
 					m_bAttacked = false;			
@@ -2700,24 +2694,6 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 
 				}
-			}
-		}
-		else if (Index > 13.5f && Index <= 15.5f)
-		{
-			m_bAttacked = false;
-		}
-		else if (Index >= 15.5f && Index <= 17.5f)
-		{
-			if (!m_bAttacked)
-			{
-				Check_Att_Collider(AT_Sword_Skill1);
-				if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Skill1]))
-				{
-					m_pGameInstance->Set_TimeRatio(0.4f);
-					m_bAttacked = true;
-					m_pCam_Manager->Set_ShakeCam(true, 2.0f);
-				}
-
 			}
 		}
 		else
