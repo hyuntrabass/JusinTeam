@@ -94,10 +94,11 @@ void CBlackhole::Tick(_float fTimeDelta)
 			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Blackhole_Spread_Circle");
 			Info.pMatrix = &EffectMatrix;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
-
 		}
-
-
+	}
+	else if (m_fLifeTime >= 1.2f && m_iSoundChannel == -1)
+	{
+		m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("Sfx_Boss_IdunDark_Atk_06"));
 	}
 
 	if (m_pFrameEffect && m_pBaseEffect)

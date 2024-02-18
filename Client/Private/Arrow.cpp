@@ -131,7 +131,7 @@ void CArrow::Tick(_float fTimeDelta)
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
 			m_pGameInstance->Play_Sound(TEXT("SE_5130_Meteor_SFX_02"), 0.3f);
-			m_pGameInstance->Play_Sound(TEXT("SD_6135_SmokeScreen_SFX_01"), 0.3f);
+			m_pGameInstance->Play_Sound(TEXT("Draug_Attack03_SFX_01"));
 			m_ArrowType.Att_Type = AT_End;
 			//Kill();
 		}
