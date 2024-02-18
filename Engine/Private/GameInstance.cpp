@@ -1112,14 +1112,14 @@ _bool CGameInstance::Is_SoundManager_Ready()
 	return static_cast<_bool>(m_pSound_Manager);
 }
 
-_int CGameInstance::Play_Sound(const wstring& strSoundTag, _float fVolume, _bool isLoop)
+_int CGameInstance::Play_Sound(const wstring& strSoundTag, _float fVolume, _bool isLoop, _float fStartPosRatio)
 {
 	if (!m_pSound_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
 	}
 
-	return m_pSound_Manager->Play_Sound(strSoundTag, fVolume, isLoop);
+	return m_pSound_Manager->Play_Sound(strSoundTag, fVolume, isLoop, fStartPosRatio);
 }
 void CGameInstance::PlayBGM(const wstring& strSoundTag, float fVolume)
 {
@@ -1341,6 +1341,16 @@ _bool CGameInstance::Get_IsLoopingSound(_uint iChannel)
 	}
 
 	return m_pSound_Manager->Get_IsLoopingSound(iChannel);
+}
+
+_float CGameInstance::Get_CurPosRatio(_uint iChannel)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->Get_CurPosRatio(iChannel);
 }
 
 void CGameInstance::Set_CameraNF(const _float2& vCamNF)
