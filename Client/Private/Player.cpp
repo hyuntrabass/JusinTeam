@@ -742,7 +742,11 @@ HRESULT CPlayer::Render_Shadow()
 
 CComponent* CPlayer::Find_Component(const wstring& strComTag)
 {
-	if(!m_bIsMount)
+	if (strComTag == TEXT("Com_Transform") && m_bIsMount)
+	{	
+		return m_pRiding->Find_Component(strComTag);
+	}
+	else
 	{
 		auto& it = m_Components.find(strComTag);
 		if (it == m_Components.end())
@@ -751,10 +755,6 @@ CComponent* CPlayer::Find_Component(const wstring& strComTag)
 		}
 
 		return it->second;
-	}
-	else
-	{
-		return m_pRiding->Find_Component(strComTag);
 	}
 }
 
