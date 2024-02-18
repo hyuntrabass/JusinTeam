@@ -142,8 +142,8 @@ void CArrow::Tick(_float fTimeDelta)
 			Info.pMatrix = &EffectMat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
-			m_ArrowType.Att_Type = AT_End;
-			//Kill();
+			//m_ArrowType.Att_Type = AT_End;
+			Kill();
 		}
 		break;
 	}
