@@ -25,6 +25,7 @@ public: // Graphic Device
 	HRESULT Clear_BackBuffer_View(_vec4 vClearColor);
 	HRESULT Clear_DepthStencil_View();
 	HRESULT Present();
+	ID3D11Resource* Get_BackBufferTexture();
 
 public: // Timer Manager
 	HRESULT Add_Timer(const wstring& strTimerTag);
@@ -148,6 +149,7 @@ public: // RenderTarget
 	HRESULT Bind_ShaderResourceView(class CShader* pShader, const _char* pVariableName, const wstring& strTargetTag);
 	ID3D11Texture2D* Get_Texture2D(const wstring& strTargetTag);
 	ID3D11ShaderResourceView* Get_SRV(const wstring& strTargetTag);
+	HRESULT Copy_Texture(const wstring& strTargetTag, ID3D11Resource* pTexture);
 
 #ifdef _DEBUG
 public:

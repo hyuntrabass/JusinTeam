@@ -108,6 +108,14 @@ HRESULT CGraphic_Device::Present()
 	return m_pSwapChain->Present(0, 0);	
 }
 
+ID3D11Resource* CGraphic_Device::Get_BackBufferTexture()
+{
+	ID3D11Resource* pBackBufferResource;
+	m_pBackBufferRTV->GetResource(&pBackBufferResource);
+
+	return pBackBufferResource;
+}
+
 
 HRESULT CGraphic_Device::Ready_SwapChain(const GRAPHIC_DESC& GraphicInfo)
 {

@@ -94,7 +94,7 @@ _bool CCollision_Manager::CheckCollision_Parrying(CCollider* pCollider)
 	{
 		if ((_bool)m_pPlayer->Get_HP())
 		{
-		m_pPlayer->Set_Damage(0, 4);
+		m_pPlayer->Set_Damage(0, 0);
 			return true;
 		}
 

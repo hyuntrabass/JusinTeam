@@ -242,6 +242,17 @@ HRESULT CGameInstance::Present()
 	return m_pGraphic_Device->Present();
 }
 
+ID3D11Resource* CGameInstance::Get_BackBufferTexture()
+{
+	if (!m_pGraphic_Device)
+	{
+		MSG_BOX("FATAL ERROR : m_pGraphic_Device is NULL");
+		return nullptr;
+	}
+
+	return m_pGraphic_Device->Get_BackBufferTexture();
+}
+
 HRESULT CGameInstance::Add_Timer(const wstring& strTimerTag)
 {
 	if (!m_pTimer_Manager)
@@ -1068,6 +1079,16 @@ ID3D11ShaderResourceView* CGameInstance::Get_SRV(const wstring& strTargetTag)
 	}
 
 	return m_pRenderTarget_Manager->Get_SRV(strTargetTag);
+}
+
+HRESULT CGameInstance::Copy_Texture(const wstring& strTargetTag, ID3D11Resource* pTexture)
+{
+	if (!m_pRenderTarget_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pRenderTarget_Manager is NULL");
+	}
+
+	return m_pRenderTarget_Manager->Copy_Texture(strTargetTag, pTexture);
 }
 
 #ifdef _DEBUG

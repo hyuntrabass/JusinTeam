@@ -128,6 +128,18 @@ HRESULT CRenderTarget_Manager::Bind_ShaderResourceView(CShader* pShader, const _
 	return pTarget->Bind_ShaderResourceView(pShader, pVariableName);
 }
 
+HRESULT CRenderTarget_Manager::Copy_Texture(const wstring& strTargetTag, ID3D11Resource* pTexture)
+{
+	CRenderTarget* pTarget = Find_RenderTarget(strTargetTag);
+	if (not pTarget)
+	{
+		MSG_BOX("Can't Find RenderTarget!");
+		return E_FAIL;
+	}
+
+	return pTarget->Copy_Texture(pTexture);
+}
+
 ID3D11Texture2D* CRenderTarget_Manager::Get_Texture2D(const wstring& strTargetTag)
 {
 	CRenderTarget* pTarget = Find_RenderTarget(strTargetTag);

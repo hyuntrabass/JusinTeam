@@ -162,6 +162,11 @@ HRESULT CCommonTrail::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_isBlur", &m_shouldRenderBlur, sizeof _bool)))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 

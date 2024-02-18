@@ -14,6 +14,16 @@ HRESULT CUI_Manager::Init()
 {
 	for (size_t i = 0; i < PART_TYPE::PT_END; i++)
 	{
+		if (i == (PART_TYPE)PT_SWORD)
+		{
+			m_CustomPart[i] = (_uint)SWORD_UNEQUIP;
+			continue;
+		}
+		if (i == (PART_TYPE)PT_BOW)
+		{
+			m_CustomPart[i] = (_uint)BOW_UNEQUIP;
+			continue;
+		}
 		m_CustomPart[i] = 0;
 	}
 	
@@ -59,6 +69,8 @@ void CUI_Manager::Set_Exp_ByPercent(_float fExp)
 		Level_Up();
 		m_fExp.x = 0.f;
 		m_fExp.y += 20.f * m_iLevel;
+		m_tExtraStaus.Max_Hp += 10;
+		m_tExtraStaus.Max_Mp += 2;
 		//스탯바꾸는곳에서 처리하는게 나을듯 레벨업함수에서
 	}
 }
@@ -162,16 +174,42 @@ const _uint& CUI_Manager::Get_CustomPart(PART_TYPE eType)
 	return m_CustomPart[eType];
 }
 
-const _uint& CUI_Manager::Get_WeaponType(PART_TYPE eType, WEAPON_TYPE* wpType, _uint* iExtraStatus)
+const _uint& CUI_Manager::Get_WeaponType(PART_TYPE eType, WEAPON_TYPE* wpType)
 {
 	m_eChangedPart = PT_END;
 	*wpType = m_eWeaponType;
-	//Find_Item()
 	return m_CustomPart[eType];
 }
 
-HRESULT CUI_Manager::Set_CustomPart(PART_TYPE eType, _uint iIndex)
+HRESULT CUI_Manager::Set_CustomPart(PART_TYPE eType, _uint iIndex, _uint iStatus)
 {
+
+	switch (eType)
+	{
+	case PT_HAIR:
+		break;
+	case PT_FACE:
+		break;
+	case PT_BODY:
+		m_tExtraStaus.Armor = iStatus;
+		break;
+	case PT_HELMET:
+		m_tExtraStaus.Armor = iStatus;
+		break;
+	case PT_SWORD:
+		m_tExtraStaus.Attack = iStatus;
+		break;
+	case PT_BOW:
+		m_tExtraStaus.Attack = iStatus;
+		break;
+	case PT_END:
+		break;
+	default:
+		break;
+	}
+	
+
+	
 	m_eChangedPart = eType;
 	m_CustomPart[eType] = iIndex;
 	return S_OK;
@@ -180,6 +218,15 @@ HRESULT CUI_Manager::Set_CustomPart(PART_TYPE eType, _uint iIndex)
 HRESULT CUI_Manager::Set_WeaponType(WEAPON_TYPE eWpType)
 {
 	m_eWeaponType = eWpType;
+	if (eWpType == WP_BOW)
+	{
+		m_eChangedPart = PT_BOW;
+	}
+	else
+	{
+		m_eChangedPart = PT_SWORD;
+	}
+
 	return S_OK;
 }
 
@@ -401,7 +448,7 @@ HRESULT CUI_Manager::Init_Skills()
 	Info.iSkillType = (_uint)WP_BOW;
 	Info.isSkillIn = false;
 	Info.iMp = 45;
-	Info.iCoolTime = 20;
+	Info.iCoolTime = 15;
 	Info.iSkillIdx = 3;
 	Info.iModelSkillIndex = 7;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon1");
@@ -409,7 +456,7 @@ HRESULT CUI_Manager::Init_Skills()
 
 	Info.strName = TEXT("화살비");
 	Info.iMp = 30;
-	Info.iCoolTime = 8;
+	Info.iCoolTime = 5;
 	Info.iSkillIdx = 2;
 	Info.iModelSkillIndex = 1;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon2");
@@ -417,7 +464,7 @@ HRESULT CUI_Manager::Init_Skills()
 
 	Info.strName = TEXT("폭발 화살");
 	Info.iMp = 12;
-	Info.iCoolTime = 6;
+	Info.iCoolTime = 4;
 	Info.iSkillIdx = 1;
 	Info.iModelSkillIndex = 6;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon3");
@@ -425,7 +472,7 @@ HRESULT CUI_Manager::Init_Skills()
 
 	Info.strName = TEXT("삼중 연사");
 	Info.iMp = 8;
-	Info.iCoolTime = 7;
+	Info.iCoolTime = 5;
 	Info.iSkillIdx = 0;
 	Info.iModelSkillIndex = 0;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon4");
@@ -434,7 +481,7 @@ HRESULT CUI_Manager::Init_Skills()
 	Info.iSkillType = (_uint)WP_SWORD;
 	Info.strName = TEXT("전광 석화");
 	Info.iMp = 12;
-	Info.iCoolTime = 8;
+	Info.iCoolTime = 4;
 	Info.iSkillIdx = 2;
 	Info.iModelSkillIndex = 2;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon5");
@@ -442,7 +489,7 @@ HRESULT CUI_Manager::Init_Skills()
 
 	Info.strName = TEXT("기습 공격");
 	Info.iMp = 8;
-	Info.iCoolTime = 4;
+	Info.iCoolTime = 3;
 	Info.iSkillIdx = 0;
 	Info.iModelSkillIndex = 5;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon7");
@@ -450,7 +497,7 @@ HRESULT CUI_Manager::Init_Skills()
 
 	Info.strName = TEXT("인장 각인");
 	Info.iMp = 6;
-	Info.iCoolTime = 8;
+	Info.iCoolTime = 6;
 	Info.iSkillIdx = 1;
 	Info.iModelSkillIndex = 4;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon6");
@@ -458,7 +505,7 @@ HRESULT CUI_Manager::Init_Skills()
 
 	Info.strName = TEXT("연속 각인");
 	Info.iMp = 8;
-	Info.iCoolTime = 10;
+	Info.iCoolTime = 6;
 	Info.iSkillIdx = 3;
 	Info.iModelSkillIndex = 3;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon8");
