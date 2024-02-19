@@ -32,7 +32,7 @@ public://트리거하려고 추가함
 	void Add_TriggerEffect(TRIGGEREFFECT_DESC TriggerEffectDesc);
 	void Delete_TriggerEffect(_uint iTriggerEffectIndex);
 	void Reset_TriggerEffects();
-	//라이트 트리거
+	//사운드 트리거
 	const _uint Get_NumTriggerSound() const;
 	TRIGGERSOUND_DESC* Get_TriggerSound(_uint iTriggerSoundIndex);
 	vector<TRIGGERSOUND_DESC>& Get_TriggerSounds();

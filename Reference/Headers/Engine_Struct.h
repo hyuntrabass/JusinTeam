@@ -215,6 +215,7 @@ namespace Engine
 		float fInitVolume{};
 		float fFadeoutSecond = 1.f;
 		bool IsClientTrigger{};
+		float fStartPosRatio{};
 		
 		int iChannel = -1;
 		bool HasPlayed{};
