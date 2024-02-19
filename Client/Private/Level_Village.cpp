@@ -369,7 +369,7 @@ HRESULT CLevel_Village::Ready_Interaction()
 		ObjectInfo.eObjectType = Object_Environment;
 		ObjectInfo.m_iIndex = (_uint)FIELD;
 
-		if (ObjectPrototype == L"Prototype_Model_OakTree" || ObjectPrototype == L"Prototype_Model_OakTree")
+		if (ObjectPrototype == L"Prototype_Model_OakTree" || ObjectPrototype == L"Prototype_Model_Herbs")
 		{
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Interaction_Object"), TEXT("Prototype_GameObject_Intraction_NonAnim_Object"), &ObjectInfo)))
 			{
