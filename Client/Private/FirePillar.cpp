@@ -47,6 +47,16 @@ void CFirePillar::Tick(_float fTimeDelta)
 {
 	m_fLifeTime += fTimeDelta;
 
+	if (m_fLifeTime >= 7.f)
+	{
+		if (m_iSoundChannel != -1)
+		{
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+		}
+		Kill();
+		return;
+	}
+
 	if (m_fLifeTime >= 1.5f)
 	{
 		if (m_pBaseEffect && m_pFrameEffect)
@@ -103,9 +113,23 @@ void CFirePillar::Tick(_float fTimeDelta)
 			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_FirePillar_Floor_Loop");
 			Info.pMatrix = &EffectMatrix;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
-
 		}
+	}
 
+	if (m_fLifeTime >= 1.2f)
+	{
+		if (m_iSoundChannel == -1)
+		{
+			m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("BP_Skill_10061_SFX_01"));
+		}
+	}
+
+	if (m_iSoundChannel != -1)
+	{
+		if (not m_pGameInstance->Get_IsPlayingSound(m_iSoundChannel))
+		{
+			m_iSoundChannel = -1;
+		}
 	}
 
 	if (m_pFrameEffect && m_pBaseEffect)

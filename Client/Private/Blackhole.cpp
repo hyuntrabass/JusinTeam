@@ -50,7 +50,10 @@ void CBlackhole::Tick(_float fTimeDelta)
 
 	if (m_fLifeTime >= 12.f)
 	{
-		m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+		if (m_iSoundChannel != -1)
+		{
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+		}
 		Kill();
 		return;
 	}

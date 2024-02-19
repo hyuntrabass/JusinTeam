@@ -30,6 +30,7 @@ private:
 
 private:
 	_float m_fLifeTime = {};
+	_int m_iSoundChannel = -1;
 
 public:
 	HRESULT Add_Components();
