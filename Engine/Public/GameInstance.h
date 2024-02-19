@@ -160,7 +160,7 @@ public:
 public: // Sound Manager
 	HRESULT Init_SoundManager();
 	_bool Is_SoundManager_Ready();
-	_int Play_Sound(const wstring& strSoundTag, _float fVolume = 0.5f, _bool isLoop = false);
+	_int Play_Sound(const wstring& strSoundTag, _float fVolume = 0.5f, _bool isLoop = false, _float fStartPosRatio = 0.f);
 	void PlayBGM(const wstring& strSoundTag, float fVolume = 0.3f);
 	void StopSound(_uint iChannel);
 	void StopAll();
@@ -174,6 +174,8 @@ public: // Sound Manager
 	_float Get_ChannelVolume(_uint iChannel);
 	// 사운드 채널이 루프중인지를 반환 함.
 	_bool Get_IsLoopingSound(_uint iChannel);
+	// 사운드 채널의 현재 재생위치를 비율로 반환 함.
+	_float Get_CurPosRatio(_uint iChannel);
 
 	// 사운드 채널의 볼륨을 지정함.
 	void Set_ChannelVolume(_uint iChannel, _float fVolume);
