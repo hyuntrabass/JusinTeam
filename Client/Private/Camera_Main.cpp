@@ -384,7 +384,30 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 
 		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
 		{
-			m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
+			_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
+			_vec4 vFrontLook = vLook;
+			vFrontLook.y = 0.f;
+			_float fResult = vLook.Dot(vFrontLook);
+			_float fTurnValue = fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor;
+
+			if (fResult < 0.97f && fResult > 0.72f)
+			{
+				m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
+			}
+			else if (fResult >= 0.97f)
+			{
+				if (fTurnValue > 0.f)
+				{
+					m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
+				}
+			}
+			else if (fResult <= 0.72f)
+			{
+				if (fTurnValue < 0.f)
+				{
+					m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
+				}
+			}
 		}
 
 		m_AimZoomOutTime += fTimeDelta * 4.f;
