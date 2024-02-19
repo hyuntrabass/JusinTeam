@@ -34,6 +34,7 @@ public:
 	_bool Get_Infinite() { return m_isInfinite; }
 	wstring Get_CutScene_Path() { return m_strFilePath; }
 	const _uint& Get_SkyTextureIndex() const;
+	_bool Get_InOut() { return m_isInVillage; }
 
 	void Teleport(const TeleportSpot eSpot);
 

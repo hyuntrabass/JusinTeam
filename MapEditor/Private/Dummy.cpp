@@ -1,6 +1,6 @@
 #include "Dummy.h"
 
-static _int iID = -1;
+static _int iID = 0;
 
 CDummy::CDummy(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -101,7 +101,7 @@ void CDummy::Late_Tick(_float fTimeDelta)
 if(m_eType == ItemType::Trigger)
 	m_pRendererCom->Add_DebugComponent(m_pCollider);
 #endif
-if (m_eType == ItemType::Environment)
+if (m_eType == ItemType::Environment || m_eType == ItemType::Interaction)
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
 else
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);

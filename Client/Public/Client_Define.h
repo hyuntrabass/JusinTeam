@@ -324,11 +324,12 @@ namespace Client
 		_vec4 vLook{ _vec4(0.f, 0.f, 1.f, 0.f) };
 		_mat m_WorldMatrix{};
 		ObjectType eObjectType{ };
+		_uint m_iIndex{};
 	};
 	enum Monster_AttType
 	{
-		Parrying_Succescc,
 		MonAtt_Hit,
+		Parrying_Succescc,	
 		MonAtt_KnockDown,
 		MonAtt_Stun,
 		MonAtt_Poison,
@@ -549,6 +550,17 @@ enum TriggerType
 	BOSS_TRIGGER,
 	TRIGGER_END
 };
+
+
+enum PlaceType
+{
+	VILLAGE,
+	FIELD,
+	DUNGEON,
+	TOWER,
+	PLACE_END
+};
+
 #pragma endregion
 
 

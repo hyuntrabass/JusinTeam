@@ -2,6 +2,7 @@
 
 #include "Effect_Dummy.h"
 #include "Effect_Manager.h"
+#include "Camera_Manager.h"
 
 CMeteor::CMeteor(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -40,14 +41,27 @@ HRESULT CMeteor::Init(void* pArg)
 	_vec3 vRandomDir = _vec3(Random(RandomNumber), 0.f, Random(RandomNumber)).Get_Normalized();
 
 	m_vTargetPos = vDragonPos + (rand() % 5 + 5) * vRandomDir;
-
+	
 	_vec3 vDragonRight = m_pDragonTransform->Get_State(State::Right).Get_Normalized();
 
 
 	m_pTransformCom->Set_Position(m_vTargetPos + vDragonRight * 4.f + _vec3(0.f, 7.f, 0.f));
 	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
-
 	m_pTransformCom->Set_Speed(40.f);
+
+	m_pTransformCom->LookAt(_vec4(m_vTargetPos, 1.f));
+
+	m_MeteorMatrix = _mat::CreateScale(1.5f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)/* + _vec3(0.f, 0.1f, 0.f)*/));
+	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Meteor");
+	Info.pMatrix = &m_MeteorMatrix;
+	Info.isFollow = true;
+	m_pMeteor = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+	//SURFACETRAIL_DESC Desc{};
+	//Desc.vColor = Colors::Coral;
+	//Desc.iNumVertices = 10;
+	//Desc.strMaskTextureTag = TEXT("FX_F_PB5001Trail002_Tex");
+	//m_pMeteorTrail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 
 	return S_OK;
 }
@@ -57,17 +71,35 @@ void CMeteor::Tick(_float fTimeDelta)
 	if (m_pTransformCom->Get_State(State::Pos).y <= m_pDragonTransform->Get_State(State::Pos).y)
 	{
 		Kill();
+
+		Safe_Release(m_pMeteor);
+		//Safe_Release(m_pMeteorTrail);
 	}
 
-	m_pTransformCom->LookAt(_vec4(m_vTargetPos, 1.f));
 	m_pTransformCom->Go_Straight(fTimeDelta);
 
+
+	if (m_pMeteor)
+	{
+		m_MeteorMatrix = _mat::CreateScale(1.5f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)/* + _vec3(0.f, 0.1f, 0.f)*/));
+
+		m_pMeteor->Tick(fTimeDelta);
+		//Update_Trail(fTimeDelta);
+	}
+
 	Update_Collider();
+
 }
 
 void CMeteor::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	//m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+
+	if (m_pMeteor)
+	{
+		m_pMeteor->Late_Tick(fTimeDelta);
+		//m_pMeteorTrail->Late_Tick(fTimeDelta);
+	}
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
@@ -136,6 +168,16 @@ void CMeteor::Update_Collider()
 {
 	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 }
+
+//void CMeteor::Update_Trail(_float fTimeDelta)
+//{
+//	//_mat TopMatrix = _mat::CreateTranslation(_vec3(0.f, 0.5f, 0.f)) * m_pTransformCom->Get_World_Matrix();
+//	//_mat BottomMatrix = _mat::CreateTranslation(_vec3(0.f, -0.5f, 0.f)) * m_pTransformCom->Get_World_Matrix();
+//
+//	//m_pMeteorTrail->Tick(TopMatrix.Position_vec3(), BottomMatrix.Position_vec3());
+//	//m_pMeteorTrail->Tick(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.5f, 0.f)), _vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, -0.5f, 0.f)));
+//	//m_pMeteorTrail->Tick(m_MeteorMatrix.Position_vec3() + _vec3(0.f, 0.5f, 0.f), m_MeteorMatrix.Position_vec3() + _vec3(0.f, -0.5f, 0.f));
+//}
 
 HRESULT CMeteor::Add_Components()
 {
@@ -221,4 +263,5 @@ void CMeteor::Free()
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pColliderCom);
 	Safe_Release(m_pModelCom);
+
 }
