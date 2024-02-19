@@ -327,8 +327,8 @@ namespace Client
 	};
 	enum Monster_AttType
 	{
-		Parrying_Succescc,
 		MonAtt_Hit,
+		Parrying_Succescc,	
 		MonAtt_KnockDown,
 		MonAtt_Stun,
 		MonAtt_Poison,

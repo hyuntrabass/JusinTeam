@@ -23,7 +23,11 @@ HRESULT CRiding::Init(void* pArg)
 	m_CurrentIndex = Desc->Type;
 	m_eCurMode = (MODE)Desc->iMode;
 	m_pCam_Manager = CCamera_Manager::Get_Instance();
-	m_pCam_Manager->Set_RidingZoom(true);
+
+	if(m_eCurMode ==PLAYER)
+	{
+		m_pCam_Manager->Set_RidingZoom(true);
+	}
 
 	switch (m_CurrentIndex)
 	{

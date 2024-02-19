@@ -29,6 +29,7 @@ private: // CAM_MODE
 	void WorldMap_Mode(_float fTimeDelta);
 	void SkillBook_Mode(_float fTimeDelta);
 
+
 private:
 	class CCamera_Manager* m_pCam_Manager{ nullptr };
 
