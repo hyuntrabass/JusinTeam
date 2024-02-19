@@ -195,7 +195,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		"StaticPass_NonLight",
 		"StaticPass_OutLine",
 		"StaticPass_AlphaTestMeshes",
-		"StaticPass_Sky",
+		"StaticPass_Diff_Dissolve",
 		"StaticPass_COLMesh",
 		"StaticPass_SingleColorFx",
 		"StaticPass_SingleColorDissolve",
