@@ -385,7 +385,7 @@ PS_OUT_EFFECT PS_Main_Effect_Dissolve(PS_IN Input)
 {
     PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
-    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
+    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r + 0.1f;
     float fAlpha = saturate((fDissolve - g_fDissolveRatio) * 10.0f);
     if (fAlpha <= 0.f)
     {

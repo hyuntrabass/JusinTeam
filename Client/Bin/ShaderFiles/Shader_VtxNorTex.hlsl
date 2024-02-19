@@ -122,10 +122,11 @@ PS_OUT PS_Main_Effect(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     vector vMtrlDiffuse = g_Texture.Sample(LinearSampler, Input.vTex);
+    vMtrlDiffuse.a = 1.f;
     
     Output.vDiffuse = vMtrlDiffuse;
-    Output.vNormal = Input.vNor;
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
+    Output.vNormal = 1.f;
+    Output.vDepth = 0.f;
     
     return Output;
 }
