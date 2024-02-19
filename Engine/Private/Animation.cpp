@@ -103,8 +103,18 @@ HRESULT CAnimation::Init(ifstream& ModelFile, const vector<class CBone*>& Bones)
 	return S_OK;
 }
 
-void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio, _float fStartAnimPos)
+void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio, _float fStartAnimPos, _bool bRewindAnimation)
 {
+	if (bRewindAnimation)
+	{
+		if (fStartAnimPos == 0.f && not m_isFinished)
+		{
+			fStartAnimPos = m_fDuration;
+		}
+
+		fDurationRatio = 1.f - fDurationRatio;
+	}
+
 	if (isAnimChanged)
 	{
 		if (bSkipInterpolation)
@@ -132,24 +142,55 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 		
 		if (not m_isFinished)
 		{
-			m_fCurrentAnimPos += m_fTickPerSec * fTimeDelta;
-		}
-
-		if (m_fCurrentAnimPos >= m_fDuration * fDurationRatio)
-		{
-			if (isLoop)
+			if (bRewindAnimation)
 			{
-				m_fCurrentAnimPos = fStartAnimPos;
+				m_fCurrentAnimPos -= m_fTickPerSec * fTimeDelta;
 			}
 			else
 			{
-				m_isFinished = true;
+				m_fCurrentAnimPos += m_fTickPerSec * fTimeDelta;
+			}
+		}
+
+		if (bRewindAnimation)
+		{
+			if (m_fCurrentAnimPos <= m_fDuration * fDurationRatio)
+			{
+				if (isLoop)
+				{
+					m_fCurrentAnimPos = fStartAnimPos;
+				}
+				else
+				{
+					m_fCurrentAnimPos = m_fDuration * fDurationRatio;
+					m_isFinished = true;
+				}
+			}
+			else
+			{
+				m_isFinished = false;
 			}
 		}
 		else
 		{
-			m_isFinished = false;
+			if (m_fCurrentAnimPos >= m_fDuration * fDurationRatio)
+			{
+				if (isLoop)
+				{
+					m_fCurrentAnimPos = fStartAnimPos;
+				}
+				else
+				{
+					m_fCurrentAnimPos = m_fDuration * fDurationRatio;
+					m_isFinished = true;
+				}
+			}
+			else
+			{
+				m_isFinished = false;
+			}
 		}
+
 	}
 
 	if (isAnimChanged)

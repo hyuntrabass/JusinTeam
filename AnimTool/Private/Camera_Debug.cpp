@@ -150,11 +150,11 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Pressing(DIK_Q))
 	{
 		m_pTransformCom->Go_Up(fTimeDelta);
-	}
+	}/*
 	if (m_pGameInstance->Key_Pressing(DIK_Z))
 	{
 		m_pTransformCom->Go_Down(fTimeDelta);
-	}
+	}*/
 
 	__super::Tick(fTimeDelta);
 }

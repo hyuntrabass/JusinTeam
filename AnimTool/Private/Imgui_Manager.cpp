@@ -606,6 +606,19 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					}
 					(*iter)->Set_CurrentAnimPos(static_cast<_float>(iCurrentAnimPos));
 				}
+
+				if (m_pGameInstance->Key_Down(DIK_Z))
+				{
+					if (m_AnimDesc.bRewindAnimation)
+					{
+						m_AnimDesc.bRewindAnimation = false;
+					}
+					else
+					{
+						m_AnimDesc.bRewindAnimation = true;
+					}
+					pCurModel->Set_Animation(m_AnimDesc);
+				}
 			}
 		}
 #pragma endregion
@@ -667,6 +680,19 @@ HRESULT CImgui_Manager::ImGuiMenu()
 						iCurrentAnimPos = 0;
 					}
 					(*iter)->Set_CurrentAnimPos(static_cast<_float>(iCurrentAnimPos));
+				}
+
+				if (m_pGameInstance->Key_Down(DIK_Z))
+				{
+					if (m_AnimDesc.bRewindAnimation)
+					{
+						m_AnimDesc.bRewindAnimation = false;
+					}
+					else
+					{
+						m_AnimDesc.bRewindAnimation = true;
+					}
+					pCurModel->Set_Animation(m_AnimDesc);
 				}
 			}
 		}

@@ -148,6 +148,7 @@ namespace Engine
 		float fDurationRatio{ 1.f };
 		bool bRestartAnimation{ false };
 		float fStartAnimPos{};
+		bool bRewindAnimation{ false };
 	};
 
 

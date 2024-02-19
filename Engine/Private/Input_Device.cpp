@@ -171,54 +171,30 @@ _bool CInput_Device::Key_Pressing(_ubyte iKey)
 
 _bool CInput_Device::Key_Down(_ubyte iKey, InputChannel eInputChannel)
 {
-	if (eInputChannel == InputChannel::UI)
+	if (!m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && (m_byKeyState[iKey] & 0x80))
 	{
-		if (!m_byPreKeyState[iKey] && (m_byKeyState[iKey] & 0x80))
-		{
-			return true;
-		}
-
-		return false;
+		m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = true;
+		return true;
 	}
-	else
-	{
-		if (!m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && (m_byKeyState[iKey] & 0x80))
-		{
-			m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = true;
-			return true;
-		}
 
-		if (m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && !(m_byKeyState[iKey] & 0x80))
-			m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = false;
-		
-		return false;
-	}
+	if (m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && !(m_byKeyState[iKey] & 0x80))
+		m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = false;
+
+	return false;
 }
 
 _bool CInput_Device::Key_Up(_ubyte iKey, InputChannel eInputChannel)
 {
-	if (eInputChannel == InputChannel::UI)
+	if (m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && !(m_byKeyState[iKey] & 0x80))
 	{
-		if (m_byPreKeyState[iKey] && !(m_byKeyState[iKey] & 0x80))
-		{
-			return true;
-		}
-
-		return false;
+		m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = false;
+		return true;
 	}
-	else
-	{
-		if (m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && !(m_byKeyState[iKey] & 0x80))
-		{
-			m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = false;
-			return true;
-		}
 
-		if (!m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && (m_byKeyState[iKey] & 0x80))
-			m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = true;
+	if (!m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && (m_byKeyState[iKey] & 0x80))
+		m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = true;
 
-		return false;
-	}
+	return false;
 }
 
 _bool CInput_Device::Mouse_Pressing(_long iKey)
