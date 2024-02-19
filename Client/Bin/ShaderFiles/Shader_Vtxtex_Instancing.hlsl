@@ -13,6 +13,8 @@ float2 g_CamNF;
 
 bool g_isBlur;
 
+Texture2D g_DistortionTexture;
+
 struct VS_IN
 {
     float3 vPos : Position;
@@ -221,6 +223,11 @@ struct PS_OUT
     vector vBlur : SV_Target2;
 };
 
+struct PS_OUT_DISTORTION
+{
+    vector vDistortion : SV_Target0;
+};
+
 PS_OUT PS_Main(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
@@ -279,7 +286,6 @@ PS_OUT PS_Main_Sprite(PS_IN Input)
     Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
     Output.vAlpha = fAlpha;
     Output.vBlur = vector(Color, fAlpha) * g_isBlur;
-    
 
     //Output.vColor = g_vColor;
     
@@ -629,6 +635,19 @@ PS_OUT PS_Main_Color_Alpha(PS_IN Input)
     Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
     Output.vAlpha = fAlpha;
     Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+    
+    return Output;
+}
+
+PS_OUT_DISTORTION PS_Distortion(PS_IN Input)
+{
+    PS_OUT_DISTORTION Output = (PS_OUT_DISTORTION) 0;
+    
+    vector vColor = g_DistortionTexture.Sample(LinearSampler, Input.vTex);
+    
+    vColor.rgb = vColor.rgb * 2.f - 1.f;
+    
+    Output.vDistortion = vColor;
     
     return Output;
 }
@@ -1064,4 +1083,16 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main_Color_Alpha();
     }
 
+    pass Particle_Distortion
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_OnebyOne, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = compile gs_5_0 GS_MAIN();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Color_Alpha();
+    }
 };
