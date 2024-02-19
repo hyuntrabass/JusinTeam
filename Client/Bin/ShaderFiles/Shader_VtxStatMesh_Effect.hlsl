@@ -32,6 +32,7 @@ uint g_OutlineColor;
 
 bool g_isBlur;
 
+Texture2D g_DistortionTexture;
 
 struct VS_IN
 {
@@ -230,6 +231,11 @@ struct PS_OUT_EFFECT
     vector vColor : SV_Target0;
     vector vAlpha : SV_Target1;
     vector vBlur : SV_Target2;
+};
+
+struct PS_OUT_DISTORTION
+{
+    vector vDistortion : SV_Target0;
 };
 
 PS_OUT_DEFERRED PS_Main(PS_IN Input)
@@ -772,6 +778,21 @@ PS_OUT_EFFECT PS_Main_DiffEffect_Alpha(PS_IN Input)
     return Output;
 }
 
+
+
+PS_OUT_DISTORTION PS_Distortion(PS_IN Input)
+{
+    PS_OUT_DISTORTION Output = (PS_OUT_DISTORTION) 0;
+    
+    vector vColor = g_DistortionTexture.Sample(LinearSampler, Input.vTex);
+    
+    vColor.rgb = vColor.rgb * 2.f - 1.f;
+    
+    Output.vDistortion = vColor;
+    
+    return Output;
+}
+
 technique11 DefaultTechnique_Shader_StatMesh
 {
     pass Default // 0
@@ -1058,5 +1079,18 @@ technique11 DefaultTechnique_Shader_StatMesh
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_DiffEffect_Alpha();
+    }
+
+    pass Default_Distortion // 22
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_OnebyOne, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Distortion();
     }
 };

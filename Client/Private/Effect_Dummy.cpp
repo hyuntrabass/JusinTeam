@@ -343,6 +343,7 @@ HRESULT CEffect_Dummy::Add_Components()
 		}
 	}
 
+
 	return S_OK;
 }
 
