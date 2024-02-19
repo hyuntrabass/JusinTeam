@@ -26,7 +26,7 @@ HRESULT CSound_Manager::Init()
 	return S_OK;
 }
 
-_int CSound_Manager::Play_Sound(const wstring& strSoundTag, _float fVolume, _bool isLoop)
+_int CSound_Manager::Play_Sound(const wstring& strSoundTag, _float fVolume, _bool isLoop, _float fStartPosRatio)
 {
 	FMOD::Sound* pSound = Find_Sound(strSoundTag);
 
@@ -55,6 +55,12 @@ _int CSound_Manager::Play_Sound(const wstring& strSoundTag, _float fVolume, _boo
 			m_pChannelArr[i]->setVolume(fVolume);
 			//이전 사운드 저장
 			m_SoundDescs[i].fStartVolume = fVolume;
+			
+			_uint iSoundLength{};
+			pSound->getLength(&iSoundLength, FMOD_TIMEUNIT_MS);
+			fStartPosRatio *= static_cast<_float>(iSoundLength);
+			_uint iStartPos = static_cast<_uint>(fStartPosRatio);
+			m_pChannelArr[i]->setPosition(iStartPos, FMOD_TIMEUNIT_MS);
 
 			m_pSystem->update();
 
@@ -235,6 +241,20 @@ _bool CSound_Manager::Get_IsLoopingSound(_uint iChannel)
 	{
 		return false;
 	}
+}
+
+_float CSound_Manager::Get_CurPosRatio(_uint iChannel)
+{
+	FMOD::Sound* pSound{};
+	m_pChannelArr[iChannel]->getCurrentSound(&pSound);
+	_uint iSoundLength{};
+	pSound->getLength(&iSoundLength, FMOD_TIMEUNIT_MS);
+	_uint iCurPos{};
+	m_pChannelArr[iChannel]->getPosition(&iCurPos, FMOD_TIMEUNIT_MS);
+
+	_float fCurPosRatio = static_cast<_float>(iCurPos) / static_cast<_float>(iSoundLength);
+
+	return fCurPosRatio;
 }
 
 HRESULT CSound_Manager::LoadSoundFile()

@@ -201,7 +201,7 @@ private:
 	CRenderer* m_pRendererCom = { nullptr };
 	CCollider* m_pBodyColliderCom = { nullptr };
 	CCollider* m_pAttackColliderCom = { nullptr };
-
+	class CCamera_Manager* m_pCam_Manager{ nullptr };
 private:
 	_bool m_bDelete{};
 	_bool m_hasJumped{};

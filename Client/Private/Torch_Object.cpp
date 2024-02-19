@@ -44,12 +44,10 @@ HRESULT CTorch_Object::Init(void* pArg)
 	m_pTransformCom->Set_State(State::Pos, vPos);
 
 	m_pModelCom->Apply_TransformToActor(m_Info.m_WorldMatrix);
-
+	
 	EffectInfo Effect = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"TorchFire_Dun");
-	Effect.pMatrix =  & m_FireMat;
-	Effect.isFollow = true;
-	m_pFire = CEffect_Manager::Get_Instance()->Clone_Effect(Effect);
 
+	_vec3 vFire_Hight{};
 	if (strPrototype == L"Prototype_Model_Wall_Torch")
 	{
 		vFire_Hight = _vec3(0.f, 1.5f, 0.f);
@@ -61,6 +59,7 @@ HRESULT CTorch_Object::Init(void* pArg)
 	else if (strPrototype == L"Prototype_Model_Stand_Torch2")
 	{
 		vFire_Hight = _vec3(0.f, 1.f, 0.f);
+		Effect = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"TorchFire_Boss");
 	}
 	else if (strPrototype == L"Prototype_Model_Torch")
 	{
@@ -71,16 +70,47 @@ HRESULT CTorch_Object::Init(void* pArg)
 		vFire_Hight = _vec3(0.f, 0.5f, 0.f);
 	}
 
+	//_mat FireMat{};
+	m_FireMat.Position(vPos + vFire_Hight);
+	Effect.pMatrix = &m_FireMat;
+	Effect.isFollow = true;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Effect);
+
 	return S_OK;
 }
 
 void CTorch_Object::Tick(_float fTimeDelta)
 {
-	m_FireMat = _mat::CreateTranslation(m_Info.m_WorldMatrix.Position_vec3());
-	if (m_pFire)
+	_float fScale{};
+	_vec3 vFire_Hight{};
+	if (strPrototype == L"Prototype_Model_Wall_Torch")
 	{
-		m_pFire->Tick(fTimeDelta);
+		vFire_Hight = _vec3(0.f, 1.2f, 0.f);
+		fScale = 1.7f;
 	}
+	else if (strPrototype == L"Prototype_Model_Stand_Torch1")
+	{
+		vFire_Hight = _vec3(0.f, 1.5f, 0.f);
+		fScale = 2.2f;
+	}
+	else if (strPrototype == L"Prototype_Model_Stand_Torch2")
+	{
+		vFire_Hight = _vec3(0.f, 3.7f, 0.f);
+		fScale = 6.2f;
+	}
+	else if (strPrototype == L"Prototype_Model_Torch")
+	{
+		vFire_Hight = _vec3(0.f, 1.3f, 0.f);
+		fScale = 2.f;
+	}
+	else if (strPrototype == L"Prototype_Model_Brazier")
+	{
+		vFire_Hight = _vec3(0.f, 0.4f, 0.f);
+		fScale = 2.2f;
+	}
+
+	m_FireMat = _mat::CreateScale(fScale);
+	m_FireMat.Position(m_pTransformCom->Get_State(State::Pos) + vFire_Hight);
 }
 
 void CTorch_Object::Late_Tick(_float fTimeDelta)
@@ -91,11 +121,6 @@ void CTorch_Object::Late_Tick(_float fTimeDelta)
 		return;
 	}
 	__super::Late_Tick(fTimeDelta);
-
-	if (m_pFire)
-	{
-		m_pFire->Late_Tick(fTimeDelta);
-	}
 }
 
 HRESULT CTorch_Object::Render()
@@ -136,6 +161,4 @@ CGameObject* CTorch_Object::Clone(void* pArg)
 void CTorch_Object::Free()
 {
 	__super::Free();
-
-	Safe_Release(m_pFire);
 }

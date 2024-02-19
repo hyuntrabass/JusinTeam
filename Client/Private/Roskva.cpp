@@ -116,6 +116,10 @@ void CRoskva::Tick(_float fTimeDelta)
 
 
 	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
+	if (pCollider == nullptr)
+	{
+		return;
+	}
 	_bool isColl = m_pColliderCom->Intersect(pCollider);
 	m_isColl = isColl;
 	if (!m_bTalking && isColl && m_pGameInstance->Key_Down(DIK_E) /* && collider */) // 나중에 조건 추가

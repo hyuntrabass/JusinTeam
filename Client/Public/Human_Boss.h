@@ -11,41 +11,41 @@ public:
 
 	enum HUMANBOSS_ANIM
 	{
-	BossAnim_attack01, // 전방 낫으로 공격
-	BossAnim_attack02,	// 반대 방향으로 공격
-	BossAnim_attack03,	// 2연속 공격
-	BossAnim_attack04, // 주변 전부 공격
-	BossAnim_attack05, // 카운터?
-	BossAnim_attack06_End,
-	BossAnim_attack06_Loop,
-	BossAnim_attack06_Start,
-	BossAnim_attack06_Start001,
-	BossAnim_attack07,
-	BossAnim_attack08,
-	BossAnim_attack08_2,
-	BossAnim_attack09_A, //반 장판
-	BossAnim_attack09_B,
-	BossAnim_attack10_A,
-	BossAnim_attack10_B,
-	BossAnim_attack11_A,
-	BossAnim_attack11_B,
-	BossAnim_attack12_A,
-	BossAnim_attack12_B,
-	BossAnim_attack13,
-	BossAnim_BossView_Idle,	//레이저
-	BossAnim_CardTestattack01,
-	BossAnim_CardTestattack02,
-	BossAnim_CardTestattack03,
-	BossAnim_Die,
-	BossAnim_Idle, 
-	BossAnim_Rage,
-	BossAnim_Roar,
-	BossAnim_Run,
-	BossAnim_Run2,
-	BossAnim_Spawn,
-	BossAnim_Spawn_Idle,
-	BossAnim_Walk,
-	BossAnim_End
+		BossAnim_attack01, // 전방 낫으로 공격
+		BossAnim_attack02,	// 반대 방향으로 공격
+		BossAnim_attack03,	// 2연속 공격
+		BossAnim_attack04, // 주변 전부 공격
+		BossAnim_attack05, // 카운터?
+		BossAnim_attack06_End,
+		BossAnim_attack06_Loop,
+		BossAnim_attack06_Start,
+		BossAnim_attack06_Start001,
+		BossAnim_attack07,
+		BossAnim_attack08,
+		BossAnim_attack08_2,
+		BossAnim_attack09_A, //반 장판
+		BossAnim_attack09_B,
+		BossAnim_attack10_A,
+		BossAnim_attack10_B,
+		BossAnim_attack11_A,
+		BossAnim_attack11_B,
+		BossAnim_attack12_A,
+		BossAnim_attack12_B,
+		BossAnim_attack13,
+		BossAnim_BossView_Idle,	//레이저
+		BossAnim_CardTestattack01,
+		BossAnim_CardTestattack02,
+		BossAnim_CardTestattack03,
+		BossAnim_Die,
+		BossAnim_Idle,
+		BossAnim_Rage,
+		BossAnim_Roar,
+		BossAnim_Run,
+		BossAnim_Run2,
+		BossAnim_Spawn,
+		BossAnim_Spawn_Idle,
+		BossAnim_Walk,
+		BossAnim_End
 	};
 
 	enum STATE
@@ -56,11 +56,12 @@ public:
 		CounterAtt,
 		Hide_Start,
 		Hide,
-		HideAtt,
+		Hide_Att,
 		Razer,
 		Hit,
 		Idle,
 		Walk,
+		Reflect,
 		Roar,
 		Run,
 		Die,
@@ -100,39 +101,47 @@ private:
 	CModel* m_pModelCom = { nullptr };
 	CCollider* m_pBodyCollider = { nullptr };
 	CCollider* m_pCommonAttCollider = { nullptr };
+	CTexture* m_pDissolveTextureCom{ nullptr };
+	CTransform* m_pPlayerTransform{ nullptr };
+
 	class CEffect_Dummy* m_pBaseEffect{ nullptr };
 	class CEffect_Dummy* m_pFrameEffect{ nullptr };
 	class CEffect_Dummy* m_pDimEffect{ nullptr };
 	class CEffect_Dummy* m_pAttackEffect{ nullptr };
 	class CEffect_Dummy* m_pShieldEffect{ nullptr };
-	CTexture* m_pDissolveTextureCom{ nullptr };
-	CTransform* m_pPlayerTransform{ nullptr };
-
-private:
-	STATE m_ePreState = BOSS_STATE_END;
-	STATE m_eState = BOSS_STATE_END;
+	class CEffect_Dummy* m_pRingEffect{ nullptr };
 
 private:
 	ANIM_DESC m_Animation{};
+	STATE m_eState = BOSS_STATE_END;
+	STATE m_ePreState = BOSS_STATE_END;
 
 private:
+	
+	_bool m_bSecondPattern{};
 	_uint m_iAttackPattern = {};
 	_bool m_bSelectAttackPattern = { false };
-	_bool m_bSecondPattern{};
-	_bool m_bChangePass{};
-	_bool m_bShieldOn{};
+	
 	_float m_fHitTime{};
-	_mat m_BaseEffectMat{};
+	_float m_fHideTimmer{};
+	_bool m_bChangePass{};
+	_bool m_bHide{};
+	_bool m_bAttacked{};
+	_uint m_iPassIndex{};
+	_bool m_bViewWeapon{};
+	_float m_fDissolveRatio{};
+	_uint m_iWeaponPassIndex{};
+
+	_bool m_bShieldOn{};
 	_mat m_AttEffectMat{};
+	_mat m_BaseEffectMat{};
 	_mat m_ShieldEffectMat{};
+	_mat m_RingEffectMat{};
 	_mat m_AttEffectOriMat{};
+	_float m_fShiledTimmer{};
 	_mat m_BaseEffectOriMat{};
 	_float m_fBaseEffectScale{};
-	_uint m_iPassIndex{};
-	_uint m_iWeaponPassIndex{};
-	_bool m_bViewWeapon{};
-	_bool m_bAttacked{};
-	_float m_fDissolveRatio{};
+
 public:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

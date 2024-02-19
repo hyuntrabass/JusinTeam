@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Tower.h"
+#include "InfinityTower.h"
 #include "SummonWindow.h"
 #include "NineSlice.h"
 #include "Vehicle.h"

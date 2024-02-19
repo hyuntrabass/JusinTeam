@@ -110,10 +110,10 @@ HRESULT CLevel_GamePlay::Init()
 		return E_FAIL;
 	}
 
-	/*if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Boss"), TEXT("Prototype_GameObject_Human_Boss"))))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Boss"), TEXT("Prototype_GameObject_Human_Boss"))))
 	{
 		return E_FAIL;
-	}*/
+	}
 
 	// UI
 	if (FAILED(Ready_UI()))
@@ -820,6 +820,11 @@ HRESULT CLevel_GamePlay::Ready_UI()
 		return E_FAIL;
 	}
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_VehicleBook"))))
+	{
+		return E_FAIL;
+	}
+	
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_InfinityTower"))))
 	{
 		return E_FAIL;
 	}
