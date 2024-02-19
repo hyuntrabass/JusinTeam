@@ -20,11 +20,13 @@ public:
 	virtual HRESULT Render() override;
 	HRESULT Render_Shadow();
 	HRESULT Render_Instance();
+	_bool Get_Collision() { return m_isCollision; }
 
 private:
 	PlaceType m_ePlaceType{ PLACE_END };
 	ObjectInfo m_Info{};
-	_uint m_iShaderPass{};
+	_uint m_iShaderPass{0};
+	_bool m_isCollision{ false };
 
 private:
 	CTrigger_Manager* m_pTrigger_Manager{ nullptr };

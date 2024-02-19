@@ -19,6 +19,7 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 	virtual HRESULT Render_Instance() override;
+	_bool Get_Collision() { return m_isCollision; }
 
 private:
 	HRESULT Add_Components();
@@ -35,6 +36,9 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CVTFModel* m_pModelCom{ nullptr };
 	CCollider* m_pColliderCom{ nullptr };
+
+private:
+	_bool m_isCollision{false};
 
 public:
 	static CInteraction_Anim* Create(_dev pDevice, _context pContext);
