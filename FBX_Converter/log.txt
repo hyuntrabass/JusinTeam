@@ -3,20 +3,54 @@
 Animation Models : Start Converting...
 1. Normally Anim Model	2. For VTF Model 3. Part Model
 1
-Converting... Balloon.fbx
+Converting... boss.fbx
+Read File Succssefully
+Animation name list: 
+Mon_Angrboda.ao|attack01
+Mon_Angrboda.ao|attack02
+Mon_Angrboda.ao|attack03
+Mon_Angrboda.ao|attack04
+Mon_Angrboda.ao|attack05
+Mon_Angrboda.ao|attack06_End
+Mon_Angrboda.ao|attack06_Loop
+Mon_Angrboda.ao|attack06_Start
+Mon_Angrboda.ao|attack06_Start.001
+Mon_Angrboda.ao|attack07
+Mon_Angrboda.ao|attack08
+Mon_Angrboda.ao|attack08_2
+Mon_Angrboda.ao|attack09_A
+Mon_Angrboda.ao|attack09_B
+Mon_Angrboda.ao|attack10_A
+Mon_Angrboda.ao|attack10_B
+Mon_Angrboda.ao|attack11_A
+Mon_Angrboda.ao|attack11_B
+Mon_Angrboda.ao|attack12_A
+Mon_Angrboda.ao|attack12_B
+Mon_Angrboda.ao|attack13
+Mon_Angrboda.ao|BossView_Idle
+Mon_Angrboda.ao|CardTestattack01
+Mon_Angrboda.ao|CardTestattack02
+Mon_Angrboda.ao|CardTestattack03
+Mon_Angrboda.ao|Die
+Mon_Angrboda.ao|Idle
+Mon_Angrboda.ao|Rage
+Mon_Angrboda.ao|Roar
+Mon_Angrboda.ao|Run
+Mon_Angrboda.ao|Run2
+Mon_Angrboda.ao|Spawn
+Mon_Angrboda.ao|Spawn_Idle
+Mon_Angrboda.ao|Walk
+Converting... untitled.fbx
 Read File Succssefully
 Animation name list: 
 Mon_water_balloon_A.ao|Attack
 Mon_water_balloon_A.ao|die
 Mon_water_balloon_A.ao|Idle
-Mon_water_balloon_A.ao|Mon_water_balloon_A_matAction
-Mon_water_balloon_A.ao|Mon_water_balloon_A_matAction.001
 Mon_water_balloon_A.ao|Run
-Mon_water_balloon_A.ao|Shader NodetreeAction
 Mon_water_balloon_A.ao|Skill_End
 Mon_water_balloon_A.ao|Skill_Loop
 Mon_water_balloon_A.ao|Skill_Start
 Animation Models : Convert Success!
 
-1 Animation Models
+2 Animation Models
 are Successfully Converted as hyuntramesh!!

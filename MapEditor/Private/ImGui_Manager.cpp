@@ -1457,7 +1457,7 @@ void CImGui_Manager::Delete_Dummy()
 			{
 				if ((*it)->Get_Selected() == true)
 				{
-					m_ObjectsList.erase(it);
+					m_ObjectsList.erase(it++);
 					break;
 				}
 			}
@@ -1654,6 +1654,7 @@ void CImGui_Manager::Reset()
 	//m_CameraList.clear();
 
 	m_DummyList.clear();
+
 	if (m_pSelectedDummy)
 		m_pSelectedDummy = nullptr;
 	if (m_pSelectMap)

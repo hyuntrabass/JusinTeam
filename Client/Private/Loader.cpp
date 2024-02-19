@@ -307,6 +307,39 @@ HRESULT CLoader::Load_Logo()
 		}
 	}
 
+
+	strInputFilePath = "../Bin/Resources/AnimMesh/Interaction/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (!entry.exists())
+				return S_OK;
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CVTFModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+	strInputFilePath = "../Bin/Resources/StaticMesh/Environment/Interaction/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (!entry.exists())
+				return S_OK;
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
 #pragma endregion
 
 	m_strLoadingText = L"Logo : Loading Shader";
@@ -1743,6 +1776,9 @@ HRESULT CLoader::Load_Village()
 		}
 	}
 
+
+
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Village_Map"), CMap::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -1762,10 +1798,22 @@ HRESULT CLoader::Load_Village()
 	{
 		return E_FAIL;
 	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Torch_Object"), CTorch_Object::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Intraction_NonAnim_Object"), CInteraction_NonAnim::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Intraction_Anim_Object"), CInteraction_Anim::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	{
 		m_pGameInstance->Set_CurrentLevelIndex(LEVEL_VILLAGE);
 		{

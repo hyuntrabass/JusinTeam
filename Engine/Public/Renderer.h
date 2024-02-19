@@ -13,7 +13,7 @@ enum RenderGroup
 	RG_Blur,
 	RG_NonLight,
 	RG_Blend,
-	RG_BlendBlur,
+	RG_Distortion,
 	RG_Water,
 	RG_UI,
 	RG_Cursor,
@@ -183,6 +183,7 @@ private:
 	HRESULT Render_HDR();
 	HRESULT Render_Outline();
 	HRESULT Render_Blend();
+	HRESULT Render_Distortion();
 	HRESULT Render_Final();
 	HRESULT Render_UI();
 #ifdef _DEBUG

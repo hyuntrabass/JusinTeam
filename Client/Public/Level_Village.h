@@ -22,7 +22,9 @@ private:
 	//HRESULT Ready_Player();
 
 	HRESULT Ready_Torch();
+	HRESULT Ready_Field_Environment();
 	HRESULT Ready_Environment();
+	HRESULT Ready_Interaction();
 
 	//HRESULT In_To_Dungeon();
 

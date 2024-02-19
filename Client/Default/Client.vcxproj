@@ -197,6 +197,8 @@
     <ClInclude Include="..\Public\HpMonster.h" />
     <ClInclude Include="..\Public\Human_Boss.h" />
     <ClInclude Include="..\Public\InfinityTower.h" />
+    <ClInclude Include="..\Public\Interaction_Anim_Object.h" />
+    <ClInclude Include="..\Public\Interaction_NonAnim_Object.h" />
     <ClInclude Include="..\Public\Inven.h" />
     <ClInclude Include="..\Public\InvenFrame.h" />
     <ClInclude Include="..\Public\InvenWindow.h" />
@@ -342,6 +344,8 @@
     <ClCompile Include="..\Private\FirePillar.cpp" />
     <ClCompile Include="..\Private\Human_Boss.cpp" />
     <ClCompile Include="..\Private\InfinityTower.cpp" />
+    <ClCompile Include="..\Private\Interaction_Anim_Object.cpp" />
+    <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp" />
     <ClCompile Include="..\Private\Meteor.cpp" />
     <ClCompile Include="..\Private\NineSlice.cpp" />
     <ClCompile Include="..\Private\NumEffect.cpp" />

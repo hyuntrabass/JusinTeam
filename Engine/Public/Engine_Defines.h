@@ -172,6 +172,7 @@ namespace Engine
 		DefPass_Outline,
 		DefPass_Blur,
 		DefPass_Distortion,
+		DefPass_JustDraw,
 	};
 
 	enum Effect_Type
