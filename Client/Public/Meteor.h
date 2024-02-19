@@ -2,6 +2,7 @@
 
 #include "Client_Define.h"
 #include "GameObject.h"
+//#include "CommonSurfaceTrail.h"
 
 BEGIN(Client)
 
@@ -23,6 +24,9 @@ public:
 	HRESULT Add_Collider();
 	void Update_Collider();
 
+//public:
+//	void Update_Trail(_float fTimeDelta);
+
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
@@ -34,8 +38,11 @@ private: // Dragon_Boss Component
 	CTransform* m_pDragonTransform = { nullptr };
 
 private:
-	class CEffect_Dummy* m_pFrameEffect = { nullptr };
-	class CEffect_Dummy* m_pBaseEffect = { nullptr };
+	class CEffect_Dummy* m_pMeteor = { nullptr };
+	_mat m_MeteorMatrix = {};
+
+//private:
+//	CCommonSurfaceTrail* m_pMeteorTrail = { nullptr };
 
 private:
 	_vec3 m_vTargetPos = {};
