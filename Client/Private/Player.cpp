@@ -1252,6 +1252,15 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 
 	if (m_Status.Current_Hp <= 0)
 	{
+		if(m_bIsMount)
+		{
+			m_pCam_Manager->Set_RidingZoom(false);
+			Safe_Release(m_pRiding);
+			m_bIsMount = false;
+			_vec4 vLook = m_pGameInstance->Get_CameraLook();
+			vLook.y = 0.f;
+			m_pTransformCom->LookAt_Dir(vLook);
+		}
 		m_Status.Current_Hp = 0;
 		CUI_Manager::Get_Instance()->Set_Hp(m_Status.Current_Hp, m_Status.Max_Hp);
 		m_eState = Die;
@@ -3400,7 +3409,7 @@ void CPlayer::Tick_Riding(_float fTimeDelta)
 	if (m_pRiding->Get_Delete())
 	{
 		m_pCam_Manager->Set_RidingZoom(false);
-		m_hasJumped = true;
+
 		if (m_pRiding->Get_RidingType() != Bird)
 		{
 			m_pTransformCom->Set_Position(_vec3(m_pRiding->Get_Pos() + _vec3(0.f, 2.f, 0.f)));
@@ -3444,6 +3453,7 @@ void CPlayer::Tick_Riding(_float fTimeDelta)
 				m_pGameInstance->FadeinSound(0, fTimeDelta, 0.5f);
 			}
 		}
+
 		_vec4 vLook = m_pGameInstance->Get_CameraLook();
 		vLook.y = 0.f;
 		m_pTransformCom->LookAt_Dir(vLook);
@@ -4293,8 +4303,8 @@ HRESULT CPlayer::Add_Components()
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::OBB;
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
-	CollDesc.vExtents = _vec3(0.4f, 1.3f, 0.4f);
-	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.8f, 0.f);
+	CollDesc.vExtents = _vec3(0.4f, 1.8f, 0.4f);
+	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.5f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 		TEXT("Com_Player_Hit_OBB"), (CComponent**)&m_pHitCollider, &CollDesc)))
