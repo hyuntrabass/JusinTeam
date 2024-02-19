@@ -59,7 +59,7 @@ HRESULT CCommonSurfaceTrail::Init(void* pArg)
 	return S_OK;
 }
 
-void CCommonSurfaceTrail::Tick(_float3 vTopPos, _float3 vBottomPos)
+void CCommonSurfaceTrail::Tick(_vec3 vTopPos, _vec3 vBottomPos)
 {
 	if (m_TopPosList.size() >= m_Info.iNumVertices)
 	{
@@ -85,6 +85,11 @@ void CCommonSurfaceTrail::Late_Tick(_float fTimeDelta)
 	for (size_t i = 0; i < m_Info.iNumVertices; i++)
 	{
 		m_AlphaArray[i] = 1.f - static_cast<_float>(i) / m_Info.iNumVertices;
+	}
+
+	if (m_TopPosList.size() < m_Info.iNumVertices)
+	{
+		return;
 	}
 
 	_uint iIndex{};

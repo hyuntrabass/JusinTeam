@@ -284,7 +284,7 @@ HRESULT CEffect_Dummy::Add_Components()
 		{
 			return E_FAIL;
 		}
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTexEffect"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex_Effect"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		{
 			return E_FAIL;
 		}
@@ -300,7 +300,7 @@ HRESULT CEffect_Dummy::Add_Components()
 		{
 			return E_FAIL;
 		}
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxMeshEffect"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxMesh_Effect"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		{
 			return E_FAIL;
 		}
@@ -342,6 +342,7 @@ HRESULT CEffect_Dummy::Add_Components()
 			return E_FAIL;
 		}
 	}
+
 
 	return S_OK;
 }

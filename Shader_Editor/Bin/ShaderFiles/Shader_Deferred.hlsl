@@ -343,7 +343,7 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
             if (fViewZ <= Z)
             {
                 float fLightDepth = CalcCascadeShadowFactor(i, vLightPos);
-                if (vLightPos.z - 0.01f > fLightDepth)
+                if (vLightPos.z - 0.0025f > fLightDepth)
                 {
                     FinalColor.rgb = FinalColor.rgb * 0.5f;
                 }
@@ -576,7 +576,8 @@ PS_OUT PS_Main_Distortion(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    float2 vDistortion = g_DistortionTexture.Sample(LinearSampler, Input.vTexcoord).rg * 0.05f;
+    float2 vDistortion = g_DistortionTexture.Sample(LinearSampler, Input.vTexcoord).rg;
+    //vDistortion = vDistortion * 2.f - 1.f;
     
     float2 vTex = Input.vTexcoord + vDistortion;
     

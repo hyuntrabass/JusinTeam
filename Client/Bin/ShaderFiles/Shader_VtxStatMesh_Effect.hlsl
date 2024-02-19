@@ -32,6 +32,7 @@ uint g_OutlineColor;
 
 bool g_isBlur;
 
+Texture2D g_DistortionTexture;
 
 struct VS_IN
 {
@@ -232,6 +233,11 @@ struct PS_OUT_EFFECT
     vector vBlur : SV_Target2;
 };
 
+struct PS_OUT_DISTORTION
+{
+    vector vDistortion : SV_Target0;
+};
+
 PS_OUT_DEFERRED PS_Main(PS_IN Input)
 {
     PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
@@ -375,17 +381,15 @@ PS_OUT_EFFECT PS_Main_Effect_Dissolve(PS_IN Input)
 {
     PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
-    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio > fDissolve)
+    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r + 0.1f;
+    float fAlpha = saturate((fDissolve - g_fDissolveRatio) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
     
-    vector vColor = g_vColor;
-    
-    float3 Color = vColor.rgb;
-    float fAlpha = vColor.a;
+    float3 Color = g_vColor.rgb;
+    fAlpha = g_vColor.a * fAlpha;
     
     float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
     fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
@@ -448,9 +452,9 @@ PS_OUT_EFFECT PS_Main_MaskEffect_Dissolve(PS_IN Input)
 {
     PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
-    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio > fDissolve)
+    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r + 0.1f;
+    float fAlpha = saturate((fDissolve - g_fDissolveRatio) * 10.0f);
+    if (fAlpha <= 0.f)
     {
         discard;
     }
@@ -462,7 +466,7 @@ PS_OUT_EFFECT PS_Main_MaskEffect_Dissolve(PS_IN Input)
     }
     
     float3 Color = g_vColor.rgb;
-    float fAlpha = vMask.r;
+    fAlpha *= vMask.r;
     
     float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
     fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
@@ -772,6 +776,46 @@ PS_OUT_EFFECT PS_Main_DiffEffect_Alpha(PS_IN Input)
     return Output;
 }
 
+
+
+PS_OUT_DISTORTION PS_Distortion(PS_IN Input)
+{
+    PS_OUT_DISTORTION Output = (PS_OUT_DISTORTION) 0;
+    
+    vector vColor = g_DistortionTexture.Sample(LinearSampler, Input.vTex);
+    
+    vColor.rgb = vColor.rgb * 2.f - 1.f;
+    
+    Output.vDistortion = vColor;
+    
+    return Output;
+}
+
+PS_OUT_EFFECT PS_Main_DiffEffect_Dissolve(PS_IN Input)
+{
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
+
+    vector vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform);
+    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r + 0.1f;
+    float fAlpha = saturate((fDissolve - g_fDissolveRatio) * 10.0f);
+    if (fAlpha <= 0.f)
+    {
+        discard;
+    }
+
+    float3 Color = vColor.rgb;
+    fAlpha *= vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = vector(fAlpha, fAlpha, fAlpha, fAlpha);
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+    
+    return Output;
+}
+
 technique11 DefaultTechnique_Shader_StatMesh
 {
     pass Default // 0
@@ -826,17 +870,17 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_AlphaTest();
     }
 
-    pass Sky // 4
+    pass Diff_Dissolve // 4
     {
-        SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_None, 0);
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Effect, 0);
         SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main_Sky();
+        PixelShader = compile ps_5_0 PS_Main_DiffEffect_Dissolve();
     }
 
     pass COLMesh // 5
@@ -1058,5 +1102,18 @@ technique11 DefaultTechnique_Shader_StatMesh
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_DiffEffect_Alpha();
+    }
+
+    pass Default_Distortion // 22
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_OnebyOne, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Distortion();
     }
 };
