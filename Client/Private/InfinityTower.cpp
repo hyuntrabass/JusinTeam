@@ -92,6 +92,7 @@ void CInfinityTower::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 	m_pLeftBg->Late_Tick(fTimeDelta);
 
 	for (_uint i = 0; i < 3; i++)
@@ -112,7 +113,7 @@ void CInfinityTower::Late_Tick(_float fTimeDelta)
 	m_pCloud->Late_Tick(fTimeDelta);
 	m_pExitButton->Late_Tick(fTimeDelta);
 	m_pStartButton->Late_Tick(fTimeDelta);
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
+
 }
 
 HRESULT CInfinityTower::Render()
