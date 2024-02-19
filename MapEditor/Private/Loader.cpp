@@ -308,7 +308,7 @@ HRESULT CLoader::Load_Editor()
 			}
 		}
 	}
-	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/Interaction/Mesh/";
+	strInputFilePath = "../Bin/Resources/Model/Interaction/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
