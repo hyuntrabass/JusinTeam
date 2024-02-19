@@ -141,6 +141,8 @@
 #include "Etc_Object.h"
 #include "Environment_Object.h"
 #include "Torch_Object.h"
+#include "Interaction_NonAnim_Object.h"
+#include "Interaction_Anim_Object.h"
 
 // Trigger
 #include "Trigger.h"
