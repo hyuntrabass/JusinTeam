@@ -471,7 +471,7 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 				{
 					_int iMaxSound = m_TriggerSounds[i].strSoundNames.size() - 1;
 					_randInt RandomSound(0, iMaxSound);
-					m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[RandomSound(m_RandomNumber)], m_TriggerSounds[i].fInitVolume, m_TriggerSounds[i].fStartPosRatio);
+					m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[RandomSound(m_RandomNumber)], m_TriggerSounds[i].fInitVolume, false, m_TriggerSounds[i].fStartPosRatio);
 					m_TriggerSounds[i].HasPlayed = true;
 				}
 			}
@@ -479,7 +479,7 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 			{
 				_int iMaxSound = m_TriggerSounds[i].strSoundNames.size() - 1;
 				_randInt RandomSound(0, iMaxSound);
-				m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[RandomSound(m_RandomNumber)], m_TriggerSounds[i].fInitVolume, m_TriggerSounds[i].fStartPosRatio);
+				m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[RandomSound(m_RandomNumber)], m_TriggerSounds[i].fInitVolume, false, m_TriggerSounds[i].fStartPosRatio);
 				m_TriggerSounds[i].HasPlayed = true;
 			}
 		}

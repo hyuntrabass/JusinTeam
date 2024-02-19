@@ -1005,7 +1005,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					if (pSoundDesc->iEndAnimIndices.size() > 0)
 					{
 						_uint iEndIndex = static_cast<_uint>(pSoundDesc->iEndAnimIndices.size()) - 1;
-						pSoundDesc->iEndAnimIndices[iEndIndex] = m_pPlayer->Get_CurrentModel()->Get_CurrentAnimationIndex();
+						pSoundDesc->iEndAnimIndices[iEndIndex] = m_pPlayer->Get_CurrentPlayerModel()->Get_CurrentAnimationIndex();
 						_uint iCurrentAnimPos = static_cast<_uint>(m_pPlayer->Get_CurrentAnim()->Get_CurrentAnimPos());
 						pSoundDesc->fEndAnimPoses[iEndIndex] = static_cast<_float>(iCurrentAnimPos);
 					}
@@ -1050,7 +1050,13 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				ImGui::SeparatorText("VOLUME");
 				ImGui::PushItemWidth(100.f);
 
-				ImGui::InputFloat("VOLUME##1", &pSoundDesc->fInitVolume, 0.05f, 0.f, "%.2f");
+				if (ImGui::InputFloat("VOLUME##1", &pSoundDesc->fInitVolume, 0.05f, 0.f, "%.2f"))
+				{
+					if (pSoundDesc->iChannel != -1)
+					{
+						m_pGameInstance->Set_ChannelVolume(pSoundDesc->iChannel, pSoundDesc->fInitVolume);
+					}
+				}
 				if (pSoundDesc->fInitVolume >= 1.f)
 				{
 					pSoundDesc->fInitVolume = 1.f;
@@ -1058,10 +1064,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				else if (pSoundDesc->fInitVolume <= 0.f)
 				{
 					pSoundDesc->fInitVolume = 0.f;
-				}
-				if (pSoundDesc->iChannel != -1)
-				{
-					m_pGameInstance->Set_ChannelVolume(pSoundDesc->iChannel, pSoundDesc->fInitVolume);
 				}
 
 				ImGui::InputFloat("STARTPOS##1", &pSoundDesc->fStartPosRatio, 0.05f, 0.f, "%.2f");
@@ -1495,7 +1497,13 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				ImGui::SeparatorText("VOLUME");
 				ImGui::PushItemWidth(100.f);
 
-				ImGui::InputFloat("VOLUME##1", &pSoundDesc->fInitVolume, 0.05f, 0.f, "%.2f");
+				if(ImGui::InputFloat("VOLUME##1", &pSoundDesc->fInitVolume, 0.05f, 0.f, "%.2f"))
+				{
+					if (pSoundDesc->iChannel != -1)
+					{
+						m_pGameInstance->Set_ChannelVolume(pSoundDesc->iChannel, pSoundDesc->fInitVolume);
+					}
+				}
 				if (pSoundDesc->fInitVolume >= 1.f)
 				{
 					pSoundDesc->fInitVolume = 1.f;
@@ -1503,10 +1511,6 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				else if (pSoundDesc->fInitVolume <= 0.f)
 				{
 					pSoundDesc->fInitVolume = 0.f;
-				}
-				if (pSoundDesc->iChannel != -1)
-				{
-					m_pGameInstance->Set_ChannelVolume(pSoundDesc->iChannel, pSoundDesc->fInitVolume);
 				}
 
 				ImGui::InputFloat("STARTPOS##1", &pSoundDesc->fStartPosRatio, 0.05f, 0.f, "%.2f");
