@@ -148,6 +148,7 @@ private:
 	_float m_fIdleTime = {};
 	_float m_fTime = {};
 	_float m_fMeteorTime = {};
+	_float m_fDragonHeadTime = {};
 
 private:
 	_uint m_iAttackPattern = {};
@@ -159,12 +160,21 @@ private:
 	_bool m_bAttacked2 = { false };
 
 private:
+	_bool m_bCanPull = { false };
+
+private:
+	_vec3 m_vDragonHeadPos = {};
+	_vec3 m_vPlayerOldPos = {};
+
+private:
 	_bool m_bChangePass = { false };
 	_uint m_iPassIndex = {};
 	_float m_fHitTime = {};
 
 private:
 	_bool m_bCreateObject = { false };
+
+	_bool m_bCreateEffect[2] = { false };
 
 public:
 	HRESULT Add_Components();

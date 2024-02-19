@@ -35,6 +35,7 @@ HRESULT CImGui_Manager::Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc)
 	Search_Monster();
 	Search_NPC();
 	Search_Envir();
+	Search_Inter();
 
 	//SectionName.reserve(MAX_PATH);
 	SectionName.resize(MAX_PATH);
@@ -136,9 +137,14 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 
 			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LCONTROL))
 			{
+				if (m_pSelectedDummy)
+				{
+					m_pSelectedDummy->Select(false);
+					m_pSelectedDummy = nullptr;
+				}
 				if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
 				{
-					m_PickingPos = m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y);
+					m_PickingPos = _vec4(m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y).x, m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y).y, m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y).z, 1.f); ;
 					m_vInstancePos.push_back(m_PickingPos);
 				}
 				FastPicking();
@@ -146,20 +152,25 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 
 			if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LSHIFT))
 			{
+
 				if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
 				{
 					fTimeDeltaAcc += fTimeDelta;
 					if (fTimeDeltaAcc > 0.1f)
 					{
-						m_PickingPos = m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y);
+						m_PickingPos = _vec4(m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y).x, m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y).y, m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y).z, 1.f); ;
 						m_vInstancePos.push_back(m_PickingPos);
 						fTimeDeltaAcc = 0;
 					}
 				}
-				//FastPicking();
 			}
 			if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_SPACE))
 			{
+				if (m_pSelectedDummy)
+				{
+					m_pSelectedDummy->Select(false);
+					m_pSelectedDummy = nullptr;
+				}
 				FastPicking();
 				Delete_Dummy();
 			}
@@ -482,8 +493,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			static int iSelectEnvir = 0;
 			ImGui::RadioButton("Tree", &iSelectEnvir, 0); ImGui::SameLine();
 			ImGui::RadioButton("Grass", &iSelectEnvir, 1); ImGui::SameLine();
-			ImGui::RadioButton("Rock", &iSelectEnvir, 2); ImGui::SameLine();
-			ImGui::RadioButton("Interaction", &iSelectEnvir, 3);
+			ImGui::RadioButton("Rock", &iSelectEnvir, 2);
 
 			_int iEnvirCount = m_EnvirList.size();
 			_int iPickingCount = m_vInstancePos.size();
@@ -497,7 +507,6 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			if(iSelectEnvir == 0){m_eType = TEXT("Tree");}
 			else if (iSelectEnvir == 1)	{m_eType = TEXT("Grass");}
 			else if (iSelectEnvir == 2)	{m_eType = TEXT("Rock");}
-			else if (iSelectEnvir == 3)	{m_eType = TEXT("Interaction");}
 
 			ImGui::Separator();
 			ImGui::NewLine();
@@ -583,6 +592,113 @@ HRESULT CImGui_Manager::ImGuiMenu()
 		}
 
 #pragma endregion
+
+
+#pragma region 상호작용 오브젝트
+		if (ImGui::BeginTabItem("Interaction"))
+		{
+			m_eItemType = ItemType::Interaction;
+			/* 상호작용 */
+			static int iSelectInteraction = 0;
+			ImGui::RadioButton("NonAnim", &iSelectInteraction, 0); ImGui::SameLine();
+			ImGui::RadioButton("Anim", &iSelectInteraction, 1);
+
+			_int iInteractionCount = m_InteractionList.size();
+			_int iPickingCount = m_vInstancePos.size();
+			ImGui::InputInt("Count", &iInteractionCount, 14);
+			ImGui::InputInt("Picking Count", &iPickingCount, 14);
+
+			ImGui::SeparatorText("LIST");
+			static int Interaction_current_idx = 0;
+			ImGui::Text("Environment");
+
+			if (iSelectInteraction == 0) { m_eType = TEXT("NonAnim"); }
+			else if (iSelectInteraction == 1) { m_eType = TEXT("Anim"); }
+
+			ImGui::Separator();
+			ImGui::NewLine();
+
+			static ImGuiTextFilter Filter;
+			Filter.Draw("Search##1");
+			ImGui::SameLine();
+			_bool shouldScrollToSelectedItem{};
+			if (ImGui::Button("Scroll##1"))
+			{
+				shouldScrollToSelectedItem = true;
+			}
+			for (int i = 0; i < Interactions[m_eType].size(); ++i)
+			{
+				if (Filter.PassFilter(Interactions[m_eType][i]))
+				{
+					_bool isSelected = (i == m_iSelectIdx);
+
+					if (ImGui::Selectable(Interactions[m_eType][i], isSelected))
+					{
+						Interaction_current_idx = i;
+						m_iSelectIdx = Interaction_current_idx;
+					}
+					if (isSelected)
+					{
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+			}
+			ImGui::Separator();
+			ImGui::SeparatorText("MATRIX : ");
+			ImGui::InputFloat4("Right", &m_ObjectMatrix.m[0][0], 0);
+			ImGui::InputFloat4("Up", &m_ObjectMatrix.m[1][0], 0);
+			ImGui::InputFloat4("Look", &m_ObjectMatrix.m[2][0], 0);
+			ImGui::InputFloat4("Position", &m_ObjectMatrix.m[3][0], 0);
+			ImGui::Separator();
+			if (ImGui::Button("Delete"))
+			{
+				Delete_Dummy();
+				if (!m_vInstancePos.empty())
+					m_vInstancePos.clear();
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("Create"))
+			{
+				if (Interaction_current_idx != -1)
+				{
+					Create_Dummy(Interaction_current_idx);
+					if (!m_vInstancePos.empty())
+						m_vInstancePos.clear();
+				}
+			}
+			ImGui::SeparatorText("Picking Info");
+
+			if (ImGui::Button("Picking Delete"))
+			{
+				if (!m_vInstancePos.empty())
+					m_vInstancePos.clear();
+			}
+			ImGui::SameLine();
+
+			if (ImGui::Button("Picking One_Delete"))
+			{
+				if (!m_vInstancePos.empty())
+					m_vInstancePos.pop_back();
+			}
+
+			ImGui::SeparatorText("Save / Load");
+
+			if (ImGui::Button("SAVE"))
+			{
+				Save_Interaction();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("LOAD"))
+			{
+				Load_Interaction();
+			}
+			ImGui::EndTabItem();
+		}
+
+#pragma endregion
+
 #pragma region 몬스터
 		if (ImGui::BeginTabItem("Monster"))
 		{
@@ -1215,7 +1331,7 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	{
 		DummyInfo Info{};
 		Info.ppDummy = &m_pSelectedDummy;
-		Info.vPos = m_PickingPos;
+		Info.vPos = _vec4(m_PickingPos.x, m_PickingPos.y, m_PickingPos.z, 1.f);
 		XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_vLook)));
 		Info.Prototype = L"Prototype_Model_";
 		Info.eType = m_eItemType;
@@ -1243,9 +1359,9 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 		case ItemType::NPC:
 			MultiByteToWideChar(CP_ACP, 0, NPCs[iListIndex], static_cast<int>(strlen(NPCs[iListIndex])), strUnicode, static_cast<int>(strlen(NPCs[iListIndex])));
 			break;
-		//case ItemType::Environment:
-		//	MultiByteToWideChar(CP_ACP, 0, Envirs[m_eType][iListIndex], static_cast<int>(strlen(Envirs[m_eType][iListIndex])), strUnicode, static_cast<int>(strlen(Envirs[m_eType][iListIndex])));
-		//	break;
+		case ItemType::Interaction:
+			MultiByteToWideChar(CP_ACP, 0, Interactions[m_eType][iListIndex], static_cast<int>(strlen(Interactions[m_eType][iListIndex])), strUnicode, static_cast<int>(strlen(Interactions[m_eType][iListIndex])));
+			break;
 		case ItemType::Trigger:
 			Info.Prototype = L"Prototype_Model_Collider";
 
@@ -1269,9 +1385,9 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 		case MapEditor::ItemType::NPC:
 			m_NPCList.push_back(m_pSelectedDummy);
 			break;
-		//case MapEditor::ItemType::Environment:
-		//	m_EnvirList.push_back(m_pSelectedDummy);
-		//	break;
+		case MapEditor::ItemType::Interaction:
+			m_InteractionList.push_back(m_pSelectedDummy);
+			break;
 		case MapEditor::ItemType::Trigger:
 			m_TriggerList.push_back(m_pSelectedDummy);
 			break;
@@ -1331,6 +1447,9 @@ void CImGui_Manager::Delete_Dummy()
 		if (!m_DummyList.empty())
 			m_DummyList.erase(DummyIndex);
 
+		m_pSelectedDummy->Kill();
+		m_pSelectedDummy = nullptr;
+
 		if (m_eItemType == ItemType::Objects)
 		{
 
@@ -1380,6 +1499,18 @@ void CImGui_Manager::Delete_Dummy()
 			}
 
 		}
+		else if (m_eItemType == ItemType::Interaction)
+		{
+			for (auto it = m_InteractionList.begin(); it != m_InteractionList.end(); it++)
+			{
+				if ((*it)->Get_Selected() == true)
+				{
+					m_InteractionList.erase(it);
+					break;
+				}
+			}
+
+		}
 		else if (m_eItemType == ItemType::Trigger)
 		{
 			for (auto it = m_TriggerList.begin(); it != m_TriggerList.end(); it++)
@@ -1393,8 +1524,7 @@ void CImGui_Manager::Delete_Dummy()
 
 		}
 	
-		m_pSelectedDummy->Set_Dead();
-		m_pSelectedDummy = nullptr;
+	
 	}
 }
 
@@ -1566,6 +1696,7 @@ void CImGui_Manager::PopBack_Dummy()
 	if (m_pTerrain)
 		m_pTerrain = nullptr;
 }
+
 void CImGui_Manager::Search_Map()
 {
 	string strFilePath = "../../Client/Bin/Resources/StaticMesh/Map/Tutorial/Mesh";
@@ -1709,7 +1840,6 @@ void CImGui_Manager::Search_Monster()
 
 }
 
-
 void CImGui_Manager::Search_NPC()
 {
 	if (!NPCs.empty())
@@ -1787,7 +1917,11 @@ void CImGui_Manager::Search_Envir()
 		}
 	}
 
-	strFilePath = "../../Client/Bin/Resources/StaticMesh/Environment/Interaction/Mesh";
+}
+
+void CImGui_Manager::Search_Inter()
+{
+	string strFilePath = "../../Client/Bin/Resources/StaticMesh/Environment/Interaction/Mesh";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strFilePath))
 	{
 		if (entry.is_regular_file())
@@ -1798,7 +1932,23 @@ void CImGui_Manager::Search_Envir()
 			if (extension == ".hyuntrastatmesh") {
 				char* cstr = new char[strName.length() + 1];
 				strcpy_s(cstr, strName.length() + 1, strName.c_str());
-				Envirs[L"Interaction"].push_back(cstr);
+				Interactions[L"NonAnim"].push_back(cstr);
+
+			}
+		}
+	}
+	strFilePath = "../../Client/Bin/Resources/AnimMesh/Interaction/Mesh";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			string strName = entry.path().stem().string();
+			string extension = entry.path().extension().string();
+
+			if (extension == ".hyuntraanimmesh") {
+				char* cstr = new char[strName.length() + 1];
+				strcpy_s(cstr, strName.length() + 1, strName.c_str());
+				Interactions[L"Anim"].push_back(cstr);
 
 			}
 		}
@@ -2121,7 +2271,7 @@ HRESULT CImGui_Manager::Load_Map()
 			MapInfo MapInfo{};
 			MapInfo.eType = ItemType::Map;
 			MapInfo.Prototype = MapPrototype;
-			MapInfo.vPos = _float4(MapWorldMat._41, MapWorldMat._42, MapWorldMat._43, MapWorldMat._44);
+			MapInfo.vPos = _float4(MapWorldMat._41, MapWorldMat._42, MapWorldMat._43, 1.f);
 			MapInfo.ppMap = &m_pSelectMap;
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Map"), TEXT("Prototype_GameObject_Map"), &MapInfo)))
@@ -2245,7 +2395,7 @@ HRESULT CImGui_Manager::Load_Object()
 			ObjectsInfo.eType = ItemType::Objects;
 			ObjectsInfo.Prototype = ObjectsPrototype;
 			ObjectsInfo.vLook = _float4(ObjectsWorldMat._31, ObjectsWorldMat._32, ObjectsWorldMat._33, ObjectsWorldMat._34);
-			ObjectsInfo.vPos = _float4(ObjectsWorldMat._41, ObjectsWorldMat._42, ObjectsWorldMat._43, ObjectsWorldMat._44);
+			ObjectsInfo.vPos = _float4(ObjectsWorldMat._41, ObjectsWorldMat._42, ObjectsWorldMat._43, 1.f);
 			ObjectsInfo.ppDummy = &m_pSelectedDummy;
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &ObjectsInfo)))
@@ -2369,7 +2519,7 @@ HRESULT CImGui_Manager::Load_Monster()
 			MonsterInfo.eType = ItemType::Monster;
 			MonsterInfo.Prototype = MonsterPrototype;
 			MonsterInfo.vLook = _float4(MonsterWorldMat._31, MonsterWorldMat._32, MonsterWorldMat._33, MonsterWorldMat._34);
-			MonsterInfo.vPos = _float4(MonsterWorldMat._41, MonsterWorldMat._42, MonsterWorldMat._43, MonsterWorldMat._44);
+			MonsterInfo.vPos = _float4(MonsterWorldMat._41, MonsterWorldMat._42, MonsterWorldMat._43, 1.f);
 			MonsterInfo.ppDummy = &m_pSelectedDummy;
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &MonsterInfo)))
@@ -2491,7 +2641,7 @@ HRESULT CImGui_Manager::Load_NPC()
 			NPCInfo.eType = ItemType::NPC;
 			NPCInfo.Prototype = NPCPrototype;
 			NPCInfo.vLook = _float4(NPCWorldMat._31, NPCWorldMat._32, NPCWorldMat._33, NPCWorldMat._34);
-			NPCInfo.vPos = _float4(NPCWorldMat._41, NPCWorldMat._42, NPCWorldMat._43, NPCWorldMat._44);
+			NPCInfo.vPos = _float4(NPCWorldMat._41, NPCWorldMat._42, NPCWorldMat._43, 1.f);
 			NPCInfo.ppDummy = &m_pSelectedDummy;
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &NPCInfo)))
@@ -2614,7 +2764,7 @@ HRESULT CImGui_Manager::Load_Envir()
 			EnvirInfo.eType = ItemType::Environment;
 			EnvirInfo.Prototype = EnvirPrototype;
 			EnvirInfo.vLook = _float4(EnvirWorldMat._31, EnvirWorldMat._32, EnvirWorldMat._33, EnvirWorldMat._34);
-			EnvirInfo.vPos = _float4(EnvirWorldMat._41, EnvirWorldMat._42, EnvirWorldMat._43, EnvirWorldMat._44);
+			EnvirInfo.vPos = _float4(EnvirWorldMat._41, EnvirWorldMat._42, EnvirWorldMat._43, 1.f);
 			EnvirInfo.ppDummy = &m_pSelectedDummy;
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &EnvirInfo)))
@@ -2643,6 +2793,131 @@ HRESULT CImGui_Manager::Load_Envir()
 	return S_OK;
 }
 #pragma endregion
+
+#pragma region 상호작용 저장 / 불러오기
+HRESULT CImGui_Manager::Save_Interaction()
+{
+	OPENFILENAME OFN;
+	TCHAR filePathName[MAX_PATH] = L"";
+	TCHAR lpstrFile[MAX_PATH] = L"_InteractionData.dat";
+	static TCHAR filter[] = L"모든 파일\0*.*\0텍스트 파일\0*.txt\0dat 파일\0*.dat";
+
+	memset(&OFN, 0, sizeof(OPENFILENAME));
+	OFN.lStructSize = sizeof(OPENFILENAME);
+	OFN.hwndOwner = g_hWnd;
+	OFN.lpstrFilter = filter;
+	OFN.lpstrFile = lpstrFile;
+	OFN.nMaxFile = 256;
+	OFN.lpstrInitialDir = L"..\\Bin\\Data";
+
+	if (GetSaveFileName(&OFN) != 0)
+	{
+		const TCHAR* pGetPath = OFN.lpstrFile;
+
+		std::ofstream outFile(pGetPath, std::ios::binary);
+
+		if (!outFile.is_open())
+			return E_FAIL;
+
+		_uint InteractionListSize = (_uint)m_InteractionList.size();
+		outFile.write(reinterpret_cast<const char*>(&InteractionListSize), sizeof(_uint));
+
+		for (auto& Interaction : m_InteractionList)
+		{
+			CTransform* pInteractionTransform = dynamic_cast<CTransform*>(Interaction->Find_Component(TEXT("Com_Transform")));
+
+			wstring InteractionPrototype = Interaction->Get_Info().Prototype;
+			_ulong InteractionPrototypeSize = (_ulong)InteractionPrototype.size();
+
+			outFile.write(reinterpret_cast<const char*>(&InteractionPrototypeSize), sizeof(_ulong));
+			outFile.write(reinterpret_cast<const char*>(InteractionPrototype.c_str()), InteractionPrototypeSize * sizeof(wchar_t));
+
+			_mat InteractionWorldMat = pInteractionTransform->Get_World_Matrix();
+			outFile.write(reinterpret_cast<const char*>(&InteractionWorldMat), sizeof(_mat));
+		}
+
+		MessageBox(g_hWnd, L"파일 저장 완료", L"파일 저장", MB_OK);
+		outFile.close();
+
+	}
+	return S_OK;
+}
+HRESULT CImGui_Manager::Load_Interaction()
+{
+	OPENFILENAME OFN;
+	TCHAR filePathName[MAX_PATH] = L"";
+	static TCHAR filter[] = L"모두(*.*)\0*.*\0데이터 파일(*.dat)\0*.dat";
+
+	memset(&OFN, 0, sizeof(OPENFILENAME));
+	OFN.lStructSize = sizeof(OPENFILENAME);
+	OFN.hwndOwner = g_hWnd;
+	OFN.lpstrFilter = filter;
+	OFN.lpstrFile = filePathName;
+	OFN.nMaxFile = 256;
+	OFN.lpstrInitialDir = L"..\\Bin\\Data\\";
+
+	if (GetOpenFileName(&OFN) != 0)
+	{
+		const TCHAR* pGetPath = OFN.lpstrFile;
+
+		std::ifstream inFile(pGetPath, std::ios::binary);
+
+		if (!inFile.is_open())
+		{
+			MessageBox(g_hWnd, L"파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+			return E_FAIL;
+		}
+
+		_uint InteractionListSize;
+		inFile.read(reinterpret_cast<char*>(&InteractionListSize), sizeof(_uint));
+
+
+		for (_uint i = 0; i < InteractionListSize; ++i)
+		{
+			_ulong InteractionPrototypeSize;
+			inFile.read(reinterpret_cast<char*>(&InteractionPrototypeSize), sizeof(_ulong));
+
+			wstring InteractionPrototype;
+			InteractionPrototype.resize(InteractionPrototypeSize);
+			inFile.read(reinterpret_cast<char*>(&InteractionPrototype[0]), InteractionPrototypeSize * sizeof(wchar_t));
+
+			_mat InteractionWorldMat;
+			inFile.read(reinterpret_cast<char*>(&InteractionWorldMat), sizeof(_mat));
+
+			DummyInfo EnvirInfo{};
+			EnvirInfo.eType = ItemType::Interaction;
+			EnvirInfo.Prototype = InteractionPrototype;
+			EnvirInfo.vLook = _float4(InteractionWorldMat._31, InteractionWorldMat._32, InteractionWorldMat._33, InteractionWorldMat._34);
+			EnvirInfo.vPos = _float4(InteractionWorldMat._41, InteractionWorldMat._42, InteractionWorldMat._43, 1.f);
+			EnvirInfo.ppDummy = &m_pSelectedDummy;
+
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &EnvirInfo)))
+			{
+				MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
+				return E_FAIL;
+			}
+
+			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
+			m_InteractionList.push_back(m_pSelectedDummy);
+
+			CTransform* pInteractionTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
+
+			pInteractionTransform->Set_State(State::Right, InteractionWorldMat.Right());
+			pInteractionTransform->Set_State(State::Up, InteractionWorldMat.Up());
+			pInteractionTransform->Set_State(State::Look, InteractionWorldMat.Look());
+			pInteractionTransform->Set_State(State::Pos, InteractionWorldMat.Position());
+
+			m_pSelectedDummy = nullptr;
+		}
+
+		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
+		inFile.close();
+
+	}
+	return S_OK;
+}
+#pragma endregion
+
 #pragma region 트리거 저장 / 불러오기
 HRESULT CImGui_Manager::Save_Trigger()
 {
@@ -3086,6 +3361,7 @@ void CImGui_Manager::Free()
 		Safe_Delete_Array(cstr);
 	}
 	NPCs.clear();
+
 	for (auto& entry : Envirs)
 	{
 		for (const char* cstr : entry.second) {
@@ -3094,6 +3370,15 @@ void CImGui_Manager::Free()
 		entry.second.clear();
 	}
 	Envirs.clear();
+
+	for (auto& entry : Interactions)
+	{
+		for (const char* cstr : entry.second) {
+			Safe_Delete_Array(cstr);
+		}
+		entry.second.clear();
+	}
+	Interactions.clear();
 
 	for (auto& Map : m_MapsList)
 	{
@@ -3120,13 +3405,17 @@ void CImGui_Manager::Free()
 	}
 	m_NPCList.clear();
 
-
 	for (auto& cstr : m_EnvirList)
 	{
 		Safe_Release(cstr);
 	}
 	m_EnvirList.clear();
 
+	for (auto& cstr : m_InteractionList)
+	{
+		Safe_Release(cstr);
+	}
+	m_InteractionList.clear();
 
 	for (auto& cstr : m_TriggerList)
 	{
@@ -3140,12 +3429,10 @@ void CImGui_Manager::Free()
 	}
 	m_CameraList.clear();
 
-	if (!m_DummyList.empty())
+
+	for (auto& Pair : m_DummyList)
 	{
-		for (auto& Pair : m_DummyList)
-		{
-			Safe_Release(Pair.second);
-		}
+		Safe_Release(Pair.second);
 	}
 	m_DummyList.clear();
 

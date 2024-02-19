@@ -15,6 +15,7 @@ public:
 		_float fFadeSecond = 1.f;
 		_bool IsReusable{};
 		_float fFadeSoundRatio{};
+		_float fDurationRatio = 1.f;
 
 	}SOUND_DESC;
 
@@ -26,7 +27,7 @@ public:
 	HRESULT Init();
 
 public:
-	_int Play_Sound(const wstring& strSoundTag, _float fVolume, _bool isLoop);
+	_int Play_Sound(const wstring& strSoundTag, _float fVolume, _bool isLoop, _float fStartPosRatio);
 	void PlayBGM(const wstring& strSoundTag, _float fVolume);
 	void StopSound(_uint iChannel);
 	void StopAll();
@@ -38,6 +39,7 @@ public:
 	_bool Get_IsPlayingSound(_uint iChannel);
 	_float GetChannelVolume(_uint iChannel);
 	_bool Get_IsLoopingSound(_uint iChannel);
+	_float Get_CurPosRatio(_uint iChannel);
 
 private:
 	_float m_fFadeTimeDelta{};
