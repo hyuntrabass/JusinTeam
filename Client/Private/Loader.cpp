@@ -1054,6 +1054,12 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
+	
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Balloon"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Mini1/Mesh/Balloon.hyuntraanimmesh", false, Pivot1))))
+	{
+		return E_FAIL;
+	}
 
 
 #pragma endregion Monster
@@ -1414,6 +1420,11 @@ HRESULT CLoader::Load_GamePlay()
 #pragma endregion
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_VTFTest"), CVTFTest::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Balloon"), CBalloon::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

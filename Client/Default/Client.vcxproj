@@ -161,6 +161,7 @@
     <ClInclude Include="..\Public\Arrow.h" />
     <ClInclude Include="..\Public\BackGround.h" />
     <ClInclude Include="..\Public\BackGround_Mask.h" />
+    <ClInclude Include="..\Public\Balloon.h" />
     <ClInclude Include="..\Public\Blackhole.h" />
     <ClInclude Include="..\Public\BlackSmith.h" />
     <ClInclude Include="..\Public\BlurTexture.h" />
@@ -314,6 +315,7 @@
     <ClCompile Include="..\Private\Arrow.cpp" />
     <ClCompile Include="..\Private\BackGround.cpp" />
     <ClCompile Include="..\Private\BackGround_Mask.cpp" />
+    <ClCompile Include="..\Private\Balloon.cpp" />
     <ClCompile Include="..\Private\Blackhole.cpp" />
     <ClCompile Include="..\Private\BlackSmith.cpp" />
     <ClCompile Include="..\Private\BlurTexture.cpp" />

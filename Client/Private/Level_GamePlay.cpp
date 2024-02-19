@@ -141,9 +141,15 @@ HRESULT CLevel_GamePlay::Init()
 	Desc.fOut_Duration = 3.f;
 	CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
 
-
 	m_pGameInstance->Play_Video(TEXT("Tutorial0.wmv"));
 	m_pGameInstance->Set_StopKey(DIK_RETURN);
+
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Balloon"), TEXT("Prototype_GameObject_Balloon"))))
+	{
+		return E_FAIL;
+	}
+
 
 	return S_OK;
 }
