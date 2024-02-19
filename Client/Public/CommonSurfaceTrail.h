@@ -25,7 +25,7 @@ public:
 public:
 	HRESULT Init_Prototype() override;
 	HRESULT Init(void* pArg) override;
-	void Tick(_float3 vTopPos, _float3 vBottomPos);
+	void Tick(_vec3 vTopPos, _vec3 vBottomPos);
 	void Late_Tick(_float fTimeDelta) override;
 	HRESULT Render() override;
 
@@ -38,8 +38,8 @@ private:
 private:
 	_bool m_bNoRender{};
 
-	list<_float3> m_TopPosList{};
-	list<_float3> m_BottomPosList{};
+	list<_vec3> m_TopPosList{};
+	list<_vec3> m_BottomPosList{};
 
 	SURFACETRAIL_DESC m_Info{};
 	_vec3* m_TopPosArray{};

@@ -24,7 +24,7 @@ HRESULT CRiding::Init(void* pArg)
 	m_eCurMode = (MODE)Desc->iMode;
 	m_pCam_Manager = CCamera_Manager::Get_Instance();
 
-	if(m_eCurMode ==PLAYER)
+	if (m_eCurMode == PLAYER)
 	{
 		m_pCam_Manager->Set_RidingZoom(true);
 	}
@@ -100,7 +100,7 @@ HRESULT CRiding::Init(void* pArg)
 		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Tiger");
 		m_fRunSpeed = 12.f;
 	}
-		break;
+	break;
 	case Client::Nihilir:
 	{
 		m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Idle;
@@ -109,7 +109,7 @@ HRESULT CRiding::Init(void* pArg)
 		m_fWalkSpeed = 5.f;
 		m_fRunSpeed = 14.f;
 	}
-		break;
+	break;
 	default:
 		break;
 	}
@@ -190,13 +190,13 @@ HRESULT CRiding::Init(void* pArg)
 		PxCapsuleControllerDesc ControllerDesc{};
 		ControllerDesc.height = 0.8f;
 		ControllerDesc.radius = 0.6f;
-		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); 
-		ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f)); 
-		ControllerDesc.contactOffset = 0.1f; 
+		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f);
+		ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f));
+		ControllerDesc.contactOffset = 0.1f;
 		ControllerDesc.stepOffset = 0.3f;
 		m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
 	}
-	m_pTransformCom->Set_Position(_vec3(Desc->vSummonPos + _vec3(0.f,1.f,0.f)));
+	m_pTransformCom->Set_Position(_vec3(Desc->vSummonPos + _vec3(0.f, 1.f, 0.f)));
 	m_Animation.fAnimSpeedRatio = 2.f;
 	m_fDissolveRatio = 1.f;
 	return S_OK;
@@ -204,33 +204,33 @@ HRESULT CRiding::Init(void* pArg)
 
 void CRiding::Tick(_float fTimeDelta)
 {
-	
+
 	if (m_eCurMode == VEHICLEBOOK)
 	{
 		m_pModelCom->Set_Animation(m_Animation);
 		return;
 	}
 
-	
-		if (!m_isDead)
+
+	if (!m_isDead)
+	{
+		m_fDissolveRatio = 0.f;
+	}
+	else
+	{
+		if (m_CurrentIndex == Nihilir)
 		{
-			m_fDissolveRatio = 0.f;
+			_vec3 vPos = m_pTransformCom->Get_State(State::Pos) + _vec4(0.f, 2.5f, 0.f, 0.f);
+			m_pTransformCom->Set_Position(vPos);
 		}
 		else
 		{
-			if(m_CurrentIndex==Nihilir)
-			{
-				_vec3 vPos = m_pTransformCom->Get_State(State::Pos) + _vec4(0.f, 2.5f, 0.f, 0.f);
-				m_pTransformCom->Set_Position(vPos);
-			}
-			else
-			{
-				_vec3 vPos = m_pTransformCom->Get_State(State::Pos) + _vec4(0.f, 1.f, 0.f, 0.f);
-				m_pTransformCom->Set_Position(vPos);
-			}
-			m_bDelete = true;
+			_vec3 vPos = m_pTransformCom->Get_State(State::Pos) + _vec4(0.f, 1.f, 0.f, 0.f);
+			m_pTransformCom->Set_Position(vPos);
 		}
-	
+		m_bDelete = true;
+	}
+
 	/*else
 	{
 		if (m_fDissolveRatio >= 0.f && !m_isDead)
@@ -289,13 +289,13 @@ void CRiding::Tick(_float fTimeDelta)
 	{
 		m_pTransformCom->Gravity(fTimeDelta, -1.2f);
 		if (!m_pTransformCom->Is_Jumping())
-			{
-				_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
-				vPos.y += 1.f;
-				m_pTransformCom->Set_Position(vPos);
-				
-				m_bDelete = true;
-			}
+		{
+			_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
+			vPos.y += 1.f;
+			m_pTransformCom->Set_Position(vPos);
+
+			m_bDelete = true;
+		}
 	}
 	else
 	{
@@ -310,7 +310,7 @@ void CRiding::Late_Tick(_float fTimeDelta)
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
-	if(true == m_pGameInstance->Get_TurnOnShadow())
+	if (true == m_pGameInstance->Get_TurnOnShadow())
 		m_pRendererCom->Add_RenderGroup(RG_Shadow, this);
 
 #ifdef _DEBUG
@@ -457,7 +457,7 @@ void CRiding::Move(_float fTimeDelta)
 		vDirection -= vRightDir;
 		hasMoved = true;
 	}
-	
+
 	if (m_eState == Riding_Jump_Start or
 		m_eState == Riding_Jump)
 	{
@@ -468,7 +468,7 @@ void CRiding::Move(_float fTimeDelta)
 		}
 	}
 
-	
+
 
 	if (hasMoved)
 	{
@@ -585,9 +585,9 @@ void CRiding::Init_State()
 			default:
 				break;
 			}
-		
+
 		}
-			break;
+		break;
 		case Client::Riding_Idle:
 			switch (m_CurrentIndex)
 			{
@@ -599,21 +599,21 @@ void CRiding::Init_State()
 				m_Animation.isLoop = true;
 				m_hasJumped = false;
 			}
-				break;
+			break;
 			case Client::Nihilir:
 			{
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Idle;
 				m_Animation.isLoop = true;
 				m_hasJumped = false;
 			}
-				break;
+			break;
 			case Client::Horse:
 			{
 				m_Animation.iAnimIndex = Horse_1004_Idle;
 				m_Animation.isLoop = true;
 				m_hasJumped = false;
 			}
-				break;
+			break;
 
 			default:
 				break;
@@ -631,7 +631,7 @@ void CRiding::Init_State()
 				m_Animation.isLoop = true;
 				m_hasJumped = false;
 			}
-				break;
+			break;
 			case Client::Nihilir:
 			{
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Run;
@@ -647,7 +647,7 @@ void CRiding::Init_State()
 				m_Animation.bSkipInterpolation = true;
 				m_hasJumped = false;
 			}
-				break;
+			break;
 			default:
 				break;
 			}
@@ -664,14 +664,14 @@ void CRiding::Init_State()
 				m_Animation.isLoop = true;
 				m_hasJumped = false;
 			}
-				break;
+			break;
 			case Client::Nihilir:
 			{
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Walk;
 				m_Animation.isLoop = true;
 				m_hasJumped = false;
 			}
-				break;
+			break;
 			case Client::Horse:
 			{
 				m_Animation.iAnimIndex = Horse_1004_Run_F;
@@ -688,7 +688,7 @@ void CRiding::Init_State()
 		{
 			m_hasJumped = false;
 		}
-			break;
+		break;
 		case Client::Riding_Jump_Start:
 			switch (m_CurrentIndex)
 			{
@@ -697,13 +697,13 @@ void CRiding::Init_State()
 				m_Animation.iAnimIndex = Tiger_1003_Jump_Start;
 				m_hasJumped = true;
 			}
-				break;
+			break;
 			case Client::Nihilir:
 			{
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Jump_Start;
 				m_hasJumped = true;
 			}
-				break;
+			break;
 			case Client::Horse:
 			{
 				m_Animation.iAnimIndex = Horse_1004_jump_start;
@@ -723,14 +723,14 @@ void CRiding::Init_State()
 				m_hasJumped = true;
 				m_Animation.isLoop = true;
 			}
-				break;
+			break;
 			case Client::Nihilir:
 			{
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Jump_Loop;
 				m_hasJumped = true;
 				m_Animation.isLoop = true;
 			}
-				break;
+			break;
 			case Client::Horse:
 			{
 				m_Animation.iAnimIndex = Horse_1004_jump_loop;
@@ -750,13 +750,13 @@ void CRiding::Init_State()
 				m_Animation.iAnimIndex = Tiger_1003_Jump_End_Run;
 				m_hasJumped = false;
 			}
-				break;
+			break;
 			case Client::Nihilir:
 			{
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Jump_End_Run;
 				m_hasJumped = false;
 			}
-				break;
+			break;
 			case Client::Horse:
 			{
 				m_Animation.iAnimIndex = Horse_1004_jump_End_Run;
@@ -775,13 +775,13 @@ void CRiding::Init_State()
 				m_Animation.iAnimIndex = Tiger_1003_Jump_End;
 				m_hasJumped = false;
 			}
-				break;
+			break;
 			case Client::Nihilir:
 			{
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Jump_End;
 				m_hasJumped = false;
 			}
-				break;
+			break;
 			case Client::Horse:
 			{
 				m_Animation.iAnimIndex = Horse_1004_jump_End;
@@ -814,9 +814,9 @@ void CRiding::Init_State()
 			default:
 				break;
 			}
-			
+
 		}
-			break;
+		break;
 		case Riding_Glide:
 		{
 			switch (m_CurrentIndex)
@@ -839,8 +839,8 @@ void CRiding::Init_State()
 			default:
 				break;
 			}
-			
-		break;
+
+			break;
 		}
 		case Client::Riding_End:
 			break;
@@ -849,7 +849,7 @@ void CRiding::Init_State()
 		}
 		m_ePrevState = m_eState;
 	}
-}                                                                              
+}
 
 void CRiding::Tick_State(_float fTimeDelta)
 {
@@ -902,7 +902,7 @@ void CRiding::Tick_State(_float fTimeDelta)
 			break;
 		}
 	}
-		break;
+	break;
 	case Client::Riding_Jump_End:
 	{
 		switch (m_CurrentIndex)
@@ -933,7 +933,7 @@ void CRiding::Tick_State(_float fTimeDelta)
 			break;
 		}
 	}
-		break;
+	break;
 	case Client::Riding_Jump_Run:
 	{
 		switch (m_CurrentIndex)
@@ -962,7 +962,7 @@ void CRiding::Tick_State(_float fTimeDelta)
 			break;
 		}
 	}
-		break;
+	break;
 	case Client::Riding_Run:
 		break;
 	case Client::Riding_Walk:
@@ -998,13 +998,13 @@ _mat CRiding::Get_Mat()
 	{
 		if (m_eState == Riding_Glide)
 		{
-		OffsetMat = _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(180.f)) * *m_pModelCom->Get_BoneMatrix("Saddle") ;
+			OffsetMat = _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(180.f)) * *m_pModelCom->Get_BoneMatrix("Saddle");
 		}
 		else
 		{
-		OffsetMat = _mat::CreateTranslation(0.f, 0.8f, 0.f) * _mat::CreateRotationZ(XMConvertToRadians(-180.f)) * _mat::CreateRotationY(XMConvertToRadians(90.f)) * *m_pModelCom->Get_BoneMatrix("Saddle");
+			OffsetMat = _mat::CreateTranslation(0.f, 0.8f, 0.f) * _mat::CreateRotationZ(XMConvertToRadians(-180.f)) * _mat::CreateRotationY(XMConvertToRadians(90.f)) * *m_pModelCom->Get_BoneMatrix("Saddle");
 		}
-		
+
 	}
 	else if (m_CurrentIndex == Horse)
 	{

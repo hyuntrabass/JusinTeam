@@ -34,12 +34,12 @@ HRESULT CArrow::Init(void* pArg)
 		}
 		if (m_ArrowType.Att_Type == AT_Bow_SkillR)
 		{
-		_mat fourComboMat = m_ArrowType.world * _mat::CreateTranslation(_vec3(0.f, -1.5f, 0.f));
+			_mat fourComboMat = m_ArrowType.world * _mat::CreateTranslation(_vec3(0.f, -1.5f, 0.f));
 			m_pTransformCom->Set_Matrix(fourComboMat);
 		}
 		else
 		{
-		m_pTransformCom->Set_Matrix(m_ArrowType.world);
+			m_pTransformCom->Set_Matrix(m_ArrowType.world);
 		}
 		m_pTransformCom->Set_Speed(25.f);
 		m_pTransformCom->Set_Scale(_vec3(1.5f));
@@ -115,8 +115,8 @@ void CArrow::Tick(_float fTimeDelta)
 		PxRaycastBuffer Buffer{};
 		//m_pCollider->Change_Radius(3.f);
 
-		if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), 
-			m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer) or 
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos),
+			m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer) or
 			m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
 			m_pCollider->Set_Radius(4.f);
@@ -173,7 +173,7 @@ void CArrow::Tick(_float fTimeDelta)
 	default:
 		break;
 	}
-	
+
 	m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
 
 	_mat world{};
@@ -210,7 +210,7 @@ HRESULT CArrow::Render()
 	{
 		return E_FAIL;
 	}
-	
+
 	else
 	{
 		for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
@@ -315,7 +315,7 @@ HRESULT CArrow::Add_Components()
 	CollDesc.vCenter = _vec3(0.f, 0.f, -0.3f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-									  TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
+		TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
 		return E_FAIL;
 	return S_OK;
 }
