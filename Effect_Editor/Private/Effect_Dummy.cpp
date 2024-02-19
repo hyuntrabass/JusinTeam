@@ -258,7 +258,7 @@ HRESULT CEffect_Dummy::Add_Components()
 		{
 			return E_FAIL;
 		}
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex_Effect"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		{
 			return E_FAIL;
 		}
@@ -274,7 +274,7 @@ HRESULT CEffect_Dummy::Add_Components()
 		{
 			return E_FAIL;
 		}
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxStatMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxStatMesh_Effect"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		{
 			return E_FAIL;
 		}
@@ -423,6 +423,16 @@ HRESULT CEffect_Dummy::Bind_ShaderResources()
 		{
 			return E_FAIL;
 		}
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_isBlur", &m_shouldRenderBlur, sizeof m_shouldRenderBlur)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_CamNF", &m_pGameInstance->Get_CameraNF(), sizeof(_float2))))
+	{
+		return E_FAIL;
 	}
 
 	return S_OK;
