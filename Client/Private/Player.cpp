@@ -726,7 +726,7 @@ HRESULT CPlayer::Render()
 	}
 	if (m_Current_Weapon == WP_SWORD && m_Weapon_CurrentIndex != SWORD_UNEQUIP)
 	{
-		Render_Parts(PT_SWORD, (_uint)m_Weapon_CurrentIndex - 7);
+		Render_Parts(PT_SWORD, (_uint)m_Weapon_CurrentIndex - 6);
 	}
 	else if (m_Current_Weapon == WP_BOW && m_Weapon_CurrentIndex != BOW_UNEQUIP)
 	{
@@ -1217,6 +1217,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 	if (m_eState == Aim_Idle or m_eState == SkillR)
 	{
 		m_pCam_Manager->Set_AimMode(false);
+		m_bLockOn = false;
 	}
 	if (m_pEffect_Shield)
 	{
@@ -1497,7 +1498,13 @@ void CPlayer::Move(_float fTimeDelta)
 	{
 		isUnequip = true;
 	}
-
+	if (m_eState == Jump)
+	{
+		if (!m_pTransformCom->Is_Jumping())
+		{
+			m_eState = Jump_End;
+		}
+	}
 	if (!m_bReadySwim && !isUnequip)
 	{
 
@@ -1617,55 +1624,7 @@ void CPlayer::Move(_float fTimeDelta)
 			//vCamLook.y = 0.f;
 			m_pTransformCom->LookAt_Dir(vCamLook);
 		}
-		if (m_pGameInstance->Mouse_Down(DIM_RBUTTON))
-		{
-			if (m_Current_Weapon == WP_BOW)
-			{
-				if (m_eState == Skill1 or m_eState == Skill2 or m_eState == Skill3 or m_eState == Skill4)
-				{
-					return;
-				}
 
-				m_bLockOn = !m_bLockOn;
-
-				if (m_bLockOn)
-				{
-					m_pCam_Manager->Set_AimMode(true);
-				}
-				else
-				{
-					m_pCam_Manager->Set_AimMode(false);
-				}
-
-			}
-		}
-
-		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON))
-		{
-			if (m_eState == Aim_Idle)
-			{
-				SkillR_Attack();
-				m_eState = SkillR;
-				m_iCurrentSkill_Index = SkillR;
-				m_fAttTimer = 0.f;
-			}
-			else if (m_fAttTimer > 0.2f and m_eState == SkillR)
-			{
-				SkillR_Attack();
-				m_eState = SkillR;
-				m_iCurrentSkill_Index = SkillR;
-				m_fAttTimer = 0.f;
-			}
-		}
-
-
-		if (m_eState == Jump)
-		{
-			if (!m_pTransformCom->Is_Jumping())
-			{
-				m_eState = Jump_End;
-			}
-		}
 
 		if (m_fAttTimer > 0.4f && m_eState == Attack)
 		{
@@ -1685,11 +1644,25 @@ void CPlayer::Move(_float fTimeDelta)
 	}
 	if (m_pGameInstance->Mouse_Pressing(DIM_RBUTTON))
 	{
-		m_eState = Aim_Idle;
-		m_bLockOn = true;
+		if (m_Current_Weapon == WP_BOW)
+		{
+			if (!m_bLockOn)
+			{			
+				if (m_eState == Skill1 or m_eState == Skill2 or m_eState == Skill3 or m_eState == Skill4)
+				{
+					return;
+				}
+				m_pCam_Manager->Set_AimMode(true);
+				m_eState = Aim_Idle;
+				m_bLockOn = true;
+			}	
+		}
 	}
 	else if (m_eState == Aim_Idle)
 	{
+		_vec4 vLook = m_pTransformCom->Get_State(State::Look);
+		vLook.y = 0.f;
+		m_pTransformCom->LookAt_Dir(vLook);
 		m_eState = Idle;
 		m_bLockOn = false;
 		m_pCam_Manager->Set_AimMode(false);
@@ -1706,7 +1679,6 @@ void CPlayer::Move(_float fTimeDelta)
 
 		}
 	}
-
 	else if ((m_bMove_AfterSkill /*or m_fSkiilTimer>1.2f*/ && m_eState != SkillR && m_eState != Aim_Idle))
 	{
 
@@ -3160,7 +3132,7 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 			if (Index >= 4.f && Index <= 5.f)
 			{
 				Cam_AttackZoom(2.5f);
-				m_pGameInstance->Set_TimeRatio(0.3f);
+				//m_pGameInstance->Set_TimeRatio(0.3f);
 			}
 			else if (Index >= 5.f && Index <= 7.f && m_ReadyArrow)
 			{
@@ -3178,7 +3150,7 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		case 2:
 			if (Index >= 5.f && Index <= 6.f)
 			{
-				m_pGameInstance->Set_TimeRatio(0.5f);
+				//m_pGameInstance->Set_TimeRatio(0.5f);
 			}
 			else if (Index >= 6.f && Index <= 8.f && m_ReadyArrow)
 			{
@@ -3196,7 +3168,7 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		case 3:
 			if (Index >= 6.f && Index <= 7.f)
 			{
-				m_pGameInstance->Set_TimeRatio(0.5f);
+				//m_pGameInstance->Set_TimeRatio(0.5f);
 			}
 			else if (Index >= 7.f && Index <= 9.f && m_ReadyArrow)
 			{
@@ -3214,7 +3186,7 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		case 4:
 			if (Index >= 5.f && Index <= 6.f)
 			{
-				m_pGameInstance->Set_TimeRatio(0.5f);
+				//m_pGameInstance->Set_TimeRatio(0.5f);
 			}
 			else if (Index >= 2.f && Index <= 4.f && m_ReadyArrow)
 			{
@@ -3685,6 +3657,7 @@ void CPlayer::Init_State()
 	{
 		m_ReadyArrow = true;
 		m_Animation.isLoop = false;
+		m_Animation.bRewindAnimation = false;
 		m_Animation.bRestartAnimation = false;
 		m_Animation.bSkipInterpolation = false;
 		m_Animation.fDurationRatio = 1.f;
@@ -3840,11 +3813,11 @@ void CPlayer::Init_State()
 		{
 			m_Animation.iAnimIndex = Anim_B_idle_end;
 			m_hasJumped = false;
+			m_Animation.fDurationRatio = 0.1f;
 			m_iSuperArmor = {};
-			m_Animation.bRewindAnimation = true;
 			m_Animation.isLoop = false;
-			m_Animation.fAnimSpeedRatio = 3.f;
-			m_Animation.fStartAnimPos = 70.f;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
 		}
 		break;
 		case Client::CPlayer::Climb:
@@ -4079,7 +4052,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 				m_pModelCom->IsAnimationFinished(Anim_ID_Sniper_Attack_03_B) or
 				m_pModelCom->IsAnimationFinished(Anim_ID_Sniper_Attack_04_B))
 			{
-				if (m_bLockOn)
+				if (m_bLockOn or m_pCam_Manager->Get_AimMode())
 				{
 					m_eState = Aim_Idle;
 				}
