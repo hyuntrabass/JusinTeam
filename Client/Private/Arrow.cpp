@@ -106,10 +106,11 @@ void CArrow::Tick(_float fTimeDelta)
 		{
 			if (m_pTransformCom->Go_To(m_vRaycastPos, fTimeDelta, 0.5f))
 			{
+
 				m_bIntersected = true;
 			}
 		}
-		else if(m_fDeadTime<2.f)
+		else if (m_fDeadTime < 2.f)
 		{
 			m_fDeadTime = 2.f;
 		}
@@ -143,13 +144,22 @@ void CArrow::Tick(_float fTimeDelta)
 	}
 	case AT_Bow_Skill2:
 	{
-		_float fDist = 0.3f;
-		PxRaycastBuffer Buffer{};
-		//m_pCollider->Change_Radius(3.f);
+		if (not m_ArrowType.bAimMode)
+		{
+			PxRaycastBuffer Buffer{};
+			_float fDist = 0.3f;
+			if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer))
+			{
+				Kill();
+			}
+		}
 
-		if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos),
-			m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer) or
-			m_pGameInstance->CheckCollision_Monster(m_pCollider))
+		if (m_pGameInstance->CheckCollision_Monster(m_pCollider) or m_bIntersected)
+		{
+			Kill();
+		}
+
+		if (m_isDead)
 		{
 			m_pCollider->Set_Radius(4.f);
 			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);

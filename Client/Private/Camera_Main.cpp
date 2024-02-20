@@ -376,7 +376,7 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 			_float fResult = vLook.Dot(vFrontLook);
 			_float fTurnValue = fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor;
 
-			if (fResult < 1.f && fResult > 0.f)
+			if (fResult < 1.f && fResult > 0.3f)
 			{
 				m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
 			}
@@ -387,7 +387,7 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 					m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
 				}
 			}
-			else if (fResult <= 0.f)
+			else if (fResult <= 0.3f)
 			{
 				if (fTurnValue < 0.f)
 				{
@@ -415,9 +415,9 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 		}
 		_float fShakeAmount = sin(m_fShakeAcc * 15.f) * powf(0.5f, m_fShakeAcc) * 0.2f;
 		m_pTransformCom->Set_State(State::Pos, LerpCamPos);
-		_vec4 vShakePos = m_pTransformCom->Get_State(State::Pos);
+		/*_vec4 vShakePos = m_pTransformCom->Get_State(State::Pos);
 		vShakePos += XMVectorSet(fShakeAmount, -fShakeAmount, 0.f, 0.f);
-		m_pTransformCom->Set_State(State::Pos, vShakePos);
+		m_pTransformCom->Set_State(State::Pos, vShakePos);*/
 		m_fShakeAcc += fTimeDelta * 10.f / m_pGameInstance->Get_TimeRatio();
 		m_AimZoomInTime = 0.f;
 	}

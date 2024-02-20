@@ -33,17 +33,16 @@ HRESULT CRiding::Init(void* pArg)
 	{
 	case Client::Bird:
 	{
+		m_hasJumped = true;
+		m_fWalkSpeed = 10.f;
+		m_fRunSpeed = 10.f;
+
 		if (Desc->bGlide)
 		{
-			m_Animation.iAnimIndex = Bird_1005_Fly;
 			m_eState = Riding_Glide;
-			m_hasJumped = true;
-			m_fWalkSpeed = 10.f;
-			m_fRunSpeed = 10.f;
 		}
 		else
 		{
-			m_Animation.iAnimIndex = Bird_1005_Start;
 			m_eState = Riding_Sky;
 		}
 		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Bird");
@@ -51,17 +50,15 @@ HRESULT CRiding::Init(void* pArg)
 	break;
 	case Client::Wyvern:
 	{
+		m_hasJumped = true;
+		m_fWalkSpeed = 11.f;
+		m_fRunSpeed = 11.f;
 		if (Desc->bGlide)
 		{
-			m_Animation.iAnimIndex = Wyvern_3004_Fly;
 			m_eState = Riding_Glide;
-			m_hasJumped = true;
-			m_fWalkSpeed = 11.f;
-			m_fRunSpeed = 11.f;
 		}
 		else
 		{
-			m_Animation.iAnimIndex = Wyvern_3004_TakeOff;
 			m_eState = Riding_Sky;
 		}
 		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Wyvern");
@@ -69,17 +66,16 @@ HRESULT CRiding::Init(void* pArg)
 	break;
 	case Client::Falar:
 	{
+		m_hasJumped = true;
+		m_fWalkSpeed = 12.f;
+		m_fRunSpeed = 12.f;
 		if (Desc->bGlide)
 		{
 			m_Animation.iAnimIndex = Falar_5002_fly;
 			m_eState = Riding_Glide;
-			m_hasJumped = true;
-			m_fWalkSpeed = 12.f;
-			m_fRunSpeed = 12.f;
 		}
 		else
 		{
-			m_Animation.iAnimIndex = Falar_5002_TakeOff;
 			m_eState = Riding_Sky;
 		}
 		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Falar");
@@ -151,8 +147,8 @@ HRESULT CRiding::Init(void* pArg)
 	if (m_CurrentIndex == Nihilir)
 	{
 		PxCapsuleControllerDesc ControllerDesc{};
-		ControllerDesc.height = 2.0f; // 높이(위 아래의 반구 크기 제외
-		ControllerDesc.radius = 1.5f; // 위아래 반구의 반지름
+		ControllerDesc.height = 1.8f; // 높이(위 아래의 반구 크기 제외
+		ControllerDesc.radius = 1.3f; // 위아래 반구의 반지름
 		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
 		ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
 		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
