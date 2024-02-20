@@ -67,6 +67,7 @@ private:
 public:
 	virtual HRESULT Add_Collider() override;
 	virtual void Update_Collider() override;
+	HRESULT Bind_ShaderResources();
 
 public:
 	static CBalloon* Create(_dev pDevice, _context pContext);
