@@ -390,18 +390,18 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 			_float fResult = vLook.Dot(vFrontLook);
 			_float fTurnValue = fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor;
 
-			if (fResult < 0.97f && fResult > 0.72f)
+			if (fResult < 1.f && fResult > 0.f)
 			{
 				m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
 			}
-			else if (fResult >= 0.97f)
+			else if (fResult >= 1.f)
 			{
 				if (fTurnValue > 0.f)
 				{
 					m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
 				}
 			}
-			else if (fResult <= 0.72f)
+			else if (fResult <= 0.f)
 			{
 				if (fTurnValue < 0.f)
 				{
@@ -415,8 +415,8 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 		_vec4 PlayerRight = m_pPlayerTransform->Get_State(State::Right).Get_Normalized();
 		_vec4 PlayerUp = m_pPlayerTransform->Get_State(State::Up).Get_Normalized();
 		_vec3 AimPos = m_pCam_Manager->Get_AimPos();
-		m_vAimCamPos = m_pPlayerTransform->Get_CenterPos() - (vMeLook * AimPos.z * 1.3f)
-			+ (PlayerUp * AimPos.y * 0.5f) + (PlayerRight * AimPos.x);
+		m_vAimCamPos = m_pPlayerTransform->Get_State(State::Pos) - (vMeLook * AimPos.z * 0.88f)
+			+ (PlayerUp * AimPos.y * 0.9f) + (PlayerRight * AimPos.x);
 
 		_vec4 LerpCamPos{};
 		if (m_AimZoomOutTime < 1.f)

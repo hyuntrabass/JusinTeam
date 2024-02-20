@@ -402,7 +402,7 @@ private:
 	_bool m_bFirstVillage{};
 	_uint m_iLoggingCount{};
 	_bool m_bArrowRain_Start{};
-
+	_bool m_bAimMode{};
 	_vec4 m_vPos{};
 	_bool m_bIsClimb{};
 	_bool m_bComboZoom{};
