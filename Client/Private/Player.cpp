@@ -1675,6 +1675,7 @@ void CPlayer::Move(_float fTimeDelta)
 					m_pCam_Manager->Set_AimMode(true);
 					m_eState = AimMode_Start;
 					m_bLockOn = true;
+					CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_HIDE);
 				}
 			
 			}
@@ -1689,6 +1690,7 @@ void CPlayer::Move(_float fTimeDelta)
 		m_pCam_Manager->Set_AimMode(false);
 		m_bMove_AfterSkill = true;
 		m_eState = AimMode_End;
+		CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_DEFAULT);
 	}
 
 	if (m_bLockOn)
