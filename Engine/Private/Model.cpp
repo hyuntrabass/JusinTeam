@@ -384,7 +384,7 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 	}
 
 	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop,
-		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio, m_AnimDesc.fStartAnimPos);
+		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio, m_AnimDesc.fStartAnimPos, m_AnimDesc.bRewindAnimation);
 
 	for (auto& pBone : m_Bones)
 	{
@@ -471,7 +471,7 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 				{
 					_int iMaxSound = m_TriggerSounds[i].strSoundNames.size() - 1;
 					_randInt RandomSound(0, iMaxSound);
-					m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[RandomSound(m_RandomNumber)], m_TriggerSounds[i].fInitVolume);
+					m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[RandomSound(m_RandomNumber)], m_TriggerSounds[i].fInitVolume, false, m_TriggerSounds[i].fStartPosRatio);
 					m_TriggerSounds[i].HasPlayed = true;
 				}
 			}
@@ -479,7 +479,7 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 			{
 				_int iMaxSound = m_TriggerSounds[i].strSoundNames.size() - 1;
 				_randInt RandomSound(0, iMaxSound);
-				m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[RandomSound(m_RandomNumber)], m_TriggerSounds[i].fInitVolume);
+				m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[RandomSound(m_RandomNumber)], m_TriggerSounds[i].fInitVolume, false, m_TriggerSounds[i].fStartPosRatio);
 				m_TriggerSounds[i].HasPlayed = true;
 			}
 		}
@@ -924,6 +924,7 @@ HRESULT CModel::Read_TriggerSounds(const string& strFilePath)
 			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fInitVolume), sizeof(_float));
 			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fFadeoutSecond), sizeof(_float));
 			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.IsClientTrigger), sizeof(_bool));
+			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fStartPosRatio), sizeof(_float));
 
 			m_TriggerSounds.push_back(SoundDesc);
 			m_iNumTriggersSound++;

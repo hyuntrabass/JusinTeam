@@ -1,6 +1,7 @@
 #pragma once
 #include "Client_Define.h"
 #include "Objects.h"
+#include "Trigger_Manager.h"
 
 BEGIN(Client)
 
@@ -17,6 +18,10 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+
+private:
+	CTrigger_Manager* m_pTrigger_Manager{ nullptr };
+	PlaceType m_ePlaceType{ PLACE_END };
 
 public:
 	static CEnvironment_Object* Create(_dev pDevice, _context pContext);

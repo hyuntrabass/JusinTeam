@@ -44,6 +44,7 @@ public:
         float fInitVolume{};
         float fFadeoutSecond;
         bool IsClientTrigger{};
+        float fStartPosRatio{};
     };
 
 private:

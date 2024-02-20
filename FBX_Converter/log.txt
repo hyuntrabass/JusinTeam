@@ -1,1 +1,17 @@
 1. Static Only   2. Anim Only   3. All
+2
+Animation Models : Start Converting...
+1. Normally Anim Model	2. For VTF Model 3. Part Model
+1
+Converting... GoldStone.fbx
+Read File Succssefully
+Animation name list: 
+Com_SM_Goldstone_001.ao|Com_SM_Goldstone_001.ao|Com_SM_Goldstone_001.ao|Com_SM_Gold
+Converting... SaltStone.fbx
+Read File Succssefully
+Animation name list: 
+Com_SM_Saltstone_001.ao|Com_SM_Saltstone_001.ao|Com_SM_Saltstone_001.ao|Com_SM_Gold
+Animation Models : Convert Success!
+
+2 Animation Models
+are Successfully Converted as hyuntramesh!!

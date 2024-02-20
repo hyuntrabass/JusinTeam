@@ -64,6 +64,17 @@ HRESULT CLevel_Village::Init()
 		MSG_BOX("Failed to Ready Environment");
 		return E_FAIL;
 	}
+	if (FAILED(Ready_Field_Environment()))
+	{
+		MSG_BOX("Failed to Ready Field Environment");
+		return E_FAIL;
+	}
+
+	if (FAILED(Ready_Interaction()))
+	{
+		MSG_BOX("Failed to Ready Interaction");
+		return E_FAIL;
+	}
 
 	if (FAILED(Ready_Village_Monster()))
 	{
@@ -224,6 +235,7 @@ HRESULT CLevel_Village::Ready_Torch()
 		ObjectInfo.strPrototypeTag = ObjectPrototype;
 		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
 		ObjectInfo.eObjectType = Object_Building;
+		ObjectInfo.m_iIndex = (_uint)DUNGEON;
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Torch_Object"), &ObjectInfo)))
 		{
 			MSG_BOX("Torch 불러오기 실패");
@@ -234,10 +246,10 @@ HRESULT CLevel_Village::Ready_Torch()
 }
 
 
-HRESULT CLevel_Village::Ready_Environment()
+HRESULT CLevel_Village::Ready_Field_Environment()
 {
 
-	const TCHAR* pGetPath = TEXT("../Bin/Data/Village_EnvirData.dat");
+	const TCHAR* pGetPath = TEXT("../Bin/Data/Field_EnvirData.dat");
 
 	std::ifstream inFile(pGetPath, std::ios::binary);
 
@@ -267,14 +279,113 @@ HRESULT CLevel_Village::Ready_Environment()
 		ObjectInfo.strPrototypeTag = ObjectPrototype;
 		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
 		ObjectInfo.eObjectType = Object_Environment;
+		ObjectInfo.m_iIndex = (_uint)FIELD;
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Envir_Object"), TEXT("Prototype_GameObject_Village_Envir_Object"), &ObjectInfo)))
 		{
-			MSG_BOX("환경오브젝트 불러오기 실패");
+			MSG_BOX("필드 환경오브젝트 불러오기 실패");
+			return E_FAIL;
+		}
+	}
+
+
+	return S_OK;
+}
+
+
+HRESULT CLevel_Village::Ready_Environment()
+{
+	const TCHAR* pGetPath = TEXT("../Bin/Data/Village_EnvirData.dat");
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MSG_BOX("환경오브젝트 파일을 찾지 못했습니다.");
+		return E_FAIL;
+	}
+
+	_uint ObjectListSize;
+	inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
+
+	for (_uint i = 0; i < ObjectListSize; ++i)
+	{
+		_ulong ObjectPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
+
+		wstring ObjectPrototype;
+		ObjectPrototype.resize(ObjectPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
+
+		_mat ObjectWorldMat;
+		inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
+
+		ObjectInfo ObjectInfo{};
+		ObjectInfo.strPrototypeTag = ObjectPrototype;
+		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
+		ObjectInfo.eObjectType = Object_Environment;
+		ObjectInfo.m_iIndex = (_uint)VILLAGE;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Envir_Object"), TEXT("Prototype_GameObject_Village_Envir_Object"), &ObjectInfo)))
+		{
+			MSG_BOX("마을 환경오브젝트 불러오기 실패");
 			return E_FAIL;
 		}
 	}
 
 	CTrigger_Manager::Get_Instance()->Set_SkyTextureIndex(12);
+
+	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_Interaction()
+{
+	const TCHAR* pGetPath = TEXT("../Bin/Data/Village_InteractionData.dat");
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MSG_BOX("환경오브젝트 파일을 찾지 못했습니다.");
+		return E_FAIL;
+	}
+
+	_uint ObjectListSize;
+	inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
+
+	for (_uint i = 0; i < ObjectListSize; ++i)
+	{
+		_ulong ObjectPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
+
+		wstring ObjectPrototype;
+		ObjectPrototype.resize(ObjectPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
+
+		_mat ObjectWorldMat;
+		inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
+
+		ObjectInfo ObjectInfo{};
+		ObjectInfo.strPrototypeTag = ObjectPrototype;
+		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
+		ObjectInfo.eObjectType = Object_Environment;
+		ObjectInfo.m_iIndex = (_uint)FIELD;
+
+		if (ObjectPrototype == L"Prototype_Model_OakTree" || ObjectPrototype == L"Prototype_Model_Herbs")
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Interaction_Object"), TEXT("Prototype_GameObject_Intraction_NonAnim_Object"), &ObjectInfo)))
+			{
+				MSG_BOX("채집오브젝트 불러오기 실패");
+				return E_FAIL;
+			}
+		}
+		else if (ObjectPrototype == L"Prototype_Model_GoldStone" || ObjectPrototype == L"Prototype_Model_SaltStone")
+		{
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Interaction_Object"), TEXT("Prototype_GameObject_Intraction_Anim_Object"), &ObjectInfo)))
+			{
+				MSG_BOX("채집오브젝트 불러오기 실패");
+				return E_FAIL;
+			}
+		}
+	}
 
 	return S_OK;
 }

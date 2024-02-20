@@ -907,6 +907,12 @@
     <ClInclude Include="..\Public\Tower.h">
       <Filter>02.GameObjects\00.UI\98.InfinityTower</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Interaction_Anim_Object.h">
+      <Filter>02.GameObjects\09.Object\Interaction\Anim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Interaction_NonAnim_Object.h">
+      <Filter>02.GameObjects\09.Object\Interaction\NonAnim</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1354,6 +1360,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Tower.cpp">
       <Filter>02.GameObjects\00.UI\98.InfinityTower</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Interaction_Anim_Object.cpp">
+      <Filter>02.GameObjects\09.Object\Interaction\Anim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp">
+      <Filter>02.GameObjects\09.Object\Interaction\NonAnim</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

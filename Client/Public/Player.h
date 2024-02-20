@@ -402,13 +402,14 @@ private:
 	_bool m_bFirstVillage{};
 	_uint m_iLoggingCount{};
 	_bool m_bArrowRain_Start{};
-
+	_bool m_bAimMode{};
 	_vec4 m_vPos{};
 	_bool m_bIsClimb{};
 	_bool m_bComboZoom{};
 	_bool m_bStartGame{};
 	_vec4 m_SaveCamPos{};
 	_bool m_bReady_Move{};
+	_bool m_bMove_AfterSkill{true};
 	_uint m_ShaderIndex{};
 	_vec4 m_SaveCamLook{};
 	_bool m_bReady_Climb{};
@@ -456,7 +457,6 @@ private:
 
 	_float m_fAttTimer{};
 	_float m_StartRegen{};
-	_float m_fSkiilTimer{};
 	_float m_fAttackZoom{};
 	_float m_fHpRegenTime{};
 	_float m_fMpRegenTime{};

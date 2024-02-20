@@ -9,7 +9,10 @@ CEnvironment_Object::CEnvironment_Object(_dev pDevice, _context pContext)
 
 CEnvironment_Object::CEnvironment_Object(const CEnvironment_Object& rhs)
 	: CObjects(rhs)
+	, m_pTrigger_Manager(CTrigger_Manager::Get_Instance())
+
 {
+	Safe_AddRef(m_pTrigger_Manager);
 	m_isInstancing = true;
 }
 
@@ -23,6 +26,7 @@ HRESULT CEnvironment_Object::Init(void* pArg)
 {
 	m_Info = *(ObjectInfo*)pArg;
 	wstring strPrototype = m_Info.strPrototypeTag;
+	m_ePlaceType = (PlaceType)m_Info.m_iIndex;
 
 	if (FAILED(__super::Add_Components(strPrototype, m_Info.eObjectType)))
 	{
@@ -60,14 +64,25 @@ void CEnvironment_Object::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
+
 	__super::Late_Tick(fTimeDelta);
+
+	//if (m_pTrigger_Manager->Get_InOut() == true)
+	//{
+	//	if (m_ePlaceType == VILLAGE)
+	//		__super::Late_Tick(fTimeDelta);
+	//}
+	//else if (m_pTrigger_Manager->Get_InOut() == false)
+	//{
+	//	if(m_ePlaceType == FIELD)
+	//		__super::Late_Tick(fTimeDelta);
+	//}
+
 }
 
 HRESULT CEnvironment_Object::Render()
 {
-
 	__super::Render();
-
 	return S_OK;
 }
 
@@ -101,4 +116,5 @@ CGameObject* CEnvironment_Object::Clone(void* pArg)
 void CEnvironment_Object::Free()
 {
 	__super::Free();
+	Safe_Release(m_pTrigger_Manager);
 }
