@@ -99,10 +99,21 @@ void CArrow::Tick(_float fTimeDelta)
 		m_pTransformCom->LookAt(_vec4(m_ArrowType.MonCollider->Get_ColliderPos(), 1.f));
 		m_pTransformCom->Go_To(_vec4(m_ArrowType.MonCollider->Get_ColliderPos(), 1.f), fTimeDelta, 0.f);
 	}
-	else if (m_ArrowType.bAimMode && m_vRaycastPos !=_vec4())
+	else if (m_ArrowType.bAimMode && m_vRaycastPos != _vec4())
 	{
 		m_pTransformCom->LookAt(m_vRaycastPos);
-		m_pTransformCom->Go_To(m_vRaycastPos, fTimeDelta, 0.f);
+		if (!m_bIntersected)
+		{
+			if (m_pTransformCom->Go_To(m_vRaycastPos, fTimeDelta, 0.5f))
+			{
+				m_bIntersected = true;
+			}
+		}
+		else if(m_fDeadTime<2.f)
+		{
+			m_fDeadTime = 2.f;
+		}
+
 	}
 	else
 	{
@@ -315,9 +326,9 @@ HRESULT CArrow::Add_Components()
 		}
 		CollDesc.eType = ColliderType::OBB;
 
-	/*	CollDesc.vRadians 
-		CollDesc.vCenter = _vec3(0.f, 0.f, -0.3f);
-		CollDesc.vExtents */
+		/*	CollDesc.vRadians
+			CollDesc.vCenter = _vec3(0.f, 0.f, -0.3f);
+			CollDesc.vExtents */
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 			TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
 		{
@@ -330,7 +341,7 @@ HRESULT CArrow::Add_Components()
 		{
 			return E_FAIL;
 		}
-	
+
 		CollDesc.eType = ColliderType::Sphere;
 		CollDesc.fRadius = 0.2f;
 		CollDesc.vCenter = _vec3(0.f, 0.f, -0.3f);
@@ -352,7 +363,7 @@ HRESULT CArrow::Add_Components()
 	//	TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
 	//	return E_FAIL;
 
-	
+
 	return S_OK;
 }
 
