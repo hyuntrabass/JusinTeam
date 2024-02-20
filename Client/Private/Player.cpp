@@ -9,7 +9,7 @@
 #include "Camera_Manager.h"
 #include "Trigger_Manager.h"
 #include "Dialog.h"
-#include "TextButton.h"
+#include "TextButtonColor.h"
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -643,19 +643,22 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		m_Current_Weapon = WP_SWORD;
 		m_bWeapon_Unequip = false;
 
-		CTextButton::TEXTBUTTON_DESC ButtonDesc = {};
+		CTextButtonColor::TEXTBUTTON_DESC ButtonDesc = {};
 		ButtonDesc.eLevelID = LEVEL_STATIC;
 		ButtonDesc.fDepth = (_float)D_SCREEN / (_float)D_END;
 		ButtonDesc.strText = TEXT("");
 		ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Aim");
 		ButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, (_float)g_ptCenter.y);
-		ButtonDesc.vSize = _vec2(50.f, 50.f);
+		ButtonDesc.vSize = _vec2(40.f, 40.f);
+		ButtonDesc.vColor = _vec4(1.f, 1.f, 1.f, 1.f);
+		ButtonDesc.fAlpha = 0.7f;
 
-		m_pAim = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
+		m_pAim = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ButtonDesc);
 		if (not m_pAim)
 		{
 			return;
 		}
+		dynamic_cast<CTextButtonColor*>(m_pAim)->Set_Pass(VTPass_Mask_ColorAlpha);
 	}
 
 
@@ -1648,10 +1651,14 @@ void CPlayer::Move(_float fTimeDelta)
 
 				if (m_bLockOn)
 				{
+
+					CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_HIDE);
+
 					m_pCam_Manager->Set_AimMode(true);
 				}
 				else
 				{
+					CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_DEFAULT);
 					m_pCam_Manager->Set_AimMode(false);
 				}
 

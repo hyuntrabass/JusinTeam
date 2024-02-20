@@ -204,6 +204,24 @@ HRESULT CTextButtonColor::Bind_ShaderResources()
 			}
 		}
 	}
+	else if (m_ePass == VTPass_UI_Color_Alpha)
+	{
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float))))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof(_vec4))))
+		{
+			return E_FAIL;
+		}
+		if (m_strTexture != TEXT(""))
+		{
+			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 	else  if (m_ePass == VTPass_Mask_ColorAlpha)
 	{
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof(_vec4))))
