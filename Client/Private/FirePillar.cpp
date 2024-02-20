@@ -203,4 +203,7 @@ CGameObject* CFirePillar::Clone(void* pArg)
 void CFirePillar::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pFrameEffect);
+	Safe_Release(m_pBaseEffect);
 }

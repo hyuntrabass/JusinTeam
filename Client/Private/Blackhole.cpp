@@ -227,6 +227,9 @@ void CBlackhole::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pFrameEffect);
+	Safe_Release(m_pBaseEffect);
+
 	//Safe_Release(m_pRendererCom);
 	//Safe_Release(m_pShaderCom);
 }
