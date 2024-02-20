@@ -33,6 +33,8 @@ HRESULT CStatue::Init(void* pArg)
 	m_Animation.isLoop = false;
 	m_Animation.fAnimSpeedRatio = 2.f;
 
+	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
+
 	//m_pTransformCom->Set_Scale(_vec3(1.5f));
 	m_pTransformCom->Set_Position(_vec3(__super::Compute_PlayerPos()) + _vec3(0.f, 1.f, 0.f)); // Test
 	
@@ -83,8 +85,6 @@ void CStatue::Late_Tick(_float fTimeDelta)
 HRESULT CStatue::Render()
 {
 	__super::Render();
-
-
 
 	return S_OK;
 }
