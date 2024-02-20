@@ -22,7 +22,7 @@ public:
 
 	class C3DUITex* m_Points[MAP_END];
 	CGameObject* m_pTitle{ nullptr };
-private:
+private: 
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom[3]{ nullptr };
