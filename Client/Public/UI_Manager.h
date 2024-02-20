@@ -24,7 +24,7 @@ class CUI_Manager final : public CBase
 	DECLARE_SINGLETON(CUI_Manager)
 public:
 	enum TYPE { MONSTER, NPC, TYPE_END };
-	enum MOUSESTATE { M_DEFAULT, M_TEXT, M_GRAB, MOUSESTATE_END };
+	enum MOUSESTATE { M_DEFAULT, M_TEXT, M_GRAB, M_HIDE, MOUSESTATE_END };
 private:
 	CUI_Manager();
 	virtual ~CUI_Manager() = default;
