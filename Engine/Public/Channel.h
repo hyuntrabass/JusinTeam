@@ -40,7 +40,6 @@ private:
 	_mat m_PrevTransformation{};
 	KEYFRAME m_DestKeyFrame = {};
 	_float m_fPreAnimPos = { 0.f };
-	_bool m_IsBack = { false };
 
 public:
 	static CChannel* Create(ifstream& ModelFile);

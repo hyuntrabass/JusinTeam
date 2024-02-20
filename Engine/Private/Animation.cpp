@@ -135,9 +135,12 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 	}
 	else
 	{
-		if (m_fCurrentAnimPos == 0.f)
+		if (not bRewindAnimation)
 		{
-			m_fCurrentAnimPos = fStartAnimPos;
+			if (m_fCurrentAnimPos == 0.f)
+			{
+				m_fCurrentAnimPos = fStartAnimPos;
+			}
 		}
 		
 		if (not m_isFinished)
