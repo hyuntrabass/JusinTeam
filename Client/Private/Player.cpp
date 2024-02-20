@@ -3129,7 +3129,7 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		switch (m_iAttackCombo)
 		{
 		case 1:
-			if (Index >= 4.f && Index <= 5.f)
+			if (Index >= 4.f && Index <= 5.f &&!m_bLockOn)
 			{
 				Cam_AttackZoom(2.5f);
 				//m_pGameInstance->Set_TimeRatio(0.3f);
@@ -3148,13 +3148,13 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 			}
 			break;
 		case 2:
-			if (Index >= 5.f && Index <= 6.f)
+			if (Index >= 5.f && Index <= 6.f && !m_bLockOn)
 			{
 				//m_pGameInstance->Set_TimeRatio(0.5f);
 			}
 			else if (Index >= 6.f && Index <= 8.f && m_ReadyArrow)
 			{
-				m_fAttackZoom += 0.7f;
+				//m_fAttackZoom += 0.7f;
 				Create_Arrow(AT_Bow_Common);
 				
 				//m_pCam_Manager->Set_ShakeCam(1.f);
@@ -3172,7 +3172,7 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 			}
 			else if (Index >= 7.f && Index <= 9.f && m_ReadyArrow)
 			{
-				m_fAttackZoom += 0.7f;
+				//m_fAttackZoom += 0.7f;
 				Create_Arrow(AT_Bow_Common);
 
 				//m_pCam_Manager->Set_ShakeCam(1.f);
@@ -3190,7 +3190,7 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 			}
 			else if (Index >= 2.f && Index <= 4.f && m_ReadyArrow)
 			{
-				m_fAttackZoom += 1.f;
+				//m_fAttackZoom += 1.f;
 				Create_Arrow(AT_Bow_Common);
 
 				//m_pCam_Manager->Set_ShakeCam(1.f);
