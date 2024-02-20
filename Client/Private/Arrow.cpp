@@ -32,11 +32,11 @@ HRESULT CArrow::Init(void* pArg)
 		{
 			strPartiFxTag = L"ExplosiveArrowParti";
 		}
-		if (m_ArrowType.Att_Type == AT_Bow_SkillR)
+		/*if (m_ArrowType.Att_Type == AT_Bow_SkillR)
 		{
 			_mat fourComboMat = m_ArrowType.world * _mat::CreateTranslation(_vec3(0.f, -1.5f, 0.f));
 			m_pTransformCom->Set_Matrix(fourComboMat);
-		}
+		}*/
 		else
 		{
 			m_pTransformCom->Set_Matrix(m_ArrowType.world);
@@ -90,6 +90,7 @@ void CArrow::Tick(_float fTimeDelta)
 	}
 
 	switch (m_ArrowType.Att_Type)
+
 	{
 	case AT_Bow_Common:
 	{
@@ -311,7 +312,7 @@ HRESULT CArrow::Add_Components()
 
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
-	CollDesc.fRadius = 0.05f;
+	CollDesc.fRadius = 0.1f;
 	CollDesc.vCenter = _vec3(0.f, 0.f, -0.3f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),

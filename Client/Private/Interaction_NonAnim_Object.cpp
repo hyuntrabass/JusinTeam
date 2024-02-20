@@ -51,7 +51,14 @@ HRESULT CInteraction_NonAnim::Init(void* pArg)
 
 void CInteraction_NonAnim::Tick(_float fTimeDelta)
 {
+	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 
+	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
+	m_isCollision = m_pColliderCom->Intersect(pCollider);
+
+#ifdef _DEBUG
+	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
+#endif
 }
 
 void CInteraction_NonAnim::Late_Tick(_float fTimeDelta)

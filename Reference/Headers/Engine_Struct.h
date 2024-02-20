@@ -148,6 +148,7 @@ namespace Engine
 		float fDurationRatio{ 1.f };
 		bool bRestartAnimation{ false };
 		float fStartAnimPos{};
+		bool bRewindAnimation{ false };
 	};
 
 
@@ -215,6 +216,7 @@ namespace Engine
 		float fInitVolume{};
 		float fFadeoutSecond = 1.f;
 		bool IsClientTrigger{};
+		float fStartPosRatio{};
 		
 		int iChannel = -1;
 		bool HasPlayed{};
