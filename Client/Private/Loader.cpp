@@ -1452,6 +1452,14 @@ HRESULT CLoader::Load_GamePlay()
 
 #pragma endregion
 
+#pragma region BrickGame
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BrickBall"), CBrickBall::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+#pragma endregion
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_VTFTest"), CVTFTest::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;

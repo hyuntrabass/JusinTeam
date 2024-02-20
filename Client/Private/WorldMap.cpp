@@ -78,10 +78,10 @@ void CWorldMap::Tick(_float fTimeDelta)
 			switch (m_eCurPoint)
 			{
 			case VILLAGE:
-				CTrigger_Manager::Get_Instance()->Teleport(TS_Village);
+				CUI_Manager::Get_Instance()->Set_Teleport(true, TS_Village);
 				break;
 			case DUNGEON:
-				CTrigger_Manager::Get_Instance()->Teleport(TS_Dungeon);
+				CUI_Manager::Get_Instance()->Set_Teleport(true, TS_Dungeon);
 				break;
 			case TOWER:
 				CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
@@ -132,7 +132,7 @@ void CWorldMap::Tick(_float fTimeDelta)
 				m_fReadyTime = 0.f;
 				m_eCurPoint = (MAPPOINT)i;
 				CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
-				
+				return;
 			}
 
 			m_Points[i]->Tick(fTimeDelta);

@@ -24,8 +24,7 @@ public:
 	void Update_Collider();
 
 public:
-	void Parry_Success();
-	void RayCast();
+	_bool RayCast();
 
 private:
 	CShader* m_pShaderCom = { nullptr };
@@ -33,15 +32,8 @@ private:
 	CCollider* m_pColliderCom = { nullptr };
 
 private:
-	_bool m_bShoot = { false };
-	_float m_fLifeTime = {};
 
-private: // SIX_MISSILE
-	static _uint m_iMissileID;
-	_uint m_iMissileIndex = {};
-	_float m_fDepartTime = {};
-	_float m_fEffectTimer{};
-	_bool m_bParryingOk{};
+private:
 
 private:
 	_mat m_EffectMatrix{};
