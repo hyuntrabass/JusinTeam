@@ -117,7 +117,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if (m_pCam_Manager->Get_CameraState() == CS_WORLDMAP)
 	{
-		return;
+		//return;
 	}
 
 	if (!m_bFirstVillage && m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_VILLAGE)
@@ -596,7 +596,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	}
 	if (m_pCam_Manager->Get_CameraState() == CS_WORLDMAP)
 	{
-		return;
+		//return;
 	}
 
 	if (m_bIsMount)
@@ -726,7 +726,7 @@ HRESULT CPlayer::Render()
 	}
 	if (m_Current_Weapon == WP_SWORD && m_Weapon_CurrentIndex != SWORD_UNEQUIP)
 	{
-		Render_Parts(PT_SWORD, (_uint)m_Weapon_CurrentIndex - 7);
+		Render_Parts(PT_SWORD, (_uint)m_Weapon_CurrentIndex - 6);
 	}
 	else if (m_Current_Weapon == WP_BOW && m_Weapon_CurrentIndex != BOW_UNEQUIP)
 	{
@@ -787,7 +787,7 @@ HRESULT CPlayer::Render_Shadow()
 
 	if (m_Current_Weapon == WP_SWORD && m_Weapon_CurrentIndex != SWORD_UNEQUIP)
 	{
-		Render_Shadow_Parts(PT_SWORD, (_uint)m_Weapon_CurrentIndex - 7);
+		Render_Shadow_Parts(PT_SWORD, (_uint)m_Weapon_CurrentIndex - 6);
 	}
 	else if (m_Current_Weapon == WP_BOW && m_Weapon_CurrentIndex != BOW_UNEQUIP)
 	{

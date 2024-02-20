@@ -89,36 +89,22 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		{
 			return;
 		}
-		if (m_pGameInstance->Key_Down(DIK_M))
+		if (m_eCurrState == CS_WORLDMAP)
 		{
-			if (m_eCurrState == CS_WORLDMAP)
-			{
-				m_isWorldMap = false;
-			}
-			else if (m_eCurrState == CS_DEFAULT)
+			if (!m_isWorldMap)
 			{
 				m_isWorldMap = true;
-			}
-			if (m_eCurrState == CS_ZOOM)
-			{
-				return;
-			}
-			if (m_pGameInstance->Get_CurrentLevelIndex() > LEVEL_GAMEPLAY)
-			{
-				m_pGameInstance->Play_Sound(TEXT("WorldMap_Click"), 1.f);
-
 				CFadeBox::FADE_DESC Desc = {};
 				Desc.fIn_Duration = 0.5f;
 				Desc.fOut_Duration = 0.5f;
 				Desc.phasFadeCompleted = &m_isFadeReady;
 				CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
-			}
-		}
+				m_isReady = true;
 
-		if (m_isFadeReady)
-		{
-			if (m_eCurrState != CS_WORLDMAP)
+			}
+			if (m_isFadeReady)
 			{
+
 				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
 
 				m_Original_Light_Desc = *LightDesc;
@@ -128,52 +114,52 @@ void CCamera_Main::Tick(_float fTimeDelta)
 				LightDesc->vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
 				LightDesc->vSpecular = _vec4(1.f);
 
-				m_pCam_Manager->Set_CameraState(CS_WORLDMAP); 
-				m_eCurrState = CS_WORLDMAP;
 				m_pTransformCom->Set_State(State::Pos, m_vMapPos);
-				CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 				m_isFadeReady = false;
-			}
-			else
-			{
-				if (!m_isWorldMap)
-				{
-					if (m_Original_Light_Desc.eType != LIGHT_DESC::TYPE::End)
-					{
-						LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
-						*LightDesc = m_Original_Light_Desc;
-					}
-				}
-				m_pCam_Manager->Set_CameraState(CS_DEFAULT);
-				m_eCurrState = CS_DEFAULT;
-				CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
-				m_isFadeReady = false;
-			}
-
-
-
-			if (m_isWorldMap && m_eCurrState == CS_DEFAULT)
-			{
-				if (m_Original_Light_Desc.eType != LIGHT_DESC::TYPE::End)
-				{
-					LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
-					*LightDesc = m_Original_Light_Desc;
-				}				CFadeBox::FADE_DESC Desc = {};
-				Desc.fIn_Duration = 0.5f;
-				Desc.fOut_Duration = 0.5f;
-				Desc.phasFadeCompleted = &m_isFadeReady;
-				CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
-				m_isWorldMap = false;
+				m_isReady = false;
+				return;
 			}
 		}
 
-		
-		Init_State(fTimeDelta);
-		Tick_State(fTimeDelta);
+		if (m_isWorldMap && m_eCurrState != CS_WORLDMAP)
+		{
+			CFadeBox::FADE_DESC Desc = {};
+			Desc.fIn_Duration = 0.5f;
+			Desc.fOut_Duration = 0.5f;
+			Desc.phasFadeCompleted = &m_isFadeReady;
+			CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
+			m_isWorldMap = false;
+			m_isReady = true; 
+		}
+		if (m_isFadeReady && m_eCurrState != CS_WORLDMAP)
+		{
+			m_isReady = false;
+			m_isFadeReady = false;
+			m_ePrevState = CS_WORLDMAP;
+			m_eCurrState = CS_DEFAULT;
+			if (m_Original_Light_Desc.eType != LIGHT_DESC::TYPE::End)
+			{
+				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
+				if (LightDesc->vDiffuse == _vec4(0.8f, 0.8f, 0.8f, 1.f))
+				{
+					*LightDesc = m_Original_Light_Desc;
+				}
+			}
+			return;
+		}
+
+		if (!m_isReady)
+		{
+			Init_State(fTimeDelta);
+			Tick_State(fTimeDelta);
+
+		}
+
 	}
 
 
-	__super::Tick(fTimeDelta);
+		__super::Tick(fTimeDelta);
+
 }
 
 void CCamera_Main::Late_Tick(_float fTimeDelta)
@@ -797,6 +783,8 @@ void CCamera_Main::Init_State(_float fTimeDelta)
 		switch (m_eCurrState)
 		{
 		case Client::CS_DEFAULT:
+			m_pTransformCom->Set_State(State::Pos, _vec4(m_pPlayerTransform->Get_CenterPos() + _vec4(0.f, 3.f, 0.f, 0.f)));
+			m_vOriCamPos = _vec4(m_pPlayerTransform->Get_CenterPos()) + _vec4(0.f, 3.f, 0.f, 0.f);
 			m_pTransformCom->LookAt_Dir(m_vOriginalLook);
 			break;
 		case Client::CS_ZOOM:

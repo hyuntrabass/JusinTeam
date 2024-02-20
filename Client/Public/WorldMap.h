@@ -30,6 +30,9 @@ private:
 
 private:
 	MAPPOINT m_eCurPoint{};
+
+	_bool m_isReady{};
+	_bool m_isActive{};
 	_bool m_bSelect{};
 	_bool m_isPrototype{};
 	_bool m_isSelected{};
@@ -37,6 +40,8 @@ private:
 
 	_uint m_iShaderPass{};
 	_uint m_iOutLineShaderPass{};
+
+	_float m_fReadyTime{ false };
 
 	_vec2 m_fWater_Nomal{};
 	_vec2 m_fGround_Mask{};

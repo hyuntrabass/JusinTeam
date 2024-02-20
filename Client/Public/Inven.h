@@ -43,7 +43,7 @@ private:
 	CGameObject*								m_pInvenFrame{ nullptr };
 
 	CWearable_Slot*								m_pWearableSlots[WEARABLE_TYPE::W_END]{};
-
+	
 	LIGHT_DESC									m_Light_Desc{};
 private:
 	void Init_InvenState(); 

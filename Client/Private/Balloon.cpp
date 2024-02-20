@@ -39,7 +39,7 @@ HRESULT CBalloon::Init(void* pArg)
 
 	m_eCurState = STATE_IDLE;
 
-	m_iHP = 250;
+	m_iHP = 10000;
 	m_iDamageAccMax = 150;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
@@ -127,10 +127,6 @@ void CBalloon::Set_Damage(_int iDamage, _uint iDamageType)
 	{
 		m_iDamageAcc += iDamage;
 	}
-	_mat EffectMat = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
-	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Mini_Explosion_Blue");
-	Info.pMatrix = &EffectMat;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 	m_fIdleTime = 0.f;
 
 	_vec4 vPlayerPos = __super::Compute_PlayerPos();

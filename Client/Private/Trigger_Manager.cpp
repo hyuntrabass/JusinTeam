@@ -194,9 +194,9 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot)
 			pGetPath = TEXT("../Bin/Data/DungeonPos.dat");
 
 			// юс╫ц
-			CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
-			pCamTransform->Set_State(State::Pos, _vec4(2067.11f, -12.8557f, 2086.95f, 1.f));
-			pCamTransform->LookAt_Dir(_vec4(0.97706846f, -0.21286753f, 0.004882995f, 0.f));
+			//CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
+			//pCamTransform->Set_State(State::Pos, _vec4(2067.11f, -12.8557f, 2086.95f, 1.f));
+			//pCamTransform->LookAt_Dir(_vec4(0.97706846f, -0.21286753f, 0.004882995f, 0.f));
 
 			CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 			//pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 4.f, 0.f));
@@ -235,9 +235,9 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot)
 			_mat Player_Matrix{};
 			inFile.read(reinterpret_cast<char*>(&Player_Matrix), sizeof(_mat));
 
-			CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
-			pCamTransform->Set_State(State::Pos, Player_Matrix.Position() + _vec4(0.0f, 3.f, 0.f, 1.f));
-			pCamTransform->LookAt_Dir(Player_Matrix.Look() + _vec4(0.f, 0.5f, 0.f, 0.f));
+			//CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
+			//pCamTransform->Set_State(State::Pos, Player_Matrix.Position() + _vec4(0.0f, 3.f, 0.f, 1.f));
+			//pCamTransform->LookAt_Dir(Player_Matrix.Look() + _vec4(0.f, 0.5f, 0.f, 0.f));
 			CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 			pPlayerTransform->Set_Position(_vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
 			pPlayerTransform->LookAt_Dir(Player_Matrix.Look());

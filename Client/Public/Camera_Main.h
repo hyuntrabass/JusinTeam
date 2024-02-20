@@ -35,6 +35,7 @@ private:
 
 private:
 	_bool m_isWorldMap{};
+	_bool m_isReady{};
 	_int m_iRotation{ 1 };
 	_float m_fLerpTime{};
 	_vec4 m_vAimCamPos{};

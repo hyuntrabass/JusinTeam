@@ -3,6 +3,7 @@
 #include "TextButton.h"
 #include "TextButtonColor.h"
 #include "UI_Manager.h"
+#include "Camera_Manager.h"
 #include "Tower.h"
 
 CInfinityTower::CInfinityTower(_dev pDevice, _context pContext)
@@ -54,6 +55,7 @@ void CInfinityTower::Tick(_float fTimeDelta)
 {
 	if (CUI_Manager::Get_Instance()->IsInfinityTower())
 	{
+		CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
 		CUI_Manager::Get_Instance()->Open_InfinityTower(false);
 		m_isActive = true;
 	}
@@ -72,6 +74,7 @@ void CInfinityTower::Tick(_float fTimeDelta)
 		{
 			m_pTowers[i]->Select_Object(false);
 		}
+		CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 		m_vDefaultPoint = m_vInitialPoint;
 		m_isActive = false;
 		return;
