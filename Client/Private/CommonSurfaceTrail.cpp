@@ -107,7 +107,14 @@ void CCommonSurfaceTrail::Late_Tick(_float fTimeDelta)
 	m_pTrailBufferCom->Update(m_Info.iNumVertices, m_TopPosArray, m_BottomPosArray, m_AlphaArray);
 
 	__super::Compute_CamDistance();
-	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
+	if (m_Info.iPassIndex == 2)
+	{
+		m_pRendererCom->Add_RenderGroup(RG_Distortion, this);
+	}
+	else
+	{
+		m_pRendererCom->Add_RenderGroup(RG_Blend, this);
+	}
 }
 
 HRESULT CCommonSurfaceTrail::Render()
@@ -122,7 +129,7 @@ HRESULT CCommonSurfaceTrail::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(1)))
+	if (FAILED(m_pShaderCom->Begin(m_Info.iPassIndex)))
 	{
 		return E_FAIL;
 	}

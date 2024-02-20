@@ -719,7 +719,7 @@ PS_OUT_EFFECT PS_Main_Effect_Alpha(PS_IN Input)
     PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
 
     float3 Color = g_vColor.rgb;
-    float fAlpha = g_fAlpha;
+    float fAlpha = saturate(g_fAlpha);
     
     float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
     fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
@@ -742,7 +742,7 @@ PS_OUT_EFFECT PS_Main_MaskEffect_Alpha(PS_IN Input)
     }
     
     vector vColor = g_vColor;
-    vColor.a *= vMask.r * g_fAlpha;
+    vColor.a *= vMask.r * saturate(g_fAlpha);
     
     float3 Color = vColor.rgb;
     float fAlpha = vColor.a;
@@ -764,7 +764,7 @@ PS_OUT_EFFECT PS_Main_DiffEffect_Alpha(PS_IN Input)
     vector vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform);
     
     float3 Color = vColor.rgb;
-    float fAlpha = g_fAlpha;
+    float fAlpha = saturate(g_fAlpha);
     
     float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
     fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
@@ -776,17 +776,13 @@ PS_OUT_EFFECT PS_Main_DiffEffect_Alpha(PS_IN Input)
     return Output;
 }
 
-
-
 PS_OUT_DISTORTION PS_Distortion(PS_IN Input)
 {
     PS_OUT_DISTORTION Output = (PS_OUT_DISTORTION) 0;
     
-    vector vColor = g_DistortionTexture.Sample(LinearSampler, Input.vTex);
+    Output.vDistortion = normalize(g_DistortionTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform)) * g_fAlpha;
     
-    vColor.rgb = vColor.rgb * 2.f - 1.f;
-    
-    Output.vDistortion = vColor;
+    //Output.vDistortion = Output.vDistortion * 2.f - 1.f;
     
     return Output;
 }

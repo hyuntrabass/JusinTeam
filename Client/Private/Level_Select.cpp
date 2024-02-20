@@ -261,6 +261,11 @@ HRESULT CLevel_Select::Ready_Light()
 	Effect.pMatrix = &EffectMat;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Effect);
 	
+	Effect = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BoneFire_Distortion");
+	EffectMat = _mat::CreateRotationY(3.14f) * _mat::CreateTranslation(_vec3(0.f, 1.f, -3.3f));
+	Effect.pMatrix = &EffectMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Effect);
+
 	// аб
 	Effect = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"TorchFire");
 	EffectMat = _mat::CreateTranslation(_vec3(-2.58f, 2.7f, -0.79f));

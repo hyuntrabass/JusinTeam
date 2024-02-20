@@ -642,12 +642,13 @@ PS_OUT PS_Main_Color_Alpha(PS_IN Input)
 PS_OUT_DISTORTION PS_Distortion(PS_IN Input)
 {
     PS_OUT_DISTORTION Output = (PS_OUT_DISTORTION) 0;
-    
-    vector vColor = g_DistortionTexture.Sample(LinearSampler, Input.vTex);
-    
-    vColor.rgb = vColor.rgb * 2.f - 1.f;
-    
-    Output.vDistortion = vColor;
+    vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
+    if (vMask.r < 0.1f)
+    {
+        discard;
+    }
+
+    Output.vDistortion = normalize(g_DistortionTexture.Sample(LinearSampler, Input.vTex)) * g_fAlpha * vMask.r;
     
     return Output;
 }
@@ -1093,6 +1094,6 @@ technique11 DefaultTechnique
         GeometryShader = compile gs_5_0 GS_MAIN();
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main_Color_Alpha();
+        PixelShader = compile ps_5_0 PS_Distortion();
     }
 };

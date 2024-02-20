@@ -2,6 +2,7 @@
 #include "Camera.h"
 #include "Effect_Dummy.h"
 #include <commdlg.h>
+#include "Engine_Defines.h"
 
 IMPLEMENT_SINGLETON(CImgui_Manager)
 
@@ -85,7 +86,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 #pragma region Main Window
 	Begin("Effect_Tool");
 
-	const _char* szType[ET_END]{ "Particle", "Rect", "Mesh" };
+	const _char* szType[ET_END]{ "Particle", "Rect", "Mesh", "Distortion", "Particle_Distortion"};
 
 	if (Combo("Type", &m_iCurrent_Type, szType, IM_ARRAYSIZE(szType)))
 	{
@@ -118,106 +119,108 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 	const _char* szInstancingPasses[InstPass_End]
 	{
-		"InstPass_Particle_TextureMask",
-		"InstPass_Particle_Sprite_Color",
-		"InstPass_Particle_MaskColor",
-		"InstPass_Particle_TextureMask_Dissolve",
-		"InstPass_Particle_Sprite_Color_Dissolve",
-		"InstPass_Particle_MaskColor_Dissolve",
-		"InstPass_Particle_Sprite_Texture",
-		"InstPass_Particle_Sprite_Texture_Dissolve",
-		"InstPass_Particle_Sprite_Texture_RandomIndex",
-		"InstPass_Particle_Sprite_Texture_RandomIndex_Dissolve",
-		"InstPass_Particle_Sprite_Color_RandomIndex",
-		"InstPass_Particle_Sprite_Color_RandomIndex_Dissolve",
-		"InstPass_Particle_TextureMask_Trail",
-		"InstPass_Particle_Sprite_Color_Trail",
-		"InstPass_Particle_MaskColor_Trail",
-		"InstPass_Particle_TextureMask_Dissolve_Trail",
-		"InstPass_Particle_Sprite_Color_Dissolve_Trail",
-		"InstPass_Particle_MaskColor_Dissolve_Trail",
-		"InstPass_Particle_Sprite_Texture_Trail",
-		"InstPass_Particle_Sprite_Texture_Dissolve_Trail",
-		"InstPass_Particle_Sprite_Texture_RandomIndex_Trail",
-		"InstPass_Particle_Sprite_Texture_RandomIndex_Dissolve_Trail",
-		"InstPass_Particle_Sprite_Color_RandomIndex_Trail",
-		"InstPass_Particle_Sprite_Color_RandomIndex_Dissolve_Trail",
-		"InstPass_Particle_Sprite_DiffMask",
-		"InstPass_Particle_Sprite_DiffMask_Dissolve",
-		"InstPass_Particle_Sprite_DiffMask_RandomIndex",
-		"InstPass_Particle_Sprite_DiffMask_RandomIndex_Dissolve",
-		"InstPass_Particle_Sprite_DiffMask_Trail",
-		"InstPass_Particle_Sprite_DiffMask_Dissolve_Trail",
-		"InstPass_Particle_Sprite_DiffMask_RandomIndex_Trail",
-		"InstPass_Particle_Sprite_DiffMask_RandomIndex_Dissolve_Trail",
-		"InstPass_Particle_MaskColor_Alpha",
+		"TextureMask",
+		"Sprite_Color",
+		"MaskColor",
+		"TextureMask_Dissolve",
+		"Sprite_Color_Dissolve",
+		"MaskColor_Dissolve",
+		"Sprite_Texture",
+		"Sprite_Texture_Dissolve",
+		"Sprite_Texture_RandomIndex",
+		"Sprite_Texture_RandomIndex_Dissolve",
+		"Sprite_Color_RandomIndex",
+		"Sprite_Color_RandomIndex_Dissolve",
+		"TextureMask_Trail",
+		"Sprite_Color_Trail",
+		"MaskColor_Trail",
+		"TextureMask_Dissolve_Trail",
+		"Sprite_Color_Dissolve_Trail",
+		"MaskColor_Dissolve_Trail",
+		"Sprite_Texture_Trail",
+		"Sprite_Texture_Dissolve_Trail",
+		"Sprite_Texture_RandomIndex_Trail",
+		"Sprite_Texture_RandomIndex_Dissolve_Trail",
+		"Sprite_Color_RandomIndex_Trail",
+		"Sprite_Color_RandomIndex_Dissolve_Trail",
+		"Sprite_DiffMask",
+		"Sprite_DiffMask_Dissolve",
+		"Sprite_DiffMask_RandomIndex",
+		"Sprite_DiffMask_RandomIndex_Dissolve",
+		"Sprite_DiffMask_Trail",
+		"Sprite_DiffMask_Dissolve_Trail",
+		"Sprite_DiffMask_RandomIndex_Trail",
+		"Sprite_DiffMask_RandomIndex_Dissolve_Trail",
+		"MaskColor_Alpha",
+		"Distortion",
 	};
 
 	const _char* szVTPasses[VTPass_End]
 	{
-		"VTPass_UI",
-		"VTPass_UI_Alpha",
-		"VTPass_UI_Color_Alpha",
-		"VTPass_Button",
-		"VTPass_Background",
-		"VTPass_Background_Mask",
-		"VTPass_Mask_Texture",
-		"VTPass_Inv_Mask_Texture",
-		"VTPass_Mask_Color",
-		"VTPass_Mask_ColorAlpha",
-		"VTPass_HP",
-		"VTPass_Hit",
-		"VTPass_Sprite",
-		"VTPass_SpriteMaskTexture",
-		"VTPass_SpriteMaskColor",
-		"VTPass_Hell",
-		"VTPass_Mask_Texture_Dissolve",
-		"VTPass_Inv_Mask_Texture_Dissolve",
-		"VTPass_Mask_Color_Dissolve",
-		"VTPass_Sprite_Dissolve",
-		"VTPass_SpriteMaskTexture_Dissolve",
-		"VTPass_SpriteMaskColor_Dissolve",
-		"VTPass_Dust",
-		"VTPass_Dissolve",
-		"VTPass_MP",
-		"VTPass_BLUR",
-		"VTPass_Bright",
-		"VTPass_ScrollAlpha",
-		"VTPass_HPNoMask",
-		"VTPass_NineSlice",
-		"VTPass_FadeVertical",
-		"VTPass_FadeHorizontal",
+		"UI",
+		"UI_Alpha",
+		"UI_Color_Alpha",
+		"Button",
+		"Background",
+		"Background_Mask",
+		"Mask_Texture",
+		"Inv_Mask_Texture",
+		"Mask_Color",
+		"Mask_ColorAlpha",
+		"HP",
+		"Hit",
+		"Sprite",
+		"SpriteMaskTexture",
+		"SpriteMaskColor",
+		"Hell",
+		"Mask_Texture_Dissolve",
+		"Inv_Mask_Texture_Dissolve",
+		"Mask_Color_Dissolve",
+		"Sprite_Dissolve",
+		"SpriteMaskTexture_Dissolve",
+		"SpriteMaskColor_Dissolve",
+		"Dust",
+		"Dissolve",
+		"MP",
+		"BLUR",
+		"Bright",
+		"ScrollAlpha",
+		"HPNoMask",
+		"NineSlice",
+		"FadeVertical",
+		"FadeHorizontal",
 	};
 
 	const _char* szStatPasses[StaticPass_End]
 	{
-		"StaticPass_Default",
-		"StaticPass_NonLight",
-		"StaticPass_OutLine",
-		"StaticPass_AlphaTestMeshes",
-		"StaticPass_Diff_Dissolve",
-		"StaticPass_COLMesh",
-		"StaticPass_SingleColorFx",
-		"StaticPass_SingleColorDissolve",
-		"StaticPass_Fireball",
-		"StaticPass_MaskEffect",
-		"StaticPass_MaskDissolve",
-		"StaticPass_MaskEffectClamp",
-		"StaticPass_SingleColoredEffectFrontCull",
-		"StaticPass_Shadow",
-		"StaticPass_Water",
-		"StaticPass_Worldmap_Water",
-		"StaticPass_Worldmap_Cloud",
-		"StaticPsss_Rim",
-		"StaticPass_DiffEffect",
-		"StaticPass_SingleColorAlpha",
-		"StaticPass_MaskAlpha",
-		"StaticPass_DiffAlpha",
+		"Default",
+		"NonLight",
+		"OutLine",
+		"AlphaTestMeshes",
+		"Diff_Dissolve",
+		"COLMesh",
+		"SingleColorFx",
+		"SingleColorDissolve",
+		"Fireball",
+		"MaskEffect",
+		"MaskDissolve",
+		"MaskEffectClamp",
+		"SingleColoredEffectFrontCull",
+		"Shadow",
+		"Water",
+		"Worldmap_Water",
+		"Worldmap_Cloud",
+		"Rim",
+		"DiffEffect",
+		"SingleColorAlpha",
+		"MaskAlpha",
+		"DiffAlpha",
+		"Distortion",
 	};
 
 	SeparatorText("Shader Pass");
 
-	if (m_iCurrent_Type == ET_PARTICLE)
+	if (m_iCurrent_Type == ET_PARTICLE or m_iCurrent_Type == ET_PARTI_DISTORTION)
 	{
 		//if (BeginListBox("", ImVec2(-FLT_MIN, 7 * ImGui::GetTextLineHeightWithSpacing())))
 		//{
@@ -323,7 +326,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		ImGui::EndChild();
 
 	}
-	else if (m_iCurrent_Type == ET_MESH)
+	else if (m_iCurrent_Type == ET_MESH or m_iCurrent_Type == ET_DISTORTION)
 	{
 		//ListBox("Pass##3", &iPassIndex, szStatPasses, StaticPass_End);
 		//if (iPassIndex >= StaticPass_End)
@@ -419,9 +422,18 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	NewLine();
 
 #pragma region Diffuse
-	SeparatorText("Diffuse");
-	RadioButton("Texture", &iIsColor, 0); SameLine();
-	RadioButton("Color", &iIsColor, 1);
+	if (m_iCurrent_Type != ET_DISTORTION and m_iCurrent_Type != ET_PARTI_DISTORTION)
+	{
+		SeparatorText("Diffuse");
+		RadioButton("Texture", &iIsColor, 0); SameLine();
+		RadioButton("Color", &iIsColor, 1);
+	}
+	else
+	{
+		SeparatorText("Distortion");
+		iIsColor = false;
+	}
+
 	if (iIsColor)
 	{
 		NewLine();
@@ -525,7 +537,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		InputFloat("Alpha Delta", &fAlphaDelta);
 		Info.fAlphaDelta = fAlphaDelta;
 
-		if (m_iCurrent_Type == ET_MESH)
+		if (m_iCurrent_Type == ET_MESH or m_iCurrent_Type == ET_DISTORTION)
 		{
 			InputFloat2("UV Initializer", reinterpret_cast<_float*>(&vUVInit));
 			Info.vUVInit = vUVInit;
@@ -735,79 +747,93 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	Separator();
 	NewLine();
 
-#pragma region Light
-	Checkbox("Has Light", &m_hasLight);
-	Separator();
 	static LIGHT_DESC Light_Desc{};
 	static _int iAttenuation{};
-	const _char* szAttenuations[]
+#pragma region Light
+	if (m_iCurrent_Type == ET_DISTORTION or m_iCurrent_Type == ET_PARTI_DISTORTION)
 	{
-		"LIGHT_RANGE_7",
-		"LIGHT_RANGE_13",
-		"LIGHT_RANGE_20",
-		"LIGHT_RANGE_32",
-		"LIGHT_RANGE_50",
-		"LIGHT_RANGE_65",
-		"LIGHT_RANGE_100",
-		"LIGHT_RANGE_160",
-		"LIGHT_RANGE_200",
-		"LIGHT_RANGE_325",
-		"LIGHT_RANGE_600",
-		"LIGHT_RANGE_3250",
-	};
-	Light_Desc.eType = LIGHT_DESC::Point;
-
-	Info.hasLight = m_hasLight;
-	if (m_hasLight)
+		m_hasLight = true;
+		Info.hasLight = m_hasLight;
+		Info.Light_Desc.eType = LIGHT_DESC::Point;
+		Info.Light_Desc.vDiffuse = _vec4(1.f);
+		Info.Light_Desc.vAmbient = _vec4(1.f);
+		Info.Light_Desc.vSpecular = _vec4(1.f);
+		Info.Light_Desc.vAttenuation = LIGHT_RANGE_3250;
+	}
+	else
 	{
-		SameLine();
-		SeparatorText("Light Description");
-		ColorPicker4("Diffuse", reinterpret_cast<_float*>(&Light_Desc.vDiffuse), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_DisplayRGB);
-		InputFloat4("Ambient", reinterpret_cast<_float*>(&Light_Desc.vAmbient), "%.2f");
-		InputFloat4("Specular", reinterpret_cast<_float*>(&Light_Desc.vSpecular), "%.2f");
-		Combo("Attenuation", &iAttenuation, szAttenuations, IM_ARRAYSIZE(szAttenuations));
-
-		switch (iAttenuation)
+		Checkbox("Has Light", &m_hasLight);
+		Separator();
+		const _char* szAttenuations[]
 		{
-		case 0:
-			Light_Desc.vAttenuation = LIGHT_RANGE_7;
-			break;
-		case 1:
-			Light_Desc.vAttenuation = LIGHT_RANGE_13;
-			break;
-		case 2:
-			Light_Desc.vAttenuation = LIGHT_RANGE_20;
-			break;
-		case 3:
-			Light_Desc.vAttenuation = LIGHT_RANGE_32;
-			break;
-		case 4:
-			Light_Desc.vAttenuation = LIGHT_RANGE_50;
-			break;
-		case 5:
-			Light_Desc.vAttenuation = LIGHT_RANGE_65;
-			break;
-		case 6:
-			Light_Desc.vAttenuation = LIGHT_RANGE_100;
-			break;
-		case 7:
-			Light_Desc.vAttenuation = LIGHT_RANGE_160;
-			break;
-		case 8:
-			Light_Desc.vAttenuation = LIGHT_RANGE_200;
-			break;
-		case 9:
-			Light_Desc.vAttenuation = LIGHT_RANGE_325;
-			break;
-		case 10:
-			Light_Desc.vAttenuation = LIGHT_RANGE_600;
-			break;
-		case 11:
-			Light_Desc.vAttenuation = LIGHT_RANGE_3250;
-			break;
+			"LIGHT_RANGE_7",
+			"LIGHT_RANGE_13",
+			"LIGHT_RANGE_20",
+			"LIGHT_RANGE_32",
+			"LIGHT_RANGE_50",
+			"LIGHT_RANGE_65",
+			"LIGHT_RANGE_100",
+			"LIGHT_RANGE_160",
+			"LIGHT_RANGE_200",
+			"LIGHT_RANGE_325",
+			"LIGHT_RANGE_600",
+			"LIGHT_RANGE_3250",
+		};
+		Light_Desc.eType = LIGHT_DESC::Point;
+
+		Info.hasLight = m_hasLight;
+		if (m_hasLight)
+		{
+			SameLine();
+			SeparatorText("Light Description");
+			ColorPicker4("Diffuse", reinterpret_cast<_float*>(&Light_Desc.vDiffuse), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_DisplayRGB);
+			InputFloat4("Ambient", reinterpret_cast<_float*>(&Light_Desc.vAmbient), "%.2f");
+			InputFloat4("Specular", reinterpret_cast<_float*>(&Light_Desc.vSpecular), "%.2f");
+			Combo("Attenuation", &iAttenuation, szAttenuations, IM_ARRAYSIZE(szAttenuations));
+
+			switch (iAttenuation)
+			{
+			case 0:
+				Light_Desc.vAttenuation = LIGHT_RANGE_7;
+				break;
+			case 1:
+				Light_Desc.vAttenuation = LIGHT_RANGE_13;
+				break;
+			case 2:
+				Light_Desc.vAttenuation = LIGHT_RANGE_20;
+				break;
+			case 3:
+				Light_Desc.vAttenuation = LIGHT_RANGE_32;
+				break;
+			case 4:
+				Light_Desc.vAttenuation = LIGHT_RANGE_50;
+				break;
+			case 5:
+				Light_Desc.vAttenuation = LIGHT_RANGE_65;
+				break;
+			case 6:
+				Light_Desc.vAttenuation = LIGHT_RANGE_100;
+				break;
+			case 7:
+				Light_Desc.vAttenuation = LIGHT_RANGE_160;
+				break;
+			case 8:
+				Light_Desc.vAttenuation = LIGHT_RANGE_200;
+				break;
+			case 9:
+				Light_Desc.vAttenuation = LIGHT_RANGE_325;
+				break;
+			case 10:
+				Light_Desc.vAttenuation = LIGHT_RANGE_600;
+				break;
+			case 11:
+				Light_Desc.vAttenuation = LIGHT_RANGE_3250;
+				break;
+			}
+
+			Info.Light_Desc = Light_Desc;
 		}
 
-		Info.Light_Desc = Light_Desc;
 	}
 	NewLine();
 	NewLine();
@@ -830,7 +856,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	static _float fPartiAppearRatio{};
 	static _float fPartiDissolveRatio{ 0.8f };
 
-	if (m_iCurrent_Type == ET_PARTICLE)
+	if (m_iCurrent_Type == ET_PARTICLE or m_iCurrent_Type == ET_PARTI_DISTORTION)
 	{
 		SeparatorText("Particle Information");
 		Checkbox("Loop", &m_ParticleInfo.isLoop);
@@ -956,7 +982,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 		Info.strModel = {};
 	}
-	else if (m_iCurrent_Type == ET_MESH)
+	else if (m_iCurrent_Type == ET_MESH or m_iCurrent_Type == ET_DISTORTION)
 	{
 		SeparatorText("Mesh Information");
 
@@ -1176,7 +1202,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 		switch (Info.iType)
 		{
-		case Effect::ET_PARTICLE:
+		case Engine::ET_PARTICLE:
+		case Engine::ET_PARTI_DISTORTION:
 			m_ParticleInfo = Info.PartiDesc;
 			m_iNumInstance = Info.iNumInstances;
 			bApplyGravity = Info.bApplyGravity;
@@ -1184,7 +1211,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			fPartiDissolveRatio = Info.fPartiDissolveRatio;
 			fPartiAppearRatio = Info.fPartiAppearRatio;
 			break;
-		case Effect::ET_RECT:
+		case Engine::ET_RECT:
 			isBillboard = Info.isBillboard;
 			if (Info.isSprite)
 			{
@@ -1198,7 +1225,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			vSizeDelta = Info.vSizeDelta;
 			fRectRotationAngle = Info.fRectRotationAngle;
 			break;
-		case Effect::ET_MESH:
+		case Engine::ET_MESH:
+		case Engine::ET_DISTORTION:
 			isBillboard = Info.isBillboard;
 			if (isBillboard)
 			{
@@ -1377,7 +1405,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 		switch (Info.iType)
 		{
-		case Effect::ET_PARTICLE:
+		case Engine::ET_PARTICLE:
+		case Engine::ET_PARTI_DISTORTION:
 			m_ParticleInfo = Info.PartiDesc;
 			m_iNumInstance = Info.iNumInstances;
 			bApplyGravity = Info.bApplyGravity;
@@ -1385,7 +1414,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			fPartiDissolveRatio = Info.fPartiDissolveRatio;
 			fPartiAppearRatio = Info.fPartiAppearRatio;
 			break;
-		case Effect::ET_RECT:
+		case Engine::ET_RECT:
 			isBillboard = Info.isBillboard;
 			if (Info.isSprite)
 			{
@@ -1399,7 +1428,8 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			vSizeDelta = Info.vSizeDelta;
 			fRectRotationAngle = Info.fRectRotationAngle;
 			break;
-		case Effect::ET_MESH:
+		case Engine::ET_MESH:
+		case Engine::ET_DISTORTION:
 			isBillboard = Info.isBillboard;
 			if (isBillboard)
 			{

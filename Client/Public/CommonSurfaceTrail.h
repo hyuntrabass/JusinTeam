@@ -9,6 +9,7 @@ struct SURFACETRAIL_DESC
 	_vec4 vColor{};
 	_uint iNumVertices{};
 	wstring strMaskTextureTag{};
+	_uint iPassIndex{ 1 };
 };
 
 class CCommonSurfaceTrail final : public CBlendObject
