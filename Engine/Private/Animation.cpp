@@ -184,7 +184,6 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 				}
 				else
 				{
-					m_fCurrentAnimPos = m_fDuration * fDurationRatio;
 					m_isFinished = true;
 				}
 			}
