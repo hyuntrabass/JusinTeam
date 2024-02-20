@@ -7,6 +7,7 @@
 #include "Symbol.h"
 #include "FadeBox.h"
 #include "Riding.h"
+#include "Trigger_Manager.h"
 
 BEGIN(Engine)
 class CGameInstance;
@@ -142,10 +143,17 @@ public:
 	HRESULT Add_FadeBox(CFadeBox::FADE_DESC& Description);
 	CFadeBox* Clone_FadeBox(CFadeBox::FADE_DESC& Description);
 
+
+	void Set_Teleport(_bool isTeleport, TeleportSpot eSpot = TS_END) { m_bTeleport = isTeleport; m_bTeleport = eSpot; }
+	const _bool& Is_Teleport(TeleportSpot* eSpot = nullptr);
+
 private:
 	PART_TYPE		m_eChangedPart{ PT_END };
 	MOUSESTATE		m_eMouseState{ M_DEFAULT };
 	WEAPON_TYPE		m_eWeaponType{ WP_BOW };
+
+	TeleportSpot	m_eTeleportSpot{ TS_END };
+	_bool			m_bTeleport{};
 
 	_bool			m_isInfinityTower{ false };
 	_bool			m_isPet{ false };
