@@ -58,6 +58,7 @@ namespace Effect
 		StaticPass_SingleColorAlpha,
 		StaticPass_MaskAlpha,
 		StaticPass_DiffAlpha,
+		StaticPass_Distortion,
 		StaticPass_End,
 	};
 
@@ -140,6 +141,7 @@ namespace Effect
 		InstPass_Particle_Sprite_DiffMask_RandomIndex_Trail,
 		InstPass_Particle_Sprite_DiffMask_RandomIndex_Dissolve_Trail,
 		InstPass_Particle_MaskColor_Alpha,
+		InstPass_Particle_Distortion,
 		InstPass_End,
 	};
 #pragma endregion

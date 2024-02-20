@@ -145,6 +145,9 @@ void CArrow::Tick(_float fTimeDelta)
 			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Boom");
 			Info.pMatrix = &EffectMat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Distortion");
+			Info.pMatrix = &EffectMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
 			m_pGameInstance->Play_Sound(TEXT("SE_5130_Meteor_SFX_02"), 0.3f);

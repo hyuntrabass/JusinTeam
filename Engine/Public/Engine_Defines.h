@@ -180,6 +180,8 @@ namespace Engine
 		ET_PARTICLE,
 		ET_RECT,
 		ET_MESH,
+		ET_DISTORTION,
+		ET_PARTI_DISTORTION,
 		ET_END
 	};
 
