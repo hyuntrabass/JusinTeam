@@ -1647,12 +1647,22 @@ void CImGui_Manager::Reset()
 	}
 	m_EnvirList.clear();
 
+	for (auto iter : m_InteractionList)
+	{
+		iter->Kill();
+	}
+	m_InteractionList.clear();
+
 	//for (auto iter : m_CameraList)
 	//{
 	//	iter->Set_Dead();
 	//}
 	//m_CameraList.clear();
 
+	for (auto Pair : m_DummyList)
+	{
+		Pair.second->Kill();
+	}
 	m_DummyList.clear();
 
 	if (m_pSelectedDummy)
@@ -1938,7 +1948,7 @@ void CImGui_Manager::Search_Inter()
 			}
 		}
 	}
-	strFilePath = "../../Client/Bin/Resources/AnimMesh/Interaction/Mesh";
+	strFilePath = "../Bin/Resources/Model/Interaction/Mesh";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strFilePath))
 	{
 		if (entry.is_regular_file())
@@ -3429,7 +3439,6 @@ void CImGui_Manager::Free()
 		Safe_Release(cstr);
 	}
 	m_CameraList.clear();
-
 
 	for (auto& Pair : m_DummyList)
 	{

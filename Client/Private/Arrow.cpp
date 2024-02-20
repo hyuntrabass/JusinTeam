@@ -32,16 +32,30 @@ HRESULT CArrow::Init(void* pArg)
 		{
 			strPartiFxTag = L"ExplosiveArrowParti";
 		}
-		if (m_ArrowType.Att_Type == AT_Bow_SkillR)
+
+		m_pTransformCom->Set_Matrix(m_ArrowType.world);
+
+		if (m_ArrowType.bAimMode)
 		{
-			_mat fourComboMat = m_ArrowType.world * _mat::CreateTranslation(_vec3(0.f, -1.5f, 0.f));
-			m_pTransformCom->Set_Matrix(fourComboMat);
+			m_pTransformCom->Set_Speed(40.f);
+			_vec4 vLook = m_pTransformCom->Get_State(State::Look);
+			PxRaycastBuffer Buffer{};
+			_vec4 vRayDir = m_pGameInstance->Get_CameraLook().Get_Normalized();
+			_vec4 vMyPos = m_pTransformCom->Get_State(State::Pos);
+			_float fDist = 200.f;
+			if (m_pGameInstance->Raycast(m_pGameInstance->Get_CameraPos(), vRayDir, fDist, Buffer))
+			{
+				m_vRaycastPos = PxVec3ToVector(Buffer.block.position, 1.f);
+			}
+			else
+			{
+				m_ArrowType.bAimMode = false;
+			}
 		}
 		else
 		{
-			m_pTransformCom->Set_Matrix(m_ArrowType.world);
+			m_pTransformCom->Set_Speed(25.f);
 		}
-		m_pTransformCom->Set_Speed(25.f);
 		m_pTransformCom->Set_Scale(_vec3(1.5f));
 
 		EffectInfo EffectInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(strPartiFxTag);
@@ -68,6 +82,7 @@ HRESULT CArrow::Init(void* pArg)
 	trail_desc.vPSize = _vec2(0.02f, 0.02f);
 	trail_desc.iNumVertices = 10;
 	m_pTrail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &trail_desc);
+
 	return S_OK;
 }
 
@@ -79,10 +94,15 @@ void CArrow::Tick(_float fTimeDelta)
 		Kill();
 	}
 
-	if (m_ArrowType.MonCollider != nullptr && (m_ArrowType.Att_Type == AT_Bow_Common or m_ArrowType.Att_Type == AT_Bow_SkillR or m_ArrowType.Att_Type == AT_Bow_Skill2))
+	if (m_ArrowType.MonCollider != nullptr && !m_ArrowType.bAimMode)
 	{
 		m_pTransformCom->LookAt(_vec4(m_ArrowType.MonCollider->Get_ColliderPos(), 1.f));
 		m_pTransformCom->Go_To(_vec4(m_ArrowType.MonCollider->Get_ColliderPos(), 1.f), fTimeDelta, 0.f);
+	}
+	else if (m_ArrowType.bAimMode && m_vRaycastPos !=_vec4())
+	{
+		m_pTransformCom->LookAt(m_vRaycastPos);
+		m_pTransformCom->Go_To(m_vRaycastPos, fTimeDelta, 0.f);
 	}
 	else
 	{
@@ -90,6 +110,7 @@ void CArrow::Tick(_float fTimeDelta)
 	}
 
 	switch (m_ArrowType.Att_Type)
+
 	{
 	case AT_Bow_Common:
 	{
@@ -223,6 +244,7 @@ HRESULT CArrow::Render()
 			{
 				if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 				{
+					int a = 0;
 				}
 
 				_bool HasNorTex{};
@@ -287,9 +309,20 @@ HRESULT CArrow::Add_Components()
 	{
 		return E_FAIL;
 	}
+	Collider_Desc CollDesc = {};
 	if (m_ArrowType.Att_Type == AT_Bow_Skill2)
 	{
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_BoomArrow"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+		{
+			return E_FAIL;
+		}
+		CollDesc.eType = ColliderType::OBB;
+
+	/*	CollDesc.vRadians 
+		CollDesc.vCenter = _vec3(0.f, 0.f, -0.3f);
+		CollDesc.vExtents */
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+			TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
 		{
 			return E_FAIL;
 		}
@@ -297,6 +330,16 @@ HRESULT CArrow::Add_Components()
 	else
 	{
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Arrow"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+		{
+			return E_FAIL;
+		}
+	
+		CollDesc.eType = ColliderType::Sphere;
+		CollDesc.fRadius = 0.2f;
+		CollDesc.vCenter = _vec3(0.f, 0.f, -0.3f);
+
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+			TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
 		{
 			return E_FAIL;
 		}
@@ -312,14 +355,7 @@ HRESULT CArrow::Add_Components()
 	//	TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
 	//	return E_FAIL;
 
-	Collider_Desc CollDesc = {};
-	CollDesc.eType = ColliderType::Sphere;
-	CollDesc.fRadius = 0.05f;
-	CollDesc.vCenter = _vec3(0.f, 0.f, -0.3f);
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-		TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
-		return E_FAIL;
+	
 	return S_OK;
 }
 

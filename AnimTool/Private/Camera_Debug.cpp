@@ -112,9 +112,9 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
 	{
 		m_fSpeed += fSpeedRatio;
-		if (m_fSpeed > 5.f)
+		if (m_fSpeed > 10.f)
 		{
-			m_fSpeed = 5.f;
+			m_fSpeed = 10.f;
 		}
 	}
 	else if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
@@ -150,11 +150,11 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Pressing(DIK_Q))
 	{
 		m_pTransformCom->Go_Up(fTimeDelta);
-	}
+	}/*
 	if (m_pGameInstance->Key_Pressing(DIK_Z))
 	{
 		m_pTransformCom->Go_Down(fTimeDelta);
-	}
+	}*/
 
 	__super::Tick(fTimeDelta);
 }
