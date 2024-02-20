@@ -49,14 +49,27 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 					if (m_isInVillage)
 					{
 						CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::FIELDSOUTH);
-						m_pGameInstance->FadeoutSound(0, fTimeDelta, 1.f, false);
+						for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+						{
+							if (m_pGameInstance->Get_IsLoopingSound(i))
+							{
+								m_pGameInstance->FadeoutSound(i, fTimeDelta, 1.f, false);
+							}
+						}
 					}
 					iter->Set_Limited(true);
 				}
 				if (not m_pGameInstance->Get_IsPlayingSound(0))
 				{
 					m_pGameInstance->PlayBGM(TEXT("Midgard_Field"));
-					m_pGameInstance->FadeinSound(0, fTimeDelta);
+					m_pGameInstance->Play_Sound(TEXT("AMB_Midgard_Field_SFX_01"), 0.5f, true);
+					for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+					{
+						if (m_pGameInstance->Get_IsLoopingSound(i))
+						{
+							m_pGameInstance->FadeinSound(i, fTimeDelta);
+						}
+					}
 					m_isInVillage = false;
 				}
 			}
@@ -68,14 +81,26 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 					if (not m_isInVillage)
 					{
 						CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
-						m_pGameInstance->FadeoutSound(0, fTimeDelta, 1.f, false);
+						for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+						{
+							if (m_pGameInstance->Get_IsLoopingSound(i))
+							{
+								m_pGameInstance->FadeoutSound(i, fTimeDelta, 1.f, false);
+							}
+						}
 					}
 					iter->Set_Limited(true);
 				}
 				if (not m_pGameInstance->Get_IsPlayingSound(0))
 				{
 					m_pGameInstance->PlayBGM(TEXT("BGM_1st_Village"));
-					m_pGameInstance->FadeinSound(0, fTimeDelta);
+					for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+					{
+						if (m_pGameInstance->Get_IsLoopingSound(i))
+						{
+							m_pGameInstance->FadeinSound(i, fTimeDelta);
+						}
+					}
 					m_isInVillage = true;
 				}
 			}
@@ -87,14 +112,27 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 					if (m_isInVillage)
 					{
 						CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::FIELDEAST);
-						m_pGameInstance->FadeoutSound(0, fTimeDelta, 1.f, false);
+						for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+						{
+							if (m_pGameInstance->Get_IsLoopingSound(i))
+							{
+								m_pGameInstance->FadeoutSound(i, fTimeDelta, 1.f, false);
+							}
+						}
 					}
 					iter->Set_Limited(true);
 				}
 				if (not m_pGameInstance->Get_IsPlayingSound(0))
 				{
 					m_pGameInstance->PlayBGM(TEXT("Midgard_Field"));
-					m_pGameInstance->FadeinSound(0, fTimeDelta);
+					m_pGameInstance->Play_Sound(TEXT("AMB_Midgard_Field_SFX_01"), 0.5f, true);
+					for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+					{
+						if (m_pGameInstance->Get_IsLoopingSound(i))
+						{
+							m_pGameInstance->FadeinSound(i, fTimeDelta);
+						}
+					}
 					m_isInVillage = false;
 				}
 			}
@@ -106,14 +144,26 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 					if (not m_isInVillage)
 					{
 						CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::VILLAGE);
-						m_pGameInstance->FadeoutSound(0, fTimeDelta, 1.f, false);
+						for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+						{
+							if (m_pGameInstance->Get_IsLoopingSound(i))
+							{
+								m_pGameInstance->FadeoutSound(i, fTimeDelta, 1.f, false);
+							}
+						}
 					}
 					iter->Set_Limited(true);
 				}
 				if (not m_pGameInstance->Get_IsPlayingSound(0))
 				{
 					m_pGameInstance->PlayBGM(TEXT("BGM_1st_Village"));
-					m_pGameInstance->FadeinSound(0, fTimeDelta);
+					for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+					{
+						if (m_pGameInstance->Get_IsLoopingSound(i))
+						{
+							m_pGameInstance->FadeinSound(i, fTimeDelta);
+						}
+					}
 					m_isInVillage = true;
 				}
 			}
@@ -199,7 +249,13 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 				}
 			}
 			m_pGameInstance->PlayBGM(TEXT("BGM_6th_Field_01"));
-			m_pGameInstance->FadeinSound(0, fTimeDelta, 0.5f);
+			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+			{
+				if (m_pGameInstance->Get_IsLoopingSound(i))
+				{
+					m_pGameInstance->FadeinSound(i, fTimeDelta, 0.5f);
+				}
+			}
 
 			pGetPath = TEXT("../Bin/Data/DungeonPos.dat");
 
@@ -230,7 +286,13 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 				}
 			}
 			m_pGameInstance->PlayBGM(TEXT("BGM_1st_Village"));
-			m_pGameInstance->FadeinSound(0, fTimeDelta, 0.5f);
+			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+			{
+				if (m_pGameInstance->Get_IsLoopingSound(i))
+				{
+					m_pGameInstance->FadeinSound(i, fTimeDelta, 0.5f);
+				}
+			}
 
 			pGetPath = TEXT("../Bin/Data/Village_Player_Pos.dat");
 

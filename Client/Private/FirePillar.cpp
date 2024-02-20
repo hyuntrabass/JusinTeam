@@ -49,10 +49,6 @@ void CFirePillar::Tick(_float fTimeDelta)
 
 	if (m_fLifeTime >= 7.f)
 	{
-		if (m_iSoundChannel != -1)
-		{
-			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
-		}
 		Kill();
 		return;
 	}
@@ -116,11 +112,24 @@ void CFirePillar::Tick(_float fTimeDelta)
 		}
 	}
 
-	if (m_fLifeTime >= 1.2f)
+	if (m_fLifeTime >= 6.f)
+	{
+		if (m_iSoundChannel != -1)
+		{
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+		}
+	}
+	else if (m_fLifeTime >= 1.2f)
 	{
 		if (m_iSoundChannel == -1)
 		{
 			m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("BP_Skill_10061_SFX_01"));
+		}
+		else if (m_pGameInstance->Get_ChannelCurPosRatio(m_iSoundChannel) >= 0.6f)
+		{
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+			m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("BP_Skill_10061_SFX_01"), 0.5f, 0.25f);
+			m_pGameInstance->FadeinSound(m_iSoundChannel, fTimeDelta);
 		}
 	}
 

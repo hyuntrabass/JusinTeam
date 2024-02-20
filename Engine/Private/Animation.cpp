@@ -165,6 +165,7 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 				}
 				else
 				{
+					//툴에서 터지는거 방지
 					m_fCurrentAnimPos = m_fDuration * fDurationRatio;
 					m_isFinished = true;
 				}
