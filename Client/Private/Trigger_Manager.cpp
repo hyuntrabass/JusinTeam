@@ -331,7 +331,6 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 			m_iSkyTextureIndex = 12;
 			break;
 		}
-
 	}
 	// 파일을 읽어서 위치, 룩을 세팅하는 코드를 넣습니당
 

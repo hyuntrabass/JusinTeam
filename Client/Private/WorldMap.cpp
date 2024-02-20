@@ -132,7 +132,7 @@ void CWorldMap::Tick(_float fTimeDelta)
 				m_fReadyTime = 0.f;
 				m_eCurPoint = (MAPPOINT)i;
 				CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
-				
+				return;
 			}
 
 			m_Points[i]->Tick(fTimeDelta);

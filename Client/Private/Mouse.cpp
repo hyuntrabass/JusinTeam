@@ -24,9 +24,8 @@ HRESULT CMouse::Init(void* pArg)
 		return E_FAIL;
 	}
 
-
-	m_fSizeX = 63.f;
-	m_fSizeY = 63.f;
+	m_fSizeX = 64.f;
+	m_fSizeY = 64.f;
 
 	m_fX = g_iWinSizeX >> 1;
 	m_fY = g_iWinSizeY >> 1;
@@ -43,11 +42,18 @@ HRESULT CMouse::Init(void* pArg)
 void CMouse::Tick(_float fTimeDelta)
 {
 
+
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
-	m_fSizeX = 64.f;
-	m_fSizeY = 64.f;
+
+	CUI_Manager::MOUSESTATE eState = CUI_Manager::Get_Instance()->Get_MouseState();
+	if (eState == CUI_Manager::M_HIDE)
+	{
+		SetCursorPos((_uint)g_ptCenter.x, (_uint)g_ptCenter.y);
+		return;
+	}
+
 
 	m_fX = static_cast<_float>(ptMouse.x);
 	m_fY = static_cast<_float>(ptMouse.y);
@@ -59,12 +65,17 @@ void CMouse::Tick(_float fTimeDelta)
 
 void CMouse::Late_Tick(_float fTimeDelta)
 {
+	CUI_Manager::MOUSESTATE eState = CUI_Manager::Get_Instance()->Get_MouseState();
+	if (eState == CUI_Manager::M_HIDE)
+	{
+		return;
+	}
+
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
 HRESULT CMouse::Render()
 {
-	CUI_Manager::MOUSESTATE eState = CUI_Manager::Get_Instance()->Get_MouseState();
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;

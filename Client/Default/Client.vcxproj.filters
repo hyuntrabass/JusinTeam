@@ -451,8 +451,11 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\UIEffect\Num">
       <UniqueIdentifier>{3b25b89c-d55a-49aa-90af-b52ebcf633d2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\04.Monster\98. MiniGame">
+    <Filter Include="02.GameObjects\14.BrickGame">
       <UniqueIdentifier>{fae2df1e-88e4-4c45-9640-60c520878be7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Monster\98. Statue">
+      <UniqueIdentifier>{b30a4619-e442-47d5-bdd3-dcd61152f75c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -908,8 +911,14 @@
       <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Num</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Balloon.h">
-      <Filter>02.GameObjects\04.Monster\98. MiniGame</Filter>
+      <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Interaction_Anim_Object.h" />
+    <ClInclude Include="..\Public\Interaction_NonAnim_Object.h" />
+    <ClInclude Include="..\Public\BrickBall.h">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Statue.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1362,8 +1371,14 @@
       <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Num</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Balloon.cpp">
-      <Filter>02.GameObjects\04.Monster\98. MiniGame</Filter>
+      <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Interaction_Anim_Object.cpp" />
+    <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp" />
+    <ClCompile Include="..\Private\BrickBall.cpp">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Statue.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">

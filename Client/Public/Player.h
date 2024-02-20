@@ -363,6 +363,7 @@ public:
 	void Update_Trail(_float fTimeDelta);
 
 private:
+	CGameObject* m_pAim{ nullptr };
 	CRiding* m_pRiding{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CGameObject* m_pNameTag{ nullptr };
