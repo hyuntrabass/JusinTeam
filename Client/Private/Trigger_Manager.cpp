@@ -149,6 +149,7 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 		m_strFilePath = L"../Bin/Data/Boss_Final_CutScene.dat";
 		CCamera_Manager::Get_Instance()->Set_CameraModeIndex(CM_CUTSCENE);
 		m_bAfterSuicide = false;
+		m_isShaking = true;
 	}
 
 

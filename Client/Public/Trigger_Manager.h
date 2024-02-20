@@ -49,11 +49,13 @@ public:
 	void Set_AfterSuicide() { m_bAfterSuicide = true; }
 	void Set_BossStart() { m_bBossStart = true; }
 	void LoopBroken() { m_isBreakLoop = false; }
+	void Set_Shake_Camera(_bool isShaking) { m_isShaking = isShaking; }
 
 	_bool Get_StartSuicide() { return m_bStartSuicide; }
 	_bool Get_AfterSuicide() { return m_bAfterSuicide; }
 	_bool Get_BossStart() { return m_bBossStart; }
 	_bool Is_BreakLoop() { return m_isBreakLoop; }
+	_bool Get_Shake_Camera() { return m_isShaking; }
 
 private:
 	CGameInstance* m_pGameInstance = { nullptr };
@@ -66,6 +68,7 @@ private:
 	wstring m_strFilePath{};
 	_bool m_isBreakLoop{};
 	_bool m_isInVillage{};
+	_bool m_isShaking{false};
 
 private:
 	_bool m_isCollBossTrigger = { false };

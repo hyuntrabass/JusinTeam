@@ -2,6 +2,9 @@
 #include "Interaction_NonAnim_Object.h"
 #include "Camera_Manager.h"
 
+// Prototype_Model_Hurbs
+// Prototype_Model_OakTree
+
 CInteraction_NonAnim::CInteraction_NonAnim(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
