@@ -411,7 +411,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 				Info.pMatrix = &EffectMatrix;
 				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
-				EffectMatrix = _mat::CreateScale(6.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.1f, 0.f)));
+				EffectMatrix = _mat::CreateScale(4.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.1f, 0.f)));
 				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Roar_Floor_Parti");
 				Info.pMatrix = &EffectMatrix;
 				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
@@ -421,7 +421,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 			if (m_fTime >= 0.1f)
 			{
-				_mat EffectMatrix = _mat::CreateScale(10.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) /*+ _vec3(0.f, -0.1f, 0.f)*/));
+				_mat EffectMatrix = _mat::CreateScale(15.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) /*+ _vec3(0.f, -0.1f, 0.f)*/));
 				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Roar");
 				Info.pMatrix = &EffectMatrix;
 				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
@@ -441,7 +441,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->Get_CurrentAnimPos() >= 135.f && m_pModelCom->Get_CurrentAnimPos() <= 250.f)
 		{
-			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 0.5f);
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 0.1f);
 		}
 
 		if (m_pModelCom->IsAnimationFinished(ROAR))
@@ -786,17 +786,17 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 				Info.pMatrix = &EffectMatrix;
 				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
-				EffectMatrix = _mat::CreateScale(2.3f) * _mat::CreateTranslation(_vec3(m_vPlayerOldPos + _vec3(0.f, 0.1f, 0.f)));
+				EffectMatrix = _mat::CreateScale(2.3f) * _mat::CreateTranslation(_vec3(m_vPlayerOldPos + _vec3(0.f, 0.2f, 0.f)));
 				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Head_Fire_Floor");
 				Info.pMatrix = &EffectMatrix;
 				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
-				EffectMatrix = _mat::CreateScale(2.3f) * _mat::CreateTranslation(_vec3(m_vPlayerOldPos + _vec3(0.f, 0.1f, 0.f)));
+				EffectMatrix = _mat::CreateScale(2.3f) * _mat::CreateTranslation(_vec3(m_vPlayerOldPos + _vec3(0.f, 0.5f, 0.f)));
 				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Floor_Parti2");
 				Info.pMatrix = &EffectMatrix;
 				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
-				EffectMatrix = _mat::CreateScale(2.f) * _mat::CreateRotationX(180.f) * _mat::CreateTranslation(_vec3(m_vPlayerOldPos + _vec3(0.f, 2.f, 0.f)));
+				EffectMatrix = _mat::CreateScale(2.f) /** _mat::CreateRotationX(180.f)*/ * _mat::CreateTranslation(_vec3(m_vPlayerOldPos + _vec3(0.f, -1.f, 0.f)));
 				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Head_Fire_Parti");
 				Info.pMatrix = &EffectMatrix;
 				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
