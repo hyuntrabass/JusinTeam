@@ -457,6 +457,9 @@
     <Filter Include="02.GameObjects\09.Object\Interaction\Anim">
       <UniqueIdentifier>{64c323e5-f5a0-4b88-9c50-f5a9e3638a8a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\04.Monster\98. Statue">
+      <UniqueIdentifier>{b30a4619-e442-47d5-bdd3-dcd61152f75c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -913,6 +916,7 @@
     <ClInclude Include="..\Public\Interaction_NonAnim_Object.h">
       <Filter>02.GameObjects\09.Object\Interaction\NonAnim</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Statue.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1367,6 +1371,7 @@
     <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp">
       <Filter>02.GameObjects\09.Object\Interaction\NonAnim</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Statue.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
