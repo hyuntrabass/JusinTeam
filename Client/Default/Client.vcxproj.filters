@@ -912,6 +912,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Interaction_Anim_Object.h" />
     <ClInclude Include="..\Public\Interaction_NonAnim_Object.h" />
+    <ClInclude Include="..\Public\BrickBall.h">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1368,6 +1371,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Interaction_Anim_Object.cpp" />
     <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp" />
+    <ClCompile Include="..\Private\BrickBall.cpp">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">

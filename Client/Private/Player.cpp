@@ -9,6 +9,7 @@
 #include "Camera_Manager.h"
 #include "Trigger_Manager.h"
 #include "Dialog.h"
+#include "TextButton.h"
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -641,6 +642,20 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		m_Weapon_CurrentIndex = SWORD_UNEQUIP;
 		m_Current_Weapon = WP_SWORD;
 		m_bWeapon_Unequip = false;
+
+		CTextButton::TEXTBUTTON_DESC ButtonDesc = {};
+		ButtonDesc.eLevelID = LEVEL_STATIC;
+		ButtonDesc.fDepth = (_float)D_SCREEN / (_float)D_END;
+		ButtonDesc.strText = TEXT("");
+		ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Aim");
+		ButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, (_float)g_ptCenter.y);
+		ButtonDesc.vSize = _vec2(50.f, 50.f);
+
+		m_pAim = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
+		if (not m_pAim)
+		{
+			return;
+		}
 	}
 
 
@@ -681,7 +696,10 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	{
 		m_pNameTag->Late_Tick(fTimeDelta);
 	}
-
+	if (m_bLockOn && m_pAim != nullptr)
+	{
+		m_pAim->Late_Tick(fTimeDelta);
+	}
 
 }
 
@@ -4680,6 +4698,8 @@ void CPlayer::Free()
 		Safe_Release(m_pLeft_Trail[i]);
 		Safe_Release(m_pRight_Trail[i]);
 	}
+
+	Safe_Release(m_pAim);
 
 	Safe_Release(m_pRiding);
 	Safe_Release(m_pNameTag);
