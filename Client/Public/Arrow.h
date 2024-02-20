@@ -13,7 +13,7 @@ struct Arrow_Type
 	_vec4 vLook{};
 	_int iDamage{};
 	CCollider* MonCollider{ nullptr };
-
+	_bool bAimMode{};
 };
 class CArrow final : public CBlendObject
 {
@@ -43,6 +43,7 @@ private:
 	_float m_fDeadTime{};
 	_mat m_ParticleMatrix{};
 	_int m_iDamage{};
+	_vec4 m_vRaycastPos{};
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
