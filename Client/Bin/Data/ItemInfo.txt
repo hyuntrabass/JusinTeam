@@ -17,8 +17,8 @@ WEARABLE|TOP|UNIQUE|엘드룬의 수호 투구|ProtectiveGear-10|30|40|0|0|3|1|
 WEARABLE|TOP|LEGENDARY|레긴레이프의 불멸 투구|ProtectiveGear-10|0|50|0|0|4|1|
 EQUIP|SWORD|COMMON|무스 뿔 단검|Weapon_Rogue-1|0|10|0|0|0|1|
 EQUIP|SWORD|UNCOMMON|거인의 강철 단검|Weapon_Rogue-1|18|20|0|0|1|1|
-EQUIP|SWORD|RARE|폭군 수드리의 단검|Weapon_Rogue-1|44|30|0|0|2|1|
-EQUIP|SWORD|UNIQUE|헤임달의 단검|Weapon_Rogue-1|51|40|0|0|3|1|
+EQUIP|SWORD|RARE|헤임달의 단검|Weapon_Rogue-1|51|40|0|0|2|1|
+EQUIP|SWORD|UNIQUE|폭군 수드리의 단검|Weapon_Rogue-1|44|30|0|0|3|1|
 EQUIP|SWORD|LEGENDARY|오딘의 궁니르 단검|Weapon_Rogue-1|46|50|0|0|4|1|
 EQUIP|BOW|COMMON|무스 뿔 활|Weapon_Rogue-2|0|10|0|0|0|1|
 EQUIP|BOW|UNCOMMON|거인의 강철 활|Weapon_Rogue-2|3|20|0|0|1|1|

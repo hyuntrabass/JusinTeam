@@ -74,6 +74,7 @@ void CTower::Tick(_float fTimeDelta)
 
 void CTower::Late_Tick(_float fTimeDelta)
 {
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 	if (!m_isCleared)
 	{
 		m_pDoor->Late_Tick(fTimeDelta);
@@ -82,7 +83,7 @@ void CTower::Late_Tick(_float fTimeDelta)
 	{
 		m_pSelectMask->Late_Tick(fTimeDelta);
 	}
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
+
 }
 
 HRESULT CTower::Render()
@@ -92,7 +93,7 @@ HRESULT CTower::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(VTPass_Dissolve)))
+	if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
 	{
 		return E_FAIL;
 	}

@@ -41,6 +41,7 @@ void CMap::Tick(_float fTimeDelta)
 
 void CMap::Late_Tick(_float fTimeDelta)
 {
+	/*
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Camera", LEVEL_STATIC);
 
 	_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
@@ -50,9 +51,10 @@ void CMap::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
+	*/
 
 	CAMERA_STATE CamState = CCamera_Manager::Get_Instance()->Get_CameraState();
-	if (CamState == CS_SKILLBOOK or CamState == CS_INVEN or CamState == CS_WORLDMAP)
+	if (CamState == CS_SKILLBOOK or CamState == CS_INVEN)
 	{
 		return;
 	}

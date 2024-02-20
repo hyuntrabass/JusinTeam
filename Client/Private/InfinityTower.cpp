@@ -3,6 +3,7 @@
 #include "TextButton.h"
 #include "TextButtonColor.h"
 #include "UI_Manager.h"
+#include "Camera_Manager.h"
 #include "Tower.h"
 
 CInfinityTower::CInfinityTower(_dev pDevice, _context pContext)
@@ -54,6 +55,7 @@ void CInfinityTower::Tick(_float fTimeDelta)
 {
 	if (CUI_Manager::Get_Instance()->IsInfinityTower())
 	{
+		CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
 		CUI_Manager::Get_Instance()->Open_InfinityTower(false);
 		m_isActive = true;
 	}
@@ -72,6 +74,7 @@ void CInfinityTower::Tick(_float fTimeDelta)
 		{
 			m_pTowers[i]->Select_Object(false);
 		}
+		CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 		m_vDefaultPoint = m_vInitialPoint;
 		m_isActive = false;
 		return;
@@ -92,6 +95,7 @@ void CInfinityTower::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 	m_pLeftBg->Late_Tick(fTimeDelta);
 
 	for (_uint i = 0; i < 3; i++)
@@ -112,7 +116,7 @@ void CInfinityTower::Late_Tick(_float fTimeDelta)
 	m_pCloud->Late_Tick(fTimeDelta);
 	m_pExitButton->Late_Tick(fTimeDelta);
 	m_pStartButton->Late_Tick(fTimeDelta);
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
+
 }
 
 HRESULT CInfinityTower::Render()

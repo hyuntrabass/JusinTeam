@@ -257,7 +257,9 @@ public:
 		Skill3,
 		Skill4,
 		SkillR,
-		Aim_Idle,
+		AimMode_Start,
+		AimMode,
+		AimMode_End,
 		Jump_Long_End,
 		Mount,
 		Mount_Run,
@@ -361,6 +363,7 @@ public:
 	void Update_Trail(_float fTimeDelta);
 
 private:
+	CGameObject* m_pAim{ nullptr };
 	CRiding* m_pRiding{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CGameObject* m_pNameTag{ nullptr };
