@@ -508,7 +508,7 @@ void CVoid20::Tick_State(_float fTimeDelta)
 		{
 			m_fDeadTime += fTimeDelta;
 		}
-
+		
 		break;
 	}
 

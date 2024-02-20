@@ -90,6 +90,7 @@ void CFirePillar::Tick(_float fTimeDelta)
 			Info.pMatrix = &EffectMatrix;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
+			EffectMatrix = _mat::CreateScale(1.8f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)/* + _vec3(0.f, -0.1f, 0.f)*/));
 			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_FirePillar_Tornado_Loop");
 			Info.pMatrix = &EffectMatrix;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);

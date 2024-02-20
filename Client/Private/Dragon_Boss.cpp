@@ -252,7 +252,7 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 			m_Animation.fAnimSpeedRatio = 2.f;
 
 			{
-				_mat EffectMatrix = _mat::CreateScale(25.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) 
+				_mat EffectMatrix = _mat::CreateScale(25.f) * _mat::CreateRotationX(XMConvertToRadians(90.f))
 					* _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.2f, 0.f)));
 
 				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Frame");
@@ -289,12 +289,12 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 
 			break;
 
-		//case Client::CDragon_Boss::STATE_UNKNOWN:
-		//	m_Animation.iAnimIndex = OUROBOROS_ATTACK06_START;
-		//	m_Animation.isLoop = false;
-		//	m_Animation.fAnimSpeedRatio = 2.f;
+			//case Client::CDragon_Boss::STATE_UNKNOWN:
+			//	m_Animation.iAnimIndex = OUROBOROS_ATTACK06_START;
+			//	m_Animation.isLoop = false;
+			//	m_Animation.fAnimSpeedRatio = 2.f;
 
-		//	break;
+			//	break;
 
 		case Client::CDragon_Boss::STATE_RAGE:
 			m_Animation.iAnimIndex = OUROBOROS_ATTACK07;
@@ -359,7 +359,7 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 			m_Animation.fAnimSpeedRatio = 2.f;
 		}
 
-			break;
+		break;
 
 		case Client::CDragon_Boss::STATE_DIE:
 			m_Animation.iAnimIndex = DIE;
@@ -474,7 +474,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 					it = false;
 				}
 			}
-			
+
 			DRAGON_ATTACK eAttackRandom = static_cast<DRAGON_ATTACK>(rand() % ATTACK_END);
 
 			while (m_bAttack_Selected[eAttackRandom] == true)
@@ -499,9 +499,9 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 			case Client::CDragon_Boss::WING_ATTACK:
 				eTempDragonState = STATE_WING_ATTACK;
 				break;
-			//case Client::CDragon_Boss::UNKNOWN:
-			//	eTempDragonState = STATE_UNKNOWN;
-			//	break;
+				//case Client::CDragon_Boss::UNKNOWN:
+				//	eTempDragonState = STATE_UNKNOWN;
+				//	break;
 			case Client::CDragon_Boss::RAGE:
 				eTempDragonState = STATE_RAGE;
 				break;
@@ -531,22 +531,22 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = eTempDragonState;
 
-			m_eCurState = STATE_FLY_FIRE; // 테스트용
+			m_eCurState = STATE_TAKE_DOWN; // 테스트용
 		}
 	}
 
-		break;
+	break;
 
 	case Client::CDragon_Boss::STATE_RIGHT_SLASH:
 
 		if (m_pModelCom->Get_CurrentAnimPos() >= 41.f && m_pModelCom->Get_CurrentAnimPos() <= 43.f)
 		{
-			 if (!m_bAttacked1)
-			 {
-				 _uint iDamage = 60 + rand() % 20;
-				 m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
-				 m_bAttacked1 = true;
-			 }
+			if (!m_bAttacked1)
+			{
+				_uint iDamage = 60 + rand() % 20;
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
+				m_bAttacked1 = true;
+			}
 		}
 
 		if (m_pModelCom->Get_CurrentAnimPos() >= 37.f && m_pModelCom->Get_CurrentAnimPos() <= 43.f)
@@ -566,6 +566,119 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 	case Client::CDragon_Boss::STATE_TAKE_DOWN:
 
+		if (m_pModelCom->Get_CurrentAnimPos() >= 84.f && m_pModelCom->Get_CurrentAnimPos() >= 84.f)
+		{
+
+		}
+
+		if (m_pModelCom->Get_CurrentAnimPos() >= 84.f)
+		{
+			if (!m_bCreateEffect[0])
+			{
+				// 오른쪽
+				_mat EffectMatrix = _mat::CreateScale(2.f) * _mat::CreateTranslation(0.f, 0.1f, 0.f) * (*m_pModelCom->Get_BoneMatrix("Bip001-R-Finger21")) 
+					* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();;
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Crack"); // 수정
+				//Info.pMatrix = &EffectMatrix;
+				//CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				EffectMatrix = _mat::CreateScale(4.f) * _mat::CreateTranslation(0.f, 0.1f, 0.f) * (*m_pModelCom->Get_BoneMatrix("Bip001-R-Finger21"))
+					* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();;
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Parti_Black");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				EffectMatrix = _mat::CreateScale(4.f) * _mat::CreateTranslation(0.f, 0.1f, 0.f) * (*m_pModelCom->Get_BoneMatrix("Bip001-R-Finger21"))
+					* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();;
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Parti_Red");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				EffectMatrix = _mat::CreateScale(2.f) * _mat::CreateTranslation(0.f, 0.1f, 0.f) * (*m_pModelCom->Get_BoneMatrix("Bip001-R-Finger21"))
+					* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();;
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Spread2");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				EffectMatrix = _mat::CreateScale(2.f) * _mat::CreateTranslation(0.f, 0.1f, 0.f) * (*m_pModelCom->Get_BoneMatrix("Bip001-R-Finger21"))
+					* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();;
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Spread3");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				EffectMatrix = _mat::CreateScale(2.f) * _mat::CreateRotationX(XMConvertToRadians(180.f)) * _mat::CreateTranslation(0.f, 0.1f, 0.f) * (*m_pModelCom->Get_BoneMatrix("Bip001-R-Finger21"))
+					* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();;
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Spread4");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				EffectMatrix = _mat::CreateScale(1.5f) * _mat::CreateRotationX(XMConvertToRadians(180.f)) * _mat::CreateTranslation(0.f, 0.1f, 0.f) * (*m_pModelCom->Get_BoneMatrix("Bip001-R-Finger21"))
+					* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();;
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Spread5");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				EffectMatrix = _mat::CreateScale(2.2f) * _mat::CreateRotationX(XMConvertToRadians(180.f)) * _mat::CreateTranslation(0.f, 0.1f, 0.f) * (*m_pModelCom->Get_BoneMatrix("Bip001-R-Finger21"))
+					* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();;
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Spread6");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+
+				// 왼쪽
+				EffectMatrix = _mat::CreateScale(2.f) * _mat::CreateTranslation(0.f, 0.1f, 0.f) * (*m_pModelCom->Get_BoneMatrix("Bip001-L-Finger21"))
+					* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();;
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Crack"); // 수정
+				//Info.pMatrix = &EffectMatrix;
+				//CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				EffectMatrix = _mat::CreateScale(4.f) * _mat::CreateTranslation(0.f, 0.1f, 0.f) * (*m_pModelCom->Get_BoneMatrix("Bip001-L-Finger21"))
+					* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();;
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Parti_Black");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				EffectMatrix = _mat::CreateScale(4.f) * _mat::CreateTranslation(0.f, 0.1f, 0.f) * (*m_pModelCom->Get_BoneMatrix("Bip001-L-Finger21"))
+					* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();;
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Parti_Red");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				EffectMatrix = _mat::CreateScale(2.f) * _mat::CreateTranslation(0.f, 0.1f, 0.f) * (*m_pModelCom->Get_BoneMatrix("Bip001-L-Finger21"))
+					* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();;
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Spread2");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				EffectMatrix = _mat::CreateScale(2.f) * _mat::CreateTranslation(0.f, 0.1f, 0.f) * (*m_pModelCom->Get_BoneMatrix("Bip001-L-Finger21"))
+					* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();;
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Spread3");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				EffectMatrix = _mat::CreateScale(2.f) * _mat::CreateRotationX(XMConvertToRadians(180.f)) * _mat::CreateTranslation(0.f, 0.1f, 0.f) * (*m_pModelCom->Get_BoneMatrix("Bip001-L-Finger21"))
+					* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();;
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Spread4");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				EffectMatrix = _mat::CreateScale(1.5f) * _mat::CreateRotationX(XMConvertToRadians(180.f)) * _mat::CreateTranslation(0.f, 0.1f, 0.f) * (*m_pModelCom->Get_BoneMatrix("Bip001-L-Finger21"))
+					* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();;
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Spread5");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				EffectMatrix = _mat::CreateScale(2.2f) * _mat::CreateRotationX(XMConvertToRadians(180.f)) * _mat::CreateTranslation(0.f, 0.1f, 0.f) * (*m_pModelCom->Get_BoneMatrix("Bip001-L-Finger21"))
+					* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();;
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Spread6");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+
+				m_bCreateEffect[0] = true;
+			}
+		}
+
 		if (m_pModelCom->Get_CurrentAnimPos() >= 82.f && m_pModelCom->Get_CurrentAnimPos() <= 84.f)
 		{
 			if (!m_bAttacked1)
@@ -574,6 +687,8 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 				m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 				m_bAttacked1 = true;
 			}
+
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 0.3f);
 		}
 
 		if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK02))
@@ -721,25 +836,25 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 		break;
 
-	//case Client::CDragon_Boss::STATE_UNKNOWN:
+		//case Client::CDragon_Boss::STATE_UNKNOWN:
 
-	//	if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK06_START))
-	//	{
-	//		m_Animation.iAnimIndex = OUROBOROS_ATTACK06_LOOP;
-	//	}
+		//	if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK06_START))
+		//	{
+		//		m_Animation.iAnimIndex = OUROBOROS_ATTACK06_LOOP;
+		//	}
 
-	//	if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK06_LOOP))
-	//	{
-	//		m_Animation.iAnimIndex = OUROBOROS_ATTACK06_END;
-	//	}
+		//	if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK06_LOOP))
+		//	{
+		//		m_Animation.iAnimIndex = OUROBOROS_ATTACK06_END;
+		//	}
 
-	//	if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK06_END))
-	//	{
-	//		m_eCurState = STATE_IDLE;
-	//		m_bAttack_Selected[UNKNOWN] = true;
-	//	}
+		//	if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK06_END))
+		//	{
+		//		m_eCurState = STATE_IDLE;
+		//		m_bAttack_Selected[UNKNOWN] = true;
+		//	}
 
-	//	break;
+		//	break;
 
 	case Client::CDragon_Boss::STATE_RAGE:
 
@@ -844,7 +959,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		}
 	}
 
-		break;
+	break;
 
 	case Client::CDragon_Boss::STATE_DOUBLE_SLASH:
 
