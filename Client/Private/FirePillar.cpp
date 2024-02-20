@@ -57,7 +57,7 @@ void CFirePillar::Tick(_float fTimeDelta)
 		return;
 	}
 
-	if (m_fLifeTime >= 1.5f)
+	if (m_fLifeTime >= 1.8f)
 	{
 		if (m_pBaseEffect && m_pFrameEffect)
 		{

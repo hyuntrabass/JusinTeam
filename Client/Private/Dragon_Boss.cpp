@@ -421,7 +421,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 			if (m_fTime >= 0.1f)
 			{
-				_mat EffectMatrix = _mat::CreateScale(15.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) /*+ _vec3(0.f, -0.1f, 0.f)*/));
+				_mat EffectMatrix = _mat::CreateScale(20.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) /*+ _vec3(0.f, -0.1f, 0.f)*/));
 				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Roar");
 				Info.pMatrix = &EffectMatrix;
 				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
@@ -531,7 +531,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = eTempDragonState;
 
-			m_eCurState = STATE_TAKE_DOWN; // 테스트용
+			m_eCurState = STATE_FIRE_PILLAR; // 테스트용
 		}
 	}
 
@@ -566,10 +566,10 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 	case Client::CDragon_Boss::STATE_TAKE_DOWN:
 
-		if (m_pModelCom->Get_CurrentAnimPos() >= 84.f && m_pModelCom->Get_CurrentAnimPos() >= 84.f)
-		{
+		//if (m_pModelCom->Get_CurrentAnimPos() >= 84.f && m_pModelCom->Get_CurrentAnimPos() >= 84.f)
+		//{
 
-		}
+		//}
 
 		if (m_pModelCom->Get_CurrentAnimPos() >= 84.f)
 		{
