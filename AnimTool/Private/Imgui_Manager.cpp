@@ -1072,8 +1072,17 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				}
 
 				ImGui::PopItemWidth();
+				ImGui::PushItemWidth(100.f);
 
-				ImGui::SeparatorText("VOLUME");
+				ImGui::InputFloat("FADEOUT SECOND##1", &pSoundDesc->fFadeoutSecond, 0.05f, 0.f, "%.2f");
+				if (pSoundDesc->fFadeoutSecond <= 0.f)
+				{
+					pSoundDesc->fFadeoutSecond = 0.1f;
+				}
+
+				ImGui::PopItemWidth();
+
+				ImGui::SeparatorText("SOUND");
 				ImGui::PushItemWidth(100.f);
 
 				if (ImGui::InputFloat("VOLUME##1", &pSoundDesc->fInitVolume, 0.05f, 0.f, "%.2f"))
@@ -1102,12 +1111,34 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					pSoundDesc->fStartPosRatio = 0.f;
 				}
 
-				ImGui::InputFloat("FADEOUT SECOND##1", &pSoundDesc->fFadeoutSecond, 0.05f, 0.f, "%.2f");
-				if (pSoundDesc->fFadeoutSecond <= 0.f)
+				if (ImGui::Button("FADEIN SOUND##1"))
 				{
-					pSoundDesc->fFadeoutSecond = 0.1f;
+					if (pSoundDesc->IsFadeinSound == false)
+					{
+						pSoundDesc->IsFadeinSound = true;
+					}
+					else if (pSoundDesc->IsFadeinSound == true)
+					{
+						pSoundDesc->IsFadeinSound = false;
+					}
+				}
+				ImGui::SameLine();
+				if (pSoundDesc->IsFadeinSound)
+				{
+					ImGui::Text("TRUE");
+				}
+				else
+				{
+					ImGui::Text("FALSE");
 				}
 
+				ImGui::InputFloat("FADEIN SECOND##1", &pSoundDesc->fFadeinSecond, 0.05f, 0.f, "%.2f");
+				if (pSoundDesc->fFadeinSecond <= 0.f)
+				{
+					pSoundDesc->fFadeinSecond = 0.1f;
+				}
+
+				ImGui::SeparatorText("SOUND");
 				if (ImGui::Button("CLIENT TRIGGER"))
 				{
 					if (pSoundDesc->IsClientTrigger == false)
@@ -1143,6 +1174,10 @@ HRESULT CImgui_Manager::ImGuiMenu()
 						pSoundDesc->iChannel = -1;
 					}
 					pSoundDesc->iChannel = m_pGameInstance->Play_Sound(pSoundDesc->strSoundNames[0], pSoundDesc->fInitVolume, false, pSoundDesc->fStartPosRatio);
+					if (pSoundDesc->IsFadeinSound)
+					{
+						m_pGameInstance->FadeinSound(pSoundDesc->iChannel, 0.016f, pSoundDesc->fFadeinSecond);
+					}
 				}
 
 				ImGui::PopItemWidth();
@@ -1519,8 +1554,17 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				}
 
 				ImGui::PopItemWidth();
+				ImGui::PushItemWidth(100.f);
 
-				ImGui::SeparatorText("VOLUME");
+				ImGui::InputFloat("FADEOUT SECOND##1", &pSoundDesc->fFadeoutSecond, 0.05f, 0.f, "%.2f");
+				if (pSoundDesc->fFadeoutSecond <= 0.f)
+				{
+					pSoundDesc->fFadeoutSecond = 0.1f;
+				}
+
+				ImGui::PopItemWidth();
+
+				ImGui::SeparatorText("SOUND");
 				ImGui::PushItemWidth(100.f);
 
 				if(ImGui::InputFloat("VOLUME##1", &pSoundDesc->fInitVolume, 0.05f, 0.f, "%.2f"))
@@ -1549,12 +1593,34 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					pSoundDesc->fStartPosRatio = 0.f;
 				}
 
-				ImGui::InputFloat("FADEOUT SECOND##1", &pSoundDesc->fFadeoutSecond, 0.05f, 0.f, "%.2f");
-				if (pSoundDesc->fFadeoutSecond <= 0.f)
+				if (ImGui::Button("FADEIN SOUND##1"))
 				{
-					pSoundDesc->fFadeoutSecond = 0.1f;
+					if (pSoundDesc->IsFadeinSound == false)
+					{
+						pSoundDesc->IsFadeinSound = true;
+					}
+					else if (pSoundDesc->IsFadeinSound == true)
+					{
+						pSoundDesc->IsFadeinSound = false;
+					}
+				}
+				ImGui::SameLine();
+				if (pSoundDesc->IsFadeinSound)
+				{
+					ImGui::Text("TRUE");
+				}
+				else
+				{
+					ImGui::Text("FALSE");
 				}
 
+				ImGui::InputFloat("FADEIN SECOND##1", &pSoundDesc->fFadeinSecond, 0.05f, 0.f, "%.2f");
+				if (pSoundDesc->fFadeinSecond <= 0.f)
+				{
+					pSoundDesc->fFadeinSecond = 0.1f;
+				}
+
+				ImGui::SeparatorText("SOUND");
 				if (ImGui::Button("CLIENT TRIGGER"))
 				{
 					if (pSoundDesc->IsClientTrigger == false)
@@ -1589,6 +1655,10 @@ HRESULT CImgui_Manager::ImGuiMenu()
 						pSoundDesc->iChannel = -1;
 					}
 					pSoundDesc->iChannel = m_pGameInstance->Play_Sound(pSoundDesc->strSoundNames[0], pSoundDesc->fInitVolume, false, pSoundDesc->fStartPosRatio);
+					if (pSoundDesc->IsFadeinSound)
+					{
+						m_pGameInstance->FadeinSound(pSoundDesc->iChannel, 0.016f, pSoundDesc->fFadeinSecond);
+					}
 				}
 
 				ImGui::PopItemWidth();
@@ -1933,6 +2003,10 @@ HRESULT CImgui_Manager::SaveFile()
 					Fileout.write(reinterpret_cast<_char*>(&IsClientTrigger), sizeof(_bool));
 					_float fStartPosRatio = SoundDescs[i].fStartPosRatio;
 					Fileout.write(reinterpret_cast<_char*>(&fStartPosRatio), sizeof(_float));
+					_bool IsFadeinSound = SoundDescs[i].IsFadeinSound;
+					Fileout.write(reinterpret_cast<_char*>(&IsFadeinSound), sizeof(_bool));
+					_float fFadeinSecond = SoundDescs[i].fFadeinSecond;
+					Fileout.write(reinterpret_cast<_char*>(&fFadeinSecond), sizeof(_float));
 				}
 			}
 		}
@@ -2021,6 +2095,10 @@ HRESULT CImgui_Manager::SaveFile()
 					Fileout.write(reinterpret_cast<_char*>(&IsClientTrigger), sizeof(_bool));
 					_float fStartPosRatio = SoundDescs[i].fStartPosRatio;
 					Fileout.write(reinterpret_cast<_char*>(&fStartPosRatio), sizeof(_float));
+					_bool IsFadeinSound = SoundDescs[i].IsFadeinSound;
+					Fileout.write(reinterpret_cast<_char*>(&IsFadeinSound), sizeof(_bool));
+					_float fFadeinSecond = SoundDescs[i].fFadeinSecond;
+					Fileout.write(reinterpret_cast<_char*>(&fFadeinSecond), sizeof(_float));
 				}
 			}
 		}
@@ -2159,6 +2237,8 @@ HRESULT CImgui_Manager::LoadFile()
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fFadeoutSecond), sizeof(_float));
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.IsClientTrigger), sizeof(_bool));
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fStartPosRatio), sizeof(_float));
+					Filein.read(reinterpret_cast<_char*>(&SoundDesc.IsFadeinSound), sizeof(_bool));
+					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fFadeinSecond), sizeof(_float));
 
 					pCurModel->Add_TriggerSound(SoundDesc);
 				}
@@ -2252,6 +2332,8 @@ HRESULT CImgui_Manager::LoadFile()
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fFadeoutSecond), sizeof(_float));
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.IsClientTrigger), sizeof(_bool));
 					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fStartPosRatio), sizeof(_float));
+					Filein.read(reinterpret_cast<_char*>(&SoundDesc.IsFadeinSound), sizeof(_bool));
+					Filein.read(reinterpret_cast<_char*>(&SoundDesc.fFadeinSecond), sizeof(_float));
 
 					pCurModel->Add_TriggerSound(SoundDesc);
 				}
@@ -2450,6 +2532,8 @@ HRESULT CImgui_Manager::UpdateFile()
 						Filein.read(reinterpret_cast<_char*>(&PreSoundDesc.fFadeoutSecond), sizeof(_float));
 						Filein.read(reinterpret_cast<_char*>(&PreSoundDesc.IsClientTrigger), sizeof(_bool));
 						Filein.read(reinterpret_cast<_char*>(&PreSoundDesc.fStartPosRatio), sizeof(_float));
+						Filein.read(reinterpret_cast<_char*>(&PreSoundDesc.IsFadeinSound), sizeof(_bool));
+						Filein.read(reinterpret_cast<_char*>(&PreSoundDesc.fFadeinSecond), sizeof(_float));
 
 						PreSoundDescs.push_back(PreSoundDesc);
 					}
@@ -2476,6 +2560,8 @@ HRESULT CImgui_Manager::UpdateFile()
 					SoundDesc.fFadeoutSecond = PreSoundDescs[i].fFadeoutSecond;
 					SoundDesc.IsClientTrigger = PreSoundDescs[i].IsClientTrigger;
 					SoundDesc.fStartPosRatio = PreSoundDescs[i].fStartPosRatio;
+					SoundDesc.IsFadeinSound = PreSoundDescs[i].IsFadeinSound;
+					SoundDesc.fFadeinSecond = PreSoundDescs[i].fFadeinSecond;
 
 					SoundDescs.push_back(SoundDesc);
 				}
@@ -2522,6 +2608,10 @@ HRESULT CImgui_Manager::UpdateFile()
 						Fileout.write(reinterpret_cast<_char*>(&IsClientTrigger), sizeof(_bool));
 						_float fStartPosRatio = SoundDescs[i].fStartPosRatio;
 						Fileout.write(reinterpret_cast<_char*>(&fStartPosRatio), sizeof(_float));
+						_bool IsFadeinSound = SoundDescs[i].IsFadeinSound;
+						Fileout.write(reinterpret_cast<_char*>(&IsFadeinSound), sizeof(_bool));
+						_float fFadeinSecond = SoundDescs[i].fFadeinSecond;
+						Fileout.write(reinterpret_cast<_char*>(&fFadeinSecond), sizeof(_float));
 					}
 
 					Fileout.close();
