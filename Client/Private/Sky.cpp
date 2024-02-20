@@ -33,7 +33,8 @@ void CSky::Tick(_float fTimeDelta)
 	{
 		return;
 	}
-
+	m_pTransformCom->Set_RotationPerSec(0.5f);
+	m_pTransformCom->Turn(_vec4(0.f, 1.f, 0.f, 0.f), fTimeDelta);
 	if (CCamera_Manager::Get_Instance()->Get_CameraModeIndex() == CM_DEBUG)
 	{
 		if (m_pGameInstance->Key_Down(DIK_NUMPAD3))
