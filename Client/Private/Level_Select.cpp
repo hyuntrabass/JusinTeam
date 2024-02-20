@@ -262,7 +262,17 @@ HRESULT CLevel_Select::Ready_Light()
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Effect);
 	
 	Effect = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BoneFire_Distortion");
-	EffectMat = _mat::CreateRotationY(3.14f) * _mat::CreateTranslation(_vec3(0.f, 1.f, -3.3f));
+	EffectMat = _mat::CreateRotationY(3.14f) * _mat::CreateTranslation(_vec3(0.f, 0.85f, -3.3f));
+	Effect.pMatrix = &EffectMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Effect);
+
+	Effect = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BoneFire_Spark");
+	EffectMat = _mat::CreateTranslation(_vec3(0.f, 0.85f, -3.3f));
+	Effect.pMatrix = &EffectMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Effect);
+
+	Effect = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BoneFire_Smoke");
+	EffectMat = _mat::CreateTranslation(_vec3(0.f, 0.85f, -3.3f));
 	Effect.pMatrix = &EffectMat;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Effect);
 
