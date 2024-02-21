@@ -199,6 +199,7 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 		m_strFilePath = L"../Bin/Data/Boss_Final_CutScene.dat";
 		CCamera_Manager::Get_Instance()->Set_CameraModeIndex(CM_CUTSCENE);
 		m_bAfterSuicide = false;
+		m_isShaking = true;
 	}
 
 
@@ -260,9 +261,9 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 			pGetPath = TEXT("../Bin/Data/DungeonPos.dat");
 
 			// 임시
-			//CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
-			//pCamTransform->Set_State(State::Pos, _vec4(2067.11f, -12.8557f, 2086.95f, 1.f));
-			//pCamTransform->LookAt_Dir(_vec4(0.97706846f, -0.21286753f, 0.004882995f, 0.f));
+			CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
+			pCamTransform->Set_State(State::Pos, _vec4(2067.11f, -12.8557f, 2086.95f, 1.f));
+			pCamTransform->LookAt_Dir(_vec4(0.97706846f, -0.21286753f, 0.004882995f, 0.f));
 
 			CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 			//pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 4.f, 0.f));
@@ -329,6 +330,33 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 			LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
 			*Light = g_Light_Village;
 			m_iSkyTextureIndex = 12;
+			break;
+		}
+		case Client::TS_Minigame:
+		{
+			m_isInVillage = false;
+
+			pGetPath = TEXT("../Bin/Data/Minigame_Player_Pos.dat");
+
+			std::ifstream inFile(pGetPath, std::ios::binary);
+
+			if (!inFile.is_open())
+			{
+				MSG_BOX("파일을 찾지 못했습니다.");
+				return;
+			}
+
+			_mat Player_Matrix{};
+			inFile.read(reinterpret_cast<char*>(&Player_Matrix), sizeof(_mat));
+
+			CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+			pPlayerTransform->Set_Position(_vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
+			pPlayerTransform->LookAt_Dir(Player_Matrix.Look());
+
+			//m_pGameInstance->Set_HellHeight(-70.f);
+			//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+			//*Light = g_Light_Village;
+			//m_iSkyTextureIndex = 12;
 			break;
 		}
 	}

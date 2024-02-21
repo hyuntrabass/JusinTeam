@@ -501,7 +501,6 @@ enum TriggerType
 	TRIGGER_END
 };
 
-
 enum PlaceType
 {
 	VILLAGE,

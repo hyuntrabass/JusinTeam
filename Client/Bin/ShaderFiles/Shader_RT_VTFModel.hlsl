@@ -79,33 +79,6 @@ VS_OUT VS_Main(VS_IN Input)
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
     
-    matrix BoneMatrix = Get_BoneMatrix(Input, g_BoneTexture);
-    
-    vector vPos = mul(vector(Input.vPos, 1.f), BoneMatrix);
-    vector vNormal = mul(vector(Input.vNor, 0.f), BoneMatrix);
-    
-    Output.vPos = mul(vPos, matWVP);
-    Output.vNor = normalize(mul(vNormal, g_WorldMatrix));
-    Output.vTex = Input.vTex;
-    Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
-    Output.vProjPos = Output.vPos;
-    Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), g_WorldMatrix)).xyz;
-    Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
-    Output.vDir = 0.f;
-    
-    return Output;
-}
-
-
-VS_OUT VS_Motion_Blur(VS_IN Input)
-{
-    VS_OUT Output = (VS_OUT) 0;
-	
-    matrix matWV, matWVP;
-    
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
-    matWVP = mul(matWV, g_ProjMatrix);
-    
     matrix matOldWV, matOldWVP;
     
     matOldWV = mul(g_OldWorldMatrix, g_OldViewMatrix);
@@ -137,17 +110,13 @@ VS_OUT VS_Motion_Blur(VS_IN Input)
     
     float2 velocity = (vNewPos.xy / vNewPos.w) - (vOldPos.xy / vOldPos.w);
     
-    //float S = (1.f / g_fDeltaTime) * 1.f;
-    
-    //velocity = (S / 5.f) * velocity;
-    
     vector vCalDir;
     vCalDir.xy = velocity * 0.5f;
     vCalDir.y *= -1.f;
     vCalDir.z = vPos.z;
     vCalDir.w = vPos.w;
     
-    Output.vPos = vPos;
+    Output.vPos = vNewPos;
     Output.vNor = normalize(mul(vNormal, g_WorldMatrix));
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
@@ -155,6 +124,7 @@ VS_OUT VS_Motion_Blur(VS_IN Input)
     Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), g_WorldMatrix)).xyz;
     Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
     Output.vDir = vCalDir;
+    
     
     return Output;
 }
@@ -305,7 +275,7 @@ PS_OUT PS_Main(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
     Output.vRimMask = 0.f;
     
     return Output;
@@ -352,7 +322,8 @@ PS_OUT PS_Main_Dissolve(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
+
     Output.vRimMask = 0.f;
     
     return Output;
@@ -402,7 +373,7 @@ PS_OUT PS_Main_LerpDissolve(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
     Output.vRimMask = 0.f;
     
     return Output;
@@ -451,7 +422,7 @@ PS_OUT PS_Main_Rim(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
     Output.vRimMask = vRimColor;
     
     return Output;
@@ -500,7 +471,7 @@ PS_OUT PS_Motion_Blur(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
     Output.vRimMask = 0.f;
     
     return Output;
@@ -551,7 +522,7 @@ PS_OUT PS_LerpBlur(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
     Output.vRimMask = 0.f;
     
     return Output;
@@ -604,7 +575,7 @@ technique11 DefaultTechnique_Shader_RTVTF
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-        VertexShader = compile vs_5_0 VS_Motion_Blur();
+        VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
@@ -632,7 +603,7 @@ technique11 DefaultTechnique_Shader_RTVTF
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-        VertexShader = compile vs_5_0 VS_Motion_Blur();
+        VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;

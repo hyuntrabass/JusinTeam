@@ -293,6 +293,8 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Pull_Out");
 				Info.pMatrix = &EffectMatrix;
 				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				m_pGameInstance->Play_Sound(TEXT("Sfx_Boss_Hirokin_Atk_04_01"));
 			}
 
 			break;
@@ -540,7 +542,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = eTempDragonState;
 
-			m_eCurState = STATE_BLACKHOLE; // 테스트용
+			//m_eCurState = STATE_RIGHT_SLASH; // 테스트용
 		}
 	}
 
@@ -560,9 +562,9 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->Get_CurrentAnimPos() >= 37.f && m_pModelCom->Get_CurrentAnimPos() <= 43.f)
 		{
-			m_pRightTrail1->Late_Tick(fTimeDelta);
+			/*m_pRightTrail1->Late_Tick(fTimeDelta);
 			m_pRightTrail2->Late_Tick(fTimeDelta);
-			m_pRightTrail3->Late_Tick(fTimeDelta);
+			m_pRightTrail3->Late_Tick(fTimeDelta);*/
 
 			//if (!m_bCreateEffect[0])
 			//{
@@ -1225,7 +1227,7 @@ HRESULT CDragon_Boss::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Dragon"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Dragon"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
 	{
 		return E_FAIL;
 	}
