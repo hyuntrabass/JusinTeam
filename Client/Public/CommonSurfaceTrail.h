@@ -6,7 +6,7 @@ BEGIN(Client)
 
 struct SURFACETRAIL_DESC
 {
-	_vec4 vColor{};
+	_color vColor{};
 	_uint iNumVertices{};
 	wstring strMaskTextureTag{};
 	_uint iPassIndex{ 1 };
@@ -22,6 +22,8 @@ private:
 public:
 	void On();
 	void Off();
+
+	void Set_Color(const _color vColor);
 
 public:
 	HRESULT Init_Prototype() override;
