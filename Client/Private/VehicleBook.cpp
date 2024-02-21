@@ -565,6 +565,7 @@ HRESULT CVehicleBook::Add_Parts()
 	TextButton.fDepth = m_fDepth - 0.02f;
 	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Button_Blue");
 	TextButton.strText = TEXT("Å» °Í ÀåÂø");
+	TextButton.vSize = _vec2(150.f, 100.f);
 	TextButton.vPosition = _vec2(1160.f, 665.f);
 	m_pEquipButton = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
 	if (not m_pEquipButton)

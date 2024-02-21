@@ -134,6 +134,7 @@ namespace Engine
 		std::wstring strUnDissolveTexture{};
 		std::string strModel{};
 
+		std::wstring strEffectTag{};
 		bool isFollow{};
 		SimpleMath::Matrix* pMatrix{};
 	};
@@ -148,6 +149,7 @@ namespace Engine
 		float fDurationRatio{ 1.f };
 		bool bRestartAnimation{ false };
 		float fStartAnimPos{};
+		bool bRewindAnimation{ false };
 	};
 
 
@@ -216,6 +218,8 @@ namespace Engine
 		float fFadeoutSecond = 1.f;
 		bool IsClientTrigger{};
 		float fStartPosRatio{};
+		bool IsFadeinSound{};
+		float fFadeinSecond = 1.f;
 		
 		int iChannel = -1;
 		bool HasPlayed{};

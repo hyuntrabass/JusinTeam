@@ -6,9 +6,10 @@ BEGIN(Client)
 
 struct SURFACETRAIL_DESC
 {
-	_vec4 vColor{};
+	_color vColor{};
 	_uint iNumVertices{};
 	wstring strMaskTextureTag{};
+	_uint iPassIndex{ 1 };
 };
 
 class CCommonSurfaceTrail final : public CBlendObject
@@ -21,6 +22,8 @@ private:
 public:
 	void On();
 	void Off();
+
+	void Set_Color(const _color vColor);
 
 public:
 	HRESULT Init_Prototype() override;
@@ -37,6 +40,7 @@ private:
 
 private:
 	_bool m_bNoRender{};
+	_int m_iTickCounter{};
 
 	list<_vec3> m_TopPosList{};
 	list<_vec3> m_BottomPosList{};

@@ -740,6 +740,22 @@ CFadeBox* CUI_Manager::Clone_FadeBox(CFadeBox::FADE_DESC& Description)
 	return dynamic_cast<CFadeBox*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_FadeBox"), &Description));
 }
 
+const _bool& CUI_Manager::Is_Teleport(TeleportSpot* eSpot)
+{
+	*eSpot = m_eTeleportSpot;
+	return m_bTeleport;
+}
+
+_bool CUI_Manager::Is_Collecting()
+{
+	if (m_isCollect)
+	{
+		m_isCollect = false;
+		return true;
+	}
+	return true;
+}
+
 void CUI_Manager::Free()
 {
 	Safe_Release(m_pGameInstance);

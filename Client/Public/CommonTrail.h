@@ -22,6 +22,8 @@ public:
 	void On();
 	void Off();
 
+	void Set_Color(const _color vColor);
+
 public:
 	HRESULT Init_Prototype() override;
 	HRESULT Init(void* pArg) override;
@@ -39,6 +41,7 @@ private:
 
 private:
 	_bool m_bNoRender{};
+	_int m_iTickCounter{};
 
 	list<_vec3> m_TrailPosList{};
 	TRAIL_DESC m_Info{};

@@ -346,13 +346,13 @@ HRESULT CRiding::Render()
 		}
 
 		_bool HasMaskTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Normals)))
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
 		{
-			HasNorTex = false;
+			HasMaskTex = false;
 		}
 		else
 		{
-			HasNorTex = true;
+			HasMaskTex = true;
 		}
 
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
@@ -540,7 +540,7 @@ void CRiding::Move(_float fTimeDelta)
 	{
 		m_eState = Riding_Idle;
 	}
-	if (m_pGameInstance->Key_Down(DIK_SPACE, InputChannel::GamePlay))
+	if (m_pGameInstance->Key_Down(DIK_SPACE))
 	{
 		if (m_eState == Riding_Glide)
 		{

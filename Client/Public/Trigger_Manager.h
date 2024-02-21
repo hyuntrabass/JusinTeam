@@ -36,7 +36,7 @@ public:
 	const _uint& Get_SkyTextureIndex() const;
 	_bool Get_InOut() { return m_isInVillage; }
 
-	void Teleport(const TeleportSpot eSpot);
+	void Teleport(const TeleportSpot eSpot, _float fTimeDelta = 0.016f);
 
 public:
 	HRESULT Ready_Trigger_Village();

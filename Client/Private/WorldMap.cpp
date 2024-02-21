@@ -43,7 +43,74 @@ HRESULT CWorldMap::Init(void* pArg)
 
 void CWorldMap::Tick(_float fTimeDelta)
 {
-	if (CCamera_Manager::Get_Instance()->Get_CameraState() != CS_WORLDMAP)
+
+	if (m_isReady)
+	{
+		m_fReadyTime += fTimeDelta;
+		_float fLength = (m_pGameInstance->Get_CameraPos() - m_pTransformCom->Get_State(State::Pos)).Length();
+		if (!m_isActive && !m_bSelect)
+		{
+			if (fLength <= 100.f)
+			{			
+				CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
+				m_isReady = false;
+				m_isActive = true;
+			}
+		}
+
+		if (m_isActive && !m_bSelect)
+		{
+			if (fLength >= 100.f)
+			{
+				CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
+				m_isReady = false;
+				m_isActive = false;
+			}
+		}
+
+		if (m_bSelect && m_fReadyTime >= 0.5f)
+		{
+			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
+			
+			m_bSelect = false;
+			m_isReady = false;
+			m_isActive = false;
+			switch (m_eCurPoint)
+			{
+			case VILLAGE:
+				CTrigger_Manager::Get_Instance()->Teleport(TS_Village, fTimeDelta);
+				break;
+			case DUNGEON:
+				CTrigger_Manager::Get_Instance()->Teleport(TS_Dungeon, fTimeDelta);
+				break;
+			case TOWER:
+				CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
+				CUI_Manager::Get_Instance()->Open_InfinityTower(true);
+				break;
+			}
+			return;
+		}
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_M))
+	{
+		m_pGameInstance->Play_Sound(TEXT("WorldMap_Click"), 1.f);
+		if (!m_isActive && !m_isReady)
+		{
+			CCamera_Manager::Get_Instance()->Set_CameraState(CS_WORLDMAP);
+			m_isReady = true;
+			return;
+		}
+		if (m_isActive && !m_isReady)
+		{
+			CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
+			m_isReady = true;
+			return;
+		}
+	}
+
+
+	if (!m_isActive)
 	{
 		return;
 	}
@@ -56,49 +123,17 @@ void CWorldMap::Tick(_float fTimeDelta)
 	m_fWater_Nomal.x += fTimeDelta * 0.1f;
 	m_fWater_Nomal.y -= fTimeDelta * 0.1f;
 
-	if (m_bSelect)
-	{
-		switch (m_eCurPoint)
-		{
-		case VILLAGE:
-			CTrigger_Manager::Get_Instance()->Teleport(TS_Village);
-			break;
-		case DUNGEON:
-			CTrigger_Manager::Get_Instance()->Teleport(TS_Dungeon);
-			break;
-		case TOWER:
-			break;
-		}
-		m_bSelect = false;
-
-		CFadeBox::FADE_DESC Desc = {};
-		Desc.fIn_Duration = 0.5f;
-		Desc.fOut_Duration = 0.5f;
-		Desc.phasFadeCompleted = &m_isFadeReady;
-		CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
-
-		return;
-	}
-
-	if (m_isFadeReady)
-	{
-		if (m_eCurPoint == TOWER)
-		{
-			CUI_Manager::Get_Instance()->Open_InfinityTower(true);
-		}
-		CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
-		CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
-		m_isFadeReady = false;
-	}
-
 	for (size_t i = 0; i < MAP_END; i++)
 	{
 		if (m_Points[i] != nullptr)
 		{
 			if (PtInRect(&m_Points[i]->Get_Rect(), ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 			{
+				m_isReady = true;
 				m_bSelect = true;
+				m_fReadyTime = 0.f;
 				m_eCurPoint = (MAPPOINT)i;
+				CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
 				return;
 			}
 
@@ -112,9 +147,10 @@ void CWorldMap::Tick(_float fTimeDelta)
 
 void CWorldMap::Late_Tick(_float fTimeDelta)
 {
-	if (CCamera_Manager::Get_Instance()->Get_CameraState() != CS_WORLDMAP)
+	if (!m_isActive)
+	{
 		return;
-
+}
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 	for (size_t i = 0; i < MAP_END; i++)
 	{

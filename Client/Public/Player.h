@@ -257,7 +257,9 @@ public:
 		Skill3,
 		Skill4,
 		SkillR,
-		Aim_Idle,
+		AimMode_Start,
+		AimMode,
+		AimMode_End,
 		Jump_Long_End,
 		Mount,
 		Mount_Run,
@@ -361,6 +363,7 @@ public:
 	void Update_Trail(_float fTimeDelta);
 
 private:
+	CGameObject* m_pAim{ nullptr };
 	CRiding* m_pRiding{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CGameObject* m_pNameTag{ nullptr };
@@ -375,8 +378,8 @@ private:
 	class CEffect_Dummy* m_pFrameEffect{ nullptr };
 	class CEffect_Dummy* m_pEffect_Shield{ nullptr };
 	class CCamera_Manager* m_pCam_Manager{ nullptr };
-	CCommonSurfaceTrail* m_pLeft_Trail[5]{ nullptr };
-	CCommonSurfaceTrail* m_pRight_Trail[5]{ nullptr };
+	CCommonSurfaceTrail* m_pLeft_Trail{ nullptr };
+	CCommonSurfaceTrail* m_pRight_Trail{ nullptr };
 
 private:
 	ANIM_DESC m_Animation{};
@@ -402,7 +405,7 @@ private:
 	_bool m_bFirstVillage{};
 	_uint m_iLoggingCount{};
 	_bool m_bArrowRain_Start{};
-
+	_bool m_bAimMode{};
 	_vec4 m_vPos{};
 	_bool m_bIsClimb{};
 	_bool m_bComboZoom{};

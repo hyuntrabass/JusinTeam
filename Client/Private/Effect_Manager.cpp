@@ -63,14 +63,14 @@ EffectInfo CEffect_Manager::Get_EffectInformation(const wstring& strEffectTag)
 	return iter->second;
 }
 
-HRESULT CEffect_Manager::Add_Layer_Effect(EffectInfo& pInfo, const _bool isStaticLevel)
+HRESULT CEffect_Manager::Add_Layer_Effect(EffectInfo& Info, const _bool isStaticLevel)
 {
 	_uint iLevel = LEVEL_STATIC;
 	if (not isStaticLevel)
 	{
 		iLevel = m_pGameInstance->Get_CurrentLevelIndex();
 	}
-	return m_pGameInstance->Add_Layer(iLevel, L"Layer_Effect", L"Prototype_GameObject_EffectDummy", &pInfo);
+	return m_pGameInstance->Add_Layer(iLevel, L"Layer_Effect", L"Prototype_GameObject_EffectDummy", &Info);
 }
 
 CEffect_Dummy* CEffect_Manager::Clone_Effect(EffectInfo& pInfo)
@@ -239,7 +239,9 @@ HRESULT CEffect_Manager::Read_EffectFile()
 					iNameSize = {};
 				}
 
-				m_EffectInfos.emplace(entry.path().stem().wstring(), Info);
+				Info.strEffectTag = entry.path().stem().wstring();
+
+				m_EffectInfos.emplace(Info.strEffectTag, Info);
 
 				File.close();
 			}

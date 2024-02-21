@@ -59,8 +59,9 @@ void CEnvironment_Object::Tick(_float fTimeDelta)
 
 void CEnvironment_Object::Late_Tick(_float fTimeDelta)
 {
+
 	CAMERA_STATE CamState = CCamera_Manager::Get_Instance()->Get_CameraState();
-	if (CamState == CS_SKILLBOOK or CamState == CS_INVEN or CamState == CS_WORLDMAP)
+	if (CamState == CS_SKILLBOOK or CamState == CS_INVEN )//or CamState == CS_WORLDMAP)
 	{
 		return;
 	}

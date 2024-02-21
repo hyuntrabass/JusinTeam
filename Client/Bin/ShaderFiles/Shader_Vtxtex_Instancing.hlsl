@@ -272,7 +272,7 @@ PS_OUT PS_Main_Sprite(PS_IN Input)
     }
     
     float3 Color = g_vColor.rgb;
-    float fAlpha = vMask.r * Input.fDissolveRatio;
+    float fAlpha = g_vColor.a * vMask.r * Input.fDissolveRatio;
     
     //float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 6.f)), 0.01f, 3e3); // 1e-5 = 0.00001, 3e3 = 3000
     
@@ -305,7 +305,7 @@ PS_OUT PS_Main_Color(PS_IN Input)
     }
     
     float3 Color = g_vColor.rgb;
-    float fAlpha = vMask.r * Input.fDissolveRatio;
+    float fAlpha = g_vColor.a * vMask.r * Input.fDissolveRatio;
     
     //float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 6.f)), 0.01f, 3e3); // 1e-5 = 0.00001, 3e3 = 3000
     
@@ -388,13 +388,7 @@ PS_OUT PS_Main_Sprite_Dissolve(PS_IN Input)
     }
 
     float3 Color = g_vColor.rgb;
-    fAlpha = vMask.r * fAlpha;
-    
-    //float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 6.f)), 0.01f, 3e3); // 1e-5 = 0.00001, 3e3 = 3000
-    
-    //fWeight = max(fWeight, 1.f);
-    
-    //float fWeight = pow(Input.LinearZ, -2.5f);
+    fAlpha = g_vColor.a * vMask.r * fAlpha;
     
     float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
     fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
@@ -402,13 +396,7 @@ PS_OUT PS_Main_Sprite_Dissolve(PS_IN Input)
     Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
     Output.vAlpha = fAlpha;
     Output.vBlur = vector(Color, fAlpha) * g_isBlur;
-    
-    
-    
-    //Output.vColor = g_vColor;
-    
-    //Output.vColor.a = vMask.r;
-    
+
     return Output;
 }
 
@@ -430,14 +418,8 @@ PS_OUT PS_Main_Color_Dissolve(PS_IN Input)
     }
     
     float3 Color = g_vColor.rgb;
-    fAlpha = vMask.r * fAlpha;
-    
-    //float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 6.f)), 0.01f, 3e3); // 1e-5 = 0.00001, 3e3 = 3000
-    
-    //fWeight = max(fWeight, 1.f);
-    
-    //float fWeight = pow(Input.LinearZ, -2.5f);
-    
+    fAlpha = g_vColor.a * vMask.r * fAlpha;
+        
     float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
     fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
     
@@ -445,10 +427,6 @@ PS_OUT PS_Main_Color_Dissolve(PS_IN Input)
     Output.vAlpha = fAlpha;
     Output.vBlur = vector(Color, fAlpha) * g_isBlur;
         
-    
-    //Output.vColor = g_vColor;
-    //Output.vColor.a = vMask.r;
-    
     return Output;
 }
 
@@ -625,9 +603,8 @@ PS_OUT PS_Main_Color_Alpha(PS_IN Input)
         discard;
     }
     
-    
     float3 Color = vColor.rgb;
-    float fAlpha = vMask.r * Input.fDissolveRatio * saturate(g_fAlpha);
+    float fAlpha = g_vColor.a * vMask.r * Input.fDissolveRatio * saturate(g_fAlpha);
     
     float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
     fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
@@ -642,12 +619,13 @@ PS_OUT PS_Main_Color_Alpha(PS_IN Input)
 PS_OUT_DISTORTION PS_Distortion(PS_IN Input)
 {
     PS_OUT_DISTORTION Output = (PS_OUT_DISTORTION) 0;
-    
-    vector vColor = g_DistortionTexture.Sample(LinearSampler, Input.vTex);
-    
-    vColor.rgb = vColor.rgb * 2.f - 1.f;
-    
-    Output.vDistortion = vColor;
+    vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
+    if (vMask.r < 0.1f)
+    {
+        discard;
+    }
+
+    Output.vDistortion = normalize(g_DistortionTexture.Sample(LinearSampler, Input.vTex)) * g_fAlpha * vMask.r * Input.fDissolveRatio;
     
     return Output;
 }
@@ -1093,6 +1071,6 @@ technique11 DefaultTechnique
         GeometryShader = compile gs_5_0 GS_MAIN();
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main_Color_Alpha();
+        PixelShader = compile ps_5_0 PS_Distortion();
     }
 };

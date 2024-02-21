@@ -542,6 +542,10 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Distortion"), _float2(ViewportDesc.Width - 350.f, 150.f), _float2(100.f, 100.f))))
+	{
+		return E_FAIL;
+	}
 
 	if (FAILED(m_pGameInstance->Ready_Debug_RT(L"Target_Outline", _float2(ViewportDesc.Width - 250.f, 50.f), _float2(100.f, 100.f))))
 		return E_FAIL;
@@ -2148,6 +2152,11 @@ HRESULT CRenderer::Render_Debug()
 	//}
 
 	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_SSAOBlur"), m_pShader, m_pVIBuffer)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_Distortion"), m_pShader, m_pVIBuffer)))
 	{
 		return E_FAIL;
 	}

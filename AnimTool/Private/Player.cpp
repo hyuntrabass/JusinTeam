@@ -231,12 +231,12 @@ HRESULT CPlayer::Place_PartModels()
 
 	Desc.ePartType = 3;
 
-	Desc.FileName = "sword4";
+	Desc.FileName = "bow4";
 
 	if (FAILED(m_pPlayerModelCom->Place_Parts(Desc)))
 		return E_FAIL;
 
-	Desc.FileName = "bow4";
+	Desc.FileName = "sword4";
 
 	if (FAILED(m_pPlayerModelCom->Place_Parts(Desc)))
 		return E_FAIL;

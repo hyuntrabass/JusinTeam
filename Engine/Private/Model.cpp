@@ -384,7 +384,7 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 	}
 
 	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop,
-		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio, m_AnimDesc.fStartAnimPos);
+		m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio, m_AnimDesc.fStartAnimPos, m_AnimDesc.bRewindAnimation);
 
 	for (auto& pBone : m_Bones)
 	{
@@ -472,6 +472,10 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 					_int iMaxSound = m_TriggerSounds[i].strSoundNames.size() - 1;
 					_randInt RandomSound(0, iMaxSound);
 					m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[RandomSound(m_RandomNumber)], m_TriggerSounds[i].fInitVolume, false, m_TriggerSounds[i].fStartPosRatio);
+					if (m_TriggerSounds[i].IsFadeinSound)
+					{
+						m_pGameInstance->FadeinSound(m_TriggerSounds[i].iChannel, fTimeDelta, m_TriggerSounds[i].fFadeinSecond);
+					}
 					m_TriggerSounds[i].HasPlayed = true;
 				}
 			}
@@ -480,6 +484,10 @@ void CModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigger)
 				_int iMaxSound = m_TriggerSounds[i].strSoundNames.size() - 1;
 				_randInt RandomSound(0, iMaxSound);
 				m_TriggerSounds[i].iChannel = m_pGameInstance->Play_Sound(m_TriggerSounds[i].strSoundNames[RandomSound(m_RandomNumber)], m_TriggerSounds[i].fInitVolume, false, m_TriggerSounds[i].fStartPosRatio);
+				if (m_TriggerSounds[i].IsFadeinSound)
+				{
+					m_pGameInstance->FadeinSound(m_TriggerSounds[i].iChannel, fTimeDelta, m_TriggerSounds[i].fFadeinSecond);
+				}
 				m_TriggerSounds[i].HasPlayed = true;
 			}
 		}
@@ -925,6 +933,8 @@ HRESULT CModel::Read_TriggerSounds(const string& strFilePath)
 			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fFadeoutSecond), sizeof(_float));
 			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.IsClientTrigger), sizeof(_bool));
 			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fStartPosRatio), sizeof(_float));
+			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.IsFadeinSound), sizeof(_bool));
+			TriggerFile.read(reinterpret_cast<_char*>(&SoundDesc.fFadeinSecond), sizeof(_float));
 
 			m_TriggerSounds.push_back(SoundDesc);
 			m_iNumTriggersSound++;
@@ -962,6 +972,17 @@ CComponent* CModel::Clone(void* pArg)
 
 void CModel::Free()
 {
+	if (m_hasCloned)
+	{
+		for (size_t i = 0; i < m_TriggerEffects.size(); i++)
+		{
+			if (m_TriggerEffects[i].IsFollow)
+			{
+				m_pGameInstance->Delete_Effect(m_EffectMatrices[i]);
+			}
+		}
+	}
+
 	__super::Free();
 
 	for (auto& pBone : m_Bones)

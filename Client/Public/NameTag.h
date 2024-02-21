@@ -38,17 +38,21 @@ private:
 	HRESULT Bind_ShaderResources();
 
 private:
+	_bool				m_isCoord{};
 	LEVEL_ID			m_eLevel;
 
 	_float				m_fFontSize{ 0.f };
 	_vec2				m_vTextPosition;
 	_vec4				m_vColor{ _vec4(1.f, 1.f, 1.f, 1.f) };
+	_vec4				m_vPos{};
 
 	CTransform*			m_pParentTransform{ nullptr };
 						
-	wstring				m_strNameTag;
+	wstring				m_strNameTag{};
 
 public:
+	void Set_IsCoord(_bool isCoord) { m_isCoord = isCoord; }
+	void Set_Transform(_vec4 vPos) { m_vPos = vPos; }
 	void Set_Text(const wstring strText) { m_strNameTag = strText; }
 
 public:

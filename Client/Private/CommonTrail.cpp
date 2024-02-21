@@ -20,6 +20,11 @@ void CCommonTrail::Off()
 	m_bNoRender = true;
 }
 
+void CCommonTrail::Set_Color(const _color vColor)
+{
+	m_Info.vColor = vColor;
+}
+
 HRESULT CCommonTrail::Init_Prototype()
 {
 	return S_OK;
@@ -44,6 +49,8 @@ HRESULT CCommonTrail::Init(void* pArg)
 	{
 		MSG_BOX("버텍스 개수는 50을 초과할 수 없습니다.");
 	}
+
+	m_iTickCounter = m_Info.iNumVertices;
 
 	m_PosArray = new _vec3[m_Info.iNumVertices];
 	m_ColorArray = new _vec4[m_Info.iNumVertices];
@@ -71,6 +78,7 @@ void CCommonTrail::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
+
 	for (size_t i = 0; i < m_Info.iNumVertices; i++)
 	{
 		XMStoreFloat3(&m_PosArray[i], m_pTransformCom->Get_State(State::Pos));

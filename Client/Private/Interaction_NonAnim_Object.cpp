@@ -1,6 +1,8 @@
 #pragma once
 #include "Interaction_NonAnim_Object.h"
 #include "Camera_Manager.h"
+#include "NameTag.h"
+#include "UI_Manager.h"
 
 CInteraction_NonAnim::CInteraction_NonAnim(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -42,26 +44,82 @@ HRESULT CInteraction_NonAnim::Init(void* pArg)
 	m_pTransformCom->Set_State(State::Look, vLook);
 	m_pTransformCom->Set_State(State::Pos, vPos);
 
+	
 	//m_pModelCom->Apply_TransformToActor(m_Info.m_WorldMatrix);
 
-	
+	CNameTag::NAMETAG_DESC NameTagDesc = {};
+	NameTagDesc.eLevelID = LEVEL_STATIC;
+	NameTagDesc.fFontSize = 0.32f;
+	NameTagDesc.pParentTransform = m_pTransformCom;
+	if (m_Info.strPrototypeTag == TEXT("Prototype_Model_Hurbs"))
+	{
+		NameTagDesc.strNameTag = TEXT("아마풀");
+	}
+	else
+	{
+		NameTagDesc.strNameTag = TEXT("오크나무");
+	}
+
+	NameTagDesc.vColor = _vec4(0.f, 0.6f, 0.125f, 1.f);
+	NameTagDesc.vTextPosition = _vec2(0.f, 1.9f);
+
+	m_pNameTag = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_NameTag"), &NameTagDesc);
+	if (not m_pNameTag)
+	{
+		return E_FAIL;
+	}
+
 
 	return S_OK;
 }
 
 void CInteraction_NonAnim::Tick(_float fTimeDelta)
 {
-	__super::Tick(fTimeDelta);
+	if (m_isCollect)
+	{
+		m_fCollectTime += fTimeDelta;
+		if (m_fCollectTime >= 3.f)
+		{
+			m_isDead = true;
+		}
+	}
+	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+	m_pWideColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+
+	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
+	m_isCollision = m_pColliderCom->Intersect(pCollider);
+	m_isWideCollision = m_pWideColliderCom->Intersect(pCollider);
+	if (m_isCollision)
+	{
+		if (!m_isCollect && m_pGameInstance->Key_Down(DIK_E))
+		{
+			CUI_Manager::Get_Instance()->Set_Collect();
+			m_isCollect = true;
+		}
+	}
+
+	if (m_isWideCollision)
+	{
+		dynamic_cast<CNameTag*>(m_pNameTag)->Tick(fTimeDelta);
+	}
+
+#ifdef _DEBUG
+	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
+#endif
 }
 
 void CInteraction_NonAnim::Late_Tick(_float fTimeDelta)
 {
 	CAMERA_STATE CamState = CCamera_Manager::Get_Instance()->Get_CameraState();
-	if (CamState == CS_SKILLBOOK or CamState == CS_INVEN or CamState == CS_WORLDMAP)
+	if (CamState == CS_SKILLBOOK or CamState == CS_INVEN) //or CamState == CS_WORLDMAP)
 	{
 		return;
 	}
 
+	if (m_isWideCollision)
+	{
+		m_pNameTag->Late_Tick(fTimeDelta);
+	}
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend_Instance, this);
 }
 
@@ -99,6 +157,14 @@ HRESULT CInteraction_NonAnim::Add_Components()
 	CollDesc.vCenter = _vec3(0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Interaction_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))
+		return E_FAIL;
+
+	Collider_Desc ColDesc2{};
+	ColDesc2.eType = ColliderType::Sphere;
+	ColDesc2.fRadius = 20.f;
+	ColDesc2.vCenter = _vec3(0.f);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Interaction_Sphere1"), (CComponent**)&m_pWideColliderCom, &ColDesc2)))
 		return E_FAIL;
 
 	return S_OK;
@@ -288,10 +354,12 @@ CGameObject* CInteraction_NonAnim::Clone(void* pArg)
 void CInteraction_NonAnim::Free()
 {
 	__super::Free();
+	Safe_Release(m_pNameTag);
 	Safe_Release(m_pTrigger_Manager);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pWideColliderCom);
 	Safe_Release(m_pColliderCom);
 
 

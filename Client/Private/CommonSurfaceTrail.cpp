@@ -20,6 +20,11 @@ void CCommonSurfaceTrail::Off()
 	m_bNoRender = true;
 }
 
+void CCommonSurfaceTrail::Set_Color(const _color vColor)
+{
+	m_Info.vColor = vColor;
+}
+
 HRESULT CCommonSurfaceTrail::Init_Prototype()
 {
 	return S_OK;
@@ -39,6 +44,7 @@ HRESULT CCommonSurfaceTrail::Init(void* pArg)
 	{
 		MSG_BOX("버텍스 개수는 50을 초과할 수 없습니다.");
 	}
+	m_iTickCounter = m_Info.iNumVertices;
 
 	if (m_Info.strMaskTextureTag.empty())
 	{
@@ -82,6 +88,7 @@ void CCommonSurfaceTrail::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
+
 	for (size_t i = 0; i < m_Info.iNumVertices; i++)
 	{
 		m_AlphaArray[i] = 1.f - static_cast<_float>(i) / m_Info.iNumVertices;
@@ -107,7 +114,14 @@ void CCommonSurfaceTrail::Late_Tick(_float fTimeDelta)
 	m_pTrailBufferCom->Update(m_Info.iNumVertices, m_TopPosArray, m_BottomPosArray, m_AlphaArray);
 
 	__super::Compute_CamDistance();
-	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
+	if (m_Info.iPassIndex == 2)
+	{
+		m_pRendererCom->Add_RenderGroup(RG_Distortion, this);
+	}
+	else
+	{
+		m_pRendererCom->Add_RenderGroup(RG_Blend, this);
+	}
 }
 
 HRESULT CCommonSurfaceTrail::Render()
@@ -122,7 +136,7 @@ HRESULT CCommonSurfaceTrail::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(1)))
+	if (FAILED(m_pShaderCom->Begin(m_Info.iPassIndex)))
 	{
 		return E_FAIL;
 	}
