@@ -10,6 +10,12 @@ class CHPMonster;
 class CBalloon final : public CGameObject
 {
 public:
+	typedef struct tagBalloonDesc
+	{
+		_vec3 vPosition{};
+		_vec4 vColor;
+	}BALLOON_DESC;
+
 	enum BALLOON_ANIM
 	{
 		Attack,
@@ -73,9 +79,10 @@ private:
 	_float m_fDeadTime = {};
 	_float m_bHit = {};
 
-private:
 	_bool m_bParticle{};
 	_bool m_bDamaged = { false };
+
+	_vec4 m_vColor{};
 
 private:
 	HRESULT Add_Collider();

@@ -20,6 +20,10 @@ HRESULT CBalloon::Init_Prototype()
 
 HRESULT CBalloon::Init(void* pArg)
 {
+	m_vColor = ((BALLOON_DESC*)pArg)->vColor;
+	_vec3 vPos = ((BALLOON_DESC*)pArg)->vPosition;
+
+	m_pTransformCom->Set_Position(vPos);
 
 	if (FAILED(Add_Components()))
 	{
@@ -51,10 +55,6 @@ HRESULT CBalloon::Init(void* pArg)
 	ControllerDesc.stepOffset = 0.2f;
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
-
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-	_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-	m_pTransformCom->Set_Position(vPlayerPos);
 	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
 
 
@@ -81,12 +81,6 @@ void CBalloon::Late_Tick(_float fTimeDelta)
 {
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
-	/*
-	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 2.f))
-	{
-
-	}
-	*/
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
@@ -136,8 +130,8 @@ HRESULT CBalloon::Render()
 		{
 			return E_FAIL;
 		}
-		_vec4 vColor = { 0.f, 0.6f, 1.f, 1.f };
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _vec4)))
+	
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof _vec4)))
 		{
 			return E_FAIL;
 		}

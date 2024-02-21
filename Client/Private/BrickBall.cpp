@@ -19,6 +19,7 @@ HRESULT CBrickBall::Init_Prototype()
 
 HRESULT CBrickBall::Init(void* pArg)
 {
+
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
