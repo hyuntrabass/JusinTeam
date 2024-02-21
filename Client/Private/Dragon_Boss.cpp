@@ -542,7 +542,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = eTempDragonState;
 
-			//m_eCurState = STATE_WING_ATTACK; // 테스트용
+			//m_eCurState = STATE_DOUBLE_SLASH; // 테스트용
 		}
 	}
 
@@ -1183,7 +1183,7 @@ HRESULT CDragon_Boss::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Dragon"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Dragon"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
 	{
 		return E_FAIL;
 	}
