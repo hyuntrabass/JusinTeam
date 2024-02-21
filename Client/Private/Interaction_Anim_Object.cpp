@@ -4,6 +4,10 @@
 #include "NameTag.h"
 #include "UI_Manager.h"
 
+// 부셔지는 애니메이션 하나 밖에 없음
+// Prototype_Model_GoldStone
+// Prototype_Model_SaltStone
+
 CInteraction_Anim::CInteraction_Anim(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
