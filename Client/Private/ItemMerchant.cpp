@@ -63,6 +63,9 @@ HRESULT CItemMerchant::Init(void* pArg)
 
 void CItemMerchant::Tick(_float fTimeDelta)
 {
+	__super::Tick(fTimeDelta);
+
+
 	if (m_pShop->IsActive())
 	{
 		m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 1000.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));

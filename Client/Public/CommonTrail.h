@@ -22,6 +22,8 @@ public:
 	void On();
 	void Off();
 
+	void Set_Color(const _color vColor);
+
 public:
 	HRESULT Init_Prototype() override;
 	HRESULT Init(void* pArg) override;

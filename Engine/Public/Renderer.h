@@ -184,6 +184,8 @@ private:
 	HRESULT Render_Outline();
 	HRESULT Render_Blend();
 	HRESULT Render_Distortion();
+	HRESULT Render_NoneBlendFinal();
+	HRESULT Render_BlendFinal();
 	HRESULT Render_Final();
 	HRESULT Render_UI();
 #ifdef _DEBUG

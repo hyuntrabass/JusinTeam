@@ -27,7 +27,7 @@ HRESULT CObjects::Init(void* pArg)
 
 void CObjects::Tick(_float fTimeDelta)
 {
-
+	m_pTransformCom->Set_OldMatrix();
 }
 
 void CObjects::Late_Tick(_float fTimeDelta)
@@ -59,7 +59,7 @@ void CObjects::Late_Tick(_float fTimeDelta)
 		//}
 		else
 		{
-		if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
+		if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 20.f))
 		{
 			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
 		}
@@ -309,12 +309,17 @@ HRESULT CObjects::Bind_ShaderResources()
 			return E_FAIL;
 		}
 
+		if (FAILED(m_pTransformCom->Bind_OldWorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+			return E_FAIL;
 	}
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
+		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
 	{

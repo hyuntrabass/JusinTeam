@@ -59,7 +59,7 @@ protected:
 	_uint m_iPassIndex = { AnimPass_Default };
 
 protected:
-	_float m_fBackPower = { 0.5f };
+	_float m_fBackPower = { 0.1f };
 
 protected:
 	_float m_fDeadTime = {};

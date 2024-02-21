@@ -6,6 +6,8 @@ texture2D g_NormalTexture;
 texture2D g_MaskTexture;
 texture2D g_DissolveTexture;
 
+matrix g_OldViewMatrix;
+
 vector g_vColor;
 float g_fAlpha;
 
@@ -40,6 +42,7 @@ struct VS_OUT
     vector vProjPos : Texcoord2;
     float3 vTangent : Tangent;
     float3 vBinormal : Binormal;
+    float2 vDir : DIRECTION;
 };
 
 VS_OUT VS_Main(VS_IN Input)
@@ -51,13 +54,29 @@ VS_OUT VS_Main(VS_IN Input)
     matWV = mul(Input.mWorld, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
 	
-    Output.vPos = mul(vector(Input.vPos, 1.f), matWVP);
+    vector vNewPos = mul(vector(Input.vPos, 1.f), matWVP);
+    
+    matrix matOldWV, matOldWVP;
+    
+    matOldWV = mul(Input.mWorld, g_OldViewMatrix);
+    matOldWVP = mul(matOldWV, g_ProjMatrix);
+    
+    vector vOldPos = mul(vector(Input.vPos, 1.f), matOldWVP);
+    
+    float2 Velocity = (vNewPos.xy / vNewPos.w) - (vOldPos.xy / vOldPos.w);
+    
+    float2 vCalDir;
+    vCalDir = Velocity * 0.5f;
+    vCalDir.y *= -1.f;
+    
+    Output.vPos = vNewPos;
     Output.vNor = normalize(mul(vector(Input.vNor, 0.f), Input.mWorld));
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), Input.mWorld);
     Output.vProjPos = Output.vPos;
     Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), Input.mWorld)).xyz;
     Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
+    Output.vDir = vCalDir;
     
     return Output;
 }
@@ -163,6 +182,7 @@ struct PS_IN
     vector vProjPos : Texcoord2;
     float3 vTangent : Tangent;
     float3 vBinormal : Binormal;
+    float2 vDir : DIRECTION;
     
 };
 
@@ -210,7 +230,7 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
 
     return Output;
 }
@@ -261,7 +281,8 @@ PS_OUT_DEFERRED PS_Main_AlphaTest(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
+
 
     return Output;
 }
@@ -385,7 +406,7 @@ technique11 DefaultTechnique_Shader_StatInstance
 
     pass AlphaTestMeshes
     {
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 

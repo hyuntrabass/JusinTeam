@@ -4,6 +4,9 @@
 #include "NameTag.h"
 #include "UI_Manager.h"
 
+// Prototype_Model_Hurbs
+// Prototype_Model_OakTree
+
 CInteraction_NonAnim::CInteraction_NonAnim(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -301,6 +304,9 @@ HRESULT CInteraction_NonAnim::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
+		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
 	{

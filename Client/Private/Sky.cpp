@@ -29,6 +29,8 @@ HRESULT CSky::Init(void* pArg)
 
 void CSky::Tick(_float fTimeDelta)
 {
+	m_pTransformCom->Set_OldMatrix();
+
 	if (CCamera_Manager::Get_Instance()->Get_CameraState() == CS_SKILLBOOK or CCamera_Manager::Get_Instance()->Get_CameraState() == CS_INVEN)
 	{
 		return;
@@ -53,13 +55,13 @@ void CSky::Tick(_float fTimeDelta)
 			}
 		}
 
-	#ifdef _DEBUG
+#ifdef _DEBUG
 		m_pGameInstance->Get_StringStream() << "= 스카이 텍스쳐 ========================" << endl;
 		m_pGameInstance->Get_StringStream() << "다음 텍스쳐 : NUM_3" << endl;
 		m_pGameInstance->Get_StringStream() << "이전 텍스쳐 : NUM_2" << endl;
 		m_pGameInstance->Get_StringStream() << "현재 텍스쳐 : " << m_iTextureIndex << "번" << endl;
 		m_pGameInstance->Get_StringStream() << endl;
-	#endif // _DEBUG
+#endif // _DEBUG
 
 
 		return;
@@ -237,10 +239,16 @@ HRESULT CSky::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pTransformCom->Bind_OldWorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+		return E_FAIL;
+
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix_vec4x4())))
+		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
 	{

@@ -26,97 +26,169 @@ HRESULT CRiding::Init(void* pArg)
 
 	if (m_eCurMode == PLAYER)
 	{
-		m_pCam_Manager->Set_RidingZoom(true);
-	}
 
-	switch (m_CurrentIndex)
-	{
-	case Client::Bird:
-	{
-		if (Desc->bGlide)
+
+		switch (m_CurrentIndex)
 		{
-			m_Animation.iAnimIndex = Bird_1005_Fly;
-			m_eState = Riding_Glide;
+		case Client::Bird:
+		{
 			m_hasJumped = true;
 			m_fWalkSpeed = 10.f;
 			m_fRunSpeed = 10.f;
+
+			if (Desc->bGlide)
+			{
+				m_eState = Riding_Glide;
+				m_pCam_Manager->Set_RidingZoom(true);
+			}
+			else if (Desc->bLanding)
+			{
+				m_eState = Riding_Landing;
+			}
+			else
+			{
+				m_eState = Riding_Sky;
+				//m_pCam_Manager->Set_FlyCam(true);
+			}
+			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Bird");
 		}
-		else
+		break;
+		case Client::Wyvern:
 		{
-			m_Animation.iAnimIndex = Bird_1005_Start;
-			m_eState = Riding_Sky;
-		}
-		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Bird");
-	}
-	break;
-	case Client::Wyvern:
-	{
-		if (Desc->bGlide)
-		{
-			m_Animation.iAnimIndex = Wyvern_3004_Fly;
-			m_eState = Riding_Glide;
 			m_hasJumped = true;
 			m_fWalkSpeed = 11.f;
 			m_fRunSpeed = 11.f;
+			if (Desc->bGlide)
+			{
+				m_eState = Riding_Glide;
+				m_pCam_Manager->Set_RidingZoom(true);
+			}
+			else if (Desc->bLanding)
+			{
+				m_eState = Riding_Landing;
+				m_pCam_Manager->Set_RidingZoom(true);
+			}
+			else
+			{
+				m_eState = Riding_Sky;
+				m_pCam_Manager->Set_RidingZoom(true);
+			}
+			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Wyvern");
 		}
-		else
+		break;
+		case Client::Falar:
 		{
-			m_Animation.iAnimIndex = Wyvern_3004_TakeOff;
-			m_eState = Riding_Sky;
-		}
-		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Wyvern");
-	}
-	break;
-	case Client::Falar:
-	{
-		if (Desc->bGlide)
-		{
-			m_Animation.iAnimIndex = Falar_5002_fly;
-			m_eState = Riding_Glide;
 			m_hasJumped = true;
 			m_fWalkSpeed = 12.f;
 			m_fRunSpeed = 12.f;
+			if (Desc->bGlide)
+			{
+				m_eState = Riding_Glide;
+				m_pCam_Manager->Set_FlyCam(true);
+			}
+			else if (Desc->bLanding)
+			{
+				m_eState = Riding_Landing;
+				m_pCam_Manager->Set_FlyCam(true);
+			}
+			else
+			{
+				m_eState = Riding_Sky;
+				//m_pCam_Manager->Set_RidingZoom(true);
+				m_pCam_Manager->Set_FlyCam(true);
+			}
+			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Falar");
+		}
+		break;
+		case Client::Horse:
+		{
+			m_Animation.iAnimIndex = Horse_1004_Idle;
+			m_eState = Riding_Idle;
+			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Horse");
+			m_fRunSpeed = 10.f;
+			m_pCam_Manager->Set_RidingZoom(true);
+		}
+		break;
+		case Client::Tiger:
+		{
+			m_Animation.iAnimIndex = Tiger_1003_Idle;
+			m_eState = Riding_Idle;
+			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Tiger");
+			m_fRunSpeed = 12.f;
+			m_pCam_Manager->Set_RidingZoom(true);
+		}
+		break;
+		case Client::Nihilir:
+		{
+			m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Idle;
+			m_eState = Riding_Idle;
+			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Nihilir");
+			m_fWalkSpeed = 5.f;
+			m_fRunSpeed = 14.f;
+			m_pCam_Manager->Set_RidingZoom(true);
+		}
+		break;
+		default:
+			break;
+		}
+
+		if (m_CurrentIndex == Nihilir)
+		{
+			PxCapsuleControllerDesc ControllerDesc{};
+			ControllerDesc.height = 1.8f; // 높이(위 아래의 반구 크기 제외
+			ControllerDesc.radius = 1.3f; // 위아래 반구의 반지름
+			ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+			ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+			ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+			ControllerDesc.stepOffset = 0.3f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+
+			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
+
+		}
+		else if (m_CurrentIndex == Tiger)
+		{
+			PxCapsuleControllerDesc ControllerDesc{};
+			ControllerDesc.height = 1.176f; // 높이(위 아래의 반구 크기 제외
+			ControllerDesc.radius = 0.65f; // 위아래 반구의 반지름
+			ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+			ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f)); // 캐릭터가 오를 수 있는 최대 각도
+			ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+			ControllerDesc.stepOffset = 0.3f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
+
+		}
+		else if (m_CurrentIndex == Horse)
+		{
+			PxCapsuleControllerDesc ControllerDesc{};
+			ControllerDesc.height = 1.176f; // 높이(위 아래의 반구 크기 제외
+			ControllerDesc.radius = 0.6f; // 위아래 반구의 반지름
+			ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+			ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f)); // 캐릭터가 오를 수 있는 최대 각도
+			ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+			ControllerDesc.stepOffset = 0.3f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
+
 		}
 		else
 		{
-			m_Animation.iAnimIndex = Falar_5002_TakeOff;
-			m_eState = Riding_Sky;
+			PxCapsuleControllerDesc ControllerDesc{};
+			ControllerDesc.height = 0.8f;
+			ControllerDesc.radius = 0.6f;
+			ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f);
+			ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f));
+			ControllerDesc.contactOffset = 0.1f;
+			ControllerDesc.stepOffset = 0.3f;
+			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
 		}
-		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Falar");
+
+
+		m_pTransformCom->Set_Position(_vec3(Desc->vSummonPos + _vec3(0.f, 1.f, 0.f)));
+
+		m_Animation.fAnimSpeedRatio = 2.f;
+		m_fDissolveRatio = 1.f;
+
 	}
-	break;
-	case Client::Horse:
-	{
-		m_Animation.iAnimIndex = Horse_1004_Idle;
-		m_eState = Riding_Idle;
-		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Horse");
-		m_fRunSpeed = 10.f;
-	}
-	break;
-	case Client::Tiger:
-	{
-		m_Animation.iAnimIndex = Tiger_1003_Idle;
-		m_eState = Riding_Idle;
-		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Tiger");
-		m_fRunSpeed = 12.f;
-	}
-	break;
-	case Client::Nihilir:
-	{
-		m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Idle;
-		m_eState = Riding_Idle;
-		m_strPrototypeTag = TEXT("Prototype_Model_Riding_Nihilir");
-		m_fWalkSpeed = 5.f;
-		m_fRunSpeed = 14.f;
-	}
-	break;
-	default:
-		break;
-	}
-	if (FAILED(Add_Components()))
-	{
-		return E_FAIL;
-	}
+
 	if (m_eCurMode == VEHICLEBOOK)
 	{
 		m_pTransformCom->Set_State(State::Pos, _vec4(-1.f, 299.f, 3.f, 1.f));
@@ -127,84 +199,50 @@ HRESULT CRiding::Init(void* pArg)
 		case Bird:
 			m_Animation.iAnimIndex = Bird_1005_Fly;
 			m_pTransformCom->Set_State(State::Pos, _vec4(-1.f, 299.f, 2.f, 1.f));
+			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Bird");
 			break;
 		case Nihilir:
+			m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Idle;
 			m_pTransformCom->Set_State(State::Pos, _vec4(-1.2f, 297.2f, 2.2f, 1.f));
+			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Nihilir");
 			break;
 		case Wyvern:
 			m_Animation.iAnimIndex = Wyvern_3004_Fly;
+			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Wyvern");
 			break;
 		case Falar:
 			m_Animation.iAnimIndex = Falar_5002_fly;
 			m_pTransformCom->Set_State(State::Pos, _vec4(-1.f, 299.f, 3.5f, 1.f));
+			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Falar");
 			break;
 		case Tiger:
+			m_Animation.iAnimIndex = Tiger_1003_Idle;
 			m_pTransformCom->Set_State(State::Pos, _vec4(-0.6f, 299.5f, 2.f, 1.f));
+			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Tiger");
+			break;
+		case Horse:
+			m_Animation.iAnimIndex = Horse_1004_Idle;
+			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Horse");
 			break;
 		}
 
 		m_Animation.isLoop = true;
 		m_Animation.bSkipInterpolation = true;
 		m_Animation.fAnimSpeedRatio = 2.f;
-		return S_OK;
 	}
-	if (m_CurrentIndex == Nihilir)
-	{
-		PxCapsuleControllerDesc ControllerDesc{};
-		ControllerDesc.height = 2.0f; // 높이(위 아래의 반구 크기 제외
-		ControllerDesc.radius = 1.5f; // 위아래 반구의 반지름
-		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
-		ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
-		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
-		ControllerDesc.stepOffset = 0.3f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 
-		m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
 
-	}
-	else if (m_CurrentIndex == Tiger)
+	if (FAILED(Add_Components()))
 	{
-		PxCapsuleControllerDesc ControllerDesc{};
-		ControllerDesc.height = 1.176f; // 높이(위 아래의 반구 크기 제외
-		ControllerDesc.radius = 0.65f; // 위아래 반구의 반지름
-		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
-		ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f)); // 캐릭터가 오를 수 있는 최대 각도
-		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
-		ControllerDesc.stepOffset = 0.3f; // 캐릭터가 오를 수 있는 계단의 최대 높이
-		m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
+		return E_FAIL;
+	}
 
-	}
-	else if (m_CurrentIndex == Horse)
-	{
-		PxCapsuleControllerDesc ControllerDesc{};
-		ControllerDesc.height = 1.176f; // 높이(위 아래의 반구 크기 제외
-		ControllerDesc.radius = 0.6f; // 위아래 반구의 반지름
-		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
-		ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f)); // 캐릭터가 오를 수 있는 최대 각도
-		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
-		ControllerDesc.stepOffset = 0.3f; // 캐릭터가 오를 수 있는 계단의 최대 높이
-		m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
-
-	}
-	else
-	{
-		PxCapsuleControllerDesc ControllerDesc{};
-		ControllerDesc.height = 0.8f;
-		ControllerDesc.radius = 0.6f;
-		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f);
-		ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f));
-		ControllerDesc.contactOffset = 0.1f;
-		ControllerDesc.stepOffset = 0.3f;
-		m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
-	}
-	m_pTransformCom->Set_Position(_vec3(Desc->vSummonPos + _vec3(0.f, 1.f, 0.f)));
-	m_Animation.fAnimSpeedRatio = 2.f;
-	m_fDissolveRatio = 1.f;
 	return S_OK;
 }
 
 void CRiding::Tick(_float fTimeDelta)
 {
-
+	m_pTransformCom->Set_OldMatrix();
 	if (m_eCurMode == VEHICLEBOOK)
 	{
 		m_pModelCom->Set_Animation(m_Animation);
@@ -254,36 +292,6 @@ void CRiding::Tick(_float fTimeDelta)
 	Init_State();
 	Tick_State(fTimeDelta);
 	m_pModelCom->Set_Animation(m_Animation);
-	if (m_CurrentIndex == Bird)
-	{
-		_float Index = m_pModelCom->Get_CurrentAnimPos();
-		if (m_eState == Riding_Sky)
-		{
-			if (Index >= 88.f && !m_hasJumped)
-			{
-				m_hasJumped = true;
-			}
-			else if (Index >= 95.f)
-			{
-				CFadeBox::FADE_DESC Desc = {};
-				Desc.fOut_Duration = 1.5f;
-				CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
-
-				m_bDelete = true;
-
-			}
-		}
-		else if (m_eState == Riding_Landing)
-		{
-			if (Index >= 1.f && !m_hasJumped)
-			{
-				CFadeBox::FADE_DESC Desc = {};
-				Desc.fOut_Duration = 0.7f;
-				CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
-				m_hasJumped = true;
-			}
-		}
-	}
 
 	if (m_eState == Riding_Glide)
 	{
@@ -856,18 +864,31 @@ void CRiding::Tick_State(_float fTimeDelta)
 	switch (m_eState)
 	{
 	case Client::Riding_Landing:
-		if (m_pModelCom->IsAnimationFinished(Bird_2005_Landing))
+		switch (m_CurrentIndex)
 		{
-			CCamera_Manager::Get_Instance()->Set_FlyCam(false);
-
-
-			Delete_Riding();
-			CFadeBox::FADE_DESC Desc = {};
-			Desc.fOut_Duration = 1.f;
-			CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
+		case Client::Bird:
+			if (m_pModelCom->IsAnimationFinished(Bird_2005_Landing))
+			{
+				CCamera_Manager::Get_Instance()->Set_FlyCam(false);
+				Delete_Riding();
+			}
+			break;
+		case Client::Wyvern:
+			if (m_pModelCom->IsAnimationFinished(Wyvern_3004_Landing))
+			{
+				CCamera_Manager::Get_Instance()->Set_FlyCam(false);
+				Delete_Riding();
+			}
+			break;
+		case Client::Falar:
+			if (m_pModelCom->IsAnimationFinished(Falar_5002_landing))
+			{
+				CCamera_Manager::Get_Instance()->Set_FlyCam(false);
+				Delete_Riding();
+			}
+			break;
 		}
 		break;
-
 	case Client::Riding_Idle:
 		break;
 	case Client::Riding_Jump_Start:
@@ -972,7 +993,7 @@ void CRiding::Tick_State(_float fTimeDelta)
 	case Client::Riding_Jump:
 		break;
 	case Client::Riding_Sky:
-		// 애니메이션 종료후 지역 이동하는 효과
+
 		break;
 	case Client::Riding_End:
 		break;
@@ -986,39 +1007,49 @@ void CRiding::Tick_State(_float fTimeDelta)
 _mat CRiding::Get_Mat()
 {
 	_mat OffsetMat{};
+	_mat BoneMat{};
+	if (m_CurrentIndex == Bird)
+	{
+		BoneMat = *m_pModelCom->Get_BoneMatrix("Saddle");
+	}
+	else
+	{
+		BoneMat = *m_pModelCom->Get_BoneMatrix("saddle");
+	}
+	BoneMat = BoneMat.Get_RotationRemoved();
 	if (m_CurrentIndex == Tiger)
 	{
-		OffsetMat = _mat::CreateRotationY(XMConvertToRadians(-90.f)) * *m_pModelCom->Get_BoneMatrix("saddle");
+		OffsetMat = BoneMat;
 	}
 	else if (m_CurrentIndex == Nihilir)
 	{
-		OffsetMat = _mat::CreateRotationY(XMConvertToRadians(-180.f)) * _mat::CreateRotationX(XMConvertToRadians(-90.f)) * *m_pModelCom->Get_BoneMatrix("saddle");
+		OffsetMat = BoneMat;
 	}
 	else if (m_CurrentIndex == Bird)
 	{
 		if (m_eState == Riding_Glide)
 		{
-			OffsetMat = _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(180.f)) * *m_pModelCom->Get_BoneMatrix("Saddle");
+			OffsetMat = _mat::CreateTranslation(0.f, -0.1f, 0.f) * BoneMat;
 		}
 		else
 		{
-			OffsetMat = _mat::CreateTranslation(0.f, 0.8f, 0.f) * _mat::CreateRotationZ(XMConvertToRadians(-180.f)) * _mat::CreateRotationY(XMConvertToRadians(90.f)) * *m_pModelCom->Get_BoneMatrix("Saddle");
+			OffsetMat = _mat::CreateTranslation(0.f, -0.1f, 0.f) * BoneMat;
 		}
 
 	}
 	else if (m_CurrentIndex == Horse)
 	{
-		OffsetMat = _mat::CreateRotationY(XMConvertToRadians(-180.f)) * _mat::CreateRotationX(XMConvertToRadians(-90.f)) * *m_pModelCom->Get_BoneMatrix("saddle");
+		OffsetMat = BoneMat;
 	}
 	else if (m_CurrentIndex == Wyvern)
 	{
 		if (m_eState == Riding_Glide)
 		{
-			OffsetMat = _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(180.f)) * *m_pModelCom->Get_BoneMatrix("saddle");
+			OffsetMat = BoneMat;
 		}
 		else
 		{
-			OffsetMat = _mat::CreateTranslation(0.f, 0.8f, 0.f) * _mat::CreateRotationZ(XMConvertToRadians(-180.f)) * _mat::CreateRotationY(XMConvertToRadians(90.f)) * *m_pModelCom->Get_BoneMatrix("saddle");
+			OffsetMat = _mat::CreateTranslation(0.f, -0.1f, 0.f) * BoneMat;
 		}
 
 	}
@@ -1026,13 +1057,16 @@ _mat CRiding::Get_Mat()
 	{
 		if (m_eState == Riding_Glide)
 		{
-			OffsetMat = _mat::CreateRotationX(XMConvertToRadians(180.f)) * _mat::CreateRotationY(XMConvertToRadians(-90.f)) * *m_pModelCom->Get_BoneMatrix("saddle");
+			OffsetMat = BoneMat;
 		}
-		else
+		else if (m_eState == Riding_Landing)
 		{
-			OffsetMat = _mat::CreateTranslation(0.f, 0.8f, 0.f) * _mat::CreateRotationZ(XMConvertToRadians(-180.f)) * _mat::CreateRotationY(XMConvertToRadians(90.f)) * *m_pModelCom->Get_BoneMatrix("saddle");
+			OffsetMat = BoneMat;
 		}
-
+		else if (m_eState == Riding_Sky)
+		{
+			OffsetMat = _mat::CreateTranslation(0.f, -0.3f, 0.f) * BoneMat;
+		}
 	}
 	OffsetMat *= m_pTransformCom->Get_World_Matrix();
 
@@ -1116,6 +1150,16 @@ HRESULT CRiding::Add_Components()
 HRESULT CRiding::Bind_ShaderResources()
 {
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pTransformCom->Bind_OldWorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
 	{
 		return E_FAIL;
 	}

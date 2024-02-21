@@ -113,14 +113,14 @@ void CFirePillar::Tick(_float fTimeDelta)
 		}
 	}
 
-	if (m_fLifeTime >= 6.f)
+	if (m_fLifeTime >= 6.3f)
 	{
 		if (m_iSoundChannel != -1)
 		{
 			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
 		}
 	}
-	else if (m_fLifeTime >= 1.2f)
+	else if (m_fLifeTime >= 1.5f)
 	{
 		if (m_iSoundChannel == -1)
 		{
