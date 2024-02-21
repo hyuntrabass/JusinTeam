@@ -475,7 +475,6 @@ void CInfinityTower::Tower_Tick(_float fTimeDelta, POINT& ptMouse)
 
 	for (size_t i = 0; i < TOWER_END; i++)
 	{
-		_float a = m_pTowers[i]->Get_Rect().bottom;
 		if (PtInRect(&m_pTowers[i]->Get_Rect(), ptMouse))
 		{
 			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))

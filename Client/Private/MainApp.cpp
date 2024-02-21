@@ -386,7 +386,6 @@ CMainApp* CMainApp::Create()
 void CMainApp::Free()
 {
 	CCamera_Manager::Destroy_Instance();
-	CEffect_Manager::Destroy_Instance();
 	CTrigger_Manager::Destroy_Instance();
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pGameInstance);
@@ -395,6 +394,7 @@ void CMainApp::Free()
 
 	CGameInstance::Release_Engine();
 
+	CEffect_Manager::Destroy_Instance();
 	CEvent_Manager::Destroy_Instance();
 	CUI_Manager::Destroy_Instance();
 

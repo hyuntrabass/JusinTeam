@@ -77,6 +77,9 @@ HRESULT CRoskva::Init(void* pArg)
 
 void CRoskva::Tick(_float fTimeDelta)
 {
+	__super::Tick(fTimeDelta);
+
+
 	if (m_pArrow->Get_TransPosition().y < m_pArrow->Get_Position().y - 5.f)
 	{
 		m_fDir = 0.6f;

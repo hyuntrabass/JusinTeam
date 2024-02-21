@@ -20,6 +20,11 @@ void CCommonSurfaceTrail::Off()
 	m_bNoRender = true;
 }
 
+void CCommonSurfaceTrail::Set_Color(const _color vColor)
+{
+	m_Info.vColor = vColor;
+}
+
 HRESULT CCommonSurfaceTrail::Init_Prototype()
 {
 	return S_OK;
@@ -75,19 +80,10 @@ void CCommonSurfaceTrail::Tick(_vec3 vTopPos, _vec3 vBottomPos)
 	m_BottomPosList.push_front(vBottomPos);
 
 	m_pTransformCom->Set_State(State::Pos, XMVectorSetW(XMLoadFloat3(&vTopPos), 1.f));
-
-	m_iTickCounter++;
 }
 
 void CCommonSurfaceTrail::Late_Tick(_float fTimeDelta)
 {
-	if (m_iTickCounter <= 0)
-	{
-		return;
-	}
-
-	m_iTickCounter--;
-
 	if (m_bNoRender)
 	{
 		return;

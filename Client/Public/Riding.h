@@ -21,6 +21,7 @@ struct Riding_Desc
 	_vec4 vSummonPos{};
 	_bool bGlide{};
 	_uint iMode{ 0 };
+	_bool bLanding{};
 };
 enum Riding_State
 {
@@ -206,13 +207,13 @@ private:
 	_bool m_bDelete{};
 	_bool m_hasJumped{};
 	_mat m_Worldmatrix{};
-	Riding_State m_eState{};
+	Riding_State m_eState{ Riding_End };
 	MODE	m_eCurMode{ PLAYER };
 	ANIM_DESC m_Animation{};
 	_float m_fDissolveRatio{};
 	_float m_fRunSpeed{ 7.f };
 	_float m_fWalkSpeed{ 3.f };
-	Riding_State m_ePrevState{};
+	Riding_State m_ePrevState{ Riding_End };
 	wstring m_strPrototypeTag{};
 	CTexture* m_pDissolveTextureCom{};
 	Riding_Type m_CurrentIndex{ Type_End };

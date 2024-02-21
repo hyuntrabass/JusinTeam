@@ -162,7 +162,10 @@ void CVehicle::Tick(_float fTimeDelta)
 
 		m_pDetail->Tick(fTimeDelta);
 		m_pSelected->Tick(fTimeDelta);
-		m_pRiding->Tick(fTimeDelta);
+		if (m_pRiding != nullptr)
+		{
+			m_pRiding->Tick(fTimeDelta);
+		}
 	}
 	if (m_isEquip)
 	{
@@ -184,7 +187,10 @@ void CVehicle::Late_Tick(_float fTimeDelta)
 	{
 		m_pDetail->Late_Tick(fTimeDelta);
 		m_pSelected->Late_Tick(fTimeDelta);
-		m_pRiding->Late_Tick(fTimeDelta);
+		if (m_pRiding != nullptr)
+		{
+			m_pRiding->Late_Tick(fTimeDelta);
+		}
 	}
 	if (m_isEquip)
 	{
@@ -235,8 +241,21 @@ void CVehicle::Set_SelectVehicle(_bool isSelect)
 {
 	if (!m_isSelected && isSelect == true)
 	{
+		if (m_pRiding == nullptr)
+		{
+			m_pRiding = (CRiding*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Riding"), &m_tRidingDesc);
+			if (not m_pRiding)
+			{
+				return;
+			}
+		}
+
 		m_pDetail->Set_Position(_vec2(m_pDetail->Get_Position()));
 		m_fAlpha = 0.f;
+	}
+	if (m_isSelected && !isSelect)
+	{
+		Safe_Release(m_pRiding);
 	}
 	m_isSelected = isSelect;
 }
@@ -293,11 +312,8 @@ HRESULT CVehicle::Init_Info()
 	}
 
 	riding_desc.iMode = 1;
-	m_pRiding = (CRiding*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Riding"), &riding_desc);
-	if (not m_pRiding)
-	{
-		return E_FAIL;
-	}
+	m_tRidingDesc = riding_desc;
+	
 
 	return S_OK;
 }

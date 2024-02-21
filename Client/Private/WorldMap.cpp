@@ -78,10 +78,10 @@ void CWorldMap::Tick(_float fTimeDelta)
 			switch (m_eCurPoint)
 			{
 			case VILLAGE:
-				CTrigger_Manager::Get_Instance()->Teleport(TS_Village, fTimeDelta);
+				CUI_Manager::Get_Instance()->Set_Teleport(true, TS_Village);
 				break;
 			case DUNGEON:
-				CTrigger_Manager::Get_Instance()->Teleport(TS_Dungeon, fTimeDelta);
+				CUI_Manager::Get_Instance()->Set_Teleport(true, TS_Dungeon);
 				break;
 			case TOWER:
 				CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
@@ -114,6 +114,8 @@ void CWorldMap::Tick(_float fTimeDelta)
 	{
 		return;
 	}
+	m_pTransformCom->Set_OldMatrix();
+
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
@@ -379,6 +381,16 @@ HRESULT CWorldMap::Add_Components()
 HRESULT CWorldMap::Bind_ShaderResources()
 {
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pTransformCom->Bind_OldWorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
 	{
 		return E_FAIL;
 	}

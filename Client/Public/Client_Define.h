@@ -342,6 +342,7 @@ namespace Client
 		AnimPass_Dissolve,
 		AnimPass_Rim,
 		AnimPass_DefaultNoCull,
+		AnimPass_Color,
 	};
 
 	enum StaticMeshPass
@@ -499,7 +500,6 @@ enum TriggerType
 	BOSS_TRIGGER,
 	TRIGGER_END
 };
-
 
 enum PlaceType
 {

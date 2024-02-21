@@ -22,7 +22,6 @@ HRESULT CNumEffect::Init(void* pArg)
 {
 
 	m_bOrth = ((HITEFFECT_DESC*)pArg)->bOrth;
-	m_isPlayer = ((HITEFFECT_DESC*)pArg)->isPlayer;
 	m_fDepth = (_float)D_NAMETAG / (_float)D_END;
 
 	m_iDamage = ((HITEFFECT_DESC*)pArg)->iDamage;
@@ -35,8 +34,8 @@ HRESULT CNumEffect::Init(void* pArg)
 	}
 
 
-	m_fSizeX = 150.f;
-	m_fSizeY = 150.f;
+	m_fSizeX = 300.f;
+	m_fSizeY = 300.f;
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
@@ -56,6 +55,20 @@ HRESULT CNumEffect::Init(void* pArg)
 		return E_FAIL;
 	}
 	m_pEffect->Set_Pass(VTPass_Mask_Color);
+
+	if (m_iDamage >= 5.f)
+	{
+		m_vColor = _vec4(0.94f, 0.34f, 0.1f, 1.f);
+	}
+	else if (m_iDamage >= 10.f)
+	{
+		m_vColor = _vec4(1.f, 0.8f, 0.f, 1.f);
+	}
+	else
+	{
+		m_vColor.w = 0.f;
+	}
+	
 	return S_OK;
 }
 
@@ -81,11 +94,11 @@ void CNumEffect::Tick(_float fTimeDelta)
 	}
 	else
 	{
-		m_fSizeX -= 300.f * fTimeDelta;
-		m_fSizeY -= 300.f * fTimeDelta;
-		m_fAlpha = Lerp(0.f, 1.f, (120.f - m_fSizeX) / 120.f);
+		m_fSizeX -= 500.f * fTimeDelta;
+		m_fSizeY -= 500.f * fTimeDelta;
+		m_fAlpha = Lerp(0.f, 1.f, (140.f - m_fSizeX) / 140.f);
 	}
-	if (m_pEffect->Get_Size().y >= 120.f)
+	if (m_pEffect->Get_Size().y >= 140.f)
 	{
 		m_isEffect = false;
 	}
@@ -111,11 +124,19 @@ void CNumEffect::Late_Tick(_float fTimeDelta)
 
 HRESULT CNumEffect::Render()
 {
+	if (!m_bOrth)
+	{
+		m_pTransformCom->Set_State(State::Pos, m_pParentTransform->Get_State(State::Pos) + m_vTextPosition);
+		_vec2 v2DPos = __super::Convert_To_2D(m_pTransformCom);
+		m_fX = v2DPos.x;
+		m_fY = v2DPos.y;
+	}
+	else
+	{
+		m_fX = m_vTextPosition.x;
+		m_fY = m_vTextPosition.y;
+	}
 
-	m_pTransformCom->Set_State(State::Pos, m_pParentTransform->Get_State(State::Pos) + m_vTextPosition);
-	_vec2 v2DPos = __super::Convert_To_2D(m_pTransformCom);
-	m_fX = v2DPos.x;
-	m_fY = v2DPos.y;
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 	if (FAILED(Bind_ShaderResources()))
@@ -140,10 +161,19 @@ HRESULT CNumEffect::Render()
 	// 10자리 수.
 	if (m_iDamage > 9)
 	{
-		m_pTransformCom->Set_State(State::Pos, m_pParentTransform->Get_State(State::Pos) + m_vTextPosition);
-		_vec2 v2DPos = __super::Convert_To_2D(m_pTransformCom);
-		m_fX = v2DPos.x - 15.f;
-		m_fY = v2DPos.y;
+		if (!m_bOrth)
+		{
+			m_pTransformCom->Set_State(State::Pos, m_pParentTransform->Get_State(State::Pos) + m_vTextPosition);
+			_vec2 v2DPos = __super::Convert_To_2D(m_pTransformCom);
+			m_fX = v2DPos.x - 15.f;
+			m_fY = v2DPos.y;
+		}
+		else
+		{
+			m_fX = m_vTextPosition.x - 20.f;
+			m_fY = m_vTextPosition.y;
+		}
+
 		__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 		if (FAILED(Bind_ShaderResources()))
@@ -168,10 +198,18 @@ HRESULT CNumEffect::Render()
 		// 100자리 수.
 		if (m_iDamage > 99)
 		{
-			m_pTransformCom->Set_State(State::Pos, m_pParentTransform->Get_State(State::Pos) + m_vTextPosition);
-			_vec2 v2DPos = __super::Convert_To_2D(m_pTransformCom);
-			m_fX = v2DPos.x - 30.f;
-			m_fY = v2DPos.y;
+			if (!m_bOrth)
+			{
+				m_pTransformCom->Set_State(State::Pos, m_pParentTransform->Get_State(State::Pos) + m_vTextPosition);
+				_vec2 v2DPos = __super::Convert_To_2D(m_pTransformCom);
+				m_fX = v2DPos.x - 30.f;
+				m_fY = v2DPos.y;
+			}
+			else
+			{
+				m_fX = m_vTextPosition.x - 40.f;
+				m_fY = m_vTextPosition.y;
+			}
 			__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 			if (FAILED(Bind_ShaderResources()))
@@ -235,13 +273,9 @@ HRESULT CNumEffect::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
-	_vec4 vColor = _vec4(1.f, 0.2f, 0.2f, 1.f);
-	if (!m_isPlayer)
-	{
-		vColor.w = 0.f;
-	}
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _vec4)))
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof _vec4)))
 	{
 		return E_FAIL;
 	}	

@@ -88,7 +88,7 @@ void CNastron03::Tick(_float fTimeDelta)
 	Update_Collider();
 	__super::Update_BodyCollider();
 
-	Update_Trail(fTimeDelta);
+	//Update_Trail(fTimeDelta);
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
@@ -96,6 +96,8 @@ void CNastron03::Tick(_float fTimeDelta)
 
 void CNastron03::Late_Tick(_float fTimeDelta)
 {
+	m_pSwordTrail->Late_Tick(fTimeDelta);
+
 	__super::Late_Tick(fTimeDelta);
 
 #ifdef _DEBUG
@@ -383,7 +385,9 @@ void CNastron03::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 44.f && fAnimpos <= 54.f)
 				{
-					m_pSwordTrail->Late_Tick(fTimeDelta);
+					//m_pSwordTrail->Late_Tick(fTimeDelta);
+
+					Update_Trail(fTimeDelta);
 				}
 
 			}
@@ -409,11 +413,15 @@ void CNastron03::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 34.f && fAnimpos <= 41.f)
 				{
-					m_pSwordTrail->Late_Tick(fTimeDelta);
+					//m_pSwordTrail->Late_Tick(fTimeDelta);
+
+					Update_Trail(fTimeDelta);
 				}
 				if (fAnimpos >= 66.f && fAnimpos <= 71.f)
 				{
-					m_pSwordTrail->Late_Tick(fTimeDelta);
+					//m_pSwordTrail->Late_Tick(fTimeDelta);
+
+					Update_Trail(fTimeDelta);
 				}
 
 			}

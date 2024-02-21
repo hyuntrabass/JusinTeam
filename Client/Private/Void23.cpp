@@ -96,7 +96,7 @@ void CVoid23::Tick(_float fTimeDelta)
 	Update_Collider();
 	__super::Update_BodyCollider();
 
-	Update_Trail(fTimeDelta);
+	//Update_Trail(fTimeDelta);
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
@@ -104,6 +104,8 @@ void CVoid23::Tick(_float fTimeDelta)
 
 void CVoid23::Late_Tick(_float fTimeDelta)
 {
+	m_pSwordTrail->Late_Tick(fTimeDelta);
+
 	__super::Late_Tick(fTimeDelta);
 
 #ifdef _DEBUG
@@ -429,12 +431,16 @@ void CVoid23::Tick_State(_float fTimeDelta)
 
 				if (fAnimpos >= 60.f && fAnimpos <= 76.f)
 				{
-					m_pSwordTrail->Late_Tick(fTimeDelta);
+					//m_pSwordTrail->Late_Tick(fTimeDelta);
+
+					Update_Trail(fTimeDelta);
 				}
 
 				if (fAnimpos >= 110.f && fAnimpos <= 124.f)
 				{
-					m_pSwordTrail->Late_Tick(fTimeDelta);
+					//m_pSwordTrail->Late_Tick(fTimeDelta);
+
+					Update_Trail(fTimeDelta);
 				}
 			}
 			break;
@@ -471,7 +477,9 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 49.f && fAnimpos <= 57.f)
 				{
-					m_pSwordTrail->Late_Tick(fTimeDelta);
+					//m_pSwordTrail->Late_Tick(fTimeDelta);
+
+					Update_Trail(fTimeDelta);
 				}
 			}
 			break;
@@ -499,7 +507,9 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 101.f && fAnimpos <= 109.f)
 				{
-					m_pSwordTrail->Late_Tick(fTimeDelta);
+					//m_pSwordTrail->Late_Tick(fTimeDelta);
+
+					Update_Trail(fTimeDelta);
 				}
 			}
 			break;
@@ -527,7 +537,9 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 60.f && fAnimpos <= 80.f)
 				{
-					m_pSwordTrail->Late_Tick(fTimeDelta);
+					//m_pSwordTrail->Late_Tick(fTimeDelta);
+
+					Update_Trail(fTimeDelta);
 				}
 			}
 			break;
@@ -558,7 +570,9 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 58.f && fAnimpos <= 125.f)
 				{
-					m_pSwordTrail->Late_Tick(fTimeDelta);
+					//m_pSwordTrail->Late_Tick(fTimeDelta);
+
+					Update_Trail(fTimeDelta);
 				}
 			}
 			break;
@@ -634,6 +648,8 @@ void CVoid23::Update_Trail(_float fTimeDelta)
 	_mat Result2 = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 
 	m_pSwordTrail->Tick(Result1.Position_vec3(), Result2.Position_vec3());
+
+
 }
 
 HRESULT CVoid23::Add_Collider()

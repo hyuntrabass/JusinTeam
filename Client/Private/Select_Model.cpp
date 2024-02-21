@@ -35,6 +35,8 @@ HRESULT CSelect_Model::Init(void* pArg)
 
 void CSelect_Model::Tick(_float fTimeDelta)
 {
+	m_pTransformCom->Set_OldMatrix();
+
 	if (m_pModelCom->IsAnimationFinished(S_MOTION))
 	{
 		m_eCurAnimState = S_PICK_IDLE;
@@ -153,6 +155,16 @@ HRESULT CSelect_Model::Add_Components()
 HRESULT CSelect_Model::Bind_ShaderResources()
 {
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pTransformCom->Bind_OldWorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
 	{
 		return E_FAIL;
 	}

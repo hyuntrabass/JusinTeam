@@ -6,7 +6,7 @@
 #include "NameTag.h"
 #include "CommonTrail.h"
 #include "CommonSurfaceTrail.h"
-
+#include "Trigger_Manager.h"
 BEGIN(Client)
 
 struct BODYPART_DESC
@@ -348,7 +348,6 @@ public:
 	void Cam_AttackZoom(_float fZoom);
 	void After_BowAtt(_float fTimeDelta);
 	void After_SwordAtt(_float fTimeDelta);
-	void After_CommonAtt(_float fTimeDelta);
 	void Create_Arrow(ATTACK_TYPE Att_Type);
 	void Check_Att_Collider(ATTACK_TYPE Att_Type);
 
@@ -378,8 +377,8 @@ private:
 	class CEffect_Dummy* m_pFrameEffect{ nullptr };
 	class CEffect_Dummy* m_pEffect_Shield{ nullptr };
 	class CCamera_Manager* m_pCam_Manager{ nullptr };
-	CCommonSurfaceTrail* m_pLeft_Trail[5]{ nullptr };
-	CCommonSurfaceTrail* m_pRight_Trail[5]{ nullptr };
+	CCommonSurfaceTrail* m_pLeft_Trail{ nullptr };
+	CCommonSurfaceTrail* m_pRight_Trail{ nullptr };
 
 private:
 	ANIM_DESC m_Animation{};
@@ -388,6 +387,7 @@ private:
 	ANIM_LIST m_SwordSkill[5]{};
 	Riding_State m_Riding_State{};
 	PLAYER_STATE m_eState{ Idle };
+	TeleportSpot m_eTeleportSpot{};
 	PLAYER_STATE m_ePrevState{ State_End };
 	WEAPON_TYPE m_Current_Weapon{ WP_END };
 	Riding_Type m_Current_AirRiding{ Type_End };
@@ -396,6 +396,9 @@ private:
 
 private:
 	_bool m_bIsMount{};
+	_bool m_bIsSkying{};
+	_float m_fFadeTimmer{};
+	_bool m_bReadyCommonAtt{ true };
 	_int m_iArrowRain{};
 	_mat m_Riding_Mat{};
 	_vec4 m_vArrowLook{};
@@ -407,12 +410,13 @@ private:
 	_bool m_bArrowRain_Start{};
 	_bool m_bAimMode{};
 	_vec4 m_vPos{};
+	_bool m_bReady_Teleport{};
 	_bool m_bIsClimb{};
 	_bool m_bComboZoom{};
 	_bool m_bStartGame{};
 	_vec4 m_SaveCamPos{};
 	_bool m_bReady_Move{};
-	_bool m_bMove_AfterSkill{true};
+	_bool m_bMove_AfterSkill{ true };
 	_uint m_ShaderIndex{};
 	_vec4 m_SaveCamLook{};
 	_bool m_bReady_Climb{};
@@ -449,7 +453,6 @@ private:
 	_bool m_bReadySwim{};
 	_mat m_ShieldMatrix{};
 	_float m_iSuperArmor{};
-	_mat m_OldWorldMatrix{};
 	_bool m_bWeapon_Unequip{};
 	wstring m_strPlayerName{};
 
@@ -463,7 +466,6 @@ private:
 	_float m_fAttackZoom{};
 	_float m_fHpRegenTime{};
 	_float m_fMpRegenTime{};
-	_float m_ReturnZoomTime{};
 	_float m_fDissolveRatio{};
 	_float m_fRimRightTimmer{};
 	_float m_fBoostSpeedTimmer{};

@@ -244,6 +244,8 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 
 void CNPC_Dummy::Tick(_float fTimeDelta)
 {	
+	__super::Tick(fTimeDelta);
+
 	m_pModelCom->Set_Animation(m_Animation);
 	m_pDialog->Tick(fTimeDelta);
 

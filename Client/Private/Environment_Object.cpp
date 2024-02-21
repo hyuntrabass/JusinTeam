@@ -54,7 +54,7 @@ HRESULT CEnvironment_Object::Init(void* pArg)
 
 void CEnvironment_Object::Tick(_float fTimeDelta)
 {
-
+	__super::Tick(fTimeDelta);
 }
 
 void CEnvironment_Object::Late_Tick(_float fTimeDelta)
