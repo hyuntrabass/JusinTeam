@@ -289,6 +289,8 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Pull_Out");
 				Info.pMatrix = &EffectMatrix;
 				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				m_pGameInstance->Play_Sound(TEXT("Sfx_Boss_Hirokin_Atk_04_01"));
 			}
 
 			break;
