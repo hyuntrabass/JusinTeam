@@ -1,6 +1,7 @@
 #include "Engine_Shader_Define.hlsli"
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
+matrix g_OldWorldMatrix, g_OldViewMatrix;
 
 Texture2D g_NormalTexture;
 
@@ -35,6 +36,8 @@ struct VS_OUT_WATER
     float3 vBinormal : Binormal;
     vector vReflectionPos : REFLECTION;
     vector vRefractionPos : REFRACTION;
+    
+    vector vOldPos : OLDPOS;
 };
 
 VS_OUT_WATER VS_MAIN_Water(VS_IN Input)
@@ -46,12 +49,18 @@ VS_OUT_WATER VS_MAIN_Water(VS_IN Input)
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
     
+    matrix matOldWV, matOldWVP;
+    
+    matOldWV = mul(g_OldWorldMatrix, g_OldViewMatrix);
+    matOldWVP = mul(matOldWV, g_ProjMatrix);
+    
     Output.vPos = mul(vector(Input.vPos, 1.f), matWVP);
     Output.vNor = normalize(mul(vector(Input.vNor, 0.f), g_WorldMatrix));
     Output.vTex = Input.vTex;
     Output.vProjPos = Output.vPos;
     Output.vTangent = normalize(mul(vector(1.f, 0.f, .0f, 0.f), g_WorldMatrix)).xyz;
     Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
+    Output.vOldPos = mul(vector(Input.vPos, 1.f), matOldWVP);
     
     matrix matWRV, matWRVP;
     
@@ -74,6 +83,8 @@ struct PS_IN_WATER
     float3 vBinormal : Binormal;
     vector vReflectionPos : REFLECTION;
     vector vRefractionPos : REFRACTION;
+    
+    vector vOldPos : OLDPOS;
 };
 
 struct PS_OUT_WATER
@@ -139,9 +150,15 @@ PS_OUT_WATER PS_MAIN_Water(PS_IN_WATER Input)
     //float4 vMergeDiffuse = vRefractionDiffuse * (1 - fFresnel) * vRefractionDiffuse.a * vReflectionDiffuse.a + vReflectionDiffuse * fFresnel * vReflectionDiffuse.a * vRefractionDiffuse.a;
     //vMergeDiffuse = saturate(vMergeDiffuse * float4(0.95f, 1.00f, 1.05f, 1.0f) + float4(0.15f, 0.15f, 0.15f, 0.0f));
     
+    float2 Velocity = (Input.vProjPos.xy / Input.vProjPos.w) - (Input.vOldPos.xy / Input.vOldPos.w);
+    
+    float2 vCalDir;
+    vCalDir = Velocity * 0.5f;
+    vCalDir.y *= -1.f;
+    
     Output.vDiffuse = vReflectionDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, 1.f);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_vCamNF.y, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_vCamNF.y, vCalDir.x, vCalDir.y);
     
     return Output;
 }

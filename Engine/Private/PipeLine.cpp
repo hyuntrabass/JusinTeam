@@ -46,7 +46,7 @@ void CPipeLine::Set_Transform(TransformType eState, _fmatrix TransformMatrix)
 
 void CPipeLine::Set_OldViewMatrix(const _mat& TransformMatrix)
 {
-	m_OldViewMatrix = TransformMatrix;
+	XMStoreFloat4x4(&m_OldViewMatrix, TransformMatrix);
 }
 
 _mat CPipeLine::Get_OldViewMatrix_vec4x4() const
@@ -89,6 +89,8 @@ HRESULT CPipeLine::Init()
 		XMStoreFloat4x4(&m_TransformMatrix[i], XMMatrixIdentity());
 		XMStoreFloat4x4(&m_TransformMatrix_Inversed[i], XMMatrixIdentity());
 	}
+
+	XMStoreFloat4x4(&m_OldViewMatrix, XMMatrixIdentity());
 
 	return S_OK;
 }

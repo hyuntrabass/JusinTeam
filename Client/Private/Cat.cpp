@@ -59,6 +59,8 @@ HRESULT CCat::Init(void* pArg)
 
 void CCat::Tick(_float fTimeDelta)
 {
+	__super::Tick(fTimeDelta);
+
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 

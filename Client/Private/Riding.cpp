@@ -242,6 +242,7 @@ HRESULT CRiding::Init(void* pArg)
 
 void CRiding::Tick(_float fTimeDelta)
 {
+	m_pTransformCom->Set_OldMatrix();
 	if (m_eCurMode == VEHICLEBOOK)
 	{
 		m_pModelCom->Set_Animation(m_Animation);
@@ -1149,6 +1150,16 @@ HRESULT CRiding::Add_Components()
 HRESULT CRiding::Bind_ShaderResources()
 {
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pTransformCom->Bind_OldWorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
 	{
 		return E_FAIL;
 	}

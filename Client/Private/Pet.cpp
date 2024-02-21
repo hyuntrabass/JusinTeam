@@ -29,6 +29,8 @@ HRESULT CPet::Init(void* pArg)
 
 void CPet::Tick(_float fTimeDelta)
 {
+	m_pTransformCom->Set_OldMatrix();
+
 	if (CUI_Manager::Get_Instance()->Get_IsPetDie())
 	{
 		CUI_Manager::Get_Instance()->Set_Pet(false);
@@ -147,6 +149,16 @@ HRESULT CPet::Add_Components()
 HRESULT CPet::Bind_ShaderResources()
 {
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pTransformCom->Bind_OldWorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
 	{
 		return E_FAIL;
 	}

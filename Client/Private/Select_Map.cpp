@@ -32,7 +32,7 @@ HRESULT CSelect_Map::Init(void* pArg)
 
 void CSelect_Map::Tick(_float fTimeDelta)
 {
-   
+    m_pTransformCom->Set_OldMatrix();
 }
 
 void CSelect_Map::Late_Tick(_float fTimeDelta)
@@ -110,10 +110,16 @@ HRESULT CSelect_Map::Bind_ShaderResources()
         return E_FAIL;
     }
 
+    if (FAILED(m_pTransformCom->Bind_OldWorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+        return E_FAIL;
+
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
     {
         return E_FAIL;
     }
+
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
+        return E_FAIL;
 
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
     {

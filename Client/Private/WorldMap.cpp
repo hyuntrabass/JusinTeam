@@ -114,6 +114,8 @@ void CWorldMap::Tick(_float fTimeDelta)
 	{
 		return;
 	}
+	m_pTransformCom->Set_OldMatrix();
+
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
@@ -379,6 +381,16 @@ HRESULT CWorldMap::Add_Components()
 HRESULT CWorldMap::Bind_ShaderResources()
 {
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pTransformCom->Bind_OldWorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
 	{
 		return E_FAIL;
 	}

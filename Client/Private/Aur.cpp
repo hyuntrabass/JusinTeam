@@ -46,6 +46,9 @@ HRESULT CAur::Init(void* pArg)
 
 void CAur::Tick(_float fTimeDelta)
 {
+	__super::Tick(fTimeDelta);
+
+
 	if (false) // 나중에 조건 추가
 	{
 		m_bTalking = true;

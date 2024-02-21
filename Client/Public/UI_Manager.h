@@ -147,6 +147,9 @@ public:
 	void Set_Teleport(_bool isTeleport, TeleportSpot eSpot = TS_END) { m_bTeleport = isTeleport; m_eTeleportSpot = eSpot; }
 	const _bool& Is_Teleport(TeleportSpot* eSpot = nullptr);
 
+	void Set_Collect() { m_isCollect = true; }
+	_bool Is_Collecting();
+
 private:
 	PART_TYPE		m_eChangedPart{ PT_END };
 	MOUSESTATE		m_eMouseState{ M_DEFAULT };
@@ -154,6 +157,8 @@ private:
 
 	TeleportSpot	m_eTeleportSpot{ TS_END };
 	_bool			m_bTeleport{};
+
+	_bool			m_isCollect{ false };
 
 	_bool			m_isInfinityTower{ false };
 	_bool			m_isPet{ false };

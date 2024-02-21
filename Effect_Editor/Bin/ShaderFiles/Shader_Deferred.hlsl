@@ -601,6 +601,43 @@ PS_OUT PS_Draw(PS_IN Input)
     return Output;
 }
 
+PS_OUT PS_MotionBlur(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    uint iNumBlurSample = 10;
+    
+    vector vDepth_Velocity_Desc = g_Depth_Velocity_Texture.Sample(LinearSampler, Input.vTexcoord);
+    
+    float2 Velocity = vDepth_Velocity_Desc.zw / (float)iNumBlurSample;
+    
+    float Depth = vDepth_Velocity_Desc.x;
+    
+    uint iCnt = 1;
+    
+    vector BColor;
+    float BDepth;
+    
+    vector vColor;
+    
+    for (uint i = iCnt; i < iNumBlurSample; ++i)
+    {
+        BColor = g_Texture.Sample(LinearClampSampler, Input.vTexcoord + Velocity * (float) i);
+        BDepth = g_Depth_Velocity_Texture.Sample(LinearClampSampler, Input.vTexcoord + Velocity * (float) i).x;
+        if (Depth < BDepth + 0.04f)
+        {
+            iCnt++;
+            vColor += BColor;
+        }
+    }
+    
+    vColor /= (float) iCnt;
+    
+    Output.vColor = vColor;
+    
+    return Output;
+}
+
 technique11 DefaultTechnique
 {
     pass Debug // 0
@@ -783,5 +820,18 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Draw();
+    }
+
+    pass Motion_Blur // 14
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_MotionBlur();
     }
 };

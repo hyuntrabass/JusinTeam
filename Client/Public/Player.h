@@ -377,8 +377,8 @@ private:
 	class CEffect_Dummy* m_pFrameEffect{ nullptr };
 	class CEffect_Dummy* m_pEffect_Shield{ nullptr };
 	class CCamera_Manager* m_pCam_Manager{ nullptr };
-	CCommonSurfaceTrail* m_pLeft_Trail[5]{ nullptr };
-	CCommonSurfaceTrail* m_pRight_Trail[5]{ nullptr };
+	CCommonSurfaceTrail* m_pLeft_Trail{ nullptr };
+	CCommonSurfaceTrail* m_pRight_Trail{ nullptr };
 
 private:
 	ANIM_DESC m_Animation{};
@@ -453,7 +453,6 @@ private:
 	_bool m_bReadySwim{};
 	_mat m_ShieldMatrix{};
 	_float m_iSuperArmor{};
-	_mat m_OldWorldMatrix{};
 	_bool m_bWeapon_Unequip{};
 	wstring m_strPlayerName{};
 

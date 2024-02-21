@@ -746,6 +746,16 @@ const _bool& CUI_Manager::Is_Teleport(TeleportSpot* eSpot)
 	return m_bTeleport;
 }
 
+_bool CUI_Manager::Is_Collecting()
+{
+	if (m_isCollect)
+	{
+		m_isCollect = false;
+		return true;
+	}
+	return true;
+}
+
 void CUI_Manager::Free()
 {
 	Safe_Release(m_pGameInstance);
