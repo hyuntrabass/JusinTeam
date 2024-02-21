@@ -7,9 +7,9 @@
 #include "Effect_Dummy.h"
 #include "Effect_Manager.h"
 #include "Camera_Manager.h"
-#include "Trigger_Manager.h"
 #include "Dialog.h"
 #include "TextButtonColor.h"
+
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -158,6 +158,41 @@ void CPlayer::Tick(_float fTimeDelta)
 			m_ShaderIndex = VTFPass_Dissolve;
 			m_HairShaderIndex = VTFPass_LerpDissolve;
 		}
+	}
+
+	TeleportSpot eTeleportSpot{};
+	if (CUI_Manager::Get_Instance()->Is_Teleport(&eTeleportSpot))
+	{
+		CUI_Manager::Get_Instance()->Set_Teleport(false);
+		Riding_Desc eRiding_Desc{};
+		m_Current_AirRiding = CUI_Manager::Get_Instance()->Get_Riding(VC_FLY);
+		eRiding_Desc.Type = m_Current_AirRiding;
+		Summon_Riding(eRiding_Desc);
+
+		CFadeBox::FADE_DESC Desc = {};
+		Desc.fIn_Duration = 2.5f;
+		Desc.phasFadeCompleted = &m_bReady_Teleport;
+		CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
+		m_eTeleportSpot = eTeleportSpot;
+	}
+
+	if (m_bReady_Teleport)
+	{
+		m_pCam_Manager->Set_RidingZoom(false);
+		m_pCam_Manager->Set_FlyCam(false);
+		
+		m_bIsMount = false;
+		Safe_Release(m_pRiding);
+		CTrigger_Manager::Get_Instance()->Teleport(m_eTeleportSpot);
+		m_bReady_Teleport = false;
+		Riding_Desc eRiding_Desc{};
+		eRiding_Desc.Type = m_Current_AirRiding;
+		eRiding_Desc.bLanding = true;
+		eRiding_Desc.vSummonPos = m_pTransformCom->Get_CenterPos();
+		Summon_Riding(eRiding_Desc);
+		CFadeBox::FADE_DESC Desc = {};
+		Desc.fOut_Duration = 0.5f;
+		CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
 	}
 
 	if (m_pFrameEffect)
@@ -610,18 +645,6 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		CEvent_Manager::Get_Instance()->Late_Tick(fTimeDelta);
 
 	}
-
-
-	/*if (m_UsingMotionBlur)
-	{
-		m_ShaderIndex = VTFPass_Motion_Blur;
-		m_HairShaderIndex = VTFPass_LerpBlur;
-	}
-	else
-	{
-		m_ShaderIndex = VTFPass_Dissolve;
-		m_HairShaderIndex = VTFPass_LerpDissolve;
-	}*/
 
 	if (!m_bStartGame && m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY)
 	{
@@ -3492,10 +3515,7 @@ void CPlayer::Summon_Riding(Riding_Desc Type)
 	Riding_Desc Desc{};
 	Desc = Type;
 	Desc.vSummonPos = m_pTransformCom->Get_State(State::Pos);
-	if (Desc.Type == Bird && !Desc.bGlide)
-	{
-		m_pCam_Manager->Set_FlyCam(true);
-	}
+	m_bIsMount = true;
 
 
 	wstring strName{};
@@ -3519,10 +3539,12 @@ void CPlayer::Tick_Riding(_float fTimeDelta)
 	if (m_pRiding->Get_Delete())
 	{
 		m_pCam_Manager->Set_RidingZoom(false);
+		m_pCam_Manager->Set_FlyCam(false);
 
 		if (m_pRiding->Get_RidingType() != Bird)
 		{
 			m_pTransformCom->Set_Position(_vec3(m_pRiding->Get_Pos() + _vec3(0.f, 2.f, 0.f)));
+
 			m_bIsMount = false;
 			Safe_Release(m_pRiding);
 		}
@@ -3538,20 +3560,11 @@ void CPlayer::Tick_Riding(_float fTimeDelta)
 			m_pCam_Manager->Set_FlyCam(false);
 			if (m_pTransformCom->Get_CenterPos().x > 1500.f)
 			{
-				CTrigger_Manager::Get_Instance()->Teleport(TS_Village);
-				for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
-				{
-					if (m_pGameInstance->Get_IsLoopingSound(i))
-					{
-						m_pGameInstance->StopSound(i);
-					}
-				}
 				m_pGameInstance->PlayBGM(TEXT("BGM_1st_Village"));
 				m_pGameInstance->FadeinSound(0, fTimeDelta, 0.5f);
 			}
 			else
 			{
-				CTrigger_Manager::Get_Instance()->Teleport(TS_Dungeon);
 				for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 				{
 					if (m_pGameInstance->Get_IsLoopingSound(i))
@@ -3698,6 +3711,7 @@ void CPlayer::Init_State()
 		{
 			m_Animation.iAnimIndex = Anim_idle_00;
 			m_Animation.isLoop = true;
+
 			m_hasJumped = false;
 			m_iSuperArmor = {};
 		}
@@ -3712,6 +3726,7 @@ void CPlayer::Init_State()
 		break;
 		case Client::CPlayer::Run_Start:
 		{
+			m_Animation.bSkipInterpolation = true;
 			m_Animation.iAnimIndex = Anim_Normal_run_start;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
@@ -3720,6 +3735,7 @@ void CPlayer::Init_State()
 		break;
 		case Client::CPlayer::Run:
 		{
+			m_Animation.bSkipInterpolation = true;
 			m_Animation.iAnimIndex = Anim_Normal_run;
 			m_Animation.isLoop = true;
 			m_iSuperArmor = {};
@@ -4292,7 +4308,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 	case Client::CPlayer::Jump_End:
 		if (m_pModelCom->IsAnimationFinished(Anim_jump_end))
 		{
-			m_eState = Run;
+			m_eState = Idle;
 		}
 		break;
 	case Client::CPlayer::Jump_Long_End:

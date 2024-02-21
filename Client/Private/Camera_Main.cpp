@@ -158,7 +158,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 	}
 
 
-		__super::Tick(fTimeDelta);
+	__super::Tick(fTimeDelta);
 
 }
 
@@ -201,7 +201,8 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 
 	if (m_pCam_Manager->Get_FlyCam())
 	{
-
+		CTransform* m_RidingTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+		m_pTransformCom->Set_State(State::Pos,m_RidingTransform->Get_CenterPos());
 		m_pTransformCom->LookAt(m_pPlayerTransform->Get_State(State::Pos));
 	}
 	else if (!m_pCam_Manager->Get_AimMode())
@@ -216,30 +217,8 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 
 			if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
 			{
-				_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
-				_vec4 vFrontLook = vLook;
-				vFrontLook.y = 0.f;
-				_float fResult = vLook.Dot(vFrontLook);
 				_float fTurnValue = fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor;
-
-				if (fResult < 0.97f && fResult > 0.72f)
-				{
-					m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right) , fTurnValue);
-				}
-				else if(fResult >=0.97f)
-				{
-					if(fTurnValue>0.f)
-					{
-						m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
-					}
-				}
-				else if (fResult <= 0.72f)
-				{
-					if (fTurnValue < 0.f)
-					{
-						m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
-					}
-				}
+				m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
 			}
 		}
 

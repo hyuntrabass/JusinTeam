@@ -144,7 +144,7 @@ public:
 	CFadeBox* Clone_FadeBox(CFadeBox::FADE_DESC& Description);
 
 
-	void Set_Teleport(_bool isTeleport, TeleportSpot eSpot = TS_END) { m_bTeleport = isTeleport; m_bTeleport = eSpot; }
+	void Set_Teleport(_bool isTeleport, TeleportSpot eSpot = TS_END) { m_bTeleport = isTeleport; m_eTeleportSpot = eSpot; }
 	const _bool& Is_Teleport(TeleportSpot* eSpot = nullptr);
 
 private:

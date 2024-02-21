@@ -6,7 +6,7 @@
 #include "NameTag.h"
 #include "CommonTrail.h"
 #include "CommonSurfaceTrail.h"
-
+#include "Trigger_Manager.h"
 BEGIN(Client)
 
 struct BODYPART_DESC
@@ -388,6 +388,7 @@ private:
 	ANIM_LIST m_SwordSkill[5]{};
 	Riding_State m_Riding_State{};
 	PLAYER_STATE m_eState{ Idle };
+	TeleportSpot m_eTeleportSpot{};
 	PLAYER_STATE m_ePrevState{ State_End };
 	WEAPON_TYPE m_Current_Weapon{ WP_END };
 	Riding_Type m_Current_AirRiding{ Type_End };
@@ -407,6 +408,7 @@ private:
 	_bool m_bArrowRain_Start{};
 	_bool m_bAimMode{};
 	_vec4 m_vPos{};
+	_bool m_bReady_Teleport{};
 	_bool m_bIsClimb{};
 	_bool m_bComboZoom{};
 	_bool m_bStartGame{};
