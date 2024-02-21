@@ -918,7 +918,9 @@
     <ClInclude Include="..\Public\BrickBall.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Statue.h" />
+    <ClInclude Include="..\Public\Statue.h">
+      <Filter>02.GameObjects\04.Monster\98. Statue</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1378,7 +1380,9 @@
     <ClCompile Include="..\Private\BrickBall.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Statue.cpp" />
+    <ClCompile Include="..\Private\Statue.cpp">
+      <Filter>02.GameObjects\04.Monster\98. Statue</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">

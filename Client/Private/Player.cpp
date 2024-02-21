@@ -229,9 +229,7 @@ void CPlayer::Tick(_float fTimeDelta)
 	m_fAttTimer += fTimeDelta;
 
 
-	m_OldWorldMatrix = m_pTransformCom->Get_World_Matrix();
-
-
+	m_pTransformCom->Set_OldMatrix();
 
 
 	if (m_bStartGame)
@@ -4591,10 +4589,11 @@ HRESULT CPlayer::Bind_ShaderResources()
 	}
 
 	// 모션블러용 이전프레임 WorldMatrix 바인드
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldWorldMatrix", m_OldWorldMatrix)))
+	if (FAILED(m_pTransformCom->Bind_OldWorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
 	{
 		return E_FAIL;
 	}
+
 
 	// 모션블러용 이전프레임 ViewMatrix 바인드
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix_vec4x4())))

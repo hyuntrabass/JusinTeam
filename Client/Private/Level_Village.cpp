@@ -153,6 +153,10 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	{
 		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Statue"), TEXT("Prototype_GameObject_Statue"));
 	}
+	if (m_pGameInstance->Key_Down(DIK_EQUALS))
+	{
+		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Test"), TEXT("Prototype_GameObject_Void20"));
+	}
 }
 
 HRESULT CLevel_Village::Render()

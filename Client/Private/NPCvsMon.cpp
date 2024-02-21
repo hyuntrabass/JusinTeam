@@ -46,6 +46,8 @@ HRESULT CNPCvsMon::Init(void* pArg)
 
 void CNPCvsMon::Tick(_float fTimeDelta)
 {
+	m_pTransformCom->Set_OldMatrix();
+
 	m_pModelCom->Set_Animation(m_Animation);
 	m_Animation.fStartAnimPos = 0.f;
 }

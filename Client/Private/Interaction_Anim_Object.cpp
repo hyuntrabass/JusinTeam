@@ -98,7 +98,6 @@ void CInteraction_Anim::Tick(_float fTimeDelta)
 			m_isCollect = true;
 		}
 	}
-
 	if (m_isWideCollision)
 	{
 		dynamic_cast<CNameTag*>(m_pNameTag)->Tick(fTimeDelta);

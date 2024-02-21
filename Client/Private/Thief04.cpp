@@ -93,13 +93,16 @@ void CThief04::Tick(_float fTimeDelta)
 	Update_Collider();
 	__super::Update_BodyCollider();
 
-	Update_Trail(fTimeDelta);
+	//Update_Trail(fTimeDelta);
 
 	m_pTransformCom->Gravity(fTimeDelta);
 }
 
 void CThief04::Late_Tick(_float fTimeDelta)
 {
+	m_pAxeTrail->Late_Tick(fTimeDelta);
+	m_pKnifeTrail->Late_Tick(fTimeDelta);
+
 	__super::Late_Tick(fTimeDelta);
 
 #ifdef _DEBUG
@@ -383,8 +386,10 @@ void CThief04::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 40.f && fAnimpos <= 48.f)
 				{
-					m_pAxeTrail->Late_Tick(fTimeDelta);
-					m_pKnifeTrail->Late_Tick(fTimeDelta);
+					//m_pAxeTrail->Late_Tick(fTimeDelta);
+					//m_pKnifeTrail->Late_Tick(fTimeDelta);
+
+					Update_Trail(fTimeDelta);
 				}
 			}
 			break;
@@ -409,11 +414,16 @@ void CThief04::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 22.f && fAnimpos <= 28.f)
 				{
-					m_pKnifeTrail->Late_Tick(fTimeDelta);
+					//m_pKnifeTrail->Late_Tick(fTimeDelta);
+
+					Update_Trail(fTimeDelta);
+
 				}
 				if (fAnimpos >= 44.f && fAnimpos <= 49.f)
 				{
-					m_pAxeTrail->Late_Tick(fTimeDelta);
+					//m_pAxeTrail->Late_Tick(fTimeDelta);
+
+					Update_Trail(fTimeDelta);
 				}
 			}
 			break;
@@ -432,8 +442,10 @@ void CThief04::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 29.f && fAnimpos <= 40.f)
 				{
-					m_pKnifeTrail->Late_Tick(fTimeDelta);
-					m_pAxeTrail->Late_Tick(fTimeDelta);
+					//m_pKnifeTrail->Late_Tick(fTimeDelta);
+					//m_pAxeTrail->Late_Tick(fTimeDelta);
+
+					Update_Trail(fTimeDelta);
 				}
 			}
 			break;
@@ -452,11 +464,16 @@ void CThief04::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 30.f && fAnimpos <= 34.f)
 				{
-					m_pAxeTrail->Late_Tick(fTimeDelta);
+					//m_pAxeTrail->Late_Tick(fTimeDelta);
+
+					Update_Trail(fTimeDelta);
+
 				}
 				if (fAnimpos >= 44.f && fAnimpos <= 50.f)
 				{
-					m_pKnifeTrail->Late_Tick(fTimeDelta);
+					//m_pKnifeTrail->Late_Tick(fTimeDelta);
+
+					Update_Trail(fTimeDelta);
 				}
 			}
 			break;
@@ -475,7 +492,9 @@ void CThief04::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 42.f && fAnimpos <= 48.f)
 				{
-					m_pAxeTrail->Late_Tick(fTimeDelta);
+					//m_pAxeTrail->Late_Tick(fTimeDelta);
+
+					Update_Trail(fTimeDelta);
 				}
 			}
 			break;

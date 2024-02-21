@@ -45,7 +45,7 @@ private:
 
 private:
 	Riding_Type				m_eRidingType;
-
+	Riding_Desc				m_tRidingDesc{};
 	_bool					m_isSelected{ false };
 	_bool					m_isEquip{ false };
 
