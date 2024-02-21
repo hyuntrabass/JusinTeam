@@ -20,13 +20,6 @@ void CDummy::Select(const _bool& isSelected)
 	m_isSelected = isSelected;
 }
 
-void CDummy::Modify(_fvector vPos, _fvector vLook)
-{
-	m_pTransformCom->Set_State(State::Pos, vPos);
-	m_pTransformCom->LookAt_Dir(vLook);
-	XMStoreFloat4(&m_Info.vPos, vPos);
-	XMStoreFloat4(&m_Info.vLook, vLook);
-}
 
 void CDummy::Get_State(_float4& vPos, _float4& vLook)
 {
@@ -78,8 +71,26 @@ HRESULT CDummy::Init(void* pArg)
 		m_Info.ppDummy = nullptr;
 	}
 
-	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_Info.vPos));
-	m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_Info.vLook));
+	if (m_Info.eType == ItemType::Environment)
+	{
+		_vec3 vUp{ m_Info.vNormal };
+		_vec3 vRight = vUp.Cross(_vec3(0.f, 1.f, 0.f)).Get_Normalized();
+		_vec3 vLook = vRight.Cross(vUp).Get_Normalized();
+		
+		_mat mMatrix{};
+		mMatrix.Right(vRight);
+		mMatrix.Up(vUp);
+		mMatrix.Look(vLook);
+		mMatrix.Position(m_Info.vPos);
+		m_pTransformCom->Set_Matrix(mMatrix);
+	}
+	else
+	{
+		_mat mMatrix{};
+		mMatrix.Position(m_Info.vPos);
+		m_pTransformCom->Set_Matrix(mMatrix);
+	}
+	m_pModelCom->Apply_TransformToActor(m_pTransformCom->Get_World_Matrix());
 
 	return S_OK;
 }

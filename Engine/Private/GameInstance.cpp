@@ -746,12 +746,12 @@ _vec4 CGameInstance::Compute_MousePicked_Terrain(_float44 matTerrainWorld, _floa
 
 	return m_pPicking->Compute_MousePicked_Terrain(matTerrainWorld, pVerticesPos, iNumVerticesX, iNumVerticesZ);
 }
-_vec4 CGameInstance::Compute_MousePicked_MeshTerrain(_float44 matTerrainWorld, _float3* pVerticesPos, vector<VTXNORTEX> vVertices, vector<_ulong> vIndices)
+_vec4 CGameInstance::Compute_MousePicked_MeshTerrain(_float44 matTerrainWorld, vector<VTXNORTEX> vVertices, vector<_ulong> vIndices)
 {
 	if (nullptr == m_pPicking)
 		return _vec4(0.f, 0.f, 0.f, 0.f);
 
-	return m_pPicking->Compute_MousePicked_MeshTerrain(matTerrainWorld, pVerticesPos, vVertices, vIndices);
+	return m_pPicking->Compute_MousePicked_MeshTerrain(matTerrainWorld, vVertices, vIndices);
 }
 HRESULT CGameInstance::Ready_Texture2D()
 {
@@ -768,6 +768,22 @@ HRESULT CGameInstance::Ready_FastPicking()
 		return E_FAIL;
 	}
 	return m_pPicking->Ready_FastPicking();
+}
+_vec4 CGameInstance::Get_World_Pos()
+{
+	if (nullptr == m_pPicking)
+	{
+		return _vec4(0.f, 0.f, 0.f, 0.f);
+	}
+	return m_pPicking->Get_World_Pos();
+}
+_vec4 CGameInstance::Get_World_Dir()
+{
+	if (nullptr == m_pPicking)
+	{
+		return _vec4(0.f, 0.f, 0.f, 0.f);
+	}
+	return m_pPicking->Get_World_Dir();
 }
 HRESULT CGameInstance::Add_Font(const wstring& strFontTag, const wstring& strFilePath)
 {

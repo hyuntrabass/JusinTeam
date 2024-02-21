@@ -103,10 +103,13 @@ public: // Picking
 	_int FastPicking(_uint x, _uint y);
 
 	_vec4 Compute_MousePicked_Terrain(_float44 matTerrainWorld, _float3* pVerticesPos, _uint iNumVerticesX, _uint iNumVerticesZ);
-	_vec4 Compute_MousePicked_MeshTerrain(_float44 matTerrainWorld, _float3* pVerticesPos, vector<VTXNORTEX> vVertices, vector<_ulong> vIndices);
+	_vec4 Compute_MousePicked_MeshTerrain(_float44 matTerrainWorld, vector<VTXNORTEX> vVertices, vector<_ulong> vIndices);
 
 	HRESULT Ready_Texture2D();
 	HRESULT Ready_FastPicking();
+	_vec4 Get_World_Pos();
+	_vec4 Get_World_Dir();
+
 
 public: // Font
 	HRESULT Add_Font(const wstring& strFontTag, const wstring& strFilePath);

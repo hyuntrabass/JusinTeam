@@ -41,6 +41,7 @@ HRESULT CMap::Init(void* pArg)
 	m_iShaderPass = StaticPass_AlphaTestMeshes;
 	
 	m_pTransformCom->Set_Position(MapPos);
+	m_pModelCom->Apply_TransformToActor(m_pTransformCom->Get_World_Matrix());
 
 	return S_OK;
 }
