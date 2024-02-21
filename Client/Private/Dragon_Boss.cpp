@@ -542,7 +542,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = eTempDragonState;
 
-			//m_eCurState = STATE_DOUBLE_SLASH; // 테스트용
+			m_eCurState = STATE_RIGHT_SLASH; // 테스트용
 		}
 	}
 
@@ -562,9 +562,9 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->Get_CurrentAnimPos() >= 37.f && m_pModelCom->Get_CurrentAnimPos() <= 43.f)
 		{
-			m_pRightTrail1->Late_Tick(fTimeDelta);
+			/*m_pRightTrail1->Late_Tick(fTimeDelta);
 			m_pRightTrail2->Late_Tick(fTimeDelta);
-			m_pRightTrail3->Late_Tick(fTimeDelta);
+			m_pRightTrail3->Late_Tick(fTimeDelta);*/
 
 			//if (!m_bCreateEffect[0])
 			//{
