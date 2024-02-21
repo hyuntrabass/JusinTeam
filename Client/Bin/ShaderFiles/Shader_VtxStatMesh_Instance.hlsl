@@ -406,7 +406,7 @@ technique11 DefaultTechnique_Shader_StatInstance
 
     pass AlphaTestMeshes
     {
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 

@@ -4,6 +4,9 @@
 #include "NameTag.h"
 #include "UI_Manager.h"
 
+// Prototype_Model_Hurbs
+// Prototype_Model_OakTree
+
 CInteraction_NonAnim::CInteraction_NonAnim(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
