@@ -24,7 +24,8 @@ public:
 	void Update_Collider();
 
 public:
-	_bool RayCast();
+	void RayCast();
+
 
 private:
 	CShader* m_pShaderCom = { nullptr };
@@ -32,12 +33,14 @@ private:
 	CCollider* m_pColliderCom = { nullptr };
 
 private:
+	_bool					m_isColl{};
+	_uint					m_iCollNum{};
 
-private:
+	_float					m_fSpeed{};
+	_vec3					m_vDir{};
 
-private:
-	_mat m_EffectMatrix{};
-	class CEffect_Dummy* m_pEffect_Ball{};
+	_mat					m_EffectMatrix{};
+	class CEffect_Dummy*	m_pEffect_Ball{};
 
 public:
 	HRESULT Add_Components();

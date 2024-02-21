@@ -47,7 +47,7 @@ void CLake::Tick(_float fTimeDelta)
 	//	m_Desc.fRefractionScale += 0.01f;
 	//if (m_pGameInstance->Key_Down(DIK_O))
 	//	m_Desc.fRefractionScale -= 0.01f;
-
+	m_pTransformCom->Set_OldMatrix();
 
 	m_Desc.fWaterPos += m_Desc.fWaterSpeed * fTimeDelta;
 }
@@ -106,7 +106,6 @@ HRESULT CLake::Add_Component()
 
 HRESULT CLake::Bind_ShaderResources()
 {
-
 	_float Y = m_pTransformCom->Get_CenterPos().y;
 
 	_mat ReflectionViewMat = m_pGameInstance->ChagneViewForReflection(Y);
@@ -117,8 +116,13 @@ HRESULT CLake::Bind_ShaderResources()
 	//if (FAILED(m_pShaderCom->Bind_Matrix("g_ReflectionViewMatrix", XMMatrixIdentity())))
 	//	return E_FAIL;
 
-	_float44 pWorldMatrix = m_pTransformCom->Get_World_Matrix();
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", pWorldMatrix)))
+	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+		return E_FAIL;
+
+	if (FAILED(m_pTransformCom->Bind_OldWorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
 		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))

@@ -20,6 +20,8 @@ bool g_bSelected = false;
 
 vector g_RimColor;
 
+matrix g_OldWorldMatrix, g_OldViewMatrix;
+
 struct VS_IN
 {
     float3 vPos : Position;
@@ -39,6 +41,7 @@ struct VS_OUT
     vector vProjPos : Texcoord2;
     float3 vTangent : Tangent;
     float3 vBinormal : Binormal;
+    vector vOldPos : Texcoord3;
 };
 
 VS_OUT VS_Main(VS_IN Input)
@@ -57,15 +60,25 @@ VS_OUT VS_Main(VS_IN Input)
     
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
+    
+    vector vNewPos = mul(vPos, matWVP);
+    
+    matrix matOldWV, matOldWVP;
+    
+    matOldWV = mul(g_OldWorldMatrix, g_OldViewMatrix);
+    matOldWVP = mul(matOldWV, g_ProjMatrix);
+    
+    vector vOldPos = mul(vPos, matOldWVP);
 	
-    Output.vPos = mul(vPos, matWVP);
+    Output.vPos = vNewPos;
     Output.vNor = normalize(mul(vNor, g_WorldMatrix));
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
     Output.vProjPos = Output.vPos;
     Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), g_WorldMatrix)).xyz;
     Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
-	
+    Output.vOldPos = vOldPos;
+    
     return Output;
 }
 
@@ -141,6 +154,7 @@ struct PS_IN
     vector vProjPos : Texcoord2;
     float3 vTangent : Tangent;
     float3 vBinormal : Binormal;
+    vector vOldPos : Texcoord3;
 };
 
 struct PS_OUT
@@ -187,10 +201,15 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
         vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
+    float2 Velocity = (Input.vProjPos.xy / Input.vProjPos.w) - (Input.vOldPos.xy / Input.vOldPos.w);
+    
+    float2 vCalDir;
+    vCalDir = Velocity * 0.5f;
+    vCalDir.y *= -1.f;
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, vCalDir.x, vCalDir.y);
     
     return Output;
 }
@@ -244,10 +263,15 @@ PS_OUT_DEFERRED PS_Main_Dissolve(PS_IN Input)
         vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
+    float2 Velocity = (Input.vProjPos.xy / Input.vProjPos.w) - (Input.vOldPos.xy / Input.vOldPos.w);
+    
+    float2 vCalDir;
+    vCalDir = Velocity * 0.5f;
+    vCalDir.y *= -1.f;
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, vCalDir.x, vCalDir.y);
     
     return Output;
 }
@@ -291,14 +315,58 @@ PS_OUT_DEFERRED PS_Main_Rim(PS_IN Input)
     
     vector vRimColor = g_RimColor * fRim;
     
+    float2 Velocity = (Input.vProjPos.xy / Input.vProjPos.w) - (Input.vOldPos.xy / Input.vOldPos.w);
+    
+    float2 vCalDir;
+    vCalDir = Velocity * 0.5f;
+    vCalDir.y *= -1.f;
+    
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, vCalDir.x, vCalDir.y);
+    
     Output.vRimMask = vRimColor;
     
     return Output;
 }
-
+PS_OUT_DEFERRED PS_Color(PS_IN Input)
+{
+    PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + vector(0.5f, 0.f, 0.f, 0.f) * g_bSelected;
+    if (vMtrlDiffuse.a < 0.3f)
+    {
+        discard;
+    }
+    float3 vNormal;
+    if (g_HasNorTex)
+    {
+        vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
+    
+        vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+        float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
+    
+        vNormal = normalize(mul(normalize(vNormal), WorldMatrix) * -1.f);
+    }
+    else
+    {
+        vNormal = normalize(Input.vNor.xyz);
+    }
+    
+    vector vMask = vector(1.f, 0.1f, 0.1f, 0.1f);
+    if (g_HasMaskTex)
+    {
+        vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
+    }
+    
+    
+    Output.vDiffuse = g_vColor;
+    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, 0.f, 0.f);
+    
+    return Output;
+}
 
 
 technique11 DefaultTechnique_Shader_AnimMesh
@@ -379,5 +447,18 @@ technique11 DefaultTechnique_Shader_AnimMesh
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main();
+    }
+
+    pass MeshColor
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Color();
     }
 };

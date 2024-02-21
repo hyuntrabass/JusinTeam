@@ -311,14 +311,14 @@ CMainApp* CMainApp::Create()
 
 void CMainApp::Free()
 {
-	CEffect_Manager::Destroy_Instance();
-
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 
 	CGameInstance::Release_Engine();
+
+	CEffect_Manager::Destroy_Instance();
 	
 	if (_heapchk() != _HEAPOK)
 	{

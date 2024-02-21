@@ -134,6 +134,7 @@ namespace Engine
 		std::wstring strUnDissolveTexture{};
 		std::string strModel{};
 
+		std::wstring strEffectTag{};
 		bool isFollow{};
 		SimpleMath::Matrix* pMatrix{};
 	};
