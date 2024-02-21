@@ -996,11 +996,14 @@ CComponent* CRealtimeVTFModel::Clone(void* pArg)
 
 void CRealtimeVTFModel::Free()
 {
-	for (size_t i = 0; i < m_TriggerEffects.size(); i++)
+	if (m_hasCloned)
 	{
-		if (m_pGameInstance->Has_Created_Effect(m_EffectMatrices[i]) && m_TriggerEffects[i].IsFollow)
+		for (size_t i = 0; i < m_TriggerEffects.size(); i++)
 		{
-			m_pGameInstance->Delete_Effect(m_EffectMatrices[i]);
+			if (m_pGameInstance->Has_Created_Effect(m_EffectMatrices[i]) && m_TriggerEffects[i].IsFollow)
+			{
+				m_pGameInstance->Delete_Effect(m_EffectMatrices[i]);
+			}
 		}
 	}
 
