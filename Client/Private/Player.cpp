@@ -4596,12 +4596,12 @@ HRESULT CPlayer::Bind_ShaderResources()
 
 
 	// 모션블러용 이전프레임 ViewMatrix 바인드
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix_vec4x4())))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
 	{
 		return E_FAIL;
 	}
 
-	m_pModelCom->Set_UsingMotionBlur(m_UsingMotionBlur);
+	m_pModelCom->Set_UsingMotionBlur(true);
 
 	// 뼈 바인드
 	if (FAILED(m_pModelCom->Bind_Bone(m_pShaderCom)))
