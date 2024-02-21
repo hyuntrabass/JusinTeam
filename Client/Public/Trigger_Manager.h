@@ -10,6 +10,7 @@ enum TeleportSpot
 	TS_Dungeon,
 	TS_Village,
 	TS_Minigame,
+	TS_DragonMap,
 	TS_END
 };
 
