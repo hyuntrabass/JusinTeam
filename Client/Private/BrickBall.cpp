@@ -28,14 +28,18 @@ HRESULT CBrickBall::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-
-
+	m_fSpeed = 5.f;
+	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
+	m_pTransformCom->Set_Speed(m_fSpeed);
 
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-	m_pTransformCom->Set_Position(vPlayerPos);
+	vPlayerPos.y += 1.f;
+	_vec4 vPlayerLook = pPlayerTransform->Get_State(State::Look);
+	vPlayerLook.y = 0.f;
 
-	m_pTransformCom->Set_Scale(_vec3(1.5f, 1.5f, 1.5f));
+	m_pTransformCom->LookAt_Dir(vPlayerLook);
+	m_pTransformCom->Set_Position(vPlayerPos);
 
 	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 
@@ -49,26 +53,15 @@ HRESULT CBrickBall::Init(void* pArg)
 
 void CBrickBall::Tick(_float fTimeDelta)
 {
-	if (RayCast())
-	{
-		//_matrix	TransformMatrix = XMLoadFloat4x4(&m_WorldMatrix);
+	RayCast();
 
-		//_vector vDir = vState - vPosition;
-
-	//	float dotProduct = XMVectorGetX(XMVector3Dot(vDir, XMLoadFloat3(&vCellNormal)));
-
-		//_vector vSlide = vDir - XMLoadFloat3(&vCellNormal) * dotProduct;
-	//	반사 벡터 = 슬라이드 벡터 - 2 * (슬라이드 벡터 • 법선 벡터) * 법선 벡터
-	}
-
-
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-	_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-	m_pTransformCom->Set_Position(vPlayerPos);
+	m_pTransformCom->Go_Straight(fTimeDelta);
+	m_pTransformCom->Set_Speed(m_fSpeed);
 
 	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 
 	Update_Collider();
+
 	if (m_pEffect_Ball)
 	{
 		m_pEffect_Ball->Tick(fTimeDelta);
@@ -76,7 +69,22 @@ void CBrickBall::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->CheckCollision_Player(m_pColliderCom))
 	{
-		//m_isDead = true;
+		if (!m_isColl)
+		{
+			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+
+			_vec4 vPlayerLook = pPlayerTransform->Get_State(State::Look);
+			vPlayerLook.y = 0.f;
+
+			m_pTransformCom->LookAt_Dir(vPlayerLook);
+			m_fSpeed = 8.f;
+		}
+		m_isColl = true;
+	}
+	else
+	{
+		m_fSpeed = 5.f;
+		m_isColl = false;
 	}
 }
 
@@ -119,18 +127,29 @@ void CBrickBall::Update_Collider()
 }
 
 
-_bool CBrickBall::RayCast()
+void CBrickBall::RayCast()
 {
-	_float fDist = 0.5f;
+	_float fDist = 1.f;
 	PxRaycastBuffer Buffer{};
 
 	if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), 
 		m_pTransformCom->Get_State(State::Look).Get_Normalized(),
 		fDist, Buffer))
 	{
-		return true;
+		_vec3 vNormal = _vec3(PxVec3ToVector(Buffer.block.normal));
+		_vec3 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
+		vNormal.Normalize();
+		m_vDir = _vec3::Reflect(vLook, vNormal);
+		m_vDir.y = 0.f;
+		m_pTransformCom->LookAt_Dir(m_vDir);
+
+
+		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Ball_Smoke");
+		Info.pMatrix = &m_EffectMatrix;
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
 	}
-	return false;
+
 }
 
 HRESULT CBrickBall::Add_Components()

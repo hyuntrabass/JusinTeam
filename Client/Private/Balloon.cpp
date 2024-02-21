@@ -151,13 +151,18 @@ HRESULT CBalloon::Render()
 		{
 			return E_FAIL;
 		}
+		_vec4 vColor = { 0.f, 0.6f, 1.f, 1.f };
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _vec4)))
+		{
+			return E_FAIL;
+		}
 
 		if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
 		{
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+		if (FAILED(m_pShaderCom->Begin(AnimPass_Color)))
 		{
 			return E_FAIL;
 		}
@@ -168,7 +173,6 @@ HRESULT CBalloon::Render()
 		}
 	}
 
-	return S_OK;
 	return S_OK;
 }
 
