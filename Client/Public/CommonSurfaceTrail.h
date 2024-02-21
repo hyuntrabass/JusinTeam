@@ -38,6 +38,7 @@ private:
 
 private:
 	_bool m_bNoRender{};
+	_int m_iTickCounter{};
 
 	list<_vec3> m_TopPosList{};
 	list<_vec3> m_BottomPosList{};
