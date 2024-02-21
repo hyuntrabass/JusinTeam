@@ -155,18 +155,19 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 			if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_LSHIFT))
 			{
 
-				if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
-				{
+				//if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
+				//{
 					fTimeDeltaAcc += fTimeDelta;
 					if (fTimeDeltaAcc > 0.1f)
 					{
 						//m_PickingPos = _vec4(m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y).x, m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y).y, m_pGameInstance->PickingDepth(m_vMousePos.x, m_vMousePos.y).z, 1.f); ;
+						PickingRayCast();
 						m_PickingPos = _vec4(m_vRayCastPos.x, m_vRayCastPos.y, m_vRayCastPos.z, 1.f);
 						m_vInstancePos.push_back(m_PickingPos);
-						m_vInstancePos.push_back(m_vRayCastNor);
+						m_vInstanceNor.push_back(m_vRayCastNor);
 						fTimeDeltaAcc = 0;
 					}
-				}
+				//}
 			}
 			if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON) && m_pGameInstance->Key_Pressing(DIK_SPACE))
 			{
@@ -665,8 +666,6 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			if (ImGui::Button("Delete"))
 			{
 				Delete_Dummy();
-				if (!m_vInstancePos.empty())
-					m_vInstancePos.clear();
 			}
 
 			ImGui::SameLine();
@@ -676,25 +675,8 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				if (Interaction_current_idx != -1)
 				{
 					Create_Dummy(Interaction_current_idx);
-					if (!m_vInstancePos.empty())
-						m_vInstancePos.clear();
 				}
 			}
-			ImGui::SeparatorText("Picking Info");
-
-			if (ImGui::Button("Picking Delete"))
-			{
-				if (!m_vInstancePos.empty())
-					m_vInstancePos.clear();
-			}
-			ImGui::SameLine();
-
-			if (ImGui::Button("Picking One_Delete"))
-			{
-				if (!m_vInstancePos.empty())
-					m_vInstancePos.pop_back();
-			}
-
 			ImGui::SeparatorText("Save / Load");
 
 			if (ImGui::Button("SAVE"))
@@ -2096,7 +2078,7 @@ void CImGui_Manager::FastPicking()
 void CImGui_Manager::PickingRayCast()
 {
 	PxRaycastBuffer Buffer{};
-	_float fDistance{100.f};
+	_float fDistance{1000.f};
 
 	if (m_pGameInstance->Raycast(m_pGameInstance->Get_World_Pos(),  m_pGameInstance->Get_World_Dir(), fDistance, Buffer))
 	{

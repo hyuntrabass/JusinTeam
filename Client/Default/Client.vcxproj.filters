@@ -457,8 +457,14 @@
     <Filter Include="02.GameObjects\04.Monster\98. Statue">
       <UniqueIdentifier>{b30a4619-e442-47d5-bdd3-dcd61152f75c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\09.Object\Interaction\Door">
-      <UniqueIdentifier>{495eab76-da60-48ec-adbe-b5e33d41ac9f}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\09.Object\Interaction">
+      <UniqueIdentifier>{4b7dd441-49f8-4755-a596-3ce6de4ae474}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\09.Object\Interaction\Anim">
+      <UniqueIdentifier>{ad520320-8fe0-42eb-9b9b-6444cf84c0ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\09.Object\Interaction\NonAnim">
+      <UniqueIdentifier>{7f2d2e87-4e5c-4110-983d-3c1613d9d9cf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -916,12 +922,18 @@
     <ClInclude Include="..\Public\Balloon.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Interaction_Anim_Object.h" />
-    <ClInclude Include="..\Public\Interaction_NonAnim_Object.h" />
     <ClInclude Include="..\Public\BrickBall.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Statue.h" />
+    <ClInclude Include="..\Public\Interaction_Anim_Object.h">
+      <Filter>02.GameObjects\09.Object\Interaction\Anim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Interaction_NonAnim_Object.h">
+      <Filter>02.GameObjects\09.Object\Interaction\NonAnim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Statue.h">
+      <Filter>02.GameObjects\04.Monster\98. Statue</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1376,12 +1388,18 @@
     <ClCompile Include="..\Private\Balloon.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Interaction_Anim_Object.cpp" />
-    <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp" />
     <ClCompile Include="..\Private\BrickBall.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Statue.cpp" />
+    <ClCompile Include="..\Private\Interaction_Anim_Object.cpp">
+      <Filter>02.GameObjects\09.Object\Interaction\Anim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp">
+      <Filter>02.GameObjects\09.Object\Interaction\NonAnim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Statue.cpp">
+      <Filter>02.GameObjects\04.Monster\98. Statue</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
