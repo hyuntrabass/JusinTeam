@@ -99,10 +99,22 @@ void CArrow::Tick(_float fTimeDelta)
 		m_pTransformCom->LookAt(_vec4(m_ArrowType.MonCollider->Get_ColliderPos(), 1.f));
 		m_pTransformCom->Go_To(_vec4(m_ArrowType.MonCollider->Get_ColliderPos(), 1.f), fTimeDelta, 0.f);
 	}
-	else if (m_ArrowType.bAimMode && m_vRaycastPos !=_vec4())
+	else if (m_ArrowType.bAimMode && m_vRaycastPos != _vec4())
 	{
 		m_pTransformCom->LookAt(m_vRaycastPos);
-		m_pTransformCom->Go_To(m_vRaycastPos, fTimeDelta, 0.f);
+		if (!m_bIntersected)
+		{
+			if (m_pTransformCom->Go_To(m_vRaycastPos, fTimeDelta, 0.5f))
+			{
+
+				m_bIntersected = true;
+			}
+		}
+		else if (m_fDeadTime < 2.f)
+		{
+			m_fDeadTime = 2.f;
+		}
+
 	}
 	else
 	{
@@ -132,13 +144,22 @@ void CArrow::Tick(_float fTimeDelta)
 	}
 	case AT_Bow_Skill2:
 	{
-		_float fDist = 0.3f;
-		PxRaycastBuffer Buffer{};
-		//m_pCollider->Change_Radius(3.f);
+		if (not m_ArrowType.bAimMode)
+		{
+			PxRaycastBuffer Buffer{};
+			_float fDist = 0.3f;
+			if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer))
+			{
+				Kill();
+			}
+		}
 
-		if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos),
-			m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer) or
-			m_pGameInstance->CheckCollision_Monster(m_pCollider))
+		if (m_pGameInstance->CheckCollision_Monster(m_pCollider) or m_bIntersected)
+		{
+			Kill();
+		}
+
+		if (m_isDead)
 		{
 			m_pCollider->Set_Radius(4.f);
 			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
@@ -318,9 +339,9 @@ HRESULT CArrow::Add_Components()
 		}
 		CollDesc.eType = ColliderType::OBB;
 
-	/*	CollDesc.vRadians 
-		CollDesc.vCenter = _vec3(0.f, 0.f, -0.3f);
-		CollDesc.vExtents */
+		/*	CollDesc.vRadians
+			CollDesc.vCenter = _vec3(0.f, 0.f, -0.3f);
+			CollDesc.vExtents */
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 			TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
 		{
@@ -333,7 +354,7 @@ HRESULT CArrow::Add_Components()
 		{
 			return E_FAIL;
 		}
-	
+
 		CollDesc.eType = ColliderType::Sphere;
 		CollDesc.fRadius = 0.2f;
 		CollDesc.vCenter = _vec3(0.f, 0.f, -0.3f);
@@ -355,7 +376,7 @@ HRESULT CArrow::Add_Components()
 	//	TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
 	//	return E_FAIL;
 
-	
+
 	return S_OK;
 }
 

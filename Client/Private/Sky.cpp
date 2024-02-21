@@ -55,13 +55,13 @@ void CSky::Tick(_float fTimeDelta)
 			}
 		}
 
-	#ifdef _DEBUG
+#ifdef _DEBUG
 		m_pGameInstance->Get_StringStream() << "= 스카이 텍스쳐 ========================" << endl;
 		m_pGameInstance->Get_StringStream() << "다음 텍스쳐 : NUM_3" << endl;
 		m_pGameInstance->Get_StringStream() << "이전 텍스쳐 : NUM_2" << endl;
 		m_pGameInstance->Get_StringStream() << "현재 텍스쳐 : " << m_iTextureIndex << "번" << endl;
 		m_pGameInstance->Get_StringStream() << endl;
-	#endif // _DEBUG
+#endif // _DEBUG
 
 
 		return;
