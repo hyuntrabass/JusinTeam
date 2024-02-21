@@ -50,7 +50,10 @@ void CBlackhole::Tick(_float fTimeDelta)
 
 	if (m_fLifeTime >= 12.f)
 	{
-		m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+		if (m_iSoundChannel != -1)
+		{
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+		}
 		Kill();
 		return;
 	}
@@ -103,9 +106,9 @@ void CBlackhole::Tick(_float fTimeDelta)
 
 	if (m_fLifeTime >= 3.f)
 	{
-		if (m_pGameInstance->Get_CurPosRatio(m_iSoundChannel) >= 0.8f)
+		if (m_pGameInstance->Get_ChannelCurPosRatio(m_iSoundChannel) >= 0.8f)
 		{
-			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta);
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
 			m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("BP_Skill_10020_SFX_01"), 0.5f, false, 0.1f);
 			m_pGameInstance->FadeinSound(m_iSoundChannel, fTimeDelta);
 		}
@@ -116,9 +119,9 @@ void CBlackhole::Tick(_float fTimeDelta)
 		{
 			m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("Sfx_Boss_IdunDark_Atk_06"));
 		}
-		else if (m_pGameInstance->Get_CurPosRatio(m_iSoundChannel) >= 0.3f)
+		else if (m_pGameInstance->Get_ChannelCurPosRatio(m_iSoundChannel) >= 0.3f)
 		{
-			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta);
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
 			m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("BP_Skill_10020_SFX_01"), 0.5f, false, 0.1f);
 		}
 	}
@@ -223,6 +226,9 @@ CGameObject* CBlackhole::Clone(void* pArg)
 void CBlackhole::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pFrameEffect);
+	Safe_Release(m_pBaseEffect);
 
 	//Safe_Release(m_pRendererCom);
 	//Safe_Release(m_pShaderCom);

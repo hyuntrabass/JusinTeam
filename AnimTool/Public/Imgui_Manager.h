@@ -42,8 +42,11 @@ public:
         std::vector<float> fEndAnimPoses;
         std::vector<std::wstring> strSoundNames;
         float fInitVolume{};
-        float fFadeoutSecond;
+        float fFadeoutSecond{};
         bool IsClientTrigger{};
+        float fStartPosRatio{};
+        bool IsFadeinSound{};
+        float fFadeinSecond{};
     };
 
 private:

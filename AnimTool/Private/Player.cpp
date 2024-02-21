@@ -231,12 +231,12 @@ HRESULT CPlayer::Place_PartModels()
 
 	Desc.ePartType = 3;
 
-	Desc.FileName = "sword4";
+	Desc.FileName = "bow4";
 
 	if (FAILED(m_pPlayerModelCom->Place_Parts(Desc)))
 		return E_FAIL;
 
-	Desc.FileName = "bow4";
+	Desc.FileName = "sword4";
 
 	if (FAILED(m_pPlayerModelCom->Place_Parts(Desc)))
 		return E_FAIL;
@@ -312,7 +312,7 @@ HRESULT CPlayer::Bind_ShaderResources()
 			return E_FAIL;
 
 		// 카메라 Far 바인드
-		if (FAILED(m_pPlayerShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
+		if (FAILED(m_pPlayerShaderCom->Bind_RawValue("g_CamNF", &m_pGameInstance->Get_CameraNF(), sizeof _float2)))
 			return E_FAIL;
 
 		m_pPlayerModelCom->Set_UsingMotionBlur(false);
@@ -338,7 +338,7 @@ HRESULT CPlayer::Bind_ShaderResources()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_CamNF", &m_pGameInstance->Get_CameraNF(), sizeof _float2)))
 		{
 			return E_FAIL;
 		}

@@ -1,7 +1,7 @@
 1. Static Only   2. Anim Only   3. All
 1
 Static Models : Start Converting...
-Converting... Map.fbx
+Converting... BrickMap.fbx
 Read File Succssefully
 Static Models : Convert Success!
 

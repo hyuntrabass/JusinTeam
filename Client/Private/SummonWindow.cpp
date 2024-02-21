@@ -383,7 +383,7 @@ HRESULT CSummonWindow::Add_Parts()
 	{
 		TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BG_VehicleCard2");
 	}
-	TextButton.strTexture2 = TEXT("Prototype_Component_Texture_Effect_FX_B_Gradient016_Tex");
+	TextButton.strTexture2 = TEXT("Prototype_Component_Texture_Effect_FX_B_Gradient010_Tex");
 	m_pCard = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
 	if (not m_pCard)
 	{

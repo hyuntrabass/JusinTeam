@@ -178,7 +178,7 @@ public: // Sound Manager
 	// 사운드 채널이 루프중인지를 반환 함.
 	_bool Get_IsLoopingSound(_uint iChannel);
 	// 사운드 채널의 현재 재생위치를 비율로 반환 함.
-	_float Get_CurPosRatio(_uint iChannel);
+	_float Get_ChannelCurPosRatio(_uint iChannel);
 
 	// 사운드 채널의 볼륨을 지정함.
 	void Set_ChannelVolume(_uint iChannel, _float fVolume);

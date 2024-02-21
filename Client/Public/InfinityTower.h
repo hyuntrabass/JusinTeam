@@ -48,9 +48,9 @@ private:
 
 	class CTextButtonColor*		m_pRoundEffect{ nullptr };
 	CTextButtonColor*			m_pLeftBg{nullptr};
-	CTextButtonColor*			m_pLightening[3];
+	CTextButtonColor*			m_pLightening[3]{};
 
-	class CTower*				m_pTowers[TOWER_END];
+	class CTower*				m_pTowers[TOWER_END]{};
 
 private:
 	HRESULT Ready_Tower();
