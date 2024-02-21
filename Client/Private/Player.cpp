@@ -3245,6 +3245,23 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 	}
 	else if (m_eState == Skill2)
 	{
+		if (m_bLockOn)
+		{
+			if (Index >= 29.f && Index <= 34.f)
+			{
+				m_pGameInstance->Set_TimeRatio(0.2f);
+				Cam_AttackZoom(10.f);
+			}
+			else if (Index >= 35.f && Index <= 37.f)
+			{
+				Cam_AttackZoom(0.f);
+			}
+			else
+			{
+				m_pGameInstance->Set_TimeRatio(1.f);
+			}
+		}
+	
 		if (Index > 5.f && Index < 25.f)
 		{
 			m_pTransformCom->Go_Backward(fTimeDelta);
@@ -3252,11 +3269,6 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		if (Index >= 5.f && Index <= 6.f)
 		{
 			m_pTransformCom->Jump(7.f);
-		}
-		else if (Index >= 32.f && Index <= 33.f)
-		{
-			m_pGameInstance->Set_TimeRatio(0.2f);
-
 		}
 		else if (Index >= 34.f && Index <= 36.f && m_ReadyArrow)
 		{
@@ -3548,7 +3560,6 @@ void CPlayer::Tick_Riding(_float fTimeDelta)
 
 void CPlayer::Arrow_Rain()
 {
-
 	if (m_iArrowRain == 0)
 	{
 		_mat EffectMatrix{};
