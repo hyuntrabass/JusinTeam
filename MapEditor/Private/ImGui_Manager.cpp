@@ -1305,6 +1305,7 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 			Info.Prototype = L"Prototype_Model_";
 			Info.eType = m_eItemType;
 
+
 			_vec3 vUp{ m_vInstanceNor[i] };
 			_vec3 vRight = vUp.Cross(_vec3(0.f, 1.f, 0.f)).Get_Normalized();
 			_vec3 vLook = vRight.Cross(vUp).Get_Normalized();
@@ -1313,6 +1314,8 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 			Info.mMatrix.Up(vUp);
 			Info.mMatrix.Look(vLook);
 			Info.mMatrix.Position(m_vInstancePos[i]);
+
+
 
 			_tchar strUnicode[MAX_PATH]{};
 			MultiByteToWideChar(CP_ACP, 0, Envirs[m_eType][iListIndex], static_cast<int>(strlen(Envirs[m_eType][iListIndex])), strUnicode, static_cast<int>(strlen(Envirs[m_eType][iListIndex])));
@@ -1323,6 +1326,12 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 			{
 				MSG_BOX("Failed to Add Layer : Dummy");
 			}
+
+			CTransform* pTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(L"Com_Transform"));
+			random_device rd;
+			_randNum RandNum(rd());
+			_randFloat Random = _randFloat(0.f, 360.f);
+			pTransform->Rotation(vUp, _float(Random(RandNum)));
 
 			m_EnvirList.push_back(m_pSelectedDummy);
 			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
@@ -2812,8 +2821,8 @@ HRESULT CImGui_Manager::Load_Envir()
 				return E_FAIL;
 			}
 
-			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
 			m_EnvirList.push_back(m_pSelectedDummy);
+			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
 
 			//CTransform* pEnvirTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
 
