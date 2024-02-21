@@ -454,6 +454,9 @@
     <Filter Include="02.GameObjects\14.BrickGame">
       <UniqueIdentifier>{fae2df1e-88e4-4c45-9640-60c520878be7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\04.Monster\98. Statue">
+      <UniqueIdentifier>{b30a4619-e442-47d5-bdd3-dcd61152f75c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -915,6 +918,7 @@
     <ClInclude Include="..\Public\BrickBall.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Statue.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1374,6 +1378,7 @@
     <ClCompile Include="..\Private\BrickBall.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Statue.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">

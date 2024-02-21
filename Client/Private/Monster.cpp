@@ -195,6 +195,12 @@ _vec4 CMonster::Compute_PlayerPos()
 	return pPlayerTransform->Get_State(State::Pos);
 }
 
+_vec4 CMonster::Compute_PlayerLook()
+{
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	return pPlayerTransform->Get_State(State::Look).Get_Normalized();
+}
+
 _float CMonster::Compute_PlayerDistance()
 {
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);

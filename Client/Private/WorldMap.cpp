@@ -78,10 +78,10 @@ void CWorldMap::Tick(_float fTimeDelta)
 			switch (m_eCurPoint)
 			{
 			case VILLAGE:
-				CUI_Manager::Get_Instance()->Set_Teleport(true, TS_Village);
+				CTrigger_Manager::Get_Instance()->Teleport(TS_Village, fTimeDelta);
 				break;
 			case DUNGEON:
-				CUI_Manager::Get_Instance()->Set_Teleport(true, TS_Dungeon);
+				CTrigger_Manager::Get_Instance()->Teleport(TS_Dungeon, fTimeDelta);
 				break;
 			case TOWER:
 				CUI_Manager::Get_Instance()->Set_FullScreenUI(true);

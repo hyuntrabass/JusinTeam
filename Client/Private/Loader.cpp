@@ -1069,6 +1069,12 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Statue"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Statue/Mesh/Statue.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
 	// Dead
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Void01_Die"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Dead/Void01/Mesh/Void01_Die.hyuntraanimmesh"))))
@@ -1543,6 +1549,11 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Spider"), CSpider::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Statue"), CStatue::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

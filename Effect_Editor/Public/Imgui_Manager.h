@@ -5,14 +5,6 @@
 
 BEGIN(Effect)
 
-enum Effect_Type
-{
-	ET_PARTICLE,
-	ET_RECT,
-	ET_MESH,
-	ET_END
-};
-
 struct OldParticleDesc
 {
 	SimpleMath::Vector3 vMinPos{}, vMaxPos;

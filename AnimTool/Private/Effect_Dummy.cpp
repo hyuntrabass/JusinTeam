@@ -48,6 +48,11 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 
 	m_OffsetMatrix = *m_Effect.pMatrix;
 
+	if (m_Effect.iType == ET_DISTORTION or m_Effect.iType == ET_PARTI_DISTORTION)
+	{
+		m_Effect.hasLight = false;
+	}
+
 	if (m_Effect.hasLight)
 	{
 		m_strLightTag = L"Light_Effect_" + to_wstring(m_iLightID++);
@@ -128,7 +133,7 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 
 	if (m_Effect.isUVLoop and
 		(m_vUV.x < -1.f or m_vUV.x > 2.f or
-			m_vUV.y < -1.f or m_vUV.y > 2.f))
+		 m_vUV.y < -1.f or m_vUV.y > 2.f))
 	{
 		m_vUV = m_Effect.vUVInit;
 	}
@@ -143,6 +148,7 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 	switch (m_Effect.iType)
 	{
 	case Effect_Type::ET_PARTICLE:
+	case Effect_Type::ET_PARTI_DISTORTION:
 		m_pParticle->Update(fTimeDelta, m_pTransformCom->Get_World_Matrix(), m_Effect.iNumInstances, m_Effect.bApplyGravity, m_Effect.vGravityDir, m_Effect.fPartiAppearRatio, m_Effect.fPartiDissolveRatio);
 		//m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
 		break;
@@ -178,6 +184,7 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 		break;
 	}
 	case Effect_Type::ET_MESH:
+	case Effect_Type::ET_DISTORTION:
 	{
 		if (m_Effect.isBillboard)
 		{
@@ -211,7 +218,7 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 	if (m_Effect.hasLight)
 	{
 		LIGHT_DESC* pLightInfo = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, m_strLightTag);
-		if (m_Effect.iType == ET_PARTICLE)
+		if (m_Effect.iType == ET_PARTICLE or m_Effect.iType == ET_PARTI_DISTORTION)
 		{
 			pLightInfo->vPosition = m_OffsetMatrix.Position();
 		}
@@ -221,8 +228,14 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 		}
 	}
 	__super::Compute_CamDistance();
-
-	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
+	if (m_Effect.iType == ET_DISTORTION or m_Effect.iType == ET_PARTI_DISTORTION)
+	{
+		m_pRendererCom->Add_RenderGroup(RG_Distortion, this);
+	}
+	else
+	{
+		m_pRendererCom->Add_RenderGroup(RG_Blend, this);
+	}
 }
 
 HRESULT CEffect_Dummy::Render()
@@ -241,12 +254,14 @@ HRESULT CEffect_Dummy::Render()
 	switch (m_Effect.iType)
 	{
 	case Effect_Type::ET_PARTICLE:
+	case Effect_Type::ET_PARTI_DISTORTION:
 		hr = m_pParticle->Render();
 		break;
 	case Effect_Type::ET_RECT:
 		hr = m_pRect->Render();
 		break;
 	case Effect_Type::ET_MESH:
+	case Effect_Type::ET_DISTORTION:
 		for (size_t i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
 		{
 			if (FAILED(m_pModelCom->Render(i)))
@@ -270,6 +285,7 @@ HRESULT CEffect_Dummy::Add_Components()
 	switch (m_Effect.iType)
 	{
 	case Effect_Type::ET_PARTICLE:
+	case Effect_Type::ET_PARTI_DISTORTION:
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Instancing_Point"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pParticle), &m_Effect.PartiDesc)))
 		{
 			return E_FAIL;
@@ -290,6 +306,7 @@ HRESULT CEffect_Dummy::Add_Components()
 		}
 		break;
 	case Effect_Type::ET_MESH:
+	case Effect_Type::ET_DISTORTION:
 		wstring PrototypeTag = L"Prototype_Model_Effect_";
 
 		_tchar strUnicode[MAX_PATH]{};
@@ -355,7 +372,7 @@ HRESULT CEffect_Dummy::Bind_ShaderResources()
 			return E_FAIL;
 		}
 
-		if (m_Effect.iType == ET_MESH)
+		if (m_Effect.iType == ET_MESH or m_Effect.iType == ET_DISTORTION)
 		{
 			if (FAILED(m_pShaderCom->Bind_RawValue("g_vUVTransform", &m_vUV, sizeof m_vUV)))
 			{
@@ -402,6 +419,11 @@ HRESULT CEffect_Dummy::Bind_ShaderResources()
 		{
 			strVariableName = "g_DiffuseTexture";
 		}
+		else if (m_Effect.iType == ET_DISTORTION or m_Effect.iType == ET_PARTI_DISTORTION)
+		{
+			strVariableName = "g_DistortionTexture";
+		}
+
 		if (FAILED(m_pDiffTextureCom->Bind_ShaderResource(m_pShaderCom, strVariableName.c_str())))
 		{
 			return E_FAIL;
@@ -415,7 +437,7 @@ HRESULT CEffect_Dummy::Bind_ShaderResources()
 		}
 	}
 
-	if (m_Effect.iType == ET_PARTICLE)
+	if (m_Effect.iType == ET_PARTICLE or m_Effect.iType == ET_PARTI_DISTORTION)
 	{
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof _vec4)))
 		{

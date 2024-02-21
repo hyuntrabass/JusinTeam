@@ -1364,7 +1364,7 @@ _bool CGameInstance::Get_IsLoopingSound(_uint iChannel)
 	return m_pSound_Manager->Get_IsLoopingSound(iChannel);
 }
 
-_float CGameInstance::Get_CurPosRatio(_uint iChannel)
+_float CGameInstance::Get_ChannelCurPosRatio(_uint iChannel)
 {
 	if (!m_pSound_Manager)
 	{

@@ -118,6 +118,11 @@ struct PS_OUT
     vector vBlur : SV_Target2;
 };
 
+struct PS_OUT_DISTORTION
+{
+    vector vDistortion : SV_Target0;
+};
+
 PS_OUT PS_Main_Color(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
@@ -174,6 +179,15 @@ PS_OUT PS_Main_Mask(PS_IN Input)
     return Output;
 }
 
+PS_OUT_DISTORTION PS_Distortion(PS_IN Input)
+{
+    PS_OUT_DISTORTION Output = (PS_OUT_DISTORTION) 0;
+    
+    Output.vDistortion = normalize(g_MaskTexture.Sample(LinearSampler, Input.vTex)) * 0.05f;
+    
+    return Output;
+}
+
 technique11 DefaultTechnique
 {
     pass SingleColorSurface
@@ -200,5 +214,18 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Mask();
+    }
+
+    pass Distortion
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_OnebyOne, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = compile gs_5_0 GS_Main();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Distortion();
     }
 };
