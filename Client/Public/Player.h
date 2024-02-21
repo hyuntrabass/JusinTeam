@@ -348,7 +348,6 @@ public:
 	void Cam_AttackZoom(_float fZoom);
 	void After_BowAtt(_float fTimeDelta);
 	void After_SwordAtt(_float fTimeDelta);
-	void After_CommonAtt(_float fTimeDelta);
 	void Create_Arrow(ATTACK_TYPE Att_Type);
 	void Check_Att_Collider(ATTACK_TYPE Att_Type);
 
@@ -397,6 +396,9 @@ private:
 
 private:
 	_bool m_bIsMount{};
+	_bool m_bIsSkying{};
+	_float m_fFadeTimmer{};
+	_bool m_bReadyCommonAtt{ true };
 	_int m_iArrowRain{};
 	_mat m_Riding_Mat{};
 	_vec4 m_vArrowLook{};
@@ -414,7 +416,7 @@ private:
 	_bool m_bStartGame{};
 	_vec4 m_SaveCamPos{};
 	_bool m_bReady_Move{};
-	_bool m_bMove_AfterSkill{true};
+	_bool m_bMove_AfterSkill{ true };
 	_uint m_ShaderIndex{};
 	_vec4 m_SaveCamLook{};
 	_bool m_bReady_Climb{};
@@ -465,7 +467,6 @@ private:
 	_float m_fAttackZoom{};
 	_float m_fHpRegenTime{};
 	_float m_fMpRegenTime{};
-	_float m_ReturnZoomTime{};
 	_float m_fDissolveRatio{};
 	_float m_fRimRightTimmer{};
 	_float m_fBoostSpeedTimmer{};

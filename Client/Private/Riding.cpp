@@ -66,12 +66,12 @@ HRESULT CRiding::Init(void* pArg)
 			else if (Desc->bLanding)
 			{
 				m_eState = Riding_Landing;
-				m_pCam_Manager->Set_FlyCam(true);
+				m_pCam_Manager->Set_RidingZoom(true);
 			}
 			else
 			{
 				m_eState = Riding_Sky;
-				/ m_pCam_Manager->Set_FlyCam(true);
+				m_pCam_Manager->Set_RidingZoom(true);
 			}
 			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Wyvern");
 		}
@@ -94,7 +94,8 @@ HRESULT CRiding::Init(void* pArg)
 			else
 			{
 				m_eState = Riding_Sky;
-				m_pCam_Manager->Set_RidingZoom(true);
+				//m_pCam_Manager->Set_RidingZoom(true);
+				m_pCam_Manager->Set_FlyCam(true);
 			}
 			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Falar");
 		}
@@ -130,64 +131,64 @@ HRESULT CRiding::Init(void* pArg)
 		default:
 			break;
 		}
-	
-	if (m_CurrentIndex == Nihilir)
-	{
-		PxCapsuleControllerDesc ControllerDesc{};
-		ControllerDesc.height = 1.8f; // 높이(위 아래의 반구 크기 제외
-		ControllerDesc.radius = 1.3f; // 위아래 반구의 반지름
-		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
-		ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
-		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
-		ControllerDesc.stepOffset = 0.3f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 
-		m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
+		if (m_CurrentIndex == Nihilir)
+		{
+			PxCapsuleControllerDesc ControllerDesc{};
+			ControllerDesc.height = 1.8f; // 높이(위 아래의 반구 크기 제외
+			ControllerDesc.radius = 1.3f; // 위아래 반구의 반지름
+			ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+			ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+			ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+			ControllerDesc.stepOffset = 0.3f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 
-	}
-	else if (m_CurrentIndex == Tiger)
-	{
-		PxCapsuleControllerDesc ControllerDesc{};
-		ControllerDesc.height = 1.176f; // 높이(위 아래의 반구 크기 제외
-		ControllerDesc.radius = 0.65f; // 위아래 반구의 반지름
-		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
-		ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f)); // 캐릭터가 오를 수 있는 최대 각도
-		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
-		ControllerDesc.stepOffset = 0.3f; // 캐릭터가 오를 수 있는 계단의 최대 높이
-		m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
+			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
 
-	}
-	else if (m_CurrentIndex == Horse)
-	{
-		PxCapsuleControllerDesc ControllerDesc{};
-		ControllerDesc.height = 1.176f; // 높이(위 아래의 반구 크기 제외
-		ControllerDesc.radius = 0.6f; // 위아래 반구의 반지름
-		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
-		ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f)); // 캐릭터가 오를 수 있는 최대 각도
-		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
-		ControllerDesc.stepOffset = 0.3f; // 캐릭터가 오를 수 있는 계단의 최대 높이
-		m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
+		}
+		else if (m_CurrentIndex == Tiger)
+		{
+			PxCapsuleControllerDesc ControllerDesc{};
+			ControllerDesc.height = 1.176f; // 높이(위 아래의 반구 크기 제외
+			ControllerDesc.radius = 0.65f; // 위아래 반구의 반지름
+			ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+			ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f)); // 캐릭터가 오를 수 있는 최대 각도
+			ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+			ControllerDesc.stepOffset = 0.3f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
 
-	}
-	else
-	{
-		PxCapsuleControllerDesc ControllerDesc{};
-		ControllerDesc.height = 0.8f;
-		ControllerDesc.radius = 0.6f;
-		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f);
-		ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f));
-		ControllerDesc.contactOffset = 0.1f;
-		ControllerDesc.stepOffset = 0.3f;
-		m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
-	}
+		}
+		else if (m_CurrentIndex == Horse)
+		{
+			PxCapsuleControllerDesc ControllerDesc{};
+			ControllerDesc.height = 1.176f; // 높이(위 아래의 반구 크기 제외
+			ControllerDesc.radius = 0.6f; // 위아래 반구의 반지름
+			ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+			ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f)); // 캐릭터가 오를 수 있는 최대 각도
+			ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+			ControllerDesc.stepOffset = 0.3f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
 
-	
+		}
+		else
+		{
+			PxCapsuleControllerDesc ControllerDesc{};
+			ControllerDesc.height = 0.8f;
+			ControllerDesc.radius = 0.6f;
+			ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f);
+			ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f));
+			ControllerDesc.contactOffset = 0.1f;
+			ControllerDesc.stepOffset = 0.3f;
+			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
+		}
+
+
 		m_pTransformCom->Set_Position(_vec3(Desc->vSummonPos + _vec3(0.f, 1.f, 0.f)));
-	
-	m_Animation.fAnimSpeedRatio = 2.f;
-	m_fDissolveRatio = 1.f;
+
+		m_Animation.fAnimSpeedRatio = 2.f;
+		m_fDissolveRatio = 1.f;
 
 	}
-	
+
 	if (m_eCurMode == VEHICLEBOOK)
 	{
 		m_pTransformCom->Set_State(State::Pos, _vec4(-1.f, 299.f, 3.f, 1.f));
@@ -230,12 +231,12 @@ HRESULT CRiding::Init(void* pArg)
 		m_Animation.fAnimSpeedRatio = 2.f;
 	}
 
-	
+
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
-	
+
 	return S_OK;
 }
 
@@ -991,7 +992,7 @@ void CRiding::Tick_State(_float fTimeDelta)
 	case Client::Riding_Jump:
 		break;
 	case Client::Riding_Sky:
-	
+
 		break;
 	case Client::Riding_End:
 		break;
@@ -1008,7 +1009,7 @@ _mat CRiding::Get_Mat()
 	_mat BoneMat{};
 	if (m_CurrentIndex == Bird)
 	{
-		 BoneMat = *m_pModelCom->Get_BoneMatrix("Saddle");
+		BoneMat = *m_pModelCom->Get_BoneMatrix("Saddle");
 	}
 	else
 	{
@@ -1059,7 +1060,7 @@ _mat CRiding::Get_Mat()
 		}
 		else if (m_eState == Riding_Landing)
 		{
-			OffsetMat =  BoneMat;
+			OffsetMat = BoneMat;
 		}
 		else if (m_eState == Riding_Sky)
 		{
