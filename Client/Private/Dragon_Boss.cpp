@@ -49,6 +49,8 @@ HRESULT CDragon_Boss::Init(void* pArg)
 	m_eCurState = STATE_ROAR;
 	//m_eCurState = STATE_FLY_FIRE;
 
+	m_Animation.fInterpolationTime = 0.5f;
+
 	m_iHP = 20000;
 
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
@@ -198,6 +200,7 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = IDLE;
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 2.f;
+			m_Animation.fDurationRatio = 1.f;
 
 			m_fIdleTime = 0.f;
 			m_fTime = 0.f;
@@ -243,6 +246,7 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = OUROBOROS_ATTACK02;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
+			m_Animation.fDurationRatio = 0.9f;
 
 			break;
 
@@ -531,7 +535,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = eTempDragonState;
 
-			m_eCurState = STATE_FIRE_PILLAR; // 테스트용
+			m_eCurState = STATE_WING_ATTACK; // 테스트용
 		}
 	}
 
