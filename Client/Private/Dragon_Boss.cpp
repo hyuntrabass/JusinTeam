@@ -542,7 +542,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = eTempDragonState;
 
-			m_eCurState = STATE_RIGHT_SLASH; // 테스트용
+			//m_eCurState = STATE_RIGHT_SLASH; // 테스트용
 		}
 	}
 
