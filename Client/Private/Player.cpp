@@ -4670,6 +4670,8 @@ void CPlayer::Free()
 
 	Safe_Release(m_pLeft_Trail);
 	Safe_Release(m_pRight_Trail);
+	Safe_Release(m_pLeft_Distortion_Trail);
+	Safe_Release(m_pRight_Distortion_Trail);
 
 	Safe_Release(m_pAim);
 
