@@ -146,7 +146,7 @@ private:
 
 private:
 	_float m_fIdleTime = {};
-	_float m_fTime = {};
+	_float m_fTime[2] = {};
 	_float m_fMeteorTime = {};
 	_float m_fDragonHeadTime = {};
 

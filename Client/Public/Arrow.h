@@ -44,6 +44,7 @@ private:
 	_mat m_ParticleMatrix{};
 	_int m_iDamage{};
 	_vec4 m_vRaycastPos{};
+	_bool m_bIntersected{};
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

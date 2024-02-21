@@ -33,10 +33,11 @@ struct DummyInfo
 	_uint iStageIndex{};
 	_int iTriggerNum{};
 	_float fTriggerSize{};
-	_float4 vPos{};
-	_float4 vLook{};
+	//_float4 vPos{};
+	_float3 vNormal{};
+	//_float3 vLook{};
+	_mat mMatrix{};
 	_bool bCheck{};
-	vector<_vec4> InstancePos;
 	class CDummy** ppDummy{ nullptr };
 };
 
@@ -122,6 +123,7 @@ private:
 
 	void Mouse_Pos();
 	void FastPicking();
+	void PickingRayCast();
 	void Picking_On_Terrain();
 	void MeshToMask();
 
@@ -194,11 +196,16 @@ private:
 
 	_bool m_isInstancing{false};
 	vector<_vec4> m_vInstancePos;
+	vector<_vec3> m_vInstanceNor;
 	_mat m_mCameraEyePoint{};
 	_mat m_mCameraAtPoint{};
 	_vec4 m_fCameraPickingPos[2];
 	_float fTimeDeltaAcc{0.f};
 	_uint iClickCount{0};
+	_bool m_isUseNormal{false};
+
+	_vec4 m_vRayCastPos{};
+	_vec3 m_vRayCastNor{};
 
 private:
 	// 파일의 이름 가져와서 저장

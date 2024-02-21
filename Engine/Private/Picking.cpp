@@ -130,6 +130,50 @@ _float4 CPicking::PickingDepth(_float x, _float y)
 	return WorldPos;
 }
 
+_vec4 CPicking::PickingNormal(_float x, _float y)
+{
+	ID3D11Texture2D* pTexture = nullptr;
+
+	pTexture = m_pGameInstance->Get_Texture2D(L"Target_Normal_Spec");
+
+	if (nullptr == pTexture) {
+		MSG_BOX("Get Target_Depth FAILED");
+		return _float4(0.f, 0.f, 0.f, 0.f);
+	}
+
+	D3D11_BOX m_Box;
+	m_Box.left = static_cast<_uint>(x);
+	m_Box.top = static_cast<_uint>(y);
+	m_Box.right = static_cast<_uint>(x + 1);
+	m_Box.bottom = static_cast<_uint>(y + 1);
+	m_Box.front = 0;
+	m_Box.back = 1;
+
+	m_pContext->CopySubresourceRegion(m_pTexture, 0, 0, 0, 0, pTexture, 0, &m_Box);
+
+	D3D11_MAPPED_SUBRESOURCE MappedResource = {};
+
+	if (FAILED(m_pContext->Map(m_pTexture, 0, D3D11_MAP_READ, 0, &MappedResource)))
+		return _float4(0.f, 0.f, 0.f, 0.f);
+
+
+	if (nullptr == MappedResource.pData) {
+		m_pContext->Unmap(m_pTexture, 0);
+		return _float4(0.f, 0.f, 0.f, 0.f);
+
+	}
+
+	_vec4 PickPos = ((_vec4*)MappedResource.pData)[0];
+
+	m_pContext->Unmap(m_pTexture, 0);
+
+	PickPos.w = 0.f;
+
+	PickPos.Normalize();
+	return PickPos;
+}
+
+
 _int CPicking::FastPicking(_uint x, _uint y)
 {
 	ID3D11Texture2D* pTexture = nullptr;
@@ -327,7 +371,7 @@ _vec4 CPicking::Compute_MousePicked_Terrain(_float44 matTerrainWorld, _float3* p
 	return vResult;
 }
 
-_vec4 CPicking::Compute_MousePicked_MeshTerrain(_float44 matTerrainWorld, _float3* pVerticesPos, vector<VTXNORTEX> vVertices, vector<_ulong> vIndices)
+_vec4 CPicking::Compute_MousePicked_MeshTerrain(_float44 matTerrainWorld, vector<VTXNORTEX> vVertices, vector<_ulong> vIndices)
 {
 	//Transform_To_LocalSpace(matTerrainWorld);
 
