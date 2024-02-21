@@ -134,6 +134,9 @@ private:
 	class CEffect_Dummy* m_pBaseEffect = { nullptr };
 
 private:
+	_mat m_FollowEffectMatrix[2] = {};
+
+private:
 	DRAGON_STATE m_ePreState = STATE_END;
 	DRAGON_STATE m_eCurState = STATE_END;
 
