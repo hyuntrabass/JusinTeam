@@ -105,6 +105,7 @@
 #include "Nastron07.h"
 #include "Spider.h"
 
+#include "Statue.h"
 #include "Dead.h"
 
 // NPC

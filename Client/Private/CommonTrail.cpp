@@ -45,6 +45,8 @@ HRESULT CCommonTrail::Init(void* pArg)
 		MSG_BOX("버텍스 개수는 50을 초과할 수 없습니다.");
 	}
 
+	m_iTickCounter = m_Info.iNumVertices;
+
 	m_PosArray = new _vec3[m_Info.iNumVertices];
 	m_ColorArray = new _vec4[m_Info.iNumVertices];
 	m_PSizeArray = new _vec2[m_Info.iNumVertices];
@@ -63,14 +65,23 @@ void CCommonTrail::Tick(_float3 vPos)
 	m_TrailPosList.push_front(vPos);
 
 	m_pTransformCom->Set_State(State::Pos, XMVectorSetW(XMLoadFloat3(&vPos), 1.f));
+
+	m_iTickCounter++;
 }
 
 void CCommonTrail::Late_Tick(_float fTimeDelta)
 {
+	if (m_iTickCounter <= 0)
+	{
+		return;
+	}
+	m_iTickCounter--;
+
 	if (m_bNoRender)
 	{
 		return;
 	}
+
 	for (size_t i = 0; i < m_Info.iNumVertices; i++)
 	{
 		XMStoreFloat3(&m_PosArray[i], m_pTransformCom->Get_State(State::Pos));

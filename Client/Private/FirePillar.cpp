@@ -49,15 +49,11 @@ void CFirePillar::Tick(_float fTimeDelta)
 
 	if (m_fLifeTime >= 7.f)
 	{
-		if (m_iSoundChannel != -1)
-		{
-			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
-		}
 		Kill();
 		return;
 	}
 
-	if (m_fLifeTime >= 1.5f)
+	if (m_fLifeTime >= 1.8f)
 	{
 		if (m_pBaseEffect && m_pFrameEffect)
 		{
@@ -90,6 +86,7 @@ void CFirePillar::Tick(_float fTimeDelta)
 			Info.pMatrix = &EffectMatrix;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
+			EffectMatrix = _mat::CreateScale(1.8f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)/* + _vec3(0.f, -0.1f, 0.f)*/));
 			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_FirePillar_Tornado_Loop");
 			Info.pMatrix = &EffectMatrix;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
@@ -116,11 +113,24 @@ void CFirePillar::Tick(_float fTimeDelta)
 		}
 	}
 
-	if (m_fLifeTime >= 1.2f)
+	if (m_fLifeTime >= 6.f)
+	{
+		if (m_iSoundChannel != -1)
+		{
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+		}
+	}
+	else if (m_fLifeTime >= 1.2f)
 	{
 		if (m_iSoundChannel == -1)
 		{
 			m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("BP_Skill_10061_SFX_01"));
+		}
+		else if (m_pGameInstance->Get_ChannelCurPosRatio(m_iSoundChannel) >= 0.6f)
+		{
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+			m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("BP_Skill_10061_SFX_01"), 0.5f, 0.25f);
+			m_pGameInstance->FadeinSound(m_iSoundChannel, fTimeDelta);
 		}
 	}
 
@@ -193,4 +203,7 @@ CGameObject* CFirePillar::Clone(void* pArg)
 void CFirePillar::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pFrameEffect);
+	Safe_Release(m_pBaseEffect);
 }

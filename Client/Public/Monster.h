@@ -31,6 +31,7 @@ public:
 
 public:
 	virtual _vec4 Compute_PlayerPos();
+	virtual _vec4 Compute_PlayerLook();
 	virtual _float Compute_PlayerDistance();
 
 	virtual _vec4 Compute_ModelTestPos();
