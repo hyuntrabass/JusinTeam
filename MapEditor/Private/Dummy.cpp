@@ -71,25 +71,9 @@ HRESULT CDummy::Init(void* pArg)
 		m_Info.ppDummy = nullptr;
 	}
 
-	if (m_Info.eType == ItemType::Environment)
-	{
-		_vec3 vUp{ m_Info.vNormal };
-		_vec3 vRight = vUp.Cross(_vec3(0.f, 1.f, 0.f)).Get_Normalized();
-		_vec3 vLook = vRight.Cross(vUp).Get_Normalized();
-		
-		_mat mMatrix{};
-		mMatrix.Right(vRight);
-		mMatrix.Up(vUp);
-		mMatrix.Look(vLook);
-		mMatrix.Position(m_Info.vPos);
-		m_pTransformCom->Set_Matrix(mMatrix);
-	}
-	else
-	{
-		_mat mMatrix{};
-		mMatrix.Position(m_Info.vPos);
-		m_pTransformCom->Set_Matrix(mMatrix);
-	}
+
+	m_pTransformCom->Set_Matrix(m_Info.mMatrix);
+	
 	m_pModelCom->Apply_TransformToActor(m_pTransformCom->Get_World_Matrix());
 
 	return S_OK;

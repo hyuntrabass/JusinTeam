@@ -33,9 +33,10 @@ struct DummyInfo
 	_uint iStageIndex{};
 	_int iTriggerNum{};
 	_float fTriggerSize{};
-	_float4 vPos{};
+	//_float4 vPos{};
 	_float3 vNormal{};
-	_float3 vLook{};
+	//_float3 vLook{};
+	_mat mMatrix{};
 	_bool bCheck{};
 	class CDummy** ppDummy{ nullptr };
 };

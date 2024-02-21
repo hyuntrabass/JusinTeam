@@ -1302,10 +1302,17 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 		{
 			DummyInfo Info{};
 			Info.ppDummy = &m_pSelectedDummy;
-			Info.vPos = m_vInstancePos[i];
-			Info.vNormal = m_vInstanceNor[i];
 			Info.Prototype = L"Prototype_Model_";
 			Info.eType = m_eItemType;
+
+			_vec3 vUp{ m_vInstanceNor[i] };
+			_vec3 vRight = vUp.Cross(_vec3(0.f, 1.f, 0.f)).Get_Normalized();
+			_vec3 vLook = vRight.Cross(vUp).Get_Normalized();
+
+			Info.mMatrix.Right(vRight);
+			Info.mMatrix.Up(vUp);
+			Info.mMatrix.Look(vLook);
+			Info.mMatrix.Position(m_vInstancePos[i]);
 
 			_tchar strUnicode[MAX_PATH]{};
 			MultiByteToWideChar(CP_ACP, 0, Envirs[m_eType][iListIndex], static_cast<int>(strlen(Envirs[m_eType][iListIndex])), strUnicode, static_cast<int>(strlen(Envirs[m_eType][iListIndex])));
@@ -1326,7 +1333,8 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	{
 		DummyInfo Info{};
 		Info.ppDummy = &m_pSelectedDummy;
-		Info.vPos = _vec4(m_PickingPos.x, m_PickingPos.y, m_PickingPos.z, 1.f);
+		//Info.vPos = _vec4(m_PickingPos.x, m_PickingPos.y, m_PickingPos.z, 1.f);
+		Info.mMatrix.Position(_vec4(m_PickingPos.x, m_PickingPos.y, m_PickingPos.z, 1.f));
 		if (m_isUseNormal)
 			Info.vNormal = m_vRayCastNor;
 		else
@@ -2309,12 +2317,12 @@ HRESULT CImGui_Manager::Load_Map()
 			m_Map.emplace(m_pSelectMap->Get_ID(), m_pSelectMap);
 			m_MapsList.push_back(m_pSelectMap);
 
-			CTransform* pMapTransform = dynamic_cast<CTransform*>(m_pSelectMap->Find_Component(TEXT("Com_Transform")));
+			//CTransform* pMapTransform = dynamic_cast<CTransform*>(m_pSelectMap->Find_Component(TEXT("Com_Transform")));
 
-			pMapTransform->Set_State(State::Right, MapWorldMat.Right());
-			pMapTransform->Set_State(State::Up, MapWorldMat.Up());
-			pMapTransform->Set_State(State::Look, MapWorldMat.Look());
-			pMapTransform->Set_State(State::Pos, MapWorldMat.Position());
+			//pMapTransform->Set_State(State::Right, MapWorldMat.Right());
+			//pMapTransform->Set_State(State::Up, MapWorldMat.Up());
+			//pMapTransform->Set_State(State::Look, MapWorldMat.Look());
+			//pMapTransform->Set_State(State::Pos, MapWorldMat.Position());
 
 			m_pSelectMap = nullptr;
 		}
@@ -2420,8 +2428,9 @@ HRESULT CImGui_Manager::Load_Object()
 			DummyInfo ObjectsInfo{};
 			ObjectsInfo.eType = ItemType::Objects;
 			ObjectsInfo.Prototype = ObjectsPrototype;
-			ObjectsInfo.vLook = _float3(ObjectsWorldMat._31, ObjectsWorldMat._32, ObjectsWorldMat._33);
-			ObjectsInfo.vPos = _float4(ObjectsWorldMat._41, ObjectsWorldMat._42, ObjectsWorldMat._43, 1.f);
+			//ObjectsInfo.vLook = _float3(ObjectsWorldMat._31, ObjectsWorldMat._32, ObjectsWorldMat._33);
+			//ObjectsInfo.vPos = _float4(ObjectsWorldMat._41, ObjectsWorldMat._42, ObjectsWorldMat._43, 1.f);
+			ObjectsInfo.mMatrix = ObjectsWorldMat;
 			ObjectsInfo.ppDummy = &m_pSelectedDummy;
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &ObjectsInfo)))
@@ -2433,12 +2442,12 @@ HRESULT CImGui_Manager::Load_Object()
 			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
 			m_ObjectsList.push_back(m_pSelectedDummy);
 
-			CTransform* pObjectsTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
+			//CTransform* pObjectsTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
 
-			pObjectsTransform->Set_State(State::Right, ObjectsWorldMat.Right());
-			pObjectsTransform->Set_State(State::Up, ObjectsWorldMat.Up());
-			pObjectsTransform->Set_State(State::Look, ObjectsWorldMat.Look());
-			pObjectsTransform->Set_State(State::Pos, ObjectsWorldMat.Position());
+			//pObjectsTransform->Set_State(State::Right, ObjectsWorldMat.Right());
+			//pObjectsTransform->Set_State(State::Up, ObjectsWorldMat.Up());
+			//pObjectsTransform->Set_State(State::Look, ObjectsWorldMat.Look());
+			//pObjectsTransform->Set_State(State::Pos, ObjectsWorldMat.Position());
 
 			m_pSelectedDummy = nullptr;
 		}
@@ -2544,8 +2553,9 @@ HRESULT CImGui_Manager::Load_Monster()
 			DummyInfo MonsterInfo{};
 			MonsterInfo.eType = ItemType::Monster;
 			MonsterInfo.Prototype = MonsterPrototype;
-			MonsterInfo.vLook = _float3(MonsterWorldMat._31, MonsterWorldMat._32, MonsterWorldMat._33);
-			MonsterInfo.vPos = _float4(MonsterWorldMat._41, MonsterWorldMat._42, MonsterWorldMat._43, 1.f);
+			//MonsterInfo.vLook = _float3(MonsterWorldMat._31, MonsterWorldMat._32, MonsterWorldMat._33);
+			//MonsterInfo.vPos = _float4(MonsterWorldMat._41, MonsterWorldMat._42, MonsterWorldMat._43, 1.f);
+			MonsterInfo.mMatrix = MonsterWorldMat;
 			MonsterInfo.ppDummy = &m_pSelectedDummy;
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &MonsterInfo)))
@@ -2557,12 +2567,12 @@ HRESULT CImGui_Manager::Load_Monster()
 			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
 			m_MonsterList.push_back(m_pSelectedDummy);
 
-			CTransform* pMonsterTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
+			//CTransform* pMonsterTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
 
-			pMonsterTransform->Set_State(State::Right, MonsterWorldMat.Right());
-			pMonsterTransform->Set_State(State::Up, MonsterWorldMat.Up());
-			pMonsterTransform->Set_State(State::Look, MonsterWorldMat.Look());
-			pMonsterTransform->Set_State(State::Pos, MonsterWorldMat.Position());
+			//pMonsterTransform->Set_State(State::Right, MonsterWorldMat.Right());
+			//pMonsterTransform->Set_State(State::Up, MonsterWorldMat.Up());
+			//pMonsterTransform->Set_State(State::Look, MonsterWorldMat.Look());
+			//pMonsterTransform->Set_State(State::Pos, MonsterWorldMat.Position());
 
 			m_pSelectedDummy = nullptr;
 		}
@@ -2666,9 +2676,10 @@ HRESULT CImGui_Manager::Load_NPC()
 			DummyInfo NPCInfo{};
 			NPCInfo.eType = ItemType::NPC;
 			NPCInfo.Prototype = NPCPrototype;
-			NPCInfo.vLook = _float3(NPCWorldMat._31, NPCWorldMat._32, NPCWorldMat._33);
-			NPCInfo.vPos = _float4(NPCWorldMat._41, NPCWorldMat._42, NPCWorldMat._43, 1.f);
-			NPCInfo.ppDummy = &m_pSelectedDummy;
+			//NPCInfo.vLook = _float3(NPCWorldMat._31, NPCWorldMat._32, NPCWorldMat._33);
+			//NPCInfo.vPos = _float4(NPCWorldMat._41, NPCWorldMat._42, NPCWorldMat._43, 1.f);
+			NPCInfo.mMatrix = NPCWorldMat;
+;			NPCInfo.ppDummy = &m_pSelectedDummy;
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &NPCInfo)))
 			{
@@ -2679,12 +2690,12 @@ HRESULT CImGui_Manager::Load_NPC()
 			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
 			m_MonsterList.push_back(m_pSelectedDummy);
 
-			CTransform* pMonsterTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
+			//CTransform* pMonsterTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
 
-			pMonsterTransform->Set_State(State::Right, NPCWorldMat.Right());
-			pMonsterTransform->Set_State(State::Up, NPCWorldMat.Up());
-			pMonsterTransform->Set_State(State::Look, NPCWorldMat.Look());
-			pMonsterTransform->Set_State(State::Pos, NPCWorldMat.Position());
+			//pMonsterTransform->Set_State(State::Right, NPCWorldMat.Right());
+			//pMonsterTransform->Set_State(State::Up, NPCWorldMat.Up());
+			//pMonsterTransform->Set_State(State::Look, NPCWorldMat.Look());
+			//pMonsterTransform->Set_State(State::Pos, NPCWorldMat.Position());
 
 			m_pSelectedDummy = nullptr;
 		}
@@ -2790,8 +2801,9 @@ HRESULT CImGui_Manager::Load_Envir()
 			EnvirInfo.eType = ItemType::Environment;
 			EnvirInfo.Prototype = EnvirPrototype;
 			//EnvirInfo.vLook = _float4(EnvirWorldMat._31, EnvirWorldMat._32, EnvirWorldMat._33, EnvirWorldMat._34);
-			EnvirInfo.vLook = _float3(EnvirWorldMat._31, EnvirWorldMat._32, EnvirWorldMat._33);
-			EnvirInfo.vPos = _float4(EnvirWorldMat._41, EnvirWorldMat._42, EnvirWorldMat._43, 1.f);
+			//EnvirInfo.vLook = _float3(EnvirWorldMat._31, EnvirWorldMat._32, EnvirWorldMat._33);
+			EnvirInfo.mMatrix = EnvirWorldMat;
+			//EnvirInfo.vPos = _float4(EnvirWorldMat._41, EnvirWorldMat._42, EnvirWorldMat._43, 1.f);
 			EnvirInfo.ppDummy = &m_pSelectedDummy;
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &EnvirInfo)))
@@ -2803,12 +2815,13 @@ HRESULT CImGui_Manager::Load_Envir()
 			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
 			m_EnvirList.push_back(m_pSelectedDummy);
 
-			CTransform* pEnvirTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
+			//CTransform* pEnvirTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
 
-			pEnvirTransform->Set_State(State::Right, EnvirWorldMat.Right());
-			pEnvirTransform->Set_State(State::Up, EnvirWorldMat.Up());
-			pEnvirTransform->Set_State(State::Look, EnvirWorldMat.Look());
-			pEnvirTransform->Set_State(State::Pos, EnvirWorldMat.Position());
+			//pEnvirTransform->Set_State(State::Right, EnvirWorldMat.Right());
+			//pEnvirTransform->Set_State(State::Up, EnvirWorldMat.Up());
+			//pEnvirTransform->Set_State(State::Look, EnvirWorldMat.Look());
+			//pEnvirTransform->Set_State(State::Pos, EnvirWorldMat.Position());
+
 
 			m_pSelectedDummy = nullptr;
 		}
@@ -2914,9 +2927,9 @@ HRESULT CImGui_Manager::Load_Interaction()
 			DummyInfo EnvirInfo{};
 			EnvirInfo.eType = ItemType::Interaction;
 			EnvirInfo.Prototype = InteractionPrototype;
-			EnvirInfo.vLook = _float3(InteractionWorldMat._31, InteractionWorldMat._32, InteractionWorldMat._33);
-			//EnvirInfo.vLook = _float4(InteractionWorldMat._31, InteractionWorldMat._32, InteractionWorldMat._33, InteractionWorldMat._34);
-			EnvirInfo.vPos = _float4(InteractionWorldMat._41, InteractionWorldMat._42, InteractionWorldMat._43, 1.f);
+			//EnvirInfo.vLook = _float3(InteractionWorldMat._31, InteractionWorldMat._32, InteractionWorldMat._33);
+			//EnvirInfo.vPos = _float4(InteractionWorldMat._41, InteractionWorldMat._42, InteractionWorldMat._43, 1.f);
+			EnvirInfo.mMatrix = InteractionWorldMat;
 			EnvirInfo.ppDummy = &m_pSelectedDummy;
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &EnvirInfo)))
@@ -2928,12 +2941,12 @@ HRESULT CImGui_Manager::Load_Interaction()
 			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
 			m_InteractionList.push_back(m_pSelectedDummy);
 
-			CTransform* pInteractionTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
+			//CTransform* pInteractionTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
 
-			pInteractionTransform->Set_State(State::Right, InteractionWorldMat.Right());
-			pInteractionTransform->Set_State(State::Up, InteractionWorldMat.Up());
-			pInteractionTransform->Set_State(State::Look, InteractionWorldMat.Look());
-			pInteractionTransform->Set_State(State::Pos, InteractionWorldMat.Position());
+			//pInteractionTransform->Set_State(State::Right, InteractionWorldMat.Right());
+			//pInteractionTransform->Set_State(State::Up, InteractionWorldMat.Up());
+			//pInteractionTransform->Set_State(State::Look, InteractionWorldMat.Look());
+			//pInteractionTransform->Set_State(State::Pos, InteractionWorldMat.Position());
 
 			m_pSelectedDummy = nullptr;
 		}
@@ -3062,8 +3075,9 @@ HRESULT CImGui_Manager::Load_Trigger()
 
 			TriggerInfo.eType = ItemType::Trigger;
 			//TriggerInfo.vLook = _float4(TriggerWorldMat._31, TriggerWorldMat._32, TriggerWorldMat._33, TriggerWorldMat._34);
-			TriggerInfo.vLook = _float3(TriggerWorldMat._31, TriggerWorldMat._32, TriggerWorldMat._33);
-			TriggerInfo.vPos = _float4(TriggerWorldMat._41, TriggerWorldMat._42, TriggerWorldMat._43, TriggerWorldMat._44);
+			//TriggerInfo.vLook = _float3(TriggerWorldMat._31, TriggerWorldMat._32, TriggerWorldMat._33);
+			//TriggerInfo.vPos = _float4(TriggerWorldMat._41, TriggerWorldMat._42, TriggerWorldMat._43, TriggerWorldMat._44);
+			TriggerInfo.mMatrix = TriggerWorldMat;
 			TriggerInfo.bCheck = bCheck;
 			TriggerInfo.fTriggerSize = TriggerSize;
 			TriggerInfo.iTriggerNum = iIndex;
@@ -3079,12 +3093,12 @@ HRESULT CImGui_Manager::Load_Trigger()
 			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
 			m_TriggerList.push_back(m_pSelectedDummy);
 
-			CTransform* pEnvirTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
+			//CTransform* pEnvirTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
 
-			pEnvirTransform->Set_State(State::Right, TriggerWorldMat.Right());
-			pEnvirTransform->Set_State(State::Up, TriggerWorldMat.Up());
-			pEnvirTransform->Set_State(State::Look, TriggerWorldMat.Look());
-			pEnvirTransform->Set_State(State::Pos, TriggerWorldMat.Position());
+			//pEnvirTransform->Set_State(State::Right, TriggerWorldMat.Right());
+			//pEnvirTransform->Set_State(State::Up, TriggerWorldMat.Up());
+			//pEnvirTransform->Set_State(State::Look, TriggerWorldMat.Look());
+			//pEnvirTransform->Set_State(State::Pos, TriggerWorldMat.Position());
 
 			m_pSelectedDummy = nullptr;
 		}
