@@ -4,12 +4,12 @@
 #include "Effect_Manager.h"
 
 CBalloon::CBalloon(_dev pDevice, _context pContext)
-	: CMonster(pDevice, pContext)
+	: CGameObject(pDevice, pContext)
 {
 }
 
 CBalloon::CBalloon(const CBalloon& rhs)
-	: CMonster(rhs)
+	: CGameObject(rhs)
 {
 }
 
@@ -20,9 +20,8 @@ HRESULT CBalloon::Init_Prototype()
 
 HRESULT CBalloon::Init(void* pArg)
 {
-	m_strModelTag = TEXT("Prototype_Model_Balloon");
 
-	if (FAILED(__super::Add_Components()))
+	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
@@ -40,7 +39,6 @@ HRESULT CBalloon::Init(void* pArg)
 	m_eCurState = STATE_IDLE;
 
 	m_iHP = 10000;
-	m_iDamageAccMax = 150;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
@@ -54,35 +52,18 @@ HRESULT CBalloon::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
-	_vec3 vPlayerPos = __super::Compute_PlayerPos();
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 	m_pTransformCom->Set_Position(vPlayerPos);
 	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
 
-	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
 
-	if (!m_isPrototype)
-	{
-		CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
-	}
-
-
-	CHPMonster::HP_DESC HpDesc = {};
-	HpDesc.eLevelID = LEVEL_STATIC;
-	HpDesc.iMaxHp = m_iHP;
-	HpDesc.pParentTransform = m_pTransformCom;
-	HpDesc.vPosition = m_MonsterHpBarPos;
-	m_HpBar = (CHPMonster*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPMonster"), &HpDesc);
-	if (m_HpBar == nullptr)
-	{
-		return E_FAIL;
-	}
 
 	return S_OK;
 }
 
 void CBalloon::Tick(_float fTimeDelta)
 {
-	__super::Tick(fTimeDelta);
 
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
@@ -90,8 +71,7 @@ void CBalloon::Tick(_float fTimeDelta)
 	m_pModelCom->Set_Animation(m_Animation);
 
 
-	Update_Collider();
-	__super::Update_BodyCollider();
+	Update_BodyCollider();
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
@@ -99,12 +79,17 @@ void CBalloon::Tick(_float fTimeDelta)
 
 void CBalloon::Late_Tick(_float fTimeDelta)
 {
-	__super::Late_Tick(fTimeDelta);
+	m_pModelCom->Play_Animation(fTimeDelta);
+	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	/*
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 2.f))
+	{
 
+	}
+	*/
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
-	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
 #endif
 }
 
@@ -178,6 +163,8 @@ HRESULT CBalloon::Render()
 
 void CBalloon::Set_Damage(_int iDamage, _uint iDamageType)
 {
+	/*
+	
 	m_fHittedTime = 6.f;
 	m_eCurState = STATE_HIT;
 
@@ -211,24 +198,11 @@ void CBalloon::Set_Damage(_int iDamage, _uint iDamageType)
 
 		m_pTransformCom->Set_Speed(0.5f);
 	}
+	*/
 }
 
 void CBalloon::Init_State(_float fTimeDelta)
 {
-	_vec4 vPlayerPos = __super::Compute_PlayerPos();
-	_float fDistance = __super::Compute_PlayerDistance();
-	_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
-	vDir.y = 0.f;
-
-	if (m_iHP <= 0 && !m_bParticle)
-	{
-		
-
-		m_eCurState = STATE_DIE;
-		m_bParticle = true;
-	}
-
-
 
 	if (m_ePreState != m_eCurState)
 	{
@@ -272,8 +246,6 @@ void CBalloon::Init_State(_float fTimeDelta)
 
 void CBalloon::Tick_State(_float fTimeDelta)
 {
-	_vec4 vPlayerPos = __super::Compute_PlayerPos();
-	_float fDistance = __super::Compute_PlayerDistance();
 
 	switch (m_eCurState)
 	{
@@ -292,7 +264,6 @@ void CBalloon::Tick_State(_float fTimeDelta)
 
 			if (m_bHit == true)
 			{
-				m_iDamageAcc = 0;
 				m_bHit = false;
 			}
 		}
@@ -323,26 +294,37 @@ HRESULT CBalloon::Add_Collider()
 		TEXT("Com_Collider_OBB"), (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
 		return E_FAIL;
 
-	// Frustum
-	Collider_Desc ColDesc{};
-	ColDesc.eType = ColliderType::Frustum;
-	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
-	_matrix matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
-	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.f), 1.f / 2.f, 0.01f, 2.f);
-	XMStoreFloat4x4(&ColDesc.matFrustum, matView * matProj);
+	return S_OK;
+}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack"), reinterpret_cast<CComponent**>(&m_pAttackColliderCom), &ColDesc)))
+
+void CBalloon::Update_BodyCollider()
+{
+	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+}
+
+HRESULT CBalloon::Add_Components()
+{
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
 		return E_FAIL;
 	}
 
-	return S_OK;
-}
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	{
+		return E_FAIL;
+	}
 
-void CBalloon::Update_Collider()
-{
-	_mat Offset = _mat::CreateTranslation(0.f, 0.5f, 0.f);
-	m_pAttackColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Balloon"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_T_EFF_Noise_04_BC"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom))))
+	{
+		return E_FAIL;
+	}
+	return S_OK;
 }
 
 HRESULT CBalloon::Bind_ShaderResources()
@@ -404,4 +386,12 @@ void CBalloon::Free()
 {
 	__super::Free();
 
+
+	Safe_Release(m_pModelCom);
+	Safe_Release(m_pRendererCom);
+	Safe_Release(m_pShaderCom);
+
+	Safe_Release(m_pBodyColliderCom);
+
+	Safe_Release(m_pDissolveTextureCom);
 }

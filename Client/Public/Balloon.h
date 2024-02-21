@@ -7,7 +7,7 @@ BEGIN(Client)
 
 class CHPMonster;
 
-class CBalloon final : public CMonster
+class CBalloon final : public CGameObject
 {
 public:
 	enum BALLOON_ANIM
@@ -48,6 +48,18 @@ public:
 
 	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) override;
 	
+private:
+	CShader*	m_pShaderCom = { nullptr };
+	CRenderer*  m_pRendererCom = { nullptr };
+	CModel*		m_pModelCom = { nullptr };
+	CCollider*  m_pBodyColliderCom = { nullptr };
+
+	CTexture* m_pDissolveTextureCom = { nullptr };
+
+private:
+
+	ANIM_DESC m_Animation{};
+
 public:
 	void Init_State(_float fTimeDelta);
 	void Tick_State(_float fTimeDelta);
@@ -58,15 +70,17 @@ private:
 
 private:
 	_float m_fIdleTime = {};
+	_float m_fDeadTime = {};
+	_float m_bHit = {};
 
 private:
 	_bool m_bParticle{};
 	_bool m_bDamaged = { false };
 
-
-public:
-	virtual HRESULT Add_Collider() override;
-	virtual void Update_Collider() override;
+private:
+	HRESULT Add_Collider();
+	void Update_BodyCollider();
+	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
