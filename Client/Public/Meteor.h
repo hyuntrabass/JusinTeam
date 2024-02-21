@@ -39,7 +39,10 @@ private: // Dragon_Boss Component
 
 private:
 	class CEffect_Dummy* m_pMeteor = { nullptr };
+	class CEffect_Dummy* m_pMeteorParti = { nullptr };
+
 	_mat m_MeteorMatrix = {};
+	_mat m_MeteorPartiMatrix = {};
 
 //private:
 //	CCommonSurfaceTrail* m_pMeteorTrail = { nullptr };

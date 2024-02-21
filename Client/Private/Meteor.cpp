@@ -47,7 +47,7 @@ HRESULT CMeteor::Init(void* pArg)
 
 	m_pTransformCom->Set_Position(m_vTargetPos + vDragonRight * 4.f + _vec3(0.f, 7.f, 0.f));
 	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
-	m_pTransformCom->Set_Speed(40.f);
+	m_pTransformCom->Set_Speed(20.f);
 
 	m_pTransformCom->LookAt(_vec4(m_vTargetPos, 1.f));
 
@@ -56,6 +56,13 @@ HRESULT CMeteor::Init(void* pArg)
 	Info.pMatrix = &m_MeteorMatrix;
 	Info.isFollow = true;
 	m_pMeteor = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+	//m_MeteorPartiMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)/* + _vec3(0.f, 0.1f, 0.f)*/));
+	m_MeteorPartiMatrix = m_pTransformCom->Get_World_Matrix();
+	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Meteor_Parti");
+	Info.pMatrix = &m_MeteorPartiMatrix;
+	Info.isFollow = true;
+	m_pMeteorParti = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
 	//SURFACETRAIL_DESC Desc{};
 	//Desc.vColor = Colors::Coral;
@@ -72,8 +79,26 @@ void CMeteor::Tick(_float fTimeDelta)
 	{
 		Kill();
 
-		Safe_Release(m_pMeteor);
-		//Safe_Release(m_pMeteorTrail);
+		if (m_pMeteor)
+		{
+			Safe_Release(m_pMeteor);
+			Safe_Release(m_pMeteorParti);
+
+			_mat EffectMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.5f, 0.f)));
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Meteor_Shine");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			//EffectMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.1f, 0.f)));
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Meteor_Explo_Floor");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			//EffectMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.1f, 0.f)));
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Meteor_Explo_Parti2");
+			Info.pMatrix = &EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+		}
 	}
 
 	m_pTransformCom->Go_Straight(fTimeDelta);
@@ -82,8 +107,12 @@ void CMeteor::Tick(_float fTimeDelta)
 	if (m_pMeteor)
 	{
 		m_MeteorMatrix = _mat::CreateScale(1.5f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)/* + _vec3(0.f, 0.1f, 0.f)*/));
+		//m_MeteorPartiMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)/* + _vec3(0.f, 0.1f, 0.f)*/));
+		m_MeteorPartiMatrix = m_pTransformCom->Get_World_Matrix();
 
 		m_pMeteor->Tick(fTimeDelta);
+		m_pMeteorParti->Tick(fTimeDelta);
+
 		//Update_Trail(fTimeDelta);
 	}
 
@@ -98,6 +127,8 @@ void CMeteor::Late_Tick(_float fTimeDelta)
 	if (m_pMeteor)
 	{
 		m_pMeteor->Late_Tick(fTimeDelta);
+		m_pMeteorParti->Late_Tick(fTimeDelta);
+
 		//m_pMeteorTrail->Late_Tick(fTimeDelta);
 	}
 
@@ -265,4 +296,5 @@ void CMeteor::Free()
 	Safe_Release(m_pModelCom);
 
 	Safe_Release(m_pMeteor);
+	Safe_Release(m_pMeteorParti);
 }
