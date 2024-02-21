@@ -1737,7 +1737,10 @@ HRESULT CLoader::Load_Village()
 			if (!entry.exists())
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
-
+			if (strPrototypeTag == L"Prototype_Model_BrickMap")
+			{
+				DungeonPivot = _mat::CreateScale(0.1f);
+			}
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, DungeonPivot))))
 			{
 				return E_FAIL;
@@ -1807,6 +1810,12 @@ HRESULT CLoader::Load_Village()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Minigame"), CMap::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Village_Etc_Object"), CEtc_Object::Create(m_pDevice, m_pContext))))
 	{

@@ -9,6 +9,7 @@ enum TeleportSpot
 {
 	TS_Dungeon,
 	TS_Village,
+	TS_Minigame,
 	TS_END
 };
 
