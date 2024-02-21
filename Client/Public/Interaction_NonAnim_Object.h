@@ -26,7 +26,11 @@ private:
 	PlaceType m_ePlaceType{ PLACE_END };
 	ObjectInfo m_Info{};
 	_uint m_iShaderPass{0};
+
+	_float m_fCollectTime{};
 	_bool m_isCollision{ false };
+	_bool m_isWideCollision{ false };
+	_bool m_isCollect{};
 
 private:
 	CTrigger_Manager* m_pTrigger_Manager{ nullptr };
@@ -34,7 +38,8 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
 	CCollider* m_pColliderCom{ nullptr };
-
+	CCollider* m_pWideColliderCom{ nullptr };
+	CGameObject* m_pNameTag{ nullptr };
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
