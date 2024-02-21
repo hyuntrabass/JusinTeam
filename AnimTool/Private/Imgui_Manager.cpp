@@ -943,7 +943,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				}
 
 				//이펙트 다시 보기
-				if (m_pGameInstance->Key_Down(DIK_V))
+				if (m_pGameInstance->Key_Pressing(DIK_V))
 				{
 					pEffectDesc->HasCreated = false;
 				}
@@ -1424,7 +1424,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				}
 
 				//이펙트 다시 보기
-				if (m_pGameInstance->Key_Down(DIK_V))
+				if (m_pGameInstance->Key_Pressing(DIK_V))
 				{
 					pEffectDesc->HasCreated = false;
 				}

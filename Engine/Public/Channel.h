@@ -37,8 +37,6 @@ private:
 	_uint m_iCurrentKeyFrame{};
 	vector<KEYFRAME> m_KeyFrames{};
 	_uint m_iBoneIndex{};
-	_mat m_PrevTransformation{};
-	KEYFRAME m_DestKeyFrame = {};
 	_float m_fPreAnimPos = { 0.f };
 
 public:

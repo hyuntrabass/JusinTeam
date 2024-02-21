@@ -108,6 +108,11 @@ void CCamera_CutScene::Tick(_float fTimeDelta)
 	else
 		Play_Camera(fTimeDelta);
 
+	if (m_pTrigger_Manager->Get_Shake_Camera() == true)
+	{
+		m_pCam_Manager->Set_ShakeCam(true, 0.5f);
+	}
+
 	__super::Tick(fTimeDelta);
 }
 
