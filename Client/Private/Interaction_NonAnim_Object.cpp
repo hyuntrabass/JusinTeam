@@ -51,7 +51,7 @@ HRESULT CInteraction_NonAnim::Init(void* pArg)
 
 void CInteraction_NonAnim::Tick(_float fTimeDelta)
 {
-
+	__super::Tick(fTimeDelta);
 }
 
 void CInteraction_NonAnim::Late_Tick(_float fTimeDelta)
@@ -235,6 +235,9 @@ HRESULT CInteraction_NonAnim::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
+		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
 	{

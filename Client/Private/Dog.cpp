@@ -59,6 +59,9 @@ HRESULT CDog::Init(void* pArg)
 
 void CDog::Tick(_float fTimeDelta)
 {
+	__super::Tick(fTimeDelta);
+
+
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 

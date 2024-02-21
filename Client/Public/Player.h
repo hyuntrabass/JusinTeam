@@ -446,7 +446,6 @@ private:
 	_bool m_bReadySwim{};
 	_mat m_ShieldMatrix{};
 	_float m_iSuperArmor{};
-	_mat m_OldWorldMatrix{};
 	_bool m_bWeapon_Unequip{};
 	wstring m_strPlayerName{};
 

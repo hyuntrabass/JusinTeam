@@ -75,6 +75,8 @@ HRESULT CGroar_Boss::Init(void* pArg)
 
 void CGroar_Boss::Tick(_float fTimeDelta)
 {
+	m_pTransformCom->Set_OldMatrix();
+
 	//if (m_pGameInstance->Key_Down(DIK_Q, InputChannel::UI)) // 괴물들 잡아달라 하고 보스방으로 순간이동 하는 타이밍(한번만 들어와야 함)
 	if (m_strQuestOngoing == TEXT("그로아를 지켜라") || m_pGameInstance->Key_Down(DIK_Q, InputChannel::UI))
 	{
@@ -1385,6 +1387,16 @@ HRESULT CGroar_Boss::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pTransformCom->Bind_OldWorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
 	{
 		return E_FAIL;
 	}

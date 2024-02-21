@@ -147,6 +147,8 @@ PS_OUT PS_Main_Alpha(PS_IN Input)
     float3 Color = vColor.rgb;
     float fAlpha = vColor.a * g_fAlpha;
     
+    if(fAlpha < 0.f)
+        fAlpha = 0.f;
     
     float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
     fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
@@ -164,6 +166,9 @@ PS_OUT PS_Main_Color_Alpha(PS_IN Input)
     
     float3 Color = g_vColor.rgb;
     float fAlpha = g_fAlpha;
+    
+    if(fAlpha < 0.f)
+        fAlpha = 0.f;
 
     float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
     fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
@@ -278,6 +283,9 @@ PS_OUT PS_MaskColorAlpha(PS_IN Input)
     float3 Color = vColor.rgb;
     float fAlpha = vColor.a * vMask * g_fAlpha;
     
+    if(fAlpha < 0.f)
+        fAlpha = 0.f;
+    
     float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
     fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
     
@@ -320,6 +328,9 @@ PS_OUT PS_Main_Hit(PS_IN Input)
     
     float3 Color = vColor.rgb;
     float fAlpha = vColor.a * g_fAlpha;
+    
+    if(fAlpha < 0.f)
+        fAlpha = 0.f;
     
     
     float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
@@ -836,6 +847,9 @@ PS_OUT PS_ScrollAlpha(PS_IN Input)
     float3 Color = vColor.rgb;
     float fAlpha = vColor.a;
     
+    if(fAlpha < 0.f)
+        fAlpha = 0.f;
+    
     float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
     fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
     
@@ -1013,6 +1027,9 @@ PS_OUT PS_Main_LerpColorNAlpha(PS_IN Input)
     float3 Color = vColor.rgb;
     float fAlpha = vColor.a;
     
+    if(fAlpha < 0.f)
+        fAlpha = 0.f;
+    
     float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
     fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
     
@@ -1093,6 +1110,9 @@ PS_OUT PS_Main_ChangeBright(PS_IN Input)
     
     float3 Color = vColor.rgb;
     float fAlpha = vColor.a;
+    
+    if(fAlpha < 0.f)
+        fAlpha = 0.f;
     
     float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
     fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;

@@ -56,6 +56,9 @@ HRESULT CBlackSmith::Init(void* pArg)
 
 void CBlackSmith::Tick(_float fTimeDelta)
 {
+	__super::Tick(fTimeDelta);
+
+
 	if (false) // 나중에 조건 추가
 	{
 		m_bTalking = true;

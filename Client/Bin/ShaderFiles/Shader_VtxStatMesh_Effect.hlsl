@@ -721,6 +721,9 @@ PS_OUT_EFFECT PS_Main_Effect_Alpha(PS_IN Input)
     float3 Color = g_vColor.rgb;
     float fAlpha = g_fAlpha;
     
+    if(fAlpha < 0.f)
+        fAlpha = 0.f;
+    
     float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
     fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
     
@@ -747,6 +750,9 @@ PS_OUT_EFFECT PS_Main_MaskEffect_Alpha(PS_IN Input)
     float3 Color = vColor.rgb;
     float fAlpha = vColor.a;
     
+    if(fAlpha < 0.f)
+        fAlpha = 0.f;
+    
     float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
     fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
     
@@ -765,6 +771,9 @@ PS_OUT_EFFECT PS_Main_DiffEffect_Alpha(PS_IN Input)
     
     float3 Color = vColor.rgb;
     float fAlpha = g_fAlpha;
+    
+    if(fAlpha < 0.f)
+        fAlpha = 0.f;
     
     float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
     fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;

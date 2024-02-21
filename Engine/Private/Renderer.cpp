@@ -41,7 +41,7 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Depth_Velocity"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 0.f, 1.f))))
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Depth_Velocity"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 0.f, 0.f))))
 	{
 		return E_FAIL;
 	}
@@ -233,6 +233,13 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
+
+#pragma endregion
+
+#pragma region For_MRT_MotionBlur
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(L"Target_MotionBlur", static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
 
 #pragma endregion
 
@@ -439,6 +446,14 @@ HRESULT CRenderer::Init_Prototype()
 	//	return E_FAIL;
 
 #pragma endregion
+
+#pragma region MRT_MotionBlur
+
+	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_MotionBlur", L"Target_MotionBlur")))
+		return E_FAIL;
+
+#pragma endregion
+
 
 #pragma region MRT_Distortion
 
@@ -669,7 +684,6 @@ HRESULT CRenderer::Draw_RenderGroup()
 	if (FAILED(Clear_Instance()))
 		return E_FAIL;
 
-
 	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_GameObjects"))))
 	{
 		return E_FAIL;
@@ -737,6 +751,18 @@ HRESULT CRenderer::Draw_RenderGroup()
 	if (FAILED(Render_Distortion()))
 	{
 		MSG_BOX("Failed to Render : Distortion");
+		return E_FAIL;
+	}
+
+	if (FAILED(Render_NoneBlendFinal()))
+	{
+		MSG_BOX("Failed to Render : NoneBlendFinal");
+		return E_FAIL;
+	}
+
+	if (FAILED(Render_BlendFinal()))
+	{
+		MSG_BOX("Failed to Render : BlendFinal");
 		return E_FAIL;
 	}
 
@@ -877,8 +903,8 @@ HRESULT CRenderer::Render_Priority()
 		}
 		Safe_Release(pGameObject);
 	}
-	m_RenderObjects[RG_Priority].clear();
 
+	m_RenderObjects[RG_Priority].clear();
 	return S_OK;
 }
 
@@ -1734,6 +1760,78 @@ HRESULT CRenderer::Render_Deferred()
 	return S_OK;
 }
 
+HRESULT CRenderer::Render_HDR()
+{
+	// 원명
+	if (FAILED(Get_AvgLuminance()))
+		return E_FAIL;
+
+	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Deferrd"), L"MRT_BLURTEX", m_fHDRBloomPower, true)))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR")))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", m_WorldMatrix)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", m_ViewMatrix)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DeferredTexture", TEXT("Target_Deferrd"))))
+	{
+		return E_FAIL;
+	}
+
+	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_HDRTexture", TEXT("Target_BlurTex"))))
+	//{
+	//	return E_FAIL;
+	//}
+
+	if (FAILED(m_pShader->Bind_ShaderResourceView("g_Luminance", m_pLumValue->Get_SRV())))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BloomTexture", L"Target_BlurTex")))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Bind_RawValue("g_HDR", &m_HDR, sizeof(HDR_DESC))))
+		return E_FAIL;
+
+	if (m_pGameInstance->Key_Down(DIK_F3))
+		m_TurnOnToneMap = !m_TurnOnToneMap;
+
+	if (m_pGameInstance->Key_Down(DIK_F4))
+		m_TurnOnBloom = !m_TurnOnBloom;
+
+	if (FAILED(m_pShader->Bind_RawValue("TurnOnToneMap", &m_TurnOnToneMap, sizeof(_bool))))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Bind_RawValue("TurnOnBloom", &m_TurnOnBloom, sizeof(_bool))))
+		return E_FAIL;
+
+
+	if (FAILED(m_pShader->Begin(DefPass_HDR)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pVIBuffer->Render()))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->End_MRT()))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 HRESULT CRenderer::Render_Outline()
 {
 	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Outline"))))
@@ -1834,84 +1932,22 @@ HRESULT CRenderer::Render_Distortion()
 	return S_OK;
 }
 
-HRESULT CRenderer::Render_HDR()
-{
-	// 원명
-	if (FAILED(Get_AvgLuminance()))
-		return E_FAIL;
-
-	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Deferrd"), L"MRT_BLURTEX", m_fHDRBloomPower, true)))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR")))
-		return E_FAIL;
-
-	if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", m_WorldMatrix)))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", m_ViewMatrix)))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DeferredTexture", TEXT("Target_Deferrd"))))
-	{
-		return E_FAIL;
-	}
-
-	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_HDRTexture", TEXT("Target_BlurTex"))))
-	//{
-	//	return E_FAIL;
-	//}
-
-	if (FAILED(m_pShader->Bind_ShaderResourceView("g_Luminance", m_pLumValue->Get_SRV())))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BloomTexture", L"Target_BlurTex")))
-		return E_FAIL;
-
-	if (FAILED(m_pShader->Bind_RawValue("g_HDR", &m_HDR, sizeof(HDR_DESC))))
-		return E_FAIL;
-
-	if (m_pGameInstance->Key_Down(DIK_F3))
-		m_TurnOnToneMap = !m_TurnOnToneMap;
-
-	if (m_pGameInstance->Key_Down(DIK_F4))
-		m_TurnOnBloom = !m_TurnOnBloom;
-
-	if (FAILED(m_pShader->Bind_RawValue("TurnOnToneMap", &m_TurnOnToneMap, sizeof(_bool))))
-		return E_FAIL;
-
-	if (FAILED(m_pShader->Bind_RawValue("TurnOnBloom", &m_TurnOnBloom, sizeof(_bool))))
-		return E_FAIL;
-
-
-	if (FAILED(m_pShader->Begin(DefPass_HDR)))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(m_pVIBuffer->Render()))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->End_MRT()))
-		return E_FAIL;
-
-	return S_OK;
-}
-
-HRESULT CRenderer::Render_Final()
+HRESULT CRenderer::Render_NoneBlendFinal()
 {
 	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR_Sky")))
 		return E_FAIL;
 
-	if (FAILED(Render_Priority())) // Sky
+	if (FAILED(Render_Priority()))
+		return E_FAIL;
+
+	// HDR Texture
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_HDR")))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Begin(DefPass_JustDraw)))
+		return E_FAIL;
+
+	if (FAILED(m_pVIBuffer->Render()))
 		return E_FAIL;
 
 	// Outline
@@ -1955,14 +1991,15 @@ HRESULT CRenderer::Render_Final()
 
 	}
 
-	// HDR Texture
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_HDR")))
+	if (FAILED(m_pGameInstance->End_MRT()))
 		return E_FAIL;
 
-	if (FAILED(m_pShader->Begin(DefPass_JustDraw)))
-		return E_FAIL;
+	return S_OK;
+}
 
-	if (FAILED(m_pVIBuffer->Render()))
+HRESULT CRenderer::Render_BlendFinal()
+{
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR_Sky", nullptr, false)))
 		return E_FAIL;
 
 	// Effect
@@ -1993,16 +2030,38 @@ HRESULT CRenderer::Render_Final()
 	if (FAILED(m_pVIBuffer->Render()))
 		return E_FAIL;
 
+
 	if (FAILED(m_pGameInstance->End_MRT()))
 		return E_FAIL;
 
+	return S_OK;
+}
 
-	// Distortion
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DistortionTexture", L"Target_Distortion")))
+HRESULT CRenderer::Render_Final()
+{
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_MotionBlur")))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Depth_Velocity_Texture", L"Target_Depth_Velocity")))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_HDR_Sky")))
-		return E_FAIL;	
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Begin(14)))
+		return E_FAIL;
+
+	if (FAILED(m_pVIBuffer->Render()))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->End_MRT()))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DistortionTexture", L"Target_Distortion")))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_MotionBlur")))
+		return E_FAIL;
 
 	if (FAILED(m_pShader->Begin(DefPass_Distortion)))
 	{
@@ -2012,7 +2071,6 @@ HRESULT CRenderer::Render_Final()
 	{
 		return E_FAIL;
 	}
-
 
 	return S_OK;
 }

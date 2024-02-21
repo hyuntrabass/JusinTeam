@@ -52,7 +52,7 @@ HRESULT CInteraction_Anim::Init(void* pArg)
 
 void CInteraction_Anim::Tick(_float fTimeDelta)
 {
-
+	__super::Tick(fTimeDelta);
 }
 
 void CInteraction_Anim::Late_Tick(_float fTimeDelta)

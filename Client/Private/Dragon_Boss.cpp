@@ -61,6 +61,8 @@ HRESULT CDragon_Boss::Init(void* pArg)
 
 void CDragon_Boss::Tick(_float fTimeDelta)
 {
+	m_pTransformCom->Set_OldMatrix();
+
 	if (m_pGameInstance->Key_Down(DIK_DELETE))
 	{
 		Kill();
@@ -979,6 +981,16 @@ HRESULT CDragon_Boss::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pTransformCom->Bind_OldWorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
 	{
 		return E_FAIL;
 	}
