@@ -39,7 +39,16 @@ HRESULT CNameTag::Init(void* pArg)
 
 void CNameTag::Tick(_float fTimeDelta)
 {
-	m_pTransformCom->Set_State(State::Pos, m_pParentTransform->Get_State(State::Pos) + m_vTextPosition);
+	if (m_isCoord)
+	{
+		m_pTransformCom->Set_State(State::Pos, m_vPos + m_vTextPosition);
+	}
+	else
+	{
+		//DirectX::XMFLOAT3 = {x=149.119095 y=-6.72868681 z=121.260971 }
+		m_pTransformCom->Set_State(State::Pos, m_pParentTransform->Get_State(State::Pos) + m_vTextPosition);
+	}
+
 }
 
 void CNameTag::Late_Tick(_float fTimeDelta)

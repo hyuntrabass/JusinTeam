@@ -10,7 +10,6 @@ public:
 	typedef struct tagNameTagDesc
 	{
 		_bool bOrth{ false };
-		_bool isPlayer{ false };
 		_uint	iDamage;
 		_vec2	vTextPosition;
 		class CTransform* pParentTransform{ nullptr };
@@ -40,7 +39,6 @@ private:
 
 private:
 	_bool				m_bOrth{};
-	_bool				m_isPlayer{ false };
 	_bool				m_isEffect{ true };
 	LEVEL_ID			m_eLevel{};
 
