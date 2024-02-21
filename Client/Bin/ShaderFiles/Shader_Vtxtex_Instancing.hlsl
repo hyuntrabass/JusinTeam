@@ -625,7 +625,7 @@ PS_OUT_DISTORTION PS_Distortion(PS_IN Input)
         discard;
     }
 
-    Output.vDistortion = normalize(g_DistortionTexture.Sample(LinearSampler, Input.vTex)) * g_fAlpha * vMask.r;
+    Output.vDistortion = normalize(g_DistortionTexture.Sample(LinearSampler, Input.vTex)) * g_fAlpha * vMask.r * Input.fDissolveRatio;
     
     return Output;
 }
