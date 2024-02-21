@@ -592,18 +592,19 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 				if (Compute_Angle(135.f))
 				{
 					m_pGameInstance->Attack_Player(m_pCommonAttCollider, 200, MonAtt_KnockDown);
+					if (m_pGameInstance->CheckCollision_Player(m_pCommonAttCollider))
+					{
+						m_bAttacked = true;
+					}
 				}
-
-				Safe_Release(m_pAttackEffect);
-				Safe_Release(m_pShieldEffect);
-				EffectInfo Info{};
+				/*Safe_Release(m_pAttackEffect);
+				Safe_Release(m_pShieldEffect);*/
+				/*EffectInfo Info{};
 				m_AttEffectMat = _mat::CreateScale(10.f)*_mat::CreateRotationX(135.f) * _mat::CreateTranslation(_vec3(0.f, 0.7f, 0.f)) * m_pTransformCom->Get_World_Matrix();
 				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Boss_Sword");
 				Info.pMatrix = &m_AttEffectMat;
-				Info.isFollow = true;
+				Info.isFollow = true;*/
 				//m_pAttackEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-				
-				m_bAttacked = true;
 			}
 			if (m_bAttacked)
 			{
@@ -660,7 +661,12 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 				if (Compute_Angle(135.f))
 				{
 					m_pGameInstance->Attack_Player(m_pCommonAttCollider, 200, MonAtt_KnockDown);
+					if (m_pGameInstance->CheckCollision_Player(m_pCommonAttCollider))
+					{
+						m_bAttacked = true;
+					}
 				}
+				
 			}
 		}
 		else if (Index >= 116.f && m_bViewWeapon)
@@ -706,6 +712,10 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			if (!m_bAttacked)
 			{
 				m_pGameInstance->Attack_Player(m_pCommonAttCollider, 200, MonAtt_KnockDown);
+				if (m_pGameInstance->CheckCollision_Player(m_pCommonAttCollider))
+				{
+					m_bAttacked = true;
+				}
 			}
 		}
 		else if (Index >= 186.f && m_bViewWeapon)
@@ -755,13 +765,17 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 		if (Index >= 0.f && Index <= 1.f)
 		{
 
-		_vec3 vPos = m_pPlayerTransform->Get_State(State::Pos) - (m_pPlayerTransform->Get_State(State::Look).Get_Normalized() * 1.9f);
-		m_pTransformCom->Set_FootPosition(vPos);
-		_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
-		m_pTransformCom->LookAt(vPlayerPos);
+			_vec3 vPos = m_pPlayerTransform->Get_State(State::Pos) - (m_pPlayerTransform->Get_State(State::Look).Get_Normalized() * 1.9f);
+			m_pTransformCom->Set_FootPosition(vPos);
+			_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
+			m_pTransformCom->LookAt(vPlayerPos);
 		}
+		else if (Index >= 49.f && Index <= 53.f)
+		{
 
+		}
 	}
+
 	if (m_bShieldOn && m_fShiledTimmer <10.f)
 	{
 		m_fShiledTimmer += fTimedelta;
