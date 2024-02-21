@@ -14,7 +14,6 @@ private:
 
 public:
 	void Select(const _bool& isSelected);
-	void Modify(_fvector vPos, _fvector vLook);
 	
 	void Get_State(_float4& vPos, _float4& vLook);
 	_bool Get_Selected() { return m_isSelected; }

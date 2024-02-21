@@ -20,13 +20,6 @@ void CDummy::Select(const _bool& isSelected)
 	m_isSelected = isSelected;
 }
 
-void CDummy::Modify(_fvector vPos, _fvector vLook)
-{
-	m_pTransformCom->Set_State(State::Pos, vPos);
-	m_pTransformCom->LookAt_Dir(vLook);
-	XMStoreFloat4(&m_Info.vPos, vPos);
-	XMStoreFloat4(&m_Info.vLook, vLook);
-}
 
 void CDummy::Get_State(_float4& vPos, _float4& vLook)
 {
@@ -78,8 +71,10 @@ HRESULT CDummy::Init(void* pArg)
 		m_Info.ppDummy = nullptr;
 	}
 
-	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_Info.vPos));
-	m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_Info.vLook));
+
+	m_pTransformCom->Set_Matrix(m_Info.mMatrix);
+	
+	m_pModelCom->Apply_TransformToActor(m_pTransformCom->Get_World_Matrix());
 
 	return S_OK;
 }
