@@ -976,7 +976,7 @@ void CModel::Free()
 	{
 		for (size_t i = 0; i < m_TriggerEffects.size(); i++)
 		{
-			if (m_pGameInstance->Has_Created_Effect(m_EffectMatrices[i]) && m_TriggerEffects[i].IsFollow)
+			if (m_TriggerEffects[i].IsFollow)
 			{
 				m_pGameInstance->Delete_Effect(m_EffectMatrices[i]);
 			}
