@@ -13,7 +13,7 @@ public:
 		_uint	iDamage;
 		_vec2	vTextPosition;
 		class CTransform* pParentTransform{ nullptr };
-	}HITEFFECT_DESC;
+	}NUMEFFECT_DESC;
 private:
 	CNumEffect(_dev pDevice, _context pContext);
 	CNumEffect(const CNumEffect& rhs);

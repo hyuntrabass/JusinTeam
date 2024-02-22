@@ -81,6 +81,10 @@ Texture2D g_DistortionTexture;
 Texture2D g_EffectColorTexture;
 Texture2D g_AlphaTexture;
 
+
+vector g_vCenterPos;
+float g_fRadialBlur_Power;
+
 vector Get_WorldPos(float2 vTex)
 {
     vector vDepth_Velocity_Desc = g_Depth_Velocity_Texture.Sample(PointClampSampler, vTex);
@@ -638,6 +642,50 @@ PS_OUT PS_MotionBlur(PS_IN Input)
     return Output;
 }
 
+PS_OUT PS_RadialBlur(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    vector vPos = mul(vector(g_vCenterPos.xyz, 1.f), g_CamViewMatrix);
+    vPos = mul(vPos, g_CamProjMatrix);
+    
+    vPos.x = (vPos.x + 1.f) * 0.5f;
+    vPos.y = (vPos.y - 1.f) * -0.5f;
+    
+    float2 Dir = vPos.xy - Input.vTexcoord;
+    
+    float2 DirMulti = Dir * g_fRadialBlur_Power;
+        
+    float fSize[11] = { -0.05f, -0.04f, -0.03f, -0.02f, -0.01f, 0.f, 0.01f, 0.02f, 0.03f, 0.04f, 0.05f };
+    
+    float fGaussian_weights[11] =
+    {
+        0.0009765625f,
+        0.009765625f,
+        0.0439453125f,
+        0.1171875f,
+        0.205078125f,
+        0.24609375f,
+        0.205078125f,
+        0.1171875f,
+        0.0439453125f,
+        0.009765625f,
+        0.0009765625f
+    };
+    
+    float2 UV;
+    vector vColor = 0;
+    for (uint i = 0; i < 11; ++i)
+    {
+        UV = (DirMulti * fSize[i]) + Input.vTexcoord;
+        vColor += g_Texture.Sample(LinearClampSampler, UV) * fGaussian_weights[i];
+    }
+       
+    Output.vColor = vColor;
+    
+    return Output;
+}
+
 technique11 DefaultTechnique
 {
     pass Debug // 0
@@ -834,4 +882,18 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_MotionBlur();
     }
+
+    pass Radial_Blur // 15
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_RadialBlur();
+    }
+
 };

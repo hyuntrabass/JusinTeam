@@ -133,6 +133,10 @@ void CVehicleBook::Tick(_float fTimeDelta)
 	{
 		if (m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
+			for (size_t j = 0; j < m_vecVehicle[m_eCurType].size(); j++)
+			{
+				m_vecVehicle[m_eCurType][j]->Set_SelectVehicle(false);
+			}
 			if (m_Light_Desc.eType != LIGHT_DESC::TYPE::End)
 			{
 				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
@@ -164,6 +168,10 @@ void CVehicleBook::Tick(_float fTimeDelta)
 		{
 			if (PtInRect(&dynamic_cast<CTextButtonColor*>(m_pVehicleType[i])->Get_Rect(), ptMouse))
 			{
+				for (size_t j = 0; j < m_vecVehicle[m_eCurType].size(); j++)
+				{
+					m_vecVehicle[m_eCurType][j]->Set_SelectVehicle(false);
+				}
 				m_ePrevType = m_eCurType;
 				m_eCurType = (VEHICLE_TYPE)i;
 
@@ -177,10 +185,7 @@ void CVehicleBook::Tick(_float fTimeDelta)
 				_vec2 fUnderBarPos = dynamic_cast<CTextButton*>(m_pUnderBar)->Get_Position();
 				dynamic_cast<CTextButton*>(m_pUnderBar)->Set_Position(_vec2(vPos.x, fUnderBarPos.y));
 
-				for (size_t j = 0; j < m_vecVehicle[m_eCurType].size(); j++)
-				{
-					m_vecVehicle[m_eCurType][j]->Set_SelectVehicle(false);
-				}
+
 				break;
 			}
 		}
