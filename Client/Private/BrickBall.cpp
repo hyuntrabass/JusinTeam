@@ -30,7 +30,7 @@ HRESULT CBrickBall::Init(void* pArg)
 		return E_FAIL;
 	}
 	m_fSpeed = 5.f;
-	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
+	m_pTransformCom->Set_Scale(_vec3(8.f, 8.f, 8.f));
 	m_pTransformCom->Set_Speed(m_fSpeed);
 
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
@@ -54,6 +54,20 @@ HRESULT CBrickBall::Init(void* pArg)
 
 void CBrickBall::Tick(_float fTimeDelta)
 {
+	_vec2 vCenterPos = _vec2(-1999.90186f, -1999.60742f);
+	_vec2 vSize = _vec2(14.f, 20.f);
+	RECT rcRect = {
+		  (LONG)(vCenterPos.x - vSize.x * 0.5f),
+		  (LONG)(vCenterPos.y - vSize.y * 0.5f),
+		  (LONG)(vCenterPos.x + vSize.x * 0.5f),
+		  (LONG)(vCenterPos.y + vSize.y * 0.5f)
+	};
+	POINT vCurPos = { m_pTransformCom->Get_State(State::Pos).x, m_pTransformCom->Get_State(State::Pos).z };
+	if (!PtInRect(&rcRect, vCurPos))
+	{
+		m_isDead = true;
+	}
+
 	RayCast();
 
 	m_pTransformCom->Go_Straight(fTimeDelta);
@@ -78,13 +92,13 @@ void CBrickBall::Tick(_float fTimeDelta)
 			vPlayerLook.y = 0.f;
 
 			m_pTransformCom->LookAt_Dir(vPlayerLook);
-			m_fSpeed = 8.f;
+			m_fSpeed = 10.f;
 		}
 		m_isColl = true;
 	}
 	else
 	{
-		m_fSpeed = 5.f;
+		m_fSpeed = 8.f;
 		m_isColl = false;
 	}
 }
@@ -113,7 +127,7 @@ HRESULT CBrickBall::Add_Collider()
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
 	CollDesc.vCenter = _vec3(0.f);
-	CollDesc.fRadius = 0.2f;
+	CollDesc.fRadius = 0.15f;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 		TEXT("Com_Collider_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))

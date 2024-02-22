@@ -148,9 +148,6 @@
     <Filter Include="02.GameObjects\00.UI\POPUP">
       <UniqueIdentifier>{395d4c54-fec4-4c43-8e36-2a78faf9edea}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.UI\Texture&amp;Text">
-      <UniqueIdentifier>{e433917e-0435-4307-a9c2-4229c403b1c9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\04.Monster\00. ModelTest">
       <UniqueIdentifier>{0e66fe14-e7ce-411d-974f-08f8c5cae5d8}</UniqueIdentifier>
     </Filter>
@@ -456,6 +453,9 @@
     </Filter>
     <Filter Include="98.Default\Hell">
       <UniqueIdentifier>{33adb1d1-a5eb-44d1-8260-3a45e1e43819}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.UI\Texture&amp;Text">
+      <UniqueIdentifier>{e433917e-0435-4307-a9c2-4229c403b1c9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -921,6 +921,9 @@
     <ClInclude Include="..\Public\Statue.h" />
     <ClInclude Include="..\Public\BrickGame.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AnimTool\Public\Player.h">
+      <Filter>01.Levels\03.GamePlay</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

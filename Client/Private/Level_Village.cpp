@@ -140,7 +140,7 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_B))
 	{
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BrickGame"), TEXT("Prototype_GameObject_BrickBall"))))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_BrickBall"), TEXT("Prototype_GameObject_BrickBall"))))
 		{
 			return;
 		}

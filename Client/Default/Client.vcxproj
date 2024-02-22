@@ -157,6 +157,7 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\AnimTool\Public\Player.h" />
     <ClInclude Include="..\Public\3DUITex.h" />
     <ClInclude Include="..\Public\Arrow.h" />
     <ClInclude Include="..\Public\BackGround.h" />

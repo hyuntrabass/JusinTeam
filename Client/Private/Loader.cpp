@@ -1810,6 +1810,11 @@ HRESULT CLoader::Load_Village()
 	{
 		return E_FAIL;
 	}
+	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_NumEffect"), CNumEffect::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Village_Map"), CMap::Create(m_pDevice, m_pContext))))

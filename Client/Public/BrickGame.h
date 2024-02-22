@@ -2,6 +2,8 @@
 #include "Client_Define.h"
 #include "OrthographicObject.h"
 #include "Riding.h"
+#define BRICKCOL 6
+#define BRICKROW 6
 
 BEGIN(Client)
 class CBrickGame final : public CGameObject
@@ -26,11 +28,15 @@ private:
 	_bool										m_isPrototype{ false };
 	_bool										m_isActive{ false };
 
+	static const _uint							m_iRow;
+	static const _uint							m_iCol;
+	_uint										m_iCombo{};
 	_uint										m_iCurIndex{};
 	_int										m_iSoundChannel = -1;
 
+	_float										m_fComboTime{};
 
-	class CBalloon*								m_pBalloon[3][3]{};
+	class CBalloon*								m_pBalloon[BRICKROW][BRICKCOL]{};
 	LIGHT_DESC									m_Light_Desc{};
 
 private:
