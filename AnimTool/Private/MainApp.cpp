@@ -317,6 +317,7 @@ void CMainApp::Free()
 	Safe_Release(m_pContext);
 
 	CGameInstance::Release_Engine();
+	Safe_Release(m_pImgui_Manager);
 
 	CEffect_Manager::Destroy_Instance();
 	
@@ -324,6 +325,4 @@ void CMainApp::Free()
 	{
 		MSG_BOX("Heap currupted");
 	}
-	
-	Safe_Release(m_pImgui_Manager);
 }

@@ -183,7 +183,7 @@ PS_OUT_DISTORTION PS_Distortion(PS_IN Input)
 {
     PS_OUT_DISTORTION Output = (PS_OUT_DISTORTION) 0;
     
-    Output.vDistortion = normalize(g_MaskTexture.Sample(LinearSampler, Input.vTex)) * 0.05f;
+    Output.vDistortion = normalize(g_MaskTexture.Sample(LinearSampler, Input.vTex)) * 0.03f * Input.fAlpha;
     
     return Output;
 }
