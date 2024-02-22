@@ -353,6 +353,7 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 			pPlayerTransform->Set_Position(_vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
 			pPlayerTransform->LookAt_Dir(Player_Matrix.Look());
 
+			_vec4 vPosition = pPlayerTransform->Get_State(State::Pos);
 			//m_pGameInstance->Set_HellHeight(-70.f);
 			//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
 			//*Light = g_Light_Village;

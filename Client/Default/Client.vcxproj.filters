@@ -148,9 +148,6 @@
     <Filter Include="02.GameObjects\00.UI\POPUP">
       <UniqueIdentifier>{395d4c54-fec4-4c43-8e36-2a78faf9edea}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.UI\Texture&amp;Text">
-      <UniqueIdentifier>{e433917e-0435-4307-a9c2-4229c403b1c9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\04.Monster\00. ModelTest">
       <UniqueIdentifier>{0e66fe14-e7ce-411d-974f-08f8c5cae5d8}</UniqueIdentifier>
     </Filter>
@@ -403,9 +400,6 @@
     <Filter Include="02.GameObjects\01.Camera\CutScene\Curve">
       <UniqueIdentifier>{3ed5c41d-0372-425d-9eb7-aa5417122c3e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\06.Sky\Hell">
-      <UniqueIdentifier>{33adb1d1-a5eb-44d1-8260-3a45e1e43819}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\00.UI\GameUI\UIEffect\Target">
       <UniqueIdentifier>{6ebcc380-0108-4b70-8ee2-43a716264acd}</UniqueIdentifier>
     </Filter>
@@ -457,14 +451,11 @@
     <Filter Include="02.GameObjects\04.Monster\98. Statue">
       <UniqueIdentifier>{b30a4619-e442-47d5-bdd3-dcd61152f75c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\09.Object\Interaction">
-      <UniqueIdentifier>{4b7dd441-49f8-4755-a596-3ce6de4ae474}</UniqueIdentifier>
+    <Filter Include="98.Default\Hell">
+      <UniqueIdentifier>{33adb1d1-a5eb-44d1-8260-3a45e1e43819}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\09.Object\Interaction\Anim">
-      <UniqueIdentifier>{ad520320-8fe0-42eb-9b9b-6444cf84c0ff}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\09.Object\Interaction\NonAnim">
-      <UniqueIdentifier>{7f2d2e87-4e5c-4110-983d-3c1613d9d9cf}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\00.UI\Texture&amp;Text">
+      <UniqueIdentifier>{e433917e-0435-4307-a9c2-4229c403b1c9}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\09.Object\ETC\Tower">
       <UniqueIdentifier>{da0fdb47-bb4d-43c6-9bf6-aa68566c0962}</UniqueIdentifier>
@@ -925,17 +916,17 @@
     <ClInclude Include="..\Public\Balloon.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Interaction_Anim_Object.h" />
+    <ClInclude Include="..\Public\Interaction_NonAnim_Object.h" />
     <ClInclude Include="..\Public\BrickBall.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Interaction_Anim_Object.h">
-      <Filter>02.GameObjects\09.Object\Interaction\Anim</Filter>
+    <ClInclude Include="..\Public\Statue.h" />
+    <ClInclude Include="..\Public\BrickGame.h">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Interaction_NonAnim_Object.h">
-      <Filter>02.GameObjects\09.Object\Interaction\NonAnim</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Statue.h">
-      <Filter>02.GameObjects\04.Monster\98. Statue</Filter>
+    <ClInclude Include="..\..\AnimTool\Public\Player.h">
+      <Filter>01.Levels\03.GamePlay</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\TowerObject.h">
       <Filter>02.GameObjects\09.Object\ETC\Tower</Filter>
@@ -1394,17 +1385,14 @@
     <ClCompile Include="..\Private\Balloon.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Interaction_Anim_Object.cpp" />
+    <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp" />
     <ClCompile Include="..\Private\BrickBall.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Interaction_Anim_Object.cpp">
-      <Filter>02.GameObjects\09.Object\Interaction\Anim</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp">
-      <Filter>02.GameObjects\09.Object\Interaction\NonAnim</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Statue.cpp">
-      <Filter>02.GameObjects\04.Monster\98. Statue</Filter>
+    <ClCompile Include="..\Private\Statue.cpp" />
+    <ClCompile Include="..\Private\BrickGame.cpp">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\TowerObject.cpp">
       <Filter>02.GameObjects\09.Object\ETC\Tower</Filter>

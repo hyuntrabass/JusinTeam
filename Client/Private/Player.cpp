@@ -440,8 +440,9 @@ void CPlayer::Tick(_float fTimeDelta)
 					m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * dwMouseMove * -1.f * 0.1f);
 				}
 			}
+			return;
 		}
-		return;
+
 	}
 	if (m_isInvenActive && !CUI_Manager::Get_Instance()->Showing_FullScreenUI())
 	{
