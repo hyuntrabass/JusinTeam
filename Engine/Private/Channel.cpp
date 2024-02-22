@@ -97,6 +97,7 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 	}
 
 	KEYFRAME LastKeyFrame = m_KeyFrames.back();
+	KEYFRAME FirstKeyFrame = m_KeyFrames.front();
 
 	_vec4 vScaling{};
 	_vec4 vRotation{};
@@ -142,90 +143,49 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 		vRotation = XMLoadFloat4(&LastKeyFrame.vRotation);
 		vPosition = XMLoadFloat4(&LastKeyFrame.vPosition);
 	}
+	else if (fCurrentAnimPos <= FirstKeyFrame.fTime)
+	{
+		vScaling = XMLoadFloat4(&FirstKeyFrame.vScaling);
+		vRotation = XMLoadFloat4(&FirstKeyFrame.vRotation);
+		vPosition = XMLoadFloat4(&FirstKeyFrame.vPosition);
+	}
 	else
 	{
-		m_PrevTransformation = {};
-		_int iNextKeyFrame = m_iCurrentKeyFrame + 1;
-		if (iNextKeyFrame >= static_cast<_int>(m_iNumkeyFrames - 1))
-		{
-			iNextKeyFrame = m_iNumkeyFrames - 1;
-		}
-		_int iPreKeyFrame = m_iCurrentKeyFrame - 1;
-		if (iPreKeyFrame < 0)
-		{
-			iPreKeyFrame = 0;
-		}
-
 		if (fCurrentAnimPos >= m_fPreAnimPos)
 		{
-			while (fCurrentAnimPos > m_KeyFrames[iNextKeyFrame].fTime)
+			while (fCurrentAnimPos > m_KeyFrames[m_iCurrentKeyFrame + 1].fTime)
 			{
 				m_iCurrentKeyFrame++;
-				iNextKeyFrame++;
-				if (iNextKeyFrame >= static_cast<_int>(m_iNumkeyFrames - 1))
-				{
-					iNextKeyFrame = m_iNumkeyFrames - 1;
-					break;
-				}
 			}
 		}
-		else if (fCurrentAnimPos <= m_fPreAnimPos)
+		else if (fCurrentAnimPos < m_fPreAnimPos)
 		{
-			while (fCurrentAnimPos < m_KeyFrames[iPreKeyFrame].fTime)
+			while (fCurrentAnimPos < m_KeyFrames[m_iCurrentKeyFrame].fTime)
 			{
 				m_iCurrentKeyFrame--;
-				iPreKeyFrame--;
-				if (iPreKeyFrame < 0)
-				{
-					iPreKeyFrame = 0;
-					break;
-				}
 			}
 		}
 
 		_float fRatio = 0.f;
 
-		if (fCurrentAnimPos <= m_fPreAnimPos)
-		{
-			m_DestKeyFrame = m_KeyFrames[iPreKeyFrame];
-			_float fDenominator = m_KeyFrames[m_iCurrentKeyFrame].fTime - m_DestKeyFrame.fTime;
-			if (fDenominator == 0.f)
-			{
-				fDenominator = 1.f;
-			}
-			fRatio = (m_KeyFrames[m_iCurrentKeyFrame].fTime - fCurrentAnimPos) / (fDenominator);
-		}
-		else
-		{
-			m_DestKeyFrame = m_KeyFrames[iNextKeyFrame];
-			fRatio = (fCurrentAnimPos - m_KeyFrames[m_iCurrentKeyFrame].fTime) / (m_DestKeyFrame.fTime - m_KeyFrames[m_iCurrentKeyFrame].fTime);
-		}
+		fRatio = (fCurrentAnimPos - m_KeyFrames[m_iCurrentKeyFrame].fTime) / (m_KeyFrames[m_iCurrentKeyFrame + 1].fTime - m_KeyFrames[m_iCurrentKeyFrame].fTime);
 
 		_vec4 vSrcScaling{}, vDstScaling{};
 		_vec4 vSrcRotation{}, vDstRotation{};
 		_vec4 vSrcPotition{}, vDstPosition{};
 
 		vSrcScaling = XMLoadFloat4(&m_KeyFrames[m_iCurrentKeyFrame].vScaling);
-		vDstScaling = XMLoadFloat4(&m_DestKeyFrame.vScaling);
+		vDstScaling = XMLoadFloat4(&m_KeyFrames[m_iCurrentKeyFrame + 1].vScaling);
 
 		vSrcRotation = XMLoadFloat4(&m_KeyFrames[m_iCurrentKeyFrame].vRotation);
-		vDstRotation = XMLoadFloat4(&m_DestKeyFrame.vRotation);
+		vDstRotation = XMLoadFloat4(&m_KeyFrames[m_iCurrentKeyFrame + 1].vRotation);
 
 		vSrcPotition = XMLoadFloat4(&m_KeyFrames[m_iCurrentKeyFrame].vPosition);
-		vDstPosition = XMLoadFloat4(&m_DestKeyFrame.vPosition);
+		vDstPosition = XMLoadFloat4(&m_KeyFrames[m_iCurrentKeyFrame + 1].vPosition);
 
-		if (fCurrentAnimPos <= m_fPreAnimPos)
-		{
-			vScaling = XMVectorLerp(vDstScaling, vSrcScaling, fRatio);
-			vRotation = XMQuaternionSlerp(vDstRotation, vSrcRotation, fRatio);
-			vPosition = XMVectorLerp(vDstPosition, vSrcPotition, fRatio);
-		}
-		else
-		{
-			vScaling = XMVectorLerp(vSrcScaling, vDstScaling, fRatio);
-			vRotation = XMQuaternionSlerp(vSrcRotation, vDstRotation, fRatio);
-			vPosition = XMVectorLerp(vSrcPotition, vDstPosition, fRatio);
-		}
+		vScaling = XMVectorLerp(vSrcScaling, vDstScaling, fRatio);
+		vRotation = XMQuaternionSlerp(vSrcRotation, vDstRotation, fRatio);
+		vPosition = XMVectorLerp(vSrcPotition, vDstPosition, fRatio);
 
 		m_fPreAnimPos = fCurrentAnimPos;
 

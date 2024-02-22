@@ -25,12 +25,16 @@ HRESULT CArrow::Init(void* pArg)
 		return E_FAIL;
 	}
 	m_iDamage = m_ArrowType.iDamage;
+
+	m_shouldRenderBlur = true;
+
 	if (m_ArrowType.Att_Type != AT_Bow_Skill3)
 	{
 		wstring strPartiFxTag{ L"CommonArrowParti" };
 		if (m_ArrowType.Att_Type == AT_Bow_Skill2)
 		{
 			strPartiFxTag = L"ExplosiveArrowParti";
+			m_shouldRenderBlur = false;
 		}
 
 		m_pTransformCom->Set_Matrix(m_ArrowType.world);
@@ -161,7 +165,7 @@ void CArrow::Tick(_float fTimeDelta)
 
 		if (m_isDead)
 		{
-			m_pCollider->Set_Radius(4.f);
+			m_pCollider->Set_Radius(5.f);
 			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
 
 			_mat EffectMat = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
@@ -239,14 +243,13 @@ void CArrow::Late_Tick(_float fTimeDelta)
 	{
 		m_pParticle->Late_Tick(fTimeDelta);
 	}
-	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 	__super::Compute_CamDistance();
 
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
+
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pCollider);
 #endif // _DEBUG
-
 }
 
 HRESULT CArrow::Render()
@@ -339,9 +342,9 @@ HRESULT CArrow::Add_Components()
 		}
 		CollDesc.eType = ColliderType::OBB;
 
-		/*	CollDesc.vRadians
-			CollDesc.vCenter = _vec3(0.f, 0.f, -0.3f);
-			CollDesc.vExtents */
+		CollDesc.eType = ColliderType::Sphere;
+		CollDesc.fRadius = 0.2f;
+		CollDesc.vCenter = _vec3(0.f, 0.f, -0.3f);
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 			TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
 		{

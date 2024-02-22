@@ -68,6 +68,8 @@ HRESULT CDead::Init(void* pArg)
 
 void CDead::Tick(_float fTimeDelta)
 {
+	m_pTransformCom->Set_OldMatrix();
+
 	m_fLifeTime += fTimeDelta;
 	
 	if (m_fLifeTime >= 30.f)
