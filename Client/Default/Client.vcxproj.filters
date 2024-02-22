@@ -91,9 +91,6 @@
     <Filter Include="02.GameObjects\05.Select_Object\Npc">
       <UniqueIdentifier>{86a76fbe-fc20-4c6a-a37e-2ee11aa80f44}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\06.Sky">
-      <UniqueIdentifier>{a9819a4b-3804-433a-b4b8-3528db49cffc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\04.Monster">
       <UniqueIdentifier>{086d8fbf-1f82-4f80-bf2a-c9239899b420}</UniqueIdentifier>
     </Filter>
@@ -456,6 +453,9 @@
     </Filter>
     <Filter Include="02.GameObjects\00.UI\Texture&amp;Text">
       <UniqueIdentifier>{e433917e-0435-4307-a9c2-4229c403b1c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\06.Sky">
+      <UniqueIdentifier>{a9819a4b-3804-433a-b4b8-3528db49cffc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -925,6 +925,9 @@
     <ClInclude Include="..\..\AnimTool\Public\Player.h">
       <Filter>01.Levels\03.GamePlay</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\BrickWall.h">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1386,6 +1389,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Statue.cpp" />
     <ClCompile Include="..\Private\BrickGame.cpp">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BrickWall.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
   </ItemGroup>

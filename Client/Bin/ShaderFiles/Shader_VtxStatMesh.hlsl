@@ -448,7 +448,7 @@ PS_OUT_EFFECT PS_Main_MaskEffect_Dissolve(PS_IN Input)
     {
         discard;
     }
-    
+
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform);
     if (vMask.r < 0.1f)
     {

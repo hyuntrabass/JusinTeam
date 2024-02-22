@@ -829,6 +829,11 @@ HRESULT CLevel_GamePlay::Ready_UI()
 		return E_FAIL;
 	}
 
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"))))
+	{
+		return E_FAIL;
+	}
+
 
 
 
