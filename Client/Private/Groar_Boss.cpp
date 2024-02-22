@@ -245,8 +245,14 @@ void CGroar_Boss::Set_Damage(_int iDamage, _uint iDamageType)
 
 		m_pHpBoss->Set_HP(m_iHP);
 
+		_bool isCritical{};
+		if (iDamageType == (_uint)AT_End - 1)
+		{
+			isCritical = true;
+		}
 		CHitEffect::HITEFFECT_DESC Desc{};
 		Desc.iDamage = iDamage;
+		Desc.isCritical = isCritical;
 		Desc.pParentTransform = m_pTransformCom;
 		Desc.vTextPosition = _vec2(0.f, 1.5f);
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
