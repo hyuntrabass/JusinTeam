@@ -68,7 +68,16 @@ public:
 		Spwan,
 		BOSS_STATE_END
 	};
-
+	
+	enum ATTACK_RANGE
+	{
+		Range_45,
+		Range_90,
+		Range_135,
+		Range_180,
+		Range_360,
+		Range_End,	
+	};
 private:
 	CHuman_Boss(_dev pDevice, _context pContext);
 	CHuman_Boss(const CHuman_Boss& rhs);
@@ -91,7 +100,7 @@ public:
 	virtual void Set_Damage(_int iDamage, _uint MonAttType = 0) override;
 
 public:
-	void View_Attack_Range();
+	void View_Attack_Range(ATTACK_RANGE Range);
 	void After_Attack(_float fTimedelta);
 	_bool Compute_Angle(_float fAngle);
 

@@ -137,6 +137,9 @@ void CPlayer::Tick(_float fTimeDelta)
 		m_fDissolveRatio -= fTimeDelta * 4.f;
 	}
 
+	
+	
+
 	if (m_bHitted)
 	{
 		m_fRimRightTimmer += fTimeDelta;
@@ -548,6 +551,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		}
 	}
 
+	Set_ExtraStatus();
 	m_pModelCom->Set_Animation(m_Animation);
 	m_pParryingCollider->Update(m_pTransformCom->Get_World_Matrix());
 	Update_Trail(fTimeDelta);
@@ -1652,7 +1656,6 @@ void CPlayer::Move(_float fTimeDelta)
 	}
 	if (m_pGameInstance->Mouse_Pressing(DIM_RBUTTON))
 	{
-
 		if (m_Current_Weapon == WP_BOW &&m_eState != AimMode_End && m_eState != Hit && 
 			m_eState != KnockDown && m_eState != Stun && m_eState != Stun_Start)
 		{
@@ -1690,6 +1693,7 @@ void CPlayer::Move(_float fTimeDelta)
 		m_eState = AimMode_End;
 		CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_DEFAULT);
 	}
+
 	if (m_bLockOn)
 	{
 		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON))
@@ -2496,12 +2500,13 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 
 
 	_int RandomPercentage = rand() % 100 + 1;
-	_uint RandomDmg = rand() % 30;
+	_uint RandomDmg = rand() % 10;
 	_uint Critical{};
-	/*if (RandomPercentage <= m_Status.Critical)
+
+	if (RandomPercentage <= m_Status.Critical)
 	{
 		Critical = m_Status.Attack * (_uint)(m_Status.Critical_Dmg * 0.01) - m_Status.Attack;
-	}*/
+	}
 
 
 	switch (Att_Type)
@@ -2509,6 +2514,7 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 	case Client::AT_Sword_Common:
 	{
 		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], m_Status.Attack + Critical + RandomDmg, Att_Type);
+
 	}
 	break;
 	case Client::AT_Sword_Skill1:
@@ -2534,6 +2540,15 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 	default:
 		break;
 	}
+}
+void CPlayer::Set_ExtraStatus()
+{
+	PLAYER_STATUS ExtraStat = 	CUI_Manager::Get_Instance()->Get_ExtraStatus();
+	m_Status.Max_Hp = m_OriStatus.Max_Hp + ExtraStat.Max_Hp;
+	m_Status.Attack = m_OriStatus.Attack + ExtraStat.Attack;
+	m_Status.Max_Mp = m_OriStatus.Max_Mp + ExtraStat.Max_Mp;
+	m_Status.Critical = m_OriStatus.Critical + ExtraStat.Critical;
+
 }
 void CPlayer::After_SwordAtt(_float fTimeDelta)
 {

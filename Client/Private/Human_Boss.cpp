@@ -284,7 +284,7 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = BossAnim_attack01;
 			m_Animation.isLoop = false;
 			m_bAttacked = false;
-			View_Attack_Range();
+			View_Attack_Range(Range_135);
 			break;
 		case Client::CHuman_Boss::CommonAtt1:
 		{
@@ -297,13 +297,13 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 			vLook.z *= -1;
 			m_pTransformCom->LookAt_Dir(vLook);
 			m_bAttacked = false;
-			View_Attack_Range();
+			View_Attack_Range(Range_135);
 		}
 			break;
 		case Client::CHuman_Boss::CommonAtt2:
 			m_Animation.iAnimIndex = BossAnim_attack03;
 			m_Animation.isLoop = false;
-			View_Attack_Range();
+			View_Attack_Range(Range_360);
 			break;
 
 		case Client::CHuman_Boss::Reflect:
@@ -322,9 +322,11 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 			break;
 		case Client::CHuman_Boss::Hide_Att:
 		{
+			m_Animation.fAnimSpeedRatio = 2.5f;
 			m_Animation.iAnimIndex = BossAnim_attack06_End;
 			m_Animation.isLoop = false;
-
+			m_bAttacked = false;
+			View_Attack_Range(Range_135);
 		}
 			break;
 		case Client::CHuman_Boss::Razer:
@@ -458,7 +460,7 @@ void CHuman_Boss::Set_Damage(_int iDamage, _uint MonAttType)
 
 }
 
-void CHuman_Boss::View_Attack_Range()
+void CHuman_Boss::View_Attack_Range(ATTACK_RANGE Range)
 {
 	if (m_pBaseEffect)
 	{
@@ -475,9 +477,29 @@ void CHuman_Boss::View_Attack_Range()
 
 	_mat EffectMatrix{};
 	EffectInfo Info{};
-	switch (m_eState)
+	switch (Range)
 	{
-	case CommonAtt0:
+	case Range_90:
+	{
+		EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.2f, 0.f));
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_90_Frame");
+		Info.pMatrix = &EffectMatrix;
+		m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_90_Dim");
+		Info.pMatrix = &EffectMatrix;
+		m_pDimEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		m_fBaseEffectScale = 1.f;
+		m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.24f, 0.f));
+		m_BaseEffectMat = m_BaseEffectOriMat;
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_90_Base");
+		Info.pMatrix = &m_BaseEffectMat;
+		Info.isFollow = true;
+		m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+		break;
+	}
+	case Range_135:
 	{
 		EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f,0.2f,0.f));
 		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_135_Frame");
@@ -497,27 +519,7 @@ void CHuman_Boss::View_Attack_Range()
 		m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 		break;
 	}
-	case CommonAtt1:
-	{
-		EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.2f, 0.f));
-		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_135_Frame");
-		Info.pMatrix = &EffectMatrix;
-		m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-
-		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_135_Dim");
-		Info.pMatrix = &EffectMatrix;
-		m_pDimEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-
-		m_fBaseEffectScale = 1.f;
-		m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.24f, 0.f));
-		m_BaseEffectMat = m_BaseEffectOriMat;
-		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_135_Base");
-		Info.pMatrix = &m_BaseEffectMat;
-		Info.isFollow = true;
-		m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-		break;
-	}
-	case CommonAtt2:
+	case Range_360:
 	{
 		EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.2f, 0.f));
 		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Frame");
@@ -540,12 +542,6 @@ void CHuman_Boss::View_Attack_Range()
 	default:
 		break;
 	}
-
-
-
-	
-	
-
 
 }
 
@@ -762,6 +758,32 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 	else if (m_eState == Hide_Att)
 	{
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
+		
+		if (Index >= 0.f && Index <= 49.f)
+		{
+			if (m_fBaseEffectScale < 30.f)
+			{
+				m_fBaseEffectScale += fTimedelta * 40.f;
+			}
+
+			m_BaseEffectMat = _mat::CreateScale(m_fBaseEffectScale) * m_BaseEffectOriMat;
+		}
+		else if (Index >= 49.f && Index <= 51.f)
+		{
+			if (m_pBaseEffect)
+			{
+				Safe_Release(m_pBaseEffect);
+			}
+			if (m_pDimEffect)
+			{
+				Safe_Release(m_pDimEffect);
+			}
+
+			if (m_pFrameEffect)
+			{
+				Safe_Release(m_pFrameEffect);
+			}
+		}
 		if (Index >= 0.f && Index <= 1.f)
 		{
 
@@ -772,7 +794,18 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 		}
 		else if (Index >= 49.f && Index <= 53.f)
 		{
+			if (!m_bAttacked)
+			{
+				if (Compute_Angle(90.f))
+				{
+					m_pGameInstance->Attack_Player(m_pCommonAttCollider, 250, MonAtt_KnockDown);
+					if (m_pGameInstance->CheckCollision_Player(m_pCommonAttCollider))
+					{
+						m_bAttacked = true;
+					}
+				}
 
+			}
 		}
 	}
 
