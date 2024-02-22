@@ -123,7 +123,7 @@ HRESULT CRiding::Init(void* pArg)
 			m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Idle;
 			m_eState = Riding_Idle;
 			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Nihilir");
-			m_fWalkSpeed = 3.f;
+			m_fWalkSpeed = 5.f;
 			m_fRunSpeed = 30.f;
 			m_pCam_Manager->Set_RidingZoom(true);
 		}
