@@ -9,6 +9,7 @@ class CHitEffect final : public COrthographicObject
 public:
 	typedef struct tagNameTagDesc
 	{
+		_bool isCritical{};
 		_bool isPlayer{ false };
 		_uint	iDamage;
 		_vec2	vTextPosition;
@@ -38,6 +39,7 @@ private:
 	HRESULT Bind_ShaderResources();
 
 private:
+	_bool				m_isCritical{ false };
 	_bool				m_isPlayer{ false };
 	_bool				m_isEffect{ true };
 	LEVEL_ID			m_eLevel{};

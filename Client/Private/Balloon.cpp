@@ -20,9 +20,12 @@ HRESULT CBalloon::Init_Prototype()
 
 HRESULT CBalloon::Init(void* pArg)
 {
-	m_vColor = ((BALLOON_DESC*)pArg)->vColor;
-	_vec3 vPos = ((BALLOON_DESC*)pArg)->vPosition;
+	//m_vColor = ((BALLOON_DESC*)pArg)->vColor;
+	//_vec3 vPos = ((BALLOON_DESC*)pArg)->vPosition;
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	_vec3 vPos = pPlayerTransform->Get_State(State::Pos);
 
+	m_vColor = _vec4(1.f, 4.f, 5.f, 1.f);
 	m_pTransformCom->Set_Position(vPos);
 
 	if (FAILED(Add_Components()))

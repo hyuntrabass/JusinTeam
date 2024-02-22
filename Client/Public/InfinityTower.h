@@ -3,11 +3,10 @@
 #include "OrthographicObject.h"
 
 BEGIN(Client)
+enum TOWER { BRICK, MINI2, BOSS1, MINI3, BOSS2, TOWER_END };
 
 class CInfinityTower final : public COrthographicObject
 {
-public:
-	enum TOWER{ MINI1, MINI2, BOSS1, MINI3, BOSS2, TOWER_END};
 
 private:
 	CInfinityTower(_dev pDevice, _context pContext);
@@ -28,6 +27,8 @@ private:
 	CTexture* m_pTextureCom{ nullptr };
 
 private:
+	TOWER						m_iCurIndex{};
+
 	_bool						m_isActive{};
 	_bool						m_isPlaying{};
 	_bool						m_isPrototype{};
@@ -64,6 +65,7 @@ public:
 private:
 	void Effect_Tick(_float fTimeDelta);
 	void Tower_Tick(_float fTimeDelta, POINT& ptMouse);
+	void Exit_Tower();
 
 public:
 	static CInfinityTower* Create(_dev pDevice, _context pContext);

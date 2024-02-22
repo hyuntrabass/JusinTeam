@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BrickGame.h"
 #include "BrickBall.h"
 #include "Balloon.h"
 #include "Tower.h"

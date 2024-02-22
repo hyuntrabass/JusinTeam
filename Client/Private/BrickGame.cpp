@@ -7,6 +7,7 @@
 #include "Vehicle.h"
 #include "Camera_Manager.h"
 #include "Balloon.h"
+#include "InfinityTower.h"
 
 CBrickGame::CBrickGame(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -31,11 +32,12 @@ HRESULT CBrickGame::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-
+	/*
 	if (FAILED(Add_Parts()))
 	{
 		return E_FAIL;
 	}
+	*/
 
 
 
@@ -44,51 +46,25 @@ HRESULT CBrickGame::Init(void* pArg)
 
 void CBrickGame::Tick(_float fTimeDelta)
 {
-	if (!m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
+	if (!m_isActive && CUI_Manager::Get_Instance()->Get_CurrentMiniGame() == (TOWER)BRICK)
 	{
-		if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
-		{
-			return;
-		}
-		//LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
-
-		//m_Light_Desc = *LightDesc;
-		//LightDesc->eType = LIGHT_DESC::Directional;
-		//LightDesc->vDirection = _float4(0.f, 0.f, 1.f, 0.f);
-		//LightDesc->vDiffuse = _vec4(0.8f, 0.8f, 0.8f, 1.f);
-		//LightDesc->vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
-		//LightDesc->vSpecular = _vec4(1.f);
-
-		CFadeBox::FADE_DESC Desc = {};
-		Desc.fOut_Duration = 0.8f;
-		CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
-
-		//CCamera_Manager::Get_Instance()->Set_CameraState(CS_SKILLBOOK);
+		CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 		m_isActive = true;
-
+		CTrigger_Manager::Get_Instance()->Teleport(TS_Minigame);
 	}
+	
 
 	if (!m_isActive)
 	{
 		return;
 	}
-	if (m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
+	if (m_isActive && m_pGameInstance->Key_Down(DIK_PGUP))
 	{
-	/*	if (m_Light_Desc.eType != LIGHT_DESC::TYPE::End)
-		{
-			LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
-			*LightDesc = m_Light_Desc;
-		}*/
-		CFadeBox::FADE_DESC Desc = {};
-		Desc.fOut_Duration = 0.8f;
-		CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
-
-		CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
-		CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 		m_isActive = false;
-
+		CUI_Manager::Get_Instance()->Open_InfinityTower(true);
 		return;
 	}
+	
 
 }
 
@@ -99,7 +75,7 @@ void CBrickGame::Late_Tick(_float fTimeDelta)
 		return;
 	}
 
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 }
 
 HRESULT CBrickGame::Render()
@@ -128,7 +104,7 @@ HRESULT CBrickGame::Add_Parts()
 			Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
 			Desc.vPosition = _vec3(vPlayerPos.x + 10.f * j, vPlayerPos.y + 1.f, vPlayerPos.z + 10.f * i);
 
-			CBalloon * pBalloon = (CBalloon*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Vehicle"), &Desc);
+			CBalloon * pBalloon = (CBalloon*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Balloon"), &Desc);
 			if (pBalloon == nullptr)
 			{
 				return E_FAIL;

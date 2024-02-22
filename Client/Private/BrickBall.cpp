@@ -130,7 +130,7 @@ void CBrickBall::Update_Collider()
 
 void CBrickBall::RayCast()
 {
-	_float fDist = 1.f;
+	_float fDist = 0.51f;
 	PxRaycastBuffer Buffer{};
 
 	if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), 
