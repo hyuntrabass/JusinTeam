@@ -3,6 +3,8 @@
 #include "Inven.h"
 #include "SkillBook.h"
 #include "Event_Manager.h"
+
+
 IMPLEMENT_SINGLETON(CUI_Manager)
 
 CUI_Manager::CUI_Manager()
@@ -754,6 +756,17 @@ _bool CUI_Manager::Is_Collecting()
 		return true;
 	}
 	return true;
+}
+
+_uint CUI_Manager::Get_CurrentMiniGame()
+{
+	if (m_iCurrentMiniGame != (_uint)TOWER::TOWER_END)
+	{
+		_uint iIdx = m_iCurrentMiniGame;
+		m_iCurrentMiniGame = TOWER_END;
+		return iIdx;
+	}
+	return m_iCurrentMiniGame;
 }
 
 void CUI_Manager::Free()

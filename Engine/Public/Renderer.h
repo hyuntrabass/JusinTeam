@@ -39,6 +39,14 @@ public:
 		m_TurnOnBloom = TurnOnBloom;
 	}
 
+	const void Set_RaidalBlur(_vec4 vRadialCenter, _float fBlurPower) {
+		m_vRadialCenter = vRadialCenter;
+		m_fRadial_BlurPower = fBlurPower;
+		if (0.f > m_fRadial_BlurPower)
+			m_fRadial_BlurPower = 0.f;
+	}
+
+
 #ifdef _DEBUG
 	HRESULT Add_DebugComponent(class CComponent* pDebugComponent);
 #endif // _DEBUG
@@ -58,6 +66,9 @@ private:
 	_float44 m_WorldMatrix{}, m_ViewMatrix{}, m_ProjMatrix{};
 
 	ID3D11DepthStencilView* m_pShadowDSV{ nullptr };
+
+	_vec4 m_vRadialCenter{};
+	_float m_fRadial_BlurPower = 0.f;
 
 #pragma region Æò±Õ ÈÖµµ ±¸ÇÏ´Â ½¦ÀÌ´õ¶û ·£´õÅ¸°Ùµé
 

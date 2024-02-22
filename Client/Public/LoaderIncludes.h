@@ -1,5 +1,7 @@
 #pragma once
 
+#include "NumEffect.h"
+#include "BrickGame.h"
 #include "BrickBall.h"
 #include "Balloon.h"
 #include "Tower.h"
@@ -144,6 +146,7 @@
 #include "Etc_Object.h"
 #include "Environment_Object.h"
 #include "Torch_Object.h"
+#include "TowerObject.h"
 #include "Interaction_NonAnim_Object.h"
 #include "Interaction_Anim_Object.h"
 

@@ -5,6 +5,7 @@
 #include "3DUITEX.h"
 #include "Trigger_Manager.h"
 #include "Camera_Manager.h"
+#include "Event_Manager.h"
 
 CWorldMap::CWorldMap(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -129,6 +130,11 @@ void CWorldMap::Tick(_float fTimeDelta)
 		{
 			if (PtInRect(&m_Points[i]->Get_Rect(), ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 			{
+				if ((MAPPOINT)i != TOWER && CUI_Manager::Get_Instance()->Get_Riding(VC_FLY) == (Riding_Type)Type_End)
+				{
+					CEvent_Manager::Get_Instance()->Set_Alert(TEXT("공중 탈 것을 장착하세요."));
+						return;
+				}
 				m_isReady = true;
 				m_bSelect = true;
 				m_fReadyTime = 0.f;

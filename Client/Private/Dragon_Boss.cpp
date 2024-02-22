@@ -281,6 +281,13 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 
 			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Blackhole"), TEXT("Prototype_GameObject_Blackhole"));
 
+			{
+				_mat EffectMatrix = _mat::CreateScale(10.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.1f, 0.f)));
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Blackhole_Spread_Mesh");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			}
+
 			break;
 
 		case Client::CDragon_Boss::STATE_WING_ATTACK:
@@ -319,6 +326,13 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 			m_Animation.fAnimSpeedRatio = 2.f;
 
 			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_FirePillar"), TEXT("Prototype_GameObject_FirePillar"));
+
+			{
+				_mat EffectMatrix = _mat::CreateScale(2.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.1f, 0.f)));
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Floor_Spread");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			}
 
 			break;
 
@@ -588,10 +602,42 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 	case Client::CDragon_Boss::STATE_TAKE_DOWN:
 
-		//if (m_pModelCom->Get_CurrentAnimPos() >= 84.f && m_pModelCom->Get_CurrentAnimPos() >= 84.f)
-		//{
+		m_fTime[0] += fTimeDelta;
 
-		//}
+		if (m_pModelCom->Get_CurrentAnimPos() >= 3.f && m_pModelCom->Get_CurrentAnimPos() <= 82.f)
+		{
+			m_FollowEffectMatrix[0] = _mat::CreateScale(5.f) * /*_mat::CreateTranslation(0.f, 0.1f, 0.f) * */(*m_pModelCom->Get_BoneMatrix("Bip001-R-Finger21"))
+				* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
+
+			m_FollowEffectMatrix[1] = _mat::CreateScale(5.f) * /*_mat::CreateTranslation(0.f, 0.1f, 0.f) * */(*m_pModelCom->Get_BoneMatrix("Bip001-L-Finger21"))
+				* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
+
+			if (m_fTime[0] >= 0.7f)
+			{
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Mouth"); // 수정
+				Info.pMatrix = &m_FollowEffectMatrix[0];
+				Info.isFollow = true;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Mouth3"); // 수정
+				Info.pMatrix = &m_FollowEffectMatrix[0];
+				Info.isFollow = true;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Mouth"); // 수정
+				Info.pMatrix = &m_FollowEffectMatrix[1];
+				Info.isFollow = true;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_TakeDown_Mouth3"); // 수정
+				Info.pMatrix = &m_FollowEffectMatrix[1];
+				Info.isFollow = true;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				m_fTime[0] = 0.f;
+			}
+		}
 
 		if (m_pModelCom->Get_CurrentAnimPos() >= 84.f)
 		{
@@ -724,12 +770,22 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 	case Client::CDragon_Boss::STATE_SHOOT_FIRE:
 
 		m_fTime[0] += fTimeDelta;
+		m_fTime[1] += fTimeDelta;
+
 
 		if (m_fTime[0] >= 1.2f)
 		{
-			Safe_Release(m_pFrameEffect);
-			Safe_Release(m_pBaseEffect);
+			if (m_pFrameEffect && m_pBaseEffect)
+			{
+				Safe_Release(m_pFrameEffect);
+				Safe_Release(m_pBaseEffect);
 
+				_mat EffectMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.1f, 0.f)));
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Meteor_Floor");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			}
+	
 			m_fMeteorTime += fTimeDelta;
 
 			if (m_fMeteorTime >= 0.05f)
@@ -738,6 +794,27 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 				m_fMeteorTime = 0.f;
 			}
 		}
+
+		//if (m_pModelCom->Get_CurrentAnimPos() >= 5.f && m_pModelCom->Get_CurrentAnimPos() <= 100.f)
+		//{
+		//	m_FollowEffectMatrix[0] = _mat::CreateScale(5.f) * /*_mat::CreateTranslation(0.f, 0.1f, 0.f) * */(*m_pModelCom->Get_BoneMatrix("Nose_Bone001_end"))
+		//		* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
+
+		//	if (m_fTime[1] >= 0.5f)
+		//	{
+		//		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_FirePillar_Mouth2"); // 수정
+		//		Info.pMatrix = &m_FollowEffectMatrix[0];
+		//		Info.isFollow = true;
+		//		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+		//		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_FirePillar_Mouth3"); // 수정
+		//		Info.pMatrix = &m_FollowEffectMatrix[0];
+		//		Info.isFollow = true;
+		//		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+		//		m_fTime[1] = 0.f;
+		//	}
+		//}
 
 		if (m_pFrameEffect && m_pBaseEffect)
 		{
@@ -764,24 +841,17 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 		m_fTime[0] += fTimeDelta;
 
-		if (m_pModelCom->Get_CurrentAnimPos() >= 13.f && m_pModelCom->Get_CurrentAnimPos() <= 57.f)
+		if (m_pModelCom->Get_CurrentAnimPos() >= 13.f && m_pModelCom->Get_CurrentAnimPos() <= 58.f)
 		{
 			m_FollowEffectMatrix[0] = _mat::CreateScale(4.f) * /*_mat::CreateTranslation(0.f, 0.1f, 0.f) * */(*m_pModelCom->Get_BoneMatrix("Bip001-L-Finger2"))
 				* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 
 			if (!m_bCreateEffect[0])
 			{
-				//m_FollowEffectMatrix = _mat::CreateScale(2.f) * /*_mat::CreateTranslation(0.f, 0.1f, 0.f) * */(*m_pModelCom->Get_BoneMatrix("Bip001-L-Finger2"))
-				//	* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Blackhole_Hand_Sphere"); // 수정
 				Info.pMatrix = &m_FollowEffectMatrix[0];
 				Info.isFollow = true;
 				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
-
-				//Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Blackhole_Hand_Sphere2"); // 수정
-				//Info.pMatrix = &m_FollowEffectMatrix[0];
-				//Info.isFollow = true;
-				//CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 				m_bCreateEffect[0] = true;
 			}
@@ -791,16 +861,10 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 			if (m_fTime[0] >= 0.2f)
 			{
-
 				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Blackhole_Hand_Rect2"); // 수정
 				Info.pMatrix = &m_FollowEffectMatrix[1];
 				Info.isFollow = true;
 				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
-
-				//Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Blackhole_Hand_Rect2"); // 수정
-				//Info.pMatrix = &m_FollowEffectMatrix;
-				//Info.isFollow = true;
-				//CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 				m_fTime[0] = 0.f;
 			}
@@ -816,27 +880,18 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 	case Client::CDragon_Boss::STATE_WING_ATTACK:
 
-		if (m_pModelCom->Get_CurrentAnimPos() >= 38.f)
+		if (m_pModelCom->Get_CurrentAnimPos() >= 28.f)
 		{
-			//if (!m_bCreateEffect[0])
-			//{
-			//	_mat EffectMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 5.f, 0.f)));
-			//	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Pull_Parti1");
-			//	Info.pMatrix = &EffectMatrix;
-			//	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			if (!m_bCreateEffect[0])
+			{
+				_mat EffectMatrix = _mat::CreateScale(4.f, 2.f, 1.f) * _mat::CreateTranslation(/*_vec3(m_pTransformCom->Get_State(State::Pos) + */_vec3(0.f, 12.f, 0.f))
+					 * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Pull_Wing_Parti");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
-			//	EffectMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 4.f, 0.f)));
-			//	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Pull_Parti2");
-			//	Info.pMatrix = &EffectMatrix;
-			//	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
-
-			//	EffectMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 6.f, 0.f)));
-			//	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Pull_Parti3");
-			//	Info.pMatrix = &EffectMatrix;
-			//	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
-
-			//	m_bCreateEffect[0] = true;
-			//}
+				m_bCreateEffect[0] = true;
+			}
 		}
 
 		if (m_pModelCom->Get_CurrentAnimPos() >= 69.f && m_pModelCom->Get_CurrentAnimPos() <= 71.f)
@@ -977,6 +1032,30 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 	case Client::CDragon_Boss::STATE_FIRE_PILLAR:
 
+		m_fTime[0] += fTimeDelta;
+
+		if (m_pModelCom->Get_CurrentAnimPos() >= 8.f && m_pModelCom->Get_CurrentAnimPos() <= 77.f)
+		{
+			m_FollowEffectMatrix[0] = _mat::CreateScale(5.f) * /*_mat::CreateTranslation(0.f, 0.1f, 0.f) * */(*m_pModelCom->Get_BoneMatrix("Nose_Bone001_end"))
+				* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
+
+			if (m_fTime[0] >= 0.4f)
+			{
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_FirePillar_Mouth2"); // 수정
+				Info.pMatrix = &m_FollowEffectMatrix[0];
+				Info.isFollow = true;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_FirePillar_Mouth3"); // 수정
+				Info.pMatrix = &m_FollowEffectMatrix[0];
+				Info.isFollow = true;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				m_fTime[0] = 0.f;
+			}
+
+		}
+
 		if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK08))
 		{
 			m_eCurState = STATE_IDLE;
@@ -1054,6 +1133,16 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->Get_CurrentAnimPos() >= 326.f && m_pModelCom->Get_CurrentAnimPos() <= 330.f)
 		{
 			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 0.3f);
+
+			if (!m_bCreateEffect[0])
+			{
+				_mat EffectMatrix = _mat::CreateScale(10.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.2f, 0.f)));
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Dust_Parti");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				m_bCreateEffect[0] = true;
+			}
 		}
 
 		if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK09))

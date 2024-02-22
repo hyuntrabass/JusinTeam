@@ -158,7 +158,6 @@
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\LoaderIncludes.h" />
     <ClInclude Include="..\Public\MainApp.h" />
-    <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="AnimTool.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />

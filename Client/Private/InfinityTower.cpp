@@ -70,13 +70,8 @@ void CInfinityTower::Tick(_float fTimeDelta)
 	/* 나가기 */
 	if (PtInRect(&m_pExitButton->Get_Rect(), ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::GamePlay))
 	{
-		for (size_t i = 0; i < TOWER_END; i++)
-		{
-			m_pTowers[i]->Select_Object(false);
-		}
-		CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
-		m_vDefaultPoint = m_vInitialPoint;
-		m_isActive = false;
+		Exit_Tower();
+		
 		return;
 	}
 
@@ -439,11 +434,11 @@ void CInfinityTower::Tower_Tick(_float fTimeDelta, POINT& ptMouse)
 	_float fTermX = 137.f;
 	if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
 	{
-		if (m_pTowers[MINI1]->Get_Position().y > m_vInitialPoint.y)
+		if (m_pTowers[BRICK]->Get_Position().y > m_vInitialPoint.y)
 		{
 			m_vDefaultPoint.y -= fTimeDelta * 500.f;
 		}
-		if (m_pTowers[MINI1]->Get_Position().y <= m_vInitialPoint.y)
+		if (m_pTowers[BRICK]->Get_Position().y <= m_vInitialPoint.y)
 		{
 			m_vDefaultPoint.y = m_vInitialPoint.y;
 		}
@@ -460,6 +455,15 @@ void CInfinityTower::Tower_Tick(_float fTimeDelta, POINT& ptMouse)
 		m_pStartButton->Set_Size(140.f, 80.f, 0.3f);
 		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
+			switch (m_iCurIndex)
+			{
+			case BRICK:
+				CUI_Manager::Get_Instance()->Set_MiniGameStage(BRICK);
+				break;
+			default:
+				break;
+			}
+			Exit_Tower();
 		}
 	}
 	else
@@ -471,7 +475,6 @@ void CInfinityTower::Tower_Tick(_float fTimeDelta, POINT& ptMouse)
 
 	/* 타워 선택 */
 	_bool isSelect{ false };
-	_uint iCurIdx{};
 
 	for (size_t i = 0; i < TOWER_END; i++)
 	{
@@ -481,7 +484,7 @@ void CInfinityTower::Tower_Tick(_float fTimeDelta, POINT& ptMouse)
 			{
 				m_pTowers[i]->Select_Object(true);
 				isSelect = true;
-				iCurIdx = i;
+				m_iCurIndex = (TOWER)i;
 				break;
 			}
 		}
@@ -489,12 +492,23 @@ void CInfinityTower::Tower_Tick(_float fTimeDelta, POINT& ptMouse)
 
 	for (size_t i = 0; i < TOWER_END; i++)
 	{
-		if (isSelect && iCurIdx != i)
+		if (isSelect && m_iCurIndex != i)
 		{
 			m_pTowers[i]->Select_Object(false);
 		}
 		m_pTowers[i]->Tick(fTimeDelta);
 	}
+}
+
+void CInfinityTower::Exit_Tower()
+{
+	for (size_t i = 0; i < TOWER_END; i++)
+	{
+		m_pTowers[i]->Select_Object(false);
+	}
+	CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
+	m_vDefaultPoint = m_vInitialPoint;
+	m_isActive = false;
 }
 
 CInfinityTower* CInfinityTower::Create(_dev pDevice, _context pContext)
