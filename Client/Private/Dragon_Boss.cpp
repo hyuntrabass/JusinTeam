@@ -440,13 +440,18 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 				Info.pMatrix = &EffectMatrix;
 				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
+				EffectMatrix = _mat::CreateScale(8.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 5.f, 0.f)));
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Roar_Distortion");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
 				m_bCreateEffect[0] = true;
 			}
 
 			if (m_fTime[0] >= 0.1f)
 			{
-				_mat EffectMatrix = _mat::CreateScale(20.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) /*+ _vec3(0.f, -0.1f, 0.f)*/));
-				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Roar");
+				_mat EffectMatrix = _mat::CreateScale(2.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 5.f, 0.f)));
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Roar_Rect");
 				Info.pMatrix = &EffectMatrix;
 				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
@@ -556,7 +561,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = eTempDragonState;
 
-			//m_eCurState = STATE_SHOOT_FIRE; // 테스트용
+			m_eCurState = STATE_RAGE; // 테스트용
 		}
 	}
 
@@ -990,6 +995,11 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 			{
 				_mat EffectMatrix = _mat::CreateScale(15.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.2f, 0.f)));
 				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Rage_Floor_Parti");
+				Info.pMatrix = &EffectMatrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				EffectMatrix = _mat::CreateScale(8.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 5.f, 0.f)));
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Roar_Distortion");
 				Info.pMatrix = &EffectMatrix;
 				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
