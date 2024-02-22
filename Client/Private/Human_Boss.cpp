@@ -1019,7 +1019,6 @@ CGameObject* CHuman_Boss::Clone(void* pArg)
 void CHuman_Boss::Free()
 {
 	__super::Free();
-	m_pGameInstance->Delete_CollisionObject(this);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pDimEffect);
 	Safe_Release(m_pShaderCom);
