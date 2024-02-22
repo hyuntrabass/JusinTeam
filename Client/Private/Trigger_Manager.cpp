@@ -240,180 +240,182 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 
 	switch (eSpot)
 	{
-		case Client::TS_Dungeon:
+	case Client::TS_Dungeon:
+	{
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 		{
-			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+			if (m_pGameInstance->Get_IsLoopingSound(i))
 			{
-				if (m_pGameInstance->Get_IsLoopingSound(i))
-				{
-					m_pGameInstance->StopSound(i);
-				}
+				m_pGameInstance->StopSound(i);
 			}
-			m_pGameInstance->PlayBGM(TEXT("BGM_6th_Field_01"));
-			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
-			{
-				if (m_pGameInstance->Get_IsLoopingSound(i))
-				{
-					m_pGameInstance->FadeinSound(i, fTimeDelta, 0.5f);
-				}
-			}
-
-			pGetPath = TEXT("../Bin/Data/DungeonPos.dat");
-
-			// 임시
-			CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
-			pCamTransform->Set_State(State::Pos, _vec4(2067.11f, -12.8557f, 2086.95f, 1.f));
-			pCamTransform->LookAt_Dir(_vec4(0.97706846f, -0.21286753f, 0.004882995f, 0.f));
-
-			CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-			//pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 4.f, 0.f));
-			pPlayerTransform->Set_Position(_vec3(2070.81f, -14.8443f, 2086.87f));
-			pPlayerTransform->LookAt_Dir(_vec4(0.99763946f, 0.014162573f, 0.067186668f, 0.f));
-
-			m_pGameInstance->Set_HellHeight(-30.f);
-			LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
-			*Light = g_Light_Dungeon;
-			m_iSkyTextureIndex = 10;
-			break;
 		}
-		case Client::TS_Village:
+		m_pGameInstance->PlayBGM(TEXT("BGM_6th_Field_01"));
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 		{
-			m_isInVillage = true;
-			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+			if (m_pGameInstance->Get_IsLoopingSound(i))
 			{
-				if (m_pGameInstance->Get_IsLoopingSound(i))
-				{
-					m_pGameInstance->StopSound(i);
-				}
+				m_pGameInstance->FadeinSound(i, fTimeDelta, 0.5f);
 			}
-			m_pGameInstance->PlayBGM(TEXT("BGM_1st_Village"));
-			for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
-			{
-				if (m_pGameInstance->Get_IsLoopingSound(i))
-				{
-					m_pGameInstance->FadeinSound(i, fTimeDelta, 0.5f);
-				}
-			}
-
-			pGetPath = TEXT("../Bin/Data/Village_Player_Pos.dat");
-
-			// 임시
-			std::ifstream inFile(pGetPath, std::ios::binary);
-
-			if (!inFile.is_open())
-			{
-				MSG_BOX("파일을 찾지 못했습니다.");
-				return;
-			}
-
-			//_vec4 Player_Pos{ 0.f };
-			//inFile.read(reinterpret_cast<char*>(&Player_Pos), sizeof(_vec4));
-
-			//CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
-			//pCamTransform->Set_State(State::Pos, _vec4(-17.9027f, 18.f, 125.f, 1.f));
-			//pCamTransform->LookAt_Dir(_vec4(-0.541082f, 0.548757f, 0.637257f, 0.f));
-			//CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-			//pPlayerTransform->Set_Position(_vec3(Player_Pos));
-			//pPlayerTransform->LookAt_Dir(_vec4(-0.541082f, 0.f, 0.637257f, 0.f));
-
-			_mat Player_Matrix{};
-			inFile.read(reinterpret_cast<char*>(&Player_Matrix), sizeof(_mat));
-
-			//CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
-			//pCamTransform->Set_State(State::Pos, Player_Matrix.Position() + _vec4(0.0f, 3.f, 0.f, 1.f));
-			//pCamTransform->LookAt_Dir(Player_Matrix.Look() + _vec4(0.f, 0.5f, 0.f, 0.f));
-			CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-			pPlayerTransform->Set_Position(_vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
-			pPlayerTransform->LookAt_Dir(Player_Matrix.Look());
-
-			m_pGameInstance->Set_HellHeight(-70.f);
-			LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
-			*Light = g_Light_Village;
-			m_iSkyTextureIndex = 12;
-			break;
 		}
-		case Client::TS_Minigame:
+
+		pGetPath = TEXT("../Bin/Data/DungeonPos.dat");
+
+		// 임시
+		CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
+		pCamTransform->Set_State(State::Pos, _vec4(2067.11f, -12.8557f, 2086.95f, 1.f));
+		pCamTransform->LookAt_Dir(_vec4(0.97706846f, -0.21286753f, 0.004882995f, 0.f));
+
+		CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+		//pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 4.f, 0.f));
+		pPlayerTransform->Set_Position(_vec3(2070.81f, -14.8443f, 2086.87f));
+		pPlayerTransform->LookAt_Dir(_vec4(0.99763946f, 0.014162573f, 0.067186668f, 0.f));
+
+		m_pGameInstance->Set_HellHeight(-30.f);
+		LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+		*Light = g_Light_Dungeon;
+		m_iSkyTextureIndex = 10;
+		break;
+	}
+	case Client::TS_Village:
+	{
+		m_isInVillage = true;
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 		{
-			m_isInVillage = false;
-
-			pGetPath = TEXT("../Bin/Data/Minigame_Player_Pos.dat");
-
-			std::ifstream inFile(pGetPath, std::ios::binary);
-
-			if (!inFile.is_open())
+			if (m_pGameInstance->Get_IsLoopingSound(i))
 			{
-				MSG_BOX("파일을 찾지 못했습니다.");
-				return;
+				m_pGameInstance->StopSound(i);
 			}
-
-			_mat Player_Matrix{};
-			inFile.read(reinterpret_cast<char*>(&Player_Matrix), sizeof(_mat));
-
-			CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-			pPlayerTransform->Set_Position(_vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
-			pPlayerTransform->LookAt_Dir(Player_Matrix.Look());
-
-			_vec4 vPosition = pPlayerTransform->Get_State(State::Pos);
-			//m_pGameInstance->Set_HellHeight(-70.f);
-			//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
-			//*Light = g_Light_Village;
-			//m_iSkyTextureIndex = 12;
-			break;
 		}
-		case Client::TS_DragonMap:
+		m_pGameInstance->PlayBGM(TEXT("BGM_1st_Village"));
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 		{
-			m_isInVillage = false;
-
-			pGetPath = TEXT("../Bin/Data/DragonMap_Player_Pos.dat");
-
-			std::ifstream inFile(pGetPath, std::ios::binary);
-
-			if (!inFile.is_open())
+			if (m_pGameInstance->Get_IsLoopingSound(i))
 			{
-				MSG_BOX("파일을 찾지 못했습니다.");
-				return;
+				m_pGameInstance->FadeinSound(i, fTimeDelta, 0.5f);
 			}
-
-			_mat Player_Matrix{};
-			inFile.read(reinterpret_cast<char*>(&Player_Matrix), sizeof(_mat));
-
-			CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-			pPlayerTransform->Set_Position(_vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
-			pPlayerTransform->LookAt_Dir(Player_Matrix.Look());
-
-			//m_pGameInstance->Set_HellHeight(-70.f);
-			//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
-			//*Light = g_Light_Village;
-			//m_iSkyTextureIndex = 12;
-			break;
 		}
-		case Client::TS_BossRoom:
+
+		pGetPath = TEXT("../Bin/Data/Village_Player_Pos.dat");
+
+		// 임시
+		std::ifstream inFile(pGetPath, std::ios::binary);
+
+		if (!inFile.is_open())
 		{
-			m_isInVillage = false;
-
-			pGetPath = TEXT("../Bin/Data/BossRoom_Player_Pos.dat");
-
-			std::ifstream inFile(pGetPath, std::ios::binary);
-
-			if (!inFile.is_open())
-			{
-				MSG_BOX("파일을 찾지 못했습니다.");
-				return;
-			}
-
-			_mat Player_Matrix{};
-			inFile.read(reinterpret_cast<char*>(&Player_Matrix), sizeof(_mat));
-
-			CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-			pPlayerTransform->Set_Position(_vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
-			pPlayerTransform->LookAt_Dir(Player_Matrix.Look());
-
-			//m_pGameInstance->Set_HellHeight(-70.f);
-			//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
-			//*Light = g_Light_Village;
-			//m_iSkyTextureIndex = 12;
-			break;
+			MSG_BOX("파일을 찾지 못했습니다.");
+			return;
 		}
+
+		//_vec4 Player_Pos{ 0.f };
+		//inFile.read(reinterpret_cast<char*>(&Player_Pos), sizeof(_vec4));
+
+		//CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
+		//pCamTransform->Set_State(State::Pos, _vec4(-17.9027f, 18.f, 125.f, 1.f));
+		//pCamTransform->LookAt_Dir(_vec4(-0.541082f, 0.548757f, 0.637257f, 0.f));
+		//CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+		//pPlayerTransform->Set_Position(_vec3(Player_Pos));
+		//pPlayerTransform->LookAt_Dir(_vec4(-0.541082f, 0.f, 0.637257f, 0.f));
+
+		_mat Player_Matrix{};
+		inFile.read(reinterpret_cast<char*>(&Player_Matrix), sizeof(_mat));
+
+		//CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
+		//pCamTransform->Set_State(State::Pos, Player_Matrix.Position() + _vec4(0.0f, 3.f, 0.f, 1.f));
+		//pCamTransform->LookAt_Dir(Player_Matrix.Look() + _vec4(0.f, 0.5f, 0.f, 0.f));
+		CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+		pPlayerTransform->Set_Position(_vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
+		pPlayerTransform->LookAt_Dir(Player_Matrix.Look());
+
+		m_pGameInstance->Set_HellHeight(-70.f);
+		LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+		*Light = g_Light_Village;
+		m_iSkyTextureIndex = 12;
+		break;
+	}
+	case Client::TS_Minigame:
+	{
+		m_isInVillage = false;
+
+		pGetPath = TEXT("../Bin/Data/Minigame_Player_Pos.dat");
+
+		std::ifstream inFile(pGetPath, std::ios::binary);
+
+		if (!inFile.is_open())
+		{
+			MSG_BOX("파일을 찾지 못했습니다.");
+			return;
+		}
+
+		_mat Player_Matrix{};
+		inFile.read(reinterpret_cast<char*>(&Player_Matrix), sizeof(_mat));
+
+		CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+		pPlayerTransform->Set_Position(_vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
+		pPlayerTransform->LookAt_Dir(Player_Matrix.Look());
+
+		_vec4 vPosition = pPlayerTransform->Get_State(State::Pos);
+		//m_pGameInstance->Set_HellHeight(-70.f);
+		//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+		//*Light = g_Light_Village;
+		//m_iSkyTextureIndex = 12;
+		break;
+	}
+	case Client::TS_DragonMap:
+	{
+		m_isInVillage = false;
+
+		pGetPath = TEXT("../Bin/Data/DragonMap_Player_Pos.dat");
+
+		std::ifstream inFile(pGetPath, std::ios::binary);
+
+		if (!inFile.is_open())
+		{
+			MSG_BOX("파일을 찾지 못했습니다.");
+			return;
+		}
+
+		_mat Player_Matrix{};
+		inFile.read(reinterpret_cast<char*>(&Player_Matrix), sizeof(_mat));
+
+		CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+		pPlayerTransform->Set_Position(_vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
+		pPlayerTransform->LookAt_Dir(Player_Matrix.Look());
+
+		m_pGameInstance->Set_HellHeight(-70.f);
+		LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+		*Light = g_Light_Dragon;
+
+		m_iSkyTextureIndex = 11;
+		break;
+	}
+
+	case Client::TS_BossRoom:
+	{
+		m_isInVillage = false;
+
+		pGetPath = TEXT("../Bin/Data/BossRoom_Player_Pos.dat");
+
+		std::ifstream inFile(pGetPath, std::ios::binary);
+
+		if (!inFile.is_open())
+		{
+			MSG_BOX("파일을 찾지 못했습니다.");
+			return;
+		}
+
+		_mat Player_Matrix{};
+		inFile.read(reinterpret_cast<char*>(&Player_Matrix), sizeof(_mat));
+
+		CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+		pPlayerTransform->Set_Position(_vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
+		pPlayerTransform->LookAt_Dir(Player_Matrix.Look());
+
+		//m_pGameInstance->Set_HellHeight(-70.f);
+		//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+		//*Light = g_Light_Village;
+		//m_iSkyTextureIndex = 12;
+		break;
+	}
 	}
 	// 파일을 읽어서 위치, 룩을 세팅하는 코드를 넣습니당
 

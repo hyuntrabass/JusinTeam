@@ -40,6 +40,7 @@ private:
 
 private:
 	_bool m_bNoRender{};
+	_float m_fDissolveRatio{};
 	_int m_iTickCounter{};
 
 	list<_vec3> m_TopPosList{};

@@ -148,6 +148,8 @@ void CArrow::Tick(_float fTimeDelta)
 	}
 	case AT_Bow_Skill2:
 	{
+		m_pTransformCom->Set_OldMatrix();
+
 		if (not m_ArrowType.bAimMode)
 		{
 			PxRaycastBuffer Buffer{};
@@ -245,7 +247,14 @@ void CArrow::Late_Tick(_float fTimeDelta)
 	}
 	__super::Compute_CamDistance();
 
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
+	if (m_ArrowType.Att_Type == AT_Bow_Skill2)
+	{
+		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	}
+	else
+	{
+		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
+	}
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pCollider);
@@ -266,6 +275,16 @@ HRESULT CArrow::Render()
 
 			if (m_ArrowType.Att_Type == AT_Bow_Skill2)
 			{
+				if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+				{
+					return E_FAIL;
+				}
+
+				if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
+				{
+					return E_FAIL;
+				}
+
 				if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 				{
 					int a = 0;
@@ -346,7 +365,7 @@ HRESULT CArrow::Add_Components()
 		CollDesc.fRadius = 0.2f;
 		CollDesc.vCenter = _vec3(0.f, 0.f, -0.3f);
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-			TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
+										  TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
 		{
 			return E_FAIL;
 		}
@@ -363,7 +382,7 @@ HRESULT CArrow::Add_Components()
 		CollDesc.vCenter = _vec3(0.f, 0.f, -0.3f);
 
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-			TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
+										  TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
 		{
 			return E_FAIL;
 		}
