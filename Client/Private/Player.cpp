@@ -596,7 +596,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	}
 
 
-	if (m_ViewLeftTrail)
+	//if (m_ViewLeftTrail)
 	{
 		m_pLeft_Trail->Late_Tick(fTimeDelta);
 		m_pLeft_Distortion_Trail->Late_Tick(fTimeDelta);
@@ -4425,10 +4425,10 @@ void CPlayer::Update_Trail(_float fTimeDelta)
 			BottomMatrix = *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
 			UpMatrix = _mat::CreateTranslation(0.f, -0.5f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
 			m_pLeft_Trail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
-
-			BottomMatrix = _mat::CreateTranslation(0.f, -0.45f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();;
-			UpMatrix = _mat::CreateTranslation(0.f, -1.f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
 			m_pLeft_Distortion_Trail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
+
+			//BottomMatrix = _mat::CreateTranslation(0.f, -0.45f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();;
+			//UpMatrix = _mat::CreateTranslation(0.f, -1.f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
 		}
 
 		if (m_pRight_Trail != nullptr)
@@ -4436,10 +4436,10 @@ void CPlayer::Update_Trail(_float fTimeDelta)
 			BottomMatrix = *m_Right_Mat * m_pTransformCom->Get_World_Matrix();
 			UpMatrix = _mat::CreateTranslation(0.f, 0.5f, 0.f) * *m_Right_Mat * m_pTransformCom->Get_World_Matrix();
 			m_pRight_Trail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
-			
-			BottomMatrix = _mat::CreateTranslation(0.f, 0.45f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();;
-			UpMatrix = _mat::CreateTranslation(0.f, 1.f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
 			m_pRight_Distortion_Trail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
+			
+			//BottomMatrix = _mat::CreateTranslation(0.f, 0.45f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();;
+			//UpMatrix = _mat::CreateTranslation(0.f, 1.f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
 		}
 	}
 }
