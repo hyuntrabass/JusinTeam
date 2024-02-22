@@ -1009,6 +1009,7 @@ _mat CRiding::Get_Mat()
 {
 	_mat OffsetMat{};
 	_mat BoneMat{};
+
 	if (m_CurrentIndex == Bird)
 	{
 		BoneMat = *m_pModelCom->Get_BoneMatrix("Saddle");
@@ -1034,7 +1035,7 @@ _mat CRiding::Get_Mat()
 		}
 		else
 		{
-			OffsetMat = _mat::CreateTranslation(0.f, -0.1f, 0.f) * BoneMat;
+			OffsetMat = _mat::CreateTranslation(0.f, 0.1f, 0.f) * BoneMat;
 		}
 
 	}
