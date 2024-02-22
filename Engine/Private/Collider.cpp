@@ -201,6 +201,7 @@ void CCollider::Set_Radius(const _float fRadius) const
 	}
 
 	reinterpret_cast<BoundingSphere*>(m_pBounder)->Radius = fRadius;
+	reinterpret_cast<BoundingSphere*>(m_pBounder_Origin)->Radius = fRadius;
 }
 
 _vec3 CCollider::Get_Extents()
