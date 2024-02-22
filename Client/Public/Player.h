@@ -287,18 +287,17 @@ public:
 		Revival_End,
 		State_End
 	};
-
 	struct PLAYER_STATUS
 	{
 		_int Current_Hp{ 1000 };
 		_int Max_Hp{ 1000 };
-		_int Max_Mp{ 1000 };
+		_int Max_Mp{ 500 };
 		_int Current_Mp{ 1000 };
-		_int Attack{ 80 };
-		_int Critical{};
-		_int Critical_Dmg{ 150 };
-		_int Armor{};
-		_float Speed{};
+		_int Attack{ 70 };
+		_int Critical{ 10 };	// 기본 치명타 확률 10 (10퍼센트 확률로 기본 공격력 대신 기본공격력의 Critical_Dmg % 가 들어감)
+		_int Critical_Dmg{ 150 }; // 기본 치명타데미지 150( 기본 데미지에 추가50퍼센트 피해)
+		_int Armor{}; // 방어력이 10일때 받는 데미지 10퍼센트 줄여줌(90퍼만 받음)
+		_float Speed{}; // 기본 걷는 이속 2+스피드/2,뛰는 이속 4+스피드
 	};
 
 private:
@@ -350,7 +349,7 @@ public:
 	void After_SwordAtt(_float fTimeDelta);
 	void Create_Arrow(ATTACK_TYPE Att_Type);
 	void Check_Att_Collider(ATTACK_TYPE Att_Type);
-
+	void Set_ExtraStatus();
 public:
 	HRESULT Add_Riding();
 	void Tick_Riding(_float fTimeDelta);
@@ -385,6 +384,7 @@ private:
 private:
 	ANIM_DESC m_Animation{};
 	PLAYER_STATUS m_Status{};
+	PLAYER_STATUS m_OriStatus{};
 	ANIM_LIST m_BowSkill[5]{};
 	ANIM_LIST m_SwordSkill[5]{};
 	Riding_State m_Riding_State{};
