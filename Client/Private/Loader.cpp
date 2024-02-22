@@ -1746,6 +1746,10 @@ HRESULT CLoader::Load_Village()
 			{
 				DungeonPivot = _mat::CreateScale(0.5f);
 			}
+			else if (strPrototypeTag == L"Prototype_Model_BossRoom")
+			{
+				DungeonPivot = _mat::CreateScale(0.005f);
+			}
 			else
 				DungeonPivot = _mat::CreateScale(0.001f);
 
@@ -1829,6 +1833,11 @@ HRESULT CLoader::Load_Village()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BossRoom"), CMap::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Village_Etc_Object"), CEtc_Object::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -1854,6 +1863,10 @@ HRESULT CLoader::Load_Village()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Tower_Object"), CTowerObject::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 	{
 		m_pGameInstance->Set_CurrentLevelIndex(LEVEL_VILLAGE);
 		{
@@ -1965,6 +1978,44 @@ HRESULT CLoader::Load_Village()
 				ObjectInfo.m_WorldMatrix = ObjectWorldMat;
 				ObjectInfo.eObjectType = Object_Building;
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Village_Etc_Object"), &ObjectInfo)))
+				{
+					MSG_BOX("오브젝트 불러오기 실패");
+					return E_FAIL;
+				}
+			}
+		}
+		{
+			const TCHAR* pGetPath = TEXT("../Bin/Data/Tower_MapData.dat");
+
+			std::ifstream inFile(pGetPath, std::ios::binary);
+
+			if (!inFile.is_open())
+			{
+				MSG_BOX("오브젝트 파일을 찾지 못했습니다.");
+				return E_FAIL;
+			}
+
+			_uint ObjectListSize;
+			inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
+
+
+			for (_uint i = 0; i < ObjectListSize; ++i)
+			{
+				_ulong ObjectPrototypeSize;
+				inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
+
+				wstring ObjectPrototype;
+				ObjectPrototype.resize(ObjectPrototypeSize);
+				inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
+
+				_mat ObjectWorldMat;
+				inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
+
+				ObjectInfo ObjectInfo{};
+				ObjectInfo.strPrototypeTag = ObjectPrototype;
+				ObjectInfo.m_WorldMatrix = ObjectWorldMat;
+				ObjectInfo.eObjectType = Object_Building;
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Tower_Object"), &ObjectInfo)))
 				{
 					MSG_BOX("오브젝트 불러오기 실패");
 					return E_FAIL;

@@ -119,15 +119,24 @@ HRESULT CLevel_Village::Init()
 	
 	if (FAILED(Ready_Minigame()))
 	{
-		MSG_BOX("Failed to Ready Minigame()");
+		MSG_BOX("Failed to Ready Minigame");
 		return E_FAIL;
 	}
 	if (FAILED(Ready_DragonBoss()))
 	{
-		MSG_BOX("Failed to Ready Minigame()");
+		MSG_BOX("Failed to Ready Minigame");
 		return E_FAIL;
 	}
-
+	if (FAILED(Ready_BossRoom()))
+	{
+		MSG_BOX("Failed to Ready BossRoom");
+		return E_FAIL;
+	}
+	//if (FAILED(Ready_Tower()))
+	//{
+	//	MSG_BOX("Failed to Ready Tower()");
+	//	return E_FAIL;
+	//}
 	m_pGameInstance->Set_FogNF(_vec2(50.f, 2000.f));
 	m_pGameInstance->Set_FogColor(_color(1.f));
 
@@ -163,6 +172,11 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
 	{
 		CTrigger_Manager::Get_Instance()->Teleport(TS_DragonMap);
+		return;
+	}
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD5))
+	{
+		CTrigger_Manager::Get_Instance()->Teleport(TS_BossRoom);
 		return;
 	}
 	// Test
@@ -974,6 +988,50 @@ HRESULT CLevel_Village::Ready_DragonBoss()
 			return E_FAIL;
 		}
 	}
+	inFile.close();
+	return S_OK;
+}
+
+
+HRESULT CLevel_Village::Ready_BossRoom()
+{
+	const TCHAR* pGetPath = TEXT("../Bin/Data/BossRoom_MapData.dat");
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MSG_BOX("무한의탑 모델 데이터 파일 불러오기 실패.");
+		return E_FAIL;
+	}
+
+	_uint MapListSize;
+	inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+
+
+	for (_uint i = 0; i < MapListSize; ++i)
+	{
+		_ulong MapPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+
+		wstring MapPrototype;
+		MapPrototype.resize(MapPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+
+		_mat MapWorldMat;
+		inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+
+		MapInfo MapInfo{};
+		MapInfo.Prototype = MapPrototype;
+		MapInfo.m_Matrix = MapWorldMat;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Tower"), TEXT("Prototype_GameObject_BossRoom"), &MapInfo)))
+		{
+			MSG_BOX("무한의탑 생성 실패");
+			return E_FAIL;
+		}
+	}
+	inFile.close();
 	return S_OK;
 }
 

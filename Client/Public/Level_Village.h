@@ -43,7 +43,8 @@ private: // NPC
 private: //UI
 	HRESULT Ready_UI();
 
-private: // Test
+private:
+	// Test
 	HRESULT Ready_Test(); 
 
 private:
@@ -52,6 +53,7 @@ private:
 private:	// 무한의탑
 	HRESULT Ready_Minigame();
 	HRESULT Ready_DragonBoss();
+	HRESULT Ready_BossRoom();
 
 public:
 	static CLevel_Village* Create(_dev pDevice, _context pContext);

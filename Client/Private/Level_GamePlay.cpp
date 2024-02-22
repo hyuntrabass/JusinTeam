@@ -506,6 +506,7 @@ HRESULT CLevel_GamePlay::Ready_Object()
 			return E_FAIL;
 		}
 	}
+	inFile.close();
 	return S_OK;
 }
 

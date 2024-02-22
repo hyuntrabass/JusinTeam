@@ -466,6 +466,9 @@
     <Filter Include="02.GameObjects\09.Object\Interaction\NonAnim">
       <UniqueIdentifier>{7f2d2e87-4e5c-4110-983d-3c1613d9d9cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\09.Object\ETC\Tower">
+      <UniqueIdentifier>{da0fdb47-bb4d-43c6-9bf6-aa68566c0962}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -934,6 +937,9 @@
     <ClInclude Include="..\Public\Statue.h">
       <Filter>02.GameObjects\04.Monster\98. Statue</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\TowerObject.h">
+      <Filter>02.GameObjects\09.Object\ETC\Tower</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1399,6 +1405,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Statue.cpp">
       <Filter>02.GameObjects\04.Monster\98. Statue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TowerObject.cpp">
+      <Filter>02.GameObjects\09.Object\ETC\Tower</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
