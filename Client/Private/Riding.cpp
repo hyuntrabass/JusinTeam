@@ -44,11 +44,12 @@ HRESULT CRiding::Init(void* pArg)
 			else if (Desc->bLanding)
 			{
 				m_eState = Riding_Landing;
+				m_pCam_Manager->Set_FlyCam(true);
 			}
 			else
 			{
 				m_eState = Riding_Sky;
-				//m_pCam_Manager->Set_FlyCam(true);
+				m_pCam_Manager->Set_FlyCam(true);
 			}
 			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Bird");
 		}
@@ -66,12 +67,12 @@ HRESULT CRiding::Init(void* pArg)
 			else if (Desc->bLanding)
 			{
 				m_eState = Riding_Landing;
-				m_pCam_Manager->Set_RidingZoom(true);
+				m_pCam_Manager->Set_FlyCam(true);
 			}
 			else
 			{
 				m_eState = Riding_Sky;
-				m_pCam_Manager->Set_RidingZoom(true);
+				m_pCam_Manager->Set_FlyCam(true);
 			}
 			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Wyvern");
 		}
@@ -1008,6 +1009,7 @@ _mat CRiding::Get_Mat()
 {
 	_mat OffsetMat{};
 	_mat BoneMat{};
+
 	if (m_CurrentIndex == Bird)
 	{
 		BoneMat = *m_pModelCom->Get_BoneMatrix("Saddle");
@@ -1033,7 +1035,7 @@ _mat CRiding::Get_Mat()
 		}
 		else
 		{
-			OffsetMat = _mat::CreateTranslation(0.f, -0.1f, 0.f) * BoneMat;
+			OffsetMat = _mat::CreateTranslation(0.f, 0.1f, 0.f) * BoneMat;
 		}
 
 	}
