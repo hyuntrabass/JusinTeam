@@ -64,6 +64,18 @@ namespace Client
 		_vec4(0.1f) // Specular
 	};
 
+	static const LIGHT_DESC g_Light_Dragon
+	{
+		LIGHT_DESC::Directional,
+		_vec4(-1.f, -2.f, -1.f, 0.f), // Direction
+		_vec4(), // Position
+		_vec4(), // Attenuation
+
+		_vec4(0.936f, 0.728f, 0.650f, 0.f), // Diffuse
+		_vec4(0.5f), // Ambient
+		_vec4(1.f, 0.4f, 0.15f, 0.f) // Specular
+	};
+
 	enum LEVEL_ID
 	{
 		LEVEL_STATIC,

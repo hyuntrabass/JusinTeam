@@ -160,7 +160,7 @@ void CLevel_Village::Tick(_float fTimeDelta)
 		CTrigger_Manager::Get_Instance()->Teleport(TS_Minigame);
 		return;
 	}
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
 	{
 		CTrigger_Manager::Get_Instance()->Teleport(TS_DragonMap);
 		return;
