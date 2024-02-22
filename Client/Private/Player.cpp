@@ -280,7 +280,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 
 	m_pTransformCom->Set_OldMatrix();
-
+	dynamic_cast<CTransform*>(Find_Component(L"Com_Transform"))->Set_OldMatrix();
 
 	if (m_bStartGame)
 	{
