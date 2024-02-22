@@ -91,16 +91,20 @@ void CDummy::Late_Tick(_float fTimeDelta)
 {
 	if (m_eType == ItemType::Monster || m_eType == ItemType::NPC)
 		m_pModelCom->Play_Animation(fTimeDelta);
-#ifdef _DEBUG
 
-if(m_eType == ItemType::Trigger)
-	m_pRendererCom->Add_DebugComponent(m_pCollider);
-#endif
-if (m_eType == ItemType::Environment)
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
-else
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	#ifdef _DEBUG
+	if(m_eType == ItemType::Trigger)
+		m_pRendererCom->Add_DebugComponent(m_pCollider);
+	#endif
 
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
+	{
+	if (m_eType == ItemType::Environment)
+		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
+	else
+		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+
+	}
 }
 
 HRESULT CDummy::Render()

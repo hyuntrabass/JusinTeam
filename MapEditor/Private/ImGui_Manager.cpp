@@ -1139,9 +1139,24 @@ HRESULT CImGui_Manager::ImGuiMenu()
 
 HRESULT CImGui_Manager::ImGuiPos()
 {
-	ImGui::Begin("Mouse Pos");
+	ImGui::Begin("Position");
 
-	ImGui::SeparatorText("MOUSE POS : ");
+	ImGui::SeparatorText("Camera Position : ");
+	ImGui::InputFloat3("Cam Pos", &m_vCamPosition.x, 0);
+
+	ImGui::Checkbox("CamPosition Get", &m_isCamPosition);
+	if (m_isCamPosition == true)
+	{
+		m_vCamPosition = m_pGameInstance->Get_CameraPos();
+	}
+
+	if (ImGui::Button("Set CameraPos"))
+	{
+		CTransform* pCameraTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
+		pCameraTransform->Set_Position(_vec3(m_isCamPosition));
+	}
+
+	ImGui::SeparatorText("Mouse Pos : ");
 	ImGui::InputFloat2("Mouse Pos", &m_vMousePos.x, 0);
 
 	ImGui::SeparatorText("RayCast Position : ");
@@ -1150,7 +1165,7 @@ HRESULT CImGui_Manager::ImGuiPos()
 	ImGui::SeparatorText("RayCast Normal : ");
 	ImGui::InputFloat3("RayCast Normal", &m_vRayCastNor.x, 0);
 
-	ImGui::SeparatorText("PICKING POS : ");
+	ImGui::SeparatorText("Picking Pos : ");
 	ImGui::InputFloat3("Picking Pos", &m_PickingPos.x, 0);
 
 	if (m_eItemType == ItemType::Terrain)
