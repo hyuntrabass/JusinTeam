@@ -112,9 +112,9 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			else if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
 			{
 				m_fSpeed -= fSpeedRatio;
-				if (m_fSpeed < 0.7f)
+				if (m_fSpeed < 0.2f)
 				{
-					m_fSpeed = 0.7f;
+					m_fSpeed = 0.2f;
 				}
 			}
 		}
@@ -123,10 +123,10 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		{
 			m_pTransformCom->Set_Speed(m_fSpeed * 2.f);
 		}
-		else if (m_pGameInstance->Key_Pressing(DIK_LCONTROL) || m_pGameInstance->Gamepad_Pressing(XINPUT_A))
-		{
-			m_pTransformCom->Set_Speed(m_fSpeed * 0.2f);
-		}
+		//else if (m_pGameInstance->Key_Pressing(DIK_LCONTROL) || m_pGameInstance->Gamepad_Pressing(XINPUT_A))
+		//{
+		//	m_pTransformCom->Set_Speed(m_fSpeed * 0.2f);
+		//}
 		else
 		{
 			m_pTransformCom->Set_Speed(m_fSpeed);

@@ -49,8 +49,9 @@ private: // Test
 private:
 	HRESULT Ready_Trigger();
 
-private:	// Minigame
+private:	// 무한의탑
 	HRESULT Ready_Minigame();
+	HRESULT Ready_DragonBoss();
 
 public:
 	static CLevel_Village* Create(_dev pDevice, _context pContext);

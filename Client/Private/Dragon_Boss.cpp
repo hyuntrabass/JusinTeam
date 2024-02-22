@@ -762,6 +762,50 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 	case Client::CDragon_Boss::STATE_BLACKHOLE:
 
+		m_fTime[0] += fTimeDelta;
+
+		if (m_pModelCom->Get_CurrentAnimPos() >= 13.f && m_pModelCom->Get_CurrentAnimPos() <= 57.f)
+		{
+			m_FollowEffectMatrix[0] = _mat::CreateScale(4.f) * /*_mat::CreateTranslation(0.f, 0.1f, 0.f) * */(*m_pModelCom->Get_BoneMatrix("Bip001-L-Finger2"))
+				* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
+
+			if (!m_bCreateEffect[0])
+			{
+				//m_FollowEffectMatrix = _mat::CreateScale(2.f) * /*_mat::CreateTranslation(0.f, 0.1f, 0.f) * */(*m_pModelCom->Get_BoneMatrix("Bip001-L-Finger2"))
+				//	* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Blackhole_Hand_Sphere"); // 수정
+				Info.pMatrix = &m_FollowEffectMatrix[0];
+				Info.isFollow = true;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				//Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Blackhole_Hand_Sphere2"); // 수정
+				//Info.pMatrix = &m_FollowEffectMatrix[0];
+				//Info.isFollow = true;
+				//CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				m_bCreateEffect[0] = true;
+			}
+
+			m_FollowEffectMatrix[1] = _mat::CreateScale(6.f) * /*_mat::CreateTranslation(0.f, 0.1f, 0.f) * */(*m_pModelCom->Get_BoneMatrix("Bip001-L-Finger2"))
+				* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
+
+			if (m_fTime[0] >= 0.2f)
+			{
+
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Blackhole_Hand_Rect2"); // 수정
+				Info.pMatrix = &m_FollowEffectMatrix[1];
+				Info.isFollow = true;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				//Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Blackhole_Hand_Rect2"); // 수정
+				//Info.pMatrix = &m_FollowEffectMatrix;
+				//Info.isFollow = true;
+				//CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				m_fTime[0] = 0.f;
+			}
+		}
+
 		if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK04))
 		{
 			m_eCurState = STATE_IDLE;

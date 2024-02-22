@@ -177,6 +177,13 @@ HRESULT CLoader::Load_Editor()
 			{
 				Pivot = _mat::CreateScale(0.1f);
 			}
+			else if (strPrototypeTag == L"Prototype_Model_DragonMap")
+			{
+				Pivot = _mat::CreateScale(0.5f);
+			}
+			else
+				Pivot = _mat::CreateScale(0.001f);
+
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
 			{
 				return E_FAIL;

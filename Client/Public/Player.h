@@ -379,6 +379,8 @@ private:
 	class CCamera_Manager* m_pCam_Manager{ nullptr };
 	CCommonSurfaceTrail* m_pLeft_Trail{ nullptr };
 	CCommonSurfaceTrail* m_pRight_Trail{ nullptr };
+	CCommonSurfaceTrail* m_pLeft_Distortion_Trail{ nullptr };
+	CCommonSurfaceTrail* m_pRight_Distortion_Trail{ nullptr };
 
 private:
 	ANIM_DESC m_Animation{};

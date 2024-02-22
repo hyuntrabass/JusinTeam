@@ -207,6 +207,9 @@ private:
 	_vec4 m_vRayCastPos{};
 	_vec3 m_vRayCastNor{};
 
+	_vec3 m_vCamPosition{};
+	_bool m_isCamPosition{false};
+
 private:
 	// 파일의 이름 가져와서 저장
 	unordered_map<wstring, vector<const char*>> Maps;

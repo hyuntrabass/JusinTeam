@@ -62,6 +62,11 @@ HRESULT CPlayer::Init(void* pArg)
 	m_pLeft_Trail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 	m_pRight_Trail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 
+	Desc.iPassIndex = 2;
+	Desc.strMaskTextureTag = L"FX_J_Noise_Normal004_Tex";
+	m_pLeft_Distortion_Trail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
+	m_pRight_Distortion_Trail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
+
 	//Desc.vColor = Colors::LightGreen;
 	//m_pLeft_Trail[1] = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 	//m_pRight_Trail[1] = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
@@ -593,12 +598,13 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	if (m_ViewLeftTrail)
 	{
 		m_pLeft_Trail->Late_Tick(fTimeDelta);
+		m_pLeft_Distortion_Trail->Late_Tick(fTimeDelta);
 		m_ViewLeftTrail = false;
-
 	}
 	if (m_ViewRightTrail)
 	{
 		m_pRight_Trail->Late_Tick(fTimeDelta);
+		m_pRight_Distortion_Trail->Late_Tick(fTimeDelta);
 		m_ViewRightTrail = false;
 	}
 
@@ -4418,6 +4424,10 @@ void CPlayer::Update_Trail(_float fTimeDelta)
 			BottomMatrix = *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
 			UpMatrix = _mat::CreateTranslation(0.f, -0.5f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
 			m_pLeft_Trail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
+
+			BottomMatrix = _mat::CreateTranslation(0.f, -0.45f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();;
+			UpMatrix = _mat::CreateTranslation(0.f, -1.f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
+			m_pLeft_Distortion_Trail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
 		}
 
 		if (m_pRight_Trail != nullptr)
@@ -4425,6 +4435,10 @@ void CPlayer::Update_Trail(_float fTimeDelta)
 			BottomMatrix = *m_Right_Mat * m_pTransformCom->Get_World_Matrix();
 			UpMatrix = _mat::CreateTranslation(0.f, 0.5f, 0.f) * *m_Right_Mat * m_pTransformCom->Get_World_Matrix();
 			m_pRight_Trail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
+			
+			BottomMatrix = _mat::CreateTranslation(0.f, 0.45f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();;
+			UpMatrix = _mat::CreateTranslation(0.f, 1.f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
+			m_pRight_Distortion_Trail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
 		}
 	}
 }
@@ -4656,6 +4670,8 @@ void CPlayer::Free()
 
 	Safe_Release(m_pLeft_Trail);
 	Safe_Release(m_pRight_Trail);
+	Safe_Release(m_pLeft_Distortion_Trail);
+	Safe_Release(m_pRight_Distortion_Trail);
 
 	Safe_Release(m_pAim);
 
