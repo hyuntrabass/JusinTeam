@@ -38,7 +38,7 @@ HRESULT CHuman_Boss::Init(void* pArg)
 	ControllerDesc.slopeLimit = cosf(PxDegToRad(1.f)); // 캐릭터가 오를 수 있는 최대 각도
 	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
 	ControllerDesc.stepOffset = 0.01f; // 캐릭터가 오를 수 있는 계단의 최대 높이
-	m_pGameInstance->Register_CollisionObject(this, m_pBodyCollider);
+	//m_pGameInstance->Register_CollisionObject(this, m_pBodyCollider);
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 	m_pTransformCom->Set_Position(_vec3(100.325f, 8.5294f, 110.833f));
 	m_Animation.iAnimIndex = BossAnim_attack01;
@@ -1019,7 +1019,7 @@ CGameObject* CHuman_Boss::Clone(void* pArg)
 void CHuman_Boss::Free()
 {
 	__super::Free();
-
+	m_pGameInstance->Delete_CollisionObject(this);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pDimEffect);
 	Safe_Release(m_pShaderCom);

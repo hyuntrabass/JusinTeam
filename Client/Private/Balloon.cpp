@@ -46,7 +46,7 @@ HRESULT CBalloon::Init(void* pArg)
 
 	m_iHP = 10000;
 
-	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
+	//m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
 	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
 
