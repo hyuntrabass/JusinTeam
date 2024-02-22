@@ -353,15 +353,16 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		pPlayerTransform->Set_Position(_vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
 		pPlayerTransform->LookAt_Dir(Player_Matrix.Look());
 
-		//m_pGameInstance->Set_HellHeight(-70.f);
-		//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
-		//*Light = g_Light_Village;
-		//m_iSkyTextureIndex = 12;
-		break;
-	}
-	case Client::TS_DragonMap:
-	{
-		m_isInVillage = false;
+			_vec4 vPosition = pPlayerTransform->Get_State(State::Pos);
+			//m_pGameInstance->Set_HellHeight(-70.f);
+			//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+			//*Light = g_Light_Village;
+			//m_iSkyTextureIndex = 12;
+			break;
+		}
+		case Client::TS_DragonMap:
+		{
+			m_isInVillage = false;
 
 		pGetPath = TEXT("../Bin/Data/DragonMap_Player_Pos.dat");
 
@@ -387,6 +388,34 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		m_iSkyTextureIndex = 11;
 		break;
 	}
+		}
+		case Client::TS_BossRoom:
+		{
+			m_isInVillage = false;
+
+			pGetPath = TEXT("../Bin/Data/BossRoom_Player_Pos.dat");
+
+			std::ifstream inFile(pGetPath, std::ios::binary);
+
+			if (!inFile.is_open())
+			{
+				MSG_BOX("파일을 찾지 못했습니다.");
+				return;
+			}
+
+			_mat Player_Matrix{};
+			inFile.read(reinterpret_cast<char*>(&Player_Matrix), sizeof(_mat));
+
+			CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+			pPlayerTransform->Set_Position(_vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
+			pPlayerTransform->LookAt_Dir(Player_Matrix.Look());
+
+			//m_pGameInstance->Set_HellHeight(-70.f);
+			//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+			//*Light = g_Light_Village;
+			//m_iSkyTextureIndex = 12;
+			break;
+		}
 	}
 	// 파일을 읽어서 위치, 룩을 세팅하는 코드를 넣습니당
 

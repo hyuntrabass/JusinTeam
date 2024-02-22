@@ -142,6 +142,11 @@ HRESULT CVehicle::Init(void* pArg)
 
 void CVehicle::Tick(_float fTimeDelta)
 {
+	if (!m_isSelected && m_pRiding)
+	{
+		Safe_Release(m_pRiding);
+	}
+
 	if (m_isSelected)
 	{
 		_vec2 vPos = m_pDetail->Get_TransPosition();
@@ -253,7 +258,7 @@ void CVehicle::Set_SelectVehicle(_bool isSelect)
 		m_pDetail->Set_Position(_vec2(m_pDetail->Get_Position()));
 		m_fAlpha = 0.f;
 	}
-	if (m_isSelected && !isSelect)
+	if (!isSelect)
 	{
 		Safe_Release(m_pRiding);
 	}

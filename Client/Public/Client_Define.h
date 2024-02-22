@@ -157,7 +157,7 @@ namespace Client
 		AT_Bow_Skill3,// 이속 느려지게
 		AT_Bow_Skill4,// 경직
 		AT_Bow_SkillR,// 경직
-
+		AT_Critical,
 		AT_End
 	};
 
@@ -189,9 +189,9 @@ namespace Client
 	{
 		D_MOUSE,
 		D_FADE,
+		D_ALERT,
 		D_WINDOW,
 		D_LOADING,
-		D_ALERT,
 		D_INVEN,
 		D_SHOP,
 		D_QUEST,

@@ -135,8 +135,15 @@ void CVoid01::Set_Damage(_int iDamage, _uint iDamageType)
 
 	m_fIdleTime = 0.f;
 
+
+	_bool isCritical{};
+	if (iDamageType == (_uint)AT_End - 1)
+	{
+		isCritical = true;
+	}
 	CHitEffect::HITEFFECT_DESC Desc{};
 	Desc.iDamage = iDamage;
+	Desc.isCritical = isCritical;
 	Desc.pParentTransform = m_pTransformCom;
 	Desc.vTextPosition = _vec2(0.f, 1.5f);
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
@@ -148,7 +155,7 @@ void CVoid01::Set_Damage(_int iDamage, _uint iDamageType)
 	m_pTransformCom->LookAt(vPlayerPos);
 
 	if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
-		iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
+		iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4 || iDamageType == AT_Critical)
 	{
 		// °æÁ÷
 		//m_Animation.fAnimSpeedRatio = 1.f;
