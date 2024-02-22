@@ -368,26 +368,6 @@ void CPlayer::Tick(_float fTimeDelta)
 		}
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_V))
-	{
-
-		if (!m_bIsMount)
-		{
-			m_Current_AirRiding = CUI_Manager::Get_Instance()->Get_Riding(VC_FLY);
-			if (m_Current_AirRiding != Type_End)
-			{
-				m_bIsMount = true;
-				Riding_Desc Desc{};
-				Desc.Type = m_Current_AirRiding;
-				Summon_Riding(Desc);
-			}
-		}
-		else
-		{
-			m_pRiding->Delete_Riding();
-		}
-	}
-
 	Front_Ray_Check();
 	Health_Regen(fTimeDelta);
 	if (m_bIsMount)
@@ -1840,8 +1820,7 @@ void CPlayer::Move(_float fTimeDelta)
 			if (m_pGameInstance->Key_Pressing(DIK_LSHIFT))
 			{
 				if (m_eState == Walk or
-					m_eState == Idle or
-					m_eState == AimMode_End)
+					m_eState == Idle )
 				{
 					m_eState = Run_Start;
 
@@ -1850,12 +1829,12 @@ void CPlayer::Move(_float fTimeDelta)
 						 m_eState == Skill1 or
 						 m_eState == Skill2 or
 						 m_eState == Skill3 or
-						 m_eState == Skill4)
+						 m_eState == Skill4 or
+						 m_eState == AimMode_End)
 				{
 					m_eState = Attack_Run;
 				}
-				else if (/*m_pTransformCom->Is_OnGround() and*/
-						 m_eState == Run or
+				else if ( m_eState == Run or
 						 m_eState == Run_End or
 						 m_pModelCom->IsAnimationFinished(Anim_Normal_run_start))
 				{
