@@ -87,6 +87,27 @@ namespace Engine
 	}
 
 	/**
+	\brief 0에서 1사이의 값으로 변환
+
+	\param[in] Value: 해당 값이 0보다 작으면 0을 1보다 크면 1로 변환 됩니다.
+	\return 변환된 값.
+	*/
+	template<typename T>
+	T Saturate(T Value)
+	{
+		return clamp(Value, 0.f, 1.f);
+		//if (Value < 0.f)
+		//{
+		//	Value = 0.f;
+		//}
+		//if (Value > 1.f)
+		//{
+		//	Value = 1.f;
+		//}
+		//return Value;
+	}
+
+	/**
 	\brief XMVECTOR를 PxVec3로 변환합니다. w는 사라짐.
 
 	\param[in]  vVector: 벡터를 넣으세요.

@@ -2,6 +2,7 @@
 #include "UI_Manager.h"
 #include "Event_Manager.h"
 #include "Effect_Manager.h"
+#include "Camera_Manager.h"
 
 CBalloon::CBalloon(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -20,6 +21,9 @@ HRESULT CBalloon::Init_Prototype()
 
 HRESULT CBalloon::Init(void* pArg)
 {
+	m_vColor = ((BALLOON_DESC*)pArg)->vColor;
+	_vec3 vPos = ((BALLOON_DESC*)pArg)->vPosition;
+	m_pTransformCom->Set_Position(vPos);
 
 	if (FAILED(Add_Components()))
 	{
@@ -30,6 +34,8 @@ HRESULT CBalloon::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+	Set_RandomColor();
+
 
 	m_Animation.iAnimIndex = Idle;
 	m_Animation.isLoop = true;
@@ -40,23 +46,9 @@ HRESULT CBalloon::Init(void* pArg)
 
 	m_iHP = 10000;
 
-	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
+	//m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
-	PxCapsuleControllerDesc ControllerDesc{};
-	ControllerDesc.height = 0.4f;
-	ControllerDesc.radius = 0.6f;
-	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f);
-	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f));
-	ControllerDesc.contactOffset = 0.1f;
-	ControllerDesc.stepOffset = 0.2f;
-
-	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
-
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-	_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-	m_pTransformCom->Set_Position(vPlayerPos);
 	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
-
 
 
 	return S_OK;
@@ -70,10 +62,10 @@ void CBalloon::Tick(_float fTimeDelta)
 
 	m_pModelCom->Set_Animation(m_Animation);
 
-
 	Update_BodyCollider();
 
 	m_pTransformCom->Gravity(fTimeDelta);
+
 
 }
 
@@ -81,12 +73,6 @@ void CBalloon::Late_Tick(_float fTimeDelta)
 {
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
-	/*
-	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 2.f))
-	{
-
-	}
-	*/
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
@@ -136,8 +122,8 @@ HRESULT CBalloon::Render()
 		{
 			return E_FAIL;
 		}
-		_vec4 vColor = { 0.f, 0.6f, 1.f, 1.f };
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _vec4)))
+	
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof _vec4)))
 		{
 			return E_FAIL;
 		}
@@ -219,24 +205,15 @@ void CBalloon::Init_State(_float fTimeDelta)
 			break;
 
 		case Client::CBalloon::STATE_HIT:
-
-			if (m_bHit == true)
-			{
-				m_Animation.iAnimIndex = NodetreeAction;
-			}
-
-			
+			m_Animation.iAnimIndex = NodetreeAction;
 			m_Animation.isLoop = false;
-			m_Animation.fAnimSpeedRatio = 2.f;
+			m_Animation.fAnimSpeedRatio = 3.f;
 
 			break;
 
 		case Client::CBalloon::STATE_DIE:
 			m_Animation.iAnimIndex = die;
 			m_Animation.isLoop = false;
-
-			_uint iRandomExp = rand() % 100;
-			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(15.f + (_float)iRandomExp / 2.f * 0.1f);
 			break;
 		}
 
@@ -246,12 +223,23 @@ void CBalloon::Init_State(_float fTimeDelta)
 
 void CBalloon::Tick_State(_float fTimeDelta)
 {
-
+	m_isColl = false;
 	switch (m_eCurState)
 	{
 	case Client::CBalloon::STATE_IDLE:
 	{
-		m_fIdleTime += fTimeDelta;
+
+		CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_BrickBall"), TEXT("Com_Collider_Sphere"));
+		if (pCollider == nullptr)
+		{
+			return;
+		}
+		m_isColl = m_pBodyColliderCom->Intersect(pCollider);
+		if (m_isColl)
+		{
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 2.0f);
+			m_eCurState = STATE_HIT;
+		}
 	}
 	break;
 
@@ -260,12 +248,8 @@ void CBalloon::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
 		{
 			m_eCurState = STATE_IDLE;
-			m_fIdleTime = 0.f;
-
-			if (m_bHit == true)
-			{
-				m_bHit = false;
-			}
+			_uint iColor = (_uint)m_eCurColor + 1;
+			m_eCurColor = (Color)iColor;
 		}
 
 		break;
@@ -274,24 +258,71 @@ void CBalloon::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->IsAnimationFinished(die))
 		{
-			m_fDeadTime += fTimeDelta;
+			m_isDead = true;
 		}
 
 		break;
 	}
 
+	Set_Color();
+}
+
+void CBalloon::Set_Color()
+{
+	switch (m_eCurColor)
+	{
+	case PINK:
+		m_vColor = _vec4(1.f, 0.56f, 0.93f, 1.f);
+		break;
+	case YELLOW:
+		m_vColor = _vec4(0.94f, 0.77f, 0.2f, 1.f);
+		break;
+	case PURPLE:
+		m_vColor = _vec4(0.63f, 0.4f, 0.9f, 1.f);
+		break;
+	case BLUE:
+		m_vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
+		break;
+	case COLOR_END:
+		m_eCurState = STATE_DIE;
+		break;
+	default:
+		break;
+	}
+}
+
+void CBalloon::Set_RandomColor()
+{
+	_uint iRandom = rand() % 100;
+
+	if (iRandom < 50)
+	{
+		m_eCurColor = BLUE;
+	}
+	else if (iRandom < 70)
+	{
+		m_eCurColor = PURPLE;
+	}
+	else if (iRandom < 80)
+	{
+		m_eCurColor = PINK;
+	}
+	else
+	{
+		m_eCurColor = YELLOW;
+	}
+	Set_Color();
 }
 
 HRESULT CBalloon::Add_Collider()
 {
-	Collider_Desc BodyCollDesc = {};
-	BodyCollDesc.eType = ColliderType::OBB;
-	BodyCollDesc.vExtents = _vec3(0.2f, 0.4f, 0.6f);
-	BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y, 0.f);
-	BodyCollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
+	Collider_Desc CollDesc = {};
+	CollDesc.eType = ColliderType::Sphere;
+	CollDesc.vCenter = _vec3(0.f);
+	CollDesc.fRadius = 0.15f;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-		TEXT("Com_Collider_OBB"), (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
+		TEXT("Com_Collider_Sphere"), (CComponent**)&m_pBodyColliderCom, &CollDesc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -385,7 +416,6 @@ CGameObject* CBalloon::Clone(void* pArg)
 void CBalloon::Free()
 {
 	__super::Free();
-
 
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);

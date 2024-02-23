@@ -297,18 +297,17 @@ HRESULT CPlayer::Add_Components()
 
 HRESULT CPlayer::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
-	{
-		return E_FAIL;
-	}
-
 	if (m_eType == TYPE_PLAYER)
 	{
+		if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pPlayerShaderCom, "g_OldWorldMatrix")))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pPlayerShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
+		{
+			return E_FAIL;
+		}
 		// WorldMatrix 바인드
 		if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pPlayerShaderCom, "g_WorldMatrix")))
 			return E_FAIL;
@@ -325,7 +324,7 @@ HRESULT CPlayer::Bind_ShaderResources()
 		if (FAILED(m_pPlayerShaderCom->Bind_RawValue("g_CamNF", &m_pGameInstance->Get_CameraNF(), sizeof _float2)))
 			return E_FAIL;
 
-		m_pPlayerModelCom->Set_UsingMotionBlur(false);
+		m_pPlayerModelCom->Set_UsingMotionBlur(true);
 
 		// 뼈 바인드
 		if (FAILED(m_pPlayerModelCom->Bind_Bone(m_pPlayerShaderCom)))
@@ -333,6 +332,16 @@ HRESULT CPlayer::Bind_ShaderResources()
 	}
 	else
 	{
+		if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
+		{
+			return E_FAIL;
+		}
+
 		if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 		{
 			return E_FAIL;

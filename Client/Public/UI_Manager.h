@@ -8,6 +8,8 @@
 #include "FadeBox.h"
 #include "Riding.h"
 #include "Trigger_Manager.h"
+#include "InfinityTower.h"
+#include "Player.h"
 
 BEGIN(Engine)
 class CGameInstance;
@@ -33,7 +35,7 @@ private:
 public:
 	HRESULT Init();
 	/*
-	
+
 	void	Tick(_float fTimeDelta);
 	void	Late_Tick(_float fTimeDelta);
 	HRESULT Render();
@@ -81,7 +83,7 @@ public:
 	void Set_HairColor(_vec4 vColor) { m_vHairColor = vColor; }
 	void Set_Picking_UI(_bool isPicking) { m_isPicking = isPicking; }
 	void Set_FullScreenUI(_bool isShowing) { m_isShowing = isShowing; }
-	void Set_InvenActive(_bool isInvenActive) { if (m_isInvenActive && !isInvenActive) { m_isSetInvenState = false; } m_isInvenActive = isInvenActive;  }
+	void Set_InvenActive(_bool isInvenActive) { if (m_isInvenActive && !isInvenActive) { m_isSetInvenState = false; } m_isInvenActive = isInvenActive; }
 	void Set_Exp_ByPercent(_float fExp);
 	HRESULT Set_Coin(_int iCoin);
 	HRESULT Set_Diamond(_uint iDia);
@@ -122,14 +124,14 @@ public:
 	const _vec4& Get_HairColor() const { return m_vHairColor; }
 	const _vec4& Get_InvenPos() const { return m_vInvenPos; }
 	const _vec4& Get_LastPlayerPos() const { return m_vPlayerPos; }
-	const _uint& Get_CustomPart (PART_TYPE eType);
+	const _uint& Get_CustomPart(PART_TYPE eType);
 	const _uint& Get_WeaponType(PART_TYPE eType, WEAPON_TYPE* wpType);
 	const _uint& Get_Coin() const { return m_iCoin; }
 	const _uint& Get_Diamond() const { return m_iDiamond; }
 	const _float2& Get_Exp() const { return m_fExp; }
 	const _uint& Get_Level() const { return m_iLevel; }
 	const MOUSESTATE& Get_MouseState() const { return m_eMouseState; }
-	const PLAYER_STATUS& Get_ExtraStatus() const { return m_tExtraStaus; }
+	const CPlayer::PLAYER_STATUS& Get_ExtraStatus() const { return m_tExtraStaus; }
 
 	const PART_TYPE& Is_CustomPartChanged() const { return m_eChangedPart; }
 	const _bool& Is_Picking_UI() const { return m_isPicking; }
@@ -150,7 +152,11 @@ public:
 	void Set_Collect() { m_isCollect = true; }
 	_bool Is_Collecting();
 
+	void Set_MiniGameStage(TOWER eTower) { m_iCurrentMiniGame = eTower; }
+	_uint Get_CurrentMiniGame();
+
 private:
+	_uint			m_iCurrentMiniGame{(_uint)TOWER_END};
 	PART_TYPE		m_eChangedPart{ PT_END };
 	MOUSESTATE		m_eMouseState{ M_DEFAULT };
 	WEAPON_TYPE		m_eWeaponType{ WP_BOW };
@@ -185,7 +191,7 @@ private:
 	_uint			m_iCoin{};
 	_uint			m_iDiamond{};
 	_uint			m_CustomPart[PART_TYPE::PT_END]{};
-	PLAYER_STATUS   m_tExtraStaus{};
+	CPlayer::PLAYER_STATUS   m_tExtraStaus{};
 
 	_float2			m_fExp{ 0.f, 1000.f };
 
@@ -214,6 +220,6 @@ private:
 
 public:
 	virtual void Free() override;
-};
+	};
 
-END
+	END

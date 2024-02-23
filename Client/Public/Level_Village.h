@@ -22,11 +22,7 @@ private:
 	//HRESULT Ready_Player();
 
 	HRESULT Ready_Torch();
-	HRESULT Ready_Field_Environment();
-	HRESULT Ready_Environment();
 	HRESULT Ready_Interaction();
-
-	//HRESULT In_To_Dungeon();
 
 	HRESULT Ready_NpcvsMon();
 
@@ -40,20 +36,12 @@ private: // NPC
 	HRESULT Ready_NPC();
 	HRESULT Ready_NPC_Dummy();
 
-private: //UI
-	HRESULT Ready_UI();
-
 private:
 	// Test
 	HRESULT Ready_Test(); 
 
 private:
 	HRESULT Ready_Trigger();
-
-private:	// 무한의탑
-	HRESULT Ready_Minigame();
-	HRESULT Ready_DragonBoss();
-	HRESULT Ready_BossRoom();
 
 public:
 	static CLevel_Village* Create(_dev pDevice, _context pContext);
