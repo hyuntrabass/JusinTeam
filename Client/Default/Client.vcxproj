@@ -269,6 +269,7 @@
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\Statue.h" />
     <ClInclude Include="..\Public\SummonWindow.h" />
+    <ClInclude Include="..\Public\SurvivalGame.h" />
     <ClInclude Include="..\Public\Symbol.h" />
     <ClInclude Include="..\Public\Targeted.h" />
     <ClInclude Include="..\Public\Tentacle.h" />
@@ -427,6 +428,7 @@
     <ClCompile Include="..\Private\Spider.cpp" />
     <ClCompile Include="..\Private\Statue.cpp" />
     <ClCompile Include="..\Private\SummonWindow.cpp" />
+    <ClCompile Include="..\Private\SurvivalGame.cpp" />
     <ClCompile Include="..\Private\Symbol.cpp" />
     <ClCompile Include="..\Private\Targeted.cpp" />
     <ClCompile Include="..\Private\Tentacle.cpp" />
