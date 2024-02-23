@@ -53,7 +53,8 @@ public:
 		CommonAtt0,	// 전방
 		CommonAtt1,	// 후방
 		CommonAtt2,	// 전후방
-		CounterAtt,
+		Counter_Start,
+		Counter_Fail,
 		Hide_Start,
 		Hide,
 		Hide_Att,
@@ -68,7 +69,16 @@ public:
 		Spwan,
 		BOSS_STATE_END
 	};
-
+	
+	enum ATTACK_RANGE
+	{
+		Range_45,
+		Range_90,
+		Range_135,
+		Range_180,
+		Range_360,
+		Range_End,	
+	};
 private:
 	CHuman_Boss(_dev pDevice, _context pContext);
 	CHuman_Boss(const CHuman_Boss& rhs);
@@ -91,10 +101,10 @@ public:
 	virtual void Set_Damage(_int iDamage, _uint MonAttType = 0) override;
 
 public:
-	void View_Attack_Range();
+	void View_Attack_Range(ATTACK_RANGE Range);
 	void After_Attack(_float fTimedelta);
 	_bool Compute_Angle(_float fAngle);
-
+	void Increased_Range(_float Index, _float fTImeDelta);
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
@@ -121,7 +131,7 @@ private:
 	_bool m_bSecondPattern{};
 	_uint m_iAttackPattern = {};
 	_bool m_bSelectAttackPattern = { false };
-	
+	_bool m_bCounter_Success{};
 	_float m_fHitTime{};
 	_float m_fHideTimmer{};
 	_bool m_bChangePass{};

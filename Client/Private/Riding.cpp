@@ -44,11 +44,12 @@ HRESULT CRiding::Init(void* pArg)
 			else if (Desc->bLanding)
 			{
 				m_eState = Riding_Landing;
+				m_pCam_Manager->Set_FlyCam(true);
 			}
 			else
 			{
 				m_eState = Riding_Sky;
-				//m_pCam_Manager->Set_FlyCam(true);
+				m_pCam_Manager->Set_FlyCam(true);
 			}
 			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Bird");
 		}
@@ -66,12 +67,12 @@ HRESULT CRiding::Init(void* pArg)
 			else if (Desc->bLanding)
 			{
 				m_eState = Riding_Landing;
-				m_pCam_Manager->Set_RidingZoom(true);
+				m_pCam_Manager->Set_FlyCam(true);
 			}
 			else
 			{
 				m_eState = Riding_Sky;
-				m_pCam_Manager->Set_RidingZoom(true);
+				m_pCam_Manager->Set_FlyCam(true);
 			}
 			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Wyvern");
 		}
@@ -79,12 +80,12 @@ HRESULT CRiding::Init(void* pArg)
 		case Client::Falar:
 		{
 			m_hasJumped = true;
-			m_fWalkSpeed = 90;
-			m_fRunSpeed = 90;
+			m_fWalkSpeed = 20.f;
+			m_fRunSpeed = 20.f;
 			if (Desc->bGlide)
 			{
 				m_eState = Riding_Glide;
-				m_pCam_Manager->Set_FlyCam(true);
+				m_pCam_Manager->Set_RidingZoom(true);
 			}
 			else if (Desc->bLanding)
 			{
@@ -123,8 +124,8 @@ HRESULT CRiding::Init(void* pArg)
 			m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Idle;
 			m_eState = Riding_Idle;
 			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Nihilir");
-			m_fWalkSpeed = 60.f;
-			m_fRunSpeed = 90.f;
+			m_fWalkSpeed = 5.f;
+			m_fRunSpeed = 30.f;
 			m_pCam_Manager->Set_RidingZoom(true);
 		}
 		break;
@@ -1008,6 +1009,7 @@ _mat CRiding::Get_Mat()
 {
 	_mat OffsetMat{};
 	_mat BoneMat{};
+
 	if (m_CurrentIndex == Bird)
 	{
 		BoneMat = *m_pModelCom->Get_BoneMatrix("Saddle");
@@ -1033,7 +1035,7 @@ _mat CRiding::Get_Mat()
 		}
 		else
 		{
-			OffsetMat = _mat::CreateTranslation(0.f, -0.1f, 0.f) * BoneMat;
+			OffsetMat = _mat::CreateTranslation(0.f, 0.1f, 0.f) * BoneMat;
 		}
 
 	}

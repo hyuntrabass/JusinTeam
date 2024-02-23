@@ -111,9 +111,6 @@
     <ClInclude Include="..\Public\Imgui_Manager.h">
       <Filter>96.ImGui\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Player.h">
-      <Filter>02.GameObjects\01. Player</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\LoaderIncludes.h">
       <Filter>01.Levels\99.Loading\Loader</Filter>
     </ClInclude>

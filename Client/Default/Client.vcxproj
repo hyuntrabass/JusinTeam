@@ -157,6 +157,7 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\AnimTool\Public\Player.h" />
     <ClInclude Include="..\Public\3DUITex.h" />
     <ClInclude Include="..\Public\Arrow.h" />
     <ClInclude Include="..\Public\BackGround.h" />
@@ -166,6 +167,8 @@
     <ClInclude Include="..\Public\BlackSmith.h" />
     <ClInclude Include="..\Public\BlurTexture.h" />
     <ClInclude Include="..\Public\BrickBall.h" />
+    <ClInclude Include="..\Public\BrickGame.h" />
+    <ClInclude Include="..\Public\BrickWall.h" />
     <ClInclude Include="..\Public\Camera_CutScene.h" />
     <ClInclude Include="..\Public\Camera_Debug.h" />
     <ClInclude Include="..\Public\Camera_Main.h" />
@@ -291,6 +294,7 @@
     <ClInclude Include="..\Public\Thief04.h" />
     <ClInclude Include="..\Public\Torch_Object.h" />
     <ClInclude Include="..\Public\Tower.h" />
+    <ClInclude Include="..\Public\TowerObject.h" />
     <ClInclude Include="..\Public\Trigger.h" />
     <ClInclude Include="..\Public\Trigger_Manager.h" />
     <ClInclude Include="..\Public\TrilobiteA.h" />
@@ -325,6 +329,8 @@
     <ClCompile Include="..\Private\BlackSmith.cpp" />
     <ClCompile Include="..\Private\BlurTexture.cpp" />
     <ClCompile Include="..\Private\BrickBall.cpp" />
+    <ClCompile Include="..\Private\BrickGame.cpp" />
+    <ClCompile Include="..\Private\BrickWall.cpp" />
     <ClCompile Include="..\Private\Camera_CutScene.cpp" />
     <ClCompile Include="..\Private\Camera_Debug.cpp" />
     <ClCompile Include="..\Private\Camera_Main.cpp" />
@@ -448,6 +454,7 @@
     <ClCompile Include="..\Private\Thief04.cpp" />
     <ClCompile Include="..\Private\Torch_Object.cpp" />
     <ClCompile Include="..\Private\Tower.cpp" />
+    <ClCompile Include="..\Private\TowerObject.cpp" />
     <ClCompile Include="..\Private\Trigger.cpp" />
     <ClCompile Include="..\Private\Trigger_Manager.cpp" />
     <ClCompile Include="..\Private\TrilobiteA.cpp" />

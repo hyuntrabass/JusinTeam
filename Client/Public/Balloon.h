@@ -1,15 +1,20 @@
 #pragma once
 
 #include "Client_Define.h"
-#include "Monster.h"
+#include "GameObject.h"
 
 BEGIN(Client)
-
-class CHPMonster;
 
 class CBalloon final : public CGameObject
 {
 public:
+	enum Color { PINK, YELLOW, PURPLE, BLUE, COLOR_END};
+	typedef struct tagBalloonDesc
+	{
+		_vec3 vPosition{};
+		_vec4 vColor;
+	}BALLOON_DESC;
+
 	enum BALLOON_ANIM
 	{
 		Attack,
@@ -57,25 +62,34 @@ private:
 	CTexture* m_pDissolveTextureCom = { nullptr };
 
 private:
-
-	ANIM_DESC m_Animation{};
+	Color		m_eCurColor{};
+	ANIM_DESC	m_Animation{};
 
 public:
 	void Init_State(_float fTimeDelta);
 	void Tick_State(_float fTimeDelta);
 
 private:
-	BALLOON_STATE m_ePreState = STATE_END;
-	BALLOON_STATE m_eCurState = STATE_END;
+	BALLOON_STATE m_ePreState = STATE_IDLE;
+	BALLOON_STATE m_eCurState = STATE_IDLE;
 
 private:
 	_float m_fIdleTime = {};
 	_float m_fDeadTime = {};
 	_float m_bHit = {};
 
-private:
+	_bool m_isColl{};
 	_bool m_bParticle{};
 	_bool m_bDamaged = { false };
+
+	_vec4 m_vColor{};
+
+public:
+	const _bool& Is_Coll() const { return m_isColl; }
+
+private:
+	void Set_Color();
+	void Set_RandomColor();
 
 private:
 	HRESULT Add_Collider();

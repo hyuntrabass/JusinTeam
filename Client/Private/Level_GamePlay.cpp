@@ -144,26 +144,12 @@ HRESULT CLevel_GamePlay::Init()
 	m_pGameInstance->Play_Video(TEXT("Tutorial0.wmv"));
 	m_pGameInstance->Set_StopKey(DIK_RETURN);
 
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Balloon"), TEXT("Prototype_GameObject_Balloon"))))
-	{
-		return E_FAIL;
-	}
-
-
 	return S_OK;
 }
 
 void CLevel_GamePlay::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_B))
-	{
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BrickGame"), TEXT("Prototype_GameObject_BrickBall"))))
-		{
-			return;
-		}
-	}
 	if (!m_bReadyTutorial)
 	{
 		m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.2f);
@@ -506,6 +492,7 @@ HRESULT CLevel_GamePlay::Ready_Object()
 			return E_FAIL;
 		}
 	}
+	inFile.close();
 	return S_OK;
 }
 
@@ -839,6 +826,11 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	}
 	
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_InfinityTower"))))
+	{
+		return E_FAIL;
+	}
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"))))
 	{
 		return E_FAIL;
 	}

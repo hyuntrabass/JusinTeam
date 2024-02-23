@@ -64,6 +64,18 @@ namespace Client
 		_vec4(0.1f) // Specular
 	};
 
+	static const LIGHT_DESC g_Light_Dragon
+	{
+		LIGHT_DESC::Directional,
+		_vec4(-1.f, -2.f, -1.f, 0.f), // Direction
+		_vec4(), // Position
+		_vec4(), // Attenuation
+
+		_vec4(0.936f, 0.728f, 0.650f, 0.f), // Diffuse
+		_vec4(0.5f), // Ambient
+		_vec4(1.f, 0.4f, 0.15f, 0.f) // Specular
+	};
+
 	enum LEVEL_ID
 	{
 		LEVEL_STATIC,
@@ -96,18 +108,7 @@ namespace Client
 		CS_WORLDMAP,
 		CS_STATEEND
 	};
-	struct PLAYER_STATUS
-	{
-		_int Current_Hp{ 1000 };
-		_int Max_Hp{ 1000 };
-		_int Max_Mp{ 1000 };
-		_int Current_Mp{ 1000 };
-		_int Attack{ 100 };
-		_int Critical{};
-		_int Critical_Dmg{ 150 }; // 기본 치명타데미지 150( 기본 데미지에 추가50퍼센트 피해)
-		_int Armor{}; // 방어력이 10일때 받는 데미지 10퍼센트 줄여줌(90퍼만 받음)
-		_float Speed{}; // 기본 걷는 이속 2+스피드/2,뛰는 이속 4+스피드
-	};
+
 	enum WEAPON_TYPE
 	{
 		WP_BOW,
@@ -145,7 +146,7 @@ namespace Client
 		AT_Bow_Skill3,// 이속 느려지게
 		AT_Bow_Skill4,// 경직
 		AT_Bow_SkillR,// 경직
-
+		AT_Critical,
 		AT_End
 	};
 
@@ -177,9 +178,9 @@ namespace Client
 	{
 		D_MOUSE,
 		D_FADE,
+		D_ALERT,
 		D_WINDOW,
 		D_LOADING,
-		D_ALERT,
 		D_INVEN,
 		D_SHOP,
 		D_QUEST,

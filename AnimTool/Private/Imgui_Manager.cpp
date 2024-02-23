@@ -205,6 +205,11 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	{
 		m_fTimeDelta = fTimeDelta * m_fTimeRatio;
 	}
+	
+	if (m_pGameInstance->Key_Down(DIK_B))
+	{
+		CEffect_Manager::Get_Instance()->Clear(LEVEL_TOOL);
+	}
 
 	if (m_pPlayer)
 	{
@@ -258,6 +263,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 		m_iCurrentModelIndex = 0;
 		m_iCurTriggerIndex = 0;
 		m_iCurSoundNameIndex = 0;
+		CEffect_Manager::Get_Instance()->Clear(LEVEL_TOOL);
 	}
 
 	if (m_eModelType == TYPE_MONSTER)
@@ -410,7 +416,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 					TRIGGERSOUND_DESC SoundDesc{};
 					SoundDesc.strSoundNames.push_back(szSoundName);
 					SoundDesc.iStartAnimIndex = m_AnimDesc.iAnimIndex;
-					SoundDesc.fStartAnimPos = static_cast<_float>(iCurrentAnimPos);
+					SoundDesc.fStartAnimPos = static_cast<_float>(iCurrentAnimPos);        
 					SoundDesc.fInitVolume = 0.5f;
 					pCurModel->Add_TriggerSound(SoundDesc);
 				}

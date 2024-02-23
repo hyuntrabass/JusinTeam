@@ -21,14 +21,14 @@ HRESULT CNumEffect::Init_Prototype()
 HRESULT CNumEffect::Init(void* pArg)
 {
 
-	m_bOrth = ((HITEFFECT_DESC*)pArg)->bOrth;
+	m_bOrth = ((NUMEFFECT_DESC*)pArg)->bOrth;
 	m_fDepth = (_float)D_NAMETAG / (_float)D_END;
 
-	m_iDamage = ((HITEFFECT_DESC*)pArg)->iDamage;
-	m_vTextPosition = ((HITEFFECT_DESC*)pArg)->vTextPosition;
+	m_iDamage = ((NUMEFFECT_DESC*)pArg)->iDamage;
+	m_vTextPosition = ((NUMEFFECT_DESC*)pArg)->vTextPosition;
 	//m_vColor = ((NAMETAG_DESC*)pArg)->vColor;HITEFFECT_DESC
-	m_pParentTransform = ((HITEFFECT_DESC*)pArg)->pParentTransform;
-	if (m_bOrth)
+	m_pParentTransform = ((NUMEFFECT_DESC*)pArg)->pParentTransform;
+	if (!m_bOrth)
 	{
 		Safe_AddRef(m_pParentTransform);
 	}
@@ -41,20 +41,24 @@ HRESULT CNumEffect::Init(void* pArg)
 		return E_FAIL;
 	}	
 
-
-	C3DUITex::UITEX_DESC TexDesc = {};
-	TexDesc.eLevelID = LEVEL_STATIC;
-	TexDesc.pParentTransform = m_pParentTransform;
-	TexDesc.strTexture = TEXT("Prototype_Component_Texture_Effect_FX_A_Shine003_Tex");
-	TexDesc.vPosition = _vec3(m_vTextPosition.x, m_vTextPosition.y, -0.01f);
-	TexDesc.vSize = _vec2(40.f, 40.f);
-
-	m_pEffect = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &TexDesc);
-	if (not m_pEffect)
+	if (!m_bOrth)
 	{
-		return E_FAIL;
+		C3DUITex::UITEX_DESC TexDesc = {};
+		TexDesc.eLevelID = LEVEL_STATIC;
+		TexDesc.pParentTransform = m_pParentTransform;
+		TexDesc.strTexture = TEXT("Prototype_Component_Texture_Effect_FX_A_Shine003_Tex");
+		TexDesc.vPosition = _vec3(m_vTextPosition.x, m_vTextPosition.y, -0.01f);
+		TexDesc.vSize = _vec2(40.f, 40.f);
+
+		m_pEffect = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &TexDesc);
+		if (not m_pEffect)
+		{
+			return E_FAIL;
+		}
+		m_pEffect->Set_Pass(VTPass_Mask_Color);
+
 	}
-	m_pEffect->Set_Pass(VTPass_Mask_Color);
+
 
 	if (m_iDamage >= 5.f)
 	{
@@ -74,10 +78,10 @@ HRESULT CNumEffect::Init(void* pArg)
 
 void CNumEffect::Tick(_float fTimeDelta)
 {
-	if (m_fSizeX <= 30.f)
+	if (m_fSizeX <= 100.f)
 	{
 		m_fTime += fTimeDelta;
-		if (m_fTime >= 0.5f && m_fAlpha <= 0.f)
+		if (m_fTime >= 0.2f && m_fAlpha <= 0.f)
 		{
 			m_isDead = true;
 		}
@@ -94,31 +98,36 @@ void CNumEffect::Tick(_float fTimeDelta)
 	}
 	else
 	{
-		m_fSizeX -= 500.f * fTimeDelta;
-		m_fSizeY -= 500.f * fTimeDelta;
-		m_fAlpha = Lerp(0.f, 1.f, (140.f - m_fSizeX) / 140.f);
+		m_fSizeX -= 300.f * fTimeDelta;
+		m_fSizeY -= 300.f * fTimeDelta;
+		m_fAlpha = Lerp(0.f, 1.f, (300.f - m_fSizeX) / 300.f);
 	}
-	if (m_pEffect->Get_Size().y >= 140.f)
+
+	if (!m_bOrth)
 	{
-		m_isEffect = false;
+		if (m_pEffect->Get_Size().y >= 140.f)
+		{
+			m_isEffect = false;
+		}
+		if (m_fAlpha >= 0.2f && m_isEffect)
+		{
+			m_pEffect->Set_Size(m_pEffect->Get_Size().x + 12.f, m_pEffect->Get_Size().y + 8.f);
+		}
+		m_pEffect->Tick(fTimeDelta);
 	}
-	if (m_fAlpha >= 0.2f && m_isEffect)
-	{
-		m_pEffect->Set_Size(m_pEffect->Get_Size().x + 12.f, m_pEffect->Get_Size().y + 8.f);
-	}
-	m_pEffect->Tick(fTimeDelta);
+
 }
 
 void CNumEffect::Late_Tick(_float fTimeDelta)
 {
-	if (m_fAlpha >= 0.2f && m_isEffect)
+	if (!m_bOrth)
 	{
-		m_pEffect->Late_Tick(fTimeDelta);
+		if (m_fAlpha >= 0.2f && m_isEffect)
+		{
+			m_pEffect->Late_Tick(fTimeDelta);
+		}
 	}
-	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
-	{
-		return;
-	}
+
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
