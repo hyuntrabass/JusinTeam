@@ -101,6 +101,31 @@ void CBrickBall::Tick(_float fTimeDelta)
 		m_fSpeed = 8.f;
 		m_isColl = false;
 	}
+
+
+	if (m_pGameInstance->CheckCollision_Monster(m_pColliderCom))
+	{
+		if (!m_isColl)
+		{
+			_vec3 vLook = m_pTransformCom->Get_State(State::Pos);
+			_vec3 vNormal = vLook * -1.f;
+			m_vDir = _vec3::Reflect(vLook, vNormal);
+			m_vDir.y = 0.f;
+			m_pTransformCom->LookAt_Dir(m_vDir);
+
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Ball_Smoke");
+			Info.pMatrix = &m_EffectMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+
+		}
+		m_isColl = true;
+	}
+	else
+	{
+		m_fSpeed = 8.f;
+		m_isColl = false;
+	}
 }
 
 void CBrickBall::Late_Tick(_float fTimeDelta)
