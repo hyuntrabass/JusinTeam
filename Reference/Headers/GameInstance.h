@@ -132,8 +132,6 @@ public: // Collision
 	CCollider* Get_Nearest_MonsterCollider();
 	HRESULT Register_CollisionCulling(CGameObject* pObject, CCollider* pCollider);
 	_bool CheckCollision_Culling(class CCollider* pCollider);
-
-
 	CollideFace Get_CollideFace(CCollider* pAABBCollider, CCollider* pShereCollider);
 
 public: // PhysX
