@@ -44,7 +44,7 @@ void CSurvivalGame::Init_Pattern(_float fTimeDelta)
 		switch (m_eCurPattern)
 		{
 		case Client::CSurvivalGame::PATTERN_INIT:
-
+			
 			m_fTime = 0.f;
 
 			break;
