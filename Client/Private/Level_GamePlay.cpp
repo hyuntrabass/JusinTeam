@@ -11,6 +11,7 @@
 #include "Pop_Skill.h"
 #include "Pop_LevelUp.h"
 #include "Camera_Manager.h"
+#include "BrickWall.h"
 
 //원명의 꼽사리
 #include "Lake.h"
@@ -824,8 +825,9 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	{
 		return E_FAIL;
 	}
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"))))
+	CBrickWall::WALL_DESC WallDesc{};
+	WallDesc.rcRect = { (_long)1.f, (_long)0.f, (_long)0.f, (_long)0.f };
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
 	{
 		return E_FAIL;
 	}

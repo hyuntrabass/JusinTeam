@@ -1,6 +1,5 @@
 #include "Collision_Manager.h"
 #include "GameObject.h"
-#include "Collider.h"
 
 HRESULT CCollision_Manager::Register_CollisionObject(CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer, class CCollider* AttRangeCollider, class CCollider* ParryingColliderr)
 {
@@ -38,6 +37,27 @@ HRESULT CCollision_Manager::Register_CollisionObject(CGameObject* pObject, class
 		Safe_AddRef(pObject);
 		Safe_AddRef(pHitCollider);
 	}
+
+	return S_OK;
+}
+
+
+HRESULT CCollision_Manager::Register_CollisionCulling(CGameObject* pObject, class CCollider* pCollider)
+{
+	if (not pObject)
+	{
+		return E_FAIL;
+	}
+
+	auto iter = m_Objects.find(pObject);
+	if (iter != m_Objects.end())
+	{
+		MSG_BOX("Objects Already Exist! : Collision_Manager");
+		return E_FAIL;
+	}
+	m_Objects.emplace(pObject, pCollider);
+	Safe_AddRef(pObject);
+	Safe_AddRef(pCollider);
 
 	return S_OK;
 }
@@ -125,6 +145,20 @@ _bool CCollision_Manager::CheckCollision_Player(CCollider* pCollider)
 	return false;
 }
 
+_bool CCollision_Manager::CheckCollision_Culling(CCollider* pCollider)
+{
+	if (not m_pObjectCollider)
+	{
+		return false;
+	}
+	if (pCollider->Intersect(m_pObjectCollider))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 class CCollider* CCollision_Manager::Get_Nearest_MonsterCollider()
 {
 
@@ -148,6 +182,48 @@ class CCollider* CCollision_Manager::Get_Nearest_MonsterCollider()
 	return nearestMonsterCollider;
 }
 
+CollideFace CCollision_Manager::Get_CollideFace(CCollider* pAABBCollider, CCollider* pShereCollider)
+{
+	_vec3 vNormal{};
+	CollideFace eCollideFace = C_END;
+	if (pAABBCollider->Get_ColliderType() != ColliderType::AABB || pShereCollider->Get_ColliderType() != ColliderType::Sphere)
+	{
+		return eCollideFace;
+	}
+
+	_vec3 vSphereCenter = pShereCollider->Get_ColliderPos();
+	_vec3 vAABBMin = pAABBCollider->Get_ColliderPos() - pAABBCollider->Get_Extents();
+	_vec3 vAABBMax = pAABBCollider->Get_ColliderPos() + pAABBCollider->Get_Extents();
+
+
+	float dist_min_x = abs(vSphereCenter.x - vAABBMin.x);
+	float dist_max_x = abs(vSphereCenter.x - vAABBMax.x);
+	float dist_min_z = abs(vSphereCenter.z - vAABBMin.z);
+	float dist_max_z = abs(vSphereCenter.z - vAABBMax.z);
+
+	//float fMinDist = min( dist_min_x, min(dist_max_x, min(dist_min_y, dist_max_y), min(dist_min_z, dist_max_z)));
+	vector<float> vecDists = { dist_min_x, dist_max_x, dist_min_z, dist_max_z };
+	float fMinDist = *min_element(vecDists.begin(), vecDists.end());
+
+	if (fMinDist == dist_min_x)
+	{
+		eCollideFace = C_BACK;
+	}
+	else if (fMinDist == dist_max_x)
+	{
+		eCollideFace = C_FRONT;
+	}
+	else if (fMinDist == dist_min_z)
+	{
+		eCollideFace = C_LEFT;
+	}
+	else if (fMinDist == dist_max_z)
+	{
+		eCollideFace = C_RIGHT;
+	}
+
+	return eCollideFace;
+}
 CCollision_Manager* CCollision_Manager::Create()
 {
 	CCollision_Manager* pInstance = new CCollision_Manager();
@@ -167,5 +243,13 @@ void CCollision_Manager::Free()
 		Safe_Release(Monster.second);
 		Safe_Release(const_cast<CGameObject*>(Monster.first));
 	}
+
+	for (auto& Obejcts : m_Objects)
+	{
+		Safe_Release(Obejcts.second);
+		Safe_Release(const_cast<CGameObject*>(Obejcts.first));
+	}
+
 	m_Monsters.clear();
+	m_Objects.clear();
 }

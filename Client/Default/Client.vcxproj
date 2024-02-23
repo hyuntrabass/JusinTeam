@@ -167,6 +167,7 @@
     <ClInclude Include="..\Public\BlackSmith.h" />
     <ClInclude Include="..\Public\BlurTexture.h" />
     <ClInclude Include="..\Public\BrickBall.h" />
+    <ClInclude Include="..\Public\BrickBar.h" />
     <ClInclude Include="..\Public\BrickGame.h" />
     <ClInclude Include="..\Public\BrickWall.h" />
     <ClInclude Include="..\Public\Camera_CutScene.h" />
@@ -329,6 +330,7 @@
     <ClCompile Include="..\Private\BlackSmith.cpp" />
     <ClCompile Include="..\Private\BlurTexture.cpp" />
     <ClCompile Include="..\Private\BrickBall.cpp" />
+    <ClCompile Include="..\Private\BrickBar.cpp" />
     <ClCompile Include="..\Private\BrickGame.cpp" />
     <ClCompile Include="..\Private\BrickWall.cpp" />
     <ClCompile Include="..\Private\Camera_CutScene.cpp" />

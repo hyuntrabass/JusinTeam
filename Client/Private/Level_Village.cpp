@@ -104,7 +104,12 @@ HRESULT CLevel_Village::Init()
 		MSG_BOX("Failed to Ready Test");
 		return E_FAIL;
 	}
-	
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_BrickBar"), TEXT("Prototype_GameObject_BrickBar"))))
+	{
+		return E_FAIL;
+	}
+
 	m_pGameInstance->Set_FogNF(_vec2(50.f, 2000.f));
 	m_pGameInstance->Set_FogColor(_color(1.f));
 
@@ -121,6 +126,7 @@ void CLevel_Village::Tick(_float fTimeDelta)
 		{
 			return;
 		}
+
 	}
 	if (m_pGameInstance->Key_Down(DIK_END))
 	{
@@ -153,6 +159,21 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD5))
 	{
 		CTrigger_Manager::Get_Instance()->Teleport(TS_BossRoom);
+		return;
+	}
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD6))
+	{
+		CTrigger_Manager::Get_Instance()->Teleport(TS_MiniDungeon);
+		return;
+	}
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD7))
+	{
+		CTrigger_Manager::Get_Instance()->Teleport(TS_SurvivalMap);
+		return;
+	}
+	if (m_pGameInstance->Key_Down(DIK_0))
+	{
+		CTrigger_Manager::Get_Instance()->Teleport(TS_SescoMap);
 		return;
 	}
 	// Test

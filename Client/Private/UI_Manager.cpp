@@ -769,6 +769,16 @@ _uint CUI_Manager::Get_CurrentMiniGame()
 	return m_iCurrentMiniGame;
 }
 
+_bool CUI_Manager::Is_WorldMap()
+{
+	if (m_isWorldMap)
+	{
+		m_isWorldMap = false;
+		return true;
+	}
+	return false;
+}
+
 void CUI_Manager::Free()
 {
 	Safe_Release(m_pGameInstance);
