@@ -20,7 +20,6 @@ private:
 
 public:
 	void On();
-	void Off();
 
 	void Set_Color(const _color vColor);
 
@@ -41,7 +40,7 @@ private:
 
 private:
 	_bool m_bNoRender{};
-	_int m_iTickCounter{};
+	_float m_fDissolveRatio{};
 
 	list<_vec3> m_TrailPosList{};
 	TRAIL_DESC m_Info{};
