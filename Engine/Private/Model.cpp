@@ -719,6 +719,16 @@ _bool CModel::Intersect_RayModel(_fmatrix WorldMatrix, _vec4* pPickPos)
 	return false;
 }
 
+_float CModel::Get_Radius()
+{
+	_float Max_Radius = 0.f;
+	for (auto& pMesh : m_Meshes)
+	{
+		Max_Radius = max(Max_Radius, pMesh->Get_Radius());
+	}
+	return Max_Radius;
+}
+
 
 HRESULT CModel::Read_Bones(ifstream& File)
 {

@@ -130,6 +130,10 @@ public: // Collision
 	_bool Attack_Player(class CCollider* pCollider, _uint iDamage, _uint iDamageType = 0);
 	_bool CheckCollision_Player(class CCollider* pCollider); // 필요없음
 	CCollider* Get_Nearest_MonsterCollider();
+	HRESULT Register_CollisionCulling(CGameObject* pObject, CCollider* pCollider);
+	_bool CheckCollision_Culling(class CCollider* pCollider);
+
+
 public: // PhysX
 	void Init_PhysX_Character(class CTransform* pTransform, CollisionGroup eGroup, PxCapsuleControllerDesc* pDesc = nullptr);
 	void Init_PhysX_MoveableObject(class CTransform* pTransform);

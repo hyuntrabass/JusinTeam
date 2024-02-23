@@ -5,7 +5,7 @@ BEGIN(Engine)
 
 typedef struct tagAnimTransArray {
 	using TransformArrayType = array<_mat, 300>;
-	array<TransformArrayType, 1000> TransformArray;
+	array<TransformArrayType, 1500> TransformArray;
 }ANIMTRANS_ARRAY;
 
 // 이 VTF는 Prototype 단계에서 애니메이션을 미리 계산합니다
@@ -39,8 +39,8 @@ public:
 	HRESULT Bind_Animation(class CShader* pShader);
 	HRESULT Bind_OldAnimation(class CShader* pShader);
 	HRESULT Bind_PlayAnimation(class CShader* pShader);
-
 	HRESULT Render(_uint iMeshIndex);
+	void Apply_TransformToActor(_fmatrix WorldMatrix);
 
 	HRESULT Render_Instancing(class CVIBuffer_Mesh_Instance*& pInstanceBuffer, class CShader*& pShader);
 	HRESULT Render_Shadow_Instancing(class CVIBuffer_Mesh_Instance*& pInstanceBuffer, class CShader*& pShader);
