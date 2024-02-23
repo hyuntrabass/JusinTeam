@@ -27,11 +27,16 @@ public:
 	vector<VTXSTATICMESH> Get_VtxStaticInfo() { return m_Vertices; }
 	vector<_ulong> Get_InidcesStaticInfo() { return m_Indices; }
 	_uint Get_NumIndices() { return m_iNum; }
+	_float Get_Radius() { return m_fRadius; }
 
 private:
 	_float3* m_pVerticesPos{ nullptr };
 	_float3* m_pVerticesNor{ nullptr };
 	_ulong* m_pIndices{ nullptr };
+
+	_vec3 m_vCenterPos{};
+
+	_float m_fRadius{ 0.f };
 
 	_char m_szName[MAX_PATH]{};
 	_uint m_iMatIndex{};

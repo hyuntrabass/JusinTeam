@@ -1,7 +1,7 @@
 #pragma once
 #include "Environment_Object.h"
 #include "Camera_Manager.h"
-
+#include "Camera_Main.h"
 CEnvironment_Object::CEnvironment_Object(_dev pDevice, _context pContext)
 	: CObjects(pDevice, pContext)
 {
@@ -32,6 +32,12 @@ HRESULT CEnvironment_Object::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+	
+	if (FAILED(Add_Collider()))
+	{
+		return E_FAIL;
+	}
+	//m_pGameInstance->Register_CollisionCulling(this, m_pCollider);
 
 	m_iShaderPass = 0;
 
@@ -45,15 +51,14 @@ HRESULT CEnvironment_Object::Init(void* pArg)
 	m_pTransformCom->Set_State(State::Look, vLook);
 	m_pTransformCom->Set_State(State::Pos, vPos);
 
-	m_pModelCom->Apply_TransformToActor(m_Info.m_WorldMatrix);
-
-	
+	//m_pModelCom->Apply_TransformToActor(m_Info.m_WorldMatrix);
 
 	return S_OK;
 }
 
 void CEnvironment_Object::Tick(_float fTimeDelta)
 {
+	//m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
 	__super::Tick(fTimeDelta);
 }
 
@@ -66,8 +71,11 @@ void CEnvironment_Object::Late_Tick(_float fTimeDelta)
 		return;
 	}
 
-	__super::Late_Tick(fTimeDelta);
+	CCamera_Main* pCamera = dynamic_cast<CCamera_Main*>(m_pGameInstance->Find_Prototype(L"Prototype_GameObject_Camera_Main"));
 
+	//if (pCamera->Get_CheckCollision() == true)
+		__super::Late_Tick(fTimeDelta);
+	
 	//if (m_pTrigger_Manager->Get_InOut() == true)
 	//{
 	//	if (m_ePlaceType == VILLAGE)
@@ -86,6 +94,21 @@ HRESULT CEnvironment_Object::Render()
 	__super::Render();
 	return S_OK;
 }
+
+HRESULT CEnvironment_Object::Add_Collider()
+{
+	Collider_Desc CollDesc = {};
+	CollDesc.eType = ColliderType::Sphere;
+	CollDesc.fRadius = m_pModelCom->Get_Radius();
+	CollDesc.vCenter = _vec3(0.f, 0.f, 0.f);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Trigger_Sphere"), (CComponent**)&m_pCollider, &CollDesc)))
+	{
+		return E_FAIL;
+	}
+	return S_OK;
+}
+
 
 
 CEnvironment_Object* CEnvironment_Object::Create(_dev pDevice, _context pContext)
@@ -118,4 +141,5 @@ void CEnvironment_Object::Free()
 {
 	__super::Free();
 	Safe_Release(m_pTrigger_Manager);
+	Safe_Release(m_pCollider);
 }
