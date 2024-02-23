@@ -159,7 +159,7 @@ void CLevel_Village::Tick(_float fTimeDelta)
 		CTrigger_Manager::Get_Instance()->Teleport(TS_SurvivalMap);
 		return;
 	}
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD8))
+	if (m_pGameInstance->Key_Down(DIK_0))
 	{
 		CTrigger_Manager::Get_Instance()->Teleport(TS_SescoMap);
 		return;
