@@ -16,6 +16,7 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 
+	_bool Get_CheckCollision() { return m_isCollision; }
 public:
 	void Camera_Zoom(_float fTimeDelta);
 
@@ -29,11 +30,11 @@ private: // CAM_MODE
 	void WorldMap_Mode(_float fTimeDelta);
 	void SkillBook_Mode(_float fTimeDelta);
 
-
 private:
 	class CCamera_Manager* m_pCam_Manager{ nullptr };
 
 private:
+	_bool m_isCollision{false};
 	_bool m_isWorldMap{};
 	_bool m_isReady{};
 	_int m_iRotation{ 1 };
@@ -78,10 +79,18 @@ private:
 	 _float m_fLerp_RightDistance{};
 	 _float m_fCurrentMapZoom{ 1017.16f };
 	 _vec4 m_vMapPos{ 990.944f, 1017.16f, 1003.75f, 1.f	};
+	 //_matrix matProj{};
+	 //_matrix matView{};
 
 private:
 	void Init_State(_float fTimeDelta);
 	void Tick_State(_float fTimeDelta);
+
+
+	HRESULT Add_Collider();
+
+	CCollider* m_pColliderCom{ nullptr };
+	CRenderer* m_pRendererCom{ nullptr };
 
 public:
 	static CCamera_Main* Create(_dev pDevice, _context pContext);

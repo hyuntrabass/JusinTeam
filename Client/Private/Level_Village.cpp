@@ -149,6 +149,21 @@ void CLevel_Village::Tick(_float fTimeDelta)
 		CTrigger_Manager::Get_Instance()->Teleport(TS_BossRoom);
 		return;
 	}
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD6))
+	{
+		CTrigger_Manager::Get_Instance()->Teleport(TS_MiniDungeon);
+		return;
+	}
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD7))
+	{
+		CTrigger_Manager::Get_Instance()->Teleport(TS_SurvivalMap);
+		return;
+	}
+	if (m_pGameInstance->Key_Down(DIK_NUMPAD8))
+	{
+		CTrigger_Manager::Get_Instance()->Teleport(TS_SescoMap);
+		return;
+	}
 	// Test
 	if (m_pGameInstance->Key_Down(DIK_RSHIFT))
 	{

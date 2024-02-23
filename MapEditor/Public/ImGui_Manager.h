@@ -182,6 +182,7 @@ private:
 	_int TerrainCount[2]{ 0,0 };
 	_float TerrainHight{ 0.f };
 	_float BrushSize{ 1.f };
+	_float m_fRadius{ 0.f };
 
 	_float4 m_vPos{ 0.f, 0.f, 0.f, 1.f };
 	_float4 m_vLook{ 0.f, 0.f, 1.f, 0.f };
