@@ -153,3 +153,7 @@
 
 // Trigger
 #include "Trigger.h"
+
+//SescoGame
+#include "VTFMonster.h"
+#include "Void19.h"

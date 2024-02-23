@@ -472,6 +472,15 @@
     <Filter Include="02.GameObjects\09.Object\Interaction\NonAnim">
       <UniqueIdentifier>{b3b240ce-ced1-4247-b650-cd75226bd65c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\16.SescoGame">
+      <UniqueIdentifier>{cdda6c42-dd45-4fa9-a883-1619f7af9b3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\16.SescoGame\VTFMonster">
+      <UniqueIdentifier>{e50dc525-65d4-4a02-85e1-1dfc9b85487e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\16.SescoGame\VTFMonster\Void19">
+      <UniqueIdentifier>{ecbcf51e-2c12-4b06-82bd-f9b3590c1b7b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -952,6 +961,13 @@
     <ClInclude Include="..\Public\Interaction_NonAnim_Object.h">
       <Filter>02.GameObjects\09.Object\Interaction\NonAnim</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\BrickWall.h" />
+    <ClInclude Include="..\Public\VTFMonster.h">
+      <Filter>02.GameObjects\16.SescoGame\VTFMonster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Void19.h">
+      <Filter>02.GameObjects\16.SescoGame\VTFMonster\Void19</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1426,6 +1442,13 @@
     </ClCompile>
     <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp">
       <Filter>02.GameObjects\09.Object\Interaction\NonAnim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BrickWall.cpp" />
+    <ClCompile Include="..\Private\VTFMonster.cpp">
+      <Filter>02.GameObjects\16.SescoGame\VTFMonster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Void19.cpp">
+      <Filter>02.GameObjects\16.SescoGame\VTFMonster\Void19</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

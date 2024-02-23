@@ -308,8 +308,10 @@
     <ClInclude Include="..\Public\Void01.h" />
     <ClInclude Include="..\Public\Void05.h" />
     <ClInclude Include="..\Public\Void09.h" />
+    <ClInclude Include="..\Public\Void19.h" />
     <ClInclude Include="..\Public\Void20.h" />
     <ClInclude Include="..\Public\Void23.h" />
+    <ClInclude Include="..\Public\VTFMonster.h" />
     <ClInclude Include="..\Public\VTFTest.h" />
     <ClInclude Include="..\Public\Wearable_Slot.h" />
     <ClInclude Include="..\Public\WorldMap.h" />
@@ -468,8 +470,10 @@
     <ClCompile Include="..\Private\Void01.cpp" />
     <ClCompile Include="..\Private\Void05.cpp" />
     <ClCompile Include="..\Private\Void09.cpp" />
+    <ClCompile Include="..\Private\Void19.cpp" />
     <ClCompile Include="..\Private\Void20.cpp" />
     <ClCompile Include="..\Private\Void23.cpp" />
+    <ClCompile Include="..\Private\VTFMonster.cpp" />
     <ClCompile Include="..\Private\VTFTest.cpp" />
     <ClCompile Include="..\Private\Wearable_Slot.cpp" />
     <ClCompile Include="..\Private\WorldMap.cpp" />
