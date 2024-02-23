@@ -13,6 +13,7 @@ CCommonSurfaceTrail::CCommonSurfaceTrail(const CCommonSurfaceTrail& rhs)
 void CCommonSurfaceTrail::On()
 {
 	m_bNoRender = false;
+	m_fDissolveRatio = 0.f;
 }
 
 void CCommonSurfaceTrail::Off()
@@ -67,6 +68,11 @@ HRESULT CCommonSurfaceTrail::Init(void* pArg)
 
 void CCommonSurfaceTrail::Tick(_vec3 vTopPos, _vec3 vBottomPos)
 {
+	if (m_bNoRender and m_fDissolveRatio < 1.f)
+	{
+		return;
+	}
+
 	if (m_TopPosList.size() >= m_Info.iNumVertices)
 	{
 		m_TopPosList.pop_back();
@@ -84,19 +90,19 @@ void CCommonSurfaceTrail::Tick(_vec3 vTopPos, _vec3 vBottomPos)
 
 void CCommonSurfaceTrail::Late_Tick(_float fTimeDelta)
 {
-	if (m_bNoRender)
+	if (m_fDissolveRatio >= 1.f)
 	{
 		return;
+	}
+
+	if (m_bNoRender)
+	{
+		m_fDissolveRatio += fTimeDelta * 4.f;
 	}
 
 	for (size_t i = 0; i < m_Info.iNumVertices; i++)
 	{
-		m_AlphaArray[i] = 1.f - static_cast<_float>(i) / m_Info.iNumVertices;
-	}
-
-	if (m_TopPosList.size() < m_Info.iNumVertices)
-	{
-		return;
+		m_AlphaArray[i] = Saturate((1.f - static_cast<_float>(i) / m_Info.iNumVertices) - m_fDissolveRatio);
 	}
 
 	_uint iIndex{};

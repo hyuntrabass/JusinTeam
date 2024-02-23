@@ -104,6 +104,7 @@ void CTransform::Set_FootPosition(_vec3 vPosition)
 	{
 		PxExtendedVec3 NewPos{ static_cast<_double>(vPosition.x), static_cast<_double>(vPosition.y), static_cast<_double>(vPosition.z) };
 		m_pController->setFootPosition(NewPos);
+		Set_State(State::Pos, PxExVec3ToVector(m_pController->getFootPosition(), 1.f));
 	}
 	else
 	{
@@ -116,6 +117,7 @@ void CTransform::Set_FootPosition(PxVec3 vPosition)
 	if (m_pController)
 	{
 		m_pController->setFootPosition(PxVec3ToPxExVec3(vPosition));
+		Set_State(State::Pos, PxExVec3ToVector(m_pController->getFootPosition(), 1.f));
 	}
 }
 

@@ -181,6 +181,10 @@ HRESULT CLoader::Load_Editor()
 			{
 				Pivot = _mat::CreateScale(0.5f);
 			}
+			else if (strPrototypeTag == L"Prototype_Model_BossRoom")
+			{
+				Pivot = _mat::CreateScale(0.005f);
+			}
 			else
 				Pivot = _mat::CreateScale(0.001f);
 
@@ -272,6 +276,8 @@ HRESULT CLoader::Load_Editor()
 			}
 		}
 	}
+	Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+
 	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Environment/Grass/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -281,12 +287,19 @@ HRESULT CLoader::Load_Editor()
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
+			if (strPrototypeTag == L"Prototype_Model_MidGrass1" || strPrototypeTag == L"Prototype_Model_PlaneGrass")
+			{
+				Pivot = XMMatrixScaling(0.005f, 0.005f, 0.005f);
+			}else
+				Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
 			{
 				return E_FAIL;
 			}
 		}
 	}
+	Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 
 	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Environment/Rock/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
