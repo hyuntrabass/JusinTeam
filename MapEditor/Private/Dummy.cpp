@@ -97,14 +97,16 @@ void CDummy::Late_Tick(_float fTimeDelta)
 		m_pRendererCom->Add_DebugComponent(m_pCollider);
 	#endif
 
-	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos),100.f))
-	{
 	if (m_eType == ItemType::Environment)
-		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
+	{
+		if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
+		{
+			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
+		}	
+	}
 	else
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 
-	}
 }
 
 HRESULT CDummy::Render()
