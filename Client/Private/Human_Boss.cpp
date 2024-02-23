@@ -22,12 +22,10 @@ HRESULT CHuman_Boss::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-
 	if (FAILED(Add_Collider()))
 	{
 		return E_FAIL;
 	}
-
 	m_pTransformCom->Set_State(State::Pos, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	Safe_AddRef(m_pPlayerTransform);
@@ -40,7 +38,7 @@ HRESULT CHuman_Boss::Init(void* pArg)
 	ControllerDesc.stepOffset = 0.01f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyCollider);
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
-	m_pTransformCom->Set_Position(_vec3(100.325f, 8.5294f, 110.833f));
+	m_pTransformCom->Set_Position(_vec3(-3017.f, -1.f, -3000.f));
 	m_Animation.iAnimIndex = BossAnim_attack01;
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = false;
@@ -62,14 +60,20 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 	{
 		m_eState = CommonAtt1;
 	}
-	
+
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD6, InputChannel::UI))
 	{
-		m_eState = Hide_Start;
+		m_pTransformCom->Set_Position(_vec3(-2998.008f, -1.200f, -3006.094f));
+		m_pTransformCom->LookAt_Dir(_vec4(-0.997f, 0.f, -0.042f, 0.f));
+		m_eState = Pizza;
 	}
 	if (m_pFrameEffect)
 	{
 		m_pFrameEffect->Tick(fTimeDelta);
+	}
+	if (m_pRingEffect)
+	{
+		m_pRingEffect->Tick(fTimeDelta);
 	}
 	if (m_pBaseEffect)
 	{
@@ -82,11 +86,6 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 	if (m_pAttackEffect)
 	{
 		m_pAttackEffect->Tick(fTimeDelta);
-	}
-	if (m_pShieldEffect)
-	{
-		m_pShieldEffect->Tick(fTimeDelta);
-
 	}
 	if (m_pCounterEffect)
 	{
@@ -103,9 +102,9 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 	m_pTransformCom->Set_OldMatrix();
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
-	After_Attack(fTimeDelta);
 	Update_Collider();
 	m_pModelCom->Set_Animation(m_Animation);
+	After_Attack(fTimeDelta);
 	m_pTransformCom->Gravity(fTimeDelta);
 }
 
@@ -115,7 +114,10 @@ void CHuman_Boss::Late_Tick(_float fTimeDelta)
 	{
 		m_pFrameEffect->Late_Tick(fTimeDelta);
 	}
-
+	if (m_pRingEffect)
+	{
+		m_pRingEffect->Late_Tick(fTimeDelta);
+	}
 	if (m_pBaseEffect)
 	{
 		m_pBaseEffect->Late_Tick(fTimeDelta);
@@ -123,11 +125,6 @@ void CHuman_Boss::Late_Tick(_float fTimeDelta)
 	if (m_pDimEffect)
 	{
 		m_pDimEffect->Late_Tick(fTimeDelta);
-	}
-	if (m_pShieldEffect)
-	{
-		m_pShieldEffect->Late_Tick(fTimeDelta);
-
 	}
 	if (m_pCounterEffect)
 	{
@@ -181,7 +178,7 @@ HRESULT CHuman_Boss::Render()
 		else
 		{
 			if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Opacity)))
-			{		
+			{
 			}
 		}
 
@@ -281,6 +278,9 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 		Safe_Release(m_pFrameEffect);
 		m_Animation = {};
 		m_Animation.fAnimSpeedRatio = 1.5f;
+		m_bReflectOn = false;
+		m_bAttacked = false;
+		m_bLeftPattern = false;
 		switch (m_eState)
 		{
 		case Client::CHuman_Boss::CommonAtt0:
@@ -296,7 +296,6 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 			vLook.y = 0;
 			vLook.z *= -1;
 			m_pTransformCom->LookAt_Dir(vLook);
-			m_bAttacked = false;
 			View_Attack_Range(Range_135);
 		}
 		break;
@@ -305,18 +304,17 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 			View_Attack_Range(Range_360);
 			break;
 
-		case Client::CHuman_Boss::Reflect:
-			m_Animation.iAnimIndex = BossAnim_attack13;
+		case Client::CHuman_Boss::Pizza:
+			m_Animation.iAnimIndex = BossAnim_BossView_Idle;
+			View_Attack_Range(Range_45, 45.f);
 			break;
 		case Client::CHuman_Boss::Counter_Start:
-			m_bAttacked = false;
 			m_bViewWeapon = true;
 			m_bCounter_Success = false;
 			m_Animation.iAnimIndex = BossAnim_attack05;
 			m_Animation.bSkipInterpolation = false;
 			break;
 		case Client::CHuman_Boss::Counter_Fail:
-			
 			m_Animation.bSkipInterpolation = false;
 			m_Animation.iAnimIndex = BossAnim_Die;
 			m_Animation.fDurationRatio = 0.5f;
@@ -337,7 +335,6 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 			m_Animation.fAnimSpeedRatio = 2.f;
 			m_Animation.iAnimIndex = BossAnim_attack06_End;
 			m_Animation.isLoop = false;
-			m_bAttacked = false;
 
 		}
 		break;
@@ -346,6 +343,8 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 		case Client::CHuman_Boss::Hit:
 			break;
 		case Client::CHuman_Boss::Idle:
+			m_Animation.iAnimIndex = BossAnim_Idle;
+			m_Animation.isLoop = true;
 			break;
 		case Client::CHuman_Boss::Walk:
 			break;
@@ -469,7 +468,7 @@ void CHuman_Boss::Update_Collider()
 
 void CHuman_Boss::Set_Damage(_int iDamage, _uint MonAttType)
 {
-	if (m_bShieldOn)
+	if (m_bReflectOn)
 	{
 		m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);
 		return;
@@ -513,7 +512,7 @@ void CHuman_Boss::Set_Damage(_int iDamage, _uint MonAttType)
 
 }
 
-void CHuman_Boss::View_Attack_Range(ATTACK_RANGE Range)
+void CHuman_Boss::View_Attack_Range(ATTACK_RANGE Range, _float fRotationY)
 {
 	Safe_Release(m_pBaseEffect);
 	Safe_Release(m_pDimEffect);
@@ -523,9 +522,50 @@ void CHuman_Boss::View_Attack_Range(ATTACK_RANGE Range)
 	EffectInfo Info{};
 	switch (Range)
 	{
+	case Range_45:
+	{
+		if (fRotationY == 0.f)
+		{
+			EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.2f, 0.f));
+		}
+		else
+		{
+			EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.2f, 0.f));
+		}
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Frame");
+		Info.pMatrix = &EffectMatrix;
+		m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Dim");
+		Info.pMatrix = &EffectMatrix;
+		m_pDimEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		m_fBaseEffectScale = 1.f;
+		if (fRotationY == 0.f)
+		{
+			m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.24f, 0.f));
+		}
+		else
+		{
+			m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.24f, 0.f));
+		}
+		m_BaseEffectMat = m_BaseEffectOriMat;
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Base");
+		Info.pMatrix = &m_BaseEffectMat;
+		Info.isFollow = true;
+		m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+		break;
+	}
 	case Range_90:
 	{
-		EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.2f, 0.f));
+		if (fRotationY == 0.f)
+		{
+			EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.2f, 0.f));
+		}
+		else
+		{
+			EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.2f, 0.f));
+		}
 		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_90_Frame");
 		Info.pMatrix = &EffectMatrix;
 		m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
@@ -591,7 +631,6 @@ void CHuman_Boss::View_Attack_Range(ATTACK_RANGE Range)
 
 void CHuman_Boss::After_Attack(_float fTimedelta)
 {
-	m_ShieldEffectMat = _mat::CreateRotationY(1.f) * m_ShieldEffectMat;
 
 	if (m_eState == CommonAtt0)
 	{
@@ -623,19 +662,10 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 						m_bAttacked = true;
 					}
 				}
-				/*Safe_Release(m_pAttackEffect);
-				Safe_Release(m_pShieldEffect);*/
-				/*EffectInfo Info{};
-				m_AttEffectMat = _mat::CreateScale(10.f)*_mat::CreateRotationX(135.f) * _mat::CreateTranslation(_vec3(0.f, 0.7f, 0.f)) * m_pTransformCom->Get_World_Matrix();
-				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Boss_Sword");
-				Info.pMatrix = &m_AttEffectMat;
-				Info.isFollow = true;*/
-				//m_pAttackEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 			}
 			if (m_bAttacked)
 			{
 				_vec3 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
-				m_AttEffectMat *= (_mat::CreateTranslation(vLook) * 0.5f);
 			}
 		}
 		else if (Index >= 61.f && Index <= 63.f)
@@ -724,34 +754,6 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			m_bViewWeapon = false;
 		}
 	}
-	else if (m_eState == Reflect)
-	{
-		_float Index = m_pModelCom->Get_CurrentAnimPos();
-		if (Index >= 0.f && Index <= 2.f)
-		{
-			m_bViewWeapon = true;
-		}
-		if (Index >= 173.f && Index <= 175.f && !m_bShieldOn)
-		{
-
-			EffectInfo Info{};
-			m_ShieldEffectMat = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(0.f, 1.8f, 0.f)) * m_pTransformCom->Get_World_Matrix();
-			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Boss_Shield");
-			Info.pMatrix = &m_ShieldEffectMat;
-			Info.isFollow = true;
-			m_pShieldEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-			m_RingEffectMat = _mat::CreateScale(_vec3(8.f, 5.f, 8.f)) * _mat::CreateTranslation(_vec3(0.f, 1.8f, 0.f)) * m_pTransformCom->Get_World_Matrix();
-			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Turn_Ring");
-			Info.pMatrix = &m_RingEffectMat;
-			Info.isFollow = true;
-			//m_pRingEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-			m_bShieldOn = true;
-		}
-		else if (Index >= 202.f && m_bViewWeapon)
-		{
-			m_bViewWeapon = false;
-		}
-	}
 	else if (m_eState == Hide_Start)
 	{
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
@@ -766,7 +768,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 
 		if (Index >= 0.f && Index <= 49.f)
 		{
-			Increased_Range(50.f,fTimedelta);
+			Increased_Range(50.f, fTimedelta);
 		}
 		else if (Index >= 49.f && Index <= 51.f)
 		{
@@ -782,9 +784,6 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 				m_pTransformCom->Set_FootPosition(vPos);
 				_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
 				m_pTransformCom->LookAt(vPlayerPos);
-				/*		_vec4 vLook = m_pTransformCom->Get_State(State::Look);
-						vLook.y = 0.f;
-						m_pTransformCom->LookAt_Dir(vLook);*/
 				View_Attack_Range(Range_135);
 				m_bAttacked = true;
 			}
@@ -812,49 +811,69 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 	else if (m_eState == Counter_Start)
 	{
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
-		if (Index >= 0.f && Index <= 3.f)
+
+		if (Index >= 70.f && Index <= 73.f)
 		{
 			if (!m_bAttacked)
 			{
-				View_Attack_Range(Range_360);
+				if ((m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_SafeZone"), TEXT("Prototype_GameObject_SafeZone"))))
+				{
+					MSG_BOX("SafeZone 불러오기 실패");
+					return;
+				}
 				m_bAttacked = true;
 			}
 		}
-		else if (Index >= 4.f && Index <= 6.f)
+		else if (Index >= 74.f && Index <= 76.f)
 		{
 			m_bAttacked = false;
-		}
-		if (Index >= 0.f && Index <= 181.f)
-		{
-			Increased_Range(182.f,fTimedelta);
 		}
 		else if (Index >= 181.f && Index <= 183.f)
 		{
 			m_bAttacked = false;
 		}
+
 		if (Index >= 100.f && Index <= 160.f)
 		{
 			if (!m_bAttacked)
 			{
+				_uint iRandom = rand() % 2;
+				_mat EffectMat{};
 				EffectInfo Info{};
-				_mat EffectMat = _mat::CreateScale(3.f) * m_pTransformCom->Get_World_Matrix();
-				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Human_Counter");
-				Info.pMatrix = &EffectMat;
-				m_pCounterEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-				m_vRimColor = _vec4(0.13f, 0.13f, 0.89f, 1.f);
-				m_iPassIndex = AnimPass_Rim;
-				m_iWeaponPassIndex = AnimPass_Rim;
+				if (iRandom)
+				{
+					EffectMat = _mat::CreateScale(3.f) * m_pTransformCom->Get_World_Matrix();
+					Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Human_Counter");
+					Info.pMatrix = &EffectMat;
+					m_pCounterEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+					m_vRimColor = _vec4(0.13f, 0.13f, 0.89f, 1.f);
+					m_iPassIndex = AnimPass_Rim;
+					m_iWeaponPassIndex = AnimPass_Rim;
+				}
+				else
+				{
+					EffectMat = _mat::CreateScale(3.f) * m_pTransformCom->Get_World_Matrix();
+					Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Reflect_Counter");
+					Info.pMatrix = &EffectMat;
+					m_pCounterEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+					m_vRimColor = _vec4(0.969f, 0.957f, 0.235f, 1.f);
+					m_iPassIndex = AnimPass_Rim;
+					m_iWeaponPassIndex = AnimPass_Rim;
+					m_bReflectOn = true;
+				}
 				m_bAttacked = true;
 			}
-
-			if (m_bCounter_Success)
+			if (!m_bReflectOn)
 			{
-				m_pGameInstance->Play_Sound(TEXT("Counter"),0.7f); 
-				m_eState = Counter_Fail;
-				m_bCounter_Success = false;
-				m_iPassIndex = AnimPass_DefaultNoCull;
-				m_iWeaponPassIndex = AnimPass_Dissolve;
-				return;
+				if (m_bCounter_Success)
+				{
+					m_pGameInstance->Play_Sound(TEXT("Counter"), 0.7f);
+					m_eState = Counter_Fail;
+					m_bCounter_Success = false;
+					m_iPassIndex = AnimPass_DefaultNoCull;
+					m_iWeaponPassIndex = AnimPass_Dissolve;
+					return;
+				}
 			}
 		}
 		else if (Index >= 161.f && Index <= 163.f)
@@ -868,34 +887,240 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			Safe_Release(m_pBaseEffect);
 			Safe_Release(m_pDimEffect);
 			Safe_Release(m_pFrameEffect);
-
-			if (!m_bAttacked)
+			CCollider* pPlayerCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
+			CCollider* pSafeZoneCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_SafeZone"), TEXT("Com_SafeZone_Collider"));
+			if (m_bReflectOn)
 			{
-				m_pGameInstance->Attack_Player(m_pCommonAttCollider, 250, MonAtt_KnockDown);
-				if (m_pGameInstance->CheckCollision_Player(m_pCommonAttCollider))
+				if (!pPlayerCollider->Intersect(pSafeZoneCollider))
 				{
-					m_bAttacked = true;
+					if (!m_bAttacked)
+					{
+						m_pGameInstance->Attack_Player(nullptr, 250, MonAtt_KnockDown);
+						m_bAttacked = true;
+					}
 				}
 			}
+			else
+			{
+				if (!m_bAttacked)
+				{
+					if (!m_bAttacked)
+					{
+						m_pGameInstance->Attack_Player(nullptr, 250, MonAtt_KnockDown);
+						m_bAttacked = true;
+					}
+				}
+			}
+
 		}
 		else
 		{
-			m_bCounter_Success = false;	
+			m_bCounter_Success = false;
 		}
 	}
-	if (m_bShieldOn && m_fShiledTimmer < 10.f)
+	else if (m_eState == Pizza)
 	{
-		m_fShiledTimmer += fTimedelta;
-		m_ShieldEffectMat = _mat::CreateScale(1.f) * _mat::CreateRotationY(5.f) * _mat::CreateTranslation(_vec3(0.f, 1.8f, 0.f)) * m_pTransformCom->Get_World_Matrix();
-		m_RingEffectMat = _mat::CreateScale(_vec3(8.f, 5.f, 8.f)) * _mat::CreateTranslation(_vec3(0.f, 1.8f, 0.f)) * m_pTransformCom->Get_World_Matrix();
+	
+		_float Index = m_pModelCom->Get_CurrentAnimPos();
+		if (Index >= 1.f && Index < 4.f)
+		{
+			if (!m_bAttacked)
+			{
+				_mat EffectMat{};
+				EffectInfo Info{};
+				_uint iRandom = rand() % 2;
+				if (iRandom)
+				{
+					EffectMat = _mat::CreateScale(5.f) * _mat::CreateRotationX(XMConvertToRadians(180.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.2f, 0.f));
+					m_fAttackRange = -45.f;
+					m_bLeftPattern = true;
+				}
+				else
+				{
+					EffectMat = _mat::CreateScale(5.f) * m_pTransformCom->Get_World_Matrix();
+					m_fAttackRange = 45.f;
+					m_bLeftPattern = false;
+				}
 
-	}
-	else if (m_bShieldOn && m_fShiledTimmer >= 10.f)
-	{
-		m_bShieldOn = false;
-		m_fShiledTimmer = 0.f;
-		Safe_Release(m_pShieldEffect);
-		Safe_Release(m_pCounterEffect);
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"RightTurn_Ring");
+				Info.pMatrix = &EffectMat;
+				m_pRingEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+				m_bAttacked = true;
+			}
+		}
+		if (Index >= 4.f && Index < 6.f)
+		{
+			m_bAttacked = false;
+		}
+
+		if (Index >= 70.f && Index < 106.f)
+		{
+			
+			if (!m_bAttacked)
+			{
+				View_Attack_Range(Range_45);
+				m_bAttacked = true;
+			}
+			Increased_Range(36.f, fTimedelta);
+		}
+		else if (Index >= 107.f && Index <= 109.f)
+		{
+			if (m_bAttacked)
+			{
+				if (!Compute_Angle(45.f))
+				{
+					m_pGameInstance->Attack_Player(nullptr, 50.f, MonAtt_Hit);
+				}
+				m_bAttacked = false;
+			}
+		}
+		else if (Index >= 110.f && Index < 146.f)
+		{
+			if (!m_bAttacked)
+			{
+				View_Attack_Range(Range_45, m_fAttackRange);
+				m_bAttacked = true;
+			}
+			Increased_Range(36.f, fTimedelta);
+		}
+		else if (Index >= 147.f && Index <= 149.f)
+		{
+			if (m_bAttacked)
+			{
+				if (!Compute_Angle(45.f, m_fAttackRange))
+				{
+					m_pGameInstance->Attack_Player(nullptr, 50.f, MonAtt_Hit);
+				}
+				m_bAttacked = false;
+			}
+		}
+		else if (Index >= 150.f && Index < 186.f)
+		{
+			if (!m_bAttacked)
+			{
+				View_Attack_Range(Range_45, m_fAttackRange *2.f);
+				m_bAttacked = true;
+			}
+			Increased_Range(36.f, fTimedelta);
+		}
+		else if (Index >= 187.f && Index <= 189.f)
+		{
+			if (m_bAttacked)
+			{
+				if (!Compute_Angle(45.f, m_fAttackRange * 2.f))
+				{
+					m_pGameInstance->Attack_Player(nullptr, 50.f, MonAtt_Hit);
+				}
+				m_bAttacked = false;
+			}
+		}
+		else if (Index >= 190.f && Index < 226.f)
+		{
+			if (!m_bAttacked)
+			{
+				View_Attack_Range(Range_45, m_fAttackRange * 3.f);
+				m_bAttacked = true;
+			}
+			Increased_Range(36.f, fTimedelta);
+		}
+		else if (Index >= 227.f && Index <= 229.f)
+		{
+			if (m_bAttacked)
+			{
+				if (!Compute_Angle(45.f, m_fAttackRange * 3.f))
+				{
+					m_pGameInstance->Attack_Player(nullptr, 50.f, MonAtt_Hit);
+				}
+				m_bAttacked = false;
+			}
+		}
+		else if (Index >= 230.f && Index < 276.f)
+		{
+			if (!m_bAttacked)
+			{
+				View_Attack_Range(Range_45, m_fAttackRange * 4.f);
+				m_bAttacked = true;
+			}
+			Increased_Range(36.f, fTimedelta);
+		}
+		else if (Index >= 277.f && Index <= 279.f)
+		{
+			if (m_bAttacked)
+			{
+				if (!Compute_Angle(45.f, m_fAttackRange * 4.f))
+				{
+					m_pGameInstance->Attack_Player(nullptr, 50.f, MonAtt_Hit);
+				}
+				m_bAttacked = false;
+			}
+		}
+		else if (Index >= 280.f && Index < 316.f)
+		{
+			if (!m_bAttacked)
+			{
+				View_Attack_Range(Range_45, m_fAttackRange * 5.f);
+				m_bAttacked = true;
+			}
+			Increased_Range(36.f, fTimedelta);
+		}
+		else if (Index >= 317.f && Index <= 319.f)
+		{
+			if (m_bAttacked)
+			{
+				if (!Compute_Angle(45.f, m_fAttackRange * 5.f))
+				{
+					m_pGameInstance->Attack_Player(nullptr, 50.f, MonAtt_Hit);
+				}
+				m_bAttacked = false;
+			}
+		}
+		else if (Index >= 320.f && Index < 356.f)
+		{
+			if (!m_bAttacked)
+			{
+				View_Attack_Range(Range_45, m_fAttackRange * 6.f);
+				m_bAttacked = true;
+			}
+			Increased_Range(36.f, fTimedelta);
+		}
+		else if (Index >= 357.f && Index <= 359.f)
+		{
+			if (m_bAttacked)
+			{
+				if (!Compute_Angle(45.f, m_fAttackRange * 6.f))
+				{
+					m_pGameInstance->Attack_Player(nullptr, 50.f, MonAtt_Hit);
+				}
+				m_bAttacked = false;
+			}
+
+		}
+		else if (Index >= 360.f && Index < 396.f)
+		{
+			if (!m_bAttacked)
+			{
+				View_Attack_Range(Range_45, m_fAttackRange * 7.f);
+				m_bAttacked = true;
+			}
+			Increased_Range(36.f, fTimedelta);
+		}
+		else if (Index >= 397.f && Index <= 439.f)
+		{
+			if (m_bAttacked)
+			{
+				if (!Compute_Angle(45.f, m_fAttackRange * 7.f))
+				{
+					m_pGameInstance->Attack_Player(nullptr, 50.f, MonAtt_Hit);
+				}
+				m_bAttacked = false;
+			}
+
+		}
+		else if (Index >= 400.f && Index <= 460)
+		{
+			m_eState = Idle;
+			return;
+		}
 	}
 	if (m_bHide && m_fHideTimmer < 7.f)
 	{
@@ -909,32 +1134,34 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 	}
 }
 
-_bool CHuman_Boss::Compute_Angle(_float fAngle)
+_bool CHuman_Boss::Compute_Angle(_float fAngle, _float RotationY)
 {
-	fAngle -= 85.f;
+	fAngle = abs(fAngle - 92.f);
 	_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
-	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
 
+	if (RotationY != 0)
+	{
+		_vec3 vLook3 = _vec3(vLook.x, vLook.y, vLook.z);
+		vLook3.Normalize();
+		RotationY = XMConvertToRadians(RotationY);
+		vLook3 = _vec3::Transform(vLook3, _mat::CreateRotationY(RotationY));
+		vLook = _vec4(vLook3.x, vLook3.y, vLook3.z, 0.f);
+	}
+
+	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
 	_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
-	vPlayerPos -= vPos;
-	vPlayerPos.Normalize();
-	_float fResult = vLook.Dot(vPlayerPos);
+	vPlayerPos.y = vPos.y;
+	_vec4 vDir = vPlayerPos - vPos;
+	vDir.Normalize();
+
+	_float fResult = vLook.Dot(vDir);
 	_float angleInRadians = acos(fResult);
 	_float angleInDegrees = angleInRadians * (180.0f / XM_PI);
 
-
-	if (angleInDegrees <= fAngle)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-
+	return (angleInDegrees <= fAngle);
 }
 
-void CHuman_Boss::Increased_Range(_float Index,_float fTImeDelta)
+void CHuman_Boss::Increased_Range(_float Index, _float fTImeDelta, _float fRotationY)
 {
 	_float fIncrease = 1400.f / Index;
 
@@ -958,7 +1185,7 @@ HRESULT CHuman_Boss::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Human_Boss"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_VILLAGE, TEXT("Prototype_Model_Human_Boss"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	{
 		return E_FAIL;
 	}
@@ -1048,7 +1275,7 @@ void CHuman_Boss::Free()
 	Safe_Release(m_pDimEffect);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pCounterEffect);
-	Safe_Release(m_pShieldEffect);
+	Safe_Release(m_pRingEffect);
 	Safe_Release(m_pBaseEffect);
 	Safe_Release(m_pAttackEffect);
 	Safe_Release(m_pRendererCom);

@@ -249,6 +249,7 @@
     <ClInclude Include="..\Public\Radar.h" />
     <ClInclude Include="..\Public\Riding.h" />
     <ClInclude Include="..\Public\Roskva.h" />
+    <ClInclude Include="..\Public\SafeZone.h" />
     <ClInclude Include="..\Public\Scarecrow.h" />
     <ClInclude Include="..\Public\Select_Map.h" />
     <ClInclude Include="..\Public\Select_Model.h" />
@@ -409,6 +410,7 @@
     <ClCompile Include="..\Private\Radar.cpp" />
     <ClCompile Include="..\Private\Riding.cpp" />
     <ClCompile Include="..\Private\Roskva.cpp" />
+    <ClCompile Include="..\Private\SafeZone.cpp" />
     <ClCompile Include="..\Private\Scarecrow.cpp" />
     <ClCompile Include="..\Private\Select_Map.cpp" />
     <ClCompile Include="..\Private\Select_Model.cpp" />

@@ -132,7 +132,7 @@
 #include "Meteor.h"
 
 #include "Human_Boss.h"
-
+#include "SafeZone.h"
 
 // Pet
 #include "Pet_Cat.h"

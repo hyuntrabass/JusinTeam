@@ -76,6 +76,12 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
+	if (FAILED(Ready_Human_Boss()))
+	{
+		MSG_BOX("Failed to Ready HumanBoss");
+		return E_FAIL;
+	}
+
 	if (FAILED(Ready_NPC()))
 	{
 		MSG_BOX("Failed to Ready NPC");
@@ -468,6 +474,14 @@ HRESULT CLevel_Village::Ready_Groar_Boss()
 	}
 
 	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_Human_Boss()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Boss"), TEXT("Prototype_GameObject_Human_Boss"))))
+	{
+		return E_FAIL;
+	}
 }
 
 HRESULT CLevel_Village::Ready_NPC()

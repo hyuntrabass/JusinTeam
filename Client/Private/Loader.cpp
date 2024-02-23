@@ -1194,7 +1194,7 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Human_Boss"),
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, TEXT("Prototype_Model_Human_Boss"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Human_Boss/Mesh/boss.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
@@ -1633,6 +1633,11 @@ HRESULT CLoader::Load_GamePlay()
 
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Human_Boss"), CHuman_Boss::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_SafeZone"), CSafeZone::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
