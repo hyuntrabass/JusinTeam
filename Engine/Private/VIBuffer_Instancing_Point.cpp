@@ -1,4 +1,5 @@
 #include "VIBuffer_Instancing_Point.h"
+#include "Compute_Shader.h"
 
 CVIBuffer_Instancing_Point::CVIBuffer_Instancing_Point(_dev pDevice, _context pContext)
 	: CVIBuffer_Instancing(pDevice, pContext)
@@ -16,7 +17,7 @@ HRESULT CVIBuffer_Instancing_Point::Init_Prototype(_uint iNumInstances)
 	m_iVertexStride = sizeof VTXPOINT;
 	m_iNumVertices = 1;
 
-	m_iNumInstances = iNumInstances;
+	m_iNumInstances = 1000;
 	m_iIndexCountPerInstance = 1;
 	m_iInstanceStride = sizeof VTXINSTANCING;
 
@@ -52,6 +53,7 @@ HRESULT CVIBuffer_Instancing_Point::Init_Prototype(_uint iNumInstances)
 
 	Safe_Delete(pVertex);
 #pragma endregion
+
 
 #pragma region Index
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
@@ -107,6 +109,8 @@ HRESULT CVIBuffer_Instancing_Point::Init_Prototype(_uint iNumInstances)
 	m_InstancingInitialData.pSysMem = pVertexInstance;
 
 #pragma endregion
+
+	m_pComputeShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_ComputeParticle.hlsl", "particle", sizeof ParticleParams);
 
 	return S_OK;
 }
@@ -175,6 +179,51 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 	if (FAILED(m_pDevice->CreateBuffer(&m_InstancingBufferDesc, &m_InstancingInitialData, &m_pVBInstance)))
 	{
 		Safe_Delete_Array(m_InstancingInitialData.pSysMem);
+		return E_FAIL;
+	}
+
+#pragma region Vertex for SRV
+	ZeroMemory(&m_InstancingBufferDesc, sizeof m_InstancingBufferDesc);
+	m_InstancingBufferDesc.ByteWidth = m_iInstanceStride * m_iNumInstances;
+	m_InstancingBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	m_InstancingBufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+	m_InstancingBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	m_InstancingBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	m_InstancingBufferDesc.StructureByteStride = m_iInstanceStride;
+
+	if (FAILED(m_pDevice->CreateBuffer(&m_InstancingBufferDesc, &m_InstancingInitialData, &m_pVSRB)))
+	{
+		Safe_Delete_Array(m_InstancingInitialData.pSysMem);
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pDevice->CreateBuffer(&m_InstancingBufferDesc, &m_InstancingInitialData, &m_pVUAVB)))
+	{
+		Safe_Delete_Array(m_InstancingInitialData.pSysMem);
+		return E_FAIL;
+	}
+#pragma endregion
+
+
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
+	srvDesc.Buffer.FirstElement = 0;
+	srvDesc.Buffer.NumElements = m_iNumInstances;
+
+	if (FAILED(m_pDevice->CreateShaderResourceView(m_pVSRB, &srvDesc, &m_pSRV)))
+	{
+		return E_FAIL;
+	}
+
+	D3D11_UNORDERED_ACCESS_VIEW_DESC UAVDesc{};
+	UAVDesc.Format = DXGI_FORMAT_UNKNOWN;
+	UAVDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+	UAVDesc.Buffer.NumElements = m_iNumInstances;
+
+	if (FAILED(m_pDevice->CreateUnorderedAccessView(m_pVUAVB, &UAVDesc, &m_pUAV)))
+	{
 		return E_FAIL;
 	}
 
