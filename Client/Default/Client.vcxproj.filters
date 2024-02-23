@@ -463,6 +463,15 @@
     <Filter Include="02.GameObjects\15. SurvivalGame">
       <UniqueIdentifier>{cf696106-eeaf-4b97-925a-6f520fc47a0d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\09.Object\Interaction">
+      <UniqueIdentifier>{ed155913-ed0d-482b-b571-b387e469cd97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\09.Object\Interaction\Anim">
+      <UniqueIdentifier>{1ff87796-ec6b-4468-8b43-84ce67c31796}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\09.Object\Interaction\NonAnim">
+      <UniqueIdentifier>{b3b240ce-ced1-4247-b650-cd75226bd65c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -919,8 +928,6 @@
     <ClInclude Include="..\Public\Balloon.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Interaction_Anim_Object.h" />
-    <ClInclude Include="..\Public\Interaction_NonAnim_Object.h" />
     <ClInclude Include="..\Public\BrickBall.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
@@ -938,6 +945,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\SurvivalGame.h">
       <Filter>02.GameObjects\15. SurvivalGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Interaction_Anim_Object.h">
+      <Filter>02.GameObjects\09.Object\Interaction\Anim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Interaction_NonAnim_Object.h">
+      <Filter>02.GameObjects\09.Object\Interaction\NonAnim</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1390,8 +1403,6 @@
     <ClCompile Include="..\Private\Balloon.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Interaction_Anim_Object.cpp" />
-    <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp" />
     <ClCompile Include="..\Private\BrickBall.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
@@ -1409,6 +1420,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\SurvivalGame.cpp">
       <Filter>02.GameObjects\15. SurvivalGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Interaction_Anim_Object.cpp">
+      <Filter>02.GameObjects\09.Object\Interaction\Anim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp">
+      <Filter>02.GameObjects\09.Object\Interaction\NonAnim</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

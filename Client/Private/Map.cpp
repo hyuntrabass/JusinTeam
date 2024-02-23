@@ -1,6 +1,20 @@
 #include "Map.h"
 #include "Camera_Manager.h"
 
+/*
+
+맵 수정 필요할 시 
+
+미니게임 - Prototype_Model_Minigame
+드래곤맵 - Prototype_Model_DragonMap
+보스맵 - Prototype_Model_BossMap
+미니던전 - Prototype_Model_MiniDungeon
+생존맵 - Prototype_Model_Survival_Map
+
+m_Info.Prototype을 가져와서 나눠주면 됩니다.
+
+*/
+
 CMap::CMap(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
 {

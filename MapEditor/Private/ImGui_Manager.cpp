@@ -1172,49 +1172,55 @@ HRESULT CImGui_Manager::ImGuiPos()
 	{
 		ImGui::SeparatorText("TERRAIN POS : ");
 		ImGui::InputFloat3("Terrain Pos", &m_TerrainPos.x, 0);
+
+		ImGui::SeparatorText("Wireframe : ");
+		ImGui::Checkbox("WireFrame", &m_isMode);
+
+		if (m_pTerrain)
+		{
+			m_pTerrain->Mode(m_isMode);
+		}
+		if (m_pSelectMap)
+		{
+			m_pSelectMap->Mode(m_isMode);
+		}
 	}
 
 	ImGui::SeparatorText("ImGuizmo : ");
 	ImGui::Checkbox("ImGui Check", &m_iImGuizmoCheck);
-
-	ImGui::SeparatorText("Wireframe : ");
-	ImGui::Checkbox("WireFrame", &m_isMode);
 
 	ImGui::SeparatorText("DummyCount : ");
 	_int iDummyCount = m_DummyList.size();
 	ImGui::InputInt("Dummy Size", &iDummyCount, 14);
 
 	ImGui::Checkbox("Use Normal", &m_isUseNormal);
-	
-	if (m_pTerrain)
-	{
-		m_pTerrain->Mode(m_isMode);
-	}
-	if (m_pSelectMap)
-	{
-		m_pSelectMap->Mode(m_isMode);
-	}
+
 
 	// 마스크맵 만들기
-	if (m_eItemType == ItemType::Map)
+	//if (m_eItemType == ItemType::Map)
+	//{
+	//	if (ImGui::Button("Normal Save"))
+	//	{
+	//		MeshToMask();
+	//	}
+	//}
+
+	if (m_eItemType != ItemType::Terrain || m_eItemType != ItemType::Monster || m_eItemType != ItemType::NPC)
 	{
-		if (ImGui::Button("Normal Save"))
+		if (m_pSelectedDummy)
 		{
-			MeshToMask();
+			CModel* pModel = dynamic_cast<CModel*>(m_pSelectedDummy->Find_Component(L"Com_Model"));
+			m_fRadius = pModel->Get_Radius();
+
+			ImGui::InputFloat("Radius", &m_fRadius);
 		}
 	}
+
 	ImGui::SeparatorText("All Reset : ");
 
 	if (ImGui::Button("Reset"))
 	{
 		Reset();
-	}
-
-	ImGui::SeparatorText("Pos Save : ");
-
-	if (ImGui::Button("Save_Pos"))
-	{
-		Save_Pos();
 	}
 
 	if (ImGui::Button("Save_WorldMatrix"))
@@ -2906,6 +2912,7 @@ HRESULT CImGui_Manager::Save_Interaction()
 	}
 	return S_OK;
 }
+
 HRESULT CImGui_Manager::Load_Interaction()
 {
 	OPENFILENAME OFN;
@@ -2935,7 +2942,6 @@ HRESULT CImGui_Manager::Load_Interaction()
 		_uint InteractionListSize;
 		inFile.read(reinterpret_cast<char*>(&InteractionListSize), sizeof(_uint));
 
-
 		for (_uint i = 0; i < InteractionListSize; ++i)
 		{
 			_ulong InteractionPrototypeSize;
@@ -2951,8 +2957,6 @@ HRESULT CImGui_Manager::Load_Interaction()
 			DummyInfo EnvirInfo{};
 			EnvirInfo.eType = ItemType::Interaction;
 			EnvirInfo.Prototype = InteractionPrototype;
-			//EnvirInfo.vLook = _float3(InteractionWorldMat._31, InteractionWorldMat._32, InteractionWorldMat._33);
-			//EnvirInfo.vPos = _float4(InteractionWorldMat._41, InteractionWorldMat._42, InteractionWorldMat._43, 1.f);
 			EnvirInfo.mMatrix = InteractionWorldMat;
 			EnvirInfo.ppDummy = &m_pSelectedDummy;
 
@@ -2964,13 +2968,6 @@ HRESULT CImGui_Manager::Load_Interaction()
 
 			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
 			m_InteractionList.push_back(m_pSelectedDummy);
-
-			//CTransform* pInteractionTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
-
-			//pInteractionTransform->Set_State(State::Right, InteractionWorldMat.Right());
-			//pInteractionTransform->Set_State(State::Up, InteractionWorldMat.Up());
-			//pInteractionTransform->Set_State(State::Look, InteractionWorldMat.Look());
-			//pInteractionTransform->Set_State(State::Pos, InteractionWorldMat.Position());
 
 			m_pSelectedDummy = nullptr;
 		}
