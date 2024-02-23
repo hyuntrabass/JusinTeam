@@ -466,6 +466,12 @@
     <Filter Include="02.GameObjects\09.Object\Interaction\NonAnim">
       <UniqueIdentifier>{7f2d2e87-4e5c-4110-983d-3c1613d9d9cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\15.StealthGame">
+      <UniqueIdentifier>{2dd9be1b-d49e-4a1d-92f0-84c3a6ee0ef3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\15.StealthGame\Guard">
+      <UniqueIdentifier>{4c8ef8c7-00b1-4252-a915-44f988fbd371}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -934,6 +940,9 @@
     <ClInclude Include="..\Public\Statue.h">
       <Filter>02.GameObjects\04.Monster\98. Statue</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Guard.h">
+      <Filter>02.GameObjects\15.StealthGame\Guard</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1399,6 +1408,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Statue.cpp">
       <Filter>02.GameObjects\04.Monster\98. Statue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Guard.cpp">
+      <Filter>02.GameObjects\15.StealthGame\Guard</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

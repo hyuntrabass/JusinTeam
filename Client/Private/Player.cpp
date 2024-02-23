@@ -1715,10 +1715,14 @@ void CPlayer::Move(_float fTimeDelta)
 			vDirection += vForwardDir;
 
 
+			m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
+			m_pRendererCom->Set_RadialBlur_Power(1.f);
+
 			hasMoved = true;
 		}
 		else if (m_pGameInstance->Key_Pressing(DIK_S))
 		{
+			m_pRendererCom->Set_RadialBlur_Power(0.f);
 			vDirection -= vForwardDir;
 			hasMoved = true;
 		}
