@@ -1455,6 +1455,11 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BrickWall"), CBrickWall::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
 
 #pragma endregion
 
@@ -1875,6 +1880,8 @@ HRESULT CLoader::Load_Village()
 	{
 		return E_FAIL;
 	}
+
+	// 원래 레벨 이닛에서 했던것들
 	{
 		m_pGameInstance->Set_CurrentLevelIndex(LEVEL_VILLAGE);
 		{
@@ -2029,6 +2036,217 @@ HRESULT CLoader::Load_Village()
 					return E_FAIL;
 				}
 			}
+		}
+
+		//Ready_Field_Environment
+		{
+			const TCHAR* pGetPath = TEXT("../Bin/Data/Field_EnvirData.dat");
+
+			std::ifstream inFile(pGetPath, std::ios::binary);
+
+			if (!inFile.is_open())
+			{
+				MSG_BOX("환경오브젝트 파일을 찾지 못했습니다.");
+				return E_FAIL;
+			}
+
+			_uint ObjectListSize;
+			inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
+
+
+			for (_uint i = 0; i < ObjectListSize; ++i)
+			{
+				_ulong ObjectPrototypeSize;
+				inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
+
+				wstring ObjectPrototype;
+				ObjectPrototype.resize(ObjectPrototypeSize);
+				inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
+
+				_mat ObjectWorldMat;
+				inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
+
+				ObjectInfo ObjectInfo{};
+				ObjectInfo.strPrototypeTag = ObjectPrototype;
+				ObjectInfo.m_WorldMatrix = ObjectWorldMat;
+				ObjectInfo.eObjectType = Object_Environment;
+				ObjectInfo.m_iIndex = (_uint)FIELD;
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Envir_Object"), TEXT("Prototype_GameObject_Village_Envir_Object"), &ObjectInfo)))
+				{
+					MSG_BOX("필드 환경오브젝트 불러오기 실패");
+					return E_FAIL;
+				}
+			}
+		}
+
+		//Ready_Environment
+		{
+			const TCHAR* pGetPath = TEXT("../Bin/Data/Village_EnvirData.dat");
+
+			std::ifstream inFile(pGetPath, std::ios::binary);
+
+			if (!inFile.is_open())
+			{
+				MSG_BOX("환경오브젝트 파일을 찾지 못했습니다.");
+				return E_FAIL;
+			}
+
+			_uint ObjectListSize;
+			inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
+
+			for (_uint i = 0; i < ObjectListSize; ++i)
+			{
+				_ulong ObjectPrototypeSize;
+				inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
+
+				wstring ObjectPrototype;
+				ObjectPrototype.resize(ObjectPrototypeSize);
+				inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
+
+				_mat ObjectWorldMat;
+				inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
+
+				ObjectInfo ObjectInfo{};
+				ObjectInfo.strPrototypeTag = ObjectPrototype;
+				ObjectInfo.m_WorldMatrix = ObjectWorldMat;
+				ObjectInfo.eObjectType = Object_Environment;
+				ObjectInfo.m_iIndex = (_uint)VILLAGE;
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Envir_Object"), TEXT("Prototype_GameObject_Village_Envir_Object"), &ObjectInfo)))
+				{
+					MSG_BOX("마을 환경오브젝트 불러오기 실패");
+					return E_FAIL;
+				}
+			}
+
+			CTrigger_Manager::Get_Instance()->Set_SkyTextureIndex(12);
+
+		}
+
+		//Ready_Minigame
+		{
+			const TCHAR* pGetPath = TEXT("../Bin/Data/Minigame_MapData.dat");
+
+			std::ifstream inFile(pGetPath, std::ios::binary);
+
+			if (!inFile.is_open())
+			{
+				MSG_BOX("미니게임맵 데이터 파일 불러오기 실패.");
+				return E_FAIL;
+			}
+
+			_uint MapListSize;
+			inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+
+
+			for (_uint i = 0; i < MapListSize; ++i)
+			{
+				_ulong MapPrototypeSize;
+				inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+
+				wstring MapPrototype;
+				MapPrototype.resize(MapPrototypeSize);
+				inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+
+				_mat MapWorldMat;
+				inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+
+				MapInfo MapInfo{};
+				MapInfo.Prototype = MapPrototype;
+				MapInfo.m_Matrix = MapWorldMat;
+
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Tower"), TEXT("Prototype_GameObject_Minigame"), &MapInfo)))
+				{
+					MSG_BOX("미니게임맵 생성 실패");
+					return E_FAIL;
+				}
+			}
+
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_BrickGame"), TEXT("Prototype_GameObject_BrickGame"))))
+			{
+				return E_FAIL;
+			}
+		}
+
+		//Ready_DragonBoss
+		{
+			const TCHAR* pGetPath = TEXT("../Bin/Data/DragonMap_MapData.dat");
+
+			std::ifstream inFile(pGetPath, std::ios::binary);
+
+			if (!inFile.is_open())
+			{
+				MSG_BOX("드래곤맵 데이터 파일 불러오기 실패.");
+				return E_FAIL;
+			}
+
+			_uint MapListSize;
+			inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+
+
+			for (_uint i = 0; i < MapListSize; ++i)
+			{
+				_ulong MapPrototypeSize;
+				inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+
+				wstring MapPrototype;
+				MapPrototype.resize(MapPrototypeSize);
+				inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+
+				_mat MapWorldMat;
+				inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+
+				MapInfo MapInfo{};
+				MapInfo.Prototype = MapPrototype;
+				MapInfo.m_Matrix = MapWorldMat;
+
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Tower"), TEXT("Prototype_GameObject_DragonMap"), &MapInfo)))
+				{
+					MSG_BOX("드래곤맵 생성 실패");
+					return E_FAIL;
+				}
+			}
+			inFile.close();
+		}
+
+		//Ready_BossRoom
+		{
+			const TCHAR* pGetPath = TEXT("../Bin/Data/BossRoom_MapData.dat");
+
+			std::ifstream inFile(pGetPath, std::ios::binary);
+
+			if (!inFile.is_open())
+			{
+				MSG_BOX("무한의탑 모델 데이터 파일 불러오기 실패.");
+				return E_FAIL;
+			}
+
+			_uint MapListSize;
+			inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+
+
+			for (_uint i = 0; i < MapListSize; ++i)
+			{
+				_ulong MapPrototypeSize;
+				inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+
+				wstring MapPrototype;
+				MapPrototype.resize(MapPrototypeSize);
+				inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+
+				_mat MapWorldMat;
+				inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+
+				MapInfo MapInfo{};
+				MapInfo.Prototype = MapPrototype;
+				MapInfo.m_Matrix = MapWorldMat;
+
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Tower"), TEXT("Prototype_GameObject_BossRoom"), &MapInfo)))
+				{
+					MSG_BOX("무한의탑 생성 실패");
+					return E_FAIL;
+				}
+			}
+			inFile.close();
 		}
 	}
 

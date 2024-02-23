@@ -821,6 +821,7 @@ PS_OUT_EFFECT PS_Main_DiffEffect_Dissolve(PS_IN Input)
     return Output;
 }
 
+
 technique11 DefaultTechnique_Shader_StatMesh
 {
     pass Default // 0
@@ -1121,4 +1122,5 @@ technique11 DefaultTechnique_Shader_StatMesh
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Distortion();
     }
+
 };

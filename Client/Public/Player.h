@@ -432,8 +432,6 @@ private:
 	const _float m_fWalkSpeed{ 1.f };
 	_bool m_isInvenActive{ false };
 
-	_bool m_ViewLeftTrail{};
-	_bool m_ViewRightTrail{};
 	_bool m_bPoison{};
 	_bool m_bHitted{};
 	_uint m_iShield{};

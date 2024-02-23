@@ -255,7 +255,8 @@ void CModel::Set_Animation(ANIM_DESC Animation_Desc)
 {
 	if (m_AnimDesc.iAnimIndex != Animation_Desc.iAnimIndex or
 		Animation_Desc.bRestartAnimation or
-		m_AnimDesc.bRewindAnimation != Animation_Desc.bRewindAnimation)
+		(m_AnimDesc.bRewindAnimation != Animation_Desc.bRewindAnimation and
+			m_Animations[m_AnimDesc.iAnimIndex]->IsFinished()))
 	{
 		m_isAnimChanged = true;
 
