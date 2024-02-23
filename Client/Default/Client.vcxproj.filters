@@ -451,14 +451,17 @@
     <Filter Include="02.GameObjects\04.Monster\98. Statue">
       <UniqueIdentifier>{b30a4619-e442-47d5-bdd3-dcd61152f75c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="98.Default\Hell">
+      <UniqueIdentifier>{33adb1d1-a5eb-44d1-8260-3a45e1e43819}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObjects\00.UI\Texture&amp;Text">
       <UniqueIdentifier>{e433917e-0435-4307-a9c2-4229c403b1c9}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\09.Object\ETC\Tower">
       <UniqueIdentifier>{da0fdb47-bb4d-43c6-9bf6-aa68566c0962}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\06.Sky\Hell">
-      <UniqueIdentifier>{33adb1d1-a5eb-44d1-8260-3a45e1e43819}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\15. SurvivalGame">
+      <UniqueIdentifier>{cf696106-eeaf-4b97-925a-6f520fc47a0d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -864,6 +867,7 @@
     <ClInclude Include="..\Public\Targeted.h">
       <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Target</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Hell.h" />
     <ClInclude Include="..\Public\Symbol.h">
       <Filter>02.GameObjects\00.UI\Symbol</Filter>
     </ClInclude>
@@ -920,7 +924,6 @@
     <ClInclude Include="..\Public\BrickBall.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Statue.h" />
     <ClInclude Include="..\Public\BrickGame.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
@@ -930,8 +933,11 @@
     <ClInclude Include="..\Public\TowerObject.h">
       <Filter>02.GameObjects\09.Object\ETC\Tower</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Hell.h">
-      <Filter>02.GameObjects\06.Sky\Hell</Filter>
+    <ClInclude Include="..\Public\Statue.h">
+      <Filter>02.GameObjects\04.Monster\98. Statue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SurvivalGame.h">
+      <Filter>02.GameObjects\15. SurvivalGame</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1338,6 +1344,7 @@
     <ClCompile Include="..\Private\Rabbit.cpp">
       <Filter>02.GameObjects\04.Monster\02. Animal\00. Rabbit</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Hell.cpp" />
     <ClCompile Include="..\Private\Symbol.cpp">
       <Filter>02.GameObjects\00.UI\Symbol</Filter>
     </ClCompile>
@@ -1388,7 +1395,6 @@
     <ClCompile Include="..\Private\BrickBall.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Statue.cpp" />
     <ClCompile Include="..\Private\BrickGame.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
@@ -1398,8 +1404,11 @@
     <ClCompile Include="..\Private\Human_Boss.cpp">
       <Filter>02.GameObjects\08. Boss\Human_Boss</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Hell.cpp">
-      <Filter>02.GameObjects\06.Sky\Hell</Filter>
+    <ClCompile Include="..\Private\Statue.cpp">
+      <Filter>02.GameObjects\04.Monster\98. Statue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SurvivalGame.cpp">
+      <Filter>02.GameObjects\15. SurvivalGame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
