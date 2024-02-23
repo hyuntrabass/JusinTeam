@@ -1,11 +1,9 @@
 #pragma once
 
 #include "Client_Define.h"
-#include "Monster.h"
+#include "GameObject.h"
 
 BEGIN(Client)
-
-class CHPMonster;
 
 class CBalloon final : public CGameObject
 {
