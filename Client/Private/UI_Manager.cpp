@@ -755,7 +755,7 @@ _bool CUI_Manager::Is_Collecting()
 		m_isCollect = false;
 		return true;
 	}
-	return true;
+	return false;
 }
 
 _uint CUI_Manager::Get_CurrentMiniGame()

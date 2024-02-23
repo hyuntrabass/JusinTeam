@@ -38,7 +38,7 @@ HRESULT CHuman_Boss::Init(void* pArg)
 	ControllerDesc.slopeLimit = cosf(PxDegToRad(1.f)); // 캐릭터가 오를 수 있는 최대 각도
 	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
 	ControllerDesc.stepOffset = 0.01f; // 캐릭터가 오를 수 있는 계단의 최대 높이
-	//m_pGameInstance->Register_CollisionObject(this, m_pBodyCollider);
+	m_pGameInstance->Register_CollisionObject(this, m_pBodyCollider);
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 	m_pTransformCom->Set_Position(_vec3(100.325f, 8.5294f, 110.833f));
 	m_Animation.iAnimIndex = BossAnim_attack01;
@@ -88,9 +88,9 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 		m_pShieldEffect->Tick(fTimeDelta);
 
 	}
-	if (m_pRingEffect)
+	if (m_pCounterEffect)
 	{
-		m_pRingEffect->Tick(fTimeDelta);
+		m_pCounterEffect->Tick(fTimeDelta);
 	}
 	if (!m_bViewWeapon && m_fDissolveRatio < 1.f)
 	{
@@ -129,9 +129,9 @@ void CHuman_Boss::Late_Tick(_float fTimeDelta)
 		m_pShieldEffect->Late_Tick(fTimeDelta);
 
 	}
-	if (m_pRingEffect)
+	if (m_pCounterEffect)
 	{
-		m_pRingEffect->Late_Tick(fTimeDelta);
+		m_pCounterEffect->Late_Tick(fTimeDelta);
 	}
 	if (m_pAttackEffect)
 	{
@@ -176,14 +176,12 @@ HRESULT CHuman_Boss::Render()
 		{
 			if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 			{
-				int a = 0;
 			}
 		}
 		else
 		{
 			if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Opacity)))
-			{
-				int a = 0;
+			{		
 			}
 		}
 
@@ -256,7 +254,7 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 	if (m_bChangePass == true)
 	{
 		m_fHitTime += fTimeDelta;
-
+		m_vRimColor = Colors::Red;
 		if (m_iPassIndex == AnimPass_DefaultNoCull)
 		{
 			m_iPassIndex = AnimPass_Rim;
@@ -814,29 +812,56 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 	else if (m_eState == Counter_Start)
 	{
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
-
-		if (Index >= 0.f && Index <= 181.f)
+		if (Index >= 0.f && Index <= 3.f)
 		{
 			if (!m_bAttacked)
 			{
 				View_Attack_Range(Range_360);
 				m_bAttacked = true;
 			}
+		}
+		else if (Index >= 4.f && Index <= 6.f)
+		{
+			m_bAttacked = false;
+		}
+		if (Index >= 0.f && Index <= 181.f)
+		{
 			Increased_Range(182.f,fTimedelta);
 		}
-		if (Index >= 181.f && Index <= 183.f)
+		else if (Index >= 181.f && Index <= 183.f)
 		{
 			m_bAttacked = false;
 		}
 		if (Index >= 100.f && Index <= 160.f)
 		{
-		
+			if (!m_bAttacked)
+			{
+				EffectInfo Info{};
+				_mat EffectMat = _mat::CreateScale(3.f) * m_pTransformCom->Get_World_Matrix();
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Human_Counter");
+				Info.pMatrix = &EffectMat;
+				m_pCounterEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+				m_vRimColor = _vec4(0.13f, 0.13f, 0.89f, 1.f);
+				m_iPassIndex = AnimPass_Rim;
+				m_iWeaponPassIndex = AnimPass_Rim;
+				m_bAttacked = true;
+			}
+
 			if (m_bCounter_Success)
 			{
+				m_pGameInstance->Play_Sound(TEXT("Counter"),0.7f); 
 				m_eState = Counter_Fail;
 				m_bCounter_Success = false;
+				m_iPassIndex = AnimPass_DefaultNoCull;
+				m_iWeaponPassIndex = AnimPass_Dissolve;
 				return;
 			}
+		}
+		else if (Index >= 161.f && Index <= 163.f)
+		{
+			m_iPassIndex = AnimPass_DefaultNoCull;
+			m_iWeaponPassIndex = AnimPass_Dissolve;
+			m_bAttacked = false;
 		}
 		else if (Index >= 183.f && Index <= 186.f)
 		{
@@ -870,7 +895,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 		m_bShieldOn = false;
 		m_fShiledTimmer = 0.f;
 		Safe_Release(m_pShieldEffect);
-		Safe_Release(m_pRingEffect);
+		Safe_Release(m_pCounterEffect);
 	}
 	if (m_bHide && m_fHideTimmer < 7.f)
 	{
@@ -949,7 +974,7 @@ HRESULT CHuman_Boss::Bind_ShaderResources()
 	if (m_iPassIndex == AnimPass_Rim)
 	{
 		_vec4 vColor = Colors::Red;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vColor, sizeof vColor)))
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &m_vRimColor, sizeof vColor)))
 		{
 			return E_FAIL;
 		}
@@ -1019,11 +1044,10 @@ CGameObject* CHuman_Boss::Clone(void* pArg)
 void CHuman_Boss::Free()
 {
 	__super::Free();
-	m_pGameInstance->Delete_CollisionObject(this);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pDimEffect);
 	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pRingEffect);
+	Safe_Release(m_pCounterEffect);
 	Safe_Release(m_pShieldEffect);
 	Safe_Release(m_pBaseEffect);
 	Safe_Release(m_pAttackEffect);

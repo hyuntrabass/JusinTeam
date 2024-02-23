@@ -415,9 +415,6 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\Vehicle\Vehicle">
       <UniqueIdentifier>{0d9cfe46-b184-4484-a323-3a20f496c6c0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\08. Boss\Human_Boss">
-      <UniqueIdentifier>{ca41e229-ff6d-4b8d-a622-f84b5234450a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\09.Object\Torch">
       <UniqueIdentifier>{b81bd7e5-ba31-4ee3-962d-a9f6c2f09f29}</UniqueIdentifier>
     </Filter>
@@ -459,6 +456,9 @@
     </Filter>
     <Filter Include="02.GameObjects\09.Object\ETC\Tower">
       <UniqueIdentifier>{da0fdb47-bb4d-43c6-9bf6-aa68566c0962}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Human_Boss">
+      <UniqueIdentifier>{ca41e229-ff6d-4b8d-a622-f84b5234450a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

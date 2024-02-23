@@ -119,13 +119,12 @@ private:
 	class CEffect_Dummy* m_pDimEffect{ nullptr };
 	class CEffect_Dummy* m_pAttackEffect{ nullptr };
 	class CEffect_Dummy* m_pShieldEffect{ nullptr };
-	class CEffect_Dummy* m_pRingEffect{ nullptr };
+	class CEffect_Dummy* m_pCounterEffect{ nullptr };
 
 private:
 	ANIM_DESC m_Animation{};
 	STATE m_eState = BOSS_STATE_END;
 	STATE m_ePreState = BOSS_STATE_END;
-
 private:
 	
 	_bool m_bSecondPattern{};
@@ -141,7 +140,7 @@ private:
 	_bool m_bViewWeapon{};
 	_float m_fDissolveRatio{};
 	_uint m_iWeaponPassIndex{};
-
+	_vec4 m_vRimColor{};
 	_bool m_bShieldOn{};
 	_mat m_AttEffectMat{};
 	_mat m_BaseEffectMat{};
