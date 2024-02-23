@@ -933,6 +933,12 @@
     <ClInclude Include="..\public\Hell.h">
       <Filter>02.GameObjects\06.Sky\Hell</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\BrickWall.h">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BrickBar.h">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1400,6 +1406,12 @@
     </ClCompile>
     <ClCompile Include="..\private\Hell.cpp">
       <Filter>02.GameObjects\06.Sky\Hell</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BrickWall.cpp">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BrickBar.cpp">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

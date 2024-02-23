@@ -923,6 +923,15 @@ CCollider* CGameInstance::Get_Nearest_MonsterCollider()
 
 	return m_pCollision_Manager->Get_Nearest_MonsterCollider();
 }
+CollideFace CGameInstance::Get_CollideFace(CCollider* pAABBCollider, CCollider* pShereCollider)
+{
+	if (!m_pCollision_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
+	}
+	
+	return m_pCollision_Manager->Get_CollideFace(pAABBCollider, pShereCollider);
+}
 void CGameInstance::Init_PhysX_Character(CTransform* pTransform, CollisionGroup eGroup, PxCapsuleControllerDesc* pDesc)
 {
 	if (!m_pPhysX_Manager)
