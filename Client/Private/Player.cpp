@@ -586,12 +586,8 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 	m_pLeft_Trail->Late_Tick(fTimeDelta);
 	m_pLeft_Distortion_Trail->Late_Tick(fTimeDelta);
-	m_pLeft_Trail->Off();
-	m_pLeft_Distortion_Trail->Off();
 	m_pRight_Trail->Late_Tick(fTimeDelta);
 	m_pRight_Distortion_Trail->Late_Tick(fTimeDelta);
-	m_pRight_Trail->Off();
-	m_pRight_Distortion_Trail->Off();
 
 	if (m_pCam_Manager->Get_CameraState() == CS_WORLDMAP)
 	{
