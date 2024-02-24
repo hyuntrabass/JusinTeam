@@ -969,7 +969,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			{
 				if (!Compute_Angle(45.f))
 				{
-					m_pGameInstance->Attack_Player(nullptr, 50.f, MonAtt_Hit);
+					m_pGameInstance->Attack_Player(nullptr, 50, MonAtt_Hit);
 				}
 				m_bAttacked = false;
 			}
@@ -989,7 +989,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			{
 				if (!Compute_Angle(45.f, m_fAttackRange))
 				{
-					m_pGameInstance->Attack_Player(nullptr, 50.f, MonAtt_Hit);
+					m_pGameInstance->Attack_Player(nullptr, 50, MonAtt_Hit);
 				}
 				m_bAttacked = false;
 			}
@@ -1009,7 +1009,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			{
 				if (!Compute_Angle(45.f, m_fAttackRange * 2.f))
 				{
-					m_pGameInstance->Attack_Player(nullptr, 50.f, MonAtt_Hit);
+					m_pGameInstance->Attack_Player(nullptr, 50, MonAtt_Hit);
 				}
 				m_bAttacked = false;
 			}
@@ -1029,7 +1029,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			{
 				if (!Compute_Angle(45.f, m_fAttackRange * 3.f))
 				{
-					m_pGameInstance->Attack_Player(nullptr, 50.f, MonAtt_Hit);
+					m_pGameInstance->Attack_Player(nullptr, 50, MonAtt_Hit);
 				}
 				m_bAttacked = false;
 			}
@@ -1049,7 +1049,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			{
 				if (!Compute_Angle(45.f, m_fAttackRange * 4.f))
 				{
-					m_pGameInstance->Attack_Player(nullptr, 50.f, MonAtt_Hit);
+					m_pGameInstance->Attack_Player(nullptr, 50, MonAtt_Hit);
 				}
 				m_bAttacked = false;
 			}
@@ -1069,7 +1069,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			{
 				if (!Compute_Angle(45.f, m_fAttackRange * 5.f))
 				{
-					m_pGameInstance->Attack_Player(nullptr, 50.f, MonAtt_Hit);
+					m_pGameInstance->Attack_Player(nullptr, 50, MonAtt_Hit);
 				}
 				m_bAttacked = false;
 			}
@@ -1089,7 +1089,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			{
 				if (!Compute_Angle(45.f, m_fAttackRange * 6.f))
 				{
-					m_pGameInstance->Attack_Player(nullptr, 50.f, MonAtt_Hit);
+					m_pGameInstance->Attack_Player(nullptr, 50, MonAtt_Hit);
 				}
 				m_bAttacked = false;
 			}
@@ -1110,7 +1110,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			{
 				if (!Compute_Angle(45.f, m_fAttackRange * 7.f))
 				{
-					m_pGameInstance->Attack_Player(nullptr, 50.f, MonAtt_Hit);
+					m_pGameInstance->Attack_Player(nullptr, 50, MonAtt_Hit);
 				}
 				m_bAttacked = false;
 			}

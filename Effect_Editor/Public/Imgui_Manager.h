@@ -70,6 +70,8 @@ private:
 public:
 	const _bool& Has_Light();
 
+	const _color& Get_BGColor();
+
 public:
 	HRESULT Init(_dev pDevice, _context pContext, vector<string>* pTextureList, vector<string>* pModelList);
 	void Tick(_float fTimeDelta);
@@ -114,6 +116,8 @@ private:
 	_mat m_DummyMatrix{};
 
 	filesystem::path m_CurrFilePath{};
+
+	_color m_vBGColor{ 0.2f, 0.2f, 0.25f, 1.f };
 
 private:
 	HRESULT Ready_Layers();

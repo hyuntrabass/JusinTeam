@@ -511,6 +511,8 @@ HRESULT CLevel_Village::Ready_Human_Boss()
 	{
 		return E_FAIL;
 	}
+
+	return S_OK;
 }
 
 HRESULT CLevel_Village::Ready_NPC()

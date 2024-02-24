@@ -73,7 +73,7 @@ public: // Input Manager
 public: // Light Manager
 	LIGHT_DESC* Get_LightDesc(_uint iLevelIndex, const wstring& strLightTag);
 	HRESULT Add_Light(_uint iLevelIndex, const wstring& strLightTag, const LIGHT_DESC& LightDesc);
-	HRESULT Delete_Light(_uint iLevelIndex, const wstring& strLightTag, _float fDimmerDuration = 0.5f);
+	HRESULT Delete_Light(_uint iLevelIndex, const wstring& strLightTag, _float fDimmerDuration = 1.f);
 	HRESULT Render_Lights(_uint iLevelIndex, class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
 	HRESULT Bind_Light_ViewProjMatrix(_uint iLevelIndex, const wstring& strLightTag, class CShader* pShader, const _char* pViewVariableName, const _char* pProjVariableName);
 

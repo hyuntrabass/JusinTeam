@@ -174,7 +174,7 @@ void CArrow::Tick(_float fTimeDelta)
 			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Spark");
 			Info.pMatrix = &EffectMat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
-			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_test");
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion");
 			Info.pMatrix = &EffectMat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Arrow_Explosion_Impact");
