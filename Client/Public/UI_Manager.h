@@ -154,6 +154,9 @@ public:
 
 	void Set_MiniGameStage(TOWER eTower) { m_iCurrentMiniGame = eTower; }
 	_uint Get_CurrentMiniGame();
+	
+	void Set_WorldMap() { m_isWorldMap = true; }
+	_bool Is_WorldMap();
 
 private:
 	_uint			m_iCurrentMiniGame{(_uint)TOWER_END};
@@ -165,6 +168,7 @@ private:
 	_bool			m_bTeleport{};
 
 	_bool			m_isCollect{ false };
+	_bool			m_isWorldMap{ false };
 
 	_bool			m_isInfinityTower{ false };
 	_bool			m_isPet{ false };

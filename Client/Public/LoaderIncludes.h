@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BrickBar.h"
 #include "BrickWall.h"
 #include "NumEffect.h"
 #include "BrickGame.h"
@@ -132,7 +133,7 @@
 #include "Meteor.h"
 
 #include "Human_Boss.h"
-
+#include "SafeZone.h"
 
 // Pet
 #include "Pet_Cat.h"

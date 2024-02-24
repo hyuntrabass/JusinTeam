@@ -9,6 +9,7 @@
 #include "Balloon.h"
 #include "InfinityTower.h"
 #include "NumEffect.h"
+#include "BrickWall.h"
 
 //const _float CBrickGame::m_iRow = 7;
 //const _float CBrickGame::m_iCOl = 7;
@@ -70,13 +71,14 @@ void CBrickGame::Tick(_float fTimeDelta)
 		m_fComboTime = 0.f;
 	}
 
-	if (m_isActive && m_pGameInstance->Key_Down(DIK_PGUP))
+	if (m_isActive && m_pGameInstance->Key_Down(DIK_SPACE))
 	{
 		m_isActive = false;
 		CUI_Manager::Get_Instance()->Open_InfinityTower(true);
 		return;
 	}
-
+	/*
+	
 	for (size_t i = 0; i < BRICKROW; i++)
 	{
 		for (size_t j = 0; j < BRICKCOL; j++)
@@ -99,7 +101,7 @@ void CBrickGame::Tick(_float fTimeDelta)
 				m_pBalloon[i][j]->Tick(fTimeDelta);
 			}
 		}
-	}
+	}*/
 }
 
 void CBrickGame::Late_Tick(_float fTimeDelta)
@@ -108,6 +110,8 @@ void CBrickGame::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
+	/*
+	
 	for (size_t i = 0; i < BRICKROW; i++)
 	{
 		for (size_t j = 0; j < BRICKCOL; j++)
@@ -117,7 +121,7 @@ void CBrickGame::Late_Tick(_float fTimeDelta)
 				m_pBalloon[i][j]->Late_Tick(fTimeDelta);
 			}
 		}
-	}
+	}*/
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 }
 
@@ -136,6 +140,27 @@ HRESULT CBrickGame::Render()
 
 HRESULT CBrickGame::Add_Parts()
 {
+	CBrickWall::WALL_DESC WallDesc{};
+	WallDesc.rcRect = { (_long)1.f, (_long)0.f, (_long)0.f, (_long)0.f };
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
+	{
+		return E_FAIL;
+	}
+	WallDesc.rcRect = { (_long)0.f, (_long)1.f, (_long)0.f, (_long)0.f };
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
+	{
+		return E_FAIL;
+	}
+	WallDesc.rcRect = { (_long)0.f, (_long)0.f, (_long)1.f, (_long)0.f };
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
+	{
+		return E_FAIL;
+	}
+	WallDesc.rcRect = { (_long)0.f, (_long)0.f, (_long)0.f, (_long)1.f };
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
+	{
+		return E_FAIL;
+	}
 	
 	_vec3 vStartPos = _vec3(-1994.55347f, 0.f, -2006.44592f);
 	for (_uint i = 0; i < BRICKROW; i++)
@@ -146,12 +171,18 @@ HRESULT CBrickGame::Add_Parts()
 			Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
 			Desc.vPosition = _vec3(vStartPos.x - 2.2f * j, vStartPos.y, vStartPos.z + 2.2f * i);
 
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Balloons"), TEXT("Prototype_GameObject_Balloon"), &Desc)))
+			{
+				return E_FAIL;
+			}
+		 /*
 			CBalloon * pBalloon = (CBalloon*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Balloon"), &Desc);
 			if (pBalloon == nullptr)
 			{
 				return E_FAIL;
 			}
-			m_pBalloon[i][j] = pBalloon;
+		 */
+			//m_pBalloon[i][j] = pBalloon;
 		}
 
 	}

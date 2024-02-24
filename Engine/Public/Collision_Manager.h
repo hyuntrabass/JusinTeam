@@ -1,5 +1,6 @@
 #pragma once
 #include "Base.h"
+#include "Collider.h"
 
 BEGIN(Engine)
 
@@ -20,6 +21,8 @@ public:
 	_bool CheckCollision_Player(class CCollider* pCollider); // 필요없음
 	_bool CheckCollision_Culling(class CCollider* pCollider);
 	class CCollider* Get_Nearest_MonsterCollider();
+	CollideFace Get_CollideFace(CCollider* pAABBCollider, CCollider* pShereCollider);
+
 private:
 	map<class CGameObject*, class CCollider*> m_Monsters{};
 	map<class CGameObject*, class CCollider*> m_Objects{};

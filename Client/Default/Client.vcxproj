@@ -167,6 +167,7 @@
     <ClInclude Include="..\Public\BlackSmith.h" />
     <ClInclude Include="..\Public\BlurTexture.h" />
     <ClInclude Include="..\Public\BrickBall.h" />
+    <ClInclude Include="..\Public\BrickBar.h" />
     <ClInclude Include="..\Public\BrickGame.h" />
     <ClInclude Include="..\Public\BrickWall.h" />
     <ClInclude Include="..\Public\Camera_CutScene.h" />
@@ -249,6 +250,7 @@
     <ClInclude Include="..\Public\Radar.h" />
     <ClInclude Include="..\Public\Riding.h" />
     <ClInclude Include="..\Public\Roskva.h" />
+    <ClInclude Include="..\Public\SafeZone.h" />
     <ClInclude Include="..\Public\Scarecrow.h" />
     <ClInclude Include="..\Public\Select_Map.h" />
     <ClInclude Include="..\Public\Select_Model.h" />
@@ -331,6 +333,7 @@
     <ClCompile Include="..\Private\BlackSmith.cpp" />
     <ClCompile Include="..\Private\BlurTexture.cpp" />
     <ClCompile Include="..\Private\BrickBall.cpp" />
+    <ClCompile Include="..\Private\BrickBar.cpp" />
     <ClCompile Include="..\Private\BrickGame.cpp" />
     <ClCompile Include="..\Private\BrickWall.cpp" />
     <ClCompile Include="..\Private\Camera_CutScene.cpp" />
@@ -412,6 +415,7 @@
     <ClCompile Include="..\Private\Radar.cpp" />
     <ClCompile Include="..\Private\Riding.cpp" />
     <ClCompile Include="..\Private\Roskva.cpp" />
+    <ClCompile Include="..\Private\SafeZone.cpp" />
     <ClCompile Include="..\Private\Scarecrow.cpp" />
     <ClCompile Include="..\Private\Select_Map.cpp" />
     <ClCompile Include="..\Private\Select_Model.cpp" />

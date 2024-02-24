@@ -864,6 +864,14 @@ void CRiding::Init_State()
 
 void CRiding::Tick_State(_float fTimeDelta)
 {
+	//if (m_eState == Riding_Glide)
+	//{
+	//	m_pRendererCom->Set_RaidalBlur(m_pTransformCom->Get_State(State::Pos), _float(1.f));
+	//}
+	//else
+	//{
+	//	m_pRendererCom->Set_RaidalBlur(m_pTransformCom->Get_CenterPos(), _float(0.f));
+	//}
 	switch (m_eState)
 	{
 	case Client::Riding_Landing:
@@ -1081,8 +1089,6 @@ _vec4 CRiding::Get_Pos()
 {
 	return m_pTransformCom->Get_State(State::Pos);
 }
-
-
 
 void CRiding::Update_Collider()
 {
