@@ -95,6 +95,11 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 		m_iCurrentKeyFrame = 0;
 		m_fPreAnimPos = 0.f;
 	}
+	else if (fCurrentAnimPos == m_KeyFrames.back().fTime && !isAnimChanged)
+	{
+		m_iCurrentKeyFrame = m_KeyFrames.size() - 1;
+		m_fPreAnimPos = fCurrentAnimPos;
+	}
 
 	KEYFRAME LastKeyFrame = m_KeyFrames.back();
 	KEYFRAME FirstKeyFrame = m_KeyFrames.front();

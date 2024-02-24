@@ -215,6 +215,7 @@
     <ClInclude Include="..\Public\ItemMerchant.h" />
     <ClInclude Include="..\Public\ItemSlot.h" />
     <ClInclude Include="..\Public\JobMark.h" />
+    <ClInclude Include="..\Public\Launcher.h" />
     <ClInclude Include="..\Public\Level_Village.h" />
     <ClInclude Include="..\Public\Logo_Dust.h" />
     <ClInclude Include="..\Public\Logo_Stone.h" />
@@ -245,6 +246,7 @@
     <ClInclude Include="..\Public\Pop_QuestIn.h" />
     <ClInclude Include="..\Public\Etc_Object.h" />
     <ClInclude Include="..\Public\Pop_Skill.h" />
+    <ClInclude Include="..\Public\Projectile.h" />
     <ClInclude Include="..\Public\Quest.h" />
     <ClInclude Include="..\Public\QuestBox.h" />
     <ClInclude Include="..\Public\Rabbit.h" />
@@ -258,9 +260,11 @@
     <ClInclude Include="..\Public\NameTag.h" />
     <ClInclude Include="..\Public\SelectDesc.h" />
     <ClInclude Include="..\Public\Select_Npc.h" />
+    <ClInclude Include="..\Public\SescoGame.h" />
     <ClInclude Include="..\Public\Shop.h" />
     <ClInclude Include="..\Public\ShopDesc.h" />
     <ClInclude Include="..\Public\ShopWindow.h" />
+    <ClInclude Include="..\Public\Sickle.h" />
     <ClInclude Include="..\Public\Skill.h" />
     <ClInclude Include="..\Public\SkillBlock.h" />
     <ClInclude Include="..\Public\SkillBook.h" />
@@ -363,9 +367,11 @@
     <ClCompile Include="..\Private\InfinityTower.cpp" />
     <ClCompile Include="..\Private\Interaction_Anim_Object.cpp" />
     <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp" />
+    <ClCompile Include="..\Private\Launcher.cpp" />
     <ClCompile Include="..\Private\Meteor.cpp" />
     <ClCompile Include="..\Private\NineSlice.cpp" />
     <ClCompile Include="..\Private\NumEffect.cpp" />
+    <ClCompile Include="..\Private\Projectile.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />
     <ClCompile Include="..\Private\FadeBox.cpp" />
     <ClCompile Include="..\Private\Goat.cpp" />
@@ -424,9 +430,11 @@
     <ClCompile Include="..\Private\NameTag.cpp" />
     <ClCompile Include="..\Private\SelectDesc.cpp" />
     <ClCompile Include="..\Private\Select_Npc.cpp" />
+    <ClCompile Include="..\Private\SescoGame.cpp" />
     <ClCompile Include="..\Private\Shop.cpp" />
     <ClCompile Include="..\Private\ShopDesc.cpp" />
     <ClCompile Include="..\Private\ShopWindow.cpp" />
+    <ClCompile Include="..\Private\Sickle.cpp" />
     <ClCompile Include="..\Private\Skill.cpp" />
     <ClCompile Include="..\Private\SkillBlock.cpp" />
     <ClCompile Include="..\Private\SkillBook.cpp" />

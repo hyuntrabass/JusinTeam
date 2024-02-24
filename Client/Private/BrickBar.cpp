@@ -36,8 +36,8 @@ HRESULT CBrickBar::Init(void* pArg)
 
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-	vPlayerPos.y += 1.f;
-	_vec4 vCenterPos = _vec4(-1999.90186f, 0.2f, -1992.60742f, 1.f);
+	vPlayerPos.y += 1.f; 
+	_vec4 vCenterPos = _vec4(-2000.70496f, 11.4677677f, -1992.06152f, 1.f);
 	_vec4 vPlayerLook = pPlayerTransform->Get_State(State::Look);
 	vPlayerLook.y = 0.f;
 
@@ -51,12 +51,13 @@ HRESULT CBrickBar::Init(void* pArg)
 	Info.isFollow = true;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
+	m_pColliderCom->Set_Normal();
+
 	return S_OK;
 }
 
 void CBrickBar::Tick(_float fTimeDelta)
 {
-	m_pColliderCom->Set_Normal();
 	if (m_pGameInstance->Key_Pressing(DIK_LEFT))
 	{
 		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
@@ -91,11 +92,12 @@ void CBrickBar::Tick(_float fTimeDelta)
 void CBrickBar::Late_Tick(_float fTimeDelta)
 {
 	//m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
-
+	/*
 	if (m_pEffect_Ball)
 	{
 		m_pEffect_Ball->Late_Tick(fTimeDelta);
 	}
+	*/
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
@@ -128,30 +130,6 @@ void CBrickBar::Update_Collider()
 }
 
 
-void CBrickBar::RayCast()
-{
-	_float fDist = 0.51f;
-	PxRaycastBuffer Buffer{};
-
-	if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), 
-		m_pTransformCom->Get_State(State::Look).Get_Normalized(),
-		fDist, Buffer))
-	{
-		_vec3 vNormal = _vec3(PxVec3ToVector(Buffer.block.normal));
-		_vec3 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
-		vNormal.Normalize();
-		m_vDir = _vec3::Reflect(vLook, vNormal);
-		m_vDir.y = 0.f;
-		m_pTransformCom->LookAt_Dir(m_vDir);
-
-
-		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Ball_Smoke");
-		Info.pMatrix = &m_EffectMatrix;
-		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
-
-	}
-
-}
 
 HRESULT CBrickBar::Add_Components()
 {

@@ -710,6 +710,15 @@ void CCamera_Main::SkillBook_Mode(_float fTimeDelta)
 	m_pTransformCom->LookAt_Dir(_vec4(-0.514929f, -0.221083f, 0.828224f, 0.f));
 }
 
+void CCamera_Main::BrickGame_Mode(_float fTimeDelta)
+{
+	_vec4 vBrickGamePos = _vec4(-1999.853f, 17.962f, -1985.831f, 1.f);
+
+	m_pTransformCom->Set_State(State::Pos, vBrickGamePos);
+
+	m_pTransformCom->LookAt_Dir(_vec4(-0.004f, -0.500f, -0.866f, 0.f));
+}
+
 
 void CCamera_Main::WorldMap_Mode(_float fTimeDelta)
 {
@@ -827,6 +836,9 @@ void CCamera_Main::Init_State(_float fTimeDelta)
 		case Client::CS_WORLDMAP:
 			m_vOriginalLook = m_pTransformCom->Get_State(State::Look);
 			break;
+		case Client::CS_BRICKGAME:
+			m_vOriginalLook = m_pTransformCom->Get_State(State::Look);
+			break;
 		}
 
 		m_ePrevState = m_eCurrState;
@@ -870,6 +882,9 @@ void CCamera_Main::Tick_State(_float fTimeDelta)
 	}
 	case Client::CS_WORLDMAP:
 		WorldMap_Mode(fTimeDelta);
+		break;
+	case Client::CS_BRICKGAME:
+		BrickGame_Mode(fTimeDelta);
 		break;
 	}
 }

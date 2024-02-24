@@ -442,17 +442,18 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CUSTOM)
 	{
+	
+
 		if (!m_bIsMount)
 		{
 			Move(fTimeDelta);
 		}
-
 		Init_State();
-
 		if (!m_bIsMount)
 		{
 			Tick_State(fTimeDelta);
 		}
+
 		if (m_Current_Weapon == WP_SWORD)
 		{
 			After_SwordAtt(fTimeDelta);
@@ -641,6 +642,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 			return;
 		}
 		dynamic_cast<CTextButtonColor*>(m_pAim)->Set_Pass(VTPass_Mask_ColorAlpha);
+		CUI_Manager::Get_Instance()->Set_Mp(m_Status.Current_Mp, m_Status.Max_Mp);
 	}
 
 

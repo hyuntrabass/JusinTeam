@@ -191,6 +191,59 @@ CollideFace CCollision_Manager::Get_CollideFace(CCollider* pAABBCollider, CColli
 		return eCollideFace;
 	}
 
+	_vec3 vNormals[C_END]{};
+	vNormals[C_TOP] = _vec3(0.f, 1.f, 0.f);
+	vNormals[C_BOTTOM] = _vec3(0.f, -1.f, 0.f);
+	vNormals[C_FRONT] = _vec3(0.f, 0.f, 1.f);
+	vNormals[C_BACK] = _vec3(0.f, 0.f, -1.f);
+	vNormals[C_LEFT] = _vec3(-1.f, 0.f, 0.f);
+	vNormals[C_RIGHT] = _vec3(1.f, 0.f, 0.f);
+
+	_vec3 vPlaneDot[C_END]{};
+	vPlaneDot[C_TOP] = _vec3(pAABBCollider->Get_ColliderPos().x, pAABBCollider->Get_ColliderPos().y + pAABBCollider->Get_Extents().y, pAABBCollider->Get_ColliderPos().z);
+	vPlaneDot[C_BOTTOM] = _vec3(pAABBCollider->Get_ColliderPos().x, pAABBCollider->Get_ColliderPos().y - pAABBCollider->Get_Extents().y, pAABBCollider->Get_ColliderPos().z);
+	vPlaneDot[C_FRONT] = _vec3(pAABBCollider->Get_ColliderPos().x, pAABBCollider->Get_ColliderPos().y, pAABBCollider->Get_ColliderPos().z + pAABBCollider->Get_Extents().z);
+	vPlaneDot[C_BACK] = _vec3(pAABBCollider->Get_ColliderPos().x, pAABBCollider->Get_ColliderPos().y, pAABBCollider->Get_ColliderPos().z - pAABBCollider->Get_Extents().z);
+	vPlaneDot[C_LEFT] = _vec3(pAABBCollider->Get_ColliderPos().x - pAABBCollider->Get_Extents().x, pAABBCollider->Get_ColliderPos().y, pAABBCollider->Get_ColliderPos().z);
+	vPlaneDot[C_RIGHT] = _vec3(pAABBCollider->Get_ColliderPos().x + pAABBCollider->Get_Extents().x, pAABBCollider->Get_ColliderPos().y, pAABBCollider->Get_ColliderPos().z);
+
+	for (size_t i = 0; i < C_END; i++)
+	{
+		_vec3 vLine = pShereCollider->Get_ColliderPos() - pAABBCollider->Get_ColliderPos();
+		_float t = XMVectorGetX(XMVector3Dot(vNormals[i], vPlaneDot[i] - pAABBCollider->Get_ColliderPos())) / XMVectorGetX(XMVector3Dot(vNormals[i], vLine));
+		if (t >= 0 && t <= 1)
+		{
+			eCollideFace = (CollideFace)i;
+			break;
+		}
+	}
+
+	if (eCollideFace == C_END)
+	{
+		_vec3 vDir = pShereCollider->Get_ColliderPos() - pAABBCollider->Get_ColliderPos();
+		vDir.Normalize();
+
+		_float fMaxForProduct{ -1.f };
+		for (size_t i = 0; i < C_END; i++)
+		{
+			_float fDotProduct = XMVectorGetX(XMVector3Dot(vNormals[i], vDir));
+			if (fDotProduct > fMaxForProduct)
+			{
+				fMaxForProduct = fDotProduct;
+				eCollideFace = (CollideFace)i;
+			}
+		}
+	}
+
+	return eCollideFace;
+	/*
+	*     XMVECTOR V = XMLoadFloat3(&P2) - XMLoadFloat3(&P1);
+
+    // Calculate the scalar value t
+    float t = XMVectorGetX(XMVector3Dot(XMLoadFloat3(&N), XMLoadFloat3(&P0) - XMLoadFloat3(&P1))) / XMVectorGetX(XMVector3Dot(XMLoadFloat3(&N), V));
+	*/
+	/*
+	
 	_vec3 vSphereCenter = pShereCollider->Get_ColliderPos();
 	_vec3 vAABBMin = pAABBCollider->Get_ColliderPos() - pAABBCollider->Get_Extents();
 	_vec3 vAABBMax = pAABBCollider->Get_ColliderPos() + pAABBCollider->Get_Extents();
@@ -201,7 +254,6 @@ CollideFace CCollision_Manager::Get_CollideFace(CCollider* pAABBCollider, CColli
 	float dist_min_z = abs(vSphereCenter.z - vAABBMin.z);
 	float dist_max_z = abs(vSphereCenter.z - vAABBMax.z);
 
-	//float fMinDist = min( dist_min_x, min(dist_max_x, min(dist_min_y, dist_max_y), min(dist_min_z, dist_max_z)));
 	vector<float> vecDists = { dist_min_x, dist_max_x, dist_min_z, dist_max_z };
 	float fMinDist = *min_element(vecDists.begin(), vecDists.end());
 
@@ -222,7 +274,7 @@ CollideFace CCollision_Manager::Get_CollideFace(CCollider* pAABBCollider, CColli
 		eCollideFace = C_RIGHT;
 	}
 
-	return eCollideFace;
+	return eCollideFace;*/
 }
 CCollision_Manager* CCollision_Manager::Create()
 {

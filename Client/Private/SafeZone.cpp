@@ -50,7 +50,7 @@ void CSafeZone::Tick(_float fTimeDelta)
 	
 
 	m_fLifeTimer += fTimeDelta;
-	if (m_fLifeTimer > 10.f)
+	if (m_fLifeTimer > 5.f)
 	{
 		Kill();
 	}
