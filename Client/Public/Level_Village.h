@@ -38,6 +38,9 @@ private: // NPC
 	HRESULT Ready_NPC();
 	HRESULT Ready_NPC_Dummy();
 
+private: // SescoGame
+	HRESULT Ready_SescoGame();
+
 private:
 	HRESULT Ready_Survival_Game();
 

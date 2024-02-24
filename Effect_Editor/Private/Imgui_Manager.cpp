@@ -862,7 +862,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		Checkbox("Loop", &m_ParticleInfo.isLoop);
 
 		InputInt("Instance Number", &m_iNumInstance);
-		m_iNumInstance = clamp(m_iNumInstance, 0, 300);
+		m_iNumInstance = clamp(m_iNumInstance, 0, 1024);
 
 		InputFloat3("Min Pos", reinterpret_cast<_float*>(&m_ParticleInfo.vMinPos));
 		InputFloat3("Max Pos", reinterpret_cast<_float*>(&m_ParticleInfo.vMaxPos)); SameLine(); if (Button("Same with Min")) { m_ParticleInfo.vMaxPos = m_ParticleInfo.vMinPos; }
@@ -1114,6 +1114,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		{
 			Info.vSize.z = 1.f;
 		}
+		Info.pMatrix = &m_DummyMatrix;
 		m_pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Info));
 
 		m_iCurrent_Type = Info.iType;
@@ -1317,6 +1318,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		{
 			Info.vSize.z = 1.f;
 		}
+		Info.pMatrix = &m_DummyMatrix;
 		m_pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Info));
 
 		m_iCurrent_Type = Info.iType;

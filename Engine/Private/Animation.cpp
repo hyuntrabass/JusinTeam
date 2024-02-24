@@ -180,6 +180,7 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 				if (isLoop)
 				{
 					m_fCurrentAnimPos = fStartAnimPos;
+	
 				}
 				else
 				{

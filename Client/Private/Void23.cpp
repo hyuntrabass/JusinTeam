@@ -96,7 +96,7 @@ void CVoid23::Tick(_float fTimeDelta)
 	Update_Collider();
 	__super::Update_BodyCollider();
 
-	//Update_Trail(fTimeDelta);
+	Update_Trail(fTimeDelta);
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
@@ -431,16 +431,12 @@ void CVoid23::Tick_State(_float fTimeDelta)
 
 				if (fAnimpos >= 60.f && fAnimpos <= 76.f)
 				{
-					//m_pSwordTrail->Late_Tick(fTimeDelta);
-
-					Update_Trail(fTimeDelta);
+					m_pSwordTrail->On();
 				}
 
 				if (fAnimpos >= 110.f && fAnimpos <= 124.f)
 				{
-					//m_pSwordTrail->Late_Tick(fTimeDelta);
-
-					Update_Trail(fTimeDelta);
+					m_pSwordTrail->On();
 				}
 			}
 			break;
@@ -477,9 +473,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 49.f && fAnimpos <= 57.f)
 				{
-					//m_pSwordTrail->Late_Tick(fTimeDelta);
-
-					Update_Trail(fTimeDelta);
+					m_pSwordTrail->On();
 				}
 			}
 			break;
@@ -507,9 +501,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 101.f && fAnimpos <= 109.f)
 				{
-					//m_pSwordTrail->Late_Tick(fTimeDelta);
-
-					Update_Trail(fTimeDelta);
+					m_pSwordTrail->On();
 				}
 			}
 			break;
@@ -537,9 +529,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 60.f && fAnimpos <= 80.f)
 				{
-					//m_pSwordTrail->Late_Tick(fTimeDelta);
-
-					Update_Trail(fTimeDelta);
+					m_pSwordTrail->On();
 				}
 			}
 			break;
@@ -570,9 +560,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 58.f && fAnimpos <= 125.f)
 				{
-					//m_pSwordTrail->Late_Tick(fTimeDelta);
-
-					Update_Trail(fTimeDelta);
+					m_pSwordTrail->On();
 				}
 			}
 			break;

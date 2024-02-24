@@ -269,6 +269,7 @@ call UpdateLib.bat</Command>
     </Text>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_AvgLum.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_BlurTex.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_ComputeParticle.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Deferred.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxColor.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>

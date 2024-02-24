@@ -145,7 +145,15 @@ HRESULT CLevel_GamePlay::Init()
 
 void CLevel_GamePlay::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_B))
+	{
 
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BrickBall"), TEXT("Prototype_GameObject_BrickBall"))))
+		{
+			return;
+		}
+
+	}
 	if (!m_bReadyTutorial)
 	{
 		m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.2f);

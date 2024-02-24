@@ -195,6 +195,7 @@
     <ClInclude Include="..\Public\FirePillar.h" />
     <ClInclude Include="..\Public\Goat.h" />
     <ClInclude Include="..\Public\Groar_Boss.h" />
+    <ClInclude Include="..\Public\Guard.h" />
     <ClInclude Include="..\public\Hell.h" />
     <ClInclude Include="..\Public\HitEffect.h" />
     <ClInclude Include="..\Public\HpBar.h" />
@@ -262,6 +263,7 @@
     <ClInclude Include="..\Public\Shop.h" />
     <ClInclude Include="..\Public\ShopDesc.h" />
     <ClInclude Include="..\Public\ShopWindow.h" />
+    <ClInclude Include="..\Public\Sickle.h" />
     <ClInclude Include="..\Public\Skill.h" />
     <ClInclude Include="..\Public\SkillBlock.h" />
     <ClInclude Include="..\Public\SkillBook.h" />
@@ -312,8 +314,10 @@
     <ClInclude Include="..\Public\Void01.h" />
     <ClInclude Include="..\Public\Void05.h" />
     <ClInclude Include="..\Public\Void09.h" />
+    <ClInclude Include="..\Public\Void19.h" />
     <ClInclude Include="..\Public\Void20.h" />
     <ClInclude Include="..\Public\Void23.h" />
+    <ClInclude Include="..\Public\VTFMonster.h" />
     <ClInclude Include="..\Public\VTFTest.h" />
     <ClInclude Include="..\Public\Wearable_Slot.h" />
     <ClInclude Include="..\Public\WorldMap.h" />
@@ -357,6 +361,7 @@
     <ClCompile Include="..\Private\Event_Manager.cpp" />
     <ClCompile Include="..\Private\ExpBar.cpp" />
     <ClCompile Include="..\Private\FirePillar.cpp" />
+    <ClCompile Include="..\Private\Guard.cpp" />
     <ClCompile Include="..\Private\Human_Boss.cpp" />
     <ClCompile Include="..\Private\InfinityTower.cpp" />
     <ClCompile Include="..\Private\Interaction_Anim_Object.cpp" />
@@ -427,6 +432,7 @@
     <ClCompile Include="..\Private\Shop.cpp" />
     <ClCompile Include="..\Private\ShopDesc.cpp" />
     <ClCompile Include="..\Private\ShopWindow.cpp" />
+    <ClCompile Include="..\Private\Sickle.cpp" />
     <ClCompile Include="..\Private\Skill.cpp" />
     <ClCompile Include="..\Private\SkillBlock.cpp" />
     <ClCompile Include="..\Private\SkillBook.cpp" />
@@ -476,8 +482,10 @@
     <ClCompile Include="..\Private\Void01.cpp" />
     <ClCompile Include="..\Private\Void05.cpp" />
     <ClCompile Include="..\Private\Void09.cpp" />
+    <ClCompile Include="..\Private\Void19.cpp" />
     <ClCompile Include="..\Private\Void20.cpp" />
     <ClCompile Include="..\Private\Void23.cpp" />
+    <ClCompile Include="..\Private\VTFMonster.cpp" />
     <ClCompile Include="..\Private\VTFTest.cpp" />
     <ClCompile Include="..\Private\Wearable_Slot.cpp" />
     <ClCompile Include="..\Private\WorldMap.cpp" />

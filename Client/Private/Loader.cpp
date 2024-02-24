@@ -1101,6 +1101,7 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 
+
 #pragma endregion Monster
 
 #pragma region NPC
@@ -1685,6 +1686,11 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Sickle"), CSickle::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Dragon_Boss"), CDragon_Boss::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -1814,7 +1820,8 @@ HRESULT CLoader::Load_Village()
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 			if (strPrototypeTag == L"Prototype_Model_BrickMap")
 			{
-				DungeonPivot = _mat::CreateScale(0.1f);
+				DungeonPivot = _mat::CreateScale(0.045f);
+
 			}
 			else if (strPrototypeTag == L"Prototype_Model_DragonMap")
 			{
@@ -1891,6 +1898,28 @@ HRESULT CLoader::Load_Village()
 			}
 		}
 	}
+
+#pragma region SescoGame
+
+	strInputFilePath = "../Bin/Resources/AnimMesh/SescoGame/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (entry.path().extension().string() != ".hyuntraanimmesh")
+			{
+				continue;
+			}
+			wstring strPrototypeTag = TEXT("Prototype_Model_VTFMonster_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CVTFModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+#pragma endregion
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BrickGame"), CBrickGame::Create(m_pDevice, m_pContext))))
 	{
@@ -1971,7 +2000,14 @@ HRESULT CLoader::Load_Village()
 	{
 		return E_FAIL;
 	}
+#pragma region SescoGame
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Void19_Object"), CVoid19::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+#pragma endregion
 	// 원래 레벨 이닛에서 했던것들
 	{
 		m_pGameInstance->Set_CurrentLevelIndex(LEVEL_VILLAGE);

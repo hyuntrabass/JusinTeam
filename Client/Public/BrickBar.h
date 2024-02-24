@@ -23,10 +23,6 @@ public:
 	HRESULT Add_Collider();
 	void Update_Collider();
 
-public:
-	void RayCast();
-
-
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };

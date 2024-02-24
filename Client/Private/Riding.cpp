@@ -289,9 +289,9 @@ void CRiding::Tick(_float fTimeDelta)
 		}
 	}*/
 
-	Move(fTimeDelta);
 	Init_State();
 	Tick_State(fTimeDelta);
+	Move(fTimeDelta);
 	m_pModelCom->Set_Animation(m_Animation);
 
 	if (m_eState == Riding_Glide)
@@ -569,6 +569,7 @@ void CRiding::Init_State()
 		m_Animation.isLoop = false;
 		m_Animation.fAnimSpeedRatio = 2.f;
 		m_Animation.bSkipInterpolation = false;
+		m_Animation.fDurationRatio = 1.f;
 
 		switch (m_eState)
 		{
@@ -646,6 +647,7 @@ void CRiding::Init_State()
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Run;
 				m_Animation.bSkipInterpolation = true;
 				m_Animation.isLoop = true;
+				m_Animation.fDurationRatio = 0.3f;
 				m_hasJumped = false;
 			}
 			break;

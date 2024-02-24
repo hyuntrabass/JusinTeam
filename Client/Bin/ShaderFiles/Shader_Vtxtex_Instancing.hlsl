@@ -22,8 +22,10 @@ struct VS_IN
     
     row_major matrix TransformMatrix : World;
     vector vPrevPos : PrevPosition;
-    uint iInstanceID : InstanceID;
+    float fIndex : Index;
     float fDissolveRatio : Dissolve;
+    
+    uint iSVInstanceID : SV_InstanceID;
 };
 
 struct VS_OUT
@@ -45,7 +47,7 @@ VS_OUT VS_Main(VS_IN Input)
     
     Output.vPos = mul(vPosition, g_WorldMatrix);
     Output.vPSize = float2(Input.vPSize.x * Input.TransformMatrix._11, Input.vPSize.y * Input.TransformMatrix._22);
-    Output.iIndex = g_iIndex;
+    Output.iIndex = uint(Input.fIndex * (g_vNumSprite.x * g_vNumSprite.y));
     Output.vPrevPos = Input.vPrevPos;
     Output.fDissolveRatio = 1.f - Input.fDissolveRatio;
     
@@ -62,7 +64,24 @@ VS_OUT VS_Main_RandomIndex(VS_IN Input)
     
     Output.vPos = mul(vPosition, g_WorldMatrix);
     Output.vPSize = float2(Input.vPSize.x * Input.TransformMatrix._11, Input.vPSize.y * Input.TransformMatrix._22);
-    Output.iIndex = Input.iInstanceID;
+    Output.iIndex = Input.iSVInstanceID;
+    Output.vPrevPos = Input.vPrevPos;
+    Output.fDissolveRatio = 1.f - Input.fDissolveRatio;
+    
+    return Output;
+}
+
+VS_OUT VS_Main_RandomSprite(VS_IN Input)
+{
+    VS_OUT Output = (VS_OUT) 0;
+    
+    matrix matWV, matWVP;
+    
+    vector vPosition = mul(float4(Input.vPos, 1.f), Input.TransformMatrix);
+    
+    Output.vPos = mul(vPosition, g_WorldMatrix);
+    Output.vPSize = float2(Input.vPSize.x * Input.TransformMatrix._11, Input.vPSize.y * Input.TransformMatrix._22);
+    Output.iIndex = uint(Input.fIndex * (g_vNumSprite.x * g_vNumSprite.y));
     Output.vPrevPos = Input.vPrevPos;
     Output.fDissolveRatio = 1.f - Input.fDissolveRatio;
     

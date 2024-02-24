@@ -234,11 +234,15 @@ void CBalloon::Tick_State(_float fTimeDelta)
 		{
 			return;
 		}
+
 		m_isColl = m_pBodyColliderCom->Intersect(pCollider);
 		if (m_isColl)
 		{
-			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 2.0f);
-			m_eCurState = STATE_HIT;
+			if (CUI_Manager::Get_Instance()->Get_BrickBallColor() == m_eCurColor)
+			{
+				CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 2.0f);
+				m_eCurState = STATE_HIT;
+			}
 		}
 	}
 	break;
@@ -249,7 +253,7 @@ void CBalloon::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = STATE_IDLE;
 			_uint iColor = (_uint)m_eCurColor + 1;
-			m_eCurColor = (Color)iColor;
+			m_eCurColor = (BrickColor)iColor;
 		}
 
 		break;
@@ -287,7 +291,7 @@ void CBalloon::Set_Color()
 		if (m_eCurState != STATE_DIE)
 		{
 			m_eCurState = STATE_DIE;
-			m_pGameInstance->Delete_CollisionObject(this);
+			m_isDead = true;
 		}
 		break;
 	default:
@@ -323,7 +327,7 @@ HRESULT CBalloon::Add_Collider()
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::AABB;
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
-	CollDesc.vExtents = _vec3(0.5f, 0.5f, 0.5f);
+	CollDesc.vExtents = _vec3(0.8f, 0.8f, 0.8f);
 	CollDesc.vCenter = _vec3(0.f, 0.f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
