@@ -32,6 +32,10 @@ private:
 	_float m_fLifeTime = {};
 	_int m_iSoundChannel = -1;
 
+private:
+	static _uint m_iFirePillarID;
+	static _bool m_bDirSelected[8];
+
 public:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

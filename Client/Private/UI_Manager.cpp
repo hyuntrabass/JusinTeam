@@ -755,7 +755,7 @@ _bool CUI_Manager::Is_Collecting()
 		m_isCollect = false;
 		return true;
 	}
-	return true;
+	return false;
 }
 
 _uint CUI_Manager::Get_CurrentMiniGame()
@@ -767,6 +767,16 @@ _uint CUI_Manager::Get_CurrentMiniGame()
 		return iIdx;
 	}
 	return m_iCurrentMiniGame;
+}
+
+_bool CUI_Manager::Is_WorldMap()
+{
+	if (m_isWorldMap)
+	{
+		m_isWorldMap = false;
+		return true;
+	}
+	return false;
 }
 
 void CUI_Manager::Free()

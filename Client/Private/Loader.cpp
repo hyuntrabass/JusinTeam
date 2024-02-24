@@ -1194,7 +1194,7 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Human_Boss"),
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, TEXT("Prototype_Model_Human_Boss"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Human_Boss/Mesh/boss.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
@@ -1455,6 +1455,16 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BrickWall"), CBrickWall::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BrickBar"), CBrickBar::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
 
 #pragma endregion
 
@@ -1632,6 +1642,11 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_SafeZone"), CSafeZone::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Dragon_Boss"), CDragon_Boss::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -1750,6 +1765,14 @@ HRESULT CLoader::Load_Village()
 			{
 				DungeonPivot = _mat::CreateScale(0.005f);
 			}
+			else if (strPrototypeTag == L"Prototype_Model_Survival_Map")
+			{
+				DungeonPivot = _mat::CreateScale(1.f);
+			}
+			else if (strPrototypeTag == L"Prototype_Model_SescoMap")
+			{
+				DungeonPivot = _mat::CreateScale(0.005f);
+			}
 			else
 				DungeonPivot = _mat::CreateScale(0.001f);
 
@@ -1810,6 +1833,28 @@ HRESULT CLoader::Load_Village()
 		}
 	}
 
+#pragma region SescoGame
+
+	strInputFilePath = "../Bin/Resources/AnimMesh/SescoGame/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (entry.path().extension().string() != ".hyuntraanimmesh")
+			{
+				continue;
+			}
+			wstring strPrototypeTag = TEXT("Prototype_Model_VTFMonster_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CVTFModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+#pragma endregion
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BrickGame"), CBrickGame::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -1846,6 +1891,20 @@ HRESULT CLoader::Load_Village()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_MiniDungeon"), CMap::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Survival_Map"), CMap::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_SescoMap"), CMap::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Village_Etc_Object"), CEtc_Object::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -1875,7 +1934,14 @@ HRESULT CLoader::Load_Village()
 	{
 		return E_FAIL;
 	}
+#pragma region SescoGame
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Void19_Object"), CVoid19::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+#pragma endregion
 	// 원래 레벨 이닛에서 했던것들
 	{
 		m_pGameInstance->Set_CurrentLevelIndex(LEVEL_VILLAGE);
@@ -2211,7 +2277,7 @@ HRESULT CLoader::Load_Village()
 
 			if (!inFile.is_open())
 			{
-				MSG_BOX("무한의탑 모델 데이터 파일 불러오기 실패.");
+				MSG_BOX("무한의탑 보스맵 모델 데이터 파일 불러오기 실패.");
 				return E_FAIL;
 			}
 
@@ -2237,7 +2303,130 @@ HRESULT CLoader::Load_Village()
 
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Tower"), TEXT("Prototype_GameObject_BossRoom"), &MapInfo)))
 				{
-					MSG_BOX("무한의탑 생성 실패");
+					MSG_BOX("무한의탑 보스맵 생성 실패");
+					return E_FAIL;
+				}
+			}
+			inFile.close();
+		}
+
+		//Ready_MiniDungeon
+		{
+			const TCHAR* pGetPath = TEXT("../Bin/Data/MiniDungeon_MapData.dat");
+
+			std::ifstream inFile(pGetPath, std::ios::binary);
+
+			if (!inFile.is_open())
+			{
+				MSG_BOX("무한의탑 미니던전 모델 데이터 파일 불러오기 실패.");
+				return E_FAIL;
+			}
+
+			_uint MapListSize;
+			inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+
+
+			for (_uint i = 0; i < MapListSize; ++i)
+			{
+				_ulong MapPrototypeSize;
+				inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+
+				wstring MapPrototype;
+				MapPrototype.resize(MapPrototypeSize);
+				inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+
+				_mat MapWorldMat;
+				inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+
+				MapInfo MapInfo{};
+				MapInfo.Prototype = MapPrototype;
+				MapInfo.m_Matrix = MapWorldMat;
+
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Tower"), TEXT("Prototype_GameObject_MiniDungeon"), &MapInfo)))
+				{
+					MSG_BOX("무한의탑 미니던전 생성 실패");
+					return E_FAIL;
+				}
+			}
+			inFile.close();
+		}
+
+		//Ready_Survival_Map
+		{
+			const TCHAR* pGetPath = TEXT("../Bin/Data/Survival_Map_MapData.dat");
+
+			std::ifstream inFile(pGetPath, std::ios::binary);
+
+			if (!inFile.is_open())
+			{
+				MSG_BOX("서바이벌맵 모델 데이터 파일 불러오기 실패.");
+				return E_FAIL;
+			}
+
+			_uint MapListSize;
+			inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+
+
+			for (_uint i = 0; i < MapListSize; ++i)
+			{
+				_ulong MapPrototypeSize;
+				inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+
+				wstring MapPrototype;
+				MapPrototype.resize(MapPrototypeSize);
+				inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+
+				_mat MapWorldMat;
+				inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+
+				MapInfo MapInfo{};
+				MapInfo.Prototype = MapPrototype;
+				MapInfo.m_Matrix = MapWorldMat;
+
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Tower"), TEXT("Prototype_GameObject_Survival_Map"), &MapInfo)))
+				{
+					MSG_BOX("서바이벌맵 생성 실패");
+					return E_FAIL;
+				}
+			}
+			inFile.close();
+		}
+
+		//Ready_Sesco
+		{
+			const TCHAR* pGetPath = TEXT("../Bin/Data/SescoMap_MapData.dat");
+
+			std::ifstream inFile(pGetPath, std::ios::binary);
+
+			if (!inFile.is_open())
+			{
+				MSG_BOX("세스코맵 모델 데이터 파일 불러오기 실패.");
+				return E_FAIL;
+			}
+
+			_uint MapListSize;
+			inFile.read(reinterpret_cast<char*>(&MapListSize), sizeof(_uint));
+
+
+			for (_uint i = 0; i < MapListSize; ++i)
+			{
+				_ulong MapPrototypeSize;
+				inFile.read(reinterpret_cast<char*>(&MapPrototypeSize), sizeof(_ulong));
+
+				wstring MapPrototype;
+				MapPrototype.resize(MapPrototypeSize);
+				inFile.read(reinterpret_cast<char*>(&MapPrototype[0]), MapPrototypeSize * sizeof(wchar_t));
+
+				_mat MapWorldMat;
+				inFile.read(reinterpret_cast<char*>(&MapWorldMat), sizeof(_mat));
+
+				MapInfo MapInfo{};
+				MapInfo.Prototype = MapPrototype;
+				MapInfo.m_Matrix = MapWorldMat;
+
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Tower"), TEXT("Prototype_GameObject_SescoMap"), &MapInfo)))
+				{
+					MSG_BOX("세스코맵 생성 실패");
 					return E_FAIL;
 				}
 			}

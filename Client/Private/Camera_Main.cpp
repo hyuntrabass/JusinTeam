@@ -35,6 +35,11 @@ HRESULT CCamera_Main::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	if (FAILED(Add_Collider()))
+	{
+		return E_FAIL;
+	}
+
 	m_pCam_Manager = CCamera_Manager::Get_Instance();
 	Safe_AddRef(m_pCam_Manager);
 
@@ -43,6 +48,9 @@ HRESULT CCamera_Main::Init(void* pArg)
 
 void CCamera_Main::Tick(_float fTimeDelta)
 {
+	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+	//matProj = m_pGameInstance->Get_Transform(TransformType::Proj);
+	//matView = m_pGameInstance->Get_Transform(TransformType::View);
 
 	//fTimeDelta /= (m_pGameInstance->Get_TimeRatio());
 
@@ -164,6 +172,14 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 void CCamera_Main::Late_Tick(_float fTimeDelta)
 {
+#ifdef _DEBUG
+	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
+#endif
+
+	if (m_pGameInstance->CheckCollision_Culling(m_pColliderCom))
+		m_isCollision = true;
+	else
+		m_isCollision = false;
 
 }
 
@@ -858,6 +874,30 @@ void CCamera_Main::Tick_State(_float fTimeDelta)
 	}
 }
 
+HRESULT CCamera_Main::Add_Collider()
+{
+	Collider_Desc ColDesc{};
+	ColDesc.eType = ColliderType::Frustum;
+	_matrix matView = m_pGameInstance->Get_Transform(TransformType::View);
+	// 1인자 : 절두체 각도(범위), 2인자 : Aspect, 3인자 : Near, 4인자 : Far(절두체 깊이)
+	_matrix matProj = m_pGameInstance->Get_Transform(TransformType::Proj);
+	XMStoreFloat4x4(&ColDesc.matFrustum,  matProj);
+	//XMStoreFloat4x4(&ColDesc.matFrustum, matProj);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &ColDesc)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+
+
 CCamera_Main* CCamera_Main::Create(_dev pDevice, _context pContext)
 {
 	CCamera_Main* pInstance = new CCamera_Main(pDevice, pContext);
@@ -890,4 +930,6 @@ void CCamera_Main::Free()
 
 	Safe_Release(m_pPlayerTransform);
 	Safe_Release(m_pCam_Manager);
+	Safe_Release(m_pColliderCom);
+	Safe_Release(m_pRendererCom);
 }

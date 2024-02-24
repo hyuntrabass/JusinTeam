@@ -569,6 +569,14 @@ HRESULT CVTFModel::CreateVTF(_uint MaxFrame)
 	return S_OK;
 }
 
+void CVTFModel::Apply_TransformToActor(_fmatrix WorldMatrix)
+{
+	for (auto& pMesh : m_Meshes)
+	{
+		pMesh->Apply_TransformToActor(WorldMatrix);
+	}
+}
+
 HRESULT CVTFModel::CreateAnimationTransform(_uint iIndex, ANIMTRANS_ARRAY* pAnimTransform)
 {
 	CAnimation* pAnimation = m_Animations[iIndex];

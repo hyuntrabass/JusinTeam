@@ -22,6 +22,7 @@ CMesh::CMesh(const CMesh& rhs)
 	, m_OffsetMatrices(rhs.m_OffsetMatrices)
 	, m_BoneMatrices(rhs.m_BoneMatrices)
 	, m_eType(rhs.m_eType)
+	, m_fRadius(rhs.m_fRadius)
 {
 	strcpy_s(m_szName, rhs.m_szName);
 }
@@ -244,8 +245,20 @@ HRESULT CMesh::Ready_StaticMesh(ifstream& ModelFile, _mat OffsetMatrix)
 		ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vTangent), sizeof _float3);
 
 		m_Vertices.push_back(m_VerticesInfo);
+
+		m_vCenterPos += pVertices[i].vPosition;
 	}
 
+	m_vCenterPos = m_vCenterPos / m_iNumVertices;
+
+	_float fFarDistance{};
+	_vec3 vFarPos{};
+	for (size_t i = 0; i < m_iNumVertices; i++)
+	{
+		fFarDistance = _vec3::Distance(m_vCenterPos, pVertices[i].vPosition);
+		
+		m_fRadius = max(m_fRadius, fFarDistance);
+	}
 
 	m_InitialData.pSysMem = pVertices;
 

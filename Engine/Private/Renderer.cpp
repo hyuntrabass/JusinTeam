@@ -2076,8 +2076,17 @@ HRESULT CRenderer::Render_Final()
 	if (FAILED(m_pShader->Bind_RawValue("g_fRadialBlur_Power", &m_fRadial_BlurPower, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(m_pShader->Bind_RawValue("g_vCenterPos", &m_vRadialCenter, sizeof(_vec4))))
+	if (FAILED(m_pShader->Bind_RawValue("g_WorldOrTex", &m_bWorldOrTex, sizeof(_bool))))
 		return E_FAIL;
+
+	if (false == m_bWorldOrTex) {
+		if (FAILED(m_pShader->Bind_RawValue("g_vCenterPos", &m_vRadialWorldCenter, sizeof(_vec4))))
+			return E_FAIL;
+	}
+	else {
+		if (FAILED(m_pShader->Bind_RawValue("g_vCenterTexPos", &m_vRadialTexCenter, sizeof(_vec2))))
+			return E_FAIL;
+	}
 
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_MotionBlur")))
 		return E_FAIL;

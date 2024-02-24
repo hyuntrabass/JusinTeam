@@ -48,7 +48,7 @@ HRESULT CBalloon::Init(void* pArg)
 
 	//m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
-	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
+	m_pTransformCom->Set_Scale(_vec3(1.4f, 1.4f, 1.4f));
 
 
 	return S_OK;
@@ -56,7 +56,7 @@ HRESULT CBalloon::Init(void* pArg)
 
 void CBalloon::Tick(_float fTimeDelta)
 {
-
+	m_pBodyColliderCom->Set_Normal();
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 
@@ -284,7 +284,11 @@ void CBalloon::Set_Color()
 		m_vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
 		break;
 	case COLOR_END:
-		m_eCurState = STATE_DIE;
+		if (m_eCurState != STATE_DIE)
+		{
+			m_eCurState = STATE_DIE;
+			m_pGameInstance->Delete_CollisionObject(this);
+		}
 		break;
 	default:
 		break;
@@ -317,9 +321,10 @@ void CBalloon::Set_RandomColor()
 HRESULT CBalloon::Add_Collider()
 {
 	Collider_Desc CollDesc = {};
-	CollDesc.eType = ColliderType::Sphere;
-	CollDesc.vCenter = _vec3(0.f);
-	CollDesc.fRadius = 0.15f;
+	CollDesc.eType = ColliderType::AABB;
+	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
+	CollDesc.vExtents = _vec3(0.5f, 0.5f, 0.5f);
+	CollDesc.vCenter = _vec3(0.f, 0.f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 		TEXT("Com_Collider_Sphere"), (CComponent**)&m_pBodyColliderCom, &CollDesc)))

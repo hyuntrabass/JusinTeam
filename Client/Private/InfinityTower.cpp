@@ -71,7 +71,7 @@ void CInfinityTower::Tick(_float fTimeDelta)
 	if (PtInRect(&m_pExitButton->Get_Rect(), ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::GamePlay))
 	{
 		Exit_Tower();
-		
+		CUI_Manager::Get_Instance()->Set_WorldMap();
 		return;
 	}
 

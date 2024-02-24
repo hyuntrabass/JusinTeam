@@ -255,7 +255,8 @@ void CModel::Set_Animation(ANIM_DESC Animation_Desc)
 {
 	if (m_AnimDesc.iAnimIndex != Animation_Desc.iAnimIndex or
 		Animation_Desc.bRestartAnimation or
-		m_AnimDesc.bRewindAnimation != Animation_Desc.bRewindAnimation)
+		(m_AnimDesc.bRewindAnimation != Animation_Desc.bRewindAnimation and
+			m_Animations[m_AnimDesc.iAnimIndex]->IsFinished()))
 	{
 		m_isAnimChanged = true;
 
@@ -716,6 +717,16 @@ _bool CModel::Intersect_RayModel(_fmatrix WorldMatrix, _vec4* pPickPos)
 	}
 
 	return false;
+}
+
+_float CModel::Get_Radius()
+{
+	_float Max_Radius = 0.f;
+	for (auto& pMesh : m_Meshes)
+	{
+		Max_Radius = max(Max_Radius, pMesh->Get_Radius());
+	}
+	return Max_Radius;
 }
 
 

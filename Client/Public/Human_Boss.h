@@ -50,19 +50,19 @@ public:
 
 	enum STATE
 	{
-		CommonAtt0,	// 전방
-		CommonAtt1,	// 후방
-		CommonAtt2,	// 전후방
-		Counter_Start,
-		Counter_Fail,
-		Hide_Start,
-		Hide,
-		Hide_Att,
+		CommonAtt0,	// 전방 공격
+		CommonAtt1,	// 후방 공격
+		CommonAtt2,	// 전체 공격(콜라이더만큼)
+		Counter_Start,	//기 모으고 카운터 or 반사 패턴 진행
+		Counter_Fail,	// 플레이어가 카운터 성공시 기절
+		Hide_Start,	// 포탈타고 사라짐
+		Hide,	//사라진 상태
+		Hide_Att,	 // 사라진상태에서 기습공격
 		Razer,
+		Pizza, // 반시계방향으로 피자조각 범위  공격
 		Hit,
 		Idle,
 		Walk,
-		Reflect,
 		Roar,
 		Run,
 		Die,
@@ -101,10 +101,10 @@ public:
 	virtual void Set_Damage(_int iDamage, _uint MonAttType = 0) override;
 
 public:
-	void View_Attack_Range(ATTACK_RANGE Range);
+	void View_Attack_Range(ATTACK_RANGE Range,_float fRotationY = 0.f);
 	void After_Attack(_float fTimedelta);
-	_bool Compute_Angle(_float fAngle);
-	void Increased_Range(_float Index, _float fTImeDelta);
+	_bool Compute_Angle(_float fAngle, _float RotationY = 0.f);
+	void Increased_Range(_float Index, _float fTImeDelta,_float fRotationY = 0.f);
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
@@ -118,14 +118,13 @@ private:
 	class CEffect_Dummy* m_pFrameEffect{ nullptr };
 	class CEffect_Dummy* m_pDimEffect{ nullptr };
 	class CEffect_Dummy* m_pAttackEffect{ nullptr };
-	class CEffect_Dummy* m_pShieldEffect{ nullptr };
 	class CEffect_Dummy* m_pRingEffect{ nullptr };
+	class CEffect_Dummy* m_pCounterEffect{ nullptr };
 
 private:
 	ANIM_DESC m_Animation{};
 	STATE m_eState = BOSS_STATE_END;
 	STATE m_ePreState = BOSS_STATE_END;
-
 private:
 	
 	_bool m_bSecondPattern{};
@@ -136,19 +135,19 @@ private:
 	_float m_fHideTimmer{};
 	_bool m_bChangePass{};
 	_bool m_bHide{};
+	_bool m_bLeftPattern{};
 	_bool m_bAttacked{};
 	_uint m_iPassIndex{};
+	_float m_fAttackRange{};
 	_bool m_bViewWeapon{};
 	_float m_fDissolveRatio{};
 	_uint m_iWeaponPassIndex{};
-
-	_bool m_bShieldOn{};
+	_vec4 m_vRimColor{};
+	_bool m_bReflectOn{};
 	_mat m_AttEffectMat{};
-	_mat m_BaseEffectMat{};
-	_mat m_ShieldEffectMat{};
 	_mat m_RingEffectMat{};
+	_mat m_BaseEffectMat{};
 	_mat m_AttEffectOriMat{};
-	_float m_fShiledTimmer{};
 	_mat m_BaseEffectOriMat{};
 	_float m_fBaseEffectScale{};
 
