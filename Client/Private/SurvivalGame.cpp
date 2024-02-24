@@ -1,5 +1,7 @@
 #include "SurvivalGame.h"
 
+#include "Launcher.h"
+
 CSurvivalGame::CSurvivalGame(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -24,6 +26,15 @@ HRESULT CSurvivalGame::Init(void* pArg)
 
 void CSurvivalGame::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_UP))
+	{
+		for (size_t i = 0; i < 5; i++)
+		{
+			CLauncher::LAUNCHER_TYPE eType = CLauncher::TYPE_RANDOM_POS;
+			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Launcher"), TEXT("Prototype_GameObject_Launcher"), &eType);
+		}
+	}
+
 	Init_Pattern(fTimeDelta);
 	Tick_Pattern(fTimeDelta);
 }

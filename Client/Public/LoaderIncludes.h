@@ -154,3 +154,8 @@
 
 // Trigger
 #include "Trigger.h"
+
+// SurvivalGame
+#include "SurvivalGame.h"
+#include "Launcher.h"
+#include "Projectile.h"

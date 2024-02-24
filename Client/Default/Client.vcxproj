@@ -245,6 +245,7 @@
     <ClInclude Include="..\Public\Pop_QuestIn.h" />
     <ClInclude Include="..\Public\Etc_Object.h" />
     <ClInclude Include="..\Public\Pop_Skill.h" />
+    <ClInclude Include="..\Public\Projectile.h" />
     <ClInclude Include="..\Public\Quest.h" />
     <ClInclude Include="..\Public\QuestBox.h" />
     <ClInclude Include="..\Public\Rabbit.h" />
@@ -364,6 +365,7 @@
     <ClCompile Include="..\Private\Meteor.cpp" />
     <ClCompile Include="..\Private\NineSlice.cpp" />
     <ClCompile Include="..\Private\NumEffect.cpp" />
+    <ClCompile Include="..\Private\Projectile.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />
     <ClCompile Include="..\Private\FadeBox.cpp" />
     <ClCompile Include="..\Private\Goat.cpp" />

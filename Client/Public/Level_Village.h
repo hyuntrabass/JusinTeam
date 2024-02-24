@@ -39,6 +39,9 @@ private: // NPC
 	HRESULT Ready_NPC_Dummy();
 
 private:
+	HRESULT Ready_Survival_Game();
+
+private:
 	// Test
 	HRESULT Ready_Test(); 
 
