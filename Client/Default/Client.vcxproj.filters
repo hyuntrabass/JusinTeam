@@ -481,6 +481,15 @@
     <Filter Include="02.GameObjects\08. Boss\Human_Boss\SafeZone">
       <UniqueIdentifier>{77fc0119-0729-4d57-af69-e640bf13baf1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\16.SescoGame">
+      <UniqueIdentifier>{e3defe81-605e-4266-b85b-6e360c41fb90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\16.SescoGame\VTFMonster">
+      <UniqueIdentifier>{1e16aa27-6928-42eb-bc72-da733a69936b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\16.SescoGame\VTFMonster\Void19">
+      <UniqueIdentifier>{6de5bee6-1aae-49f5-b546-96ce84157a85}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -939,7 +948,6 @@
     <ClInclude Include="..\Public\BrickBall.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Statue.h" />
     <ClInclude Include="..\Public\BrickGame.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
@@ -961,15 +969,9 @@
     <ClInclude Include="..\Public\Interaction_NonAnim_Object.h">
       <Filter>02.GameObjects\09.Object\Interaction\NonAnim</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\BrickBar.h">
-      <Filter>02.GameObjects\14.BrickGame</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\BrickWall.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\SescoGame.h">
-      <Filter>02.GameObjects\16.SescoGame</Filter>
-	</ClInclude>
     <ClInclude Include="..\Public\SafeZone.h">
       <Filter>02.GameObjects\08. Boss\Human_Boss\SafeZone</Filter>
     </ClInclude>
@@ -979,6 +981,28 @@
     </ClInclude>
     <ClInclude Include="..\Public\Projectile.h">
       <Filter>02.GameObjects\15. SurvivalGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Guard.h" />
+    <ClInclude Include="..\Public\SescoGame.h">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VTFMonster.h">
+      <Filter>02.GameObjects\16.SescoGame\VTFMonster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Void19.h">
+      <Filter>02.GameObjects\16.SescoGame\VTFMonster\Void19</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SurvivalGame.h">
+      <Filter>02.GameObjects\15. SurvivalGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BrickBar.h">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Statue.h">
+      <Filter>02.GameObjects\04.Monster\98. Statue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sickle.h">
+      <Filter>02.GameObjects\08. Boss\Human_Boss\Sickle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1467,9 +1491,6 @@
     <ClCompile Include="..\Private\BrickWall.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\SescoGame.cpp">
-      <Filter>02.GameObjects\16.SescoGame</Filter>
-	</ClCompile>
     <ClCompile Include="..\Private\Sickle.cpp">
       <Filter>02.GameObjects\08. Boss\Human_Boss\Sickle</Filter>
     </ClCompile>
@@ -1481,6 +1502,16 @@
     </ClCompile>
     <ClCompile Include="..\Private\Projectile.cpp">
       <Filter>02.GameObjects\15. SurvivalGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Guard.cpp" />
+    <ClCompile Include="..\Private\SescoGame.cpp">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VTFMonster.cpp">
+      <Filter>02.GameObjects\16.SescoGame\VTFMonster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Void19.cpp">
+      <Filter>02.GameObjects\16.SescoGame\VTFMonster\Void19</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
