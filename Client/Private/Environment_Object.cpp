@@ -2,6 +2,7 @@
 #include "Environment_Object.h"
 #include "Camera_Manager.h"
 #include "Camera_Main.h"
+
 CEnvironment_Object::CEnvironment_Object(_dev pDevice, _context pContext)
 	: CObjects(pDevice, pContext)
 {
@@ -58,13 +59,14 @@ HRESULT CEnvironment_Object::Init(void* pArg)
 
 void CEnvironment_Object::Tick(_float fTimeDelta)
 {
+
+
 	//m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
 	__super::Tick(fTimeDelta);
 }
 
 void CEnvironment_Object::Late_Tick(_float fTimeDelta)
 {
-
 	CAMERA_STATE CamState = CCamera_Manager::Get_Instance()->Get_CameraState();
 	if (CamState == CS_SKILLBOOK or CamState == CS_INVEN )//or CamState == CS_WORLDMAP)
 	{

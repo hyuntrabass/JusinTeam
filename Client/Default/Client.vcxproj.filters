@@ -459,7 +459,7 @@
     </Filter>
     <Filter Include="02.GameObjects\15. SurvivalGame">
       <UniqueIdentifier>{cf696106-eeaf-4b97-925a-6f520fc47a0d}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="02.GameObjects\08. Boss\Human_Boss">
       <UniqueIdentifier>{ca41e229-ff6d-4b8d-a622-f84b5234450a}</UniqueIdentifier>
     </Filter>
@@ -483,6 +483,12 @@
     </Filter>
     <Filter Include="02.GameObjects\16.SescoGame\VTFMonster\Void19">
       <UniqueIdentifier>{ecbcf51e-2c12-4b06-82bd-f9b3590c1b7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Human_Boss\Sickle">
+      <UniqueIdentifier>{1c00a570-6485-49de-bae7-32f3a1b36b3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Human_Boss\SafeZone">
+      <UniqueIdentifier>{93a4a843-a152-4478-9073-a12a00818578}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -959,9 +965,6 @@
       <Filter>02.GameObjects\15. SurvivalGame</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\BrickWall.h" />
-    <ClInclude Include="..\Public\SafeZone.h">
-      <Filter>02.GameObjects\08. Boss\Human_Boss</Filter>
-	</ClInclude>
     <ClInclude Include="..\Public\Interaction_Anim_Object.h">
       <Filter>02.GameObjects\09.Object\Interaction\Anim</Filter>
     </ClInclude>
@@ -974,6 +977,13 @@
     </ClInclude>
     <ClInclude Include="..\Public\Void19.h">
       <Filter>02.GameObjects\16.SescoGame\VTFMonster\Void19</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BrickBar.h" />
+    <ClInclude Include="..\Public\Sickle.h">
+      <Filter>02.GameObjects\08. Boss\Human_Boss\Sickle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SafeZone.h">
+      <Filter>02.GameObjects\08. Boss\Human_Boss\SafeZone</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1444,11 +1454,7 @@
     <ClCompile Include="..\Private\SurvivalGame.cpp">
       <Filter>02.GameObjects\15. SurvivalGame</Filter>
     </ClCompile>
-
     <ClCompile Include="..\Private\BrickWall.cpp" />
-    <ClCompile Include="..\Private\SafeZone.cpp">
-      <Filter>02.GameObjects\08. Boss\Human_Boss</Filter>
-	</ClCompile>
     <ClCompile Include="..\Private\Interaction_Anim_Object.cpp">
       <Filter>02.GameObjects\09.Object\Interaction\Anim</Filter>
     </ClCompile>
@@ -1461,6 +1467,13 @@
     </ClCompile>
     <ClCompile Include="..\Private\Void19.cpp">
       <Filter>02.GameObjects\16.SescoGame\VTFMonster\Void19</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BrickBar.cpp" />
+    <ClCompile Include="..\Private\Sickle.cpp">
+      <Filter>02.GameObjects\08. Boss\Human_Boss\Sickle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SafeZone.cpp">
+      <Filter>02.GameObjects\08. Boss\Human_Boss\SafeZone</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

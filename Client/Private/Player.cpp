@@ -442,17 +442,18 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CUSTOM)
 	{
+	
+
 		if (!m_bIsMount)
 		{
 			Move(fTimeDelta);
 		}
-
 		Init_State();
-
 		if (!m_bIsMount)
 		{
 			Tick_State(fTimeDelta);
 		}
+
 		if (m_Current_Weapon == WP_SWORD)
 		{
 			After_SwordAtt(fTimeDelta);

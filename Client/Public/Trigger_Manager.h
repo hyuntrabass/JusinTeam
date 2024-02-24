@@ -62,10 +62,12 @@ public:
 	_bool Get_BossStart() { return m_bBossStart; }
 	_bool Is_BreakLoop() { return m_isBreakLoop; }
 	_bool Get_Shake_Camera() { return m_isShaking; }
-
+	TeleportSpot Get_CurrentSpot() { return m_eCurrentSpot; }
 private:
 	CGameInstance* m_pGameInstance = { nullptr };
 
+private:
+	TeleportSpot m_eCurrentSpot{ TS_END };
 private:
 	_bool m_isColl{ false };
 	_bool m_isLimited{ false };

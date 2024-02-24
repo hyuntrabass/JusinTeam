@@ -1,39 +1,36 @@
-#include "SafeZone.h"
+#include "Sickle.h"
 #include "Effect_Dummy.h"
 #include "Effect_Manager.h"
 #include "Collision_Manager.h"
 
-CSafeZone::CSafeZone(_dev pDevice, _context pContext)
+CSickle::CSickle(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
 {
 }
 
-CSafeZone::CSafeZone(const CSafeZone& rhs)
+CSickle::CSickle(const CSickle& rhs)
 	: CBlendObject(rhs)
 {
 }
 
-HRESULT CSafeZone::Init_Prototype()
+HRESULT CSickle::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CSafeZone::Init(void* pArg)
+HRESULT CSickle::Init(void* pArg)
 {
-	
 	_uint iRandom = rand() % 4;
 
-	switch (iRandom)
-	{
-	case 0:m_pTransformCom->Set_Position(_vec3(-2991.653f, -2.1066f, -3006.270f));
-		break;
-	case 1:	m_pTransformCom->Set_Position(_vec3(-2997.939f, -2.1066f, -3012.380f));
-		break;
-	case 2:m_pTransformCom->Set_Position(_vec3(-3004.307f, -2.1066f, -3006.045f));
-		break;
-	case 3:m_pTransformCom->Set_Position(_vec3(-2997.846f, -2.1066f,-2999.703f));
-		break;
-	}
+
+	_vec3 StartPos = *reinterpret_cast<_vec3*>(pArg);
+
+	_float fSpeed{ 30.f };
+
+	m_pTransformCom->Set_Position(StartPos);
+	m_pTransformCom->Set_Speed(fSpeed);
+	m_pTransformCom->LookAt(dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")))->Get_CenterPos());
+
 
 	if (FAILED(Add_Components()))
 	{
@@ -45,20 +42,25 @@ HRESULT CSafeZone::Init(void* pArg)
 	return S_OK;
 }
 
-void CSafeZone::Tick(_float fTimeDelta)
+void CSickle::Tick(_float fTimeDelta)
 {
-	
-
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
+	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+	vPos = XMVectorLerp(vPos, vPlayerPos,0.1f);
+	m_pTransformCom->Set_State(State::Pos, vPos);
+	 
 	m_fLifeTimer += fTimeDelta;
-	if (m_fLifeTimer > 5.f)
+	if (m_fLifeTimer > 10.f)
 	{
 		Kill();
 	}
 
-	m_EffectMatrices[0] = _mat::CreateScale(10.f)/*_mat::CreateRotationX(XMConvertToRadians(35.f)) * _mat::CreateRotationY(XMConvertToRadians(90.f)) **/ * m_pTransformCom->Get_World_Matrix();
-	m_EffectMatrices[1] = _mat::CreateScale(10.f)/*_mat::CreateRotationX(XMConvertToRadians(35.f)) * _mat::CreateRotationY(XMConvertToRadians(90.f)) **/ * m_pTransformCom->Get_World_Matrix();
+	m_EffectMatrices[0] = _mat::CreateScale(4.f)/* * _mat::CreateRotationY(XMConvertToRadians(m_fLifeTimer *-2000.f))*/ * m_pTransformCom->Get_World_Matrix();
+	m_EffectMatrices[1] = _mat::CreateScale(4.f) * m_pTransformCom->Get_World_Matrix();
+	m_EffectMatrices[2] = _mat::CreateScale(4.f)* m_pTransformCom->Get_World_Matrix();
 	
-	for (size_t i = 0; i < 2; i++)
+	for (size_t i = 0; i < 3; i++)
 	{
 		if (m_pEffects[i])
 		{
@@ -66,10 +68,10 @@ void CSafeZone::Tick(_float fTimeDelta)
 		}
 	}
 
-	//if (m_pGameInstance->Attack_Player(m_pColliderCom, 100))
-	//{
-	//	Kill();
-	//}
+	if (m_pGameInstance->Attack_Player(m_pColliderCom, 100))
+	{
+		Kill();
+	}
 
 	//if (m_isDead)
 	//{
@@ -105,9 +107,9 @@ void CSafeZone::Tick(_float fTimeDelta)
 	//}
 }
 
-void CSafeZone::Late_Tick(_float fTimeDelta)
+void CSickle::Late_Tick(_float fTimeDelta)
 {
-	for (size_t i = 0; i < 2; i++)
+	for (size_t i = 0; i < 3; i++)
 	{
 		if (m_pEffects[i])
 		{
@@ -123,12 +125,12 @@ void CSafeZone::Late_Tick(_float fTimeDelta)
 
 }
 
-HRESULT CSafeZone::Add_Components()
+HRESULT CSickle::Add_Components()
 {
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
 	CollDesc.vCenter = _vec3(0.f);
-	CollDesc.fRadius = 4.f;
+	CollDesc.fRadius = 2.7f;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_SafeZone_Collider"), (CComponent**)&m_pColliderCom, &CollDesc)))
 	{
@@ -139,15 +141,21 @@ HRESULT CSafeZone::Add_Components()
 	Safe_AddRef(pEffect_Manager);
 	EffectInfo Info{};
 
-	Info = pEffect_Manager->Get_EffectInformation(L"SafeZone");
+	Info = pEffect_Manager->Get_EffectInformation(L"HumanBoss_Sickle");
 	Info.pMatrix = &m_EffectMatrices[0];
 	Info.isFollow = true;
 	m_pEffects[0] = pEffect_Manager->Clone_Effect(Info);
 
-	Info = pEffect_Manager->Get_EffectInformation(L"SafeZone_Distortion");
+	Info = pEffect_Manager->Get_EffectInformation(L"HumanBoss_Ring");
 	Info.pMatrix = &m_EffectMatrices[1];
 	Info.isFollow = true;
 	m_pEffects[1] = pEffect_Manager->Clone_Effect(Info);
+
+	Info = pEffect_Manager->Get_EffectInformation(L"HumanBoss_Ring2");
+	Info.pMatrix = &m_EffectMatrices[2];
+	Info.isFollow = true;
+	m_pEffects[2] = pEffect_Manager->Clone_Effect(Info);
+
 
 	Safe_Release(pEffect_Manager);
 
@@ -162,9 +170,9 @@ HRESULT CSafeZone::Add_Components()
 	return S_OK;
 }
 
-CSafeZone* CSafeZone::Create(_dev pDevice, _context pContext)
+CSickle* CSickle::Create(_dev pDevice, _context pContext)
 {
-	CSafeZone* pInstance = new CSafeZone(pDevice, pContext);
+	CSickle* pInstance = new CSickle(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
@@ -175,25 +183,25 @@ CSafeZone* CSafeZone::Create(_dev pDevice, _context pContext)
 	return pInstance;
 }
 
-CGameObject* CSafeZone::Clone(void* pArg)
+CGameObject* CSickle::Clone(void* pArg)
 {
-	CSafeZone* pInstance = new CSafeZone(*this);
+	CSickle* pInstance = new CSickle(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CSafeZone");
+		MSG_BOX("Failed to Clone : CSickle");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CSafeZone::Free()
+void CSickle::Free()
 {
 	__super::Free();
 
 	Safe_Release(m_pColliderCom);
-	for (size_t i = 0; i < 2; i++)
+	for (size_t i = 0; i < 3; i++)
 	{
 		Safe_Release(m_pEffects[i]);
 	}
