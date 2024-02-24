@@ -133,7 +133,7 @@
 #include "Meteor.h"
 
 #include "Human_Boss.h"
-
+#include "SafeZone.h"
 
 // Pet
 #include "Pet_Cat.h"
@@ -154,3 +154,7 @@
 
 // Trigger
 #include "Trigger.h"
+
+//SescoGame
+#include "VTFMonster.h"
+#include "Void19.h"

@@ -7,6 +7,7 @@
 #include "NPC_Dummy.h"
 #include "Map.h"
 #include "Trigger_Manager.h"
+#include "VTFMonster.h"
 
 CLevel_Village::CLevel_Village(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -76,6 +77,12 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
+	if (FAILED(Ready_Human_Boss()))
+	{
+		MSG_BOX("Failed to Ready HumanBoss");
+		return E_FAIL;
+	}
+
 	if (FAILED(Ready_NPC()))
 	{
 		MSG_BOX("Failed to Ready NPC");
@@ -104,6 +111,13 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
+
+	if (FAILED(Ready_SescoGame()))
+	{
+		MSG_BOX("Failed to Ready SescoGame");
+		return E_FAIL;
+	}
+	
 	m_pGameInstance->Set_FogNF(_vec2(50.f, 2000.f));
 	m_pGameInstance->Set_FogColor(_color(1.f));
 
@@ -181,7 +195,7 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	}
 	if (m_pGameInstance->Key_Down(DIK_EQUALS))
 	{
-		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Test"), TEXT("Prototype_GameObject_Void20"));
+		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Test"), TEXT("Prototype_GameObject_Void23"));
 	}
 }
 
@@ -491,6 +505,14 @@ HRESULT CLevel_Village::Ready_Groar_Boss()
 	return S_OK;
 }
 
+HRESULT CLevel_Village::Ready_Human_Boss()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Boss"), TEXT("Prototype_GameObject_Human_Boss"))))
+	{
+		return E_FAIL;
+	}
+}
+
 HRESULT CLevel_Village::Ready_NPC()
 {
 	NPC_INFO Info{};
@@ -702,6 +724,67 @@ HRESULT CLevel_Village::Ready_NPC_Dummy()
 		//}
 	}
 
+	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_SescoGame()
+{
+	/*for (_uint i = 0; i < 100; i++)
+	{
+		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
+		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Void19");
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
+			return E_FAIL;
+	}
+	for (_uint i = 0; i < 100; i++)
+	{
+		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
+		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Muspelheim06");
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
+			return E_FAIL;
+	}
+	for (_uint i = 0; i < 100; i++)
+	{
+		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
+		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Niflheim09");
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
+			return E_FAIL;
+	}
+	for (_uint i = 0; i < 100; i++)
+	{
+		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
+		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Redant");
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
+			return E_FAIL;
+	}
+	for (_uint i = 0; i < 100; i++)
+	{
+		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
+		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Scorpion");
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
+			return E_FAIL;
+	}
+	for (_uint i = 0; i < 100; i++)
+	{
+		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
+		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Trilobites");
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
+			return E_FAIL;
+	}
+	for (_uint i = 0; i < 100; i++)
+	{
+		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
+		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Trilobites_A");
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
+			return E_FAIL;
+	}*/
 	return S_OK;
 }
 

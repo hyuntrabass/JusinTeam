@@ -195,6 +195,7 @@
     <ClInclude Include="..\Public\FirePillar.h" />
     <ClInclude Include="..\Public\Goat.h" />
     <ClInclude Include="..\Public\Groar_Boss.h" />
+    <ClInclude Include="..\Public\Guard.h" />
     <ClInclude Include="..\public\Hell.h" />
     <ClInclude Include="..\Public\HitEffect.h" />
     <ClInclude Include="..\Public\HpBar.h" />
@@ -250,6 +251,7 @@
     <ClInclude Include="..\Public\Radar.h" />
     <ClInclude Include="..\Public\Riding.h" />
     <ClInclude Include="..\Public\Roskva.h" />
+    <ClInclude Include="..\Public\SafeZone.h" />
     <ClInclude Include="..\Public\Scarecrow.h" />
     <ClInclude Include="..\Public\Select_Map.h" />
     <ClInclude Include="..\Public\Select_Model.h" />
@@ -271,6 +273,7 @@
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\Statue.h" />
     <ClInclude Include="..\Public\SummonWindow.h" />
+    <ClInclude Include="..\Public\SurvivalGame.h" />
     <ClInclude Include="..\Public\Symbol.h" />
     <ClInclude Include="..\Public\Targeted.h" />
     <ClInclude Include="..\Public\Tentacle.h" />
@@ -308,8 +311,10 @@
     <ClInclude Include="..\Public\Void01.h" />
     <ClInclude Include="..\Public\Void05.h" />
     <ClInclude Include="..\Public\Void09.h" />
+    <ClInclude Include="..\Public\Void19.h" />
     <ClInclude Include="..\Public\Void20.h" />
     <ClInclude Include="..\Public\Void23.h" />
+    <ClInclude Include="..\Public\VTFMonster.h" />
     <ClInclude Include="..\Public\VTFTest.h" />
     <ClInclude Include="..\Public\Wearable_Slot.h" />
     <ClInclude Include="..\Public\WorldMap.h" />
@@ -353,6 +358,7 @@
     <ClCompile Include="..\Private\Event_Manager.cpp" />
     <ClCompile Include="..\Private\ExpBar.cpp" />
     <ClCompile Include="..\Private\FirePillar.cpp" />
+    <ClCompile Include="..\Private\Guard.cpp" />
     <ClCompile Include="..\Private\Human_Boss.cpp" />
     <ClCompile Include="..\Private\InfinityTower.cpp" />
     <ClCompile Include="..\Private\Interaction_Anim_Object.cpp" />
@@ -411,6 +417,7 @@
     <ClCompile Include="..\Private\Radar.cpp" />
     <ClCompile Include="..\Private\Riding.cpp" />
     <ClCompile Include="..\Private\Roskva.cpp" />
+    <ClCompile Include="..\Private\SafeZone.cpp" />
     <ClCompile Include="..\Private\Scarecrow.cpp" />
     <ClCompile Include="..\Private\Select_Map.cpp" />
     <ClCompile Include="..\Private\Select_Model.cpp" />
@@ -431,6 +438,7 @@
     <ClCompile Include="..\Private\Spider.cpp" />
     <ClCompile Include="..\Private\Statue.cpp" />
     <ClCompile Include="..\Private\SummonWindow.cpp" />
+    <ClCompile Include="..\Private\SurvivalGame.cpp" />
     <ClCompile Include="..\Private\Symbol.cpp" />
     <ClCompile Include="..\Private\Targeted.cpp" />
     <ClCompile Include="..\Private\Tentacle.cpp" />
@@ -468,8 +476,10 @@
     <ClCompile Include="..\Private\Void01.cpp" />
     <ClCompile Include="..\Private\Void05.cpp" />
     <ClCompile Include="..\Private\Void09.cpp" />
+    <ClCompile Include="..\Private\Void19.cpp" />
     <ClCompile Include="..\Private\Void20.cpp" />
     <ClCompile Include="..\Private\Void23.cpp" />
+    <ClCompile Include="..\Private\VTFMonster.cpp" />
     <ClCompile Include="..\Private\VTFTest.cpp" />
     <ClCompile Include="..\Private\Wearable_Slot.cpp" />
     <ClCompile Include="..\Private\WorldMap.cpp" />

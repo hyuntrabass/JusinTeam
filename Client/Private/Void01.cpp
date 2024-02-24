@@ -94,6 +94,9 @@ void CVoid01::Tick(_float fTimeDelta)
 
 void CVoid01::Late_Tick(_float fTimeDelta)
 {
+	m_pLeftTrail->Late_Tick(fTimeDelta);
+	m_pRightTrail->Late_Tick(fTimeDelta);
+
 	__super::Late_Tick(fTimeDelta);
 
 #ifdef _DEBUG
@@ -366,8 +369,8 @@ void CVoid01::Tick_State(_float fTimeDelta)
 				}
 				//if (fAnimpos >= 18.f && fAnimpos <= 23.f)
 				//{
-				//	m_pLeftTrail->Late_Tick(fTimeDelta);
-				//	m_pRightTrail->Late_Tick(fTimeDelta);
+				//	m_pLeftTrail->On();
+				//	m_pRightTrail->On();
 				//}
 			}
 			break;
@@ -385,8 +388,8 @@ void CVoid01::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 40.f && fAnimpos <= 75.f)
 				{
-					m_pLeftTrail->Late_Tick(fTimeDelta);
-					m_pRightTrail->Late_Tick(fTimeDelta);
+					m_pLeftTrail->On();
+					m_pRightTrail->On();
 				}
 			}
 			break;
@@ -404,8 +407,8 @@ void CVoid01::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 42.f && fAnimpos <= 50.f)
 				{
-					m_pLeftTrail->Late_Tick(fTimeDelta);
-					m_pRightTrail->Late_Tick(fTimeDelta);
+					m_pLeftTrail->On();
+					m_pRightTrail->On();
 				}
 			}
 			break;

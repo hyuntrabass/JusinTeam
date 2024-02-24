@@ -101,7 +101,7 @@ void CNastron07::Tick(_float fTimeDelta)
 	Update_Collider();
 	__super::Update_BodyCollider();
 
-	//Update_Trail(fTimeDelta);
+	Update_Trail(fTimeDelta);
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
@@ -400,14 +400,12 @@ void CNastron07::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 49.f && fAnimpos <= 58.f)
 				{
-					//m_pLeftTrail1->Late_Tick(fTimeDelta);
-					//m_pLeftTrail2->Late_Tick(fTimeDelta);
-					//m_pLeftTrail3->Late_Tick(fTimeDelta);
-					//m_pRightTrail1->Late_Tick(fTimeDelta);
-					//m_pRightTrail2->Late_Tick(fTimeDelta);
-					//m_pRightTrail3->Late_Tick(fTimeDelta);
-
-					Update_Trail(fTimeDelta);
+					m_pLeftTrail1->On();
+					m_pLeftTrail2->On();
+					m_pLeftTrail3->On();
+					m_pRightTrail1->On();
+					m_pRightTrail2->On();
+					m_pRightTrail3->On();
 				}
 			}
 			break;
@@ -433,26 +431,22 @@ void CNastron07::Tick_State(_float fTimeDelta)
 
 				if (fAnimpos >= 34.f && fAnimpos <= 44.f)
 				{
-					//m_pLeftTrail1->Late_Tick(fTimeDelta);
-					//m_pLeftTrail2->Late_Tick(fTimeDelta);
-					//m_pLeftTrail3->Late_Tick(fTimeDelta);
-					//m_pRightTrail1->Late_Tick(fTimeDelta);
-					//m_pRightTrail2->Late_Tick(fTimeDelta);
-					//m_pRightTrail3->Late_Tick(fTimeDelta);
-
-					Update_Trail(fTimeDelta);
+					m_pLeftTrail1->On();
+					m_pLeftTrail2->On();
+					m_pLeftTrail3->On();
+					m_pRightTrail1->On();
+					m_pRightTrail2->On();
+					m_pRightTrail3->On();
 
 				}
 				if (fAnimpos >= 79.f && fAnimpos <= 86.f)
 				{
-					//m_pLeftTrail1->Late_Tick(fTimeDelta);
-					//m_pLeftTrail2->Late_Tick(fTimeDelta);
-					//m_pLeftTrail3->Late_Tick(fTimeDelta);
-					//m_pRightTrail1->Late_Tick(fTimeDelta);
-					//m_pRightTrail2->Late_Tick(fTimeDelta);
-					//m_pRightTrail3->Late_Tick(fTimeDelta);
-
-					Update_Trail(fTimeDelta);
+					m_pLeftTrail1->On();
+					m_pLeftTrail2->On();
+					m_pLeftTrail3->On();
+					m_pRightTrail1->On();
+					m_pRightTrail2->On();
+					m_pRightTrail3->On();
 
 				}
 

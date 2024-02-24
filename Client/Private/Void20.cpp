@@ -96,7 +96,7 @@ void CVoid20::Tick(_float fTimeDelta)
 	Update_Collider();
 	__super::Update_BodyCollider();
 
-	//Update_Trail(fTimeDelta);
+	Update_Trail(fTimeDelta);
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
@@ -429,12 +429,9 @@ void CVoid20::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 32.f && fAnimpos <= 42.f)
 				{
-					Update_Trail(fTimeDelta);
+					m_pSwordTrailL->On();
+					m_pSwordTrailR->On();
 				}
-
-				//m_pSwordTrailL->Late_Tick(fTimeDelta);
-				//m_pSwordTrailR->Late_Tick(fTimeDelta);
-
 			}
 			break;
 		case 1:
@@ -457,10 +454,8 @@ void CVoid20::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 58.f && fAnimpos <= 64.f)
 				{
-					Update_Trail(fTimeDelta);
+					m_pSwordTrailR->On();
 				}
-
-				//m_pSwordTrailR->Late_Tick(fTimeDelta);
 			}
 			break;
 		case 2:
@@ -483,10 +478,8 @@ void CVoid20::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 36.f && fAnimpos <= 43.f)
 				{
-					Update_Trail(fTimeDelta);
+					m_pSwordTrailL->On();
 				}
-
-				//m_pSwordTrailL->Late_Tick(fTimeDelta);
 			}
 			break;
 		}

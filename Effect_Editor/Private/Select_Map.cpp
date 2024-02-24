@@ -70,7 +70,7 @@ HRESULT CSelect_Map::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(StaticPass_Default)))
+		if (FAILED(m_pShaderCom->Begin(StaticPass_NonLight)))
 		{
 			return E_FAIL;
 		}

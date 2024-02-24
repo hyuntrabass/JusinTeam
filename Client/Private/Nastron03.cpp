@@ -385,9 +385,7 @@ void CNastron03::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 44.f && fAnimpos <= 54.f)
 				{
-					//m_pSwordTrail->Late_Tick(fTimeDelta);
-
-					Update_Trail(fTimeDelta);
+					m_pSwordTrail->On();
 				}
 
 			}
@@ -413,15 +411,11 @@ void CNastron03::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 34.f && fAnimpos <= 41.f)
 				{
-					//m_pSwordTrail->Late_Tick(fTimeDelta);
-
-					Update_Trail(fTimeDelta);
+					m_pSwordTrail->On();
 				}
 				if (fAnimpos >= 66.f && fAnimpos <= 71.f)
 				{
-					//m_pSwordTrail->Late_Tick(fTimeDelta);
-
-					Update_Trail(fTimeDelta);
+					m_pSwordTrail->On();
 				}
 
 			}
