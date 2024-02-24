@@ -13,11 +13,7 @@ CCommonTrail::CCommonTrail(const CCommonTrail& rhs)
 void CCommonTrail::On()
 {
 	m_bNoRender = false;
-}
-
-void CCommonTrail::Off()
-{
-	m_bNoRender = true;
+	m_fDissolveRatio = 0.f;
 }
 
 void CCommonTrail::Set_Color(const _color vColor)
@@ -50,8 +46,6 @@ HRESULT CCommonTrail::Init(void* pArg)
 		MSG_BOX("버텍스 개수는 50을 초과할 수 없습니다.");
 	}
 
-	m_iTickCounter = m_Info.iNumVertices;
-
 	m_PosArray = new _vec3[m_Info.iNumVertices];
 	m_ColorArray = new _vec4[m_Info.iNumVertices];
 	m_PSizeArray = new _vec2[m_Info.iNumVertices];
@@ -63,6 +57,11 @@ HRESULT CCommonTrail::Init(void* pArg)
 
 void CCommonTrail::Tick(_float3 vPos)
 {
+	if (m_bNoRender and m_fDissolveRatio < 1.f)
+	{
+		return;
+	}
+
 	if (m_TrailPosList.size() >= m_Info.iNumVertices)
 	{
 		m_TrailPosList.pop_back();
@@ -74,15 +73,20 @@ void CCommonTrail::Tick(_float3 vPos)
 
 void CCommonTrail::Late_Tick(_float fTimeDelta)
 {
-	if (m_bNoRender)
+	if (m_fDissolveRatio >= 1.f)
 	{
 		return;
+	}
+
+	if (m_bNoRender)
+	{
+		m_fDissolveRatio += fTimeDelta * 4.f;
 	}
 
 	for (size_t i = 0; i < m_Info.iNumVertices; i++)
 	{
 		XMStoreFloat3(&m_PosArray[i], m_pTransformCom->Get_State(State::Pos));
-		m_ColorArray[i] = _float4(m_Info.vColor.x, m_Info.vColor.y, m_Info.vColor.z, 1.f - static_cast<_float>(i) / m_Info.iNumVertices);
+		m_ColorArray[i] = _float4(m_Info.vColor.x, m_Info.vColor.y, m_Info.vColor.z, Saturate((1.f - static_cast<_float>(i) / m_Info.iNumVertices) - m_fDissolveRatio));
 	}
 
 	_uint iIndex{};
@@ -100,6 +104,7 @@ void CCommonTrail::Late_Tick(_float fTimeDelta)
 
 	__super::Compute_CamDistance();
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
+	m_bNoRender = true;
 }
 
 HRESULT CCommonTrail::Render()

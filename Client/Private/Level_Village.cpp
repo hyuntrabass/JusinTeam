@@ -106,18 +106,24 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
+	//if (FAILED(Ready_Survival_Game()))
+	//{
+	//	MSG_BOX("Failed to Ready Survival Game");
+	//	return E_FAIL;
+	//}
+
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_BrickBar"), TEXT("Prototype_GameObject_BrickBar"))))
 	{
 		return E_FAIL;
 	}
 
 
-	if (FAILED(Ready_SescoGame()))
-	{
-		MSG_BOX("Failed to Ready SescoGame");
-		return E_FAIL;
-	}
-	
+	//if (FAILED(Ready_SescoGame()))
+	//{
+	//	MSG_BOX("Failed to Ready SescoGame");
+	//	return E_FAIL;
+	//}
+	//
 	m_pGameInstance->Set_FogNF(_vec2(50.f, 2000.f));
 	m_pGameInstance->Set_FogColor(_color(1.f));
 
@@ -196,14 +202,14 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	{
 		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"));
 	}
-	if (m_pGameInstance->Key_Down(DIK_UP))
-	{
-		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Statue"), TEXT("Prototype_GameObject_Statue"));
-	}
-	if (m_pGameInstance->Key_Down(DIK_EQUALS))
-	{
-		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Test"), TEXT("Prototype_GameObject_Void20"));
-	}
+	//if (m_pGameInstance->Key_Down(DIK_UP))
+	//{
+	//	m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Statue"), TEXT("Prototype_GameObject_Statue"));
+	//}
+	//if (m_pGameInstance->Key_Down(DIK_EQUALS))
+	//{
+	//	m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Test"), TEXT("Prototype_GameObject_Void20"));
+	//}
 }
 
 HRESULT CLevel_Village::Render()
@@ -792,6 +798,16 @@ HRESULT CLevel_Village::Ready_SescoGame()
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
 			return E_FAIL;
 	}*/
+	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_Survival_Game()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SurvivalGame"), TEXT("Prototype_GameObject_SurvivalGame"))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 

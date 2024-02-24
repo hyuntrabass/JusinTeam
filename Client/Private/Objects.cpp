@@ -1,6 +1,6 @@
 #include "Objects.h"
 #include "Camera_Manager.h"
-
+#include "Trigger_Manager.h"
 CObjects::CObjects(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
 {
@@ -27,11 +27,16 @@ HRESULT CObjects::Init(void* pArg)
 
 void CObjects::Tick(_float fTimeDelta)
 {
+
 	m_pTransformCom->Set_OldMatrix();
 }
 
 void CObjects::Late_Tick(_float fTimeDelta)
 {
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Village)
+	{
+		return;
+	}
 
 	CAMERA_STATE CamState = CCamera_Manager::Get_Instance()->Get_CameraState();
 	if (CamState == CS_SKILLBOOK or CamState == CS_INVEN) //or CamState == CS_WORLDMAP)

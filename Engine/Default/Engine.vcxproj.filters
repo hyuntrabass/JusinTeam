@@ -632,6 +632,9 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_BlurTex.hlsl">
       <Filter>01.Utility\98.ShaderFiles</Filter>
     </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_ComputeParticle.hlsl">
+      <Filter>01.Utility\98.ShaderFiles</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Bin\ShaderFiles\Shader_DownScale.hlsl">

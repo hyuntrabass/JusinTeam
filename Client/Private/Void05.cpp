@@ -104,6 +104,9 @@ void CVoid05::Tick(_float fTimeDelta)
 
 void CVoid05::Late_Tick(_float fTimeDelta)
 {
+	m_pLeftTrail->Late_Tick(fTimeDelta);
+	m_pRightTrail->Late_Tick(fTimeDelta);
+
 	__super::Late_Tick(fTimeDelta);
 
 	m_Animation.fStartAnimPos = 0.f;
@@ -355,8 +358,8 @@ void CVoid05::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 43.f && fAnimpos <= 52.f)
 				{
-					m_pLeftTrail->Late_Tick(fTimeDelta);
-					m_pRightTrail->Late_Tick(fTimeDelta);
+					m_pLeftTrail->On();
+					m_pRightTrail->On();
 				}
 			}
 			break;
@@ -396,8 +399,8 @@ void CVoid05::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 17.f && fAnimpos <= 50.f)
 				{
-					m_pLeftTrail->Late_Tick(fTimeDelta);
-					m_pRightTrail->Late_Tick(fTimeDelta);
+					m_pLeftTrail->On();
+					m_pRightTrail->On();
 				}
 			}
 			break;

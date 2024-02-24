@@ -46,6 +46,7 @@ private:
 	_bool m_isColl{};
 	_bool m_bParticle{};
 	_bool m_bDamaged = { false };
+	_bool m_isBlur = { false };
 
 	_vec4 m_vColor{};
 	//_vec3 m_vNormals[DIR_END]{};

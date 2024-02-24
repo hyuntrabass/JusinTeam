@@ -50,11 +50,11 @@ void CStatue::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-	if (m_pGameInstance->Key_Pressing(DIK_DOWN))
-	{
-		m_bDamaged = true;
+	//if (m_pGameInstance->Key_Pressing(DIK_DOWN))
+	//{
+	//	m_bDamaged = true;
 
-	}
+	//}
 
 	if (m_pModelCom->IsAnimationFinished(0))
 	{

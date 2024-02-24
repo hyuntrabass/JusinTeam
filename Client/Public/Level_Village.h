@@ -42,6 +42,9 @@ private: // SescoGame
 	HRESULT Ready_SescoGame();
 
 private:
+	HRESULT Ready_Survival_Game();
+
+private:
 	// Test
 	HRESULT Ready_Test(); 
 

@@ -81,7 +81,8 @@ Texture2D g_DistortionTexture;
 Texture2D g_EffectColorTexture;
 Texture2D g_AlphaTexture;
 
-
+bool g_WorldOrTex;
+float2 g_vCenterTexPos;
 vector g_vCenterPos;
 float g_fRadialBlur_Power;
 
@@ -646,13 +647,25 @@ PS_OUT PS_RadialBlur(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    vector vPos = mul(vector(g_vCenterPos.xyz, 1.f), g_CamViewMatrix);
-    vPos = mul(vPos, g_CamProjMatrix);
+    float2 Dir = 0.f;
+    if (false == g_WorldOrTex)
+    {
+        matrix matVP = mul(g_CamViewMatrix, g_CamProjMatrix);
+        
+        vector vPos = mul(g_vCenterPos, matVP);
+        
+        vPos /= vPos.w;
     
-    vPos.x = (vPos.x + 1.f) * 0.5f;
-    vPos.y = (vPos.y - 1.f) * -0.5f;
+        vPos.x = (vPos.x + 1.f) * 0.5f;
+        vPos.y = (vPos.y - 1.f) * -0.5f;
     
-    float2 Dir = vPos.xy - Input.vTexcoord;
+        Dir = vPos.xy - Input.vTexcoord;
+    }
+    else
+    {
+        Dir = g_vCenterTexPos - Input.vTexcoord;
+    }
+
     
     float2 DirMulti = Dir * g_fRadialBlur_Power;
         

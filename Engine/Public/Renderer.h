@@ -39,8 +39,17 @@ public:
 		m_TurnOnBloom = TurnOnBloom;
 	}
 
-	const void Set_RaidalBlur(_vec4 vRadialCenter, _float fBlurPower) {
-		m_vRadialCenter = vRadialCenter;
+	const void Set_RadialBlur_World(_vec4 vRadialCenter) {
+		m_vRadialWorldCenter = vRadialCenter;
+		m_bWorldOrTex = false;
+	}
+
+	const void Set_RadialBlur_Texcoord(_vec2 vRadialCenter) {
+		m_vRadialTexCenter = vRadialCenter;
+		m_bWorldOrTex = true;
+	}
+
+	const void Set_RadialBlur_Power(_float fBlurPower) {
 		m_fRadial_BlurPower = fBlurPower;
 		if (0.f > m_fRadial_BlurPower)
 			m_fRadial_BlurPower = 0.f;
@@ -67,7 +76,9 @@ private:
 
 	ID3D11DepthStencilView* m_pShadowDSV{ nullptr };
 
-	_vec4 m_vRadialCenter{};
+	_bool m_bWorldOrTex{ true };
+	_vec2 m_vRadialTexCenter{};
+	_vec4 m_vRadialWorldCenter{};
 	_float m_fRadial_BlurPower = 0.f;
 
 #pragma region Æò±Õ ÈÖµµ ±¸ÇÏ´Â ½¦ÀÌ´õ¶û ·£´õÅ¸°Ùµé
