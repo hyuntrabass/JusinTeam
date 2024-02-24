@@ -26,6 +26,11 @@ HRESULT CSurvivalGame::Init(void* pArg)
 
 void CSurvivalGame::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_LEFT))
+	{
+		Kill();
+	}
+
 	if (m_pGameInstance->Key_Down(DIK_UP))
 	{
 		for (size_t i = 0; i < 5; i++)
