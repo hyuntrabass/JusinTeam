@@ -469,6 +469,12 @@
     <Filter Include="02.GameObjects\09.Object\Interaction\NonAnim">
       <UniqueIdentifier>{b3b240ce-ced1-4247-b650-cd75226bd65c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Human_Boss\Sickle">
+      <UniqueIdentifier>{d9ba639c-8f75-46bf-b077-f09850b4df52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Human_Boss\SafeZone">
+      <UniqueIdentifier>{77fc0119-0729-4d57-af69-e640bf13baf1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -952,6 +958,14 @@
     <ClInclude Include="..\Public\BrickWall.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Guard.h" />
+    <ClInclude Include="..\Public\Sickle.h" />
+    <ClInclude Include="..\Public\SurvivalGame.h" />
+    <ClInclude Include="..\Public\Void19.h" />
+    <ClInclude Include="..\Public\VTFMonster.h" />
+    <ClInclude Include="..\Public\SafeZone.h">
+      <Filter>02.GameObjects\08. Boss\Human_Boss\SafeZone</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1429,6 +1443,16 @@
     </ClCompile>
     <ClCompile Include="..\Private\BrickWall.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Guard.cpp" />
+    <ClCompile Include="..\Private\SurvivalGame.cpp" />
+    <ClCompile Include="..\Private\Void19.cpp" />
+    <ClCompile Include="..\Private\VTFMonster.cpp" />
+    <ClCompile Include="..\Private\Sickle.cpp">
+      <Filter>02.GameObjects\08. Boss\Human_Boss\Sickle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SafeZone.cpp">
+      <Filter>02.GameObjects\08. Boss\Human_Boss\SafeZone</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
