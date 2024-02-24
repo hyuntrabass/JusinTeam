@@ -256,19 +256,21 @@ void CNPC_Dummy::Tick(_float fTimeDelta)
 
 void CNPC_Dummy::Late_Tick(_float fTimeDelta)
 {
-
-	__super::Late_Tick(fTimeDelta);
-	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
-	_bool isColl = m_pColliderCom->Intersect(pCollider);
-	if (isColl)
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 2.f))
 	{
-		if (m_strModelTag == TEXT("Prototype_Model_Male_009"))
+		__super::Late_Tick(fTimeDelta);
+		CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
+		_bool isColl = m_pColliderCom->Intersect(pCollider);
+		if (isColl)
 		{
-			_int a = 10;
-		}
+			if (m_strModelTag == TEXT("Prototype_Model_Male_009"))
+			{
+				_int a = 10;
+			}
 
-		//wstring strTest = m_strModelTag;
-		m_pDialog->Late_Tick(fTimeDelta);
+			//wstring strTest = m_strModelTag;
+			m_pDialog->Late_Tick(fTimeDelta);
+		}
 	}
 }
 

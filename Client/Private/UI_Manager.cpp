@@ -43,7 +43,15 @@ HRESULT CUI_Manager::Init()
 		return E_FAIL;
 	}
 
-
+	m_tExtraStaus.Armor = 0;
+	m_tExtraStaus.Attack = 0;
+	m_tExtraStaus.Critical = 0;
+	m_tExtraStaus.Critical_Dmg = 0;
+	m_tExtraStaus.Current_Hp = 0;
+	m_tExtraStaus.Current_Mp = 0;
+	m_tExtraStaus.Max_Hp = 0;
+	m_tExtraStaus.Max_Mp = 0;
+	m_tExtraStaus.Speed = 0.f;
 	return S_OK;
 }
 

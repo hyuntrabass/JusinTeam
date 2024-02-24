@@ -34,7 +34,7 @@ HRESULT CMPBar::Init(void* pArg)
 	m_fDepth = (_float)D_BAR / (_float)D_END;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
-	m_vRatio = _float2(1000.f, 1000.f);
+	m_vRatio = _float2(500.f, 500.f);
 
 	CTextButton::TEXTBUTTON_DESC Button = {};
 	Button.eLevelID = LEVEL_STATIC;

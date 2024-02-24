@@ -640,6 +640,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 			return;
 		}
 		dynamic_cast<CTextButtonColor*>(m_pAim)->Set_Pass(VTPass_Mask_ColorAlpha);
+		CUI_Manager::Get_Instance()->Set_Mp(m_Status.Current_Mp, m_Status.Max_Mp);
 	}
 
 
