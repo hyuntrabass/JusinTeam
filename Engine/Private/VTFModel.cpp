@@ -210,6 +210,7 @@ HRESULT CVTFModel::Play_Animation(_float fTimeDelta)
 			else
 			{
 				//애니메이션이 끝났다
+				m_PlayAnimDesc.eCurrent.iCurrFrame = pPlayingAnim->Get_MaxFrame() - 1.f;
 				m_PlayAnimDesc.eCurrent.iNextFrame = m_PlayAnimDesc.eCurrent.iCurrFrame;
 				m_PlayAnimDesc.eCurrent.fTime = 0.f;
 				m_PlayAnimDesc.eCurrent.fRatio = m_PlayAnimDesc.eCurrent.fTime;

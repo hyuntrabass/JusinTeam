@@ -982,6 +982,9 @@
     <ClInclude Include="..\Public\BrickWall.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\SescoGame.h">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1474,6 +1477,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\BrickWall.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SescoGame.cpp">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

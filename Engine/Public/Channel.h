@@ -14,10 +14,6 @@ public:
 		return m_szName;
 	}
 
-	void Reset_CurrentKeyFrame() {
-		m_iCurrentKeyFrame = 0;
-	}
-
 	KEYFRAME Get_CurrentKeyFrame(_float fCurrentAnimPos) const;
 
 public:

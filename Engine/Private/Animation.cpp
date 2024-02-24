@@ -55,11 +55,7 @@ const _float CAnimation::Get_Duration() const
 void CAnimation::ResetFinished()
 {
 	m_isFinished = false;
-	m_fCurrentAnimPos = {};
-	for (auto& pChannel : m_Channels)
-	{
-		pChannel->Reset_CurrentKeyFrame();
-	}
+	//선형보간 중에 애니메이션 바뀌면 선형보간을 처음부터 하기 위해
 	m_isInterpolating = false;
 }
 
@@ -198,7 +194,7 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 	{
 		Update_Lerp_TransformationMatrix(Bones, isAnimChanged, fInterpolationTime);
 	}
-	else if (not m_isFinished)
+	else// if (not m_isFinished)
 	{
 		for (size_t i = 0; i < m_iNumChannels; i++)
 		{

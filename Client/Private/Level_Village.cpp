@@ -182,6 +182,13 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_0))
 	{
 		CTrigger_Manager::Get_Instance()->Teleport(TS_SescoMap);
+
+		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
+		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Void19");
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
+			return;
+
 		return;
 	}
 	// Test
