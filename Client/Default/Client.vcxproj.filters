@@ -475,6 +475,12 @@
     <Filter Include="02.GameObjects\09.Object\Interaction\NonAnim">
       <UniqueIdentifier>{b3b240ce-ced1-4247-b650-cd75226bd65c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\15. SurvivalGame\00. Launcher">
+      <UniqueIdentifier>{d6d25139-83a2-4305-8efa-8485864b614f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\15. SurvivalGame\01. Projectile">
+      <UniqueIdentifier>{69ef5a15-b68b-4ca5-9552-056824a21d4a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -952,13 +958,15 @@
     <ClInclude Include="..\Public\BrickWall.h" />
     <ClInclude Include="..\Public\SafeZone.h">
       <Filter>02.GameObjects\08. Boss\Human_Boss</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="..\Public\Interaction_Anim_Object.h">
       <Filter>02.GameObjects\09.Object\Interaction\Anim</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Interaction_NonAnim_Object.h">
       <Filter>02.GameObjects\09.Object\Interaction\NonAnim</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\BrickBar.h" />
+    <ClInclude Include="..\Public\Launcher.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1428,17 +1436,18 @@
     <ClCompile Include="..\Private\SurvivalGame.cpp">
       <Filter>02.GameObjects\15. SurvivalGame</Filter>
     </ClCompile>
-
     <ClCompile Include="..\Private\BrickWall.cpp" />
     <ClCompile Include="..\Private\SafeZone.cpp">
       <Filter>02.GameObjects\08. Boss\Human_Boss</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="..\Private\Interaction_Anim_Object.cpp">
       <Filter>02.GameObjects\09.Object\Interaction\Anim</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp">
       <Filter>02.GameObjects\09.Object\Interaction\NonAnim</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\BrickBar.cpp" />
+    <ClCompile Include="..\Private\Launcher.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">

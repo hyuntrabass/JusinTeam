@@ -214,6 +214,7 @@
     <ClInclude Include="..\Public\ItemMerchant.h" />
     <ClInclude Include="..\Public\ItemSlot.h" />
     <ClInclude Include="..\Public\JobMark.h" />
+    <ClInclude Include="..\Public\Launcher.h" />
     <ClInclude Include="..\Public\Level_Village.h" />
     <ClInclude Include="..\Public\Logo_Dust.h" />
     <ClInclude Include="..\Public\Logo_Stone.h" />
@@ -359,6 +360,7 @@
     <ClCompile Include="..\Private\InfinityTower.cpp" />
     <ClCompile Include="..\Private\Interaction_Anim_Object.cpp" />
     <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp" />
+    <ClCompile Include="..\Private\Launcher.cpp" />
     <ClCompile Include="..\Private\Meteor.cpp" />
     <ClCompile Include="..\Private\NineSlice.cpp" />
     <ClCompile Include="..\Private\NumEffect.cpp" />
