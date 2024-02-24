@@ -5,7 +5,7 @@ struct Vertex_Instancing
     vector vLook;
     vector vPos;
     vector vPrevPos;
-    unsigned int iInstanceID;
+    float fIndex;
     float fDissolveRatio;
 
     float fSpeed;
@@ -34,7 +34,7 @@ cbuffer ParticleParams : register(b0)
     int bApplyGravity;
     int isFirstUpdate;
     
-    vector Padding3;
+    float4 Padding;
 }
 
 [numthreads(1024, 1, 1)]
@@ -83,6 +83,8 @@ void particle(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID
         {
             pVertex.fDissolveRatio = 0.f;
         }
+        
+        pVertex.fIndex = saturate(pVertex.vLifeTime.x / pVertex.vLifeTime.y);
 
         pVertex.vPrevPos = pVertex.vPos;
         pVertex.vPos += pVertex.vDirection * pVertex.fSpeed * fTimeDelta;

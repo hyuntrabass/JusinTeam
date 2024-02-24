@@ -10,18 +10,18 @@ protected:
 	{
 		_uint iNumInstances;
 		_uint iNumUse;
-		float fTimeDelta;
-		float fAppearRatio;
+		_float fTimeDelta;
+		_float fAppearRatio;
 		
 		_vec4 vGravityDir;
 
 
 		_mat WorldMatrix;
 
-		float fDissolveRatio;
-		int isLoop;
-		int bApplyGravity;
-		int isFirstUpdate;
+		_float fDissolveRatio;
+		_int isLoop;
+		_int bApplyGravity;
+		_int isFirstUpdate;
 
 		_vec4 padding;
 	};

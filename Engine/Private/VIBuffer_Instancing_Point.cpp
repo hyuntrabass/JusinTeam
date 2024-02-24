@@ -11,13 +11,13 @@ CVIBuffer_Instancing_Point::CVIBuffer_Instancing_Point(const CVIBuffer_Instancin
 {
 }
 
-HRESULT CVIBuffer_Instancing_Point::Init_Prototype(_uint iNumInstances)
+HRESULT CVIBuffer_Instancing_Point::Init_Prototype()
 {
 	m_iNumVertexBuffers = 2;
 	m_iVertexStride = sizeof VTXPOINT;
 	m_iNumVertices = 1;
 
-	m_iNumInstances = 1000;
+	m_iNumInstances = 1024;
 	m_iIndexCountPerInstance = 1;
 	m_iInstanceStride = sizeof VTXINSTANCING;
 
@@ -95,15 +95,12 @@ HRESULT CVIBuffer_Instancing_Point::Init_Prototype(_uint iNumInstances)
 
 	VTXINSTANCING* pVertexInstance = new VTXINSTANCING[m_iNumInstances]{};
 
-	_uint iInstanceID{};
-
 	for (size_t i = 0; i < m_iNumInstances; i++)
 	{
 		pVertexInstance[i].vRight = _float4(1.f, 0.f, 0.f, 0.f);
 		pVertexInstance[i].vUp = _float4(0.f, 1.f, 0.f, 0.f);
 		pVertexInstance[i].vLook = _float4(0.f, 0.f, 1.f, 0.f);
 		pVertexInstance[i].vPos = _float4(0.f + i, 0.f, 0.f + i, 1.f);
-		pVertexInstance[i].iInstanceID = iInstanceID++;
 	}
 
 	m_InstancingInitialData.pSysMem = pVertexInstance;
@@ -145,12 +142,9 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 		_randFloat RandomSpeed = _randFloat(Desc.vSpeedRange.x, Desc.vSpeedRange.y);
 		_randFloat RandomLifeTime = _randFloat(Desc.vLifeTime.x, Desc.vLifeTime.y);
 
-		_randFloat RandomRadian = _randFloat(0.f, XMVectorGetX(g_XMPi) * 2.f);
-
 		for (size_t i = 0; i < m_iNumInstances; i++)
 		{
 			_float fScale = RandomScale(RandomNumber);
-			_float fCeta = RandomRadian(RandomNumber);
 
 			pVertexInstance[i].vRight = _float4(fScale, 0.f, 0.f, 0.f);
 			pVertexInstance[i].vUp = _float4(0.f, fScale, 0.f, 0.f);
@@ -187,7 +181,7 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 	m_InstancingBufferDesc.ByteWidth = m_iInstanceStride * m_iNumInstances;
 	m_InstancingBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	m_InstancingBufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
-	m_InstancingBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	m_InstancingBufferDesc.CPUAccessFlags = 0;
 	m_InstancingBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 	m_InstancingBufferDesc.StructureByteStride = m_iInstanceStride;
 
@@ -230,11 +224,11 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 	return S_OK;
 }
 
-CVIBuffer_Instancing_Point* CVIBuffer_Instancing_Point::Create(_dev pDevice, _context pContext, _uint iNumInstances)
+CVIBuffer_Instancing_Point* CVIBuffer_Instancing_Point::Create(_dev pDevice, _context pContext)
 {
 	CVIBuffer_Instancing_Point* pInstance = new CVIBuffer_Instancing_Point(pDevice, pContext);
 
-	if (FAILED(pInstance->Init_Prototype(iNumInstances)))
+	if (FAILED(pInstance->Init_Prototype()))
 	{
 		MSG_BOX("Failed to Create : CVIBuffer_Instancing_Point");
 		Safe_Release(pInstance);
