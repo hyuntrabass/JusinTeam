@@ -29,7 +29,7 @@ HRESULT CCompute_Shader::Init_Prototype(const wstring& strShaderFilePath, const 
 		BDesc.ByteWidth = iDataSize;
 		BDesc.Usage = D3D11_USAGE_DYNAMIC;
 		BDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		BDesc.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
+		BDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 		if (FAILED(m_pDevice->CreateBuffer(&BDesc, nullptr, &m_pBuffer)))
 			return E_FAIL;

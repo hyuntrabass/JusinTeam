@@ -16,11 +16,6 @@ void CCommonSurfaceTrail::On()
 	m_fDissolveRatio = 0.f;
 }
 
-void CCommonSurfaceTrail::Off()
-{
-	m_bNoRender = true;
-}
-
 void CCommonSurfaceTrail::Set_Color(const _color vColor)
 {
 	m_Info.vColor = vColor;
@@ -45,7 +40,6 @@ HRESULT CCommonSurfaceTrail::Init(void* pArg)
 	{
 		MSG_BOX("버텍스 개수는 50을 초과할 수 없습니다.");
 	}
-	m_iTickCounter = m_Info.iNumVertices;
 
 	if (m_Info.strMaskTextureTag.empty())
 	{
@@ -128,6 +122,7 @@ void CCommonSurfaceTrail::Late_Tick(_float fTimeDelta)
 	{
 		m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 	}
+	m_bNoRender = true;
 }
 
 HRESULT CCommonSurfaceTrail::Render()

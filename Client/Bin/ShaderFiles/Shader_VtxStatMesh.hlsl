@@ -767,7 +767,7 @@ technique11 DefaultTechnique_Shader_StatMesh
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main_NonLight();
+        PixelShader = compile ps_5_0 PS_Main();
     }
 
     pass OutLine // 2

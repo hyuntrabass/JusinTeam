@@ -39,14 +39,12 @@ void CNPC::Tick(_float fTimeDelta)
 
 void CNPC::Late_Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
-	{
-		m_pModelCom->Play_Animation(fTimeDelta);
-		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	m_pModelCom->Play_Animation(fTimeDelta);
+	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
-		if(true == m_pGameInstance->Get_TurnOnShadow())
-			m_pRendererCom->Add_RenderGroup(RG_Shadow, this);
-	}
+	if(true == m_pGameInstance->Get_TurnOnShadow())
+		m_pRendererCom->Add_RenderGroup(RG_Shadow, this);
+
 }
 
 HRESULT CNPC::Render()

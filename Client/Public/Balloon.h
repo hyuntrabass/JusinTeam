@@ -5,10 +5,10 @@
 
 BEGIN(Client)
 
+enum BrickColor { PINK, YELLOW, PURPLE, BLUE, COLOR_END };
 class CBalloon final : public CGameObject
 {
 public:
-	enum Color { PINK, YELLOW, PURPLE, BLUE, COLOR_END};
 	typedef struct tagBalloonDesc
 	{
 		_vec3 vPosition{};
@@ -62,7 +62,7 @@ private:
 	CTexture* m_pDissolveTextureCom = { nullptr };
 
 private:
-	Color		m_eCurColor{};
+	BrickColor		m_eCurColor{};
 	ANIM_DESC	m_Animation{};
 
 public:

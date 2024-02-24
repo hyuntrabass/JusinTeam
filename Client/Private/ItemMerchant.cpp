@@ -124,24 +124,29 @@ void CItemMerchant::Tick(_float fTimeDelta)
 
 void CItemMerchant::Late_Tick(_float fTimeDelta)
 {
-	if (m_bTalking == true)
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 2.f))
 	{
-		m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 1000.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));
-		m_pShop->Late_Tick(fTimeDelta);
-	}
-	else
-	{
-		if (m_isColl)
+		if (m_bTalking == true)
 		{
-			m_pSpeechBubble->Late_Tick(fTimeDelta);
+			m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 1000.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));
+			m_pShop->Late_Tick(fTimeDelta);
 		}
+		else
+		{
+			if (m_isColl)
+			{
+				m_pSpeechBubble->Late_Tick(fTimeDelta);
+			}
+		}
+
+		__super::Late_Tick(fTimeDelta);
 	}
+
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
 #endif // _DEBUG
 
-	__super::Late_Tick(fTimeDelta);
 }
 
 HRESULT CItemMerchant::Render()

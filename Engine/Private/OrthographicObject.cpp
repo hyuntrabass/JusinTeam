@@ -57,8 +57,8 @@ const _vec2 COrthographicObject::Convert_To_2D(CTransform* pTransform) const
 
 	if (vPos.z > 1.f)
 	{
-		vPos.x = -10.f;
-		vPos.y = -10.f;
+		vPos.x = -100.f;
+		vPos.y = -100.f;
 	}
 	_vec2 vPosition2D = _vec2(vPos.x, vPos.y);
 	return vPosition2D;

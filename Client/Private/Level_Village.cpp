@@ -191,11 +191,11 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	}
 	if (m_pGameInstance->Key_Down(DIK_UP))
 	{
-		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Statue"), TEXT("Prototype_GameObject_Statue"));
+		//m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Statue"), TEXT("Prototype_GameObject_Statue"));
 	}
 	if (m_pGameInstance->Key_Down(DIK_EQUALS))
 	{
-		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Test"), TEXT("Prototype_GameObject_Void20"));
+		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Test"), TEXT("Prototype_GameObject_Void23"));
 	}
 }
 
@@ -729,7 +729,7 @@ HRESULT CLevel_Village::Ready_NPC_Dummy()
 
 HRESULT CLevel_Village::Ready_SescoGame()
 {
-	for (_uint i = 0; i < 100; i++)
+	/*for (_uint i = 0; i < 100; i++)
 	{
 		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
 		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Void19");
@@ -784,7 +784,7 @@ HRESULT CLevel_Village::Ready_SescoGame()
 
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
 			return E_FAIL;
-	}
+	}*/
 	return S_OK;
 }
 

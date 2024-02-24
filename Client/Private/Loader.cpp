@@ -1101,6 +1101,7 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 
+
 #pragma endregion Monster
 
 #pragma region NPC
@@ -1760,7 +1761,8 @@ HRESULT CLoader::Load_Village()
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 			if (strPrototypeTag == L"Prototype_Model_BrickMap")
 			{
-				DungeonPivot = _mat::CreateScale(0.1f);
+				DungeonPivot = _mat::CreateScale(0.045f);
+
 			}
 			else if (strPrototypeTag == L"Prototype_Model_DragonMap")
 			{

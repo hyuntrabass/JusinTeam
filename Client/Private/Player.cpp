@@ -587,12 +587,8 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 	m_pLeft_Trail->Late_Tick(fTimeDelta);
 	m_pLeft_Distortion_Trail->Late_Tick(fTimeDelta);
-	m_pLeft_Trail->Off();
-	m_pLeft_Distortion_Trail->Off();
 	m_pRight_Trail->Late_Tick(fTimeDelta);
 	m_pRight_Distortion_Trail->Late_Tick(fTimeDelta);
-	m_pRight_Trail->Off();
-	m_pRight_Distortion_Trail->Off();
 
 	if (m_pCam_Manager->Get_CameraState() == CS_WORLDMAP)
 	{
@@ -646,6 +642,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 			return;
 		}
 		dynamic_cast<CTextButtonColor*>(m_pAim)->Set_Pass(VTPass_Mask_ColorAlpha);
+		CUI_Manager::Get_Instance()->Set_Mp(m_Status.Current_Mp, m_Status.Max_Mp);
 	}
 
 

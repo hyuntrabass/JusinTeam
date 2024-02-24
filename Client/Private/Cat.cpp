@@ -71,7 +71,11 @@ void CCat::Tick(_float fTimeDelta)
 
 void CCat::Late_Tick(_float fTimeDelta)
 {
-	__super::Late_Tick(fTimeDelta);
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 2.f))
+	{
+		__super::Late_Tick(fTimeDelta);
+	}
+
 }
 
 HRESULT CCat::Render()
