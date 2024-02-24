@@ -292,7 +292,7 @@ public:
 		_int Current_Hp{ 1000 };
 		_int Max_Hp{ 1000 };
 		_int Max_Mp{ 500 };
-		_int Current_Mp{ 1000 };
+		_int Current_Mp{ 500 };
 		_int Attack{ 70 };
 		_int Critical{ 10 };	// 기본 치명타 확률 10 (10퍼센트 확률로 기본 공격력 대신 기본공격력의 Critical_Dmg % 가 들어감)
 		_int Critical_Dmg{ 150 }; // 기본 치명타데미지 150( 기본 데미지에 추가50퍼센트 피해)

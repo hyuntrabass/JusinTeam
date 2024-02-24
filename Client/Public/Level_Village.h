@@ -32,6 +32,8 @@ private: // Monster, Boss
 
 	HRESULT Ready_Groar_Boss();
 
+	HRESULT Ready_Human_Boss();
+
 private: // NPC
 	HRESULT Ready_NPC();
 	HRESULT Ready_NPC_Dummy();

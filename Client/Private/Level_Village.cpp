@@ -76,6 +76,12 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
+	if (FAILED(Ready_Human_Boss()))
+	{
+		MSG_BOX("Failed to Ready HumanBoss");
+		return E_FAIL;
+	}
+
 	if (FAILED(Ready_NPC()))
 	{
 		MSG_BOX("Failed to Ready NPC");
@@ -98,7 +104,12 @@ HRESULT CLevel_Village::Init()
 		MSG_BOX("Failed to Ready Test");
 		return E_FAIL;
 	}
-	
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_BrickBar"), TEXT("Prototype_GameObject_BrickBar"))))
+	{
+		return E_FAIL;
+	}
+
 	m_pGameInstance->Set_FogNF(_vec2(50.f, 2000.f));
 	m_pGameInstance->Set_FogColor(_color(1.f));
 
@@ -115,6 +126,7 @@ void CLevel_Village::Tick(_float fTimeDelta)
 		{
 			return;
 		}
+
 	}
 	if (m_pGameInstance->Key_Down(DIK_END))
 	{
@@ -483,6 +495,14 @@ HRESULT CLevel_Village::Ready_Groar_Boss()
 	}
 
 	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_Human_Boss()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Boss"), TEXT("Prototype_GameObject_Human_Boss"))))
+	{
+		return E_FAIL;
+	}
 }
 
 HRESULT CLevel_Village::Ready_NPC()

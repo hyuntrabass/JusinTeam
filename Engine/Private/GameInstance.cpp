@@ -943,6 +943,15 @@ _bool CGameInstance::CheckCollision_Culling(CCollider* pCollider)
 
 	return m_pCollision_Manager->CheckCollision_Culling(pCollider);
 }
+CollideFace CGameInstance::Get_CollideFace(CCollider* pAABBCollider, CCollider* pShereCollider)
+{
+	if (!m_pCollision_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
+	}
+	
+	return m_pCollision_Manager->Get_CollideFace(pAABBCollider, pShereCollider);
+}
 void CGameInstance::Init_PhysX_Character(CTransform* pTransform, CollisionGroup eGroup, PxCapsuleControllerDesc* pDesc)
 {
 	if (!m_pPhysX_Manager)

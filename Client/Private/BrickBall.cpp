@@ -1,7 +1,8 @@
 ﻿#include "BrickBall.h"
 #include "Effect_Dummy.h"
 #include "Effect_Manager.h"
-
+#include "GameInstance.h"
+#include "Collider.h"
 CBrickBall::CBrickBall(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -54,6 +55,11 @@ HRESULT CBrickBall::Init(void* pArg)
 
 void CBrickBall::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_RETURN))
+	{
+		m_isDead = true;
+	}
+	m_fSpeed = 12.f;
 	_vec2 vCenterPos = _vec2(-1999.90186f, -1999.60742f);
 	_vec2 vSize = _vec2(14.f, 20.f);
 	RECT rcRect = {
@@ -82,50 +88,92 @@ void CBrickBall::Tick(_float fTimeDelta)
 		m_pEffect_Ball->Tick(fTimeDelta);
 	}
 
-	if (m_pGameInstance->CheckCollision_Player(m_pColliderCom))
+	
+	CCollider* pCollider{ nullptr };
+	_bool isColl{};
+	for (_uint i = 0; i < 4; i++)
 	{
-		if (!m_isColl)
+		pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Com_Collider_BrickWall"), i);
+		if (pCollider == nullptr)
 		{
-			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-
-			_vec4 vPlayerLook = pPlayerTransform->Get_State(State::Look);
-			vPlayerLook.y = 0.f;
-
-			m_pTransformCom->LookAt_Dir(vPlayerLook);
-			m_fSpeed = 10.f;
+			return;
 		}
-		m_isColl = true;
-	}
-	else
-	{
-		m_fSpeed = 8.f;
-		m_isColl = false;
+		isColl = m_pColliderCom->Intersect(pCollider);
+		if (isColl)
+		{
+			break;
+		}
 	}
 
-
-	if (m_pGameInstance->CheckCollision_Monster(m_pColliderCom))
+	if (isColl)
 	{
 		if (!m_isColl)
 		{
-			_vec3 vLook = m_pTransformCom->Get_State(State::Pos);
-			_vec3 vNormal = vLook * -1.f;
+			_vec3 vLook = m_pTransformCom->Get_State(State::Look);
+			_vec3 vNormal = pCollider->Get_Normal(m_pGameInstance->Get_CollideFace(pCollider, m_pColliderCom));
+			vNormal.Normalize();
 			m_vDir = _vec3::Reflect(vLook, vNormal);
 			m_vDir.y = 0.f;
 			m_pTransformCom->LookAt_Dir(m_vDir);
-
-			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Ball_Smoke");
-			Info.pMatrix = &m_EffectMatrix;
-			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
-			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-
 		}
 		m_isColl = true;
 	}
 	else
 	{
-		m_fSpeed = 8.f;
 		m_isColl = false;
 	}
+
+	CCollider* pBarCollider{ nullptr };
+	_bool isBarColl{};
+
+	pBarCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_BrickBar"), TEXT("Com_Collider_Bar"));
+	if (pBarCollider == nullptr)
+	{
+		return;
+	}
+	isBarColl = m_pColliderCom->Intersect(pBarCollider);
+
+	if (isBarColl)
+	{
+		_vec3 vLook = m_pTransformCom->Get_State(State::Look);
+		_vec3 vNormal = pBarCollider->Get_Normal(m_pGameInstance->Get_CollideFace(pBarCollider, m_pColliderCom));
+
+		vNormal.Normalize();
+		m_vDir = _vec3::Reflect(vLook, vNormal);
+		m_vDir.y = 0.f;
+		m_pTransformCom->LookAt_Dir(m_vDir);
+	}
+
+
+	CCollider* pBalloonCollider{ nullptr };
+	_bool isBalloonColl{};
+	for (_uint i = 0; i < 36; i++)
+	{
+		pBalloonCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_Balloons"), TEXT("Com_Collider_Sphere"), i);
+		if (pBalloonCollider == nullptr)
+		{
+			return;
+		}
+		isBalloonColl = m_pColliderCom->Intersect(pBalloonCollider);
+		if (isBalloonColl)
+		{
+			break;
+		}
+	}
+
+	if (isBalloonColl)
+	{
+		_vec3 vLook = m_pTransformCom->Get_State(State::Look);
+		_vec3 vNormal = pBalloonCollider->Get_Normal(m_pGameInstance->Get_CollideFace(pBalloonCollider, m_pColliderCom));
+		vNormal.Normalize();
+		m_vDir = _vec3::Reflect(vLook, vNormal);
+		m_vDir.y = 0.f;
+		m_pTransformCom->LookAt_Dir(m_vDir);
+	}
+
+	return;
+
+
 }
 
 void CBrickBall::Late_Tick(_float fTimeDelta)
@@ -152,7 +200,7 @@ HRESULT CBrickBall::Add_Collider()
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
 	CollDesc.vCenter = _vec3(0.f);
-	CollDesc.fRadius = 0.15f;
+	CollDesc.fRadius = 0.1f;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 		TEXT("Com_Collider_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))

@@ -9,6 +9,12 @@ BEGIN(Client)
 
 class CBrickWall final : public CGameObject
 {
+public:
+	//enum DIR { FRONT, BACK, LEFT, RIGHT, DIR_END };
+	typedef struct tagWallDesc
+	{
+		RECT rcRect{};
+	}WALL_DESC;
 private:
 	CBrickWall(_dev pDevice, _context pContext);
 	CBrickWall(const CBrickWall& rhs);
@@ -42,12 +48,18 @@ private:
 	_bool m_bDamaged = { false };
 
 	_vec4 m_vColor{};
+	//_vec3 m_vNormals[DIR_END]{};
 
+	RECT				m_rcRect{};
 	_mat				m_EffectMatrix{};
 	class CEffect_Dummy* m_pEffect_Ball{};
+
 public:
 	const _bool& Is_Coll() const { return m_isColl; }
 
+
+private:
+	//void Set_Normal();
 
 private:
 	HRESULT Add_Collider();

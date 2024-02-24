@@ -342,6 +342,11 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	}
 
+	if (CUI_Manager::Get_Instance()->Is_Collecting())
+	{
+		m_eState = Collect_Start;
+	}
+
 	if (m_pGameInstance->Key_Down(DIK_C))
 	{
 
