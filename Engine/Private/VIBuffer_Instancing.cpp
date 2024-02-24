@@ -127,7 +127,7 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 		PartiBuffer.vGravityDir = vGravityDir;
 		PartiBuffer.fAppearRatio = fAppearRatio;
 		PartiBuffer.fDissolveRatio = fDissolveRatio;
-		PartiBuffer.WorldMatrix = WorldMatrix;
+		PartiBuffer.WorldMatrix = WorldMatrix.Transpose();
 		PartiBuffer.isLoop = m_isLoop;
 		PartiBuffer.bApplyGravity = bApplyGravity;
 		PartiBuffer.isFirstUpdate = m_isFirstUpdate;
