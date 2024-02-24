@@ -21,7 +21,7 @@ HRESULT CVTFTest::Init(void* pArg)
         return E_FAIL;
 
     //m_pTransformCom->Set_Position(_vec3(101.f, 4.f, 108.f));
-    m_pTransformCom->Set_Position(_vec3(rand() % 100, 4.f, rand() % 100));
+    m_pTransformCom->Set_Position(_vec3(static_cast<_float>(rand() % 100), 4.f, static_cast<_float>(rand() % 100)));
 
     m_Animation.iAnimIndex = rand() % 20;
     m_Animation.fAnimSpeedRatio = 1.5f;

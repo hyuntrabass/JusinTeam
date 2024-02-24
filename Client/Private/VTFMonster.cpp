@@ -27,7 +27,7 @@ HRESULT CVTFMonster::Init(void* pArg)
     if (FAILED(Add_Components()))
         return E_FAIL;
 
-    m_pTransformCom->Set_Position(_vec3(rand() % 60 - 3030, 0.f, rand() % 60 - 30));
+    m_pTransformCom->Set_Position(_vec3(static_cast<_float>(rand() % 60) - 3030, 0.f, static_cast<_float>(rand() % 60 - 30)));
 
     m_Animation.iAnimIndex = rand() % 20;
     m_Animation.fAnimSpeedRatio = 1.5f;

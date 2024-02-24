@@ -729,7 +729,7 @@ HRESULT CLevel_Village::Ready_NPC_Dummy()
 
 HRESULT CLevel_Village::Ready_SescoGame()
 {
-	for (_uint i = 0; i < 100; i++)
+	/*for (_uint i = 0; i < 100; i++)
 	{
 		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
 		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Void19");
@@ -784,7 +784,7 @@ HRESULT CLevel_Village::Ready_SescoGame()
 
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
 			return E_FAIL;
-	}
+	}*/
 	return S_OK;
 }
 
