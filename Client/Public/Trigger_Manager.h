@@ -12,6 +12,9 @@ enum TeleportSpot
 	TS_Minigame,
 	TS_DragonMap,
 	TS_BossRoom,
+	TS_MiniDungeon,
+	TS_SurvivalMap,
+	TS_SescoMap,
 	TS_END
 };
 

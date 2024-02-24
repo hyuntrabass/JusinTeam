@@ -325,7 +325,10 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
 
-			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_FirePillar"), TEXT("Prototype_GameObject_FirePillar"));
+			for (size_t i = 0; i < 5; i++)
+			{
+				m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_FirePillar"), TEXT("Prototype_GameObject_FirePillar"));
+			}
 
 			{
 				_mat EffectMatrix = _mat::CreateScale(2.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.1f, 0.f)));
@@ -561,7 +564,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = eTempDragonState;
 
-			m_eCurState = STATE_RAGE; // 테스트용
+			m_eCurState = STATE_FIRE_PILLAR; // 테스트용
 		}
 	}
 

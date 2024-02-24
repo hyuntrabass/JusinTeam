@@ -29,35 +29,71 @@ HRESULT CBrickWall::Init(void* pArg)
 		return E_FAIL;
 	}
 
+
+	
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+
+	//_vec4 vCenterPos = vPlayerPos;
+	_vec4 vCenterPos = _vec4(-1999.90186f, 0.f, -1999.60742f, 1.f);
+	_vec2 vSize = _vec2(14.f, 20.f);
+	m_rcRect = ((WALL_DESC*)pArg)->rcRect;
+	
+	if (m_rcRect.left == 1)
+	{
+		vCenterPos.x -= 6.f;
+		m_pTransformCom->Set_Scale(_vec3(30.f, 8.f, 1.f));
+	}
+	else if (m_rcRect.right == 1)
+	{
+		vCenterPos.x += 6.f;
+		m_pTransformCom->Set_Scale(_vec3(30.f, 8.f, 1.f));
+	}
+	else if (m_rcRect.top == 1)
+	{
+		vCenterPos.z -= 9.f;
+		m_pTransformCom->Set_Scale(_vec3(1.f, 8.f, 21.f));
+		m_pTransformCom->Rotation(_vec4(0.f, 1.f, 0.f, 0.f), 90.f);
+	}
+	else if (m_rcRect.bottom == 1)
+	{
+		vCenterPos.z += 9.f;
+		m_pTransformCom->Set_Scale(_vec3(1.f, 8.f, 21.f));
+		m_pTransformCom->Rotation(_vec4(0.f, 1.f, 0.f, 0.f), 90.f);
+	}
+
 	if (FAILED(Add_Collider()))
 	{
 		return E_FAIL;
 	}
 
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-	vPlayerPos.y += 1.f;
-	m_pTransformCom->Set_State(State::Pos, vPlayerPos);
-	m_pTransformCom->Set_Scale(_vec3(5.f, 5.f, 1.f));
+	m_pTransformCom->Set_State(State::Pos, vCenterPos);
 	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 
-
-	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BrickWall_ParticleRot");
+	EffectInfo Info{};
+	if (m_rcRect.left == 1 || m_rcRect.right == 1)
+	{
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BrickWall_ParticleRot");
+	}
+	else
+	{
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BrickWall_Particle");
+	}
 	Info.pMatrix = &m_EffectMatrix;
 	Info.isFollow = true;
 	m_pEffect_Ball = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
+	m_shouldRenderBlur = true;
 
 
-
+	m_pColliderCom->Set_Normal();
 	return S_OK;
 }
 
 void CBrickWall::Tick(_float fTimeDelta)
 {
 	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
-
-	m_shouldRenderBlur = true;
+	_vec3 vPos = m_pColliderCom->Get_ColliderPos();
 
 	m_pTransformCom->Set_Scale(_vec3(10.f, 10.f, 10.f));
 
@@ -83,7 +119,7 @@ void CBrickWall::Tick(_float fTimeDelta)
 	{
 		m_pEffect_Ball->Tick(fTimeDelta);
 	}
-
+	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 }
 
 void CBrickWall::Late_Tick(_float fTimeDelta)
@@ -167,13 +203,32 @@ HRESULT CBrickWall::Render()
 	return S_OK;
 }
 
+/*
+void CBrickWall::Set_Normal()
+{
+	_vec3 vExtents = m_pColliderCom->Get_Extents();
+	m_vNormals[FRONT] = _vec3(0.f, 0.f, 1.f) * vExtents.z;
+	m_vNormals[BACK] = _vec3(0.f, 0.f, -1.f) * vExtents.z;
+	m_vNormals[LEFT] = _vec3(-1.f, 0.f, 0.f) * vExtents.x;
+	m_vNormals[RIGHT] = _vec3(1.f, 0.f, 0.f) * vExtents.x;
+
+}
+*/
 
 HRESULT CBrickWall::Add_Collider()
 {
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::AABB;
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
-	CollDesc.vExtents = _vec3(1.f, 1.f, 1.f);
+	if (m_rcRect.left == 1 || m_rcRect.right == 1)
+	{
+		CollDesc.vExtents = _vec3(0.05f, 0.2f, 1.f);
+	}
+	else
+	{
+		CollDesc.vExtents = _vec3(1.f, 0.2f, 0.05f);
+	}
+
 	CollDesc.vCenter = _vec3(0.f, 0.f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),

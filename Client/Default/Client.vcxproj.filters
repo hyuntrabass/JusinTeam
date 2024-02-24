@@ -415,9 +415,6 @@
     <Filter Include="02.GameObjects\00.UI\GameUI\Vehicle\Vehicle">
       <UniqueIdentifier>{0d9cfe46-b184-4484-a323-3a20f496c6c0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\08. Boss\Human_Boss">
-      <UniqueIdentifier>{ca41e229-ff6d-4b8d-a622-f84b5234450a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\09.Object\Torch">
       <UniqueIdentifier>{b81bd7e5-ba31-4ee3-962d-a9f6c2f09f29}</UniqueIdentifier>
     </Filter>
@@ -451,11 +448,20 @@
     <Filter Include="02.GameObjects\04.Monster\98. Statue">
       <UniqueIdentifier>{b30a4619-e442-47d5-bdd3-dcd61152f75c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="98.Default\Hell">
+      <UniqueIdentifier>{33adb1d1-a5eb-44d1-8260-3a45e1e43819}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObjects\00.UI\Texture&amp;Text">
       <UniqueIdentifier>{e433917e-0435-4307-a9c2-4229c403b1c9}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\09.Object\ETC\Tower">
       <UniqueIdentifier>{da0fdb47-bb4d-43c6-9bf6-aa68566c0962}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\15. SurvivalGame">
+      <UniqueIdentifier>{cf696106-eeaf-4b97-925a-6f520fc47a0d}</UniqueIdentifier>
+	</Filter>
+    <Filter Include="02.GameObjects\08. Boss\Human_Boss">
+      <UniqueIdentifier>{ca41e229-ff6d-4b8d-a622-f84b5234450a}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\06.Sky\Hell">
       <UniqueIdentifier>{33adb1d1-a5eb-44d1-8260-3a45e1e43819}</UniqueIdentifier>
@@ -465,6 +471,24 @@
     </Filter>
     <Filter Include="02.GameObjects\15.StealthGame\Guard">
       <UniqueIdentifier>{4c8ef8c7-00b1-4252-a915-44f988fbd371}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\09.Object\Interaction">
+      <UniqueIdentifier>{ed155913-ed0d-482b-b571-b387e469cd97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\09.Object\Interaction\Anim">
+      <UniqueIdentifier>{1ff87796-ec6b-4468-8b43-84ce67c31796}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\09.Object\Interaction\NonAnim">
+      <UniqueIdentifier>{b3b240ce-ced1-4247-b650-cd75226bd65c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\16.SescoGame">
+      <UniqueIdentifier>{cdda6c42-dd45-4fa9-a883-1619f7af9b3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\16.SescoGame\VTFMonster">
+      <UniqueIdentifier>{e50dc525-65d4-4a02-85e1-1dfc9b85487e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\16.SescoGame\VTFMonster\Void19">
+      <UniqueIdentifier>{ecbcf51e-2c12-4b06-82bd-f9b3590c1b7b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -870,6 +894,7 @@
     <ClInclude Include="..\Public\Targeted.h">
       <Filter>02.GameObjects\00.UI\GameUI\UIEffect\Target</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Hell.h" />
     <ClInclude Include="..\Public\Symbol.h">
       <Filter>02.GameObjects\00.UI\Symbol</Filter>
     </ClInclude>
@@ -921,12 +946,9 @@
     <ClInclude Include="..\Public\Balloon.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Interaction_Anim_Object.h" />
-    <ClInclude Include="..\Public\Interaction_NonAnim_Object.h" />
     <ClInclude Include="..\Public\BrickBall.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Statue.h" />
     <ClInclude Include="..\Public\BrickGame.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
@@ -936,8 +958,28 @@
     <ClInclude Include="..\Public\TowerObject.h">
       <Filter>02.GameObjects\09.Object\ETC\Tower</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Hell.h">
-      <Filter>02.GameObjects\06.Sky\Hell</Filter>
+    <ClInclude Include="..\Public\Statue.h">
+      <Filter>02.GameObjects\04.Monster\98. Statue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SurvivalGame.h">
+      <Filter>02.GameObjects\15. SurvivalGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BrickWall.h" />
+    <ClInclude Include="..\Public\SafeZone.h">
+      <Filter>02.GameObjects\08. Boss\Human_Boss</Filter>
+	</ClInclude>
+    <ClInclude Include="..\Public\Interaction_Anim_Object.h">
+      <Filter>02.GameObjects\09.Object\Interaction\Anim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Interaction_NonAnim_Object.h">
+      <Filter>02.GameObjects\09.Object\Interaction\NonAnim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BrickWall.h" />
+    <ClInclude Include="..\Public\VTFMonster.h">
+      <Filter>02.GameObjects\16.SescoGame\VTFMonster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Void19.h">
+      <Filter>02.GameObjects\16.SescoGame\VTFMonster\Void19</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Guard.h">
       <Filter>02.GameObjects\15.StealthGame\Guard</Filter>
@@ -1347,6 +1389,7 @@
     <ClCompile Include="..\Private\Rabbit.cpp">
       <Filter>02.GameObjects\04.Monster\02. Animal\00. Rabbit</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Hell.cpp" />
     <ClCompile Include="..\Private\Symbol.cpp">
       <Filter>02.GameObjects\00.UI\Symbol</Filter>
     </ClCompile>
@@ -1392,12 +1435,9 @@
     <ClCompile Include="..\Private\Balloon.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Interaction_Anim_Object.cpp" />
-    <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp" />
     <ClCompile Include="..\Private\BrickBall.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Statue.cpp" />
     <ClCompile Include="..\Private\BrickGame.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
@@ -1407,8 +1447,29 @@
     <ClCompile Include="..\Private\Human_Boss.cpp">
       <Filter>02.GameObjects\08. Boss\Human_Boss</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Hell.cpp">
-      <Filter>02.GameObjects\06.Sky\Hell</Filter>
+    <ClCompile Include="..\Private\Statue.cpp">
+      <Filter>02.GameObjects\04.Monster\98. Statue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SurvivalGame.cpp">
+      <Filter>02.GameObjects\15. SurvivalGame</Filter>
+    </ClCompile>
+
+    <ClCompile Include="..\Private\BrickWall.cpp" />
+    <ClCompile Include="..\Private\SafeZone.cpp">
+      <Filter>02.GameObjects\08. Boss\Human_Boss</Filter>
+	</ClCompile>
+    <ClCompile Include="..\Private\Interaction_Anim_Object.cpp">
+      <Filter>02.GameObjects\09.Object\Interaction\Anim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp">
+      <Filter>02.GameObjects\09.Object\Interaction\NonAnim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BrickWall.cpp" />
+    <ClCompile Include="..\Private\VTFMonster.cpp">
+      <Filter>02.GameObjects\16.SescoGame\VTFMonster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Void19.cpp">
+      <Filter>02.GameObjects\16.SescoGame\VTFMonster\Void19</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Guard.cpp">
       <Filter>02.GameObjects\15.StealthGame\Guard</Filter>

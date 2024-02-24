@@ -32,7 +32,8 @@ HRESULT CCamera::Init(void* pArg)
 
 	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&pCameraDesc->vCameraPos));
 	m_pTransformCom->LookAt(XMLoadFloat4(&pCameraDesc->vFocusPos));
-
+	m_pGameInstance->Set_Transform(TransformType::View, m_pTransformCom->Get_World_Inverse());
+	m_pGameInstance->Set_Transform(TransformType::Proj, XMMatrixPerspectiveFovLH(m_fFovY, m_fAspect, m_fNear, m_fFar));
 	return S_OK;
 }
 
