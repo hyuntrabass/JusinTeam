@@ -36,6 +36,7 @@ HRESULT CVTFMonster::Init(void* pArg)
 
 void CVTFMonster::Tick(_float fTimeDelta)
 {
+    m_pTransformCom->Set_OldMatrix();
     m_pModelCom->Set_Animation(m_Animation);
     m_pTransformCom->Gravity(fTimeDelta);
 }
@@ -143,6 +144,11 @@ HRESULT CVTFMonster::Add_Components()
 HRESULT CVTFMonster::Bind_ShaderResources()
 {
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
+    {
+        return E_FAIL;
+    }
+
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
     {
         return E_FAIL;
     }

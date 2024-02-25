@@ -1187,16 +1187,18 @@ HRESULT CRenderer::Render_AnimNonBlend_Instance()
 			Instance_Data MeshInstancing;
 			CTransform* pTransform = static_cast<CTransform*>(pGameObject->Find_Component(L"Com_Transform"));
 			MeshInstancing.mMatrix = pTransform->Get_World_Matrix();
+			MeshInstancing.mOldMatrix = pTransform->Get_OldWorld_Matrix();
 			MeshInstancing.m_iID = i;
 			Add_Instance(instanceId, MeshInstancing);
 
 			CVTFModel* pModel = static_cast<CVTFModel*>(pGameObject->Find_Component(L"Com_Model"));
 			PlayAnimDescs->PlayAnim[i] = pModel->Get_PlayAnimDesc();
+			PlayAnimDescs->OldAnim[i] = pModel->Get_OldAnimDesc();
 		}
 
 		CVTFModel* pHeadModel = static_cast<CVTFModel*>(pHead->Find_Component(L"Com_Model"));
 		CShader* pHeadShader = static_cast<CShader*>(pHead->Find_Component(L"Com_Shader"));
-		if (FAILED(pHeadShader->Bind_RawValue("g_PlayAnimInstances", PlayAnimDescs, MAX_INSTANCE * sizeof(PLAYANIM_DESC))))
+		if (FAILED(pHeadShader->Bind_RawValue("g_PlayAnimInstances", PlayAnimDescs, sizeof(INSTANCED_PLAYANIM_DESC))))
 			return E_FAIL;
 
 		Safe_Delete(PlayAnimDescs);

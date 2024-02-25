@@ -33,7 +33,7 @@ void CObjects::Tick(_float fTimeDelta)
 
 void CObjects::Late_Tick(_float fTimeDelta)
 {
-	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Village)
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Village and CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Tutorial)
 	{
 		return;
 	}

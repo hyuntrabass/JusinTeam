@@ -19,6 +19,7 @@ bool g_HasMaskTex;
 bool g_bSelected = false;
 
 vector g_RimColor;
+uint g_OutlineColor;
 
 matrix g_OldWorldMatrix, g_OldViewMatrix;
 
@@ -387,7 +388,7 @@ technique11 DefaultTechnique_Shader_AnimMesh
     pass OutLine
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_DrawStencil, 1);
+        SetDepthStencilState(DSS_DrawStencil, g_OutlineColor);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();

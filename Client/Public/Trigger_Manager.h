@@ -7,6 +7,7 @@ BEGIN(Client)
 
 enum TeleportSpot
 {
+	TS_Tutorial,
 	TS_Dungeon,
 	TS_Village,
 	TS_Minigame,
@@ -67,7 +68,7 @@ private:
 	CGameInstance* m_pGameInstance = { nullptr };
 
 private:
-	TeleportSpot m_eCurrentSpot{ TS_END };
+	TeleportSpot m_eCurrentSpot{ TS_Tutorial };
 private:
 	_bool m_isColl{ false };
 	_bool m_isLimited{ false };

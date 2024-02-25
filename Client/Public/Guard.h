@@ -16,7 +16,7 @@ public:
 
 	enum GAURD_STATE {
 		STATE_IDLE,
-		STATE_READY,
+		STATE_PATROL,
 		STATE_CHASE,
 		STATE_ATTACK,
 		STATE_HIT,
@@ -38,7 +38,13 @@ public:
 
 	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) override;
 
+public:
+	void Init_State(_float fTimeDelta);
+	void Tick_State(_float fTimeDelta);
 
+private:
+	GAURD_STATE m_ePreState = STATE_END;
+	GAURD_STATE m_eCurState = STATE_END;
 
 private:
 	CShader* m_pShaderCom = nullptr;
@@ -63,6 +69,10 @@ private:
 public:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
+
+public:
+	HRESULT Add_Collider();
+	void Update_Collider();
 
 public:
 	static CGuard* Create(_dev pDevice, _context pContext);
