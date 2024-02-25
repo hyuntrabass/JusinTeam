@@ -1101,6 +1101,7 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 
+
 #pragma endregion Monster
 
 #pragma region NPC
@@ -1228,7 +1229,45 @@ HRESULT CLoader::Load_GamePlay()
 
 #pragma endregion Pet
 
-#pragma endregion
+#pragma region Survival Game
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_BlueGem"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/SurvivalGame/BlueGem/Mesh/BlueGem.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Cannon"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/SurvivalGame/Cannon/Mesh/Cannon.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_EyeStatue"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/SurvivalGame/EyeStatue/Mesh/EyeStatue.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_EyeStone"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/SurvivalGame/EyeStone/Mesh/EyeStone.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_LokiStone"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/SurvivalGame/LokiStone/Mesh/LokiStone.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Tower"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/SurvivalGame/Tower/Mesh/Tower.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+#pragma endregion Survival Game
 
 
 	m_strLoadingText = L"GamePlay : Loading Shader";
@@ -1647,6 +1686,11 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Sickle"), CSickle::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Dragon_Boss"), CDragon_Boss::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -1714,6 +1758,27 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 
 #pragma endregion
+
+#pragma region Survival Game
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_SurvivalGame"), CSurvivalGame::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Launcher"), CLauncher::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Projectile"), CProjectile::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+
+#pragma endregion Survival Game
+
 #pragma endregion
 
 	m_strLoadingText = L"GamePlay : Loading Complete!";
@@ -1755,7 +1820,8 @@ HRESULT CLoader::Load_Village()
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 			if (strPrototypeTag == L"Prototype_Model_BrickMap")
 			{
-				DungeonPivot = _mat::CreateScale(0.1f);
+				DungeonPivot = _mat::CreateScale(0.045f);
+
 			}
 			else if (strPrototypeTag == L"Prototype_Model_DragonMap")
 			{
@@ -1767,7 +1833,7 @@ HRESULT CLoader::Load_Village()
 			}
 			else if (strPrototypeTag == L"Prototype_Model_Survival_Map")
 			{
-				DungeonPivot = _mat::CreateScale(1.f);
+				DungeonPivot = _mat::CreateScale(0.6f);
 			}
 			else if (strPrototypeTag == L"Prototype_Model_SescoMap")
 			{

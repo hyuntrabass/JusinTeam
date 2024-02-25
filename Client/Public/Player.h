@@ -315,26 +315,27 @@ public:
 
 public:
 	class CComponent* Find_Component(const wstring& strComTag) override;
+	virtual void Set_Damage(_int iDamage, _uint MonAttType = 0) override;
 
-public:
+private:
 	HRESULT Add_Info();
 	HRESULT Place_PartModels();
 	HRESULT Render_Parts(PART_TYPE Parts, _uint Index);
 	HRESULT Render_Shadow_Parts(PART_TYPE Parts, _uint Index);
 
-public:
+private:
 	void Move(_float fTimeDelta);
 	void Is_Climb(_float fTimeDelta);
 	void Health_Regen(_float fTImeDelta);
 	void Change_Parts(PART_TYPE PartsType, _int ChangeIndex);
 	void Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex);
-	virtual void Set_Damage(_int iDamage, _uint MonAttType = 0) override;
+	
 
-public:
+private:
 	void Front_Ray_Check();
 	_bool Turn_Ray_Check(_bool bRight);
 
-public:
+private:
 	void Arrow_Rain();
 	void Common_Attack();
 	void Skill1_Attack();
@@ -350,12 +351,12 @@ public:
 	void Create_Arrow(ATTACK_TYPE Att_Type);
 	void Check_Att_Collider(ATTACK_TYPE Att_Type);
 	void Set_ExtraStatus();
-public:
+private:
 	HRESULT Add_Riding();
 	void Tick_Riding(_float fTimeDelta);
 	void Summon_Riding(Riding_Desc Type);
 
-public:
+private:
 	void Init_State();
 	void Tick_State(_float fTimeDelta);
 	void Update_Trail(_float fTimeDelta);

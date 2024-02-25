@@ -40,7 +40,7 @@ HRESULT CMeteor::Init(void* pArg)
 
 	_vec3 vRandomDir = _vec3(Random(RandomNumber), 0.f, Random(RandomNumber)).Get_Normalized();
 
-	m_vTargetPos = vDragonPos + (rand() % 5 + 5) * vRandomDir;
+	m_vTargetPos = vDragonPos + static_cast<_float>(rand() % 5 + 5) * vRandomDir;
 	
 	_vec3 vDragonRight = m_pDragonTransform->Get_State(State::Right).Get_Normalized();
 

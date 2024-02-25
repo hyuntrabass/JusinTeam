@@ -27,54 +27,17 @@ HRESULT CVTFMonster::Init(void* pArg)
     if (FAILED(Add_Components()))
         return E_FAIL;
 
-    m_pTransformCom->Set_Position(_vec3(static_cast<_float>(rand() % 60) - 3030, 0.f, static_cast<_float>(rand() % 60 - 30)));
+    m_pShaderCom->Set_PassIndex(0);
 
-    m_Animation.iAnimIndex = rand() % 20;
-    m_Animation.fAnimSpeedRatio = 1.5f;
-    m_Animation.isLoop = true;
-
-    random_device rand;
-    _randNum RandomNumber(rand());
-    _randFloat RandomAnimPos(0.f, 1000.f);
-    m_Animation.fStartAnimPos = RandomAnimPos(RandomNumber);
+    m_pTransformCom->Set_Position(_vec3(static_cast<_float>(rand() % 50) - 3025, 1.f, static_cast<_float>(rand() % 50 - 25)));
 
     return S_OK;
 }
 
 void CVTFMonster::Tick(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_LEFT, InputChannel::UI))
-    {
-        m_Animation.iAnimIndex -= 1;
-    }
-    else if (m_pGameInstance->Key_Down(DIK_RIGHT, InputChannel::UI))
-    {
-        m_Animation.iAnimIndex += 1;
-    }
-    else if (m_pGameInstance->Key_Down(DIK_UP, InputChannel::UI))
-    {
-        if (m_Animation.isLoop)
-        {
-            m_Animation.isLoop = false;
-        }
-        else if (not m_Animation.isLoop)
-        {
-            m_Animation.isLoop = true;
-        }
-    }
-    else if (m_pGameInstance->Key_Down(DIK_DOWN, InputChannel::UI))
-    {
-        if (m_Animation.bSkipInterpolation)
-        {
-            m_Animation.bSkipInterpolation = false;
-        }
-        else if (not m_Animation.bSkipInterpolation)
-        {
-            m_Animation.bSkipInterpolation = true;
-        }
-    }
     m_pModelCom->Set_Animation(m_Animation);
-    m_Animation.fStartAnimPos = 0.f;
+    m_pTransformCom->Gravity(fTimeDelta);
 }
 
 void CVTFMonster::Late_Tick(_float fTimeDelta)
@@ -85,6 +48,13 @@ void CVTFMonster::Late_Tick(_float fTimeDelta)
 
         m_pRendererCom->Add_RenderGroup(RG_AnimNonBlend_Instance, this);
     }
+}
+
+void CVTFMonster::Set_Damage(_int iDamage, _uint MonAttType)
+{
+    m_iHP -= iDamage;
+
+    m_IsHitted = true;
 }
 
 HRESULT CVTFMonster::Render()
@@ -161,8 +131,6 @@ HRESULT CVTFMonster::Add_Components()
     {
         return E_FAIL;
     }
-
-    m_pShaderCom->Set_PassIndex(0);
 
     if (FAILED(__super::Add_Component(LEVEL_VILLAGE, m_strModelTag, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
     {

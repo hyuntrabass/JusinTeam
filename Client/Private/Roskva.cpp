@@ -165,10 +165,14 @@ void CRoskva::Late_Tick(_float fTimeDelta)
 {
 	if (!m_bTalking)
 	{
-		if (m_isColl)
+		if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 2.f))
 		{
-			m_pSpeechBubble->Late_Tick(fTimeDelta);
+			if (m_isColl)
+			{
+				m_pSpeechBubble->Late_Tick(fTimeDelta);
+			}
 		}
+
 	}
 	else
 	{
@@ -182,9 +186,11 @@ void CRoskva::Late_Tick(_float fTimeDelta)
 		}
 	}
 
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 2.f))
+	{
+		__super::Late_Tick(fTimeDelta);
+	}
 
-
-	__super::Late_Tick(fTimeDelta);
 }
 
 HRESULT CRoskva::Render()

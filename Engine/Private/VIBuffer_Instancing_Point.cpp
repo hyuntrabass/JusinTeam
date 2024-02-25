@@ -12,7 +12,7 @@ CVIBuffer_Instancing_Point::CVIBuffer_Instancing_Point(const CVIBuffer_Instancin
 {
 }
 
-HRESULT CVIBuffer_Instancing_Point::Init_Prototype(_uint iNumInstances)
+HRESULT CVIBuffer_Instancing_Point::Init_Prototype()
 {
 	m_iNumVertexBuffers = 2;
 	m_iVertexStride = sizeof VTXPOINT;
@@ -96,15 +96,12 @@ HRESULT CVIBuffer_Instancing_Point::Init_Prototype(_uint iNumInstances)
 
 	VTXINSTANCING* pVertexInstance = new VTXINSTANCING[m_iNumInstances]{};
 
-	_uint iInstanceID{};
-
 	for (size_t i = 0; i < m_iNumInstances; i++)
 	{
 		pVertexInstance[i].vRight = _float4(1.f, 0.f, 0.f, 0.f);
 		pVertexInstance[i].vUp = _float4(0.f, 1.f, 0.f, 0.f);
 		pVertexInstance[i].vLook = _float4(0.f, 0.f, 1.f, 0.f);
 		pVertexInstance[i].vPos = _float4(0.f + i, 0.f, 0.f + i, 1.f);
-		pVertexInstance[i].iInstanceID = iInstanceID++;
 	}
 
 	m_InstancingInitialData.pSysMem = pVertexInstance;
@@ -151,46 +148,6 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 		_randFloat RandomSpeed = _randFloat(Desc.vSpeedRange.x, Desc.vSpeedRange.y);
 		_randFloat RandomLifeTime = _randFloat(Desc.vLifeTime.x, Desc.vLifeTime.y);
 
-		/*_randFloat fRandomSeed = _randFloat(0.f);
-
-		ParticleInitParams Params;
-		Params.isLoop = Desc.isLoop;
-		Params.vMinPos = Desc.vMinPos;
-		Params.vMaxPos = Desc.vMaxPos;
-
-		Params.vMinDir = Desc.vMinDir;
-		Params.vMaxDir = Desc.vMaxDir;
-
-		Params.vScaleRange = Desc.vScaleRange;
-		Params.fMinSpeed = Desc.vSpeedRange.x;
-		Params.fMaxSpeed = Desc.vSpeedRange.y;
-		Params.vLifeTimeRange = Desc.vLifeTime;
-		Params.fRandomSeed = fRandomSeed(RandomNumber);
-
-		m_pContext->CopyResource(m_pVSRB, m_pVBInstance);
-
-		HRESULT hr{};
-
-		hr = m_pInitComputeShader->Set_Shader();
-
-		hr = m_pInitComputeShader->Change_Value(&Params, sizeof ParticleInitParams, 1);
-
-		_uint2 iSlot = _uint2(0, 0);
-		hr = m_pInitComputeShader->Bind_ShaderResourceView(m_pSRV, m_pUAV, iSlot);
-
-		ID3D11ShaderResourceView* SRV = m_pNoiseNormalTexture->Get_SRV();
-		
-		m_pContext->CSSetShaderResources(1, 1, &SRV);
-
-		_uint3 ThreadGroup{ 2, 1, 1 };
-		hr = m_pInitComputeShader->Begin(ThreadGroup);
-
-		if (FAILED(hr))
-			return E_FAIL;
-
-		m_pContext->CopyResource(m_pVBInstance, m_pVUAVB);*/
-
-
 		for (size_t i = 0; i < m_iNumInstances; i++)
 		{
 			_float fScale = RandomScale(RandomNumber);
@@ -230,7 +187,7 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 	m_InstancingBufferDesc.ByteWidth = m_iInstanceStride * m_iNumInstances;
 	m_InstancingBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	m_InstancingBufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
-	m_InstancingBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	m_InstancingBufferDesc.CPUAccessFlags = 0;
 	m_InstancingBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 	m_InstancingBufferDesc.StructureByteStride = m_iInstanceStride;
 
@@ -290,11 +247,11 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 	return S_OK;
 }
 
-CVIBuffer_Instancing_Point* CVIBuffer_Instancing_Point::Create(_dev pDevice, _context pContext, _uint iNumInstances)
+CVIBuffer_Instancing_Point* CVIBuffer_Instancing_Point::Create(_dev pDevice, _context pContext)
 {
 	CVIBuffer_Instancing_Point* pInstance = new CVIBuffer_Instancing_Point(pDevice, pContext);
 
-	if (FAILED(pInstance->Init_Prototype(iNumInstances)))
+	if (FAILED(pInstance->Init_Prototype()))
 	{
 		MSG_BOX("Failed to Create : CVIBuffer_Instancing_Point");
 		Safe_Release(pInstance);

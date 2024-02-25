@@ -289,9 +289,9 @@ void CRiding::Tick(_float fTimeDelta)
 		}
 	}*/
 
-	Move(fTimeDelta);
 	Init_State();
 	Tick_State(fTimeDelta);
+	Move(fTimeDelta);
 	m_pModelCom->Set_Animation(m_Animation);
 
 	if (m_eState == Riding_Glide)

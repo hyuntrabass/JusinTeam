@@ -21,6 +21,9 @@ private:
 	virtual ~CDialog() = default;
 
 public:
+	void Set_Text(const wstring& strText);
+
+public:
 	virtual HRESULT Init_Prototype() override;
 	virtual HRESULT Init(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;

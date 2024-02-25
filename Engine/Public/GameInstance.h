@@ -73,7 +73,7 @@ public: // Input Manager
 public: // Light Manager
 	LIGHT_DESC* Get_LightDesc(_uint iLevelIndex, const wstring& strLightTag);
 	HRESULT Add_Light(_uint iLevelIndex, const wstring& strLightTag, const LIGHT_DESC& LightDesc);
-	HRESULT Delete_Light(_uint iLevelIndex, const wstring& strLightTag, _float fDimmerDuration = 0.5f);
+	HRESULT Delete_Light(_uint iLevelIndex, const wstring& strLightTag, _float fDimmerDuration = 1.f);
 	HRESULT Render_Lights(_uint iLevelIndex, class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
 	HRESULT Bind_Light_ViewProjMatrix(_uint iLevelIndex, const wstring& strLightTag, class CShader* pShader, const _char* pViewVariableName, const _char* pProjVariableName);
 
@@ -238,6 +238,9 @@ public: // Get_Set
 	// 콘솔에 출력할 스트림을 가져옴.
 	stringstream& Get_StringStream();
 	void Add_String_to_Stream(const string& strText);
+
+	void Set_FPS(const _uint iFPS);
+	const _uint& Get_FPS();
 #endif
 
 	// 카메라의 near, far를 지정함. 이것도 카메라에서만 호출 할것.
@@ -318,6 +321,7 @@ private:
 #ifdef _DEBUG
 	stringstream m_OutputStream{};
 	string m_strPrevStream{};
+	_uint m_iFPS{};
 #endif
 
 private:

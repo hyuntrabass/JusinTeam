@@ -10,8 +10,8 @@ protected:
 	{
 		_uint iNumInstances;
 		_uint iNumUse;
-		float fTimeDelta;
-		float fAppearRatio;
+		_float fTimeDelta;
+		_float fAppearRatio;
 		
 		_vec4 vGravityDir;
 

@@ -106,18 +106,24 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
+	if (FAILED(Ready_Survival_Game()))
+	{
+		MSG_BOX("Failed to Ready Survival Game");
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_BrickBar"), TEXT("Prototype_GameObject_BrickBar"))))
 	{
 		return E_FAIL;
 	}
 
 
-	if (FAILED(Ready_SescoGame()))
-	{
-		MSG_BOX("Failed to Ready SescoGame");
-		return E_FAIL;
-	}
-	
+	//if (FAILED(Ready_SescoGame()))
+	//{
+	//	MSG_BOX("Failed to Ready SescoGame");
+	//	return E_FAIL;
+	//}
+	//
 	m_pGameInstance->Set_FogNF(_vec2(50.f, 2000.f));
 	m_pGameInstance->Set_FogColor(_color(1.f));
 
@@ -182,6 +188,13 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_0))
 	{
 		CTrigger_Manager::Get_Instance()->Teleport(TS_SescoMap);
+
+		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
+		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Void19");
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
+			return;
+
 		return;
 	}
 	// Test
@@ -189,14 +202,14 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	{
 		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"));
 	}
-	if (m_pGameInstance->Key_Down(DIK_UP))
-	{
-		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Statue"), TEXT("Prototype_GameObject_Statue"));
-	}
-	if (m_pGameInstance->Key_Down(DIK_EQUALS))
-	{
-		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Test"), TEXT("Prototype_GameObject_Void23"));
-	}
+	//if (m_pGameInstance->Key_Down(DIK_UP))
+	//{
+	//	m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Statue"), TEXT("Prototype_GameObject_Statue"));
+	//}
+	//if (m_pGameInstance->Key_Down(DIK_EQUALS))
+	//{
+	//	m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Test"), TEXT("Prototype_GameObject_Void20"));
+	//}
 }
 
 HRESULT CLevel_Village::Render()
@@ -511,6 +524,8 @@ HRESULT CLevel_Village::Ready_Human_Boss()
 	{
 		return E_FAIL;
 	}
+
+	return S_OK;
 }
 
 HRESULT CLevel_Village::Ready_NPC()
@@ -626,102 +641,16 @@ HRESULT CLevel_Village::Ready_NPC_Dummy()
 		Info.strNPCPrototype = NPCPrototype;
 		Info.NPCWorldMat = NPCWorldMat;
 
-		//if (Info.strNPCPrototype == TEXT("Prototype_Model_BlackSmith"))
-		//{
-		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_BlackSmith"), TEXT("Prototype_GameObject_BlackSmith"), &Info)))
-		//	{
-		//		MSG_BOX("BlackSmith 积己 角菩");
-		//		return E_FAIL;
-		//	}
-
-		//}
-		//else if (Info.strNPCPrototype == TEXT("Prototype_Model_ItemMerchant"))
-		//{
-		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_ItemMerchant"), TEXT("Prototype_GameObject_ItemMerchant"), &Info)))
-		//	{
-		//		MSG_BOX("ItemMerchant 积己 角菩");
-		//		return E_FAIL;
-		//	}
-
-		//}
-		//else if (Info.strNPCPrototype == TEXT("Prototype_Model_Roskva"))
-		//{
-		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Roskva"), TEXT("Prototype_GameObject_Roskva"), &Info)))
-		//	{
-		//		MSG_BOX("Roskva 积己 角菩");
-		//		return E_FAIL;
-		//	}
-
-		//}
-		//else if (Info.strNPCPrototype == TEXT("Prototype_Model_Cat"))
-		//{
-		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Cat"), TEXT("Prototype_GameObject_Cat"), &Info)))
-		//	{
-		//		MSG_BOX("Cat 积己 角菩");
-		//		return E_FAIL;
-		//	}
-
-		//}
-		//else if (Info.strNPCPrototype == TEXT("Prototype_Model_Dog"))
-		//{
-		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dog"), TEXT("Prototype_GameObject_Dog"), &Info)))
-		//	{
-		//		MSG_BOX("Dog 积己 角菩");
-		//		return E_FAIL;
-		//	}
-
-		//}
-
-		string strInputFilePath = "../../Client/Bin/Resources/AnimMesh/NPC/NPC_Dummy/Mesh/";
-		for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+		if (Info.strNPCPrototype == L"Prototype_Model_Horse")
 		{
-			if (entry.is_regular_file())
-			{
-				if (!entry.exists())
-				{
-					return S_OK;
-				}
-
-				wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
-
-				if (Info.strNPCPrototype == strPrototypeTag)
-				{
-					if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_") + entry.path().stem().wstring(), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
-					{
-						wstring MSG = entry.path().stem().wstring() + L"积己 角菩";
-						MessageBox(nullptr, MSG.c_str(), L"error", MB_OK);
-						return E_FAIL;
-					}
-				}
-			}
+			Info.strNPCPrototype = L"Prototype_Model_Donkey";
 		}
 
-		//if (Info.strNPCPrototype == TEXT("Prototype_Model_Dwarf_Male_002"))
-		//{
-		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dwarf_Male_002"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
-		//	{
-		//		MSG_BOX("Dwarf_Male_002 积己 角菩");
-		//		return E_FAIL;
-		//	}
-		//}
-
-		//else if (Info.strNPCPrototype == TEXT("Prototype_Model_Female_003"))
-		//{
-		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Female_003"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
-		//	{
-		//		MSG_BOX("Female_003 积己 角菩");
-		//		return E_FAIL;
-		//	}
-		//}
-
-		//else if (Info.strNPCPrototype == TEXT("Prototype_Model_Female_004"))
-		//{
-		//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Female_004"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
-		//	{
-		//		MSG_BOX("Female_004 积己 角菩");
-		//		return E_FAIL;
-		//	}
-		//}
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_NPCDummy"), TEXT("Prototype_GameObject_NPC_Dummy"), &Info)))
+		{
+			MSG_BOX("Failed to Add NPC_DUMMY");
+			return E_FAIL;
+		}
 	}
 
 	return S_OK;
@@ -785,6 +714,16 @@ HRESULT CLevel_Village::Ready_SescoGame()
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
 			return E_FAIL;
 	}*/
+	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_Survival_Game()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SurvivalGame"), TEXT("Prototype_GameObject_SurvivalGame"))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 

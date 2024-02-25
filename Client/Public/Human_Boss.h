@@ -58,8 +58,11 @@ public:
 		Hide_Start,	// 포탈타고 사라짐
 		Hide,	//사라진 상태
 		Hide_Att,	 // 사라진상태에서 기습공격
-		Razer,
-		Pizza, // 반시계방향으로 피자조각 범위  공격
+		Throw_Sickle, // 낫 날리기
+		Pizza_Start,
+		Pizza_Loop,	//피자 패턴으로 공격
+		Pizza_BackLoop,
+		Pizza_End,
 		Hit,
 		Idle,
 		Walk,
@@ -79,6 +82,17 @@ public:
 		Range_360,
 		Range_End,	
 	};
+
+	enum PATTERN
+	{
+		PT_Common,
+		PT_Counter,
+		PT_Hide,
+		PT_Pizza,
+		PT_ThrowSickle,
+		PT_END
+	};
+
 private:
 	CHuman_Boss(_dev pDevice, _context pContext);
 	CHuman_Boss(const CHuman_Boss& rhs);
@@ -92,19 +106,24 @@ public:
 	virtual HRESULT Render() override;
 
 public:
+	virtual void Set_Damage(_int iDamage, _uint MonAttType = 0) override;
+
+private:
 	void Init_State(_float fTimeDelta);
 	void Tick_State(_float fTimeDelta);
 
-public:
+private:
 	HRESULT Add_Collider();
 	void Update_Collider();
-	virtual void Set_Damage(_int iDamage, _uint MonAttType = 0) override;
 
-public:
+private:
 	void View_Attack_Range(ATTACK_RANGE Range,_float fRotationY = 0.f);
 	void After_Attack(_float fTimedelta);
 	_bool Compute_Angle(_float fAngle, _float RotationY = 0.f);
 	void Increased_Range(_float Index, _float fTImeDelta,_float fRotationY = 0.f);
+	void Set_Pattern();
+	_float Compute_Distance();
+
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
@@ -125,11 +144,12 @@ private:
 	ANIM_DESC m_Animation{};
 	STATE m_eState = BOSS_STATE_END;
 	STATE m_ePreState = BOSS_STATE_END;
+	vector<int> m_vecPattern{};
+
 private:
-	
-	_bool m_bSecondPattern{};
-	_uint m_iAttackPattern = {};
-	_bool m_bSelectAttackPattern = { false };
+	_uint m_iPizzaAttCount{};
+	_uint m_iAttackPattern{};
+	_bool m_bSelectAttackPattern{};
 	_bool m_bCounter_Success{};
 	_float m_fHitTime{};
 	_float m_fHideTimmer{};
@@ -142,6 +162,7 @@ private:
 	_bool m_bViewWeapon{};
 	_float m_fDissolveRatio{};
 	_uint m_iWeaponPassIndex{};
+	_float m_fPatternDelay{};
 	_vec4 m_vRimColor{};
 	_bool m_bReflectOn{};
 	_mat m_AttEffectMat{};

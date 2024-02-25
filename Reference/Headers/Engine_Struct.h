@@ -311,7 +311,7 @@ namespace Engine
 		SimpleMath::Vector4 vLook{};
 		SimpleMath::Vector4 vPos{};
 		SimpleMath::Vector4 vPrevPos{};
-		unsigned int iInstanceID{};
+		float fIndex{};
 		float fDissolveRatio{};
 
 		float fSpeed{};

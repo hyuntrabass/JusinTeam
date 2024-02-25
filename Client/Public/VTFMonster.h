@@ -20,6 +20,9 @@ protected:
 	virtual ~CVTFMonster() = default;
 
 public:
+	virtual void Set_Damage(_int iDamage, _uint MonAttType = 0) override;
+
+public:
 	virtual HRESULT Init_Prototype() override;
 	virtual HRESULT Init(void* pArg = nullptr) override;
 	virtual void Tick(_float fTimeDelta) override;
@@ -37,6 +40,8 @@ protected:
 
 protected:
 	wstring m_strModelTag{};
+	_bool m_IsHitted{};
+	_float m_fHitTime{};
 
 protected:
 	HRESULT Add_Components();

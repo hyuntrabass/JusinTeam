@@ -10,6 +10,7 @@
 #include "Trigger_Manager.h"
 #include "InfinityTower.h"
 #include "Player.h"
+#include "Balloon.h"
 
 BEGIN(Engine)
 class CGameInstance;
@@ -157,6 +158,9 @@ public:
 	
 	void Set_WorldMap() { m_isWorldMap = true; }
 	_bool Is_WorldMap();
+	
+	void Set_BrickBallColor(BrickColor eColor) { m_eBrickBallColor = eColor; }
+	const BrickColor& Get_BrickBallColor() const { return m_eBrickBallColor; }
 
 private:
 	_uint			m_iCurrentMiniGame{(_uint)TOWER_END};
@@ -200,13 +204,15 @@ private:
 	_float2			m_fExp{ 0.f, 1000.f };
 
 	_vec2			m_vHp{ 1000.f, 1000.f };
-	_vec2			m_vMp{ 1000.f, 1000.f };
+	_vec2			m_vMp{ 500.f, 500.f };
 
 	_vec4			m_vInvenPos{ 0.f, 1000.f, 0.f, 1.f };
 	_vec4			m_vPlayerPos{ 0.f, 0.f, 0.f, 0.f };
 	_vec4			m_vCameraPos{ 0.f, 0.f, 0.f, 0.f };
 	_vec4			m_vTargetPos{ 0.f, 0.f, 0.f, 0.f };
 	_vec4			m_vHairColor{ 0.f, 0.f, 0.f, 0.f };
+
+	BrickColor		m_eBrickBallColor{};
 
 	map<const wstring, ITEM> m_mapItem{};
 
