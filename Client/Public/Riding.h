@@ -75,6 +75,7 @@ enum Falar_Anim
 };
 enum Horse_Anim
 {
+
 	Horse_1004_Attack01,
 	Horse_1004_Idle,
 	Horse_1004_jump_End,
@@ -205,6 +206,7 @@ private:
 	class CCamera_Manager* m_pCam_Manager{ nullptr };
 private:
 	_bool m_bDelete{};
+	_float m_fJumpPower{};
 	_bool m_hasJumped{};
 	_mat m_Worldmatrix{};
 	Riding_State m_eState{ Riding_End };

@@ -146,7 +146,8 @@ namespace Client
 		AT_Bow_Skill3_Start,
 		AT_Bow_Skill3,// 이속 느려지게
 		AT_Bow_Skill4,// 경직
-		AT_Bow_SkillR,// 경직
+		AT_OutLine, //위치 변경 금지
+		AT_Bow_SkillR,// 경직	
 		AT_Critical,
 		AT_End
 	};
@@ -343,7 +344,7 @@ namespace Client
 		AnimPass_Shadow,
 		AnimPass_Dissolve,
 		AnimPass_Rim,
-		AnimPass_DefaultNoCull,
+		AnimPass_DissolveNoCull,
 		AnimPass_Color,
 	};
 
