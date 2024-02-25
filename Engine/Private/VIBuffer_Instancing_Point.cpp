@@ -110,10 +110,6 @@ HRESULT CVIBuffer_Instancing_Point::Init_Prototype()
 
 	m_pComputeShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_ComputeParticle.hlsl", "particle", sizeof ParticleParams);
 
-	m_pInitComputeShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_ComputeParticle.hlsl", "Init", sizeof ParticleInitParams);
-
-	m_pNoiseNormalTexture = CTexture::Create(m_pDevice, m_pContext, L"../../Reference/NoiseNormal/Noise_Normal.jpg");
-
 	return S_OK;
 }
 
@@ -123,7 +119,6 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 	_randNum RandomNumber(rand());
 
 	VTXINSTANCING* pVertexInstance = reinterpret_cast<VTXINSTANCING*>(const_cast<void*>(m_InstancingInitialData.pSysMem));
-
 
 	if (pArg)
 	{
@@ -223,25 +218,6 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-#pragma endregion
-
-#pragma region Test
-
-	//D3D11_MAPPED_SUBRESOURCE SubResource{};
-
-	//m_pContext->Map(m_pVUAVB, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
-
-	//VTXINSTANCING* pVertex = reinterpret_cast<VTXINSTANCING*>(SubResource.pData);
-
-	//vector<VTXINSTANCING> hi;
-
-	//for (size_t i = 0; i < 512; i++)
-	//{
-	//	hi.push_back(pVertex[i]);
-	//}
-
-	//m_pContext->Unmap(m_pVUAVB, 0);
-
 #pragma endregion
 
 	return S_OK;

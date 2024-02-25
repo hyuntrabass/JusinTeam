@@ -25,26 +25,6 @@ protected:
 		_vec4 padding;
 	};
 
-	struct ParticleInitParams {
-		_vec3 vMinPos;
-		_uint isLoop;
-
-		_vec3 vMaxPos;
-		_float fRandomSeed;
-
-		_vec2 vLifeTimeRange;
-		_vec2 vScaleRange;
-
-		_vec3 vMinDir;
-		_float fMinSpeed;
-
-		_vec3 vMaxDir;
-		_float fMaxSpeed;
-
-		//_float fMaxRange;
-		//_vec3 vPadding;
-	};
-
 protected:
 	CVIBuffer_Instancing(_dev pDevice, _context pContext);
 	CVIBuffer_Instancing(const CVIBuffer_Instancing& rhs);
@@ -73,11 +53,9 @@ protected: // compute
 	ID3D11Buffer* m_pVSRB{ nullptr };
 	ID3D11Buffer* m_pVUAVB{ nullptr };
 	class CCompute_Shader* m_pComputeShader{ nullptr };
-	class CCompute_Shader* m_pInitComputeShader{ nullptr };
 	ID3D11ShaderResourceView* m_pSRV{ nullptr };
 	ID3D11UnorderedAccessView* m_pUAV{ nullptr };
 
-	class CTexture* m_pNoiseNormalTexture{ nullptr };
 
 public:
 	virtual CComponent* Clone(void* pArg) = 0;

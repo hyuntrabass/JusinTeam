@@ -17,10 +17,7 @@ CVIBuffer_Instancing::CVIBuffer_Instancing(const CVIBuffer_Instancing& rhs)
 	, m_pVSRB(rhs.m_pVSRB)
 	, m_pVUAVB(rhs.m_pVUAVB)
 	, m_pComputeShader(dynamic_cast<CCompute_Shader*>(rhs.m_pComputeShader->Clone()))
-	, m_pInitComputeShader(dynamic_cast<CCompute_Shader*>(rhs.m_pInitComputeShader->Clone()))
-	, m_pNoiseNormalTexture(rhs.m_pNoiseNormalTexture)
 {
-	Safe_AddRef(m_pNoiseNormalTexture);
 }
 
 HRESULT CVIBuffer_Instancing::Init_Prototype()
@@ -39,7 +36,7 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 
 	if (not CS_Particle)
 	{
-	#pragma region Map-Unmap Particle System
+#pragma region Map-Unmap Particle System
 		if (iNumUse == -1)
 		{
 			iNumUse = m_iNumInstances;
@@ -118,11 +115,11 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 
 		m_pContext->Unmap(m_pVBInstance, 0);
 
-	#pragma endregion 
+#pragma endregion 
 	}
 	else
 	{
-	#pragma region Compute Shader Particle System
+#pragma region Compute Shader Particle System
 		ParticleParams PartiBuffer{};
 		PartiBuffer.iNumInstances = m_iNumInstances;
 		PartiBuffer.iNumUse = iNumUse;
@@ -137,19 +134,24 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 
 		m_pContext->CopyResource(m_pVSRB, m_pVBInstance);
 
-		m_pComputeShader->Set_Shader();
+		HRESULT hr = E_FAIL;
 
-		m_pComputeShader->Change_Value(&PartiBuffer, sizeof ParticleParams);
+		hr = m_pComputeShader->Set_Shader();
+
+		hr = m_pComputeShader->Change_Value(&PartiBuffer, sizeof ParticleParams);
 
 		_uint2 iSlot = _uint2(0, 0);
-		m_pComputeShader->Bind_ShaderResourceView(m_pSRV, m_pUAV, iSlot);
+		hr = m_pComputeShader->Bind_ShaderResourceView(m_pSRV, m_pUAV, iSlot);
 
-	_uint3 ThreadGroup{ 2, 1, 1 };
-	hr = m_pComputeShader->Begin(ThreadGroup);
+		_uint3 ThreadGroup{ 2, 1, 1 };
+		hr = m_pComputeShader->Begin(ThreadGroup);
+
+		if (FAILED(hr))
+			return;
 
 		m_pContext->CopyResource(m_pVBInstance, m_pVUAVB);
 
-	#pragma region 값 확인용
+#pragma region 값 확인용
 		//D3D11_MAPPED_SUBRESOURCE SubResource{};
 
 	//m_pContext->Map(m_pVUAVB, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
@@ -159,8 +161,8 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 	//_vec4 vPos = pVertex->vPos;
 
 	//m_pContext->Unmap(m_pVUAVB, 0);  
-	#pragma endregion
-	#pragma endregion 
+#pragma endregion
+#pragma endregion 
 	}
 
 	m_isFirstUpdate = false;
@@ -200,9 +202,6 @@ HRESULT CVIBuffer_Instancing::Render()
 void CVIBuffer_Instancing::Free()
 {
 	__super::Free();
-
-	Safe_Release(m_pInitComputeShader);
-	Safe_Release(m_pNoiseNormalTexture);
 
 	Safe_Release(m_pVBInstance);
 	Safe_Release(m_pSRV);
