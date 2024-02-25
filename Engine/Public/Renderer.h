@@ -20,6 +20,14 @@ enum RenderGroup
 	RG_End
 };
 
+struct RadialParams {
+	_vec2 vCenterTexPos{};
+	_float fRadialBlur_Power{};
+	_uint isTex{};
+
+	_vec4 vCenterPos{};
+};
+
 class ENGINE_DLL CRenderer final : public CComponent
 {
 private:
@@ -39,20 +47,17 @@ public:
 		m_TurnOnBloom = TurnOnBloom;
 	}
 
-	const void Set_RadialBlur_World(_vec4 vRadialCenter) {
-		m_vRadialWorldCenter = vRadialCenter;
-		m_bWorldOrTex = false;
-	}
+	const void Set_RadialBlur_World(_vec4 vRadialCenter);
 
 	const void Set_RadialBlur_Texcoord(_vec2 vRadialCenter) {
-		m_vRadialTexCenter = vRadialCenter;
-		m_bWorldOrTex = true;
+		m_RBParams.vCenterTexPos = vRadialCenter;
+		m_RBParams.isTex = true;
 	}
 
 	const void Set_RadialBlur_Power(_float fBlurPower) {
-		m_fRadial_BlurPower = fBlurPower;
-		if (0.f > m_fRadial_BlurPower)
-			m_fRadial_BlurPower = 0.f;
+		m_RBParams.fRadialBlur_Power = fBlurPower;
+		if (0.f > m_RBParams.fRadialBlur_Power)
+			m_RBParams.fRadialBlur_Power = 0.f;
 	}
 
 
@@ -76,10 +81,7 @@ private:
 
 	ID3D11DepthStencilView* m_pShadowDSV{ nullptr };
 
-	_bool m_bWorldOrTex{ true };
-	_vec2 m_vRadialTexCenter{};
-	_vec4 m_vRadialWorldCenter{};
-	_float m_fRadial_BlurPower = 0.f;
+	_bool m_bMotionBlur{ false };
 
 #pragma region Æò±Õ ÈÖµµ ±¸ÇÏ´Â ½¦ÀÌ´õ¶û ·£´õÅ¸°Ùµé
 
@@ -119,6 +121,22 @@ private:
 	class CShader* m_pGetBlurShader{ nullptr };
 
 #pragma endregion
+
+#pragma region ·¹µð¾ó ºí·¯
+
+	class CCompute_Shader* m_pRadialShader = nullptr;
+	class CCompute_RenderTarget* m_pRadialRT = nullptr;
+	RadialParams m_RBParams;
+
+#pragma endregion
+
+#pragma region ¸ð¼Ç ºí·¯
+
+	class CCompute_Shader* m_pMotionShader = nullptr;
+	class CCompute_RenderTarget* m_pMotionRT = nullptr;
+
+#pragma endregion
+
 
 	class CTexture* m_pNoiseNormal = nullptr;
 
@@ -220,7 +238,12 @@ private:
 	HRESULT Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MRT_Tag, _float fBlurPower, _bool isBloom = false);
 	HRESULT Add_Instance(InstanceID InstanceID, Instance_Data& pMeshInstancing);
 	HRESULT Clear_Instance();
+	HRESULT FinishCommand();
 	map<InstanceID, class CVIBuffer_Mesh_Instance*>	m_InstanceBuffers;
+
+	ID3D11CommandList* m_pCommandList = nullptr;
+	_context m_pDeferrd = nullptr;
+
 
 public:
 	static CRenderer* Create(_dev pDevice, _context pContext);

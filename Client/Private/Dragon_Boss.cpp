@@ -805,18 +805,18 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 		//if (m_pModelCom->Get_CurrentAnimPos() >= 5.f && m_pModelCom->Get_CurrentAnimPos() <= 100.f)
 		//{
-		//	m_FollowEffectMatrix[0] = _mat::CreateScale(5.f) * /*_mat::CreateTranslation(0.f, 0.1f, 0.f) * */(*m_pModelCom->Get_BoneMatrix("Nose_Bone001_end"))
+		//	m_UpdateMatrix[0] = _mat::CreateScale(5.f) * /*_mat::CreateTranslation(0.f, 0.1f, 0.f) * */(*m_pModelCom->Get_BoneMatrix("Nose_Bone001_end"))
 		//		* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 
 		//	if (m_fTime[1] >= 0.5f)
 		//	{
 		//		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_FirePillar_Mouth2"); // 수정
-		//		Info.pMatrix = &m_FollowEffectMatrix[0];
+		//		Info.pMatrix = &m_UpdateMatrix[0];
 		//		Info.isFollow = true;
 		//		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 		//		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_FirePillar_Mouth3"); // 수정
-		//		Info.pMatrix = &m_FollowEffectMatrix[0];
+		//		Info.pMatrix = &m_UpdateMatrix[0];
 		//		Info.isFollow = true;
 		//		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 

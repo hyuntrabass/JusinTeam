@@ -315,7 +315,7 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 
 		if (m_pCam_Manager->Get_RidingZoom())
 		{
-			vLerpCamPos = vPlayerPos + _vec4(0.f, -1.1, 0.f, 0.f)
+			vLerpCamPos = vPlayerPos + _vec4(0.f, -1.1f, 0.f, 0.f)
 				- (m_pTransformCom->Get_State(State::Look) * 11.f)
 				+ (m_pTransformCom->Get_State(State::Up) * 11.f * 0.15f);
 
@@ -324,7 +324,7 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 		else if (m_pCam_Manager->Get_FlyCam())
 		{
 			CTransform* m_RidingTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-			vLerpCamPos = vPlayerPos + _vec4(0.f, -1.1, 0.f, 0.f)
+			vLerpCamPos = vPlayerPos + _vec4(0.f, -1.1f, 0.f, 0.f)
 				- (m_pTransformCom->Get_State(State::Look) * 11.f)
 				+ (m_pTransformCom->Get_State(State::Up) * 11.f * 0.15f);
 

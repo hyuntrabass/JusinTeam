@@ -25,7 +25,7 @@ HRESULT CSickle::Init(void* pArg)
 
 	_vec3 StartPos = *reinterpret_cast<_vec3*>(pArg);
 
-	_float fSpeed{ 30.f };
+	_float fSpeed{ 10.f };
 
 	m_pTransformCom->Set_Position(StartPos);
 	m_pTransformCom->Set_Speed(fSpeed);
@@ -47,7 +47,7 @@ void CSickle::Tick(_float fTimeDelta)
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
 	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
-	vPos = XMVectorLerp(vPos, vPlayerPos,0.1f);
+	vPos = XMVectorLerp(vPos, vPlayerPos,0.05f);
 	m_pTransformCom->Set_State(State::Pos, vPos);
 	 
 	m_fLifeTimer += fTimeDelta;

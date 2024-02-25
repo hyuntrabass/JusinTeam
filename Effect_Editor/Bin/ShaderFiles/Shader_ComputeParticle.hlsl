@@ -1,3 +1,5 @@
+#include "Engine_Shader_Define.hlsli"
+
 struct Vertex_Instancing
 {
     vector vRight;
@@ -27,17 +29,30 @@ cbuffer ParticleParams : register(b0)
     
     vector vGravityDir;
     
-    row_major matrix WorldMatrix;
-    
     float fDissolveRatio;
     int isLoop;
     int bApplyGravity;
     int isFirstUpdate;
     
-    float4 Padding;
+    row_major matrix WorldMatrix;
+    
+    vector Padding3;
 }
 
-[numthreads(1024, 1, 1)]
+float Random(float fSeed)
+{
+    float fRandom = frac(sin(fSeed) * 43758.5453f);
+    return fRandom;
+}
+
+float RandomRange(float fSeed, float fMin, float fMax)
+{
+    float fRandom = Random(fSeed);
+    float fRange = fMax - fMin;
+    return (fRandom * fRange) + fMin;
+}
+
+[numthreads(256, 1, 1)]
 void particle(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID, uint groupIndex : SV_GroupIndex, uint3 dispatchID : SV_DispatchThreadID)
 {
     if (dispatchID.x < iNumInstances)
@@ -109,6 +124,94 @@ void particle(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID
             }
         }
 
+        OutputInfo[dispatchID.x] = pVertex;
+    }
+}
+
+cbuffer RandomParam : register(b1)
+{
+    float3 vMinPos;
+    uint InitisLoop;
+    
+    float3 vMaxPos;
+    float fRandomSeed;
+    
+    float2 vLifeTimeRange;
+    float2 vScaleRange;
+    
+    float3 vMinDir;
+    float fMinSpeed;
+    
+    float3 vMaxDir;
+    float fMaxSpeed;
+    
+    //float fMaxRange;
+    //float3 vPadding;
+}
+
+Texture2D<vector> InputNoiseNormalTexture : register(t1);
+
+
+[numthreads(256, 1, 1)]
+void Init(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID, uint groupIndex : SV_GroupIndex, uint3 dispatchID : SV_DispatchThreadID)
+{
+    if (dispatchID.x < 512)
+    {
+        Vertex_Instancing pVertex = InputInfo[dispatchID.x];
+
+       
+        //vector fRandom = InputNoiseNormalTexture.Load(hi);
+        
+        float fScale = RandomRange(1, vScaleRange.x, vScaleRange.y);
+        
+        pVertex.vRight = vector(fScale, 0.f, 0.f, 0.f);
+        pVertex.vUp = vector(0.f, fScale, 0.f, 0.f);
+        pVertex.vLook = vector(0.f, 0.f, fScale, 0.f);
+        
+        float fPosX = RandomRange(1, vMinPos.x, vMaxPos.x);
+        
+        
+        
+        //fRandom = InputNoiseNormalTexture.Load(hi);
+        
+        float fPosY = RandomRange(1, vMinPos.y, vMaxPos.y);
+        float fPosZ = RandomRange(1, vMinPos.z, vMaxPos.z);
+        
+        pVertex.vPos = vector(fPosX, fPosY, fPosZ, 1.f);
+        
+        pVertex.vOriginPos = pVertex.vPos;
+        
+        
+        
+        //fRandom = InputNoiseNormalTexture.Load(hi);
+        
+        float fSpeed = RandomRange(1, fMinSpeed, fMaxSpeed);
+        float fLifeTime = RandomRange(1, vLifeTimeRange.x, vLifeTimeRange.y);
+        
+        pVertex.fSpeed = fSpeed;
+        pVertex.vLifeTime.y = fLifeTime;
+        
+        if (1 == InitisLoop)
+        {
+            pVertex.vLifeTime.x = vLifeTimeRange.x;
+        }
+        else
+        {
+            pVertex.vLifeTime.x = 0.f;
+        }
+        
+        
+        //fRandom = InputNoiseNormalTexture.Load(hi);
+        
+        float fDirX = RandomRange(1, vMinDir.x, vMaxDir.x);
+        float fDirY = RandomRange(1, vMinDir.y, vMaxDir.y);
+        float fDirZ = RandomRange(1, vMinDir.z, vMaxDir.z);
+        
+        vector vDir = normalize(vector(fDirX, fDirY, fDirZ, 0.f));
+        
+        pVertex.vDirection = vDir;
+        pVertex.vOriginDir = pVertex.vDirection;
+        
         OutputInfo[dispatchID.x] = pVertex;
     }
 }

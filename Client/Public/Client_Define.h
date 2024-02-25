@@ -76,6 +76,18 @@ namespace Client
 		_vec4(1.f, 0.4f, 0.15f, 0.f) // Specular
 	};
 
+	static const LIGHT_DESC g_Light_Survival
+	{
+		LIGHT_DESC::Directional,
+		_vec4(-1.f, -2.f, -1.f, 0.f), // Direction
+		_vec4(), // Position
+		_vec4(), // Attenuation
+
+		_vec4(0.45f), // Diffuse
+		_vec4(0.5f), // Ambient
+		_vec4(0.1f) // Specular
+	};
+
 	enum LEVEL_ID
 	{
 		LEVEL_STATIC,
@@ -146,7 +158,8 @@ namespace Client
 		AT_Bow_Skill3_Start,
 		AT_Bow_Skill3,// 이속 느려지게
 		AT_Bow_Skill4,// 경직
-		AT_Bow_SkillR,// 경직
+		AT_OutLine, //위치 변경 금지
+		AT_Bow_SkillR,// 경직	
 		AT_Critical,
 		AT_End
 	};
@@ -343,7 +356,7 @@ namespace Client
 		AnimPass_Shadow,
 		AnimPass_Dissolve,
 		AnimPass_Rim,
-		AnimPass_DefaultNoCull,
+		AnimPass_DissolveNoCull,
 		AnimPass_Color,
 	};
 

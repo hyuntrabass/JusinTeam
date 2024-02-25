@@ -1833,7 +1833,7 @@ HRESULT CLoader::Load_Village()
 			}
 			else if (strPrototypeTag == L"Prototype_Model_Survival_Map")
 			{
-				DungeonPivot = _mat::CreateScale(0.6f);
+				DungeonPivot = _mat::CreateScale(0.7f);
 			}
 			else if (strPrototypeTag == L"Prototype_Model_SescoMap")
 			{

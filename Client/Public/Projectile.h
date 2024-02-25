@@ -11,6 +11,7 @@ public:
 	enum PROJECTILE_TYPE
 	{
 		TYPE_RANDOM_POS,
+		TYPE_FLOOR,
 		TYPE_GUIDED_MISSILE,
 		TYPE_TANGHURU,
 		TYPE_END
@@ -20,7 +21,7 @@ public:
 	{
 		PROJECTILE_TYPE eType;
 		_vec3 vStartPos;
-		CTransform* pLauncherTransform;
+		CTransform* pLauncherTransform = { nullptr };
 	};
 
 private:
@@ -42,10 +43,15 @@ private:
 	//CCollider* m_pColliderCom = { nullptr };
 
 private:
+	class CEffect_Dummy* m_pFrameEffect = { nullptr };
+	class CEffect_Dummy* m_pBaseEffect = { nullptr };
+
+private:
 	class CEffect_Dummy* m_pBall = { nullptr };
 	class CEffect_Dummy* m_pBallParticle = { nullptr };
 
-	_mat m_FollowEffectMatrix = {};
+	_mat m_UpdateMatrix = {};
+	_float m_fCircleRange = { 0.001f };
 
 private:
 	PROJECTILE_DESC m_ProjectileDesc = {};

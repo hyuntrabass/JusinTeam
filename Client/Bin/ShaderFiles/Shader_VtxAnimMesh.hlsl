@@ -436,7 +436,7 @@ technique11 DefaultTechnique_Shader_AnimMesh
         PixelShader = compile ps_5_0 PS_Main_Rim();
     }
 
-    pass DefaultNoCull
+    pass DissolveNoCull
     {
         SetRasterizerState(RS_None);
         SetDepthStencilState(DSS_Default, 0);
@@ -446,7 +446,7 @@ technique11 DefaultTechnique_Shader_AnimMesh
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main();
+        PixelShader = compile ps_5_0 PS_Main_Dissolve();
     }
 
     pass MeshColor

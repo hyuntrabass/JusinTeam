@@ -400,6 +400,7 @@ private:
 private:
 	_bool m_bIsMount{};
 	_bool m_bIsSkying{};
+	_float m_bSlowSpeed{};
 	_float m_fFadeTimmer{};
 	_bool m_bReadyCommonAtt{ true };
 	_int m_iArrowRain{};

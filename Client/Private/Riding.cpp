@@ -23,10 +23,9 @@ HRESULT CRiding::Init(void* pArg)
 	m_CurrentIndex = Desc->Type;
 	m_eCurMode = (MODE)Desc->iMode;
 	m_pCam_Manager = CCamera_Manager::Get_Instance();
-
+	m_pTransformCom->Set_Position(_vec3(0.f, -1000.f, 0.f));
 	if (m_eCurMode == PLAYER)
 	{
-
 
 		switch (m_CurrentIndex)
 		{
@@ -107,6 +106,7 @@ HRESULT CRiding::Init(void* pArg)
 			m_eState = Riding_Idle;
 			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Horse");
 			m_fRunSpeed = 10.f;
+			m_fJumpPower = 10.f;
 			m_pCam_Manager->Set_RidingZoom(true);
 		}
 		break;
@@ -116,6 +116,7 @@ HRESULT CRiding::Init(void* pArg)
 			m_eState = Riding_Idle;
 			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Tiger");
 			m_fRunSpeed = 12.f;
+			m_fJumpPower = 15.f;
 			m_pCam_Manager->Set_RidingZoom(true);
 		}
 		break;
@@ -126,6 +127,7 @@ HRESULT CRiding::Init(void* pArg)
 			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Nihilir");
 			m_fWalkSpeed = 5.f;
 			m_fRunSpeed = 30.f;
+			m_fJumpPower = 20.f;
 			m_pCam_Manager->Set_RidingZoom(true);
 		}
 		break;
@@ -558,7 +560,7 @@ void CRiding::Move(_float fTimeDelta)
 		if (!m_hasJumped)
 		{
 			m_eState = Riding_Jump_Start;
-			m_pTransformCom->Jump(10.f);
+			m_pTransformCom->Jump(m_fJumpPower);
 		}
 	}
 }
@@ -566,11 +568,9 @@ void CRiding::Init_State()
 {
 	if (m_eState != m_ePrevState)
 	{
-		m_Animation.isLoop = false;
+		m_Animation = {};
 		m_Animation.fAnimSpeedRatio = 2.f;
-		m_Animation.bSkipInterpolation = false;
-		m_Animation.fDurationRatio = 1.f;
-
+		m_Animation.bSkipInterpolation = true;
 		switch (m_eState)
 		{
 		case Client::Riding_Landing:
@@ -605,6 +605,7 @@ void CRiding::Init_State()
 				break;
 			case Client::Tiger:
 			{
+
 				m_Animation.iAnimIndex = Tiger_1003_Idle;
 				m_Animation.isLoop = true;
 				m_hasJumped = false;
@@ -706,7 +707,10 @@ void CRiding::Init_State()
 			case Client::Tiger:
 			{
 				m_Animation.iAnimIndex = Tiger_1003_Jump_Start;
+				m_Animation.bSkipInterpolation = true;
+				m_Animation.fAnimSpeedRatio = 1.f;
 				m_hasJumped = true;
+				m_Animation.fStartAnimPos = 6.f;
 			}
 			break;
 			case Client::Nihilir:
@@ -733,6 +737,7 @@ void CRiding::Init_State()
 				m_Animation.iAnimIndex = Tiger_1003_Jump_loop;
 				m_hasJumped = true;
 				m_Animation.isLoop = true;
+				m_Animation.bSkipInterpolation = true;
 			}
 			break;
 			case Client::Nihilir:
@@ -759,6 +764,7 @@ void CRiding::Init_State()
 			case Client::Tiger:
 			{
 				m_Animation.iAnimIndex = Tiger_1003_Jump_End_Run;
+				m_Animation.bSkipInterpolation = true;
 				m_hasJumped = false;
 			}
 			break;
