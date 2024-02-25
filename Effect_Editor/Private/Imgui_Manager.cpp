@@ -2084,14 +2084,14 @@ HRESULT CImgui_Manager::Export_Data(EffectInfo& Info)
 {
 	OPENFILENAME ofn;
 	TCHAR filePathName[MAX_PATH] = L"";
-	TCHAR lpstrFile[MAX_PATH] = L".effect";
+	wstring strTempFilePath = m_CurrFilePath.wstring();
 	static TCHAR filter[] = L"¿Ã∆Â∆Æ ∆ƒ¿œ(*.effect)\0*.effect\0";
 
 	memset(&ofn, 0, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner = g_hWnd;
 	ofn.lpstrFilter = filter;
-	ofn.lpstrFile = lpstrFile;
+	ofn.lpstrFile = strTempFilePath.data();
 	ofn.nMaxFile = 256;
 	ofn.lpstrInitialDir = L"..\\..\\Client\\Bin\\EffectData";
 	ofn.Flags = OFN_OVERWRITEPROMPT;
