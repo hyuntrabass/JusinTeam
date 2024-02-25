@@ -176,10 +176,10 @@ void CCamera_Main::Late_Tick(_float fTimeDelta)
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
 #endif
 
-	if (m_pGameInstance->CheckCollision_Culling(m_pColliderCom))
-		m_isCollision = true;
-	else
-		m_isCollision = false;
+	//if (m_pGameInstance->CheckCollision_Culling(m_pColliderCom))
+	//	m_isCollision = true;
+	//else
+	//	m_isCollision = false;
 
 }
 

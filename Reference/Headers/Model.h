@@ -64,6 +64,7 @@ public:
 	_bool Intersect_RayModel(_fmatrix WorldMatrix, _vec4* pPickPos);
 	_int Get_InstanceID() { return m_iInstanceID; }
 	_float Get_Radius();
+	_vec3 Get_CenterPos();
 
 private:
 	class CTransform* m_pOwnerTransform{};

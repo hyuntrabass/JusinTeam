@@ -193,6 +193,10 @@ HRESULT CLoader::Load_Editor()
 			{
 				Pivot = _mat::CreateScale(0.005f);
 			}
+			else if (strPrototypeTag == L"Prototype_Model_MiniDungeon")
+			{
+				Pivot = _mat::CreateScale(0.003f);
+			}
 			else
 				Pivot = _mat::CreateScale(0.001f);
 

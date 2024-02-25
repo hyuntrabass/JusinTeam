@@ -120,7 +120,12 @@ void CTorch_Object::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
-	__super::Late_Tick(fTimeDelta);
+
+	CCollider* pCameraCollider = dynamic_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_STATIC, L"Layer_Camera", L"Com_Collider"));
+	if (m_pColliderCom->Intersect(pCameraCollider))
+	{
+		__super::Late_Tick(fTimeDelta);
+	}
 }
 
 HRESULT CTorch_Object::Render()

@@ -572,7 +572,8 @@ void CModel::Apply_TransformToActor(_fmatrix WorldMatrix)
 
 HRESULT CModel::Render(_uint iMeshIndex)
 {
-	m_Meshes[iMeshIndex]->Render();
+	if (FAILED(m_Meshes[iMeshIndex]->Render()))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -719,14 +720,40 @@ _bool CModel::Intersect_RayModel(_fmatrix WorldMatrix, _vec4* pPickPos)
 	return false;
 }
 
-_float CModel::Get_Radius()
+_float CModel::Get_MeshRadius()
 {
 	_float Max_Radius = 0.f;
 	for (auto& pMesh : m_Meshes)
 	{
 		Max_Radius = max(Max_Radius, pMesh->Get_Radius());
 	}
+
 	return Max_Radius;
+}
+
+_float CModel::Get_ModelRadius()
+{
+	_vec3 vCenter{};
+	_float fFarDistance{};
+	_float fRadius{};
+	for (auto& pMesh : m_Meshes)
+	{
+		fFarDistance = _vec3::Distance(vCenter, pMesh->Get_CenterPos());
+		fRadius = max(fRadius, fFarDistance);
+
+	}
+	return fRadius;
+}
+
+_vec3 CModel::Get_CenterPos()
+{
+	_vec3 vCenter{};
+	for (auto& pMesh : m_Meshes)
+	{
+		vCenter += pMesh->Get_CenterPos();
+	}
+	vCenter = vCenter / m_Meshes.size();
+	return vCenter;
 }
 
 

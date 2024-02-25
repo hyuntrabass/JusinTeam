@@ -1,5 +1,6 @@
 #pragma once
 #include "Etc_Object.h"
+#include "Camera_Main.h"
 
 CEtc_Object::CEtc_Object(_dev pDevice, _context pContext)
 	: CObjects(pDevice, pContext)
@@ -30,6 +31,8 @@ HRESULT CEtc_Object::Init(void* pArg)
 
 	m_iShaderPass = StaticPass_AlphaTestMeshes;
 
+	//m_pGameInstance->Register_CollisionCulling(this, m_pColliderCom);
+
 	m_pTransformCom->Set_Matrix(m_Info.m_WorldMatrix);
 	m_pModelCom->Apply_TransformToActor(m_Info.m_WorldMatrix);
 	
@@ -43,7 +46,12 @@ void CEtc_Object::Tick(_float fTimeDelta)
 
 void CEtc_Object::Late_Tick(_float fTimeDelta)
 {
-	__super::Late_Tick(fTimeDelta);
+	//CCollider* pCameraCollider = dynamic_cast<CCollider*>(m_pGameInstance->Find_Prototype(L"Prototype_GameObject_Camera_Main")->Find_Component(L"Com_Collider"));
+	CCollider* pCameraCollider = dynamic_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_STATIC, L"Layer_Camera", L"Com_Collider"));
+	if (m_pColliderCom->Intersect(pCameraCollider))
+	{
+		__super::Late_Tick(fTimeDelta);
+	}
 }
 
 HRESULT CEtc_Object::Render()

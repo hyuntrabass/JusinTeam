@@ -1763,6 +1763,10 @@ HRESULT CLoader::Load_Village()
 			{
 				DungeonPivot = _mat::CreateScale(0.005f);
 			}
+			else if (strPrototypeTag == L"Prototype_Model_MiniDungeon")
+			{
+				Pivot = _mat::CreateScale(0.003f);
+			}
 			else
 				DungeonPivot = _mat::CreateScale(0.001f);
 
