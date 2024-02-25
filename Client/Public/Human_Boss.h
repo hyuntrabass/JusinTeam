@@ -148,8 +148,8 @@ private:
 
 private:
 	_uint m_iPizzaAttCount{};
-	_uint m_iAttackPattern = {};
-	_bool m_bSelectAttackPattern = { false };
+	_uint m_iAttackPattern{};
+	_bool m_bSelectAttackPattern{};
 	_bool m_bCounter_Success{};
 	_float m_fHitTime{};
 	_float m_fHideTimmer{};

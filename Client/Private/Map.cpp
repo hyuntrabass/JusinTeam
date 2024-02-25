@@ -112,7 +112,7 @@ void CMap::Late_Tick(_float fTimeDelta)
 		}
 		break;
 	case Client::TS_SescoMap:
-		if (m_Info.Prototype != TEXT("SescoMap"))
+		if (m_Info.Prototype != TEXT("Prototype_Model_SescoMap"))
 		{
 			return;
 		}
