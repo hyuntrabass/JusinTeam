@@ -870,6 +870,18 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		m_iNumInstance = clamp(m_iNumInstance, 0, 1024);
 
 		InputFloat3("Min Pos", reinterpret_cast<_float*>(&m_ParticleInfo.vMinPos));
+		if (m_ParticleInfo.vMinPos.x > m_ParticleInfo.vMaxPos.x)
+		{
+			m_ParticleInfo.vMaxPos.x = m_ParticleInfo.vMinPos.x;
+		}
+		if (m_ParticleInfo.vMinPos.y > m_ParticleInfo.vMaxPos.y)
+		{
+			m_ParticleInfo.vMaxPos.y = m_ParticleInfo.vMinPos.y;
+		}
+		if (m_ParticleInfo.vMinPos.z > m_ParticleInfo.vMaxPos.z)
+		{
+			m_ParticleInfo.vMaxPos.z = m_ParticleInfo.vMinPos.z;
+		}
 		InputFloat3("Max Pos", reinterpret_cast<_float*>(&m_ParticleInfo.vMaxPos)); SameLine(); if (Button("Same with Min")) { m_ParticleInfo.vMaxPos = m_ParticleInfo.vMinPos; }
 		if (m_ParticleInfo.vMinPos.x > m_ParticleInfo.vMaxPos.x)
 		{
@@ -885,6 +897,18 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		}
 
 		InputFloat3("Min Dir", reinterpret_cast<_float*>(&m_ParticleInfo.vMinDir));
+		if (m_ParticleInfo.vMinDir.x > m_ParticleInfo.vMaxDir.x)
+		{
+			m_ParticleInfo.vMaxDir.x = m_ParticleInfo.vMinDir.x;
+		}
+		if (m_ParticleInfo.vMinDir.y > m_ParticleInfo.vMaxDir.y)
+		{
+			m_ParticleInfo.vMaxDir.y = m_ParticleInfo.vMinDir.y;
+		}
+		if (m_ParticleInfo.vMinDir.z > m_ParticleInfo.vMaxDir.z)
+		{
+			m_ParticleInfo.vMaxDir.z = m_ParticleInfo.vMinDir.z;
+		}
 		InputFloat3("Max Dir", reinterpret_cast<_float*>(&m_ParticleInfo.vMaxDir)); SameLine(); if (Button("Same with Min##1")) { m_ParticleInfo.vMaxDir = m_ParticleInfo.vMinDir; }
 		if (m_ParticleInfo.vMinDir.x > m_ParticleInfo.vMaxDir.x)
 		{
@@ -902,19 +926,19 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		InputFloat2("LifeTime", reinterpret_cast<_float*>(&m_ParticleInfo.vLifeTime));
 		if (m_ParticleInfo.vLifeTime.x > m_ParticleInfo.vLifeTime.y)
 		{
-			m_ParticleInfo.vLifeTime.x = m_ParticleInfo.vLifeTime.y;
+			m_ParticleInfo.vLifeTime.y = m_ParticleInfo.vLifeTime.x;
 		}
 
 		InputFloat2("Scale", reinterpret_cast<_float*>(&m_ParticleInfo.vScaleRange));
 		if (m_ParticleInfo.vScaleRange.x > m_ParticleInfo.vScaleRange.y)
 		{
-			m_ParticleInfo.vScaleRange.x = m_ParticleInfo.vScaleRange.y;
+			m_ParticleInfo.vScaleRange.y = m_ParticleInfo.vScaleRange.x;
 		}
 
 		InputFloat2("Speed", reinterpret_cast<_float*>(&m_ParticleInfo.vSpeedRange));
 		if (m_ParticleInfo.vSpeedRange.x > m_ParticleInfo.vSpeedRange.y)
 		{
-			m_ParticleInfo.vSpeedRange.x = m_ParticleInfo.vSpeedRange.y;
+			m_ParticleInfo.vSpeedRange.y = m_ParticleInfo.vSpeedRange.x;
 		}
 
 		Checkbox("Gravity", &bApplyGravity);

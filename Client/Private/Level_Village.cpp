@@ -8,6 +8,7 @@
 #include "Map.h"
 #include "Trigger_Manager.h"
 #include "VTFMonster.h"
+#include "Effect_Manager.h"
 
 CLevel_Village::CLevel_Village(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -117,6 +118,33 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
+	// 분수 큰물
+	_mat FountainMat = _mat::CreateScale(2.6f) * _mat::CreateRotationZ(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(-25.292f, 12.821f, 116.395f));
+	EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Water_Base");
+	EffectDesc.pMatrix = &FountainMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+
+	EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Water_Decal");
+	EffectDesc.pMatrix = &FountainMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+
+	EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Water_Dist");
+	EffectDesc.pMatrix = &FountainMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+
+	// 분수 작은물
+	FountainMat = _mat::CreateScale(1.3f) * _mat::CreateRotationZ(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(-25.292f, 17.321f, 116.395f));
+	EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Water_Base");
+	EffectDesc.pMatrix = &FountainMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+
+	EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Water_Decal");
+	EffectDesc.pMatrix = &FountainMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+
+	EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Water_Dist");
+	EffectDesc.pMatrix = &FountainMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 
 	//if (FAILED(Ready_SescoGame()))
 	//{
@@ -206,10 +234,14 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	//{
 	//	m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Statue"), TEXT("Prototype_GameObject_Statue"));
 	//}
-	//if (m_pGameInstance->Key_Down(DIK_EQUALS))
-	//{
-	//	m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Test"), TEXT("Prototype_GameObject_Void20"));
-	//}
+	if (m_pGameInstance->Key_Down(DIK_EQUALS))
+	{
+		static _mat FountainMat = _mat::CreateScale(1.3f) * _mat::CreateRotationZ(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(-25.292f, 17.321f, 116.395f));
+		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Waterfall_Dist");
+		EffectDesc.pMatrix = &FountainMat;
+		EffectDesc.isFollow = true;
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+	}
 }
 
 HRESULT CLevel_Village::Render()

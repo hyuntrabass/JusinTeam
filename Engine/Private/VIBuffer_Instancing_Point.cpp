@@ -134,6 +134,11 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 		fMaxRange = max(fMaxRange, fabs(Desc.vMaxPos.z));
 		fMaxRange = max(fMaxRange, fabs(Desc.vMinPos.z));
 
+		_vec3 vCenterPos{};
+		vCenterPos.x = Lerp(Desc.vMinPos.x, Desc.vMaxPos.x, 0.5f);
+		vCenterPos.y = Lerp(Desc.vMinPos.y, Desc.vMaxPos.y, 0.5f);
+		vCenterPos.z = Lerp(Desc.vMinPos.z, Desc.vMaxPos.z, 0.5f);
+
 		_randFloat RandomDirX = _randFloat(Desc.vMinDir.x, Desc.vMaxDir.x);
 		_randFloat RandomDirY = _randFloat(Desc.vMinDir.y, Desc.vMaxDir.y);
 		_randFloat RandomDirZ = _randFloat(Desc.vMinDir.z, Desc.vMaxDir.z);
@@ -150,7 +155,7 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 			pVertexInstance[i].vUp = _float4(0.f, fScale, 0.f, 0.f);
 			pVertexInstance[i].vLook = _float4(0.f, 0.f, 1.f, 0.f);
 			pVertexInstance[i].vPos = _float4(RandomX(RandomNumber), RandomY(RandomNumber), RandomZ(RandomNumber), 1.f);
-			while (_vec3(pVertexInstance[i].vPos).Length() > fMaxRange)
+			while ((_vec3(pVertexInstance[i].vPos) - vCenterPos).Length() > fMaxRange)
 			{
 				pVertexInstance[i].vPos = _float4(RandomX(RandomNumber), RandomY(RandomNumber), RandomZ(RandomNumber), 1.f);
 			}

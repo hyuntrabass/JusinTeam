@@ -76,7 +76,7 @@ void CEnvironment_Object::Late_Tick(_float fTimeDelta)
 	CCamera_Main* pCamera = dynamic_cast<CCamera_Main*>(m_pGameInstance->Find_Prototype(L"Prototype_GameObject_Camera_Main"));
 
 	//if (pCamera->Get_CheckCollision() == true)
-		__super::Late_Tick(fTimeDelta);
+		//__super::Late_Tick(fTimeDelta);
 	
 	//if (m_pTrigger_Manager->Get_InOut() == true)
 	//{
