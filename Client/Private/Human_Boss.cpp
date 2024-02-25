@@ -372,7 +372,7 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 		case Client::CHuman_Boss::Roar:
 			break;
 		case Client::CHuman_Boss::Run:
-			m_Animation.iAnimIndex = BossAnim_Run;
+			m_Animation.iAnimIndex = BossAnim_Walk;
 			m_Animation.isLoop = true;
 			m_fPatternDelay = 0.f;
 			break;
