@@ -48,7 +48,6 @@ HRESULT CCamera_Main::Init(void* pArg)
 
 void CCamera_Main::Tick(_float fTimeDelta)
 {
-	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 	//matProj = m_pGameInstance->Get_Transform(TransformType::Proj);
 	//matView = m_pGameInstance->Get_Transform(TransformType::View);
 
@@ -167,6 +166,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 
 	__super::Tick(fTimeDelta);
+	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 
 }
 
