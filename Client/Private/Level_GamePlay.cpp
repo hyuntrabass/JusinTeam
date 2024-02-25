@@ -79,11 +79,11 @@ HRESULT CLevel_GamePlay::Init()
 	}
 
 	// Monster_Test
-	if (FAILED(Ready_ModelTest()))
-	{
-		MSG_BOX("Failed to Ready ModelTest");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_ModelTest()))
+	//{
+	//	MSG_BOX("Failed to Ready ModelTest");
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(Ready_Monster_Test()))
 	{

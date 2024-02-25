@@ -15,13 +15,12 @@ protected:
 		
 		_vec4 vGravityDir;
 
+		float fDissolveRatio;
+		int isLoop;
+		int bApplyGravity;
+		int isFirstUpdate;
 
 		_mat WorldMatrix;
-
-		_float fDissolveRatio;
-		_int isLoop;
-		_int bApplyGravity;
-		_int isFirstUpdate;
 
 		_vec4 padding;
 	};
@@ -56,6 +55,7 @@ protected: // compute
 	class CCompute_Shader* m_pComputeShader{ nullptr };
 	ID3D11ShaderResourceView* m_pSRV{ nullptr };
 	ID3D11UnorderedAccessView* m_pUAV{ nullptr };
+
 
 public:
 	virtual CComponent* Clone(void* pArg) = 0;

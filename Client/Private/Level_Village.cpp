@@ -107,11 +107,11 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	//if (FAILED(Ready_Survival_Game()))
-	//{
-	//	MSG_BOX("Failed to Ready Survival Game");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Survival_Game()))
+	{
+		MSG_BOX("Failed to Ready Survival Game");
+		return E_FAIL;
+	}
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_BrickBar"), TEXT("Prototype_GameObject_BrickBar"))))
 	{
@@ -146,12 +146,6 @@ HRESULT CLevel_Village::Init()
 	EffectDesc.pMatrix = &FountainMat;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 
-	//if (FAILED(Ready_SescoGame()))
-	//{
-	//	MSG_BOX("Failed to Ready SescoGame");
-	//	return E_FAIL;
-	//}
-	//
 	m_pGameInstance->Set_FogNF(_vec2(50.f, 2000.f));
 	m_pGameInstance->Set_FogColor(_color(1.f));
 
@@ -217,10 +211,7 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	{
 		CTrigger_Manager::Get_Instance()->Teleport(TS_SescoMap);
 
-		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Void19");
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_SescoGame_Object"))))
 			return;
 
 		return;
@@ -527,11 +518,11 @@ HRESULT CLevel_Village::Ready_Dungeon_Monster()
 		}
 		else if (Info.strMonsterPrototype == TEXT("Prototype_Model_Void23"))
 		{
-			//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void23"), TEXT("Prototype_GameObject_Void23"), &Info)))
-			//{
-			//	MSG_BOX("Void23 积己 角菩");
-			//	return E_FAIL;
-			//}
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void23"), TEXT("Prototype_GameObject_Void23"), &Info)))
+			{
+				MSG_BOX("Void23 积己 角菩");
+				return E_FAIL;
+			}
 
 		}
 

@@ -44,6 +44,13 @@ private:
 private:
 	_float m_fTime = {};
 
+private:
+	_bool m_bGameStart = { false };
+
+private:
+	_uint m_iLauncherCount = {};
+
+
 public:
 	static CSurvivalGame* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;

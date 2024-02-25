@@ -1,5 +1,6 @@
 #include "VIBuffer_Instancing_Point.h"
 #include "Compute_Shader.h"
+#include "Texture.h"
 
 CVIBuffer_Instancing_Point::CVIBuffer_Instancing_Point(_dev pDevice, _context pContext)
 	: CVIBuffer_Instancing(pDevice, pContext)
@@ -17,7 +18,7 @@ HRESULT CVIBuffer_Instancing_Point::Init_Prototype()
 	m_iVertexStride = sizeof VTXPOINT;
 	m_iNumVertices = 1;
 
-	m_iNumInstances = 1024;
+	m_iNumInstances = 512;
 	m_iIndexCountPerInstance = 1;
 	m_iInstanceStride = sizeof VTXINSTANCING;
 
@@ -201,9 +202,6 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 		Safe_Delete_Array(m_InstancingInitialData.pSysMem);
 		return E_FAIL;
 	}
-#pragma endregion
-
-
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
@@ -225,6 +223,7 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+#pragma endregion
 
 	return S_OK;
 }

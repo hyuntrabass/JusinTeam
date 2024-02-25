@@ -35,18 +35,34 @@ private:
 	CCollider* m_pColliderCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
 
+	CTexture* m_pDissolveTextureCom = { nullptr };
+
+private:
+	class CEffect_Dummy* m_pFrameEffect = { nullptr };
+	class CEffect_Dummy* m_pBaseEffect = { nullptr };
+
+	class CEffect_Dummy* m_pLauncher = { nullptr };
+	class CEffect_Dummy* m_pLauncherParticle = { nullptr };
+
+
 private:
 	LAUNCHER_TYPE m_eType = { TYPE_END };
 	wstring m_strModelTag = {};
 
 private:
 	ANIM_DESC m_Animation = {};
-	
+
 private:
 	_uint m_iPassIndex = {};
 
 private:
 	_float m_fTime = {};
+	_float m_fProjectileCreateTime = {};
+
+	_uint m_iProjectileCount = {};
+
+private:
+	_float m_fDissolveRatio = { 1.f };
 
 private:
 	_bool m_bCreateProjectile = { false };

@@ -22,6 +22,7 @@ HRESULT CVTFMonster::Init(void* pArg)
         VTFMONSTER_DESC* pVtfMonsterDesc = reinterpret_cast<VTFMONSTER_DESC*>(pArg);
 
         m_strModelTag = pVtfMonsterDesc->strModelTag;
+        m_pTransformCom->Set_Position(pVtfMonsterDesc->vPosition);
     }
 
     if (FAILED(Add_Components()))
@@ -29,7 +30,8 @@ HRESULT CVTFMonster::Init(void* pArg)
 
     m_pShaderCom->Set_PassIndex(0);
 
-    m_pTransformCom->Set_Position(_vec3(static_cast<_float>(rand() % 50) - 3025, 1.f, static_cast<_float>(rand() % 50 - 25)));
+    random_device rand;
+    m_RandomNumber = _randNum(rand());
 
     return S_OK;
 }
@@ -42,10 +44,10 @@ void CVTFMonster::Tick(_float fTimeDelta)
 
 void CVTFMonster::Late_Tick(_float fTimeDelta)
 {
+    m_pModelCom->Play_Animation(fTimeDelta);
+
     if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos()))
     {
-        m_pModelCom->Play_Animation(fTimeDelta);
-
         m_pRendererCom->Add_RenderGroup(RG_AnimNonBlend_Instance, this);
     }
 }

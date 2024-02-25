@@ -162,7 +162,8 @@ _bool CCollision_Manager::CheckCollision_Culling(CCollider* pCollider)
 class CCollider* CCollision_Manager::Get_Nearest_MonsterCollider()
 {
 
-	CCollider* nearestMonsterCollider = nullptr;
+	CCollider* NearestMonsterCollider = nullptr;
+	CGameObject* NearestMonsterObject = nullptr;
 	_float minDistance = 300.f;
 
 	for (auto& Monster : m_Monsters)
@@ -174,12 +175,17 @@ class CCollider* CCollision_Manager::Get_Nearest_MonsterCollider()
 			if (distance < minDistance)
 			{
 				minDistance = distance;
-				nearestMonsterCollider = Monster.second;
-
+				NearestMonsterCollider = Monster.second;
+				NearestMonsterObject = Monster.first;
 			}
 		}
 	}
-	return nearestMonsterCollider;
+	
+	if (NearestMonsterObject)
+	{
+		NearestMonsterObject->Set_Damage(0, 11);
+	}
+	return NearestMonsterCollider;
 }
 
 CollideFace CCollision_Manager::Get_CollideFace(CCollider* pAABBCollider, CCollider* pShereCollider)
