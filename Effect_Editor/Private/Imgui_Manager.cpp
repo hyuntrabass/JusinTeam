@@ -19,6 +19,11 @@ const _bool& CImgui_Manager::Has_Light()
 	return m_hasLight;
 }
 
+const _color& CImgui_Manager::Get_BGColor()
+{
+	return m_vBGColor;
+}
+
 HRESULT CImgui_Manager::Init(_dev pDevice, _context pContext, vector<string>* pTextureList, vector<string>* pModelList)
 {
 	m_pDevice = pDevice;
@@ -862,7 +867,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		Checkbox("Loop", &m_ParticleInfo.isLoop);
 
 		InputInt("Instance Number", &m_iNumInstance);
-		m_iNumInstance = clamp(m_iNumInstance, 0, 300);
+		m_iNumInstance = clamp(m_iNumInstance, 0, 1024);
 
 		InputFloat3("Min Pos", reinterpret_cast<_float*>(&m_ParticleInfo.vMinPos));
 		InputFloat3("Max Pos", reinterpret_cast<_float*>(&m_ParticleInfo.vMaxPos)); SameLine(); if (Button("Same with Min")) { m_ParticleInfo.vMaxPos = m_ParticleInfo.vMinPos; }
@@ -1114,6 +1119,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		{
 			Info.vSize.z = 1.f;
 		}
+		Info.pMatrix = &m_DummyMatrix;
 		m_pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Info));
 
 		m_iCurrent_Type = Info.iType;
@@ -1317,6 +1323,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		{
 			Info.vSize.z = 1.f;
 		}
+		Info.pMatrix = &m_DummyMatrix;
 		m_pEffect = dynamic_cast<CEffect_Dummy*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Dummy", &Info));
 
 		m_iCurrent_Type = Info.iType;
@@ -1552,6 +1559,11 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 	End();
 #pragma endregion
+
+	Begin("Background");
+	ColorPicker4("Background Color", reinterpret_cast<_float*>(&m_vBGColor), ImGuiColorEditFlags_Float | ImGuiColorEditFlags_DisplayRGB);
+	End();
+
 }
 
 void CImgui_Manager::Effect_Tick(_float fTimeDelta)
@@ -1629,6 +1641,11 @@ HRESULT CImgui_Manager::Ready_Layers()
 	CamDesc.fFar = 100.f;
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, L"Layer_Camera", TEXT("Prototype_GameObject_Camera"), &CamDesc)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_BG"), TEXT("Prototype_GameObject_BG"))))
 	{
 		return E_FAIL;
 	}

@@ -116,7 +116,7 @@ void CVoid09::Tick(_float fTimeDelta)
 	Update_Collider();
 	__super::Update_BodyCollider();
 
-	//Update_Trail(fTimeDelta);
+	Update_Trail(fTimeDelta);
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
@@ -453,9 +453,7 @@ void CVoid09::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 29.f && fAnimpos <= 33.f)
 				{
-					//m_pSwordTrail->Late_Tick(fTimeDelta);
-
-					Update_Trail(fTimeDelta);
+					m_pSwordTrail->On();
 				}
 			}
 			break;

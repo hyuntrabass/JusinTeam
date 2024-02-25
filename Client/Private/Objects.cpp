@@ -1,6 +1,6 @@
 #include "Objects.h"
 #include "Camera_Manager.h"
-
+#include "Trigger_Manager.h"
 CObjects::CObjects(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
 {
@@ -35,6 +35,10 @@ void CObjects::Tick(_float fTimeDelta)
 
 void CObjects::Late_Tick(_float fTimeDelta)
 {
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Village)
+	{
+		return;
+	}
 
 	CAMERA_STATE CamState = CCamera_Manager::Get_Instance()->Get_CameraState();
 	if (CamState == CS_SKILLBOOK or CamState == CS_INVEN) //or CamState == CS_WORLDMAP)
@@ -57,13 +61,17 @@ void CObjects::Late_Tick(_float fTimeDelta)
 	else
 	{
 		if(m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY)
-		//if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
-		//{
+			//if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
+			//{
 			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
 		//}
 		else
 		{
-			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
+			if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 20.f))
+			{
+				m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
+			}
+
 		}
 	}
 

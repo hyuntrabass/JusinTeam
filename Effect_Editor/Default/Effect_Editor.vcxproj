@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\public\BackGround_Effect.h" />
     <ClInclude Include="..\Public\Camera_Main.h" />
     <ClInclude Include="..\public\Effect_Dummy.h" />
     <ClInclude Include="..\public\EffectApp.h" />
@@ -163,6 +164,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\private\BackGround_Effect.cpp" />
     <ClCompile Include="..\Private\Camera_Main.cpp" />
     <ClCompile Include="..\private\Effect_Dummy.cpp" />
     <ClCompile Include="..\private\EffectApp.cpp" />

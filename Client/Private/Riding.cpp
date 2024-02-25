@@ -289,9 +289,9 @@ void CRiding::Tick(_float fTimeDelta)
 		}
 	}*/
 
-	Move(fTimeDelta);
 	Init_State();
 	Tick_State(fTimeDelta);
+	Move(fTimeDelta);
 	m_pModelCom->Set_Animation(m_Animation);
 
 	if (m_eState == Riding_Glide)
@@ -569,6 +569,7 @@ void CRiding::Init_State()
 		m_Animation.isLoop = false;
 		m_Animation.fAnimSpeedRatio = 2.f;
 		m_Animation.bSkipInterpolation = false;
+		m_Animation.fDurationRatio = 1.f;
 
 		switch (m_eState)
 		{
@@ -646,6 +647,7 @@ void CRiding::Init_State()
 				m_Animation.iAnimIndex = Nihilir_VC_Nihilir_5002_Run;
 				m_Animation.bSkipInterpolation = true;
 				m_Animation.isLoop = true;
+				m_Animation.fDurationRatio = 0.3f;
 				m_hasJumped = false;
 			}
 			break;
@@ -862,6 +864,14 @@ void CRiding::Init_State()
 
 void CRiding::Tick_State(_float fTimeDelta)
 {
+	//if (m_eState == Riding_Glide)
+	//{
+	//	m_pRendererCom->Set_RaidalBlur(m_pTransformCom->Get_State(State::Pos), _float(1.f));
+	//}
+	//else
+	//{
+	//	m_pRendererCom->Set_RaidalBlur(m_pTransformCom->Get_CenterPos(), _float(0.f));
+	//}
 	switch (m_eState)
 	{
 	case Client::Riding_Landing:
@@ -1079,8 +1089,6 @@ _vec4 CRiding::Get_Pos()
 {
 	return m_pTransformCom->Get_State(State::Pos);
 }
-
-
 
 void CRiding::Update_Collider()
 {

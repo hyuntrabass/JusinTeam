@@ -1,6 +1,6 @@
 #include "Map.h"
 #include "Camera_Manager.h"
-
+#include "Trigger_Manager.h"
 /*
 
 맵 수정 필요할 시 
@@ -67,6 +67,62 @@ void CMap::Late_Tick(_float fTimeDelta)
 		return;
 	}
 	*/
+	TeleportSpot eCurrentSpot = CTrigger_Manager::Get_Instance()->Get_CurrentSpot();
+	switch (eCurrentSpot)
+	{
+	case Client::TS_Dungeon:
+		if (m_Info.Prototype != TEXT("Prototype_Model_Dungeon"))
+		{
+			return;
+		}
+		break;
+	case Client::TS_Village:
+		if (m_Info.Prototype != TEXT("Prototype_Model_Map") and m_Info.Prototype != TEXT("Prototype_Model_Tower"))
+		{
+			return;
+		}
+		break;
+	case Client::TS_Minigame:
+		if (m_Info.Prototype != TEXT("Prototype_Model_BrickMap"))
+		{
+			return;
+		}
+		break;
+	case Client::TS_DragonMap:
+		if (m_Info.Prototype != TEXT("Prototype_Model_DragonMap"))
+		{
+			return;
+		}
+		break;
+	case Client::TS_BossRoom:
+		if (m_Info.Prototype != TEXT("Prototype_Model_BossRoom"))
+		{
+			return;
+		}
+		break;
+	case Client::TS_MiniDungeon:
+		if (m_Info.Prototype != TEXT("Prototype_Model_MiniDungeon"))
+		{
+			return;
+		}
+		break;
+	case Client::TS_SurvivalMap:
+		if (m_Info.Prototype != TEXT("Prototype_Model_Survival_Map"))
+		{
+			return;
+		}
+		break;
+	case Client::TS_SescoMap:
+		if (m_Info.Prototype != TEXT("Prototype_Model_SescoMap"))
+		{
+			return;
+		}
+		break;
+	case Client::TS_END:
+		break;
+	default:
+		break;
+	}
 
 
 	CAMERA_STATE CamState = CCamera_Manager::Get_Instance()->Get_CameraState();

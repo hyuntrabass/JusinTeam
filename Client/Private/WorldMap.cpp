@@ -93,7 +93,7 @@ void CWorldMap::Tick(_float fTimeDelta)
 		}
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_M))
+	if (m_pGameInstance->Key_Down(DIK_M) || CUI_Manager::Get_Instance()->Is_WorldMap())
 	{
 		m_pGameInstance->Play_Sound(TEXT("WorldMap_Click"), 1.f);
 		if (!m_isActive && !m_isReady)

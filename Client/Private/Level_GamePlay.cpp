@@ -11,6 +11,7 @@
 #include "Pop_Skill.h"
 #include "Pop_LevelUp.h"
 #include "Camera_Manager.h"
+#include "BrickWall.h"
 
 //원명의 꼽사리
 #include "Lake.h"
@@ -78,11 +79,11 @@ HRESULT CLevel_GamePlay::Init()
 	}
 
 	// Monster_Test
-	if (FAILED(Ready_ModelTest()))
-	{
-		MSG_BOX("Failed to Ready ModelTest");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_ModelTest()))
+	//{
+	//	MSG_BOX("Failed to Ready ModelTest");
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(Ready_Monster_Test()))
 	{
@@ -107,11 +108,6 @@ HRESULT CLevel_GamePlay::Init()
 	if (FAILED(Ready_Pet()))
 	{
 		MSG_BOX("Failed to Ready Pet");
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Boss"), TEXT("Prototype_GameObject_Human_Boss"))))
-	{
 		return E_FAIL;
 	}
 
@@ -149,7 +145,15 @@ HRESULT CLevel_GamePlay::Init()
 
 void CLevel_GamePlay::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_B))
+	{
 
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BrickBall"), TEXT("Prototype_GameObject_BrickBall"))))
+		{
+			return;
+		}
+
+	}
 	if (!m_bReadyTutorial)
 	{
 		m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.2f);
@@ -829,8 +833,9 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	{
 		return E_FAIL;
 	}
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"))))
+	CBrickWall::WALL_DESC WallDesc{};
+	WallDesc.rcRect = { (_long)1.f, (_long)0.f, (_long)0.f, (_long)0.f };
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
 	{
 		return E_FAIL;
 	}

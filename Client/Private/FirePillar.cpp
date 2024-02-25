@@ -3,6 +3,9 @@
 #include "Effect_Dummy.h"
 #include "Effect_Manager.h"
 
+_uint CFirePillar::m_iFirePillarID = 0;
+_bool CFirePillar::m_bDirSelected[8] = { false };
+
 CFirePillar::CFirePillar(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -25,10 +28,54 @@ HRESULT CFirePillar::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-	_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+	//CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	//_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 
-	_mat EffectMatrix = _mat::CreateScale(5.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(vPlayerPos) + _vec3(0.f, 0.1f, 0.f));
+	//_mat EffectMatrix = _mat::CreateScale(5.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(vPlayerPos) + _vec3(0.f, 0.1f, 0.f));
+
+	//EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Frame");
+	//Info.pMatrix = &EffectMatrix;
+	//m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+	//Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Base");
+	//Info.pMatrix = &EffectMatrix;
+	//m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+	//m_pTransformCom->Set_Position(vPlayerPos + _vec3(0.f, 0.1f, 0.f));
+
+	CTransform* pDragonTransform = GET_TRANSFORM("Layer_Dragon_Boss", LEVEL_VILLAGE);
+	_vec4 vDragonPos = pDragonTransform->Get_State(State::Pos);
+	//vGroarPos.y -= 0.1f;
+	_vec4 vDragonLook = pDragonTransform->Get_State(State::Look).Get_Normalized();
+
+	_vec4 vDir[8] = {};
+
+	for (size_t i = 0; i < 8; i++)
+	{
+		vDir[i] = _vec4::Transform(vDragonLook, _mat::CreateRotationY(XMConvertToRadians(45.f * i)));
+	}
+
+	_uint iRandomDir = {};
+
+	if (m_iFirePillarID == 0)
+	{
+		iRandomDir = rand() % 8;
+		m_bDirSelected[iRandomDir] = true;
+	}
+	else
+	{
+		iRandomDir = rand() % 8;
+		while (m_bDirSelected[iRandomDir] == true)
+		{
+			iRandomDir = rand() % 8;
+		}
+
+		m_bDirSelected[iRandomDir] = true;
+	}
+
+	m_pTransformCom->Set_Position(_vec3(vDragonPos + 10 * vDir[iRandomDir]));
+
+	_mat EffectMatrix = _mat::CreateScale(5.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(vDragonPos + 10 * vDir[iRandomDir]) + _vec3(0.f, 0.1f, 0.f));
 
 	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Frame");
 	Info.pMatrix = &EffectMatrix;
@@ -38,7 +85,17 @@ HRESULT CFirePillar::Init(void* pArg)
 	Info.pMatrix = &EffectMatrix;
 	m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
-	m_pTransformCom->Set_Position(vPlayerPos + _vec3(0.f, 0.1f, 0.f));
+	++m_iFirePillarID;
+
+	if (m_iFirePillarID == 5)
+	{
+		m_iFirePillarID = 0;
+
+		for (auto& it : m_bDirSelected)
+		{
+			it = false;
+		}
+	}
 
 	return S_OK;
 }
@@ -129,7 +186,7 @@ void CFirePillar::Tick(_float fTimeDelta)
 		else if (m_pGameInstance->Get_ChannelCurPosRatio(m_iSoundChannel) >= 0.6f)
 		{
 			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
-			m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("BP_Skill_10061_SFX_01"), 0.5f, 0.25f);
+			m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("BP_Skill_10061_SFX_01"), 0.5f);
 			m_pGameInstance->FadeinSound(m_iSoundChannel, fTimeDelta);
 		}
 	}

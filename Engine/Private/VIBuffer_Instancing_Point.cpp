@@ -1,4 +1,6 @@
 #include "VIBuffer_Instancing_Point.h"
+#include "Compute_Shader.h"
+#include "Texture.h"
 
 CVIBuffer_Instancing_Point::CVIBuffer_Instancing_Point(_dev pDevice, _context pContext)
 	: CVIBuffer_Instancing(pDevice, pContext)
@@ -10,13 +12,13 @@ CVIBuffer_Instancing_Point::CVIBuffer_Instancing_Point(const CVIBuffer_Instancin
 {
 }
 
-HRESULT CVIBuffer_Instancing_Point::Init_Prototype(_uint iNumInstances)
+HRESULT CVIBuffer_Instancing_Point::Init_Prototype()
 {
 	m_iNumVertexBuffers = 2;
 	m_iVertexStride = sizeof VTXPOINT;
 	m_iNumVertices = 1;
 
-	m_iNumInstances = iNumInstances;
+	m_iNumInstances = 512;
 	m_iIndexCountPerInstance = 1;
 	m_iInstanceStride = sizeof VTXINSTANCING;
 
@@ -52,6 +54,7 @@ HRESULT CVIBuffer_Instancing_Point::Init_Prototype(_uint iNumInstances)
 
 	Safe_Delete(pVertex);
 #pragma endregion
+
 
 #pragma region Index
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
@@ -93,20 +96,19 @@ HRESULT CVIBuffer_Instancing_Point::Init_Prototype(_uint iNumInstances)
 
 	VTXINSTANCING* pVertexInstance = new VTXINSTANCING[m_iNumInstances]{};
 
-	_uint iInstanceID{};
-
 	for (size_t i = 0; i < m_iNumInstances; i++)
 	{
 		pVertexInstance[i].vRight = _float4(1.f, 0.f, 0.f, 0.f);
 		pVertexInstance[i].vUp = _float4(0.f, 1.f, 0.f, 0.f);
 		pVertexInstance[i].vLook = _float4(0.f, 0.f, 1.f, 0.f);
 		pVertexInstance[i].vPos = _float4(0.f + i, 0.f, 0.f + i, 1.f);
-		pVertexInstance[i].iInstanceID = iInstanceID++;
 	}
 
 	m_InstancingInitialData.pSysMem = pVertexInstance;
 
 #pragma endregion
+
+	m_pComputeShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_ComputeParticle.hlsl", "particle", sizeof ParticleParams);
 
 	return S_OK;
 }
@@ -141,12 +143,9 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 		_randFloat RandomSpeed = _randFloat(Desc.vSpeedRange.x, Desc.vSpeedRange.y);
 		_randFloat RandomLifeTime = _randFloat(Desc.vLifeTime.x, Desc.vLifeTime.y);
 
-		_randFloat RandomRadian = _randFloat(0.f, XMVectorGetX(g_XMPi) * 2.f);
-
 		for (size_t i = 0; i < m_iNumInstances; i++)
 		{
 			_float fScale = RandomScale(RandomNumber);
-			_float fCeta = RandomRadian(RandomNumber);
 
 			pVertexInstance[i].vRight = _float4(fScale, 0.f, 0.f, 0.f);
 			pVertexInstance[i].vUp = _float4(0.f, fScale, 0.f, 0.f);
@@ -178,14 +177,57 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 		return E_FAIL;
 	}
 
+#pragma region Vertex for SRV
+	ZeroMemory(&m_InstancingBufferDesc, sizeof m_InstancingBufferDesc);
+	m_InstancingBufferDesc.ByteWidth = m_iInstanceStride * m_iNumInstances;
+	m_InstancingBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	m_InstancingBufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+	m_InstancingBufferDesc.CPUAccessFlags = 0;
+	m_InstancingBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	m_InstancingBufferDesc.StructureByteStride = m_iInstanceStride;
+
+	if (FAILED(m_pDevice->CreateBuffer(&m_InstancingBufferDesc, &m_InstancingInitialData, &m_pVSRB)))
+	{
+		Safe_Delete_Array(m_InstancingInitialData.pSysMem);
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pDevice->CreateBuffer(&m_InstancingBufferDesc, &m_InstancingInitialData, &m_pVUAVB)))
+	{
+		Safe_Delete_Array(m_InstancingInitialData.pSysMem);
+		return E_FAIL;
+	}
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
+	srvDesc.Buffer.FirstElement = 0;
+	srvDesc.Buffer.NumElements = m_iNumInstances;
+
+	if (FAILED(m_pDevice->CreateShaderResourceView(m_pVSRB, &srvDesc, &m_pSRV)))
+	{
+		return E_FAIL;
+	}
+
+	D3D11_UNORDERED_ACCESS_VIEW_DESC UAVDesc{};
+	UAVDesc.Format = DXGI_FORMAT_UNKNOWN;
+	UAVDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+	UAVDesc.Buffer.NumElements = m_iNumInstances;
+
+	if (FAILED(m_pDevice->CreateUnorderedAccessView(m_pVUAVB, &UAVDesc, &m_pUAV)))
+	{
+		return E_FAIL;
+	}
+#pragma endregion
+
 	return S_OK;
 }
 
-CVIBuffer_Instancing_Point* CVIBuffer_Instancing_Point::Create(_dev pDevice, _context pContext, _uint iNumInstances)
+CVIBuffer_Instancing_Point* CVIBuffer_Instancing_Point::Create(_dev pDevice, _context pContext)
 {
 	CVIBuffer_Instancing_Point* pInstance = new CVIBuffer_Instancing_Point(pDevice, pContext);
 
-	if (FAILED(pInstance->Init_Prototype(iNumInstances)))
+	if (FAILED(pInstance->Init_Prototype()))
 	{
 		MSG_BOX("Failed to Create : CVIBuffer_Instancing_Point");
 		Safe_Release(pInstance);

@@ -2,6 +2,7 @@
 #include "Environment_Object.h"
 #include "Camera_Manager.h"
 #include "Camera_Main.h"
+
 CEnvironment_Object::CEnvironment_Object(_dev pDevice, _context pContext)
 	: CObjects(pDevice, pContext)
 {

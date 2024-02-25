@@ -41,6 +41,7 @@ HRESULT CEtc_Object::Init(void* pArg)
 
 void CEtc_Object::Tick(_float fTimeDelta)
 {
+
 	__super::Tick(fTimeDelta);
 }
 

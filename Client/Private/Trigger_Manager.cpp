@@ -274,6 +274,7 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
 		*Light = g_Light_Dungeon;
 		m_iSkyTextureIndex = 10;
+		m_eCurrentSpot = TS_Dungeon;
 		break;
 	}
 	case Client::TS_Village:
@@ -330,6 +331,7 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
 		*Light = g_Light_Village;
 		m_iSkyTextureIndex = 12;
+		m_eCurrentSpot = TS_Village;
 		break;
 	}
 	case Client::TS_Minigame:
@@ -350,7 +352,7 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		inFile.read(reinterpret_cast<char*>(&Player_Matrix), sizeof(_mat));
 
 		CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-		pPlayerTransform->Set_Position(_vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
+		pPlayerTransform->Set_Position(_vec3(-2000.70496f, 11.4677677f, -1999.06152f));//_vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
 		pPlayerTransform->LookAt_Dir(Player_Matrix.Look());
 
 		_vec4 vPosition = pPlayerTransform->Get_State(State::Pos);
@@ -358,6 +360,7 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
 		//*Light = g_Light_Village;
 		//m_iSkyTextureIndex = 12;
+		m_eCurrentSpot = TS_Minigame;
 		break;
 	}
 	case Client::TS_DragonMap:
@@ -386,6 +389,7 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		*Light = g_Light_Dragon;
 
 		m_iSkyTextureIndex = 11;
+		m_eCurrentSpot = TS_DragonMap;
 		break;
 	}
 
@@ -414,6 +418,7 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
 		//*Light = g_Light_Village;
 		//m_iSkyTextureIndex = 12;
+		m_eCurrentSpot = TS_BossRoom;
 		break;
 	}
 
@@ -442,6 +447,7 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
 		//*Light = g_Light_Village;
 		//m_iSkyTextureIndex = 12;
+		m_eCurrentSpot = TS_MiniDungeon;
 		break;
 	}
 
@@ -470,6 +476,7 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
 		//*Light = g_Light_Village;
 		//m_iSkyTextureIndex = 12;
+		m_eCurrentSpot = TS_SurvivalMap;
 		break;
 	}
 
@@ -499,6 +506,7 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
 		//*Light = g_Light_Village;
 		//m_iSkyTextureIndex = 12;
+		m_eCurrentSpot = TS_SescoMap;
 		break;
 	}
 

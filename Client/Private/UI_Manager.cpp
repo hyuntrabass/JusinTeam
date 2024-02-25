@@ -43,7 +43,15 @@ HRESULT CUI_Manager::Init()
 		return E_FAIL;
 	}
 
-
+	m_tExtraStaus.Armor = 0;
+	m_tExtraStaus.Attack = 0;
+	m_tExtraStaus.Critical = 0;
+	m_tExtraStaus.Critical_Dmg = 0;
+	m_tExtraStaus.Current_Hp = 0;
+	m_tExtraStaus.Current_Mp = 0;
+	m_tExtraStaus.Max_Hp = 0;
+	m_tExtraStaus.Max_Mp = 0;
+	m_tExtraStaus.Speed = 0.f;
 	return S_OK;
 }
 
@@ -767,6 +775,16 @@ _uint CUI_Manager::Get_CurrentMiniGame()
 		return iIdx;
 	}
 	return m_iCurrentMiniGame;
+}
+
+_bool CUI_Manager::Is_WorldMap()
+{
+	if (m_isWorldMap)
+	{
+		m_isWorldMap = false;
+		return true;
+	}
+	return false;
 }
 
 void CUI_Manager::Free()

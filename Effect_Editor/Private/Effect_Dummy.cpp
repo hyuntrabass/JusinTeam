@@ -71,6 +71,12 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 
 	if (m_fUnDissolveRatio <= 0.f and m_Effect.fLifeTime >= 0.f and m_fTimer > m_Effect.fLifeTime)
 	{
+		if (m_Effect.hasLight)
+		{
+			m_pGameInstance->Delete_Light(LEVEL_STATIC, m_strLightTag);
+			m_Effect.hasLight = false;
+		}
+
 		if (m_Effect.strDissolveTexture.size())
 		{
 			m_fDissolveRatio += fTimeDelta / m_Effect.fDissolveDuration;

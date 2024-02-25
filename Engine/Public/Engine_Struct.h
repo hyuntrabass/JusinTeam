@@ -49,7 +49,7 @@ namespace Engine
 
 	struct ParticleDesc
 	{
-		SimpleMath::Vector3 vMinPos{}, vMaxPos;
+		SimpleMath::Vector3 vMinPos{}, vMaxPos{};
 		SimpleMath::Vector2 vSpeedRange{};
 		SimpleMath::Vector2 vLifeTime{};
 		SimpleMath::Vector2 vScaleRange{};
@@ -311,7 +311,7 @@ namespace Engine
 		SimpleMath::Vector4 vLook{};
 		SimpleMath::Vector4 vPos{};
 		SimpleMath::Vector4 vPrevPos{};
-		unsigned int iInstanceID{};
+		float fIndex{};
 		float fDissolveRatio{};
 
 		float fSpeed{};

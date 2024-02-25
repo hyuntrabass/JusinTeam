@@ -2,8 +2,6 @@
 #include "UI_Manager.h"
 #include "Dialog.h"
 
-_float CNPC_Dummy::m_fOffsetX = 75.f;
-
 CNPC_Dummy::CNPC_Dummy(_dev pDevice, _context pContext)
 	: CNPC(pDevice, pContext)
 {
@@ -52,6 +50,7 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 	if (m_strModelTag == TEXT("Prototype_Model_Donkey"))
 	{
 		m_Animation.iAnimIndex = 1;
+		DialogDesc.strText = TEXT("히히히히힝");
 	}
 
 #pragma endregion Animal
@@ -183,9 +182,6 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 	m_Animation.isLoop = true;
 	m_Animation.fAnimSpeedRatio = 2.f;
 
-	m_fOffsetX -= 2.f;
-
-	
 	m_pDialog = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Dialog"), &DialogDesc);
 	if (m_pDialog == nullptr)
 	{
@@ -246,6 +242,37 @@ void CNPC_Dummy::Tick(_float fTimeDelta)
 {	
 	__super::Tick(fTimeDelta);
 
+	if (m_strModelTag == TEXT("Prototype_Model_Male_009"))
+	{
+		dynamic_cast<CDialog*>(m_pDialog)->Set_Text(L"현재 프레임은 " + to_wstring(m_pGameInstance->Get_FPS()) + L"이구만.");
+	}
+
+	if (m_strModelTag == TEXT("Prototype_Model_Male_027"))
+	{
+		m_fTimer += fTimeDelta;
+
+		if (m_fTimer > 3.f)
+		{
+			_int iRandomNum = rand() % 3;
+
+			switch (iRandomNum)
+			{
+			case 0:
+				dynamic_cast<CDialog*>(m_pDialog)->Set_Text(L"내 멋진 기타를 봐");
+				break;
+			case 1:
+				dynamic_cast<CDialog*>(m_pDialog)->Set_Text(L"딩가딩가링");
+				break;
+			case 2:
+				dynamic_cast<CDialog*>(m_pDialog)->Set_Text(L"딩가디 딩가딩가");
+				break;
+			}
+
+			m_fTimer = {};
+		}
+	}
+
+
 	m_pModelCom->Set_Animation(m_Animation);
 	m_pDialog->Tick(fTimeDelta);
 
@@ -256,19 +283,21 @@ void CNPC_Dummy::Tick(_float fTimeDelta)
 
 void CNPC_Dummy::Late_Tick(_float fTimeDelta)
 {
-
-	__super::Late_Tick(fTimeDelta);
-	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
-	_bool isColl = m_pColliderCom->Intersect(pCollider);
-	if (isColl)
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 2.f))
 	{
-		if (m_strModelTag == TEXT("Prototype_Model_Male_009"))
+		__super::Late_Tick(fTimeDelta);
+		CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
+		_bool isColl = m_pColliderCom->Intersect(pCollider);
+		if (isColl)
 		{
-			_int a = 10;
-		}
+			if (m_strModelTag == TEXT("Prototype_Model_Male_009"))
+			{
+				_int a = 10;
+			}
 
-		//wstring strTest = m_strModelTag;
-		m_pDialog->Late_Tick(fTimeDelta);
+			//wstring strTest = m_strModelTag;
+			m_pDialog->Late_Tick(fTimeDelta);
+		}
 	}
 }
 

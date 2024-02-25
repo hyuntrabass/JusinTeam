@@ -28,6 +28,9 @@
     <Filter Include="03.Terrain">
       <UniqueIdentifier>{a6e94067-471e-4102-bff7-b78e0d179676}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.Objects\BackGround">
+      <UniqueIdentifier>{cf434f9e-1ab6-4074-bcbe-96f25689c93a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -88,6 +91,7 @@
     <ClInclude Include="..\Public\Select_Map.h">
       <Filter>03.Terrain</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\BackGround_Effect.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Effect_Editor.ico">
@@ -146,5 +150,6 @@
     <ClCompile Include="..\Private\Select_Map.cpp">
       <Filter>03.Terrain</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\BackGround_Effect.cpp" />
   </ItemGroup>
 </Project>

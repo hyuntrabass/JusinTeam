@@ -1,7 +1,7 @@
 #include "Compute_Shader.h"
 
-constexpr ID3D11ShaderResourceView* NULL_SRV = nullptr;
-constexpr ID3D11UnorderedAccessView* NULL_UAV = nullptr;
+constexpr ID3D11ShaderResourceView* NULL_SRV[8] = {};
+constexpr ID3D11UnorderedAccessView* NULL_UAV[8] = {};
 constexpr _uint NO_OFFSET = -1;
 
 CCompute_Shader::CCompute_Shader(_dev pDevice, _context pContext)
@@ -29,7 +29,7 @@ HRESULT CCompute_Shader::Init_Prototype(const wstring& strShaderFilePath, const 
 		BDesc.ByteWidth = iDataSize;
 		BDesc.Usage = D3D11_USAGE_DYNAMIC;
 		BDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		BDesc.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
+		BDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 		if (FAILED(m_pDevice->CreateBuffer(&BDesc, nullptr, &m_pBuffer)))
 			return E_FAIL;
@@ -37,7 +37,7 @@ HRESULT CCompute_Shader::Init_Prototype(const wstring& strShaderFilePath, const 
 
 	ID3DBlob* ErrorBlob = nullptr;
 
-	if (FAILED(D3DCompileFromFile(strShaderFilePath.c_str(), nullptr, nullptr, strEntryPoint.c_str(), "cs_5_0", 0, 0, &m_pBlob, &ErrorBlob))) {
+	if (FAILED(D3DCompileFromFile(strShaderFilePath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, strEntryPoint.c_str(), "cs_5_0", 0, 0, &m_pBlob, &ErrorBlob))) {
 		if (nullptr != ErrorBlob) {
 			OutputDebugStringA((_char*)ErrorBlob->GetBufferPointer());
 			Safe_Release(ErrorBlob);
@@ -65,6 +65,10 @@ HRESULT CCompute_Shader::Init(void* pArg)
 
 HRESULT CCompute_Shader::Set_Shader()
 {
+	//ID3D11ShaderResourceView* pSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT]{};
+
+	//m_pContext->PSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, pSRV);
+
 	m_pContext->CSSetShader(m_pShader, nullptr, 0);
 
 	return S_OK;
@@ -82,8 +86,8 @@ HRESULT CCompute_Shader::Begin(_uint3 ThreadGroupCount)
 	//	int a = 0;
 	//}
 	
-	m_pContext->CSSetShaderResources(m_iSlot.x, 1, &NULL_SRV);
-	m_pContext->CSSetUnorderedAccessViews(m_iSlot.y, 1, &NULL_UAV, &NO_OFFSET);
+	m_pContext->CSSetShaderResources(m_iSlot.x, m_iNumViews, NULL_SRV);
+	m_pContext->CSSetUnorderedAccessViews(m_iSlot.y, 1, NULL_UAV, &NO_OFFSET);
 
 
 	//m_pContext->CSSetShader(nullptr, nullptr, 0);
@@ -91,7 +95,7 @@ HRESULT CCompute_Shader::Begin(_uint3 ThreadGroupCount)
 	return S_OK;
 }
 
-HRESULT CCompute_Shader::Change_Value(void* pArg, _uint iDataSize)
+HRESULT CCompute_Shader::Change_Value(void* pArg, _uint iDataSize, _uint iSlot)
 {
 	D3D11_MAPPED_SUBRESOURCE MSR{};
 
@@ -102,7 +106,7 @@ HRESULT CCompute_Shader::Change_Value(void* pArg, _uint iDataSize)
 
 	m_pContext->Unmap(m_pBuffer, 0);
 
-	m_pContext->CSSetConstantBuffers(0, 1, &m_pBuffer);
+	m_pContext->CSSetConstantBuffers(iSlot, 1, &m_pBuffer);
 
 	return S_OK;
 }
@@ -115,6 +119,33 @@ HRESULT CCompute_Shader::Bind_ShaderResourceView(ID3D11ShaderResourceView* pSRV,
 
 	m_pContext->CSSetUnorderedAccessViews(m_iSlot.y, 1, &pUAV, &NO_OFFSET);
 
+	return S_OK;
+}
+
+HRESULT CCompute_Shader::Bind_SRVs(ID3D11ShaderResourceView** pSRVs, _uint iSlot, _uint iNumViews)
+{
+	m_iSlot.x = iSlot;
+
+	m_pContext->CSSetShaderResources(iSlot, iNumViews, pSRVs);
+
+	return S_OK;
+}
+
+HRESULT CCompute_Shader::Bind_UAV(ID3D11UnorderedAccessView* pUAV, _uint iSlot)
+{
+	m_iSlot.y = iSlot;
+
+	m_pContext->CSSetUnorderedAccessViews(iSlot, 1, &pUAV, &NO_OFFSET);
+
+	return S_OK;
+}
+
+HRESULT CCompute_Shader::Begin_MultiSRV(_uint3 ThreadGroupCount)
+{
+	m_pContext->Dispatch(ThreadGroupCount.x, ThreadGroupCount.y, ThreadGroupCount.z);
+
+	m_pContext->CSSetShaderResources(m_iSlot.x, m_iNumViews, NULL_SRV);
+	m_pContext->CSSetUnorderedAccessViews(m_iSlot.y, 1, NULL_UAV, &NO_OFFSET);
 	return S_OK;
 }
 

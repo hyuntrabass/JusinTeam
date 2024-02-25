@@ -5,13 +5,25 @@ BEGIN(Engine)
 
 class ENGINE_DLL CVIBuffer_Instancing abstract : public CVIBuffer
 {
-//public:
-	//typedef struct tagMeshDesc
-	//{
-	//	_float3		vMinPosition, vMaxPosition;
-	//	_float2		vScaleRange;
-	//	_mat		mWorldMatrix;
-	//}MESH_DESC;
+protected:
+	struct ParticleParams
+	{
+		_uint iNumInstances;
+		_uint iNumUse;
+		_float fTimeDelta;
+		_float fAppearRatio;
+		
+		_vec4 vGravityDir;
+
+		float fDissolveRatio;
+		int isLoop;
+		int bApplyGravity;
+		int isFirstUpdate;
+
+		_mat WorldMatrix;
+
+		_vec4 padding;
+	};
 
 protected:
 	CVIBuffer_Instancing(_dev pDevice, _context pContext);
@@ -36,6 +48,14 @@ protected:
 
 	_bool m_isFirstUpdate{ true };
 	_bool m_isLoop{};
+
+protected: // compute
+	ID3D11Buffer* m_pVSRB{ nullptr };
+	ID3D11Buffer* m_pVUAVB{ nullptr };
+	class CCompute_Shader* m_pComputeShader{ nullptr };
+	ID3D11ShaderResourceView* m_pSRV{ nullptr };
+	ID3D11UnorderedAccessView* m_pUAV{ nullptr };
+
 
 public:
 	virtual CComponent* Clone(void* pArg) = 0;

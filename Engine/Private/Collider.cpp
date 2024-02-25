@@ -238,6 +238,39 @@ _vec3 CCollider::Get_ColliderPos()
 	return _vec3();
 }
 
+void CCollider::Set_Normal()
+{
+	switch (m_eType)
+	{
+	case Engine::ColliderType::AABB:
+		_vec3 vExtents = reinterpret_cast<BoundingBox*>(m_pBounder_Origin)->Extents;
+
+		m_vNormals[C_TOP] = _vec3(0.f, 1.f, 0.f);
+		m_vNormals[C_BOTTOM] = _vec3(0.f, -1.f, 0.f);
+		m_vNormals[C_FRONT] = _vec3(0.f, 0.f, 1.f);
+		m_vNormals[C_BACK] = _vec3(0.f, 0.f, -1.f);
+		m_vNormals[C_LEFT] = _vec3(-1.f, 0.f, 0.f);
+		m_vNormals[C_RIGHT] = _vec3(1.f, 0.f, 0.f);
+	}
+	
+}
+
+_vec3 CCollider::Get_Normal(CollideFace eColliderFace)
+{
+	_vec3 vNormal{};
+	if (eColliderFace < C_END)
+	{
+		return m_vNormals[eColliderFace];
+	}
+
+	return vNormal;
+}
+
+const ColliderType& CCollider::Get_ColliderType() const
+{
+	return m_eType;
+}
+
 #ifdef _DEBUG
 HRESULT CCollider::Render()
 {
