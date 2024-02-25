@@ -2002,6 +2002,11 @@ HRESULT CLoader::Load_Village()
 	}
 #pragma region SescoGame
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_SescoGame_Object"), CSescoGame::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Void19_Object"), CVoid19::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;

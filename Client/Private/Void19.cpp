@@ -108,6 +108,8 @@ void CVoid19::Init_State(_float fTimeDelta)
 		case Client::CVoid19::State_Die:
 			m_Animation.iAnimIndex = Anim_stun;
 			m_Animation.fDurationRatio = 0.1f;
+
+			m_pTransformCom->Delete_Controller();
 			break;
 		}
 
