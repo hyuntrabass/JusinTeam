@@ -58,6 +58,7 @@ HRESULT CPlayer::Init(void* pArg)
 
 	SURFACETRAIL_DESC Desc{};
 	Desc.vColor = _color(1.f, 0.5f, 0.1f, 1.f);
+
 	Desc.iNumVertices = 8;
 	m_pLeft_Trail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 	m_pRight_Trail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
@@ -74,7 +75,7 @@ HRESULT CPlayer::Init(void* pArg)
 	//Desc.vColor = Colors::DarkRed;
 	//m_pLeft_Trail[2] = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 	//m_pRight_Trail[2] = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
-
+	
 	//Desc.vColor = Colors::MediumPurple;
 	//m_pLeft_Trail[3] = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 	//m_pRight_Trail[3] = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
@@ -179,7 +180,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		m_bIsSkying = true;
 		m_eTeleportSpot = eTeleportSpot;
 	}
-
+	
 	if (m_bIsSkying)
 	{
 		if (m_fFadeTimmer > 1.f)
@@ -262,7 +263,17 @@ void CPlayer::Tick(_float fTimeDelta)
 			m_fRimTick += fTimeDelta;
 		}
 	}
-
+	if (m_bSlowSpeed > 0.f)
+	{
+		m_bSlowSpeed -= fTimeDelta * 0.5f;
+		m_Animation.fAnimSpeedRatio = 2.f - (m_bSlowSpeed * 0.3f);
+		m_pModelCom->Set_Animation(m_Animation);
+	}
+	else
+	{
+		m_bSlowSpeed = 0.f;
+	}
+	
 	if (m_fDissolveRatio < 0.f)
 	{
 		m_fDissolveRatio = 0.f;
@@ -345,6 +356,10 @@ void CPlayer::Tick(_float fTimeDelta)
 	if (CUI_Manager::Get_Instance()->Is_Collecting())
 	{
 		m_eState = Collect_Start;
+	}
+	if (m_pGameInstance->Key_Down(DIK_Z))
+	{
+		Set_Damage(0, MonAtt_Poison);
 	}
 
 	if (m_pGameInstance->Key_Down(DIK_C))
@@ -1329,6 +1344,10 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 				m_iPoisionDamage = iDamage;
 				m_bPoison = true;
 				m_vRimColor = _vec4(0.f, 1.f, 0.f, 1.f);
+				if (m_bSlowSpeed == 0.f)
+				{
+					m_bSlowSpeed = 3.f;
+				}
 			}
 		}
 		break;
@@ -1799,7 +1818,7 @@ void CPlayer::Move(_float fTimeDelta)
 				return;
 			}
 
-			m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed);
+			m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed -m_bSlowSpeed);
 			m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
 
 			_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
@@ -1860,7 +1879,7 @@ void CPlayer::Move(_float fTimeDelta)
 					m_eState = Jump_Run;
 
 				}
-				m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed);
+				m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed - m_bSlowSpeed);
 			}
 			else
 			{
@@ -1873,12 +1892,12 @@ void CPlayer::Move(_float fTimeDelta)
 					m_eState == AimMode_End)
 				{
 					m_eState = Attack_Run;
-					m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed);
+					m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed - m_bSlowSpeed);
 				}
 				else if (m_eState == Jump_End)
 				{
 					m_eState = Jump_Run;
-					m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed);
+					m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed - m_bSlowSpeed);
 				}
 				else if (m_eState == Run or
 						 m_eState == Run_End or
@@ -1887,7 +1906,7 @@ void CPlayer::Move(_float fTimeDelta)
 						 )
 				{
 					m_eState = Run;
-					m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed);
+					m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed - m_bSlowSpeed);
 				}
 				else
 				{
@@ -1900,11 +1919,11 @@ void CPlayer::Move(_float fTimeDelta)
 					else if (m_eState == Jump or
 							 m_eState == Jump_Start)
 					{
-						m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed);
+						m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed - m_bSlowSpeed);
 					}
 					else
 					{
-						m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed);
+						m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed - m_bSlowSpeed);
 					}
 				}
 
@@ -2512,22 +2531,22 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 	break;
 	case Client::AT_Sword_Skill1:
 	{
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack * 1.5f) + Critical + RandomDmg, Att_Type);
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.5f) + Critical + RandomDmg, Att_Type);
 	}
 	break;
 	case Client::AT_Sword_Skill2:
 	{
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_uint)(m_Status.Attack * 1.5f) + Critical + RandomDmg, Att_Type);
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.5f) + Critical + RandomDmg, Att_Type);
 	}
 	break;
 	case Client::AT_Sword_Skill3:
 	{
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack * 1.3f) + Critical + RandomDmg, Att_Type);
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.3f) + Critical + RandomDmg, Att_Type);
 	}
 	break;
 	case Client::AT_Sword_Skill4:
 	{
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack * 2.f) + Critical + RandomDmg, Att_Type);
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 2.f) + Critical + RandomDmg, Att_Type);
 	}
 	break;
 	default:
@@ -2562,6 +2581,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 				if (Index >= 13.f && Index <= 23.f)
 				{
+					m_pLeft_Trail->Set_Color(_color(1.f, 0.5f, 0.1f, 1.f));
 					m_pLeft_Trail->On();
 					m_pLeft_Distortion_Trail->On();
 				}
@@ -2612,6 +2632,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				}
 				if (Index >= 20.5f && Index <= 26.f)
 				{
+					m_pLeft_Trail->Set_Color(_color(1.f, 0.5f, 0.1f, 1.f));
 					m_pLeft_Trail->On();
 					m_pLeft_Distortion_Trail->On();
 				}
@@ -2659,6 +2680,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				}
 				if (Index >= 17.f && Index <= 23.f)
 				{
+					m_pLeft_Trail->Set_Color(_color(1.f, 0.5f, 0.1f, 1.f));
 					m_pLeft_Trail->On();
 					m_pLeft_Distortion_Trail->On();
 				}
@@ -2710,6 +2732,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				}
 				if (Index >= 18.f && Index <= 21.f)
 				{
+					m_pLeft_Trail->Set_Color(_color(1.f, 0.5f, 0.1f, 1.f));
 					m_pLeft_Trail->On();
 					m_pLeft_Distortion_Trail->On();
 				}
@@ -2780,6 +2803,8 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 		if (Index >= 9.f && Index < 13.f)
 		{
+			m_pLeft_Trail->Set_Color(_color(Colors::MediumPurple));
+			m_pRight_Trail->Set_Color(_color(Colors::MediumPurple));
 			m_pLeft_Trail->On();
 			m_pLeft_Distortion_Trail->On();
 			m_pRight_Trail->On();
@@ -2842,6 +2867,9 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
 		if (Index >= 6.f && Index < 66.f)
 		{
+			m_pLeft_Trail->Set_Color(_color(1.f, 0.5f, 0.1f, 1.f));
+			m_pRight_Trail->Set_Color(_color(1.f, 0.5f, 0.1f, 1.f));
+
 			m_pLeft_Trail->On();
 			m_pLeft_Distortion_Trail->On();
 			m_pRight_Trail->On();
@@ -2944,6 +2972,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
 		if (Index >= 19.f && Index < 29.f)
 		{
+			m_pLeft_Trail->Set_Color(_color(1.f, 0.5f, 0.1f, 1.f));
 			m_pLeft_Trail->On();
 			m_pLeft_Distortion_Trail->On();
 		}
@@ -3011,6 +3040,8 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
 		if (Index >= 5.f && Index <= 17.f)
 		{
+			m_pLeft_Trail->Set_Color(_color(Colors::MediumPurple));
+			m_pRight_Trail->Set_Color(_color(Colors::MediumPurple));
 			m_pLeft_Trail->On();
 			m_pLeft_Distortion_Trail->On();
 			m_pRight_Trail->On();
@@ -3438,7 +3469,7 @@ void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
 			type.MonCollider = m_pGameInstance->Get_Nearest_MonsterCollider();
 		}
 		type.Att_Type = AT_Bow_Skill2;
-		type.iDamage = (m_Status.Attack) * 2.5f + rand() % 30;
+		type.iDamage = (_int)((m_Status.Attack) * 2.5f) + rand() % 30;
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
 		{
 			return;
@@ -3607,7 +3638,7 @@ void CPlayer::Arrow_Rain()
 	if (m_iArrowRain < 80)
 	{
 		Arrow_Type Type{};
-		Type.iDamage = m_Status.Attack * 0.8f + rand() % 30;
+		Type.iDamage = (_int)(m_Status.Attack * 0.8f) + rand() % 30;
 		Type.Att_Type = AT_Bow_Skill3;
 		_float random = (_float)(rand() % 70);
 		_int randommos = rand() % 2;
@@ -3696,6 +3727,7 @@ void CPlayer::Init_State()
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
 			m_iSuperArmor = {};
+			m_Animation.fAnimSpeedRatio = 2.f - (m_bSlowSpeed*0.3f);
 		}
 		break;
 		case Client::CPlayer::Run:
@@ -3705,6 +3737,7 @@ void CPlayer::Init_State()
 			m_Animation.isLoop = true;
 			m_iSuperArmor = {};
 			m_hasJumped = false;
+			m_Animation.fAnimSpeedRatio = 2.f - (m_bSlowSpeed * 0.3f);
 		}
 		break;
 		case Client::CPlayer::Run_End:

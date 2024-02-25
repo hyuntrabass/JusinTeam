@@ -127,7 +127,7 @@ HRESULT CLevel_GamePlay::Init()
 	EffectDesc.pMatrix = &m_RainMatrix;
 	EffectDesc.isFollow = true;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
-
+	
 	m_pGameInstance->Set_FogNF(_vec2(5.f, 300.f));
 	m_pGameInstance->Set_FogColor(_color(0.1f));
 	CUI_Manager::Get_Instance()->Set_Coin(100000);
