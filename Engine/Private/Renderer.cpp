@@ -228,13 +228,6 @@ HRESULT CRenderer::Init_Prototype()
 
 #pragma endregion
 
-#pragma region For_MRT_RadialBlur
-
-	if (FAILED(m_pGameInstance->Add_RenderTarget(L"Target_RadialBlur", static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
-		return E_FAIL;
-
-#pragma endregion
-
 #pragma region For_MRT_MotionBlur
 
 	if (FAILED(m_pGameInstance->Add_RenderTarget(L"Target_MotionBlur", static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
@@ -454,20 +447,12 @@ HRESULT CRenderer::Init_Prototype()
 
 #pragma endregion
 
-#pragma region MRT_MotionBlur
+#pragma region MRT_Distortion
 
 	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_Distortion", L"Target_Distortion")))
 		return E_FAIL;
 
 #pragma endregion
-
-#pragma region MRT_RadialBlur
-
-	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_RadialBlur", L"Target_RadialBlur")))
-		return E_FAIL;
-
-#pragma endregion
-
 
 #pragma region MRT_MotionBlur
 
@@ -568,39 +553,42 @@ HRESULT CRenderer::Init_Prototype()
 
 #endif // _DEBUG
 
+	if (FAILED(m_pDevice->CreateDeferredContext(0, &m_pDeferrd)))
+		return E_FAIL;
+
 #pragma region 평균 휘도값 구하기
 
-	m_pLumShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_AvgLum.hlsl", "DownScaleFirst", 0);
+	m_pLumShader = CCompute_Shader::Create(m_pDevice, m_pDeferrd, L"../Bin/ShaderFiles/Shader_AvgLum.hlsl", "DownScaleFirst", 0);
 
-	m_pDownShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_AvgLum.hlsl", "DownScaleSecond", 0);
+	m_pDownShader = CCompute_Shader::Create(m_pDevice, m_pDeferrd, L"../Bin/ShaderFiles/Shader_AvgLum.hlsl", "DownScaleSecond", 0);
 
-	m_pDown2Shader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_AvgLum.hlsl", "DownScaleThird", 0);
+	m_pDown2Shader = CCompute_Shader::Create(m_pDevice, m_pDeferrd, L"../Bin/ShaderFiles/Shader_AvgLum.hlsl", "DownScaleThird", 0);
 
-	m_pDown3Shader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_AvgLum.hlsl", "DownScaleFourth", 0);
+	m_pDown3Shader = CCompute_Shader::Create(m_pDevice, m_pDeferrd, L"../Bin/ShaderFiles/Shader_AvgLum.hlsl", "DownScaleFourth", 0);
 
-	m_pGetAvgLumShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_AvgLum.hlsl", "LastDownScaled", 0);
+	m_pGetAvgLumShader = CCompute_Shader::Create(m_pDevice, m_pDeferrd, L"../Bin/ShaderFiles/Shader_AvgLum.hlsl", "LastDownScaled", 0);
 
 	_uint2 iSize = m_WinSize;
 
 	iSize = _uint2(iSize.x / 4, iSize.y / 3);
 
-	m_pLumRT = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16_UNORM);
+	m_pLumRT = CCompute_RenderTarget::Create(m_pDevice, m_pDeferrd, iSize, DXGI_FORMAT_R16_UNORM);
 
 	iSize = _uint2(iSize.x / 4, iSize.y / 4);
 
-	m_pDownRT = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16_UNORM);
+	m_pDownRT = CCompute_RenderTarget::Create(m_pDevice, m_pDeferrd, iSize, DXGI_FORMAT_R16_UNORM);
 
 	iSize = _uint2(iSize.x / 4, iSize.y / 3);
 
-	m_pDownRT1 = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16_UNORM);
+	m_pDownRT1 = CCompute_RenderTarget::Create(m_pDevice, m_pDeferrd, iSize, DXGI_FORMAT_R16_UNORM);
 
 	iSize = _uint2(iSize.x / 5, iSize.y / 5);
 
-	m_pDownRT2 = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16_UNORM);
+	m_pDownRT2 = CCompute_RenderTarget::Create(m_pDevice, m_pDeferrd, iSize, DXGI_FORMAT_R16_UNORM);
 
 	iSize = _uint2(1, 1);
 
-	m_pLumValue = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16_UNORM);
+	m_pLumValue = CCompute_RenderTarget::Create(m_pDevice, m_pDeferrd, iSize, DXGI_FORMAT_R16_UNORM);
 #pragma endregion
 
 #pragma region 블러만들기
@@ -608,30 +596,30 @@ HRESULT CRenderer::Init_Prototype()
 	m_BLParam.radius = GAUSSIAN_RADIUS;
 	m_BLParam.direction = 0;
 
-	m_pBlurShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_Blur.hlsl", "Blur", sizeof(BLURPARAM));
+	m_pBlurShader = CCompute_Shader::Create(m_pDevice, m_pDeferrd, L"../Bin/ShaderFiles/Shader_Blur.hlsl", "Blur", sizeof(BLURPARAM));
 
-	m_pDownScaleShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_DownScale.hlsl", "Downsample", sizeof(DSPARAM));
+	m_pDownScaleShader = CCompute_Shader::Create(m_pDevice, m_pDeferrd, L"../Bin/ShaderFiles/Shader_DownScale.hlsl", "Downsample", sizeof(DSPARAM));
 
 	iSize = _uint2(m_WinSize.x / 2, m_WinSize.y / 2);
 	m_DSParam[0].ScaleX = iSize.x;
 	m_DSParam[0].ScaleY = iSize.y;
 
-	m_pHalfRT = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16G16B16A16_UNORM);
-	m_pHalfBlurRT = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16G16B16A16_UNORM);
+	m_pHalfRT = CCompute_RenderTarget::Create(m_pDevice, m_pDeferrd, iSize, DXGI_FORMAT_R16G16B16A16_UNORM);
+	m_pHalfBlurRT = CCompute_RenderTarget::Create(m_pDevice, m_pDeferrd, iSize, DXGI_FORMAT_R16G16B16A16_UNORM);
 
 	iSize = _uint2(iSize.x / 2, iSize.y / 2);
 	m_DSParam[1].ScaleX = iSize.x;
 	m_DSParam[1].ScaleY = iSize.y;
 
-	m_pQuarterRT = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16G16B16A16_UNORM);
-	m_pQuarterBlurRT = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16G16B16A16_UNORM);
+	m_pQuarterRT = CCompute_RenderTarget::Create(m_pDevice, m_pDeferrd, iSize, DXGI_FORMAT_R16G16B16A16_UNORM);
+	m_pQuarterBlurRT = CCompute_RenderTarget::Create(m_pDevice, m_pDeferrd, iSize, DXGI_FORMAT_R16G16B16A16_UNORM);
 
 	iSize = _uint2(iSize.x / 2, iSize.y / 2);
 	m_DSParam[2].ScaleX = iSize.x;
 	m_DSParam[2].ScaleY = iSize.y;
 
-	m_pEightRT = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16G16B16A16_UNORM);
-	m_pEightBlurRT = CCompute_RenderTarget::Create(m_pDevice, m_pContext, iSize, DXGI_FORMAT_R16G16B16A16_UNORM);
+	m_pEightRT = CCompute_RenderTarget::Create(m_pDevice, m_pDeferrd, iSize, DXGI_FORMAT_R16G16B16A16_UNORM);
+	m_pEightBlurRT = CCompute_RenderTarget::Create(m_pDevice, m_pDeferrd, iSize, DXGI_FORMAT_R16G16B16A16_UNORM);
 
 	m_pGetBlurShader = CShader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_BlurTex.hlsl", VTXPOSTEX::Elements, VTXPOSTEX::iNumElements);
 
@@ -643,6 +631,23 @@ HRESULT CRenderer::Init_Prototype()
 
 #pragma endregion
 
+#pragma region 레디얼 블러
+
+	m_pRadialShader = CCompute_Shader::Create(m_pDevice, m_pDeferrd, L"../Bin/ShaderFiles/Shader_Blur.hlsl", "Radial_Blur", sizeof(RadialParams));
+	m_pRadialRT = CCompute_RenderTarget::Create(m_pDevice, m_pDeferrd, m_WinSize, DXGI_FORMAT_R16G16B16A16_UNORM);
+
+#pragma endregion
+
+#pragma region 모션 블러
+
+	m_pMotionShader = CCompute_Shader::Create(m_pDevice, m_pDeferrd, L"../Bin/ShaderFiles/Shader_Blur.hlsl", "Motion_Blur");
+	m_pMotionRT = CCompute_RenderTarget::Create(m_pDevice, m_pDeferrd, m_WinSize, DXGI_FORMAT_R16G16B16A16_UNORM);
+
+#pragma endregion
+
+
+	if (FAILED(FinishCommand()))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -1649,6 +1654,9 @@ HRESULT CRenderer::Render_LightAcc()
 
 #pragma endregion
 
+	if (FAILED(FinishCommand()))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -1779,7 +1787,13 @@ HRESULT CRenderer::Render_HDR()
 	if (FAILED(Get_AvgLuminance()))
 		return E_FAIL;
 
+	if (FAILED(FinishCommand()))
+		return E_FAIL;
+
 	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Deferrd"), L"MRT_BLURTEX", m_fHDRBloomPower, true)))
+		return E_FAIL;
+
+	if (FAILED(FinishCommand()))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR")))
@@ -2052,58 +2066,111 @@ HRESULT CRenderer::Render_BlendFinal()
 
 HRESULT CRenderer::Render_Final()
 {
-	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_MotionBlur")))
+	if (m_pGameInstance->Key_Down(DIK_F6))
+		m_bMotionBlur = !m_bMotionBlur;
+
+	if (true == m_bMotionBlur) {
+
+		if (FAILED(m_pMotionShader->Set_Shader()))
+			return E_FAIL;
+
+		ID3D11ShaderResourceView* SRVs[2] = { m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pGameInstance->Get_SRV(L"Target_Depth_Velocity") };
+
+		if (FAILED(m_pMotionShader->Bind_SRVs(SRVs, 0, 2)))
+			return E_FAIL;
+
+		if (FAILED(m_pMotionShader->Bind_UAV(m_pMotionRT->Get_UAV(), 0)))
+			return E_FAIL;
+
+		_uint2 ThreadGroupSize = _uint2((m_WinSize.x + 7) / 8, (m_WinSize.y + 7) / 8);
+		if (FAILED(m_pMotionShader->Begin_MultiSRV(_uint3(ThreadGroupSize.x, ThreadGroupSize.y, 1))))
+			return E_FAIL;
+
+		//if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_MotionBlur")))
+		//	return E_FAIL;
+
+		//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Depth_Velocity_Texture", L"Target_Depth_Velocity")))
+		//	return E_FAIL;
+
+		//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_HDR_Sky")))
+		//	return E_FAIL;
+
+		//if (FAILED(m_pShader->Begin(14)))
+		//	return E_FAIL;
+
+		//if (FAILED(m_pVIBuffer->Render()))
+		//	return E_FAIL;
+
+		//if (FAILED(m_pGameInstance->End_MRT()))
+		//	return E_FAIL;
+
+	}
+
+#pragma region Old_RadialBlur
+
+	//if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_RadialBlur")))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pShader->Bind_RawValue("g_fRadialBlur_Power", &m_fRadial_BlurPower, sizeof(_float))))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pShader->Bind_RawValue("g_WorldOrTex", &m_bWorldOrTex, sizeof(_bool))))
+	//	return E_FAIL;
+
+	//if (false == m_bWorldOrTex) {
+	//	if (FAILED(m_pShader->Bind_RawValue("g_vCenterPos", &m_vRadialWorldCenter, sizeof(_vec4))))
+	//		return E_FAIL;
+	//}
+	//else {
+	//	if (FAILED(m_pShader->Bind_RawValue("g_vCenterTexPos", &m_vRadialTexCenter, sizeof(_vec2))))
+	//		return E_FAIL;
+	//}
+
+	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", MotionBlur)))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pShader->Begin(15)))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pVIBuffer->Render()))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->End_MRT()))
+	//	return E_FAIL;
+
+#pragma endregion
+
+#pragma region Compute_RadialBlur
+
+	if (FAILED(m_pRadialShader->Set_Shader()))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Depth_Velocity_Texture", L"Target_Depth_Velocity")))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_HDR_Sky")))
-		return E_FAIL;
-
-	if (FAILED(m_pShader->Begin(14)))
-		return E_FAIL;
-
-	if (FAILED(m_pVIBuffer->Render()))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->End_MRT()))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_RadialBlur")))
-		return E_FAIL;
-
-	if (FAILED(m_pShader->Bind_RawValue("g_fRadialBlur_Power", &m_fRadial_BlurPower, sizeof(_float))))
-		return E_FAIL;
-
-	if (FAILED(m_pShader->Bind_RawValue("g_WorldOrTex", &m_bWorldOrTex, sizeof(_bool))))
-		return E_FAIL;
-
-	if (false == m_bWorldOrTex) {
-		if (FAILED(m_pShader->Bind_RawValue("g_vCenterPos", &m_vRadialWorldCenter, sizeof(_vec4))))
+	_uint2 iSlot = _uint2(0, 0);
+	if (true == m_bMotionBlur) {
+		if (FAILED(m_pRadialShader->Bind_ShaderResourceView(m_pMotionRT->Get_SRV(), m_pRadialRT->Get_UAV(), iSlot)))
 			return E_FAIL;
 	}
 	else {
-		if (FAILED(m_pShader->Bind_RawValue("g_vCenterTexPos", &m_vRadialTexCenter, sizeof(_vec2))))
+		if (FAILED(m_pRadialShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pRadialRT->Get_UAV(), iSlot)))
 			return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_MotionBlur")))
+	if(FAILED(m_pRadialShader->Change_Value(&m_RBParams, sizeof(RadialParams), 1)))
 		return E_FAIL;
 
-	if (FAILED(m_pShader->Begin(15)))
+	_uint2 ThreadGroupSize = _uint2((m_WinSize.x + 7) / 8, (m_WinSize.y + 7) / 8);
+	if (FAILED(m_pRadialShader->Begin(_uint3(ThreadGroupSize.x, ThreadGroupSize.y, 1))))
 		return E_FAIL;
 
-	if (FAILED(m_pVIBuffer->Render()))
-		return E_FAIL;
+#pragma endregion
 
-	if (FAILED(m_pGameInstance->End_MRT()))
+	if (FAILED(FinishCommand()))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DistortionTexture", L"Target_Distortion")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_RadialBlur")))
+	if (FAILED(m_pShader->Bind_ShaderResourceView("g_Texture", m_pRadialRT->Get_SRV())))
 		return E_FAIL;
 
 	if (FAILED(m_pShader->Begin(DefPass_Distortion)))
@@ -2346,6 +2413,9 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 		iSize = _uint2(iSize.x / 2, iSize.y / 2);
 	}
 
+	if (FAILED(FinishCommand()))
+		return E_FAIL;
+
 	ID3D11ShaderResourceView* pDownSRVs[3] = { m_pHalfRT->Get_SRV(), m_pQuarterRT->Get_SRV(), m_pEightRT->Get_SRV() };
 	ID3D11ShaderResourceView* pBlurSRVs[3] = { m_pHalfBlurRT->Get_SRV(), m_pQuarterBlurRT->Get_SRV(), m_pEightBlurRT->Get_SRV() };
 	ID3D11UnorderedAccessView* pBlurUAVs[3] = { m_pHalfBlurRT->Get_UAV(), m_pQuarterBlurRT->Get_UAV(), m_pEightBlurRT->Get_UAV() };
@@ -2376,7 +2446,7 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 				if (FAILED(m_pBlurShader->Bind_ShaderResourceView(pBlurSRVs[i], pUAVs[i], iSlot)))
 					return E_FAIL;
 			}
-
+			//
 			m_BLParam.direction = j; // 가로 세로로 블러먹이기
 			if (FAILED(m_pBlurShader->Change_Value(&m_BLParam, sizeof(BLURPARAM))))
 				return E_FAIL;
@@ -2386,6 +2456,9 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 		}
 
 	}
+
+	if (FAILED(FinishCommand()))
+		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Begin_MRT(MRT_Tag)))
 		return E_FAIL;
@@ -2438,6 +2511,27 @@ HRESULT CRenderer::Clear_Instance()
 		pBuffer->Clear_Instance();
 	}
 	return S_OK;
+}
+
+HRESULT CRenderer::FinishCommand()
+{
+	if (FAILED(m_pDeferrd->FinishCommandList(FALSE, &m_pCommandList)))
+		return E_FAIL;
+
+	m_pContext->ExecuteCommandList(m_pCommandList, TRUE);
+
+	Safe_Release(m_pCommandList);
+
+	return S_OK;
+}
+
+const void CRenderer::Set_RadialBlur_World(_vec4 vRadialCenter) {
+	_vec4 vPos = vRadialCenter;
+	vPos = XMVector3TransformCoord(vPos, m_pGameInstance->Get_Transform(TransformType::View));
+	vPos = XMVector3TransformCoord(vPos, m_pGameInstance->Get_Transform(TransformType::Proj));
+	vPos = vPos / vPos.w;
+	m_RBParams.vCenterPos = vPos;
+	m_RBParams.isTex = false;
 }
 
 CRenderer* CRenderer::Create(_dev pDevice, _context pContext)
@@ -2503,6 +2597,18 @@ void CRenderer::Free()
 
 #pragma endregion
 
+#pragma region Radial Blur Release
+	Safe_Release(m_pRadialShader);
+	Safe_Release(m_pRadialRT);
+#pragma endregion
+
+#pragma region Motion Blur Release
+	Safe_Release(m_pMotionShader);
+	Safe_Release(m_pMotionRT);
+#pragma endregion
+
+
+
 	Safe_Release(m_pShadowMap);
 
 	//SSAO
@@ -2535,4 +2641,6 @@ void CRenderer::Free()
 	}
 	m_InstanceBuffers.clear();
 
+
+	Safe_Release(m_pDeferrd);
 }

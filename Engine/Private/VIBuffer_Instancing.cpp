@@ -17,7 +17,10 @@ CVIBuffer_Instancing::CVIBuffer_Instancing(const CVIBuffer_Instancing& rhs)
 	, m_pVSRB(rhs.m_pVSRB)
 	, m_pVUAVB(rhs.m_pVUAVB)
 	, m_pComputeShader(dynamic_cast<CCompute_Shader*>(rhs.m_pComputeShader->Clone()))
+	, m_pInitComputeShader(dynamic_cast<CCompute_Shader*>(rhs.m_pInitComputeShader->Clone()))
+	, m_pNoiseNormalTexture(rhs.m_pNoiseNormalTexture)
 {
+	Safe_AddRef(m_pNoiseNormalTexture);
 }
 
 HRESULT CVIBuffer_Instancing::Init_Prototype()
@@ -32,86 +35,88 @@ HRESULT CVIBuffer_Instancing::Init(void* pArg)
 
 void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNumUse, _bool bApplyGravity, _vec3 vGravityDir, _float fAppearRatio, _float fDissolveRatio)
 {
-//#pragma region MyRegion
-//	if (iNumUse == -1)
-//{
-//	iNumUse = m_iNumInstances;
-//}
-//D3D11_MAPPED_SUBRESOURCE SubResource{};
-//
-//m_pContext->Map(m_pVBInstance, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
-//
-//for (size_t i = 0; i < m_iNumInstances; i++)
-//{
-//	VTXINSTANCING* pVertex = &reinterpret_cast<VTXINSTANCING*>(SubResource.pData)[i];
-//
-//	if (pVertex->vLifeTime.x == 0)
-//	{
-//		pVertex->vPos = _vec4::Transform(pVertex->vOriginPos, WorldMatrix);
-//		pVertex->vPrevPos = pVertex->vPos;
-//
-//		pVertex->vDirection = _vec4::Transform(pVertex->vOriginDir, WorldMatrix.Get_Rotation());
-//	}
-//
-//	if (m_isLoop and m_isFirstUpdate)
-//	{
-//		pVertex->vPos = _float4(0.f, -10000.f, 0.f, 1.f);
-//		pVertex->vPrevPos = pVertex->vPos;
-//	}
-//
-//	//pVertex->vPos.y += pVertex->fSpeed * fTimeDelta;
-//	if (bApplyGravity)
-//	{
-//		_float fAlpha = (pVertex->vLifeTime.x / pVertex->vLifeTime.y) * 0.7f;
-//		pVertex->vDirection = _vec4::Lerp(pVertex->vDirection, _vec4(vGravityDir), fAlpha);
-//	}
-//
-//	if (fAppearRatio > 0.f and pVertex->vLifeTime.x <= pVertex->vLifeTime.y * fAppearRatio)
-//	{
-//		pVertex->fDissolveRatio = 1.f - (pVertex->vLifeTime.x / (pVertex->vLifeTime.y * fAppearRatio));
-//		pVertex->fDissolveRatio = min(pVertex->fDissolveRatio, 1.f);
-//	}
-//	else if (pVertex->vLifeTime.x > pVertex->vLifeTime.y * fDissolveRatio)
-//	{
-//		pVertex->fDissolveRatio = (pVertex->vLifeTime.x - (pVertex->vLifeTime.y * fDissolveRatio)) / (pVertex->vLifeTime.y * (1.f - fDissolveRatio));
-//		pVertex->fDissolveRatio = min(pVertex->fDissolveRatio, 1.f);
-//	}
-//	else
-//	{
-//		pVertex->fDissolveRatio = 0.f;
-//	}
-//
-//	pVertex->vPrevPos = pVertex->vPos;
-//	pVertex->vPos += pVertex->vDirection * pVertex->fSpeed * fTimeDelta;
-//	pVertex->vLifeTime.x += fTimeDelta;
-//
-//	if (i >= iNumUse)
-//	{
-//		pVertex->vPos = _float4(-1000.f, -1000.f, -1000.f, 1.f);
-//		continue;
-//	}
-//
-//	if (pVertex->vLifeTime.x > pVertex->vLifeTime.y)
-//	{
-//		if (m_isLoop)
-//		{
-//			pVertex->vLifeTime.x = 0.f;
-//			pVertex->vPos = _vec4::Transform(pVertex->vOriginPos, WorldMatrix);
-//			pVertex->vPrevPos = pVertex->vPos;
-//		}
-//		else
-//		{
-//			pVertex->vPos = _float4(0.f, -10000.f, 0.f, 1.f);
-//			pVertex->vPrevPos = pVertex->vPos;
-//		}
-//	}
-//}
-//
-//m_pContext->Unmap(m_pVBInstance, 0);
-//
-//m_isFirstUpdate = false;
-//
-//#pragma endregion
+#pragma region MyRegion
+	//if (iNumUse == -1)
+	//{
+	//	iNumUse = m_iNumInstances;
+	//}
+	//D3D11_MAPPED_SUBRESOURCE SubResource{};
+
+	//m_pContext->Map(m_pVBInstance, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
+
+	//for (size_t i = 0; i < m_iNumInstances; i++)
+	//{
+	//	VTXINSTANCING* pVertex = &reinterpret_cast<VTXINSTANCING*>(SubResource.pData)[i];
+
+	//	if (pVertex->vLifeTime.x == 0)
+	//	{
+	//		pVertex->vPos = _vec4::Transform(pVertex->vOriginPos, WorldMatrix);
+	//		pVertex->vPrevPos = pVertex->vPos;
+
+	//		pVertex->vDirection = _vec4::Transform(pVertex->vOriginDir, WorldMatrix.Get_Rotation());
+	//	}
+
+	//	if (m_isLoop and m_isFirstUpdate)
+	//	{
+	//		pVertex->vPos = _float4(0.f, -10000.f, 0.f, 1.f);
+	//		pVertex->vPrevPos = pVertex->vPos;
+	//	}
+
+	//	//pVertex->vPos.y += pVertex->fSpeed * fTimeDelta;
+	//	if (bApplyGravity)
+	//	{
+	//		_float fAlpha = (pVertex->vLifeTime.x / pVertex->vLifeTime.y) * 0.7f;
+	//		pVertex->vDirection = _vec4::Lerp(pVertex->vDirection, _vec4(vGravityDir), fAlpha);
+	//	}
+
+	//	if (fAppearRatio > 0.f and pVertex->vLifeTime.x <= pVertex->vLifeTime.y * fAppearRatio)
+	//	{
+	//		pVertex->fDissolveRatio = 1.f - (pVertex->vLifeTime.x / (pVertex->vLifeTime.y * fAppearRatio));
+	//		pVertex->fDissolveRatio = min(pVertex->fDissolveRatio, 1.f);
+	//	}
+	//	else if (pVertex->vLifeTime.x > pVertex->vLifeTime.y * fDissolveRatio)
+	//	{
+	//		pVertex->fDissolveRatio = (pVertex->vLifeTime.x - (pVertex->vLifeTime.y * fDissolveRatio)) / (pVertex->vLifeTime.y * (1.f - fDissolveRatio));
+	//		pVertex->fDissolveRatio = min(pVertex->fDissolveRatio, 1.f);
+	//	}
+	//	else
+	//	{
+	//		pVertex->fDissolveRatio = 0.f;
+	//	}
+
+	//	pVertex->vPrevPos = pVertex->vPos;
+	//	pVertex->vPos += pVertex->vDirection * pVertex->fSpeed * fTimeDelta;
+	//	pVertex->vLifeTime.x += fTimeDelta;
+
+	//	if (i >= iNumUse)
+	//	{
+	//		pVertex->vPos = _float4(-1000.f, -1000.f, -1000.f, 1.f);
+	//		continue;
+	//	}
+
+	//	if (pVertex->vLifeTime.x > pVertex->vLifeTime.y)
+	//	{
+	//		if (m_isLoop)
+	//		{
+	//			pVertex->vLifeTime.x = 0.f;
+	//			pVertex->vPos = _vec4::Transform(pVertex->vOriginPos, WorldMatrix);
+	//			pVertex->vPrevPos = pVertex->vPos;
+	//		}
+	//		else
+	//		{
+	//			pVertex->vPos = _float4(0.f, -10000.f, 0.f, 1.f);
+	//			pVertex->vPrevPos = pVertex->vPos;
+	//		}
+	//	}
+	//}
+
+	//m_pContext->Unmap(m_pVBInstance, 0);
+
+	//m_isFirstUpdate = false;
+
+#pragma endregion
+
+	
 
 	ParticleParams PartiBuffer{};
 	PartiBuffer.iNumInstances = m_iNumInstances;
@@ -135,8 +140,11 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 	_uint2 iSlot = _uint2(0, 0);
 	hr = m_pComputeShader->Bind_ShaderResourceView(m_pSRV, m_pUAV, iSlot);
 
-	_uint3 ThreadGroup{ 1, 1, 1 };
+	_uint3 ThreadGroup{ 2, 1, 1 };
 	hr = m_pComputeShader->Begin(ThreadGroup);
+
+	if (FAILED(hr))
+		return;
 
 	m_pContext->CopyResource(m_pVBInstance, m_pVUAVB);
 
@@ -187,6 +195,9 @@ HRESULT CVIBuffer_Instancing::Render()
 void CVIBuffer_Instancing::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pInitComputeShader);
+	Safe_Release(m_pNoiseNormalTexture);
 
 	Safe_Release(m_pVBInstance);
 	Safe_Release(m_pSRV);

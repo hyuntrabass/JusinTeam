@@ -1,5 +1,6 @@
 #include "VIBuffer_Instancing_Point.h"
 #include "Compute_Shader.h"
+#include "Texture.h"
 
 CVIBuffer_Instancing_Point::CVIBuffer_Instancing_Point(_dev pDevice, _context pContext)
 	: CVIBuffer_Instancing(pDevice, pContext)
@@ -17,7 +18,7 @@ HRESULT CVIBuffer_Instancing_Point::Init_Prototype(_uint iNumInstances)
 	m_iVertexStride = sizeof VTXPOINT;
 	m_iNumVertices = 1;
 
-	m_iNumInstances = 1000;
+	m_iNumInstances = 512;
 	m_iIndexCountPerInstance = 1;
 	m_iInstanceStride = sizeof VTXINSTANCING;
 
@@ -112,6 +113,10 @@ HRESULT CVIBuffer_Instancing_Point::Init_Prototype(_uint iNumInstances)
 
 	m_pComputeShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_ComputeParticle.hlsl", "particle", sizeof ParticleParams);
 
+	m_pInitComputeShader = CCompute_Shader::Create(m_pDevice, m_pContext, L"../Bin/ShaderFiles/Shader_ComputeParticle.hlsl", "Init", sizeof ParticleInitParams);
+
+	m_pNoiseNormalTexture = CTexture::Create(m_pDevice, m_pContext, L"../../Reference/NoiseNormal/Noise_Normal.jpg");
+
 	return S_OK;
 }
 
@@ -121,6 +126,7 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 	_randNum RandomNumber(rand());
 
 	VTXINSTANCING* pVertexInstance = reinterpret_cast<VTXINSTANCING*>(const_cast<void*>(m_InstancingInitialData.pSysMem));
+
 
 	if (pArg)
 	{
@@ -145,12 +151,49 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 		_randFloat RandomSpeed = _randFloat(Desc.vSpeedRange.x, Desc.vSpeedRange.y);
 		_randFloat RandomLifeTime = _randFloat(Desc.vLifeTime.x, Desc.vLifeTime.y);
 
-		_randFloat RandomRadian = _randFloat(0.f, XMVectorGetX(g_XMPi) * 2.f);
+		/*_randFloat fRandomSeed = _randFloat(0.f);
+
+		ParticleInitParams Params;
+		Params.isLoop = Desc.isLoop;
+		Params.vMinPos = Desc.vMinPos;
+		Params.vMaxPos = Desc.vMaxPos;
+
+		Params.vMinDir = Desc.vMinDir;
+		Params.vMaxDir = Desc.vMaxDir;
+
+		Params.vScaleRange = Desc.vScaleRange;
+		Params.fMinSpeed = Desc.vSpeedRange.x;
+		Params.fMaxSpeed = Desc.vSpeedRange.y;
+		Params.vLifeTimeRange = Desc.vLifeTime;
+		Params.fRandomSeed = fRandomSeed(RandomNumber);
+
+		m_pContext->CopyResource(m_pVSRB, m_pVBInstance);
+
+		HRESULT hr{};
+
+		hr = m_pInitComputeShader->Set_Shader();
+
+		hr = m_pInitComputeShader->Change_Value(&Params, sizeof ParticleInitParams, 1);
+
+		_uint2 iSlot = _uint2(0, 0);
+		hr = m_pInitComputeShader->Bind_ShaderResourceView(m_pSRV, m_pUAV, iSlot);
+
+		ID3D11ShaderResourceView* SRV = m_pNoiseNormalTexture->Get_SRV();
+		
+		m_pContext->CSSetShaderResources(1, 1, &SRV);
+
+		_uint3 ThreadGroup{ 2, 1, 1 };
+		hr = m_pInitComputeShader->Begin(ThreadGroup);
+
+		if (FAILED(hr))
+			return E_FAIL;
+
+		m_pContext->CopyResource(m_pVBInstance, m_pVUAVB);*/
+
 
 		for (size_t i = 0; i < m_iNumInstances; i++)
 		{
 			_float fScale = RandomScale(RandomNumber);
-			_float fCeta = RandomRadian(RandomNumber);
 
 			pVertexInstance[i].vRight = _float4(fScale, 0.f, 0.f, 0.f);
 			pVertexInstance[i].vUp = _float4(0.f, fScale, 0.f, 0.f);
@@ -202,9 +245,6 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 		Safe_Delete_Array(m_InstancingInitialData.pSysMem);
 		return E_FAIL;
 	}
-#pragma endregion
-
-
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
@@ -226,6 +266,26 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+#pragma endregion
+
+#pragma region Test
+
+	//D3D11_MAPPED_SUBRESOURCE SubResource{};
+
+	//m_pContext->Map(m_pVUAVB, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
+
+	//VTXINSTANCING* pVertex = reinterpret_cast<VTXINSTANCING*>(SubResource.pData);
+
+	//vector<VTXINSTANCING> hi;
+
+	//for (size_t i = 0; i < 512; i++)
+	//{
+	//	hi.push_back(pVertex[i]);
+	//}
+
+	//m_pContext->Unmap(m_pVUAVB, 0);
+
+#pragma endregion
 
 	return S_OK;
 }
