@@ -77,11 +77,11 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	//if (FAILED(Ready_Human_Boss()))
-	//{
-	//	MSG_BOX("Failed to Ready HumanBoss");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Human_Boss()))
+	{
+		MSG_BOX("Failed to Ready HumanBoss");
+		return E_FAIL;
+	}
 
 	if (FAILED(Ready_NPC()))
 	{
@@ -106,11 +106,11 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	//if (FAILED(Ready_Survival_Game()))
-	//{
-	//	MSG_BOX("Failed to Ready Survival Game");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Survival_Game()))
+	{
+		MSG_BOX("Failed to Ready Survival Game");
+		return E_FAIL;
+	}
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_BrickBar"), TEXT("Prototype_GameObject_BrickBar"))))
 	{
