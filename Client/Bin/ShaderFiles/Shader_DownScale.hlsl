@@ -14,14 +14,14 @@ uint GroupIndex : SV_GroupIndex, uint3 DispatchID : SV_DispatchThreadID)
 {
     uint2 Pixel = uint2(DispatchID.x, DispatchID.y);
     
-    if (Pixel.x < iWinSize.x && Pixel.y < iWinSize.y)
-    {
-        uint2 inPixel = Pixel * 2;
+    if (Pixel.x >= iWinSize.x || Pixel.y >= iWinSize.y)
+        return;
     
-        float4 hIntensity0 = lerp(InputTexture[inPixel], InputTexture[inPixel + uint2(1, 0)], 0.5f);
-        float4 hIntensity1 = lerp(InputTexture[inPixel + uint2(0, 1)], InputTexture[inPixel + uint2(1, 1)], 0.5f);
-        float4 Intensity = lerp(hIntensity0, hIntensity1, 0.5f);
+    uint2 inPixel = Pixel * 2;
     
-        OutputTexture[Pixel] = Intensity;
-    }
+    float4 hIntensity0 = lerp(InputTexture[inPixel], InputTexture[inPixel + uint2(1, 0)], 0.5f);
+    float4 hIntensity1 = lerp(InputTexture[inPixel + uint2(0, 1)], InputTexture[inPixel + uint2(1, 1)], 0.5f);
+    float4 Intensity = lerp(hIntensity0, hIntensity1, 0.5f);
+    
+    OutputTexture[Pixel] = Intensity;
 }

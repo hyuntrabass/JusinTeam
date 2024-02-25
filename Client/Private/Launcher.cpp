@@ -1,6 +1,8 @@
 #include "Launcher.h"
 
 #include "Projectile.h"
+#include "Effect_Dummy.h"
+#include "Effect_Manager.h"
 
 CLauncher::CLauncher(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -21,17 +23,39 @@ HRESULT CLauncher::Init(void* pArg)
 {
 	m_eType = *(LAUNCHER_TYPE*)pArg;
 
+	_vec3 vCenterPos = _vec3(-2000.f, 0.f, 2000.f);
+
 	switch (m_eType)
 	{
 	case Client::CLauncher::TYPE_RANDOM_POS:
+	{
 		m_strModelTag = TEXT("Prototype_Model_LokiStone");
 		m_Animation.iAnimIndex = 0;
 		m_Animation.isLoop = true;
+		m_Animation.fAnimSpeedRatio = 2.f;
+
+		m_pTransformCom->Set_Scale(_vec3(0.7f));
+
+		random_device dev;
+		_randNum RandomNumber(dev());
+		_randFloat Random = _randFloat(-1.f, 1.f);
+
+		_vec3 vRandomDir = _vec3(Random(RandomNumber), 0.f, Random(RandomNumber)).Get_Normalized();
+
+		m_pTransformCom->Set_Position(vCenterPos + (rand() % 8 + 1) * vRandomDir); // Radius : 8
+
+		m_iPassIndex = AnimPass_Dissolve;
+	}
+
 		break;
+
 	case Client::CLauncher::TYPE_FLOOR:
+
 		break;
+
 	case Client::CLauncher::TYPE_LASER:
 		break;
+
 	case Client::CLauncher::TYPE_PIZZA:
 		break;
 	}
@@ -41,16 +65,7 @@ HRESULT CLauncher::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	_vec3 vCenterPos = _vec3(-2000.f, 0.f, 2000.f);
 
-	random_device dev;
-	_randNum RandomNumber(dev());
-	_randFloat Random = _randFloat(-1.f, 1.f);
-
-	_vec3 vRandomDir = _vec3(Random(RandomNumber), 0.f, Random(RandomNumber)).Get_Normalized();
-
-	m_pTransformCom->Set_Position(vCenterPos + (rand() % 8 + 1) * vRandomDir); // Radius : 8
-	m_pTransformCom->Set_Scale(_vec3(0.5f));
 
 	return S_OK;
 }
@@ -64,29 +79,46 @@ void CLauncher::Tick(_float fTimeDelta)
 		Kill();
 	}
 
+	if (m_fDissolveRatio <= 0.f)
+	{
+		m_iPassIndex = AnimPass_Rim;
+	}
+
 	m_fTime += fTimeDelta;
+	m_fProjectileCreateTime += fTimeDelta;
 
 	switch (m_eType)
 	{
 	case Client::CLauncher::TYPE_RANDOM_POS:
 
-		if (m_fTime >= 2.f)
+		if (m_fTime >= 2.5f)
 		{
-			if (!m_bCreateProjectile)
+			if (m_fProjectileCreateTime >= 1.5f)
 			{
-				for (size_t i = 0; i < 8; i++)
+				if (m_iProjectileCount <= 3)
 				{
-					CProjectile::PROJECTILE_DESC Desc = {};
-					Desc.eType = CProjectile::TYPE_RANDOM_POS;
-					Desc.pLauncherTransform = m_pTransformCom;
-					Desc.vStartPos = m_pTransformCom->Get_State(State::Pos);
+					for (size_t i = 0; i < 8; i++)
+					{
+						CProjectile::PROJECTILE_DESC Desc = {};
+						Desc.eType = CProjectile::TYPE_RANDOM_POS;
+						Desc.pLauncherTransform = m_pTransformCom;
+						Desc.vStartPos = m_pTransformCom->Get_State(State::Pos);
 
-					m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
+						m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
+					}
+
+					++m_iProjectileCount;
 				}
 
-				m_bCreateProjectile = true;
+				else
+				{
+					Kill();
+				}
+
+				m_fProjectileCreateTime = 0.f;
 			}
 		}
+
 
 		break;
 	case Client::CLauncher::TYPE_FLOOR:
@@ -98,6 +130,7 @@ void CLauncher::Tick(_float fTimeDelta)
 	}
 
 	m_pModelCom->Set_Animation(m_Animation);
+
 }
 
 void CLauncher::Late_Tick(_float fTimeDelta)
@@ -186,11 +219,45 @@ HRESULT CLauncher::Add_Components()
 		return E_FAIL;
 	}
 
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_T_EFF_Noise_04_BC"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
 HRESULT CLauncher::Bind_ShaderResources()
 {
+	if (m_iPassIndex == AnimPass_Dissolve)
+	{
+		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
+		{
+			return E_FAIL;
+		}
+
+		m_fDissolveRatio -= 0.02f;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
+		{
+			return E_FAIL;
+		}
+
+		_bool bHasNorTex = true;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &bHasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+	}
+
+	if (m_iPassIndex == AnimPass_Rim)
+	{
+		_vec4 vColor = Colors::Gold;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vColor, sizeof vColor)))
+		{
+			return E_FAIL;
+		}
+	}
+
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
 		return E_FAIL;
@@ -256,4 +323,12 @@ CGameObject* CLauncher::Clone(void* pArg)
 void CLauncher::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pModelCom);
+	Safe_Release(m_pRendererCom);
+	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pColliderCom);
+
+	Safe_Release(m_pDissolveTextureCom);
+
 }

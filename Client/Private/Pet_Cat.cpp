@@ -1,6 +1,8 @@
 #include "Pet_Cat.h"
+
 #include "Effect_Manager.h"
 #include "UI_Manager.h"
+#include "Camera_Manager.h"
 
 CPet_Cat::CPet_Cat(_dev pDevice, _context pContext)
 	: CPet(pDevice, pContext)
@@ -143,7 +145,8 @@ void CPet_Cat::Tick_State(_float fTimeDelta)
 	_vec4 vPlayerLook = pPlayerTransform->Get_State(State::Look).Get_Normalized();
 
 	_vec3 vTargetPos = vPlayerPos - (1.f * vPlayerRight) - (1.f * vPlayerLook);
-	vTargetPos.y += 1.5f;
+	vTargetPos.y += 0.5f;
+
 
 	_vec3 vMyPos = m_pTransformCom->Get_State(State::Pos);
 	_vec4 vMyLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
@@ -156,6 +159,12 @@ void CPet_Cat::Tick_State(_float fTimeDelta)
 	case Client::CPet_Cat::STATE_CHASE:
 
 	{
+		if (CUI_Manager::Get_Instance()->Is_InvenActive() == true)
+		{
+			m_eCurState = STATE_INVEN;
+			break;
+		}
+
 		if (fDistance <= 5.f && fDistance >= 2.f)
 		{
 			m_fPosLerpRatio = 0.03f;
@@ -169,6 +178,13 @@ void CPet_Cat::Tick_State(_float fTimeDelta)
 		_vec4 vSetLook = XMVectorLerp(vMyLook, vPlayerLook, m_fLookLerpRatio);
 
 		m_pTransformCom->LookAt_Dir(vSetLook);
+
+		if (CCamera_Manager::Get_Instance()->Get_AimMode() == true)
+		{
+			m_pTransformCom->Set_Position(vTargetPos);
+
+			break;
+		}
 
 		if (fDistance >= 2.f)
 		{
@@ -190,10 +206,6 @@ void CPet_Cat::Tick_State(_float fTimeDelta)
 				m_eCurState = STATE_EMOTION;
 			}
 
-			if (CUI_Manager::Get_Instance()->Is_InvenActive() == true)
-			{
-				m_eCurState = STATE_INVEN;
-			}
 		}
 
 		if (fDistance > 10.f)
@@ -225,6 +237,13 @@ void CPet_Cat::Tick_State(_float fTimeDelta)
 
 			m_pTransformCom->LookAt_Dir(vSetLook);
 
+			if (CCamera_Manager::Get_Instance()->Get_AimMode() == true)
+			{
+				m_pTransformCom->Set_Position(vTargetPos);
+
+				break;
+			}
+
 			if (fDistance >= 2.f)
 			{
 				m_pTransformCom->Set_Position(vSetPos);
@@ -253,7 +272,7 @@ void CPet_Cat::Tick_State(_float fTimeDelta)
 
 	case Client::CPet_Cat::STATE_INVEN:
 
-		m_pTransformCom->Set_Position(_vec3(vPlayerPos.x + 1.7f, vPlayerPos.y + 1.5f, vPlayerPos.z - 1.5f));
+		m_pTransformCom->Set_Position(_vec3(vPlayerPos.x + 1.7f, vPlayerPos.y + 1.f, vPlayerPos.z - 1.5f));
 		m_pTransformCom->LookAt_Dir(_vec4(0.f, 0.f, 1.f, 0.f));
 
 		m_fIdleTime += fTimeDelta;
