@@ -1311,11 +1311,15 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 		case MonAtt_KnockDown:
 		{
 			m_eState = KnockDown;
+			m_pCam_Manager->Set_RidingZoom(false);
+			m_bLockOn = false;
 		}
 		break;
 		case MonAtt_Stun:
 		{
 			m_eState = Stun_Start;
+			m_pCam_Manager->Set_RidingZoom(false);
+			m_bLockOn = false;
 		}
 		break;
 		case MonAtt_Poison:
@@ -4333,17 +4337,19 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		break;
 	case Client::CPlayer::KnockDown:
 		if (m_Current_Weapon == WP_SWORD)
+		{
 			if (m_pModelCom->IsAnimationFinished(Anim_Assassin_knockdown))
 			{
 				m_eState = Idle;
 			}
-			else
+		}
+		else
+		{
+			if (m_pModelCom->IsAnimationFinished(Anim_Sniper_knockdown))
 			{
-				if (m_pModelCom->IsAnimationFinished(Anim_Sniper_knockdown))
-				{
-					m_eState = Idle;
-				}
+				m_eState = Idle;
 			}
+		}
 		break;
 	case Client::CPlayer::Revival_Start:
 		if (m_pModelCom->IsAnimationFinished(Anim_revival_start))
