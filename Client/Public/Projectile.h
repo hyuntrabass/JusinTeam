@@ -39,7 +39,7 @@ private:
 	//CShader* m_pShaderCom = { nullptr };
 	//CRenderer* m_pRendererCom = { nullptr };
 	//CModel* m_pModelCom = { nullptr };
-	CCollider* m_pColliderCom = { nullptr };
+	//CCollider* m_pColliderCom = { nullptr };
 
 private:
 	class CEffect_Dummy* m_pBall = { nullptr };

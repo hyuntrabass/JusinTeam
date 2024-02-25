@@ -50,7 +50,7 @@ HRESULT CProjectile::Init(void* pArg)
 		break;
 	}
 
-	m_FollowEffectMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+	m_FollowEffectMatrix = _mat::CreateScale(0.5f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 
 	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Yellow");
 	Info.pMatrix = &m_FollowEffectMatrix;
@@ -163,4 +163,7 @@ CGameObject* CProjectile::Clone(void* pArg)
 void CProjectile::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pBall);
+	Safe_Release(m_pBallParticle);
 }

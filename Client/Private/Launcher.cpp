@@ -256,4 +256,9 @@ CGameObject* CLauncher::Clone(void* pArg)
 void CLauncher::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pModelCom);
+	Safe_Release(m_pRendererCom);
+	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pColliderCom);
 }
