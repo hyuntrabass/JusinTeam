@@ -27,7 +27,7 @@ cbuffer ParticleParams : register(b0)
     
     vector vGravityDir;
     
-    matrix WorldMatrix;
+    row_major matrix WorldMatrix;
     
     float fDissolveRatio;
     int isLoop;

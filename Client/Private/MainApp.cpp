@@ -87,20 +87,13 @@ void CMainApp::Tick(_float fTimeDelta)
 	m_fTimeAcc += fFinalTimeDelta;
 
 #ifdef _DEBUG
-	/*m_pGameInstance->Get_StringStream() << "FPS: " << m_iFPS << endl;
-	m_pGameInstance->Get_StringStream() << endl;*/
+	m_pGameInstance->Get_StringStream() << "FPS: " << m_pGameInstance->Get_FPS() << endl;
+	m_pGameInstance->Get_StringStream() << endl;
 #endif // _DEBUG
 
 
 	m_pGameInstance->Tick_Engine(fFinalTimeDelta);
 	CTrigger_Manager::Get_Instance()->Tick(fTimeDelta);
-
-	//m_pGameInstance->Get_StringStream() << L"시발" << endl;
-	//m_pGameInstance->Get_StringStream() << "시발" << endl;
-	//m_pGameInstance->Get_StringStream() << m_pGameInstance->Get_CompleteInputString().c_str() << endl;
-	//m_pGameInstance->Add_String_to_Stream(m_pGameInstance->Get_CompleteInputString());
-	//m_pGameInstance->Add_String_to_Stream(m_pGameInstance->Get_ComposingInputString());
-
 }
 
 HRESULT CMainApp::Render()
@@ -110,7 +103,7 @@ HRESULT CMainApp::Render()
 	if (m_fTimeAcc >= 1.f)
 	{
 		wstring fps = L"FPS: " + to_wstring(m_iFrameCount);
-		m_iFPS = m_iFrameCount;
+		m_pGameInstance->Set_FPS(m_iFrameCount);
 
 		SetWindowText(g_hWnd, fps.c_str());
 

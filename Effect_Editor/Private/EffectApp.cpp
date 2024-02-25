@@ -6,6 +6,7 @@
 #include "Effect_Dummy.h"
 #include "Camera_Main.h"
 #include "Select_Map.h"
+#include "BackGround_Effect.h"
 
 CEffectApp::CEffectApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -329,6 +330,10 @@ HRESULT CEffectApp::Ready_Prototype_GameObject()
 		return E_FAIL;
 	}
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Map"), CSelect_Map::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BG"), CBackGround::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

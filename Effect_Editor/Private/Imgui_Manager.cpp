@@ -19,6 +19,11 @@ const _bool& CImgui_Manager::Has_Light()
 	return m_hasLight;
 }
 
+const _color& CImgui_Manager::Get_BGColor()
+{
+	return m_vBGColor;
+}
+
 HRESULT CImgui_Manager::Init(_dev pDevice, _context pContext, vector<string>* pTextureList, vector<string>* pModelList)
 {
 	m_pDevice = pDevice;
@@ -1554,6 +1559,11 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 
 	End();
 #pragma endregion
+
+	Begin("Background");
+	ColorPicker4("Background Color", reinterpret_cast<_float*>(&m_vBGColor), ImGuiColorEditFlags_Float | ImGuiColorEditFlags_DisplayRGB);
+	End();
+
 }
 
 void CImgui_Manager::Effect_Tick(_float fTimeDelta)
@@ -1631,6 +1641,11 @@ HRESULT CImgui_Manager::Ready_Layers()
 	CamDesc.fFar = 100.f;
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, L"Layer_Camera", TEXT("Prototype_GameObject_Camera"), &CamDesc)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_BG"), TEXT("Prototype_GameObject_BG"))))
 	{
 		return E_FAIL;
 	}

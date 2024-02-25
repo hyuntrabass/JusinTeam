@@ -350,8 +350,7 @@ private:
 	void After_SwordAtt(_float fTimeDelta);
 	void Create_Arrow(ATTACK_TYPE Att_Type);
 	void Check_Att_Collider(ATTACK_TYPE Att_Type);
-	void Set_ExtraStatus()
-		;
+	void Set_ExtraStatus();
 private:
 	HRESULT Add_Riding();
 	void Tick_Riding(_float fTimeDelta);

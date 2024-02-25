@@ -1311,11 +1311,15 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 		case MonAtt_KnockDown:
 		{
 			m_eState = KnockDown;
+			m_pCam_Manager->Set_RidingZoom(false);
+			m_bLockOn = false;
 		}
 		break;
 		case MonAtt_Stun:
 		{
 			m_eState = Stun_Start;
+			m_pCam_Manager->Set_RidingZoom(false);
+			m_bLockOn = false;
 		}
 		break;
 		case MonAtt_Poison:
@@ -2494,7 +2498,7 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 
 	if (RandomPercentage <= m_Status.Critical)
 	{
-		Critical = m_Status.Attack * (_uint)(m_Status.Critical_Dmg * 0.01) - m_Status.Attack;
+		Critical = m_Status.Attack * (_uint)(m_Status.Critical_Dmg * 0.01f) - m_Status.Attack;
 	}
 
 
@@ -2508,22 +2512,22 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 	break;
 	case Client::AT_Sword_Skill1:
 	{
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack * 1.5) + Critical + RandomDmg, Att_Type);
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack * 1.5f) + Critical + RandomDmg, Att_Type);
 	}
 	break;
 	case Client::AT_Sword_Skill2:
 	{
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_uint)(m_Status.Attack * 1.5) + Critical + RandomDmg, Att_Type);
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_uint)(m_Status.Attack * 1.5f) + Critical + RandomDmg, Att_Type);
 	}
 	break;
 	case Client::AT_Sword_Skill3:
 	{
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack * 1.3) + Critical + RandomDmg, Att_Type);
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack * 1.3f) + Critical + RandomDmg, Att_Type);
 	}
 	break;
 	case Client::AT_Sword_Skill4:
 	{
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack * 2) + Critical + RandomDmg, Att_Type);
+		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (m_Status.Attack * 2.f) + Critical + RandomDmg, Att_Type);
 	}
 	break;
 	default:
@@ -3434,7 +3438,7 @@ void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
 			type.MonCollider = m_pGameInstance->Get_Nearest_MonsterCollider();
 		}
 		type.Att_Type = AT_Bow_Skill2;
-		type.iDamage = (m_Status.Attack) * 2.5 + rand() % 30;
+		type.iDamage = (m_Status.Attack) * 2.5f + rand() % 30;
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
 		{
 			return;
@@ -3603,7 +3607,7 @@ void CPlayer::Arrow_Rain()
 	if (m_iArrowRain < 80)
 	{
 		Arrow_Type Type{};
-		Type.iDamage = m_Status.Attack * 0.8 + rand() % 30;
+		Type.iDamage = m_Status.Attack * 0.8f + rand() % 30;
 		Type.Att_Type = AT_Bow_Skill3;
 		_float random = (_float)(rand() % 70);
 		_int randommos = rand() % 2;
@@ -4333,17 +4337,19 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		break;
 	case Client::CPlayer::KnockDown:
 		if (m_Current_Weapon == WP_SWORD)
+		{
 			if (m_pModelCom->IsAnimationFinished(Anim_Assassin_knockdown))
 			{
 				m_eState = Idle;
 			}
-			else
+		}
+		else
+		{
+			if (m_pModelCom->IsAnimationFinished(Anim_Sniper_knockdown))
 			{
-				if (m_pModelCom->IsAnimationFinished(Anim_Sniper_knockdown))
-				{
-					m_eState = Idle;
-				}
+				m_eState = Idle;
 			}
+		}
 		break;
 	case Client::CPlayer::Revival_Start:
 		if (m_pModelCom->IsAnimationFinished(Anim_revival_start))

@@ -25,11 +25,10 @@ public:
 	virtual HRESULT Render() override;
 
 private:
-	NPC_TYPE m_eNPCType = TYPE_END;
+	NPC_TYPE m_eNPCType{ TYPE_END };
 
 	CGameObject* m_pDialog{ nullptr };
-private: // Test
-	static _float m_fOffsetX;
+	_float m_fTimer{};
 
 public:
 	static CNPC_Dummy* Create(_dev pDevice, _context pContext);
