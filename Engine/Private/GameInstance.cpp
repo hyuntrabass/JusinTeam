@@ -1377,6 +1377,14 @@ void CGameInstance::Add_String_to_Stream(const string& strText)
 {
 	m_OutputStream << strText << endl;
 }
+void CGameInstance::Set_FPS(const _uint iFPS)
+{
+	m_iFPS = iFPS;
+}
+const _uint& CGameInstance::Get_FPS()
+{
+	return m_iFPS;
+}
 #endif
 
 _bool CGameInstance::Get_IsPlayingSound(_uint iChannel)

@@ -624,6 +624,7 @@ PS_OUT PS_MotionBlur(PS_IN Input)
     float BDepth;
     
     vector vColor;
+    vColor = g_Texture.Sample(LinearSampler, Input.vTexcoord);
     
     for (uint i = iCnt; i < iNumBlurSample; ++i)
     {

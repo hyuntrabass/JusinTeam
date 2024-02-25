@@ -238,6 +238,9 @@ public: // Get_Set
 	// 콘솔에 출력할 스트림을 가져옴.
 	stringstream& Get_StringStream();
 	void Add_String_to_Stream(const string& strText);
+
+	void Set_FPS(const _uint iFPS);
+	const _uint& Get_FPS();
 #endif
 
 	// 카메라의 near, far를 지정함. 이것도 카메라에서만 호출 할것.
@@ -318,6 +321,7 @@ private:
 #ifdef _DEBUG
 	stringstream m_OutputStream{};
 	string m_strPrevStream{};
+	_uint m_iFPS{};
 #endif
 
 private:
