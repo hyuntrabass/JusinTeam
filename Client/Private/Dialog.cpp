@@ -13,6 +13,11 @@ CDialog::CDialog(const CDialog& rhs)
 {
 }
 
+void CDialog::Set_Text(const wstring& strText)
+{
+	m_strText = strText;
+}
+
 HRESULT CDialog::Init_Prototype()
 {
 	return S_OK;
@@ -51,6 +56,14 @@ void CDialog::Tick(_float fTimeDelta)
 	m_vTextPos = __super::Convert_To_2D(m_pTransformCom);
 	m_fX = m_vTextPos.x;
 	m_fY = m_vTextPos.y;
+
+	m_vTextSize = m_pGameInstance->Get_TextSize(L"Font_Malang", m_strText);
+	m_vTextSize.x *= 1.f / 2.f;
+	m_vTextSize.y *= 1.f / 3.f;
+
+	m_fSizeX = m_vTextSize.x;
+	m_fSizeY = m_vTextSize.y;
+
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
 
