@@ -77,11 +77,11 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_Human_Boss()))
-	{
-		MSG_BOX("Failed to Ready HumanBoss");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Human_Boss()))
+	//{
+	//	MSG_BOX("Failed to Ready HumanBoss");
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(Ready_NPC()))
 	{
@@ -495,11 +495,11 @@ HRESULT CLevel_Village::Ready_Dungeon_Monster()
 		}
 		else if (Info.strMonsterPrototype == TEXT("Prototype_Model_Void23"))
 		{
-			//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void23"), TEXT("Prototype_GameObject_Void23"), &Info)))
-			//{
-			//	MSG_BOX("Void23 积己 角菩");
-			//	return E_FAIL;
-			//}
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void23"), TEXT("Prototype_GameObject_Void23"), &Info)))
+			{
+				MSG_BOX("Void23 积己 角菩");
+				return E_FAIL;
+			}
 
 		}
 
