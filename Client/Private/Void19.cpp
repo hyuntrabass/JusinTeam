@@ -38,7 +38,12 @@ HRESULT CVoid19::Init(void* pArg)
 	m_iHP = 500;
 
 	m_eState = State_Idle;
+	m_ePreState = m_eState;
+
 	m_Animation.iAnimIndex = Anim_roar;
+	m_Animation.bSkipInterpolation = true;
+	_randFloat RandomAnimPos(0.f, 1000.f);
+	m_Animation.fStartAnimPos = RandomAnimPos(m_RandomNumber);
 
 	return S_OK;
 }
@@ -80,15 +85,23 @@ void CVoid19::Init_State(_float fTimeDelta)
 {
 	if (m_IsHitted == true)
 	{
-		m_fHitTime += fTimeDelta;
-
-		m_pShaderCom->Set_PassIndex(1);
-
-		if (m_fHitTime >= 0.3f)
+		if (m_iHP <= 0)
 		{
-			m_fHitTime = 0.f;
+			m_eState = State_Die;
 			m_IsHitted = false;
-			m_pShaderCom->Set_PassIndex(0);
+		}
+		else
+		{
+			m_fHitTime += fTimeDelta;
+
+			m_pShaderCom->Set_PassIndex(1);
+
+			if (m_fHitTime >= 0.3f)
+			{
+				m_fHitTime = 0.f;
+				m_IsHitted = false;
+				m_pShaderCom->Set_PassIndex(0);
+			}
 		}
 	}
 
@@ -110,6 +123,7 @@ void CVoid19::Init_State(_float fTimeDelta)
 			m_Animation.fDurationRatio = 0.1f;
 
 			m_pTransformCom->Delete_Controller();
+			m_pGameInstance->Delete_CollisionObject(this);
 			break;
 		}
 

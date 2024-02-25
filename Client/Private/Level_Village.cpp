@@ -77,11 +77,11 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_Human_Boss()))
+	/*if (FAILED(Ready_Human_Boss()))
 	{
 		MSG_BOX("Failed to Ready HumanBoss");
 		return E_FAIL;
-	}
+	}*/
 
 	if (FAILED(Ready_NPC()))
 	{
@@ -117,13 +117,6 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-
-	//if (FAILED(Ready_SescoGame()))
-	//{
-	//	MSG_BOX("Failed to Ready SescoGame");
-	//	return E_FAIL;
-	//}
-	//
 	m_pGameInstance->Set_FogNF(_vec2(50.f, 2000.f));
 	m_pGameInstance->Set_FogColor(_color(1.f));
 

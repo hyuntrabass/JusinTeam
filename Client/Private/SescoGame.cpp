@@ -18,6 +18,18 @@ HRESULT CSescoGame::Init_Prototype()
 
 HRESULT CSescoGame::Init(void* pArg)
 {
+	//UP
+	m_SpawnPositions.push_back(_vec3(-3000.f, 1.f, 30.f));
+	//DOWN
+	m_SpawnPositions.push_back(_vec3(-3000.f, 1.f, -30.f));
+	//RIGHT
+	m_SpawnPositions.push_back(_vec3(-2970.f, 1.f, 0.f));
+	//LEFT
+	m_SpawnPositions.push_back(_vec3(-3030.f, 1.f, 0.f));
+
+	random_device rand;
+	m_RandomNumber = _randNum(rand());
+
 	return S_OK;
 }
 
@@ -25,19 +37,88 @@ void CSescoGame::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_9))
 	{
-		Kill();
+		m_fTimeLimit = 0.f;
 	}
 
 	m_fTimeLimit -= fTimeDelta;
+
+	if (m_fTimeLimit <= -1.f)
+	{
+		Kill();
+		return;
+	}
+
+#pragma region SpawnVoid19
+
+	if (m_fMonsterSpawnTime == 0.f)
+	{
+		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
+		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Void19");
+
+		_int iNumSpawn{};
+		_randInt RandomDir(0, 3);
+		_randInt RandomPos(5, 20);
+		_randInt RandomSymbol(0, 1);
+
+		while (iNumSpawn <= 5)
+		{
+			_int iSymbol = RandomSymbol(m_RandomNumber);
+			if (iSymbol == 0)
+			{
+				iSymbol = -1;
+			}
+
+			_vec3 vPos{};
+
+			_int iRandom = RandomDir(m_RandomNumber);
+			if (iRandom <= 1)
+			{
+				vPos = m_SpawnPositions[iRandom];
+				vPos.x += RandomPos(m_RandomNumber) * iSymbol;
+				for (auto& Pair : m_Void19Positions)
+				{
+					if (Pair.second == vPos)
+					{
+						continue;
+					}
+				}
+			}
+			else
+			{
+				vPos = m_SpawnPositions[iRandom];
+				vPos.z += RandomPos(m_RandomNumber) * iSymbol;
+				for (auto& Pair : m_Void19Positions)
+				{
+					if (Pair.second == vPos)
+					{
+						continue;
+					}
+				}
+			}
+
+			VTFMonsterDesc.vPosition = vPos;
+			CVTFMonster* pMonster = reinterpret_cast<CVTFMonster*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc));
+			m_Monsters.push_back(pMonster);
+			m_Void19Positions.emplace(pMonster->Get_ID(), vPos);
+			iNumSpawn++;
+		}
+	}
+
+#pragma endregion
+
+	m_fMonsterSpawnTime += fTimeDelta;
 
 	for (auto& pMonster : m_Monsters)
 	{
 		pMonster->Tick(fTimeDelta);
 	}
-
+	//실패 조건
 	if (m_Monsters.size() > m_iMonsterLimit || m_fTimeLimit <= 0.f)
 	{
-		Kill();
+		for (auto& pMonster : m_Monsters)
+		{
+			pMonster->Set_Damage(pMonster->Get_HP());
+		}
 	}
 
 	Release_DeadObjects();
@@ -57,6 +138,10 @@ void CSescoGame::Release_DeadObjects()
 	{
 		if ((*it)->isDead())
 		{
+			if ((*it)->Get_ModelTag() == TEXT("Prototype_Model_VTFMonster_Void19"))
+			{
+				m_Void19Positions.erase((*it)->Get_ID());
+			}
 			Safe_Release(*it);
 			it = m_Monsters.erase(it);
 		}
@@ -99,6 +184,9 @@ void CSescoGame::Free()
 
 	for (auto& pMonster : m_Monsters)
 	{
-		pMonster->Free();
+		Safe_Release(pMonster);
 	}
+	m_Monsters.clear();
+
+	m_Void19Positions.clear();
 }
