@@ -54,9 +54,10 @@ HRESULT CHuman_Boss::Init(void* pArg)
 void CHuman_Boss::Tick(_float fTimeDelta)
 {
 
+
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD8, InputChannel::UI))
 	{
-		
+		int a = 0;
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD9, InputChannel::UI))
 	{
@@ -1323,15 +1324,16 @@ CGameObject* CHuman_Boss::Clone(void* pArg)
 void CHuman_Boss::Free()
 {
 	__super::Free();
+
 	Safe_Release(m_pModelCom);
-	Safe_Release(m_pDimEffect);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pCounterEffect);
 	Safe_Release(m_pRingEffect);
+	Safe_Release(m_pDimEffect);
 	Safe_Release(m_pBaseEffect);
+	Safe_Release(m_pFrameEffect);
 	Safe_Release(m_pAttackEffect);
 	Safe_Release(m_pRendererCom);
-	Safe_Release(m_pFrameEffect);
 	Safe_Release(m_pBodyCollider);
 	Safe_Release(m_pPlayerTransform);
 	Safe_Release(m_pCommonAttCollider);
