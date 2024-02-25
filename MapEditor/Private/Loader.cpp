@@ -288,8 +288,8 @@ HRESULT CLoader::Load_Editor()
 			}
 		}
 	}
-	//Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
-	Pivot = XMMatrixScaling(0.005f, 0.005f, 0.005f);
+	Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	//Pivot = XMMatrixScaling(0.005f, 0.005f, 0.005f);
 
 	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Environment/Grass/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
@@ -486,6 +486,11 @@ HRESULT CLoader::Load_Editor()
 //
 //
 //#pragma endregion Monster
+if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Statue"),
+	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Statue/Mesh/Statue.hyuntraanimmesh"))))
+{
+	return E_FAIL;
+}
 
 #pragma region NPC
 

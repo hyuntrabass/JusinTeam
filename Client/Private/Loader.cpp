@@ -272,6 +272,7 @@ HRESULT CLoader::Load_Logo()
 			{
 				return E_FAIL;
 			}
+			
 		}
 	}
 
@@ -2123,6 +2124,7 @@ HRESULT CLoader::Load_Village()
 				ObjectInfo.strPrototypeTag = ObjectPrototype;
 				ObjectInfo.m_WorldMatrix = ObjectWorldMat;
 				ObjectInfo.eObjectType = Object_Building;
+
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Village_Etc_Object"), &ObjectInfo)))
 				{
 					MSG_BOX("오브젝트 불러오기 실패");
@@ -2202,11 +2204,13 @@ HRESULT CLoader::Load_Village()
 				ObjectInfo.m_WorldMatrix = ObjectWorldMat;
 				ObjectInfo.eObjectType = Object_Environment;
 				ObjectInfo.m_iIndex = (_uint)FIELD;
+
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Envir_Object"), TEXT("Prototype_GameObject_Village_Envir_Object"), &ObjectInfo)))
 				{
 					MSG_BOX("필드 환경오브젝트 불러오기 실패");
 					return E_FAIL;
 				}
+
 			}
 		}
 

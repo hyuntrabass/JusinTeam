@@ -10,6 +10,7 @@ CObjects::CObjects(const CObjects& rhs)
 	: CBlendObject(rhs)
 	, m_Info(rhs.m_Info)
 	, m_isInstancing(rhs.m_isInstancing)
+
 {
 }
 
@@ -27,15 +28,15 @@ HRESULT CObjects::Init(void* pArg)
 
 void CObjects::Tick(_float fTimeDelta)
 {
-	//if(m_isInstancing == false)
-	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+	if(m_isInstancing == false)
+		m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 
 	m_pTransformCom->Set_OldMatrix();
 }
 
 void CObjects::Late_Tick(_float fTimeDelta)
 {
-	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Village)
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Village and CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Tutorial)
 	{
 		return;
 	}
@@ -67,7 +68,7 @@ void CObjects::Late_Tick(_float fTimeDelta)
 		//}
 		else
 		{
-			if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 20.f))
+			if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Village)
 			{
 				m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
 			}
@@ -307,7 +308,10 @@ HRESULT CObjects::Add_Components(wstring strPrototype, ObjectType eType )
 			return E_FAIL;
 		}
 	}
-	Add_Collider();
+
+	if(m_isInstancing == false)
+		Add_Collider();
+
 	return S_OK;
 }
 
@@ -315,7 +319,7 @@ HRESULT CObjects::Add_Collider()
 {
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
-	CollDesc.fRadius = m_pModelCom->Get_Radius();
+	CollDesc.fRadius = m_pModelCom->Get_ModelRadius();
 	CollDesc.vCenter = m_pModelCom->Get_CenterPos();
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Trigger_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))
@@ -375,5 +379,7 @@ void CObjects::Free()
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pColliderCom);
+
+	if (m_isInstancing == false)
+		Safe_Release(m_pColliderCom);
 }

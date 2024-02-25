@@ -70,7 +70,6 @@ void CEnvironment_Object::Late_Tick(_float fTimeDelta)
 		return;
 	}
 
-
 	__super::Late_Tick(fTimeDelta);
 	
 	m_isRendered = true;

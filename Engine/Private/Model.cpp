@@ -740,7 +740,6 @@ _float CModel::Get_ModelRadius()
 	{
 		fFarDistance = _vec3::Distance(vCenter, pMesh->Get_CenterPos());
 		fRadius = max(fRadius, fFarDistance);
-
 	}
 	return fRadius;
 }

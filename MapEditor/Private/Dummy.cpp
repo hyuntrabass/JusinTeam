@@ -46,7 +46,8 @@ HRESULT CDummy::Init(void* pArg)
 	if(m_Info.eType == ItemType::Monster || m_Info.eType == ItemType::NPC)
 	{
 		m_isAnim = true;
-		m_Animation.isLoop = true;
+		m_Animation.iAnimIndex = 0;
+		m_Animation.isLoop = false;
 	}
 	else if (m_Info.eType == ItemType::Trigger)
 	{
@@ -81,6 +82,11 @@ HRESULT CDummy::Init(void* pArg)
 
 void CDummy::Tick(_float fTimeDelta)
 {
+	if (m_eType == ItemType::Environment)
+	{
+		if (m_isRendered)
+			return;
+	}
 	if (m_eType == ItemType::Trigger)
 	{
 		m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
@@ -90,7 +96,7 @@ void CDummy::Tick(_float fTimeDelta)
 void CDummy::Late_Tick(_float fTimeDelta)
 {
 	if (m_eType == ItemType::Monster || m_eType == ItemType::NPC)
-		m_pModelCom->Play_Animation(fTimeDelta);
+		m_pModelCom->Play_Animation(0.f);
 
 	#ifdef _DEBUG
 	if(m_eType == ItemType::Trigger)
@@ -99,13 +105,17 @@ void CDummy::Late_Tick(_float fTimeDelta)
 
 	if (m_eType == ItemType::Environment)
 	{
-		if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
-		{
+		if (m_isRendered)
+			return;
+		//if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
+		//{
 			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
-		}	
+		//}	
 	}
 	else
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+
+	m_isRendered = true;
 
 }
 
@@ -177,7 +187,8 @@ HRESULT CDummy::Render()
 		
 	}
 	
-	
+	m_isRendered = false;
+
 
 	return S_OK;
 }

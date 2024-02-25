@@ -37,6 +37,7 @@ private: // Monster, Boss
 private: // NPC
 	HRESULT Ready_NPC();
 	HRESULT Ready_NPC_Dummy();
+	HRESULT Ready_Statue();
 
 private: // SescoGame
 	HRESULT Ready_SescoGame();

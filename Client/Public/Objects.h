@@ -32,6 +32,7 @@ protected:
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
 	CCollider* m_pColliderCom{ nullptr };
+
 protected:
 
 	ObjectInfo m_Info{};

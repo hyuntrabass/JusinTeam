@@ -17,6 +17,8 @@ HRESULT CStatue::Init_Prototype()
 
 HRESULT CStatue::Init(void* pArg)
 {
+	m_Info = *(Info*)pArg;
+
 	m_strModelTag = TEXT("Prototype_Model_Statue");
 
 	if (FAILED(__super::Add_Components()))
@@ -35,11 +37,23 @@ HRESULT CStatue::Init(void* pArg)
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
+	_vec4 vRight = _vec4(m_Info.MonsterWorldMat._11, m_Info.MonsterWorldMat._12, m_Info.MonsterWorldMat._13, m_Info.MonsterWorldMat._14);
+	_vec4 vUp = _vec4(m_Info.MonsterWorldMat._21, m_Info.MonsterWorldMat._22, m_Info.MonsterWorldMat._23, m_Info.MonsterWorldMat._24);
+	_vec4 vLook = _vec4(m_Info.MonsterWorldMat._31, m_Info.MonsterWorldMat._32, m_Info.MonsterWorldMat._33, m_Info.MonsterWorldMat._34);
+	_vec4 vPos = _vec4(m_Info.MonsterWorldMat._41, m_Info.MonsterWorldMat._42, m_Info.MonsterWorldMat._43, 1.f);
+
+	m_pTransformCom->Set_State(State::Right, vRight);
+	m_pTransformCom->Set_State(State::Up, vUp);
+	m_pTransformCom->Set_State(State::Look, vLook);
+	m_pTransformCom->Set_State(State::Pos, vPos);
+
+	m_iHP = 100;
+
 	//m_pTransformCom->Set_Scale(_vec3(1.5f));
-	m_pTransformCom->Set_Position(_vec3(__super::Compute_PlayerPos()) + _vec3(0.f, 1.f, 0.f)); // Test
+	//m_pTransformCom->Set_Position(_vec3(__super::Compute_PlayerPos()) + _vec3(0.f, 1.f, 0.f)); // Test
 	
 	//m_pTransformCom->LookAt_Dir(_vec4(0.f, 0.f, -1.f, 0.f));
-	m_pTransformCom->LookAt_Dir(__super::Compute_PlayerLook());
+	//m_pTransformCom->LookAt_Dir(__super::Compute_PlayerLook());
 
 	m_pModelCom->Play_Animation(0.f);
 
@@ -74,7 +88,10 @@ void CStatue::Late_Tick(_float fTimeDelta)
 		m_pModelCom->Play_Animation(fTimeDelta);
 	}
 
-	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 20.f))
+	{
+		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	}
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);

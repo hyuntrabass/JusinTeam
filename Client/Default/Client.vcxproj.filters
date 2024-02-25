@@ -490,6 +490,9 @@
     <Filter Include="02.GameObjects\16.SescoGame\VTFMonster\Void19">
       <UniqueIdentifier>{6de5bee6-1aae-49f5-b546-96ce84157a85}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\04.Monster\08. Guard">
+      <UniqueIdentifier>{b9b74782-be19-497f-b2e1-15f9389c07c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">

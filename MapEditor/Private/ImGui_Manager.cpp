@@ -1210,7 +1210,7 @@ HRESULT CImGui_Manager::ImGuiPos()
 		if (m_pSelectedDummy)
 		{
 			CModel* pModel = dynamic_cast<CModel*>(m_pSelectedDummy->Find_Component(L"Com_Model"));
-			m_fRadius = pModel->Get_Radius();
+			m_fRadius = pModel->Get_ModelRadius();
 
 			ImGui::InputFloat("Radius", &m_fRadius);
 		}

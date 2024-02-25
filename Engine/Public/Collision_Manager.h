@@ -19,6 +19,7 @@ public:
 	_bool Attack_Player(class CCollider* pCollider, _uint iDamage, _uint iDamageType);
 	_bool CheckCollision_Player(class CCollider* pCollider); // 필요없음
 	class CCollider* Get_Nearest_MonsterCollider();
+	CollideFace Get_CollideFace(CCollider* pAABBCollider, CCollider* pShereCollider);
 	
 private:
 	map<class CGameObject*, class CCollider*> m_Monsters{};
