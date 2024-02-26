@@ -53,16 +53,16 @@ HRESULT CEnvironment_Object::Init(void* pArg)
 
 void CEnvironment_Object::Tick(_float fTimeDelta)
 {
-	if (m_isRendered)
-		return;
+	//if (m_isRendered)
+	//	return;
 
 	__super::Tick(fTimeDelta);
 }
 
 void CEnvironment_Object::Late_Tick(_float fTimeDelta)
 {
-	if (m_isRendered)
-		return;
+	//if (m_isRendered)
+	//	return;
 
 	CAMERA_STATE CamState = CCamera_Manager::Get_Instance()->Get_CameraState();
 	if (CamState == CS_SKILLBOOK or CamState == CS_INVEN )//or CamState == CS_WORLDMAP)
@@ -72,14 +72,14 @@ void CEnvironment_Object::Late_Tick(_float fTimeDelta)
 
 	__super::Late_Tick(fTimeDelta);
 	
-	m_isRendered = true;
+	//m_isRendered = true;
 
 }
 
 HRESULT CEnvironment_Object::Render()
 {
 	__super::Render();
-	m_isRendered = false;
+	//m_isRendered = false;
 	return S_OK;
 }
 

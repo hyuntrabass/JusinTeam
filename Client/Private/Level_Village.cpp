@@ -405,6 +405,7 @@ HRESULT CLevel_Village::Ready_TreasureBox()
 		}
 	}
 	inFile.close();
+	return S_OK;
 }
 
 HRESULT CLevel_Village::Ready_NpcvsMon()
@@ -499,7 +500,7 @@ HRESULT CLevel_Village::Ready_Village_Monster()
 
 		}
 	}
-
+	inFile.close();
 	return S_OK;
 }
 
@@ -542,6 +543,7 @@ HRESULT CLevel_Village::Ready_Statue()
 		}
 
 	}
+	inFile.close();
 	return S_OK;
 }
 HRESULT CLevel_Village::Ready_Dungeon_Monster()
@@ -622,7 +624,7 @@ HRESULT CLevel_Village::Ready_Dungeon_Monster()
 		}
 
 	}
-
+	inFile.close();
 	return S_OK;
 }
 

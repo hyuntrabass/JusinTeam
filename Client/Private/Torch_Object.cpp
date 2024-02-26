@@ -81,11 +81,6 @@ HRESULT CTorch_Object::Init(void* pArg)
 
 void CTorch_Object::Tick(_float fTimeDelta)
 {
-
-
-	if (m_isRendered)
-		return;
-
 	_float fScale{};
 	_vec3 vFire_Hight{};
 	if (strPrototype == L"Prototype_Model_Wall_Torch")
@@ -120,9 +115,6 @@ void CTorch_Object::Tick(_float fTimeDelta)
 
 void CTorch_Object::Late_Tick(_float fTimeDelta)
 {
-	if (m_isRendered)
-		return;
-
 	CAMERA_STATE CamState = CCamera_Manager::Get_Instance()->Get_CameraState();
 	if (CamState == CS_SKILLBOOK or CamState == CS_INVEN)// or CamState == CS_WORLDMAP)
 	{
@@ -130,15 +122,11 @@ void CTorch_Object::Late_Tick(_float fTimeDelta)
 	}
 	__super::Late_Tick(fTimeDelta);
 	
-	m_isRendered = true;
-
 }
 
 HRESULT CTorch_Object::Render()
 {
-
 	__super::Render();
-	m_isRendered = false;
 
 	return S_OK;
 }
