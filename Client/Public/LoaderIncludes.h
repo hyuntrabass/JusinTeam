@@ -120,6 +120,7 @@
 #include "Roskva.h"
 #include "Aur.h"
 #include "NPC_Dummy.h"
+#include "Guard.h"
 
 // Boss
 #include "Groar_Boss.h"

@@ -40,6 +40,7 @@ private: // NPC
 	HRESULT Ready_NPC();
 	HRESULT Ready_NPC_Dummy();
 	HRESULT Ready_Statue();
+	HRESULT Ready_Guard();
 
 private: // SescoGame
 	HRESULT Ready_SescoGame();
