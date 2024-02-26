@@ -24,8 +24,6 @@ HRESULT CCat::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(75.f, 0.f, 75.f, 1.f));
 	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
 	m_pTransformCom->Set_Speed(1.f);
 

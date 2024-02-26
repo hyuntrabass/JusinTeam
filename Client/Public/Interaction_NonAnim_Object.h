@@ -20,7 +20,15 @@ public:
 	virtual HRESULT Render() override;
 	HRESULT Render_Shadow();
 	HRESULT Render_Instance();
-	_bool Get_Collision() { return m_isCollision; }
+
+private:
+	CTrigger_Manager* m_pTrigger_Manager{ nullptr };
+	CRenderer* m_pRendererCom{ nullptr };
+	CShader* m_pShaderCom{ nullptr };
+	CModel* m_pModelCom{ nullptr };
+	CCollider* m_pColliderCom{ nullptr };
+	CCollider* m_pWideColliderCom{ nullptr };
+
 
 private:
 	PlaceType m_ePlaceType{ PLACE_END };
@@ -32,14 +40,16 @@ private:
 	_bool m_isWideCollision{ false };
 	_bool m_isCollect{};
 
-private:
-	CTrigger_Manager* m_pTrigger_Manager{ nullptr };
-	CRenderer* m_pRendererCom{ nullptr };
-	CShader* m_pShaderCom{ nullptr };
-	CModel* m_pModelCom{ nullptr };
-	CCollider* m_pColliderCom{ nullptr };
-	CCollider* m_pWideColliderCom{ nullptr };
+	_float m_fTime{};
+	_float m_fDir{ 1.f };
+
+	class CTextButtonColor* m_pBar{ nullptr };
+	CGameObject* m_pBG{ nullptr };
 	CGameObject* m_pNameTag{ nullptr };
+	class C3DUITex* m_pSpeechBubble{ nullptr };
+	class CItem* m_pItem{ nullptr };
+
+
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

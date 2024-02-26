@@ -37,8 +37,6 @@ public:
 	virtual HRESULT Render() override;
 
 private:
-
-private:
 	ROSKVA_STATE				m_eState{ TALK };
 	_bool						m_bTalking = { false };
 	_bool						m_bNextDialog = { false };

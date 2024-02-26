@@ -54,7 +54,7 @@ HRESULT CPlayer::Init(void* pArg)
 	Change_Parts(PT_HAIR, 0);
 	Change_Parts(PT_FACE, 0);
 
-	m_pGameInstance->Register_CollisionObject(this, m_pHitCollider, true, m_pAttCollider[AT_Bow_Common], m_pParryingCollider);
+	m_pGameInstance->Register_CollisionObject(this, m_pHitCollider, true, m_pParryingCollider);
 
 	SURFACETRAIL_DESC Desc{};
 	Desc.vColor = _color(1.f, 0.5f, 0.1f, 1.f);
@@ -117,6 +117,10 @@ HRESULT CPlayer::Init(void* pArg)
 void CPlayer::Tick(_float fTimeDelta)
 {
 
+	if (m_pGameInstance->Key_Down(DIK_B, InputChannel::GamePlay))
+	{
+		CEvent_Manager::Get_Instance()->Update_Quest(TEXT("몬스터 처치"));
+	}
 	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
 	{
 		return;
@@ -380,6 +384,10 @@ void CPlayer::Tick(_float fTimeDelta)
 					Summon_Riding(Desc);
 					m_eState = Mount;
 				}
+				else
+				{
+					CEvent_Manager::Get_Instance()->Set_Alert(TEXT("지상 탈 것을 장착하세요."));
+				}
 			}
 			else
 			{
@@ -504,7 +512,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		Arrow_Rain();
 	}
 
-	for (int i = 0; i < AT_Bow_Skill1; i++)
+	for (int i = 0; i < AT_Bow_Common; i++)
 	{
 		_mat offset = /*_mat::CreateScale(_vec3(1.f,6.5f,1.f))* */_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f));
 		m_pAttCollider[i]->Update(offset * m_pTransformCom->Get_World_Matrix());
@@ -658,6 +666,8 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		}
 		dynamic_cast<CTextButtonColor*>(m_pAim)->Set_Pass(VTPass_Mask_ColorAlpha);
 		CUI_Manager::Get_Instance()->Set_Mp(m_Status.Current_Mp, m_Status.Max_Mp);
+		CEvent_Manager::Get_Instance()->Set_Quest(TEXT("몬스터 처치"));
+
 	}
 
 
@@ -1256,18 +1266,11 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 	m_Status.Current_Hp -= (iDamage - iDamage * (_int)(m_Status.Armor / 0.01));
 
 
-
-	CHitEffect::HITEFFECT_DESC Desc{};
 	_int iRandomX = rand() % 100;
 	_int iRandomY = rand() % 50 + 130;
-	Desc.iDamage = iDamage;
-	Desc.pParentTransform = m_pTransformCom;
-	Desc.isPlayer = true;
-	Desc.vTextPosition = _vec2((_float)(iRandomX - 50) * 0.01f, (_float)iRandomY * 0.01f);
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
-	{
-		return;
-	}
+	_vec2 vDamagePos = _vec2((_float)(iRandomX - 50) * 0.01f, (_float)iRandomY * 0.01f);
+	CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, vDamagePos, (ATTACK_TYPE)MonAttType, true);
+
 	CUI_Manager::Get_Instance()->Set_Hp(m_Status.Current_Hp, m_Status.Max_Hp);
 
 	if (m_Status.Current_Hp <= 0)
@@ -1511,7 +1514,8 @@ void CPlayer::Move(_float fTimeDelta)
 
 	if (m_eState == Revival_Start or m_eState == Revival_End
 		or m_eState == KnockDown or m_eState == Stun_Start
-		or m_eState == Stun or m_eState == Die or m_eState == Jump_Long_End)
+		or m_eState == Stun or m_eState == Die or m_eState == Jump_Long_End
+		 or m_eState == Collect_Start or m_eState == Collect_Loop or m_eState == Collect_End)
 	{
 		m_pTransformCom->Gravity(fTimeDelta);
 		return;
@@ -1622,7 +1626,7 @@ void CPlayer::Move(_float fTimeDelta)
 			if (m_eState == Idle or m_eState == Run_Start or m_eState == Run or m_eState == Run_End
 				or m_eState == Walk or m_eState == Jump_Start or m_eState == Jump_End or m_eState == Attack_Idle)
 			{
-				if (m_Current_Weapon == WP_SWORD)
+				if (m_Current_Weapon == WP_SWORD and CUI_Manager::Get_Instance()->Get_CustomPart(PT_BOW) != BOW_UNEQUIP)
 				{
 					CUI_Manager::Get_Instance()->Set_WeaponType(WP_BOW);
 					WEAPON_TYPE eWpType{};
@@ -1633,7 +1637,7 @@ void CPlayer::Move(_float fTimeDelta)
 					Change_Weapon(WP_BOW, BOW0);
 					*/
 				}
-				else
+				else if (m_Current_Weapon == WP_BOW and CUI_Manager::Get_Instance()->Get_CustomPart(PT_SWORD) != SWORD_UNEQUIP)
 				{
 					CUI_Manager::Get_Instance()->Set_WeaponType(WP_SWORD);
 					WEAPON_TYPE eWpType{};
@@ -1666,7 +1670,7 @@ void CPlayer::Move(_float fTimeDelta)
 	if (m_pGameInstance->Mouse_Pressing(DIM_RBUTTON))
 	{
 		if (m_Current_Weapon == WP_BOW && m_eState != AimMode_End && m_eState != Hit &&
-			m_eState != KnockDown && m_eState != Stun && m_eState != Stun_Start && m_eState != AimMode)
+			m_eState != KnockDown && m_eState != Stun && m_eState != Stun_Start && m_eState != AimMode && m_Weapon_CurrentIndex != BOW_UNEQUIP)
 		{
 			if (!m_bLockOn)
 			{
@@ -2140,7 +2144,7 @@ void CPlayer::Common_Attack()
 		m_pTransformCom->LookAt_Dir(vCamLook);
 	}
 
-	m_pAttCollider[AT_Bow_Common]->Update(_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f)) * m_pTransformCom->Get_World_Matrix());
+	m_pAttCollider[AT_Sword_Skill4]->Update(_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f)) * m_pTransformCom->Get_World_Matrix());
 	if (m_Current_Weapon == WP_SWORD)
 	{
 		m_Animation.fAnimSpeedRatio = 3.f;
@@ -2185,7 +2189,7 @@ void CPlayer::Common_Attack()
 	else if (m_Current_Weapon == WP_BOW)
 	{
 
-		if (m_bLockOn)
+		if (!m_bLockOn)
 		{
 			m_Animation.fAnimSpeedRatio = 4.5;
 			CCollider* pMonCollider = m_pGameInstance->Get_Nearest_MonsterCollider();
@@ -2193,7 +2197,7 @@ void CPlayer::Common_Attack()
 			{
 				_vec4 vMonPos = _vec4(pMonCollider->Get_ColliderPos(), 1.f);
 				vMonPos.y = m_pTransformCom->Get_State(State::Pos).y;
-				//m_pTransformCom->LookAt(vMonPos);
+				m_pTransformCom->LookAt(vMonPos);
 			}
 		}
 		else
@@ -2246,7 +2250,7 @@ void CPlayer::Skill1_Attack()
 	_vec4 vCamLook = m_pGameInstance->Get_CameraLook();
 	vCamLook.y = 0.f;
 	m_pTransformCom->LookAt_Dir(vCamLook);
-	m_pAttCollider[AT_Bow_Common]->Update(_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f)) * m_pTransformCom->Get_World_Matrix());
+	m_pAttCollider[AT_Sword_Skill4]->Update(_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f)) * m_pTransformCom->Get_World_Matrix());
 	if (m_Current_Weapon == WP_SWORD)
 	{
 		m_pTransformCom->Set_Speed(6.f);
@@ -2284,7 +2288,7 @@ void CPlayer::Skill2_Attack()
 	_vec4 vCamLook = m_pGameInstance->Get_CameraLook();
 	vCamLook.y = 0.f;
 	m_pTransformCom->LookAt_Dir(vCamLook);
-	m_pAttCollider[AT_Bow_Common]->Update(_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f)) * m_pTransformCom->Get_World_Matrix());
+	m_pAttCollider[AT_Sword_Skill4]->Update(_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f)) * m_pTransformCom->Get_World_Matrix());
 	if (m_Current_Weapon == WP_SWORD)
 	{
 		m_Animation.iAnimIndex = m_SwordSkill[1];
@@ -2321,7 +2325,7 @@ void CPlayer::Skill3_Attack()
 	_vec4 vCamLook = m_pGameInstance->Get_CameraLook();
 	vCamLook.y = 0.f;
 	m_pTransformCom->LookAt_Dir(vCamLook);
-	m_pAttCollider[AT_Bow_Common]->Update(_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f)) * m_pTransformCom->Get_World_Matrix());
+	m_pAttCollider[AT_Sword_Skill4]->Update(_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f)) * m_pTransformCom->Get_World_Matrix());
 	if (m_Current_Weapon == WP_SWORD)
 	{
 		m_Animation.iAnimIndex = m_SwordSkill[2];
@@ -2371,7 +2375,7 @@ void CPlayer::Skill4_Attack()
 		vCamLook.y = 0.f;
 		m_pTransformCom->LookAt_Dir(vCamLook);
 		_mat offset = _mat::CreateTranslation(_vec3(0.f, 1.f, 0.f));
-		m_pAttCollider[AT_Bow_Common]->Update(offset * m_pTransformCom->Get_World_Matrix());
+		m_pAttCollider[AT_Sword_Skill4]->Update(offset * m_pTransformCom->Get_World_Matrix());
 		if (m_bLockOn)
 		{
 
@@ -2525,28 +2529,67 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 	{
 	case Client::AT_Sword_Common:
 	{
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], m_Status.Attack + Critical + RandomDmg, Att_Type);
+		if (Critical == 0)
+		{
+			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], m_Status.Attack  + RandomDmg, Att_Type);
 
+		}
+		else
+		{
+			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], m_Status.Attack + Critical + RandomDmg, AT_Critical);
+		}
 	}
 	break;
 	case Client::AT_Sword_Skill1:
 	{
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.5f) + Critical + RandomDmg, Att_Type);
+		if (Critical == 0)
+		{
+			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.5f)  + RandomDmg, Att_Type);
+		}
+		else
+		{
+			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.5f) + Critical + RandomDmg, AT_Critical);
+		}
 	}
 	break;
 	case Client::AT_Sword_Skill2:
 	{
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.5f) + Critical + RandomDmg, Att_Type);
+		if (Critical == 0)
+		{
+			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.5f)  + RandomDmg, Att_Type);
+		}
+		else
+		{
+			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.5f) + Critical + RandomDmg, AT_Critical);
+
+		}
 	}
 	break;
 	case Client::AT_Sword_Skill3:
 	{
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.3f) + Critical + RandomDmg, Att_Type);
+		if (Critical == 0)
+		{
+			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.3f)  + RandomDmg, Att_Type);
+		}
+		else
+		{
+			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.3f) + Critical + RandomDmg, AT_Critical);
+
+		}
+		
 	}
 	break;
 	case Client::AT_Sword_Skill4:
 	{
-		m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 2.f) + Critical + RandomDmg, Att_Type);
+		if (Critical == 0)
+		{
+			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 2.f)  + RandomDmg, Att_Type);
+
+		}
+		else
+		{
+			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 2.f) + RandomDmg, AT_Critical);
+		}
 	}
 	break;
 	default:
@@ -2590,6 +2633,8 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					if (!m_bAttacked)
 					{
+						m_pRendererCom->Set_RadialBlur_Power(0.6f);
+						m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
 						Check_Att_Collider(AT_Sword_Common);
 						if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Common]))
 						{
@@ -2610,8 +2655,10 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					}
 
 				}
-				else
+				else if(Index>=22.f && Index<=24.f)
 				{
+					m_pRendererCom->Set_RadialBlur_Power(0.f);
+
 					m_pGameInstance->Set_TimeRatio(1.f);
 				}
 			}
@@ -2641,6 +2688,8 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				{
 					if (!m_bAttacked)
 					{
+						m_pRendererCom->Set_RadialBlur_Power(0.6f);
+						m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
 						Check_Att_Collider(AT_Sword_Common);
 						if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Common]))
 						{
@@ -2658,8 +2707,10 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						m_pGameInstance->Set_TimeRatio(1.f);
 					}
 				}
-				else
+				else if (Index >= 25.f && Index <= 27.f)
 				{
+					m_pRendererCom->Set_RadialBlur_Power(0.f);
+
 					m_pGameInstance->Set_TimeRatio(1.f);
 				}
 			}
@@ -2689,6 +2740,8 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 					if (!m_bAttacked)
 					{
+						m_pRendererCom->Set_RadialBlur_Power(0.6f);
+						m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
 						Check_Att_Collider(AT_Sword_Common);
 						if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Common]))
 						{
@@ -2704,8 +2757,10 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						m_pGameInstance->Set_TimeRatio(1.f);
 					}
 				}
-				else
+				else if (Index >= 23.f && Index <= 25.f)
 				{
+					m_pRendererCom->Set_RadialBlur_Power(0.f);
+
 					m_pGameInstance->Set_TimeRatio(1.f);
 				}
 
@@ -2717,6 +2772,13 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			{
 				if (Index >= 7.5f && Index <= 25.f)
 				{
+					if (!m_bRadialOn)
+					{
+						m_pRendererCom->Set_RadialBlur_Power(2.f);
+						m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
+						m_bRadialOn = true;
+					}
+					
 					m_pTransformCom->Set_Speed(m_fSkillSpeed);
 					m_pTransformCom->Go_Straight(fTimeDelta);
 					if (!m_bComboZoom)
@@ -2725,6 +2787,14 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						m_bComboZoom = true;
 					}
 
+				}
+				else if (Index >= 26.f && Index <= 28.f)
+				{
+					if (m_bRadialOn)
+					{
+						m_pRendererCom->Set_RadialBlur_Power(0.f);
+						m_bRadialOn = false;
+					}
 				}
 				if (Index >= 15.5f && Index <= 40.f)
 				{
@@ -2803,6 +2873,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 		if (Index >= 9.f && Index < 13.f)
 		{
+			
 			m_pLeft_Trail->Set_Color(_color(Colors::MediumPurple));
 			m_pRight_Trail->Set_Color(_color(Colors::MediumPurple));
 			m_pLeft_Trail->On();
@@ -2810,7 +2881,14 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 			m_pRight_Trail->On();
 			m_pRight_Distortion_Trail->On();
 		}
-
+		if (Index >= 14.f && Index < 16.f)
+		{
+			if (m_bRadialOn)
+			{
+				
+				m_bRadialOn = false;
+			}
+		}
 		if (Index >= 5.f && Index < 15.f)
 		{
 			m_pTransformCom->Set_Speed(3.f);
@@ -2824,6 +2902,12 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		{
 			if (!m_bAttacked)
 			{
+				if (!m_bRadialOn)
+				{
+					m_pRendererCom->Set_RadialBlur_Power(0.7f);
+					m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
+					m_bRadialOn = true;
+				}
 				Check_Att_Collider(AT_Sword_Skill1);
 				if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Skill1]))
 				{
@@ -2836,12 +2920,14 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		}
 		else if (Index > 13.5f && Index <= 15.5f)
 		{
+			
 			m_bAttacked = false;
 		}
 		else if (Index >= 15.5f && Index <= 17.5f)
 		{
 			if (!m_bAttacked)
 			{
+				m_pRendererCom->Set_RadialBlur_Power(0.f);
 				Check_Att_Collider(AT_Sword_Skill1);
 				if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Skill1]))
 				{
@@ -2890,6 +2976,9 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		{
 			if (!m_bAttacked)
 			{
+			
+				m_pRendererCom->Set_RadialBlur_Power(1.f);
+				m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
 				Check_Att_Collider(AT_Sword_Skill2);
 				if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Skill2]))
 				{
@@ -2904,11 +2993,14 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		else if (Index > 33.f && Index <= 35.f)
 		{
 			m_bAttacked = false;
+			m_pRendererCom->Set_RadialBlur_Power(0.f);
 		}
 		else if (Index >= 36.f && Index <= 40.f)
 		{
 			if (!m_bAttacked)
 			{
+				m_pRendererCom->Set_RadialBlur_Power(1.f);
+				m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
 				Check_Att_Collider(AT_Sword_Skill2);
 				if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Skill2]))
 				{
@@ -2922,12 +3014,16 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		}
 		else if (Index > 40.f && Index <= 43.f)
 		{
+			m_pRendererCom->Set_RadialBlur_Power(0.f);
+
 			m_bAttacked = false;
 		}
 		else if (Index >= 52.f && Index <= 54.f)
 		{
 			if (!m_bAttacked)
 			{
+				m_pRendererCom->Set_RadialBlur_Power(1.f);
+				m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
 				Check_Att_Collider(AT_Sword_Skill2);
 				if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Skill2]))
 				{
@@ -2941,12 +3037,16 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		}
 		else if (Index > 55.f && Index <= 57.f)
 		{
+			m_pRendererCom->Set_RadialBlur_Power(0.f);
+		
 			m_bAttacked = false;
 		}
 		else if (Index >= 65.f && Index <= 67.f)
 		{
 			if (!m_bAttacked)
 			{
+				m_pRendererCom->Set_RadialBlur_Power(1.f);
+				m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
 				Check_Att_Collider(AT_Sword_Skill2);
 				if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Skill2]))
 				{
@@ -2958,8 +3058,13 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 			}
 		}
+		else if (Index >= 67.f && Index<=69.f)
+		{
+			m_pRendererCom->Set_RadialBlur_Power(0.f);
+		}
 		else if (Index >= 74.f && !m_bMove_AfterSkill)
 		{
+
 			m_bMove_AfterSkill = true;
 		}
 		else
@@ -2986,12 +3091,16 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		}
 		else if (Index >= 15.f && Index <= 27.f)
 		{
+			
 			Cam_AttackZoom(2.5f);
 			m_pTransformCom->Set_Speed(m_fSkillSpeed);
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
-
-
+		if (Index >= 19.f && Index <= 30.f)
+		{
+			m_pRendererCom->Set_RadialBlur_Power(2.f);
+			m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
+		}
 		if (Index >= 27.f && Index <= 29.f)
 		{
 			if (!m_bAttacked)
@@ -3014,6 +3123,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		{
 			if (!m_bAttacked)
 			{
+				m_pRendererCom->Set_RadialBlur_Power(0.f);
 				Check_Att_Collider(AT_Sword_Skill3);
 				if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Skill3]))
 				{
@@ -3094,6 +3204,8 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		{
 			if (!m_bAttacked)
 			{
+				m_pRendererCom->Set_RadialBlur_Power(2.f);
+				m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.4f, 0.4f));
 				Check_Att_Collider(AT_Sword_Skill4);
 				if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Skill4]))
 				{
@@ -3118,6 +3230,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		}
 		else if (Index >= 18.f && Index < 24.f)
 		{
+			m_pRendererCom->Set_RadialBlur_Power(0.f);
 			m_bAttacked = false;
 			m_pCam_Manager->Set_AimMode(false);
 		}
@@ -3125,6 +3238,8 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		{
 			if (!m_bAttacked)
 			{
+				m_pRendererCom->Set_RadialBlur_Power(2.f);
+				m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.6f, 0.4f));
 				Check_Att_Collider(AT_Sword_Skill4);
 				if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Skill4]))
 				{
@@ -3140,6 +3255,8 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		}
 		else if (Index >= 33.f && Index <= 35.f)
 		{
+			m_pRendererCom->Set_RadialBlur_Power(0.f);
+
 			m_pCam_Manager->Set_AimMode(false);
 			m_bAttacked = false;
 		}
@@ -3147,6 +3264,8 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		{
 			if (!m_bAttacked)
 			{
+				m_pRendererCom->Set_RadialBlur_Power(0.4f);
+				m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
 				Check_Att_Collider(AT_Sword_Skill4);
 				if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Skill4]))
 				{
@@ -3161,12 +3280,15 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		}
 		else if (Index >= 59.f && Index <= 62.f)
 		{
+			m_pRendererCom->Set_RadialBlur_Power(0.f);
 			m_bAttacked = false;
 		}
 		else if (Index >= 67.f && Index <= 69.f)
 		{
 			if (!m_bAttacked)
 			{
+				m_pRendererCom->Set_RadialBlur_Power(0.4f);
+				m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
 				Check_Att_Collider(AT_Sword_Skill4);
 				if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Skill4]))
 				{
@@ -3178,6 +3300,10 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				m_pCam_Manager->Set_ShakeCam(true, 0.5f);
 			}
 			Cam_AttackZoom(4.4f);
+		}
+		else if (Index >= 70.f && Index <= 72.f)
+		{
+			m_pRendererCom->Set_RadialBlur_Power(0.f);
 		}
 		else if (Index >= 80.f && !m_bMove_AfterSkill)
 		{
@@ -3195,6 +3321,28 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		switch (m_iAttackCombo)
 		{
 		case 1:
+			if (Index >= 5.f && Index <= 8.f)
+			{
+				if (m_fRadialPower < 1.f)
+				{
+					m_fRadialPower += fTimeDelta * 2.f;
+					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
+				}
+				m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.5f, 0.5f));
+			}
+			else if (Index >= 8.f && Index <= 11.f)
+			{
+				if (m_fRadialPower > 0.f)
+				{
+					m_fRadialPower -= fTimeDelta * 2.f;
+					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
+				}
+			}
+			else if (Index >= 11.f && Index <= 13.f)
+			{
+				m_fRadialPower = 0.f;
+				m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
+			}
 			if (Index >= 4.f && Index <= 5.f && !m_bLockOn)
 			{
 				Cam_AttackZoom(2.5f);
@@ -3202,62 +3350,116 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 			}
 			else if (Index >= 5.f && Index <= 7.f && m_ReadyArrow)
 			{
+				
 				Create_Arrow(AT_Bow_Common);
 				m_pGameInstance->Set_TimeRatio(0.3f);
 				m_ReadyArrow = false;
 			}
-			else
+			else if(Index>=7.f&&Index<=9.f)
 			{
+				
 				m_pGameInstance->Set_TimeRatio(1.f);
 			}
+		
 			break;
 		case 2:
 			if (Index >= 5.f && Index <= 6.f && !m_bLockOn)
 			{
 				m_fAttackZoom += 0.7f;
+				m_fRadialPower = 0.f;
 			}
 			else if (Index >= 6.f && Index <= 8.f && m_ReadyArrow)
 			{
-
+				if (m_fRadialPower < 0.6f)
+				{
+					m_fRadialPower += fTimeDelta *2.f;
+					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
+				}
+				m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.5f, 0.5f));
 				Create_Arrow(AT_Bow_Common);
 				m_pGameInstance->Set_TimeRatio(0.3f);
 				m_ReadyArrow = false;
 			}
-			else
+			else if (Index >= 8.f && Index <= 10.f)
 			{
+				if (m_fRadialPower > 0.f)
+				{
+					m_fRadialPower -= fTimeDelta * 2.f;
+					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
+				}
 				m_pGameInstance->Set_TimeRatio(1.f);
+			}
+			else if (Index >= 10.f && Index <= 12.f)
+			{
+				m_fRadialPower = 0.f;
+				m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
 			}
 			break;
 		case 3:
 			if (Index >= 6.f && Index <= 7.f)
 			{
+				m_fRadialPower = 0.f;
 				m_fAttackZoom += 0.7f;
 			}
 			else if (Index >= 7.f && Index <= 9.f && m_ReadyArrow)
 			{
+				if (m_fRadialPower < 1.f)
+				{
+					m_fRadialPower += fTimeDelta * 2.f;
+					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
+				}
+				m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.5f, 0.5f));
 				Create_Arrow(AT_Bow_Common);
 				m_pGameInstance->Set_TimeRatio(0.3f);
 				m_ReadyArrow = false;
 			}
-			else
+			else if (Index >= 9.f && Index <= 11.f)
 			{
+				if (m_fRadialPower > 0.f)
+				{
+					m_fRadialPower -= fTimeDelta * 2.f;
+					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
+				}
 				m_pGameInstance->Set_TimeRatio(1.f);
+			}
+			else if (Index >= 11.f && Index <= 13.f)
+			{
+				m_fRadialPower = 0.f;
+				m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
 			}
 			break;
 		case 4:
 			if (Index >= 5.f && Index <= 6.f)
 			{
+				m_fRadialPower = 0.f;
 				m_fAttackZoom += 0.7f;
 			}
 			else if (Index >= 2.f && Index <= 4.f && m_ReadyArrow)
 			{
+				if (m_fRadialPower < 0.6f)
+				{
+					m_fRadialPower += fTimeDelta * 2.f;
+					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
+				}
+				m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.5f, 0.5f));
 				Create_Arrow(AT_Bow_Common);
 				m_pGameInstance->Set_TimeRatio(0.3f);
 				m_ReadyArrow = false;
 			}
-			else
+			else if (Index >= 4.f && Index <= 6.f)
 			{
+
+				if (m_fRadialPower > 0.f)
+				{
+					m_fRadialPower -= fTimeDelta * 2.f;
+					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
+				}
 				m_pGameInstance->Set_TimeRatio(1.f);
+			}
+			else if (Index >= 6.f && Index <= 8.f)
+			{
+				m_fRadialPower = 0.f;
+				m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
 			}
 			break;
 		default:
@@ -3269,6 +3471,11 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 
 		if (Index >= 16.f && Index <= 19.f && m_ReadyArrow)
 		{
+			if (m_bLockOn)
+			{
+				m_pRendererCom->Set_RadialBlur_Power(1.f);
+				m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.5f, 0.5f));
+			}
 			Create_Arrow(AT_Bow_Skill1);
 			m_ReadyArrow = false;
 		}
@@ -3283,6 +3490,7 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		}
 		else if (Index > 33.f && Index <= 35.f && !m_ReadyArrow)
 		{
+
 			m_ReadyArrow = true;
 		}
 		else if (Index >= 47.f && Index <= 49.f && m_ReadyArrow)
@@ -3290,8 +3498,13 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 			Create_Arrow(AT_Bow_Skill1);
 			m_ReadyArrow = false;
 		}
+		else if (Index >= 55.f && Index <= 57.f)
+		{
+			m_pRendererCom->Set_RadialBlur_Power(0.f);
+		}
 		else if (Index >= 64.f && !m_bMove_AfterSkill)
 		{
+			
 			m_bMove_AfterSkill = true;
 		}
 	}
@@ -3301,11 +3514,14 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		{
 			if (Index >= 29.f && Index <= 34.f)
 			{
+				m_pRendererCom->Set_RadialBlur_Power(1.4f);
+				m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.5f, 0.5f));
 				m_pGameInstance->Set_TimeRatio(0.2f);
 				Cam_AttackZoom(10.f);
 			}
 			else if (Index >= 35.f && Index <= 37.f)
 			{
+				m_pRendererCom->Set_RadialBlur_Power(0.f);
 				Cam_AttackZoom(0.f);
 			}
 			else
@@ -3366,6 +3582,11 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		}
 		if (Index >= 26.f && Index <= 28.f)
 		{
+			if (!m_bAttacked)
+			{
+				Create_Arrow(AT_Bow_Skill4);
+				m_bAttacked = true;
+			}
 			m_pCam_Manager->Set_ShakeCam(true, 1.f);
 			m_pGameInstance->Set_TimeRatio(0.2f);
 			m_UsingMotionBlur = true;
@@ -3397,16 +3618,16 @@ void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
 	_mat OffsetMat{};
 	if (m_bLockOn)
 	{
-		OffsetMat = _mat::CreateTranslation(_vec3(0.f, 1.8f, 0.f));
+		OffsetMat = _mat::CreateTranslation(_vec3(0.1f, 0.f, 0.7f));
 	}
 	else
 	{
-		OffsetMat = _mat::CreateTranslation(_vec3(0.f, 1.4f, 0.f));
+		OffsetMat = _mat::CreateTranslation(_vec3(0.1f, 0.f, 0.7f));
 	}
 
 	_mat BoneMat = (*m_pModelCom->Get_BoneMatrix("bowstring"));
-
-	_mat ArrowMat = OffsetMat * BoneMat * m_pTransformCom->Get_World_Matrix();
+	BoneMat.RemoveRotation();
+	_mat ArrowMat = OffsetMat* BoneMat * m_pTransformCom->Get_World_Matrix();
 	Arrow_Type type{};
 
 
@@ -3499,8 +3720,17 @@ void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
 	{
 		type.world = ArrowMat;
 		type.vLook = m_pTransformCom->Get_State(State::Look);
-		type.vLook.y -= 0.25f;
-		type.Att_Type = AT_Bow_Skill4;
+		type.iDamage = (_int)(m_Status.Attack * 1.5) + rand() % 10;
+		type.Att_Type = Att_Type;
+
+		if (m_bLockOn)
+		{
+			type.bAimMode = true;
+		}
+		else
+		{
+			type.MonCollider = m_pGameInstance->Get_Nearest_MonsterCollider();
+		}
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
 		{
 			return;
@@ -3684,6 +3914,7 @@ void CPlayer::Init_State()
 	m_pGameInstance->Get_Nearest_MonsterCollider();
 	if (m_eState != m_ePrevState)
 	{
+		m_pRendererCom->Set_RadialBlur_Power(0.f);
 		m_ReadyArrow = true;
 		m_Animation.isLoop = false;
 		m_Animation.bRewindAnimation = false;
@@ -4262,10 +4493,13 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		}
 		else if (m_Current_Weapon == WP_BOW)
 		{
-			if (m_pModelCom->IsAnimationFinished(m_BowSkill[3]))
+			if (m_bLockOn)
 			{
-				m_eState = AimMode;
+				if (m_pModelCom->IsAnimationFinished(m_BowSkill[3]))
+				{
+					m_eState = AimMode;
 
+				}
 			}
 			else
 			{
@@ -4580,18 +4814,6 @@ HRESULT CPlayer::Add_Components()
 	}
 
 
-	CollDesc.eType = ColliderType::Frustum;
-	_mat matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
-	_mat matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(50.f), 2.f, 0.01f, 20.f);
-
-
-	CollDesc.matFrustum = matView * matProj;
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_CommonBow_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Bow_Common]), &CollDesc)))
-	{
-		return E_FAIL;
-	}
-
 	return S_OK;
 }
 
@@ -4710,7 +4932,7 @@ void CPlayer::Free()
 
 
 
-	for (int i = 0; i < AT_End; i++)
+	for (int i = 0; i < AT_Bow_Common; i++)
 	{
 		Safe_Release(m_pAttCollider[i]);
 	}

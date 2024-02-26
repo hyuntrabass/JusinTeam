@@ -43,6 +43,8 @@ HRESULT CCamera_Main::Init(void* pArg)
 	m_pCam_Manager = CCamera_Manager::Get_Instance();
 	Safe_AddRef(m_pCam_Manager);
 
+	m_pGameInstance->Register_CamCollider(m_pColliderCom);
+
 	return S_OK;
 }
 
@@ -719,6 +721,20 @@ void CCamera_Main::BrickGame_Mode(_float fTimeDelta)
 	m_pTransformCom->LookAt_Dir(_vec4(-0.004f, -0.500f, -0.866f, 0.f));
 }
 
+void CCamera_Main::Collect_Mode(_float fTimeDelta)
+{
+	_vec4 vCurrentPos = m_pTransformCom->Get_State(State::Pos);
+
+	float lerpFactor = 0.1f;
+	_vec3 vTargetPos = m_pPlayerTransform->Get_CenterPos();
+	vTargetPos.z = vTargetPos.z - 3.f;
+
+	_vec4 vNewPos = XMVectorLerp(vCurrentPos, vTargetPos, lerpFactor);
+
+	m_pTransformCom->Set_State(State::Pos, vNewPos);
+
+}
+
 
 void CCamera_Main::WorldMap_Mode(_float fTimeDelta)
 {
@@ -839,6 +855,9 @@ void CCamera_Main::Init_State(_float fTimeDelta)
 		case Client::CS_BRICKGAME:
 			m_vOriginalLook = m_pTransformCom->Get_State(State::Look);
 			break;
+		case Client::CS_COLLECT:
+			m_vOriginalLook = m_pTransformCom->Get_State(State::Look);
+			break;
 		}
 
 		m_ePrevState = m_eCurrState;
@@ -885,6 +904,9 @@ void CCamera_Main::Tick_State(_float fTimeDelta)
 		break;
 	case Client::CS_BRICKGAME:
 		BrickGame_Mode(fTimeDelta);
+		break;
+	case Client::CS_COLLECT:
+		Collect_Mode(fTimeDelta);
 		break;
 	}
 }

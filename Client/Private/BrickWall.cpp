@@ -89,14 +89,43 @@ HRESULT CBrickWall::Init(void* pArg)
 
 	m_shouldRenderBlur = true;
 
-
+	m_pTransformCom->Set_Scale(_vec3(1.f, 30.f, 27.f));
 	m_pColliderCom->Set_Normal();
 	return S_OK;
 }
 
 void CBrickWall::Tick(_float fTimeDelta)
 {
-	
+
+	if (m_rcRect.top == 1)
+	{
+		m_pTransformCom->Set_Scale(_vec3(1.f, 30.f, 23.f));
+		_vec3 vPos = _vec3(-2000.06f, 12.4f, m_pTransformCom->Get_State(State::Pos).z);
+		m_pTransformCom->Set_Position(vPos);
+		m_pColliderCom->Change_Extents(_vec3(10.f, 0.2f, 0.02f));
+	}
+	else if (m_rcRect.bottom == 1)
+	{
+		//ÀÌ°Å »©ÀÚ
+		_vec3 vPos = _vec3(m_pTransformCom->Get_State(State::Pos).x, 12.4f, m_pTransformCom->Get_State(State::Pos).z);
+		m_pTransformCom->Set_Position(vPos);
+		m_pColliderCom->Change_Extents(_vec3(10.f, 0.2f, 0.02f));
+	}
+	if (m_rcRect.left == 1)
+	{
+		_vec3 vPos = _vec3(-2000.70496f, 12.4f, -1999.06152f);
+		vPos.x -= 7.2f;
+		m_pTransformCom->Set_Position(vPos);
+
+	}
+	else if (m_rcRect.right == 1)
+	{
+		_vec3 vPos = _vec3(-2000.70496f, 12.4f, -1999.06152f);
+		vPos.x += 8.5f;
+		m_pTransformCom->Set_Position(vPos);
+
+	}
+
 	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 	_vec3 vPos = m_pColliderCom->Get_ColliderPos();
 
@@ -116,7 +145,7 @@ void CBrickWall::Tick(_float fTimeDelta)
 	m_fDissolveRatio = 0.f;
 
 
-	m_fX += fTimeDelta * 0.3f * m_fDir;
+	m_fX += fTimeDelta * 0.2f * m_fDir;
 
 	if (m_pEffect_Ball)
 	{
@@ -130,6 +159,7 @@ void CBrickWall::Tick(_float fTimeDelta)
 	pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_BrickBall"), TEXT("Com_Collider_Sphere"));
 	if (pCollider == nullptr)
 	{
+		m_isBlur = false;
 		return;
 	}
 	_bool isColl = m_pColliderCom->Intersect(pCollider);
@@ -182,7 +212,8 @@ HRESULT CBrickWall::Render()
 		{
 			return E_FAIL;
 		}
-		m_vColor = _vec4(0.8f, 0.5f, 0.98f, 1.f);
+		//m_vColor = _vec4(0.83f, 0.78f, 1.f, 0.2f);
+		m_vColor = _vec4(1.f, 1.f, 1.f, 0.1f);
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof _vec4)))
 		{
 			return E_FAIL;
@@ -247,7 +278,7 @@ HRESULT CBrickWall::Add_Collider()
 	}
 	else
 	{
-		CollDesc.vExtents = _vec3(0.6f, 0.2f, 0.2f);
+		CollDesc.vExtents = _vec3(10.f, 0.2f, 0.02f);
 	}
 
 	CollDesc.vCenter = _vec3(0.f, 0.f, 0.f);

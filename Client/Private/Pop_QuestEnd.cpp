@@ -3,6 +3,8 @@
 #include "TextButton.h"
 #include "BlurTexture.h"
 #include "UI_Manager.h"
+#include "Event_Manager.h"
+#include "Item.h"
 
 CPop_QuestEnd::CPop_QuestEnd(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -50,6 +52,36 @@ HRESULT CPop_QuestEnd::Init(void* pArg)
 
 	m_fStartButtonPos = dynamic_cast<CTextButton*>(m_pButton)->Get_Position();
 	m_fButtonTime = m_fStartButtonPos.y;
+
+
+
+	vector<pair<wstring, _uint>> vecRewards = ((QUESTEND_DESC*)pArg)->vecRewards;
+	if (!vecRewards.empty())
+	{
+		for (_uint i = 0, j = 0; i < vecRewards.size(); i++, j += 70)
+		{
+			CItem::ITEM_DESC ItemDesc{};
+			ItemDesc.bCanInteract = false;
+			ITEM eItem = CUI_Manager::Get_Instance()->Find_Item(vecRewards[i].first);
+			ItemDesc.eItemDesc = eItem;
+			ItemDesc.fDepth = m_fDepth - 0.01f;
+			ItemDesc.haveBG = true;
+			ItemDesc.iNum = vecRewards[i].second;
+			ItemDesc.isScreen = false;
+			ItemDesc.vPosition = _vec2((_float)g_ptCenter.x + ((_float)vecRewards.size() - 1.f) * -35.f + (_float)j, (_float)g_ptCenter.y + 130.f);
+			ItemDesc.vSize = _vec2(60.f, 60.f);
+
+			CItem* pItem = (CItem*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Item"), &ItemDesc);
+			if (not pItem)
+			{
+				return E_FAIL;
+			}
+			m_vecItems.push_back(pItem);
+			CUI_Manager::Get_Instance()->Set_Item(vecRewards[i].first, vecRewards[i].second);
+		}
+
+	}
+
 	return S_OK;
 }
 
@@ -58,6 +90,11 @@ void CPop_QuestEnd::Tick(_float fTimeDelta)
 
 	if (m_fDeadTime >= 0.8f && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 	{
+		if (m_strQuestTitle == TEXT("몬스터 처치"))
+		{
+			CEvent_Manager::Get_Instance()->Set_QuestTrigger(CEvent_Manager::TUTO_TRIGGER);
+			m_pGameInstance->Play_Video(TEXT("Tutorial1.wmv"));
+		}
 		m_isDead = true;
 	}
 
@@ -79,11 +116,14 @@ void CPop_QuestEnd::Tick(_float fTimeDelta)
 
 
 
+	_float f = m_fDepth;
 
 	m_pBackground->Tick(fTimeDelta);
 	m_pButton->Tick(fTimeDelta);
-
-
+	for (auto& iter : m_vecItems)
+	{
+		iter->Tick(fTimeDelta);
+	}
 }
 
 void CPop_QuestEnd::Late_Tick(_float fTimeDelta)
@@ -94,6 +134,10 @@ void CPop_QuestEnd::Late_Tick(_float fTimeDelta)
 	m_pExclamationMark->Late_Tick(fTimeDelta);
 	m_pBorder->Late_Tick(fTimeDelta);
 	m_pBackground->Late_Tick(fTimeDelta);
+	for (auto& iter : m_vecItems)
+	{
+		iter->Late_Tick(fTimeDelta);
+	}
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
@@ -213,7 +257,9 @@ HRESULT CPop_QuestEnd::Add_Parts()
 
 	CFadeBox::FADE_DESC Desc = {};
 	Desc.fMaxAlpha = 0.7f;
+	Desc.fDepth = m_fDepth + 0.01f;
 	Desc.isInfiniteLoop = true;
+	Desc.fIn_Duration = 0.3f;
 	m_pBackground = CUI_Manager::Get_Instance()->Clone_FadeBox(Desc);
 	if (not m_pBackground)
 	{
@@ -274,12 +320,12 @@ HRESULT CPop_QuestEnd::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
-	/*
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fx", &m_fTime, sizeof(_float))))
+	_float fBrightFactor = 4.f;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fBrightFactor", &fBrightFactor, sizeof(_float))))
 	{
 		return E_FAIL;
 	}
-	*/
+
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fx", &m_fTime, sizeof(_float))))
 	{
@@ -323,6 +369,11 @@ CGameObject* CPop_QuestEnd::Clone(void* pArg)
 void CPop_QuestEnd::Free()
 {
 	__super::Free();
+
+	for (auto& iter : m_vecItems)
+	{
+		Safe_Release(iter);
+	}
 
 	Safe_Release(m_pBorder);
 	Safe_Release(m_pBackground);

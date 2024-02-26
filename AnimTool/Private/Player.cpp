@@ -102,6 +102,7 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		m_pModelCom->Play_Animation(fTimeDelta);
 	}
+	m_pTransformCom->Set_OldMatrix();
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)

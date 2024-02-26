@@ -12,7 +12,7 @@ public:
 		_float	fExp;
 		_uint	iMoney;
 		wstring strQuestTitle;
-
+		vector<pair<wstring, _uint>> vecRewards;
 	}QUESTEND_DESC;
 private:
 	CPop_QuestEnd(_dev pDevice, _context pContext);
@@ -46,13 +46,14 @@ private:
 	_float			m_fButtonTime{};
 	_float2			m_fStartButtonPos{};
 
-
 	CGameObject* m_pBackground{ nullptr };
 	CGameObject* m_pBorder{ nullptr };
 	CGameObject* m_pButton{ nullptr };
 	CGameObject* m_pExclamationMark{ nullptr };
 	CGameObject* m_pMoney{ nullptr };
 	CGameObject* m_pExp{ nullptr };
+
+	vector<class CItem*> m_vecItems;
 
 private:
 	HRESULT Add_Parts();

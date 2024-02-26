@@ -119,6 +119,7 @@ namespace Client
 		CS_ENDFULLSCREEN,
 		CS_WORLDMAP,
 		CS_BRICKGAME,
+		CS_COLLECT,
 		CS_STATEEND
 	};
 

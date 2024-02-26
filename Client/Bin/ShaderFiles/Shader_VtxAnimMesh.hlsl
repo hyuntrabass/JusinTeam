@@ -369,6 +369,55 @@ PS_OUT_DEFERRED PS_Color(PS_IN Input)
     return Output;
 }
 
+PS_OUT_DEFERRED PS_Main_DissolveNoCull(PS_IN Input)
+{
+    PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + vector(0.5f, 0.f, 0.f, 0.f) * g_bSelected;
+    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
+    if (vMtrlDiffuse.a < 0.3f)
+    {
+        discard;
+    }
+    if (g_fDissolveRatio > fDissolve)
+    {
+        discard;
+    }
+  
+    float3 vNormal;
+    if (g_HasNorTex)
+    {
+        vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
+    
+        vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+        float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
+    
+        vNormal = normalize(mul(normalize(vNormal), WorldMatrix) * -1.f);
+    }
+    else
+    {
+        vNormal = normalize(Input.vNor.xyz);
+    }
+    
+    vector vMask = vector(1.f, 0.1f, 0.1f, 0.1f);
+    if (g_HasMaskTex)
+    {
+        vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
+    }
+    
+    float2 Velocity = (Input.vProjPos.xy / Input.vProjPos.w) - (Input.vOldPos.xy / Input.vOldPos.w);
+    
+    float2 vCalDir;
+    vCalDir = Velocity * 0.5f;
+    vCalDir.y *= -1.f;
+    
+    Output.vDiffuse = vMtrlDiffuse;
+    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, vCalDir.x, vCalDir.y);
+    
+    return Output;
+}
 
 technique11 DefaultTechnique_Shader_AnimMesh
 {
@@ -447,7 +496,7 @@ technique11 DefaultTechnique_Shader_AnimMesh
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main_Dissolve();
+        PixelShader = compile ps_5_0 PS_Main_DissolveNoCull();
     }
 
     pass MeshColor

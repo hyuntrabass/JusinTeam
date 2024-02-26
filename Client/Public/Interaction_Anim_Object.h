@@ -19,7 +19,6 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 	virtual HRESULT Render_Instance() override;
-	_bool Get_Collision() { return m_isCollision; }
 
 private:
 	HRESULT Add_Components();
@@ -37,12 +36,24 @@ private:
 	CVTFModel* m_pModelCom{ nullptr };
 	CCollider* m_pColliderCom{ nullptr };
 	CCollider* m_pWideColliderCom{ nullptr };
-	CGameObject* m_pNameTag{ nullptr };
+
 private:
-	_bool m_isCollision{false};
+	_bool m_isAnimStart{false};
 	_bool m_isWideCollision{false};
 	_bool m_isCollect{};
 	_float m_fCollectTime{};
+
+	_float m_fTime{};
+	_float m_fDir{1.f};
+
+	class CTextButtonColor* m_pBar{ nullptr };
+	class C3DUITex* m_pSpeechBubble{ nullptr };
+	class CItem* m_pItem{ nullptr };
+	CGameObject* m_pBG{ nullptr };
+	CGameObject* m_pNameTag{ nullptr };
+
+	wstring m_strName{};
+
 public:
 	static CInteraction_Anim* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;

@@ -1,5 +1,4 @@
 #include "Monster.h"
-#include "UI_Manager.h"
 
 CMonster::CMonster(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)

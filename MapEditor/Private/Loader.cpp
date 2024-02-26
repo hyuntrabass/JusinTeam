@@ -187,7 +187,7 @@ HRESULT CLoader::Load_Editor()
 			}
 			else if (strPrototypeTag == L"Prototype_Model_Survival_Map")
 			{
-				Pivot = _mat::CreateScale(1.f);
+				Pivot = _mat::CreateScale(0.7f);
 			}
 			else if (strPrototypeTag == L"Prototype_Model_SescoMap")
 			{

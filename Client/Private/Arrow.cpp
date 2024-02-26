@@ -1,7 +1,7 @@
 #include "Arrow.h"
 #include "Effect_Manager.h"
 #include "Effect_Dummy.h"
-
+#include "Camera_Manager.h"
 CArrow::CArrow(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
 {
@@ -60,7 +60,7 @@ HRESULT CArrow::Init(void* pArg)
 		{
 			m_pTransformCom->Set_Speed(25.f);
 		}
-		m_pTransformCom->Set_Scale(_vec3(1.5f));
+		m_pTransformCom->Set_Scale(_vec3(1.f));
 
 		EffectInfo EffectInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(strPartiFxTag);
 		EffectInfo.pMatrix = &m_ParticleMatrix;
@@ -72,7 +72,7 @@ HRESULT CArrow::Init(void* pArg)
 		_uint random = rand() % 12;
 		m_pTransformCom->Set_State(State::Pos, m_ArrowType.vPos);
 		m_pTransformCom->Set_Speed(12.f + (_float)random);
-		m_pTransformCom->Set_Scale(_vec3(3.f, 3.f, 1.5f));
+		m_pTransformCom->Set_Scale(_vec3(2.5f, 2.5f, 1.2f));
 	}
 
 	m_pTransformCom->LookAt_Dir(m_ArrowType.vLook);
@@ -86,13 +86,37 @@ HRESULT CArrow::Init(void* pArg)
 	trail_desc.vPSize = _vec2(0.02f, 0.02f);
 	trail_desc.iNumVertices = 10;
 	m_pTrail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &trail_desc);
+	if (m_ArrowType.Att_Type == AT_Bow_Skill4)
+	{	
+		m_pTransformCom->LookAt_Dir(m_ArrowType.vLook);
+	}
 
+
+	m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
+	
 	return S_OK;
 }
 
 void CArrow::Tick(_float fTimeDelta)
 {
 	m_fDeadTime += fTimeDelta;
+
+	if (m_ArrowType.Att_Type == AT_Bow_Skill4)
+	{
+		m_fAttDelay += fTimeDelta;
+		if(m_fAttDelay>0.2f)
+		{
+			m_pGameInstance->Attack_Monster(m_pCollider, m_ArrowType.iDamage, ATTACK_TYPE::AT_Bow_Skill4);
+			m_fAttDelay = 0.f;
+		}
+		if (m_fDeadTime > 1.5f)
+		{
+			Kill();
+		}
+		m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
+		return;
+	}
+
 	if (m_fDeadTime > 2.5f)
 	{
 		Kill();
@@ -132,7 +156,16 @@ void CArrow::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
-			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Common);
+			_int RandomPercentage = rand() % 100 + 1;
+
+			if (RandomPercentage <= 30)
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider, (_int)(m_iDamage * 1.5), AT_Critical);
+			}
+			else
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Common);
+			}
 			Kill();
 		}
 		break;
@@ -141,7 +174,16 @@ void CArrow::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
-			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill1);
+			_int RandomPercentage = rand() % 100 + 1;
+
+			if (RandomPercentage <= 30)
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider,  (_int)(m_iDamage * 1.5), AT_Critical);
+			}
+			else
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill1);
+			}
 			Kill();
 		}
 		break;
@@ -167,6 +209,7 @@ void CArrow::Tick(_float fTimeDelta)
 
 		if (m_isDead)
 		{
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true,0.05f);
 			m_pCollider->Set_Radius(5.f);
 			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
 
@@ -196,7 +239,17 @@ void CArrow::Tick(_float fTimeDelta)
 			Info.pMatrix = &EffectMat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
-			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
+			_int RandomPercentage = rand() % 100 + 1;
+
+			if (RandomPercentage <= 30)
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider,  (_int)(m_iDamage * 1.5), AT_Critical);
+			}
+			else
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
+			}
+			
 			m_pGameInstance->Play_Sound(TEXT("SE_5130_Meteor_SFX_02"), 0.3f);
 			m_pGameInstance->Play_Sound(TEXT("Draug_Attack03_SFX_01"));
 			Kill();
@@ -207,7 +260,16 @@ void CArrow::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
-			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill3);
+			_int RandomPercentage = rand() % 100 + 1;
+
+			if (RandomPercentage <= 30)
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider,  (_int)(m_iDamage * 1.5), AT_Critical);
+			}
+			else
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill3);
+			}
 			Kill();
 		}
 		break;
@@ -216,7 +278,16 @@ void CArrow::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
-			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Common);
+			_int RandomPercentage = rand() % 100 + 1;
+
+			if (RandomPercentage <= 30)
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider,  (_int)(m_iDamage * 1.5), AT_Critical);
+			}
+			else
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Common);
+			}
 			Kill();
 		}
 		break;
@@ -240,6 +311,13 @@ void CArrow::Tick(_float fTimeDelta)
 
 void CArrow::Late_Tick(_float fTimeDelta)
 {
+	if (m_ArrowType.Att_Type == AT_Bow_Skill4)
+	{
+#ifdef _DEBUG
+		m_pRendererCom->Add_DebugComponent(m_pCollider);
+#endif // _DEBUG
+		return;
+	}
 	m_pTrail->Late_Tick(fTimeDelta);
 	if (m_pParticle)
 	{
@@ -359,13 +437,29 @@ HRESULT CArrow::Add_Components()
 		{
 			return E_FAIL;
 		}
-		CollDesc.eType = ColliderType::OBB;
 
 		CollDesc.eType = ColliderType::Sphere;
 		CollDesc.fRadius = 0.2f;
 		CollDesc.vCenter = _vec3(0.f, 0.f, -0.3f);
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 										  TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
+		{
+			return E_FAIL;
+		}
+	}
+	else if (m_ArrowType.Att_Type == AT_Bow_Skill4)
+	{
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Arrow"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+		{
+			return E_FAIL;
+		}
+
+		CollDesc.eType = ColliderType::OBB;
+		CollDesc.vExtents = _vec3(1.f, 1.f, 10.f);
+		CollDesc.vCenter = _vec3(0.f, 0.f, CollDesc.vExtents.z/1.15f);
+		CollDesc.vRadians = {};
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+			TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))
 		{
 			return E_FAIL;
 		}

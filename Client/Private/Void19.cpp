@@ -17,7 +17,6 @@ HRESULT CVoid19::Init_Prototype()
 
 HRESULT CVoid19::Init(void* pArg)
 {
-	m_pTransformCom->Set_State(State::Pos, _vec4(0.f, -1000.f, 0.f, 1.f));
 	PxCapsuleControllerDesc ControllerDesc{};
 	ControllerDesc.height = 1.2f; // 높이(위 아래의 반구 크기 제외
 	ControllerDesc.radius = 0.5f; // 위아래 반구의 반지름

@@ -193,7 +193,7 @@ public:
 	void Update_Collider();
 	void Move(_float fTimeDelta);
 	void Tick_State(_float fTimeDelta);
-	_bool Get_Delete() { return m_bDelete; }
+	_bool Get_Delete();
 	Riding_State Get_State() { return m_eState; }
 	Riding_Type Get_RidingType() { return m_CurrentIndex; }
 
@@ -204,11 +204,15 @@ private:
 	CCollider* m_pBodyColliderCom = { nullptr };
 	CCollider* m_pAttackColliderCom = { nullptr };
 	class CCamera_Manager* m_pCam_Manager{ nullptr };
+
 private:
 	_bool m_bDelete{};
 	_float m_fJumpPower{};
 	_bool m_hasJumped{};
 	_mat m_Worldmatrix{};
+	_float m_fRadialPower{};
+	_float m_fRadialMaxPower{};
+
 	Riding_State m_eState{ Riding_End };
 	MODE	m_eCurMode{ PLAYER };
 	ANIM_DESC m_Animation{};
@@ -219,7 +223,7 @@ private:
 	wstring m_strPrototypeTag{};
 	CTexture* m_pDissolveTextureCom{};
 	Riding_Type m_CurrentIndex{ Type_End };
-
+	
 public:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

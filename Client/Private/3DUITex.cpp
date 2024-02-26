@@ -35,7 +35,8 @@ HRESULT C3DUITex::Init(void* pArg)
 	m_vTextPosition = ((UITEX_DESC*)pArg)->vTextPosition;
 	m_strText = ((UITEX_DESC*)pArg)->strText;
 	m_vTextColor = ((UITEX_DESC*)pArg)->vTextColor;
-	
+	m_vColor = ((UITEX_DESC*)pArg)->vColor;
+
 	m_fDepth = (_float)D_NAMETAG / (_float)D_END + 0.1f;
 
 	if (FAILED(Add_Components()))
@@ -161,9 +162,12 @@ HRESULT C3DUITex::Bind_ShaderResources()
 		{
 			return E_FAIL;
 		}
-		_vec4 vColor = _vec4(1.f, 0.5f, 0.f, 1.f);
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _vec4)))
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof _vec4)))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_bOn", &m_bBright, sizeof _bool)))
 		{
 			return E_FAIL;
 		}

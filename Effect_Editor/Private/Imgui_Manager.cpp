@@ -791,6 +791,17 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		{
 			SameLine();
 			SeparatorText("Light Description");
+			if (Button("Auto All"))
+			{
+				Light_Desc.vDiffuse = m_vColor;
+				Light_Desc.vAmbient = m_vColor * 0.05f;
+				Light_Desc.vSpecular = m_vColor;
+			} SetItemTooltip("Set Light Info Automatically based on Effect Diffuse Color. Exclude Attenuation."); SameLine();
+			if (Button("Semi Auto"))
+			{
+				Light_Desc.vAmbient = Light_Desc.vDiffuse * 0.05f;
+				Light_Desc.vSpecular = Light_Desc.vDiffuse;
+			}SetItemTooltip("Set Light Ambient and Specular automatically based on Light Diffuse Color you picked. Exclude Attenuation.");
 			ColorPicker4("Diffuse", reinterpret_cast<_float*>(&Light_Desc.vDiffuse), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_DisplayRGB);
 			InputFloat4("Ambient", reinterpret_cast<_float*>(&Light_Desc.vAmbient), "%.2f");
 			InputFloat4("Specular", reinterpret_cast<_float*>(&Light_Desc.vSpecular), "%.2f");
@@ -882,7 +893,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		{
 			m_ParticleInfo.vMaxPos.z = m_ParticleInfo.vMinPos.z;
 		}
-		InputFloat3("Max Pos", reinterpret_cast<_float*>(&m_ParticleInfo.vMaxPos)); SameLine(); if (Button("Same with Min")) { m_ParticleInfo.vMaxPos = m_ParticleInfo.vMinPos; }
+		InputFloat3("Max Pos", reinterpret_cast<_float*>(&m_ParticleInfo.vMaxPos));
 		if (m_ParticleInfo.vMinPos.x > m_ParticleInfo.vMaxPos.x)
 		{
 			m_ParticleInfo.vMinPos.x = m_ParticleInfo.vMaxPos.x;
@@ -909,7 +920,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		{
 			m_ParticleInfo.vMaxDir.z = m_ParticleInfo.vMinDir.z;
 		}
-		InputFloat3("Max Dir", reinterpret_cast<_float*>(&m_ParticleInfo.vMaxDir)); SameLine(); if (Button("Same with Min##1")) { m_ParticleInfo.vMaxDir = m_ParticleInfo.vMinDir; }
+		InputFloat3("Max Dir", reinterpret_cast<_float*>(&m_ParticleInfo.vMaxDir));
 		if (m_ParticleInfo.vMinDir.x > m_ParticleInfo.vMaxDir.x)
 		{
 			m_ParticleInfo.vMinDir.x = m_ParticleInfo.vMaxDir.x;

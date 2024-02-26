@@ -1,5 +1,6 @@
 #include "Goat.h"
 #include "UI_Manager.h"
+#include "Event_Manager.h"
 
 const _float CGoat::m_fChaseRange = 5.f;
 const _float CGoat::m_fAttackRange = 2.f;
@@ -57,7 +58,6 @@ HRESULT CGoat::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
-	m_pTransformCom->Set_Position(_vec3(100.f, 8.f, 108.f));
 	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
 
 	//if (pArg)
@@ -115,6 +115,8 @@ void CGoat::Set_Damage(_int iDamage, _uint iDamageType)
 		m_fIdleTime = 0.f;
 
 		m_fHittedTime = 6.f;
+
+		CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 1.5f), (ATTACK_TYPE)iDamageType);
 
 		_vec4 vPlayerPos = __super::Compute_PlayerPos();
 		m_pTransformCom->LookAt(vPlayerPos);
@@ -449,6 +451,7 @@ void CGoat::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->IsAnimationFinished(DIE))
 		{
+			CEvent_Manager::Get_Instance()->Update_Quest(TEXT("ø∞º“¿‚±‚"));
 			m_fDeadTime += fTimeDelta;
 		}
 
