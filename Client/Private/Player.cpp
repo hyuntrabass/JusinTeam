@@ -117,6 +117,10 @@ HRESULT CPlayer::Init(void* pArg)
 void CPlayer::Tick(_float fTimeDelta)
 {
 
+	if (m_pGameInstance->Key_Down(DIK_B, InputChannel::GamePlay))
+	{
+		CEvent_Manager::Get_Instance()->Update_Quest(TEXT("몬스터 처치"));
+	}
 	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
 	{
 		return;
@@ -379,6 +383,10 @@ void CPlayer::Tick(_float fTimeDelta)
 					Desc.Type = m_Current_GroundRiding;
 					Summon_Riding(Desc);
 					m_eState = Mount;
+				}
+				else
+				{
+					CEvent_Manager::Get_Instance()->Set_Alert(TEXT("지상 탈 것을 장착하세요."));
 				}
 			}
 			else
@@ -658,6 +666,8 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		}
 		dynamic_cast<CTextButtonColor*>(m_pAim)->Set_Pass(VTPass_Mask_ColorAlpha);
 		CUI_Manager::Get_Instance()->Set_Mp(m_Status.Current_Mp, m_Status.Max_Mp);
+		CEvent_Manager::Get_Instance()->Set_Quest(TEXT("몬스터 처치"));
+
 	}
 
 

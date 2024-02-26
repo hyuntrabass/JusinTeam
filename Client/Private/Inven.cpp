@@ -91,9 +91,6 @@ HRESULT CInven::Init(void* pArg)
 	strItem = TEXT("오딘의 궁니르 단검");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);	
 
-	strItem = TEXT("거인의 강철 단검");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
-
 	strItem = TEXT("폭군 수드리의 단검");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);
 

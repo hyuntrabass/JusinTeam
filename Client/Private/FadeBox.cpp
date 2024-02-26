@@ -30,9 +30,21 @@ HRESULT CFadeBox::Init(void* pArg)
 	m_fX = g_iWinSizeX >> 1;
 	m_fY = g_iWinSizeY >> 1;
 
-	m_fDepth = (_float)D_FADE / (_float)D_END;
-
 	m_Desc = *reinterpret_cast<FADE_DESC*>(pArg);
+
+	if (m_Desc.fDepth == 0.f)
+	{
+		m_fDepth = (_float)D_FADE / (_float)D_END;
+	}
+	else
+	{
+		m_fDepth = m_Desc.fDepth;
+	}
+
+	if (m_Desc.isInfiniteLoop)
+	{
+		//m_fAlpha = m_Desc.fMaxAlpha;
+	}
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	return S_OK;
@@ -80,6 +92,7 @@ void CFadeBox::Tick(_float fTimeDelta)
 		}
 	}
 
+	_float f = m_fDepth;
 	m_fTime += fTimeDelta;
 }
 
