@@ -28,6 +28,7 @@ public:
 	vector<_ulong> Get_InidcesStaticInfo() { return m_Indices; }
 	_uint Get_NumIndices() { return m_iNum; }
 	_float Get_Radius() { return m_fRadius; }
+	_vec3 Get_CenterPos() { return m_vCenterPos; }
 
 private:
 	_float3* m_pVerticesPos{ nullptr };

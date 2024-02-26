@@ -42,26 +42,6 @@ HRESULT CCollision_Manager::Register_CollisionObject(CGameObject* pObject, class
 }
 
 
-HRESULT CCollision_Manager::Register_CollisionCulling(CGameObject* pObject, class CCollider* pCollider)
-{
-	if (not pObject)
-	{
-		return E_FAIL;
-	}
-
-	auto iter = m_Objects.find(pObject);
-	if (iter != m_Objects.end())
-	{
-		MSG_BOX("Objects Already Exist! : Collision_Manager");
-		return E_FAIL;
-	}
-	m_Objects.emplace(pObject, pCollider);
-	Safe_AddRef(pObject);
-	Safe_AddRef(pCollider);
-
-	return S_OK;
-}
-
 void CCollision_Manager::Delete_CollisionObject(CGameObject* pObject, _bool IsPlayer)
 {
 	if (IsPlayer)
@@ -138,20 +118,6 @@ _bool CCollision_Manager::Attack_Player(CCollider* pCollider, _uint iDamage, _ui
 _bool CCollision_Manager::CheckCollision_Player(CCollider* pCollider)
 {
 	if (pCollider->Intersect(m_pPlayerHitCollider))
-	{
-		return true;
-	}
-
-	return false;
-}
-
-_bool CCollision_Manager::CheckCollision_Culling(CCollider* pCollider)
-{
-	if (not m_pObjectCollider)
-	{
-		return false;
-	}
-	if (pCollider->Intersect(m_pObjectCollider))
 	{
 		return true;
 	}
@@ -301,13 +267,5 @@ void CCollision_Manager::Free()
 		Safe_Release(Monster.second);
 		Safe_Release(const_cast<CGameObject*>(Monster.first));
 	}
-
-	for (auto& Obejcts : m_Objects)
-	{
-		Safe_Release(Obejcts.second);
-		Safe_Release(const_cast<CGameObject*>(Obejcts.first));
-	}
-
 	m_Monsters.clear();
-	m_Objects.clear();
 }

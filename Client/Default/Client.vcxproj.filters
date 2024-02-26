@@ -493,6 +493,9 @@
     <Filter Include="02.GameObjects\02.Terrain\Ocean">
       <UniqueIdentifier>{762959c5-5314-494b-9651-8d75013b8959}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\04.Monster\08. Guard">
+      <UniqueIdentifier>{b9b74782-be19-497f-b2e1-15f9389c07c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">

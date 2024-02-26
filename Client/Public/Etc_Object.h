@@ -25,6 +25,7 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+
 public:
 	static CEtc_Object* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
