@@ -11,7 +11,8 @@ private:
 	virtual ~CCollision_Manager() = default;
 
 public:
-	HRESULT Register_CollisionObject(class CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer = false , class CCollider* AttRangeCollider = nullptr, class CCollider* ParryingCollider = nullptr);
+	HRESULT Register_CollisionObject(class CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer = false , class CCollider* ParryingCollider = nullptr);
+	HRESULT Register_CamCollider(class CCollider* pCamCollider);
 	void Delete_CollisionObject(class CGameObject* pObject, _bool IsPlayer);
 	void Attack_Monster(class CCollider* pCollider, _uint iDamage, _uint iDamageType);
 	_bool CheckCollision_Monster(class CCollider* pCollider);
@@ -26,7 +27,7 @@ private:
 	class CGameObject* m_pPlayer{ nullptr };
 	class CCollider* m_pPlayerHitCollider{ nullptr };
 	class CCollider* m_pPlayerParryingCollider{ nullptr };
-	class CCollider* m_pPlayerAttRangeCollider{ nullptr };
+	class CCollider* m_pCamCollider{ nullptr };
 
 public:
 	static CCollision_Manager* Create();

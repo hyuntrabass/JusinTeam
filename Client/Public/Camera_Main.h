@@ -33,6 +33,8 @@ private: // CAM_MODE
 
 private:
 	class CCamera_Manager* m_pCam_Manager{ nullptr };
+	CTransform* m_pPlayerTransform{ nullptr };
+	CUTSCENE* m_pScene{ nullptr };
 
 private:
 	_bool m_isCollision{false};
@@ -59,8 +61,7 @@ private:
 	_bool  m_bInitMode[CAMERA_MODE::CM_END]{};
 	CAMERA_STATE m_eCurrState{};
 	CAMERA_STATE m_ePrevState{};
-	CTransform* m_pPlayerTransform{ nullptr };
-
+	
 	_bool m_isFadeReady{};
 	_vec4 m_vOriginalLook{};
 	LIGHT_DESC m_Original_Light_Desc{};
@@ -73,7 +74,7 @@ private:
 	 _float m_fCamChangeTime{};
 	 _float m_fMap_UpDistance{};
 	 _float m_fLerp_UpDistance{};
-	CUTSCENE* m_pScene{ nullptr };
+	
 	 _float m_fMap_LookDistance{};
 	 _float m_fMap_RightDistance{};
 	 _float m_fLerp_LookDistance{};

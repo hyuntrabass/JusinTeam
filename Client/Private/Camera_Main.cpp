@@ -43,6 +43,8 @@ HRESULT CCamera_Main::Init(void* pArg)
 	m_pCam_Manager = CCamera_Manager::Get_Instance();
 	Safe_AddRef(m_pCam_Manager);
 
+	m_pGameInstance->Register_CamCollider(m_pColliderCom);
+
 	return S_OK;
 }
 

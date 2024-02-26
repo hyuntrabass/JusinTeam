@@ -187,7 +187,7 @@ void CArrow::Tick(_float fTimeDelta)
 
 		if (m_isDead)
 		{
-			CCamera_Manager::Get_Instance()->Set_ShakeCam(0.05f);
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true,0.05f);
 			m_pCollider->Set_Radius(5.f);
 			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
 

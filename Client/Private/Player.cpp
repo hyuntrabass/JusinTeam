@@ -54,7 +54,7 @@ HRESULT CPlayer::Init(void* pArg)
 	Change_Parts(PT_HAIR, 0);
 	Change_Parts(PT_FACE, 0);
 
-	m_pGameInstance->Register_CollisionObject(this, m_pHitCollider, true, m_pAttCollider[AT_Bow_Common], m_pParryingCollider);
+	m_pGameInstance->Register_CollisionObject(this, m_pHitCollider, true, m_pParryingCollider);
 
 	SURFACETRAIL_DESC Desc{};
 	Desc.vColor = _color(1.f, 0.5f, 0.1f, 1.f);
@@ -504,7 +504,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		Arrow_Rain();
 	}
 
-	for (int i = 0; i < AT_Bow_Skill1; i++)
+	for (int i = 0; i < AT_Bow_Common; i++)
 	{
 		_mat offset = /*_mat::CreateScale(_vec3(1.f,6.5f,1.f))* */_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f));
 		m_pAttCollider[i]->Update(offset * m_pTransformCom->Get_World_Matrix());
@@ -2141,7 +2141,7 @@ void CPlayer::Common_Attack()
 		m_pTransformCom->LookAt_Dir(vCamLook);
 	}
 
-	m_pAttCollider[AT_Bow_Common]->Update(_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f)) * m_pTransformCom->Get_World_Matrix());
+	m_pAttCollider[AT_Sword_Skill4]->Update(_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f)) * m_pTransformCom->Get_World_Matrix());
 	if (m_Current_Weapon == WP_SWORD)
 	{
 		m_Animation.fAnimSpeedRatio = 3.f;
@@ -2247,7 +2247,7 @@ void CPlayer::Skill1_Attack()
 	_vec4 vCamLook = m_pGameInstance->Get_CameraLook();
 	vCamLook.y = 0.f;
 	m_pTransformCom->LookAt_Dir(vCamLook);
-	m_pAttCollider[AT_Bow_Common]->Update(_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f)) * m_pTransformCom->Get_World_Matrix());
+	m_pAttCollider[AT_Sword_Skill4]->Update(_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f)) * m_pTransformCom->Get_World_Matrix());
 	if (m_Current_Weapon == WP_SWORD)
 	{
 		m_pTransformCom->Set_Speed(6.f);
@@ -2285,7 +2285,7 @@ void CPlayer::Skill2_Attack()
 	_vec4 vCamLook = m_pGameInstance->Get_CameraLook();
 	vCamLook.y = 0.f;
 	m_pTransformCom->LookAt_Dir(vCamLook);
-	m_pAttCollider[AT_Bow_Common]->Update(_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f)) * m_pTransformCom->Get_World_Matrix());
+	m_pAttCollider[AT_Sword_Skill4]->Update(_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f)) * m_pTransformCom->Get_World_Matrix());
 	if (m_Current_Weapon == WP_SWORD)
 	{
 		m_Animation.iAnimIndex = m_SwordSkill[1];
@@ -2322,7 +2322,7 @@ void CPlayer::Skill3_Attack()
 	_vec4 vCamLook = m_pGameInstance->Get_CameraLook();
 	vCamLook.y = 0.f;
 	m_pTransformCom->LookAt_Dir(vCamLook);
-	m_pAttCollider[AT_Bow_Common]->Update(_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f)) * m_pTransformCom->Get_World_Matrix());
+	m_pAttCollider[AT_Sword_Skill4]->Update(_mat::CreateTranslation(_vec3(0.f, 1.f, 0.f)) * m_pTransformCom->Get_World_Matrix());
 	if (m_Current_Weapon == WP_SWORD)
 	{
 		m_Animation.iAnimIndex = m_SwordSkill[2];
@@ -2372,7 +2372,7 @@ void CPlayer::Skill4_Attack()
 		vCamLook.y = 0.f;
 		m_pTransformCom->LookAt_Dir(vCamLook);
 		_mat offset = _mat::CreateTranslation(_vec3(0.f, 1.f, 0.f));
-		m_pAttCollider[AT_Bow_Common]->Update(offset * m_pTransformCom->Get_World_Matrix());
+		m_pAttCollider[AT_Sword_Skill4]->Update(offset * m_pTransformCom->Get_World_Matrix());
 		if (m_bLockOn)
 		{
 
@@ -4598,18 +4598,6 @@ HRESULT CPlayer::Add_Components()
 	}
 
 
-	CollDesc.eType = ColliderType::Frustum;
-	_mat matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
-	_mat matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(50.f), 2.f, 0.01f, 20.f);
-
-
-	CollDesc.matFrustum = matView * matProj;
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_CommonBow_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Bow_Common]), &CollDesc)))
-	{
-		return E_FAIL;
-	}
-
 	return S_OK;
 }
 
@@ -4728,7 +4716,7 @@ void CPlayer::Free()
 
 
 
-	for (int i = 0; i < AT_End; i++)
+	for (int i = 0; i < AT_Bow_Common; i++)
 	{
 		Safe_Release(m_pAttCollider[i]);
 	}
