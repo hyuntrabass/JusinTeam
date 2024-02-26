@@ -171,6 +171,7 @@ CollideFace CCollision_Manager::Get_CollideFace(CCollider* pAABBCollider, CColli
 		return eCollideFace;
 	}
 
+	
 	_vec3 vNormals[C_END]{};
 	vNormals[C_TOP] = _vec3(0.f, 1.f, 0.f);
 	vNormals[C_BOTTOM] = _vec3(0.f, -1.f, 0.f);
@@ -178,7 +179,7 @@ CollideFace CCollision_Manager::Get_CollideFace(CCollider* pAABBCollider, CColli
 	vNormals[C_BACK] = _vec3(0.f, 0.f, -1.f);
 	vNormals[C_LEFT] = _vec3(-1.f, 0.f, 0.f);
 	vNormals[C_RIGHT] = _vec3(1.f, 0.f, 0.f);
-
+	/*
 	_vec3 vPlaneDot[C_END]{};
 	vPlaneDot[C_TOP] = _vec3(pAABBCollider->Get_ColliderPos().x, pAABBCollider->Get_ColliderPos().y + pAABBCollider->Get_Extents().y, pAABBCollider->Get_ColliderPos().z);
 	vPlaneDot[C_BOTTOM] = _vec3(pAABBCollider->Get_ColliderPos().x, pAABBCollider->Get_ColliderPos().y - pAABBCollider->Get_Extents().y, pAABBCollider->Get_ColliderPos().z);
@@ -186,35 +187,46 @@ CollideFace CCollision_Manager::Get_CollideFace(CCollider* pAABBCollider, CColli
 	vPlaneDot[C_BACK] = _vec3(pAABBCollider->Get_ColliderPos().x, pAABBCollider->Get_ColliderPos().y, pAABBCollider->Get_ColliderPos().z - pAABBCollider->Get_Extents().z);
 	vPlaneDot[C_LEFT] = _vec3(pAABBCollider->Get_ColliderPos().x - pAABBCollider->Get_Extents().x, pAABBCollider->Get_ColliderPos().y, pAABBCollider->Get_ColliderPos().z);
 	vPlaneDot[C_RIGHT] = _vec3(pAABBCollider->Get_ColliderPos().x + pAABBCollider->Get_Extents().x, pAABBCollider->Get_ColliderPos().y, pAABBCollider->Get_ColliderPos().z);
-
+	
+	vector<CollideFace> vecCollideFace;
 	for (size_t i = 0; i < C_END; i++)
 	{
-		_vec3 vLine = pShereCollider->Get_ColliderPos() - pAABBCollider->Get_ColliderPos();
-		_float t = XMVectorGetX(XMVector3Dot(vNormals[i], vPlaneDot[i] - pAABBCollider->Get_ColliderPos())) / XMVectorGetX(XMVector3Dot(vNormals[i], vLine));
+		_vec3 vLine = pAABBCollider->Get_ColliderPos() - pShereCollider->Get_ColliderPos();
+		_float t = XMVectorGetX(XMVector3Dot(vNormals[i], vPlaneDot[i] - pShereCollider->Get_ColliderPos())) / XMVectorGetX(XMVector3Dot(vNormals[i], vLine));
+		if (XMVectorGetX(XMVector3Dot(vNormals[i], vLine)) == 0.f)
+		{
+			continue;
+		}
 		if (t >= 0 && t <= 1)
 		{
 			eCollideFace = (CollideFace)i;
-			break;
+			vecCollideFace.push_back(eCollideFace);
 		}
 	}
 
-	if (eCollideFace == C_END)
+	if (vecCollideFace.empty())
 	{
-		_vec3 vDir = pShereCollider->Get_ColliderPos() - pAABBCollider->Get_ColliderPos();
-		vDir.Normalize();
+		
+	}
+	else
+	{
+		eCollideFace = *min_element(vecCollideFace.begin(), vecCollideFace.end());
 
-		_float fMaxForProduct{ -1.f };
-		for (size_t i = 0; i < C_END; i++)
+	}
+	*/
+	_vec3 vDir = pShereCollider->Get_ColliderPos() - pAABBCollider->Get_ColliderPos();
+	vDir.Normalize();
+
+	_float fMaxForProduct{ -1.f };
+	for (size_t i = 0; i < C_END; i++)
+	{
+		_float fDotProduct = XMVectorGetX(XMVector3Dot(vNormals[i], vDir));
+		if (fDotProduct > fMaxForProduct)
 		{
-			_float fDotProduct = XMVectorGetX(XMVector3Dot(vNormals[i], vDir));
-			if (fDotProduct > fMaxForProduct)
-			{
-				fMaxForProduct = fDotProduct;
-				eCollideFace = (CollideFace)i;
-			}
+			fMaxForProduct = fDotProduct;
+			eCollideFace = (CollideFace)i;
 		}
 	}
-
 	return eCollideFace;
 	/*
 	*     XMVECTOR V = XMLoadFloat3(&P2) - XMLoadFloat3(&P1);

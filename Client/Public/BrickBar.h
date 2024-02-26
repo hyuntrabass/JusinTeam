@@ -27,6 +27,8 @@ private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
 	CCollider* m_pColliderCom = { nullptr };
+	CModel* m_pModelCom = { nullptr };
+	CTexture* m_pMaskTextureCom = { nullptr };
 
 private:
 	_bool					m_isColl{};
@@ -35,6 +37,7 @@ private:
 	_float					m_fSpeed{};
 	_vec3					m_vDir{};
 
+	_vec4					m_vColor{};
 	_mat					m_EffectMatrix{};
 	class CEffect_Dummy*	m_pEffect_Ball{};
 

@@ -3,6 +3,10 @@
 #include "Camera_Manager.h"
 #include "NameTag.h"
 #include "UI_Manager.h"
+#include "TextButtonColor.h"
+#include "TextButton.h"
+#include "3DUITEX.h"
+#include "Item.h"
 
 // Prototype_Model_Hurbs
 // Prototype_Model_OakTree
@@ -49,22 +53,23 @@ HRESULT CInteraction_NonAnim::Init(void* pArg)
 
 	
 	//m_pModelCom->Apply_TransformToActor(m_Info.m_WorldMatrix);
+	ITEM eItem{};
 
 	CNameTag::NAMETAG_DESC NameTagDesc = {};
 	NameTagDesc.eLevelID = LEVEL_STATIC;
-	NameTagDesc.fFontSize = 0.32f;
+	NameTagDesc.fFontSize = 0.36f;
 	NameTagDesc.pParentTransform = m_pTransformCom;
-	if (m_Info.strPrototypeTag == TEXT("Prototype_Model_Hurbs"))
-	{
-		NameTagDesc.strNameTag = TEXT("아마풀");
-	}
-	else
+	if (m_Info.strPrototypeTag == TEXT("Prototype_Model_OakTree"))
 	{
 		NameTagDesc.strNameTag = TEXT("오크나무");
 	}
+	else
+	{
+		NameTagDesc.strNameTag = TEXT("아마풀");
+	}
 
-	NameTagDesc.vColor = _vec4(0.f, 0.6f, 0.125f, 1.f);
-	NameTagDesc.vTextPosition = _vec2(0.f, 1.9f);
+	NameTagDesc.vColor = _vec4(0.31f, 0.96f, 1.f, 1.f);
+	NameTagDesc.vTextPosition = _vec2(0.f, 3.2f);
 
 	m_pNameTag = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_NameTag"), &NameTagDesc);
 	if (not m_pNameTag)
@@ -72,7 +77,20 @@ HRESULT CInteraction_NonAnim::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	CItem::ITEM_DESC ItemDesc{};
+	ItemDesc.bCanInteract = false;
+	ItemDesc.eItemDesc = CUI_Manager::Get_Instance()->Find_Item(NameTagDesc.strNameTag);
+	ItemDesc.fDepth = (_float)D_SCREEN / (_float)D_END;
+	ItemDesc.haveBG = true;
+	ItemDesc.isScreen = false;
+	ItemDesc.vPosition = _vec2((_float)g_ptCenter.x, 160.f);
+	ItemDesc.vSize = _vec2(50.f, 50.f);
 
+	m_pItem = (CItem*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Item"), &ItemDesc);
+	if (not m_pItem)
+	{
+		return E_FAIL;
+	}
 	return S_OK;
 }
 
@@ -80,12 +98,34 @@ void CInteraction_NonAnim::Tick(_float fTimeDelta)
 {
 	if (m_isCollect)
 	{
+		m_pBar->Set_Factor(m_fCollectTime / 4.f);
+		m_pBar->Set_UV(m_fCollectTime, 0.f);
+
 		m_fCollectTime += fTimeDelta;
-		if (m_fCollectTime >= 3.f)
+
+		if (m_fTime >= 2.f)
 		{
-			m_isDead = true;
+			m_fDir = -1.f;
 		}
+		if (m_fTime <= -2.f)
+		{
+			m_fDir = 1.f;
+		}
+		m_fTime += fTimeDelta * 5.f * m_fDir;
+		m_pItem->Set_Position(_vec2((_float)g_ptCenter.x, 160.f + m_fTime));
+
+		if (m_fCollectTime >= 4.f)
+		{
+			wstring strItem = m_pItem->Get_ItemDesc().strName;
+			CUI_Manager::Get_Instance()->Set_Item(strItem);
+			m_isDead = true;
+			m_isCollect = false;
+		}
+
+		m_pBar->Tick(fTimeDelta);
+		m_pItem->Tick(fTimeDelta);
 	}
+
 	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 	m_pWideColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 
@@ -104,6 +144,7 @@ void CInteraction_NonAnim::Tick(_float fTimeDelta)
 	if (m_isWideCollision)
 	{
 		dynamic_cast<CNameTag*>(m_pNameTag)->Tick(fTimeDelta);
+		m_pSpeechBubble->Tick(fTimeDelta);
 	}
 
 #ifdef _DEBUG
@@ -118,10 +159,17 @@ void CInteraction_NonAnim::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
+	if (m_isCollect)
+	{
+		m_pItem->Late_Tick(fTimeDelta);
+		m_pBG->Late_Tick(fTimeDelta);
+		m_pBar->Late_Tick(fTimeDelta);
+	}
 
 	if (m_isWideCollision)
 	{
 		m_pNameTag->Late_Tick(fTimeDelta);
+		m_pSpeechBubble->Late_Tick(fTimeDelta);
 	}
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend_Instance, this);
 }
@@ -169,6 +217,56 @@ HRESULT CInteraction_NonAnim::Add_Components()
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Interaction_Sphere1"), (CComponent**)&m_pWideColliderCom, &ColDesc2)))
 		return E_FAIL;
+
+	C3DUITex::UITEX_DESC TexDesc = {};
+	TexDesc.eLevelID = LEVEL_STATIC;
+	TexDesc.pParentTransform = m_pTransformCom;
+	TexDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SpeechBubble");
+	TexDesc.vPosition = _vec3(0.f,3.8f, 0.f);
+	TexDesc.vSize = _vec2(40.f, 40.f);
+
+	m_pSpeechBubble = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &TexDesc);
+	if (not m_pSpeechBubble)
+	{
+		return E_FAIL;
+	}
+
+	CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
+	ColButtonDesc.eLevelID = LEVEL_STATIC;
+	ColButtonDesc.fDepth = (_float)D_SCREEN / (_float)D_END;
+	ColButtonDesc.fAlpha = 0.8f;
+	ColButtonDesc.fFontSize = 0.36f;
+	ColButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	ColButtonDesc.vTextPosition = _vec2(0.f, 20.f);
+	ColButtonDesc.strText = TEXT("채집중...");
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_CollectBar");
+	ColButtonDesc.strTexture2 = TEXT("Prototype_Component_Texture_UI_Gameplay_Mask_FlagMove");
+	ColButtonDesc.vSize = _vec2(180.f, 12.f);
+	ColButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, 200.f);
+	ColButtonDesc.vColor = _vec4(0.31f, 0.96f, 1.f, 1.f);
+
+	m_pBar = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+	if (not m_pBar)
+	{
+		return E_FAIL;
+	}
+	m_pBar->Set_Pass(VTPass_HPBoss);
+
+	CTextButton::TEXTBUTTON_DESC Button = {};
+	Button.eLevelID = LEVEL_STATIC;
+	Button.fDepth = (_float)D_SCREEN / (_float)D_END;
+	Button.strText = TEXT("");
+	Button.strTexture = TEXT("Prototype_Component_Texture_UI_FadeBox");
+	Button.vPosition = _vec2((_float)g_ptCenter.x, 200.f);
+	Button.vSize = _vec2(183.f, 15.f);
+	Button.fFontSize = 0.5f;
+	Button.vTextColor = _vec4(0.5f, 0.07f, 0.04f, 1.f);
+	m_pBG = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+
+	if (not m_pBG)
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -358,7 +456,12 @@ void CInteraction_NonAnim::Free()
 {
 	__super::Free();
 	Safe_Release(m_pNameTag);
+	Safe_Release(m_pBar);
+	Safe_Release(m_pBG);
+	Safe_Release(m_pItem);
+	Safe_Release(m_pSpeechBubble);
 	Safe_Release(m_pTrigger_Manager);
+	Safe_Release(m_pSpeechBubble);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);

@@ -140,13 +140,17 @@ HRESULT CLevel_GamePlay::Init()
 	m_pGameInstance->Play_Video(TEXT("Tutorial0.wmv"));
 	m_pGameInstance->Set_StopKey(DIK_RETURN);
 
+
 	return S_OK;
 }
 
 void CLevel_GamePlay::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_B))
+
+	if (m_pGameInstance->Key_Down(DIK_B,InputChannel::Engine))
 	{
+		CEvent_Manager::Get_Instance()->Update_Quest(TEXT("몬스터 처치"));
+
 
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BrickBall"), TEXT("Prototype_GameObject_BrickBall"))))
 		{

@@ -954,6 +954,16 @@ void CGameInstance::Init_PhysX_Character(CTransform* pTransform, CollisionGroup 
 	m_pPhysX_Manager->Init_PhysX_Character(pTransform, eGroup, pDesc);
 }
 
+void CGameInstance::Init_PhysX_Character(CTransform* pTransform, CollisionGroup eGroup, PxBoxControllerDesc* pDesc)
+{
+	if (!m_pPhysX_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pPhysX_Manager is NULL");
+	}
+
+	m_pPhysX_Manager->Init_PhysX_Character(pTransform, eGroup, pDesc);
+}
+
 void CGameInstance::Init_PhysX_MoveableObject(CTransform* pTransform)
 {
 	if (!m_pPhysX_Manager)

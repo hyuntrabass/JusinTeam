@@ -148,9 +148,19 @@ HRESULT CDragon_Boss::Render()
 
 void CDragon_Boss::Set_Damage(_int iDamage, _uint iDamageType)
 {
-	m_iHP -= iDamage;
-	m_bChangePass = true;
+	if (iDamage > 0)
+	{
+		m_iHP -= iDamage;
+		m_bChangePass = true;
+		m_fIdleTime = 0.f;
 
+		if (iDamage >= 500)
+		{
+			m_eCurState = STATE_HIT;
+		}
+	}
+
+	
 	//CHitEffect::HITEFFECT_DESC Desc{};
 	//Desc.iDamage = iDamage;
 	//Desc.pParentTransform = m_pTransformCom;
@@ -346,9 +356,10 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 
 			{
 				m_vPlayerOldPos = vPlayerPos;
+				m_vPlayerOldPos.y = m_pTransformCom->Get_State(State::Pos).y;
 
 				_mat EffectMatrix = _mat::CreateScale(15.f) * _mat::CreateRotationX(XMConvertToRadians(90.f))
-					* _mat::CreateTranslation(_vec3(m_vPlayerOldPos + _vec3(0.f, 0.2f, 0.f)));
+					* _mat::CreateTranslation(_vec3(m_vPlayerOldPos + _vec3(0.f, 0.1f, 0.f)));
 
 				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Frame");
 				Info.pMatrix = &EffectMatrix;
@@ -564,7 +575,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = eTempDragonState;
 
-			m_eCurState = STATE_FIRE_PILLAR; // 테스트용
+			//m_eCurState = STATE_BLACKHOLE; // 테스트용
 		}
 	}
 
@@ -580,24 +591,6 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 				m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 				m_bAttacked1 = true;
 			}
-		}
-
-		if (m_pModelCom->Get_CurrentAnimPos() >= 37.f && m_pModelCom->Get_CurrentAnimPos() <= 43.f)
-		{
-			/*m_pRightTrail1->Late_Tick(fTimeDelta);
-			m_pRightTrail2->Late_Tick(fTimeDelta);
-			m_pRightTrail3->Late_Tick(fTimeDelta);*/
-
-			//if (!m_bCreateEffect[0])
-			//{
-			//	_mat EffectMatrix = _mat::CreateScale(3.f) * /*_mat::CreateTranslation(0.f, 0.1f, 0.f) **/ (*m_pModelCom->Get_BoneMatrix("Bip001-R-Finger21"))
-			//		* m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
-			//	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Trail"); // 수정
-			//	Info.pMatrix = &EffectMatrix;
-			//	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
-
-			//	m_bCreateEffect[0] = true;
-			//}
 		}
 
 		if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK01))
@@ -793,7 +786,17 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 				Info.pMatrix = &EffectMatrix;
 				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 			}
-	
+
+			if (fDistance <= 9.f)
+			{
+				if (m_fTime[1] >= 0.5f)
+				{
+					_uint iDamage = 50 + rand() % 20;
+					m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);
+					m_fTime[1] = 0.f;
+				}
+			}
+
 			m_fMeteorTime += fTimeDelta;
 
 			if (m_fMeteorTime >= 0.05f)
@@ -940,7 +943,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 				if (!m_bAttacked1)
 				{
 					_uint iDamage = 100 + rand() % 20;
-					m_pGameInstance->Attack_Player(nullptr, iDamage);
+					m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);
 					m_bAttacked1 = true;
 				}
 
@@ -1081,6 +1084,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 	{
 		m_fTime[0] += fTimeDelta;
+		m_fTime[1] += fTimeDelta;
 
 		if (m_fTime[0] >= 2.f)
 		{
@@ -1118,6 +1122,19 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 			if (m_fTime[0] <= 6.f)
 			{
+				_float fHeadDistance = (vPlayerPos - m_vPlayerOldPos).Length();
+
+				if (fHeadDistance <= 6.f)
+				{
+					if (m_fTime[1] >= 0.3f)
+					{
+						_uint iDamage = 30 + rand() % 20;
+						m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);
+
+						m_fTime[1] = 0.f;
+					}
+				}
+
 				if (m_fDragonHeadTime >= 0.2f)
 				{
 					_mat EffectMatrix = _mat::CreateScale(1.f, 2.f, 1.f) * _mat::CreateRotationX(XMConvertToRadians(180.f)) * _mat::CreateTranslation(_vec3(m_vPlayerOldPos + _vec3(0.f, 5.f, 0.f)));

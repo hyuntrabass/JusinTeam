@@ -4,13 +4,18 @@ matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
 texture2D g_MaskTexture;
+texture2D g_DissolveTexture;
 
 float2 g_CamNF;
+vector g_vCamPos;
 
 bool g_HasNorTex;
 bool g_HasMaskTex;
 
 matrix g_OldWorldMatrix, g_OldViewMatrix;
+
+vector g_RimColor;
+uint g_OutlineColor;
 
 struct tagAnimTimeDesc
 {

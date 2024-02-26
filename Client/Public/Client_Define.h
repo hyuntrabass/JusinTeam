@@ -119,6 +119,7 @@ namespace Client
 		CS_ENDFULLSCREEN,
 		CS_WORLDMAP,
 		CS_BRICKGAME,
+		CS_COLLECT,
 		CS_STATEEND
 	};
 
@@ -482,6 +483,16 @@ namespace Client
 		InstPass_Particle_Sprite_DiffMask_RandomIndex_Dissolve_Trail,
 		InstPass_Particle_MaskColor_Alpha,
 		InstPass_End,
+	};
+
+	enum VTFInstancingPass
+	{
+		VTF_InstPass_Default,
+		VTF_InstPass_Shadow,
+		VTF_InstPass_Dissolve,
+		VTF_InstPass_Main_Rim,
+		VTF_InstPass_OutLine,
+		VTF_InstPass_End
 	};
 #pragma endregion
 #pragma region �ƾ�

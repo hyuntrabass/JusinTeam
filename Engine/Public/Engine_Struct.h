@@ -186,12 +186,17 @@ namespace Engine
 		ANIMTIME_DESC eNext;
 	};
 
+	using DISSOLVE_RATIO = struct tagDissolveWithPadding {
+		float fDissolveRatio{};
+		XMFLOAT3 vPadding{};
+	};
+
 #define MAX_INSTANCE 300
 	using INSTANCED_PLAYANIM_DESC = struct tagInstancedPlayAnimDesc
 	{
 		PLAYANIM_DESC PlayAnim[MAX_INSTANCE];
 		ANIMTIME_DESC OldAnim[MAX_INSTANCE];
-		float fDissolveRatio[MAX_INSTANCE]{};
+		DISSOLVE_RATIO DissolveRatio[MAX_INSTANCE];
 	};
 
 	using TRIGGEREFFECT_DESC = struct tagTriggerEffectDesc {

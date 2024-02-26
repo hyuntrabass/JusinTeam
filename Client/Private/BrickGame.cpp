@@ -169,11 +169,13 @@ HRESULT CBrickGame::Add_Parts()
 	{
 		return E_FAIL;
 	}
+	/*
 	WallDesc.rcRect = { (_long)0.f, (_long)0.f, (_long)0.f, (_long)1.f };
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
 	{
 		return E_FAIL;
 	}
+	*/
 
 	_vec3 vStartPos = _vec3(-1994.24585f, 11.5f, -2006.11536f);
 	for (_uint i = 0; i < BRICKROW; i++)
