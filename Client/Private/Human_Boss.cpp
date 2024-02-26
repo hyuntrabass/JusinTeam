@@ -2,6 +2,7 @@
 #include "Effect_Manager.h"
 #include "Effect_Dummy.h"
 #include "Camera_Manager.h"
+#include "Trigger_Manager.h"
 CHuman_Boss::CHuman_Boss(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -51,6 +52,14 @@ HRESULT CHuman_Boss::Init(void* pArg)
 
 void CHuman_Boss::Tick(_float fTimeDelta)
 {
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_BossRoom) 
+	{
+		return;
+	}
+	if (CCamera_Manager::Get_Instance()->Get_CameraState() == CS_INVEN)
+	{
+		return;
+	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD8, InputChannel::UI))
 	{
 		m_eState = Counter_Start;
@@ -160,7 +169,7 @@ HRESULT CHuman_Boss::Render()
 	{
 		if (i == 3)
 		{
-			if (m_bViewModel)
+			if (!m_bViewModel)
 			{
 				if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fModelDissolveRatio, sizeof _float)))
 				{
@@ -338,6 +347,7 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 		case Client::CHuman_Boss::Pizza_End:
 			m_Animation.iAnimIndex = BossAnim_attack13;
 			m_Animation.fStartAnimPos = 100.f;
+			m_Animation.bSkipInterpolation = true;
 			View_Attack_Range(Range_360);
 			break;
 		case Client::CHuman_Boss::Counter_Start:
@@ -607,7 +617,7 @@ void CHuman_Boss::Set_Damage(_int iDamage, _uint MonAttType)
 
 }
 
-void CHuman_Boss::View_Attack_Range(ATTACK_RANGE Range, _float fRotationY)
+void CHuman_Boss::View_Attack_Range(ATTACK_RANGE Range, _float fRotationY, _bool bPizza)
 {
 	Safe_Release(m_pBaseEffect);
 	Safe_Release(m_pDimEffect);
@@ -627,13 +637,25 @@ void CHuman_Boss::View_Attack_Range(ATTACK_RANGE Range, _float fRotationY)
 		{
 			EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.25f, 0.f));
 		}
-		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Frame");
-		Info.pMatrix = &EffectMatrix;
-		m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-
-		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Dim");
-		Info.pMatrix = &EffectMatrix;
-		m_pDimEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+		if (bPizza)
+		{
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Player_45_Frame");
+			Info.pMatrix = &EffectMatrix;
+			m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Player_45_Dim");
+			Info.pMatrix = &EffectMatrix;
+			m_pDimEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+		}
+		else
+		{		
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Frame");
+			Info.pMatrix = &EffectMatrix;
+			m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Dim");
+			Info.pMatrix = &EffectMatrix;
+			m_pDimEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+		}
+		
 
 		m_fBaseEffectScale = 1.f;
 		if (fRotationY == 0.f)
@@ -645,7 +667,14 @@ void CHuman_Boss::View_Attack_Range(ATTACK_RANGE Range, _float fRotationY)
 			m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.27f, 0.f));
 		}
 		m_BaseEffectMat = m_BaseEffectOriMat;
-		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Base");
+		if (bPizza)
+		{
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Player_45_Base");
+		}
+		else
+		{
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Base");
+		}
 		Info.pMatrix = &m_BaseEffectMat;
 		Info.isFollow = true;
 		m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
@@ -783,7 +812,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			{
 				if (Compute_Angle(135.f))
 				{
-					m_pGameInstance->Attack_Player(m_pCommonAttCollider, 200, MonAtt_KnockDown);
+					m_pGameInstance->Attack_Player(m_pCommonAttCollider, 250 + rand() % 30, MonAtt_KnockDown);
 					if (m_pGameInstance->CheckCollision_Player(m_pCommonAttCollider))
 					{
 						m_bAttacked = true;
@@ -828,7 +857,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			{
 				if (Compute_Angle(135.f))
 				{
-					m_pGameInstance->Attack_Player(m_pCommonAttCollider, 200, MonAtt_KnockDown);
+					m_pGameInstance->Attack_Player(m_pCommonAttCollider, 250 + rand() % 30, MonAtt_KnockDown);
 					if (m_pGameInstance->CheckCollision_Player(m_pCommonAttCollider))
 					{
 						m_bAttacked = true;
@@ -868,7 +897,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 		{
 			if (!m_bAttacked)
 			{
-				m_pGameInstance->Attack_Player(m_pCommonAttCollider, 200, MonAtt_KnockDown);
+				m_pGameInstance->Attack_Player(m_pCommonAttCollider, 300+rand()%30, MonAtt_KnockDown);
 				if (m_pGameInstance->CheckCollision_Player(m_pCommonAttCollider))
 				{
 					m_bAttacked = true;
@@ -926,7 +955,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			{
 				if (Compute_Angle(135.f))
 				{
-					m_pGameInstance->Attack_Player(m_pCommonAttCollider, 250, MonAtt_KnockDown);
+					m_pGameInstance->Attack_Player(m_pCommonAttCollider, 300 + rand() % 30, MonAtt_KnockDown);
 					if (m_pGameInstance->CheckCollision_Player(m_pCommonAttCollider))
 					{
 						m_bAttacked = true;
@@ -1025,7 +1054,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 				{
 					if (!m_bAttacked)
 					{
-						m_pGameInstance->Attack_Player(nullptr, 250, MonAtt_KnockDown);
+						m_pGameInstance->Attack_Player(nullptr, 250 + rand() % 50, MonAtt_KnockDown);
 						m_bAttacked = true;
 					}
 				}
@@ -1037,7 +1066,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 				{
 					if (!m_bAttacked)
 					{
-						m_pGameInstance->Attack_Player(nullptr, 250, MonAtt_KnockDown);
+						m_pGameInstance->Attack_Player(nullptr, 250 + rand() % 50, MonAtt_KnockDown);
 						m_bAttacked = true;
 					}
 				}
@@ -1064,7 +1093,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 				{
 					m_fAttackRange -= 45.f;
 				}
-				View_Attack_Range(Range_45, m_fAttackRange);
+				View_Attack_Range(Range_45, m_fAttackRange,true);
 				m_bAttacked = true;
 			}
 			Increased_Range(36.f, fTimedelta);
@@ -1075,7 +1104,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			{
 				if (!Compute_Angle(45.f, m_fAttackRange))
 				{
-					m_pGameInstance->Attack_Player(nullptr, 50, MonAtt_Hit);
+					m_pGameInstance->Attack_Player(nullptr, 100 + rand() % 50, MonAtt_Hit);
 				}
 				m_bAttacked = false;
 			}
@@ -1096,7 +1125,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 				{
 					m_fAttackRange -= 45.f;
 				}
-				View_Attack_Range(Range_45, m_fAttackRange);
+				View_Attack_Range(Range_45, m_fAttackRange,true);
 				m_bAttacked = true;
 			}
 			Increased_Range(36.f, fTimedelta);
@@ -1107,7 +1136,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			{
 				if (!Compute_Angle(45.f, m_fAttackRange))
 				{
-					m_pGameInstance->Attack_Player(nullptr, 50, MonAtt_Hit);
+					m_pGameInstance->Attack_Player(nullptr, 100 + rand() % 50, MonAtt_Hit);
 				}
 				m_bAttacked = false;
 			}
@@ -1127,7 +1156,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 				Safe_Release(m_pBaseEffect);
 				Safe_Release(m_pDimEffect);
 				Safe_Release(m_pFrameEffect);
-				m_pGameInstance->Attack_Player(m_pCommonAttCollider, 50, MonAtt_KnockDown);
+				m_pGameInstance->Attack_Player(m_pCommonAttCollider, 250 + rand() % 50, MonAtt_KnockDown);
 				m_bAttacked = true;
 			}
 		}

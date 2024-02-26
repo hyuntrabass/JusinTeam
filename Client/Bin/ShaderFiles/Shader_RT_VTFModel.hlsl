@@ -129,37 +129,6 @@ VS_OUT VS_Main(VS_IN Input)
     return Output;
 }
 
-VS_OUT VS_Main_OutLine(VS_IN Input)
-{
-    VS_OUT Output = (VS_OUT) 0;
-    
-    matrix matWV, matWVP;
-    
-    matrix Bone = Get_BoneMatrix(Input, g_BoneTexture);
-    
-    vector vPos = mul(vector(Input.vPos, 1.f), Bone);
-    vector vNor = mul(vector(Input.vNor, 0.f), Bone);
-    
-    float fDist = length(g_vCamPos - mul(vPos, g_WorldMatrix));
-    
-    float fThickness = clamp(fDist / g_CamNF.y, 0.001f, 0.05f);
-    
-    vPos += normalize(vNor) * fThickness;
-    
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
-    matWVP = mul(matWV, g_ProjMatrix);
-    
-    Output.vPos = mul(vPos, matWVP);
-    Output.vNor = normalize(mul(vNor, g_WorldMatrix));
-    Output.vTex = Input.vTex;
-    Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
-    Output.vProjPos = Output.vPos;
-    Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), g_WorldMatrix)).xyz;
-    Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
-
-    return Output;
-}
-
 struct VS_SHADOW_OUT
 {
     vector vPos : Position; // == float4

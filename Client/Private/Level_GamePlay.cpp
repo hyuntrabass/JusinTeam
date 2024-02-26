@@ -140,13 +140,17 @@ HRESULT CLevel_GamePlay::Init()
 	m_pGameInstance->Play_Video(TEXT("Tutorial0.wmv"));
 	m_pGameInstance->Set_StopKey(DIK_RETURN);
 
+
 	return S_OK;
 }
 
 void CLevel_GamePlay::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_B))
+
+	if (m_pGameInstance->Key_Down(DIK_B,InputChannel::Engine))
 	{
+		CEvent_Manager::Get_Instance()->Update_Quest(TEXT("몬스터 처치"));
+
 
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BrickBall"), TEXT("Prototype_GameObject_BrickBall"))))
 		{
@@ -397,7 +401,7 @@ HRESULT CLevel_GamePlay::Ready_Map()
 	Desc.fReflectionScale = 0.1f;
 	Desc.fRefractionScale = 0.1f;
 	Desc.vPos = _vec3(100.f, 1.f, 100.f);
-	Desc.vSize = _vec2(200.f, 200.f);
+	Desc.vSize = _vec2(500.f, 500.f);
 	Desc.fWaterSpeed = 0.01f;
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, L"Layer_Map", L"Prototype_GameObject_Water", &Desc)))
 		return E_FAIL;

@@ -845,14 +845,24 @@ _bool CGameInstance::IsIn_Fov_Local(_vec4 vPos, _float fRange)
 	return m_pFrustum->IsIn_Fov_Local(vPos, fRange);
 }
 
-HRESULT CGameInstance::Register_CollisionObject(CGameObject* pObject, CCollider* pHitCollider, _bool IsPlayer, CCollider* AttRangeCollider, CCollider* ParryingCollider)
+HRESULT CGameInstance::Register_CollisionObject(CGameObject* pObject, CCollider* pHitCollider, _bool IsPlayer, CCollider* ParryingCollider)
 {
 	if (!m_pCollision_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
 	}
 
-	return m_pCollision_Manager->Register_CollisionObject(pObject, pHitCollider, IsPlayer, AttRangeCollider, ParryingCollider);
+	return m_pCollision_Manager->Register_CollisionObject(pObject, pHitCollider, IsPlayer, ParryingCollider);
+}
+
+HRESULT CGameInstance::Register_CamCollider(CCollider* pCamCollider)
+{
+	if (!m_pCollision_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
+	}
+
+	return m_pCollision_Manager->Register_CamCollider(pCamCollider);
 }
 
 void CGameInstance::Delete_CollisionObject(CGameObject* pObject, _bool IsPlayer)
@@ -923,36 +933,28 @@ CCollider* CGameInstance::Get_Nearest_MonsterCollider()
 
 	return m_pCollision_Manager->Get_Nearest_MonsterCollider();
 }
-HRESULT CGameInstance::Register_CollisionCulling(CGameObject* pObject, CCollider* pCollider)
-{
-	if (!m_pCollision_Manager)
-	{
-		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
-		//return E_FAIL;
-	}
 
-	return m_pCollision_Manager->Register_CollisionCulling(pObject, pCollider);
-}
-_bool CGameInstance::CheckCollision_Culling(CCollider* pCollider)
-{
-	if (!m_pCollision_Manager)
-	{
-		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
-		//return false;
-	}
-
-	return m_pCollision_Manager->CheckCollision_Culling(pCollider);
-}
 CollideFace CGameInstance::Get_CollideFace(CCollider* pAABBCollider, CCollider* pShereCollider)
 {
 	if (!m_pCollision_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
 	}
-	
+
 	return m_pCollision_Manager->Get_CollideFace(pAABBCollider, pShereCollider);
 }
+
 void CGameInstance::Init_PhysX_Character(CTransform* pTransform, CollisionGroup eGroup, PxCapsuleControllerDesc* pDesc)
+{
+	if (!m_pPhysX_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pPhysX_Manager is NULL");
+	}
+
+	m_pPhysX_Manager->Init_PhysX_Character(pTransform, eGroup, pDesc);
+}
+
+void CGameInstance::Init_PhysX_Character(CTransform* pTransform, CollisionGroup eGroup, PxBoxControllerDesc* pDesc)
 {
 	if (!m_pPhysX_Manager)
 	{

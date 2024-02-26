@@ -351,6 +351,7 @@ private:
 	void Create_Arrow(ATTACK_TYPE Att_Type);
 	void Check_Att_Collider(ATTACK_TYPE Att_Type);
 	void Set_ExtraStatus();
+
 private:
 	HRESULT Add_Riding();
 	void Tick_Riding(_float fTimeDelta);
@@ -371,7 +372,7 @@ private:
 	CCollider* m_pParryingCollider{ nullptr };
 	CTransform* m_pCameraTransform{ nullptr };
 	CTexture* m_pDissolveTextureCom{ nullptr };
-	CCollider* m_pAttCollider[AT_End]{ nullptr };
+	CCollider* m_pAttCollider[AT_Bow_Common]{ nullptr };
 	CRealtimeVTFModel* m_pModelCom = { nullptr };
 	class CEffect_Dummy* m_pBaseEffect{ nullptr };
 	class CEffect_Dummy* m_pFrameEffect{ nullptr };

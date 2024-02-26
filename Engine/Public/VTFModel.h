@@ -27,6 +27,8 @@ public:
 
 	void Set_Animation(ANIM_DESC Animation_Desc);
 
+	void Set_DissolveRatio(_float fDissolveRatio) { m_fDissolveRatio = fDissolveRatio; }
+
 	const _uint& Get_NumMeshes() const {
 		return m_iNumMeshes;
 	}
@@ -34,6 +36,8 @@ public:
 
 	_int Get_InstanceID() { return m_iInstanceID; }
 	PLAYANIM_DESC& Get_PlayAnimDesc() { return m_PlayAnimDesc; }
+	ANIMTIME_DESC& Get_OldAnimDesc() { return m_OldAnimDesc; }
+	_float Get_DissolveRatio() { return m_fDissolveRatio; }
 
 	HRESULT Bind_Material(class CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType);
 	HRESULT Bind_Animation(class CShader* pShader);
@@ -71,6 +75,8 @@ private:
 
 	static _int	m_iNextInstanceID;
 	_int m_iInstanceID{};
+
+	_float m_fDissolveRatio{};
 
 private:
 	// For_Animation

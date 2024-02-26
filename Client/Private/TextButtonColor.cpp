@@ -292,6 +292,40 @@ HRESULT CTextButtonColor::Bind_ShaderResources()
 			}
 		}
 	}
+	else  if (m_ePass == VTPass_HPBoss)
+	{
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fx", &m_fMoveX, sizeof(_float))))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fy", &m_fMoveY, sizeof(_float))))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fHpRatio", &m_fFactor, sizeof(_float))))
+		{
+			return E_FAIL;
+		}
+		_bool isOn = true;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_bOn", &isOn, sizeof(_bool))))
+		{
+			return E_FAIL;
+		}
+		if (m_strTexture != TEXT(""))
+		{
+			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+			{
+				return E_FAIL;
+			}
+		}
+		if (m_strTexture2 != TEXT(""))
+		{
+			if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 	else  if (m_ePass == VTPass_MaskColorMove)
 	{
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_fx", &m_fMoveX, sizeof(_float))))

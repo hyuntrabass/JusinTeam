@@ -112,7 +112,7 @@ private:
 	_float Compute_Distance();
 	void After_Attack(_float fTimedelta);
 	_bool Compute_Angle(_float fAngle, _float RotationY = 0.f);
-	void View_Attack_Range(ATTACK_RANGE Range,_float fRotationY = 0.f);
+	void View_Attack_Range(ATTACK_RANGE Range, _float fRotationY = 0.f, _bool bPizza = false);
 	void Increased_Range(_float Index, _float fTImeDelta,_float fRotationY = 0.f);
 
 private:
@@ -142,7 +142,7 @@ private:
 	_uint m_iAttackPattern{};
 	_bool m_bSelectAttackPattern{};
 	_bool m_bCounter_Success{};
-	_bool m_bViewModel{};
+	_bool m_bViewModel{true};
 	_float m_fHitTime{};
 	_float m_fHideTimmer{};
 	_bool m_bChangePass{};

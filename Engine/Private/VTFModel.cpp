@@ -383,7 +383,7 @@ HRESULT CVTFModel::Render_Shadow_Instancing(CVIBuffer_Mesh_Instance*& pInstanceB
 			return E_FAIL;
 		}
 
-		if (FAILED(pShader->Begin(2)))
+		if (FAILED(pShader->Begin(1)))
 		{
 			return E_FAIL;
 		}

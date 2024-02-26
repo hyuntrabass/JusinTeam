@@ -28,7 +28,10 @@ HRESULT CVTFMonster::Init(void* pArg)
     if (FAILED(Add_Components()))
         return E_FAIL;
 
-    m_pShaderCom->Set_PassIndex(0);
+    m_pShaderCom->Set_PassIndex(VTF_InstPass_Default);
+
+    m_pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+    Safe_AddRef(m_pPlayerTransform);
 
     random_device rand;
     m_RandomNumber = _randNum(rand());
@@ -38,6 +41,7 @@ HRESULT CVTFMonster::Init(void* pArg)
 
 void CVTFMonster::Tick(_float fTimeDelta)
 {
+    m_pTransformCom->Set_OldMatrix();
     m_pModelCom->Set_Animation(m_Animation);
     m_pTransformCom->Gravity(fTimeDelta);
 }
@@ -49,11 +53,17 @@ void CVTFMonster::Late_Tick(_float fTimeDelta)
     if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos()))
     {
         m_pRendererCom->Add_RenderGroup(RG_AnimNonBlend_Instance, this);
+        m_pModelCom->Set_DissolveRatio(m_fDissolveRatio);
     }
 }
 
 void CVTFMonster::Set_Damage(_int iDamage, _uint MonAttType)
 {
+    if (iDamage == 0)
+    {
+        return;
+    }
+
     m_iHP -= iDamage;
 
     m_IsHitted = true;
@@ -139,6 +149,11 @@ HRESULT CVTFMonster::Add_Components()
          return E_FAIL;
     }
 
+    if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Logo_Noise"), TEXT("Com_Dissolve_Texture"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom))))
+    {
+        return E_FAIL;
+    }
+
     return S_OK;
 }
 
@@ -149,12 +164,22 @@ HRESULT CVTFMonster::Bind_ShaderResources()
         return E_FAIL;
     }
 
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
+    {
+        return E_FAIL;
+    }
+
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
     {
         return E_FAIL;
     }
 
     if (FAILED(m_pShaderCom->Bind_RawValue("g_CamNF", &m_pGameInstance->Get_CameraNF(), sizeof _float2)))
+    {
+        return E_FAIL;
+    }
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof _vector)))
     {
         return E_FAIL;
     }
@@ -171,6 +196,23 @@ HRESULT CVTFMonster::Bind_ShaderResources()
 
     }
 
+    if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
+    {
+        return E_FAIL;
+    }
+
+    _vector vRimColor = { 1.f, 0.f, 0.f, 1.f };
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vRimColor, sizeof _vector)))
+    {
+        return E_FAIL;
+    }
+
+    _uint iOutlineColor = OutlineColor_Red;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_OutlineColor", &iOutlineColor, sizeof _uint)))
+    {
+        return E_FAIL;
+    }
+
     return S_OK;
 }
 
@@ -181,4 +223,8 @@ void CVTFMonster::Free()
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pRendererCom);
+    Safe_Release(m_pBodyColliderCom);
+    Safe_Release(m_pDissolveTextureCom);
+
+    Safe_Release(m_pPlayerTransform);
 }

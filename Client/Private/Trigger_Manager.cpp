@@ -261,20 +261,40 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		pGetPath = TEXT("../Bin/Data/DungeonPos.dat");
 
 		// 임시
+		//CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
+		//pCamTransform->Set_State(State::Pos, _vec4(2067.11f, -12.8557f, 2086.95f, 1.f));
+		//pCamTransform->LookAt_Dir(_vec4(0.97706846f, -0.21286753f, 0.004882995f, 0.f));
+
+		//CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+		////pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 4.f, 0.f));
+		//pPlayerTransform->Set_Position(_vec3(2070.81f, -14.8443f, 2086.87f));
+		//pPlayerTransform->LookAt_Dir(_vec4(0.99763946f, 0.014162573f, 0.067186668f, 0.f));
+
+		std::ifstream inFile(pGetPath, std::ios::binary);
+
+		if (!inFile.is_open())
+		{
+			MSG_BOX("파일을 찾지 못했습니다.");
+			return;
+		}
+
+		_mat Player_Matrix{};
+		inFile.read(reinterpret_cast<char*>(&Player_Matrix), sizeof(_mat));
 		CTransform* pCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
-		pCamTransform->Set_State(State::Pos, _vec4(2067.11f, -12.8557f, 2086.95f, 1.f));
-		pCamTransform->LookAt_Dir(_vec4(0.97706846f, -0.21286753f, 0.004882995f, 0.f));
+		pCamTransform->Set_State(State::Pos, _vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
+		pCamTransform->LookAt_Dir(_vec4(Player_Matrix.Look().x, Player_Matrix.Look().y - 1.f, Player_Matrix.Look().z, 0.f));
 
 		CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-		//pPlayerTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 4.f, 0.f));
-		pPlayerTransform->Set_Position(_vec3(2070.81f, -14.8443f, 2086.87f));
-		pPlayerTransform->LookAt_Dir(_vec4(0.99763946f, 0.014162573f, 0.067186668f, 0.f));
+		pPlayerTransform->Set_Position(_vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
+		pPlayerTransform->LookAt_Dir(Player_Matrix.Look());
 
 		m_pGameInstance->Set_HellHeight(-30.f);
 		LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
 		*Light = g_Light_Dungeon;
 		m_iSkyTextureIndex = 10;
 		m_eCurrentSpot = TS_Dungeon;
+
+		inFile.close();
 		break;
 	}
 	case Client::TS_Village:
@@ -332,6 +352,8 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		*Light = g_Light_Village;
 		m_iSkyTextureIndex = 12;
 		m_eCurrentSpot = TS_Village;
+		inFile.close();
+
 		break;
 	}
 	case Client::TS_Minigame:
@@ -361,6 +383,8 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		//*Light = g_Light_Village;
 		//m_iSkyTextureIndex = 12;
 		m_eCurrentSpot = TS_Minigame;
+		inFile.close();
+
 		break;
 	}
 	case Client::TS_DragonMap:
@@ -390,6 +414,8 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 
 		m_iSkyTextureIndex = 11;
 		m_eCurrentSpot = TS_DragonMap;
+		inFile.close();
+
 		break;
 	}
 
@@ -419,6 +445,8 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		//*Light = g_Light_Village;
 		//m_iSkyTextureIndex = 12;
 		m_eCurrentSpot = TS_BossRoom;
+		inFile.close();
+
 		break;
 	}
 
@@ -448,6 +476,8 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		//*Light = g_Light_Village;
 		//m_iSkyTextureIndex = 12;
 		m_eCurrentSpot = TS_MiniDungeon;
+		inFile.close();
+
 		break;
 	}
 
@@ -478,6 +508,8 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		
 		//m_iSkyTextureIndex = 12;
 		m_eCurrentSpot = TS_SurvivalMap;
+		inFile.close();
+
 		break;
 	}
 
@@ -508,6 +540,8 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		//*Light = g_Light_Village;
 		//m_iSkyTextureIndex = 12;
 		m_eCurrentSpot = TS_SescoMap;
+		inFile.close();
+
 		break;
 	}
 

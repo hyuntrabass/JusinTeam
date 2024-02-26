@@ -253,7 +253,48 @@ void CPhysX_Manager::Init_PhysX_Character(CTransform* pTransform, CollisionGroup
 	//m_Characters.emplace(pTransform, pController);
 }
 
+void CPhysX_Manager::Init_PhysX_Character(CTransform* pTransform, CollisionGroup eGroup, PxBoxControllerDesc* pDesc)
+{
+	_float3 vPos{};
+	XMStoreFloat3(&vPos, pTransform->Get_State(State::Pos));
+	PxExtendedVec3 Position{ static_cast<_double>(vPos.x), static_cast<_double>(vPos.y), static_cast<_double>(vPos.z) };
 
+	PxBoxControllerDesc ControllerDesc{};
+	if (not pDesc)
+	{
+		MSG_BOX("");
+	}
+	else
+	{
+		ControllerDesc = *pDesc;
+		ControllerDesc.reportCallback = nullptr;
+		Position.y += ControllerDesc.halfHeight;
+		ControllerDesc.position = Position;
+		ControllerDesc.material = m_pMaterial;
+		ControllerDesc.density = 700.f;
+	}
+
+	PxController* pController = m_pControllerManager->createController(ControllerDesc);
+
+	CollisionMask Mask{};
+	switch (eGroup)
+	{
+	case Engine::COLGROUP_PLAYER:
+		Mask = MASK_PLAYER;
+		break;
+	case Engine::COLGROUP_MONSTER:
+		Mask = MASK_MONSTER;
+		break;
+	case Engine::COLGROUP_TERRAIN:
+		Mask = MASK_TERRAIN;
+		break;
+	}
+
+	if (pTransform)
+	{
+		pTransform->Set_Controller(pController);
+	}
+}
 
 void CPhysX_Manager::Init_PhysX_MoveableObject(CTransform* pTransform)
 {

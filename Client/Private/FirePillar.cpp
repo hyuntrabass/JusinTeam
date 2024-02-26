@@ -45,7 +45,6 @@ HRESULT CFirePillar::Init(void* pArg)
 
 	CTransform* pDragonTransform = GET_TRANSFORM("Layer_Dragon_Boss", LEVEL_VILLAGE);
 	_vec4 vDragonPos = pDragonTransform->Get_State(State::Pos);
-	//vGroarPos.y -= 0.1f;
 	_vec4 vDragonLook = pDragonTransform->Get_State(State::Look).Get_Normalized();
 
 	_vec4 vDir[8] = {};
@@ -103,6 +102,7 @@ HRESULT CFirePillar::Init(void* pArg)
 void CFirePillar::Tick(_float fTimeDelta)
 {
 	m_fLifeTime += fTimeDelta;
+	m_fDamageTime += fTimeDelta;
 
 	if (m_fLifeTime >= 7.f)
 	{
@@ -112,6 +112,24 @@ void CFirePillar::Tick(_float fTimeDelta)
 
 	if (m_fLifeTime >= 1.8f)
 	{
+		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+		_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+
+		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+		_float fDistance = (vPlayerPos - vPos).Length();
+
+		if (fDistance <= 3.5f)
+		{
+			if (m_fDamageTime >= 0.3f)
+			{
+				_uint iDamage = 30 + rand() % 20;
+				m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);
+
+				m_fDamageTime = 0.f;
+			}
+
+		}
+
 		if (m_pBaseEffect && m_pFrameEffect)
 		{
 			Safe_Release(m_pFrameEffect);

@@ -56,6 +56,7 @@ private:
 
 	CTransform*			m_pParentTransform{ nullptr };
 	class C3DUITex*		m_pEffect{ nullptr };
+	C3DUITex*		m_pCritical{ nullptr };
 	
 
 
