@@ -91,11 +91,7 @@ HRESULT CInven::Init(void* pArg)
 	strItem = TEXT("¿ÀµòÀÇ ±Ã´Ï¸£ ´Ü°Ë");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);	
 
-	strItem = TEXT("Æø±º ¼öµå¸®ÀÇ ´Ü°Ë");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
 
-	strItem = TEXT("ÇìÀÓ´ÞÀÇ ´Ü°Ë");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
 
 	strItem = TEXT("·¹±ä·¹ÀÌÇÁÀÇ ºÒ¸ê °©¿Ê");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);	

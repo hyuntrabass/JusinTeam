@@ -245,20 +245,10 @@ void CGroar_Boss::Set_Damage(_int iDamage, _uint iDamageType)
 
 		m_pHpBoss->Set_HP(m_iHP);
 
-		_bool isCritical{};
-		if (iDamageType == (_uint)AT_End - 1)
-		{
-			isCritical = true;
-		}
-		CHitEffect::HITEFFECT_DESC Desc{};
-		Desc.iDamage = iDamage;
-		Desc.isCritical = isCritical;
-		Desc.pParentTransform = m_pTransformCom;
-		Desc.vTextPosition = _vec2(0.f, 1.5f);
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
-		{
-			return;
-		}
+		_uint iRandomX = rand() % 100;
+		_uint iRandomY = rand() % 100 + 230;
+		_vec2 vDamagePos = _vec2((_float)(iRandomX - 50) * 0.01f, (_float)iRandomY * 0.01f);
+		CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, vDamagePos, (ATTACK_TYPE)iDamageType);
 	}	
 	
 	//if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||

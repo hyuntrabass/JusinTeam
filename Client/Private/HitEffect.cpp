@@ -56,9 +56,11 @@ HRESULT CHitEffect::Init(void* pArg)
 	
 	if (m_isCritical)
 	{
+		_uint iRandomX = rand() % 80;
+		_uint iRandomY = rand() % 80;
 		TexDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Text_Cri");
-		TexDesc.vPosition = _vec3(m_vTextPosition.x, m_vTextPosition.y + 0.4f, +0.01f);
-		TexDesc.vSize = _vec2(600.f, 600.f);
+		TexDesc.vPosition = _vec3(m_vTextPosition.x + (_float)iRandomX * 0.01f - 0.4f, m_vTextPosition.y + (_float)iRandomY * 0.01f - 0.4f, +0.01f);
+		TexDesc.vSize = _vec2(1000.f, 1000.f);
 		TexDesc.vColor = _vec4(1.f, 0.36f, 0.f, 1.f);
 		m_pCritical = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &TexDesc);
 		if (not m_pCritical)
@@ -75,9 +77,13 @@ void CHitEffect::Tick(_float fTimeDelta)
 {
 	if (m_isCritical)
 	{
-		if (m_pCritical->Get_Size().x >= 200.f)
+		if (m_pCritical->Get_Size().x >= 150.f)
 		{
-			m_pCritical->Set_Size(m_pCritical->Get_Size().x - 20.f, m_pCritical->Get_Size().y - 20.f);
+			m_pCritical->Set_Size(m_pCritical->Get_Size().x - 90.f, m_pCritical->Get_Size().y - 90.f);
+		}
+		else
+		{
+			m_pCritical->Set_Position(_vec3(m_pCritical->Get_Position().x , m_pCritical->Get_Position().y + fTimeDelta * 0.2f, m_pCritical->Get_Position().z));
 		}
 		m_pCritical->Tick(fTimeDelta);
 	}
@@ -273,6 +279,10 @@ HRESULT CHitEffect::Bind_ShaderResources()
 	if (!m_isPlayer)
 	{
 		vColor.w = 0.f;
+	}
+	if (m_isCritical)
+	{
+
 	}
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _vec4)))

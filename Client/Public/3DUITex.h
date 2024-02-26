@@ -41,6 +41,7 @@ private:
 	CTexture* m_pTextureCom{ nullptr };
 
 private:
+	_bool			m_bBright{};
 	LEVEL_ID		m_eLevel{};
 	VTPass			m_ePass{ VTPass_UI };
 	wstring			m_strTexture;
@@ -62,8 +63,9 @@ public:
 	void Set_Size(_float fSizeX, _float fSizeY);
 	void Set_Pass(VTPass ePass) { m_ePass = ePass; }
 	void Set_Position(_vec3 vPos);
+	const _vec3& Get_Position() const { return m_vPosition; }
 	const RECT& Get_Rect() const { return m_rcRect; }
-
+	void Set_Bright(_bool isBright) { m_bBright = isBright; }
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

@@ -50,9 +50,25 @@ void CCescoGame::Tick(_float fTimeDelta)
 
 	m_fMonsterSpawnTime += fTimeDelta;
 
+#pragma region SpawnMonster
+
+	if (m_fMonsterSpawnTime >= 1.f)
+	{
+		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
+		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Scorpion");
+		VTFMonsterDesc.vPosition = m_SpawnPositions[0];
+		CVTFMonster* pMonster = reinterpret_cast<CVTFMonster*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Scorpion_Object"), &VTFMonsterDesc));
+		m_Monsters.push_back(pMonster);
+
+		m_iMonsterSpawnCount++;
+		m_fMonsterSpawnTime = 0.f;
+	}
+
+#pragma endregion
+
 #pragma region SpawnVoid19
 
-	if (m_fMonsterSpawnTime >= 5.f)
+	if (m_iMonsterSpawnCount % 10 == 1 && m_fMonsterSpawnTime == 0.f)
 	{
 		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
 		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Void19");
@@ -62,7 +78,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 		_randInt RandomPos(5, 20);
 		_randInt RandomSymbol(0, 1);
 
-		while (iNumSpawn <= 5)
+		while (iNumSpawn < 5)
 		{
 			_int iSymbol = RandomSymbol(m_RandomNumber);
 			if (iSymbol == 0)
@@ -115,8 +131,6 @@ void CCescoGame::Tick(_float fTimeDelta)
 			m_Void19Positions.emplace(pMonster->Get_ID(), vPos);
 			iNumSpawn++;
 		}
-
-		m_fMonsterSpawnTime = 0.f;
 	}
 
 #pragma endregion

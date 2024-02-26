@@ -33,6 +33,10 @@ HRESULT CVTFMonster::Init(void* pArg)
     m_pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
     Safe_AddRef(m_pPlayerTransform);
 
+    _vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
+    vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
+    m_pTransformCom->LookAt(vPlayerPos);
+
     random_device rand;
     m_RandomNumber = _randNum(rand());
 
@@ -44,6 +48,8 @@ void CVTFMonster::Tick(_float fTimeDelta)
     m_pTransformCom->Set_OldMatrix();
     m_pModelCom->Set_Animation(m_Animation);
     m_pTransformCom->Gravity(fTimeDelta);
+
+    m_Animation.fStartAnimPos = 0.f;
 }
 
 void CVTFMonster::Late_Tick(_float fTimeDelta)
@@ -66,7 +72,7 @@ void CVTFMonster::Set_Damage(_int iDamage, _uint MonAttType)
 
     m_iHP -= iDamage;
 
-    m_IsHitted = true;
+    m_HasHitted = true;
 }
 
 HRESULT CVTFMonster::Render()

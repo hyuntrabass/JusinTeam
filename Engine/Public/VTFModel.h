@@ -26,13 +26,13 @@ public:
 	HRESULT Play_Animation(_float fTimeDelta);
 
 	void Set_Animation(ANIM_DESC Animation_Desc);
-
 	void Set_DissolveRatio(_float fDissolveRatio) { m_fDissolveRatio = fDissolveRatio; }
 
 	const _uint& Get_NumMeshes() const {
 		return m_iNumMeshes;
 	}
 	const _bool IsAnimationFinished(_uint iAnimIndex) const;
+	const _float Get_CurrentAnimPos() const;
 
 	_int Get_InstanceID() { return m_iInstanceID; }
 	PLAYANIM_DESC& Get_PlayAnimDesc() { return m_PlayAnimDesc; }

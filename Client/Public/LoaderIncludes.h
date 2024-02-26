@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Pop_Reward.h"
 #include "BrickBar.h"
 #include "BrickWall.h"
 #include "NumEffect.h"
@@ -158,10 +159,11 @@
 // Trigger
 #include "Trigger.h"
 
-//SescoGame
+//CescoGame
 #include "CescoGame.h"
 #include "VTFMonster.h"
 #include "Void19.h"
+#include "Scorpion.h"
 
 // SurvivalGame
 #include "SurvivalGame.h"

@@ -60,7 +60,7 @@ HRESULT CArrow::Init(void* pArg)
 		{
 			m_pTransformCom->Set_Speed(25.f);
 		}
-		m_pTransformCom->Set_Scale(_vec3(1.5f));
+		m_pTransformCom->Set_Scale(_vec3(1.f));
 
 		EffectInfo EffectInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(strPartiFxTag);
 		EffectInfo.pMatrix = &m_ParticleMatrix;
@@ -72,7 +72,7 @@ HRESULT CArrow::Init(void* pArg)
 		_uint random = rand() % 12;
 		m_pTransformCom->Set_State(State::Pos, m_ArrowType.vPos);
 		m_pTransformCom->Set_Speed(12.f + (_float)random);
-		m_pTransformCom->Set_Scale(_vec3(3.f, 3.f, 1.5f));
+		m_pTransformCom->Set_Scale(_vec3(2.5f, 2.5f, 1.2f));
 	}
 
 	m_pTransformCom->LookAt_Dir(m_ArrowType.vLook);
@@ -90,6 +90,7 @@ HRESULT CArrow::Init(void* pArg)
 	{	
 		m_pTransformCom->LookAt_Dir(m_ArrowType.vLook);
 	}
+
 
 	m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
 	
@@ -155,7 +156,16 @@ void CArrow::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
-			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Common);
+			_int RandomPercentage = rand() % 100 + 1;
+
+			if (RandomPercentage <= 30)
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider, (_int)(m_iDamage * 1.5), AT_Critical);
+			}
+			else
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Common);
+			}
 			Kill();
 		}
 		break;
@@ -164,7 +174,16 @@ void CArrow::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
-			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill1);
+			_int RandomPercentage = rand() % 100 + 1;
+
+			if (RandomPercentage <= 30)
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider,  (_int)(m_iDamage * 1.5), AT_Critical);
+			}
+			else
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill1);
+			}
 			Kill();
 		}
 		break;
@@ -220,7 +239,17 @@ void CArrow::Tick(_float fTimeDelta)
 			Info.pMatrix = &EffectMat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
-			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
+			_int RandomPercentage = rand() % 100 + 1;
+
+			if (RandomPercentage <= 30)
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider,  (_int)(m_iDamage * 1.5), AT_Critical);
+			}
+			else
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
+			}
+			
 			m_pGameInstance->Play_Sound(TEXT("SE_5130_Meteor_SFX_02"), 0.3f);
 			m_pGameInstance->Play_Sound(TEXT("Draug_Attack03_SFX_01"));
 			Kill();
@@ -231,7 +260,16 @@ void CArrow::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
-			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill3);
+			_int RandomPercentage = rand() % 100 + 1;
+
+			if (RandomPercentage <= 30)
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider,  (_int)(m_iDamage * 1.5), AT_Critical);
+			}
+			else
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill3);
+			}
 			Kill();
 		}
 		break;
@@ -240,7 +278,16 @@ void CArrow::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->CheckCollision_Monster(m_pCollider))
 		{
-			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Common);
+			_int RandomPercentage = rand() % 100 + 1;
+
+			if (RandomPercentage <= 30)
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider,  (_int)(m_iDamage * 1.5), AT_Critical);
+			}
+			else
+			{
+				m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Common);
+			}
 			Kill();
 		}
 		break;

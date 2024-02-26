@@ -1515,6 +1515,12 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 	
+	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Pop_Reward"), CPop_Reward::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
 
 #pragma endregion
 
@@ -1855,7 +1861,7 @@ HRESULT CLoader::Load_Village()
 			}
 			else if (strPrototypeTag == L"Prototype_Model_Survival_Map")
 			{
-				DungeonPivot = _mat::CreateScale(0.7f);
+				DungeonPivot = _mat::CreateScale(0.4f);
 			}
 			else if (strPrototypeTag == L"Prototype_Model_SescoMap")
 			{
@@ -2034,6 +2040,11 @@ HRESULT CLoader::Load_Village()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Void19_Object"), CVoid19::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Scorpion_Object"), CScorpion::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

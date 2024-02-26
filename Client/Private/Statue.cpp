@@ -113,6 +113,8 @@ void CStatue::Set_Damage(_int iDamage, _uint iDamageType)
 	{
 		m_bDamaged = true;
 	}
+	CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 2.f), (ATTACK_TYPE)iDamageType);
+
 }
 
 HRESULT CStatue::Add_Collider()

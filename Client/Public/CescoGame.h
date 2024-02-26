@@ -24,6 +24,7 @@ private:
 	vector<_vec3> m_SpawnPositions;
 	map<_int, _vec3> m_Void19Positions;
 	_float m_fMonsterSpawnTime{};
+	_uint m_iMonsterSpawnCount{};
 	
 	_float m_fTimeLimit{ 1209999999.f };
 	_uint m_iMonsterLimit{ 200 };
