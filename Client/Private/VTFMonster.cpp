@@ -30,6 +30,9 @@ HRESULT CVTFMonster::Init(void* pArg)
 
     m_pShaderCom->Set_PassIndex(VTF_InstPass_Default);
 
+    m_pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+    Safe_AddRef(m_pPlayerTransform);
+
     random_device rand;
     m_RandomNumber = _randNum(rand());
 
@@ -50,12 +53,17 @@ void CVTFMonster::Late_Tick(_float fTimeDelta)
     if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos()))
     {
         m_pRendererCom->Add_RenderGroup(RG_AnimNonBlend_Instance, this);
-        m_pRendererCom->Add_RenderGroup(RG_Shadow, this);
+        m_pModelCom->Set_DissolveRatio(m_fDissolveRatio);
     }
 }
 
 void CVTFMonster::Set_Damage(_int iDamage, _uint MonAttType)
 {
+    if (iDamage == 0)
+    {
+        return;
+    }
+
     m_iHP -= iDamage;
 
     m_IsHitted = true;
@@ -215,4 +223,8 @@ void CVTFMonster::Free()
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pRendererCom);
+    Safe_Release(m_pBodyColliderCom);
+    Safe_Release(m_pDissolveTextureCom);
+
+    Safe_Release(m_pPlayerTransform);
 }

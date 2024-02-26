@@ -37,9 +37,12 @@ public:
 
 protected:
 	CShader* m_pShaderCom = { nullptr };
-	CRenderer* m_pRendererCom = { nullptr };
 	CVTFModel* m_pModelCom = { nullptr };
+	CRenderer* m_pRendererCom = { nullptr };
+	CCollider* m_pBodyColliderCom = { nullptr };
 	CTexture* m_pDissolveTextureCom = { nullptr };
+
+	CTransform* m_pPlayerTransform = { nullptr };
 
 protected:
 	ANIM_DESC m_Animation{};

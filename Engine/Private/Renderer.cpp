@@ -1176,7 +1176,7 @@ HRESULT CRenderer::Render_AnimNonBlend_Instance()
 	for (auto& Pair : InstanceData)
 	{
 		vector<CGameObject*>& vInstances = Pair.second;
-		const InstanceID instanceId = Pair.first;;
+		const InstanceID instanceId = Pair.first;
 		CGameObject*& pHead = vInstances[0];
 		//Late_Tick 2번 들어와서 터지는거 방지
 		if (vInstances.size() > MAX_INSTANCE)

@@ -10,12 +10,12 @@ class CVoid19 final : public CVTFMonster
 public:
 	enum ANIM
 	{
-		Anim_attack01, //침뱉기
+		Anim_attack01, // 침뱉기
 		Anim_attack02,
 		Anim_hit_add,
 		Anim_idle,
-		Anim_roar,
-		Anim_stun, // 죽으면 스턴으로 만들고 디졸브해야할듯
+		Anim_roar, //idle로 쓰는중
+		Anim_stun, // 사망
 		Anim_End
 	};
 	enum STATE
@@ -38,9 +38,6 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 	virtual HRESULT Render_Instance() override;
-
-private:
-	CCollider* m_pColliderCom = { nullptr };
 
 private:
 	STATE m_eState{ State_End };
