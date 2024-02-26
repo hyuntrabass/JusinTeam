@@ -1194,6 +1194,7 @@ HRESULT CRenderer::Render_AnimNonBlend_Instance()
 			CVTFModel* pModel = static_cast<CVTFModel*>(pGameObject->Find_Component(L"Com_Model"));
 			PlayAnimDescs->PlayAnim[i] = pModel->Get_PlayAnimDesc();
 			PlayAnimDescs->OldAnim[i] = pModel->Get_OldAnimDesc();
+			PlayAnimDescs->fDissolveRatio[i] = pModel->Get_DissolveRatio();
 		}
 
 		CVTFModel* pHeadModel = static_cast<CVTFModel*>(pHead->Find_Component(L"Com_Model"));

@@ -407,7 +407,7 @@ PS_OUT PS_Main_Dissolve(PS_IN Input)
     if(0.3f > vMtrDiffuse.a)
         discard;
     
-    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex);
+    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).x;
     
     if (g_PlayAnimInstances.fDissolveRatio[Input.iID] > fDissolve)
         discard;
