@@ -85,7 +85,10 @@ HRESULT CInteraction_Anim::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-
+	if (NameTagDesc.strNameTag == TEXT("보물상자"))
+	{
+		return S_OK;
+	}
 	CItem::ITEM_DESC ItemDesc{};
 	ItemDesc.bCanInteract = false;
 	ItemDesc.eItemDesc = CUI_Manager::Get_Instance()->Find_Item(NameTagDesc.strNameTag);
@@ -121,7 +124,11 @@ void CInteraction_Anim::Tick(_float fTimeDelta)
 			m_fDir = 1.f;
 		}
 		m_fTime += fTimeDelta * 5.f * m_fDir;
-		m_pItem->Set_Position(_vec2((_float)g_ptCenter.x, 160.f + m_fTime));
+		if (m_pItem != nullptr)
+		{
+			m_pItem->Set_Position(_vec2((_float)g_ptCenter.x, 160.f + m_fTime));
+		}
+
 
 		if (m_fCollectTime >= 4.f)
 		{
@@ -130,7 +137,11 @@ void CInteraction_Anim::Tick(_float fTimeDelta)
 		}
 
 		m_pBar->Tick(fTimeDelta);
-		m_pItem->Tick(fTimeDelta);
+		if (m_pItem != nullptr)
+		{
+			m_pItem->Tick(fTimeDelta);
+		}
+
 	}
 	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 	m_pWideColliderCom->Update(m_pTransformCom->Get_World_Matrix());
@@ -168,7 +179,11 @@ void CInteraction_Anim::Late_Tick(_float fTimeDelta)
 	}
 	if (m_isCollect)
 	{
-		m_pItem->Late_Tick(fTimeDelta);
+		if (m_pItem != nullptr)
+		{
+			m_pItem->Late_Tick(fTimeDelta);
+		}
+
 		m_pBG->Late_Tick(fTimeDelta);
 		m_pBar->Late_Tick(fTimeDelta);
 	}
@@ -178,8 +193,12 @@ void CInteraction_Anim::Late_Tick(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(0))
 		{
 			//CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
-			wstring strItem = m_pItem->Get_ItemDesc().strName;
-			CUI_Manager::Get_Instance()->Set_Item(strItem);
+			if (m_pItem != nullptr)
+			{
+				wstring strItem = m_pItem->Get_ItemDesc().strName;
+				CUI_Manager::Get_Instance()->Set_Item(strItem);
+			}
+
 			m_isDead = true;
 		}
 		m_pModelCom->Play_Animation(fTimeDelta);
