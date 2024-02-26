@@ -28,7 +28,7 @@ HRESULT CVTFMonster::Init(void* pArg)
     if (FAILED(Add_Components()))
         return E_FAIL;
 
-    m_pShaderCom->Set_PassIndex(0);
+    m_pShaderCom->Set_PassIndex(VTF_InstPass_Default);
 
     random_device rand;
     m_RandomNumber = _randNum(rand());
@@ -50,6 +50,7 @@ void CVTFMonster::Late_Tick(_float fTimeDelta)
     if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos()))
     {
         m_pRendererCom->Add_RenderGroup(RG_AnimNonBlend_Instance, this);
+        m_pRendererCom->Add_RenderGroup(RG_Shadow, this);
     }
 }
 
@@ -140,6 +141,11 @@ HRESULT CVTFMonster::Add_Components()
          return E_FAIL;
     }
 
+    if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Logo_Noise"), TEXT("Com_Dissolve_Texture"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom))))
+    {
+        return E_FAIL;
+    }
+
     return S_OK;
 }
 
@@ -165,6 +171,11 @@ HRESULT CVTFMonster::Bind_ShaderResources()
         return E_FAIL;
     }
 
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof _vector)))
+    {
+        return E_FAIL;
+    }
+
     if (true == m_pGameInstance->Get_TurnOnShadow()) {
 
         CASCADE_DESC Desc = m_pGameInstance->Get_CascadeDesc();
@@ -175,6 +186,23 @@ HRESULT CVTFMonster::Bind_ShaderResources()
         if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeProj", Desc.LightProj, 3)))
             return E_FAIL;
 
+    }
+
+    if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
+    {
+        return E_FAIL;
+    }
+
+    _vector vRimColor = { 1.f, 0.f, 0.f, 1.f };
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vRimColor, sizeof _vector)))
+    {
+        return E_FAIL;
+    }
+
+    _uint iOutlineColor = OutlineColor_Red;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_OutlineColor", &iOutlineColor, sizeof _uint)))
+    {
+        return E_FAIL;
     }
 
     return S_OK;

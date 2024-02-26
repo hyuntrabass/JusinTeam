@@ -483,6 +483,16 @@ namespace Client
 		InstPass_Particle_MaskColor_Alpha,
 		InstPass_End,
 	};
+
+	enum VTFInstancingPass
+	{
+		VTF_InstPass_Default,
+		VTF_InstPass_Shadow,
+		VTF_InstPass_Dissolve,
+		VTF_InstPass_Main_Rim,
+		VTF_InstPass_OutLine,
+		VTF_InstPass_End
+	};
 #pragma endregion
 #pragma region �ƾ�
 	struct SectionInfo
