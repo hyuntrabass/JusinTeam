@@ -78,11 +78,11 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	//if (FAILED(Ready_Human_Boss()))
-	//{
-	//	MSG_BOX("Failed to Ready HumanBoss");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Human_Boss()))
+	{
+		MSG_BOX("Failed to Ready HumanBoss");
+		return E_FAIL;
+	}
 
 	if (FAILED(Ready_NPC()))
 	{

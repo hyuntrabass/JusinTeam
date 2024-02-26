@@ -135,6 +135,7 @@
 #include "Human_Boss.h"
 #include "SafeZone.h"
 #include "Sickle.h"
+#include "SickleTrap.h"
 
 // Pet
 #include "Pet_Cat.h"

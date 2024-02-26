@@ -493,6 +493,9 @@
     <Filter Include="02.GameObjects\02.Terrain\Ocean">
       <UniqueIdentifier>{762959c5-5314-494b-9651-8d75013b8959}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Human_Boss\Sickle\Trap">
+      <UniqueIdentifier>{9048c3c2-baf3-489d-ae02-26f87e1d450b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1010,6 +1013,9 @@
     <ClInclude Include="..\Public\Ocean.h">
       <Filter>02.GameObjects\02.Terrain\Ocean</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\SickleTrap.h">
+      <Filter>02.GameObjects\08. Boss\Human_Boss\Sickle\Trap</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1521,6 +1527,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Ocean.cpp">
       <Filter>02.GameObjects\02.Terrain\Ocean</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SickleTrap.cpp">
+      <Filter>02.GameObjects\08. Boss\Human_Boss\Sickle\Trap</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

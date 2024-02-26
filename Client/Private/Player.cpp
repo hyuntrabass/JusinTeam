@@ -1511,7 +1511,8 @@ void CPlayer::Move(_float fTimeDelta)
 
 	if (m_eState == Revival_Start or m_eState == Revival_End
 		or m_eState == KnockDown or m_eState == Stun_Start
-		or m_eState == Stun or m_eState == Die or m_eState == Jump_Long_End)
+		or m_eState == Stun or m_eState == Die or m_eState == Jump_Long_End
+		 or m_eState == Collect_Start or m_eState == Collect_Loop or m_eState == Collect_End)
 	{
 		m_pTransformCom->Gravity(fTimeDelta);
 		return;
@@ -1666,7 +1667,7 @@ void CPlayer::Move(_float fTimeDelta)
 	if (m_pGameInstance->Mouse_Pressing(DIM_RBUTTON))
 	{
 		if (m_Current_Weapon == WP_BOW && m_eState != AimMode_End && m_eState != Hit &&
-			m_eState != KnockDown && m_eState != Stun && m_eState != Stun_Start && m_eState != AimMode)
+			m_eState != KnockDown && m_eState != Stun && m_eState != Stun_Start && m_eState != AimMode && m_Weapon_CurrentIndex != BOW_UNEQUIP)
 		{
 			if (!m_bLockOn)
 			{
@@ -3366,6 +3367,11 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		}
 		if (Index >= 26.f && Index <= 28.f)
 		{
+			if (!m_bAttacked)
+			{
+				Create_Arrow(AT_Bow_Skill4);
+				m_bAttacked = true;
+			}
 			m_pCam_Manager->Set_ShakeCam(true, 1.f);
 			m_pGameInstance->Set_TimeRatio(0.2f);
 			m_UsingMotionBlur = true;
@@ -3499,8 +3505,17 @@ void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
 	{
 		type.world = ArrowMat;
 		type.vLook = m_pTransformCom->Get_State(State::Look);
-		type.vLook.y -= 0.25f;
-		type.Att_Type = AT_Bow_Skill4;
+		type.iDamage = (_int)(m_Status.Attack * 1.5) + rand() % 10;
+		type.Att_Type = Att_Type;
+
+		if (m_bLockOn)
+		{
+			type.bAimMode = true;
+		}
+		else
+		{
+			type.MonCollider = m_pGameInstance->Get_Nearest_MonsterCollider();
+		}
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Arrow"), TEXT("Prototype_GameObject_Arrow"), &type)))
 		{
 			return;
@@ -4262,10 +4277,13 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		}
 		else if (m_Current_Weapon == WP_BOW)
 		{
-			if (m_pModelCom->IsAnimationFinished(m_BowSkill[3]))
+			if (m_bLockOn)
 			{
-				m_eState = AimMode;
+				if (m_pModelCom->IsAnimationFinished(m_BowSkill[3]))
+				{
+					m_eState = AimMode;
 
+				}
 			}
 			else
 			{
