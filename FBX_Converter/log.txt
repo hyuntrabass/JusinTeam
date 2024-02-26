@@ -1,1 +1,13 @@
 1. Static Only   2. Anim Only   3. All
+2
+Animation Models : Start Converting...
+1. Normally Anim Model	2. For VTF Model 3. Part Model
+2
+Converting... TreasureBox.fbx
+Read File Succssefully
+Animation name list: 
+jewel_box_01_stand.ao|jewel_box_01_open
+Animation Models : Convert Success!
+
+1 Animation Models
+are Successfully Converted as hyuntramesh!!

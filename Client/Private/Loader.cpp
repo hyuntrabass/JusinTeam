@@ -317,6 +317,10 @@ HRESULT CLoader::Load_Logo()
 			if (!entry.exists())
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+			if (strPrototypeTag == L"Prototype_Model_TreasureBox")
+				Pivot = XMMatrixScaling(0.005f, 0.005f, 0.005f);
+			else
+				Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CVTFModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
 			{

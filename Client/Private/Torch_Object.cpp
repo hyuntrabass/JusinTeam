@@ -120,8 +120,6 @@ void CTorch_Object::Tick(_float fTimeDelta)
 
 void CTorch_Object::Late_Tick(_float fTimeDelta)
 {
-
-
 	if (m_isRendered)
 		return;
 
@@ -130,11 +128,7 @@ void CTorch_Object::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
-
-	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Dungeon)
-	{
-		__super::Late_Tick(fTimeDelta);
-	}
+	__super::Late_Tick(fTimeDelta);
 	
 	m_isRendered = true;
 

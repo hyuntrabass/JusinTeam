@@ -24,6 +24,8 @@ private:
 	HRESULT Ready_Torch();
 	HRESULT Ready_Interaction();
 
+	HRESULT Ready_TreasureBox();
+
 	HRESULT Ready_NpcvsMon();
 
 private: // Monster, Boss

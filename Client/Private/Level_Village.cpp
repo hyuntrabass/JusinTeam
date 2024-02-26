@@ -121,7 +121,11 @@ HRESULT CLevel_Village::Init()
 		MSG_BOX("Failed to Ready Statue");
 		return E_FAIL;
 	}
-
+	if (FAILED(Ready_TreasureBox()))
+	{
+		MSG_BOX("Failed to Ready TreasureBox");
+		return E_FAIL;
+	}
 	//if (FAILED(Ready_SescoGame()))
 	//{sd
 	//	MSG_BOX("Failed to Ready SescoGame");
@@ -330,8 +334,52 @@ HRESULT CLevel_Village::Ready_Interaction()
 			}
 		}
 	}
+	inFile.close();
+
 
 	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_TreasureBox()
+{
+	const TCHAR* pGetPath = TEXT("../Bin/Data/TreasureBox.dat");
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MSG_BOX("던전 보물상자 파일을 찾지 못했습니다.");
+		return E_FAIL;
+	}
+
+	_uint ObjectListSize;
+	inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
+
+	for (_uint i = 0; i < ObjectListSize; ++i)
+	{
+		_ulong ObjectPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
+
+		wstring ObjectPrototype;
+		ObjectPrototype.resize(ObjectPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
+
+		_mat ObjectWorldMat;
+		inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
+
+		ObjectInfo ObjectInfo{};
+		ObjectInfo.strPrototypeTag = ObjectPrototype;
+		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
+		ObjectInfo.eObjectType = Object_Environment;
+		ObjectInfo.m_iIndex = (_uint)FIELD;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Interaction_Object"), TEXT("Prototype_GameObject_Intraction_Anim_Object"), &ObjectInfo)))
+		{
+			MSG_BOX("던전 보물상자 불러오기 실패");
+			return E_FAIL;
+		}
+	}
+	inFile.close();
 }
 
 HRESULT CLevel_Village::Ready_NpcvsMon()

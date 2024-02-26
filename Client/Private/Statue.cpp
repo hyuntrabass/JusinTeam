@@ -30,6 +30,7 @@ HRESULT CStatue::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER);
 
 	m_Animation.iAnimIndex = 0;
 	m_Animation.isLoop = false;
@@ -126,15 +127,15 @@ HRESULT CStatue::Add_Collider()
 		TEXT("Com_Collider_OBB"), (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
 		return E_FAIL;
 
-	PxCapsuleControllerDesc ControllerDesc{};
-	ControllerDesc.height = 1.f; // 높이(위 아래의 반구 크기 제외
-	ControllerDesc.radius = 0.6f; // 위아래 반구의 반지름
-	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
-	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
-	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
-	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+	//PxCapsuleControllerDesc ControllerDesc{};
+	//ControllerDesc.height = 1.f; // 높이(위 아래의 반구 크기 제외
+	//ControllerDesc.radius = 0.6f; // 위아래 반구의 반지름
+	//ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+	//ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+	//ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+	//ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 
-	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+	//m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER);
 
 	return S_OK;
 }

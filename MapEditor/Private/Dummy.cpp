@@ -43,7 +43,7 @@ HRESULT CDummy::Init(void* pArg)
 
 	m_Info = *(DummyInfo*)pArg;
 	m_eType = m_Info.eType;
-	if(m_Info.eType == ItemType::Monster || m_Info.eType == ItemType::NPC)
+	if(m_Info.eType == ItemType::Monster || m_Info.eType == ItemType::NPC || m_Info.eType ==ItemType::Interaction)
 	{
 		m_isAnim = true;
 		m_Animation.iAnimIndex = 0;
@@ -95,8 +95,8 @@ void CDummy::Tick(_float fTimeDelta)
 
 void CDummy::Late_Tick(_float fTimeDelta)
 {
-	if (m_eType == ItemType::Monster || m_eType == ItemType::NPC)
-		m_pModelCom->Play_Animation(0.f);
+	if (m_eType == ItemType::Monster || m_eType == ItemType::NPC || m_eType == ItemType::Interaction)
+		m_pModelCom->Play_Animation(fTimeDelta);
 
 	#ifdef _DEBUG
 	if(m_eType == ItemType::Trigger)
