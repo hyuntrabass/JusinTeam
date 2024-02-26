@@ -83,15 +83,6 @@ public:
 		Range_End,	
 	};
 
-	enum PATTERN
-	{
-		PT_Common,
-		PT_Counter,
-		PT_Hide,
-		PT_Pizza,
-		PT_ThrowSickle,
-		PT_END
-	};
 
 private:
 	CHuman_Boss(_dev pDevice, _context pContext);
@@ -117,12 +108,12 @@ private:
 	void Update_Collider();
 
 private:
-	void View_Attack_Range(ATTACK_RANGE Range,_float fRotationY = 0.f);
-	void After_Attack(_float fTimedelta);
-	_bool Compute_Angle(_float fAngle, _float RotationY = 0.f);
-	void Increased_Range(_float Index, _float fTImeDelta,_float fRotationY = 0.f);
 	void Set_Pattern();
 	_float Compute_Distance();
+	void After_Attack(_float fTimedelta);
+	_bool Compute_Angle(_float fAngle, _float RotationY = 0.f);
+	void View_Attack_Range(ATTACK_RANGE Range,_float fRotationY = 0.f);
+	void Increased_Range(_float Index, _float fTImeDelta,_float fRotationY = 0.f);
 
 private:
 	CShader* m_pShaderCom = { nullptr };
@@ -151,6 +142,7 @@ private:
 	_uint m_iAttackPattern{};
 	_bool m_bSelectAttackPattern{};
 	_bool m_bCounter_Success{};
+	_bool m_bViewModel{};
 	_float m_fHitTime{};
 	_float m_fHideTimmer{};
 	_bool m_bChangePass{};
@@ -160,7 +152,8 @@ private:
 	_uint m_iPassIndex{};
 	_float m_fAttackRange{};
 	_bool m_bViewWeapon{};
-	_float m_fDissolveRatio{};
+	_float m_fWeaponDissolveRatio{};
+	_float m_fModelDissolveRatio{};
 	_uint m_iWeaponPassIndex{};
 	_float m_fPatternDelay{};
 	_vec4 m_vRimColor{};

@@ -34,6 +34,7 @@ public:
 
 	_int Get_InstanceID() { return m_iInstanceID; }
 	PLAYANIM_DESC& Get_PlayAnimDesc() { return m_PlayAnimDesc; }
+	ANIMTIME_DESC& Get_OldAnimDesc() { return m_OldAnimDesc; }
 
 	HRESULT Bind_Material(class CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType);
 	HRESULT Bind_Animation(class CShader* pShader);

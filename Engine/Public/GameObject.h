@@ -44,8 +44,10 @@ protected:
 	_bool m_isDead{ false };
 	_int m_iHP{};
 	_bool m_isRendered{ false };
-	_int m_iID = 0;
 	_bool m_shouldRenderBlur{};
+
+	static _int	m_iNextID;
+	_int m_iID = 0;
 
 protected:
 	HRESULT Add_Component(_uint iLevelIndex, const wstring& strPrototypeTag, const wstring& strComTag, _Inout_ CComponent** ppComponent, void* pArg = nullptr);

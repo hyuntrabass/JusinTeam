@@ -236,6 +236,7 @@
     <ClInclude Include="..\Public\NPC_Dummy.h" />
     <ClInclude Include="..\Public\NumEffect.h" />
     <ClInclude Include="..\Public\Objects.h" />
+    <ClInclude Include="..\Public\Ocean.h" />
     <ClInclude Include="..\Public\Odin.h" />
     <ClInclude Include="..\Public\Pet.h" />
     <ClInclude Include="..\Public\Pet_Cat.h" />
@@ -371,6 +372,7 @@
     <ClCompile Include="..\Private\Meteor.cpp" />
     <ClCompile Include="..\Private\NineSlice.cpp" />
     <ClCompile Include="..\Private\NumEffect.cpp" />
+    <ClCompile Include="..\Private\Ocean.cpp" />
     <ClCompile Include="..\Private\Projectile.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />
     <ClCompile Include="..\Private\FadeBox.cpp" />

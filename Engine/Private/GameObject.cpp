@@ -1,6 +1,8 @@
 #include "GameObject.h"
 #include "GameInstance.h"
 
+_int CGameObject::m_iNextID = 0;
+
 CGameObject::CGameObject(_dev pDevice, _context pContext)
 	: m_pDevice(pDevice)
 	, m_pContext(pContext)
@@ -16,7 +18,6 @@ CGameObject::CGameObject(const CGameObject& rhs)
 	: m_pDevice(rhs.m_pDevice)
 	, m_pContext(rhs.m_pContext)
 	, m_pGameInstance(rhs.m_pGameInstance)
-	, m_iID(rhs.m_iID)
 {
 	Safe_AddRef(m_pGameInstance);
 	Safe_AddRef(m_pContext);
@@ -27,6 +28,7 @@ CGameObject::CGameObject(const CGameObject& rhs)
 		MSG_BOX("Failed to Import TransformCom");
 	}
 
+	m_iID = m_iNextID++;
 }
 
 const _bool& CGameObject::Is_Blur()

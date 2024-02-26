@@ -490,6 +490,9 @@
     <Filter Include="02.GameObjects\16.SescoGame\VTFMonster\Void19">
       <UniqueIdentifier>{6de5bee6-1aae-49f5-b546-96ce84157a85}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\02.Terrain\Ocean">
+      <UniqueIdentifier>{762959c5-5314-494b-9651-8d75013b8959}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1004,6 +1007,9 @@
     <ClInclude Include="..\Public\Sickle.h">
       <Filter>02.GameObjects\08. Boss\Human_Boss\Sickle</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Ocean.h">
+      <Filter>02.GameObjects\02.Terrain\Ocean</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1512,6 +1518,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Void19.cpp">
       <Filter>02.GameObjects\16.SescoGame\VTFMonster\Void19</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ocean.cpp">
+      <Filter>02.GameObjects\02.Terrain\Ocean</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

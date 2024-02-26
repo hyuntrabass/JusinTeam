@@ -190,7 +190,8 @@ namespace Engine
 	using INSTANCED_PLAYANIM_DESC = struct tagInstancedPlayAnimDesc
 	{
 		PLAYANIM_DESC PlayAnim[MAX_INSTANCE];
-
+		ANIMTIME_DESC OldAnim[MAX_INSTANCE];
+		float fDissolveRatio[MAX_INSTANCE]{};
 	};
 
 	using TRIGGEREFFECT_DESC = struct tagTriggerEffectDesc {
@@ -366,7 +367,7 @@ namespace Engine
 	struct Instance_Data
 	{
 		SimpleMath::Matrix mMatrix{};
-		//SimpleMath::Matrix mOldMatrix{};
+		SimpleMath::Matrix mOldMatrix{};
 		unsigned int m_iID{};
 	};
 
@@ -377,10 +378,11 @@ namespace Engine
 		XMFLOAT2 vTexcoord{};
 		XMFLOAT3 vTangent{};
 		XMMATRIX mMatrix{};
+		XMMATRIX mOldMatrix{};
 
 		unsigned int iInstanceID{};
 
-		static const unsigned int iNumElements{ 9 };
+		static const unsigned int iNumElements{ 13 };
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	};
 
@@ -394,10 +396,11 @@ namespace Engine
 		XMUINT4 vBlendIndices{};
 		XMFLOAT4 vBlendWeights{};
 		XMMATRIX mMatrix{};
+		XMMATRIX mOldMatrix{};
 
 		unsigned int iInstanceID{};
 
-		static const unsigned int iNumElements{ 11 };
+		static const unsigned int iNumElements{ 15 };
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	};
 }
