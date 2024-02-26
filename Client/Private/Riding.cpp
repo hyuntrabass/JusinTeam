@@ -34,7 +34,7 @@ HRESULT CRiding::Init(void* pArg)
 			m_hasJumped = true;
 			m_fWalkSpeed = 10.f;
 			m_fRunSpeed = 10.f;
-
+			m_fRadialMaxPower = 0.7f;
 			if (Desc->bGlide)
 			{
 				m_eState = Riding_Glide;
@@ -58,6 +58,7 @@ HRESULT CRiding::Init(void* pArg)
 			m_hasJumped = true;
 			m_fWalkSpeed = 11.f;
 			m_fRunSpeed = 11.f;
+			m_fRadialMaxPower = 0.9f;
 			if (Desc->bGlide)
 			{
 				m_eState = Riding_Glide;
@@ -81,6 +82,7 @@ HRESULT CRiding::Init(void* pArg)
 			m_hasJumped = true;
 			m_fWalkSpeed = 20.f;
 			m_fRunSpeed = 20.f;
+			m_fRadialMaxPower = 2.f;
 			if (Desc->bGlide)
 			{
 				m_eState = Riding_Glide;
@@ -107,6 +109,7 @@ HRESULT CRiding::Init(void* pArg)
 			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Horse");
 			m_fRunSpeed = 10.f;
 			m_fJumpPower = 10.f;
+			m_fRadialMaxPower = 0.3f;
 			m_pCam_Manager->Set_RidingZoom(true);
 		}
 		break;
@@ -117,6 +120,7 @@ HRESULT CRiding::Init(void* pArg)
 			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Tiger");
 			m_fRunSpeed = 12.f;
 			m_fJumpPower = 15.f;
+			m_fRadialMaxPower = 0.6f;
 			m_pCam_Manager->Set_RidingZoom(true);
 		}
 		break;
@@ -128,6 +132,7 @@ HRESULT CRiding::Init(void* pArg)
 			m_fWalkSpeed = 5.f;
 			m_fRunSpeed = 30.f;
 			m_fJumpPower = 20.f;
+			m_fRadialMaxPower = 1.f;
 			m_pCam_Manager->Set_RidingZoom(true);
 		}
 		break;
@@ -245,6 +250,7 @@ HRESULT CRiding::Init(void* pArg)
 
 void CRiding::Tick(_float fTimeDelta)
 {
+	
 	m_pTransformCom->Set_OldMatrix();
 	if (m_eCurMode == VEHICLEBOOK)
 	{
@@ -272,24 +278,6 @@ void CRiding::Tick(_float fTimeDelta)
 		m_bDelete = true;
 	}
 
-	/*else
-	{
-		if (m_fDissolveRatio >= 0.f && !m_isDead)
-		{
-			m_fDissolveRatio -= fTimeDelta / 2.f;
-		}
-		else if (m_isDead)
-		{
-			m_fDissolveRatio += fTimeDelta / 1.4f;
-
-			if (m_fDissolveRatio >= 1.f)
-			{
-				_vec3 vPos = m_pTransformCom->Get_State(State::Pos) + _vec4(0.f, 1.f, 0.f, 0.f);
-				m_pTransformCom->Set_Position(vPos);
-				m_bDelete = true;
-			}
-		}
-	}*/
 
 	Init_State();
 	Tick_State(fTimeDelta);
@@ -870,14 +858,27 @@ void CRiding::Init_State()
 
 void CRiding::Tick_State(_float fTimeDelta)
 {
-	//if (m_eState == Riding_Glide)
-	//{
-	//	m_pRendererCom->Set_RaidalBlur(m_pTransformCom->Get_State(State::Pos), _float(1.f));
-	//}
-	//else
-	//{
-	//	m_pRendererCom->Set_RaidalBlur(m_pTransformCom->Get_CenterPos(), _float(0.f));
-	//}
+	if (m_eState == Riding_Glide or m_eState == Riding_Run or m_eState == Riding_Jump 
+		or m_eState == Riding_Jump_Start or m_eState == Riding_Jump_End)
+	{
+		if (m_fRadialPower < m_fRadialMaxPower)
+		{
+			m_fRadialPower += fTimeDelta * 2.3f;
+			m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
+			
+		}
+		m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
+	}
+	else
+	{
+		if (m_fRadialPower>0.f)
+		{
+			m_fRadialPower -= fTimeDelta * 2.3f;
+			m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
+		}
+		
+	}
+
 	switch (m_eState)
 	{
 	case Client::Riding_Landing:
@@ -1017,6 +1018,16 @@ void CRiding::Tick_State(_float fTimeDelta)
 	default:
 		break;
 	}
+}
+
+_bool CRiding::Get_Delete()
+{
+	if (m_bDelete)
+	{
+		m_pRendererCom->Set_RadialBlur_Power(0.f);
+		return m_bDelete;
+	}
+	return false;
 }
 
 
