@@ -408,7 +408,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 
 	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
 	_float fDistance = (vPlayerPos - vPos).Length();
-
+	
 	_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 	vDir.y = 0.f;
 

@@ -54,7 +54,7 @@ void CSickle::Tick(_float fTimeDelta)
 
 	m_EffectMatrices[0] = _mat::CreateScale(4.f)/* * _mat::CreateRotationY(XMConvertToRadians(m_fLifeTimer *-2000.f))*/ * m_pTransformCom->Get_World_Matrix();
 	m_EffectMatrices[1] = _mat::CreateScale(4.f) * m_pTransformCom->Get_World_Matrix();
-	m_EffectMatrices[2] = _mat::CreateScale(4.f)* m_pTransformCom->Get_World_Matrix();
+	m_EffectMatrices[2] = _mat::CreateScale(4.f) * m_pTransformCom->Get_World_Matrix();
 	
 	for (size_t i = 0; i < 3; i++)
 	{

@@ -272,6 +272,7 @@ HRESULT CLoader::Load_Logo()
 			{
 				return E_FAIL;
 			}
+			
 		}
 	}
 
@@ -316,6 +317,10 @@ HRESULT CLoader::Load_Logo()
 			if (!entry.exists())
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+			if (strPrototypeTag == L"Prototype_Model_TreasureBox")
+				Pivot = XMMatrixScaling(0.005f, 0.005f, 0.005f);
+			else
+				Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CVTFModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
 			{
@@ -1844,6 +1849,10 @@ HRESULT CLoader::Load_Village()
 			{
 				DungeonPivot = _mat::CreateScale(0.005f);
 			}
+			else if (strPrototypeTag == L"Prototype_Model_MiniDungeon")
+			{
+				Pivot = _mat::CreateScale(0.003f);
+			}
 			else
 				DungeonPivot = _mat::CreateScale(0.001f);
 
@@ -2129,6 +2138,7 @@ HRESULT CLoader::Load_Village()
 				ObjectInfo.strPrototypeTag = ObjectPrototype;
 				ObjectInfo.m_WorldMatrix = ObjectWorldMat;
 				ObjectInfo.eObjectType = Object_Building;
+
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Village_Etc_Object"), &ObjectInfo)))
 				{
 					MSG_BOX("오브젝트 불러오기 실패");
@@ -2208,11 +2218,13 @@ HRESULT CLoader::Load_Village()
 				ObjectInfo.m_WorldMatrix = ObjectWorldMat;
 				ObjectInfo.eObjectType = Object_Environment;
 				ObjectInfo.m_iIndex = (_uint)FIELD;
+
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Envir_Object"), TEXT("Prototype_GameObject_Village_Envir_Object"), &ObjectInfo)))
 				{
 					MSG_BOX("필드 환경오브젝트 불러오기 실패");
 					return E_FAIL;
 				}
+
 			}
 		}
 

@@ -24,6 +24,8 @@ private:
 	HRESULT Ready_Torch();
 	HRESULT Ready_Interaction();
 
+	HRESULT Ready_TreasureBox();
+
 	HRESULT Ready_NpcvsMon();
 
 private: // Monster, Boss
@@ -37,6 +39,7 @@ private: // Monster, Boss
 private: // NPC
 	HRESULT Ready_NPC();
 	HRESULT Ready_NPC_Dummy();
+	HRESULT Ready_Statue();
 
 private: // SescoGame
 	HRESULT Ready_SescoGame();

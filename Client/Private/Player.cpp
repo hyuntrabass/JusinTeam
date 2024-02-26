@@ -3696,7 +3696,7 @@ void CPlayer::Arrow_Rain()
 
 void CPlayer::Init_State()
 {
-
+	m_pGameInstance->Get_Nearest_MonsterCollider();
 	if (m_eState != m_ePrevState)
 	{
 		m_ReadyArrow = true;

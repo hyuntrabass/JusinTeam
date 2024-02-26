@@ -31,6 +31,8 @@ protected:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
+	CCollider* m_pColliderCom{ nullptr };
+
 protected:
 
 	ObjectInfo m_Info{};
@@ -41,6 +43,7 @@ protected:
 
 protected:
 	HRESULT Add_Components(wstring strPrototype, ObjectType eType);
+	HRESULT Add_Collider();
 	HRESULT Bind_ShaderResources();
 
 

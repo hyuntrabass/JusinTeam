@@ -84,7 +84,6 @@ void CSickleTrap::Tick(_float fTimeDelta)
 		pPlayerTransform->Set_State(State::Pos, vPlayerPos);
 	}
 
-
 }
 
 void CSickleTrap::Late_Tick(_float fTimeDelta)

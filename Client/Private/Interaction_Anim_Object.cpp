@@ -7,6 +7,7 @@
 // 부셔지는 애니메이션 하나 밖에 없음
 // Prototype_Model_GoldStone
 // Prototype_Model_SaltStone
+// Prototype_Model_TreasureBox
 
 CInteraction_Anim::CInteraction_Anim(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -61,9 +62,13 @@ HRESULT CInteraction_Anim::Init(void* pArg)
 	{
 		NameTagDesc.strNameTag = TEXT("금광석");
 	}
-	else
+	else if(m_Info.strPrototypeTag == TEXT("Prototype_Model_SaltStone"))
 	{
 		NameTagDesc.strNameTag = TEXT("소금 광석");
+	}
+	else if (m_Info.strPrototypeTag == TEXT("Prototype_Model_TreasureBox"))
+	{
+		NameTagDesc.strNameTag = TEXT("보물상자");
 	}
 
 	NameTagDesc.vColor = _vec4(0.f, 0.6f, 0.8f, 1.f);
