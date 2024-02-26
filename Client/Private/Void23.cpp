@@ -81,11 +81,6 @@ HRESULT CVoid23::Init(void* pArg)
 
 void CVoid23::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_3))
-	{
-		Set_Damage(0, AT_Bow_Skill3);
-	}
-
 	__super::Tick(fTimeDelta);
 
 	Init_State(fTimeDelta);
@@ -111,6 +106,7 @@ void CVoid23::Late_Tick(_float fTimeDelta)
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
+	m_pRendererCom->Add_DebugComponent(m_pFloorCollider);
 #endif
 }
 
@@ -123,26 +119,31 @@ HRESULT CVoid23::Render()
 
 void CVoid23::Set_Damage(_int iDamage, _uint iDamageType)
 {
-	m_fHittedTime = 6.f;
-
-	//if (iDamage >= 300)
+	if (iDamage > 0)
 	{
-		m_eCurState = STATE_HIT;
-	}
+		m_iHP -= iDamage;
+		m_bDamaged = true;
+		m_bChangePass = true;
+		m_fHittedTime = 6.f;
+		m_fIdleTime = 0.f;
 
-	m_iHP -= iDamage;
-	m_bDamaged = true;
-	m_bChangePass = true;
+		_vec4 vPlayerPos = __super::Compute_PlayerPos();
+		m_pTransformCom->LookAt(vPlayerPos);
+
+		if (iDamage >= 500)
+		{
+			m_eCurState = STATE_HIT;
+		}
+		else
+		{
+			m_eCurState = STATE_CHASE;
+		}
+	}	
 
 	//if (m_bHit == false)
 	//{
 	//	m_iDamageAcc += iDamage;
 	//}
-
-	m_fIdleTime = 0.f;
-
-	_vec4 vPlayerPos = __super::Compute_PlayerPos();
-	m_pTransformCom->LookAt(vPlayerPos);
 
 	//if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
 	//	iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
@@ -191,6 +192,14 @@ void CVoid23::Init_State(_float fTimeDelta)
 			m_Animation.fInterpolationTime = 0.2f;
 
 			m_pTransformCom->Set_Speed(1.5f);
+
+			m_fIdleTime = 0.f;
+
+			m_bSelectAttackPattern = false;
+
+			m_bAttacked = false;
+			m_bAttacked2 = false;
+
 			break;
 
 		case Client::CVoid23::STATE_WALK:
@@ -226,18 +235,12 @@ void CVoid23::Init_State(_float fTimeDelta)
 				m_pTransformCom->Set_Speed(4.f);
 			}
 
-			// Test
-			++m_iAttackPattern;
-			if (m_iAttackPattern == 5)
-			{
-				m_iAttackPattern = 0;
-			}
-
 			break;
 
 		case Client::CVoid23::STATE_ATTACK:
-			m_bDamaged = false;
+			//m_bDamaged = false;
 			m_Animation.fAnimSpeedRatio = 2.5f;
+			m_Animation.isLoop = false;
 			m_bAttacking = true;
 
 			m_pTransformCom->LookAt_Dir(vDir);
@@ -289,39 +292,49 @@ void CVoid23::Tick_State(_float fTimeDelta)
 {
 	_vec4 vPlayerPos = __super::Compute_PlayerPos();
 	_float fDistance = __super::Compute_PlayerDistance();
+	_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
+	vDir.y = 0.f;
 
 	switch (m_eCurState)
 	{
 	case Client::CVoid23::STATE_IDLE:
 	{
-		m_fIdleTime += fTimeDelta;
-
-		if (m_bAttacking == true)
+		if (m_bDamaged)
 		{
+			m_fIdleTime += fTimeDelta;
+
 			if (m_fIdleTime >= 1.f)
 			{
-				if (fDistance >= m_fAttackRange)
-				{
-					m_eCurState = STATE_CHASE;
-				}
-				else
-				{
-					m_eCurState = STATE_ATTACK;
-				}
-
-				m_fIdleTime = 0.f;
+				m_eCurState = STATE_CHASE;
 			}
-
 		}
-		else
-		{
-			//if (m_fIdleTime >= 2.f)
-			//{
-			//	m_eCurState = STATE_WALK;
-			//	m_fIdleTime = 0.f;
-			//}
 
-		}
+		//if (m_bAttacking == true)
+		//{
+		//	if (m_fIdleTime >= 1.f)
+		//	{
+		//		if (fDistance >= m_fAttackRange)
+		//		{
+		//			m_eCurState = STATE_CHASE;
+		//		}
+		//		else
+		//		{
+		//			m_eCurState = STATE_ATTACK;
+		//		}
+
+		//		m_fIdleTime = 0.f;
+		//	}
+
+		//}
+		//else
+		//{
+		//	//if (m_fIdleTime >= 2.f)
+		//	//{
+		//	//	m_eCurState = STATE_WALK;
+		//	//	m_fIdleTime = 0.f;
+		//	//}
+
+		//}
 
 		//if (fDistance <= m_fChaseRange)
 		//{
@@ -354,17 +367,59 @@ void CVoid23::Tick_State(_float fTimeDelta)
 
 	case Client::CVoid23::STATE_CHASE:
 	{
-		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
-		vDir.y = 0.f;
+		if (!m_bSelectAttackPattern)
+		{
+			m_iAttackPattern = { INT_MAX };
 
-		//if (fDistance > m_fChaseRange && !m_bDamaged)
-		//{
-		//	m_eCurState = STATE_IDLE;
-		//	m_bSlow = false;
-		//	m_bAttacking = false;
+			_bool bReset = { true };
+			for (auto& it : m_bAttack_Selected)
+			{
+				if (it == false)
+				{
+					bReset = false;
+					break;
+				}
+			}
 
-		//	break;
-		//}
+			if (bReset == true)
+			{
+				for (auto& it : m_bAttack_Selected)
+				{
+					it = false;
+				}
+			}
+
+			VOID23_ATTACK eAttackRandom = static_cast<VOID23_ATTACK>(rand() % ATTACK_END);
+
+			while (m_bAttack_Selected[eAttackRandom] == true)
+			{
+				eAttackRandom = static_cast<VOID23_ATTACK>(rand() % ATTACK_END);
+			}
+
+			switch (eAttackRandom)
+			{
+			case Client::CVoid23::ATTACK1:
+				m_iAttackPattern = 0;
+				break;
+			case Client::CVoid23::ATTACK2:
+				m_iAttackPattern = 1;
+				break;
+			case Client::CVoid23::ATTACK3:
+				m_iAttackPattern = 2;
+				break;
+			case Client::CVoid23::ATTACK4:
+				m_iAttackPattern = 3;
+				break;
+			case Client::CVoid23::ATTACK5:
+				m_iAttackPattern = 4;
+				break;
+			}
+
+			m_bSelectAttackPattern = true;
+
+		}
+
+		m_pTransformCom->LookAt_Dir(vDir);
 
 		if (fDistance <= m_fAttackRange)
 		{
@@ -374,7 +429,6 @@ void CVoid23::Tick_State(_float fTimeDelta)
 		}
 		else
 		{
-			m_pTransformCom->LookAt_Dir(vDir);
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
 	}
@@ -382,25 +436,10 @@ void CVoid23::Tick_State(_float fTimeDelta)
 
 	case Client::CVoid23::STATE_ATTACK:
 
-		if (!m_bSelectAttackPattern)
-		{
-			if (m_pModelCom->IsAnimationFinished(B_ATTACK01) || m_pModelCom->IsAnimationFinished(B_ATTACK02) ||
-				m_pModelCom->IsAnimationFinished(B_ATTACK03) || m_pModelCom->IsAnimationFinished(B_ATTACK04) ||
-				m_pModelCom->IsAnimationFinished(B_ATTACK05))
-			{
-				m_iAttackPattern = rand() % 5;
-				m_bSelectAttackPattern = true;
-				m_bAttacked = false;
-				m_bAttacked2 = false;
-			}
-		}
-
 		switch (m_iAttackPattern)
 		{
 		case 0:
 			m_Animation.iAnimIndex = B_ATTACK01;
-			m_Animation.isLoop = false;
-			m_bSelectAttackPattern = false;
 			{
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 66.f && fAnimpos <= 68.f)
@@ -438,13 +477,17 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				{
 					m_pSwordTrail->On();
 				}
+
+				if (m_pModelCom->IsAnimationFinished(B_ATTACK01))
+				{
+					m_eCurState = STATE_IDLE;
+					m_bAttack_Selected[ATTACK1] = true;
+				}
 			}
 			break;
 
 		case 1:
 			m_Animation.iAnimIndex = B_ATTACK02;
-			m_Animation.isLoop = false;
-			m_bSelectAttackPattern = false;
 			{
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 55.f && fAnimpos <= 57.f)
@@ -475,16 +518,21 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				{
 					m_pSwordTrail->On();
 				}
+
+				if (m_pModelCom->IsAnimationFinished(B_ATTACK02))
+				{
+					m_eCurState = STATE_IDLE;
+					m_bAttack_Selected[ATTACK2] = true;
+				}
+
 			}
 			break;
 
 		case 2:
 			m_Animation.iAnimIndex = B_ATTACK03;
-			m_Animation.isLoop = false;
-			m_bSelectAttackPattern = false;
 			{
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
-				if (fAnimpos >= 110.f && fAnimpos <= 112.f)
+				if (fAnimpos >= 108.f && fAnimpos <= 110.f)
 				{
 					if (m_pGameInstance->CheckCollision_Parrying(m_pAttackColliderCom))
 					{
@@ -495,7 +543,8 @@ void CVoid23::Tick_State(_float fTimeDelta)
 					if (!m_bAttacked)
 					{
 						_uint iDamage = m_iDefaultDamage2 + rand() % 50;
-						m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_KnockDown);
+						//m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_KnockDown);
+						m_pGameInstance->Attack_Player(m_pFloorCollider, iDamage, MonAtt_Stun);
 						m_bAttacked = true;
 					}
 				}
@@ -503,13 +552,18 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				{
 					m_pSwordTrail->On();
 				}
+
+				if (m_pModelCom->IsAnimationFinished(B_ATTACK03))
+				{
+					m_eCurState = STATE_IDLE;
+					m_bAttack_Selected[ATTACK3] = true;
+				}
+
 			}
 			break;
 
 		case 3:
 			m_Animation.iAnimIndex = B_ATTACK04;
-			m_Animation.isLoop = false;
-			m_bSelectAttackPattern = false;
 			{
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 70.f && fAnimpos <= 72.f)
@@ -531,13 +585,18 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				{
 					m_pSwordTrail->On();
 				}
+
+				if (m_pModelCom->IsAnimationFinished(B_ATTACK04))
+				{
+					m_eCurState = STATE_IDLE;
+					m_bAttack_Selected[ATTACK4] = true;
+				}
+
 			}
 			break;
 
 		case 4:
 			m_Animation.iAnimIndex = B_ATTACK05;
-			m_Animation.isLoop = false;
-			m_bSelectAttackPattern = false;
 			{
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 65.f && fAnimpos <= 67.f)
@@ -562,24 +621,16 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				{
 					m_pSwordTrail->On();
 				}
+
+				if (m_pModelCom->IsAnimationFinished(B_ATTACK05))
+				{
+					m_eCurState = STATE_IDLE;
+					m_bAttack_Selected[ATTACK5] = true;
+				}
+
 			}
 			break;
 
-		}
-
-		if (m_pModelCom->IsAnimationFinished(B_ATTACK01) || m_pModelCom->IsAnimationFinished(B_ATTACK02) ||
-			m_pModelCom->IsAnimationFinished(B_ATTACK03) || m_pModelCom->IsAnimationFinished(B_ATTACK04) ||
-			m_pModelCom->IsAnimationFinished(B_ATTACK05))
-		{
-			m_eCurState = STATE_IDLE;
-
-			//// Test
-			//++m_iAttackPattern;
-
-			//if (m_iAttackPattern == 5)
-			//{
-			//	m_iAttackPattern = 0;
-			//}
 		}
 
 		break;
@@ -652,12 +703,21 @@ HRESULT CVoid23::Add_Collider()
 		TEXT("Com_Collider_OBB"), (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
 		return E_FAIL;
 
+	Collider_Desc FloorCollDesc = {};
+	FloorCollDesc.eType = ColliderType::AABB;
+	FloorCollDesc.vExtents = _vec3(10.f, 0.1f, 10.f);
+	FloorCollDesc.vCenter = _vec3(0.f, FloorCollDesc.vExtents.y, 0.f);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+		TEXT("Com_Collider_AABB"), (CComponent**)&m_pFloorCollider, &FloorCollDesc)))
+		return E_FAIL;
+
 	// Frustum
 	Collider_Desc ColDesc{};
 	ColDesc.eType = ColliderType::Frustum;
 	_matrix matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
 	// 1인자 : 절두체 각도(범위), 2인자 : Aspect, 3인자 : Near, 4인자 : Far(절두체 깊이)
-	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.f), 1.f, 0.01f, 4.f);
+	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.f), 1.f, 0.01f, 7.f);
 	XMStoreFloat4x4(&ColDesc.matFrustum, matView * matProj);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack"), reinterpret_cast<CComponent**>(&m_pAttackColliderCom), &ColDesc)))
@@ -672,6 +732,9 @@ void CVoid23::Update_Collider()
 {
 	_mat Offset = _mat::CreateTranslation(0.f, 2.f, 0.f);
 	m_pAttackColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
+
+	//_mat Offset = _mat::CreateTranslation(0.f, 2.f, 0.f);
+	m_pFloorCollider->Update(/*Offset **/ m_pTransformCom->Get_World_Matrix());
 }
 
 CVoid23* CVoid23::Create(_dev pDevice, _context pContext)
@@ -705,4 +768,5 @@ void CVoid23::Free()
 	__super::Free();
 
 	Safe_Release(m_pSwordTrail);
+	Safe_Release(m_pFloorCollider);
 }

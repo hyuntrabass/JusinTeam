@@ -23,6 +23,7 @@ CMesh::CMesh(const CMesh& rhs)
 	, m_BoneMatrices(rhs.m_BoneMatrices)
 	, m_eType(rhs.m_eType)
 	, m_fRadius(rhs.m_fRadius)
+	, m_vCenterPos(rhs.m_vCenterPos)
 {
 	strcpy_s(m_szName, rhs.m_szName);
 }

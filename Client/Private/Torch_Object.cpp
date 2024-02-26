@@ -3,7 +3,7 @@
 #include "Camera_Manager.h"
 #include "Effect_Manager.h"
 #include "Effect_Dummy.h"
-
+#include "Trigger_Manager.h"
 CTorch_Object::CTorch_Object(_dev pDevice, _context pContext)
 	: CObjects(pDevice, pContext)
 {
@@ -121,11 +121,11 @@ void CTorch_Object::Late_Tick(_float fTimeDelta)
 		return;
 	}
 	__super::Late_Tick(fTimeDelta);
+	
 }
 
 HRESULT CTorch_Object::Render()
 {
-
 	__super::Render();
 
 	return S_OK;

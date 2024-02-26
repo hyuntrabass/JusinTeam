@@ -2,50 +2,12 @@
 2
 Animation Models : Start Converting...
 1. Normally Anim Model	2. For VTF Model 3. Part Model
-1
-Converting... BlueGem.fbx
+2
+Converting... TreasureBox.fbx
 Read File Succssefully
 Animation name list: 
-War_Hallow_idle.ao|Attack01
-War_Hallow_idle.ao|idle
-Converting... Cannon.fbx
-Read File Succssefully
-Animation name list: 
-War_SM_Cannon_001.ao|War_SM_Cannon_001_Attack01
-War_SM_Cannon_001.ao|War_SM_Cannon_001_Attack02
-War_SM_Cannon_001.ao|War_SM_Cannon_001_Die
-War_SM_Cannon_001.ao|War_SM_Cannon_001_Idle
-Converting... EyeStatue.fbx
-Read File Succssefully
-Animation name list: 
-Mist_SM_EyeStatue_001_Ani.ao|Mist_SM_EyeStatue_001_Ani_Attack01_Short
-Mist_SM_EyeStatue_001_Ani.ao|Mist_SM_EyeStatue_001_Ani_Attack02
-Mist_SM_EyeStatue_001_Ani.ao|Mist_SM_EyeStatue_001_Ani_Attack02_A
-Mist_SM_EyeStatue_001_Ani.ao|Mist_SM_EyeStatue_001_Ani_Idle
-Converting... EyeStone.fbx
-Read File Succssefully
-Animation name list: 
-Com_SM_FenrirSealStone.ao|Com_SM_FenrirSealStone_Enchant
-Com_SM_FenrirSealStone.ao|Com_SM_FenrirSealStone_EnchantFailed
-Com_SM_FenrirSealStone.ao|Com_SM_FenrirSealStone_EnchantSuccess
-Com_SM_FenrirSealStone.ao|Com_SM_FenrirSealStone_idle
-Com_SM_FenrirSealStone.ao|Com_SM_FenrirSealStone_Stopidle
-Converting... LokiStone.fbx
-Read File Succssefully
-Animation name list: 
-Com_SM_LokiStone.ao|Com_SM_LokiStone_Enchant
-Com_SM_LokiStone.ao|Com_SM_LokiStone_EnchantFailed
-Com_SM_LokiStone.ao|Com_SM_LokiStone_EnchantSuccess
-Com_SM_LokiStone.ao|Com_SM_LokiStone_idle
-Com_SM_LokiStone.ao|Com_SM_LokiStone_Stopidle
-Converting... Tower.fbx
-Read File Succssefully
-Animation name list: 
-War_StoneTower.ao|Attack01
-War_StoneTower.ao|Attack02
-War_StoneTower.ao|destroy
-War_StoneTower.ao|idle
+jewel_box_01_stand.ao|jewel_box_01_open
 Animation Models : Convert Success!
 
-6 Animation Models
+1 Animation Models
 are Successfully Converted as hyuntramesh!!

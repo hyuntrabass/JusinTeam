@@ -495,6 +495,9 @@
     </Filter>
     <Filter Include="02.GameObjects\16.SescoGame\VTFMonster\Scorpion">
       <UniqueIdentifier>{76a297ed-9845-427c-b9fa-55ba9e746c5f}</UniqueIdentifier>
+	</Filter>
+    <Filter Include="02.GameObjects\04.Monster\08. Guard">
+      <UniqueIdentifier>{b9b74782-be19-497f-b2e1-15f9389c07c4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

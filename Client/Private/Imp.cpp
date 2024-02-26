@@ -71,11 +71,6 @@ HRESULT CImp::Init(void* pArg)
 
 void CImp::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_M))
-	{
-		Set_Damage(0, AT_Bow_Skill3);
-	}
-
 	__super::Tick(fTimeDelta);
 
 	Init_State(fTimeDelta);
@@ -109,21 +104,26 @@ HRESULT CImp::Render()
 
 void CImp::Set_Damage(_int iDamage, _uint iDamageType)
 {
-	m_fHittedTime = 6.f;
-	m_eCurState = STATE_HIT;
+	if (iDamage > 0)
+	{
+		m_eCurState = STATE_HIT;
 
-	m_iHP -= iDamage;
-	m_bDamaged = true;
-	m_bChangePass = true;
+		m_iHP -= iDamage;
+		m_bDamaged = true;
+		m_bChangePass = true;
+		m_fIdleTime = 0.f;
+
+		m_fHittedTime = 6.f;
+
+		_vec4 vPlayerPos = __super::Compute_PlayerPos();
+		m_pTransformCom->LookAt(vPlayerPos);
+
+	}
+
 	if (m_bHit == false)
 	{
 		m_iDamageAcc += iDamage;
 	}
-
-	m_fIdleTime = 0.f;
-
-	_vec4 vPlayerPos = __super::Compute_PlayerPos();
-	m_pTransformCom->LookAt(vPlayerPos);
 
 	if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
 		iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
@@ -147,6 +147,12 @@ void CImp::Set_Damage(_int iDamage, _uint iDamageType)
 		m_bSlow = true;
 		m_Animation.fAnimSpeedRatio = 1.f;
 	}
+
+	if (iDamageType == AT_OutLine && !m_bChangePass)
+	{
+		m_iPassIndex = AnimPass_OutLine;
+	}
+
 }
 
 void CImp::Init_State(_float fTimeDelta)

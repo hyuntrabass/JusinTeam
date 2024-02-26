@@ -64,7 +64,7 @@ void CMonster::Tick(_float fTimeDelta)
 			m_iPassIndex = AnimPass_Default;
 		}
 
-		if (m_fHitTime >= 0.3f)
+		if (m_fHitTime >= 1.f)
 		{
 			m_fHitTime = 0.f;
 			m_bChangePass = false;
@@ -185,6 +185,12 @@ HRESULT CMonster::Render()
 		{
 			return E_FAIL;
 		}
+
+	}
+
+	if (!m_bChangePass && m_iHP > 0)
+	{
+		m_iPassIndex = AnimPass_Default;
 	}
 
 	return S_OK;
@@ -345,6 +351,16 @@ HRESULT CMonster::Add_Components()
 
 HRESULT CMonster::Bind_ShaderResources()
 {
+	if (m_iPassIndex == AnimPass_OutLine)
+	{
+		_uint iColor = OutlineColor_Red;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_OutlineColor", &iColor, sizeof iColor)))
+		{
+			return E_FAIL;
+		}
+
+	}
+
 	if (m_iPassIndex == AnimPass_Rim && m_bChangePass == true)
 	{
 		_vec4 vColor = Colors::Red;
