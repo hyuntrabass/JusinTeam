@@ -116,6 +116,7 @@ private:
 
 private:
 	CCommonSurfaceTrail* m_pSwordTrail = { nullptr };
+	CCommonSurfaceTrail* m_pDistTrail = { nullptr };
 
 private:
 	_float m_fIdleTime = {};

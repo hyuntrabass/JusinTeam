@@ -49,6 +49,10 @@ HRESULT CVoid23::Init(void* pArg)
 
 	m_pSwordTrail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 
+	Desc.iPassIndex = 2;
+	Desc.strMaskTextureTag = L"FX_B_CraterCrack002_Normal_Tex";
+	m_pDistTrail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
+
 	PxCapsuleControllerDesc ControllerDesc{};
 	ControllerDesc.height = 2.2f; // 높이(위 아래의 반구 크기 제외
 	ControllerDesc.radius = 0.9f; // 위아래 반구의 반지름
@@ -100,6 +104,7 @@ void CVoid23::Tick(_float fTimeDelta)
 void CVoid23::Late_Tick(_float fTimeDelta)
 {
 	m_pSwordTrail->Late_Tick(fTimeDelta);
+	m_pDistTrail->Late_Tick(fTimeDelta);
 
 	__super::Late_Tick(fTimeDelta);
 
@@ -471,11 +476,13 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				if (fAnimpos >= 60.f && fAnimpos <= 76.f)
 				{
 					m_pSwordTrail->On();
+					m_pDistTrail->On();
 				}
 
 				if (fAnimpos >= 110.f && fAnimpos <= 124.f)
 				{
 					m_pSwordTrail->On();
+					m_pDistTrail->On();
 				}
 
 				if (m_pModelCom->IsAnimationFinished(B_ATTACK01))
@@ -517,6 +524,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				if (fAnimpos >= 49.f && fAnimpos <= 57.f)
 				{
 					m_pSwordTrail->On();
+					m_pDistTrail->On();
 				}
 
 				if (m_pModelCom->IsAnimationFinished(B_ATTACK02))
@@ -551,6 +559,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				if (fAnimpos >= 101.f && fAnimpos <= 109.f)
 				{
 					m_pSwordTrail->On();
+					m_pDistTrail->On();
 				}
 
 				if (m_pModelCom->IsAnimationFinished(B_ATTACK03))
@@ -584,6 +593,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				if (fAnimpos >= 60.f && fAnimpos <= 80.f)
 				{
 					m_pSwordTrail->On();
+					m_pDistTrail->On();
 				}
 
 				if (m_pModelCom->IsAnimationFinished(B_ATTACK04))
@@ -620,6 +630,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				if (fAnimpos >= 58.f && fAnimpos <= 125.f)
 				{
 					m_pSwordTrail->On();
+					m_pDistTrail->On();
 				}
 
 				if (m_pModelCom->IsAnimationFinished(B_ATTACK05))
@@ -688,7 +699,9 @@ void CVoid23::Update_Trail(_float fTimeDelta)
 
 	m_pSwordTrail->Tick(Result1.Position_vec3(), Result2.Position_vec3());
 
-
+	Offset = _mat::CreateTranslation(_vec3(10.01f, -0.67f, -0.53f));
+	Result1 = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
+	m_pDistTrail->Tick(Result1.Position_vec3(), Result2.Position_vec3());
 }
 
 HRESULT CVoid23::Add_Collider()
@@ -768,5 +781,6 @@ void CVoid23::Free()
 	__super::Free();
 
 	Safe_Release(m_pSwordTrail);
+	Safe_Release(m_pDistTrail);
 	Safe_Release(m_pFloorCollider);
 }
