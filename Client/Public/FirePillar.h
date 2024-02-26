@@ -30,6 +30,9 @@ private:
 
 private:
 	_float m_fLifeTime = {};
+	_float m_fDamageTime = {};
+
+private:
 	_int m_iSoundChannel = -1;
 
 private:

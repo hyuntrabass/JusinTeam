@@ -79,11 +79,11 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	//if (FAILED(Ready_Human_Boss()))
-	//{
-	//	MSG_BOX("Failed to Ready HumanBoss");
-	//	return E_FAIL;
-	//}
+	if (FAILED(Ready_Human_Boss()))
+	{
+		MSG_BOX("Failed to Ready HumanBoss");
+		return E_FAIL;
+	}
 
 	if (FAILED(Ready_NPC()))
 	{
@@ -227,7 +227,7 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	{
 		CTrigger_Manager::Get_Instance()->Teleport(TS_SescoMap);
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_SescoGame_Object"))))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_CescoGameObject"), TEXT("Prototype_GameObject_CescoGame_Object"))))
 			return;
 
 		return;
@@ -235,7 +235,7 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	// Test
 	if (m_pGameInstance->Key_Down(DIK_RSHIFT))
 	{
-		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"));
+		//m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"));
 	}
 	//if (m_pGameInstance->Key_Down(DIK_UP))
 	//{

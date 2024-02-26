@@ -9,6 +9,7 @@ class CFadeBox final : public COrthographicObject
 public:
 	typedef struct tagFadeDesc
 	{
+		_float fDepth{};
 		_float fIn_Duration{};
 		_float fMid_Duration{};
 		_float fOut_Duration{};

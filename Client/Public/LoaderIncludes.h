@@ -136,6 +136,7 @@
 #include "Human_Boss.h"
 #include "SafeZone.h"
 #include "Sickle.h"
+#include "SickleTrap.h"
 
 // Pet
 #include "Pet_Cat.h"
@@ -158,7 +159,7 @@
 #include "Trigger.h"
 
 //SescoGame
-#include "SescoGame.h"
+#include "CescoGame.h"
 #include "VTFMonster.h"
 #include "Void19.h"
 

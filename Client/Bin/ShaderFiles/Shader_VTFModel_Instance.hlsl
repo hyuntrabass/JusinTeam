@@ -40,11 +40,17 @@ struct tagPlayAnimDesc
     tagAnimTimeDesc eNext;
 };
 
+struct tagDissolveRatio_Padding
+{
+    float fDissolveRatio;
+    float3 vPadding;
+};
+
 struct tagPlayAnimBuffer
 {
     tagPlayAnimDesc PlayAnimFrames[MAX_INSTANCE];
     tagAnimTimeDesc OldAnimDesc[MAX_INSTANCE];
-    float fDissolveRatio[MAX_INSTANCE];
+    tagDissolveRatio_Padding DissolveRatio[MAX_INSTANCE];
 };
 
 
@@ -64,6 +70,7 @@ struct VS_IN
     row_major matrix mWorld : World;
     row_major matrix mOldWorld : OldWorld;
     int iID : ID;
+
 };
 
 struct VS_OUT
@@ -407,9 +414,9 @@ PS_OUT PS_Main_Dissolve(PS_IN Input)
     if(0.3f > vMtrDiffuse.a)
         discard;
     
-    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex);
+    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).x;
     
-    if (g_PlayAnimInstances.fDissolveRatio[Input.iID] > fDissolve)
+    if (g_PlayAnimInstances.DissolveRatio[Input.iID].fDissolveRatio > fDissolve)
         discard;
     
     float3 vNormal;

@@ -45,6 +45,7 @@ private:
 	_int m_iDamage{};
 	_vec4 m_vRaycastPos{};
 	_bool m_bIntersected{};
+	_float m_fAttDelay{0.2f};
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

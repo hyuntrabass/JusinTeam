@@ -21,6 +21,8 @@ HRESULT CPop_QuestIn::Init_Prototype()
 
 HRESULT CPop_QuestIn::Init(void* pArg)
 {
+	m_fDepth = (_float)D_QUEST / (_float)D_END;
+
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
@@ -31,8 +33,6 @@ HRESULT CPop_QuestIn::Init(void* pArg)
 
 	m_fX = (_float)g_iWinSizeX / 2.f;
 	m_fY = 100.f;
-
-	m_fDepth = (_float)D_QUEST / (_float)D_END;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
@@ -243,6 +243,8 @@ HRESULT CPop_QuestIn::Add_Parts()
 	CFadeBox::FADE_DESC Desc = {};
 	Desc.fMaxAlpha = 0.7f;
 	Desc.isInfiniteLoop = true;
+	Desc.fDepth =(m_fDepth + 0.01f);
+	Desc.fIn_Duration = 0.3f;
 	m_pBackground = CUI_Manager::Get_Instance()->Clone_FadeBox(Desc);
 	if (not m_pBackground)
 	{
@@ -273,12 +275,12 @@ HRESULT CPop_QuestIn::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
-	/*
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fx", &m_fTime, sizeof(_float))))
+	_float fBrightFactor = 4.f;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fBrightFactor", &fBrightFactor, sizeof(_float))))
 	{
 		return E_FAIL;
-	}	
-	*/
+	}
+	
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fx", &m_fTime, sizeof(_float))))
 	{

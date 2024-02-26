@@ -28,6 +28,11 @@ HRESULT CBlackhole::Init(void* pArg)
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 
+	CTransform* pDragonTransform = GET_TRANSFORM("Layer_Dragon_Boss", LEVEL_VILLAGE);
+	_vec3 vDragonPos = pDragonTransform->Get_State(State::Pos);
+
+	vPlayerPos.y = vDragonPos.y + 0.1f;
+
 	_mat EffectMatrix = _mat::CreateScale(9.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(vPlayerPos) + _vec3(0.f, 0.1f, 0.f));
 
 	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Frame");
@@ -38,8 +43,7 @@ HRESULT CBlackhole::Init(void* pArg)
 	Info.pMatrix = &EffectMatrix;
 	m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
-
-	m_pTransformCom->Set_Position(vPlayerPos + _vec3(0.f, 0.1f, 0.f));
+	m_pTransformCom->Set_Position(vPlayerPos);
 
     return S_OK;
 }
@@ -47,6 +51,7 @@ HRESULT CBlackhole::Init(void* pArg)
 void CBlackhole::Tick(_float fTimeDelta)
 {
 	m_fLifeTime += fTimeDelta;
+	m_fDamageTime += fTimeDelta;
 
 	if (m_fLifeTime >= 12.f)
 	{
@@ -60,6 +65,24 @@ void CBlackhole::Tick(_float fTimeDelta)
 
 	if (m_fLifeTime >= 1.5f)
 	{
+		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+		_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+
+		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+		_float fDistance = (vPlayerPos - vPos).Length();
+
+		if (fDistance <= 4.f)
+		{
+			if (m_fDamageTime >= 0.3f)
+			{
+				_uint iDamage = 20 + rand() % 20;
+				m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);
+
+				m_fDamageTime = 0.f;
+			}
+
+		}
+
 		if (m_pBaseEffect && m_pFrameEffect)
 		{
 			Safe_Release(m_pFrameEffect);

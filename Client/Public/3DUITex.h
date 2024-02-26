@@ -15,6 +15,7 @@ public:
 		class CTransform* pParentTransform;
 		LEVEL_ID eLevelID;
 
+		_vec4 vColor{ _vec4(1.f, 0.5f, 0.f, 1.f) };
 		_float	fFontSize{};
 		_vec2	vTextPosition{};
 		wstring strText{TEXT("")};
@@ -52,6 +53,7 @@ private:
 	_vec2			m_vTextPosition{};
 	wstring			m_strText{ TEXT("") };
 	_vec4			m_vTextColor{ _vec4(1.f, 1.f, 1.f, 1.f) };
+	_vec4			m_vColor{ _vec4(1.f, 1.f, 1.f, 1.f) };
 
 	RECT				m_rcRect{};
 
