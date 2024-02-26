@@ -210,7 +210,7 @@ HRESULT CVTFModel::Play_Animation(_float fTimeDelta)
 			else
 			{
 				//애니메이션이 끝났다
-				m_PlayAnimDesc.eCurrent.iCurrFrame = pPlayingAnim->Get_MaxFrame() - 1.f;
+				m_PlayAnimDesc.eCurrent.iCurrFrame = static_cast<_uint>(pPlayingAnim->Get_MaxFrame() - 1.f);
 				m_PlayAnimDesc.eCurrent.iNextFrame = m_PlayAnimDesc.eCurrent.iCurrFrame;
 				m_PlayAnimDesc.eCurrent.fTime = 0.f;
 				m_PlayAnimDesc.eCurrent.fRatio = m_PlayAnimDesc.eCurrent.fTime;
@@ -383,7 +383,7 @@ HRESULT CVTFModel::Render_Shadow_Instancing(CVIBuffer_Mesh_Instance*& pInstanceB
 			return E_FAIL;
 		}
 
-		if (FAILED(pShader->Begin(2)))
+		if (FAILED(pShader->Begin(1)))
 		{
 			return E_FAIL;
 		}

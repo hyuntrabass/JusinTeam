@@ -8,6 +8,7 @@
 #include "Map.h"
 #include "Trigger_Manager.h"
 #include "VTFMonster.h"
+#include "Effect_Manager.h"
 
 CLevel_Village::CLevel_Village(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -77,11 +78,11 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_Human_Boss()))
-	{
-		MSG_BOX("Failed to Ready HumanBoss");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Human_Boss()))
+	//{
+	//	MSG_BOX("Failed to Ready HumanBoss");
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(Ready_NPC()))
 	{
@@ -116,6 +117,31 @@ HRESULT CLevel_Village::Init()
 	{
 		return E_FAIL;
 	}
+
+	// 분수 큰물
+	_mat FountainMat = _mat::CreateScale(2.6f) * _mat::CreateRotationZ(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(-25.292f, 12.821f, 116.395f));
+	EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Water_Base");
+	EffectDesc.pMatrix = &FountainMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+
+	EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Water_Decal");
+	EffectDesc.pMatrix = &FountainMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+
+	EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Water_Dist");
+	EffectDesc.pMatrix = &FountainMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+
+	// 분수 작은물
+	FountainMat = _mat::CreateScale(1.3f) * _mat::CreateRotationZ(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(-25.292f, 17.321f, 116.395f));
+	EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Water_Base");
+	EffectDesc.pMatrix = &FountainMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+
+	EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Water_Decal");
+	EffectDesc.pMatrix = &FountainMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+
 	if (FAILED(Ready_Statue()))
 	{
 		MSG_BOX("Failed to Ready Statue");
@@ -126,12 +152,10 @@ HRESULT CLevel_Village::Init()
 		MSG_BOX("Failed to Ready TreasureBox");
 		return E_FAIL;
 	}
-	//if (FAILED(Ready_SescoGame()))
-	//{sd
-	//	MSG_BOX("Failed to Ready SescoGame");
-	//	return E_FAIL;
-	//}
-	//
+	EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Water_Dist");
+	EffectDesc.pMatrix = &FountainMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+
 	m_pGameInstance->Set_FogNF(_vec2(50.f, 2000.f));
 	m_pGameInstance->Set_FogColor(_color(1.f));
 
@@ -197,10 +221,7 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	{
 		CTrigger_Manager::Get_Instance()->Teleport(TS_SescoMap);
 
-		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Void19");
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_SescoGame_Object"))))
 			return;
 
 		return;
@@ -214,10 +235,14 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	//{
 	//	m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Statue"), TEXT("Prototype_GameObject_Statue"));
 	//}
-	//if (m_pGameInstance->Key_Down(DIK_EQUALS))
-	//{
-	//	m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Test"), TEXT("Prototype_GameObject_Void20"));
-	//}
+	if (m_pGameInstance->Key_Down(DIK_EQUALS))
+	{
+		static _mat FountainMat = _mat::CreateScale(1.3f) * _mat::CreateRotationZ(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(-25.292f, 17.321f, 116.395f));
+		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Waterfall_Dist");
+		EffectDesc.pMatrix = &FountainMat;
+		EffectDesc.isFollow = true;
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+	}
 }
 
 HRESULT CLevel_Village::Render()
@@ -588,11 +613,11 @@ HRESULT CLevel_Village::Ready_Dungeon_Monster()
 		}
 		else if (Info.strMonsterPrototype == TEXT("Prototype_Model_Void23"))
 		{
-			//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void23"), TEXT("Prototype_GameObject_Void23"), &Info)))
-			//{
-			//	MSG_BOX("Void23 생성 실패");
-			//	return E_FAIL;
-			//}
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void23"), TEXT("Prototype_GameObject_Void23"), &Info)))
+			{
+				MSG_BOX("Void23 생성 실패");
+				return E_FAIL;
+			}
 
 		}
 

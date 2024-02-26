@@ -29,7 +29,8 @@ struct VS_IN
     float2 vTex : Texcoord0;
     float3 vTan : Tangent;
     row_major matrix mWorld : World;
-    
+    row_major matrix mOldWorld : OldWorld;
+
     int iID : ID;
 };
 

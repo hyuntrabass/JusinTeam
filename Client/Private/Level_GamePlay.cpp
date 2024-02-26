@@ -127,7 +127,7 @@ HRESULT CLevel_GamePlay::Init()
 	EffectDesc.pMatrix = &m_RainMatrix;
 	EffectDesc.isFollow = true;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
-
+	
 	m_pGameInstance->Set_FogNF(_vec2(5.f, 300.f));
 	m_pGameInstance->Set_FogColor(_color(0.1f));
 	CUI_Manager::Get_Instance()->Set_Coin(100000);
@@ -397,7 +397,7 @@ HRESULT CLevel_GamePlay::Ready_Map()
 	Desc.fReflectionScale = 0.1f;
 	Desc.fRefractionScale = 0.1f;
 	Desc.vPos = _vec3(100.f, 1.f, 100.f);
-	Desc.vSize = _vec2(200.f, 200.f);
+	Desc.vSize = _vec2(500.f, 500.f);
 	Desc.fWaterSpeed = 0.01f;
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, L"Layer_Map", L"Prototype_GameObject_Water", &Desc)))
 		return E_FAIL;

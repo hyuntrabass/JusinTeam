@@ -1838,7 +1838,7 @@ HRESULT CLoader::Load_Village()
 			}
 			else if (strPrototypeTag == L"Prototype_Model_Survival_Map")
 			{
-				DungeonPivot = _mat::CreateScale(0.6f);
+				DungeonPivot = _mat::CreateScale(0.7f);
 			}
 			else if (strPrototypeTag == L"Prototype_Model_SescoMap")
 			{
@@ -2010,6 +2010,11 @@ HRESULT CLoader::Load_Village()
 		return E_FAIL;
 	}
 #pragma region SescoGame
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_SescoGame_Object"), CSescoGame::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Void19_Object"), CVoid19::Create(m_pDevice, m_pContext))))
 	{

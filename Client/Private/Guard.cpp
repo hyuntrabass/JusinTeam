@@ -24,6 +24,11 @@ HRESULT CGuard::Init(void* pArg)
 
 	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 
+	m_Animation.iAnimIndex;
+	m_Animation.isLoop = true;
+	m_Animation.bSkipInterpolation = false;
+	m_Animation.fAnimSpeedRatio = 1.5f;
+
 	m_iHP = 1;
 
 	PxCapsuleControllerDesc ControllerDesc{};
@@ -134,6 +139,42 @@ void CGuard::Set_Damage(_int iDamage, _uint iDamageType)
 	
 }
 
+void CGuard::Init_State(_float fTimeDelta)
+{
+	if (m_ePreState != m_eCurState) {
+		switch (m_eCurState)
+		{
+		case Client::CGuard::STATE_IDLE:
+			m_Animation.iAnimIndex;
+			m_Animation.isLoop = true;
+			m_Animation.fAnimSpeedRatio;
+
+			m_pTransformCom->Set_Speed(1.f);
+			break;
+		case Client::CGuard::STATE_PATROL:
+			m_Animation.iAnimIndex;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 4.f;
+			break;
+		case Client::CGuard::STATE_CHASE:
+			break;
+		case Client::CGuard::STATE_ATTACK:
+			break;
+		case Client::CGuard::STATE_HIT:
+			break;
+		case Client::CGuard::STATE_DIE:
+			break;
+		}
+
+		m_ePreState = m_eCurState;
+	}
+
+}
+
+void CGuard::Tick_State(_float fTimeDelta)
+{
+}
+
 
 HRESULT CGuard::Add_Components()
 {
@@ -178,6 +219,38 @@ HRESULT CGuard::Bind_ShaderResources()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+HRESULT CGuard::Add_Collider()
+{
+	Collider_Desc BodyCollDesc = {};
+	BodyCollDesc.eType = ColliderType::OBB;
+	BodyCollDesc.vExtents = _vec3(0.3f, 1.f, 0.2f);
+	BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y, 0.f);
+	BodyCollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, L"Prototype_Component_Collider",
+		L"Com_Collider_OBB", (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
+		return E_FAIL;
+
+	// Frustum
+	Collider_Desc ColDesc{};
+	ColDesc.eType = ColliderType::Frustum;
+	_matrix matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
+	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.f), 0.5f, 0.01f, 1.5f);
+
+	ColDesc.matFrustum = matView * matProj;
+
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack"), reinterpret_cast<CComponent**>(&m_pAttackColliderCom), &ColDesc)))
+	//{
+	//	return E_FAIL;
+	//}
+
+	return S_OK;
+}
+
+void CGuard::Update_Collider()
+{
 }
 
 CGuard* CGuard::Create(_dev pDevice, _context pContext)

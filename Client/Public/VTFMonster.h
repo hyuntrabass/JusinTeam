@@ -11,6 +11,7 @@ public:
 	typedef struct tagVTFMonsterDesc
 	{
 		wstring strModelTag;
+		_vec3 vPosition{};
 
 	}VTFMONSTER_DESC;
 
@@ -21,6 +22,10 @@ protected:
 
 public:
 	virtual void Set_Damage(_int iDamage, _uint MonAttType = 0) override;
+
+	const wstring& Get_ModelTag() const {
+		return m_strModelTag;
+	}
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -37,6 +42,7 @@ protected:
 
 protected:
 	ANIM_DESC m_Animation{};
+	_randNum m_RandomNumber;
 
 protected:
 	wstring m_strModelTag{};
