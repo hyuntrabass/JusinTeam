@@ -23,7 +23,6 @@ HRESULT CRiding::Init(void* pArg)
 	m_CurrentIndex = Desc->Type;
 	m_eCurMode = (MODE)Desc->iMode;
 	m_pCam_Manager = CCamera_Manager::Get_Instance();
-	m_pTransformCom->Set_Position(_vec3(0.f, -1000.f, 0.f));
 	if (m_eCurMode == PLAYER)
 	{
 
