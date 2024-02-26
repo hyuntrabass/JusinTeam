@@ -12,7 +12,7 @@ public:
 	{
 		Anim_attack01,
 		Anim_attack02,
-		Anim_attack03,
+		Anim_attack03, //°ø°Ý
 		Anim_attack04,
 		Anim_die,
 		Anim_die01,
@@ -20,7 +20,7 @@ public:
 		Anim_hit_L,
 		Anim_hit_R,
 		Anim_idle,
-		Anim_knockdown,
+		Anim_knockdown, //»ç¸Á duration 0.4f
 		Anim_roar,
 		Anim_run,
 		Anim_stun,
@@ -52,7 +52,7 @@ public:
 	virtual HRESULT Render_Instance() override;
 
 private:
-	CCollider* m_pColliderCom = { nullptr };
+	CCollider* m_pAttackColliderCom = { nullptr };
 
 private:
 	STATE m_eState{ State_End };
