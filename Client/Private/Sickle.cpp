@@ -20,15 +20,11 @@ HRESULT CSickle::Init_Prototype()
 
 HRESULT CSickle::Init(void* pArg)
 {
-	_uint iRandom = rand() % 4;
 
 
 	_vec3 StartPos = *reinterpret_cast<_vec3*>(pArg);
 
-	_float fSpeed{ 10.f };
-
 	m_pTransformCom->Set_Position(StartPos);
-	m_pTransformCom->Set_Speed(fSpeed);
 	m_pTransformCom->LookAt(dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")))->Get_CenterPos());
 
 
@@ -47,7 +43,7 @@ void CSickle::Tick(_float fTimeDelta)
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
 	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
-	vPos = XMVectorLerp(vPos, vPlayerPos,0.05f);
+	vPos = XMVectorLerp(vPos, vPlayerPos,0.02f);
 	m_pTransformCom->Set_State(State::Pos, vPos);
 	 
 	m_fLifeTimer += fTimeDelta;
@@ -58,7 +54,7 @@ void CSickle::Tick(_float fTimeDelta)
 
 	m_EffectMatrices[0] = _mat::CreateScale(4.f)/* * _mat::CreateRotationY(XMConvertToRadians(m_fLifeTimer *-2000.f))*/ * m_pTransformCom->Get_World_Matrix();
 	m_EffectMatrices[1] = _mat::CreateScale(4.f) * m_pTransformCom->Get_World_Matrix();
-	m_EffectMatrices[2] = _mat::CreateScale(4.f)* m_pTransformCom->Get_World_Matrix();
+	m_EffectMatrices[2] = _mat::CreateScale(4.f) * m_pTransformCom->Get_World_Matrix();
 	
 	for (size_t i = 0; i < 3; i++)
 	{
@@ -68,12 +64,17 @@ void CSickle::Tick(_float fTimeDelta)
 		}
 	}
 
-	if (m_pGameInstance->Attack_Player(m_pColliderCom, 100))
+	if (m_pGameInstance->Attack_Player(m_pColliderCom, 150 + rand() % 50))
 	{
 		Kill();
 	}
 
-	//if (m_isDead)
+
+	if (m_isDead)
+	{
+		_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
+		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SickleTrap"), TEXT("Prototype_GameObject_SickleTrap"), &vPos);
+	}
 	//{
 	//	m_pGameInstance->Play_Sound(TEXT("SD_4062_FireBall_SFX_01"));
 

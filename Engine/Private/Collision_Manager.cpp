@@ -1,7 +1,7 @@
 #include "Collision_Manager.h"
 #include "GameObject.h"
 
-HRESULT CCollision_Manager::Register_CollisionObject(CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer, class CCollider* AttRangeCollider, class CCollider* ParryingColliderr)
+HRESULT CCollision_Manager::Register_CollisionObject(CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer, class CCollider* ParryingColliderr)
 {
 	if (not pObject or not pHitCollider)
 	{
@@ -17,11 +17,9 @@ HRESULT CCollision_Manager::Register_CollisionObject(CGameObject* pObject, class
 		}
 		m_pPlayer = pObject;
 		m_pPlayerHitCollider = pHitCollider;
-		m_pPlayerAttRangeCollider = AttRangeCollider;
 		m_pPlayerParryingCollider = ParryingColliderr;
 		Safe_AddRef(m_pPlayer);
 		Safe_AddRef(m_pPlayerHitCollider);
-		Safe_AddRef(m_pPlayerAttRangeCollider);
 		Safe_AddRef(m_pPlayerParryingCollider);
 	}
 	else
@@ -38,6 +36,12 @@ HRESULT CCollision_Manager::Register_CollisionObject(CGameObject* pObject, class
 		Safe_AddRef(pHitCollider);
 	}
 
+	return S_OK;
+}
+
+HRESULT CCollision_Manager::Register_CamCollider(CCollider* pCamCollider)
+{
+	m_pCamCollider = pCamCollider;
 	return S_OK;
 }
 
@@ -127,6 +131,10 @@ _bool CCollision_Manager::CheckCollision_Player(CCollider* pCollider)
 
 class CCollider* CCollision_Manager::Get_Nearest_MonsterCollider()
 {
+	if (!m_pCamCollider)
+	{
+		return nullptr;
+	}
 
 	CCollider* NearestMonsterCollider = nullptr;
 	CGameObject* NearestMonsterObject = nullptr;
@@ -134,7 +142,7 @@ class CCollider* CCollision_Manager::Get_Nearest_MonsterCollider()
 
 	for (auto& Monster : m_Monsters)
 	{
-		if (Monster.second->Intersect(m_pPlayerAttRangeCollider))
+		if (Monster.second->Intersect(m_pCamCollider))
 		{
 			_vec4 monsterPos = _vec4(Monster.second->Get_ColliderPos(),1.f);
 			_float distance = _vec4::Distance(_vec4(m_pPlayerHitCollider->Get_ColliderPos(), 1.f), monsterPos);
@@ -272,7 +280,7 @@ void CCollision_Manager::Free()
 	Safe_Release(m_pPlayer);
 	Safe_Release(m_pPlayerHitCollider);
 	Safe_Release(m_pPlayerParryingCollider);
-	Safe_Release(m_pPlayerAttRangeCollider);
+	Safe_Release(m_pCamCollider);
 
 	for (auto& Monster : m_Monsters)
 	{

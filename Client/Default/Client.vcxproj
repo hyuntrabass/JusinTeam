@@ -157,7 +157,6 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\AnimTool\Public\Player.h" />
     <ClInclude Include="..\Public\3DUITex.h" />
     <ClInclude Include="..\Public\Arrow.h" />
     <ClInclude Include="..\Public\BackGround.h" />
@@ -268,6 +267,7 @@
     <ClInclude Include="..\Public\ShopDesc.h" />
     <ClInclude Include="..\Public\ShopWindow.h" />
     <ClInclude Include="..\Public\Sickle.h" />
+    <ClInclude Include="..\Public\SickleTrap.h" />
     <ClInclude Include="..\Public\Skill.h" />
     <ClInclude Include="..\Public\SkillBlock.h" />
     <ClInclude Include="..\Public\SkillBook.h" />
@@ -441,6 +441,7 @@
     <ClCompile Include="..\Private\ShopDesc.cpp" />
     <ClCompile Include="..\Private\ShopWindow.cpp" />
     <ClCompile Include="..\Private\Sickle.cpp" />
+    <ClCompile Include="..\Private\SickleTrap.cpp" />
     <ClCompile Include="..\Private\Skill.cpp" />
     <ClCompile Include="..\Private\SkillBlock.cpp" />
     <ClCompile Include="..\Private\SkillBook.cpp" />

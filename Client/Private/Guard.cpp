@@ -1,5 +1,6 @@
 #include "Guard.h"
 #include "UI_Manager.h"
+#include "Effect_Dummy.h"
 
 
 CGuard::CGuard(_dev pDevice, _context pContext)
@@ -19,17 +20,26 @@ HRESULT CGuard::Init_Prototype()
 
 HRESULT CGuard::Init(void* pArg)
 {
+	MiniDungeonInfo m_Info = *(MiniDungeonInfo*)pArg;
+	m_iIndex = m_Info.iIndex;
+	GuardMatrix = m_Info.mMatrix;
+
 	if (FAILED(Add_Components()))
 		return E_FAIL;
 
-	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
+	if (FAILED(Add_Collider()))
+		return E_FAIL;
 
-	m_Animation.iAnimIndex;
+	m_Animation.iAnimIndex = ANIM_IDLE;
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 1.5f;
 
 	m_iHP = 1;
+
+	m_pTransformCom->Set_Matrix(GuardMatrix);
+
+	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
 	PxCapsuleControllerDesc ControllerDesc{};
 	ControllerDesc.height = 1.2f; // 높이(위 아래의 반구 크기 제외
@@ -41,12 +51,18 @@ HRESULT CGuard::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
+	View_Detect_Range();
 
 	return S_OK;
 }
 
 void CGuard::Tick(_float fTimeDelta)
 {
+	
+	if (m_pGameInstance->Key_Down(DIK_DOWN))
+	{
+		m_Animation.iAnimIndex++;
+	}
 	m_pTransformCom->Set_OldMatrix();
 
 	if (true == m_bChangePass) {
@@ -66,7 +82,7 @@ void CGuard::Tick(_float fTimeDelta)
 	if (1.f <= m_fDissolveRatio)
 		Kill();
 
-
+	m_pModelCom->Set_Animation(m_Animation);
 }
 
 void CGuard::Late_Tick(_float fTimeDelta)
@@ -86,8 +102,8 @@ HRESULT CGuard::Render()
 		return E_FAIL;
 
 	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); ++i) {
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuaseTexture", i, TextureType::Diffuse)))
-			continue;
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+			return E_FAIL;
 
 		_bool HasNorTex{};
 		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
@@ -119,6 +135,9 @@ HRESULT CGuard::Render()
 			return E_FAIL;
 		}
 
+		if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+			return E_FAIL;
+
 		if (FAILED(m_pShaderCom->Begin(m_iPassIndex)))
 			return E_FAIL;
 
@@ -146,24 +165,31 @@ void CGuard::Init_State(_float fTimeDelta)
 		switch (m_eCurState)
 		{
 		case Client::CGuard::STATE_IDLE:
-			m_Animation.iAnimIndex;
+			m_Animation.iAnimIndex = ANIM_IDLE;
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio;
 
 			m_pTransformCom->Set_Speed(1.f);
 			break;
 		case Client::CGuard::STATE_PATROL:
-			m_Animation.iAnimIndex;
+			m_Animation.iAnimIndex = ANIM_WALK;
+			m_Animation.isLoop = true;
+			m_Animation.fAnimSpeedRatio = 1.f;
+			break;
+		case Client::CGuard::STATE_CHASE:
+			m_Animation.iAnimIndex = ANIM_RUN;
+			m_Animation.isLoop = true;
+			m_Animation.fAnimSpeedRatio = 4.f;
+			break;
+		case Client::CGuard::STATE_ATTACK:
+			m_Animation.iAnimIndex = ANIM_ATTACK_1;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 4.f;
 			break;
-		case Client::CGuard::STATE_CHASE:
-			break;
-		case Client::CGuard::STATE_ATTACK:
-			break;
-		case Client::CGuard::STATE_HIT:
-			break;
 		case Client::CGuard::STATE_DIE:
+			m_Animation.iAnimIndex = ANIM_DIE;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
 			break;
 		}
 
@@ -176,6 +202,26 @@ void CGuard::Tick_State(_float fTimeDelta)
 {
 }
 
+void CGuard::View_Detect_Range()
+{
+	//Safe_Release(m_pBaseEffect);
+	//Safe_Release(m_pFrameEffect);
+
+	_mat EffectMatrix{};
+	EffectInfo Info{};
+
+	EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.25f, 0.f));
+
+	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Frame");
+	Info.pMatrix = &EffectMatrix;
+	m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Base");
+	Info.pMatrix = &EffectMatrix;
+	m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+}
+
 
 HRESULT CGuard::Add_Components()
 {
@@ -184,7 +230,17 @@ HRESULT CGuard::Add_Components()
 		return E_FAIL;
 	}
 
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_T_EFF_Noise_04_BC"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Guard"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
 	{
 		return E_FAIL;
 	}
@@ -195,28 +251,67 @@ HRESULT CGuard::Add_Components()
 
 HRESULT CGuard::Bind_ShaderResources()
 {
+	if (m_iPassIndex == AnimPass_Rim && m_bChangePass == true)
+	{
+		_vec4 vColor = Colors::Red;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vColor, sizeof vColor)))
+		{
+			return E_FAIL;
+		}
+	}
+
+	if (m_iPassIndex == AnimPass_Dissolve)
+	{
+		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
+		{
+			return E_FAIL;
+		}
+
+		m_fDissolveRatio += 0.02f;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
+		{
+			return E_FAIL;
+		}
+
+		_bool bHasNorTex = true;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &bHasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+	}
+
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	{
 		return E_FAIL;
+	}
 
 	if (FAILED(m_pTransformCom->Bind_OldWorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+	{
 		return E_FAIL;
+	}
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix())))
+	{
 		return E_FAIL;
+	}
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
+	{
 		return E_FAIL;
+	}
 
-	if(FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
+	{
 		return E_FAIL;
+	}
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_CamNF", &m_pGameInstance->Get_CameraNF(), sizeof(_float2))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_CamNF", &m_pGameInstance->Get_CameraNF(), sizeof _float2)))
+	{
 		return E_FAIL;
+	}
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof(_float4))))
-		return E_FAIL;
-
-	if (FAILED(m_pModelCom->Bind_Animation(m_pShaderCom)))
 		return E_FAIL;
 
 	return S_OK;
@@ -230,28 +325,44 @@ HRESULT CGuard::Add_Collider()
 	BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y, 0.f);
 	BodyCollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, L"Prototype_Component_Collider",
-		L"Com_Collider_OBB", (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, L"Prototype_Component_Collider", L"Com_Collider_OBB", (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
 		return E_FAIL;
 
 	// Frustum
-	Collider_Desc ColDesc{};
-	ColDesc.eType = ColliderType::Frustum;
+	Collider_Desc AttackColDesc{};
+	AttackColDesc.eType = ColliderType::Frustum;
 	_matrix matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
 	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.f), 0.5f, 0.01f, 1.5f);
 
-	ColDesc.matFrustum = matView * matProj;
+	AttackColDesc.matFrustum = matView * matProj;
 
-	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack"), reinterpret_cast<CComponent**>(&m_pAttackColliderCom), &ColDesc)))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack"), reinterpret_cast<CComponent**>(&m_pAttackColliderCom), &AttackColDesc)))
+	{
+		return E_FAIL;
+	}
+
+	// Frustum
+	Collider_Desc DetectColDesc{};
+	DetectColDesc.eType = ColliderType::Frustum;
+	matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
+	matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.f), 0.5f, 0.01f, 10.f);
+
+	DetectColDesc.matFrustum = matView * matProj;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Detect"), reinterpret_cast<CComponent**>(&m_pDetectColliderCom), &DetectColDesc)))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
 
 void CGuard::Update_Collider()
 {
+	_mat Offset = _mat::CreateTranslation(0.f, 0.6f, 0.f);
+	m_pAttackColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
+	m_pDetectColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
+	
 }
 
 CGuard* CGuard::Create(_dev pDevice, _context pContext)
@@ -260,7 +371,7 @@ CGuard* CGuard::Create(_dev pDevice, _context pContext)
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CVoid01");
+		MSG_BOX("Failed to Create : CGuard");
 		Safe_Release(pInstance);
 	}
 
@@ -273,7 +384,7 @@ CGameObject* CGuard::Clone(void* pArg)
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CVoid01");
+		MSG_BOX("Failed to Clone : CGuard");
 		Safe_Release(pInstance);
 	}
 
@@ -287,7 +398,10 @@ void CGuard::Free()
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pModelCom);
-
+	Safe_Release(m_pBaseEffect);
+	Safe_Release(m_pFrameEffect);
 	Safe_Release(m_pBodyColliderCom);
+	Safe_Release(m_pAttackColliderCom);
+	Safe_Release(m_pDetectColliderCom);
 	Safe_Release(m_pDissolveTextureCom);
 }

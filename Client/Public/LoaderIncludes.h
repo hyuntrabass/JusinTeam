@@ -121,6 +121,7 @@
 #include "Roskva.h"
 #include "Aur.h"
 #include "NPC_Dummy.h"
+#include "Guard.h"
 
 // Boss
 #include "Groar_Boss.h"
@@ -136,6 +137,7 @@
 #include "Human_Boss.h"
 #include "SafeZone.h"
 #include "Sickle.h"
+#include "SickleTrap.h"
 
 // Pet
 #include "Pet_Cat.h"
