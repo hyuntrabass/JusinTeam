@@ -2021,6 +2021,11 @@ HRESULT CLoader::Load_Village()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Scorpion_Object"), CScorpion::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 #pragma endregion
 	// 원래 레벨 이닛에서 했던것들
 	{

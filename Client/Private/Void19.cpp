@@ -24,7 +24,7 @@ HRESULT CVoid19::Init(void* pArg)
 	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
 	ControllerDesc.slopeLimit = cosf(PxDegToRad(1.f)); // 캐릭터가 오를 수 있는 최대 각도
 	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
-	ControllerDesc.stepOffset = 0.01f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
 	if (FAILED(__super::Init(pArg)))
@@ -83,12 +83,12 @@ HRESULT CVoid19::Render_Instance()
 
 void CVoid19::Init_State(_float fTimeDelta)
 {
-	if (m_IsHitted == true)
+	if (m_HasHitted == true)
 	{
 		if (m_iHP <= 0)
 		{
 			m_eState = State_Die;
-			m_IsHitted = false;
+			m_HasHitted = false;
 
 			m_pShaderCom->Set_PassIndex(VTF_InstPass_Dissolve);
 		}
@@ -101,7 +101,7 @@ void CVoid19::Init_State(_float fTimeDelta)
 			if (m_fHitTime >= 0.3f)
 			{
 				m_fHitTime = 0.f;
-				m_IsHitted = false;
+				m_HasHitted = false;
 
 				m_pShaderCom->Set_PassIndex(VTF_InstPass_Default);
 			}
@@ -119,8 +119,14 @@ void CVoid19::Init_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = Anim_roar;
 			break;
 		case Client::CVoid19::State_Attack:
+		{
 			m_Animation.iAnimIndex = Anim_attack01;
+
+			_vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
+			vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
+			m_pTransformCom->LookAt(vPlayerPos);
 			break;
+		}
 		case Client::CVoid19::State_Die:
 			m_Animation.iAnimIndex = Anim_stun;
 			m_Animation.fDurationRatio = 0.1f;
@@ -156,8 +162,7 @@ void CVoid19::Tick_State(_float fTimeDelta)
 		{
 			m_fDissolveRatio += fTimeDelta;
 		}
-
-		if (m_fDissolveRatio > 1.f)
+		else
 		{
 			Kill();
 		}

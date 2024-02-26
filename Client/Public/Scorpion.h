@@ -17,8 +17,8 @@ public:
 		Anim_die,
 		Anim_die01,
 		Anim_hit_add,
-		Anim_hit_L,
-		Anim_hit_R,
+		Anim_hit_L, //히트 살아있음
+		Anim_hit_R, //히트 살아있음
 		Anim_idle,
 		Anim_knockdown, //사망 duration 0.4f
 		Anim_roar,

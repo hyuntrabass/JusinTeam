@@ -495,7 +495,7 @@
     </Filter>
     <Filter Include="02.GameObjects\16.SescoGame\VTFMonster\Scorpion">
       <UniqueIdentifier>{76a297ed-9845-427c-b9fa-55ba9e746c5f}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="02.GameObjects\04.Monster\08. Guard">
       <UniqueIdentifier>{b9b74782-be19-497f-b2e1-15f9389c07c4}</UniqueIdentifier>
     </Filter>
@@ -991,7 +991,6 @@
     <ClInclude Include="..\Public\Projectile.h">
       <Filter>02.GameObjects\15. SurvivalGame</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Guard.h" />
     <ClInclude Include="..\Public\VTFMonster.h">
       <Filter>02.GameObjects\16.SescoGame\VTFMonster</Filter>
     </ClInclude>
@@ -1018,6 +1017,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\CescoGame.h">
       <Filter>02.GameObjects\16.SescoGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Guard.h">
+      <Filter>02.GameObjects\04.Monster\08. Guard</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1518,7 +1520,6 @@
     <ClCompile Include="..\Private\Projectile.cpp">
       <Filter>02.GameObjects\15. SurvivalGame</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Guard.cpp" />
     <ClCompile Include="..\Private\VTFMonster.cpp">
       <Filter>02.GameObjects\16.SescoGame\VTFMonster</Filter>
     </ClCompile>
@@ -1533,6 +1534,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\CescoGame.cpp">
       <Filter>02.GameObjects\16.SescoGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Guard.cpp">
+      <Filter>02.GameObjects\04.Monster\08. Guard</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
