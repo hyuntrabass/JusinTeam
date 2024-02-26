@@ -198,9 +198,7 @@ HRESULT CPhysX_Manager::Render()
 
 void CPhysX_Manager::Init_PhysX_Character(CTransform* pTransform, CollisionGroup eGroup, PxCapsuleControllerDesc* pDesc)
 {
-	_float3 vPos{};
-	XMStoreFloat3(&vPos, pTransform->Get_State(State::Pos));
-	PxExtendedVec3 Position{ static_cast<_double>(vPos.x), static_cast<_double>(vPos.y), static_cast<_double>(vPos.z) };
+	PxExtendedVec3 Position{ -1000, -1000, -1000 };
 
 	PxCapsuleControllerDesc ControllerDesc{};
 	if (not pDesc)
