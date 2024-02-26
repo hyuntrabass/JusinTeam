@@ -256,6 +256,9 @@
     <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Spider">
       <UniqueIdentifier>{f363281d-5323-407d-80fa-91b4b26af4c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\08. Boss\Groar_Boss\Missile">
+      <UniqueIdentifier>{60d859ff-77f1-4b49-be0b-495060f838c9}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObjects\11.Trigger">
       <UniqueIdentifier>{e34cfd3d-cd3e-4a9c-a182-3c577c5cdb93}</UniqueIdentifier>
     </Filter>
@@ -490,8 +493,11 @@
     <Filter Include="02.GameObjects\02.Terrain\Ocean">
       <UniqueIdentifier>{762959c5-5314-494b-9651-8d75013b8959}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\08. Boss\Missile">
-      <UniqueIdentifier>{60d859ff-77f1-4b49-be0b-495060f838c9}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\16.SescoGame\VTFMonster\Scorpion">
+      <UniqueIdentifier>{76a297ed-9845-427c-b9fa-55ba9e746c5f}</UniqueIdentifier>
+	</Filter>
+    <Filter Include="02.GameObjects\04.Monster\08. Guard">
+      <UniqueIdentifier>{b9b74782-be19-497f-b2e1-15f9389c07c4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -805,7 +811,7 @@
       <Filter>02.GameObjects\08. Boss\Groar_Boss\Spider</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Missile.h">
-      <Filter>02.GameObjects\08. Boss\Missile</Filter>
+      <Filter>02.GameObjects\08. Boss\Groar_Boss\Missile</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Trigger.h">
       <Filter>02.GameObjects\11.Trigger</Filter>
@@ -986,9 +992,6 @@
       <Filter>02.GameObjects\15. SurvivalGame</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Guard.h" />
-    <ClInclude Include="..\Public\SescoGame.h">
-      <Filter>02.GameObjects\16.SescoGame</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\VTFMonster.h">
       <Filter>02.GameObjects\16.SescoGame\VTFMonster</Filter>
     </ClInclude>
@@ -1009,6 +1012,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Ocean.h">
       <Filter>02.GameObjects\02.Terrain\Ocean</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Scorpion.h">
+      <Filter>02.GameObjects\16.SescoGame\VTFMonster\Scorpion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CescoGame.h">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1323,7 +1332,7 @@
       <Filter>02.GameObjects\08. Boss\Groar_Boss\Spider</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Missile.cpp">
-      <Filter>02.GameObjects\08. Boss\Missile</Filter>
+      <Filter>02.GameObjects\08. Boss\Groar_Boss\Missile</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Trigger.cpp">
       <Filter>02.GameObjects\11.Trigger</Filter>
@@ -1510,9 +1519,6 @@
       <Filter>02.GameObjects\15. SurvivalGame</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Guard.cpp" />
-    <ClCompile Include="..\Private\SescoGame.cpp">
-      <Filter>02.GameObjects\16.SescoGame</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\VTFMonster.cpp">
       <Filter>02.GameObjects\16.SescoGame\VTFMonster</Filter>
     </ClCompile>
@@ -1521,6 +1527,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Ocean.cpp">
       <Filter>02.GameObjects\02.Terrain\Ocean</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Scorpion.cpp">
+      <Filter>02.GameObjects\16.SescoGame\VTFMonster\Scorpion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CescoGame.cpp">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

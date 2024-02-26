@@ -33,9 +33,9 @@ HRESULT CVoid19::Init(void* pArg)
 	if (FAILED(Add_Components()))
 		return E_FAIL;
 
-	m_pGameInstance->Register_CollisionObject(this, m_pColliderCom);
+	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
-	m_iHP = 500;
+	m_iHP = 300;
 
 	m_eState = State_Idle;
 	m_ePreState = m_eState;
@@ -53,7 +53,7 @@ void CVoid19::Tick(_float fTimeDelta)
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 
-	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 
 	__super::Tick(fTimeDelta);
 }
@@ -62,7 +62,7 @@ void CVoid19::Late_Tick(_float fTimeDelta)
 {
 	__super::Late_Tick(fTimeDelta);
 #ifdef _DEBUG
-	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
+	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 
 #endif // DEBUG
 }
@@ -89,18 +89,21 @@ void CVoid19::Init_State(_float fTimeDelta)
 		{
 			m_eState = State_Die;
 			m_IsHitted = false;
+
+			m_pShaderCom->Set_PassIndex(VTF_InstPass_Dissolve);
 		}
 		else
 		{
 			m_fHitTime += fTimeDelta;
 
-			m_pShaderCom->Set_PassIndex(1);
+			m_pShaderCom->Set_PassIndex(VTF_InstPass_Main_Rim);
 
 			if (m_fHitTime >= 0.3f)
 			{
 				m_fHitTime = 0.f;
 				m_IsHitted = false;
-				m_pShaderCom->Set_PassIndex(0);
+
+				m_pShaderCom->Set_PassIndex(VTF_InstPass_Default);
 			}
 		}
 	}
@@ -121,6 +124,7 @@ void CVoid19::Init_State(_float fTimeDelta)
 		case Client::CVoid19::State_Die:
 			m_Animation.iAnimIndex = Anim_stun;
 			m_Animation.fDurationRatio = 0.1f;
+			m_Animation.fInterpolationTime = 1.f;
 
 			m_pTransformCom->Delete_Controller();
 			m_pGameInstance->Delete_CollisionObject(this);
@@ -148,7 +152,12 @@ void CVoid19::Tick_State(_float fTimeDelta)
 		}
 		break;
 	case Client::CVoid19::State_Die:
-		if (m_pModelCom->IsAnimationFinished(Anim_stun))
+		if (m_fDissolveRatio < 1.f)
+		{
+			m_fDissolveRatio += fTimeDelta;
+		}
+
+		if (m_fDissolveRatio > 1.f)
 		{
 			Kill();
 		}
@@ -163,7 +172,7 @@ HRESULT CVoid19::Add_Components()
 	ColliderDesc.vExtents = _vec3(0.5f, 1.2f, 0.5f);
 	ColliderDesc.vCenter = _vec3(0.f, ColliderDesc.vExtents.y, 0.f);
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &ColliderDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pBodyColliderCom), &ColliderDesc)))
 	{
 		return E_FAIL;
 	}
@@ -200,6 +209,4 @@ CGameObject* CVoid19::Clone(void* pArg)
 void CVoid19::Free()
 {
 	__super::Free();
-
-	Safe_Release(m_pColliderCom);
 }

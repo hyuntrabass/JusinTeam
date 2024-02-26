@@ -1,13 +1,13 @@
 1. Static Only   2. Anim Only   3. All
-1
-Static Models : Start Converting...
-Converting... BrickMap.fbx
+2
+Animation Models : Start Converting...
+1. Normally Anim Model	2. For VTF Model 3. Part Model
+2
+Converting... TreasureBox.fbx
 Read File Succssefully
-Converting... palgakjung.fbx
-Read File Succssefully
-Converting... CommonCube.fbx
-Read File Succssefully
-Static Models : Convert Success!
+Animation name list: 
+jewel_box_01_stand.ao|jewel_box_01_open
+Animation Models : Convert Success!
 
-3 Static Models
+1 Animation Models
 are Successfully Converted as hyuntramesh!!

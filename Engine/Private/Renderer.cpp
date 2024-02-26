@@ -733,6 +733,9 @@ HRESULT CRenderer::Draw_RenderGroup()
 		return E_FAIL;
 	}
 
+	if (FAILED(Clear_Instance()))
+		return E_FAIL;
+
 	if (FAILED(m_pGameInstance->End_MRT()))
 		return E_FAIL;
 
@@ -1173,7 +1176,7 @@ HRESULT CRenderer::Render_AnimNonBlend_Instance()
 	for (auto& Pair : InstanceData)
 	{
 		vector<CGameObject*>& vInstances = Pair.second;
-		const InstanceID instanceId = Pair.first;;
+		const InstanceID instanceId = Pair.first;
 		CGameObject*& pHead = vInstances[0];
 		//Late_Tick 2번 들어와서 터지는거 방지
 		if (vInstances.size() > MAX_INSTANCE)
@@ -1194,6 +1197,7 @@ HRESULT CRenderer::Render_AnimNonBlend_Instance()
 			CVTFModel* pModel = static_cast<CVTFModel*>(pGameObject->Find_Component(L"Com_Model"));
 			PlayAnimDescs->PlayAnim[i] = pModel->Get_PlayAnimDesc();
 			PlayAnimDescs->OldAnim[i] = pModel->Get_OldAnimDesc();
+			PlayAnimDescs->DissolveRatio[i].fDissolveRatio = pModel->Get_DissolveRatio();
 		}
 
 		CVTFModel* pHeadModel = static_cast<CVTFModel*>(pHead->Find_Component(L"Com_Model"));
