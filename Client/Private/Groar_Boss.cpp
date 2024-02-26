@@ -350,8 +350,6 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 
 			CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::GROAR);
 
-			m_pTransformCom->Set_Position(_vec3(0.f));
-
 			m_pTransformCom->Delete_Controller();
 
 			PxCapsuleControllerDesc ControllerDesc{};
@@ -364,7 +362,7 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 
 			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 			
-			m_pTransformCom->Set_Position(vPos + _vec3(10.f, 0.6f, 0.f));
+			m_pTransformCom->Set_FootPosition(vPos + _vec3(0.f, 0.1f, 0.f));
 			m_pTransformCom->LookAt_Dir(_vec4(-1.f, 0.f, 0.f, 0.f));
 
 			break;

@@ -41,12 +41,12 @@ HRESULT CStatue::Init(void* pArg)
 	_vec4 vRight = _vec4(m_Info.MonsterWorldMat._11, m_Info.MonsterWorldMat._12, m_Info.MonsterWorldMat._13, m_Info.MonsterWorldMat._14);
 	_vec4 vUp = _vec4(m_Info.MonsterWorldMat._21, m_Info.MonsterWorldMat._22, m_Info.MonsterWorldMat._23, m_Info.MonsterWorldMat._24);
 	_vec4 vLook = _vec4(m_Info.MonsterWorldMat._31, m_Info.MonsterWorldMat._32, m_Info.MonsterWorldMat._33, m_Info.MonsterWorldMat._34);
-	_vec4 vPos = _vec4(m_Info.MonsterWorldMat._41, m_Info.MonsterWorldMat._42, m_Info.MonsterWorldMat._43, 1.f);
+	_vec3 vPos = _vec3(m_Info.MonsterWorldMat._41, m_Info.MonsterWorldMat._42, m_Info.MonsterWorldMat._43);
 
 	m_pTransformCom->Set_State(State::Right, vRight);
 	m_pTransformCom->Set_State(State::Up, vUp);
 	m_pTransformCom->Set_State(State::Look, vLook);
-	m_pTransformCom->Set_State(State::Pos, vPos);
+	m_pTransformCom->Set_FootPosition(vPos);
 
 	m_iHP = 100;
 
