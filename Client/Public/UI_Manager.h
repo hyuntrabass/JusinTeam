@@ -162,6 +162,8 @@ public:
 	void Set_BrickBallColor(BrickColor eColor) { m_eBrickBallColor = eColor; }
 	const BrickColor& Get_BrickBallColor() const { return m_eBrickBallColor; }
 
+	void Set_HitEffect(CTransform* pTransform, _uint iDamage, _vec2 vTextPos, ATTACK_TYPE eType, _bool isPlayer = false);
+
 private:
 	_uint			m_iCurrentMiniGame{(_uint)TOWER_END};
 	PART_TYPE		m_eChangedPart{ PT_END };

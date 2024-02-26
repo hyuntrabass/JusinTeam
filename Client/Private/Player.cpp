@@ -1266,18 +1266,11 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 	m_Status.Current_Hp -= (iDamage - iDamage * (_int)(m_Status.Armor / 0.01));
 
 
-
-	CHitEffect::HITEFFECT_DESC Desc{};
 	_int iRandomX = rand() % 100;
 	_int iRandomY = rand() % 50 + 130;
-	Desc.iDamage = iDamage;
-	Desc.pParentTransform = m_pTransformCom;
-	Desc.isPlayer = true;
-	Desc.vTextPosition = _vec2((_float)(iRandomX - 50) * 0.01f, (_float)iRandomY * 0.01f);
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
-	{
-		return;
-	}
+	_vec2 vDamagePos = _vec2((_float)(iRandomX - 50) * 0.01f, (_float)iRandomY * 0.01f);
+	CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, vDamagePos, (ATTACK_TYPE)MonAttType, true);
+
 	CUI_Manager::Get_Instance()->Set_Hp(m_Status.Current_Hp, m_Status.Max_Hp);
 
 	if (m_Status.Current_Hp <= 0)

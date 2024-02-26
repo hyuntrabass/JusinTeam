@@ -167,6 +167,10 @@ HRESULT C3DUITex::Bind_ShaderResources()
 		{
 			return E_FAIL;
 		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_bOn", &m_bBright, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
 	}
 	else
 	{

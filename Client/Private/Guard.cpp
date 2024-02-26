@@ -136,7 +136,8 @@ void CGuard::Set_Damage(_int iDamage, _uint iDamageType)
 	m_iHP -= iDamage;
 	m_bChangePass = true;
 
-	
+	CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 3.f), (ATTACK_TYPE)iDamageType);
+
 }
 
 void CGuard::Init_State(_float fTimeDelta)

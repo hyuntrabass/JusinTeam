@@ -198,6 +198,11 @@ PS_OUT PS_MaskColor(PS_IN Input)
     
     //Output.vBlur = vector(Color, fAlpha);
     Output.vColor = g_vColor;
+    if(g_bOn)
+    {
+        Output.vColor *= 3.f;
+    }
+
     
     Output.vColor.a = Output.vColor.a * vMask.r;
     

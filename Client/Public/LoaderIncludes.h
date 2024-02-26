@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Pop_Reward.h"
 #include "BrickBar.h"
 #include "BrickWall.h"
 #include "NumEffect.h"
