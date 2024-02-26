@@ -176,6 +176,7 @@
     <ClInclude Include="..\public\Camera_Manager.h" />
     <ClInclude Include="..\Public\Cat.h" />
     <ClInclude Include="..\Public\Aur.h" />
+    <ClInclude Include="..\Public\CescoGame.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Coin.h" />
@@ -256,12 +257,12 @@
     <ClInclude Include="..\Public\Roskva.h" />
     <ClInclude Include="..\Public\SafeZone.h" />
     <ClInclude Include="..\Public\Scarecrow.h" />
+    <ClInclude Include="..\Public\Scorpion.h" />
     <ClInclude Include="..\Public\Select_Map.h" />
     <ClInclude Include="..\Public\Select_Model.h" />
     <ClInclude Include="..\Public\NameTag.h" />
     <ClInclude Include="..\Public\SelectDesc.h" />
     <ClInclude Include="..\Public\Select_Npc.h" />
-    <ClInclude Include="..\Public\SescoGame.h" />
     <ClInclude Include="..\Public\Shop.h" />
     <ClInclude Include="..\Public\ShopDesc.h" />
     <ClInclude Include="..\Public\ShopWindow.h" />
@@ -348,6 +349,7 @@
     <ClCompile Include="..\private\Camera_Manager.cpp" />
     <ClCompile Include="..\Private\Cat.cpp" />
     <ClCompile Include="..\Private\Aur.cpp" />
+    <ClCompile Include="..\Private\CescoGame.cpp" />
     <ClCompile Include="..\Private\CharacterSelect.cpp" />
     <ClCompile Include="..\Private\Coin.cpp" />
     <ClCompile Include="..\Private\CutScene_Curve.cpp" />
@@ -427,12 +429,12 @@
     <ClCompile Include="..\Private\Roskva.cpp" />
     <ClCompile Include="..\Private\SafeZone.cpp" />
     <ClCompile Include="..\Private\Scarecrow.cpp" />
+    <ClCompile Include="..\Private\Scorpion.cpp" />
     <ClCompile Include="..\Private\Select_Map.cpp" />
     <ClCompile Include="..\Private\Select_Model.cpp" />
     <ClCompile Include="..\Private\NameTag.cpp" />
     <ClCompile Include="..\Private\SelectDesc.cpp" />
     <ClCompile Include="..\Private\Select_Npc.cpp" />
-    <ClCompile Include="..\Private\SescoGame.cpp" />
     <ClCompile Include="..\Private\Shop.cpp" />
     <ClCompile Include="..\Private\ShopDesc.cpp" />
     <ClCompile Include="..\Private\ShopWindow.cpp" />

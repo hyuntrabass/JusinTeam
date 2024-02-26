@@ -1908,9 +1908,9 @@ HRESULT CLoader::Load_Village()
 		}
 	}
 
-#pragma region SescoGame
+#pragma region CescoGame
 
-	strInputFilePath = "../Bin/Resources/AnimMesh/SescoGame/";
+	strInputFilePath = "../Bin/Resources/AnimMesh/CescoGame/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -1975,7 +1975,7 @@ HRESULT CLoader::Load_Village()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_SescoMap"), CMap::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_CescoMap"), CMap::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -2009,9 +2009,9 @@ HRESULT CLoader::Load_Village()
 	{
 		return E_FAIL;
 	}
-#pragma region SescoGame
+#pragma region CescoGame
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_SescoGame_Object"), CSescoGame::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_CescoGame_Object"), CCescoGame::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -2475,7 +2475,7 @@ HRESULT CLoader::Load_Village()
 			inFile.close();
 		}
 
-		//Ready_Sesco
+		//Ready_Cesco
 		{
 			const TCHAR* pGetPath = TEXT("../Bin/Data/SescoMap_MapData.dat");
 
@@ -2507,7 +2507,7 @@ HRESULT CLoader::Load_Village()
 				MapInfo.Prototype = MapPrototype;
 				MapInfo.m_Matrix = MapWorldMat;
 
-				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Tower"), TEXT("Prototype_GameObject_SescoMap"), &MapInfo)))
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Tower"), TEXT("Prototype_GameObject_CescoMap"), &MapInfo)))
 				{
 					MSG_BOX("技胶内甘 积己 角菩");
 					return E_FAIL;

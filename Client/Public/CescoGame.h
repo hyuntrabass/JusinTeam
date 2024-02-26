@@ -5,12 +5,12 @@
 
 BEGIN(Client)
 
-class CSescoGame final : public CGameObject
+class CCescoGame final : public CGameObject
 {
 private:
-	CSescoGame(_dev pDevice, _context pContext);
-	CSescoGame(const CSescoGame& rhs);
-	virtual ~CSescoGame() = default;
+	CCescoGame(_dev pDevice, _context pContext);
+	CCescoGame(const CCescoGame& rhs);
+	virtual ~CCescoGame() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -32,7 +32,7 @@ private:
 	void Release_DeadObjects();
 
 public:
-	static CSescoGame* Create(_dev pDevice, _context pContext);
+	static CCescoGame* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

@@ -221,7 +221,7 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	{
 		CTrigger_Manager::Get_Instance()->Teleport(TS_SescoMap);
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_SescoGame_Object"))))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_CescoGameObject"), TEXT("Prototype_GameObject_CescoGame_Object"))))
 			return;
 
 		return;

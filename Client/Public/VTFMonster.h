@@ -37,8 +37,12 @@ public:
 
 protected:
 	CShader* m_pShaderCom = { nullptr };
-	CRenderer* m_pRendererCom = { nullptr };
 	CVTFModel* m_pModelCom = { nullptr };
+	CRenderer* m_pRendererCom = { nullptr };
+	CCollider* m_pBodyColliderCom = { nullptr };
+	CTexture* m_pDissolveTextureCom = { nullptr };
+
+	CTransform* m_pPlayerTransform = { nullptr };
 
 protected:
 	ANIM_DESC m_Animation{};
@@ -48,6 +52,7 @@ protected:
 	wstring m_strModelTag{};
 	_bool m_IsHitted{};
 	_float m_fHitTime{};
+	_float m_fDissolveRatio{};
 
 protected:
 	HRESULT Add_Components();

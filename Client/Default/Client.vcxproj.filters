@@ -493,6 +493,9 @@
     <Filter Include="02.GameObjects\02.Terrain\Ocean">
       <UniqueIdentifier>{762959c5-5314-494b-9651-8d75013b8959}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\16.SescoGame\VTFMonster\Scorpion">
+      <UniqueIdentifier>{76a297ed-9845-427c-b9fa-55ba9e746c5f}</UniqueIdentifier>
+	</Filter>
     <Filter Include="02.GameObjects\04.Monster\08. Guard">
       <UniqueIdentifier>{b9b74782-be19-497f-b2e1-15f9389c07c4}</UniqueIdentifier>
     </Filter>
@@ -989,9 +992,6 @@
       <Filter>02.GameObjects\15. SurvivalGame</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Guard.h" />
-    <ClInclude Include="..\Public\SescoGame.h">
-      <Filter>02.GameObjects\16.SescoGame</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\VTFMonster.h">
       <Filter>02.GameObjects\16.SescoGame\VTFMonster</Filter>
     </ClInclude>
@@ -1012,6 +1012,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Ocean.h">
       <Filter>02.GameObjects\02.Terrain\Ocean</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Scorpion.h">
+      <Filter>02.GameObjects\16.SescoGame\VTFMonster\Scorpion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CescoGame.h">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1513,9 +1519,6 @@
       <Filter>02.GameObjects\15. SurvivalGame</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Guard.cpp" />
-    <ClCompile Include="..\Private\SescoGame.cpp">
-      <Filter>02.GameObjects\16.SescoGame</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\VTFMonster.cpp">
       <Filter>02.GameObjects\16.SescoGame\VTFMonster</Filter>
     </ClCompile>
@@ -1524,6 +1527,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Ocean.cpp">
       <Filter>02.GameObjects\02.Terrain\Ocean</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Scorpion.cpp">
+      <Filter>02.GameObjects\16.SescoGame\VTFMonster\Scorpion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CescoGame.cpp">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
