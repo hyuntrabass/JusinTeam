@@ -57,6 +57,11 @@ HRESULT CHitEffect::Init(void* pArg)
 
 void CHitEffect::Tick(_float fTimeDelta)
 {
+	if (m_iDamage == 0)
+	{
+		m_isDead = true;
+		return;
+	}
 	if (m_fSizeX <= 30.f)
 	{
 		m_fTime += fTimeDelta;
@@ -94,6 +99,11 @@ void CHitEffect::Tick(_float fTimeDelta)
 
 void CHitEffect::Late_Tick(_float fTimeDelta)
 {
+	if (m_iDamage == 0)
+	{
+		return;
+	}
+
 	if (m_fAlpha >= 0.2f && m_isEffect)
 	{
 		m_pEffect->Late_Tick(fTimeDelta);

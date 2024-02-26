@@ -53,11 +53,25 @@ HRESULT CBrickBar::Init(void* pArg)
 
 	m_pColliderCom->Set_Normal();
 
+	/*
+	PxBoxControllerDesc ControllerDesc{};
+
+	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+	ControllerDesc.halfHeight = 0.8f;
+	ControllerDesc.halfSideExtent = 0.8f;
+	ControllerDesc.halfForwardExtent = 0.2f;
+	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+	*/
+	//
 	return S_OK;
 }
 
 void CBrickBar::Tick(_float fTimeDelta)
 {
+	m_pColliderCom->Change_Extents(_vec3(0.2f, 0.2f, 0.05f));
 	if (m_pGameInstance->Key_Pressing(DIK_LEFT))
 	{
 		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
@@ -91,7 +105,7 @@ void CBrickBar::Tick(_float fTimeDelta)
 
 void CBrickBar::Late_Tick(_float fTimeDelta)
 {
-	//m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 	/*
 	if (m_pEffect_Ball)
 	{
@@ -106,6 +120,45 @@ void CBrickBar::Late_Tick(_float fTimeDelta)
 
 HRESULT CBrickBar::Render()
 {
+	if (FAILED(Bind_ShaderResources()))
+	{
+		return E_FAIL;
+	}
+
+	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
+	{
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		{
+			_bool bFailed = true;
+		}
+
+		if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof _vec4)))
+		{
+			return E_FAIL;
+		}
+
+		_bool isBlur = true;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_isBlur", &isBlur, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+	
+		if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffect)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pModelCom->Render(i)))
+		{
+			return E_FAIL;
+		}
+	}
+
 	return S_OK;
 }
 
@@ -143,11 +196,16 @@ HRESULT CBrickBar::Add_Components()
 		return E_FAIL;
 	}
 
-	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Ball");
-	Info.pMatrix = &m_EffectMatrix;
-	Info.isFollow = true;
-	m_pEffect_Ball = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-	
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Effect_CommonCube"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_T_EFF_Noise_04_BC"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -212,7 +270,9 @@ void CBrickBar::Free()
 	__super::Free();
 
 	Safe_Release(m_pEffect_Ball);
+	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
+	Safe_Release(m_pDissolveTextureCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pColliderCom);
 }

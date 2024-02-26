@@ -77,11 +77,13 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
+	/*
 	if (FAILED(Ready_Human_Boss()))
 	{
 		MSG_BOX("Failed to Ready HumanBoss");
 		return E_FAIL;
 	}
+	*/
 
 	if (FAILED(Ready_NPC()))
 	{
@@ -200,7 +202,7 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	// Test
 	if (m_pGameInstance->Key_Down(DIK_RSHIFT))
 	{
-		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"));
+		//m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"));
 	}
 	//if (m_pGameInstance->Key_Down(DIK_UP))
 	//{
