@@ -36,10 +36,10 @@ void CObjects::Tick(_float fTimeDelta)
 
 void CObjects::Late_Tick(_float fTimeDelta)
 {
-	//if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Village and CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Tutorial)
-	//{
-	//	return;
-	//}
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Village and CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Tutorial)
+	{
+		return;
+	}
 
 	CAMERA_STATE CamState = CCamera_Manager::Get_Instance()->Get_CameraState();
 	if (CamState == CS_SKILLBOOK or CamState == CS_INVEN) //or CamState == CS_WORLDMAP)

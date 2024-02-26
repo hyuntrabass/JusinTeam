@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Pop_Reward.h"
 #include "BrickBar.h"
 #include "BrickWall.h"
 #include "NumEffect.h"
@@ -120,6 +121,7 @@
 #include "Roskva.h"
 #include "Aur.h"
 #include "NPC_Dummy.h"
+#include "Guard.h"
 
 // Boss
 #include "Groar_Boss.h"

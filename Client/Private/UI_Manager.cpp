@@ -3,6 +3,7 @@
 #include "Inven.h"
 #include "SkillBook.h"
 #include "Event_Manager.h"
+#include "HitEffect.h"
 
 
 IMPLEMENT_SINGLETON(CUI_Manager)
@@ -785,6 +786,29 @@ _bool CUI_Manager::Is_WorldMap()
 		return true;
 	}
 	return false;
+}
+
+void CUI_Manager::Set_HitEffect(CTransform* pTransform, _uint iDamage, _vec2 vTextPos, ATTACK_TYPE eType, _bool isPlayer)
+{
+	_bool isCritical{};
+	if (eType == (_uint)AT_End - 1)
+	{
+		isCritical = true;
+	}
+	CHitEffect::HITEFFECT_DESC Desc{};
+	Desc.iDamage = iDamage;
+	Desc.isCritical = isCritical;
+	Desc.pParentTransform = pTransform;
+	Desc.vTextPosition = vTextPos;
+	if (isPlayer)
+	{
+		Desc.isPlayer = true;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
+	{
+		return;
+	}
 }
 
 void CUI_Manager::Free()

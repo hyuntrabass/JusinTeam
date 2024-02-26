@@ -126,7 +126,6 @@ HRESULT CVoid05::Render()
 
 void CVoid05::Set_Damage(_int iDamage, _uint iDamageType)
 {
-	_bool isCritical{};
 
 	if (iDamage > 0)
 	{
@@ -139,16 +138,7 @@ void CVoid05::Set_Damage(_int iDamage, _uint iDamageType)
 
 		m_fHittedTime = 6.f;
 
-		CHitEffect::HITEFFECT_DESC Desc{};
-		Desc.iDamage = iDamage;
-		Desc.isCritical = isCritical;
-		Desc.pParentTransform = m_pTransformCom;
-		Desc.vTextPosition = _vec2(0.f, 1.5f);
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
-		{
-			return;
-		}
+		CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 1.5f), (ATTACK_TYPE)iDamageType);
 
 		_vec4 vPlayerPos = __super::Compute_PlayerPos();
 		m_pTransformCom->LookAt(vPlayerPos);
@@ -160,10 +150,6 @@ void CVoid05::Set_Damage(_int iDamage, _uint iDamageType)
 		m_iDamageAcc += iDamage;
 	}
 
-	if (iDamageType == (_uint)AT_End - 1)
-	{
-		isCritical = true;
-	}
 
 	if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
 		iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4 || iDamageType == AT_Critical)

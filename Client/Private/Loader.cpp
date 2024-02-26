@@ -1147,6 +1147,12 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Guard"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Guard/Mesh/Guard.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
 	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/NPC/NPC_Dummy/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -1509,6 +1515,12 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 	
+	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Pop_Reward"), CPop_Reward::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
 
 #pragma endregion
 
@@ -1655,6 +1667,12 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
+
+		if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Guard"), CGuard::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 
 #pragma endregion NPC
 
@@ -1843,7 +1861,7 @@ HRESULT CLoader::Load_Village()
 			}
 			else if (strPrototypeTag == L"Prototype_Model_Survival_Map")
 			{
-				DungeonPivot = _mat::CreateScale(0.7f);
+				DungeonPivot = _mat::CreateScale(0.4f);
 			}
 			else if (strPrototypeTag == L"Prototype_Model_SescoMap")
 			{
@@ -1851,7 +1869,7 @@ HRESULT CLoader::Load_Village()
 			}
 			else if (strPrototypeTag == L"Prototype_Model_MiniDungeon")
 			{
-				Pivot = _mat::CreateScale(0.003f);
+				DungeonPivot = _mat::CreateScale(0.003f);
 			}
 			else
 				DungeonPivot = _mat::CreateScale(0.001f);

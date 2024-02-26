@@ -3,10 +3,12 @@
 #include "Camera_Manager.h"
 #include "NameTag.h"
 #include "UI_Manager.h"
+#include "Event_Manager.h"
 #include "3DUITEX.h"
 #include "Item.h"
 #include "TextButtonColor.h"
 #include "TextButton.h"
+#include "Pop_Reward.h"
 
 // 부셔지는 애니메이션 하나 밖에 없음
 // Prototype_Model_GoldStone
@@ -37,11 +39,6 @@ HRESULT CInteraction_Anim::Init(void* pArg)
 	m_Info = *(ObjectInfo*)pArg;
 	m_ePlaceType = (PlaceType)m_Info.m_iIndex;
 
-	if (FAILED(Add_Components()))
-	{
-		return E_FAIL;
-	}
-
 	_vec4 vRight = _vec4(m_Info.m_WorldMatrix._11, m_Info.m_WorldMatrix._12, m_Info.m_WorldMatrix._13, m_Info.m_WorldMatrix._14);
 	_vec4 vUp = _vec4(m_Info.m_WorldMatrix._21, m_Info.m_WorldMatrix._22, m_Info.m_WorldMatrix._23, m_Info.m_WorldMatrix._24);
 	_vec4 vLook = _vec4(m_Info.m_WorldMatrix._31, m_Info.m_WorldMatrix._32, m_Info.m_WorldMatrix._33, m_Info.m_WorldMatrix._34);
@@ -63,6 +60,11 @@ HRESULT CInteraction_Anim::Init(void* pArg)
 	NameTagDesc.eLevelID = LEVEL_STATIC;
 	NameTagDesc.fFontSize = 0.36f;
 	NameTagDesc.pParentTransform = m_pTransformCom;
+
+	NameTagDesc.vColor = _vec4(0.31f, 0.96f, 1.f, 1.f);
+	NameTagDesc.vTextPosition = _vec2(0.f, 3.2f);
+
+
 	if (m_Info.strPrototypeTag == TEXT("Prototype_Model_GoldStone"))
 	{
 		NameTagDesc.strNameTag = TEXT("금광석");
@@ -73,12 +75,15 @@ HRESULT CInteraction_Anim::Init(void* pArg)
 	}
 	else if (m_Info.strPrototypeTag == TEXT("Prototype_Model_TreasureBox"))
 	{
+		NameTagDesc.vTextPosition = _vec2(0.f, 2.f);
+		m_strName = TEXT("보물상자");
 		NameTagDesc.strNameTag = TEXT("보물상자");
 	}
 
-	NameTagDesc.vColor = _vec4(0.31f, 0.96f, 1.f, 1.f);
-	NameTagDesc.vTextPosition = _vec2(0.f, 3.2f);
-
+	if (FAILED(Add_Components()))
+	{
+		return E_FAIL;
+	}
 
 	m_pNameTag = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_NameTag"), &NameTagDesc);
 	if (not m_pNameTag)
@@ -198,7 +203,31 @@ void CInteraction_Anim::Late_Tick(_float fTimeDelta)
 				wstring strItem = m_pItem->Get_ItemDesc().strName;
 				CUI_Manager::Get_Instance()->Set_Item(strItem);
 			}
-
+			if (m_strName == TEXT("보물상자"))
+			{
+				CPop_Reward::REWARD_DESC Desc{};
+				vector < pair<wstring, _uint>> vecReward;
+				vecReward.push_back(make_pair(TEXT("엘드룬의 수호 갑옷"), 1));
+				vecReward.push_back(make_pair(TEXT("엘드룬의 수호 투구"), 1));
+				Desc.vecRewards = vecReward;
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Pop_Reward"), &Desc)))
+				{
+					return;
+				}
+				/*다른 인덱스 보물상자 보물
+				* 				vector < pair<wstring, _uint>> vecReward;
+				vecReward.push_back(make_pair(TEXT("헤임달의 단검"), 1));
+				vecReward.push_back(make_pair(TEXT("헤임달의 활"), 1));
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Pop_Reward"))))
+				{
+					return;
+				}
+				*/
+			}
+			else
+			{
+				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("채집하기"));
+			}
 			m_isDead = true;
 		}
 		m_pModelCom->Play_Animation(fTimeDelta);
@@ -316,7 +345,15 @@ HRESULT CInteraction_Anim::Add_Components()
 	TexDesc.eLevelID = LEVEL_STATIC;
 	TexDesc.pParentTransform = m_pTransformCom;
 	TexDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SpeechBubble");
-	TexDesc.vPosition = _vec3(0.f, 3.8f, 0.f);
+	if (m_strName == TEXT("보물상자"))
+	{
+		TexDesc.vPosition = _vec3(0.f, 2.3f, 0.f);
+	}
+	else
+	{
+		TexDesc.vPosition = _vec3(0.f, 3.8f, 0.f);
+	}
+
 	TexDesc.vSize = _vec2(40.f, 40.f);
 
 	m_pSpeechBubble = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &TexDesc);
@@ -333,7 +370,14 @@ HRESULT CInteraction_Anim::Add_Components()
 	ColButtonDesc.fFontSize = 0.36f;
 	ColButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	ColButtonDesc.vTextPosition = _vec2(0.f, 20.f);
-	ColButtonDesc.strText = TEXT("채집중...");
+	if (m_strName == TEXT("보물상자"))
+	{
+		ColButtonDesc.strText = TEXT("여는중...");
+	}
+	else
+	{
+		ColButtonDesc.strText = TEXT("채집중...");
+	}
 	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_CollectBar");
 	ColButtonDesc.strTexture2 = TEXT("Prototype_Component_Texture_UI_Gameplay_Mask_FlagMove");
 	ColButtonDesc.vSize = _vec2(180.f, 12.f);

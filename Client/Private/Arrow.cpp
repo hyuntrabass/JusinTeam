@@ -91,6 +91,9 @@ HRESULT CArrow::Init(void* pArg)
 		m_pTransformCom->LookAt_Dir(m_ArrowType.vLook);
 	}
 
+
+	m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
+	
 	return S_OK;
 }
 

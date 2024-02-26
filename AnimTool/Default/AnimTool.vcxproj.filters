@@ -120,6 +120,9 @@
     <ClInclude Include="..\Public\Effect_Manager.h">
       <Filter>02.GameObjects\02.Effect\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Player.h">
+      <Filter>02.GameObjects\01. Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="small.ico">

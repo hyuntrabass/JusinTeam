@@ -115,6 +115,8 @@ void CImp::Set_Damage(_int iDamage, _uint iDamageType)
 
 		m_fHittedTime = 6.f;
 
+		CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 2.f), (ATTACK_TYPE)iDamageType);
+
 		_vec4 vPlayerPos = __super::Compute_PlayerPos();
 		m_pTransformCom->LookAt(vPlayerPos);
 

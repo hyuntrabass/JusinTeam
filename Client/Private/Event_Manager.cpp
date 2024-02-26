@@ -139,6 +139,12 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 		}
 	}
 
+	if (m_QuestTrigger[TUTO_TRIGGER] && m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY && not m_pGameInstance->Is_Playing_Video())
+	{
+		m_QuestTrigger[TUTO_TRIGGER] = false;
+		m_pGameInstance->Level_ShutDown(LEVEL_GAMEPLAY);
+	}
+
 	m_pQuest->Tick(fTimeDelta);
 	m_pAlert->Tick(fTimeDelta);
 }
@@ -207,8 +213,8 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.isMain = false;
 	tDesc.strQuestTitle = TEXT("채집하기");
 	tDesc.strText = TEXT("소금광석 채집하기");
-	vecRewards.push_back(make_pair(TEXT("헤임달의 단검"), 1));
-	vecRewards.push_back(make_pair(TEXT("헤임달의 활"), 1));
+	vecRewards.push_back(make_pair(TEXT("폭군 수드리의 활"), 1));
+	vecRewards.push_back(make_pair(TEXT("폭군 수드리의 단검"), 1));
 	tDesc.vecRewards = vecRewards;
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
@@ -277,6 +283,7 @@ HRESULT CEvent_Manager::Update_Quest(const wstring& strQuest)
 			m_QuestTrigger[GROAR_MONSTER] = true;
 			Set_Quest(TEXT("그로아를 찾아서"));
 		}
+
 	}
 	return S_OK;
 }
