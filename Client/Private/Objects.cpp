@@ -10,6 +10,7 @@ CObjects::CObjects(const CObjects& rhs)
 	: CBlendObject(rhs)
 	, m_Info(rhs.m_Info)
 	, m_isInstancing(rhs.m_isInstancing)
+
 {
 }
 
@@ -27,6 +28,8 @@ HRESULT CObjects::Init(void* pArg)
 
 void CObjects::Tick(_float fTimeDelta)
 {
+	if(m_isInstancing == false)
+		m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 
 	m_pTransformCom->Set_OldMatrix();
 }
@@ -44,6 +47,7 @@ void CObjects::Late_Tick(_float fTimeDelta)
 		return;
 	}
 
+
 	// ÀÎ½ºÅÏ½Ì ÇÒ ¸ðµ¨°ú ¾ÈÇÒ ¸ðµ¨À» ³ª´²ÁÜ
 	if (m_isInstancing == false)
 	{
@@ -57,19 +61,7 @@ void CObjects::Late_Tick(_float fTimeDelta)
 	}
 	else
 	{
-		if(m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY)
-			//if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
-			//{
-			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
-		//}
-		else
-		{
-			if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 20.f))
-			{
-				m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
-			}
-
-		}
+		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
 	}
 
 }
@@ -132,7 +124,9 @@ HRESULT CObjects::Render()
 		}
 	}
 
-
+#ifdef _DEBUG
+	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
+#endif
 	return S_OK;
 }
 
@@ -274,6 +268,7 @@ HRESULT CObjects::Add_Components(wstring strPrototype, ObjectType eType )
 		{
 			return E_FAIL;
 		}
+
 	}
 	else
 	{
@@ -302,8 +297,28 @@ HRESULT CObjects::Add_Components(wstring strPrototype, ObjectType eType )
 		}
 	}
 
+	if(m_isInstancing == false)
+		Add_Collider();
+
 	return S_OK;
 }
+
+HRESULT CObjects::Add_Collider()
+{
+	Collider_Desc CollDesc = {};
+	CollDesc.eType = ColliderType::Sphere;
+	CollDesc.fRadius = m_pModelCom->Get_ModelRadius();
+	CollDesc.vCenter = m_pModelCom->Get_CenterPos();
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Trigger_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))
+	{
+		return E_FAIL;
+	}
+	return S_OK;
+}
+
+
+
 
 HRESULT CObjects::Bind_ShaderResources()
 {
@@ -352,4 +367,7 @@ void CObjects::Free()
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
+
+	if (m_isInstancing == false)
+		Safe_Release(m_pColliderCom);
 }

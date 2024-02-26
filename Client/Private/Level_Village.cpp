@@ -142,6 +142,16 @@ HRESULT CLevel_Village::Init()
 	EffectDesc.pMatrix = &FountainMat;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 
+	if (FAILED(Ready_Statue()))
+	{
+		MSG_BOX("Failed to Ready Statue");
+		return E_FAIL;
+	}
+	if (FAILED(Ready_TreasureBox()))
+	{
+		MSG_BOX("Failed to Ready TreasureBox");
+		return E_FAIL;
+	}
 	EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Water_Dist");
 	EffectDesc.pMatrix = &FountainMat;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
@@ -349,8 +359,52 @@ HRESULT CLevel_Village::Ready_Interaction()
 			}
 		}
 	}
+	inFile.close();
+
 
 	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_TreasureBox()
+{
+	const TCHAR* pGetPath = TEXT("../Bin/Data/TreasureBox.dat");
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MSG_BOX("던전 보물상자 파일을 찾지 못했습니다.");
+		return E_FAIL;
+	}
+
+	_uint ObjectListSize;
+	inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
+
+	for (_uint i = 0; i < ObjectListSize; ++i)
+	{
+		_ulong ObjectPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
+
+		wstring ObjectPrototype;
+		ObjectPrototype.resize(ObjectPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
+
+		_mat ObjectWorldMat;
+		inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
+
+		ObjectInfo ObjectInfo{};
+		ObjectInfo.strPrototypeTag = ObjectPrototype;
+		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
+		ObjectInfo.eObjectType = Object_Environment;
+		ObjectInfo.m_iIndex = (_uint)FIELD;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Interaction_Object"), TEXT("Prototype_GameObject_Intraction_Anim_Object"), &ObjectInfo)))
+		{
+			MSG_BOX("던전 보물상자 불러오기 실패");
+			return E_FAIL;
+		}
+	}
+	inFile.close();
 }
 
 HRESULT CLevel_Village::Ready_NpcvsMon()
@@ -449,6 +503,47 @@ HRESULT CLevel_Village::Ready_Village_Monster()
 	return S_OK;
 }
 
+HRESULT CLevel_Village::Ready_Statue()
+{
+	MonsterInfo Info{};
+	const TCHAR* pGetPath = L"../Bin/Data/Dungeon_Statue.dat";
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
+	{
+		MessageBox(g_hWnd, L"Dungeon_Statue 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+		return E_FAIL;
+	}
+
+	_uint MonsterListSize;
+	inFile.read(reinterpret_cast<char*>(&MonsterListSize), sizeof(_uint));
+
+
+	for (_uint i = 0; i < MonsterListSize; ++i)
+	{
+		_ulong MonsterPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&MonsterPrototypeSize), sizeof(_ulong));
+
+		wstring MonsterPrototype;
+		MonsterPrototype.resize(MonsterPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&MonsterPrototype[0]), MonsterPrototypeSize * sizeof(wchar_t));
+
+		_mat MonsterWorldMat;
+		inFile.read(reinterpret_cast<char*>(&MonsterWorldMat), sizeof(_mat));
+
+		Info.strMonsterPrototype = MonsterPrototype;
+		Info.MonsterWorldMat = MonsterWorldMat;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Statue"), &Info)))
+		{
+			MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
+			return E_FAIL;
+		}
+
+	}
+	return S_OK;
+}
 HRESULT CLevel_Village::Ready_Dungeon_Monster()
 {
 	MonsterInfo Info{};

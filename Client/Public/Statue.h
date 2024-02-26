@@ -27,7 +27,7 @@ public:
 
 private:
 	_bool m_bDamaged = { false };
-
+	Info m_Info{};
 public:
 	static CStatue* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;

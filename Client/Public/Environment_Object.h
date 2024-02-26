@@ -19,12 +19,11 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
-	HRESULT Add_Collider();
-
 private:
 	CTrigger_Manager* m_pTrigger_Manager{ nullptr };
 	PlaceType m_ePlaceType{ PLACE_END };
-	CCollider* m_pCollider{ false };
+	_bool m_isSetting{ false };
+
 public:
 	static CEnvironment_Object* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;

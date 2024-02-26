@@ -13,7 +13,7 @@ protected:
 	virtual ~CVIBuffer_Mesh_Instance() = default;
 
 public:
-	virtual HRESULT Init_Prototype(_uint iMaxCount = 1500);
+	virtual HRESULT Init_Prototype(_uint iMaxCount = 2000);
 	virtual HRESULT Init(void* pArg) override;
 	virtual void Update(_float fTimeDelta, _mat WorldMatrix, _int iNumUse = -1, _bool bApplyGravity = false, _vec3 vGravityDir = _vec3());
 	virtual HRESULT Render(CMesh* pMesh);
