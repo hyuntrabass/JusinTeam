@@ -23,7 +23,7 @@ HRESULT CLauncher::Init(void* pArg)
 {
 	m_eType = *(LAUNCHER_TYPE*)pArg;
 
-	_vec3 vCenterPos = _vec3(-2000.f, 0.f, 2000.f);
+	//_vec3 vCenterPos = _vec3(-2000.f, 0.f, 2000.f);
 
 	switch (m_eType)
 	{
@@ -42,7 +42,7 @@ HRESULT CLauncher::Init(void* pArg)
 
 		_vec3 vRandomDir = _vec3(Random(RandomNumber), 0.f, Random(RandomNumber)).Get_Normalized();
 
-		m_pTransformCom->Set_Position(vCenterPos + (rand() % 8 + 1) * vRandomDir); // Radius : 8
+		m_pTransformCom->Set_Position(CENTER_POS + (rand() % 8 + 1) * vRandomDir); // Radius : 8
 
 		m_iPassIndex = AnimPass_Dissolve;
 	}
@@ -54,6 +54,17 @@ HRESULT CLauncher::Init(void* pArg)
 		break;
 
 	case Client::CLauncher::TYPE_LASER:
+
+		m_strModelTag = TEXT("Prototype_Model_Cannon");
+		m_Animation.iAnimIndex = 3;
+		m_Animation.isLoop = true;
+		m_Animation.fAnimSpeedRatio = 2.f;
+
+		m_pTransformCom->Set_Scale(_vec3(0.3f));
+		m_pTransformCom->Set_Position(CENTER_POS);
+
+		m_iPassIndex = AnimPass_Dissolve;
+
 		break;
 
 	case Client::CLauncher::TYPE_PIZZA:
@@ -121,9 +132,29 @@ void CLauncher::Tick(_float fTimeDelta)
 
 
 		break;
+
 	case Client::CLauncher::TYPE_FLOOR:
 		break;
+
 	case Client::CLauncher::TYPE_LASER:
+
+		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+		_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
+		vDir.y = 0.f;
+
+		if (m_iPassIndex == AnimPass_Rim)
+		{
+			if (m_fTime >= 2.f)
+			{
+				m_pTransformCom->LookAt_Dir(vDir);
+			}
+			else
+			{
+				m_Animation.iAnimIndex = 0;
+			}
+		}
+
 		break;
 	case Client::CLauncher::TYPE_PIZZA:
 		break;
@@ -251,7 +282,22 @@ HRESULT CLauncher::Bind_ShaderResources()
 
 	if (m_iPassIndex == AnimPass_Rim)
 	{
-		_vec4 vColor = Colors::Gold;
+		_vec4 vColor = {};
+
+		switch (m_eType)
+		{
+		case Client::CLauncher::TYPE_RANDOM_POS:
+			vColor = Colors::Gold;
+			break;
+		case Client::CLauncher::TYPE_FLOOR:
+			break;
+		case Client::CLauncher::TYPE_LASER:
+			vColor = Colors::Cyan;
+			break;
+		case Client::CLauncher::TYPE_PIZZA:
+			break;
+		}
+
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vColor, sizeof vColor)))
 		{
 			return E_FAIL;
