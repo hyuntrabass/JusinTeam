@@ -208,6 +208,8 @@ private:
 	_bool m_bChangePos = { false };
 
 private:
+	_bool						m_bQuest{};
+	_bool						m_isReward{};
 	GROAR_NPCSTATE				m_eState{ NPC_TALK };
 	_bool						m_bTalking = { false };
 	_bool						m_bNextDialog = { false };

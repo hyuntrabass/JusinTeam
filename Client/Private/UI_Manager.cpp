@@ -427,6 +427,14 @@ HRESULT CUI_Manager::Init_Items()
 		{
 			Item.eItemUsage = IT_VEHICLECARD;
 		}
+		else if (Item.strName == TEXT("[유니크]신비한 알")|| Item.strName == TEXT("[신화]신비한 알"))
+		{
+			Item.eItemUsage = IT_PETCARD;
+		}
+		else if (Item.strName == TEXT("아마풀")|| Item.strName == TEXT("오크나무") || Item.strName == TEXT("소금광석") || Item.strName == TEXT("금광석"))
+		{
+			Item.eItemUsage = IT_INGREDIENT;
+		}
 		else
 		{
 			Item.eItemUsage = IT_NOUSAGE;
@@ -776,6 +784,17 @@ _uint CUI_Manager::Get_CurrentMiniGame()
 		return iIdx;
 	}
 	return m_iCurrentMiniGame;
+}
+
+_uint CUI_Manager::Get_VehicleBook_Vehicle()
+{
+	if (m_eNewRidingType != Riding_Type::Type_End)
+	{
+		_uint iIdx = m_eNewRidingType;
+		m_eNewRidingType = Type_End;
+		return iIdx;
+	}
+	return Type_End;
 }
 
 _bool CUI_Manager::Is_WorldMap()

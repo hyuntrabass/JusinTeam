@@ -1,4 +1,4 @@
-#include "SummonWindow.h"
+#include "SummonWindowPet.h"
 #include "GameInstance.h"
 #include "TextButton.h"
 #include "TextButtonColor.h"
@@ -8,22 +8,22 @@
 #include "FadeBox.h"
 #include "Skill.h"
 
-CSummonWindow::CSummonWindow(_dev pDevice, _context pContext)
+CSummonWindowPet::CSummonWindowPet(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
 }
 
-CSummonWindow::CSummonWindow(const CSummonWindow& rhs)
+CSummonWindowPet::CSummonWindowPet(const CSummonWindowPet& rhs)
 	: COrthographicObject(rhs)
 {
 }
 
-HRESULT CSummonWindow::Init_Prototype()
+HRESULT CSummonWindowPet::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CSummonWindow::Init(void* pArg)
+HRESULT CSummonWindowPet::Init(void* pArg)
 {
 	if (FAILED(Add_Components()))
 	{
@@ -52,7 +52,7 @@ HRESULT CSummonWindow::Init(void* pArg)
 	return S_OK;
 }
 
-void CSummonWindow::Tick(_float fTimeDelta)
+void CSummonWindowPet::Tick(_float fTimeDelta)
 {
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
@@ -198,7 +198,7 @@ void CSummonWindow::Tick(_float fTimeDelta)
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
 
-void CSummonWindow::Late_Tick(_float fTimeDelta)
+void CSummonWindowPet::Late_Tick(_float fTimeDelta)
 {
 	if (m_pCard != nullptr)
 	{
@@ -220,7 +220,7 @@ void CSummonWindow::Late_Tick(_float fTimeDelta)
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
-HRESULT CSummonWindow::Render()
+HRESULT CSummonWindowPet::Render()
 {
 
 	if (FAILED(Bind_ShaderResources()))
@@ -246,7 +246,7 @@ HRESULT CSummonWindow::Render()
 	return S_OK;
 }
 
-HRESULT CSummonWindow::Add_Components()
+HRESULT CSummonWindowPet::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -263,7 +263,7 @@ HRESULT CSummonWindow::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_Gacha0"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_Gacha2"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -275,7 +275,7 @@ HRESULT CSummonWindow::Add_Components()
 	return S_OK;
 }
 
-HRESULT CSummonWindow::Add_Parts()
+HRESULT CSummonWindowPet::Add_Parts()
 {
 	CTextButton::TEXTBUTTON_DESC Button = {};
 
@@ -371,17 +371,13 @@ HRESULT CSummonWindow::Add_Parts()
 	TextButton.vColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	TextButton.vPosition = _vec2(m_fX, (_float)g_iWinSizeY - 200.f);
 	TextButton.vSize = _vec2(200.f, 400.f);
-	if (m_iItemTier == TIER_COMMON)
+	if (m_iItemTier == TIER_UNIQUE)
 	{
-		TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BG_VehicleCard");
-	}
-	else if (m_iItemTier == TIER_RARE)
-	{
-		TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BG_VehicleCard02");
+		TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BG_PetCard1");
 	}
 	else if (m_iItemTier == TIER_LEGENDARY)
 	{
-		TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BG_VehicleCard2");
+		TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_BG_PetCard2");
 	}
 	TextButton.strTexture2 = TEXT("Prototype_Component_Texture_Effect_FX_B_Gradient010_Tex");
 	m_pCard = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
@@ -397,47 +393,22 @@ HRESULT CSummonWindow::Add_Parts()
 	TextButton.vPosition = _vec2(m_fX, (_float)g_iWinSizeY - 200.f);
 	TextButton.vSize = _vec2(75.f, 150.f);
 	_uint iRandom = rand() % 10;
-	if (m_iItemTier == TIER_COMMON)
+	if (m_iItemTier == TIER_UNIQUE)
 	{
-		if (iRandom <= 5)
-		{
-			TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_c_bird");
-			m_eRidingType = Bird;
-		}
-		else
-		{
-			TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_c_horse");
-			m_eRidingType = Horse;
-		}
-	}
-	else if (m_iItemTier == TIER_RARE)
-	{
-		if (iRandom <= 5)
-		{
-			TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_c_tiger");
-			m_eRidingType = Tiger;
-		}
-		else
-		{
-			TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_c_wyvern");
-			m_eRidingType = Wyvern;
-		}
+		TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_c_Pet1");
+		
+		wstring strName = TEXT("고양이");
+		CUI_Manager::Get_Instance()->Delete_Item(INVEN_TYPE::INVEN_WEARABLE, strName);
+		CUI_Manager::Get_Instance()->Set_Item(strName);
 	}
 	else if (m_iItemTier == TIER_LEGENDARY)
 	{
-		if (iRandom <= 5)
-		{
-			TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_c_falar");
-			m_eRidingType = Falar;
-		}
-		else
-		{
-			TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_c_nihilir");
-			m_eRidingType = Nihilir;
-		}
+		TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_c_Pet2");
+		wstring strName = TEXT("드래곤");
+		CUI_Manager::Get_Instance()->Delete_Item(INVEN_TYPE::INVEN_WEARABLE, strName);
+		CUI_Manager::Get_Instance()->Set_Item(strName);
 	}
 	
-	CUI_Manager::Get_Instance()->Set_VehicleBook_Vehicle(m_eRidingType);
 	m_pResultCard = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
 	if (not m_pResultCard)
 	{
@@ -449,7 +420,7 @@ HRESULT CSummonWindow::Add_Parts()
 	return S_OK;
 }
 
-HRESULT CSummonWindow::Bind_ShaderResources()
+HRESULT CSummonWindowPet::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
 		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
@@ -492,33 +463,33 @@ HRESULT CSummonWindow::Bind_ShaderResources()
 	return S_OK;
 }
 
-CSummonWindow* CSummonWindow::Create(_dev pDevice, _context pContext)
+CSummonWindowPet* CSummonWindowPet::Create(_dev pDevice, _context pContext)
 {
-	CSummonWindow* pInstance = new CSummonWindow(pDevice, pContext);
+	CSummonWindowPet* pInstance = new CSummonWindowPet(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CSummonWindow");
+		MSG_BOX("Failed to Create : CSummonWindowPet");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CSummonWindow::Clone(void* pArg)
+CGameObject* CSummonWindowPet::Clone(void* pArg)
 {
-	CSummonWindow* pInstance = new CSummonWindow(*this);
+	CSummonWindowPet* pInstance = new CSummonWindowPet(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CSummonWindow");
+		MSG_BOX("Failed to Clone : CSummonWindowPet");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CSummonWindow::Free()
+void CSummonWindowPet::Free()
 {
 	__super::Free();
 

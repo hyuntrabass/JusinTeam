@@ -124,6 +124,7 @@ private:
 	_uint m_iAttackPattern = {};
 	_bool m_bSelectAttackPattern = { false };
 	_bool m_bAttack_Selected[ATTACK_END] = { false };
+	_bool m_isReward = { false };
 
 private:
 	_bool m_bAttacking = { false };

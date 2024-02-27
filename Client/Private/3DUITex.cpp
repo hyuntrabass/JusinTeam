@@ -42,9 +42,13 @@ HRESULT C3DUITex::Init(void* pArg)
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
-	}
+	}	
+	
+	m_pTransformCom->Set_State(State::Pos, m_pParentTransform->Get_State(State::Pos) + m_vPosition);
+	m_vTextPos = __super::Convert_To_2D(m_pTransformCom);
+	m_fX = m_vTextPos.x;
+	m_fY = m_vTextPos.y;
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
-
 
 	return S_OK;
 }

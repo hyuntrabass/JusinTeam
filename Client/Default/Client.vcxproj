@@ -280,6 +280,7 @@
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\Statue.h" />
     <ClInclude Include="..\Public\SummonWindow.h" />
+    <ClInclude Include="..\Public\SummonWindowPet.h" />
     <ClInclude Include="..\Public\SurvivalGame.h" />
     <ClInclude Include="..\Public\Symbol.h" />
     <ClInclude Include="..\Public\Targeted.h" />
@@ -305,6 +306,7 @@
     <ClInclude Include="..\Public\Torch_Object.h" />
     <ClInclude Include="..\Public\Tower.h" />
     <ClInclude Include="..\Public\TowerObject.h" />
+    <ClInclude Include="..\Public\TreasureBox.h" />
     <ClInclude Include="..\Public\Trigger.h" />
     <ClInclude Include="..\Public\Trigger_Manager.h" />
     <ClInclude Include="..\Public\TrilobiteA.h" />
@@ -453,6 +455,7 @@
     <ClCompile Include="..\Private\Spider.cpp" />
     <ClCompile Include="..\Private\Statue.cpp" />
     <ClCompile Include="..\Private\SummonWindow.cpp" />
+    <ClCompile Include="..\Private\SummonWindowPet.cpp" />
     <ClCompile Include="..\Private\SurvivalGame.cpp" />
     <ClCompile Include="..\Private\Symbol.cpp" />
     <ClCompile Include="..\Private\Targeted.cpp" />
@@ -478,6 +481,7 @@
     <ClCompile Include="..\Private\Torch_Object.cpp" />
     <ClCompile Include="..\Private\Tower.cpp" />
     <ClCompile Include="..\Private\TowerObject.cpp" />
+    <ClCompile Include="..\Private\TreasureBox.cpp" />
     <ClCompile Include="..\Private\Trigger.cpp" />
     <ClCompile Include="..\Private\Trigger_Manager.cpp" />
     <ClCompile Include="..\Private\TrilobiteA.cpp" />
