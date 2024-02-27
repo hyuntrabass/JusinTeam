@@ -1799,7 +1799,6 @@ void CPlayer::Move(_float fTimeDelta)
 				m_pTransformCom->Jump(8.f);
 				m_eState = Jump_Start;
 				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("점프하기"));
-				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("그로아의 부탁"));
 			}
 			else if (m_bReady_Climb)
 			{

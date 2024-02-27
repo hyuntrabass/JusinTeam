@@ -686,6 +686,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				Desc.vPos = vPos;
 				vector <pair<wstring, _uint>> vecItem;
 				vecItem.push_back(make_pair(TEXT("[신화]신비한 알"), 1));
+				vecItem.push_back(make_pair(TEXT("그로아 남편의 팔찌"), 1));
 				vecItem.push_back(make_pair(TEXT("레긴레이프의 불멸 투구"), 1));
 				vecItem.push_back(make_pair(TEXT("레긴레이프의 불멸 갑옷"), 1));
 				Desc.vecItem = vecItem;
