@@ -268,8 +268,8 @@ void CGuard::Tick_State(_float fTimeDelta)
 
 void CGuard::View_Detect_Range()
 {
-	//Safe_Release(m_pBaseEffect);
-	//Safe_Release(m_pFrameEffect);
+	Safe_Release(m_pBaseEffect);
+	Safe_Release(m_pFrameEffect);
 
 	_mat EffectMatrix{};
 	EffectInfo Info{};
