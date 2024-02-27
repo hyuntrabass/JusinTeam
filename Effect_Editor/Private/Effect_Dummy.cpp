@@ -131,9 +131,22 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 	{
 	case Effect_Type::ET_PARTICLE:
 	case Effect_Type::ET_PARTI_DISTORTION:
-		m_pParticle->Update(fTimeDelta, m_pTransformCom->Get_World_Matrix(), m_Effect.iNumInstances, m_Effect.bApplyGravity, m_Effect.vGravityDir, m_Effect.fPartiAppearRatio, m_Effect.fPartiDissolveRatio);
+	{
+		//m_pParticle->Update(fTimeDelta, m_pTransformCom->Get_World_Matrix(), m_Effect.iNumInstances, m_Effect.bApplyGravity, m_Effect.vGravityDir, m_Effect.fPartiAppearRatio, m_Effect.fPartiDissolveRatio);
+		ParticleParams Param{};
+		Param.iNumUse = m_Effect.iNumInstances;
+		Param.fTimeDelta = fTimeDelta;
+		Param.fAppearRatio = m_Effect.fPartiAppearRatio;
+		Param.vGravityDir = m_Effect.vGravityDir;
+		Param.fDissolveRatio = m_Effect.fPartiDissolveRatio;
+		Param.bApplyGravity = m_Effect.bApplyGravity;
+		Param.WorldMatrix = m_pTransformCom->Get_World_Matrix();
+		Param.bChangeDir = m_Effect.bChangeDir;
+
+		m_pParticle->Update(Param);
 		//m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
 		break;
+	}
 	case Effect_Type::ET_RECT:
 	{
 		if (m_Effect.isBillboard)

@@ -71,9 +71,9 @@ namespace Client
 		_vec4(), // Position
 		_vec4(), // Attenuation
 
-		_vec4(0.936f, 0.728f, 0.650f, 0.f), // Diffuse
-		_vec4(0.5f), // Ambient
-		_vec4(1.f, 0.4f, 0.15f, 0.f) // Specular
+		_vec4(0.4f, 0.158f, 0.f, 0.f), // Diffuse
+		_vec4(0.02f, 0.01f, 0.f, 0.f), // Ambient
+		_vec4(0.4f, 0.16f, 0.f, 0.f) // Specular
 	};
 
 	static const LIGHT_DESC g_Light_Survival

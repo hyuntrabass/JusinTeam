@@ -168,6 +168,35 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _mat WorldMatrix, _int iNum
 	m_isFirstUpdate = false;
 }
 
+void CVIBuffer_Instancing::Update(ParticleParams Parameter)
+{
+	ParticleParams PartiBuffer{ Parameter };
+	PartiBuffer.iNumInstances = m_iNumInstances;
+	PartiBuffer.isLoop = m_isLoop;
+	PartiBuffer.isFirstUpdate = m_isFirstUpdate;
+
+	m_pContext->CopyResource(m_pVSRB, m_pVBInstance);
+
+	HRESULT hr = E_FAIL;
+
+	hr = m_pComputeShader->Set_Shader();
+
+	hr = m_pComputeShader->Change_Value(&PartiBuffer, sizeof ParticleParams);
+
+	_uint2 iSlot = _uint2(0, 0);
+	hr = m_pComputeShader->Bind_ShaderResourceView(m_pSRV, m_pUAV, iSlot);
+
+	_uint3 ThreadGroup{ 1, 1, 1 };
+	hr = m_pComputeShader->Begin(ThreadGroup);
+
+	if (FAILED(hr))
+		return;
+
+	m_pContext->CopyResource(m_pVBInstance, m_pVUAVB);
+
+	m_isFirstUpdate = false;
+}
+
 HRESULT CVIBuffer_Instancing::Render()
 {
 	ID3D11Buffer* pVertexBuffer[] =
