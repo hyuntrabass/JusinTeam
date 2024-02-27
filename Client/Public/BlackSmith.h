@@ -18,6 +18,7 @@ public:
 		WALK01,
 		ANIM_END
 	};
+	enum BLACKSMITH_STATE { TALK, QUEST_ING, ROSKVA_END };
 
 private:
 	CBlackSmith(_dev pDevice, _context pContext);
@@ -32,7 +33,32 @@ public:
 	virtual HRESULT Render() override;
 
 private:
-	_bool m_bTalking = { false };
+	BLACKSMITH_STATE			m_eState{ TALK };
+	_bool						m_bTalking = { false };
+	_bool						m_bNextDialog = { false };
+	_bool						m_isColl = { false };
+
+	_float						m_fDir{ -1.f };
+	_float						m_fButtonTime{};
+
+	wstring						m_strQuestOngoing{};
+	list<wstring>				m_DialogList;
+	list<wstring>				m_ChattList;
+
+	class CTextButton* m_pLine{ nullptr };
+	CTextButton* m_pArrow{ nullptr };
+	class CDialogText* m_pDialogText{ nullptr };
+	CTextButton* m_pSkipButton{ nullptr };
+	class CTextButtonColor* m_pBackGround{ nullptr };
+	class C3DUITex* m_pSpeechBubble{ nullptr };
+
+private:
+	void Set_Text(BLACKSMITH_STATE eState);
+
+private:
+	HRESULT Init_Dialog();
+	HRESULT Add_Parts();
+
 
 public:
 	static CBlackSmith* Create(_dev pDevice, _context pContext);

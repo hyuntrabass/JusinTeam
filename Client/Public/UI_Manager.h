@@ -156,11 +156,16 @@ public:
 	void Set_MiniGameStage(TOWER eTower) { m_iCurrentMiniGame = eTower; }
 	_uint Get_CurrentMiniGame();
 	
+	void Set_VehicleBook_Vehicle(Riding_Type eType) { m_eNewRidingType = eType; }
+	_uint Get_VehicleBook_Vehicle();
+	
 	void Set_WorldMap() { m_isWorldMap = true; }
 	_bool Is_WorldMap();
 	
 	void Set_BrickBallColor(BrickColor eColor) { m_eBrickBallColor = eColor; }
 	const BrickColor& Get_BrickBallColor() const { return m_eBrickBallColor; }
+
+	void Set_HitEffect(CTransform* pTransform, _uint iDamage, _vec2 vTextPos, ATTACK_TYPE eType, _bool isPlayer = false);
 
 private:
 	_uint			m_iCurrentMiniGame{(_uint)TOWER_END};
@@ -189,6 +194,7 @@ private:
 	_bool			m_isBoss{ false };
 
 
+	Riding_Type		m_eNewRidingType{ Type_End };
 	Riding_Type		m_eRidingType{ Type_End };
 	Riding_Type     m_CurRidingType[VC_END];
 	_uint			m_iLevel{ 1 };

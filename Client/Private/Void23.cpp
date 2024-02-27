@@ -1,4 +1,5 @@
 #include "Void23.h"
+#include "TreasureBox.h"
 
 const _float CVoid23::m_fChaseRange = 7.f;
 const _float CVoid23::m_fAttackRange = 5.f;
@@ -48,6 +49,10 @@ HRESULT CVoid23::Init(void* pArg)
 	Desc.iNumVertices = 10;
 
 	m_pSwordTrail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
+
+	Desc.iPassIndex = 2;
+	Desc.strMaskTextureTag = L"FX_B_CraterCrack002_Normal_Tex";
+	m_pDistTrail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 
 	PxCapsuleControllerDesc ControllerDesc{};
 	ControllerDesc.height = 2.2f; // 높이(위 아래의 반구 크기 제외
@@ -100,6 +105,7 @@ void CVoid23::Tick(_float fTimeDelta)
 void CVoid23::Late_Tick(_float fTimeDelta)
 {
 	m_pSwordTrail->Late_Tick(fTimeDelta);
+	m_pDistTrail->Late_Tick(fTimeDelta);
 
 	__super::Late_Tick(fTimeDelta);
 
@@ -126,6 +132,8 @@ void CVoid23::Set_Damage(_int iDamage, _uint iDamageType)
 		m_bChangePass = true;
 		m_fHittedTime = 6.f;
 		m_fIdleTime = 0.f;
+
+		CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 1.5f), (ATTACK_TYPE)iDamageType);
 
 		_vec4 vPlayerPos = __super::Compute_PlayerPos();
 		m_pTransformCom->LookAt(vPlayerPos);
@@ -471,11 +479,13 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				if (fAnimpos >= 60.f && fAnimpos <= 76.f)
 				{
 					m_pSwordTrail->On();
+					m_pDistTrail->On();
 				}
 
 				if (fAnimpos >= 110.f && fAnimpos <= 124.f)
 				{
 					m_pSwordTrail->On();
+					m_pDistTrail->On();
 				}
 
 				if (m_pModelCom->IsAnimationFinished(B_ATTACK01))
@@ -517,6 +527,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				if (fAnimpos >= 49.f && fAnimpos <= 57.f)
 				{
 					m_pSwordTrail->On();
+					m_pDistTrail->On();
 				}
 
 				if (m_pModelCom->IsAnimationFinished(B_ATTACK02))
@@ -551,6 +562,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				if (fAnimpos >= 101.f && fAnimpos <= 109.f)
 				{
 					m_pSwordTrail->On();
+					m_pDistTrail->On();
 				}
 
 				if (m_pModelCom->IsAnimationFinished(B_ATTACK03))
@@ -584,6 +596,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				if (fAnimpos >= 60.f && fAnimpos <= 80.f)
 				{
 					m_pSwordTrail->On();
+					m_pDistTrail->On();
 				}
 
 				if (m_pModelCom->IsAnimationFinished(B_ATTACK04))
@@ -620,6 +633,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				if (fAnimpos >= 58.f && fAnimpos <= 125.f)
 				{
 					m_pSwordTrail->On();
+					m_pDistTrail->On();
 				}
 
 				if (m_pModelCom->IsAnimationFinished(B_ATTACK05))
@@ -665,6 +679,25 @@ void CVoid23::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(DIE))
 		{
 			m_fDeadTime += fTimeDelta;
+			if (!m_isReward)
+			{
+				CTreasureBox::TREASURE_DESC Desc{};
+				_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+				Desc.vPos = vPos;
+				vector <pair<wstring, _uint>> vecItem;
+				vecItem.push_back(make_pair(TEXT("[신화]신비한 알"), 1));
+				vecItem.push_back(make_pair(TEXT("그로아 남편의 팔찌"), 1));
+				vecItem.push_back(make_pair(TEXT("레긴레이프의 불멸 투구"), 1));
+				vecItem.push_back(make_pair(TEXT("레긴레이프의 불멸 갑옷"), 1));
+				Desc.vecItem = vecItem;
+				Desc.eDir = CTreasureBox::RIGHT;
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Temp"), TEXT("Prototype_GameObject_TreasureBox"), &Desc)))
+				{
+					return;
+				}
+				vecItem.clear();
+				m_isReward = true;
+			}
 		}
 
 		break;
@@ -688,7 +721,9 @@ void CVoid23::Update_Trail(_float fTimeDelta)
 
 	m_pSwordTrail->Tick(Result1.Position_vec3(), Result2.Position_vec3());
 
-
+	Offset = _mat::CreateTranslation(_vec3(10.01f, -0.67f, -0.53f));
+	Result1 = Offset * Matrix * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
+	m_pDistTrail->Tick(Result1.Position_vec3(), Result2.Position_vec3());
 }
 
 HRESULT CVoid23::Add_Collider()
@@ -768,5 +803,6 @@ void CVoid23::Free()
 	__super::Free();
 
 	Safe_Release(m_pSwordTrail);
+	Safe_Release(m_pDistTrail);
 	Safe_Release(m_pFloorCollider);
 }

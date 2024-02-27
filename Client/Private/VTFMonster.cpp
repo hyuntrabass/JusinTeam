@@ -1,4 +1,5 @@
 #include "VTFMonster.h"
+#include "UI_Manager.h"
 
 CVTFMonster::CVTFMonster(_dev pDevice, _context pContext)
     :CGameObject(pDevice, pContext)
@@ -23,6 +24,8 @@ HRESULT CVTFMonster::Init(void* pArg)
 
         m_strModelTag = pVtfMonsterDesc->strModelTag;
         m_pTransformCom->Set_Position(pVtfMonsterDesc->vPosition);
+        m_pPlayerTransform = pVtfMonsterDesc->pPlayerTransform;
+        Safe_AddRef(m_pPlayerTransform);
     }
 
     if (FAILED(Add_Components()))
@@ -30,8 +33,9 @@ HRESULT CVTFMonster::Init(void* pArg)
 
     m_pShaderCom->Set_PassIndex(VTF_InstPass_Default);
 
-    m_pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-    Safe_AddRef(m_pPlayerTransform);
+    _vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
+    vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
+    m_pTransformCom->LookAt(vPlayerPos);
 
     random_device rand;
     m_RandomNumber = _randNum(rand());
@@ -44,6 +48,8 @@ void CVTFMonster::Tick(_float fTimeDelta)
     m_pTransformCom->Set_OldMatrix();
     m_pModelCom->Set_Animation(m_Animation);
     m_pTransformCom->Gravity(fTimeDelta);
+
+    m_Animation.fStartAnimPos = 0.f;
 }
 
 void CVTFMonster::Late_Tick(_float fTimeDelta)
@@ -57,16 +63,18 @@ void CVTFMonster::Late_Tick(_float fTimeDelta)
     }
 }
 
-void CVTFMonster::Set_Damage(_int iDamage, _uint MonAttType)
+void CVTFMonster::Set_Damage(_int iDamage, _uint AttackType)
 {
     if (iDamage == 0)
     {
         return;
     }
 
+    CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 1.5f), (ATTACK_TYPE)AttackType);
+
     m_iHP -= iDamage;
 
-    m_IsHitted = true;
+    m_HasHitted = true;
 }
 
 HRESULT CVTFMonster::Render()

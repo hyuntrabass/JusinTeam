@@ -268,6 +268,13 @@ const _bool CVTFModel::IsAnimationFinished(_uint iAnimIndex) const
 	}
 }
 
+const _float CVTFModel::Get_CurrentAnimPos() const
+{
+	_float fCurrentAnimPos{};
+	fCurrentAnimPos = static_cast<_float>(m_PlayAnimDesc.eCurrent.iCurrFrame) + m_PlayAnimDesc.eCurrent.fTime;
+	return fCurrentAnimPos;
+}
+
 HRESULT CVTFModel::Bind_Material(CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType)
 {
 	_uint iMatIndex = m_Meshes[iMeshIndex]->Get_MatIndex();

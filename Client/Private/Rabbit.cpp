@@ -126,6 +126,8 @@ void CRabbit::Set_Damage(_int iDamage, _uint iDamageType)
 
 		m_fHittedTime = 6.f;
 
+		CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 1.5f), (ATTACK_TYPE)iDamageType);
+
 		_vec4 vPlayerPos = __super::Compute_PlayerPos();
 		m_pTransformCom->LookAt(vPlayerPos);
 
@@ -462,6 +464,10 @@ void CRabbit::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->IsAnimationFinished(DIE))
 		{
+			if (m_fDeadTime == 0.f)
+			{
+				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("로스크바의 부탁"));
+			}
 			m_fDeadTime += fTimeDelta;
 		}
 
@@ -533,6 +539,5 @@ CGameObject* CRabbit::Clone(void* pArg)
 void CRabbit::Free()
 {
 	__super::Free();
-	CEvent_Manager::Get_Instance()->Update_Quest(TEXT("로스크바의 부탁"));
-
+	//CEvent_Manager::Get_Instance()->Update_Quest(TEXT("로스크바의 부탁"));
 }

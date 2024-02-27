@@ -103,7 +103,9 @@ HRESULT CMainApp::Render()
 	if (m_fTimeAcc >= 1.f)
 	{
 		wstring fps = L"FPS: " + to_wstring(m_iFrameCount);
+#ifdef _DEBUG
 		m_pGameInstance->Set_FPS(m_iFrameCount);
+#endif // _DEBUG
 
 		SetWindowText(g_hWnd, fps.c_str());
 

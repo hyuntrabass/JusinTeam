@@ -111,7 +111,7 @@ HRESULT CItemSlot::Set_Item(CItem* pItem, _int* iNum)
 	CItem::ITEM_DESC ItemDesc = {};
 	ItemDesc.bCanInteract = false;
 	ItemDesc.eItemDesc = pItem->Get_ItemDesc();
-	ItemDesc.fDepth = m_fDepth - 0.1f;
+	ItemDesc.fDepth = m_fDepth - 0.01f;
 	ItemDesc.iNum = iItemNum;
 	ItemDesc.vPosition = _vec2(m_fX, m_fY);
 	if (m_eSlotMode == ITSLOT_SCREEN)

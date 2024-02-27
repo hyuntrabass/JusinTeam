@@ -3,6 +3,7 @@
 #include "TextButton.h"
 #include "BlurTexture.h"
 #include "UI_Manager.h"
+#include "Event_Manager.h"
 #include "Item.h"
 
 CPop_QuestEnd::CPop_QuestEnd(_dev pDevice, _context pContext)
@@ -89,6 +90,11 @@ void CPop_QuestEnd::Tick(_float fTimeDelta)
 
 	if (m_fDeadTime >= 0.8f && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 	{
+		if (m_strQuestTitle == TEXT("몬스터 처치"))
+		{
+			CEvent_Manager::Get_Instance()->Set_QuestTrigger(CEvent_Manager::TUTO_TRIGGER);
+			m_pGameInstance->Play_Video(TEXT("Tutorial1.wmv"));
+		}
 		m_isDead = true;
 	}
 
