@@ -135,8 +135,14 @@ void CScorpion::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = true;
 			break;
 		case Client::CScorpion::State_Attack:
+		{
 			m_Animation.iAnimIndex = Anim_attack03;
+
+			_vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
+			vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
+			m_pTransformCom->LookAt(vPlayerPos);
 			break;
+		}
 		case Client::CScorpion::State_Die:
 			m_Animation.iAnimIndex = Anim_knockdown;
 
