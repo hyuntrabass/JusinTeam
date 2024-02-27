@@ -9,6 +9,7 @@
 #include "GameInstance.h"
 #include "Level_Loading.h"
 #include "Camera_Manager.h"
+#include "Effect_Manager.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -80,6 +81,7 @@ HRESULT CMainApp::Init()
 		return E_FAIL;
 	}
 
+	CEffect_Manager::Get_Instance()->Register_Callback();
 
 	return S_OK;
 }
@@ -190,6 +192,11 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Instancing_Point"), CVIBuffer_Instancing_Point::Create(m_pDevice, m_pContext))))
+
+	{
+		return E_FAIL;
+	}
 
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex"), CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Vtxtex.hlsl"), VTXPOSTEX::Elements, VTXPOSTEX::iNumElements))))
@@ -211,6 +218,15 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 		return E_FAIL;
 	}
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxAnimMesh"), CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxAnimMesh.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex_Effect"), CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_Vtxtex_Effect.hlsl"), VTXPOSTEX::Elements, VTXPOSTEX::iNumElements))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxStatMesh_Effect"), CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxStatMesh_Effect.hlsl"), VTXSTATICMESH::Elements, VTXSTATICMESH::iNumElements))))
 	{
 		return E_FAIL;
 	}
@@ -292,6 +308,7 @@ void CMainApp::Free()
 	Safe_Release(m_pImGui_Manager);
 	CCamera_Manager::Destroy_Instance();
 	CGameInstance::Release_Engine();
+	CEffect_Manager::Destroy_Instance();
 
 	if (_heapchk() != _HEAPOK)
 	{

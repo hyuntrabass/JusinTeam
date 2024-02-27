@@ -88,12 +88,51 @@ namespace MapEditor
 		_float4 vLook{_float4(0.f, 0.f, 1.f, 0.f)};
 	};
 
-	struct EffectInfo
+	struct MapToolEffectInfo
 	{
-		_float4 vColor{};
-		_float fScale{};
-		_float4 vPos{};
-		_uint iType{};
+		unsigned int iType{};
+		bool isSprite{};
+		bool isFixedIndex{};
+		XMINT2 vNumSprites{};
+		float fSpriteDuration{};
+		int iFixedSpriteIndex{};
+		ParticleDesc PartiDesc{};
+		unsigned int iNumInstances{};
+		float fLifeTime{};
+		SimpleMath::Vector4 vColor{};
+		unsigned int iPassIndex{};
+		SimpleMath::Vector3 vSize{};
+		SimpleMath::Vector3 vPosOffset{};
+		SimpleMath::Vector3 vSizeDelta{};
+		bool bApplyGravity{};
+		SimpleMath::Vector3 vGravityDir{};
+		float fDissolveDuration{};
+		bool bSkipBloom{};
+		float fUnDissolveDuration{};
+		SimpleMath::Vector2 vUVInit{};
+		SimpleMath::Vector2 vUVDelta{};
+		bool isRandomSprite{};
+		bool isUVLoop{};
+		float fAlphaInit{};
+		float fAlphaDelta{};
+		float fRectRotationAngle{};
+		bool isBillboard{};
+		SimpleMath::Vector3 vBillboardRotation{};
+		float fPartiAppearRatio{};
+		float fPartiDissolveRatio{};
+
+		bool hasLight{};
+		LIGHT_DESC Light_Desc{};
+
+		std::wstring strDiffuseTexture{};
+		std::wstring strMaskTexture{};
+		std::wstring strDissolveTexture{};
+		std::wstring strUnDissolveTexture{};
+		std::string strModel{};
+		
+		std::wstring strEffectTag{};
+		bool isFollow{};
+		SimpleMath::Matrix* pMatrix{};
 	};
 
 	struct AttachmentInfo

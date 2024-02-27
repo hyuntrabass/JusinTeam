@@ -51,18 +51,24 @@ HRESULT CGuard::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
-	View_Detect_Range();
 
 	return S_OK;
 }
 
 void CGuard::Tick(_float fTimeDelta)
 {
-	
+	View_Detect_Range();
+	m_eCurState = STATE_PATROL;
 	if (m_pGameInstance->Key_Down(DIK_DOWN))
 	{
 		m_Animation.iAnimIndex++;
 	}
+
+	if (m_pGameInstance->Key_Down(DIK_DELETE))
+	{
+
+	}
+
 	m_pTransformCom->Set_OldMatrix();
 
 	if (true == m_bChangePass) {
@@ -82,7 +88,12 @@ void CGuard::Tick(_float fTimeDelta)
 	if (1.f <= m_fDissolveRatio)
 		Kill();
 
+	Init_State(fTimeDelta);
+	Tick_State(fTimeDelta);
+
 	m_pModelCom->Set_Animation(m_Animation);
+	Update_Collider();
+
 }
 
 void CGuard::Late_Tick(_float fTimeDelta)
@@ -92,6 +103,8 @@ void CGuard::Late_Tick(_float fTimeDelta)
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
+	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
+	m_pRendererCom->Add_DebugComponent(m_pDetectColliderCom);
 #endif // _DEBUG
 
 }
@@ -158,6 +171,10 @@ void CGuard::Set_Damage(_int iDamage, _uint iDamageType)
 
 void CGuard::Init_State(_float fTimeDelta)
 {
+	_vec4 vPlayerPos = Compute_PlayerPos();
+	_float fDistance = Compute_PlayerDistance();
+	_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
+
 	if (m_ePreState != m_eCurState) {
 		switch (m_eCurState)
 		{
@@ -166,12 +183,13 @@ void CGuard::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio;
 
-			m_pTransformCom->Set_Speed(1.f);
 			break;
 		case Client::CGuard::STATE_PATROL:
 			m_Animation.iAnimIndex = ANIM_WALK;
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 1.f;
+			m_pTransformCom->Set_Speed(1.f);
+
 			break;
 		case Client::CGuard::STATE_CHASE:
 			m_Animation.iAnimIndex = ANIM_RUN;
@@ -197,6 +215,52 @@ void CGuard::Init_State(_float fTimeDelta)
 
 void CGuard::Tick_State(_float fTimeDelta)
 {
+	_vec4 vPlayerPos = Compute_PlayerPos();
+	_float fDistance = Compute_PlayerDistance();
+
+	_float fDist = 1.0f;
+	PxRaycastBuffer Buffer{};
+	
+	switch (m_eCurState)
+	{
+	case STATE_IDLE:
+		m_fIdleTime += fTimeDelta;
+
+		if (m_fIdleTime >= 1.f)
+		{
+			m_eCurState = STATE_PATROL;
+
+		}
+			m_fIdleTime = 0.f;
+		
+		break;
+
+	case STATE_PATROL:
+
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer))
+		{
+			m_pTransformCom->LookAt_Dir(PxVec3ToVector(Buffer.block.normal));
+		}
+		else
+		{
+			m_pTransformCom->Go_Straight(fTimeDelta);
+		}
+
+		if (m_pModelCom->IsAnimationFinished(ANIM_WALK))
+		{
+			m_eCurState = STATE_IDLE;
+		}
+
+		break;
+
+	case STATE_DIE:
+		if (m_pModelCom->IsAnimationFinished(ANIM_DIE))
+		{
+			m_fDeadTime += fTimeDelta;
+		}
+
+		break;
+	}
 }
 
 void CGuard::View_Detect_Range()
@@ -217,6 +281,30 @@ void CGuard::View_Detect_Range()
 	Info.pMatrix = &EffectMatrix;
 	m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
+}
+
+_vec4 CGuard::Compute_PlayerPos()
+{
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	return pPlayerTransform->Get_State(State::Pos);
+}
+
+_vec4 CGuard::Compute_PlayerLook()
+{
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	return pPlayerTransform->Get_State(State::Look).Get_Normalized();
+}
+
+_float CGuard::Compute_PlayerDistance()
+{
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+
+	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+
+	_float fDistance = (vPlayerPos - vPos).Length();
+
+	return fDistance;
 }
 
 
@@ -328,7 +416,7 @@ HRESULT CGuard::Add_Collider()
 	// Frustum
 	Collider_Desc AttackColDesc{};
 	AttackColDesc.eType = ColliderType::Frustum;
-	_matrix matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
+	_matrix matView = XMMatrixLookAtLH(m_pTransformCom->Get_State(State::Pos), m_pTransformCom->Get_State(State::Look), _vec3(0.f,1.f,0.f));
 	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.f), 0.5f, 0.01f, 1.5f);
 
 	AttackColDesc.matFrustum = matView * matProj;
@@ -341,8 +429,8 @@ HRESULT CGuard::Add_Collider()
 	// Frustum
 	Collider_Desc DetectColDesc{};
 	DetectColDesc.eType = ColliderType::Frustum;
-	matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
-	matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.f), 0.5f, 0.01f, 10.f);
+	matView = XMMatrixLookAtLH(m_pTransformCom->Get_State(State::Pos), m_pTransformCom->Get_State(State::Look), _vec3(0.f, 1.f, 0.f));
+	matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(90.f), 0.5f, 0.01f, 10.f);
 
 	DetectColDesc.matFrustum = matView * matProj;
 
@@ -356,9 +444,10 @@ HRESULT CGuard::Add_Collider()
 
 void CGuard::Update_Collider()
 {
-	_mat Offset = _mat::CreateTranslation(0.f, 0.6f, 0.f);
+	_mat Offset = _mat::CreateTranslation(0.f, 2.f, 0.f);
 	m_pAttackColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
 	m_pDetectColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
+	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 	
 }
 

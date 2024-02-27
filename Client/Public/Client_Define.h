@@ -291,6 +291,15 @@ namespace Client
 		ObjectType eObjectType{ };
 		_uint m_iIndex{};
 	};
+
+	struct EffectObjectInfo
+	{
+		wstring strEffectName{};
+		_float m_fSize{};
+		_mat m_WorldMatrix{};
+		_bool m_isFollow{};
+	};
+
 	enum Monster_AttType
 	{
 		MonAtt_Hit,

@@ -36,7 +36,7 @@ HRESULT CInteraction_Anim::Init(void* pArg)
 {
 	m_Info = *(ObjectInfo*)pArg;
 	m_ePlaceType = (PlaceType)m_Info.m_iIndex;
-
+	m_iObjectIndex = m_Info.m_iIndex;
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
