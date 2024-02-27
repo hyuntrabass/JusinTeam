@@ -274,7 +274,7 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 		}
 		else if (iWall == 2)
 		{
-			vNormal = _vec4(0.f, 0.f, 1.f, 0.f);
+			vNormal = _vec4(1.f, 0.f, 0.f, 0.f);
 		}
 		else if (iWall == 3)
 		{

@@ -22,7 +22,7 @@ protected:
 	virtual ~CVTFMonster() = default;
 
 public:
-	virtual void Set_Damage(_int iDamage, _uint MonAttType = 0) override;
+	virtual void Set_Damage(_int iDamage, _uint AttackType = 0) override;
 
 	const wstring& Get_ModelTag() const {
 		return m_strModelTag;

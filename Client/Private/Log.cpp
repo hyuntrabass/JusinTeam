@@ -65,12 +65,12 @@ void CLog::Tick(_float fTimeDelta)
             m_fJumpForce -= fTimeDelta * 5.f;
         }
 
-        m_pGameInstance->Attack_Monster(m_pBodyColliderCom, 1000);
+        m_pGameInstance->Attack_Monster(m_pBodyColliderCom, 999, AT_Critical);
 
-        if (m_fJumpForce <= 0.f)
+        if (m_fJumpForce <= 1.f)
         {
             m_fDissolveRatio += fTimeDelta;
-            m_iPassIndex = StaticPass_MaskDissolve;
+            m_iPassIndex = StaticPass_Dissolve;
 
             m_pTransformCom->Delete_Controller();
             m_pGameInstance->Delete_CollisionObject(this);

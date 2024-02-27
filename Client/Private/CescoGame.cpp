@@ -77,12 +77,19 @@ void CCescoGame::Tick(_float fTimeDelta)
 
 	if (m_fMonsterSpawnTime >= 1.f)
 	{
-		/*CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
+		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
 		VTFMonsterDesc.strModelTag = TEXT("Prototype_VTFModel_Scorpion");
 		VTFMonsterDesc.vPosition = m_SpawnPositions[0];
 		VTFMonsterDesc.pPlayerTransform = m_pPlayerTransform;
-		CVTFMonster* pMonster = reinterpret_cast<CVTFMonster*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Scorpion_Object"), &VTFMonsterDesc));
-		m_Monsters.push_back(pMonster);*/
+		CVTFMonster* pScorpion = reinterpret_cast<CVTFMonster*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Scorpion_Object"), &VTFMonsterDesc));
+		m_Monsters.push_back(pScorpion);
+
+		VTFMonsterDesc = {};
+		VTFMonsterDesc.strModelTag = TEXT("Prototype_VTFModel_RedAnt");
+		VTFMonsterDesc.vPosition = m_SpawnPositions[1];
+		VTFMonsterDesc.pPlayerTransform = m_pPlayerTransform;
+		CVTFMonster* pRedAnt = reinterpret_cast<CVTFMonster*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_RedAnt_Object"), &VTFMonsterDesc));
+		m_Monsters.push_back(pRedAnt);
 
 		m_iMonsterSpawnCount++;
 		m_fMonsterSpawnTime = 0.f;
@@ -95,7 +102,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 	if (m_iMonsterSpawnCount % 10 == 1 && m_fMonsterSpawnTime == 0.f)
 	{
 		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_VTFModel_Void19");
+		VTFMonsterDesc.strModelTag = TEXT("Prototype_VTFModel_Larva");
 		VTFMonsterDesc.pPlayerTransform = m_pPlayerTransform;
 
 		_int iNumSpawn{};
@@ -119,7 +126,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 			{
 				vPos = m_SpawnPositions[iRandom];
 				vPos.x += RandomPos(m_RandomNumber) * iSymbol;
-				for (auto& Pair : m_Void19Positions)
+				for (auto& Pair : m_LarvaPositions)
 				{
 					if (Pair.second == vPos)
 					{
@@ -132,7 +139,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 			{
 				vPos = m_SpawnPositions[iRandom];
 				vPos.z += RandomPos(m_RandomNumber) * iSymbol;
-				for (auto& Pair : m_Void19Positions)
+				for (auto& Pair : m_LarvaPositions)
 				{
 					if (Pair.second == vPos)
 					{
@@ -142,7 +149,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 				}
 			}
 
-			if (m_Void19Positions.size() == 128)
+			if (m_LarvaPositions.size() == 128)
 			{
 				break;
 			}
@@ -151,9 +158,9 @@ void CCescoGame::Tick(_float fTimeDelta)
 				continue;
 
 			VTFMonsterDesc.vPosition = vPos;
-			CVTFMonster* pMonster = reinterpret_cast<CVTFMonster*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc));
+			CVTFMonster* pMonster = reinterpret_cast<CVTFMonster*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Larva_Object"), &VTFMonsterDesc));
 			m_Monsters.push_back(pMonster);
-			m_Void19Positions.emplace(pMonster->Get_ID(), vPos);
+			m_LarvaPositions.emplace(pMonster->Get_ID(), vPos);
 			iNumSpawn++;
 		}
 	}
@@ -190,9 +197,9 @@ void CCescoGame::Release_DeadObjects()
 	{
 		if ((*it)->isDead())
 		{
-			if ((*it)->Get_ModelTag() == TEXT("Prototype_VTFModel_Void19"))
+			if ((*it)->Get_ModelTag() == TEXT("Prototype_VTFModel_Larva"))
 			{
-				m_Void19Positions.erase((*it)->Get_ID());
+				m_LarvaPositions.erase((*it)->Get_ID());
 			}
 			Safe_Release(*it);
 			it = m_Monsters.erase(it);
@@ -240,7 +247,7 @@ void CCescoGame::Free()
 	}
 	m_Monsters.clear();
 
-	m_Void19Positions.clear();
+	m_LarvaPositions.clear();
 
 	Safe_Release(m_pPlayerTransform);
 }

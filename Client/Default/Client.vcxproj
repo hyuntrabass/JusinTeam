@@ -254,6 +254,7 @@
     <ClInclude Include="..\Public\QuestBox.h" />
     <ClInclude Include="..\Public\Rabbit.h" />
     <ClInclude Include="..\Public\Radar.h" />
+    <ClInclude Include="..\Public\RedAnt.h" />
     <ClInclude Include="..\Public\Riding.h" />
     <ClInclude Include="..\Public\Roskva.h" />
     <ClInclude Include="..\Public\SafeZone.h" />
@@ -281,6 +282,7 @@
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\Statue.h" />
     <ClInclude Include="..\Public\SummonWindow.h" />
+    <ClInclude Include="..\Public\SummonWindowPet.h" />
     <ClInclude Include="..\Public\SurvivalGame.h" />
     <ClInclude Include="..\Public\Symbol.h" />
     <ClInclude Include="..\Public\Targeted.h" />
@@ -306,6 +308,7 @@
     <ClInclude Include="..\Public\Torch_Object.h" />
     <ClInclude Include="..\Public\Tower.h" />
     <ClInclude Include="..\Public\TowerObject.h" />
+    <ClInclude Include="..\Public\TreasureBox.h" />
     <ClInclude Include="..\Public\Trigger.h" />
     <ClInclude Include="..\Public\Trigger_Manager.h" />
     <ClInclude Include="..\Public\TrilobiteA.h" />
@@ -319,7 +322,7 @@
     <ClInclude Include="..\Public\Void01.h" />
     <ClInclude Include="..\Public\Void05.h" />
     <ClInclude Include="..\Public\Void09.h" />
-    <ClInclude Include="..\Public\Void19.h" />
+    <ClInclude Include="..\Public\Larva.h" />
     <ClInclude Include="..\Public\Void20.h" />
     <ClInclude Include="..\Public\Void23.h" />
     <ClInclude Include="..\Public\VTFMonster.h" />
@@ -429,6 +432,7 @@
     <ClCompile Include="..\Private\Quest.cpp" />
     <ClCompile Include="..\Private\QuestBox.cpp" />
     <ClCompile Include="..\Private\Radar.cpp" />
+    <ClCompile Include="..\Private\RedAnt.cpp" />
     <ClCompile Include="..\Private\Riding.cpp" />
     <ClCompile Include="..\Private\Roskva.cpp" />
     <ClCompile Include="..\Private\SafeZone.cpp" />
@@ -455,6 +459,7 @@
     <ClCompile Include="..\Private\Spider.cpp" />
     <ClCompile Include="..\Private\Statue.cpp" />
     <ClCompile Include="..\Private\SummonWindow.cpp" />
+    <ClCompile Include="..\Private\SummonWindowPet.cpp" />
     <ClCompile Include="..\Private\SurvivalGame.cpp" />
     <ClCompile Include="..\Private\Symbol.cpp" />
     <ClCompile Include="..\Private\Targeted.cpp" />
@@ -480,6 +485,7 @@
     <ClCompile Include="..\Private\Torch_Object.cpp" />
     <ClCompile Include="..\Private\Tower.cpp" />
     <ClCompile Include="..\Private\TowerObject.cpp" />
+    <ClCompile Include="..\Private\TreasureBox.cpp" />
     <ClCompile Include="..\Private\Trigger.cpp" />
     <ClCompile Include="..\Private\Trigger_Manager.cpp" />
     <ClCompile Include="..\Private\TrilobiteA.cpp" />
@@ -493,7 +499,7 @@
     <ClCompile Include="..\Private\Void01.cpp" />
     <ClCompile Include="..\Private\Void05.cpp" />
     <ClCompile Include="..\Private\Void09.cpp" />
-    <ClCompile Include="..\Private\Void19.cpp" />
+    <ClCompile Include="..\Private\Larva.cpp" />
     <ClCompile Include="..\Private\Void20.cpp" />
     <ClCompile Include="..\Private\Void23.cpp" />
     <ClCompile Include="..\Private\VTFMonster.cpp" />

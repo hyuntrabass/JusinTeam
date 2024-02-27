@@ -42,6 +42,7 @@ HRESULT CVehicleBook::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+	//나중에 주석 
 	for (size_t i = 0; i < Type_End; i++)
 	{
 		if (FAILED(Set_Vehicle((Riding_Type)i)))
@@ -49,8 +50,6 @@ HRESULT CVehicleBook::Init(void* pArg)
 			return E_FAIL;
 		}
 	}
-
-
 
 	return S_OK;
 }
@@ -62,6 +61,16 @@ void CVehicleBook::Tick(_float fTimeDelta)
 		fTimeDelta /= m_pGameInstance->Get_TimeRatio();
 	}
 
+	Riding_Type eNewRiding = (Riding_Type)CUI_Manager::Get_Instance()->Get_VehicleBook_Vehicle();
+	if (eNewRiding != Type_End)
+	{
+		if (FAILED(Set_Vehicle(eNewRiding)))
+		{
+			return;
+		}
+		return;
+	}
+	
 	POINT ptMouse;
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
