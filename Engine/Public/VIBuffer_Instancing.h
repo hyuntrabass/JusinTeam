@@ -3,28 +3,29 @@
 
 BEGIN(Engine)
 
+struct ParticleParams
+{
+	_uint iNumInstances{};
+	_uint iNumUse{};
+	_float fTimeDelta{};
+	_float fAppearRatio{};
+
+	_vec4 vGravityDir{};
+
+	_float fDissolveRatio{ 0.8f };
+	_int isLoop{};
+	_int bApplyGravity{};
+	_int isFirstUpdate{};
+
+	_mat WorldMatrix{};
+
+	_int bChangeDir{};
+
+	_vec3 padding{};
+};
+
 class ENGINE_DLL CVIBuffer_Instancing abstract : public CVIBuffer
 {
-protected:
-	struct ParticleParams
-	{
-		_uint iNumInstances;
-		_uint iNumUse;
-		_float fTimeDelta;
-		_float fAppearRatio;
-		
-		_vec4 vGravityDir;
-
-		float fDissolveRatio;
-		int isLoop;
-		int bApplyGravity;
-		int isFirstUpdate;
-
-		_mat WorldMatrix;
-
-		_vec4 padding;
-	};
-
 protected:
 	CVIBuffer_Instancing(_dev pDevice, _context pContext);
 	CVIBuffer_Instancing(const CVIBuffer_Instancing& rhs);
@@ -34,6 +35,8 @@ public:
 	virtual HRESULT Init_Prototype() override;
 	virtual HRESULT Init(void* pArg) override;
 	virtual void Update(_float fTimeDelta, _mat WorldMatrix, _int iNumUse = -1, _bool bApplyGravity = false, _vec3 vGravityDir = _vec3(), _float fAppearRatio = 0.f, _float fDissolveRatio = 0.8f);
+	virtual void Update(ParticleParams Parameter);
+
 	virtual HRESULT Render() override;
 
 protected:

@@ -137,6 +137,13 @@ private:
 
 #pragma endregion
 
+#pragma region FXAA
+
+	class CCompute_Shader* m_pFXAAShader = nullptr;
+	class CCompute_RenderTarget* m_pFXAART = nullptr;
+
+#pragma endregion
+
 
 	class CTexture* m_pNoiseNormal = nullptr;
 

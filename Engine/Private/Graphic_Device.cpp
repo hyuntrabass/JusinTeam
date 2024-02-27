@@ -116,7 +116,6 @@ ID3D11Resource* CGraphic_Device::Get_BackBufferTexture()
 	return pBackBufferResource;
 }
 
-
 HRESULT CGraphic_Device::Ready_SwapChain(const GRAPHIC_DESC& GraphicInfo)
 {
 	IDXGIDevice*			pDevice = nullptr;
@@ -150,13 +149,14 @@ HRESULT CGraphic_Device::Ready_SwapChain(const GRAPHIC_DESC& GraphicInfo)
 	SwapChain.BufferDesc.RefreshRate.Numerator = 60;
 	SwapChain.BufferDesc.RefreshRate.Denominator = 1;
 	SwapChain.SampleDesc.Quality = 0;
-	SwapChain.SampleDesc.Count = 1;	
+	SwapChain.SampleDesc.Count = 1;
 	//SwapChain.SampleDesc.Quality = NumQualityLevels - 1;
 	//SwapChain.SampleDesc.Count = 4;	
 
 	SwapChain.OutputWindow = GraphicInfo.hWnd;	
 	SwapChain.Windowed = GraphicInfo.isWindowed;
 	SwapChain.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	SwapChain.Flags = 0;
 
 	/* 백버퍼라는 텍스쳐를 생성했다. */
 	if (FAILED(pFactory->CreateSwapChain(m_pDevice, &SwapChain, &m_pSwapChain)))
@@ -184,7 +184,7 @@ HRESULT CGraphic_Device::Ready_BackBufferRenderTargetView()
 	ID3D11Texture2D*		pBackBufferTexture = nullptr;
 
 	/* 스왑체인이 들고있던 텍스처를 가져와봐. */
-	if (FAILED(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBufferTexture)))
+	if (FAILED(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBufferTexture))))
 		return E_FAIL;
 
 	if (FAILED(m_pDevice->CreateRenderTargetView(pBackBufferTexture, nullptr, &m_pBackBufferRTV)))
@@ -202,8 +202,6 @@ HRESULT CGraphic_Device::Ready_DepthStencilRenderTargetView(_uint iWinCX, _uint 
 	if (nullptr == m_pDevice)
 		return E_FAIL;
 
-	ID3D11Texture2D*		pDepthStencilTexture = nullptr;
-	
 	D3D11_TEXTURE2D_DESC	TextureDesc;
 	ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
 
@@ -222,6 +220,8 @@ HRESULT CGraphic_Device::Ready_DepthStencilRenderTargetView(_uint iWinCX, _uint 
 		/*| D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE*/;
 	TextureDesc.CPUAccessFlags = 0;
 	TextureDesc.MiscFlags = 0;
+
+	ID3D11Texture2D*		pDepthStencilTexture = nullptr;
 
 	if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr, 
 		&pDepthStencilTexture)))

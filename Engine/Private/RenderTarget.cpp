@@ -55,20 +55,20 @@ HRESULT CRenderTarget::Init(_uint iWidth, _uint iHeight, DXGI_FORMAT ePixelForma
 		return E_FAIL;
 	}
 
-	//D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
-	//ZeroMemory(&rtvDesc, sizeof(rtvDesc));
-	//rtvDesc.Format = Desc.Format;
-	//rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
+	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
+	ZeroMemory(&rtvDesc, sizeof(rtvDesc));
+	rtvDesc.Format = Desc.Format;
+	rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 
 	if (FAILED(m_pDevice->CreateRenderTargetView(m_pTexture, nullptr, &m_pRenderTargetView)))
 	{
 		return E_FAIL;
 	}
 
-	//D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	//ZeroMemory(&srvDesc, sizeof(srvDesc));
-	//srvDesc.Format = Desc.Format;
-	//srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroMemory(&srvDesc, sizeof(srvDesc));
+	srvDesc.Format = Desc.Format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 
 	if (FAILED(m_pDevice->CreateShaderResourceView(m_pTexture, nullptr, &m_pShaderResourceView)))
 	{

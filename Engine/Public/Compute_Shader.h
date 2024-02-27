@@ -15,6 +15,8 @@ public:
     virtual HRESULT Init_Prototype(const wstring& strShaderFilePath, const string& strEntryPoint, _uint iDataSize);
     virtual HRESULT Init(void* pArg);
 
+    HRESULT Create_Sampler(D3D11_SAMPLER_DESC Desc);
+
 public:
     HRESULT Set_Shader();
 
@@ -33,14 +35,15 @@ public:
 
     // 여러개 텍스처 시작하기
     HRESULT Begin_MultiSRV(_uint3 ThreadGroupCount);
+
+    HRESULT Bind_Sampler();
 private:
     ID3D11Buffer* m_pBuffer = nullptr;
 
     ID3DBlob* m_pBlob = nullptr;
 
     ID3D11ComputeShader* m_pShader = nullptr;
-
-    ID3D11Query* m_pQuery = nullptr;
+    ID3D11SamplerState* m_pSamplerState = nullptr;
 
     _uint2 m_iSlot{};
 
