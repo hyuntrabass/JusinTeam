@@ -108,7 +108,7 @@ void CTransform::Set_FootPosition(_vec3 vPosition)
 	}
 	else
 	{
-		return;
+		Set_State(State::Pos, _vec4(vPosition, 1.f));
 	}
 }
 
