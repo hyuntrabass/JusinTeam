@@ -307,7 +307,10 @@ HRESULT CObjects::Add_Collider()
 {
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
-	CollDesc.fRadius = m_pModelCom->Get_ModelRadius();
+	if(m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY)
+		CollDesc.fRadius = m_pModelCom->Get_MeshRadius();
+	else	
+		CollDesc.fRadius = m_pModelCom->Get_ModelRadius();
 	CollDesc.vCenter = m_pModelCom->Get_CenterPos();
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Trigger_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))

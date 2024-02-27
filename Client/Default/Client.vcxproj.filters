@@ -499,6 +499,9 @@
     <Filter Include="02.GameObjects\09.Object\Rewards">
       <UniqueIdentifier>{24a9619d-f053-4e87-8a6c-69f7a12f0140}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\07. NPC\05. Guard">
+      <UniqueIdentifier>{4d5ac9ca-c2a6-4be4-bcc8-9dade883791c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1015,8 +1018,10 @@
     <ClInclude Include="..\Public\Pop_Reward.h">
       <Filter>02.GameObjects\00.UI\POPUP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\CescoGame.h" />
+    <ClInclude Include="..\Public\Scorpion.h" />
     <ClInclude Include="..\Public\Guard.h">
-      <Filter>02.GameObjects\04.Monster\08. Guard</Filter>
+      <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\CescoGame.h" />
     <ClInclude Include="..\Public\Guard.h" />
@@ -1541,8 +1546,10 @@
     <ClCompile Include="..\Private\Pop_Reward.cpp">
       <Filter>02.GameObjects\00.UI\POPUP</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\CescoGame.cpp" />
+    <ClCompile Include="..\Private\Scorpion.cpp" />
     <ClCompile Include="..\Private\Guard.cpp">
-      <Filter>02.GameObjects\04.Monster\08. Guard</Filter>
+      <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\CescoGame.cpp" />
     <ClCompile Include="..\Private\Guard.cpp" />

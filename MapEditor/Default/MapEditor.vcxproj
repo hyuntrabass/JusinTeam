@@ -40,6 +40,9 @@
     <ClInclude Include="..\Public\CutScene_Point.h" />
     <ClInclude Include="..\Public\CutScene_Curve.h" />
     <ClInclude Include="..\Public\Dummy.h" />
+    <ClInclude Include="..\Public\Effect_Dummy.h" />
+    <ClInclude Include="..\Public\Effect_Manager.h" />
+    <ClInclude Include="..\Public\Effect_Sphere.h" />
     <ClInclude Include="..\Public\ImGui_Manager.h" />
     <ClInclude Include="..\Public\Level_Editor.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
@@ -73,6 +76,9 @@
     <ClCompile Include="..\Private\CutScene_Point.cpp" />
     <ClCompile Include="..\Private\CutScene_Curve.cpp" />
     <ClCompile Include="..\Private\Dummy.cpp" />
+    <ClCompile Include="..\Private\Effect_Dummy.cpp" />
+    <ClCompile Include="..\Private\Effect_Manager.cpp" />
+    <ClCompile Include="..\Private\Effect_Sphere.cpp" />
     <ClCompile Include="..\Private\ImGui_Manager.cpp" />
     <ClCompile Include="..\Private\Level_Editor.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />
