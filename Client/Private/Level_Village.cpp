@@ -235,7 +235,7 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	// Test
 	if (m_pGameInstance->Key_Down(DIK_RSHIFT))
 	{
-		//m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"));
+		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"));
 	}
 	//if (m_pGameInstance->Key_Down(DIK_UP))
 	//{
