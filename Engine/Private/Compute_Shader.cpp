@@ -63,6 +63,11 @@ HRESULT CCompute_Shader::Init(void* pArg)
 	return S_OK;
 }
 
+HRESULT CCompute_Shader::Create_Sampler(D3D11_SAMPLER_DESC Desc)
+{
+	return m_pDevice->CreateSamplerState(&Desc, &m_pSamplerState);
+}
+
 HRESULT CCompute_Shader::Set_Shader()
 {
 	//ID3D11ShaderResourceView* pSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT]{};
@@ -149,6 +154,14 @@ HRESULT CCompute_Shader::Begin_MultiSRV(_uint3 ThreadGroupCount)
 	return S_OK;
 }
 
+HRESULT CCompute_Shader::Bind_Sampler()
+{
+	m_pContext->CSSetSamplers(0, 1, &m_pSamplerState);
+
+	return S_OK;
+}
+
+
 CCompute_Shader* CCompute_Shader::Create(_dev pDevice, _context pContext, const wstring& strShaderFilePath, const string& strEntryPoint, _uint iDataSize)
 {
 	CCompute_Shader* pInstance = new CCompute_Shader(pDevice, pContext);
@@ -182,5 +195,5 @@ void CCompute_Shader::Free()
 	Safe_Release(m_pBuffer);
 	Safe_Release(m_pBlob);
 	Safe_Release(m_pShader);
-	//Safe_Release(m_pQuery);
+	Safe_Release(m_pSamplerState);
 }
