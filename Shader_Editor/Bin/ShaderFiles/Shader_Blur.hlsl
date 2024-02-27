@@ -215,9 +215,9 @@ void FXAA(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID, ui
     float Lum_Range = LumMax - LumMin;
     
     vector vColor = 1.f;
-    //if (Lum_Range < max(0.0312, LumMax * 0.125))
-    if (Lum_Range < 0.f)
-        {
+    if (Lum_Range < max(0.0312, LumMax * 0.125))
+    //if (Lum_Range < 0.f)
+    {
         vColor = vector(RGB_M, 1.f);
         outputTexture[pixel] = vColor;
         return;
