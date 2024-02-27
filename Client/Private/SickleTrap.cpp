@@ -79,11 +79,11 @@ void CSickleTrap::Tick(_float fTimeDelta)
 		vPos.y = vPlayerPos.y;
 		_vec4 vDir = vPos - vPlayerPos;
 		vDir.Normalize();
+		vDir.y = 0.f;
 		vDir.w = 0.f;
-		vPlayerPos += vDir;
-		pPlayerTransform->Set_State(State::Pos, vPlayerPos);
+		vPlayerPos += vDir *2.f;
+		pPlayerTransform->Set_State(State::Pos, vPlayerPos); 
 	}
-
 }
 
 void CSickleTrap::Late_Tick(_float fTimeDelta)
@@ -111,7 +111,7 @@ HRESULT CSickleTrap::Add_Components()
 	CollDesc.vCenter = _vec3(0.f);
 	CollDesc.fRadius = 2.7f;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_SafeZone_Collider"), (CComponent**)&m_pColliderCom, &CollDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider"), (CComponent**)&m_pColliderCom, &CollDesc)))
 	{
 		return E_FAIL;
 	}
