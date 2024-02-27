@@ -23,15 +23,14 @@ HRESULT CVTFMonster::Init(void* pArg)
 
         m_strModelTag = pVtfMonsterDesc->strModelTag;
         m_pTransformCom->Set_Position(pVtfMonsterDesc->vPosition);
+        m_pPlayerTransform = pVtfMonsterDesc->pPlayerTransform;
+        Safe_AddRef(m_pPlayerTransform);
     }
 
     if (FAILED(Add_Components()))
         return E_FAIL;
 
     m_pShaderCom->Set_PassIndex(VTF_InstPass_Default);
-
-    m_pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-    Safe_AddRef(m_pPlayerTransform);
 
     _vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
     vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;

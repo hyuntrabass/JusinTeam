@@ -1942,9 +1942,27 @@ HRESULT CLoader::Load_Village()
 			{
 				continue;
 			}
-			wstring strPrototypeTag = TEXT("Prototype_Model_VTFMonster_") + entry.path().stem().wstring();
+			wstring strPrototypeTag = TEXT("Prototype_VTFModel_") + entry.path().stem().wstring();
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CVTFModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+	strInputFilePath = "../Bin/Resources/StaticMesh/CescoGame/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (entry.path().extension().string() != ".hyuntrastatmesh")
+			{
+				continue;
+			}
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
 			{
 				return E_FAIL;
 			}
@@ -2045,6 +2063,11 @@ HRESULT CLoader::Load_Village()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Scorpion_Object"), CScorpion::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	//static
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Log_Object"), CLog::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
