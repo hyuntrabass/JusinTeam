@@ -42,7 +42,7 @@ HRESULT CLauncher::Init(void* pArg)
 
 		_vec3 vRandomDir = _vec3(Random(RandomNumber), 0.f, Random(RandomNumber)).Get_Normalized();
 
-		m_pTransformCom->Set_Position(vCenterPos + static_cast<_float>(rand() % 8 + 1) * vRandomDir); // Radius : 8
+		m_pTransformCom->Set_Position(CENTER_POS + static_cast<_float>(rand() % 8 + 1) * vRandomDir); // Radius : 8
 
 		m_iPassIndex = AnimPass_Dissolve;
 	}
