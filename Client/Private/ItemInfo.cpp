@@ -4,6 +4,7 @@
 #include "NineSlice.h"
 #include "UI_Manager.h"
 #include "SummonWindow.h"
+#include "SummonWindowPet.h"
 #include "Item.h"
 
 CItemInfo::CItemInfo(_dev pDevice, _context pContext)
@@ -122,6 +123,17 @@ void CItemInfo::Tick(_float fTimeDelta)
 				}
 				isOtherItemExist = true;
 			}
+			else if (m_eItemDesc.eItemUsage == IT_PETCARD)
+			{
+				CSummonWindowPet::SUMMON_DESC Desc{};
+				Desc.iItemTier = (ITEM_TIER)m_eItemDesc.iItemTier;
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_SummonWindowPet"), &Desc)))
+				{
+					m_isDead = true;
+					return;
+				}
+				isOtherItemExist = true;
+			}
 			if (isOtherItemExist)
 			{
 				CUI_Manager::Get_Instance()->Delete_Item((INVEN_TYPE)m_eItemDesc.iInvenType, m_eItemDesc.strName);
@@ -222,7 +234,7 @@ HRESULT CItemInfo::Render()
 	}
 
 
-	if (m_eItemDesc.eItemUsage != IT_VEHICLECARD)
+	if (m_eItemDesc.eItemUsage != IT_VEHICLECARD && m_eItemDesc.eItemUsage != IT_PETCARD)
 	{
 		m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(m_eItemDesc.iStatus) + TEXT("%"), _vec2(vTextPos.x + 1.f, vTextPos.y + 25.f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, true);
 		m_pGameInstance->Render_Text(L"Font_Malang", to_wstring(m_eItemDesc.iStatus) + TEXT("%"), _vec2(vTextPos.x, vTextPos.y + 25.f + 1.f), 0.7f, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, true);
@@ -250,7 +262,7 @@ HRESULT CItemInfo::Add_Parts()
 		return E_FAIL;
 	}
 
-	if (m_eItemDesc.eItemUsage == IT_VEHICLECARD)
+	if (m_eItemDesc.eItemUsage == IT_VEHICLECARD || m_eItemDesc.eItemUsage == IT_PETCARD)
 	{
 		Button.strText = TEXT("º“»Ø");
 	}

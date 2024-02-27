@@ -404,7 +404,9 @@ private:
 	_float m_bSlowSpeed{};
 	_float m_fFadeTimmer{};
 	_bool m_bReadyCommonAtt{ true };
+	_float m_fRadialPower{};
 	_int m_iArrowRain{};
+	_bool m_bRadialOn{};
 	_mat m_Riding_Mat{};
 	_vec4 m_vArrowLook{};
 	_bool m_ReadyArrow{};

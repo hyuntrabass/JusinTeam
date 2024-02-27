@@ -91,11 +91,7 @@ HRESULT CInven::Init(void* pArg)
 	strItem = TEXT("오딘의 궁니르 단검");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);	
 
-	strItem = TEXT("폭군 수드리의 단검");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
 
-	strItem = TEXT("헤임달의 단검");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
 
 	strItem = TEXT("레긴레이프의 불멸 갑옷");
 	CUI_Manager::Get_Instance()->Set_Item(strItem);	
@@ -104,7 +100,7 @@ HRESULT CInven::Init(void* pArg)
 	CUI_Manager::Get_Instance()->Set_Item(strItem);	
 	
 	strItem = TEXT("체력 포션");
-	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
+	CUI_Manager::Get_Instance()->Set_Item(strItem, 50);
 	
 	strItem = TEXT("[신화]탈 것 소환 카드");
 	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
@@ -113,6 +109,12 @@ HRESULT CInven::Init(void* pArg)
 	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
 	
 	strItem = TEXT("[일반]탈 것 소환 카드");
+	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
+	
+	strItem = TEXT("[유니크]신비한 알");
+	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
+	
+	strItem = TEXT("[신화]신비한 알");
 	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
 	
 	strItem = TEXT("고양이");
@@ -390,8 +392,8 @@ HRESULT CInven::Add_Parts()
 	Button.fDepth = m_fDepth - 0.03f;
 	Button.strText = TEXT("");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Notify");
-	Button.vPosition = _vec2(m_fX + 17.f, m_fY - 14.f);
-	Button.vSize = _vec2(40.f, 40.f);
+	Button.vPosition = _vec2(m_fX + 18.f, m_fY - 15.f);
+	Button.vSize = _vec2(50.f, 50.f);
 
 	m_pNotify = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 

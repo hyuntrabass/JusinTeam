@@ -496,6 +496,9 @@
     <Filter Include="02.GameObjects\08. Boss\Human_Boss\Sickle\Trap">
       <UniqueIdentifier>{9048c3c2-baf3-489d-ae02-26f87e1d450b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\09.Object\Rewards">
+      <UniqueIdentifier>{24a9619d-f053-4e87-8a6c-69f7a12f0140}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObjects\07. NPC\05. Guard">
       <UniqueIdentifier>{4d5ac9ca-c2a6-4be4-bcc8-9dade883791c}</UniqueIdentifier>
     </Filter>
@@ -1012,10 +1015,22 @@
     <ClInclude Include="..\Public\SickleTrap.h">
       <Filter>02.GameObjects\08. Boss\Human_Boss\Sickle\Trap</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Pop_Reward.h">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    </ClInclude>
     <ClInclude Include="..\Public\CescoGame.h" />
     <ClInclude Include="..\Public\Scorpion.h" />
     <ClInclude Include="..\Public\Guard.h">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CescoGame.h" />
+    <ClInclude Include="..\Public\Guard.h" />
+    <ClInclude Include="..\Public\Scorpion.h" />
+    <ClInclude Include="..\Public\TreasureBox.h">
+      <Filter>02.GameObjects\09.Object\Rewards</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SummonWindowPet.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window\Summon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1528,10 +1543,22 @@
     <ClCompile Include="..\Private\SickleTrap.cpp">
       <Filter>02.GameObjects\08. Boss\Human_Boss\Sickle\Trap</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Pop_Reward.cpp">
+      <Filter>02.GameObjects\00.UI\POPUP</Filter>
+    </ClCompile>
     <ClCompile Include="..\Private\CescoGame.cpp" />
     <ClCompile Include="..\Private\Scorpion.cpp" />
     <ClCompile Include="..\Private\Guard.cpp">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CescoGame.cpp" />
+    <ClCompile Include="..\Private\Guard.cpp" />
+    <ClCompile Include="..\Private\Scorpion.cpp" />
+    <ClCompile Include="..\Private\TreasureBox.cpp">
+      <Filter>02.GameObjects\09.Object\Rewards</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SummonWindowPet.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Inven\Window\Summon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

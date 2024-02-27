@@ -19,11 +19,13 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 
 private:
+	CTransform* m_pPlayerTransform = { nullptr };
 	_randNum m_RandomNumber;
 	list<class CVTFMonster*> m_Monsters;
 	vector<_vec3> m_SpawnPositions;
 	map<_int, _vec3> m_Void19Positions;
 	_float m_fMonsterSpawnTime{};
+	_uint m_iMonsterSpawnCount{};
 	
 	_float m_fTimeLimit{ 1209999999.f };
 	_uint m_iMonsterLimit{ 200 };

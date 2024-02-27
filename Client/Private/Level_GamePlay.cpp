@@ -12,6 +12,7 @@
 #include "Pop_LevelUp.h"
 #include "Camera_Manager.h"
 #include "BrickWall.h"
+#include "TreasureBox.h"
 #include "Guard.h"
 
 //원명의 꼽사리
@@ -165,13 +166,13 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 	{
 		CEvent_Manager::Get_Instance()->Update_Quest(TEXT("몬스터 처치"));
 
-
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BrickBall"), TEXT("Prototype_GameObject_BrickBall"))))
 		{
 			return;
 		}
 
 	}
+
 	if (!m_bReadyTutorial)
 	{
 		m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.2f);

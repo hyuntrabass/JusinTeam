@@ -24,8 +24,6 @@ HRESULT CAur::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(71.f, 8.f, 97.f, 1.f));
-
 	m_Animation.iAnimIndex = HANGING01;
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = false;
@@ -40,6 +38,8 @@ HRESULT CAur::Init(void* pArg)
 	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+
+	m_pTransformCom->Set_Position(_vec3(71.f, 8.f, 97.f));
 
 	return S_OK;
 }

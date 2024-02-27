@@ -61,18 +61,20 @@ HRESULT CProjectile::Init(void* pArg)
 	{
 		m_pTransformCom->Set_Position(m_ProjectileDesc.vStartPos);
 
-		_mat Matrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+		_mat Matrix = _mat::CreateScale(2.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 0.5f, 0.f));
 
 		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Blue");
 		Info.pMatrix = &Matrix;
 		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+		Matrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 0.5f, 0.f));
 
 		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Parti_Blue");
 		Info.pMatrix = &Matrix;
 		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 
-		_mat FrameMatrix = _mat::CreateScale(3.f) * _mat::CreateRotationX(XMConvertToRadians(90.f))
+		_mat FrameMatrix = _mat::CreateScale(5.f) * _mat::CreateRotationX(XMConvertToRadians(90.f))
 			* _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.1f, 0.f)));
 
 		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Frame");
@@ -132,15 +134,33 @@ void CProjectile::Tick(_float fTimeDelta)
 
 	case Client::CProjectile::TYPE_FLOOR:
 
-
 		m_UpdateMatrix = _mat::CreateScale(m_fCircleRange) * _mat::CreateRotationX(XMConvertToRadians(90.f))
 			* _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.1f, 0.f)));
 
 		//if (m_fTime >= 1.5f)
-		if (m_fCircleRange >= 3.f)
+		if (m_fCircleRange >= 5.f)
 		{
-			Safe_Release(m_pFrameEffect);
-			Safe_Release(m_pBaseEffect);
+			if (m_pBaseEffect && m_pFrameEffect)
+			{
+				Safe_Release(m_pFrameEffect);
+				Safe_Release(m_pBaseEffect);
+
+				_mat Matrix = _mat::CreateScale(2.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 0.5f, 0.f));
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Explode_Blue");
+				Info.pMatrix = &Matrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				Matrix = _mat::CreateScale(0.8f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 1.f, 0.f));
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Explode_Mesh_Blue");
+				Info.pMatrix = &Matrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+				Matrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 1.f, 0.f));
+				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Explode_Parti_Blue");
+				Info.pMatrix = &Matrix;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			}
 
 			m_fTime = 0.f;
 		}

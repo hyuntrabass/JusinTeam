@@ -12,6 +12,7 @@ public:
 	{
 		wstring strModelTag;
 		_vec3 vPosition{};
+		CTransform* pPlayerTransform;
 
 	}VTFMONSTER_DESC;
 
@@ -50,8 +51,10 @@ protected:
 
 protected:
 	wstring m_strModelTag{};
-	_bool m_IsHitted{};
+	_bool m_HasHitted{};
 	_float m_fHitTime{};
+	_bool m_HasAttacked{};
+	_float m_fAttackDelay{};
 	_float m_fDissolveRatio{};
 
 protected:

@@ -1496,6 +1496,10 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_SummonWindowPet"), CSummonWindowPet::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_InfinityTower"), CInfinityTower::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -1511,6 +1515,17 @@ HRESULT CLoader::Load_GamePlay()
 	}
 	
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BrickBar"), CBrickBar::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
+	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Pop_Reward"), CPop_Reward::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_TreasureBox"), CTreasureBox::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -1855,7 +1870,7 @@ HRESULT CLoader::Load_Village()
 			}
 			else if (strPrototypeTag == L"Prototype_Model_Survival_Map")
 			{
-				DungeonPivot = _mat::CreateScale(0.7f);
+				DungeonPivot = _mat::CreateScale(0.4f);
 			}
 			else if (strPrototypeTag == L"Prototype_Model_SescoMap")
 			{
@@ -1936,9 +1951,27 @@ HRESULT CLoader::Load_Village()
 			{
 				continue;
 			}
-			wstring strPrototypeTag = TEXT("Prototype_Model_VTFMonster_") + entry.path().stem().wstring();
+			wstring strPrototypeTag = TEXT("Prototype_VTFModel_") + entry.path().stem().wstring();
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CVTFModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+	strInputFilePath = "../Bin/Resources/StaticMesh/CescoGame/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (entry.path().extension().string() != ".hyuntrastatmesh")
+			{
+				continue;
+			}
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
 			{
 				return E_FAIL;
 			}
@@ -2034,6 +2067,16 @@ HRESULT CLoader::Load_Village()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Void19_Object"), CVoid19::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Scorpion_Object"), CScorpion::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	//static
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Log_Object"), CLog::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

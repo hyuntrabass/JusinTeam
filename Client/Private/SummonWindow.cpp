@@ -437,6 +437,7 @@ HRESULT CSummonWindow::Add_Parts()
 		}
 	}
 	
+	CUI_Manager::Get_Instance()->Set_VehicleBook_Vehicle(m_eRidingType);
 	m_pResultCard = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
 	if (not m_pResultCard)
 	{

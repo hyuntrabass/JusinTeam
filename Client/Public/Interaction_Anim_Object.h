@@ -54,6 +54,7 @@ private:
 	CGameObject* m_pBG{ nullptr };
 	CGameObject* m_pNameTag{ nullptr };
 
+	wstring m_strName{};
 
 public:
 	static CInteraction_Anim* Create(_dev pDevice, _context pContext);

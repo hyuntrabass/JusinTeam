@@ -183,7 +183,37 @@ PS_OUT_DISTORTION PS_Distortion(PS_IN Input)
 {
     PS_OUT_DISTORTION Output = (PS_OUT_DISTORTION) 0;
     
-    Output.vDistortion = normalize(g_MaskTexture.Sample(LinearSampler, Input.vTex)) * 0.03f * Input.fAlpha;
+    Output.vDistortion = normalize(g_MaskTexture.Sample(LinearSampler, Input.vTex)) * 0.04f * Input.fAlpha;
+    
+    return Output;
+}
+
+PS_OUT PS_Main_Mask_Lightning(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex * float2(12.f, 4.f));
+    
+    float3 Color = g_vColor.rgb;
+    float fAlpha = vMask.r * Input.fAlpha;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = vector(fAlpha, fAlpha, fAlpha, fAlpha);
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+    
+    
+    
+    //Output.vColor = g_vColor;
+    //Output.vColor.a = vMask.r * Input.fAlpha;
+    
+    //Output.vBlurColor = g_vColor;
+        
+    //Output.vBlurColor.a = vMask.r * Input.fAlpha;
+    
+    
     
     return Output;
 }
@@ -227,5 +257,18 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Distortion();
+    }
+
+    pass MaskLightning
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = compile gs_5_0 GS_Main();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Mask_Lightning();
     }
 };
