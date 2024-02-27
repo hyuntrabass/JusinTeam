@@ -53,11 +53,6 @@ public:
 	void Init_State(_float fTimeDelta);
 	void Tick_State(_float fTimeDelta);
 	void View_Detect_Range();
-
-	_vec4 Compute_PlayerPos();
-	_vec4 Compute_PlayerLook();
-	_float Compute_PlayerDistance();
-
 private:
 	GUARD_STATE m_ePreState = STATE_END;
 	GUARD_STATE m_eCurState = STATE_END;
@@ -79,7 +74,6 @@ private:
 	_uint m_iPassIndex{};
 	_float m_fDeadTime{ 0.f };
 	_float m_fDissolveRatio{ 0.f };
-	_float m_fIdleTime{ 0.f };
 
 	_bool m_bChangePass = false;
 	_float m_fHitTime { 0.f };

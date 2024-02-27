@@ -21,6 +21,7 @@ HRESULT CHitEffect::Init_Prototype()
 HRESULT CHitEffect::Init(void* pArg)
 {
 	m_isCritical = ((HITEFFECT_DESC*)pArg)->isCritical;
+	m_isCritical = true;
 
 	m_isPlayer = ((HITEFFECT_DESC*)pArg)->isPlayer;
 	m_fDepth = (_float)D_NAMETAG / (_float)D_END;

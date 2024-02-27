@@ -201,30 +201,30 @@ void CScorpion::Tick_State(_float fTimeDelta)
 	}
 	case Client::CScorpion::State_Attack:
 	{
-		////_float fCurrentAnimPos = m_pModelCom->Get_CurrentAnimPos();
-		//if (fCurrentAnimPos >= 20.f && fCurrentAnimPos <= 23.f && not m_HasAttacked)
-		//{
-		//	_uint iDamage = rand() % 6 + 10;
-		//	m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage);
-		//	m_HasAttacked = true;
-		//}
+		_float fCurrentAnimPos = m_pModelCom->Get_CurrentAnimPos();
+		if (fCurrentAnimPos >= 20.f && fCurrentAnimPos <= 23.f && not m_HasAttacked)
+		{
+			_uint iDamage = rand() % 6 + 10;
+			m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage);
+			m_HasAttacked = true;
+		}
 
-		//if (m_pModelCom->IsAnimationFinished(Anim_attack03))
-		//{
-		//	_vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
-		//	vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
-		//	_float fDis = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Length();
+		if (m_pModelCom->IsAnimationFinished(Anim_attack03))
+		{
+			_vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
+			vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
+			_float fDis = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Length();
 
-		//	if (fDis <= 2.f)
-		//	{
-		//		m_eState = State_Idle;
-		//	}
-		//	else
-		//	{
-		//		m_eState = State_Run;
-		//	}
-		//}
-		//break;
+			if (fDis <= 2.f)
+			{
+				m_eState = State_Idle;
+			}
+			else
+			{
+				m_eState = State_Run;
+			}
+		}
+		break;
 	}
 	case Client::CScorpion::State_Die:
 		if (m_fDissolveRatio < 1.f)

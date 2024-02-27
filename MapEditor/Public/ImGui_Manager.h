@@ -23,7 +23,6 @@ enum class ItemType
 	Trigger,
 	Interaction,
 	Camera,
-	Effect,
 	End
 };
 
@@ -40,15 +39,6 @@ struct DummyInfo
 	_mat mMatrix{};
 	_bool bCheck{};
 	class CDummy** ppDummy{ nullptr };
-};
-
-struct EffectDummyInfo
-{
-	wstring EffectName{};
-	_mat mMatrix{};
-	_float fSize{};
-	_bool isFollow{};
-	class CEffect_Sphere** ppDummy{ nullptr };
 };
 
 struct MapInfo
@@ -111,19 +101,18 @@ private:
 	HRESULT ImGuizmoMenu();
 
 	void Create_Dummy(const _int& iListIndex);
-	void Create_Effect_Dummy(const _int& iListIndex);
 	void Create_Camera();
 	void Create_Curve(class CCamera_CutScene* pCamera, _vec4 FirstPos, _vec4 SecondPos);
 	void Create_Map(const _int& iListIndex);
 	HRESULT Create_Terrain();
 	HRESULT Modify_Terrain();
 	void Delete_Dummy();
-	void Delete_Effect_Dummy();
 	void Delete_Camera();
 	void Delete_Map();
 	void Delete_Terrain();
 	void Delete_Curve(vector<class CCutScene_Curve*>& pAtCurve, vector<class CCutScene_Curve*>& pEyeCurve);
 	void Reset();
+	void PopBack_Dummy();
 
 	void Search_Map();
 	void Search_Object();
@@ -131,7 +120,6 @@ private:
 	void Search_NPC();
 	void Search_Envir();
 	void Search_Inter();
-	void Search_Effect();
 
 	void Mouse_Pos();
 	void FastPicking();
@@ -170,10 +158,6 @@ private:
 	// 트리거
 	HRESULT Save_Trigger();
 	HRESULT Load_Trigger();
-
-	// 이펙트
-	HRESULT Save_Effect();
-	HRESULT Load_Effect();
 
 	// 카메라
 	HRESULT Save_CutScene(class CCamera_CutScene* pCamera);
@@ -243,22 +227,16 @@ private:
 	vector<class CDummy*> m_EnvirList;
 	vector<class CDummy*> m_TriggerList;
 	vector<class CDummy*> m_InteractionList;
-
-	vector<class CEffect_Sphere*> m_Effect;
-
 	vector<class CCamera_CutScene*> m_CameraList;
 	vector<class CCutScene_Curve*> m_SectionEyeList;
 	vector<class CCutScene_Curve*> m_SectionAtList;
 
-	vector<string> m_EffectFiles;
 
 	map<int, class CDummy*>m_DummyList;
-	map<int, class CEffect_Sphere*>m_EffectDummyList;
-	map<int, class CMap*>m_Map;
+	map<int, class CMap*>m_Map{};
 	//map<int, class CCamera_CutScene*>m_Camera{};
 
 	class CDummy* m_pSelectedDummy{ nullptr };
-	class CEffect_Sphere* m_pSelected_Effect_Dummy{ nullptr };
 	class CMap* m_pSelectMap{ nullptr };
 	class CCamera_CutScene* m_pSelectCamera{ nullptr };
 	class CCutScene_Curve* m_pSelectSection{ nullptr };
@@ -267,7 +245,6 @@ private:
 	_mat	m_ObjectMatrix{};
 	_mat	m_MapMatrix{};
 	_mat	m_CameraMatrix{};
-	_mat	m_EffectMatrix{};
 	_mat	m_ViewMatrix = {};
 	_mat	m_ProjMatrix = {};
 
@@ -277,13 +254,10 @@ private:
 	CTexture* m_pTextures{ nullptr };
 	wstring m_eType{};
 	_float m_fTriggerSize{1.f};
-	_float m_fEffectSize{1.f};
 	_int m_iTriggerNumber{0};
 	string SectionName{};
 	SectionInfo m_eSectionInfo{};
 	_bool m_isTriggerCheck{ false };
-	_bool m_isFollow{ false };
-	const _char** m_szEffectFiles;
 
 	// 카메라 Eye
 	_vec4 vEyeStartCurved{};
