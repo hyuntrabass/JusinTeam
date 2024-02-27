@@ -13,6 +13,7 @@
 #include "Camera_Manager.h"
 #include "BrickWall.h"
 #include "TreasureBox.h"
+#include "Guard.h"
 
 //원명의 꼽사리
 #include "Lake.h"
@@ -147,6 +148,19 @@ HRESULT CLevel_GamePlay::Init()
 
 void CLevel_GamePlay::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_MINUS))
+	{
+		CTransform* CPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, L"Layer_Player", L"Com_Transform"));
+		
+		MiniDungeonInfo testInfo{};
+		testInfo.mMatrix= CPlayerTransform->Get_World_Matrix();
+		testInfo.iIndex++;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Guard"), &testInfo)))
+		{
+			return;
+		}
+	}
 
 	if (m_pGameInstance->Key_Down(DIK_B,InputChannel::Engine))
 	{
