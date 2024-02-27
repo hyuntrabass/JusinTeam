@@ -1,16 +1,23 @@
 #pragma once
 #include "Client_Define.h"
 #include "Objects.h"
-#include "Trigger_Manager.h"
-//Interaction_Anim_Object -> 애니메이션 있는 채집 // Prototype_Model_GoldStone // Prototype_Model_SaltStone
 BEGIN(Client)
 
-class CInteraction_Anim final : public CGameObject
+class CTreasureBox final : public CGameObject
 {
+public:
+	enum DIR { LEFT, RIGHT, FRONT, BACK, DIR_END };
+	typedef struct tagTreasureDesc
+	{
+		DIR eDir{};
+		_vec4 vPos{};
+		vector<pair<wstring, _uint>> vecItem;
+	}TREASURE_DESC;
+
 private:
-	CInteraction_Anim(_dev pDevice, _context pContext);
-	CInteraction_Anim(const CInteraction_Anim& rhs);
-	virtual ~CInteraction_Anim() = default;
+	CTreasureBox(_dev pDevice, _context pContext);
+	CTreasureBox(const CTreasureBox& rhs);
+	virtual ~CTreasureBox() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -25,7 +32,6 @@ private:
 	HRESULT Bind_ShaderResources();
 
 private:
-	CTrigger_Manager* m_pTrigger_Manager{ nullptr };
 	PlaceType m_ePlaceType{ PLACE_END };
 	ObjectInfo m_Info{};
 	ANIM_DESC m_Animation{};
@@ -38,15 +44,18 @@ private:
 	CCollider* m_pWideColliderCom{ nullptr };
 
 private:
+	 DIR  m_eDir{};
+	_bool m_isJump{false};
 	_bool m_isAnimStart{false};
 	_bool m_isWideCollision{false};
 	_bool m_isCollect{};
 	_float m_fCollectTime{};
 
+	_float m_fJumpTime{};
 	_float m_fTime{};
 	_float m_fDir{1.f};
 
-	_uint m_iObjectIndex{ 0 };
+	vector<pair<wstring, _uint>> m_vecItem;
 
 	class CTextButtonColor* m_pBar{ nullptr };
 	class C3DUITex* m_pSpeechBubble{ nullptr };
@@ -54,10 +63,8 @@ private:
 	CGameObject* m_pBG{ nullptr };
 	CGameObject* m_pNameTag{ nullptr };
 
-	wstring m_strName{};
-
 public:
-	static CInteraction_Anim* Create(_dev pDevice, _context pContext);
+	static CTreasureBox* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

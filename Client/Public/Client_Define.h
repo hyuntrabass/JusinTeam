@@ -237,6 +237,8 @@ namespace Client
 		IT_HPPOTION,
 		IT_MPPOTION,
 		IT_VEHICLECARD,
+		IT_PETCARD,
+		IT_INGREDIENT,
 		USAGE_END
 	};
 
@@ -291,6 +293,15 @@ namespace Client
 		ObjectType eObjectType{ };
 		_uint m_iIndex{};
 	};
+
+	struct EffectObjectInfo
+	{
+		wstring strEffectName{};
+		_float m_fSize{};
+		_mat m_WorldMatrix{};
+		_bool m_isFollow{};
+	};
+
 	enum Monster_AttType
 	{
 		MonAtt_Hit,

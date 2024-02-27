@@ -9,6 +9,7 @@
 #include "Camera_Manager.h"
 #include "Dialog.h"
 #include "TextButtonColor.h"
+#include "TreasureBox.h"
 
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -116,6 +117,22 @@ HRESULT CPlayer::Init(void* pArg)
 
 void CPlayer::Tick(_float fTimeDelta)
 {
+
+	if (m_pGameInstance->Key_Down(DIK_V, InputChannel::Engine))
+	{
+		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+		CTreasureBox::TREASURE_DESC Desc{};
+		_vec4 vPos = pPlayerTransform->Get_State(State::Pos);
+		vPos.y += 3.f;
+		Desc.vPos = vPos;
+		vector <pair<wstring, _uint>> vecItem;
+		vecItem.push_back(make_pair(TEXT("[신화]탈 것 소환 카드"), 1));
+		Desc.vecItem = vecItem;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Temp"), TEXT("Prototype_GameObject_TreasureBox"), &Desc)))
+		{
+			return;
+		}
+	}
 
 	if (m_pGameInstance->Key_Down(DIK_B, InputChannel::GamePlay))
 	{
@@ -1782,7 +1799,6 @@ void CPlayer::Move(_float fTimeDelta)
 				m_pTransformCom->Jump(8.f);
 				m_eState = Jump_Start;
 				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("점프하기"));
-				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("그로아의 부탁"));
 			}
 			else if (m_bReady_Climb)
 			{

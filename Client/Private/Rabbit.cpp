@@ -464,6 +464,10 @@ void CRabbit::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->IsAnimationFinished(DIE))
 		{
+			if (m_fDeadTime == 0.f)
+			{
+				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("로스크바의 부탁"));
+			}
 			m_fDeadTime += fTimeDelta;
 		}
 
@@ -535,6 +539,5 @@ CGameObject* CRabbit::Clone(void* pArg)
 void CRabbit::Free()
 {
 	__super::Free();
-	CEvent_Manager::Get_Instance()->Update_Quest(TEXT("로스크바의 부탁"));
-
+	//CEvent_Manager::Get_Instance()->Update_Quest(TEXT("로스크바의 부탁"));
 }
