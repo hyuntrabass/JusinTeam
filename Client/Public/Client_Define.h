@@ -385,6 +385,7 @@ namespace Client
 		StaticPass_SingleColorAlpha,
 		StaticPass_MaskAlpha,
 		StaticPass_DiffAlpha,
+		StaticPass_Dissolve,
 		StaticPass_End,
 	};
 

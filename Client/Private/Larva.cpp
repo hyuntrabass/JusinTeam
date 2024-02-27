@@ -1,21 +1,21 @@
-#include "Void19.h"
+#include "Larva.h"
 
-CVoid19::CVoid19(_dev pDevice, _context pContext)
+CLarva::CLarva(_dev pDevice, _context pContext)
 	:CVTFMonster(pDevice, pContext)
 {
 }
 
-CVoid19::CVoid19(const CVoid19& rhs)
+CLarva::CLarva(const CLarva& rhs)
 	:CVTFMonster(rhs)
 {
 }
 
-HRESULT CVoid19::Init_Prototype()
+HRESULT CLarva::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CVoid19::Init(void* pArg)
+HRESULT CLarva::Init(void* pArg)
 {
 	PxCapsuleControllerDesc ControllerDesc{};
 	ControllerDesc.height = 1.2f; // 높이(위 아래의 반구 크기 제외
@@ -47,7 +47,7 @@ HRESULT CVoid19::Init(void* pArg)
 	return S_OK;
 }
 
-void CVoid19::Tick(_float fTimeDelta)
+void CLarva::Tick(_float fTimeDelta)
 {
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
@@ -57,7 +57,7 @@ void CVoid19::Tick(_float fTimeDelta)
 	__super::Tick(fTimeDelta);
 }
 
-void CVoid19::Late_Tick(_float fTimeDelta)
+void CLarva::Late_Tick(_float fTimeDelta)
 {
 	__super::Late_Tick(fTimeDelta);
 #ifdef _DEBUG
@@ -66,21 +66,21 @@ void CVoid19::Late_Tick(_float fTimeDelta)
 #endif // DEBUG
 }
 
-HRESULT CVoid19::Render()
+HRESULT CLarva::Render()
 {
 	__super::Render();
 
 	return S_OK;
 }
 
-HRESULT CVoid19::Render_Instance()
+HRESULT CLarva::Render_Instance()
 {
 	__super::Render_Instance();
 
 	return S_OK;
 }
 
-void CVoid19::Init_State(_float fTimeDelta)
+void CLarva::Init_State(_float fTimeDelta)
 {
 	if (m_HasHitted == true)
 	{
@@ -114,10 +114,10 @@ void CVoid19::Init_State(_float fTimeDelta)
 
 		switch (m_eState)
 		{
-		case Client::CVoid19::State_Idle:
+		case Client::CLarva::State_Idle:
 			m_Animation.iAnimIndex = Anim_roar;
 			break;
-		case Client::CVoid19::State_Attack:
+		case Client::CLarva::State_Attack:
 		{
 			m_Animation.iAnimIndex = Anim_attack01;
 
@@ -126,7 +126,7 @@ void CVoid19::Init_State(_float fTimeDelta)
 			m_pTransformCom->LookAt(vPlayerPos);
 			break;
 		}
-		case Client::CVoid19::State_Die:
+		case Client::CLarva::State_Die:
 			m_Animation.iAnimIndex = Anim_stun;
 			m_Animation.fDurationRatio = 0.1f;
 			m_Animation.fInterpolationTime = 1.f;
@@ -140,23 +140,30 @@ void CVoid19::Init_State(_float fTimeDelta)
 	}
 }
 
-void CVoid19::Tick_State(_float fTimeDelta)
+void CLarva::Tick_State(_float fTimeDelta)
 {
 	switch (m_eState)
 	{
-	case Client::CVoid19::State_Idle:
+	case Client::CLarva::State_Idle:
 		if (m_pModelCom->IsAnimationFinished(Anim_roar))
 		{
 			m_eState = State_Attack;
 		}
 		break;
-	case Client::CVoid19::State_Attack:
+	case Client::CLarva::State_Attack:
+	{
+		_float fCurrentAnimPos = m_pModelCom->Get_CurrentAnimPos();
+		if (fCurrentAnimPos >= 58.f && fCurrentAnimPos <= 61.f && not m_HasAttacked)
+		{
+		}
+
 		if (m_pModelCom->IsAnimationFinished(Anim_attack01))
 		{
 			m_eState = State_Idle;
 		}
 		break;
-	case Client::CVoid19::State_Die:
+	}
+	case Client::CLarva::State_Die:
 		if (m_fDissolveRatio < 1.f)
 		{
 			m_fDissolveRatio += fTimeDelta;
@@ -169,7 +176,7 @@ void CVoid19::Tick_State(_float fTimeDelta)
 	}
 }
 
-HRESULT CVoid19::Add_Components()
+HRESULT CLarva::Add_Components()
 {
 	Collider_Desc ColliderDesc{};
 	ColliderDesc.eType = ColliderType::AABB;
@@ -184,33 +191,33 @@ HRESULT CVoid19::Add_Components()
 	return S_OK;
 }
 
-CVoid19* CVoid19::Create(_dev pDevice, _context pContext)
+CLarva* CLarva::Create(_dev pDevice, _context pContext)
 {
-	CVoid19* pInstance = new CVoid19(pDevice, pContext);
+	CLarva* pInstance = new CLarva(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CVoid19");
+		MSG_BOX("Failed to Create : CLarva");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CVoid19::Clone(void* pArg)
+CGameObject* CLarva::Clone(void* pArg)
 {
-	CVoid19* pInstance = new CVoid19(*this);
+	CLarva* pInstance = new CLarva(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CVoid19");
+		MSG_BOX("Failed to Clone : CLarva");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CVoid19::Free()
+void CLarva::Free()
 {
 	__super::Free();
 }

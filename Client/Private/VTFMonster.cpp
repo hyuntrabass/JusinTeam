@@ -1,4 +1,5 @@
 #include "VTFMonster.h"
+#include "UI_Manager.h"
 
 CVTFMonster::CVTFMonster(_dev pDevice, _context pContext)
     :CGameObject(pDevice, pContext)
@@ -62,12 +63,14 @@ void CVTFMonster::Late_Tick(_float fTimeDelta)
     }
 }
 
-void CVTFMonster::Set_Damage(_int iDamage, _uint MonAttType)
+void CVTFMonster::Set_Damage(_int iDamage, _uint AttackType)
 {
     if (iDamage == 0)
     {
         return;
     }
+
+    CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 1.5f), (ATTACK_TYPE)AttackType);
 
     m_iHP -= iDamage;
 

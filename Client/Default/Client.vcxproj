@@ -254,6 +254,7 @@
     <ClInclude Include="..\Public\QuestBox.h" />
     <ClInclude Include="..\Public\Rabbit.h" />
     <ClInclude Include="..\Public\Radar.h" />
+    <ClInclude Include="..\Public\RedAnt.h" />
     <ClInclude Include="..\Public\Riding.h" />
     <ClInclude Include="..\Public\Roskva.h" />
     <ClInclude Include="..\Public\SafeZone.h" />
@@ -319,7 +320,7 @@
     <ClInclude Include="..\Public\Void01.h" />
     <ClInclude Include="..\Public\Void05.h" />
     <ClInclude Include="..\Public\Void09.h" />
-    <ClInclude Include="..\Public\Void19.h" />
+    <ClInclude Include="..\Public\Larva.h" />
     <ClInclude Include="..\Public\Void20.h" />
     <ClInclude Include="..\Public\Void23.h" />
     <ClInclude Include="..\Public\VTFMonster.h" />
@@ -429,6 +430,7 @@
     <ClCompile Include="..\Private\Quest.cpp" />
     <ClCompile Include="..\Private\QuestBox.cpp" />
     <ClCompile Include="..\Private\Radar.cpp" />
+    <ClCompile Include="..\Private\RedAnt.cpp" />
     <ClCompile Include="..\Private\Riding.cpp" />
     <ClCompile Include="..\Private\Roskva.cpp" />
     <ClCompile Include="..\Private\SafeZone.cpp" />
@@ -493,7 +495,7 @@
     <ClCompile Include="..\Private\Void01.cpp" />
     <ClCompile Include="..\Private\Void05.cpp" />
     <ClCompile Include="..\Private\Void09.cpp" />
-    <ClCompile Include="..\Private\Void19.cpp" />
+    <ClCompile Include="..\Private\Larva.cpp" />
     <ClCompile Include="..\Private\Void20.cpp" />
     <ClCompile Include="..\Private\Void23.cpp" />
     <ClCompile Include="..\Private\VTFMonster.cpp" />

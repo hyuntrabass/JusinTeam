@@ -5,31 +5,39 @@
 
 BEGIN(Client)
 
-class CVoid19 final : public CVTFMonster
+class CRedAnt final : public CVTFMonster
 {
 public:
 	enum ANIM
 	{
-		Anim_attack01, // Ä§¹ñ±â
-		Anim_attack02,
+		Anim_attack01,
+		Anim_attack02, //°ø°Ý
+		Anim_attack03,
+		Anim_die, //»ç¸Á
 		Anim_hit_add,
 		Anim_idle,
-		Anim_roar, //idle·Î ¾²´ÂÁß
-		Anim_stun, // »ç¸Á
+		Anim_knockdown,
+		Anim_L_hit,
+		Anim_R_hit,
+		Anim_roar,
+		Anim_run,
+		Anim_stun,
+		Anim_walk,
 		Anim_End
 	};
 	enum STATE
 	{
 		State_Idle,
+		State_Run,
 		State_Attack,
 		State_Die,
 		State_End
 	};
 
 private:
-	CVoid19(_dev pDevice, _context pContext);
-	CVoid19(const CVoid19& rhs);
-	virtual ~CVoid19() = default;
+	CRedAnt(_dev pDevice, _context pContext);
+	CRedAnt(const CRedAnt& rhs);
+	virtual ~CRedAnt() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -38,6 +46,9 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 	virtual HRESULT Render_Instance() override;
+
+private:
+	CCollider* m_pAttackColliderCom = { nullptr };
 
 private:
 	STATE m_eState{ State_End };
@@ -51,7 +62,7 @@ private:
 	HRESULT Add_Components();
 
 public:
-	static CVoid19* Create(_dev pDevice, _context pContext);
+	static CRedAnt* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

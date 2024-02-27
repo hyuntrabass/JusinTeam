@@ -162,8 +162,9 @@
 //CescoGame
 #include "CescoGame.h"
 
-#include "Void19.h"
+#include "Larva.h"
 #include "Scorpion.h"
+#include "RedAnt.h"
 
 #include "Log.h"
 
