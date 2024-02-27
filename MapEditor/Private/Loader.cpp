@@ -133,6 +133,44 @@ HRESULT CLoader::Load_Editor()
 	}
 #pragma endregion
 
+	m_strLoadingText = L"Editor : Loading Effect";
+
+#pragma region Effect
+	// Effect Textures
+	strInputFilePath = "../../Client/Bin/Resources/Textures/Effect/";
+	_uint iTextureNumber{};
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_Effect_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Effect/Mesh/";
+	_uint iMeshNumber{};
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_Effect_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+#pragma endregion
+
+
+
+
 #pragma endregion
 
 	m_strLoadingText = L"Editor : Loading Object Model";
@@ -187,11 +225,15 @@ HRESULT CLoader::Load_Editor()
 			}
 			else if (strPrototypeTag == L"Prototype_Model_Survival_Map")
 			{
-				Pivot = _mat::CreateScale(1.f);
+				Pivot = _mat::CreateScale(0.7f);
 			}
 			else if (strPrototypeTag == L"Prototype_Model_SescoMap")
 			{
 				Pivot = _mat::CreateScale(0.005f);
+			}
+			else if (strPrototypeTag == L"Prototype_Model_MiniDungeon")
+			{
+				Pivot = _mat::CreateScale(0.003f);
 			}
 			else
 				Pivot = _mat::CreateScale(0.001f);
@@ -284,8 +326,8 @@ HRESULT CLoader::Load_Editor()
 			}
 		}
 	}
-	//Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
-	Pivot = XMMatrixScaling(0.005f, 0.005f, 0.005f);
+	Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	//Pivot = XMMatrixScaling(0.005f, 0.005f, 0.005f);
 
 	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Environment/Grass/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
@@ -348,6 +390,10 @@ HRESULT CLoader::Load_Editor()
 			if (!entry.exists())
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+			if(strPrototypeTag == L"Prototype_Model_TreasureBox")
+				Pivot = XMMatrixScaling(0.005f, 0.005f, 0.005f);
+			else
+				Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
 			{
@@ -482,6 +528,11 @@ HRESULT CLoader::Load_Editor()
 //
 //
 //#pragma endregion Monster
+if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Statue"),
+	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Statue/Mesh/Statue.hyuntraanimmesh"))))
+{
+	return E_FAIL;
+}
 
 #pragma region NPC
 
@@ -621,7 +672,15 @@ HRESULT CLoader::Load_Editor()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Effect_Sphere"), CEffect_Sphere::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_EffectDummy"), CEffect_Dummy::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Map"), CMap::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;

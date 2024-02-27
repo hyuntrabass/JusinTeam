@@ -126,36 +126,30 @@ HRESULT CVoid05::Render()
 
 void CVoid05::Set_Damage(_int iDamage, _uint iDamageType)
 {
-	m_fHittedTime = 6.f;
-	m_eCurState = STATE_HIT;
 
-	m_iHP -= iDamage;
-	m_bDamaged = true;
-	m_bChangePass = true;
+	if (iDamage > 0)
+	{
+		m_eCurState = STATE_HIT;
+
+		m_iHP -= iDamage;
+		m_bDamaged = true;
+		m_bChangePass = true;
+		m_fIdleTime = 0.f;
+
+		m_fHittedTime = 6.f;
+
+		CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 1.5f), (ATTACK_TYPE)iDamageType);
+
+		_vec4 vPlayerPos = __super::Compute_PlayerPos();
+		m_pTransformCom->LookAt(vPlayerPos);
+
+	}
+
 	if (m_bHit == false)
 	{
 		m_iDamageAcc += iDamage;
 	}
 
-	m_fIdleTime = 0.f;
-
-
-	_bool isCritical{};
-	if (iDamageType == (_uint)AT_End - 1)
-	{
-		isCritical = true;
-	}
-	CHitEffect::HITEFFECT_DESC Desc{};
-	Desc.iDamage = iDamage;
-	Desc.isCritical = isCritical;
-	Desc.pParentTransform = m_pTransformCom;
-	Desc.vTextPosition = _vec2(0.f, 1.5f);
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_HitEffect"), TEXT("Prototype_GameObject_HitEffect"), &Desc)))
-	{
-		return;
-	}
-	_vec4 vPlayerPos = __super::Compute_PlayerPos();
-	m_pTransformCom->LookAt(vPlayerPos);
 
 	if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
 		iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4 || iDamageType == AT_Critical)
@@ -178,6 +172,11 @@ void CVoid05::Set_Damage(_int iDamage, _uint iDamageType)
 		// 이속 느려지게
 		m_bSlow = true;
 		//m_Animation.fAnimSpeedRatio = 0.8f;
+	}
+
+	if (iDamageType == AT_OutLine && !m_bChangePass)
+	{
+		m_iPassIndex = AnimPass_OutLine;
 	}
 }
 

@@ -38,27 +38,46 @@ HRESULT CBrickBall::Init(void* pArg)
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 	vPlayerPos.y = 11.5f;
+	vPlayerPos.z -=1.f;
 	_vec4 vPlayerLook = pPlayerTransform->Get_State(State::Look);
 	vPlayerLook.y = 0.f;
-
+	//m_vDir = vPlayerLook;
 	m_pTransformCom->LookAt_Dir(vPlayerLook);
 	m_pTransformCom->Set_Position(vPlayerPos);
 
 	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 
+	/*
 	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Ball_Init");
 	Info.pMatrix = &m_EffectMatrix;
 	Info.isFollow = true;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+	*/
+	//m_vDir = _vec4(0.f, 0.f, -1.f, 0.f);
 
 	m_shouldRenderBlur = true;
 	m_eCurBrickColor = BLUE;
+
+	/*
+	PxCapsuleControllerDesc ControllerDesc{};
+	ControllerDesc.height = 0.4f; // 높이(위 아래의 반구 크기 제외
+	ControllerDesc.radius = 0.4f; // 위아래 반구의 반지름
+	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+
+	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+	*/
+
+
 	return S_OK;
 }
 
 void CBrickBall::Tick(_float fTimeDelta)
 {
 	Set_BallColor();
+
 	CUI_Manager::Get_Instance()->Set_BrickBallColor(m_eCurBrickColor);
 
 	m_fX += fTimeDelta;
@@ -82,9 +101,6 @@ void CBrickBall::Tick(_float fTimeDelta)
 	}
 
 
-	m_pTransformCom->Go_Straight(fTimeDelta);
-	m_pTransformCom->Set_Speed(m_fSpeed);
-
 
 	if (m_pGameInstance->Key_Down(DIK_UP, InputChannel::GamePlay))
 	{
@@ -94,7 +110,12 @@ void CBrickBall::Tick(_float fTimeDelta)
 			m_iBallColor = 0;
 		}
 	}
+	//RayCast();
 	Check_Collision(fTimeDelta);
+	m_pTransformCom->Set_Speed(m_fSpeed);
+	m_pTransformCom->Go_Straight(fTimeDelta);
+	//_vec4 vPos = m_pTransformCom->Get_State(State::Pos) + m_vDir * fTimeDelta * 5.f;
+	//m_pTransformCom->Set_State(State::Pos, vPos);
 
 	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 
@@ -192,7 +213,7 @@ void CBrickBall::Update_Collider()
 
 void CBrickBall::RayCast()
 {
-	_float fDist = 0.51f;
+	_float fDist = 5.f;
 	PxRaycastBuffer Buffer{};
 
 	if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), 
@@ -222,7 +243,8 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 
 	CCollider* pCollider{ nullptr };
 	_bool isColl{};
-	for (_uint i = 0; i < 4; i++)
+	_uint iWall{};
+	for (_uint i = 0; i < 3; i++)
 	{
 		pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Com_Collider_BrickWall"), i);
 		if (pCollider == nullptr)
@@ -232,26 +254,37 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 		isColl = m_pColliderCom->Intersect(pCollider);
 		if (isColl)
 		{
+			iWall = i;
 			break;
 		}
 	}
 
-	if (isColl)
+	if (isColl && m_pCurCollider != pCollider)
 	{
-		if (!m_isColl)
+		m_pCurCollider = nullptr;
+		m_pCurCollider = pCollider;
+		_vec3 vNormal{};
+		if (iWall == 0)
 		{
-			_vec3 vLook = m_pTransformCom->Get_State(State::Look);
-			_vec3 vNormal = pCollider->Get_Normal(m_pGameInstance->Get_CollideFace(pCollider, m_pColliderCom));
-			vNormal.Normalize();
-			m_vDir = _vec3::Reflect(vLook, vNormal);
-			m_vDir.y = 0.f;
-			m_pTransformCom->LookAt_Dir(m_vDir);
+			vNormal = _vec4(-1.f, 0.f, 0.f, 0.f);
 		}
-		m_isColl = true;
-	}
-	else
-	{
-		m_isColl = false;
+		else if (iWall == 1)
+		{
+			vNormal = _vec4(0.f, 0.f, -1.f, 0.f);
+		}
+		else if (iWall == 2)
+		{
+			vNormal = _vec4(1.f, 0.f, 0.f, 0.f);
+		}
+		else if (iWall == 3)
+		{
+			vNormal = _vec4(1.f, 0.f, 0.f, 0.f);
+		}
+		_vec3 vLook = m_pTransformCom->Get_State(State::Look);
+		vNormal.Normalize();
+		m_vDir = _vec3::Reflect(vLook, vNormal);
+		m_vDir.y = 0.f;
+		m_pTransformCom->LookAt_Dir(m_vDir);
 	}
 
 	CCollider* pBarCollider{ nullptr };
@@ -264,26 +297,14 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 	}
 	isBarColl = m_pColliderCom->Intersect(pBarCollider);
 
-	if (isBarColl)
+	if (isBarColl && m_pCurCollider != pBarCollider)
 	{
+		m_pCurCollider = nullptr;
+		m_pCurCollider = pBarCollider;
 		_vec3 vLook = m_pTransformCom->Get_State(State::Look);
 		_vec3 vNormal = pBarCollider->Get_Normal(m_pGameInstance->Get_CollideFace(pBarCollider, m_pColliderCom));
-		/*
-		
-		if (vNormal.z > 0)
-		{
-			
-			if (pBarCollider->Get_ColliderPos().x + pBarCollider->Get_Extents().x / 4.f < m_pColliderCom->Get_ColliderPos().x)
-			{
-				vNormal.x = 0.5f;
-			}
-			else if (pBarCollider->Get_ColliderPos().x - pBarCollider->Get_Extents().x / 4.f > m_pColliderCom->Get_ColliderPos().x)
-			{
-				vNormal.x = -0.5f;
-			}
-			
-		}
-		*/
+		vNormal = vNormal = _vec4(0.f, 0.f, 1.f, 0.f);
+
 		vNormal.Normalize();
 		m_vDir = _vec3::Reflect(vLook, vNormal);
 		m_vDir.y = 0.f;
@@ -309,22 +330,16 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 		}
 	}
 
-	if (isBalloonColl)
+	if (isBalloonColl && m_pCurCollider != pBalloonCollider)
 	{
-		if (!m_isBalloonColl)
-		{
-			_vec3 vLook = m_pTransformCom->Get_State(State::Look);
-			_vec3 vNormal = pBalloonCollider->Get_Normal(m_pGameInstance->Get_CollideFace(pBalloonCollider, m_pColliderCom));
-			vNormal.Normalize();
-			m_vDir = _vec3::Reflect(vLook, vNormal);
-			m_vDir.y = 0.f;
-			m_pTransformCom->LookAt_Dir(m_vDir);
-		}
-		m_isBalloonColl = true;
-	}
-	else
-	{
-		m_isBalloonColl = false;
+		m_pCurCollider = nullptr;
+		m_pCurCollider = pBalloonCollider;
+		_vec3 vLook = m_pTransformCom->Get_State(State::Look);
+		_vec3 vNormal = pBalloonCollider->Get_Normal(m_pGameInstance->Get_CollideFace(pBalloonCollider, m_pColliderCom));
+		vNormal.Normalize();
+		m_vDir = _vec3::Reflect(vLook, vNormal);
+		m_vDir.y = 0.f;
+		m_pTransformCom->LookAt_Dir(m_vDir);
 	}
 
 }
@@ -373,6 +388,7 @@ HRESULT CBrickBall::Add_Components()
 	{
 		return E_FAIL;
 	}
+
 	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Ball");
 	Info.pMatrix = &m_EffectMatrix;
 	Info.isFollow = true;

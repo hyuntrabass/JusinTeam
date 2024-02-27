@@ -5,7 +5,7 @@
 
 맵 수정 필요할 시 
 
-미니게임 - Prototype_Model_Minigame
+미니게임 - Prototype_Model_BrickMap
 드래곤맵 - Prototype_Model_DragonMap
 보스맵 - Prototype_Model_BossMap
 미니던전 - Prototype_Model_MiniDungeon
@@ -42,7 +42,7 @@ HRESULT CMap::Init(void* pArg)
 	}
 
 	m_iShaderPass = 0;
-	
+
 	m_pTransformCom->Set_Matrix(m_Info.m_Matrix);
 	m_pModelCom->Apply_TransformToActor(m_Info.m_Matrix);
 	return S_OK;
@@ -50,6 +50,7 @@ HRESULT CMap::Init(void* pArg)
 
 void CMap::Tick(_float fTimeDelta)
 {
+	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 	m_pTransformCom->Set_OldMatrix();
 }
 
@@ -123,11 +124,19 @@ void CMap::Late_Tick(_float fTimeDelta)
 		break;
 	}
 
+
 	CAMERA_STATE CamState = CCamera_Manager::Get_Instance()->Get_CameraState();
 	if (CamState == CS_SKILLBOOK or CamState == CS_INVEN)
 	{
 		return;
 	}
+
+	//CCollider* pCollider = dynamic_cast<CCollider*>(m_pGameInstance->Find_Prototype(L"Prototype_Model_Player")->Find_Component(L"Com_Collider"));
+
+	//if (m_pColliderCom->Intersect(pCollider))
+	//{
+
+	//}
 
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 
@@ -193,7 +202,9 @@ HRESULT CMap::Render()
 
 	}
 
-
+#ifdef _DEBUG
+	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
+#endif
 	return S_OK;
 }
 
@@ -216,7 +227,21 @@ HRESULT CMap::Add_Components()
 	{
 		return E_FAIL;
 	}
+	Add_Collider();
+	return S_OK;
+}
 
+HRESULT CMap::Add_Collider()
+{
+	Collider_Desc CollDesc = {};
+	CollDesc.eType = ColliderType::Sphere;
+	CollDesc.fRadius = m_pModelCom->Get_MeshRadius();
+	CollDesc.vCenter = m_pModelCom->Get_CenterPos();
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Trigger_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))
+	{
+		return E_FAIL;
+	}
 	return S_OK;
 }
 
@@ -253,6 +278,7 @@ HRESULT CMap::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
+	
 	return S_OK;
 }
 
@@ -290,4 +316,5 @@ void CMap::Free()
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pColliderCom);
 }

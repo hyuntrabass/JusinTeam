@@ -35,15 +35,20 @@ HRESULT C3DUITex::Init(void* pArg)
 	m_vTextPosition = ((UITEX_DESC*)pArg)->vTextPosition;
 	m_strText = ((UITEX_DESC*)pArg)->strText;
 	m_vTextColor = ((UITEX_DESC*)pArg)->vTextColor;
-	
+	m_vColor = ((UITEX_DESC*)pArg)->vColor;
+
 	m_fDepth = (_float)D_NAMETAG / (_float)D_END + 0.1f;
 
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
-	}
+	}	
+	
+	m_pTransformCom->Set_State(State::Pos, m_pParentTransform->Get_State(State::Pos) + m_vPosition);
+	m_vTextPos = __super::Convert_To_2D(m_pTransformCom);
+	m_fX = m_vTextPos.x;
+	m_fY = m_vTextPos.y;
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
-
 
 	return S_OK;
 }
@@ -161,9 +166,12 @@ HRESULT C3DUITex::Bind_ShaderResources()
 		{
 			return E_FAIL;
 		}
-		_vec4 vColor = _vec4(1.f, 0.5f, 0.f, 1.f);
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _vec4)))
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof _vec4)))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_bOn", &m_bBright, sizeof _bool)))
 		{
 			return E_FAIL;
 		}

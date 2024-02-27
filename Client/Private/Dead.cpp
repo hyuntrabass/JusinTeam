@@ -85,13 +85,14 @@ void CDead::Tick(_float fTimeDelta)
 			{
 				if (not m_hasVideoStarted)
 				{
-					m_pGameInstance->Play_Video(TEXT("Tutorial1.wmv"));
+					CEvent_Manager::Get_Instance()->Update_Quest(TEXT("몬스터 처치"));
+					//m_pGameInstance->Play_Video(TEXT("Tutorial1.wmv"));
 					m_hasVideoStarted = true;
 				}
 
 				if (not m_pGameInstance->Is_Playing_Video())
 				{
-					m_pGameInstance->Level_ShutDown(LEVEL_GAMEPLAY);
+					//m_pGameInstance->Level_ShutDown(LEVEL_GAMEPLAY);
 				}
 			}
 		}

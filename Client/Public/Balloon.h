@@ -58,7 +58,6 @@ private:
 	CRenderer*  m_pRendererCom = { nullptr };
 	CModel*		m_pModelCom = { nullptr };
 	CCollider*  m_pBodyColliderCom = { nullptr };
-
 	CTexture* m_pDissolveTextureCom = { nullptr };
 
 private:

@@ -76,6 +76,16 @@ public:
 		STATE_END
 	};
 
+	enum VOID23_ATTACK
+	{
+		ATTACK1,
+		ATTACK2,
+		ATTACK3,
+		ATTACK4,
+		ATTACK5,
+		ATTACK_END
+	};
+
 private:
 	CVoid23(_dev pDevice, _context pContext);
 	CVoid23(const CVoid23& rhs);
@@ -98,17 +108,23 @@ public:
 	void Update_Trail(_float fTimeDelta);
 
 private:
+	CCollider* m_pFloorCollider = { nullptr };
+
+private:
 	VOID23_STATE m_ePreState = STATE_END;
 	VOID23_STATE m_eCurState = STATE_END;
 
 private:
 	CCommonSurfaceTrail* m_pSwordTrail = { nullptr };
+	CCommonSurfaceTrail* m_pDistTrail = { nullptr };
 
 private:
 	_float m_fIdleTime = {};
 
 	_uint m_iAttackPattern = {};
 	_bool m_bSelectAttackPattern = { false };
+	_bool m_bAttack_Selected[ATTACK_END] = { false };
+	_bool m_isReward = { false };
 
 private:
 	_bool m_bAttacking = { false };

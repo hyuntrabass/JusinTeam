@@ -12,6 +12,8 @@
 #include "Pop_LevelUp.h"
 #include "Camera_Manager.h"
 #include "BrickWall.h"
+#include "TreasureBox.h"
+#include "Guard.h"
 
 //원명의 꼽사리
 #include "Lake.h"
@@ -140,13 +142,29 @@ HRESULT CLevel_GamePlay::Init()
 	m_pGameInstance->Play_Video(TEXT("Tutorial0.wmv"));
 	m_pGameInstance->Set_StopKey(DIK_RETURN);
 
+
 	return S_OK;
 }
 
 void CLevel_GamePlay::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_B))
+	if (m_pGameInstance->Key_Down(DIK_MINUS))
 	{
+		CTransform* CPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, L"Layer_Player", L"Com_Transform"));
+		
+		MiniDungeonInfo testInfo{};
+		testInfo.mMatrix= CPlayerTransform->Get_World_Matrix();
+		testInfo.iIndex++;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Guard"), &testInfo)))
+		{
+			return;
+		}
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_B,InputChannel::Engine))
+	{
+		CEvent_Manager::Get_Instance()->Update_Quest(TEXT("몬스터 처치"));
 
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BrickBall"), TEXT("Prototype_GameObject_BrickBall"))))
 		{
@@ -154,6 +172,7 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		}
 
 	}
+
 	if (!m_bReadyTutorial)
 	{
 		m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.2f);

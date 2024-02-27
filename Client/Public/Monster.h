@@ -5,6 +5,7 @@
 #include "HitEffect.h"
 #include "HpMonster.h"
 #include "Event_Manager.h"
+#include "UI_Manager.h"
 
 BEGIN(Client)
 

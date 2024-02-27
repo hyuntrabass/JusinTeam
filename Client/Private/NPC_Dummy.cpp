@@ -242,10 +242,14 @@ void CNPC_Dummy::Tick(_float fTimeDelta)
 {	
 	__super::Tick(fTimeDelta);
 
+#ifdef _DEBUG
+
 	if (m_strModelTag == TEXT("Prototype_Model_Male_009"))
 	{
 		dynamic_cast<CDialog*>(m_pDialog)->Set_Text(L"현재 프레임은 " + to_wstring(m_pGameInstance->Get_FPS()) + L"이구만.");
 	}
+
+#endif // _DEBUG
 
 	if (m_strModelTag == TEXT("Prototype_Model_Male_027"))
 	{

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "TreasureBox.h"
+#include "Pop_Reward.h"
 #include "BrickBar.h"
 #include "BrickWall.h"
 #include "NumEffect.h"
@@ -9,6 +11,7 @@
 #include "Tower.h"
 #include "InfinityTower.h"
 #include "SummonWindow.h"
+#include "SummonWindowPet.h"
 #include "NineSlice.h"
 #include "Vehicle.h"
 #include "VehicleBook.h"
@@ -120,6 +123,7 @@
 #include "Roskva.h"
 #include "Aur.h"
 #include "NPC_Dummy.h"
+#include "Guard.h"
 
 // Boss
 #include "Groar_Boss.h"
@@ -135,6 +139,7 @@
 #include "Human_Boss.h"
 #include "SafeZone.h"
 #include "Sickle.h"
+#include "SickleTrap.h"
 
 // Pet
 #include "Pet_Cat.h"
@@ -156,10 +161,14 @@
 // Trigger
 #include "Trigger.h"
 
-//SescoGame
+//CescoGame
 #include "CescoGame.h"
-#include "VTFMonster.h"
-#include "Void19.h"
+
+#include "Larva.h"
+#include "Scorpion.h"
+#include "RedAnt.h"
+
+#include "Log.h"
 
 // SurvivalGame
 #include "SurvivalGame.h"

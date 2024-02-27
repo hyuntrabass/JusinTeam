@@ -272,6 +272,7 @@ HRESULT CLoader::Load_Logo()
 			{
 				return E_FAIL;
 			}
+			
 		}
 	}
 
@@ -316,6 +317,10 @@ HRESULT CLoader::Load_Logo()
 			if (!entry.exists())
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+			if (strPrototypeTag == L"Prototype_Model_TreasureBox")
+				Pivot = XMMatrixScaling(0.005f, 0.005f, 0.005f);
+			else
+				Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CVTFModel::Create(m_pDevice, m_pContext, entry.path().string(), false, Pivot))))
 			{
@@ -1141,6 +1146,12 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
+	_mat GuardPivot = _mat::CreateRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Guard"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Guard/Mesh/Guard.hyuntraanimmesh", false, GuardPivot))))
+	{
+		return E_FAIL;
+	}
 
 	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/NPC/NPC_Dummy/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
@@ -1485,6 +1496,10 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_SummonWindowPet"), CSummonWindowPet::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_InfinityTower"), CInfinityTower::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -1500,6 +1515,17 @@ HRESULT CLoader::Load_GamePlay()
 	}
 	
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BrickBar"), CBrickBar::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
+	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Pop_Reward"), CPop_Reward::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_TreasureBox"), CTreasureBox::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -1651,6 +1677,12 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+		if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Guard"), CGuard::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+
 #pragma endregion NPC
 
 #pragma region Boss
@@ -1687,6 +1719,11 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Sickle"), CSickle::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_SickleTrap"), CSickleTrap::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -1833,11 +1870,15 @@ HRESULT CLoader::Load_Village()
 			}
 			else if (strPrototypeTag == L"Prototype_Model_Survival_Map")
 			{
-				DungeonPivot = _mat::CreateScale(0.7f);
+				DungeonPivot = _mat::CreateScale(0.4f);
 			}
 			else if (strPrototypeTag == L"Prototype_Model_SescoMap")
 			{
 				DungeonPivot = _mat::CreateScale(0.005f);
+			}
+			else if (strPrototypeTag == L"Prototype_Model_MiniDungeon")
+			{
+				DungeonPivot = _mat::CreateScale(0.003f);
 			}
 			else
 				DungeonPivot = _mat::CreateScale(0.001f);
@@ -1910,9 +1951,27 @@ HRESULT CLoader::Load_Village()
 			{
 				continue;
 			}
-			wstring strPrototypeTag = TEXT("Prototype_Model_VTFMonster_") + entry.path().stem().wstring();
+			wstring strPrototypeTag = TEXT("Prototype_VTFModel_") + entry.path().stem().wstring();
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CVTFModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+	strInputFilePath = "../Bin/Resources/StaticMesh/CescoGame/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (entry.path().extension().string() != ".hyuntrastatmesh")
+			{
+				continue;
+			}
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
 			{
 				return E_FAIL;
 			}
@@ -2007,7 +2066,22 @@ HRESULT CLoader::Load_Village()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Void19_Object"), CVoid19::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Larva_Object"), CLarva::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Scorpion_Object"), CScorpion::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_RedAnt_Object"), CRedAnt::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	//static
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Log_Object"), CLog::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -2124,6 +2198,7 @@ HRESULT CLoader::Load_Village()
 				ObjectInfo.strPrototypeTag = ObjectPrototype;
 				ObjectInfo.m_WorldMatrix = ObjectWorldMat;
 				ObjectInfo.eObjectType = Object_Building;
+
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Village_Etc_Object"), &ObjectInfo)))
 				{
 					MSG_BOX("오브젝트 불러오기 실패");
@@ -2203,11 +2278,13 @@ HRESULT CLoader::Load_Village()
 				ObjectInfo.m_WorldMatrix = ObjectWorldMat;
 				ObjectInfo.eObjectType = Object_Environment;
 				ObjectInfo.m_iIndex = (_uint)FIELD;
+
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Envir_Object"), TEXT("Prototype_GameObject_Village_Envir_Object"), &ObjectInfo)))
 				{
 					MSG_BOX("필드 환경오브젝트 불러오기 실패");
 					return E_FAIL;
 				}
+
 			}
 		}
 

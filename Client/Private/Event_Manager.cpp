@@ -50,55 +50,56 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 			m_isWaiting = false;
 		}
 
-		if (m_vecPopEvents.empty())
+		if (m_EventList.empty())
 		{
 			m_isEventIn = false;
 			return;
 		}
 		if (!m_isWaiting)
 		{
-			EVENT_TYPE eType = m_vecPopEvents.front().eType;
+			EVENT_TYPE eType = m_EventList.front().eType;
 
 			switch (eType)
 			{
 			case LEVELUP:
 			{
 				CPop_LevelUp::LEVELUP_DESC Desc{};
-				Desc.iLevel = m_vecPopEvents.front().iNum;
+				Desc.iLevel = m_EventList.front().iNum;
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pop"), TEXT("Prototype_GameObject_PopLevelUp"), &Desc)))
 				{
 					return;
 				}
 				m_pGameInstance->Play_Sound(TEXT("LevelUp"));
-				m_vecPopEvents.erase(m_vecPopEvents.begin());
+				m_EventList.pop_front();
 			}
 			break;
 			case QUESTIN:
 			{
 				m_pGameInstance->Play_Sound(TEXT("Quest_Start"), 0.6f);
 				CPop_QuestIn::QUESTIN_DESC PopQuestInDesc = {};
-				PopQuestInDesc.isMain = m_vecPopEvents.front().isMain;
-				PopQuestInDesc.fExp = m_vecPopEvents.front().fExp;
-				PopQuestInDesc.iMoney = m_vecPopEvents.front().iMoney;
-				PopQuestInDesc.strText = m_vecPopEvents.front().strText;
-				PopQuestInDesc.strQuestTitle = m_vecPopEvents.front().strQuestTitle;
+				PopQuestInDesc.isMain = m_EventList.front().isMain;
+				PopQuestInDesc.fExp = m_EventList.front().fExp;
+				PopQuestInDesc.iMoney = m_EventList.front().iMoney;
+				PopQuestInDesc.strText = m_EventList.front().strText;
+				PopQuestInDesc.strQuestTitle = m_EventList.front().strQuestTitle;
 
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pop"), TEXT("Prototype_GameObject_Pop_QuestIn"), &PopQuestInDesc)))
 					return;
-				m_vecPopEvents.erase(m_vecPopEvents.begin());
+				m_EventList.pop_front();
 			}
 			break;
 			case QUESTEND:
 			{
 				m_pGameInstance->Play_Sound(TEXT("Quest_Complete"), 0.6f);
 				CPop_QuestEnd::QUESTEND_DESC PopQuestEndDesc = {};
-				PopQuestEndDesc.fExp = m_vecPopEvents.front().fExp;
-				PopQuestEndDesc.iMoney = m_vecPopEvents.front().iMoney;
-				PopQuestEndDesc.strQuestTitle = m_vecPopEvents.front().strQuestTitle;
+				PopQuestEndDesc.fExp = m_EventList.front().fExp;
+				PopQuestEndDesc.iMoney = m_EventList.front().iMoney;
+				PopQuestEndDesc.strQuestTitle = m_EventList.front().strQuestTitle;
+				PopQuestEndDesc.vecRewards = m_EventList.front().vecRewards;
 
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pop"), TEXT("Prototype_GameObject_Pop_QuestEnd"), &PopQuestEndDesc)))
 					return;
-				m_vecPopEvents.erase(m_vecPopEvents.begin());
+				m_EventList.pop_front();
 			}
 			break;
 			case TUTORIAL:
@@ -107,7 +108,7 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 				TutoDesc.eTuto = m_eCurTuto;
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pop"), TEXT("Prototype_GameObject_Tutorial"), &TutoDesc)))
 					return;
-				m_vecPopEvents.erase(m_vecPopEvents.begin());
+				m_EventList.pop_front();
 
 				if (m_eCurTuto == T_OPENINVEN|| m_eCurTuto == T_OPENSKILL)
 				{
@@ -124,18 +125,24 @@ void CEvent_Manager::Tick(_float fTimeDelta)
 			case UNLOCKSKILL:
 			{
 				CPop_Skill::SKILLIN_DESC Desc{};
-				Desc.iSkillLevel = m_vecPopEvents.front().iNum;
+				Desc.iSkillLevel = m_EventList.front().iNum;
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Pop"), TEXT("Prototype_GameObject_PopSkill"), &Desc)))
 				{
 					return;
 				}
 				m_pGameInstance->Play_Sound(TEXT("UI_Synthesis_Success_SFX_01"));
-				m_vecPopEvents.erase(m_vecPopEvents.begin());
+				m_EventList.pop_front();
 			}
 			break;
 			}
 			m_isWaiting = true;
 		}
+	}
+
+	if (m_QuestTrigger[TUTO_TRIGGER] && m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY && not m_pGameInstance->Is_Playing_Video())
+	{
+		m_QuestTrigger[TUTO_TRIGGER] = false;
+		m_pGameInstance->Level_ShutDown(LEVEL_GAMEPLAY);
 	}
 
 	m_pQuest->Tick(fTimeDelta);
@@ -161,53 +168,82 @@ HRESULT CEvent_Manager::Init_Quest()
 		return E_FAIL;
 	}
 
+	vector<pair<wstring, _uint>> vecRewards;
+
 	EVENT_DESC tDesc = {};
 	tDesc.eType = QUESTIN;
 	tDesc.fExp = 1.7f;
 	tDesc.iNum = 1;
 	tDesc.iMoney = 1000;
+	tDesc.isMain = true;
+	tDesc.strQuestTitle = TEXT("몬스터 처치");
+	tDesc.strText = TEXT("갑판 위 몬스터 처치하기");
+	vecRewards.push_back(make_pair(TEXT("[일반]탈 것 소환 카드"), 10));
+	vecRewards.push_back(make_pair(TEXT("[유니크]신비한 알"), 1));
+	vecRewards.push_back(make_pair(TEXT("마나하임의 갑옷"), 1));
+	vecRewards.push_back(make_pair(TEXT("바이킹의 투구"), 1));
+	vecRewards.push_back(make_pair(TEXT("거인의 강철 단검"), 1));
+	vecRewards.push_back(make_pair(TEXT("거인의 강철 활"), 1));
+	tDesc.vecRewards = vecRewards;
+	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
+
+	vecRewards.clear();
+	tDesc.vecRewards = vecRewards;
+	tDesc.eType = QUESTIN;
+	tDesc.fExp = 50.f;
+	tDesc.iNum = 3;
+	tDesc.iMoney = 500000;
 	tDesc.isMain = false;
-	tDesc.strQuestTitle = TEXT("퀘스트!");
-	tDesc.strText = TEXT("그냥");
+	tDesc.strQuestTitle = TEXT("로스크바의 부탁");
+	tDesc.strText = TEXT("토끼 세마리 잡기");
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	tDesc.eType = QUESTIN;
-	tDesc.fExp = 1.3f;
+	tDesc.fExp = 20.f;
 	tDesc.iNum = 1;
-	tDesc.iMoney = 1000;
+	tDesc.iMoney = 10000;
 	tDesc.isMain = false;
-	tDesc.strQuestTitle = TEXT("이동하기");
-	tDesc.strText = TEXT("이동을 해봐");
-	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
-
-	tDesc.eType = QUESTIN;
-	tDesc.fExp = 5.6f;
-	tDesc.iNum = 1;
-	tDesc.iMoney = 1000;
-	tDesc.isMain = true;
-	tDesc.strQuestTitle = TEXT("점프하기");
-	tDesc.strText = TEXT("스페이스바를 눌러 쩜프해봐");
-	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
-		
-	
-	tDesc.eType = QUESTIN;
-	tDesc.fExp = 100.f;
-	tDesc.iNum = 1;
-	tDesc.iMoney = 1000;
-	tDesc.isMain = true;
 	tDesc.strQuestTitle = TEXT("체력포션 구매");
 	tDesc.strText = TEXT("마을 상인에게 체력포션 구매하기");
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 	
 	tDesc.eType = QUESTIN;
-	tDesc.fExp = 100.f;
-	tDesc.iNum = 3;
+	tDesc.fExp = 20.5f;
+	tDesc.iNum = 1;
+	tDesc.iMoney = 10000;
+	tDesc.isMain = true;
+	tDesc.strQuestTitle = TEXT("그로아씨 찾기");
+	tDesc.strText = TEXT("던전에 있는 그로아 찾기");
+	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
+
+	tDesc.eType = QUESTIN;
+	tDesc.fExp = 12.3f;
+	tDesc.iNum = 2;
 	tDesc.iMoney = 10000;
 	tDesc.isMain = false;
-	tDesc.strQuestTitle = TEXT("로스크바의 부탁");
-	tDesc.strText = TEXT("토끼 세마리 잡기");
+	tDesc.strQuestTitle = TEXT("채집하기");
+	tDesc.strText = TEXT("소금광석 채집하기");
+	vecRewards.push_back(make_pair(TEXT("폭군 수드리의 활"), 1));
+	vecRewards.push_back(make_pair(TEXT("폭군 수드리의 단검"), 1));
+	tDesc.vecRewards = vecRewards;
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
-	
+
+	vecRewards.clear();
+
+	tDesc.eType = QUESTIN;
+	tDesc.fExp = 15.6f;
+	tDesc.iNum = 2;
+	tDesc.iMoney = 10000;
+	tDesc.isMain = false;
+	tDesc.strQuestTitle = TEXT("염소잡기");
+	tDesc.strText = TEXT("염소 두마리 잡기");
+	vecRewards.push_back(make_pair(TEXT("[희귀]탈 것 소환 카드"), 10));
+	vecRewards.push_back(make_pair(TEXT("[신화]탈 것 소환 카드"), 10));
+	tDesc.vecRewards = vecRewards;
+	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
+
+	vecRewards.clear();
+	tDesc.vecRewards = vecRewards;
 	tDesc.eType = QUESTIN;
 	tDesc.fExp = 14.6f;
 	tDesc.iNum = 1;
@@ -220,7 +256,7 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.eType = QUESTIN;
 	tDesc.fExp = 20.3f;
 	tDesc.iNum = 3;//몬스터 수만큼? 
-	tDesc.iMoney = 100000; 
+	tDesc.iMoney = 10000; 
 	tDesc.isMain = true;
 	tDesc.strQuestTitle = TEXT("그로아를 지켜라");
 	tDesc.strText = TEXT("몬스터로부터 그로아 지키기");
@@ -229,7 +265,7 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.eType = QUESTIN;
 	tDesc.fExp = 10.2f;// 몬스터 수만큼 ?
 	tDesc.iNum = 1;
-	tDesc.iMoney = 1000;
+	tDesc.iMoney = 10000;
 	tDesc.isMain = true;
 	tDesc.strQuestTitle = TEXT("그로아를 찾아서");
 	tDesc.strText = TEXT("남편 흔적 찾는 그로아 찾기");
@@ -257,6 +293,7 @@ HRESULT CEvent_Manager::Update_Quest(const wstring& strQuest)
 			m_QuestTrigger[GROAR_MONSTER] = true;
 			Set_Quest(TEXT("그로아를 찾아서"));
 		}
+
 	}
 	return S_OK;
 }
@@ -266,7 +303,7 @@ void CEvent_Manager::Set_LevelUp(_uint iLevel)
 	Desc.eType = LEVELUP;
 	Desc.iNum = iLevel;
 
-	m_vecPopEvents.push_back(Desc);
+	m_EventList.push_back(Desc);
 	m_isEventIn = true;
 
 }
@@ -276,7 +313,7 @@ void CEvent_Manager::Set_SkillUnlock(_uint iIndex)
 	Desc.eType = UNLOCKSKILL;
 	Desc.iNum = iIndex;
 
-	m_vecPopEvents.push_back(Desc);
+	m_EventList.push_back(Desc);
 	m_isEventIn = true;
 }
 void CEvent_Manager::Set_Alert(const wstring strAlert)
@@ -314,7 +351,7 @@ void CEvent_Manager::Set_TutorialSeq(TUTO_SEQ eTuto)
 			m_isTutoStarted = true;
 			EVENT_DESC Desc = {};
 			Desc.eType = TUTORIAL;
-			m_vecPopEvents.push_back(Desc);
+			m_EventList.push_back(Desc);
 			return;
 		}
 
@@ -333,7 +370,7 @@ void CEvent_Manager::Set_TutorialSeq(TUTO_SEQ eTuto)
 		m_isEventIn = true;
 		EVENT_DESC Desc = {};
 		Desc.eType = TUTORIAL;
-		m_vecPopEvents.push_back(Desc);
+		m_EventList.push_back(Desc);
 	}
 }
 
@@ -378,7 +415,7 @@ HRESULT CEvent_Manager::Set_Quest(const wstring& strQuest)
 	}
 
 
-	m_vecPopEvents.push_back(m_QuestMap[strQuest]);
+	m_EventList.push_back(m_QuestMap[strQuest]);
 	m_isEventIn = true;
 
 	return S_OK;
@@ -386,7 +423,7 @@ HRESULT CEvent_Manager::Set_Quest(const wstring& strQuest)
 HRESULT CEvent_Manager::Set_Event(EVENT_DESC pDesc)
 {
 	m_isWaiting = false;
-	m_vecPopEvents.push_back(pDesc);
+	m_EventList.push_back(pDesc);
 	m_isEventIn = true;
 
 	return S_OK;

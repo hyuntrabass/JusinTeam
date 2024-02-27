@@ -30,8 +30,6 @@ HRESULT CItemMerchant::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-	//m_pTransformCom->Set_State(State::Pos, _vec4(static_cast<_float>(rand() % 20), 0.f, static_cast<_float>(rand() % 20), 1.f));
-	m_pTransformCom->Set_State(State::Pos, _vec4(75.f, 0.f, 100.f, 1.f));
 
 	m_Animation.iAnimIndex = IDLE;
 	m_Animation.isLoop = true;
@@ -95,6 +93,7 @@ void CItemMerchant::Tick(_float fTimeDelta)
 	m_isColl = isColl;
 	if (!m_bTalking && isColl && m_pGameInstance->Key_Down(DIK_E))
 	{
+	
 		CFadeBox::FADE_DESC Desc = {};
 		Desc.fIn_Duration = 0.5f;
 		Desc.fOut_Duration = 1.f;
@@ -124,21 +123,22 @@ void CItemMerchant::Tick(_float fTimeDelta)
 
 void CItemMerchant::Late_Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 2.f))
+	if (m_bTalking)
 	{
-		if (m_bTalking == true)
-		{
-			m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 1000.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));
-			m_pShop->Late_Tick(fTimeDelta);
-		}
-		else
+		m_pTransformCom->Set_State(State::Pos, _vec4(m_pTransformCom->Get_State(State::Pos).x, 1000.f, m_pTransformCom->Get_State(State::Pos).z, 1.f));
+		m_pShop->Late_Tick(fTimeDelta);
+	}
+
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 5.f))
+	{
+		
+		if (!m_bTalking)
 		{
 			if (m_isColl)
 			{
 				m_pSpeechBubble->Late_Tick(fTimeDelta);
 			}
 		}
-
 		__super::Late_Tick(fTimeDelta);
 	}
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "TowerObject.h"
+#include "Trigger_Manager.h"
 
 CTowerObject::CTowerObject(_dev pDevice, _context pContext)
 	: CObjects(pDevice, pContext)
@@ -43,6 +44,10 @@ void CTowerObject::Tick(_float fTimeDelta)
 
 void CTowerObject::Late_Tick(_float fTimeDelta)
 {
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Village)
+	{
+		return;
+	}
 	__super::Late_Tick(fTimeDelta);
 }
 

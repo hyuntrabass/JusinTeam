@@ -27,11 +27,15 @@ private:
 
 private:
 
-	_uint			m_iSelect{};
 	_bool			m_isPrototype{ false };
-	CItemSlot*		m_pSlots[ITEMSLOT_END];
+	_bool			m_isCoolTime{ false };
+	_uint			m_iSelect{};
 
-	CTextButton*	m_pSelect{ nullptr };
+	_float			m_fTime{};
+	CItemSlot* m_pSlots[ITEMSLOT_END]{};
+
+	class CTextButton*	m_pSelect{ nullptr };
+	class CTextButtonColor*	m_pMask{ nullptr };
 
 private:
 	HRESULT Add_Components();

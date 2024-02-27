@@ -503,7 +503,20 @@ HRESULT CShop::Init_ShopItems()
 	m_vecShopItems[EXPENDABLE].push_back(pShopDesc);
 
 
-	ShopDesc.strItemName = TEXT("마나하임의 갑옷");
+
+
+	ShopDesc.strItemName = TEXT("가죽 마스크");
+	ShopDesc.vPosition = _vec2(235.f, fStartY + fShopDescY * iEquipIndex + fTerm * iEquipIndex);
+	pShopDesc = (CShopDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_ShopDesc"), &ShopDesc);
+	if (not pShopDesc)
+	{
+		return E_FAIL;
+	}
+	m_vecShopItems[EQUIP].push_back(pShopDesc);
+	
+	iEquipIndex++;
+
+	ShopDesc.strItemName = TEXT("고대 그림자 투구");
 	ShopDesc.vPosition = _vec2(235.f, fStartY + fShopDescY * iEquipIndex + fTerm * iEquipIndex);
 	pShopDesc = (CShopDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_ShopDesc"), &ShopDesc);
 	if (not pShopDesc)
@@ -514,7 +527,7 @@ HRESULT CShop::Init_ShopItems()
 
 	iEquipIndex++;
 
-	ShopDesc.strItemName = TEXT("가죽 마스크");
+	ShopDesc.strItemName = TEXT("고대 그림자 로브");
 	ShopDesc.vPosition = _vec2(235.f, fStartY + fShopDescY * iEquipIndex + fTerm * iEquipIndex);
 	pShopDesc = (CShopDesc*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_ShopDesc"), &ShopDesc);
 	if (not pShopDesc)
@@ -522,6 +535,8 @@ HRESULT CShop::Init_ShopItems()
 		return E_FAIL;
 	}
 	m_vecShopItems[EQUIP].push_back(pShopDesc);
+
+
 	return S_OK;
 }
 

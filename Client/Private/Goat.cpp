@@ -1,5 +1,6 @@
 #include "Goat.h"
 #include "UI_Manager.h"
+#include "Event_Manager.h"
 
 const _float CGoat::m_fChaseRange = 5.f;
 const _float CGoat::m_fAttackRange = 2.f;
@@ -57,7 +58,6 @@ HRESULT CGoat::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
-	m_pTransformCom->Set_Position(_vec3(100.f, 8.f, 108.f));
 	m_MonsterHpBarPos = _vec3(0.f, 1.2f, 0.f);
 
 	//if (pArg)
@@ -105,21 +105,28 @@ HRESULT CGoat::Render()
 
 void CGoat::Set_Damage(_int iDamage, _uint iDamageType)
 {
-	m_fHittedTime = 6.f;
-	m_eCurState = STATE_HIT;
+	if (iDamage > 0)
+	{
+		m_eCurState = STATE_HIT;
 
-	m_iHP -= iDamage;
-	m_bDamaged = true;
-	m_bChangePass = true;
+		m_iHP -= iDamage;
+		m_bDamaged = true;
+		m_bChangePass = true;
+		m_fIdleTime = 0.f;
+
+		m_fHittedTime = 6.f;
+
+		CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 1.5f), (ATTACK_TYPE)iDamageType);
+
+		_vec4 vPlayerPos = __super::Compute_PlayerPos();
+		m_pTransformCom->LookAt(vPlayerPos);
+
+	}
+
 	if (m_bHit == false)
 	{
 		m_iDamageAcc += iDamage;
 	}
-
-	m_fIdleTime = 0.f;
-
-	_vec4 vPlayerPos = __super::Compute_PlayerPos();
-	m_pTransformCom->LookAt(vPlayerPos);
 
 	if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
 		iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
@@ -142,6 +149,12 @@ void CGoat::Set_Damage(_int iDamage, _uint iDamageType)
 		// 이속 느려지게
 		m_pTransformCom->Set_Speed(0.5f);
 	}
+
+	if (iDamageType == AT_OutLine && !m_bChangePass)
+	{
+		m_iPassIndex = AnimPass_OutLine;
+	}
+
 }
 
 void CGoat::Init_State(_float fTimeDelta)
@@ -438,6 +451,7 @@ void CGoat::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->IsAnimationFinished(DIE))
 		{
+			CEvent_Manager::Get_Instance()->Update_Quest(TEXT("염소잡기"));
 			m_fDeadTime += fTimeDelta;
 		}
 
