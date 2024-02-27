@@ -19,6 +19,7 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 
 private:
+	CTransform* m_pPlayerTransform = { nullptr };
 	_randNum m_RandomNumber;
 	list<class CVTFMonster*> m_Monsters;
 	vector<_vec3> m_SpawnPositions;
