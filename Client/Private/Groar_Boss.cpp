@@ -240,16 +240,19 @@ void CGroar_Boss::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	if (m_eCurState == STATE_BOSS)
 	{
-		m_iHP -= iDamage;
-		m_bChangePass = true;
+		if (iDamage > 0)
+		{
+			m_iHP -= iDamage;
+			m_bChangePass = true;
 
-		m_pHpBoss->Set_HP(m_iHP);
+			m_pHpBoss->Set_HP(m_iHP);
 
-		_uint iRandomX = rand() % 100;
-		_uint iRandomY = rand() % 100 + 230;
-		_vec2 vDamagePos = _vec2((_float)(iRandomX - 50) * 0.01f, (_float)iRandomY * 0.01f);
-		CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, vDamagePos, (ATTACK_TYPE)iDamageType);
-	}	
+			_uint iRandomX = rand() % 100;
+			_uint iRandomY = rand() % 100 + 230;
+			_vec2 vDamagePos = _vec2((_float)(iRandomX - 50) * 0.01f, (_float)iRandomY * 0.01f);
+			CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, vDamagePos, (ATTACK_TYPE)iDamageType);
+		}
+	}
 	
 	//if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
 	//	iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
@@ -668,6 +671,9 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 	case Client::CGroar_Boss::BOSS_STATE_THROW_ATTACK:
 
+	{
+		_float fAnimPos = m_pBossModelCom->Get_CurrentAnimPos();
+
 		if (m_pBossModelCom->Get_CurrentAnimationIndex() == MON_GROAR_ASGARD_ATTACK00)
 		{
 			if (m_pBossModelCom->Get_CurrentAnimPos() >= 10.f && !m_bCreateMissile)
@@ -679,10 +685,10 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 				++m_iThrowAttackCombo;
 			}
 
-			if (m_pBossModelCom->Get_CurrentAnimPos() < 10.f)
-			{
-				m_bCreateMissile = false;
-			}
+			//if (m_pBossModelCom->Get_CurrentAnimPos() < 10.f)
+			//{
+			//	m_bCreateMissile = false;
+			//}
 
 			if (m_pBossModelCom->Get_CurrentAnimPos() <= 38.f)
 			{
@@ -702,10 +708,10 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 				++m_iThrowAttackCombo;
 			}
 
-			if (m_pBossModelCom->Get_CurrentAnimPos() < 15.f)
-			{
-				m_bCreateMissile = false;
-			}
+			//if (m_pBossModelCom->Get_CurrentAnimPos() < 15.f)
+			//{
+			//	m_bCreateMissile = false;
+			//}
 
 			if (m_pBossModelCom->Get_CurrentAnimPos() <= 51.f)
 			{
@@ -724,10 +730,14 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 			m_eBossCurState = BOSS_STATE_CHASE;
 		}
+	}
 
 		break;
 
 	case Client::CGroar_Boss::BOSS_STATE_SIX_MISSILE:
+
+	{
+		_float fAnimPos = m_pBossModelCom->Get_CurrentAnimPos();
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 60.f && !m_bCreateMissile)
 		{
@@ -755,10 +765,14 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			m_eBossCurState = BOSS_STATE_CHASE;
 			m_bAttack_Selected[ATTACK_SIX_MISSILE] = true;
 		}
+	}
 
 		break;
 
 	case Client::CGroar_Boss::BOSS_STATE_TAKE_DOWN:
+
+	{
+		_float fAnimPos = m_pBossModelCom->Get_CurrentAnimPos();
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 69.f && m_pBossModelCom->Get_CurrentAnimPos() <= 72.f)
 		{
@@ -810,10 +824,14 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			m_eBossCurState = BOSS_STATE_CHASE;
 			m_bAttack_Selected[ATTACK_TAKE_DOWN] = true;
 		}
+	}
 
 		break;
 
 	case Client::CGroar_Boss::BOSS_STATE_SPIDER:
+
+	{
+		_float fAnimPos = m_pBossModelCom->Get_CurrentAnimPos();
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 80.f && !m_bCreateSpider)
 		{
@@ -830,10 +848,15 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			m_eBossCurState = BOSS_STATE_CHASE;
 			m_bAttack_Selected[ATTACK_SPIDER] = true;
 		}
+	}
 
 		break;
 
 	case Client::CGroar_Boss::BOSS_STATE_TENTACLE:
+
+	{
+		_float fAnimPos = m_pBossModelCom->Get_CurrentAnimPos();
+
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 48.f)
 		{
 			m_fTentacleTime += fTimeDelta;
@@ -851,10 +874,14 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			m_bAttack_Selected[ATTACK_TENTACLE] = true;
 			m_fTentacleTime = 0.f;
 		}
+	}
 
 		break;
 
 	case Client::CGroar_Boss::BOSS_STATE_XBEAM:
+
+	{
+		_float fAnimPos = m_pBossModelCom->Get_CurrentAnimPos();
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() < 102.f)
 		{
@@ -880,10 +907,14 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			m_bAttack_Selected[ATTACK_XBEAM] = true;
 			m_bCreateXBeam = false;
 		}
+	}
 
 		break;
 
 	case Client::CGroar_Boss::BOSS_STATE_RAGE:
+
+	{
+		_float fAnimPos = m_pBossModelCom->Get_CurrentAnimPos();
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 95.f && m_pBossModelCom->Get_CurrentAnimPos() <= 175.f)
 		{
@@ -911,6 +942,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			m_eBossCurState = BOSS_STATE_CHASE;
 			m_bAttack_Selected[ATTACK_YELL] = true;
 		}
+	}
 
 		break;
 

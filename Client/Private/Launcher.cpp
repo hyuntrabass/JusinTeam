@@ -56,11 +56,10 @@ HRESULT CLauncher::Init(void* pArg)
 	case Client::CLauncher::TYPE_LASER:
 
 		m_strModelTag = TEXT("Prototype_Model_Cannon");
-		m_Animation.iAnimIndex = 3;
+		m_Animation.iAnimIndex = 0;
 		m_Animation.isLoop = true;
-		m_Animation.fAnimSpeedRatio = 2.f;
+		m_Animation.fAnimSpeedRatio = 1.7f;
 
-		m_pTransformCom->Set_Scale(_vec3(0.3f));
 		m_pTransformCom->Set_Position(CENTER_POS);
 
 		m_iPassIndex = AnimPass_Dissolve;
@@ -138,9 +137,10 @@ void CLauncher::Tick(_float fTimeDelta)
 
 	case Client::CLauncher::TYPE_LASER:
 
+	{
 		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 		_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
+		_vec3 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 		vDir.y = 0.f;
 
 		if (m_iPassIndex == AnimPass_Rim)
@@ -149,11 +149,12 @@ void CLauncher::Tick(_float fTimeDelta)
 			{
 				m_pTransformCom->LookAt_Dir(vDir);
 			}
-			else
-			{
-				m_Animation.iAnimIndex = 0;
-			}
+			//else
+			//{
+			//	m_Animation.iAnimIndex = 0;
+			//}
 		}
+	}
 
 		break;
 	case Client::CLauncher::TYPE_PIZZA:

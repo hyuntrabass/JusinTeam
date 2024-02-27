@@ -1248,8 +1248,9 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	_mat CannonPivot = _mat::CreateScale(0.3f);
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Cannon"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/SurvivalGame/Cannon/Mesh/Cannon.hyuntraanimmesh"))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/SurvivalGame/Cannon/Mesh/Cannon.hyuntraanimmesh", false, CannonPivot))))
 	{
 		return E_FAIL;
 	}

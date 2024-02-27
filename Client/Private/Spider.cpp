@@ -77,7 +77,7 @@ HRESULT CSpider::Init(void* pArg)
 		m_bDirSelected[iRandomDir] = true;
 	}
 
-	m_pTransformCom->Set_Position(_vec3(vGroarPos + 10 * vDir[iRandomDir]));
+	m_pTransformCom->Set_FootPosition(_vec3(vGroarPos + 10 * vDir[iRandomDir]));
 	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
 
 	++m_iSpiderID;
@@ -133,8 +133,10 @@ HRESULT CSpider::Render()
 void CSpider::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	//m_iHP = 0;
-	m_eCurState = STATE_DIE;
-
+	if (iDamage > 0)
+	{
+		m_eCurState = STATE_DIE;
+	}
 	//m_bDamaged = true;
 
 	//_vec4 vPlayerPos = __super::Compute_PlayerPos();
