@@ -12,6 +12,7 @@ public:
 	{
 		wstring strModelTag;
 		_vec3 vPosition{};
+		CTransform* pPlayerTransform;
 
 	}VTFMONSTER_DESC;
 

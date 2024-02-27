@@ -502,6 +502,12 @@
     <Filter Include="02.GameObjects\08. Boss\Human_Boss\Sickle\Trap">
       <UniqueIdentifier>{9048c3c2-baf3-489d-ae02-26f87e1d450b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\16.SescoGame\Static">
+      <UniqueIdentifier>{5a1475cc-3ffa-4ca0-8bec-dc9d3fd24cd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\16.SescoGame\Static\Log">
+      <UniqueIdentifier>{4c975945-a265-49f5-9a57-6a4709909cd0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1033,6 +1039,9 @@
     <ClInclude Include="..\Public\CescoGame.h">
       <Filter>02.GameObjects\16.SescoGame</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Log.h">
+      <Filter>02.GameObjects\16.SescoGame\Static\Log</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1561,6 +1570,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\CescoGame.cpp">
       <Filter>02.GameObjects\16.SescoGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Log.cpp">
+      <Filter>02.GameObjects\16.SescoGame\Static\Log</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
