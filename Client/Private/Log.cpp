@@ -17,6 +17,15 @@ HRESULT CLog::Init_Prototype()
 
 HRESULT CLog::Init(void* pArg)
 {
+    PxCapsuleControllerDesc ControllerDesc{};
+    ControllerDesc.height = 1.2f; // 높이(위 아래의 반구 크기 제외
+    ControllerDesc.radius = 0.5f; // 위아래 반구의 반지름
+    ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+    ControllerDesc.slopeLimit = cosf(PxDegToRad(1.f)); // 캐릭터가 오를 수 있는 최대 각도
+    ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+    ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+    m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+
     if (pArg)
     {
         LOG_DESC* pLogDesc = reinterpret_cast<LOG_DESC*>(pArg);
@@ -27,12 +36,50 @@ HRESULT CLog::Init(void* pArg)
     if (FAILED(Add_Components()))
         return E_FAIL;
 
+    m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
+
+    m_iPassIndex = StaticPass_Default;
+
     return S_OK;
 }
 
 void CLog::Tick(_float fTimeDelta)
 {
     m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+
+    if (m_IsFall)
+    {
+        m_fFallTime += fTimeDelta;
+
+        m_pTransformCom->Set_OldMatrix();
+        m_pTransformCom->Gravity(fTimeDelta);
+        if (not m_pTransformCom->Is_Jumping())
+        {
+            if (m_fJumpForce >= 0.f)
+            {
+                m_pTransformCom->Jump(m_fJumpForce);
+            }
+        }
+        else
+        {
+            m_fJumpForce -= fTimeDelta * 5.f;
+        }
+
+        m_pGameInstance->Attack_Monster(m_pBodyColliderCom, 1000);
+
+        if (m_fJumpForce <= 0.f)
+        {
+            m_fDissolveRatio += fTimeDelta;
+            m_iPassIndex = StaticPass_MaskDissolve;
+
+            m_pTransformCom->Delete_Controller();
+            m_pGameInstance->Delete_CollisionObject(this);
+            if (m_fDissolveRatio >= 1.f)
+            {
+                Kill();
+            }
+        }
+    }
 }
 
 void CLog::Late_Tick(_float fTimeDelta)
@@ -67,7 +114,7 @@ HRESULT CLog::Render()
             HasNorTex = true;
         }
 
-        if (FAILED(m_pShaderCom->Begin(StaticPass_Default)))
+        if (FAILED(m_pShaderCom->Begin(m_iPassIndex)))
         {
             return E_FAIL;
         }
@@ -80,12 +127,12 @@ HRESULT CLog::Render()
     return S_OK;
 }
 
-void CLog::Init_State(_float fTimeDelta)
+void CLog::Set_Damage(_int iDamage, _uint MonAttType)
 {
-}
-
-void CLog::Tick_State(_float fTimeDelta)
-{
+    if (MonAttType == AT_Bow_Skill2)
+    {
+        m_IsFall = true;
+    }
 }
 
 HRESULT CLog::Add_Components()
@@ -111,8 +158,8 @@ HRESULT CLog::Add_Components()
     }
 
 	Collider_Desc ColliderDesc{};
-	ColliderDesc.eType = ColliderType::AABB;
-	ColliderDesc.vExtents = _vec3(1.f, 1.2f, 1.f);
+	ColliderDesc.eType = ColliderType::OBB;
+	ColliderDesc.vExtents = _vec3(0.5f, 0.5f, 2.f);
 	ColliderDesc.vCenter = _vec3(0.f, ColliderDesc.vExtents.y, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pBodyColliderCom), &ColliderDesc)))
@@ -172,6 +219,11 @@ HRESULT CLog::Bind_ShaderResources()
         return E_FAIL;
     }
 
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
+    {
+        return E_FAIL;
+    }
+
     return S_OK;
 }
 
@@ -204,4 +256,10 @@ CGameObject* CLog::Clone(void* pArg)
 void CLog::Free()
 {
 	__super::Free();
+
+    Safe_Release(m_pModelCom);
+    Safe_Release(m_pShaderCom);
+    Safe_Release(m_pRendererCom);
+    Safe_Release(m_pBodyColliderCom);
+    Safe_Release(m_pDissolveTextureCom);
 }
