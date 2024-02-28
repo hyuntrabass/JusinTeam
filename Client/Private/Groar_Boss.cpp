@@ -470,6 +470,8 @@ void CGroar_Boss::Init_State(_float fTimeDelta)
 
 			_uint iRandomExp = rand() % 100;
 			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(1000.f + (_float)iRandomExp / 2.f * 0.1f);
+			CUI_Manager::Get_Instance()->Set_isBoss(false);
+			Safe_Release(m_pHpBoss);
 
 			break;
 		}
