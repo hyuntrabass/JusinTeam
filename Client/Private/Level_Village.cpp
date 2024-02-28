@@ -55,6 +55,12 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
+	if (FAILED(Ready_DragonMap_Effect()))
+	{
+		MSG_BOX("Failed to Ready DragonMap Effect");
+		return E_FAIL;
+	}
+
 	if (FAILED(Ready_Interaction()))
 	{
 		MSG_BOX("Failed to Ready Interaction");
@@ -141,15 +147,6 @@ HRESULT CLevel_Village::Init()
 
 	EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Water_Decal");
 	EffectDesc.pMatrix = &FountainMat;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
-
-	_mat SparkMat = _mat::CreateTranslation(_vec3(3000.f, -1.5f, 3000.f));
-	EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"MapSpark");
-	EffectDesc.pMatrix = &SparkMat;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
-	SparkMat = _mat::CreateTranslation(_vec3(3000.f, 3.f, 3000.f));
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
-	SparkMat = _mat::CreateTranslation(_vec3(3000.f, 1.5f, 3000.f));
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 
 	if (FAILED(Ready_Statue()))
@@ -903,6 +900,55 @@ HRESULT CLevel_Village::Ready_Survival_Game()
 	{
 		return E_FAIL;
 	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_DragonMap_Effect()
+{
+	_mat SparkMat = _mat::CreateTranslation(_vec3(3000.f, -1.5f, 3000.f));
+	EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"MapSpark");
+	EffectDesc.pMatrix = &SparkMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+	SparkMat = _mat::CreateTranslation(_vec3(3000.f, 3.f, 3000.f));
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+	SparkMat = _mat::CreateTranslation(_vec3(3000.f, 1.5f, 3000.f));
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+
+
+	std::ifstream InFile(L"../Bin/Data/DragonMap_Effect.dat", std::ios::binary);
+
+	if (InFile.is_open())
+	{
+		_uint EffectListSize;
+		InFile.read(reinterpret_cast<char*>(&EffectListSize), sizeof(_uint));
+
+		for (_uint i = 0; i < EffectListSize; ++i)
+		{
+			_ulong EffectNameSize;
+			InFile.read(reinterpret_cast<char*>(&EffectNameSize), sizeof(_ulong));
+
+			wstring EffectName;
+			EffectName.resize(EffectNameSize);
+			InFile.read(reinterpret_cast<char*>(&EffectName[0]), EffectNameSize * sizeof(wchar_t));
+
+			_bool isFollow{ false };
+			InFile.read(reinterpret_cast<char*>(&isFollow), sizeof(_bool));
+
+			_float EffectSize{};
+			InFile.read(reinterpret_cast<char*>(&EffectSize), sizeof(_float));
+
+			_mat EffectWorldMat;
+			InFile.read(reinterpret_cast<char*>(&EffectWorldMat), sizeof(_mat));
+
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(EffectName);
+			Info.pMatrix = &EffectWorldMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+		}
+
+		InFile.close();
+	}
+
 
 	return S_OK;
 }
