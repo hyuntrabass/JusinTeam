@@ -133,7 +133,7 @@ HRESULT CSickle::Add_Components()
 	CollDesc.vCenter = _vec3(0.f);
 	CollDesc.fRadius = 2.7f;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_SafeZone_Collider"), (CComponent**)&m_pColliderCom, &CollDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider"), (CComponent**)&m_pColliderCom, &CollDesc)))
 	{
 		return E_FAIL;
 	}
