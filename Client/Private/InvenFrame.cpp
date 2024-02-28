@@ -615,7 +615,7 @@ void CInvenFrame::ItemSlot_Logic(_uint iSlotIdx, _uint iIndex)
 			Set_ItemPosition(m_eCurInvenType);
 		}
 	}
-	m_pGameInstance->Play_Sound(TEXT("ItemEquip"), 1.f);
+	m_pGameInstance->Play_Sound(TEXT("Potion"));
 }
 
 void CInvenFrame::ItemSlot_Delete_Logic(_uint iSlotIdx)
@@ -822,6 +822,7 @@ void CInvenFrame::Picking_InvenButton(POINT ptMouse)
 				if (m_pSelectSlot[j]->Is_Full())
 				{
 					ItemSlot_Delete_Logic(j);
+					m_pGameInstance->Play_Sound(TEXT("UI_Item_Mounting"));
 					break;
 				}
 			}
@@ -987,11 +988,17 @@ void CInvenFrame::Inven_Tick(_float fTimeDelta, POINT ptMouse)
 			dynamic_cast<CTextButton*>(m_pResetSymbol)->Set_Size(20.f, 20.f);
 			if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Engine) && !m_isPicking)
 			{
+				_bool IsPlayingSound = {};
 				for (_uint i = 0; i < 4; i++)
 				{
 					if (m_pSelectSlot[i]->Is_Full())
 					{
 						ItemSlot_Delete_Logic(i);
+						if (not IsPlayingSound)
+						{
+							m_pGameInstance->Play_Sound(TEXT("UI_Item_Mounting"));
+							IsPlayingSound = true;
+						}
 					}
 				}
 			}

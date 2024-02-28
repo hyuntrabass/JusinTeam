@@ -308,8 +308,10 @@ void CBlackSmith::Play_TalkSound(const wstring& strTalkText)
 		strTalkText == m_strLines[6] ||
 		strTalkText == m_strLines[8] ||
 		strTalkText == m_strLines[9] ||
-		strTalkText == m_strLines[10] ||
-		strTalkText == m_strLines[11])
+		strTalkText == m_strLines[13] ||
+		strTalkText == m_strLines[14] ||
+		strTalkText == m_strLines[15] ||
+		strTalkText == m_strLines[16])
 	{
 		if (m_iSoundChannel != -1)
 		{
@@ -320,6 +322,11 @@ void CBlackSmith::Play_TalkSound(const wstring& strTalkText)
 		{
 			m_IsSoundSkip = true;
 			m_fSoundSkipRatio = 0.4f;
+		}
+		else if (strTalkText == m_strLines[8])
+		{
+			m_IsSoundSkip = true;
+			m_fSoundSkipRatio = 0.5f;
 		}
 		m_iSoundChannel = m_pGameInstance->Play_Sound(m_TalkSounds.front());
 		m_TalkSounds.pop_front();

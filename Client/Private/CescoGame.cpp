@@ -148,7 +148,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 					if (Pair.second == vPos)
 					{
 						HasPosition = true;
-						continue;
+						break;
 					}
 				}
 			}
@@ -161,7 +161,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 					if (Pair.second == vPos)
 					{
 						HasPosition = true;
-						continue;
+						break;
 					}
 				}
 			}
