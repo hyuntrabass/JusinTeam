@@ -378,10 +378,6 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		m_eState = Collect_Start;
 	}
-	if (m_pGameInstance->Key_Down(DIK_Z))
-	{
-		Set_Damage(0, MonAtt_Poison);
-	}
 
 	if (m_pGameInstance->Key_Down(DIK_C))
 	{
@@ -1271,6 +1267,8 @@ HRESULT CPlayer::Add_Riding()
 
 void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 {
+	m_bMove_AfterSkill = true;
+
 	if (m_eState == Revival_Start or m_eState == Revival_End or m_eState == Die)
 	{
 		return;

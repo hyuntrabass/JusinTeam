@@ -12,6 +12,7 @@ CCescoGame::CCescoGame(const CCescoGame& rhs)
 	:CGameObject(rhs)
 	, m_pPlayerTransform(rhs.m_pPlayerTransform)
 {
+	Safe_AddRef(m_pPlayerTransform);
 }
 
 HRESULT CCescoGame::Init_Prototype()
@@ -37,19 +38,7 @@ HRESULT CCescoGame::Init(void* pArg)
 	m_RandomNumber = _randNum(rand());
 
 	CLog::LOG_DESC LogDesc{};
-	CHook::HOOK_DESC HookDesc{};
-	_randInt RandomDir(1, 4);
-
-	for (_uint i = 0; i < m_SpawnPositions.size(); i++)
-	{
-		HookDesc.WorldMatrix = _mat::CreateScale(1.f, 2.f, 1.f);
-		_vec3 vSpawnPos = m_SpawnPositions[i];
-		HookDesc.WorldMatrix.Position_vec3(vSpawnPos);
-		if (FAILED(m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Hook"), TEXT("Prototype_GameObject_Hook_Object"), &HookDesc)))
-		{
-			return E_FAIL;
-		}
-	}
+	
 	for (_uint i = 0; i < m_SpawnPositions.size(); i++)
 	{
 		LogDesc.WorldMatrix = _mat::CreateScale(3.f, 3.f, 10.f);
@@ -75,9 +64,14 @@ HRESULT CCescoGame::Init(void* pArg)
 
 void CCescoGame::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Key_Down(DIK_8,InputChannel::UI))
+	{
+		Create_Hook();
+	}
 	if (m_pGameInstance->Key_Down(DIK_9))
 	{
 		m_fTimeLimit = 0.f;
+	
 	}
 
 	m_fTimeLimit -= fTimeDelta;
@@ -114,7 +108,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 
 #pragma endregion
 
-#pragma region SpawnVoid19
+#pragma region SpawnCOVID19 // 코로나
 
 	if (m_iMonsterSpawnCount % 10 == 1 && m_fMonsterSpawnTime == 0.f)
 	{
@@ -206,6 +200,118 @@ void CCescoGame::Late_Tick(_float fTimeDelta)
 	{
 		pMonster->Late_Tick(fTimeDelta);
 	}
+}
+
+HRESULT CCescoGame::Create_Hook()
+{
+	CHook::HOOK_DESC HookDesc{};
+	_randInt RandomDir(0, 3);
+	_randInt RandomCount(1, 3);
+
+	
+
+	HookDesc.WorldMatrix = _mat::CreateScale(1.f, 2.f, 1.f);
+
+	for (int i = 0; i < 2; i++)
+	{
+		_int iDirNum = RandomDir(m_RandomNumber);
+		vector<int> vecHookPos;
+		_vec3 vSpawnPos = m_SpawnPositions[iDirNum];
+		_int iCountNum = RandomCount(m_RandomNumber);
+		_vec3 vHookPos = vSpawnPos;
+		switch (iDirNum)
+		{
+		
+		case 0:	//위
+		{
+			while (iCountNum < 4)
+			{
+				_vec3 vSpawnPos = m_SpawnPositions[iDirNum];
+				_vec3 vHookPos = vSpawnPos;
+				_int iPosNum = RandomCount(m_RandomNumber);
+				vector<int>::iterator it = std::find(vecHookPos.begin(), vecHookPos.end(), iPosNum);
+				if (it == vecHookPos.end())
+				{
+					vecHookPos.push_back(iPosNum);
+					vHookPos.x = vSpawnPos.x - 20.f + 10.f * iPosNum;
+					vHookPos.y += 1.f;
+					HookDesc.WorldMatrix.Position_vec3(vHookPos);
+					if (FAILED(m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Hook"), TEXT("Prototype_GameObject_Hook_Object"), &HookDesc)))
+					{
+						return E_FAIL;
+					}
+					iCountNum++;
+				}
+			}
+		break;
+		}
+		case 1:	//아래
+		{
+			while (iCountNum < 5)
+			{
+				_int iPosNum = RandomCount(m_RandomNumber);
+				vector<int>::iterator it = std::find(vecHookPos.begin(), vecHookPos.end(), iPosNum);
+				if (it == vecHookPos.end())
+				{
+					vecHookPos.push_back(iPosNum);
+					vHookPos.x = vSpawnPos.x - 20.f + 10.f * iPosNum;
+					vHookPos.y += 1.f;
+					HookDesc.WorldMatrix.Position_vec3(vHookPos);
+					if (FAILED(m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Hook"), TEXT("Prototype_GameObject_Hook_Object"), &HookDesc)))
+					{
+						return E_FAIL;
+					}
+					iCountNum++;
+				}
+			}
+		}
+		break;
+		case 2:	//오른쪽
+		{
+			while (iCountNum < 5)
+			{
+				_int iPosNum = RandomCount(m_RandomNumber);
+				vector<int>::iterator it = std::find(vecHookPos.begin(), vecHookPos.end(), iPosNum);
+				if (it == vecHookPos.end())
+				{
+					vecHookPos.push_back(iPosNum);
+					vHookPos.x = vSpawnPos.z - 20.f + 10.f * iPosNum;
+					vHookPos.y += 1.f;
+					HookDesc.WorldMatrix.Position_vec3(vHookPos);
+					if (FAILED(m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Hook"), TEXT("Prototype_GameObject_Hook_Object"), &HookDesc)))
+					{
+						return E_FAIL;
+					}
+					iCountNum++;
+				}
+			}
+		break;
+		}
+		case 3:	//아래		
+		{
+			while (iCountNum < 5)
+			{
+				_int iPosNum = RandomCount(m_RandomNumber);
+				vector<int>::iterator it = std::find(vecHookPos.begin(), vecHookPos.end(), iPosNum);
+				if (it == vecHookPos.end())
+				{
+					vecHookPos.push_back(iPosNum);
+					vHookPos.x = vSpawnPos.z - 20.f + 10.f * iPosNum;
+					vHookPos.y += 1.f;
+					HookDesc.WorldMatrix.Position_vec3(vHookPos);
+					if (FAILED(m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Hook"), TEXT("Prototype_GameObject_Hook_Object"), &HookDesc)))
+					{
+						return E_FAIL;
+					}
+					iCountNum++;
+				}
+			}
+		break;
+		}
+	}
+}
+		
+	
 }
 
 void CCescoGame::Release_DeadObjects()
