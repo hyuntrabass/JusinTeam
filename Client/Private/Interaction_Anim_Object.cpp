@@ -40,11 +40,6 @@ HRESULT CInteraction_Anim::Init(void* pArg)
 {
 	m_Info = *(ObjectInfo*)pArg;
 	m_ePlaceType = (PlaceType)m_Info.m_iIndex;
-	m_iObjectIndex = m_Info.m_iIndex;
-	if (FAILED(Add_Components()))
-	{
-		return E_FAIL;
-	}
 
 	_vec4 vRight = _vec4(m_Info.m_WorldMatrix._11, m_Info.m_WorldMatrix._12, m_Info.m_WorldMatrix._13, m_Info.m_WorldMatrix._14);
 	_vec4 vUp = _vec4(m_Info.m_WorldMatrix._21, m_Info.m_WorldMatrix._22, m_Info.m_WorldMatrix._23, m_Info.m_WorldMatrix._24);
@@ -97,9 +92,10 @@ HRESULT CInteraction_Anim::Init(void* pArg)
 		NameTagDesc.strNameTag = TEXT("보물상자");
 	}
 
-	NameTagDesc.vColor = _vec4(0.31f, 0.96f, 1.f, 1.f);
-	NameTagDesc.vTextPosition = _vec2(0.f, 3.2f);
-
+	if (FAILED(Add_Components()))
+	{
+		return E_FAIL;
+	}
 
 	m_pNameTag = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_NameTag"), &NameTagDesc);
 	if (not m_pNameTag)
@@ -383,7 +379,7 @@ HRESULT CInteraction_Anim::Add_Components()
 // Com_Collider
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
-	CollDesc.fRadius = 5.f;
+	CollDesc.fRadius = 2.f;
 	CollDesc.vCenter = _vec3(0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Interaction_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))
@@ -446,6 +442,7 @@ HRESULT CInteraction_Anim::Add_Components()
 		return E_FAIL;
 	}
 	m_pBar->Set_Pass(VTPass_HPBoss);
+	m_pBar->Set_Factor(0.f);
 
 	CTextButton::TEXTBUTTON_DESC Button = {};
 	Button.eLevelID = LEVEL_STATIC;

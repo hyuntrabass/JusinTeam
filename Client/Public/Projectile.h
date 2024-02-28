@@ -52,6 +52,8 @@ private:
 	class CEffect_Dummy* m_pBall = { nullptr };
 	class CEffect_Dummy* m_pBallParticle = { nullptr };
 
+	class CEffect_Dummy* m_pEffect[3] = {};
+
 	_mat m_UpdateMatrix = {};
 	_float m_fCircleRange = { 0.001f };
 

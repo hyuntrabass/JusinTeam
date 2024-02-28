@@ -243,6 +243,7 @@ void CInven::Tick(_float fTimeDelta)
 					ITEM Item = m_pWearableSlots[i]->Get_ItemDesc();
 					dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(Item);
 					m_pWearableSlots[i]->Delete_Item();
+					m_pGameInstance->Play_Sound(TEXT("Quick_Slot_Up"));
 				}
 				break;
 			}

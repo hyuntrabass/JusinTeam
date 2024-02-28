@@ -352,6 +352,7 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 
 		_vec4 vLook = m_pTransformCom->Get_State(State::Look);
 		PxRaycastBuffer Buffer{};
+
 		_vec4 vRayDir{};
 		vMyPos = m_pTransformCom->Get_State(State::Pos);
 		_vec4 PlayerCenter = m_pPlayerTransform->Get_CenterPos();
@@ -365,7 +366,9 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 		{
 			if (m_pGameInstance->Raycast(m_pPlayerTransform->Get_CenterPos(), vRayDir, fDist, Buffer))
 			{
-				m_pTransformCom->Set_State(State::Pos, PxVec3ToVector(Buffer.block.position, 1.f));
+				_vec3 vBlockPos = PxVec3ToFloat3(Buffer.block.position);
+				vBlockPos -= _vec3(vRayDir * 0.17f);
+				m_pTransformCom->Set_State(State::Pos, _vec4(vBlockPos, 1.f));
 			}
 		}
 
@@ -389,12 +392,18 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 			_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
 			_vec4 vFrontLook = vLook;
 			vFrontLook.y = 0.f;
+			vFrontLook.Normalize();
 			_float fResult = vLook.Dot(vFrontLook);
 			_float fTurnValue = fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor;
-
-			if (fResult < 1.f && fResult > 0.3f)
+			if (abs(fTurnValue) > 0.3f)
 			{
-				m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
+				return;
+			}
+			if (fResult < 1.f && fResult > 0.5f)
+			{
+				{
+					m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
+				}
 			}
 			else if (fResult >= 1.f)
 			{
@@ -403,13 +412,15 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 					m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
 				}
 			}
-			else if (fResult <= 0.3f)
+			else if (fResult < 0.5f)
 			{
-				if (fTurnValue < 0.f)
+				if ((fTurnValue < 0.f and vLook.y < 0.f) or (fTurnValue > 0.f and vLook.y > 0.f))
 				{
 					m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
 				}
+				
 			}
+
 		}
 
 		m_AimZoomOutTime += fTimeDelta * 4.f;
@@ -623,36 +634,34 @@ void CCamera_Main::Custom_Mode(_float fTimeDelta)
 
 }
 
-void CCamera_Main::ZOOM_Mode(_float fTimeDelta)
+void CCamera_Main::Zoom_Mode(_float fTimeDelta)
 {
 	_vec4 vCurLook = m_pTransformCom->Get_State(State::Look);;
 
 	_vec4 vCurrentPos = m_pTransformCom->Get_State(State::Pos);
-	_vec4 vTargetPos = m_pCam_Manager->Get_CameraTargetPos();
 	_vec4 vTargetLook = m_pCam_Manager->Get_CameraTargetLook();
-	_vec4 vPlayerRight = m_pPlayerTransform->Get_State(State::Right);
+	
 	_vec4 vPlayerUp = m_pPlayerTransform->Get_State(State::Up);
 	_vec4 vPlayerLook = m_pPlayerTransform->Get_State(State::Look);
-
+	_vec4 vTargetPos = m_pCam_Manager->Get_CameraTargetPos();
+	_vec4 vPlayerRight = m_pPlayerTransform->Get_State(State::Right);
 	_vec4 vPlayerPos = vTargetPos + vTargetLook * 1.5f;
+	vPlayerPos.y -= 0.1f;
 
-	float swayX = (sin(m_CurrentTime * m_SwaySpeed) * m_SwayAmount) * 0.003f;
-	float swayY = (sin((m_CurrentTime + m_TimeOffset) * m_SwaySpeed) * m_SwayAmount) * 0.003f;
+	_float swayX = (sin(m_CurrentTime * m_SwaySpeed) * m_SwayAmount) * 0.003f;
+	_float swayY = (sin((m_CurrentTime + m_TimeOffset) * m_SwaySpeed) * m_SwayAmount) * 0.003f;
 
 	m_fCamChangeTime += fTimeDelta;
 	if (m_fCamChangeTime > 5.f)
 	{
-		m_fCamChangeTime = 0;
+		m_fCamChangeTime = 0.f;
 		++m_iCamChange;
 		if (m_iCamChange >= 3)
 			m_iCamChange = 0;
 	}
 	if (m_iCamChange == 2)
 	{
-		m_pPlayerTransform->Set_State(State::Pos, vPlayerPos);
-		m_pPlayerTransform->LookAt(vTargetPos + vPlayerRight * -0.1f);
-
-
+	
 		m_pTransformCom->Set_State(State::Pos, vPlayerPos +
 			vPlayerRight * 1.4f +
 			vPlayerUp * 1.2f -
@@ -662,10 +671,6 @@ void CCamera_Main::ZOOM_Mode(_float fTimeDelta)
 	}
 	else if (m_iCamChange == 1)
 	{
-		m_pPlayerTransform->Set_State(State::Pos, vPlayerPos);
-		m_pPlayerTransform->LookAt(vTargetPos);
-
-
 		m_pTransformCom->Set_State(State::Pos, vPlayerPos +
 			vPlayerRight * -0.4f +
 			vPlayerUp * 1.6f -
@@ -675,10 +680,6 @@ void CCamera_Main::ZOOM_Mode(_float fTimeDelta)
 	}
 	else
 	{
-		m_pPlayerTransform->Set_State(State::Pos, vPlayerPos);
-		m_pPlayerTransform->LookAt(vTargetPos + vPlayerRight * -0.1f);
-
-
 		m_pTransformCom->Set_State(State::Pos, vPlayerPos +
 			vPlayerRight * 1.f +
 			vPlayerUp * 1.8f -
@@ -717,7 +718,7 @@ void CCamera_Main::SkillBook_Mode(_float fTimeDelta)
 
 void CCamera_Main::BrickGame_Mode(_float fTimeDelta)
 {
-	_vec4 vBrickGamePos = _vec4(-1999.853f, 17.962f, -1985.831f, 1.f);
+	_vec4 vBrickGamePos = _vec4(-1999.853f, 5.962f, -1985.831f, 1.f);
 
 	m_pTransformCom->Set_State(State::Pos, vBrickGamePos);
 
@@ -840,6 +841,16 @@ void CCamera_Main::Init_State(_float fTimeDelta)
 			m_pTransformCom->LookAt_Dir(m_vOriginalLook);
 			break;
 		case Client::CS_ZOOM:
+		{
+			_vec4 vTargetLook = m_pCam_Manager->Get_CameraTargetLook();
+			_vec4 vPlayerUp = m_pPlayerTransform->Get_State(State::Up);
+			_vec4 vTargetPos = m_pCam_Manager->Get_CameraTargetPos();
+			_vec4 vPlayerRight = m_pPlayerTransform->Get_State(State::Right);
+			_vec4 vPlayerPos = vTargetPos + vTargetLook * 1.5f;
+			vPlayerPos.y -= 0.1f;
+			m_pPlayerTransform->Set_FootPosition(_vec3(vPlayerPos));
+			m_pPlayerTransform->LookAt(vTargetPos + vPlayerRight * -0.1f);
+		}
 			break;
 		case Client::CS_INVEN:
 			m_vOriginalLook = m_pTransformCom->Get_State(State::Look);
@@ -875,7 +886,7 @@ void CCamera_Main::Tick_State(_float fTimeDelta)
 		Default_Mode(fTimeDelta);
 		break;
 	case Client::CS_ZOOM:
-		ZOOM_Mode(fTimeDelta);
+		Zoom_Mode(fTimeDelta);
 		break;
 	case Client::CS_INVEN:
 		Inven_Mode(fTimeDelta);

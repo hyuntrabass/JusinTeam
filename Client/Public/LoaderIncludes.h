@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GlowCube.h"
 #include "TreasureBox.h"
 #include "Pop_Reward.h"
 #include "BrickBar.h"
@@ -175,3 +176,4 @@
 #include "SurvivalGame.h"
 #include "Launcher.h"
 #include "Projectile.h"
+#include "Survival_Mon.h"

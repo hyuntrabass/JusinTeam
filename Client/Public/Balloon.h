@@ -52,12 +52,12 @@ public:
 	virtual HRESULT Render() override;
 
 	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) override;
-	
+
 private:
-	CShader*	m_pShaderCom = { nullptr };
-	CRenderer*  m_pRendererCom = { nullptr };
-	CModel*		m_pModelCom = { nullptr };
-	CCollider*  m_pBodyColliderCom = { nullptr };
+	CShader* m_pShaderCom = { nullptr };
+	CRenderer* m_pRendererCom = { nullptr };
+	CModel* m_pModelCom = { nullptr };
+	CCollider* m_pBodyColliderCom = { nullptr };
 	CTexture* m_pDissolveTextureCom = { nullptr };
 
 private:

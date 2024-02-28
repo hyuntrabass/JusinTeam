@@ -38,6 +38,7 @@ private:
 
 	class CBalloon*								m_pBalloon[BRICKROW][BRICKCOL]{};
 	LIGHT_DESC									m_Light_Desc{};
+	CGameObject*								m_pBackGround{nullptr};
 
 private:
 	HRESULT Add_Parts();
