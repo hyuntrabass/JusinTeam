@@ -85,13 +85,14 @@ HRESULT CGlowCube::Render()
 		{
 			return E_FAIL;
 		}
+
 		_vec2 vUV = _vec2(m_fX, 0.f);
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vUVTransform", &vUV, sizeof _vec2)))
 		{
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffect)))
+		if (FAILED(m_pShaderCom->Begin(StaticPass_SingleColorFx)))
 		{
 			return E_FAIL;
 		}

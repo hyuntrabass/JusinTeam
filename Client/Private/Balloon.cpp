@@ -73,7 +73,7 @@ void CBalloon::Tick(_float fTimeDelta)
 
 void CBalloon::Late_Tick(_float fTimeDelta)
 {
-	//m_pCube->Late_Tick(fTimeDelta);
+	m_pCube->Late_Tick(fTimeDelta);
 	//m_shouldRenderBlur = true;
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 
@@ -125,7 +125,7 @@ HRESULT CBalloon::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(StaticPass_MaskDiffEffect)))
+		if (FAILED(m_pShaderCom->Begin(StaticPass_DiffEffect)))
 		{
 			return E_FAIL;
 		}
@@ -296,7 +296,7 @@ HRESULT CBalloon::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_BrickCube"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Balloon"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
 	{
 		return E_FAIL;
 	}
