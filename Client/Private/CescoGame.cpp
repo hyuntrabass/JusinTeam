@@ -85,7 +85,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 		m_Monsters.push_back(pScorpion);
 
 		VTFMonsterDesc = {};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_VTFModel_RedAnt");
+		VTFMonsterDesc.strModelTag = TEXT("Prototype_VTFModel_Redant");
 		VTFMonsterDesc.vPosition = m_SpawnPositions[1];
 		VTFMonsterDesc.pPlayerTransform = m_pPlayerTransform;
 		CVTFMonster* pRedAnt = reinterpret_cast<CVTFMonster*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_RedAnt_Object"), &VTFMonsterDesc));

@@ -215,18 +215,21 @@ void FXAA(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID, ui
     float Lum_Range = LumMax - LumMin;
     
     vector vColor = 1.f;
-    //if (Lum_Range < max(0.0312, LumMax * 0.125))
-    if (Lum_Range < 0.f)
-        {
+    if (Lum_Range < max(0.0312, LumMax * 0.125))
+    //if (Lum_Range < 0.f)
+    {
         vColor = vector(RGB_M, 1.f);
         outputTexture[pixel] = vColor;
         return;
     }
     
+    //outputTexture[pixel] = vColor;
+    //return;
+    
     float3 RGB_DL = inputTexture.Load(int3(pixel + int2(-1, 1), 0)).rgb;
-    float3 RGB_DR = inputTexture.Load(int3(pixel + int2(+1, 1), 0)).rgb;
+    float3 RGB_DR = inputTexture.Load(int3(pixel + int2(1, 1), 0)).rgb;
     float3 RGB_UL = inputTexture.Load(int3(pixel + int2(-1, -1), 0)).rgb;
-    float3 RGB_UR = inputTexture.Load(int3(pixel + int2(1, 1), 0)).rgb;
+    float3 RGB_UR = inputTexture.Load(int3(pixel + int2(1, -1), 0)).rgb;
     
     float Lum_DL = RGB2Lum(RGB_DL);
     float Lum_DR = RGB2Lum(RGB_DR);
@@ -246,8 +249,8 @@ void FXAA(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID, ui
     
     bool isHorizontal = (Edge_Horizontal >= Edge_Vertical);
     
-    float Lum1 = isHorizontal ? Lum_D : Lum_L;
-    float Lum2 = isHorizontal ? Lum_U : Lum_R;
+    float Lum1 = isHorizontal ? Lum_D : Lum_R;
+    float Lum2 = isHorizontal ? Lum_U : Lum_L;
     
     float Gradient1 = Lum1 - Lum_M;
     float Gradient2 = Lum2 - Lum_M;
@@ -262,11 +265,11 @@ void FXAA(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID, ui
     
     if (is1Steepest)
     {
-        stepLegth = -stepLegth;
         Lum_LA = 0.5f * (Lum1 + Lum_M);
     }
     else
     {
+        stepLegth = -stepLegth;
         Lum_LA = 0.5f * (Lum2 + Lum_M);
     }
     
@@ -285,14 +288,10 @@ void FXAA(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID, ui
     float2 UV1 = CurrentUV - offset;
     float2 UV2 = CurrentUV + offset;
     
-    int2 iTex;
-    iTex.x = UV1.x * 1280.f;
-    iTex.y = UV1.y * 720.f;
-    float Lum_End1 = RGB2Lum(inputTexture.Load(int3(iTex, 0)).rgb);
+    float Lum_End1 = RGB2Lum(inputTexture.SampleLevel(LinearSampler, UV1, 0.f).rgb);
     
-    iTex.x = UV2.x * 1280.f;
-    iTex.y = UV2.y * 720.f;
-    float Lum_End2 = RGB2Lum(inputTexture.Load(int3(iTex, 0)).rgb);
+    
+    float Lum_End2 = RGB2Lum(inputTexture.SampleLevel(LinearSampler, UV2, 0.f).rgb);
     
     Lum_End1 -= Lum_LA;
     Lum_End2 -= Lum_LA;
@@ -317,17 +316,13 @@ void FXAA(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID, ui
         {
             if (false == Reached1)
             {
-                iTex.x = UV1.x * 1280.f;
-                iTex.y = UV1.y * 720.f;
-                Lum_End1 = RGB2Lum(inputTexture.Load(int3(iTex, 0)).rgb);
+                Lum_End1 = RGB2Lum(inputTexture.SampleLevel(LinearSampler, UV1, 0.f).rgb);
                 Lum_End1 = Lum_End1 - Lum_LA;
             }
             
             if (false == Reached2)
             {
-                iTex.x = UV2.x * 1280.f;
-                iTex.y = UV2.y * 720.f;
-                Lum_End2 = RGB2Lum(inputTexture.Load(int3(iTex, 0)).rgb);
+                Lum_End2 = RGB2Lum(inputTexture.SampleLevel(LinearSampler, UV2, 0.f).rgb);
                 Lum_End2 = Lum_End2 - Lum_LA;
             }
             
