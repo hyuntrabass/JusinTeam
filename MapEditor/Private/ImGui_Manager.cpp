@@ -1708,7 +1708,7 @@ void CImGui_Manager::Delete_Effect_Dummy()
 {
 	if (m_pSelected_Effect_Dummy)
 	{
-		//m_pSelected_Effect_Dummy->Kill();
+		m_pSelected_Effect_Dummy->Kill();
 		m_pSelected_Effect_Dummy = nullptr;
 
 		auto it = m_EffectDummyList.find(EffectIndex);
