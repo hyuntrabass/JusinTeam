@@ -508,6 +508,9 @@
     <Filter Include="02.GameObjects\16.SescoGame\Static\Log">
       <UniqueIdentifier>{4c975945-a265-49f5-9a57-6a4709909cd0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\16.SescoGame\Static\Hook">
+      <UniqueIdentifier>{4d728264-d27a-4b92-8641-0da4fc6fc013}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1042,6 +1045,9 @@
     <ClInclude Include="..\Public\Log.h">
       <Filter>02.GameObjects\16.SescoGame\Static\Log</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Hook.h">
+      <Filter>02.GameObjects\16.SescoGame\Static\Hook</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1573,6 +1579,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Log.cpp">
       <Filter>02.GameObjects\16.SescoGame\Static\Log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Hook.cpp">
+      <Filter>02.GameObjects\16.SescoGame\Static\Hook</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

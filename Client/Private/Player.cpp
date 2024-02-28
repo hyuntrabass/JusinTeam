@@ -2638,7 +2638,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						Check_Att_Collider(AT_Sword_Common);
 						if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Common]))
 						{
-							m_pGameInstance->Set_TimeRatio(0.05f);
+							m_pGameInstance->Set_TimeRatio(0.1f);
 							m_bAttacked = true;
 						}
 
@@ -2649,8 +2649,6 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					}
 					if (m_bAttacked)
 					{
-						m_pTransformCom->Set_Speed(5.f);
-						m_pTransformCom->Go_Straight(fTimeDelta);
 						m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 					}
 
@@ -2693,7 +2691,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						Check_Att_Collider(AT_Sword_Common);
 						if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Common]))
 						{
-							m_pGameInstance->Set_TimeRatio(0.05f);
+							m_pGameInstance->Set_TimeRatio(0.1f);
 							m_bAttacked = true;
 
 						}
@@ -2745,7 +2743,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						Check_Att_Collider(AT_Sword_Common);
 						if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Common]))
 						{
-							m_pGameInstance->Set_TimeRatio(0.05f);
+							m_pGameInstance->Set_TimeRatio(0.1f);
 							m_bAttacked = true;
 
 						}
@@ -2814,13 +2812,11 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						Check_Att_Collider(AT_Sword_Common);
 						if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Common]))
 						{
-							m_pGameInstance->Set_TimeRatio(0.05f);
+							m_pGameInstance->Set_TimeRatio(0.1f);
 							m_bAttacked = true;
 							m_fSkillSpeed = 0.f;
 
 						}
-
-						m_pGameInstance->Set_TimeRatio(1.f);
 
 					}
 					else
@@ -2836,6 +2832,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				else if (Index > 18.f && Index < 21.f)
 				{
 					m_bAttacked = false;
+					m_pGameInstance->Set_TimeRatio(1.f);
 				}
 				else if (Index >= 22.f && Index <= 24.f)
 				{
@@ -2844,7 +2841,6 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						Check_Att_Collider(AT_Sword_Common);
 						if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Common]))
 						{
-							m_pGameInstance->Set_TimeRatio(0.2f);
 							m_bAttacked = true;
 
 						}
@@ -3579,14 +3575,16 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 			//m_pCam_Manager->Set_ShakeCam(true, 0.1f);
 		}
 	}
+
 	if (m_bMove_AfterSkill and m_eState != Attack)
 	{
 		if (m_fRadialPower > 0.f)
 		{
 			m_fRadialPower -= fTimeDelta *2.f;
+			m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
 		}
-		m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
-	}
+		}
+	
 }
 
 void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
@@ -4211,6 +4209,7 @@ void CPlayer::Init_State()
 		case Client::CPlayer::Collect_Loop:
 		{
 			m_Animation.iAnimIndex = Anim_Collect_loop;
+			m_Animation.fAnimSpeedRatio = 3.f;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}

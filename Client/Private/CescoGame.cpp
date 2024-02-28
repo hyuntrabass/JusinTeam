@@ -1,6 +1,7 @@
 #include "CescoGame.h"
 #include "VTFMonster.h"
 #include "Log.h"
+#include "Hook.h"
 
 CCescoGame::CCescoGame(_dev pDevice, _context pContext)
 	:CGameObject(pDevice, pContext)
@@ -32,22 +33,42 @@ HRESULT CCescoGame::Init(void* pArg)
 	//LEFT
 	m_SpawnPositions.push_back(_vec3(-3030.f, 1.f, 0.f));
 
+	random_device rand;
+	m_RandomNumber = _randNum(rand());
+
 	CLog::LOG_DESC LogDesc{};
+	CHook::HOOK_DESC HookDesc{};
+	_randInt RandomDir(1, 4);
+
 	for (_uint i = 0; i < m_SpawnPositions.size(); i++)
 	{
-		LogDesc.WorldMatrix = _mat::CreateScale(3.f, 3.f, 10.f);
+		HookDesc.WorldMatrix = _mat::CreateScale(1.f, 2.f, 1.f);
 		_vec3 vSpawnPos = m_SpawnPositions[i];
-		vSpawnPos.y = 18.f;
-		LogDesc.WorldMatrix.Position_vec3(vSpawnPos);
-
-		if (FAILED(m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Log"), TEXT("Prototype_GameObject_Log_Object"), &LogDesc)))
+		HookDesc.WorldMatrix.Position_vec3(vSpawnPos);
+		if (FAILED(m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Hook"), TEXT("Prototype_GameObject_Hook_Object"), &HookDesc)))
 		{
 			return E_FAIL;
 		}
 	}
+	for (_uint i = 0; i < m_SpawnPositions.size(); i++)
+	{
+		LogDesc.WorldMatrix = _mat::CreateScale(3.f, 3.f, 10.f);
 
-	random_device rand;
-	m_RandomNumber = _randNum(rand());
+		_vec3 vSpawnPos = m_SpawnPositions[i];
+
+		vSpawnPos.y = 18.f;
+		LogDesc.WorldMatrix.Position_vec3(vSpawnPos);
+
+	
+
+		//if (FAILED(m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Log"), TEXT("Prototype_GameObject_Log_Object"), &LogDesc)))
+		//{
+		//	return E_FAIL;
+		//}
+	
+	}
+
+
 
 	return S_OK;
 }
