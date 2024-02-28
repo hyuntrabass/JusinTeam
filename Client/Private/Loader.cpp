@@ -1113,6 +1113,13 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_BrickCube"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/BrickGame/Mesh/BrickCubeAlpha.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+
+
 
 #pragma endregion Monster
 
@@ -1153,9 +1160,9 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
-	_mat GuardPivot = _mat::CreateRotationY(XMConvertToRadians(180.f));
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Guard"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Guard/Mesh/Guard.hyuntraanimmesh", false, GuardPivot))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Guard/Mesh/Guard.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
@@ -1526,6 +1533,10 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_GlowCube"), CGlowCube::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 	
 	
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Pop_Reward"), CPop_Reward::Create(m_pDevice, m_pContext))))
@@ -1865,7 +1876,7 @@ HRESULT CLoader::Load_Village()
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 			if (strPrototypeTag == L"Prototype_Model_BrickMap")
 			{
-				DungeonPivot = _mat::CreateScale(0.045f);
+				DungeonPivot = _mat::CreateScale(2.f);
 
 			}
 			else if (strPrototypeTag == L"Prototype_Model_DragonMap")

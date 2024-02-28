@@ -388,6 +388,7 @@ HRESULT CLevel_Village::Ready_TreasureBox()
 		MSG_BOX("던전 보물상자 파일을 찾지 못했습니다.");
 		return E_FAIL;
 	}
+
 	_uint ObjectListSize;
 	inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
 
@@ -407,7 +408,7 @@ HRESULT CLevel_Village::Ready_TreasureBox()
 		ObjectInfo.strPrototypeTag = ObjectPrototype;
 		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
 		ObjectInfo.eObjectType = Object_Environment;
-		ObjectInfo.m_iIndex = i;
+		ObjectInfo.m_iIndex = (_uint)FIELD;
 
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Interaction_Object"), TEXT("Prototype_GameObject_Intraction_Anim_Object"), &ObjectInfo)))
 		{

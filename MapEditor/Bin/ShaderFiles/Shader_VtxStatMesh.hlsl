@@ -357,41 +357,12 @@ PS_OUT PS_Main_Sky(PS_IN Input)
     return Output;
 }
 
-PS_OUT_DEFERRED PS_Main_COL(PS_IN Input)
+PS_OUT PS_Main_COL(PS_IN Input)
 {
-    PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
+    PS_OUT Output = (PS_OUT) 0;
     
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + 0.3f * g_bSelected;
-    
-    float3 vNormal;
-    if (g_HasNorTex)
-    {
-        vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
-    
-        vNormal = vNormalDesc.xyz * 2.f - 1.f;
-    
-        float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
-    
-        vNormal = normalize(mul(normalize(vNormal), WorldMatrix) * -1.f);
-    }
-    else
-    {
-        vNormal = normalize(Input.vNor.xyz);
-    }
-    
-    vector vMask = vector(1.f, 0.1f, 0.1f, 0.1f);
-    if (g_HasMaskTex)
-    {
-        vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
-    }
-    
-    Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
-    Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
-    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, Input.vDir.x, Input.vDir.y);
-    Output.ID = g_iID;
-
     return Output;
-   }
+}
 
 PS_OUT PS_Main_Effect(PS_IN Input)
 {
@@ -790,11 +761,11 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_Sky();
     }
 
-    pass WireFrame
+    pass COLMesh
     {
-        SetRasterizerState(RS_Wire);
+        SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;

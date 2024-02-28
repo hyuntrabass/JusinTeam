@@ -487,6 +487,9 @@
     <Filter Include="02.GameObjects\16.SescoGame\VTFMonster">
       <UniqueIdentifier>{1e16aa27-6928-42eb-bc72-da733a69936b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\16.SescoGame\VTFMonster\Void19">
+      <UniqueIdentifier>{6de5bee6-1aae-49f5-b546-96ce84157a85}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObjects\02.Terrain\Ocean">
       <UniqueIdentifier>{762959c5-5314-494b-9651-8d75013b8959}</UniqueIdentifier>
     </Filter>
@@ -495,24 +498,6 @@
     </Filter>
     <Filter Include="02.GameObjects\09.Object\Rewards">
       <UniqueIdentifier>{24a9619d-f053-4e87-8a6c-69f7a12f0140}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\07. NPC\05. Guard">
-      <UniqueIdentifier>{4d5ac9ca-c2a6-4be4-bcc8-9dade883791c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\16.SescoGame\VTFMonster\RedAnt">
-      <UniqueIdentifier>{3e65ec19-78c3-4267-ade3-959f7cbe49e1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\16.SescoGame\VTFMonster\Larva">
-      <UniqueIdentifier>{6de5bee6-1aae-49f5-b546-96ce84157a85}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\16.SescoGame\Static">
-      <UniqueIdentifier>{4ec5d1ac-0b0f-445c-a183-93dc792f47a4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\16.SescoGame\Static\Log">
-      <UniqueIdentifier>{db895257-e835-46d2-84ab-dfc20211a523}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\16.SescoGame\VTFMonster\Scorpion">
-      <UniqueIdentifier>{1b37edba-7333-4988-99fd-bac3fd49c811}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1006,9 +991,6 @@
     <ClInclude Include="..\Public\VTFMonster.h">
       <Filter>02.GameObjects\16.SescoGame\VTFMonster</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Larva.h">
-      <Filter>02.GameObjects\16.SescoGame\VTFMonster\Larva</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\SurvivalGame.h">
       <Filter>02.GameObjects\15. SurvivalGame</Filter>
     </ClInclude>
@@ -1039,20 +1021,12 @@
     <ClInclude Include="..\Public\SummonWindowPet.h">
       <Filter>02.GameObjects\00.UI\GameUI\Inven\Window\Summon</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\RedAnt.h">
-      <Filter>02.GameObjects\16.SescoGame\VTFMonster\RedAnt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\CescoGame.h">
-      <Filter>02.GameObjects\16.SescoGame</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Log.h">
-      <Filter>02.GameObjects\16.SescoGame\Static\Log</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Scorpion.h">
-      <Filter>02.GameObjects\16.SescoGame\VTFMonster\Scorpion</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Guard.h">
-      <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
+    <ClInclude Include="..\Public\Guard.h" />
+    <ClInclude Include="..\Public\Log.h" />
+    <ClInclude Include="..\Public\RedAnt.h" />
+    <ClInclude Include="..\Public\Larva.h" />
+    <ClInclude Include="..\Public\GlowCube.h">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1556,9 +1530,6 @@
     <ClCompile Include="..\Private\VTFMonster.cpp">
       <Filter>02.GameObjects\16.SescoGame\VTFMonster</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Larva.cpp">
-      <Filter>02.GameObjects\16.SescoGame\VTFMonster\Larva</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Ocean.cpp">
       <Filter>02.GameObjects\02.Terrain\Ocean</Filter>
     </ClCompile>
@@ -1577,20 +1548,12 @@
     <ClCompile Include="..\Private\SummonWindowPet.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\Inven\Window\Summon</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\RedAnt.cpp">
-      <Filter>02.GameObjects\16.SescoGame\VTFMonster\RedAnt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\CescoGame.cpp">
-      <Filter>02.GameObjects\16.SescoGame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Log.cpp">
-      <Filter>02.GameObjects\16.SescoGame\Static\Log</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Scorpion.cpp">
-      <Filter>02.GameObjects\16.SescoGame\VTFMonster\Scorpion</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Guard.cpp">
-      <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
+    <ClCompile Include="..\Private\Guard.cpp" />
+    <ClCompile Include="..\Private\Log.cpp" />
+    <ClCompile Include="..\Private\RedAnt.cpp" />
+    <ClCompile Include="..\Private\Larva.cpp" />
+    <ClCompile Include="..\Private\GlowCube.cpp">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -46,8 +46,6 @@ private:
 	_float m_fTime{};
 	_float m_fDir{1.f};
 
-	_uint m_iObjectIndex{ 0 };
-
 	class CTextButtonColor* m_pBar{ nullptr };
 	class C3DUITex* m_pSpeechBubble{ nullptr };
 	class CItem* m_pItem{ nullptr };

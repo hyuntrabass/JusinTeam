@@ -208,6 +208,7 @@ private:
 	_bool m_bChangePos = { false };
 
 private:
+	_bool						m_bDeleteHpbar{};
 	_bool						m_bQuest{};
 	_bool						m_isReward{};
 	GROAR_NPCSTATE				m_eState{ NPC_TALK };
