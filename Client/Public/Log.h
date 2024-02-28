@@ -35,6 +35,9 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+public:
+	virtual void Set_Damage(_int iDamage, _uint MonAttType = 0) override;
+
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
@@ -46,9 +49,11 @@ private:
 	STATE m_eState{ State_End };
 	STATE m_ePreState{ State_End };
 
-private:
-	void Init_State(_float fTimeDelta);
-	void Tick_State(_float fTimeDelta);
+	_uint m_iPassIndex{};
+	_float m_fDissolveRatio{};
+	_bool m_IsFall{};
+	_float m_fFallTime{};
+	_float m_fJumpForce{ 20.f };
 
 private:
 	HRESULT Add_Components();

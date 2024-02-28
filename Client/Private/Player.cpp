@@ -1179,6 +1179,16 @@ HRESULT CPlayer::Render_Parts(PART_TYPE Parts, _uint Index)
 			g_HasMaskTex = true;
 		}
 
+		//_bool HasGlowTex{};
+		//if (FAILED(m_pModelCom->Bind_Part_Material(m_pShaderCom, "g_GlowTexture", TextureType::Specular, (_uint)Parts, (_uint)Index, k)))
+		//{
+		//	HasGlowTex = false;
+		//}
+		//else
+		//{
+		//	HasGlowTex = true;
+		//}
+
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
 		{
 			return E_FAIL;
@@ -1189,6 +1199,11 @@ HRESULT CPlayer::Render_Parts(PART_TYPE Parts, _uint Index)
 		{
 			return E_FAIL;
 		}
+
+		//if (FAILED(m_pShaderCom->Bind_RawValue("g_HasGlowTex", &HasGlowTex, sizeof _bool)))
+		//{
+		//	return E_FAIL;
+		//}
 
 		if (Parts == PT_HAIR)
 		{

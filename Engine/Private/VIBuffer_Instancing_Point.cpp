@@ -18,7 +18,7 @@ HRESULT CVIBuffer_Instancing_Point::Init_Prototype()
 	m_iVertexStride = sizeof VTXPOINT;
 	m_iNumVertices = 1;
 
-	m_iNumInstances = 512;
+	m_iNumInstances = 1024;
 	m_iIndexCountPerInstance = 1;
 	m_iInstanceStride = sizeof VTXINSTANCING;
 

@@ -57,6 +57,7 @@ void CAnimation::ResetFinished()
 	m_isFinished = false;
 	//선형보간 중에 애니메이션 바뀌면 선형보간을 처음부터 하기 위해
 	m_isInterpolating = false;
+	m_fCurrentAnimPos = 0.f;
 }
 
 void CAnimation::Set_CurrentAnimPos(_float fCurrentAnimPos)

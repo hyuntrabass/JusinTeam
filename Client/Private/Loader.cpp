@@ -1248,8 +1248,9 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	_mat CannonPivot = _mat::CreateScale(0.3f);
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Cannon"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/SurvivalGame/Cannon/Mesh/Cannon.hyuntraanimmesh"))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/SurvivalGame/Cannon/Mesh/Cannon.hyuntraanimmesh", false, CannonPivot))))
 	{
 		return E_FAIL;
 	}
@@ -2066,12 +2067,17 @@ HRESULT CLoader::Load_Village()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Void19_Object"), CVoid19::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Larva_Object"), CLarva::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Scorpion_Object"), CScorpion::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_RedAnt_Object"), CRedAnt::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
