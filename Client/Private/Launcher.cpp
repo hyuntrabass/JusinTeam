@@ -55,10 +55,16 @@ HRESULT CLauncher::Init(void* pArg)
 
 	case Client::CLauncher::TYPE_LASER:
 
+		// Anim
+		// Attack01
+		// Attack02
+		// Die
+		// Idle
+
 		m_strModelTag = TEXT("Prototype_Model_Cannon");
-		m_Animation.iAnimIndex = 0;
+		m_Animation.iAnimIndex = 3;
 		m_Animation.isLoop = true;
-		m_Animation.fAnimSpeedRatio = 1.7f;
+		m_Animation.fAnimSpeedRatio = 1.f;
 
 		m_pTransformCom->Set_Position(CENTER_POS);
 
