@@ -181,7 +181,13 @@ void CInteraction_Anim::Tick(_float fTimeDelta)
 			CUI_Manager::Get_Instance()->Set_Collect();
 			m_isCollect = true;
 		}
+		m_pShaderCom->Set_PassIndex(VTF_InstPass_OutLine);
 	}
+	else
+	{
+		m_pShaderCom->Set_PassIndex(VTF_InstPass_Default);
+	}
+
 	if (m_isWideCollision)
 	{
 		dynamic_cast<CNameTag*>(m_pNameTag)->Tick(fTimeDelta);
@@ -473,6 +479,12 @@ HRESULT CInteraction_Anim::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_CamNF", &m_pGameInstance->Get_CameraNF(), sizeof _float2)))
+	{
+		return E_FAIL;
+	}
+
+	_uint iOutLineColorIndex = 2;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_OutlineColor", &iOutLineColorIndex, sizeof iOutLineColorIndex)))
 	{
 		return E_FAIL;
 	}

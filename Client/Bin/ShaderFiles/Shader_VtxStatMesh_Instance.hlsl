@@ -11,6 +11,8 @@ matrix g_OldViewMatrix;
 vector g_vColor;
 float g_fAlpha;
 
+uint g_iOutLineColorIndex;
+
 vector g_vCamPos;
 float2 g_CamNF;
 float g_fLightFar;
@@ -395,14 +397,14 @@ technique11 DefaultTechnique_Shader_StatInstance
     pass OutLine
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_DrawStencil, 1);
+        SetDepthStencilState(DSS_DrawStencil, g_iOutLineColorIndex);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main();
+        PixelShader = compile ps_5_0 PS_Main_AlphaTest();
     }
 
     pass AlphaTestMeshes

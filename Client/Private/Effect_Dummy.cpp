@@ -145,6 +145,11 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 
 	m_pTransformCom->Set_Matrix(m_OffsetMatrix);
 
+	if (!m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 50.f))
+	{
+		return;
+	}
+
 	switch (m_Effect.iType)
 	{
 	case Effect_Type::ET_PARTICLE:
@@ -284,6 +289,11 @@ HRESULT CEffect_Dummy::Render()
 	}
 
 	return hr;
+}
+
+void CEffect_Dummy::Kill()
+{
+	m_Effect.fLifeTime = 0.f;
 }
 
 HRESULT CEffect_Dummy::Add_Components()
