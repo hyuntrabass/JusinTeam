@@ -133,11 +133,13 @@ void CPlayer::Tick(_float fTimeDelta)
 			return;
 		}
 	}
-
+	/*
 	if (m_pGameInstance->Key_Down(DIK_B, InputChannel::GamePlay))
 	{
 		CEvent_Manager::Get_Instance()->Update_Quest(TEXT("몬스터 처치"));
 	}
+	*/
+
 	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
 	{
 		return;

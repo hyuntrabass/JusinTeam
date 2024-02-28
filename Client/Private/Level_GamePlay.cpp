@@ -13,6 +13,7 @@
 #include "Camera_Manager.h"
 #include "BrickWall.h"
 #include "TreasureBox.h"
+#include "Balloon.h"
 
 //원명의 꼽사리
 #include "Lake.h"
@@ -150,13 +151,26 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_B,InputChannel::Engine))
 	{
+		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+		CBalloon::BALLOON_DESC Desc{};
+		Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
+		_vec3 vPos = pPlayerTransform->Get_State(State::Pos);
+		vPos.y += 1.5f;
+		Desc.vPosition = vPos;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Balloons"), TEXT("Prototype_GameObject_Balloon"), &Desc)))
+		{
+			return;
+		}
+		/*
+		
 		CEvent_Manager::Get_Instance()->Update_Quest(TEXT("몬스터 처치"));
 
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BrickBall"), TEXT("Prototype_GameObject_BrickBall"))))
 		{
 			return;
 		}
-
+		*/
 	}
 
 	if (!m_bReadyTutorial)

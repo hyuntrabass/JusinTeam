@@ -388,6 +388,7 @@ namespace Client
 		StaticPass_MaskAlpha,
 		StaticPass_DiffAlpha,
 		StaticPass_Dissolve,
+		StaticPass_MaskDiffEffect,
 		StaticPass_End,
 	};
 

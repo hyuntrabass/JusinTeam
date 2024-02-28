@@ -3,6 +3,7 @@
 #include "Event_Manager.h"
 #include "Effect_Manager.h"
 #include "Camera_Manager.h"
+#include "GlowCube.h"
 
 CBalloon::CBalloon(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -35,45 +36,33 @@ HRESULT CBalloon::Init(void* pArg)
 		return E_FAIL;
 	}
 	Set_RandomColor();
+	//Prototype_GameObject_GlowCube
 
-
-	m_Animation.iAnimIndex = Idle;
-	m_Animation.isLoop = true;
-	m_Animation.bSkipInterpolation = false;
-	m_Animation.fAnimSpeedRatio = 2.f;
+	CGlowCube::GLOWCUBE_DESC CubeDesc{};
+	CubeDesc.vColor = m_vColor;
+	CubeDesc.pParentTransform = m_pTransformCom;
+	CubeDesc.vPos = _vec3(0.f, 0.5f, 0.f);
+	m_pCube = (CGlowCube*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_GlowCube"), &CubeDesc);
+	if (m_pCube == nullptr)
+	{
+		return E_FAIL;
+	}
 
 	m_eCurState = STATE_IDLE;
-
-	m_iHP = 10000;
-
-	//m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
-
 	m_pTransformCom->Set_Scale(_vec3(1.4f, 1.4f, 1.4f));
-	/*
-	PxBoxControllerDesc ControllerDesc{};
-
-	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
-	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
-	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
-	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
-	ControllerDesc.halfHeight = 0.8f;
-	ControllerDesc.halfSideExtent = 0.8f;
-	ControllerDesc.halfForwardExtent = 0.8f;
-	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
-	*/
-	//
+	
 	return S_OK;
 }
 
 void CBalloon::Tick(_float fTimeDelta)
 {
+	m_fX += fTimeDelta;
 
 	m_pBodyColliderCom->Change_Extents(_vec3(0.82f, 0.82f, 0.82f));
 	m_pBodyColliderCom->Set_Normal();
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
-
-	m_pModelCom->Set_Animation(m_Animation);
+	m_pCube->Tick(fTimeDelta);
 
 	Update_BodyCollider();
 
@@ -84,8 +73,9 @@ void CBalloon::Tick(_float fTimeDelta)
 
 void CBalloon::Late_Tick(_float fTimeDelta)
 {
-	m_pModelCom->Play_Animation(fTimeDelta);
-	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	m_pCube->Late_Tick(fTimeDelta);
+	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
+
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
@@ -99,6 +89,7 @@ HRESULT CBalloon::Render()
 		return E_FAIL;
 	}
 
+
 	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
 	{
 		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
@@ -106,47 +97,35 @@ HRESULT CBalloon::Render()
 			_bool bFailed = true;
 		}
 
-		_bool HasNorTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-		{
-			HasNorTex = false;
-		}
-		else
-		{
-			HasNorTex = true;
-		}
-
-		_bool HasMaskTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
-		{
-			HasMaskTex = false;
-		}
-		else
-		{
-			HasMaskTex = true;
-		}
-
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+		if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
 		{
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
-	
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof _vec4)))
 		{
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		_float fAlpha = 1.f;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &fAlpha, sizeof _float)))
 		{
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(AnimPass_Color)))
+		_bool isBlur = false;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_isBlur", &isBlur, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		_vec2 vUV = _vec2(0.f, 0.f);
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vUVTransform", &vUV, sizeof _vec2)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(StaticPass_MaskDiffEffect)))
 		{
 			return E_FAIL;
 		}
@@ -160,46 +139,6 @@ HRESULT CBalloon::Render()
 	return S_OK;
 }
 
-void CBalloon::Set_Damage(_int iDamage, _uint iDamageType)
-{
-	/*
-	
-	m_fHittedTime = 6.f;
-	m_eCurState = STATE_HIT;
-
-	m_iHP -= iDamage;
-	m_bDamaged = true;
-	m_bChangePass = true;
-	if (m_bHit == false)
-	{
-		m_iDamageAcc += iDamage;
-	}
-	m_fIdleTime = 0.f;
-
-	_vec4 vPlayerPos = __super::Compute_PlayerPos();
-	m_pTransformCom->LookAt(vPlayerPos);
-
-	if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
-		iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
-	{
-	}
-
-	if (iDamageType == AT_Bow_Common || iDamageType == AT_Bow_Skill1)
-	{
-
-		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
-
-		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
-	}
-
-	if (iDamageType == AT_Bow_Skill3)
-	{
-
-		m_pTransformCom->Set_Speed(0.5f);
-	}
-	*/
-}
-
 void CBalloon::Init_State(_float fTimeDelta)
 {
 
@@ -208,25 +147,16 @@ void CBalloon::Init_State(_float fTimeDelta)
 		switch (m_eCurState)
 		{
 		case Client::CBalloon::STATE_IDLE:
-			m_Animation.iAnimIndex = Idle;
-			m_Animation.isLoop = true;
-			m_Animation.fAnimSpeedRatio = 2.2f;
-			m_Animation.fInterpolationTime = 0.5f;
 
-			m_pTransformCom->Set_Speed(3.f);
 			m_bDamaged = false;
 			break;
 
 		case Client::CBalloon::STATE_HIT:
-			m_Animation.iAnimIndex = NodetreeAction;
-			m_Animation.isLoop = false;
-			m_Animation.fAnimSpeedRatio = 3.f;
 
 			break;
 
 		case Client::CBalloon::STATE_DIE:
-			m_Animation.iAnimIndex = die;
-			m_Animation.isLoop = false;
+
 			break;
 		}
 
@@ -261,27 +191,20 @@ void CBalloon::Tick_State(_float fTimeDelta)
 	break;
 
 	case Client::CBalloon::STATE_HIT:
-
-		if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
-		{
-			m_eCurState = STATE_IDLE;
-			_uint iColor = (_uint)m_eCurColor + 1;
-			m_eCurColor = (BrickColor)iColor;
-		}
-
+	{
+		_uint iColor = (_uint)m_eCurColor + 1;
+		m_eCurColor = (BrickColor)iColor;
 		break;
+	}
+
 
 	case Client::CBalloon::STATE_DIE:
-
-		if (m_pModelCom->IsAnimationFinished(die))
-		{
 			m_isDead = true;
-		}
-
 		break;
 	}
 
 	Set_Color();
+
 }
 
 void CBalloon::Set_Color()
@@ -310,6 +233,11 @@ void CBalloon::Set_Color()
 	default:
 		break;
 	}
+	if(m_pCube != nullptr)
+	{
+		m_pCube->Set_Color(m_vColor);
+	}
+
 }
 
 void CBalloon::Set_RandomColor()
@@ -363,17 +291,22 @@ HRESULT CBalloon::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxMesh_Effect"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Balloon"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_BrickCube"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
 	{
 		return E_FAIL;
 	}
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_T_EFF_Noise_04_BC"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_cubealpha"), TEXT("Com_Texture1"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -439,11 +372,13 @@ void CBalloon::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pCube);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 
 	Safe_Release(m_pBodyColliderCom);
 
+	Safe_Release(m_pMaskTextureCom);
 	Safe_Release(m_pDissolveTextureCom);
 }

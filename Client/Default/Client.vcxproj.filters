@@ -991,9 +991,6 @@
     <ClInclude Include="..\Public\VTFMonster.h">
       <Filter>02.GameObjects\16.SescoGame\VTFMonster</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Void19.h">
-      <Filter>02.GameObjects\16.SescoGame\VTFMonster\Void19</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\SurvivalGame.h">
       <Filter>02.GameObjects\15. SurvivalGame</Filter>
     </ClInclude>
@@ -1015,9 +1012,6 @@
     <ClInclude Include="..\Public\Pop_Reward.h">
       <Filter>02.GameObjects\00.UI\POPUP</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Guard.h">
-      <Filter>02.GameObjects\04.Monster\08. Guard</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\CescoGame.h" />
     <ClInclude Include="..\Public\Guard.h" />
     <ClInclude Include="..\Public\Scorpion.h" />
@@ -1026,6 +1020,13 @@
     </ClInclude>
     <ClInclude Include="..\Public\SummonWindowPet.h">
       <Filter>02.GameObjects\00.UI\GameUI\Inven\Window\Summon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Guard.h" />
+    <ClInclude Include="..\Public\Log.h" />
+    <ClInclude Include="..\Public\RedAnt.h" />
+    <ClInclude Include="..\Public\Larva.h" />
+    <ClInclude Include="..\Public\GlowCube.h">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1529,9 +1530,6 @@
     <ClCompile Include="..\Private\VTFMonster.cpp">
       <Filter>02.GameObjects\16.SescoGame\VTFMonster</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Void19.cpp">
-      <Filter>02.GameObjects\16.SescoGame\VTFMonster\Void19</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Ocean.cpp">
       <Filter>02.GameObjects\02.Terrain\Ocean</Filter>
     </ClCompile>
@@ -1541,9 +1539,6 @@
     <ClCompile Include="..\Private\Pop_Reward.cpp">
       <Filter>02.GameObjects\00.UI\POPUP</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Guard.cpp">
-      <Filter>02.GameObjects\04.Monster\08. Guard</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\CescoGame.cpp" />
     <ClCompile Include="..\Private\Guard.cpp" />
     <ClCompile Include="..\Private\Scorpion.cpp" />
@@ -1552,6 +1547,13 @@
     </ClCompile>
     <ClCompile Include="..\Private\SummonWindowPet.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\Inven\Window\Summon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Guard.cpp" />
+    <ClCompile Include="..\Private\Log.cpp" />
+    <ClCompile Include="..\Private\RedAnt.cpp" />
+    <ClCompile Include="..\Private\Larva.cpp" />
+    <ClCompile Include="..\Private\GlowCube.cpp">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
