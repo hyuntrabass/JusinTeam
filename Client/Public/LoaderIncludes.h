@@ -170,6 +170,7 @@
 #include "RedAnt.h"
 
 #include "Log.h"
+#include "Hook.h"
 
 // SurvivalGame
 #include "SurvivalGame.h"

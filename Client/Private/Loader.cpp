@@ -337,7 +337,14 @@ HRESULT CLoader::Load_Logo()
 			if (!entry.exists())
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
-
+			if (strPrototypeTag == L"Prototype_Model_Hurbs")
+				Pivot = XMMatrixScaling(0.1f, 0.1f, 0.1f);
+		/*	else if (strPrototypeTag == L"Prototype_Model_OakTree")
+			{
+				Pivot = XMMatrixScaling(0.05f, 0.05f, 0.05f);
+			}*/
+			else
+				Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
 			{
 				return E_FAIL;
@@ -1724,7 +1731,7 @@ HRESULT CLoader::Load_GamePlay()
 	{
 		return E_FAIL;
 	}
-
+	 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_SafeZone"), CSafeZone::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -1952,7 +1959,7 @@ HRESULT CLoader::Load_Village()
 		}
 	}
 
-#pragma region CescoGame
+#pragma region  Game
 
 	strInputFilePath = "../Bin/Resources/AnimMesh/CescoGame/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
@@ -2094,6 +2101,11 @@ HRESULT CLoader::Load_Village()
 	}
 	//static
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Log_Object"), CLog::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Hook_Object"), CHook::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

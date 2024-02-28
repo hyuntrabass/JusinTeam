@@ -833,6 +833,11 @@ HRESULT CRenderer::Draw_RenderGroup()
 	return S_OK;
 }
 
+void CRenderer::Switch_FXAA()
+{
+	m_bFXAA = !m_bFXAA;
+}
+
 #ifdef _DEBUG
 HRESULT CRenderer::Add_DebugComponent(CComponent* pDebugComponent)
 {
@@ -2091,32 +2096,15 @@ HRESULT CRenderer::Render_BlendFinal()
 
 HRESULT CRenderer::Render_Final()
 {
-	if (FAILED(m_pFXAAShader->Set_Shader()))
-		return E_FAIL;
-
-	if (FAILED(m_pFXAAShader->Bind_Sampler()))
-		return E_FAIL;
-
-	if(FAILED(m_pFXAAShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pFXAART->Get_UAV(), _uint2(0,0))))
-		return E_FAIL;
-
-	_uint3 Size = _uint3((m_WinSize.x * 7) / 8, (m_WinSize.y + 7) / 8, 1);
-	if (FAILED(m_pFXAAShader->Begin(Size)))
-		return E_FAIL;
-	
-	if (FAILED(FinishCommand()))
-		return E_FAIL;
-	
 	if (m_pGameInstance->Key_Down(DIK_F6))
 		m_bMotionBlur = !m_bMotionBlur;
-
 	
 	if (true == m_bMotionBlur) {
 
 		if (FAILED(m_pMotionShader->Set_Shader()))
 			return E_FAIL;
 
-		ID3D11ShaderResourceView* SRVs[2] = { m_pFXAART->Get_SRV(), m_pGameInstance->Get_SRV(L"Target_Depth_Velocity")};
+		ID3D11ShaderResourceView* SRVs[2] = { m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pGameInstance->Get_SRV(L"Target_Depth_Velocity")};
 
 		if (FAILED(m_pMotionShader->Bind_SRVs(SRVs, 0, 2)))
 			return E_FAIL;
@@ -2193,9 +2181,7 @@ HRESULT CRenderer::Render_Final()
 			return E_FAIL;
 	}
 	else {
-		//if (FAILED(m_pRadialShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pRadialRT->Get_UAV(), iSlot)))
-		//	return E_FAIL;
-		if (FAILED(m_pRadialShader->Bind_ShaderResourceView(m_pFXAART->Get_SRV(), m_pRadialRT->Get_UAV(), iSlot)))
+		if (FAILED(m_pRadialShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pRadialRT->Get_UAV(), iSlot)))
 			return E_FAIL;
 	}	
 
@@ -2211,11 +2197,40 @@ HRESULT CRenderer::Render_Final()
 	if (FAILED(FinishCommand()))
 		return E_FAIL;
 
+	if (m_pGameInstance->Key_Down(DIK_F7))
+		m_bFXAA = !m_bFXAA;
+
+	if (true == m_bFXAA) {
+
+		if (FAILED(m_pFXAAShader->Set_Shader()))
+			return E_FAIL;
+
+		if (FAILED(m_pFXAAShader->Bind_Sampler()))
+			return E_FAIL;
+
+		if (FAILED(m_pFXAAShader->Bind_ShaderResourceView(m_pRadialRT->Get_SRV(), m_pFXAART->Get_UAV(), _uint2(0, 0))))
+			return E_FAIL;
+
+		_uint3 Size = _uint3((m_WinSize.x * 7) / 8, (m_WinSize.y + 7) / 8, 1);
+		if (FAILED(m_pFXAAShader->Begin(Size)))
+			return E_FAIL;
+		
+		if (FAILED(FinishCommand()))
+			return E_FAIL;
+
+	}
+	
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DistortionTexture", L"Target_Distortion")))
 		return E_FAIL;
 
-	if (FAILED(m_pShader->Bind_ShaderResourceView("g_Texture", m_pRadialRT->Get_SRV())))
-		return E_FAIL;
+	if (true == m_bFXAA) {
+		if (FAILED(m_pShader->Bind_ShaderResourceView("g_Texture", m_pFXAART->Get_SRV())))
+			return E_FAIL;
+	}
+	else {
+		if (FAILED(m_pShader->Bind_ShaderResourceView("g_Texture", m_pRadialRT->Get_SRV())))
+			return E_FAIL;
+	}
 
 	if (FAILED(m_pShader->Begin(DefPass_Distortion)))
 	{

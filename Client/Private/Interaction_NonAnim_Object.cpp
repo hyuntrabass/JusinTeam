@@ -7,6 +7,7 @@
 #include "TextButton.h"
 #include "3DUITEX.h"
 #include "Item.h"
+#include "Effect_Manager.h"
 
 // Prototype_Model_Hurbs
 // Prototype_Model_OakTree

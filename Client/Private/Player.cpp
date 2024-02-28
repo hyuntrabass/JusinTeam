@@ -2671,7 +2671,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						Check_Att_Collider(AT_Sword_Common);
 						if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Common]))
 						{
-							m_pGameInstance->Set_TimeRatio(0.05f);
+							m_pGameInstance->Set_TimeRatio(0.1f);
 							m_bAttacked = true;
 						}
 
@@ -2682,8 +2682,6 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					}
 					if (m_bAttacked)
 					{
-						m_pTransformCom->Set_Speed(5.f);
-						m_pTransformCom->Go_Straight(fTimeDelta);
 						m_pCam_Manager->Set_ShakeCam(true, 2.0f);
 					}
 
@@ -2726,7 +2724,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						Check_Att_Collider(AT_Sword_Common);
 						if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Common]))
 						{
-							m_pGameInstance->Set_TimeRatio(0.05f);
+							m_pGameInstance->Set_TimeRatio(0.1f);
 							m_bAttacked = true;
 
 						}
@@ -2778,7 +2776,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						Check_Att_Collider(AT_Sword_Common);
 						if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Common]))
 						{
-							m_pGameInstance->Set_TimeRatio(0.05f);
+							m_pGameInstance->Set_TimeRatio(0.1f);
 							m_bAttacked = true;
 
 						}
@@ -2847,13 +2845,11 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						Check_Att_Collider(AT_Sword_Common);
 						if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Common]))
 						{
-							m_pGameInstance->Set_TimeRatio(0.05f);
+							m_pGameInstance->Set_TimeRatio(0.1f);
 							m_bAttacked = true;
 							m_fSkillSpeed = 0.f;
 
 						}
-
-						m_pGameInstance->Set_TimeRatio(1.f);
 
 					}
 					else
@@ -2869,6 +2865,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 				else if (Index > 18.f && Index < 21.f)
 				{
 					m_bAttacked = false;
+					m_pGameInstance->Set_TimeRatio(1.f);
 				}
 				else if (Index >= 22.f && Index <= 24.f)
 				{
@@ -2877,7 +2874,6 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						Check_Att_Collider(AT_Sword_Common);
 						if (m_pGameInstance->CheckCollision_Monster(m_pAttCollider[AT_Sword_Common]))
 						{
-							m_pGameInstance->Set_TimeRatio(0.2f);
 							m_bAttacked = true;
 
 						}
@@ -3354,41 +3350,28 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		switch (m_iAttackCombo)
 		{
 		case 1:
-			if (Index >= 5.f && Index <= 8.f)
+			if (Index >= 0.f && Index <= 5.f)
 			{
 				if (m_fRadialPower < 1.f)
 				{
-					m_fRadialPower += fTimeDelta * 2.f;
+					m_fRadialPower += fTimeDelta * 3.f;
 					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
 				}
 				m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.5f, 0.5f));
 			}
-			else if (Index >= 8.f && Index <= 11.f)
-			{
-				if (m_fRadialPower > 0.f)
-				{
-					m_fRadialPower -= fTimeDelta * 2.f;
-					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
-				}
-			}
-			else if (Index >= 11.f && Index <= 13.f)
-			{
-				m_fRadialPower = 0.f;
-				m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
-			}
+	
 			if (Index >= 4.f && Index <= 5.f && !m_bLockOn)
 			{
 				Cam_AttackZoom(2.5f);
 
 			}
 			else if (Index >= 5.f && Index <= 7.f && m_ReadyArrow)
-			{
-				
+			{		
 				Create_Arrow(AT_Bow_Common);
 				m_pGameInstance->Set_TimeRatio(0.3f);
 				m_ReadyArrow = false;
 			}
-			else if(Index>=7.f&&Index<=9.f)
+			else
 			{
 				
 				m_pGameInstance->Set_TimeRatio(1.f);
@@ -3396,103 +3379,80 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		
 			break;
 		case 2:
-			if (Index >= 5.f && Index <= 6.f && !m_bLockOn)
+			if (Index >= 0.f && Index <= 5.f)
 			{
-				m_fAttackZoom += 0.7f;
-				m_fRadialPower = 0.f;
-			}
-			else if (Index >= 6.f && Index <= 8.f && m_ReadyArrow)
-			{
-				if (m_fRadialPower < 0.6f)
+				if (m_fRadialPower < 1.f)
 				{
-					m_fRadialPower += fTimeDelta *2.f;
+					m_fRadialPower += fTimeDelta * 3.f;
 					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
 				}
 				m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.5f, 0.5f));
+			}
+			if (Index >= 5.f && Index <= 6.f && !m_bLockOn)
+			{
+				m_fAttackZoom += 0.7f;
+			}
+			else if (Index >= 6.f && Index <= 8.f && m_ReadyArrow)
+			{
+				
 				Create_Arrow(AT_Bow_Common);
 				m_pGameInstance->Set_TimeRatio(0.3f);
 				m_ReadyArrow = false;
 			}
-			else if (Index >= 8.f && Index <= 10.f)
+			else 
 			{
-				if (m_fRadialPower > 0.f)
-				{
-					m_fRadialPower -= fTimeDelta * 2.f;
-					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
-				}
 				m_pGameInstance->Set_TimeRatio(1.f);
-			}
-			else if (Index >= 10.f && Index <= 12.f)
-			{
-				m_fRadialPower = 0.f;
-				m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
 			}
 			break;
 		case 3:
+			if (Index >= 0.f && Index <= 7.f)
+			{
+				if (m_fRadialPower < 1.f)
+				{
+					m_fRadialPower += fTimeDelta * 3.f;
+					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
+				}
+				m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.5f, 0.5f));
+			}
 			if (Index >= 6.f && Index <= 7.f)
 			{
-				m_fRadialPower = 0.f;
 				m_fAttackZoom += 0.7f;
 			}
 			else if (Index >= 7.f && Index <= 9.f && m_ReadyArrow)
 			{
-				if (m_fRadialPower < 1.f)
-				{
-					m_fRadialPower += fTimeDelta * 2.f;
-					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
-				}
-				m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.5f, 0.5f));
 				Create_Arrow(AT_Bow_Common);
 				m_pGameInstance->Set_TimeRatio(0.3f);
 				m_ReadyArrow = false;
 			}
-			else if (Index >= 9.f && Index <= 11.f)
+			else 
 			{
-				if (m_fRadialPower > 0.f)
-				{
-					m_fRadialPower -= fTimeDelta * 2.f;
-					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
-				}
 				m_pGameInstance->Set_TimeRatio(1.f);
-			}
-			else if (Index >= 11.f && Index <= 13.f)
-			{
-				m_fRadialPower = 0.f;
-				m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
 			}
 			break;
 		case 4:
+			if (Index >= 0.f && Index <= 2.f)
+			{
+				if (m_fRadialPower < 1.f)
+				{
+					m_fRadialPower += fTimeDelta * 3.f;
+					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
+				}
+				m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.5f, 0.5f));
+			}
 			if (Index >= 5.f && Index <= 6.f)
 			{
-				m_fRadialPower = 0.f;
 				m_fAttackZoom += 0.7f;
 			}
 			else if (Index >= 2.f && Index <= 4.f && m_ReadyArrow)
 			{
-				if (m_fRadialPower < 0.6f)
-				{
-					m_fRadialPower += fTimeDelta * 2.f;
-					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
-				}
-				m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.5f, 0.5f));
+				
 				Create_Arrow(AT_Bow_Common);
 				m_pGameInstance->Set_TimeRatio(0.3f);
 				m_ReadyArrow = false;
 			}
-			else if (Index >= 4.f && Index <= 6.f)
+			else
 			{
-
-				if (m_fRadialPower > 0.f)
-				{
-					m_fRadialPower -= fTimeDelta * 2.f;
-					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
-				}
 				m_pGameInstance->Set_TimeRatio(1.f);
-			}
-			else if (Index >= 6.f && Index <= 8.f)
-			{
-				m_fRadialPower = 0.f;
-				m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
 			}
 			break;
 		default:
@@ -3613,6 +3573,11 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		{
 			Cam_AttackZoom(-2.f);
 		}
+		if (Index >= 24.f && Index <= 52.f)
+		{
+			m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
+			m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.5f, 0.5f));
+		}
 		if (Index >= 26.f && Index <= 28.f)
 		{
 			if (!m_bAttacked)
@@ -3644,6 +3609,15 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		}
 	}
 
+	if (m_bMove_AfterSkill and m_eState != Attack)
+	{
+		if (m_fRadialPower > 0.f)
+		{
+			m_fRadialPower -= fTimeDelta *2.f;
+			m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
+		}
+		}
+	
 }
 
 void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
@@ -3959,6 +3933,7 @@ void CPlayer::Init_State()
 		m_Animation.fAnimSpeedRatio = 2.f;
 		m_bReadyMove = true;
 		m_iHP = 0;
+		m_fRadialPower = 0.f;
 		if (m_pGameInstance->Get_TimeRatio() < 1.f)
 		{
 			m_pGameInstance->Set_TimeRatio(1.f);
@@ -4104,6 +4079,7 @@ void CPlayer::Init_State()
 			Skill3_Attack();
 			break;
 		case Client::CPlayer::Skill4:
+			m_fRadialPower = 2.f;
 			Skill4_Attack();
 			break;
 		case Client::CPlayer::SkillR:
@@ -4266,6 +4242,7 @@ void CPlayer::Init_State()
 		case Client::CPlayer::Collect_Loop:
 		{
 			m_Animation.iAnimIndex = Anim_Collect_loop;
+			m_Animation.fAnimSpeedRatio = 3.f;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}

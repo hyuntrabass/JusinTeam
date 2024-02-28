@@ -190,6 +190,7 @@ private:
 	_vec4 m_vMouseWorld{ 0.f,0.f,0.f,0.f };
 
 	_int DummyIndex{ 0 };
+	_int EffectIndex{ 0 };
 	_int MapIndex{ 0 };
 	_int CameraIndex{ 0 };
 	_bool m_isMode{ false };
