@@ -88,19 +88,21 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		- (m_pTransformCom->Get_State(State::Look) * m_fPlayerDistance)
 		+ (m_pTransformCom->Get_State(State::Up) * m_fPlayerDistance * 0.25f));
 
-	_vec4 vLook = m_pTransformCom->Get_State(State::Look);
-	PxRaycastBuffer Buffer{};
-	_vec4 vRayDir{};
-	_vec4 vMyPos = m_pTransformCom->Get_State(State::Pos);
-	_vec4 PlayerCenter = m_pPlayerTransform->Get_CenterPos();
-	vRayDir = vMyPos - PlayerCenter;
-	vRayDir.Normalize();
-	_float fDist = XMVectorGetX(XMVector3Length(vRayDir)) - 0.4f;
-	if (m_pGameInstance->Raycast(m_pPlayerTransform->Get_CenterPos() + vRayDir * 0.5f, vRayDir, fDist, Buffer))
+	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_LOADING)
 	{
-		m_pTransformCom->Set_State(State::Pos, PxVec3ToVector(Buffer.block.position, 1.f));
+		_vec4 vLook = m_pTransformCom->Get_State(State::Look);
+		PxRaycastBuffer Buffer{};
+		_vec4 vRayDir{};
+		_vec4 vMyPos = m_pTransformCom->Get_State(State::Pos);
+		_vec4 PlayerCenter = m_pPlayerTransform->Get_CenterPos();
+		vRayDir = vMyPos - PlayerCenter;
+		vRayDir.Normalize();
+		_float fDist = XMVectorGetX(XMVector3Length(vRayDir)) - 0.4f;
+		if (m_pGameInstance->Raycast(m_pPlayerTransform->Get_CenterPos() + vRayDir * 0.5f, vRayDir, fDist, Buffer))
+		{
+			m_pTransformCom->Set_State(State::Pos, PxVec3ToVector(Buffer.block.position, 1.f));
+		}
 	}
-
 	_vec4 vShakePos = m_pTransformCom->Get_State(State::Pos);
 	vShakePos += XMVectorSet(fShakeAmount, -fShakeAmount, 0.f, 0.f);
 	m_pTransformCom->Set_State(State::Pos, vShakePos);

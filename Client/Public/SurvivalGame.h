@@ -48,7 +48,7 @@ private:
 	_bool m_bGameStart = { false };
 
 private:
-	_uint m_iLauncherCount = {};
+	_uint m_iCount = {};
 
 
 public:

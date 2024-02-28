@@ -3,6 +3,7 @@
 #include "TextButton.h"
 #include "BlurTexture.h"
 #include "UI_Manager.h"
+#include "Event_Manager.h"
 #include "Item.h"
 
 CPop_Reward::CPop_Reward(_dev pDevice, _context pContext)
@@ -80,7 +81,16 @@ void CPop_Reward::Tick(_float fTimeDelta)
 
 	if (m_fDeadTime >= 0.8f && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 	{
+		for (auto& iter : m_vecItems)
+		{
+			if (iter->Get_ItemDesc().strName == TEXT("그로아 남편의 팔찌"))
+			{
+				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("그로아의 부탁"));
+				break;
+			}
+		}
 		m_isDead = true;
+		return;
 	}
 
 	m_fTime += fTimeDelta * 0.2f;

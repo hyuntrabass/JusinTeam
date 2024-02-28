@@ -1,5 +1,6 @@
 #pragma once
 
+#include "TreasureBox.h"
 #include "Pop_Reward.h"
 #include "BrickBar.h"
 #include "BrickWall.h"
@@ -10,6 +11,7 @@
 #include "Tower.h"
 #include "InfinityTower.h"
 #include "SummonWindow.h"
+#include "SummonWindowPet.h"
 #include "NineSlice.h"
 #include "Vehicle.h"
 #include "VehicleBook.h"
@@ -162,8 +164,9 @@
 //CescoGame
 #include "CescoGame.h"
 
-#include "Void19.h"
+#include "Larva.h"
 #include "Scorpion.h"
+#include "RedAnt.h"
 
 #include "Log.h"
 #include "Hook.h"

@@ -179,6 +179,7 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.strQuestTitle = TEXT("몬스터 처치");
 	tDesc.strText = TEXT("갑판 위 몬스터 처치하기");
 	vecRewards.push_back(make_pair(TEXT("[일반]탈 것 소환 카드"), 10));
+	vecRewards.push_back(make_pair(TEXT("[유니크]신비한 알"), 1));
 	vecRewards.push_back(make_pair(TEXT("마나하임의 갑옷"), 1));
 	vecRewards.push_back(make_pair(TEXT("바이킹의 투구"), 1));
 	vecRewards.push_back(make_pair(TEXT("거인의 강철 단검"), 1));
@@ -187,7 +188,7 @@ HRESULT CEvent_Manager::Init_Quest()
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	vecRewards.clear();
-
+	tDesc.vecRewards = vecRewards;
 	tDesc.eType = QUESTIN;
 	tDesc.fExp = 50.f;
 	tDesc.iNum = 3;
@@ -204,6 +205,15 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.isMain = false;
 	tDesc.strQuestTitle = TEXT("체력포션 구매");
 	tDesc.strText = TEXT("마을 상인에게 체력포션 구매하기");
+	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
+	
+	tDesc.eType = QUESTIN;
+	tDesc.fExp = 20.5f;
+	tDesc.iNum = 1;
+	tDesc.iMoney = 10000;
+	tDesc.isMain = true;
+	tDesc.strQuestTitle = TEXT("그로아씨 찾기");
+	tDesc.strText = TEXT("던전에 있는 그로아 찾기");
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	tDesc.eType = QUESTIN;
@@ -224,7 +234,7 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.fExp = 15.6f;
 	tDesc.iNum = 2;
 	tDesc.iMoney = 10000;
-	tDesc.isMain = true;
+	tDesc.isMain = false;
 	tDesc.strQuestTitle = TEXT("염소잡기");
 	tDesc.strText = TEXT("염소 두마리 잡기");
 	vecRewards.push_back(make_pair(TEXT("[희귀]탈 것 소환 카드"), 10));
@@ -233,7 +243,7 @@ HRESULT CEvent_Manager::Init_Quest()
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	vecRewards.clear();
-
+	tDesc.vecRewards = vecRewards;
 	tDesc.eType = QUESTIN;
 	tDesc.fExp = 14.6f;
 	tDesc.iNum = 1;

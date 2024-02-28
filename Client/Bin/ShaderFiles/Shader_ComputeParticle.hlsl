@@ -36,7 +36,9 @@ cbuffer ParticleParams : register(b0)
     
     row_major matrix WorldMatrix;
     
-    vector Padding3;
+    int bChangeDir;
+    
+    float3 Padding3;
 }
 
 float Random(float fSeed)
@@ -52,7 +54,7 @@ float RandomRange(float fSeed, float fMin, float fMax)
     return (fRandom * fRange) + fMin;
 }
 
-[numthreads(256, 1, 1)]
+[numthreads(1024, 1, 1)]
 void particle(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID, uint groupIndex : SV_GroupIndex, uint3 dispatchID : SV_DispatchThreadID)
 {
     if (dispatchID.x < iNumInstances)
@@ -79,6 +81,10 @@ void particle(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID
         }
 
         if (bApplyGravity)
+        {
+            pVertex.vDirection = lerp(pVertex.vDirection, vGravityDir, 0.01f);
+        }
+        else if (bChangeDir)
         {
             float fAlpha = (pVertex.vLifeTime.x / pVertex.vLifeTime.y) * 0.7f;
             pVertex.vDirection = lerp(pVertex.vDirection, vGravityDir, fAlpha);

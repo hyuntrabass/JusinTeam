@@ -11,6 +11,7 @@
 #include "Trigger_Manager.h"
 #include "HitEffect.h"
 #include "Camera_Manager.h"
+#include "TreasureBox.h"
 
 const _float CGroar_Boss::m_fChaseRange = 10.f;
 const _float CGroar_Boss::m_fAttackRange = 6.f;
@@ -75,6 +76,7 @@ HRESULT CGroar_Boss::Init(void* pArg)
 
 void CGroar_Boss::Tick(_float fTimeDelta)
 {
+
 	m_pTransformCom->Set_OldMatrix();
 
 	//if (m_pGameInstance->Key_Down(DIK_Q, InputChannel::UI)) // 괴물들 잡아달라 하고 보스방으로 순간이동 하는 타이밍(한번만 들어와야 함)
@@ -240,16 +242,21 @@ void CGroar_Boss::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	if (m_eCurState == STATE_BOSS)
 	{
-		m_iHP -= iDamage;
-		m_bChangePass = true;
+		if (iDamage > 0)
+		{
+			m_iHP -= iDamage;
+			m_bChangePass = true;
 
-		m_pHpBoss->Set_HP(m_iHP);
-
-		_uint iRandomX = rand() % 100;
-		_uint iRandomY = rand() % 100 + 230;
-		_vec2 vDamagePos = _vec2((_float)(iRandomX - 50) * 0.01f, (_float)iRandomY * 0.01f);
-		CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, vDamagePos, (ATTACK_TYPE)iDamageType);
-	}	
+			if (m_pHpBoss != nullptr)
+			{
+				m_pHpBoss->Set_HP(m_iHP);
+			}
+			_uint iRandomX = rand() % 100;
+			_uint iRandomY = rand() % 100 + 230;
+			_vec2 vDamagePos = _vec2((_float)(iRandomX - 50) * 0.01f, (_float)iRandomY * 0.01f);
+			CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, vDamagePos, (ATTACK_TYPE)iDamageType);
+		}
+	}
 	
 	//if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
 	//	iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
@@ -668,6 +675,9 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 	case Client::CGroar_Boss::BOSS_STATE_THROW_ATTACK:
 
+	{
+		_float fAnimPos = m_pBossModelCom->Get_CurrentAnimPos();
+
 		if (m_pBossModelCom->Get_CurrentAnimationIndex() == MON_GROAR_ASGARD_ATTACK00)
 		{
 			if (m_pBossModelCom->Get_CurrentAnimPos() >= 10.f && !m_bCreateMissile)
@@ -679,10 +689,10 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 				++m_iThrowAttackCombo;
 			}
 
-			if (m_pBossModelCom->Get_CurrentAnimPos() < 10.f)
-			{
-				m_bCreateMissile = false;
-			}
+			//if (m_pBossModelCom->Get_CurrentAnimPos() < 10.f)
+			//{
+			//	m_bCreateMissile = false;
+			//}
 
 			if (m_pBossModelCom->Get_CurrentAnimPos() <= 38.f)
 			{
@@ -702,10 +712,10 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 				++m_iThrowAttackCombo;
 			}
 
-			if (m_pBossModelCom->Get_CurrentAnimPos() < 15.f)
-			{
-				m_bCreateMissile = false;
-			}
+			//if (m_pBossModelCom->Get_CurrentAnimPos() < 15.f)
+			//{
+			//	m_bCreateMissile = false;
+			//}
 
 			if (m_pBossModelCom->Get_CurrentAnimPos() <= 51.f)
 			{
@@ -724,10 +734,14 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 
 			m_eBossCurState = BOSS_STATE_CHASE;
 		}
+	}
 
 		break;
 
 	case Client::CGroar_Boss::BOSS_STATE_SIX_MISSILE:
+
+	{
+		_float fAnimPos = m_pBossModelCom->Get_CurrentAnimPos();
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 60.f && !m_bCreateMissile)
 		{
@@ -755,10 +769,14 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			m_eBossCurState = BOSS_STATE_CHASE;
 			m_bAttack_Selected[ATTACK_SIX_MISSILE] = true;
 		}
+	}
 
 		break;
 
 	case Client::CGroar_Boss::BOSS_STATE_TAKE_DOWN:
+
+	{
+		_float fAnimPos = m_pBossModelCom->Get_CurrentAnimPos();
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 69.f && m_pBossModelCom->Get_CurrentAnimPos() <= 72.f)
 		{
@@ -810,10 +828,14 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			m_eBossCurState = BOSS_STATE_CHASE;
 			m_bAttack_Selected[ATTACK_TAKE_DOWN] = true;
 		}
+	}
 
 		break;
 
 	case Client::CGroar_Boss::BOSS_STATE_SPIDER:
+
+	{
+		_float fAnimPos = m_pBossModelCom->Get_CurrentAnimPos();
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 80.f && !m_bCreateSpider)
 		{
@@ -830,10 +852,15 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			m_eBossCurState = BOSS_STATE_CHASE;
 			m_bAttack_Selected[ATTACK_SPIDER] = true;
 		}
+	}
 
 		break;
 
 	case Client::CGroar_Boss::BOSS_STATE_TENTACLE:
+
+	{
+		_float fAnimPos = m_pBossModelCom->Get_CurrentAnimPos();
+
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 48.f)
 		{
 			m_fTentacleTime += fTimeDelta;
@@ -851,10 +878,14 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			m_bAttack_Selected[ATTACK_TENTACLE] = true;
 			m_fTentacleTime = 0.f;
 		}
+	}
 
 		break;
 
 	case Client::CGroar_Boss::BOSS_STATE_XBEAM:
+
+	{
+		_float fAnimPos = m_pBossModelCom->Get_CurrentAnimPos();
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() < 102.f)
 		{
@@ -880,10 +911,14 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			m_bAttack_Selected[ATTACK_XBEAM] = true;
 			m_bCreateXBeam = false;
 		}
+	}
 
 		break;
 
 	case Client::CGroar_Boss::BOSS_STATE_RAGE:
+
+	{
+		_float fAnimPos = m_pBossModelCom->Get_CurrentAnimPos();
 
 		if (m_pBossModelCom->Get_CurrentAnimPos() >= 95.f && m_pBossModelCom->Get_CurrentAnimPos() <= 175.f)
 		{
@@ -911,10 +946,34 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 			m_eBossCurState = BOSS_STATE_CHASE;
 			m_bAttack_Selected[ATTACK_YELL] = true;
 		}
+	}
 
 		break;
 
 	case Client::CGroar_Boss::BOSS_STATE_DIE:
+		if (m_pBossModelCom->IsAnimationFinished(MON_GROAR_ASGARD_DIE))
+		{
+			if (!m_isReward)
+			{
+				CTreasureBox::TREASURE_DESC Desc{};
+				_vec4 vPos = m_pTransformCom->Get_State(State::Pos); 
+				Desc.vPos = vPos;
+				vector <pair<wstring, _uint>> vecItem;
+				vecItem.push_back(make_pair(TEXT("[신화]탈 것 소환 카드"), 10));
+				vecItem.push_back(make_pair(TEXT("레긴레이프의 불멸 투구"), 1));
+				vecItem.push_back(make_pair(TEXT("레긴레이프의 불멸 갑옷"), 1));
+				vecItem.push_back(make_pair(TEXT("오딘의 궁니르 단검"), 1));
+				vecItem.push_back(make_pair(TEXT("오딘의 궁니르 활"), 1));
+				Desc.vecItem = vecItem;
+				Desc.eDir = CTreasureBox::LEFT;
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Temp"), TEXT("Prototype_GameObject_TreasureBox"), &Desc)))
+				{
+					return;
+				}
+				vecItem.clear();
+				m_isReward = true;
+			}
+		}
 		break;
 	}
 }
@@ -1132,6 +1191,11 @@ void CGroar_Boss::NPC_Tick(_float fTimeDelta)
 
 	_bool isColl = m_pNpcColliderCom->Intersect(pCollider);
 	m_isColl = isColl;
+	if (!m_bQuest && isColl)
+	{
+		m_bQuest = true;
+		CEvent_Manager::Get_Instance()->Update_Quest(TEXT("그로아씨 찾기"));
+	}
 	if (!m_bTalking && isColl && m_pGameInstance->Key_Down(DIK_E))
 	{
 		m_pArrow->Set_Position(_vec2(1100.f, 600.f));

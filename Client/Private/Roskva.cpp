@@ -292,6 +292,10 @@ HRESULT CRoskva::Init_Dialog()
 	m_vecDialog.push_back(TEXT("거대 토끼와 싸우느라 체력이 많이 떨어졌네"));
 	m_vecDialog.push_back(TEXT("마을에 있는 상인에게 체력포션을 구매할 수 있어!"));
 	m_vecDialog.push_back(TEXT("!체력포션 구매"));
+	m_vecDialog.push_back(TEXT("그나저나 그로아씨는 괜찮으려나.."));
+	m_vecDialog.push_back(TEXT("던전에 간 남편이 돌아오질 않아서 찾으러 간다고 했거든."));
+	m_vecDialog.push_back(TEXT("무슨 일이 생긴 건 아닐지 걱정된달까?"));
+	m_vecDialog.push_back(TEXT("!그로아씨 찾기"));
 	m_vecDialog.push_back(TEXT("END"));
 
 	m_vecChatt.push_back(TEXT("머야 퀘스트 하고 와"));

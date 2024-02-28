@@ -143,6 +143,15 @@ HRESULT CLevel_Village::Init()
 	EffectDesc.pMatrix = &FountainMat;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 
+	_mat SparkMat = _mat::CreateTranslation(_vec3(3000.f, -1.5f, 3000.f));
+	EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"MapSpark");
+	EffectDesc.pMatrix = &SparkMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+	SparkMat = _mat::CreateTranslation(_vec3(3000.f, 3.f, 3000.f));
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+	SparkMat = _mat::CreateTranslation(_vec3(3000.f, 1.5f, 3000.f));
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+
 	if (FAILED(Ready_Statue()))
 	{
 		MSG_BOX("Failed to Ready Statue");
@@ -235,7 +244,7 @@ void CLevel_Village::Tick(_float fTimeDelta)
 	// Test
 	if (m_pGameInstance->Key_Down(DIK_RSHIFT))
 	{
-		//m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"));
+		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"));
 	}
 	//if (m_pGameInstance->Key_Down(DIK_UP))
 	//{
@@ -382,7 +391,6 @@ HRESULT CLevel_Village::Ready_TreasureBox()
 		MSG_BOX("던전 보물상자 파일을 찾지 못했습니다.");
 		return E_FAIL;
 	}
-
 	_uint ObjectListSize;
 	inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
 
@@ -402,7 +410,7 @@ HRESULT CLevel_Village::Ready_TreasureBox()
 		ObjectInfo.strPrototypeTag = ObjectPrototype;
 		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
 		ObjectInfo.eObjectType = Object_Environment;
-		ObjectInfo.m_iIndex = (_uint)FIELD;
+		ObjectInfo.m_iIndex = i;
 
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Interaction_Object"), TEXT("Prototype_GameObject_Intraction_Anim_Object"), &ObjectInfo)))
 		{

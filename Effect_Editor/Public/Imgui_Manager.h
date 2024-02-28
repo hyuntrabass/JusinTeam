@@ -45,6 +45,7 @@ struct OldEffectInfo
 	float fRectRotationAngle{};
 	bool isBillboard{};
 	SimpleMath::Vector3 vBillboardRotation{};
+	float fPartiAppearRatio{};
 	float fPartiDissolveRatio{};
 
 	bool hasLight{};
@@ -56,6 +57,7 @@ struct OldEffectInfo
 	std::wstring strUnDissolveTexture{};
 	std::string strModel{};
 
+	std::wstring strEffectTag{};
 	bool isFollow{};
 	SimpleMath::Matrix* pMatrix{};
 };
