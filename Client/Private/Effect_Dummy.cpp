@@ -149,9 +149,20 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 	{
 	case Effect_Type::ET_PARTICLE:
 	case Effect_Type::ET_PARTI_DISTORTION:
-		m_pParticle->Update(fTimeDelta, m_pTransformCom->Get_World_Matrix(), m_Effect.iNumInstances, m_Effect.bApplyGravity, m_Effect.vGravityDir, m_Effect.fPartiAppearRatio, m_Effect.fPartiDissolveRatio);
-		//m_WorldMatrix = m_pTransformCom->Get_World_Matrix();
+	{
+		ParticleParams Param{};
+		Param.iNumUse = m_Effect.iNumInstances;
+		Param.fTimeDelta = fTimeDelta;
+		Param.fAppearRatio = m_Effect.fPartiAppearRatio;
+		Param.vGravityDir = m_Effect.vGravityDir;
+		Param.fDissolveRatio = m_Effect.fPartiDissolveRatio;
+		Param.bApplyGravity = m_Effect.bApplyGravity;
+		Param.WorldMatrix = m_pTransformCom->Get_World_Matrix();
+		Param.bChangeDir = m_Effect.bChangeDir;
+
+		m_pParticle->Update(Param);
 		break;
+	}
 	case Effect_Type::ET_RECT:
 	{
 		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);

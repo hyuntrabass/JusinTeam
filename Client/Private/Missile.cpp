@@ -161,6 +161,7 @@ void CMissile::Tick(_float fTimeDelta)
 		return;
 	}
 
+	_float fAnimPos = m_pGroarModel->Get_CurrentAnimPos();
 
 	switch (m_eType)
 	{
@@ -184,7 +185,7 @@ void CMissile::Tick(_float fTimeDelta)
 		}
 
 		if (!m_bShoot && m_pGroarModel->Get_CurrentAnimationIndex() == CGroar_Boss::MON_GROAR_ASGARD_ATTACK01 &&
-			m_pGroarModel->Get_CurrentAnimPos() >= 51.f)
+			fAnimPos >= 51.f)
 		{
 			m_bShoot = true;
 
@@ -234,7 +235,7 @@ void CMissile::Tick(_float fTimeDelta)
 		}
 
 		if (!m_bShoot && m_pGroarModel->Get_CurrentAnimationIndex() == CGroar_Boss::MON_GROAR_ASGARD_ATTACK00 &&
-			m_pGroarModel->Get_CurrentAnimPos() >= 38.f)
+			fAnimPos >= 38.f)
 		{
 			m_bShoot = true;
 
@@ -294,7 +295,7 @@ void CMissile::Tick(_float fTimeDelta)
 		m_fEffectTimer += fTimeDelta;
 
 		if (!m_bShoot && m_pGroarModel->Get_CurrentAnimationIndex() == CGroar_Boss::MON_GROAR_ASGARD_ATTACK02 &&
-			m_pGroarModel->Get_CurrentAnimPos() >= m_fDepartTime)
+			fAnimPos >= m_fDepartTime)
 		{
 			m_bShoot = true;
 		}

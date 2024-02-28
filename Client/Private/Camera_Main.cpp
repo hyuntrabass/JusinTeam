@@ -361,9 +361,12 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 		vRayDir.Normalize();
 
 
-		if (m_pGameInstance->Raycast(m_pPlayerTransform->Get_CenterPos(), vRayDir, fDist, Buffer))
+		if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_LOADING)
 		{
-			m_pTransformCom->Set_State(State::Pos, PxVec3ToVector(Buffer.block.position, 1.f));
+			if (m_pGameInstance->Raycast(m_pPlayerTransform->Get_CenterPos(), vRayDir, fDist, Buffer))
+			{
+				m_pTransformCom->Set_State(State::Pos, PxVec3ToVector(Buffer.block.position, 1.f));
+			}
 		}
 
 		_vec4 vShakePos = m_pTransformCom->Get_State(State::Pos);
