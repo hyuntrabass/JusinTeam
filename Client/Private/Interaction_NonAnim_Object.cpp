@@ -204,7 +204,7 @@ HRESULT CInteraction_NonAnim::Add_Components()
 	// Com_Collider
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
-	CollDesc.fRadius = 5.f;
+	CollDesc.fRadius = 2.f;
 	CollDesc.vCenter = _vec3(0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Interaction_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))

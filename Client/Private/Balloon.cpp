@@ -73,9 +73,9 @@ void CBalloon::Tick(_float fTimeDelta)
 
 void CBalloon::Late_Tick(_float fTimeDelta)
 {
-	m_pCube->Late_Tick(fTimeDelta);
+	//m_pCube->Late_Tick(fTimeDelta);
+	//m_shouldRenderBlur = true;
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
-
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
@@ -358,7 +358,7 @@ CBalloon* CBalloon::Create(_dev pDevice, _context pContext)
 CGameObject* CBalloon::Clone(void* pArg)
 {
 	CBalloon* pInstance = new CBalloon(*this);
-
+                                                                                                                                                                                                                  
 	if (FAILED(pInstance->Init(pArg)))
 	{
 		MSG_BOX("Failed to Clone : CBalloon");
