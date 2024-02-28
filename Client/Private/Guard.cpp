@@ -57,6 +57,8 @@ HRESULT CGuard::Init(void* pArg)
 
 void CGuard::Tick(_float fTimeDelta)
 {
+	m_pTransformCom->Set_OldMatrix();
+
 	View_Detect_Range();
 	m_eCurState = STATE_PATROL;
 	if (m_pGameInstance->Key_Down(DIK_DOWN))
@@ -69,7 +71,6 @@ void CGuard::Tick(_float fTimeDelta)
 
 	}
 
-	m_pTransformCom->Set_OldMatrix();
 
 	if (true == m_bChangePass) {
 		m_fHitTime += fTimeDelta;
@@ -104,7 +105,6 @@ void CGuard::Late_Tick(_float fTimeDelta)
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
-	m_pRendererCom->Add_DebugComponent(m_pDetectColliderCom);
 #endif // _DEBUG
 
 }
@@ -138,12 +138,27 @@ HRESULT CGuard::Render()
 			HasMaskTex = true;
 		}
 
+		_bool HasGlowTex{};
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_GlowTexture", i, TextureType::Specular)))
+		{
+			HasGlowTex = false;
+		}
+		else
+		{
+			HasGlowTex = true;
+		}
+
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}
 
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasGlowTex", &HasGlowTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}
@@ -429,18 +444,6 @@ HRESULT CGuard::Add_Collider()
 		return E_FAIL;
 	}
 
-	// Frustum
-	Collider_Desc DetectColDesc{};
-	DetectColDesc.eType = ColliderType::Frustum;
-	matView = XMMatrixLookAtLH(m_pTransformCom->Get_State(State::Pos), m_pTransformCom->Get_State(State::Look), _vec3(0.f, 1.f, 0.f));
-	matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(90.f), 0.5f, 0.01f, 10.f);
-
-	DetectColDesc.matFrustum = matView * matProj;
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Detect"), reinterpret_cast<CComponent**>(&m_pDetectColliderCom), &DetectColDesc)))
-	{
-		return E_FAIL;
-	}
 
 	return S_OK;
 }
@@ -449,7 +452,6 @@ void CGuard::Update_Collider()
 {
 	_mat Offset = _mat::CreateTranslation(0.f, 2.f, 0.f);
 	m_pAttackColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
-	m_pDetectColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
 	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 	
 }
@@ -491,6 +493,5 @@ void CGuard::Free()
 	Safe_Release(m_pFrameEffect);
 	Safe_Release(m_pBodyColliderCom);
 	Safe_Release(m_pAttackColliderCom);
-	Safe_Release(m_pDetectColliderCom);
 	Safe_Release(m_pDissolveTextureCom);
 }
