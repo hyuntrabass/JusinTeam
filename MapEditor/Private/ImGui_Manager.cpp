@@ -1192,7 +1192,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::InputFloat4("Look", &m_EffectMatrix.m[2][0], 0);
 			ImGui::InputFloat4("Position", &m_EffectMatrix.m[3][0], 0);
 			ImGui::Separator();
-			if (ImGui::Button("Create"))
+			if (ImGui::Button("Create") or m_pGameInstance->Key_Down(DIK_C))
 			{
 				Create_Effect_Dummy(Effect_current_idx);
 			}
@@ -1708,7 +1708,7 @@ void CImGui_Manager::Delete_Effect_Dummy()
 {
 	if (m_pSelected_Effect_Dummy)
 	{
-		//m_pSelected_Effect_Dummy->Kill();
+		m_pSelected_Effect_Dummy->Kill();
 		m_pSelected_Effect_Dummy = nullptr;
 
 		auto it = m_EffectDummyList.find(EffectIndex);
