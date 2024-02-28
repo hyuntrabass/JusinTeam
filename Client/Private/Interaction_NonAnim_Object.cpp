@@ -64,7 +64,7 @@ HRESULT CInteraction_NonAnim::Init(void* pArg)
 	if (m_Info.strPrototypeTag == TEXT("Prototype_Model_OakTree"))
 	{
 		NameTagDesc.strNameTag = TEXT("오크나무");
-		//NameTagDesc.vTextPosition = _vec2(0.f, 3.2f);
+		NameTagDesc.vTextPosition = _vec2(0.f, 3.2f);
 
 		_mat EffectMat = _mat::CreateTranslation(_vec3(vPos) + _vec3(0.f, 1.5f, 0.f));
 		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Tree_Effect");
@@ -74,7 +74,7 @@ HRESULT CInteraction_NonAnim::Init(void* pArg)
 	else
 	{
 		NameTagDesc.strNameTag = TEXT("아마풀");
-		//NameTagDesc.vTextPosition = _vec2(0.f, 1.4f);
+		NameTagDesc.vTextPosition = _vec2(0.f, 1.4f);
 
 		_mat EffectMat = _mat::CreateTranslation(_vec3(vPos) + _vec3(0.f, 0.5f, 0.f));
 		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Grass_Effect");
@@ -83,7 +83,7 @@ HRESULT CInteraction_NonAnim::Init(void* pArg)
 	}
 
 	NameTagDesc.vColor = _vec4(0.31f, 0.96f, 1.f, 1.f);
-	NameTagDesc.vTextPosition = _vec2(0.f, 3.2f);
+	//NameTagDesc.vTextPosition = _vec2(0.f, 3.2f);
 
 	m_pNameTag = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_NameTag"), &NameTagDesc);
 	if (not m_pNameTag)
@@ -517,6 +517,7 @@ void CInteraction_NonAnim::Free()
 {
 	__super::Free();
 	Safe_Release(m_pNameTag);
+	Safe_Release(m_pEffect);
 	Safe_Release(m_pBar);
 	Safe_Release(m_pBG);
 	Safe_Release(m_pItem);
