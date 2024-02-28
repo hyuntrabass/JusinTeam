@@ -1241,7 +1241,7 @@ HRESULT CImGui_Manager::ImGuiPos()
 	if (ImGui::Button("Set CameraPos"))
 	{
 		CTransform* pCameraTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
-		pCameraTransform->Set_Position(_vec3(m_isCamPosition));
+		pCameraTransform->Set_State(State::Pos, _vec4(m_vCamPosition, 1.f));
 	}
 
 	ImGui::SeparatorText("Mouse Pos : ");
