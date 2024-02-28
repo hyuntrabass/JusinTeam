@@ -666,6 +666,7 @@ HRESULT CSkillBook::Add_Parts()
 	{
 		return E_FAIL;
 	}
+	m_pSlotBackGround->Set_Pass(VTPass_UI_Color_Alpha);
 
 	TextButton.fDepth = m_fDepth - 0.02f;
 	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_buttonRed");

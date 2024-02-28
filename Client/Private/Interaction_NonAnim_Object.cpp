@@ -63,15 +63,14 @@ HRESULT CInteraction_NonAnim::Init(void* pArg)
 	if (m_Info.strPrototypeTag == TEXT("Prototype_Model_OakTree"))
 	{
 		NameTagDesc.strNameTag = TEXT("오크나무");
-		NameTagDesc.vTextPosition = _vec2(0.f, 3.2f);
 	}
 	else
 	{
 		NameTagDesc.strNameTag = TEXT("아마풀");
-		NameTagDesc.vTextPosition = _vec2(0.f, 1.4f);
 	}
 
 	NameTagDesc.vColor = _vec4(0.31f, 0.96f, 1.f, 1.f);
+	NameTagDesc.vTextPosition = _vec2(0.f, 3.2f);
 
 	m_pNameTag = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_NameTag"), &NameTagDesc);
 	if (not m_pNameTag)
@@ -195,18 +194,18 @@ HRESULT CInteraction_NonAnim::Add_Components()
 	}
 	m_pShaderCom->Set_PassIndex(3);
 	m_iShaderPass = StaticPass_Default;
-
+	
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Info.strPrototypeTag, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	{
 		return E_FAIL;
 	}
 
 
-	/* For.Com_Collider_SPHERE */
-// Com_Collider
+		/* For.Com_Collider_SPHERE */
+	// Com_Collider
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
-	CollDesc.fRadius = 5.f;
+	CollDesc.fRadius = 2.f;
 	CollDesc.vCenter = _vec3(0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Interaction_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))
@@ -224,15 +223,7 @@ HRESULT CInteraction_NonAnim::Add_Components()
 	TexDesc.eLevelID = LEVEL_STATIC;
 	TexDesc.pParentTransform = m_pTransformCom;
 	TexDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SpeechBubble");
-	if (m_Info.strPrototypeTag == TEXT("Prototype_Model_OakTree"))
-	{
-		TexDesc.vPosition = _vec3(0.f, 3.8f, 0.f);
-	}
-	else
-	{
-		TexDesc.vPosition = _vec3(0.f, 2.f, 0.f);
-	}
-
+	TexDesc.vPosition = _vec3(0.f,3.8f, 0.f);
 	TexDesc.vSize = _vec2(40.f, 40.f);
 
 	m_pSpeechBubble = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &TexDesc);

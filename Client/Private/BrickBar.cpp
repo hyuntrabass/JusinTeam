@@ -37,7 +37,7 @@ HRESULT CBrickBar::Init(void* pArg)
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 	vPlayerPos.y += 1.f; 
-	_vec4 vCenterPos = _vec4(-2000.70496f, 11.4677677f, -1992.06152f, 1.f);
+	_vec4 vCenterPos = _vec4(-2000.70496f, 1.4677677f, -1992.06152f, 1.f);
 	_vec4 vPlayerLook = pPlayerTransform->Get_State(State::Look);
 	vPlayerLook.y = 0.f;
 

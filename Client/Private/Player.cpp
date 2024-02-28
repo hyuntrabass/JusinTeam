@@ -133,11 +133,13 @@ void CPlayer::Tick(_float fTimeDelta)
 			return;
 		}
 	}
-
+	/*
 	if (m_pGameInstance->Key_Down(DIK_B, InputChannel::GamePlay))
 	{
 		CEvent_Manager::Get_Instance()->Update_Quest(TEXT("몬스터 처치"));
 	}
+	*/
+
 	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
 	{
 		return;
@@ -4240,7 +4242,7 @@ void CPlayer::Init_State()
 		case Client::CPlayer::Collect_Loop:
 		{
 			m_Animation.iAnimIndex = Anim_Collect_loop;
-			m_Animation.fAnimSpeedRatio = 3.f;
+			m_Animation.fAnimSpeedRatio = 5.f;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}

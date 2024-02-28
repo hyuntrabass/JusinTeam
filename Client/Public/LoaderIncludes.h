@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GlowCube.h"
 #include "TreasureBox.h"
 #include "Pop_Reward.h"
 #include "BrickBar.h"
