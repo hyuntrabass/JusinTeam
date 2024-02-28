@@ -36,6 +36,7 @@ private:
 	CVTFModel* m_pModelCom{ nullptr };
 	CCollider* m_pColliderCom{ nullptr };
 	CCollider* m_pWideColliderCom{ nullptr };
+	class CEffect_Dummy* m_pEffect{ nullptr };
 
 private:
 	_bool m_isAnimStart{false};
@@ -45,8 +46,6 @@ private:
 
 	_float m_fTime{};
 	_float m_fDir{1.f};
-
-	_uint m_iObjectIndex{ 0 };
 
 	class CTextButtonColor* m_pBar{ nullptr };
 	class C3DUITex* m_pSpeechBubble{ nullptr };

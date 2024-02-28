@@ -244,6 +244,8 @@ CGameObject* CEffect_Sphere::Clone(void* pArg)
 }
 void CEffect_Sphere::Free()
 {
+	CEffect_Manager::Get_Instance()->Delete_Effect(mMatrix);
+
 	__super::Free();
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);

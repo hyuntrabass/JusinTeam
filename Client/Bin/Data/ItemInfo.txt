@@ -14,7 +14,7 @@ WEARABLE|TOP|COMMON|가죽 마스크|ProtectiveGear-9|0|10|0|5000|0|1|
 WEARABLE|TOP|UNCOMMON|바이킹의 투구|ProtectiveGear-9|52|20|0|0|1|1|
 WEARABLE|TOP|RARE|고대 그림자 투구|ProtectiveGear-10|15|30|100700|0|2|1|
 WEARABLE|TOP|UNIQUE|엘드룬의 수호 투구|ProtectiveGear-10|30|40|100000|0|3|1|
-WEARABLE|TOP|LEGENDARY|레긴레이프의 불멸 투구|ProtectiveGear-10|330000|50|0|0|4|1|
+WEARABLE|TOP|LEGENDARY|레긴레이프의 불멸 투구|ProtectiveGear-10|0|50|0|0|4|1|
 EQUIP|SWORD|COMMON|무스 뿔 단검|Weapon_Rogue-1|0|10|0|0|0|1|
 EQUIP|SWORD|UNCOMMON|거인의 강철 단검|Weapon_Rogue-1|18|20|0|0|1|1|
 EQUIP|SWORD|RARE|폭군 수드리의 단검|Weapon_Rogue-1|51|40|0|0|2|1|

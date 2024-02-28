@@ -112,6 +112,15 @@ void CItemInfo::Tick(_float fTimeDelta)
 				}
 				isOtherItemExist = true;
 			}
+			else if (m_eItemDesc.iItemType == (_uint)ITEM_PET)
+			{
+				if (FAILED(CUI_Manager::Get_Instance()->Set_WearableItem(W_PET, m_eItemDesc)))
+				{
+					m_isDead = true;
+					return;
+				}
+				isOtherItemExist = true;
+			}
 			if (m_eItemDesc.eItemUsage == IT_VEHICLECARD)
 			{
 				CSummonWindow::SUMMON_DESC Desc{};
