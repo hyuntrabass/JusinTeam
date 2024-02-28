@@ -69,7 +69,6 @@ private:
 
 	CCollider* m_pBodyColliderCom = nullptr;
 	CCollider* m_pAttackColliderCom = nullptr;
-	CCollider* m_pDetectColliderCom = nullptr;
 	CTexture* m_pDissolveTextureCom = nullptr;
 
 	class CEffect_Dummy* m_pBaseEffect{ nullptr };

@@ -34,6 +34,7 @@ HRESULT CGuard::Init(void* pArg)
 	m_Animation.isLoop = true;
 	m_Animation.bSkipInterpolation = false;
 	m_Animation.fAnimSpeedRatio = 1.5f;
+	m_eCurState = STATE_PATROL;
 
 	m_iHP = 1;
 
@@ -60,14 +61,57 @@ void CGuard::Tick(_float fTimeDelta)
 {
 	m_pTransformCom->Set_OldMatrix();
 
-	m_eCurState = STATE_PATROL;
 	if (m_pGameInstance->Key_Down(DIK_DOWN))
 	{
 		m_Animation.iAnimIndex++;
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_DELETE))
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+
+	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+
+	_vec4 vToPlayer = vPlayerPos - vPos;
+
+	_float fDist = vToPlayer.Length();
+	_vec3 vNormalToPlayer = vToPlayer.Get_Normalized();
+
+	_vec3 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
+
+	_float fAngle = vLook.Dot(vNormalToPlayer);
+
+	switch (m_eCurState)
 	{
+	case Client::CGuard::STATE_IDLE:
+
+		break;
+	case Client::CGuard::STATE_PATROL:
+
+
+		fAngle = XMConvertToDegrees(fAngle);
+		if (60.f >= fAngle && 10.f >= fDist) {
+			PxRaycastBuffer Buffer{};
+			if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), vNormalToPlayer, 10.f, Buffer)) {
+				if (fDist < Buffer.block.distance)
+					m_eCurState = STATE_CHASE;
+			}
+			else
+				m_eCurState = STATE_CHASE;
+		}
+		break;
+	case Client::CGuard::STATE_CHASE:
+		break;
+	case Client::CGuard::STATE_ATTACK:
+		break;
+	case Client::CGuard::STATE_HIT:
+		break;
+	case Client::CGuard::STATE_DIE:
+		break;
+	case Client::CGuard::STATE_END:
+		break;
+	}
+
+	if (STATE_PATROL == m_eCurState) {
 
 	}
 
@@ -372,12 +416,6 @@ HRESULT CGuard::Bind_ShaderResources()
 
 		m_fDissolveRatio += 0.02f;
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
-		{
-			return E_FAIL;
-		}
-
-		_bool bHasNorTex = true;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &bHasNorTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}
