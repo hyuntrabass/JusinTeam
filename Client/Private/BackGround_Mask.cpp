@@ -64,6 +64,14 @@ HRESULT CBackGround_Mask::Render()
 			return E_FAIL;
 		}
 	}
+	else if (m_strTexture == TEXT("Prototype_Component_Texture_UI_Gameplay_NightSky"))
+	{
+		if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
+		{
+			return E_FAIL;
+		}
+
+	}
 	else
 	{
 		if (FAILED(m_pShaderCom->Begin(VTPass_Background_Mask)))
@@ -128,9 +136,10 @@ HRESULT CBackGround_Mask::Bind_ShaderResources()
 			return E_FAIL;
 		}
 	}
-
+	
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fx", &m_fSpeed, sizeof(_float))))
 		return E_FAIL;
+	
 
 	return S_OK;
 }

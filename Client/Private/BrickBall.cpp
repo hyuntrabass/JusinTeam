@@ -37,7 +37,7 @@ HRESULT CBrickBall::Init(void* pArg)
 
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-	vPlayerPos.y = 11.5f;
+	vPlayerPos.y = 1.5f;
 	vPlayerPos.z -=1.f;
 	_vec4 vPlayerLook = pPlayerTransform->Get_State(State::Look);
 	vPlayerLook.y = 0.f;

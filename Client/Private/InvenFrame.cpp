@@ -292,6 +292,8 @@ HRESULT CInvenFrame::Add_Parts()
 	{
 		return E_FAIL;
 	}
+	m_pBackGround->Set_Pass(VTPass_UI_Color_Alpha);
+
 
 	_float fButtonStartX = m_fX - (m_fSizeX / 2.f) + (m_fSizeX / 2.f) / 2.f;
 	Button.fDepth = m_fDepth - 0.03f;

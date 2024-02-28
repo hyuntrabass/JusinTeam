@@ -4242,7 +4242,7 @@ void CPlayer::Init_State()
 		case Client::CPlayer::Collect_Loop:
 		{
 			m_Animation.iAnimIndex = Anim_Collect_loop;
-			m_Animation.fAnimSpeedRatio = 3.f;
+			m_Animation.fAnimSpeedRatio = 5.f;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}

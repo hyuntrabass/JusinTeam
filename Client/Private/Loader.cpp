@@ -1876,7 +1876,7 @@ HRESULT CLoader::Load_Village()
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 			if (strPrototypeTag == L"Prototype_Model_BrickMap")
 			{
-				DungeonPivot = _mat::CreateScale(2.f);
+				DungeonPivot = _mat::CreateScale(1.7f);
 
 			}
 			else if (strPrototypeTag == L"Prototype_Model_DragonMap")
