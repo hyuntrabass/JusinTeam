@@ -141,6 +141,7 @@ private:
 
 	class CCompute_Shader* m_pFXAAShader = nullptr;
 	class CCompute_RenderTarget* m_pFXAART = nullptr;
+	_bool m_bFXAA = true;
 
 #pragma endregion
 
