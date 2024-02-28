@@ -2,6 +2,7 @@
 
 #include "Launcher.h"
 #include "Projectile.h"
+#include "Survival_Mon.h"
 
 CSurvivalGame::CSurvivalGame(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -50,7 +51,8 @@ void CSurvivalGame::Init_Pattern(_float fTimeDelta)
 		{
 		case Client::CSurvivalGame::PATTERN_INIT:
 
-			m_fTime = 0.f;
+			m_fTime[0] = 0.f;
+			m_fTime[1] = 0.f;
 			m_iCount = 0;
 
 			break;
@@ -80,7 +82,8 @@ void CSurvivalGame::Init_Pattern(_float fTimeDelta)
 
 void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 {
-	m_fTime += fTimeDelta;
+	m_fTime[0] += fTimeDelta;
+	m_fTime[1] += fTimeDelta;
 
 	random_device dev;
 	_randNum RandomNumber(dev());
@@ -91,19 +94,19 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 		if (m_pGameInstance->Key_Down(DIK_UP))
 		{
-			m_eCurPattern = PATTERN_LASER;
+			m_eCurPattern = PATTERN_TANGHURU;
 		}
 
 		break;
 
 	case Client::CSurvivalGame::PATTERN_RANDOM_MISSILE:
 
-		if (m_fTime >= 3.f)
+		if (m_fTime[0] >= 3.f)
 		{
 			CLauncher::LAUNCHER_TYPE eType = CLauncher::TYPE_RANDOM_POS;
 			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Launcher"), TEXT("Prototype_GameObject_Launcher"), &eType);
 
-			m_fTime = 0.f;
+			m_fTime[0] = 0.f;
 			++m_iCount;
 		}
 
@@ -116,7 +119,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 	case Client::CSurvivalGame::PATTERN_FLOOR:
 
-		if (m_fTime >= 1.f)
+		if (m_fTime[0] >= 1.f)
 		{
 			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 
@@ -134,7 +137,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 			Desc.vStartPos = CENTER_POS + (rand() % 8 + 1) * vRandomDir;
 			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
 
-			m_fTime = 0.f;
+			m_fTime[0] = 0.f;
 			++m_iCount;
 		}
 
@@ -147,7 +150,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 	case Client::CSurvivalGame::PATTERN_GUIDED_MISSILE:
 
-		if (m_fTime >= 1.5f)
+		if (m_fTime[0] >= 1.5f)
 		{
 			CProjectile::PROJECTILE_DESC Desc = {};
 			Desc.eType = CProjectile::TYPE_GUIDED_MISSILE;
@@ -161,7 +164,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 				m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
 			}
 
-			m_fTime = 0.f;
+			m_fTime[0] = 0.f;
 			++m_iCount;
 		}
 
@@ -185,6 +188,38 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 		break;
 
 	case Client::CSurvivalGame::PATTERN_TANGHURU:
+
+		if (m_fTime[0] >= 0.3f)
+		{
+			CProjectile::PROJECTILE_DESC Desc = {};
+			Desc.eType = CProjectile::TYPE_TANGHURU;
+
+			_randFloat Random = _randFloat(-1.f, 1.f);
+			_vec3 vRandomDir = _vec3(Random(RandomNumber), 0.f, Random(RandomNumber)).Get_Normalized();
+
+			for (size_t i = 0; i < 6; i++)
+			{
+				Desc.vStartPos = CENTER_POS + vRandomDir * (i + 5 + i * 0.3f);
+				m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
+			}
+
+			++m_iCount;
+			m_fTime[0] = 0.f;
+		}
+
+		if (m_fTime[1] >= 2.f)
+		{
+			CSurvival_Mon::SURVIVAL_MON_TYPE Type = CSurvival_Mon::TYPE_IMP;
+			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Survival_Mon"), TEXT("Prototype_GameObject_Survival_Mon"), &Type);
+
+			m_fTime[1] = 0.f;
+		}
+
+		if (m_iCount >= 30)
+		{
+			m_eCurPattern = PATTERN_INIT;
+		}
+
 		break;
 
 	case Client::CSurvivalGame::PATTERN_SUICIDE_MONSTER:

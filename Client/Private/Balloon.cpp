@@ -44,24 +44,8 @@ HRESULT CBalloon::Init(void* pArg)
 
 	m_eCurState = STATE_IDLE;
 
-	m_iHP = 10000;
-
-	//m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
-
 	m_pTransformCom->Set_Scale(_vec3(1.4f, 1.4f, 1.4f));
-	/*
-	PxBoxControllerDesc ControllerDesc{};
 
-	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
-	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
-	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
-	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
-	ControllerDesc.halfHeight = 0.8f;
-	ControllerDesc.halfSideExtent = 0.8f;
-	ControllerDesc.halfForwardExtent = 0.8f;
-	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
-	*/
-	//
 	return S_OK;
 }
 
@@ -135,7 +119,7 @@ HRESULT CBalloon::Render()
 		{
 			return E_FAIL;
 		}
-	
+
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof _vec4)))
 		{
 			return E_FAIL;
@@ -163,7 +147,7 @@ HRESULT CBalloon::Render()
 void CBalloon::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	/*
-	
+
 	m_fHittedTime = 6.f;
 	m_eCurState = STATE_HIT;
 

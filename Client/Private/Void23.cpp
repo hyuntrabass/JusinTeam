@@ -138,13 +138,16 @@ void CVoid23::Set_Damage(_int iDamage, _uint iDamageType)
 		_vec4 vPlayerPos = __super::Compute_PlayerPos();
 		m_pTransformCom->LookAt(vPlayerPos);
 
-		if (iDamage >= 500)
+		if (iDamage >= 500 && m_eCurState != STATE_KNOCKDOWN)
 		{
 			m_eCurState = STATE_HIT;
 		}
 		else
 		{
-			m_eCurState = STATE_CHASE;
+			if (m_eCurState != STATE_KNOCKDOWN)
+			{
+				m_eCurState = STATE_CHASE;
+			}
 		}
 	}	
 

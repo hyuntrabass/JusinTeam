@@ -42,7 +42,7 @@ private:
 	PATTERN m_eCurPattern = PATTERN_END;
 
 private:
-	_float m_fTime = {};
+	_float m_fTime[2] = {};
 
 private:
 	_bool m_bGameStart = { false };

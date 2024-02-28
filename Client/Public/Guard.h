@@ -82,9 +82,9 @@ private:
 	_float m_fIdleTime{ 0.f };
 
 	_bool m_bChangePass = false;
-	_float m_fHitTime { 0.f };
+	_float m_fHitTime{ 0.f };
 	_float m_fHittedTime{ 0.f };
-	_uint m_iIndex{0};
+	_uint m_iIndex{ 0 };
 	_mat GuardMatrix{};
 
 private:

@@ -43,7 +43,7 @@ HRESULT CDummy::Init(void* pArg)
 
 	m_Info = *(DummyInfo*)pArg;
 	m_eType = m_Info.eType;
-	if(m_Info.eType == ItemType::Monster || m_Info.eType == ItemType::NPC || m_Info.eType ==ItemType::Interaction)
+	if(m_Info.eType == ItemType::Monster || m_Info.eType == ItemType::NPC )
 	{
 		m_isAnim = true;
 		m_Animation.iAnimIndex = 0;
@@ -82,11 +82,7 @@ HRESULT CDummy::Init(void* pArg)
 
 void CDummy::Tick(_float fTimeDelta)
 {
-	if (m_eType == ItemType::Environment)
-	{
-		if (m_isRendered)
-			return;
-	}
+
 	if (m_eType == ItemType::Trigger)
 	{
 		m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
@@ -95,7 +91,7 @@ void CDummy::Tick(_float fTimeDelta)
 
 void CDummy::Late_Tick(_float fTimeDelta)
 {
-	if (m_eType == ItemType::Monster || m_eType == ItemType::NPC || m_eType == ItemType::Interaction)
+	if (m_eType == ItemType::Monster || m_eType == ItemType::NPC)
 		m_pModelCom->Play_Animation(fTimeDelta);
 
 	#ifdef _DEBUG
@@ -105,12 +101,10 @@ void CDummy::Late_Tick(_float fTimeDelta)
 
 	if (m_eType == ItemType::Environment)
 	{
-		if (m_isRendered)
-			return;
-		//if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
-		//{
+		if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 20.f))
+		{
 			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
-		//}	
+		}	
 	}
 	else
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
@@ -281,40 +275,40 @@ HRESULT CDummy::Bind_ShaderResources()
 		}
 
 
-		//if (m_Info.eType == ItemType::Trigger)
-		//{
-		//	_float4 vColor{ 0.3f, 0.8f, 0.3f, 0.5f };
-		//	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _float4)))
-		//	{
-		//		return E_FAIL;
-		//	}
+		if (m_Info.eType == ItemType::Trigger)
+		{
+			_float4 vColor{ 0.3f, 0.8f, 0.3f, 0.5f };
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _float4)))
+			{
+				return E_FAIL;
+			}
 
-		//	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_EDITOR, TEXT("Light_Main"));
-		//	if (!pLightDesc)
-		//	{
-		//		return E_FAIL;
-		//	}
+			const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_EDITOR, TEXT("Light_Main"));
+			if (!pLightDesc)
+			{
+				return E_FAIL;
+			}
 
-		//	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof _float4)))
-		//	{
-		//		return E_FAIL;
-		//	}
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof _float4)))
+			{
+				return E_FAIL;
+			}
 
-		//	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof _float4)))
-		//	{
-		//		return E_FAIL;
-		//	}
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof _float4)))
+			{
+				return E_FAIL;
+			}
 
-		//	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof _float4)))
-		//	{
-		//		return E_FAIL;
-		//	}
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof _float4)))
+			{
+				return E_FAIL;
+			}
 
-		//	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof _float4)))
-		//	{
-		//		return E_FAIL;
-		//	}
-		//}
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof _float4)))
+			{
+				return E_FAIL;
+			}
+		}
 
 	}
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))

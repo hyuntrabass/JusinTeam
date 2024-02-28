@@ -75,6 +75,7 @@ void CSummonWindowPet::Tick(_float fTimeDelta)
 				return;
 			}
 			m_bSetResult = true;
+			m_pGameInstance->Play_Sound(TEXT("Skill_Open"), 0.5f, false, 0.4f);
 			return;
 		}
 	}
@@ -140,6 +141,8 @@ void CSummonWindowPet::Tick(_float fTimeDelta)
 			if (m_pCard->Get_Size().x < 100.f)
 			{
 				m_bStartShake = true;
+				_int iSoundChannel = m_pGameInstance->Play_Sound(TEXT("Skill_Open"), 0.5f, false, 0.1f);
+				m_pGameInstance->FadeinSound(iSoundChannel, fTimeDelta);
 			}
 
 		}

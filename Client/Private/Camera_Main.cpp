@@ -718,7 +718,7 @@ void CCamera_Main::SkillBook_Mode(_float fTimeDelta)
 
 void CCamera_Main::BrickGame_Mode(_float fTimeDelta)
 {
-	_vec4 vBrickGamePos = _vec4(-1999.853f, 17.962f, -1985.831f, 1.f);
+	_vec4 vBrickGamePos = _vec4(-1999.853f, 5.962f, -1985.831f, 1.f);
 
 	m_pTransformCom->Set_State(State::Pos, vBrickGamePos);
 
