@@ -72,7 +72,7 @@ HRESULT CBrickBar::Init(void* pArg)
 void CBrickBar::Tick(_float fTimeDelta)
 {
 	m_shouldRenderBlur = true;
-	m_pColliderCom->Change_Extents(_vec3(0.2f, 0.2f, 0.05f));
+	m_pColliderCom->Change_Extents(_vec3(1.f, 1.f, 1.f));
 	if (m_pGameInstance->Key_Pressing(DIK_LEFT))
 	{
 		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
@@ -86,7 +86,8 @@ void CBrickBar::Tick(_float fTimeDelta)
 		m_pTransformCom->Set_State(State::Pos, vPos);
 	}
 
-
+	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+	_vec4 vPosCol = m_pColliderCom->Get_ColliderPos();
 	
 	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 

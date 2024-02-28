@@ -108,7 +108,7 @@ void CTransform::Set_FootPosition(_vec3 vPosition)
 	}
 	else
 	{
-		return;
+		Set_State(State::Pos, _vec4(vPosition, 1.f));
 	}
 }
 
@@ -190,6 +190,8 @@ void CTransform::Set_Controller(PxController* pController)
 {
 	m_pController = pController;
 	m_pScene = m_pController->getScene();
+
+	Set_FootPosition(m_WorldMatrix.Position_vec3());
 }
 
 void CTransform::Delete_Controller()

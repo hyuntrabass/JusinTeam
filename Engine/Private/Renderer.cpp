@@ -645,7 +645,26 @@ HRESULT CRenderer::Init_Prototype()
 
 #pragma endregion
 
+#pragma region FXAA
+	
+	m_pFXAAShader = CCompute_Shader::Create(m_pDevice, m_pDeferrd, L"../Bin/ShaderFiles/Shader_Blur.hlsl", "FXAA");
+	m_pFXAART = CCompute_RenderTarget::Create(m_pDevice,m_pDeferrd, m_WinSize, DXGI_FORMAT_R16G16B16A16_UNORM);
 
+	D3D11_SAMPLER_DESC Desc{};
+	Desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	Desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	Desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	Desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	Desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	Desc.MinLOD = 0;
+	Desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	if (FAILED(m_pFXAAShader->Create_Sampler(Desc)))
+		return E_FAIL;
+
+#pragma endregion
+
+	//
 	if (FAILED(FinishCommand()))
 		return E_FAIL;
 
@@ -812,6 +831,11 @@ HRESULT CRenderer::Draw_RenderGroup()
 
 
 	return S_OK;
+}
+
+void CRenderer::Switch_FXAA()
+{
+	m_bFXAA = !m_bFXAA;
 }
 
 #ifdef _DEBUG
@@ -2074,13 +2098,13 @@ HRESULT CRenderer::Render_Final()
 {
 	if (m_pGameInstance->Key_Down(DIK_F6))
 		m_bMotionBlur = !m_bMotionBlur;
-
+	
 	if (true == m_bMotionBlur) {
 
 		if (FAILED(m_pMotionShader->Set_Shader()))
 			return E_FAIL;
 
-		ID3D11ShaderResourceView* SRVs[2] = { m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pGameInstance->Get_SRV(L"Target_Depth_Velocity") };
+		ID3D11ShaderResourceView* SRVs[2] = { m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pGameInstance->Get_SRV(L"Target_Depth_Velocity")};
 
 		if (FAILED(m_pMotionShader->Bind_SRVs(SRVs, 0, 2)))
 			return E_FAIL;
@@ -2159,7 +2183,7 @@ HRESULT CRenderer::Render_Final()
 	else {
 		if (FAILED(m_pRadialShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pRadialRT->Get_UAV(), iSlot)))
 			return E_FAIL;
-	}
+	}	
 
 	if(FAILED(m_pRadialShader->Change_Value(&m_RBParams, sizeof(RadialParams), 1)))
 		return E_FAIL;
@@ -2173,11 +2197,40 @@ HRESULT CRenderer::Render_Final()
 	if (FAILED(FinishCommand()))
 		return E_FAIL;
 
+	if (m_pGameInstance->Key_Down(DIK_F7))
+		m_bFXAA = !m_bFXAA;
+
+	if (true == m_bFXAA) {
+
+		if (FAILED(m_pFXAAShader->Set_Shader()))
+			return E_FAIL;
+
+		if (FAILED(m_pFXAAShader->Bind_Sampler()))
+			return E_FAIL;
+
+		if (FAILED(m_pFXAAShader->Bind_ShaderResourceView(m_pRadialRT->Get_SRV(), m_pFXAART->Get_UAV(), _uint2(0, 0))))
+			return E_FAIL;
+
+		_uint3 Size = _uint3((m_WinSize.x * 7) / 8, (m_WinSize.y + 7) / 8, 1);
+		if (FAILED(m_pFXAAShader->Begin(Size)))
+			return E_FAIL;
+		
+		if (FAILED(FinishCommand()))
+			return E_FAIL;
+
+	}
+	
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DistortionTexture", L"Target_Distortion")))
 		return E_FAIL;
 
-	if (FAILED(m_pShader->Bind_ShaderResourceView("g_Texture", m_pRadialRT->Get_SRV())))
-		return E_FAIL;
+	if (true == m_bFXAA) {
+		if (FAILED(m_pShader->Bind_ShaderResourceView("g_Texture", m_pFXAART->Get_SRV())))
+			return E_FAIL;
+	}
+	else {
+		if (FAILED(m_pShader->Bind_ShaderResourceView("g_Texture", m_pRadialRT->Get_SRV())))
+			return E_FAIL;
+	}
 
 	if (FAILED(m_pShader->Begin(DefPass_Distortion)))
 	{
@@ -2613,6 +2666,10 @@ void CRenderer::Free()
 	Safe_Release(m_pMotionRT);
 #pragma endregion
 
+#pragma region FXAA
+	Safe_Release(m_pFXAAShader);
+	Safe_Release(m_pFXAART);
+#pragma endregion
 
 
 	Safe_Release(m_pShadowMap);

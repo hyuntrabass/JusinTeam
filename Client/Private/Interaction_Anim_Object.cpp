@@ -211,22 +211,21 @@ void CInteraction_Anim::Late_Tick(_float fTimeDelta)
 			{
 				CPop_Reward::REWARD_DESC Desc{};
 				vector < pair<wstring, _uint>> vecReward;
-				vecReward.push_back(make_pair(TEXT("엘드룬의 수호 갑옷"), 1));
-				vecReward.push_back(make_pair(TEXT("엘드룬의 수호 투구"), 1));
+				if (m_Info.m_iIndex == 0)
+				{
+					vecReward.push_back(make_pair(TEXT("엘드룬의 수호 갑옷"), 1));
+					vecReward.push_back(make_pair(TEXT("엘드룬의 수호 투구"), 1));
+				}
+				else
+				{
+					vecReward.push_back(make_pair(TEXT("헤임달의 단검"), 1));
+					vecReward.push_back(make_pair(TEXT("헤임달의 활"), 1));
+				}
 				Desc.vecRewards = vecReward;
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Pop_Reward"), &Desc)))
 				{
 					return;
 				}
-				/*다른 인덱스 보물상자 보물
-				* 				vector < pair<wstring, _uint>> vecReward;
-				vecReward.push_back(make_pair(TEXT("헤임달의 단검"), 1));
-				vecReward.push_back(make_pair(TEXT("헤임달의 활"), 1));
-				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Pop_Reward"))))
-				{
-					return;
-				}
-				*/
 			}
 			else
 			{

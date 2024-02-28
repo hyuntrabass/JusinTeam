@@ -23,7 +23,7 @@ private:
 	_randNum m_RandomNumber;
 	list<class CVTFMonster*> m_Monsters;
 	vector<_vec3> m_SpawnPositions;
-	map<_int, _vec3> m_Void19Positions;
+	map<_int, _vec3> m_LarvaPositions;
 	_float m_fMonsterSpawnTime{};
 	_uint m_iMonsterSpawnCount{};
 	

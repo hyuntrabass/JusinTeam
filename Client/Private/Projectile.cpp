@@ -61,9 +61,9 @@ HRESULT CProjectile::Init(void* pArg)
 	{
 		m_pTransformCom->Set_Position(m_ProjectileDesc.vStartPos);
 
-		_mat Matrix = _mat::CreateScale(2.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 0.5f, 0.f));
+		_mat Matrix = _mat::CreateScale(2.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 0.f, 0.f));
 
-		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Blue");
+		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Blue2");
 		Info.pMatrix = &Matrix;
 		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
@@ -94,6 +94,26 @@ HRESULT CProjectile::Init(void* pArg)
 		break;
 
 	case Client::CProjectile::TYPE_GUIDED_MISSILE:
+
+	{
+		m_pTransformCom->Set_Position(m_ProjectileDesc.vStartPos);
+
+		m_UpdateMatrix = _mat::CreateScale(0.75f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 1.f, 0.f));
+
+		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Galaxy");
+		Info.pMatrix = &m_UpdateMatrix;
+		Info.isFollow = true;
+		m_pBall = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+		_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+		_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
+		vDir.y = 0.f;
+
+		m_pTransformCom->LookAt_Dir(vDir);
+		m_pTransformCom->Set_Speed(rand() % 10 + 5);
+	}
+
 		break;
 
 	case Client::CProjectile::TYPE_TANGHURU:
@@ -155,10 +175,10 @@ void CProjectile::Tick(_float fTimeDelta)
 				Info.pMatrix = &Matrix;
 				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
-				Matrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 1.f, 0.f));
-				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Explode_Parti_Blue");
-				Info.pMatrix = &Matrix;
-				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+				//Matrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 1.f, 0.f));
+				//Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Explode_Parti_Blue");
+				//Info.pMatrix = &Matrix;
+				//CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 			}
 
@@ -176,6 +196,24 @@ void CProjectile::Tick(_float fTimeDelta)
 		break;
 
 	case Client::CProjectile::TYPE_GUIDED_MISSILE:
+
+		if (m_fTime >= 5.f)
+		{
+			Kill();
+			Safe_Release(m_pBall);
+			//Safe_Release(m_pBallParticle);
+		}
+
+		m_pTransformCom->Go_Straight(fTimeDelta);
+
+		m_UpdateMatrix = _mat::CreateScale(0.75f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 1.f, 0.f));
+
+		if (m_pBall /*&& m_pBallParticle*/)
+		{
+			m_pBall->Tick(fTimeDelta);
+			//m_pBallParticle->Tick(fTimeDelta);
+		}
+
 		break;
 	case Client::CProjectile::TYPE_TANGHURU:
 		break;
@@ -210,6 +248,13 @@ void CProjectile::Late_Tick(_float fTimeDelta)
 		break;
 
 	case Client::CProjectile::TYPE_GUIDED_MISSILE:
+
+		if (m_pBall/* && m_pBallParticle*/)
+		{
+			m_pBall->Late_Tick(fTimeDelta);
+			//m_pBallParticle->Late_Tick(fTimeDelta);
+		}
+
 		break;
 	case Client::CProjectile::TYPE_TANGHURU:
 		break;

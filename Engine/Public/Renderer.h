@@ -60,6 +60,7 @@ public:
 			m_RBParams.fRadialBlur_Power = 0.f;
 	}
 
+	void Switch_FXAA();
 
 #ifdef _DEBUG
 	HRESULT Add_DebugComponent(class CComponent* pDebugComponent);
@@ -134,6 +135,14 @@ private:
 
 	class CCompute_Shader* m_pMotionShader = nullptr;
 	class CCompute_RenderTarget* m_pMotionRT = nullptr;
+
+#pragma endregion
+
+#pragma region FXAA
+
+	class CCompute_Shader* m_pFXAAShader = nullptr;
+	class CCompute_RenderTarget* m_pFXAART = nullptr;
+	_bool m_bFXAA = true;
 
 #pragma endregion
 

@@ -865,6 +865,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	static _float fSizeforSprite{ 1.f };
 	static _vec3 vSizeDelta{};
 	static _bool bApplyGravity{};
+	static _bool bChangeDir{};
 	static _vec3 vGravityDir{};
 	static _float fRectRotationAngle{};
 	static _bool isBillboard{};
@@ -952,11 +953,18 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			m_ParticleInfo.vSpeedRange.y = m_ParticleInfo.vSpeedRange.x;
 		}
 
-		Checkbox("Gravity", &bApplyGravity);
-
-		if (bApplyGravity)
+		if (Checkbox("Gravity", &bApplyGravity) and bApplyGravity)
 		{
-			InputFloat3("Gravity Dir", reinterpret_cast<_float*>(&vGravityDir), "%.2f");
+			bChangeDir = false;
+		}SameLine();
+		if (Checkbox("Change Dir", &bChangeDir) and bChangeDir)
+		{
+			bApplyGravity = false;
+		}
+
+		if (bApplyGravity or bChangeDir)
+		{
+			InputFloat3("Dir", reinterpret_cast<_float*>(&vGravityDir), "%.2f");
 		}
 
 		NewLine();
@@ -982,6 +990,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 		Info.vSize = _vec3(1.f);
 		Info.bApplyGravity = bApplyGravity;
 		Info.vGravityDir = vGravityDir;
+		Info.bChangeDir = bChangeDir;
 
 		Info.strModel = {};
 	}
@@ -1248,6 +1257,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			m_ParticleInfo = Info.PartiDesc;
 			m_iNumInstance = Info.iNumInstances;
 			bApplyGravity = Info.bApplyGravity;
+			bChangeDir = Info.bChangeDir;
 			vGravityDir = Info.vGravityDir;
 			fPartiDissolveRatio = Info.fPartiDissolveRatio;
 			fPartiAppearRatio = Info.fPartiAppearRatio;
@@ -1452,6 +1462,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 			m_ParticleInfo = Info.PartiDesc;
 			m_iNumInstance = Info.iNumInstances;
 			bApplyGravity = Info.bApplyGravity;
+			bChangeDir = Info.bChangeDir;
 			vGravityDir = Info.vGravityDir;
 			fPartiDissolveRatio = Info.fPartiDissolveRatio;
 			fPartiAppearRatio = Info.fPartiAppearRatio;
@@ -1833,6 +1844,7 @@ EffectInfo CImgui_Manager::Load_Data(_bool isAdd, _bool isQuick)
 			InFile.read(reinterpret_cast<_char*>(&Info.vBillboardRotation), sizeof Info.vBillboardRotation);
 			InFile.read(reinterpret_cast<_char*>(&Info.fPartiDissolveRatio), sizeof Info.fPartiDissolveRatio);
 			InFile.read(reinterpret_cast<_char*>(&Info.fPartiAppearRatio), sizeof Info.fPartiAppearRatio);
+			InFile.read(reinterpret_cast<_char*>(&Info.bChangeDir), sizeof Info.bChangeDir);
 
 			size_t iNameSize{};
 
@@ -1937,6 +1949,7 @@ void CImgui_Manager::Load_OldData()
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.isBillboard), sizeof OldInfo.isBillboard);
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.vBillboardRotation), sizeof OldInfo.vBillboardRotation);
 				InFile.read(reinterpret_cast<_char*>(&OldInfo.fPartiDissolveRatio), sizeof OldInfo.fPartiDissolveRatio);
+				InFile.read(reinterpret_cast<_char*>(&OldInfo.fPartiAppearRatio), sizeof OldInfo.fPartiAppearRatio);
 
 				size_t iNameSize{};
 
@@ -1999,7 +2012,7 @@ void CImgui_Manager::Load_OldData()
 			NewInfo.vSize = OldInfo.vSize;
 			NewInfo.vPosOffset = OldInfo.vPosOffset;
 			NewInfo.vSizeDelta = OldInfo.vSizeDelta;
-			NewInfo.bApplyGravity = OldInfo.bApplyGravity;
+			NewInfo.bApplyGravity = false;
 			NewInfo.vGravityDir = OldInfo.vGravityDir;
 			NewInfo.fDissolveDuration = OldInfo.fDissolveDuration;
 			NewInfo.bSkipBloom = OldInfo.bSkipBloom;
@@ -2018,7 +2031,8 @@ void CImgui_Manager::Load_OldData()
 			NewInfo.isBillboard = OldInfo.isBillboard;
 			NewInfo.vBillboardRotation = OldInfo.vBillboardRotation;
 			NewInfo.fPartiDissolveRatio = OldInfo.fPartiDissolveRatio;
-			NewInfo.fPartiAppearRatio = 0.f;
+			NewInfo.fPartiAppearRatio = OldInfo.fPartiAppearRatio;
+			NewInfo.bChangeDir = OldInfo.bApplyGravity;
 
 			NewInfo.strDiffuseTexture = OldInfo.strDiffuseTexture;
 			NewInfo.strMaskTexture = OldInfo.strMaskTexture;
@@ -2063,6 +2077,7 @@ void CImgui_Manager::Load_OldData()
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.vBillboardRotation), sizeof NewInfo.vBillboardRotation);
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.fPartiDissolveRatio), sizeof NewInfo.fPartiDissolveRatio);
 				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.fPartiAppearRatio), sizeof NewInfo.fPartiAppearRatio);
+				OutFile.write(reinterpret_cast<const _char*>(&NewInfo.bChangeDir), sizeof NewInfo.bChangeDir);
 
 				size_t iNameSize{};
 				iNameSize = (NewInfo.strDiffuseTexture.size() + 1) * sizeof(_tchar);
@@ -2148,6 +2163,7 @@ HRESULT CImgui_Manager::Export_Data(EffectInfo& Info)
 			OutFile.write(reinterpret_cast<const _char*>(&Info.vBillboardRotation), sizeof Info.vBillboardRotation);
 			OutFile.write(reinterpret_cast<const _char*>(&Info.fPartiDissolveRatio), sizeof Info.fPartiDissolveRatio);
 			OutFile.write(reinterpret_cast<const _char*>(&Info.fPartiAppearRatio), sizeof Info.fPartiAppearRatio);
+			OutFile.write(reinterpret_cast<const _char*>(&Info.bChangeDir), sizeof Info.bChangeDir);
 
 			size_t iNameSize{};
 			iNameSize = (Info.strDiffuseTexture.size() + 1) * sizeof(_tchar);
@@ -2220,6 +2236,7 @@ HRESULT CImgui_Manager::Override_Data(EffectInfo& Info)
 		OutFile.write(reinterpret_cast<const _char*>(&Info.vBillboardRotation), sizeof Info.vBillboardRotation);
 		OutFile.write(reinterpret_cast<const _char*>(&Info.fPartiDissolveRatio), sizeof Info.fPartiDissolveRatio);
 		OutFile.write(reinterpret_cast<const _char*>(&Info.fPartiAppearRatio), sizeof Info.fPartiAppearRatio);
+		OutFile.write(reinterpret_cast<const _char*>(&Info.bChangeDir), sizeof Info.bChangeDir);
 
 		size_t iNameSize{};
 		iNameSize = (Info.strDiffuseTexture.size() + 1) * sizeof(_tchar);

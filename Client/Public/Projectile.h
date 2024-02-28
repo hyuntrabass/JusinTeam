@@ -3,6 +3,8 @@
 #include "Client_Define.h"
 #include "GameObject.h"
 
+#define CENTER_POS _vec3(-2000.f, 0.f, 2000.f)
+
 BEGIN(Client)
 
 class CProjectile final : public CGameObject

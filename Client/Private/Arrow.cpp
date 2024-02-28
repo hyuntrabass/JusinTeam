@@ -191,7 +191,7 @@ void CArrow::Tick(_float fTimeDelta)
 	case AT_Bow_Skill2:
 	{
 		m_pTransformCom->Set_OldMatrix();
-
+		
 		if (not m_ArrowType.bAimMode)
 		{
 			PxRaycastBuffer Buffer{};
@@ -209,6 +209,8 @@ void CArrow::Tick(_float fTimeDelta)
 
 		if (m_isDead)
 		{
+			//m_pRendererCom->Set_RadialBlur_Power(1.5f);
+			//m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
 			CCamera_Manager::Get_Instance()->Set_ShakeCam(true,0.05f);
 			m_pCollider->Set_Radius(5.f);
 			m_pGameInstance->Attack_Monster(m_pCollider, m_iDamage, AT_Bow_Skill2);
