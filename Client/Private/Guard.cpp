@@ -51,6 +51,7 @@ HRESULT CGuard::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
+	View_Detect_Range();
 
 	return S_OK;
 }
@@ -59,7 +60,6 @@ void CGuard::Tick(_float fTimeDelta)
 {
 	m_pTransformCom->Set_OldMatrix();
 
-	View_Detect_Range();
 	m_eCurState = STATE_PATROL;
 	if (m_pGameInstance->Key_Down(DIK_DOWN))
 	{

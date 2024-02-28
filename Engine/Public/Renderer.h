@@ -60,6 +60,7 @@ public:
 			m_RBParams.fRadialBlur_Power = 0.f;
 	}
 
+	void Switch_FXAA();
 
 #ifdef _DEBUG
 	HRESULT Add_DebugComponent(class CComponent* pDebugComponent);

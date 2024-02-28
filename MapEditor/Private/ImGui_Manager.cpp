@@ -1192,7 +1192,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::InputFloat4("Look", &m_EffectMatrix.m[2][0], 0);
 			ImGui::InputFloat4("Position", &m_EffectMatrix.m[3][0], 0);
 			ImGui::Separator();
-			if (ImGui::Button("Create"))
+			if (ImGui::Button("Create") or m_pGameInstance->Key_Down(DIK_C))
 			{
 				Create_Effect_Dummy(Effect_current_idx);
 			}
@@ -1241,7 +1241,7 @@ HRESULT CImGui_Manager::ImGuiPos()
 	if (ImGui::Button("Set CameraPos"))
 	{
 		CTransform* pCameraTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
-		pCameraTransform->Set_Position(_vec3(m_isCamPosition));
+		pCameraTransform->Set_State(State::Pos, _vec4(m_vCamPosition, 1.f));
 	}
 
 	ImGui::SeparatorText("Mouse Pos : ");
@@ -1711,7 +1711,7 @@ void CImGui_Manager::Delete_Effect_Dummy()
 		m_pSelected_Effect_Dummy->Kill();
 		m_pSelected_Effect_Dummy = nullptr;
 
-		auto it = m_EffectDummyList.find(DummyIndex);
+		auto it = m_EffectDummyList.find(EffectIndex);
 		if (it != m_EffectDummyList.end()) {
 			it->second->Kill();
 			m_EffectDummyList.erase(it);
@@ -2208,9 +2208,11 @@ void CImGui_Manager::FastPicking()
 	if (m_pSelectMap)
 	{
 		m_pSelectMap->Select(false);
+		return;
 	}
-	if (m_pSelectCamera)
+	if (m_pSelected_Effect_Dummy)
 	{
+		m_pSelected_Effect_Dummy->Select(false);
 		return;
 	}
 	if (m_eItemType != ItemType::Map && m_eItemType != ItemType::Camera && m_eItemType != ItemType::Effect)
@@ -2252,7 +2254,7 @@ void CImGui_Manager::FastPicking()
 	}
 	else if (m_eItemType == ItemType::Effect)
 	{
-		_int EffectIndex = 0;
+		EffectIndex = -1;
 
 		if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
 		{

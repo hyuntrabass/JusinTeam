@@ -43,7 +43,7 @@ HRESULT CDummy::Init(void* pArg)
 
 	m_Info = *(DummyInfo*)pArg;
 	m_eType = m_Info.eType;
-	if(m_Info.eType == ItemType::Monster || m_Info.eType == ItemType::NPC || m_Info.eType ==ItemType::Interaction)
+	if(m_Info.eType == ItemType::Monster || m_Info.eType == ItemType::NPC )
 	{
 		m_isAnim = true;
 		m_Animation.iAnimIndex = 0;
@@ -82,11 +82,7 @@ HRESULT CDummy::Init(void* pArg)
 
 void CDummy::Tick(_float fTimeDelta)
 {
-	if (m_eType == ItemType::Environment)
-	{
-		if (m_isRendered)
-			return;
-	}
+
 	if (m_eType == ItemType::Trigger)
 	{
 		m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
@@ -95,7 +91,7 @@ void CDummy::Tick(_float fTimeDelta)
 
 void CDummy::Late_Tick(_float fTimeDelta)
 {
-	if (m_eType == ItemType::Monster || m_eType == ItemType::NPC || m_eType == ItemType::Interaction)
+	if (m_eType == ItemType::Monster || m_eType == ItemType::NPC)
 		m_pModelCom->Play_Animation(fTimeDelta);
 
 	#ifdef _DEBUG
@@ -105,12 +101,10 @@ void CDummy::Late_Tick(_float fTimeDelta)
 
 	if (m_eType == ItemType::Environment)
 	{
-		if (m_isRendered)
-			return;
-		//if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
-		//{
+		if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 20.f))
+		{
 			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend_Instance, this);
-		//}	
+		}	
 	}
 	else
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);

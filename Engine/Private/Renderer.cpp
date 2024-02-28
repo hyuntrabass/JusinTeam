@@ -846,6 +846,11 @@ HRESULT CRenderer::Draw_RenderGroup()
 	return S_OK;
 }
 
+void CRenderer::Switch_FXAA()
+{
+	m_bFXAA = !m_bFXAA;
+}
+
 #ifdef _DEBUG
 HRESULT CRenderer::Add_DebugComponent(CComponent* pDebugComponent)
 {
