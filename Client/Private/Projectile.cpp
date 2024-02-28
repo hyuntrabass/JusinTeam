@@ -117,6 +117,40 @@ HRESULT CProjectile::Init(void* pArg)
 		break;
 
 	case Client::CProjectile::TYPE_TANGHURU:
+
+	{
+		m_pTransformCom->Set_Position(m_ProjectileDesc.vStartPos + _vec3(0.f, -1.f, 0.f));
+
+		m_UpdateMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) /*+ _vec3(0.f, 1.f, 0.f)*/);
+
+		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Galaxy");
+		Info.pMatrix = &m_UpdateMatrix;
+		Info.isFollow = true;
+		m_pBall = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Thorn");
+		Info.pMatrix = &m_UpdateMatrix;
+		Info.isFollow = true;
+		m_pEffect[0] = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Thorn2");
+		Info.pMatrix = &m_UpdateMatrix;
+		Info.isFollow = true;
+		m_pEffect[1] = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Out_Galaxy");
+		Info.pMatrix = &m_UpdateMatrix;
+		Info.isFollow = true;
+		m_pEffect[2] = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		_mat Matrix = _mat::CreateScale(1.2f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 1.1f, 0.f));
+
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Floor_Galaxy");
+		Info.pMatrix = &Matrix;
+		//Info.isFollow = false;
+		m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+	}
+
 		break;
 	}
 
@@ -127,7 +161,6 @@ HRESULT CProjectile::Init(void* pArg)
 void CProjectile::Tick(_float fTimeDelta)
 {
 	m_fTime += fTimeDelta;
-
 
 	switch (m_ProjectileDesc.eType)
 	{
@@ -216,6 +249,41 @@ void CProjectile::Tick(_float fTimeDelta)
 
 		break;
 	case Client::CProjectile::TYPE_TANGHURU:
+
+		if (m_fTime >= 4.f)
+		{
+			Kill();
+			Safe_Release(m_pBall);
+			Safe_Release(m_pEffect[0]);
+			Safe_Release(m_pEffect[1]);
+			Safe_Release(m_pEffect[2]);
+			Safe_Release(m_pFrameEffect);
+		}
+
+		if (m_pFrameEffect)
+		{
+			m_pFrameEffect->Tick(fTimeDelta);
+		}
+
+		if (m_fTime >= 1.f)
+		{
+			if (m_pBall)
+			{
+				m_pBall->Tick(fTimeDelta);
+				m_pEffect[0]->Tick(fTimeDelta);
+				m_pEffect[1]->Tick(fTimeDelta);
+				m_pEffect[2]->Tick(fTimeDelta);
+			}
+
+			if (m_pTransformCom->Get_State(State::Pos).y <= 1.f)
+			{
+				m_pTransformCom->Go_Up(fTimeDelta);
+			}
+		}
+
+
+		m_UpdateMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) /*+ _vec3(0.f, 1.f, 0.f)*/);
+
 		break;
 	}
 
@@ -257,6 +325,15 @@ void CProjectile::Late_Tick(_float fTimeDelta)
 
 		break;
 	case Client::CProjectile::TYPE_TANGHURU:
+		if (m_pBall)
+		{
+			m_pBall->Late_Tick(fTimeDelta);
+			m_pEffect[0]->Late_Tick(fTimeDelta);
+			m_pEffect[1]->Late_Tick(fTimeDelta);
+			m_pEffect[2]->Late_Tick(fTimeDelta);
+			m_pFrameEffect->Late_Tick(fTimeDelta);
+		}
+
 		break;
 	}
 }
@@ -311,4 +388,8 @@ void CProjectile::Free()
 
 	Safe_Release(m_pFrameEffect);
 	Safe_Release(m_pBaseEffect);
+
+	Safe_Release(m_pEffect[0]);
+	Safe_Release(m_pEffect[1]);
+	Safe_Release(m_pEffect[2]);
 }

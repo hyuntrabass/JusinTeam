@@ -47,7 +47,7 @@ HRESULT CLauncher::Init(void* pArg)
 		m_iPassIndex = AnimPass_Dissolve;
 	}
 
-		break;
+	break;
 
 	case Client::CLauncher::TYPE_FLOOR:
 
@@ -61,14 +61,27 @@ HRESULT CLauncher::Init(void* pArg)
 		// Die
 		// Idle
 
+	{
 		m_strModelTag = TEXT("Prototype_Model_Cannon");
-		m_Animation.iAnimIndex = 3;
-		m_Animation.isLoop = true;
-		m_Animation.fAnimSpeedRatio = 1.f;
+		m_Animation.iAnimIndex = 1;
+		m_Animation.isLoop = false;
+		m_Animation.fStartAnimPos = 115.f;
 
 		m_pTransformCom->Set_Position(CENTER_POS);
 
 		m_iPassIndex = AnimPass_Dissolve;
+
+		Collider_Desc BodyCollDesc = {};
+		BodyCollDesc.eType = ColliderType::OBB;
+		BodyCollDesc.vExtents = _vec3(0.5f, 0.5f, 15.f);
+		BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y, 0.f);
+		BodyCollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
+
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+			TEXT("Com_Collider_OBB"), (CComponent**)&m_pColliderCom, &BodyCollDesc)))
+			return E_FAIL;
+	}
+
 
 		break;
 
@@ -149,20 +162,53 @@ void CLauncher::Tick(_float fTimeDelta)
 		_vec3 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 		vDir.y = 0.f;
 
+		if (m_pModelCom->IsAnimationFinished(1))
+		{
+			m_Animation.iAnimIndex = 3;
+		}
+
 		if (m_iPassIndex == AnimPass_Rim)
 		{
-			if (m_fTime >= 2.f)
+			if (m_Animation.iAnimIndex == 3)
 			{
+				m_Animation.fAnimSpeedRatio = 6.f;
+
 				m_pTransformCom->LookAt_Dir(vDir);
 			}
-			//else
-			//{
-			//	m_Animation.iAnimIndex = 0;
-			//}
+			else if (m_Animation.iAnimIndex == 0)
+			{
+				m_Animation.fAnimSpeedRatio = 1.7f;
+				m_Animation.fStartAnimPos = 12.f;
+
+				if (m_pModelCom->Get_CurrentAnimPos() >= 20.f && m_pModelCom->Get_CurrentAnimPos() <= 85.f)
+				{
+					if (m_fTime >= 0.3f)
+					{
+						_uint iDamage = 30 + rand() % 10;
+						m_pGameInstance->Attack_Player(m_pColliderCom, iDamage, MonAtt_Hit);
+
+						m_fTime = 0.f;
+					}
+				}
+			}
+
+			if (m_pModelCom->IsAnimationFinished(3))
+			{
+				m_Animation.iAnimIndex = 0;
+			}
+			else if (m_pModelCom->IsAnimationFinished(0))
+			{
+				m_Animation.iAnimIndex = 3;
+			}
 		}
 	}
 
-		break;
+	{
+		_mat Offset = _mat::CreateTranslation(0.f, 3.f, 18.f);
+		m_pColliderCom->Update(Offset * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix());
+	}
+
+	break;
 	case Client::CLauncher::TYPE_PIZZA:
 		break;
 	}
@@ -173,8 +219,39 @@ void CLauncher::Tick(_float fTimeDelta)
 
 void CLauncher::Late_Tick(_float fTimeDelta)
 {
-	m_pModelCom->Play_Animation(fTimeDelta);
+	switch (m_eType)
+	{
+	case Client::CLauncher::TYPE_RANDOM_POS:
+		m_pModelCom->Play_Animation(fTimeDelta);
+
+		break;
+	case Client::CLauncher::TYPE_FLOOR:
+		m_pModelCom->Play_Animation(fTimeDelta);
+
+		break;
+	case Client::CLauncher::TYPE_LASER:
+
+		//if (m_iPassIndex == AnimPass_Rim)
+	{
+		m_pModelCom->Play_Animation(fTimeDelta);
+
+	}
+	break;
+	case Client::CLauncher::TYPE_PIZZA:
+		m_pModelCom->Play_Animation(fTimeDelta);
+
+		break;
+	}
+
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+
+#ifdef _DEBUG
+	if (m_pColliderCom)
+	{
+		m_pRendererCom->Add_DebugComponent(m_pColliderCom);
+	}
+#endif
+
 }
 
 HRESULT CLauncher::Render()
@@ -342,7 +419,9 @@ HRESULT CLauncher::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof(_float4))))
+	{
 		return E_FAIL;
+	}
 
 	return S_OK;
 }

@@ -505,7 +505,7 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		//m_pGameInstance->Set_HellHeight(-70.f);
 		LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
 		*Light = g_Light_Survival;
-		
+
 		//m_iSkyTextureIndex = 12;
 		m_eCurrentSpot = TS_SurvivalMap;
 		inFile.close();
