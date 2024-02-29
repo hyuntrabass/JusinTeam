@@ -176,24 +176,24 @@ HRESULT CHuman_Boss::Render()
 
 	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
 	{
-		if (i == 3)
-		{
-			if (!m_bViewModel)
-			{
-				if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fModelDissolveRatio, sizeof _float)))
-				{
-					return E_FAIL;
-				}
-			}
-			else
-			{
-				if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fWeaponDissolveRatio, sizeof _float)))
-				{
-					return E_FAIL;
-				}
-			}		
-		}
-		else
+		//if (i == 3)
+		//{
+		//	if (!m_bViewModel)
+		//	{
+		//		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fModelDissolveRatio, sizeof _float)))
+		//		{
+		//			return E_FAIL;
+		//		}
+		//	}
+		//	else
+		//	{
+		//		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fWeaponDissolveRatio, sizeof _float)))
+		//		{
+		//			return E_FAIL;
+		//		}
+		//	}		
+		//}
+		//else
 		{
 			if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fModelDissolveRatio, sizeof _float)))
 			{
@@ -256,15 +256,15 @@ HRESULT CHuman_Boss::Render()
 			return E_FAIL;
 		}
 
-		if (i == 3)
-		{
-			if (FAILED(m_pShaderCom->Begin(m_iWeaponPassIndex)))
-			{
-				return E_FAIL;
-			}
+		//if (i == 3)
+		//{
+		//	if (FAILED(m_pShaderCom->Begin(m_iWeaponPassIndex)))
+		//	{
+		//		return E_FAIL;
+		//	}
 
-		}
-		else
+		//}
+		//else
 		{
 			if (FAILED(m_pShaderCom->Begin(m_iPassIndex)))
 			{
