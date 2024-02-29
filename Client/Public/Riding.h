@@ -212,7 +212,7 @@ private:
 	_mat m_Worldmatrix{};
 	_float m_fRadialPower{};
 	_float m_fRadialMaxPower{};
-
+	_bool m_bDecreaseBlur{};
 	Riding_State m_eState{ Riding_End };
 	MODE	m_eCurMode{ PLAYER };
 	ANIM_DESC m_Animation{};

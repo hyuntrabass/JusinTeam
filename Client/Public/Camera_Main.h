@@ -16,14 +16,14 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 
-	_bool Get_CheckCollision() { return m_isCollision; }
+
 public:
 	void Camera_Zoom(_float fTimeDelta);
 
 private: // CAM_MODE
 	void Default_Mode(_float fTimeDelta);
 	void Shop_Mode(_float fTimeDelta);
-	void ZOOM_Mode(_float fTimeDelta);
+	void Zoom_Mode(_float fTimeDelta);
 	void Custom_Mode(_float fTimeDelta);
 	_bool Inven_Mode(_float fTimeDelta);
 	void Select_Mode(_float fTimeDelta);
@@ -31,6 +31,9 @@ private: // CAM_MODE
 	void SkillBook_Mode(_float fTimeDelta);
 	void BrickGame_Mode(_float fTimeDelta);
 	void Collect_Mode(_float fTimeDelta);
+
+public:
+	_bool Get_CheckCollision() { return m_isCollision; }
 
 private:
 	class CCamera_Manager* m_pCam_Manager{ nullptr };

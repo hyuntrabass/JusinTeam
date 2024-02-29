@@ -51,13 +51,14 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) override;
+
 private:
-	CShader*	m_pShaderCom = { nullptr };
-	CRenderer*  m_pRendererCom = { nullptr };
-	CModel*		m_pModelCom = { nullptr };
-	CCollider*  m_pBodyColliderCom = { nullptr };
+	CShader* m_pShaderCom = { nullptr };
+	CRenderer* m_pRendererCom = { nullptr };
+	CModel* m_pModelCom = { nullptr };
+	CCollider* m_pBodyColliderCom = { nullptr };
 	CTexture* m_pDissolveTextureCom = { nullptr };
-	CTexture* m_pMaskTextureCom = { nullptr };
 
 private:
 	BrickColor		m_eCurColor{};
@@ -75,14 +76,12 @@ private:
 	_float m_fIdleTime = {};
 	_float m_fDeadTime = {};
 	_float m_bHit = {};
-	_float m_fX = {};
 
 	_bool m_isColl{};
 	_bool m_bParticle{};
 	_bool m_bDamaged = { false };
 
 	_vec4 m_vColor{};
-	class CGlowCube* m_pCube{ nullptr };
 
 public:
 	const _bool& Is_Coll() const { return m_isColl; }

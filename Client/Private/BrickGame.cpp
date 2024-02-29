@@ -119,10 +119,12 @@ void CBrickGame::Tick(_float fTimeDelta)
 
 void CBrickGame::Late_Tick(_float fTimeDelta)
 {
+
 	if (!m_isActive)
 	{
 		return;
 	}
+	m_pBackGround->Late_Tick(fTimeDelta);
 	/*
 	
 	for (size_t i = 0; i < BRICKROW; i++)
@@ -177,7 +179,7 @@ HRESULT CBrickGame::Add_Parts()
 	}
 	*/
 
-	_vec3 vStartPos = _vec3(-1994.24585f, 11.5f, -2006.11536f);
+	_vec3 vStartPos = _vec3(-1994.24585f, 1.5f, -2006.11536f);
 	for (_uint i = 0; i < BRICKROW; i++)
 	{
 		for (_uint j = 0; j < BRICKCOL; j++)
@@ -200,6 +202,18 @@ HRESULT CBrickGame::Add_Parts()
 			//m_pBalloon[i][j] = pBalloon;
 		}
 
+	}
+
+	UiInfo info{};
+	info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_NightSky");
+	info.vPos = _vec2((_float)g_iWinSizeX / 2.f, (_float)g_iWinSizeY / 2.f);
+	info.vSize = _vec2((_float)g_iWinSizeX, (_float)g_iWinSizeY);
+	info.iLevel = (_uint)LEVEL_STATIC;
+
+	m_pBackGround = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BackGround_Mask"), &info);
+	if (not m_pBackGround)
+	{
+		return E_FAIL;
 	}
 	return S_OK;
 }
@@ -259,5 +273,6 @@ void CBrickGame::Free()
 		}
 	}
 
+	Safe_Release(m_pBackGround);
 	Safe_Release(m_pRendererCom);
 }

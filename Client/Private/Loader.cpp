@@ -1262,7 +1262,7 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
-	_mat CannonPivot = _mat::CreateScale(0.3f);
+	_mat CannonPivot = _mat::CreateScale(0.4f);
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Cannon"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/SurvivalGame/Cannon/Mesh/Cannon.hyuntraanimmesh", false, CannonPivot))))
 	{
@@ -1832,6 +1832,10 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Survival_Mon"), CSurvival_Mon::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 
 #pragma endregion Survival Game
 
@@ -1876,7 +1880,7 @@ HRESULT CLoader::Load_Village()
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 			if (strPrototypeTag == L"Prototype_Model_BrickMap")
 			{
-				DungeonPivot = _mat::CreateScale(2.f);
+				DungeonPivot = _mat::CreateScale(1.7f);
 
 			}
 			else if (strPrototypeTag == L"Prototype_Model_DragonMap")

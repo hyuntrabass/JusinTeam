@@ -924,14 +924,14 @@ _bool CGameInstance::CheckCollision_Player(CCollider* pCollider)
 
 	return m_pCollision_Manager->CheckCollision_Player(pCollider);
 }
-CCollider* CGameInstance::Get_Nearest_MonsterCollider()
+CCollider* CGameInstance::Get_Nearest_MonsterCollider(_float fMaxDistance)
 {
 	if (!m_pCollision_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
 	}
 
-	return m_pCollision_Manager->Get_Nearest_MonsterCollider();
+	return m_pCollision_Manager->Get_Nearest_MonsterCollider(fMaxDistance);
 }
 
 CollideFace CGameInstance::Get_CollideFace(CCollider* pAABBCollider, CCollider* pShereCollider)

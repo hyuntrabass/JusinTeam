@@ -28,7 +28,7 @@ private:
 	CModel* m_pModelCom{ nullptr };
 	CCollider* m_pColliderCom{ nullptr };
 	CCollider* m_pWideColliderCom{ nullptr };
-
+	class CEffect_Dummy* m_pEffect{ nullptr };
 
 private:
 	PlaceType m_ePlaceType{ PLACE_END };
@@ -49,6 +49,8 @@ private:
 	class C3DUITex* m_pSpeechBubble{ nullptr };
 	class CItem* m_pItem{ nullptr };
 
+private:
+	_uint m_iOutLineColorIndex{ 2 };
 
 private:
 	HRESULT Add_Components();

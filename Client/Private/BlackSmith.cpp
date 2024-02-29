@@ -157,6 +157,24 @@ void CBlackSmith::Tick(_float fTimeDelta)
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
+	//사운드 채널 갱신 / 사운드 나오는 도중에 사운드 넘어가기 위해
+	if (m_iSoundChannel != -1)
+	{
+		if (not m_pGameInstance->Get_IsPlayingSound(m_iSoundChannel))
+		{
+			m_iSoundChannel = -1;
+		}
+		else if(m_IsSoundSkip)
+		{
+			if (m_pGameInstance->Get_ChannelCurPosRatio(m_iSoundChannel) >= m_fSoundSkipRatio)
+			{
+				m_pGameInstance->StopSound(m_iSoundChannel);
+				m_iSoundChannel = -1;
+
+				m_IsSoundSkip = false;
+			}
+		}
+	}
 }
 
 void CBlackSmith::Late_Tick(_float fTimeDelta)
@@ -247,6 +265,7 @@ void CBlackSmith::Set_Text(BLACKSMITH_STATE eState)
 		{
 			return;
 		}
+		Play_TalkSound(m_DialogList.front());
 		m_DialogList.pop_front();
 	}
 	break;
@@ -281,20 +300,60 @@ void CBlackSmith::Set_Text(BLACKSMITH_STATE eState)
 	}
 }
 
+void CBlackSmith::Play_TalkSound(const wstring& strTalkText)
+{
+	if (strTalkText == m_strLines[0] ||
+		strTalkText == m_strLines[1] ||
+		strTalkText == m_strLines[2] ||
+		strTalkText == m_strLines[6] ||
+		strTalkText == m_strLines[8] ||
+		strTalkText == m_strLines[9] ||
+		strTalkText == m_strLines[13] ||
+		strTalkText == m_strLines[14] ||
+		strTalkText == m_strLines[15] ||
+		strTalkText == m_strLines[16])
+	{
+		if (m_iSoundChannel != -1)
+		{
+			m_pGameInstance->StopSound(m_iSoundChannel);
+		}
+		if (strTalkText == m_strLines[1] ||
+			strTalkText == m_strLines[6])
+		{
+			m_IsSoundSkip = true;
+			m_fSoundSkipRatio = 0.4f;
+		}
+		else if (strTalkText == m_strLines[8])
+		{
+			m_IsSoundSkip = true;
+			m_fSoundSkipRatio = 0.5f;
+		}
+		m_iSoundChannel = m_pGameInstance->Play_Sound(m_TalkSounds.front());
+		m_TalkSounds.pop_front();
+	}
+}
+
 HRESULT CBlackSmith::Init_Dialog()
 {
-	m_DialogList.push_back(TEXT("나는 블랙스미스다"));
-	m_DialogList.push_back(TEXT("모험가의 기본은 좋은 무기지."));
-	m_DialogList.push_back(TEXT("너 무기가 별로네"));
-	m_DialogList.push_back(TEXT("좋은 재료를 가져오면 무기를 만들어주지"));
-	m_DialogList.push_back(TEXT("!채집하기"));
-	m_DialogList.push_back(TEXT("무기는 마음에 들었나?"));
-	m_DialogList.push_back(TEXT("그럼 염소탕을 대접해라"));
-	m_DialogList.push_back(TEXT("!염소잡기"));
-	m_DialogList.push_back(TEXT("END"));
+	for (size_t i = 0; i < size(m_strLines); i++)
+	{
+		m_DialogList.push_back(m_strLines[i]);
+	}
 
 	m_ChattList.push_back(TEXT("뭐야 재료를 가져와야 만들어주지!!"));
 	m_ChattList.push_back(TEXT("뚝딱뚝딱"));
+
+	m_TalkSounds.push_back(TEXT("10035_3_EndTalk"));
+	m_TalkSounds.push_back(TEXT("10063_1_StartTalk_1"));
+	m_TalkSounds.push_back(TEXT("10063_1_StartTalk_2"));
+	m_TalkSounds.push_back(TEXT("10063_1_StartTalk_3"));
+	m_TalkSounds.push_back(TEXT("10064_1_StartTalk_1"));
+	m_TalkSounds.push_back(TEXT("10064_1_StartTalk_2"));
+	m_TalkSounds.push_back(TEXT("10071_3_EndTalk"));
+	m_TalkSounds.push_back(TEXT("10040_1_StartTalk_2"));
+	m_TalkSounds.push_back(TEXT("10040_1_StartTalk_3"));
+	m_TalkSounds.push_back(TEXT("10041_2_InformTalk"));
+	
 	return S_OK;
 }
 

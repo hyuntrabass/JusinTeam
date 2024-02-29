@@ -380,10 +380,6 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		m_eState = Collect_Start;
 	}
-	if (m_pGameInstance->Key_Down(DIK_Z))
-	{
-		Set_Damage(0, MonAtt_Poison);
-	}
 
 	if (m_pGameInstance->Key_Down(DIK_C))
 	{
@@ -1273,6 +1269,8 @@ HRESULT CPlayer::Add_Riding()
 
 void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 {
+	m_bMove_AfterSkill = true;
+
 	if (m_eState == Revival_Start or m_eState == Revival_End or m_eState == Die)
 	{
 		return;
@@ -4242,7 +4240,7 @@ void CPlayer::Init_State()
 		case Client::CPlayer::Collect_Loop:
 		{
 			m_Animation.iAnimIndex = Anim_Collect_loop;
-			m_Animation.fAnimSpeedRatio = 3.f;
+			m_Animation.fAnimSpeedRatio = 5.f;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}

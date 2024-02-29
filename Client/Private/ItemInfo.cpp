@@ -131,6 +131,7 @@ void CItemInfo::Tick(_float fTimeDelta)
 					return;
 				}
 				isOtherItemExist = true;
+				m_pGameInstance->Play_Sound(TEXT("Skill_Click"), 0.3f);
 			}
 			else if (m_eItemDesc.eItemUsage == IT_PETCARD)
 			{
@@ -142,6 +143,7 @@ void CItemInfo::Tick(_float fTimeDelta)
 					return;
 				}
 				isOtherItemExist = true;
+				m_pGameInstance->Play_Sound(TEXT("Skill_Click"), 0.3f);
 			}
 			if (isOtherItemExist)
 			{

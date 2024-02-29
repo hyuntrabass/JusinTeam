@@ -36,6 +36,7 @@ private:
 	CVTFModel* m_pModelCom{ nullptr };
 	CCollider* m_pColliderCom{ nullptr };
 	CCollider* m_pWideColliderCom{ nullptr };
+	class CEffect_Dummy* m_pEffect{ nullptr };
 
 private:
 	_bool m_isAnimStart{false};

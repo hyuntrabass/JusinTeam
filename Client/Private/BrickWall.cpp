@@ -39,7 +39,7 @@ HRESULT CBrickWall::Init(void* pArg)
 	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 
 	//_vec4 vCenterPos = vPlayerPos;
-	_vec4 vCenterPos = _vec4(-2000.70496f, 11.4677677f, -1999.06152f, 1.f);
+	_vec4 vCenterPos = _vec4(-2000.70496f, 1.4677677f, -1999.06152f, 1.f);
 	_vec2 vSize = _vec2(18.f,18.f);
 	m_rcRect = ((WALL_DESC*)pArg)->rcRect;
 	

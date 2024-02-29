@@ -10,7 +10,8 @@
 #include "Map.h"
 //#include "CutScene_Curve.h"
 #include "Camera_CutScene.h"
-
+#include "Effect_Manager.h"
+#include "Effect_Sphere.h"
 IMPLEMENT_SINGLETON(CImGui_Manager)
 
 CImGui_Manager::CImGui_Manager()
@@ -36,6 +37,7 @@ HRESULT CImGui_Manager::Initialize_Prototype(const GRAPHIC_DESC& GraphicDesc)
 	Search_NPC();
 	Search_Envir();
 	Search_Inter();
+	Search_Effect();
 
 	//SectionName.reserve(MAX_PATH);
 	SectionName.resize(MAX_PATH);
@@ -106,18 +108,18 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 			pMapTransform->Set_State(State::Look, ObjLook);
 			pMapTransform->Set_State(State::Pos, ObjPosition);
 		}
-		else if (m_pSelectCamera)
+		else if (m_pSelected_Effect_Dummy)
 		{
-			//CTransform* pMapTransform = (CTransform*)m_pSelectCamera->Find_Component(TEXT("Com_Transform"));
+			CTransform* pEffectTransform = (CTransform*)m_pSelected_Effect_Dummy->Find_Component(TEXT("Com_Transform"));
 
-			//_vector ObjRight = { m_CameraMatrix._11, m_CameraMatrix._12, m_CameraMatrix._13, m_CameraMatrix._14 };
-			//_vector ObjUp = { m_CameraMatrix._21, m_CameraMatrix._22, m_CameraMatrix._23, m_CameraMatrix._24 };
-			//_vector ObjLook = { m_CameraMatrix._31, m_CameraMatrix._32, m_CameraMatrix._33, m_CameraMatrix._34 };
-			//_vector ObjPosition = { m_CameraMatrix._41, m_CameraMatrix._42, m_CameraMatrix._43, m_CameraMatrix._44 };
-			//pMapTransform->Set_State(State::Right, ObjRight);
-			//pMapTransform->Set_State(State::Up, ObjUp);
-			//pMapTransform->Set_State(State::Look, ObjLook);
-			//pMapTransform->Set_State(State::Pos, ObjPosition);
+			_vector ObjRight = { m_EffectMatrix._11, m_EffectMatrix._12, m_EffectMatrix._13, m_EffectMatrix._14 };
+			_vector ObjUp = { m_EffectMatrix._21, m_EffectMatrix._22, m_EffectMatrix._23, m_EffectMatrix._24 };
+			_vector ObjLook = { m_EffectMatrix._31, m_EffectMatrix._32, m_EffectMatrix._33, m_EffectMatrix._34 };
+			_vector ObjPosition = { m_EffectMatrix._41, m_EffectMatrix._42, m_EffectMatrix._43, m_EffectMatrix._44 };
+			pEffectTransform->Set_State(State::Right, ObjRight);
+			pEffectTransform->Set_State(State::Up, ObjUp);
+			pEffectTransform->Set_State(State::Look, ObjLook);
+			pEffectTransform->Set_State(State::Pos, ObjPosition);
 		}
 
 		if (m_eItemType != ItemType::Environment && m_eItemType != ItemType::Camera)
@@ -216,6 +218,13 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 				m_pSelectMap->Select(false);
 				m_pSelectMap = nullptr;
 			}
+
+			if (m_pSelected_Effect_Dummy)
+			{
+				m_pSelected_Effect_Dummy->Select(false);
+				m_pSelected_Effect_Dummy = nullptr;
+			}
+
 			m_vInstancePos.clear();
 			m_vInstanceNor.clear();
 		}
@@ -1086,6 +1095,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 				ImGui::EndTabItem();
 		}
 #pragma endregion
+
 #pragma region 트리거
 		if (ImGui::BeginTabItem("Trigger"))
 		{
@@ -1105,6 +1115,7 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::Separator();
 			ImGui::Checkbox("Limited", &m_isTriggerCheck);
 			ImGui::Separator();
+
 			if (ImGui::Button("Create"))
 			{
 				Create_Dummy(0);
@@ -1325,7 +1336,7 @@ HRESULT CImGui_Manager::ImGuizmoMenu()
 {
 	m_ViewMatrix = m_pGameInstance->Get_Transform(TransformType::View);
 	m_ProjMatrix = m_pGameInstance->Get_Transform(TransformType::Proj);
-	if (m_eItemType != ItemType::Map && m_eItemType != ItemType::Camera)
+	if (m_eItemType != ItemType::Map && m_eItemType != ItemType::Camera && m_eItemType != ItemType::Effect)
 	{
 		if (m_pSelectedDummy)
 		{
@@ -1383,6 +1394,31 @@ HRESULT CImGui_Manager::ImGuizmoMenu()
 			}
 		}
 	}
+
+	else if (m_eItemType == ItemType::Effect)
+	{
+		if (m_pSelected_Effect_Dummy)
+		{
+			CTransform* pEffectTransform = (CTransform*)m_pSelected_Effect_Dummy->Find_Component(TEXT("Com_Transform"));
+			m_EffectMatrix = pEffectTransform->Get_World_Matrix();
+			ImGuizmo::Manipulate(&m_ViewMatrix.m[0][0], &m_ProjMatrix.m[0][0], ImGuizmo::OPERATION::SCALE, ImGuizmo::MODE::WORLD, &m_EffectMatrix.m[0][0]);
+			ImGuizmo::Manipulate(&m_ViewMatrix.m[0][0], &m_ProjMatrix.m[0][0], ImGuizmo::OPERATION::ROTATE, ImGuizmo::MODE::WORLD, &m_EffectMatrix.m[0][0]);
+			ImGuizmo::Manipulate(&m_ViewMatrix.m[0][0], &m_ProjMatrix.m[0][0], ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::MODE::WORLD, &m_EffectMatrix.m[0][0]);
+			if (ImGuizmo::IsUsing() == true)
+			{
+				_vector ObjRight = { m_EffectMatrix._11, m_EffectMatrix._12, m_EffectMatrix._13, m_EffectMatrix._14 };
+				_vector ObjUp = { m_EffectMatrix._21, m_EffectMatrix._22, m_EffectMatrix._23, m_EffectMatrix._24 };
+				_vector ObjLook = { m_EffectMatrix._31, m_EffectMatrix._32, m_EffectMatrix._33, m_EffectMatrix._34 };
+				_vector ObjPosition = { m_EffectMatrix._41, m_EffectMatrix._42, m_EffectMatrix._43, 1.f };
+				pEffectTransform->Set_State(State::Right, ObjRight);
+				pEffectTransform->Set_State(State::Up, ObjUp);
+				pEffectTransform->Set_State(State::Look, ObjLook);
+				pEffectTransform->Set_State(State::Pos, ObjPosition);
+			}
+		}
+
+	}
+
 	return S_OK;
 }
 
@@ -1512,6 +1548,31 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	
 }
 
+void CImGui_Manager::Create_Effect_Dummy(const _int& iListIndex)
+{
+	_tchar strUnicode[MAX_PATH]{};
+
+	MultiByteToWideChar(CP_ACP, 0, m_EffectFiles[iListIndex].c_str(), static_cast<int>(strlen(m_EffectFiles[iListIndex].c_str())), strUnicode, static_cast<int>(strlen(m_EffectFiles[iListIndex].c_str())));
+
+	EffectDummyInfo Info{};
+	Info.EffectName = strUnicode;
+	Info.isFollow = m_isFollow;
+	Info.ppDummy = &m_pSelected_Effect_Dummy;
+	Info.fSize = m_fEffectSize;
+
+	m_EffectMatrix = _mat::CreateScale(m_fEffectSize);
+	m_EffectMatrix.Position(m_PickingPos);
+	Info.mMatrix = m_EffectMatrix;
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Effect_Sphere"), &Info)))
+	{
+		MSG_BOX("Failed to Add Layer : Dummy");
+	}
+
+	m_EffectDummyList.emplace(m_pSelected_Effect_Dummy->Get_ID(), m_pSelected_Effect_Dummy);
+	m_Effect.push_back(m_pSelected_Effect_Dummy);
+	m_pSelected_Effect_Dummy = nullptr;
+}
+
 void CImGui_Manager::Create_Map(const _int& iListIndex)
 {
 	MapInfo Info{};
@@ -1639,6 +1700,9 @@ void CImGui_Manager::Delete_Dummy()
 					break;
 				}
 			}
+		}
+	}
+}
 
 void CImGui_Manager::Delete_Effect_Dummy()
 {
@@ -1652,8 +1716,17 @@ void CImGui_Manager::Delete_Effect_Dummy()
 			it->second->Kill();
 			m_EffectDummyList.erase(it);
 		}
-	
 
+		for (auto it = m_Effect.begin(); it != m_Effect.end(); it++)
+		{
+			if ((*it)->Get_Selected() == true)
+			{
+				m_Effect.erase(it);
+				break;
+			}
+		}
+
+		
 	}
 }
 
@@ -1782,11 +1855,11 @@ void CImGui_Manager::Reset()
 	}
 	m_InteractionList.clear();
 
-	//for (auto iter : m_CameraList)
-	//{
-	//	iter->Set_Dead();
-	//}
-	//m_CameraList.clear();
+	for (auto Pair : m_EffectDummyList)
+	{
+		Pair.second->Kill();
+	}
+	m_EffectDummyList.clear();
 
 	for (auto Pair : m_DummyList)
 	{
@@ -1802,39 +1875,8 @@ void CImGui_Manager::Reset()
 		m_pTerrain = nullptr;
 	if (m_pSelectCamera)
 		m_pSelectCamera = nullptr;
-}
-
-void CImGui_Manager::PopBack_Dummy()
-{
-	if (m_eItemType == ItemType::Map)
-	{
-		m_MapsList.pop_back();
-	}
-	if (m_eItemType == ItemType::Objects)
-	{
-		m_ObjectsList.pop_back();
-	}
-	if (m_eItemType == ItemType::Environment)
-	{
-		m_EnvirList.pop_back();
-	}
-	if (m_eItemType == ItemType::Monster)
-	{
-		m_MonsterList.pop_back();
-	}
-
-	if (m_eItemType == ItemType::NPC)
-	{
-		m_NPCList.pop_back();
-	}
-
-
-	if (m_pSelectedDummy)
-		m_pSelectedDummy = nullptr;
-	if (m_pSelectMap)
-		m_pSelectMap = nullptr;
-	if (m_pTerrain)
-		m_pTerrain = nullptr;
+	if (m_pSelected_Effect_Dummy)
+		m_pSelected_Effect_Dummy = nullptr;
 }
 
 void CImGui_Manager::Search_Map()
@@ -2095,6 +2137,33 @@ void CImGui_Manager::Search_Inter()
 	}
 }
 
+void CImGui_Manager::Search_Effect()
+{
+	CEffect_Manager::Get_Instance()->Read_EffectFile();
+
+	string strInputFilePath = "../../Client/Bin/EffectData/";
+	_uint iNumEffectFiles{};
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			if (entry.path().extension().string() != ".effect")
+			{
+				continue;
+			}
+			iNumEffectFiles++;
+			m_EffectFiles.push_back(entry.path().stem().string());
+		}
+	}
+
+	m_szEffectFiles = new const _char * [iNumEffectFiles];
+
+	for (_uint i = 0; i < iNumEffectFiles; i++)
+	{
+		m_szEffectFiles[i] = m_EffectFiles[i].c_str();
+	}
+}
+
 void CImGui_Manager::Mouse_Pos()
 {
 	// 마우스 좌표를 월드 좌표로
@@ -2146,7 +2215,7 @@ void CImGui_Manager::FastPicking()
 		m_pSelected_Effect_Dummy->Select(false);
 		return;
 	}
-	if (m_eItemType != ItemType::Map && m_eItemType != ItemType::Camera)
+	if (m_eItemType != ItemType::Map && m_eItemType != ItemType::Camera && m_eItemType != ItemType::Effect)
 	{
 		DummyIndex = -1;
 
@@ -2187,20 +2256,20 @@ void CImGui_Manager::FastPicking()
 	{
 		EffectIndex = -1;
 
-	//	if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
-	//	{
-	//		CameraIndex = m_pGameInstance->FastPicking((_uint)m_vMousePos.x, (_uint)m_vMousePos.y);
+		if ((m_vMousePos.x >= 0.f && m_vMousePos.x < m_iWinSizeX) && (m_vMousePos.y >= 0.f && m_vMousePos.y < m_iWinSizeY))
+		{
+			EffectIndex = m_pGameInstance->FastPicking((_uint)m_vMousePos.x, (_uint)m_vMousePos.y);
 
-	//		auto iter = m_Camera.find(CameraIndex);
-	//		if (iter != m_Camera.end())
-	//		{
-	//			m_pSelectCamera = (*iter).second;
-	//			m_pSelectCamera->Select(true);
-	//			CTransform* pMapTransform = (CTransform*)m_pSelectCamera->Find_Component(TEXT("Com_Transform"));
-	//			m_CameraMatrix = pMapTransform->Get_World_Matrix();
-	//		}
-	//	}
-	//}
+			auto iter = m_EffectDummyList.find(EffectIndex);
+			if (iter != m_EffectDummyList.end())
+			{
+				m_pSelected_Effect_Dummy = (*iter).second;
+				m_pSelected_Effect_Dummy->Select(true);
+				CTransform* pEffetTransform = (CTransform*)m_pSelected_Effect_Dummy->Find_Component(TEXT("Com_Transform"));
+				m_EffectMatrix = pEffetTransform->Get_World_Matrix();
+			}
+		}
+	}
 }
 
 void CImGui_Manager::PickingRayCast()
@@ -3391,6 +3460,140 @@ HRESULT CImGui_Manager::Load_CutScene()
 }
 #pragma endregion
 
+#pragma region 이펙트 저장
+
+HRESULT CImGui_Manager::Save_Effect()
+{
+	OPENFILENAME OFN;
+	TCHAR filePathName[MAX_PATH] = L"";
+	TCHAR lpstrFile[MAX_PATH] = L"_Effect.dat";
+	static TCHAR filter[] = L"모든 파일\0*.*\0텍스트 파일\0*.txt\0dat 파일\0*.dat";
+
+	memset(&OFN, 0, sizeof(OPENFILENAME));
+	OFN.lStructSize = sizeof(OPENFILENAME);
+	OFN.hwndOwner = g_hWnd;
+	OFN.lpstrFilter = filter;
+	OFN.lpstrFile = lpstrFile;
+	OFN.nMaxFile = 256;
+	OFN.lpstrInitialDir = L"..\\Bin\\Data";
+
+	if (GetSaveFileName(&OFN) != 0)
+	{
+		const TCHAR* pGetPath = OFN.lpstrFile;
+
+		std::ofstream outFile(pGetPath, std::ios::binary);
+
+		if (!outFile.is_open())
+			return E_FAIL;
+
+		_uint EffectSize = (_uint)m_Effect.size();
+		outFile.write(reinterpret_cast<const char*>(&EffectSize), sizeof(_uint));
+
+		for (auto& Effect : m_Effect)
+		{
+			wstring EffectName = Effect->Get_Info().EffectName;
+			_ulong EffectNameSize = (_ulong)EffectName.size();
+
+			_bool EffectFollow = Effect->Get_Info().isFollow;
+
+			outFile.write(reinterpret_cast<const char*>(&EffectNameSize), sizeof(_ulong));
+			outFile.write(reinterpret_cast<const char*>(EffectName.c_str()), EffectNameSize * sizeof(wchar_t));
+
+			outFile.write(reinterpret_cast<const char*>(&EffectFollow), sizeof(_bool));
+
+			_float fSize = Effect->Get_Info().fSize;
+			outFile.write(reinterpret_cast<const char*>(&fSize), sizeof(_float));
+
+			CTransform* pEffectTransform = dynamic_cast<CTransform*>(Effect->Find_Component(TEXT("Com_Transform")));
+			_mat TriggerWorldMat = pEffectTransform->Get_World_Matrix();
+			outFile.write(reinterpret_cast<const char*>(&TriggerWorldMat), sizeof(_mat));
+		}
+
+		MessageBox(g_hWnd, L"파일 저장 완료", L"파일 저장", MB_OK);
+		outFile.close();
+
+
+	}
+	return S_OK;
+}
+
+HRESULT CImGui_Manager::Load_Effect()
+{
+	OPENFILENAME OFN;
+	TCHAR filePathName[MAX_PATH] = L"";
+	static TCHAR filter[] = L"모두(*.*)\0*.*\0데이터 파일(*.dat)\0*.dat";
+
+	memset(&OFN, 0, sizeof(OPENFILENAME));
+	OFN.lStructSize = sizeof(OPENFILENAME);
+	OFN.hwndOwner = g_hWnd;
+	OFN.lpstrFilter = filter;
+	OFN.lpstrFile = filePathName;
+	OFN.nMaxFile = 256;
+	OFN.lpstrInitialDir = L"..\\Bin\\Data\\";
+
+	if (GetOpenFileName(&OFN) != 0)
+	{
+		const TCHAR* pGetPath = OFN.lpstrFile;
+
+		std::ifstream inFile(pGetPath, std::ios::binary);
+
+		if (!inFile.is_open())
+		{
+			MessageBox(g_hWnd, L"파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+			return E_FAIL;
+		}
+
+		_uint EffectListSize;
+		inFile.read(reinterpret_cast<char*>(&EffectListSize), sizeof(_uint));
+
+
+		for (_uint i = 0; i < EffectListSize; ++i)
+		{
+			EffectDummyInfo Info{};
+
+			_ulong EffectNameSize;
+			inFile.read(reinterpret_cast<char*>(&EffectNameSize), sizeof(_ulong));
+
+			wstring EffectName;
+			EffectName.resize(EffectNameSize);
+			inFile.read(reinterpret_cast<char*>(&EffectName[0]), EffectNameSize * sizeof(wchar_t));
+
+			_bool isFollow{false};
+			inFile.read(reinterpret_cast<char*>(&isFollow), sizeof(_bool));
+
+			_float EffectSize{};
+			inFile.read(reinterpret_cast<char*>(&EffectSize), sizeof(_float));
+
+			_mat EffectWorldMat;
+			inFile.read(reinterpret_cast<char*>(&EffectWorldMat), sizeof(_mat));
+
+			Info.EffectName = EffectName;
+			Info.isFollow = isFollow;
+			Info.fSize = EffectSize;
+			Info.mMatrix = EffectWorldMat;
+			Info.ppDummy = &m_pSelected_Effect_Dummy;
+
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Effect_Sphere"), &Info)))
+			{
+				MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
+				return E_FAIL;
+			}
+
+			m_EffectDummyList.emplace(m_pSelected_Effect_Dummy->Get_ID(), m_pSelected_Effect_Dummy);
+			m_Effect.push_back(m_pSelected_Effect_Dummy);
+			m_pSelected_Effect_Dummy = nullptr;
+		}
+
+		MessageBox(g_hWnd, L"파일 로드 완료", L"파일 로드", MB_OK);
+		inFile.close();
+
+	}
+	return S_OK;
+}
+
+#pragma endregion
+
+
 #pragma region 위치 저장
 HRESULT CImGui_Manager::Save_Pos()
 {
@@ -3583,6 +3786,11 @@ void CImGui_Manager::Free()
 	}
 	m_CameraList.clear();
 
+	for (auto& cstr : m_Effect)
+	{
+		Safe_Release(cstr);
+	}
+	m_Effect.clear();
 	//for (auto& Pair : m_DummyList)
 	//{
 	//	Safe_Release(Pair.second);
@@ -3596,10 +3804,15 @@ void CImGui_Manager::Free()
 	//}
 	m_Map.clear();
 
+
+
+	m_EffectDummyList.clear();
+
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pSelectedDummy);
 	Safe_Release(m_pSelectMap);
 	Safe_Release(m_pSelectCamera);
+	Safe_Delete_Array(m_szEffectFiles);
 
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();

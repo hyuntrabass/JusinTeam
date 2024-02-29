@@ -9,6 +9,8 @@
 #include "TextButtonColor.h"
 #include "TextButton.h"
 #include "Pop_Reward.h"
+#include "Effect_Dummy.h"
+#include "Effect_Manager.h"
 
 // 부셔지는 애니메이션 하나 밖에 없음
 // Prototype_Model_GoldStone
@@ -68,10 +70,20 @@ HRESULT CInteraction_Anim::Init(void* pArg)
 	if (m_Info.strPrototypeTag == TEXT("Prototype_Model_GoldStone"))
 	{
 		NameTagDesc.strNameTag = TEXT("금광석");
+
+		_mat EffectMat = _mat::CreateTranslation(_vec3(vPos));
+		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Mineral_Parti");
+		EffectDesc.pMatrix = &EffectMat;
+		m_pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(EffectDesc);
 	}
-	else if(m_Info.strPrototypeTag == TEXT("Prototype_Model_SaltStone"))
+	else if (m_Info.strPrototypeTag == TEXT("Prototype_Model_SaltStone"))
 	{
 		NameTagDesc.strNameTag = TEXT("소금광석");
+
+		_mat EffectMat = _mat::CreateTranslation(_vec3(vPos));
+		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Mineral_Parti_Blue");
+		EffectDesc.pMatrix = &EffectMat;
+		m_pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(EffectDesc);
 	}
 	else if (m_Info.strPrototypeTag == TEXT("Prototype_Model_TreasureBox"))
 	{
@@ -108,6 +120,9 @@ HRESULT CInteraction_Anim::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+
+	m_iHP = 1;
+
 	return S_OK;
 }
 
@@ -162,11 +177,42 @@ void CInteraction_Anim::Tick(_float fTimeDelta)
 			CUI_Manager::Get_Instance()->Set_Collect();
 			m_isCollect = true;
 		}
+		m_pShaderCom->Set_PassIndex(VTF_InstPass_OutLine);
 	}
+	else
+	{
+		m_pShaderCom->Set_PassIndex(VTF_InstPass_Default);
+	}
+
 	if (m_isWideCollision)
 	{
 		dynamic_cast<CNameTag*>(m_pNameTag)->Tick(fTimeDelta);
 		m_pSpeechBubble->Tick(fTimeDelta);
+	}
+
+	if (m_pEffect)
+	{
+		m_pEffect->Tick(fTimeDelta);
+
+		if (m_isAnimStart)
+		{
+			_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
+			_mat EffectMat = _mat::CreateTranslation(vPos);
+			EffectInfo EffectDesc{};
+
+			if (m_Info.strPrototypeTag == TEXT("Prototype_Model_GoldStone"))
+			{
+				EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Mineral_Parti_Diss");
+			}
+			else
+			{
+				EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Mineral_Parti_Blue_Diss");
+			}
+
+			EffectDesc.pMatrix = &EffectMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+			Safe_Release(m_pEffect);
+		}
 	}
 
 #ifdef _DEBUG
@@ -206,29 +252,30 @@ void CInteraction_Anim::Late_Tick(_float fTimeDelta)
 			if (m_strName == TEXT("보물상자"))
 			{
 				CPop_Reward::REWARD_DESC Desc{};
-				vector < pair<wstring, _uint>> vecReward;
 				if (m_Info.m_iIndex == 0)
 				{
-					vecReward.push_back(make_pair(TEXT("엘드룬의 수호 갑옷"), 1));
-					vecReward.push_back(make_pair(TEXT("엘드룬의 수호 투구"), 1));
+					Desc.vecRewards.push_back(make_pair(TEXT("엘드룬의 수호 갑옷"), 1));
+					Desc.vecRewards.push_back(make_pair(TEXT("엘드룬의 수호 투구"), 1));
 				}
 				else
 				{
-					vecReward.push_back(make_pair(TEXT("헤임달의 단검"), 1));
-					vecReward.push_back(make_pair(TEXT("헤임달의 활"), 1));
+					Desc.vecRewards.push_back(make_pair(TEXT("헤임달의 단검"), 1));
+					Desc.vecRewards.push_back(make_pair(TEXT("헤임달의 활"), 1));
 				}
-				Desc.vecRewards = vecReward;
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Pop_Reward"), &Desc)))
 				{
 					return;
 				}
 			}
-			else
-			{
-				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("채집하기"));
-			}
 			m_isDead = true;
 		}
+
+		if (m_iHP > 0 and m_Info.strPrototypeTag == TEXT("Prototype_Model_SaltStone"))
+		{
+			CEvent_Manager::Get_Instance()->Update_Quest(TEXT("채집하기"));
+			m_iHP = 0;
+		}
+
 		m_pModelCom->Play_Animation(fTimeDelta);
 	}
 
@@ -237,6 +284,12 @@ void CInteraction_Anim::Late_Tick(_float fTimeDelta)
 		m_pNameTag->Late_Tick(fTimeDelta);
 		m_pSpeechBubble->Late_Tick(fTimeDelta);
 	}
+
+	if (m_pEffect)
+	{
+		m_pEffect->Late_Tick(fTimeDelta);
+	}
+
 	m_pRendererCom->Add_RenderGroup(RG_AnimNonBlend_Instance, this);
 }
 
@@ -326,12 +379,12 @@ HRESULT CInteraction_Anim::Add_Components()
 // Com_Collider
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
-	CollDesc.fRadius = 5.f;
+	CollDesc.fRadius = 2.f;
 	CollDesc.vCenter = _vec3(0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Interaction_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))
 		return E_FAIL;
-	
+
 	Collider_Desc ColDesc2{};
 	ColDesc2.eType = ColliderType::Sphere;
 	ColDesc2.fRadius = 27.f;
@@ -389,6 +442,7 @@ HRESULT CInteraction_Anim::Add_Components()
 		return E_FAIL;
 	}
 	m_pBar->Set_Pass(VTPass_HPBoss);
+	m_pBar->Set_Factor(0.f);
 
 	CTextButton::TEXTBUTTON_DESC Button = {};
 	Button.eLevelID = LEVEL_STATIC;
@@ -426,7 +480,14 @@ HRESULT CInteraction_Anim::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (true == m_pGameInstance->Get_TurnOnShadow()) {
+	_uint iOutLineColorIndex = 2;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_OutlineColor", &iOutLineColorIndex, sizeof iOutLineColorIndex)))
+	{
+		return E_FAIL;
+	}
+
+	if (true == m_pGameInstance->Get_TurnOnShadow())
+	{
 
 		CASCADE_DESC Desc = m_pGameInstance->Get_CascadeDesc();
 
@@ -473,7 +534,7 @@ void CInteraction_Anim::Free()
 {
 	__super::Free();
 	Safe_Release(m_pNameTag);
-
+	Safe_Release(m_pEffect);
 	Safe_Release(m_pBar);
 	Safe_Release(m_pBG);
 	Safe_Release(m_pItem);
