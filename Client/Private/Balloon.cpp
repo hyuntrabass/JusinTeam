@@ -74,7 +74,7 @@ void CBalloon::Tick(_float fTimeDelta)
 void CBalloon::Late_Tick(_float fTimeDelta)
 {
 	m_pCube->Late_Tick(fTimeDelta);
-	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
+	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
 
 #ifdef _DEBUG

@@ -111,10 +111,6 @@ void CGuard::Tick(_float fTimeDelta)
 		break;
 	}
 
-	if (STATE_PATROL == m_eCurState) {
-
-	}
-
 
 	if (true == m_bChangePass) {
 		m_fHitTime += fTimeDelta;
@@ -134,6 +130,8 @@ void CGuard::Tick(_float fTimeDelta)
 		Kill();
 
 	m_pModelCom->Set_Animation(m_Animation);
+
+	m_pTransformCom->Gravity(fTimeDelta);
 }
 
 void CGuard::Late_Tick(_float fTimeDelta)
@@ -376,6 +374,11 @@ HRESULT CGuard::Bind_ShaderResources()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+_vec4 CGuard::Compute_PlayerPos()
+{
+	return _vec4();
 }
 
 HRESULT CGuard::Add_Collider()
