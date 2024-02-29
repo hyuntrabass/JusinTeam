@@ -1167,6 +1167,12 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	_mat GuardTowerPivot = _mat::CreateScale(0.002f);
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GuardTower"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/StoneTower/Mesh/StoneTower.hyuntraanimmesh", false ,GuardTowerPivot))))
+	{
+		return E_FAIL;
+	}
 	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/NPC/NPC_Dummy/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -1696,11 +1702,14 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
-		if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Guard"), CGuard::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Guard"), CGuard::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
-
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_GuardTower"), CGuardTower::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 
 #pragma endregion NPC
 

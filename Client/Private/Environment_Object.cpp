@@ -69,8 +69,11 @@ void CEnvironment_Object::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
+
+
 	if(m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos(), 20.f))
 		__super::Late_Tick(fTimeDelta);
+	
 	
 	//m_isRendered = true;
 

@@ -20,7 +20,7 @@ HRESULT CGuard::Init_Prototype()
 
 HRESULT CGuard::Init(void* pArg)
 {
-	MiniDungeonInfo m_Info = *(MiniDungeonInfo*)pArg;
+	GuardInfo m_Info = *(GuardInfo*)pArg;
 	m_iIndex = m_Info.iIndex;
 	GuardMatrix = m_Info.mMatrix;
 
@@ -61,12 +61,11 @@ void CGuard::Tick(_float fTimeDelta)
 	m_eCurState = STATE_PATROL;
 	if (m_pGameInstance->Key_Down(DIK_DOWN))
 	{
-		m_Animation.iAnimIndex++;
+		m_Animation.iAnimIndex--;
 	}
-
-	if (m_pGameInstance->Key_Down(DIK_DELETE))
+	if (m_pGameInstance->Key_Up(DIK_UP))
 	{
-
+		m_Animation.iAnimIndex++;
 	}
 
 	m_pTransformCom->Set_OldMatrix();

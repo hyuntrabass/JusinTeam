@@ -505,6 +505,9 @@
     <Filter Include="02.GameObjects\16.SescoGame\VTFMonster\Larva">
       <UniqueIdentifier>{6de5bee6-1aae-49f5-b546-96ce84157a85}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\07. NPC\06. GuardTower">
+      <UniqueIdentifier>{065bad8b-d57c-4d7f-8167-aac0a06c6cf2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1040,6 +1043,11 @@
     </ClInclude>
     <ClInclude Include="..\Public\Log.h" />
     <ClInclude Include="..\Public\Survival_Mon.h" />
+    <ClInclude Include="..\Public\GlowCube.h" />
+    <ClInclude Include="..\Public\Hook.h" />
+    <ClInclude Include="..\Public\GuardTower.h">
+      <Filter>02.GameObjects\07. NPC\06. GuardTower</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1573,6 +1581,11 @@
     </ClCompile>
     <ClCompile Include="..\Private\Log.cpp" />
     <ClCompile Include="..\Private\Survival_Mon.cpp" />
+    <ClCompile Include="..\Private\GlowCube.cpp" />
+    <ClCompile Include="..\Private\Hook.cpp" />
+    <ClCompile Include="..\Private\GuardTower.cpp">
+      <Filter>02.GameObjects\07. NPC\06. GuardTower</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
