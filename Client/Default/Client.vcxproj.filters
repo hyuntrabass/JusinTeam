@@ -1039,7 +1039,6 @@
     <ClInclude Include="..\Public\RedAnt.h">
       <Filter>02.GameObjects\16.SescoGame\VTFMonster\RedAnt</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Survival_Mon.h" />
     <ClInclude Include="..\Public\GlowCube.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
@@ -1057,6 +1056,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\BrickCat.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Survival_Mon.h">
+      <Filter>02.GameObjects\15. SurvivalGame</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Level_Tower.h">
       <Filter>01.Levels\05.Tower</Filter>
@@ -1590,7 +1592,6 @@
     <ClCompile Include="..\Private\RedAnt.cpp">
       <Filter>02.GameObjects\16.SescoGame\VTFMonster\RedAnt</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Survival_Mon.cpp" />
     <ClCompile Include="..\Private\GlowCube.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
@@ -1608,6 +1609,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\BrickCat.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Survival_Mon.cpp">
+      <Filter>02.GameObjects\15. SurvivalGame</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Level_Tower.cpp">
       <Filter>01.Levels\05.Tower</Filter>

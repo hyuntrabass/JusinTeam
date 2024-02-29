@@ -1,9 +1,21 @@
 1. Static Only   2. Anim Only   3. All
 1
 Static Models : Start Converting...
-Converting... HOOK.fbx
+Converting... BrickMap.fbx
+Read File Succssefully
+Converting... palgakjung.fbx
+Read File Succssefully
+Converting... CommonCube.fbx
+Read File Succssefully
+Converting... BrickMap2.fbx
+Read File Succssefully
+Converting... BrickCubeAlpha.fbx
+Read File Succssefully
+Converting... Floor.fbx
+Read File Succssefully
+Converting... bordercube.fbx
 Read File Succssefully
 Static Models : Convert Success!
 
-1 Static Models
+7 Static Models
 are Successfully Converted as hyuntramesh!!
