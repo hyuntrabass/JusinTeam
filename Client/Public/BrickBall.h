@@ -7,7 +7,11 @@ BEGIN(Client)
 
 class CBrickBall final : public CGameObject
 {
-
+public:
+	typedef struct tagBallDesc
+	{
+		_vec3 vPos{};
+	}BALL_DESC;
 private:
 	CBrickBall(_dev pDevice, _context pContext);
 	CBrickBall(const CBrickBall& rhs);
@@ -37,6 +41,7 @@ private:
 
 private:
 	BrickColor				m_eCurBrickColor{};
+	_bool					m_isCombo{};
 	_bool					m_isColl{};
 	_bool					m_isBalloonColl{};
 	_uint					m_iCollNum{};
@@ -50,11 +55,17 @@ private:
 	_mat					m_EffectMatrix{};
 	class CEffect_Dummy*	m_pEffect_Ball{ nullptr };
 	CCollider*				m_pCurCollider{ nullptr };
+
+public:
+	const _bool& Is_Combo() const { return m_isCombo; }
+	const _bool& Is_Dead() const { return m_isDead; }
+
 private:
 	void Check_Collision(_float fTimeDelta);
 	void Set_BallColor();
 
 public:
+	CCollider* Get_BrickBallCollider() { return m_pColliderCom; }
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 

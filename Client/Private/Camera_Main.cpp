@@ -718,11 +718,29 @@ void CCamera_Main::SkillBook_Mode(_float fTimeDelta)
 
 void CCamera_Main::BrickGame_Mode(_float fTimeDelta)
 {
-	_vec4 vBrickGamePos = _vec4(-1999.853f, 5.962f, -1985.831f, 1.f);
+
+	if (m_fShakeAcc > 1.8f and m_pCam_Manager->Get_ShakeCam())
+	{
+		m_fShakeAcc = m_pCam_Manager->Get_ShakePower();
+		m_pCam_Manager->Set_ShakeCam(false);
+	}
+
+	_float fShakeAmount = sin(m_fShakeAcc * 15.f) * powf(0.5f, m_fShakeAcc) * 0.2f;
+	if (m_fLerpTime < 1.f)
+	{
+		_vec4 vShakePos = m_pTransformCom->Get_State(State::Pos);
+		vShakePos += XMVectorSet(fShakeAmount, -fShakeAmount, 0.f, 0.f);
+		m_pTransformCom->Set_State(State::Pos, vShakePos);
+		m_fShakeAcc += fTimeDelta * 10.f / m_pGameInstance->Get_TimeRatio();
+	}
+
+
+
+	_vec4 vBrickGamePos = _vec4(-1999.853f, 12.962f, -1980.831f, 1.f);
 
 	m_pTransformCom->Set_State(State::Pos, vBrickGamePos);
 
-	m_pTransformCom->LookAt_Dir(_vec4(-0.004f, -0.500f, -0.866f, 0.f));
+	m_pTransformCom->LookAt_Dir(_vec4(-0.004f, -0.70f, -0.866f, 0.f));
 }
 
 void CCamera_Main::Collect_Mode(_float fTimeDelta)

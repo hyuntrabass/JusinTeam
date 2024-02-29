@@ -2,7 +2,7 @@
 
 #include "GameObject.h"
 #include "Client_Define.h"
-
+#include "Hook.h"
 BEGIN(Client)
 
 class CCescoGame final : public CGameObject
@@ -22,16 +22,19 @@ public:
 	HRESULT Create_Hook();
 private:
 	CTransform* m_pPlayerTransform = { nullptr };
-	_randNum m_RandomNumber;
 	list<class CVTFMonster*> m_Monsters;
 	vector<_vec3> m_SpawnPositions;
 	map<_int, _vec3> m_LarvaPositions;
-	_float m_fMonsterSpawnTime{};
-	_uint m_iMonsterSpawnCount{};
-	
-	_float m_fTimeLimit{ 1209999999.f };
-	_uint m_iMonsterLimit{ 200 };
+	vector<CHook*> m_vecHooks;
+	_randNum m_RandomNumber;
+	CHook* m_pCurrent_DraggingHook{};
 
+	_float m_fMonsterSpawnTime{};
+	_uint m_iMonsterLimit{ 200 };
+	_uint m_iMonsterSpawnCount{};
+	_bool m_bHadDragging{};
+	_float m_fTimeLimit{ 1209999999.f };
+	_vec4 m_vHookPos{};
 private:
 	void Release_DeadObjects();
 

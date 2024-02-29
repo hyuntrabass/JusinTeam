@@ -289,8 +289,6 @@ void FXAA(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID, ui
     float2 UV2 = CurrentUV + offset;
     
     float Lum_End1 = RGB2Lum(inputTexture.SampleLevel(LinearSampler, UV1, 0.f).rgb);
-    
-    
     float Lum_End2 = RGB2Lum(inputTexture.SampleLevel(LinearSampler, UV2, 0.f).rgb);
     
     Lum_End1 -= Lum_LA;
@@ -343,7 +341,7 @@ void FXAA(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID, ui
     float Dist1 = isHorizontal ? (vUV.x - UV1.x) : (vUV.y - UV1.y);
     float Dist2 = isHorizontal ? (UV2.x - vUV.x) : (UV2.y - vUV.y);
     
-    bool isDirection = Dist1 < Dist2;
+    bool isDirection = length(Dist1) < length(Dist2);
     float DistFinal = min(Dist1, Dist2);
     
     float Edge_Thickness = Dist1 + Dist2;

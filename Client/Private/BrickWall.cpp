@@ -91,37 +91,55 @@ HRESULT CBrickWall::Init(void* pArg)
 
 	m_pTransformCom->Set_Scale(_vec3(1.f, 30.f, 27.f));
 	m_pColliderCom->Set_Normal();
+
+	m_Colors[0] = _vec4(0.28f, 0.28f, 0.45f, 1.f);
+	m_Colors[1] = _vec4(0.592f, 0.459f, 0.678f, 1.f);
+	m_Colors[2] = _vec4(0.51f, 0.929f, 1, 1.f);
+	m_vColor = m_Colors[0];
+	m_iNextColor = 1;
 	return S_OK;
 }
 
 void CBrickWall::Tick(_float fTimeDelta)
 {
+	m_fColorTime += fTimeDelta;
+	if (m_fColorTime >= 4.f)
+	{
+		m_iNextColor++;
+		m_fColorTime = 0.f;
+		if (m_iNextColor >= MAXCOLOR)
+		{
+			m_iNextColor = 0;
+		}
+	}
 
 	if (m_rcRect.top == 1)
 	{
-		m_pTransformCom->Set_Scale(_vec3(1.f, 30.f, 23.f));
-		_vec3 vPos = _vec3(-2000.06f, 12.4f, m_pTransformCom->Get_State(State::Pos).z);
+		m_pTransformCom->Set_Scale(_vec3(1.f, 50.f, 45.f));
+		_vec3 vPos = _vec3(-2000.f, 1.4677677f, -2010.f);
 		m_pTransformCom->Set_Position(vPos);
 		m_pColliderCom->Change_Extents(_vec3(10.f, 0.2f, 0.02f));
 	}
 	else if (m_rcRect.bottom == 1)
 	{
 		//ÀÌ°Å »©ÀÚ
-		_vec3 vPos = _vec3(m_pTransformCom->Get_State(State::Pos).x, 12.4f, m_pTransformCom->Get_State(State::Pos).z);
+		_vec3 vPos = _vec3(m_pTransformCom->Get_State(State::Pos).x, 1.4677677f, m_pTransformCom->Get_State(State::Pos).z);
 		m_pTransformCom->Set_Position(vPos);
 		m_pColliderCom->Change_Extents(_vec3(10.f, 0.2f, 0.02f));
 	}
 	if (m_rcRect.left == 1)
 	{
-		_vec3 vPos = _vec3(-2000.70496f, 12.4f, -1999.06152f);
-		vPos.x -= 7.2f;
+		m_pTransformCom->Set_Scale(_vec3(1.f, 50.f, 40.f));
+		_vec3 vPos = _vec3(-2000.f, 1.4677677f, -1996.4f);
+		vPos.x -= 15.3f;
 		m_pTransformCom->Set_Position(vPos);
 
 	}
 	else if (m_rcRect.right == 1)
 	{
-		_vec3 vPos = _vec3(-2000.70496f, 12.4f, -1999.06152f);
-		vPos.x += 8.5f;
+		m_pTransformCom->Set_Scale(_vec3(1.f, 50.f, 40.f));
+		_vec3 vPos = _vec3(-2000.f, 1.4677677f, -1996.4f);
+		vPos.x += 15.3f;
 		m_pTransformCom->Set_Position(vPos);
 
 	}
@@ -154,6 +172,7 @@ void CBrickWall::Tick(_float fTimeDelta)
 	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 
 
+	/*
 	CCollider* pCollider{ nullptr };
 
 	pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_BrickBall"), TEXT("Com_Collider_Sphere"));
@@ -171,6 +190,7 @@ void CBrickWall::Tick(_float fTimeDelta)
 	{
 		m_isBlur = false;
 	}
+	*/
 
 }
 
@@ -212,8 +232,15 @@ HRESULT CBrickWall::Render()
 		{
 			return E_FAIL;
 		}
-		//m_vColor = _vec4(0.83f, 0.78f, 1.f, 0.2f);
-		m_vColor = _vec4(1.f, 1.f, 1.f, 0.1f);
+
+		_float fLerpFactor = m_fColorTime / 4.f;
+		_int iCurColor = m_iNextColor - 1;
+		if (iCurColor < 0 )
+		{
+			iCurColor = MAXCOLOR - 1;
+		}
+		m_vColor = XMVectorLerp(m_Colors[iCurColor], m_Colors[m_iNextColor], fLerpFactor);
+
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof _vec4)))
 		{
 			return E_FAIL;
