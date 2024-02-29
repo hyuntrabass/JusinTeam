@@ -456,11 +456,6 @@ HRESULT CGuard::Bind_ShaderResources()
 	return S_OK;
 }
 
-_vec4 CGuard::Compute_PlayerPos()
-{
-	return _vec4();
-}
-
 HRESULT CGuard::Add_Collider()
 {
 	Collider_Desc BodyCollDesc = {};

@@ -93,8 +93,6 @@ public:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
-private:
-	_vec4 Compute_PlayerPos();
 
 public:
 	HRESULT Add_Collider();
