@@ -24,6 +24,7 @@ Texture2D g_DiffuseTexture;
 Texture2D g_Normal_Spec_Texture;
 Texture2D g_Depth_Velocity_Texture;
 Texture2D g_RimMaskTexture;
+Texture2D g_GlowTexture;
 
 // MRT_Light
 Texture2D g_ShadeTexture;
@@ -307,7 +308,7 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     {
         discard;
     }
-    
+
     vDiffuse.rgb = pow(vDiffuse.rgb, 2.2f);
     
     vector vShade = g_ShadeTexture.Sample(LinearSampler, Input.vTexcoord);
@@ -319,6 +320,10 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     vRimMask.a = 0.f;
     
     FinalColor = vDiffuse * vShade + vSpecular + vRimMask;
+    
+    vector vGlow = g_GlowTexture.Sample(LinearSampler, Input.vTexcoord);
+    
+    FinalColor += vGlow;
     
     vector vSsaoDesc = g_SSAOTexture.Sample(LinearSampler, Input.vTexcoord);
     
