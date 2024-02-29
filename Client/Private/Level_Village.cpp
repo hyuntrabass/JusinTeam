@@ -85,12 +85,6 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_Human_Boss()))
-	{
-		MSG_BOX("Failed to Ready HumanBoss");
-		return E_FAIL;
-	}
-
 	if (FAILED(Ready_NPC()))
 	{
 		MSG_BOX("Failed to Ready NPC");
@@ -105,23 +99,6 @@ HRESULT CLevel_Village::Init()
 	if (FAILED(Ready_Trigger()))
 	{
 		MSG_BOX("Failed to Ready Trigger");
-		return E_FAIL;
-	}
-
-	if (FAILED(Ready_Test()))
-	{
-		MSG_BOX("Failed to Ready Test");
-		return E_FAIL;
-	}
-
-	if (FAILED(Ready_Survival_Game()))
-	{
-		MSG_BOX("Failed to Ready Survival Game");
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_BrickBar"), TEXT("Prototype_GameObject_BrickBar"))))
-	{
 		return E_FAIL;
 	}
 
@@ -177,15 +154,7 @@ HRESULT CLevel_Village::Init()
 
 void CLevel_Village::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_B))
-	{
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_BrickBall"), TEXT("Prototype_GameObject_BrickBall"))))
-		{
-			return;
-		}
-
-	}
+	
 	if (m_pGameInstance->Key_Down(DIK_END))
 	{
 		CTrigger_Manager::Get_Instance()->Teleport(TS_Dungeon);
@@ -204,56 +173,14 @@ void CLevel_Village::Tick(_float fTimeDelta)
 		DestroyWindow(g_hWnd);
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
+	if (m_pGameInstance->Is_Level_ShutDown(LEVEL_VILLAGE) or m_pGameInstance->Key_Down(DIK_NUMPAD9) or m_pGameInstance->Key_Down(DIK_PRIOR))
 	{
-		CTrigger_Manager::Get_Instance()->Teleport(TS_Minigame);
-		return;
-	}
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
-	{
-		CTrigger_Manager::Get_Instance()->Teleport(TS_DragonMap);
-		return;
-	}
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD5))
-	{
-		CTrigger_Manager::Get_Instance()->Teleport(TS_BossRoom);
-		return;
-	}
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD6))
-	{
-		CTrigger_Manager::Get_Instance()->Teleport(TS_MiniDungeon);
-		return;
-	}
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD7))
-	{
-		CTrigger_Manager::Get_Instance()->Teleport(TS_SurvivalMap);
-		return;
-	}
-	if (m_pGameInstance->Key_Down(DIK_0))
-	{
-		CTrigger_Manager::Get_Instance()->Teleport(TS_SescoMap);
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_CescoGameObject"), TEXT("Prototype_GameObject_CescoGame_Object"))))
-			return;
+		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_TOWER))))
+		{
+			MSG_BOX("Failed to Open Level");
+		}
 
 		return;
-	}
-	// Test
-	if (m_pGameInstance->Key_Down(DIK_RSHIFT))
-	{
-		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"));
-	}
-	//if (m_pGameInstance->Key_Down(DIK_UP))
-	//{
-	//	m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Statue"), TEXT("Prototype_GameObject_Statue"));
-	//}
-	if (m_pGameInstance->Key_Down(DIK_EQUALS))
-	{
-		static _mat FountainMat = _mat::CreateScale(1.3f) * _mat::CreateRotationZ(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(-25.292f, 17.321f, 116.395f));
-		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Waterfall_Dist");
-		EffectDesc.pMatrix = &FountainMat;
-		EffectDesc.isFollow = true;
-		CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 	}
 }
 
@@ -417,48 +344,6 @@ HRESULT CLevel_Village::Ready_TreasureBox()
 		}
 	}
 	inFile.close();
-	return S_OK;
-}
-
-HRESULT CLevel_Village::Ready_NpcvsMon()
-{
-	MonsterInfo Info{};
-	const TCHAR* pGetPath = L"../Bin/Data/Prologue_MonsterData.dat";
-
-	std::ifstream inFile(pGetPath, std::ios::binary);
-
-	if (!inFile.is_open())
-	{
-		MessageBox(g_hWnd, L"../Bin/Data/Prologue_MonsterData.dat 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
-		return E_FAIL;
-	}
-
-	_uint MonsterListSize;
-	inFile.read(reinterpret_cast<char*>(&MonsterListSize), sizeof(_uint));
-
-
-	for (_uint i = 0; i < MonsterListSize; ++i)
-	{
-		_ulong MonsterPrototypeSize;
-		inFile.read(reinterpret_cast<char*>(&MonsterPrototypeSize), sizeof(_ulong));
-
-		wstring MonsterPrototype;
-		MonsterPrototype.resize(MonsterPrototypeSize);
-		inFile.read(reinterpret_cast<char*>(&MonsterPrototype[0]), MonsterPrototypeSize * sizeof(wchar_t));
-
-		_mat MonsterWorldMat;
-		inFile.read(reinterpret_cast<char*>(&MonsterWorldMat), sizeof(_mat));
-
-		Info.strMonsterPrototype = MonsterPrototype;
-		Info.MonsterWorldMat = MonsterWorldMat;
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), MonsterPrototype, &Info)))
-		{
-			MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
-			return E_FAIL;
-		}
-
-	}
 	return S_OK;
 }
 

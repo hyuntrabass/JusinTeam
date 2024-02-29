@@ -8,17 +8,15 @@ BEGIN(Client)
 class CSurvivalGame final : public CGameObject
 {
 public:
-	enum PATTERN
+	enum STAGE
 	{
-		PATTERN_INIT,
-		PATTERN_RANDOM_MISSILE,
-		PATTERN_FLOOR,
-		PATTERN_GUIDED_MISSILE,
-		PATTERN_LASER,
-		PATTERN_PIZZA,
-		PATTERN_TANGHURU,
-		PATTERN_SUICIDE_MONSTER,
-		PATTERN_END
+		STAGE_INIT,
+		STAGE01, // 랜덤위치에 런처 생성되서 8개 미사일 발사
+		STAGE02, // 플레이어 위치와 랜덤 위치에 생성되는 폭발물
+		STAGE03, // 플레이어 향해 날아오는 유도 미사일
+		STAGE04, // 캐논에서 레이저
+		STAGE05, // 탕후루 + 날파리
+		STAGE_END
 	};
 
 private:
@@ -38,8 +36,11 @@ public:
 	void Tick_Pattern(_float fTimeDelta);
 
 private:
-	PATTERN m_ePrePattern = PATTERN_END;
-	PATTERN m_eCurPattern = PATTERN_END;
+	CRenderer* m_pRendererCom = { nullptr };
+
+private:
+	STAGE m_ePreStage = STAGE_END;
+	STAGE m_eCurStage = STAGE_END;
 
 private:
 	_float m_fTime[2] = {};
@@ -50,6 +51,11 @@ private:
 private:
 	_uint m_iCount = {};
 
+private:
+	wstring m_strStage = {};
+
+public:
+	HRESULT Add_Components();
 
 public:
 	static CSurvivalGame* Create(_dev pDevice, _context pContext);

@@ -26,7 +26,6 @@ HRESULT CSickleTrap::Init(void* pArg)
 
 	m_pTransformCom->Set_Position(StartPos);
 
-	m_pTransformCom->LookAt(dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")))->Get_CenterPos());
 
 
 	if (FAILED(Add_Components()))
@@ -48,11 +47,11 @@ void CSickleTrap::Tick(_float fTimeDelta)
 		Kill();
 	}
 
-	m_EffectMatrices[0] = _mat::CreateScale(4.f)/* * _mat::CreateRotationY(XMConvertToRadians(m_fLifeTimer *-2000.f))*/ * m_pTransformCom->Get_World_Matrix();
-	m_EffectMatrices[1] = _mat::CreateScale(4.f) * m_pTransformCom->Get_World_Matrix();
+	m_EffectMatrices[0] = _mat::CreateScale(6.f)/* * _mat::CreateRotationY(XMConvertToRadians(m_fLifeTimer *-2000.f))*/ * m_pTransformCom->Get_World_Matrix();
+	m_EffectMatrices[1] = _mat::CreateScale(6.f) * m_pTransformCom->Get_World_Matrix();
 	m_EffectMatrices[2] = _mat::CreateScale(4.f)* m_pTransformCom->Get_World_Matrix();
 	
-	for (size_t i = 0; i < 3; i++)
+	for (size_t i = 0; i < 2; i++)
 	{
 		if (m_pEffects[i])
 		{
@@ -70,25 +69,11 @@ void CSickleTrap::Tick(_float fTimeDelta)
 
 	}
 
-	CCollider* pPlayerHitCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
-	if (m_pColliderCom->Intersect(pPlayerHitCollider))
-	{
-		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-		_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
-		vPos.y = vPlayerPos.y;
-		_vec4 vDir = vPos - vPlayerPos;
-		vDir.Normalize();
-		vDir.y = 0.f;
-		vDir.w = 0.f;
-		vPlayerPos += vDir *2.f;
-		pPlayerTransform->Set_State(State::Pos, vPlayerPos); 
-	}
 }
 
 void CSickleTrap::Late_Tick(_float fTimeDelta)
 {
-	for (size_t i = 0; i < 3; i++)
+	for (size_t i = 0; i < 2; i++)
 	{
 		if (m_pEffects[i])
 		{
@@ -109,7 +94,7 @@ HRESULT CSickleTrap::Add_Components()
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
 	CollDesc.vCenter = _vec3(0.f);
-	CollDesc.fRadius = 2.7f;
+	CollDesc.fRadius = 3.5f;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider"), (CComponent**)&m_pColliderCom, &CollDesc)))
 	{
@@ -120,20 +105,15 @@ HRESULT CSickleTrap::Add_Components()
 	Safe_AddRef(pEffect_Manager);
 	EffectInfo Info{};
 
-	Info = pEffect_Manager->Get_EffectInformation(L"HumanBoss_Sickle");
-	Info.pMatrix = &m_EffectMatrices[0];
-	Info.isFollow = true;
-	m_pEffects[0] = pEffect_Manager->Clone_Effect(Info);
-
 	Info = pEffect_Manager->Get_EffectInformation(L"HumanBoss_Ring");
 	Info.pMatrix = &m_EffectMatrices[1];
 	Info.isFollow = true;
-	m_pEffects[1] = pEffect_Manager->Clone_Effect(Info);
+	m_pEffects[0] = pEffect_Manager->Clone_Effect(Info);
 
 	Info = pEffect_Manager->Get_EffectInformation(L"HumanBoss_Ring2");
 	Info.pMatrix = &m_EffectMatrices[2];
 	Info.isFollow = true;
-	m_pEffects[2] = pEffect_Manager->Clone_Effect(Info);
+	m_pEffects[1] = pEffect_Manager->Clone_Effect(Info);
 
 
 	Safe_Release(pEffect_Manager);
@@ -180,7 +160,7 @@ void CSickleTrap::Free()
 	__super::Free();
 
 	Safe_Release(m_pColliderCom);
-	for (size_t i = 0; i < 3; i++)
+	for (size_t i = 0; i < 2; i++)
 	{
 		Safe_Release(m_pEffects[i]);
 	}

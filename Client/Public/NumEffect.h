@@ -38,11 +38,13 @@ private:
 	HRESULT Bind_ShaderResources();
 
 private:
+	_bool				m_isChanging{};
 	_bool				m_bOrth{};
 	_bool				m_isEffect{ true };
 	LEVEL_ID			m_eLevel{};
 
-	_uint				m_iDamage{};
+	_uint				m_iTargetNum{};
+	_uint				m_iCurNum{};
 	_uint				m_iNumIdx{};
 	_uint				m_iRenderNum{};
 	_float				m_fFontSize{ 0.f };
@@ -54,8 +56,10 @@ private:
 
 	CTransform*			m_pParentTransform{ nullptr };
 	class C3DUITex*		m_pEffect{ nullptr };
-	
+	class CTextButtonColor* m_pShineEffect{ nullptr };
 
+public:
+	void Set_TargetNum(_uint iNum);
 
 public:
 	static CNumEffect* Create(_dev pDevice, _context pContext);

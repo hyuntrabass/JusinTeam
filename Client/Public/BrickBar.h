@@ -3,6 +3,7 @@
 #include "Client_Define.h"
 #include "GameObject.h"
 
+enum BAR_DIR{ BAR_LEFT, BAR_RIGHT, BAR_STOP, BAR_END };
 BEGIN(Client)
 
 class CBrickBar final : public CGameObject
@@ -31,6 +32,7 @@ private:
 	CTexture* m_pMaskTextureCom = { nullptr };
 
 private:
+	BAR_DIR					m_eCurDir{};
 	_bool					m_isColl{};
 	_uint					m_iCollNum{};
 
@@ -41,6 +43,7 @@ private:
 	_mat					m_EffectMatrix{};
 	class CEffect_Dummy*	m_pEffect_Ball{};
 
+	class CBrickCat*					m_pPet{ nullptr };
 public:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

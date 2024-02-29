@@ -149,30 +149,6 @@ HRESULT CLevel_GamePlay::Init()
 void CLevel_GamePlay::Tick(_float fTimeDelta)
 {
 
-	if (m_pGameInstance->Key_Down(DIK_B,InputChannel::Engine))
-	{
-		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-		CBalloon::BALLOON_DESC Desc{};
-		Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
-		_vec3 vPos = pPlayerTransform->Get_State(State::Pos);
-		vPos.y += 1.5f;
-		Desc.vPosition = vPos;
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Balloons"), TEXT("Prototype_GameObject_Balloon"), &Desc)))
-		{
-			return;
-		}
-		/*
-		
-		CEvent_Manager::Get_Instance()->Update_Quest(TEXT("몬스터 처치"));
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_BrickBall"), TEXT("Prototype_GameObject_BrickBall"))))
-		{
-			return;
-		}
-		*/
-	}
-
 	if (!m_bReadyTutorial)
 	{
 		m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.2f);
@@ -273,7 +249,7 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 	{
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_VILLAGE))))
 		{
-			return;
+			MSG_BOX("Failed to Open Level");
 		}
 
 		return;
@@ -849,12 +825,6 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	}
 	
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_InfinityTower"))))
-	{
-		return E_FAIL;
-	}
-	CBrickWall::WALL_DESC WallDesc{};
-	WallDesc.rcRect = { (_long)1.f, (_long)0.f, (_long)0.f, (_long)0.f };
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
 	{
 		return E_FAIL;
 	}

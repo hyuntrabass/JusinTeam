@@ -78,13 +78,14 @@ HRESULT CArrow::Init(void* pArg)
 	m_pTransformCom->LookAt_Dir(m_ArrowType.vLook);
 
 	TRAIL_DESC trail_desc{};
-	trail_desc.vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
-	if (m_ArrowType.Att_Type == AT_Bow_Skill2)
-	{
-		trail_desc.vColor = _color(1.f, 0.5f, 0.f);
-	}
+	trail_desc.vColor = _vec4(1.f);
+	trail_desc.vColor.w = 0.1f;
+	//if (m_ArrowType.Att_Type == AT_Bow_Skill2)
+	//{
+	//	trail_desc.vColor = _color(1.f, 0.5f, 0.f);
+	//}
 	trail_desc.vPSize = _vec2(0.02f, 0.02f);
-	trail_desc.iNumVertices = 10;
+	trail_desc.iNumVertices = 20;
 	m_pTrail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &trail_desc);
 	if (m_ArrowType.Att_Type == AT_Bow_Skill4)
 	{	
@@ -302,6 +303,7 @@ void CArrow::Tick(_float fTimeDelta)
 
 	_mat world{};
 	world = m_pTransformCom->Get_World_Matrix();
+	m_pTrail->On();
 	m_pTrail->Tick((world.Position_vec3()));
 	m_ParticleMatrix = m_pTransformCom->Get_World_Matrix();
 	//m_ParticleMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));

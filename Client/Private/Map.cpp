@@ -240,7 +240,10 @@ HRESULT CMap::Add_Components()
 
 	if (FAILED(__super::Add_Component(m_pGameInstance->Get_CurrentLevelIndex(), m_Info.Prototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	{
-		return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Info.Prototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+		{
+			return E_FAIL;
+		}
 	}
 	Add_Collider();
 	return S_OK;

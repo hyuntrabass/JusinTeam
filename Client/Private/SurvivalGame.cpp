@@ -21,7 +21,12 @@ HRESULT CSurvivalGame::Init_Prototype()
 
 HRESULT CSurvivalGame::Init(void* pArg)
 {
-	m_eCurPattern = PATTERN_INIT;
+	if (FAILED(Add_Components()))
+	{
+		return E_FAIL;
+	}
+
+	m_eCurStage = STAGE_INIT;
 
 	return S_OK;
 }
@@ -30,14 +35,18 @@ void CSurvivalGame::Tick(_float fTimeDelta)
 {
 	Init_Pattern(fTimeDelta);
 	Tick_Pattern(fTimeDelta);
+
 }
 
 void CSurvivalGame::Late_Tick(_float fTimeDelta)
 {
+	//m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 }
 
 HRESULT CSurvivalGame::Render()
 {
+	//m_pGameInstance->Render_Text(L"Font_Dialogue", m_strStage, _vec2(640.f, 100.f), 1.f, _vec4(1.f, 0.f, 0.f, 1.f));
+
 	return S_OK;
 }
 
@@ -45,38 +54,54 @@ void CSurvivalGame::Init_Pattern(_float fTimeDelta)
 {
 	CLauncher::LAUNCHER_TYPE eType = { CLauncher::TYPE_END };
 
-	if (m_ePrePattern != m_eCurPattern)
+	if (m_ePreStage != m_eCurStage)
 	{
-		switch (m_eCurPattern)
+		switch (m_eCurStage)
 		{
-		case Client::CSurvivalGame::PATTERN_INIT:
+		case Client::CSurvivalGame::STAGE_INIT:
 
 			m_fTime[0] = 0.f;
 			m_fTime[1] = 0.f;
 			m_iCount = 0;
 
 			break;
-		case Client::CSurvivalGame::PATTERN_RANDOM_MISSILE:
+		case Client::CSurvivalGame::STAGE01:
+			m_fTime[0] = 0.f;
+			m_fTime[1] = 0.f;
+			m_iCount = 0;
+
 			break;
-		case Client::CSurvivalGame::PATTERN_FLOOR:
+		case Client::CSurvivalGame::STAGE02:
+			m_fTime[0] = 0.f;
+			m_fTime[1] = 0.f;
+			m_iCount = 0;
+
 			break;
-		case Client::CSurvivalGame::PATTERN_GUIDED_MISSILE:
+		case Client::CSurvivalGame::STAGE03:
+			m_fTime[0] = 0.f;
+			m_fTime[1] = 0.f;
+			m_iCount = 0;
+
 			break;
-		case Client::CSurvivalGame::PATTERN_LASER:
+		case Client::CSurvivalGame::STAGE04:
+			m_fTime[0] = 0.f;
+			m_fTime[1] = 0.f;
+			m_iCount = 0;
+
 
 			eType = CLauncher::TYPE_LASER;
 			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Launcher"), TEXT("Prototype_GameObject_Launcher"), &eType);
 
 			break;
-		case Client::CSurvivalGame::PATTERN_PIZZA:
-			break;
-		case Client::CSurvivalGame::PATTERN_TANGHURU:
-			break;
-		case Client::CSurvivalGame::PATTERN_SUICIDE_MONSTER:
+		case Client::CSurvivalGame::STAGE05:
+			m_fTime[0] = 0.f;
+			m_fTime[1] = 0.f;
+			m_iCount = 0;
+
 			break;
 		}
 
-		m_ePrePattern = m_eCurPattern;
+		m_ePreStage = m_eCurStage;
 	}
 }
 
@@ -88,18 +113,24 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 	random_device dev;
 	_randNum RandomNumber(dev());
 
-	switch (m_eCurPattern)
+	switch (m_eCurStage)
 	{
-	case Client::CSurvivalGame::PATTERN_INIT:
+	case Client::CSurvivalGame::STAGE_INIT:
+
+		m_strStage = L"준비중";
 
 		if (m_pGameInstance->Key_Down(DIK_UP))
 		{
-			m_eCurPattern = PATTERN_TANGHURU;
+			m_eCurStage = STAGE03;
 		}
 
 		break;
 
-	case Client::CSurvivalGame::PATTERN_RANDOM_MISSILE:
+	case Client::CSurvivalGame::STAGE01:
+
+		m_strStage = L"스테이지 1";
+
+		//m_pGameInstance->Render_Text(L"Font_Dialogue", strStage, _vec2(640.f, 100.f), 1.f, _vec4(1.f, 0.f, 0.f, 1.f));
 
 		if (m_fTime[0] >= 3.f)
 		{
@@ -110,14 +141,16 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 			++m_iCount;
 		}
 
-		if (m_iCount >= 3)
+		if (m_iCount >= 5)
 		{
-			m_eCurPattern = PATTERN_INIT;
+			m_eCurStage = STAGE_INIT;
 		}
 
 		break;
 
-	case Client::CSurvivalGame::PATTERN_FLOOR:
+	case Client::CSurvivalGame::STAGE02:
+
+		m_strStage = L"스테이지 2";
 
 		if (m_fTime[0] >= 1.f)
 		{
@@ -143,12 +176,14 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 		if (m_iCount >= 5)
 		{
-			m_eCurPattern = PATTERN_INIT;
+			m_eCurStage = STAGE_INIT;
 		}
 
 		break;
 
-	case Client::CSurvivalGame::PATTERN_GUIDED_MISSILE:
+	case Client::CSurvivalGame::STAGE03:
+
+		m_strStage = L"스테이지 3";
 
 		if (m_fTime[0] >= 1.5f)
 		{
@@ -168,26 +203,27 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 			++m_iCount;
 		}
 
-		if (m_iCount >= 10)
+		if (m_iCount >= 4)
 		{
-			m_eCurPattern = PATTERN_INIT;
+			m_eCurStage = STAGE_INIT;
 		}
 
 		break;
 
-	case Client::CSurvivalGame::PATTERN_LASER:
+	case Client::CSurvivalGame::STAGE04:
 
-		if (m_pGameInstance->Key_Down(DIK_RIGHT))
+		if (m_fTime[0] >= 15.f)
 		{
-			m_eCurPattern = PATTERN_INIT;
+			m_eCurStage = STAGE_INIT;
 		}
 
+		m_strStage = L"스테이지 4";
+
 		break;
 
-	case Client::CSurvivalGame::PATTERN_PIZZA:
-		break;
+	case Client::CSurvivalGame::STAGE05:
 
-	case Client::CSurvivalGame::PATTERN_TANGHURU:
+		m_strStage = L"스테이지 5";
 
 		if (m_fTime[0] >= 0.3f)
 		{
@@ -217,14 +253,21 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 		if (m_iCount >= 30)
 		{
-			m_eCurPattern = PATTERN_INIT;
+			m_eCurStage = STAGE_INIT;
 		}
 
 		break;
-
-	case Client::CSurvivalGame::PATTERN_SUICIDE_MONSTER:
-		break;
 	}
+}
+
+HRESULT CSurvivalGame::Add_Components()
+{
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
 }
 
 CSurvivalGame* CSurvivalGame::Create(_dev pDevice, _context pContext)
@@ -256,4 +299,6 @@ CGameObject* CSurvivalGame::Clone(void* pArg)
 void CSurvivalGame::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pRendererCom);
 }

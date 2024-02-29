@@ -38,6 +38,8 @@ HRESULT CInteraction_Anim::Init_Prototype()
 
 HRESULT CInteraction_Anim::Init(void* pArg)
 {
+	m_iHP = 1;
+
 	m_Info = *(ObjectInfo*)pArg;
 	m_ePlaceType = (PlaceType)m_Info.m_iIndex;
 
@@ -121,8 +123,6 @@ HRESULT CInteraction_Anim::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_iHP = 1;
-
 	return S_OK;
 }
 
@@ -196,22 +196,26 @@ void CInteraction_Anim::Tick(_float fTimeDelta)
 
 		if (m_isAnimStart)
 		{
-			_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
-			_mat EffectMat = _mat::CreateTranslation(vPos);
-			EffectInfo EffectDesc{};
+			m_pEffect->Kill();
+		}
 
-			if (m_Info.strPrototypeTag == TEXT("Prototype_Model_GoldStone"))
-			{
-				EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Mineral_Parti_Diss");
-			}
-			else
-			{
-				EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Mineral_Parti_Blue_Diss");
-			}
+		if (m_pEffect->isDead())
+		{
+			Safe_Release(m_pEffect);
+		}
+	}
 
+	if (m_Info.strPrototypeTag == TEXT("Prototype_Model_TreasureBox") and m_iHP > 0)
+	{
+		if (m_pModelCom->Get_CurrentAnimPos() > 10.f)
+		{
+			_mat EffectMat = m_pTransformCom->Get_World_Matrix();
+			EffectMat.Position_vec3(EffectMat.Position_vec3() + _vec3(0.f, 0.5f, 0.f));
+			EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Chest_Parti");
 			EffectDesc.pMatrix = &EffectMat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
-			Safe_Release(m_pEffect);
+
+			m_iHP = 0;
 		}
 	}
 
