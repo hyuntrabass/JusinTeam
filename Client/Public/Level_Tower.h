@@ -5,11 +5,11 @@
 
 BEGIN(Client)
 
-class CLevel_Village final : public CLevel
+class CLevel_Tower final : public CLevel
 {
 private:
-	CLevel_Village(_dev pDevice, _context pContext);
-	virtual ~CLevel_Village() = default;
+	CLevel_Tower(_dev pDevice, _context pContext);
+	virtual ~CLevel_Tower() = default;
 
 public:
 	virtual HRESULT Init() override;
@@ -17,27 +17,12 @@ public:
 	virtual HRESULT Render() override;
 
 private:
-	HRESULT Ready_Camera();
 	HRESULT Ready_Light();
-	//HRESULT Ready_Player();
-
-	HRESULT Ready_Torch();
-	HRESULT Ready_Interaction();
-
-	HRESULT Ready_TreasureBox();
 
 private: // Monster, Boss
-	HRESULT Ready_Village_Monster();
-	HRESULT Ready_Dungeon_Monster();
-
-	HRESULT Ready_Groar_Boss();
-
 	HRESULT Ready_Human_Boss();
 
 private: // NPC
-	HRESULT Ready_NPC();
-	HRESULT Ready_NPC_Dummy();
-	HRESULT Ready_Statue();
 	HRESULT Ready_Guard();
 
 private: // SescoGame
@@ -50,14 +35,10 @@ private:
 	HRESULT Ready_DragonMap_Effect();
 
 private:
-	// Test
-	HRESULT Ready_Test(); 
-
-private:
 	HRESULT Ready_Trigger();
 
 public:
-	static CLevel_Village* Create(_dev pDevice, _context pContext);
+	static CLevel_Tower* Create(_dev pDevice, _context pContext);
 	virtual void Free() override;
 };
 

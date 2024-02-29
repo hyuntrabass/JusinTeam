@@ -505,6 +505,9 @@
     <Filter Include="02.GameObjects\16.SescoGame\VTFMonster\Larva">
       <UniqueIdentifier>{6de5bee6-1aae-49f5-b546-96ce84157a85}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Levels\05.Tower">
+      <UniqueIdentifier>{ef65bb23-86ec-4fe1-8e7b-8de643743cf4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1055,6 +1058,9 @@
     <ClInclude Include="..\Public\BrickCat.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Level_Tower.h">
+      <Filter>01.Levels\05.Tower</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1602,6 +1608,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\BrickCat.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Tower.cpp">
+      <Filter>01.Levels\05.Tower</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

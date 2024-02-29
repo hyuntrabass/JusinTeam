@@ -42,6 +42,7 @@ private:
 	HRESULT Load_Custom();
 	HRESULT Load_GamePlay();
 	HRESULT Load_Village();
+	HRESULT Load_Tower();
 
 public:
 	static CLoader* Create(_dev pDevice, _context pContext, LEVEL_ID eNextLevel);

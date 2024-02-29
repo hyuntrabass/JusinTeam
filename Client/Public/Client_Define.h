@@ -97,6 +97,7 @@ namespace Client
 		LEVEL_CUSTOM,
 		LEVEL_GAMEPLAY,
 		LEVEL_VILLAGE,
+		LEVEL_TOWER,
 		LEVEL_END
 	};
 
