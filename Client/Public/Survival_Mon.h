@@ -60,6 +60,13 @@ private:
 	CTexture* m_pDissolveTextureCom = { nullptr };
 
 private:
+	class CEffect_Dummy* m_pFrameEffect = { nullptr };
+	class CEffect_Dummy* m_pBaseEffect = { nullptr };
+
+	_mat m_UpdateMatrix = {};
+	_float m_fCircleRange = { 0.001f };
+
+private:
 	SURVIVAL_MON_TYPE m_eType = { TYPE_END };
 	wstring m_strModelTag = {};
 
@@ -75,6 +82,9 @@ private:
 private:
 	_bool m_bSpawned = { false };
 	_bool m_bExplode = { false };
+
+private:
+	_bool m_bCreateEffect = { false };
 
 public:
 	HRESULT Add_Components();

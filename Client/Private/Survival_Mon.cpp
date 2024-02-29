@@ -1,5 +1,8 @@
 #include "Survival_Mon.h"
 
+#include "Effect_Dummy.h"
+#include "Effect_Manager.h"
+
 CSurvival_Mon::CSurvival_Mon(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -44,6 +47,8 @@ HRESULT CSurvival_Mon::Init(void* pArg)
 
 		m_iPassIndex = AnimPass_Dissolve;
 
+
+
 		break;
 	}
 
@@ -85,6 +90,10 @@ void CSurvival_Mon::Tick(_float fTimeDelta)
 		vDir.y = 0.f;
 		_float fDistance = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Length();
 
+		m_UpdateMatrix = _mat::CreateScale(m_fCircleRange) * _mat::CreateRotationX(XMConvertToRadians(90.f))
+			* _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.1f, 0.f)));
+
+
 		if (m_pModelCom->IsAnimationFinished(ROAR))
 		{
 			m_bSpawned = true;
@@ -103,19 +112,69 @@ void CSurvival_Mon::Tick(_float fTimeDelta)
 
 			else
 			{
-				m_Animation.iAnimIndex = ATTACK01;
+				m_Animation.iAnimIndex = ATTACK01_H;
+				m_Animation.isLoop = false;
 				m_Animation.fDurationRatio = 0.371f;
 				m_Animation.fAnimSpeedRatio = 1.5f;
 
 				m_bExplode = true;
+
+				if (!m_bCreateEffect)
+				{
+					_mat FrameMatrix = _mat::CreateScale(3.7f) * _mat::CreateRotationX(XMConvertToRadians(90.f))
+						* _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.1f, 0.f)));
+
+					EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Frame");
+					Info.pMatrix = &FrameMatrix;
+					m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+					m_UpdateMatrix = _mat::CreateScale(m_fCircleRange) * _mat::CreateRotationX(XMConvertToRadians(90.f))
+						* _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.1f, 0.f)));
+
+					Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Base");
+					Info.pMatrix = &m_UpdateMatrix;
+					Info.isFollow = true;
+					m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+					m_bCreateEffect = true;
+				}
+
+				if (m_pFrameEffect && m_pBaseEffect)
+				{
+					if (m_fCircleRange <= 3.75f)
+					{
+						m_fCircleRange += 0.1f;
+					}
+
+					m_pFrameEffect->Tick(fTimeDelta);
+					m_pBaseEffect->Tick(fTimeDelta);
+				}
 			}
 		}
 
-		if (m_Animation.iAnimIndex == ATTACK01 && m_pModelCom->Get_CurrentAnimPos() >= 43.f)
+		if (m_pModelCom->IsAnimationFinished(ATTACK01_H))
 		{
 			Kill();
+
+			if (m_pFrameEffect && m_pBaseEffect)
+			{
+				Safe_Release(m_pFrameEffect);
+				Safe_Release(m_pBaseEffect);
+			}
+
 			// ÀÌÆåÆ® Ãß°¡
+			_mat FrameMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.1f, 0.f)));
+
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Explode_Mesh_Purple");
+			Info.pMatrix = &FrameMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Explode_Sphere_Purple");
+			Info.pMatrix = &FrameMatrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
 		}
+
 	}
 
 	break;
@@ -126,6 +185,12 @@ void CSurvival_Mon::Tick(_float fTimeDelta)
 
 void CSurvival_Mon::Late_Tick(_float fTimeDelta)
 {
+	if (m_pFrameEffect && m_pBaseEffect)
+	{
+		m_pFrameEffect->Late_Tick(fTimeDelta);
+		m_pBaseEffect->Late_Tick(fTimeDelta);
+	}
+
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
@@ -331,4 +396,7 @@ void CSurvival_Mon::Free()
 	Safe_Release(m_pShaderCom);
 
 	Safe_Release(m_pDissolveTextureCom);
+
+	Safe_Release(m_pFrameEffect);
+	Safe_Release(m_pBaseEffect);
 }
