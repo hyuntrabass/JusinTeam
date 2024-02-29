@@ -4,6 +4,7 @@
 #include "GameInstance.h"
 #include "Collider.h"
 #include "UI_Manager.h"
+#include "BrickBar.h"
 CBrickBall::CBrickBall(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -31,19 +32,16 @@ HRESULT CBrickBall::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-	m_fSpeed = 6.f;
-	m_pTransformCom->Set_Scale(_vec3(1.f, 1.f, 1.f));
+	m_fSpeed = 9.f;
+	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
 	m_pTransformCom->Set_Speed(m_fSpeed);
 
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-	_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-	vPlayerPos.y = 1.5f;
-	vPlayerPos.z -=1.f;
-	_vec4 vPlayerLook = pPlayerTransform->Get_State(State::Look);
-	vPlayerLook.y = 0.f;
-	//m_vDir = vPlayerLook;
-	m_pTransformCom->LookAt_Dir(vPlayerLook);
-	m_pTransformCom->Set_Position(vPlayerPos);
+	
+	_vec3 vPos = ((BALL_DESC*)pArg)->vPos;
+
+	m_pTransformCom->Set_Position(vPos);
+	_vec3 vNormal = _vec3(0.f, 0.f, -1.f);
+	m_pTransformCom->LookAt_Dir(vNormal);
 
 	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 
@@ -58,36 +56,21 @@ HRESULT CBrickBall::Init(void* pArg)
 	m_shouldRenderBlur = true;
 	m_eCurBrickColor = BLUE;
 
-	/*
-	PxCapsuleControllerDesc ControllerDesc{};
-	ControllerDesc.height = 0.4f; // 높이(위 아래의 반구 크기 제외
-	ControllerDesc.radius = 0.4f; // 위아래 반구의 반지름
-	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
-	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
-	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
-	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
-
-	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
-	*/
-
 
 	return S_OK;
 }
 
 void CBrickBall::Tick(_float fTimeDelta)
 {
+	m_fSpeed = 12.f;
 	Set_BallColor();
 
 	CUI_Manager::Get_Instance()->Set_BrickBallColor(m_eCurBrickColor);
 
 	m_fX += fTimeDelta;
-	if (m_pGameInstance->Key_Down(DIK_RETURN))
-	{
-		m_isDead = true;
-	}
 
 	_vec2 vCenterPos = _vec2(-2000.70496f, -1999.06152f);
-	_vec2 vSize = _vec2(20.f, 20.f);
+	_vec2 vSize = _vec2(32.f, 30.f);
 	RECT rcRect = {
 		  (LONG)(vCenterPos.x - vSize.x * 0.5f),
 		  (LONG)(vCenterPos.y - vSize.y * 0.5f),
@@ -114,7 +97,8 @@ void CBrickBall::Tick(_float fTimeDelta)
 	Check_Collision(fTimeDelta);
 	m_pTransformCom->Set_Speed(m_fSpeed);
 	m_pTransformCom->Go_Straight(fTimeDelta);
-	//_vec4 vPos = m_pTransformCom->Get_State(State::Pos) + m_vDir * fTimeDelta * 5.f;
+
+	//_vec4 vPos = m_pTransformCom->Get_State(State::Pos) + m_vDir * fTimeDelta * m_fSpeed;
 	//m_pTransformCom->Set_State(State::Pos, vPos);
 
 	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
@@ -238,7 +222,7 @@ void CBrickBall::RayCast()
 
 void CBrickBall::Check_Collision(_float fTimeDelta)
 {
-
+	m_isCombo = false;
 	Update_Collider();
 
 	CCollider* pCollider{ nullptr };
@@ -261,6 +245,7 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 
 	if (isColl && m_pCurCollider != pCollider)
 	{
+		m_isCombo = true;
 		m_pCurCollider = nullptr;
 		m_pCurCollider = pCollider;
 		_vec3 vNormal{};
@@ -299,11 +284,21 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 
 	if (isBarColl && m_pCurCollider != pBarCollider)
 	{
+		m_isCombo = true;
 		m_pCurCollider = nullptr;
 		m_pCurCollider = pBarCollider;
 		_vec3 vLook = m_pTransformCom->Get_State(State::Look);
 		_vec3 vNormal = pBarCollider->Get_Normal(m_pGameInstance->Get_CollideFace(pBarCollider, m_pColliderCom));
-		vNormal = vNormal = _vec4(0.f, 0.f, 1.f, 0.f);
+
+
+		if (CUI_Manager::Get_Instance()->Get_BarDir() == BAR_LEFT)
+		{
+			vNormal = _vec4(-0.2f, 0.f, 1.f, 0.f);
+		}
+		else if (CUI_Manager::Get_Instance()->Get_BarDir() == BAR_RIGHT)
+		{
+			vNormal =  _vec4(0.2f, 0.f, 1.f, 0.f);
+		}
 
 		vNormal.Normalize();
 		m_vDir = _vec3::Reflect(vLook, vNormal);
@@ -332,6 +327,7 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 
 	if (isBalloonColl && m_pCurCollider != pBalloonCollider)
 	{
+		m_isCombo = true;
 		m_pCurCollider = nullptr;
 		m_pCurCollider = pBalloonCollider;
 		_vec3 vLook = m_pTransformCom->Get_State(State::Look);

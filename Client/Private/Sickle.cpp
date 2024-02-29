@@ -52,11 +52,11 @@ void CSickle::Tick(_float fTimeDelta)
 		Kill();
 	}
 
-	m_EffectMatrices[0] = _mat::CreateScale(4.f)/* * _mat::CreateRotationY(XMConvertToRadians(m_fLifeTimer *-2000.f))*/ * m_pTransformCom->Get_World_Matrix();
+	m_EffectMatrices[0] = _mat::CreateScale(6.f) * _mat::CreateRotationY(XMConvertToRadians(m_fLifeTimer *-2000.f)) * m_pTransformCom->Get_World_Matrix();
 	m_EffectMatrices[1] = _mat::CreateScale(4.f) * m_pTransformCom->Get_World_Matrix();
 	m_EffectMatrices[2] = _mat::CreateScale(4.f) * m_pTransformCom->Get_World_Matrix();
 	
-	for (size_t i = 0; i < 3; i++)
+	for (size_t i = 0; i < 1; i++)
 	{
 		if (m_pEffects[i])
 		{
@@ -110,7 +110,7 @@ void CSickle::Tick(_float fTimeDelta)
 
 void CSickle::Late_Tick(_float fTimeDelta)
 {
-	for (size_t i = 0; i < 3; i++)
+	for (size_t i = 0; i < 1; i++)
 	{
 		if (m_pEffects[i])
 		{
@@ -147,15 +147,15 @@ HRESULT CSickle::Add_Components()
 	Info.isFollow = true;
 	m_pEffects[0] = pEffect_Manager->Clone_Effect(Info);
 
-	Info = pEffect_Manager->Get_EffectInformation(L"HumanBoss_Ring");
-	Info.pMatrix = &m_EffectMatrices[1];
-	Info.isFollow = true;
-	m_pEffects[1] = pEffect_Manager->Clone_Effect(Info);
+	//Info = pEffect_Manager->Get_EffectInformation(L"HumanBoss_Ring");
+	//Info.pMatrix = &m_EffectMatrices[1];
+	//Info.isFollow = true;
+	//m_pEffects[1] = pEffect_Manager->Clone_Effect(Info);
 
-	Info = pEffect_Manager->Get_EffectInformation(L"HumanBoss_Ring2");
-	Info.pMatrix = &m_EffectMatrices[2];
-	Info.isFollow = true;
-	m_pEffects[2] = pEffect_Manager->Clone_Effect(Info);
+	//Info = pEffect_Manager->Get_EffectInformation(L"HumanBoss_Ring2");
+	//Info.pMatrix = &m_EffectMatrices[2];
+	//Info.isFollow = true;
+	//m_pEffects[2] = pEffect_Manager->Clone_Effect(Info);
 
 
 	Safe_Release(pEffect_Manager);
@@ -202,7 +202,7 @@ void CSickle::Free()
 	__super::Free();
 
 	Safe_Release(m_pColliderCom);
-	for (size_t i = 0; i < 3; i++)
+	for (size_t i = 0; i < 1; i++)
 	{
 		Safe_Release(m_pEffects[i]);
 	}

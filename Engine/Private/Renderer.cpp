@@ -50,7 +50,12 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
-	//
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Glow"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	{
+		return E_FAIL;
+	}
+
 
 #pragma endregion
 
@@ -263,6 +268,11 @@ HRESULT CRenderer::Init_Prototype()
 	}
 
 	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Rim"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Glow"))))
 	{
 		return E_FAIL;
 	}
@@ -510,7 +520,10 @@ HRESULT CRenderer::Init_Prototype()
 	{
 		return E_FAIL;
 	}
-
+	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Glow"), _float2(50.f, 450.f), _float2(100.f, 100.f))))
+	{
+		return E_FAIL;
+	}
 	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Shade"), _float2(150.f, 50.f), _float2(100.f, 100.f))))
 	{
 		return E_FAIL;
@@ -1711,6 +1724,9 @@ HRESULT CRenderer::Render_Deferred()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_GlowTexture", L"Target_Glow")))
+		return E_FAIL;
+
 
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_SSAOTexture", TEXT("Target_SSAOBlur"))))
 	{
@@ -1991,6 +2007,9 @@ HRESULT CRenderer::Render_Distortion()
 
 HRESULT CRenderer::Render_NoneBlendFinal()
 {
+	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Glow"), L"MRT_BlurTest", 1.f)))
+		return E_FAIL;
+
 	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR_Sky")))
 		return E_FAIL;
 
@@ -2002,6 +2021,15 @@ HRESULT CRenderer::Render_NoneBlendFinal()
 		return E_FAIL;
 
 	if (FAILED(m_pShader->Begin(DefPass_JustDraw)))
+		return E_FAIL;
+
+	if (FAILED(m_pVIBuffer->Render()))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlendTexture", L"Target_BlurTest")))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Begin(DefPass_Blur)))
 		return E_FAIL;
 
 	if (FAILED(m_pVIBuffer->Render()))

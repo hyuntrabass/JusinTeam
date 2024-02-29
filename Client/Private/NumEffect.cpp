@@ -22,9 +22,9 @@ HRESULT CNumEffect::Init(void* pArg)
 {
 
 	m_bOrth = ((NUMEFFECT_DESC*)pArg)->bOrth;
-	m_fDepth = (_float)D_NAMETAG / (_float)D_END;
+	m_fDepth = (_float)D_WINDOW / (_float)D_END;
 
-	m_iDamage = ((NUMEFFECT_DESC*)pArg)->iDamage;
+	m_iCurNum = ((NUMEFFECT_DESC*)pArg)->iDamage;
 	m_vTextPosition = ((NUMEFFECT_DESC*)pArg)->vTextPosition;
 	//m_vColor = ((NAMETAG_DESC*)pArg)->vColor;HITEFFECT_DESC
 	m_pParentTransform = ((NUMEFFECT_DESC*)pArg)->pParentTransform;
@@ -33,38 +33,63 @@ HRESULT CNumEffect::Init(void* pArg)
 		Safe_AddRef(m_pParentTransform);
 	}
 
+	m_fX = m_vTextPosition.x;
+	m_fY = m_vTextPosition.y;
 
-	m_fSizeX = 300.f;
-	m_fSizeY = 300.f;
+	m_fSizeX = 40.f;
+	m_fSizeY = 40.f;
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}	
 
-	if (!m_bOrth)
+	CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
+	ColButtonDesc.eLevelID = LEVEL_STATIC;
+	ColButtonDesc.fDepth = m_fDepth - 0.01f;
+	ColButtonDesc.fAlpha = 1.;
+	ColButtonDesc.fFontSize = 0.f;
+	ColButtonDesc.strText = TEXT("");
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_Effect_FX_A_Shine003_Tex");
+	ColButtonDesc.strTexture2 = TEXT("Prototype_Component_Texture_Effect_FX_A_Shine003_Tex");
+	ColButtonDesc.vSize = _vec2(20.f, 10.f);
+	ColButtonDesc.vPosition = _vec2(m_fX, m_fY);
+
+	m_pShineEffect = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+	if (not m_pShineEffect)
 	{
-		C3DUITex::UITEX_DESC TexDesc = {};
-		TexDesc.eLevelID = LEVEL_STATIC;
-		TexDesc.pParentTransform = m_pParentTransform;
-		TexDesc.strTexture = TEXT("Prototype_Component_Texture_Effect_FX_A_Shine003_Tex");
-		TexDesc.vPosition = _vec3(m_vTextPosition.x, m_vTextPosition.y, -0.01f);
-		TexDesc.vSize = _vec2(40.f, 40.f);
+		return E_FAIL;
+	}
+	m_pShineEffect->Set_Pass(VTPass_Mask_Texture);
 
-		m_pEffect = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &TexDesc);
-		if (not m_pEffect)
+	m_vColor = _vec4(0.94f, 0.34f, 0.1f, 1.f);
+	
+	return S_OK;
+}
+
+void CNumEffect::Tick(_float fTimeDelta)
+{
+	if (m_isChanging)
+	{
+		if (m_fSizeX <= 40.f)
 		{
-			return E_FAIL;
-		}
-		m_pEffect->Set_Pass(VTPass_Mask_Color);
-
+			m_isChanging = false;
+			m_fSizeX = 40.f;
+			m_fSizeY = 40.f;
+			m_fAlpha = 1.f;
+			return;
+		}		
+		m_fAlpha = Lerp(0.f, 1.f, (300.f - m_fSizeX) / 300.f);
+		m_fSizeX -= 300.f * fTimeDelta;
+		m_fSizeY -= 300.f * fTimeDelta;
 	}
 
-
-	if (m_iDamage >= 5.f)
+	/*
+	
+	if (m_iCurNum >= 5.f)
 	{
 		m_vColor = _vec4(0.94f, 0.34f, 0.1f, 1.f);
 	}
-	else if (m_iDamage >= 10.f)
+	else if (m_iCurNum >= 10.f)
 	{
 		m_vColor = _vec4(1.f, 0.8f, 0.f, 1.f);
 	}
@@ -72,60 +97,26 @@ HRESULT CNumEffect::Init(void* pArg)
 	{
 		m_vColor.w = 0.f;
 	}
-	
-	return S_OK;
-}
-
-void CNumEffect::Tick(_float fTimeDelta)
-{
-	if (m_fSizeX <= 100.f)
+	*/
+	m_vColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	if (m_isEffect)
 	{
-		m_fTime += fTimeDelta;
-		if (m_fTime >= 0.2f && m_fAlpha <= 0.f)
-		{
-			m_isDead = true;
-		}
-		if (m_fTime >= 0.5f)
-		{
-
-			m_fAlpha -= 2.f * fTimeDelta;
-			m_vTextPosition.y += 2.f * fTimeDelta;
-		}
-		else
-		{
-			m_vTextPosition.y += 0.2f * fTimeDelta;
-		}
-	}
-	else
-	{
-		m_fSizeX -= 300.f * fTimeDelta;
-		m_fSizeY -= 300.f * fTimeDelta;
-		m_fAlpha = Lerp(0.f, 1.f, (300.f - m_fSizeX) / 300.f);
-	}
-
-	if (!m_bOrth)
-	{
-		if (m_pEffect->Get_Size().y >= 140.f)
+		if (m_pShineEffect->Get_Size().y >= 120.f)
 		{
 			m_isEffect = false;
 		}
-		if (m_fAlpha >= 0.2f && m_isEffect)
-		{
-			m_pEffect->Set_Size(m_pEffect->Get_Size().x + 12.f, m_pEffect->Get_Size().y + 8.f);
-		}
-		m_pEffect->Tick(fTimeDelta);
+		m_pShineEffect->Set_Size(m_pShineEffect->Get_Size().x + 40.f, m_pShineEffect->Get_Size().y + 30.f);
+		m_pShineEffect->Tick(fTimeDelta);
 	}
 
 }
 
 void CNumEffect::Late_Tick(_float fTimeDelta)
 {
-	if (!m_bOrth)
+	if (m_isEffect)
 	{
-		if (m_fAlpha >= 0.2f && m_isEffect)
-		{
-			m_pEffect->Late_Tick(fTimeDelta);
-		}
+
+			m_pShineEffect->Late_Tick(fTimeDelta);
 	}
 
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
@@ -152,7 +143,7 @@ HRESULT CNumEffect::Render()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", m_iDamage % 10)))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", m_iCurNum % 10)))
 	{
 		return E_FAIL;
 	}
@@ -168,7 +159,7 @@ HRESULT CNumEffect::Render()
 	}
 
 	// 10ÀÚ¸® ¼ö.
-	if (m_iDamage > 9)
+	if (m_iCurNum > 9)
 	{
 		if (!m_bOrth)
 		{
@@ -189,7 +180,7 @@ HRESULT CNumEffect::Render()
 		{
 			return E_FAIL;
 		}
-		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", (m_iDamage % 100) / 10)))
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", (m_iCurNum % 100) / 10)))
 		{
 			return E_FAIL;
 		}
@@ -205,7 +196,7 @@ HRESULT CNumEffect::Render()
 		}
 
 		// 100ÀÚ¸® ¼ö.
-		if (m_iDamage > 99)
+		if (m_iCurNum > 99)
 		{
 			if (!m_bOrth)
 			{
@@ -225,7 +216,7 @@ HRESULT CNumEffect::Render()
 			{
 				return E_FAIL;
 			}
-			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", m_iDamage / 100)))
+			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", m_iCurNum / 100)))
 			{
 				return E_FAIL;
 			}
@@ -241,6 +232,8 @@ HRESULT CNumEffect::Render()
 
 		}
 	}
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("ÄÞº¸"), _vec2(m_fX + 50.f + 1.f, m_fY + 1.f), 0.5f, _vec4(0.f, 0.f, 0.f, 1.f));
+	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("ÄÞº¸"), _vec2(m_fX + 50.f, m_fY), 0.5f, _vec4(1.f, 1.f, 1.f, 1.f));
 
 	return S_OK;
 }
@@ -288,11 +281,31 @@ HRESULT CNumEffect::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}	
+	
+	m_fAlpha = 1.f;
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof _float)))
 	{
 		return E_FAIL;
 	}
+	
 	return S_OK;
+}
+
+void CNumEffect::Set_TargetNum(_uint iNum)
+{
+	if (m_iCurNum != iNum)
+	{
+		m_iCurNum = iNum;
+		m_iTargetNum = m_iCurNum;
+		if (m_iCurNum >= 10)
+		{
+			m_fSizeX = 100.f;
+			m_fSizeY = 100.f;
+			m_isChanging = true;
+		}
+		m_pShineEffect->Set_Size(20.f, 10.f);
+		m_isEffect = true;
+	}
 }
 
 CNumEffect* CNumEffect::Create(_dev pDevice, _context pContext)
@@ -327,6 +340,7 @@ void CNumEffect::Free()
 
 	Safe_Release(m_pEffect);
 	Safe_Release(m_pParentTransform);
+	Safe_Release(m_pShineEffect);
 
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);

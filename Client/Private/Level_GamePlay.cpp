@@ -174,7 +174,6 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		}
 		*/
 	}
-
 	if (m_pGameInstance->Key_Down(DIK_NUMPADMINUS, InputChannel::Engine))
 	{
 		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
@@ -201,7 +200,6 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 			return;
 		}
 	}
-
 	if (!m_bReadyTutorial)
 	{
 		m_pGameInstance->PlayBGM(TEXT("Prologue_BGM_Loop"), 0.2f);
@@ -878,12 +876,6 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	}
 	
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_InfinityTower"))))
-	{
-		return E_FAIL;
-	}
-	CBrickWall::WALL_DESC WallDesc{};
-	WallDesc.rcRect = { (_long)1.f, (_long)0.f, (_long)0.f, (_long)0.f };
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
 	{
 		return E_FAIL;
 	}

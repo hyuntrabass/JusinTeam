@@ -1,4 +1,5 @@
 #include "CommonTrail.h"
+#include "Camera_Manager.h"
 
 CCommonTrail::CCommonTrail(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
@@ -57,6 +58,11 @@ HRESULT CCommonTrail::Init(void* pArg)
 
 void CCommonTrail::Tick(_float3 vPos)
 {
+	if (CCamera_Manager::Get_Instance()->Get_CameraModeIndex() == CM_DEBUG)
+	{
+		return;
+	}
+
 	if (m_bNoRender and m_fDissolveRatio < 1.f)
 	{
 		return;
@@ -86,7 +92,7 @@ void CCommonTrail::Late_Tick(_float fTimeDelta)
 	for (size_t i = 0; i < m_Info.iNumVertices; i++)
 	{
 		XMStoreFloat3(&m_PosArray[i], m_pTransformCom->Get_State(State::Pos));
-		m_ColorArray[i] = _float4(m_Info.vColor.x, m_Info.vColor.y, m_Info.vColor.z, Saturate((1.f - static_cast<_float>(i) / m_Info.iNumVertices) - m_fDissolveRatio));
+		m_ColorArray[i] = _float4(m_Info.vColor.x, m_Info.vColor.y, m_Info.vColor.z, max(0.f, Lerp(m_Info.vColor.w, 0.f, static_cast<_float>(i) / m_Info.iNumVertices) - m_fDissolveRatio));
 	}
 
 	_uint iIndex{};

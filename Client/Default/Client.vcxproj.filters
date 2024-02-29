@@ -1024,8 +1024,6 @@
     <ClInclude Include="..\Public\Pop_Reward.h">
       <Filter>02.GameObjects\00.UI\POPUP</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\CescoGame.h" />
-    <ClInclude Include="..\Public\Scorpion.h" />
     <ClInclude Include="..\Public\Guard.h">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
     </ClInclude>
@@ -1041,12 +1039,24 @@
     <ClInclude Include="..\Public\RedAnt.h">
       <Filter>02.GameObjects\16.SescoGame\VTFMonster\RedAnt</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Log.h" />
     <ClInclude Include="..\Public\Survival_Mon.h" />
-    <ClInclude Include="..\Public\GlowCube.h" />
-    <ClInclude Include="..\Public\Hook.h" />
-    <ClInclude Include="..\Public\GuardTower.h">
-      <Filter>02.GameObjects\07. NPC\06. GuardTower</Filter>
+    <ClInclude Include="..\Public\GlowCube.h">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CescoGame.h">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Hook.h">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Log.h">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Scorpion.h">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BrickCat.h">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1562,8 +1572,6 @@
     <ClCompile Include="..\Private\Pop_Reward.cpp">
       <Filter>02.GameObjects\00.UI\POPUP</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\CescoGame.cpp" />
-    <ClCompile Include="..\Private\Scorpion.cpp" />
     <ClCompile Include="..\Private\Guard.cpp">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
     </ClCompile>
@@ -1579,12 +1587,24 @@
     <ClCompile Include="..\Private\RedAnt.cpp">
       <Filter>02.GameObjects\16.SescoGame\VTFMonster\RedAnt</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Log.cpp" />
     <ClCompile Include="..\Private\Survival_Mon.cpp" />
-    <ClCompile Include="..\Private\GlowCube.cpp" />
-    <ClCompile Include="..\Private\Hook.cpp" />
-    <ClCompile Include="..\Private\GuardTower.cpp">
-      <Filter>02.GameObjects\07. NPC\06. GuardTower</Filter>
+    <ClCompile Include="..\Private\GlowCube.cpp">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CescoGame.cpp">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Hook.cpp">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Log.cpp">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Scorpion.cpp">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BrickCat.cpp">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
