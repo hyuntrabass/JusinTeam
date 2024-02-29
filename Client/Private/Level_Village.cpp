@@ -85,12 +85,6 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_Human_Boss()))
-	{
-		MSG_BOX("Failed to Ready HumanBoss");
-		return E_FAIL;
-	}
-
 	if (FAILED(Ready_NPC()))
 	{
 		MSG_BOX("Failed to Ready NPC");
@@ -105,18 +99,6 @@ HRESULT CLevel_Village::Init()
 	if (FAILED(Ready_Trigger()))
 	{
 		MSG_BOX("Failed to Ready Trigger");
-		return E_FAIL;
-	}
-
-	if (FAILED(Ready_Test()))
-	{
-		MSG_BOX("Failed to Ready Test");
-		return E_FAIL;
-	}
-
-	if (FAILED(Ready_Survival_Game()))
-	{
-		MSG_BOX("Failed to Ready Survival Game");
 		return E_FAIL;
 	}
 
