@@ -390,6 +390,16 @@ HRESULT CArrow::Render()
 					HasMaskTex = true;
 				}
 
+				_bool HasGlowTex{};
+				if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_GlowTexture", i, TextureType::Specular)))
+				{
+					HasGlowTex = false;
+				}
+				else
+				{
+					HasGlowTex = true;
+				}
+
 				if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
 				{
 					return E_FAIL;
@@ -399,6 +409,12 @@ HRESULT CArrow::Render()
 				{
 					return E_FAIL;
 				}
+
+				if (FAILED(m_pShaderCom->Bind_RawValue("g_HasGlowTex", &HasGlowTex, sizeof _bool)))
+				{
+					return E_FAIL;
+				}
+
 				if (FAILED(m_pShaderCom->Begin(StaticPass_Default)))
 				{
 					return E_FAIL;

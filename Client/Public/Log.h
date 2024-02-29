@@ -46,6 +46,7 @@ private:
 	CTexture* m_pDissolveTextureCom = { nullptr };
 
 private:
+	_randNum m_RandomNumber;
 	STATE m_eState{ State_End };
 	STATE m_ePreState{ State_End };
 
