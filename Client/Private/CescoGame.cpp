@@ -91,6 +91,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
 		VTFMonsterDesc.strModelTag = TEXT("Prototype_VTFModel_Scorpion");
 		VTFMonsterDesc.vPosition = m_SpawnPositions[0];
+		VTFMonsterDesc.vPosition.z -= 1.f;
 		VTFMonsterDesc.pPlayerTransform = m_pPlayerTransform;
 		CVTFMonster* pScorpion = reinterpret_cast<CVTFMonster*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Scorpion_Object"), &VTFMonsterDesc));
 		m_Monsters.push_back(pScorpion);
@@ -98,6 +99,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 		VTFMonsterDesc = {};
 		VTFMonsterDesc.strModelTag = TEXT("Prototype_VTFModel_Redant");
 		VTFMonsterDesc.vPosition = m_SpawnPositions[1];
+		VTFMonsterDesc.vPosition.z += 1.f;
 		VTFMonsterDesc.pPlayerTransform = m_pPlayerTransform;
 		CVTFMonster* pRedAnt = reinterpret_cast<CVTFMonster*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_RedAnt_Object"), &VTFMonsterDesc));
 		m_Monsters.push_back(pRedAnt);
@@ -108,7 +110,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 
 #pragma endregion
 
-#pragma region SpawnCOVID19 // ÄÚ·Î³ª
+#pragma region SpawnLarva
 
 	if (m_iMonsterSpawnCount % 10 == 1 && m_fMonsterSpawnTime == 0.f)
 	{
