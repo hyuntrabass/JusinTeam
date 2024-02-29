@@ -120,11 +120,6 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_BrickBar"), TEXT("Prototype_GameObject_BrickBar"))))
-	{
-		return E_FAIL;
-	}
-
 	// 분수 큰물
 	_mat FountainMat = _mat::CreateScale(2.6f) * _mat::CreateRotationZ(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(-25.292f, 12.821f, 116.395f));
 	EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Water_Base");
@@ -177,15 +172,7 @@ HRESULT CLevel_Village::Init()
 
 void CLevel_Village::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_B))
-	{
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_BrickBall"), TEXT("Prototype_GameObject_BrickBall"))))
-		{
-			return;
-		}
-
-	}
+	
 	if (m_pGameInstance->Key_Down(DIK_END))
 	{
 		CTrigger_Manager::Get_Instance()->Teleport(TS_Dungeon);

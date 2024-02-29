@@ -10,6 +10,8 @@
 #include "InfinityTower.h"
 #include "NumEffect.h"
 #include "BrickWall.h"
+#include "BrickBar.h"
+#include "BrickBall.h"
 
 //const _float CBrickGame::m_iRow = 7;
 //const _float CBrickGame::m_iCOl = 7;
@@ -57,10 +59,7 @@ void CBrickGame::Tick(_float fTimeDelta)
 	_vec4 vPos = pPlayerTransform->Get_State(State::Pos);
 	if (!m_isActive && CUI_Manager::Get_Instance()->Get_CurrentMiniGame() == (TOWER)BRICK)
 	{
-		CCamera_Manager::Get_Instance()->Set_CameraState(CS_BRICKGAME);
-		CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
-		m_isActive = true;
-		CTrigger_Manager::Get_Instance()->Teleport(TS_Minigame);
+		Init_Game();
 	}
 
 	if (!m_isActive)
@@ -72,17 +71,6 @@ void CBrickGame::Tick(_float fTimeDelta)
 		return;
 	}
 
-
-	if (m_iCombo > 0 && m_pGameInstance->Get_LayerSize(LEVEL_VILLAGE, TEXT("Layer_BrickBall")) == 0)
-	{
-		m_iCombo = 0;
-	}
-	if (m_fComboTime >= 1.5f)
-	{
-		m_iCombo = 0;
-		m_fComboTime = 0.f;
-	}
-
 	if (m_isActive && m_pGameInstance->Key_Down(DIK_PGUP))
 	{
 		CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
@@ -90,6 +78,41 @@ void CBrickGame::Tick(_float fTimeDelta)
 		CUI_Manager::Get_Instance()->Open_InfinityTower(true);
 		return;
 	}
+
+	if ((m_pBall && m_pBall->Is_Dead()) || (m_pBall && m_pGameInstance->Key_Down(DIK_RETURN)))
+	{
+		Safe_Release(m_pBall);
+		return;
+	}
+
+	if (not m_pBall && m_pGameInstance->Key_Down(DIK_B, InputChannel::GamePlay)) //나중에는 space 해제
+	{
+		m_iCombo = 0;
+		CBrickBall::BALL_DESC Desc{};
+		CTransform* pTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_BrickBar"), TEXT("Com_Transform"));
+		_vec3 vPos = pTransform->Get_State(State::Pos);
+		Desc.vPos = _vec3(vPos.x, vPos.y, vPos.z - 2.f);
+		m_pBall = (CBrickBall*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BrickBall"), &Desc);
+		if (not m_pBall)
+		{
+			return;
+		}
+	}
+	if(m_fComboTime > 2.f || not m_pBall)
+	{
+		m_iCombo = 0;
+		m_fComboTime = 0.f;
+	}
+
+	if (m_pBall)
+	{
+		if (m_pBall->Is_Combo() && m_fComboTime <= 2.f)
+		{
+			m_fComboTime = 0.f;
+			m_iCombo++;
+		}
+	}
+
 	/*
 	
 	for (size_t i = 0; i < BRICKROW; i++)
@@ -115,6 +138,16 @@ void CBrickGame::Tick(_float fTimeDelta)
 			}
 		}
 	}*/
+	m_pBackGround->Tick(fTimeDelta);
+	if (m_pBall)
+	{
+		m_pBall->Tick(fTimeDelta);
+	}
+	if (m_pCombo)
+	{
+		m_pCombo->Set_TargetNum(m_iCombo);
+		m_pCombo->Tick(fTimeDelta);
+	}
 }
 
 void CBrickGame::Late_Tick(_float fTimeDelta)
@@ -138,6 +171,14 @@ void CBrickGame::Late_Tick(_float fTimeDelta)
 		}
 	}*/
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	if (m_pBall)
+	{
+		m_pBall->Late_Tick(fTimeDelta);
+	}
+	if (m_pCombo)
+	{
+		m_pCombo->Late_Tick(fTimeDelta);
+	}
 }
 
 HRESULT CBrickGame::Render()
@@ -179,14 +220,14 @@ HRESULT CBrickGame::Add_Parts()
 	}
 	*/
 
-	_vec3 vStartPos = _vec3(-1994.24585f, 1.5f, -2006.11536f);
+	_vec3 vStartPos = _vec3(-1990.f, 1.5f, -2005.11536f);
 	for (_uint i = 0; i < BRICKROW; i++)
 	{
 		for (_uint j = 0; j < BRICKCOL; j++)
 		{
 			CBalloon::BALLOON_DESC Desc{};
 			Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
-			Desc.vPosition = _vec3(vStartPos.x - 2.2f * j, vStartPos.y, vStartPos.z + 2.2f * i);
+			Desc.vPosition = _vec3(vStartPos.x - 3.5f * j, vStartPos.y, vStartPos.z + 3.5f * i);
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Balloons"), TEXT("Prototype_GameObject_Balloon"), &Desc)))
 			{
@@ -215,6 +256,17 @@ HRESULT CBrickGame::Add_Parts()
 	{
 		return E_FAIL;
 	}
+
+	CNumEffect::NUMEFFECT_DESC NumDesc{};
+	NumDesc.bOrth = true;
+	NumDesc.iDamage = 0;
+	NumDesc.vTextPosition = _vec2((_float)g_ptCenter.x - 5.f, 40.f);
+	m_pCombo = (CNumEffect*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_NumEffect"), &NumDesc);
+	if (not m_pCombo)
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -230,6 +282,35 @@ HRESULT CBrickGame::Add_Components()
 HRESULT CBrickGame::Bind_ShaderResources()
 {
 	return S_OK;
+}
+
+void CBrickGame::Init_Game()
+{
+	CCamera_Manager::Get_Instance()->Set_CameraState(CS_BRICKGAME);
+	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
+	m_isActive = true;
+	CTrigger_Manager::Get_Instance()->Teleport(TS_Minigame);
+
+	if (m_pGameInstance->Get_LayerSize(LEVEL_VILLAGE, TEXT("Layer_BrickBar")) == 0)
+	{
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_BrickBar"), TEXT("Prototype_GameObject_BrickBar"))))
+		{
+			return;
+		}
+	}
+	if (m_pBall == nullptr)
+	{
+		CBalloon::BALLOON_DESC Desc{};
+		CTransform* pTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_BrickBar"), TEXT("Com_Transform"));
+		_vec3 vPos = pTransform->Get_State(State::Pos);
+		Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
+		Desc.vPosition = _vec3(vPos.x, vPos.y, vPos.z - 2.f);
+		m_pBall = (CBrickBall*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BrickBall"), &Desc);
+		if (not m_pBall)
+		{
+			return;
+		}
+	}
 }
 
 CBrickGame* CBrickGame::Create(_dev pDevice, _context pContext)
@@ -258,6 +339,28 @@ CGameObject* CBrickGame::Clone(void* pArg)
 	return pInstance;
 }
 
+CComponent* CBrickGame::Find_Component(const wstring& strComTag)
+{
+	if (strComTag == TEXT("BrickBall"))
+	{
+		if (not m_pBall)
+		{
+			return nullptr;
+		}
+		return m_pBall->Get_BrickBallCollider();
+	}
+	else
+	{
+		auto& it = m_Components.find(strComTag);
+		if (it == m_Components.end())
+		{
+			return nullptr;
+		}
+
+		return it->second;
+	}
+}
+
 void CBrickGame::Free()
 {
 	__super::Free();
@@ -273,6 +376,8 @@ void CBrickGame::Free()
 		}
 	}
 
+	Safe_Release(m_pBall);
+	Safe_Release(m_pCombo);
 	Safe_Release(m_pBackGround);
 	Safe_Release(m_pRendererCom);
 }

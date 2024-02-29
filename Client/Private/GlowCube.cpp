@@ -31,17 +31,18 @@ HRESULT CGlowCube::Init(void* pArg)
 	m_pParentTransform = ((GLOWCUBE_DESC*)pArg)->pParentTransform;
 	Safe_AddRef(m_pParentTransform);
 
-	m_pTransformCom->Set_Scale(_vec3(0.5f, 0.5f, 0.5f));
+	m_pTransformCom->Set_Scale(_vec3(1.2f, 1.2f, 1.2f));
 	m_pTransformCom->Set_State(State::Pos, m_pParentTransform->Get_State(State::Pos) + m_vPos);
 
+	m_shouldRenderBlur = true;
 	return S_OK;
 }
 
 void CGlowCube::Tick(_float fTimeDelta)
 {
 	m_fX += fTimeDelta * 0.2f;
-	m_shouldRenderBlur = true;
-	m_pTransformCom->Set_Scale(_vec3(0.5f, 0.5f, 0.5f));
+
+
 	m_pTransformCom->Set_State(State::Pos, m_pParentTransform->Get_State(State::Pos) + m_vPos);
 }
 
@@ -74,7 +75,7 @@ HRESULT CGlowCube::Render()
 			return E_FAIL;
 		}
 
-		_bool isBlur = false;
+		_bool isBlur = true;
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_isBlur", &isBlur, sizeof _bool)))
 		{
 			return E_FAIL;
@@ -92,7 +93,7 @@ HRESULT CGlowCube::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(StaticPass_SingleColorFx)))
+		if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffect)))
 		{
 			return E_FAIL;
 		}

@@ -51,8 +51,6 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
-	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) override;
-
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
@@ -83,6 +81,7 @@ private:
 
 	_vec4 m_vColor{};
 
+	class CGlowCube* m_pCube{ nullptr };
 public:
 	const _bool& Is_Coll() const { return m_isColl; }
 

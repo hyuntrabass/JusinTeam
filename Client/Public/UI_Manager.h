@@ -11,6 +11,7 @@
 #include "InfinityTower.h"
 #include "Player.h"
 #include "Balloon.h"
+#include "BrickBar.h"
 
 BEGIN(Engine)
 class CGameInstance;
@@ -166,8 +167,12 @@ public:
 	const BrickColor& Get_BrickBallColor() const { return m_eBrickBallColor; }
 
 	void Set_HitEffect(CTransform* pTransform, _uint iDamage, _vec2 vTextPos, ATTACK_TYPE eType, _bool isPlayer = false);
+	
+	void Set_BarDir(BAR_DIR eDir) { m_eCurBarDir = eDir; }
+	BAR_DIR Get_BarDir() { return m_eCurBarDir; }
 
 private:
+	BAR_DIR			m_eCurBarDir{BAR_STOP};
 	_uint			m_iCurrentMiniGame{(_uint)TOWER_END};
 	PART_TYPE		m_eChangedPart{ PT_END };
 	MOUSESTATE		m_eMouseState{ M_DEFAULT };
