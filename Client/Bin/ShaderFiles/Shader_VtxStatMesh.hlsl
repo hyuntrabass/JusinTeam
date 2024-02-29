@@ -7,6 +7,7 @@ texture2D g_MaskTexture;
 texture2D g_CloudTexture;
 texture2D g_DissolveTexture;
 texture2D g_GradationTexture;
+Texture2D g_GlowTexture;
 
 vector g_vColor;
 float g_fAlpha;
@@ -17,6 +18,7 @@ float g_fLightFar;
 float g_fDissolveRatio;
 bool g_HasNorTex;
 bool g_HasMaskTex;
+bool g_HasGlowTex;
 bool g_bSelected = false;
 
 
@@ -215,6 +217,7 @@ struct PS_OUT_DEFERRED
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
     vector vRimMask : SV_Target3;
+    vector vGlow : SV_Target4;
 };
 
 struct PS_OUT
@@ -263,6 +266,10 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
         vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
+    vector vGlow = 0.f;
+    if (g_HasGlowTex)
+        vGlow = g_GlowTexture.Sample(LinearSampler, Input.vTex);
+    
     float2 Velocity = Input.vProjPos.xy / Input.vProjPos.w - Input.vOldPos.xy / Input.vOldPos.w;
     
     float2 vCalDir;
@@ -272,6 +279,7 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, vCalDir.x, vCalDir.y);
+    Output.vGlow = vGlow;
     
     return Output;
 }
@@ -319,6 +327,10 @@ PS_OUT_DEFERRED PS_Main_AlphaTest(PS_IN Input)
         vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
+    vector vGlow = 0.f;
+    if (g_HasGlowTex)
+        vGlow = g_GlowTexture.Sample(LinearSampler, Input.vTex);
+    
     float2 Velocity = Input.vProjPos.xy / Input.vProjPos.w - Input.vOldPos.xy / Input.vOldPos.w;
     
     float2 vCalDir;
@@ -329,6 +341,7 @@ PS_OUT_DEFERRED PS_Main_AlphaTest(PS_IN Input)
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, vCalDir.x, vCalDir.y);
+    Output.vGlow = vGlow;
     
     return Output;
 }
@@ -542,6 +555,7 @@ PS_WATER_OUT PS_Main_Water(PS_WATER_IN Input)
     {
         vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
+
     
     float2 Velocity = Input.vProjPos.xy / Input.vProjPos.w - Input.vOldPos.xy / Input.vOldPos.w;
     
@@ -553,6 +567,7 @@ PS_WATER_OUT PS_Main_Water(PS_WATER_IN Input)
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, vCalDir.x, vCalDir.y);
+    
     return Output;
 }
 
@@ -586,6 +601,10 @@ PS_OUT_DEFERRED PS_Main_Rim(PS_IN Input)
         vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
+    vector vGlow = 0.f;
+    if (g_HasGlowTex)
+        vGlow = g_GlowTexture.Sample(LinearSampler, Input.vTex);
+    
     float3 vToCamera = normalize(g_vCamPos - Input.vWorldPos).xyz;
     
     float fRim = smoothstep(0.5f, 1.f, 1.f - max(0.f, dot(vNormal, vToCamera)));
@@ -603,6 +622,7 @@ PS_OUT_DEFERRED PS_Main_Rim(PS_IN Input)
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, vCalDir.x, vCalDir.y);
     Output.vRimMask = vRimColor;
+    Output.vGlow = vGlow;
     
     return Output;
 }
@@ -777,6 +797,10 @@ PS_OUT_DEFERRED PS_Main_Dissolve(PS_IN Input)
         vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
+    vector vGlow = 0.f;
+    if (g_HasGlowTex)
+        vGlow = g_GlowTexture.Sample(LinearSampler, Input.vTex);
+    
     float2 Velocity = (Input.vProjPos.xy / Input.vProjPos.w) - (Input.vOldPos.xy / Input.vOldPos.w);
     
     float2 vCalDir;
@@ -786,6 +810,7 @@ PS_OUT_DEFERRED PS_Main_Dissolve(PS_IN Input)
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, vMask.b);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, vCalDir.x, vCalDir.y);
+    Output.vGlow = vGlow;
     
     return Output;
 }

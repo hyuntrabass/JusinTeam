@@ -2,8 +2,8 @@
 #include "Client_Define.h"
 #include "OrthographicObject.h"
 #include "Riding.h"
-#define BRICKCOL 6
-#define BRICKROW 6
+#define BRICKCOL 7
+#define BRICKROW 4
 
 BEGIN(Client)
 class CBrickGame final : public CGameObject
@@ -35,12 +35,20 @@ private:
 	_int										m_iSoundChannel = -1;
 
 	_float										m_fComboTime{};
+	_float										m_fTimeLimit{};
 
 	class CBalloon*								m_pBalloon[BRICKROW][BRICKCOL]{};
 	LIGHT_DESC									m_Light_Desc{};
 	CGameObject*								m_pBackGround{nullptr};
+	class CNumEffect*							m_pCombo{ nullptr };
+
+	class CBrickBall*							m_pBall{ nullptr };
+
+public:
+	class CComponent* Find_Component(const wstring& strComTag) override;
 
 private:
+	void Init_Game();
 	HRESULT Add_Parts();
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

@@ -500,7 +500,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 	if (m_pPlayer)
 	{
 		ImGui::Begin("ANIMATION MENU");
-		ImGui::PushItemWidth(300.f);
+		ImGui::PushItemWidth(350.f);
 #pragma region ImGuizmo
 		/*ImGui::RadioButton("STATE", &m_iManipulateType, TYPE_STATE); ImGui::SameLine();
 		ImGui::RadioButton("RESET", &m_iManipulateType, TYPE_RESET);
@@ -813,7 +813,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				ImGui::End();
 
 				ImGui::Begin("TRIGGER MENU");
-				ImGui::PushItemWidth(300.f);
+				ImGui::PushItemWidth(350.f);
 
 				//이펙트 이름 띄우기
 				vector<TRIGGEREFFECT_DESC> EffectDescs = pCurModel->Get_TriggerEffects();
@@ -976,7 +976,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			if (pCurModel->Get_NumTriggerSound() != 0 && m_eTriggerType == TRIGGER_SOUND)
 			{
 				ImGui::Begin("TRIGGER MENU");
-				ImGui::PushItemWidth(300.f);
+				ImGui::PushItemWidth(350.f);
 
 				vector<TRIGGERSOUND_DESC> SoundDescs = pCurModel->Get_TriggerSounds();
 				//사운드 이름 띄우기
@@ -1294,7 +1294,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 				ImGui::End();
 
 				ImGui::Begin("TRIGGER MENU");
-				ImGui::PushItemWidth(300.f);
+				ImGui::PushItemWidth(350.f);
 
 				//이펙트 이름 띄우기
 				vector<TRIGGEREFFECT_DESC> EffectDescs = pCurModel->Get_TriggerEffects();
@@ -1457,7 +1457,7 @@ HRESULT CImgui_Manager::ImGuiMenu()
 			if (pCurModel->Get_NumTriggerSound() != 0 && m_eTriggerType == TRIGGER_SOUND)
 			{
 				ImGui::Begin("TRIGGER MENU");
-				ImGui::PushItemWidth(300.f);
+				ImGui::PushItemWidth(350.f);
 
 				CModel* pCurModel = m_pPlayer->Get_CurrentModel();
 				vector<TRIGGERSOUND_DESC> SoundDescs = pCurModel->Get_TriggerSounds();

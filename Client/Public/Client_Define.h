@@ -301,6 +301,8 @@ namespace Client
 		MonAtt_Stun,
 		MonAtt_Poison,
 		MonAtt_Pull,
+		MonAtt_Hook,
+		MonAtt_Hook_End,
 		MonAtt_End
 	};
 #pragma endregion

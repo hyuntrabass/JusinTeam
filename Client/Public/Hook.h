@@ -11,7 +11,7 @@ public:
 	typedef struct tagLogDesc
 	{
 		_mat WorldMatrix{};
-
+		_vec4 vLookat{};
 	}HOOK_DESC;
 
 private:
@@ -26,6 +26,11 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+public:
+	_bool Get_Dragging() { return m_bDragging; }
+	_bool Get_HadCollision() { return m_bHadCollision; }
+	void Set_Dragging(_bool bDrag) {m_bDragging = bDrag;}
+	_vec4 Get_Position();
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
@@ -35,6 +40,9 @@ private:
 
 private:
 	_float m_fLifeTime{};
+	_bool m_bDragging{};
+	_bool m_bHadCollision{};
+
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

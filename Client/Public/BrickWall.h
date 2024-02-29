@@ -3,7 +3,7 @@
 #include "Client_Define.h"
 #include "GameObject.h"
 
-
+#define MAXCOLOR 3
 BEGIN(Client)
 
 
@@ -38,17 +38,20 @@ private:
 
 
 private:
-
-	_float m_fX{};
-	_float m_fDir = {1.f};
-	_float m_fDissolveRatio = {0.5f};
-
 	_bool m_isColl{};
 	_bool m_bParticle{};
 	_bool m_bDamaged = { false };
 	_bool m_isBlur = { false };
 
+	_uint m_iNextColor{};
+
+	_float m_fX{};
+	_float m_fDir = {1.f};
+	_float m_fDissolveRatio = {0.5f};
+	_float m_fColorTime = {};
+
 	_vec4 m_vColor{};
+	_vec4 m_Colors[MAXCOLOR]{};
 	//_vec3 m_vNormals[DIR_END]{};
 
 	RECT				m_rcRect{};

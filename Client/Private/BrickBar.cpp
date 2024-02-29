@@ -1,8 +1,11 @@
 ﻿#include "BrickBar.h"
 #include "Effect_Dummy.h"
 #include "Effect_Manager.h"
+#include "UI_Manager.h"
 #include "GameInstance.h"
 #include "Collider.h"
+#include "BrickCat.h"
+
 CBrickBar::CBrickBar(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -30,76 +33,60 @@ HRESULT CBrickBar::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+
 	m_fSpeed = 5.f;
-	m_pTransformCom->Set_Scale(_vec3(1.f, 1.f, 0.5f));
+	m_pTransformCom->Set_Scale(_vec3(1.f, 0.5f, 0.5f));
 	m_pTransformCom->Set_Speed(m_fSpeed);
 
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 	vPlayerPos.y += 1.f; 
-	_vec4 vCenterPos = _vec4(-2000.70496f, 1.4677677f, -1992.06152f, 1.f);
+	_vec4 vCenterPos = _vec4(-2000.70496f, 1.4677677f, -1987.06152f, 1.f);
 	_vec4 vPlayerLook = pPlayerTransform->Get_State(State::Look);
 	vPlayerLook.y = 0.f;
 
-	//m_pTransformCom->LookAt_Dir(vPlayerLook);
 	m_pTransformCom->Set_State(State::Pos, vCenterPos);
-
-	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
-
-	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BrickArrow");
-	Info.pMatrix = &m_EffectMatrix;
-	Info.isFollow = true;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 	m_pColliderCom->Set_Normal();
 	m_vColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	/*
-	PxBoxControllerDesc ControllerDesc{};
+	m_shouldRenderBlur = true;
 
-	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
-	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
-	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
-	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
-	ControllerDesc.halfHeight = 0.8f;
-	ControllerDesc.halfSideExtent = 0.8f;
-	ControllerDesc.halfForwardExtent = 0.2f;
-	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
+
+	/*
+	m_pPet = (CPet_Cat*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Pet_Cat"));
+	if (m_pPet == nullptr)
+	{
+		return E_FAIL;
+	}
 	*/
-	//
 	return S_OK;
 }
 
 void CBrickBar::Tick(_float fTimeDelta)
 {
-	m_shouldRenderBlur = true;
-	m_pColliderCom->Change_Extents(_vec3(1.f, 1.f, 1.f));
+	m_eCurDir = BAR_STOP;
+
+	m_pTransformCom->Set_Scale(_vec3(2.f, 0.5f, 0.3f));
 	if (m_pGameInstance->Key_Pressing(DIK_LEFT))
 	{
+		m_eCurDir = BAR_LEFT;
 		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
-		vPos.x += fTimeDelta * 5.f; 
+		vPos.x += fTimeDelta * 10.f; 
 		m_pTransformCom->Set_State(State::Pos, vPos);
 	}
 	if (m_pGameInstance->Key_Pressing(DIK_RIGHT))
 	{
+		m_eCurDir = BAR_RIGHT;
 		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
-		vPos.x -= fTimeDelta * 5.f; 
+		vPos.x -= fTimeDelta * 10.f; 
 		m_pTransformCom->Set_State(State::Pos, vPos);
 	}
 
 	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
-	_vec4 vPosCol = m_pColliderCom->Get_ColliderPos();
-	
-	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 
 	Update_Collider();
 
-	if (m_pEffect_Ball)
-	{
-		m_pEffect_Ball->Tick(fTimeDelta);
-	}
-
-	
-
+	CUI_Manager::Get_Instance()->Set_BarDir(m_eCurDir);
 	return;
 
 
@@ -108,13 +95,7 @@ void CBrickBar::Tick(_float fTimeDelta)
 void CBrickBar::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
-	/*
-	if (m_pEffect_Ball)
-	{
-		m_pEffect_Ball->Late_Tick(fTimeDelta);
-	}
-	*/
-
+	
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
 #endif
@@ -169,7 +150,7 @@ HRESULT CBrickBar::Add_Collider()
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::AABB;
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
-	CollDesc.vExtents = _vec3(0.1f, 0.2f, 0.1f);
+	CollDesc.vExtents = _vec3(1.f, 0.5f, 1.f);
 	CollDesc.vCenter = _vec3(0.f, 0.f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
