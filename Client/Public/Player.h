@@ -270,6 +270,7 @@ public:
 		Climb_D,
 		Climb_L,
 		Climb_R,
+		Hook,
 		Swim_Idle,
 		Swim,
 		Swim_collect,
@@ -293,7 +294,7 @@ public:
 		_int Max_Hp{ 1000 };
 		_int Max_Mp{ 500 };
 		_int Current_Mp{ 500 };
-		_int Attack{ 70 };
+		_int Attack{ 60 };
 		_int Critical{ 10 };	// 기본 치명타 확률 10 (10퍼센트 확률로 기본 공격력 대신 기본공격력의 Critical_Dmg % 가 들어감)
 		_int Critical_Dmg{ 150 }; // 기본 치명타데미지 150( 기본 데미지에 추가50퍼센트 피해)
 		_int Armor{}; // 방어력이 10일때 받는 데미지 10퍼센트 줄여줌(90퍼만 받음)

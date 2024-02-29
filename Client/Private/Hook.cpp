@@ -20,10 +20,12 @@ HRESULT CHook::Init(void* pArg)
     if (pArg)
     {
         HOOK_DESC* pLogDesc = reinterpret_cast<HOOK_DESC*>(pArg);
-
         m_pTransformCom->Set_Matrix(pLogDesc->WorldMatrix);
+        _vec4 vLook = pLogDesc->vLookat;
+        vLook.w = 0.f;
+        m_pTransformCom->LookAt_Dir(vLook);
     }
-
+    m_pTransformCom->Set_Speed(10.f);
     if (FAILED(Add_Components()))
         return E_FAIL;
 
@@ -34,12 +36,22 @@ void CHook::Tick(_float fTimeDelta)
 {
     m_fLifeTime += fTimeDelta;
 
-    if (m_fLifeTime >= 10.f)
+    if (m_fLifeTime >= 6.f)
     {
         Kill();
     }
-
+    m_pTransformCom->Go_Straight(fTimeDelta);
     m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+
+    m_bHadCollision = false;
+
+    if (!m_bHadCollision)
+    {
+        if (m_pGameInstance->Attack_Player(m_pBodyColliderCom, 0, MonAtt_Hook))
+        {
+            m_bHadCollision = true;
+        }
+    }
 }
 
 void CHook::Late_Tick(_float fTimeDelta)
@@ -120,6 +132,11 @@ HRESULT CHook::Render()
         }
     }
     return S_OK;
+}
+
+_vec4 CHook::Get_Position()
+{
+    return m_pTransformCom->Get_State(State::Pos);
 }
 
 HRESULT CHook::Add_Components()

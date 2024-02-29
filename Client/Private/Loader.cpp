@@ -1993,11 +1993,22 @@ HRESULT CLoader::Load_Village()
 				continue;
 			}
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
-
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			if (strPrototypeTag == TEXT("Prototype_Model_Hook"))
 			{
-				return E_FAIL;
+				Pivot = _mat::CreateRotationY(XMConvertToRadians(90.f));
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(),false, Pivot))))
+				{
+					return E_FAIL;
+				}
 			}
+			else
+			{
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+				{
+					return E_FAIL;
+				}
+			}
+		
 		}
 	}
 

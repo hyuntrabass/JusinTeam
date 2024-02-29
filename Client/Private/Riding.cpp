@@ -116,7 +116,7 @@ HRESULT CRiding::Init(void* pArg)
 			m_eState = Riding_Idle;
 			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Tiger");
 			m_fRunSpeed = 12.f;
-			m_fJumpPower = 15.f;
+			m_fJumpPower = 12.f;
 			m_fRadialMaxPower = 1.f;
 			m_pCam_Manager->Set_RidingZoom(true);
 		}
