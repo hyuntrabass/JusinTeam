@@ -1,7 +1,6 @@
 #include "CescoGame.h"
 #include "VTFMonster.h"
 #include "Log.h"
-#include "Hook.h"
 
 CCescoGame::CCescoGame(_dev pDevice, _context pContext)
 	:CGameObject(pDevice, pContext)
@@ -191,6 +190,43 @@ void CCescoGame::Tick(_float fTimeDelta)
 		pMonster->Tick(fTimeDelta);
 	}
 
+	for (auto& pHook : m_vecHooks)
+	{
+		pHook->Tick(fTimeDelta);
+	}
+	m_bHadDragging = false;
+
+	_bool bDrag{};
+	_bool bCollision{};
+
+	for (auto& pHooks : m_vecHooks)
+	{
+		if (pHooks->Get_Dragging())
+		{
+			bDrag = true;
+			break;
+		}
+	}
+
+	if (!bDrag)
+	{
+		for (auto& pHooks : m_vecHooks)
+		{
+				
+			if (pHooks->Get_HadCollision())
+			{
+				m_pCurrent_DraggingHook = pHooks;
+				pHooks->Set_Dragging(true);
+				break;
+			}
+		}
+	}
+
+	if (m_pCurrent_DraggingHook)
+	{
+		m_pPlayerTransform->Set_Position(_vec3(m_pCurrent_DraggingHook->Get_Position()));
+	}
+
 	Release_DeadObjects();
 }
 
@@ -200,6 +236,11 @@ void CCescoGame::Late_Tick(_float fTimeDelta)
 	{
 		pMonster->Late_Tick(fTimeDelta);
 	}
+
+	for (auto& pHook : m_vecHooks)
+	{
+		pHook->Late_Tick(fTimeDelta);
+	}
 }
 
 HRESULT CCescoGame::Create_Hook()
@@ -207,39 +248,35 @@ HRESULT CCescoGame::Create_Hook()
 	CHook::HOOK_DESC HookDesc{};
 	_randInt RandomDir(0, 3);
 	_randInt RandomCount(1, 3);
+	_randInt RandomCountNum(1, 7);
 
-	
-
-	HookDesc.WorldMatrix = _mat::CreateScale(1.f, 2.f, 1.f);
+	HookDesc.WorldMatrix = _mat::CreateScale(2.f, 2.f, 1.5f);
 
 	for (int i = 0; i < 2; i++)
 	{
 		_int iDirNum = RandomDir(m_RandomNumber);
 		vector<int> vecHookPos;
-		_vec3 vSpawnPos = m_SpawnPositions[iDirNum];
 		_int iCountNum = RandomCount(m_RandomNumber);
-		_vec3 vHookPos = vSpawnPos;
+		_vec3 vSpawnPos = m_SpawnPositions[iDirNum];
+		
 		switch (iDirNum)
 		{
-		
 		case 0:	//À§
 		{
 			while (iCountNum < 4)
 			{
-				_vec3 vSpawnPos = m_SpawnPositions[iDirNum];
 				_vec3 vHookPos = vSpawnPos;
-				_int iPosNum = RandomCount(m_RandomNumber);
+				_int iPosNum = RandomCountNum(m_RandomNumber);
 				vector<int>::iterator it = std::find(vecHookPos.begin(), vecHookPos.end(), iPosNum);
 				if (it == vecHookPos.end())
 				{
 					vecHookPos.push_back(iPosNum);
-					vHookPos.x = vSpawnPos.x - 20.f + 10.f * iPosNum;
+					vHookPos.x = vSpawnPos.x - 20.f + 6.f * iPosNum;
 					vHookPos.y += 1.f;
 					HookDesc.WorldMatrix.Position_vec3(vHookPos);
-					if (FAILED(m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Hook"), TEXT("Prototype_GameObject_Hook_Object"), &HookDesc)))
-					{
-						return E_FAIL;
-					}
+					HookDesc.vLookat = _vec4(0.f, 0.f, -1.f, 1.f);
+					CHook* pHook = dynamic_cast<CHook*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Hook_Object"), &HookDesc));
+					m_vecHooks.push_back(pHook);
 					iCountNum++;
 				}
 			}
@@ -249,18 +286,18 @@ HRESULT CCescoGame::Create_Hook()
 		{
 			while (iCountNum < 5)
 			{
-				_int iPosNum = RandomCount(m_RandomNumber);
+				_int iPosNum = RandomCountNum(m_RandomNumber);
+				_vec3 vHookPos = vSpawnPos;
 				vector<int>::iterator it = std::find(vecHookPos.begin(), vecHookPos.end(), iPosNum);
 				if (it == vecHookPos.end())
 				{
 					vecHookPos.push_back(iPosNum);
-					vHookPos.x = vSpawnPos.x - 20.f + 10.f * iPosNum;
+					vHookPos.x = vSpawnPos.x - 20.f + 6.f * iPosNum;
 					vHookPos.y += 1.f;
 					HookDesc.WorldMatrix.Position_vec3(vHookPos);
-					if (FAILED(m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Hook"), TEXT("Prototype_GameObject_Hook_Object"), &HookDesc)))
-					{
-						return E_FAIL;
-					}
+					HookDesc.vLookat = _vec4(0.f, 0.f, 1.f, 1.f);
+					CHook* pHook = dynamic_cast<CHook*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Hook_Object"), &HookDesc));
+					m_vecHooks.push_back(pHook);
 					iCountNum++;
 				}
 			}
@@ -270,48 +307,48 @@ HRESULT CCescoGame::Create_Hook()
 		{
 			while (iCountNum < 5)
 			{
-				_int iPosNum = RandomCount(m_RandomNumber);
+				_int iPosNum = RandomCountNum(m_RandomNumber);
+				_vec3 vHookPos = vSpawnPos;
 				vector<int>::iterator it = std::find(vecHookPos.begin(), vecHookPos.end(), iPosNum);
 				if (it == vecHookPos.end())
 				{
 					vecHookPos.push_back(iPosNum);
-					vHookPos.x = vSpawnPos.z - 20.f + 10.f * iPosNum;
+					vHookPos.z = vSpawnPos.z - 20.f + 6.f * iPosNum;
 					vHookPos.y += 1.f;
 					HookDesc.WorldMatrix.Position_vec3(vHookPos);
-					if (FAILED(m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Hook"), TEXT("Prototype_GameObject_Hook_Object"), &HookDesc)))
-					{
-						return E_FAIL;
-					}
+					HookDesc.vLookat = _vec4(-1.f, 0.f, 0.f, 1.f);
+					CHook* pHook = dynamic_cast<CHook*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Hook_Object"), &HookDesc));
+					m_vecHooks.push_back(pHook);
 					iCountNum++;
 				}
 			}
-		break;
+			break;
 		}
-		case 3:	//¾Æ·¡		
+		case 3:	//¿ÞÂÊ		
 		{
 			while (iCountNum < 5)
 			{
-				_int iPosNum = RandomCount(m_RandomNumber);
+				_int iPosNum = RandomCountNum(m_RandomNumber);
+				_vec3 vHookPos = vSpawnPos;
 				vector<int>::iterator it = std::find(vecHookPos.begin(), vecHookPos.end(), iPosNum);
 				if (it == vecHookPos.end())
 				{
 					vecHookPos.push_back(iPosNum);
-					vHookPos.x = vSpawnPos.z - 20.f + 10.f * iPosNum;
+					vHookPos.z = vSpawnPos.z - 20.f + 6.f * iPosNum;
 					vHookPos.y += 1.f;
 					HookDesc.WorldMatrix.Position_vec3(vHookPos);
-					if (FAILED(m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Hook"), TEXT("Prototype_GameObject_Hook_Object"), &HookDesc)))
-					{
-						return E_FAIL;
-					}
+					HookDesc.vLookat = _vec4(1.f,0.f,0.f,1.f);
+					CHook* pHook = dynamic_cast<CHook*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Hook_Object"), &HookDesc));
+					m_vecHooks.push_back(pHook);
 					iCountNum++;
 				}
 			}
-		break;
+			break;
 		}
 	}
 }
-		
-	
+
+	return S_OK;
 }
 
 void CCescoGame::Release_DeadObjects()
@@ -326,6 +363,24 @@ void CCescoGame::Release_DeadObjects()
 			}
 			Safe_Release(*it);
 			it = m_Monsters.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+
+	for (auto& it = m_vecHooks.begin(); it != m_vecHooks.end();)
+	{
+		if ((*it)->isDead())
+		{
+			if (m_pCurrent_DraggingHook == *it)
+			{
+				m_pCurrent_DraggingHook = nullptr;
+				m_pGameInstance->Attack_Player(nullptr, 0, MonAtt_Hook_End);
+			}
+			Safe_Release(*it);
+			it = m_vecHooks.erase(it);
 		}
 		else
 		{
@@ -369,6 +424,12 @@ void CCescoGame::Free()
 		Safe_Release(pMonster);
 	}
 	m_Monsters.clear();
+
+	for (auto& pHook: m_vecHooks)
+	{
+		Safe_Release(pHook);
+	}
+	m_vecHooks.clear();
 
 	m_LarvaPositions.clear();
 

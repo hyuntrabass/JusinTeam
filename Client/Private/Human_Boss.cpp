@@ -40,12 +40,13 @@ HRESULT CHuman_Boss::Init(void* pArg)
 	ControllerDesc.stepOffset = 0.01f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyCollider);
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
-	m_pTransformCom->Set_Position(_vec3(-3017.f, -1.f, -3000.f));
+	m_pTransformCom->Set_Position(_vec3(-2998.008f, -0.200f, -3006.094f));
+	m_pTransformCom->LookAt_Dir(_vec4(-0.997f, 0.f, -0.042f, 0.f));
 	m_pTransformCom->Set_Speed(3.f);
 	m_iPassIndex = AnimPass_DissolveNoCull;
 	m_iWeaponPassIndex = AnimPass_Dissolve;
 	m_iHP = 100;
-	m_eState = Idle; 
+	m_eState = Spwan;
 	return S_OK;
 }
 
@@ -65,8 +66,7 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD9, InputChannel::UI))
 	{
-		m_pTransformCom->Set_Position(_vec3(-2998.008f, -0.200f, -3006.094f));
-		m_pTransformCom->LookAt_Dir(_vec4(-0.997f, 0.f, -0.042f, 0.f));
+	
 		m_eState = Pizza_Start;
 	}
 
@@ -122,6 +122,16 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 
 void CHuman_Boss::Late_Tick(_float fTimeDelta)
 {
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_BossRoom)
+	{
+		return;
+	}
+
+	if (CCamera_Manager::Get_Instance()->Get_CameraState() == CS_INVEN)
+	{
+		return;
+	}
+
 	if (m_pFrameEffect)
 	{
 		m_pFrameEffect->Late_Tick(fTimeDelta);
@@ -298,6 +308,13 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 		m_bLeftPattern = false;
 		switch (m_eState)
 		{
+		case Client::CHuman_Boss::Spwan:
+		{
+			m_Animation.iAnimIndex = BossAnim_Spawn;
+			m_Animation.fAnimSpeedRatio = 1.7f;
+
+		}
+		break;
 		case Client::CHuman_Boss::CommonAtt0:
 		{
 			_vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
@@ -407,8 +424,6 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 			m_fPatternDelay = 0.f;
 			break;
 		case Client::CHuman_Boss::Die:
-			break;
-		case Client::CHuman_Boss::Spwan:
 			break;
 		default:
 			break;
@@ -529,6 +544,10 @@ void CHuman_Boss::Tick_State(_float fTimeDelta)
 		}
 		break;
 	case Spwan:
+		if (m_pModelCom->IsAnimationFinished(BossAnim_Spawn))
+		{
+			m_eState = Idle;
+		}
 		break;
 	default:
 		break;
@@ -1055,7 +1074,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			Safe_Release(m_pDimEffect);
 			Safe_Release(m_pFrameEffect);
 			CCollider* pPlayerCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
-			CCollider* pSafeZoneCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_SafeZone"), TEXT("Com_SafeZone_Collider"));
+			CCollider* pSafeZoneCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_SafeZone"), TEXT("Com_SafeZone_Coll"));
 			if (m_bReflectOn)
 			{
 				if (!pPlayerCollider->Intersect(pSafeZoneCollider))

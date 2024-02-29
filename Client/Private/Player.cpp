@@ -1270,7 +1270,11 @@ HRESULT CPlayer::Add_Riding()
 void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 {
 	m_bMove_AfterSkill = true;
-
+	if (MonAttType == MonAtt_Hook_End)
+	{
+		m_eState = Jump_End;
+		return;
+	}
 	if (m_eState == Revival_Start or m_eState == Revival_End or m_eState == Die)
 	{
 		return;
@@ -1293,8 +1297,15 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 		return;
 
 	}
-
-
+	
+	if (MonAttType == MonAtt_Hook)
+	{
+		if (m_eState != Hook)
+		{
+			m_eState = Hook;
+		}
+		return;
+	}
 	m_Status.Current_Hp -= (iDamage - iDamage * (_int)(m_Status.Armor / 0.01));
 
 
@@ -1537,6 +1548,10 @@ void CPlayer::Health_Regen(_float fTImeDelta)
 
 void CPlayer::Move(_float fTimeDelta)
 {
+	if (m_eState == Hook)
+	{
+		return;
+	}
 	_bool hasMoved{};
 	_vec4 vForwardDir = m_pGameInstance->Get_CameraLook();
 	vForwardDir.y = 0.f;
@@ -2309,7 +2324,7 @@ void CPlayer::Skill1_Attack()
 		m_Animation.isLoop = false;
 		m_hasJumped = false;
 		m_iSuperArmor = { 1.f };
-		m_Animation.fAnimSpeedRatio = 2.7f;
+		m_Animation.fAnimSpeedRatio = 5.f;
 		m_Animation.fDurationRatio = 0.8f;
 	}
 	m_bAttacked = false;
@@ -3348,16 +3363,6 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		switch (m_iAttackCombo)
 		{
 		case 1:
-			if (Index >= 0.f && Index <= 5.f)
-			{
-				if (m_fRadialPower < 1.f)
-				{
-					m_fRadialPower += fTimeDelta * 3.f;
-					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
-				}
-				m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.5f, 0.5f));
-			}
-	
 			if (Index >= 4.f && Index <= 5.f && !m_bLockOn)
 			{
 				Cam_AttackZoom(2.5f);
@@ -3377,15 +3382,6 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		
 			break;
 		case 2:
-			if (Index >= 0.f && Index <= 5.f)
-			{
-				if (m_fRadialPower < 1.f)
-				{
-					m_fRadialPower += fTimeDelta * 3.f;
-					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
-				}
-				m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.5f, 0.5f));
-			}
 			if (Index >= 5.f && Index <= 6.f && !m_bLockOn)
 			{
 				m_fAttackZoom += 0.7f;
@@ -3403,15 +3399,6 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 			}
 			break;
 		case 3:
-			if (Index >= 0.f && Index <= 7.f)
-			{
-				if (m_fRadialPower < 1.f)
-				{
-					m_fRadialPower += fTimeDelta * 3.f;
-					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
-				}
-				m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.5f, 0.5f));
-			}
 			if (Index >= 6.f && Index <= 7.f)
 			{
 				m_fAttackZoom += 0.7f;
@@ -3428,15 +3415,6 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 			}
 			break;
 		case 4:
-			if (Index >= 0.f && Index <= 2.f)
-			{
-				if (m_fRadialPower < 1.f)
-				{
-					m_fRadialPower += fTimeDelta * 3.f;
-					m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
-				}
-				m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.5f, 0.5f));
-			}
 			if (Index >= 5.f && Index <= 6.f)
 			{
 				m_fAttackZoom += 0.7f;
@@ -3489,7 +3467,7 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 			Create_Arrow(AT_Bow_Skill1);
 			m_ReadyArrow = false;
 		}
-		else if (Index >= 55.f && Index <= 57.f)
+		else if (Index >= 60.f && Index <= 63.f)
 		{
 			m_pRendererCom->Set_RadialBlur_Power(0.f);
 		}
@@ -4025,6 +4003,15 @@ void CPlayer::Init_State()
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
 			m_iSuperArmor = {};
+		}
+		break;
+		case Client::CPlayer::Hook:
+		{
+			m_Animation.iAnimIndex = Anim_jump_loop;
+			m_Animation.isLoop = true;
+			m_Animation.fAnimSpeedRatio = 2.f;
+			m_hasJumped = true;
+			m_bReadyMove = false;	
 		}
 		break;
 		case Client::CPlayer::Attack:
