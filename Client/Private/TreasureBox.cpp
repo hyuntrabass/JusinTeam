@@ -9,7 +9,7 @@
 #include "TextButtonColor.h"
 #include "TextButton.h"
 #include "Pop_Reward.h"
-
+#include "Effect_Manager.h"
 
 CTreasureBox::CTreasureBox(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -75,6 +75,9 @@ HRESULT CTreasureBox::Init(void* pArg)
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 	m_pTransformCom->Set_Position(_vec3(vPos));
 	m_pTransformCom->Set_Speed(1.f);
+
+	m_iHP = 1;
+
 	return S_OK;
 }
 
@@ -126,7 +129,13 @@ void CTreasureBox::Tick(_float fTimeDelta)
 			CUI_Manager::Get_Instance()->Set_Collect();
 			m_isCollect = true;
 		}
+		m_pShaderCom->Set_PassIndex(VTF_InstPass_OutLine);
 	}
+	else
+	{
+		m_pShaderCom->Set_PassIndex(VTF_InstPass_Default);
+	}
+
 	if (m_isWideCollision)
 	{
 		dynamic_cast<CNameTag*>(m_pNameTag)->Tick(fTimeDelta);
@@ -157,6 +166,16 @@ void CTreasureBox::Tick(_float fTimeDelta)
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
+	if (m_pModelCom->Get_CurrentAnimPos() > 10.f and m_iHP > 0)
+	{
+		_mat EffectMat = m_pTransformCom->Get_World_Matrix();
+		EffectMat.Position_vec3(EffectMat.Position_vec3() + _vec3(0.f, 0.5f, 0.f));
+		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Chest_Parti");
+		EffectDesc.pMatrix = &EffectMat;
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+
+		m_iHP = 0;
+	}
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);

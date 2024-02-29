@@ -687,18 +687,15 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				CTreasureBox::TREASURE_DESC Desc{};
 				_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
 				Desc.vPos = vPos;
-				vector <pair<wstring, _uint>> vecItem;
-				vecItem.push_back(make_pair(TEXT("[신화]신비한 알"), 1));
-				vecItem.push_back(make_pair(TEXT("그로아 남편의 팔찌"), 1));
-				vecItem.push_back(make_pair(TEXT("레긴레이프의 불멸 투구"), 1));
-				vecItem.push_back(make_pair(TEXT("레긴레이프의 불멸 갑옷"), 1));
-				Desc.vecItem = vecItem;
+				Desc.vecItem.push_back(make_pair(TEXT("[신화]신비한 알"), 1));
+				Desc.vecItem.push_back(make_pair(TEXT("그로아 남편의 팔찌"), 1));
+				Desc.vecItem.push_back(make_pair(TEXT("레긴레이프의 불멸 투구"), 1));
+				Desc.vecItem.push_back(make_pair(TEXT("레긴레이프의 불멸 갑옷"), 1));
 				Desc.eDir = CTreasureBox::RIGHT;
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Temp"), TEXT("Prototype_GameObject_TreasureBox"), &Desc)))
 				{
 					return;
 				}
-				vecItem.clear();
 				m_isReward = true;
 			}
 		}
