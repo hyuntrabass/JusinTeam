@@ -15,7 +15,7 @@ public:
 	const _bool& isDead() const { return m_isDead; }
 	const _int& Get_HP() const { return m_iHP; }
 	_int Get_ID() { return m_iID; }
-	void Kill() { m_isDead = true; }
+	virtual void Kill() { m_isDead = true; }
 	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) { m_iHP -= iDamage; }
 	void InitRendered() { m_isRendered = false; }
 	const _bool& Is_Blur();

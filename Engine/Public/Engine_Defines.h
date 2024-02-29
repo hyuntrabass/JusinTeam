@@ -191,6 +191,8 @@ namespace Engine
 		OutlineColor_White,
 		OutlineColor_Yellow,
 		OutlineColor_Red,
+		OutlineColor_Blue,
+		OutlineColor_Pink,
 		OutlineColor_End
 	};
 }

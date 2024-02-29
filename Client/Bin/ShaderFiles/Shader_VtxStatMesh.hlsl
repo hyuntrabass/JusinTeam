@@ -747,9 +747,10 @@ PS_OUT_DEFERRED PS_Main_Dissolve(PS_IN Input)
     PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + vector(0.5f, 0.f, 0.f, 0.f) * g_bSelected;
-    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r;
-    
-    if (g_fDissolveRatio > fDissolve)
+   
+    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r + 0.1f;
+    vMtrlDiffuse.a = saturate((fDissolve - g_fDissolveRatio) * 10.0f);
+    if (vMtrlDiffuse.a <= 0.f)
     {
         discard;
     }
@@ -1081,7 +1082,7 @@ technique11 DefaultTechnique_Shader_StatMesh
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;

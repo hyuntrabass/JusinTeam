@@ -130,7 +130,7 @@ public: // Collision
 	_bool CheckCollision_Parrying(class CCollider* pCollider);
 	_bool Attack_Player(class CCollider* pCollider, _uint iDamage, _uint iDamageType = 0);
 	_bool CheckCollision_Player(class CCollider* pCollider); // 필요없음
-	CCollider* Get_Nearest_MonsterCollider();
+	CCollider* Get_Nearest_MonsterCollider(_float fMaxDistance = 15.f);
 	CollideFace Get_CollideFace(CCollider* pAABBCollider, CCollider* pShereCollider);
 
 public: // PhysX

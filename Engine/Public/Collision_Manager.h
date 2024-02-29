@@ -19,7 +19,7 @@ public:
 	_bool CheckCollision_Parrying(class CCollider* pCollider);
 	_bool Attack_Player(class CCollider* pCollider, _uint iDamage, _uint iDamageType);
 	_bool CheckCollision_Player(class CCollider* pCollider); // 필요없음
-	class CCollider* Get_Nearest_MonsterCollider();
+	class CCollider* Get_Nearest_MonsterCollider(_float MaxDistance);
 	CollideFace Get_CollideFace(CCollider* pAABBCollider, CCollider* pShereCollider);
 	
 private:

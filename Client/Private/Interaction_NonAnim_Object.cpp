@@ -8,6 +8,7 @@
 #include "3DUITEX.h"
 #include "Item.h"
 #include "Effect_Manager.h"
+#include "Effect_Dummy.h"
 
 // Prototype_Model_Hurbs
 // Prototype_Model_OakTree
@@ -52,7 +53,7 @@ HRESULT CInteraction_NonAnim::Init(void* pArg)
 	m_pTransformCom->Set_State(State::Look, vLook);
 	m_pTransformCom->Set_State(State::Pos, vPos);
 
-	
+
 	//m_pModelCom->Apply_TransformToActor(m_Info.m_WorldMatrix);
 	ITEM eItem{};
 
@@ -63,14 +64,26 @@ HRESULT CInteraction_NonAnim::Init(void* pArg)
 	if (m_Info.strPrototypeTag == TEXT("Prototype_Model_OakTree"))
 	{
 		NameTagDesc.strNameTag = TEXT("오크나무");
+		NameTagDesc.vTextPosition = _vec2(0.f, 3.2f);
+
+		_mat EffectMat = _mat::CreateTranslation(_vec3(vPos) + _vec3(0.f, 1.5f, 0.f));
+		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Tree_Effect");
+		EffectDesc.pMatrix = &EffectMat;
+		m_pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(EffectDesc);
 	}
 	else
 	{
 		NameTagDesc.strNameTag = TEXT("아마풀");
+		NameTagDesc.vTextPosition = _vec2(0.f, 1.4f);
+
+		_mat EffectMat = _mat::CreateTranslation(_vec3(vPos) + _vec3(0.f, 0.5f, 0.f));
+		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Grass_Effect");
+		EffectDesc.pMatrix = &EffectMat;
+		m_pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(EffectDesc);
 	}
 
 	NameTagDesc.vColor = _vec4(0.31f, 0.96f, 1.f, 1.f);
-	NameTagDesc.vTextPosition = _vec2(0.f, 3.2f);
+	//NameTagDesc.vTextPosition = _vec2(0.f, 3.2f);
 
 	m_pNameTag = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_NameTag"), &NameTagDesc);
 	if (not m_pNameTag)
@@ -92,6 +105,9 @@ HRESULT CInteraction_NonAnim::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+
+	m_iHP = 1;
+
 	return S_OK;
 }
 
@@ -119,12 +135,26 @@ void CInteraction_NonAnim::Tick(_float fTimeDelta)
 		{
 			wstring strItem = m_pItem->Get_ItemDesc().strName;
 			CUI_Manager::Get_Instance()->Set_Item(strItem);
-			m_isDead = true;
+			m_iHP = 0;
 			m_isCollect = false;
+			m_fCollectTime = 0.f;
+			if (m_pEffect)
+			{
+				m_pEffect->Kill();
+			}
 		}
 
 		m_pBar->Tick(fTimeDelta);
 		m_pItem->Tick(fTimeDelta);
+	}
+
+	if (!m_iHP)
+	{
+		m_fCollectTime += fTimeDelta;
+		if (m_fCollectTime > 1.f)
+		{
+			m_isDead = true;
+		}
 	}
 
 	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
@@ -140,12 +170,23 @@ void CInteraction_NonAnim::Tick(_float fTimeDelta)
 			CUI_Manager::Get_Instance()->Set_Collect();
 			m_isCollect = true;
 		}
+
+		m_pShaderCom->Set_PassIndex(2);
+	}
+	else
+	{
+		m_pShaderCom->Set_PassIndex(3);
 	}
 
 	if (m_isWideCollision)
 	{
 		dynamic_cast<CNameTag*>(m_pNameTag)->Tick(fTimeDelta);
 		m_pSpeechBubble->Tick(fTimeDelta);
+	}
+
+	if (m_pEffect)
+	{
+		m_pEffect->Tick(fTimeDelta);
 	}
 
 #ifdef _DEBUG
@@ -173,6 +214,11 @@ void CInteraction_NonAnim::Late_Tick(_float fTimeDelta)
 		m_pSpeechBubble->Late_Tick(fTimeDelta);
 	}
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend_Instance, this);
+
+	if (m_pEffect)
+	{
+		m_pEffect->Late_Tick(fTimeDelta);
+	}
 }
 
 
@@ -380,7 +426,8 @@ HRESULT CInteraction_NonAnim::Render_Instance()
 		return E_FAIL;
 	}
 
-	if (true == m_pGameInstance->Get_TurnOnShadow()) {
+	if (true == m_pGameInstance->Get_TurnOnShadow())
+	{
 
 		CASCADE_DESC Desc = m_pGameInstance->Get_CascadeDesc();
 
@@ -422,6 +469,19 @@ HRESULT CInteraction_NonAnim::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
+	if (m_iHP)
+	{
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fCollectTime, sizeof m_fCollectTime)))
+		{
+			return E_FAIL;
+		}
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_iOutLineColorIndex", &m_iOutLineColorIndex, sizeof m_iOutLineColorIndex)))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -457,6 +517,7 @@ void CInteraction_NonAnim::Free()
 {
 	__super::Free();
 	Safe_Release(m_pNameTag);
+	Safe_Release(m_pEffect);
 	Safe_Release(m_pBar);
 	Safe_Release(m_pBG);
 	Safe_Release(m_pItem);

@@ -49,6 +49,8 @@ private:
 	class C3DUITex* m_pSpeechBubble{ nullptr };
 	class CItem* m_pItem{ nullptr };
 
+private:
+	_uint m_iOutLineColorIndex{ 2 };
 
 private:
 	HRESULT Add_Components();

@@ -31,8 +31,7 @@ HRESULT CRiding::Init(void* pArg)
 		case Client::Bird:
 		{
 			m_hasJumped = true;
-			m_fWalkSpeed = 10.f;
-			m_fRunSpeed = 10.f;
+			m_fRunSpeed = 12.f;
 			m_fRadialMaxPower = 0.7f;
 			if (Desc->bGlide)
 			{
@@ -55,9 +54,8 @@ HRESULT CRiding::Init(void* pArg)
 		case Client::Wyvern:
 		{
 			m_hasJumped = true;
-			m_fWalkSpeed = 11.f;
-			m_fRunSpeed = 11.f;
-			m_fRadialMaxPower = 0.9f;
+			m_fRunSpeed = 15.f;
+			m_fRadialMaxPower = 1.f;
 			if (Desc->bGlide)
 			{
 				m_eState = Riding_Glide;
@@ -81,7 +79,7 @@ HRESULT CRiding::Init(void* pArg)
 			m_hasJumped = true;
 			m_fWalkSpeed = 20.f;
 			m_fRunSpeed = 20.f;
-			m_fRadialMaxPower = 2.f;
+			m_fRadialMaxPower = 1.4f;
 			if (Desc->bGlide)
 			{
 				m_eState = Riding_Glide;
@@ -108,7 +106,7 @@ HRESULT CRiding::Init(void* pArg)
 			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Horse");
 			m_fRunSpeed = 10.f;
 			m_fJumpPower = 10.f;
-			m_fRadialMaxPower = 0.3f;
+			m_fRadialMaxPower = 0.6f;
 			m_pCam_Manager->Set_RidingZoom(true);
 		}
 		break;
@@ -119,7 +117,7 @@ HRESULT CRiding::Init(void* pArg)
 			m_strPrototypeTag = TEXT("Prototype_Model_Riding_Tiger");
 			m_fRunSpeed = 12.f;
 			m_fJumpPower = 15.f;
-			m_fRadialMaxPower = 0.6f;
+			m_fRadialMaxPower = 1.f;
 			m_pCam_Manager->Set_RidingZoom(true);
 		}
 		break;
@@ -131,7 +129,7 @@ HRESULT CRiding::Init(void* pArg)
 			m_fWalkSpeed = 5.f;
 			m_fRunSpeed = 30.f;
 			m_fJumpPower = 20.f;
-			m_fRadialMaxPower = 1.f;
+			m_fRadialMaxPower = 1.4f;
 			m_pCam_Manager->Set_RidingZoom(true);
 		}
 		break;
@@ -176,6 +174,17 @@ HRESULT CRiding::Init(void* pArg)
 			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
 
 		}
+		else if (m_CurrentIndex == Wyvern)
+		{
+			PxCapsuleControllerDesc ControllerDesc{};
+			ControllerDesc.height = 0.1f;
+			ControllerDesc.radius = 0.1f;
+			ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f);
+			ControllerDesc.slopeLimit = cosf(PxDegToRad(65.f));
+			ControllerDesc.contactOffset = 0.1f;
+			ControllerDesc.stepOffset = 0.3f;
+			m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER, &ControllerDesc);
+		}
 		else
 		{
 			PxCapsuleControllerDesc ControllerDesc{};
@@ -189,7 +198,7 @@ HRESULT CRiding::Init(void* pArg)
 		}
 
 
-		m_pTransformCom->Set_Position(_vec3(Desc->vSummonPos + _vec3(0.f, 1.f, 0.f)));
+ 		m_pTransformCom->Set_Position(_vec3(Desc->vSummonPos + _vec3(0.f, 1.f, 0.f)));
 
 		m_Animation.fAnimSpeedRatio = 2.f;
 		m_fDissolveRatio = 1.f;
@@ -285,7 +294,7 @@ void CRiding::Tick(_float fTimeDelta)
 
 	if (m_eState == Riding_Glide)
 	{
-		m_pTransformCom->Gravity(fTimeDelta, -1.2f);
+		m_pTransformCom->Gravity(fTimeDelta,-1.2f);
 		if (!m_pTransformCom->Is_Jumping())
 		{
 			_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
@@ -618,6 +627,8 @@ void CRiding::Init_State()
 			}
 			break;
 		case Client::Riding_Run:
+			m_bDecreaseBlur = false;
+			m_fRadialPower = 0.f;
 			switch (m_CurrentIndex)
 			{
 			case Client::Bird:
@@ -823,6 +834,8 @@ void CRiding::Init_State()
 		break;
 		case Riding_Glide:
 		{
+			m_bDecreaseBlur = false;
+			m_fRadialPower = 0.f;
 			switch (m_CurrentIndex)
 			{
 			case Client::Bird:
@@ -833,6 +846,7 @@ void CRiding::Init_State()
 			case Client::Wyvern:
 				m_Animation.iAnimIndex = Wyvern_3004_Fly;
 				m_Animation.isLoop = true;
+				m_Animation.fAnimSpeedRatio = 1.f;
 				m_hasJumped = false;
 				break;
 			case Client::Falar:
@@ -857,26 +871,32 @@ void CRiding::Init_State()
 
 void CRiding::Tick_State(_float fTimeDelta)
 {
-	if (m_eState == Riding_Glide or m_eState == Riding_Run or m_eState == Riding_Jump 
-		or m_eState == Riding_Jump_Start or m_eState == Riding_Jump_End)
+	if (m_eState == Riding_Glide or m_eState == Riding_Run)
 	{
-		if (m_fRadialPower < m_fRadialMaxPower)
+		if (!m_bDecreaseBlur)
 		{
-			m_fRadialPower += fTimeDelta * 2.3f;
-			m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
-			
+			if (m_fRadialPower < m_fRadialMaxPower)
+			{
+				m_fRadialPower += fTimeDelta * 5.f;
+				m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
+				m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
+			}
+			else
+			{
+				m_bDecreaseBlur = true;
+			}
 		}
-		m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
-	}
-	else
-	{
-		if (m_fRadialPower>0.f)
+		else
 		{
-			m_fRadialPower -= fTimeDelta * 2.3f;
-			m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
+			if (m_fRadialPower > 0.f)
+			{
+				m_fRadialPower -= fTimeDelta * 1.f;
+				m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
+				m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
+			}
 		}
-		
 	}
+
 
 	switch (m_eState)
 	{
@@ -1077,7 +1097,7 @@ _mat CRiding::Get_Mat()
 		}
 		else
 		{
-			OffsetMat = _mat::CreateTranslation(0.f, -0.1f, 0.f) * BoneMat;
+			OffsetMat = _mat::CreateTranslation(0.f, 0.1f, 0.f) * BoneMat;
 		}
 
 	}
