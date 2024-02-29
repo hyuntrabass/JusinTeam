@@ -133,7 +133,7 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 
 	if (m_Effect.isUVLoop and
 		(m_vUV.x < -1.f or m_vUV.x > 2.f or
-			m_vUV.y < -1.f or m_vUV.y > 2.f))
+		 m_vUV.y < -1.f or m_vUV.y > 2.f))
 	{
 		m_vUV = m_Effect.vUVInit;
 	}
@@ -284,6 +284,11 @@ HRESULT CEffect_Dummy::Render()
 	}
 
 	return hr;
+}
+
+void CEffect_Dummy::Kill()
+{
+	m_Effect.fLifeTime = 0.f;
 }
 
 HRESULT CEffect_Dummy::Add_Components()

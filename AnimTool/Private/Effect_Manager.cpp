@@ -112,8 +112,8 @@ void CEffect_Manager::Delete_Effect(const void* pMatrix)
 		return;
 	}
 
-	Safe_Release(iter->second);
-	m_Effects[iCurrLevel].erase(iter);
+	iter->second->Kill();
+	//m_Effects[iCurrLevel].erase(iter);
 }
 
 void CEffect_Manager::Clear(_uint iLevelIndex)

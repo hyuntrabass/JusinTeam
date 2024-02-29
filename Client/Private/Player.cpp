@@ -76,7 +76,7 @@ HRESULT CPlayer::Init(void* pArg)
 	//Desc.vColor = Colors::DarkRed;
 	//m_pLeft_Trail[2] = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 	//m_pRight_Trail[2] = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
-	
+
 	//Desc.vColor = Colors::MediumPurple;
 	//m_pLeft_Trail[3] = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 	//m_pRight_Trail[3] = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
@@ -203,7 +203,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		m_bIsSkying = true;
 		m_eTeleportSpot = eTeleportSpot;
 	}
-	
+
 	if (m_bIsSkying)
 	{
 		if (m_fFadeTimmer > 1.f)
@@ -296,7 +296,7 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		m_bSlowSpeed = 0.f;
 	}
-	
+
 	if (m_fDissolveRatio < 0.f)
 	{
 		m_fDissolveRatio = 0.f;
@@ -480,7 +480,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CUSTOM)
 	{
-	
+
 
 		if (!m_bIsMount)
 		{
@@ -1562,7 +1562,7 @@ void CPlayer::Move(_float fTimeDelta)
 	if (m_eState == Revival_Start or m_eState == Revival_End
 		or m_eState == KnockDown or m_eState == Stun_Start
 		or m_eState == Stun or m_eState == Die or m_eState == Jump_Long_End
-		 or m_eState == Collect_Start or m_eState == Collect_Loop or m_eState == Collect_End)
+		or m_eState == Collect_Start or m_eState == Collect_Loop or m_eState == Collect_End)
 	{
 		m_pTransformCom->Gravity(fTimeDelta);
 		return;
@@ -1868,7 +1868,7 @@ void CPlayer::Move(_float fTimeDelta)
 				return;
 			}
 
-			m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed -m_bSlowSpeed);
+			m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed - m_bSlowSpeed);
 			m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
 
 			_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
@@ -2577,7 +2577,7 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 	{
 		if (Critical == 0)
 		{
-			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], m_Status.Attack  + RandomDmg, Att_Type);
+			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], m_Status.Attack + RandomDmg, Att_Type);
 
 		}
 		else
@@ -2590,7 +2590,7 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 	{
 		if (Critical == 0)
 		{
-			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.5f)  + RandomDmg, Att_Type);
+			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.5f) + RandomDmg, Att_Type);
 		}
 		else
 		{
@@ -2602,7 +2602,7 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 	{
 		if (Critical == 0)
 		{
-			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.5f)  + RandomDmg, Att_Type);
+			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.5f) + RandomDmg, Att_Type);
 		}
 		else
 		{
@@ -2615,21 +2615,21 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 	{
 		if (Critical == 0)
 		{
-			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.3f)  + RandomDmg, Att_Type);
+			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.3f) + RandomDmg, Att_Type);
 		}
 		else
 		{
 			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.3f) + Critical + RandomDmg, AT_Critical);
 
 		}
-		
+
 	}
 	break;
 	case Client::AT_Sword_Skill4:
 	{
 		if (Critical == 0)
 		{
-			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 2.f)  + RandomDmg, Att_Type);
+			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 2.f) + RandomDmg, Att_Type);
 
 		}
 		else
@@ -2699,7 +2699,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					}
 
 				}
-				else if(Index>=22.f && Index<=24.f)
+				else if (Index >= 22.f && Index <= 24.f)
 				{
 					m_pRendererCom->Set_RadialBlur_Power(0.f);
 
@@ -2822,7 +2822,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
 						m_bRadialOn = true;
 					}
-					
+
 					m_pTransformCom->Set_Speed(m_fSkillSpeed);
 					m_pTransformCom->Go_Straight(fTimeDelta);
 					if (!m_bComboZoom)
@@ -2915,7 +2915,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 		if (Index >= 9.f && Index < 13.f)
 		{
-			
+
 			m_pLeft_Trail->Set_Color(_color(Colors::MediumPurple));
 			m_pRight_Trail->Set_Color(_color(Colors::MediumPurple));
 			m_pLeft_Trail->On();
@@ -2927,7 +2927,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		{
 			if (m_bRadialOn)
 			{
-				
+
 				m_bRadialOn = false;
 			}
 		}
@@ -2962,7 +2962,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		}
 		else if (Index > 13.5f && Index <= 15.5f)
 		{
-			
+
 			m_bAttacked = false;
 		}
 		else if (Index >= 15.5f && Index <= 17.5f)
@@ -3018,7 +3018,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		{
 			if (!m_bAttacked)
 			{
-			
+
 				m_pRendererCom->Set_RadialBlur_Power(1.f);
 				m_pRendererCom->Set_RadialBlur_World(m_pTransformCom->Get_CenterPos());
 				Check_Att_Collider(AT_Sword_Skill2);
@@ -3080,7 +3080,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		else if (Index > 55.f && Index <= 57.f)
 		{
 			m_pRendererCom->Set_RadialBlur_Power(0.f);
-		
+
 			m_bAttacked = false;
 		}
 		else if (Index >= 65.f && Index <= 67.f)
@@ -3100,7 +3100,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 
 			}
 		}
-		else if (Index >= 67.f && Index<=69.f)
+		else if (Index >= 67.f && Index <= 69.f)
 		{
 			m_pRendererCom->Set_RadialBlur_Power(0.f);
 		}
@@ -3133,7 +3133,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		}
 		else if (Index >= 15.f && Index <= 27.f)
 		{
-			
+
 			Cam_AttackZoom(2.5f);
 			m_pTransformCom->Set_Speed(m_fSkillSpeed);
 			m_pTransformCom->Go_Straight(fTimeDelta);
@@ -3369,17 +3369,17 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 
 			}
 			else if (Index >= 5.f && Index <= 7.f && m_ReadyArrow)
-			{		
+			{
 				Create_Arrow(AT_Bow_Common);
 				m_pGameInstance->Set_TimeRatio(0.3f);
 				m_ReadyArrow = false;
 			}
 			else
 			{
-				
+
 				m_pGameInstance->Set_TimeRatio(1.f);
 			}
-		
+
 			break;
 		case 2:
 			if (Index >= 5.f && Index <= 6.f && !m_bLockOn)
@@ -3388,12 +3388,12 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 			}
 			else if (Index >= 6.f && Index <= 8.f && m_ReadyArrow)
 			{
-				
+
 				Create_Arrow(AT_Bow_Common);
 				m_pGameInstance->Set_TimeRatio(0.3f);
 				m_ReadyArrow = false;
 			}
-			else 
+			else
 			{
 				m_pGameInstance->Set_TimeRatio(1.f);
 			}
@@ -3409,7 +3409,7 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 				m_pGameInstance->Set_TimeRatio(0.3f);
 				m_ReadyArrow = false;
 			}
-			else 
+			else
 			{
 				m_pGameInstance->Set_TimeRatio(1.f);
 			}
@@ -3421,7 +3421,7 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 			}
 			else if (Index >= 2.f && Index <= 4.f && m_ReadyArrow)
 			{
-				
+
 				Create_Arrow(AT_Bow_Common);
 				m_pGameInstance->Set_TimeRatio(0.3f);
 				m_ReadyArrow = false;
@@ -3473,7 +3473,7 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 		}
 		else if (Index >= 64.f && !m_bMove_AfterSkill)
 		{
-			
+
 			m_bMove_AfterSkill = true;
 		}
 	}
@@ -3589,11 +3589,11 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 	{
 		if (m_fRadialPower > 0.f)
 		{
-			m_fRadialPower -= fTimeDelta *2.f;
+			m_fRadialPower -= fTimeDelta * 2.f;
 			m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
 		}
-		}
-	
+	}
+
 }
 
 void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
@@ -3610,7 +3610,7 @@ void CPlayer::Create_Arrow(ATTACK_TYPE Att_Type)
 
 	_mat BoneMat = (*m_pModelCom->Get_BoneMatrix("bowstring"));
 	BoneMat.RemoveRotation();
-	_mat ArrowMat = OffsetMat* BoneMat * m_pTransformCom->Get_World_Matrix();
+	_mat ArrowMat = OffsetMat * BoneMat * m_pTransformCom->Get_World_Matrix();
 	Arrow_Type type{};
 
 
@@ -3942,7 +3942,7 @@ void CPlayer::Init_State()
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
 			m_iSuperArmor = {};
-			m_Animation.fAnimSpeedRatio = 2.f - (m_bSlowSpeed*0.3f);
+			m_Animation.fAnimSpeedRatio = 2.f - (m_bSlowSpeed * 0.3f);
 		}
 		break;
 		case Client::CPlayer::Run:
@@ -4694,29 +4694,26 @@ void CPlayer::Update_Trail(_float fTimeDelta)
 {
 	_mat UpMatrix{};
 	_mat	BottomMatrix{};
-	if (m_pCam_Manager->Get_CameraModeIndex() == CM_MAIN)
+	if (m_pLeft_Trail != nullptr)
 	{
-		if (m_pLeft_Trail != nullptr)
-		{
-			BottomMatrix = *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
-			UpMatrix = _mat::CreateTranslation(0.f, -0.5f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
-			m_pLeft_Trail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
+		BottomMatrix = *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
+		UpMatrix = _mat::CreateTranslation(0.f, -0.5f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
+		m_pLeft_Trail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
 
-			//BottomMatrix = _mat::CreateTranslation(0.f, -0.45f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();;
-			UpMatrix = _mat::CreateTranslation(0.f, -1.f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
-			m_pLeft_Distortion_Trail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
-		}
+		//BottomMatrix = _mat::CreateTranslation(0.f, -0.45f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();;
+		UpMatrix = _mat::CreateTranslation(0.f, -1.f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
+		m_pLeft_Distortion_Trail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
+	}
 
-		if (m_pRight_Trail != nullptr)
-		{
-			BottomMatrix = *m_Right_Mat * m_pTransformCom->Get_World_Matrix();
-			UpMatrix = _mat::CreateTranslation(0.f, 0.5f, 0.f) * *m_Right_Mat * m_pTransformCom->Get_World_Matrix();
-			m_pRight_Trail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
-			m_pRight_Distortion_Trail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
+	if (m_pRight_Trail != nullptr)
+	{
+		BottomMatrix = *m_Right_Mat * m_pTransformCom->Get_World_Matrix();
+		UpMatrix = _mat::CreateTranslation(0.f, 0.5f, 0.f) * *m_Right_Mat * m_pTransformCom->Get_World_Matrix();
+		m_pRight_Trail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
+		m_pRight_Distortion_Trail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
 
-			//BottomMatrix = _mat::CreateTranslation(0.f, 0.45f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();;
-			//UpMatrix = _mat::CreateTranslation(0.f, 1.f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
-		}
+		//BottomMatrix = _mat::CreateTranslation(0.f, 0.45f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();;
+		//UpMatrix = _mat::CreateTranslation(0.f, 1.f, 0.f) * *m_Left_Mat * m_pTransformCom->Get_World_Matrix();
 	}
 }
 
