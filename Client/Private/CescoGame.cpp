@@ -3,6 +3,7 @@
 #include "Log.h"
 #include "Hook.h"
 
+#include "Camera_Manager.h"
 CCescoGame::CCescoGame(_dev pDevice, _context pContext)
 	:CGameObject(pDevice, pContext)
 {
@@ -41,6 +42,10 @@ HRESULT CCescoGame::Init(void* pArg)
 	{
 		Create_Log(i);
 	}
+
+		
+
+	CCamera_Manager::Get_Instance()->Set_RidingZoom(true);
 
 	return S_OK;
 }
@@ -361,7 +366,7 @@ HRESULT CCescoGame::Create_Hook()
 	CHook::HOOK_DESC HookDesc{};
 	_randInt RandomDir(0, 3);
 	_randInt RandomCount(1, 3);
-	_randInt RandomCountNum(1, 9);
+	_randInt RandomCountNum(1, 8);
 
 	HookDesc.WorldMatrix = _mat::CreateScale(2.f, 2.f, 1.5f);
 
@@ -426,7 +431,7 @@ HRESULT CCescoGame::Create_Hook()
 				if (it == vecHookPos.end())
 				{
 					vecHookPos.push_back(iPosNum);
-					vHookPos.z = vSpawnPos.z - 20.f + 6.f * iPosNum;
+					vHookPos.z = vSpawnPos.z - 20.f + 5.f * iPosNum;
 					vHookPos.y += 1.f;
 					HookDesc.WorldMatrix.Position_vec3(vHookPos);
 					HookDesc.vLookat = _vec4(-1.f, 0.f, 0.f, 1.f);
@@ -637,6 +642,7 @@ CGameObject* CCescoGame::Clone(void* pArg)
 
 void CCescoGame::Free()
 {
+	CCamera_Manager::Get_Instance()->Set_RidingZoom(false);
 	__super::Free();
 
 	for (auto& pMonster : m_Monsters)

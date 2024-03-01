@@ -70,6 +70,18 @@
     <Filter Include="02.GameObjects\01.Camera\Manager">
       <UniqueIdentifier>{3eb84866-2142-479e-ba39-d31d38a191ac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\05.Effect">
+      <UniqueIdentifier>{7698916c-3fc0-4d48-b610-d541f6e73979}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05.Effect\Manager">
+      <UniqueIdentifier>{c46e022b-dbed-46bc-9651-2d6fe643c0be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05.Effect\Dummy">
+      <UniqueIdentifier>{b0bb17ca-2732-4b76-9399-7ad3b1d322ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05.Effect\Sphere">
+      <UniqueIdentifier>{5d15dddf-3fae-4a05-bf60-d677dd1a8ba4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MapEditor_Define.h">
@@ -171,6 +183,15 @@
     <ClInclude Include="..\Public\Camera_Manager.h">
       <Filter>02.GameObjects\01.Camera\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Effect_Manager.h">
+      <Filter>02.GameObjects\05.Effect\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Sphere.h">
+      <Filter>02.GameObjects\05.Effect\Sphere</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Dummy.h">
+      <Filter>02.GameObjects\05.Effect\Dummy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -253,6 +274,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Manager.cpp">
       <Filter>02.GameObjects\01.Camera\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Manager.cpp">
+      <Filter>02.GameObjects\05.Effect\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Sphere.cpp">
+      <Filter>02.GameObjects\05.Effect\Sphere</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Dummy.cpp">
+      <Filter>02.GameObjects\05.Effect\Dummy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

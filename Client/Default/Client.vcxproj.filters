@@ -525,6 +525,9 @@
     </Filter>
     <Filter Include="02.GameObjects\16.CescoGame\VTFMonster\Wasp">
       <UniqueIdentifier>{a23b4087-67c5-42c9-aeec-bd575032f483}</UniqueIdentifier>
+	</Filter>
+    <Filter Include="02.GameObjects\07. NPC\06. GuardTower">
+      <UniqueIdentifier>{065bad8b-d57c-4d7f-8167-aac0a06c6cf2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1073,19 +1076,23 @@
     <ClInclude Include="..\Public\Guard.h">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Scorpion.h" />
     <ClInclude Include="..\Public\CescoGame.h">
       <Filter>02.GameObjects\16.CescoGame</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Larva_Ball.h">
       <Filter>02.GameObjects\16.CescoGame\VTFMonster\Larva\Ball</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\CescoGame.h" />
     <ClInclude Include="..\Public\Wasp.h">
       <Filter>02.GameObjects\16.CescoGame\VTFMonster\Wasp</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Scorpion.h">
       <Filter>02.GameObjects\16.CescoGame\VTFMonster\Scorpion</Filter>
+	</ClInclude>
+    <ClInclude Include="..\Public\GuardTower.h">
+      <Filter>02.GameObjects\07. NPC\06. GuardTower</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Guard.h">
+      <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1632,19 +1639,23 @@
     <ClCompile Include="..\Private\Guard.cpp">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Scorpion.cpp" />
     <ClCompile Include="..\Private\CescoGame.cpp">
       <Filter>02.GameObjects\16.CescoGame</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Larva_Ball.cpp">
       <Filter>02.GameObjects\16.CescoGame\VTFMonster\Larva\Ball</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\CescoGame.cpp" />
     <ClCompile Include="..\Private\Wasp.cpp">
       <Filter>02.GameObjects\16.CescoGame\VTFMonster\Wasp</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Scorpion.cpp">
       <Filter>02.GameObjects\16.CescoGame\VTFMonster\Scorpion</Filter>
+	</ClCompile>
+    <ClCompile Include="..\Private\GuardTower.cpp">
+      <Filter>02.GameObjects\07. NPC\06. GuardTower</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Guard.cpp">
+      <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

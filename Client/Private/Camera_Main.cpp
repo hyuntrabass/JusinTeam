@@ -718,29 +718,34 @@ void CCamera_Main::SkillBook_Mode(_float fTimeDelta)
 
 void CCamera_Main::BrickGame_Mode(_float fTimeDelta)
 {
-
-	if (m_fShakeAcc > 1.8f and m_pCam_Manager->Get_ShakeCam())
+	if (m_fShakeAcc > 1.5f and m_pCam_Manager->Get_ShakeCam())
 	{
 		m_fShakeAcc = m_pCam_Manager->Get_ShakePower();
 		m_pCam_Manager->Set_ShakeCam(false);
+		m_fLerpTime = 0.f;
 	}
 
 	_float fShakeAmount = sin(m_fShakeAcc * 15.f) * powf(0.5f, m_fShakeAcc) * 0.2f;
 	if (m_fLerpTime < 1.f)
 	{
+		m_fLerpTime += fTimeDelta;
 		_vec4 vShakePos = m_pTransformCom->Get_State(State::Pos);
 		vShakePos += XMVectorSet(fShakeAmount, -fShakeAmount, 0.f, 0.f);
 		m_pTransformCom->Set_State(State::Pos, vShakePos);
 		m_fShakeAcc += fTimeDelta * 10.f / m_pGameInstance->Get_TimeRatio();
 	}
+	else
+	{
+		_vec4 vBrickGamePos = _vec4(-2000.f, 14.9f, -1978.4f, 1.f);
+
+		m_pTransformCom->Set_State(State::Pos, vBrickGamePos);
+
+		m_pTransformCom->LookAt_Dir(_vec4(-0.0f, -0.5575f, -0.8301f, 0.f));
+	}
+
+	//DirectX::XMFLOAT3 = {x=0.00349983899 y=-0.557534575 z=-0.830147624 }
 
 
-
-	_vec4 vBrickGamePos = _vec4(-1999.853f, 12.962f, -1980.831f, 1.f);
-
-	m_pTransformCom->Set_State(State::Pos, vBrickGamePos);
-
-	m_pTransformCom->LookAt_Dir(_vec4(-0.004f, -0.70f, -0.866f, 0.f));
 }
 
 void CCamera_Main::Collect_Mode(_float fTimeDelta)

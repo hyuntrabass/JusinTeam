@@ -12,10 +12,11 @@ class CProjectile final : public CGameObject
 public:
 	enum PROJECTILE_TYPE
 	{
-		TYPE_RANDOM_POS,
+		TYPE_MISSILE,
 		TYPE_FLOOR,
 		TYPE_GUIDED_MISSILE,
 		TYPE_TANGHURU,
+		TYPE_SPEAR,
 		TYPE_END
 	};
 

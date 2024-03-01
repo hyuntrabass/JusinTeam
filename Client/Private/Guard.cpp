@@ -20,7 +20,7 @@ HRESULT CGuard::Init_Prototype()
 
 HRESULT CGuard::Init(void* pArg)
 {
-	MiniDungeonInfo m_Info = *(MiniDungeonInfo*)pArg;
+	GuardInfo m_Info = *(GuardInfo*)pArg;
 	m_iIndex = m_Info.iIndex;
 	GuardMatrix = m_Info.mMatrix;
 

@@ -22,7 +22,7 @@ HRESULT CLevel_Tower::Init()
 	m_pGameInstance->StopAll();
 
 
-	CTrigger_Manager::Get_Instance()->Teleport(TS_Minigame);
+	//CTrigger_Manager::Get_Instance()->Teleport(TS_Minigame);
 
 	if (FAILED(Ready_Light()))
 	{
@@ -65,7 +65,8 @@ HRESULT CLevel_Tower::Init()
 		MSG_BOX("Failed to Ready Guard");
 		return E_FAIL;
 	}
-
+	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
+	CUI_Manager::Get_Instance()->Open_InfinityTower(true);
 	m_pGameInstance->Set_FogNF(_vec2(50.f, 2000.f));
 	m_pGameInstance->Set_FogColor(_color(1.f));
 
@@ -150,7 +151,7 @@ HRESULT CLevel_Tower::Ready_Light()
 
 HRESULT CLevel_Tower::Ready_Guard()
 {
-	MiniDungeonInfo Info{};
+	GuardInfo Info{};
 	const TCHAR* pGetPath = L"../Bin/Data/MiniDungeon_NPCData.dat";
 
 	std::ifstream inFile(pGetPath, std::ios::binary);

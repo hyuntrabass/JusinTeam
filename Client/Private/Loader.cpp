@@ -948,7 +948,7 @@ HRESULT CLoader::Load_GamePlay()
 			}
 		}
 	}
-
+	Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Object/Tutorial/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -957,6 +957,10 @@ HRESULT CLoader::Load_GamePlay()
 			if (!entry.exists())
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+			if(strPrototypeTag != L"Prototype_Model_DeadPeople")
+				Pivot = XMMatrixScaling(0.003f, 0.003f, 0.003f);
+			else
+				Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
 			{
@@ -1119,6 +1123,7 @@ HRESULT CLoader::Load_GamePlay()
 
 #pragma region NPC
 
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Cat"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Cat/Mesh/Cat.hyuntraanimmesh"))))
 	{
@@ -1161,6 +1166,12 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	_mat GuardTowerPivot = _mat::CreateScale(0.002f);
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GuardTower"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/StoneTower/Mesh/StoneTower.hyuntraanimmesh", false ,GuardTowerPivot))))
+	{
+		return E_FAIL;
+	}
 	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/NPC/NPC_Dummy/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -1240,12 +1251,23 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_BlackCat"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Pet/Pet_BlackCat/Mesh/BlackCat.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion Pet
 
 #pragma region Survival Game
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_BlueGem"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/SurvivalGame/BlueGem/Mesh/BlueGem.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_BlueGem_Destroy"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/SurvivalGame/BlueGem_Destroy/Mesh/BlueGem_Destroy.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
@@ -1271,6 +1293,18 @@ HRESULT CLoader::Load_GamePlay()
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_LokiStone"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/SurvivalGame/LokiStone/Mesh/LokiStone.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Barricade"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/SurvivalGame/Barricade/Mesh/Barricade.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Spear"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/SurvivalGame/Spear/Mesh/Spear.hyuntrastatmesh"))))
 	{
 		return E_FAIL;
 	}
@@ -1678,11 +1712,14 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
-		if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Guard"), CGuard::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Guard"), CGuard::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
-
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_GuardTower"), CGuardTower::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 
 #pragma endregion NPC
 
@@ -1759,6 +1796,17 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Pet_Dragon"), CPet_Dragon::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BrickCat"), CBrickCat::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BlackCat"), CBlackCat::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -1841,6 +1889,10 @@ HRESULT CLoader::Load_Village()
 			if (!entry.exists())
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+			if(strPrototypeTag == L"Prototype_Model_Dungeon")
+				Pivot = _mat::CreateScale(0.001f);
+			else
+				Pivot = _mat::CreateScale(0.003f);
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
 			{
@@ -1849,7 +1901,7 @@ HRESULT CLoader::Load_Village()
 		}
 	}
 
-	_mat DungeonPivot = _mat::CreateScale(0.001f);
+	/*_mat DungeonPivot = _mat::CreateScale(0.001f);
 	 strInputFilePath = "../Bin/Resources/StaticMesh/Map/Dungeon/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -1859,61 +1911,34 @@ HRESULT CLoader::Load_Village()
 				return S_OK;
 
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
-			if (strPrototypeTag == L"Prototype_Model_BrickMap")
-			{
-				DungeonPivot = _mat::CreateScale(1.7f);
-				continue;
-			}
-			else if (strPrototypeTag == L"Prototype_Model_DragonMap")
-			{
-				DungeonPivot = _mat::CreateScale(0.5f);
-				continue;
-			}
-			else if (strPrototypeTag == L"Prototype_Model_BossRoom")
-			{
-				DungeonPivot = _mat::CreateScale(0.005f);
-				continue;
-			}
-			else if (strPrototypeTag == L"Prototype_Model_Survival_Map")
-			{
-				DungeonPivot = _mat::CreateScale(0.4f);
-				continue;
-			}
-			else if (strPrototypeTag == L"Prototype_Model_SescoMap")
-			{
-				DungeonPivot = _mat::CreateScale(0.005f);
-				continue;
-			}
-			else if (strPrototypeTag == L"Prototype_Model_MiniDungeon")
-			{
-				DungeonPivot = _mat::CreateScale(0.003f);
-				continue;
-			}
-			else
-				DungeonPivot = _mat::CreateScale(0.001f);
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, DungeonPivot))))
 			{
 				return E_FAIL;
 			}
 		}
-	}
-	strInputFilePath = "../Bin/Resources/StaticMesh/Object/Midgard/Mesh/";
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
-	{
-		if (entry.is_regular_file())
-		{
-			if (!entry.exists())
-				return S_OK;
-			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+	}*/
+	//strInputFilePath = "../Bin/Resources/StaticMesh/Object/Midgard/Mesh/";
+	//for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	//{
+	//	if (entry.is_regular_file())
+	//	{
+	//		if (!entry.exists())
+	//			return S_OK;
+	//		wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
-			{
-				return E_FAIL;
-			}
-		}
-	}
+	//		if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
+	//		{
+	//			return E_FAIL;
+	//		}
+	//	}
+	//}
 	Pivot = _mat::CreateScale(0.003f);
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, TEXT("Prototype_Model_Village"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Object/Midgard/Mesh/Village.hyuntrastatmesh", true, Pivot))))
+	{
+		return E_FAIL;
+	}
 	//_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(90.f));
 
 	strInputFilePath = "../Bin/Resources/StaticMesh/Object/Dungeon/Mesh/";
@@ -2270,7 +2295,7 @@ HRESULT CLoader::Load_Tower()
 			}
 			else
 			{
-				DungeonPivot = _mat::CreateScale(0.001f);
+				//DungeonPivot = _mat::CreateScale(0.001f);
 				continue;
 			}
 

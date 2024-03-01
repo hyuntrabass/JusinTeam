@@ -10,6 +10,7 @@ class CGlowCube final : public CGameObject
 public:
 	typedef struct tagGlowCubeDesc
 	{
+		_bool isDefault{false};
 		_vec4 vColor{};
 		_vec4 vPos{};
 		CTransform* pParentTransform{};
@@ -33,6 +34,7 @@ private:
 	CTexture* m_pMaskTextureCom = { nullptr };
 
 private:
+	_bool					m_isDefault{};
 	_float					m_fX{};
 	_vec3					m_vPos{};
 	_vec4					m_vColor{};

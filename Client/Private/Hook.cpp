@@ -36,7 +36,7 @@ void CHook::Tick(_float fTimeDelta)
 {
     m_fLifeTime += fTimeDelta;
 
-    if (m_fLifeTime >= 5.5f)
+    if (m_fLifeTime >= 6.f)
     {
         Kill();
     }
