@@ -7,6 +7,7 @@ struct Vertex_Instancing
     vector vLook;
     vector vPos;
     vector vPrevPos;
+    vector vPrevPrevPos;
     float fIndex;
     float fDissolveRatio;
 
@@ -73,6 +74,7 @@ void particle(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID
             }
             
             pVertex.vPos = mul(pVertex.vOriginPos, WorldMatrix);
+            pVertex.vPrevPrevPos = pVertex.vPrevPos;
             pVertex.vPrevPos = pVertex.vPos;
 
             {
@@ -89,6 +91,7 @@ void particle(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID
         {
             pVertex.vPos = vector(0.f, -30000.f, 0.f, 1.f);
             pVertex.vPrevPos = pVertex.vPos;
+            pVertex.vPrevPrevPos = pVertex.vPrevPos;
         }
 
         if (bApplyGravity)
@@ -122,6 +125,7 @@ void particle(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID
         
         pVertex.fIndex = saturate(pVertex.vLifeTime.x / pVertex.vLifeTime.y);
 
+        pVertex.vPrevPrevPos = pVertex.vPrevPos;
         pVertex.vPrevPos = pVertex.vPos;
         pVertex.vPos += pVertex.vDirection * pVertex.fSpeed * fTimeDelta;
         pVertex.vLifeTime.x += fTimeDelta;
@@ -137,11 +141,13 @@ void particle(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID
                 pVertex.vLifeTime.x = 0.f;
                 pVertex.vPos = mul(vector(pVertex.vOriginPos.xyz, 1.f), WorldMatrix);
                 pVertex.vPrevPos = pVertex.vPos;
+                pVertex.vPrevPrevPos = pVertex.vPrevPos;
             }
             else
             {
                 pVertex.vPos = vector(0.f, -10000.f, 0.f, 1.f);
                 pVertex.vPrevPos = pVertex.vPos;
+                pVertex.vPrevPrevPos = pVertex.vPrevPos;
             }
         }
 
