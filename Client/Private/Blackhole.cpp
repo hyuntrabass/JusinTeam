@@ -28,7 +28,7 @@ HRESULT CBlackhole::Init(void* pArg)
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 
-	CTransform* pDragonTransform = GET_TRANSFORM("Layer_Dragon_Boss", LEVEL_VILLAGE);
+	CTransform* pDragonTransform = GET_TRANSFORM("Layer_Dragon_Boss", LEVEL_TOWER);
 	_vec3 vDragonPos = pDragonTransform->Get_State(State::Pos);
 
 	vPlayerPos.y = vDragonPos.y + 0.1f;

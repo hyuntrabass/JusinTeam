@@ -247,7 +247,6 @@ HRESULT CRiding::Init(void* pArg)
 		m_Animation.fAnimSpeedRatio = 2.f;
 	}
 
-
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
@@ -302,12 +301,55 @@ void CRiding::Tick(_float fTimeDelta)
 			m_pTransformCom->Set_Position(vPos);
 
 			m_bDelete = true;
+			if (m_iSoundChannel != -1)
+			{
+				m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+			}
+		}
+
+		switch (m_CurrentIndex)
+		{
+		case Client::Bird:
+			if (m_iSoundChannel == -1)
+			{
+				m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("Fly_Bloom_SFX_02"), 0.5f, false, 0.1f);
+				m_pGameInstance->FadeinSound(m_iSoundChannel, fTimeDelta);
+			}
+			break;
+		case Client::Wyvern:
+			if (m_iSoundChannel == -1)
+			{
+				m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("Fly_Bloom_SFX_02"), 0.7f, false, 0.1f);
+				m_pGameInstance->FadeinSound(m_iSoundChannel, fTimeDelta);
+			}
+			break;
+		case Client::Falar:
+			if (m_iSoundChannel == -1)
+			{
+				m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("5002_Fly_Bloom_SFX_02"), 0.5f, false, 0.1f);
+				m_pGameInstance->FadeinSound(m_iSoundChannel, fTimeDelta);
+			}
+			break;
 		}
 	}
 	else
 	{
 		m_pTransformCom->Gravity(fTimeDelta);
 	}
+
+	if (m_iSoundChannel != -1)
+	{
+		if (not m_pGameInstance->Get_IsPlayingSound(m_iSoundChannel))
+		{
+			m_iSoundChannel = -1;
+		}
+		else if (m_pGameInstance->Get_ChannelCurPosRatio(m_iSoundChannel) >= 0.35f)
+		{
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+			m_iSoundChannel = -1;
+		}
+	}
+
 
 	//Update_Collider();
 }
@@ -789,6 +831,8 @@ void CRiding::Init_State()
 			case Client::Horse:
 			{
 				m_Animation.iAnimIndex = Horse_1004_jump_End_Run;
+				m_Animation.fStartAnimPos = 3.f;
+				m_Animation.bSkipInterpolation = true;
 				m_hasJumped = false;
 			}
 			break;
@@ -814,6 +858,8 @@ void CRiding::Init_State()
 			case Client::Horse:
 			{
 				m_Animation.iAnimIndex = Horse_1004_jump_End;
+				m_Animation.fStartAnimPos = 3.f;
+				m_Animation.bSkipInterpolation = true;
 				m_hasJumped = false;
 			}
 			break;
@@ -860,7 +906,6 @@ void CRiding::Init_State()
 			case Client::Wyvern:
 				m_Animation.iAnimIndex = Wyvern_3004_Fly;
 				m_Animation.isLoop = true;
-				m_Animation.fAnimSpeedRatio = 1.f;
 				m_hasJumped = false;
 				break;
 			case Client::Falar:
