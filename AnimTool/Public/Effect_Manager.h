@@ -25,6 +25,7 @@ public:
 
 	void Create_Effect(const wstring& strEffectTag, _mat* pMatrix, const _bool& isFollow);
 	void Delete_Effect(const void* pMatrix);
+	void Delete_All();
 
 	void Clear(_uint iLevelIndex);
 
@@ -37,6 +38,8 @@ private:
 	CGameInstance* m_pGameInstance{ nullptr };
 	map<const wstring, EffectInfo> m_EffectInfos{};
 	map<const void*, class CEffect_Dummy*> m_Effects[LEVEL_END]{};
+
+	_bool m_isReadytoFree{};
 
 public:
 	virtual void Free() override;
