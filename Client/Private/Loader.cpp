@@ -948,7 +948,7 @@ HRESULT CLoader::Load_GamePlay()
 			}
 		}
 	}
-
+	Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Object/Tutorial/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -957,6 +957,10 @@ HRESULT CLoader::Load_GamePlay()
 			if (!entry.exists())
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+			if(strPrototypeTag != L"Prototype_Model_DeadPeople")
+				Pivot = XMMatrixScaling(0.003f, 0.003f, 0.003f);
+			else
+				Pivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
 			{
@@ -1850,6 +1854,10 @@ HRESULT CLoader::Load_Village()
 			if (!entry.exists())
 				return S_OK;
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+			if(strPrototypeTag == L"Prototype_Model_Dungeon")
+				Pivot = _mat::CreateScale(0.001f);
+			else
+				Pivot = _mat::CreateScale(0.003f);
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
 			{
@@ -1858,7 +1866,7 @@ HRESULT CLoader::Load_Village()
 		}
 	}
 
-	_mat DungeonPivot = _mat::CreateScale(0.001f);
+	/*_mat DungeonPivot = _mat::CreateScale(0.001f);
 	 strInputFilePath = "../Bin/Resources/StaticMesh/Map/Dungeon/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -1874,22 +1882,30 @@ HRESULT CLoader::Load_Village()
 				return E_FAIL;
 			}
 		}
-	}
-	strInputFilePath = "../Bin/Resources/StaticMesh/Object/Midgard/Mesh/";
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
-	{
-		if (entry.is_regular_file())
-		{
-			if (!entry.exists())
-				return S_OK;
-			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
+	}*/
+	//strInputFilePath = "../Bin/Resources/StaticMesh/Object/Midgard/Mesh/";
+	//for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	//{
+	//	if (entry.is_regular_file())
+	//	{
+	//		if (!entry.exists())
+	//			return S_OK;
+	//		wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
-			{
-				return E_FAIL;
-			}
-		}
+	//		if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, Pivot))))
+	//		{
+	//			return E_FAIL;
+	//		}
+	//	}
+	//}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, TEXT("Prototype_Model_Village"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Object/Midgard/Mesh/Village.hyuntrastatmesh", true, Pivot))))
+	{
+		return E_FAIL;
 	}
+
+
 	Pivot = _mat::CreateScale(0.003f);
 	//_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(90.f));
 
@@ -2247,7 +2263,7 @@ HRESULT CLoader::Load_Tower()
 			}
 			else
 			{
-				DungeonPivot = _mat::CreateScale(0.001f);
+				//DungeonPivot = _mat::CreateScale(0.001f);
 				continue;
 			}
 
