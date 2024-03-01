@@ -25,6 +25,7 @@ public:
 
 	void Create_Effect(const wstring& strEffectTag, _mat* pMatrix, const _bool& isFollow);
 	void Delete_Effect(const void* pMatrix);
+	void Delete_All();
 
 	void Clear(_uint iLevelIndex);
 

@@ -116,6 +116,18 @@ void CEffect_Manager::Delete_Effect(const void* pMatrix)
 	//m_Effects[iCurrLevel].erase(iter);
 }
 
+void CEffect_Manager::Delete_All()
+{
+	for (size_t i = 0; i < LEVEL_END; i++)
+	{
+		for (auto& pEffect : m_Effects[i])
+		{
+			Safe_Release(pEffect.second);
+		}
+		m_Effects[i].clear();
+	}
+}
+
 void CEffect_Manager::Clear(_uint iLevelIndex)
 {
 	for (auto& Pair : m_Effects[iLevelIndex])
@@ -258,14 +270,5 @@ HRESULT CEffect_Manager::Read_EffectFile()
 
 void CEffect_Manager::Free()
 {
-	for (size_t i = 0; i < LEVEL_END; i++)
-	{
-		for (auto& pEffect : m_Effects[i])
-		{
-			Safe_Release(pEffect.second);
-		}
-		m_Effects[i].clear();
-	}
-
 	Safe_Release(m_pGameInstance);
 }
