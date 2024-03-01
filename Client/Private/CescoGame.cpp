@@ -70,7 +70,6 @@ void CCescoGame::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_9))
 	{
 		m_fTimeLimit = 0.f;
-
 	}
 
 	m_fTimeLimit -= fTimeDelta;
@@ -97,7 +96,6 @@ void CCescoGame::Tick(_float fTimeDelta)
 		pMonster->Tick(fTimeDelta);
 	}
 
-
 	Release_DeadObjects();
 }
 
@@ -117,6 +115,7 @@ void CCescoGame::Late_Tick(_float fTimeDelta)
 void CCescoGame::Tick_Phase(_float fTimeDelta)
 {
 	m_fMonsterSpawnTime += fTimeDelta;
+
 	switch (m_eCurrentPhase)
 	{
 	case Client::CCescoGame::Phase1:
@@ -145,132 +144,105 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 
 		if (m_iMonsterSpawnCount % 10 == 1 && m_fMonsterSpawnTime == 0.f)
 		{
-			CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
-			VTFMonsterDesc.strModelTag = TEXT("Prototype_VTFModel_Larva");
-			VTFMonsterDesc.pPlayerTransform = m_pPlayerTransform;
-
-			_int iNumSpawn{};
-			_randInt RandomDir(0, 3);
-			_randInt RandomPos(5, 20);
-			_randInt RandomSymbol(0, 1);
-
-			while (iNumSpawn < 5)
+			for (_uint i = 0; i < 5; i++)
 			{
-				_int iSymbol = RandomSymbol(m_RandomNumber);
-				if (iSymbol == 0)
-				{
-					iSymbol = -1;
-				}
-
-				_vec3 vPos{};
-				_bool HasPosition{};
-
-				_int iRandom = RandomDir(m_RandomNumber);
-				if (iRandom <= 1)
-				{
-					vPos = m_SpawnPositions[iRandom];
-					vPos.x += RandomPos(m_RandomNumber) * iSymbol;
-					for (auto& Pair : m_LarvaPositions)
-					{
-						if (Pair.second == vPos)
-						{
-							HasPosition = true;
-							break;
-						}
-					}
-				}
-				else
-				{
-					vPos = m_SpawnPositions[iRandom];
-					vPos.z += RandomPos(m_RandomNumber) * iSymbol;
-					for (auto& Pair : m_LarvaPositions)
-					{
-						if (Pair.second == vPos)
-						{
-							HasPosition = true;
-							break;
-						}
-					}
-				}
-
-				if (m_LarvaPositions.size() == 128)
-				{
-					break;
-				}
-
-				if (HasPosition)
-					continue;
-
-				VTFMonsterDesc.vPosition = vPos;
-				CVTFMonster* pMonster = reinterpret_cast<CVTFMonster*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Larva_Object"), &VTFMonsterDesc));
-				m_Monsters.push_back(pMonster);
-				m_LarvaPositions.emplace(pMonster->Get_ID(), vPos);
-				iNumSpawn++;
+				Create_Larva();
 			}
 		}
 
 #pragma endregion
-
 	}
 	break;
 	case Client::CCescoGame::Phase2:
 		break;
 	case Client::CCescoGame::Phase3:
 	{
-		
-		if (m_fHookSpawnTime >= 3.f)
+#pragma region SpawnMonster
+
+		if (m_fMonsterSpawnTime >= 1.f)
+		{
+			_vec3 vSpawnPos = m_SpawnPositions[0];
+			vSpawnPos.z -= 1.f;
+			if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Scorpion"), vSpawnPos, TEXT("Prototype_GameObject_Scorpion_Object"))))
+				return;
+
+			vSpawnPos = m_SpawnPositions[1];
+			vSpawnPos.z += 1.f;
+			if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Redant"), vSpawnPos, TEXT("Prototype_GameObject_RedAnt_Object"))))
+				return;
+
+			m_iMonsterSpawnCount++;
+			m_fMonsterSpawnTime = 0.f;
+		}
+
+#pragma endregion
+
+#pragma region SpawnLarva
+
+		if (m_iMonsterSpawnCount % 10 == 1 && m_fMonsterSpawnTime == 0.f)
+		{
+			for (_uint i = 0; i < 5; i++)
+			{
+				Create_Larva();
+			}
+		}
+
+#pragma endregion
+
+#pragma region SpawnHook
+
+		if (m_fHookSpawnTime >= 5.f)
 		{
 			Create_Hook();
 			m_fHookSpawnTime = 0.f;
 		}
 		m_fHookSpawnTime += fTimeDelta;
-	}
-	break;
 
-	}
+#pragma endregion
 
+#pragma region HookTick
 
-
-
-
-#pragma region SpawnHook
-	for (auto& pHook : m_vecHooks)
-	{
-		pHook->Tick(fTimeDelta);
-	}
-	m_bHadDragging = false;
-
-	_bool bDrag{};
-	_bool bCollision{};
-
-	for (auto& pHooks : m_vecHooks)
-	{
-		if (pHooks->Get_Dragging())
+		for (auto& pHook : m_vecHooks)
 		{
-			bDrag = true;
-			break;
+			pHook->Tick(fTimeDelta);
 		}
-	}
+		m_bHadDragging = false;
 
-	if (!bDrag)
-	{
+		_bool bDrag{};
+		_bool bCollision{};
+
 		for (auto& pHooks : m_vecHooks)
 		{
-
-			if (pHooks->Get_HadCollision())
+			if (pHooks->Get_Dragging())
 			{
-				m_pCurrent_DraggingHook = pHooks;
-				pHooks->Set_Dragging(true);
+				bDrag = true;
 				break;
 			}
 		}
-	}
 
-	if (m_pCurrent_DraggingHook)
-	{
-		m_pPlayerTransform->Set_Position(_vec3(m_pCurrent_DraggingHook->Get_Position()));
-	}
+		if (!bDrag)
+		{
+			for (auto& pHooks : m_vecHooks)
+			{
+
+				if (pHooks->Get_HadCollision())
+				{
+					m_pCurrent_DraggingHook = pHooks;
+					pHooks->Set_Dragging(true);
+					break;
+				}
+			}
+		}
+
+		if (m_pCurrent_DraggingHook)
+		{
+			m_pPlayerTransform->Set_Position(_vec3(m_pCurrent_DraggingHook->Get_Position()));
+		}
+
 #pragma endregion
+	}
+	break;
+	}
 }
 
 HRESULT CCescoGame::Create_CommonMonster(const wstring& strModelTag, _vec3 SpawnPosition, const wstring& strPrototypeTag)
@@ -388,6 +360,72 @@ HRESULT CCescoGame::Create_Hook()
 			break;
 		}
 		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CCescoGame::Create_Larva()
+{
+	CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
+	VTFMonsterDesc.strModelTag = TEXT("Prototype_VTFModel_Larva");
+	VTFMonsterDesc.pPlayerTransform = m_pPlayerTransform;
+
+	_randInt RandomDir(0, 3);
+	_randInt RandomPos(5, 20);
+	_randInt RandomSymbol(0, 1);
+
+	while (true)
+	{
+		_int iSymbol = RandomSymbol(m_RandomNumber);
+		if (iSymbol == 0)
+		{
+			iSymbol = -1;
+		}
+
+		_vec3 vPos{};
+		_bool HasPosition{};
+
+		_int iRandom = RandomDir(m_RandomNumber);
+		if (iRandom <= 1)
+		{
+			vPos = m_SpawnPositions[iRandom];
+			vPos.x += RandomPos(m_RandomNumber) * iSymbol;
+			for (auto& Pair : m_LarvaPositions)
+			{
+				if (Pair.second == vPos)
+				{
+					HasPosition = true;
+					break;
+				}
+			}
+		}
+		else
+		{
+			vPos = m_SpawnPositions[iRandom];
+			vPos.z += RandomPos(m_RandomNumber) * iSymbol;
+			for (auto& Pair : m_LarvaPositions)
+			{
+				if (Pair.second == vPos)
+				{
+					HasPosition = true;
+					break;
+				}
+			}
+		}
+
+		if (m_LarvaPositions.size() == 128)
+		{
+			break;
+		}
+
+		if (HasPosition)
+			continue;
+
+		VTFMonsterDesc.vPosition = vPos;
+		CVTFMonster* pMonster = reinterpret_cast<CVTFMonster*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Larva_Object"), &VTFMonsterDesc));
+		m_Monsters.push_back(pMonster);
+		m_LarvaPositions.emplace(pMonster->Get_ID(), vPos);
 	}
 
 	return S_OK;

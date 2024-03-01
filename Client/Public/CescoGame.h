@@ -48,8 +48,9 @@ private:
 	Phase m_eCurrentPhase{Phase_End};
 
 private:
-	HRESULT Create_Hook();
 	HRESULT Create_CommonMonster(const wstring& strModelTag, _vec3 SpawnPosition, const wstring& strPrototypeTag);
+	HRESULT Create_Hook();
+	HRESULT Create_Larva();
 
 private:
 	void Release_DeadObjects();
