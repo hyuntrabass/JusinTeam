@@ -43,7 +43,7 @@ HRESULT CFirePillar::Init(void* pArg)
 
 	//m_pTransformCom->Set_Position(vPlayerPos + _vec3(0.f, 0.1f, 0.f));
 
-	CTransform* pDragonTransform = GET_TRANSFORM("Layer_Dragon_Boss", LEVEL_VILLAGE);
+	CTransform* pDragonTransform = GET_TRANSFORM("Layer_Dragon_Boss", LEVEL_TOWER);
 	_vec4 vDragonPos = pDragonTransform->Get_State(State::Pos);
 	_vec4 vDragonLook = pDragonTransform->Get_State(State::Look).Get_Normalized();
 
