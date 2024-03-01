@@ -300,7 +300,7 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 	{
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_VILLAGE))))
 		{
-			return;
+			MSG_BOX("Failed to Open Level");
 		}
 
 		return;

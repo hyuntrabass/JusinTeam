@@ -26,8 +26,6 @@ private:
 
 	HRESULT Ready_TreasureBox();
 
-	HRESULT Ready_NpcvsMon();
-
 private: // Monster, Boss
 	HRESULT Ready_Village_Monster();
 	HRESULT Ready_Dungeon_Monster();

@@ -206,6 +206,9 @@ private:
 	class CCamera_Manager* m_pCam_Manager{ nullptr };
 
 private:
+	_int m_iSoundChannel = -1;
+
+private:
 	_bool m_bDelete{};
 	_float m_fJumpPower{};
 	_bool m_hasJumped{};
