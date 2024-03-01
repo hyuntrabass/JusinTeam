@@ -1302,6 +1302,13 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 	{
 		if (m_eState != Hook)
 		{
+			if (m_bIsMount)
+			{
+				m_pCam_Manager->Set_RidingZoom(false);
+				Safe_Release(m_pRiding);
+				m_bIsMount = false;
+			}
+
 			m_eState = Hook;
 		}
 		return;
