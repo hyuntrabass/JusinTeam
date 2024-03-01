@@ -31,7 +31,7 @@ HRESULT CMeteor::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pDragonTransform = GET_TRANSFORM("Layer_Dragon_Boss", LEVEL_VILLAGE);
+	m_pDragonTransform = GET_TRANSFORM("Layer_Dragon_Boss", LEVEL_TOWER);
 	_vec3 vDragonPos = m_pDragonTransform->Get_State(State::Pos);
 
 	random_device dev;
