@@ -37,7 +37,6 @@ private:
 	vector<CHook*> m_vecHooks;
 	CHook* m_pCurrent_DraggingHook{};
 	_randNum m_RandomNumber;
-
 	_float m_fHookSpawnTime{};
 	_float m_fMonsterSpawnTime{};
 	_uint m_iMonsterLimit{ 200 };
@@ -46,11 +45,14 @@ private:
 	_float m_fTimeLimit{ 1209999999.f };
 	_vec4 m_vHookPos{};
 	Phase m_eCurrentPhase{Phase_End};
-
+	_float m_fHookAttTime{};
+	_float m_fPosionSpawnTime{};
+	_uint m_iDragging_EscapeCount{};
 private:
 	HRESULT Create_CommonMonster(const wstring& strModelTag, _vec3 SpawnPosition, const wstring& strPrototypeTag);
 	HRESULT Create_Hook();
 	HRESULT Create_Larva();
+	HRESULT Create_Posion(_float fTimeDelta);
 
 private:
 	void Release_DeadObjects();

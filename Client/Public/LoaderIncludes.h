@@ -169,6 +169,7 @@
 #include "Scorpion.h"
 #include "RedAnt.h"
 
+#include "Cesco_Poison.h"
 #include "Log.h"
 #include "Hook.h"
 

@@ -3,6 +3,7 @@
 #include "Effect_Dummy.h"
 #include "Camera_Manager.h"
 #include "Trigger_Manager.h"
+#include "UI_Manager.h"
 CHuman_Boss::CHuman_Boss(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -47,11 +48,23 @@ HRESULT CHuman_Boss::Init(void* pArg)
 	m_iWeaponPassIndex = AnimPass_Dissolve;
 	m_iHP = 100;
 	m_eState = Spwan;
+
+	m_WeaponBone_Mat = m_pModelCom->Get_BoneMatrix("Bip001-Prop1");
+	SURFACETRAIL_DESC Desc{};
+	Desc.vColor = _color(0.086f, 0.384f, 0.729f, 1.f);
+
+	Desc.iNumVertices = 15;
+	m_pWeapon_Trail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
+
+	Desc.iPassIndex = 2;
+	Desc.strMaskTextureTag = L"FX_J_Noise_Normal004_Tex";
+	m_pWeapon_Distortion_Trail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 	return S_OK;
 }
 
 void CHuman_Boss::Tick(_float fTimeDelta)
 {
+
 	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_BossRoom) 
 	{
 		return;
@@ -111,17 +124,26 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 	{
 		m_fWeaponDissolveRatio -= fTimeDelta * 1.5f;
 	}
+
+	if(m_eState!=Hide_Start and m_eState != Hide)
+	{
+		m_pWeapon_Trail->On();
+		m_pWeapon_Distortion_Trail->On();
+	}
+
 	m_pTransformCom->Set_OldMatrix();
 	Init_State(fTimeDelta);
 	m_pModelCom->Set_Animation(m_Animation);
 	Tick_State(fTimeDelta);
 	Update_Collider();
+	Update_Trail();
 	After_Attack(fTimeDelta);
 	m_pTransformCom->Gravity(fTimeDelta);
 }
 
 void CHuman_Boss::Late_Tick(_float fTimeDelta)
 {
+
 	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_BossRoom)
 	{
 		return;
@@ -156,6 +178,9 @@ void CHuman_Boss::Late_Tick(_float fTimeDelta)
 	{
 		m_pAttackEffect->Late_Tick(fTimeDelta);
 	}
+
+	m_pWeapon_Trail->Late_Tick(fTimeDelta);
+	m_pWeapon_Distortion_Trail->Late_Tick(fTimeDelta);
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
@@ -600,6 +625,22 @@ void CHuman_Boss::Update_Collider()
 	m_pCommonAttCollider->Update(m_pTransformCom->Get_World_Matrix());
 }
 
+void CHuman_Boss::Update_Trail()
+{
+
+	_mat LeftMatrix{};
+	_mat	RightMatrix{};
+
+	RightMatrix = _mat::CreateTranslation(0.f, 0.f, -1.9f) * *m_WeaponBone_Mat * m_pTransformCom->Get_World_Matrix();
+	LeftMatrix = _mat::CreateTranslation(1.48f, -0.02f,-0.86f) * *m_WeaponBone_Mat * m_pTransformCom->Get_World_Matrix();
+	m_pWeapon_Trail->Tick(LeftMatrix.Position_vec3(), RightMatrix.Position_vec3());
+
+	RightMatrix = _mat::CreateTranslation(0.f, 0.f, -1.9f) * *m_WeaponBone_Mat * m_pTransformCom->Get_World_Matrix();
+	LeftMatrix = _mat::CreateTranslation(1.48f, -0.02f, -0.86f) * *m_WeaponBone_Mat * m_pTransformCom->Get_World_Matrix();
+	m_pWeapon_Distortion_Trail->Tick(LeftMatrix.Position_vec3(), RightMatrix.Position_vec3());
+	
+}
+
 void CHuman_Boss::Set_Damage(_int iDamage, _uint MonAttType)
 {
 
@@ -613,6 +654,8 @@ void CHuman_Boss::Set_Damage(_int iDamage, _uint MonAttType)
 		m_pGameInstance->Attack_Player(nullptr, iDamage, MonAtt_Hit);
 		return;
 	}
+
+	CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 1.5f), (ATTACK_TYPE)MonAttType);
 
 	switch ((ATTACK_TYPE)MonAttType)
 	{
@@ -1090,7 +1133,11 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			CCollider* pSafeZoneCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_SafeZone"), TEXT("Com_SafeZone_Coll"));
 			if (m_bReflectOn)
 			{
-				if (!pPlayerCollider->Intersect(pSafeZoneCollider))
+				if (pPlayerCollider->Intersect(pSafeZoneCollider))
+				{
+					
+				}
+				else
 				{
 					if (!m_bAttacked)
 					{
@@ -1100,16 +1147,14 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 				}
 				m_bReflectOn = false;
 			}
-			else
+			else if(!m_bAttacked)
 			{
 				if (!m_bAttacked)
 				{
-					if (!m_bAttacked)
-					{
-						m_pGameInstance->Attack_Player(nullptr, 250 + rand() % 50, MonAtt_KnockDown);
-						m_bAttacked = true;
-					}
+					m_pGameInstance->Attack_Player(nullptr, 250 + rand() % 50, MonAtt_KnockDown);
+					m_bAttacked = true;
 				}
+				
 			}
 
 		}
@@ -1469,6 +1514,8 @@ void CHuman_Boss::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pWeapon_Distortion_Trail);
+	Safe_Release(m_pWeapon_Trail);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pCounterEffect);

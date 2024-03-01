@@ -1270,21 +1270,18 @@ HRESULT CPlayer::Add_Riding()
 void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 {
 	m_bMove_AfterSkill = true;
-	if (MonAttType == MonAtt_Hook_End)
-	{
-		m_eState = Jump_End;
-		return;
-	}
+
 	if (m_eState == Revival_Start or m_eState == Revival_End or m_eState == Die)
 	{
 		return;
 	}
 
-	if (m_bLockOn)
+	if (MonAttType == MonAtt_Hook_End)
 	{
-		m_pCam_Manager->Set_AimMode(false);
-		m_bLockOn = false;
+		m_eState = Jump_End;
+		return;
 	}
+
 	if (m_pEffect_Shield)
 	{
 		// 보호막 깨지는 이펙트
@@ -1298,6 +1295,10 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 
 	}
 	
+
+
+
+
 	if (MonAttType == MonAtt_Hook)
 	{
 		if (m_eState != Hook)
@@ -1308,13 +1309,20 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 				Safe_Release(m_pRiding);
 				m_bIsMount = false;
 			}
-
+			if (m_bLockOn)
+			{
+				m_pCam_Manager->Set_AimMode(false);
+				m_bLockOn = false;
+			}
 			m_eState = Hook;
 		}
-		return;
+		if (iDamage <= 0)
+		{
+			return;
+		}
+		m_Status.Current_Hp -= (iDamage - iDamage * (_int)(m_Status.Armor / 0.01));
 	}
 	m_Status.Current_Hp -= (iDamage - iDamage * (_int)(m_Status.Armor / 0.01));
-
 
 	_int iRandomX = rand() % 100;
 	_int iRandomY = rand() % 50 + 130;
@@ -1322,9 +1330,14 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 	CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, vDamagePos, (ATTACK_TYPE)MonAttType, true);
 
 	CUI_Manager::Get_Instance()->Set_Hp(m_Status.Current_Hp, m_Status.Max_Hp);
-
 	if (m_Status.Current_Hp <= 0)
 	{
+		if (m_bLockOn)
+		{
+			m_pCam_Manager->Set_AimMode(false);
+			m_bLockOn = false;
+		}
+
 		if (m_bIsMount)
 		{
 			m_pCam_Manager->Set_RidingZoom(false);
@@ -1337,6 +1350,10 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 		m_Status.Current_Hp = 0;
 		CUI_Manager::Get_Instance()->Set_Hp(m_Status.Current_Hp, m_Status.Max_Hp);
 		m_eState = Die;
+	}
+	else if (m_eState == Hook)
+	{
+		return;
 	}
 	else
 	{
@@ -1353,73 +1370,76 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 			}
 		}
 
+
 		if (m_eState == KnockDown or m_bIsMount)
 		{
 			return;
 		}
 
-		switch (MonAttType)
-		{
-		case MonAtt_Hit:
-		{
-			m_eState = Hit;
-			m_Animation.iAnimIndex = Anim_Stun_start;
-			m_Animation.fDurationRatio = 0.4f;
-			m_Animation.fAnimSpeedRatio = 2.f;
-			m_Animation.fStartAnimPos = 18.f;
-			m_Animation.isLoop = false;
-			m_hasJumped = false;
-			if (!m_bPoison)
+
+			switch (MonAttType)
 			{
-				m_bHitted = true;
-				m_vRimColor = _vec4(1.f, 1.f, 1.f, 1.f);
-			}
-		}
-		break;
-		case MonAtt_KnockDown:
-		{
-			m_eState = KnockDown;
-			m_pCam_Manager->Set_RidingZoom(false);
-			m_bLockOn = false;
-		}
-		break;
-		case MonAtt_Stun:
-		{
-			m_eState = Stun_Start;
-			m_pCam_Manager->Set_RidingZoom(false);
-			m_bLockOn = false;
-		}
-		break;
-		case MonAtt_Poison:
-		{
-			if (!m_bPoison)
+			case MonAtt_Hit:
 			{
-				m_iPoisionDamage = iDamage;
-				m_bPoison = true;
-				m_vRimColor = _vec4(0.f, 1.f, 0.f, 1.f);
-				if (m_bSlowSpeed == 0.f)
+				m_eState = Hit;
+				m_Animation.iAnimIndex = Anim_Stun_start;
+				m_Animation.fDurationRatio = 0.4f;
+				m_Animation.fAnimSpeedRatio = 2.f;
+				m_Animation.fStartAnimPos = 18.f;
+				m_Animation.isLoop = false;
+				m_hasJumped = false;
+				if (!m_bPoison)
 				{
-					m_bSlowSpeed = 3.f;
+					m_bHitted = true;
+					m_vRimColor = _vec4(1.f, 1.f, 1.f, 1.f);
 				}
 			}
-		}
-		break;
-		case Parrying_Succescc:
-		{
-			m_fBoostSpeedTimmer = 5.f;
-			m_fBoostSpeed = 3.f;
-			//보호막 생성
-			if (not m_pEffect_Shield)
+			break;
+			case MonAtt_KnockDown:
 			{
-				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Shield");
-				Info.isFollow = true;
-				Info.pMatrix = &m_ShieldMatrix;
-				m_pEffect_Shield = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+				m_eState = KnockDown;
+				m_pCam_Manager->Set_RidingZoom(false);
+				m_bLockOn = false;
 			}
-		}
-		break;
+			break;
+			case MonAtt_Stun:
+			{
+				m_eState = Stun_Start;
+				m_pCam_Manager->Set_RidingZoom(false);
+				m_bLockOn = false;
+			}
+			break;
+			case MonAtt_Poison:
+			{
+				if (!m_bPoison)
+				{
+					m_iPoisionDamage = iDamage;
+					m_bPoison = true;
+					m_vRimColor = _vec4(0.f, 1.f, 0.f, 1.f);
+					if (m_bSlowSpeed == 0.f)
+					{
+						m_bSlowSpeed = 3.f;
+					}
+				}
+			}
+			break;
+			case Parrying_Succescc:
+			{
+				m_fBoostSpeedTimmer = 5.f;
+				m_fBoostSpeed = 3.f;
+				//보호막 생성
+				if (not m_pEffect_Shield)
+				{
+					EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Shield");
+					Info.isFollow = true;
+					Info.pMatrix = &m_ShieldMatrix;
+					m_pEffect_Shield = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+				}
+			}
+			break;
 
-		}
+			}
+		
 	}
 
 	m_StartRegen = 0.f;
@@ -3598,7 +3618,7 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 	{
 		if (m_fRadialPower > 0.f)
 		{
-			m_fRadialPower -= fTimeDelta * 2.f;
+			m_fRadialPower -= fTimeDelta * 3.f;
 			m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
 		}
 	}
@@ -4084,7 +4104,7 @@ void CPlayer::Init_State()
 			m_Animation.iAnimIndex = Anim_B_idle_end;
 			m_hasJumped = false;
 			//m_Animation.fDurationRatio = 0.1f;
-			m_iSuperArmor = {};
+			m_iSuperArmor = { 1.f };
 			m_Animation.isLoop = false;
 			m_Animation.bRewindAnimation = true;
 			m_Animation.fAnimSpeedRatio = 5.f;
@@ -4096,7 +4116,7 @@ void CPlayer::Init_State()
 			m_Animation.iAnimIndex = Anim_B_idle_end;
 			m_hasJumped = false;
 			m_Animation.fDurationRatio = 0.01f;
-			m_iSuperArmor = {};
+			m_iSuperArmor = {1.f};
 			m_Animation.isLoop = false;
 		}
 		break;

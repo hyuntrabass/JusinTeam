@@ -177,6 +177,7 @@
     <ClInclude Include="..\Public\Cat.h" />
     <ClInclude Include="..\Public\Aur.h" />
     <ClInclude Include="..\Public\CescoGame.h" />
+    <ClInclude Include="..\Public\Cesco_Poison.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Coin.h" />
@@ -361,6 +362,7 @@
     <ClCompile Include="..\Private\Cat.cpp" />
     <ClCompile Include="..\Private\Aur.cpp" />
     <ClCompile Include="..\Private\CescoGame.cpp" />
+    <ClCompile Include="..\Private\Cesco_Poison.cpp" />
     <ClCompile Include="..\Private\CharacterSelect.cpp" />
     <ClCompile Include="..\Private\Coin.cpp" />
     <ClCompile Include="..\Private\CutScene_Curve.cpp" />
