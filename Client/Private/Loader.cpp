@@ -2417,6 +2417,11 @@ HRESULT CLoader::Load_Tower()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Wasp_Object"), CWasp::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	//static
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Log_Object"), CLog::Create(m_pDevice, m_pContext))))
 	{

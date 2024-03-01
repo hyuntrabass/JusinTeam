@@ -65,10 +65,11 @@ void CScorpion::Tick(_float fTimeDelta)
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 
+	m_pTransformCom->Gravity(fTimeDelta);
+	__super::Tick(fTimeDelta);
+
 	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 	m_pAttackColliderCom->Update(m_pTransformCom->Get_World_Matrix());
-
-	__super::Tick(fTimeDelta);
 }
 
 void CScorpion::Late_Tick(_float fTimeDelta)

@@ -168,6 +168,7 @@
 #include "Larva.h"
 #include "Scorpion.h"
 #include "RedAnt.h"
+#include "Wasp.h"
 
 #include "Log.h"
 #include "Hook.h"

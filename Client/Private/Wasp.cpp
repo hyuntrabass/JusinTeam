@@ -1,21 +1,21 @@
-#include "RedAnt.h"
+#include "Wasp.h"
 
-CRedAnt::CRedAnt(_dev pDevice, _context pContext)
+CWasp::CWasp(_dev pDevice, _context pContext)
 	:CVTFMonster(pDevice, pContext)
 {
 }
 
-CRedAnt::CRedAnt(const CRedAnt& rhs)
+CWasp::CWasp(const CWasp& rhs)
 	:CVTFMonster(rhs)
 {
 }
 
-HRESULT CRedAnt::Init_Prototype()
+HRESULT CWasp::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CRedAnt::Init(void* pArg)
+HRESULT CWasp::Init(void* pArg)
 {
 	PxCapsuleControllerDesc ControllerDesc{};
 	ControllerDesc.height = 0.5f; // 높이(위 아래의 반구 크기 제외
@@ -41,7 +41,7 @@ HRESULT CRedAnt::Init(void* pArg)
 	m_eState = State_Run;
 	m_ePreState = m_eState;
 
-	m_Animation.iAnimIndex = Anim_run;
+	m_Animation.iAnimIndex = Anim_Walk;
 	m_Animation.bSkipInterpolation = true;
 	_randFloat RandomAnimPos(0.f, 1000.f);
 	m_Animation.fStartAnimPos = RandomAnimPos(m_RandomNumber);
@@ -51,7 +51,7 @@ HRESULT CRedAnt::Init(void* pArg)
 	return S_OK;
 }
 
-void CRedAnt::Tick(_float fTimeDelta)
+void CWasp::Tick(_float fTimeDelta)
 {
 	if (m_HasAttacked)
 	{
@@ -65,14 +65,13 @@ void CRedAnt::Tick(_float fTimeDelta)
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 
-	m_pTransformCom->Gravity(fTimeDelta);
 	__super::Tick(fTimeDelta);
 
 	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 	m_pAttackColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 }
 
-void CRedAnt::Late_Tick(_float fTimeDelta)
+void CWasp::Late_Tick(_float fTimeDelta)
 {
 	__super::Late_Tick(fTimeDelta);
 #ifdef _DEBUG
@@ -81,21 +80,21 @@ void CRedAnt::Late_Tick(_float fTimeDelta)
 #endif // DEBUG
 }
 
-HRESULT CRedAnt::Render()
+HRESULT CWasp::Render()
 {
 	__super::Render();
 
 	return S_OK;
 }
 
-HRESULT CRedAnt::Render_Instance()
+HRESULT CWasp::Render_Instance()
 {
 	__super::Render_Instance();
 
 	return S_OK;
 }
 
-void CRedAnt::Init_State(_float fTimeDelta)
+void CWasp::Init_State(_float fTimeDelta)
 {
 	if (m_HasHitted == true)
 	{
@@ -127,25 +126,25 @@ void CRedAnt::Init_State(_float fTimeDelta)
 
 		switch (m_eState)
 		{
-		case Client::CRedAnt::State_Idle:
-			m_Animation.iAnimIndex = Anim_idle;
+		case Client::CWasp::State_Idle:
+			m_Animation.iAnimIndex = Anim_Idle;
 			m_Animation.isLoop = true;
 			break;
-		case Client::CRedAnt::State_Run:
-			m_Animation.iAnimIndex = Anim_run;
+		case Client::CWasp::State_Run:
+			m_Animation.iAnimIndex = Anim_Walk;
 			m_Animation.isLoop = true;
 			break;
-		case Client::CRedAnt::State_Attack:
+		case Client::CWasp::State_Attack:
 		{
-			m_Animation.iAnimIndex = Anim_attack02;
+			m_Animation.iAnimIndex = Anim_Attack01;
 
 			_vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
 			vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
 			m_pTransformCom->LookAt(vPlayerPos);
 			break;
 		}
-		case Client::CRedAnt::State_Die:
-			m_Animation.iAnimIndex = Anim_knockdown;
+		case Client::CWasp::State_Die:
+			m_Animation.iAnimIndex = Anim_Knockdown;
 
 			m_pTransformCom->Delete_Controller();
 			m_pGameInstance->Delete_CollisionObject(this);
@@ -156,11 +155,11 @@ void CRedAnt::Init_State(_float fTimeDelta)
 	}
 }
 
-void CRedAnt::Tick_State(_float fTimeDelta)
+void CWasp::Tick_State(_float fTimeDelta)
 {
 	switch (m_eState)
 	{
-	case Client::CRedAnt::State_Idle:
+	case Client::CWasp::State_Idle:
 	{
 		_vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
 		vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
@@ -178,7 +177,7 @@ void CRedAnt::Tick_State(_float fTimeDelta)
 		}
 		break;
 	}
-	case Client::CRedAnt::State_Run:
+	case Client::CWasp::State_Run:
 	{
 		_vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
 		vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
@@ -200,17 +199,17 @@ void CRedAnt::Tick_State(_float fTimeDelta)
 		}
 		break;
 	}
-	case Client::CRedAnt::State_Attack:
+	case Client::CWasp::State_Attack:
 	{
 		_float fCurrentAnimPos = m_pModelCom->Get_CurrentAnimPos();
-		if (fCurrentAnimPos >= 43.f && fCurrentAnimPos <= 46.f && not m_HasAttacked)
+		if (fCurrentAnimPos >= 20.f && fCurrentAnimPos <= 23.f && not m_HasAttacked)
 		{
 			_uint iDamage = rand() % 6 + 10;
 			m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage);
 			m_HasAttacked = true;
 		}
 
-		if (m_pModelCom->IsAnimationFinished(Anim_attack02))
+		if (m_pModelCom->IsAnimationFinished(Anim_Attack01))
 		{
 			_vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
 			vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
@@ -227,7 +226,7 @@ void CRedAnt::Tick_State(_float fTimeDelta)
 		}
 		break;
 	}
-	case Client::CRedAnt::State_Die:
+	case Client::CWasp::State_Die:
 		if (m_fDissolveRatio < 1.f)
 		{
 			m_fDissolveRatio += fTimeDelta;
@@ -241,7 +240,7 @@ void CRedAnt::Tick_State(_float fTimeDelta)
 	}
 }
 
-HRESULT CRedAnt::Add_Components()
+HRESULT CWasp::Add_Components()
 {
 	Collider_Desc ColliderDesc{};
 	ColliderDesc.eType = ColliderType::AABB;
@@ -267,33 +266,33 @@ HRESULT CRedAnt::Add_Components()
 	return S_OK;
 }
 
-CRedAnt* CRedAnt::Create(_dev pDevice, _context pContext)
+CWasp* CWasp::Create(_dev pDevice, _context pContext)
 {
-	CRedAnt* pInstance = new CRedAnt(pDevice, pContext);
+	CWasp* pInstance = new CWasp(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CRedAnt");
+		MSG_BOX("Failed to Create : CWasp");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CRedAnt::Clone(void* pArg)
+CGameObject* CWasp::Clone(void* pArg)
 {
-	CRedAnt* pInstance = new CRedAnt(*this);
+	CWasp* pInstance = new CWasp(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CRedAnt");
+		MSG_BOX("Failed to Clone : CWasp");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CRedAnt::Free()
+void CWasp::Free()
 {
 	__super::Free();
 

@@ -140,6 +140,12 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 			if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Redant"), vSpawnPos, TEXT("Prototype_GameObject_RedAnt_Object"))))
 				return;
 
+			vSpawnPos = m_SpawnPositions[2];
+			vSpawnPos.x -= 1.f;
+			vSpawnPos.y += 2.f;
+			if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Wasp"), vSpawnPos, TEXT("Prototype_GameObject_Wasp_Object"))))
+				return;
+
 			m_iMonsterSpawnCount++;
 			m_fMonsterSpawnTime = 0.f;
 		}
