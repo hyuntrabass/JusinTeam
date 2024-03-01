@@ -203,7 +203,7 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 	case CBlackCat::STATE_IDLE:
 	{
 		m_pTransformCom->LookAt_Dir(vNormal);
-		CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_BrickGame"), TEXT("BrickBall"));
+		CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickGame"), TEXT("BrickBall"));
 		if (pCollider == nullptr)
 		{
 			return;
@@ -211,7 +211,7 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 		_bool isColl = m_pColliderCom->Intersect(pCollider);
 		if (isColl)
 		{
-			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 2.0f);
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 1.6f);
 			m_eCurState = STATE_HIT;
 		}
 	}

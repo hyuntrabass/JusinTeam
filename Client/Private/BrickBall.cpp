@@ -69,20 +69,7 @@ HRESULT CBrickBall::Init(void* pArg)
 void CBrickBall::Tick(_float fTimeDelta)
 {
 	m_pTransformCom->Set_Scale(_vec3(1.3f, 1.3f, 1.3f));
-	_mat UpMatrix{};
-	_mat	BottomMatrix{};
-	if (m_pTrail != nullptr)
-	{
-		m_pTrail->Set_Color(m_vColor);
-		m_pTrail->On();
-		BottomMatrix = _mat::CreateTranslation(0.2f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();
-		UpMatrix = _mat::CreateTranslation(-0.2f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();
-		m_pTrail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
 
-		BottomMatrix = _mat::CreateTranslation(0.1f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();;
-		UpMatrix = _mat::CreateTranslation(0.1f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();
-		m_pDistortionTrail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
-	}
 
 	m_fSpeed = 12.f;
 	Set_BallColor();
@@ -132,11 +119,36 @@ void CBrickBall::Tick(_float fTimeDelta)
 		m_pEffect_Ball->Tick(fTimeDelta);
 	}
 	*/
+	_mat UpMatrix{};
+	_mat	BottomMatrix{};
+	if (m_pTrail != nullptr)
+	{
+		m_pTrail->Set_Color(m_vColor);
+		m_pTrail->On();
+		m_pDistortionTrail->On();
+		if (m_pTransformCom->Get_State(State::Look).z < 0.f)
+		{
+			BottomMatrix = _mat::CreateTranslation(0.15f, 0.f, -0.6f) * m_pTransformCom->Get_World_Matrix();
+			UpMatrix = _mat::CreateTranslation(-0.15f, 0.f, -0.6f) * m_pTransformCom->Get_World_Matrix();
+		}
+		else
+		{
+			BottomMatrix = _mat::CreateTranslation(0.15f, 0.f, -0.8f) * m_pTransformCom->Get_World_Matrix();
+			UpMatrix = _mat::CreateTranslation(-0.15f, 0.f, -0.8f) * m_pTransformCom->Get_World_Matrix();
+		}
+		
+		m_pTrail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
+
+		BottomMatrix = _mat::CreateTranslation(0.2f, -0.3f, 0.f) * m_pTransformCom->Get_World_Matrix();;
+		UpMatrix = _mat::CreateTranslation(-0.2f, -0.3f, 0.f) * m_pTransformCom->Get_World_Matrix();
+		m_pDistortionTrail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
+	}
 }
 
 void CBrickBall::Late_Tick(_float fTimeDelta)
 {
 	m_pTrail->Late_Tick(fTimeDelta);
+	//m_pDistortionTrail->Late_Tick(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 	//if (m_pEffect_Ball)
 	//{
@@ -247,7 +259,7 @@ HRESULT CBrickBall::Init_Effect()
 	SURFACETRAIL_DESC Desc{};
 	Desc.vColor = _color(1.f, 0.5f, 0.1f, 1.f);
 
-	Desc.iNumVertices = 10;
+	Desc.iNumVertices = 12;
 	m_pTrail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 
 	Desc.iPassIndex = 2;
@@ -283,17 +295,16 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 	CCollider* pCollider{ nullptr };
 	_bool isColl{};
 	_uint iWall{};
-	for (_uint i = 0; i < 3; i++)
+	for (iWall = 0; iWall < 3; iWall++)
 	{
-		pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Com_Collider_BrickWall"), i);
+		pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_Wall"), TEXT("Com_Collider_BrickWall"), iWall);
 		if (pCollider == nullptr)
 		{
-			return;
+			break;
 		}
-		isColl = m_pColliderCom->Intersect(pCollider);
-		if (isColl)
+		if (m_pColliderCom->Intersect(pCollider))
 		{
-			iWall = i;
+			isColl = true;
 			break;
 		}
 	}
@@ -327,55 +338,53 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 		m_pTransformCom->LookAt_Dir(m_vDir);
 	}
 
+
 	CCollider* pBarCollider{ nullptr };
-	_bool isBarColl{};
 
-	pBarCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_BrickBar"), TEXT("Com_Collider_Bar"));
-	if (pBarCollider == nullptr)
+	pBarCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickBar"), TEXT("Com_Collider_Bar"));
+	if (pBarCollider != nullptr)
 	{
-		return;
-	}
-	isBarColl = m_pColliderCom->Intersect(pBarCollider);
-
-	if (isBarColl && m_pCurCollider != pBarCollider)
-	{
-		m_isCombo = true;
-		m_pCurCollider = nullptr;
-		m_pCurCollider = pBarCollider;
-		_vec3 vLook = m_pTransformCom->Get_State(State::Look);
-		_vec3 vNormal = pBarCollider->Get_Normal(m_pGameInstance->Get_CollideFace(pBarCollider, m_pColliderCom));
-
-
-		if (CUI_Manager::Get_Instance()->Get_BarDir() == BAR_LEFT)
+		if (m_pColliderCom->Intersect(pBarCollider) && m_pCurCollider != pBarCollider)
 		{
-			vNormal = _vec4(-0.2f, 0.f, 1.f, 0.f);
-		}
-		else if (CUI_Manager::Get_Instance()->Get_BarDir() == BAR_RIGHT)
-		{
-			vNormal =  _vec4(0.2f, 0.f, 1.f, 0.f);
+			m_isCombo = true;
+			m_pCurCollider = nullptr;
+			m_pCurCollider = pBarCollider;
+			_vec3 vLook = m_pTransformCom->Get_State(State::Look);
+			_vec3 vNormal = pBarCollider->Get_Normal(m_pGameInstance->Get_CollideFace(pBarCollider, m_pColliderCom));
+
+
+			if (CUI_Manager::Get_Instance()->Get_BarDir() == BAR_LEFT)
+			{
+				vNormal = _vec4(-0.2f, 0.f, 1.f, 0.f);
+			}
+			else if (CUI_Manager::Get_Instance()->Get_BarDir() == BAR_RIGHT)
+			{
+				vNormal = _vec4(0.2f, 0.f, 1.f, 0.f);
+			}
+
+			vNormal.Normalize();
+			m_vDir = _vec3::Reflect(vLook, vNormal);
+			m_vDir.y = 0.f;
+			m_pTransformCom->LookAt_Dir(m_vDir);
+			m_eCurBrickColor = (BrickColor)m_iBallColor;
 		}
 
-		vNormal.Normalize();
-		m_vDir = _vec3::Reflect(vLook, vNormal);
-		m_vDir.y = 0.f;
-		m_pTransformCom->LookAt_Dir(m_vDir);
-		m_eCurBrickColor = (BrickColor)m_iBallColor;
 	}
 
 
 	CCollider* pBalloonCollider{ nullptr };
 	_bool isBalloonColl{};
-	_uint iNum = m_pGameInstance->Get_LayerSize(LEVEL_VILLAGE, TEXT("Layer_Balloons"));
+	_uint iNum = m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_Balloons"));
 	for (_uint i = 0; i < iNum; i++)
 	{
-		pBalloonCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_Balloons"), TEXT("Com_Collider_Sphere"), i);
+		pBalloonCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_Balloons"), TEXT("Com_Collider_Sphere"), i);
 		if (pBalloonCollider == nullptr)
 		{
-			return;
+			break;
 		}
-		isBalloonColl = m_pColliderCom->Intersect(pBalloonCollider);
-		if (isBalloonColl)
+		if (m_pColliderCom->Intersect(pBalloonCollider))
 		{
+			isBalloonColl = true;
 			break;
 		}
 	}
@@ -395,30 +404,24 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 
 
 	CCollider* pMonCollider{ nullptr };
-	_bool isMonColl{};
 
-	pMonCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_BlackCat"), TEXT("Com_Collider_Bar"));
-	if (pMonCollider == nullptr)
+	pMonCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BlackCat"), TEXT("Com_Collider_Bar"));
+	if (pMonCollider != nullptr)
 	{
-		return;
+		if (m_pColliderCom->Intersect(pMonCollider) && m_pCurCollider != pMonCollider)
+		{
+			m_isCombo = true;
+			m_pCurCollider = nullptr;
+			m_pCurCollider = pMonCollider;
+			_vec3 vLook = m_pTransformCom->Get_State(State::Look);
+			_vec3 vNormal = pMonCollider->Get_Normal(m_pGameInstance->Get_CollideFace(pMonCollider, m_pColliderCom));
+			vNormal.Normalize();
+			m_vDir = _vec3::Reflect(vLook, vNormal);
+			m_vDir.y = 0.f;
+			m_pTransformCom->LookAt_Dir(m_vDir);
+			m_eCurBrickColor = (BrickColor)m_iBallColor;
+		}
 	}
-	isMonColl = m_pColliderCom->Intersect(pMonCollider);
-
-	if (isMonColl && m_pCurCollider != pMonCollider)
-	{
-		m_isCombo = true;
-		m_pCurCollider = nullptr;
-		m_pCurCollider = pMonCollider;
-		_vec3 vLook = m_pTransformCom->Get_State(State::Look);
-		_vec3 vNormal = pMonCollider->Get_Normal(m_pGameInstance->Get_CollideFace(pMonCollider, m_pColliderCom));
-		vNormal.Normalize();
-		m_vDir = _vec3::Reflect(vLook, vNormal);
-		m_vDir.y = 0.f;
-		m_pTransformCom->LookAt_Dir(m_vDir);
-		m_eCurBrickColor = (BrickColor)m_iBallColor;
-	}
-
-
 }
 
 void CBrickBall::Set_BallColor()

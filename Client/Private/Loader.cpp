@@ -1915,15 +1915,12 @@ HRESULT CLoader::Load_Village()
 	//		}
 	//	}
 	//}
-
+	Pivot = _mat::CreateScale(0.003f);
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, TEXT("Prototype_Model_Village"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Object/Midgard/Mesh/Village.hyuntrastatmesh", true, Pivot))))
 	{
 		return E_FAIL;
 	}
-
-
-	Pivot = _mat::CreateScale(0.003f);
 	//_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(90.f));
 
 	strInputFilePath = "../Bin/Resources/StaticMesh/Object/Dungeon/Mesh/";

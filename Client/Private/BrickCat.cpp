@@ -142,7 +142,7 @@ void CBrickCat::Init_State(_float fTimeDelta)
 void CBrickCat::Tick_State(_float fTimeDelta)
 {
 
-	CTransform * pBarTransform = GET_TRANSFORM("Layer_BrickBar", LEVEL_VILLAGE);
+	CTransform * pBarTransform = GET_TRANSFORM("Layer_BrickBar", LEVEL_TOWER);
 	_vec4 vBarPos = pBarTransform->Get_State(State::Pos);
 
 	_float fDistance = __super::Compute_PlayerDistance();
@@ -169,7 +169,7 @@ void CBrickCat::Tick_State(_float fTimeDelta)
 			break;
 		}
 
-		if (fDistance <= 5.f && fDistance >= 2.f)
+		if (fDistance <= 2.f && fDistance >= 2.f)
 		{
 			m_fPosLerpRatio = 0.03f;
 		}
@@ -190,7 +190,7 @@ void CBrickCat::Tick_State(_float fTimeDelta)
 			break;
 		}
 
-		if (fDistance >= 2.f)
+		if (fDistance >= 1.f)
 		{
 			m_Animation.iAnimIndex = RUN;
 			m_Animation.isLoop = true;
@@ -229,11 +229,11 @@ void CBrickCat::Tick_State(_float fTimeDelta)
 		{
 			if (fDistance <= 5.f && fDistance >= 2.f)
 			{
-				m_fPosLerpRatio = 0.03f;
+				m_fPosLerpRatio = 0.1f;
 			}
 			else if (fDistance > 5.f)
 			{
-				m_fPosLerpRatio = 0.05f;
+				m_fPosLerpRatio = 0.1f;
 			}
 
 			_vec3 vSetPos = XMVectorLerp(vMyPos, vTargetPos, m_fPosLerpRatio);
