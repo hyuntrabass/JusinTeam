@@ -162,6 +162,7 @@
     <ClInclude Include="..\Public\BackGround.h" />
     <ClInclude Include="..\Public\BackGround_Mask.h" />
     <ClInclude Include="..\Public\Balloon.h" />
+    <ClInclude Include="..\Public\BlackCat.h" />
     <ClInclude Include="..\Public\Blackhole.h" />
     <ClInclude Include="..\Public\BlackSmith.h" />
     <ClInclude Include="..\Public\BlurTexture.h" />
@@ -219,6 +220,7 @@
     <ClInclude Include="..\Public\ItemMerchant.h" />
     <ClInclude Include="..\Public\ItemSlot.h" />
     <ClInclude Include="..\Public\JobMark.h" />
+    <ClInclude Include="..\Public\Larva_Ball.h" />
     <ClInclude Include="..\Public\Launcher.h" />
     <ClInclude Include="..\Public\Level_Tower.h" />
     <ClInclude Include="..\Public\Level_Village.h" />
@@ -333,6 +335,7 @@
     <ClInclude Include="..\Public\Void23.h" />
     <ClInclude Include="..\Public\VTFMonster.h" />
     <ClInclude Include="..\Public\VTFTest.h" />
+    <ClInclude Include="..\Public\Wasp.h" />
     <ClInclude Include="..\Public\Wearable_Slot.h" />
     <ClInclude Include="..\Public\WorldMap.h" />
     <ClInclude Include="..\public\XBeam.h" />
@@ -347,6 +350,7 @@
     <ClCompile Include="..\Private\BackGround.cpp" />
     <ClCompile Include="..\Private\BackGround_Mask.cpp" />
     <ClCompile Include="..\Private\Balloon.cpp" />
+    <ClCompile Include="..\Private\BlackCat.cpp" />
     <ClCompile Include="..\Private\Blackhole.cpp" />
     <ClCompile Include="..\Private\BlackSmith.cpp" />
     <ClCompile Include="..\Private\BlurTexture.cpp" />
@@ -385,6 +389,7 @@
     <ClCompile Include="..\Private\InfinityTower.cpp" />
     <ClCompile Include="..\Private\Interaction_Anim_Object.cpp" />
     <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp" />
+    <ClCompile Include="..\Private\Larva_Ball.cpp" />
     <ClCompile Include="..\Private\Launcher.cpp" />
     <ClCompile Include="..\Private\Level_Tower.cpp" />
     <ClCompile Include="..\Private\Log.cpp" />
@@ -516,6 +521,7 @@
     <ClCompile Include="..\Private\Void23.cpp" />
     <ClCompile Include="..\Private\VTFMonster.cpp" />
     <ClCompile Include="..\Private\VTFTest.cpp" />
+    <ClCompile Include="..\Private\Wasp.cpp" />
     <ClCompile Include="..\Private\Wearable_Slot.cpp" />
     <ClCompile Include="..\Private\WorldMap.cpp" />
     <ClCompile Include="..\private\XBeam.cpp" />

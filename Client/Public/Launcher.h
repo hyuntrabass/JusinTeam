@@ -11,9 +11,9 @@ public:
 	enum LAUNCHER_TYPE
 	{
 		TYPE_RANDOM_POS,
-		TYPE_FLOOR,
-		TYPE_LASER,
-		TYPE_PIZZA,
+		TYPE_CANNON,
+		TYPE_BLUEGEM,
+		TYPE_BARRICADE,
 		TYPE_END
 	};
 
@@ -29,20 +29,24 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+public:
+	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) override;
+
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
 	CCollider* m_pColliderCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
+	CModel* m_pDestroyModelCom = { nullptr };
 
 	CTexture* m_pDissolveTextureCom = { nullptr };
 
 private:
-	class CEffect_Dummy* m_pFrameEffect = { nullptr };
-	class CEffect_Dummy* m_pBaseEffect = { nullptr };
+	//class CEffect_Dummy* m_pFrameEffect = { nullptr };
+	//class CEffect_Dummy* m_pBaseEffect = { nullptr };
 
-	class CEffect_Dummy* m_pLauncher = { nullptr };
-	class CEffect_Dummy* m_pLauncherParticle = { nullptr };
+	//class CEffect_Dummy* m_pLauncher = { nullptr };
+	//class CEffect_Dummy* m_pLauncherParticle = { nullptr };
 
 
 private:
@@ -66,6 +70,13 @@ private:
 
 private:
 	_bool m_bCreateProjectile = { false };
+
+private:
+	_bool m_bDestroy = { false };
+
+private:
+	static _uint m_iLauncherID;
+	static _uint m_iDestroyCount;
 
 public:
 	HRESULT Add_Components();

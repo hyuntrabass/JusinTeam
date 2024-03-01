@@ -116,6 +116,20 @@ void CEffect_Manager::Delete_Effect(const void* pMatrix)
 	//m_Effects[iCurrLevel].erase(iter);
 }
 
+void CEffect_Manager::Delete_All()
+{
+	for (size_t i = 0; i < LEVEL_END; i++)
+	{
+		for (auto& pEffect : m_Effects[i])
+		{
+			Safe_Release(pEffect.second);
+		}
+		m_Effects[i].clear();
+	}
+
+	m_isReadytoFree = true;
+}
+
 void CEffect_Manager::Clear(_uint iLevelIndex)
 {
 	for (auto& Pair : m_Effects[iLevelIndex])
@@ -195,6 +209,7 @@ HRESULT CEffect_Manager::Read_EffectFile()
 				File.read(reinterpret_cast<_char*>(&Info.fPartiDissolveRatio), sizeof Info.fPartiDissolveRatio);
 				File.read(reinterpret_cast<_char*>(&Info.fPartiAppearRatio), sizeof Info.fPartiAppearRatio);
 				File.read(reinterpret_cast<_char*>(&Info.bChangeDir), sizeof Info.bChangeDir);
+				File.read(reinterpret_cast<_char*>(&Info.bTargetPos), sizeof Info.bTargetPos);
 
 				size_t iNameSize{};
 
@@ -258,13 +273,9 @@ HRESULT CEffect_Manager::Read_EffectFile()
 
 void CEffect_Manager::Free()
 {
-	for (size_t i = 0; i < LEVEL_END; i++)
+	if (not m_isReadytoFree)
 	{
-		for (auto& pEffect : m_Effects[i])
-		{
-			Safe_Release(pEffect.second);
-		}
-		m_Effects[i].clear();
+		Delete_All();
 	}
 
 	Safe_Release(m_pGameInstance);

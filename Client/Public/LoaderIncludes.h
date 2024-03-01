@@ -1,5 +1,7 @@
 #pragma once
 
+#include "BlackCat.h"
+#include "BrickCat.h"
 #include "GlowCube.h"
 #include "TreasureBox.h"
 #include "Pop_Reward.h"
@@ -169,9 +171,11 @@
 #include "Larva.h"
 #include "Scorpion.h"
 #include "RedAnt.h"
+#include "Wasp.h"
 
 #include "Log.h"
 #include "Hook.h"
+#include "Larva_Ball.h"
 
 // SurvivalGame
 #include "SurvivalGame.h"

@@ -20,8 +20,9 @@ struct ParticleParams
 	_mat WorldMatrix{};
 
 	_int bChangeDir{};
+	_int bTargetPos{};
 
-	_vec3 padding{};
+	_vec2 padding{};
 };
 
 class ENGINE_DLL CVIBuffer_Instancing abstract : public CVIBuffer

@@ -221,7 +221,7 @@ void CImgui_Manager::Tick(_float fTimeDelta)
 	
 	if (m_pGameInstance->Key_Down(DIK_B))
 	{
-		CEffect_Manager::Get_Instance()->Clear(LEVEL_TOOL);
+		CEffect_Manager::Get_Instance()->Delete_All();
 	}
 
 	if (m_pPlayer)

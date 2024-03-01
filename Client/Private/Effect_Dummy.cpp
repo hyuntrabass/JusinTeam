@@ -70,6 +70,8 @@ HRESULT CEffect_Dummy::Init(void* pArg)
 		m_shouldRenderBlur = true;
 	}
 
+	m_iHP = 1;
+
 	return S_OK;
 }
 
@@ -90,6 +92,11 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 		{
 			m_pGameInstance->Delete_Light(LEVEL_STATIC, m_strLightTag);
 			m_Effect.hasLight = false;
+		}
+
+		if (m_Effect.iType == ET_PARTICLE or m_Effect.iType == ET_PARTI_DISTORTION)
+		{
+			m_iHP = 0;
 		}
 
 		if (m_Effect.strDissolveTexture.size())
@@ -163,7 +170,12 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 		Param.fDissolveRatio = m_Effect.fPartiDissolveRatio;
 		Param.bApplyGravity = m_Effect.bApplyGravity;
 		Param.WorldMatrix = m_pTransformCom->Get_World_Matrix();
+		if (m_iHP <= 0)
+		{
+			Param.WorldMatrix = _mat::CreateTranslation(_vec3(-3000.f));
+		}
 		Param.bChangeDir = m_Effect.bChangeDir;
+		Param.bTargetPos = m_Effect.bTargetPos;
 
 		m_pParticle->Update(Param);
 		break;
@@ -533,6 +545,8 @@ CGameObject* CEffect_Dummy::Clone(void* pArg)
 
 void CEffect_Dummy::Free()
 {
+	m_pGameInstance->Delete_Light(LEVEL_STATIC, m_strLightTag);
+
 	__super::Free();
 
 	Safe_Release(m_pUnDissolveTextureCom);

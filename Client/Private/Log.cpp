@@ -36,9 +36,10 @@ HRESULT CLog::Init(void* pArg)
     if (FAILED(Add_Components()))
         return E_FAIL;
 
-    m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
+    m_pGameInstance->Register_CollisionObject(this, m_pColliderCom);
 
-    m_iPassIndex = StaticPass_Default;
+    m_iPassIndex = StaticPass_Dissolve;
+    m_fDissolveRatio = 1.f;
 
     random_device rand;
     m_RandomNumber = _randNum(rand());
@@ -48,7 +49,7 @@ HRESULT CLog::Init(void* pArg)
 
 void CLog::Tick(_float fTimeDelta)
 {
-    m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+    m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 
     if (m_IsFall)
     {
@@ -85,7 +86,19 @@ void CLog::Tick(_float fTimeDelta)
             m_fJumpForce -= fTimeDelta * 5.f;
         }
 
-        m_pGameInstance->Attack_Monster(m_pBodyColliderCom, 999, AT_Critical);
+        m_pGameInstance->Attack_Monster(m_pColliderCom, 999, AT_Critical);
+    }
+    else
+    {
+        if (m_iPassIndex == StaticPass_Dissolve)
+        {
+            m_fDissolveRatio -= fTimeDelta;
+            if (m_fDissolveRatio <= 0.f)
+            {
+                m_iPassIndex = StaticPass_Default;
+                m_fDissolveRatio = 0.f;
+            }
+        }
     }
 }
 
@@ -93,7 +106,7 @@ void CLog::Late_Tick(_float fTimeDelta)
 {
     m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 #ifdef _DEBUG
-    m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
+    m_pRendererCom->Add_DebugComponent(m_pColliderCom);
 #endif // DEBUG
 }
 
@@ -171,10 +184,10 @@ HRESULT CLog::Add_Components()
 
 	Collider_Desc ColliderDesc{};
 	ColliderDesc.eType = ColliderType::OBB;
-	ColliderDesc.vExtents = _vec3(0.5f, 0.5f, 2.f);
+	ColliderDesc.vExtents = _vec3(0.1f, 0.5f, 2.f);
 	ColliderDesc.vCenter = _vec3(0.f, ColliderDesc.vExtents.y, 0.f);
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pBodyColliderCom), &ColliderDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &ColliderDesc)))
 	{
 		return E_FAIL;
 	}
@@ -272,6 +285,6 @@ void CLog::Free()
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pRendererCom);
-    Safe_Release(m_pBodyColliderCom);
+    Safe_Release(m_pColliderCom);
     Safe_Release(m_pDissolveTextureCom);
 }

@@ -20,6 +20,7 @@ HRESULT CGlowCube::Init_Prototype()
 
 HRESULT CGlowCube::Init(void* pArg)
 {
+	m_isDefault = ((GLOWCUBE_DESC*)pArg)->isDefault;
 
 	if (FAILED(Add_Components()))
 	{
@@ -31,7 +32,8 @@ HRESULT CGlowCube::Init(void* pArg)
 	m_pParentTransform = ((GLOWCUBE_DESC*)pArg)->pParentTransform;
 	Safe_AddRef(m_pParentTransform);
 
-	m_pTransformCom->Set_Scale(_vec3(1.2f, 1.2f, 1.2f));
+	m_pTransformCom->Set_Scale(_vec3(0.02f, 0.02f, 0.02f));
+	//m_pTransformCom->Set_Scale(_vec3(1.2f, 1.2f, 1.2f));
 	m_pTransformCom->Set_State(State::Pos, m_pParentTransform->Get_State(State::Pos) + m_vPos);
 
 	m_shouldRenderBlur = true;
@@ -40,16 +42,24 @@ HRESULT CGlowCube::Init(void* pArg)
 
 void CGlowCube::Tick(_float fTimeDelta)
 {
-	m_pTransformCom->Set_Scale(_vec3(0.001f, 0.001f, 0.001f));
-	m_fX += fTimeDelta * 0.2f;
-
+	m_pTransformCom->Set_Scale(_vec3(0.015f, 0.015f, 0.015f));
 
 	m_pTransformCom->Set_State(State::Pos, m_pParentTransform->Get_State(State::Pos) + m_vPos);
 }
 
 void CGlowCube::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
+
+	if (m_isDefault)
+	{
+		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	}
+	else
+	{
+		m_shouldRenderBlur = true;
+		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
+	}
+
 }
 
 HRESULT CGlowCube::Render()
@@ -58,27 +68,38 @@ HRESULT CGlowCube::Render()
 	{
 		return E_FAIL;
 	}
-
 	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
 	{
 		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
 			_bool bFailed = true;
 		}
-		/*
-		if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
-		{
-			return E_FAIL;
-		}
-		*/
 
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof _vec4)))
 		{
 			return E_FAIL;
 		}
-
+		if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+		{
+			return E_FAIL;
+		}
 		_bool isBlur = true;
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_isBlur", &isBlur, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		_bool isFalse = { false };
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &isFalse, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &isFalse, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_bSelected", &isFalse, sizeof _bool)))
 		{
 			return E_FAIL;
 		}
@@ -95,7 +116,7 @@ HRESULT CGlowCube::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(StaticPass_MaskDiffEffect)))
+		if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffect)))
 		{
 			return E_FAIL;
 		}
@@ -115,10 +136,19 @@ HRESULT CGlowCube::Add_Components()
 	{
 		return E_FAIL;
 	}
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxMesh_Effect"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	if (m_isDefault)
 	{
-		return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxStatMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+		{
+			return E_FAIL;
+		}
+	}
+	else
+	{
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxMesh_Effect"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+		{
+			return E_FAIL;
+		}
 	}
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_BrickCube"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
@@ -126,7 +156,7 @@ HRESULT CGlowCube::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_T_EFF_Noise_04_BC"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_cubeone"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom))))
 	{
 		return E_FAIL;
 	}

@@ -56,6 +56,12 @@ HRESULT CBalloon::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+	Desc.isDefault = true;
+	m_pDefCube = (CGlowCube*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_GlowCube"), &Desc);
+	if (m_pDefCube == nullptr)
+	{
+		return E_FAIL;
+	}
 	
 	
 	return S_OK;
@@ -70,7 +76,11 @@ void CBalloon::Tick(_float fTimeDelta)
 	m_pBodyColliderCom->Set_Normal();
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
-
+	if (m_pCube != nullptr)
+	{
+		m_pDefCube->Tick(fTimeDelta);
+		m_pCube->Tick(fTimeDelta);
+	}
 	m_pModelCom->Set_Animation(m_Animation);
 
 	Update_BodyCollider();
@@ -83,8 +93,7 @@ void CBalloon::Tick(_float fTimeDelta)
 void CBalloon::Late_Tick(_float fTimeDelta)
 {
 	m_pModelCom->Play_Animation(fTimeDelta);
-	//m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
-
+	//m_pDefCube->Late_Tick(fTimeDelta);
 	m_pCube->Late_Tick(fTimeDelta);
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
@@ -210,10 +219,17 @@ void CBalloon::Tick_State(_float fTimeDelta)
 		m_isColl = m_pBodyColliderCom->Intersect(pCollider);
 		if (m_isColl)
 		{
+			_mat Mat = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"LightningTube_White");
+			Info.pMatrix = &Mat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 2.0f);
+			m_eCurState = STATE_HIT;
 			if (CUI_Manager::Get_Instance()->Get_BrickBallColor() == m_eCurColor)
 			{
-				CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 2.0f);
-				m_eCurState = STATE_HIT;
+				
 			}
 		}
 	}
@@ -248,16 +264,18 @@ void CBalloon::Set_Color()
 	switch (m_eCurColor)
 	{
 	case PINK:
-		m_vColor = _vec4(1.f, 0.56f, 0.93f, 1.f);
+		//m_vColor = _vec4(0.38f, 0.235f, 0.f, 1.f);
+		m_vColor = _vec4(0.27f, 0.14f, 0.36f, 1.f);
 		break;
 	case YELLOW:
-		m_vColor = _vec4(0.94f, 0.77f, 0.2f, 1.f);
+		//m_vColor = _vec4(0.5f, 0.42f, 0.f, 1.f);
+		m_vColor = _vec4(0.143f, 0.267f, 0.321f, 1.f);
 		break;
 	case PURPLE:
-		m_vColor = _vec4(0.63f, 0.4f, 0.9f, 1.f);
+		m_vColor = _vec4(0.27f, 0.14f, 0.36f, 1.f);
 		break;
 	case BLUE:
-		m_vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
+		m_vColor = _vec4(0.143f, 0.267f, 0.321f, 1.f);
 		break;
 	case COLOR_END:
 		if (m_eCurState != STATE_DIE)
@@ -271,6 +289,7 @@ void CBalloon::Set_Color()
 	}
 	if (m_pCube != nullptr)
 	{
+		m_pDefCube->Set_Color(m_vColor);
 		m_pCube->Set_Color(m_vColor);
 	}
 }
@@ -403,6 +422,7 @@ void CBalloon::Free()
 	__super::Free();
 
 	Safe_Release(m_pCube);
+	Safe_Release(m_pDefCube);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
