@@ -2428,6 +2428,11 @@ HRESULT CLoader::Load_Tower()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Larva_Ball_Object"), CLarva_Ball::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	//Ready_Cesco
 	{
 		const TCHAR* pGetPath = TEXT("../Bin/Data/SescoMap_MapData.dat");

@@ -1,4 +1,5 @@
 #include "Larva.h"
+#include "Larva_Ball.h"
 
 CLarva::CLarva(_dev pDevice, _context pContext)
 	:CVTFMonster(pDevice, pContext)
@@ -62,7 +63,6 @@ void CLarva::Late_Tick(_float fTimeDelta)
 	__super::Late_Tick(fTimeDelta);
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
-
 #endif // DEBUG
 }
 
@@ -155,11 +155,27 @@ void CLarva::Tick_State(_float fTimeDelta)
 		_float fCurrentAnimPos = m_pModelCom->Get_CurrentAnimPos();
 		if (fCurrentAnimPos >= 58.f && fCurrentAnimPos <= 61.f && not m_HasAttacked)
 		{
+			CLarva_Ball::LARVABALL_DESC LarvaBallDesc{};
+			_vec3 vPos = m_pTransformCom->Get_CenterPos();
+			vPos.y = 1.f;
+			LarvaBallDesc.vPosition = vPos;
+
+			_vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
+			vPlayerPos.y = 1.f;
+			LarvaBallDesc.vDirection = vPlayerPos - vPos;
+			//LarvaBallDesc.vDirection.Normalize();
+			LarvaBallDesc.vDirection.w = 0.f;
+			
+			if (FAILED(m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_larva_Ball"), TEXT("Prototype_GameObject_Larva_Ball_Object"), &LarvaBallDesc)))
+				return;
+
+			m_HasAttacked = true;
 		}
 
 		if (m_pModelCom->IsAnimationFinished(Anim_attack01))
 		{
 			m_eState = State_Idle;
+			m_HasAttacked = false;
 		}
 		break;
 	}

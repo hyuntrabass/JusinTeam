@@ -171,6 +171,7 @@
 
 #include "Log.h"
 #include "Hook.h"
+#include "Larva_Ball.h"
 
 // SurvivalGame
 #include "SurvivalGame.h"
