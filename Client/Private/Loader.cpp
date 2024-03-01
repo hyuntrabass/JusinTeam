@@ -1898,7 +1898,7 @@ HRESULT CLoader::Load_Village()
 	//		}
 	//	}
 	//}
-
+	Pivot = _mat::CreateScale(0.003f);
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, TEXT("Prototype_Model_Village"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Object/Midgard/Mesh/Village.hyuntrastatmesh", true, Pivot))))
 	{

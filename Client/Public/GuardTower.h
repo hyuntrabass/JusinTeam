@@ -14,6 +14,13 @@ struct GuardTowerInfo
 class CGuardTower final : public CGameObject
 {
 public:
+	enum PATTERN_TYPE {
+		PATTERN_TURN,
+		PATTERN_ANGLE,
+		PATTERN_CIRCLE,
+		PATTERN_END
+	};
+
 	enum GUARDTOWER_ANIM {
 		ANIM_DIE,
 		ANIM_IDLE,
@@ -56,15 +63,24 @@ public:
 	void Tick_State(_float fTimeDelta);
 	void View_Detect_Range(_float fTimeDelta);
 
-	_bool Compute_Angle(_float fAngle);
 	_vec4 Compute_PlayerPos();
 	_vec4 Compute_PlayerLook();
 	_float Compute_PlayerDistance();
-	_vec4 Compute_Player_To_Dir();
+	_vec4 Compute_Player_To_Dir(_vec4 vPos);
+
+	void Compute_Lazer_Dir();
 
 	void Create_Range();
 
+	void Create_Lazer();
+
+	void Create_Attack_Lazer();
+
 	void Delete_Range();
+
+	void Delete_Lazer();
+
+	void Delete_Attack_Lazer();
 
 
 private:
@@ -81,9 +97,12 @@ private:
 
 	class CEffect_Dummy* m_pBaseEffect{ nullptr };
 	class CEffect_Dummy* m_pFrameEffect{ nullptr };
+	class CEffect_Dummy* m_pThreatEffect{ nullptr };
+	class CEffect_Dummy* m_pAttackEffect{ nullptr };
 
 private:
 	GuardTowerInfo m_Info{};
+	PATTERN_TYPE m_Pattern_Type{ PATTERN_END };
 	EffectInfo Info{};
 	EFFECT_DIR m_Dir{DIR_END};
 	_uint m_iPassIndex{};
@@ -91,6 +110,7 @@ private:
 	_float m_fDissolveRatio{ 0.f };
 	_float m_fIdleTime{ 0.f };
 	_float m_fDetectTime{ 0.f };
+	_float m_fAttackTime{ 0.f };
 
 	_bool m_bChangePass{false};
 	_bool m_bDamaged{ false };
@@ -101,8 +121,11 @@ private:
 	_float m_fHittedTime{ 0.f };
 	_uint m_iIndex{ 0 };
 	_mat m_GuardTowerMatrix{};
-	_mat EffectMatrix{};
+	_mat m_EffectMatrix{};
+	_mat m_LazerMatrix{};
 	_vec4 m_vLook{};
+	_vec4 m_vCurPlayerPos{};
+
 
 private:
 	ANIM_DESC m_Animation{};

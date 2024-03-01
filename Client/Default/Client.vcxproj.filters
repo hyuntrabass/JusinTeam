@@ -523,6 +523,9 @@
     <Filter Include="02.GameObjects\07. NPC\06. GuardTower">
       <UniqueIdentifier>{065bad8b-d57c-4d7f-8167-aac0a06c6cf2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\07. NPC\06. GuardTower\Lazer">
+      <UniqueIdentifier>{243a9605-d661-4a3e-8b2c-88670f6aeb12}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1056,9 +1059,6 @@
     <ClInclude Include="..\Public\CescoGame.h">
       <Filter>02.GameObjects\16.SescoGame</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Scorpion.h">
-      <Filter>02.GameObjects\16.SescoGame</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\BrickCat.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
@@ -1085,6 +1085,10 @@
     </ClInclude>
     <ClInclude Include="..\Public\Guard.h">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Scorpion.h" />
+    <ClInclude Include="..\Public\TowerLazer.h">
+      <Filter>02.GameObjects\07. NPC\06. GuardTower\Lazer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1617,9 +1621,6 @@
     <ClCompile Include="..\Private\CescoGame.cpp">
       <Filter>02.GameObjects\16.SescoGame</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Scorpion.cpp">
-      <Filter>02.GameObjects\16.SescoGame</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\BrickCat.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
@@ -1646,6 +1647,10 @@
     </ClCompile>
     <ClCompile Include="..\Private\Guard.cpp">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Scorpion.cpp" />
+    <ClCompile Include="..\Private\TowerLazer.cpp">
+      <Filter>02.GameObjects\07. NPC\06. GuardTower\Lazer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
