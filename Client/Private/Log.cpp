@@ -159,7 +159,7 @@ HRESULT CLog::Add_Components()
         return E_FAIL;
     }
 
-    if (FAILED(__super::Add_Component(LEVEL_VILLAGE, TEXT("Prototype_Model_Log"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+    if (FAILED(__super::Add_Component(LEVEL_TOWER, TEXT("Prototype_Model_Log"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
     {
         return E_FAIL;
     }
