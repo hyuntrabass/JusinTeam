@@ -74,7 +74,7 @@ void CDragon_Boss::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_RIGHT))
 	{
-		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Blackhole"), TEXT("Prototype_GameObject_Blackhole"));
+		//m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Blackhole"), TEXT("Prototype_GameObject_Blackhole"));
 	}
 
 	Init_State(fTimeDelta);

@@ -93,7 +93,7 @@ void CBrickBall::Tick(_float fTimeDelta)
 	}
 
 
-
+	/*
 	if (m_pGameInstance->Key_Down(DIK_UP, InputChannel::GamePlay))
 	{
 		m_iBallColor++;
@@ -102,6 +102,7 @@ void CBrickBall::Tick(_float fTimeDelta)
 			m_iBallColor = 0;
 		}
 	}
+	*/
 	//RayCast();
 	Check_Collision(fTimeDelta);
 	m_pTransformCom->Set_Speed(m_fSpeed);
@@ -289,6 +290,7 @@ HRESULT CBrickBall::Init_Effect()
 
 void CBrickBall::Check_Collision(_float fTimeDelta)
 {
+	m_isBarColl = false;
 	m_isCombo = false;
 	Update_Collider();
 
@@ -341,11 +343,12 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 
 	CCollider* pBarCollider{ nullptr };
 
-	pBarCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickBar"), TEXT("Com_Collider_Bar"));
+	pBarCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickGame"), TEXT("BrickBarCol"));
 	if (pBarCollider != nullptr)
 	{
 		if (m_pColliderCom->Intersect(pBarCollider) && m_pCurCollider != pBarCollider)
 		{
+			m_isBarColl = true;
 			m_isCombo = true;
 			m_pCurCollider = nullptr;
 			m_pCurCollider = pBarCollider;
@@ -366,7 +369,14 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 			m_vDir = _vec3::Reflect(vLook, vNormal);
 			m_vDir.y = 0.f;
 			m_pTransformCom->LookAt_Dir(m_vDir);
-			m_eCurBrickColor = (BrickColor)m_iBallColor;
+			_vec4 vRight = m_vDir - _vec4(1.f, 0.f, 0.f, 0.f).Get_Normalized();
+			_vec4 vLeft = m_vDir - _vec4(-1.f, 0.f, 0.f, 0.f).Get_Normalized();
+			if (vRight.Length() <= 0.1f || vLeft.Length() <= 0.1f)
+			{
+				m_vDir.z = 1.f;
+			}
+	
+			//m_eCurBrickColor = (BrickColor)m_iBallColor;
 		}
 
 	}
@@ -419,7 +429,6 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 			m_vDir = _vec3::Reflect(vLook, vNormal);
 			m_vDir.y = 0.f;
 			m_pTransformCom->LookAt_Dir(m_vDir);
-			m_eCurBrickColor = (BrickColor)m_iBallColor;
 		}
 	}
 }

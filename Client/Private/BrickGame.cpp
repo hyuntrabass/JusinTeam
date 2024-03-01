@@ -13,9 +13,6 @@
 #include "BrickBar.h"
 #include "BrickBall.h"
 
-//const _float CBrickGame::m_iRow = 7;
-//const _float CBrickGame::m_iCOl = 7;
-
 CBrickGame::CBrickGame(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -89,7 +86,7 @@ void CBrickGame::Tick(_float fTimeDelta)
 	{
 		m_iCombo = 0;
 		CBrickBall::BALL_DESC Desc{};
-		CTransform* pTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickBar"), TEXT("Com_Transform"));
+		CTransform* pTransform = m_pBar->Get_Transform();
 		_vec3 vPos = pTransform->Get_State(State::Pos);
 		Desc.vPos = _vec3(vPos.x, vPos.y, vPos.z - 2.f);
 		m_pBall = (CBrickBall*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BrickBall"), &Desc);
@@ -113,6 +110,13 @@ void CBrickGame::Tick(_float fTimeDelta)
 		}
 	}
 
+	if (m_pBall != nullptr)
+	{
+		if (m_pBall->Is_BarColl())
+		{
+			m_pBall->Set_CurrentBallColor(m_pBar->Get_CurrentColor());
+		}
+	}
 	/*
 	
 	for (size_t i = 0; i < BRICKROW; i++)
@@ -143,6 +147,10 @@ void CBrickGame::Tick(_float fTimeDelta)
 	{
 		m_pBall->Tick(fTimeDelta);
 	}
+	if (m_pBar)
+	{
+		m_pBar->Tick(fTimeDelta);
+	}
 	if (m_pCombo)
 	{
 		m_pCombo->Set_TargetNum(m_iCombo);
@@ -157,7 +165,7 @@ void CBrickGame::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
-	//m_pBackGround->Late_Tick(fTimeDelta);
+	m_pBackGround->Late_Tick(fTimeDelta);
 	/*
 	
 	for (size_t i = 0; i < BRICKROW; i++)
@@ -174,6 +182,10 @@ void CBrickGame::Late_Tick(_float fTimeDelta)
 	if (m_pBall)
 	{
 		m_pBall->Late_Tick(fTimeDelta);
+	}
+	if (m_pBar)
+	{
+		m_pBar->Late_Tick(fTimeDelta);
 	}
 	if (m_pCombo)
 	{
@@ -225,10 +237,23 @@ HRESULT CBrickGame::Add_Parts()
 	{
 		for (_uint j = 0; j < BRICKCOL; j++)
 		{
+			_vec2 vCenterPos = _vec2(-2000.f, -2000.f);
+			_vec2 vSize = _vec2(5.f, 5.f);
+			RECT rcRect = {
+				  (LONG)(vCenterPos.x - vSize.x * 0.5f),
+				  (LONG)(vCenterPos.y - vSize.y * 0.5f),
+				  (LONG)(vCenterPos.x + vSize.x * 0.5f),
+				  (LONG)(vCenterPos.y + vSize.y * 0.5f)
+			};
+
 			CBalloon::BALLOON_DESC Desc{};
 			Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
 			Desc.vPosition = _vec3(vStartPos.x - 2.0f * j, vStartPos.y, vStartPos.z + 2.0f * i);
-
+			POINT ptPos = { vStartPos.x, vStartPos.z };
+			if (PtInRect(&rcRect, ptPos))
+			{
+				continue;
+			}
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Balloons"), TEXT("Prototype_GameObject_Balloon"), &Desc)))
 			{
 				return E_FAIL;
@@ -291,17 +316,15 @@ void CBrickGame::Init_Game()
 	m_isActive = true;
 	CTrigger_Manager::Get_Instance()->Teleport(TS_Minigame);
 
-	if (m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_BrickBar")) == 0)
+	if (not m_pBar)
 	{
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_BrickBar"), TEXT("Prototype_GameObject_BrickBar"))))
-		{
-			return;
-		}
+		m_pBar = (CBrickBar*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BrickBar"));
 	}
 	if (m_pBall == nullptr)
 	{
+
 		CBalloon::BALLOON_DESC Desc{};
-		CTransform* pTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickBar"), TEXT("Com_Transform"));
+		CTransform* pTransform = m_pBar->Get_Transform();
 		_vec3 vPos = pTransform->Get_State(State::Pos);
 		Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
 		Desc.vPosition = _vec3(vPos.x, vPos.y, vPos.z - 2.f);
@@ -362,6 +385,22 @@ CComponent* CBrickGame::Find_Component(const wstring& strComTag)
 			return nullptr;
 		}
 		return m_pBall->Get_BrickBallCollider();
+	}
+	else if (strComTag == TEXT("BrickBarCol"))
+	{
+		if (not m_pBar)
+		{
+			return nullptr;
+		}
+		return m_pBar->Get_BrickBarCollider();
+	}
+	else if (strComTag == TEXT("BrickBarTransform"))
+	{
+		if (not m_pBar)
+		{
+			return nullptr;
+		}
+		return m_pBar->Get_Transform();
 	}
 	else
 	{

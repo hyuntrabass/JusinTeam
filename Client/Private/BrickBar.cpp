@@ -51,14 +51,8 @@ HRESULT CBrickBar::Init(void* pArg)
 	m_vColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	m_shouldRenderBlur = true;
 
+	m_eCurBrickColor = BLUE;
 
-	/*
-	m_pPet = (CPet_Cat*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Pet_Cat"));
-	if (m_pPet == nullptr)
-	{
-		return E_FAIL;
-	}
-	*/
 	return S_OK;
 }
 
@@ -81,6 +75,31 @@ void CBrickBar::Tick(_float fTimeDelta)
 		vPos.x -= fTimeDelta * 10.f; 
 		m_pTransformCom->Set_State(State::Pos, vPos);
 	}
+
+	if (!m_isChanged && m_pGameInstance->Key_Down(DIK_UP, InputChannel::GamePlay))
+	{
+		m_iBallColor++;
+
+		if (m_iBallColor > (_uint)COLOR_END)
+		{
+			m_iBallColor = 0;
+		}
+		m_isChanged = true;
+	}
+	if (m_isChanged)
+	{
+		if (m_fTime >= 90.f)
+		{
+			m_eCurBrickColor = (BrickColor)m_iBallColor;
+			m_fTime = 0.f;
+			m_isChanged = false;
+		}
+		m_fTime += fTimeDelta * 150.f;
+		m_pTransformCom->Rotation(_vec4(1.f, 0.f, 0.f, 0.f), m_fTime);
+	}
+
+	Set_BarColor();
+
 
 	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
 
@@ -165,6 +184,29 @@ void CBrickBar::Update_Collider()
 }
 
 
+
+void CBrickBar::Set_BarColor()
+{
+	switch (m_eCurBrickColor)
+	{
+	case PINK:
+		m_vColor = _vec4(1.f, 0.56f, 0.93f, 1.f);
+		break;
+	case YELLOW:
+		m_vColor = _vec4(0.94f, 0.77f, 0.2f, 1.f);
+		break;
+	case PURPLE:
+		m_vColor = _vec4(0.63f, 0.4f, 0.9f, 1.f);
+		break;
+	case BLUE:
+		m_vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
+		break;
+	case COLOR_END:
+		break;
+	default:
+		break;
+	}
+}
 
 HRESULT CBrickBar::Add_Components()
 {
