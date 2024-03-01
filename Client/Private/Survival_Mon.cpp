@@ -173,6 +173,10 @@ void CSurvival_Mon::Tick(_float fTimeDelta)
 			Info.pMatrix = &FrameMatrix;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
+			if (fDistance <= 1.8f)
+			{
+				m_pGameInstance->Attack_Player(nullptr, rand() % 10, MonAtt_Hit);
+			}
 		}
 
 	}

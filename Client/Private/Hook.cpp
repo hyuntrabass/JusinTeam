@@ -42,7 +42,6 @@ void CHook::Tick(_float fTimeDelta)
     }
     m_pTransformCom->Go_Straight(fTimeDelta);
     m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
-
     m_bHadCollision = false;
 
     if (!m_bHadCollision)
@@ -136,7 +135,12 @@ HRESULT CHook::Render()
 
 _vec4 CHook::Get_Position()
 {
-    return m_pTransformCom->Get_State(State::Pos);
+    _vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+    _vec4 vLook = m_pTransformCom->Get_State(State::Look);
+    vLook.Normalize();
+    vPos += vLook *1.3f;
+    vPos.y -= 0.4f;
+    return vPos;
 }
 
 HRESULT CHook::Add_Components()
@@ -151,7 +155,7 @@ HRESULT CHook::Add_Components()
         return E_FAIL;
     }
 
-    if (FAILED(__super::Add_Component(LEVEL_VILLAGE, TEXT("Prototype_Model_Hook"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+    if (FAILED(__super::Add_Component(LEVEL_TOWER, TEXT("Prototype_Model_Hook"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
     {
         return E_FAIL;
     }

@@ -3,29 +3,12 @@
 Animation Models : Start Converting...
 1. Normally Anim Model	2. For VTF Model 3. Part Model
 1
-Converting... Balloon.fbx
+Converting... StoneTower.fbx
 Read File Succssefully
 Animation name list: 
-Mon_water_balloon_A.ao|Attack
-Mon_water_balloon_A.ao|die
-Mon_water_balloon_A.ao|Idle
-Mon_water_balloon_A.ao|Mon_water_balloon_A_matAction
-Mon_water_balloon_A.ao|Mon_water_balloon_A_matAction.001
-Mon_water_balloon_A.ao|Run
-Mon_water_balloon_A.ao|Shader NodetreeAction
-Mon_water_balloon_A.ao|Skill_End
-Mon_water_balloon_A.ao|Skill_Loop
-Mon_water_balloon_A.ao|Skill_Start
-Converting... BlackCat.fbx
-Read File Succssefully
-Animation name list: 
-Pet_10_A.ao|collect
-Pet_10_A.ao|Emotion
-Pet_10_A.ao|Idle
-Pet_10_A.ao|Run
-Pet_10_A.ao|teleport_end
-Pet_10_A.ao|teleport_start
+War_StoneTower.ao|War_StoneTower.ao|War_StoneTower.ao|destroy
+War_StoneTower.ao|War_StoneTower.ao|War_StoneTower.ao|idle
 Animation Models : Convert Success!
 
-2 Animation Models
+1 Animation Models
 are Successfully Converted as hyuntramesh!!

@@ -210,7 +210,7 @@ void CBalloon::Tick_State(_float fTimeDelta)
 	case Client::CBalloon::STATE_IDLE:
 	{
 
-		CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_BrickGame"), TEXT("BrickBall"));
+		CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickGame"), TEXT("BrickBall"));
 		if (pCollider == nullptr)
 		{
 			return;

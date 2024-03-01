@@ -17,7 +17,7 @@ CProjectile::CProjectile(const CProjectile& rhs)
 
 HRESULT CProjectile::Init_Prototype()
 {
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CProjectile::Init(void* pArg)
@@ -36,6 +36,11 @@ HRESULT CProjectile::Init(void* pArg)
 		Info.isFollow = true;
 		m_pBall = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Out_Yellow");
+		Info.pMatrix = &m_UpdateMatrix;
+		Info.isFollow = true;
+		m_pBallOut = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
 		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Parti_Yellow");
 		Info.pMatrix = &m_UpdateMatrix;
 		Info.isFollow = true;
@@ -44,7 +49,7 @@ HRESULT CProjectile::Init(void* pArg)
 		_vec4 vLauncherLook = m_ProjectileDesc.pLauncherTransform->Get_State(State::Look).Get_Normalized();
 		_vec4 vDir = _vec4::Transform(vLauncherLook, _mat::CreateRotationY(XMConvertToRadians(45.f * m_iProjectileID)));
 
-		m_pTransformCom->Set_Position(m_ProjectileDesc.vStartPos);
+		m_pTransformCom->Set_Position(m_ProjectileDesc.vStartPos + _vec3(0.f, 1.f, 0.f));
 		m_pTransformCom->LookAt_Dir(vDir);
 
 		++m_iProjectileID;
@@ -54,7 +59,7 @@ HRESULT CProjectile::Init(void* pArg)
 			m_iProjectileID = 0;
 		}
 	}
-		break;
+	break;
 
 	case Client::CProjectile::TYPE_FLOOR:
 
@@ -91,7 +96,7 @@ HRESULT CProjectile::Init(void* pArg)
 
 	}
 
-		break;
+	break;
 
 	case Client::CProjectile::TYPE_GUIDED_MISSILE:
 
@@ -100,7 +105,7 @@ HRESULT CProjectile::Init(void* pArg)
 
 		m_UpdateMatrix = _mat::CreateScale(0.75f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 1.f, 0.f));
 
-		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Galaxy");
+		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_White");
 		Info.pMatrix = &m_UpdateMatrix;
 		Info.isFollow = true;
 		m_pBall = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
@@ -114,7 +119,7 @@ HRESULT CProjectile::Init(void* pArg)
 		m_pTransformCom->Set_Speed(rand() % 10 + 5);
 	}
 
-		break;
+	break;
 
 	case Client::CProjectile::TYPE_TANGHURU:
 
@@ -151,11 +156,15 @@ HRESULT CProjectile::Init(void* pArg)
 		m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 	}
 
-		break;
+	break;
 	}
 
+	if (FAILED(Add_Components()))
+	{
+		return E_FAIL;
+	}
 
-    return S_OK;
+	return S_OK;
 }
 
 void CProjectile::Tick(_float fTimeDelta)
@@ -170,6 +179,7 @@ void CProjectile::Tick(_float fTimeDelta)
 		{
 			Kill();
 			Safe_Release(m_pBall);
+			Safe_Release(m_pBallOut);
 			Safe_Release(m_pBallParticle);
 		}
 
@@ -180,12 +190,20 @@ void CProjectile::Tick(_float fTimeDelta)
 		if (m_pBall && m_pBallParticle)
 		{
 			m_pBall->Tick(fTimeDelta);
+			m_pBallOut->Tick(fTimeDelta);
 			m_pBallParticle->Tick(fTimeDelta);
 		}
+
+		m_pGameInstance->Attack_Player(m_pColliderCom, rand() % 6, MonAtt_Hit);
 
 		break;
 
 	case Client::CProjectile::TYPE_FLOOR:
+
+	{
+		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+		_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+		_float fDistance = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Length();
 
 		m_UpdateMatrix = _mat::CreateScale(m_fCircleRange) * _mat::CreateRotationX(XMConvertToRadians(90.f))
 			* _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.1f, 0.f)));
@@ -208,6 +226,11 @@ void CProjectile::Tick(_float fTimeDelta)
 				Info.pMatrix = &Matrix;
 				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
+				if (fDistance <= 2.f)
+				{
+					m_pGameInstance->Attack_Player(nullptr, rand() % 10, MonAtt_Hit);
+				}
+
 				//Matrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 1.f, 0.f));
 				//Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Explode_Parti_Blue");
 				//Info.pMatrix = &Matrix;
@@ -225,6 +248,7 @@ void CProjectile::Tick(_float fTimeDelta)
 			m_pBaseEffect->Tick(fTimeDelta);
 			m_pFrameEffect->Tick(fTimeDelta);
 		}
+	}
 
 		break;
 
@@ -246,6 +270,8 @@ void CProjectile::Tick(_float fTimeDelta)
 			m_pBall->Tick(fTimeDelta);
 			//m_pBallParticle->Tick(fTimeDelta);
 		}
+
+		m_pGameInstance->Attack_Player(m_pColliderCom, rand() % 6, MonAtt_Hit);
 
 		break;
 	case Client::CProjectile::TYPE_TANGHURU:
@@ -281,13 +307,17 @@ void CProjectile::Tick(_float fTimeDelta)
 			}
 		}
 
-
 		m_UpdateMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) /*+ _vec3(0.f, 1.f, 0.f)*/);
+
+		m_pGameInstance->Attack_Player(m_pColliderCom, rand() % 6, MonAtt_Hit);
 
 		break;
 	}
 
-
+	if (m_pColliderCom)
+	{
+		m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+	}
 
 }
 
@@ -300,6 +330,7 @@ void CProjectile::Late_Tick(_float fTimeDelta)
 		if (m_pBall && m_pBallParticle)
 		{
 			m_pBall->Late_Tick(fTimeDelta);
+			m_pBallOut->Late_Tick(fTimeDelta);
 			m_pBallParticle->Late_Tick(fTimeDelta);
 		}
 
@@ -336,21 +367,96 @@ void CProjectile::Late_Tick(_float fTimeDelta)
 
 		break;
 	}
+
+#ifdef _DEBUG
+	if (m_pColliderCom)
+	{
+		m_pRendererCom->Add_DebugComponent(m_pColliderCom);
+	}
+#endif
+
 }
 
 HRESULT CProjectile::Render()
 {
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CProjectile::Add_Components()
 {
-    return S_OK;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
+	{
+		return E_FAIL;
+	}
+
+	switch (m_ProjectileDesc.eType)
+	{
+	case Client::CProjectile::TYPE_RANDOM_POS:
+	{
+		Collider_Desc CollDesc = {};
+		CollDesc.eType = ColliderType::Sphere;
+		CollDesc.vCenter = _vec3(0.f);
+		CollDesc.fRadius = 0.3f;
+
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+			TEXT("Com_Collider_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))
+		{
+			return E_FAIL;
+		}
+	}
+	break;
+
+	case Client::CProjectile::TYPE_FLOOR:
+
+	{
+
+	}
+
+	break;
+
+	case Client::CProjectile::TYPE_GUIDED_MISSILE:
+
+	{
+		Collider_Desc CollDesc = {};
+		CollDesc.eType = ColliderType::Sphere;
+		CollDesc.vCenter = _vec3(0.f);
+		CollDesc.fRadius = 0.3f;
+
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+			TEXT("Com_Collider_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))
+		{
+			return E_FAIL;
+		}
+
+	}
+
+	break;
+
+	case Client::CProjectile::TYPE_TANGHURU:
+
+	{
+		Collider_Desc CollDesc = {};
+		CollDesc.eType = ColliderType::Sphere;
+		CollDesc.vCenter = _vec3(0.f);
+		CollDesc.fRadius = 0.3f;
+
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+			TEXT("Com_Collider_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))
+		{
+			return E_FAIL;
+		}
+	}
+
+	break;
+	}
+
+
+	return S_OK;
 }
 
 HRESULT CProjectile::Bind_ShaderResources()
 {
-    return S_OK;
+	return S_OK;
 }
 
 CProjectile* CProjectile::Create(_dev pDevice, _context pContext)
@@ -384,6 +490,7 @@ void CProjectile::Free()
 	__super::Free();
 
 	Safe_Release(m_pBall);
+	Safe_Release(m_pBallOut);
 	Safe_Release(m_pBallParticle);
 
 	Safe_Release(m_pFrameEffect);
@@ -392,4 +499,7 @@ void CProjectile::Free()
 	Safe_Release(m_pEffect[0]);
 	Safe_Release(m_pEffect[1]);
 	Safe_Release(m_pEffect[2]);
+
+	Safe_Release(m_pColliderCom);
+	Safe_Release(m_pRendererCom);
 }

@@ -121,7 +121,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 		if (m_pGameInstance->Key_Down(DIK_UP))
 		{
-			m_eCurStage = STAGE01;
+			m_eCurStage = STAGE03;
 		}
 
 		break;
@@ -143,7 +143,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 		if (m_iCount >= 5)
 		{
-			m_eCurStage = STAGE02;
+			m_eCurStage = STAGE_INIT;
 		}
 
 		break;
@@ -176,7 +176,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 		if (m_iCount >= 5)
 		{
-			m_eCurStage = STAGE03;
+			m_eCurStage = STAGE_INIT;
 		}
 
 		break;
@@ -205,7 +205,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 		if (m_iCount >= 4)
 		{
-			m_eCurStage = STAGE04;
+			m_eCurStage = STAGE_INIT;
 		}
 
 		break;
@@ -214,7 +214,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 		if (m_fTime[0] >= 15.f)
 		{
-			m_eCurStage = STAGE05;
+			m_eCurStage = STAGE_INIT;
 		}
 
 		m_strStage = L"스테이지 4";
@@ -253,7 +253,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 		if (m_iCount >= 30)
 		{
-			m_eCurStage = STAGE01;
+			m_eCurStage = STAGE_INIT;
 		}
 
 		break;

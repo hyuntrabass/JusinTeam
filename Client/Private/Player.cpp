@@ -1303,6 +1303,13 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 	{
 		if (m_eState != Hook)
 		{
+			if (m_bIsMount)
+			{
+				m_pCam_Manager->Set_RidingZoom(false);
+				Safe_Release(m_pRiding);
+				m_bIsMount = false;
+			}
+
 			m_eState = Hook;
 		}
 		return;
@@ -2177,12 +2184,14 @@ void CPlayer::Common_Attack()
 		m_iAttackCombo = 0;
 	}
 
-	m_Animation.bSkipInterpolation = false;
 	m_iCurrentSkill_Index = 0;
 	m_bComboZoom = false;
 	m_bAttacked = false;
 	m_bReadyMove = false;
 	m_Animation.isLoop = false;
+	m_Animation.bSkipInterpolation = true;
+	m_hasJumped = false;
+	m_iSuperArmor = {};
 
 	if (!m_bLockOn)
 	{
@@ -2510,22 +2519,22 @@ void CPlayer::Return_Attack_IdleForm()
 	m_Animation.fAnimSpeedRatio = 3.f;
 	if (m_Current_Weapon == WP_SWORD)
 	{
-		if (m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack01_A))
+		if (m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack01_A) && m_iAttackCombo==1)
 		{
 			m_Animation.iAnimIndex = Anim_Assassin_Attack01_B;
 			m_bReadyMove = true;
 		}
-		else if (m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack02_A))
+		else if (m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack02_A) && m_iAttackCombo == 2)
 		{
 			m_Animation.iAnimIndex = Anim_Assassin_Attack02_B;
 			m_bReadyMove = true;
 		}
-		else if (m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack03_A))
+		else if (m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack03_A) && m_iAttackCombo == 3)
 		{
 			m_Animation.iAnimIndex = Anim_Assassin_Attack03_B;
 			m_bReadyMove = true;
 		}
-		else if (m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack04_A))
+		else if (m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack04_A) && m_iAttackCombo == 4)
 		{
 			m_Animation.iAnimIndex = Anim_Assassin_Attack04_B;
 			m_bReadyMove = true;
@@ -4647,6 +4656,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 	case Client::CPlayer::Collect_End:
 		if (m_pModelCom->IsAnimationFinished(Anim_Collect_end))
 		{
+			m_bMove_AfterSkill = true;
 			m_eState = Idle;
 		}
 		break;

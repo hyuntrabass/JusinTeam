@@ -47,8 +47,8 @@ void CEtc_Object::Tick(_float fTimeDelta)
 
 void CEtc_Object::Late_Tick(_float fTimeDelta)
 {
-	//CCollider* pCameraCollider = dynamic_cast<CCollider*>(m_pGameInstance->Find_Prototype(L"Prototype_GameObject_Camera_Main")->Find_Component(L"Com_Collider"));
 	CCollider* pCameraCollider = dynamic_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_STATIC, L"Layer_Camera", L"Com_Collider"));
+	
 	if (m_pColliderCom->Intersect(pCameraCollider))
 	{
 		__super::Late_Tick(fTimeDelta);
