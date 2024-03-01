@@ -1868,38 +1868,6 @@ HRESULT CLoader::Load_Village()
 				return S_OK;
 
 			wstring strPrototypeTag = TEXT("Prototype_Model_") + entry.path().stem().wstring();
-			if (strPrototypeTag == L"Prototype_Model_BrickMap")
-			{
-				DungeonPivot = _mat::CreateScale(1.7f);
-				continue;
-			}
-			else if (strPrototypeTag == L"Prototype_Model_DragonMap")
-			{
-				DungeonPivot = _mat::CreateScale(0.5f);
-				continue;
-			}
-			else if (strPrototypeTag == L"Prototype_Model_BossRoom")
-			{
-				DungeonPivot = _mat::CreateScale(0.005f);
-				continue;
-			}
-			else if (strPrototypeTag == L"Prototype_Model_Survival_Map")
-			{
-				DungeonPivot = _mat::CreateScale(0.4f);
-				continue;
-			}
-			else if (strPrototypeTag == L"Prototype_Model_SescoMap")
-			{
-				DungeonPivot = _mat::CreateScale(0.005f);
-				continue;
-			}
-			else if (strPrototypeTag == L"Prototype_Model_MiniDungeon")
-			{
-				DungeonPivot = _mat::CreateScale(0.003f);
-				continue;
-			}
-			else
-				DungeonPivot = _mat::CreateScale(0.001f);
 
 			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), true, DungeonPivot))))
 			{

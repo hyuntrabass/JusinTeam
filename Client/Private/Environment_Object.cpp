@@ -70,10 +70,13 @@ void CEnvironment_Object::Late_Tick(_float fTimeDelta)
 		return;
 	}
 
-
-	if(m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos(), 20.f))
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY)
 		__super::Late_Tick(fTimeDelta);
-	
+	else
+	{
+		if(m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos(), 20.f))
+			__super::Late_Tick(fTimeDelta);
+	}
 	
 	//m_isRendered = true;
 

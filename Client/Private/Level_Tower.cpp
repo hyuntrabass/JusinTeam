@@ -150,7 +150,7 @@ HRESULT CLevel_Tower::Ready_Light()
 
 HRESULT CLevel_Tower::Ready_Guard()
 {
-	MiniDungeonInfo Info{};
+	GuardInfo Info{};
 	const TCHAR* pGetPath = L"../Bin/Data/MiniDungeon_NPCData.dat";
 
 	std::ifstream inFile(pGetPath, std::ios::binary);
