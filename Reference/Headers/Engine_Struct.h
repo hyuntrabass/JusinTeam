@@ -125,6 +125,7 @@ namespace Engine
 		float fPartiAppearRatio{};
 		float fPartiDissolveRatio{};
 		bool bChangeDir{};
+		bool bTargetPos{};
 
 		bool hasLight{};
 		LIGHT_DESC Light_Desc{};

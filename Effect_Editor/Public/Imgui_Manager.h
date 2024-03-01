@@ -47,6 +47,7 @@ struct OldEffectInfo
 	SimpleMath::Vector3 vBillboardRotation{};
 	float fPartiAppearRatio{};
 	float fPartiDissolveRatio{};
+	bool bChangeDir{};
 
 	bool hasLight{};
 	LIGHT_DESC Light_Desc{};

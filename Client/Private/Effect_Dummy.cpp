@@ -92,6 +92,12 @@ void CEffect_Dummy::Tick(_float fTimeDelta)
 			m_Effect.hasLight = false;
 		}
 
+		if (m_Effect.iType == ET_PARTICLE or m_Effect.iType == ET_PARTI_DISTORTION)
+		{
+			m_OffsetMatrix = _mat::CreateTranslation(_vec3(-3000.f));
+			*m_Effect.pMatrix = m_OffsetMatrix;
+		}
+
 		if (m_Effect.strDissolveTexture.size())
 		{
 			m_fDissolveRatio += fTimeDelta / m_Effect.fDissolveDuration;
@@ -164,6 +170,7 @@ void CEffect_Dummy::Late_Tick(_float fTimeDelta)
 		Param.bApplyGravity = m_Effect.bApplyGravity;
 		Param.WorldMatrix = m_pTransformCom->Get_World_Matrix();
 		Param.bChangeDir = m_Effect.bChangeDir;
+		Param.bTargetPos = m_Effect.bTargetPos;
 
 		m_pParticle->Update(Param);
 		break;
