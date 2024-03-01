@@ -26,6 +26,8 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 
 private:
+	class CEffect_Dummy* m_pBallEffect{};
+	class CEffect_Dummy* m_pGasEffect{};
 	CCollider* m_pColliderCom = { nullptr };
 #ifdef _DEBUG
 	CRenderer* m_pRendererCom = { nullptr };
@@ -33,6 +35,7 @@ private:
 
 private:
 	_float m_fLifeTime{};
+	_float m_fGasSpawnTime{};
 	_mat m_EffectMatrix{};
 
 private:

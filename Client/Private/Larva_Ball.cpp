@@ -39,10 +39,21 @@ HRESULT CLarva_Ball::Init(void* pArg)
 void CLarva_Ball::Tick(_float fTimeDelta)
 {
 	m_fLifeTime += fTimeDelta;
+	m_fGasSpawnTime += fTimeDelta;
 
 	m_pTransformCom->Go_Straight(fTimeDelta);
 	m_EffectMatrix = m_pTransformCom->Get_World_Matrix();
 	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+	m_pBallEffect->Tick(fTimeDelta);
+
+	if (m_fGasSpawnTime >= 0.3f)
+	{
+		/*EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(TEXT("Groar_Ball_Smoke"));
+		Info.pMatrix = &m_EffectMatrix;
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);*/
+
+		m_fGasSpawnTime = 0.f;
+	}
 
 	if (m_pGameInstance->Attack_Player(m_pColliderCom, 10, MonAtt_Poison) || m_fLifeTime >= 5.f)
 	{
@@ -53,6 +64,10 @@ void CLarva_Ball::Tick(_float fTimeDelta)
 
 void CLarva_Ball::Late_Tick(_float fTimeDelta)
 {
+	if (m_pBallEffect)
+	{
+		m_pBallEffect->Late_Tick(fTimeDelta);
+	}
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
 #endif // DEBUG
@@ -79,7 +94,10 @@ HRESULT CLarva_Ball::Add_Components()
 		return E_FAIL;
 	}
 
-	CEffect_Manager::Get_Instance()->Create_Effect(TEXT("Center"), &m_EffectMatrix, true);
+	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(TEXT("Groar_Ball"));
+	Info.pMatrix = &m_EffectMatrix;
+	Info.isFollow = true;
+	m_pBallEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
 	return S_OK;
 }
@@ -114,6 +132,7 @@ void CLarva_Ball::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pBallEffect);
 	Safe_Release(m_pColliderCom);
 #ifdef _DEBUG
 	Safe_Release(m_pRendererCom);
