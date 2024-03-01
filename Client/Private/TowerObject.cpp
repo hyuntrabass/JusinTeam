@@ -44,11 +44,13 @@ void CTowerObject::Tick(_float fTimeDelta)
 
 void CTowerObject::Late_Tick(_float fTimeDelta)
 {
-	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Village)
+
+	CCollider* pCameraCollider = dynamic_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_STATIC, L"Layer_Camera", L"Com_Collider"));
+
+	if (m_pColliderCom->Intersect(pCameraCollider))
 	{
-		return;
+		__super::Late_Tick(fTimeDelta);
 	}
-	__super::Late_Tick(fTimeDelta);
 }
 
 HRESULT CTowerObject::Render()

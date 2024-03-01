@@ -1,5 +1,7 @@
 #pragma once
 
+#include "BlackCat.h"
+#include "BrickCat.h"
 #include "GlowCube.h"
 #include "TreasureBox.h"
 #include "Pop_Reward.h"
@@ -125,6 +127,7 @@
 #include "Aur.h"
 #include "NPC_Dummy.h"
 #include "Guard.h"
+#include "GuardTower.h"
 
 // Boss
 #include "Groar_Boss.h"
