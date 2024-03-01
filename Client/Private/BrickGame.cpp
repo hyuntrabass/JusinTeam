@@ -89,7 +89,7 @@ void CBrickGame::Tick(_float fTimeDelta)
 	{
 		m_iCombo = 0;
 		CBrickBall::BALL_DESC Desc{};
-		CTransform* pTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_BrickBar"), TEXT("Com_Transform"));
+		CTransform* pTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickBar"), TEXT("Com_Transform"));
 		_vec3 vPos = pTransform->Get_State(State::Pos);
 		Desc.vPos = _vec3(vPos.x, vPos.y, vPos.z - 2.f);
 		m_pBall = (CBrickBall*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BrickBall"), &Desc);
@@ -157,7 +157,7 @@ void CBrickGame::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
-	m_pBackGround->Late_Tick(fTimeDelta);
+	//m_pBackGround->Late_Tick(fTimeDelta);
 	/*
 	
 	for (size_t i = 0; i < BRICKROW; i++)
@@ -198,17 +198,17 @@ HRESULT CBrickGame::Add_Parts()
 {
 	CBrickWall::WALL_DESC WallDesc{};
 	WallDesc.rcRect = { (_long)1.f, (_long)0.f, (_long)0.f, (_long)0.f };
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
 	{
 		return E_FAIL;
 	}
 	WallDesc.rcRect = { (_long)0.f, (_long)1.f, (_long)0.f, (_long)0.f };
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
 	{
 		return E_FAIL;
 	}
 	WallDesc.rcRect = { (_long)0.f, (_long)0.f, (_long)1.f, (_long)0.f };
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
 	{
 		return E_FAIL;
 	}
@@ -227,9 +227,9 @@ HRESULT CBrickGame::Add_Parts()
 		{
 			CBalloon::BALLOON_DESC Desc{};
 			Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
-			Desc.vPosition = _vec3(vStartPos.x - 3.5f * j, vStartPos.y, vStartPos.z + 3.5f * i);
+			Desc.vPosition = _vec3(vStartPos.x - 2.0f * j, vStartPos.y, vStartPos.z + 2.0f * i);
 
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Balloons"), TEXT("Prototype_GameObject_Balloon"), &Desc)))
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Balloons"), TEXT("Prototype_GameObject_Balloon"), &Desc)))
 			{
 				return E_FAIL;
 			}
@@ -291,9 +291,9 @@ void CBrickGame::Init_Game()
 	m_isActive = true;
 	CTrigger_Manager::Get_Instance()->Teleport(TS_Minigame);
 
-	if (m_pGameInstance->Get_LayerSize(LEVEL_VILLAGE, TEXT("Layer_BrickBar")) == 0)
+	if (m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_BrickBar")) == 0)
 	{
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_BrickBar"), TEXT("Prototype_GameObject_BrickBar"))))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_BrickBar"), TEXT("Prototype_GameObject_BrickBar"))))
 		{
 			return;
 		}
@@ -301,13 +301,27 @@ void CBrickGame::Init_Game()
 	if (m_pBall == nullptr)
 	{
 		CBalloon::BALLOON_DESC Desc{};
-		CTransform* pTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_BrickBar"), TEXT("Com_Transform"));
+		CTransform* pTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickBar"), TEXT("Com_Transform"));
 		_vec3 vPos = pTransform->Get_State(State::Pos);
 		Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
 		Desc.vPosition = _vec3(vPos.x, vPos.y, vPos.z - 2.f);
 		m_pBall = (CBrickBall*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BrickBall"), &Desc);
 		if (not m_pBall)
 		{
+			MSG_BOX("BrickBall");
+			return;
+		}
+	}
+	if (m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_BrickPet")) == 0)
+	{
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_BrickPet"), TEXT("Prototype_GameObject_BrickCat"))))
+		{
+			MSG_BOX("BrickPet");
+			return;
+		}
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_BlackCat"), TEXT("Prototype_GameObject_BlackCat"))))
+		{
+			MSG_BOX("BrickPet");
 			return;
 		}
 	}

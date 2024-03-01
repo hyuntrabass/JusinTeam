@@ -1,0 +1,75 @@
+#pragma once
+
+#include "Client_Define.h"
+#include "Pet.h"
+
+BEGIN(Client)
+
+class CBlackCat final : public CGameObject
+{
+public:
+	enum PET_CAT_ANIM
+	{
+		COLLECT,
+		EMOTION,
+		IDLE,
+		RUN,
+		TELEPORT_END,
+		TELEPORT_START,
+		ANIM_END
+	};
+
+	enum PET_CAT_STATE
+	{
+		STATE_IDLE,
+		STATE_CHASE,
+		STATE_HIT,
+		STATE_EMOTION,
+		STATE_INVEN,
+		STATE_END
+	};
+
+private:
+	CBlackCat(_dev pDevice, _context pContext);
+	CBlackCat(const CBlackCat& rhs);
+	virtual ~CBlackCat() = default;
+
+public:
+	virtual HRESULT Init_Prototype() override;
+	virtual HRESULT Init(void* pArg = nullptr) override;
+	virtual void Tick(_float fTimeDelta) override;
+	virtual void Late_Tick(_float fTimeDelta) override;
+	virtual HRESULT Render() override;
+
+private:
+	CShader* m_pShaderCom = { nullptr };
+	CRenderer* m_pRendererCom = { nullptr };
+	CModel* m_pModelCom = { nullptr };
+	CCollider* m_pColliderCom = { nullptr };
+
+public:
+	void Init_State(_float fTimeDelta);
+	void Tick_State(_float fTimeDelta);
+
+private:
+	PET_CAT_STATE m_ePreState = STATE_END;
+	PET_CAT_STATE m_eCurState = STATE_END;
+
+private:
+	_float m_fIdleTime = {};
+	ANIM_DESC m_Animation{};
+	_mat m_EffectMatrix{};
+
+private:
+	void Update_Collider();
+	HRESULT Add_Collider();
+	HRESULT Add_Components();
+	HRESULT Bind_ShaderResources();
+
+public:
+	static CBlackCat* Create(_dev pDevice, _context pContext);
+	virtual CGameObject* Clone(void* pArg) override;
+	virtual void Free() override;
+};
+
+END

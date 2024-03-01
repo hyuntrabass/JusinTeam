@@ -1713,7 +1713,7 @@ void CImGui_Manager::Delete_Effect_Dummy()
 
 		auto it = m_EffectDummyList.find(EffectIndex);
 		if (it != m_EffectDummyList.end()) {
-			it->second->Kill();
+			//it->second->Kill();
 			m_EffectDummyList.erase(it);
 		}
 

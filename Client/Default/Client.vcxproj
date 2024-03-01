@@ -162,6 +162,7 @@
     <ClInclude Include="..\Public\BackGround.h" />
     <ClInclude Include="..\Public\BackGround_Mask.h" />
     <ClInclude Include="..\Public\Balloon.h" />
+    <ClInclude Include="..\Public\BlackCat.h" />
     <ClInclude Include="..\Public\Blackhole.h" />
     <ClInclude Include="..\Public\BlackSmith.h" />
     <ClInclude Include="..\Public\BlurTexture.h" />
@@ -199,6 +200,7 @@
     <ClInclude Include="..\Public\Goat.h" />
     <ClInclude Include="..\Public\Groar_Boss.h" />
     <ClInclude Include="..\Public\Guard.h" />
+    <ClInclude Include="..\Public\GuardTower.h" />
     <ClInclude Include="..\public\Hell.h" />
     <ClInclude Include="..\Public\HitEffect.h" />
     <ClInclude Include="..\Public\Hook.h" />
@@ -347,6 +349,7 @@
     <ClCompile Include="..\Private\BackGround.cpp" />
     <ClCompile Include="..\Private\BackGround_Mask.cpp" />
     <ClCompile Include="..\Private\Balloon.cpp" />
+    <ClCompile Include="..\Private\BlackCat.cpp" />
     <ClCompile Include="..\Private\Blackhole.cpp" />
     <ClCompile Include="..\Private\BlackSmith.cpp" />
     <ClCompile Include="..\Private\BlurTexture.cpp" />
@@ -380,6 +383,7 @@
     <ClCompile Include="..\Private\FirePillar.cpp" />
     <ClCompile Include="..\Private\GlowCube.cpp" />
     <ClCompile Include="..\Private\Guard.cpp" />
+    <ClCompile Include="..\Private\GuardTower.cpp" />
     <ClCompile Include="..\Private\Hook.cpp" />
     <ClCompile Include="..\Private\Human_Boss.cpp" />
     <ClCompile Include="..\Private\InfinityTower.cpp" />

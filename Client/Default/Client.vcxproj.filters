@@ -508,6 +508,9 @@
     <Filter Include="01.Levels\05.Tower">
       <UniqueIdentifier>{ef65bb23-86ec-4fe1-8e7b-8de643743cf4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\07. NPC\06. GuardTower">
+      <UniqueIdentifier>{065bad8b-d57c-4d7f-8167-aac0a06c6cf2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1066,6 +1069,12 @@
     <ClInclude Include="..\Public\Cesco_Poison.h">
       <Filter>02.GameObjects\16.SescoGame</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\GuardTower.h">
+      <Filter>02.GameObjects\07. NPC\06. GuardTower</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Guard.h">
+      <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1621,6 +1630,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Cesco_Poison.cpp">
       <Filter>02.GameObjects\16.SescoGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GuardTower.cpp">
+      <Filter>02.GameObjects\07. NPC\06. GuardTower</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Guard.cpp">
+      <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
