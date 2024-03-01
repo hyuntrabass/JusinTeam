@@ -56,8 +56,6 @@ HRESULT CCescoGame::Init(void* pArg)
 		}
 	}
 
-
-
 	return S_OK;
 }
 
@@ -87,21 +85,15 @@ void CCescoGame::Tick(_float fTimeDelta)
 
 	if (m_fMonsterSpawnTime >= 1.f)
 	{
-		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_VTFModel_Scorpion");
-		VTFMonsterDesc.vPosition = m_SpawnPositions[0];
-		VTFMonsterDesc.vPosition.z -= 1.f;
-		VTFMonsterDesc.pPlayerTransform = m_pPlayerTransform;
-		CVTFMonster* pScorpion = reinterpret_cast<CVTFMonster*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Scorpion_Object"), &VTFMonsterDesc));
-		m_Monsters.push_back(pScorpion);
+		_vec3 vSpawnPos = m_SpawnPositions[0];
+		vSpawnPos.z -= 1.f;
+		if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Scorpion"), vSpawnPos, TEXT("Prototype_GameObject_Scorpion_Object"))))
+			return;
 
-		VTFMonsterDesc = {};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_VTFModel_Redant");
-		VTFMonsterDesc.vPosition = m_SpawnPositions[1];
-		VTFMonsterDesc.vPosition.z += 1.f;
-		VTFMonsterDesc.pPlayerTransform = m_pPlayerTransform;
-		CVTFMonster* pRedAnt = reinterpret_cast<CVTFMonster*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_RedAnt_Object"), &VTFMonsterDesc));
-		m_Monsters.push_back(pRedAnt);
+		vSpawnPos = m_SpawnPositions[1];
+		vSpawnPos.z += 1.f;
+		if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Redant"), vSpawnPos, TEXT("Prototype_GameObject_RedAnt_Object"))))
+			return;
 
 		m_iMonsterSpawnCount++;
 		m_fMonsterSpawnTime = 0.f;
@@ -243,6 +235,18 @@ void CCescoGame::Late_Tick(_float fTimeDelta)
 	{
 		pHook->Late_Tick(fTimeDelta);
 	}
+}
+
+HRESULT CCescoGame::Create_CommonMonster(const wstring& strModelTag, _vec3 SpawnPosition, const wstring& strPrototypeTag)
+{
+	CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
+	VTFMonsterDesc.strModelTag = strModelTag;
+	VTFMonsterDesc.vPosition = SpawnPosition;
+	VTFMonsterDesc.pPlayerTransform = m_pPlayerTransform;
+	CVTFMonster* pVTFMonster = reinterpret_cast<CVTFMonster*>(m_pGameInstance->Clone_Object(strPrototypeTag, &VTFMonsterDesc));
+	m_Monsters.push_back(pVTFMonster);
+
+	return S_OK;
 }
 
 HRESULT CCescoGame::Create_Hook()

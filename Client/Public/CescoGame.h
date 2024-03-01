@@ -18,8 +18,6 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 
-public:
-	HRESULT Create_Hook();
 private:
 	CTransform* m_pPlayerTransform = { nullptr };
 	list<class CVTFMonster*> m_Monsters;
@@ -35,6 +33,11 @@ private:
 	_bool m_bHadDragging{};
 	_float m_fTimeLimit{ 1209999999.f };
 	_vec4 m_vHookPos{};
+
+private:
+	HRESULT Create_CommonMonster(const wstring& strModelTag, _vec3 SpawnPosition, const wstring& strPrototypeTag);
+	HRESULT Create_Hook();
+
 private:
 	void Release_DeadObjects();
 
