@@ -36,7 +36,7 @@ void CHook::Tick(_float fTimeDelta)
 {
     m_fLifeTime += fTimeDelta;
 
-    if (m_fLifeTime >= 5.5f)
+    if (m_fLifeTime >= 6.f)
     {
         Kill();
     }
@@ -155,7 +155,7 @@ HRESULT CHook::Add_Components()
         return E_FAIL;
     }
 
-    if (FAILED(__super::Add_Component(LEVEL_VILLAGE, TEXT("Prototype_Model_Hook"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+    if (FAILED(__super::Add_Component(LEVEL_TOWER, TEXT("Prototype_Model_Hook"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
     {
         return E_FAIL;
     }
