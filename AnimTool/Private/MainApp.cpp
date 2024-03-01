@@ -317,6 +317,7 @@ void CMainApp::Free()
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 
+	CEffect_Manager::Get_Instance()->Free();
 	CGameInstance::Release_Engine();
 	Safe_Release(m_pImgui_Manager);
 
