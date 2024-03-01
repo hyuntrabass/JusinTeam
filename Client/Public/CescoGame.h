@@ -29,11 +29,6 @@ public:
 private:
 	void Tick_Phase(_float fTimeDelta);
 
-
-private:
-	HRESULT Create_Hook();
-
-
 private:
 	CTransform* m_pPlayerTransform = { nullptr };
 	list<class CVTFMonster*> m_Monsters;
@@ -52,8 +47,8 @@ private:
 	_vec4 m_vHookPos{};
 	Phase m_eCurrentPhase{Phase_End};
 
-
 private:
+	HRESULT Create_Hook();
 	HRESULT Create_CommonMonster(const wstring& strModelTag, _vec3 SpawnPosition, const wstring& strPrototypeTag);
 
 private:

@@ -37,7 +37,7 @@ HRESULT CCescoGame::Init(void* pArg)
 	m_RandomNumber = _randNum(rand());
 
 	CLog::LOG_DESC LogDesc{};
-	
+
 	for (_uint i = 0; i < m_SpawnPositions.size(); i++)
 	{
 		LogDesc.WorldMatrix = _mat::CreateScale(3.f, 3.f, 10.f);
@@ -61,15 +61,14 @@ HRESULT CCescoGame::Init(void* pArg)
 
 void CCescoGame::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_8,InputChannel::UI))
+	if (m_pGameInstance->Key_Down(DIK_8, InputChannel::UI))
 	{
 		m_eCurrentPhase = Phase1;
-		//Create_Hook();
 	}
 	if (m_pGameInstance->Key_Down(DIK_9))
 	{
 		m_fTimeLimit = 0.f;
-	
+
 	}
 
 	m_fTimeLimit -= fTimeDelta;
@@ -122,17 +121,17 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 	{
 #pragma region SpawnMonster
 
-	if (m_fMonsterSpawnTime >= 1.f)
-	{
-		_vec3 vSpawnPos = m_SpawnPositions[0];
-		vSpawnPos.z -= 1.f;
-		if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Scorpion"), vSpawnPos, TEXT("Prototype_GameObject_Scorpion_Object"))))
-			return;
+		if (m_fMonsterSpawnTime >= 1.f)
+		{
+			_vec3 vSpawnPos = m_SpawnPositions[0];
+			vSpawnPos.z -= 1.f;
+			if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Scorpion"), vSpawnPos, TEXT("Prototype_GameObject_Scorpion_Object"))))
+				return;
 
-		vSpawnPos = m_SpawnPositions[1];
-		vSpawnPos.z += 1.f;
-		if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Redant"), vSpawnPos, TEXT("Prototype_GameObject_RedAnt_Object"))))
-			return;
+			vSpawnPos = m_SpawnPositions[1];
+			vSpawnPos.z += 1.f;
+			if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Redant"), vSpawnPos, TEXT("Prototype_GameObject_RedAnt_Object"))))
+				return;
 
 			m_iMonsterSpawnCount++;
 			m_fMonsterSpawnTime = 0.f;
@@ -211,7 +210,7 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 #pragma endregion
 
 	}
-		break;
+	break;
 	case Client::CCescoGame::Phase2:
 		break;
 	case Client::CCescoGame::Phase3:
@@ -223,60 +222,52 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 		}
 		m_fHookSpawnTime += fTimeDelta;
 	}
-		break;
+	break;
 
 	}
 
-	
+
 
 
 
 #pragma region SpawnHook
-		for (auto& pHook : m_vecHooks)
+	for (auto& pHook : m_vecHooks)
+	{
+		pHook->Tick(fTimeDelta);
+	}
+	m_bHadDragging = false;
+
+	_bool bDrag{};
+	_bool bCollision{};
+
+	for (auto& pHooks : m_vecHooks)
+	{
+		if (pHooks->Get_Dragging())
 		{
-			pHook->Tick(fTimeDelta);
+			bDrag = true;
+			break;
 		}
-		m_bHadDragging = false;
+	}
 
-		_bool bDrag{};
-		_bool bCollision{};
-
+	if (!bDrag)
+	{
 		for (auto& pHooks : m_vecHooks)
 		{
-			if (pHooks->Get_Dragging())
+
+			if (pHooks->Get_HadCollision())
 			{
-				bDrag = true;
+				m_pCurrent_DraggingHook = pHooks;
+				pHooks->Set_Dragging(true);
 				break;
 			}
 		}
-
-		if (!bDrag)
-		{
-			for (auto& pHooks : m_vecHooks)
-			{
-
-				if (pHooks->Get_HadCollision())
-				{
-					m_pCurrent_DraggingHook = pHooks;
-					pHooks->Set_Dragging(true);
-					break;
-				}
-			}
-		}
-
-		if (m_pCurrent_DraggingHook)
-		{
-			m_pPlayerTransform->Set_Position(_vec3(m_pCurrent_DraggingHook->Get_Position()));
-		}
-#pragma endregion
-}
-
-
-
-	for (auto& pHook : m_vecHooks)
-	{
-		pHook->Late_Tick(fTimeDelta);
 	}
+
+	if (m_pCurrent_DraggingHook)
+	{
+		m_pPlayerTransform->Set_Position(_vec3(m_pCurrent_DraggingHook->Get_Position()));
+	}
+#pragma endregion
 }
 
 HRESULT CCescoGame::Create_CommonMonster(const wstring& strModelTag, _vec3 SpawnPosition, const wstring& strPrototypeTag)
@@ -306,7 +297,7 @@ HRESULT CCescoGame::Create_Hook()
 		vector<int> vecHookPos;
 		_int iCountNum = RandomCount(m_RandomNumber);
 		_vec3 vSpawnPos = m_SpawnPositions[iDirNum];
-		
+
 		switch (iDirNum)
 		{
 		case 0:	//À§
@@ -328,7 +319,7 @@ HRESULT CCescoGame::Create_Hook()
 					iCountNum++;
 				}
 			}
-		break;
+			break;
 		}
 		case 1:	//¾Æ·¡
 		{
@@ -385,7 +376,7 @@ HRESULT CCescoGame::Create_Hook()
 					vHookPos.z = vSpawnPos.z - 20.f + 6.f * iPosNum;
 					vHookPos.y += 1.f;
 					HookDesc.WorldMatrix.Position_vec3(vHookPos);
-					HookDesc.vLookat = _vec4(1.f,0.f,0.f,1.f);
+					HookDesc.vLookat = _vec4(1.f, 0.f, 0.f, 1.f);
 					CHook* pHook = dynamic_cast<CHook*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Hook_Object"), &HookDesc));
 					m_vecHooks.push_back(pHook);
 					iCountNum++;
@@ -393,8 +384,8 @@ HRESULT CCescoGame::Create_Hook()
 			}
 			break;
 		}
+		}
 	}
-}
 
 	return S_OK;
 }
@@ -473,7 +464,7 @@ void CCescoGame::Free()
 	}
 	m_Monsters.clear();
 
-	for (auto& pHook: m_vecHooks)
+	for (auto& pHook : m_vecHooks)
 	{
 		Safe_Release(pHook);
 	}
