@@ -20,9 +20,24 @@ HRESULT CGuard::Init_Prototype()
 
 HRESULT CGuard::Init(void* pArg)
 {
-	MiniDungeonInfo m_Info = *(MiniDungeonInfo*)pArg;
-	m_iIndex = m_Info.iIndex;
-	GuardMatrix = m_Info.mMatrix;
+	GuardInfo Info = *(GuardInfo*)pArg;
+	m_Info.iIndex = Info.iIndex;
+	m_Info.mMatrix = Info.mMatrix;
+	m_Info.PatrolPoint = Info.PatrolPoint;
+
+	m_Info.iIndex = 0;
+	m_Info.mMatrix = XMMatrixIdentity();
+	m_Info.mMatrix._41 = 3004.f;
+	m_Info.mMatrix._42 = 3.5f;
+	m_Info.mMatrix._43 = -38.f;
+	m_Info.mMatrix._44 = 1.f;
+
+	m_Info.PatrolPoint = _vec4(3000.f, 5.f, -75.f, 1.f);
+
+	m_PatrolPoint1 = m_Info.mMatrix.Position();
+	m_PatrolPoint2 = m_Info.PatrolPoint;
+
+	m_Point = m_PatrolPoint2;
 
 	if (FAILED(Add_Components()))
 		return E_FAIL;
@@ -38,7 +53,8 @@ HRESULT CGuard::Init(void* pArg)
 
 	m_iHP = 1;
 
-	m_pTransformCom->Set_Matrix(GuardMatrix);
+	m_pTransformCom->Set_Matrix(m_Info.mMatrix);
+	m_pTransformCom->LookAt(m_Point);
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
@@ -52,7 +68,7 @@ HRESULT CGuard::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
-	View_Detect_Range();
+	//View_Detect_Range();
 
 	return S_OK;
 }
@@ -61,54 +77,10 @@ void CGuard::Tick(_float fTimeDelta)
 {
 	m_pTransformCom->Set_OldMatrix();
 
+
 	if (m_pGameInstance->Key_Down(DIK_DOWN))
 	{
-		m_Animation.iAnimIndex++;
-	}
-
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-
-	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
-
-	_vec4 vToPlayer = vPlayerPos - vPos;
-
-	_float fDist = vToPlayer.Length();
-	_vec3 vNormalToPlayer = vToPlayer.Get_Normalized();
-
-	_vec3 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
-
-	_float fAngle = vLook.Dot(vNormalToPlayer);
-
-	switch (m_eCurState)
-	{
-	case Client::CGuard::STATE_IDLE:
-
-		break;
-	case Client::CGuard::STATE_PATROL:
-
-
-		fAngle = XMConvertToDegrees(fAngle);
-		if (60.f >= fAngle && 10.f >= fDist) {
-			PxRaycastBuffer Buffer{};
-			if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), vNormalToPlayer, 10.f, Buffer)) {
-				if (fDist < Buffer.block.distance)
-					m_eCurState = STATE_CHASE;
-			}
-			else
-				m_eCurState = STATE_CHASE;
-		}
-		break;
-	case Client::CGuard::STATE_CHASE:
-		break;
-	case Client::CGuard::STATE_ATTACK:
-		break;
-	case Client::CGuard::STATE_HIT:
-		break;
-	case Client::CGuard::STATE_DIE:
-		break;
-	case Client::CGuard::STATE_END:
-		break;
+		m_eCurState = STATE_PATROL;
 	}
 
 
@@ -231,9 +203,6 @@ void CGuard::Set_Damage(_int iDamage, _uint iDamageType)
 
 void CGuard::Init_State(_float fTimeDelta)
 {
-	_vec4 vPlayerPos = Compute_PlayerPos();
-	_float fDistance = Compute_PlayerDistance();
-	_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 
 	if (m_ePreState != m_eCurState) {
 		switch (m_eCurState)
@@ -241,15 +210,13 @@ void CGuard::Init_State(_float fTimeDelta)
 		case Client::CGuard::STATE_IDLE:
 			m_Animation.iAnimIndex = ANIM_IDLE;
 			m_Animation.isLoop = true;
-			m_Animation.fAnimSpeedRatio;
-
+			m_Animation.fAnimSpeedRatio = 1.f;
 			break;
 		case Client::CGuard::STATE_PATROL:
 			m_Animation.iAnimIndex = ANIM_WALK;
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 1.f;
 			m_pTransformCom->Set_Speed(1.f);
-
 			break;
 		case Client::CGuard::STATE_CHASE:
 			m_Animation.iAnimIndex = ANIM_RUN;
@@ -257,7 +224,7 @@ void CGuard::Init_State(_float fTimeDelta)
 			m_Animation.fAnimSpeedRatio = 4.f;
 			break;
 		case Client::CGuard::STATE_ATTACK:
-			m_Animation.iAnimIndex = ANIM_ATTACK_1;
+			m_Animation.iAnimIndex = ANIM_SWING;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 4.f;
 			break;
@@ -275,42 +242,102 @@ void CGuard::Init_State(_float fTimeDelta)
 
 void CGuard::Tick_State(_float fTimeDelta)
 {
-	_vec4 vPlayerPos = Compute_PlayerPos();
-	_float fDistance = Compute_PlayerDistance();
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
 
-	_float fDist = 1.0f;
+	_vec4 vPos = m_pTransformCom->Get_CenterPos();
+
+	_vec4 vToPlayer = vPlayerPos - vPos;
+
+	_float fDist = vToPlayer.Length();
+	_vec3 vNormalToPlayer = vToPlayer.Get_Normalized();
+
+	_vec3 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
+
+	_float fAngle = acosf(vLook.Dot(vNormalToPlayer));
 	PxRaycastBuffer Buffer{};
-	
+
+	_vec4 vMyPosition = m_pTransformCom->Get_State(State::Pos);
+
 	switch (m_eCurState)
 	{
 	case STATE_IDLE:
-		m_fIdleTime += fTimeDelta;
-
-		if (m_fIdleTime >= 1.f)
-		{
-			m_eCurState = STATE_PATROL;
-
+		if (XMConvertToRadians(45.f) >= fAngle && 10.f >= fDist) {
+			if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), vNormalToPlayer, 10.f, Buffer)) {
+				if (fDist < Buffer.block.distance)
+					m_eCurState = STATE_CHASE;
+				else {
+					m_fIdleTime += fTimeDelta;
+					if (5.f < m_fIdleTime) {
+						m_fIdleTime = 0.f;
+						m_eCurState = STATE_PATROL;
+						m_bPatrolChange = !m_bPatrolChange;
+						switch (m_bPatrolChange)
+						{
+						case true:
+							m_Point = m_PatrolPoint1;
+							break;
+						case false:
+							m_Point = m_PatrolPoint2;
+							break;
+						}
+						m_pTransformCom->LookAt(m_Point);
+					}
+				}
+			}
+			else
+				m_eCurState = STATE_CHASE;
 		}
-			m_fIdleTime = 0.f;
-		
+		else {
+			m_fIdleTime += fTimeDelta;
+			if (5.f < m_fIdleTime) {
+				m_fIdleTime = 0.f;
+				m_eCurState = STATE_PATROL;
+				m_bPatrolChange = !m_bPatrolChange;
+				switch (m_bPatrolChange)
+				{
+				case true:
+					m_Point = m_PatrolPoint1;
+					break;
+				case false:
+					m_Point = m_PatrolPoint2;
+					break;
+				}
+				m_pTransformCom->LookAt(m_Point);
+			}
+		}
 		break;
 
 	case STATE_PATROL:
 
-		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer))
-		{
-			m_pTransformCom->LookAt_Dir(PxVec3ToVector(Buffer.block.normal));
+		if (XMConvertToRadians(45.f) >= fAngle && 10.f >= fDist) {
+			if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), vNormalToPlayer, 10.f, Buffer)) {
+				if (fDist < Buffer.block.distance)
+					m_eCurState = STATE_CHASE;
+				else {
+					_float fPatrolDist = (m_Point - vMyPosition).Length();
+					if (0.5f > fPatrolDist) {
+						m_eCurState = STATE_IDLE;
+					}
+					else {
+						m_pTransformCom->LookAt(m_Point);
+						m_pTransformCom->Go_Straight(fTimeDelta);
+					}
+				}
+			}
+			else
+				m_eCurState = STATE_CHASE;
 		}
-		else
-		{
-			m_pTransformCom->Go_Straight(fTimeDelta);
+		else {
+			_float fPatrolDist = (m_Point - vMyPosition).Length();
+			if (0.5f > fPatrolDist) {
+				m_eCurState = STATE_IDLE;
+			}
+			else {
+				m_pTransformCom->LookAt(m_Point);
+				m_pTransformCom->Go_Straight(fTimeDelta);
+			}
 		}
-
-		if (m_pModelCom->IsAnimationFinished(ANIM_WALK))
-		{
-			m_eCurState = STATE_IDLE;
-		}
-
 		break;
 
 	case STATE_DIE:
@@ -346,7 +373,7 @@ void CGuard::View_Detect_Range()
 _vec4 CGuard::Compute_PlayerPos()
 {
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-	return pPlayerTransform->Get_State(State::Pos);
+	return pPlayerTransform->Get_CenterPos();
 }
 
 _vec4 CGuard::Compute_PlayerLook()

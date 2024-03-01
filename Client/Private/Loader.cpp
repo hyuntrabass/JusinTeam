@@ -1161,8 +1161,9 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	_mat GuardPivot = _mat::CreateRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Guard"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Guard/Mesh/Guard.hyuntraanimmesh"))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Guard/Mesh/Guard.hyuntraanimmesh", false, GuardPivot))))
 	{
 		return E_FAIL;
 	}

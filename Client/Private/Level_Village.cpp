@@ -562,44 +562,55 @@ HRESULT CLevel_Village::Ready_Statue()
 
 HRESULT CLevel_Village::Ready_Guard()
 {
-	MiniDungeonInfo Info{};
-	const TCHAR* pGetPath = L"../Bin/Data/MiniDungeon_NPCData.dat";
+	GuardInfo Info{};
 
-	std::ifstream inFile(pGetPath, std::ios::binary);
+	//Info.iIndex = 0;
+	//Info.mMatrix;
+	//Info.PatrolPoint;
 
-	if (!inFile.is_open())
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Guard"), &Info)))
 	{
-		MessageBox(g_hWnd, L"MiniDungeon_NPCData 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+		MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
 		return E_FAIL;
 	}
 
-	_uint MonsterListSize;
-	inFile.read(reinterpret_cast<char*>(&MonsterListSize), sizeof(_uint));
+	//const TCHAR* pGetPath = L"../Bin/Data/MiniDungeon_NPCData.dat";
+
+	//std::ifstream inFile(pGetPath, std::ios::binary);
+
+	//if (!inFile.is_open())
+	//{
+	//	MessageBox(g_hWnd, L"MiniDungeon_NPCData 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+	//	return E_FAIL;
+	//}
+
+	//_uint MonsterListSize;
+	//inFile.read(reinterpret_cast<char*>(&MonsterListSize), sizeof(_uint));
 
 
-	for (_uint i = 0; i < MonsterListSize; ++i)
-	{
-		_ulong MonsterPrototypeSize;
-		inFile.read(reinterpret_cast<char*>(&MonsterPrototypeSize), sizeof(_ulong));
+	//for (_uint i = 0; i < MonsterListSize; ++i)
+	//{
+	//	_ulong MonsterPrototypeSize;
+	//	inFile.read(reinterpret_cast<char*>(&MonsterPrototypeSize), sizeof(_ulong));
 
-		wstring MonsterPrototype;
-		MonsterPrototype.resize(MonsterPrototypeSize);
-		inFile.read(reinterpret_cast<char*>(&MonsterPrototype[0]), MonsterPrototypeSize * sizeof(wchar_t));
+	//	wstring MonsterPrototype;
+	//	MonsterPrototype.resize(MonsterPrototypeSize);
+	//	inFile.read(reinterpret_cast<char*>(&MonsterPrototype[0]), MonsterPrototypeSize * sizeof(wchar_t));
 
-		_mat MonsterWorldMat;
-		inFile.read(reinterpret_cast<char*>(&MonsterWorldMat), sizeof(_mat));
+	//	_mat MonsterWorldMat;
+	//	inFile.read(reinterpret_cast<char*>(&MonsterWorldMat), sizeof(_mat));
 
-		Info.mMatrix = MonsterWorldMat;
-		Info.iIndex = i;
+	//	Info.mMatrix = MonsterWorldMat;
+	//	Info.iIndex = i;
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Guard"), &Info)))
-		{
-			MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
-			return E_FAIL;
-		}
+	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Guard"), &Info)))
+	//	{
+	//		MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
+	//		return E_FAIL;
+	//	}
 
-	}
-	inFile.close();
+	//}
+	//inFile.close();
 	return S_OK;
 }
 

@@ -43,6 +43,9 @@ public:
 	HRESULT Add_RenderGroup(RenderGroup eRenderGroup, class CGameObject* pRenderObject);
 	HRESULT Draw_RenderGroup();
 
+
+
+
 	const void Set_TurnOneBloom(_bool TurnOnBloom) {
 		m_TurnOnBloom = TurnOnBloom;
 	}
