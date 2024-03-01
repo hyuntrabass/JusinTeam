@@ -326,7 +326,7 @@ void CBlackSmith::Play_TalkSound(const wstring& strTalkText)
 		else if (strTalkText == m_strLines[8])
 		{
 			m_IsSoundSkip = true;
-			m_fSoundSkipRatio = 0.5f;
+			m_fSoundSkipRatio = 0.49f;
 		}
 		m_iSoundChannel = m_pGameInstance->Play_Sound(m_TalkSounds.front());
 		m_TalkSounds.pop_front();

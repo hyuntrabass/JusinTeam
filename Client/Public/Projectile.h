@@ -39,10 +39,10 @@ public:
 	virtual HRESULT Render() override;
 
 private:
+	CCollider* m_pColliderCom = { nullptr };
+	CRenderer* m_pRendererCom = { nullptr };
 	//CShader* m_pShaderCom = { nullptr };
-	//CRenderer* m_pRendererCom = { nullptr };
 	//CModel* m_pModelCom = { nullptr };
-	//CCollider* m_pColliderCom = { nullptr };
 
 private:
 	class CEffect_Dummy* m_pFrameEffect = { nullptr };
@@ -50,6 +50,7 @@ private:
 
 private:
 	class CEffect_Dummy* m_pBall = { nullptr };
+	class CEffect_Dummy* m_pBallOut = { nullptr };
 	class CEffect_Dummy* m_pBallParticle = { nullptr };
 
 	class CEffect_Dummy* m_pEffect[3] = {};

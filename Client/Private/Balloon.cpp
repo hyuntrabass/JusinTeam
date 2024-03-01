@@ -3,6 +3,7 @@
 #include "Event_Manager.h"
 #include "Effect_Manager.h"
 #include "Camera_Manager.h"
+#include "GlowCube.h"
 
 CBalloon::CBalloon(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -46,13 +47,26 @@ HRESULT CBalloon::Init(void* pArg)
 
 	m_pTransformCom->Set_Scale(_vec3(1.4f, 1.4f, 1.4f));
 
+	CGlowCube::GLOWCUBE_DESC Desc{};
+	Desc.pParentTransform = m_pTransformCom;
+	Desc.vColor = _vec4(m_vColor);
+	Desc.vPos = _vec4(0.f, 0.f, 0.f, 0.f);
+	m_pCube = (CGlowCube*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_GlowCube"), &Desc);
+	if (m_pCube == nullptr)
+	{
+		return E_FAIL;
+	}
+	
+	
 	return S_OK;
 }
 
 void CBalloon::Tick(_float fTimeDelta)
 {
 
-	m_pBodyColliderCom->Change_Extents(_vec3(0.82f, 0.82f, 0.82f));
+	m_pTransformCom->Set_Scale(_vec3(3.f, 3.f, 3.f));
+
+	m_pBodyColliderCom->Change_Extents(_vec3(0.35f, 0.35f, 0.35f));
 	m_pBodyColliderCom->Set_Normal();
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
@@ -69,8 +83,9 @@ void CBalloon::Tick(_float fTimeDelta)
 void CBalloon::Late_Tick(_float fTimeDelta)
 {
 	m_pModelCom->Play_Animation(fTimeDelta);
-	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	//m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
+	m_pCube->Late_Tick(fTimeDelta);
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 #endif
@@ -144,46 +159,6 @@ HRESULT CBalloon::Render()
 	return S_OK;
 }
 
-void CBalloon::Set_Damage(_int iDamage, _uint iDamageType)
-{
-	/*
-
-	m_fHittedTime = 6.f;
-	m_eCurState = STATE_HIT;
-
-	m_iHP -= iDamage;
-	m_bDamaged = true;
-	m_bChangePass = true;
-	if (m_bHit == false)
-	{
-		m_iDamageAcc += iDamage;
-	}
-	m_fIdleTime = 0.f;
-
-	_vec4 vPlayerPos = __super::Compute_PlayerPos();
-	m_pTransformCom->LookAt(vPlayerPos);
-
-	if (iDamageType == AT_Sword_Common || iDamageType == AT_Sword_Skill1 || iDamageType == AT_Sword_Skill2 ||
-		iDamageType == AT_Sword_Skill3 || iDamageType == AT_Sword_Skill4 || iDamageType == AT_Bow_Skill2 || iDamageType == AT_Bow_Skill4)
-	{
-	}
-
-	if (iDamageType == AT_Bow_Common || iDamageType == AT_Bow_Skill1)
-	{
-
-		_vec4 vDir = m_pTransformCom->Get_State(State::Pos) - __super::Compute_PlayerPos();
-
-		m_pTransformCom->Go_To_Dir(vDir, m_fBackPower);
-	}
-
-	if (iDamageType == AT_Bow_Skill3)
-	{
-
-		m_pTransformCom->Set_Speed(0.5f);
-	}
-	*/
-}
-
 void CBalloon::Init_State(_float fTimeDelta)
 {
 
@@ -226,7 +201,7 @@ void CBalloon::Tick_State(_float fTimeDelta)
 	case Client::CBalloon::STATE_IDLE:
 	{
 
-		CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_VILLAGE, TEXT("Layer_BrickBall"), TEXT("Com_Collider_Sphere"));
+		CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickGame"), TEXT("BrickBall"));
 		if (pCollider == nullptr)
 		{
 			return;
@@ -293,6 +268,10 @@ void CBalloon::Set_Color()
 		break;
 	default:
 		break;
+	}
+	if (m_pCube != nullptr)
+	{
+		m_pCube->Set_Color(m_vColor);
 	}
 }
 
@@ -423,6 +402,7 @@ void CBalloon::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pCube);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

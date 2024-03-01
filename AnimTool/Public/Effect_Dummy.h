@@ -19,6 +19,8 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+	virtual void Kill() override;
+
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CVIBuffer_Instancing_Point* m_pParticle{ nullptr };

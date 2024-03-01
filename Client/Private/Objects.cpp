@@ -28,7 +28,7 @@ HRESULT CObjects::Init(void* pArg)
 
 void CObjects::Tick(_float fTimeDelta)
 {
-	if(m_isInstancing == false)
+	if (m_isInstancing == false)
 		m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 
 	m_pTransformCom->Set_OldMatrix();
@@ -53,10 +53,10 @@ void CObjects::Late_Tick(_float fTimeDelta)
 	{
 		//if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
 		//{
-			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 
-			if(true == m_pGameInstance->Get_TurnOnShadow())
-				m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Shadow, this);
+		if (true == m_pGameInstance->Get_TurnOnShadow())
+			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Shadow, this);
 		//}
 	}
 	else
@@ -175,7 +175,8 @@ HRESULT CObjects::Render_Instance()
 		return E_FAIL;
 	}
 
-	if (true == m_pGameInstance->Get_TurnOnShadow()) {
+	if (true == m_pGameInstance->Get_TurnOnShadow())
+	{
 
 		CASCADE_DESC Desc = m_pGameInstance->Get_CascadeDesc();
 
@@ -255,9 +256,9 @@ HRESULT CObjects::Render_Reflection(_float4 vClipPlane)
 	return S_OK;
 }
 
-HRESULT CObjects::Add_Components(wstring strPrototype, ObjectType eType )
+HRESULT CObjects::Add_Components(wstring strPrototype, ObjectType eType)
 {
- 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
 		return E_FAIL;
 	}
@@ -293,11 +294,14 @@ HRESULT CObjects::Add_Components(wstring strPrototype, ObjectType eType )
 	{
 		if (FAILED(__super::Add_Component(m_pGameInstance->Get_CurrentLevelIndex(), strPrototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		{
-			return E_FAIL;
+			if (FAILED(__super::Add_Component(LEVEL_STATIC, strPrototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+			{
+				return E_FAIL;
+			}
 		}
 	}
 
-	if(m_isInstancing == false)
+	if (m_isInstancing == false)
 		Add_Collider();
 
 	return S_OK;
@@ -307,7 +311,15 @@ HRESULT CObjects::Add_Collider()
 {
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
-	CollDesc.fRadius = m_pModelCom->Get_ModelRadius();
+
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_GAMEPLAY)
+	{
+		CollDesc.fRadius = m_pModelCom->Get_MeshRadius();
+	}
+	else
+	{
+		CollDesc.fRadius = m_pModelCom->Get_ModelRadius();
+	}
 	CollDesc.vCenter = m_pModelCom->Get_CenterPos();
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Trigger_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))

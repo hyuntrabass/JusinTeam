@@ -1,4 +1,5 @@
 #include "CommonSurfaceTrail.h"
+#include "Camera_Manager.h"
 
 CCommonSurfaceTrail::CCommonSurfaceTrail(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
@@ -62,6 +63,11 @@ HRESULT CCommonSurfaceTrail::Init(void* pArg)
 
 void CCommonSurfaceTrail::Tick(_vec3 vTopPos, _vec3 vBottomPos)
 {
+	if (CCamera_Manager::Get_Instance()->Get_CameraModeIndex() == CM_DEBUG)
+	{
+		return;
+	}
+
 	if (m_bNoRender and m_fDissolveRatio < 1.f)
 	{
 		return;
@@ -96,7 +102,7 @@ void CCommonSurfaceTrail::Late_Tick(_float fTimeDelta)
 
 	for (size_t i = 0; i < m_Info.iNumVertices; i++)
 	{
-		m_AlphaArray[i] = Saturate((1.f - static_cast<_float>(i) / m_Info.iNumVertices) - m_fDissolveRatio);
+		m_AlphaArray[i] = max(0.f, Lerp(m_Info.vColor.w, 0.f, static_cast<_float>(i) / m_Info.iNumVertices) - m_fDissolveRatio);
 	}
 
 	_uint iIndex{};

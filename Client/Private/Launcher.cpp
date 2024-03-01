@@ -51,6 +51,10 @@ HRESULT CLauncher::Init(void* pArg)
 
 	case Client::CLauncher::TYPE_FLOOR:
 
+	{
+
+	}
+
 		break;
 
 	case Client::CLauncher::TYPE_LASER:
@@ -131,7 +135,7 @@ void CLauncher::Tick(_float fTimeDelta)
 						CProjectile::PROJECTILE_DESC Desc = {};
 						Desc.eType = CProjectile::TYPE_RANDOM_POS;
 						Desc.pLauncherTransform = m_pTransformCom;
-						Desc.vStartPos = m_pTransformCom->Get_State(State::Pos);
+						Desc.vStartPos = m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.2f, 0.f);
 
 						m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
 					}
@@ -199,7 +203,13 @@ void CLauncher::Tick(_float fTimeDelta)
 			else if (m_pModelCom->IsAnimationFinished(0))
 			{
 				m_Animation.iAnimIndex = 3;
+				++m_iProjectileCount;
 			}
+		}
+
+		if (m_iProjectileCount >= 4)
+		{
+			Kill();
 		}
 	}
 

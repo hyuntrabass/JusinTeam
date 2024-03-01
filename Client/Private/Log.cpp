@@ -40,6 +40,9 @@ HRESULT CLog::Init(void* pArg)
 
     m_iPassIndex = StaticPass_Default;
 
+    random_device rand;
+    m_RandomNumber = _randNum(rand());
+
     return S_OK;
 }
 
@@ -55,9 +58,26 @@ void CLog::Tick(_float fTimeDelta)
         m_pTransformCom->Gravity(fTimeDelta);
         if (not m_pTransformCom->Is_Jumping())
         {
-            if (m_fJumpForce >= 0.f)
+            if (m_fJumpForce <= 1.f)
+            {
+                m_fDissolveRatio += fTimeDelta;
+                m_iPassIndex = StaticPass_Dissolve;
+
+                m_pTransformCom->Delete_Controller();
+                m_pGameInstance->Delete_CollisionObject(this);
+                if (m_fDissolveRatio >= 1.f)
+                {
+                    Kill();
+                }
+            }
+            else if (m_fJumpForce >= 0.f)
             {
                 m_pTransformCom->Jump(m_fJumpForce);
+
+                _randInt RandomSound(1, 4);
+                wstring SoundTag = TEXT("Hit_Huge_Wood_SFX_0") + to_wstring(RandomSound(m_RandomNumber));
+                m_pGameInstance->Play_Sound(SoundTag, m_fJumpForce * 0.05f);
+                m_pGameInstance->Play_Sound(TEXT("Ask_Matriarch_Attack05_SFX_02"), m_fJumpForce * 0.01f);
             }
         }
         else
@@ -66,19 +86,6 @@ void CLog::Tick(_float fTimeDelta)
         }
 
         m_pGameInstance->Attack_Monster(m_pBodyColliderCom, 999, AT_Critical);
-
-        if (m_fJumpForce <= 1.f)
-        {
-            m_fDissolveRatio += fTimeDelta;
-            m_iPassIndex = StaticPass_Dissolve;
-
-            m_pTransformCom->Delete_Controller();
-            m_pGameInstance->Delete_CollisionObject(this);
-            if (m_fDissolveRatio >= 1.f)
-            {
-                Kill();
-            }
-        }
     }
 }
 
@@ -152,7 +159,7 @@ HRESULT CLog::Add_Components()
         return E_FAIL;
     }
 
-    if (FAILED(__super::Add_Component(LEVEL_VILLAGE, TEXT("Prototype_Model_Log"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+    if (FAILED(__super::Add_Component(LEVEL_TOWER, TEXT("Prototype_Model_Log"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
     {
         return E_FAIL;
     }

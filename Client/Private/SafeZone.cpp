@@ -103,6 +103,7 @@ void CSafeZone::Tick(_float fTimeDelta)
 
 	//	Safe_Release(pEffect_Manager);
 	//}
+	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 }
 
 void CSafeZone::Late_Tick(_float fTimeDelta)
@@ -115,7 +116,7 @@ void CSafeZone::Late_Tick(_float fTimeDelta)
 		}
 	}
 
-	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
@@ -128,9 +129,9 @@ HRESULT CSafeZone::Add_Components()
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::Sphere;
 	CollDesc.vCenter = _vec3(0.f);
-	CollDesc.fRadius = 4.f;
+	CollDesc.fRadius = 5.f;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_SafeZone_Collider"), (CComponent**)&m_pColliderCom, &CollDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_SafeZone_Coll"), (CComponent**)&m_pColliderCom, &CollDesc)))
 	{
 		return E_FAIL;
 	}

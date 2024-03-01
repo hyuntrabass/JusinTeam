@@ -8,6 +8,7 @@
 #include "Level_Dungeon.h"
 #include "Loading.h"
 #include "Loading_Horse.h"
+#include "Level_Tower.h"
 
 CLevel_Loading::CLevel_Loading(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -76,6 +77,9 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 		//	break;
 		case Client::LEVEL_VILLAGE:
 			pLevel = CLevel_Village::Create(m_pDevice, m_pContext);
+			break;
+		case Client::LEVEL_TOWER:
+			pLevel = CLevel_Tower::Create(m_pDevice, m_pContext);
 			break;
 		//case Client::LEVEL_DUNGEON:
 		//	pLevel = CLevel_Dungeon::Create(m_pDevice, m_pContext);

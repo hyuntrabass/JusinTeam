@@ -233,7 +233,7 @@ struct PS_OUT_DEFERRED
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
     vector vRimMask : SV_Target3;
-    int ID : SV_Target4;
+    int ID : SV_Target5;
 
 };
 

@@ -167,6 +167,7 @@
     <ClInclude Include="..\Public\BlurTexture.h" />
     <ClInclude Include="..\Public\BrickBall.h" />
     <ClInclude Include="..\Public\BrickBar.h" />
+    <ClInclude Include="..\Public\BrickCat.h" />
     <ClInclude Include="..\Public\BrickGame.h" />
     <ClInclude Include="..\Public\BrickWall.h" />
     <ClInclude Include="..\Public\Camera_CutScene.h" />
@@ -197,6 +198,7 @@
     <ClInclude Include="..\Public\Goat.h" />
     <ClInclude Include="..\Public\Groar_Boss.h" />
     <ClInclude Include="..\Public\Guard.h" />
+    <ClInclude Include="..\Public\GuardTower.h" />
     <ClInclude Include="..\public\Hell.h" />
     <ClInclude Include="..\Public\HitEffect.h" />
     <ClInclude Include="..\Public\Hook.h" />
@@ -218,6 +220,7 @@
     <ClInclude Include="..\Public\ItemSlot.h" />
     <ClInclude Include="..\Public\JobMark.h" />
     <ClInclude Include="..\Public\Launcher.h" />
+    <ClInclude Include="..\Public\Level_Tower.h" />
     <ClInclude Include="..\Public\Level_Village.h" />
     <ClInclude Include="..\Public\Log.h" />
     <ClInclude Include="..\Public\Logo_Dust.h" />
@@ -349,6 +352,7 @@
     <ClCompile Include="..\Private\BlurTexture.cpp" />
     <ClCompile Include="..\Private\BrickBall.cpp" />
     <ClCompile Include="..\Private\BrickBar.cpp" />
+    <ClCompile Include="..\Private\BrickCat.cpp" />
     <ClCompile Include="..\Private\BrickGame.cpp" />
     <ClCompile Include="..\Private\BrickWall.cpp" />
     <ClCompile Include="..\Private\Camera_CutScene.cpp" />
@@ -375,12 +379,14 @@
     <ClCompile Include="..\Private\FirePillar.cpp" />
     <ClCompile Include="..\Private\GlowCube.cpp" />
     <ClCompile Include="..\Private\Guard.cpp" />
+    <ClCompile Include="..\Private\GuardTower.cpp" />
     <ClCompile Include="..\Private\Hook.cpp" />
     <ClCompile Include="..\Private\Human_Boss.cpp" />
     <ClCompile Include="..\Private\InfinityTower.cpp" />
     <ClCompile Include="..\Private\Interaction_Anim_Object.cpp" />
     <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp" />
     <ClCompile Include="..\Private\Launcher.cpp" />
+    <ClCompile Include="..\Private\Level_Tower.cpp" />
     <ClCompile Include="..\Private\Log.cpp" />
     <ClCompile Include="..\Private\Meteor.cpp" />
     <ClCompile Include="..\Private\NineSlice.cpp" />
