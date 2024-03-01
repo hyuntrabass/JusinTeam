@@ -39,6 +39,8 @@ private:
 	map<const wstring, EffectInfo> m_EffectInfos{};
 	map<const void*, class CEffect_Dummy*> m_Effects[LEVEL_END]{};
 
+	_bool m_isReadytoFree{};
+
 public:
 	virtual void Free() override;
 };

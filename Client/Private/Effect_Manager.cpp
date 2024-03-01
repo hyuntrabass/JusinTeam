@@ -126,6 +126,8 @@ void CEffect_Manager::Delete_All()
 		}
 		m_Effects[i].clear();
 	}
+
+	m_isReadytoFree = true;
 }
 
 void CEffect_Manager::Clear(_uint iLevelIndex)
@@ -270,5 +272,10 @@ HRESULT CEffect_Manager::Read_EffectFile()
 
 void CEffect_Manager::Free()
 {
+	if (not m_isReadytoFree)
+	{
+		Delete_All();
+	}
+
 	Safe_Release(m_pGameInstance);
 }
