@@ -95,7 +95,6 @@ void CBrickBar::Tick(_float fTimeDelta)
 void CBrickBar::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
-	
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
 #endif

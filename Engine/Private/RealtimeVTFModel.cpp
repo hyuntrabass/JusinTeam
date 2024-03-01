@@ -398,7 +398,17 @@ HRESULT CRealtimeVTFModel::Play_Animation(_float fTimeDelta, _bool OnClientTrigg
 				m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() >= m_TriggerEffects[i].fEndAnimPoses[j] &&
 				m_pGameInstance->Has_Created_Effect(m_EffectMatrices[i]))
 			{
-				m_pGameInstance->Delete_Effect(m_EffectMatrices[i]);
+				if (m_TriggerEffects[i].iEndAnimIndices[j] == m_TriggerEffects[i].iStartAnimIndex)
+				{
+					if (m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos() < m_TriggerEffects[i].fStartAnimPos)
+					{
+						m_pGameInstance->Delete_Effect(m_EffectMatrices[i]);
+					}
+				}
+				else
+				{
+					m_pGameInstance->Delete_Effect(m_EffectMatrices[i]);
+				}
 			}
 		}
 	}

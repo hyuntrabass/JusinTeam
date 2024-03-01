@@ -26,7 +26,7 @@ HRESULT CProjectile::Init(void* pArg)
 
 	switch (m_ProjectileDesc.eType)
 	{
-	case Client::CProjectile::TYPE_RANDOM_POS:
+	case Client::CProjectile::TYPE_MISSILE:
 
 	{
 		m_UpdateMatrix = _mat::CreateScale(0.5f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
@@ -173,7 +173,7 @@ void CProjectile::Tick(_float fTimeDelta)
 
 	switch (m_ProjectileDesc.eType)
 	{
-	case Client::CProjectile::TYPE_RANDOM_POS:
+	case Client::CProjectile::TYPE_MISSILE:
 
 		if (m_fTime >= 2.f)
 		{
@@ -325,7 +325,7 @@ void CProjectile::Late_Tick(_float fTimeDelta)
 {
 	switch (m_ProjectileDesc.eType)
 	{
-	case Client::CProjectile::TYPE_RANDOM_POS:
+	case Client::CProjectile::TYPE_MISSILE:
 
 		if (m_pBall && m_pBallParticle)
 		{
@@ -391,7 +391,7 @@ HRESULT CProjectile::Add_Components()
 
 	switch (m_ProjectileDesc.eType)
 	{
-	case Client::CProjectile::TYPE_RANDOM_POS:
+	case Client::CProjectile::TYPE_MISSILE:
 	{
 		Collider_Desc CollDesc = {};
 		CollDesc.eType = ColliderType::Sphere;

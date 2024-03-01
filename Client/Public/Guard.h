@@ -5,7 +5,7 @@
 
 BEGIN(Client)
 
-struct MiniDungeonInfo
+struct GuardInfo
 {
 	_mat mMatrix{};
 	_uint iIndex{};
