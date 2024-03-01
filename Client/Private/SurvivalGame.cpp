@@ -121,7 +121,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 		if (m_pGameInstance->Key_Down(DIK_UP))
 		{
-			m_eCurStage = STAGE01;
+			m_eCurStage = STAGE05;
 		}
 
 		break;
