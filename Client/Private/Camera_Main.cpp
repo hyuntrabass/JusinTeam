@@ -734,13 +734,13 @@ void CCamera_Main::BrickGame_Mode(_float fTimeDelta)
 		m_fShakeAcc += fTimeDelta * 10.f / m_pGameInstance->Get_TimeRatio();
 	}
 
+	//DirectX::XMFLOAT3 = {x=0.00349983899 y=-0.557534575 z=-0.830147624 }
 
-
-	_vec4 vBrickGamePos = _vec4(-1999.853f, 12.962f, -1980.831f, 1.f);
+	_vec4 vBrickGamePos = _vec4(-2000.f, 14.9f, -1978.4f, 1.f);
 
 	m_pTransformCom->Set_State(State::Pos, vBrickGamePos);
 
-	m_pTransformCom->LookAt_Dir(_vec4(-0.004f, -0.70f, -0.866f, 0.f));
+	m_pTransformCom->LookAt_Dir(_vec4(-0.0f, -0.5575f, -0.8301f, 0.f));
 }
 
 void CCamera_Main::Collect_Mode(_float fTimeDelta)

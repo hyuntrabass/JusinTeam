@@ -284,6 +284,7 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     return Output;
 }
 
+
 PS_OUT PS_Main_NonLight(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
@@ -815,6 +816,55 @@ PS_OUT_DEFERRED PS_Main_Dissolve(PS_IN Input)
     return Output;
 }
 
+PS_OUT_DEFERRED PS_Main_GlowBox(PS_IN Input)
+{
+    PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + 0.3f * g_bSelected;
+    if (vMtrlDiffuse.x < 0.5f)
+    {
+        vMtrlDiffuse.xyz = g_vColor.xyz;
+    }
+    float3 vNormal;
+    if (g_HasNorTex)
+    {
+        vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
+    
+        vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+        float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
+    
+        vNormal = normalize(mul(normalize(vNormal), WorldMatrix) * -1.f);
+    }
+    else
+    {
+        vNormal = normalize(Input.vNor.xyz);
+    }
+    
+    vector vMask = vector(1.f, 0.1f, 0.1f, 0.1f);
+    if (g_HasMaskTex)
+    {
+        vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
+    }
+    
+    vector vGlow = 0.f;
+    if (g_HasGlowTex)
+        vGlow = g_GlowTexture.Sample(LinearSampler, Input.vTex);
+    
+    float2 Velocity = Input.vProjPos.xy / Input.vProjPos.w - Input.vOldPos.xy / Input.vOldPos.w;
+    
+    float2 vCalDir;
+    vCalDir = Velocity * 0.5f;
+    vCalDir.y *= -1.f;
+    
+    Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
+    Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, vCalDir.x, vCalDir.y);
+    Output.vGlow = vGlow;
+    
+    return Output;
+}
+
 technique11 DefaultTechnique_Shader_StatMesh
 {
     pass Default // 0
@@ -1115,4 +1165,17 @@ technique11 DefaultTechnique_Shader_StatMesh
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Dissolve();
     }
+    pass GlowBox //23
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_GlowBox();
+    }
+
 };

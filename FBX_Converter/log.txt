@@ -1,21 +1,31 @@
 1. Static Only   2. Anim Only   3. All
+2
+Animation Models : Start Converting...
+1. Normally Anim Model	2. For VTF Model 3. Part Model
 1
-Static Models : Start Converting...
-Converting... BrickMap.fbx
+Converting... Balloon.fbx
 Read File Succssefully
-Converting... palgakjung.fbx
+Animation name list: 
+Mon_water_balloon_A.ao|Attack
+Mon_water_balloon_A.ao|die
+Mon_water_balloon_A.ao|Idle
+Mon_water_balloon_A.ao|Mon_water_balloon_A_matAction
+Mon_water_balloon_A.ao|Mon_water_balloon_A_matAction.001
+Mon_water_balloon_A.ao|Run
+Mon_water_balloon_A.ao|Shader NodetreeAction
+Mon_water_balloon_A.ao|Skill_End
+Mon_water_balloon_A.ao|Skill_Loop
+Mon_water_balloon_A.ao|Skill_Start
+Converting... BlackCat.fbx
 Read File Succssefully
-Converting... CommonCube.fbx
-Read File Succssefully
-Converting... BrickMap2.fbx
-Read File Succssefully
-Converting... BrickCubeAlpha.fbx
-Read File Succssefully
-Converting... Floor.fbx
-Read File Succssefully
-Converting... bordercube.fbx
-Read File Succssefully
-Static Models : Convert Success!
+Animation name list: 
+Pet_10_A.ao|collect
+Pet_10_A.ao|Emotion
+Pet_10_A.ao|Idle
+Pet_10_A.ao|Run
+Pet_10_A.ao|teleport_end
+Pet_10_A.ao|teleport_start
+Animation Models : Convert Success!
 
-7 Static Models
+2 Animation Models
 are Successfully Converted as hyuntramesh!!

@@ -55,12 +55,15 @@ private:
 	_mat					m_EffectMatrix{};
 	class CEffect_Dummy*	m_pEffect_Ball{ nullptr };
 	CCollider*				m_pCurCollider{ nullptr };
-
+	class CCommonSurfaceTrail* m_pTrail{ nullptr };
+	CCommonSurfaceTrail* m_pDistortionTrail { nullptr };
+	const _mat*				m_Mat{};
 public:
 	const _bool& Is_Combo() const { return m_isCombo; }
 	const _bool& Is_Dead() const { return m_isDead; }
 
 private:
+	HRESULT Init_Effect();
 	void Check_Collision(_float fTimeDelta);
 	void Set_BallColor();
 

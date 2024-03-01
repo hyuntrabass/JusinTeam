@@ -157,7 +157,7 @@ void CBrickGame::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
-	m_pBackGround->Late_Tick(fTimeDelta);
+	//m_pBackGround->Late_Tick(fTimeDelta);
 	/*
 	
 	for (size_t i = 0; i < BRICKROW; i++)
@@ -227,7 +227,7 @@ HRESULT CBrickGame::Add_Parts()
 		{
 			CBalloon::BALLOON_DESC Desc{};
 			Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
-			Desc.vPosition = _vec3(vStartPos.x - 3.5f * j, vStartPos.y, vStartPos.z + 3.5f * i);
+			Desc.vPosition = _vec3(vStartPos.x - 2.0f * j, vStartPos.y, vStartPos.z + 2.0f * i);
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Balloons"), TEXT("Prototype_GameObject_Balloon"), &Desc)))
 			{
@@ -308,6 +308,20 @@ void CBrickGame::Init_Game()
 		m_pBall = (CBrickBall*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BrickBall"), &Desc);
 		if (not m_pBall)
 		{
+			MSG_BOX("BrickBall");
+			return;
+		}
+	}
+	if (m_pGameInstance->Get_LayerSize(LEVEL_VILLAGE, TEXT("Layer_BrickPet")) == 0)
+	{
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_BrickPet"), TEXT("Prototype_GameObject_BrickCat"))))
+		{
+			MSG_BOX("BrickPet");
+			return;
+		}
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_BlackCat"), TEXT("Prototype_GameObject_BlackCat"))))
+		{
+			MSG_BOX("BrickPet");
 			return;
 		}
 	}

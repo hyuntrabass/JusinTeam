@@ -44,9 +44,11 @@ HRESULT CBrickCat::Init(void* pArg)
 	Info.isFollow = true;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info, true);
 
+	/*
 	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Pet_Cat_Light");
 	Info.pMatrix = &m_EffectMatrix;
 	Info.isFollow = true;
+	*/
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info, true);
 
 	return S_OK;
@@ -54,6 +56,9 @@ HRESULT CBrickCat::Init(void* pArg)
 
 void CBrickCat::Tick(_float fTimeDelta)
 {
+
+	m_pTransformCom->Set_Scale(_vec3(3.f, 3.f, 3.f));
+
 	__super::Tick(fTimeDelta);
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
@@ -136,20 +141,19 @@ void CBrickCat::Init_State(_float fTimeDelta)
 
 void CBrickCat::Tick_State(_float fTimeDelta)
 {
-	_vec4 vPlayerPos = __super::Compute_PlayerPos();
+
+	CTransform * pBarTransform = GET_TRANSFORM("Layer_BrickBar", LEVEL_VILLAGE);
+	_vec4 vBarPos = pBarTransform->Get_State(State::Pos);
+
 	_float fDistance = __super::Compute_PlayerDistance();
 
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	_vec4 vBarRight = pBarTransform->Get_State(State::Right).Get_Normalized();
+	_vec4 vBarLook = pBarTransform->Get_State(State::Look).Get_Normalized();
 
-	_vec4 vPlayerRight = pPlayerTransform->Get_State(State::Right).Get_Normalized();
-	_vec4 vPlayerLook = pPlayerTransform->Get_State(State::Look).Get_Normalized();
-
-	_vec3 vTargetPos = vPlayerPos - (1.f * vPlayerRight) - (1.f * vPlayerLook);
-	vTargetPos.y += 0.5f;
-
-
+	_vec3 vTargetPos = vBarPos;// +(1.f * vBarRight) + (1.f * vBarLook);
+	vTargetPos.z += 1.f;
 	_vec3 vMyPos = m_pTransformCom->Get_State(State::Pos);
-	_vec4 vMyLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
+	_vec4 vMyLook = _vec4(0.f, 0.f, -1.f, 0.f);
 
 	switch (m_eCurState)
 	{
@@ -175,7 +179,7 @@ void CBrickCat::Tick_State(_float fTimeDelta)
 		}
 
 		_vec3 vSetPos = XMVectorLerp(vMyPos, vTargetPos, m_fPosLerpRatio);
-		_vec4 vSetLook = XMVectorLerp(vMyLook, vPlayerLook, m_fLookLerpRatio);
+		_vec4 vSetLook = XMVectorLerp(vMyLook, vBarLook, m_fLookLerpRatio);
 
 		m_pTransformCom->LookAt_Dir(vSetLook);
 
@@ -196,7 +200,7 @@ void CBrickCat::Tick_State(_float fTimeDelta)
 
 		if (fDistance < 2.1f)
 		{
-			m_Animation.iAnimIndex = IDLE;
+			m_Animation.iAnimIndex = RUN;
 			m_Animation.isLoop = true;
 
 			m_fIdleTime += fTimeDelta;
@@ -211,7 +215,7 @@ void CBrickCat::Tick_State(_float fTimeDelta)
 		if (fDistance > 10.f)
 		{
 			m_pTransformCom->Set_Position(vTargetPos);
-			m_pTransformCom->LookAt_Dir(vPlayerLook);
+			m_pTransformCom->LookAt_Dir(vBarLook * -1.f);
 		}
 
 	}
@@ -233,7 +237,7 @@ void CBrickCat::Tick_State(_float fTimeDelta)
 			}
 
 			_vec3 vSetPos = XMVectorLerp(vMyPos, vTargetPos, m_fPosLerpRatio);
-			_vec4 vSetLook = XMVectorLerp(vMyLook, vPlayerLook, m_fLookLerpRatio);
+			_vec4 vSetLook = XMVectorLerp(vMyLook, vBarLook, m_fLookLerpRatio);
 
 			m_pTransformCom->LookAt_Dir(vSetLook);
 
@@ -261,18 +265,14 @@ void CBrickCat::Tick_State(_float fTimeDelta)
 				m_eCurState = STATE_CHASE;
 			}
 		}
-
-		if (m_bInvenOn != CUI_Manager::Get_Instance()->Is_InvenActive())
-		{
-			m_eCurState = STATE_INVEN;
-		}
 	}
 
 		break;
 
+
 	case Client::CBrickCat::STATE_INVEN:
 
-		m_pTransformCom->Set_Position(_vec3(vPlayerPos.x + 1.7f, vPlayerPos.y + 1.f, vPlayerPos.z - 1.5f));
+		m_pTransformCom->Set_Position(_vec3(vBarPos.x + 1.7f, vBarPos.y + 1.f, vBarPos.z - 1.5f));
 		m_pTransformCom->LookAt_Dir(_vec4(0.f, 0.f, 1.f, 0.f));
 
 		m_fIdleTime += fTimeDelta;

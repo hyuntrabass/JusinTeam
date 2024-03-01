@@ -1125,6 +1125,7 @@ HRESULT CLoader::Load_GamePlay()
 
 #pragma region NPC
 
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Cat"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Cat/Mesh/Cat.hyuntraanimmesh"))))
 	{
@@ -1252,6 +1253,11 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_BlackCat"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Pet/Pet_BlackCat/Mesh/BlackCat.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion Pet
 
 #pragma region Survival Game
@@ -1777,6 +1783,17 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Pet_Dragon"), CPet_Dragon::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BrickCat"), CBrickCat::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BlackCat"), CBlackCat::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

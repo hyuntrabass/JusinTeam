@@ -119,7 +119,7 @@ void CPlayer::Tick(_float fTimeDelta)
 {
 
 	if (m_pGameInstance->Key_Down(DIK_V, InputChannel::Engine))
-	{
+	{/*
 		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 		CTreasureBox::TREASURE_DESC Desc{};
 		_vec4 vPos = pPlayerTransform->Get_State(State::Pos);
@@ -132,6 +132,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		{
 			return;
 		}
+	 */
 	}
 	/*
 	if (m_pGameInstance->Key_Down(DIK_B, InputChannel::GamePlay))

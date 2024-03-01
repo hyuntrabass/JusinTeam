@@ -5,6 +5,7 @@
 #include "Collider.h"
 #include "UI_Manager.h"
 #include "BrickBar.h"
+#include "CommonSurfaceTrail.h"
 CBrickBall::CBrickBall(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -32,6 +33,7 @@ HRESULT CBrickBall::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+
 	m_fSpeed = 9.f;
 	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
 	m_pTransformCom->Set_Speed(m_fSpeed);
@@ -57,11 +59,31 @@ HRESULT CBrickBall::Init(void* pArg)
 	m_eCurBrickColor = BLUE;
 
 
+	if (FAILED(Init_Effect()))
+	{
+		return E_FAIL;
+	}
 	return S_OK;
 }
 
 void CBrickBall::Tick(_float fTimeDelta)
 {
+	m_pTransformCom->Set_Scale(_vec3(1.3f, 1.3f, 1.3f));
+	_mat UpMatrix{};
+	_mat	BottomMatrix{};
+	if (m_pTrail != nullptr)
+	{
+		m_pTrail->Set_Color(m_vColor);
+		m_pTrail->On();
+		BottomMatrix = _mat::CreateTranslation(0.2f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();
+		UpMatrix = _mat::CreateTranslation(-0.2f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();
+		m_pTrail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
+
+		BottomMatrix = _mat::CreateTranslation(0.1f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();;
+		UpMatrix = _mat::CreateTranslation(0.1f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();
+		m_pDistortionTrail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
+	}
+
 	m_fSpeed = 12.f;
 	Set_BallColor();
 
@@ -114,7 +136,7 @@ void CBrickBall::Tick(_float fTimeDelta)
 
 void CBrickBall::Late_Tick(_float fTimeDelta)
 {
-
+	m_pTrail->Late_Tick(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 	//if (m_pEffect_Ball)
 	//{
@@ -218,6 +240,39 @@ void CBrickBall::RayCast()
 
 	}
 
+}
+
+HRESULT CBrickBall::Init_Effect()
+{
+	SURFACETRAIL_DESC Desc{};
+	Desc.vColor = _color(1.f, 0.5f, 0.1f, 1.f);
+
+	Desc.iNumVertices = 10;
+	m_pTrail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
+
+	Desc.iPassIndex = 2;
+	Desc.strMaskTextureTag = L"FX_J_Noise_Normal004_Tex";
+	m_pDistortionTrail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
+
+	
+	m_Mat = &m_pTransformCom->Get_World_Matrix();
+	_mat UpMatrix{};
+	_mat	BottomMatrix{};
+	if (m_pTrail != nullptr)
+	{
+		m_pTrail->Set_Color(m_vColor);
+		m_pTrail->On();
+		BottomMatrix = _mat::CreateTranslation(0.1f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();
+		UpMatrix = _mat::CreateTranslation(-0.1f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();
+		m_pTrail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
+
+		BottomMatrix = _mat::CreateTranslation(0.1f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();;
+		UpMatrix = _mat::CreateTranslation(0.1f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();
+		m_pDistortionTrail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
+
+
+	}
+	return S_OK;
 }
 
 void CBrickBall::Check_Collision(_float fTimeDelta)
@@ -338,6 +393,32 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 		m_pTransformCom->LookAt_Dir(m_vDir);
 	}
 
+
+	CCollider* pMonCollider{ nullptr };
+	_bool isMonColl{};
+
+	pMonCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_BlackCat"), TEXT("Com_Collider_Bar"));
+	if (pMonCollider == nullptr)
+	{
+		return;
+	}
+	isMonColl = m_pColliderCom->Intersect(pMonCollider);
+
+	if (isMonColl && m_pCurCollider != pMonCollider)
+	{
+		m_isCombo = true;
+		m_pCurCollider = nullptr;
+		m_pCurCollider = pMonCollider;
+		_vec3 vLook = m_pTransformCom->Get_State(State::Look);
+		_vec3 vNormal = pMonCollider->Get_Normal(m_pGameInstance->Get_CollideFace(pMonCollider, m_pColliderCom));
+		vNormal.Normalize();
+		m_vDir = _vec3::Reflect(vLook, vNormal);
+		m_vDir.y = 0.f;
+		m_pTransformCom->LookAt_Dir(m_vDir);
+		m_eCurBrickColor = (BrickColor)m_iBallColor;
+	}
+
+
 }
 
 void CBrickBall::Set_BallColor()
@@ -451,6 +532,8 @@ void CBrickBall::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pTrail);
+	Safe_Release(m_pDistortionTrail);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pMaskTextureCom);
 	Safe_Release(m_pEffect_Ball);
