@@ -825,8 +825,8 @@ PS_OUT_EFFECT PS_Main_MaskDiffEffect(PS_IN_EFFECT Input)
 {
     PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
     vector vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
-   
-    if (vColor.a < 0.1f)
+
+    if (vColor.r < 0.1f)
     {
         /*
         vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform);

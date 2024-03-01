@@ -40,6 +40,7 @@ HRESULT CGlowCube::Init(void* pArg)
 
 void CGlowCube::Tick(_float fTimeDelta)
 {
+	m_pTransformCom->Set_Scale(_vec3(0.001f, 0.001f, 0.001f));
 	m_fX += fTimeDelta * 0.2f;
 
 
@@ -64,11 +65,12 @@ HRESULT CGlowCube::Render()
 		{
 			_bool bFailed = true;
 		}
-
+		/*
 		if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
 		{
 			return E_FAIL;
 		}
+		*/
 
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof _vec4)))
 		{
@@ -93,7 +95,7 @@ HRESULT CGlowCube::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffect)))
+		if (FAILED(m_pShaderCom->Begin(StaticPass_MaskDiffEffect)))
 		{
 			return E_FAIL;
 		}
@@ -119,7 +121,7 @@ HRESULT CGlowCube::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Effect_CommonCube"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_BrickCube"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
 	{
 		return E_FAIL;
 	}
