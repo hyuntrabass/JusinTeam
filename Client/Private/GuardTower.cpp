@@ -683,7 +683,6 @@ CGameObject* CGuardTower::Clone(void* pArg)
 void CGuardTower::Free()
 {
 	__super::Free();
-	__super::Free();
 	//if (!m_isPrototype)
 	//{
 	//	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);

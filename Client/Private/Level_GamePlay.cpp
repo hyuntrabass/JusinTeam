@@ -174,7 +174,7 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		}
 		*/
 	}
-	if (m_pGameInstance->Key_Down(DIK_NUMPADMINUS, InputChannel::Engine))
+	if (m_pGameInstance->Key_Down(DIK_NUMPADMINUS))
 	{
 		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 		GuardInfo Desc{};
@@ -188,7 +188,7 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 			return;
 		}
 	}
-	if (m_pGameInstance->Key_Down(DIK_NUMPADPLUS, InputChannel::Engine))
+	if (m_pGameInstance->Key_Down(DIK_NUMPADPLUS))
 	{
 		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 		GuardTowerInfo Desc{};
