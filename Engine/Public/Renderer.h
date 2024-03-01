@@ -174,6 +174,9 @@ private:
 	HDR_DESC m_HDR;
 
 
+	_float m_DOFRange = 200.f;
+	_float m_DOFPower = 0.8f;
+
 public:
 	SSAO_DESC Get_SSAO() const {
 		return m_SSAO;

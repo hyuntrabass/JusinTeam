@@ -99,6 +99,8 @@ static float2 Poisson[8] =
     float2(-0.757088f, 0.349334f),
     float2(0.574619f, 0.685879f)
 };
+float g_fDOFPower;
+float g_fDOFRange;
 
 vector Get_WorldPos(float2 vTex)
 {
@@ -375,21 +377,21 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
         }
     }
     
-    float fFogFactor = saturate((g_vFogNF.y - fViewZ) / (g_vFogNF.y - g_vFogNF.x));
-    vector vFogColor = g_vFogColor;
-    vFogColor.a = 1.f;
+    //float fFogFactor = saturate((g_vFogNF.y - fViewZ) / (g_vFogNF.y - g_vFogNF.x));
+    //vector vFogColor = g_vFogColor;
+    //vFogColor.a = 1.f;
     
-    if (vWorldPos.y < g_fHellStart)
-    {
-        //float fHell = (vWorldPos.y + 15.f) / 35.f;
-        float fHell = 1.f - ((g_fHellStart - vWorldPos.y) / 20.f);
-        fHell = max(fHell, 0.f);
-        FinalColor *= vector(fHell, fHell, fHell, 1.f);
-        vFogColor *= fHell;
-    }
+    //if (vWorldPos.y < g_fHellStart)
+    //{
+    //    //float fHell = (vWorldPos.y + 15.f) / 35.f;
+    //    float fHell = 1.f - ((g_fHellStart - vWorldPos.y) / 20.f);
+    //    fHell = max(fHell, 0.f);
+    //    FinalColor *= vector(fHell, fHell, fHell, 1.f);
+    //    vFogColor *= fHell;
+    //}
        
 
-    FinalColor = lerp(fFogFactor * FinalColor, vFogColor, (1.f - fFogFactor));
+    //FinalColor = lerp(fFogFactor * FinalColor, vFogColor, (1.f - fFogFactor));
     //FinalColor = fFogFactor * FinalColor + (1.f - fFogFactor) * vFogColor;
     
     FinalColor.a = 1.f;
@@ -724,15 +726,15 @@ PS_OUT PS_DOF(PS_IN Input) //
     
     vector OriginColor = g_Texture.Sample(LinearSampler, Input.vTexcoord);
     
-    if(0.f == OriginColor.a)
-        discard;
+    //if(0.f == OriginColor.a)
+    //    discard;
     
     vector BlurColor = g_BlurTexture.Sample(LinearSampler, Input.vTexcoord);
     
     vector vDepth_Velocity_Desc = g_Depth_Velocity_Texture.Sample(PointSampler, Input.vTexcoord);
     float fViewZ = vDepth_Velocity_Desc.y * g_vCamNF.y;
     
-    float Blur = saturate(abs(fViewZ - 10.f) * (2.f / 350.f));
+    float Blur = clamp(abs(fViewZ - 10.f) * (2.f / g_fDOFRange), 0, g_fDOFPower);
     
     //float fSizeCoC = fBlurriness * (2.f / 1280.f);
     

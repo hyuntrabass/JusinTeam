@@ -136,11 +136,11 @@ HRESULT CLevel_Village::Init()
 		MSG_BOX("Failed to Ready TreasureBox");
 		return E_FAIL;
 	}
-	if (FAILED(Ready_Guard()))
-	{
-		MSG_BOX("Failed to Ready Guard");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Guard()))
+	//{
+	//	MSG_BOX("Failed to Ready Guard");
+	//	return E_FAIL;
+	//}
 	EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Water_Dist");
 	EffectDesc.pMatrix = &FountainMat;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
