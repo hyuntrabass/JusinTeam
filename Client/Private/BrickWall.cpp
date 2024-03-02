@@ -118,14 +118,14 @@ void CBrickWall::Tick(_float fTimeDelta)
 		m_pTransformCom->Set_Scale(_vec3(1.f, 50.f, 45.f));
 		_vec3 vPos = _vec3(-2000.f, 1.4677677f, -2010.f);
 		m_pTransformCom->Set_Position(vPos);
-		m_pColliderCom->Change_Extents(_vec3(10.f, 0.2f, 0.02f));
+		m_pColliderCom->Change_Extents(_vec3(15.f, 0.2f, 0.02f));
 	}
 	else if (m_rcRect.bottom == 1)
 	{
 		//ÀÌ°Å »©ÀÚ
 		_vec3 vPos = _vec3(m_pTransformCom->Get_State(State::Pos).x, 1.4677677f, m_pTransformCom->Get_State(State::Pos).z);
 		m_pTransformCom->Set_Position(vPos);
-		m_pColliderCom->Change_Extents(_vec3(10.f, 0.2f, 0.02f));
+		m_pColliderCom->Change_Extents(_vec3(15.f, 0.2f, 0.02f));
 	}
 	if (m_rcRect.left == 1)
 	{
@@ -196,7 +196,7 @@ void CBrickWall::Tick(_float fTimeDelta)
 
 void CBrickWall::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
+	//m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 
 
 	if (m_pEffect_Ball)

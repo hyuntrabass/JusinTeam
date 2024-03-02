@@ -43,6 +43,9 @@ public:
 	HRESULT Add_RenderGroup(RenderGroup eRenderGroup, class CGameObject* pRenderObject);
 	HRESULT Draw_RenderGroup();
 
+
+
+
 	const void Set_TurnOneBloom(_bool TurnOnBloom) {
 		m_TurnOnBloom = TurnOnBloom;
 	}
@@ -170,6 +173,9 @@ private:
 	SSAO_DESC m_SSAO;
 	HDR_DESC m_HDR;
 
+
+	_float m_DOFRange = 200.f;
+	_float m_DOFPower = 0.8f;
 
 public:
 	SSAO_DESC Get_SSAO() const {

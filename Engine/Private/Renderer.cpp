@@ -677,7 +677,14 @@ HRESULT CRenderer::Init_Prototype()
 
 #pragma endregion
 
-	//
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_DOF"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_DOF", L"Target_DOF")))
+		return E_FAIL;
+
 	if (FAILED(FinishCommand()))
 		return E_FAIL;
 
@@ -1902,6 +1909,8 @@ HRESULT CRenderer::Render_HDR()
 	if (FAILED(m_pGameInstance->End_MRT()))
 		return E_FAIL;
 
+
+
 	return S_OK;
 }
 
@@ -1972,9 +1981,6 @@ HRESULT CRenderer::Render_Blend()
 	if (FAILED(m_pGameInstance->End_MRT()))
 		return E_FAIL;
 
-	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Effect_Blur"), L"MRT_Blur", m_fEffectBlurPower)))
-		return E_FAIL;
-
 	return S_OK;
 }
 
@@ -2007,6 +2013,7 @@ HRESULT CRenderer::Render_Distortion()
 
 HRESULT CRenderer::Render_NoneBlendFinal()
 {
+
 	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Glow"), L"MRT_BlurTest", 1.f)))
 		return E_FAIL;
 
@@ -2033,6 +2040,64 @@ HRESULT CRenderer::Render_NoneBlendFinal()
 		return E_FAIL;
 
 	if (FAILED(m_pVIBuffer->Render()))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->End_MRT()))
+		return E_FAIL;
+
+#pragma region DOF
+
+	if (m_pGameInstance->Key_Down(DIK_RBRACKET))
+		m_DOFPower += 0.01f;
+
+	if (m_pGameInstance->Key_Down(DIK_PERIOD))
+		m_DOFPower -= 0.01f;
+
+	if (m_pGameInstance->Key_Down(DIK_LBRACKET))
+		m_DOFRange -= 10.f;
+
+	if (m_pGameInstance->Key_Down(DIK_COMMA))
+		m_DOFRange += 10.f;
+
+	m_pGameInstance->Get_StringStream() << "Power: " << m_DOFPower << endl;
+	m_pGameInstance->Get_StringStream() << "Range: " << m_DOFRange << endl;
+
+	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), L"MRT_Blur", 1.f)))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_DOF")))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_HDR_Sky")))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", L"Target_Bloom")))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Depth_Velocity_Texture", L"Target_Depth_Velocity")))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Bind_RawValue("g_fDOFRange", &m_DOFRange, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Bind_RawValue("g_fDOFPower", &m_DOFPower, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Begin(16)))
+		return E_FAIL;
+
+	if (FAILED(m_pVIBuffer->Render()))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->End_MRT()))
+		return E_FAIL;
+
+#pragma endregion
+
+	//if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR_Sky", nullptr, false)))
+	//	return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_DOF", nullptr, false)))
 		return E_FAIL;
 
 	// Outline
@@ -2084,7 +2149,13 @@ HRESULT CRenderer::Render_NoneBlendFinal()
 
 HRESULT CRenderer::Render_BlendFinal()
 {
-	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR_Sky", nullptr, false)))
+	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Effect_Blur"), L"MRT_Blur", m_fEffectBlurPower)))
+		return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR_Sky", nullptr, false)))
+	//	return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_DOF", nullptr, false)))
 		return E_FAIL;
 
 	// Effect
@@ -2103,7 +2174,10 @@ HRESULT CRenderer::Render_BlendFinal()
 	if (FAILED(m_pGameInstance->End_MRT()))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR_Sky", nullptr, false)))
+	//if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR_Sky", nullptr, false)))
+	//	return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_DOF", nullptr, false)))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlendTexture", L"Target_Bloom")))
@@ -2124,6 +2198,33 @@ HRESULT CRenderer::Render_BlendFinal()
 
 HRESULT CRenderer::Render_Final()
 {
+	if (m_pGameInstance->Key_Down(DIK_F7))
+		m_bFXAA = !m_bFXAA;
+
+	if (true == m_bFXAA) {
+
+		if (FAILED(m_pFXAAShader->Set_Shader()))
+			return E_FAIL;
+
+		if (FAILED(m_pFXAAShader->Bind_Sampler()))
+			return E_FAIL;
+
+		//if (FAILED(m_pFXAAShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pFXAART->Get_UAV(), _uint2(0, 0))))
+		//	return E_FAIL;
+
+		if (FAILED(m_pFXAAShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_DOF"), m_pFXAART->Get_UAV(), _uint2(0, 0))))
+			return E_FAIL;
+
+		_uint3 Size = _uint3((m_WinSize.x * 7) / 8, (m_WinSize.y + 7) / 8, 1);
+		if (FAILED(m_pFXAAShader->Begin(Size)))
+			return E_FAIL;
+
+		if (FAILED(FinishCommand()))
+			return E_FAIL;
+
+	}
+
+
 	if (m_pGameInstance->Key_Down(DIK_F6))
 		m_bMotionBlur = !m_bMotionBlur;
 	
@@ -2132,7 +2233,11 @@ HRESULT CRenderer::Render_Final()
 		if (FAILED(m_pMotionShader->Set_Shader()))
 			return E_FAIL;
 
-		ID3D11ShaderResourceView* SRVs[2] = { m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pGameInstance->Get_SRV(L"Target_Depth_Velocity")};
+		//ID3D11ShaderResourceView* SRVs[2] = { m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pGameInstance->Get_SRV(L"Target_Depth_Velocity")};
+		ID3D11ShaderResourceView* SRVs[2] = { m_pGameInstance->Get_SRV(L"Target_DOF"), m_pGameInstance->Get_SRV(L"Target_Depth_Velocity") };
+
+		if (true == m_bFXAA)
+			SRVs[0] = m_pFXAART->Get_SRV();
 
 		if (FAILED(m_pMotionShader->Bind_SRVs(SRVs, 0, 2)))
 			return E_FAIL;
@@ -2144,24 +2249,8 @@ HRESULT CRenderer::Render_Final()
 		if (FAILED(m_pMotionShader->Begin_MultiSRV(_uint3(ThreadGroupSize.x, ThreadGroupSize.y, 1))))
 			return E_FAIL;
 
-		//if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_MotionBlur")))
-		//	return E_FAIL;
-
-		//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Depth_Velocity_Texture", L"Target_Depth_Velocity")))
-		//	return E_FAIL;
-
-		//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_HDR_Sky")))
-		//	return E_FAIL;
-
-		//if (FAILED(m_pShader->Begin(14)))
-		//	return E_FAIL;
-
-		//if (FAILED(m_pVIBuffer->Render()))
-		//	return E_FAIL;
-
-		//if (FAILED(m_pGameInstance->End_MRT()))
-		//	return E_FAIL;
-
+		if (FAILED(FinishCommand()))
+			return E_FAIL;
 	}
 
 #pragma region Old_RadialBlur
@@ -2209,8 +2298,18 @@ HRESULT CRenderer::Render_Final()
 			return E_FAIL;
 	}
 	else {
-		if (FAILED(m_pRadialShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pRadialRT->Get_UAV(), iSlot)))
-			return E_FAIL;
+		if (true == m_bFXAA) {
+			if (FAILED(m_pRadialShader->Bind_ShaderResourceView(m_pFXAART->Get_SRV(), m_pRadialRT->Get_UAV(), iSlot)))
+				return E_FAIL;
+		}
+		else {
+			//if (FAILED(m_pRadialShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pRadialRT->Get_UAV(), iSlot)))
+			//	return E_FAIL;
+
+			if (FAILED(m_pRadialShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_DOF"), m_pRadialRT->Get_UAV(), iSlot)))
+				return E_FAIL;
+			
+		}
 	}	
 
 	if(FAILED(m_pRadialShader->Change_Value(&m_RBParams, sizeof(RadialParams), 1)))
@@ -2220,45 +2319,17 @@ HRESULT CRenderer::Render_Final()
 	if (FAILED(m_pRadialShader->Begin(_uint3(ThreadGroupSize.x, ThreadGroupSize.y, 1))))
 		return E_FAIL;
 
-#pragma endregion
-
 	if (FAILED(FinishCommand()))
 		return E_FAIL;
 
-	if (m_pGameInstance->Key_Down(DIK_F7))
-		m_bFXAA = !m_bFXAA;
+#pragma endregion
 
-	if (true == m_bFXAA) {
 
-		if (FAILED(m_pFXAAShader->Set_Shader()))
-			return E_FAIL;
-
-		if (FAILED(m_pFXAAShader->Bind_Sampler()))
-			return E_FAIL;
-
-		if (FAILED(m_pFXAAShader->Bind_ShaderResourceView(m_pRadialRT->Get_SRV(), m_pFXAART->Get_UAV(), _uint2(0, 0))))
-			return E_FAIL;
-
-		_uint3 Size = _uint3((m_WinSize.x * 7) / 8, (m_WinSize.y + 7) / 8, 1);
-		if (FAILED(m_pFXAAShader->Begin(Size)))
-			return E_FAIL;
-		
-		if (FAILED(FinishCommand()))
-			return E_FAIL;
-
-	}
-	
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DistortionTexture", L"Target_Distortion")))
 		return E_FAIL;
 
-	if (true == m_bFXAA) {
-		if (FAILED(m_pShader->Bind_ShaderResourceView("g_Texture", m_pFXAART->Get_SRV())))
-			return E_FAIL;
-	}
-	else {
-		if (FAILED(m_pShader->Bind_ShaderResourceView("g_Texture", m_pRadialRT->Get_SRV())))
-			return E_FAIL;
-	}
+	if (FAILED(m_pShader->Bind_ShaderResourceView("g_Texture", m_pRadialRT->Get_SRV())))
+		return E_FAIL;
 
 	if (FAILED(m_pShader->Begin(DefPass_Distortion)))
 	{
@@ -2533,7 +2604,7 @@ HRESULT CRenderer::Get_BlurTex(ID3D11ShaderResourceView* pSRV, const wstring& MR
 				if (FAILED(m_pBlurShader->Bind_ShaderResourceView(pBlurSRVs[i], pUAVs[i], iSlot)))
 					return E_FAIL;
 			}
-			//
+			
 			m_BLParam.direction = j; // 가로 세로로 블러먹이기
 			if (FAILED(m_pBlurShader->Change_Value(&m_BLParam, sizeof(BLURPARAM))))
 				return E_FAIL;

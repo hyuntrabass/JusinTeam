@@ -1,7 +1,11 @@
 #include "CescoGame.h"
 #include "VTFMonster.h"
 #include "Log.h"
+#include "Hook.h"
+
 #include "Camera_Manager.h"
+#include "Cesco_Poison.h"
+
 CCescoGame::CCescoGame(_dev pDevice, _context pContext)
 	:CGameObject(pDevice, pContext)
 {
@@ -36,25 +40,12 @@ HRESULT CCescoGame::Init(void* pArg)
 	random_device rand;
 	m_RandomNumber = _randNum(rand());
 
-	CLog::LOG_DESC LogDesc{};
-
 	for (_uint i = 0; i < m_SpawnPositions.size(); i++)
 	{
-		LogDesc.WorldMatrix = _mat::CreateScale(3.f, 3.f, 10.f);
-		if (i <= 1)
-		{
-			LogDesc.WorldMatrix *= _mat::CreateRotationY(XMConvertToRadians(90.f));
-		}
-		_vec3 vSpawnPos = m_SpawnPositions[i];
-
-		vSpawnPos.y = 18.f;
-		LogDesc.WorldMatrix.Position_vec3(vSpawnPos);
-
-		if (FAILED(m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Log"), TEXT("Prototype_GameObject_Log_Object"), &LogDesc)))
-		{
-			return E_FAIL;
-		}
+		Create_Log(i);
 	}
+
+		
 
 	CCamera_Manager::Get_Instance()->Set_RidingZoom(true);
 
@@ -65,12 +56,13 @@ void CCescoGame::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_8, InputChannel::UI))
 	{
-		m_eCurrentPhase = Phase1;
+		m_eCurrentPhase = Phase3;
 	}
 	if (m_pGameInstance->Key_Down(DIK_9))
 	{
 		m_fTimeLimit = 0.f;
 	}
+	
 
 	m_fTimeLimit -= fTimeDelta;
 
@@ -96,6 +88,17 @@ void CCescoGame::Tick(_float fTimeDelta)
 		pMonster->Tick(fTimeDelta);
 	}
 
+	for (_uint i = 0; i < m_SpawnPositions.size(); i++)
+	{
+		auto& Pair = m_Logs.find(i);
+		if (Pair == m_Logs.end())
+		{
+			continue;
+		}
+
+		Pair->second->Tick(fTimeDelta);
+	}
+
 	Release_DeadObjects();
 }
 
@@ -109,6 +112,17 @@ void CCescoGame::Late_Tick(_float fTimeDelta)
 	for (auto& pHook : m_vecHooks)
 	{
 		pHook->Late_Tick(fTimeDelta);
+	}
+
+	for (_uint i = 0; i < m_SpawnPositions.size(); i++)
+	{
+		auto& Pair = m_Logs.find(i);
+		if (Pair == m_Logs.end())
+		{
+			continue;
+		}
+
+		Pair->second->Late_Tick(fTimeDelta);
 	}
 }
 
@@ -134,6 +148,12 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 			if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Redant"), vSpawnPos, TEXT("Prototype_GameObject_RedAnt_Object"))))
 				return;
 
+			vSpawnPos = m_SpawnPositions[2];
+			vSpawnPos.x -= 1.f;
+			vSpawnPos.y += 2.f;
+			if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Wasp"), vSpawnPos, TEXT("Prototype_GameObject_Wasp_Object"))))
+				return;
+
 			m_iMonsterSpawnCount++;
 			m_fMonsterSpawnTime = 0.f;
 		}
@@ -151,11 +171,27 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 		}
 
 #pragma endregion
+
+#pragma region SpawnLog
+
+		for (_uint i = 0; i < m_SpawnPositions.size(); i++)
+		{
+			auto& Pair = m_Logs.find(i);
+			if (Pair == m_Logs.end())
+			{
+				m_fLogSpawnTime[i] += fTimeDelta;
+				if (m_fLogSpawnTime[i] >= 30.f)
+				{
+					Create_Log(i);
+					m_fLogSpawnTime[i] = 0.f;
+				}
+			}
+		}
+
+#pragma endregion
 	}
 	break;
 	case Client::CCescoGame::Phase2:
-		break;
-	case Client::CCescoGame::Phase3:
 	{
 #pragma region SpawnMonster
 
@@ -189,9 +225,82 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 
 #pragma endregion
 
+#pragma region SpawnLog
+
+		for (_uint i = 0; i < m_SpawnPositions.size(); i++)
+		{
+			auto& Pair = m_Logs.find(i);
+			if (Pair == m_Logs.end())
+			{
+				m_fLogSpawnTime[i] += fTimeDelta;
+				if (m_fLogSpawnTime[i] >= 30.f)
+				{
+					Create_Log(i);
+					m_fLogSpawnTime[i] = 0.f;
+				}
+			}
+		}
+
+#pragma endregion
+	}
+	break;
+	case Client::CCescoGame::Phase3:
+	{
+		Create_Posion(fTimeDelta);
+
+#pragma region SpawnMonster
+
+		if (m_fMonsterSpawnTime >= 1.f)
+		{
+			_vec3 vSpawnPos = m_SpawnPositions[0];
+			vSpawnPos.z -= 1.f;
+			if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Scorpion"), vSpawnPos, TEXT("Prototype_GameObject_Scorpion_Object"))))
+				return;
+
+			vSpawnPos = m_SpawnPositions[1];
+			vSpawnPos.z += 1.f;
+			if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Redant"), vSpawnPos, TEXT("Prototype_GameObject_RedAnt_Object"))))
+				return;
+
+			m_iMonsterSpawnCount++;
+			m_fMonsterSpawnTime = 0.f;
+		}
+
+#pragma endregion
+
+#pragma region SpawnLarva
+
+		if (m_iMonsterSpawnCount % 10 == 1 && m_fMonsterSpawnTime == 0.f)
+		{
+			for (_uint i = 0; i < 5; i++)
+			{
+				Create_Larva();
+			}
+		}
+
+#pragma endregion
+
+#pragma region SpawnLog
+
+		for (_uint i = 0; i < m_SpawnPositions.size(); i++)
+		{
+			auto& Pair = m_Logs.find(i);
+			if (Pair == m_Logs.end())
+			{
+				m_fLogSpawnTime[i] += fTimeDelta;
+				if (m_fLogSpawnTime[i] >= 30.f)
+				{
+					Create_Log(i);
+					m_fLogSpawnTime[i] = 0.f;
+				}
+			}
+		}
+
+#pragma endregion
+
 #pragma region SpawnHook
 
-		if (m_fHookSpawnTime >= 5.f)
+		if (m_fHookSpawnTime >= 6.f)
 		{
 			Create_Hook();
 			m_fHookSpawnTime = 0.f;
@@ -204,14 +313,14 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 
 		for (auto& pHook : m_vecHooks)
 		{
-			pHook->Tick(fTimeDelta);
+			pHook->Tick(fTimeDelta); 
 		}
 		m_bHadDragging = false;
 
 		_bool bDrag{};
 		_bool bCollision{};
 
-		for (auto& pHooks : m_vecHooks)
+		for (auto& pHooks : m_vecHooks)  
 		{
 			if (pHooks->Get_Dragging())
 			{
@@ -236,6 +345,25 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 
 		if (m_pCurrent_DraggingHook)
 		{
+
+			if (m_pGameInstance->Key_Down(DIK_SPACE, InputChannel::UI))
+			{
+				m_iDragging_EscapeCount++;
+			}
+			if (m_iDragging_EscapeCount >= 5)
+			{
+				m_iDragging_EscapeCount = 0;
+				Safe_Release(m_pCurrent_DraggingHook);
+				m_pCurrent_DraggingHook = nullptr;
+				m_pGameInstance->Attack_Player(nullptr, 0, MonAtt_Hook_End);
+				return;
+			}
+			m_fHookAttTime += fTimeDelta;
+			if (m_fHookAttTime >= 1.f)
+			{
+				m_pGameInstance->Attack_Player(nullptr, rand() % 20 + 40, MonAtt_Hook);
+				m_fHookAttTime = 0.f;
+			}
 			m_pPlayerTransform->Set_Position(_vec3(m_pCurrent_DraggingHook->Get_Position()));
 		}
 
@@ -263,8 +391,11 @@ HRESULT CCescoGame::Create_Hook()
 	_randInt RandomDir(0, 3);
 	_randInt RandomCount(1, 3);
 	_randInt RandomCountNum(1, 8);
+	
 
 	HookDesc.WorldMatrix = _mat::CreateScale(2.f, 2.f, 1.5f);
+	
+	
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -426,8 +557,56 @@ HRESULT CCescoGame::Create_Larva()
 		CVTFMonster* pMonster = reinterpret_cast<CVTFMonster*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Larva_Object"), &VTFMonsterDesc));
 		m_Monsters.push_back(pMonster);
 		m_LarvaPositions.emplace(pMonster->Get_ID(), vPos);
+		return S_OK;
 	}
 
+	return S_OK;
+}
+
+HRESULT CCescoGame::Create_Log(_uint SpawnPositionIndex)
+{
+	if (SpawnPositionIndex >= m_SpawnPositions.size())
+	{
+		return S_OK;
+	}
+
+	CLog::LOG_DESC LogDesc{};
+
+	LogDesc.WorldMatrix = _mat::CreateScale(3.f, 3.f, 10.f);
+	if (SpawnPositionIndex <= 1)
+	{
+		LogDesc.WorldMatrix *= _mat::CreateRotationY(XMConvertToRadians(90.f));
+	}
+
+	_vec3 vSpawnPos = m_SpawnPositions[SpawnPositionIndex];
+	vSpawnPos.y = 18.f;
+	LogDesc.WorldMatrix.Position_vec3(vSpawnPos);
+
+	CLog* pLog = reinterpret_cast<CLog*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Log_Object"), &LogDesc));
+	m_Logs.emplace(SpawnPositionIndex, pLog);
+
+	return S_OK;
+}
+
+HRESULT CCescoGame::Create_Posion(_float fTimeDelta)
+{
+	_randInt RandomX(-3020, -2980);
+	_randInt RandomY(-20, 30);
+	if (m_fPosionSpawnTime > 0.5f)
+	{
+		_mat PoisonWolrd{};
+		PoisonWolrd = _mat::CreateScale(2.f, 2.f, 1.5f);
+		_int iRandomX = RandomX(m_RandomNumber);
+		_int iRandomY = RandomY(m_RandomNumber);
+		PoisonWolrd.Position_vec3(_vec3(iRandomX, 24.f, iRandomY));
+		if (FAILED(m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Poison"), TEXT("Prototype_GameObject_Cesco_Poison"), &PoisonWolrd)))
+		{
+			return E_FAIL;
+		}
+		m_fPosionSpawnTime = 0.f;
+
+	}
+		m_fPosionSpawnTime += fTimeDelta;
 	return S_OK;
 }
 
@@ -465,6 +644,21 @@ void CCescoGame::Release_DeadObjects()
 		else
 		{
 			++it;
+		}
+	}
+
+	for (_uint i = 0; i < m_SpawnPositions.size(); i++)
+	{
+		auto& Pair = m_Logs.find(i);
+		if (Pair == m_Logs.end())
+		{
+			continue;
+		}
+
+		if (Pair->second->isDead())
+		{
+			Safe_Release(Pair->second);
+			m_Logs.erase(i);
 		}
 	}
 }
@@ -511,6 +705,12 @@ void CCescoGame::Free()
 		Safe_Release(pHook);
 	}
 	m_vecHooks.clear();
+
+	for (auto& Pair : m_Logs)
+	{
+		Safe_Release(Pair.second);
+	}
+	m_Logs.clear();
 
 	m_LarvaPositions.clear();
 

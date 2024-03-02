@@ -87,6 +87,21 @@ float2 g_vCenterTexPos;
 vector g_vCenterPos;
 float g_fRadialBlur_Power;
 
+// DOF
+static float2 Poisson[8] =
+{
+    float2(0.f, 0.f),
+    float2(0.527837f, -0.085868f),
+    float2(-0.040088f, 0.536087f),
+    float2(-0.670445f, -0.179949f),
+    float2(-0.419418f, -0.616039f),
+    float2(0.440453f, -0.639399f),
+    float2(-0.757088f, 0.349334f),
+    float2(0.574619f, 0.685879f)
+};
+float g_fDOFPower;
+float g_fDOFRange;
+
 vector Get_WorldPos(float2 vTex)
 {
     vector vDepth_Velocity_Desc = g_Depth_Velocity_Texture.Sample(PointClampSampler, vTex);
@@ -362,21 +377,21 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
         }
     }
     
-    float fFogFactor = saturate((g_vFogNF.y - fViewZ) / (g_vFogNF.y - g_vFogNF.x));
-    vector vFogColor = g_vFogColor;
-    vFogColor.a = 1.f;
+    //float fFogFactor = saturate((g_vFogNF.y - fViewZ) / (g_vFogNF.y - g_vFogNF.x));
+    //vector vFogColor = g_vFogColor;
+    //vFogColor.a = 1.f;
     
-    if (vWorldPos.y < g_fHellStart)
-    {
-        //float fHell = (vWorldPos.y + 15.f) / 35.f;
-        float fHell = 1.f - ((g_fHellStart - vWorldPos.y) / 20.f);
-        fHell = max(fHell, 0.f);
-        FinalColor *= vector(fHell, fHell, fHell, 1.f);
-        vFogColor *= fHell;
-    }
+    //if (vWorldPos.y < g_fHellStart)
+    //{
+    //    //float fHell = (vWorldPos.y + 15.f) / 35.f;
+    //    float fHell = 1.f - ((g_fHellStart - vWorldPos.y) / 20.f);
+    //    fHell = max(fHell, 0.f);
+    //    FinalColor *= vector(fHell, fHell, fHell, 1.f);
+    //    vFogColor *= fHell;
+    //}
        
 
-    FinalColor = lerp(fFogFactor * FinalColor, vFogColor, (1.f - fFogFactor));
+    //FinalColor = lerp(fFogFactor * FinalColor, vFogColor, (1.f - fFogFactor));
     //FinalColor = fFogFactor * FinalColor + (1.f - fFogFactor) * vFogColor;
     
     FinalColor.a = 1.f;
@@ -611,7 +626,7 @@ PS_OUT PS_Draw(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_MotionBlur(PS_IN Input)
+PS_OUT PS_MotionBlur(PS_IN Input) // Not use, this be Compute Shader
 {
     PS_OUT Output = (PS_OUT) 0;
     
@@ -649,7 +664,7 @@ PS_OUT PS_MotionBlur(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_RadialBlur(PS_IN Input)
+PS_OUT PS_RadialBlur(PS_IN Input) // Not use, this be Compute Shader
 {
     PS_OUT Output = (PS_OUT) 0;
     
@@ -705,49 +720,31 @@ PS_OUT PS_RadialBlur(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_FXAA(PS_IN Input) // ·òÆ° º´½ÅÀÓ ¾²Áö¸¶¼À
+PS_OUT PS_DOF(PS_IN Input) // 
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    float2 TexelSize = 1.f / float2(1280.f, 720.f);
+    vector OriginColor = g_Texture.Sample(LinearSampler, Input.vTexcoord);
     
-    float3 RGB_NW = g_Texture.Sample(LinearClampSampler, Input.vTexcoord + float2(-1.f, -1.f) * TexelSize).rgb;
-    float3 RGB_NE = g_Texture.Sample(LinearClampSampler, Input.vTexcoord + float2(1.f, -1.f) * TexelSize).rgb;
-    float3 RGB_SW = g_Texture.Sample(LinearClampSampler, Input.vTexcoord + float2(-1.f, 1.f) * TexelSize).rgb;
-    float3 RGB_SE = g_Texture.Sample(LinearClampSampler, Input.vTexcoord + float2(1.f, 1.f) * TexelSize).rgb;
-    float3 RGB_M = g_Texture.Sample(LinearClampSampler, Input.vTexcoord).rgb;
+    //if(0.f == OriginColor.a)
+    //    discard;
     
-    float3 Luma = float3(0.299f, 0.587f, 0.114f);
+    vector BlurColor = g_BlurTexture.Sample(LinearSampler, Input.vTexcoord);
     
-    float L_NW = dot(RGB_NW, Luma);
-    float L_NE = dot(RGB_NE, Luma);
-    float L_SW = dot(RGB_SW, Luma);
-    float L_SE = dot(RGB_SE, Luma);
-    float L_M = dot(RGB_M, Luma);
+    vector vDepth_Velocity_Desc = g_Depth_Velocity_Texture.Sample(PointSampler, Input.vTexcoord);
+    float fViewZ = vDepth_Velocity_Desc.y * g_vCamNF.y;
     
-    float L_Min = min(L_M, min(min(L_NW, L_NE), min(L_SW, L_SE)));
-    float L_Max = max(L_M, max(max(L_NW, L_NE), max(L_SW, L_SE)));
+    float Blur = clamp(abs(fViewZ - 10.f) * (2.f / g_fDOFRange), 0, g_fDOFPower);
     
-    float2 vDir;
-    vDir.x = -((L_NW + L_NE) - (L_SW + L_SE));
-    vDir.y = ((L_NW + L_SW) - (L_NE + L_SE));
+    //float fSizeCoC = fBlurriness * (2.f / 1280.f);
     
-    float DirReduce = max((L_NW + L_NE + L_SW + L_SE) * (0.25f * 0.5f), 0.0001f);
+    //float fTotalContribution = 1.f;
     
-    vDir = normalize(vDir * DirReduce);
     
-    float3 RGBA = 0.5f * (g_Texture.Sample(LinearClampSampler, Input.vTexcoord + vDir * (1.f / 3.f - 0.5f)).rgb +
-    g_Texture.Sample(LinearClampSampler, Input.vTexcoord + vDir * (2.f / 3.f - 0.5f)).rgb);
     
-    float3 RGBB = RGBA * 0.5f + 0.25f * (g_Texture.Sample(LinearClampSampler, Input.vTexcoord + vDir * -0.5f).rgb +
-    g_Texture.Sample(LinearClampSampler, Input.vTexcoord + vDir * 0.5f).rgb);
+    //float DiscRadius = abs(fViewZ * )
     
-    float LumB = dot(RGBB, Luma);
-    
-    if((LumB < L_Min) || (LumB > L_Max))
-        Output.vColor = vector(RGBA, 1.f);
-    else
-        Output.vColor = vector(RGBB, 1.f);
+    Output.vColor = lerp(OriginColor, BlurColor, Blur);
     
     return Output;
 }
@@ -962,7 +959,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_RadialBlur();
     }
 
-    pass FXAA // 16
+    pass DOF // 16
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -972,7 +969,7 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_FXAA();
+        PixelShader = compile ps_5_0 PS_DOF();
     }
 
 };

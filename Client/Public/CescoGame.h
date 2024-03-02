@@ -32,25 +32,37 @@ private:
 private:
 	CTransform* m_pPlayerTransform = { nullptr };
 	list<class CVTFMonster*> m_Monsters;
+	vector<class CHook*> m_vecHooks;
+	class CHook* m_pCurrent_DraggingHook{};
+	map<_uint, class CLog*> m_Logs;
+
+private:
+	_randNum m_RandomNumber;
+	Phase m_eCurrentPhase{ Phase_End };
 	vector<_vec3> m_SpawnPositions;
 	map<_int, _vec3> m_LarvaPositions;
-	vector<CHook*> m_vecHooks;
-	CHook* m_pCurrent_DraggingHook{};
-	_randNum m_RandomNumber;
-
-	_float m_fHookSpawnTime{};
-	_float m_fMonsterSpawnTime{};
 	_uint m_iMonsterLimit{ 200 };
-	_uint m_iMonsterSpawnCount{};
-	_bool m_bHadDragging{};
 	_float m_fTimeLimit{ 1209999999.f };
+	_float m_fMonsterSpawnTime{};
+	_uint m_iMonsterSpawnCount{};
+
+	//Hook
+	_float m_fHookSpawnTime{};
+	_bool m_bHadDragging{};
 	_vec4 m_vHookPos{};
-	Phase m_eCurrentPhase{Phase_End};
+	_uint m_iDragging_EscapeCount{};
+
+	//Log
+	_float m_fLogSpawnTime[4]{};
+	_float m_fHookAttTime{};
+	_float m_fPosionSpawnTime{};
 
 private:
 	HRESULT Create_CommonMonster(const wstring& strModelTag, _vec3 SpawnPosition, const wstring& strPrototypeTag);
 	HRESULT Create_Hook();
 	HRESULT Create_Larva();
+	HRESULT Create_Log(_uint SpawnPositionIndex);
+	HRESULT Create_Posion(_float fTimeDelta);
 
 private:
 	void Release_DeadObjects();

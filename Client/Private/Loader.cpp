@@ -1123,6 +1123,7 @@ HRESULT CLoader::Load_GamePlay()
 
 #pragma region NPC
 
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Cat"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Cat/Mesh/Cat.hyuntraanimmesh"))))
 	{
@@ -1159,8 +1160,9 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	_mat GuardPivot = _mat::CreateRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Guard"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Guard/Mesh/Guard.hyuntraanimmesh"))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Guard/Mesh/Guard.hyuntraanimmesh", false, GuardPivot))))
 	{
 		return E_FAIL;
 	}
@@ -1250,12 +1252,23 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_BlackCat"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Pet/Pet_BlackCat/Mesh/BlackCat.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion Pet
 
 #pragma region Survival Game
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_BlueGem"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/SurvivalGame/BlueGem/Mesh/BlueGem.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_BlueGem_Destroy"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/SurvivalGame/BlueGem_Destroy/Mesh/BlueGem_Destroy.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
@@ -1281,6 +1294,18 @@ HRESULT CLoader::Load_GamePlay()
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_LokiStone"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/SurvivalGame/LokiStone/Mesh/LokiStone.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Barricade"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/SurvivalGame/Barricade/Mesh/Barricade.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Spear"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/SurvivalGame/Spear/Mesh/Spear.hyuntrastatmesh"))))
 	{
 		return E_FAIL;
 	}
@@ -1776,6 +1801,17 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BrickCat"), CBrickCat::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BlackCat"), CBlackCat::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 
 #pragma endregion Pet
 
@@ -1904,9 +1940,6 @@ HRESULT CLoader::Load_Village()
 	{
 		return E_FAIL;
 	}
-
-
-	Pivot = _mat::CreateScale(0.003f);
 	//_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(90.f));
 
 	strInputFilePath = "../Bin/Resources/StaticMesh/Object/Dungeon/Mesh/";
@@ -2400,12 +2433,22 @@ HRESULT CLoader::Load_Tower()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Cesco_Poison"), CCesco_Poison::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Scorpion_Object"), CScorpion::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_RedAnt_Object"), CRedAnt::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Wasp_Object"), CWasp::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -2417,6 +2460,11 @@ HRESULT CLoader::Load_Tower()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Hook_Object"), CHook::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Larva_Ball_Object"), CLarva_Ball::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

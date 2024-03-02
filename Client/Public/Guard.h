@@ -7,8 +7,9 @@ BEGIN(Client)
 
 struct GuardInfo
 {
-	_mat mMatrix{};
 	_uint iIndex{};
+	_mat mMatrix{};
+	_vec4 PatrolPoint{};
 };
 
 class CGuard final : public CGameObject
@@ -18,8 +19,9 @@ public:
 		ANIM_DIE,
 		ANIM_IDLE,
 		ANIM_RUN,
-		ANIM_ATTACK_1,
-		ANIM_ATTACK_2,
+		ANIM_SWING,
+		ANIM_BOW,
+		ANIM_STEP,
 		ANIM_WALK,
 		ANIM_END
 	};
@@ -58,6 +60,7 @@ public:
 	_vec4 Compute_PlayerLook();
 	_float Compute_PlayerDistance();
 
+
 private:
 	GUARD_STATE m_ePreState = STATE_END;
 	GUARD_STATE m_eCurState = STATE_END;
@@ -83,8 +86,12 @@ private:
 	_bool m_bChangePass = false;
 	_float m_fHitTime{ 0.f };
 	_float m_fHittedTime{ 0.f };
-	_uint m_iIndex{ 0 };
-	_mat GuardMatrix{};
+	GuardInfo m_Info{};
+
+	_vec4 m_Point{};
+	_vec4 m_PatrolPoint1{};
+	_vec4 m_PatrolPoint2{};
+	_bool m_bPatrolChange = false;
 
 private:
 	ANIM_DESC m_Animation{};

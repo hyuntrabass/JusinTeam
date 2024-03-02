@@ -125,6 +125,7 @@ namespace Engine
 		float fPartiAppearRatio{};
 		float fPartiDissolveRatio{};
 		bool bChangeDir{};
+		bool bTargetPos{};
 
 		bool hasLight{};
 		LIGHT_DESC Light_Desc{};
@@ -318,6 +319,7 @@ namespace Engine
 		SimpleMath::Vector4 vLook{};
 		SimpleMath::Vector4 vPos{};
 		SimpleMath::Vector4 vPrevPos{};
+		SimpleMath::Vector4 vPrevPrevPos{};
 		float fIndex{};
 		float fDissolveRatio{};
 
@@ -360,7 +362,7 @@ namespace Engine
 
 	using VTXPOINT_INSTANCING = struct ENGINE_DLL tagVertex_Point_Instancing
 	{
-		static const unsigned int iNumElements{ 9 };
+		static const unsigned int iNumElements{ 10 };
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	};
 

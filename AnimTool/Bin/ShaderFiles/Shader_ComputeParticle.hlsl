@@ -7,6 +7,7 @@ struct Vertex_Instancing
     vector vLook;
     vector vPos;
     vector vPrevPos;
+    vector vPrevPrevPos;
     float fIndex;
     float fDissolveRatio;
 
@@ -37,8 +38,9 @@ cbuffer ParticleParams : register(b0)
     row_major matrix WorldMatrix;
     
     int bChangeDir;
+    int bTargetPos;
     
-    float3 Padding3;
+    float2 Padding;
 }
 
 float Random(float fSeed)
@@ -63,21 +65,33 @@ void particle(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID
         
         if (pVertex.vLifeTime.x == 0)
         {
+            if (bTargetPos)
+            {
+                pVertex.vOriginPos = vGravityDir - (normalize(pVertex.vOriginDir) * pVertex.vLifeTime.y * pVertex.fSpeed);
+                pVertex.vOriginPos.w = 1.f;
+                //pVertex.vOriginDir = normalize(vGravityDir - pVertex.vOriginPos);
+                //pVertex.vLifeTime.y = length(vGravityDir - pVertex.vOriginPos) / pVertex.fSpeed;
+            }
+            
             pVertex.vPos = mul(pVertex.vOriginPos, WorldMatrix);
+            pVertex.vPrevPrevPos = pVertex.vPrevPos;
             pVertex.vPrevPos = pVertex.vPos;
 
-            matrix WorldRotation = WorldMatrix;
-            WorldRotation._11_12_13_14 = normalize(WorldRotation._11_12_13_14);
-            WorldRotation._21_22_23_24 = normalize(WorldRotation._21_22_23_24);
-            WorldRotation._31_32_33_34 = normalize(WorldRotation._31_32_33_34);
-            WorldRotation._41_42_43_44 = vector(0.f, 0.f, 0.f, 1.f);
-            pVertex.vDirection = mul(pVertex.vOriginDir, WorldRotation);
+            {
+                matrix WorldRotation = WorldMatrix;
+                WorldRotation._11_12_13_14 = normalize(WorldRotation._11_12_13_14);
+                WorldRotation._21_22_23_24 = normalize(WorldRotation._21_22_23_24);
+                WorldRotation._31_32_33_34 = normalize(WorldRotation._31_32_33_34);
+                WorldRotation._41_42_43_44 = vector(0.f, 0.f, 0.f, 1.f);
+                pVertex.vDirection = mul(pVertex.vOriginDir, WorldRotation);
+            }
         }
 
         if (isLoop && isFirstUpdate)
         {
             pVertex.vPos = vector(0.f, -30000.f, 0.f, 1.f);
             pVertex.vPrevPos = pVertex.vPos;
+            pVertex.vPrevPrevPos = pVertex.vPrevPos;
         }
 
         if (bApplyGravity)
@@ -89,6 +103,10 @@ void particle(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID
             float fAlpha = (pVertex.vLifeTime.x / pVertex.vLifeTime.y) * 0.7f;
             pVertex.vDirection = lerp(pVertex.vDirection, vGravityDir, fAlpha);
         }
+        //else if (bTargetPos)
+        //{
+        //    pVertex.vDirection = normalize(vGravityDir - pVertex.vOriginPos);
+        //}
 
         if (fAppearRatio > 0.f && pVertex.vLifeTime.x <= pVertex.vLifeTime.y * fAppearRatio)
         {
@@ -107,6 +125,7 @@ void particle(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID
         
         pVertex.fIndex = saturate(pVertex.vLifeTime.x / pVertex.vLifeTime.y);
 
+        pVertex.vPrevPrevPos = pVertex.vPrevPos;
         pVertex.vPrevPos = pVertex.vPos;
         pVertex.vPos += pVertex.vDirection * pVertex.fSpeed * fTimeDelta;
         pVertex.vLifeTime.x += fTimeDelta;
@@ -122,11 +141,13 @@ void particle(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID
                 pVertex.vLifeTime.x = 0.f;
                 pVertex.vPos = mul(vector(pVertex.vOriginPos.xyz, 1.f), WorldMatrix);
                 pVertex.vPrevPos = pVertex.vPos;
+                pVertex.vPrevPrevPos = pVertex.vPrevPos;
             }
             else
             {
                 pVertex.vPos = vector(0.f, -10000.f, 0.f, 1.f);
                 pVertex.vPrevPos = pVertex.vPos;
+                pVertex.vPrevPrevPos = pVertex.vPrevPos;
             }
         }
 

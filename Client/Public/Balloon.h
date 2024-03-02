@@ -81,6 +81,7 @@ private:
 
 	_vec4 m_vColor{};
 
+	class CGlowCube* m_pDefCube{ nullptr };
 	class CGlowCube* m_pCube{ nullptr };
 public:
 	const _bool& Is_Coll() const { return m_isColl; }

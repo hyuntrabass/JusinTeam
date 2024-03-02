@@ -47,7 +47,6 @@ void CVTFMonster::Tick(_float fTimeDelta)
 {
     m_pTransformCom->Set_OldMatrix();
     m_pModelCom->Set_Animation(m_Animation);
-    m_pTransformCom->Gravity(fTimeDelta);
 
     m_Animation.fStartAnimPos = 0.f;
 }

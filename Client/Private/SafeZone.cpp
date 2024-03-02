@@ -48,7 +48,6 @@ HRESULT CSafeZone::Init(void* pArg)
 void CSafeZone::Tick(_float fTimeDelta)
 {
 	
-
 	m_fLifeTimer += fTimeDelta;
 	if (m_fLifeTimer > 5.f)
 	{
@@ -66,43 +65,7 @@ void CSafeZone::Tick(_float fTimeDelta)
 		}
 	}
 
-	//if (m_pGameInstance->Attack_Player(m_pColliderCom, 100))
-	//{
-	//	Kill();
-	//}
 
-	//if (m_isDead)
-	//{
-	//	m_pGameInstance->Play_Sound(TEXT("SD_4062_FireBall_SFX_01"));
-
-	//	CEffect_Manager* pEffect_Manager = CEffect_Manager::Get_Instance();
-	//	Safe_AddRef(pEffect_Manager);
-	//	EffectInfo Info{};
-
-	//	_mat EffectMat{ _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos))) };
-
-	//	Info = pEffect_Manager->Get_EffectInformation(L"Green_Explosion");
-	//	Info.pMatrix = &EffectMat;
-	//	pEffect_Manager->Add_Layer_Effect(Info);
-
-	//	Info = pEffect_Manager->Get_EffectInformation(L"Groar_XBeam_Spark");
-	//	Info.pMatrix = &EffectMat;
-	//	pEffect_Manager->Add_Layer_Effect(Info);
-
-	//	Info = pEffect_Manager->Get_EffectInformation(L"Groar_XBeam_Explosion");
-	//	Info.pMatrix = &EffectMat;
-	//	pEffect_Manager->Add_Layer_Effect(Info);
-
-	//	Info = pEffect_Manager->Get_EffectInformation(L"Arrow_Explosion_Smoke");
-	//	Info.pMatrix = &EffectMat;
-	//	pEffect_Manager->Add_Layer_Effect(Info);
-
-	//	Info = pEffect_Manager->Get_EffectInformation(L"Arrow_Explosion_Smoke2");
-	//	Info.pMatrix = &EffectMat;
-	//	pEffect_Manager->Add_Layer_Effect(Info);
-
-	//	Safe_Release(pEffect_Manager);
-	//}
 	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 }
 

@@ -520,6 +520,12 @@
     <Filter Include="02.GameObjects\16.CescoGame\Static\Hook">
       <UniqueIdentifier>{f47d38fd-5729-4a13-97cb-6f84b64e7c93}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\16.CescoGame\VTFMonster\Larva\Ball">
+      <UniqueIdentifier>{fd39e21f-f72d-4740-9813-4757a9aa652d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\16.CescoGame\VTFMonster\Wasp">
+      <UniqueIdentifier>{a23b4087-67c5-42c9-aeec-bd575032f483}</UniqueIdentifier>
+	</Filter>
     <Filter Include="02.GameObjects\07. NPC\06. GuardTower">
       <UniqueIdentifier>{065bad8b-d57c-4d7f-8167-aac0a06c6cf2}</UniqueIdentifier>
     </Filter>
@@ -1042,7 +1048,6 @@
     <ClInclude Include="..\Public\Pop_Reward.h">
       <Filter>02.GameObjects\00.UI\POPUP</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\CescoGame.h" />
     <ClInclude Include="..\Public\Guard.h" />
     <ClInclude Include="..\Public\TreasureBox.h">
       <Filter>02.GameObjects\09.Object\Rewards</Filter>
@@ -1056,7 +1061,10 @@
     <ClInclude Include="..\Public\GlowCube.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\CescoGame.h">
+    <ClInclude Include="..\Public\Scorpion.h">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Scorpion.h">
       <Filter>02.GameObjects\16.SescoGame</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\BrickCat.h">
@@ -1068,9 +1076,6 @@
     <ClInclude Include="..\Public\Level_Tower.h">
       <Filter>01.Levels\05.Tower</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Scorpion.h">
-      <Filter>02.GameObjects\16.CescoGame\VTFMonster\Scorpion</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Hook.h">
       <Filter>02.GameObjects\16.CescoGame\Static\Hook</Filter>
     </ClInclude>
@@ -1080,13 +1085,24 @@
     <ClInclude Include="..\Public\Guard.h">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\CescoGame.h">
+      <Filter>02.GameObjects\16.CescoGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Larva_Ball.h">
+      <Filter>02.GameObjects\16.CescoGame\VTFMonster\Larva\Ball</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Wasp.h">
+      <Filter>02.GameObjects\16.CescoGame\VTFMonster\Wasp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Scorpion.h">
+      <Filter>02.GameObjects\16.CescoGame\VTFMonster\Scorpion</Filter>
+	</ClInclude>
     <ClInclude Include="..\Public\GuardTower.h">
       <Filter>02.GameObjects\07. NPC\06. GuardTower</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Guard.h">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Scorpion.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1601,7 +1617,6 @@
     <ClCompile Include="..\Private\Pop_Reward.cpp">
       <Filter>02.GameObjects\00.UI\POPUP</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\CescoGame.cpp" />
     <ClCompile Include="..\Private\Guard.cpp" />
     <ClCompile Include="..\Private\TreasureBox.cpp">
       <Filter>02.GameObjects\09.Object\Rewards</Filter>
@@ -1609,13 +1624,16 @@
     <ClCompile Include="..\Private\SummonWindowPet.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\Inven\Window\Summon</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\RedAnt.cpp">
-      <Filter>02.GameObjects\16.CescoGame\VTFMonster\RedAnt</Filter>
+    <ClCompile Include="..\Private\CescoGame.cpp">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\GlowCube.cpp">
-      <Filter>02.GameObjects\14.BrickGame</Filter>
+    <ClCompile Include="..\Private\Scorpion.cpp">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\CescoGame.cpp">
+      <Filter>02.GameObjects\16.SescoGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Scorpion.cpp">
       <Filter>02.GameObjects\16.SescoGame</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\BrickCat.cpp">
@@ -1639,13 +1657,24 @@
     <ClCompile Include="..\Private\Guard.cpp">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\CescoGame.cpp">
+      <Filter>02.GameObjects\16.CescoGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Larva_Ball.cpp">
+      <Filter>02.GameObjects\16.CescoGame\VTFMonster\Larva\Ball</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Wasp.cpp">
+      <Filter>02.GameObjects\16.CescoGame\VTFMonster\Wasp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Scorpion.cpp">
+      <Filter>02.GameObjects\16.CescoGame\VTFMonster\Scorpion</Filter>
+	</ClCompile>
     <ClCompile Include="..\Private\GuardTower.cpp">
       <Filter>02.GameObjects\07. NPC\06. GuardTower</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Guard.cpp">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Scorpion.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">

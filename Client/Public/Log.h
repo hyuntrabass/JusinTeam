@@ -42,7 +42,7 @@ private:
 	CShader* m_pShaderCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
-	CCollider* m_pBodyColliderCom = { nullptr };
+	CCollider* m_pColliderCom = { nullptr };
 	CTexture* m_pDissolveTextureCom = { nullptr };
 
 private:

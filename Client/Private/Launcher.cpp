@@ -3,6 +3,10 @@
 #include "Projectile.h"
 #include "Effect_Dummy.h"
 #include "Effect_Manager.h"
+#include "Camera_Manager.h"
+
+_uint CLauncher::m_iLauncherID = 0;
+_uint CLauncher::m_iDestroyCount = 0;
 
 CLauncher::CLauncher(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -49,15 +53,7 @@ HRESULT CLauncher::Init(void* pArg)
 
 	break;
 
-	case Client::CLauncher::TYPE_FLOOR:
-
-	{
-
-	}
-
-		break;
-
-	case Client::CLauncher::TYPE_LASER:
+	case Client::CLauncher::TYPE_CANNON:
 
 		// Anim
 		// Attack01
@@ -85,12 +81,72 @@ HRESULT CLauncher::Init(void* pArg)
 			TEXT("Com_Collider_OBB"), (CComponent**)&m_pColliderCom, &BodyCollDesc)))
 			return E_FAIL;
 	}
-
+	m_iDestroyCount = 0;
 
 		break;
 
-	case Client::CLauncher::TYPE_PIZZA:
+	case Client::CLauncher::TYPE_BLUEGEM:
+
+	{
+		m_strModelTag = TEXT("Prototype_Model_BlueGem");
+		m_Animation.iAnimIndex = 0;
+		m_Animation.isLoop = true;
+		m_Animation.fAnimSpeedRatio = 2.f;
+
+		m_iPassIndex = AnimPass_Dissolve;
+
+		m_pTransformCom->Set_Scale(_vec3(0.25f));
+
+		switch (m_iLauncherID)
+		{
+		case 0:
+			m_pTransformCom->Set_Position(CENTER_POS + _vec3(9.f, 6.f, 0.f));
+			break;
+		case 1:
+			m_pTransformCom->Set_Position(CENTER_POS + _vec3(0.f, 6.f, 9.f));
+			break;
+		case 2:
+			m_pTransformCom->Set_Position(CENTER_POS + _vec3(-9.f, 6.f, 0.f));
+			break;
+		case 3:
+			m_pTransformCom->Set_Position(CENTER_POS + _vec3(0.f, 6.f, -9.f));
+			break;
+		}
+
+		Collider_Desc BodyCollDesc = {};
+		BodyCollDesc.eType = ColliderType::AABB;
+		BodyCollDesc.vExtents = _vec3(2.f, 3.f, 2.f);
+		BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y, 0.f);
+
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+			TEXT("Com_Collider_AABB"), (CComponent**)&m_pColliderCom, &BodyCollDesc)))
+			return E_FAIL;
+
+		m_pGameInstance->Register_CollisionObject(this, m_pColliderCom);
+
+		++m_iLauncherID;
+
+		if (m_iLauncherID >= 4)
+		{
+			m_iLauncherID = 0;
+		}
+	}
+
 		break;
+
+	case Client::CLauncher::TYPE_BARRICADE:
+
+		// Anim
+		// Destroy
+		// Idle
+		// Spawn
+		
+	{
+
+	}
+
+	break;
+
 	}
 
 	if (FAILED(Add_Components()))
@@ -112,17 +168,17 @@ void CLauncher::Tick(_float fTimeDelta)
 		Kill();
 	}
 
-	if (m_fDissolveRatio <= 0.f)
-	{
-		m_iPassIndex = AnimPass_Rim;
-	}
-
 	m_fTime += fTimeDelta;
 	m_fProjectileCreateTime += fTimeDelta;
 
 	switch (m_eType)
 	{
 	case Client::CLauncher::TYPE_RANDOM_POS:
+
+		if (m_fDissolveRatio <= 0.f)
+		{
+			m_iPassIndex = AnimPass_Rim;
+		}
 
 		if (m_fTime >= 2.5f)
 		{
@@ -133,7 +189,7 @@ void CLauncher::Tick(_float fTimeDelta)
 					for (size_t i = 0; i < 8; i++)
 					{
 						CProjectile::PROJECTILE_DESC Desc = {};
-						Desc.eType = CProjectile::TYPE_RANDOM_POS;
+						Desc.eType = CProjectile::TYPE_MISSILE;
 						Desc.pLauncherTransform = m_pTransformCom;
 						Desc.vStartPos = m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.2f, 0.f);
 
@@ -152,15 +208,40 @@ void CLauncher::Tick(_float fTimeDelta)
 			}
 		}
 
+		m_pModelCom->Set_Animation(m_Animation);
 
 		break;
 
-	case Client::CLauncher::TYPE_FLOOR:
-		break;
-
-	case Client::CLauncher::TYPE_LASER:
+	case Client::CLauncher::TYPE_CANNON:
 
 	{
+		if (m_fDissolveRatio <= 0.f)
+		{
+			m_iPassIndex = AnimPass_Rim;
+		}
+
+		if (m_bDestroy == true)
+		{
+			m_pTransformCom->Go_Down(fTimeDelta);
+
+			if (m_pTransformCom->Get_State(State::Pos).y <= -1.f)
+			{
+				Kill();
+			}
+		}
+
+		if (m_iDestroyCount >= 4)
+		{
+			m_Animation.iAnimIndex = 2;
+			m_Animation.fAnimSpeedRatio = 1.f;
+
+			if (m_pModelCom->IsAnimationFinished(2))
+			{
+				m_bDestroy = true;
+			}
+
+		}
+
 		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 		_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 		_vec3 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
@@ -170,6 +251,7 @@ void CLauncher::Tick(_float fTimeDelta)
 		{
 			m_Animation.iAnimIndex = 3;
 		}
+
 
 		if (m_iPassIndex == AnimPass_Rim)
 		{
@@ -207,24 +289,64 @@ void CLauncher::Tick(_float fTimeDelta)
 			}
 		}
 
-		if (m_iProjectileCount >= 4)
-		{
-			Kill();
-		}
-	}
 
-	{
 		_mat Offset = _mat::CreateTranslation(0.f, 3.f, 18.f);
 		m_pColliderCom->Update(Offset * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix());
+
+		m_pModelCom->Set_Animation(m_Animation);
+
 	}
 
 	break;
-	case Client::CLauncher::TYPE_PIZZA:
+
+	case Client::CLauncher::TYPE_BLUEGEM:
+
+		if (m_fDissolveRatio <= 0.f)
+		{
+			if (!m_bDestroy)
+			{
+				m_iPassIndex = AnimPass_OutLine;
+			}
+			else
+			{
+				m_iPassIndex = AnimPass_Default;
+			}
+		}
+
+		if (!m_bDestroy)
+		{
+			m_pTransformCom->Turn(_vec4(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+			m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+		}
+		else
+		{
+			m_pTransformCom->Go_Down(fTimeDelta);
+		}
+
+		if (m_pTransformCom->Get_State(State::Pos).y <= -5.f)
+		{
+			Kill();
+			m_pGameInstance->Delete_CollisionObject(this);
+		}
+
+		if (!m_bDestroy)
+		{
+			m_pModelCom->Set_Animation(m_Animation);
+		}
+		else
+		{
+			m_pDestroyModelCom->Set_Animation(m_Animation);
+		}
+
 		break;
+
+	case Client::CLauncher::TYPE_BARRICADE:
+
+		m_pModelCom->Set_Animation(m_Animation);
+
+		break;
+
 	}
-
-	m_pModelCom->Set_Animation(m_Animation);
-
 }
 
 void CLauncher::Late_Tick(_float fTimeDelta)
@@ -235,11 +357,8 @@ void CLauncher::Late_Tick(_float fTimeDelta)
 		m_pModelCom->Play_Animation(fTimeDelta);
 
 		break;
-	case Client::CLauncher::TYPE_FLOOR:
-		m_pModelCom->Play_Animation(fTimeDelta);
 
-		break;
-	case Client::CLauncher::TYPE_LASER:
+	case Client::CLauncher::TYPE_CANNON:
 
 		//if (m_iPassIndex == AnimPass_Rim)
 	{
@@ -247,8 +366,16 @@ void CLauncher::Late_Tick(_float fTimeDelta)
 
 	}
 	break;
-	case Client::CLauncher::TYPE_PIZZA:
-		m_pModelCom->Play_Animation(fTimeDelta);
+	case Client::CLauncher::TYPE_BLUEGEM:
+
+		if (m_bDestroy == true)
+		{
+			m_pDestroyModelCom->Play_Animation(fTimeDelta);
+		}
+		else
+		{
+			m_pModelCom->Play_Animation(fTimeDelta);
+		}
 
 		break;
 	}
@@ -271,15 +398,30 @@ HRESULT CLauncher::Render()
 		return E_FAIL;
 	}
 
-	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
+	CModel* pModel = { nullptr };
+	pModel = m_pModelCom;
+
+	if (m_eType == CLauncher::TYPE_BLUEGEM)
 	{
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		if (m_bDestroy == true)
+		{
+			pModel = m_pDestroyModelCom;
+		}
+		else
+		{
+			pModel = m_pModelCom;
+		}
+	}
+
+	for (_uint i = 0; i < pModel->Get_NumMeshes(); i++)
+	{
+		if (FAILED(pModel->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
 			_bool bFailed = true;
 		}
 
 		_bool HasNorTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+		if (FAILED(pModel->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
 		{
 			HasNorTex = false;
 		}
@@ -289,7 +431,7 @@ HRESULT CLauncher::Render()
 		}
 
 		_bool HasMaskTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
+		if (FAILED(pModel->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
 		{
 			HasMaskTex = false;
 		}
@@ -308,7 +450,7 @@ HRESULT CLauncher::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		if (FAILED(pModel->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
 		{
 			return E_FAIL;
 		}
@@ -318,13 +460,33 @@ HRESULT CLauncher::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pModelCom->Render(i)))
+		if (FAILED(pModel->Render(i)))
 		{
 			return E_FAIL;
 		}
 	}
 
 	return S_OK;
+}
+
+void CLauncher::Set_Damage(_int iDamage, _uint iDamageType)
+{
+	if (iDamage > 0)
+	{
+		if (m_eType == CLauncher::TYPE_BLUEGEM)
+		{
+			m_bDestroy = true;
+
+			m_Animation.iAnimIndex = 0;
+			m_Animation.isLoop = false;
+
+			m_pTransformCom->Set_Speed(7.f);
+
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 0.5f);
+
+			++m_iDestroyCount;
+		}
+	}
 }
 
 HRESULT CLauncher::Add_Components()
@@ -347,6 +509,27 @@ HRESULT CLauncher::Add_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_T_EFF_Noise_04_BC"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom))))
 	{
 		return E_FAIL;
+	}
+
+	switch (m_eType)
+	{
+	case Client::CLauncher::TYPE_RANDOM_POS:
+		break;
+
+	case Client::CLauncher::TYPE_CANNON:
+		break;
+
+	case Client::CLauncher::TYPE_BLUEGEM:
+
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_BlueGem_Destroy"), TEXT("Com_DestroyModel"), reinterpret_cast<CComponent**>(&m_pDestroyModelCom), m_pTransformCom)))
+		{
+			return E_FAIL;
+		}
+
+		break;
+
+	case Client::CLauncher::TYPE_BARRICADE:
+		break;
 	}
 
 	return S_OK;
@@ -374,7 +557,7 @@ HRESULT CLauncher::Bind_ShaderResources()
 		}
 	}
 
-	if (m_iPassIndex == AnimPass_Rim)
+	else if (m_iPassIndex == AnimPass_Rim)
 	{
 		_vec4 vColor = {};
 
@@ -383,12 +566,10 @@ HRESULT CLauncher::Bind_ShaderResources()
 		case Client::CLauncher::TYPE_RANDOM_POS:
 			vColor = Colors::Gold;
 			break;
-		case Client::CLauncher::TYPE_FLOOR:
-			break;
-		case Client::CLauncher::TYPE_LASER:
+		case Client::CLauncher::TYPE_CANNON:
 			vColor = Colors::Cyan;
 			break;
-		case Client::CLauncher::TYPE_PIZZA:
+		case Client::CLauncher::TYPE_BLUEGEM:
 			break;
 		}
 
@@ -397,6 +578,25 @@ HRESULT CLauncher::Bind_ShaderResources()
 			return E_FAIL;
 		}
 	}
+
+	else if (m_iPassIndex == AnimPass_OutLine)
+	{
+		_uint iColor = {};
+
+		switch (m_eType)
+		{
+		case Client::CLauncher::TYPE_BLUEGEM:
+			iColor = OutlineColor_Red;
+			break;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_OutlineColor", &iColor, sizeof iColor)))
+		{
+			return E_FAIL;
+		}
+	}
+
+
 
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
@@ -467,6 +667,7 @@ void CLauncher::Free()
 	__super::Free();
 
 	Safe_Release(m_pModelCom);
+	Safe_Release(m_pDestroyModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pColliderCom);
