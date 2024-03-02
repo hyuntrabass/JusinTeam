@@ -46,17 +46,12 @@ void CLarva_Ball::Tick(_float fTimeDelta)
 	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 	m_pBallEffect->Tick(fTimeDelta);
 
-	if (m_fGasSpawnTime >= 0.3f)
+	if (m_pGameInstance->Attack_Player(m_pColliderCom, 10, MonAtt_Poison) || m_fLifeTime >= 8.f)
 	{
-		/*EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(TEXT("Groar_Ball_Smoke"));
+		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(TEXT("Groar_Ball_Smoke"));
 		Info.pMatrix = &m_EffectMatrix;
-		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);*/
+		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
-		m_fGasSpawnTime = 0.f;
-	}
-
-	if (m_pGameInstance->Attack_Player(m_pColliderCom, 10, MonAtt_Poison) || m_fLifeTime >= 5.f)
-	{
 		m_pGameInstance->Delete_CollisionObject(this);
 		Kill();
 	}

@@ -2,6 +2,7 @@
 
 #include "Client_Define.h"
 #include "GameObject.h"
+#include "Balloon.h"
 
 enum BAR_DIR{ BAR_LEFT, BAR_RIGHT, BAR_STOP, BAR_END };
 BEGIN(Client)
@@ -31,11 +32,16 @@ private:
 	CModel* m_pModelCom = { nullptr };
 	CTexture* m_pMaskTextureCom = { nullptr };
 
-private:
+private:	
+	BrickColor				m_eCurBrickColor{};
 	BAR_DIR					m_eCurDir{};
 	_bool					m_isColl{};
-	_uint					m_iCollNum{};
+	_bool					m_isChanged{};
 
+	_uint					m_iCollNum{};
+	_uint					m_iBallColor{};
+
+	_float					m_fTime{};
 	_float					m_fSpeed{};
 	_vec3					m_vDir{};
 
@@ -43,8 +49,16 @@ private:
 	_mat					m_EffectMatrix{};
 	class CEffect_Dummy*	m_pEffect_Ball{};
 
-	class CBrickCat*					m_pPet{ nullptr };
+	class CBrickCat*		m_pPet{ nullptr };
+
+private:
+	void Set_BarColor();
+
 public:
+	BrickColor Get_CurrentColor() { return m_eCurBrickColor; }
+public:
+	CTransform* Get_Transform() { return m_pTransformCom; }
+	CCollider* Get_BrickBarCollider() { return m_pColliderCom; }
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
