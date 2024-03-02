@@ -27,7 +27,7 @@ private:
 	virtual ~CTransform() = default;
 
 public:
-	_mat Get_World_Matrix() const;
+	const _mat& Get_World_Matrix() const;
 	_mat Get_OldWorld_Matrix() const;
 	_mat Get_World_Inverse() const;
 	_vec4 Get_State(State eState) const;

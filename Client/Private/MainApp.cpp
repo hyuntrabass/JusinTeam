@@ -384,6 +384,7 @@ void CMainApp::Free()
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
+	CEffect_Manager::Get_Instance()->Delete_All();
 
 	CGameInstance::Release_Engine();
 
