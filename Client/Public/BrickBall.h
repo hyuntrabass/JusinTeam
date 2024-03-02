@@ -70,7 +70,8 @@ private:
 
 public:
 	_bool Is_BarColl() { return m_isBarColl; }
-	void Set_CurrentBallColor(BrickColor eColor) { m_eCurBrickColor = eColor; }
+	void Set_CurrentBallColor(BrickColor eColor);
+
 public:
 	CCollider* Get_BrickBallCollider() { return m_pColliderCom; }
 	HRESULT Add_Components();

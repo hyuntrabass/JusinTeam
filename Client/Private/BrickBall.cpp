@@ -92,18 +92,6 @@ void CBrickBall::Tick(_float fTimeDelta)
 		m_isDead = true;
 	}
 
-
-	/*
-	if (m_pGameInstance->Key_Down(DIK_UP, InputChannel::GamePlay))
-	{
-		m_iBallColor++;
-		if (m_iBallColor > (_uint)COLOR_END)
-		{
-			m_iBallColor = 0;
-		}
-	}
-	*/
-	//RayCast();
 	Check_Collision(fTimeDelta);
 	m_pTransformCom->Set_Speed(m_fSpeed);
 	m_pTransformCom->Go_Straight(fTimeDelta);
@@ -114,12 +102,12 @@ void CBrickBall::Tick(_float fTimeDelta)
 	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 
 
-	/*
+	
 	if (m_pEffect_Ball)
 	{
 		m_pEffect_Ball->Tick(fTimeDelta);
 	}
-	*/
+	
 	_mat UpMatrix{};
 	_mat	BottomMatrix{};
 	if (m_pTrail != nullptr)
@@ -151,10 +139,10 @@ void CBrickBall::Late_Tick(_float fTimeDelta)
 	m_pTrail->Late_Tick(fTimeDelta);
 	//m_pDistortionTrail->Late_Tick(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
-	//if (m_pEffect_Ball)
-	//{
-	//	m_pEffect_Ball->Late_Tick(fTimeDelta);
-	//}
+	if (m_pEffect_Ball)
+	{
+		m_pEffect_Ball->Late_Tick(fTimeDelta);
+	}
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
@@ -455,6 +443,12 @@ void CBrickBall::Set_BallColor()
 	default:
 		break;
 	}
+}
+
+void CBrickBall::Set_CurrentBallColor(BrickColor eColor)
+{
+	Safe_Release(m_pEffect_Ball);
+	m_eCurBrickColor = eColor;
 }
 
 HRESULT CBrickBall::Add_Components()
