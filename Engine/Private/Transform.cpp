@@ -64,7 +64,7 @@ const _bool CTransform::Is_OnGround() const
 	return HasCollided;
 }
 
-_mat CTransform::Get_World_Matrix() const
+const _mat& CTransform::Get_World_Matrix() const
 {
 	return m_WorldMatrix;
 }

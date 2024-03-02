@@ -88,16 +88,21 @@ void CSurvivalGame::Init_Pattern(_float fTimeDelta)
 			m_fTime[1] = 0.f;
 			m_iCount = 0;
 
-
-			eType = CLauncher::TYPE_LASER;
+			eType = CLauncher::TYPE_CANNON;
 			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Launcher"), TEXT("Prototype_GameObject_Launcher"), &eType);
+
+			for (size_t i = 0; i < 4; i++)
+			{
+				CLauncher::LAUNCHER_TYPE eType = CLauncher::TYPE_BLUEGEM;
+				m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_BlueGem"), TEXT("Prototype_GameObject_Launcher"), &eType);
+			}
 
 			break;
 		case Client::CSurvivalGame::STAGE05:
 			m_fTime[0] = 0.f;
 			m_fTime[1] = 0.f;
 			m_iCount = 0;
-
+			
 			break;
 		}
 
@@ -121,7 +126,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 		if (m_pGameInstance->Key_Down(DIK_UP))
 		{
-			m_eCurStage = STAGE03;
+			m_eCurStage = STAGE04;
 		}
 
 		break;

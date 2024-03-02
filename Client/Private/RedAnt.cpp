@@ -18,7 +18,7 @@ HRESULT CRedAnt::Init_Prototype()
 HRESULT CRedAnt::Init(void* pArg)
 {
 	PxCapsuleControllerDesc ControllerDesc{};
-	ControllerDesc.height = 1.2f; // 높이(위 아래의 반구 크기 제외
+	ControllerDesc.height = 0.5f; // 높이(위 아래의 반구 크기 제외
 	ControllerDesc.radius = 0.5f; // 위아래 반구의 반지름
 	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
 	ControllerDesc.slopeLimit = cosf(PxDegToRad(1.f)); // 캐릭터가 오를 수 있는 최대 각도
@@ -65,10 +65,11 @@ void CRedAnt::Tick(_float fTimeDelta)
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 
+	m_pTransformCom->Gravity(fTimeDelta);
+	__super::Tick(fTimeDelta);
+
 	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 	m_pAttackColliderCom->Update(m_pTransformCom->Get_World_Matrix());
-
-	__super::Tick(fTimeDelta);
 }
 
 void CRedAnt::Late_Tick(_float fTimeDelta)
@@ -255,7 +256,7 @@ HRESULT CRedAnt::Add_Components()
 	ColliderDesc = {};
 	ColliderDesc.eType = ColliderType::Frustum;
 	_mat matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
-	_mat matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(10.f), 2.f, 0.01f, 3.f);
+	_mat matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(40.f), 0.5f, 0.01f, 3.f);
 	ColliderDesc.matFrustum = matView * matProj;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack"), reinterpret_cast<CComponent**>(&m_pAttackColliderCom), &ColliderDesc)))

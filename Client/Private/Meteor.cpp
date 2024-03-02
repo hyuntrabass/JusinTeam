@@ -31,7 +31,7 @@ HRESULT CMeteor::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pDragonTransform = GET_TRANSFORM("Layer_Dragon_Boss", LEVEL_VILLAGE);
+	m_pDragonTransform = GET_TRANSFORM("Layer_Dragon_Boss", LEVEL_TOWER);
 	_vec3 vDragonPos = m_pDragonTransform->Get_State(State::Pos);
 
 	random_device dev;
@@ -45,9 +45,9 @@ HRESULT CMeteor::Init(void* pArg)
 	_vec3 vDragonRight = m_pDragonTransform->Get_State(State::Right).Get_Normalized();
 
 
-	m_pTransformCom->Set_Position(m_vTargetPos + vDragonRight * 4.f + _vec3(0.f, 7.f, 0.f));
+	m_pTransformCom->Set_Position(m_vTargetPos + vDragonRight * 10.f + _vec3(0.f, 30.f, 0.f));
 	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
-	m_pTransformCom->Set_Speed(20.f);
+	m_pTransformCom->Set_Speed(30.f);
 
 	m_pTransformCom->LookAt(_vec4(m_vTargetPos, 1.f));
 

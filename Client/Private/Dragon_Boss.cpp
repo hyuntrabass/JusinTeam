@@ -605,7 +605,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = eTempDragonState;
 
-			//m_eCurState = STATE_BLACKHOLE; // 테스트용
+			//m_eCurState = STATE_SHOOT_FIRE; // 테스트용
 		}
 	}
 
@@ -1134,7 +1134,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 				EffectMatrix = _mat::CreateScale(2.3f) * _mat::CreateTranslation(_vec3(m_vPlayerOldPos + _vec3(0.f, 0.2f, 0.f)));
 				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Head_Fire_Floor");
 				Info.pMatrix = &EffectMatrix;
-				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+				//CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 				EffectMatrix = _mat::CreateScale(2.3f) * _mat::CreateTranslation(_vec3(m_vPlayerOldPos + _vec3(0.f, 0.5f, 0.f)));
 				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Floor_Parti2");
@@ -1170,7 +1170,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 					_mat EffectMatrix = _mat::CreateScale(1.f, 2.f, 1.f) * _mat::CreateRotationX(XMConvertToRadians(180.f)) * _mat::CreateTranslation(_vec3(m_vPlayerOldPos + _vec3(0.f, 5.f, 0.f)));
 					EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Head_Fire");
 					Info.pMatrix = &EffectMatrix;
-					CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+					//CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 					m_fDragonHeadTime = 0.f;
 				}
