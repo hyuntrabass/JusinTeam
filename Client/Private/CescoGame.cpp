@@ -2,9 +2,8 @@
 #include "VTFMonster.h"
 #include "Log.h"
 #include "Hook.h"
-
+#include "UI_Manager.h"
 #include "Camera_Manager.h"
-#include "Cesco_Poison.h"
 
 CCescoGame::CCescoGame(_dev pDevice, _context pContext)
 	:CGameObject(pDevice, pContext)
@@ -45,7 +44,7 @@ HRESULT CCescoGame::Init(void* pArg)
 		Create_Log(i);
 	}
 
-		
+
 
 	CCamera_Manager::Get_Instance()->Set_RidingZoom(true);
 
@@ -62,7 +61,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 	{
 		m_fTimeLimit = 0.f;
 	}
-	
+
 
 	m_fTimeLimit -= fTimeDelta;
 
@@ -246,8 +245,27 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 	break;
 	case Client::CCescoGame::Phase3:
 	{
-		Create_Posion(fTimeDelta);
+		if (m_fEyeBombSpawnTime >= 2.f)
+		{
 
+			_vec3 vSpawnPos = m_pPlayerTransform->Get_CenterPos();
+			_randInt RandomCountNum(-300, 300);
+
+			_float fRandomX = RandomCountNum(m_RandomNumber);
+			_float fRandomZ = RandomCountNum(m_RandomNumber);
+			fRandomX /= 100.f;
+			fRandomZ /= 100.f;
+			vSpawnPos.x += fRandomX;
+			vSpawnPos.z += fRandomZ;
+			vSpawnPos.y = 0.f;
+			if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_EyeBomb"), vSpawnPos, TEXT("Prototype_GameObject_EyeBomb"))))
+			{
+				return;
+			}
+			m_fEyeBombSpawnTime = 0.f;
+
+		}
+		m_fEyeBombSpawnTime += fTimeDelta;
 #pragma region SpawnMonster
 
 		if (m_fMonsterSpawnTime >= 1.f)
@@ -313,14 +331,14 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 
 		for (auto& pHook : m_vecHooks)
 		{
-			pHook->Tick(fTimeDelta); 
+			pHook->Tick(fTimeDelta);
 		}
 		m_bHadDragging = false;
 
 		_bool bDrag{};
 		_bool bCollision{};
 
-		for (auto& pHooks : m_vecHooks)  
+		for (auto& pHooks : m_vecHooks)
 		{
 			if (pHooks->Get_Dragging())
 			{
@@ -345,26 +363,30 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 
 		if (m_pCurrent_DraggingHook)
 		{
+			if ((CUI_Manager::Get_Instance()->Get_Hp().x) > 0)
+			{
+				if (m_pGameInstance->Key_Down(DIK_SPACE, InputChannel::UI))
+				{
+					m_iDragging_EscapeCount++;
+				}
+				if (m_iDragging_EscapeCount >= 5)
+				{
+					m_iDragging_EscapeCount = 0;
+					m_vecHooks.erase(remove(m_vecHooks.begin(), m_vecHooks.end(), m_pCurrent_DraggingHook), m_vecHooks.end());
+					Safe_Release(m_pCurrent_DraggingHook);
+					m_pCurrent_DraggingHook = nullptr;
+					m_pGameInstance->Attack_Player(nullptr, 0, MonAtt_Hook_End);
+					return;
+				}
+				m_fHookAttTime += fTimeDelta;
+				if (m_fHookAttTime >= 1.f)
+				{
+					m_pGameInstance->Attack_Player(nullptr, rand() % 20 + 40, MonAtt_Hook);
+					m_fHookAttTime = 0.f;
+				}
+				m_pPlayerTransform->Set_Position(_vec3(m_pCurrent_DraggingHook->Get_Position()));
+			}
 
-			if (m_pGameInstance->Key_Down(DIK_SPACE, InputChannel::UI))
-			{
-				m_iDragging_EscapeCount++;
-			}
-			if (m_iDragging_EscapeCount >= 5)
-			{
-				m_iDragging_EscapeCount = 0;
-				Safe_Release(m_pCurrent_DraggingHook);
-				m_pCurrent_DraggingHook = nullptr;
-				m_pGameInstance->Attack_Player(nullptr, 0, MonAtt_Hook_End);
-				return;
-			}
-			m_fHookAttTime += fTimeDelta;
-			if (m_fHookAttTime >= 1.f)
-			{
-				m_pGameInstance->Attack_Player(nullptr, rand() % 20 + 40, MonAtt_Hook);
-				m_fHookAttTime = 0.f;
-			}
-			m_pPlayerTransform->Set_Position(_vec3(m_pCurrent_DraggingHook->Get_Position()));
 		}
 
 #pragma endregion
@@ -391,11 +413,11 @@ HRESULT CCescoGame::Create_Hook()
 	_randInt RandomDir(0, 3);
 	_randInt RandomCount(1, 3);
 	_randInt RandomCountNum(1, 8);
-	
+
 
 	HookDesc.WorldMatrix = _mat::CreateScale(2.f, 2.f, 1.5f);
-	
-	
+
+
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -586,29 +608,9 @@ HRESULT CCescoGame::Create_Log(_uint SpawnPositionIndex)
 	m_Logs.emplace(SpawnPositionIndex, pLog);
 
 	return S_OK;
+
 }
 
-HRESULT CCescoGame::Create_Posion(_float fTimeDelta)
-{
-	_randInt RandomX(-3020, -2980);
-	_randInt RandomY(-20, 30);
-	if (m_fPosionSpawnTime > 0.5f)
-	{
-		_mat PoisonWolrd{};
-		PoisonWolrd = _mat::CreateScale(2.f, 2.f, 1.5f);
-		_int iRandomX = RandomX(m_RandomNumber);
-		_int iRandomY = RandomY(m_RandomNumber);
-		PoisonWolrd.Position_vec3(_vec3(iRandomX, 24.f, iRandomY));
-		if (FAILED(m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Poison"), TEXT("Prototype_GameObject_Cesco_Poison"), &PoisonWolrd)))
-		{
-			return E_FAIL;
-		}
-		m_fPosionSpawnTime = 0.f;
-
-	}
-		m_fPosionSpawnTime += fTimeDelta;
-	return S_OK;
-}
 
 void CCescoGame::Release_DeadObjects()
 {

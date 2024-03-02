@@ -525,9 +525,12 @@
     </Filter>
     <Filter Include="02.GameObjects\16.CescoGame\VTFMonster\Wasp">
       <UniqueIdentifier>{a23b4087-67c5-42c9-aeec-bd575032f483}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="02.GameObjects\07. NPC\06. GuardTower">
       <UniqueIdentifier>{065bad8b-d57c-4d7f-8167-aac0a06c6cf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\16.CescoGame\VTFMonster\EyeBomb">
+      <UniqueIdentifier>{c7ee1e28-957d-4f96-9c32-f1512cbdfea4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1087,12 +1090,16 @@
     </ClInclude>
     <ClInclude Include="..\Public\Scorpion.h">
       <Filter>02.GameObjects\16.CescoGame\VTFMonster\Scorpion</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="..\Public\GuardTower.h">
       <Filter>02.GameObjects\07. NPC\06. GuardTower</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Guard.h">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BlackCat.h" />
+    <ClInclude Include="..\Public\EyeBomb.h">
+      <Filter>02.GameObjects\16.CescoGame\VTFMonster\EyeBomb</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1650,12 +1657,16 @@
     </ClCompile>
     <ClCompile Include="..\Private\Scorpion.cpp">
       <Filter>02.GameObjects\16.CescoGame\VTFMonster\Scorpion</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="..\Private\GuardTower.cpp">
       <Filter>02.GameObjects\07. NPC\06. GuardTower</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Guard.cpp">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BlackCat.cpp" />
+    <ClCompile Include="..\Private\EyeBomb.cpp">
+      <Filter>02.GameObjects\16.CescoGame\VTFMonster\EyeBomb</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

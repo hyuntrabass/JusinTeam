@@ -2420,6 +2420,20 @@ HRESULT CLoader::Load_Tower()
 		}
 	}
 
+	strInputFilePath = "../Bin/Resources/Textures/CescoGame";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_") + entry.path().stem().wstring();
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOWER, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+
+		}
+	}
+
 #pragma endregion
 
 
@@ -2433,7 +2447,7 @@ HRESULT CLoader::Load_Tower()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Cesco_Poison"), CCesco_Poison::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_EyeBomb"), CEyeBomb::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
