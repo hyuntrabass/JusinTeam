@@ -1087,9 +1087,6 @@
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Scorpion.h" />
-    <ClInclude Include="..\Public\TowerLazer.h">
-      <Filter>02.GameObjects\07. NPC\06. GuardTower\Lazer</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1649,9 +1646,6 @@
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Scorpion.cpp" />
-    <ClCompile Include="..\Private\TowerLazer.cpp">
-      <Filter>02.GameObjects\07. NPC\06. GuardTower\Lazer</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">

@@ -313,7 +313,6 @@
     <ClInclude Include="..\Public\Thief04.h" />
     <ClInclude Include="..\Public\Torch_Object.h" />
     <ClInclude Include="..\Public\Tower.h" />
-    <ClInclude Include="..\Public\TowerLazer.h" />
     <ClInclude Include="..\Public\TowerObject.h" />
     <ClInclude Include="..\Public\TreasureBox.h" />
     <ClInclude Include="..\Public\Trigger.h" />
@@ -497,7 +496,6 @@
     <ClCompile Include="..\Private\Thief04.cpp" />
     <ClCompile Include="..\Private\Torch_Object.cpp" />
     <ClCompile Include="..\Private\Tower.cpp" />
-    <ClCompile Include="..\Private\TowerLazer.cpp" />
     <ClCompile Include="..\Private\TowerObject.cpp" />
     <ClCompile Include="..\Private\TreasureBox.cpp" />
     <ClCompile Include="..\Private\Trigger.cpp" />

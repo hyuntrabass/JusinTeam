@@ -93,6 +93,7 @@ private:
 	CModel* m_pModelCom = nullptr;
 
 	CCollider* m_pBodyColliderCom = nullptr;
+	CCollider* m_pAttackColliderCom = nullptr;
 	CTexture* m_pDissolveTextureCom = nullptr;
 
 	class CEffect_Dummy* m_pBaseEffect{ nullptr };
@@ -111,6 +112,7 @@ private:
 	_float m_fIdleTime{ 0.f };
 	_float m_fDetectTime{ 0.f };
 	_float m_fAttackTime{ 0.f };
+	_float m_fAttackDelay{ 0.f };
 
 	_bool m_bChangePass{false};
 	_bool m_bDamaged{ false };
@@ -126,7 +128,6 @@ private:
 	_vec4 m_vLook{};
 	_vec4 m_vCurPlayerPos{};
 
-
 private:
 	ANIM_DESC m_Animation{};
 
@@ -136,6 +137,7 @@ public:
 
 public:
 	HRESULT Add_Collider();
+	HRESULT Add_Attack_Collider();
 	void Update_Collider();
 
 public:

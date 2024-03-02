@@ -28,13 +28,14 @@ HRESULT CGuardTower::Init(void* pArg)
 	m_iIndex = m_Info.iIndex;
 	m_GuardTowerMatrix = m_Info.mMatrix;
 	m_LazerMatrix = m_GuardTowerMatrix;
-
 	if (FAILED(Add_Components()))
 		return E_FAIL;
 
 	if (FAILED(Add_Collider()))
 		return E_FAIL;
 
+	if (FAILED(Add_Attack_Collider()))
+		return E_FAIL;
 	m_Animation.iAnimIndex = ANIM_IDLE;
 	m_Animation.isLoop = false;
 	m_Animation.bSkipInterpolation = false;
@@ -46,21 +47,24 @@ HRESULT CGuardTower::Init(void* pArg)
 
 	//m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
-	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Frame");
-	Info.pMatrix = &m_EffectMatrix;
-	Info.isFollow = true;
-	m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+	//Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Frame");
+	//Info.pMatrix = &m_EffectMatrix;
+	//Info.isFollow = true;
+	//m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
-	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Base");
-	Info.pMatrix = &m_EffectMatrix;
-	Info.isFollow = true;
-	m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+	//Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Base");
+	//Info.pMatrix = &m_EffectMatrix;
+	//Info.isFollow = true;
+	//m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
-	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Cannon_Laser_Warning");
-	Info.pMatrix = &m_LazerMatrix;
-	Info.isFollow = true;
-	m_pThreatEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-
+	//Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Cannon_Laser_Warning");
+	//Info.pMatrix = &m_LazerMatrix;
+	//Info.isFollow = true;
+	//m_pThreatEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+	
+	Create_Range();
+	Create_Lazer();
+	Create_Attack_Lazer();
 
 
 	m_eCurState = STATE_IDLE;
@@ -82,26 +86,16 @@ HRESULT CGuardTower::Init(void* pArg)
 
 void CGuardTower::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Pressing(DIK_UP))
-	{
-		m_eCurState = STATE_IDLE;
-	}
-	if (m_pGameInstance->Key_Pressing(DIK_DOWN))
-	{
-		m_eCurState = STATE_DIE;
-	}
-	if (m_pGameInstance->Key_Pressing(DIK_RIGHT))
-	{
-		m_eCurState = STATE_DETECT;
-	}
 
-	if (m_pGameInstance->Key_Pressing(DIK_EQUALS))
+	if (m_bDamaged == true)
 	{
-		Kill();
-		m_pGameInstance->Delete_CollisionObject(this);
-		m_pTransformCom->Delete_Controller();
+		m_fAttackDelay += fTimeDelta;
+		if (m_fAttackDelay >= 1.5f)
+		{
+			m_bDamaged = false;
+			m_fAttackDelay = 0;
+		}
 	}
-
 	if (m_eCurState == STATE_DETECT)
 	{
 		if (m_pFrameEffect)
@@ -202,6 +196,7 @@ void CGuardTower::Late_Tick(_float fTimeDelta)
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
+	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
 
 #endif // _DEBUG
 
@@ -325,7 +320,6 @@ void CGuardTower::Tick_State(_float fTimeDelta)
 	_float fDistance = Compute_PlayerDistance();
 	_vec4 vLazerLook{};
 	_float fDist = 1.0f;
-	PxRaycastBuffer Buffer{};
 	View_Detect_Range(m_fDetectTime);
 
 	switch (m_eCurState)
@@ -353,7 +347,7 @@ void CGuardTower::Tick_State(_float fTimeDelta)
 
 		if (m_isDetected == true)
 		{
-			m_eCurState = STATE_ATTACK_READY;
+				m_eCurState = STATE_ATTACK_READY;
 		}
 
 		break;
@@ -370,11 +364,13 @@ void CGuardTower::Tick_State(_float fTimeDelta)
 		}
 		else
 		{
-			if (m_fAttackTime > 1.f)
+			if (m_fAttackTime > 2.f)
 			{
 				m_eCurState = STATE_ATTACK;
 				m_vCurPlayerPos = Compute_PlayerPos();
-				Create_Attack_Lazer();
+				if (m_pAttackEffect->isDead() == true)
+					Create_Attack_Lazer();
+				m_pAttackColliderCom->Change_Extents(_vec3(0.25f, 6.f, 0.25f));
 				m_fAttackTime = 0.f;
 			}
 		}
@@ -383,14 +379,22 @@ void CGuardTower::Tick_State(_float fTimeDelta)
 	case Client::CGuardTower::STATE_ATTACK:
 
 		m_fAttackTime += fTimeDelta;
+		
+		if (m_bDamaged == false)
+		{
+			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+			m_bDamaged = true;
+		}
+		
 		if (m_fAttackTime > 1.f)
 		{
 			if (m_isDetected == false)
-				m_eCurState = STATE_IDLE;
+				m_eCurState = STATE_DETECT;
 			else
+			{
 				m_eCurState = STATE_ATTACK_READY;
+			}
 			m_fAttackTime = 0.f;
-			Delete_Attack_Lazer();
 		}
 		break;
 
@@ -428,7 +432,10 @@ void CGuardTower::View_Detect_Range(_float fTimeDelta)
 			{
 				if (pBuffer.block.distance > Compute_PlayerDistance())
 				{
-					m_isDetected = true;
+					if (CUI_Manager::Get_Instance()->Get_Hp().x > 0)
+						m_isDetected = true;
+					else
+						m_isDetected = false;
 				}
 				else
 					m_isDetected = false;
@@ -441,8 +448,6 @@ void CGuardTower::View_Detect_Range(_float fTimeDelta)
 			m_isDetected = false;
 		}
 	
-
-
 	if (fRadian >= 360.f)
 	{
 		m_bInit = true;
@@ -534,10 +539,13 @@ void CGuardTower::Create_Lazer()
 
 void CGuardTower::Create_Attack_Lazer()
 {
+	Safe_Release(m_pAttackEffect);
+
 	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Cannon_Laser");
 	Info.pMatrix = &m_LazerMatrix;
 	Info.isFollow = true;
 	Info.fLifeTime = 0.1f;
+
 	m_pAttackEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 }
 
@@ -568,9 +576,14 @@ void CGuardTower::Delete_Attack_Lazer()
 {
 	if (m_pAttackEffect)
 	{
-		m_pAttackEffect->Kill();
+		if(m_pAttackEffect->isDead() == true)
+		{
+			CTransform* pEffectTransform = dynamic_cast<CTransform*>(m_pAttackEffect->Find_Component(L"Com_Transform"));
+			CEffect_Manager::Get_Instance()->Delete_Effect(&pEffectTransform->Get_World_Matrix());
+		}
+		/*m_pAttackEffect->Kill();
 		m_pAttackEffect = nullptr;
-	
+	*/
 	}
 
 }
@@ -687,16 +700,30 @@ HRESULT CGuardTower::Add_Collider()
 	BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y, 0.f);
 	BodyCollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, L"Prototype_Component_Collider", L"Com_Collider_OBB", (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, L"Prototype_Component_Collider", L"Com_Collider_Body_OBB", (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
 		return E_FAIL;
 
+	return S_OK;
+}
+
+
+HRESULT CGuardTower::Add_Attack_Collider()
+{
+	Collider_Desc AttackCollDesc = {};
+	AttackCollDesc.eType = ColliderType::OBB;
+	AttackCollDesc.vExtents = _vec3(0.25f, 6.f, 0.25f);
+	AttackCollDesc.vCenter = _vec3(0.f, AttackCollDesc.vExtents.y, 0.f);
+	AttackCollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, L"Prototype_Component_Collider", L"Com_Collider_Attack_OBB", (CComponent**)&m_pAttackColliderCom, &AttackCollDesc)))
+		return E_FAIL;
 	return S_OK;
 }
 
 void CGuardTower::Update_Collider()
 {
 	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
-
+	m_pAttackColliderCom->Update(m_LazerMatrix);
 }
 
 CGuardTower* CGuardTower::Create(_dev pDevice, _context pContext)
@@ -746,5 +773,6 @@ void CGuardTower::Free()
 	Safe_Release(m_pThreatEffect);
 	Safe_Release(m_pAttackEffect);
 	Safe_Release(m_pBodyColliderCom);
+	Safe_Release(m_pAttackColliderCom);
 	Safe_Release(m_pDissolveTextureCom);
 }
