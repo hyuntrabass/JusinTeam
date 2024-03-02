@@ -5,7 +5,7 @@
 
 BEGIN(Client)
 
-enum BrickColor { PINK, YELLOW, PURPLE, BLUE, COLOR_END };
+enum BrickColor { RED, BLUE, COLOR_END };
 class CBalloon final : public CGameObject
 {
 public:
@@ -71,13 +71,16 @@ private:
 	BALLOON_STATE m_eCurState = STATE_IDLE;
 
 private:
-	_float m_fIdleTime = {};
-	_float m_fDeadTime = {};
-	_float m_bHit = {};
 
 	_bool m_isColl{};
 	_bool m_bParticle{};
 	_bool m_bDamaged = { false };
+
+	_uint m_iCount{ 1 };
+
+	_float m_fIdleTime = {};
+	_float m_fDeadTime = {};
+	_float m_bHit = {};
 
 	_vec4 m_vColor{};
 

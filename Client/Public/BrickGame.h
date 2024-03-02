@@ -2,7 +2,7 @@
 #include "Client_Define.h"
 #include "OrthographicObject.h"
 #include "Riding.h"
-#define BRICKCOL 15
+#define BRICKCOL 11
 #define BRICKROW 7
 
 BEGIN(Client)

@@ -89,6 +89,7 @@ void CBrickGame::Tick(_float fTimeDelta)
 		CTransform* pTransform = m_pBar->Get_Transform();
 		_vec3 vPos = pTransform->Get_State(State::Pos);
 		Desc.vPos = _vec3(vPos.x, vPos.y, vPos.z - 2.f);
+		Desc.eBrickColor = m_pBar->Get_CurrentColor();
 		m_pBall = (CBrickBall*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BrickBall"), &Desc);
 		if (not m_pBall)
 		{
@@ -112,10 +113,12 @@ void CBrickGame::Tick(_float fTimeDelta)
 
 	if (m_pBall != nullptr)
 	{
+		
 		if (m_pBall->Is_BarColl())
 		{
 			m_pBall->Set_CurrentBallColor(m_pBar->Get_CurrentColor());
 		}
+		
 	}
 	/*
 	
@@ -165,7 +168,7 @@ void CBrickGame::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
-	m_pBackGround->Late_Tick(fTimeDelta);
+	//m_pBackGround->Late_Tick(fTimeDelta);
 	/*
 	
 	for (size_t i = 0; i < BRICKROW; i++)
@@ -232,13 +235,13 @@ HRESULT CBrickGame::Add_Parts()
 	}
 	*/
 
-	_vec3 vStartPos = _vec3(-1990.f, 1.5f, -2005.11536f);
+	_vec3 vStartPos = _vec3(-1989.f, 1.5f, -2010.11536f);
 	for (_uint i = 0; i < BRICKROW; i++)
 	{
 		for (_uint j = 0; j < BRICKCOL; j++)
 		{
 			_vec2 vCenterPos = _vec2(-2000.f, -2000.f);
-			_vec2 vSize = _vec2(5.f, 5.f);
+			_vec2 vSize = _vec2(8.f, 8.f);
 			RECT rcRect = {
 				  (LONG)(vCenterPos.x - vSize.x * 0.5f),
 				  (LONG)(vCenterPos.y - vSize.y * 0.5f),
@@ -248,8 +251,8 @@ HRESULT CBrickGame::Add_Parts()
 
 			CBalloon::BALLOON_DESC Desc{};
 			Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
-			Desc.vPosition = _vec3(vStartPos.x - 2.0f * j, vStartPos.y, vStartPos.z + 2.0f * i);
-			POINT ptPos = { vStartPos.x, vStartPos.z };
+			Desc.vPosition = _vec3(vStartPos.x - 2.1f * j, vStartPos.y, vStartPos.z + 2.1f * i);
+			POINT ptPos = { Desc.vPosition.x, Desc.vPosition.z };
 			if (PtInRect(&rcRect, ptPos))
 			{
 				continue;
@@ -430,6 +433,7 @@ void CBrickGame::Free()
 	}
 
 	Safe_Release(m_pBall);
+	Safe_Release(m_pBar);
 	Safe_Release(m_pCombo);
 	Safe_Release(m_pBackGround);
 	Safe_Release(m_pRendererCom);

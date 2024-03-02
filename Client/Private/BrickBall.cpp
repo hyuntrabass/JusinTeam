@@ -5,7 +5,7 @@
 #include "Collider.h"
 #include "UI_Manager.h"
 #include "BrickBar.h"
-#include "CommonSurfaceTrail.h"
+#include "CommonTrail.h"
 CBrickBall::CBrickBall(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -34,15 +34,17 @@ HRESULT CBrickBall::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_fSpeed = 9.f;
-	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
+	m_fSpeed = 12.f;
+	m_pTransformCom->Set_Scale(_vec3(1.5f, 1.5f, 1.5f));
 	m_pTransformCom->Set_Speed(m_fSpeed);
 
 	
 	_vec3 vPos = ((BALL_DESC*)pArg)->vPos;
+	m_eCurBrickColor = ((BALL_DESC*)pArg)->eBrickColor;
+
 
 	m_pTransformCom->Set_Position(vPos);
-	_vec3 vNormal = _vec3(0.f, 0.f, -1.f);
+	_vec3 vNormal = _vec3(0.f, 0.f, 1.f);
 	m_pTransformCom->LookAt_Dir(vNormal);
 
 	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
@@ -58,7 +60,7 @@ HRESULT CBrickBall::Init(void* pArg)
 	m_shouldRenderBlur = true;
 	m_eCurBrickColor = BLUE;
 
-
+	Set_BallColor();
 	if (FAILED(Init_Effect()))
 	{
 		return E_FAIL;
@@ -68,11 +70,8 @@ HRESULT CBrickBall::Init(void* pArg)
 
 void CBrickBall::Tick(_float fTimeDelta)
 {
-	m_pTransformCom->Set_Scale(_vec3(1.3f, 1.3f, 1.3f));
-
-
-	m_fSpeed = 12.f;
-	Set_BallColor();
+	m_pTransformCom->Set_Scale(_vec3(1.8f, 1.8f, 1.8f));
+	//Set_BallColor();
 
 	CUI_Manager::Get_Instance()->Set_BrickBallColor(m_eCurBrickColor);
 
@@ -106,14 +105,20 @@ void CBrickBall::Tick(_float fTimeDelta)
 	if (m_pEffect_Ball)
 	{
 		m_pEffect_Ball->Tick(fTimeDelta);
+	}	
+	if (m_pEffect_Ball_Parti)
+	{
+		m_pEffect_Ball_Parti->Tick(fTimeDelta);
 	}
 	
 	_mat UpMatrix{};
 	_mat	BottomMatrix{};
 	if (m_pTrail != nullptr)
 	{
-		m_pTrail->Set_Color(m_vColor);
 		m_pTrail->On();
+		_mat Matrix = _mat::CreateTranslation(0.f, 0.1f, 0.f) * m_pTransformCom->Get_World_Matrix();
+		m_pTrail->Tick(Matrix.Position_vec3());
+		/*
 		m_pDistortionTrail->On();
 		if (m_pTransformCom->Get_State(State::Look).z < 0.f)
 		{
@@ -131,6 +136,7 @@ void CBrickBall::Tick(_float fTimeDelta)
 		BottomMatrix = _mat::CreateTranslation(0.2f, -0.3f, 0.f) * m_pTransformCom->Get_World_Matrix();;
 		UpMatrix = _mat::CreateTranslation(-0.2f, -0.3f, 0.f) * m_pTransformCom->Get_World_Matrix();
 		m_pDistortionTrail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
+		*/
 	}
 }
 
@@ -142,6 +148,10 @@ void CBrickBall::Late_Tick(_float fTimeDelta)
 	if (m_pEffect_Ball)
 	{
 		m_pEffect_Ball->Late_Tick(fTimeDelta);
+	}
+	if (m_pEffect_Ball_Parti)
+	{
+		m_pEffect_Ball_Parti->Late_Tick(fTimeDelta);
 	}
 
 #ifdef _DEBUG
@@ -245,15 +255,13 @@ void CBrickBall::RayCast()
 
 HRESULT CBrickBall::Init_Effect()
 {
-	SURFACETRAIL_DESC Desc{};
-	Desc.vColor = _color(1.f, 0.5f, 0.1f, 1.f);
+	TRAIL_DESC Desc{};
+	Desc.vColor = _color(1.f, 1.f, 1.f, 1.f);
+	Desc.vPSize = _vec2(0.1f, 0.1f);
+	Desc.iNumVertices = 16;
+	m_pTrail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
 
-	Desc.iNumVertices = 12;
-	m_pTrail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 
-	Desc.iPassIndex = 2;
-	Desc.strMaskTextureTag = L"FX_J_Noise_Normal004_Tex";
-	m_pDistortionTrail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
 
 	
 	m_Mat = &m_pTransformCom->Get_World_Matrix();
@@ -261,17 +269,14 @@ HRESULT CBrickBall::Init_Effect()
 	_mat	BottomMatrix{};
 	if (m_pTrail != nullptr)
 	{
-		m_pTrail->Set_Color(m_vColor);
 		m_pTrail->On();
+		_mat Matrix = _mat::CreateTranslation(0.f, 0.1f, 0.f) * m_pTransformCom->Get_World_Matrix();
+		m_pTrail->Tick(Matrix.Position_vec3());
+
+		/*
 		BottomMatrix = _mat::CreateTranslation(0.1f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();
 		UpMatrix = _mat::CreateTranslation(-0.1f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();
-		m_pTrail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
-
-		BottomMatrix = _mat::CreateTranslation(0.1f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();;
-		UpMatrix = _mat::CreateTranslation(0.1f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();
-		m_pDistortionTrail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
-
-
+		*/
 	}
 	return S_OK;
 }
@@ -423,19 +428,32 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 
 void CBrickBall::Set_BallColor()
 {
-
+	Safe_Release(m_pEffect_Ball);
+	Safe_Release(m_pEffect_Ball_Parti);
+	//m_eCurBrickColor = RED;
 	switch (m_eCurBrickColor)
 	{
-	case PINK:
-		m_vColor = _vec4(1.f, 0.56f, 0.93f, 1.f);
-		break;
-	case YELLOW:
-		m_vColor = _vec4(0.94f, 0.77f, 0.2f, 1.f);
-		break;
-	case PURPLE:
-		m_vColor = _vec4(0.63f, 0.4f, 0.9f, 1.f);
+	case RED:
+	{
+		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_FireBallParti");
+		Info.pMatrix = &m_EffectMatrix;
+		Info.isFollow = true;
+		m_pEffect_Ball_Parti = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+	
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Ball_Fire");
+		Info.pMatrix = &m_EffectMatrix;
+		Info.isFollow = true;
+		m_pEffect_Ball = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+	}
+		m_vColor = _vec4(1.f, 0.32f, 0.23f, 1.f);
 		break;
 	case BLUE:
+	{		
+		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Ball_Ice");
+		Info.pMatrix = &m_EffectMatrix;
+		Info.isFollow = true;
+		m_pEffect_Ball = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+	}
 		m_vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
 		break;
 	case COLOR_END:
@@ -447,8 +465,11 @@ void CBrickBall::Set_BallColor()
 
 void CBrickBall::Set_CurrentBallColor(BrickColor eColor)
 {
-	Safe_Release(m_pEffect_Ball);
-	m_eCurBrickColor = eColor;
+	if (m_eCurBrickColor != eColor)
+	{
+		m_eCurBrickColor = eColor;
+		Set_BallColor();
+	}
 }
 
 HRESULT CBrickBall::Add_Components()
@@ -472,11 +493,6 @@ HRESULT CBrickBall::Add_Components()
 		return E_FAIL;
 	}
 
-	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Ball");
-	Info.pMatrix = &m_EffectMatrix;
-	Info.isFollow = true;
-	m_pEffect_Ball = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-	
 	return S_OK;
 }
 
@@ -539,8 +555,9 @@ void CBrickBall::Free()
 	__super::Free();
 
 	Safe_Release(m_pTrail);
-	Safe_Release(m_pDistortionTrail);
+	//Safe_Release(m_pDistortionTrail);
 	Safe_Release(m_pModelCom);
+	Safe_Release(m_pEffect_Ball_Parti);
 	Safe_Release(m_pMaskTextureCom);
 	Safe_Release(m_pEffect_Ball);
 	Safe_Release(m_pRendererCom);

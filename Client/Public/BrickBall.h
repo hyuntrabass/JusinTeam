@@ -10,6 +10,7 @@ class CBrickBall final : public CGameObject
 public:
 	typedef struct tagBallDesc
 	{
+		BrickColor eBrickColor{};
 		_vec3 vPos{};
 	}BALL_DESC;
 private:
@@ -55,9 +56,10 @@ private:
 
 	_mat					m_EffectMatrix{};
 	class CEffect_Dummy*	m_pEffect_Ball{ nullptr };
+	CEffect_Dummy*	m_pEffect_Ball_Parti{ nullptr };
 	CCollider*				m_pCurCollider{ nullptr };
-	class CCommonSurfaceTrail* m_pTrail{ nullptr };
-	CCommonSurfaceTrail* m_pDistortionTrail { nullptr };
+	class CCommonTrail*		m_pTrail{ nullptr };
+	//CCommonSurfaceTrail* m_pDistortionTrail { nullptr };
 	const _mat*				m_Mat{};
 public:
 	const _bool& Is_Combo() const { return m_isCombo; }

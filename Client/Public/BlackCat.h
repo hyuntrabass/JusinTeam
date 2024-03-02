@@ -25,7 +25,8 @@ public:
 		STATE_CHASE,
 		STATE_HIT,
 		STATE_EMOTION,
-		STATE_INVEN,
+		STATE_DIE,
+		STATE_CHANGE,
 		STATE_END
 	};
 
@@ -56,9 +57,30 @@ private:
 	PET_CAT_STATE m_eCurState = STATE_END;
 
 private:
+	_bool m_bChangePhase{};
+	_bool m_bChangePass{};
+	_bool m_bHit{};
+
+	_uint m_iPassIndex{};
+	_uint m_iHitCount{};
+
 	_float m_fIdleTime = {};
+	_float m_fHitTime = {};
+
 	ANIM_DESC m_Animation{};
 	_mat m_EffectMatrix{};
+
+	vector<wstring> m_vecText;
+	CGameObject* m_pDialog{ nullptr };
+
+
+	class C3DUITex* m_pHpBG{ nullptr };
+	C3DUITex* m_pHpBar{ nullptr };
+	C3DUITex* m_pHpBorder{ nullptr };
+	
+	_float m_fBarFloating{ 0.f };
+	_float m_fTargetHp{ 15.f };
+	_vec2 m_Hp{_int2(15.f, 15.f)};
 
 private:
 	void Update_Collider();

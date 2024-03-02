@@ -51,7 +51,7 @@ HRESULT CBrickBar::Init(void* pArg)
 	m_vColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	m_shouldRenderBlur = true;
 
-	m_eCurBrickColor = BLUE;
+
 
 	return S_OK;
 }
@@ -80,7 +80,7 @@ void CBrickBar::Tick(_float fTimeDelta)
 	{
 		m_iBallColor++;
 
-		if (m_iBallColor > (_uint)COLOR_END)
+		if (m_iBallColor >= (_uint)COLOR_END)
 		{
 			m_iBallColor = 0;
 		}
@@ -94,7 +94,7 @@ void CBrickBar::Tick(_float fTimeDelta)
 			m_fTime = 0.f;
 			m_isChanged = false;
 		}
-		m_fTime += fTimeDelta * 150.f;
+		m_fTime += fTimeDelta * 200.f;
 		m_pTransformCom->Rotation(_vec4(1.f, 0.f, 0.f, 0.f), m_fTime);
 	}
 
@@ -189,14 +189,8 @@ void CBrickBar::Set_BarColor()
 {
 	switch (m_eCurBrickColor)
 	{
-	case PINK:
-		m_vColor = _vec4(1.f, 0.56f, 0.93f, 1.f);
-		break;
-	case YELLOW:
-		m_vColor = _vec4(0.94f, 0.77f, 0.2f, 1.f);
-		break;
-	case PURPLE:
-		m_vColor = _vec4(0.63f, 0.4f, 0.9f, 1.f);
+	case RED:
+		m_vColor = _vec4(1.f, 0.32f, 0.23f, 1.f);
 		break;
 	case BLUE:
 		m_vColor = _vec4(0.f, 0.6f, 1.f, 1.f);
