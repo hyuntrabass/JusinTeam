@@ -578,6 +578,13 @@ HRESULT CCescoGame::Create_Log(_uint SpawnPositionIndex)
 		LogDesc.WorldMatrix *= _mat::CreateRotationY(XMConvertToRadians(90.f));
 	}
 
+	_vec3 vSpawnPos = m_SpawnPositions[SpawnPositionIndex];
+	vSpawnPos.y = 18.f;
+	LogDesc.WorldMatrix.Position_vec3(vSpawnPos);
+
+	CLog* pLog = reinterpret_cast<CLog*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Log_Object"), &LogDesc));
+	m_Logs.emplace(SpawnPositionIndex, pLog);
+
 	return S_OK;
 }
 
@@ -597,13 +604,6 @@ HRESULT CCescoGame::Create_Posion(_float fTimeDelta)
 			return E_FAIL;
 		}
 		m_fPosionSpawnTime = 0.f;
-
-	_vec3 vSpawnPos = m_SpawnPositions[SpawnPositionIndex];
-	vSpawnPos.y = 18.f;
-	LogDesc.WorldMatrix.Position_vec3(vSpawnPos);
-
-	CLog* pLog = reinterpret_cast<CLog*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Log_Object"), &LogDesc));
-	m_Logs.emplace(SpawnPositionIndex, pLog);
 
 	}
 		m_fPosionSpawnTime += fTimeDelta;
