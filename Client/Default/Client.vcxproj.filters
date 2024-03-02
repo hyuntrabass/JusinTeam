@@ -525,9 +525,12 @@
     </Filter>
     <Filter Include="02.GameObjects\16.CescoGame\VTFMonster\Wasp">
       <UniqueIdentifier>{a23b4087-67c5-42c9-aeec-bd575032f483}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="02.GameObjects\07. NPC\06. GuardTower">
       <UniqueIdentifier>{065bad8b-d57c-4d7f-8167-aac0a06c6cf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\16.CescoGame\Static\Hive">
+      <UniqueIdentifier>{f31552b1-e435-4ee7-82bf-be25c1543ee9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1087,12 +1090,17 @@
     </ClInclude>
     <ClInclude Include="..\Public\Scorpion.h">
       <Filter>02.GameObjects\16.CescoGame\VTFMonster\Scorpion</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="..\Public\GuardTower.h">
       <Filter>02.GameObjects\07. NPC\06. GuardTower</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Guard.h">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BlackCat.h" />
+    <ClInclude Include="..\Public\Cesco_Poison.h" />
+    <ClInclude Include="..\Public\Hive.h">
+      <Filter>02.GameObjects\16.CescoGame\Static\Hive</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1650,12 +1658,17 @@
     </ClCompile>
     <ClCompile Include="..\Private\Scorpion.cpp">
       <Filter>02.GameObjects\16.CescoGame\VTFMonster\Scorpion</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="..\Private\GuardTower.cpp">
       <Filter>02.GameObjects\07. NPC\06. GuardTower</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Guard.cpp">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BlackCat.cpp" />
+    <ClCompile Include="..\Private\Cesco_Poison.cpp" />
+    <ClCompile Include="..\Private\Hive.cpp">
+      <Filter>02.GameObjects\16.CescoGame\Static\Hive</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

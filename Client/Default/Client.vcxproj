@@ -203,6 +203,7 @@
     <ClInclude Include="..\Public\GuardTower.h" />
     <ClInclude Include="..\public\Hell.h" />
     <ClInclude Include="..\Public\HitEffect.h" />
+    <ClInclude Include="..\Public\Hive.h" />
     <ClInclude Include="..\Public\Hook.h" />
     <ClInclude Include="..\Public\HpBar.h" />
     <ClInclude Include="..\Public\HpBoss.h" />
@@ -386,6 +387,7 @@
     <ClCompile Include="..\Private\GlowCube.cpp" />
     <ClCompile Include="..\Private\Guard.cpp" />
     <ClCompile Include="..\Private\GuardTower.cpp" />
+    <ClCompile Include="..\Private\Hive.cpp" />
     <ClCompile Include="..\Private\Hook.cpp" />
     <ClCompile Include="..\Private\Human_Boss.cpp" />
     <ClCompile Include="..\Private\InfinityTower.cpp" />
