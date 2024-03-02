@@ -66,7 +66,7 @@ private:
 	_float m_fHiveSpawnTime[2]{};
 
 	//Wasp
-	_float m_fWaspSpawnTime[4]{};
+	_float m_fWaspSpawnTime[8]{};
 
 private:
 	HRESULT Create_CommonMonster(const wstring& strModelTag, _vec3 SpawnPosition, const wstring& strPrototypeTag);

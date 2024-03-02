@@ -247,6 +247,28 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 		}
 
 #pragma endregion
+
+#pragma region SpawnWasp
+
+		for (size_t i = 0; i < m_HiveSpawnPositions.size(); i++)
+		{
+			auto& iter = m_Hives.find(i);
+			if (iter != m_Hives.end())
+			{
+				m_fWaspSpawnTime[i] += fTimeDelta;
+				if (m_fWaspSpawnTime[i] >= 5.f)
+				{
+					_vec3 vSpawnPos = m_HiveSpawnPositions[i];
+					vSpawnPos.y -= 3.f;
+					if (Create_CommonMonster(TEXT("Prototype_VTFModel_Wasp"), vSpawnPos, TEXT("Prototype_GameObject_Wasp")))
+						return;
+
+					m_fWaspSpawnTime[i] = 0.f;
+				}
+			}
+		}
+
+#pragma endregion
 	}
 	break;
 	case Client::CCescoGame::Phase2:
@@ -759,6 +781,7 @@ void CCescoGame::Release_DeadObjects()
 		{
 			Safe_Release(Pair->second);
 			m_Hives.erase(i);
+			m_fWaspSpawnTime[i] = 0.f;
 		}
 	}
 }
