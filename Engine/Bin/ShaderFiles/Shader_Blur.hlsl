@@ -397,6 +397,9 @@ cbuffer GalMegiParams : register(b2)
     float3 LightColor;
     
     vector vLightPos;
+    
+    uint iToggleGalMegi;
+    uint3 PaddingByte;
 }
 
 float Random(float2 UV)
@@ -435,7 +438,12 @@ void GalMegi(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
         }
     }
     else
-        S = 1.f;
+    {
+        if(true == iToggleGalMegi)
+            S = 1.f;
+        else
+            S = 0.f;
+    }
     
     S *= 0.25f;
     

@@ -98,6 +98,9 @@ void CLevel_Tower::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD6))
 	{
 		CTrigger_Manager::Get_Instance()->Teleport(TS_MiniDungeon);
+
+
+
 		return;
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD7))
