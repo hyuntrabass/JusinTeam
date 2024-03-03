@@ -43,7 +43,6 @@ void CHook::Tick(_float fTimeDelta)
 	m_pTransformCom->Go_Straight(fTimeDelta);
 	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 	m_bHadCollision = false;
-
 	if (!m_bHadCollision)
 	{
 		if ((CUI_Manager::Get_Instance()->Get_Hp().x) > 0)
@@ -123,7 +122,13 @@ HRESULT CHook::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(StaticPass_Default)))
+		_uint iOutlineColor = OutlineColor_White;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_OutlineColor", &iOutlineColor, sizeof _uint)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(StaticPass_OutLine)))
 		{
 			return E_FAIL;
 		}

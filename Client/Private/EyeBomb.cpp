@@ -2,6 +2,7 @@
 #include "Effect_Manager.h"
 #include "Effect_Dummy.h"
 #include "TextButtonColor.h"
+#include "UI_Manager.h"
 CEyeBomb::CEyeBomb(_dev pDevice, _context pContext)
 	:CVTFMonster(pDevice, pContext)
 {
@@ -59,7 +60,7 @@ void CEyeBomb::Tick(_float fTimeDelta)
 		if (m_fBaseEffectScale >= 0.f)
 		{
 			m_fBaseEffectScale -= fTimeDelta;
-			m_BloodTextrue->Set_Alpha(m_fBaseEffectScale / 2.f);
+			m_BloodTextrue->Set_Alpha(m_fBaseEffectScale / 4.f);
 			m_BloodTextrue->Tick(fTimeDelta);
 			
 		}
@@ -76,14 +77,24 @@ void CEyeBomb::Tick(_float fTimeDelta)
 		
 		if (m_pGameInstance->Attack_Player(m_pBodyColliderCom, rand() % 20 + 100, MonAtt_Hit))
 		{
+			if (CUI_Manager::Get_Instance()->Get_Hp().x <= 0)
+			{
+				Kill();
+				return;
+			}
 			CTextButtonColor::TEXTBUTTON_DESC ButtonDesc = {};
 			ButtonDesc.eLevelID = LEVEL_TOWER;
 			ButtonDesc.fDepth = (_float)D_ALERT / (_float)D_END;
 			ButtonDesc.strText = TEXT("");
 			int Randnum = rand() % 3;
-			ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_EyeBomb_Blood0");
-			ButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, (_float)g_ptCenter.y);
-			ButtonDesc.vSize = _vec2(1280.f, 720.f);
+			ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_EyeBomb_Blood") + std::to_wstring(Randnum);
+			_randInt RandomPosX(-400, 400);
+			_randInt RandomPosY(-200, 200);
+			_uint iRandomX = RandomPosX(m_RandomNumber);
+			_uint iRandomY = RandomPosY(m_RandomNumber);
+
+			ButtonDesc.vPosition = _vec2((_float)(g_ptCenter.x + iRandomX), (_float)(g_ptCenter.y + iRandomY));
+			ButtonDesc.vSize = _vec2(1800.f, 1200.f);
 			ButtonDesc.fAlpha = 1.f;
 			
 			m_BloodTextrue = dynamic_cast<CTextButtonColor*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ButtonDesc));
@@ -93,7 +104,7 @@ void CEyeBomb::Tick(_float fTimeDelta)
 			}
 			m_BloodTextrue->Set_Pass(VTPass_UI_Alpha);
 			m_bIsCollision = true;
-			m_fBaseEffectScale = 2.f;
+			m_fBaseEffectScale = 4.f;
 		}
 		else
 		{

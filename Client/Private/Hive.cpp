@@ -29,7 +29,7 @@ HRESULT CHive::Init(void* pArg)
 
     m_pGameInstance->Register_CollisionObject(this, m_pColliderCom);
 
-    m_iPassIndex = StaticPass_Dissolve;
+    m_iPassIndex = StaticPass_OutLineDissolve;
     m_fDissolveRatio = 1.f;
 
     m_iHP = 300;
@@ -47,14 +47,14 @@ void CHive::Tick(_float fTimeDelta)
         if (m_fDissolveRatio <= 0.f)
         {
             m_fDissolveRatio = 0.f;
-            m_iPassIndex = StaticPass_Default;
+            m_iPassIndex = StaticPass_OutLine;
             m_HasCreated = true;
         }
     }
 
     if (m_iHP <= 0)
     {
-        m_iPassIndex = StaticPass_Dissolve;
+        m_iPassIndex = StaticPass_OutLineDissolve;
         if (m_fDissolveRatio <= 1.f)
         {
             m_fDissolveRatio += fTimeDelta;
@@ -201,6 +201,12 @@ HRESULT CHive::Bind_ShaderResources()
     }
 
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
+    {
+        return E_FAIL;
+    }
+
+    _uint iOutlineColor = OutlineColor_Yellow;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_OutlineColor", &iOutlineColor, sizeof _uint)))
     {
         return E_FAIL;
     }
