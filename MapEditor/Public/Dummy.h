@@ -26,6 +26,7 @@ public:
 	_int Get_ID() const {return m_iID;}
 	_uint Get_TriggerNum() { return m_iTrigger; }
 	_uint Get_AnimIndex();
+	_uint Get_PatternIndex() { return m_iIndex; }
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -50,6 +51,7 @@ private:
 	_bool m_isSelected{};
 	_uint m_iShaderPass{};
 	_uint m_iOutLineShaderPass{};
+	_uint m_iIndex{};
 	_bool m_isAnim{};
 	ANIM_DESC m_Animation{};
 	

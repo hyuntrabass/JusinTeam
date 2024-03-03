@@ -46,6 +46,7 @@
 #include "Player.h"
 #include "Select.h"
 #include "FadeBox.h"
+#include "Sun.h"
 
 #include "Logo_Text.h"
 #include "Logo_Dust.h"

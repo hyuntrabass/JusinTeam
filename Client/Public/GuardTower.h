@@ -14,6 +14,13 @@ struct GuardTowerInfo
 class CGuardTower final : public CGameObject
 {
 public:
+	enum PATTERN_TYPE {
+		PATTERN_1,
+		PATTERN_2,
+		PATTERN_3,
+		PATTERN_END
+	};
+
 	enum GUARDTOWER_ANIM {
 		ANIM_DIE,
 		ANIM_IDLE,
@@ -53,18 +60,23 @@ public:
 
 public:
 	void Init_State(_float fTimeDelta);
-	void Tick_State(_float fTimeDelta);
-	void View_Detect_Range(_float fTimeDelta);
+	void Tick_State_Pattern_1(_float fTimeDelta);
+	void Tick_State_Pattern_2(_float fTimeDelta);
+	void Tick_State_Pattern_3(_float fTimeDelta);
+	void View_Detect_Range_Pattern_1(_float fTimeDelta);
+	void View_Detect_Range_Pattern_2(EFFECT_DIR eDir);
+	void View_Detect_Range_Pattern_3();
 
-	_bool Compute_Angle(_float fAngle);
 	_vec4 Compute_PlayerPos();
 	_vec4 Compute_PlayerLook();
 	_float Compute_PlayerDistance();
-	_vec4 Compute_Player_To_Dir();
-
-	void Create_Range();
-
-	void Delete_Range();
+	_vec4 Compute_Player_To_Dir(_vec4 vPos);
+	void Compute_Lazer_Dir();
+	void Create_Range_Pattern_1();
+	void Create_Range_Pattern_2();
+	void Create_Range_Pattern_3();
+	void Create_Lazer();
+	void Create_Attack_Lazer();
 
 
 private:
@@ -77,23 +89,31 @@ private:
 	CModel* m_pModelCom = nullptr;
 
 	CCollider* m_pBodyColliderCom = nullptr;
+	CCollider* m_pAttackColliderCom = nullptr;
 	CTexture* m_pDissolveTextureCom = nullptr;
 
 	class CEffect_Dummy* m_pBaseEffect{ nullptr };
 	class CEffect_Dummy* m_pFrameEffect{ nullptr };
+	class CEffect_Dummy* m_pThreatEffect{ nullptr };
+	class CEffect_Dummy* m_pAttackEffect{ nullptr };
 
 private:
 	GuardTowerInfo m_Info{};
+	PATTERN_TYPE m_Pattern_Type{ PATTERN_END };
 	EffectInfo Info{};
-	EFFECT_DIR m_Dir{DIR_END};
+	EFFECT_DIR m_Dir{DOWN};
 	_uint m_iPassIndex{};
 	_float m_fDeadTime{ 0.f };
 	_float m_fDissolveRatio{ 0.f };
 	_float m_fIdleTime{ 0.f };
 	_float m_fDetectTime{ 0.f };
+	_float m_fAttackTime{ 0.f };
+	_float m_fAttackDelay{ 0.f };
+	_float m_fAnimTime{ 0.f };
 
 	_bool m_bChangePass{false};
 	_bool m_bDamaged{ false };
+	_bool m_bAttacked{ false };
 	_bool m_isPrototype{ false };
 	_bool m_bInit{ false };
 	_bool m_isDetected{ false };
@@ -101,8 +121,10 @@ private:
 	_float m_fHittedTime{ 0.f };
 	_uint m_iIndex{ 0 };
 	_mat m_GuardTowerMatrix{};
-	_mat EffectMatrix{};
+	_mat m_EffectMatrix{};
+	_mat m_LazerMatrix{};
 	_vec4 m_vLook{};
+	_vec4 m_vCurPlayerPos{};
 
 private:
 	ANIM_DESC m_Animation{};
@@ -113,6 +135,7 @@ public:
 
 public:
 	HRESULT Add_Collider();
+	HRESULT Add_Attack_Collider();
 	void Update_Collider();
 
 public:
