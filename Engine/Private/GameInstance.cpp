@@ -1489,6 +1489,36 @@ void CGameInstance::Set_SystemVolume(_float fSystemVolume)
 	return m_pSound_Manager->SetSystemVolume(fSystemVolume);
 }
 
+void CGameInstance::Set_BackGroundVolume(_float fBackGroundVolume)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->SetBackGroundVolume(fBackGroundVolume);
+}
+
+void CGameInstance::Set_EnvironmentVolume(_float fEnvironmentVolume)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->SetEnvironmentVolume(fEnvironmentVolume);
+}
+
+void CGameInstance::Set_EffectVolume(_float fEffectVolume)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->SetEffectVolume(fEffectVolume);
+}
+
 void CGameInstance::Set_InputString(const wstring& strInput)
 {
 	m_strInput = strInput;

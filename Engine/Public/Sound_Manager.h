@@ -61,6 +61,7 @@ private:
 	FMOD::Sound* Find_Sound(const wstring& strSoundTag);
 	void FadingoutSound(_uint iChannel);
 	void FadinginSound(_uint iChannel);
+	_float Standard_FadeSound(_uint iChannel);
 
 public:
 	static CSound_Manager* Create();
