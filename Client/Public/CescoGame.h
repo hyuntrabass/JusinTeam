@@ -76,6 +76,7 @@ private:
 
 	//Lava
 	map<_int, _vec3> m_LarvaPositions;
+	_uint m_iNumSpawnLarva{};
 
 
 private:

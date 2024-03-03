@@ -29,7 +29,7 @@ HRESULT CHive::Init(void* pArg)
 
     m_pGameInstance->Register_CollisionObject(this, m_pColliderCom);
 
-    m_iPassIndex = StaticPass_Dissolve;
+    m_iPassIndex = StaticPass_OutLineDissolve;
     m_fDissolveRatio = 1.f;
 
     m_iHP = 300;
@@ -54,7 +54,7 @@ void CHive::Tick(_float fTimeDelta)
 
     if (m_iHP <= 0)
     {
-        m_iPassIndex = StaticPass_Dissolve;
+        m_iPassIndex = StaticPass_OutLineDissolve;
         if (m_fDissolveRatio <= 1.f)
         {
             m_fDissolveRatio += fTimeDelta;
