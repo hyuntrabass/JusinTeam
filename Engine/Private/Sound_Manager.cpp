@@ -46,13 +46,14 @@ _int CSound_Manager::Play_Sound(const wstring& strSoundTag, _float fVolume, _boo
 			if (isLoop)
 			{
 				m_pChannelArr[i]->setMode(FMOD_LOOP_NORMAL);
+				m_pChannelArr[i]->setVolume(fVolume * m_fSystemVolume * m_fEnvironmentVolume);
 			}
 			else
 			{
 				m_pChannelArr[i]->setMode(FMOD_LOOP_OFF);
+				m_pChannelArr[i]->setVolume(fVolume * m_fSystemVolume * m_fEffectVolume);
 			}
 
-			m_pChannelArr[i]->setVolume(fVolume * m_fSystemVolume);
 			//이전 사운드 저장
 			m_SoundDescs[i].fStartVolume = fVolume;
 			
@@ -83,7 +84,7 @@ void CSound_Manager::PlayBGM(const wstring& strSoundTag, _float fVolume)
 
 	m_pChannelArr[0]->setMode(FMOD_LOOP_NORMAL);
 
-	m_pChannelArr[0]->setVolume(fVolume * m_fSystemVolume);
+	m_pChannelArr[0]->setVolume(fVolume * m_fSystemVolume * m_fBackGroundVolume);
 	//이전 사운드 저장
 	m_SoundDescs[0].fStartVolume = fVolume;
 
@@ -132,8 +133,18 @@ void CSound_Manager::SetSystemVolume(_float fSystemVolume)
 
 	for (_int i = 0; i < FMOD_MAX_CHANNEL_WIDTH; ++i)
 	{
-		_float fVolume = GetChannelVolume(i);
-		SetChannelVolume(i, fVolume * m_fSystemVolume);
+		if (i == 0)
+		{
+			SetChannelVolume(i, m_SoundDescs[i].fStartVolume * m_fSystemVolume * m_fBackGroundVolume);
+		}
+		else if (Get_IsLoopingSound(i))
+		{
+			SetChannelVolume(i, m_SoundDescs[i].fStartVolume * m_fSystemVolume * m_fEnvironmentVolume);
+		}
+		else
+		{
+			SetChannelVolume(i, m_SoundDescs[i].fStartVolume * m_fSystemVolume * m_fEffectVolume);
+		}
 	}
 }
 
@@ -150,8 +161,7 @@ void CSound_Manager::SetBackGroundVolume(_float fBackGroundVolume)
 
 	m_fBackGroundVolume = fBackGroundVolume;
 
-	_float fVolume = GetChannelVolume(0);
-	SetChannelVolume(0, fVolume * m_fBackGroundVolume);
+	SetChannelVolume(0, m_SoundDescs[0].fStartVolume * m_fSystemVolume * m_fBackGroundVolume);
 }
 
 void CSound_Manager::SetEnvironmentVolume(_float fEnvironmentVolume)
@@ -171,8 +181,7 @@ void CSound_Manager::SetEnvironmentVolume(_float fEnvironmentVolume)
 	{
 		if (Get_IsLoopingSound(i))
 		{
-			_float fVolume = GetChannelVolume(i);
-			SetChannelVolume(i, fVolume * m_fEnvironmentVolume);
+			SetChannelVolume(i, m_SoundDescs[i].fStartVolume * m_fSystemVolume * m_fEnvironmentVolume);
 		}
 	}
 }
@@ -194,8 +203,7 @@ void CSound_Manager::SetEffectVolume(_float fEffectVolume)
 	{
 		if (not Get_IsLoopingSound(i))
 		{
-			_float fVolume = GetChannelVolume(i);
-			SetChannelVolume(i, fVolume * m_fEffectVolume);
+			SetChannelVolume(i, m_SoundDescs[i].fStartVolume * m_fSystemVolume * m_fEffectVolume);
 		}
 	}
 }
@@ -214,7 +222,7 @@ void CSound_Manager::Update()
 			{
 				FadingoutSound(i);
 	
-				if (GetChannelVolume(i) <= (m_SoundDescs[i].fStartVolume * m_SoundDescs[i].fFadeSoundRatio * m_fSystemVolume))
+				if (GetChannelVolume(i) <= Standard_FadeSound(i))
 				{
 					m_SoundDescs[i].IsFadingout = false;
 					if (not m_SoundDescs[i].IsReusable)
@@ -224,7 +232,7 @@ void CSound_Manager::Update()
 					}
 					else
 					{
-						SetChannelVolume(i, (m_SoundDescs[i].fStartVolume * m_SoundDescs[i].fFadeSoundRatio * m_fSystemVolume));
+						SetChannelVolume(i, Standard_FadeSound(i));
 					}
 				}
 			}
@@ -239,10 +247,10 @@ void CSound_Manager::Update()
 			{
 				FadinginSound(i);
 
-				if (GetChannelVolume(i) >= (m_SoundDescs[i].fStartVolume * m_SoundDescs[i].fFadeSoundRatio * m_fSystemVolume))
+				if (GetChannelVolume(i) >= Standard_FadeSound(i))
 				{
 					m_SoundDescs[i].IsFadingin = false;
-					SetChannelVolume(i, (m_SoundDescs[i].fStartVolume * m_SoundDescs[i].fFadeSoundRatio * m_fSystemVolume));
+					SetChannelVolume(i, Standard_FadeSound(i));
 				}
 			}
 			else
@@ -281,7 +289,21 @@ HRESULT CSound_Manager::FadeinSound(_uint iChannel, _float fTimeDelta, _float fF
 		return E_FAIL;
 	}
 
-	if (not m_SoundDescs[iChannel].IsFadingin && GetChannelVolume(iChannel) == (m_SoundDescs[iChannel].fStartVolume * m_fSystemVolume))
+	_float fStartVolume{};
+	if (iChannel == 0)
+	{
+		fStartVolume = m_SoundDescs[iChannel].fStartVolume * m_fSystemVolume * m_fBackGroundVolume;
+	}
+	else if (Get_IsLoopingSound(iChannel))
+	{
+		fStartVolume = m_SoundDescs[iChannel].fStartVolume * m_fSystemVolume * m_fEnvironmentVolume;
+	}
+	else
+	{
+		fStartVolume = m_SoundDescs[iChannel].fStartVolume * m_fSystemVolume * m_fEffectVolume;
+	}
+
+	if (not m_SoundDescs[iChannel].IsFadingin && GetChannelVolume(iChannel) == fStartVolume)
 	{
 		SetChannelVolume(iChannel, 0.f);
 	}
@@ -376,8 +398,40 @@ FMOD::Sound* CSound_Manager::Find_Sound(const wstring& strSoundTag)
 
 void CSound_Manager::FadingoutSound(_uint iChannel)
 {
+	if (m_fSystemVolume == 0.f)
+	{
+		return;
+	}
+
 	_float fVolume = GetChannelVolume(iChannel);
-	fVolume -= (m_fFadeTimeDelta / (m_SoundDescs[iChannel].fFadeSecond / m_SoundDescs[iChannel].fStartVolume));
+
+	_float fStartVolume{};
+	if (iChannel == 0)
+	{
+		if (m_fBackGroundVolume == 0.f)
+		{
+			return;
+		}
+		fStartVolume = m_SoundDescs[iChannel].fStartVolume * m_fSystemVolume * m_fBackGroundVolume;
+	}
+	else if (Get_IsLoopingSound(iChannel))
+	{
+		if (m_fEnvironmentVolume == 0.f)
+		{
+			return;
+		}
+		fStartVolume = m_SoundDescs[iChannel].fStartVolume * m_fSystemVolume * m_fEnvironmentVolume;
+	}
+	else
+	{
+		if (m_fEffectVolume == 0.f)
+		{
+			return;
+		}
+		fStartVolume = m_SoundDescs[iChannel].fStartVolume * m_fSystemVolume * m_fEffectVolume;
+	}
+
+	fVolume -= (m_fFadeTimeDelta / (m_SoundDescs[iChannel].fFadeSecond / fStartVolume));
 		//(m_SoundDescs[iChannel].fStartVolume * (1.f - m_SoundDescs[iChannel].fFadeSoundRatio))));
 	
 	SetChannelVolume(iChannel, fVolume);
@@ -385,11 +439,62 @@ void CSound_Manager::FadingoutSound(_uint iChannel)
 
 void CSound_Manager::FadinginSound(_uint iChannel)
 {
+	if (m_fSystemVolume == 0.f)
+	{
+		return;
+	}
+
 	_float fVolume = GetChannelVolume(iChannel);
-	fVolume += (m_fFadeTimeDelta / (m_SoundDescs[iChannel].fFadeSecond / m_SoundDescs[iChannel].fStartVolume));
+
+	_float fStartVolume{};
+	if (iChannel == 0)
+	{
+		if (m_fBackGroundVolume == 0.f)
+		{
+			return;
+		}
+		fStartVolume = m_SoundDescs[iChannel].fStartVolume * m_fSystemVolume * m_fBackGroundVolume;
+	}
+	else if (Get_IsLoopingSound(iChannel))
+	{
+		if (m_fEnvironmentVolume == 0.f)
+		{
+			return;
+		}
+		fStartVolume = m_SoundDescs[iChannel].fStartVolume * m_fSystemVolume * m_fEnvironmentVolume;
+	}
+	else
+	{
+		if (m_fEffectVolume == 0.f)
+		{
+			return;
+		}
+		fStartVolume = m_SoundDescs[iChannel].fStartVolume * m_fSystemVolume * m_fEffectVolume;
+	}
+
+	fVolume += (m_fFadeTimeDelta / (m_SoundDescs[iChannel].fFadeSecond / fStartVolume));
 		//(m_SoundDescs[iChannel].fStartVolume * m_SoundDescs[iChannel].fFadeSoundRatio)));
 
 	SetChannelVolume(iChannel, fVolume);
+}
+
+_float CSound_Manager::Standard_FadeSound(_uint iChannel)
+{
+	_float fStandardSound{};
+	if (iChannel == 0)
+	{
+		fStandardSound = m_SoundDescs[iChannel].fStartVolume * m_SoundDescs[iChannel].fFadeSoundRatio * m_fSystemVolume * m_fBackGroundVolume;
+	}
+	else if (Get_IsLoopingSound(iChannel))
+	{
+		fStandardSound = m_SoundDescs[iChannel].fStartVolume * m_SoundDescs[iChannel].fFadeSoundRatio * m_fSystemVolume * m_fEnvironmentVolume;
+	}
+	else
+	{
+		fStandardSound = m_SoundDescs[iChannel].fStartVolume * m_SoundDescs[iChannel].fFadeSoundRatio * m_fSystemVolume * m_fEffectVolume;
+	}
+
+	return fStandardSound;
 }
 
 CSound_Manager* CSound_Manager::Create()
