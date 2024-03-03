@@ -515,7 +515,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 			if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
 			{
-				m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * dwMouseMove * -10.f * fMouseSensor);
+				m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * dwMouseMove * -1.f * fMouseSensor);
 			}
 		}
 	}
@@ -1270,22 +1270,26 @@ HRESULT CPlayer::Add_Riding()
 
 void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 {
-	m_bMove_AfterSkill = true;
-	if (MonAttType == MonAtt_Hook_End)
-	{
-		m_eState = Jump_End;
-		return;
-	}
-	if (m_eState == Revival_Start or m_eState == Revival_End or m_eState == Die)
+	
+
+	if (m_eState == Skill4)
 	{
 		return;
 	}
 
-	if (m_bLockOn)
+	if (m_eState == Revival_Start or m_eState == Revival_End or m_eState == Die)
 	{
-		m_pCam_Manager->Set_AimMode(false);
-		m_bLockOn = false;
+		m_bMove_AfterSkill = true;
+		return;
 	}
+
+	if (MonAttType == MonAtt_Hook_End)
+	{
+		m_eState = Jump_End;
+		m_bMove_AfterSkill = true;
+		return;
+	}
+
 	if (m_pEffect_Shield)
 	{
 		// º¸È£¸· ±úÁö´Â ÀÌÆåÆ®
@@ -1296,9 +1300,8 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 		return;
-
 	}
-	
+
 	if (MonAttType == MonAtt_Hook)
 	{
 		if (m_eState != Hook)
@@ -1309,13 +1312,19 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 				Safe_Release(m_pRiding);
 				m_bIsMount = false;
 			}
-
+			m_bMove_AfterSkill = true;
+			CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_DEFAULT);
+			m_pCam_Manager->Set_AimMode(false);
+			m_bLockOn = false;	
 			m_eState = Hook;
 		}
-		return;
+		if (iDamage <= 0)
+		{
+			return;
+		}
+		m_Status.Current_Hp -= (iDamage - iDamage * (_int)(m_Status.Armor / 0.01));
 	}
 	m_Status.Current_Hp -= (iDamage - iDamage * (_int)(m_Status.Armor / 0.01));
-
 
 	_int iRandomX = rand() % 100;
 	_int iRandomY = rand() % 50 + 130;
@@ -1323,9 +1332,15 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 	CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, vDamagePos, (ATTACK_TYPE)MonAttType, true);
 
 	CUI_Manager::Get_Instance()->Set_Hp(m_Status.Current_Hp, m_Status.Max_Hp);
-
 	if (m_Status.Current_Hp <= 0)
 	{
+		if (m_bLockOn)
+		{
+			m_pCam_Manager->Set_AimMode(false);
+			CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_DEFAULT);
+			m_bLockOn = false;
+		}
+
 		if (m_bIsMount)
 		{
 			m_pCam_Manager->Set_RidingZoom(false);
@@ -1338,6 +1353,11 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 		m_Status.Current_Hp = 0;
 		CUI_Manager::Get_Instance()->Set_Hp(m_Status.Current_Hp, m_Status.Max_Hp);
 		m_eState = Die;
+		m_bMove_AfterSkill = true;
+	}
+	else if (m_eState == Hook)
+	{
+		return;
 	}
 	else
 	{
@@ -1348,16 +1368,20 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 
 		if (m_eState == Stun_Start or m_eState == Stun)
 		{
+			m_bMove_AfterSkill = true;
 			if (MonAttType == MonAtt_Stun)
 			{
 				return;
 			}
 		}
 
+
 		if (m_eState == KnockDown or m_bIsMount)
 		{
+			m_bMove_AfterSkill = true;
 			return;
 		}
+
 
 		switch (MonAttType)
 		{
@@ -1379,15 +1403,19 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 		break;
 		case MonAtt_KnockDown:
 		{
+			m_bMove_AfterSkill = true;
 			m_eState = KnockDown;
 			m_pCam_Manager->Set_RidingZoom(false);
+			CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_DEFAULT);
 			m_bLockOn = false;
 		}
 		break;
 		case MonAtt_Stun:
 		{
+			m_bMove_AfterSkill = true;
 			m_eState = Stun_Start;
 			m_pCam_Manager->Set_RidingZoom(false);
+			CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_DEFAULT);
 			m_bLockOn = false;
 		}
 		break;
@@ -1421,6 +1449,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 		break;
 
 		}
+
 	}
 
 	m_StartRegen = 0.f;
@@ -1912,17 +1941,17 @@ void CPlayer::Move(_float fTimeDelta)
 
 				}
 				else if (m_eState == Attack or
-						 m_eState == Skill1 or
-						 m_eState == Skill2 or
-						 m_eState == Skill3 or
-						 m_eState == Skill4 or
-						 m_eState == AimMode_End)
+					m_eState == Skill1 or
+					m_eState == Skill2 or
+					m_eState == Skill3 or
+					m_eState == Skill4 or
+					m_eState == AimMode_End)
 				{
 					m_eState = Attack_Run;
 				}
 				else if (m_eState == Run or
-						 m_eState == Run_End or
-						 m_pModelCom->IsAnimationFinished(Anim_Normal_run_start))
+					m_eState == Run_End or
+					m_pModelCom->IsAnimationFinished(Anim_Normal_run_start))
 				{
 					m_eState = Run;
 
@@ -1958,10 +1987,10 @@ void CPlayer::Move(_float fTimeDelta)
 					m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed - m_bSlowSpeed);
 				}
 				else if (m_eState == Run or
-						 m_eState == Run_End or
-						 m_eState == Run_Start or
-						 m_eState == Jump_Long_End
-						 )
+					m_eState == Run_End or
+					m_eState == Run_Start or
+					m_eState == Jump_Long_End
+					)
 				{
 					m_eState = Run;
 					m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed - m_bSlowSpeed);
@@ -1975,7 +2004,7 @@ void CPlayer::Move(_float fTimeDelta)
 						m_pTransformCom->Set_Speed(m_fWalkSpeed + m_Status.Speed / 3.f);
 					}
 					else if (m_eState == Jump or
-							 m_eState == Jump_Start)
+						m_eState == Jump_Start)
 					{
 						m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed - m_bSlowSpeed);
 					}
@@ -2519,7 +2548,7 @@ void CPlayer::Return_Attack_IdleForm()
 	m_Animation.fAnimSpeedRatio = 3.f;
 	if (m_Current_Weapon == WP_SWORD)
 	{
-		if (m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack01_A) && m_iAttackCombo==1)
+		if (m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack01_A) && m_iAttackCombo == 1)
 		{
 			m_Animation.iAnimIndex = Anim_Assassin_Attack01_B;
 			m_bReadyMove = true;
@@ -3599,7 +3628,7 @@ void CPlayer::After_BowAtt(_float fTimeDelta)
 	{
 		if (m_fRadialPower > 0.f)
 		{
-			m_fRadialPower -= fTimeDelta * 2.f;
+			m_fRadialPower -= fTimeDelta * 3.f;
 			m_pRendererCom->Set_RadialBlur_Power(m_fRadialPower);
 		}
 	}
@@ -4021,7 +4050,7 @@ void CPlayer::Init_State()
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 2.f;
 			m_hasJumped = true;
-			m_bReadyMove = false;	
+			m_bReadyMove = false;
 		}
 		break;
 		case Client::CPlayer::Attack:
@@ -4085,7 +4114,7 @@ void CPlayer::Init_State()
 			m_Animation.iAnimIndex = Anim_B_idle_end;
 			m_hasJumped = false;
 			//m_Animation.fDurationRatio = 0.1f;
-			m_iSuperArmor = {};
+			m_iSuperArmor = { 1.f };
 			m_Animation.isLoop = false;
 			m_Animation.bRewindAnimation = true;
 			m_Animation.fAnimSpeedRatio = 5.f;
@@ -4097,7 +4126,7 @@ void CPlayer::Init_State()
 			m_Animation.iAnimIndex = Anim_B_idle_end;
 			m_hasJumped = false;
 			m_Animation.fDurationRatio = 0.01f;
-			m_iSuperArmor = {};
+			m_iSuperArmor = { 1.f };
 			m_Animation.isLoop = false;
 		}
 		break;
@@ -4178,6 +4207,7 @@ void CPlayer::Init_State()
 		case Client::CPlayer::Stun:
 		{
 			m_Animation.iAnimIndex = Anim_stun;
+			m_Animation.fAnimSpeedRatio = 3.5f;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}
@@ -4758,7 +4788,7 @@ HRESULT CPlayer::Add_Components()
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.5f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-									  TEXT("Com_Player_Hit_OBB"), (CComponent**)&m_pHitCollider, &CollDesc)))
+		TEXT("Com_Player_Hit_OBB"), (CComponent**)&m_pHitCollider, &CollDesc)))
 	{
 		return E_FAIL;
 	}
@@ -4768,7 +4798,7 @@ HRESULT CPlayer::Add_Components()
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.2f, 0.4f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-									  TEXT("Com_Collider_Common_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Common]), &CollDesc)))
+		TEXT("Com_Collider_Common_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Common]), &CollDesc)))
 	{
 		return E_FAIL;
 	}
@@ -4801,14 +4831,14 @@ HRESULT CPlayer::Add_Components()
 	{
 		return E_FAIL;
 	}
-	CollDesc.vExtents = _vec3(2.3f, 2.f, 1.8f);
+	CollDesc.vExtents = _vec3(2.5f, 2.f, 2.f);
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.2f, 0.2f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Skill2_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Skill2]), &CollDesc)))
 	{
 		return E_FAIL;
 	}
-	CollDesc.vExtents = _vec3(3.f, 2.f, 3.f);
+	CollDesc.vExtents = _vec3(4.f, 2.f, 4.f);
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.2f, 0.2f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Skill4_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Skill4]), &CollDesc)))

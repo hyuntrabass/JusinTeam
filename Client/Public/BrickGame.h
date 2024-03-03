@@ -2,8 +2,8 @@
 #include "Client_Define.h"
 #include "OrthographicObject.h"
 #include "Riding.h"
-#define BRICKCOL 7
-#define BRICKROW 4
+#define BRICKCOL 11
+#define BRICKROW 7
 
 BEGIN(Client)
 class CBrickGame final : public CGameObject
@@ -43,6 +43,7 @@ private:
 	class CNumEffect*							m_pCombo{ nullptr };
 
 	class CBrickBall*							m_pBall{ nullptr };
+	class CBrickBar*							m_pBar{ nullptr };
 
 public:
 	class CComponent* Find_Component(const wstring& strComTag) override;

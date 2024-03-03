@@ -59,6 +59,7 @@ void CScorpion::Tick(_float fTimeDelta)
 		if (m_fAttackDelay >= 1.f)
 		{
 			m_HasAttacked = false;
+			m_fAttackDelay = 0.f;
 		}
 	}
 

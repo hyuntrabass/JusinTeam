@@ -32,6 +32,8 @@ HRESULT CWasp::Init(void* pArg)
 	if (FAILED(Add_Components()))
 		return E_FAIL;
 
+	m_pTransformCom->Set_Scale(_vec3(0.5f, 0.5f, 0.5f));
+
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
 	m_pTransformCom->Set_Speed(3.f);
@@ -59,6 +61,7 @@ void CWasp::Tick(_float fTimeDelta)
 		if (m_fAttackDelay >= 1.f)
 		{
 			m_HasAttacked = false;
+			m_fAttackDelay = 0.f;
 		}
 	}
 

@@ -109,18 +109,16 @@ void CCamera_Main::Tick(_float fTimeDelta)
 				Desc.phasFadeCompleted = &m_isFadeReady;
 				CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
 				m_isReady = true;
-
 			}
 			if (m_isFadeReady)
 			{
-
 				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
 
 				m_Original_Light_Desc = *LightDesc;
 				LightDesc->eType = LIGHT_DESC::Directional;
 				LightDesc->vDirection = _float4(-1.f, 0.f, -1.f, 0.f);
-				LightDesc->vDiffuse = _vec4(0.8f, 0.8f, 0.8f, 1.f);
-				LightDesc->vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
+				LightDesc->vDiffuse = _vec4(0.9f, 0.9f, 0.9f, 1.f);
+				LightDesc->vAmbient = _float4(0.4f, 0.4f, 0.4f, 1.f);
 				LightDesc->vSpecular = _vec4(1.f);
 
 				m_pTransformCom->Set_State(State::Pos, m_vMapPos);
@@ -418,7 +416,7 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 				{
 					m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
 				}
-				
+
 			}
 
 		}
@@ -432,9 +430,9 @@ void CCamera_Main::Default_Mode(_float fTimeDelta)
 		_float fZoom = m_pCam_Manager->Get_CameraAttackZoom();
 		fZoom *= 0.05f;
 		fZoom = 0.78f - fZoom;
-			m_vAimCamPos = m_pPlayerTransform->Get_State(State::Pos) - (vMeLook * AimPos.z * fZoom)
-				+ (PlayerUp * AimPos.y * 0.9f) + (PlayerRight * AimPos.x);
-		
+		m_vAimCamPos = m_pPlayerTransform->Get_State(State::Pos) - (vMeLook * AimPos.z * fZoom)
+			+ (PlayerUp * AimPos.y * 0.9f) + (PlayerRight * AimPos.x);
+
 
 		_vec4 LerpCamPos{};
 		if (m_AimZoomOutTime < 1.f)
@@ -640,7 +638,7 @@ void CCamera_Main::Zoom_Mode(_float fTimeDelta)
 
 	_vec4 vCurrentPos = m_pTransformCom->Get_State(State::Pos);
 	_vec4 vTargetLook = m_pCam_Manager->Get_CameraTargetLook();
-	
+
 	_vec4 vPlayerUp = m_pPlayerTransform->Get_State(State::Up);
 	_vec4 vPlayerLook = m_pPlayerTransform->Get_State(State::Look);
 	_vec4 vTargetPos = m_pCam_Manager->Get_CameraTargetPos();
@@ -661,7 +659,7 @@ void CCamera_Main::Zoom_Mode(_float fTimeDelta)
 	}
 	if (m_iCamChange == 2)
 	{
-	
+
 		m_pTransformCom->Set_State(State::Pos, vPlayerPos +
 			vPlayerRight * 1.4f +
 			vPlayerUp * 1.2f -
@@ -874,7 +872,7 @@ void CCamera_Main::Init_State(_float fTimeDelta)
 			m_pPlayerTransform->Set_FootPosition(_vec3(vPlayerPos));
 			m_pPlayerTransform->LookAt(vTargetPos + vPlayerRight * -0.1f);
 		}
-			break;
+		break;
 		case Client::CS_INVEN:
 			m_vOriginalLook = m_pTransformCom->Get_State(State::Look);
 			break;
@@ -955,7 +953,7 @@ HRESULT CCamera_Main::Add_Collider()
 	_matrix matView = m_pGameInstance->Get_Transform(TransformType::View);
 	// 1인자 : 절두체 각도(범위), 2인자 : Aspect, 3인자 : Near, 4인자 : Far(절두체 깊이)
 	_matrix matProj = m_pGameInstance->Get_Transform(TransformType::Proj);
-	XMStoreFloat4x4(&ColDesc.matFrustum,  matProj);
+	XMStoreFloat4x4(&ColDesc.matFrustum, matProj);
 	//XMStoreFloat4x4(&ColDesc.matFrustum, matProj);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &ColDesc)))

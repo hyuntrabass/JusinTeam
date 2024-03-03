@@ -920,7 +920,6 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_HP();
     }
-
     pass Hit
     {
         SetRasterizerState(RS_Default);

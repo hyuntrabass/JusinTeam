@@ -107,7 +107,7 @@ void CArrow::Tick(_float fTimeDelta)
 		m_fAttDelay += fTimeDelta;
 		if(m_fAttDelay>0.2f)
 		{
-			m_pGameInstance->Attack_Monster(m_pCollider, m_ArrowType.iDamage, ATTACK_TYPE::AT_Bow_Skill4);
+			m_pGameInstance->Attack_Monster(m_pCollider, m_ArrowType.iDamage +rand()%20, ATTACK_TYPE::AT_Bow_Skill4);
 			m_fAttDelay = 0.f;
 		}
 		if (m_fDeadTime > 1.5f)
