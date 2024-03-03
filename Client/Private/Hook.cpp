@@ -43,7 +43,6 @@ void CHook::Tick(_float fTimeDelta)
 	m_pTransformCom->Go_Straight(fTimeDelta);
 	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 	m_bHadCollision = false;
-
 	if (!m_bHadCollision)
 	{
 		if ((CUI_Manager::Get_Instance()->Get_Hp().x) > 0)

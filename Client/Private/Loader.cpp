@@ -2432,7 +2432,7 @@ HRESULT CLoader::Load_Tower()
 		}
 	}
 
-	strInputFilePath = "../Bin/Resources/Textures/CescoGame";
+	strInputFilePath = "../Bin/Resources/Textures/CescoGame/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())

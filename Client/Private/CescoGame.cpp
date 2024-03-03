@@ -74,7 +74,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_8, InputChannel::UI))
 	{
-		m_eCurrentPhase = Phase1;
+		m_eCurrentPhase = Phase3;
 	}
 	if (m_pGameInstance->Key_Down(DIK_9))
 	{
