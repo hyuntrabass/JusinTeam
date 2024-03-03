@@ -219,6 +219,11 @@ void CBlackCat::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = true;
 			m_fIdleTime = 0.f;
 			break;
+		case Client::CBlackCat::STATE_ANGRY:
+			m_Animation.iAnimIndex = RUN;
+			m_Animation.isLoop = true;
+			m_fIdleTime = 0.f;
+			break;
 		case Client::CBlackCat::STATE_HIT:
 			m_Animation.iAnimIndex = EMOTION;
 			m_Animation.isLoop = false;
@@ -248,6 +253,11 @@ void CBlackCat::Init_State(_float fTimeDelta)
 			m_fIdleTime = 0.f;
 
 		break;
+		case Client::CBlackCat::STATE_CHANGE:
+			m_Animation.iAnimIndex = TELEPORT_START;
+			m_Animation.isLoop = false;
+			m_fIdleTime = 0.f;
+			break;
 		case Client::CBlackCat::STATE_DIE:
 			m_Animation.iAnimIndex = TELEPORT_END;
 			m_Animation.isLoop = false;
@@ -326,9 +336,9 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 	}
 		break;
 
-	case CBlackCat::STATE_CHASE:
+	case CBlackCat::STATE_ANGRY:
 	{
-		m_pTransformCom->LookAt_Dir(vNormal * -1.f);
+		
 	}
 		break;
 	case CBlackCat::STATE_HIT:
@@ -358,6 +368,20 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 			
 			m_eCurState = STATE_IDLE;
 			
+		}
+	}
+	break;
+	case CBlackCat::STATE_CHANGE:
+	{
+
+		if (m_pModelCom->IsAnimationFinished(TELEPORT_END))
+		{
+			//여기서 이펙트 나와야됨 연기같은거
+			m_eCurState = STATE_ANGRY;
+		}
+		else if (m_pModelCom->IsAnimationFinished(TELEPORT_START))
+		{
+			m_Animation.iAnimIndex = TELEPORT_END;
 		}
 	}
 	break;

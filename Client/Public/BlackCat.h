@@ -22,6 +22,7 @@ public:
 	enum PET_CAT_STATE
 	{
 		STATE_IDLE,
+		STATE_ANGRY,
 		STATE_CHASE,
 		STATE_HIT,
 		STATE_EMOTION,
@@ -80,7 +81,7 @@ private:
 	
 	_float m_fBarFloating{ 0.f };
 	_float m_fTargetHp{ 15.f };
-	_vec2 m_Hp{_int2(15.f, 15.f)};
+	_vec2 m_Hp{_vec2(15.f, 15.f)};
 
 private:
 	void Update_Collider();
