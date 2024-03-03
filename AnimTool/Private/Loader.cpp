@@ -266,11 +266,22 @@ HRESULT CLoader::Load_Tool()
 				continue;
 			}
 			wstring strPrototypeTag = TEXT("Prototype_Model_Monster_") + to_wstring(m_iNumMonsterModels++);
-
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+			if (entry.path().stem().string() == "StoneTower")
 			{
-				return E_FAIL;
+				Pivot = _mat::CreateScale(0.002f);
+
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string(), false ,Pivot))))
+				{
+					return E_FAIL;
+				}
 			}
+			else
+			{
+				if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOOL, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, entry.path().string()))))
+				{
+					return E_FAIL;
+				}
+			}	
 		}
 	}
 	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/Pet/";

@@ -1173,7 +1173,7 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 	_mat GuardTowerPivot = _mat::CreateScale(0.002f);
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GuardTower"),
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_StoneTower"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/StoneTower/Mesh/StoneTower.hyuntraanimmesh", false ,GuardTowerPivot))))
 	{
 		return E_FAIL;

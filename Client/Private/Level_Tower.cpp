@@ -6,6 +6,7 @@
 #include "NPC.h"
 #include "NPC_Dummy.h"
 #include "Guard.h"
+#include "GuardTower.h"
 #include "Map.h"
 #include "Trigger_Manager.h"
 #include "VTFMonster.h"
@@ -60,11 +61,7 @@ HRESULT CLevel_Tower::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_Guard()))
-	{
-		MSG_BOX("Failed to Ready Guard");
-		return E_FAIL;
-	}
+	
 	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 	CUI_Manager::Get_Instance()->Open_InfinityTower(true);
 	m_pGameInstance->Set_FogNF(_vec2(50.f, 2000.f));
@@ -134,6 +131,35 @@ void CLevel_Tower::Tick(_float fTimeDelta)
 		EffectDesc.isFollow = true;
 		CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 	}
+
+	if (m_pGameInstance->Key_Down(DIK_NUMPADMINUS))
+	{
+		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+		GuardInfo Desc{};
+		Desc.mMatrix = pPlayerTransform->Get_World_Matrix();
+		//_vec3 vPos = pPlayerTransform->Get_State(State::Pos);
+		//vPos.y += 1.5f;s
+		Desc.iIndex++;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Guard"), TEXT("Prototype_GameObject_Guard"), &Desc)))
+		{
+			return;
+		}
+	}
+	if (m_pGameInstance->Key_Down(DIK_NUMPADPLUS))
+	{
+		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+		GuardTowerInfo Desc{};
+		Desc.mMatrix = pPlayerTransform->Get_World_Matrix();
+		Desc.iIndex++;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Guard"), TEXT("Prototype_GameObject_GuardTower"), &Desc)))
+		{
+			return;
+		}
+	}
+
+
 }
 
 HRESULT CLevel_Tower::Render()
