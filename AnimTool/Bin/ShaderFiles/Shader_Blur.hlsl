@@ -383,3 +383,66 @@ void FXAA(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID, ui
     
     outputTexture[pixel] = vColor;
 }
+
+
+//float2 g_vCenterTexPos;
+//float g_fRadialBlur_Power;
+//uint g_isTex;
+    
+//vector g_vCenterPos;
+
+cbuffer GalMegiParams : register(b2)
+{
+    uint Samples;
+    float3 LightColor;
+    
+    vector vLightPos;
+}
+
+float Random(float2 UV)
+{
+    float fRandom = frac(sin(dot(UV, float2(12.9898f, 78.233f))) * 45758.5433f);
+    return fRandom;
+}
+
+[numthreads(8, 8, 1)]
+void GalMegi(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID, uint groupIndex : SV_GroupIndex, uint3 dispatchID : SV_DispatchThreadID)
+{
+    int2 pixel = int2(dispatchID.x, dispatchID.y);
+
+    if (pixel.x >= 1280 || pixel.y >= 720)
+        return;
+    
+    float2 vUV;
+    vUV.x = pixel.x / 1280.f;
+    vUV.y = pixel.y / 720.f;
+    
+    float2 vPos;
+    vPos.x = (vLightPos.x + 1.f) * 0.5f;
+    vPos.y = (vLightPos.y - 1.f) * -0.5f;
+    
+    float S = 0.f;
+    
+    if (vLightPos.z > 0.f && vLightPos.z < 1.f)
+    {
+        for (uint i = 0; i < Samples; ++i)
+        {
+            float2 UV = lerp(vUV, vPos, (float(i) + Random(vUV)) / float(Samples));
+            float fZ = inputTexture.SampleLevel(LinearSampler, UV, 0.f).y;
+            if (0.5f <= fZ)
+                S += 1.f / (float) Samples;
+
+        }
+    }
+    else
+        S = 1.f;
+    
+    S *= 0.25f;
+    
+    vector vColor = 0.f;
+
+    vColor.rgb = S * LightColor;
+    vColor.a = S;
+    
+    outputTexture[pixel] = vColor;
+}
