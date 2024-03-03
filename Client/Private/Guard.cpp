@@ -25,8 +25,7 @@ HRESULT CGuard::Init(void* pArg)
 	m_OriginMatrix = m_Info.mMatrix * _mat::CreateTranslation(0.f, 1.f, 0.f);
 	m_EffectMatrix = m_Info.mMatrix;
 
-	//m_ePattern = (GUARD_PATTERN)m_Info.iIndex;
-	m_ePattern = (GUARD_PATTERN)1;
+	m_ePattern = (GUARD_PATTERN)m_Info.iIndex;
 
 	if (FAILED(Add_Components()))
 		return E_FAIL;

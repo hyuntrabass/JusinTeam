@@ -2703,7 +2703,10 @@ HRESULT CLoader::Load_Tower()
 
 
 #pragma endregion
-
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_InfiltrationGame"), CInfiltrationGame::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 #pragma region ÀáÀÔ
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_MiniDungeon"), CMap::Create(m_pDevice, m_pContext))))
 	{
