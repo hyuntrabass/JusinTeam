@@ -716,6 +716,19 @@ void CCamera_Main::SkillBook_Mode(_float fTimeDelta)
 
 void CCamera_Main::BrickGame_Mode(_float fTimeDelta)
 {
+	if (m_pCam_Manager->Get_ZoomFactor() >= 2.f)
+	{
+		_vec4 vCurrentPos = m_pTransformCom->Get_State(State::Pos);
+
+		_float fLerpFactor = 0.1f;
+
+		_vec4 vTargetPos = m_vOriCamPos + _vec4(0.f, -1.f, -15.f, 0.f);
+
+		_vec4 vNewPos = XMVectorLerp(vCurrentPos, vTargetPos, fLerpFactor);
+		m_pTransformCom->Set_State(State::Pos, vNewPos);
+		return;
+	}
+
 	if (m_fShakeAcc > 1.5f and m_pCam_Manager->Get_ShakeCam())
 	{
 		m_fShakeAcc = m_pCam_Manager->Get_ShakePower();
@@ -734,9 +747,13 @@ void CCamera_Main::BrickGame_Mode(_float fTimeDelta)
 	}
 	else
 	{
-		_vec4 vBrickGamePos = _vec4(-2000.f, 14.9f, -1978.4f, 1.f);
+		m_vOriCamPos = m_pTransformCom->Get_State(State::Pos);
 
-		m_pTransformCom->Set_State(State::Pos, vBrickGamePos);
+		_vec4 vCurrentPos = m_pTransformCom->Get_State(State::Pos);
+		_float fLerpFactor = 0.1f;
+		_vec4 vBrickGamePos = _vec4(-2000.f, 14.9f, -1978.4f, 1.f);
+		_vec4 vNewPos = XMVectorLerp(vCurrentPos, vBrickGamePos, fLerpFactor);
+		m_pTransformCom->Set_State(State::Pos, vNewPos);
 
 		m_pTransformCom->LookAt_Dir(_vec4(-0.0f, -0.5575f, -0.8301f, 0.f));
 	}

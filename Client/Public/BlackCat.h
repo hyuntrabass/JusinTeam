@@ -25,7 +25,6 @@ public:
 		STATE_ANGRY,
 		STATE_CHASE,
 		STATE_HIT,
-		STATE_EMOTION,
 		STATE_DIE,
 		STATE_CHANGE,
 		STATE_END
@@ -70,6 +69,7 @@ private:
 
 	ANIM_DESC m_Animation{};
 	_mat m_EffectMatrix{};
+	_mat m_EffectMatrixLight{};
 
 	vector<wstring> m_vecText;
 	CGameObject* m_pDialog{ nullptr };

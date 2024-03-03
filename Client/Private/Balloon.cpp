@@ -69,7 +69,6 @@ HRESULT CBalloon::Init(void* pArg)
 
 void CBalloon::Tick(_float fTimeDelta)
 {
-
 	m_pTransformCom->Set_Scale(_vec3(3.f, 3.f, 3.f));
 
 	m_pBodyColliderCom->Change_Extents(_vec3(0.35f, 0.35f, 0.35f));
@@ -224,30 +223,10 @@ void CBalloon::Tick_State(_float fTimeDelta)
 				return;
 			}
 			_mat Mat = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
-			if (m_eCurColor == BLUE)
-			{
-				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Ball_Smoke");
-				Info.pMatrix = &Mat;
-				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
-			}
-			else
-			{
-				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Ball_SmokeFire");
-				Info.pMatrix = &Mat;
-				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
-			}
-
-
-			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 2.0f);
-			if (m_iCount <= 0)
-			{
-				m_eCurState = STATE_DIE;
-			}
-			else
-			{
-				m_eCurState = STATE_HIT;
-			}
 			
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 2.0f);
+
+			m_eCurState = STATE_DIE;
 		}
 	}
 	break;

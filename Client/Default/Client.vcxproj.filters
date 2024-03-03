@@ -1097,10 +1097,12 @@
     <ClInclude Include="..\Public\Guard.h">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\BlackCat.h" />
     <ClInclude Include="..\Public\Cesco_Poison.h" />
     <ClInclude Include="..\Public\Hive.h">
       <Filter>02.GameObjects\16.CescoGame\Static\Hive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BlackCat.h">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1665,10 +1667,12 @@
     <ClCompile Include="..\Private\Guard.cpp">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\BlackCat.cpp" />
     <ClCompile Include="..\Private\Cesco_Poison.cpp" />
     <ClCompile Include="..\Private\Hive.cpp">
       <Filter>02.GameObjects\16.CescoGame\Static\Hive</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BlackCat.cpp">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

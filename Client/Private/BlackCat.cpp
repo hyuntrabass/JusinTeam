@@ -57,13 +57,28 @@ HRESULT CBlackCat::Init(void* pArg)
 	m_vecText.push_back(TEXT("아얏"));
 	m_vecText.push_back(TEXT("아파!!"));
 	m_vecText.push_back(TEXT("어이쿠"));
-	/*
-	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Pet_Cat_Light");
+
+	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_CatSmoke1");
 	Info.pMatrix = &m_EffectMatrix;
 	Info.isFollow = true;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info, true);
+	
+	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_CatSmoke2");
+	Info.pMatrix = &m_EffectMatrix;
+	Info.isFollow = true;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info, true);
+	
+
+
+	/*
+	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Cat_Light");
+	Info.pMatrix = &m_EffectMatrixLight;
+	Info.isFollow = true;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info, true);
 	*/
+	
 	m_pColliderCom->Set_Normal();
+	m_pTransformCom->Set_State(State::Pos, _vec4(-2000.f, -1.f, -2007.f, 1.f));
 	return S_OK;
 }
 
@@ -95,7 +110,8 @@ void CBlackCat::Tick(_float fTimeDelta)
 	Update_Collider();
 	m_pModelCom->Set_Animation(m_Animation);
 
-	m_EffectMatrix = *m_pModelCom->Get_BoneMatrix("Bip001-Spine") * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
+	m_EffectMatrixLight = _mat::CreateTranslation(2.f, 3.5f, 0.9f) * m_pTransformCom->Get_World_Matrix();
+	m_EffectMatrix = _mat::CreateTranslation(0.f, 2.f, 0.9f) * m_pTransformCom->Get_World_Matrix();
 	if (m_bHit)
 	{
 		m_pDialog->Tick(fTimeDelta);
@@ -104,16 +120,19 @@ void CBlackCat::Tick(_float fTimeDelta)
 
 void CBlackCat::Late_Tick(_float fTimeDelta)
 {
-	m_pHpBG->Late_Tick(fTimeDelta);
-	m_pHpBar->Late_Tick(fTimeDelta);
-	m_pHpBorder->Late_Tick(fTimeDelta);
+	if (m_eCurState != STATE_CHANGE)
+	{
+		m_pHpBG->Late_Tick(fTimeDelta);
+		m_pHpBar->Late_Tick(fTimeDelta);
+		m_pHpBorder->Late_Tick(fTimeDelta);
+	}
 
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
-	if (m_bHit)
+	if (m_bHit && m_eCurState != STATE_CHANGE)
 	{
-		m_pDialog->Late_Tick(fTimeDelta);
+		//m_pDialog->Late_Tick(fTimeDelta);
 	}
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
@@ -201,11 +220,7 @@ HRESULT CBlackCat::Render()
 
 void CBlackCat::Init_State(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_L))
-	{
-		m_eCurState = STATE_EMOTION;
-	}
-	//m_eCurState = STATE_IDLE;
+
 	if (m_ePreState != m_eCurState)
 	{
 		switch (m_eCurState)
@@ -217,51 +232,23 @@ void CBlackCat::Init_State(_float fTimeDelta)
 		case Client::CBlackCat::STATE_CHASE:
 			m_Animation.iAnimIndex = RUN;
 			m_Animation.isLoop = true;
-			m_fIdleTime = 0.f;
 			break;
 		case Client::CBlackCat::STATE_ANGRY:
 			m_Animation.iAnimIndex = RUN;
 			m_Animation.isLoop = true;
-			m_fIdleTime = 0.f;
 			break;
 		case Client::CBlackCat::STATE_HIT:
 			m_Animation.iAnimIndex = EMOTION;
 			m_Animation.isLoop = false;
-			m_fIdleTime = 0.f;
 			break;
-		case Client::CBlackCat::STATE_EMOTION:
-		{
-			_uint iRandom = rand() % 3;
-			switch (iRandom)
-			{
-			case 0:
-				m_Animation.iAnimIndex = EMOTION;
-				break;
-
-			case 1:
-				m_Animation.iAnimIndex = TELEPORT_END;
-				break;
-
-			case 2:
-				m_Animation.iAnimIndex = TELEPORT_START;
-				break;
-			}
-		}
-
-			m_Animation.isLoop = false;
-
-			m_fIdleTime = 0.f;
-
-		break;
 		case Client::CBlackCat::STATE_CHANGE:
+			CCamera_Manager::Get_Instance()->Set_ZoomFactor(2.f);
 			m_Animation.iAnimIndex = TELEPORT_START;
 			m_Animation.isLoop = false;
-			m_fIdleTime = 0.f;
 			break;
 		case Client::CBlackCat::STATE_DIE:
 			m_Animation.iAnimIndex = TELEPORT_END;
 			m_Animation.isLoop = false;
-			m_fIdleTime = 0.f;
 			break;
 		}
 
@@ -298,6 +285,12 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 		}
 	}
 
+	if (m_Hp.x <= m_Hp.y * 2.f / 3.f && !m_bChangePhase)
+	{
+		m_bChangePhase = true;
+		m_eCurState = STATE_CHANGE;
+	}
+
 	m_pHpBar->Set_Factor(m_Hp.x / (_float)m_Hp.y);
 
 
@@ -309,7 +302,7 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 
 
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(-2000.f, -1.f, -1999.f, 1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(-2000.f, -1.f, -2007.f, 1.f));
 	_vec3 vNormal = _vec3(0.f, 0.f, -1.f);
 	switch (m_eCurState)
 	{
@@ -328,17 +321,12 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 			m_eCurState = STATE_HIT;
 			m_iHitCount++;
 		}
-
-		if (m_Hp.x <= m_Hp.y * 2.f / 3.f && !m_bChangePhase)
-		{
-			m_bChangePhase = true;
-		}
 	}
 		break;
 
 	case CBlackCat::STATE_ANGRY:
 	{
-		
+
 	}
 		break;
 	case CBlackCat::STATE_HIT:
@@ -360,27 +348,25 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 
 	}
 		break;
-
-	case CBlackCat::STATE_EMOTION:
-	{
-		if (m_pModelCom->IsAnimationFinished(EMOTION) || m_pModelCom->IsAnimationFinished(TELEPORT_END) || m_pModelCom->IsAnimationFinished(TELEPORT_START))
-		{
-			
-			m_eCurState = STATE_IDLE;
-			
-		}
-	}
-	break;
 	case CBlackCat::STATE_CHANGE:
 	{
 
 		if (m_pModelCom->IsAnimationFinished(TELEPORT_END))
 		{
-			//여기서 이펙트 나와야됨 연기같은거
+			
 			m_eCurState = STATE_ANGRY;
+		//	m_bChangePhase = false;
+
 		}
 		else if (m_pModelCom->IsAnimationFinished(TELEPORT_START))
 		{
+			_mat Matrix = _mat::CreateTranslation(0.f, 1.f, 0.f) * m_pTransformCom->Get_World_Matrix();
+			CCamera_Manager::Get_Instance()->Set_ZoomFactor(0.f);
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Cat_Dust");
+			Info.pMatrix = &Matrix;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+
 			m_Animation.iAnimIndex = TELEPORT_END;
 		}
 	}
@@ -423,7 +409,7 @@ HRESULT CBlackCat::Add_Components()
 	TexDesc.eLevelID = LEVEL_TOWER;
 	TexDesc.pParentTransform = m_pTransformCom;
 	TexDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_CatHpBg");
-	TexDesc.vPosition = _vec3(0.f, 9.5f, 0.1f);
+	TexDesc.vPosition = _vec3(0.f, 9.8f, 0.1f);
 	TexDesc.vSize = _vec2(200.f, 200.f);
 
 	m_pHpBG = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &TexDesc);
@@ -434,7 +420,7 @@ HRESULT CBlackCat::Add_Components()
 	
 	TexDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_CatHpHp");
 	TexDesc.strTexture2 = TEXT("Prototype_Component_Texture_UI_Gameplay_Mask_FlagMove");
-	TexDesc.vPosition = _vec3(0.f, 9.5f, 0.f);
+	TexDesc.vPosition = _vec3(0.f, 9.8f, 0.f);
 
 	m_pHpBar = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &TexDesc);
 	if (not m_pHpBar)
@@ -446,7 +432,7 @@ HRESULT CBlackCat::Add_Components()
 
 	TexDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_CatHpUp");
 	TexDesc.strTexture2 = TEXT("");
-	TexDesc.vPosition = _vec3(0.f, 9.5f, -0.1f);
+	TexDesc.vPosition = _vec3(0.f, 9.8f, -0.1f);
 
 	m_pHpBorder = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &TexDesc);
 	if (not m_pHpBorder)
@@ -507,7 +493,7 @@ HRESULT CBlackCat::Add_Collider()
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::AABB;
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
-	CollDesc.vExtents = _vec3(1.2f, 1.2f, 1.2f);
+	CollDesc.vExtents = _vec3(1.5f, 1.5f, 1.5f);
 	CollDesc.vCenter = _vec3(0.f, 1.f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),

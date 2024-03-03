@@ -12,14 +12,16 @@
 #include "BrickWall.h"
 #include "BrickBar.h"
 #include "BrickBall.h"
+#include "Effect_Manager.h"
+#include "TextButtonColor.h"
 
 CBrickGame::CBrickGame(_dev pDevice, _context pContext)
-	: CGameObject(pDevice, pContext)
+	: COrthographicObject(pDevice, pContext)
 {
 }
 
 CBrickGame::CBrickGame(const CBrickGame& rhs)
-	: CGameObject(rhs)
+	: COrthographicObject(rhs)
 {
 }
 
@@ -41,13 +43,21 @@ HRESULT CBrickGame::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-	
+	CCamera_Manager::Get_Instance()->Set_ZoomFactor(0.f);
+
+
+	m_EffectMatrix = _mat::CreateTranslation(_vec3(-1989.f, 0.f, -2005.11536f));
+	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_MapParti");
+	Info.pMatrix = &m_EffectMatrix;
+	Info.isFollow = true;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info, true);
+
+
 	return S_OK;
 }
 
 void CBrickGame::Tick(_float fTimeDelta)
 {
-
 	//중심 DirectX::XMFLOAT4 = {x=-2000.70496 y=11.4677677 z=-1999.06152 ...}
 	//왼쪽벽DirectX::XMFLOAT4 = {x=-1991.24585 y=11.4677677 z=-2000.09204 ...}
 	//위쪽 벽 DirectX::XMFLOAT4 = {x=-2000.19641 y=11.4677696 z=-2007.11536 ...}
@@ -68,10 +78,36 @@ void CBrickGame::Tick(_float fTimeDelta)
 		return;
 	}
 
+	m_fTime += fTimeDelta;
+	if (m_fTime >= 1.f)
+	{
+		if (m_iSec <= 0)
+		{
+			m_iMinute -= 1;
+			m_iSec = 60;
+			if (m_iMinute < 0)
+			{
+				m_iMinute = 0;
+				m_isGameOver = true;
+				return;
+			}
+		}
+		else
+		{
+			m_iSec -= 1;
+		}
+		m_fTime = 0.f;
+	}
+
 	if (m_isActive && m_pGameInstance->Key_Down(DIK_PGUP))
 	{
 		CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
 		m_isActive = false;
+		if (m_Light_Desc.eType != LIGHT_DESC::TYPE::End)
+		{
+			LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
+			*LightDesc = m_Light_Desc;
+		}
 		CUI_Manager::Get_Instance()->Open_InfinityTower(true);
 		return;
 	}
@@ -159,6 +195,9 @@ void CBrickGame::Tick(_float fTimeDelta)
 		m_pCombo->Set_TargetNum(m_iCombo);
 		m_pCombo->Tick(fTimeDelta);
 	}
+	m_pTimeBar->Set_Pass(VTPass_UI_Alpha);
+	m_pTimeBar->Set_Alpha(0.5f);
+	m_EffectMatrix = _mat::CreateTranslation(_vec3(-1989.f, 0.f, -2005.11536f));
 }
 
 void CBrickGame::Late_Tick(_float fTimeDelta)
@@ -168,7 +207,8 @@ void CBrickGame::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
-	//m_pBackGround->Late_Tick(fTimeDelta);
+	m_pTimeBar->Late_Tick(fTimeDelta);
+	m_pBackGround->Late_Tick(fTimeDelta);
 	/*
 	
 	for (size_t i = 0; i < BRICKROW; i++)
@@ -181,7 +221,7 @@ void CBrickGame::Late_Tick(_float fTimeDelta)
 			}
 		}
 	}*/
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+
 	if (m_pBall)
 	{
 		m_pBall->Late_Tick(fTimeDelta);
@@ -194,6 +234,8 @@ void CBrickGame::Late_Tick(_float fTimeDelta)
 	{
 		m_pCombo->Late_Tick(fTimeDelta);
 	}
+	
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
 HRESULT CBrickGame::Render()
@@ -203,6 +245,24 @@ HRESULT CBrickGame::Render()
 		return E_FAIL;
 	}
 
+	wstring strMin = to_wstring(m_iMinute);
+	if (m_iMinute == 60)
+	{
+		strMin = to_wstring(0);
+	}
+	wstring strSec = to_wstring(m_iSec);
+	wstring strText = strMin + TEXT(" : ") + strSec;
+	_vec4 vColor{};
+	if (m_iMinute <= 1 && 60 - m_iSec <= 30)
+	{
+		vColor = _vec4(1.f, 0.f, 0.f, 1.f);
+	}
+	else
+	{
+		vColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	}
+
+	m_pGameInstance->Render_Text(L"Font_Malang", strText, _vec2((_float)g_ptCenter.x, 38.f), 0.8f, vColor);
 
 	return S_OK;
 }
@@ -211,36 +271,33 @@ HRESULT CBrickGame::Render()
 
 HRESULT CBrickGame::Add_Parts()
 {
-	CBrickWall::WALL_DESC WallDesc{};
-	WallDesc.rcRect = { (_long)1.f, (_long)0.f, (_long)0.f, (_long)0.f };
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
+	if (m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_Wall")) == 0)
 	{
-		return E_FAIL;
-	}
-	WallDesc.rcRect = { (_long)0.f, (_long)1.f, (_long)0.f, (_long)0.f };
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
-	{
-		return E_FAIL;
-	}
-	WallDesc.rcRect = { (_long)0.f, (_long)0.f, (_long)1.f, (_long)0.f };
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
-	{
-		return E_FAIL;
-	}
-	/*
-	WallDesc.rcRect = { (_long)0.f, (_long)0.f, (_long)0.f, (_long)1.f };
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
-	{
-		return E_FAIL;
-	}
-	*/
+		CBrickWall::WALL_DESC WallDesc{};
 
-	_vec3 vStartPos = _vec3(-1989.f, 1.5f, -2010.11536f);
+		WallDesc.rcRect = { (_long)1.f, (_long)0.f, (_long)0.f, (_long)0.f };
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
+		{
+			return E_FAIL;
+		}
+		WallDesc.rcRect = { (_long)0.f, (_long)1.f, (_long)0.f, (_long)0.f };
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
+		{
+			return E_FAIL;
+		}
+		WallDesc.rcRect = { (_long)0.f, (_long)0.f, (_long)1.f, (_long)0.f };
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
+		{
+			return E_FAIL;
+		}
+	}
+
+	_vec3 vStartPos = _vec3(-1989.f, 1.5f, -2005.11536f);
 	for (_uint i = 0; i < BRICKROW; i++)
 	{
 		for (_uint j = 0; j < BRICKCOL; j++)
 		{
-			_vec2 vCenterPos = _vec2(-2000.f, -2000.f);
+			_vec2 vCenterPos = _vec2(-2000.f, -2005.f);
 			_vec2 vSize = _vec2(8.f, 8.f);
 			RECT rcRect = {
 				  (LONG)(vCenterPos.x - vSize.x * 0.5f),
@@ -251,7 +308,7 @@ HRESULT CBrickGame::Add_Parts()
 
 			CBalloon::BALLOON_DESC Desc{};
 			Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
-			Desc.vPosition = _vec3(vStartPos.x - 2.1f * j, vStartPos.y, vStartPos.z + 2.1f * i);
+			Desc.vPosition = _vec3(vStartPos.x - 2.25f * j, vStartPos.y, vStartPos.z + 2.25f * i);
 			POINT ptPos = { Desc.vPosition.x, Desc.vPosition.z };
 			if (PtInRect(&rcRect, ptPos))
 			{
@@ -288,12 +345,30 @@ HRESULT CBrickGame::Add_Parts()
 	CNumEffect::NUMEFFECT_DESC NumDesc{};
 	NumDesc.bOrth = true;
 	NumDesc.iDamage = 0;
-	NumDesc.vTextPosition = _vec2((_float)g_ptCenter.x - 5.f, 40.f);
+	NumDesc.vTextPosition = _vec2((_float)g_iWinSizeX - 100.f, (_float)g_ptCenter.y);
 	m_pCombo = (CNumEffect*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_NumEffect"), &NumDesc);
 	if (not m_pCombo)
 	{
 		return E_FAIL;
 	}
+
+	CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
+	ColButtonDesc.eLevelID = LEVEL_STATIC;
+	ColButtonDesc.fDepth = (_float)D_ALERT / (_float)D_END;
+	ColButtonDesc.fFontSize = 0.f;
+	ColButtonDesc.strText = TEXT("");
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_TimeLimit");
+	ColButtonDesc.vSize = _vec2(200.f, 200.f);
+	ColButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, 40.);
+
+
+	m_pTimeBar = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+	if (not m_pTimeBar)
+	{
+		return E_FAIL;
+	}
+
+	
 
 	return S_OK;
 }
@@ -314,10 +389,23 @@ HRESULT CBrickGame::Bind_ShaderResources()
 
 void CBrickGame::Init_Game()
 {
+	m_iMinute = 3;
+	m_iSec = 60;
 	CCamera_Manager::Get_Instance()->Set_CameraState(CS_BRICKGAME);
 	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 	m_isActive = true;
 	CTrigger_Manager::Get_Instance()->Teleport(TS_Minigame);
+
+
+	LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
+
+	m_Light_Desc = *LightDesc;
+	LightDesc->eType = LIGHT_DESC::Directional;
+	LightDesc->vDirection = _float4(-1.f, 0.f, -1.f, 0.f);
+	LightDesc->vDiffuse = _vec4(0.2f, 0.2f, 0.2f, 1.f);
+	LightDesc->vAmbient = _float4(0.4f, 0.4f, 0.4f, 1.f);
+	LightDesc->vSpecular = _vec4(1.f);
+
 
 	if (not m_pBar)
 	{
@@ -432,6 +520,7 @@ void CBrickGame::Free()
 		}
 	}
 
+	Safe_Release(m_pTimeBar);
 	Safe_Release(m_pBall);
 	Safe_Release(m_pBar);
 	Safe_Release(m_pCombo);
