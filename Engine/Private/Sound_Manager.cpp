@@ -137,6 +137,69 @@ void CSound_Manager::SetSystemVolume(_float fSystemVolume)
 	}
 }
 
+void CSound_Manager::SetBackGroundVolume(_float fBackGroundVolume)
+{
+	if (fBackGroundVolume >= 1.f)
+	{
+		fBackGroundVolume = 1.f;
+	}
+	else if (fBackGroundVolume <= 0.f)
+	{
+		fBackGroundVolume = 0.f;
+	}
+
+	m_fBackGroundVolume = fBackGroundVolume;
+
+	_float fVolume = GetChannelVolume(0);
+	SetChannelVolume(0, fVolume * m_fBackGroundVolume);
+}
+
+void CSound_Manager::SetEnvironmentVolume(_float fEnvironmentVolume)
+{
+	if (fEnvironmentVolume >= 1.f)
+	{
+		fEnvironmentVolume = 1.f;
+	}
+	else if (fEnvironmentVolume <= 0.f)
+	{
+		fEnvironmentVolume = 0.f;
+	}
+
+	m_fEnvironmentVolume = fEnvironmentVolume;
+
+	for (_int i = 0; i < FMOD_MAX_CHANNEL_WIDTH; ++i)
+	{
+		if (Get_IsLoopingSound(i))
+		{
+			_float fVolume = GetChannelVolume(i);
+			SetChannelVolume(i, fVolume * m_fEnvironmentVolume);
+		}
+	}
+}
+
+void CSound_Manager::SetEffectVolume(_float fEffectVolume)
+{
+	if (fEffectVolume >= 1.f)
+	{
+		fEffectVolume = 1.f;
+	}
+	else if (fEffectVolume <= 0.f)
+	{
+		fEffectVolume = 0.f;
+	}
+
+	m_fEffectVolume = fEffectVolume;
+
+	for (_int i = 0; i < FMOD_MAX_CHANNEL_WIDTH; ++i)
+	{
+		if (not Get_IsLoopingSound(i))
+		{
+			_float fVolume = GetChannelVolume(i);
+			SetChannelVolume(i, fVolume * m_fEffectVolume);
+		}
+	}
+}
+
 void CSound_Manager::Update()
 {
 	for (int i = 0; i < FMOD_MAX_CHANNEL_WIDTH; ++i)

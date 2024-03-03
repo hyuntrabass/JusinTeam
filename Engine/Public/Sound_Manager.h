@@ -34,6 +34,9 @@ public:
 	void SetChannelVolume(_uint iChannel, _float fVolume);
 	void SetChannelStartVolume(_uint iChannel);
 	void SetSystemVolume(_float fSystemVolume);
+	void SetBackGroundVolume(_float fBackGroundVolume);
+	void SetEnvironmentVolume(_float fEnvironmentVolume);
+	void SetEffectVolume(_float fEffectVolume);
 	void Update();
 	HRESULT FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond, _bool IsReusable, _float fFadeSoundRatio);
 	HRESULT FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond, _float fFadeSoundRatio);
@@ -44,6 +47,9 @@ public:
 
 private:
 	_float m_fSystemVolume{ 1.f };
+	_float m_fBackGroundVolume{ 1.f };
+	_float m_fEnvironmentVolume{ 1.f };
+	_float m_fEffectVolume{ 1.f };
 	_float m_fFadeTimeDelta{};
 	map<const wstring, FMOD::Sound*> m_Sound;
 	FMOD::Channel** m_pChannelArr{};
