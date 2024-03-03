@@ -15,6 +15,13 @@ struct GuardInfo
 class CGuard final : public CGameObject
 {
 public:
+	enum GUARD_PATTERN {
+		PATTERN_1,
+		PATTERN_2,
+		PATTERN_3,
+		PATTERN_END
+	};
+
 	enum GUARD_ANIM {
 		ANIM_DIE,
 		ANIM_IDLE,
@@ -56,7 +63,9 @@ public:
 
 public:
 	void Init_State(_float fTimeDelta);
-	void Tick_Pattern1_State(_float fTimeDelta);
+	void Tick_State_Pattern1(_float fTimeDelta);
+	void Tick_State_Pattern2(_float fTimeDelta);
+	void Tick_State_Pattern3(_float fTimeDelta);
 
 	_vec4 Compute_PlayerPos();
 	_vec4 Compute_PlayerLook();
@@ -90,7 +99,11 @@ private:
 	_float m_fTurnTime{};
 	_float m_fAttackTime{};
 	_float m_fPatrolTime{};
+	_float m_fAttackDelay{ 0.f };
 
+	 _randNum m_iRandomAttack{0};
+	_bool m_bDamaged{ false };
+	_bool m_bAttacked{ false };
 	_bool m_bChangePass = false;
 	_bool m_isArrived = false;
 	_bool m_isDetected{false};
@@ -98,8 +111,11 @@ private:
 	_float m_fHittedTime{ 0.f };
 	GuardInfo m_Info{};
 	EffectInfo Info{};
+	GUARD_PATTERN m_ePattern{ PATTERN_END };
 	_mat m_OriginMatrix{};
 	_mat m_EffectMatrix{};
+	_vec4 vIdlePos{};
+	_vec4 vPatrolPos{};
 
 	//_vec4 m_Point{};
 	//_vec4 m_PatrolPoint1{};

@@ -61,11 +61,7 @@ HRESULT CLevel_Tower::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_Guard()))
-	{
-		MSG_BOX("Failed to Ready Guard");
-		return E_FAIL;
-	}
+	
 	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 	CUI_Manager::Get_Instance()->Open_InfinityTower(true);
 	m_pGameInstance->Set_FogNF(_vec2(50.f, 2000.f));
@@ -145,7 +141,7 @@ void CLevel_Tower::Tick(_float fTimeDelta)
 		//vPos.y += 1.5f;s
 		Desc.iIndex++;
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Guard"), TEXT("Prototype_GameObject_Guard"), &Desc)))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Guard"), TEXT("Prototype_GameObject_Guard"), &Desc)))
 		{
 			return;
 		}
@@ -157,11 +153,12 @@ void CLevel_Tower::Tick(_float fTimeDelta)
 		Desc.mMatrix = pPlayerTransform->Get_World_Matrix();
 		Desc.iIndex++;
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Guard"), TEXT("Prototype_GameObject_GuardTower"), &Desc)))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Guard"), TEXT("Prototype_GameObject_GuardTower"), &Desc)))
 		{
 			return;
 		}
 	}
+
 
 }
 
