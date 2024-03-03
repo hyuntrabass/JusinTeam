@@ -172,8 +172,7 @@
 #include "Scorpion.h"
 #include "RedAnt.h"
 #include "Wasp.h"
-
-#include "Cesco_Poison.h"
+#include "EyeBomb.h"
 #include "Log.h"
 #include "Hook.h"
 #include "Larva_Ball.h"

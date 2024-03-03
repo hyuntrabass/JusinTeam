@@ -78,7 +78,7 @@ HRESULT CCollider::Init(void* pArg)
 	return S_OK;
 }
 
-void CCollider::Update(_fmatrix WorldMatrix)
+void CCollider::Update(_mat WorldMatrix)
 {
 	switch (m_eType)
 	{

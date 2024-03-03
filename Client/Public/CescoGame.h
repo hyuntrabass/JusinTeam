@@ -46,6 +46,7 @@ private:
 	_uint m_iMonsterLimit{ 200 };
 	_float m_fTimeLimit{ 1209999999.f };
 	_float m_fMonsterSpawnTime{};
+	_float m_fEyeBombSpawnTime{};
 	_uint m_iMonsterSpawnCount{};
 
 	//Hook
@@ -57,8 +58,6 @@ private:
 
 	//Log
 	_float m_fLogSpawnTime[4]{};
-
-	//Poison
 	_float m_fPosionSpawnTime{};
 
 	//Hive
@@ -73,7 +72,6 @@ private:
 	HRESULT Create_Hook();
 	HRESULT Create_Larva();
 	HRESULT Create_Log(_uint SpawnPositionIndex);
-	HRESULT Create_Posion(_float fTimeDelta);
 	HRESULT Create_Hive();
 
 private:

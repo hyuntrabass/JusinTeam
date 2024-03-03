@@ -10,6 +10,7 @@ public:
 	typedef struct tagNameTagDesc
 	{
 		wstring strTexture;
+		wstring strTexture2;
 		_vec2   vSize;
 		_vec3	vPosition;
 		class CTransform* pParentTransform;
@@ -39,6 +40,7 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
 	CTexture* m_pTextureCom{ nullptr };
+	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
 	_bool			m_bBright{};
@@ -49,10 +51,13 @@ private:
 	_vec3			m_vPosition{};
 	CTransform*		m_pParentTransform{ nullptr };
 
-	_vec2			m_vTextPos{};
+	_float			m_fTime{};
+	_float			m_fFactor{};
 	_float			m_fFontSize{};
+	_vec2			m_vTextPos{};
 	_vec2			m_vTextPosition{};
 	wstring			m_strText{ TEXT("") };
+	wstring			m_strTexture2{ TEXT("") };
 	_vec4			m_vTextColor{ _vec4(1.f, 1.f, 1.f, 1.f) };
 	_vec4			m_vColor{ _vec4(1.f, 1.f, 1.f, 1.f) };
 
@@ -66,6 +71,9 @@ public:
 	const _vec3& Get_Position() const { return m_vPosition; }
 	const RECT& Get_Rect() const { return m_rcRect; }
 	void Set_Bright(_bool isBright) { m_bBright = isBright; }
+	void Set_Time(_float fTime) { m_fTime = fTime; }
+	void Set_Factor(_float fFactor) { m_fFactor = fFactor; }
+
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

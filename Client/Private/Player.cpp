@@ -515,7 +515,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 			if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
 			{
-				m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * dwMouseMove * -10.f * fMouseSensor);
+				m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * dwMouseMove * -1.f * fMouseSensor);
 			}
 		}
 	}
@@ -1293,12 +1293,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 		return;
-
 	}
-	
-
-
-
 
 	if (MonAttType == MonAtt_Hook)
 	{
@@ -1310,11 +1305,9 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 				Safe_Release(m_pRiding);
 				m_bIsMount = false;
 			}
-			if (m_bLockOn)
-			{
-				m_pCam_Manager->Set_AimMode(false);
-				m_bLockOn = false;
-			}
+
+			m_pCam_Manager->Set_AimMode(false);
+			m_bLockOn = false;	
 			m_eState = Hook;
 		}
 		if (iDamage <= 0)
@@ -1378,69 +1371,69 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 		}
 
 
-			switch (MonAttType)
+		switch (MonAttType)
+		{
+		case MonAtt_Hit:
+		{
+			m_eState = Hit;
+			m_Animation.iAnimIndex = Anim_Stun_start;
+			m_Animation.fDurationRatio = 0.4f;
+			m_Animation.fAnimSpeedRatio = 2.f;
+			m_Animation.fStartAnimPos = 18.f;
+			m_Animation.isLoop = false;
+			m_hasJumped = false;
+			if (!m_bPoison)
 			{
-			case MonAtt_Hit:
+				m_bHitted = true;
+				m_vRimColor = _vec4(1.f, 1.f, 1.f, 1.f);
+			}
+		}
+		break;
+		case MonAtt_KnockDown:
+		{
+			m_eState = KnockDown;
+			m_pCam_Manager->Set_RidingZoom(false);
+			m_bLockOn = false;
+		}
+		break;
+		case MonAtt_Stun:
+		{
+			m_eState = Stun_Start;
+			m_pCam_Manager->Set_RidingZoom(false);
+			m_bLockOn = false;
+		}
+		break;
+		case MonAtt_Poison:
+		{
+			if (!m_bPoison)
 			{
-				m_eState = Hit;
-				m_Animation.iAnimIndex = Anim_Stun_start;
-				m_Animation.fDurationRatio = 0.4f;
-				m_Animation.fAnimSpeedRatio = 2.f;
-				m_Animation.fStartAnimPos = 18.f;
-				m_Animation.isLoop = false;
-				m_hasJumped = false;
-				if (!m_bPoison)
+				m_iPoisionDamage = iDamage;
+				m_bPoison = true;
+				m_vRimColor = _vec4(0.f, 1.f, 0.f, 1.f);
+				if (m_bSlowSpeed == 0.f)
 				{
-					m_bHitted = true;
-					m_vRimColor = _vec4(1.f, 1.f, 1.f, 1.f);
+					m_bSlowSpeed = 3.f;
 				}
 			}
-			break;
-			case MonAtt_KnockDown:
+		}
+		break;
+		case Parrying_Succescc:
+		{
+			m_fBoostSpeedTimmer = 5.f;
+			m_fBoostSpeed = 3.f;
+			//보호막 생성
+			if (not m_pEffect_Shield)
 			{
-				m_eState = KnockDown;
-				m_pCam_Manager->Set_RidingZoom(false);
-				m_bLockOn = false;
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Shield");
+				Info.isFollow = true;
+				Info.pMatrix = &m_ShieldMatrix;
+				m_pEffect_Shield = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 			}
-			break;
-			case MonAtt_Stun:
-			{
-				m_eState = Stun_Start;
-				m_pCam_Manager->Set_RidingZoom(false);
-				m_bLockOn = false;
-			}
-			break;
-			case MonAtt_Poison:
-			{
-				if (!m_bPoison)
-				{
-					m_iPoisionDamage = iDamage;
-					m_bPoison = true;
-					m_vRimColor = _vec4(0.f, 1.f, 0.f, 1.f);
-					if (m_bSlowSpeed == 0.f)
-					{
-						m_bSlowSpeed = 3.f;
-					}
-				}
-			}
-			break;
-			case Parrying_Succescc:
-			{
-				m_fBoostSpeedTimmer = 5.f;
-				m_fBoostSpeed = 3.f;
-				//보호막 생성
-				if (not m_pEffect_Shield)
-				{
-					EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Shield");
-					Info.isFollow = true;
-					Info.pMatrix = &m_ShieldMatrix;
-					m_pEffect_Shield = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-				}
-			}
-			break;
+		}
+		break;
 
-			}
-		
+		}
+
 	}
 
 	m_StartRegen = 0.f;
@@ -1932,17 +1925,17 @@ void CPlayer::Move(_float fTimeDelta)
 
 				}
 				else if (m_eState == Attack or
-						 m_eState == Skill1 or
-						 m_eState == Skill2 or
-						 m_eState == Skill3 or
-						 m_eState == Skill4 or
-						 m_eState == AimMode_End)
+					m_eState == Skill1 or
+					m_eState == Skill2 or
+					m_eState == Skill3 or
+					m_eState == Skill4 or
+					m_eState == AimMode_End)
 				{
 					m_eState = Attack_Run;
 				}
 				else if (m_eState == Run or
-						 m_eState == Run_End or
-						 m_pModelCom->IsAnimationFinished(Anim_Normal_run_start))
+					m_eState == Run_End or
+					m_pModelCom->IsAnimationFinished(Anim_Normal_run_start))
 				{
 					m_eState = Run;
 
@@ -1978,10 +1971,10 @@ void CPlayer::Move(_float fTimeDelta)
 					m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed - m_bSlowSpeed);
 				}
 				else if (m_eState == Run or
-						 m_eState == Run_End or
-						 m_eState == Run_Start or
-						 m_eState == Jump_Long_End
-						 )
+					m_eState == Run_End or
+					m_eState == Run_Start or
+					m_eState == Jump_Long_End
+					)
 				{
 					m_eState = Run;
 					m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed - m_bSlowSpeed);
@@ -1995,7 +1988,7 @@ void CPlayer::Move(_float fTimeDelta)
 						m_pTransformCom->Set_Speed(m_fWalkSpeed + m_Status.Speed / 3.f);
 					}
 					else if (m_eState == Jump or
-							 m_eState == Jump_Start)
+						m_eState == Jump_Start)
 					{
 						m_pTransformCom->Set_Speed(m_fRunSpeed + m_Status.Speed + m_fBoostSpeed - m_bSlowSpeed);
 					}
@@ -2539,7 +2532,7 @@ void CPlayer::Return_Attack_IdleForm()
 	m_Animation.fAnimSpeedRatio = 3.f;
 	if (m_Current_Weapon == WP_SWORD)
 	{
-		if (m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack01_A) && m_iAttackCombo==1)
+		if (m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack01_A) && m_iAttackCombo == 1)
 		{
 			m_Animation.iAnimIndex = Anim_Assassin_Attack01_B;
 			m_bReadyMove = true;
@@ -4041,7 +4034,7 @@ void CPlayer::Init_State()
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 2.f;
 			m_hasJumped = true;
-			m_bReadyMove = false;	
+			m_bReadyMove = false;
 		}
 		break;
 		case Client::CPlayer::Attack:
@@ -4117,7 +4110,7 @@ void CPlayer::Init_State()
 			m_Animation.iAnimIndex = Anim_B_idle_end;
 			m_hasJumped = false;
 			m_Animation.fDurationRatio = 0.01f;
-			m_iSuperArmor = {1.f};
+			m_iSuperArmor = { 1.f };
 			m_Animation.isLoop = false;
 		}
 		break;
@@ -4778,7 +4771,7 @@ HRESULT CPlayer::Add_Components()
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.5f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-									  TEXT("Com_Player_Hit_OBB"), (CComponent**)&m_pHitCollider, &CollDesc)))
+		TEXT("Com_Player_Hit_OBB"), (CComponent**)&m_pHitCollider, &CollDesc)))
 	{
 		return E_FAIL;
 	}
@@ -4788,7 +4781,7 @@ HRESULT CPlayer::Add_Components()
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.2f, 0.4f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
-									  TEXT("Com_Collider_Common_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Common]), &CollDesc)))
+		TEXT("Com_Collider_Common_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Common]), &CollDesc)))
 	{
 		return E_FAIL;
 	}
@@ -4821,14 +4814,14 @@ HRESULT CPlayer::Add_Components()
 	{
 		return E_FAIL;
 	}
-	CollDesc.vExtents = _vec3(2.3f, 2.f, 1.8f);
+	CollDesc.vExtents = _vec3(2.5f, 2.f, 2.f);
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.2f, 0.2f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Skill2_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Skill2]), &CollDesc)))
 	{
 		return E_FAIL;
 	}
-	CollDesc.vExtents = _vec3(3.f, 2.f, 3.f);
+	CollDesc.vExtents = _vec3(4.f, 2.f, 4.f);
 	CollDesc.vCenter = _vec3(0.f, CollDesc.vExtents.y * 0.2f, 0.2f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Skill4_Att"), reinterpret_cast<CComponent**>(&m_pAttCollider[AT_Sword_Skill4]), &CollDesc)))

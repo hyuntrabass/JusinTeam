@@ -10,6 +10,7 @@ class CBrickBall final : public CGameObject
 public:
 	typedef struct tagBallDesc
 	{
+		BrickColor eBrickColor{};
 		_vec3 vPos{};
 	}BALL_DESC;
 private:
@@ -42,6 +43,7 @@ private:
 private:
 	BrickColor				m_eCurBrickColor{};
 	_bool					m_isCombo{};
+	_bool					m_isBarColl{};
 	_bool					m_isColl{};
 	_bool					m_isBalloonColl{};
 	_uint					m_iCollNum{};
@@ -54,9 +56,10 @@ private:
 
 	_mat					m_EffectMatrix{};
 	class CEffect_Dummy*	m_pEffect_Ball{ nullptr };
+	CEffect_Dummy*	m_pEffect_Ball_Parti{ nullptr };
 	CCollider*				m_pCurCollider{ nullptr };
-	class CCommonSurfaceTrail* m_pTrail{ nullptr };
-	CCommonSurfaceTrail* m_pDistortionTrail { nullptr };
+	class CCommonTrail*		m_pTrail{ nullptr };
+	//CCommonSurfaceTrail* m_pDistortionTrail { nullptr };
 	const _mat*				m_Mat{};
 public:
 	const _bool& Is_Combo() const { return m_isCombo; }
@@ -66,6 +69,10 @@ private:
 	HRESULT Init_Effect();
 	void Check_Collision(_float fTimeDelta);
 	void Set_BallColor();
+
+public:
+	_bool Is_BarColl() { return m_isBarColl; }
+	void Set_CurrentBallColor(BrickColor eColor);
 
 public:
 	CCollider* Get_BrickBallCollider() { return m_pColliderCom; }
