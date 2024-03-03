@@ -2,9 +2,10 @@
 #include "VTFMonster.h"
 #include "Log.h"
 #include "Hook.h"
+#include "Hive.h"
 
+#include "UI_Manager.h"
 #include "Camera_Manager.h"
-#include "Cesco_Poison.h"
 
 CCescoGame::CCescoGame(_dev pDevice, _context pContext)
 	:CGameObject(pDevice, pContext)
@@ -28,24 +29,37 @@ HRESULT CCescoGame::Init_Prototype()
 
 HRESULT CCescoGame::Init(void* pArg)
 {
-	//UP
+	//FRONT
 	m_SpawnPositions.push_back(_vec3(-3000.f, 1.f, 30.f));
-	//DOWN
+	//BACK
 	m_SpawnPositions.push_back(_vec3(-3000.f, 1.f, -30.f));
 	//RIGHT
 	m_SpawnPositions.push_back(_vec3(-2970.f, 1.f, 0.f));
 	//LEFT
 	m_SpawnPositions.push_back(_vec3(-3030.f, 1.f, 0.f));
 
+	//DOWN
+	//LF
+	m_HiveSpawnPositions.push_back(_vec3(-3026.f, 13.5f, 26.f));
+	//RF
+	m_HiveSpawnPositions.push_back(_vec3(-2974.f, 13.5f, 26.f));
+	//LB
+	m_HiveSpawnPositions.push_back(_vec3(-3026.f, 13.5f, -26.f));
+	//RB
+	m_HiveSpawnPositions.push_back(_vec3(-2974.f, 13.5f, -26.f));
+	//UP
+	//LF
+	m_HiveSpawnPositions.push_back(_vec3(-3025.f, 21.5f, 25.f));
+	//RF
+	m_HiveSpawnPositions.push_back(_vec3(-2975.f, 21.5f, 25.f));
+	//LB
+	m_HiveSpawnPositions.push_back(_vec3(-3025.f, 21.5f, -25.f));
+	//RB
+	m_HiveSpawnPositions.push_back(_vec3(-2975.f, 21.5f, -25.f));
+	
 	random_device rand;
 	m_RandomNumber = _randNum(rand());
 
-	for (_uint i = 0; i < m_SpawnPositions.size(); i++)
-	{
-		Create_Log(i);
-	}
-
-		
 
 	CCamera_Manager::Get_Instance()->Set_RidingZoom(true);
 
@@ -62,9 +76,6 @@ void CCescoGame::Tick(_float fTimeDelta)
 	{
 		m_fTimeLimit = 0.f;
 	}
-	
-
-	m_fTimeLimit -= fTimeDelta;
 
 	if (m_fTimeLimit <= -1.f)
 	{
@@ -72,14 +83,33 @@ void CCescoGame::Tick(_float fTimeDelta)
 		return;
 	}
 
-	Tick_Phase(fTimeDelta);
-
+	Init_Phase(fTimeDelta);
+	switch (m_eCurrentPhase)
+	{
+	case Client::CCescoGame::Phase1:
+		Tick_Phase1(fTimeDelta);
+		break;
+	case Client::CCescoGame::Phase2:
+		Tick_Phase2(fTimeDelta);
+		break;
+	case Client::CCescoGame::Phase3:
+		Tick_Phase3(fTimeDelta);
+		break;
+	case Client::CCescoGame::Phase_Buff:
+		Tick_Phase_Buff(fTimeDelta);
+		return;
+	}
 	//½ÇÆÐ Á¶°Ç
 	if (m_Monsters.size() > m_iMonsterLimit || m_fTimeLimit <= 0.f)
 	{
 		for (auto& pMonster : m_Monsters)
 		{
 			pMonster->Set_Damage(pMonster->Get_HP());
+		}
+
+		for (auto& Pair : m_Hives)
+		{
+			Pair.second->Set_Damage(Pair.second->Get_HP());
 		}
 	}
 
@@ -88,15 +118,14 @@ void CCescoGame::Tick(_float fTimeDelta)
 		pMonster->Tick(fTimeDelta);
 	}
 
-	for (_uint i = 0; i < m_SpawnPositions.size(); i++)
+	for (auto& Pair : m_Logs)
 	{
-		auto& Pair = m_Logs.find(i);
-		if (Pair == m_Logs.end())
-		{
-			continue;
-		}
+		Pair.second->Tick(fTimeDelta);
+	}
 
-		Pair->second->Tick(fTimeDelta);
+	for (auto& Pair : m_Hives)
+	{
+		Pair.second->Tick(fTimeDelta);
 	}
 
 	Release_DeadObjects();
@@ -114,238 +143,257 @@ void CCescoGame::Late_Tick(_float fTimeDelta)
 		pHook->Late_Tick(fTimeDelta);
 	}
 
+	for (auto& Pair : m_Logs)
+	{ 
+		Pair.second->Late_Tick(fTimeDelta);
+	}
+
+	for (auto& Pair : m_Hives)
+	{
+		Pair.second->Late_Tick(fTimeDelta);
+	}
+}
+
+void CCescoGame::Init_Phase(_float fTimeDelta)
+{
+	if (m_eCurrentPhase != m_ePreviousPhase)
+	{
+		switch (m_eCurrentPhase)
+		{
+		case Client::CCescoGame::Phase1:
+		{
+	
+	
+		}
+			break;
+		case Client::CCescoGame::Phase2:
+		{
+			for (_uint i = 0; i < m_SpawnPositions.size(); i++)
+			{
+				Create_Log(i);
+			}
+
+			//¹úÁý °¹¼ö +1
+			m_IsSpawnHives.push_back(false);
+
+		}
+			break;
+		case Client::CCescoGame::Phase3:
+		{
+			//¹úÁý °¹¼ö +1
+			m_IsSpawnHives.push_back(false);
+		}
+			break;
+		}
+
+		m_ePreviousPhase = m_eCurrentPhase;
+	}
+}
+
+void CCescoGame::Tick_Phase1(_float fTimeDelta)
+{
+	m_fTimeLimit -= fTimeDelta;
+	m_fMonsterSpawnTime += fTimeDelta;
+
+#pragma region SpawnMonster
+
+	if (m_fMonsterSpawnTime >= 1.f)
+	{
+		_vec3 vSpawnPos = m_SpawnPositions[0];
+		vSpawnPos.z -= 1.f;
+		if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Scorpion"), vSpawnPos, TEXT("Prototype_GameObject_Scorpion"))))
+			return;
+
+		vSpawnPos = m_SpawnPositions[1];
+		vSpawnPos.z += 1.f;
+		if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Redant"), vSpawnPos, TEXT("Prototype_GameObject_RedAnt"))))
+			return;
+
+		m_iMonsterSpawnCount++;
+		m_fMonsterSpawnTime = 0.f;
+	}
+
+#pragma endregion
+
+#pragma region SpawnLarva
+
+	if (m_iMonsterSpawnCount % 10 == 1 && m_fMonsterSpawnTime == 0.f)
+	{
+		for (_uint i = 0; i < 5; i++)
+		{
+			Create_Larva();
+		}
+	}
+
+#pragma endregion
+
+
+}
+
+void CCescoGame::Tick_Phase2(_float fTimeDelta)
+{
+	Tick_Phase1(fTimeDelta);
+#pragma region SpawnLog
+
 	for (_uint i = 0; i < m_SpawnPositions.size(); i++)
 	{
 		auto& Pair = m_Logs.find(i);
 		if (Pair == m_Logs.end())
 		{
-			continue;
+			m_fLogSpawnTimes[i] += fTimeDelta;
+			if (m_fLogSpawnTimes[i] >= 30.f)
+			{
+				Create_Log(i);
+				m_fLogSpawnTimes[i] = 0.f;
+			}
 		}
-
-		Pair->second->Late_Tick(fTimeDelta);
 	}
+
+#pragma endregion
+
+#pragma region SpawnHive
+
+	_uint iNumReadySpawnHive{};
+	for (size_t i = 0; i < m_IsSpawnHives.size(); i++)
+	{
+		if (m_IsSpawnHives[i])
+		{
+			iNumReadySpawnHive++;
+		}
+	}
+	if (m_Hives.size() + static_cast<size_t>(iNumReadySpawnHive) < m_IsSpawnHives.size())
+	{
+		_uint iNumSpawnHive = static_cast<_uint>(m_IsSpawnHives.size() - (m_Hives.size() + static_cast<size_t>(iNumReadySpawnHive)));
+
+		while (iNumSpawnHive)
+		{
+			_uint iSpawnHiveIndex{};
+			while (m_IsSpawnHives[iSpawnHiveIndex])
+			{
+				++iSpawnHiveIndex;
+			}
+			m_IsSpawnHives[iSpawnHiveIndex] = true;
+
+			--iNumSpawnHive;
+		}
+	}
+
+	for (size_t i = 0; i < m_IsSpawnHives.size(); i++)
+	{
+		if (m_IsSpawnHives[i])
+		{
+			m_fHiveSpawnTimes[i] += fTimeDelta;
+			if (m_fHiveSpawnTimes[i] >= 15.f)
+			{
+				Create_Hive();
+				m_IsSpawnHives[i] = false;
+				m_fHiveSpawnTimes[i] = 0.f;
+			}
+		}
+	}
+
+#pragma endregion
+
+#pragma region SpawnWasp
+
+	for (size_t i = 0; i < m_HiveSpawnPositions.size(); i++)
+	{
+		auto& iter = m_Hives.find(i);
+		if (iter != m_Hives.end())
+		{
+			m_fWaspSpawnTimes[i] += fTimeDelta;
+			if (m_fWaspSpawnTimes[i] >= 5.f)
+			{
+				_vec3 vSpawnPos = m_HiveSpawnPositions[i];
+				vSpawnPos.y -= 3.f;
+				if (Create_CommonMonster(TEXT("Prototype_VTFModel_Wasp"), vSpawnPos, TEXT("Prototype_GameObject_Wasp")))
+					return;
+
+				m_fWaspSpawnTimes[i] = 0.f;
+			}
+		}
+	}
+
+#pragma endregion
 }
 
-void CCescoGame::Tick_Phase(_float fTimeDelta)
+void CCescoGame::Tick_Phase3(_float fTimeDelta)
 {
-	m_fMonsterSpawnTime += fTimeDelta;
-
-	switch (m_eCurrentPhase)
+	Tick_Phase1(fTimeDelta);
+	Tick_Phase2(fTimeDelta);
+#pragma region EyeBombSpawn
+	if (m_fEyeBombSpawnTime >= 2.f)
 	{
-	case Client::CCescoGame::Phase1:
-	{
-#pragma region SpawnMonster
+		_vec3 vSpawnPos = m_pPlayerTransform->Get_CenterPos();
+		_randFloat RandomCountNum(-300.f, 300.f);
 
-		if (m_fMonsterSpawnTime >= 1.f)
+		_float fRandomX = RandomCountNum(m_RandomNumber);
+		_float fRandomZ = RandomCountNum(m_RandomNumber);
+		fRandomX /= 100.f;
+		fRandomZ /= 100.f;
+		vSpawnPos.x += fRandomX;
+		vSpawnPos.z += fRandomZ;
+		vSpawnPos.y = 0.f;
+		if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_EyeBomb"), vSpawnPos, TEXT("Prototype_GameObject_EyeBomb"))))
 		{
-			_vec3 vSpawnPos = m_SpawnPositions[0];
-			vSpawnPos.z -= 1.f;
-			if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Scorpion"), vSpawnPos, TEXT("Prototype_GameObject_Scorpion_Object"))))
-				return;
-
-			vSpawnPos = m_SpawnPositions[1];
-			vSpawnPos.z += 1.f;
-			if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Redant"), vSpawnPos, TEXT("Prototype_GameObject_RedAnt_Object"))))
-				return;
-
-			vSpawnPos = m_SpawnPositions[2];
-			vSpawnPos.x -= 1.f;
-			vSpawnPos.y += 2.f;
-			if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Wasp"), vSpawnPos, TEXT("Prototype_GameObject_Wasp_Object"))))
-				return;
-
-			m_iMonsterSpawnCount++;
-			m_fMonsterSpawnTime = 0.f;
+			return;
 		}
+		m_fEyeBombSpawnTime = 0.f;
 
-#pragma endregion
-
-#pragma region SpawnLarva
-
-		if (m_iMonsterSpawnCount % 10 == 1 && m_fMonsterSpawnTime == 0.f)
-		{
-			for (_uint i = 0; i < 5; i++)
-			{
-				Create_Larva();
-			}
-		}
-
-#pragma endregion
-
-#pragma region SpawnLog
-
-		for (_uint i = 0; i < m_SpawnPositions.size(); i++)
-		{
-			auto& Pair = m_Logs.find(i);
-			if (Pair == m_Logs.end())
-			{
-				m_fLogSpawnTime[i] += fTimeDelta;
-				if (m_fLogSpawnTime[i] >= 30.f)
-				{
-					Create_Log(i);
-					m_fLogSpawnTime[i] = 0.f;
-				}
-			}
-		}
-
-#pragma endregion
 	}
-	break;
-	case Client::CCescoGame::Phase2:
-	{
-#pragma region SpawnMonster
-
-		if (m_fMonsterSpawnTime >= 1.f)
-		{
-			_vec3 vSpawnPos = m_SpawnPositions[0];
-			vSpawnPos.z -= 1.f;
-			if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Scorpion"), vSpawnPos, TEXT("Prototype_GameObject_Scorpion_Object"))))
-				return;
-
-			vSpawnPos = m_SpawnPositions[1];
-			vSpawnPos.z += 1.f;
-			if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Redant"), vSpawnPos, TEXT("Prototype_GameObject_RedAnt_Object"))))
-				return;
-
-			m_iMonsterSpawnCount++;
-			m_fMonsterSpawnTime = 0.f;
-		}
-
-#pragma endregion
-
-#pragma region SpawnLarva
-
-		if (m_iMonsterSpawnCount % 10 == 1 && m_fMonsterSpawnTime == 0.f)
-		{
-			for (_uint i = 0; i < 5; i++)
-			{
-				Create_Larva();
-			}
-		}
-
-#pragma endregion
-
-#pragma region SpawnLog
-
-		for (_uint i = 0; i < m_SpawnPositions.size(); i++)
-		{
-			auto& Pair = m_Logs.find(i);
-			if (Pair == m_Logs.end())
-			{
-				m_fLogSpawnTime[i] += fTimeDelta;
-				if (m_fLogSpawnTime[i] >= 30.f)
-				{
-					Create_Log(i);
-					m_fLogSpawnTime[i] = 0.f;
-				}
-			}
-		}
-
-#pragma endregion
-	}
-	break;
-	case Client::CCescoGame::Phase3:
-	{
-		Create_Posion(fTimeDelta);
-
-#pragma region SpawnMonster
-
-		if (m_fMonsterSpawnTime >= 1.f)
-		{
-			_vec3 vSpawnPos = m_SpawnPositions[0];
-			vSpawnPos.z -= 1.f;
-			if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Scorpion"), vSpawnPos, TEXT("Prototype_GameObject_Scorpion_Object"))))
-				return;
-
-			vSpawnPos = m_SpawnPositions[1];
-			vSpawnPos.z += 1.f;
-			if (FAILED(Create_CommonMonster(TEXT("Prototype_VTFModel_Redant"), vSpawnPos, TEXT("Prototype_GameObject_RedAnt_Object"))))
-				return;
-
-			m_iMonsterSpawnCount++;
-			m_fMonsterSpawnTime = 0.f;
-		}
-
-#pragma endregion
-
-#pragma region SpawnLarva
-
-		if (m_iMonsterSpawnCount % 10 == 1 && m_fMonsterSpawnTime == 0.f)
-		{
-			for (_uint i = 0; i < 5; i++)
-			{
-				Create_Larva();
-			}
-		}
-
-#pragma endregion
-
-#pragma region SpawnLog
-
-		for (_uint i = 0; i < m_SpawnPositions.size(); i++)
-		{
-			auto& Pair = m_Logs.find(i);
-			if (Pair == m_Logs.end())
-			{
-				m_fLogSpawnTime[i] += fTimeDelta;
-				if (m_fLogSpawnTime[i] >= 30.f)
-				{
-					Create_Log(i);
-					m_fLogSpawnTime[i] = 0.f;
-				}
-			}
-		}
+	m_fEyeBombSpawnTime += fTimeDelta;
 
 #pragma endregion
 
 #pragma region SpawnHook
 
-		if (m_fHookSpawnTime >= 6.f)
-		{
-			Create_Hook();
-			m_fHookSpawnTime = 0.f;
-		}
-		m_fHookSpawnTime += fTimeDelta;
+	if (m_fHookSpawnTime >= 6.f)
+	{
+		Create_Hook();
+		m_fHookSpawnTime = 0.f;
+	}
+	m_fHookSpawnTime += fTimeDelta;
 
 #pragma endregion
 
 #pragma region HookTick
 
-		for (auto& pHook : m_vecHooks)
+	for (auto& pHook : m_vecHooks)
+	{
+		pHook->Tick(fTimeDelta);
+	}
+	m_bHadDragging = false;
+
+	_bool bDrag{};
+	_bool bCollision{};
+
+	for (auto& pHooks : m_vecHooks)
+	{
+		if (pHooks->Get_Dragging())
 		{
-			pHook->Tick(fTimeDelta); 
+			bDrag = true;
+			break;
 		}
-		m_bHadDragging = false;
+	}
 
-		_bool bDrag{};
-		_bool bCollision{};
-
-		for (auto& pHooks : m_vecHooks)  
+	if (!bDrag)
+	{
+		for (auto& pHooks : m_vecHooks)
 		{
-			if (pHooks->Get_Dragging())
+
+			if (pHooks->Get_HadCollision())
 			{
-				bDrag = true;
+				m_pCurrent_DraggingHook = pHooks;
+				pHooks->Set_Dragging(true);
 				break;
 			}
 		}
+	}
 
-		if (!bDrag)
+	if (m_pCurrent_DraggingHook)
+	{
+		if ((CUI_Manager::Get_Instance()->Get_Hp().x) > 0)
 		{
-			for (auto& pHooks : m_vecHooks)
-			{
-
-				if (pHooks->Get_HadCollision())
-				{
-					m_pCurrent_DraggingHook = pHooks;
-					pHooks->Set_Dragging(true);
-					break;
-				}
-			}
-		}
-
-		if (m_pCurrent_DraggingHook)
-		{
-
 			if (m_pGameInstance->Key_Down(DIK_SPACE, InputChannel::UI))
 			{
 				m_iDragging_EscapeCount++;
@@ -353,6 +401,7 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 			if (m_iDragging_EscapeCount >= 5)
 			{
 				m_iDragging_EscapeCount = 0;
+				m_vecHooks.erase(remove(m_vecHooks.begin(), m_vecHooks.end(), m_pCurrent_DraggingHook), m_vecHooks.end());
 				Safe_Release(m_pCurrent_DraggingHook);
 				m_pCurrent_DraggingHook = nullptr;
 				m_pGameInstance->Attack_Player(nullptr, 0, MonAtt_Hook_End);
@@ -367,10 +416,15 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 			m_pPlayerTransform->Set_Position(_vec3(m_pCurrent_DraggingHook->Get_Position()));
 		}
 
+	}
+
 #pragma endregion
-	}
-	break;
-	}
+}
+
+void CCescoGame::Tick_Phase_Buff(_float fTimeDelta)
+{
+	 
+
 }
 
 HRESULT CCescoGame::Create_CommonMonster(const wstring& strModelTag, _vec3 SpawnPosition, const wstring& strPrototypeTag)
@@ -391,11 +445,11 @@ HRESULT CCescoGame::Create_Hook()
 	_randInt RandomDir(0, 3);
 	_randInt RandomCount(1, 3);
 	_randInt RandomCountNum(1, 8);
-	
+
 
 	HookDesc.WorldMatrix = _mat::CreateScale(2.f, 2.f, 1.5f);
-	
-	
+
+
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -420,7 +474,7 @@ HRESULT CCescoGame::Create_Hook()
 					vHookPos.y += 1.f;
 					HookDesc.WorldMatrix.Position_vec3(vHookPos);
 					HookDesc.vLookat = _vec4(0.f, 0.f, -1.f, 1.f);
-					CHook* pHook = dynamic_cast<CHook*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Hook_Object"), &HookDesc));
+					CHook* pHook = dynamic_cast<CHook*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Hook"), &HookDesc));
 					m_vecHooks.push_back(pHook);
 					iCountNum++;
 				}
@@ -441,7 +495,7 @@ HRESULT CCescoGame::Create_Hook()
 					vHookPos.y += 1.f;
 					HookDesc.WorldMatrix.Position_vec3(vHookPos);
 					HookDesc.vLookat = _vec4(0.f, 0.f, 1.f, 1.f);
-					CHook* pHook = dynamic_cast<CHook*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Hook_Object"), &HookDesc));
+					CHook* pHook = dynamic_cast<CHook*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Hook"), &HookDesc));
 					m_vecHooks.push_back(pHook);
 					iCountNum++;
 				}
@@ -462,7 +516,7 @@ HRESULT CCescoGame::Create_Hook()
 					vHookPos.y += 1.f;
 					HookDesc.WorldMatrix.Position_vec3(vHookPos);
 					HookDesc.vLookat = _vec4(-1.f, 0.f, 0.f, 1.f);
-					CHook* pHook = dynamic_cast<CHook*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Hook_Object"), &HookDesc));
+					CHook* pHook = dynamic_cast<CHook*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Hook"), &HookDesc));
 					m_vecHooks.push_back(pHook);
 					iCountNum++;
 				}
@@ -483,7 +537,7 @@ HRESULT CCescoGame::Create_Hook()
 					vHookPos.y += 1.f;
 					HookDesc.WorldMatrix.Position_vec3(vHookPos);
 					HookDesc.vLookat = _vec4(1.f, 0.f, 0.f, 1.f);
-					CHook* pHook = dynamic_cast<CHook*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Hook_Object"), &HookDesc));
+					CHook* pHook = dynamic_cast<CHook*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Hook"), &HookDesc));
 					m_vecHooks.push_back(pHook);
 					iCountNum++;
 				}
@@ -554,7 +608,7 @@ HRESULT CCescoGame::Create_Larva()
 			continue;
 
 		VTFMonsterDesc.vPosition = vPos;
-		CVTFMonster* pMonster = reinterpret_cast<CVTFMonster*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Larva_Object"), &VTFMonsterDesc));
+		CVTFMonster* pMonster = reinterpret_cast<CVTFMonster*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Larva"), &VTFMonsterDesc));
 		m_Monsters.push_back(pMonster);
 		m_LarvaPositions.emplace(pMonster->Get_ID(), vPos);
 		return S_OK;
@@ -582,31 +636,38 @@ HRESULT CCescoGame::Create_Log(_uint SpawnPositionIndex)
 	vSpawnPos.y = 18.f;
 	LogDesc.WorldMatrix.Position_vec3(vSpawnPos);
 
-	CLog* pLog = reinterpret_cast<CLog*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Log_Object"), &LogDesc));
+	CLog* pLog = reinterpret_cast<CLog*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Log"), &LogDesc));
 	m_Logs.emplace(SpawnPositionIndex, pLog);
 
 	return S_OK;
+
 }
 
-HRESULT CCescoGame::Create_Posion(_float fTimeDelta)
-{
-	_randInt RandomX(-3020, -2980);
-	_randInt RandomY(-20, 30);
-	if (m_fPosionSpawnTime > 0.5f)
-	{
-		_mat PoisonWolrd{};
-		PoisonWolrd = _mat::CreateScale(2.f, 2.f, 1.5f);
-		_int iRandomX = RandomX(m_RandomNumber);
-		_int iRandomY = RandomY(m_RandomNumber);
-		PoisonWolrd.Position_vec3(_vec3(iRandomX, 24.f, iRandomY));
-		if (FAILED(m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Poison"), TEXT("Prototype_GameObject_Cesco_Poison"), &PoisonWolrd)))
-		{
-			return E_FAIL;
-		}
-		m_fPosionSpawnTime = 0.f;
 
+HRESULT CCescoGame::Create_Hive()
+{
+	CHive::HIVE_DESC HiveDesc{};
+
+	while (true)
+	{
+		_uint iHiveSpawnPosSize = static_cast<_uint>(m_HiveSpawnPositions.size() - 1);
+		_randInt RandomPosIndex(0, iHiveSpawnPosSize);
+
+		_int PosIndex = RandomPosIndex(m_RandomNumber);
+		auto iter = m_Hives.find(PosIndex);
+		if (iter != m_Hives.end())
+		{
+			continue;
+		}
+
+		HiveDesc.vPosition = m_HiveSpawnPositions[PosIndex];
+
+		CHive* pHive = reinterpret_cast<CHive*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Hive"), &HiveDesc));
+
+		m_Hives.emplace(PosIndex, pHive);
+		return S_OK;
 	}
-		m_fPosionSpawnTime += fTimeDelta;
+
 	return S_OK;
 }
 
@@ -661,6 +722,22 @@ void CCescoGame::Release_DeadObjects()
 			m_Logs.erase(i);
 		}
 	}
+
+	for (size_t i = 0; i < m_HiveSpawnPositions.size(); i++)
+	{
+		auto& Pair = m_Hives.find(i);
+		if (Pair == m_Hives.end())
+		{
+			continue;
+		}
+
+		if (Pair->second->isDead())
+		{
+			Safe_Release(Pair->second);
+			m_Hives.erase(i);
+			m_fWaspSpawnTimes[i] = 0.f;
+		}
+	}
 }
 
 CCescoGame* CCescoGame::Create(_dev pDevice, _context pContext)
@@ -711,6 +788,12 @@ void CCescoGame::Free()
 		Safe_Release(Pair.second);
 	}
 	m_Logs.clear();
+
+	for (auto& Pair : m_Hives)
+	{
+		Safe_Release(Pair.second);
+	}
+	m_Hives.clear();
 
 	m_LarvaPositions.clear();
 

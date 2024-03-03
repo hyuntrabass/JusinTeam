@@ -95,7 +95,7 @@ void CLog::Tick(_float fTimeDelta)
             m_fDissolveRatio -= fTimeDelta;
             if (m_fDissolveRatio <= 0.f)
             {
-                m_iPassIndex = StaticPass_Default;
+                m_iPassIndex = StaticPass_OutLine;
                 m_fDissolveRatio = 0.f;
             }
         }
@@ -245,6 +245,12 @@ HRESULT CLog::Bind_ShaderResources()
     }
 
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
+    {
+        return E_FAIL;
+    }
+
+    _uint iOutlineColor = OutlineColor_White;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_OutlineColor", &iOutlineColor, sizeof _uint)))
     {
         return E_FAIL;
     }

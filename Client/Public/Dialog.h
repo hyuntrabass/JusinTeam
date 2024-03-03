@@ -22,6 +22,7 @@ private:
 
 public:
 	void Set_Text(const wstring& strText);
+	void Set_Position(_vec3 vPos);
 
 public:
 	virtual HRESULT Init_Prototype() override;

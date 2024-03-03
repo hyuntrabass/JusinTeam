@@ -4,6 +4,7 @@
 #include "Camera_Manager.h"
 #include "Trigger_Manager.h"
 #include "UI_Manager.h"
+
 CHuman_Boss::CHuman_Boss(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -65,7 +66,8 @@ HRESULT CHuman_Boss::Init(void* pArg)
 void CHuman_Boss::Tick(_float fTimeDelta)
 {
 
-	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_BossRoom) 
+
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_BossRoom)
 	{
 		return;
 	}
@@ -73,13 +75,19 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 	{
 		return;
 	}
+
+	if ((CUI_Manager::Get_Instance()->Get_Hp().x) <= 0)
+	{
+
+	}
+
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD8, InputChannel::UI))
 	{
 		m_eState = Counter_Start;
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD9, InputChannel::UI))
 	{
-	
+
 		m_eState = Pizza_Start;
 	}
 
@@ -107,7 +115,7 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 	{
 		m_pCounterEffect->Tick(fTimeDelta);
 	}
-	if (!m_bViewModel&& m_fModelDissolveRatio < 1.f)
+	if (!m_bViewModel && m_fModelDissolveRatio < 1.f)
 	{
 		m_fModelDissolveRatio += fTimeDelta * 1.5f;
 	}
@@ -125,7 +133,7 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 		m_fWeaponDissolveRatio -= fTimeDelta * 1.5f;
 	}
 
-	if(m_eState!=Hide_Start and m_eState != Hide)
+	if (m_eState != Hide_Start and m_eState != Hide)
 	{
 		m_pWeapon_Trail->On();
 		m_pWeapon_Distortion_Trail->On();
@@ -225,11 +233,11 @@ HRESULT CHuman_Boss::Render()
 				return E_FAIL;
 			}
 		}
-	
+
 		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
 		}
-		
+
 
 
 		_bool HasNorTex{};
@@ -363,7 +371,7 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 			m_Animation.fAnimSpeedRatio = 2.2f;
 			View_Attack_Range(Range_135);
 		}
-			break;
+		break;
 		case Client::CHuman_Boss::CommonAtt1:
 		{
 			m_Animation.iAnimIndex = BossAnim_attack02;
@@ -441,7 +449,7 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = BossAnim_attack07;
 			m_bViewWeapon = true;
 		}
-			break;
+		break;
 		case Client::CHuman_Boss::Hit:
 			break;
 		case Client::CHuman_Boss::Idle:
@@ -450,7 +458,7 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = true;
 			m_fPatternDelay = 0.f;
 		}
-			break;
+		break;
 		case Client::CHuman_Boss::Walk:
 			break;
 		case Client::CHuman_Boss::Roar:
@@ -524,7 +532,7 @@ void CHuman_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eState = Pizza_BackLoop;
 		}
-		
+
 		break;
 	case Pizza_Loop:
 		if (m_pModelCom->IsAnimationFinished(BossAnim_attack13))
@@ -534,18 +542,18 @@ void CHuman_Boss::Tick_State(_float fTimeDelta)
 		}
 		break;
 	case Pizza_BackLoop:
-			if (m_pModelCom->IsAnimationFinished(BossAnim_attack13))
+		if (m_pModelCom->IsAnimationFinished(BossAnim_attack13))
+		{
+			m_iPizzaAttCount++;
+			if (m_iPizzaAttCount >= 7)
 			{
-				m_iPizzaAttCount++;
-				if (m_iPizzaAttCount >= 7)
-				{
-					m_eState = Pizza_End;
-				}
-				else
-				{
-					m_eState = Pizza_Loop;
-				}
+				m_eState = Pizza_End;
 			}
+			else
+			{
+				m_eState = Pizza_Loop;
+			}
+		}
 		break;
 	case Pizza_End:
 		if (m_pModelCom->IsAnimationFinished(BossAnim_attack13))
@@ -562,7 +570,7 @@ void CHuman_Boss::Tick_State(_float fTimeDelta)
 	case Run:
 	{
 		m_fPatternDelay += fTimeDelta;
-		if (m_fPatternDelay > 4.f or Compute_Distance() <2.5f)
+		if (m_fPatternDelay > 4.f or Compute_Distance() < 2.5f)
 		{
 			Set_Pattern();
 			return;
@@ -572,7 +580,7 @@ void CHuman_Boss::Tick_State(_float fTimeDelta)
 		m_pTransformCom->LookAt(vPlayerPos);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 	}
-		break;
+	break;
 	case Idle:
 		m_fPatternDelay += fTimeDelta;
 		if (m_fPatternDelay > 2.5f)
@@ -632,19 +640,19 @@ void CHuman_Boss::Update_Trail()
 	_mat	RightMatrix{};
 
 	RightMatrix = _mat::CreateTranslation(0.f, 0.f, -1.9f) * *m_WeaponBone_Mat * m_pTransformCom->Get_World_Matrix();
-	LeftMatrix = _mat::CreateTranslation(1.48f, -0.02f,-0.86f) * *m_WeaponBone_Mat * m_pTransformCom->Get_World_Matrix();
+	LeftMatrix = _mat::CreateTranslation(1.48f, -0.02f, -0.86f) * *m_WeaponBone_Mat * m_pTransformCom->Get_World_Matrix();
 	m_pWeapon_Trail->Tick(LeftMatrix.Position_vec3(), RightMatrix.Position_vec3());
 
 	RightMatrix = _mat::CreateTranslation(0.f, 0.f, -1.9f) * *m_WeaponBone_Mat * m_pTransformCom->Get_World_Matrix();
 	LeftMatrix = _mat::CreateTranslation(1.48f, -0.02f, -0.86f) * *m_WeaponBone_Mat * m_pTransformCom->Get_World_Matrix();
 	m_pWeapon_Distortion_Trail->Tick(LeftMatrix.Position_vec3(), RightMatrix.Position_vec3());
-	
+
 }
 
 void CHuman_Boss::Set_Damage(_int iDamage, _uint MonAttType)
 {
 
-	if (m_eState == Hide or iDamage <=0)
+	if (m_eState == Hide or iDamage <= 0)
 	{
 		return;
 	}
@@ -705,160 +713,160 @@ void CHuman_Boss::View_Attack_Range(ATTACK_RANGE Range, _float fRotationY, _bool
 	EffectInfo Info{};
 	switch (Range)
 	{
-		case Range_45:
+	case Range_45:
+	{
+		if (fRotationY == 0.f)
 		{
-			if (fRotationY == 0.f)
-			{
-				EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.25f, 0.f));
-			}
-			else
-			{
-				EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.25f, 0.f));
-			}
-			if (bPizza)
-			{
-				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Player_45_Frame");
-				Info.pMatrix = &EffectMatrix;
-				m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Player_45_Dim");
-				Info.pMatrix = &EffectMatrix;
-				m_pDimEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-			}
-			else
-			{		
-				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Frame");
-				Info.pMatrix = &EffectMatrix;
-				m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Dim");
-				Info.pMatrix = &EffectMatrix;
-				m_pDimEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-			}
-			
-
-			m_fBaseEffectScale = 1.f;
-			if (fRotationY == 0.f)
-			{
-				m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.27f, 0.f));
-			}
-			else
-			{
-				m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.27f, 0.f));
-			}
-			m_BaseEffectMat = m_BaseEffectOriMat;
-			if (bPizza)
-			{
-				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Player_45_Base");
-			}
-			else
-			{
-				Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Base");
-			}
-			Info.pMatrix = &m_BaseEffectMat;
-			Info.isFollow = true;
-			m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-			break;
+			EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.25f, 0.f));
 		}
-		case Range_90:
+		else
 		{
-			if (fRotationY == 0.f)
-			{
-				EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.25f, 0.f));
-			}
-			else
-			{
-				EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.25f, 0.f));
-			}
-			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_90_Frame");
+			EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.25f, 0.f));
+		}
+		if (bPizza)
+		{
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Player_45_Frame");
 			Info.pMatrix = &EffectMatrix;
 			m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-
-			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_90_Dim");
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Player_45_Dim");
 			Info.pMatrix = &EffectMatrix;
 			m_pDimEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-
-			m_fBaseEffectScale = 1.f;
-			if (fRotationY == 0.f)
-			{
-				m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.27f, 0.f));
-			}
-			else
-			{
-				m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.27f, 0.f));
-			}
-			m_BaseEffectMat = m_BaseEffectOriMat;
-			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_90_Base");
-			Info.pMatrix = &m_BaseEffectMat;
-			Info.isFollow = true;
-			m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-			break;
 		}
-		case Range_135:
+		else
 		{
-			if (fRotationY == 0.f)
-			{
-				EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.25f, 0.f));
-			}
-			else
-			{
-				EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.25f, 0.f));
-			}	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_135_Frame");
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Frame");
 			Info.pMatrix = &EffectMatrix;
 			m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-
-			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_135_Dim");
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Dim");
 			Info.pMatrix = &EffectMatrix;
 			m_pDimEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-
-			m_fBaseEffectScale = 1.f;
-			if (fRotationY == 0.f)
-			{
-				m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.27f, 0.f));
-			}
-			else
-			{
-				m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.27f, 0.f));
-			}
-			m_BaseEffectMat = m_BaseEffectOriMat;
-			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_135_Base");
-			Info.pMatrix = &m_BaseEffectMat;
-			Info.isFollow = true;
-			m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-			break;
 		}
-		case Range_360:
+
+
+		m_fBaseEffectScale = 1.f;
+		if (fRotationY == 0.f)
 		{
-			if (fRotationY == 0.f)
-			{
-				EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.25f, 0.f));
-			}
-			else
-			{
-				EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.25f, 0.f));
-			}	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Frame");
-			Info.pMatrix = &EffectMatrix;
-			m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-
-			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Dim");
-			Info.pMatrix = &EffectMatrix;
-			m_pDimEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-
-			m_fBaseEffectScale = 1.f;
-			if (fRotationY == 0.f)
-			{
-				m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.27f, 0.f));
-			}
-			else
-			{
-				m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.27f, 0.f));
-			}	m_BaseEffectMat = m_BaseEffectOriMat;
-			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Base");
-			Info.pMatrix = &m_BaseEffectMat;
-			Info.isFollow = true;
-			m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-			break;
+			m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.27f, 0.f));
 		}
-		default:
-			break;
+		else
+		{
+			m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.27f, 0.f));
+		}
+		m_BaseEffectMat = m_BaseEffectOriMat;
+		if (bPizza)
+		{
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Player_45_Base");
+		}
+		else
+		{
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Base");
+		}
+		Info.pMatrix = &m_BaseEffectMat;
+		Info.isFollow = true;
+		m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+		break;
+	}
+	case Range_90:
+	{
+		if (fRotationY == 0.f)
+		{
+			EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.25f, 0.f));
+		}
+		else
+		{
+			EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.25f, 0.f));
+		}
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_90_Frame");
+		Info.pMatrix = &EffectMatrix;
+		m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_90_Dim");
+		Info.pMatrix = &EffectMatrix;
+		m_pDimEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		m_fBaseEffectScale = 1.f;
+		if (fRotationY == 0.f)
+		{
+			m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.27f, 0.f));
+		}
+		else
+		{
+			m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.27f, 0.f));
+		}
+		m_BaseEffectMat = m_BaseEffectOriMat;
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_90_Base");
+		Info.pMatrix = &m_BaseEffectMat;
+		Info.isFollow = true;
+		m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+		break;
+	}
+	case Range_135:
+	{
+		if (fRotationY == 0.f)
+		{
+			EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.25f, 0.f));
+		}
+		else
+		{
+			EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.25f, 0.f));
+		}	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_135_Frame");
+		Info.pMatrix = &EffectMatrix;
+		m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_135_Dim");
+		Info.pMatrix = &EffectMatrix;
+		m_pDimEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		m_fBaseEffectScale = 1.f;
+		if (fRotationY == 0.f)
+		{
+			m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.27f, 0.f));
+		}
+		else
+		{
+			m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.27f, 0.f));
+		}
+		m_BaseEffectMat = m_BaseEffectOriMat;
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_135_Base");
+		Info.pMatrix = &m_BaseEffectMat;
+		Info.isFollow = true;
+		m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+		break;
+	}
+	case Range_360:
+	{
+		if (fRotationY == 0.f)
+		{
+			EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.25f, 0.f));
+		}
+		else
+		{
+			EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.25f, 0.f));
+		}	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Frame");
+		Info.pMatrix = &EffectMatrix;
+		m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Dim");
+		Info.pMatrix = &EffectMatrix;
+		m_pDimEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		m_fBaseEffectScale = 1.f;
+		if (fRotationY == 0.f)
+		{
+			m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.27f, 0.f));
+		}
+		else
+		{
+			m_BaseEffectOriMat = _mat::CreateScale(m_fBaseEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRotationY)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.27f, 0.f));
+		}	m_BaseEffectMat = m_BaseEffectOriMat;
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Base");
+		Info.pMatrix = &m_BaseEffectMat;
+		Info.isFollow = true;
+		m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+		break;
+	}
+	default:
+		break;
 	}
 
 }
@@ -975,7 +983,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 		{
 			if (!m_bAttacked)
 			{
-				m_pGameInstance->Attack_Player(m_pCommonAttCollider, 300+rand()%30, MonAtt_KnockDown);
+				m_pGameInstance->Attack_Player(m_pCommonAttCollider, 300 + rand() % 30, MonAtt_KnockDown);
 				if (m_pGameInstance->CheckCollision_Player(m_pCommonAttCollider))
 				{
 					m_bAttacked = true;
@@ -990,14 +998,14 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 	else if (m_eState == Hide_Start)
 	{
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
-		if (Index >= 110.f &&  Index<=114.f)
+		if (Index >= 110.f && Index <= 114.f)
 		{
 			m_bViewModel = false;
 		}
 		if (Index >= 48.f && !m_bHide)
 		{
 			m_bHide = true;
-			
+
 		}
 	}
 	else if (m_eState == Hide_Att)
@@ -1135,7 +1143,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			{
 				if (pPlayerCollider->Intersect(pSafeZoneCollider))
 				{
-					
+
 				}
 				else
 				{
@@ -1147,14 +1155,14 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 				}
 				m_bReflectOn = false;
 			}
-			else if(!m_bAttacked)
+			else if (!m_bAttacked)
 			{
 				if (!m_bAttacked)
 				{
 					m_pGameInstance->Attack_Player(nullptr, 250 + rand() % 50, MonAtt_KnockDown);
 					m_bAttacked = true;
 				}
-				
+
 			}
 
 		}
@@ -1166,7 +1174,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 	else if (m_eState == Pizza_Loop)
 	{
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
-		if (Index >= 100.f && Index <137.f)
+		if (Index >= 100.f && Index < 137.f)
 		{
 			if (!m_bAttacked)
 			{
@@ -1178,7 +1186,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 				{
 					m_fAttackRange -= 45.f;
 				}
-				View_Attack_Range(Range_45, m_fAttackRange,true);
+				View_Attack_Range(Range_45, m_fAttackRange, true);
 				m_bAttacked = true;
 			}
 			Increased_Range(36.f, fTimedelta);
@@ -1210,7 +1218,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 				{
 					m_fAttackRange -= 45.f;
 				}
-				View_Attack_Range(Range_45, m_fAttackRange,true);
+				View_Attack_Range(Range_45, m_fAttackRange, true);
 				m_bAttacked = true;
 			}
 			Increased_Range(36.f, fTimedelta);
@@ -1249,7 +1257,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 	else if (m_eState == Throw_Sickle)
 	{
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
-		if (Index >=96.f && Index < 98.f)
+		if (Index >= 96.f && Index < 98.f)
 		{
 			if (!m_bAttacked)
 			{
@@ -1257,7 +1265,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 				_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
 				m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Sickle"), TEXT("Prototype_GameObject_Sickle"), &vPos);
 				m_bAttacked = true;
-				
+
 			}
 		}
 		if (Index >= 190.f && Index < 192.f)
@@ -1285,18 +1293,18 @@ _bool CHuman_Boss::Compute_Angle(_float fAngle, _float RotationY)
 	if (RotationY < 0.f)
 	{
 		RotationY = 360.f + RotationY;
-		
+
 		fLowerBound = RotationY - fAngle;
 		fUpperBound = RotationY + fAngle;
 	}
 	else if (RotationY == 0.f)
 	{
 		fLowerBound = 360.f - fAngle;
-		fUpperBound =  fAngle;
+		fUpperBound = fAngle;
 	}
 	else
 	{
-		
+
 		fLowerBound = RotationY - fAngle;
 		fUpperBound = RotationY + fAngle;
 	}
@@ -1326,7 +1334,7 @@ _bool CHuman_Boss::Compute_Angle(_float fAngle, _float RotationY)
 	vDir.Normalize();
 
 	_float fResult = vLook.Dot(vDir);
-	if (fResult == 0.f or fResult>1.f)
+	if (fResult == 0.f or fResult > 1.f)
 	{
 		fResult = 0.01f;
 	}
@@ -1337,9 +1345,9 @@ _bool CHuman_Boss::Compute_Angle(_float fAngle, _float RotationY)
 	_vec4 vRight = m_pTransformCom->Get_State(State::Right);
 
 	fResult = vRight.Dot(vDir);
-	
+
 	if (fResult < 0)
-	{	
+	{
 		angleInDegrees = 360.f - angleInDegrees;
 	}
 
@@ -1356,7 +1364,7 @@ _bool CHuman_Boss::Compute_Angle(_float fAngle, _float RotationY)
 
 void CHuman_Boss::Increased_Range(_float Index, _float fTImeDelta, _float fRotationY)
 {
-	_float fIncrease = (1050.f * m_Animation.fAnimSpeedRatio ) / Index;
+	_float fIncrease = (1050.f * m_Animation.fAnimSpeedRatio) / Index;
 
 	if (m_fBaseEffectScale < 30.f)
 	{
@@ -1376,7 +1384,7 @@ void CHuman_Boss::Set_Pattern()
 		}
 	}
 
-	
+
 
 	_bool Duplication = true;
 	while (Duplication)
@@ -1412,7 +1420,7 @@ _float CHuman_Boss::Compute_Distance()
 	_vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
 	_vec4 vPos = m_pTransformCom->Get_CenterPos();
 	vPlayerPos.y = vPos.y;
-	
+
 	return _vec3::Distance(_vec3(vPos), _vec3(vPlayerPos));
 }
 

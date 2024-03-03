@@ -423,6 +423,9 @@ HRESULT CLevel_GamePlay::Ready_Map()
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, L"Layer_Map", L"Prototype_GameObject_Water", &Desc)))
 		return E_FAIL;
 
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, L"Layer_Sun", L"Prototype_GameObject_Sun")))
+		return E_FAIL;
+
 	return S_OK;
 }
 

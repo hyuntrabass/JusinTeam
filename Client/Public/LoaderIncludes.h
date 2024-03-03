@@ -46,6 +46,7 @@
 #include "Player.h"
 #include "Select.h"
 #include "FadeBox.h"
+#include "Sun.h"
 
 #include "Logo_Text.h"
 #include "Logo_Dust.h"
@@ -172,11 +173,11 @@
 #include "Scorpion.h"
 #include "RedAnt.h"
 #include "Wasp.h"
-
-#include "Cesco_Poison.h"
+#include "EyeBomb.h"
 #include "Log.h"
 #include "Hook.h"
 #include "Larva_Ball.h"
+#include "Hive.h"
 
 // SurvivalGame
 #include "SurvivalGame.h"

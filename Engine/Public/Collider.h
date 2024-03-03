@@ -43,7 +43,7 @@ private:
 public:
 	virtual HRESULT Init_Prototype();
 	virtual HRESULT Init(void* pArg);
-	void Update(_fmatrix WorldMatrix);
+	void Update(_mat WorldMatrix);
 
 public:
 	_bool Intersect(const class CCollider* pTargetCollider);
