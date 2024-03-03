@@ -33,6 +33,7 @@ public:
 	void StopAll();
 	void SetChannelVolume(_uint iChannel, _float fVolume);
 	void SetChannelStartVolume(_uint iChannel);
+	void SetSystemVolume(_float fSystemVolume);
 	void Update();
 	HRESULT FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond, _bool IsReusable, _float fFadeSoundRatio);
 	HRESULT FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond, _float fFadeSoundRatio);
@@ -42,6 +43,7 @@ public:
 	_float Get_CurPosRatio(_uint iChannel);
 
 private:
+	_float m_fSystemVolume{ 1.f };
 	_float m_fFadeTimeDelta{};
 	map<const wstring, FMOD::Sound*> m_Sound;
 	FMOD::Channel** m_pChannelArr{};

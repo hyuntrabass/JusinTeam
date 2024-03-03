@@ -27,6 +27,7 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 
 private:
+	void Init_Phase(_float fTimeDelta);
 	void Tick_Phase(_float fTimeDelta);
 
 private:
@@ -40,6 +41,7 @@ private:
 private:
 	_randNum m_RandomNumber;
 	Phase m_eCurrentPhase{ Phase_End };
+	Phase m_ePreviousPhase{ Phase_End };
 	vector<_vec3> m_SpawnPositions;
 	vector<_vec3> m_HiveSpawnPositions;
 	map<_int, _vec3> m_LarvaPositions;
@@ -57,15 +59,15 @@ private:
 	_float m_fHookAttTime{};
 
 	//Log
-	_float m_fLogSpawnTime[4]{};
+	_float m_fLogSpawnTimes[4]{};
 	_float m_fPosionSpawnTime{};
 
 	//Hive
-	_bool m_IsSpawnHive[2]{};
-	_float m_fHiveSpawnTime[2]{};
+	vector<_bool> m_IsSpawnHives;
+	_float m_fHiveSpawnTimes[2]{};
 
 	//Wasp
-	_float m_fWaspSpawnTime[8]{};
+	_float m_fWaspSpawnTimes[8]{};
 
 private:
 	HRESULT Create_CommonMonster(const wstring& strModelTag, _vec3 SpawnPosition, const wstring& strPrototypeTag);

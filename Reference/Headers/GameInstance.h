@@ -188,6 +188,8 @@ public: // Sound Manager
 	void Set_ChannelVolume(_uint iChannel, _float fVolume);
 	// 사운드 채널의 볼륨을 초기 볼륨으로 되돌림.
 	void Set_ChannelStartVolume(_uint iChannel);
+	// 시스템 볼륨을 지정함.
+	void Set_SystemVolume(_float fSystemVolume);
 
 public: // Effect Callback
 	using Func_CreateFX = function<void(const wstring&, _mat*, const _bool&)>;
