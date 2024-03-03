@@ -1270,16 +1270,23 @@ HRESULT CPlayer::Add_Riding()
 
 void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 {
-	m_bMove_AfterSkill = true;
+	
+
+	if (m_eState == Skill4)
+	{
+		return;
+	}
 
 	if (m_eState == Revival_Start or m_eState == Revival_End or m_eState == Die)
 	{
+		m_bMove_AfterSkill = true;
 		return;
 	}
 
 	if (MonAttType == MonAtt_Hook_End)
 	{
 		m_eState = Jump_End;
+		m_bMove_AfterSkill = true;
 		return;
 	}
 
@@ -1305,7 +1312,8 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 				Safe_Release(m_pRiding);
 				m_bIsMount = false;
 			}
-
+			m_bMove_AfterSkill = true;
+			CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_DEFAULT);
 			m_pCam_Manager->Set_AimMode(false);
 			m_bLockOn = false;	
 			m_eState = Hook;
@@ -1329,6 +1337,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 		if (m_bLockOn)
 		{
 			m_pCam_Manager->Set_AimMode(false);
+			CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_DEFAULT);
 			m_bLockOn = false;
 		}
 
@@ -1344,6 +1353,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 		m_Status.Current_Hp = 0;
 		CUI_Manager::Get_Instance()->Set_Hp(m_Status.Current_Hp, m_Status.Max_Hp);
 		m_eState = Die;
+		m_bMove_AfterSkill = true;
 	}
 	else if (m_eState == Hook)
 	{
@@ -1358,6 +1368,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 
 		if (m_eState == Stun_Start or m_eState == Stun)
 		{
+			m_bMove_AfterSkill = true;
 			if (MonAttType == MonAtt_Stun)
 			{
 				return;
@@ -1367,6 +1378,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 
 		if (m_eState == KnockDown or m_bIsMount)
 		{
+			m_bMove_AfterSkill = true;
 			return;
 		}
 
@@ -1391,15 +1403,19 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 		break;
 		case MonAtt_KnockDown:
 		{
+			m_bMove_AfterSkill = true;
 			m_eState = KnockDown;
 			m_pCam_Manager->Set_RidingZoom(false);
+			CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_DEFAULT);
 			m_bLockOn = false;
 		}
 		break;
 		case MonAtt_Stun:
 		{
+			m_bMove_AfterSkill = true;
 			m_eState = Stun_Start;
 			m_pCam_Manager->Set_RidingZoom(false);
+			CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_DEFAULT);
 			m_bLockOn = false;
 		}
 		break;
@@ -4191,6 +4207,7 @@ void CPlayer::Init_State()
 		case Client::CPlayer::Stun:
 		{
 			m_Animation.iAnimIndex = Anim_stun;
+			m_Animation.fAnimSpeedRatio = 3.5f;
 			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}

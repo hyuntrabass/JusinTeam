@@ -2,6 +2,7 @@
 #include "Effect_Manager.h"
 #include "Effect_Dummy.h"
 #include "TextButtonColor.h"
+#include "UI_Manager.h"
 CEyeBomb::CEyeBomb(_dev pDevice, _context pContext)
 	:CVTFMonster(pDevice, pContext)
 {
@@ -73,8 +74,14 @@ void CEyeBomb::Tick(_float fTimeDelta)
 
 	if (m_fBaseEffectScale > 10.f)
 	{
+		
 		if (m_pGameInstance->Attack_Player(m_pBodyColliderCom, rand() % 20 + 100, MonAtt_Hit))
 		{
+			if (CUI_Manager::Get_Instance()->Get_Hp().x <= 0)
+			{
+				Kill();
+				return;
+			}
 			CTextButtonColor::TEXTBUTTON_DESC ButtonDesc = {};
 			ButtonDesc.eLevelID = LEVEL_TOWER;
 			ButtonDesc.fDepth = (_float)D_ALERT / (_float)D_END;

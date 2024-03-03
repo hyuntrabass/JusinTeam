@@ -122,7 +122,13 @@ HRESULT CHook::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(StaticPass_Default)))
+		_uint iOutlineColor = OutlineColor_White;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_OutlineColor", &iOutlineColor, sizeof _uint)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(StaticPass_OutLine)))
 		{
 			return E_FAIL;
 		}
