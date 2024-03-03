@@ -28,10 +28,13 @@ public:
 
 	enum GUARD_STATE {
 		STATE_IDLE,
+		STATE_TURN,
 		STATE_PATROL,
 		STATE_CHASE,
-		STATE_ATTACK,
+		STATE_ATTACK_SWING,
+		STATE_ATTACK_STEP,
 		STATE_HIT,
+		STATE_BACK,
 		STATE_DIE,
 		STATE_END
 	};
@@ -53,12 +56,14 @@ public:
 
 public:
 	void Init_State(_float fTimeDelta);
-	void Tick_State(_float fTimeDelta);
-	void View_Detect_Range();
+	void Tick_Pattern1_State(_float fTimeDelta);
 
 	_vec4 Compute_PlayerPos();
 	_vec4 Compute_PlayerLook();
 	_float Compute_PlayerDistance();
+
+	void Create_Range();
+	void Detect_Range(_float fAngle, _float fDist, _vec4 vNormalToPlayer);
 
 
 private:
@@ -82,16 +87,24 @@ private:
 	_float m_fDeadTime{ 0.f };
 	_float m_fDissolveRatio{ 0.f };
 	_float m_fIdleTime{ 0.f };
+	_float m_fTurnTime{};
+	_float m_fAttackTime{};
+	_float m_fPatrolTime{};
 
 	_bool m_bChangePass = false;
+	_bool m_isArrived = false;
+	_bool m_isDetected{false};
 	_float m_fHitTime{ 0.f };
 	_float m_fHittedTime{ 0.f };
 	GuardInfo m_Info{};
+	EffectInfo Info{};
+	_mat m_OriginMatrix{};
+	_mat m_EffectMatrix{};
 
-	_vec4 m_Point{};
-	_vec4 m_PatrolPoint1{};
-	_vec4 m_PatrolPoint2{};
-	_bool m_bPatrolChange = false;
+	//_vec4 m_Point{};
+	//_vec4 m_PatrolPoint1{};
+	//_vec4 m_PatrolPoint2{};
+	//_bool m_bPatrolChange = false;
 
 private:
 	ANIM_DESC m_Animation{};

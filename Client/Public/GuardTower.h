@@ -67,21 +67,13 @@ public:
 	_vec4 Compute_PlayerLook();
 	_float Compute_PlayerDistance();
 	_vec4 Compute_Player_To_Dir(_vec4 vPos);
-
 	void Compute_Lazer_Dir();
-
 	void Create_Range();
-
 	void Create_Lazer();
-
 	void Create_Attack_Lazer();
-
 	void Delete_Range();
-
 	void Delete_Lazer();
-
 	void Delete_Attack_Lazer();
-
 
 private:
 	GUARDTOWER_STATE m_ePreState = STATE_END;
@@ -113,6 +105,7 @@ private:
 	_float m_fDetectTime{ 0.f };
 	_float m_fAttackTime{ 0.f };
 	_float m_fAttackDelay{ 0.f };
+	_float m_fAnimTime{ 0.f };
 
 	_bool m_bChangePass{false};
 	_bool m_bDamaged{ false };

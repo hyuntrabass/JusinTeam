@@ -36,10 +36,7 @@ HRESULT CGuardTower::Init(void* pArg)
 
 	if (FAILED(Add_Attack_Collider()))
 		return E_FAIL;
-	m_Animation.iAnimIndex = ANIM_IDLE;
-	m_Animation.isLoop = false;
-	m_Animation.bSkipInterpolation = false;
-	m_Animation.fAnimSpeedRatio = 1.f;
+
 
 	m_iHP = 1;
 
@@ -114,7 +111,7 @@ void CGuardTower::Tick(_float fTimeDelta)
 			m_pAttackEffect->Tick(fTimeDelta);
 	}
 	m_pTransformCom->Set_OldMatrix();
-
+	m_pModelCom->Get_CurrentAnimPos();
 	//if (m_bChangePass == true)
 	//{
 	//	m_fHitTime += fTimeDelta;
@@ -160,13 +157,14 @@ void CGuardTower::Tick(_float fTimeDelta)
 
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
-
+	
 	m_pModelCom->Set_Animation(m_Animation);
 	Update_Collider();
 }
 
 void CGuardTower::Late_Tick(_float fTimeDelta)
 {
+	m_fAnimTime += fTimeDelta;
 	if (m_eCurState == STATE_DETECT)
 	{
 		if (m_pFrameEffect)
@@ -191,8 +189,7 @@ void CGuardTower::Late_Tick(_float fTimeDelta)
 		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 	}
 
-	if(m_eCurState != STATE_IDLE)
-		m_pModelCom->Play_Animation(fTimeDelta);
+		m_pModelCom->Play_Animation(m_fAnimTime);
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
@@ -285,7 +282,7 @@ void CGuardTower::Init_State(_float fTimeDelta)
 		case Client::CGuardTower::STATE_IDLE:
 			m_Animation.iAnimIndex = ANIM_IDLE;
 			m_Animation.isLoop = true;
-			m_Animation.fAnimSpeedRatio = 1.f;
+			m_Animation.fStartAnimPos = 0.f;
 			break;
 		case Client::CGuardTower::STATE_DETECT:
 			m_Animation.iAnimIndex = ANIM_IDLE;
@@ -294,13 +291,15 @@ void CGuardTower::Init_State(_float fTimeDelta)
 			break;
 		case Client::CGuardTower::STATE_ATTACK_READY:
 			m_Animation.iAnimIndex = ANIM_IDLE;
-			m_Animation.isLoop = true;
-			m_Animation.fAnimSpeedRatio = 1.f;
+			m_Animation.isLoop = false;
+			m_Animation.fStartAnimPos = 50.f;
+			m_Animation.fAnimSpeedRatio = 10.f;
+
 			break;
 		case Client::CGuardTower::STATE_ATTACK:
 			m_Animation.iAnimIndex = ANIM_IDLE;
 			m_Animation.isLoop = true;
-			m_Animation.fAnimSpeedRatio = 1.f;
+			m_Animation.fAnimSpeedRatio = 10.f;
 			break;
 		case Client::CGuardTower::STATE_DIE:
 			m_Animation.iAnimIndex = ANIM_DIE;
