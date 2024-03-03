@@ -52,7 +52,7 @@ _int CSound_Manager::Play_Sound(const wstring& strSoundTag, _float fVolume, _boo
 				m_pChannelArr[i]->setMode(FMOD_LOOP_OFF);
 			}
 
-			m_pChannelArr[i]->setVolume(fVolume);
+			m_pChannelArr[i]->setVolume(fVolume * m_fSystemVolume);
 			//이전 사운드 저장
 			m_SoundDescs[i].fStartVolume = fVolume;
 			
@@ -83,7 +83,7 @@ void CSound_Manager::PlayBGM(const wstring& strSoundTag, _float fVolume)
 
 	m_pChannelArr[0]->setMode(FMOD_LOOP_NORMAL);
 
-	m_pChannelArr[0]->setVolume(fVolume);
+	m_pChannelArr[0]->setVolume(fVolume * m_fSystemVolume);
 	//이전 사운드 저장
 	m_SoundDescs[0].fStartVolume = fVolume;
 
@@ -112,9 +112,92 @@ void CSound_Manager::SetChannelVolume(_uint iChannel, _float fVolume)
 
 void CSound_Manager::SetChannelStartVolume(_uint iChannel)
 {
-	m_pChannelArr[iChannel]->setVolume(m_SoundDescs[iChannel].fStartVolume);
+	m_pChannelArr[iChannel]->setVolume(m_SoundDescs[iChannel].fStartVolume * m_fSystemVolume);
 
 	m_pSystem->update();
+}
+
+void CSound_Manager::SetSystemVolume(_float fSystemVolume)
+{
+	if (fSystemVolume >= 1.f)
+	{
+		fSystemVolume = 1.f;
+	}
+	else if (fSystemVolume <= 0.f)
+	{
+		fSystemVolume = 0.f;
+	}
+
+	m_fSystemVolume = fSystemVolume;
+
+	for (_int i = 0; i < FMOD_MAX_CHANNEL_WIDTH; ++i)
+	{
+		_float fVolume = GetChannelVolume(i);
+		SetChannelVolume(i, fVolume * m_fSystemVolume);
+	}
+}
+
+void CSound_Manager::SetBackGroundVolume(_float fBackGroundVolume)
+{
+	if (fBackGroundVolume >= 1.f)
+	{
+		fBackGroundVolume = 1.f;
+	}
+	else if (fBackGroundVolume <= 0.f)
+	{
+		fBackGroundVolume = 0.f;
+	}
+
+	m_fBackGroundVolume = fBackGroundVolume;
+
+	_float fVolume = GetChannelVolume(0);
+	SetChannelVolume(0, fVolume * m_fBackGroundVolume);
+}
+
+void CSound_Manager::SetEnvironmentVolume(_float fEnvironmentVolume)
+{
+	if (fEnvironmentVolume >= 1.f)
+	{
+		fEnvironmentVolume = 1.f;
+	}
+	else if (fEnvironmentVolume <= 0.f)
+	{
+		fEnvironmentVolume = 0.f;
+	}
+
+	m_fEnvironmentVolume = fEnvironmentVolume;
+
+	for (_int i = 0; i < FMOD_MAX_CHANNEL_WIDTH; ++i)
+	{
+		if (Get_IsLoopingSound(i))
+		{
+			_float fVolume = GetChannelVolume(i);
+			SetChannelVolume(i, fVolume * m_fEnvironmentVolume);
+		}
+	}
+}
+
+void CSound_Manager::SetEffectVolume(_float fEffectVolume)
+{
+	if (fEffectVolume >= 1.f)
+	{
+		fEffectVolume = 1.f;
+	}
+	else if (fEffectVolume <= 0.f)
+	{
+		fEffectVolume = 0.f;
+	}
+
+	m_fEffectVolume = fEffectVolume;
+
+	for (_int i = 0; i < FMOD_MAX_CHANNEL_WIDTH; ++i)
+	{
+		if (not Get_IsLoopingSound(i))
+		{
+			_float fVolume = GetChannelVolume(i);
+			SetChannelVolume(i, fVolume * m_fEffectVolume);
+		}
+	}
 }
 
 void CSound_Manager::Update()
@@ -131,7 +214,7 @@ void CSound_Manager::Update()
 			{
 				FadingoutSound(i);
 	
-				if (GetChannelVolume(i) <= (m_SoundDescs[i].fStartVolume * m_SoundDescs[i].fFadeSoundRatio))
+				if (GetChannelVolume(i) <= (m_SoundDescs[i].fStartVolume * m_SoundDescs[i].fFadeSoundRatio * m_fSystemVolume))
 				{
 					m_SoundDescs[i].IsFadingout = false;
 					if (not m_SoundDescs[i].IsReusable)
@@ -141,7 +224,7 @@ void CSound_Manager::Update()
 					}
 					else
 					{
-						SetChannelVolume(i, (m_SoundDescs[i].fStartVolume * m_SoundDescs[i].fFadeSoundRatio));
+						SetChannelVolume(i, (m_SoundDescs[i].fStartVolume * m_SoundDescs[i].fFadeSoundRatio * m_fSystemVolume));
 					}
 				}
 			}
@@ -156,10 +239,10 @@ void CSound_Manager::Update()
 			{
 				FadinginSound(i);
 
-				if (GetChannelVolume(i) >= (m_SoundDescs[i].fStartVolume * m_SoundDescs[i].fFadeSoundRatio))
+				if (GetChannelVolume(i) >= (m_SoundDescs[i].fStartVolume * m_SoundDescs[i].fFadeSoundRatio * m_fSystemVolume))
 				{
 					m_SoundDescs[i].IsFadingin = false;
-					SetChannelVolume(i, (m_SoundDescs[i].fStartVolume * m_SoundDescs[i].fFadeSoundRatio));
+					SetChannelVolume(i, (m_SoundDescs[i].fStartVolume * m_SoundDescs[i].fFadeSoundRatio * m_fSystemVolume));
 				}
 			}
 			else
@@ -198,7 +281,7 @@ HRESULT CSound_Manager::FadeinSound(_uint iChannel, _float fTimeDelta, _float fF
 		return E_FAIL;
 	}
 
-	if (not m_SoundDescs[iChannel].IsFadingin && GetChannelVolume(iChannel) == m_SoundDescs[iChannel].fStartVolume)
+	if (not m_SoundDescs[iChannel].IsFadingin && GetChannelVolume(iChannel) == (m_SoundDescs[iChannel].fStartVolume * m_fSystemVolume))
 	{
 		SetChannelVolume(iChannel, 0.f);
 	}

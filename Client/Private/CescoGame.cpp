@@ -81,14 +81,13 @@ void CCescoGame::Tick(_float fTimeDelta)
 		m_fTimeLimit = 0.f;
 	}
 
-	m_fTimeLimit -= fTimeDelta;
-
 	if (m_fTimeLimit <= -1.f)
 	{
 		Kill();
 		return;
 	}
 
+	Init_Phase(fTimeDelta);
 	Tick_Phase(fTimeDelta);
 
 	//½ÇÆÐ Á¶°Ç
@@ -146,12 +145,43 @@ void CCescoGame::Late_Tick(_float fTimeDelta)
 	}
 }
 
+void CCescoGame::Init_Phase(_float fTimeDelta)
+{
+	if (m_eCurrentPhase != m_ePreviousPhase)
+	{
+		switch (m_eCurrentPhase)
+		{
+		case Client::CCescoGame::Phase1:
+		{
+			//¹úÁý °¹¼ö +1
+			m_IsSpawnHives.push_back(false);
+			m_IsSpawnHives.push_back(false);
+		}
+			break;
+		case Client::CCescoGame::Phase2:
+		{
+
+		}
+			break;
+		case Client::CCescoGame::Phase3:
+		{
+			//¹úÁý °¹¼ö +1
+			m_IsSpawnHives.push_back(false);
+		}
+			break;
+		}
+
+		m_ePreviousPhase = m_eCurrentPhase;
+	}
+}
+
 void CCescoGame::Tick_Phase(_float fTimeDelta)
 {
-	m_fMonsterSpawnTime += fTimeDelta;
-
 	switch (m_eCurrentPhase)
 	{
+		m_fTimeLimit -= fTimeDelta;
+		m_fMonsterSpawnTime += fTimeDelta;
+
 	case Client::CCescoGame::Phase1:
 	{
 #pragma region SpawnMonster
@@ -193,11 +223,11 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 			auto& Pair = m_Logs.find(i);
 			if (Pair == m_Logs.end())
 			{
-				m_fLogSpawnTime[i] += fTimeDelta;
-				if (m_fLogSpawnTime[i] >= 30.f)
+				m_fLogSpawnTimes[i] += fTimeDelta;
+				if (m_fLogSpawnTimes[i] >= 30.f)
 				{
 					Create_Log(i);
-					m_fLogSpawnTime[i] = 0.f;
+					m_fLogSpawnTimes[i] = 0.f;
 				}
 			}
 		}
@@ -207,41 +237,63 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 #pragma region SpawnHive
 
 		_uint iNumReadySpawnHive{};
-		for (size_t i = 0; i < size(m_IsSpawnHive); i++)
+		for (size_t i = 0; i < m_IsSpawnHives.size(); i++)
 		{
-			if (m_IsSpawnHive[i])
+			if (m_IsSpawnHives[i])
 			{
 				iNumReadySpawnHive++;
 			}
 		}
-		if (m_Hives.size() + static_cast<size_t>(iNumReadySpawnHive) < size(m_IsSpawnHive))
+		if (m_Hives.size() + static_cast<size_t>(iNumReadySpawnHive) < m_IsSpawnHives.size())
 		{
-			_uint iNumSpawnHive = static_cast<_uint>(size(m_IsSpawnHive) - m_Hives.size());
-
-			_uint iSpawnHiveIndex{};
+			_uint iNumSpawnHive = static_cast<_uint>(m_IsSpawnHives.size() - (m_Hives.size() + static_cast<size_t>(iNumReadySpawnHive)));
 
 			while (iNumSpawnHive)
 			{
-				while (m_IsSpawnHive[iSpawnHiveIndex])
+				_uint iSpawnHiveIndex{};
+
+				while (m_IsSpawnHives[iSpawnHiveIndex])
 				{
 					++iSpawnHiveIndex;
 				}
-				m_IsSpawnHive[iSpawnHiveIndex] = true;
+				m_IsSpawnHives[iSpawnHiveIndex] = true;
 
 				--iNumSpawnHive;
 			}
 		}
 
-		for (size_t i = 0; i < size(m_IsSpawnHive); i++)
+		for (size_t i = 0; i < m_IsSpawnHives.size(); i++)
 		{
-			if (m_IsSpawnHive[i])
+			if (m_IsSpawnHives[i])
 			{
-				m_fHiveSpawnTime[i] += fTimeDelta;
-				if (m_fHiveSpawnTime[i] >= 5.f)
+				m_fHiveSpawnTimes[i] += fTimeDelta;
+				if (m_fHiveSpawnTimes[i] >= 15.f)
 				{
 					Create_Hive();
-					m_IsSpawnHive[i] = false;
-					m_fHiveSpawnTime[i] = 0.f;
+					m_IsSpawnHives[i] = false;
+					m_fHiveSpawnTimes[i] = 0.f;
+				}
+			}
+		}
+
+#pragma endregion
+
+#pragma region SpawnWasp
+
+		for (size_t i = 0; i < m_HiveSpawnPositions.size(); i++)
+		{
+			auto& iter = m_Hives.find(i);
+			if (iter != m_Hives.end())
+			{
+				m_fWaspSpawnTimes[i] += fTimeDelta;
+				if (m_fWaspSpawnTimes[i] >= 5.f)
+				{
+					_vec3 vSpawnPos = m_HiveSpawnPositions[i];
+					vSpawnPos.y -= 3.f;
+					if (Create_CommonMonster(TEXT("Prototype_VTFModel_Wasp"), vSpawnPos, TEXT("Prototype_GameObject_Wasp")))
+						return;
+
+					m_fWaspSpawnTimes[i] = 0.f;
 				}
 			}
 		}
@@ -290,11 +342,11 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 			auto& Pair = m_Logs.find(i);
 			if (Pair == m_Logs.end())
 			{
-				m_fLogSpawnTime[i] += fTimeDelta;
-				if (m_fLogSpawnTime[i] >= 30.f)
+				m_fLogSpawnTimes[i] += fTimeDelta;
+				if (m_fLogSpawnTimes[i] >= 30.f)
 				{
 					Create_Log(i);
-					m_fLogSpawnTime[i] = 0.f;
+					m_fLogSpawnTimes[i] = 0.f;
 				}
 			}
 		}
@@ -364,11 +416,11 @@ void CCescoGame::Tick_Phase(_float fTimeDelta)
 			auto& Pair = m_Logs.find(i);
 			if (Pair == m_Logs.end())
 			{
-				m_fLogSpawnTime[i] += fTimeDelta;
-				if (m_fLogSpawnTime[i] >= 30.f)
+				m_fLogSpawnTimes[i] += fTimeDelta;
+				if (m_fLogSpawnTimes[i] >= 30.f)
 				{
 					Create_Log(i);
-					m_fLogSpawnTime[i] = 0.f;
+					m_fLogSpawnTimes[i] = 0.f;
 				}
 			}
 		}
@@ -762,6 +814,7 @@ void CCescoGame::Release_DeadObjects()
 		{
 			Safe_Release(Pair->second);
 			m_Hives.erase(i);
+			m_fWaspSpawnTimes[i] = 0.f;
 		}
 	}
 }

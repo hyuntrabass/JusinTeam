@@ -1479,6 +1479,16 @@ void CGameInstance::Set_ChannelStartVolume(_uint iChannel)
 	return m_pSound_Manager->SetChannelStartVolume(iChannel);
 }
 
+void CGameInstance::Set_SystemVolume(_float fSystemVolume)
+{
+	if (!m_pSound_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
+	}
+
+	return m_pSound_Manager->SetSystemVolume(fSystemVolume);
+}
+
 void CGameInstance::Set_InputString(const wstring& strInput)
 {
 	m_strInput = strInput;
