@@ -177,11 +177,11 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 
 void CCescoGame::Tick_Phase(_float fTimeDelta)
 {
+	m_fTimeLimit -= fTimeDelta;
+	m_fMonsterSpawnTime += fTimeDelta;
+
 	switch (m_eCurrentPhase)
 	{
-		m_fTimeLimit -= fTimeDelta;
-		m_fMonsterSpawnTime += fTimeDelta;
-
 	case Client::CCescoGame::Phase1:
 	{
 #pragma region SpawnMonster
