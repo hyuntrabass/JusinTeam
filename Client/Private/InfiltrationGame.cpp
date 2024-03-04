@@ -29,7 +29,11 @@ HRESULT CInfiltrationGame::Init(void* pArg)
 
 	m_CheckPointMatrix = m_pPlayerTransform->Get_World_Matrix();
 
-	Create_Guard();
+	_tchar* pPath = TEXT("../Bin/Data/MiniDungeon_Guard_1_Data.dat");
+	Create_Guard(pPath);
+
+	pPath = TEXT("../Bin/Data/MiniDungeon_Guard_2_Data.dat");
+	Create_Guard(pPath);
 	Create_CheckPoint();
 	return S_OK;
 }
@@ -37,19 +41,26 @@ HRESULT CInfiltrationGame::Init(void* pArg)
 void CInfiltrationGame::Tick(_float fTimeDelta)
 {
 	Reset_Play(fTimeDelta);
-	for (auto& pGuard : m_Guard)
+	for (auto& pGuardList : m_GuardList)
 	{
-		pGuard->Tick(fTimeDelta);
+		for (auto& pGuard : m_Guard)
+		{
+			pGuard->Tick(fTimeDelta);
+	
+		}
 	}
-
-	for (auto& pGuardTower : m_GuardTower)
+	for (auto& pGuardTowerList : m_GuardTowerList)
 	{
-		pGuardTower->Tick(fTimeDelta);
+		for (auto& pGuardTower : m_GuardTower)
+		{
+			pGuardTower->Tick(fTimeDelta);
+		}
 	}
 
 	for (auto& pCheckPoint : m_CheckPoint)
 	{
 		pCheckPoint->Tick(fTimeDelta);
+
 	}
 
 	Release_DeadObjects();
@@ -57,14 +68,20 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 
 void CInfiltrationGame::Late_Tick(_float fTimeDelta)
 {
-	for (auto& pGuard : m_Guard)
+	for (auto& pGuardList : m_GuardList)
 	{
-		pGuard->Late_Tick(fTimeDelta);
+		for (auto& pGuard : m_Guard)
+		{
+			pGuard->Late_Tick(fTimeDelta);
+		}
 	}
 
-	for (auto& pGuardTower : m_GuardTower)
+	for (auto& pGuardTowerList : m_GuardTowerList)
 	{
-		pGuardTower->Late_Tick(fTimeDelta);
+		for (auto& pGuardTower : m_GuardTower)
+		{
+			pGuardTower->Late_Tick(fTimeDelta);
+		}
 	}
 
 	for (auto& pCheckPoint : m_CheckPoint)
@@ -72,6 +89,7 @@ void CInfiltrationGame::Late_Tick(_float fTimeDelta)
 		if (pCheckPoint->Get_Collision())
 		{
 			m_CheckPointMatrix = pCheckPoint->Get_Matrix() + _mat::CreateTranslation(0.f, 1.f, 0.f);
+			if()
 			pCheckPoint->Kill();
 		}
 	}
@@ -80,9 +98,9 @@ void CInfiltrationGame::Late_Tick(_float fTimeDelta)
 
 
 
-HRESULT CInfiltrationGame::Create_Guard()
+HRESULT CInfiltrationGame::Create_Guard(const TCHAR* pPath)
 {
-	const TCHAR* pGetPath = TEXT("../Bin/Data/MiniDungeon_GuardData.dat");
+	const TCHAR* pGetPath = pPath;
 
 	std::ifstream inFile(pGetPath, std::ios::binary);
 
@@ -132,6 +150,8 @@ HRESULT CInfiltrationGame::Create_Guard()
 		}
 
 	}
+	m_GuardList.push_back(m_Guard);
+	m_GuardTowerList.push_back(m_GuardTower);
 
 	inFile.close();
 
@@ -226,28 +246,35 @@ void CInfiltrationGame::Reset_Play(_float fTimeDelta)
 
 void CInfiltrationGame::Release_DeadObjects()
 {
-	for (auto& it = m_Guard.begin(); it != m_Guard.end();)
+	for (auto& iter = m_GuardList.begin(); iter != m_GuardList.end(); iter++)
 	{
-		if ((*it)->isDead())
+		for (auto& it = iter->begin(); it != iter->end();)
 		{
-			Safe_Release(*it);
-			it = m_Guard.erase(it);
-		}
-		else
-		{
-			++it;
+			if ((*it)->isDead())
+			{
+				Safe_Release(*it);
+				it = m_Guard.erase(it);
+			}
+			else
+			{
+				++it;
+			}
 		}
 	}
-	for (auto& it = m_GuardTower.begin(); it != m_GuardTower.end();)
+
+	for (auto& iter = m_GuardTowerList.begin(); iter != m_GuardTowerList.end();iter++)
 	{
-		if ((*it)->isDead())
+		for (auto& it = m_GuardTower.begin(); it != m_GuardTower.end();)
 		{
-			Safe_Release(*it);
-			it = m_GuardTower.erase(it);
-		}
-		else
-		{
-			++it;
+			if ((*it)->isDead())
+			{
+				Safe_Release(*it);
+				it = m_GuardTower.erase(it);
+			}
+			else
+			{
+				++it;
+			}
 		}
 	}
 
@@ -294,17 +321,26 @@ CGameObject* CInfiltrationGame::Clone(void* pArg)
 void CInfiltrationGame::Free()
 {
 	__super::Free();
-	for (auto& pGuard : m_Guard)
-	{
-		Safe_Release(pGuard);
-	}
-	m_Guard.clear();
 
-	for (auto& pGuardTower : m_GuardTower)
+	for (auto& List : m_GuardList)
 	{
-		Safe_Release(pGuardTower);
+		for (auto& pGuard : m_Guard)
+		{
+			Safe_Release(pGuard);
+		}
+		m_Guard.clear();
 	}
-	m_GuardTower.clear();
+	m_GuardList.clear();
+
+	for (auto& List : m_GuardTowerList)
+	{
+		for (auto& pGuardTower : m_GuardTower)
+		{
+			Safe_Release(pGuardTower);
+		}
+		m_GuardTower.clear();
+	}
+	m_GuardTowerList.clear();
 
 	for (auto& pCheckPoint : m_CheckPoint)
 	{

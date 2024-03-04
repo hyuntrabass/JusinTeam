@@ -60,7 +60,7 @@ public:
 	virtual HRESULT Render() override;
 
 	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) override;
-
+	_bool Get_Detected() { return m_isDetected; }
 public:
 	void Init_State(_float fTimeDelta);
 	void Tick_State_Pattern1(_float fTimeDelta);

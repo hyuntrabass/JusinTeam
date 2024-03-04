@@ -18,12 +18,15 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 
 private:
-	vector<class CGuard*> m_Guard;
-	vector<class CGuardTower*> m_GuardTower;
+	list<class CGuard*> m_Guard;
+	list<class CGuardTower*> m_GuardTower;
 	list<class CCheckPoint*> m_CheckPoint;
 
+	vector<list<class CGuard*>> m_GuardList;
+	vector<list<class CGuardTower*>> m_GuardTowerList;
+
 private:
-	HRESULT Create_Guard();
+	HRESULT Create_Guard(const TCHAR* pPath);
 	HRESULT Create_CheckPoint();
 	void Reset_Play(_float fTimeDelta);
 	void Release_DeadObjects();
