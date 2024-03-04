@@ -398,8 +398,11 @@ cbuffer GalMegiParams : register(b2)
     
     vector vLightPos;
     
-    uint iToggleGalMegi;
-    uint3 PaddingByte;
+    float fGodRayPower;
+    float3 CamLook;
+    
+    float3 vLightDir;
+    uint Paddings;
 }
 
 float Random(float2 UV)
@@ -430,22 +433,21 @@ void GalMegi(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID,
     {
         for (uint i = 0; i < Samples; ++i)
         {
-            float2 UV = lerp(vUV, vPos, (float(i) + Random(vUV)) / float(Samples));
+            float2 UV = lerp(vUV, vPos, (float(i) + Random(vUV)) / float(Samples - 1));
             float fZ = inputTexture.SampleLevel(LinearSampler, UV, 0.f).y;
-            if (0.5f <= fZ)
+            if (1.f <= fZ)
                 S += 1.f / (float) Samples;
 
         }
     }
     else
     {
-        if(true == iToggleGalMegi)
-            S = 1.f;
-        else
-            S = 0.f;
+        S = 1.f;
     }
     
-    S *= 0.25f;
+    float fDegree = 180.f - degrees(acos(dot(normalize(CamLook), normalize(vLightDir))));
+        
+    S *= fGodRayPower * saturate(1.f - fDegree / 60.f);
     
     vector vColor = 0.f;
 

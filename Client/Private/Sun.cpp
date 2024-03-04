@@ -20,7 +20,7 @@ HRESULT CSun::Init(void* pArg)
 	if (FAILED(Add_Components()))
 		return E_FAIL;
 
-	_vec3 vScale = _vec3(0.15f, 0.15f, 1.f);
+	_vec3 vScale = _vec3(0.1f, 0.1f, 1.f);
 	m_pTransformCom->Set_Scale(vScale);
 
 	return S_OK;

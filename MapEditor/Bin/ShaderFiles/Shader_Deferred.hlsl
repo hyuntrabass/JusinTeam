@@ -743,6 +743,8 @@ PS_OUT PS_DOF(PS_IN Input) //
     
     vector OriginColor = g_Texture.Sample(LinearSampler, Input.vTexcoord);
 
+    if(0.f >= OriginColor.a)
+        discard;
     
     vector BlurColor = g_BlurTexture.Sample(LinearSampler, Input.vTexcoord);
     

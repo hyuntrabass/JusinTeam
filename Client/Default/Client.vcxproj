@@ -180,6 +180,7 @@
     <ClInclude Include="..\Public\Aur.h" />
     <ClInclude Include="..\Public\CescoGame.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
+    <ClInclude Include="..\Public\CheckPoint.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Coin.h" />
     <ClInclude Include="..\Public\Dead.h" />
@@ -197,7 +198,6 @@
     <ClInclude Include="..\Public\EyeBomb.h" />
     <ClInclude Include="..\Public\FadeBox.h" />
     <ClInclude Include="..\Public\FirePillar.h" />
-    <ClInclude Include="..\Public\GlowCube.h" />
     <ClInclude Include="..\Public\Goat.h" />
     <ClInclude Include="..\Public\Groar_Boss.h" />
     <ClInclude Include="..\Public\Guard.h" />
@@ -210,6 +210,7 @@
     <ClInclude Include="..\Public\HpBoss.h" />
     <ClInclude Include="..\Public\HpMonster.h" />
     <ClInclude Include="..\Public\Human_Boss.h" />
+    <ClInclude Include="..\Public\InfiltrationGame.h" />
     <ClInclude Include="..\Public\InfinityTower.h" />
     <ClInclude Include="..\Public\Interaction_Anim_Object.h" />
     <ClInclude Include="..\Public\Interaction_NonAnim_Object.h" />
@@ -372,6 +373,7 @@
     <ClCompile Include="..\Private\Aur.cpp" />
     <ClCompile Include="..\Private\CescoGame.cpp" />
     <ClCompile Include="..\Private\CharacterSelect.cpp" />
+    <ClCompile Include="..\Private\CheckPoint.cpp" />
     <ClCompile Include="..\Private\Coin.cpp" />
     <ClCompile Include="..\Private\CutScene_Curve.cpp" />
     <ClCompile Include="..\Private\Dead.cpp" />
@@ -387,12 +389,12 @@
     <ClCompile Include="..\Private\ExpBar.cpp" />
     <ClCompile Include="..\Private\EyeBomb.cpp" />
     <ClCompile Include="..\Private\FirePillar.cpp" />
-    <ClCompile Include="..\Private\GlowCube.cpp" />
     <ClCompile Include="..\Private\Guard.cpp" />
     <ClCompile Include="..\Private\GuardTower.cpp" />
     <ClCompile Include="..\Private\Hive.cpp" />
     <ClCompile Include="..\Private\Hook.cpp" />
     <ClCompile Include="..\Private\Human_Boss.cpp" />
+    <ClCompile Include="..\Private\InfiltrationGame.cpp" />
     <ClCompile Include="..\Private\InfinityTower.cpp" />
     <ClCompile Include="..\Private\Interaction_Anim_Object.cpp" />
     <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp" />

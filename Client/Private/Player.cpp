@@ -551,6 +551,10 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		m_ShieldMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 		m_pEffect_Shield->Tick(fTimeDelta);
+		if (m_pEffect_Shield->isDead())
+		{
+			Safe_Release(m_pEffect_Shield);
+		}
 	}
 
 	LIGHT_DESC* pLight = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Player");
@@ -1295,11 +1299,12 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 	if (m_pEffect_Shield)
 	{
 		// º¸È£¸· ±úÁö´Â ÀÌÆåÆ®
-		Safe_Release(m_pEffect_Shield);
+		m_pEffect_Shield->Kill();
+		//Safe_Release(m_pEffect_Shield);
 		m_pGameInstance->Play_Sound(TEXT("ShieldBreak"));
-		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Shield_Diss");
-		Info.pMatrix = &m_ShieldMatrix;
-		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+		//EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Shield_Diss");
+		//Info.pMatrix = &m_ShieldMatrix;
+		//CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 		return;
 	}

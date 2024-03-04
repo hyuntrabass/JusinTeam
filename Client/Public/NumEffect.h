@@ -38,6 +38,7 @@ private:
 	HRESULT Bind_ShaderResources();
 
 private:
+	_bool				m_isCombo{};
 	_bool				m_isChanging{};
 	_bool				m_bOrth{};
 	_bool				m_isEffect{ true };
@@ -57,6 +58,7 @@ private:
 	CTransform*			m_pParentTransform{ nullptr };
 	class C3DUITex*		m_pEffect{ nullptr };
 	class CTextButtonColor* m_pShineEffect{ nullptr };
+	class CTextButtonColor* m_pCombo{ nullptr };
 
 public:
 	void Set_TargetNum(_uint iNum);

@@ -5,6 +5,7 @@ texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
 texture2D g_MaskTexture;
 texture2D g_DissolveTexture;
+Texture2D g_GlowTexture;
 
 matrix g_OldViewMatrix;
 
@@ -20,6 +21,7 @@ float g_fDissolveRatio;
 
 bool g_HasNorTex;
 bool g_HasMaskTex;
+bool g_HasGlowTex;
 bool g_bSelected = false;
 
 float4 g_vClipPlane;
@@ -195,6 +197,7 @@ struct PS_OUT_DEFERRED
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
     vector vRimMask : SV_Target3;
+    vector vGlow : SV_Target4;
 };
 
 struct PS_OUT
@@ -231,10 +234,15 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
         vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
+    vector vGlow = 0.f;
+    if (g_HasGlowTex)
+        vGlow = g_GlowTexture.Sample(LinearSampler, Input.vTex);
+    
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
-
+    Output.vGlow = vGlow;
+    
     return Output;
 }
 
@@ -282,11 +290,67 @@ PS_OUT_DEFERRED PS_Main_AlphaTest(PS_IN Input)
         vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
+    vector vGlow = 0.f;
+    if (g_HasGlowTex)
+        vGlow = g_GlowTexture.Sample(LinearSampler, Input.vTex);
+    
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
+    Output.vGlow = vGlow;
 
 
+    return Output;
+}
+
+PS_OUT_DEFERRED PS_Main_Dissolve(PS_IN Input)
+{
+    PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
+    if (vMtrlDiffuse.a < 0.5f)
+    {
+        discard;
+    }
+        
+    float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r + 0.1f;
+    vMtrlDiffuse.a = saturate((fDissolve - g_fDissolveRatio) * 10.f);
+    if(vMtrlDiffuse.a <= 0.f)
+        discard;
+    
+    float3 vNormal;
+    if (g_HasNorTex)
+    {
+        vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
+    
+        vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+        float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
+    
+        vNormal = mul(normalize(vNormal), WorldMatrix) * -1.f;
+    }
+    else
+    {
+        vNormal = Input.vNor.xyz;
+    }
+    
+    vector vMask = vector(1.f, 0.1f, 0.1f, 0.1f);
+    if (g_HasMaskTex)
+    {
+        vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
+    }
+    
+    vector vGlow = 0.f;
+    if (g_HasGlowTex)
+        vGlow = g_GlowTexture.Sample(LinearSampler, Input.vTex);
+    
+    
+    Output.vDiffuse = vMtrlDiffuse;
+    Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
+    Output.vGlow = vGlow;
+
+    
     return Output;
 }
 
@@ -364,6 +428,8 @@ PS_WATER_OUT PS_Main_Water(PS_WATER_IN Input)
 
     return Output;
 }
+
+
 
 
 technique11 DefaultTechnique_Shader_StatInstance
@@ -444,5 +510,18 @@ technique11 DefaultTechnique_Shader_StatInstance
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Water();
+    }
+
+    pass Dissolve
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Dissolve();
     }
 };
