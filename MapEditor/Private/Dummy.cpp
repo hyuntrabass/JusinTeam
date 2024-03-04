@@ -92,14 +92,17 @@ void CDummy::Tick(_float fTimeDelta)
 		m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
 	}
 
-	m_pModelCom->Set_Animation(m_Animation);
+	if (m_isAnim == true)
+	{
+		m_pModelCom->Set_Animation(m_Animation);
+	}
 
 }
 
 void CDummy::Late_Tick(_float fTimeDelta)
 {
 	if (m_eType == ItemType::Monster || m_eType == ItemType::NPC)
-		m_pModelCom->Play_Animation(1.f);
+		m_pModelCom->Play_Animation(0.1f);
 
 	#ifdef _DEBUG
 	if(m_eType == ItemType::Trigger)
@@ -290,40 +293,40 @@ HRESULT CDummy::Bind_ShaderResources()
 		}
 
 
-		if (m_Info.eType == ItemType::Trigger)
-		{
-			_float4 vColor{ 0.3f, 0.8f, 0.3f, 0.5f };
-			if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _float4)))
-			{
-				return E_FAIL;
-			}
+		//if (m_Info.eType == ItemType::Trigger)
+		//{
+		//	_float4 vColor{ 0.3f, 0.8f, 0.3f, 0.5f };
+		//	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _float4)))
+		//	{
+		//		return E_FAIL;
+		//	}
 
-			const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_EDITOR, TEXT("Light_Main"));
-			if (!pLightDesc)
-			{
-				return E_FAIL;
-			}
+		//	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_EDITOR, TEXT("Light_Main"));
+		//	if (!pLightDesc)
+		//	{
+		//		return E_FAIL;
+		//	}
 
-			if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof _float4)))
-			{
-				return E_FAIL;
-			}
+		//	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof _float4)))
+		//	{
+		//		return E_FAIL;
+		//	}
 
-			if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof _float4)))
-			{
-				return E_FAIL;
-			}
+		//	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof _float4)))
+		//	{
+		//		return E_FAIL;
+		//	}
 
-			if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof _float4)))
-			{
-				return E_FAIL;
-			}
+		//	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof _float4)))
+		//	{
+		//		return E_FAIL;
+		//	}
 
-			if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof _float4)))
-			{
-				return E_FAIL;
-			}
-		}
+		//	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof _float4)))
+		//	{
+		//		return E_FAIL;
+		//	}
+		//}
 
 	}
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))

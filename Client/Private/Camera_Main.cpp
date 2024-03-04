@@ -716,6 +716,19 @@ void CCamera_Main::SkillBook_Mode(_float fTimeDelta)
 
 void CCamera_Main::BrickGame_Mode(_float fTimeDelta)
 {
+	if (m_pCam_Manager->Get_ZoomFactor() >= 2.f)
+	{
+		_vec4 vCurrentPos = m_pTransformCom->Get_State(State::Pos);
+
+		_float fLerpFactor = 0.1f;
+
+		_vec4 vTargetPos = m_vOriCamPos + _vec4(0.f, -1.f, -15.f, 0.f);
+
+		_vec4 vNewPos = XMVectorLerp(vCurrentPos, vTargetPos, fLerpFactor);
+		m_pTransformCom->Set_State(State::Pos, vNewPos);
+		return;
+	}
+
 	if (m_fShakeAcc > 1.5f and m_pCam_Manager->Get_ShakeCam())
 	{
 		m_fShakeAcc = m_pCam_Manager->Get_ShakePower();
@@ -732,15 +745,45 @@ void CCamera_Main::BrickGame_Mode(_float fTimeDelta)
 		m_pTransformCom->Set_State(State::Pos, vShakePos);
 		m_fShakeAcc += fTimeDelta * 10.f / m_pGameInstance->Get_TimeRatio();
 	}
-	else
+	
+	_vec4 vCurrentPos = m_pTransformCom->Get_State(State::Pos);
+	_float fLerpFactor = 0.1f;
+	_vec4 vBrickGamePos = _vec4(-2000.f, 14.9f, -1978.4f, 1.f);
+	_vec4 vNewPos = XMVectorLerp(vCurrentPos, vBrickGamePos, fLerpFactor);
+	m_pTransformCom->Set_State(State::Pos, vNewPos);
+	
+	
+	m_pTransformCom->LookAt_Dir(_vec4(-0.0f, -0.5575f, -0.8301f, 0.f));
+		
+
+
+	if (m_pCam_Manager->Get_ZoomFactor() <= -1.f)
 	{
-		_vec4 vBrickGamePos = _vec4(-2000.f, 14.9f, -1978.4f, 1.f);
+		m_CurrentTime = GetTickCount64() * 0.001f;
 
-		m_pTransformCom->Set_State(State::Pos, vBrickGamePos);
 
-		m_pTransformCom->LookAt_Dir(_vec4(-0.0f, -0.5575f, -0.8301f, 0.f));
+		float swayX = (sin(m_CurrentTime * m_SwaySpeed) * m_SwayAmount) * 0.008f;
+		float swayY = (sin((m_CurrentTime + m_TimeOffset) * m_SwaySpeed) * m_SwayAmount) * 0.008f;
+
+		m_fSelectRotation += (fTimeDelta * 0.8f * m_iRotation);
+
+		if (m_fSelectRotation > 2.f)
+			m_iRotation *= -1;
+		else if (m_fSelectRotation < -2.f)
+		{
+			m_iRotation *= -1;
+		}
+
+
+		_vec4 vRight = XMVectorSet(1.f, 0.f, 0.f, 0.f);
+		_vec4 vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+		_vec4 vLook = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+
+		//m_pTransformCom->Rotation(_vec4(0.f, 0.f, 1.f, 0.f), m_fSelectRotation);
+
+		m_pTransformCom->Set_State(State::Pos, m_pTransformCom->Get_State(State::Pos) + (m_pTransformCom->Get_State(State::Right) * swayX)
+			+ m_pTransformCom->Get_State(State::Up) * swayY);
 	}
-
 	//DirectX::XMFLOAT3 = {x=0.00349983899 y=-0.557534575 z=-0.830147624 }
 
 
@@ -888,7 +931,15 @@ void CCamera_Main::Init_State(_float fTimeDelta)
 			m_vOriginalLook = m_pTransformCom->Get_State(State::Look);
 			break;
 		case Client::CS_BRICKGAME:
+		{
+			m_CurrentTime = 0.f;
+			m_fSelectRotation = 0.f;
+			_vec4 vBrickGamePos = _vec4(-2000.f, 14.9f, -1978.4f, 1.f);
+			m_vOriCamPos = vBrickGamePos;
+			m_pTransformCom->Set_State(State::Pos, vBrickGamePos);
+			m_pTransformCom->LookAt_Dir(_vec4(-0.0f, -0.5575f, -0.8301f, 0.f));
 			m_vOriginalLook = m_pTransformCom->Get_State(State::Look);
+		}
 			break;
 		case Client::CS_COLLECT:
 			m_vOriginalLook = m_pTransformCom->Get_State(State::Look);

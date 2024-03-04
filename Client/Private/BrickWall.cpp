@@ -102,6 +102,12 @@ HRESULT CBrickWall::Init(void* pArg)
 
 void CBrickWall::Tick(_float fTimeDelta)
 {
+	if (CCamera_Manager::Get_Instance()->Get_CameraState() != CS_BRICKGAME)
+	{
+		m_isDead = true;
+		return;
+	}
+
 	m_fColorTime += fTimeDelta;
 	if (m_fColorTime >= 4.f)
 	{
@@ -131,7 +137,7 @@ void CBrickWall::Tick(_float fTimeDelta)
 	{
 		m_pTransformCom->Set_Scale(_vec3(1.f, 50.f, 40.f));
 		_vec3 vPos = _vec3(-2000.f, 1.4677677f, -1996.4f);
-		vPos.x -= 15.3f;
+		vPos.x -= 13.f;
 		m_pTransformCom->Set_Position(vPos);
 
 	}
@@ -139,7 +145,7 @@ void CBrickWall::Tick(_float fTimeDelta)
 	{
 		m_pTransformCom->Set_Scale(_vec3(1.f, 50.f, 40.f));
 		_vec3 vPos = _vec3(-2000.f, 1.4677677f, -1996.4f);
-		vPos.x += 15.3f;
+		vPos.x += 13.f;
 		m_pTransformCom->Set_Position(vPos);
 
 	}

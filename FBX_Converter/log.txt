@@ -2,7 +2,17 @@
 2
 Animation Models : Start Converting...
 1. Normally Anim Model	2. For VTF Model 3. Part Model
-1
+2
+Converting... Guard.fbx
+Read File Succssefully
+Animation name list: 
+Superior_Guard_Asgard_A.ao|Superior_Guard_Asgard_A.ao|Superior_Guard_Asgard_A.ao|die
+Superior_Guard_Asgard_A.ao|Superior_Guard_Asgard_A.ao|Superior_Guard_Asgard_A.ao|idle
+Superior_Guard_Asgard_A.ao|Superior_Guard_Asgard_A.ao|Superior_Guard_Asgard_A.ao|run
+Superior_Guard_Asgard_A.ao|Superior_Guard_Asgard_A.ao|Superior_Guard_Asgard_A.ao|Super
+Superior_Guard_Asgard_A.ao|Superior_Guard_Asgard_A.ao|Superior_Guard_Asgard_A.ao|Super.001
+Superior_Guard_Asgard_A.ao|Superior_Guard_Asgard_A.ao|Superior_Guard_Asgard_A.ao|Superior_
+Superior_Guard_Asgard_A.ao|Superior_Guard_Asgard_A.ao|Superior_Guard_Asgard_A.ao|walk
 Converting... StoneTower.fbx
 Read File Succssefully
 Animation name list: 
@@ -10,5 +20,5 @@ War_StoneTower.ao|War_StoneTower.ao|War_StoneTower.ao|destroy
 War_StoneTower.ao|War_StoneTower.ao|War_StoneTower.ao|idle
 Animation Models : Convert Success!
 
-1 Animation Models
+2 Animation Models
 are Successfully Converted as hyuntramesh!!

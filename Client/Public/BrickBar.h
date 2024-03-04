@@ -47,7 +47,7 @@ private:
 
 	_vec4					m_vColor{};
 	_mat					m_EffectMatrix{};
-	class CEffect_Dummy*	m_pEffect_Ball{};
+	class CEffect_Dummy*	m_pEffect_Ball{ nullptr };
 
 	class CBrickCat*		m_pPet{ nullptr };
 

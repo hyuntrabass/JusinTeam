@@ -41,9 +41,11 @@ private:
 private:
 	STAGE m_ePreStage = STAGE_END;
 	STAGE m_eCurStage = STAGE_END;
+	STAGE m_eNextStage = STAGE_END;
 
 private:
-	_float m_fTime[2] = {};
+	_float m_fTime[3] = {};
+	_float m_fInitTime = {};
 
 private:
 	_bool m_bGameStart = { false };

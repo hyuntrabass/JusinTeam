@@ -59,66 +59,7 @@ HRESULT CInteraction_Anim::Init(void* pArg)
 
 	//m_pModelCom->Apply_TransformToActor(m_Info.m_WorldMatrix);
 
-
-	CNameTag::NAMETAG_DESC NameTagDesc = {};
-	NameTagDesc.eLevelID = LEVEL_STATIC;
-	NameTagDesc.fFontSize = 0.36f;
-	NameTagDesc.pParentTransform = m_pTransformCom;
-
-	NameTagDesc.vColor = _vec4(0.31f, 0.96f, 1.f, 1.f);
-	NameTagDesc.vTextPosition = _vec2(0.f, 3.2f);
-
-
-	if (m_Info.strPrototypeTag == TEXT("Prototype_Model_GoldStone"))
-	{
-		NameTagDesc.strNameTag = TEXT("금광석");
-
-		_mat EffectMat = _mat::CreateTranslation(_vec3(vPos));
-		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Mineral_Parti");
-		EffectDesc.pMatrix = &EffectMat;
-		m_pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(EffectDesc);
-	}
-	else if (m_Info.strPrototypeTag == TEXT("Prototype_Model_SaltStone"))
-	{
-		NameTagDesc.strNameTag = TEXT("소금광석");
-
-		_mat EffectMat = _mat::CreateTranslation(_vec3(vPos));
-		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Mineral_Parti_Blue");
-		EffectDesc.pMatrix = &EffectMat;
-		m_pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(EffectDesc);
-	}
-	else if (m_Info.strPrototypeTag == TEXT("Prototype_Model_TreasureBox"))
-	{
-		NameTagDesc.vTextPosition = _vec2(0.f, 2.f);
-		m_strName = TEXT("보물상자");
-		NameTagDesc.strNameTag = TEXT("보물상자");
-	}
-
 	if (FAILED(Add_Components()))
-	{
-		return E_FAIL;
-	}
-
-	m_pNameTag = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_NameTag"), &NameTagDesc);
-	if (not m_pNameTag)
-	{
-		return E_FAIL;
-	}
-	if (NameTagDesc.strNameTag == TEXT("보물상자"))
-	{
-		return S_OK;
-	}
-	CItem::ITEM_DESC ItemDesc{};
-	ItemDesc.bCanInteract = false;
-	ItemDesc.eItemDesc = CUI_Manager::Get_Instance()->Find_Item(NameTagDesc.strNameTag);
-	ItemDesc.fDepth = (_float)D_SCREEN / (_float)D_END;
-	ItemDesc.haveBG = true;
-	ItemDesc.isScreen = false;
-	ItemDesc.vPosition = _vec2((_float)g_ptCenter.x, 160.f);
-	ItemDesc.vSize = _vec2(50.f, 50.f);
-
-	m_pItem = (CItem*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Item"), &ItemDesc);
-	if (not m_pItem)
 	{
 		return E_FAIL;
 	}
@@ -169,7 +110,7 @@ void CInteraction_Anim::Tick(_float fTimeDelta)
 	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
 	_bool isColl = m_pColliderCom->Intersect(pCollider);
 	m_isWideCollision = m_pWideColliderCom->Intersect(pCollider);
-	if (isColl)
+	if (isColl and not m_isAnimStart)
 	{
 		if (!m_isCollect && m_pGameInstance->Key_Down(DIK_E))
 		{
@@ -186,8 +127,14 @@ void CInteraction_Anim::Tick(_float fTimeDelta)
 
 	if (m_isWideCollision)
 	{
-		dynamic_cast<CNameTag*>(m_pNameTag)->Tick(fTimeDelta);
-		m_pSpeechBubble->Tick(fTimeDelta);
+		if (m_pNameTag)
+		{
+			m_pNameTag->Tick(fTimeDelta);
+		}
+		if (m_pSpeechBubble)
+		{
+			m_pSpeechBubble->Tick(fTimeDelta);
+		}
 	}
 
 	if (m_pEffect)
@@ -271,22 +218,36 @@ void CInteraction_Anim::Late_Tick(_float fTimeDelta)
 					return;
 				}
 			}
-			m_isDead = true;
+			m_pTransformCom->Set_Speed(1.f);
+			m_pTransformCom->Go_Down(fTimeDelta);
+			if (m_pTransformCom->Get_State(State::Pos).y < m_Info.m_WorldMatrix._42 - 2.f)
+			{
+				m_isDead = true;
+			}
 		}
 
 		if (m_iHP > 0 and m_Info.strPrototypeTag == TEXT("Prototype_Model_SaltStone"))
 		{
 			CEvent_Manager::Get_Instance()->Update_Quest(TEXT("채집하기"));
-			m_iHP = 0;
 		}
+
+		m_iHP = 0;
+		Safe_Release(m_pNameTag);
+		Safe_Release(m_pSpeechBubble);
 
 		m_pModelCom->Play_Animation(fTimeDelta);
 	}
 
 	if (m_isWideCollision)
 	{
-		m_pNameTag->Late_Tick(fTimeDelta);
-		m_pSpeechBubble->Late_Tick(fTimeDelta);
+		if (m_pNameTag)
+		{
+			m_pNameTag->Late_Tick(fTimeDelta);
+		}
+		if (m_pSpeechBubble)
+		{
+			m_pSpeechBubble->Late_Tick(fTimeDelta);
+		}
 	}
 
 	if (m_pEffect)
@@ -401,23 +362,7 @@ HRESULT CInteraction_Anim::Add_Components()
 	TexDesc.eLevelID = LEVEL_STATIC;
 	TexDesc.pParentTransform = m_pTransformCom;
 	TexDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SpeechBubble");
-	if (m_strName == TEXT("보물상자"))
-	{
-		TexDesc.vPosition = _vec3(0.f, 2.3f, 0.f);
-	}
-	else
-	{
-		TexDesc.vPosition = _vec3(0.f, 3.8f, 0.f);
-	}
-
 	TexDesc.vSize = _vec2(40.f, 40.f);
-
-	m_pSpeechBubble = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &TexDesc);
-	if (not m_pSpeechBubble)
-	{
-		return E_FAIL;
-	}
-
 
 	CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
 	ColButtonDesc.eLevelID = LEVEL_STATIC;
@@ -426,27 +371,11 @@ HRESULT CInteraction_Anim::Add_Components()
 	ColButtonDesc.fFontSize = 0.36f;
 	ColButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	ColButtonDesc.vTextPosition = _vec2(0.f, 20.f);
-	if (m_strName == TEXT("보물상자"))
-	{
-		ColButtonDesc.strText = TEXT("여는중...");
-	}
-	else
-	{
-		ColButtonDesc.strText = TEXT("채집중...");
-	}
 	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_CollectBar");
 	ColButtonDesc.strTexture2 = TEXT("Prototype_Component_Texture_UI_Gameplay_Mask_FlagMove");
 	ColButtonDesc.vSize = _vec2(180.f, 12.f);
 	ColButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, 200.f);
 	ColButtonDesc.vColor = _vec4(0.31f, 0.96f, 1.f, 1.f);
-
-	m_pBar = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
-	if (not m_pBar)
-	{
-		return E_FAIL;
-	}
-	m_pBar->Set_Pass(VTPass_HPBoss);
-	m_pBar->Set_Factor(0.f);
 
 	CTextButton::TEXTBUTTON_DESC Button = {};
 	Button.eLevelID = LEVEL_STATIC;
@@ -457,9 +386,95 @@ HRESULT CInteraction_Anim::Add_Components()
 	Button.vSize = _vec2(183.f, 15.f);
 	Button.fFontSize = 0.5f;
 	Button.vTextColor = _vec4(0.5f, 0.07f, 0.04f, 1.f);
-	m_pBG = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
+	CNameTag::NAMETAG_DESC NameTagDesc = {};
+	NameTagDesc.eLevelID = LEVEL_STATIC;
+	NameTagDesc.fFontSize = 0.36f;
+	NameTagDesc.pParentTransform = m_pTransformCom;
+	NameTagDesc.vColor = _vec4(0.31f, 0.96f, 1.f, 1.f);
+	NameTagDesc.vTextPosition = _vec2(0.f, 3.2f);
+
+	CItem::ITEM_DESC ItemDesc{};
+	ItemDesc.bCanInteract = false;
+	ItemDesc.fDepth = (_float)D_SCREEN / (_float)D_END;
+	ItemDesc.haveBG = true;
+	ItemDesc.isScreen = false;
+	ItemDesc.vPosition = _vec2((_float)g_ptCenter.x, 160.f);
+	ItemDesc.vSize = _vec2(50.f, 50.f);
+
+	if (m_Info.strPrototypeTag == TEXT("Prototype_Model_GoldStone"))
+	{
+		TexDesc.vPosition = _vec3(0.f, 3.8f, 0.f);
+		
+		ColButtonDesc.strText = TEXT("채집중...");
+
+		NameTagDesc.strNameTag = TEXT("금광석");
+		ItemDesc.eItemDesc = CUI_Manager::Get_Instance()->Find_Item(NameTagDesc.strNameTag);
+
+		_mat EffectMat = _mat::CreateTranslation(m_Info.m_WorldMatrix.Position_vec3());
+		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Mineral_Parti");
+		EffectDesc.pMatrix = &EffectMat;
+		m_pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(EffectDesc);
+
+		m_pItem = (CItem*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Item"), &ItemDesc);
+		if (not m_pItem)
+		{
+			return E_FAIL;
+		}
+	}
+	else if (m_Info.strPrototypeTag == TEXT("Prototype_Model_SaltStone"))
+	{
+		TexDesc.vPosition = _vec3(0.f, 3.8f, 0.f);
+		
+		ColButtonDesc.strText = TEXT("채집중...");
+
+		NameTagDesc.strNameTag = TEXT("소금광석");
+		ItemDesc.eItemDesc = CUI_Manager::Get_Instance()->Find_Item(NameTagDesc.strNameTag);
+
+		_mat EffectMat = _mat::CreateTranslation(m_Info.m_WorldMatrix.Position_vec3());
+		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Mineral_Parti_Blue");
+		EffectDesc.pMatrix = &EffectMat;
+		m_pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(EffectDesc);
+
+		m_pItem = (CItem*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Item"), &ItemDesc);
+		if (not m_pItem)
+		{
+			return E_FAIL;
+		}
+	}
+	else if (m_Info.strPrototypeTag == TEXT("Prototype_Model_TreasureBox"))
+	{
+		TexDesc.vPosition = _vec3(0.f, 2.3f, 0.f);
+		
+		ColButtonDesc.strText = TEXT("여는중...");
+		
+		NameTagDesc.vTextPosition = _vec2(0.f, 2.f);
+		m_strName = TEXT("보물상자");
+		NameTagDesc.strNameTag = TEXT("보물상자");
+	}
+
+	m_pBar = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+	if (not m_pBar)
+	{
+		return E_FAIL;
+	}
+	m_pBar->Set_Pass(VTPass_HPBoss);
+	m_pBar->Set_Factor(0.f);
+
+	m_pSpeechBubble = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &TexDesc);
+	if (not m_pSpeechBubble)
+	{
+		return E_FAIL;
+	}
+
+	m_pBG = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 	if (not m_pBG)
+	{
+		return E_FAIL;
+	}
+
+	m_pNameTag = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_NameTag"), &NameTagDesc);
+	if (not m_pNameTag)
 	{
 		return E_FAIL;
 	}
