@@ -16,6 +16,7 @@ private:
 		Phase_Buff,
 		Phase_End,
 	};
+
 private:
 	CCescoGame(_dev pDevice, _context pContext);
 	CCescoGame(const CCescoGame& rhs);
@@ -33,17 +34,20 @@ private:
 	void Tick_Phase2(_float fTimeDelta);
 	void Tick_Phase3(_float fTimeDelta);
 	void Tick_Phase_Buff(_float fTimeDelta);
-	
+
+
 private:
 	CTransform* m_pPlayerTransform = { nullptr };
 	list<class CVTFMonster*> m_Monsters;
 	vector<class CHook*> m_vecHooks;
+	vector<class CBuff_Card*> m_vecBuffCard;
 	class CHook* m_pCurrent_DraggingHook{};
 	map<_uint, class CLog*> m_Logs;
 	map<_uint, class CHive*> m_Hives;
 
 private:
 	vector<_vec3> m_SpawnPositions;
+	Phase m_eNextPhase{ Phase_End };
 	Phase m_eCurrentPhase{ Phase_End };
 	Phase m_ePreviousPhase{ Phase_End };
 	_randNum m_RandomNumber;
@@ -51,7 +55,7 @@ private:
 	_float m_fTimeLimit{ 1209999999.f };
 	_float m_fMonsterSpawnTime{};
 	_uint m_iMonsterSpawnCount{};
-
+	_float m_iMonsterSpawnSpeed{};
 	//Hook
 	_float m_fHookSpawnTime{};
 	_bool m_bHadDragging{};

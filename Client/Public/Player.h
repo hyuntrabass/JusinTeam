@@ -300,8 +300,17 @@ public:
 		_int Armor{}; // 방어력이 10일때 받는 데미지 10퍼센트 줄여줌(90퍼만 받음)
 		_float Speed{}; // 기본 걷는 이속 2+스피드/2,뛰는 이속 4+스피드
 		_float CoolDownTime{ 1.f };
-		_float MpRegenAmount{};
-		_float DamageAbsorption{};
+		_float HpRegenAmount{1.f};
+		_float MpRegenAmount{1.f};
+		_float BloodDrain{};
+		_bool PoisonImmune{};
+		//PLAYER_STATUS operator+=(PLAYER_STATUS rhs)
+		//{
+
+		//	this->Current_Hp = this->Current_Hp + rhs.Current_Hp;
+
+		//	return *this;
+		//}
 	};
 
 private:
