@@ -82,7 +82,7 @@ private:
 private:
 	CShader* m_pShaderCom = nullptr;
 	CRenderer* m_pRendererCom = nullptr;
-	CModel* m_pModelCom = nullptr;
+	CVTFModel* m_pModelCom = nullptr;
 
 	CCollider* m_pBodyColliderCom = nullptr;
 	CCollider* m_pAttackColliderCom = nullptr;
@@ -128,6 +128,7 @@ public:
 public:
 	HRESULT Add_Collider();
 	void Update_Collider();
+	HRESULT Render_Instance();
 
 public:
 	static CGuard* Create(_dev pDevice, _context pContext);

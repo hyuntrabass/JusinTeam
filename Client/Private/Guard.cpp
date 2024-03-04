@@ -40,7 +40,8 @@ HRESULT CGuard::Init(void* pArg)
 	m_pTransformCom->Set_Matrix(m_Info.mMatrix);
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
-	
+	m_pShaderCom->Set_PassIndex(VTF_InstPass_Default);
+
 	PxCapsuleControllerDesc ControllerDesc{};
 	ControllerDesc.height = 1.2f; // 높이(위 아래의 반구 크기 제외
 	ControllerDesc.radius = 0.4f; // 위아래 반구의 반지름
@@ -110,6 +111,7 @@ void CGuard::Tick(_float fTimeDelta)
 
 void CGuard::Late_Tick(_float fTimeDelta)
 {
+		m_pModelCom->Play_Animation(fTimeDelta);
 	if (m_eCurState == STATE_IDLE || m_eCurState == STATE_PATROL || m_eCurState == STATE_TURN)
 	{
 		m_pBaseEffect->Late_Tick(fTimeDelta);
@@ -117,8 +119,8 @@ void CGuard::Late_Tick(_float fTimeDelta)
 	}
 	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos()))
 	{
-		m_pModelCom->Play_Animation(fTimeDelta);
-		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+		m_pRendererCom->Add_RenderGroup(RG_AnimNonBlend_Instance, this);
+		m_pModelCom->Set_DissolveRatio(m_fDissolveRatio);
 	}
 
 
@@ -183,8 +185,8 @@ HRESULT CGuard::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-			return E_FAIL;
+		//if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		//	return E_FAIL;
 
 		if (FAILED(m_pShaderCom->Begin(m_iPassIndex)))
 			return E_FAIL;
@@ -192,10 +194,10 @@ HRESULT CGuard::Render()
 		if (FAILED(m_pModelCom->Render(i)))
 			return E_FAIL;
 	}
-	if (!m_bChangePass && m_iHP > 0)
-	{
-		m_iPassIndex = AnimPass_Default;
-	}
+	//if (!m_bChangePass && m_iHP > 0)
+	//{
+	//	m_iPassIndex = AnimPass_Default;
+	//}
 	return S_OK;
 }
 
@@ -440,12 +442,13 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 		break;
 
 	case STATE_DIE:
+
 		if (m_pModelCom->IsAnimationFinished(ANIM_DIE))
 		{
 			if (m_fDissolveRatio < 1.f)
 			{
 				m_fDissolveRatio += fTimeDelta;
-				m_iPassIndex = AnimPass_Dissolve;
+				m_pShaderCom->Set_PassIndex(VTF_InstPass_Dissolve);
 			}
 			else
 			{
@@ -868,7 +871,7 @@ HRESULT CGuard::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VTF_Instance"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 	{
 		return E_FAIL;
 	}
@@ -889,36 +892,31 @@ HRESULT CGuard::Add_Components()
 
 HRESULT CGuard::Bind_ShaderResources()
 {
-	if (m_iPassIndex == AnimPass_Rim && m_bChangePass == true)
-	{
-		_vec4 vColor = Colors::Red;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vColor, sizeof vColor)))
-		{
-			return E_FAIL;
-		}
-	}
+	if (true == m_pGameInstance->Get_TurnOnShadow()) {
 
-	if (m_iPassIndex == AnimPass_Dissolve)
-	{
-		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
-		{
-			return E_FAIL;
-		}
+		CASCADE_DESC Desc = m_pGameInstance->Get_CascadeDesc();
 
-		m_fDissolveRatio += 0.02f;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
-		{
+		if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeView", Desc.LightView, 3)))
 			return E_FAIL;
-		}
+
+		if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeProj", Desc.LightProj, 3)))
+			return E_FAIL;
 
 	}
 
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTransformCom->Bind_OldWorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+	_vector vRimColor = { 1.f, 0.f, 0.f, 1.f };
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vRimColor, sizeof _vector)))
+	{
+		return E_FAIL;
+	}
+
+	_uint iOutlineColor = OutlineColor_Red;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_OutlineColor", &iOutlineColor, sizeof _uint)))
 	{
 		return E_FAIL;
 	}
@@ -983,6 +981,16 @@ void CGuard::Update_Collider()
 	m_pAttackColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
 	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 	
+}
+
+HRESULT CGuard::Render_Instance()
+{
+	if (FAILED(Bind_ShaderResources()))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
 }
 
 CGuard* CGuard::Create(_dev pDevice, _context pContext)

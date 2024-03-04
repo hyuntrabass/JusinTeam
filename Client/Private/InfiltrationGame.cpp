@@ -71,7 +71,7 @@ void CInfiltrationGame::Late_Tick(_float fTimeDelta)
 	{
 		if (pCheckPoint->Get_Collision())
 		{
-			m_CheckPointMatrix = pCheckPoint->Get_Matrix();
+			m_CheckPointMatrix = pCheckPoint->Get_Matrix() + _mat::CreateTranslation(0.f, 1.f, 0.f);
 			pCheckPoint->Kill();
 		}
 	}
@@ -206,7 +206,7 @@ void CInfiltrationGame::Reset_Play(_float fTimeDelta)
 		if (CUI_Manager::Get_Instance()->Get_Hp().x <= 0)
 		{
 			m_fResurrectionTime += fTimeDelta;
-			if (m_fResurrectionTime > 10.f)
+			if (m_fResurrectionTime > 2.f)
 			{
 				m_isReset = true;
 				m_fResurrectionTime = 0.f;
@@ -215,7 +215,9 @@ void CInfiltrationGame::Reset_Play(_float fTimeDelta)
 	}
 	else
 	{
-		m_pPlayerTransform->Set_Matrix(m_CheckPointMatrix);
+
+		//m_pPlayerTransform->Set_Matrix(m_CheckPointMatrix);
+		m_pPlayerTransform->Set_Position(_vec3(m_CheckPointMatrix._41, m_CheckPointMatrix._42, m_CheckPointMatrix._43));
 		m_isReset = false;
 		m_fResurrectionTime = 0.f;
 

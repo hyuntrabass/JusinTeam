@@ -70,6 +70,7 @@ HRESULT CCheckPoint::Add_Components()
 }
 
 
+
 CCheckPoint* CCheckPoint::Create(_dev pDevice, _context pContext)
 {
 	CCheckPoint* pInstance = new CCheckPoint(pDevice, pContext);

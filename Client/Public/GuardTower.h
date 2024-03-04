@@ -86,7 +86,7 @@ private:
 private:
 	CShader* m_pShaderCom = nullptr;
 	CRenderer* m_pRendererCom = nullptr;
-	CModel* m_pModelCom = nullptr;
+	CVTFModel* m_pModelCom = nullptr;
 
 	CCollider* m_pBodyColliderCom = nullptr;
 	CCollider* m_pAttackColliderCom = nullptr;
@@ -132,6 +132,7 @@ private:
 public:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
+	HRESULT Render_Instance();
 
 public:
 	HRESULT Add_Collider();

@@ -25,6 +25,7 @@ public:
 private:
 	HRESULT Add_Components();
 
+
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CCollider* m_pCollider{ nullptr };
