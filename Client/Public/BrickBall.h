@@ -13,6 +13,7 @@ public:
 		BrickColor eBrickColor{};
 		_vec3 vPos{};
 	}BALL_DESC;
+	
 private:
 	CBrickBall(_dev pDevice, _context pContext);
 	CBrickBall(const CBrickBall& rhs);
@@ -60,7 +61,7 @@ private:
 	CCollider*				m_pCurCollider{ nullptr };
 	class CCommonTrail*		m_pTrail{ nullptr };
 	//CCommonSurfaceTrail* m_pDistortionTrail { nullptr };
-	const _mat*				m_Mat{};
+
 public:
 	const _bool& Is_Combo() const { return m_isCombo; }
 	const _bool& Is_Dead() const { return m_isDead; }

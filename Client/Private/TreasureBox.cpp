@@ -349,6 +349,7 @@ HRESULT CTreasureBox::Add_Components()
 		return E_FAIL;
 	}
 	m_pBar->Set_Pass(VTPass_HPBoss);
+	m_pBar->Set_Factor(0.f);
 
 	CTextButton::TEXTBUTTON_DESC Button = {};
 	Button.eLevelID = LEVEL_STATIC;

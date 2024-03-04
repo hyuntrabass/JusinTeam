@@ -356,12 +356,27 @@ HRESULT CVTFModel::Render_Instancing(CVIBuffer_Mesh_Instance*& pInstanceBuffer, 
 			HasMaskTex = true;
 		}
 
+		_bool HasGlowTex{};
+		if (FAILED(Bind_Material(pShader, "g_GlowTexture", i, TextureType::Specular)))
+		{
+			HasGlowTex = false;
+		}
+		else
+		{
+			HasGlowTex = true;
+		}
+
 		if (FAILED(pShader->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}
 
 		if (FAILED(pShader->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(pShader->Bind_RawValue("g_HasGlowTex", &HasGlowTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}

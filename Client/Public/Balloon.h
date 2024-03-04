@@ -11,24 +11,10 @@ class CBalloon final : public CGameObject
 public:
 	typedef struct tagBalloonDesc
 	{
+		_bool isEmpty{};
 		_vec3 vPosition{};
 		_vec4 vColor;
 	}BALLOON_DESC;
-
-	enum BALLOON_ANIM
-	{
-		Attack,
-		die,
-		Idle,
-		matAction,
-		matAction001,
-		Run,
-		NodetreeAction,
-		Skill_End,
-		Skill_Loop,
-		Skill_Start,
-		ANIM_END,
-	};
 
 	enum BALLOON_STATE
 	{
@@ -56,11 +42,11 @@ private:
 	CRenderer* m_pRendererCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
 	CCollider* m_pBodyColliderCom = { nullptr };
-	CTexture* m_pDissolveTextureCom = { nullptr };
+	CTexture* m_pDissolveTextureCom = { nullptr };	
+	CTexture* m_pMaskTextureCom = { nullptr };
 
 private:
 	BrickColor		m_eCurColor{};
-	ANIM_DESC	m_Animation{};
 
 public:
 	void Init_State(_float fTimeDelta);
@@ -71,21 +57,24 @@ private:
 	BALLOON_STATE m_eCurState = STATE_IDLE;
 
 private:
-
+	_bool m_isReadyToFall{ };
+	_bool m_isFall{ true };
+	_bool m_isEmpty{};
 	_bool m_isColl{};
 	_bool m_bParticle{};
 	_bool m_bDamaged = { false };
+	_bool m_bStart = { false };
 
 	_uint m_iCount{ 1 };
 
+	_float m_fDelayTime = {};
 	_float m_fIdleTime = {};
 	_float m_fDeadTime = {};
 	_float m_bHit = {};
+	_float m_fX = {};
 
 	_vec4 m_vColor{};
 
-	class CGlowCube* m_pDefCube{ nullptr };
-	class CGlowCube* m_pCube{ nullptr };
 public:
 	const _bool& Is_Coll() const { return m_isColl; }
 

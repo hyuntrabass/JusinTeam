@@ -197,7 +197,6 @@
     <ClInclude Include="..\Public\EyeBomb.h" />
     <ClInclude Include="..\Public\FadeBox.h" />
     <ClInclude Include="..\Public\FirePillar.h" />
-    <ClInclude Include="..\Public\GlowCube.h" />
     <ClInclude Include="..\Public\Goat.h" />
     <ClInclude Include="..\Public\Groar_Boss.h" />
     <ClInclude Include="..\Public\Guard.h" />
@@ -388,7 +387,6 @@
     <ClCompile Include="..\Private\ExpBar.cpp" />
     <ClCompile Include="..\Private\EyeBomb.cpp" />
     <ClCompile Include="..\Private\FirePillar.cpp" />
-    <ClCompile Include="..\Private\GlowCube.cpp" />
     <ClCompile Include="..\Private\Guard.cpp" />
     <ClCompile Include="..\Private\GuardTower.cpp" />
     <ClCompile Include="..\Private\Hive.cpp" />

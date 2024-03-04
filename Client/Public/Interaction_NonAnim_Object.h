@@ -29,6 +29,7 @@ private:
 	CCollider* m_pColliderCom{ nullptr };
 	CCollider* m_pWideColliderCom{ nullptr };
 	class CEffect_Dummy* m_pEffect{ nullptr };
+	CTexture* m_pDissolveTexture{ nullptr };
 
 private:
 	PlaceType m_ePlaceType{ PLACE_END };
@@ -36,7 +37,6 @@ private:
 	_uint m_iShaderPass{0};
 
 	_float m_fCollectTime{};
-	_bool m_isCollision{ false };
 	_bool m_isWideCollision{ false };
 	_bool m_isCollect{};
 

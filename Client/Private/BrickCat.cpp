@@ -32,7 +32,7 @@ HRESULT CBrickCat::Init(void* pArg)
 	m_Animation.fAnimSpeedRatio = 2.f;
 	m_Animation.bSkipInterpolation = false;
 
-	m_pTransformCom->Set_Scale(_vec3(1.5f, 1.5f, 1.5f));
+	m_pTransformCom->Set_Scale(_vec3(3.f, 3.f, 3.f));
 
 	m_eCurState = STATE_CHASE;
 
@@ -56,8 +56,12 @@ HRESULT CBrickCat::Init(void* pArg)
 
 void CBrickCat::Tick(_float fTimeDelta)
 {
+	if (CCamera_Manager::Get_Instance()->Get_CameraState() != CS_BRICKGAME)
+	{
+		m_isDead = true;
+		return;
+	}
 
-	m_pTransformCom->Set_Scale(_vec3(3.f, 3.f, 3.f));
 
 	__super::Tick(fTimeDelta);
 	Init_State(fTimeDelta);
