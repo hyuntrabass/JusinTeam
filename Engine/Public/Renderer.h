@@ -60,10 +60,6 @@ public:
 		m_GalParams.fGodRayPower = fGalMegiPower;
 	}
 
-	const void Set_TurnOneBloom(_bool TurnOnBloom) {
-		m_TurnOnBloom = TurnOnBloom;
-	}
-
 	const void Set_RadialBlur_World(_vec4 vRadialCenter);
 
 	const void Set_RadialBlur_Texcoord(_vec2 vRadialCenter) {
@@ -78,6 +74,42 @@ public:
 	}
 
 	void Switch_FXAA();
+
+#pragma region On / Off
+
+	const void Set_TurnOnSSAO(_bool TurnOnSSAO) {
+		m_TurnOnSSAO = TurnOnSSAO;
+	}
+
+	const void Set_TurnOnToneMap(_bool TurnOnToneMap) {
+		m_TurnOnToneMap = TurnOnToneMap;
+	}
+
+	const void Set_TurnOnBloom(_bool TurnOnBloom) {
+		m_TurnOnBloom = TurnOnBloom;
+	}
+
+	const void Set_TurnOnMotionBlur(_bool TurnOnMotionBlur) {
+		m_bMotionBlur = TurnOnMotionBlur;
+	}
+
+	const void Set_TurnOnFXAA(_bool TurnOnFXAA) {
+		m_bFXAA = TurnOnFXAA;
+	}
+
+	const void Set_TurnOnDOF(_bool TurnOnDOF) {
+		m_TurnOnDOF = TurnOnDOF;
+	}
+
+	const void Set_TurnOnGalMegi(_bool TurnOnGalMegi) {
+		m_TurnOnGalMegi = TurnOnGalMegi;
+	}
+
+#pragma endregion
+
+
+
+
 
 #ifdef _DEBUG
 	HRESULT Add_DebugComponent(class CComponent* pDebugComponent);
@@ -168,7 +200,8 @@ private:
 	class CCompute_Shader* m_pGalMegiShader = nullptr;
 	class CCompute_RenderTarget* m_pGalMegiRT = nullptr;
 	GalMegiParams m_GalParams;
-	bool m_HasLight = false;
+	_bool m_HasLight = false;
+	_bool m_TurnOnGalMegi = true;
 
 #pragma endregion
 
@@ -199,6 +232,7 @@ private:
 
 	_float m_DOFRange = 200.f;
 	_float m_DOFPower = 0.8f;
+	_bool m_TurnOnDOF = true;
 
 public:
 	SSAO_DESC Get_SSAO() const {

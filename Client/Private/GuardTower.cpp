@@ -1,7 +1,7 @@
 #include "GuardTower.h"
 #include "UI_Manager.h"
 #include "Effect_Dummy.h"
-
+#include "Trigger_Manager.h"
 
 CGuardTower::CGuardTower(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -10,8 +10,6 @@ CGuardTower::CGuardTower(_dev pDevice, _context pContext)
 
 CGuardTower::CGuardTower(const CGuardTower& rhs)
 	: CGameObject(rhs)
-	, m_Info(rhs.m_Info)
-
 {
 }
 
@@ -28,6 +26,7 @@ HRESULT CGuardTower::Init(void* pArg)
 	m_Pattern_Type = (PATTERN_TYPE)m_Info.iIndex;
 	m_GuardTowerMatrix = m_Info.mMatrix;
 	m_LazerMatrix = m_GuardTowerMatrix;
+
 	if (FAILED(Add_Components()))
 		return E_FAIL;
 
@@ -73,6 +72,9 @@ HRESULT CGuardTower::Init(void* pArg)
 
 void CGuardTower::Tick(_float fTimeDelta)
 {
+	if (PATTERN_4 == m_Pattern_Type and CTrigger_Manager::Get_Instance()->Get_Lever1On()) {
+		return;
+	}
 
 	if (m_bAttacked == true)
 	{
@@ -103,7 +105,6 @@ void CGuardTower::Tick(_float fTimeDelta)
 	m_pTransformCom->Set_OldMatrix();
 	m_pModelCom->Get_CurrentAnimPos();
 
-
 	Init_State(fTimeDelta);
 	if (m_Pattern_Type == PATTERN_1)
 	{
@@ -118,7 +119,6 @@ void CGuardTower::Tick(_float fTimeDelta)
 		Tick_State_Pattern_3(fTimeDelta);
 	}
 
-	
 	m_pModelCom->Set_Animation(m_Animation);
 	Update_Collider();
 }
@@ -150,7 +150,7 @@ void CGuardTower::Late_Tick(_float fTimeDelta)
 		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 	}
 
-		m_pModelCom->Play_Animation(m_fAnimTime);
+	m_pModelCom->Play_Animation(m_fAnimTime);
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);

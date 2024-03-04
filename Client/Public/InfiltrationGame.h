@@ -18,11 +18,9 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 
 private:
-	vector<class CGuard*> m_Guard;
-	vector<class CGuardTower*> m_GuardTower;
+	list<class CGuard*> m_Guard;
+	list<class CGuardTower*> m_GuardTower;
 
-private:
-	HRESULT Create_Guard(const wstring& strModelTag, const wstring& strPrototypeTag);
 
 
 private:

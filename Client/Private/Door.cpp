@@ -1,23 +1,24 @@
-#include "Lever.h"
+#include "Door.h"
 
-CLever::CLever(_dev pDevice, _context pContext)
+CDoor::CDoor(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
 }
 
-CLever::CLever(const CLever& rhs)
+CDoor::CDoor(const CDoor& rhs)
 	: CGameObject(rhs)
 {
 }
 
-HRESULT CLever::Init_Prototype()
+HRESULT CDoor::Init_Prototype()
 {
+
 	return S_OK;
 }
 
-HRESULT CLever::Init(void* pArg)
+HRESULT CDoor::Init(void* pArg)
 {
-	m_Info = *(LeverInfo*)pArg;
+	m_Info = *(DoorInfo*)pArg;
 
 	if (FAILED(Add_Components()))
 		return E_FAIL;
@@ -26,9 +27,9 @@ HRESULT CLever::Init(void* pArg)
 		return E_FAIL;
 
 	m_pTransformCom->Set_Matrix(m_Info.mMatrix);
-	
+
 	PxCapsuleControllerDesc ControllerDesc{};
-	ControllerDesc.height = 0.5f; // 높이(위 아래의 반구 크기 제외
+	ControllerDesc.height = 1.2f; // 높이(위 아래의 반구 크기 제외
 	ControllerDesc.radius = 0.4f; // 위아래 반구의 반지름
 	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
 	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
@@ -41,83 +42,20 @@ HRESULT CLever::Init(void* pArg)
 	return S_OK;
 }
 
-void CLever::Tick(_float fTimeDelta)
+void CDoor::Tick(_float fTimeDelta)
 {
-	m_pTransformCom->Set_OldMatrix();
-
-
-
-	Update_Collider();
 }
 
-void CLever::Late_Tick(_float fTimeDelta)
+void CDoor::Late_Tick(_float fTimeDelta)
 {
-	m_pModelCom->Play_Animation(fTimeDelta);
-	
-	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos(), 20.f))
-	{
-		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
-	}
-
-#ifdef _DEBUG
-	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
-#endif // _DEBUG
-
 }
 
-HRESULT CLever::Render()
+HRESULT CDoor::Render()
 {
-	if (FAILED(Bind_ShaderResources()))
-		return E_FAIL;
-
-	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); ++i) {
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-			return E_FAIL;
-
-		_bool HasNorTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-		{
-			HasNorTex = false;
-		}
-		else
-		{
-			HasNorTex = true;
-		}
-
-		_bool HasMaskTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
-		{
-			HasMaskTex = false;
-		}
-		else
-		{
-			HasMaskTex = true;
-		}
-
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
-
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
-
-		if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-			return E_FAIL;
-
-		if (FAILED(m_pShaderCom->Begin(0)))
-			return E_FAIL;
-
-		if (FAILED(m_pModelCom->Render(i)))
-			return E_FAIL;
-	}
-
 	return S_OK;
 }
 
-HRESULT CLever::Add_Components()
+HRESULT CDoor::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -129,13 +67,11 @@ HRESULT CLever::Add_Components()
 		return E_FAIL;
 	}
 
-	//if(FAILED(__super::Add_Component()))
-	// 모델 추가해라
 
 	return S_OK;
 }
 
-HRESULT CLever::Bind_ShaderResources()
+HRESULT CDoor::Bind_ShaderResources()
 {
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
@@ -173,51 +109,52 @@ HRESULT CLever::Bind_ShaderResources()
 	return S_OK;
 }
 
-HRESULT CLever::Add_Collider()
+HRESULT CDoor::Add_Collider()
 {
 	Collider_Desc BodyCollDesc = {};
-	BodyCollDesc.eType = ColliderType::Sphere;
-	BodyCollDesc.fRadius = 1.f;
-	BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.fRadius, 0.f);
+	BodyCollDesc.eType = ColliderType::OBB;
+	BodyCollDesc.vExtents = _vec3(1.f, 2.5f, 1.f);
+	BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y, 0.f);
+	BodyCollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, L"Prototype_Component_Collider", L"Com_Collider_Body_Sphere", (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, L"Prototype_Component_Collider", L"Com_Collider_Body_OBB", (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-void CLever::Update_Collider()
+void CDoor::Update_Collider()
 {
 	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 }
 
-CLever* CLever::Create(_dev pDevice, _context pContext)
+CDoor* CDoor::Create(_dev pDevice, _context pContext)
 {
-	CLever* pInstance = new CLever(pDevice, pContext);
+	CDoor* pInstance = new CDoor(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CLever");
+		MSG_BOX("Failed to Create : CDoor");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CLever::Clone(void* pArg)
+CGameObject* CDoor::Clone(void* pArg)
 {
-	CLever* pInstance = new CLever(*this);
+	CDoor* pInstance = new CDoor(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CLever");
+		MSG_BOX("Failed to Clone : CDoor");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CLever::Free()
+void CDoor::Free()
 {
 	__super::Free();
 

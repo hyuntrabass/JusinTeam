@@ -1047,7 +1047,7 @@ HRESULT CRenderer::Render_Sun()
 
 	if (nullptr == Light)
 		m_HasLight = false;
-	else {
+	else if(true == m_TurnOnGalMegi) {
 		vPos = vPos + (-Light->vDirection).Get_Normalized();
 
 		vPos = XMVector3TransformCoord(vPos, m_pGameInstance->Get_Transform(TransformType::View));
@@ -1869,25 +1869,27 @@ HRESULT CRenderer::Render_LightAcc()
 	//if (FAILED(m_pGameInstance->End_MRT()))
 	//	return E_FAIL;
 
+	if (true == m_TurnOnGalMegi) {
 
-	if (FAILED(m_pGalMegiShader->Set_Shader()))
-		return E_FAIL;
+		if (FAILED(m_pGalMegiShader->Set_Shader()))
+			return E_FAIL;
 
-	if (FAILED(m_pGalMegiShader->Bind_Sampler()))
-		return E_FAIL;
+		if (FAILED(m_pGalMegiShader->Bind_Sampler()))
+			return E_FAIL;
 
-	if(FAILED(m_pGalMegiShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_Depth_Velocity"), m_pGalMegiRT->Get_UAV(), _uint2(0,0))))
-		return E_FAIL;
+		if (FAILED(m_pGalMegiShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_Depth_Velocity"), m_pGalMegiRT->Get_UAV(), _uint2(0, 0))))
+			return E_FAIL;
 
-	if (FAILED(m_pGalMegiShader->Change_Value(&m_GalParams, sizeof(GalMegiParams), 2)))
-		return E_FAIL;
+		if (FAILED(m_pGalMegiShader->Change_Value(&m_GalParams, sizeof(GalMegiParams), 2)))
+			return E_FAIL;
 
-	_uint3 ThreadGroupSize = _uint3((m_WinSize.x + 7) / 8, (m_WinSize.y + 7) / 8, 1);
-	if (FAILED(m_pGalMegiShader->Begin(ThreadGroupSize)))
-		return E_FAIL;
+		_uint3 ThreadGroupSize = _uint3((m_WinSize.x + 7) / 8, (m_WinSize.y + 7) / 8, 1);
+		if (FAILED(m_pGalMegiShader->Begin(ThreadGroupSize)))
+			return E_FAIL;
 
-	if (FAILED(FinishCommand()))
-		return E_FAIL;
+		if (FAILED(FinishCommand()))
+			return E_FAIL;
+	}
 	
 	
 #pragma endregion
@@ -2098,50 +2100,38 @@ HRESULT CRenderer::Render_HDR()
 
 #pragma region DOF
 
-	if (m_pGameInstance->Key_Down(DIK_RBRACKET))
-		m_DOFPower += 0.01f;
+	if (true == m_TurnOnDOF) {
 
-	if (m_pGameInstance->Key_Down(DIK_PERIOD))
-		m_DOFPower -= 0.01f;
+		if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_HDR"), L"MRT_Blur", 1.f)))
+			return E_FAIL;
 
-	if (m_pGameInstance->Key_Down(DIK_LBRACKET))
-		m_DOFRange -= 10.f;
+		if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_DOF")))
+			return E_FAIL;
 
-	if (m_pGameInstance->Key_Down(DIK_COMMA))
-		m_DOFRange += 10.f;
+		if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_HDR")))
+			return E_FAIL;
 
-	m_pGameInstance->Get_StringStream() << "Power: " << m_DOFPower << endl;
-	m_pGameInstance->Get_StringStream() << "Range: " << m_DOFRange << endl;
+		if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", L"Target_Bloom")))
+			return E_FAIL;
 
-	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_HDR"), L"MRT_Blur", 1.f)))
-		return E_FAIL;
+		if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Depth_Velocity_Texture", L"Target_Depth_Velocity")))
+			return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_DOF")))
-		return E_FAIL;
+		if (FAILED(m_pShader->Bind_RawValue("g_fDOFRange", &m_DOFRange, sizeof(_float))))
+			return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_HDR")))
-		return E_FAIL;
+		if (FAILED(m_pShader->Bind_RawValue("g_fDOFPower", &m_DOFPower, sizeof(_float))))
+			return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", L"Target_Bloom")))
-		return E_FAIL;
+		if (FAILED(m_pShader->Begin(16)))
+			return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Depth_Velocity_Texture", L"Target_Depth_Velocity")))
-		return E_FAIL;
+		if (FAILED(m_pVIBuffer->Render()))
+			return E_FAIL;
 
-	if (FAILED(m_pShader->Bind_RawValue("g_fDOFRange", &m_DOFRange, sizeof(_float))))
-		return E_FAIL;
-
-	if (FAILED(m_pShader->Bind_RawValue("g_fDOFPower", &m_DOFPower, sizeof(_float))))
-		return E_FAIL;
-
-	if (FAILED(m_pShader->Begin(16)))
-		return E_FAIL;
-
-	if (FAILED(m_pVIBuffer->Render()))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->End_MRT()))
-		return E_FAIL;
+		if (FAILED(m_pGameInstance->End_MRT()))
+			return E_FAIL;
+	}
 
 #pragma endregion
 
@@ -2267,8 +2257,15 @@ HRESULT CRenderer::Render_NoneBlendFinal()
 		return E_FAIL;
 
 	// HDR Texture
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_DOF")))
-		return E_FAIL;
+	if (true == m_TurnOnDOF) {
+
+		if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_DOF")))
+			return E_FAIL;
+	}
+	else {
+		if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_HDR")))
+			return E_FAIL;
+	}
 
 	if (FAILED(m_pShader->Begin(DefPass_JustDraw)))
 		return E_FAIL;
@@ -2279,7 +2276,7 @@ HRESULT CRenderer::Render_NoneBlendFinal()
 	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlendTexture", L"Target_Gal_Megi")))
 	//	return E_FAIL;
 
-	if (true == m_HasLight) {
+	if (true == m_HasLight && true == m_TurnOnGalMegi) {
 
 		if (FAILED(m_pShader->Bind_ShaderResourceView("g_BlendTexture", m_pGalMegiRT->Get_SRV())))
 			return E_FAIL;

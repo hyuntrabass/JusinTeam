@@ -58,17 +58,20 @@ public:
 	void LoopBroken() { m_isBreakLoop = false; }
 	void Set_Shake_Camera(_bool isShaking) { m_isShaking = isShaking; }
 
+
 	_bool Get_StartSuicide() { return m_bStartSuicide; }
 	_bool Get_AfterSuicide() { return m_bAfterSuicide; }
 	_bool Get_BossStart() { return m_bBossStart; }
 	_bool Is_BreakLoop() { return m_isBreakLoop; }
 	_bool Get_Shake_Camera() { return m_isShaking; }
 	TeleportSpot Get_CurrentSpot() { return m_eCurrentSpot; }
+
 private:
 	CGameInstance* m_pGameInstance = { nullptr };
 
 private:
 	TeleportSpot m_eCurrentSpot{ TS_Tutorial };
+
 private:
 	_bool m_isColl{ false };
 	_bool m_isLimited{ false };
@@ -78,6 +81,9 @@ private:
 	_bool m_isBreakLoop{};
 	_bool m_isInVillage{};
 	_bool m_isShaking{false};
+
+	_bool m_isLever1 = false;
+	_bool m_isLever2 = false;
 
 private:
 	_bool m_isCollBossTrigger = { false };

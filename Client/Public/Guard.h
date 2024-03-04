@@ -9,7 +9,6 @@ struct GuardInfo
 {
 	_uint iIndex{};
 	_mat mMatrix{};
-	_vec4 PatrolPoint{};
 };
 
 class CGuard final : public CGameObject
