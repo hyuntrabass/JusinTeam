@@ -5,6 +5,7 @@ texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
 texture2D g_MaskTexture;
 texture2D g_DissolveTexture;
+Texture2D g_GlowTexture;
 
 matrix g_OldViewMatrix;
 
@@ -20,6 +21,7 @@ float g_fDissolveRatio;
 
 bool g_HasNorTex;
 bool g_HasMaskTex;
+bool g_HasGlowTex;
 bool g_bSelected = false;
 
 float4 g_vClipPlane;
@@ -195,6 +197,7 @@ struct PS_OUT_DEFERRED
     vector vNormal : SV_Target1;
     vector vDepth : SV_Target2;
     vector vRimMask : SV_Target3;
+    vector vGlow : SV_Target4;
 };
 
 struct PS_OUT
@@ -231,10 +234,15 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
         vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
+    vector vGlow = 0.f;
+    if (g_HasGlowTex)
+        vGlow = g_GlowTexture.Sample(LinearSampler, Input.vTex);
+    
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
-
+    Output.vGlow = vGlow;
+    
     return Output;
 }
 
@@ -282,9 +290,14 @@ PS_OUT_DEFERRED PS_Main_AlphaTest(PS_IN Input)
         vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
+    vector vGlow = 0.f;
+    if (g_HasGlowTex)
+        vGlow = g_GlowTexture.Sample(LinearSampler, Input.vTex);
+    
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
+    Output.vGlow = vGlow;
 
 
     return Output;
@@ -323,10 +336,15 @@ PS_OUT_DEFERRED PS_Main_Dissolve(PS_IN Input)
         vMask = g_MaskTexture.Sample(PointSampler, Input.vTex);
     }
     
+    vector vGlow = 0.f;
+    if (g_HasGlowTex)
+        vGlow = g_GlowTexture.Sample(LinearSampler, Input.vTex);
+    
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal * 0.5f + 0.5f, vMask.b);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_CamNF.y, Input.vDir.x, Input.vDir.y);
+    Output.vGlow = vGlow;
 
     
     return Output;
