@@ -85,6 +85,11 @@ HRESULT CLauncher::Init(void* pArg)
 		_mat Matrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) /*+ _vec3(0.f, 0.3f, 0.f)*/);
 		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Cannon_Parti");
 		Info.pMatrix = &Matrix;
+		m_pLauncherParticle = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		Matrix = _mat::CreateScale(1.5f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_BlueGem_Shield");
+		Info.pMatrix = &Matrix;
 		m_pLauncher = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
 		m_iDestroyCount = 0;
@@ -95,6 +100,8 @@ HRESULT CLauncher::Init(void* pArg)
 	case Client::CLauncher::TYPE_BLUEGEM:
 
 	{
+		m_iHP = 1;
+
 		m_strModelTag = TEXT("Prototype_Model_BlueGem");
 		m_Animation.iAnimIndex = 0;
 		m_Animation.isLoop = true;
@@ -140,8 +147,13 @@ HRESULT CLauncher::Init(void* pArg)
 
 		_mat Matrix = _mat::CreateScale(1.2f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 0.3f, 0.f));
 		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_BlueGem_Shield");
+		//Info.pMatrix = &Matrix;
+		//m_pLauncher = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		Matrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 1.5f, 0.f));
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_BlueGem_Parti");
 		Info.pMatrix = &Matrix;
-		m_pLauncher = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+		m_pLauncherParticle = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
 	}
 
@@ -239,7 +251,7 @@ void CLauncher::Tick(_float fTimeDelta)
 		{
 			if (m_fProjectileCreateTime >= 1.5f)
 			{
-				if (m_iProjectileCount <= 3)
+				if (m_iProjectileCount <= 2)
 				{
 					for (size_t i = 0; i < 8; i++)
 					{
@@ -273,6 +285,7 @@ void CLauncher::Tick(_float fTimeDelta)
 		if (m_pLauncher)
 		{
 			m_pLauncher->Tick(fTimeDelta);
+			m_pLauncherParticle->Tick(fTimeDelta);
 		}
 
 		if (m_fDissolveRatio <= 0.f)
@@ -293,6 +306,7 @@ void CLauncher::Tick(_float fTimeDelta)
 		if (m_iDestroyCount >= 4)
 		{
 			Safe_Release(m_pLauncher);
+			Safe_Release(m_pLauncherParticle);
 
 			m_Animation.iAnimIndex = 2;
 			m_Animation.fAnimSpeedRatio = 2.f;
@@ -363,9 +377,16 @@ void CLauncher::Tick(_float fTimeDelta)
 
 	case Client::CLauncher::TYPE_BLUEGEM:
 
-		if (m_pLauncher)
+		if (m_iHP <= 0 && m_pColliderCom)
 		{
-			m_pLauncher->Tick(fTimeDelta);
+			m_pGameInstance->Delete_CollisionObject(this);
+			Safe_Release(m_pColliderCom);
+		}
+
+		if (m_pLauncherParticle)
+		{
+			//m_pLauncher->Tick(fTimeDelta);
+			m_pLauncherParticle->Tick(fTimeDelta);
 		}
 
 		if (m_fDissolveRatio <= 0.f)
@@ -387,9 +408,10 @@ void CLauncher::Tick(_float fTimeDelta)
 		}
 		else
 		{
-			if (m_pLauncher)
+			if (m_pLauncherParticle)
 			{
-				Safe_Release(m_pLauncher);
+				//Safe_Release(m_pLauncher);
+				Safe_Release(m_pLauncherParticle);
 			}
 
 			m_pTransformCom->Go_Down(fTimeDelta);
@@ -414,11 +436,26 @@ void CLauncher::Tick(_float fTimeDelta)
 
 	case Client::CLauncher::TYPE_BARRICADE:
 
-		if (m_fTime >= 1.f)
+		if (m_fTime >= 18.f)
 		{
+			m_Animation.bRewindAnimation = true;
+
+			_float fAnimPos = m_pModelCom->Get_CurrentAnimPos();
+			
+			if (fAnimPos <= 0.f)
+			{
+				Kill();
+			}
+
+			//m_pTransformCom->Set_Speed(3.f);
+			//m_pTransformCom->Go_Down(fTimeDelta);
+
+			//if (m_pTransformCom->Get_State(State::Pos).y <= -5.f)
+			//{
+			//	Kill();
+			//}
 		}
 
-		_float fAnimPos = m_pModelCom->Get_CurrentAnimPos();
 		m_pModelCom->Set_Animation(m_Animation);
 
 		break;
@@ -440,6 +477,7 @@ void CLauncher::Late_Tick(_float fTimeDelta)
 		if (m_pLauncher)
 		{
 			m_pLauncher->Late_Tick(fTimeDelta);
+			m_pLauncherParticle->Late_Tick(fTimeDelta);
 		}
 
 		m_pModelCom->Play_Animation(fTimeDelta);
@@ -447,9 +485,10 @@ void CLauncher::Late_Tick(_float fTimeDelta)
 		break;
 	case Client::CLauncher::TYPE_BLUEGEM:
 
-		if (m_pLauncher)
+		if (m_pLauncherParticle)
 		{
-			m_pLauncher->Late_Tick(fTimeDelta);
+			//m_pLauncher->Late_Tick(fTimeDelta);
+			m_pLauncherParticle->Late_Tick(fTimeDelta);
 		}
 
 		if (m_bDestroy == true)
@@ -590,8 +629,7 @@ void CLauncher::Set_Damage(_int iDamage, _uint iDamageType)
 
 			++m_iDestroyCount;
 
-			//m_pGameInstance->Delete_CollisionObject(this);
-			//Safe_Release(m_pColliderCom);
+			m_iHP = 0;
 		}
 	}
 }
@@ -671,7 +709,22 @@ HRESULT CLauncher::Bind_ShaderResources()
 		switch (m_eType)
 		{
 		case Client::CLauncher::TYPE_RANDOM_POS:
-			vColor = Colors::Gold;
+
+			switch (m_iProjectileCount)
+			{
+			case 0:
+				vColor = Colors::Green;
+				break;
+
+			case 1:
+				vColor = Colors::Gold;
+				break;
+
+			case 2:
+				vColor = Colors::Red;
+				break;
+			}
+
 			break;
 		case Client::CLauncher::TYPE_CANNON:
 			vColor = Colors::Cyan;
@@ -782,4 +835,8 @@ void CLauncher::Free()
 	Safe_Release(m_pDissolveTextureCom);
 
 	Safe_Release(m_pLauncher);
+	Safe_Release(m_pLauncherParticle);
+
+	Safe_Release(m_pFrameEffect);
+	Safe_Release(m_pBaseEffect);
 }
