@@ -114,7 +114,7 @@ void CInteraction_NonAnim::Tick(_float fTimeDelta)
 
 	if (!m_iHP)
 	{
-		//m_pShaderCom->Set_PassIndex(µðÁ¹ºê ÆÐ½º);
+		m_pShaderCom->Set_PassIndex(6);
 	}
 	else if (m_pColliderCom->Intersect(pCollider))
 	{

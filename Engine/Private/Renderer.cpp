@@ -2097,22 +2097,6 @@ HRESULT CRenderer::Render_HDR()
 
 
 #pragma region DOF
-
-	if (m_pGameInstance->Key_Down(DIK_RBRACKET))
-		m_DOFPower += 0.01f;
-
-	if (m_pGameInstance->Key_Down(DIK_PERIOD))
-		m_DOFPower -= 0.01f;
-
-	if (m_pGameInstance->Key_Down(DIK_LBRACKET))
-		m_DOFRange -= 10.f;
-
-	if (m_pGameInstance->Key_Down(DIK_COMMA))
-		m_DOFRange += 10.f;
-
-	m_pGameInstance->Get_StringStream() << "Power: " << m_DOFPower << endl;
-	m_pGameInstance->Get_StringStream() << "Range: " << m_DOFRange << endl;
-
 	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_HDR"), L"MRT_Blur", 1.f)))
 		return E_FAIL;
 

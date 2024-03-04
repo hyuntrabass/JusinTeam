@@ -308,7 +308,11 @@ PS_OUT_DEFERRED PS_Main_Dissolve(PS_IN Input)
     PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
-    
+    if (vMtrlDiffuse.a < 0.5f)
+    {
+        discard;
+    }
+        
     float fDissolve = g_DissolveTexture.Sample(LinearSampler, Input.vTex).r + 0.1f;
     vMtrlDiffuse.a = saturate((fDissolve - g_fDissolveRatio) * 10.f);
     if(vMtrlDiffuse.a <= 0.f)
