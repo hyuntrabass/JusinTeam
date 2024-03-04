@@ -40,7 +40,8 @@ public:
 	virtual HRESULT Render() override;
 
 public:
-
+	_bool Get_IsSelect() { return m_IsSelect; }
+	Buff Get_Buff() { return m_eBuff; }
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 
@@ -53,6 +54,8 @@ private:
 	class CTextButton*		m_pExitButton{ nullptr };
 	CTextButton*			m_SelectButton{ nullptr };
 
+private:
+	_bool m_IsSelect{};
 
 private:
 	HRESULT Add_Parts();

@@ -219,6 +219,7 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 				Buff_Desc.vPos = _vec2(960.f, 360.f);
 				 pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
+				m_eNextPhase = Phase1;
 			}
 			break;
 			case Phase1:
@@ -238,6 +239,7 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 				Buff_Desc.vPos = _vec2(960.f, 360.f);
 				 pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
+				m_eNextPhase = Phase2;
 			}
 			break;
 			case Phase2:
@@ -257,6 +259,7 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 				Buff_Desc.vPos = _vec2(960.f, 360.f);
 				 pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
+				m_eNextPhase = Phase3;
 			}
 			break;
 			}
@@ -500,8 +503,49 @@ void CCescoGame::Tick_Phase3(_float fTimeDelta)
 
 void CCescoGame::Tick_Phase_Buff(_float fTimeDelta)
 {
+	_bool IsSelet{};
+	for (auto& Buffcard : m_vecBuffCard)
+	{
+		Buffcard->Tick(fTimeDelta);
+		if (Buffcard->Get_IsSelect())
+		{
+			IsSelet = true;
+			Buff eBuff = Buffcard->Get_Buff();
+			switch (eBuff)
+			{
+			case Client::Buff_MaxHp:
 
+				break;
+			case Client::Buff_HpRegen:
+				break;
+			case Client::Buff_MpRegen:
+				break;
+			case Client::Buff_Attack:
+				break;      
+			case Client::Buff_Speed:
+				break;
+			case Client::Buff_CoolDown:
+				break;
+			case Client::Buff_BloodDrain:
+				break;
+			case Client::Buff_PoisonImmune:
+				break;
+			case Client::Buff_MonRegenDown:
+				m_iMonsterSpawnSpeed = 1.f;
+				break;
+			}
+		}
+	}
 
+	if (IsSelet)
+	{
+		for (auto& Buffcard : m_vecBuffCard)
+		{
+			Safe_Release(Buffcard);
+		}
+		m_vecBuffCard.clear();
+		m_eCurrentPhase = m_eNextPhase;
+	}
 }
 
 HRESULT CCescoGame::Create_CommonMonster(const wstring& strModelTag, _vec3 SpawnPosition, const wstring& strPrototypeTag)
