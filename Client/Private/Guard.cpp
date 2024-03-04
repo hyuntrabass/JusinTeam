@@ -359,7 +359,7 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 
 		break;
 	case STATE_CHASE:
-		m_pTransformCom->Set_Speed(3.f);
+		m_pTransformCom->Set_Speed(5.f);
 		m_fAttackTime += fTimeDelta;
 
 		if(fDist < 2.f)
@@ -543,7 +543,7 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 
 		break;
 	case STATE_CHASE:
-		m_pTransformCom->Set_Speed(3.f);
+		m_pTransformCom->Set_Speed(5.f);
 		m_fAttackTime += fTimeDelta;
 
 		if (fDist < 2.f)
@@ -683,7 +683,7 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 		break;
 
 	case STATE_CHASE:
-		m_pTransformCom->Set_Speed(3.f);
+		m_pTransformCom->Set_Speed(5.f);
 		m_fAttackTime += fTimeDelta;
 
 		if (fDist < 2.f)
