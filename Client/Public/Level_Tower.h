@@ -22,9 +22,6 @@ private:
 private: // Monster, Boss
 	HRESULT Ready_Human_Boss();
 
-private: // NPC
-	HRESULT Ready_Guard();
-
 private: // SescoGame
 	HRESULT Ready_SescoGame();
 

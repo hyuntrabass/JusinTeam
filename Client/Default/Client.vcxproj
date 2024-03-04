@@ -178,7 +178,6 @@
     <ClInclude Include="..\Public\Cat.h" />
     <ClInclude Include="..\Public\Aur.h" />
     <ClInclude Include="..\Public\CescoGame.h" />
-    <ClInclude Include="..\Public\Cesco_Poison.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Coin.h" />
@@ -194,6 +193,7 @@
     <ClInclude Include="..\public\Effect_Manager.h" />
     <ClInclude Include="..\Public\Event_Manager.h" />
     <ClInclude Include="..\Public\ExpBar.h" />
+    <ClInclude Include="..\Public\EyeBomb.h" />
     <ClInclude Include="..\Public\FadeBox.h" />
     <ClInclude Include="..\Public\FirePillar.h" />
     <ClInclude Include="..\Public\Goat.h" />
@@ -208,6 +208,7 @@
     <ClInclude Include="..\Public\HpBoss.h" />
     <ClInclude Include="..\Public\HpMonster.h" />
     <ClInclude Include="..\Public\Human_Boss.h" />
+    <ClInclude Include="..\Public\InfiltrationGame.h" />
     <ClInclude Include="..\Public\InfinityTower.h" />
     <ClInclude Include="..\Public\Interaction_Anim_Object.h" />
     <ClInclude Include="..\Public\Interaction_NonAnim_Object.h" />
@@ -291,6 +292,7 @@
     <ClInclude Include="..\Public\Statue.h" />
     <ClInclude Include="..\Public\SummonWindow.h" />
     <ClInclude Include="..\Public\SummonWindowPet.h" />
+    <ClInclude Include="..\Public\Sun.h" />
     <ClInclude Include="..\Public\SurvivalGame.h" />
     <ClInclude Include="..\Public\Survival_Mon.h" />
     <ClInclude Include="..\Public\Symbol.h" />
@@ -367,7 +369,6 @@
     <ClCompile Include="..\Private\Cat.cpp" />
     <ClCompile Include="..\Private\Aur.cpp" />
     <ClCompile Include="..\Private\CescoGame.cpp" />
-    <ClCompile Include="..\Private\Cesco_Poison.cpp" />
     <ClCompile Include="..\Private\CharacterSelect.cpp" />
     <ClCompile Include="..\Private\Coin.cpp" />
     <ClCompile Include="..\Private\CutScene_Curve.cpp" />
@@ -382,12 +383,14 @@
     <ClCompile Include="..\private\Effect_Manager.cpp" />
     <ClCompile Include="..\Private\Event_Manager.cpp" />
     <ClCompile Include="..\Private\ExpBar.cpp" />
+    <ClCompile Include="..\Private\EyeBomb.cpp" />
     <ClCompile Include="..\Private\FirePillar.cpp" />
     <ClCompile Include="..\Private\Guard.cpp" />
     <ClCompile Include="..\Private\GuardTower.cpp" />
     <ClCompile Include="..\Private\Hive.cpp" />
     <ClCompile Include="..\Private\Hook.cpp" />
     <ClCompile Include="..\Private\Human_Boss.cpp" />
+    <ClCompile Include="..\Private\InfiltrationGame.cpp" />
     <ClCompile Include="..\Private\InfinityTower.cpp" />
     <ClCompile Include="..\Private\Interaction_Anim_Object.cpp" />
     <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp" />
@@ -478,6 +481,7 @@
     <ClCompile Include="..\Private\Statue.cpp" />
     <ClCompile Include="..\Private\SummonWindow.cpp" />
     <ClCompile Include="..\Private\SummonWindowPet.cpp" />
+    <ClCompile Include="..\Private\Sun.cpp" />
     <ClCompile Include="..\Private\SurvivalGame.cpp" />
     <ClCompile Include="..\Private\Survival_Mon.cpp" />
     <ClCompile Include="..\Private\Symbol.cpp" />

@@ -117,19 +117,21 @@ void CSky::Late_Tick(_float fTimeDelta)
 		return;
 	}
 
-	_vec4 vPos = m_pGameInstance->Get_CameraPos() - _vec4(0.f, 15.f, 0.f, 0.f);
-
-	m_pTransformCom->Set_State(State::Pos, vPos);
-
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Priority, this);
 }
 
 HRESULT CSky::Render()
 {
+
+
 	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
 	{
 		return S_OK;
 	}
+
+	_vec4 vPos = m_pGameInstance->Get_CameraPos() - _vec4(0.f, 15.f, 0.f, 0.f);
+
+	m_pTransformCom->Set_State(State::Pos, vPos);
 
 	if (FAILED(Bind_ShaderResources()))
 	{

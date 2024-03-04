@@ -43,11 +43,15 @@ HRESULT CDummy::Init(void* pArg)
 
 	m_Info = *(DummyInfo*)pArg;
 	m_eType = m_Info.eType;
+	m_iIndex = m_Info.iIndex;
+
 	if(m_Info.eType == ItemType::Monster || m_Info.eType == ItemType::NPC )
 	{
 		m_isAnim = true;
-		m_Animation.iAnimIndex = 0;
-		m_Animation.isLoop = false;
+		m_Animation.iAnimIndex = 1;
+		m_Animation.fAnimSpeedRatio = 1.f;
+		m_pTransformCom->Set_Speed(1.f);
+		m_Animation.isLoop = true;
 	}
 	else if (m_Info.eType == ItemType::Trigger)
 	{
@@ -87,12 +91,15 @@ void CDummy::Tick(_float fTimeDelta)
 	{
 		m_pCollider->Update(m_pTransformCom->Get_World_Matrix());
 	}
+
+	m_pModelCom->Set_Animation(m_Animation);
+
 }
 
 void CDummy::Late_Tick(_float fTimeDelta)
 {
 	if (m_eType == ItemType::Monster || m_eType == ItemType::NPC)
-		m_pModelCom->Play_Animation(fTimeDelta);
+		m_pModelCom->Play_Animation(0.1f);
 
 	#ifdef _DEBUG
 	if(m_eType == ItemType::Trigger)
@@ -233,6 +240,14 @@ HRESULT CDummy::Add_Components()
 		m_iOutLineShaderPass = StaticPass_OutLine;
 	}
 	
+	if (m_isAnim == true)
+	{
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Info.Prototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
+		{
+			return E_FAIL;
+		}
+	}
+	else
 	{
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Info.Prototype, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		{

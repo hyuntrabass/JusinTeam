@@ -6,6 +6,7 @@
 #include "NPC.h"
 #include "NPC_Dummy.h"
 #include "Guard.h"
+#include "GuardTower.h"
 #include "Map.h"
 #include "Trigger_Manager.h"
 #include "VTFMonster.h"
@@ -59,12 +60,7 @@ HRESULT CLevel_Tower::Init()
 		MSG_BOX("Failed to Ready Survival Game");
 		return E_FAIL;
 	}
-
-	if (FAILED(Ready_Guard()))
-	{
-		MSG_BOX("Failed to Ready Guard");
-		return E_FAIL;
-	}
+	
 	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 	CUI_Manager::Get_Instance()->Open_InfinityTower(true);
 	m_pGameInstance->Set_FogNF(_vec2(50.f, 2000.f));
@@ -101,6 +97,9 @@ void CLevel_Tower::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD6))
 	{
 		CTrigger_Manager::Get_Instance()->Teleport(TS_MiniDungeon);
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_InfiltrationGame"), TEXT("Prototype_GameObject_InfiltrationGame"))))
+			return;
 		return;
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD7))
@@ -134,6 +133,35 @@ void CLevel_Tower::Tick(_float fTimeDelta)
 		EffectDesc.isFollow = true;
 		CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 	}
+
+	if (m_pGameInstance->Key_Down(DIK_NUMPADMINUS))
+	{
+		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+		GuardInfo Desc{};
+		Desc.mMatrix = pPlayerTransform->Get_World_Matrix();
+		//_vec3 vPos = pPlayerTransform->Get_State(State::Pos);
+		//vPos.y += 1.5f;s
+		Desc.iIndex++;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Guard"), TEXT("Prototype_GameObject_Guard"), &Desc)))
+		{
+			return;
+		}
+	}
+	if (m_pGameInstance->Key_Down(DIK_NUMPADPLUS))
+	{
+		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+		GuardTowerInfo Desc{};
+		Desc.mMatrix = pPlayerTransform->Get_World_Matrix();
+		Desc.iIndex++;
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Guard"), TEXT("Prototype_GameObject_GuardTower"), &Desc)))
+		{
+			return;
+		}
+	}
+
+
 }
 
 HRESULT CLevel_Tower::Render()
@@ -149,49 +177,6 @@ HRESULT CLevel_Tower::Ready_Light()
 	return S_OK;
 }
 
-HRESULT CLevel_Tower::Ready_Guard()
-{
-	GuardInfo Info{};
-	const TCHAR* pGetPath = L"../Bin/Data/MiniDungeon_NPCData.dat";
-
-	std::ifstream inFile(pGetPath, std::ios::binary);
-
-	if (!inFile.is_open())
-	{
-		MessageBox(g_hWnd, L"MiniDungeon_NPCData 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
-		return E_FAIL;
-	}
-
-	_uint MonsterListSize;
-	inFile.read(reinterpret_cast<char*>(&MonsterListSize), sizeof(_uint));
-
-
-	for (_uint i = 0; i < MonsterListSize; ++i)
-	{
-		_ulong MonsterPrototypeSize;
-		inFile.read(reinterpret_cast<char*>(&MonsterPrototypeSize), sizeof(_ulong));
-
-		wstring MonsterPrototype;
-		MonsterPrototype.resize(MonsterPrototypeSize);
-		inFile.read(reinterpret_cast<char*>(&MonsterPrototype[0]), MonsterPrototypeSize * sizeof(wchar_t));
-
-		_mat MonsterWorldMat;
-		inFile.read(reinterpret_cast<char*>(&MonsterWorldMat), sizeof(_mat));
-
-		Info.mMatrix = MonsterWorldMat;
-		Info.iIndex = i;
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Guard"), &Info)))
-		{
-			MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
-			return E_FAIL;
-		}
-
-	}
-	inFile.close();
-	return S_OK;
-}
-
 HRESULT CLevel_Tower::Ready_Human_Boss()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Boss"), TEXT("Prototype_GameObject_Human_Boss"))))
@@ -201,6 +186,8 @@ HRESULT CLevel_Tower::Ready_Human_Boss()
 
 	return S_OK;
 }
+
+
 
 HRESULT CLevel_Tower::Ready_SescoGame()
 {

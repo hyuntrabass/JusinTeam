@@ -133,6 +133,7 @@ private:
 	class CEffect_Dummy* m_pCounterEffect{ nullptr };
 	CCommonSurfaceTrail* m_pWeapon_Trail{ nullptr };
 	CCommonSurfaceTrail* m_pWeapon_Distortion_Trail{ nullptr };
+
 private:
 	ANIM_DESC m_Animation{};
 	STATE m_eState = BOSS_STATE_END;

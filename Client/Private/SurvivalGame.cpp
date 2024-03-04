@@ -82,6 +82,14 @@ void CSurvivalGame::Init_Pattern(_float fTimeDelta)
 			m_fTime[1] = 0.f;
 			m_iCount = 0;
 
+			for (size_t i = 0; i < 6; i++)
+			{
+				CLauncher::LAUNCHER_TYPE eType = CLauncher::TYPE_BARRICADE;
+				m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Launcher"), TEXT("Prototype_GameObject_Launcher"), &eType);
+
+			}
+
+
 			break;
 		case Client::CSurvivalGame::STAGE04:
 			m_fTime[0] = 0.f;
@@ -126,7 +134,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 		if (m_pGameInstance->Key_Down(DIK_UP))
 		{
-			m_eCurStage = STAGE04;
+			m_eCurStage = STAGE01;
 		}
 
 		break;
@@ -190,27 +198,56 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 		m_strStage = L"스테이지 3";
 
-		if (m_fTime[0] >= 1.5f)
+		//if (m_fTime[0] >= 1.5f)
+		//{
+		//	CProjectile::PROJECTILE_DESC Desc = {};
+		//	Desc.eType = CProjectile::TYPE_GUIDED_MISSILE;
+
+		//	for (size_t i = 0; i < 8; i++)
+		//	{
+		//		_randFloat Random = _randFloat(-1.f, 1.f);
+		//		_vec3 vRandomDir = _vec3(Random(RandomNumber), 0.f, Random(RandomNumber)).Get_Normalized();
+
+		//		Desc.vStartPos = _vec3(-2000.f, 0.f, 2000.f) + 10 * vRandomDir;
+		//		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
+		//	}
+
+		//	m_fTime[0] = 0.f;
+		//	++m_iCount;
+		//}
+
+		//if (m_iCount >= 4)
+		//{
+		//	m_eCurStage = STAGE_INIT;
+		//}
+
+		if (m_fTime[0] >= 1.f)
 		{
+			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+			_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+
+			// 창 생성
 			CProjectile::PROJECTILE_DESC Desc = {};
-			Desc.eType = CProjectile::TYPE_GUIDED_MISSILE;
+			Desc.eType = CProjectile::TYPE_SPEAR;
+			Desc.pLauncherTransform = m_pTransformCom;
+			Desc.vStartPos = vPlayerPos + _vec3(0.f, 4.f, 0.f);
 
-			for (size_t i = 0; i < 8; i++)
+			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
+
+			random_device dev;
+			_randNum RandomNumber(dev());
+			_randFloat RandomOffsetX = _randFloat(-3.f, 3.f);
+			_randFloat RandomOffsetZ = _randFloat(-12.f, 12.f);
+
+			for (size_t i = 0; i < 30; i++)
 			{
-				_randFloat Random = _randFloat(-1.f, 1.f);
-				_vec3 vRandomDir = _vec3(Random(RandomNumber), 0.f, Random(RandomNumber)).Get_Normalized();
+				Desc.vStartPos = _vec3(CENTER_POS.x + RandomOffsetX(RandomNumber), CENTER_POS.y + 4.f, CENTER_POS.z + RandomOffsetZ(RandomNumber));
 
-				Desc.vStartPos = _vec3(-2000.f, 0.f, 2000.f) + 10 * vRandomDir;
 				m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
 			}
 
 			m_fTime[0] = 0.f;
-			++m_iCount;
-		}
 
-		if (m_iCount >= 4)
-		{
-			m_eCurStage = STAGE_INIT;
 		}
 
 		break;

@@ -29,6 +29,8 @@ HRESULT CRenderer::Init_Prototype()
 	m_WinSize.x = static_cast<_uint>(ViewportDesc.Width);
 	m_WinSize.y = static_cast<_uint>(ViewportDesc.Height);
 
+
+
 #pragma region For_MRT_GameObject
 
 	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Diffuse"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f), true)))
@@ -245,6 +247,17 @@ HRESULT CRenderer::Init_Prototype()
 
 	if (FAILED(m_pGameInstance->Add_RenderTarget(L"Target_Distortion", static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
+
+#pragma endregion
+
+#pragma region For_Gal_Megi
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(L"Target_Sun", static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(L"Target_Gal_Megi", static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
 
 #pragma endregion
 
@@ -677,6 +690,27 @@ HRESULT CRenderer::Init_Prototype()
 
 #pragma endregion
 
+#pragma region MRT_Gal_Megi
+	
+	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_Sun", L"Target_Sun")))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_Gal_Megi", L"Target_Gal_Megi")))
+		return E_FAIL;
+
+	m_pGalMegiShader = CCompute_Shader::Create(m_pDevice, m_pDeferrd, L"../Bin/ShaderFiles/Shader_Blur.hlsl", "GalMegi", sizeof(GalMegiParams));
+	m_pGalMegiRT = CCompute_RenderTarget::Create(m_pDevice, m_pDeferrd, m_WinSize, DXGI_FORMAT_R8G8B8A8_UNORM);
+
+	if (FAILED(m_pGalMegiShader->Create_Sampler(Desc)))
+		return E_FAIL;
+	
+	m_GalParams.Samples = 20;
+
+#pragma endregion
+
+
+#pragma region DOF
+
 	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_DOF"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 	{
 		return E_FAIL;
@@ -684,6 +718,8 @@ HRESULT CRenderer::Init_Prototype()
 
 	if (FAILED(m_pGameInstance->Add_MRT(L"MRT_DOF", L"Target_DOF")))
 		return E_FAIL;
+
+#pragma endregion
 
 	if (FAILED(FinishCommand()))
 		return E_FAIL;
@@ -722,7 +758,6 @@ HRESULT CRenderer::Draw_RenderGroup()
 	//	return E_FAIL;
 	//}
 
-
 	if (FAILED(Render_Shadow()))
 	{
 		MSG_BOX("Failed to Render : Shadow");
@@ -740,6 +775,12 @@ HRESULT CRenderer::Draw_RenderGroup()
 
 	if (FAILED(Clear_Instance()))
 		return E_FAIL;
+
+	if (FAILED(Render_Sun())) {
+		MSG_BOX("Failed to Render : Sun");
+		return E_FAIL;
+	}
+
 
 	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_GameObjects"))))
 	{
@@ -970,6 +1011,54 @@ HRESULT CRenderer::Render_Priority()
 	}
 
 	m_RenderObjects[RG_Priority].clear();
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_Sun()
+{
+
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_Sun")))
+		return E_FAIL;
+
+	for (auto& pGameObject : m_RenderObjects[RG_Sun])
+	{
+		if (pGameObject) {
+			if (FAILED(pGameObject->Render()))
+			{
+				MSG_BOX("Failed to Render");
+				return E_FAIL;
+			}
+
+		}
+		Safe_Release(pGameObject);
+	}
+
+	m_RenderObjects[RG_Sun].clear();
+
+	if (FAILED(m_pGameInstance->End_MRT()))
+		return E_FAIL;
+
+
+
+	_vec4 vPos{};
+	vPos = m_pGameInstance->Get_CameraPos();
+	LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(0, L"Light_Main");
+
+	if (nullptr == Light)
+		m_HasLight = false;
+	else {
+		vPos = vPos + (-Light->vDirection).Get_Normalized();
+
+		vPos = XMVector3TransformCoord(vPos, m_pGameInstance->Get_Transform(TransformType::View));
+		vPos = XMVector3TransformCoord(vPos, m_pGameInstance->Get_Transform(TransformType::Proj));
+		vPos = vPos / vPos.w;
+		m_GalParams.vLightPos = vPos;
+		m_GalParams.LightColor = Light->vDiffuse;
+		m_GalParams.vLightDir = Light->vDirection;
+		m_GalParams.CamLook = m_pGameInstance->Get_CameraLook();
+		m_HasLight = true;
+	}
 	return S_OK;
 }
 
@@ -1412,6 +1501,18 @@ HRESULT CRenderer::Render_Reflection()
 				}
 			}
 
+			//for (auto& pGameObject : m_RenderObjects[RG_Sun])
+			//{
+			//	if (pGameObject)
+			//	{
+			//		if (FAILED(pGameObject->Render_Reflection(vClipPlane)))
+			//		{
+			//			MSG_BOX("Failed to Render");
+			//			return E_FAIL;
+			//		}
+			//	}
+			//}
+
 			for (auto& pGameObject : m_RenderObjects[RG_NonBlend])
 			{
 				if (pGameObject)
@@ -1704,8 +1805,93 @@ HRESULT CRenderer::Render_LightAcc()
 
 #pragma endregion
 
+#pragma region MRT_Gal_Megi
+
+	//if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_SunMask")))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Depth_Velocity_Texture", L"Target_Depth_Velocity")))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_Sun")))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pShader->Begin(17)))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pVIBuffer->Render()))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->End_MRT()))
+	//	return E_FAIL;
+
+	//if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_BloomSun"), L"MRT_SunBloom", 1.f)))
+	//	return E_FAIL;
+
+	//if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_SunShadow"), L"MRT_SunBlur", 1.f)))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pRadialShader->Set_Shader()))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pRadialShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_SunMask"), m_pSunMaskRadialRT->Get_UAV(), _uint2(0, 0))))
+	//	return E_FAIL;
+
+	////m_GalMegiRBParams.fRadialBlur_Power = 50.f;
+	//if (FAILED(m_pRadialShader->Change_Value(&m_GalMegiRBParams, sizeof(RadialParams), 1)))
+	//	return E_FAIL;
+
+	//_uint2 ThreadGroupSize = _uint2((m_WinSize.x + 7) / 8, (m_WinSize.y + 7) / 8);
+	//if (FAILED(m_pRadialShader->Begin(_uint3(ThreadGroupSize.x, ThreadGroupSize.y, 1))))
+	//	return E_FAIL;
+
+	//if (FAILED(FinishCommand()))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_Gal_Megi")))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_SunBlur")))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pShader->Bind_ShaderResourceView("g_BlurTexture", m_pSunMaskRadialRT->Get_SRV())))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BloomTexture", L"Target_SunBloom")))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pShader->Begin(18)))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pVIBuffer->Render()))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->End_MRT()))
+	//	return E_FAIL;
+
+
+	if (FAILED(m_pGalMegiShader->Set_Shader()))
+		return E_FAIL;
+
+	if (FAILED(m_pGalMegiShader->Bind_Sampler()))
+		return E_FAIL;
+
+	if(FAILED(m_pGalMegiShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_Depth_Velocity"), m_pGalMegiRT->Get_UAV(), _uint2(0,0))))
+		return E_FAIL;
+
+	if (FAILED(m_pGalMegiShader->Change_Value(&m_GalParams, sizeof(GalMegiParams), 2)))
+		return E_FAIL;
+
+	_uint3 ThreadGroupSize = _uint3((m_WinSize.x + 7) / 8, (m_WinSize.y + 7) / 8, 1);
+	if (FAILED(m_pGalMegiShader->Begin(ThreadGroupSize)))
+		return E_FAIL;
+
 	if (FAILED(FinishCommand()))
 		return E_FAIL;
+	
+	
+#pragma endregion
+
 
 	return S_OK;
 }
@@ -1910,6 +2096,39 @@ HRESULT CRenderer::Render_HDR()
 		return E_FAIL;
 
 
+#pragma region DOF
+	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_HDR"), L"MRT_Blur", 1.f)))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_DOF")))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_HDR")))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", L"Target_Bloom")))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Depth_Velocity_Texture", L"Target_Depth_Velocity")))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Bind_RawValue("g_fDOFRange", &m_DOFRange, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Bind_RawValue("g_fDOFPower", &m_DOFPower, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Begin(16)))
+		return E_FAIL;
+
+	if (FAILED(m_pVIBuffer->Render()))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->End_MRT()))
+		return E_FAIL;
+
+#pragma endregion
+
 
 	return S_OK;
 }
@@ -2013,7 +2232,6 @@ HRESULT CRenderer::Render_Distortion()
 
 HRESULT CRenderer::Render_NoneBlendFinal()
 {
-
 	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Glow"), L"MRT_BlurTest", 1.f)))
 		return E_FAIL;
 
@@ -2023,8 +2241,17 @@ HRESULT CRenderer::Render_NoneBlendFinal()
 	if (FAILED(Render_Priority()))
 		return E_FAIL;
 
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlendTexture", L"Target_Sun")))
+		return E_FAIL;
+
+	if (FAILED(m_pShader->Begin(DefPass_Blur)))
+		return E_FAIL;
+
+	if (FAILED(m_pVIBuffer->Render()))
+		return E_FAIL;
+
 	// HDR Texture
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_HDR")))
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_DOF")))
 		return E_FAIL;
 
 	if (FAILED(m_pShader->Begin(DefPass_JustDraw)))
@@ -2032,6 +2259,21 @@ HRESULT CRenderer::Render_NoneBlendFinal()
 
 	if (FAILED(m_pVIBuffer->Render()))
 		return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlendTexture", L"Target_Gal_Megi")))
+	//	return E_FAIL;
+
+	if (true == m_HasLight) {
+
+		if (FAILED(m_pShader->Bind_ShaderResourceView("g_BlendTexture", m_pGalMegiRT->Get_SRV())))
+			return E_FAIL;
+
+		if (FAILED(m_pShader->Begin(DefPass_Blur)))
+			return E_FAIL;
+
+		if (FAILED(m_pVIBuffer->Render()))
+			return E_FAIL;
+	}
 
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlendTexture", L"Target_BlurTest")))
 		return E_FAIL;
@@ -2045,59 +2287,10 @@ HRESULT CRenderer::Render_NoneBlendFinal()
 	if (FAILED(m_pGameInstance->End_MRT()))
 		return E_FAIL;
 
-#pragma region DOF
-
-	if (m_pGameInstance->Key_Down(DIK_RBRACKET))
-		m_DOFPower += 0.01f;
-
-	if (m_pGameInstance->Key_Down(DIK_PERIOD))
-		m_DOFPower -= 0.01f;
-
-	if (m_pGameInstance->Key_Down(DIK_LBRACKET))
-		m_DOFRange -= 10.f;
-
-	if (m_pGameInstance->Key_Down(DIK_COMMA))
-		m_DOFRange += 10.f;
-
-	m_pGameInstance->Get_StringStream() << "Power: " << m_DOFPower << endl;
-	m_pGameInstance->Get_StringStream() << "Range: " << m_DOFRange << endl;
-
-	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), L"MRT_Blur", 1.f)))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_DOF")))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Texture", L"Target_HDR_Sky")))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", L"Target_Bloom")))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_Depth_Velocity_Texture", L"Target_Depth_Velocity")))
-		return E_FAIL;
-
-	if (FAILED(m_pShader->Bind_RawValue("g_fDOFRange", &m_DOFRange, sizeof(_float))))
-		return E_FAIL;
-
-	if (FAILED(m_pShader->Bind_RawValue("g_fDOFPower", &m_DOFPower, sizeof(_float))))
-		return E_FAIL;
-
-	if (FAILED(m_pShader->Begin(16)))
-		return E_FAIL;
-
-	if (FAILED(m_pVIBuffer->Render()))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->End_MRT()))
-		return E_FAIL;
-
-#pragma endregion
-
 	//if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR_Sky", nullptr, false)))
 	//	return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_DOF", nullptr, false)))
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR_Sky", nullptr, false)))
 		return E_FAIL;
 
 	// Outline
@@ -2140,7 +2333,7 @@ HRESULT CRenderer::Render_NoneBlendFinal()
 			return E_FAIL;
 
 	}
-
+	//
 	if (FAILED(m_pGameInstance->End_MRT()))
 		return E_FAIL;
 
@@ -2152,11 +2345,11 @@ HRESULT CRenderer::Render_BlendFinal()
 	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_Effect_Blur"), L"MRT_Blur", m_fEffectBlurPower)))
 		return E_FAIL;
 
-	//if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR_Sky", nullptr, false)))
-	//	return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_DOF", nullptr, false)))
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR_Sky", nullptr, false)))
 		return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_DOF", nullptr, false)))
+	//	return E_FAIL;
 
 	// Effect
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_EffectColorTexture", L"Target_Effect")))
@@ -2174,11 +2367,11 @@ HRESULT CRenderer::Render_BlendFinal()
 	if (FAILED(m_pGameInstance->End_MRT()))
 		return E_FAIL;
 
-	//if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR_Sky", nullptr, false)))
-	//	return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_DOF", nullptr, false)))
+	if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_HDR_Sky", nullptr, false)))
 		return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Begin_MRT(L"MRT_DOF", nullptr, false)))
+	//	return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlendTexture", L"Target_Bloom")))
 		return E_FAIL;
@@ -2209,11 +2402,11 @@ HRESULT CRenderer::Render_Final()
 		if (FAILED(m_pFXAAShader->Bind_Sampler()))
 			return E_FAIL;
 
-		//if (FAILED(m_pFXAAShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pFXAART->Get_UAV(), _uint2(0, 0))))
-		//	return E_FAIL;
-
-		if (FAILED(m_pFXAAShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_DOF"), m_pFXAART->Get_UAV(), _uint2(0, 0))))
+		if (FAILED(m_pFXAAShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pFXAART->Get_UAV(), _uint2(0, 0))))
 			return E_FAIL;
+
+		//if (FAILED(m_pFXAAShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_DOF"), m_pFXAART->Get_UAV(), _uint2(0, 0))))
+		//	return E_FAIL;
 
 		_uint3 Size = _uint3((m_WinSize.x * 7) / 8, (m_WinSize.y + 7) / 8, 1);
 		if (FAILED(m_pFXAAShader->Begin(Size)))
@@ -2224,7 +2417,7 @@ HRESULT CRenderer::Render_Final()
 
 	}
 
-
+	
 	if (m_pGameInstance->Key_Down(DIK_F6))
 		m_bMotionBlur = !m_bMotionBlur;
 	
@@ -2233,8 +2426,8 @@ HRESULT CRenderer::Render_Final()
 		if (FAILED(m_pMotionShader->Set_Shader()))
 			return E_FAIL;
 
-		//ID3D11ShaderResourceView* SRVs[2] = { m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pGameInstance->Get_SRV(L"Target_Depth_Velocity")};
-		ID3D11ShaderResourceView* SRVs[2] = { m_pGameInstance->Get_SRV(L"Target_DOF"), m_pGameInstance->Get_SRV(L"Target_Depth_Velocity") };
+		ID3D11ShaderResourceView* SRVs[2] = { m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pGameInstance->Get_SRV(L"Target_Depth_Velocity")};
+		//ID3D11ShaderResourceView* SRVs[2] = { m_pGameInstance->Get_SRV(L"Target_DOF"), m_pGameInstance->Get_SRV(L"Target_Depth_Velocity") };
 
 		if (true == m_bFXAA)
 			SRVs[0] = m_pFXAART->Get_SRV();
@@ -2303,11 +2496,11 @@ HRESULT CRenderer::Render_Final()
 				return E_FAIL;
 		}
 		else {
-			//if (FAILED(m_pRadialShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pRadialRT->Get_UAV(), iSlot)))
-			//	return E_FAIL;
-
-			if (FAILED(m_pRadialShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_DOF"), m_pRadialRT->Get_UAV(), iSlot)))
+			if (FAILED(m_pRadialShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), m_pRadialRT->Get_UAV(), iSlot)))
 				return E_FAIL;
+
+			//if (FAILED(m_pRadialShader->Bind_ShaderResourceView(m_pGameInstance->Get_SRV(L"Target_DOF"), m_pRadialRT->Get_UAV(), iSlot)))
+			//	return E_FAIL;
 			
 		}
 	}	
@@ -2768,6 +2961,11 @@ void CRenderer::Free()
 #pragma region FXAA
 	Safe_Release(m_pFXAAShader);
 	Safe_Release(m_pFXAART);
+#pragma endregion
+
+#pragma region SunMaskRadial
+	Safe_Release(m_pGalMegiRT);
+	Safe_Release(m_pGalMegiShader);
 #pragma endregion
 
 

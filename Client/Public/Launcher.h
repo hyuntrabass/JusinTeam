@@ -45,8 +45,8 @@ private:
 	//class CEffect_Dummy* m_pFrameEffect = { nullptr };
 	//class CEffect_Dummy* m_pBaseEffect = { nullptr };
 
-	//class CEffect_Dummy* m_pLauncher = { nullptr };
-	//class CEffect_Dummy* m_pLauncherParticle = { nullptr };
+	class CEffect_Dummy* m_pLauncher = { nullptr };
+	class CEffect_Dummy* m_pLauncherParticle = { nullptr };
 
 
 private:

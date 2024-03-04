@@ -29,7 +29,7 @@ HRESULT CTexture::Init_Prototype(const wstring& strTextureFilePath, _uint iNumTe
 	{
 		ID3D11ShaderResourceView* pView = nullptr;
 
-		wsprintf(szTextureFilePath, strTextureFilePath.c_str(), i);
+		wsprintf(szTextureFilePath, strTextureFilePath.c_str(), i); 
 
 		_tchar szEXT[MAX_PATH] = L"";
 

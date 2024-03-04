@@ -578,16 +578,24 @@ HRESULT CLoader::Load_Editor()
 	//{
 	//	return E_FAIL;
 	//}
+	_mat GuardPivot = _mat::CreateRotationY(XMConvertToRadians(180.f));
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Guard"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Model/NPC/Mesh/Guard.hyuntraanimmesh"))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Model/NPC/Mesh/Guard.hyuntraanimmesh", false, GuardPivot))))
 	{
 		return E_FAIL;
 	}
+
+	_mat GuardTowerPivot = _mat::CreateScale(0.002f);
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_StoneTower"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Model/NPC/Mesh/StoneTower.hyuntraanimmesh"))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Model/NPC/Mesh/StoneTower.hyuntraanimmesh", false, GuardTowerPivot))))
 	{
 		return E_FAIL;
 	}
+
+
+
 	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/NPC/NPC_Dummy/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{

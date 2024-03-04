@@ -621,8 +621,25 @@ PS_OUT PS_Draw(PS_IN Input)
     if(0.f == vColor.a)
         discard;
     
+    vColor.a = 1.f;
+    
     Output.vColor = vColor;
     
+    //vector vGodRay = g_BlendTexture.Sample(LinearSampler, Input.vTexcoord);
+    
+    //float s = 0.f;
+    //for (uint i = 0; i < 20; ++i)
+    //{
+    //    float2 UV = lerp(Input.vTexcoord, float2(0.5f, 0.5f), i / 20.f);
+    //    vector vDepth_Velocity_Desc = g_Depth_Velocity_Texture.Sample(LinearSampler, UV);
+    //    if (1.f <= vDepth_Velocity_Desc.y)
+    //        s += 1.f / 20.f;
+    //}
+    
+    //Output.vColor = lerp(vColor, vector(1.f, 1.f, 1.f, 0.f), s);
+    
+    //Output.vColor = lerp(vColor, vector(1.f, 1.f, 1.f, 1.f), vGodRay);
+        
     return Output;
 }
 
@@ -725,26 +742,80 @@ PS_OUT PS_DOF(PS_IN Input) //
     PS_OUT Output = (PS_OUT) 0;
     
     vector OriginColor = g_Texture.Sample(LinearSampler, Input.vTexcoord);
-    
-    //if(0.f == OriginColor.a)
-    //    discard;
+
+    if(0.f >= OriginColor.a)
+        discard;
     
     vector BlurColor = g_BlurTexture.Sample(LinearSampler, Input.vTexcoord);
     
     vector vDepth_Velocity_Desc = g_Depth_Velocity_Texture.Sample(PointSampler, Input.vTexcoord);
     float fViewZ = vDepth_Velocity_Desc.y * g_vCamNF.y;
     
-    float Blur = clamp(abs(fViewZ - 10.f) * (2.f / g_fDOFRange), 0, g_fDOFPower);
+    //float Blur = clamp(abs(fViewZ - 10.f) * (2.f / g_fDOFRange), 0, g_fDOFPower);
     
     //float fSizeCoC = fBlurriness * (2.f / 1280.f);
     
     //float fTotalContribution = 1.f;
     
+    float DepthDiff = abs(fViewZ - 5.f) / g_vCamNF.y;
     
+    DepthDiff += smoothstep(0.24f, 1.f, length(float2(0.5f, 0.5f) - Input.vTexcoord));
     
     //float DiscRadius = abs(fViewZ * )
     
-    Output.vColor = lerp(OriginColor, BlurColor, Blur);
+    Output.vColor = lerp(OriginColor, BlurColor, DepthDiff);
+    
+    return Output;
+}
+
+struct PS_SunMask
+{
+    vector vMask : SV_Target0;
+    vector vSunShadow : SV_Target1;
+};
+
+PS_SunMask PS_Sun_Mask(PS_IN Input)
+{
+    PS_SunMask Output = (PS_SunMask) 0;
+    
+    vector vDepth_Velocity_Desc = g_Depth_Velocity_Texture.Sample(PointSampler, Input.vTexcoord);
+    
+    if(1.f >  vDepth_Velocity_Desc.y)
+        discard;
+    
+    vector vSunColor = g_Texture.Sample(LinearSampler, Input.vTexcoord);
+
+    Output.vMask = vDepth_Velocity_Desc.y;
+    Output.vSunShadow = vDepth_Velocity_Desc.y * vSunColor;
+    
+    return Output;
+}
+
+PS_OUT PS_Gal_Megi(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    //float s = 0.f;
+    //for (uint i = 0; i < 20; ++i)
+    //{
+    //    float2 UV = lerp(Input.vTexcoord, float2(0.5f, 0.5f), i / 20.f);
+    //    vector vDepth_Velocity_Desc = g_Depth_Velocity_Texture.Sample(LinearSampler, UV);
+    //    if (1.f <= vDepth_Velocity_Desc.y)
+    //        s += 1.f / 20.f;
+    //}
+    
+    //Output.vColor = lerp(vColor, vector(1.f, 1.f, 1.f, 0.f), 0.25f * s);
+    
+    //vector vSunBlur = g_Texture.Sample(LinearSampler, Input.vTexcoord);
+    
+    //vector vRadialMask = g_BlurTexture.Sample(LinearSampler, Input.vTexcoord);
+    
+    //vector vSunBloom = g_BloomTexture.Sample(LinearSampler, Input.vTexcoord);
+    
+    //vector vRadialSun = vRadialMask * vSunBloom;
+    
+    //Output.vColor = vSunBlur + vRadialSun;
+
     
     return Output;
 }
@@ -972,4 +1043,29 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_DOF();
     }
 
+    pass Sun_Mask // 17
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Sun_Mask();
+    }
+
+    Pass Gal_Megi // 18
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Gal_Megi();
+    }
 };

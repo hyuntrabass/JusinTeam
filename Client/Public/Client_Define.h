@@ -31,7 +31,7 @@ namespace Client
 	static const LIGHT_DESC g_Light_Tutorial
 	{
 		LIGHT_DESC::Directional,
-		_vec4(-1.f, -2.f, -1.f, 0.f), // Direction
+		_vec4(-1.f, -2.f, -2.f, 0.f), // Direction
 		_vec4(), // Position
 		_vec4(), // Attenuation
 
@@ -43,7 +43,7 @@ namespace Client
 	static const LIGHT_DESC g_Light_Village
 	{
 		LIGHT_DESC::Directional,
-		_vec4(-1.f, -2.f, -1.f, 0.f), // Direction
+		_vec4(-2.f, -2.f, -2.f, 0.f), // Direction
 		_vec4(), // Position
 		_vec4(), // Attenuation
 
@@ -55,7 +55,7 @@ namespace Client
 	static const LIGHT_DESC g_Light_Dungeon
 	{
 		LIGHT_DESC::Directional,
-		_vec4(-1.f, -2.f, -1.f, 0.f), // Direction
+		_vec4(-2.f, -2.f, -2.f, 0.f), // Direction
 		_vec4(), // Position
 		_vec4(), // Attenuation
 
@@ -67,7 +67,7 @@ namespace Client
 	static const LIGHT_DESC g_Light_Dragon
 	{
 		LIGHT_DESC::Directional,
-		_vec4(-1.f, -2.f, -1.f, 0.f), // Direction
+		_vec4(-2.f, -2.f, -2.f, 0.f), // Direction
 		_vec4(), // Position
 		_vec4(), // Attenuation
 
@@ -79,7 +79,7 @@ namespace Client
 	static const LIGHT_DESC g_Light_Survival
 	{
 		LIGHT_DESC::Directional,
-		_vec4(-1.f, -2.f, -1.f, 0.f), // Direction
+		_vec4(-2.f, -2.f, -2.f, 0.f), // Direction
 		_vec4(), // Position
 		_vec4(), // Attenuation
 
@@ -392,6 +392,7 @@ namespace Client
 		StaticPass_DiffAlpha,
 		StaticPass_Dissolve,
 		StaticPass_MaskDiffEffect,
+		StaticPass_OutLineDissolve,
 		StaticPass_End,
 	};
 

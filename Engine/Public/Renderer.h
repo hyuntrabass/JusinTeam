@@ -6,12 +6,12 @@ BEGIN(Engine)
 enum RenderGroup
 {
 	RG_Priority,
+	RG_Sun,
 	RG_Shadow,
 	RG_NonBlend,
 	RG_NonBlend_Instance,
 	RG_AnimNonBlend_Instance,
 	RG_Blur,
-	RG_NonLight,
 	RG_Blend,
 	RG_Distortion,
 	RG_Water,
@@ -26,6 +26,19 @@ struct RadialParams {
 	_uint isTex{};
 
 	_vec4 vCenterPos{};
+};
+
+struct GalMegiParams {
+	_uint Samples{};
+	_vec3 LightColor{};
+
+	_vec4 vLightPos{};
+
+	_float fGodRayPower = 0.4f;
+	_vec3 CamLook{};
+
+	_vec3 vLightDir{};
+	_uint Paddings{};
 };
 
 class ENGINE_DLL CRenderer final : public CComponent
@@ -43,8 +56,9 @@ public:
 	HRESULT Add_RenderGroup(RenderGroup eRenderGroup, class CGameObject* pRenderObject);
 	HRESULT Draw_RenderGroup();
 
-
-
+	const void Set_GalMegiPower(_float fGalMegiPower) {
+		m_GalParams.fGodRayPower = fGalMegiPower;
+	}
 
 	const void Set_TurnOneBloom(_bool TurnOnBloom) {
 		m_TurnOnBloom = TurnOnBloom;
@@ -149,6 +163,15 @@ private:
 
 #pragma endregion
 
+#pragma region GalMegi
+
+	class CCompute_Shader* m_pGalMegiShader = nullptr;
+	class CCompute_RenderTarget* m_pGalMegiRT = nullptr;
+	GalMegiParams m_GalParams;
+	bool m_HasLight = false;
+
+#pragma endregion
+
 
 	class CTexture* m_pNoiseNormal = nullptr;
 
@@ -226,6 +249,7 @@ private:
 	HRESULT Ready_ShadowDSV();
 
 	HRESULT Render_Priority();
+	HRESULT Render_Sun();
 	HRESULT Render_Shadow();
 	HRESULT Render_NonBlend();
 	HRESULT Render_NonBlend_Instance();

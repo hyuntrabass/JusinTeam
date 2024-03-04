@@ -13,6 +13,7 @@ private:
 		Phase1,
 		Phase2,
 		Phase3,
+		Phase_Buff,
 		Phase_End,
 	};
 private:
@@ -27,8 +28,12 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 
 private:
-	void Tick_Phase(_float fTimeDelta);
-
+	void Init_Phase(_float fTimeDelta);
+	void Tick_Phase1(_float fTimeDelta);
+	void Tick_Phase2(_float fTimeDelta);
+	void Tick_Phase3(_float fTimeDelta);
+	void Tick_Phase_Buff(_float fTimeDelta);
+	
 private:
 	CTransform* m_pPlayerTransform = { nullptr };
 	list<class CVTFMonster*> m_Monsters;
@@ -38,11 +43,10 @@ private:
 	map<_uint, class CHive*> m_Hives;
 
 private:
-	_randNum m_RandomNumber;
-	Phase m_eCurrentPhase{ Phase_End };
 	vector<_vec3> m_SpawnPositions;
-	vector<_vec3> m_HiveSpawnPositions;
-	map<_int, _vec3> m_LarvaPositions;
+	Phase m_eCurrentPhase{ Phase_End };
+	Phase m_ePreviousPhase{ Phase_End };
+	_randNum m_RandomNumber;
 	_uint m_iMonsterLimit{ 200 };
 	_float m_fTimeLimit{ 1209999999.f };
 	_float m_fMonsterSpawnTime{};
@@ -56,24 +60,30 @@ private:
 	_float m_fHookAttTime{};
 
 	//Log
-	_float m_fLogSpawnTime[4]{};
-
-	//Poison
+	_float m_fLogSpawnTimes[4]{};
 	_float m_fPosionSpawnTime{};
 
 	//Hive
-	_bool m_IsSpawnHive[2]{};
-	_float m_fHiveSpawnTime[2]{};
+	vector<_bool> m_IsSpawnHives;
+	_float m_fHiveSpawnTimes[2]{};
+	vector<_vec3> m_HiveSpawnPositions;
 
 	//Wasp
-	_float m_fWaspSpawnTime[4]{};
+	_float m_fWaspSpawnTimes[8]{};
+
+	//EyeBomb
+	_float m_fEyeBombSpawnTime{};
+
+	//Lava
+	map<_int, _vec3> m_LarvaPositions;
+	_uint m_iNumSpawnLarva{};
+
 
 private:
 	HRESULT Create_CommonMonster(const wstring& strModelTag, _vec3 SpawnPosition, const wstring& strPrototypeTag);
 	HRESULT Create_Hook();
 	HRESULT Create_Larva();
 	HRESULT Create_Log(_uint SpawnPositionIndex);
-	HRESULT Create_Posion(_float fTimeDelta);
 	HRESULT Create_Hive();
 
 private:

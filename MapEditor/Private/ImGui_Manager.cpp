@@ -12,6 +12,7 @@
 #include "Camera_CutScene.h"
 #include "Effect_Manager.h"
 #include "Effect_Sphere.h"
+
 IMPLEMENT_SINGLETON(CImGui_Manager)
 
 CImGui_Manager::CImGui_Manager()
@@ -797,6 +798,18 @@ HRESULT CImGui_Manager::ImGuiMenu()
 			ImGui::Text("NPC");
 	
 			ImGui::NewLine();
+			ImGui::Separator();
+
+			ImGui::Checkbox("Pattern", &m_isPatternCheck);
+
+			if (m_isPatternCheck == true)
+			{
+				ImGui::RadioButton("Pattern_1", &m_iPattern, 0); ImGui::SameLine();
+				ImGui::RadioButton("Pattern_2", &m_iPattern, 1); ImGui::SameLine();
+				ImGui::RadioButton("Pattern_3", &m_iPattern, 2);
+			}
+
+			ImGui::Separator();
 
 			static ImGuiTextFilter Filter;
 			Filter.Draw("Search##2");
@@ -1476,6 +1489,7 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	{
 		DummyInfo Info{};
 		Info.ppDummy = &m_pSelectedDummy;
+		Info.iIndex = m_iPattern;
 		//Info.vPos = _vec4(m_PickingPos.x, m_PickingPos.y, m_PickingPos.z, 1.f);
 		Info.mMatrix.Position(_vec4(m_PickingPos.x, m_PickingPos.y, m_PickingPos.z, 1.f));
 		if (m_isUseNormal)
@@ -2813,6 +2827,11 @@ HRESULT CImGui_Manager::Save_NPC()
 
 			_mat NPCWorldMat = pNPCTransform->Get_World_Matrix();
 			outFile.write(reinterpret_cast<const char*>(&NPCWorldMat), sizeof(_mat));
+			if(m_isPatternCheck == true)
+			{
+				_uint iPattern = NPC->Get_PatternIndex();
+				outFile.write(reinterpret_cast<const char*>(&iPattern), sizeof(_int));
+			}
 		}
 
 		MessageBox(g_hWnd, L"파일 저장 완료", L"파일 저장", MB_OK);
@@ -2862,13 +2881,19 @@ HRESULT CImGui_Manager::Load_NPC()
 			_mat NPCWorldMat;
 			inFile.read(reinterpret_cast<char*>(&NPCWorldMat), sizeof(_mat));
 
+			_uint iPattern = 0;
+			if (m_isPatternCheck == true)
+			{
+				inFile.read(reinterpret_cast<char*>(&iPattern), sizeof(_int));
+			}
 			DummyInfo NPCInfo{};
 			NPCInfo.eType = ItemType::NPC;
 			NPCInfo.Prototype = NPCPrototype;
 			//NPCInfo.vLook = _float3(NPCWorldMat._31, NPCWorldMat._32, NPCWorldMat._33);
 			//NPCInfo.vPos = _float4(NPCWorldMat._41, NPCWorldMat._42, NPCWorldMat._43, 1.f);
 			NPCInfo.mMatrix = NPCWorldMat;
-;			NPCInfo.ppDummy = &m_pSelectedDummy;
+			NPCInfo.ppDummy = &m_pSelectedDummy;
+			NPCInfo.iIndex = iPattern;
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &NPCInfo)))
 			{
@@ -2877,7 +2902,7 @@ HRESULT CImGui_Manager::Load_NPC()
 			}
 
 			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
-			m_MonsterList.push_back(m_pSelectedDummy);
+			m_NPCList.push_back(m_pSelectedDummy);
 
 			//CTransform* pMonsterTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
 

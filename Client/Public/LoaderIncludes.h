@@ -45,6 +45,7 @@
 #include "Player.h"
 #include "Select.h"
 #include "FadeBox.h"
+#include "Sun.h"
 
 #include "Logo_Text.h"
 #include "Logo_Dust.h"
@@ -125,8 +126,7 @@
 #include "Roskva.h"
 #include "Aur.h"
 #include "NPC_Dummy.h"
-#include "Guard.h"
-#include "GuardTower.h"
+
 
 // Boss
 #include "Groar_Boss.h"
@@ -171,8 +171,7 @@
 #include "Scorpion.h"
 #include "RedAnt.h"
 #include "Wasp.h"
-
-#include "Cesco_Poison.h"
+#include "EyeBomb.h"
 #include "Log.h"
 #include "Hook.h"
 #include "Larva_Ball.h"
@@ -183,3 +182,8 @@
 #include "Launcher.h"
 #include "Projectile.h"
 #include "Survival_Mon.h"
+
+// InfiltrationGame
+#include "InfiltrationGame.h"
+#include "Guard.h"
+#include "GuardTower.h"
