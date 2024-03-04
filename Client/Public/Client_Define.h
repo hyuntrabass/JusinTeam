@@ -47,7 +47,7 @@ namespace Client
 		_vec4(), // Position
 		_vec4(), // Attenuation
 
-		_vec4(1.f), // Diffuse
+		_vec4(0.5f), // Diffuse
 		_vec4(0.3f), // Ambient
 		_vec4(0.5f) // Specular
 	};

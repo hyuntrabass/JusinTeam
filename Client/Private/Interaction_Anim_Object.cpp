@@ -169,7 +169,7 @@ void CInteraction_Anim::Tick(_float fTimeDelta)
 	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
 	_bool isColl = m_pColliderCom->Intersect(pCollider);
 	m_isWideCollision = m_pWideColliderCom->Intersect(pCollider);
-	if (isColl)
+	if (isColl and not m_isAnimStart)
 	{
 		if (!m_isCollect && m_pGameInstance->Key_Down(DIK_E))
 		{
@@ -186,8 +186,14 @@ void CInteraction_Anim::Tick(_float fTimeDelta)
 
 	if (m_isWideCollision)
 	{
-		dynamic_cast<CNameTag*>(m_pNameTag)->Tick(fTimeDelta);
-		m_pSpeechBubble->Tick(fTimeDelta);
+		if (m_pNameTag)
+		{
+			m_pNameTag->Tick(fTimeDelta);
+		}
+		if (m_pSpeechBubble)
+		{
+			m_pSpeechBubble->Tick(fTimeDelta);
+		}
 	}
 
 	if (m_pEffect)
@@ -271,22 +277,36 @@ void CInteraction_Anim::Late_Tick(_float fTimeDelta)
 					return;
 				}
 			}
-			m_isDead = true;
+			m_pTransformCom->Set_Speed(1.f);
+			m_pTransformCom->Go_Down(fTimeDelta);
+			if (m_pTransformCom->Get_State(State::Pos).y < m_Info.m_WorldMatrix._42 - 2.f)
+			{
+				m_isDead = true;
+			}
 		}
 
 		if (m_iHP > 0 and m_Info.strPrototypeTag == TEXT("Prototype_Model_SaltStone"))
 		{
 			CEvent_Manager::Get_Instance()->Update_Quest(TEXT("채집하기"));
-			m_iHP = 0;
 		}
+
+		m_iHP = 0;
+		Safe_Release(m_pNameTag);
+		Safe_Release(m_pSpeechBubble);
 
 		m_pModelCom->Play_Animation(fTimeDelta);
 	}
 
 	if (m_isWideCollision)
 	{
-		m_pNameTag->Late_Tick(fTimeDelta);
-		m_pSpeechBubble->Late_Tick(fTimeDelta);
+		if (m_pNameTag)
+		{
+			m_pNameTag->Late_Tick(fTimeDelta);
+		}
+		if (m_pSpeechBubble)
+		{
+			m_pSpeechBubble->Late_Tick(fTimeDelta);
+		}
 	}
 
 	if (m_pEffect)

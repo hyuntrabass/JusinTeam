@@ -53,59 +53,6 @@ HRESULT CInteraction_NonAnim::Init(void* pArg)
 	m_pTransformCom->Set_State(State::Look, vLook);
 	m_pTransformCom->Set_State(State::Pos, vPos);
 
-
-	//m_pModelCom->Apply_TransformToActor(m_Info.m_WorldMatrix);
-	ITEM eItem{};
-
-	CNameTag::NAMETAG_DESC NameTagDesc = {};
-	NameTagDesc.eLevelID = LEVEL_STATIC;
-	NameTagDesc.fFontSize = 0.36f;
-	NameTagDesc.pParentTransform = m_pTransformCom;
-	if (m_Info.strPrototypeTag == TEXT("Prototype_Model_OakTree"))
-	{
-		NameTagDesc.strNameTag = TEXT("오크나무");
-		NameTagDesc.vTextPosition = _vec2(0.f, 3.2f);
-
-		_mat EffectMat = _mat::CreateTranslation(_vec3(vPos) + _vec3(0.f, 1.5f, 0.f));
-		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Tree_Effect");
-		EffectDesc.pMatrix = &EffectMat;
-		m_pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(EffectDesc);
-	}
-	else
-	{
-		NameTagDesc.strNameTag = TEXT("아마풀");
-		NameTagDesc.vTextPosition = _vec2(0.f, 1.4f);
-
-		_mat EffectMat = _mat::CreateTranslation(_vec3(vPos) + _vec3(0.f, 0.5f, 0.f));
-		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Grass_Effect");
-		EffectDesc.pMatrix = &EffectMat;
-		m_pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(EffectDesc);
-	}
-
-	NameTagDesc.vColor = _vec4(0.31f, 0.96f, 1.f, 1.f);
-	//NameTagDesc.vTextPosition = _vec2(0.f, 3.2f);
-
-	m_pNameTag = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_NameTag"), &NameTagDesc);
-	if (not m_pNameTag)
-	{
-		return E_FAIL;
-	}
-
-	CItem::ITEM_DESC ItemDesc{};
-	ItemDesc.bCanInteract = false;
-	ItemDesc.eItemDesc = CUI_Manager::Get_Instance()->Find_Item(NameTagDesc.strNameTag);
-	ItemDesc.fDepth = (_float)D_SCREEN / (_float)D_END;
-	ItemDesc.haveBG = true;
-	ItemDesc.isScreen = false;
-	ItemDesc.vPosition = _vec2((_float)g_ptCenter.x, 160.f);
-	ItemDesc.vSize = _vec2(50.f, 50.f);
-
-	m_pItem = (CItem*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Item"), &ItemDesc);
-	if (not m_pItem)
-	{
-		return E_FAIL;
-	}
-
 	m_iHP = 1;
 
 	return S_OK;
@@ -113,6 +60,15 @@ HRESULT CInteraction_NonAnim::Init(void* pArg)
 
 void CInteraction_NonAnim::Tick(_float fTimeDelta)
 {
+	if (!m_iHP)
+	{
+		m_fCollectTime += fTimeDelta;
+		if (m_fCollectTime > 2.f)
+		{
+			m_isDead = true;
+		}
+	}
+
 	if (m_isCollect)
 	{
 		m_pBar->Set_Factor(m_fCollectTime / 4.f);
@@ -142,28 +98,25 @@ void CInteraction_NonAnim::Tick(_float fTimeDelta)
 			{
 				m_pEffect->Kill();
 			}
+			Safe_Release(m_pSpeechBubble);
+			Safe_Release(m_pNameTag);
 		}
 
 		m_pBar->Tick(fTimeDelta);
 		m_pItem->Tick(fTimeDelta);
 	}
 
-	if (!m_iHP)
-	{
-		m_fCollectTime += fTimeDelta;
-		if (m_fCollectTime > 1.f)
-		{
-			m_isDead = true;
-		}
-	}
-
 	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 	m_pWideColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 
 	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
-	m_isCollision = m_pColliderCom->Intersect(pCollider);
 	m_isWideCollision = m_pWideColliderCom->Intersect(pCollider);
-	if (m_isCollision)
+
+	if (!m_iHP)
+	{
+		//m_pShaderCom->Set_PassIndex(디졸브 패스);
+	}
+	else if (m_pColliderCom->Intersect(pCollider))
 	{
 		if (!m_isCollect && m_pGameInstance->Key_Down(DIK_E))
 		{
@@ -180,8 +133,14 @@ void CInteraction_NonAnim::Tick(_float fTimeDelta)
 
 	if (m_isWideCollision)
 	{
-		dynamic_cast<CNameTag*>(m_pNameTag)->Tick(fTimeDelta);
-		m_pSpeechBubble->Tick(fTimeDelta);
+		if (m_pNameTag)
+		{
+			m_pNameTag->Tick(fTimeDelta);
+		}
+		if (m_pSpeechBubble)
+		{
+			m_pSpeechBubble->Tick(fTimeDelta);
+		}
 	}
 
 	if (m_pEffect)
@@ -210,8 +169,14 @@ void CInteraction_NonAnim::Late_Tick(_float fTimeDelta)
 
 	if (m_isWideCollision)
 	{
-		m_pNameTag->Late_Tick(fTimeDelta);
-		m_pSpeechBubble->Late_Tick(fTimeDelta);
+		if (m_pNameTag)
+		{
+			m_pNameTag->Late_Tick(fTimeDelta);
+		}
+		if (m_pSpeechBubble)
+		{
+			m_pSpeechBubble->Late_Tick(fTimeDelta);
+		}
 	}
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend_Instance, this);
 
@@ -246,6 +211,10 @@ HRESULT CInteraction_NonAnim::Add_Components()
 		return E_FAIL;
 	}
 
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, L"Prototype_Component_Texture_Effect_FX_A_Fractal008_Tex", TEXT("Com_MaskTexture"), (CComponent**)&m_pDissolveTexture)))
+	{
+		return E_FAIL;
+	}
 
 		/* For.Com_Collider_SPHERE */
 	// Com_Collider
@@ -264,19 +233,6 @@ HRESULT CInteraction_NonAnim::Add_Components()
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Interaction_Sphere1"), (CComponent**)&m_pWideColliderCom, &ColDesc2)))
 		return E_FAIL;
-
-	C3DUITex::UITEX_DESC TexDesc = {};
-	TexDesc.eLevelID = LEVEL_STATIC;
-	TexDesc.pParentTransform = m_pTransformCom;
-	TexDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SpeechBubble");
-	TexDesc.vPosition = _vec3(0.f,3.8f, 0.f);
-	TexDesc.vSize = _vec2(40.f, 40.f);
-
-	m_pSpeechBubble = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &TexDesc);
-	if (not m_pSpeechBubble)
-	{
-		return E_FAIL;
-	}
 
 	CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
 	ColButtonDesc.eLevelID = LEVEL_STATIC;
@@ -311,6 +267,70 @@ HRESULT CInteraction_NonAnim::Add_Components()
 	m_pBG = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
 	if (not m_pBG)
+	{
+		return E_FAIL;
+	}
+
+	CNameTag::NAMETAG_DESC NameTagDesc = {};
+	NameTagDesc.eLevelID = LEVEL_STATIC;
+	NameTagDesc.fFontSize = 0.36f;
+	NameTagDesc.pParentTransform = m_pTransformCom;
+
+	C3DUITex::UITEX_DESC TexDesc = {};
+	TexDesc.eLevelID = LEVEL_STATIC;
+	TexDesc.pParentTransform = m_pTransformCom;
+	TexDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SpeechBubble");
+	TexDesc.vSize = _vec2(40.f, 40.f);
+
+	if (m_Info.strPrototypeTag == TEXT("Prototype_Model_OakTree"))
+	{
+		NameTagDesc.strNameTag = TEXT("오크나무");
+		NameTagDesc.vTextPosition = _vec2(0.f, 3.2f);
+		TexDesc.vPosition = _vec3(0.f, 3.8f, 0.f);
+
+		_mat EffectMat = _mat::CreateTranslation(m_Info.m_WorldMatrix.Position_vec3() + _vec3(0.f, 1.5f, 0.f));
+		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Tree_Effect");
+		EffectDesc.pMatrix = &EffectMat;
+		m_pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(EffectDesc);
+	}
+	else
+	{
+		NameTagDesc.strNameTag = TEXT("아마풀");
+		NameTagDesc.vTextPosition = _vec2(0.f, 1.4f);
+		TexDesc.vPosition = _vec3(0.f, 2.2f, 0.f);
+
+		_mat EffectMat = _mat::CreateTranslation(m_Info.m_WorldMatrix.Position_vec3() + _vec3(0.f, 0.5f, 0.f));
+		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Grass_Effect");
+		EffectDesc.pMatrix = &EffectMat;
+		m_pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(EffectDesc);
+	}
+
+	NameTagDesc.vColor = _vec4(0.31f, 0.96f, 1.f, 1.f);
+	//NameTagDesc.vTextPosition = _vec2(0.f, 3.2f);
+
+	m_pNameTag = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_NameTag"), &NameTagDesc);
+	if (not m_pNameTag)
+	{
+		return E_FAIL;
+	}
+
+	m_pSpeechBubble = (C3DUITex*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_3DUITex"), &TexDesc);
+	if (not m_pSpeechBubble)
+	{
+		return E_FAIL;
+	}
+
+	CItem::ITEM_DESC ItemDesc{};
+	ItemDesc.bCanInteract = false;
+	ItemDesc.eItemDesc = CUI_Manager::Get_Instance()->Find_Item(NameTagDesc.strNameTag);
+	ItemDesc.fDepth = (_float)D_SCREEN / (_float)D_END;
+	ItemDesc.haveBG = true;
+	ItemDesc.isScreen = false;
+	ItemDesc.vPosition = _vec2((_float)g_ptCenter.x, 160.f);
+	ItemDesc.vSize = _vec2(50.f, 50.f);
+
+	m_pItem = (CItem*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Item"), &ItemDesc);
+	if (not m_pItem)
 	{
 		return E_FAIL;
 	}
@@ -469,9 +489,15 @@ HRESULT CInteraction_NonAnim::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (m_iHP)
+	if (!m_iHP)
 	{
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fCollectTime, sizeof m_fCollectTime)))
+		if (FAILED(m_pDissolveTexture->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
+		{
+			return E_FAIL;
+		}
+
+		_float fDissolveRatio = m_fCollectTime * 0.5f;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &fDissolveRatio, sizeof fDissolveRatio)))
 		{
 			return E_FAIL;
 		}
@@ -521,7 +547,6 @@ void CInteraction_NonAnim::Free()
 	Safe_Release(m_pBar);
 	Safe_Release(m_pBG);
 	Safe_Release(m_pItem);
-	Safe_Release(m_pSpeechBubble);
 	Safe_Release(m_pTrigger_Manager);
 	Safe_Release(m_pSpeechBubble);
 	Safe_Release(m_pRendererCom);
@@ -529,6 +554,4 @@ void CInteraction_NonAnim::Free()
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pWideColliderCom);
 	Safe_Release(m_pColliderCom);
-
-
 }
