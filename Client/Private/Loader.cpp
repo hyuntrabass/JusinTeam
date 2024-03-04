@@ -845,6 +845,11 @@ HRESULT CLoader::Load_GamePlay()
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, L"Prototype_Component_Texture_Water_Normal",
 		CTexture::Create(m_pDevice, m_pContext, L"../../Client/Bin/Resources/Textures/waterNormal.dds"))))
 		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, L"Prototype_Component_Texture_Sun",
+		CTexture::Create(m_pDevice, m_pContext, L"../../Client/Bin/Resources/Textures/Effect/FX_B_CircleGradient001_Tex.dds"))))
+		return E_FAIL;
+
 #pragma endregion
 
 #pragma region UI
@@ -1160,14 +1165,15 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	_mat GuardPivot = _mat::CreateRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Guard"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Guard/Mesh/Guard.hyuntraanimmesh"))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Guard/Mesh/Guard.hyuntraanimmesh", false, GuardPivot))))
 	{
 		return E_FAIL;
 	}
 
 	_mat GuardTowerPivot = _mat::CreateScale(0.002f);
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GuardTower"),
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_StoneTower"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/StoneTower/Mesh/StoneTower.hyuntraanimmesh", false ,GuardTowerPivot))))
 	{
 		return E_FAIL;
@@ -1324,6 +1330,10 @@ HRESULT CLoader::Load_GamePlay()
 
 	m_strLoadingText = L"GamePlay : Loading Prototype";
 #pragma region Prototype
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(L"Prototype_GameObject_Sun", CSun::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	/*
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Main"), CCamera_Main::Create(m_pDevice, m_pContext))))
@@ -2305,7 +2315,19 @@ HRESULT CLoader::Load_Tower()
 			}
 		}
 	}
+	strInputFilePath = "../Bin/Resources/Textures/UI/Tower";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_UI_Tower_") + entry.path().stem().wstring();
 
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 #pragma region Ç³¼±±ú±â
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Minigame"), CMap::Create(m_pDevice, m_pContext))))
 	{
@@ -2419,46 +2441,70 @@ HRESULT CLoader::Load_Tower()
 		}
 	}
 
+	strInputFilePath = "../Bin/Resources/Textures/CescoGame/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_") + entry.path().stem().wstring();
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOWER, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+
+		}
+	}
+
 #pragma endregion
 
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_CescoGame_Object"), CCescoGame::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_CescoGame"), CCescoGame::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Larva_Object"), CLarva::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Larva"), CLarva::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Scorpion_Object"), CScorpion::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_EyeBomb"), CEyeBomb::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_RedAnt_Object"), CRedAnt::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Scorpion"), CScorpion::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Wasp_Object"), CWasp::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_RedAnt"), CRedAnt::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Wasp"), CWasp::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
 
 	//static
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Log_Object"), CLog::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Log"), CLog::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Hook_Object"), CHook::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Hook"), CHook::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Larva_Ball_Object"), CLarva_Ball::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Larva_Ball"), CLarva_Ball::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Hive"), CHive::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

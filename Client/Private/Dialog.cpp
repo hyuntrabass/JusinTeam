@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "TextButton.h"
 #include "UI_Manager.h"
+#include "Camera_Manager.h"
 
 CDialog::CDialog(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -16,6 +17,11 @@ CDialog::CDialog(const CDialog& rhs)
 void CDialog::Set_Text(const wstring& strText)
 {
 	m_strText = strText;
+}
+
+void CDialog::Set_Position(_vec3 vPos)
+{
+	m_vPosition = vPos;
 }
 
 HRESULT CDialog::Init_Prototype()
@@ -52,8 +58,9 @@ HRESULT CDialog::Init(void* pArg)
 
 void CDialog::Tick(_float fTimeDelta)
 {
-	m_pTransformCom->Set_State(State::Pos, m_pParentTransform->Get_State(State::Pos) + m_vPosition);	
+	m_pTransformCom->Set_State(State::Pos, m_pParentTransform->Get_State(State::Pos) + m_vPosition);
 	m_vTextPos = __super::Convert_To_2D(m_pTransformCom);
+
 	m_fX = m_vTextPos.x;
 	m_fY = m_vTextPos.y;
 
@@ -69,7 +76,7 @@ void CDialog::Tick(_float fTimeDelta)
 
 void CDialog::Late_Tick(_float fTimeDelta)
 {
-	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
+	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI() && CCamera_Manager::Get_Instance()->Get_CameraState() != CS_BRICKGAME)
 	{
 		return;
 	}

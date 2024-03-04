@@ -193,6 +193,7 @@
     <ClInclude Include="..\public\Effect_Manager.h" />
     <ClInclude Include="..\Public\Event_Manager.h" />
     <ClInclude Include="..\Public\ExpBar.h" />
+    <ClInclude Include="..\Public\EyeBomb.h" />
     <ClInclude Include="..\Public\FadeBox.h" />
     <ClInclude Include="..\Public\FirePillar.h" />
     <ClInclude Include="..\Public\GlowCube.h" />
@@ -202,6 +203,7 @@
     <ClInclude Include="..\Public\GuardTower.h" />
     <ClInclude Include="..\public\Hell.h" />
     <ClInclude Include="..\Public\HitEffect.h" />
+    <ClInclude Include="..\Public\Hive.h" />
     <ClInclude Include="..\Public\Hook.h" />
     <ClInclude Include="..\Public\HpBar.h" />
     <ClInclude Include="..\Public\HpBoss.h" />
@@ -290,6 +292,7 @@
     <ClInclude Include="..\Public\Statue.h" />
     <ClInclude Include="..\Public\SummonWindow.h" />
     <ClInclude Include="..\Public\SummonWindowPet.h" />
+    <ClInclude Include="..\Public\Sun.h" />
     <ClInclude Include="..\Public\SurvivalGame.h" />
     <ClInclude Include="..\Public\Survival_Mon.h" />
     <ClInclude Include="..\Public\Symbol.h" />
@@ -380,10 +383,12 @@
     <ClCompile Include="..\private\Effect_Manager.cpp" />
     <ClCompile Include="..\Private\Event_Manager.cpp" />
     <ClCompile Include="..\Private\ExpBar.cpp" />
+    <ClCompile Include="..\Private\EyeBomb.cpp" />
     <ClCompile Include="..\Private\FirePillar.cpp" />
     <ClCompile Include="..\Private\GlowCube.cpp" />
     <ClCompile Include="..\Private\Guard.cpp" />
     <ClCompile Include="..\Private\GuardTower.cpp" />
+    <ClCompile Include="..\Private\Hive.cpp" />
     <ClCompile Include="..\Private\Hook.cpp" />
     <ClCompile Include="..\Private\Human_Boss.cpp" />
     <ClCompile Include="..\Private\InfinityTower.cpp" />
@@ -476,6 +481,7 @@
     <ClCompile Include="..\Private\Statue.cpp" />
     <ClCompile Include="..\Private\SummonWindow.cpp" />
     <ClCompile Include="..\Private\SummonWindowPet.cpp" />
+    <ClCompile Include="..\Private\Sun.cpp" />
     <ClCompile Include="..\Private\SurvivalGame.cpp" />
     <ClCompile Include="..\Private\Survival_Mon.cpp" />
     <ClCompile Include="..\Private\Symbol.cpp" />

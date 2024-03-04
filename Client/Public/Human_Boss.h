@@ -2,7 +2,7 @@
 
 #include "Client_Define.h"
 #include "GameObject.h"
-
+#include "CommonSurfaceTrail.h"
 BEGIN(Client)
 
 class CHuman_Boss final : public CGameObject
@@ -106,6 +106,7 @@ private:
 private:
 	HRESULT Add_Collider();
 	void Update_Collider();
+	void Update_Trail();
 
 private:
 	void Set_Pattern();
@@ -130,6 +131,8 @@ private:
 	class CEffect_Dummy* m_pAttackEffect{ nullptr };
 	class CEffect_Dummy* m_pRingEffect{ nullptr };
 	class CEffect_Dummy* m_pCounterEffect{ nullptr };
+	CCommonSurfaceTrail* m_pWeapon_Trail{ nullptr };
+	CCommonSurfaceTrail* m_pWeapon_Distortion_Trail{ nullptr };
 
 private:
 	ANIM_DESC m_Animation{};
@@ -138,6 +141,7 @@ private:
 	vector<int> m_vecPattern{};
 
 private:
+	const _mat* m_WeaponBone_Mat{};
 	_uint m_iPizzaAttCount{};
 	_uint m_iAttackPattern{};
 	_bool m_bSelectAttackPattern{};

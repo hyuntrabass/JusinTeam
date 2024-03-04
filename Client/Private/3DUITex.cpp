@@ -24,6 +24,7 @@ HRESULT C3DUITex::Init(void* pArg)
 
 	m_eLevel = ((UITEX_DESC*)pArg)->eLevelID;
 	m_strTexture = ((UITEX_DESC*)pArg)->strTexture;
+	m_strTexture2 = ((UITEX_DESC*)pArg)->strTexture2;
 	m_vPosition = ((UITEX_DESC*)pArg)->vPosition;
 	m_pParentTransform = ((UITEX_DESC*)pArg)->pParentTransform;
 	Safe_AddRef(m_pParentTransform);
@@ -144,6 +145,15 @@ HRESULT C3DUITex::Add_Components()
 		return E_FAIL;
 	}
 
+	if (m_strTexture2 != TEXT(""))
+	{
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, m_strTexture2, TEXT("Com_Texture1"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom))))
+		{
+			return E_FAIL;
+		}
+	}
+
+
 	return S_OK;
 }
 
@@ -160,7 +170,30 @@ HRESULT C3DUITex::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (m_ePass != VTPass_UI)
+	if (m_ePass == VTPass_HPBoss)
+	{
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_bOn", &m_bBright, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fTime", &m_fTime, sizeof _float)))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fHpRatio", &m_fFactor, sizeof _float)))
+		{
+			return E_FAIL;
+		}
+	}
+	else if (m_ePass != VTPass_UI)
 	{
 		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
 		{
@@ -218,6 +251,7 @@ void C3DUITex::Free()
 
 	Safe_Release(m_pParentTransform);
 
+	Safe_Release(m_pMaskTextureCom);
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

@@ -219,39 +219,72 @@ void CBalloon::Tick_State(_float fTimeDelta)
 		m_isColl = m_pBodyColliderCom->Intersect(pCollider);
 		if (m_isColl)
 		{
+			if (CUI_Manager::Get_Instance()->Get_BrickBallColor() != m_eCurColor)
+			{
+				return;
+			}
 			_mat Mat = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+			if (m_eCurColor == BLUE)
+			{
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Ball_Smoke");
+				Info.pMatrix = &Mat;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			}
+			else
+			{
+				EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Ball_SmokeFire");
+				Info.pMatrix = &Mat;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			}
 
-			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"LightningTube_White");
-			Info.pMatrix = &Mat;
-			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 2.0f);
-			m_eCurState = STATE_HIT;
-			if (CUI_Manager::Get_Instance()->Get_BrickBallColor() == m_eCurColor)
+			if (m_iCount <= 0)
 			{
-				
+				m_eCurState = STATE_DIE;
 			}
+			else
+			{
+				m_eCurState = STATE_HIT;
+			}
+			
 		}
 	}
 	break;
 
 	case Client::CBalloon::STATE_HIT:
-
-		if (m_pModelCom->IsAnimationFinished(m_Animation.iAnimIndex))
-		{
-			m_eCurState = STATE_IDLE;
-			_uint iColor = (_uint)m_eCurColor + 1;
-			m_eCurColor = (BrickColor)iColor;
-		}
-
+		m_eCurState = STATE_IDLE;
+		m_iCount--;
 		break;
 
 	case Client::CBalloon::STATE_DIE:
+	{
+		_mat Mat = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 
-		if (m_pModelCom->IsAnimationFinished(die))
+		if (m_eCurColor == BLUE)
 		{
-			m_isDead = true;
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_IceExplosion");
+			Info.pMatrix = &Mat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_IceCubeExplosion");
+			Info.pMatrix = &Mat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 		}
+		else
+		{
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_FireballExplosion");
+			Info.pMatrix = &Mat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_FireExplosion");
+			Info.pMatrix = &Mat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+		}
+
+		m_isDead = true;
+	}
 
 		break;
 	}
@@ -263,16 +296,8 @@ void CBalloon::Set_Color()
 {
 	switch (m_eCurColor)
 	{
-	case PINK:
-		//m_vColor = _vec4(0.38f, 0.235f, 0.f, 1.f);
-		m_vColor = _vec4(0.27f, 0.14f, 0.36f, 1.f);
-		break;
-	case YELLOW:
-		//m_vColor = _vec4(0.5f, 0.42f, 0.f, 1.f);
-		m_vColor = _vec4(0.143f, 0.267f, 0.321f, 1.f);
-		break;
-	case PURPLE:
-		m_vColor = _vec4(0.27f, 0.14f, 0.36f, 1.f);
+	case RED:
+		m_vColor = _vec4(1.f, 0.32f, 0.23f, 1.f);
 		break;
 	case BLUE:
 		m_vColor = _vec4(0.143f, 0.267f, 0.321f, 1.f);
@@ -302,18 +327,11 @@ void CBalloon::Set_RandomColor()
 	{
 		m_eCurColor = BLUE;
 	}
-	else if (iRandom < 70)
-	{
-		m_eCurColor = PURPLE;
-	}
-	else if (iRandom < 80)
-	{
-		m_eCurColor = PINK;
-	}
 	else
 	{
-		m_eCurColor = YELLOW;
+		m_eCurColor = RED;
 	}
+	
 	Set_Color();
 }
 

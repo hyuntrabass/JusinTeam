@@ -20,9 +20,13 @@ HRESULT CGuard::Init_Prototype()
 
 HRESULT CGuard::Init(void* pArg)
 {
-	GuardInfo m_Info = *(GuardInfo*)pArg;
-	m_iIndex = m_Info.iIndex;
-	GuardMatrix = m_Info.mMatrix;
+	m_Info = *(GuardInfo*)pArg;
+	m_Info.iIndex = m_Info.iIndex;
+	m_OriginMatrix = m_Info.mMatrix * _mat::CreateTranslation(0.f, 1.f, 0.f);
+	m_EffectMatrix = m_Info.mMatrix;
+
+	//m_ePattern = (GUARD_PATTERN)m_Info.iIndex;
+	m_ePattern = (GUARD_PATTERN)1;
 
 	if (FAILED(Add_Components()))
 		return E_FAIL;
@@ -30,15 +34,12 @@ HRESULT CGuard::Init(void* pArg)
 	if (FAILED(Add_Collider()))
 		return E_FAIL;
 
-	m_Animation.iAnimIndex = ANIM_IDLE;
-	m_Animation.isLoop = true;
-	m_Animation.bSkipInterpolation = false;
-	m_Animation.fAnimSpeedRatio = 1.5f;
-	m_eCurState = STATE_PATROL;
+
+	m_eCurState = STATE_IDLE;
 
 	m_iHP = 1;
 
-	m_pTransformCom->Set_Matrix(GuardMatrix);
+	m_pTransformCom->Set_Matrix(m_Info.mMatrix);
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
@@ -52,7 +53,8 @@ HRESULT CGuard::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
-	View_Detect_Range();
+	Create_Range();
+
 
 	return S_OK;
 }
@@ -61,56 +63,21 @@ void CGuard::Tick(_float fTimeDelta)
 {
 	m_pTransformCom->Set_OldMatrix();
 
-	if (m_pGameInstance->Key_Down(DIK_DOWN))
+	if (m_bAttacked == true)
 	{
-		m_Animation.iAnimIndex++;
-	}
-
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-
-	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
-
-	_vec4 vToPlayer = vPlayerPos - vPos;
-
-	_float fDist = vToPlayer.Length();
-	_vec3 vNormalToPlayer = vToPlayer.Get_Normalized();
-
-	_vec3 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
-
-	_float fAngle = vLook.Dot(vNormalToPlayer);
-
-	switch (m_eCurState)
-	{
-	case Client::CGuard::STATE_IDLE:
-
-		break;
-	case Client::CGuard::STATE_PATROL:
-
-
-		fAngle = XMConvertToDegrees(fAngle);
-		if (60.f >= fAngle && 10.f >= fDist) {
-			PxRaycastBuffer Buffer{};
-			if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), vNormalToPlayer, 10.f, Buffer)) {
-				if (fDist < Buffer.block.distance)
-					m_eCurState = STATE_CHASE;
-			}
-			else
-				m_eCurState = STATE_CHASE;
+		m_fAttackDelay += fTimeDelta;
+		if (m_fAttackDelay >= 2.f)
+		{
+			m_bAttacked = false;
+			m_fAttackDelay = 0;
 		}
-		break;
-	case Client::CGuard::STATE_CHASE:
-		break;
-	case Client::CGuard::STATE_ATTACK:
-		break;
-	case Client::CGuard::STATE_HIT:
-		break;
-	case Client::CGuard::STATE_DIE:
-		break;
-	case Client::CGuard::STATE_END:
-		break;
 	}
 
+	if (m_eCurState == STATE_IDLE || m_eCurState == STATE_PATROL || m_eCurState == STATE_TURN)
+	{
+		m_pBaseEffect->Tick(fTimeDelta);
+		m_pFrameEffect->Tick(fTimeDelta);
+	}
 
 	if (true == m_bChangePass) {
 		m_fHitTime += fTimeDelta;
@@ -130,8 +97,12 @@ void CGuard::Tick(_float fTimeDelta)
 		Kill();
 
 	Init_State(fTimeDelta);
-	Tick_State(fTimeDelta);
-
+	if(m_ePattern == PATTERN_1)
+		Tick_State_Pattern1(fTimeDelta);
+	else if(m_ePattern == PATTERN_2)
+		Tick_State_Pattern2(fTimeDelta);
+	else
+		Tick_State_Pattern3(fTimeDelta);
 	m_pModelCom->Set_Animation(m_Animation);
 
 	m_pTransformCom->Gravity(fTimeDelta);
@@ -141,6 +112,12 @@ void CGuard::Tick(_float fTimeDelta)
 
 void CGuard::Late_Tick(_float fTimeDelta)
 {
+	if (m_eCurState == STATE_IDLE || m_eCurState == STATE_PATROL || m_eCurState == STATE_TURN)
+	{
+		m_pBaseEffect->Late_Tick(fTimeDelta);
+		m_pFrameEffect->Late_Tick(fTimeDelta);
+	}
+
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
@@ -214,7 +191,10 @@ HRESULT CGuard::Render()
 		if (FAILED(m_pModelCom->Render(i)))
 			return E_FAIL;
 	}
-
+	if (!m_bChangePass && m_iHP > 0)
+	{
+		m_iPassIndex = AnimPass_Default;
+	}
 	return S_OK;
 }
 
@@ -229,11 +209,9 @@ void CGuard::Set_Damage(_int iDamage, _uint iDamageType)
 
 }
 
+
 void CGuard::Init_State(_float fTimeDelta)
 {
-	_vec4 vPlayerPos = Compute_PlayerPos();
-	_float fDistance = Compute_PlayerDistance();
-	_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
 
 	if (m_ePreState != m_eCurState) {
 		switch (m_eCurState)
@@ -241,30 +219,44 @@ void CGuard::Init_State(_float fTimeDelta)
 		case Client::CGuard::STATE_IDLE:
 			m_Animation.iAnimIndex = ANIM_IDLE;
 			m_Animation.isLoop = true;
-			m_Animation.fAnimSpeedRatio;
-
+			m_Animation.fAnimSpeedRatio = 1.f;
 			break;
 		case Client::CGuard::STATE_PATROL:
 			m_Animation.iAnimIndex = ANIM_WALK;
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 1.f;
 			m_pTransformCom->Set_Speed(1.f);
-
+			break;
+		case Client::CGuard::STATE_TURN:
+			m_Animation.iAnimIndex = ANIM_WALK;
+			m_Animation.isLoop = true;
+			m_Animation.fAnimSpeedRatio = 1.f;
+			m_pTransformCom->Set_Speed(1.f);
 			break;
 		case Client::CGuard::STATE_CHASE:
 			m_Animation.iAnimIndex = ANIM_RUN;
 			m_Animation.isLoop = true;
-			m_Animation.fAnimSpeedRatio = 4.f;
+			m_Animation.fAnimSpeedRatio = 1.f;
 			break;
-		case Client::CGuard::STATE_ATTACK:
-			m_Animation.iAnimIndex = ANIM_ATTACK_1;
+		case Client::CGuard::STATE_ATTACK_SWING:
+			m_Animation.iAnimIndex = ANIM_SWING;
 			m_Animation.isLoop = false;
-			m_Animation.fAnimSpeedRatio = 4.f;
+			m_Animation.fAnimSpeedRatio = 2.f;
+			break;
+		case Client::CGuard::STATE_ATTACK_STEP:
+			m_Animation.iAnimIndex = ANIM_STEP;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
+			break;
+		case Client::CGuard::STATE_BACK:
+			m_Animation.iAnimIndex = ANIM_RUN;
+			m_Animation.isLoop = true;
+			m_Animation.fAnimSpeedRatio = 2.f;
 			break;
 		case Client::CGuard::STATE_DIE:
 			m_Animation.iAnimIndex = ANIM_DIE;
 			m_Animation.isLoop = false;
-			m_Animation.fAnimSpeedRatio = 2.f;
+			m_Animation.fAnimSpeedRatio = 1.f;
 			break;
 		}
 
@@ -273,43 +265,169 @@ void CGuard::Init_State(_float fTimeDelta)
 
 }
 
-void CGuard::Tick_State(_float fTimeDelta)
+void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 {
-	_vec4 vPlayerPos = Compute_PlayerPos();
-	_float fDistance = Compute_PlayerDistance();
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
+	_vec4 vTargetPos = pPlayerTransform->Get_State(State::Pos);
+	_vec4 vPos = m_pTransformCom->Get_CenterPos();
+	_vec4 vToPlayer = vPlayerPos - vPos;
+	_vec3 vNormalToPlayer = vToPlayer.Get_Normalized();
+	_vec3 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
+	_float fDist = vToPlayer.Length();
+	_float fAngle = acosf(vLook.Dot(vNormalToPlayer));
+	_float fDistance{ 10.f };
+	_vec4 vMyPosition = m_pTransformCom->Get_State(State::Pos);
 
-	_float fDist = 1.0f;
-	PxRaycastBuffer Buffer{};
-	
+	Detect_Range(fAngle, fDist, vNormalToPlayer);
+	PxRaycastBuffer pBuffer{};
+	_bool isCollision{ false };
+	_bool isBack{ false };
+
+	_randInt iAttackInt(0, 1);
+	_int iRandomAttack = iAttackInt(m_iRandomAttack);
+
+	if(m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look), 2.f, pBuffer))
+	{
+		m_eCurState = STATE_BACK;
+	}
 	switch (m_eCurState)
 	{
-	case STATE_IDLE:
-		m_fIdleTime += fTimeDelta;
 
-		if (m_fIdleTime >= 1.f)
+	case STATE_IDLE:
+		m_pTransformCom->Set_Speed(1.f);
+		vIdlePos = m_pTransformCom->Get_State(State::Pos);
+		m_fIdleTime += fTimeDelta;
+		if (m_isDetected == true)
+			m_eCurState = STATE_CHASE;
+
+		if (m_isArrived == true)
+		{
+			if (m_fIdleTime > 1.f)
+			{
+				m_eCurState = STATE_TURN;
+				m_isArrived = false;
+				m_fIdleTime = 0.f;
+			}
+		}
+		if (2.f < m_fIdleTime)
 		{
 			m_eCurState = STATE_PATROL;
-
-		}
 			m_fIdleTime = 0.f;
+		}
 		
 		break;
 
 	case STATE_PATROL:
-
-		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer))
+		m_fPatrolTime += fTimeDelta;
+		vPatrolPos = m_pTransformCom->Get_State(State::Pos);
+		if (m_isDetected == true)
+			m_eCurState = STATE_CHASE;
+		if((vIdlePos - vPatrolPos).Length() > 10.f)
 		{
-			m_pTransformCom->LookAt_Dir(PxVec3ToVector(Buffer.block.normal));
+			m_eCurState = STATE_IDLE;
+			m_isArrived = true;
+			
+		} 
+		else
+			m_pTransformCom->Go_Straight(fTimeDelta);
+		
+
+
+		break;
+	case STATE_TURN:
+		
+		m_fTurnTime += fTimeDelta;
+		m_pTransformCom->Turn(_vec4(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+		if (m_isDetected == true)
+			m_eCurState = STATE_CHASE;
+		if (m_fTurnTime > 2.f)
+		{
+			m_eCurState = STATE_IDLE;
+			m_fTurnTime = 0;
+		}
+
+		break;
+	case STATE_CHASE:
+		m_pTransformCom->Set_Speed(3.f);
+		m_fAttackTime += fTimeDelta;
+
+		if(fDist < 2.f)
+		{
+			if (m_fAttackTime > 1.f)
+			{
+				if (iRandomAttack == 0)
+					m_eCurState = STATE_ATTACK_SWING;
+				else
+					m_eCurState = STATE_ATTACK_STEP;
+
+				m_fAttackTime = 0.f;
+			}
+			m_pTransformCom->LookAt(vTargetPos);
+
 		}
 		else
 		{
+			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
+		if (fDist > 10.f)
+			m_eCurState = STATE_BACK;
 
-		if (m_pModelCom->IsAnimationFinished(ANIM_WALK))
+		break;
+	case STATE_ATTACK_STEP:
+			if (m_bAttacked == false)
+			{
+				if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
+				{
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+					m_bAttacked = true;
+				}
+			}
+
+			if (m_pModelCom->IsAnimationFinished(ANIM_STEP))
+			{
+				m_eCurState = STATE_CHASE;
+				m_fAttackTime = 0.f;
+			}
+			
+		break;
+
+	case STATE_ATTACK_SWING:
+
+		if (m_bAttacked == false)
 		{
+			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f )
+			{
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_bAttacked = true;
+			}
+		}
+
+		if (m_pModelCom->IsAnimationFinished(ANIM_SWING))
+		{
+			m_eCurState = STATE_CHASE;
+			m_fAttackTime = 0.f;
+
+		}
+		
+
+		break;
+
+	case STATE_BACK:
+		m_pTransformCom->Set_Speed(5.f);
+
+		m_pTransformCom->LookAt(m_OriginMatrix.Position());
+
+		isBack = m_pTransformCom->Go_To(m_OriginMatrix.Position(), fTimeDelta * 2.f);
+		
+		if (isBack)
+		{
+			m_pTransformCom->Set_Matrix(m_OriginMatrix);
+			//m_pTransformCom->Set_State(State::Look, m_OriginMatrix.Look());
 			m_eCurState = STATE_IDLE;
 		}
+		
 
 		break;
 
@@ -323,30 +441,323 @@ void CGuard::Tick_State(_float fTimeDelta)
 	}
 }
 
-void CGuard::View_Detect_Range()
+
+void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 {
-	Safe_Release(m_pBaseEffect);
-	Safe_Release(m_pFrameEffect);
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
+	_vec4 vTargetPos = pPlayerTransform->Get_State(State::Pos);
+	_vec4 vPos = m_pTransformCom->Get_CenterPos();
+	_vec4 vToPlayer = vPlayerPos - vPos;
+	_vec3 vNormalToPlayer = vToPlayer.Get_Normalized();
+	_vec3 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
+	_float fDist = vToPlayer.Length();
+	_float fAngle = acosf(vLook.Dot(vNormalToPlayer));
+	_float fDistance{ 10.f };
+	_vec4 vMyPosition = m_pTransformCom->Get_State(State::Pos);
 
-	_mat EffectMatrix{};
-	EffectInfo Info{};
+	Detect_Range(fAngle, fDist, vNormalToPlayer);
+	PxRaycastBuffer pBuffer{};
+	_bool isCollision{ false };
+	_bool isBack{ false };
 
-	EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(_vec3(0.f, 0.25f, 0.f));
+	_randInt iAttackInt(0, 1);
+	_int iRandomAttack = iAttackInt(m_iRandomAttack);
 
-	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Frame");
-	Info.pMatrix = &EffectMatrix;
-	m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
-	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_45_Base");
-	Info.pMatrix = &EffectMatrix;
-	m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+	switch (m_eCurState)
+	{
 
+	case STATE_IDLE:
+		m_pTransformCom->Set_Speed(1.f);
+		vIdlePos = m_pTransformCom->Get_State(State::Pos);
+		m_fIdleTime += fTimeDelta;
+		if (m_isDetected == true)
+			m_eCurState = STATE_CHASE;
+
+		if (m_isArrived == true)
+		{
+			if (m_fIdleTime > 1.f)
+			{
+				m_eCurState = STATE_TURN;
+				m_isArrived = false;
+				m_fIdleTime = 0.f;
+			}
+		}
+		if (2.f < m_fIdleTime)
+		{
+			m_eCurState = STATE_PATROL;
+			m_fIdleTime = 0.f;
+		}
+
+		break;
+
+	case STATE_PATROL:
+		m_fPatrolTime += fTimeDelta;
+		vPatrolPos = m_pTransformCom->Get_State(State::Pos);
+		if (m_isDetected == true)
+			m_eCurState = STATE_CHASE;
+
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look), 2.f, pBuffer))
+		{
+			m_eCurState = STATE_TURN;
+		}
+		
+		//if ((vIdlePos - vPatrolPos).Length() > 10.f)
+		//{
+		//	m_eCurState = STATE_IDLE;
+		//	m_isArrived = true;
+
+		//}
+		else
+			m_pTransformCom->Go_Straight(fTimeDelta);
+
+
+
+		break;
+	case STATE_TURN:
+
+		m_fTurnTime += fTimeDelta;
+		m_pTransformCom->Turn(_vec4(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+		if (m_isDetected == true)
+			m_eCurState = STATE_CHASE;
+
+		if (m_fTurnTime > 1.f)
+		{
+			m_eCurState = STATE_IDLE;
+			m_fTurnTime = 0;
+		}
+
+		break;
+	case STATE_CHASE:
+		m_pTransformCom->Set_Speed(3.f);
+		m_fAttackTime += fTimeDelta;
+
+		if (fDist < 2.f)
+		{
+			if (m_fAttackTime > 1.f)
+			{
+				if (iRandomAttack == 0)
+					m_eCurState = STATE_ATTACK_SWING;
+				else
+					m_eCurState = STATE_ATTACK_STEP;
+
+				m_fAttackTime = 0.f;
+			}
+			m_pTransformCom->LookAt(vTargetPos);
+
+		}
+		else
+		{
+			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
+			m_pTransformCom->Go_Straight(fTimeDelta);
+		}
+		if (fDist > 10.f)
+			m_eCurState = STATE_BACK;
+
+		break;
+	case STATE_ATTACK_STEP:
+		if (m_bAttacked == false)
+		{
+			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
+			{
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_bAttacked = true;
+			}
+		}
+
+		if (m_pModelCom->IsAnimationFinished(ANIM_STEP))
+		{
+			m_eCurState = STATE_CHASE;
+			m_fAttackTime = 0.f;
+		}
+
+		break;
+
+	case STATE_ATTACK_SWING:
+
+		if (m_bAttacked == false)
+		{
+			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
+			{
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_bAttacked = true;
+			}
+		}
+
+		if (m_pModelCom->IsAnimationFinished(ANIM_SWING))
+		{
+			m_eCurState = STATE_CHASE;
+			m_fAttackTime = 0.f;
+
+		}
+
+
+		break;
+
+	case STATE_BACK:
+		m_pTransformCom->Set_Speed(5.f);
+
+		m_pTransformCom->LookAt(m_OriginMatrix.Position());
+
+		isBack = m_pTransformCom->Go_To(m_OriginMatrix.Position(), fTimeDelta * 2.f);
+
+		if (isBack)
+		{
+			m_pTransformCom->Set_Matrix(m_OriginMatrix);
+			//m_pTransformCom->Set_State(State::Look, m_OriginMatrix.Look());
+			m_eCurState = STATE_IDLE;
+		}
+
+
+		break;
+
+	case STATE_DIE:
+		if (m_pModelCom->IsAnimationFinished(ANIM_DIE))
+		{
+			m_fDeadTime += fTimeDelta;
+		}
+
+		break;
+	}
 }
 
+
+void CGuard::Tick_State_Pattern3(_float fTimeDelta)
+{
+	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
+	_vec4 vTargetPos = pPlayerTransform->Get_State(State::Pos);
+	_vec4 vPos = m_pTransformCom->Get_CenterPos();
+	_vec4 vToPlayer = vPlayerPos - vPos;
+	_vec3 vNormalToPlayer = vToPlayer.Get_Normalized();
+	_vec3 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
+	_float fDist = vToPlayer.Length();
+	_float fAngle = acosf(vLook.Dot(vNormalToPlayer));
+	_float fDistance{ 10.f };
+	_vec4 vMyPosition = m_pTransformCom->Get_State(State::Pos);
+
+	Detect_Range(fAngle, fDist, vNormalToPlayer);
+	PxRaycastBuffer pBuffer{};
+	_bool isCollision{ false };
+	_bool isBack{ false };
+
+	_randInt iAttackInt(0, 1);
+	_int iRandomAttack = iAttackInt(m_iRandomAttack);
+
+	if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look), 2.f, pBuffer))
+	{
+		m_eCurState = STATE_BACK;
+	}
+	switch (m_eCurState)
+	{
+
+	case STATE_IDLE:
+		m_pTransformCom->Set_Speed(1.f);
+		vIdlePos = m_pTransformCom->Get_State(State::Pos);
+		m_fIdleTime += fTimeDelta;
+		if (m_isDetected == true)
+			m_eCurState = STATE_CHASE;
+
+		break;
+
+	case STATE_CHASE:
+		m_pTransformCom->Set_Speed(3.f);
+		m_fAttackTime += fTimeDelta;
+
+		if (fDist < 2.f)
+		{
+			if (m_fAttackTime > 1.f)
+			{
+				if (iRandomAttack == 0)
+					m_eCurState = STATE_ATTACK_SWING;
+				else
+					m_eCurState = STATE_ATTACK_STEP;
+
+				m_fAttackTime = 0.f;
+			}
+			m_pTransformCom->LookAt(vTargetPos);
+
+		}
+		else
+		{
+			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
+			m_pTransformCom->Go_Straight(fTimeDelta);
+		}
+		if (fDist > 10.f)
+			m_eCurState = STATE_BACK;
+
+		break;
+
+	case STATE_ATTACK_STEP:
+		if (m_bAttacked == false)
+		{
+			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
+			{
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_bAttacked = true;
+			}
+		}
+
+		if (m_pModelCom->IsAnimationFinished(ANIM_STEP))
+		{
+			m_eCurState = STATE_CHASE;
+			m_fAttackTime = 0.f;
+		}
+
+		break;
+
+	case STATE_ATTACK_SWING:
+
+		if (m_bAttacked == false)
+		{
+			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
+			{
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_bAttacked = true;
+			}
+		}
+
+		if (m_pModelCom->IsAnimationFinished(ANIM_SWING))
+		{
+			m_eCurState = STATE_CHASE;
+			m_fAttackTime = 0.f;
+
+		}
+
+
+		break;
+
+	case STATE_BACK:
+		m_pTransformCom->Set_Speed(5.f);
+
+		m_pTransformCom->LookAt(m_OriginMatrix.Position());
+
+		isBack = m_pTransformCom->Go_To(m_OriginMatrix.Position(), fTimeDelta * 2.f);
+
+		if (isBack)
+		{
+			m_pTransformCom->Set_Matrix(m_OriginMatrix);
+			//m_pTransformCom->Set_State(State::Look, m_OriginMatrix.Look());
+			m_eCurState = STATE_IDLE;
+		}
+
+
+		break;
+
+	case STATE_DIE:
+		if (m_pModelCom->IsAnimationFinished(ANIM_DIE))
+		{
+			m_fDeadTime += fTimeDelta;
+		}
+
+		break;
+	}
+}
 _vec4 CGuard::Compute_PlayerPos()
 {
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-	return pPlayerTransform->Get_State(State::Pos);
+	return pPlayerTransform->Get_CenterPos();
 }
 
 _vec4 CGuard::Compute_PlayerLook()
@@ -367,6 +778,62 @@ _float CGuard::Compute_PlayerDistance()
 	return fDistance;
 }
 
+void CGuard::Create_Range()
+{
+	if (!m_pFrameEffect)
+	{
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_90_Frame");
+		Info.pMatrix = &m_EffectMatrix;
+		Info.isFollow = true;
+		m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+	}
+
+	if (!m_pBaseEffect)
+	{
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_90_Base");
+		Info.pMatrix = &m_EffectMatrix;
+		Info.isFollow = true;
+		m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+	}
+}
+
+void CGuard::Detect_Range(_float fAngle, _float fDist, _vec4 vNormalToPlayer)
+{
+	PxRaycastBuffer Buffer{};
+	m_EffectMatrix = _mat::CreateScale(20.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(0.f, 0.1f, 0.f);
+
+	if (XMConvertToRadians(45.f) >= fAngle && 8.f >= fDist)
+	{
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), vNormalToPlayer, 100.f, Buffer))
+		{
+			if (fDist < Buffer.block.distance)
+			{
+				if (CUI_Manager::Get_Instance()->Get_Hp().x > 0)
+					m_isDetected = true;
+				else
+				{
+					if (m_pModelCom->IsAnimationFinished(ANIM_SWING) || m_pModelCom->IsAnimationFinished(ANIM_STEP))
+					{
+						m_eCurState = STATE_BACK;
+						m_isDetected = false;
+					}
+				}
+			}
+			else
+			{
+				m_isDetected = false;
+			}
+		}
+		else
+		{
+			m_isDetected = false;
+		}
+	}
+	else
+	{
+		m_isDetected = false;
+	}
+}
 
 HRESULT CGuard::Add_Components()
 {
@@ -471,7 +938,7 @@ HRESULT CGuard::Add_Collider()
 	Collider_Desc AttackColDesc{};
 	AttackColDesc.eType = ColliderType::Frustum;
 	_matrix matView = XMMatrixLookAtLH(m_pTransformCom->Get_State(State::Pos), m_pTransformCom->Get_State(State::Look), _vec3(0.f,1.f,0.f));
-	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.f), 0.5f, 0.01f, 1.5f);
+	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(90.f), 1.f, 0.1f, 2.f);
 
 	AttackColDesc.matFrustum = matView * matProj;
 
@@ -486,7 +953,7 @@ HRESULT CGuard::Add_Collider()
 
 void CGuard::Update_Collider()
 {
-	_mat Offset = _mat::CreateTranslation(0.f, 2.f, 0.f);
+	_mat Offset = _mat::CreateTranslation(0.f, 1.f, 0.f);
 	m_pAttackColliderCom->Update(Offset * m_pTransformCom->Get_World_Matrix());
 	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 	

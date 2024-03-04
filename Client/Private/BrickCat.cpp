@@ -142,7 +142,7 @@ void CBrickCat::Init_State(_float fTimeDelta)
 void CBrickCat::Tick_State(_float fTimeDelta)
 {
 
-	CTransform * pBarTransform = GET_TRANSFORM("Layer_BrickBar", LEVEL_TOWER);
+	CTransform * pBarTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickGame"), TEXT("BrickBarTransform"));
 	_vec4 vBarPos = pBarTransform->Get_State(State::Pos);
 
 	_float fDistance = __super::Compute_PlayerDistance();
@@ -163,63 +163,10 @@ void CBrickCat::Tick_State(_float fTimeDelta)
 	case Client::CBrickCat::STATE_CHASE:
 
 	{
-		if (CUI_Manager::Get_Instance()->Is_InvenActive() == true)
-		{
-			m_eCurState = STATE_INVEN;
-			break;
-		}
+		m_pTransformCom->Set_Position(vTargetPos);
 
-		if (fDistance <= 2.f && fDistance >= 2.f)
-		{
-			m_fPosLerpRatio = 0.03f;
-		}
-		else if (fDistance > 5.f)
-		{
-			m_fPosLerpRatio = 0.05f;
-		}
-
-		_vec3 vSetPos = XMVectorLerp(vMyPos, vTargetPos, m_fPosLerpRatio);
-		_vec4 vSetLook = XMVectorLerp(vMyLook, vBarLook, m_fLookLerpRatio);
-
-		m_pTransformCom->LookAt_Dir(vSetLook);
-
-		if (CCamera_Manager::Get_Instance()->Get_AimMode() == true)
-		{
-			m_pTransformCom->Set_Position(vTargetPos);
-
-			break;
-		}
-
-		if (fDistance >= 1.f)
-		{
-			m_Animation.iAnimIndex = RUN;
-			m_Animation.isLoop = true;
-
-			m_pTransformCom->Set_Position(vSetPos);
-		}
-
-		if (fDistance < 2.1f)
-		{
-			m_Animation.iAnimIndex = RUN;
-			m_Animation.isLoop = true;
-
-			m_fIdleTime += fTimeDelta;
-
-			if (m_fIdleTime >= 5.f + static_cast<_float>(rand() % 3))
-			{
-				m_eCurState = STATE_EMOTION;
-			}
-
-		}
-
-		if (fDistance > 10.f)
-		{
-			m_pTransformCom->Set_Position(vTargetPos);
-			m_pTransformCom->LookAt_Dir(vBarLook * -1.f);
-		}
-
+		m_pTransformCom->LookAt_Dir(vMyLook);
 	}
-
 	break;
 
 	case Client::CBrickCat::STATE_EMOTION:

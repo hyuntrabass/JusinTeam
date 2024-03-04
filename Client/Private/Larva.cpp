@@ -157,16 +157,15 @@ void CLarva::Tick_State(_float fTimeDelta)
 		{
 			CLarva_Ball::LARVABALL_DESC LarvaBallDesc{};
 			_vec3 vPos = m_pTransformCom->Get_CenterPos();
-			vPos.y = 1.f;
+			vPos.y = 0.5f;
 			LarvaBallDesc.vPosition = vPos;
 
 			_vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
-			vPlayerPos.y = 1.f;
+			vPlayerPos.y = 0.5f;
 			LarvaBallDesc.vDirection = vPlayerPos - vPos;
-			//LarvaBallDesc.vDirection.Normalize();
 			LarvaBallDesc.vDirection.w = 0.f;
 			
-			if (FAILED(m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_larva_Ball"), TEXT("Prototype_GameObject_Larva_Ball_Object"), &LarvaBallDesc)))
+			if (FAILED(m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_larva_Ball"), TEXT("Prototype_GameObject_Larva_Ball"), &LarvaBallDesc)))
 				return;
 
 			m_HasAttacked = true;
