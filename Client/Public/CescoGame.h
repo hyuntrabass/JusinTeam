@@ -55,7 +55,7 @@ private:
 	_float m_fTimeLimit{ 1209999999.f };
 	_float m_fMonsterSpawnTime{};
 	_uint m_iMonsterSpawnCount{};
-	_float m_iMonsterSpawnSpeed{};
+	_float m_iMonsterSpawnSpeed{1.f};
 	//Hook
 	_float m_fHookSpawnTime{};
 	_bool m_bHadDragging{};

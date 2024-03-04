@@ -30,6 +30,8 @@ HRESULT CCescoGame::Init_Prototype()
 
 HRESULT CCescoGame::Init(void* pArg)
 {
+	LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+	*Light = g_Light_Cesco;
 	//FRONT
 	m_SpawnPositions.push_back(_vec3(-3000.f, 1.f, 30.f));
 	//BACK
@@ -204,6 +206,7 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 			{
 			case Phase_End:
 			{
+
 				BUFFCARD_DESC Buff_Desc{};
 				Buff_Desc.eBuff = Buff::Buff_MaxHp;
 				Buff_Desc.vPos = _vec2(320.f, 360.f);
@@ -220,6 +223,7 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 				 pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
 				m_eNextPhase = Phase1;
+
 			}
 			break;
 			case Phase1:
@@ -531,7 +535,7 @@ void CCescoGame::Tick_Phase_Buff(_float fTimeDelta)
 			case Client::Buff_PoisonImmune:
 				break;
 			case Client::Buff_MonRegenDown:
-				m_iMonsterSpawnSpeed = 1.f;
+				m_iMonsterSpawnSpeed = 0.7f;
 				break;
 			}
 		}

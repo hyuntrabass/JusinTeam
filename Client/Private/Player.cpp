@@ -286,6 +286,11 @@ void CPlayer::Tick(_float fTimeDelta)
 			m_fRimTick += fTimeDelta;
 		}
 	}
+	else
+	{
+		m_ShaderIndex = VTFPass_Dissolve;
+		m_HairShaderIndex = VTFPass_LerpDissolve;
+	}
 	if (m_bSlowSpeed > 0.f)
 	{
 		m_bSlowSpeed -= fTimeDelta * 0.5f;
@@ -1595,6 +1600,11 @@ void CPlayer::Health_Regen(_float fTImeDelta)
 
 void CPlayer::Move(_float fTimeDelta)
 {
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() == TS_CescoMap)
+	{
+		m_pCam_Manager->Set_RidingZoom(true);
+	}
+
 	if (m_eState == Hook)
 	{
 		return;
