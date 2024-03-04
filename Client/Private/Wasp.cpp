@@ -139,7 +139,7 @@ void CWasp::Init_State(_float fTimeDelta)
 			break;
 		case Client::CWasp::State_Attack:
 		{
-			m_Animation.iAnimIndex = Anim_Attack01;
+			m_Animation.iAnimIndex = Anim_Attack02;
 
 			_vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
 			vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
@@ -212,7 +212,7 @@ void CWasp::Tick_State(_float fTimeDelta)
 			m_HasAttacked = true;
 		}
 
-		if (m_pModelCom->IsAnimationFinished(Anim_Attack01))
+		if (m_pModelCom->IsAnimationFinished(Anim_Attack02))
 		{
 			_vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
 			vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;

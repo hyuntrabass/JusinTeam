@@ -31,7 +31,7 @@ struct DummyInfo
 {
 	wstring Prototype{};
 	enum class ItemType eType {};
-	_uint iStageIndex{};
+	_uint iIndex{};
 	_int iTriggerNum{};
 	_float fTriggerSize{};
 	//_float4 vPos{};
@@ -212,6 +212,8 @@ private:
 	_bool m_isMode{ false };
 	_int iTriggerNum{ -1 };
 
+	_int m_iPattern{ 0 };
+
 	_bool m_isInstancing{false};
 	vector<_vec4> m_vInstancePos;
 	vector<_vec3> m_vInstanceNor;
@@ -284,6 +286,7 @@ private:
 	SectionInfo m_eSectionInfo{};
 	_bool m_isTriggerCheck{ false };
 	_bool m_isFollow{ false };
+	_bool m_isPatternCheck{ false };
 	const _char** m_szEffectFiles;
 
 	// Ä«¸Þ¶ó Eye

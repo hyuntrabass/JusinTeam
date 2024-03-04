@@ -84,6 +84,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 	}
 
 	Init_Phase(fTimeDelta);
+
 	switch (m_eCurrentPhase)
 	{
 	case Client::CCescoGame::Phase1:
@@ -162,12 +163,13 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 		{
 		case Client::CCescoGame::Phase1:
 		{
-	
-	
+			m_iNumSpawnLarva = 2;
 		}
 			break;
 		case Client::CCescoGame::Phase2:
 		{
+			m_iNumSpawnLarva = 5;
+
 			for (_uint i = 0; i < m_SpawnPositions.size(); i++)
 			{
 				Create_Log(i);
@@ -175,11 +177,17 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 
 			//¹úÁý °¹¼ö +1
 			m_IsSpawnHives.push_back(false);
-
 		}
 			break;
 		case Client::CCescoGame::Phase3:
 		{
+			m_iNumSpawnLarva = 5;
+
+			for (_uint i = 0; i < m_SpawnPositions.size(); i++)
+			{
+				Create_Log(i);
+			}
+
 			//¹úÁý °¹¼ö +1
 			m_IsSpawnHives.push_back(false);
 		}
@@ -219,15 +227,13 @@ void CCescoGame::Tick_Phase1(_float fTimeDelta)
 
 	if (m_iMonsterSpawnCount % 10 == 1 && m_fMonsterSpawnTime == 0.f)
 	{
-		for (_uint i = 0; i < 5; i++)
+		for (_uint i = 0; i < m_iNumSpawnLarva; i++)
 		{
 			Create_Larva();
 		}
 	}
 
 #pragma endregion
-
-
 }
 
 void CCescoGame::Tick_Phase2(_float fTimeDelta)
@@ -319,8 +325,8 @@ void CCescoGame::Tick_Phase2(_float fTimeDelta)
 
 void CCescoGame::Tick_Phase3(_float fTimeDelta)
 {
-	Tick_Phase1(fTimeDelta);
 	Tick_Phase2(fTimeDelta);
+
 #pragma region EyeBombSpawn
 	if (m_fEyeBombSpawnTime >= 2.f)
 	{

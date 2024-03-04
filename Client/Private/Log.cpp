@@ -38,7 +38,7 @@ HRESULT CLog::Init(void* pArg)
 
     m_pGameInstance->Register_CollisionObject(this, m_pColliderCom);
 
-    m_iPassIndex = StaticPass_Dissolve;
+    m_iPassIndex = StaticPass_OutLineDissolve;
     m_fDissolveRatio = 1.f;
 
     random_device rand;
@@ -62,7 +62,7 @@ void CLog::Tick(_float fTimeDelta)
             if (m_fJumpForce <= 1.f)
             {
                 m_fDissolveRatio += fTimeDelta;
-                m_iPassIndex = StaticPass_Dissolve;
+                m_iPassIndex = StaticPass_OutLineDissolve;
 
                 m_pTransformCom->Delete_Controller();
                 m_pGameInstance->Delete_CollisionObject(this);
@@ -90,7 +90,7 @@ void CLog::Tick(_float fTimeDelta)
     }
     else
     {
-        if (m_iPassIndex == StaticPass_Dissolve)
+        if (m_iPassIndex == StaticPass_OutLineDissolve)
         {
             m_fDissolveRatio -= fTimeDelta;
             if (m_fDissolveRatio <= 0.f)
