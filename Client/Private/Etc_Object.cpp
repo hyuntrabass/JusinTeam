@@ -47,6 +47,12 @@ void CEtc_Object::Tick(_float fTimeDelta)
 
 void CEtc_Object::Late_Tick(_float fTimeDelta)
 {
+	if (m_Info.strPrototypeTag == TEXT("Prototype_Model_SurvivalWall"))
+	{
+		int a = 0;
+
+	}
+	
 	CCollider* pCameraCollider = dynamic_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_STATIC, L"Layer_Camera", L"Com_Collider"));
 	
 	if (m_pColliderCom->Intersect(pCameraCollider))
@@ -57,6 +63,12 @@ void CEtc_Object::Late_Tick(_float fTimeDelta)
 
 HRESULT CEtc_Object::Render()
 {
+
+	if (m_Info.strPrototypeTag == TEXT("Prototype_Model_SurvivalWall"))
+	{
+		int a = 0;
+
+	}
 
 	__super::Render();
 

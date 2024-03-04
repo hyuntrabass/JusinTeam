@@ -36,7 +36,8 @@ void CObjects::Tick(_float fTimeDelta)
 
 void CObjects::Late_Tick(_float fTimeDelta)
 {
-	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Village and CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Tutorial and CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Dungeon)
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Village and CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Tutorial 
+		and CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_Dungeon and CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_SurvivalMap)
 	{
 		return;
 	}
