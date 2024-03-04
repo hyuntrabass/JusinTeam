@@ -31,9 +31,6 @@ HRESULT CInfiltrationGame::Init(void* pArg)
 
 	_tchar* pPath = TEXT("../Bin/Data/MiniDungeon_Guard_1_Data.dat");
 	Create_Guard(pPath);
-
-	pPath = TEXT("../Bin/Data/MiniDungeon_Guard_2_Data.dat");
-	Create_Guard(pPath);
 	Create_CheckPoint();
 	return S_OK;
 }
@@ -43,7 +40,7 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 	Reset_Play(fTimeDelta);
 	for (auto& pGuardList : m_GuardList)
 	{
-		for (auto& pGuard : m_Guard)
+		for (auto& pGuard : pGuardList)
 		{
 			pGuard->Tick(fTimeDelta);
 	
@@ -51,7 +48,7 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 	}
 	for (auto& pGuardTowerList : m_GuardTowerList)
 	{
-		for (auto& pGuardTower : m_GuardTower)
+		for (auto& pGuardTower : pGuardTowerList)
 		{
 			pGuardTower->Tick(fTimeDelta);
 		}
@@ -70,7 +67,7 @@ void CInfiltrationGame::Late_Tick(_float fTimeDelta)
 {
 	for (auto& pGuardList : m_GuardList)
 	{
-		for (auto& pGuard : m_Guard)
+		for (auto& pGuard : pGuardList)
 		{
 			pGuard->Late_Tick(fTimeDelta);
 		}
@@ -78,7 +75,7 @@ void CInfiltrationGame::Late_Tick(_float fTimeDelta)
 
 	for (auto& pGuardTowerList : m_GuardTowerList)
 	{
-		for (auto& pGuardTower : m_GuardTower)
+		for (auto& pGuardTower : pGuardTowerList)
 		{
 			pGuardTower->Late_Tick(fTimeDelta);
 		}
@@ -88,8 +85,32 @@ void CInfiltrationGame::Late_Tick(_float fTimeDelta)
 	{
 		if (pCheckPoint->Get_Collision())
 		{
+			_tchar* pPath = nullptr;
 			m_CheckPointMatrix = pCheckPoint->Get_Matrix() + _mat::CreateTranslation(0.f, 1.f, 0.f);
-			if()
+
+			switch (pCheckPoint->Get_TriggerNum())
+			{
+			case 0:
+				pPath = TEXT("../Bin/Data/MiniDungeon_Guard_2_Data.dat");
+				break;
+			case 1:
+				pPath = TEXT("../Bin/Data/MiniDungeon_Guard_3_Data.dat");
+				break;
+			//case 2:
+			//	pPath = TEXT("../Bin/Data/MiniDungeon_Guard_4_Data.dat");
+			//	break;
+			//case 3:
+			//	pPath = TEXT("../Bin/Data/MiniDungeon_Guard_5_Data.dat");
+			//	break;
+			//case 4:
+			//	pPath = TEXT("../Bin/Data/MiniDungeon_Guard_6_Data.dat");
+			//	break;
+			//case 5:
+			//	pPath = TEXT("../Bin/Data/MiniDungeon_Guard_7_Data.dat");
+			//	break;
+			}
+		
+			Create_Guard(pPath);
 			pCheckPoint->Kill();
 		}
 	}
@@ -103,7 +124,8 @@ HRESULT CInfiltrationGame::Create_Guard(const TCHAR* pPath)
 	const TCHAR* pGetPath = pPath;
 
 	std::ifstream inFile(pGetPath, std::ios::binary);
-
+	list<class CGuard*> m_Guard;
+	list<class CGuardTower*> m_GuardTower;
 	if (!inFile.is_open())
 	{
 		MessageBox(g_hWnd, L"파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
@@ -246,35 +268,25 @@ void CInfiltrationGame::Reset_Play(_float fTimeDelta)
 
 void CInfiltrationGame::Release_DeadObjects()
 {
-	for (auto& iter = m_GuardList.begin(); iter != m_GuardList.end(); iter++)
-	{
-		for (auto& it = iter->begin(); it != iter->end();)
-		{
-			if ((*it)->isDead())
-			{
-				Safe_Release(*it);
-				it = m_Guard.erase(it);
+	for (auto& pGuardList : m_GuardList) {
+		for (auto& iter = pGuardList.begin(); iter != pGuardList.end();) {
+			if ((*iter)->isDead()) {
+				Safe_Release(*iter);
+				iter = pGuardList.erase(iter);
 			}
 			else
-			{
-				++it;
-			}
+				iter++;
 		}
 	}
 
-	for (auto& iter = m_GuardTowerList.begin(); iter != m_GuardTowerList.end();iter++)
-	{
-		for (auto& it = m_GuardTower.begin(); it != m_GuardTower.end();)
-		{
-			if ((*it)->isDead())
-			{
-				Safe_Release(*it);
-				it = m_GuardTower.erase(it);
+	for (auto& pTowerList : m_GuardTowerList) {
+		for (auto& iter = pTowerList.begin(); iter != pTowerList.end();) {
+			if ((*iter)->isDead()) {
+				Safe_Release(*iter);
+				iter = pTowerList.erase(iter);
 			}
 			else
-			{
-				++it;
-			}
+				iter++;
 		}
 	}
 
@@ -324,21 +336,21 @@ void CInfiltrationGame::Free()
 
 	for (auto& List : m_GuardList)
 	{
-		for (auto& pGuard : m_Guard)
+		for (auto& pGuard : List)
 		{
 			Safe_Release(pGuard);
 		}
-		m_Guard.clear();
+		List.clear();
 	}
 	m_GuardList.clear();
 
 	for (auto& List : m_GuardTowerList)
 	{
-		for (auto& pGuardTower : m_GuardTower)
+		for (auto& pGuardTower : List)
 		{
 			Safe_Release(pGuardTower);
 		}
-		m_GuardTower.clear();
+		List.clear();
 	}
 	m_GuardTowerList.clear();
 
