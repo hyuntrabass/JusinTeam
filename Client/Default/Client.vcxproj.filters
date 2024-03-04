@@ -1122,6 +1122,9 @@
     <ClInclude Include="..\Public\CheckPoint.h">
       <Filter>02.GameObjects\17.InfiltrationGame\02. CheckPoint</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Guard.h">
+      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1698,6 +1701,9 @@
     <ClCompile Include="..\Private\Guard.cpp" />
     <ClCompile Include="..\Private\CheckPoint.cpp">
       <Filter>02.GameObjects\17.InfiltrationGame\02. CheckPoint</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Guard.cpp">
+      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

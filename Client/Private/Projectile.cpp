@@ -31,20 +31,6 @@ HRESULT CProjectile::Init(void* pArg)
 	{
 		m_UpdateMatrix = _mat::CreateScale(0.5f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 
-		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Yellow");
-		Info.pMatrix = &m_UpdateMatrix;
-		Info.isFollow = true;
-		m_pBall = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-
-		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Out_Yellow");
-		Info.pMatrix = &m_UpdateMatrix;
-		Info.isFollow = true;
-		m_pBallOut = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
-
-		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Parti_Yellow");
-		Info.pMatrix = &m_UpdateMatrix;
-		Info.isFollow = true;
-		m_pBallParticle = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
 		_vec4 vLauncherLook = m_ProjectileDesc.pLauncherTransform->Get_State(State::Look).Get_Normalized();
 		_vec4 vDir = _vec4::Transform(vLauncherLook, _mat::CreateRotationY(XMConvertToRadians(45.f * m_iProjectileID)));
@@ -52,12 +38,77 @@ HRESULT CProjectile::Init(void* pArg)
 		m_pTransformCom->Set_Position(m_ProjectileDesc.vStartPos + _vec3(0.f, 1.f, 0.f));
 		m_pTransformCom->LookAt_Dir(vDir);
 
+
+		if (m_iProjectileID <= 7)
+		{
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Green");
+			Info.pMatrix = &m_UpdateMatrix;
+			Info.isFollow = true;
+			m_pBall = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Out_White");
+			Info.pMatrix = &m_UpdateMatrix;
+			Info.isFollow = true;
+			m_pBallOut = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Parti_Green");
+			Info.pMatrix = &m_UpdateMatrix;
+			Info.isFollow = true;
+			m_pBallParticle = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+			m_pTransformCom->Set_Speed(10.f);
+
+		}
+
+		else if (m_iProjectileID >= 8 && m_iProjectileID <= 15)
+		{
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Yellow");
+			Info.pMatrix = &m_UpdateMatrix;
+			Info.isFollow = true;
+			m_pBall = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Out_White");
+			Info.pMatrix = &m_UpdateMatrix;
+			Info.isFollow = true;
+			m_pBallOut = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Parti_Yellow");
+			Info.pMatrix = &m_UpdateMatrix;
+			Info.isFollow = true;
+			m_pBallParticle = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+			m_pTransformCom->Set_Speed(15.f);
+
+		}
+
+		else if (m_iProjectileID >= 16 && m_iProjectileID <= 23)
+		{
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Red");
+			Info.pMatrix = &m_UpdateMatrix;
+			Info.isFollow = true;
+			m_pBall = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Out_White");
+			Info.pMatrix = &m_UpdateMatrix;
+			Info.isFollow = true;
+			m_pBallOut = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Parti_Red");
+			Info.pMatrix = &m_UpdateMatrix;
+			Info.isFollow = true;
+			m_pBallParticle = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+			m_pTransformCom->Set_Speed(20.f);
+
+		}
+
 		++m_iProjectileID;
 
-		if (m_iProjectileID == 8)
+		if (m_iProjectileID == 24)
 		{
 			m_iProjectileID = 0;
 		}
+
 	}
 	break;
 
@@ -66,16 +117,18 @@ HRESULT CProjectile::Init(void* pArg)
 	{
 		m_pTransformCom->Set_Position(m_ProjectileDesc.vStartPos);
 
-		_mat Matrix = _mat::CreateScale(2.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 0.f, 0.f));
+		m_SphereUpdateMatrix = _mat::CreateScale(m_fSphereRange) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 0.f, 0.f));
 
 		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Blue2");
-		Info.pMatrix = &Matrix;
-		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+		Info.pMatrix = &m_SphereUpdateMatrix;
+		Info.isFollow = true;
+		m_pBall = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
-		Matrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 0.5f, 0.f));
+		_mat Matrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 0.5f, 0.f));
 
 		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Ball_Parti_Blue");
 		Info.pMatrix = &Matrix;
+		Info.fLifeTime = 0.8f;
 		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 
@@ -238,11 +291,14 @@ void CProjectile::Tick(_float fTimeDelta)
 		m_UpdateMatrix = _mat::CreateScale(m_fCircleRange) * _mat::CreateRotationX(XMConvertToRadians(90.f))
 			* _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + _vec3(0.f, 0.1f, 0.f)));
 
+		m_SphereUpdateMatrix = _mat::CreateScale(m_fSphereRange) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 0.f, 0.f));
+
 		//if (m_fTime >= 1.5f)
 		if (m_fCircleRange >= 5.f)
 		{
 			if (m_pBaseEffect && m_pFrameEffect)
 			{
+				Safe_Release(m_pBall);
 				Safe_Release(m_pFrameEffect);
 				Safe_Release(m_pBaseEffect);
 
@@ -273,8 +329,10 @@ void CProjectile::Tick(_float fTimeDelta)
 
 		if (m_pBaseEffect && m_pFrameEffect)
 		{
-			m_fCircleRange += 0.1f;
+			m_fCircleRange += 0.15f;
+			m_fSphereRange += 0.4f;
 
+			m_pBall->Tick(fTimeDelta);
 			m_pBaseEffect->Tick(fTimeDelta);
 			m_pFrameEffect->Tick(fTimeDelta);
 		}
@@ -407,6 +465,7 @@ void CProjectile::Late_Tick(_float fTimeDelta)
 
 		if (m_pFrameEffect && m_pBaseEffect)
 		{
+			m_pBall->Late_Tick(fTimeDelta);
 			m_pFrameEffect->Late_Tick(fTimeDelta);
 			m_pBaseEffect->Late_Tick(fTimeDelta);
 		}
