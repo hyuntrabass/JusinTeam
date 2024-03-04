@@ -49,14 +49,6 @@ HRESULT CBrickBall::Init(void* pArg)
 
 	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 
-	/*
-	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Ball_Init");
-	Info.pMatrix = &m_EffectMatrix;
-	Info.isFollow = true;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
-	*/
-	//m_vDir = _vec4(0.f, 0.f, -1.f, 0.f);
-
 	m_shouldRenderBlur = true;
 	m_eCurBrickColor = BLUE;
 
@@ -70,6 +62,7 @@ HRESULT CBrickBall::Init(void* pArg)
 
 void CBrickBall::Tick(_float fTimeDelta)
 {
+	_vec3 vLook = m_pTransformCom->Get_State(State::Look);
 	m_pTransformCom->Set_Scale(_vec3(1.8f, 1.8f, 1.8f));
 	//Set_BallColor();
 
@@ -244,9 +237,6 @@ HRESULT CBrickBall::Init_Effect()
 	m_pTrail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
 
 
-
-	
-	m_Mat = &m_pTransformCom->Get_World_Matrix();
 	_mat UpMatrix{};
 	_mat	BottomMatrix{};
 	if (m_pTrail != nullptr)
@@ -254,11 +244,6 @@ HRESULT CBrickBall::Init_Effect()
 		m_pTrail->On();
 		_mat Matrix = _mat::CreateTranslation(0.f, 0.1f, 0.f) * m_pTransformCom->Get_World_Matrix();
 		m_pTrail->Tick(Matrix.Position_vec3());
-
-		/*
-		BottomMatrix = _mat::CreateTranslation(0.1f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();
-		UpMatrix = _mat::CreateTranslation(-0.1f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();
-		*/
 	}
 	return S_OK;
 }
@@ -347,15 +332,20 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 			vNormal.Normalize();
 			m_vDir = _vec3::Reflect(vLook, vNormal);
 			m_vDir.y = 0.f;
+
+			if (m_vDir.z <= 0.2f && m_vDir.z >= -0.2f)
+			{
+				m_vDir.z = -1.f;
+			}
 			m_pTransformCom->LookAt_Dir(m_vDir);
+			/*
 			_vec4 vRight = m_vDir - _vec4(1.f, 0.f, 0.f, 0.f).Get_Normalized();
 			_vec4 vLeft = m_vDir - _vec4(-1.f, 0.f, 0.f, 0.f).Get_Normalized();
 			if (vRight.Length() <= 0.1f || vLeft.Length() <= 0.1f)
 			{
 				m_vDir.z = 1.f;
 			}
-	
-			//m_eCurBrickColor = (BrickColor)m_iBallColor;
+			*/
 		}
 
 	}
@@ -395,7 +385,7 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 
 	CCollider* pMonCollider{ nullptr };
 
-	pMonCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BlackCat"), TEXT("Com_Collider_Bar"));
+	pMonCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickGame"), TEXT("BlackCat"));
 	if (pMonCollider != nullptr)
 	{
 		if (m_pColliderCom->Intersect(pMonCollider) && m_pCurCollider != pMonCollider)

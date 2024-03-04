@@ -56,6 +56,11 @@ HRESULT CBrickCat::Init(void* pArg)
 
 void CBrickCat::Tick(_float fTimeDelta)
 {
+	if (CCamera_Manager::Get_Instance()->Get_CameraState() != CS_BRICKGAME)
+	{
+		m_isDead = true;
+		return;
+	}
 
 
 	__super::Tick(fTimeDelta);

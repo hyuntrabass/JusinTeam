@@ -70,7 +70,7 @@ HRESULT CNumEffect::Init(void* pArg)
 	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_Combo");
 	//ColButtonDesc.strTexture2 = TEXT("Prototype_Component_Texture_Effect_FX_A_Shine003_Tex");
 	ColButtonDesc.vSize = _vec2(200.f, 200.f);
-	ColButtonDesc.vPosition = _vec2(m_fX, m_fY + 60.f);
+	ColButtonDesc.vPosition = _vec2(m_fX + 80.f, m_fY);
 	ColButtonDesc.vColor = _vec4(0.941f, 0.38f, 0.55f, 1.f);
 
 	m_pCombo = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
@@ -80,7 +80,8 @@ HRESULT CNumEffect::Init(void* pArg)
 	}
 	m_pCombo->Set_Pass(VTPass_Mask_ColorAlpha);
 
-	m_vColor = _vec4(0.94f, 0.34f, 0.1f, 1.f);
+	//m_vColor = _vec4(1.f, 0.8f, 0.f, 1.f);
+	m_vColor = _vec4(1.f, 0.f, 0.f, 1.f);
 	
 	return S_OK;
 }
@@ -98,9 +99,10 @@ void CNumEffect::Tick(_float fTimeDelta)
 			return;
 		}		
 		m_fAlpha = Lerp(0.f, 1.f, (300.f - m_fSizeX) / 300.f);
-		m_pCombo->Set_Size(m_pCombo->Get_Size().x - 300.f * fTimeDelta, m_pCombo->Get_Size().y - 300.f * fTimeDelta);
+		m_pCombo->Set_Size(m_pCombo->Get_Size().x - 800.f * fTimeDelta, m_pCombo->Get_Size().y - 800.f * fTimeDelta);
 		m_fSizeX -= 300.f * fTimeDelta;
 		m_fSizeY -= 300.f * fTimeDelta;
+		m_pCombo->Tick(fTimeDelta);
 	}
 
 	/*
@@ -118,7 +120,7 @@ void CNumEffect::Tick(_float fTimeDelta)
 		m_vColor.w = 0.f;
 	}
 	*/
-	m_vColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	//m_vColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	if (m_isEffect)
 	{
 		if (m_pShineEffect->Get_Size().y >= 120.f)
@@ -261,8 +263,10 @@ HRESULT CNumEffect::Render()
 
 		}
 	}
+	/*
 	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("ÄÞº¸"), _vec2(m_fX + 50.f + 1.f, m_fY + 1.f), 0.5f, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("ÄÞº¸"), _vec2(m_fX + 50.f, m_fY), 0.5f, _vec4(1.f, 1.f, 1.f, 1.f));
+	*/
 
 	return S_OK;
 }
@@ -330,7 +334,7 @@ void CNumEffect::Set_TargetNum(_uint iNum)
 		m_iTargetNum = m_iCurNum;
 		if (m_iCurNum >= 10)
 		{
-			m_pCombo->Set_Size(400.f, 400.f);
+			m_pCombo->Set_Size(300.f, 300.f);
 			m_isCombo = true;
 			m_fSizeX = 100.f;
 			m_fSizeY = 100.f;

@@ -21,6 +21,7 @@ public:
 
 	enum PET_CAT_STATE
 	{
+		STATE_START,
 		STATE_IDLE,
 		STATE_ANGRY,
 		STATE_CHASE,
@@ -51,13 +52,16 @@ private:
 public:
 	void Init_State(_float fTimeDelta);
 	void Tick_State(_float fTimeDelta);
+	HRESULT Add_Parts();
 
 private:
 	PET_CAT_STATE m_ePreState = STATE_END;
 	PET_CAT_STATE m_eCurState = STATE_END;
 
 private:
+	_bool m_bGameStart{};
 	_bool m_bChangePhase{};
+	_bool m_bPhaseStart{};
 	_bool m_bChangePass{};
 	_bool m_bHit{};
 
@@ -71,6 +75,7 @@ private:
 	_mat m_EffectMatrix{};
 	_mat m_EffectMatrixLight{};
 
+	list<wstring>	m_DialogList;
 	vector<wstring> m_vecText;
 	CGameObject* m_pDialog{ nullptr };
 
@@ -82,6 +87,18 @@ private:
 	_float m_fBarFloating{ 0.f };
 	_float m_fTargetHp{ 15.f };
 	_vec2 m_Hp{ _vec2(15.f, 15.f)};
+
+	class CTextButton* m_pLine{ nullptr };
+	class CDialogText* m_pDialogText{ nullptr };
+	class CTextButtonColor* m_pBackGround{ nullptr };
+
+public:
+	const _bool& Is_GameStart() const { return m_bGameStart; }
+	_bool Create_Bricks();
+	CCollider* Get_Collider() { return m_pColliderCom; }
+
+private:
+	void Set_Text();
 
 private:
 	void Update_Collider();

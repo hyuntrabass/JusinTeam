@@ -2,7 +2,6 @@
 
 #include "BlackCat.h"
 #include "BrickCat.h"
-#include "GlowCube.h"
 #include "TreasureBox.h"
 #include "Pop_Reward.h"
 #include "BrickBar.h"

@@ -3,8 +3,10 @@
 #include "UI_Manager.h"
 #include "Camera_Manager.h"
 #include "TextButtonColor.h"
+#include "TextButton.h"
 #include "Dialog.h"
 #include "3DUITex.h"
+#include "DialogText.h"
 
 CBlackCat::CBlackCat(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -39,37 +41,13 @@ HRESULT CBlackCat::Init(void* pArg)
 
 	m_pTransformCom->Set_Scale(_vec3(2.f, 2.f, 2.f));
 
-	m_eCurState = STATE_IDLE;
+	m_eCurState = STATE_START;
 	m_iPassIndex = AnimPass_Default;
 
-	CDialog::DIALOG_DESC DialogDesc = {};
-	DialogDesc.eLevelID = LEVEL_STATIC;
-	DialogDesc.pParentTransform = m_pTransformCom;
-	DialogDesc.vPosition = _vec3(0.f, 12.f, 0.f);
-	DialogDesc.strText = TEXT("처음");
-
-	m_pDialog = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Dialog"), &DialogDesc);
-	if (m_pDialog == nullptr)
+	if (FAILED(Add_Parts()))
 	{
 		return E_FAIL;
 	}
-
-	m_vecText.push_back(TEXT("아얏"));
-	m_vecText.push_back(TEXT("아파!!"));
-	m_vecText.push_back(TEXT("어이쿠"));
-
-	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_CatSmoke1");
-	Info.pMatrix = &m_EffectMatrix;
-	Info.isFollow = true;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info, true);
-	
-	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_CatSmoke2");
-	Info.pMatrix = &m_EffectMatrix;
-	Info.isFollow = true;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info, true);
-	
-
-
 	/*
 	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Cat_Light");
 	Info.pMatrix = &m_EffectMatrixLight;
@@ -105,6 +83,8 @@ void CBlackCat::Tick(_float fTimeDelta)
 		}
 	}
 
+	
+
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 	Update_Collider();
@@ -120,7 +100,23 @@ void CBlackCat::Tick(_float fTimeDelta)
 
 void CBlackCat::Late_Tick(_float fTimeDelta)
 {
-	if (m_eCurState != STATE_CHANGE)
+	if (m_eCurState == STATE_START)
+	{
+		if (m_pDialogText)
+		{
+			m_pDialogText->Late_Tick(fTimeDelta);
+		}
+		if (m_pBackGround)
+		{
+			m_pBackGround->Late_Tick(fTimeDelta);
+		}
+		if (m_pLine)
+		{
+			m_pLine->Late_Tick(fTimeDelta);
+		}
+	}
+
+	if (m_eCurState != STATE_CHANGE && m_eCurState != STATE_START)
 	{
 		m_pHpBG->Late_Tick(fTimeDelta);
 		m_pHpBar->Late_Tick(fTimeDelta);
@@ -225,26 +221,36 @@ void CBlackCat::Init_State(_float fTimeDelta)
 	{
 		switch (m_eCurState)
 		{
+		case STATE_START:
+			m_Animation.iAnimIndex = IDLE;
+			m_Animation.isLoop = true;
+			CCamera_Manager::Get_Instance()->Set_ZoomFactor(2.f);
+			break;
 		case Client::CBlackCat::STATE_IDLE:
 			m_Animation.iAnimIndex = IDLE;
 			m_Animation.isLoop = true;
+			m_Animation.fAnimSpeedRatio = 2.f;
 			break;
 		case Client::CBlackCat::STATE_CHASE:
 			m_Animation.iAnimIndex = RUN;
 			m_Animation.isLoop = true;
+			m_Animation.fAnimSpeedRatio = 2.f;
 			break;
 		case Client::CBlackCat::STATE_ANGRY:
 			m_Animation.iAnimIndex = RUN;
 			m_Animation.isLoop = true;
+			m_Animation.fAnimSpeedRatio = 2.f;
 			break;
 		case Client::CBlackCat::STATE_HIT:
 			m_Animation.iAnimIndex = EMOTION;
 			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 3.f;
 			break;
 		case Client::CBlackCat::STATE_CHANGE:
 			CCamera_Manager::Get_Instance()->Set_ZoomFactor(2.f);
 			m_Animation.iAnimIndex = TELEPORT_START;
 			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 1.4f;
 			break;
 		case Client::CBlackCat::STATE_DIE:
 			m_Animation.iAnimIndex = TELEPORT_END;
@@ -270,12 +276,12 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 	}
 	else
 	{
-		m_Hp.x = (_uint)m_fTargetHp;
+		m_Hp.x = (_float)m_fTargetHp;
 		m_pHpBar->Set_Bright(false);
 	}
 	
 	
-	if (m_iHitCount >= 3)
+	if (m_iHitCount >= 2)
 	{
 		m_iHitCount = 0;
 		m_fTargetHp -= 2.f;
@@ -306,6 +312,28 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 	_vec3 vNormal = _vec3(0.f, 0.f, -1.f);
 	switch (m_eCurState)
 	{
+	case STATE_START:
+	{		
+		m_pTransformCom->LookAt_Dir(vNormal);
+		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON))
+		{
+			Set_Text();
+		}
+
+		if (m_pDialogText)
+		{
+			m_pDialogText->Tick(fTimeDelta);
+		}
+		if (m_pBackGround)
+		{
+			m_pBackGround->Tick(fTimeDelta);
+		}
+		if (m_pLine)
+		{
+			m_pLine->Tick(fTimeDelta);
+		}
+	}
+		break;
 	case CBlackCat::STATE_IDLE:
 	{
 		m_pTransformCom->LookAt_Dir(vNormal);
@@ -353,9 +381,9 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->IsAnimationFinished(TELEPORT_END))
 		{
-			
+			CCamera_Manager::Get_Instance()->Set_ZoomFactor(-1.f);
 			m_eCurState = STATE_ANGRY;
-		//	m_bChangePhase = false;
+			m_bPhaseStart = true;
 
 		}
 		else if (m_pModelCom->IsAnimationFinished(TELEPORT_START))
@@ -386,6 +414,76 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 	}
 
 
+}
+
+HRESULT CBlackCat::Add_Parts()
+{
+	m_DialogList.push_back(TEXT("안녕"));
+	m_DialogList.push_back(TEXT("게임을 시작하지"));
+	m_DialogList.push_back(TEXT("END"));
+
+	CDialog::DIALOG_DESC DialogDesc = {};
+	DialogDesc.eLevelID = LEVEL_STATIC;
+	DialogDesc.pParentTransform = m_pTransformCom;
+	DialogDesc.vPosition = _vec3(0.f, 12.f, 0.f);
+	DialogDesc.strText = TEXT("처음");
+
+	m_pDialog = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Dialog"), &DialogDesc);
+	if (m_pDialog == nullptr)
+	{
+		return E_FAIL;
+	}
+
+	m_vecText.push_back(TEXT("아얏"));
+	m_vecText.push_back(TEXT("아파!!"));
+	m_vecText.push_back(TEXT("어이쿠"));
+
+	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_CatSmoke1");
+	Info.pMatrix = &m_EffectMatrix;
+	Info.isFollow = true;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info, true);
+
+	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_CatSmoke2");
+	Info.pMatrix = &m_EffectMatrix;
+	Info.isFollow = true;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info, true);
+
+	_float fDepth = (_float)D_TALK / (_float)D_END;
+	CTextButton::TEXTBUTTON_DESC ButtonDesc = {};
+	ButtonDesc.vTextBorderColor = _vec4(0.f, 0.f, 0.f, 1.f);
+	ButtonDesc.vTextColor = _vec4(1.f, 0.95f, 0.87f, 1.f);
+	ButtonDesc.strText = TEXT("검은고양이");
+	ButtonDesc.fFontSize = 0.5f;
+	ButtonDesc.vTextPosition = _vec2(0.f, -30.f);
+	ButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SiegeQuest");
+	ButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, 590.f);
+	ButtonDesc.vSize = _vec2(400.f, 10.f);
+
+	m_pLine = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &ButtonDesc);
+	if (not m_pLine)
+	{
+		return E_FAIL;
+	}
+
+	CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
+	ColButtonDesc.eLevelID = LEVEL_STATIC;
+	ColButtonDesc.fDepth = fDepth;
+	ColButtonDesc.fAlpha = 0.8f;
+	ColButtonDesc.fFontSize = 0.f;
+	ColButtonDesc.strText = TEXT("");
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_FadeBox");
+	ColButtonDesc.vSize = _vec2(g_iWinSizeX, 250.f);
+	ColButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, (_float)g_iWinSizeY);
+
+
+	m_pBackGround = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+	if (not m_pBackGround)
+	{
+		return E_FAIL;
+	}
+	m_pBackGround->Set_Pass(VTPass_FadeVertical);
+
+	return S_OK;
 }
 
 HRESULT CBlackCat::Add_Components()
@@ -503,6 +601,51 @@ HRESULT CBlackCat::Add_Collider()
 	return S_OK;
 }
 
+_bool CBlackCat::Create_Bricks()
+{
+	if (m_bPhaseStart)
+	{
+		m_bPhaseStart = false;
+		return true;
+	}
+	return false;
+}
+
+void CBlackCat::Set_Text()
+{
+	if (m_pDialogText != nullptr)
+	{
+		Safe_Release(m_pDialogText);
+	}
+
+	if (m_DialogList.empty())
+	{
+		return;
+	}
+
+	wstring strText = m_DialogList.front();
+	if (strText == TEXT("END"))
+	{
+		CCamera_Manager::Get_Instance()->Set_ZoomFactor(0.f);
+		m_eCurState = STATE_IDLE;
+		m_bGameStart = true;
+		return;
+	}
+
+
+	CDialogText::DIALOGTEXT_DESC TextDesc = {};
+	TextDesc.eLevelID = LEVEL_STATIC;
+	TextDesc.fDepth = (_float)D_TALK / (_float)D_END - 0.01f;
+	TextDesc.strText = m_DialogList.front();
+	TextDesc.vTextPos = _vec2((_float)g_ptCenter.x, 620.f);
+	m_pDialogText = (CDialogText*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_DialogText"), &TextDesc);
+	if (m_pDialogText == nullptr)
+	{
+		return;
+	}
+	m_DialogList.pop_front();
+}
+
 void CBlackCat::Update_Collider()
 {
 	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
@@ -539,11 +682,16 @@ void CBlackCat::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pLine);
+	Safe_Release(m_pDialogText);
+	Safe_Release(m_pBackGround);
+
 	Safe_Release(m_pHpBG);
 	Safe_Release(m_pHpBar);
 	Safe_Release(m_pHpBorder);
 
 	Safe_Release(m_pDialog);
+
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pColliderCom);

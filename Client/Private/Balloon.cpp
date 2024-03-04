@@ -3,7 +3,6 @@
 #include "Event_Manager.h"
 #include "Effect_Manager.h"
 #include "Camera_Manager.h"
-#include "GlowCube.h"
 
 CBalloon::CBalloon(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -22,6 +21,7 @@ HRESULT CBalloon::Init_Prototype()
 
 HRESULT CBalloon::Init(void* pArg)
 {
+	m_isEmpty = ((BALLOON_DESC*)pArg)->isEmpty;
 	m_vColor = ((BALLOON_DESC*)pArg)->vColor;
 	_vec3 vPos = ((BALLOON_DESC*)pArg)->vPosition;
 	m_pTransformCom->Set_Position(vPos);
@@ -37,51 +37,32 @@ HRESULT CBalloon::Init(void* pArg)
 	}
 	Set_RandomColor();
 
-
-	m_Animation.iAnimIndex = Idle;
-	m_Animation.isLoop = true;
-	m_Animation.bSkipInterpolation = false;
-	m_Animation.fAnimSpeedRatio = 2.f;
-
 	m_eCurState = STATE_IDLE;
 
-	m_pTransformCom->Set_Scale(_vec3(1.4f, 1.4f, 1.4f));
+	m_pTransformCom->Set_Scale(_vec3(0.015f, 0.015f, 0.015f));
 
-	CGlowCube::GLOWCUBE_DESC Desc{};
-	Desc.pParentTransform = m_pTransformCom;
-	Desc.vColor = _vec4(m_vColor);
-	Desc.vPos = _vec4(0.f, 0.f, 0.f, 0.f);
-	m_pCube = (CGlowCube*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_GlowCube"), &Desc);
-	if (m_pCube == nullptr)
-	{
-		return E_FAIL;
-	}
-	Desc.isDefault = true;
-	m_pDefCube = (CGlowCube*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_GlowCube"), &Desc);
-	if (m_pDefCube == nullptr)
-	{
-		return E_FAIL;
-	}
-	
-	
+	m_pBodyColliderCom->Set_Normal();
 	return S_OK;
 }
 
 void CBalloon::Tick(_float fTimeDelta)
 {
-	m_pTransformCom->Set_Scale(_vec3(3.f, 3.f, 3.f));
 
-	m_pBodyColliderCom->Change_Extents(_vec3(0.35f, 0.35f, 0.35f));
-	m_pBodyColliderCom->Set_Normal();
+	if (CCamera_Manager::Get_Instance()->Get_CameraState() != CS_BRICKGAME)
+	{
+		m_isDead = true;
+		return;
+	}
+
+	if (m_eCurColor == COLOR_END)
+	{
+		m_isDead = true;
+		return;
+	}
+
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
-	if (m_pCube != nullptr)
-	{
-		m_pDefCube->Tick(fTimeDelta);
-		m_pCube->Tick(fTimeDelta);
-	}
-	m_pModelCom->Set_Animation(m_Animation);
-
+	
 	Update_BodyCollider();
 
 	m_pTransformCom->Gravity(fTimeDelta);
@@ -91,9 +72,7 @@ void CBalloon::Tick(_float fTimeDelta)
 
 void CBalloon::Late_Tick(_float fTimeDelta)
 {
-	m_pModelCom->Play_Animation(fTimeDelta);
-	//m_pDefCube->Late_Tick(fTimeDelta);
-	m_pCube->Late_Tick(fTimeDelta);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 #endif
@@ -105,7 +84,6 @@ HRESULT CBalloon::Render()
 	{
 		return E_FAIL;
 	}
-
 	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
 	{
 		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
@@ -113,47 +91,48 @@ HRESULT CBalloon::Render()
 			_bool bFailed = true;
 		}
 
-		_bool HasNorTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-		{
-			HasNorTex = false;
-		}
-		else
-		{
-			HasNorTex = true;
-		}
-
-		_bool HasMaskTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
-		{
-			HasMaskTex = false;
-		}
-		else
-		{
-			HasMaskTex = true;
-		}
-
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
-
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
-
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof _vec4)))
 		{
 			return E_FAIL;
 		}
-
-		if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+		{
+			return E_FAIL;
+		}
+		_bool isBlur = true;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_isBlur", &isBlur, sizeof _bool)))
 		{
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(AnimPass_Color)))
+		_bool isFalse = { false };
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &isFalse, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &isFalse, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_bSelected", &isFalse, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		_float fAlpha = 0.1f;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &fAlpha, sizeof _float)))
+		{
+			return E_FAIL;
+		}
+
+		_vec2 vUV = _vec2(m_fX, 0.f);
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vUVTransform", &vUV, sizeof _vec2)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffect)))
 		{
 			return E_FAIL;
 		}
@@ -175,25 +154,13 @@ void CBalloon::Init_State(_float fTimeDelta)
 		switch (m_eCurState)
 		{
 		case Client::CBalloon::STATE_IDLE:
-			m_Animation.iAnimIndex = Idle;
-			m_Animation.isLoop = true;
-			m_Animation.fAnimSpeedRatio = 2.2f;
-			m_Animation.fInterpolationTime = 0.5f;
-
-			m_pTransformCom->Set_Speed(3.f);
 			m_bDamaged = false;
 			break;
 
 		case Client::CBalloon::STATE_HIT:
-			m_Animation.iAnimIndex = NodetreeAction;
-			m_Animation.isLoop = false;
-			m_Animation.fAnimSpeedRatio = 3.f;
-
 			break;
 
 		case Client::CBalloon::STATE_DIE:
-			m_Animation.iAnimIndex = die;
-			m_Animation.isLoop = false;
 			break;
 		}
 
@@ -208,6 +175,97 @@ void CBalloon::Tick_State(_float fTimeDelta)
 	{
 	case Client::CBalloon::STATE_IDLE:
 	{
+		if (!m_bStart)
+		{
+			if (m_fDelayTime >= 0.3f)
+			{
+				m_bStart = true;
+			}
+			m_fDelayTime += fTimeDelta;
+		}
+
+		if (m_isFall && !m_isReadyToFall )
+		{
+			_vec4 Pos = m_pTransformCom->Get_State(State::Pos);
+			Pos.y -= fTimeDelta * 6.f;
+			
+			if (m_pTransformCom->Get_State(State::Pos).y <= 1.5f)
+			{
+				m_isFall = false;
+				return;
+			}
+			CCollider* pBalloonCollider{ nullptr };
+			_bool isBalloonColl{};
+			_uint iNum = m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_Balloons"));
+			for (_uint i = 0; i < iNum; i++)
+			{
+				pBalloonCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_Balloons"), TEXT("Com_Collider_Sphere"), i);
+				if (pBalloonCollider == nullptr)
+				{
+					break;
+				}
+				if (pBalloonCollider == m_pBodyColliderCom)
+				{
+					break;
+				}
+				if (m_pBodyColliderCom->Intersect(pBalloonCollider))
+				{
+					isBalloonColl = true;
+					break;
+				}
+			}
+			if (isBalloonColl)
+			{
+				if (m_pTransformCom->Get_State(State::Pos).y <= 3.f)
+				{
+					Pos.y = 3.f;
+				}
+				m_isFall = false;
+				m_isReadyToFall = true;
+			}
+			m_pTransformCom->Set_State(State::Pos, Pos);
+		}
+
+		if (m_isReadyToFall)
+		{
+			if (m_isFall)
+			{
+				_vec4 Pos = m_pTransformCom->Get_State(State::Pos);
+				Pos.y -= fTimeDelta * 6.f;
+				if (Pos.y <= 1.5f)
+				{
+					Pos.y = 1.5f;
+					m_isFall = false;
+					m_isReadyToFall = false;
+				}
+				m_pTransformCom->Set_State(State::Pos, Pos);
+
+			}
+			CCollider* pBalloonCollider{ nullptr };
+			_bool isBalloonColl{};
+			_uint iNum = m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_Balloons"));
+			for (_uint i = 0; i < iNum; i++)
+			{
+				pBalloonCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_Balloons"), TEXT("Com_Collider_Sphere"), i);
+				if (pBalloonCollider == nullptr)
+				{
+					break;
+				}
+				if (pBalloonCollider == m_pBodyColliderCom)
+				{
+					break;
+				}
+				if (m_pBodyColliderCom->Intersect(pBalloonCollider))
+				{
+					isBalloonColl = true;
+					break;
+				}
+			}
+			if (!isBalloonColl)
+			{
+				m_isFall = true;
+			}
+		}
 
 		CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickGame"), TEXT("BrickBall"));
 		if (pCollider == nullptr)
@@ -216,7 +274,7 @@ void CBalloon::Tick_State(_float fTimeDelta)
 		}
 
 		m_isColl = m_pBodyColliderCom->Intersect(pCollider);
-		if (m_isColl)
+		if (m_bStart && m_isColl)
 		{
 			if (CUI_Manager::Get_Instance()->Get_BrickBallColor() != m_eCurColor)
 			{
@@ -282,34 +340,47 @@ void CBalloon::Set_Color()
 		m_vColor = _vec4(0.143f, 0.267f, 0.321f, 1.f);
 		break;
 	case COLOR_END:
-		if (m_eCurState != STATE_DIE)
-		{
-			m_eCurState = STATE_DIE;
-			m_isDead = true;
-		}
+		m_isDead = true;
 		break;
 	default:
 		break;
 	}
-	if (m_pCube != nullptr)
-	{
-		m_pDefCube->Set_Color(m_vColor);
-		m_pCube->Set_Color(m_vColor);
-	}
+
 }
 
 void CBalloon::Set_RandomColor()
 {
-	_uint iRandom = rand() % 100;
-
-	if (iRandom < 50)
+	if (m_isEmpty)
 	{
-		m_eCurColor = BLUE;
+		_uint iRandom = rand() % 100;
+
+		if (iRandom < 30)
+		{
+			m_eCurColor = RED;
+		}
+		else if (iRandom < 60)
+		{
+			m_eCurColor = BLUE;
+		}
+		else
+		{
+			m_eCurColor = COLOR_END;
+		}
 	}
 	else
 	{
-		m_eCurColor = RED;
+		_uint iRandom = rand() % 100;
+
+		if (iRandom < 50)
+		{
+			m_eCurColor = BLUE;
+		}
+		else
+		{
+			m_eCurColor = RED;
+		}
 	}
+
 	
 	Set_Color();
 }
@@ -319,7 +390,7 @@ HRESULT CBalloon::Add_Collider()
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::AABB;
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
-	CollDesc.vExtents = _vec3(0.8f, 0.8f, 0.8f);
+	CollDesc.vExtents = _vec3(74.f, 50.1f, 74.f);
 	CollDesc.vCenter = _vec3(0.f, 0.f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
@@ -342,17 +413,17 @@ HRESULT CBalloon::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxMesh_Effect"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Balloon"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_BrickCube"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_T_EFF_Noise_04_BC"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_cubeone"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -418,13 +489,13 @@ void CBalloon::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pCube);
-	Safe_Release(m_pDefCube);
+
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 
 	Safe_Release(m_pBodyColliderCom);
 
+	Safe_Release(m_pMaskTextureCom);
 	Safe_Release(m_pDissolveTextureCom);
 }

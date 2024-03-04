@@ -53,8 +53,8 @@ private:
 	class CTextButton* m_pLine{ nullptr };
 	CTextButton* m_pArrow{ nullptr };
 	class CDialogText* m_pDialogText{ nullptr };
-	CTextButton* m_pSkipButton{ nullptr };
 	class CTextButtonColor* m_pBackGround{ nullptr };
+	CTextButton* m_pSkipButton{ nullptr };
 	class C3DUITex* m_pSpeechBubble{ nullptr };
 
 private:

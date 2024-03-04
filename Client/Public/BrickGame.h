@@ -42,7 +42,6 @@ private:
 	_float										m_fTimeLimit{};
 	_mat										m_EffectMatrix{};
 
-	class CBalloon*								m_pBalloon[BRICKROW][BRICKCOL]{};
 	LIGHT_DESC									m_Light_Desc{};
 	CGameObject*								m_pBackGround{nullptr};
 	class CNumEffect*							m_pCombo{ nullptr };
@@ -51,13 +50,17 @@ private:
 	class CBrickBar*							m_pBar{ nullptr };
 
 	class CTextButtonColor*						m_pTimeBar{ nullptr };
-	//class CBalloon*							m_pBricks[BRICKROW][BRICKCOL]{};
+	class CBlackCat*							m_pCatBoss{ nullptr };
 
 public:
 	class CComponent* Find_Component(const wstring& strComTag) override;
 
 private:
 	void Init_Game();
+	void Exit_Game();
+	void Create_Bricks();
+
+private:
 	HRESULT Add_Parts();
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

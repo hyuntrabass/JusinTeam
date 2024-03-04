@@ -1058,9 +1058,6 @@
     <ClInclude Include="..\Public\RedAnt.h">
       <Filter>02.GameObjects\16.CescoGame\VTFMonster\RedAnt</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\GlowCube.h">
-      <Filter>02.GameObjects\14.BrickGame</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\BrickCat.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
@@ -1627,9 +1624,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\RedAnt.cpp">
       <Filter>02.GameObjects\16.CescoGame\VTFMonster\RedAnt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\GlowCube.cpp">
-      <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\BrickCat.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
