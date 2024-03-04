@@ -2271,8 +2271,8 @@ HRESULT CRenderer::Render_NoneBlendFinal()
 	if (m_pGameInstance->Key_Down(DIK_COMMA))
 		m_DOFRange += 10.f;
 
-	m_pGameInstance->Get_StringStream() << "Power: " << m_DOFPower << endl;
-	m_pGameInstance->Get_StringStream() << "Range: " << m_DOFRange << endl;
+	//m_pGameInstance->Get_StringStream() << "Power: " << m_DOFPower << endl;
+	//m_pGameInstance->Get_StringStream() << "Range: " << m_DOFRange << endl;
 
 	if (FAILED(Get_BlurTex(m_pGameInstance->Get_SRV(L"Target_HDR_Sky"), L"MRT_Blur", 1.f)))
 		return E_FAIL;
