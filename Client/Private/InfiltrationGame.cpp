@@ -13,20 +13,20 @@ CInfiltrationGame::CInfiltrationGame(_dev pDevice, _context pContext)
 
 CInfiltrationGame::CInfiltrationGame(const CInfiltrationGame& rhs)
 	:CGameObject(rhs)
-	, m_pPlayerTransform(rhs.m_pPlayerTransform)
 {
-	Safe_AddRef(m_pPlayerTransform);
 }
 HRESULT CInfiltrationGame::Init_Prototype()
 {
-	m_pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-	Safe_AddRef(m_pPlayerTransform);
+
 
 	return S_OK;
 }
 
 HRESULT CInfiltrationGame::Init(void* pArg)
 {
+	m_pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	Safe_AddRef(m_pPlayerTransform);
+
 	m_CheckPointMatrix = m_pPlayerTransform->Get_World_Matrix();
 
 	Create_Guard();
@@ -311,4 +311,6 @@ void CInfiltrationGame::Free()
 		Safe_Release(pCheckPoint);
 	}
 	m_CheckPoint.clear();
+
+	Safe_Release(m_pPlayerTransform);
 }
