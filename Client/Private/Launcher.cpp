@@ -379,8 +379,8 @@ void CLauncher::Tick(_float fTimeDelta)
 
 		if (m_iHP <= 0 && m_pColliderCom)
 		{
-			m_pGameInstance->Delete_CollisionObject(this);
-			Safe_Release(m_pColliderCom);
+			//m_pGameInstance->Delete_CollisionObject(this);
+			//Safe_Release(m_pColliderCom);
 		}
 
 		if (m_pLauncherParticle)
@@ -421,6 +421,7 @@ void CLauncher::Tick(_float fTimeDelta)
 		{
 			Kill();
 			m_pGameInstance->Delete_CollisionObject(this);
+			Safe_Release(m_pColliderCom);
 		}
 
 		if (!m_bDestroy)
