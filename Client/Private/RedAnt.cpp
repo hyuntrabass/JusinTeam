@@ -53,7 +53,7 @@ HRESULT CRedAnt::Init(void* pArg)
 
 void CRedAnt::Tick(_float fTimeDelta)
 {
-	if (m_HasAttacked)
+	if (m_HasAttacked && m_eState != State_Attack)
 	{
 		m_fAttackDelay += fTimeDelta;
 		if (m_fAttackDelay >= 1.f)

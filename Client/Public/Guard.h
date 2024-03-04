@@ -82,7 +82,7 @@ private:
 private:
 	CShader* m_pShaderCom = nullptr;
 	CRenderer* m_pRendererCom = nullptr;
-	CModel* m_pModelCom = nullptr;
+	CVTFModel* m_pModelCom = nullptr;
 
 	CCollider* m_pBodyColliderCom = nullptr;
 	CCollider* m_pAttackColliderCom = nullptr;
@@ -117,11 +117,6 @@ private:
 	_vec4 vIdlePos{};
 	_vec4 vPatrolPos{};
 
-	//_vec4 m_Point{};
-	//_vec4 m_PatrolPoint1{};
-	//_vec4 m_PatrolPoint2{};
-	//_bool m_bPatrolChange = false;
-
 private:
 	ANIM_DESC m_Animation{};
 
@@ -133,6 +128,7 @@ public:
 public:
 	HRESULT Add_Collider();
 	void Update_Collider();
+	HRESULT Render_Instance();
 
 public:
 	static CGuard* Create(_dev pDevice, _context pContext);
