@@ -1096,9 +1096,6 @@
     <ClInclude Include="..\Public\Scorpion.h">
       <Filter>02.GameObjects\16.CescoGame\VTFMonster\Scorpion</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Guard.h">
-      <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Hive.h">
       <Filter>02.GameObjects\16.CescoGame\Static\Hive</Filter>
     </ClInclude>
@@ -1117,6 +1114,9 @@
     <ClInclude Include="..\Public\Guard.h" />
     <ClInclude Include="..\Public\BlackCat.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Guard.h">
+      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1668,9 +1668,6 @@
     <ClCompile Include="..\Private\Scorpion.cpp">
       <Filter>02.GameObjects\16.CescoGame\VTFMonster\Scorpion</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Guard.cpp">
-      <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Hive.cpp">
       <Filter>02.GameObjects\16.CescoGame\Static\Hive</Filter>
     </ClCompile>
@@ -1695,6 +1692,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\GlowCube.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Guard.cpp">
+      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
