@@ -542,6 +542,7 @@ CGameObject* CInteraction_NonAnim::Clone(void* pArg)
 void CInteraction_NonAnim::Free()
 {
 	__super::Free();
+	Safe_Release(m_pDissolveTexture);
 	Safe_Release(m_pNameTag);
 	Safe_Release(m_pEffect);
 	Safe_Release(m_pBar);
