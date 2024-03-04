@@ -2902,7 +2902,7 @@ HRESULT CImGui_Manager::Load_NPC()
 			}
 
 			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
-			m_MonsterList.push_back(m_pSelectedDummy);
+			m_NPCList.push_back(m_pSelectedDummy);
 
 			//CTransform* pMonsterTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
 

@@ -21,7 +21,6 @@ HRESULT CGuard::Init_Prototype()
 HRESULT CGuard::Init(void* pArg)
 {
 	m_Info = *(GuardInfo*)pArg;
-	m_Info.iIndex = m_Info.iIndex;
 	m_OriginMatrix = m_Info.mMatrix * _mat::CreateTranslation(0.f, 1.f, 0.f);
 	m_EffectMatrix = m_Info.mMatrix;
 
@@ -497,7 +496,7 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 		if (m_isDetected == true)
 			m_eCurState = STATE_CHASE;
 
-		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look), 2.f, pBuffer))
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look), 10.f, pBuffer))
 		{
 			m_eCurState = STATE_TURN;
 		}
