@@ -40,6 +40,7 @@ HRESULT CGuard::Init(void* pArg)
 	m_pTransformCom->Set_Matrix(m_Info.mMatrix);
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
+	m_pShaderCom->Set_PassIndex(VTF_InstPass_Default);
 
 	PxCapsuleControllerDesc ControllerDesc{};
 	ControllerDesc.height = 1.2f; // 높이(위 아래의 반구 크기 제외
@@ -48,6 +49,8 @@ HRESULT CGuard::Init(void* pArg)
 	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
 	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
 	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+
+	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
@@ -89,10 +92,8 @@ void CGuard::Tick(_float fTimeDelta)
 	if (0 >= m_iHP || 0.01f < m_fDeadTime) {
 		m_pGameInstance->Delete_CollisionObject(this);
 		m_pTransformCom->Delete_Controller();
-	}
 
-	if (1.f <= m_fDissolveRatio)
-		Kill();
+	}
 
 	Init_State(fTimeDelta);
 	if(m_ePattern == PATTERN_1)
@@ -110,14 +111,18 @@ void CGuard::Tick(_float fTimeDelta)
 
 void CGuard::Late_Tick(_float fTimeDelta)
 {
+		m_pModelCom->Play_Animation(fTimeDelta);
 	if (m_eCurState == STATE_IDLE || m_eCurState == STATE_PATROL || m_eCurState == STATE_TURN)
 	{
 		m_pBaseEffect->Late_Tick(fTimeDelta);
 		m_pFrameEffect->Late_Tick(fTimeDelta);
 	}
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos()))
+	{
+		m_pRendererCom->Add_RenderGroup(RG_AnimNonBlend_Instance, this);
+		m_pModelCom->Set_DissolveRatio(m_fDissolveRatio);
+	}
 
-	m_pModelCom->Play_Animation(fTimeDelta);
-	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
@@ -180,8 +185,8 @@ HRESULT CGuard::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-			return E_FAIL;
+		//if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		//	return E_FAIL;
 
 		if (FAILED(m_pShaderCom->Begin(m_iPassIndex)))
 			return E_FAIL;
@@ -189,27 +194,34 @@ HRESULT CGuard::Render()
 		if (FAILED(m_pModelCom->Render(i)))
 			return E_FAIL;
 	}
-	if (!m_bChangePass && m_iHP > 0)
-	{
-		m_iPassIndex = AnimPass_Default;
-	}
+	//if (!m_bChangePass && m_iHP > 0)
+	//{
+	//	m_iPassIndex = AnimPass_Default;
+	//}
 	return S_OK;
 }
 
 void CGuard::Set_Damage(_int iDamage, _uint iDamageType)
 {
-	m_fHittedTime = 6.f;
 
-	m_iHP -= iDamage;
-	m_bChangePass = true;
-
-	CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 3.f), (ATTACK_TYPE)iDamageType);
-
+	if (m_isDetected == false)
+	{
+		if (iDamageType == AT_Sword_Common)
+		{
+			m_bChangePass = true;
+			m_iHP -= iDamage;
+		}
+		CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 2.f), (ATTACK_TYPE)iDamageType);
+	}
 }
 
 
 void CGuard::Init_State(_float fTimeDelta)
 {
+	if (m_iHP <= 0)
+	{
+		m_eCurState = STATE_DIE;
+	}
 
 	if (m_ePreState != m_eCurState) {
 		switch (m_eCurState)
@@ -430,9 +442,18 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 		break;
 
 	case STATE_DIE:
+
 		if (m_pModelCom->IsAnimationFinished(ANIM_DIE))
 		{
-			m_fDeadTime += fTimeDelta;
+			if (m_fDissolveRatio < 1.f)
+			{
+				m_fDissolveRatio += fTimeDelta;
+				m_pShaderCom->Set_PassIndex(VTF_InstPass_Dissolve);
+			}
+			else
+			{
+				Kill();
+			}
 		}
 
 		break;
@@ -501,12 +522,6 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 			m_eCurState = STATE_TURN;
 		}
 		
-		//if ((vIdlePos - vPatrolPos).Length() > 10.f)
-		//{
-		//	m_eCurState = STATE_IDLE;
-		//	m_isArrived = true;
-
-		//}
 		else
 			m_pTransformCom->Go_Straight(fTimeDelta);
 
@@ -613,7 +628,15 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 	case STATE_DIE:
 		if (m_pModelCom->IsAnimationFinished(ANIM_DIE))
 		{
-			m_fDeadTime += fTimeDelta;
+			if (m_fDissolveRatio < 1.f)
+			{
+				m_fDissolveRatio += fTimeDelta;
+				m_iPassIndex = AnimPass_Dissolve;
+			}
+			else
+			{
+				Kill();
+			}
 		}
 
 		break;
@@ -746,7 +769,15 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 	case STATE_DIE:
 		if (m_pModelCom->IsAnimationFinished(ANIM_DIE))
 		{
-			m_fDeadTime += fTimeDelta;
+			if (m_fDissolveRatio < 1.f)
+			{
+				m_fDissolveRatio += fTimeDelta;
+				m_iPassIndex = AnimPass_Dissolve;
+			}
+			else
+			{
+				Kill();
+			}
 		}
 
 		break;
@@ -840,7 +871,7 @@ HRESULT CGuard::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VTF_Instance"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 	{
 		return E_FAIL;
 	}
@@ -850,7 +881,7 @@ HRESULT CGuard::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Guard"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
+	if (FAILED(__super::Add_Component(LEVEL_TOWER, TEXT("Prototype_Model_Guard"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
 	{
 		return E_FAIL;
 	}
@@ -861,36 +892,31 @@ HRESULT CGuard::Add_Components()
 
 HRESULT CGuard::Bind_ShaderResources()
 {
-	if (m_iPassIndex == AnimPass_Rim && m_bChangePass == true)
-	{
-		_vec4 vColor = Colors::Red;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vColor, sizeof vColor)))
-		{
-			return E_FAIL;
-		}
-	}
+	if (true == m_pGameInstance->Get_TurnOnShadow()) {
 
-	if (m_iPassIndex == AnimPass_Dissolve)
-	{
-		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
-		{
-			return E_FAIL;
-		}
+		CASCADE_DESC Desc = m_pGameInstance->Get_CascadeDesc();
 
-		m_fDissolveRatio += 0.02f;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
-		{
+		if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeView", Desc.LightView, 3)))
 			return E_FAIL;
-		}
+
+		if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeProj", Desc.LightProj, 3)))
+			return E_FAIL;
 
 	}
 
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTransformCom->Bind_OldWorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+	_vector vRimColor = { 1.f, 0.f, 0.f, 1.f };
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vRimColor, sizeof _vector)))
+	{
+		return E_FAIL;
+	}
+
+	_uint iOutlineColor = OutlineColor_Red;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_OutlineColor", &iOutlineColor, sizeof _uint)))
 	{
 		return E_FAIL;
 	}
@@ -957,6 +983,16 @@ void CGuard::Update_Collider()
 	
 }
 
+HRESULT CGuard::Render_Instance()
+{
+	if (FAILED(Bind_ShaderResources()))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
 CGuard* CGuard::Create(_dev pDevice, _context pContext)
 {
 	CGuard* pInstance = new CGuard(pDevice, pContext);
@@ -986,6 +1022,8 @@ CGameObject* CGuard::Clone(void* pArg)
 void CGuard::Free()
 {
 	__super::Free();
+
+	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
