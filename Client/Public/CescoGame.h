@@ -16,6 +16,7 @@ private:
 		Phase_Buff,
 		Phase_End,
 	};
+
 private:
 	CCescoGame(_dev pDevice, _context pContext);
 	CCescoGame(const CCescoGame& rhs);
@@ -38,6 +39,7 @@ private:
 	CTransform* m_pPlayerTransform = { nullptr };
 	list<class CVTFMonster*> m_Monsters;
 	vector<class CHook*> m_vecHooks;
+	vector<class CBuff_Card*> m_vecBuffCard;
 	class CHook* m_pCurrent_DraggingHook{};
 	map<_uint, class CLog*> m_Logs;
 	map<_uint, class CHive*> m_Hives;

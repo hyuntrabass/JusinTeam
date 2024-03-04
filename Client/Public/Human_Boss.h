@@ -125,6 +125,7 @@ private:
 	CTexture* m_pDissolveTextureCom{ nullptr };
 	CTransform* m_pPlayerTransform{ nullptr };
 
+	class CHPBoss* m_pHpBoss{ nullptr };
 	class CEffect_Dummy* m_pBaseEffect{ nullptr };
 	class CEffect_Dummy* m_pFrameEffect{ nullptr };
 	class CEffect_Dummy* m_pDimEffect{ nullptr };

@@ -1269,7 +1269,10 @@ HRESULT CPlayer::Add_Riding()
 
 void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 {
-	
+	if (CCamera_Manager::Get_Instance()->Get_CameraState() == CS_INVEN)
+	{
+		return;
+	}
 
 	if (m_eState == Skill4)
 	{
@@ -1420,14 +1423,17 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 		break;
 		case MonAtt_Poison:
 		{
-			if (!m_bPoison)
+			if (!m_Status.PoisonImmune)
 			{
-				m_iPoisionDamage = iDamage;
-				m_bPoison = true;
-				m_vRimColor = _vec4(0.f, 1.f, 0.f, 1.f);
-				if (m_bSlowSpeed == 0.f)
+				if (!m_bPoison)
 				{
-					m_bSlowSpeed = 3.f;
+					m_iPoisionDamage = iDamage;
+					m_bPoison = true;
+					m_vRimColor = _vec4(0.f, 1.f, 0.f, 1.f);
+					if (m_bSlowSpeed == 0.f)
+					{
+						m_bSlowSpeed = 3.f;
+					}
 				}
 			}
 		}
@@ -1550,12 +1556,12 @@ void CPlayer::Health_Regen(_float fTImeDelta)
 {
 	if (m_StartRegen > 5.f && m_Status.Max_Hp > m_Status.Current_Hp)
 	{
-		m_fHpRegenTime += fTImeDelta;
+		m_fHpRegenTime += fTImeDelta * (m_Status.HpRegenAmount);
 	}
 
 	if (m_Status.Max_Mp > m_Status.Current_Mp)
 	{
-		m_fMpRegenTime += fTImeDelta;
+		m_fMpRegenTime += fTImeDelta * (m_Status.MpRegenAmount);
 	}
 
 	if (m_fHpRegenTime >= 1.f)
@@ -2544,6 +2550,7 @@ void CPlayer::Cam_AttackZoom(_float fZoom)
 }
 void CPlayer::Return_Attack_IdleForm()
 {
+	
 	m_Animation.fAnimSpeedRatio = 3.f;
 	if (m_Current_Weapon == WP_SWORD)
 	{
@@ -2554,6 +2561,7 @@ void CPlayer::Return_Attack_IdleForm()
 		}
 		else if (m_pModelCom->IsAnimationFinished(Anim_Assassin_Attack02_A) && m_iAttackCombo == 2)
 		{
+
 			m_Animation.iAnimIndex = Anim_Assassin_Attack02_B;
 			m_bReadyMove = true;
 		}
@@ -2622,9 +2630,9 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 		{
 			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], m_Status.Attack + Critical + RandomDmg, AT_Critical);
 		}
-		if (m_Status.DamageAbsorption > 0.f)
+		if (m_Status.BloodDrain > 0.f)
 		{
-			_uint iAbsorption = _uint((m_Status.Attack + Critical + RandomDmg) * m_Status.DamageAbsorption);
+			_uint iAbsorption = _uint((m_Status.Attack + Critical + RandomDmg) * m_Status.BloodDrain);
 			m_Status.Current_Hp += iAbsorption;
 			if (m_Status.Current_Hp > m_Status.Max_Hp)
 			{
@@ -2643,9 +2651,9 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 		{
 			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.5f) + Critical + RandomDmg, AT_Critical);
 		}
-		if (m_Status.DamageAbsorption > 0.f)
+		if (m_Status.BloodDrain > 0.f)
 		{
-			_uint iAbsorption = _uint((m_Status.Attack * 1.5f + Critical + RandomDmg) * m_Status.DamageAbsorption);
+			_uint iAbsorption = _uint((m_Status.Attack * 1.5f + Critical + RandomDmg) * m_Status.BloodDrain);
 			m_Status.Current_Hp += iAbsorption;
 			if (m_Status.Current_Hp > m_Status.Max_Hp)
 			{
@@ -2665,9 +2673,9 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.5f) + Critical + RandomDmg, AT_Critical);
 
 		}
-		if (m_Status.DamageAbsorption > 0.f)
+		if (m_Status.BloodDrain > 0.f)
 		{
-			_uint iAbsorption = _uint((m_Status.Attack * 1.5f + Critical + RandomDmg) * m_Status.DamageAbsorption);
+			_uint iAbsorption = _uint((m_Status.Attack * 1.5f + Critical + RandomDmg) * m_Status.BloodDrain);
 			m_Status.Current_Hp += iAbsorption;
 			if (m_Status.Current_Hp > m_Status.Max_Hp)
 			{
@@ -2687,9 +2695,9 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.3f) + Critical + RandomDmg, AT_Critical);
 
 		}
-		if (m_Status.DamageAbsorption > 0.f)
+		if (m_Status.BloodDrain > 0.f)
 		{
-			_uint iAbsorption = _uint((m_Status.Attack * 1.3f + Critical + RandomDmg) * m_Status.DamageAbsorption);
+			_uint iAbsorption = _uint((m_Status.Attack * 1.3f + Critical + RandomDmg) * m_Status.BloodDrain);
 			m_Status.Current_Hp += iAbsorption;
 			if (m_Status.Current_Hp > m_Status.Max_Hp)
 			{
@@ -2709,9 +2717,9 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 		{
 			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 2.f) + RandomDmg, AT_Critical);
 		}
-		if (m_Status.DamageAbsorption > 0.f)
+		if (m_Status.BloodDrain > 0.f)
 		{
-			_uint iAbsorption = _uint((m_Status.Attack * 2.f + Critical + RandomDmg) * m_Status.DamageAbsorption);
+			_uint iAbsorption = _uint((m_Status.Attack * 2.f + Critical + RandomDmg) * m_Status.BloodDrain);
 			m_Status.Current_Hp += iAbsorption;
 			if (m_Status.Current_Hp > m_Status.Max_Hp)
 			{
@@ -2732,6 +2740,9 @@ void CPlayer::Set_ExtraStatus()
 	m_Status.Attack = m_OriStatus.Attack + ExtraStat.Attack;
 	m_Status.Max_Mp = m_OriStatus.Max_Mp + ExtraStat.Max_Mp;
 	m_Status.Critical = m_OriStatus.Critical + ExtraStat.Critical;
+	m_Status.BloodDrain = m_OriStatus.BloodDrain + ExtraStat.BloodDrain;
+	m_Status.Speed = m_OriStatus.Speed + ExtraStat.Speed;
+	m_Status.PoisonImmune = m_OriStatus.PoisonImmune;
 
 }
 void CPlayer::After_SwordAtt(_float fTimeDelta)
@@ -2758,7 +2769,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					m_pLeft_Distortion_Trail->On();
 				}
 
-				if (Index >= 19.f && Index <= 22.f)
+				if (Index >= 19.f && Index < 22.f)
 				{
 					if (!m_bAttacked)
 					{
@@ -2782,7 +2793,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					}
 
 				}
-				else if (Index >= 22.f && Index <= 24.f)
+				else if (Index >= 22.f && Index <= 25.f)
 				{
 					m_pRendererCom->Set_RadialBlur_Power(0.f);
 
@@ -2834,7 +2845,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						m_pGameInstance->Set_TimeRatio(1.f);
 					}
 				}
-				else if (Index >= 25.f && Index <= 27.f)
+				else if (Index >= 25.f && Index <= 28.f)
 				{
 					m_pRendererCom->Set_RadialBlur_Power(0.f);
 
@@ -2884,7 +2895,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 						m_pGameInstance->Set_TimeRatio(1.f);
 					}
 				}
-				else if (Index >= 23.f && Index <= 25.f)
+				else if (Index >= 22.f && Index <= 26.f)
 				{
 					m_pRendererCom->Set_RadialBlur_Power(0.f);
 
@@ -2958,7 +2969,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 					}
 				}
 
-				else if (Index > 18.f && Index < 21.f)
+				else if (Index >= 18.f && Index < 22.f)
 				{
 					m_bAttacked = false;
 					m_pGameInstance->Set_TimeRatio(1.f);
@@ -3993,12 +4004,8 @@ void CPlayer::Init_State()
 		m_bReadyMove = true;
 		m_iHP = 0;
 		m_fRadialPower = 0.f;
-		if (m_pGameInstance->Get_TimeRatio() < 1.f)
-		{
-			m_pGameInstance->Set_TimeRatio(1.f);
-		}
-
-
+		m_pGameInstance->Set_TimeRatio(1.f);
+		
 		switch (m_eState)
 		{
 		case Client::CPlayer::Idle:
