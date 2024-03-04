@@ -4,6 +4,7 @@
 #include "Camera_Manager.h"
 #include "Guard.h"
 #include "GuardTower.h"
+#include "CheckPoint.h"
 
 CInfiltrationGame::CInfiltrationGame(_dev pDevice, _context pContext)
 	:CGameObject(pDevice, pContext)
@@ -14,15 +15,73 @@ CInfiltrationGame::CInfiltrationGame(const CInfiltrationGame& rhs)
 	:CGameObject(rhs)
 {
 }
-
 HRESULT CInfiltrationGame::Init_Prototype()
 {
+
+
 	return S_OK;
 }
 
 HRESULT CInfiltrationGame::Init(void* pArg)
 {
+	m_pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+	Safe_AddRef(m_pPlayerTransform);
+
+	m_CheckPointMatrix = m_pPlayerTransform->Get_World_Matrix();
+
+	Create_Guard();
+	Create_CheckPoint();
+	return S_OK;
+}
+
+void CInfiltrationGame::Tick(_float fTimeDelta)
+{
+	Reset_Play(fTimeDelta);
+	for (auto& pGuard : m_Guard)
+	{
+		pGuard->Tick(fTimeDelta);
+	}
+
+	for (auto& pGuardTower : m_GuardTower)
+	{
+		pGuardTower->Tick(fTimeDelta);
+	}
+
+	for (auto& pCheckPoint : m_CheckPoint)
+	{
+		pCheckPoint->Tick(fTimeDelta);
+	}
+
+	Release_DeadObjects();
+}
+
+void CInfiltrationGame::Late_Tick(_float fTimeDelta)
+{
+	for (auto& pGuard : m_Guard)
+	{
+		pGuard->Late_Tick(fTimeDelta);
+	}
+
+	for (auto& pGuardTower : m_GuardTower)
+	{
+		pGuardTower->Late_Tick(fTimeDelta);
+	}
+
+	for (auto& pCheckPoint : m_CheckPoint)
+	{
+		if (pCheckPoint->Get_Collision())
+		{
+			m_CheckPointMatrix = pCheckPoint->Get_Matrix() + _mat::CreateTranslation(0.f, 1.f, 0.f);
+			pCheckPoint->Kill();
+		}
+	}
 	
+}
+
+
+
+HRESULT CInfiltrationGame::Create_Guard()
+{
 	const TCHAR* pGetPath = TEXT("../Bin/Data/MiniDungeon_GuardData.dat");
 
 	std::ifstream inFile(pGetPath, std::ios::binary);
@@ -51,7 +110,7 @@ HRESULT CInfiltrationGame::Init(void* pArg)
 
 		_uint iPattern = 0;
 		inFile.read(reinterpret_cast<char*>(&iPattern), sizeof(_int));
-	
+
 		if (GuardPrototype == L"Prototype_Model_Guard")
 		{
 			GuardInfo GuardInfo{};
@@ -60,7 +119,7 @@ HRESULT CInfiltrationGame::Init(void* pArg)
 
 			CGuard* pGuard = dynamic_cast<CGuard*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Guard", &GuardInfo));
 			m_Guard.push_back(pGuard);
-			
+
 		}
 		if (GuardPrototype == L"Prototype_Model_StoneTower")
 		{
@@ -80,36 +139,90 @@ HRESULT CInfiltrationGame::Init(void* pArg)
 
 }
 
-void CInfiltrationGame::Tick(_float fTimeDelta)
+HRESULT CInfiltrationGame::Create_CheckPoint()
 {
 
-	for (auto& pGuard : m_Guard)
+	TriggerInfo Info{};
+	const TCHAR* pGetPath = TEXT("../Bin/Data/MiniDungeon_CheckPointData.dat");
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+
+	if (!inFile.is_open())
 	{
-		pGuard->Tick(fTimeDelta);
+		MSG_BOX("MiniDungeon_CheckPointData 불러오기 실패.");
+		return E_FAIL;
+	}
+	_uint TriggerListSize;
+	inFile.read(reinterpret_cast<char*>(&TriggerListSize), sizeof(_uint));
+
+
+	for (_uint i = 0; i < TriggerListSize; ++i)
+	{
+		TriggerInfo TriggerInfo{};
+
+		_uint iIndex{};
+		inFile.read(reinterpret_cast<char*>(&iIndex), sizeof(_uint));
+		TriggerInfo.iIndex = iIndex;
+
+		_bool bCheck{};
+		inFile.read(reinterpret_cast<char*>(&bCheck), sizeof(_bool));
+		TriggerInfo.bLimited = bCheck;
+
+		_ulong TriggerPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&TriggerPrototypeSize), sizeof(_ulong));
+
+		wstring TriggerPrototype;
+		TriggerPrototype.resize(TriggerPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&TriggerPrototype[0]), TriggerPrototypeSize * sizeof(wchar_t));
+
+		_float TriggerSize{};
+		inFile.read(reinterpret_cast<char*>(&TriggerSize), sizeof(_float));
+		TriggerInfo.fSize = TriggerSize;
+
+		_mat TriggerWorldMat;
+		inFile.read(reinterpret_cast<char*>(&TriggerWorldMat), sizeof(_mat));
+
+		TriggerInfo.WorldMat = TriggerWorldMat;
+
+		CCheckPoint* pCheckPoint = dynamic_cast<CCheckPoint*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CheckPoint"), &TriggerInfo));
+		if (not pCheckPoint)
+		{
+			MSG_BOX("트리거 생성 실패.");
+			return E_FAIL;
+		}
+
+		m_CheckPoint.push_back(pCheckPoint);
 	}
 
-	for (auto& pGuardTower : m_GuardTower)
-	{
-		pGuardTower->Tick(fTimeDelta);
-	}
+	inFile.close();
 
-	Release_DeadObjects();
+	return S_OK;
 }
 
-void CInfiltrationGame::Late_Tick(_float fTimeDelta)
+void CInfiltrationGame::Reset_Play(_float fTimeDelta)
 {
-	for (auto& pGuard : m_Guard)
+	if (m_isReset == false)
 	{
-		pGuard->Late_Tick(fTimeDelta);
+		if (CUI_Manager::Get_Instance()->Get_Hp().x <= 0)
+		{
+			m_fResurrectionTime += fTimeDelta;
+			if (m_fResurrectionTime > 2.f)
+			{
+				m_isReset = true;
+				m_fResurrectionTime = 0.f;
+			}
+		}
 	}
-
-	for (auto& pGuardTower : m_GuardTower)
+	else
 	{
-		pGuardTower->Late_Tick(fTimeDelta);
+
+		//m_pPlayerTransform->Set_Matrix(m_CheckPointMatrix);
+		m_pPlayerTransform->Set_Position(_vec3(m_CheckPointMatrix._41, m_CheckPointMatrix._42, m_CheckPointMatrix._43));
+		m_isReset = false;
+		m_fResurrectionTime = 0.f;
+
 	}
 }
-
-
 
 void CInfiltrationGame::Release_DeadObjects()
 {
@@ -131,6 +244,19 @@ void CInfiltrationGame::Release_DeadObjects()
 		{
 			Safe_Release(*it);
 			it = m_GuardTower.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+
+	for (auto& it = m_CheckPoint.begin(); it != m_CheckPoint.end();)
+	{
+		if ((*it)->isDead())
+		{
+			Safe_Release(*it);
+			it = m_CheckPoint.erase(it);
 		}
 		else
 		{
@@ -179,4 +305,12 @@ void CInfiltrationGame::Free()
 		Safe_Release(pGuardTower);
 	}
 	m_GuardTower.clear();
+
+	for (auto& pCheckPoint : m_CheckPoint)
+	{
+		Safe_Release(pCheckPoint);
+	}
+	m_CheckPoint.clear();
+
+	Safe_Release(m_pPlayerTransform);
 }

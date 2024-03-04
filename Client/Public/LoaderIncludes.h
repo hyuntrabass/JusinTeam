@@ -187,3 +187,4 @@
 #include "InfiltrationGame.h"
 #include "Guard.h"
 #include "GuardTower.h"
+#include "CheckPoint.h"
