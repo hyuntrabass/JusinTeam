@@ -127,8 +127,7 @@
 #include "Roskva.h"
 #include "Aur.h"
 #include "NPC_Dummy.h"
-#include "Guard.h"
-#include "GuardTower.h"
+
 
 // Boss
 #include "Groar_Boss.h"
@@ -184,3 +183,8 @@
 #include "Launcher.h"
 #include "Projectile.h"
 #include "Survival_Mon.h"
+
+// InfiltrationGame
+#include "InfiltrationGame.h"
+#include "Guard.h"
+#include "GuardTower.h"

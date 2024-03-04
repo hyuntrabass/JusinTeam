@@ -25,8 +25,7 @@ HRESULT CGuardTower::Init_Prototype()
 HRESULT CGuardTower::Init(void* pArg)
 {
 	m_Info = *(GuardTowerInfo*)pArg;
-	//m_Pattern_Type = (PATTERN_TYPE)m_Info.iIndex;
-	m_Pattern_Type = PATTERN_3;
+	m_Pattern_Type = (PATTERN_TYPE)m_Info.iIndex;
 	m_GuardTowerMatrix = m_Info.mMatrix;
 	m_LazerMatrix = m_GuardTowerMatrix;
 	if (FAILED(Add_Components()))

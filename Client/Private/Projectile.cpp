@@ -157,6 +157,36 @@ HRESULT CProjectile::Init(void* pArg)
 	}
 
 	break;
+
+	case Client::CProjectile::TYPE_SPEAR:
+	{
+		m_pTransformCom->Set_Speed(1.f);
+		m_pTransformCom->Set_Position(m_ProjectileDesc.vStartPos);
+
+		m_UpdateMatrix = _mat::CreateScale(1.f) * _mat::CreateRotationY(XMConvertToRadians(90.f)) 
+			* _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+
+		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Spear");
+		Info.pMatrix = &m_UpdateMatrix;
+		Info.isFollow = true;
+		m_pEffect[0] = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		m_ProjectileDesc.vStartPos.y = 0.f;
+
+		_mat FrameMatrix = _mat::CreateScale(3.f) * _mat::CreateRotationX(XMConvertToRadians(90.f))
+			* _mat::CreateTranslation(_vec3(m_ProjectileDesc.vStartPos + _vec3(0.f, 0.1f, 0.f)));
+
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Frame");
+		Info.pMatrix = &FrameMatrix;
+		m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Circle_Dim");
+		Info.pMatrix = &FrameMatrix;
+		m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+
+	}
+		break;
 	}
 
 	if (FAILED(Add_Components()))
@@ -312,6 +342,43 @@ void CProjectile::Tick(_float fTimeDelta)
 		m_pGameInstance->Attack_Player(m_pColliderCom, rand() % 6, MonAtt_Hit);
 
 		break;
+
+	case Client::CProjectile::TYPE_SPEAR:
+	{
+		if (m_pTransformCom->Get_State(State::Pos).y <= 3.5f)
+		{
+			m_pTransformCom->Set_Speed(30.f);
+		}		
+		
+		m_pTransformCom->Go_Down(fTimeDelta);
+
+		m_pGameInstance->Attack_Player(m_pColliderCom, rand() % 10, MonAtt_Hit);
+
+		if (m_pTransformCom->Get_State(State::Pos).y <= -5.f)
+		{
+			Kill();
+			Safe_Release(m_pFrameEffect);
+			Safe_Release(m_pBaseEffect);
+			Safe_Release(m_pEffect[0]);
+			
+			break;
+		}
+
+		if (m_pFrameEffect && m_pBaseEffect)
+		{
+			m_pBaseEffect->Tick(fTimeDelta);
+			m_pFrameEffect->Tick(fTimeDelta);
+	
+			m_pEffect[0]->Tick(fTimeDelta);
+		}
+
+		m_UpdateMatrix = _mat::CreateScale(1.f) * _mat::CreateRotationY(XMConvertToRadians(90.f))
+			* _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+
+	}
+
+	break;
+
 	}
 
 	if (m_pColliderCom)
@@ -366,6 +433,19 @@ void CProjectile::Late_Tick(_float fTimeDelta)
 		}
 
 		break;
+
+	case Client::CProjectile::TYPE_SPEAR:
+	{
+		if (m_pFrameEffect && m_pBaseEffect)
+		{
+			m_pFrameEffect->Late_Tick(fTimeDelta);
+			m_pBaseEffect->Late_Tick(fTimeDelta);
+			m_pEffect[0]->Late_Tick(fTimeDelta);
+		}
+
+	}
+	break;
+
 	}
 
 #ifdef _DEBUG
@@ -448,6 +528,24 @@ HRESULT CProjectile::Add_Components()
 	}
 
 	break;
+
+	case Client::CProjectile::TYPE_SPEAR:
+
+	{
+		Collider_Desc CollDesc = {};
+		CollDesc.eType = ColliderType::Sphere;
+		CollDesc.vCenter = _vec3(0.f, 0.2f, 0.f);
+		CollDesc.fRadius = 0.2f;
+
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+			TEXT("Com_Collider_Sphere"), (CComponent**)&m_pColliderCom, &CollDesc)))
+		{
+			return E_FAIL;
+		}
+	}
+
+	break;
+
 	}
 
 

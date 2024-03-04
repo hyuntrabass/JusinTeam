@@ -68,6 +68,7 @@ HRESULT CLauncher::Init(void* pArg)
 		m_Animation.fStartAnimPos = 115.f;
 
 		m_pTransformCom->Set_Position(CENTER_POS);
+		m_pTransformCom->Set_Speed(1.f);
 
 		m_iPassIndex = AnimPass_Dissolve;
 
@@ -80,10 +81,16 @@ HRESULT CLauncher::Init(void* pArg)
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 			TEXT("Com_Collider_OBB"), (CComponent**)&m_pColliderCom, &BodyCollDesc)))
 			return E_FAIL;
-	}
-	m_iDestroyCount = 0;
 
-		break;
+		_mat Matrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) /*+ _vec3(0.f, 0.3f, 0.f)*/);
+		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Cannon_Parti");
+		Info.pMatrix = &Matrix;
+		m_pLauncher = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		m_iDestroyCount = 0;
+	}
+
+	break;
 
 	case Client::CLauncher::TYPE_BLUEGEM:
 
@@ -130,9 +137,15 @@ HRESULT CLauncher::Init(void* pArg)
 		{
 			m_iLauncherID = 0;
 		}
+
+		_mat Matrix = _mat::CreateScale(1.2f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 0.3f, 0.f));
+		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_BlueGem_Shield");
+		Info.pMatrix = &Matrix;
+		m_pLauncher = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
 	}
 
-		break;
+	break;
 
 	case Client::CLauncher::TYPE_BARRICADE:
 
@@ -140,8 +153,50 @@ HRESULT CLauncher::Init(void* pArg)
 		// Destroy
 		// Idle
 		// Spawn
-		
+
 	{
+		m_strModelTag = TEXT("Prototype_Model_Barricade");
+		m_Animation.iAnimIndex = 2;
+		m_Animation.isLoop = false;
+		m_Animation.fAnimSpeedRatio = 2.f;
+		//m_Animation.fDurationRatio = 0.001f;
+
+		m_iPassIndex = AnimPass_Default;
+
+		m_pTransformCom->Set_Scale(_vec3(0.15f));
+
+		switch (m_iLauncherID)
+		{
+		case 0:
+			m_pTransformCom->Set_Position(CENTER_POS + _vec3(5.f, 0.f, 0.f));
+			break;
+		case 1:
+			m_pTransformCom->Set_Position(CENTER_POS + _vec3(5.f, 0.f, -7.5f));
+			break;
+		case 2:
+			m_pTransformCom->Set_Position(CENTER_POS + _vec3(5.f, 0.f, 7.5f));
+			break;
+		case 3:
+			m_pTransformCom->Set_Position(CENTER_POS + _vec3(-5.f, 0.f, 0.f));
+			m_pTransformCom->LookAt_Dir(_vec4(0.f, 0.f, -1.f, 0.f));
+			break;
+		case 4:
+			m_pTransformCom->Set_Position(CENTER_POS + _vec3(-5.f, 0.f, -7.5f));
+			m_pTransformCom->LookAt_Dir(_vec4(0.f, 0.f, -1.f, 0.f));
+			break;
+		case 5:
+			m_pTransformCom->Set_Position(CENTER_POS + _vec3(-5.f, 0.f, 7.5f));
+			m_pTransformCom->LookAt_Dir(_vec4(0.f, 0.f, -1.f, 0.f));
+			break;
+		}
+
+		++m_iLauncherID;
+
+		if (m_iLauncherID >= 6)
+		{
+			m_iLauncherID = 0;
+		}
+
 
 	}
 
@@ -215,6 +270,11 @@ void CLauncher::Tick(_float fTimeDelta)
 	case Client::CLauncher::TYPE_CANNON:
 
 	{
+		if (m_pLauncher)
+		{
+			m_pLauncher->Tick(fTimeDelta);
+		}
+
 		if (m_fDissolveRatio <= 0.f)
 		{
 			m_iPassIndex = AnimPass_Rim;
@@ -224,7 +284,7 @@ void CLauncher::Tick(_float fTimeDelta)
 		{
 			m_pTransformCom->Go_Down(fTimeDelta);
 
-			if (m_pTransformCom->Get_State(State::Pos).y <= -1.f)
+			if (m_pTransformCom->Get_State(State::Pos).y <= -3.f)
 			{
 				Kill();
 			}
@@ -232,8 +292,10 @@ void CLauncher::Tick(_float fTimeDelta)
 
 		if (m_iDestroyCount >= 4)
 		{
+			Safe_Release(m_pLauncher);
+
 			m_Animation.iAnimIndex = 2;
-			m_Animation.fAnimSpeedRatio = 1.f;
+			m_Animation.fAnimSpeedRatio = 2.f;
 
 			if (m_pModelCom->IsAnimationFinished(2))
 			{
@@ -301,6 +363,11 @@ void CLauncher::Tick(_float fTimeDelta)
 
 	case Client::CLauncher::TYPE_BLUEGEM:
 
+		if (m_pLauncher)
+		{
+			m_pLauncher->Tick(fTimeDelta);
+		}
+
 		if (m_fDissolveRatio <= 0.f)
 		{
 			if (!m_bDestroy)
@@ -320,6 +387,11 @@ void CLauncher::Tick(_float fTimeDelta)
 		}
 		else
 		{
+			if (m_pLauncher)
+			{
+				Safe_Release(m_pLauncher);
+			}
+
 			m_pTransformCom->Go_Down(fTimeDelta);
 		}
 
@@ -342,6 +414,11 @@ void CLauncher::Tick(_float fTimeDelta)
 
 	case Client::CLauncher::TYPE_BARRICADE:
 
+		if (m_fTime >= 1.f)
+		{
+		}
+
+		_float fAnimPos = m_pModelCom->Get_CurrentAnimPos();
 		m_pModelCom->Set_Animation(m_Animation);
 
 		break;
@@ -360,13 +437,20 @@ void CLauncher::Late_Tick(_float fTimeDelta)
 
 	case Client::CLauncher::TYPE_CANNON:
 
-		//if (m_iPassIndex == AnimPass_Rim)
-	{
+		if (m_pLauncher)
+		{
+			m_pLauncher->Late_Tick(fTimeDelta);
+		}
+
 		m_pModelCom->Play_Animation(fTimeDelta);
 
-	}
-	break;
+		break;
 	case Client::CLauncher::TYPE_BLUEGEM:
+
+		if (m_pLauncher)
+		{
+			m_pLauncher->Late_Tick(fTimeDelta);
+		}
 
 		if (m_bDestroy == true)
 		{
@@ -378,9 +462,29 @@ void CLauncher::Late_Tick(_float fTimeDelta)
 		}
 
 		break;
+
+	case Client::CLauncher::TYPE_BARRICADE:
+
+		m_pModelCom->Play_Animation(fTimeDelta);
+
+		break;
+
 	}
 
-	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	if (m_eType == CLauncher::TYPE_BARRICADE)
+	{
+		if (m_pModelCom->Get_CurrentAnimPos() >= 1.f)
+		{
+			m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+
+		}
+
+	}
+	else
+	{
+		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+
+	}
 
 #ifdef _DEBUG
 	if (m_pColliderCom)
@@ -485,6 +589,9 @@ void CLauncher::Set_Damage(_int iDamage, _uint iDamageType)
 			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 0.5f);
 
 			++m_iDestroyCount;
+
+			//m_pGameInstance->Delete_CollisionObject(this);
+			//Safe_Release(m_pColliderCom);
 		}
 	}
 }
@@ -674,4 +781,5 @@ void CLauncher::Free()
 
 	Safe_Release(m_pDissolveTextureCom);
 
+	Safe_Release(m_pLauncher);
 }

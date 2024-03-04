@@ -1309,12 +1309,6 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Spear"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/SurvivalGame/Spear/Mesh/Spear.hyuntrastatmesh"))))
-	{
-		return E_FAIL;
-	}
-
 #pragma endregion Survival Game
 
 
@@ -2703,7 +2697,10 @@ HRESULT CLoader::Load_Tower()
 
 
 #pragma endregion
-
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_InfiltrationGame"), CInfiltrationGame::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 #pragma region ÀáÀÔ
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_MiniDungeon"), CMap::Create(m_pDevice, m_pContext))))
 	{
