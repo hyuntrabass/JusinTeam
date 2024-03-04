@@ -65,6 +65,13 @@ HRESULT CLever::Bind_ShaderResources()
 
 HRESULT CLever::Add_Collider()
 {
+	Collider_Desc BodyCollDesc = {};
+	BodyCollDesc.eType = ColliderType::Sphere;
+	BodyCollDesc.fRadius = 1.f;
+	BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.fRadius, 0.f);
+
+
+
 	return S_OK;
 }
 
