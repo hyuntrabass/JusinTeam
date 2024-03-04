@@ -117,11 +117,6 @@ private:
 	_vec4 vIdlePos{};
 	_vec4 vPatrolPos{};
 
-	//_vec4 m_Point{};
-	//_vec4 m_PatrolPoint1{};
-	//_vec4 m_PatrolPoint2{};
-	//_bool m_bPatrolChange = false;
-
 private:
 	ANIM_DESC m_Animation{};
 

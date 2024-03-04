@@ -38,7 +38,7 @@ HRESULT CGuardTower::Init(void* pArg)
 		return E_FAIL;
 
 
-	m_iHP = 1;
+	m_iHP = 10000;
 
 	m_pTransformCom->Set_Matrix(m_GuardTowerMatrix);
 
@@ -219,12 +219,12 @@ HRESULT CGuardTower::Render()
 void CGuardTower::Set_Damage(_int iDamage, _uint iDamageType)
 {
 
-	if (iDamageType == AT_Sword_Common)
-	{
-		m_iHP -= iDamage;
-		m_bChangePass = true;
-	}
-	CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 2.f), (ATTACK_TYPE)iDamageType);
+	//if (iDamageType == AT_Sword_Common)
+	//{
+	//	m_iHP -= iDamage;
+	//	m_bChangePass = true;
+	//}
+	//CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 2.f), (ATTACK_TYPE)iDamageType);
 
 }
 
@@ -444,11 +444,7 @@ void CGuardTower::Tick_State_Pattern_2(_float fTimeDelta)
 
 
 		m_fDetectTime += fTimeDelta;
-		//if (m_bInit == true)
-		//{
-		//	m_fDetectTime = 0.f;
-		//	m_bInit = false;
-		//}
+
 
 		if (m_fDetectTime > 2.f && m_fDetectTime <= 4.f)
 			m_Dir = DOWN;
@@ -864,7 +860,7 @@ HRESULT CGuardTower::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_StoneTower"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
+	if (FAILED(__super::Add_Component(LEVEL_TOWER, TEXT("Prototype_Model_StoneTower"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
 	{
 		return E_FAIL;
 	}
@@ -1020,9 +1016,6 @@ void CGuardTower::Free()
 	//}
 	//m_pGameInstance->Delete_CollisionObject(this);
 
-	//Delete_Range();
-	//Delete_Lazer();
-	//Delete_Attack_Lazer();
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
