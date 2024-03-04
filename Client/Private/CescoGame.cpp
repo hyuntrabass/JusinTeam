@@ -3,6 +3,7 @@
 #include "Log.h"
 #include "Hook.h"
 #include "Hive.h"
+#include "Buff_Card.h"
 
 #include "UI_Manager.h"
 #include "Camera_Manager.h"
@@ -56,7 +57,7 @@ HRESULT CCescoGame::Init(void* pArg)
 	m_HiveSpawnPositions.push_back(_vec3(-3025.f, 21.5f, -25.f));
 	//RB
 	m_HiveSpawnPositions.push_back(_vec3(-2975.f, 21.5f, -25.f));
-	
+
 	random_device rand;
 	m_RandomNumber = _randNum(rand());
 
@@ -68,6 +69,10 @@ HRESULT CCescoGame::Init(void* pArg)
 
 void CCescoGame::Tick(_float fTimeDelta)
 {
+	if (CCamera_Manager::Get_Instance()->Get_CameraState() == CS_INVEN)
+	{
+		return;
+	}
 	if (m_pGameInstance->Key_Down(DIK_8, InputChannel::UI))
 	{
 		m_eCurrentPhase = Phase3;
@@ -145,7 +150,7 @@ void CCescoGame::Late_Tick(_float fTimeDelta)
 	}
 
 	for (auto& Pair : m_Logs)
-	{ 
+	{
 		Pair.second->Late_Tick(fTimeDelta);
 	}
 
@@ -164,8 +169,9 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 		case Client::CCescoGame::Phase1:
 		{
 			m_iNumSpawnLarva = 2;
+			 
 		}
-			break;
+		break;
 		case Client::CCescoGame::Phase2:
 		{
 			m_iNumSpawnLarva = 5;
@@ -178,7 +184,7 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 			//¹úÁý °¹¼ö +1
 			m_IsSpawnHives.push_back(false);
 		}
-			break;
+		break;
 		case Client::CCescoGame::Phase3:
 		{
 			m_iNumSpawnLarva = 5;
@@ -191,7 +197,75 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 			//¹úÁý °¹¼ö +1
 			m_IsSpawnHives.push_back(false);
 		}
+		break;
+		case Client::CCescoGame::Phase_Buff:
+		{
+			switch (m_ePreviousPhase)
+			{
+			case Phase_End:
+			{
+				BUFFCARD_DESC Buff_Desc{};
+				Buff_Desc.eBuff = Buff::Buff_MaxHp;
+				Buff_Desc.vPos = _vec2(320.f, 360.f);
+				CBuff_Card* pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
+				m_vecBuffCard.push_back(pBuff);
+
+				Buff_Desc.eBuff = Buff::Buff_CoolDown;
+				Buff_Desc.vPos = _vec2(640.f, 360.f);
+				 pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
+				m_vecBuffCard.push_back(pBuff);
+
+				Buff_Desc.eBuff = Buff::Buff_PoisonImmune;
+				Buff_Desc.vPos = _vec2(960.f, 360.f);
+				 pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
+				m_vecBuffCard.push_back(pBuff);
+				m_eNextPhase = Phase1;
+			}
 			break;
+			case Phase1:
+			{
+				BUFFCARD_DESC Buff_Desc{};
+				Buff_Desc.eBuff = Buff::Buff_MpRegen;
+				Buff_Desc.vPos = _vec2(320.f, 360.f);
+				CBuff_Card* pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
+				m_vecBuffCard.push_back(pBuff);
+
+				Buff_Desc.eBuff = Buff::Buff_MonRegenDown;
+				Buff_Desc.vPos = _vec2(640.f, 360.f);
+				 pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
+				m_vecBuffCard.push_back(pBuff);
+
+				Buff_Desc.eBuff = Buff::Buff_Speed;
+				Buff_Desc.vPos = _vec2(960.f, 360.f);
+				 pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
+				m_vecBuffCard.push_back(pBuff);
+				m_eNextPhase = Phase2;
+			}
+			break;
+			case Phase2:
+			{
+				BUFFCARD_DESC Buff_Desc{};
+				Buff_Desc.eBuff = Buff::Buff_HpRegen;
+				Buff_Desc.vPos = _vec2(320.f, 360.f);
+				CBuff_Card* pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
+				m_vecBuffCard.push_back(pBuff);
+
+				Buff_Desc.eBuff = Buff::Buff_Attack;
+				Buff_Desc.vPos = _vec2(640.f, 360.f);
+				 pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
+				m_vecBuffCard.push_back(pBuff);
+
+				Buff_Desc.eBuff = Buff::Buff_BloodDrain;
+				Buff_Desc.vPos = _vec2(960.f, 360.f);
+				 pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
+				m_vecBuffCard.push_back(pBuff);
+				m_eNextPhase = Phase3;
+			}
+			break;
+			}
+		}
+		break;
+
 		}
 
 		m_ePreviousPhase = m_eCurrentPhase;
@@ -328,7 +402,7 @@ void CCescoGame::Tick_Phase3(_float fTimeDelta)
 	Tick_Phase2(fTimeDelta);
 
 #pragma region EyeBombSpawn
-	if (m_fEyeBombSpawnTime >= 2.f)
+	if (m_fEyeBombSpawnTime >= 3.f)
 	{
 		_vec3 vSpawnPos = m_pPlayerTransform->Get_CenterPos();
 		_randFloat RandomCountNum(-300.f, 300.f);
@@ -414,9 +488,9 @@ void CCescoGame::Tick_Phase3(_float fTimeDelta)
 				return;
 			}
 			m_fHookAttTime += fTimeDelta;
-			if (m_fHookAttTime >= 1.f)
+			if (m_fHookAttTime >= 0.6f)
 			{
-				m_pGameInstance->Attack_Player(nullptr, rand() % 20 + 40, MonAtt_Hook);
+				m_pGameInstance->Attack_Player(nullptr, rand() % 20 + 30, MonAtt_Hook);
 				m_fHookAttTime = 0.f;
 			}
 			m_pPlayerTransform->Set_Position(_vec3(m_pCurrent_DraggingHook->Get_Position()));
@@ -429,8 +503,49 @@ void CCescoGame::Tick_Phase3(_float fTimeDelta)
 
 void CCescoGame::Tick_Phase_Buff(_float fTimeDelta)
 {
-	 
+	_bool IsSelet{};
+	for (auto& Buffcard : m_vecBuffCard)
+	{
+		Buffcard->Tick(fTimeDelta);
+		if (Buffcard->Get_IsSelect())
+		{
+			IsSelet = true;
+			Buff eBuff = Buffcard->Get_Buff();
+			switch (eBuff)
+			{
+			case Client::Buff_MaxHp:
 
+				break;
+			case Client::Buff_HpRegen:
+				break;
+			case Client::Buff_MpRegen:
+				break;
+			case Client::Buff_Attack:
+				break;      
+			case Client::Buff_Speed:
+				break;
+			case Client::Buff_CoolDown:
+				break;
+			case Client::Buff_BloodDrain:
+				break;
+			case Client::Buff_PoisonImmune:
+				break;
+			case Client::Buff_MonRegenDown:
+				m_iMonsterSpawnSpeed = 1.f;
+				break;
+			}
+		}
+	}
+
+	if (IsSelet)
+	{
+		for (auto& Buffcard : m_vecBuffCard)
+		{
+			Safe_Release(Buffcard);
+		}
+		m_vecBuffCard.clear();
+		m_eCurrentPhase = m_eNextPhase;
+	}
 }
 
 HRESULT CCescoGame::Create_CommonMonster(const wstring& strModelTag, _vec3 SpawnPosition, const wstring& strPrototypeTag)

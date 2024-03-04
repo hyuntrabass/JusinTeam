@@ -151,6 +151,7 @@ void CGroar_Boss::Late_Tick(_float fTimeDelta)
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pAttackColliderCom);
 #endif
+
 	if (m_pHpBoss != nullptr)
 	{
 		m_pHpBoss->Late_Tick(fTimeDelta);

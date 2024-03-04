@@ -264,7 +264,7 @@ void CWasp::Tick_State(_float fTimeDelta)
 			m_pTransformCom->Go_To_Dir(_vec4(0.f, 1.f, 0.f, 0.f), fTimeDelta);
 		}
 
-		if (m_pTransformCom->Get_CenterPos().y >= 20.f)
+		if (m_pTransformCom->Get_CenterPos().y >= 12.f)
 		{
 			m_eState = State_Idle;
 		}
