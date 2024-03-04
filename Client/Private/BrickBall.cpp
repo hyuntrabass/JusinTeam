@@ -35,7 +35,7 @@ HRESULT CBrickBall::Init(void* pArg)
 	}
 
 	m_fSpeed = 12.f;
-	m_pTransformCom->Set_Scale(_vec3(1.5f, 1.5f, 1.5f));
+	m_pTransformCom->Set_Scale(_vec3(1.7f, 1.7f, 1.7f));
 	m_pTransformCom->Set_Speed(m_fSpeed);
 
 	
@@ -48,14 +48,6 @@ HRESULT CBrickBall::Init(void* pArg)
 	m_pTransformCom->LookAt_Dir(vNormal);
 
 	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
-
-	/*
-	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Ball_Init");
-	Info.pMatrix = &m_EffectMatrix;
-	Info.isFollow = true;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
-	*/
-	//m_vDir = _vec4(0.f, 0.f, -1.f, 0.f);
 
 	m_shouldRenderBlur = true;
 	m_eCurBrickColor = BLUE;
@@ -70,6 +62,7 @@ HRESULT CBrickBall::Init(void* pArg)
 
 void CBrickBall::Tick(_float fTimeDelta)
 {
+	_vec3 vLook = m_pTransformCom->Get_State(State::Look);
 	m_pTransformCom->Set_Scale(_vec3(1.8f, 1.8f, 1.8f));
 	//Set_BallColor();
 
@@ -118,32 +111,14 @@ void CBrickBall::Tick(_float fTimeDelta)
 		m_pTrail->On();
 		_mat Matrix = _mat::CreateTranslation(0.f, 0.1f, 0.f) * m_pTransformCom->Get_World_Matrix();
 		m_pTrail->Tick(Matrix.Position_vec3());
-		/*
-		m_pDistortionTrail->On();
-		if (m_pTransformCom->Get_State(State::Look).z < 0.f)
-		{
-			BottomMatrix = _mat::CreateTranslation(0.15f, 0.f, -0.6f) * m_pTransformCom->Get_World_Matrix();
-			UpMatrix = _mat::CreateTranslation(-0.15f, 0.f, -0.6f) * m_pTransformCom->Get_World_Matrix();
-		}
-		else
-		{
-			BottomMatrix = _mat::CreateTranslation(0.15f, 0.f, -0.8f) * m_pTransformCom->Get_World_Matrix();
-			UpMatrix = _mat::CreateTranslation(-0.15f, 0.f, -0.8f) * m_pTransformCom->Get_World_Matrix();
-		}
-		
-		m_pTrail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
-
-		BottomMatrix = _mat::CreateTranslation(0.2f, -0.3f, 0.f) * m_pTransformCom->Get_World_Matrix();;
-		UpMatrix = _mat::CreateTranslation(-0.2f, -0.3f, 0.f) * m_pTransformCom->Get_World_Matrix();
-		m_pDistortionTrail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
-		*/
+	
 	}
 }
 
 void CBrickBall::Late_Tick(_float fTimeDelta)
 {
 	m_pTrail->Late_Tick(fTimeDelta);
-	//m_pDistortionTrail->Late_Tick(fTimeDelta);
+
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 	if (m_pEffect_Ball)
 	{
@@ -262,9 +237,6 @@ HRESULT CBrickBall::Init_Effect()
 	m_pTrail = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
 
 
-
-	
-	m_Mat = &m_pTransformCom->Get_World_Matrix();
 	_mat UpMatrix{};
 	_mat	BottomMatrix{};
 	if (m_pTrail != nullptr)
@@ -272,11 +244,6 @@ HRESULT CBrickBall::Init_Effect()
 		m_pTrail->On();
 		_mat Matrix = _mat::CreateTranslation(0.f, 0.1f, 0.f) * m_pTransformCom->Get_World_Matrix();
 		m_pTrail->Tick(Matrix.Position_vec3());
-
-		/*
-		BottomMatrix = _mat::CreateTranslation(0.1f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();
-		UpMatrix = _mat::CreateTranslation(-0.1f, 0.f, 0.f) * m_pTransformCom->Get_World_Matrix();
-		*/
 	}
 	return S_OK;
 }
@@ -286,6 +253,7 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 	m_isBarColl = false;
 	m_isCombo = false;
 	Update_Collider();
+	_bool bShowEffect{};
 
 	CCollider* pCollider{ nullptr };
 	_bool isColl{};
@@ -306,10 +274,12 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 
 	if (isColl && m_pCurCollider != pCollider)
 	{
+		bShowEffect = true;
 		m_isCombo = true;
 		m_pCurCollider = nullptr;
 		m_pCurCollider = pCollider;
 		_vec3 vNormal{};
+
 		if (iWall == 0)
 		{
 			vNormal = _vec4(-1.f, 0.f, 0.f, 0.f);
@@ -341,35 +311,41 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 	{
 		if (m_pColliderCom->Intersect(pBarCollider) && m_pCurCollider != pBarCollider)
 		{
+			bShowEffect = true;
 			m_isBarColl = true;
 			m_isCombo = true;
 			m_pCurCollider = nullptr;
 			m_pCurCollider = pBarCollider;
 			_vec3 vLook = m_pTransformCom->Get_State(State::Look);
-			_vec3 vNormal = pBarCollider->Get_Normal(m_pGameInstance->Get_CollideFace(pBarCollider, m_pColliderCom));
+			_vec3 vNormal = _vec3(0.f, 0.f, 1.f);
 
 
 			if (CUI_Manager::Get_Instance()->Get_BarDir() == BAR_LEFT)
 			{
-				vNormal = _vec4(-0.2f, 0.f, 1.f, 0.f);
+				vNormal = _vec3(-0.2f, 0.f, 1.f);
 			}
 			else if (CUI_Manager::Get_Instance()->Get_BarDir() == BAR_RIGHT)
 			{
-				vNormal = _vec4(0.2f, 0.f, 1.f, 0.f);
+				vNormal = _vec3(0.2f, 0.f, 1.f);
 			}
 
 			vNormal.Normalize();
 			m_vDir = _vec3::Reflect(vLook, vNormal);
 			m_vDir.y = 0.f;
+
+			if (m_vDir.z <= 0.2f && m_vDir.z >= -0.2f)
+			{
+				m_vDir.z = -1.f;
+			}
 			m_pTransformCom->LookAt_Dir(m_vDir);
+			/*
 			_vec4 vRight = m_vDir - _vec4(1.f, 0.f, 0.f, 0.f).Get_Normalized();
 			_vec4 vLeft = m_vDir - _vec4(-1.f, 0.f, 0.f, 0.f).Get_Normalized();
 			if (vRight.Length() <= 0.1f || vLeft.Length() <= 0.1f)
 			{
 				m_vDir.z = 1.f;
 			}
-	
-			//m_eCurBrickColor = (BrickColor)m_iBallColor;
+			*/
 		}
 
 	}
@@ -394,6 +370,7 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 
 	if (isBalloonColl && m_pCurCollider != pBalloonCollider)
 	{
+		bShowEffect = true;
 		m_isCombo = true;
 		m_pCurCollider = nullptr;
 		m_pCurCollider = pBalloonCollider;
@@ -408,11 +385,12 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 
 	CCollider* pMonCollider{ nullptr };
 
-	pMonCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BlackCat"), TEXT("Com_Collider_Bar"));
+	pMonCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickGame"), TEXT("BlackCat"));
 	if (pMonCollider != nullptr)
 	{
 		if (m_pColliderCom->Intersect(pMonCollider) && m_pCurCollider != pMonCollider)
 		{
+			bShowEffect = true;
 			m_isCombo = true;
 			m_pCurCollider = nullptr;
 			m_pCurCollider = pMonCollider;
@@ -423,6 +401,34 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 			m_vDir.y = 0.f;
 			m_pTransformCom->LookAt_Dir(m_vDir);
 		}
+	}
+
+	if (bShowEffect)
+	{
+		_mat Mat = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+
+		if (m_eCurBrickColor == BLUE)
+		{
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Ball_Smoke");
+			Info.pMatrix = &Mat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_IceSpart");
+			Info.pMatrix = &Mat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+		}
+		else
+		{
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_Ball_SmokeFire");
+			Info.pMatrix = &Mat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_FireSpart");
+			Info.pMatrix = &Mat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+		}
+
+
 	}
 }
 

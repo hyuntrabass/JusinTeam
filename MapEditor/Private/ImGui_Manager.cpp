@@ -12,6 +12,7 @@
 #include "Camera_CutScene.h"
 #include "Effect_Manager.h"
 #include "Effect_Sphere.h"
+
 IMPLEMENT_SINGLETON(CImGui_Manager)
 
 CImGui_Manager::CImGui_Manager()
@@ -1488,6 +1489,7 @@ void CImGui_Manager::Create_Dummy(const _int& iListIndex)
 	{
 		DummyInfo Info{};
 		Info.ppDummy = &m_pSelectedDummy;
+		Info.iIndex = m_iPattern;
 		//Info.vPos = _vec4(m_PickingPos.x, m_PickingPos.y, m_PickingPos.z, 1.f);
 		Info.mMatrix.Position(_vec4(m_PickingPos.x, m_PickingPos.y, m_PickingPos.z, 1.f));
 		if (m_isUseNormal)
@@ -2900,7 +2902,7 @@ HRESULT CImGui_Manager::Load_NPC()
 			}
 
 			m_DummyList.emplace(m_pSelectedDummy->Get_ID(), m_pSelectedDummy);
-			m_MonsterList.push_back(m_pSelectedDummy);
+			m_NPCList.push_back(m_pSelectedDummy);
 
 			//CTransform* pMonsterTransform = dynamic_cast<CTransform*>(m_pSelectedDummy->Find_Component(TEXT("Com_Transform")));
 
