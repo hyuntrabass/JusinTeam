@@ -116,7 +116,7 @@ HRESULT CProjectile::Init(void* pArg)
 		vDir.y = 0.f;
 
 		m_pTransformCom->LookAt_Dir(vDir);
-		m_pTransformCom->Set_Speed(rand() % 10 + 5);
+		m_pTransformCom->Set_Speed(_float(rand() % 10 + 5));
 	}
 
 	break;

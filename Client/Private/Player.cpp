@@ -117,7 +117,6 @@ HRESULT CPlayer::Init(void* pArg)
 
 void CPlayer::Tick(_float fTimeDelta)
 {
-
 	if (m_pGameInstance->Key_Down(DIK_V, InputChannel::Engine))
 	{/*
 		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
@@ -2623,6 +2622,15 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 		{
 			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], m_Status.Attack + Critical + RandomDmg, AT_Critical);
 		}
+		if (m_Status.DamageAbsorption > 0.f)
+		{
+			_uint iAbsorption = _uint((m_Status.Attack + Critical + RandomDmg) * m_Status.DamageAbsorption);
+			m_Status.Current_Hp += iAbsorption;
+			if (m_Status.Current_Hp > m_Status.Max_Hp)
+			{
+				m_Status.Current_Hp = m_Status.Max_Hp;
+			}
+		}
 	}
 	break;
 	case Client::AT_Sword_Skill1:
@@ -2634,6 +2642,15 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 		else
 		{
 			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.5f) + Critical + RandomDmg, AT_Critical);
+		}
+		if (m_Status.DamageAbsorption > 0.f)
+		{
+			_uint iAbsorption = _uint((m_Status.Attack * 1.5f + Critical + RandomDmg) * m_Status.DamageAbsorption);
+			m_Status.Current_Hp += iAbsorption;
+			if (m_Status.Current_Hp > m_Status.Max_Hp)
+			{
+				m_Status.Current_Hp = m_Status.Max_Hp;
+			}
 		}
 	}
 	break;
@@ -2648,6 +2665,15 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.5f) + Critical + RandomDmg, AT_Critical);
 
 		}
+		if (m_Status.DamageAbsorption > 0.f)
+		{
+			_uint iAbsorption = _uint((m_Status.Attack * 1.5f + Critical + RandomDmg) * m_Status.DamageAbsorption);
+			m_Status.Current_Hp += iAbsorption;
+			if (m_Status.Current_Hp > m_Status.Max_Hp)
+			{
+				m_Status.Current_Hp = m_Status.Max_Hp;
+			}
+		}
 	}
 	break;
 	case Client::AT_Sword_Skill3:
@@ -2661,7 +2687,15 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 1.3f) + Critical + RandomDmg, AT_Critical);
 
 		}
-
+		if (m_Status.DamageAbsorption > 0.f)
+		{
+			_uint iAbsorption = _uint((m_Status.Attack * 1.3f + Critical + RandomDmg) * m_Status.DamageAbsorption);
+			m_Status.Current_Hp += iAbsorption;
+			if (m_Status.Current_Hp > m_Status.Max_Hp)
+			{
+				m_Status.Current_Hp = m_Status.Max_Hp;
+			}
+		}
 	}
 	break;
 	case Client::AT_Sword_Skill4:
@@ -2675,11 +2709,21 @@ void CPlayer::Check_Att_Collider(ATTACK_TYPE Att_Type)
 		{
 			m_pGameInstance->Attack_Monster(m_pAttCollider[Att_Type], (_int)(m_Status.Attack * 2.f) + RandomDmg, AT_Critical);
 		}
+		if (m_Status.DamageAbsorption > 0.f)
+		{
+			_uint iAbsorption = _uint((m_Status.Attack * 2.f + Critical + RandomDmg) * m_Status.DamageAbsorption);
+			m_Status.Current_Hp += iAbsorption;
+			if (m_Status.Current_Hp > m_Status.Max_Hp)
+			{
+				m_Status.Current_Hp = m_Status.Max_Hp;
+			}
+		}
 	}
 	break;
 	default:
 		break;
 	}
+	CUI_Manager::Get_Instance()->Set_Hp(m_Status.Current_Hp, m_Status.Max_Hp);
 }
 void CPlayer::Set_ExtraStatus()
 {
