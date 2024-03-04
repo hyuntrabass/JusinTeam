@@ -239,13 +239,13 @@ private:
 	unordered_map<wstring, vector<const char*>> Envirs;
 	unordered_map<wstring, vector<const char*>> Interactions;
 
-	vector<class CMap*> m_MapsList;
-	vector<class CDummy*> m_ObjectsList;
-	vector<class CDummy*> m_MonsterList;
-	vector<class CDummy*> m_NPCList;
-	vector<class CDummy*> m_EnvirList;
-	vector<class CDummy*> m_TriggerList;
-	vector<class CDummy*> m_InteractionList;
+	list<class CMap*> m_MapsList;
+	list<class CDummy*> m_ObjectsList;
+	list<class CDummy*> m_MonsterList;
+	list<class CDummy*> m_NPCList;
+	list<class CDummy*> m_EnvirList;
+	list<class CDummy*> m_TriggerList;
+	list<class CDummy*> m_InteractionList;
 
 	vector<class CEffect_Sphere*> m_Effect;
 

@@ -541,11 +541,8 @@
     <Filter Include="02.GameObjects\18. Sun">
       <UniqueIdentifier>{3bb37758-e5fb-4873-a1a7-388a41d196ff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\17.InfiltrationGame\02. Lever">
-      <UniqueIdentifier>{f1af604a-83dd-4eb5-8d5b-331848b9c00a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\17.InfiltrationGame\03. Door">
-      <UniqueIdentifier>{33aef780-f49a-49c8-a3c7-0a0c5cc7023f}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\17.InfiltrationGame\02. CheckPoint">
+      <UniqueIdentifier>{784bb20b-73fe-4723-8b7d-41c09f4918e9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1120,15 +1117,13 @@
     <ClInclude Include="..\Public\InfiltrationGame.h">
       <Filter>02.GameObjects\17.InfiltrationGame</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\BlackCat.h" />
     <ClInclude Include="..\Public\Guard.h" />
-    <ClInclude Include="..\Public\BlackCat.h">
-      <Filter>02.GameObjects\14.BrickGame</Filter>
+    <ClInclude Include="..\Public\CheckPoint.h">
+      <Filter>02.GameObjects\17.InfiltrationGame\02. CheckPoint</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Lever.h">
-      <Filter>02.GameObjects\17.InfiltrationGame\02. Lever</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Door.h">
-      <Filter>02.GameObjects\17.InfiltrationGame\03. Door</Filter>
+    <ClInclude Include="..\Public\Guard.h">
+      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1701,18 +1696,13 @@
     <ClCompile Include="..\Private\InfiltrationGame.cpp">
       <Filter>02.GameObjects\17.InfiltrationGame</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\BlackCat.cpp" />
     <ClCompile Include="..\Private\Guard.cpp" />
-    <ClCompile Include="..\Private\BlackCat.cpp">
-      <Filter>02.GameObjects\14.BrickGame</Filter>
+    <ClCompile Include="..\Private\CheckPoint.cpp">
+      <Filter>02.GameObjects\17.InfiltrationGame\02. CheckPoint</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\GlowCube.cpp">
-      <Filter>02.GameObjects\14.BrickGame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Lever.cpp">
-      <Filter>02.GameObjects\17.InfiltrationGame\02. Lever</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Door.cpp">
-      <Filter>02.GameObjects\17.InfiltrationGame\03. Door</Filter>
+    <ClCompile Include="..\Private\Guard.cpp">
+      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -2,13 +2,21 @@
 2
 Animation Models : Start Converting...
 1. Normally Anim Model	2. For VTF Model 3. Part Model
-1
-Converting... StoneTower.fbx
+2
+Converting... GoldStone.fbx
 Read File Succssefully
 Animation name list: 
-War_StoneTower.ao|War_StoneTower.ao|War_StoneTower.ao|destroy
-War_StoneTower.ao|War_StoneTower.ao|War_StoneTower.ao|idle
+Com_SM_Goldstone_001.ao|Com_SM_Goldstone_001.ao|Com_SM_Goldstone_001.ao|Com_SM_Goldston
+Converting... SaltStone.fbx
+Read File Succssefully
+Animation name list: 
+Com_SM_Saltstone_001.ao|Com_SM_Saltstone_001.ao|Com_SM_Saltstone_001.ao|Com_SM_Saltston
+Converting... TreasureBox.fbx
+Read File Succssefully
+Animation name list: 
+jewel_box_01_stand.ao|jewel_box_01_stand.ao|jewel_box_01_stand.ao|jewel_box_01_op
+jewel_box_01_stand.ao|jewel_box_01_stand.ao|jewel_box_01_stand.ao|jewel_box_01_open
 Animation Models : Convert Success!
 
-1 Animation Models
+3 Animation Models
 are Successfully Converted as hyuntramesh!!

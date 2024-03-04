@@ -37,10 +37,11 @@ HRESULT CGuardTower::Init(void* pArg)
 		return E_FAIL;
 
 
-	m_iHP = 1;
+	m_iHP = 10000;
 
 	m_pTransformCom->Set_Matrix(m_GuardTowerMatrix);
 
+	m_pShaderCom->Set_PassIndex(VTF_InstPass_Default);
 
 	if (m_Pattern_Type == PATTERN_1)
 		Create_Range_Pattern_1();
@@ -126,6 +127,9 @@ void CGuardTower::Tick(_float fTimeDelta)
 void CGuardTower::Late_Tick(_float fTimeDelta)
 {
 	m_fAnimTime += fTimeDelta;
+
+	m_pModelCom->Play_Animation(fTimeDelta);
+
 	if (m_eCurState == STATE_DETECT)
 	{
 		if (m_pFrameEffect)
@@ -145,12 +149,14 @@ void CGuardTower::Late_Tick(_float fTimeDelta)
 		if (m_pAttackEffect)
 			m_pAttackEffect->Late_Tick(fTimeDelta);
 	}
-	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos(), 20.f))
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos()))
 	{
-		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+		m_pRendererCom->Add_RenderGroup(RG_AnimNonBlend_Instance, this);
+		m_pModelCom->Set_DissolveRatio(m_fDissolveRatio);
+
 	}
 
-	m_pModelCom->Play_Animation(m_fAnimTime);
+		m_pModelCom->Play_Animation(m_fAnimTime);
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
@@ -199,8 +205,8 @@ HRESULT CGuardTower::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-			return E_FAIL;
+		//if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		//	return E_FAIL;
 
 		if (FAILED(m_pShaderCom->Begin(m_iPassIndex)))
 			return E_FAIL;
@@ -209,30 +215,34 @@ HRESULT CGuardTower::Render()
 			return E_FAIL;
 	}
 
-	if (!m_bChangePass && m_iHP > 0)
-	{
-		m_iPassIndex = AnimPass_Default;
-	}
+	//if (!m_bChangePass && m_iHP > 0)
+	//{
+	//	m_iPassIndex = AnimPass_Default;
+	//}
 
 	return S_OK;
 }
 
 void CGuardTower::Set_Damage(_int iDamage, _uint iDamageType)
 {
-	//m_fHittedTime = 6.f;
 
-	//m_iHP -= iDamage;
-	//m_bChangePass = true;
-	if (iDamageType == AT_Sword_Common)
-	{
-		m_bDamaged = true;
-	}
-	CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 2.f), (ATTACK_TYPE)iDamageType);
+	//if (iDamageType == AT_Sword_Common)
+	//{
+	//	m_iHP -= iDamage;
+	//	m_bChangePass = true;
+	//}
+	//CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 2.f), (ATTACK_TYPE)iDamageType);
 
 }
 
 void CGuardTower::Init_State(_float fTimeDelta)
 {
+	if (m_iHP <= 0)
+	{
+		m_eCurState = STATE_DIE;
+	}
+
+
 	_vec4 vPlayerPos = Compute_PlayerPos();
 	_float fDistance = Compute_PlayerDistance();
 	_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_CenterPos()).Get_Normalized();
@@ -441,11 +451,7 @@ void CGuardTower::Tick_State_Pattern_2(_float fTimeDelta)
 
 
 		m_fDetectTime += fTimeDelta;
-		if (m_bInit == true)
-		{
-			m_fDetectTime = 0.f;
-			m_bInit = false;
-		}
+
 
 		if (m_fDetectTime > 2.f && m_fDetectTime <= 4.f)
 			m_Dir = DOWN;
@@ -455,8 +461,8 @@ void CGuardTower::Tick_State_Pattern_2(_float fTimeDelta)
 			m_Dir = UP;
 		else if (m_fDetectTime > 8.f && m_fDetectTime <= 10.f)
 		{
-			m_fDetectTime = 0.f;
 			m_Dir = RIGHT;
+			m_fDetectTime = 0.f;
 		}
 
 
@@ -516,9 +522,19 @@ void CGuardTower::Tick_State_Pattern_2(_float fTimeDelta)
 	case Client::CGuardTower::STATE_DIE:
 		if (m_pModelCom->IsAnimationFinished(ANIM_DIE))
 		{
-			m_fDeadTime += fTimeDelta;
+			if (m_pModelCom->IsAnimationFinished(ANIM_DIE))
+			{
+				if (m_fDissolveRatio < 1.f)
+				{
+					m_fDissolveRatio += fTimeDelta;
+					m_pShaderCom->Set_PassIndex(VTF_InstPass_Dissolve);
+				}
+				else
+				{
+					Kill();
+				}
+			}
 		}
-
 
 		break;
 	}
@@ -851,7 +867,7 @@ HRESULT CGuardTower::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VTF_Instance"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 	{
 		return E_FAIL;
 	}
@@ -861,7 +877,7 @@ HRESULT CGuardTower::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_StoneTower"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
+	if (FAILED(__super::Add_Component(LEVEL_TOWER, TEXT("Prototype_Model_StoneTower"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), m_pTransformCom)))
 	{
 		return E_FAIL;
 	}
@@ -872,52 +888,31 @@ HRESULT CGuardTower::Add_Components()
 
 HRESULT CGuardTower::Bind_ShaderResources()
 {
-	if (m_iPassIndex == AnimPass_OutLine)
-	{
-		_uint iColor = OutlineColor_Red;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_OutlineColor", &iColor, sizeof iColor)))
-		{
+	if (true == m_pGameInstance->Get_TurnOnShadow()) {
+
+		CASCADE_DESC Desc = m_pGameInstance->Get_CascadeDesc();
+
+		if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeView", Desc.LightView, 3)))
 			return E_FAIL;
-		}
+
+		if (FAILED(m_pShaderCom->Bind_Matrices("g_CascadeProj", Desc.LightProj, 3)))
+			return E_FAIL;
 
 	}
 
-	if (m_iPassIndex == AnimPass_Rim && m_bChangePass == true)
-	{
-		_vec4 vColor = Colors::Red;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vColor, sizeof vColor)))
-		{
-			return E_FAIL;
-		}
-	}
-
-	if (m_iPassIndex == AnimPass_Dissolve)
-	{
-		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
-		{
-			return E_FAIL;
-		}
-
-		m_fDissolveRatio += 0.02f;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
-		{
-			return E_FAIL;
-		}
-
-		_bool bHasNorTex = true;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &bHasNorTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
-
-	}
-
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTransformCom->Bind_OldWorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+	_vector vRimColor = { 1.f, 0.f, 0.f, 1.f };
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_RimColor", &vRimColor, sizeof _vector)))
+	{
+		return E_FAIL;
+	}
+
+	_uint iOutlineColor = OutlineColor_Red;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_OutlineColor", &iOutlineColor, sizeof _uint)))
 	{
 		return E_FAIL;
 	}
@@ -994,7 +989,15 @@ CGuardTower* CGuardTower::Create(_dev pDevice, _context pContext)
 
 	return pInstance;
 }
+HRESULT CGuardTower::Render_Instance()
+{
+	if (FAILED(Bind_ShaderResources()))
+	{
+		return E_FAIL;
+	}
 
+	return S_OK;
+}
 CGameObject* CGuardTower::Clone(void* pArg)
 {
 	CGuardTower* pInstance = new CGuardTower(*this);
@@ -1017,9 +1020,6 @@ void CGuardTower::Free()
 	//}
 	//m_pGameInstance->Delete_CollisionObject(this);
 
-	//Delete_Range();
-	//Delete_Lazer();
-	//Delete_Attack_Lazer();
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

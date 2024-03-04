@@ -3,10 +3,10 @@
 #include "OrthographicObject.h"
 #include "Riding.h"
 #define BRICKCOL 11
-#define BRICKROW 7
+#define BRICKROW 5
 
 BEGIN(Client)
-class CBrickGame final : public CGameObject
+class CBrickGame final : public COrthographicObject
 {
 private:
 	CBrickGame(_dev pDevice, _context pContext);
@@ -24,6 +24,7 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 
 private:
+	_bool										m_isGameOver{ false };
 	_bool										m_isPicking{ false };
 	_bool										m_isPrototype{ false };
 	_bool										m_isActive{ false };
@@ -34,10 +35,13 @@ private:
 	_uint										m_iCurIndex{};
 	_int										m_iSoundChannel = -1;
 
+	_float										m_fTime{};
+	_uint										m_iMinute{3};
+	_uint										m_iSec{60};
 	_float										m_fComboTime{};
 	_float										m_fTimeLimit{};
+	_mat										m_EffectMatrix{};
 
-	class CBalloon*								m_pBalloon[BRICKROW][BRICKCOL]{};
 	LIGHT_DESC									m_Light_Desc{};
 	CGameObject*								m_pBackGround{nullptr};
 	class CNumEffect*							m_pCombo{ nullptr };
@@ -45,11 +49,18 @@ private:
 	class CBrickBall*							m_pBall{ nullptr };
 	class CBrickBar*							m_pBar{ nullptr };
 
+	class CTextButtonColor*						m_pTimeBar{ nullptr };
+	class CBlackCat*							m_pCatBoss{ nullptr };
+
 public:
 	class CComponent* Find_Component(const wstring& strComTag) override;
 
 private:
 	void Init_Game();
+	void Exit_Game();
+	void Create_Bricks();
+
+private:
 	HRESULT Add_Parts();
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

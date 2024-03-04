@@ -1165,19 +1165,6 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
-	_mat GuardPivot = _mat::CreateRotationY(XMConvertToRadians(180.f));
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Guard"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Guard/Mesh/Guard.hyuntraanimmesh", false, GuardPivot))))
-	{
-		return E_FAIL;
-	}
-
-	_mat GuardTowerPivot = _mat::CreateScale(0.002f);
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_StoneTower"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/StoneTower/Mesh/StoneTower.hyuntraanimmesh", false ,GuardTowerPivot))))
-	{
-		return E_FAIL;
-	}
 	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/NPC/NPC_Dummy/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
@@ -1550,10 +1537,6 @@ HRESULT CLoader::Load_GamePlay()
 	}
 	
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BrickBar"), CBrickBar::Create(m_pDevice, m_pContext))))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_GlowCube"), CGlowCube::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -2263,6 +2246,22 @@ HRESULT CLoader::Load_Tower()
 	
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_TOWER);
 
+
+	_mat GuardPivot = _mat::CreateRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOWER, TEXT("Prototype_Model_Guard"),
+		CVTFModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Guard/Mesh/Guard.hyuntraanimmesh", false, GuardPivot))))
+	{
+		return E_FAIL;
+	}
+
+	_mat GuardTowerPivot = _mat::CreateScale(0.002f);
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOWER, TEXT("Prototype_Model_StoneTower"),
+		CVTFModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/StoneTower/Mesh/StoneTower.hyuntraanimmesh", false, GuardTowerPivot))))
+	{
+		return E_FAIL;
+	}
+
+
 	_mat DungeonPivot = _mat::CreateScale(0.001f);
 	strInputFilePath = "../Bin/Resources/StaticMesh/Map/Dungeon/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
@@ -2697,12 +2696,17 @@ HRESULT CLoader::Load_Tower()
 
 
 #pragma endregion
+#pragma region 잠입
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_InfiltrationGame"), CInfiltrationGame::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
-#pragma region 잠입
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_MiniDungeon"), CMap::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_CheckPoint"), CCheckPoint::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

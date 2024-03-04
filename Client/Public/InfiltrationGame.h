@@ -20,11 +20,24 @@ public:
 private:
 	list<class CGuard*> m_Guard;
 	list<class CGuardTower*> m_GuardTower;
+	list<class CCheckPoint*> m_CheckPoint;
 
-
+	vector<list<class CGuard*>> m_GuardList;
+	vector<list<class CGuardTower*>> m_GuardTowerList;
 
 private:
+	HRESULT Create_Guard(const TCHAR* pPath);
+	HRESULT Create_CheckPoint();
+	void Reset_Play(_float fTimeDelta);
 	void Release_DeadObjects();
+
+private:
+	_bool m_isReset{ false };
+	_mat m_CheckPointMatrix{};
+	_float m_fResurrectionTime{ 0.f };
+private:
+	CTransform* m_pPlayerTransform = { nullptr };
+
 
 public:
 	static CInfiltrationGame* Create(_dev pDevice, _context pContext);

@@ -27,8 +27,8 @@ public:
 	enum STATE
 	{
 		State_Idle,
-		State_Run,
 		State_Attack,
+		State_Attack_End,
 		State_Die,
 		State_End
 	};
@@ -52,6 +52,8 @@ private:
 private:
 	STATE m_eState{ State_End };
 	STATE m_ePreState{ State_End };
+	_vec3 m_vAttackDir{};
+	_float m_fMoveDirRatio{};
 
 private:
 	void Init_State(_float fTimeDelta);

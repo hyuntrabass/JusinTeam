@@ -19,7 +19,7 @@ HRESULT CWasp::Init(void* pArg)
 {
 	PxCapsuleControllerDesc ControllerDesc{};
 	ControllerDesc.height = 0.5f; // 높이(위 아래의 반구 크기 제외
-	ControllerDesc.radius = 0.5f; // 위아래 반구의 반지름
+	ControllerDesc.radius = 0.1f; // 위아래 반구의 반지름
 	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
 	ControllerDesc.slopeLimit = cosf(PxDegToRad(1.f)); // 캐릭터가 오를 수 있는 최대 각도
 	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
@@ -40,15 +40,17 @@ HRESULT CWasp::Init(void* pArg)
 
 	m_iHP = 200;
 
-	m_eState = State_Run;
+	m_eState = State_Idle;
 	m_ePreState = m_eState;
 
-	m_Animation.iAnimIndex = Anim_Walk;
+	m_Animation.iAnimIndex = Anim_Idle;
 	m_Animation.bSkipInterpolation = true;
 	_randFloat RandomAnimPos(0.f, 1000.f);
 	m_Animation.fStartAnimPos = RandomAnimPos(m_RandomNumber);
 
 	m_Animation.isLoop = true;
+
+	m_HasAttacked = true;
 
 	return S_OK;
 }
@@ -58,7 +60,7 @@ void CWasp::Tick(_float fTimeDelta)
 	if (m_HasAttacked)
 	{
 		m_fAttackDelay += fTimeDelta;
-		if (m_fAttackDelay >= 1.f)
+		if (m_fAttackDelay >= 5.f)
 		{
 			m_HasAttacked = false;
 			m_fAttackDelay = 0.f;
@@ -132,18 +134,31 @@ void CWasp::Init_State(_float fTimeDelta)
 		case Client::CWasp::State_Idle:
 			m_Animation.iAnimIndex = Anim_Idle;
 			m_Animation.isLoop = true;
-			break;
-		case Client::CWasp::State_Run:
-			m_Animation.iAnimIndex = Anim_Walk;
-			m_Animation.isLoop = true;
+
+			m_pTransformCom->Set_Speed(3.f);
+			m_fMoveDirRatio = 0.f;
 			break;
 		case Client::CWasp::State_Attack:
 		{
-			m_Animation.iAnimIndex = Anim_Attack02;
+			m_Animation.iAnimIndex = Anim_Run;
+			m_Animation.isLoop = true;
 
-			_vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
+			m_pTransformCom->Set_Speed(50.f);
+			_vec3 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
 			vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
-			m_pTransformCom->LookAt(vPlayerPos);
+			_vec3 vLookAtMeDir = (m_pTransformCom->Get_State(State::Pos) - vPlayerPos).Get_Normalized();
+			_vec3 vAttackPos = m_pPlayerTransform->Get_State(State::Pos) + vLookAtMeDir;
+			m_vAttackDir = vAttackPos - m_pTransformCom->Get_State(State::Pos);
+
+			m_pTransformCom->LookAt_Dir(m_vAttackDir);
+			break;
+		}
+		case Client::CWasp::State_Attack_End:
+		{
+			m_Animation.iAnimIndex = Anim_Walk;
+			m_Animation.isLoop = true;
+
+			m_vAttackDir.y = 0.f;
 			break;
 		}
 		case Client::CWasp::State_Die:
@@ -164,69 +179,96 @@ void CWasp::Tick_State(_float fTimeDelta)
 	{
 	case Client::CWasp::State_Idle:
 	{
-		_vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
-		vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
-		_float fDis = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Length();
-		if (fDis >= 2.f)
+		_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
+		m_pTransformCom->LookAt(vPlayerPos);
+
+		if (static_cast<_uint>(floorf(m_fAttackDelay)) % 2 == 0)
 		{
-			m_eState = State_Run;
+			m_pTransformCom->Go_To_Dir(_vec4(0.f, 1.f, 0.f, 0.f), fTimeDelta);
 		}
 		else
 		{
-			if (not m_HasAttacked)
-			{
-				m_eState = State_Attack;
-			}
+			m_pTransformCom->Go_To_Dir(_vec4(0.f, -1.f, 0.f, 0.f), fTimeDelta);
 		}
-		break;
-	}
-	case Client::CWasp::State_Run:
-	{
-		_vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
-		vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
-		m_pTransformCom->LookAt(vPlayerPos);
 
-		m_pTransformCom->Go_Straight(fTimeDelta);
-
-		_float fDis = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Length();
-		if (fDis <= 2.f)
+		if (m_HasAttacked)
 		{
-			if (not m_HasAttacked)
+			m_fAttackDelay += fTimeDelta;
+
+			if (m_fAttackDelay >= 1.f)
 			{
 				m_eState = State_Attack;
-			}
-			else
-			{
-				m_eState = State_Idle;
+				m_HasAttacked = false;
+				m_fAttackDelay = 0.f;
 			}
 		}
+
 		break;
 	}
 	case Client::CWasp::State_Attack:
 	{
-		_float fCurrentAnimPos = m_pModelCom->Get_CurrentAnimPos();
-		if (fCurrentAnimPos >= 20.f && fCurrentAnimPos <= 23.f && not m_HasAttacked)
+		m_pTransformCom->Go_Straight(fTimeDelta);
+
+		PxRaycastBuffer Buffer{};
+		_vec3 vDir = m_pTransformCom->Get_State(State::Look).Get_Normalized();
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), vDir, 1.5f, Buffer))
 		{
-			_uint iDamage = rand() % 6 + 10;
-			m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage);
+			m_eState = State_Attack_End;
 			m_HasAttacked = true;
 		}
 
-		if (m_pModelCom->IsAnimationFinished(Anim_Attack02))
+		if (not m_HasAttacked)
 		{
-			_vec4 vPlayerPos = m_pPlayerTransform->Get_CenterPos();
-			vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
-			_float fDis = (vPlayerPos - m_pTransformCom->Get_State(State::Pos)).Length();
-
-			if (fDis <= 2.f)
+			if (m_pGameInstance->Attack_Player(m_pAttackColliderCom, rand() % 11 + 20))
 			{
-				m_eState = State_Idle;
-			}
-			else
-			{
-				m_eState = State_Run;
+				m_HasAttacked = true;
+				m_eState = State_Attack_End;
 			}
 		}
+		
+		break;
+	}
+	case Client::CWasp::State_Attack_End:
+	{
+		m_fMoveDirRatio += fTimeDelta;
+		if (m_fMoveDirRatio < 1.f)
+		{
+			_vec3 vUp = _vec3(0.f, 1.f, 0.f);
+			_vec3 vLookAtPlayerDir = (m_pPlayerTransform->Get_State(State::Pos) - m_pTransformCom->Get_State(State::Pos)).Get_Normalized();
+			_vec3 vLook = XMVectorLerp(m_pTransformCom->Get_State(State::Look), vLookAtPlayerDir, 0.1f);
+			m_pTransformCom->Set_State(State::Look, vLook);
+			_vec3 vRight = vUp.Cross(vLook);
+			m_pTransformCom->Set_State(State::Right, vRight);
+			vUp = vLook.Cross(vRight);
+			m_pTransformCom->Set_State(State::Up, vUp);
+			m_pTransformCom->Set_Scale(_vec3(0.5f, 0.5f, 0.5f));
+
+			_vec4 vMoveDir = XMVectorLerp(m_vAttackDir, _vec3(0.f, 1.f, 0.f), m_fMoveDirRatio);
+			vMoveDir.w = 0.f;
+			m_pTransformCom->Go_To_Dir(vMoveDir, fTimeDelta);
+
+			_float MoveSpeed = m_pTransformCom->Get_Speed();
+			if (MoveSpeed > 5.f)
+			{
+				MoveSpeed -= fTimeDelta * 80.f;
+				if (MoveSpeed <= 5.f)
+				{
+					MoveSpeed = 5.f;
+				}
+				m_pTransformCom->Set_Speed(MoveSpeed);
+			}
+		}
+		else
+		{
+			m_pTransformCom->LookAt(m_pPlayerTransform->Get_State(State::Pos));
+			m_pTransformCom->Go_To_Dir(_vec4(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+		}
+
+		if (m_pTransformCom->Get_CenterPos().y >= 20.f)
+		{
+			m_eState = State_Idle;
+		}
+
 		break;
 	}
 	case Client::CWasp::State_Die:
@@ -239,6 +281,7 @@ void CWasp::Tick_State(_float fTimeDelta)
 		{
 			Kill();
 		}
+
 		break;
 	}
 }

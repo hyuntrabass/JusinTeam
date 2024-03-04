@@ -56,7 +56,7 @@ private:
 
 	RECT				m_rcRect{};
 	_mat				m_EffectMatrix{};
-	class CEffect_Dummy* m_pEffect_Ball{};
+	class CEffect_Dummy* m_pEffect_Ball{ nullptr };
 
 public:
 	const _bool& Is_Coll() const { return m_isColl; }

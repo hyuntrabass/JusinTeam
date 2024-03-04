@@ -57,7 +57,10 @@ private:
 	class CEffect_Dummy* m_pEffect[3] = {};
 
 	_mat m_UpdateMatrix = {};
+	_mat m_SphereUpdateMatrix = {};
+
 	_float m_fCircleRange = { 0.001f };
+	_float m_fSphereRange = { 0.001f };
 
 private:
 	PROJECTILE_DESC m_ProjectileDesc = {};

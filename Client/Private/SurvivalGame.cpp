@@ -27,12 +27,19 @@ HRESULT CSurvivalGame::Init(void* pArg)
 	}
 
 	m_eCurStage = STAGE_INIT;
+	m_eNextStage = STAGE01;
 
 	return S_OK;
 }
 
 void CSurvivalGame::Tick(_float fTimeDelta)
 {
+	//if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
+	//{
+	//	m_eCurStage = STAGE_INIT;
+	//	m_bGameStart = false;
+	//}
+
 	Init_Pattern(fTimeDelta);
 	Tick_Pattern(fTimeDelta);
 
@@ -60,44 +67,39 @@ void CSurvivalGame::Init_Pattern(_float fTimeDelta)
 		{
 		case Client::CSurvivalGame::STAGE_INIT:
 
+			m_fInitTime = 0.f;
 			m_fTime[0] = 0.f;
 			m_fTime[1] = 0.f;
+			m_fTime[2] = 0.f;
 			m_iCount = 0;
 
 			break;
+
 		case Client::CSurvivalGame::STAGE01:
-			m_fTime[0] = 0.f;
-			m_fTime[1] = 0.f;
-			m_iCount = 0;
-
 			break;
+
 		case Client::CSurvivalGame::STAGE02:
-			m_fTime[0] = 0.f;
-			m_fTime[1] = 0.f;
-			m_iCount = 0;
 
 			break;
 		case Client::CSurvivalGame::STAGE03:
-			m_fTime[0] = 0.f;
-			m_fTime[1] = 0.f;
-			m_iCount = 0;
 
-			for (size_t i = 0; i < 6; i++)
 			{
-				CLauncher::LAUNCHER_TYPE eType = CLauncher::TYPE_BARRICADE;
-				m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Launcher"), TEXT("Prototype_GameObject_Launcher"), &eType);
+				for (size_t i = 0; i < 6; i++)
+				{
+					CLauncher::LAUNCHER_TYPE eType = CLauncher::TYPE_BARRICADE;
+					m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Launcher"), TEXT("Prototype_GameObject_Launcher"), &eType);
 
+				}
+
+				CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+				pPlayerTransform->Set_FootPosition(CENTER_POS);
 			}
-
 
 			break;
 		case Client::CSurvivalGame::STAGE04:
-			m_fTime[0] = 0.f;
-			m_fTime[1] = 0.f;
-			m_iCount = 0;
 
 			eType = CLauncher::TYPE_CANNON;
-			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Launcher"), TEXT("Prototype_GameObject_Launcher"), &eType);
+			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Cannon"), TEXT("Prototype_GameObject_Launcher"), &eType);
 
 			for (size_t i = 0; i < 4; i++)
 			{
@@ -107,9 +109,6 @@ void CSurvivalGame::Init_Pattern(_float fTimeDelta)
 
 			break;
 		case Client::CSurvivalGame::STAGE05:
-			m_fTime[0] = 0.f;
-			m_fTime[1] = 0.f;
-			m_iCount = 0;
 			
 			break;
 		}
@@ -130,11 +129,26 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 	{
 	case Client::CSurvivalGame::STAGE_INIT:
 
+		m_fInitTime += fTimeDelta;
+
 		m_strStage = L"준비중";
 
-		if (m_pGameInstance->Key_Down(DIK_UP))
+		//if (m_pGameInstance->Key_Down(DIK_UP))
+		//{
+		//	m_eCurStage = STAGE02;
+		//}
+
+		if (m_pGameInstance->Key_Pressing(DIK_COMMA) && m_pGameInstance->Key_Pressing(DIK_PERIOD) && !m_bGameStart)
 		{
-			m_eCurStage = STAGE01;
+			m_bGameStart = true;
+		}
+
+		if (m_bGameStart == true)
+		{
+			if (m_fInitTime >= 5.f)
+			{
+				m_eCurStage = m_eNextStage;
+			}
 		}
 
 		break;
@@ -145,7 +159,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 		//m_pGameInstance->Render_Text(L"Font_Dialogue", strStage, _vec2(640.f, 100.f), 1.f, _vec4(1.f, 0.f, 0.f, 1.f));
 
-		if (m_fTime[0] >= 3.f)
+		if (m_fTime[0] >= 2.f)
 		{
 			CLauncher::LAUNCHER_TYPE eType = CLauncher::TYPE_RANDOM_POS;
 			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Launcher"), TEXT("Prototype_GameObject_Launcher"), &eType);
@@ -154,9 +168,15 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 			++m_iCount;
 		}
 
-		if (m_iCount >= 5)
+		if (m_iCount >= 7)
 		{
-			m_eCurStage = STAGE_INIT;
+			m_fTime[1] += fTimeDelta;
+
+			if (m_fTime[1] >= 10.f)
+			{
+				m_eCurStage = STAGE_INIT;
+				m_eNextStage = STAGE02;
+			}
 		}
 
 		break;
@@ -175,21 +195,22 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
 
 			_randFloat Random = _randFloat(-1.f, 1.f);
-			_vec3 vRandomDir = _vec3(Random(RandomNumber), 0.f, Random(RandomNumber)).Get_Normalized();
 
-			Desc.eType = CProjectile::TYPE_FLOOR;
-			Desc.vStartPos = CENTER_POS + (rand() % 8 + 1) * vRandomDir;
-			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
-			Desc.vStartPos = CENTER_POS + (rand() % 8 + 1) * vRandomDir;
-			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
+			for (size_t i = 0; i < 10; i++)
+			{
+				_vec3 vRandomDir = _vec3(Random(RandomNumber), 0.f, Random(RandomNumber)).Get_Normalized();
+				Desc.vStartPos = CENTER_POS + (rand() % 8 + 1) * vRandomDir;
+				m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
+			}
 
 			m_fTime[0] = 0.f;
 			++m_iCount;
 		}
 
-		if (m_iCount >= 5)
+		if (m_iCount >= 7)
 		{
 			m_eCurStage = STAGE_INIT;
+			m_eNextStage = STAGE03;
 		}
 
 		break;
@@ -221,42 +242,55 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 		//	m_eCurStage = STAGE_INIT;
 		//}
 
-		if (m_fTime[0] >= 1.f)
+		m_fTime[2] += fTimeDelta;
+
+		if (m_fTime[2] >= 2.5f)
 		{
-			CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-			_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-
-			// 창 생성
-			CProjectile::PROJECTILE_DESC Desc = {};
-			Desc.eType = CProjectile::TYPE_SPEAR;
-			Desc.pLauncherTransform = m_pTransformCom;
-			Desc.vStartPos = vPlayerPos + _vec3(0.f, 4.f, 0.f);
-
-			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
-
-			random_device dev;
-			_randNum RandomNumber(dev());
-			_randFloat RandomOffsetX = _randFloat(-3.f, 3.f);
-			_randFloat RandomOffsetZ = _randFloat(-12.f, 12.f);
-
-			for (size_t i = 0; i < 30; i++)
+			if (m_fTime[0] >= 1.f)
 			{
-				Desc.vStartPos = _vec3(CENTER_POS.x + RandomOffsetX(RandomNumber), CENTER_POS.y + 4.f, CENTER_POS.z + RandomOffsetZ(RandomNumber));
+				CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
+				_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+
+				// 창 생성
+				CProjectile::PROJECTILE_DESC Desc = {};
+				Desc.eType = CProjectile::TYPE_SPEAR;
+				Desc.pLauncherTransform = m_pTransformCom;
+				Desc.vStartPos = vPlayerPos + _vec3(0.f, 4.f, 0.f);
 
 				m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
+
+				random_device dev;
+				_randNum RandomNumber(dev());
+				_randFloat RandomOffsetX = _randFloat(-3.f, 3.f);
+				_randFloat RandomOffsetZ = _randFloat(-12.f, 12.f);
+
+				for (size_t i = 0; i < 30; i++)
+				{
+					Desc.vStartPos = _vec3(CENTER_POS.x + RandomOffsetX(RandomNumber), CENTER_POS.y + 4.f, CENTER_POS.z + RandomOffsetZ(RandomNumber));
+
+					m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
+				}
+
+				m_fTime[0] = 0.f;
+				++m_iCount;
 			}
 
-			m_fTime[0] = 0.f;
-
+		}
+		if (m_iCount >= 15)
+		{
+			m_eCurStage = STAGE_INIT;
+			m_eNextStage = STAGE04;
 		}
 
 		break;
 
 	case Client::CSurvivalGame::STAGE04:
 
-		if (m_fTime[0] >= 15.f)
+		//if (m_fTime[0] >= 15.f)
+		if (m_pGameInstance->Get_LayerSize(LEVEL_VILLAGE, TEXT("Layer_Cannon")) <= 0)
 		{
 			m_eCurStage = STAGE_INIT;
+			m_eNextStage = STAGE05;
 		}
 
 		m_strStage = L"스테이지 4";
@@ -296,6 +330,8 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 		if (m_iCount >= 30)
 		{
 			m_eCurStage = STAGE_INIT;
+			m_eNextStage = STAGE01;
+			m_bGameStart = false;
 		}
 
 		break;

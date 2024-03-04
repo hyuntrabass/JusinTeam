@@ -46,7 +46,7 @@ HRESULT CNumEffect::Init(void* pArg)
 	CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
 	ColButtonDesc.eLevelID = LEVEL_STATIC;
 	ColButtonDesc.fDepth = m_fDepth - 0.01f;
-	ColButtonDesc.fAlpha = 1.;
+	ColButtonDesc.fAlpha = 1.f;
 	ColButtonDesc.fFontSize = 0.f;
 	ColButtonDesc.strText = TEXT("");
 	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_Effect_FX_A_Shine003_Tex");
@@ -61,7 +61,27 @@ HRESULT CNumEffect::Init(void* pArg)
 	}
 	m_pShineEffect->Set_Pass(VTPass_Mask_Texture);
 
-	m_vColor = _vec4(0.94f, 0.34f, 0.1f, 1.f);
+
+	ColButtonDesc.eLevelID = LEVEL_STATIC;
+	ColButtonDesc.fDepth = m_fDepth - 0.01f;
+	ColButtonDesc.fAlpha = 1.f;
+	ColButtonDesc.fFontSize = 0.f;
+	ColButtonDesc.strText = TEXT("");
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_Combo");
+	//ColButtonDesc.strTexture2 = TEXT("Prototype_Component_Texture_Effect_FX_A_Shine003_Tex");
+	ColButtonDesc.vSize = _vec2(200.f, 200.f);
+	ColButtonDesc.vPosition = _vec2(m_fX + 80.f, m_fY);
+	ColButtonDesc.vColor = _vec4(0.941f, 0.38f, 0.55f, 1.f);
+
+	m_pCombo = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+	if (not m_pCombo)
+	{
+		return E_FAIL;
+	}
+	m_pCombo->Set_Pass(VTPass_Mask_ColorAlpha);
+
+	//m_vColor = _vec4(1.f, 0.8f, 0.f, 1.f);
+	m_vColor = _vec4(1.f, 0.f, 0.f, 1.f);
 	
 	return S_OK;
 }
@@ -79,8 +99,10 @@ void CNumEffect::Tick(_float fTimeDelta)
 			return;
 		}		
 		m_fAlpha = Lerp(0.f, 1.f, (300.f - m_fSizeX) / 300.f);
+		m_pCombo->Set_Size(m_pCombo->Get_Size().x - 800.f * fTimeDelta, m_pCombo->Get_Size().y - 800.f * fTimeDelta);
 		m_fSizeX -= 300.f * fTimeDelta;
 		m_fSizeY -= 300.f * fTimeDelta;
+		m_pCombo->Tick(fTimeDelta);
 	}
 
 	/*
@@ -98,7 +120,7 @@ void CNumEffect::Tick(_float fTimeDelta)
 		m_vColor.w = 0.f;
 	}
 	*/
-	m_vColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	//m_vColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	if (m_isEffect)
 	{
 		if (m_pShineEffect->Get_Size().y >= 120.f)
@@ -113,11 +135,20 @@ void CNumEffect::Tick(_float fTimeDelta)
 
 void CNumEffect::Late_Tick(_float fTimeDelta)
 {
+	if (m_iCurNum <= 0)
+	{
+		return;
+	}
+
 	if (m_isEffect)
 	{
-
-			m_pShineEffect->Late_Tick(fTimeDelta);
+		m_pShineEffect->Late_Tick(fTimeDelta);
 	}
+	if (m_isCombo)
+	{
+		m_pCombo->Late_Tick(fTimeDelta);
+	}
+
 
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
@@ -232,8 +263,10 @@ HRESULT CNumEffect::Render()
 
 		}
 	}
+	/*
 	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("ÄÞº¸"), _vec2(m_fX + 50.f + 1.f, m_fY + 1.f), 0.5f, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Render_Text(L"Font_Malang", TEXT("ÄÞº¸"), _vec2(m_fX + 50.f, m_fY), 0.5f, _vec4(1.f, 1.f, 1.f, 1.f));
+	*/
 
 	return S_OK;
 }
@@ -295,10 +328,14 @@ void CNumEffect::Set_TargetNum(_uint iNum)
 {
 	if (m_iCurNum != iNum)
 	{
+		m_isCombo = false;
+
 		m_iCurNum = iNum;
 		m_iTargetNum = m_iCurNum;
 		if (m_iCurNum >= 10)
 		{
+			m_pCombo->Set_Size(300.f, 300.f);
+			m_isCombo = true;
 			m_fSizeX = 100.f;
 			m_fSizeY = 100.f;
 			m_isChanging = true;
@@ -338,6 +375,7 @@ void CNumEffect::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pCombo);
 	Safe_Release(m_pEffect);
 	Safe_Release(m_pParentTransform);
 	Safe_Release(m_pShineEffect);
