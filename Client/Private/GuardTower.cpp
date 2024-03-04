@@ -145,12 +145,11 @@ void CGuardTower::Late_Tick(_float fTimeDelta)
 		if (m_pAttackEffect)
 			m_pAttackEffect->Late_Tick(fTimeDelta);
 	}
-	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos(), 20.f))
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos()))
 	{
+		m_pModelCom->Play_Animation(m_fAnimTime);
 		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 	}
-
-		m_pModelCom->Play_Animation(m_fAnimTime);
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
@@ -219,13 +218,11 @@ HRESULT CGuardTower::Render()
 
 void CGuardTower::Set_Damage(_int iDamage, _uint iDamageType)
 {
-	//m_fHittedTime = 6.f;
 
-	//m_iHP -= iDamage;
-	//m_bChangePass = true;
 	if (iDamageType == AT_Sword_Common)
 	{
-		m_bDamaged = true;
+		m_iHP -= iDamage;
+		m_bChangePass = true;
 	}
 	CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 2.f), (ATTACK_TYPE)iDamageType);
 
@@ -233,6 +230,12 @@ void CGuardTower::Set_Damage(_int iDamage, _uint iDamageType)
 
 void CGuardTower::Init_State(_float fTimeDelta)
 {
+	if (m_iHP <= 0)
+	{
+		m_eCurState = STATE_DIE;
+	}
+
+
 	_vec4 vPlayerPos = Compute_PlayerPos();
 	_float fDistance = Compute_PlayerDistance();
 	_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_CenterPos()).Get_Normalized();
@@ -441,11 +444,11 @@ void CGuardTower::Tick_State_Pattern_2(_float fTimeDelta)
 
 
 		m_fDetectTime += fTimeDelta;
-		if (m_bInit == true)
-		{
-			m_fDetectTime = 0.f;
-			m_bInit = false;
-		}
+		//if (m_bInit == true)
+		//{
+		//	m_fDetectTime = 0.f;
+		//	m_bInit = false;
+		//}
 
 		if (m_fDetectTime > 2.f && m_fDetectTime <= 4.f)
 			m_Dir = DOWN;
@@ -455,8 +458,8 @@ void CGuardTower::Tick_State_Pattern_2(_float fTimeDelta)
 			m_Dir = UP;
 		else if (m_fDetectTime > 8.f && m_fDetectTime <= 10.f)
 		{
-			m_fDetectTime = 0.f;
 			m_Dir = RIGHT;
+			m_fDetectTime = 0.f;
 		}
 
 

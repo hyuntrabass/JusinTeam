@@ -40,7 +40,7 @@ HRESULT CGuard::Init(void* pArg)
 	m_pTransformCom->Set_Matrix(m_Info.mMatrix);
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
-
+	
 	PxCapsuleControllerDesc ControllerDesc{};
 	ControllerDesc.height = 1.2f; // 높이(위 아래의 반구 크기 제외
 	ControllerDesc.radius = 0.4f; // 위아래 반구의 반지름
@@ -89,10 +89,8 @@ void CGuard::Tick(_float fTimeDelta)
 	if (0 >= m_iHP || 0.01f < m_fDeadTime) {
 		m_pGameInstance->Delete_CollisionObject(this);
 		m_pTransformCom->Delete_Controller();
-	}
 
-	if (1.f <= m_fDissolveRatio)
-		Kill();
+	}
 
 	Init_State(fTimeDelta);
 	if(m_ePattern == PATTERN_1)
@@ -115,9 +113,12 @@ void CGuard::Late_Tick(_float fTimeDelta)
 		m_pBaseEffect->Late_Tick(fTimeDelta);
 		m_pFrameEffect->Late_Tick(fTimeDelta);
 	}
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos()))
+	{
+		m_pModelCom->Play_Animation(fTimeDelta);
+		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	}
 
-	m_pModelCom->Play_Animation(fTimeDelta);
-	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
@@ -198,18 +199,25 @@ HRESULT CGuard::Render()
 
 void CGuard::Set_Damage(_int iDamage, _uint iDamageType)
 {
-	m_fHittedTime = 6.f;
 
-	m_iHP -= iDamage;
-	m_bChangePass = true;
-
-	CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 3.f), (ATTACK_TYPE)iDamageType);
-
+	if (m_isDetected == false)
+	{
+		if (iDamageType == AT_Sword_Common)
+		{
+			m_bChangePass = true;
+			m_iHP -= iDamage;
+		}
+		CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 2.f), (ATTACK_TYPE)iDamageType);
+	}
 }
 
 
 void CGuard::Init_State(_float fTimeDelta)
 {
+	if (m_iHP <= 0)
+	{
+		m_eCurState = STATE_DIE;
+	}
 
 	if (m_ePreState != m_eCurState) {
 		switch (m_eCurState)
@@ -432,7 +440,15 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 	case STATE_DIE:
 		if (m_pModelCom->IsAnimationFinished(ANIM_DIE))
 		{
-			m_fDeadTime += fTimeDelta;
+			if (m_fDissolveRatio < 1.f)
+			{
+				m_fDissolveRatio += fTimeDelta;
+				m_iPassIndex = AnimPass_Dissolve;
+			}
+			else
+			{
+				Kill();
+			}
 		}
 
 		break;
@@ -496,17 +512,11 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 		if (m_isDetected == true)
 			m_eCurState = STATE_CHASE;
 
-		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look), 10.f, pBuffer))
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look), 5.f, pBuffer))
 		{
 			m_eCurState = STATE_TURN;
 		}
 		
-		//if ((vIdlePos - vPatrolPos).Length() > 10.f)
-		//{
-		//	m_eCurState = STATE_IDLE;
-		//	m_isArrived = true;
-
-		//}
 		else
 			m_pTransformCom->Go_Straight(fTimeDelta);
 
@@ -613,7 +623,15 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 	case STATE_DIE:
 		if (m_pModelCom->IsAnimationFinished(ANIM_DIE))
 		{
-			m_fDeadTime += fTimeDelta;
+			if (m_fDissolveRatio < 1.f)
+			{
+				m_fDissolveRatio += fTimeDelta;
+				m_iPassIndex = AnimPass_Dissolve;
+			}
+			else
+			{
+				Kill();
+			}
 		}
 
 		break;
@@ -746,7 +764,15 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 	case STATE_DIE:
 		if (m_pModelCom->IsAnimationFinished(ANIM_DIE))
 		{
-			m_fDeadTime += fTimeDelta;
+			if (m_fDissolveRatio < 1.f)
+			{
+				m_fDissolveRatio += fTimeDelta;
+				m_iPassIndex = AnimPass_Dissolve;
+			}
+			else
+			{
+				Kill();
+			}
 		}
 
 		break;
