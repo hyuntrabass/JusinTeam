@@ -33,6 +33,9 @@ struct GalMegiParams {
 	_vec3 LightColor{};
 
 	_vec4 vLightPos{};
+
+	_uint iToggleGalMegi = true;
+	_uint3 PaddingByte{};
 };
 
 class ENGINE_DLL CRenderer final : public CComponent
@@ -49,6 +52,10 @@ public:
 public:
 	HRESULT Add_RenderGroup(RenderGroup eRenderGroup, class CGameObject* pRenderObject);
 	HRESULT Draw_RenderGroup();
+
+	const void Set_GalMegiToggle(_bool BackGalMegi) {
+		m_GalParams.iToggleGalMegi = BackGalMegi;
+	}
 
 	const void Set_TurnOneBloom(_bool TurnOnBloom) {
 		m_TurnOnBloom = TurnOnBloom;

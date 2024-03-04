@@ -1309,12 +1309,6 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Spear"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/SurvivalGame/Spear/Mesh/Spear.hyuntrastatmesh"))))
-	{
-		return E_FAIL;
-	}
-
 #pragma endregion Survival Game
 
 

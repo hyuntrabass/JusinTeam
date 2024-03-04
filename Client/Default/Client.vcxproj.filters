@@ -1084,9 +1084,6 @@
     <ClInclude Include="..\Public\Log.h">
       <Filter>02.GameObjects\16.CescoGame\Static\Log</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Guard.h">
-      <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\CescoGame.h">
       <Filter>02.GameObjects\16.CescoGame</Filter>
     </ClInclude>
@@ -1102,7 +1099,6 @@
     <ClInclude Include="..\Public\Guard.h">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\BlackCat.h" />
     <ClInclude Include="..\Public\Hive.h">
       <Filter>02.GameObjects\16.CescoGame\Static\Hive</Filter>
     </ClInclude>
@@ -1659,9 +1655,6 @@
     <ClCompile Include="..\Private\Log.cpp">
       <Filter>02.GameObjects\16.CescoGame\Static\Log</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Guard.cpp">
-      <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\CescoGame.cpp">
       <Filter>02.GameObjects\16.CescoGame</Filter>
     </ClCompile>
@@ -1677,7 +1670,6 @@
     <ClCompile Include="..\Private\Guard.cpp">
       <Filter>02.GameObjects\07. NPC\05. Guard</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\BlackCat.cpp" />
     <ClCompile Include="..\Private\Hive.cpp">
       <Filter>02.GameObjects\16.CescoGame\Static\Hive</Filter>
     </ClCompile>

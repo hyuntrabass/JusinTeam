@@ -1165,6 +1165,7 @@ technique11 DefaultTechnique_Shader_StatMesh
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Dissolve();
     }
+
     pass GlowBox //23
     {
         SetRasterizerState(RS_Default);
@@ -1178,4 +1179,16 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_GlowBox();
     }
 
+    pass OutLineDissolve // 24
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_DrawStencil, g_OutlineColor);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Dissolve();
+    }
 };
