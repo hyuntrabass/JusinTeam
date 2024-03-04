@@ -1114,9 +1114,8 @@
     <ClInclude Include="..\Public\Sun.h">
       <Filter>02.GameObjects\18. Sun</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Guard.h" />
-    <ClInclude Include="..\Public\BlackCat.h">
-      <Filter>02.GameObjects\14.BrickGame</Filter>
+    <ClInclude Include="..\Public\InfiltrationGame.h">
+      <Filter>02.GameObjects\17.InfiltrationGame</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1677,6 +1676,7 @@
     <ClCompile Include="..\Private\EyeBomb.cpp">
       <Filter>02.GameObjects\16.CescoGame\VTFMonster\EyeBomb</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\GlowCube.cpp" />
     <ClCompile Include="..\Private\GuardTower.cpp">
       <Filter>02.GameObjects\17.InfiltrationGame\01. GuardTower</Filter>
     </ClCompile>
@@ -1689,12 +1689,8 @@
     <ClCompile Include="..\Private\Sun.cpp">
       <Filter>02.GameObjects\18. Sun</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Guard.cpp" />
-    <ClCompile Include="..\Private\BlackCat.cpp">
-      <Filter>02.GameObjects\14.BrickGame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\GlowCube.cpp">
-      <Filter>02.GameObjects\14.BrickGame</Filter>
+    <ClCompile Include="..\Private\InfiltrationGame.cpp">
+      <Filter>02.GameObjects\17.InfiltrationGame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
