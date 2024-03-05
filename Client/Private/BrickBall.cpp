@@ -333,7 +333,7 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 			m_vDir = _vec3::Reflect(vLook, vNormal);
 			m_vDir.y = 0.f;
 
-			if (m_vDir.z <= 0.2f && m_vDir.z >= -0.2f)
+			if (m_vDir.z <= 0.3f && m_vDir.z >= -0.3f)
 			{
 				m_vDir.z = -1.f;
 			}

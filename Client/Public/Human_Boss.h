@@ -15,15 +15,15 @@ public:
 		BossAnim_attack02,	// 반대 방향으로 공격
 		BossAnim_attack03,	// 2연속 공격
 		BossAnim_attack04, // 주변 전부 공격
-		BossAnim_attack05, // 카운터?
-		BossAnim_attack06_End,
+		BossAnim_attack05, // 카운터
+		BossAnim_attack06_End, //텔포 등장
 		BossAnim_attack06_Loop,
-		BossAnim_attack06_Start,
+		BossAnim_attack06_Start, //텔포
 		BossAnim_attack06_Start001,
-		BossAnim_attack07,
+		BossAnim_attack07, //낫 빙글빙글
 		BossAnim_attack08,
 		BossAnim_attack08_2,
-		BossAnim_attack09_A, //반 장판
+		BossAnim_attack09_A,
 		BossAnim_attack09_B,
 		BossAnim_attack10_A,
 		BossAnim_attack10_B,
@@ -31,8 +31,8 @@ public:
 		BossAnim_attack11_B,
 		BossAnim_attack12_A,
 		BossAnim_attack12_B,
-		BossAnim_attack13,
-		BossAnim_BossView_Idle,	//레이저
+		BossAnim_attack13, // 피자
+		BossAnim_BossView_Idle,
 		BossAnim_CardTestattack01,
 		BossAnim_CardTestattack02,
 		BossAnim_CardTestattack03,
@@ -42,7 +42,7 @@ public:
 		BossAnim_Roar,
 		BossAnim_Run,
 		BossAnim_Run2,
-		BossAnim_Spawn,
+		BossAnim_Spawn, // 등장
 		BossAnim_Spawn_Idle,
 		BossAnim_Walk,
 		BossAnim_End
@@ -125,6 +125,7 @@ private:
 	CTexture* m_pDissolveTextureCom{ nullptr };
 	CTransform* m_pPlayerTransform{ nullptr };
 
+	class CHPBoss* m_pHpBoss{ nullptr };
 	class CEffect_Dummy* m_pBaseEffect{ nullptr };
 	class CEffect_Dummy* m_pFrameEffect{ nullptr };
 	class CEffect_Dummy* m_pDimEffect{ nullptr };

@@ -745,16 +745,16 @@ void CCamera_Main::BrickGame_Mode(_float fTimeDelta)
 		m_pTransformCom->Set_State(State::Pos, vShakePos);
 		m_fShakeAcc += fTimeDelta * 10.f / m_pGameInstance->Get_TimeRatio();
 	}
-	
+
 	_vec4 vCurrentPos = m_pTransformCom->Get_State(State::Pos);
 	_float fLerpFactor = 0.1f;
 	_vec4 vBrickGamePos = _vec4(-2000.f, 14.9f, -1978.4f, 1.f);
 	_vec4 vNewPos = XMVectorLerp(vCurrentPos, vBrickGamePos, fLerpFactor);
 	m_pTransformCom->Set_State(State::Pos, vNewPos);
-	
-	
+
+
 	m_pTransformCom->LookAt_Dir(_vec4(-0.0f, -0.5575f, -0.8301f, 0.f));
-		
+
 
 
 	if (m_pCam_Manager->Get_ZoomFactor() <= -1.f)
@@ -940,7 +940,7 @@ void CCamera_Main::Init_State(_float fTimeDelta)
 			m_pTransformCom->LookAt_Dir(_vec4(-0.0f, -0.5575f, -0.8301f, 0.f));
 			m_vOriginalLook = m_pTransformCom->Get_State(State::Look);
 		}
-			break;
+		break;
 		case Client::CS_COLLECT:
 			m_vOriginalLook = m_pTransformCom->Get_State(State::Look);
 			break;

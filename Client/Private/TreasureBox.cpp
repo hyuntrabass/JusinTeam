@@ -166,17 +166,6 @@ void CTreasureBox::Tick(_float fTimeDelta)
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
-	if (m_pModelCom->Get_CurrentAnimPos() > 10.f and m_iHP > 0)
-	{
-		_mat EffectMat = m_pTransformCom->Get_World_Matrix();
-		EffectMat.Position_vec3(EffectMat.Position_vec3() + _vec3(0.f, 0.5f, 0.f));
-		EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Chest_Parti");
-		EffectDesc.pMatrix = &EffectMat;
-		CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
-
-		m_iHP = 0;
-	}
-
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
 	m_pRendererCom->Add_DebugComponent(m_pWideColliderCom);
@@ -203,6 +192,17 @@ void CTreasureBox::Late_Tick(_float fTimeDelta)
 
 	if (m_isAnimStart)
 	{
+		if (m_pModelCom->Get_CurrentAnimPos() > 30.f and m_iHP > 0)
+		{
+			_mat EffectMat = m_pTransformCom->Get_World_Matrix();
+			EffectMat.Position_vec3(EffectMat.Position_vec3() + _vec3(0.f, 0.5f, 0.f));
+			EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Chest_Parti");
+			EffectDesc.pMatrix = &EffectMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+
+			m_iHP = 0;
+		}
+
 		if (m_pModelCom->IsAnimationFinished(0))
 		{
 			CPop_Reward::REWARD_DESC Desc{};

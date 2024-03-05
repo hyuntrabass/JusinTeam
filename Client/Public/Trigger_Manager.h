@@ -15,7 +15,7 @@ enum TeleportSpot
 	TS_BossRoom,
 	TS_MiniDungeon,
 	TS_SurvivalMap,
-	TS_SescoMap,
+	TS_CescoMap,
 	TS_END
 };
 
@@ -58,17 +58,24 @@ public:
 	void LoopBroken() { m_isBreakLoop = false; }
 	void Set_Shake_Camera(_bool isShaking) { m_isShaking = isShaking; }
 
+	const void Set_Lever1() { m_isLever1 = true; }
+	const void Set_Lever2() { m_isLever2 = true; }
+
 	_bool Get_StartSuicide() { return m_bStartSuicide; }
 	_bool Get_AfterSuicide() { return m_bAfterSuicide; }
 	_bool Get_BossStart() { return m_bBossStart; }
 	_bool Is_BreakLoop() { return m_isBreakLoop; }
 	_bool Get_Shake_Camera() { return m_isShaking; }
 	TeleportSpot Get_CurrentSpot() { return m_eCurrentSpot; }
+
+	_bool Get_Lever1On() { return m_isLever1; }
+	_bool Get_Lever2On() { return m_isLever2; }
 private:
 	CGameInstance* m_pGameInstance = { nullptr };
 
 private:
 	TeleportSpot m_eCurrentSpot{ TS_Tutorial };
+
 private:
 	_bool m_isColl{ false };
 	_bool m_isLimited{ false };
@@ -78,6 +85,9 @@ private:
 	_bool m_isBreakLoop{};
 	_bool m_isInVillage{};
 	_bool m_isShaking{false};
+
+	_bool m_isLever1 = false;
+	_bool m_isLever2 = false;
 
 private:
 	_bool m_isCollBossTrigger = { false };

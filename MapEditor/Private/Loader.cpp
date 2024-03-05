@@ -226,7 +226,7 @@ HRESULT CLoader::Load_Editor()
 			else if (strPrototypeTag == L"Prototype_Model_Survival_Map")
 			{
 				Pivot = _mat::CreateScale(0.4f);
-			} 
+			}
 			else if (strPrototypeTag == L"Prototype_Model_SescoMap")
 			{
 				Pivot = _mat::CreateScale(0.005f);

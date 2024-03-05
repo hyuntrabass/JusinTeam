@@ -111,12 +111,11 @@ void CInfiltrationGame::Late_Tick(_float fTimeDelta)
 			}
 			_int Index = CheckIndex - 1;
 			if (0 <= Index) {
-				for (auto& pGameObject : m_GuardList[Index]) {
+				for (auto& pGameObject : m_GuardList[Index])
 					pGameObject->Kill();
-				}
-				for (auto& pGameObject : m_GuardTowerList[Index]) {
+
+				for (auto& pGameObject : m_GuardTowerList[Index])
 					pGameObject->Kill();
-				}
 			}
 
 			if(pPath != nullptr)

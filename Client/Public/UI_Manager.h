@@ -133,7 +133,8 @@ public:
 	const _float2& Get_Exp() const { return m_fExp; }
 	const _uint& Get_Level() const { return m_iLevel; }
 	const MOUSESTATE& Get_MouseState() const { return m_eMouseState; }
-	const CPlayer::PLAYER_STATUS& Get_ExtraStatus() const { return m_tExtraStaus; }
+	CPlayer::PLAYER_STATUS* Set_ExtraStatus() { return &m_tExtraStatus; }
+	const CPlayer::PLAYER_STATUS& Get_ExtraStatus() const { return m_tExtraStatus; }
 
 	const PART_TYPE& Is_CustomPartChanged() const { return m_eChangedPart; }
 	const _bool& Is_Picking_UI() const { return m_isPicking; }
@@ -210,7 +211,7 @@ private:
 	_uint			m_iCoin{};
 	_uint			m_iDiamond{};
 	_uint			m_CustomPart[PART_TYPE::PT_END]{};
-	CPlayer::PLAYER_STATUS   m_tExtraStaus{};
+	CPlayer::PLAYER_STATUS   m_tExtraStatus{};
 
 	_float2			m_fExp{ 0.f, 1000.f };
 
