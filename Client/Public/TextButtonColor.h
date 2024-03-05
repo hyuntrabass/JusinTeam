@@ -9,6 +9,8 @@ class CTextButtonColor final : public COrthographicObject
 public:
 	typedef struct tagTextButtonDesc
 	{
+		_bool   isFront{};
+		_bool   isChangePass{};
 		_float  fDepth{1.f};
 		_float  fAlpha{1.f};
 
@@ -50,6 +52,9 @@ private:
 	HRESULT Bind_ShaderResources();
 
 private:
+	_bool				m_isChangePass{};
+	_bool				m_bChangeTex{};
+	_bool				m_isFront{};
 	VTPass				m_ePass{ VTPass_Mask_Color };
 	_float				m_fDuration{ 0.f };
 	_float				m_fAlpha{ 1.f };
@@ -95,6 +100,7 @@ public:
 	void Set_Index(_float fIndex) { m_fIndex = fIndex; }
 	void Set_Sprite(_int2 vNumSprite) { m_vNumSprite = vNumSprite; }
 	void Rotate_Button(_vec4 vAxis, _float fAngle);
+	void Set_ChangeTex(_bool bChangeTex) { m_bChangeTex = bChangeTex; }
 
 public:
 	static CTextButtonColor* Create(_dev pDevice, _context pContext);

@@ -44,15 +44,15 @@ HRESULT CUI_Manager::Init()
 		return E_FAIL;
 	}
 
-	m_tExtraStaus.Armor = 0;
-	m_tExtraStaus.Attack = 0;
-	m_tExtraStaus.Critical = 0;
-	m_tExtraStaus.Critical_Dmg = 0;
-	m_tExtraStaus.Current_Hp = 0;
-	m_tExtraStaus.Current_Mp = 0;
-	m_tExtraStaus.Max_Hp = 0;
-	m_tExtraStaus.Max_Mp = 0;
-	m_tExtraStaus.Speed = 0.f;
+	m_tExtraStatus.Armor = 0;
+	m_tExtraStatus.Attack = 0;
+	m_tExtraStatus.Critical = 0;
+	m_tExtraStatus.Critical_Dmg = 0;
+	m_tExtraStatus.Current_Hp = 0;
+	m_tExtraStatus.Current_Mp = 0;
+	m_tExtraStatus.Max_Hp = 0;
+	m_tExtraStatus.Max_Mp = 0;
+	m_tExtraStatus.Speed = 0.f;
 	return S_OK;
 }
 
@@ -80,8 +80,8 @@ void CUI_Manager::Set_Exp_ByPercent(_float fExp)
 		Level_Up();
 		m_fExp.x = 0.f;
 		m_fExp.y += 20.f * m_iLevel;
-		m_tExtraStaus.Max_Hp += 10;
-		m_tExtraStaus.Max_Mp += 2;
+		m_tExtraStatus.Max_Hp += 10;
+		m_tExtraStatus.Max_Mp += 2;
 		//스탯바꾸는곳에서 처리하는게 나을듯 레벨업함수에서
 	}
 }
@@ -202,16 +202,16 @@ HRESULT CUI_Manager::Set_CustomPart(PART_TYPE eType, _uint iIndex, _uint iStatus
 	case PT_FACE:
 		break;
 	case PT_BODY:
-		m_tExtraStaus.Armor = iStatus;
+		m_tExtraStatus.Armor = iStatus;
 		break;
 	case PT_HELMET:
-		m_tExtraStaus.Armor = iStatus;
+		m_tExtraStatus.Armor = iStatus;
 		break;
 	case PT_SWORD:
-		m_tExtraStaus.Attack = iStatus;
+		m_tExtraStatus.Attack = iStatus;
 		break;
 	case PT_BOW:
-		m_tExtraStaus.Attack = iStatus;
+		m_tExtraStatus.Attack = iStatus;
 		break;
 	case PT_END:
 		break;

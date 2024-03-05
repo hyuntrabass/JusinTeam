@@ -34,13 +34,14 @@ HRESULT CBackGround_Mask::Init(void* pArg)
 	m_fX = Ui_Info->vPos.x;
 	m_fY = Ui_Info->vPos.y;
 	
-	m_eLevel = (LEVEL_ID)Ui_Info->vPos.y;
+	m_eLevel = (LEVEL_ID)Ui_Info->iLevel;
 	m_fDepth = 1.1f;
 	return S_OK;
 }
 
 void CBackGround_Mask::Tick(_float fTimeDelta)
 {
+
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	m_fSpeed += 0.0003f;
 }
@@ -53,6 +54,11 @@ void CBackGround_Mask::Late_Tick(_float fTimeDelta)
 
 HRESULT CBackGround_Mask::Render()
 {
+	
+	
+	
+	
+
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;

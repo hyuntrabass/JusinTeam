@@ -29,8 +29,8 @@ private:
 	HRESULT Bind_ShaderResources();
 
 private:
-	wstring m_strTexture;
-	LEVEL_ID m_eLevel;
+	wstring m_strTexture{};
+	LEVEL_ID m_eLevel{};
 	_float m_fSpeed{};
 public:
 	static CBackGround_Mask* Create(_dev pDevice, _context pContext);
