@@ -8,6 +8,14 @@ BEGIN(Client)
 class CInteraction_Anim final : public CGameObject
 {
 private:
+	enum Type
+	{
+		Stone_Gold,
+		Stone_Salt,
+		Box,
+		End
+	};
+private:
 	CInteraction_Anim(_dev pDevice, _context pContext);
 	CInteraction_Anim(const CInteraction_Anim& rhs);
 	virtual ~CInteraction_Anim() = default;
@@ -54,6 +62,8 @@ private:
 	CGameObject* m_pNameTag{ nullptr };
 
 	wstring m_strName{};
+
+	Type m_eType{};
 
 public:
 	static CInteraction_Anim* Create(_dev pDevice, _context pContext);

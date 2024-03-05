@@ -4,6 +4,7 @@
 #include "Camera_Manager.h"
 #include "Trigger_Manager.h"
 #include "UI_Manager.h"
+#include "HPBoss.h"
 
 CHuman_Boss::CHuman_Boss(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -47,7 +48,7 @@ HRESULT CHuman_Boss::Init(void* pArg)
 	m_pTransformCom->Set_Speed(3.f);
 	m_iPassIndex = AnimPass_DissolveNoCull;
 	m_iWeaponPassIndex = AnimPass_Dissolve;
-	m_iHP = 100;
+	m_iHP = 5000;
 	m_eState = Spwan;
 
 	m_WeaponBone_Mat = m_pModelCom->Get_BoneMatrix("Bip001-Prop1");
@@ -89,6 +90,11 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 	{
 
 		m_eState = Pizza_Start;
+	}
+
+	if (m_pHpBoss)
+	{
+		m_pHpBoss->Tick(fTimeDelta);
 	}
 
 	if (m_pFrameEffect)
@@ -161,7 +167,10 @@ void CHuman_Boss::Late_Tick(_float fTimeDelta)
 	{
 		return;
 	}
-
+	if (m_pHpBoss)
+	{
+		m_pHpBoss->Late_Tick(fTimeDelta);
+	}
 	if (m_pFrameEffect)
 	{
 		m_pFrameEffect->Late_Tick(fTimeDelta);
@@ -359,6 +368,15 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = BossAnim_Spawn;
 			m_Animation.fAnimSpeedRatio = 1.7f;
 
+			CHPBoss::HPBOSS_DESC Desc{};
+			Desc.strName = L"Groar";
+			Desc.eLevelID = LEVEL_STATIC;
+			Desc.iMaxHp = m_iHP;
+			m_pHpBoss = (CHPBoss*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPBoss"), &Desc);
+			if (not m_pHpBoss)
+			{
+				return;
+			}
 		}
 		break;
 		case Client::CHuman_Boss::CommonAtt0:
@@ -425,7 +443,7 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 			m_Animation.bSkipInterpolation = false;
 			m_Animation.iAnimIndex = BossAnim_Die;
 			m_Animation.fDurationRatio = 0.5f;
-			Set_Damage(1000, 0);
+			Set_Damage(999, 0);
 			break;
 		case Client::CHuman_Boss::Hide_Start:
 			m_Animation.iAnimIndex = BossAnim_attack06_Start;
@@ -664,7 +682,7 @@ void CHuman_Boss::Set_Damage(_int iDamage, _uint MonAttType)
 	}
 
 	CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 1.5f), (ATTACK_TYPE)MonAttType);
-
+	m_iHP -= iDamage;
 	switch ((ATTACK_TYPE)MonAttType)
 	{
 	case Client::AT_Sword_Common:
@@ -698,6 +716,11 @@ void CHuman_Boss::Set_Damage(_int iDamage, _uint MonAttType)
 		break;
 	default:
 		break;
+	}
+
+	if (m_pHpBoss != nullptr)
+	{
+		m_pHpBoss->Set_HP(m_iHP);
 	}
 	m_bChangePass = true;
 
@@ -1143,7 +1166,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			{
 				if (pPlayerCollider->Intersect(pSafeZoneCollider))
 				{
-
+					m_bAttacked = true;
 				}
 				else
 				{
@@ -1522,6 +1545,7 @@ void CHuman_Boss::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pHpBoss);
 	Safe_Release(m_pWeapon_Distortion_Trail);
 	Safe_Release(m_pWeapon_Trail);
 	Safe_Release(m_pModelCom);

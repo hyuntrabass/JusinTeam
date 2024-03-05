@@ -109,7 +109,7 @@ void CLevel_Tower::Tick(_float fTimeDelta)
 	}
 	if (m_pGameInstance->Key_Down(DIK_0))
 	{
-		CTrigger_Manager::Get_Instance()->Teleport(TS_SescoMap);
+		CTrigger_Manager::Get_Instance()->Teleport(TS_CescoMap);
 
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_CescoGame"), TEXT("Prototype_GameObject_CescoGame"))))
 			return;
