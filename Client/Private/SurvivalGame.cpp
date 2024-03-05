@@ -3,6 +3,7 @@
 #include "Launcher.h"
 #include "Projectile.h"
 #include "Survival_Mon.h"
+#include "Camera_Manager.h"
 #include "Trigger_Manager.h"
 
 CSurvivalGame::CSurvivalGame(_dev pDevice, _context pContext)
@@ -139,10 +140,10 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 		m_strStage = L"ÁØºñÁß";
 
-		//if (m_pGameInstance->Key_Down(DIK_UP))
-		//{
-		//	m_eCurStage = STAGE02;
-		//}
+		if (m_pGameInstance->Key_Down(DIK_UP))
+		{
+			m_eCurStage = STAGE04;
+		}
 
 		if (m_pGameInstance->Key_Pressing(DIK_COMMA) && m_pGameInstance->Key_Pressing(DIK_PERIOD) && !m_bGameStart)
 		{
@@ -151,6 +152,8 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 		if (m_bGameStart == true)
 		{
+			CCamera_Manager::Get_Instance()->Set_RidingZoom(true);
+
 			if (m_fInitTime >= 5.f)
 			{
 				m_eCurStage = m_eNextStage;

@@ -20,6 +20,7 @@ private:
 	HRESULT Ready_Light();
 
 private:
+	HRESULT Ready_Dragon();
 	HRESULT Ready_DragonMap_Effect();
 
 private:

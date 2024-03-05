@@ -395,6 +395,14 @@ void CLauncher::Tick(_float fTimeDelta)
 			m_pLauncherParticle->Tick(fTimeDelta);
 		}
 
+		if (m_fTime >= 0.8f)
+		{
+			_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
+			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SurvivalEffect"), TEXT("Prototype_GameObject_SurvivalEffect"), &vPos);
+
+			m_fTime = 0.f;
+		}
+
 		if (m_fDissolveRatio <= 0.f)
 		{
 			if (!m_bDestroy)

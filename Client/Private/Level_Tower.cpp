@@ -37,6 +37,12 @@ HRESULT CLevel_Tower::Init()
 		return E_FAIL;
 	}
 
+	//if (FAILED(Ready_Dragon()))
+	//{
+	//	MSG_BOX("Failed to Ready Dragon");
+	//	return E_FAIL;
+	//}
+
 	if (FAILED(Ready_DragonMap_Effect()))
 	{
 		MSG_BOX("Failed to Ready DragonMap Effect");
@@ -116,10 +122,7 @@ void CLevel_Tower::Tick(_float fTimeDelta)
 	{
 		m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"));
 	}
-	//if (m_pGameInstance->Key_Down(DIK_UP))
-	//{
-	//	m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Statue"), TEXT("Prototype_GameObject_Statue"));
-	//}
+
 	if (m_pGameInstance->Key_Down(DIK_EQUALS))
 	{
 		static _mat FountainMat = _mat::CreateScale(1.3f) * _mat::CreateRotationZ(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(-25.292f, 17.321f, 116.395f));

@@ -33,7 +33,7 @@ HRESULT CSickleTrap::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pGameInstance->Play_Sound(TEXT("SE_5130_Meteor_SFX_01"));
+	m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("BP_Skill_10081_SFX_01"));
 
 	m_iHP = 1;
 
@@ -59,6 +59,10 @@ void CSickleTrap::Tick(_float fTimeDelta)
 			if (!m_iHP)
 			{
 				m_pEffects[0]->Kill();
+				if (m_iSoundChannel != -1)
+				{
+					m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+				}
 			}
 			if (m_pEffects[i]->isDead())
 			{
@@ -76,8 +80,17 @@ void CSickleTrap::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->Attack_Player(m_pColliderCom, 10 + rand() % 30))
 		{
-			
 			m_fAttDelay = 0.f;
+		}
+	}
+
+	if (m_iSoundChannel != -1)
+	{
+		if (m_pGameInstance->Get_ChannelCurPosRatio(m_iSoundChannel) >= 0.6f)
+		{
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+			m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("BP_Skill_10081_SFX_01"), 0.5f, false, 0.15f);
+			m_pGameInstance->FadeinSound(m_iSoundChannel, fTimeDelta, 0.5f);
 		}
 	}
 }

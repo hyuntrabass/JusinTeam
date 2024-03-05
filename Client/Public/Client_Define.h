@@ -67,7 +67,7 @@ namespace Client
 	static const LIGHT_DESC g_Light_Dragon
 	{
 		LIGHT_DESC::Directional,
-		_vec4(-2.f, -2.f, -2.f, 0.f), // Direction
+		_vec4(0.f, -1.f, 0.f, 0.f), // Direction
 		_vec4(), // Position
 		_vec4(), // Attenuation
 
