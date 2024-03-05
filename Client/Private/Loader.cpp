@@ -842,7 +842,7 @@ HRESULT CLoader::Load_GamePlay()
 	m_strLoadingText = L"GamePlay : Loading Texture";
 #pragma region Texture
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, L"Prototype_Component_Texture_Water_Normal",
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, L"Prototype_Component_Texture_Water_Normal",
 		CTexture::Create(m_pDevice, m_pContext, L"../../Client/Bin/Resources/Textures/waterNormal.dds"))))
 		return E_FAIL;
 
@@ -1303,7 +1303,7 @@ HRESULT CLoader::Load_GamePlay()
 #pragma region Shader
 
 
-	if(FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_GAMEPLAY, L"Prototype_Component_Shader_Water", 
+	if(FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, L"Prototype_Component_Shader_Water",
 		CShader::Create(m_pDevice, m_pContext, L"../../Client/Bin/ShaderFiles/Shader_Water.hlsl", VTXNORTEX::Elements, VTXNORTEX::iNumElements))))
 		return E_FAIL;
 
