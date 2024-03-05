@@ -10,7 +10,7 @@ enum TeleportSpot
 	TS_Tutorial,
 	TS_Dungeon,
 	TS_Village,
-	TS_Minigame,
+	TS_BrickMap,
 	TS_DragonMap,
 	TS_BossRoom,
 	TS_MiniDungeon,

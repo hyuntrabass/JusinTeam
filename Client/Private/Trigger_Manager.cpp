@@ -240,6 +240,7 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 
 	switch (eSpot)
 	{
+		
 	case Client::TS_Dungeon:
 	{
 		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
@@ -356,8 +357,24 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 
 		break;
 	}
-	case Client::TS_Minigame:
+	case Client::TS_BrickMap:
 	{
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+		{
+			if (m_pGameInstance->Get_IsLoopingSound(i))
+			{
+				m_pGameInstance->StopSound(i);
+			}
+		}
+		m_pGameInstance->PlayBGM(TEXT("BGM_Halloween_Music_Loop"));
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+		{
+			if (m_pGameInstance->Get_IsLoopingSound(i))
+			{
+				m_pGameInstance->FadeinSound(i, fTimeDelta, 0.5f);
+			}
+		}
+
 		m_isInVillage = false;
 
 		pGetPath = TEXT("../Bin/Data/Minigame_Player_Pos.dat");
@@ -382,13 +399,31 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
 		//*Light = g_Light_Village;
 		//m_iSkyTextureIndex = 12;
-		m_eCurrentSpot = TS_Minigame;
+		m_eCurrentSpot = TS_BrickMap;
 		inFile.close();
 
 		break;
 	}
 	case Client::TS_DragonMap:
 	{
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+		{
+			if (m_pGameInstance->Get_IsLoopingSound(i))
+			{
+				m_pGameInstance->StopSound(i);
+			}
+		}
+		//m_pGameInstance->PlayBGM(TEXT("1st_Indun_Boss_BGM_Loop"));
+		m_pGameInstance->Play_Sound(TEXT("AMB_Fire_SFX_02"), 0.3f, true);
+		m_pGameInstance->Play_Sound(TEXT("BP_Skill_10019_SFX_01"), 0.3f, true, 0.7f);
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+		{
+			if (m_pGameInstance->Get_IsLoopingSound(i))
+			{
+				m_pGameInstance->FadeinSound(i, fTimeDelta, 0.5f);
+			}
+		}
+
 		m_isInVillage = false;
 
 		pGetPath = TEXT("../Bin/Data/DragonMap_Player_Pos.dat");
@@ -421,6 +456,23 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 
 	case Client::TS_BossRoom:
 	{
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+		{
+			if (m_pGameInstance->Get_IsLoopingSound(i))
+			{
+				m_pGameInstance->StopSound(i);
+			}
+		}
+		m_pGameInstance->PlayBGM(TEXT("1st_Indun_BGM_Loop_01"));
+		m_pGameInstance->Play_Sound(TEXT("AMB_Drone_01"), 0.3f, true); 
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+		{
+			if (m_pGameInstance->Get_IsLoopingSound(i))
+			{
+				m_pGameInstance->FadeinSound(i, fTimeDelta, 0.5f);
+			}
+		}
+
 		m_isInVillage = false;
 
 		pGetPath = TEXT("../Bin/Data/BossRoom_Player_Pos.dat");
@@ -436,14 +488,14 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		_mat Player_Matrix{};
 		inFile.read(reinterpret_cast<char*>(&Player_Matrix), sizeof(_mat));
 
+		LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+		*Light = g_Light_HumanBoss;
+
 		CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 		pPlayerTransform->Set_Position(_vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
 		pPlayerTransform->LookAt_Dir(Player_Matrix.Look());
 
-		//m_pGameInstance->Set_HellHeight(-70.f);
-		//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
-		//*Light = g_Light_Village;
-		//m_iSkyTextureIndex = 12;
+		m_iSkyTextureIndex = 10;
 		m_eCurrentSpot = TS_BossRoom;
 		inFile.close();
 
@@ -452,6 +504,23 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 
 	case Client::TS_MiniDungeon:
 	{
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+		{
+			if (m_pGameInstance->Get_IsLoopingSound(i))
+			{
+				m_pGameInstance->StopSound(i);
+			}
+		}
+		m_pGameInstance->PlayBGM(TEXT("BSER_AreaBGM_Laboratory"));
+		m_pGameInstance->Play_Sound(TEXT("AMB_Drone_01"), 0.3f, true);
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+		{
+			if (m_pGameInstance->Get_IsLoopingSound(i))
+			{
+				m_pGameInstance->FadeinSound(i, fTimeDelta, 0.5f);
+			}
+		}
+
 		m_isInVillage = false;
 
 		pGetPath = TEXT("../Bin/Data/MiniDungeon_Player_Pos.dat");
@@ -483,6 +552,22 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 
 	case Client::TS_SurvivalMap:
 	{
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+		{
+			if (m_pGameInstance->Get_IsLoopingSound(i))
+			{
+				m_pGameInstance->StopSound(i);
+			}
+		}
+		m_pGameInstance->PlayBGM(TEXT("BGM_1st_Battle_01_Master"));
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+		{
+			if (m_pGameInstance->Get_IsLoopingSound(i))
+			{
+				m_pGameInstance->FadeinSound(i, fTimeDelta, 0.5f);
+			}
+		}
+
 		m_isInVillage = false;
 
 		pGetPath = TEXT("../Bin/Data/Survival_Map_Player_Pos.dat");
@@ -516,6 +601,22 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 
 	case Client::TS_CescoMap:
 	{
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+		{
+			if (m_pGameInstance->Get_IsLoopingSound(i))
+			{
+				m_pGameInstance->StopSound(i);
+			}
+		}
+		m_pGameInstance->PlayBGM(TEXT("BGM_InfinityDungeon_Battle_01"), 0.5f);
+		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
+		{
+			if (m_pGameInstance->Get_IsLoopingSound(i))
+			{
+				m_pGameInstance->FadeinSound(i, fTimeDelta, 0.5f);
+			}
+		}
+
 		m_isInVillage = false;
 
 		pGetPath = TEXT("../Bin/Data/SescoMap_Player_Pos.dat");

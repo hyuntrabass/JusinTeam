@@ -117,33 +117,7 @@ HRESULT CPlayer::Init(void* pArg)
 
 void CPlayer::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_V, InputChannel::Engine))
-	{/*
-		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-		CTreasureBox::TREASURE_DESC Desc{};
-		_vec4 vPos = pPlayerTransform->Get_State(State::Pos);
-		vPos.y += 3.f;
-		Desc.vPos = vPos;
-		vector <pair<wstring, _uint>> vecItem;
-		vecItem.push_back(make_pair(TEXT("[신화]탈 것 소환 카드"), 1));
-		Desc.vecItem = vecItem;
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Temp"), TEXT("Prototype_GameObject_TreasureBox"), &Desc)))
-		{
-			return;
-		}
-	 */
-	}
-	/*
-	if (m_pGameInstance->Key_Down(DIK_B, InputChannel::GamePlay))
-	{
-		CEvent_Manager::Get_Instance()->Update_Quest(TEXT("몬스터 처치"));
-	}
-	*/
 
-	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
-	{
-		return;
-	}
 
 	if (m_pCam_Manager->Get_CameraState() == CS_WORLDMAP)
 	{
@@ -591,6 +565,7 @@ void CPlayer::Tick(_float fTimeDelta)
 	}
 
 	Set_ExtraStatus();
+
 	m_pModelCom->Set_Animation(m_Animation);
 	m_pParryingCollider->Update(m_pTransformCom->Get_World_Matrix());
 	Update_Trail(fTimeDelta);
@@ -1343,7 +1318,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 	_vec2 vDamagePos = _vec2((_float)(iRandomX - 50) * 0.01f, (_float)iRandomY * 0.01f);
 	CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, vDamagePos, (ATTACK_TYPE)MonAttType, true);
 
-	CUI_Manager::Get_Instance()->Set_Hp(m_Status.Current_Hp, m_Status.Max_Hp);
+
 	if (m_Status.Current_Hp <= 0)
 	{
 		if (m_bLockOn)
@@ -1595,6 +1570,7 @@ void CPlayer::Health_Regen(_float fTImeDelta)
 	{
 		m_Status.Current_Mp = m_Status.Max_Mp;
 	}
+	CUI_Manager::Get_Instance()->Set_Hp(m_Status.Current_Hp, m_Status.Max_Hp);
 	CUI_Manager::Get_Instance()->Set_Mp(m_Status.Current_Mp, m_Status.Max_Mp);
 }
 
@@ -2441,13 +2417,14 @@ void CPlayer::Skill3_Attack()
 	}
 	else if (m_Current_Weapon == WP_BOW)
 	{
-		if (m_bLockOn)
+		if (!m_bLockOn)
 		{
 			CCollider* pMonCollider = m_pGameInstance->Get_Nearest_MonsterCollider();
 			if (pMonCollider != nullptr)
 			{
 				m_vArrowRainPos = _vec4(pMonCollider->Get_ColliderPos(), 1.f);
-				_vec4 vMonPos = _vec4(pMonCollider->Get_ColliderPos(), 1.f);
+				_vec4 vMonPos = m_vArrowRainPos;
+				m_vArrowRainPos.y -= 0.5f;
 				vMonPos.y = m_pTransformCom->Get_State(State::Pos).y;
 				m_pTransformCom->LookAt(vMonPos);
 				CUI_Manager::Get_Instance()->Set_TargetPos(vMonPos);
@@ -2757,10 +2734,11 @@ void CPlayer::Set_ExtraStatus()
 	m_Status.Critical = m_OriStatus.Critical + ExtraStat.Critical;
 	m_Status.BloodDrain = m_OriStatus.BloodDrain + ExtraStat.BloodDrain;
 	m_Status.Speed = m_OriStatus.Speed + ExtraStat.Speed;
-	m_Status.PoisonImmune = m_OriStatus.PoisonImmune;
+	m_Status.PoisonImmune = ExtraStat.PoisonImmune;
 	m_Status.HpRegenAmount = m_OriStatus.HpRegenAmount + ExtraStat.HpRegenAmount;
 	m_Status.MpRegenAmount = m_OriStatus.MpRegenAmount + ExtraStat.MpRegenAmount;
 
+	
 }
 void CPlayer::After_SwordAtt(_float fTimeDelta)
 {
@@ -3460,6 +3438,7 @@ void CPlayer::After_SwordAtt(_float fTimeDelta)
 		}
 		else if (Index >= 80.f && !m_bMove_AfterSkill)
 		{
+			m_pCam_Manager->Set_AimMode(false);
 			m_bMove_AfterSkill = true;
 		}
 	}
@@ -3940,14 +3919,16 @@ void CPlayer::Arrow_Rain()
 	{
 		_mat EffectMatrix{};
 		m_vArrowLook = m_pTransformCom->Get_State(State::Look);
+		m_vArrowLook.y = 0.f;
+		m_vArrowLook.Normalize();
 		m_vArrowLook = m_pTransformCom->Get_State(State::Pos) + m_vArrowLook * 10.f;
 		if (m_vArrowRainPos == _vec4())
 		{
-			EffectMatrix = _mat::CreateScale(10.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos) + m_vArrowLook * 10.f) + _vec3(0.f, 0.2f, 0.f));
+			EffectMatrix = _mat::CreateScale(10.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(m_vArrowLook) + _vec3(0.f, 0.2f, 0.f));
 		}
 		else
 		{
-			EffectMatrix = _mat::CreateScale(10.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(m_vArrowRainPos) + _vec3(0.f, 0.2f, 0.f));
+			EffectMatrix = _mat::CreateScale(10.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(m_vArrowRainPos));
 		}
 		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Range_Player_Circle_Frame");
 		Info.pMatrix = &EffectMatrix;
@@ -3962,7 +3943,7 @@ void CPlayer::Arrow_Rain()
 	if (m_iArrowRain < 80)
 	{
 		Arrow_Type Type{};
-		Type.iDamage = (_int)(m_Status.Attack * 0.8f) + rand() % 30;
+		Type.iDamage = (_int)(m_Status.Attack * 0.6f) + rand() % 30;
 		Type.Att_Type = AT_Bow_Skill3;
 		_float random = (_float)(rand() % 70);
 		_int randommos = rand() % 2;

@@ -82,7 +82,7 @@ void CMap::Late_Tick(_float fTimeDelta)
 			return;
 		}
 		break;
-	case Client::TS_Minigame:
+	case Client::TS_BrickMap:
 		if (m_Info.Prototype != TEXT("Prototype_Model_BrickMap"))
 		{
 			return;

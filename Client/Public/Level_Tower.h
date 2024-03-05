@@ -19,15 +19,6 @@ public:
 private:
 	HRESULT Ready_Light();
 
-private: // Monster, Boss
-	HRESULT Ready_Human_Boss();
-
-private: // SescoGame
-	HRESULT Ready_SescoGame();
-
-private:
-	HRESULT Ready_Survival_Game();
-
 private:
 	HRESULT Ready_DragonMap_Effect();
 

@@ -19,14 +19,15 @@ public:
 
 public:
 	CCollider* m_pColliderCom{ nullptr };
-	class CEffect_Dummy* m_pEffects[3]{};
+	static const _uint m_iNumEffects{ 1 };
+	class CEffect_Dummy* m_pEffects[m_iNumEffects]{};
 
 #ifdef _DEBUG
 	CRenderer* m_pRendererCom{ nullptr };
 #endif // _DEBUG
 
 private:
-	_mat m_EffectMatrices[3]{};
+	_mat m_EffectMatrices{};
 	_float m_fLifeTimer{};
 	_float m_fLifeTimeLimit{};
 	_float m_fAttDelay{};

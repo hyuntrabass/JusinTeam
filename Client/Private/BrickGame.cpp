@@ -40,10 +40,8 @@ HRESULT CBrickGame::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	if (FAILED(Add_Parts()))
-	{
-		return E_FAIL;
-	}
+	Init_Game();
+
 	CCamera_Manager::Get_Instance()->Set_ZoomFactor(0.f);
 
 	/*
@@ -67,19 +65,12 @@ void CBrickGame::Tick(_float fTimeDelta)
 	//DirectX::XMFLOAT4 = {x=-2000.28052 y=11.3177662 z=-1991.18335 ...}
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 	_vec4 vPos = pPlayerTransform->Get_State(State::Pos);
-	if (!m_isActive && CUI_Manager::Get_Instance()->Get_CurrentMiniGame() == (TOWER)BRICK)
+
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_BrickMap)
 	{
-		Init_Game();
+		Kill();
 	}
 
-	if (!m_isActive)
-	{
-		if (CCamera_Manager::Get_Instance()->Get_CameraState() == CS_BRICKGAME)
-		{
-			Exit_Game();
-		}
-		return;
-	}
 
 	m_fTime += fTimeDelta;
 	if (m_fTime >= 1.f)
@@ -102,19 +93,15 @@ void CBrickGame::Tick(_float fTimeDelta)
 		m_fTime = 0.f;
 	}
 
-	if (m_isActive && m_pGameInstance->Key_Down(DIK_PGUP))
-	{
-		m_isActive = false;
-		Exit_Game();
-		CUI_Manager::Get_Instance()->Open_InfinityTower(true);
-		return;
-	}
-
 	if (m_pCatBoss)
 	{
 		m_pCatBoss->Tick(fTimeDelta);
 	}
-	m_pBackGround->Tick(fTimeDelta);
+	if (m_pBackGround)
+	{
+		m_pBackGround->Tick(fTimeDelta);
+	}
+	
 	if (m_pCatBoss && !m_pCatBoss->Is_GameStart())
 	{
 		return;
@@ -187,6 +174,16 @@ void CBrickGame::Tick(_float fTimeDelta)
 		m_pCombo->Tick(fTimeDelta);
 	}
 
+	if (m_isDead)
+	{
+		if (m_Light_Desc.eType != LIGHT_DESC::TYPE::End)
+		{
+			LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
+			*LightDesc = m_Light_Desc;
+		}
+
+		CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
+	}
 
 	m_EffectMatrix = _mat::CreateTranslation(_vec3(-1989.f, 0.f, -2005.11536f));
 }
@@ -199,8 +196,12 @@ void CBrickGame::Late_Tick(_float fTimeDelta)
 		return;
 	}
 
-	m_pBackGround->Late_Tick(fTimeDelta);
+	
 
+	if (m_pBackGround)
+	{
+		m_pBackGround->Late_Tick(fTimeDelta);
+	}
 	if (m_pCatBoss)
 	{
 		m_pCatBoss->Late_Tick(fTimeDelta);
@@ -372,23 +373,6 @@ HRESULT CBrickGame::Bind_ShaderResources()
 	return S_OK;
 }
 
-void CBrickGame::Exit_Game()
-{
-	if (m_Light_Desc.eType != LIGHT_DESC::TYPE::End)
-	{
-		LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
-		*LightDesc = m_Light_Desc;
-	}
-
-	CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
-
-	Safe_Release(m_pCatBoss);
-	Safe_Release(m_pTimeBar);
-	Safe_Release(m_pBall);
-	Safe_Release(m_pBar);
-	Safe_Release(m_pCombo);
-	Safe_Release(m_pBackGround);
-}
 void CBrickGame::Init_Game()
 {
 	m_iMinute = 3;
@@ -402,7 +386,7 @@ void CBrickGame::Init_Game()
 	CCamera_Manager::Get_Instance()->Set_CameraState(CS_BRICKGAME);
 	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 	m_isActive = true;
-	CTrigger_Manager::Get_Instance()->Teleport(TS_Minigame);
+	CTrigger_Manager::Get_Instance()->Teleport(TS_BrickMap);
 
 
 	LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
@@ -442,6 +426,7 @@ void CBrickGame::Init_Game()
 			return;
 		}
 	}
+
 	m_pCatBoss = (CBlackCat*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BlackCat"));
 	if (not m_pCatBoss)
 	{
@@ -561,7 +546,6 @@ CComponent* CBrickGame::Find_Component(const wstring& strComTag)
 void CBrickGame::Free()
 {
 	__super::Free();
-
 
 	Safe_Release(m_pCatBoss);
 	Safe_Release(m_pTimeBar);

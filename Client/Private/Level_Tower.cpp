@@ -23,7 +23,7 @@ HRESULT CLevel_Tower::Init()
 	m_pGameInstance->StopAll();
 
 
-	//CTrigger_Manager::Get_Instance()->Teleport(TS_Minigame);
+	//CTrigger_Manager::Get_Instance()->Teleport(TS_BrickMap);
 
 	if (FAILED(Ready_Light()))
 	{
@@ -43,23 +43,13 @@ HRESULT CLevel_Tower::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_Human_Boss()))
-	{
-		MSG_BOX("Failed to Ready HumanBoss");
-		return E_FAIL;
-	}
-
 	if (FAILED(Ready_Trigger()))
 	{
 		MSG_BOX("Failed to Ready Trigger");
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_Survival_Game()))
-	{
-		MSG_BOX("Failed to Ready Survival Game");
-		return E_FAIL;
-	}
+
 	
 	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 	CUI_Manager::Get_Instance()->Open_InfinityTower(true);
@@ -81,7 +71,7 @@ void CLevel_Tower::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
 	{
-		CTrigger_Manager::Get_Instance()->Teleport(TS_Minigame);
+		CTrigger_Manager::Get_Instance()->Teleport(TS_BrickMap);
 		return;
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
@@ -92,6 +82,10 @@ void CLevel_Tower::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD5))
 	{
 		CTrigger_Manager::Get_Instance()->Teleport(TS_BossRoom);
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_HumanBoss"), TEXT("Prototype_GameObject_Human_Boss"))))
+		{
+			return;
+		}
 		return;
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD6))
@@ -100,6 +94,7 @@ void CLevel_Tower::Tick(_float fTimeDelta)
 
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_InfiltrationGame"), TEXT("Prototype_GameObject_InfiltrationGame"))))
 			return;
+
 		return;
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD7))
@@ -173,89 +168,6 @@ HRESULT CLevel_Tower::Ready_Light()
 {
 	LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
 	*Light = g_Light_Village;
-
-	return S_OK;
-}
-
-HRESULT CLevel_Tower::Ready_Human_Boss()
-{
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Boss"), TEXT("Prototype_GameObject_Human_Boss"))))
-	{
-		return E_FAIL;
-	}
-
-	return S_OK;
-}
-
-
-
-HRESULT CLevel_Tower::Ready_SescoGame()
-{
-	/*for (_uint i = 0; i < 100; i++)
-	{
-		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Void19");
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
-			return E_FAIL;
-	}
-	for (_uint i = 0; i < 100; i++)
-	{
-		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Muspelheim06");
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
-			return E_FAIL;
-	}
-	for (_uint i = 0; i < 100; i++)
-	{
-		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Niflheim09");
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
-			return E_FAIL;
-	}
-	for (_uint i = 0; i < 100; i++)
-	{
-		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Redant");
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
-			return E_FAIL;
-	}
-	for (_uint i = 0; i < 100; i++)
-	{
-		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Scorpion");
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
-			return E_FAIL;
-	}
-	for (_uint i = 0; i < 100; i++)
-	{
-		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Trilobites");
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
-			return E_FAIL;
-	}
-	for (_uint i = 0; i < 100; i++)
-	{
-		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Trilobites_A");
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
-			return E_FAIL;
-	}*/
-	return S_OK;
-}
-
-HRESULT CLevel_Tower::Ready_Survival_Game()
-{
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_SurvivalGame"), TEXT("Prototype_GameObject_SurvivalGame"))))
-	{
-		return E_FAIL;
-	}
 
 	return S_OK;
 }

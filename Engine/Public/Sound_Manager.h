@@ -29,21 +29,21 @@ public:
 public:
 	_int Play_Sound(const wstring& strSoundTag, _float fVolume, _bool isLoop, _float fStartPosRatio);
 	void PlayBGM(const wstring& strSoundTag, _float fVolume);
-	void StopSound(_uint iChannel);
+	void StopSound(_int iChannel);
 	void StopAll();
-	void SetChannelVolume(_uint iChannel, _float fVolume);
-	void SetChannelStartVolume(_uint iChannel);
+	void SetChannelVolume(_int iChannel, _float fVolume);
+	void SetChannelStartVolume(_int iChannel);
 	void SetSystemVolume(_float fSystemVolume);
 	void SetBackGroundVolume(_float fBackGroundVolume);
 	void SetEnvironmentVolume(_float fEnvironmentVolume);
 	void SetEffectVolume(_float fEffectVolume);
 	void Update();
-	HRESULT FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond, _bool IsReusable, _float fFadeSoundRatio);
-	HRESULT FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond, _float fFadeSoundRatio);
-	_bool Get_IsPlayingSound(_uint iChannel);
-	_float GetChannelVolume(_uint iChannel);
-	_bool Get_IsLoopingSound(_uint iChannel);
-	_float Get_CurPosRatio(_uint iChannel);
+	HRESULT FadeoutSound(_int iChannel, _float fTimeDelta, _float fFadeoutSecond, _bool IsReusable, _float fFadeSoundRatio);
+	HRESULT FadeinSound(_int iChannel, _float fTimeDelta, _float fFadeinSecond, _float fFadeSoundRatio);
+	_bool Get_IsPlayingSound(_int iChannel);
+	_float GetChannelVolume(_int iChannel);
+	_bool Get_IsLoopingSound(_int iChannel);
+	_float Get_CurPosRatio(_int iChannel);
 
 private:
 	_float m_fSystemVolume{ 1.f };
@@ -59,9 +59,9 @@ private:
 private:
 	HRESULT LoadSoundFile();
 	FMOD::Sound* Find_Sound(const wstring& strSoundTag);
-	void FadingoutSound(_uint iChannel);
-	void FadinginSound(_uint iChannel);
-	_float Standard_FadeSound(_uint iChannel);
+	void FadingoutSound(_int iChannel);
+	void FadinginSound(_int iChannel);
+	_float Standard_FadeSound(_int iChannel);
 
 public:
 	static CSound_Manager* Create();

@@ -29,6 +29,7 @@ private:
 
 private:
 	_bool										m_isPrototype{ false };
+	_bool										m_isReadytoDeactivate{ false };
 	_bool										m_bNewItemIn{ false };
 	_bool										m_isActive{ false };
 	_bool										m_isReset{ false };

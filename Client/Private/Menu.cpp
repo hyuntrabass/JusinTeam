@@ -61,7 +61,10 @@ void CMenu::Tick(_float fTimeDelta)
 			  (LONG)(m_fX + m_fSizeX * 0.5f),
 			  (LONG)(m_fY + m_fSizeY * 0.5f)
 	};
-
+	if (!m_isActive && CUI_Manager::Get_Instance()->Showing_FullScreenUI())
+	{
+		return;
+	}
 	if (TRUE == PtInRect(&rectUI, ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 	{
 		if (!m_isActive)
@@ -76,8 +79,10 @@ void CMenu::Tick(_float fTimeDelta)
 	}
 	if (m_isReadytoActivate)
 	{
-		m_isReadytoActivate = false;
 		m_isActive = true;
+		m_isReadytoActivate = false;
+		CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
+		CCamera_Manager::Get_Instance()->Set_CameraState(CS_SKILLBOOK);
 		return;
 	}
 
@@ -110,26 +115,22 @@ void CMenu::Tick(_float fTimeDelta)
 	}
 	if (m_isReadytoDeactivate)
 	{	
-		CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 		m_isActive = false;
-		m_isReadytoDeactivate = false;
+		m_isReadytoDeactivate = false;		
+		CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
+		CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
 		return;
 	}
 
-	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
+
 
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
-
-
-
 	m_pExitButton->Tick(fTimeDelta);
-
 	m_pBackGround->Tick(fTimeDelta);
 	m_pTitleButton->Tick(fTimeDelta);
 	m_pUnderBar->Tick(fTimeDelta);
 	m_pSelectButton->Tick(fTimeDelta);
-
 	for (size_t i = 0; i < MENU_END; i++)
 	{
 		m_pMenu[i]->Tick(fTimeDelta);
@@ -140,33 +141,26 @@ void CMenu::Late_Tick(_float fTimeDelta)
 {
 
 
-	if (!m_isActive)
+	if (m_isActive)
 	{
-		if (!CUI_Manager::Get_Instance()->Showing_FullScreenUI())
+		for (size_t i = 0; i < MENU_END; i++)
 		{
-			m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
+			m_pMenu[i]->Late_Tick(fTimeDelta);
 		}
-		return;
+		m_pExitButton->Late_Tick(fTimeDelta);
+		m_pBackGround->Late_Tick(fTimeDelta);
+		m_pTitleButton->Late_Tick(fTimeDelta);
+		m_pUnderBar->Late_Tick(fTimeDelta);
+		m_pSelectButton->Late_Tick(fTimeDelta);
 	}
 
-	m_pExitButton->Late_Tick(fTimeDelta);
-	m_pBackGround->Late_Tick(fTimeDelta);
-	m_pTitleButton->Late_Tick(fTimeDelta);
-	m_pUnderBar->Late_Tick(fTimeDelta);
-	m_pSelectButton->Late_Tick(fTimeDelta);
-
-	for (size_t i = 0; i < MENU_END; i++)
-	{
-		m_pMenu[i]->Late_Tick(fTimeDelta);
-	}
-
+	
 	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
 	{
 		return;
 	}
+
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
-
-
 }
 
 HRESULT CMenu::Render()
@@ -193,8 +187,10 @@ HRESULT CMenu::Render()
 
 HRESULT CMenu::Add_Parts()
 {
+
+
 	_float fY = 85.f;
-	_float fTerm = m_fSizeX / (_uint)MENU_END;
+	_float fTerm = 300.f / (_uint)MENU_END;
 	_float fStartX = fTerm;
 
 
@@ -205,10 +201,10 @@ HRESULT CMenu::Add_Parts()
 	Button.fFontSize = 0.5f;
 	Button.strText = TEXT("설정");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Back");
-	Button.vPosition = _vec2(20.f, 20.f);
+	Button.vPosition = _vec2(30.f, 30.f);
 	Button.vSize = _vec2(50.f, 50.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	Button.vTextPosition = _vec2(70.f, 0.f);
+	Button.vTextPosition = _vec2(40.f, 0.f);
 
 	m_pTitleButton = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
@@ -219,7 +215,7 @@ HRESULT CMenu::Add_Parts()
 
 	Button.strText = TEXT("");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Out");
-	Button.vPosition = _vec2(1230.f, 30.f);
+	Button.vPosition = _vec2(1230.f, 40.f);
 	Button.vSize = _vec2(70.f, 70.f);
 	m_pExitButton = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
@@ -254,35 +250,52 @@ HRESULT CMenu::Add_Parts()
 
 	CTextButtonColor::TEXTBUTTON_DESC TextButton = {};
 	TextButton.eLevelID = LEVEL_STATIC;
-	TextButton.strTexture = TEXT("");
 	TextButton.fDepth = m_fDepth - 0.01f;
 	TextButton.fAlpha = 1.f;
 	TextButton.fFontSize = 0.45f;
 	TextButton.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-	TextButton.strText = TEXT("소모품");
+	TextButton.strText = TEXT("환경");
 	TextButton.vPosition = _vec2(fStartX, fY);
-	TextButton.vSize = _vec2(m_fSizeX / 2.f, 70.f);
+	TextButton.vSize = _vec2(150.f, 70.f);
 	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_NoTex");
 	TextButton.vTextPosition = _vec2(0.f, 0.f);
-	m_pMenu[SOUND] = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+	m_pMenu[ENV] = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
 
-	if (not m_pMenu[SOUND])
+	if (not m_pMenu[ENV])
 	{
 		return E_FAIL;
 	}
-	dynamic_cast<CTextButtonColor*>(m_pMenu[SOUND])->Set_Pass(VTPass_UI_Alpha);
+	dynamic_cast<CTextButtonColor*>(m_pMenu[ENV])->Set_Pass(VTPass_UI_Alpha);
+	
 
-	TextButton.strText = TEXT("장비");
-	TextButton.vPosition = _vec2(fStartX + fTerm, fY);
-	TextButton.vSize = _vec2(m_fSizeX / 2.f, 70.f);
+
+	TextButton.fFontSize = 0.4f;
+	TextButton.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	TextButton.strText = TEXT("그래픽");
+	TextButton.vPosition = _vec2(fStartX, fY);
+	TextButton.vSize = _vec2(150.f, 70.f);
+	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_NoTex");
 	TextButton.vTextPosition = _vec2(0.f, 0.f);
-	m_pMenu[GRAPHIC] = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+	TextButton.isChangePass = true;
+	m_pSlots[GRAPHIC] = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
 
-	if (not m_pMenu[GRAPHIC])
+	if (not m_pSlots[GRAPHIC])
 	{
 		return E_FAIL;
 	}
-	dynamic_cast<CTextButtonColor*>(m_pMenu[GRAPHIC])->Set_Pass(VTPass_UI_Alpha);
+
+	TextButton.strText = TEXT("사운드");
+	TextButton.vPosition = _vec2(fStartX, fY);
+	TextButton.vSize = _vec2(150.f, 70.f);
+	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_NoTex");
+	TextButton.vTextPosition = _vec2(0.f, 0.f);
+	TextButton.isChangePass = true;
+	m_pSlots[GRAPHIC] = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+
+	if (not m_pSlots[GRAPHIC])
+	{
+		return E_FAIL;
+	}
 
 	UiInfo info{};
 	info.strTexture = TEXT("Prototype_Component_Texture_Skill_Background");

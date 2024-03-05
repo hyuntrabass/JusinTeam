@@ -71,9 +71,18 @@ HRESULT CCescoGame::Init(void* pArg)
 
 void CCescoGame::Tick(_float fTimeDelta)
 {
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_CescoMap)
+	{
+		Kill();
+	}
+
 	if (CCamera_Manager::Get_Instance()->Get_CameraState() == CS_INVEN)
 	{
 		return;
+	}
+	if (m_pGameInstance->Key_Down(DIK_7, InputChannel::UI))
+	{
+		m_ePreviousPhase = Phase3;
 	}
 	if (m_pGameInstance->Key_Down(DIK_8, InputChannel::UI))
 	{
@@ -94,7 +103,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 	switch (m_eCurrentPhase)
 	{
 	case Client::CCescoGame::Phase1:
-		if (m_fTimeLimit < 90.f)
+		if (m_fTimeLimit < 240.f)
 		{
 			m_eCurrentPhase = Phase_Buff;
 			return;
@@ -102,7 +111,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 		Tick_Phase1(fTimeDelta);
 		break;
 	case Client::CCescoGame::Phase2:
-		if (m_fTimeLimit < 45.f)
+		if (m_fTimeLimit < 120.f)
 		{
 			m_eCurrentPhase = Phase_Buff;
 			return;
@@ -112,7 +121,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 	case Client::CCescoGame::Phase3:
 		if (m_fTimeLimit <= 0.f)
 		{
-			// °ÔÀÓ ½Â¸®
+			Kill();
 		}
 		Tick_Phase3(fTimeDelta);
 		break;
@@ -220,6 +229,7 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 		break;
 		case Client::CCescoGame::Phase_Buff:
 		{
+			m_bBuffSelected = false;
 			switch (m_ePreviousPhase)
 			{
 			case Phase_End:
@@ -525,52 +535,56 @@ void CCescoGame::Tick_Phase3(_float fTimeDelta)
 
 void CCescoGame::Tick_Phase_Buff(_float fTimeDelta)
 {
-	_bool IsSelet{};
-	for (auto& Buffcard : m_vecBuffCard)
-	{
-		Buffcard->Tick(fTimeDelta);
-		if (Buffcard->Get_IsSelect())
-		{
-			IsSelet = true;
-			Buff eBuff = Buffcard->Get_Buff();
-			CPlayer::PLAYER_STATUS* eState = CUI_Manager::Get_Instance()->Set_ExtraStatus();
-			switch (eBuff)
-			{
-			case Client::Buff_MaxHp:
-				eState->Max_Hp += Buffcard->Get_Status();
-				break;
-			case Client::Buff_HpRegen:
-				eState->HpRegenAmount += Buffcard->Get_Status();
-				break;
-			case Client::Buff_MpRegen:
-				eState->MpRegenAmount += Buffcard->Get_Status();
-				break;
-			case Client::Buff_Attack:
-				eState->Attack += Buffcard->Get_Status();
-				break;      
-			case Client::Buff_Speed:
-				eState->Speed += Buffcard->Get_Status();
-				break;
-			case Client::Buff_CoolDown:
-				eState->CoolDownTime += Buffcard->Get_Status();
-				break;
-			case Client::Buff_BloodDrain:
-				eState->BloodDrain += Buffcard->Get_Status();
-				break;
-			case Client::Buff_PoisonImmune:
-				eState->PoisonImmune = (_bool)Buffcard->Get_Status();
-				break;
-			case Client::Buff_MonRegenDown:
-				m_iMonsterSpawnSpeed = 0.7f;
-				break;
-			}
-		}
-
-	}
-	if (IsSelet)
+	if (!m_bBuffSelected)
 	{
 		for (auto& Buffcard : m_vecBuffCard)
 		{
+			Buffcard->Tick(fTimeDelta);
+			if (Buffcard->Get_IsSelect())
+			{
+				m_bBuffSelected = true;
+				Buff eBuff = Buffcard->Get_Buff();
+				CPlayer::PLAYER_STATUS* eState = CUI_Manager::Get_Instance()->Set_ExtraStatus();
+				switch (eBuff)
+				{
+				case Client::Buff_MaxHp:
+					eState->Max_Hp += _int(Buffcard->Get_Status());
+					break;
+				case Client::Buff_HpRegen:
+					eState->HpRegenAmount += Buffcard->Get_Status();
+					break;
+				case Client::Buff_MpRegen:
+					eState->MpRegenAmount += Buffcard->Get_Status();
+					break;
+				case Client::Buff_Attack:
+					eState->Attack += _int(Buffcard->Get_Status());
+					break;
+				case Client::Buff_Speed:
+					eState->Speed += Buffcard->Get_Status();
+					break;
+				case Client::Buff_CoolDown:
+					eState->CoolDownTime += Buffcard->Get_Status();
+					break;
+				case Client::Buff_BloodDrain:
+					eState->BloodDrain += Buffcard->Get_Status();
+					break;
+				case Client::Buff_PoisonImmune:
+					eState->PoisonImmune = (_bool)Buffcard->Get_Status();
+					break;
+				case Client::Buff_MonRegenDown:
+					m_iMonsterSpawnSpeed = 0.7f;
+					break;
+				}
+			}
+
+		}
+	}
+
+	if (m_bBuffSelected)
+	{
+		for (auto& Buffcard : m_vecBuffCard)
+		{
+			Buffcard->Tick(fTimeDelta);
 			Buffcard->Set_Fade();
 		}
 	}
@@ -578,6 +592,7 @@ void CCescoGame::Tick_Phase_Buff(_float fTimeDelta)
 	_bool isEnd{};
 	for (auto& Buffcard : m_vecBuffCard)
 	{
+
 		if (Buffcard->Get_IsSelectEnd())
 		{
 			isEnd = true;
