@@ -149,6 +149,9 @@ private:
 	ANIM_DESC m_Animation{};
 
 private:
+	_float m_fScale = { 0.1f };
+
+private:
 	_float m_fIdleTime = {};
 	_float m_fTime[2] = {};
 	_float m_fMeteorTime = {};
@@ -183,6 +186,9 @@ private:
 	_bool m_bCreateObject = { false };
 
 	_bool m_bCreateEffect[2] = { false };
+
+private:
+	class CHPBoss* m_pHpBoss = { nullptr };
 
 public:
 	HRESULT Add_Components();

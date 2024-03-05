@@ -4,6 +4,8 @@
 #include "Effect_Manager.h"
 #include "Effect_Dummy.h"
 #include "Trigger_Manager.h"
+#include "HPBoss.h"
+#include "UI_Manager.h"
 
 const _float CDragon_Boss::m_fAttackRange = 10.f;
 
@@ -47,7 +49,7 @@ HRESULT CDragon_Boss::Init(void* pArg)
 	m_pRightTrail2 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
 	m_pRightTrail3 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
 
-	m_eCurState = STATE_ROAR;
+	//m_eCurState = STATE_ROAR;
 	m_eCurState = STATE_SPAWN;
 
 	m_Animation.fInterpolationTime = 0.5f;
@@ -58,10 +60,13 @@ HRESULT CDragon_Boss::Init(void* pArg)
 	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 
 	//m_pTransformCom->Set_Position(_vec3(vPlayerPos) + _vec3(0.f, 10.f, 0.f));
-	m_pTransformCom->Set_Position(_vec3(2926.f, 54.f, 2855.f));
-	m_pTransformCom->LookAt(_vec4(3000.f, 5.f, 3000.f, 1.f));
+	//m_pTransformCom->Set_Position(_vec3(2926.f, 60.f, 2855.f));
+	m_pTransformCom->Set_Position(_vec3(3119.f, 40.f, 2878.f));
+	m_pTransformCom->LookAt(_vec4(3000.f, 0.f, 3000.f, 1.f));
 
 	m_pTransformCom->Set_Speed(50.f);
+
+	m_pTransformCom->Set_Scale(_vec3(m_fScale));
 
 	return S_OK;
 }
@@ -93,6 +98,11 @@ void CDragon_Boss::Tick(_float fTimeDelta)
 	Update_Collider();
 	Update_Trail(fTimeDelta);
 
+	if (m_pHpBoss)
+	{
+		m_pHpBoss->Tick(fTimeDelta);
+	}
+
 	if (m_bSpawned)
 	{
 		m_pTransformCom->Gravity(fTimeDelta);
@@ -105,6 +115,11 @@ void CDragon_Boss::Late_Tick(_float fTimeDelta)
 	//{
 	//	return;
 	//}
+
+	if (m_pHpBoss)
+	{
+		m_pHpBoss->Late_Tick(fTimeDelta);
+	}
 
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
@@ -206,6 +221,11 @@ void CDragon_Boss::Set_Damage(_int iDamage, _uint iDamageType)
 		{
 			m_eCurState = STATE_HIT;
 		}
+
+		if (m_pHpBoss)
+		{
+			m_pHpBoss->Set_HP(m_iHP);
+		}
 	}
 
 	
@@ -261,6 +281,9 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 2.f;
 			m_Animation.fDurationRatio = 1.f;
+			m_Animation.fStartAnimPos = 0.f;
+			m_Animation.bSkipInterpolation = false;
+			m_Animation.fInterpolationTime = 0.5f;
 
 			m_fIdleTime = 0.f;
 			m_fTime[0] = 0.f;
@@ -286,6 +309,8 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = FLY_LOOP;
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 2.f;
+			//m_Animation.fDurationRatio = 0.271f;
+			m_Animation.fDurationRatio = 1.f;
 
 
 			break;
@@ -294,6 +319,10 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = ROAR;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
+			m_Animation.fStartAnimPos = 0.f;
+			m_Animation.bSkipInterpolation = false;
+			m_Animation.fInterpolationTime = 1.f;
+			m_Animation.fDurationRatio = 1.f;
 
 			m_pTransformCom->LookAt_Dir(vDir);
 
@@ -463,6 +492,8 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
 
+			Safe_Release(m_pHpBoss);
+
 			break;
 		}
 
@@ -500,17 +531,34 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		_vec3 vCenterPos = _vec3(3000.f, 0.f, 3000.f);
 		_float fCenterDistance = (vCenterPos - vPos).Length();
 
-		if (fCenterDistance <= 5.f)
+		if (m_pTransformCom->Get_State(State::Pos).z >= 2975.f)
 		{
-			if (!m_bSpawned)
+			m_bSpawned = true;
+			m_pTransformCom->Set_Speed(30.f);
+
+		}
+		else
+		{
+			if (m_fScale <= 1.f)
+			{
+				m_fScale += 0.007f;
+			}
+		}
+
+		if (fCenterDistance <= 4.f)
+		{
+			//if (!m_bSpawned)
 			{
 				//m_Animation.iAnimIndex = OUROBOROS_ATTACK06_END;
 				m_Animation.iAnimIndex = OUROBOROS_ATTACK06_END;
 				m_Animation.isLoop = false;
-				m_Animation.fStartAnimPos = 80.f;
+				m_Animation.fAnimSpeedRatio = 1.5f;
+				m_Animation.fStartAnimPos = 90.f;
 				m_Animation.bSkipInterpolation = true;
 
-				m_bSpawned = true;
+				//m_pTransformCom->LookAt(vPlayerPos);
+
+				//m_bSpawned = true;
 			}
 		}
 		else
@@ -518,10 +566,18 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
 
+		if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK06_START))
+		{
+			m_Animation.iAnimIndex = OUROBOROS_ATTACK06_END;
+		}
+
 		if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK06_END))
 		{
 			m_eCurState = STATE_ROAR;
+			m_Animation.bSkipInterpolation = false;
 		}
+
+		m_pTransformCom->Set_Scale(_vec3(m_fScale));
 	}
 
 		break;
@@ -1441,6 +1497,15 @@ HRESULT CDragon_Boss::Add_Components()
 		return E_FAIL;
 	}
 
+	//CHPBoss::HPBOSS_DESC Desc{};
+	//Desc.strName = L"Dragon";
+	//Desc.eLevelID = LEVEL_STATIC;
+	//Desc.iMaxHp = m_iHP;
+
+	//m_pHpBoss = (CHPBoss*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPBoss"), &Desc);
+
+	//CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::GROAR);
+
 	return S_OK;
 }
 
@@ -1539,4 +1604,5 @@ void CDragon_Boss::Free()
 	Safe_Release(m_pRightTrail2);
 	Safe_Release(m_pRightTrail3);
 
+	Safe_Release(m_pHpBoss);
 }
