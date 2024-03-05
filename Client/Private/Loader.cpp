@@ -2370,11 +2370,9 @@ HRESULT CLoader::Load_Tower()
 				return E_FAIL;
 			}
 		}
+		
 
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_BrickGame"), TEXT("Prototype_GameObject_BrickGame"))))
-		{
-			return E_FAIL;
-		}
+
 	}
 
 #pragma endregion
