@@ -1799,7 +1799,6 @@ EffectInfo CImgui_Manager::Load_Data(_bool isAdd, _bool isQuick)
 	EffectInfo Info{};
 
 	OPENFILENAME ofn;
-	TCHAR filePathName[MAX_PATH] = L"";
 	TCHAR lpstrFile[MAX_PATH] = L"Effect.effect";
 	static TCHAR filter[] = L"이펙트 파일(*.effect)\0*.effect\0";
 
@@ -2129,14 +2128,13 @@ HRESULT CImgui_Manager::Export_Data(EffectInfo& Info)
 {
 	OPENFILENAME ofn;
 	TCHAR filePathName[MAX_PATH] = L"";
-	wstring strTempFilePath = m_CurrFilePath.wstring();
 	static TCHAR filter[] = L"이펙트 파일(*.effect)\0*.effect\0";
 
 	memset(&ofn, 0, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner = g_hWnd;
 	ofn.lpstrFilter = filter;
-	ofn.lpstrFile = strTempFilePath.data();
+	ofn.lpstrFile = filePathName;
 	ofn.nMaxFile = 256;
 	ofn.lpstrInitialDir = L"..\\..\\Client\\Bin\\EffectData";
 	ofn.Flags = OFN_OVERWRITEPROMPT;
