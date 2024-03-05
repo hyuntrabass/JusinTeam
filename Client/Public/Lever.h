@@ -32,6 +32,9 @@ private:
 	CModel* m_pModelCom = nullptr;
 	CCollider* m_pBodyColliderCom = nullptr;
 
+	class CTextButtonColor* m_pBar{ nullptr };
+
+
 	_bool m_isOn = false;
 	_bool m_isAllDone = false;
 

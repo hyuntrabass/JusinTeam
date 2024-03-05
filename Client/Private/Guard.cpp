@@ -56,7 +56,6 @@ HRESULT CGuard::Init(void* pArg)
 
 	Create_Range();
 
-
 	return S_OK;
 }
 
@@ -543,9 +542,9 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 		if (m_isDetected == true)
 			m_eCurState = STATE_CHASE;
 
-		m_vTurnAngle.y = 0.f;
 		Degree = XMConvertToDegrees(acosf(m_vTurnAngle.Dot(vLook)));
 		if (3.f >= Degree) {
+			m_vTurnAngle.y = 0.f;
 			m_pTransformCom->LookAt_Dir(m_vTurnAngle);
 			m_eCurState = STATE_IDLE;
 		}

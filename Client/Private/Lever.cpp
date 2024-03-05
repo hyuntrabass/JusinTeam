@@ -1,5 +1,6 @@
 #include "Lever.h"
 #include "Trigger_Manager.h"
+#include "UI_Manager.h"
 
 CLever::CLever(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -53,24 +54,28 @@ void CLever::Tick(_float fTimeDelta)
 		CTrigger_Manager::Get_Instance()->Set_Lever1();
 		m_ShaderPassIndex = AnimPass_Default;
 		m_isAllDone = true;
+		return;
 	}
 
 	if (m_pModelCom->IsAnimationFinished(0) and 1 == m_Info.iIndex) {
 		CTrigger_Manager::Get_Instance()->Set_Lever2();
 		m_ShaderPassIndex = AnimPass_Default;
 		m_isAllDone = true;
+		return;
 	}
 
 	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
 	_bool isColl = m_pBodyColliderCom->Intersect(pCollider);
 
 	if (isColl) {
-		if (m_pGameInstance->Key_Down(DIK_E))
+		if (m_pGameInstance->Key_Down(DIK_E)) {
+			CUI_Manager::Get_Instance()->Set_Collect();
+
 			m_isOn = true;
-		m_ShaderPassIndex = AnimPass_OutLine;
+		}
 	}
 	else {
-		m_ShaderPassIndex = AnimPass_Default;
+		m_ShaderPassIndex = AnimPass_OutLine;
 	}
 
 	Update_Collider();

@@ -29,6 +29,7 @@ private:
     CShader* m_pShaderCom = nullptr;
     CRenderer* m_pRendererCom = nullptr;
     CModel* m_pModelCom = nullptr;
+    _bool m_Open = false;
 
 private:
     DoorInfo m_Info{};

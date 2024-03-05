@@ -105,7 +105,6 @@ private:
 	PATTERN_TYPE m_Pattern_Type{ PATTERN_END };
 	EffectInfo Info{};
 	EFFECT_DIR m_Dir{DOWN};
-	_uint m_iPassIndex{};
 	_float m_fDeadTime{ 0.f };
 	_float m_fDissolveRatio{ 0.f };
 	_float m_fIdleTime{ 0.f };

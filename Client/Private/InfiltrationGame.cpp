@@ -28,6 +28,9 @@ HRESULT CInfiltrationGame::Init_Prototype()
 
 HRESULT CInfiltrationGame::Init(void* pArg)
 {
+	LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+	*Light = g_Light_Infiltration;
+
 	m_pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	Safe_AddRef(m_pPlayerTransform);
 
@@ -45,7 +48,6 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 {
 	Reset_Play(fTimeDelta);
 
-	
 
 	for (auto& pGuardList : m_GuardList)
 	{
@@ -487,6 +489,13 @@ void CInfiltrationGame::Free()
 		Safe_Release(pCheckPoint);
 	}
 	m_CheckPoint.clear();
+
+	for (auto& pLever : m_Lever)
+		Safe_Release(pLever);
+
+	m_Lever.clear();
+
+	Safe_Release(m_pDoor);
 
 	Safe_Release(m_pPlayerTransform);
 }
