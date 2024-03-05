@@ -29,6 +29,7 @@ private:
 	HRESULT Ready_Survival_Game();
 
 private:
+	HRESULT Ready_Dragon();
 	HRESULT Ready_DragonMap_Effect();
 
 private:

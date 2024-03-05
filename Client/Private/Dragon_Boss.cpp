@@ -3,6 +3,7 @@
 #include "Camera_Manager.h"
 #include "Effect_Manager.h"
 #include "Effect_Dummy.h"
+#include "Trigger_Manager.h"
 
 const _float CDragon_Boss::m_fAttackRange = 10.f;
 
@@ -47,7 +48,7 @@ HRESULT CDragon_Boss::Init(void* pArg)
 	m_pRightTrail3 = (CCommonTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &Desc);
 
 	m_eCurState = STATE_ROAR;
-	//m_eCurState = STATE_FLY_FIRE;
+	m_eCurState = STATE_SPAWN;
 
 	m_Animation.fInterpolationTime = 0.5f;
 
@@ -56,7 +57,11 @@ HRESULT CDragon_Boss::Init(void* pArg)
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 
-	m_pTransformCom->Set_Position(_vec3(vPlayerPos) + _vec3(0.f, 3.f, 0.f));
+	//m_pTransformCom->Set_Position(_vec3(vPlayerPos) + _vec3(0.f, 10.f, 0.f));
+	m_pTransformCom->Set_Position(_vec3(2926.f, 54.f, 2855.f));
+	m_pTransformCom->LookAt(_vec4(3000.f, 5.f, 3000.f, 1.f));
+
+	m_pTransformCom->Set_Speed(50.f);
 
 	return S_OK;
 }
@@ -72,10 +77,15 @@ void CDragon_Boss::Tick(_float fTimeDelta)
 		m_pTransformCom->Delete_Controller();
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_RIGHT))
-	{
-		//m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Blackhole"), TEXT("Prototype_GameObject_Blackhole"));
-	}
+	//if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() == TS_DragonMap)
+	//{
+	//	m_bLetsStart = true;
+	//}
+
+	//if (!m_bLetsStart)
+	//{
+	//	return;
+	//}
 
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
@@ -83,11 +93,19 @@ void CDragon_Boss::Tick(_float fTimeDelta)
 	Update_Collider();
 	Update_Trail(fTimeDelta);
 
-	m_pTransformCom->Gravity(fTimeDelta);
+	if (m_bSpawned)
+	{
+		m_pTransformCom->Gravity(fTimeDelta);
+	}
 }
 
 void CDragon_Boss::Late_Tick(_float fTimeDelta)
 {
+	//if (!m_bLetsStart)
+	//{
+	//	return;
+	//}
+
 	m_pModelCom->Play_Animation(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 
@@ -263,12 +281,23 @@ void CDragon_Boss::Init_State(_float fTimeDelta)
 
 			break;
 
+		case Client::CDragon_Boss::STATE_SPAWN:
+
+			m_Animation.iAnimIndex = FLY_LOOP;
+			m_Animation.isLoop = true;
+			m_Animation.fAnimSpeedRatio = 2.f;
+
+
+			break;
+
 		case Client::CDragon_Boss::STATE_ROAR:
 			m_Animation.iAnimIndex = ROAR;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 2.f;
 
 			m_pTransformCom->LookAt_Dir(vDir);
+
+			m_pTransformCom->Set_Speed(10.f);
 
 			break;
 
@@ -463,6 +492,37 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = STATE_CHASE;
 		}
+
+		break;
+
+	case Client::CDragon_Boss::STATE_SPAWN:
+	{
+		_vec3 vCenterPos = _vec3(3000.f, 0.f, 3000.f);
+		_float fCenterDistance = (vCenterPos - vPos).Length();
+
+		if (fCenterDistance <= 5.f)
+		{
+			if (!m_bSpawned)
+			{
+				//m_Animation.iAnimIndex = OUROBOROS_ATTACK06_END;
+				m_Animation.iAnimIndex = OUROBOROS_ATTACK06_END;
+				m_Animation.isLoop = false;
+				m_Animation.fStartAnimPos = 80.f;
+				m_Animation.bSkipInterpolation = true;
+
+				m_bSpawned = true;
+			}
+		}
+		else
+		{
+			m_pTransformCom->Go_Straight(fTimeDelta);
+		}
+
+		if (m_pModelCom->IsAnimationFinished(OUROBOROS_ATTACK06_END))
+		{
+			m_eCurState = STATE_ROAR;
+		}
+	}
 
 		break;
 

@@ -155,6 +155,10 @@ private:
 	_float m_fDragonHeadTime = {};
 
 private:
+	_bool m_bLetsStart = { false };
+	_bool m_bSpawned = { false };
+
+private:
 	_uint m_iAttackPattern = {};
 	_bool m_bSelectAttackPattern = { false };
 	_bool m_bAttack_Selected[ATTACK_END] = { false };
