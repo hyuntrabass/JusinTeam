@@ -1198,7 +1198,7 @@ void CGameInstance::PlayBGM(const wstring& strSoundTag, float fVolume)
 
 	return m_pSound_Manager->PlayBGM(strSoundTag, fVolume);
 }
-void CGameInstance::StopSound(_uint iChannel)
+void CGameInstance::StopSound(_int iChannel)
 {
 	if (!m_pSound_Manager)
 	{
@@ -1217,7 +1217,7 @@ void CGameInstance::StopAll()
 	return m_pSound_Manager->StopAll();
 }
 
-HRESULT CGameInstance::FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond, _bool IsReusable, _float fFadeSoundRatio)
+HRESULT CGameInstance::FadeoutSound(_int iChannel, _float fTimeDelta, _float fFadeoutSecond, _bool IsReusable, _float fFadeSoundRatio)
 {
 	if (!m_pSound_Manager)
 	{
@@ -1227,7 +1227,7 @@ HRESULT CGameInstance::FadeoutSound(_uint iChannel, _float fTimeDelta, _float fF
 	return m_pSound_Manager->FadeoutSound(iChannel, fTimeDelta, fFadeoutSecond, IsReusable, fFadeSoundRatio);
 }
 
-HRESULT CGameInstance::FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond, _float fFadeSoundRatio)
+HRESULT CGameInstance::FadeinSound(_int iChannel, _float fTimeDelta, _float fFadeinSecond, _float fFadeSoundRatio)
 {
 	if (!m_pSound_Manager)
 	{
@@ -1389,7 +1389,7 @@ const _uint& CGameInstance::Get_FPS()
 }
 #endif
 
-_bool CGameInstance::Get_IsPlayingSound(_uint iChannel)
+_bool CGameInstance::Get_IsPlayingSound(_int iChannel)
 {
 	if (!m_pSound_Manager)
 	{
@@ -1399,7 +1399,7 @@ _bool CGameInstance::Get_IsPlayingSound(_uint iChannel)
 	return m_pSound_Manager->Get_IsPlayingSound(iChannel);
 }
 
-_float CGameInstance::Get_ChannelVolume(_uint iChannel)
+_float CGameInstance::Get_ChannelVolume(_int iChannel)
 {
 	if (!m_pSound_Manager)
 	{
@@ -1409,7 +1409,7 @@ _float CGameInstance::Get_ChannelVolume(_uint iChannel)
 	return m_pSound_Manager->GetChannelVolume(iChannel);
 }
 
-_bool CGameInstance::Get_IsLoopingSound(_uint iChannel)
+_bool CGameInstance::Get_IsLoopingSound(_int iChannel)
 {
 	if (!m_pSound_Manager)
 	{
@@ -1419,7 +1419,7 @@ _bool CGameInstance::Get_IsLoopingSound(_uint iChannel)
 	return m_pSound_Manager->Get_IsLoopingSound(iChannel);
 }
 
-_float CGameInstance::Get_ChannelCurPosRatio(_uint iChannel)
+_float CGameInstance::Get_ChannelCurPosRatio(_int iChannel)
 {
 	if (!m_pSound_Manager)
 	{
@@ -1459,7 +1459,7 @@ void CGameInstance::Set_HellHeight(const _float& fHeight)
 	m_fHellHeight = fHeight;
 }
 
-void CGameInstance::Set_ChannelVolume(_uint iChannel, _float fVolume)
+void CGameInstance::Set_ChannelVolume(_int iChannel, _float fVolume)
 {
 	if (!m_pSound_Manager)
 	{
@@ -1469,7 +1469,7 @@ void CGameInstance::Set_ChannelVolume(_uint iChannel, _float fVolume)
 	return m_pSound_Manager->SetChannelVolume(iChannel, fVolume);
 }
 
-void CGameInstance::Set_ChannelStartVolume(_uint iChannel)
+void CGameInstance::Set_ChannelStartVolume(_int iChannel)
 {
 	if (!m_pSound_Manager)
 	{

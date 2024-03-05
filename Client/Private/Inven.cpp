@@ -208,7 +208,7 @@ void CInven::Tick(_float fTimeDelta)
 				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
 				*LightDesc = m_Light_Desc;
 			}
-			
+
 			for (size_t i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 			{
 				if (m_pGameInstance->Get_IsLoopingSound(i))
@@ -218,16 +218,21 @@ void CInven::Tick(_float fTimeDelta)
 			}
 
 			CFadeBox::FADE_DESC Desc = {};
-			Desc.fOut_Duration = 0.8f;
+			Desc.fIn_Duration = 0.5f;
+			Desc.fOut_Duration = 1.f;
+			Desc.phasFadeCompleted = &m_isReadytoDeactivate;
 			CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
-
-			CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
-			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
-			CUI_Manager::Get_Instance()->Set_InvenActive(false);
-			m_isActive = false;
 		}
 	}
-
+	if (m_isActive && m_isReadytoDeactivate)
+	{
+		m_isReadytoDeactivate = false;
+		CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
+		CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
+		CUI_Manager::Get_Instance()->Set_InvenActive(false);
+		m_isActive = false;
+		return;
+	}
 
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
@@ -408,7 +413,7 @@ HRESULT CInven::Add_Parts()
 	Button.fFontSize = 0.5f;
 	Button.strText = TEXT("°¡¹æ");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Back");
-	Button.vPosition = _vec2(20.f, 20.f);
+	Button.vPosition = _vec2(30.f, 30.f);
 	Button.vSize = _vec2(50.f, 50.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	Button.vTextPosition = _vec2(40.f, 0.f);
@@ -422,7 +427,7 @@ HRESULT CInven::Add_Parts()
 	
 	Button.strText = TEXT("");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Out");
-	Button.vPosition = _vec2(1230.f, 30.f);
+	Button.vPosition = _vec2(1230.f, 40.f);
 	Button.vSize = _vec2(70.f, 70.f);
 
 	m_pExitButton = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);

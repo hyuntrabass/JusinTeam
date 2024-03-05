@@ -178,7 +178,6 @@ _bool CUI_Manager::Get_MpState(_uint* iMp)
 	return false;
 }
 
-
 const _uint& CUI_Manager::Get_CustomPart(PART_TYPE eType)
 {
 	m_eChangedPart = PT_END;

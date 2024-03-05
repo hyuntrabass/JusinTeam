@@ -43,10 +43,17 @@ _int CSound_Manager::Play_Sound(const wstring& strSoundTag, _float fVolume, _boo
 		{
 			m_pSystem->playSound(pSound, 0, false, &m_pChannelArr[i]);
 
+			_uint iSoundLength{};
+			pSound->getLength(&iSoundLength, FMOD_TIMEUNIT_MS);
+			fStartPosRatio *= static_cast<_float>(iSoundLength);
+			_uint iStartPos = static_cast<_uint>(fStartPosRatio);
+			m_pChannelArr[i]->setPosition(iStartPos, FMOD_TIMEUNIT_MS);
+
 			if (isLoop)
 			{
 				m_pChannelArr[i]->setMode(FMOD_LOOP_NORMAL);
 				m_pChannelArr[i]->setVolume(fVolume * m_fSystemVolume * m_fEnvironmentVolume);
+				m_pChannelArr[i]->setLoopPoints(iStartPos, FMOD_TIMEUNIT_MS, iSoundLength, FMOD_TIMEUNIT_MS);
 			}
 			else
 			{
@@ -56,12 +63,6 @@ _int CSound_Manager::Play_Sound(const wstring& strSoundTag, _float fVolume, _boo
 
 			//이전 사운드 저장
 			m_SoundDescs[i].fStartVolume = fVolume;
-			
-			_uint iSoundLength{};
-			pSound->getLength(&iSoundLength, FMOD_TIMEUNIT_MS);
-			fStartPosRatio *= static_cast<_float>(iSoundLength);
-			_uint iStartPos = static_cast<_uint>(fStartPosRatio);
-			m_pChannelArr[i]->setPosition(iStartPos, FMOD_TIMEUNIT_MS);
 
 			m_pSystem->update();
 
@@ -91,8 +92,13 @@ void CSound_Manager::PlayBGM(const wstring& strSoundTag, _float fVolume)
 	m_pSystem->update();
 }
 
-void CSound_Manager::StopSound(_uint iChannel)
+void CSound_Manager::StopSound(_int iChannel)
 {
+	if (iChannel < 0)
+	{
+		return;
+	}
+
 	m_pChannelArr[iChannel]->stop();
 }
 
@@ -104,15 +110,25 @@ void CSound_Manager::StopAll()
 	}
 }
 
-void CSound_Manager::SetChannelVolume(_uint iChannel, _float fVolume)
+void CSound_Manager::SetChannelVolume(_int iChannel, _float fVolume)
 {
+	if (iChannel < 0)
+	{
+		return;
+	}
+
 	m_pChannelArr[iChannel]->setVolume(fVolume);
 
 	m_pSystem->update();
 }
 
-void CSound_Manager::SetChannelStartVolume(_uint iChannel)
+void CSound_Manager::SetChannelStartVolume(_int iChannel)
 {
+	if (iChannel < 0)
+	{
+		return;
+	}
+
 	m_pChannelArr[iChannel]->setVolume(m_SoundDescs[iChannel].fStartVolume * m_fSystemVolume);
 
 	m_pSystem->update();
@@ -261,11 +277,11 @@ void CSound_Manager::Update()
 	}
 }
 
-HRESULT CSound_Manager::FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond, _bool IsReusable, _float fFadeSoundRatio)
+HRESULT CSound_Manager::FadeoutSound(_int iChannel, _float fTimeDelta, _float fFadeoutSecond, _bool IsReusable, _float fFadeSoundRatio)
 {
 	if (iChannel < 0)
 	{
-		return E_FAIL;
+		return S_OK;
 	}
 
 	if (not m_SoundDescs[iChannel].IsFadingout)
@@ -282,11 +298,11 @@ HRESULT CSound_Manager::FadeoutSound(_uint iChannel, _float fTimeDelta, _float f
 	return S_OK;
 }
 
-HRESULT CSound_Manager::FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond, _float fFadeSoundRatio)
+HRESULT CSound_Manager::FadeinSound(_int iChannel, _float fTimeDelta, _float fFadeinSecond, _float fFadeSoundRatio)
 {
 	if (iChannel < 0)
 	{
-		return E_FAIL;
+		return S_OK;
 	}
 
 	_float fStartVolume{};
@@ -317,24 +333,39 @@ HRESULT CSound_Manager::FadeinSound(_uint iChannel, _float fTimeDelta, _float fF
 	return S_OK;
 }
 
-_bool CSound_Manager::Get_IsPlayingSound(_uint eChannel)
+_bool CSound_Manager::Get_IsPlayingSound(_int iChannel)
 {
+	if (iChannel < 0)
+	{
+		return false;
+	}
+
 	_bool bPlay = false;
-	m_pChannelArr[eChannel]->isPlaying(&bPlay);
+	m_pChannelArr[iChannel]->isPlaying(&bPlay);
 
 	return bPlay;
 }
 
-_float CSound_Manager::GetChannelVolume(_uint iChannel)
+_float CSound_Manager::GetChannelVolume(_int iChannel)
 {
+	if (iChannel < 0)
+	{
+		return 0.f;
+	}
+
 	_float fVolume{};
 	m_pChannelArr[iChannel]->getVolume(&fVolume);
 
 	return fVolume;
 }
 
-_bool CSound_Manager::Get_IsLoopingSound(_uint iChannel)
+_bool CSound_Manager::Get_IsLoopingSound(_int iChannel)
 {
+	if (iChannel < 0)
+	{
+		return false;
+	}
+
 	FMOD_MODE Mode{};
 	m_pChannelArr[iChannel]->getMode(&Mode);
 
@@ -348,8 +379,13 @@ _bool CSound_Manager::Get_IsLoopingSound(_uint iChannel)
 	}
 }
 
-_float CSound_Manager::Get_CurPosRatio(_uint iChannel)
+_float CSound_Manager::Get_CurPosRatio(_int iChannel)
 {
+	if (iChannel < 0)
+	{
+		return 0.f;
+	}
+
 	FMOD::Sound* pSound{};
 	m_pChannelArr[iChannel]->getCurrentSound(&pSound);
 	_uint iSoundLength{};
@@ -396,9 +432,9 @@ FMOD::Sound* CSound_Manager::Find_Sound(const wstring& strSoundTag)
 	return it->second;
 }
 
-void CSound_Manager::FadingoutSound(_uint iChannel)
+void CSound_Manager::FadingoutSound(_int iChannel)
 {
-	if (m_fSystemVolume == 0.f)
+	if (m_fSystemVolume == 0.f || iChannel < 0)
 	{
 		return;
 	}
@@ -437,9 +473,9 @@ void CSound_Manager::FadingoutSound(_uint iChannel)
 	SetChannelVolume(iChannel, fVolume);
 }
 
-void CSound_Manager::FadinginSound(_uint iChannel)
+void CSound_Manager::FadinginSound(_int iChannel)
 {
-	if (m_fSystemVolume == 0.f)
+	if (m_fSystemVolume == 0.f || iChannel < 0)
 	{
 		return;
 	}
@@ -478,8 +514,13 @@ void CSound_Manager::FadinginSound(_uint iChannel)
 	SetChannelVolume(iChannel, fVolume);
 }
 
-_float CSound_Manager::Standard_FadeSound(_uint iChannel)
+_float CSound_Manager::Standard_FadeSound(_int iChannel)
 {
+	if (iChannel < 0)
+	{
+		return 0.f;
+	}
+
 	_float fStandardSound{};
 	if (iChannel == 0)
 	{

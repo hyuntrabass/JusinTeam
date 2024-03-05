@@ -35,6 +35,8 @@ HRESULT CSickleTrap::Init(void* pArg)
 
 	//m_pGameInstance->Play_Sound(TEXT("SE_5130_Meteor_SFX_01"));
 
+	m_iHP = 1;
+
 	return S_OK;
 }
 
@@ -44,19 +46,30 @@ void CSickleTrap::Tick(_float fTimeDelta)
 	m_fLifeTimer += fTimeDelta;
 	if (m_fLifeTimer > 10.f)
 	{
-		Kill();
+		m_iHP = 0;
 	}
 
-	m_EffectMatrices[0] = _mat::CreateScale(6.f)/* * _mat::CreateRotationY(XMConvertToRadians(m_fLifeTimer *-2000.f))*/ * m_pTransformCom->Get_World_Matrix();
-	m_EffectMatrices[1] = _mat::CreateScale(6.f) * m_pTransformCom->Get_World_Matrix();
-	m_EffectMatrices[2] = _mat::CreateScale(4.f)* m_pTransformCom->Get_World_Matrix();
+	m_EffectMatrices = m_pTransformCom->Get_World_Matrix();
 	
-	for (size_t i = 0; i < 2; i++)
+	for (size_t i = 0; i < m_iNumEffects; i++)
 	{
 		if (m_pEffects[i])
 		{
 			m_pEffects[i]->Tick(fTimeDelta);
+			if (!m_iHP)
+			{
+				m_pEffects[0]->Kill();
+			}
+			if (m_pEffects[i]->isDead())
+			{
+				Safe_Release(m_pEffects[i]);
+			}
 		}
+	}
+
+	if (not m_pEffects[0])
+	{
+		Kill();
 	}
 
 	if (m_fAttDelay > 1.f)
@@ -66,14 +79,12 @@ void CSickleTrap::Tick(_float fTimeDelta)
 			
 			m_fAttDelay = 0.f;
 		}
-
 	}
-
 }
 
 void CSickleTrap::Late_Tick(_float fTimeDelta)
 {
-	for (size_t i = 0; i < 2; i++)
+	for (size_t i = 0; i < m_iNumEffects; i++)
 	{
 		if (m_pEffects[i])
 		{
@@ -105,16 +116,10 @@ HRESULT CSickleTrap::Add_Components()
 	Safe_AddRef(pEffect_Manager);
 	EffectInfo Info{};
 
-	Info = pEffect_Manager->Get_EffectInformation(L"HumanBoss_Ring");
-	Info.pMatrix = &m_EffectMatrices[1];
+	Info = pEffect_Manager->Get_EffectInformation(L"Boss_Att7_Trap");
+	Info.pMatrix = &m_EffectMatrices;
 	Info.isFollow = true;
 	m_pEffects[0] = pEffect_Manager->Clone_Effect(Info);
-
-	Info = pEffect_Manager->Get_EffectInformation(L"HumanBoss_Ring2");
-	Info.pMatrix = &m_EffectMatrices[2];
-	Info.isFollow = true;
-	m_pEffects[1] = pEffect_Manager->Clone_Effect(Info);
-
 
 	Safe_Release(pEffect_Manager);
 
@@ -160,7 +165,7 @@ void CSickleTrap::Free()
 	__super::Free();
 
 	Safe_Release(m_pColliderCom);
-	for (size_t i = 0; i < 2; i++)
+	for (size_t i = 0; i < m_iNumEffects; i++)
 	{
 		Safe_Release(m_pEffects[i]);
 	}

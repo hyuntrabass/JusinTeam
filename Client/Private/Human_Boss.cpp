@@ -70,26 +70,23 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 
 	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_BossRoom)
 	{
-		return;
+		Kill();
 	}
 	if (CCamera_Manager::Get_Instance()->Get_CameraState() == CS_INVEN)
 	{
 		return;
 	}
 
-	if ((CUI_Manager::Get_Instance()->Get_Hp().x) <= 0)
-	{
-
-	}
+	
 
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD8, InputChannel::UI))
 	{
-		m_eState = Counter_Start;
+		m_eState = CommonAtt0;
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD9, InputChannel::UI))
 	{
 
-		m_eState = Pizza_Start;
+		m_eState = Hide_Start;
 	}
 
 	if (m_pHpBoss)
@@ -123,7 +120,14 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 	}
 	if (!m_bViewModel && m_fModelDissolveRatio < 1.f)
 	{
-		m_fModelDissolveRatio += fTimeDelta * 1.5f;
+		if (m_eState != Die)
+		{
+			m_fModelDissolveRatio += fTimeDelta * 1.5f;
+		}
+		else
+		{
+			m_fModelDissolveRatio += fTimeDelta *0.2f;
+		}
 	}
 	else if (m_bViewModel && m_fModelDissolveRatio > 0.f)
 	{
@@ -146,9 +150,15 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 	}
 
 	m_pTransformCom->Set_OldMatrix();
+
 	Init_State(fTimeDelta);
 	m_pModelCom->Set_Animation(m_Animation);
-	Tick_State(fTimeDelta);
+	if (m_eState != Die)
+	{
+		Tick_State(fTimeDelta);
+
+	}
+
 	Update_Collider();
 	Update_Trail();
 	After_Attack(fTimeDelta);
@@ -451,6 +461,7 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = false;
 			break;
 		case Client::CHuman_Boss::Hide:
+			m_pTransformCom->Set_Position(_vec3(0.f));
 			m_Animation.iAnimIndex = BossAnim_attack06_Loop;
 			m_Animation.isLoop = true;
 			break;
@@ -488,6 +499,9 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 			m_fPatternDelay = 0.f;
 			break;
 		case Client::CHuman_Boss::Die:
+			m_Animation.iAnimIndex = BossAnim_Die;
+			m_Animation.fAnimSpeedRatio = 1.8f;
+			m_fModelDissolveRatio = 0.f;
 			break;
 		default:
 			break;
@@ -683,6 +697,12 @@ void CHuman_Boss::Set_Damage(_int iDamage, _uint MonAttType)
 
 	CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 1.5f), (ATTACK_TYPE)MonAttType);
 	m_iHP -= iDamage;
+	if (m_iHP <= 0)
+	{
+		m_iHP = 0;
+		m_eState = Die;
+		return;
+	}
 	switch ((ATTACK_TYPE)MonAttType)
 	{
 	case Client::AT_Sword_Common:
@@ -900,6 +920,16 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 	if (m_eState == CommonAtt0)
 	{
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
+
+		if (Index >= 0.f && Index <= 2.f)
+		{
+		
+			_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
+			vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
+			vPlayerPos.x += 0.05f;
+			m_pTransformCom->LookAt(vPlayerPos);
+		}
+
 		if (Index >= 0.f && Index <= 44.f)
 		{
 			Increased_Range(50.f, fTimedelta);
@@ -927,10 +957,6 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 						m_bAttacked = true;
 					}
 				}
-			}
-			if (m_bAttacked)
-			{
-				_vec3 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
 			}
 		}
 		else if (Index >= 61.f && Index <= 63.f)
@@ -1045,23 +1071,29 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			Safe_Release(m_pDimEffect);
 			Safe_Release(m_pFrameEffect);
 		}
-		if (Index >= 0.f && Index <= 2.f)
+		if (Index >= 0.f && Index <= 1.5f)
 		{
 			if (!m_bAttacked)
 			{
+
 				_vec3 vPos = m_pPlayerTransform->Get_State(State::Pos) - (m_pPlayerTransform->Get_State(State::Look).Get_Normalized() * 1.7f);
-				m_pTransformCom->Set_FootPosition(vPos);
+				vPos.y = -1.4f;
+				m_pTransformCom->Set_Position(vPos);
+
 				_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
 				vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
 				vPlayerPos.x += 0.05f;
 				m_pTransformCom->LookAt(vPlayerPos);
-				View_Attack_Range(Range_135);
 				m_bAttacked = true;
 			}
 		}
-		else if (Index >= 2.f && Index <= 4.f)
+		else if (Index >= 1.5f && Index <= 3.f)
 		{
-			m_bAttacked = false;
+			if (m_bAttacked)
+			{
+				View_Attack_Range(Range_135);
+				m_bAttacked = false;
+			}
 		}
 		else if (Index >= 49.f && Index <= 53.f)
 		{
@@ -1075,7 +1107,6 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 						m_bAttacked = true;
 					}
 				}
-
 			}
 		}
 	}
@@ -1104,7 +1135,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			m_bAttacked = false;
 		}
 
-		if (Index >= 100.f && Index <= 160.f)
+		if (Index >= 100.f && Index <= 173.f)
 		{
 			if (!m_bAttacked)
 			{
@@ -1149,7 +1180,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 				}
 			}
 		}
-		else if (Index >= 161.f && Index <= 163.f)
+		else if (Index >= 173.f && Index <= 176.f)
 		{
 			m_iPassIndex = AnimPass_DissolveNoCull;
 			m_iWeaponPassIndex = AnimPass_Dissolve;
@@ -1258,6 +1289,15 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			}
 		}
 	}
+	else if (m_eState == Die)
+	{
+		_float Index = m_pModelCom->Get_CurrentAnimPos();
+		if (Index > 100)
+		{
+			m_bViewModel = false;
+		}
+
+	}
 	else if (m_eState == Pizza_End)
 	{
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
@@ -1348,12 +1388,13 @@ _bool CHuman_Boss::Compute_Angle(_float fAngle, _float RotationY)
 	{
 		fUpperBound -= 360.f;
 	}
-	_vec4 vLook = m_pTransformCom->Get_State(State::Look).Get_Normalized();
-
+	_vec4 vLook = m_pTransformCom->Get_State(State::Look);
+	vLook.y = 0.f;
+	vLook.Normalize();
 	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
 	_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
-	vPlayerPos.y = vPos.y;
 	_vec4 vDir = vPlayerPos - vPos;
+	vDir.y = 0.f;
 	vDir.Normalize();
 
 	_float fResult = vLook.Dot(vDir);
@@ -1369,7 +1410,7 @@ _bool CHuman_Boss::Compute_Angle(_float fAngle, _float RotationY)
 
 	fResult = vRight.Dot(vDir);
 
-	if (fResult < 0)
+	if (fResult < -0.02)
 	{
 		angleInDegrees = 360.f - angleInDegrees;
 	}

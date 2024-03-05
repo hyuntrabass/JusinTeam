@@ -10,7 +10,7 @@ CLevel_AnimTool::CLevel_AnimTool(_dev pDevice, _context pContext)
 HRESULT CLevel_AnimTool::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_TOOL);
-	m_pGameInstance->PlayBGM(TEXT("AMB_Voidness_Rain_Area_SFX_01"), 0.3f);
+	//m_pGameInstance->PlayBGM(TEXT("AMB_Voidness_Rain_Area_SFX_01"));
 
 	if (FAILED(Ready_Camera()))
 	{

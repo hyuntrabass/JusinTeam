@@ -52,6 +52,7 @@ private:
 private:
 	// Test
 	HRESULT Ready_Test(); 
+	HRESULT Ready_Water(); 
 
 private:
 	HRESULT Ready_Trigger();

@@ -10,6 +10,7 @@
 #include "Trigger_Manager.h"
 #include "VTFMonster.h"
 #include "Effect_Manager.h"
+#include "Lake.h"
 
 CLevel_Village::CLevel_Village(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -99,6 +100,11 @@ HRESULT CLevel_Village::Init()
 	if (FAILED(Ready_Trigger()))
 	{
 		MSG_BOX("Failed to Ready Trigger");
+		return E_FAIL;
+	}	
+	if (FAILED(Ready_Water()))
+	{
+		MSG_BOX("Failed to Ready Water");
 		return E_FAIL;
 	}
 
@@ -856,12 +862,17 @@ HRESULT CLevel_Village::Ready_Trigger()
 	return CTrigger_Manager::Get_Instance()->Ready_Trigger_Village();
 }
 
-HRESULT CLevel_Village::Ready_Test()
+
+HRESULT CLevel_Village::Ready_Water()
 {
-	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Test"), TEXT("Prototype_GameObject_Nastron03"))))
-	//{
-	//	return E_FAIL;
-	//}
+	CLake::WATER_DESC Desc;
+	Desc.fReflectionScale = 0.1f;
+	Desc.fRefractionScale = 0.1f;
+	Desc.vPos = _vec3(0.f, -40.f, 0.f);
+	Desc.vSize = _vec2(3000.f, 3000.f);
+	Desc.fWaterSpeed = 0.01f;
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, L"Layer_Map", L"Prototype_GameObject_Water", &Desc)))
+		return E_FAIL;
 
 	return S_OK;
 }
