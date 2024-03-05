@@ -70,7 +70,7 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 
 	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_BossRoom)
 	{
-		return;
+		Kill();
 	}
 	if (CCamera_Manager::Get_Instance()->Get_CameraState() == CS_INVEN)
 	{
@@ -81,7 +81,7 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD8, InputChannel::UI))
 	{
-		m_eState = Throw_Sickle;
+		m_eState = CommonAtt0;
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD9, InputChannel::UI))
 	{
@@ -150,16 +150,15 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 	}
 
 	m_pTransformCom->Set_OldMatrix();
-	if ((CUI_Manager::Get_Instance()->Get_Hp().x) > 0)
-	{	
-		Init_State(fTimeDelta);
-		m_pModelCom->Set_Animation(m_Animation);
-		if (m_eState != Die)
-		{
-			Tick_State(fTimeDelta);
 
-		}
+	Init_State(fTimeDelta);
+	m_pModelCom->Set_Animation(m_Animation);
+	if (m_eState != Die)
+	{
+		Tick_State(fTimeDelta);
+
 	}
+
 	Update_Collider();
 	Update_Trail();
 	After_Attack(fTimeDelta);
@@ -924,9 +923,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 
 		if (Index >= 0.f && Index <= 2.f)
 		{
-			_vec3 vPos = m_pPlayerTransform->Get_State(State::Pos) - (m_pPlayerTransform->Get_State(State::Look).Get_Normalized() * 1.7f);
-			vPos.y = vPos.y = -0.2f;
-			m_pTransformCom->Set_FootPosition(vPos);
+		
 			_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
 			vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
 			vPlayerPos.x += 0.05f;
@@ -1074,24 +1071,29 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			Safe_Release(m_pDimEffect);
 			Safe_Release(m_pFrameEffect);
 		}
-		if (Index >= 0.f && Index <= 2.f)
+		if (Index >= 0.f && Index <= 1.5f)
 		{
 			if (!m_bAttacked)
 			{
+
 				_vec3 vPos = m_pPlayerTransform->Get_State(State::Pos) - (m_pPlayerTransform->Get_State(State::Look).Get_Normalized() * 1.7f);
-				vPos.y = -0.2f;
-				m_pTransformCom->Set_FootPosition(vPos);
+				vPos.y = -1.4f;
+				m_pTransformCom->Set_Position(vPos);
+
 				_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
 				vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
 				vPlayerPos.x += 0.05f;
 				m_pTransformCom->LookAt(vPlayerPos);
-				View_Attack_Range(Range_135);
 				m_bAttacked = true;
 			}
 		}
-		else if (Index >= 2.f && Index <= 4.f)
+		else if (Index >= 1.5f && Index <= 3.f)
 		{
-			m_bAttacked = false;
+			if (m_bAttacked)
+			{
+				View_Attack_Range(Range_135);
+				m_bAttacked = false;
+			}
 		}
 		else if (Index >= 49.f && Index <= 53.f)
 		{
@@ -1105,7 +1107,6 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 						m_bAttacked = true;
 					}
 				}
-
 			}
 		}
 	}

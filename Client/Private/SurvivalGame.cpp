@@ -4,6 +4,7 @@
 #include "Projectile.h"
 #include "Survival_Mon.h"
 #include "Camera_Manager.h"
+#include "Trigger_Manager.h"
 
 CSurvivalGame::CSurvivalGame(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -41,6 +42,10 @@ void CSurvivalGame::Tick(_float fTimeDelta)
 	//	m_bGameStart = false;
 	//}
 
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_SurvivalMap)
+	{
+		Kill();
+	}
 
 	Init_Pattern(fTimeDelta);
 	Tick_Pattern(fTimeDelta);

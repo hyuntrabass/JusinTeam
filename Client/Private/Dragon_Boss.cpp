@@ -73,6 +73,13 @@ HRESULT CDragon_Boss::Init(void* pArg)
 
 void CDragon_Boss::Tick(_float fTimeDelta)
 {
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_DragonMap)
+	{
+		Kill();
+		m_pGameInstance->Delete_CollisionObject(this);
+		m_pTransformCom->Delete_Controller();
+	}
+
 	m_pTransformCom->Set_OldMatrix();
 
 	if (m_pGameInstance->Key_Down(DIK_DELETE))

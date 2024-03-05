@@ -4,6 +4,7 @@
 #include "Effect_Dummy.h"
 #include "Effect_Manager.h"
 #include "Camera_Manager.h"
+#include "Trigger_Manager.h"
 
 _uint CLauncher::m_iLauncherID = 0;
 _uint CLauncher::m_iDestroyCount = 0;
@@ -229,6 +230,11 @@ HRESULT CLauncher::Init(void* pArg)
 void CLauncher::Tick(_float fTimeDelta)
 {
 	m_pTransformCom->Set_OldMatrix();
+
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_SurvivalMap)
+	{
+		Kill();
+	}
 
 	if (m_pGameInstance->Key_Pressing(DIK_DOWN))
 	{
