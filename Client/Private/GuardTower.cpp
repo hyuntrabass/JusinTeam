@@ -224,12 +224,12 @@ HRESULT CGuardTower::Render()
 void CGuardTower::Set_Damage(_int iDamage, _uint iDamageType)
 {
 
-	//if (iDamageType == AT_Sword_Common)
-	//{
-	//	m_iHP -= iDamage;
-	//	m_bChangePass = true;
-	//}
-	//CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 2.f), (ATTACK_TYPE)iDamageType);
+	if (iDamageType == AT_Sword_Common)
+	{
+		m_iHP -= iDamage;
+		m_bChangePass = true;
+	}
+	CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 2.f), (ATTACK_TYPE)iDamageType);
 
 }
 
@@ -396,7 +396,7 @@ void CGuardTower::View_Detect_Range_Pattern_1(_float fTimeDelta)
 
 		if (fDetectRadian < 22.5f && Compute_PlayerDistance() <= fDistance)
 		{
-			if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), vTowerLook, 100.f, pBuffer))
+			if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), Compute_Player_To_Dir(m_pTransformCom->Get_CenterPos()), 100.f, pBuffer))
 			{
 				if (pBuffer.block.distance > Compute_PlayerDistance())
 				{
@@ -568,7 +568,7 @@ void CGuardTower::View_Detect_Range_Pattern_2(EFFECT_DIR eDir)
 
 	if (fDetectRadian < 45.f && Compute_PlayerDistance() <= fDistance)
 	{
-		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), vTowerLook, 100.f, pBuffer))
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), Compute_Player_To_Dir(m_pTransformCom->Get_CenterPos()), 200.f, pBuffer))
 		{
 			if (pBuffer.block.distance > Compute_PlayerDistance())
 			{
@@ -704,7 +704,7 @@ void CGuardTower::View_Detect_Range_Pattern_3()
 
 	if (Compute_PlayerDistance() <= 7.5f)
 	{
-		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), vTowerLook, 100.f, pBuffer))
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), Compute_Player_To_Dir(m_pTransformCom->Get_CenterPos()), 100.f, pBuffer))
 		{
 			if (pBuffer.block.distance > Compute_PlayerDistance())
 			{
@@ -741,9 +741,11 @@ _vec4 CGuardTower::Compute_PlayerLook()
 _float CGuardTower::Compute_PlayerDistance()
 {
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+	//_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+	_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
 
-	_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+	//_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
+	_vec4 vPos = m_pTransformCom->Get_CenterPos();
 
 	_float fDistance = (vPlayerPos - vPos).Length();
 
@@ -753,7 +755,8 @@ _float CGuardTower::Compute_PlayerDistance()
 _vec4 CGuardTower::Compute_Player_To_Dir(_vec4 vPos)
 {
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
-	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+	//_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+	_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
 
 	_vec4 vDir = (vPlayerPos - vPos).Get_Normalized();
 
@@ -1011,13 +1014,9 @@ CGameObject* CGuardTower::Clone(void* pArg)
 
 void CGuardTower::Free()
 {
-	__super::Free();
-	//if (!m_isPrototype)
-	//{
 	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
-	//}
-	//m_pGameInstance->Delete_CollisionObject(this);
 
+	__super::Free();
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

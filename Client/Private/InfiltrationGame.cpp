@@ -100,25 +100,27 @@ void CInfiltrationGame::Late_Tick(_float fTimeDelta)
 			case 2:
 				pPath = TEXT("../Bin/Data/MiniDungeon_Guard_4_Data.dat");
 				break;
-			//case 3:
-			//	pPath = TEXT("../Bin/Data/MiniDungeon_Guard_5_Data.dat");
-			//	break;
-			//case 4:
-			//	pPath = TEXT("../Bin/Data/MiniDungeon_Guard_6_Data.dat");
-			//	break;
+			case 3:
+				pPath = TEXT("../Bin/Data/MiniDungeon_Guard_5_Data.dat");
+				break;
+			case 4:
+				pPath = TEXT("../Bin/Data/MiniDungeon_Guard_6_Data.dat");
+				break;
 
 			
 			}
 			_int Index = CheckIndex - 1;
 			if (0 <= Index) {
 				for (auto& pGameObject : m_GuardList[Index]) {
-					//pGameObject->Kill();
-					Safe_Release(pGameObject);
+					pGameObject->Kill();
 				}
-				m_GuardList[Index].clear();
+				for (auto& pGameObject : m_GuardTowerList[Index]) {
+					pGameObject->Kill();
+				}
 			}
 
-			Create_Guard(pPath);
+			if(pPath != nullptr)
+				Create_Guard(pPath);
 			pCheckPoint->Kill();
 		}
 	}

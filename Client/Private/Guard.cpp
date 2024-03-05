@@ -89,7 +89,7 @@ void CGuard::Tick(_float fTimeDelta)
 		}
 	}
 
-	if (0 >= m_iHP || 0.01f < m_fDeadTime) {
+	if (0 >= m_iHP || 0.01f < m_fDeadTime || m_isDead == true) {
 		m_pGameInstance->Delete_CollisionObject(this);
 		m_pTransformCom->Delete_Controller();
 
@@ -359,7 +359,7 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 
 		break;
 	case STATE_CHASE:
-		m_pTransformCom->Set_Speed(5.f);
+		m_pTransformCom->Set_Speed(7.f);
 		m_fAttackTime += fTimeDelta;
 
 		if(fDist < 2.f)
@@ -378,6 +378,7 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 		}
 		else
 		{
+			vNormalToPlayer.y = 0.f;
 			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
@@ -543,7 +544,7 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 
 		break;
 	case STATE_CHASE:
-		m_pTransformCom->Set_Speed(5.f);
+		m_pTransformCom->Set_Speed(7.f);
 		m_fAttackTime += fTimeDelta;
 
 		if (fDist < 2.f)
@@ -557,11 +558,13 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 
 				m_fAttackTime = 0.f;
 			}
+			vNormalToPlayer.y = 0.f;
 			m_pTransformCom->LookAt(vTargetPos);
 
 		}
 		else
 		{
+			vNormalToPlayer.y = 0.f;
 			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
@@ -1021,11 +1024,9 @@ CGameObject* CGuard::Clone(void* pArg)
 
 void CGuard::Free()
 {
-	__super::Free();
-
 	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
-	m_pTransformCom->Delete_Controller();
-	m_pGameInstance->Delete_CollisionObject(this);
+
+	__super::Free();
 
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
