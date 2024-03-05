@@ -443,7 +443,7 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 			m_Animation.bSkipInterpolation = false;
 			m_Animation.iAnimIndex = BossAnim_Die;
 			m_Animation.fDurationRatio = 0.5f;
-			Set_Damage(1000, 0);
+			Set_Damage(999, 0);
 			break;
 		case Client::CHuman_Boss::Hide_Start:
 			m_Animation.iAnimIndex = BossAnim_attack06_Start;
