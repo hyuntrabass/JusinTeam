@@ -3,7 +3,7 @@
 #include "Camera_Manager.h"
 #include "Effect_Manager.h"
 #include "Effect_Dummy.h"
-
+#include "Trigger_Manager.h"
 const _float CDragon_Boss::m_fAttackRange = 10.f;
 
 CDragon_Boss::CDragon_Boss(_dev pDevice, _context pContext)
@@ -63,6 +63,13 @@ HRESULT CDragon_Boss::Init(void* pArg)
 
 void CDragon_Boss::Tick(_float fTimeDelta)
 {
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_DragonMap)
+	{
+		Kill();
+		m_pGameInstance->Delete_CollisionObject(this);
+		m_pTransformCom->Delete_Controller();
+	}
+
 	m_pTransformCom->Set_OldMatrix();
 
 	if (m_pGameInstance->Key_Down(DIK_DELETE))
