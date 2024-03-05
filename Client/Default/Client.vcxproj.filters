@@ -1117,6 +1117,9 @@
     <ClInclude Include="..\Public\Buff_Card.h">
       <Filter>02.GameObjects\16.CescoGame</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\GraphicSetting.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Menu</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1693,6 +1696,9 @@
     <ClCompile Include="..\Private\CheckPoint.cpp" />
     <ClCompile Include="..\Private\Buff_Card.cpp">
       <Filter>02.GameObjects\16.CescoGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GraphicSetting.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Menu</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -9,7 +9,7 @@ class CMenu final : public COrthographicObject
 {
 public:
 	enum MENU { ENV, MENU_END };
-	enum ENV_SLOT { SOUND, GRAPHIC, ENV_END };
+	enum ENV_SLOT {GRAPHIC, SOUND,ENV_END };
 
 private:
 	CMenu(_dev pDevice, _context pContext);
@@ -30,6 +30,9 @@ private:
 	CTexture* m_pTextureCom{ nullptr };
 
 private:
+	ENV_SLOT									m_eCurSlot{};
+	ENV_SLOT									m_ePrevSlot{};
+
 	_bool										m_Clicked{ false };
 	_bool										m_isReadytoDeactivate{ false };
 	_bool										m_isReadytoActivate{ false };
@@ -47,6 +50,11 @@ private:
 
 
 public:
+
+private:
+	void Init_State();
+	void Tick_GraphicSlot(_float fTimeDelta);
+	void Tick_SoundSlot(_float fTimeDelta);
 
 private:
 	HRESULT Add_Parts();

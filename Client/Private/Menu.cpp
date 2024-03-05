@@ -79,10 +79,8 @@ void CMenu::Tick(_float fTimeDelta)
 	}
 	if (m_isReadytoActivate)
 	{
-		m_isActive = true;
-		m_isReadytoActivate = false;
-		CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
-		CCamera_Manager::Get_Instance()->Set_CameraState(CS_SKILLBOOK);
+		Init_State();
+	
 		return;
 	}
 
@@ -122,15 +120,44 @@ void CMenu::Tick(_float fTimeDelta)
 		return;
 	}
 
+	for (size_t i = 0; i < ENV_END; i++)
+	{
+		if (TRUE == PtInRect(&m_pSlots[i]->Get_Rect(), ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
+		{
+			m_eCurSlot = (ENV_SLOT)i;
+			m_pSlots[i]->Set_ChangeTex(true);
+			if (m_eCurSlot != m_ePrevSlot)
+			{
+				m_pSlots[m_ePrevSlot]->Set_ChangeTex(false);
+				m_ePrevSlot = m_eCurSlot;
+			}
+			break;
+		}
+	}
 
-
-
+	switch (m_eCurSlot)
+	{
+	case Client::CMenu::GRAPHIC:
+		Tick_GraphicSlot(fTimeDelta);
+		break;
+	case Client::CMenu::SOUND:
+		break;
+	case Client::CMenu::ENV_END:
+		break;
+	default:
+		break;
+	}
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	m_pExitButton->Tick(fTimeDelta);
 	m_pBackGround->Tick(fTimeDelta);
 	m_pTitleButton->Tick(fTimeDelta);
 	m_pUnderBar->Tick(fTimeDelta);
 	m_pSelectButton->Tick(fTimeDelta);
+
+	for (size_t i = 0; i < ENV_END; i++)
+	{
+		m_pSlots[i]->Tick(fTimeDelta);
+	}
 	for (size_t i = 0; i < MENU_END; i++)
 	{
 		m_pMenu[i]->Tick(fTimeDelta);
@@ -139,10 +166,27 @@ void CMenu::Tick(_float fTimeDelta)
 
 void CMenu::Late_Tick(_float fTimeDelta)
 {
-
+	switch (m_eCurSlot)
+	{
+	case Client::CMenu::GRAPHIC:
+		
+		break;
+	case Client::CMenu::SOUND:
+		break;
+	case Client::CMenu::ENV_END:
+		break;
+	default:
+		break;
+	}
 
 	if (m_isActive)
 	{
+
+
+		for (size_t i = 0; i < ENV_END; i++)
+		{
+			m_pSlots[i]->Late_Tick(fTimeDelta);
+		}
 		for (size_t i = 0; i < MENU_END; i++)
 		{
 			m_pMenu[i]->Late_Tick(fTimeDelta);
@@ -184,6 +228,24 @@ HRESULT CMenu::Render()
 	return S_OK;
 }
 
+
+void CMenu::Init_State()
+{
+	m_eCurSlot = GRAPHIC;
+	m_ePrevSlot = GRAPHIC;
+	m_pSlots[m_eCurSlot]->Set_ChangeTex(true);
+	m_pSlots[m_ePrevSlot]->Set_ChangeTex(false);
+
+	m_isActive = true;
+	m_isReadytoActivate = false;
+	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
+	CCamera_Manager::Get_Instance()->Set_CameraState(CS_SKILLBOOK);
+}
+
+void CMenu::Tick_GraphicSlot(_float fTimeDelta)
+{
+
+}
 
 HRESULT CMenu::Add_Parts()
 {
@@ -272,9 +334,10 @@ HRESULT CMenu::Add_Parts()
 	TextButton.fFontSize = 0.4f;
 	TextButton.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	TextButton.strText = TEXT("그래픽");
-	TextButton.vPosition = _vec2(fStartX, fY);
-	TextButton.vSize = _vec2(150.f, 70.f);
-	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_NoTex");
+	TextButton.vPosition = _vec2(80.f, fY + 50.f);
+	TextButton.vSize = _vec2(150.f, 100.f);
+	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Button_Blue");
+	TextButton.strTexture2 = TEXT("Prototype_Component_Texture_UI_Button_Blue2");
 	TextButton.vTextPosition = _vec2(0.f, 0.f);
 	TextButton.isChangePass = true;
 	m_pSlots[GRAPHIC] = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
@@ -283,16 +346,18 @@ HRESULT CMenu::Add_Parts()
 	{
 		return E_FAIL;
 	}
+	m_pSlots[GRAPHIC]->Set_ChangeTex(true);
 
 	TextButton.strText = TEXT("사운드");
-	TextButton.vPosition = _vec2(fStartX, fY);
-	TextButton.vSize = _vec2(150.f, 70.f);
-	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_NoTex");
+	TextButton.vPosition = _vec2(80.f, fY);
+	TextButton.vSize = _vec2(150.f, 100.f);
+	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Button_Blue");
+	TextButton.strTexture2 = TEXT("Prototype_Component_Texture_UI_Button_Blue2");
 	TextButton.vTextPosition = _vec2(0.f, 0.f);
 	TextButton.isChangePass = true;
-	m_pSlots[GRAPHIC] = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+	m_pSlots[SOUND] = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
 
-	if (not m_pSlots[GRAPHIC])
+	if (not m_pSlots[SOUND])
 	{
 		return E_FAIL;
 	}
