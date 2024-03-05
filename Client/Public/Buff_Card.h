@@ -48,7 +48,6 @@ private:
 private:
 	RECT					m_rcRect{};
 	Buff					m_eBuff{ Buff_End };
-	//_float					m_
 	CGameObject*			m_pItemTex{ nullptr };
 	class CNineSlice*		m_pBackGround{ nullptr };
 	class CTextButton*		m_pExitButton{ nullptr };

@@ -81,26 +81,38 @@ void CCescoGame::Tick(_float fTimeDelta)
 	}
 	if (m_pGameInstance->Key_Down(DIK_9))
 	{
-		m_fTimeLimit = 0.f;
-	}
-
-	if (m_fTimeLimit <= -1.f)
-	{
 		Kill();
 		return;
 	}
+
+
+
 
 	Init_Phase(fTimeDelta);
 
 	switch (m_eCurrentPhase)
 	{
 	case Client::CCescoGame::Phase1:
+		if (m_fTimeLimit < 90.f)
+		{
+			m_eCurrentPhase = Phase_Buff;
+			return;
+		}
 		Tick_Phase1(fTimeDelta);
 		break;
 	case Client::CCescoGame::Phase2:
+		if (m_fTimeLimit < 45.f)
+		{
+			m_eCurrentPhase = Phase_Buff;
+			return;
+		}
 		Tick_Phase2(fTimeDelta);
 		break;
 	case Client::CCescoGame::Phase3:
+		if (m_fTimeLimit <= 0.f)
+		{
+			// 게임 승리
+		}
 		Tick_Phase3(fTimeDelta);
 		break;
 	case Client::CCescoGame::Phase_Buff:
@@ -108,7 +120,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 		return;
 	}
 	//실패 조건
-	if (m_Monsters.size() > m_iMonsterLimit || m_fTimeLimit <= 0.f)
+	if (m_Monsters.size() > m_iMonsterLimit)
 	{
 		for (auto& pMonster : m_Monsters)
 		{
@@ -171,7 +183,7 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 		case Client::CCescoGame::Phase1:
 		{
 			m_iNumSpawnLarva = 2;
-			 
+
 		}
 		break;
 		case Client::CCescoGame::Phase2:
@@ -215,12 +227,12 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 
 				Buff_Desc.eBuff = Buff::Buff_CoolDown;
 				Buff_Desc.vPos = _vec2(640.f, 360.f);
-				 pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
+				pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
 
 				Buff_Desc.eBuff = Buff::Buff_PoisonImmune;
 				Buff_Desc.vPos = _vec2(960.f, 360.f);
-				 pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
+				pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
 				m_eNextPhase = Phase1;
 
@@ -236,12 +248,12 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 
 				Buff_Desc.eBuff = Buff::Buff_MonRegenDown;
 				Buff_Desc.vPos = _vec2(640.f, 360.f);
-				 pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
+				pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
 
 				Buff_Desc.eBuff = Buff::Buff_Speed;
 				Buff_Desc.vPos = _vec2(960.f, 360.f);
-				 pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
+				pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
 				m_eNextPhase = Phase2;
 			}
@@ -256,12 +268,12 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 
 				Buff_Desc.eBuff = Buff::Buff_Attack;
 				Buff_Desc.vPos = _vec2(640.f, 360.f);
-				 pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
+				pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
 
 				Buff_Desc.eBuff = Buff::Buff_BloodDrain;
 				Buff_Desc.vPos = _vec2(960.f, 360.f);
-				 pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
+				pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
 				m_eNextPhase = Phase3;
 			}
@@ -279,7 +291,7 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 void CCescoGame::Tick_Phase1(_float fTimeDelta)
 {
 	m_fTimeLimit -= fTimeDelta;
-	m_fMonsterSpawnTime += fTimeDelta;
+	m_fMonsterSpawnTime += fTimeDelta * m_iMonsterSpawnSpeed;
 
 #pragma region SpawnMonster
 
@@ -406,7 +418,7 @@ void CCescoGame::Tick_Phase3(_float fTimeDelta)
 	Tick_Phase2(fTimeDelta);
 
 #pragma region EyeBombSpawn
-	if (m_fEyeBombSpawnTime >= 3.f)
+	if (m_fEyeBombSpawnTime >= 3.5f)
 	{
 		_vec3 vSpawnPos = m_pPlayerTransform->Get_CenterPos();
 		_randFloat RandomCountNum(-300.f, 300.f);
@@ -431,7 +443,7 @@ void CCescoGame::Tick_Phase3(_float fTimeDelta)
 
 #pragma region SpawnHook
 
-	if (m_fHookSpawnTime >= 6.f)
+	if (m_fHookSpawnTime >= 7.f)
 	{
 		Create_Hook();
 		m_fHookSpawnTime = 0.f;
@@ -492,9 +504,9 @@ void CCescoGame::Tick_Phase3(_float fTimeDelta)
 				return;
 			}
 			m_fHookAttTime += fTimeDelta;
-			if (m_fHookAttTime >= 0.6f)
+			if (m_fHookAttTime >= 0.5f)
 			{
-				m_pGameInstance->Attack_Player(nullptr, rand() % 20 + 30, MonAtt_Hook);
+				m_pGameInstance->Attack_Player(nullptr, rand() % 20 + 25, MonAtt_Hook);
 				m_fHookAttTime = 0.f;
 			}
 			m_pPlayerTransform->Set_Position(_vec3(m_pCurrent_DraggingHook->Get_Position()));
@@ -525,7 +537,7 @@ void CCescoGame::Tick_Phase_Buff(_float fTimeDelta)
 			case Client::Buff_MpRegen:
 				break;
 			case Client::Buff_Attack:
-				break;      
+				break;
 			case Client::Buff_Speed:
 				break;
 			case Client::Buff_CoolDown:
@@ -895,6 +907,12 @@ void CCescoGame::Free()
 {
 	CCamera_Manager::Get_Instance()->Set_RidingZoom(false);
 	__super::Free();
+
+	for (auto& Buffcard : m_vecBuffCard)
+	{
+		Safe_Release(Buffcard);
+	}
+	m_vecBuffCard.clear();
 
 	for (auto& pMonster : m_Monsters)
 	{
