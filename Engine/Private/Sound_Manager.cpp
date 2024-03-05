@@ -266,7 +266,7 @@ HRESULT CSound_Manager::FadeoutSound(_int iChannel, _float fTimeDelta, _float fF
 {
 	if (iChannel < 0)
 	{
-		return E_FAIL;
+		return S_OK;
 	}
 
 	if (not m_SoundDescs[iChannel].IsFadingout)
@@ -287,7 +287,7 @@ HRESULT CSound_Manager::FadeinSound(_int iChannel, _float fTimeDelta, _float fFa
 {
 	if (iChannel < 0)
 	{
-		return E_FAIL;
+		return S_OK;
 	}
 
 	_float fStartVolume{};
