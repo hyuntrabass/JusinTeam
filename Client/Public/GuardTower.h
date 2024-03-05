@@ -7,8 +7,8 @@ BEGIN(Client)
 
 struct GuardTowerInfo
 {
-	_mat mMatrix{};
 	_uint iIndex{};
+	_mat mMatrix{};
 };
 
 class CGuardTower final : public CGameObject

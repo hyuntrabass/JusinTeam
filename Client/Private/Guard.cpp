@@ -89,11 +89,10 @@ void CGuard::Tick(_float fTimeDelta)
 		}
 	}
 
-	if (0 >= m_iHP || 0.01f < m_fDeadTime) {
-		m_pGameInstance->Delete_CollisionObject(this);
-		m_pTransformCom->Delete_Controller();
-
-	}
+	//if (0 >= m_iHP || 0.01f < m_fDeadTime || true == m_isDead) {
+	//	m_pGameInstance->Delete_CollisionObject(this);
+	//	m_pTransformCom->Delete_Controller();
+	//}
 
 	Init_State(fTimeDelta);
 	if(m_ePattern == PATTERN_1)
@@ -218,7 +217,7 @@ void CGuard::Set_Damage(_int iDamage, _uint iDamageType)
 
 void CGuard::Init_State(_float fTimeDelta)
 {
-	if (m_iHP <= 0)
+	if (m_iHP <= 0 || true == m_isDead)
 	{
 		m_eCurState = STATE_DIE;
 	}
@@ -266,7 +265,8 @@ void CGuard::Init_State(_float fTimeDelta)
 		case Client::CGuard::STATE_DIE:
 			m_Animation.iAnimIndex = ANIM_DIE;
 			m_Animation.isLoop = false;
-			m_Animation.fAnimSpeedRatio = 1.f;
+			m_pTransformCom->Delete_Controller();
+			m_pGameInstance->Delete_CollisionObject(this);
 			break;
 		}
 
@@ -297,6 +297,8 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 	_randInt iAttackInt(0, 1);
 	_int iRandomAttack = iAttackInt(m_iRandomAttack);
 
+	_float Degree{};
+
 	if(m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look), 2.f, pBuffer))
 	{
 		m_eCurState = STATE_BACK;
@@ -315,6 +317,7 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 		{
 			if (m_fIdleTime > 1.f)
 			{
+				m_vTurnAngle = -m_pTransformCom->Get_State(State::Look);
 				m_eCurState = STATE_TURN;
 				m_isArrived = false;
 				m_fIdleTime = 0.f;
@@ -351,15 +354,21 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 		m_pTransformCom->Turn(_vec4(0.f, 1.f, 0.f, 0.f), fTimeDelta);
 		if (m_isDetected == true)
 			m_eCurState = STATE_CHASE;
-		if (m_fTurnTime > 2.f)
-		{
+
+		Degree = XMConvertToDegrees(acosf(m_vTurnAngle.Dot(vLook)));
+		if (1.f >= Degree) {
+			m_pTransformCom->LookAt_Dir(m_vTurnAngle);
 			m_eCurState = STATE_IDLE;
-			m_fTurnTime = 0;
 		}
+		//if (m_fTurnTime > 2.f)
+		//{
+		//	m_eCurState = STATE_IDLE;
+		//	m_fTurnTime = 0;
+		//}
 
 		break;
 	case STATE_CHASE:
-		m_pTransformCom->Set_Speed(5.f);
+		m_pTransformCom->Set_Speed(7.f);
 		m_fAttackTime += fTimeDelta;
 
 		if(fDist < 2.f)
@@ -378,6 +387,7 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 		}
 		else
 		{
+			vNormalToPlayer.y = 0.f;
 			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
@@ -483,7 +493,7 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 	_randInt iAttackInt(0, 1);
 	_int iRandomAttack = iAttackInt(m_iRandomAttack);
 
-
+	_float Degree{};
 	switch (m_eCurState)
 	{
 
@@ -520,6 +530,7 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look), 5.f, pBuffer))
 		{
 			m_eCurState = STATE_TURN;
+			m_vTurnAngle = m_pTransformCom->Get_State(State::Right);
 		}
 		
 		else
@@ -535,15 +546,21 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 		if (m_isDetected == true)
 			m_eCurState = STATE_CHASE;
 
-		if (m_fTurnTime > 1.f)
-		{
+		Degree = XMConvertToDegrees(acosf(m_vTurnAngle.Dot(vLook)));
+		if (1.f >= Degree) {
+			m_pTransformCom->LookAt_Dir(m_vTurnAngle);
 			m_eCurState = STATE_IDLE;
-			m_fTurnTime = 0;
 		}
+
+		//if (m_fTurnTime > 1.f)
+		//{
+		//	m_eCurState = STATE_IDLE;
+		//	m_fTurnTime = 0;
+		//}
 
 		break;
 	case STATE_CHASE:
-		m_pTransformCom->Set_Speed(5.f);
+		m_pTransformCom->Set_Speed(7.f);
 		m_fAttackTime += fTimeDelta;
 
 		if (fDist < 2.f)
@@ -557,11 +574,13 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 
 				m_fAttackTime = 0.f;
 			}
+			vNormalToPlayer.y = 0.f;
 			m_pTransformCom->LookAt(vTargetPos);
 
 		}
 		else
 		{
+			vNormalToPlayer.y = 0.f;
 			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
@@ -1021,9 +1040,8 @@ CGameObject* CGuard::Clone(void* pArg)
 
 void CGuard::Free()
 {
-	__super::Free();
-
 	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
+	__super::Free();
 
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
