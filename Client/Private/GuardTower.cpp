@@ -73,47 +73,50 @@ HRESULT CGuardTower::Init(void* pArg)
 
 void CGuardTower::Tick(_float fTimeDelta)
 {
-	if (m_bAttacked == true)
-	{
-		m_fAttackDelay += fTimeDelta;
-		if (m_fAttackDelay >= 1.5f)
-		{
-			m_bAttacked = false;
-			m_fAttackDelay = 0;
-		}
-	}
-	if (m_eCurState == STATE_DETECT)
-	{
-		if (m_pFrameEffect)
-			m_pFrameEffect->Tick(fTimeDelta);
-		if (m_pBaseEffect)
-			m_pBaseEffect->Tick(fTimeDelta);
-	}
-	if (m_eCurState == STATE_ATTACK_READY)
-	{
-		if (m_pThreatEffect)
-			m_pThreatEffect->Tick(fTimeDelta);
-	}
-	if(m_eCurState == STATE_ATTACK)
-	{
-		if (m_pAttackEffect)
-			m_pAttackEffect->Tick(fTimeDelta);
-	}
-	m_pTransformCom->Set_OldMatrix();
-	m_pModelCom->Get_CurrentAnimPos();
+	if (false == m_isTurnOff) {
 
-	Init_State(fTimeDelta);
-	if (m_Pattern_Type == PATTERN_1)
-	{
-		Tick_State_Pattern_1(fTimeDelta);
-	}
-	else if (m_Pattern_Type == PATTERN_2)
-	{
-		Tick_State_Pattern_2(fTimeDelta);
-	}
-	else if (m_Pattern_Type == PATTERN_3)
-	{
-		Tick_State_Pattern_3(fTimeDelta);
+		if (m_bAttacked == true)
+		{
+			m_fAttackDelay += fTimeDelta;
+			if (m_fAttackDelay >= 1.5f)
+			{
+				m_bAttacked = false;
+				m_fAttackDelay = 0;
+			}
+		}
+		if (m_eCurState == STATE_DETECT)
+		{
+			if (m_pFrameEffect)
+				m_pFrameEffect->Tick(fTimeDelta);
+			if (m_pBaseEffect)
+				m_pBaseEffect->Tick(fTimeDelta);
+		}
+		if (m_eCurState == STATE_ATTACK_READY)
+		{
+			if (m_pThreatEffect)
+				m_pThreatEffect->Tick(fTimeDelta);
+		}
+		if (m_eCurState == STATE_ATTACK)
+		{
+			if (m_pAttackEffect)
+				m_pAttackEffect->Tick(fTimeDelta);
+		}
+		m_pTransformCom->Set_OldMatrix();
+		m_pModelCom->Get_CurrentAnimPos();
+
+		Init_State(fTimeDelta);
+		if (m_Pattern_Type == PATTERN_1)
+		{
+			Tick_State_Pattern_1(fTimeDelta);
+		}
+		else if (m_Pattern_Type == PATTERN_2)
+		{
+			Tick_State_Pattern_2(fTimeDelta);
+		}
+		else if (m_Pattern_Type == PATTERN_3)
+		{
+			Tick_State_Pattern_3(fTimeDelta);
+		}
 	}
 
 	m_pModelCom->Set_Animation(m_Animation);
@@ -122,37 +125,36 @@ void CGuardTower::Tick(_float fTimeDelta)
 
 void CGuardTower::Late_Tick(_float fTimeDelta)
 {
-	m_fAnimTime += fTimeDelta;
 
 	m_pModelCom->Play_Animation(fTimeDelta);
 
-	if (m_eCurState == STATE_DETECT)
-	{
-		if (m_pFrameEffect)
-			m_pFrameEffect->Late_Tick(fTimeDelta);
+	if (false == m_isTurnOff) {
+		if (m_eCurState == STATE_DETECT)
+		{
+			if (m_pFrameEffect)
+				m_pFrameEffect->Late_Tick(fTimeDelta);
 
-		if (m_pBaseEffect)
-			m_pBaseEffect->Late_Tick(fTimeDelta);
+			if (m_pBaseEffect)
+				m_pBaseEffect->Late_Tick(fTimeDelta);
+		}
+
+		if (m_eCurState == STATE_ATTACK_READY)
+		{
+			if (m_pThreatEffect)
+				m_pThreatEffect->Late_Tick(fTimeDelta);
+		}
+		if (m_eCurState == STATE_ATTACK)
+		{
+			if (m_pAttackEffect)
+				m_pAttackEffect->Late_Tick(fTimeDelta);
+		}
 	}
 
-	if (m_eCurState == STATE_ATTACK_READY)
-	{
-		if (m_pThreatEffect)
-			m_pThreatEffect->Late_Tick(fTimeDelta);
-	}
-	if (m_eCurState == STATE_ATTACK)
-	{
-		if (m_pAttackEffect)
-			m_pAttackEffect->Late_Tick(fTimeDelta);
-	}
 	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos()))
 	{
 		m_pRendererCom->Add_RenderGroup(RG_AnimNonBlend_Instance, this);
 		m_pModelCom->Set_DissolveRatio(m_fDissolveRatio);
-
 	}
-
-		m_pModelCom->Play_Animation(m_fAnimTime);
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
@@ -164,52 +166,52 @@ void CGuardTower::Late_Tick(_float fTimeDelta)
 
 HRESULT CGuardTower::Render()
 {
-	if (FAILED(Bind_ShaderResources()))
-		return E_FAIL;
+	//if (FAILED(Bind_ShaderResources()))
+	//	return E_FAIL;
 
-	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); ++i) {
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-			return E_FAIL;
+	//for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); ++i) {
+	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+	//		return E_FAIL;
 
-		_bool HasNorTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-		{
-			HasNorTex = false;
-		}
-		else
-		{
-			HasNorTex = true;
-		}
+	//	_bool HasNorTex{};
+	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+	//	{
+	//		HasNorTex = false;
+	//	}
+	//	else
+	//	{
+	//		HasNorTex = true;
+	//	}
 
-		_bool HasMaskTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
-		{
-			HasMaskTex = false;
-		}
-		else
-		{
-			HasMaskTex = true;
-		}
+	//	_bool HasMaskTex{};
+	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
+	//	{
+	//		HasMaskTex = false;
+	//	}
+	//	else
+	//	{
+	//		HasMaskTex = true;
+	//	}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
+	//	if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+	//	{
+	//		return E_FAIL;
+	//	}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
+	//	if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
+	//	{
+	//		return E_FAIL;
+	//	}
 
-		//if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-		//	return E_FAIL;
+	//	//if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+	//	//	return E_FAIL;
 
-		if (FAILED(m_pShaderCom->Begin(m_iPassIndex)))
-			return E_FAIL;
+	//	if (FAILED(m_pShaderCom->Begin(m_iPassIndex)))
+	//		return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(i)))
-			return E_FAIL;
-	}
+	//	if (FAILED(m_pModelCom->Render(i)))
+	//		return E_FAIL;
+	//}
 
 	//if (!m_bChangePass && m_iHP > 0)
 	//{

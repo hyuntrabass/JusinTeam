@@ -51,11 +51,13 @@ void CLever::Tick(_float fTimeDelta)
 
 	if (m_pModelCom->IsAnimationFinished(0) and 0 == m_Info.iIndex) {
 		CTrigger_Manager::Get_Instance()->Set_Lever1();
+		m_ShaderPassIndex = AnimPass_Default;
 		m_isAllDone = true;
 	}
 
 	if (m_pModelCom->IsAnimationFinished(0) and 1 == m_Info.iIndex) {
 		CTrigger_Manager::Get_Instance()->Set_Lever2();
+		m_ShaderPassIndex = AnimPass_Default;
 		m_isAllDone = true;
 	}
 
@@ -119,6 +121,16 @@ HRESULT CLever::Render()
 			HasMaskTex = true;
 		}
 
+		_bool HasGlowTex{};
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_GlowTexture", i, TextureType::Specular)))
+		{
+			HasGlowTex = false;
+		}
+		else
+		{
+			HasGlowTex = true;
+		}
+
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
 		{
 			return E_FAIL;
@@ -129,10 +141,15 @@ HRESULT CLever::Render()
 			return E_FAIL;
 		}
 
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasGlowTex", &HasGlowTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
 		if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
 			return E_FAIL;
 
-		if (FAILED(m_pShaderCom->Begin(0)))
+		if (FAILED(m_pShaderCom->Begin(m_ShaderPassIndex)))
 			return E_FAIL;
 
 		if (FAILED(m_pModelCom->Render(i)))
@@ -193,6 +210,10 @@ HRESULT CLever::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof(_float4))))
+		return E_FAIL;
+
+	_uint iOutlineColor = OutlineColor_Yellow;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_OutlineColor", &iOutlineColor, sizeof(_uint))))
 		return E_FAIL;
 
 	return S_OK;

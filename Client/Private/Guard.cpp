@@ -89,11 +89,6 @@ void CGuard::Tick(_float fTimeDelta)
 		}
 	}
 
-	//if (0 >= m_iHP || 0.01f < m_fDeadTime || true == m_isDead) {
-	//	m_pGameInstance->Delete_CollisionObject(this);
-	//	m_pTransformCom->Delete_Controller();
-	//}
-
 	Init_State(fTimeDelta);
 	if(m_ePattern == PATTERN_1)
 		Tick_State_Pattern1(fTimeDelta);
@@ -101,6 +96,7 @@ void CGuard::Tick(_float fTimeDelta)
 		Tick_State_Pattern2(fTimeDelta);
 	else
 		Tick_State_Pattern3(fTimeDelta);
+
 	m_pModelCom->Set_Animation(m_Animation);
 
 	m_pTransformCom->Gravity(fTimeDelta);
@@ -132,67 +128,66 @@ void CGuard::Late_Tick(_float fTimeDelta)
 
 HRESULT CGuard::Render()
 {
-	if (FAILED(Bind_ShaderResources()))
-		return E_FAIL;
+	//if (FAILED(Bind_ShaderResources()))
+	//	return E_FAIL;
 
-	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); ++i) {
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-			return E_FAIL;
+	//for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); ++i) {
+	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+	//		return E_FAIL;
 
-		_bool HasNorTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-		{
-			HasNorTex = false;
-		}
-		else
-		{
-			HasNorTex = true;
-		}
+	//	_bool HasNorTex{};
+	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+	//	{
+	//		HasNorTex = false;
+	//	}
+	//	else
+	//	{
+	//		HasNorTex = true;
+	//	}
 
-		_bool HasMaskTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
-		{
-			HasMaskTex = false;
-		}
-		else
-		{
-			HasMaskTex = true;
-		}
+	//	_bool HasMaskTex{};
+	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
+	//	{
+	//		HasMaskTex = false;
+	//	}
+	//	else
+	//	{
+	//		HasMaskTex = true;
+	//	}
 
-		_bool HasGlowTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_GlowTexture", i, TextureType::Specular)))
-		{
-			HasGlowTex = false;
-		}
-		else
-		{
-			HasGlowTex = true;
-		}
+	//	_bool HasGlowTex{};
+	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_GlowTexture", i, TextureType::Specular)))
+	//	{
+	//		HasGlowTex = false;
+	//	}
+	//	else
+	//	{
+	//		HasGlowTex = true;
+	//	}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
+	//	if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+	//	{
+	//		return E_FAIL;
+	//	}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
+	//	if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
+	//	{
+	//		return E_FAIL;
+	//	}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasGlowTex", &HasGlowTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
+	//	if (FAILED(m_pShaderCom->Bind_RawValue("g_HasGlowTex", &HasGlowTex, sizeof _bool)))
+	//	{
+	//		return E_FAIL;
+	//	}
 
-		//if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-		//	return E_FAIL;
+	//	//if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+	//	//	return E_FAIL;
 
-		if (FAILED(m_pShaderCom->Begin(m_iPassIndex)))
-			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(i)))
-			return E_FAIL;
-	}
+
+	//	if (FAILED(m_pModelCom->Render(i)))
+	//		return E_FAIL;
+	//}
 	//if (!m_bChangePass && m_iHP > 0)
 	//{
 	//	m_iPassIndex = AnimPass_Default;
@@ -356,7 +351,8 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 			m_eCurState = STATE_CHASE;
 
 		Degree = XMConvertToDegrees(acosf(m_vTurnAngle.Dot(vLook)));
-		if (1.f >= Degree) {
+		if (3.f >= Degree) {
+			m_vTurnAngle.y = 0.f;
 			m_pTransformCom->LookAt_Dir(m_vTurnAngle);
 			m_eCurState = STATE_IDLE;
 		}
@@ -382,7 +378,8 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 
 				m_fAttackTime = 0.f;
 			}
-			m_pTransformCom->LookAt(vTargetPos);
+			vNormalToPlayer.y = 0.f;
+			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
 
 		}
 		else
@@ -546,8 +543,9 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 		if (m_isDetected == true)
 			m_eCurState = STATE_CHASE;
 
+		m_vTurnAngle.y = 0.f;
 		Degree = XMConvertToDegrees(acosf(m_vTurnAngle.Dot(vLook)));
-		if (1.f >= Degree) {
+		if (3.f >= Degree) {
 			m_pTransformCom->LookAt_Dir(m_vTurnAngle);
 			m_eCurState = STATE_IDLE;
 		}
@@ -575,7 +573,7 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 				m_fAttackTime = 0.f;
 			}
 			vNormalToPlayer.y = 0.f;
-			m_pTransformCom->LookAt(vTargetPos);
+			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
 
 		}
 		else
@@ -650,7 +648,7 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 			if (m_fDissolveRatio < 1.f)
 			{
 				m_fDissolveRatio += fTimeDelta;
-				m_iPassIndex = AnimPass_Dissolve;
+				m_pShaderCom->Set_PassIndex(VTF_InstPass_Dissolve);
 			}
 			else
 			{
@@ -716,11 +714,13 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 
 				m_fAttackTime = 0.f;
 			}
-			m_pTransformCom->LookAt(vTargetPos);
+			vNormalToPlayer.y = 0.f;
+			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
 
 		}
 		else
 		{
+			vNormalToPlayer.y = 0.f;
 			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
@@ -791,7 +791,7 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 			if (m_fDissolveRatio < 1.f)
 			{
 				m_fDissolveRatio += fTimeDelta;
-				m_iPassIndex = AnimPass_Dissolve;
+				m_pShaderCom->Set_PassIndex(VTF_InstPass_Dissolve);
 			}
 			else
 			{
