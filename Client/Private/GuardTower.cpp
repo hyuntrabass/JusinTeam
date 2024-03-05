@@ -57,8 +57,8 @@ HRESULT CGuardTower::Init(void* pArg)
 	m_eCurState = STATE_IDLE;
 
 	PxCapsuleControllerDesc ControllerDesc{};
-	ControllerDesc.height = 1.2f; // 높이(위 아래의 반구 크기 제외
-	ControllerDesc.radius = 0.4f; // 위아래 반구의 반지름
+	ControllerDesc.height = 2.f; // 높이(위 아래의 반구 크기 제외
+	ControllerDesc.radius = 0.8f; // 위아래 반구의 반지름
 	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
 	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
 	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
