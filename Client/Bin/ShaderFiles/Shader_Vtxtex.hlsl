@@ -776,6 +776,22 @@ PS_OUT PS_Main_Sun(PS_IN Input)
     return Output;
 }
 
+PS_OUT PS_Main_SpriteAlpha(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    float2 vSpriteSize = float2(1.f, 1.f) / g_vNumSprite;
+    int2 vSpriteCoord;
+    vSpriteCoord.x = g_iIndex % g_vNumSprite.x;
+    vSpriteCoord.y = g_iIndex / g_vNumSprite.x;
+    float2 vUV = Input.vTex / g_vNumSprite + (vSpriteSize * vSpriteCoord);
+    
+    Output.vColor = g_Texture.Sample(LinearSampler, vUV);
+    
+    Output.vColor.a *= g_fAlpha;
+ 
+    return Output;
+}
 technique11 DefaultTechnique
 {
     pass UI
@@ -945,6 +961,7 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Sprite();
     }
+
     pass SpriteMaskTexture
     {
         SetRasterizerState(RS_Default);
@@ -1253,5 +1270,17 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Sun();
+    }
+    pass SpriteAlpha
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_SpriteAlpha();
     }
 };

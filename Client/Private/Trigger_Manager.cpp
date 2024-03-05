@@ -514,7 +514,7 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 	}
 
 
-	case Client::TS_SescoMap:
+	case Client::TS_CescoMap:
 	{
 		m_isInVillage = false;
 
@@ -539,7 +539,7 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
 		//*Light = g_Light_Village;
 		//m_iSkyTextureIndex = 12;
-		m_eCurrentSpot = TS_SescoMap;
+		m_eCurrentSpot = TS_CescoMap;
 		inFile.close();
 
 		break;

@@ -118,7 +118,7 @@ private:
 
 	_mat m_DummyMatrix{};
 
-	filesystem::path m_CurrFilePath{};
+	filesystem::path m_CurrFilePath{ "Effect.effect" };
 
 	_color m_vBGColor{ 0.2f, 0.2f, 0.25f, 1.f };
 

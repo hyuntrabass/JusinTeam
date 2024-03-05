@@ -105,9 +105,6 @@ void CShop::Tick(_float fTimeDelta)
 		m_isActive = false;
 	}
 
-	if (m_isReadytoActivate)
-	{
-	}
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
