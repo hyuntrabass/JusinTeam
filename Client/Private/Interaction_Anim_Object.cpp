@@ -154,7 +154,7 @@ void CInteraction_Anim::Tick(_float fTimeDelta)
 
 	if (m_Info.strPrototypeTag == TEXT("Prototype_Model_TreasureBox") and m_iHP > 0)
 	{
-		if (m_pModelCom->Get_CurrentAnimPos() > 10.f)
+		if (m_pModelCom->Get_CurrentAnimPos() > 30.f)
 		{
 			_mat EffectMat = m_pTransformCom->Get_World_Matrix();
 			EffectMat.Position_vec3(EffectMat.Position_vec3() + _vec3(0.f, 0.5f, 0.f));
@@ -200,7 +200,7 @@ void CInteraction_Anim::Late_Tick(_float fTimeDelta)
 				wstring strItem = m_pItem->Get_ItemDesc().strName;
 				CUI_Manager::Get_Instance()->Set_Item(strItem);
 			}
-			if (m_strName == TEXT("보물상자"))
+			if (m_eType == Box)
 			{
 				CPop_Reward::REWARD_DESC Desc{};
 				if (m_Info.m_iIndex == 0)
@@ -217,6 +217,7 @@ void CInteraction_Anim::Late_Tick(_float fTimeDelta)
 				{
 					return;
 				}
+				m_isDead = true;
 			}
 			m_pTransformCom->Set_Speed(1.f);
 			m_pTransformCom->Go_Down(fTimeDelta);
@@ -226,12 +227,12 @@ void CInteraction_Anim::Late_Tick(_float fTimeDelta)
 			}
 		}
 
-		if (m_iHP > 0 and m_Info.strPrototypeTag == TEXT("Prototype_Model_SaltStone"))
+		if (m_iHP > 0 and m_eType == Stone_Salt)
 		{
 			CEvent_Manager::Get_Instance()->Update_Quest(TEXT("채집하기"));
+			m_iHP = 0;
 		}
 
-		m_iHP = 0;
 		Safe_Release(m_pNameTag);
 		Safe_Release(m_pSpeechBubble);
 
@@ -421,6 +422,8 @@ HRESULT CInteraction_Anim::Add_Components()
 		{
 			return E_FAIL;
 		}
+
+		m_eType = Stone_Gold;
 	}
 	else if (m_Info.strPrototypeTag == TEXT("Prototype_Model_SaltStone"))
 	{
@@ -441,6 +444,8 @@ HRESULT CInteraction_Anim::Add_Components()
 		{
 			return E_FAIL;
 		}
+
+		m_eType = Stone_Salt;
 	}
 	else if (m_Info.strPrototypeTag == TEXT("Prototype_Model_TreasureBox"))
 	{
@@ -451,6 +456,7 @@ HRESULT CInteraction_Anim::Add_Components()
 		NameTagDesc.vTextPosition = _vec2(0.f, 2.f);
 		m_strName = TEXT("보물상자");
 		NameTagDesc.strNameTag = TEXT("보물상자");
+		m_eType = Box;
 	}
 
 	m_pBar = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);

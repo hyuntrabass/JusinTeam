@@ -463,7 +463,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 
 					if (!m_bAttacked)
 					{
-						_uint iDamage = m_iDefaultDamage2 + rand() % 50;
+						_uint iDamage = m_iDefaultDamage1 + rand() % 50;
 						m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 						m_bAttacked = true;
 					}
@@ -473,7 +473,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				{
 					if (!m_bAttacked2)
 					{
-						_uint iDamage = m_iDefaultDamage2 + rand() % 50;
+						_uint iDamage = m_iDefaultDamage1 + rand() % 50;
 						m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 						m_bAttacked2 = true;
 					}
@@ -513,7 +513,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 
 					if (!m_bAttacked)
 					{
-						_uint iDamage = m_iDefaultDamage2 + rand() % 50;
+						_uint iDamage = m_iDefaultDamage1 + rand() % 50;
 						m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Stun);
 						m_bAttacked = true;
 					}
@@ -522,7 +522,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				{
 					if (!m_bAttacked2)
 					{
-						_uint iDamage = m_iDefaultDamage2 + rand() % 50;
+						_uint iDamage = m_iSmallDamage + rand() % 50;
 						m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 						m_bAttacked2 = true;
 					}
@@ -556,7 +556,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 
 					if (!m_bAttacked)
 					{
-						_uint iDamage = m_iDefaultDamage2 + rand() % 50;
+						_uint iDamage = 500 + rand() % 50;
 						//m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_KnockDown);
 						m_pGameInstance->Attack_Player(m_pFloorCollider, iDamage, MonAtt_Stun);
 						m_bAttacked = true;
@@ -591,7 +591,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 
 					if (!m_bAttacked)
 					{
-						_uint iDamage = m_iDefaultDamage2 + rand() % 50;
+						_uint iDamage = m_iDefaultDamage1 + rand() % 50;
 						m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 						m_bAttacked = true;
 					}
@@ -619,7 +619,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				{
 					if (!m_bAttacked)
 					{
-						_uint iDamage = m_iDefaultDamage2 + rand() % 50;
+						_uint iDamage = m_iDefaultDamage1 + rand() % 50;
 						m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 						m_bAttacked = true;
 					}
@@ -628,7 +628,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				{
 					if (!m_bAttacked2)
 					{
-						_uint iDamage = m_iDefaultDamage2 + rand() % 50;
+						_uint iDamage = m_iDefaultDamage1 + rand() % 50;
 						m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_Hit);
 						m_bAttacked2 = true;
 					}

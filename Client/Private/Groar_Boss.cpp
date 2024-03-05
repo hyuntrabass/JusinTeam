@@ -977,19 +977,16 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 				CTreasureBox::TREASURE_DESC Desc{};
 				_vec4 vPos = m_pTransformCom->Get_State(State::Pos); 
 				Desc.vPos = vPos;
-				vector <pair<wstring, _uint>> vecItem;
-				vecItem.push_back(make_pair(TEXT("[½ÅÈ­]Å» °Í ¼ÒÈ¯ Ä«µå"), 10));
-				vecItem.push_back(make_pair(TEXT("·¹±ä·¹ÀÌÇÁÀÇ ºÒ¸ê Åõ±¸"), 1));
-				vecItem.push_back(make_pair(TEXT("·¹±ä·¹ÀÌÇÁÀÇ ºÒ¸ê °©¿Ê"), 1));
-				vecItem.push_back(make_pair(TEXT("¿ÀµòÀÇ ±Ã´Ï¸£ ´Ü°Ë"), 1));
-				vecItem.push_back(make_pair(TEXT("¿ÀµòÀÇ ±Ã´Ï¸£ È°"), 1));
-				Desc.vecItem = vecItem;
+				Desc.vecItem.push_back(make_pair(TEXT("[½ÅÈ­]Å» °Í ¼ÒÈ¯ Ä«µå"), 10));
+				Desc.vecItem.push_back(make_pair(TEXT("·¹±ä·¹ÀÌÇÁÀÇ ºÒ¸ê Åõ±¸"), 1));
+				Desc.vecItem.push_back(make_pair(TEXT("·¹±ä·¹ÀÌÇÁÀÇ ºÒ¸ê °©¿Ê"), 1));
+				Desc.vecItem.push_back(make_pair(TEXT("¿ÀµòÀÇ ±Ã´Ï¸£ ´Ü°Ë"), 1));
+				Desc.vecItem.push_back(make_pair(TEXT("¿ÀµòÀÇ ±Ã´Ï¸£ È°"), 1));
 				Desc.eDir = CTreasureBox::LEFT;
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Temp"), TEXT("Prototype_GameObject_TreasureBox"), &Desc)))
 				{
 					return;
 				}
-				vecItem.clear();
 				m_isReward = true;
 			}
 		}
