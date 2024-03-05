@@ -544,6 +544,12 @@
     <Filter Include="02.GameObjects\17.InfiltrationGame\02. CheckPoint">
       <UniqueIdentifier>{784bb20b-73fe-4723-8b7d-41c09f4918e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\17.InfiltrationGame\03. Door">
+      <UniqueIdentifier>{2f4c9acd-96b4-4f87-9e5e-dc50108f56c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\17.InfiltrationGame\04. Lever">
+      <UniqueIdentifier>{69c393e1-9736-46d7-9eea-f6bcf0a88e90}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1117,6 +1123,14 @@
     </ClInclude>
     <ClInclude Include="..\Public\Guard.h">
       <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BlackCat.h" />
+    <ClInclude Include="..\Public\CheckPoint.h" />
+    <ClInclude Include="..\Public\Door.h">
+      <Filter>02.GameObjects\17.InfiltrationGame\03. Door</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Lever.h">
+      <Filter>02.GameObjects\17.InfiltrationGame\04. Lever</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1692,6 +1706,14 @@
     </ClCompile>
     <ClCompile Include="..\Private\Guard.cpp">
       <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BlackCat.cpp" />
+    <ClCompile Include="..\Private\CheckPoint.cpp" />
+    <ClCompile Include="..\Private\Door.cpp">
+      <Filter>02.GameObjects\17.InfiltrationGame\03. Door</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Lever.cpp">
+      <Filter>02.GameObjects\17.InfiltrationGame\04. Lever</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

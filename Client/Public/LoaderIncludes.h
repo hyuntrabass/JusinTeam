@@ -189,3 +189,5 @@
 #include "Guard.h"
 #include "GuardTower.h"
 #include "CheckPoint.h"
+#include "Door.h"
+#include "Lever.h"

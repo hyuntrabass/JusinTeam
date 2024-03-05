@@ -594,6 +594,20 @@ HRESULT CLoader::Load_Editor()
 		return E_FAIL;
 	}
 
+	_mat LeverPivot = _mat::CreateScale(0.01f);
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Lever"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Lever/Mesh/Lever.hyuntraanimmesh", false, LeverPivot))))
+	{
+		return E_FAIL;
+	}
+	_mat DoorPivot = _mat::CreateScale(0.005f);
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Door"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Door/Mesh/Door.hyuntraanimmesh", false, DoorPivot))))
+	{
+		return E_FAIL;
+	}
 
 
 	strInputFilePath = "../../Client/Bin/Resources/AnimMesh/NPC/NPC_Dummy/Mesh/";
