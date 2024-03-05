@@ -2450,8 +2450,13 @@ HRESULT CLoader::Load_Tower()
 
 #pragma endregion
 
-
+	
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_CescoGame"), CCescoGame::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Buff_Card"), CBuff_Card::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

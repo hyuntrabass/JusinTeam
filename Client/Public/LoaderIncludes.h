@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Buff_Card.h"
 #include "BlackCat.h"
 #include "BrickCat.h"
 #include "TreasureBox.h"

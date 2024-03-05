@@ -39,22 +39,38 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
-public:
-	_bool Get_IsSelect() { return m_IsSelect; }
-	Buff Get_Buff() { return m_eBuff; }
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 
-private:
-	RECT					m_rcRect{};
-	Buff					m_eBuff{ Buff_End };
-	CGameObject*			m_pItemTex{ nullptr };
-	class CNineSlice*		m_pBackGround{ nullptr };
-	class CTextButton*		m_pExitButton{ nullptr };
-	CTextButton*			m_SelectButton{ nullptr };
 
 private:
+	_float					m_fStatus{};
+	wstring					m_strText{};
+	RECT					m_rcRect{};
+	Buff					m_eBuff{ Buff_End };
+
+	_float					m_fTime{};
+
+	CGameObject*			m_pFade{ nullptr };
+	class CNineSlice*		m_pBackGround{ nullptr };
+	CNineSlice*				m_pSelect{ nullptr };
+	class CTextButtonColor*	m_pBorder{ nullptr };
+	CTextButtonColor*		m_pIcon{ nullptr };
+	CTextButtonColor*		m_pText{ nullptr };
+
+private:
+	_bool m_isFadeEnd{};
+	_bool m_isReadyFade{};
+	_bool m_isReadyClick{};
+	_bool m_isPicking{};
 	_bool m_IsSelect{};
+
+public:
+	const _bool& Get_IsSelect() const { return m_IsSelect; }
+	const _bool& Get_IsSelectEnd() const { return m_isFadeEnd; }
+	const Buff& Get_Buff()const { return m_eBuff; }
+	const _float& Get_Status() const { return m_fStatus; }
+	void Set_Fade() { m_isReadyFade = true; }
 
 private:
 	HRESULT Add_Parts();

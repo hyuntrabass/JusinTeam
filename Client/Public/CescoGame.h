@@ -10,6 +10,7 @@ class CCescoGame final : public CGameObject
 private:
 	enum Phase
 	{
+		Phase_Start,
 		Phase1,
 		Phase2,
 		Phase3,
@@ -48,7 +49,7 @@ private:
 private:
 	vector<_vec3> m_SpawnPositions;
 	Phase m_eNextPhase{ Phase_End };
-	Phase m_eCurrentPhase{ Phase_End };
+	Phase m_eCurrentPhase{ Phase_Start };
 	Phase m_ePreviousPhase{ Phase_End };
 	_randNum m_RandomNumber;
 	_uint m_iMonsterLimit{ 200 };
