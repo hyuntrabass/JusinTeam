@@ -1,4 +1,5 @@
 #include "Lever.h"
+#include "Trigger_Manager.h"
 
 CLever::CLever(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -45,14 +46,38 @@ void CLever::Tick(_float fTimeDelta)
 {
 	m_pTransformCom->Set_OldMatrix();
 
+	if (true == m_isAllDone)
+		return;
 
+	if (m_pModelCom->IsAnimationFinished(0) and 0 == m_Info.iIndex) {
+		CTrigger_Manager::Get_Instance()->Set_Lever1();
+		m_isAllDone = true;
+	}
+
+	if (m_pModelCom->IsAnimationFinished(0) and 1 == m_Info.iIndex) {
+		CTrigger_Manager::Get_Instance()->Set_Lever2();
+		m_isAllDone = true;
+	}
+
+	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
+	_bool isColl = m_pBodyColliderCom->Intersect(pCollider);
+
+	if (isColl) {
+		if (m_pGameInstance->Key_Down(DIK_E))
+			m_isOn = true;
+		m_ShaderPassIndex = AnimPass_OutLine;
+	}
+	else {
+		m_ShaderPassIndex = AnimPass_Default;
+	}
 
 	Update_Collider();
 }
 
 void CLever::Late_Tick(_float fTimeDelta)
 {
-	m_pModelCom->Play_Animation(fTimeDelta);
+	if(m_isOn)
+		m_pModelCom->Play_Animation(fTimeDelta);
 	
 	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos(), 20.f))
 	{

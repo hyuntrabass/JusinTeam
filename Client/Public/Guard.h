@@ -113,8 +113,10 @@ private:
 	GUARD_PATTERN m_ePattern{ PATTERN_END };
 	_mat m_OriginMatrix{};
 	_mat m_EffectMatrix{};
-	_vec4 vIdlePos{};
+	_vec3 vIdlePos{};
 	_vec4 vPatrolPos{};
+
+	_vec4 m_vTurnAngle{};
 
 private:
 	ANIM_DESC m_Animation{};

@@ -32,9 +32,13 @@ private:
 	CModel* m_pModelCom = nullptr;
 	CCollider* m_pBodyColliderCom = nullptr;
 
+	_bool m_isOn = false;
+	_bool m_isAllDone = false;
+
 private:
 	LeverInfo m_Info;
 	ANIM_DESC m_Animation{};
+	_uint m_ShaderPassIndex = 0;
 
 public:
 	HRESULT Add_Components();

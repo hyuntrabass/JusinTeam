@@ -18,7 +18,6 @@ public:
 		PATTERN_1,
 		PATTERN_2,
 		PATTERN_3,
-		PATTERN_4,
 		PATTERN_END
 	};
 

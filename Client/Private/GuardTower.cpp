@@ -73,10 +73,6 @@ HRESULT CGuardTower::Init(void* pArg)
 
 void CGuardTower::Tick(_float fTimeDelta)
 {
-	if (PATTERN_4 == m_Pattern_Type and CTrigger_Manager::Get_Instance()->Get_Lever1On()) {
-		return;
-	}
-
 	if (m_bAttacked == true)
 	{
 		m_fAttackDelay += fTimeDelta;
@@ -1013,10 +1009,10 @@ CGameObject* CGuardTower::Clone(void* pArg)
 
 void CGuardTower::Free()
 {
+	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 	__super::Free();
 	//if (!m_isPrototype)
 	//{
-	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 	//}
 	//m_pGameInstance->Delete_CollisionObject(this);
 
