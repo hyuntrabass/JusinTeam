@@ -286,6 +286,11 @@ void CPlayer::Tick(_float fTimeDelta)
 			m_fRimTick += fTimeDelta;
 		}
 	}
+	else
+	{
+		m_ShaderIndex = VTFPass_Dissolve;
+		m_HairShaderIndex = VTFPass_LerpDissolve;
+	}
 	if (m_bSlowSpeed > 0.f)
 	{
 		m_bSlowSpeed -= fTimeDelta * 0.5f;
@@ -1322,7 +1327,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 			m_bMove_AfterSkill = true;
 			CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_DEFAULT);
 			m_pCam_Manager->Set_AimMode(false);
-			m_bLockOn = false;	
+			m_bLockOn = false;
 			m_eState = Hook;
 		}
 		if (iDamage <= 0)
@@ -1595,6 +1600,11 @@ void CPlayer::Health_Regen(_float fTImeDelta)
 
 void CPlayer::Move(_float fTimeDelta)
 {
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() == TS_CescoMap)
+	{
+		m_pCam_Manager->Set_RidingZoom(true);
+	}
+
 	if (m_eState == Hook)
 	{
 		return;
@@ -2555,7 +2565,7 @@ void CPlayer::Cam_AttackZoom(_float fZoom)
 }
 void CPlayer::Return_Attack_IdleForm()
 {
-	
+
 	m_Animation.fAnimSpeedRatio = 3.f;
 	if (m_Current_Weapon == WP_SWORD)
 	{
@@ -2748,6 +2758,8 @@ void CPlayer::Set_ExtraStatus()
 	m_Status.BloodDrain = m_OriStatus.BloodDrain + ExtraStat.BloodDrain;
 	m_Status.Speed = m_OriStatus.Speed + ExtraStat.Speed;
 	m_Status.PoisonImmune = m_OriStatus.PoisonImmune;
+	m_Status.HpRegenAmount = m_OriStatus.HpRegenAmount + ExtraStat.HpRegenAmount;
+	m_Status.MpRegenAmount = m_OriStatus.MpRegenAmount + ExtraStat.MpRegenAmount;
 
 }
 void CPlayer::After_SwordAtt(_float fTimeDelta)
@@ -4010,7 +4022,7 @@ void CPlayer::Init_State()
 		m_iHP = 0;
 		m_fRadialPower = 0.f;
 		m_pGameInstance->Set_TimeRatio(1.f);
-		
+
 		switch (m_eState)
 		{
 		case Client::CPlayer::Idle:
@@ -4034,7 +4046,6 @@ void CPlayer::Init_State()
 		{
 			m_Animation.bSkipInterpolation = true;
 			m_Animation.iAnimIndex = Anim_Normal_run_start;
-			m_Animation.isLoop = false;
 			m_hasJumped = false;
 			m_iSuperArmor = {};
 			m_Animation.fAnimSpeedRatio = 2.f - (m_bSlowSpeed * 0.3f);
@@ -4053,7 +4064,6 @@ void CPlayer::Init_State()
 		case Client::CPlayer::Run_End:
 		{
 			m_Animation.iAnimIndex = Anim_Normal_run_stop;
-			m_Animation.isLoop = false;
 			m_hasJumped = false;
 			m_iSuperArmor = {};
 		}
@@ -4061,7 +4071,6 @@ void CPlayer::Init_State()
 		case Client::CPlayer::Jump_Start:
 		{
 			m_Animation.iAnimIndex = Anim_jump_start;
-			m_Animation.isLoop = false;
 			m_hasJumped = true;
 			m_iSuperArmor = {};
 		}
@@ -4077,7 +4086,6 @@ void CPlayer::Init_State()
 		case Client::CPlayer::Jump_Run:
 		{
 			m_Animation.iAnimIndex = Anim_jump_end_run;
-			m_Animation.isLoop = false;
 			m_Animation.fDurationRatio = 0.95f;
 			m_Animation.bSkipInterpolation = true;
 			m_hasJumped = false;
@@ -4087,7 +4095,6 @@ void CPlayer::Init_State()
 		case Client::CPlayer::Jump_End:
 		{
 			m_Animation.iAnimIndex = Anim_jump_end;
-			m_Animation.isLoop = false;
 			m_hasJumped = true;
 			m_iSuperArmor = {};
 		}
@@ -4095,7 +4102,6 @@ void CPlayer::Init_State()
 		case Client::CPlayer::Jump_Long_End:
 		{
 			m_Animation.iAnimIndex = Anim_jump_end_long;
-			m_Animation.isLoop = false;
 			m_hasJumped = false;
 			m_iSuperArmor = {};
 		}
@@ -4128,7 +4134,6 @@ void CPlayer::Init_State()
 			else if (m_Current_Weapon == WP_BOW)
 			{
 				m_Animation.iAnimIndex = Anim_B_idle_end;
-				m_Animation.isLoop = false;
 			}
 
 			m_hasJumped = false;
@@ -4144,7 +4149,6 @@ void CPlayer::Init_State()
 			{
 				m_Animation.iAnimIndex = Anim_Sniper_Battle_Run_end;
 			}
-			m_Animation.isLoop = false;
 			m_hasJumped = false;
 			m_iSuperArmor = {};
 		}
@@ -4169,9 +4173,7 @@ void CPlayer::Init_State()
 		{
 			m_Animation.iAnimIndex = Anim_B_idle_end;
 			m_hasJumped = false;
-			//m_Animation.fDurationRatio = 0.1f;
 			m_iSuperArmor = { 1.f };
-			m_Animation.isLoop = false;
 			m_Animation.bRewindAnimation = true;
 			m_Animation.fAnimSpeedRatio = 5.f;
 			m_Animation.fStartAnimPos = 60.f;
@@ -4183,7 +4185,6 @@ void CPlayer::Init_State()
 			m_hasJumped = false;
 			m_Animation.fDurationRatio = 0.01f;
 			m_iSuperArmor = { 1.f };
-			m_Animation.isLoop = false;
 		}
 		break;
 		case Client::CPlayer::AimMode_End:
@@ -4191,7 +4192,6 @@ void CPlayer::Init_State()
 			m_Animation.iAnimIndex = Anim_Sniper_Battle_Idle_end;
 			m_hasJumped = false;
 			m_iSuperArmor = {};
-			m_Animation.isLoop = false;
 			m_Animation.fDurationRatio = 0.5f;
 			m_Animation.fAnimSpeedRatio = 5.f;
 			m_bLockOn = false;
@@ -4249,14 +4249,12 @@ void CPlayer::Init_State()
 		case Client::CPlayer::Swim_collect:
 		{
 			m_Animation.iAnimIndex = Anim_swim_collect;
-			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}
 		break;
 		case Client::CPlayer::Stun_Start:
 		{
 			m_Animation.iAnimIndex = Anim_Stun_start;
-			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}
 		break;
@@ -4264,7 +4262,6 @@ void CPlayer::Init_State()
 		{
 			m_Animation.iAnimIndex = Anim_stun;
 			m_Animation.fAnimSpeedRatio = 3.5f;
-			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}
 		break;
@@ -4274,32 +4271,32 @@ void CPlayer::Init_State()
 			m_Animation.fDurationRatio = 0.4f;
 			m_Animation.fAnimSpeedRatio = 2.f;
 			m_Animation.fStartAnimPos = 18.f;
-			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}
 		break;
 		case Client::CPlayer::KnockDown:
 		{
 			if (m_Current_Weapon == WP_SWORD)
+			{
 				m_Animation.iAnimIndex = Anim_Assassin_knockdown;
+			}
 			else
+			{
 				m_Animation.iAnimIndex = Anim_Sniper_knockdown;
+			}
 
-			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}
 		break;
 		case Client::CPlayer::Revival_Start:
 		{
 			m_Animation.iAnimIndex = Anim_revival_start;
-			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}
 		break;
 		case Client::CPlayer::Revival_End:
 		{
 			m_Animation.iAnimIndex = Anim_revival_end;
-			m_Animation.isLoop = false;
 			m_hasJumped = false;
 			m_Status.Current_Hp = m_Status.Max_Hp;
 			m_Status.Current_Mp = m_Status.Max_Mp;
@@ -4309,14 +4306,12 @@ void CPlayer::Init_State()
 		case Client::CPlayer::Die:
 		{
 			m_Animation.iAnimIndex = Anim_die;
-			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}
 		break;
 		case Client::CPlayer::Collect_Start:
 		{
 			m_Animation.iAnimIndex = Anim_Collect_Start;
-			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}
 		break;
@@ -4324,28 +4319,24 @@ void CPlayer::Init_State()
 		{
 			m_Animation.iAnimIndex = Anim_Collect_loop;
 			m_Animation.fAnimSpeedRatio = 5.f;
-			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}
 		break;
 		case Client::CPlayer::Collect_End:
 		{
 			m_Animation.iAnimIndex = Anim_Collect_end;
-			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}
 		break;
 		case Client::CPlayer::Mining:
 		{
 			m_Animation.iAnimIndex = Anim_Mining;
-			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}
 		break;
 		case Client::CPlayer::Logging:
 		{
 			m_Animation.iAnimIndex = Anim_logging;
-			m_Animation.isLoop = false;
 			m_hasJumped = false;
 		}
 		break;
