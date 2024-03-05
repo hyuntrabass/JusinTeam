@@ -57,7 +57,6 @@ public:
 
 private:
 	void Init_Game();
-	void Exit_Game();
 	void Create_Bricks();
 
 private:

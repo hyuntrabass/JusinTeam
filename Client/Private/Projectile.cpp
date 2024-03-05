@@ -2,6 +2,7 @@
 
 #include "Effect_Dummy.h"
 #include "Effect_Manager.h"
+#include "Trigger_Manager.h"
 
 _uint CProjectile::m_iProjectileID = 0;
 
@@ -253,6 +254,11 @@ HRESULT CProjectile::Init(void* pArg)
 void CProjectile::Tick(_float fTimeDelta)
 {
 	m_fTime += fTimeDelta;
+
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_SurvivalMap)
+	{
+		Kill();
+	}
 
 	switch (m_ProjectileDesc.eType)
 	{
