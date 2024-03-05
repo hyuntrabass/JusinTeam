@@ -5,6 +5,7 @@
 #include "UI_Manager.h"
 #include "Camera_Manager.h"
 #include "Tower.h"
+#include "Trigger_Manager.h"
 
 CInfinityTower::CInfinityTower(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -457,10 +458,20 @@ void CInfinityTower::Tower_Tick(_float fTimeDelta, POINT& ptMouse)
 		{
 			switch (m_iCurIndex)
 			{
-			case BRICK:
-				CUI_Manager::Get_Instance()->Set_MiniGameStage(BRICK);
+			case Client::SURVIVAL:
+				CTrigger_Manager::Get_Instance()->Teleport(TS_SurvivalMap);
 				break;
-			default:
+			case Client::BOSS1:
+				CTrigger_Manager::Get_Instance()->Teleport(TS_MiniDungeon);
+				break;
+			case Client::BRICK:
+				CTrigger_Manager::Get_Instance()->Teleport(TS_BrickMap);
+				break;
+			case Client::CESCO:
+				CTrigger_Manager::Get_Instance()->Teleport(TS_CescoMap);
+				break;
+			case Client::BOSS2:
+				CTrigger_Manager::Get_Instance()->Teleport(TS_DragonMap);
 				break;
 			}
 			Exit_Tower();

@@ -219,17 +219,17 @@ HRESULT CBuff_Card::Add_Parts()
 		iTexIndex = 6;
 		break;
 	case Client::Buff_CoolDown:
-		m_strText = TEXT("쿨타임 0.2 감소");
+		m_strText = TEXT("쿨타임 80% 감소");
 		m_fStatus = 0.2f;
 		iTexIndex = 112;
 		break;
 	case Client::Buff_BloodDrain:
-		m_strText = TEXT("흡혈 0.1 증가");
-		m_fStatus = 0.1f;
+		m_strText = TEXT("생명력 흡수 20%");
+		m_fStatus = 0.2f;
 		iTexIndex = 7;
 		break;
 	case Client::Buff_PoisonImmune:
-		m_strText = TEXT("독 면역");
+		m_strText = TEXT("독,슬로우 상태 면역");
 		m_fStatus = 1.f;
 		iTexIndex = 131;
 		break;

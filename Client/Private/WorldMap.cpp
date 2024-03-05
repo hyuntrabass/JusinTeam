@@ -181,6 +181,13 @@ HRESULT CWorldMap::Render()
 
 		for (_uint i = 0; i < iNumMeshes; i++)
 		{
+			_bool HasGlowTex = false;
+
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_HasGlowTex", &HasGlowTex, sizeof _bool)))
+			{
+				return E_FAIL;
+			}
+
 			if (FAILED(m_pModelCom[j]->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 			{
 				return E_FAIL;

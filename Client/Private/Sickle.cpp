@@ -47,7 +47,7 @@ void CSickle::Tick(_float fTimeDelta)
 	m_pTransformCom->Set_State(State::Pos, vPos);
 	 
 	m_fLifeTimer += fTimeDelta;
-	if (m_fLifeTimer > 10.f)
+	if (m_fLifeTimer > 8.f)
 	{
 		Kill();
 	}
@@ -73,6 +73,9 @@ void CSickle::Tick(_float fTimeDelta)
 	if (m_isDead)
 	{
 		_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
+		CTransform* BossTransform = GET_TRANSFORM("Layer_HumanBoss",LEVEL_TOWER);
+		vPos.y = BossTransform->Get_State(State::Pos).y;
+	
 		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SickleTrap"), TEXT("Prototype_GameObject_SickleTrap"), &vPos);
 	}
 	//{

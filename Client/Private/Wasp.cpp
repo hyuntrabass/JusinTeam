@@ -1,5 +1,5 @@
 #include "Wasp.h"
-
+#include "CommonSurfaceTrail.h"
 CWasp::CWasp(_dev pDevice, _context pContext)
 	:CVTFMonster(pDevice, pContext)
 {
@@ -32,6 +32,16 @@ HRESULT CWasp::Init(void* pArg)
 	if (FAILED(Add_Components()))
 		return E_FAIL;
 
+	SURFACETRAIL_DESC Desc{};
+	Desc.vColor = _color(1.f, 0.5f, 0.1f, 1.f);
+
+	Desc.iNumVertices = 8;
+	m_pAttack_Trail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
+
+	Desc.iPassIndex = 2;
+	Desc.strMaskTextureTag = L"FX_J_Noise_Normal004_Tex";
+	m_pAttack_Distortion_Trail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
+	
 	m_pTransformCom->Set_Scale(_vec3(0.5f, 0.5f, 0.5f));
 
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
@@ -69,15 +79,18 @@ void CWasp::Tick(_float fTimeDelta)
 
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
-
 	__super::Tick(fTimeDelta);
-
+	m_pAttack_Trail->On();
+	m_pAttack_Distortion_Trail->On();
+	Update_Trail();
 	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 	m_pAttackColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 }
 
 void CWasp::Late_Tick(_float fTimeDelta)
 {
+	m_pAttack_Trail->Late_Tick(fTimeDelta);
+	m_pAttack_Distortion_Trail->Late_Tick(fTimeDelta);
 	__super::Late_Tick(fTimeDelta);
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
@@ -97,6 +110,21 @@ HRESULT CWasp::Render_Instance()
 	__super::Render_Instance();
 
 	return S_OK;
+}
+
+void CWasp::Update_Trail()
+{
+	_vec3 vTopPos{};
+	_vec3 vBotPos{};
+	if (m_pAttack_Trail != nullptr)
+	{
+		vBotPos = m_pTransformCom->Get_World_Matrix().Position_vec3();
+		vBotPos = vBotPos + _vec3(0.f, 0.2f, 0.f);
+		vTopPos = vBotPos + _vec3(0.f, 1.3f, 0.f);
+		m_pAttack_Trail->Tick(vTopPos, vBotPos);
+		m_pAttack_Distortion_Trail->Tick(vTopPos, vBotPos);
+	}
+
 }
 
 void CWasp::Init_State(_float fTimeDelta)
@@ -342,5 +370,7 @@ void CWasp::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pAttack_Trail);
+	Safe_Release(m_pAttack_Distortion_Trail);
 	Safe_Release(m_pAttackColliderCom);
 }

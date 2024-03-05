@@ -23,7 +23,7 @@ HRESULT CLevel_Tower::Init()
 	m_pGameInstance->StopAll();
 
 
-	//CTrigger_Manager::Get_Instance()->Teleport(TS_Minigame);
+	//CTrigger_Manager::Get_Instance()->Teleport(TS_BrickMap);
 
 	if (FAILED(Ready_Light()))
 	{
@@ -81,7 +81,7 @@ void CLevel_Tower::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
 	{
-		CTrigger_Manager::Get_Instance()->Teleport(TS_Minigame);
+		CTrigger_Manager::Get_Instance()->Teleport(TS_BrickMap);
 		return;
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
@@ -179,7 +179,7 @@ HRESULT CLevel_Tower::Ready_Light()
 
 HRESULT CLevel_Tower::Ready_Human_Boss()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Boss"), TEXT("Prototype_GameObject_Human_Boss"))))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_HumanBoss"), TEXT("Prototype_GameObject_Human_Boss"))))
 	{
 		return E_FAIL;
 	}
