@@ -81,12 +81,12 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD8, InputChannel::UI))
 	{
-		m_eState = Hide_Start;
+		m_eState = Throw_Sickle;
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD9, InputChannel::UI))
 	{
 
-		m_eState = Pizza_Start;
+		m_eState = Hide_Start;
 	}
 
 	if (m_pHpBoss)
@@ -925,7 +925,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 		if (Index >= 0.f && Index <= 2.f)
 		{
 			_vec3 vPos = m_pPlayerTransform->Get_State(State::Pos) - (m_pPlayerTransform->Get_State(State::Look).Get_Normalized() * 1.7f);
-			vPos.y = m_pTransformCom->Get_State(State::Pos).y;
+			vPos.y = vPos.y = -0.2f;
 			m_pTransformCom->Set_FootPosition(vPos);
 			_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
 			vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
@@ -1079,7 +1079,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			if (!m_bAttacked)
 			{
 				_vec3 vPos = m_pPlayerTransform->Get_State(State::Pos) - (m_pPlayerTransform->Get_State(State::Look).Get_Normalized() * 1.7f);
-				vPos.y = m_pTransformCom->Get_State(State::Pos).y;
+				vPos.y = -0.2f;
 				m_pTransformCom->Set_FootPosition(vPos);
 				_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
 				vPlayerPos.y = m_pTransformCom->Get_State(State::Pos).y;
