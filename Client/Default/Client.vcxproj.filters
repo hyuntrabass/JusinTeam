@@ -550,6 +550,9 @@
     <Filter Include="02.GameObjects\17.InfiltrationGame\04. Lever">
       <UniqueIdentifier>{69c393e1-9736-46d7-9eea-f6bcf0a88e90}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\17.InfiltrationGame\05. MiniDungeon_Teleport">
+      <UniqueIdentifier>{88ab10c4-d3f3-4a26-a6c0-5c3251afa1b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1131,6 +1134,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Lever.h">
       <Filter>02.GameObjects\17.InfiltrationGame\04. Lever</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MiniDungeon_Teleport.h">
+      <Filter>02.GameObjects\17.InfiltrationGame\05. MiniDungeon_Teleport</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1714,6 +1720,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Lever.cpp">
       <Filter>02.GameObjects\17.InfiltrationGame\04. Lever</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MiniDungeon_Teleport.cpp">
+      <Filter>02.GameObjects\17.InfiltrationGame\05. MiniDungeon_Teleport</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

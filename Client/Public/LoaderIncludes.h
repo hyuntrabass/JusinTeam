@@ -191,3 +191,4 @@
 #include "CheckPoint.h"
 #include "Door.h"
 #include "Lever.h"
+#include "MiniDungeon_Teleport.h"

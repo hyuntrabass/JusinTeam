@@ -7,6 +7,7 @@
 #include "CheckPoint.h"
 #include "Lever.h"
 #include "Door.h"
+#include "MiniDungeon_Teleport.h"
 
 CInfiltrationGame::CInfiltrationGame(_dev pDevice, _context pContext)
 	:CGameObject(pDevice, pContext)
@@ -26,6 +27,9 @@ HRESULT CInfiltrationGame::Init_Prototype()
 
 HRESULT CInfiltrationGame::Init(void* pArg)
 {
+	LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+	*Light = g_Light_Infiltration;
+
 	m_pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	Safe_AddRef(m_pPlayerTransform);
 
@@ -36,12 +40,15 @@ HRESULT CInfiltrationGame::Init(void* pArg)
 	Create_CheckPoint();
 	Create_Lever();
 	Create_Door();
+	Create_Teleport();
 	return S_OK;
 }
 
 void CInfiltrationGame::Tick(_float fTimeDelta)
 {
 	Reset_Play(fTimeDelta);
+	if (m_pTeleport)
+		m_pTeleport->Tick(fTimeDelta);
 	for (auto& pGuardList : m_GuardList)
 	{
 		for (auto& pGuard : pGuardList)
@@ -353,6 +360,59 @@ HRESULT CInfiltrationGame::Create_Door()
 	return S_OK;
 }
 
+HRESULT CInfiltrationGame::Create_Teleport()
+{
+	const TCHAR* pGetPath = TEXT("../Bin/Data/MiniDungeon_Teleport.dat");;
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+	if (!inFile.is_open())
+	{
+		MessageBox(g_hWnd, L"파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+		return E_FAIL;
+	}
+
+	_uint TriggerListSize;
+	inFile.read(reinterpret_cast<char*>(&TriggerListSize), sizeof(_uint));
+
+
+	for (_uint i = 0; i < TriggerListSize; ++i)
+	{
+		TriggerInfo TriggerInfo{};
+
+		_uint iIndex{};
+		inFile.read(reinterpret_cast<char*>(&iIndex), sizeof(_uint));
+		TriggerInfo.iIndex = iIndex;
+
+		_bool bCheck{};
+		inFile.read(reinterpret_cast<char*>(&bCheck), sizeof(_bool));
+		TriggerInfo.bLimited = bCheck;
+
+		_ulong TriggerPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&TriggerPrototypeSize), sizeof(_ulong));
+
+		wstring TriggerPrototype;
+		TriggerPrototype.resize(TriggerPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&TriggerPrototype[0]), TriggerPrototypeSize * sizeof(wchar_t));
+
+		_float TriggerSize{};
+		inFile.read(reinterpret_cast<char*>(&TriggerSize), sizeof(_float));
+		TriggerInfo.fSize = TriggerSize;
+
+		_mat TriggerWorldMat;
+		inFile.read(reinterpret_cast<char*>(&TriggerWorldMat), sizeof(_mat));
+
+		TriggerInfo.WorldMat = TriggerWorldMat;
+
+		m_pTeleport = dynamic_cast<CMiniDungeon_Teleport*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Teleport"), &TriggerInfo));
+		if (not m_pTeleport)
+		{
+			MSG_BOX("트리거 생성 실패.");
+			return E_FAIL;
+		}
+	}
+	inFile.close();
+	return S_OK;
+}
 void CInfiltrationGame::Reset_Play(_float fTimeDelta)
 {
 	if (m_isReset == false)
@@ -414,7 +474,11 @@ void CInfiltrationGame::Release_DeadObjects()
 			++it;
 		}
 	}
+
+	if (m_pTeleport->isDead())
+		Safe_Release(m_pTeleport);
 }
+
 
 CInfiltrationGame* CInfiltrationGame::Create(_dev pDevice, _context pContext)
 {
@@ -471,6 +535,15 @@ void CInfiltrationGame::Free()
 		Safe_Release(pCheckPoint);
 	}
 	m_CheckPoint.clear();
+
+	for (auto& pLever : m_Lever)
+	{
+		Safe_Release(pLever);
+	}
+	m_Lever.clear();
+	
+	Safe_Release(m_pDoor);
+	Safe_Release(m_pTeleport);
 
 	Safe_Release(m_pPlayerTransform);
 }

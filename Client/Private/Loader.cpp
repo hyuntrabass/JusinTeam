@@ -2826,6 +2826,10 @@ HRESULT CLoader::Load_Tower()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Teleport"), CMiniDungeon_Teleport::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 	//Ready_MiniDungeon
 	{
 		const TCHAR* pGetPath = TEXT("../Bin/Data/MiniDungeon_MapData.dat");

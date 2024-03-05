@@ -236,6 +236,7 @@
     <ClInclude Include="..\Public\Logo_Text.h" />
     <ClInclude Include="..\Public\Menu.h" />
     <ClInclude Include="..\Public\Meteor.h" />
+    <ClInclude Include="..\Public\MiniDungeon_Teleport.h" />
     <ClInclude Include="..\Public\Missile.h" />
     <ClInclude Include="..\Public\MPBar.h" />
     <ClInclude Include="..\Public\Map.h" />
@@ -407,6 +408,7 @@
     <ClCompile Include="..\Private\Lever.cpp" />
     <ClCompile Include="..\Private\Log.cpp" />
     <ClCompile Include="..\Private\Meteor.cpp" />
+    <ClCompile Include="..\Private\MiniDungeon_Teleport.cpp" />
     <ClCompile Include="..\Private\NineSlice.cpp" />
     <ClCompile Include="..\Private\NumEffect.cpp" />
     <ClCompile Include="..\Private\Ocean.cpp" />
