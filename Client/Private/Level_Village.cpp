@@ -871,6 +871,7 @@ HRESULT CLevel_Village::Ready_Water()
 	Desc.vPos = _vec3(0.f, -40.f, 0.f);
 	Desc.vSize = _vec2(3000.f, 3000.f);
 	Desc.fWaterSpeed = 0.01f;
+
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, L"Layer_Map", L"Prototype_GameObject_Water", &Desc)))
 		return E_FAIL;
 

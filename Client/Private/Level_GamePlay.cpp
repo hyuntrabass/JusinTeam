@@ -366,14 +366,14 @@ HRESULT CLevel_GamePlay::Ready_Player()
 
 HRESULT CLevel_GamePlay::Ready_Map()
 {
-	TERRAIN_INFO Terrain;
-	Terrain.vTerrainSize = _uint2(300, 300);
-	Terrain.isMesh = false;
+	//TERRAIN_INFO Terrain;
+	//Terrain.vTerrainSize = _uint2(300, 300);
+	//Terrain.isMesh = false;
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &Terrain)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &Terrain)))
+	//{
+	//	return E_FAIL;
+	//}
 
 	const TCHAR* pGetPath = TEXT("../Bin/Data/Prologue_MapData.dat");
 
