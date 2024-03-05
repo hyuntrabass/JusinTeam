@@ -9,6 +9,8 @@
 #include "Door.h"
 #include "MiniDungeon_Teleport.h"
 
+#include "Trigger_Manager.h"
+
 CInfiltrationGame::CInfiltrationGame(_dev pDevice, _context pContext)
 	:CGameObject(pDevice, pContext)
 {
@@ -59,10 +61,21 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 	}
 	for (auto& pGuardTowerList : m_GuardTowerList)
 	{
+		if (false == m_isTurnOff) {
+			if (true == CTrigger_Manager::Get_Instance()->Get_Lever1On()) {
+				if (pGuardTowerList == m_GuardTowerList[4]) {
+					for (auto& pGuardTower : pGuardTowerList) {
+						pGuardTower->Tower_TurnOff();
+					}
+					m_isTurnOff = true;
+				}
+			}
+		}
 		for (auto& pGuardTower : pGuardTowerList)
 		{
 			pGuardTower->Tick(fTimeDelta);
 		}
+
 	}
 
 	for (auto& pCheckPoint : m_CheckPoint)

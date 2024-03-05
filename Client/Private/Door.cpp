@@ -1,4 +1,5 @@
 #include "Door.h"
+#include "Trigger_Manager.h"
 
 CDoor::CDoor(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -23,14 +24,11 @@ HRESULT CDoor::Init(void* pArg)
 	if (FAILED(Add_Components()))
 		return E_FAIL;
 
-	if (FAILED(Add_Collider()))
-		return E_FAIL;
-
 	m_pTransformCom->Set_Matrix(m_Info.mMatrix);
 
 	PxCapsuleControllerDesc ControllerDesc{};
-	ControllerDesc.height = 1.2f; // 높이(위 아래의 반구 크기 제외
-	ControllerDesc.radius = 0.4f; // 위아래 반구의 반지름
+	ControllerDesc.height = 5.f; // 높이(위 아래의 반구 크기 제외
+	ControllerDesc.radius = 2.f; // 위아래 반구의 반지름
 	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
 	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
 	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
@@ -38,13 +36,21 @@ HRESULT CDoor::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
-
 	return S_OK;
 }
 
 void CDoor::Tick(_float fTimeDelta)
 {
 	m_pTransformCom->Set_OldMatrix();
+
+	if (false == m_Open) {
+		if (CTrigger_Manager::Get_Instance()->Get_Lever2On()) {
+			m_Animation.bRewindAnimation = true;
+			m_pModelCom->Set_Animation(m_Animation);
+			m_pTransformCom->Delete_Controller();
+		}
+	}
+
 }
 
 void CDoor::Late_Tick(_float fTimeDelta)
@@ -56,13 +62,72 @@ void CDoor::Late_Tick(_float fTimeDelta)
 		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 	}
 
-#ifdef _DEBUG
-	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
-#endif // _DEBUG
 }
 
 HRESULT CDoor::Render()
 {
+	if (FAILED(Bind_ShaderResources()))
+		return E_FAIL;
+
+	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); ++i) {
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+			return E_FAIL;
+
+		_bool HasNorTex{};
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+		{
+			HasNorTex = false;
+		}
+		else
+		{
+			HasNorTex = true;
+		}
+
+		_bool HasMaskTex{};
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
+		{
+			HasMaskTex = false;
+		}
+		else
+		{
+			HasMaskTex = true;
+		}
+
+		_bool HasGlowTex{};
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_GlowTexture", i, TextureType::Specular)))
+		{
+			HasGlowTex = false;
+		}
+		else
+		{
+			HasGlowTex = true;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasGlowTex", &HasGlowTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Begin(0)))
+			return E_FAIL;
+
+		if (FAILED(m_pModelCom->Render(i)))
+			return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -123,25 +188,6 @@ HRESULT CDoor::Bind_ShaderResources()
 	return S_OK;
 }
 
-HRESULT CDoor::Add_Collider()
-{
-	Collider_Desc BodyCollDesc = {};
-	BodyCollDesc.eType = ColliderType::OBB;
-	BodyCollDesc.vExtents = _vec3(1.f, 2.5f, 1.f);
-	BodyCollDesc.vCenter = _vec3(0.f, BodyCollDesc.vExtents.y, 0.f);
-	BodyCollDesc.vRadians = _vec3(0.f, 0.f, 0.f);
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, L"Prototype_Component_Collider", L"Com_Collider_Body_OBB", (CComponent**)&m_pBodyColliderCom, &BodyCollDesc)))
-		return E_FAIL;
-
-	return S_OK;
-}
-
-void CDoor::Update_Collider()
-{
-	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
-}
-
 CDoor* CDoor::Create(_dev pDevice, _context pContext)
 {
 	CDoor* pInstance = new CDoor(pDevice, pContext);
@@ -175,5 +221,4 @@ void CDoor::Free()
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pModelCom);
-	Safe_Release(m_pBodyColliderCom);
 }

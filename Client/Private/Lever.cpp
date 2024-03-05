@@ -1,5 +1,6 @@
 #include "Lever.h"
 #include "Trigger_Manager.h"
+#include "UI_Manager.h"
 
 CLever::CLever(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -51,24 +52,30 @@ void CLever::Tick(_float fTimeDelta)
 
 	if (m_pModelCom->IsAnimationFinished(0) and 0 == m_Info.iIndex) {
 		CTrigger_Manager::Get_Instance()->Set_Lever1();
+		m_ShaderPassIndex = AnimPass_Default;
 		m_isAllDone = true;
+		return;
 	}
 
 	if (m_pModelCom->IsAnimationFinished(0) and 1 == m_Info.iIndex) {
 		CTrigger_Manager::Get_Instance()->Set_Lever2();
+		m_ShaderPassIndex = AnimPass_Default;
 		m_isAllDone = true;
+		return;
 	}
 
 	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
 	_bool isColl = m_pBodyColliderCom->Intersect(pCollider);
 
 	if (isColl) {
-		if (m_pGameInstance->Key_Down(DIK_E))
+		if (m_pGameInstance->Key_Down(DIK_E)) {
+			CUI_Manager::Get_Instance()->Set_Collect();
+
 			m_isOn = true;
-		m_ShaderPassIndex = AnimPass_OutLine;
+		}
 	}
 	else {
-		m_ShaderPassIndex = AnimPass_Default;
+		m_ShaderPassIndex = AnimPass_OutLine;
 	}
 
 	Update_Collider();
@@ -119,12 +126,27 @@ HRESULT CLever::Render()
 			HasMaskTex = true;
 		}
 
+		_bool HasGlowTex{};
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_GlowTexture", i, TextureType::Specular)))
+		{
+			HasGlowTex = false;
+		}
+		else
+		{
+			HasGlowTex = true;
+		}
+
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}
 
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasGlowTex", &HasGlowTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}
@@ -195,6 +217,10 @@ HRESULT CLever::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof(_float4))))
+		return E_FAIL;
+
+	_uint iOutlineColor = OutlineColor_Yellow;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_OutlineColor", &iOutlineColor, sizeof(_uint))))
 		return E_FAIL;
 
 	return S_OK;

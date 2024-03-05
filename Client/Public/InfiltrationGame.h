@@ -36,6 +36,8 @@ private:
 	_bool m_isReset{ false };
 	_mat m_CheckPointMatrix{};
 	_float m_fResurrectionTime{ 0.f };
+	_bool m_isTurnOff = false;
+
 private:
 	CTransform* m_pPlayerTransform = { nullptr };
 	class CDoor* m_pDoor{ nullptr };
