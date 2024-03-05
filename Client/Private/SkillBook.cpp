@@ -135,7 +135,7 @@ void CSkillBook::Tick(_float fTimeDelta)
 
 			m_Light_Desc = *LightDesc;
 			LightDesc->eType = LIGHT_DESC::Directional;
-			LightDesc->vDirection = _float4(0.f, 0.f, -1.f, 0.f);
+			LightDesc->vDirection = _float4(0.f, 0.f, 1.f, 0.f);
 			LightDesc->vDiffuse = _vec4(0.8f, 0.8f, 0.8f, 1.f);
 			LightDesc->vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
 			LightDesc->vSpecular = _vec4(1.f);

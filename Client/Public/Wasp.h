@@ -47,7 +47,12 @@ public:
 	virtual HRESULT Render_Instance() override;
 
 private:
+	void Update_Trail();
+
+private:
 	CCollider* m_pAttackColliderCom = { nullptr };
+	class CCommonSurfaceTrail* m_pAttack_Trail{ nullptr };
+	class CCommonSurfaceTrail* m_pAttack_Distortion_Trail{ nullptr };
 
 private:
 	STATE m_eState{ State_End };

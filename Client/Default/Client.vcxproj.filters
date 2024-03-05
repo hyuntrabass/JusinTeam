@@ -541,6 +541,9 @@
     <Filter Include="02.GameObjects\18. Sun">
       <UniqueIdentifier>{3bb37758-e5fb-4873-a1a7-388a41d196ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\17.InfiltrationGame\02. CheckPoint">
+      <UniqueIdentifier>{784bb20b-73fe-4723-8b7d-41c09f4918e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1102,9 +1105,6 @@
     <ClInclude Include="..\Public\GuardTower.h">
       <Filter>02.GameObjects\17.InfiltrationGame\01. GuardTower</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Guard.h">
-      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Sun.h">
       <Filter>02.GameObjects\18. Sun</Filter>
     </ClInclude>
@@ -1112,10 +1112,11 @@
       <Filter>02.GameObjects\17.InfiltrationGame</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Guard.h" />
-    <ClInclude Include="..\Public\BlackCat.h" />
-    <ClInclude Include="..\Public\CheckPoint.h" />
     <ClInclude Include="..\Public\Buff_Card.h">
       <Filter>02.GameObjects\16.CescoGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Guard.h">
+      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1676,9 +1677,6 @@
     <ClCompile Include="..\Private\GuardTower.cpp">
       <Filter>02.GameObjects\17.InfiltrationGame\01. GuardTower</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Guard.cpp">
-      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\RedAnt.cpp">
       <Filter>02.GameObjects\16.CescoGame\VTFMonster\RedAnt</Filter>
     </ClCompile>
@@ -1689,10 +1687,11 @@
       <Filter>02.GameObjects\17.InfiltrationGame</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Guard.cpp" />
-    <ClCompile Include="..\Private\BlackCat.cpp" />
-    <ClCompile Include="..\Private\CheckPoint.cpp" />
     <ClCompile Include="..\Private\Buff_Card.cpp">
       <Filter>02.GameObjects\16.CescoGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Guard.cpp">
+      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

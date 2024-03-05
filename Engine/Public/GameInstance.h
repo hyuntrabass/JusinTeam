@@ -277,6 +277,10 @@ public: // Get_Set
 	const wstring& Get_CompleteInputString() const;
 
 	//¿ø¸í
+	const void Set_TurnOnShadow(_bool TurnOnShadow) {
+		m_bTurnOnShadow = TurnOnShadow;
+	}
+
 	_bool Get_TurnOnShadow() const {
 		return m_bTurnOnShadow;
 	}

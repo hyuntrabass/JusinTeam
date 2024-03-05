@@ -53,10 +53,14 @@ private:
 	Phase m_ePreviousPhase{ Phase_End };
 	_randNum m_RandomNumber;
 	_uint m_iMonsterLimit{ 200 };
-	_float m_fTimeLimit{ 1209999999.f };
+	_float m_fTimeLimit{ 300.f };
 	_float m_fMonsterSpawnTime{};
 	_uint m_iMonsterSpawnCount{};
-	_float m_iMonsterSpawnSpeed{};
+	_float m_iMonsterSpawnSpeed{1.f};
+	
+	//Buff
+	_bool m_bBuffSelected{};
+
 	//Hook
 	_float m_fHookSpawnTime{};
 	_bool m_bHadDragging{};
