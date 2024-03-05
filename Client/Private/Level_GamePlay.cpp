@@ -89,31 +89,31 @@ HRESULT CLevel_GamePlay::Init()
 	//	return E_FAIL;
 	//}
 
-	if (FAILED(Ready_Monster_Test()))
-	{
-		MSG_BOX("Failed to Ready Monster_Test");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Monster_Test()))
+	//{
+	//	MSG_BOX("Failed to Ready Monster_Test");
+	//	return E_FAIL;
+	//}
 
-	// NPC_Test
-	if (FAILED(Ready_NPC_Test()))
-	{
-		MSG_BOX("Failed to Ready NPC");
-		return E_FAIL;
-	}
+	//// NPC_Test
+	//if (FAILED(Ready_NPC_Test()))
+	//{
+	//	MSG_BOX("Failed to Ready NPC");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_NPC_Dummy_Test()))
-	{
-		MSG_BOX("Failed to Ready NPC_Dummy");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_NPC_Dummy_Test()))
+	//{
+	//	MSG_BOX("Failed to Ready NPC_Dummy");
+	//	return E_FAIL;
+	//}
 
-	// Pet_Test
-	if (FAILED(Ready_Pet()))
-	{
-		MSG_BOX("Failed to Ready Pet");
-		return E_FAIL;
-	}
+	//// Pet_Test
+	//if (FAILED(Ready_Pet()))
+	//{
+	//	MSG_BOX("Failed to Ready Pet");
+	//	return E_FAIL;
+	//}
 
 	// UI
 	if (FAILED(Ready_UI()))
@@ -857,8 +857,6 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	{
 		return E_FAIL;
 	}
-
-
 
 
 	return S_OK;
