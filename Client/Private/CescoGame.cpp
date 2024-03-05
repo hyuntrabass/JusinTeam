@@ -71,6 +71,11 @@ HRESULT CCescoGame::Init(void* pArg)
 
 void CCescoGame::Tick(_float fTimeDelta)
 {
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_CescoMap)
+	{
+		Kill();
+	}
+
 	if (CCamera_Manager::Get_Instance()->Get_CameraState() == CS_INVEN)
 	{
 		return;
