@@ -18,8 +18,8 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 
 private:
-	list<class CGuard*> m_Guard;
-	list<class CGuardTower*> m_GuardTower;
+	//list<class CGuard*> m_Guard;
+	//list<class CGuardTower*> m_GuardTower;
 	list<class CCheckPoint*> m_CheckPoint;
 
 	vector<list<class CGuard*>> m_GuardList;
