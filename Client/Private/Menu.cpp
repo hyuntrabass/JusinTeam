@@ -461,6 +461,10 @@ void CMenu::Free()
 		{
 			Safe_Release(m_pMenu[i]);
 		}
+		for (size_t i = 0; i < ENV_END; i++)
+		{
+			Safe_Release(m_pSlots[i]);
+		}
 
 	}
 

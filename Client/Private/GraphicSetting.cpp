@@ -72,10 +72,17 @@ void CGraphicSetting::Tick(_float fTimeDelta)
 		m_pOn->Set_Alpha(1.f);
 		m_pOff->Set_Alpha(0.f);
 	}
+	else if (PtInRect(&m_pOff->Get_Rect(), ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Default))
+	{
+		m_pOn->Set_Alpha(0.f);
+		m_pOff->Set_Alpha(1.f);
+	}
 }
 
 void CGraphicSetting::Late_Tick(_float fTimeDelta)
 {
+	m_pOn->Late_Tick(fTimeDelta);
+	m_pOff->Late_Tick(fTimeDelta);
 
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
@@ -120,7 +127,7 @@ void CGraphicSetting::Update_State(_bool isOn)
 	switch (m_eGraphic)
 	{
 	case Client::CGraphicSetting::SSAO:
-	
+		//m_pRendererCom->
 		break;
 	case Client::CGraphicSetting::TONE:
 		m_strText = TEXT("Åæ¸Ê");
@@ -310,22 +317,9 @@ void CGraphicSetting::Free()
 {
 	__super::Free();
 
-	if (!m_isPrototype)
-	{
-		for (size_t i = 0; i < MENU_END; i++)
-		{
-			Safe_Release(m_pMenu[i]);
-		}
-
-	}
-
-	Safe_Release(m_pSetting);
 	Safe_Release(m_pBackGround);
-	Safe_Release(m_pExitButton);
-	Safe_Release(m_pTitleButton);
-
-	Safe_Release(m_pUnderBar);
-	Safe_Release(m_pSelectButton);
+	Safe_Release(m_pOn);
+	Safe_Release(m_pOff);
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
