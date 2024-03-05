@@ -75,7 +75,8 @@ void CCescoGame::Tick(_float fTimeDelta)
 	}
 	if (m_pGameInstance->Key_Down(DIK_8, InputChannel::UI))
 	{
-		m_eCurrentPhase = Phase3;
+		m_ePreviousPhase = Phase_End;
+		m_eCurrentPhase = Phase_Buff;
 	}
 	if (m_pGameInstance->Key_Down(DIK_9))
 	{
@@ -139,6 +140,11 @@ void CCescoGame::Tick(_float fTimeDelta)
 
 void CCescoGame::Late_Tick(_float fTimeDelta)
 {
+	for (auto& pBuffCard : m_vecBuffCard)
+	{
+		pBuffCard->Late_Tick(fTimeDelta);
+	}
+
 	for (auto& pMonster : m_Monsters)
 	{
 		pMonster->Late_Tick(fTimeDelta);
@@ -511,33 +517,58 @@ void CCescoGame::Tick_Phase_Buff(_float fTimeDelta)
 		{
 			IsSelet = true;
 			Buff eBuff = Buffcard->Get_Buff();
+			CPlayer::PLAYER_STATUS* eState = CUI_Manager::Get_Instance()->Set_ExtraStatus();
 			switch (eBuff)
 			{
 			case Client::Buff_MaxHp:
-
+				eState->Max_Hp += Buffcard->Get_Status();
 				break;
 			case Client::Buff_HpRegen:
+				eState->HpRegenAmount += Buffcard->Get_Status();
 				break;
 			case Client::Buff_MpRegen:
+				eState->MpRegenAmount += Buffcard->Get_Status();
 				break;
 			case Client::Buff_Attack:
+				eState->Attack += Buffcard->Get_Status();
 				break;      
 			case Client::Buff_Speed:
+				eState->Speed += Buffcard->Get_Status();
 				break;
 			case Client::Buff_CoolDown:
+				eState->CoolDownTime += Buffcard->Get_Status();
 				break;
 			case Client::Buff_BloodDrain:
+				eState->BloodDrain += Buffcard->Get_Status();
 				break;
 			case Client::Buff_PoisonImmune:
+				eState->PoisonImmune = (_bool)Buffcard->Get_Status();
 				break;
 			case Client::Buff_MonRegenDown:
 				m_iMonsterSpawnSpeed = 1.f;
 				break;
 			}
 		}
+
+	}
+	if (IsSelet)
+	{
+		for (auto& Buffcard : m_vecBuffCard)
+		{
+			Buffcard->Set_Fade();
+		}
 	}
 
-	if (IsSelet)
+	_bool isEnd{};
+	for (auto& Buffcard : m_vecBuffCard)
+	{
+		if (Buffcard->Get_IsSelectEnd())
+		{
+			isEnd = true;
+		}
+	}
+
+	if (isEnd)
 	{
 		for (auto& Buffcard : m_vecBuffCard)
 		{

@@ -453,6 +453,26 @@ HRESULT CTextButtonColor::Bind_ShaderResources()
 			}
 		}
 	}
+	else if (m_ePass == VTPass_Sprite)
+	{
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vNumSprite", &m_vNumSprite, sizeof(_int2))))
+		{
+			return E_FAIL;
+		}
+		int iIndex = static_cast<_int>(m_fIndex);
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_iIndex", &iIndex, sizeof(_int))))
+		{
+			return E_FAIL;
+		}
+
+		if (m_strTexture != TEXT(""))
+		{
+			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 	else if (m_ePass == VTPass_SpriteMaskColor)
 	{
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vNumSprite", &m_vNumSprite, sizeof(_int2))))

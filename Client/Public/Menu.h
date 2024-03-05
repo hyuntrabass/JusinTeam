@@ -7,6 +7,8 @@ BEGIN(Client)
 class CWearable_Slot;
 class CMenu final : public COrthographicObject
 {
+public:
+	enum MENU { SOUND, GRAPHIC, MENU_END };
 
 private:
 	CMenu(_dev pDevice, _context pContext);
@@ -27,11 +29,20 @@ private:
 	CTexture* m_pTextureCom{ nullptr };
 
 private:
+	_bool										m_Clicked{ false };
+	_bool										m_isReadytoDeactivate{ false };
+	_bool										m_isReadytoActivate{ false };
 	_bool										m_isPrototype{ false };
 	_bool										m_isActive{ false };
 
-	CGameObject*								m_pExitGame{ nullptr };
+	CGameObject*								m_pTitleButton{ nullptr };
+	CGameObject*								m_pExitButton{ nullptr };
+	CGameObject*								m_pBackGround{ nullptr };
 	CGameObject*								m_pSetting{ nullptr };
+	CGameObject*								m_pUnderBar{ nullptr };
+	CGameObject*								m_pSelectButton{ nullptr };
+	CGameObject*								m_pMenu[MENU_END];
+
 
 public:
 

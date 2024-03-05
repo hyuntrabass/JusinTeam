@@ -1113,6 +1113,10 @@
     </ClInclude>
     <ClInclude Include="..\Public\Guard.h" />
     <ClInclude Include="..\Public\BlackCat.h" />
+    <ClInclude Include="..\Public\CheckPoint.h" />
+    <ClInclude Include="..\Public\Buff_Card.h">
+      <Filter>02.GameObjects\16.CescoGame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1686,6 +1690,10 @@
     </ClCompile>
     <ClCompile Include="..\Private\Guard.cpp" />
     <ClCompile Include="..\Private\BlackCat.cpp" />
+    <ClCompile Include="..\Private\CheckPoint.cpp" />
+    <ClCompile Include="..\Private\Buff_Card.cpp">
+      <Filter>02.GameObjects\16.CescoGame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">

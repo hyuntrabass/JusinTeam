@@ -452,6 +452,8 @@ namespace Client
 		VTPass_MaskColorMove,
 		VTPass_ChangeBright,
 		VTPass_Move,
+		VTPass_Sun,
+		VTPass_SpriteAlpha,
 		VTPass_End
 	};
 
