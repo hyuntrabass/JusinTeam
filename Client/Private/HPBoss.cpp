@@ -43,15 +43,28 @@ HRESULT CHPBoss::Init(void* pArg)
 	CUI_Manager::Get_Instance()->Set_isBoss(true);
 	//	CUI_Manager::Get_Instance()->Set_isBoss(false); 이거는 보스 죽을때
 
-	if (m_strName == TEXT(""))
-	{
-		//텍스쳐 변경
-	}
+
 	CTextButton::TEXTBUTTON_DESC Button = {};
 	Button.eLevelID = LEVEL_STATIC;
 	Button.fDepth = m_fDepth;
 	Button.strText = TEXT("");
-	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Boss_BossName");
+	if (m_strName == TEXT("Groar"))
+	{
+		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Boss_BossName");
+	}
+	else if (m_strName == TEXT("Angrboda"))
+	{
+		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Boss_BossNameAngry");
+	}
+	else if (m_strName == TEXT("Dragon"))
+	{
+		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Boss_Dragon");
+	}
+	else
+	{
+		MSG_BOX("없는 보스 텍스쳐`~");
+		return E_FAIL;
+	}
 	Button.vPosition = _vec2(m_fX, m_fY - 40.f);
 	Button.vSize = _vec2(400.f, 36.f);
 	Button.fFontSize = 0.5f;

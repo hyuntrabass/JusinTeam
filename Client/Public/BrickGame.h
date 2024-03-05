@@ -29,8 +29,6 @@ private:
 	_bool										m_isPrototype{ false };
 	_bool										m_isActive{ false };
 
-	static const _uint							m_iRow;
-	static const _uint							m_iCol;
 	_uint										m_iCombo{};
 	_uint										m_iCurIndex{};
 	_int										m_iSoundChannel = -1;

@@ -292,6 +292,7 @@
     <ClInclude Include="..\Public\Skill_Model.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\Lake.h" />
+    <ClInclude Include="..\Public\SoundSetting.h" />
     <ClInclude Include="..\Public\Spider.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\Statue.h" />
@@ -487,6 +488,7 @@
     <ClCompile Include="..\Private\Skill_Model.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Lake.cpp" />
+    <ClCompile Include="..\Private\SoundSetting.cpp" />
     <ClCompile Include="..\Private\Spider.cpp" />
     <ClCompile Include="..\Private\Statue.cpp" />
     <ClCompile Include="..\Private\SummonWindow.cpp" />

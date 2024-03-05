@@ -32,8 +32,8 @@ HRESULT CGraphicSetting::Init(void* pArg)
 		return E_FAIL;
 	}
 	
-	m_fSizeX = 800.f;
-	m_fSizeY = 70.f;
+	m_fSizeX = 1000.f;
+	m_fSizeY = 50.f;
 
 	m_fX = ((GRAPHICSETTING*)pArg)->vPos.x;
 	m_fY = ((GRAPHICSETTING*)pArg)->vPos.y;
@@ -69,18 +69,28 @@ void CGraphicSetting::Tick(_float fTimeDelta)
 	
 	if (PtInRect(&m_pOn->Get_Rect(), ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Default))
 	{
-		m_pOn->Set_Alpha(1.f);
+		Update_State(true);
+		m_pOn->Set_Alpha(MAX_ALPHA);
 		m_pOff->Set_Alpha(0.f);
+		m_pOn->Set_TextColor(_vec4(1.f, 1.f, 1.f, 1.f));
+		m_pOff->Set_TextColor(_vec4(0.6f, 0.6f, 0.6, 1.f));
 	}
 	else if (PtInRect(&m_pOff->Get_Rect(), ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::Default))
 	{
+		Update_State(false);
 		m_pOn->Set_Alpha(0.f);
-		m_pOff->Set_Alpha(1.f);
+		m_pOff->Set_Alpha(MAX_ALPHA);
+		m_pOff->Set_TextColor(_vec4(1.f, 1.f, 1.f, 1.f));
+		m_pOn->Set_TextColor(_vec4(0.6f, 0.6f, 0.6, 1.f));
 	}
+	m_pBackGround->Tick(fTimeDelta);
+	m_pOn->Tick(fTimeDelta);
+	m_pOff->Tick(fTimeDelta);
 }
 
 void CGraphicSetting::Late_Tick(_float fTimeDelta)
 {
+	m_pBackGround->Late_Tick(fTimeDelta);
 	m_pOn->Late_Tick(fTimeDelta);
 	m_pOff->Late_Tick(fTimeDelta);
 
@@ -94,7 +104,7 @@ HRESULT CGraphicSetting::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
+	if (FAILED(m_pShaderCom->Begin(VTPass_UI_Alpha)))
 	{
 		return E_FAIL;
 	}
@@ -104,8 +114,8 @@ HRESULT CGraphicSetting::Render()
 		return E_FAIL;
 	}
 
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(200.f + 1.f, m_fY + 1.f), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, true);
-	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(200.f, m_fY), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f), 0.f, true);
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(240.f + 1.f, m_fY - 10.f + 1.f), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, true);
+	m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(240.f, m_fY - 10.f), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f), 0.f, true);
 
 
 	return S_OK;
@@ -114,41 +124,32 @@ HRESULT CGraphicSetting::Render()
 
 
 void CGraphicSetting::Update_State(_bool isOn)
-{	/*
-		SSAO ²ô±â / ÄÑ±â Renderer->Set_TurnOnSSAO
-		ToneMapping(Åæ¸Ê) ²ô±â / ÄÑ±â Renderer->Set_TurnOnToneMap
-		Bloom(ºí·ë) ²ô±â / ÄÑ±â Renderer->Set_TurnOnBloom
-		±×¸²ÀÚ ²ô±â / ÄÑ±â m_pGameInstance->Set_TurnOnShadow
-		¸ð¼Ç ºí·¯ ²ô±â / ÄÑ±â Renderer->Set_TurnOnMotionBlur
-		FXAA ²ô±â / ÄÑ±â Renderer->Set_TurnOnFXAA
-		DOF ²ô±â / ÄÑ±â Renderer->Set_TurnOnDOF
-		GalMegi(God Ray) ²ô±â / ÄÑ±â Renderer->Set_TurnOnGalMegi
-	*/
+{
 	switch (m_eGraphic)
 	{
 	case Client::CGraphicSetting::SSAO:
-		//m_pRendererCom->
+		m_pRendererCom->Set_TurnOnSSAO(isOn);
 		break;
 	case Client::CGraphicSetting::TONE:
-		m_strText = TEXT("Åæ¸Ê");
+		m_pRendererCom->Set_TurnOnToneMap(isOn);
 		break;
 	case Client::CGraphicSetting::BLOOM:
-		m_strText = TEXT("ºí·ë");
+		m_pRendererCom->Set_TurnOnBloom(isOn);
 		break;
 	case Client::CGraphicSetting::SHADOW:
-		m_strText = TEXT("±×¸²ÀÚ");
+		m_pGameInstance->Set_TurnOnShadow(isOn); //false
 		break;
 	case Client::CGraphicSetting::MOTIONBLUR:
-		m_strText = TEXT("¸ð¼Ç ºí·¯");
+		m_pRendererCom->Set_TurnOnMotionBlur(isOn); //false
 		break;
 	case Client::CGraphicSetting::FXAA:
-		m_strText = TEXT("FFAA");
+		m_pRendererCom->Set_TurnOnFXAA(isOn);
 		break;
 	case Client::CGraphicSetting::DOF:
-		m_strText = TEXT("DOF");
+		m_pRendererCom->Set_TurnOnDOF(isOn);
 		break;
 	case Client::CGraphicSetting::GODRAY:
-		m_strText = TEXT("GOD-RAY");
+		m_pRendererCom->Set_TurnOnGalMegi(isOn);
 		break;
 	case Client::CGraphicSetting::LIST_END:
 		break;
@@ -196,47 +197,71 @@ HRESULT CGraphicSetting::Init_State()
 HRESULT CGraphicSetting::Add_Parts()
 {
 
-	_float fDefX = 800.f;
+	_float fDefX = 1100.f;
 
-	CNineSlice::SLICE_DESC SliceDesc{};
-	SliceDesc.eLevelID = LEVEL_STATIC;
-	SliceDesc.fDepth = m_fDepth - 0.01f;
-	SliceDesc.fFontSize = 0.f;
-	SliceDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_BuffBg2");
-	SliceDesc.strText = TEXT("");
-	SliceDesc.vPosition = _vec2(fDefX, m_fY);
-	SliceDesc.vSize = _vec2(260.f, m_fY - 5.f);
-	m_pBackGround = (CNineSlice*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_NineSlice"), &SliceDesc);
+	CTextButtonColor::TEXTBUTTON_DESC TextButton = {};
+	TextButton.eLevelID = LEVEL_STATIC;
+	TextButton.fDepth = m_fDepth - 0.01f;
+	TextButton.fAlpha = 1.f;
+	TextButton.fFontSize = 0.35f;
+	TextButton.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_RoundBox");
+	TextButton.strText = TEXT("");
+	TextButton.vPosition = _vec2(fDefX, m_fY);
+	TextButton.vSize = _vec2(212.f, m_fSizeY - 10.f);
+	m_pBackGround = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
 	if (not m_pBackGround)
 	{
 		return E_FAIL;
 	}
-	SliceDesc.fDepth = m_fDepth - 0.02f;
-	SliceDesc.fFontSize = 0.38f;
-	SliceDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_BuffBg2");
-	SliceDesc.strText = TEXT("Off");
-	SliceDesc.vPosition = _vec2(fDefX - 70.f, m_fY);
-	SliceDesc.vSize = _vec2(120.f, m_fSizeY - 8.f);
-	m_pOff = (CNineSlice*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_NineSlice"), &SliceDesc);
+	m_pBackGround->Set_Pass(VTPass_UI);
+
+	TextButton.fDepth = m_fDepth - 0.02f;
+	TextButton.fAlpha = 1.f;
+	TextButton.fFontSize = 0.35f;
+	TextButton.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_RoundBox2");
+	TextButton.strText = TEXT("Off");
+	TextButton.vPosition = _vec2(fDefX - 52.f, m_fY);
+	TextButton.vSize = _vec2(100.f, m_fSizeY - 18.f);
+	m_pOff = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
 	if (not m_pOff)
 	{
 		return E_FAIL;
 	}
-	m_pOff->Set_Pass(VTPass_SpriteAlpha);
-	m_pOff->Set_Alpha(1.f);
+	m_pOff->Set_Pass(VTPass_UI_Alpha);
+	if (m_eGraphic == MOTIONBLUR || m_eGraphic == SHADOW)
+	{
+		m_pOff->Set_TextColor(_vec4(1.f, 1.f, 1.f, 1.f));
+		m_pOff->Set_Alpha(MAX_ALPHA);
+	}
+	else
+	{
+		m_pOff->Set_TextColor(_vec4(0.6f, 0.6f, 0.6, 1.f));
+		m_pOff->Set_Alpha(0.f);
+	}
 
-	SliceDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_BuffBg2");
-	SliceDesc.strText = TEXT("On");
-	SliceDesc.vPosition = _vec2(fDefX + 70.f, m_fY);
-	SliceDesc.vSize = _vec2(120.f, m_fSizeY - 8.f);
-	m_pOn = (CNineSlice*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_NineSlice"), &SliceDesc);
+	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_RoundBox2");
+	TextButton.strText = TEXT("On");
+	TextButton.vPosition = _vec2(fDefX + 52.f, m_fY);
+	TextButton.vSize = _vec2(100.f, m_fSizeY - 18.f);
+	m_pOn = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
 	if (not m_pOn)
 	{
 		return E_FAIL;
 	}
+	m_pOn->Set_Pass(VTPass_UI_Alpha);
+	if (m_eGraphic == MOTIONBLUR || m_eGraphic == SHADOW)
+	{
+		m_pOn->Set_Alpha(0.f);
+		m_pOn->Set_TextColor(_vec4(0.6f, 0.6f, 0.6, 1.f));
+	}
+	else
+	{
+		m_pOn->Set_TextColor(_vec4(1.f, 1.f, 1.f, 1.f));
+		m_pOn->Set_Alpha(MAX_ALPHA);
+	}
 
-	m_pOn->Set_Pass(VTPass_SpriteAlpha);
-	m_pOn->Set_Alpha(1.f);
 
 	return S_OK;
 }
@@ -258,7 +283,7 @@ HRESULT CGraphicSetting::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_Setting"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Gameplay_Grey"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -280,6 +305,12 @@ HRESULT CGraphicSetting::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	{
+		return E_FAIL;
+	}		
+
+	_float fAlpha = MAX_ALPHA + 0.3f;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &fAlpha, sizeof(_float))))
 	{
 		return E_FAIL;
 	}

@@ -442,6 +442,7 @@ void CBrickGame::Init_Game()
 			return;
 		}
 	}
+	/*
 	m_pCatBoss = (CBlackCat*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BlackCat"));
 	if (not m_pCatBoss)
 	{
@@ -449,6 +450,7 @@ void CBrickGame::Init_Game()
 		return;
 	}
 
+	*/
 }
 
 void CBrickGame::Create_Bricks()
@@ -564,9 +566,10 @@ void CBrickGame::Free()
 
 
 	Safe_Release(m_pCatBoss);
-	Safe_Release(m_pTimeBar);
 	Safe_Release(m_pBall);
 	Safe_Release(m_pBar);
+
+	Safe_Release(m_pTimeBar);
 	Safe_Release(m_pCombo);
 	Safe_Release(m_pBackGround);
 

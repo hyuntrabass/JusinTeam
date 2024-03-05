@@ -2,9 +2,10 @@
 #include "Client_Define.h"
 #include "OrthographicObject.h"
 #include "Wearable_Slot.h"
+#include "GraphicSetting.h"
+#include "SoundSetting.h"
 
 BEGIN(Client)
-class CWearable_Slot;
 class CMenu final : public COrthographicObject
 {
 public:
@@ -45,8 +46,11 @@ private:
 	CGameObject*								m_pSetting{ nullptr };
 	CGameObject*								m_pUnderBar{ nullptr };
 	CGameObject*								m_pSelectButton{ nullptr };
+	class CTextButtonColor*						m_pGameEndButton{nullptr};
 	CGameObject*								m_pMenu[MENU_END]{};
-	class CTextButtonColor*						m_pSlots[ENV_END]{};
+	CTextButtonColor*							m_pSlots[ENV_END]{};
+	class CGraphicSetting*						m_pGraphicSettings[CGraphicSetting::LIST_END]{};
+	class CSoundSetting*						m_pSoundSettings[CSoundSetting::LIST_END]{};
 
 
 public:

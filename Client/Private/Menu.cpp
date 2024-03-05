@@ -65,7 +65,7 @@ void CMenu::Tick(_float fTimeDelta)
 	{
 		return;
 	}
-	if (TRUE == PtInRect(&rectUI, ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
+	if ((TRUE == PtInRect(&rectUI, ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI)) || m_pGameInstance->Key_Down(DIK_ESCAPE))
 	{
 		if (!m_isActive)
 		{
@@ -80,8 +80,6 @@ void CMenu::Tick(_float fTimeDelta)
 	if (m_isReadytoActivate)
 	{
 		Init_State();
-	
-		return;
 	}
 
 	if (!m_isActive)
@@ -90,7 +88,7 @@ void CMenu::Tick(_float fTimeDelta)
 	}
 
 	if (TRUE == PtInRect(&dynamic_cast<CTextButton*>(m_pExitButton)->Get_Rect(), ptMouse)
-		|| PtInRect(&dynamic_cast<CTextButton*>(m_pTitleButton)->Get_Rect(), ptMouse))
+		|| PtInRect(&dynamic_cast<CTextButton*>(m_pTitleButton)->Get_Rect(), ptMouse) )
 	{
 		if (m_isActive && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
@@ -111,6 +109,15 @@ void CMenu::Tick(_float fTimeDelta)
 
 		}
 	}
+	if (m_isActive && m_pGameInstance->Key_Down(DIK_ESCAPE, InputChannel::GamePlay))
+	{
+		CFadeBox::FADE_DESC Desc = {};
+		Desc.fIn_Duration = 0.5f;
+		Desc.fOut_Duration = 1.f;
+		Desc.phasFadeCompleted = &m_isReadytoDeactivate;
+		CUI_Manager::Get_Instance()->Add_FadeBox(Desc);
+	}
+
 	if (m_isReadytoDeactivate)
 	{	
 		m_isActive = false;
@@ -120,10 +127,27 @@ void CMenu::Tick(_float fTimeDelta)
 		return;
 	}
 
+	if (PtInRect(&m_pGameEndButton->Get_InitialRect(), ptMouse))
+	{
+		m_pGameEndButton->Set_Size(140.f, 80.f, 0.3f);
+		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
+		{
+			DestroyWindow(g_hWnd);
+		}
+	}
+	else
+	{
+		m_pGameEndButton->Set_Size(150.f, 100.f, 0.35f);
+	}
+
+
+	//메뉴
 	for (size_t i = 0; i < ENV_END; i++)
 	{
-		if (TRUE == PtInRect(&m_pSlots[i]->Get_Rect(), ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
+		if (TRUE == PtInRect(&m_pSlots[i]->Get_InitialRect(), ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
+			RECT rect = m_pSlots[i]->Get_InitialRect();
+			_vec2 vPos = m_pSlots[i]->Get_Position();
 			m_eCurSlot = (ENV_SLOT)i;
 			m_pSlots[i]->Set_ChangeTex(true);
 			if (m_eCurSlot != m_ePrevSlot)
@@ -141,18 +165,22 @@ void CMenu::Tick(_float fTimeDelta)
 		Tick_GraphicSlot(fTimeDelta);
 		break;
 	case Client::CMenu::SOUND:
+		Tick_SoundSlot(fTimeDelta);
 		break;
 	case Client::CMenu::ENV_END:
 		break;
 	default:
 		break;
 	}
+
+
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	m_pExitButton->Tick(fTimeDelta);
 	m_pBackGround->Tick(fTimeDelta);
 	m_pTitleButton->Tick(fTimeDelta);
 	m_pUnderBar->Tick(fTimeDelta);
 	m_pSelectButton->Tick(fTimeDelta);
+	m_pGameEndButton->Tick(fTimeDelta);
 
 	for (size_t i = 0; i < ENV_END; i++)
 	{
@@ -162,25 +190,33 @@ void CMenu::Tick(_float fTimeDelta)
 	{
 		m_pMenu[i]->Tick(fTimeDelta);
 	}
+
 }
 
 void CMenu::Late_Tick(_float fTimeDelta)
 {
-	switch (m_eCurSlot)
-	{
-	case Client::CMenu::GRAPHIC:
-		
-		break;
-	case Client::CMenu::SOUND:
-		break;
-	case Client::CMenu::ENV_END:
-		break;
-	default:
-		break;
-	}
-
+	
 	if (m_isActive)
 	{
+		switch (m_eCurSlot)
+		{
+		case Client::CMenu::GRAPHIC:
+			for (size_t i = 0; i < CGraphicSetting::LIST_END; i++)
+			{
+				m_pGraphicSettings[i]->Late_Tick(fTimeDelta);
+			}
+			break;
+		case Client::CMenu::SOUND:		
+			for (size_t i = 0; i < CSoundSetting::LIST_END; i++)
+			{
+				m_pSoundSettings[i]->Late_Tick(fTimeDelta);
+			}
+			break;
+		case Client::CMenu::ENV_END:
+			break;
+		default:
+			break;
+		}
 
 
 		for (size_t i = 0; i < ENV_END; i++)
@@ -196,6 +232,7 @@ void CMenu::Late_Tick(_float fTimeDelta)
 		m_pTitleButton->Late_Tick(fTimeDelta);
 		m_pUnderBar->Late_Tick(fTimeDelta);
 		m_pSelectButton->Late_Tick(fTimeDelta);
+		m_pGameEndButton->Late_Tick(fTimeDelta);
 	}
 
 	
@@ -233,8 +270,8 @@ void CMenu::Init_State()
 {
 	m_eCurSlot = GRAPHIC;
 	m_ePrevSlot = GRAPHIC;
-	m_pSlots[m_eCurSlot]->Set_ChangeTex(true);
-	m_pSlots[m_ePrevSlot]->Set_ChangeTex(false);
+	m_pSlots[GRAPHIC]->Set_ChangeTex(true);
+	m_pSlots[SOUND]->Set_ChangeTex(false);
 
 	m_isActive = true;
 	m_isReadytoActivate = false;
@@ -244,7 +281,20 @@ void CMenu::Init_State()
 
 void CMenu::Tick_GraphicSlot(_float fTimeDelta)
 {
+	for (size_t i = 0; i < CGraphicSetting::LIST_END; i++)
+	{
+		m_pGraphicSettings[i]->Tick(fTimeDelta);
+	}
 
+
+}
+
+void CMenu::Tick_SoundSlot(_float fTimeDelta)
+{
+	for (size_t i = 0; i < CSoundSetting::LIST_END; i++)
+	{
+		m_pSoundSettings[i]->Tick(fTimeDelta);
+	}
 }
 
 HRESULT CMenu::Add_Parts()
@@ -289,8 +339,8 @@ HRESULT CMenu::Add_Parts()
 	Button.fDepth = m_fDepth - 0.01f;
 	Button.strText = TEXT("");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_InvenUnderBar");
-	Button.vSize = _vec2(150.f, 150.f);
-	Button.vPosition = _vec2(fStartX, fY + 12.f);
+	Button.vSize = _vec2(fTerm, 150.f);
+	Button.vPosition = _vec2(fStartX - 95.f, fY + 5.f);
 	Button.vTextPosition = _vec2(0.f, 0.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 
@@ -303,13 +353,13 @@ HRESULT CMenu::Add_Parts()
 	Button.fDepth = m_fDepth - 0.02f;
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_SelecInvenMenu");
 	Button.vSize = _vec2(fTerm, 34.f);
-	Button.vPosition = _vec2(fStartX, fY);
+	Button.vPosition = _vec2(fStartX - 95.f, fY - 5.f);
 	m_pSelectButton = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 	if (not m_pSelectButton)
 	{
 		return E_FAIL;
 	}
-
+	
 	CTextButtonColor::TEXTBUTTON_DESC TextButton = {};
 	TextButton.eLevelID = LEVEL_STATIC;
 	TextButton.fDepth = m_fDepth - 0.01f;
@@ -317,8 +367,8 @@ HRESULT CMenu::Add_Parts()
 	TextButton.fFontSize = 0.45f;
 	TextButton.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	TextButton.strText = TEXT("환경");
-	TextButton.vPosition = _vec2(fStartX, fY);
-	TextButton.vSize = _vec2(150.f, 70.f);
+	TextButton.vPosition = _vec2(fStartX - 95.f, fY - 5.f);
+	TextButton.vSize = _vec2(fTerm, 70.f);
 	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_NoTex");
 	TextButton.vTextPosition = _vec2(0.f, 0.f);
 	m_pMenu[ENV] = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
@@ -334,8 +384,8 @@ HRESULT CMenu::Add_Parts()
 	TextButton.fFontSize = 0.4f;
 	TextButton.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	TextButton.strText = TEXT("그래픽");
-	TextButton.vPosition = _vec2(80.f, fY + 50.f);
-	TextButton.vSize = _vec2(150.f, 100.f);
+	TextButton.vPosition = _vec2(120.f, fY + 50.f);
+	TextButton.vSize = _vec2(150.f, 120.f);
 	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Button_Blue");
 	TextButton.strTexture2 = TEXT("Prototype_Component_Texture_UI_Button_Blue2");
 	TextButton.vTextPosition = _vec2(0.f, 0.f);
@@ -349,8 +399,8 @@ HRESULT CMenu::Add_Parts()
 	m_pSlots[GRAPHIC]->Set_ChangeTex(true);
 
 	TextButton.strText = TEXT("사운드");
-	TextButton.vPosition = _vec2(80.f, fY);
-	TextButton.vSize = _vec2(150.f, 100.f);
+	TextButton.vPosition = _vec2(120.f, fY + 100.f);
+	TextButton.vSize = _vec2(150.f, 120.f);
 	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Button_Blue");
 	TextButton.strTexture2 = TEXT("Prototype_Component_Texture_UI_Button_Blue2");
 	TextButton.vTextPosition = _vec2(0.f, 0.f);
@@ -362,6 +412,18 @@ HRESULT CMenu::Add_Parts()
 		return E_FAIL;
 	}
 
+
+	TextButton.fDepth = m_fDepth - 0.01f;
+	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_buttonRed");
+	TextButton.strText = TEXT("게임 종료");
+	TextButton.vPosition = _vec2(1150.f, 660.f);
+	m_pGameEndButton = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &TextButton);
+	if (not m_pGameEndButton)
+
+	{
+		return E_FAIL;
+
+	}
 	UiInfo info{};
 	info.strTexture = TEXT("Prototype_Component_Texture_Skill_Background");
 	info.vPos = _vec2((_float)g_iWinSizeX / 2.f, (_float)g_iWinSizeY / 2.f);
@@ -374,8 +436,31 @@ HRESULT CMenu::Add_Parts()
 		return E_FAIL;
 	}
 
+	for (size_t i = 0; i < CGraphicSetting::LIST_END; i++)
+	{
+		CGraphicSetting::GRAPHICSETTING GDesc{};
+		GDesc.eList = (CGraphicSetting::GRAPHICLIST)i;
+		GDesc.vPos = _vec2(720.f, fY + 45.f + (50.f * i) + (3.f * i));
 
+		m_pGraphicSettings[i] = (CGraphicSetting*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_GraphicSetting"), &GDesc);
+		if (not m_pGraphicSettings[i])
+		{
+			return E_FAIL;
+		}
+	}
+	
+	for (size_t i = 0; i < CSoundSetting::LIST_END; i++)
+	{
+		CSoundSetting::SOUNDSETTING SDesc{};
+		SDesc.eList = (CSoundSetting::SOUNDLIST)i;
+		SDesc.vPos = _vec2(720.f, fY + 45.f + (50.f * i) + (3.f * i));
 
+		m_pSoundSettings[i] = (CSoundSetting*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_SoundSetting"), &SDesc);
+		if (not m_pSoundSettings[i])
+		{
+			return E_FAIL;
+		}
+	}
 	return S_OK;
 }
 
@@ -465,6 +550,14 @@ void CMenu::Free()
 		{
 			Safe_Release(m_pSlots[i]);
 		}
+		for (size_t i = 0; i < CGraphicSetting::LIST_END; i++)
+		{
+			Safe_Release(m_pGraphicSettings[i]);
+		}
+		for (size_t i = 0; i < CSoundSetting::LIST_END; i++)
+		{
+			Safe_Release(m_pSoundSettings[i]);
+		}
 
 	}
 
@@ -475,6 +568,7 @@ void CMenu::Free()
 
 	Safe_Release(m_pUnderBar);
 	Safe_Release(m_pSelectButton);
+	Safe_Release(m_pGameEndButton);
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

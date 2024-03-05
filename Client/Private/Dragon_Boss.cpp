@@ -3,6 +3,7 @@
 #include "Camera_Manager.h"
 #include "Effect_Manager.h"
 #include "Effect_Dummy.h"
+#include "UI_Manager.h"
 
 const _float CDragon_Boss::m_fAttackRange = 10.f;
 
@@ -58,6 +59,7 @@ HRESULT CDragon_Boss::Init(void* pArg)
 
 	m_pTransformCom->Set_Position(_vec3(vPlayerPos) + _vec3(0.f, 3.f, 0.f));
 
+	CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::ANGRBODA);
 	return S_OK;
 }
 

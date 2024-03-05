@@ -19,6 +19,7 @@ HRESULT CNineSlice::Init_Prototype()
 HRESULT CNineSlice::Init(void* pArg)
 {
 
+	m_fPadding = ((SLICE_DESC*)pArg)->fPadding;
 	m_fDepth = ((SLICE_DESC*)pArg)->fDepth;
 	m_vSize = ((SLICE_DESC*)pArg)->vSize;
 	m_vPosition = ((SLICE_DESC*)pArg)->vPosition;
@@ -190,7 +191,7 @@ void CNineSlice::Set_Size(_float fSizeX, _float fSizeY, _float fFontSize)
 HRESULT CNineSlice::Render_Texture()
 {
 	_float2 vTexPos = m_vPosition;
-	_float fSmallSpriteSize = 6.f;
+	_float fSmallSpriteSize = m_fPadding;
 
 	_uint iIndex = 4;
 

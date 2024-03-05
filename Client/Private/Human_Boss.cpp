@@ -368,8 +368,9 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = BossAnim_Spawn;
 			m_Animation.fAnimSpeedRatio = 1.7f;
 
+			CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::ANGRBODA);
 			CHPBoss::HPBOSS_DESC Desc{};
-			Desc.strName = L"Groar";
+			Desc.strName = L"Angrboda";
 			Desc.eLevelID = LEVEL_STATIC;
 			Desc.iMaxHp = m_iHP;
 			m_pHpBoss = (CHPBoss*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPBoss"), &Desc);

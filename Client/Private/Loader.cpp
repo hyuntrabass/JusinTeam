@@ -1550,6 +1550,15 @@ HRESULT CLoader::Load_GamePlay()
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_TreasureBox"), CTreasureBox::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
+	}	
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_GraphicSetting"), CGraphicSetting::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_SoundSetting"), CSoundSetting::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
 	}
 	
 

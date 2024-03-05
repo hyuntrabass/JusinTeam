@@ -167,11 +167,12 @@ void CLevel_Village::Tick(_float fTimeDelta)
 		CTrigger_Manager::Get_Instance()->Teleport(TS_Village);
 		return;
 	}
-
+	/*
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 	{
 		DestroyWindow(g_hWnd);
 	}
+	*/
 
 	if (m_pGameInstance->Is_Level_ShutDown(LEVEL_VILLAGE) or m_pGameInstance->Key_Down(DIK_NUMPAD9) or m_pGameInstance->Key_Down(DIK_PRIOR))
 	{

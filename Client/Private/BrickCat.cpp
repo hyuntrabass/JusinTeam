@@ -49,7 +49,6 @@ HRESULT CBrickCat::Init(void* pArg)
 	Info.pMatrix = &m_EffectMatrix;
 	Info.isFollow = true;
 	*/
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info, true);
 
 	return S_OK;
 }

@@ -3,24 +3,25 @@
 #include "OrthographicObject.h"
 #include "Wearable_Slot.h"
 
-#define MAX_ALPHA 0.5f
+#define MAX_ALPHA 0.75f
+#define MAX_VOLUME 100
 BEGIN(Client)
 class CWearable_Slot;
-class CGraphicSetting final : public COrthographicObject
+class CSoundSetting final : public COrthographicObject
 {
 public:
 
-	enum GRAPHICLIST { SSAO, TONE, BLOOM, SHADOW, MOTIONBLUR, FXAA, DOF, GODRAY, LIST_END };
-	struct GRAPHICSETTING
+	enum SOUNDLIST { ALL, BACKGROUND, ENV, EFFECT, LIST_END };
+	struct SOUNDSETTING
 	{
-		GRAPHICLIST eList{};
+		SOUNDLIST eList{};
 		_vec2 vPos{};
 	};
 
 private:
-	CGraphicSetting(_dev pDevice, _context pContext);
-	CGraphicSetting(const CGraphicSetting& rhs);
-	virtual ~CGraphicSetting() = default;
+	CSoundSetting(_dev pDevice, _context pContext);
+	CSoundSetting(const CSoundSetting& rhs);
+	virtual ~CSoundSetting() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -36,16 +37,21 @@ private:
 	CTexture* m_pTextureCom{ nullptr };
 
 private:
-	GRAPHICLIST					m_eGraphic{};
+	SOUNDLIST					m_eSound{};
 	_bool						m_isPrototype{ false };
-
+	_bool						m_isPickingButton{ false };
+	_uint						m_iCurVolume{100};
+	_float						m_fSound{};
 	wstring						m_strText{};
-	class CTextButtonColor*		m_pBackGround{ nullptr };
-	CTextButtonColor*			m_pOn{ nullptr };
-	CTextButtonColor*			m_pOff{ nullptr };
+
+	_vec2						m_vStartPos{};
+
+	class CTextButtonColor*		m_pNumBar{ nullptr };
+	class CTextButtonColor*		m_pNumBarBg{ nullptr };
+	class CTextButton*			m_pNumButton{ nullptr };
 
 private:
-	void Update_State(_bool isOn);
+	void Update_State();
 
 private:
 	HRESULT Init_State();
@@ -54,7 +60,7 @@ private:
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CGraphicSetting* Create(_dev pDevice, _context pContext);
+	static CSoundSetting* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };
