@@ -37,7 +37,7 @@ HRESULT CLever::Init(void* pArg)
 	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
-
+	m_pModelCom->Play_Animation(0);
 
 	return S_OK;
 }
@@ -171,8 +171,10 @@ HRESULT CLever::Add_Components()
 		return E_FAIL;
 	}
 
-	//if(FAILED(__super::Add_Component()))
-	// 모델 추가해라
+	if (FAILED(__super::Add_Component(LEVEL_TOWER, TEXT("Prototype_Model_Lever"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }

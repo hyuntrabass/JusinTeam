@@ -5,6 +5,8 @@
 #include "Guard.h"
 #include "GuardTower.h"
 #include "CheckPoint.h"
+#include "Lever.h"
+#include "Door.h"
 
 #include "Trigger_Manager.h"
 
@@ -34,6 +36,8 @@ HRESULT CInfiltrationGame::Init(void* pArg)
 	_tchar* pPath = TEXT("../Bin/Data/MiniDungeon_Guard_1_Data.dat");
 	Create_Guard(pPath);
 	Create_CheckPoint();
+	Create_Lever();
+	Create_Door();
 	return S_OK;
 }
 
@@ -76,6 +80,15 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 
 	}
 
+	for (auto& pLever : m_Lever)
+	{
+		pLever->Tick(fTimeDelta);
+
+	}
+
+	if (m_pDoor)
+		m_pDoor->Tick(fTimeDelta);
+
 	Release_DeadObjects();
 }
 
@@ -96,6 +109,13 @@ void CInfiltrationGame::Late_Tick(_float fTimeDelta)
 			pGuardTower->Late_Tick(fTimeDelta);
 		}
 	}
+	for (auto& pLever : m_Lever)
+	{
+		pLever->Late_Tick(fTimeDelta);
+	}
+
+	if (m_pDoor)
+		m_pDoor->Late_Tick(fTimeDelta);
 
 	for (auto& pCheckPoint : m_CheckPoint)
 	{
@@ -263,6 +283,89 @@ HRESULT CInfiltrationGame::Create_CheckPoint()
 
 	inFile.close();
 
+	return S_OK;
+}
+
+HRESULT CInfiltrationGame::Create_Lever()
+{
+	const TCHAR* pGetPath = TEXT("../Bin/Data/MiniDungeon_LeverData.dat");;
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+	if (!inFile.is_open())
+	{
+		MessageBox(g_hWnd, L"파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+		return E_FAIL;
+	}
+
+	_uint LeverListSize;
+	inFile.read(reinterpret_cast<char*>(&LeverListSize), sizeof(_uint));
+
+
+	for (_uint i = 0; i < LeverListSize; ++i)
+	{
+		_ulong LeverPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&LeverPrototypeSize), sizeof(_ulong));
+
+		wstring LeverPrototype;
+		LeverPrototype.resize(LeverPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&LeverPrototype[0]), LeverPrototypeSize * sizeof(wchar_t));
+
+		_mat LeverWorldMat;
+		inFile.read(reinterpret_cast<char*>(&LeverWorldMat), sizeof(_mat));
+
+		_uint iPattern = 0;
+		inFile.read(reinterpret_cast<char*>(&iPattern), sizeof(_int));
+
+		LeverInfo LeverInfo{};
+		LeverInfo.mMatrix = LeverWorldMat;
+		LeverInfo.iIndex = iPattern;
+
+		CLever* pLever = dynamic_cast<CLever*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Lever", &LeverInfo));
+		m_Lever.push_back(pLever);
+
+	}
+	inFile.close();
+	return S_OK;
+}
+
+HRESULT CInfiltrationGame::Create_Door()
+{
+	const TCHAR* pGetPath = TEXT("../Bin/Data/MiniDungeon_DoorData.dat");;
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+	if (!inFile.is_open())
+	{
+		MessageBox(g_hWnd, L"파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+		return E_FAIL;
+	}
+
+	_uint DoorListSize;
+	inFile.read(reinterpret_cast<char*>(&DoorListSize), sizeof(_uint));
+
+
+	for (_uint i = 0; i < DoorListSize; ++i)
+	{
+		_ulong DoorPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&DoorPrototypeSize), sizeof(_ulong));
+
+		wstring DoorPrototype;
+		DoorPrototype.resize(DoorPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&DoorPrototype[0]), DoorPrototypeSize * sizeof(wchar_t));
+
+		_mat DoorWorldMat;
+		inFile.read(reinterpret_cast<char*>(&DoorWorldMat), sizeof(_mat));
+
+		_uint iPattern = 0;
+		inFile.read(reinterpret_cast<char*>(&iPattern), sizeof(_int));
+
+		DoorInfo DoorInfo{};
+		DoorInfo.mMatrix = DoorWorldMat;
+		DoorInfo.iIndex = iPattern;
+
+		m_pDoor = dynamic_cast<CDoor*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Door", &DoorInfo));
+
+	}
+	inFile.close();
 	return S_OK;
 }
 

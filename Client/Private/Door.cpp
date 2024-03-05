@@ -41,10 +41,21 @@ HRESULT CDoor::Init(void* pArg)
 
 void CDoor::Tick(_float fTimeDelta)
 {
+	m_pTransformCom->Set_OldMatrix();
 }
 
 void CDoor::Late_Tick(_float fTimeDelta)
 {
+	m_pModelCom->Play_Animation(fTimeDelta);
+
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos(), 20.f))
+	{
+		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	}
+
+#ifdef _DEBUG
+	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
+#endif // _DEBUG
 }
 
 HRESULT CDoor::Render()
@@ -125,7 +136,10 @@ HRESULT CDoor::Add_Components()
 	{
 		return E_FAIL;
 	}
-
+	if (FAILED(__super::Add_Component(LEVEL_TOWER, TEXT("Prototype_Model_Door"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
