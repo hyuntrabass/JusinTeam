@@ -1130,6 +1130,9 @@
     <ClInclude Include="..\Public\BlackCat.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\ClearEffect.h">
+      <Filter>02.GameObjects\00.UI\GameUI\UIEffect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1716,6 +1719,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\BlackCat.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ClearEffect.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\UIEffect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

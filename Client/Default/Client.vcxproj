@@ -181,6 +181,7 @@
     <ClInclude Include="..\Public\CescoGame.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
     <ClInclude Include="..\Public\CheckPoint.h" />
+    <ClInclude Include="..\Public\ClearEffect.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Coin.h" />
     <ClInclude Include="..\Public\Dead.h" />
@@ -378,6 +379,7 @@
     <ClCompile Include="..\Private\CescoGame.cpp" />
     <ClCompile Include="..\Private\CharacterSelect.cpp" />
     <ClCompile Include="..\Private\CheckPoint.cpp" />
+    <ClCompile Include="..\Private\ClearEffect.cpp" />
     <ClCompile Include="..\Private\Coin.cpp" />
     <ClCompile Include="..\Private\CutScene_Curve.cpp" />
     <ClCompile Include="..\Private\Dead.cpp" />
