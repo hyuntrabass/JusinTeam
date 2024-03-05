@@ -28,6 +28,9 @@ private:
 
 	_mat m_UpdateMatrix = {};
 
+private:
+	_float m_fTime = {};
+
 //public:
 //	HRESULT Add_Components();
 //	HRESULT Bind_ShaderResources();

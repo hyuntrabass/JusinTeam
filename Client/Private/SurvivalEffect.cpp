@@ -27,23 +27,52 @@ HRESULT CSurvivalEffect::Init(void* pArg)
 	m_pTransformCom->Set_Position(vPos);
 
 	CTransform* pCannonTransform = GET_TRANSFORM("Layer_Cannon", LEVEL_VILLAGE);
-	_vec4 vCannonPos = pCannonTransform->Get_State(State::Pos);
 
-	m_pTransformCom->LookAt(vCannonPos);
+	if (pCannonTransform)
+	{
+		_vec4 vCannonPos = pCannonTransform->Get_State(State::Pos);
 
-	m_pTransformCom->Set_Speed(5.f);
+		m_pTransformCom->LookAt(vCannonPos);
 
-	m_UpdateMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) /*+ _vec3(0.f, 0.3f, 0.f)*/);
-	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Cannon_Parti");
-	Info.pMatrix = &m_UpdateMatrix;
-	Info.isFollow = true;
-	m_pEffect[0] = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+		m_pTransformCom->Set_Speed(8.f);
+
+		m_UpdateMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) /*+ _vec3(0.f, 0.3f, 0.f)*/);
+		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Survival_Cannon_Parti");
+		Info.pMatrix = &m_UpdateMatrix;
+		Info.isFollow = true;
+		Info.iNumInstances = 30;
+		m_pEffect[0] = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+	}
 
     return S_OK;
 }
 
 void CSurvivalEffect::Tick(_float fTimeDelta)
 {
+	CTransform* pCannonTransform = GET_TRANSFORM("Layer_Cannon", LEVEL_VILLAGE);
+
+	if (!pCannonTransform)
+	{
+		Kill();
+		return;
+	}
+
+	_vec4 vCannonPos = pCannonTransform->Get_State(State::Pos);
+	_vec4 vMyPos = m_pTransformCom->Get_State(State::Pos);
+	_float fDistance = (vCannonPos - vMyPos).Length();
+
+	if (fDistance <= 1.f)
+	{
+		m_pEffect[0]->Kill();
+
+		m_fTime += fTimeDelta;
+
+		if (m_fTime >= 3.f)
+		{
+			Kill();
+		}
+	}
+
 	m_pTransformCom->Go_Straight(fTimeDelta);
 
 	m_UpdateMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) /*+ _vec3(0.f, 0.3f, 0.f)*/);
@@ -98,5 +127,5 @@ void CSurvivalEffect::Free()
 	__super::Free();
 
 	Safe_Release(m_pEffect[0]);
-	Safe_Release(m_pEffect[1]);
+	//Safe_Release(m_pEffect[1]);
 }
