@@ -169,25 +169,25 @@ public: // Sound Manager
 	_bool Is_SoundManager_Ready();
 	_int Play_Sound(const wstring& strSoundTag, _float fVolume = 0.5f, _bool isLoop = false, _float fStartPosRatio = 0.f);
 	void PlayBGM(const wstring& strSoundTag, float fVolume = 0.3f);
-	void StopSound(_uint iChannel);
+	void StopSound(_int iChannel);
 	void StopAll();
 	//fFadeSoundRatio 0.f ~ 2.f
-	HRESULT FadeoutSound(_uint iChannel, _float fTimeDelta, _float fFadeoutSecond = 1.f, _bool IsReusable = true, _float fFadeSoundRatio = 0.f);
-	HRESULT FadeinSound(_uint iChannel, _float fTimeDelta, _float fFadeinSecond = 1.f, _float fFadeSoundRatio = 1.f);
+	HRESULT FadeoutSound(_int iChannel, _float fTimeDelta, _float fFadeoutSecond = 1.f, _bool IsReusable = true, _float fFadeSoundRatio = 0.f);
+	HRESULT FadeinSound(_int iChannel, _float fTimeDelta, _float fFadeinSecond = 1.f, _float fFadeSoundRatio = 1.f);
 
 	// 사운드 채널이 재생중인지를 반환 함.
-	_bool Get_IsPlayingSound(_uint iChannel);
+	_bool Get_IsPlayingSound(_int iChannel);
 	// 사운드 채널의 볼륨을 반환 함.
-	_float Get_ChannelVolume(_uint iChannel);
+	_float Get_ChannelVolume(_int iChannel);
 	// 사운드 채널이 루프중인지를 반환 함.
-	_bool Get_IsLoopingSound(_uint iChannel);
+	_bool Get_IsLoopingSound(_int iChannel);
 	// 사운드 채널의 현재 재생위치를 비율로 반환 함.
-	_float Get_ChannelCurPosRatio(_uint iChannel);
+	_float Get_ChannelCurPosRatio(_int iChannel);
 
 	// 사운드 채널의 볼륨을 지정함.
-	void Set_ChannelVolume(_uint iChannel, _float fVolume);
+	void Set_ChannelVolume(_int iChannel, _float fVolume);
 	// 사운드 채널의 볼륨을 초기 볼륨으로 되돌림.
-	void Set_ChannelStartVolume(_uint iChannel);
+	void Set_ChannelStartVolume(_int iChannel);
 	// 시스템 볼륨을 지정함.
 	void Set_SystemVolume(_float fSystemVolume);
 	// 배경음의 볼륨을 지정함.

@@ -8,7 +8,8 @@ class CWearable_Slot;
 class CMenu final : public COrthographicObject
 {
 public:
-	enum MENU { SOUND, GRAPHIC, MENU_END };
+	enum MENU { ENV, MENU_END };
+	enum ENV_SLOT { SOUND, GRAPHIC, ENV_END };
 
 private:
 	CMenu(_dev pDevice, _context pContext);
@@ -41,7 +42,8 @@ private:
 	CGameObject*								m_pSetting{ nullptr };
 	CGameObject*								m_pUnderBar{ nullptr };
 	CGameObject*								m_pSelectButton{ nullptr };
-	CGameObject*								m_pMenu[MENU_END];
+	CGameObject*								m_pMenu[MENU_END]{};
+	class CTextButtonColor*						m_pSlots[ENV_END]{};
 
 
 public:

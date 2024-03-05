@@ -524,7 +524,7 @@ HRESULT CSkillBook::Add_Parts()
 	Button.fFontSize = 0.5f;
 	Button.strText = TEXT("½ºÅ³ºÏ");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Back");
-	Button.vPosition = _vec2(40.f, 20.f);
+	Button.vPosition = _vec2(40.f, 30.f);
 	Button.vSize = _vec2(50.f, 50.f);
 	Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	Button.vTextPosition = _vec2(40.f, 0.f);
@@ -538,7 +538,7 @@ HRESULT CSkillBook::Add_Parts()
 	
 	Button.strText = TEXT("");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Out");
-	Button.vPosition = _vec2(1230.f, 30.f);
+	Button.vPosition = _vec2(1230.f, 40.f);
 	Button.vSize = _vec2(70.f, 70.f);
 
 	m_pExitButton = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);

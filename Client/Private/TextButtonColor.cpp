@@ -23,6 +23,8 @@ HRESULT CTextButtonColor::Init(void* pArg)
 
 	m_fDepth = ((TEXTBUTTON_DESC*)pArg)->fDepth;
 	m_fAlpha = ((TEXTBUTTON_DESC*)pArg)->fAlpha;
+	m_isFront = ((TEXTBUTTON_DESC*)pArg)->isFront;
+	m_isChangePass = ((TEXTBUTTON_DESC*)pArg)->isChangePass;
 
 	m_vSize = ((TEXTBUTTON_DESC*)pArg)->vSize;
 	m_vPosition = ((TEXTBUTTON_DESC*)pArg)->vPosition;
@@ -98,11 +100,11 @@ HRESULT CTextButtonColor::Render()
 	if (m_strText != TEXT(""))
 	{
 		m_vTextColor.w = m_fAlpha;
-		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x + 1.f, m_fY + m_vTextPosition.y), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
-		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
-		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y + 1.f), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
-		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y/*  - 0.5f*/), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f));
-		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y), m_fFontSize, m_vTextColor);
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x + 1.f, m_fY + m_vTextPosition.y), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, m_isFront);
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, m_isFront);
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y + 1.f), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, m_isFront);
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y/*  - 0.5f*/), m_fFontSize, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, m_isFront);
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strText, _vec2(m_fX + m_vTextPosition.x, m_fY + m_vTextPosition.y), m_fFontSize, m_vTextColor, 0.f, m_isFront);
 
 	}
 
@@ -157,7 +159,31 @@ HRESULT CTextButtonColor::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (m_ePass == VTPass_Mask_Color)
+	if (m_isChangePass)
+	{
+		m_ePass = VTPass_UI;
+		if (!m_bChangeTex)
+		{
+			if (m_strTexture != TEXT(""))
+			{
+				if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+				{
+					return E_FAIL;
+				}
+			}
+		}
+		else
+		{
+			if (m_strTexture2 != TEXT(""))
+			{
+				if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+				{
+					return E_FAIL;
+				}
+			}
+		}
+	}
+	else if (m_ePass == VTPass_Mask_Color)
 	{
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof(_vec4))))
 		{
@@ -190,7 +216,7 @@ HRESULT CTextButtonColor::Bind_ShaderResources()
 			}
 		}
 	}
-	if (m_ePass == VTPass_UI_Alpha)
+	else if (m_ePass == VTPass_UI_Alpha)
 	{
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float))))
 		{
