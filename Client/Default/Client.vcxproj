@@ -191,6 +191,7 @@
     <ClInclude Include="..\Public\Diamond.h" />
     <ClInclude Include="..\Public\CommonTrail.h" />
     <ClInclude Include="..\Public\Dog.h" />
+    <ClInclude Include="..\Public\Door.h" />
     <ClInclude Include="..\Public\Dragon_Boss.h" />
     <ClInclude Include="..\public\Effect_Manager.h" />
     <ClInclude Include="..\Public\Event_Manager.h" />
@@ -228,6 +229,7 @@
     <ClInclude Include="..\Public\Launcher.h" />
     <ClInclude Include="..\Public\Level_Tower.h" />
     <ClInclude Include="..\Public\Level_Village.h" />
+    <ClInclude Include="..\Public\Lever.h" />
     <ClInclude Include="..\Public\Log.h" />
     <ClInclude Include="..\Public\Logo_Dust.h" />
     <ClInclude Include="..\Public\Logo_Stone.h" />
@@ -384,6 +386,7 @@
     <ClCompile Include="..\Private\Diamond.cpp" />
     <ClCompile Include="..\Private\CommonTrail.cpp" />
     <ClCompile Include="..\Private\Dog.cpp" />
+    <ClCompile Include="..\Private\Door.cpp" />
     <ClCompile Include="..\Private\Dragon_Boss.cpp" />
     <ClCompile Include="..\private\Effect_Manager.cpp" />
     <ClCompile Include="..\Private\Event_Manager.cpp" />
@@ -402,6 +405,7 @@
     <ClCompile Include="..\Private\Larva_Ball.cpp" />
     <ClCompile Include="..\Private\Launcher.cpp" />
     <ClCompile Include="..\Private\Level_Tower.cpp" />
+    <ClCompile Include="..\Private\Lever.cpp" />
     <ClCompile Include="..\Private\Log.cpp" />
     <ClCompile Include="..\Private\Meteor.cpp" />
     <ClCompile Include="..\Private\NineSlice.cpp" />

@@ -3,7 +3,7 @@
 #include "OrthographicObject.h"
 
 BEGIN(Client)
-enum TOWER { BRICK, MINI2, BOSS1, MINI3, BOSS2, TOWER_END };
+enum TOWER { SURVIVAL, BOSS1, BRICK, CESCO , BOSS2, TOWER_END };
 
 class CInfinityTower final : public COrthographicObject
 {

@@ -240,6 +240,7 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 
 	switch (eSpot)
 	{
+		
 	case Client::TS_Dungeon:
 	{
 		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
@@ -356,7 +357,7 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 
 		break;
 	}
-	case Client::TS_Minigame:
+	case Client::TS_BrickMap:
 	{
 		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 		{
@@ -398,7 +399,7 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
 		//*Light = g_Light_Village;
 		//m_iSkyTextureIndex = 12;
-		m_eCurrentSpot = TS_Minigame;
+		m_eCurrentSpot = TS_BrickMap;
 		inFile.close();
 
 		break;
@@ -487,14 +488,14 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 		_mat Player_Matrix{};
 		inFile.read(reinterpret_cast<char*>(&Player_Matrix), sizeof(_mat));
 
+		LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+		*Light = g_Light_HumanBoss;
+
 		CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 		pPlayerTransform->Set_Position(_vec3(Player_Matrix.Position() + _vec3(0.f, 2.f, 0.f)));
 		pPlayerTransform->LookAt_Dir(Player_Matrix.Look());
 
-		//m_pGameInstance->Set_HellHeight(-70.f);
-		//LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
-		//*Light = g_Light_Village;
-		//m_iSkyTextureIndex = 12;
+		m_iSkyTextureIndex = 10;
 		m_eCurrentSpot = TS_BossRoom;
 		inFile.close();
 

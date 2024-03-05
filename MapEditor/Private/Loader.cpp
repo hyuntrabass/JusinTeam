@@ -221,7 +221,7 @@ HRESULT CLoader::Load_Editor()
 			}
 			else if (strPrototypeTag == L"Prototype_Model_BossRoom")
 			{
-				Pivot = _mat::CreateScale(0.005f);
+				Pivot = _mat::CreateScale(0.005f); 
 			}
 			else if (strPrototypeTag == L"Prototype_Model_Survival_Map")
 			{

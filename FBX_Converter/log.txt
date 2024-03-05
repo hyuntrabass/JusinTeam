@@ -1,22 +1,9 @@
 1. Static Only   2. Anim Only   3. All
-2
-Animation Models : Start Converting...
-1. Normally Anim Model	2. For VTF Model 3. Part Model
-2
-Converting... GoldStone.fbx
+1
+Static Models : Start Converting...
+Converting... Floor.fbx
 Read File Succssefully
-Animation name list: 
-Com_SM_Goldstone_001.ao|Com_SM_Goldstone_001.ao|Com_SM_Goldstone_001.ao|Com_SM_Goldston
-Converting... SaltStone.fbx
-Read File Succssefully
-Animation name list: 
-Com_SM_Saltstone_001.ao|Com_SM_Saltstone_001.ao|Com_SM_Saltstone_001.ao|Com_SM_Saltston
-Converting... TreasureBox.fbx
-Read File Succssefully
-Animation name list: 
-jewel_box_01_stand.ao|jewel_box_01_stand.ao|jewel_box_01_stand.ao|jewel_box_01_op
-jewel_box_01_stand.ao|jewel_box_01_stand.ao|jewel_box_01_stand.ao|jewel_box_01_open
-Animation Models : Convert Success!
+Static Models : Convert Success!
 
-3 Animation Models
+1 Static Models
 are Successfully Converted as hyuntramesh!!

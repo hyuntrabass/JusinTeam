@@ -29,7 +29,8 @@ HRESULT CInfiltrationGame::Init(void* pArg)
 
 	m_CheckPointMatrix = m_pPlayerTransform->Get_World_Matrix();
 
-	Create_Guard();
+	_tchar* pPath = TEXT("../Bin/Data/MiniDungeon_Guard_1_Data.dat");
+	Create_Guard(pPath);
 	Create_CheckPoint();
 	return S_OK;
 }
@@ -37,19 +38,26 @@ HRESULT CInfiltrationGame::Init(void* pArg)
 void CInfiltrationGame::Tick(_float fTimeDelta)
 {
 	Reset_Play(fTimeDelta);
-	for (auto& pGuard : m_Guard)
+	for (auto& pGuardList : m_GuardList)
 	{
-		pGuard->Tick(fTimeDelta);
+		for (auto& pGuard : pGuardList)
+		{
+			pGuard->Tick(fTimeDelta);
+	
+		}
 	}
-
-	for (auto& pGuardTower : m_GuardTower)
+	for (auto& pGuardTowerList : m_GuardTowerList)
 	{
-		pGuardTower->Tick(fTimeDelta);
+		for (auto& pGuardTower : pGuardTowerList)
+		{
+			pGuardTower->Tick(fTimeDelta);
+		}
 	}
 
 	for (auto& pCheckPoint : m_CheckPoint)
 	{
 		pCheckPoint->Tick(fTimeDelta);
+
 	}
 
 	Release_DeadObjects();
@@ -57,21 +65,61 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 
 void CInfiltrationGame::Late_Tick(_float fTimeDelta)
 {
-	for (auto& pGuard : m_Guard)
+	for (auto& pGuardList : m_GuardList)
 	{
-		pGuard->Late_Tick(fTimeDelta);
+		for (auto& pGuard : pGuardList)
+		{
+			pGuard->Late_Tick(fTimeDelta);
+		}
 	}
 
-	for (auto& pGuardTower : m_GuardTower)
+	for (auto& pGuardTowerList : m_GuardTowerList)
 	{
-		pGuardTower->Late_Tick(fTimeDelta);
+		for (auto& pGuardTower : pGuardTowerList)
+		{
+			pGuardTower->Late_Tick(fTimeDelta);
+		}
 	}
 
 	for (auto& pCheckPoint : m_CheckPoint)
 	{
 		if (pCheckPoint->Get_Collision())
 		{
+			_tchar* pPath = nullptr;
 			m_CheckPointMatrix = pCheckPoint->Get_Matrix() + _mat::CreateTranslation(0.f, 1.f, 0.f);
+			_int CheckIndex = pCheckPoint->Get_TriggerNum();
+			switch (CheckIndex)
+			{
+			case 0:
+				pPath = TEXT("../Bin/Data/MiniDungeon_Guard_2_Data.dat");
+				break;
+			case 1:
+				pPath = TEXT("../Bin/Data/MiniDungeon_Guard_3_Data.dat");
+
+				break;
+			case 2:
+				pPath = TEXT("../Bin/Data/MiniDungeon_Guard_4_Data.dat");
+				break;
+			case 3:
+				pPath = TEXT("../Bin/Data/MiniDungeon_Guard_5_Data.dat");
+				break;
+			case 4:
+				pPath = TEXT("../Bin/Data/MiniDungeon_Guard_6_Data.dat");
+				break;
+
+			
+			}
+			_int Index = CheckIndex - 1;
+			if (0 <= Index) {
+				for (auto& pGameObject : m_GuardList[Index])
+					pGameObject->Kill();
+
+				for (auto& pGameObject : m_GuardTowerList[Index])
+					pGameObject->Kill();
+			}
+
+			if(pPath != nullptr)
+				Create_Guard(pPath);
 			pCheckPoint->Kill();
 		}
 	}
@@ -80,12 +128,13 @@ void CInfiltrationGame::Late_Tick(_float fTimeDelta)
 
 
 
-HRESULT CInfiltrationGame::Create_Guard()
+HRESULT CInfiltrationGame::Create_Guard(const TCHAR* pPath)
 {
-	const TCHAR* pGetPath = TEXT("../Bin/Data/MiniDungeon_GuardData.dat");
+	const TCHAR* pGetPath = pPath;
 
 	std::ifstream inFile(pGetPath, std::ios::binary);
-
+	list<class CGuard*> m_Guard;
+	list<class CGuardTower*> m_GuardTower;
 	if (!inFile.is_open())
 	{
 		MessageBox(g_hWnd, L"파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
@@ -132,6 +181,8 @@ HRESULT CInfiltrationGame::Create_Guard()
 		}
 
 	}
+	m_GuardList.push_back(m_Guard);
+	m_GuardTowerList.push_back(m_GuardTower);
 
 	inFile.close();
 
@@ -226,28 +277,25 @@ void CInfiltrationGame::Reset_Play(_float fTimeDelta)
 
 void CInfiltrationGame::Release_DeadObjects()
 {
-	for (auto& it = m_Guard.begin(); it != m_Guard.end();)
-	{
-		if ((*it)->isDead())
-		{
-			Safe_Release(*it);
-			it = m_Guard.erase(it);
-		}
-		else
-		{
-			++it;
+	for (auto& pGuardList : m_GuardList) {
+		for (auto& iter = pGuardList.begin(); iter != pGuardList.end();) {
+			if ((*iter)->isDead()) {
+				Safe_Release(*iter);
+				iter = pGuardList.erase(iter);
+			}
+			else
+				iter++;
 		}
 	}
-	for (auto& it = m_GuardTower.begin(); it != m_GuardTower.end();)
-	{
-		if ((*it)->isDead())
-		{
-			Safe_Release(*it);
-			it = m_GuardTower.erase(it);
-		}
-		else
-		{
-			++it;
+
+	for (auto& pTowerList : m_GuardTowerList) {
+		for (auto& iter = pTowerList.begin(); iter != pTowerList.end();) {
+			if ((*iter)->isDead()) {
+				Safe_Release(*iter);
+				iter = pTowerList.erase(iter);
+			}
+			else
+				iter++;
 		}
 	}
 
@@ -294,17 +342,26 @@ CGameObject* CInfiltrationGame::Clone(void* pArg)
 void CInfiltrationGame::Free()
 {
 	__super::Free();
-	for (auto& pGuard : m_Guard)
-	{
-		Safe_Release(pGuard);
-	}
-	m_Guard.clear();
 
-	for (auto& pGuardTower : m_GuardTower)
+	for (auto& List : m_GuardList)
 	{
-		Safe_Release(pGuardTower);
+		for (auto& pGuard : List)
+		{
+			Safe_Release(pGuard);
+		}
+		List.clear();
 	}
-	m_GuardTower.clear();
+	m_GuardList.clear();
+
+	for (auto& List : m_GuardTowerList)
+	{
+		for (auto& pGuardTower : List)
+		{
+			Safe_Release(pGuardTower);
+		}
+		List.clear();
+	}
+	m_GuardTowerList.clear();
 
 	for (auto& pCheckPoint : m_CheckPoint)
 	{

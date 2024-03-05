@@ -67,6 +67,9 @@ void CBrickGame::Tick(_float fTimeDelta)
 	//DirectX::XMFLOAT4 = {x=-2000.28052 y=11.3177662 z=-1991.18335 ...}
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 	_vec4 vPos = pPlayerTransform->Get_State(State::Pos);
+
+	CTrigger_Manager::Get_Instance()->Get_CurrentSpot() == TS_BossRoom;
+
 	if (!m_isActive && CUI_Manager::Get_Instance()->Get_CurrentMiniGame() == (TOWER)BRICK)
 	{
 		Init_Game();
@@ -402,7 +405,7 @@ void CBrickGame::Init_Game()
 	CCamera_Manager::Get_Instance()->Set_CameraState(CS_BRICKGAME);
 	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 	m_isActive = true;
-	CTrigger_Manager::Get_Instance()->Teleport(TS_Minigame);
+	CTrigger_Manager::Get_Instance()->Teleport(TS_BrickMap);
 
 
 	LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
