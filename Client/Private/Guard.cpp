@@ -265,8 +265,8 @@ void CGuard::Init_State(_float fTimeDelta)
 			break;
 		case Client::CGuard::STATE_DIE:
 			m_Animation.iAnimIndex = ANIM_DIE;
-			m_Animation.isLoop = false;
-			m_Animation.fAnimSpeedRatio = 1.f;
+			m_pTransformCom->Delete_Controller();
+			m_pGameInstance->Delete_CollisionObject(this);
 			break;
 		}
 
@@ -1024,6 +1024,8 @@ void CGuard::Free()
 	__super::Free();
 
 	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
+	m_pTransformCom->Delete_Controller();
+	m_pGameInstance->Delete_CollisionObject(this);
 
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
