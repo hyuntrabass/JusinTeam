@@ -56,11 +56,11 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_DragonMap_Effect()))
-	{
-		MSG_BOX("Failed to Ready DragonMap Effect");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_DragonMap_Effect()))
+	//{
+	//	MSG_BOX("Failed to Ready DragonMap Effect");
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(Ready_Interaction()))
 	{

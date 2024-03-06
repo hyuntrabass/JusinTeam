@@ -1136,6 +1136,9 @@
     <ClInclude Include="..\Public\CheckPoint.h">
       <Filter>02.GameObjects\17.InfiltrationGame\02. CheckPoint</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\SurvivalEffect.h">
+      <Filter>02.GameObjects\15. SurvivalGame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1722,6 +1725,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\CheckPoint.cpp">
       <Filter>02.GameObjects\17.InfiltrationGame\02. CheckPoint</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SurvivalEffect.cpp">
+      <Filter>02.GameObjects\15. SurvivalGame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
