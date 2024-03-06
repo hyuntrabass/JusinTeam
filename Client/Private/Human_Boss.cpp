@@ -81,7 +81,7 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD8, InputChannel::UI))
 	{
-		m_eState = CommonAtt0;
+		m_eState = Pizza_Start;
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD9, InputChannel::UI))
 	{
@@ -1242,6 +1242,8 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 				}
 				View_Attack_Range(Range_45, m_fAttackRange, true);
 				m_bAttacked = true;
+
+				m_pGameInstance->Play_Sound(TEXT("Sfx_Boss_Angrboda_Atk_09_02"), 0.5f, false, 0.15f);
 			}
 			Increased_Range(36.f, fTimedelta);
 		}
@@ -1274,6 +1276,8 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 				}
 				View_Attack_Range(Range_45, m_fAttackRange, true);
 				m_bAttacked = true;
+
+				m_pGameInstance->Play_Sound(TEXT("Sfx_Boss_Angrboda_Atk_09_02"), 0.5f, false, 0.15f);
 			}
 			Increased_Range(36.f, fTimedelta);
 		}

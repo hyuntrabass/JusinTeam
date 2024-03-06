@@ -298,6 +298,7 @@
     <ClInclude Include="..\Public\SummonWindow.h" />
     <ClInclude Include="..\Public\SummonWindowPet.h" />
     <ClInclude Include="..\Public\Sun.h" />
+    <ClInclude Include="..\Public\SurvivalEffect.h" />
     <ClInclude Include="..\Public\SurvivalGame.h" />
     <ClInclude Include="..\Public\Survival_Mon.h" />
     <ClInclude Include="..\Public\Symbol.h" />
@@ -492,6 +493,7 @@
     <ClCompile Include="..\Private\SummonWindow.cpp" />
     <ClCompile Include="..\Private\SummonWindowPet.cpp" />
     <ClCompile Include="..\Private\Sun.cpp" />
+    <ClCompile Include="..\Private\SurvivalEffect.cpp" />
     <ClCompile Include="..\Private\SurvivalGame.cpp" />
     <ClCompile Include="..\Private\Survival_Mon.cpp" />
     <ClCompile Include="..\Private\Symbol.cpp" />

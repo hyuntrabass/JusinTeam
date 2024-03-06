@@ -27,6 +27,7 @@ private:
 #endif // _DEBUG
 
 private:
+	_int m_iSoundChannel = -1;
 	_mat m_EffectMatrices{};
 	_float m_fLifeTimer{};
 	_float m_fLifeTimeLimit{};

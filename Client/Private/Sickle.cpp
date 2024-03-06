@@ -33,7 +33,7 @@ HRESULT CSickle::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pGameInstance->Play_Sound(TEXT("SE_5130_Meteor_SFX_01"));
+	m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("BP_Skill_10017_SFX_01"));
 
 	return S_OK;
 }
@@ -52,6 +52,11 @@ void CSickle::Tick(_float fTimeDelta)
 		m_hasAttacked = true;
 		_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
 		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SickleTrap"), TEXT("Prototype_GameObject_SickleTrap"), &vPos);
+		Kill();
+		if (m_iSoundChannel != -1)
+		{
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+		}
 	}
 
 	m_EffectMatrices = _mat::CreateTranslation(_vec3(vPos)+_vec3(0.f, 1.5f, 0.f));
@@ -77,6 +82,10 @@ void CSickle::Tick(_float fTimeDelta)
 	if (m_iHP == 0)
 	{
 		Kill();
+		if (m_iSoundChannel != -1)
+		{
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+		}
 	}
 
 	if (not m_hasAttacked and m_pGameInstance->Attack_Player(m_pColliderCom, 150 + rand() % 50))
@@ -87,6 +96,16 @@ void CSickle::Tick(_float fTimeDelta)
 		vPos.y = BossTransform->Get_State(State::Pos).y;
 	
 		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SickleTrap"), TEXT("Prototype_GameObject_SickleTrap"), &vPos);
+		m_pGameInstance->Play_Sound(TEXT("BP_Skill_10014_SFX_01"));
+	}
+
+	if (m_iSoundChannel != -1)
+	{
+		if (m_pGameInstance->Get_ChannelCurPosRatio(m_iSoundChannel) >= 0.6f)
+		{
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+			m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("BP_Skill_10017_SFX_01"));
+		}
 	}
 }
 
