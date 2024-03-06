@@ -35,7 +35,6 @@ private:
 
 private:
 	_float m_fLifeTime{};
-	_float m_fGasSpawnTime{};
 	_mat m_EffectMatrix{};
 
 private:

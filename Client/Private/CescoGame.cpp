@@ -137,6 +137,11 @@ void CCescoGame::Tick(_float fTimeDelta)
 			pMonster->Set_Damage(pMonster->Get_HP());
 		}
 
+		for (auto& Pair : m_Logs)
+		{
+			Pair.second->Set_Damage(Pair.second->Get_HP());
+		}
+
 		for (auto& Pair : m_Hives)
 		{
 			Pair.second->Set_Damage(Pair.second->Get_HP());
@@ -146,6 +151,24 @@ void CCescoGame::Tick(_float fTimeDelta)
 	for (auto& pMonster : m_Monsters)
 	{
 		pMonster->Tick(fTimeDelta);
+	}
+
+	_uint iNumHasPlayedSound{};
+	for (auto& pMonster : m_Monsters)
+	{
+		if (pMonster->Get_SoundChannel() != -1)
+		{
+			iNumHasPlayedSound++;
+		}
+	}
+	_bool IsPlaySound{};
+	for (auto& pMonster : m_Monsters)
+	{
+		IsPlaySound = pMonster->Get_IsPlaySound();
+		if (IsPlaySound && ++iNumHasPlayedSound <= 5)
+		{
+			pMonster->Play_Sound(IsPlaySound);
+		}
 	}
 
 	for (auto& Pair : m_Logs)

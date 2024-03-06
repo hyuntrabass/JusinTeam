@@ -150,6 +150,9 @@ void CScorpion::Init_State(_float fTimeDelta)
 
 			m_pTransformCom->Delete_Controller();
 			m_pGameInstance->Delete_CollisionObject(this);
+			//사운드
+			m_IsPlaySound = true;
+			m_strSoundTag = TEXT("Scorpion_Hit_Voice_04");
 			break;
 		}
 
@@ -209,6 +212,9 @@ void CScorpion::Tick_State(_float fTimeDelta)
 			_uint iDamage = rand() % 6 + 10;
 			m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage);
 			m_HasAttacked = true;
+			//사운드
+			m_IsPlaySound = true;
+			m_strSoundTag = TEXT("Bug_Stab02_SFX_03");
 		}
 
 		if (m_pModelCom->IsAnimationFinished(Anim_attack03))

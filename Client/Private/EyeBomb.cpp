@@ -150,6 +150,8 @@ void CEyeBomb::Tick(_float fTimeDelta)
 		pEffect_Manager->Add_Layer_Effect(Info);
 
 		Safe_Release(pEffect_Manager);
+
+		m_pGameInstance->Play_Sound(TEXT("Sfx_Mon_Niflheim_egg_Explosion_Die_01-01"), 0.5f, false, 0.2f);
 	}
 }
 

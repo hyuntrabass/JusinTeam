@@ -23,9 +23,18 @@ protected:
 
 public:
 	virtual void Set_Damage(_int iDamage, _uint AttackType = 0) override;
+	virtual void Play_Sound(_bool IsPlaySound);
 
 	const wstring& Get_ModelTag() const {
 		return m_strModelTag;
+	}
+
+	_bool Get_IsPlaySound() {
+		return m_IsPlaySound;
+	}
+
+	_int Get_SoundChannel() {
+		return m_iSoundChannel;
 	}
 
 public:
@@ -48,6 +57,10 @@ protected:
 protected:
 	ANIM_DESC m_Animation{};
 	_randNum m_RandomNumber;
+	_bool m_IsPlaySound{};
+	wstring m_strSoundTag{};
+	_int m_iSoundChannel = -1;
+	_float m_fSoundStartPosRatio{};
 
 protected:
 	wstring m_strModelTag{};
