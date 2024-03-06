@@ -29,7 +29,7 @@ private:
     CShader* m_pShaderCom = nullptr;
     CRenderer* m_pRendererCom = nullptr;
     CModel* m_pModelCom = nullptr;
-    CCollider* m_pBodyColliderCom = nullptr;
+    _bool m_Open = false;
 
 private:
     DoorInfo m_Info{};
@@ -39,9 +39,6 @@ public:
     HRESULT Add_Components();
     HRESULT Bind_ShaderResources();
 
-public:
-    HRESULT Add_Collider();
-    void Update_Collider();
 
 public:
     static CDoor* Create(_dev pDevice, _context pContext);
