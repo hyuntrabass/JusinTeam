@@ -70,6 +70,8 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 
 	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_BossRoom)
 	{
+		m_pGameInstance->Delete_CollisionObject(this);
+		m_pTransformCom->Delete_Controller();
 		Kill();
 	}
 	if (CCamera_Manager::Get_Instance()->Get_CameraState() == CS_INVEN)
@@ -81,7 +83,7 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD8, InputChannel::UI))
 	{
-		m_eState = Throw_Sickle;
+		m_eState = CommonAtt0;
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD9, InputChannel::UI))
 	{
@@ -126,8 +128,15 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 		}
 		else
 		{
-			m_fModelDissolveRatio += fTimeDelta *0.2f;
+			
+			m_fModelDissolveRatio += fTimeDelta *0.35f;
 		}
+	}
+	else if(!m_bViewModel && m_fModelDissolveRatio >= 1.f)
+	{
+		m_pGameInstance->Delete_CollisionObject(this);
+		m_pTransformCom->Delete_Controller();
+		Kill();
 	}
 	else if (m_bViewModel && m_fModelDissolveRatio > 0.f)
 	{
@@ -452,8 +461,8 @@ void CHuman_Boss::Init_State(_float fTimeDelta)
 			break;
 		case Client::CHuman_Boss::Counter_Fail:
 			m_Animation.bSkipInterpolation = false;
-			m_Animation.iAnimIndex = BossAnim_Die;
-			m_Animation.fDurationRatio = 0.5f;
+			m_Animation.iAnimIndex = BossAnim_Roar;
+			m_Animation.fAnimSpeedRatio = 2.f;
 			Set_Damage(999, 0);
 			break;
 		case Client::CHuman_Boss::Hide_Start:
@@ -1033,6 +1042,12 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 		{
 			if (!m_bAttacked)
 			{
+				_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
+				_mat ShockMat = _mat::CreateTranslation(vPos);
+				EffectInfo EffectDesc{};
+				EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Boss_Pizza_Effect");
+				EffectDesc.pMatrix = &ShockMat;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 				m_pGameInstance->Attack_Player(m_pCommonAttCollider, 300 + rand() % 30, MonAtt_KnockDown);
 				if (m_pGameInstance->CheckCollision_Player(m_pCommonAttCollider))
 				{
@@ -1228,6 +1243,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 	}
 	else if (m_eState == Pizza_Loop)
 	{
+	
 		_float Index = m_pModelCom->Get_CurrentAnimPos();
 		if (Index >= 100.f && Index < 137.f)
 		{
@@ -1241,6 +1257,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 				{
 					m_fAttackRange -= 45.f;
 				}
+			
 				View_Attack_Range(Range_45, m_fAttackRange, true);
 				m_bAttacked = true;
 
@@ -1275,6 +1292,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 				{
 					m_fAttackRange -= 45.f;
 				}
+			
 				View_Attack_Range(Range_45, m_fAttackRange, true);
 				m_bAttacked = true;
 
@@ -1286,6 +1304,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 		{
 			if (m_bAttacked)
 			{
+				
 				if (!Compute_Angle(45.f, m_fAttackRange))
 				{
 					m_pGameInstance->Attack_Player(nullptr, 100 + rand() % 50, MonAtt_Hit);
@@ -1312,6 +1331,12 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 		}
 		else if (Index > 167.f && Index < 170.f)
 		{
+			_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
+			_mat ShockMat = _mat::CreateTranslation(vPos);
+			EffectInfo EffectDesc{};
+			EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Boss_Pizza_Effect");
+			EffectDesc.pMatrix = &ShockMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 			if (!m_bAttacked)
 			{
 				Safe_Release(m_pBaseEffect);
