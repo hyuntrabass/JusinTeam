@@ -222,6 +222,15 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 		CCamera_Manager::Get_Instance()->Set_CameraModeIndex(CM_CUTSCENE);
 	}
 
+	if (m_isBossRom == true)
+	{
+		m_isBreakLoop = true;
+		m_isPlayCutScene = false;
+		m_isInfinite = false;
+		m_isBossRom = false;
+		m_strFilePath = L"../Bin/Data/BossRoom_CutSceneData.dat";
+		CCamera_Manager::Get_Instance()->Set_CameraModeIndex(CM_CUTSCENE);
+	}
 	if (bColl && pTrigger != nullptr)
 	{
 		for (auto& iter : m_pTrigger)

@@ -57,6 +57,7 @@ public:
 	void Set_BossStart() { m_bBossStart = true; }
 	void LoopBroken() { m_isBreakLoop = false; }
 	void Set_Shake_Camera(_bool isShaking) { m_isShaking = isShaking; }
+	void Set_BossRoom() { m_isBossRom = true; }
 
 	const void Set_Lever1() { m_isLever1 = true; }
 	const void Set_Lever2() { m_isLever2 = true; }
@@ -85,6 +86,7 @@ private:
 	_bool m_isBreakLoop{};
 	_bool m_isInVillage{};
 	_bool m_isShaking{false};
+	_bool m_isBossRom{ false };
 
 	_bool m_isLever1 = false;
 	_bool m_isLever2 = false;
