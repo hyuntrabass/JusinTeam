@@ -81,9 +81,9 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 
 	
 
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD8, InputChannel::UI))
+	if (m_pGameInstance->Key_Down(DIK_9, InputChannel::UI))
 	{
-		m_eState = CommonAtt0;
+		m_eState = Pizza_Start;
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD9, InputChannel::UI))
 	{
@@ -570,11 +570,19 @@ void CHuman_Boss::Tick_State(_float fTimeDelta)
 		}
 		break;
 	case Pizza_Start:
+	{
+		_float fAnimPos = m_pModelCom->Get_CurrentAnimPos();
+		if (fAnimPos >= 66.f && not m_HasPlayedSound)
+		{
+			m_pGameInstance->Play_Sound(TEXT("Vo_Boss_07_Heid_Atk_07"));
+			m_HasPlayedSound = true;
+		}
 		if (m_pModelCom->IsAnimationFinished(BossAnim_attack13))
 		{
 			m_eState = Pizza_BackLoop;
+			m_HasPlayedSound = false;
 		}
-
+	}
 		break;
 	case Pizza_Loop:
 		if (m_pModelCom->IsAnimationFinished(BossAnim_attack13))
@@ -1187,7 +1195,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			{
 				if (m_bCounter_Success)
 				{
-					m_pGameInstance->Play_Sound(TEXT("Counter"), 0.7f);
+					m_pGameInstance->Play_Sound(TEXT("UI_Enchant_Blessing_End_Fail_SFX_01"));
 					m_eState = Counter_Fail;
 					m_bCounter_Success = false;
 					m_iPassIndex = AnimPass_DissolveNoCull;
@@ -1260,8 +1268,6 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			
 				View_Attack_Range(Range_45, m_fAttackRange, true);
 				m_bAttacked = true;
-
-				m_pGameInstance->Play_Sound(TEXT("Sfx_Boss_Angrboda_Atk_09_02"), 0.5f, false, 0.15f);
 			}
 			Increased_Range(36.f, fTimedelta);
 		}
@@ -1274,6 +1280,8 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 					m_pGameInstance->Attack_Player(nullptr, 100 + rand() % 50, MonAtt_Hit);
 				}
 				m_bAttacked = false;
+
+				m_pGameInstance->Play_Sound(TEXT("Sfx_Boss_Angrboda_Atk_09_01"), 0.5f, false, 0.25f);
 			}
 		}
 	}
@@ -1295,8 +1303,6 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			
 				View_Attack_Range(Range_45, m_fAttackRange, true);
 				m_bAttacked = true;
-
-				m_pGameInstance->Play_Sound(TEXT("Sfx_Boss_Angrboda_Atk_09_02"), 0.5f, false, 0.15f);
 			}
 			Increased_Range(36.f, fTimedelta);
 		}
@@ -1310,6 +1316,8 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 					m_pGameInstance->Attack_Player(nullptr, 100 + rand() % 50, MonAtt_Hit);
 				}
 				m_bAttacked = false;
+
+				m_pGameInstance->Play_Sound(TEXT("Sfx_Boss_Angrboda_Atk_09_01"), 0.5f, false, 0.25f);
 			}
 		}
 	}
