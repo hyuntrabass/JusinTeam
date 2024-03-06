@@ -10,6 +10,7 @@ public:
 	typedef struct tagSliceDesc
 	{
 		_float  fDepth{1.f};
+		_float  fPadding{6.f};
 		_vec2	vSize;
 		_vec2	vPosition;
 
@@ -50,6 +51,7 @@ private:
 	_float	m_fDuration{ 0.f };
 	_float	m_fFontSize{};
 	_float	m_fAlpha{1.f};
+	_float	m_fPadding{1.f};
 
 	_vec2	m_vSize{};
 	_vec2	m_vPosition{};

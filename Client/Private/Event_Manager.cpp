@@ -198,6 +198,8 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.strText = TEXT("토끼 세마리 잡기");
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
+	vecRewards.clear();
+
 	tDesc.eType = QUESTIN;
 	tDesc.fExp = 20.f;
 	tDesc.iNum = 1;
@@ -205,8 +207,12 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.isMain = false;
 	tDesc.strQuestTitle = TEXT("체력포션 구매");
 	tDesc.strText = TEXT("마을 상인에게 체력포션 구매하기");
+	vecRewards.push_back(make_pair(TEXT("[희귀]탈 것 소환 카드"), 10));
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
-	
+
+	vecRewards.clear();
+
+	tDesc.vecRewards = vecRewards;
 	tDesc.eType = QUESTIN;
 	tDesc.fExp = 20.5f;
 	tDesc.iNum = 1;
@@ -216,6 +222,8 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.strText = TEXT("던전에 있는 그로아 찾기");
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
+	vecRewards.clear();
+
 	tDesc.eType = QUESTIN;
 	tDesc.fExp = 12.3f;
 	tDesc.iNum = 2;
@@ -223,13 +231,24 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.isMain = false;
 	tDesc.strQuestTitle = TEXT("채집하기");
 	tDesc.strText = TEXT("소금광석 채집하기");
+	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
+
+	vecRewards.clear();
+
+	tDesc.eType = QUESTIN;
+	tDesc.fExp = 22.3f;
+	tDesc.iNum = 1;
+	tDesc.iMoney = 10000;
+	tDesc.isMain = true;
+	tDesc.strQuestTitle = TEXT("친해져요 블랙스미스");
+	tDesc.strText = TEXT("블랙스미스 부탁 들어주기");
 	vecRewards.push_back(make_pair(TEXT("폭군 수드리의 활"), 1));
 	vecRewards.push_back(make_pair(TEXT("폭군 수드리의 단검"), 1));
 	tDesc.vecRewards = vecRewards;
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	vecRewards.clear();
-
+	
 	tDesc.eType = QUESTIN;
 	tDesc.fExp = 15.6f;
 	tDesc.iNum = 2;
@@ -237,12 +256,12 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.isMain = false;
 	tDesc.strQuestTitle = TEXT("염소잡기");
 	tDesc.strText = TEXT("염소 두마리 잡기");
-	vecRewards.push_back(make_pair(TEXT("[희귀]탈 것 소환 카드"), 10));
-	vecRewards.push_back(make_pair(TEXT("[신화]탈 것 소환 카드"), 10));
+	vecRewards.push_back(make_pair(TEXT("염소 뿔"), 3));
 	tDesc.vecRewards = vecRewards;
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
-
+	
 	vecRewards.clear();
+
 	tDesc.vecRewards = vecRewards;
 	tDesc.eType = QUESTIN;
 	tDesc.fExp = 14.6f;
@@ -253,6 +272,8 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.strText = TEXT("그로아 남편의 흔적찾기");
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 	
+	vecRewards.clear();
+
 	tDesc.eType = QUESTIN;
 	tDesc.fExp = 20.3f;
 	tDesc.iNum = 3;//몬스터 수만큼? 
@@ -262,6 +283,8 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.strText = TEXT("몬스터로부터 그로아 지키기");
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 	
+
+	vecRewards.clear();
 	tDesc.eType = QUESTIN;
 	tDesc.fExp = 10.2f;// 몬스터 수만큼 ?
 	tDesc.iNum = 1;

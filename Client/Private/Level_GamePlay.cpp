@@ -291,10 +291,12 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		//Info.pMatrix = &EffectMat;
 		//CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 	}
+	/*
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 	{
 		DestroyWindow(g_hWnd);
 	}
+	*/
 }
 
 HRESULT CLevel_GamePlay::Render()

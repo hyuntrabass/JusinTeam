@@ -51,10 +51,12 @@ void CLevel_Custom::Tick(_float fTimeDelta)
 	}
 	m_pGameInstance->Set_HellHeight(-2000.f);
 
+	/*
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 	{
 		DestroyWindow(g_hWnd);
 	}
+	*/
 }
 
 HRESULT CLevel_Custom::Render()

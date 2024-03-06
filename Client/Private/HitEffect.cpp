@@ -230,6 +230,33 @@ HRESULT CHitEffect::Render()
 				return E_FAIL;
 			}
 
+			if (m_iDamage > 999)
+			{
+				m_pTransformCom->Set_State(State::Pos, m_pParentTransform->Get_State(State::Pos) + m_vTextPosition);
+				_vec2 v2DPos = __super::Convert_To_2D(m_pTransformCom);
+				m_fX = v2DPos.x - 45.f;
+				m_fY = v2DPos.y;
+				__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+
+				if (FAILED(Bind_ShaderResources()))
+				{
+					return E_FAIL;
+				}
+				if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", m_iDamage / 1000)))
+				{
+					return E_FAIL;
+				}
+				if (FAILED(m_pShaderCom->Begin(VTPass_LerpColorNAlpha)))
+				{
+					return E_FAIL;
+				}
+
+				if (FAILED(m_pVIBufferCom->Render()))
+				{
+					return E_FAIL;
+				}
+
+			}
 		}
 	}
 

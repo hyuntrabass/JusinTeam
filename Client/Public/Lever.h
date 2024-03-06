@@ -31,9 +31,21 @@ private:
 	CRenderer* m_pRendererCom = nullptr;
 	CModel* m_pModelCom = nullptr;
 	CCollider* m_pBodyColliderCom = nullptr;
+	CCollider* m_pWideColliderCom = nullptr;
+
+	_float m_fCollectTime{};
+	_float m_fTime{};
+	_float m_fDir{ 1.f };
 
 	_bool m_isOn = false;
 	_bool m_isAllDone = false;
+	_bool m_isInteracting = false;
+	_bool m_isWideCollision = false;
+
+	class CTextButtonColor* m_pBar{ nullptr };
+	class C3DUITex* m_pSpeechBubble{ nullptr };
+	CGameObject* m_pBG{ nullptr };
+	CGameObject* m_pNameTag{ nullptr };
 
 private:
 	LeverInfo m_Info;

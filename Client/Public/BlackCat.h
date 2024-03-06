@@ -77,6 +77,7 @@ private:
 
 	list<wstring>	m_DialogList;
 	vector<wstring> m_vecText;
+
 	CGameObject* m_pDialog{ nullptr };
 
 
