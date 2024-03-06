@@ -1590,7 +1590,8 @@ void CPlayer::Move(_float fTimeDelta)
 	if (m_eState == Revival_Start or m_eState == Revival_End
 		or m_eState == KnockDown or m_eState == Stun_Start
 		or m_eState == Stun or m_eState == Die or m_eState == Jump_Long_End
-		or m_eState == Collect_Start or m_eState == Collect_Loop or m_eState == Collect_End)
+		or m_eState == Collect_Start or m_eState == Collect_Loop or m_eState == Collect_End
+		or m_eState == Shock)
 	{
 		m_pTransformCom->Gravity(fTimeDelta);
 		return;
