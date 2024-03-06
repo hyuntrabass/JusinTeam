@@ -219,8 +219,8 @@ HRESULT CBuff_Card::Add_Parts()
 		iTexIndex = 6;
 		break;
 	case Client::Buff_CoolDown:
-		m_strText = TEXT("쿨타임 80% 감소");
-		m_fStatus = 0.2f;
+		m_strText = TEXT("쿨타임 50% 감소");
+		m_fStatus = 0.5f;
 		iTexIndex = 112;
 		break;
 	case Client::Buff_BloodDrain:

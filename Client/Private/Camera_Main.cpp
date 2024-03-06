@@ -1,7 +1,7 @@
 #include "Camera_Main.h"
 #include "UI_Manager.h"
 #include "Camera_Manager.h"
-
+#include "Trigger_Manager.h"
 CCamera_Main::CCamera_Main(_dev pDevice, _context pContext)
 	: CCamera(pDevice, pContext)
 {
@@ -67,8 +67,30 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
 	m_eCurrState = m_pCam_Manager->Get_CameraState();
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() == TS_MiniDungeon)
+	{
+		CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_HIDE);
+		_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
+		vPlayerPos.y += 2.f;
+		_vec4 vPlayerLook = m_pPlayerTransform->Get_State(State::Look).Get_Normalized();
+		//vPlayerPos += vPlayerLook;
+		m_pTransformCom->Set_State(State::Pos, vPlayerPos);
+		//if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON))
+		{
+			_long dwMouseMove{};
+			if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
+			{
+				m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
+			}
 
-	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_SELECT)
+			if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
+			{
+				_float fTurnValue = fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor;
+				m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
+			}
+		}
+	}
+	else if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_SELECT)
 	{
 		Select_Mode(fTimeDelta);
 	}

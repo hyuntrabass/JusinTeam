@@ -697,11 +697,11 @@ HRESULT CLevel_Village::Ready_Trigger()
 HRESULT CLevel_Village::Ready_Water()
 {
 	CLake::WATER_DESC Desc;
-	Desc.fReflectionScale = 0.1f;
-	Desc.fRefractionScale = 0.1f;
+	Desc.fReflectionScale = 0.01f;
+	Desc.fRefractionScale = 0.01f;
 	Desc.vPos = _vec3(0.f, -40.f, 0.f);
 	Desc.vSize = _vec2(3000.f, 3000.f);
-	Desc.fWaterSpeed = 0.01f;
+	Desc.fWaterSpeed = 0.5f;
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, L"Layer_Map", L"Prototype_GameObject_Water", &Desc)))
 		return E_FAIL;
