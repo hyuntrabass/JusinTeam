@@ -38,21 +38,10 @@ private: // NPC
 	HRESULT Ready_NPC();
 	HRESULT Ready_NPC_Dummy();
 	HRESULT Ready_Statue();
-	HRESULT Ready_Guard();
-
-private: // SescoGame
-	HRESULT Ready_SescoGame();
 
 private:
-	HRESULT Ready_Survival_Game();
-
-private:
-	HRESULT Ready_DragonMap_Effect();
-
-private:
-	// Test
-	HRESULT Ready_Test(); 
 	HRESULT Ready_Water(); 
+	HRESULT Ready_Pond(); 
 
 private:
 	HRESULT Ready_Trigger();
