@@ -16,13 +16,13 @@ CGuard::CGuard(const CGuard& rhs)
 
 HRESULT CGuard::Init_Prototype()
 {
+	m_isPrototype = true;
+
 	return S_OK;
 }
 
 HRESULT CGuard::Init(void* pArg)
 {
-
-
 	m_Info = *(GuardInfo*)pArg;
 	m_OriginMatrix = m_Info.mMatrix * _mat::CreateTranslation(0.f, 1.f, 0.f);
 	m_EffectMatrix = m_Info.mMatrix;
@@ -1061,8 +1061,10 @@ CGameObject* CGuard::Clone(void* pArg)
 
 void CGuard::Free()
 {
-	m_pGameInstance->Delete_Light(LEVEL_TOWER, m_strLightTag);
-	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
+	if (false == m_isPrototype) {
+		m_pGameInstance->Delete_Light(LEVEL_TOWER, m_strLightTag);
+		CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
+	}
 	__super::Free();
 
 	Safe_Release(m_pShaderCom);

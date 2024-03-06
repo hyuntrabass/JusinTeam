@@ -1048,11 +1048,10 @@ CGameObject* CGuardTower::Clone(void* pArg)
 
 void CGuardTower::Free()
 {
-	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
-
-	if (false == m_isPrototype)
+	if (false == m_isPrototype) {
+		CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 		m_pGameInstance->Delete_Light(LEVEL_TOWER, m_strLightTag);
-
+	}
 	__super::Free();
 
 	Safe_Release(m_pRendererCom);

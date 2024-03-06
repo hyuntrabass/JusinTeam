@@ -120,6 +120,8 @@ private:
 	static _int m_iLightID;
 	wstring m_strLightTag{};
 
+
+	_bool m_isPrototype = false;
 private:
 	ANIM_DESC m_Animation{};
 
