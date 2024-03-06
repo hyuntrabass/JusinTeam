@@ -271,6 +271,7 @@ public:
 		Climb_L,
 		Climb_R,
 		Hook,
+		Shock,
 		Swim_Idle,
 		Swim,
 		Swim_collect,
