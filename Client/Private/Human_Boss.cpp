@@ -128,11 +128,11 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 		}
 		else
 		{
-			
-			m_fModelDissolveRatio += fTimeDelta *0.35f;
+
+			m_fModelDissolveRatio += fTimeDelta * 0.35f;
 		}
 	}
-	else if(!m_bViewModel && m_fModelDissolveRatio >= 1.f)
+	else if (!m_bViewModel && m_fModelDissolveRatio >= 1.f && m_eState == Die)
 	{
 		m_pGameInstance->Delete_CollisionObject(this);
 		m_pTransformCom->Delete_Controller();
@@ -550,7 +550,7 @@ void CHuman_Boss::Tick_State(_float fTimeDelta)
 		}
 		break;
 	case Client::CHuman_Boss::Counter_Fail:
-		if (m_pModelCom->IsAnimationFinished(BossAnim_Die))
+		if (m_pModelCom->IsAnimationFinished(BossAnim_Roar))
 		{
 			m_eState = Idle;
 		}
