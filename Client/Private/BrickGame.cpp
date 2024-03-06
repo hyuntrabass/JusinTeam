@@ -430,11 +430,10 @@ void CBrickGame::Init_Game()
 	m_pCatBoss = (CBlackCat*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BlackCat"));
 	if (not m_pCatBoss)
 	{
-		MSG_BOX("BrickBall");
 		return;
 	}
 
-	*/
+
 }
 
 void CBrickGame::Create_Bricks()
