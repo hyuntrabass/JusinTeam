@@ -550,8 +550,8 @@
     <Filter Include="02.GameObjects\17.InfiltrationGame\04. Lever">
       <UniqueIdentifier>{69c393e1-9736-46d7-9eea-f6bcf0a88e90}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\17.InfiltrationGame\02. CheckPoint">
-      <UniqueIdentifier>{97d17496-ed4e-498c-8b29-439283a0be31}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\17.InfiltrationGame\05. MiniDungeon_Teleport">
+      <UniqueIdentifier>{88ab10c4-d3f3-4a26-a6c0-5c3251afa1b8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1136,32 +1136,16 @@
     <ClInclude Include="..\Public\ClearEffect.h">
       <Filter>02.GameObjects\00.UI\GameUI\UIEffect</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\BlackCat.h">
-      <Filter>02.GameObjects\14.BrickGame</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Door.h">
-      <Filter>02.GameObjects\17.InfiltrationGame</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Lever.h">
-      <Filter>02.GameObjects\17.InfiltrationGame</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\CheckPoint.h">
-      <Filter>02.GameObjects\17.InfiltrationGame\02. CheckPoint</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\SurvivalEffect.h">
-      <Filter>02.GameObjects\15. SurvivalGame</Filter>
-    </ClInclude>
+    <ClInclude Include="..\Public\BlackCat.h" />
+    <ClInclude Include="..\Public\CheckPoint.h" />
     <ClInclude Include="..\Public\Door.h">
       <Filter>02.GameObjects\17.InfiltrationGame\03. Door</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Lever.h">
       <Filter>02.GameObjects\17.InfiltrationGame\04. Lever</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Guard.h">
-      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\CheckPoint.h">
-      <Filter>02.GameObjects\17.InfiltrationGame\02. CheckPoint</Filter>
+    <ClInclude Include="..\Public\MiniDungeon_Teleport.h">
+      <Filter>02.GameObjects\17.InfiltrationGame\05. MiniDungeon_Teleport</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1747,32 +1731,16 @@
     <ClCompile Include="..\Private\ClearEffect.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\UIEffect</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\BlackCat.cpp">
-      <Filter>02.GameObjects\14.BrickGame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Door.cpp">
-      <Filter>02.GameObjects\17.InfiltrationGame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Lever.cpp">
-      <Filter>02.GameObjects\17.InfiltrationGame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\CheckPoint.cpp">
-      <Filter>02.GameObjects\17.InfiltrationGame\02. CheckPoint</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\SurvivalEffect.cpp">
-      <Filter>02.GameObjects\15. SurvivalGame</Filter>
-    </ClCompile>
+    <ClCompile Include="..\Private\BlackCat.cpp" />
+    <ClCompile Include="..\Private\CheckPoint.cpp" />
     <ClCompile Include="..\Private\Door.cpp">
       <Filter>02.GameObjects\17.InfiltrationGame\03. Door</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Lever.cpp">
       <Filter>02.GameObjects\17.InfiltrationGame\04. Lever</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Guard.cpp">
-      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\CheckPoint.cpp">
-      <Filter>02.GameObjects\17.InfiltrationGame\02. CheckPoint</Filter>
+    <ClCompile Include="..\Private\MiniDungeon_Teleport.cpp">
+      <Filter>02.GameObjects\17.InfiltrationGame\05. MiniDungeon_Teleport</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

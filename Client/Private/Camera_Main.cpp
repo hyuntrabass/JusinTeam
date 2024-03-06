@@ -147,7 +147,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			if (m_Original_Light_Desc.eType != LIGHT_DESC::TYPE::End)
 			{
 				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
-				if (LightDesc->vDiffuse == _vec4(0.8f, 0.8f, 0.8f, 1.f))
+				//if (LightDesc->vDiffuse == _vec4(0.8f, 0.8f, 0.8f, 1.f))
 				{
 					*LightDesc = m_Original_Light_Desc;
 				}

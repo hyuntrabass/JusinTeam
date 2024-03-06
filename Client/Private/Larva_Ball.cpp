@@ -31,8 +31,6 @@ HRESULT CLarva_Ball::Init(void* pArg)
 	if (FAILED(Add_Components()))
 		return E_FAIL;
 
-	m_pGameInstance->Register_CollisionObject(this, m_pColliderCom);
-
 	return S_OK;
 }
 
@@ -52,8 +50,6 @@ void CLarva_Ball::Tick(_float fTimeDelta)
 		Info.pMatrix = &m_EffectMatrix;
 		Info.fLifeTime = 0.3f;
 		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
-
-		m_pGameInstance->Delete_CollisionObject(this);
 		Kill();
 	}
 }

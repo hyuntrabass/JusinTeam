@@ -100,18 +100,6 @@ namespace Client
 		_vec4(0.1f) // Specular
 	};
 
-	static const LIGHT_DESC g_Light_Infiltration
-	{
-		LIGHT_DESC::Directional,
-		_vec4(-2.f, -1.f, -2.f, 0.f), // Direction
-		_vec4(), // Position
-		_vec4(), // Attenuation
-
-		_vec4(0.05f), // Diffuse
-		_vec4(0.3f), // Ambient
-		_vec4(0.1f) // Specular
-	};
-
 	static const LIGHT_DESC g_Light_HumanBoss
 	{
 		LIGHT_DESC::Directional,
@@ -124,6 +112,18 @@ namespace Client
 		_vec4(0.1f) // Specular
 	};
 
+	
+	static const LIGHT_DESC g_Light_Infiltration
+	{
+		LIGHT_DESC::Directional,
+		_vec4(-2.f, -1.f, -2.f, 0.f), // Direction
+		_vec4(), // Position
+		_vec4(), // Attenuation
+
+		_vec4(0.05f), // Diffuse
+		_vec4(0.01f), // Ambient
+		_vec4(0.1f)  // Specular
+	};
 	enum LEVEL_ID
 	{
 		LEVEL_STATIC,
@@ -340,6 +340,7 @@ namespace Client
 		MonAtt_Pull,
 		MonAtt_Hook,
 		MonAtt_Hook_End,
+		MonAtt_Shock,
 		MonAtt_End
 	};
 #pragma endregion

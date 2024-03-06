@@ -30,6 +30,7 @@ private:
 	HRESULT Create_Door();
 	void Reset_Play(_float fTimeDelta);
 	void Release_DeadObjects();
+	HRESULT Create_Teleport();
 
 private:
 	_bool m_isReset{ false };
@@ -40,6 +41,7 @@ private:
 private:
 	CTransform* m_pPlayerTransform = { nullptr };
 	class CDoor* m_pDoor{ nullptr };
+	class CMiniDungeon_Teleport* m_pTeleport{ nullptr };
 
 public:
 	static CInfiltrationGame* Create(_dev pDevice, _context pContext);
