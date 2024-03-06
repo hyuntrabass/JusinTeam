@@ -25,7 +25,6 @@ CMap::CMap(const CMap& rhs)
 {
 }
 
-
 HRESULT CMap::Init_Prototype()
 {
 	return S_OK;
@@ -56,17 +55,6 @@ void CMap::Tick(_float fTimeDelta)
 
 void CMap::Late_Tick(_float fTimeDelta)
 {
-	/*
-	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Camera", LEVEL_STATIC);
-
-	_vec4 vPlayerPos = pPlayerTransform->Get_CenterPos();
-	_vec4 vPos = m_pTransformCom->Get_CenterPos();
-
-	if (abs(vPlayerPos.x - vPos.x) > 500.f)
-	{
-		return;
-	}
-	*/
 	TeleportSpot eCurrentSpot = CTrigger_Manager::Get_Instance()->Get_CurrentSpot();
 	switch (eCurrentSpot)
 	{

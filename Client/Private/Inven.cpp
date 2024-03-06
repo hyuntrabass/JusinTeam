@@ -203,12 +203,6 @@ void CInven::Tick(_float fTimeDelta)
 				//CEvent_Manager::Get_Instance()->Set_TutorialSeq(T_EXIT);
 			}
 
-			if (m_Light_Desc.eType != LIGHT_DESC::TYPE::End)
-			{
-				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
-				*LightDesc = m_Light_Desc;
-			}
-
 			for (size_t i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 			{
 				if (m_pGameInstance->Get_IsLoopingSound(i))
@@ -216,7 +210,6 @@ void CInven::Tick(_float fTimeDelta)
 					m_pGameInstance->FadeinSound(i, fTimeDelta);
 				}
 			}
-
 			CFadeBox::FADE_DESC Desc = {};
 			Desc.fIn_Duration = 0.5f;
 			Desc.fOut_Duration = 1.f;
@@ -226,6 +219,11 @@ void CInven::Tick(_float fTimeDelta)
 	}
 	if (m_isActive && m_isReadytoDeactivate)
 	{
+		if (m_Light_Desc.eType != LIGHT_DESC::TYPE::End)
+		{
+			LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
+			*LightDesc = m_Light_Desc;
+		}
 		m_isReadytoDeactivate = false;
 		CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
 		CUI_Manager::Get_Instance()->Set_FullScreenUI(false);

@@ -181,6 +181,7 @@
     <ClInclude Include="..\Public\CescoGame.h" />
     <ClInclude Include="..\Public\CharacterSelect.h" />
     <ClInclude Include="..\Public\CheckPoint.h" />
+    <ClInclude Include="..\Public\ClearEffect.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Coin.h" />
     <ClInclude Include="..\Public\Dead.h" />
@@ -200,6 +201,7 @@
     <ClInclude Include="..\Public\FadeBox.h" />
     <ClInclude Include="..\Public\FirePillar.h" />
     <ClInclude Include="..\Public\Goat.h" />
+    <ClInclude Include="..\Public\GraphicSetting.h" />
     <ClInclude Include="..\Public\Groar_Boss.h" />
     <ClInclude Include="..\Public\Guard.h" />
     <ClInclude Include="..\Public\GuardTower.h" />
@@ -291,6 +293,7 @@
     <ClInclude Include="..\Public\Skill_Model.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\Lake.h" />
+    <ClInclude Include="..\Public\SoundSetting.h" />
     <ClInclude Include="..\Public\Spider.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\Statue.h" />
@@ -377,6 +380,7 @@
     <ClCompile Include="..\Private\CescoGame.cpp" />
     <ClCompile Include="..\Private\CharacterSelect.cpp" />
     <ClCompile Include="..\Private\CheckPoint.cpp" />
+    <ClCompile Include="..\Private\ClearEffect.cpp" />
     <ClCompile Include="..\Private\Coin.cpp" />
     <ClCompile Include="..\Private\CutScene_Curve.cpp" />
     <ClCompile Include="..\Private\Dead.cpp" />
@@ -393,6 +397,7 @@
     <ClCompile Include="..\Private\ExpBar.cpp" />
     <ClCompile Include="..\Private\EyeBomb.cpp" />
     <ClCompile Include="..\Private\FirePillar.cpp" />
+    <ClCompile Include="..\Private\GraphicSetting.cpp" />
     <ClCompile Include="..\Private\Guard.cpp" />
     <ClCompile Include="..\Private\GuardTower.cpp" />
     <ClCompile Include="..\Private\Hive.cpp" />
@@ -486,6 +491,7 @@
     <ClCompile Include="..\Private\Skill_Model.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Lake.cpp" />
+    <ClCompile Include="..\Private\SoundSetting.cpp" />
     <ClCompile Include="..\Private\Spider.cpp" />
     <ClCompile Include="..\Private\Statue.cpp" />
     <ClCompile Include="..\Private\SummonWindow.cpp" />

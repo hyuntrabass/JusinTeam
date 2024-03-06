@@ -430,9 +430,9 @@ void CBrickGame::Init_Game()
 	m_pCatBoss = (CBlackCat*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BlackCat"));
 	if (not m_pCatBoss)
 	{
-		MSG_BOX("BrickBall");
 		return;
 	}
+
 
 }
 
@@ -548,9 +548,10 @@ void CBrickGame::Free()
 	__super::Free();
 
 	Safe_Release(m_pCatBoss);
-	Safe_Release(m_pTimeBar);
 	Safe_Release(m_pBall);
 	Safe_Release(m_pBar);
+
+	Safe_Release(m_pTimeBar);
 	Safe_Release(m_pCombo);
 	Safe_Release(m_pBackGround);
 

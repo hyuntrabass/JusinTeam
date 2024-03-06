@@ -291,10 +291,12 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		//Info.pMatrix = &EffectMat;
 		//CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 	}
+	/*
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 	{
 		DestroyWindow(g_hWnd);
 	}
+	*/
 }
 
 HRESULT CLevel_GamePlay::Render()
@@ -830,10 +832,10 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Menu"))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Menu"))))
+	//{
+	//	return E_FAIL;
+	//}
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Radar"))))
 	{
 		return E_FAIL;
@@ -848,6 +850,7 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	{
 		return E_FAIL;
 	}
+
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_VehicleBook"))))
 	{
 		return E_FAIL;

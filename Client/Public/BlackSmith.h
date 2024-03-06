@@ -18,7 +18,7 @@ public:
 		WALK01,
 		ANIM_END
 	};
-	enum BLACKSMITH_STATE { TALK, QUEST_ING, ROSKVA_END };
+	enum BLACKSMITH_STATE { TALK, QUEST_ING, STATE_END };
 
 private:
 	CBlackSmith(_dev pDevice, _context pContext);

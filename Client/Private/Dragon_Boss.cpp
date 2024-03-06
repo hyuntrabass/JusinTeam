@@ -68,6 +68,7 @@ HRESULT CDragon_Boss::Init(void* pArg)
 
 	m_pTransformCom->Set_Scale(_vec3(m_fScale));
 
+	CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::ANGRBODA);
 	return S_OK;
 }
 

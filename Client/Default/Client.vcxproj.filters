@@ -541,8 +541,8 @@
     <Filter Include="02.GameObjects\18. Sun">
       <UniqueIdentifier>{3bb37758-e5fb-4873-a1a7-388a41d196ff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\17.InfiltrationGame\02. CheckPoint">
-      <UniqueIdentifier>{784bb20b-73fe-4723-8b7d-41c09f4918e9}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\00.UI\GameUI\Menu\Setting">
+      <UniqueIdentifier>{f31a0c8a-b3e0-477c-b865-efdbb6b7535f}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\17.InfiltrationGame\03. Door">
       <UniqueIdentifier>{2f4c9acd-96b4-4f87-9e5e-dc50108f56c9}</UniqueIdentifier>
@@ -1111,6 +1111,9 @@
     <ClInclude Include="..\Public\GuardTower.h">
       <Filter>02.GameObjects\17.InfiltrationGame\01. GuardTower</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Guard.h">
+      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
+    </ClInclude>
     <ClInclude Include="..\Public\Sun.h">
       <Filter>02.GameObjects\18. Sun</Filter>
     </ClInclude>
@@ -1118,11 +1121,23 @@
       <Filter>02.GameObjects\17.InfiltrationGame</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Guard.h" />
+    <ClInclude Include="..\Public\CheckPoint.h" />
     <ClInclude Include="..\Public\Buff_Card.h">
       <Filter>02.GameObjects\16.CescoGame</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Guard.h">
-      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
+    <ClInclude Include="..\Public\Door.h" />
+    <ClInclude Include="..\Public\Lever.h" />
+    <ClInclude Include="..\Public\GraphicSetting.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Menu\Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SoundSetting.h">
+      <Filter>02.GameObjects\00.UI\GameUI\Menu\Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BlackCat.h">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ClearEffect.h">
+      <Filter>02.GameObjects\00.UI\GameUI\UIEffect</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\BlackCat.h">
       <Filter>02.GameObjects\14.BrickGame</Filter>
@@ -1698,6 +1713,9 @@
     <ClCompile Include="..\Private\GuardTower.cpp">
       <Filter>02.GameObjects\17.InfiltrationGame\01. GuardTower</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Guard.cpp">
+      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
+    </ClCompile>
     <ClCompile Include="..\Private\RedAnt.cpp">
       <Filter>02.GameObjects\16.CescoGame\VTFMonster\RedAnt</Filter>
     </ClCompile>
@@ -1708,11 +1726,23 @@
       <Filter>02.GameObjects\17.InfiltrationGame</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Guard.cpp" />
+    <ClCompile Include="..\Private\CheckPoint.cpp" />
     <ClCompile Include="..\Private\Buff_Card.cpp">
       <Filter>02.GameObjects\16.CescoGame</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Guard.cpp">
-      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
+    <ClCompile Include="..\Private\Door.cpp" />
+    <ClCompile Include="..\Private\Lever.cpp" />
+    <ClCompile Include="..\Private\GraphicSetting.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Menu\Setting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SoundSetting.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\Menu\Setting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BlackCat.cpp">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ClearEffect.cpp">
+      <Filter>02.GameObjects\00.UI\GameUI\UIEffect</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\BlackCat.cpp">
       <Filter>02.GameObjects\14.BrickGame</Filter>
