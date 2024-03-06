@@ -597,6 +597,10 @@ void CPlayer::Tick(_float fTimeDelta)
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() == TS_MiniDungeon)
+	{
+		return;
+	}
 	if (m_pFrameEffect)
 	{
 		m_pFrameEffect->Late_Tick(fTimeDelta);
@@ -1534,6 +1538,11 @@ _bool CPlayer::Turn_Ray_Check(_bool bRight)
 
 void CPlayer::Health_Regen(_float fTImeDelta)
 {
+	if (m_eState == Die or m_eState == Revival_Start or m_eState == Revival_End)
+	{
+		return;
+	}
+
 	if (m_StartRegen > 5.f && m_Status.Max_Hp > m_Status.Current_Hp)
 	{
 		m_fHpRegenTime += fTImeDelta * (m_Status.HpRegenAmount);
@@ -1622,46 +1631,46 @@ void CPlayer::Move(_float fTimeDelta)
 			m_pTransformCom->LookAt_Dir(m_pCameraTransform->Get_State(State::Look));
 		}
 
-		if (m_pGameInstance->Key_Down(DIK_1))
-		{
-			if (m_eState != Skill1)
-			{
-				Ready_Skill(ST_Skill1); // 1번창에 있던 스킬 넣어주기
-				return;
-			}
-		}
+		//if (m_pGameInstance->Key_Down(DIK_1))
+		//{
+		//	if (m_eState != Skill1)
+		//	{
+		//		Ready_Skill(ST_Skill1); // 1번창에 있던 스킬 넣어주기
+		//		return;
+		//	}
+		//}
 
-		if (m_pGameInstance->Key_Down(DIK_2))
-		{
-			if (m_eState != Skill2)
-			{
-				Ready_Skill(ST_Skill2);
-				return;
-			}
-		}
-
-
-		if (m_pGameInstance->Key_Down(DIK_3))
-		{
-			if (m_eState != Skill3)
-			{
-				Ready_Skill(ST_Skill3);
-				return;
-			}
-		}
-
-		if (m_pGameInstance->Key_Down(DIK_4))
-		{
-			if (m_eState != Skill4)
-			{
-				Ready_Skill(ST_Skill4);
-				return;
-			}
-
-		}
+		//if (m_pGameInstance->Key_Down(DIK_2))
+		//{
+		//	if (m_eState != Skill2)
+		//	{
+		//		Ready_Skill(ST_Skill2);
+		//		return;
+		//	}
+		//}
 
 
-		/*CSkillBlock::SKILLSLOT eSlotIdx{};
+		//if (m_pGameInstance->Key_Down(DIK_3))
+		//{
+		//	if (m_eState != Skill3)
+		//	{
+		//		Ready_Skill(ST_Skill3);
+		//		return;
+		//	}
+		//}
+
+		//if (m_pGameInstance->Key_Down(DIK_4))
+		//{
+		//	if (m_eState != Skill4)
+		//	{
+		//		Ready_Skill(ST_Skill4);
+		//		return;
+		//	}
+
+		//}
+
+
+		CSkillBlock::SKILLSLOT eSlotIdx{};
 		_bool isPress = false;
 		if (m_pGameInstance->Key_Down(DIK_1))
 		{
@@ -1683,7 +1692,7 @@ void CPlayer::Move(_float fTimeDelta)
 			eSlotIdx = CSkillBlock::SKILL4;
 			isPress = true;
 		}
-		if (isPress && m_fSkiilTimer > 1.2f)
+		if (isPress)
 		{
 			_int iSkillNum = 0;
 			_int iMp = 0;
@@ -1695,7 +1704,7 @@ void CPlayer::Move(_float fTimeDelta)
 				return;
 			}
 
-		}*/
+		}
 
 		if (m_pGameInstance->Key_Down(DIK_5))
 		{

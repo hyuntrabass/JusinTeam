@@ -209,20 +209,11 @@ void CWasp::Tick_State(_float fTimeDelta)
 		_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
 		m_pTransformCom->LookAt(vPlayerPos);
 
-		if (static_cast<_uint>(floorf(m_fAttackDelay)) % 2 == 0)
-		{
-			m_pTransformCom->Go_To_Dir(_vec4(0.f, 1.f, 0.f, 0.f), fTimeDelta);
-		}
-		else
-		{
-			m_pTransformCom->Go_To_Dir(_vec4(0.f, -1.f, 0.f, 0.f), fTimeDelta);
-		}
-
 		if (m_HasAttacked)
 		{
 			m_fAttackDelay += fTimeDelta;
 
-			if (m_fAttackDelay >= 1.f)
+			if (m_fAttackDelay >= 3.f)
 			{
 				m_eState = State_Attack;
 				m_HasAttacked = false;
