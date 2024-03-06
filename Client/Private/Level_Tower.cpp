@@ -70,10 +70,12 @@ HRESULT CLevel_Tower::Init()
 void CLevel_Tower::Tick(_float fTimeDelta)
 {
 	//m_pGameInstance->PhysXTick(fTimeDelta);
+	
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 	{
 		DestroyWindow(g_hWnd);
 	}
+	
 
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
 	{
@@ -85,7 +87,7 @@ void CLevel_Tower::Tick(_float fTimeDelta)
 		CTrigger_Manager::Get_Instance()->Teleport(TS_DragonMap);
 		return;
 	}
-	if (m_pGameInstance->Key_Down(DIK_NUMPAD5))
+	if (m_pGameInstance->Key_Down(DIK_0))
 	{
 		CTrigger_Manager::Get_Instance()->Teleport(TS_BossRoom);
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_HumanBoss"), TEXT("Prototype_GameObject_Human_Boss"))))

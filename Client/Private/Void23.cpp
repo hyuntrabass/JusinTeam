@@ -564,7 +564,7 @@ void CVoid23::Tick_State(_float fTimeDelta)
 					{
 						_uint iDamage = 500 + rand() % 50;
 						//m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_KnockDown);
-						m_pGameInstance->Attack_Player(m_pFloorCollider, iDamage, MonAtt_Stun);
+						m_pGameInstance->Attack_Player(m_pFloorCollider, iDamage, MonAtt_Shock);
 						m_bAttacked = true;
 					}
 				}

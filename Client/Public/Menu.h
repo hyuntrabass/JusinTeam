@@ -2,14 +2,15 @@
 #include "Client_Define.h"
 #include "OrthographicObject.h"
 #include "Wearable_Slot.h"
+#include "GraphicSetting.h"
+#include "SoundSetting.h"
 
 BEGIN(Client)
-class CWearable_Slot;
 class CMenu final : public COrthographicObject
 {
 public:
 	enum MENU { ENV, MENU_END };
-	enum ENV_SLOT { SOUND, GRAPHIC, ENV_END };
+	enum ENV_SLOT {GRAPHIC, SOUND,ENV_END };
 
 private:
 	CMenu(_dev pDevice, _context pContext);
@@ -30,6 +31,9 @@ private:
 	CTexture* m_pTextureCom{ nullptr };
 
 private:
+	ENV_SLOT									m_eCurSlot{};
+	ENV_SLOT									m_ePrevSlot{};
+
 	_bool										m_Clicked{ false };
 	_bool										m_isReadytoDeactivate{ false };
 	_bool										m_isReadytoActivate{ false };
@@ -42,11 +46,19 @@ private:
 	CGameObject*								m_pSetting{ nullptr };
 	CGameObject*								m_pUnderBar{ nullptr };
 	CGameObject*								m_pSelectButton{ nullptr };
+	class CTextButtonColor*						m_pGameEndButton{nullptr};
 	CGameObject*								m_pMenu[MENU_END]{};
-	class CTextButtonColor*						m_pSlots[ENV_END]{};
+	CTextButtonColor*							m_pSlots[ENV_END]{};
+	class CGraphicSetting*						m_pGraphicSettings[CGraphicSetting::LIST_END]{};
+	class CSoundSetting*						m_pSoundSettings[CSoundSetting::LIST_END]{};
 
 
 public:
+
+private:
+	void Init_State();
+	void Tick_GraphicSlot(_float fTimeDelta);
+	void Tick_SoundSlot(_float fTimeDelta);
 
 private:
 	HRESULT Add_Parts();

@@ -91,7 +91,6 @@ private:
 	class CEffect_Dummy* m_pFrameEffect{ nullptr };
 
 private:
-	_uint m_iPassIndex{};
 	_float m_fDeadTime{ 0.f };
 	_float m_fDissolveRatio{ 0.f };
 	_float m_fIdleTime{ 0.f };
@@ -118,6 +117,11 @@ private:
 
 	_vec4 m_vTurnAngle{};
 
+	static _int m_iLightID;
+	wstring m_strLightTag{};
+
+
+	_bool m_isPrototype = false;
 private:
 	ANIM_DESC m_Animation{};
 

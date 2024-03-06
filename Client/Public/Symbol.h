@@ -7,7 +7,7 @@ BEGIN(Client)
 class CSymbol final : public COrthographicObject
 {
 public:
-	enum TYPE { VILLAGE, FIELDEAST, FIELDSOUTH, GROAR, TYPE_END };
+	enum TYPE { VILLAGE, FIELDEAST, FIELDSOUTH, GROAR, ANGRBODA, DRAGON, TYPE_END };
 	typedef struct tagFadeDesc
 	{
 		TYPE eType;

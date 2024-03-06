@@ -3,6 +3,9 @@
 #include "Effect_Dummy.h"
 #include "Trigger_Manager.h"
 
+_int CGuardTower::m_iLightID = {};
+
+
 CGuardTower::CGuardTower(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -57,8 +60,8 @@ HRESULT CGuardTower::Init(void* pArg)
 	m_eCurState = STATE_IDLE;
 
 	PxCapsuleControllerDesc ControllerDesc{};
-	ControllerDesc.height = 1.2f; // 높이(위 아래의 반구 크기 제외
-	ControllerDesc.radius = 0.4f; // 위아래 반구의 반지름
+	ControllerDesc.height = 2.f; // 높이(위 아래의 반구 크기 제외
+	ControllerDesc.radius = 0.8f; // 위아래 반구의 반지름
 	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
 	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
 	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
@@ -68,11 +71,43 @@ HRESULT CGuardTower::Init(void* pArg)
 
 	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 
+
+	LIGHT_DESC LightDesc{};
+	LightDesc.eType = LIGHT_DESC::TYPE::Point;
+	LightDesc.vSpecular = _vec4(1.f);
+	LightDesc.vDiffuse = _vec4(0.5f);
+	LightDesc.vAmbient = _vec4(0.1f);
+	LightDesc.vPosition = m_pTransformCom->Get_State(State::Pos) + _vec4(0.f, 1.5f, 0.f, 0.f);
+	LightDesc.vAttenuation = LIGHT_RANGE_50;
+
+	m_strLightTag = L"Light_GuardTower_" + to_wstring(m_iLightID++);
+	if (FAILED(m_pGameInstance->Add_Light(LEVEL_TOWER, m_strLightTag, LightDesc)))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
 void CGuardTower::Tick(_float fTimeDelta)
 {
+	if (true == m_isTurnOff) {
+		if (true == m_LightTurnOff)
+			return;
+		if (0.f >= m_fEffectScale) {
+			m_pGameInstance->Delete_Light(LEVEL_TOWER, m_strLightTag);
+			m_LightTurnOff = true;
+			return;
+		}
+		m_fEffectScale -= fTimeDelta * 5.f;
+		LIGHT_DESC* Desc = m_pGameInstance->Get_LightDesc(LEVEL_TOWER, m_strLightTag);
+		Desc->vDiffuse -= _vec3(fTimeDelta * 0.1f);
+		Desc->vSpecular -= _vec3(fTimeDelta * 0.1f);
+		Desc->vAmbient -= _vec3(fTimeDelta * 0.1f);
+		Desc->vAttenuation -= _vec4(fTimeDelta * 0.1f, 0.f, 0.f, 0.f);
+	}
+
+
 	if (m_bAttacked == true)
 	{
 		m_fAttackDelay += fTimeDelta;
@@ -94,7 +129,7 @@ void CGuardTower::Tick(_float fTimeDelta)
 		if (m_pThreatEffect)
 			m_pThreatEffect->Tick(fTimeDelta);
 	}
-	if(m_eCurState == STATE_ATTACK)
+	if (m_eCurState == STATE_ATTACK)
 	{
 		if (m_pAttackEffect)
 			m_pAttackEffect->Tick(fTimeDelta);
@@ -116,14 +151,13 @@ void CGuardTower::Tick(_float fTimeDelta)
 		Tick_State_Pattern_3(fTimeDelta);
 	}
 
+
 	m_pModelCom->Set_Animation(m_Animation);
 	Update_Collider();
 }
 
 void CGuardTower::Late_Tick(_float fTimeDelta)
 {
-	m_fAnimTime += fTimeDelta;
-
 	m_pModelCom->Play_Animation(fTimeDelta);
 
 	if (m_eCurState == STATE_DETECT)
@@ -145,14 +179,12 @@ void CGuardTower::Late_Tick(_float fTimeDelta)
 		if (m_pAttackEffect)
 			m_pAttackEffect->Late_Tick(fTimeDelta);
 	}
+
 	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos()))
 	{
 		m_pRendererCom->Add_RenderGroup(RG_AnimNonBlend_Instance, this);
 		m_pModelCom->Set_DissolveRatio(m_fDissolveRatio);
-
 	}
-
-		m_pModelCom->Play_Animation(m_fAnimTime);
 
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pBodyColliderCom);
@@ -164,52 +196,52 @@ void CGuardTower::Late_Tick(_float fTimeDelta)
 
 HRESULT CGuardTower::Render()
 {
-	if (FAILED(Bind_ShaderResources()))
-		return E_FAIL;
+	//if (FAILED(Bind_ShaderResources()))
+	//	return E_FAIL;
 
-	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); ++i) {
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-			return E_FAIL;
+	//for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); ++i) {
+	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+	//		return E_FAIL;
 
-		_bool HasNorTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-		{
-			HasNorTex = false;
-		}
-		else
-		{
-			HasNorTex = true;
-		}
+	//	_bool HasNorTex{};
+	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+	//	{
+	//		HasNorTex = false;
+	//	}
+	//	else
+	//	{
+	//		HasNorTex = true;
+	//	}
 
-		_bool HasMaskTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
-		{
-			HasMaskTex = false;
-		}
-		else
-		{
-			HasMaskTex = true;
-		}
+	//	_bool HasMaskTex{};
+	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
+	//	{
+	//		HasMaskTex = false;
+	//	}
+	//	else
+	//	{
+	//		HasMaskTex = true;
+	//	}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
+	//	if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+	//	{
+	//		return E_FAIL;
+	//	}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
+	//	if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
+	//	{
+	//		return E_FAIL;
+	//	}
 
-		//if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-		//	return E_FAIL;
+	//	//if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+	//	//	return E_FAIL;
 
-		if (FAILED(m_pShaderCom->Begin(m_iPassIndex)))
-			return E_FAIL;
+	//	if (FAILED(m_pShaderCom->Begin(m_iPassIndex)))
+	//		return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(i)))
-			return E_FAIL;
-	}
+	//	if (FAILED(m_pModelCom->Render(i)))
+	//		return E_FAIL;
+	//}
 
 	//if (!m_bChangePass && m_iHP > 0)
 	//{
@@ -313,7 +345,7 @@ void CGuardTower::Tick_State_Pattern_1(_float fTimeDelta)
 
 		if (m_isDetected == true)
 		{
-				m_eCurState = STATE_ATTACK_READY;
+			m_eCurState = STATE_ATTACK_READY;
 		}
 
 		break;
@@ -323,7 +355,7 @@ void CGuardTower::Tick_State_Pattern_1(_float fTimeDelta)
 		m_fAttackTime += fTimeDelta;
 
 		if (m_isDetected == false)
-		{	
+		{
 			m_eCurState = STATE_IDLE;
 			m_fAttackTime = 0.f;
 
@@ -345,13 +377,13 @@ void CGuardTower::Tick_State_Pattern_1(_float fTimeDelta)
 	case Client::CGuardTower::STATE_ATTACK:
 
 		m_fAttackTime += fTimeDelta;
-		
+
 		if (m_bAttacked == false)
 		{
-			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 			m_bAttacked = true;
 		}
-		
+
 		if (m_fAttackTime > 1.f)
 		{
 			if (m_isDetected == false)
@@ -379,9 +411,9 @@ void CGuardTower::View_Detect_Range_Pattern_1(_float fTimeDelta)
 {
 	_float fRadian = fTimeDelta;
 	_float fDistance = 11.5f;
-	m_EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRadian)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(0.f, 0.1f, 0.f);
+	m_EffectMatrix = _mat::CreateScale(m_fEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRadian)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(0.f, 0.1f, 0.f);
 	m_LazerMatrix = _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(0.f, 3.f, 0.f);
-	
+
 	_vec4 vTowerLook = m_EffectMatrix.Up().Get_Normalized();
 	//_vec4 vLazerLook = Compute_Player_To_Dir(m_LazerMatrix.Position()).Get_Normalized();
 
@@ -392,17 +424,14 @@ void CGuardTower::View_Detect_Range_Pattern_1(_float fTimeDelta)
 
 	PxRaycastBuffer pBuffer{};
 
-		if (fDetectRadian < 22.5f && Compute_PlayerDistance() <= fDistance)
+	if (fDetectRadian < 22.5f && Compute_PlayerDistance() <= fDistance)
+	{
+		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), Compute_Player_To_Dir(m_pTransformCom->Get_CenterPos()), 100.f, pBuffer))
 		{
-			if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), Compute_Player_To_Dir(m_pTransformCom->Get_CenterPos()), 100.f, pBuffer))
+			if (pBuffer.block.distance > Compute_PlayerDistance())
 			{
-				if (pBuffer.block.distance > Compute_PlayerDistance())
-				{
-					if (CUI_Manager::Get_Instance()->Get_Hp().x > 0)
-						m_isDetected = true;
-					else
-						m_isDetected = false;
-				}
+				if (CUI_Manager::Get_Instance()->Get_Hp().x > 0)
+					m_isDetected = true;
 				else
 					m_isDetected = false;
 			}
@@ -410,10 +439,13 @@ void CGuardTower::View_Detect_Range_Pattern_1(_float fTimeDelta)
 				m_isDetected = false;
 		}
 		else
-		{
 			m_isDetected = false;
-		}
-	
+	}
+	else
+	{
+		m_isDetected = false;
+	}
+
 	if (fRadian >= 360.f)
 	{
 		m_bInit = true;
@@ -499,7 +531,7 @@ void CGuardTower::Tick_State_Pattern_2(_float fTimeDelta)
 
 		if (m_bAttacked == false)
 		{
-			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 			m_bAttacked = true;
 		}
 
@@ -551,7 +583,7 @@ void CGuardTower::View_Detect_Range_Pattern_2(EFFECT_DIR eDir)
 	_float fDistance = 11.5f;
 
 
-	m_EffectMatrix = _mat::CreateScale(30.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRadian)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(0.f, 0.1f, 0.f);
+	m_EffectMatrix = _mat::CreateScale(m_fEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * _mat::CreateRotationY(XMConvertToRadians(fRadian)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(0.f, 0.1f, 0.f);
 	m_LazerMatrix = _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(0.f, 3.f, 0.f);
 
 	_vec4 vTowerLook = m_EffectMatrix.Up().Get_Normalized();
@@ -661,7 +693,7 @@ void CGuardTower::Tick_State_Pattern_3(_float fTimeDelta)
 
 		if (m_bAttacked == false)
 		{
-			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 			m_bAttacked = true;
 		}
 
@@ -692,7 +724,7 @@ void CGuardTower::View_Detect_Range_Pattern_3()
 {
 	_float fRadian{};
 
-	m_EffectMatrix = _mat::CreateScale(20.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(0.f, 0.1f, 0.f);
+	m_EffectMatrix = _mat::CreateScale(m_fEffectScale) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(0.f, 0.1f, 0.f);
 	m_LazerMatrix = _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(0.f, 3.f, 0.f);
 
 	_vec4 vTowerLook = m_EffectMatrix.Up().Get_Normalized();
@@ -764,9 +796,9 @@ _vec4 CGuardTower::Compute_Player_To_Dir(_vec4 vPos)
 void CGuardTower::Compute_Lazer_Dir()
 {
 	_vec3 m_vLazerDir{};
-	if(m_eCurState == STATE_ATTACK_READY)
+	if (m_eCurState == STATE_ATTACK_READY)
 		m_vLazerDir = (Compute_PlayerPos() - m_LazerMatrix.Position()).Get_Normalized();
-	else if(m_eCurState == STATE_ATTACK)
+	else if (m_eCurState == STATE_ATTACK)
 		m_vLazerDir = (m_vCurPlayerPos - m_LazerMatrix.Position()).Get_Normalized();
 
 
@@ -798,6 +830,8 @@ void CGuardTower::Create_Range_Pattern_1()
 		Info.isFollow = true;
 		m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 	}
+
+	m_fEffectScale = 30.f;
 }
 
 void CGuardTower::Create_Range_Pattern_2()
@@ -817,6 +851,7 @@ void CGuardTower::Create_Range_Pattern_2()
 		Info.isFollow = true;
 		m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 	}
+	m_fEffectScale = 30.f;
 }
 
 void CGuardTower::Create_Range_Pattern_3()
@@ -836,6 +871,7 @@ void CGuardTower::Create_Range_Pattern_3()
 		Info.isFollow = true;
 		m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 	}
+	m_fEffectScale = 20.f;
 }
 
 void CGuardTower::Create_Lazer()
@@ -1012,8 +1048,10 @@ CGameObject* CGuardTower::Clone(void* pArg)
 
 void CGuardTower::Free()
 {
-	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
-
+	if (false == m_isPrototype) {
+		CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
+		m_pGameInstance->Delete_Light(LEVEL_TOWER, m_strLightTag);
+	}
 	__super::Free();
 
 	Safe_Release(m_pRendererCom);

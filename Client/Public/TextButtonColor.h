@@ -101,6 +101,7 @@ public:
 	void Set_Sprite(_int2 vNumSprite) { m_vNumSprite = vNumSprite; }
 	void Rotate_Button(_vec4 vAxis, _float fAngle);
 	void Set_ChangeTex(_bool bChangeTex) { m_bChangeTex = bChangeTex; }
+	void Set_TextColor(_vec4 vColor) { m_vTextColor = vColor; }
 
 public:
 	static CTextButtonColor* Create(_dev pDevice, _context pContext);

@@ -447,11 +447,11 @@ HRESULT CMonster::Bind_ShaderResources()
 
 void CMonster::Free()
 {
-	__super::Free();
 	if (!m_isPrototype)
 	{
 		CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 	}
+	__super::Free();
 
 
 

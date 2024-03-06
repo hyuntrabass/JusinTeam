@@ -80,8 +80,7 @@ void CWasp::Tick(_float fTimeDelta)
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 	__super::Tick(fTimeDelta);
-	m_pAttack_Trail->On();
-	m_pAttack_Distortion_Trail->On();
+
 	Update_Trail();
 	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 	m_pAttackColliderCom->Update(m_pTransformCom->Get_World_Matrix());
@@ -210,20 +209,11 @@ void CWasp::Tick_State(_float fTimeDelta)
 		_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
 		m_pTransformCom->LookAt(vPlayerPos);
 
-		if (static_cast<_uint>(floorf(m_fAttackDelay)) % 2 == 0)
-		{
-			m_pTransformCom->Go_To_Dir(_vec4(0.f, 1.f, 0.f, 0.f), fTimeDelta);
-		}
-		else
-		{
-			m_pTransformCom->Go_To_Dir(_vec4(0.f, -1.f, 0.f, 0.f), fTimeDelta);
-		}
-
 		if (m_HasAttacked)
 		{
 			m_fAttackDelay += fTimeDelta;
 
-			if (m_fAttackDelay >= 1.f)
+			if (m_fAttackDelay >= 3.f)
 			{
 				m_eState = State_Attack;
 				m_HasAttacked = false;
@@ -236,7 +226,8 @@ void CWasp::Tick_State(_float fTimeDelta)
 	case Client::CWasp::State_Attack:
 	{
 		m_pTransformCom->Go_Straight(fTimeDelta);
-
+		m_pAttack_Trail->On();
+		m_pAttack_Distortion_Trail->On();
 		PxRaycastBuffer Buffer{};
 		_vec3 vDir = m_pTransformCom->Get_State(State::Look).Get_Normalized();
 		if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), vDir, 1.5f, Buffer))

@@ -2,6 +2,7 @@
 #include "UI_Manager.h"
 #include "Effect_Dummy.h"
 
+_int CGuard::m_iLightID = {};
 
 CGuard::CGuard(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -15,6 +16,8 @@ CGuard::CGuard(const CGuard& rhs)
 
 HRESULT CGuard::Init_Prototype()
 {
+	m_isPrototype = true;
+
 	return S_OK;
 }
 
@@ -57,6 +60,20 @@ HRESULT CGuard::Init(void* pArg)
 	Create_Range();
 
 
+	LIGHT_DESC LightDesc{};
+	LightDesc.eType = LIGHT_DESC::TYPE::Point;
+	LightDesc.vSpecular = _vec4(1.f);
+	LightDesc.vDiffuse = _vec4(0.25f);
+	LightDesc.vAmbient = _vec4(0.05f);
+	LightDesc.vPosition = m_pTransformCom->Get_CenterPos();
+	LightDesc.vAttenuation = LIGHT_RANGE_32;
+
+	m_strLightTag = L"Light_Guard_" + to_wstring(m_iLightID++);
+	if (FAILED(m_pGameInstance->Add_Light(LEVEL_TOWER, m_strLightTag, LightDesc)))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -89,11 +106,6 @@ void CGuard::Tick(_float fTimeDelta)
 		}
 	}
 
-	//if (0 >= m_iHP || 0.01f < m_fDeadTime || true == m_isDead) {
-	//	m_pGameInstance->Delete_CollisionObject(this);
-	//	m_pTransformCom->Delete_Controller();
-	//}
-
 	Init_State(fTimeDelta);
 	if(m_ePattern == PATTERN_1)
 		Tick_State_Pattern1(fTimeDelta);
@@ -101,10 +113,15 @@ void CGuard::Tick(_float fTimeDelta)
 		Tick_State_Pattern2(fTimeDelta);
 	else
 		Tick_State_Pattern3(fTimeDelta);
+
 	m_pModelCom->Set_Animation(m_Animation);
 
 	m_pTransformCom->Gravity(fTimeDelta);
 	Update_Collider();
+
+	LIGHT_DESC* Desc = m_pGameInstance->Get_LightDesc(LEVEL_TOWER, m_strLightTag);
+	Desc->vPosition = m_pTransformCom->Get_CenterPos();
+
 
 }
 
@@ -132,67 +149,66 @@ void CGuard::Late_Tick(_float fTimeDelta)
 
 HRESULT CGuard::Render()
 {
-	if (FAILED(Bind_ShaderResources()))
-		return E_FAIL;
+	//if (FAILED(Bind_ShaderResources()))
+	//	return E_FAIL;
 
-	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); ++i) {
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-			return E_FAIL;
+	//for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); ++i) {
+	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+	//		return E_FAIL;
 
-		_bool HasNorTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-		{
-			HasNorTex = false;
-		}
-		else
-		{
-			HasNorTex = true;
-		}
+	//	_bool HasNorTex{};
+	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+	//	{
+	//		HasNorTex = false;
+	//	}
+	//	else
+	//	{
+	//		HasNorTex = true;
+	//	}
 
-		_bool HasMaskTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
-		{
-			HasMaskTex = false;
-		}
-		else
-		{
-			HasMaskTex = true;
-		}
+	//	_bool HasMaskTex{};
+	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
+	//	{
+	//		HasMaskTex = false;
+	//	}
+	//	else
+	//	{
+	//		HasMaskTex = true;
+	//	}
 
-		_bool HasGlowTex{};
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_GlowTexture", i, TextureType::Specular)))
-		{
-			HasGlowTex = false;
-		}
-		else
-		{
-			HasGlowTex = true;
-		}
+	//	_bool HasGlowTex{};
+	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_GlowTexture", i, TextureType::Specular)))
+	//	{
+	//		HasGlowTex = false;
+	//	}
+	//	else
+	//	{
+	//		HasGlowTex = true;
+	//	}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
+	//	if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
+	//	{
+	//		return E_FAIL;
+	//	}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
+	//	if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
+	//	{
+	//		return E_FAIL;
+	//	}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasGlowTex", &HasGlowTex, sizeof _bool)))
-		{
-			return E_FAIL;
-		}
+	//	if (FAILED(m_pShaderCom->Bind_RawValue("g_HasGlowTex", &HasGlowTex, sizeof _bool)))
+	//	{
+	//		return E_FAIL;
+	//	}
 
-		//if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-		//	return E_FAIL;
+	//	//if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+	//	//	return E_FAIL;
 
-		if (FAILED(m_pShaderCom->Begin(m_iPassIndex)))
-			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(i)))
-			return E_FAIL;
-	}
+
+	//	if (FAILED(m_pModelCom->Render(i)))
+	//		return E_FAIL;
+	//}
 	//if (!m_bChangePass && m_iHP > 0)
 	//{
 	//	m_iPassIndex = AnimPass_Default;
@@ -299,10 +315,8 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 
 	_float Degree{};
 
-	if(m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look), 2.f, pBuffer))
-	{
-		m_eCurState = STATE_BACK;
-	}
+	_vec3 vGotoOriginPos = (m_OriginMatrix.Position() - vMyPosition).Get_Normalized();
+
 	switch (m_eCurState)
 	{
 
@@ -356,7 +370,8 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 			m_eCurState = STATE_CHASE;
 
 		Degree = XMConvertToDegrees(acosf(m_vTurnAngle.Dot(vLook)));
-		if (1.f >= Degree) {
+		if (3.f >= Degree) {
+			m_vTurnAngle.y = 0.f;
 			m_pTransformCom->LookAt_Dir(m_vTurnAngle);
 			m_eCurState = STATE_IDLE;
 		}
@@ -382,7 +397,8 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 
 				m_fAttackTime = 0.f;
 			}
-			m_pTransformCom->LookAt(vTargetPos);
+			vNormalToPlayer.y = 0.f;
+			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
 
 		}
 		else
@@ -400,7 +416,7 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 			{
 				if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 					m_bAttacked = true;
 				}
 			}
@@ -419,7 +435,7 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f )
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 				m_bAttacked = true;
 			}
 		}
@@ -437,7 +453,8 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 	case STATE_BACK:
 		m_pTransformCom->Set_Speed(5.f);
 
-		m_pTransformCom->LookAt(m_OriginMatrix.Position());
+		vGotoOriginPos.y = 0.f;
+		m_pTransformCom->LookAt_Dir(vGotoOriginPos);
 
 		isBack = m_pTransformCom->Go_To(m_OriginMatrix.Position(), fTimeDelta * 2.f);
 		
@@ -494,6 +511,9 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 	_int iRandomAttack = iAttackInt(m_iRandomAttack);
 
 	_float Degree{};
+
+	_vec3 vGotoOriginPos = (m_OriginMatrix.Position() - vMyPosition).Get_Normalized();
+
 	switch (m_eCurState)
 	{
 
@@ -547,7 +567,8 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 			m_eCurState = STATE_CHASE;
 
 		Degree = XMConvertToDegrees(acosf(m_vTurnAngle.Dot(vLook)));
-		if (1.f >= Degree) {
+		if (3.f >= Degree) {
+			m_vTurnAngle.y = 0.f;
 			m_pTransformCom->LookAt_Dir(m_vTurnAngle);
 			m_eCurState = STATE_IDLE;
 		}
@@ -575,7 +596,7 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 				m_fAttackTime = 0.f;
 			}
 			vNormalToPlayer.y = 0.f;
-			m_pTransformCom->LookAt(vTargetPos);
+			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
 
 		}
 		else
@@ -593,7 +614,7 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 				m_bAttacked = true;
 			}
 		}
@@ -612,7 +633,7 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 				m_bAttacked = true;
 			}
 		}
@@ -630,7 +651,8 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 	case STATE_BACK:
 		m_pTransformCom->Set_Speed(5.f);
 
-		m_pTransformCom->LookAt(m_OriginMatrix.Position());
+		vGotoOriginPos.y = 0.f;
+		m_pTransformCom->LookAt_Dir(vGotoOriginPos);
 
 		isBack = m_pTransformCom->Go_To(m_OriginMatrix.Position(), fTimeDelta * 2.f);
 
@@ -650,7 +672,7 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 			if (m_fDissolveRatio < 1.f)
 			{
 				m_fDissolveRatio += fTimeDelta;
-				m_iPassIndex = AnimPass_Dissolve;
+				m_pShaderCom->Set_PassIndex(VTF_InstPass_Dissolve);
 			}
 			else
 			{
@@ -685,6 +707,9 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 	_randInt iAttackInt(0, 1);
 	_int iRandomAttack = iAttackInt(m_iRandomAttack);
 
+	_vec3 vGotoOriginPos = (m_OriginMatrix.Position() - vMyPosition).Get_Normalized();
+
+
 	if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look), 2.f, pBuffer))
 	{
 		m_eCurState = STATE_BACK;
@@ -716,11 +741,13 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 
 				m_fAttackTime = 0.f;
 			}
-			m_pTransformCom->LookAt(vTargetPos);
+			vNormalToPlayer.y = 0.f;
+			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
 
 		}
 		else
 		{
+			vNormalToPlayer.y = 0.f;
 			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
@@ -734,7 +761,7 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 				m_bAttacked = true;
 			}
 		}
@@ -753,7 +780,7 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 				m_bAttacked = true;
 			}
 		}
@@ -771,7 +798,8 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 	case STATE_BACK:
 		m_pTransformCom->Set_Speed(5.f);
 
-		m_pTransformCom->LookAt(m_OriginMatrix.Position());
+		vGotoOriginPos.y = 0.f;
+		m_pTransformCom->LookAt_Dir(vGotoOriginPos);
 
 		isBack = m_pTransformCom->Go_To(m_OriginMatrix.Position(), fTimeDelta * 2.f);
 
@@ -791,7 +819,7 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 			if (m_fDissolveRatio < 1.f)
 			{
 				m_fDissolveRatio += fTimeDelta;
-				m_iPassIndex = AnimPass_Dissolve;
+				m_pShaderCom->Set_PassIndex(VTF_InstPass_Dissolve);
 			}
 			else
 			{
@@ -1040,7 +1068,10 @@ CGameObject* CGuard::Clone(void* pArg)
 
 void CGuard::Free()
 {
-	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
+	if (false == m_isPrototype) {
+		m_pGameInstance->Delete_Light(LEVEL_TOWER, m_strLightTag);
+		CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
+	}
 	__super::Free();
 
 	Safe_Release(m_pShaderCom);

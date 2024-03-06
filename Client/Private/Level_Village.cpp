@@ -56,11 +56,11 @@ HRESULT CLevel_Village::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_DragonMap_Effect()))
-	{
-		MSG_BOX("Failed to Ready DragonMap Effect");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_DragonMap_Effect()))
+	//{
+	//	MSG_BOX("Failed to Ready DragonMap Effect");
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(Ready_Interaction()))
 	{
@@ -105,6 +105,11 @@ HRESULT CLevel_Village::Init()
 	if (FAILED(Ready_Water()))
 	{
 		MSG_BOX("Failed to Ready Water");
+		return E_FAIL;
+	}
+	if (FAILED(Ready_Pond()))
+	{
+		MSG_BOX("Failed to Ready Pond");
 		return E_FAIL;
 	}
 
@@ -173,11 +178,12 @@ void CLevel_Village::Tick(_float fTimeDelta)
 		CTrigger_Manager::Get_Instance()->Teleport(TS_Village);
 		return;
 	}
-
+	/*
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 	{
 		DestroyWindow(g_hWnd);
 	}
+	*/
 
 	if (m_pGameInstance->Is_Level_ShutDown(LEVEL_VILLAGE) or m_pGameInstance->Key_Down(DIK_NUMPAD9) or m_pGameInstance->Key_Down(DIK_PRIOR))
 	{
@@ -451,62 +457,6 @@ HRESULT CLevel_Village::Ready_Statue()
 }
 
 
-HRESULT CLevel_Village::Ready_Guard()
-{
-	GuardInfo Info{};
-	const TCHAR* pGetPath = L"../Bin/Data/MiniDungeon_NPCData.dat";
-
-	//Info.iIndex = 0;
-	//Info.mMatrix;
-	//Info.PatrolPoint;
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Guard"), &Info)))
-	{
-		MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
-		return E_FAIL;
-	}
-
-	//const TCHAR* pGetPath = L"../Bin/Data/MiniDungeon_NPCData.dat";
-
-	//std::ifstream inFile(pGetPath, std::ios::binary);
-
-	//if (!inFile.is_open())
-	//{
-	//	MessageBox(g_hWnd, L"MiniDungeon_NPCData 파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
-	//	return E_FAIL;
-	//}
-
-	//_uint MonsterListSize;
-	//inFile.read(reinterpret_cast<char*>(&MonsterListSize), sizeof(_uint));
-
-
-	//for (_uint i = 0; i < MonsterListSize; ++i)
-	//{
-	//	_ulong MonsterPrototypeSize;
-	//	inFile.read(reinterpret_cast<char*>(&MonsterPrototypeSize), sizeof(_ulong));
-
-	//	wstring MonsterPrototype;
-	//	MonsterPrototype.resize(MonsterPrototypeSize);
-	//	inFile.read(reinterpret_cast<char*>(&MonsterPrototype[0]), MonsterPrototypeSize * sizeof(wchar_t));
-
-	//	_mat MonsterWorldMat;
-	//	inFile.read(reinterpret_cast<char*>(&MonsterWorldMat), sizeof(_mat));
-
-	//	Info.mMatrix = MonsterWorldMat;
-	//	Info.iIndex = i;
-
-	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Guard"), &Info)))
-	//	{
-	//		MessageBox(g_hWnd, L"파일 로드 실패", L"파일 로드", MB_OK);
-	//		return E_FAIL;
-	//	}
-
-	//}
-	//inFile.close();
-	return S_OK;
-}
-
-
 HRESULT CLevel_Village::Ready_Dungeon_Monster()
 {
 	MonsterInfo Info{};
@@ -737,90 +687,32 @@ HRESULT CLevel_Village::Ready_NPC_Dummy()
 	return S_OK;
 }
 
-HRESULT CLevel_Village::Ready_SescoGame()
+
+HRESULT CLevel_Village::Ready_Trigger()
 {
-	/*for (_uint i = 0; i < 100; i++)
-	{
-		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Void19");
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
-			return E_FAIL;
-	}
-	for (_uint i = 0; i < 100; i++)
-	{
-		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Muspelheim06");
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
-			return E_FAIL;
-	}
-	for (_uint i = 0; i < 100; i++)
-	{
-		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Niflheim09");
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
-			return E_FAIL;
-	}
-	for (_uint i = 0; i < 100; i++)
-	{
-		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Redant");
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
-			return E_FAIL;
-	}
-	for (_uint i = 0; i < 100; i++)
-	{
-		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Scorpion");
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
-			return E_FAIL;
-	}
-	for (_uint i = 0; i < 100; i++)
-	{
-		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Trilobites");
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
-			return E_FAIL;
-	}
-	for (_uint i = 0; i < 100; i++)
-	{
-		CVTFMonster::VTFMONSTER_DESC VTFMonsterDesc{};
-		VTFMonsterDesc.strModelTag = TEXT("Prototype_Model_VTFMonster_Trilobites_A");
-
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SescoGameObject"), TEXT("Prototype_GameObject_Void19_Object"), &VTFMonsterDesc)))
-			return E_FAIL;
-	}*/
-	return S_OK;
+	return CTrigger_Manager::Get_Instance()->Ready_Trigger_Village();
 }
 
-HRESULT CLevel_Village::Ready_Survival_Game()
+
+HRESULT CLevel_Village::Ready_Water()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SurvivalGame"), TEXT("Prototype_GameObject_SurvivalGame"))))
-	{
+	CLake::WATER_DESC Desc;
+	Desc.fReflectionScale = 0.01f;
+	Desc.fRefractionScale = 0.01f;
+	Desc.vPos = _vec3(0.f, -40.f, 0.f);
+	Desc.vSize = _vec2(3000.f, 3000.f);
+	Desc.fWaterSpeed = 0.5f;
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, L"Layer_Map", L"Prototype_GameObject_Water", &Desc)))
 		return E_FAIL;
-	}
 
 	return S_OK;
 }
 
-HRESULT CLevel_Village::Ready_DragonMap_Effect()
+HRESULT CLevel_Village::Ready_Pond()
 {
-	_mat SparkMat = _mat::CreateTranslation(_vec3(3000.f, -1.5f, 3000.f));
-	EffectInfo EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"MapSpark");
-	EffectDesc.pMatrix = &SparkMat;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
-	SparkMat = _mat::CreateTranslation(_vec3(3000.f, 3.f, 3000.f));
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
-	SparkMat = _mat::CreateTranslation(_vec3(3000.f, 1.5f, 3000.f));
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
-
-
-	std::ifstream InFile(L"../Bin/Data/DragonMap_Effect.dat", std::ios::binary);
+	
+	std::ifstream InFile(L"../Bin/Data/Village_FieldWater.dat", std::ios::binary);
 
 	if (InFile.is_open())
 	{
@@ -853,26 +745,6 @@ HRESULT CLevel_Village::Ready_DragonMap_Effect()
 		InFile.close();
 	}
 
-
-	return S_OK;
-}
-
-HRESULT CLevel_Village::Ready_Trigger()
-{
-	return CTrigger_Manager::Get_Instance()->Ready_Trigger_Village();
-}
-
-
-HRESULT CLevel_Village::Ready_Water()
-{
-	CLake::WATER_DESC Desc;
-	Desc.fReflectionScale = 0.1f;
-	Desc.fRefractionScale = 0.1f;
-	Desc.vPos = _vec3(0.f, -40.f, 0.f);
-	Desc.vSize = _vec2(3000.f, 3000.f);
-	Desc.fWaterSpeed = 0.01f;
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, L"Layer_Map", L"Prototype_GameObject_Water", &Desc)))
-		return E_FAIL;
 
 	return S_OK;
 }
