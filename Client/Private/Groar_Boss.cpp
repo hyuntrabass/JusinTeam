@@ -13,6 +13,7 @@
 #include "Camera_Manager.h"
 #include "TreasureBox.h"
 
+
 const _float CGroar_Boss::m_fChaseRange = 10.f;
 const _float CGroar_Boss::m_fAttackRange = 6.f;
 
@@ -43,14 +44,15 @@ HRESULT CGroar_Boss::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_Position(_vec3(2109.f, -15.f, 2092.f));
+	m_pTransformCom->Set_Position(_vec3(1996.f, 1.f, 2009.f)); // 1번째 위치
+
 	PxRaycastBuffer RayBuff{};
 	if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), _vec4(0.f, -1.f, 0.f, 0.f), 50.f, RayBuff))
 	{
 		m_pTransformCom->Set_Position(_vec3(PxVec3ToVector(RayBuff.block.position)));
 	}
 
-	m_pTransformCom->LookAt_Dir(_vec4(-1.f, 0.f, 0.f, 0.f));
+	m_pTransformCom->LookAt_Dir(_vec4(0.f, 0.f, -1.f, 0.f));
 	m_pGameInstance->Register_CollisionObject(this, m_pBodyColliderCom);
 
 	m_eCurState = STATE_NPC;
@@ -79,10 +81,29 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 
 	m_pTransformCom->Set_OldMatrix();
 
+	// 중보 잡고 팔찌 얻었을때 순간이동 하는 타이밍
+	if (CEvent_Manager::Get_Instance()->Have_Bracelet() == true)
+	{
+		if (!m_bChangePos[1])
+		{
+			m_pTransformCom->Set_Position(_vec3(2054.f, -14.f, 2086.f)); // 2번째 위치
+
+			PxRaycastBuffer RayBuff{};
+			if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), _vec4(0.f, -1.f, 0.f, 0.f), 50.f, RayBuff))
+			{
+				m_pTransformCom->Set_Position(_vec3(PxVec3ToVector(RayBuff.block.position)));
+			}
+
+			m_pTransformCom->LookAt_Dir(_vec4(1.f, 0.f, 0.f, 0.f));
+
+			m_bChangePos[1] = true;
+		}
+	}
+
 	//if (m_pGameInstance->Key_Down(DIK_Q, InputChannel::UI)) // 괴물들 잡아달라 하고 보스방으로 순간이동 하는 타이밍(한번만 들어와야 함)
 	if (m_strQuestOngoing == TEXT("그로아를 지켜라") || m_pGameInstance->Key_Down(DIK_Q, InputChannel::UI))
 	{
-		if (!m_bChangePos)
+		if (!m_bChangePos[0])
 		{
 			m_pTransformCom->Set_Position(_vec3(2179.f, -20.f, 2083.f));
 			PxRaycastBuffer RayBuff{};
@@ -109,7 +130,7 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 			}
 			//pPlayerTransform->Set_Position(vPlayerPos);
 
-			m_bChangePos = true;
+			m_bChangePos[0] = true;
 		}
 	}
 

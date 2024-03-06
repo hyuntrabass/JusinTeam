@@ -83,7 +83,7 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_9, InputChannel::UI))
 	{
-		m_eState = Pizza_Start;
+		m_eState = Counter_Start;
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD9, InputChannel::UI))
 	{
@@ -1051,6 +1051,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 			if (!m_bAttacked)
 			{
 				_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
+				vPos.y -= 0.2f;
 				_mat ShockMat = _mat::CreateTranslation(vPos);
 				EffectInfo EffectDesc{};
 				EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Boss_Pizza_Effect");
@@ -1140,6 +1141,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 
 		if (Index >= 70.f && Index <= 72.f)
 		{
+			m_bSelectAttackPattern = false;
 			if (!m_bAttacked)
 			{
 				if ((m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_SafeZone"), TEXT("Prototype_GameObject_SafeZone"))))
@@ -1212,6 +1214,18 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 		}
 		else if (Index >= 183.f && Index <= 186.f)
 		{
+			if (!m_bSelectAttackPattern)
+			{
+				_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
+
+				_mat ShockMat = _mat::CreateTranslation(vPos);
+				EffectInfo EffectDesc{};
+				EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Boss_Dust");
+				EffectDesc.pMatrix = &ShockMat;
+				CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+				m_bSelectAttackPattern = true;
+			}
+			
 			Safe_Release(m_pBaseEffect);
 			Safe_Release(m_pDimEffect);
 			Safe_Release(m_pFrameEffect);
@@ -1340,6 +1354,7 @@ void CHuman_Boss::After_Attack(_float fTimedelta)
 		else if (Index > 167.f && Index < 170.f)
 		{
 			_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
+			vPos.y -= 0.2f;
 			_mat ShockMat = _mat::CreateTranslation(vPos);
 			EffectInfo EffectDesc{};
 			EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Boss_Pizza_Effect");

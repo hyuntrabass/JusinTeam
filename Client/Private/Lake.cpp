@@ -36,7 +36,6 @@ HRESULT CLake::Init(void* pArg)
 
 void CLake::Tick(_float fTimeDelta)
 {
-
 	//if (m_pGameInstance->Key_Down(DIK_K))
 	//	m_Desc.fReflectionScale += 0.01f;
 	//if (m_pGameInstance->Key_Down(DIK_I))

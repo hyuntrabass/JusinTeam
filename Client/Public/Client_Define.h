@@ -113,6 +113,18 @@ namespace Client
 	};
 
 	
+	static const LIGHT_DESC g_Light_Brick
+	{
+		LIGHT_DESC::Directional,
+		_vec4(-1.f, 0.f, -1.f, 0.f), // Direction
+		_vec4(), // Position
+		_vec4(), // Attenuation
+
+		_vec4(0.2f), // Diffuse
+		_vec4(0.4f), // Ambient
+		_vec4(1.f) // Specular
+	};
+
 	static const LIGHT_DESC g_Light_Infiltration
 	{
 		LIGHT_DESC::Directional,

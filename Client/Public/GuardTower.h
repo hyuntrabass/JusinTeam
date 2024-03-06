@@ -129,6 +129,13 @@ private:
 
 	_bool m_isTurnOff = false;
 
+	static _int m_iLightID;
+	wstring m_strLightTag{};
+
+	_float m_fEffectScale{};
+
+	_bool m_LightTurnOff = false;
+
 private:
 	ANIM_DESC m_Animation{};
 

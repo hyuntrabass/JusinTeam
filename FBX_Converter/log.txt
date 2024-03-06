@@ -1,9 +1,1 @@
 1. Static Only   2. Anim Only   3. All
-1
-Static Models : Start Converting...
-Converting... Floor.fbx
-Read File Succssefully
-Static Models : Convert Success!
-
-1 Static Models
-are Successfully Converted as hyuntramesh!!

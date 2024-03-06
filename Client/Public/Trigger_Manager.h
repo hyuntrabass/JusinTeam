@@ -87,7 +87,9 @@ private:
 	_bool m_isShaking{false};
 
 	_bool m_isLever1 = false;
+	_bool m_isLever1CutScene = false;
 	_bool m_isLever2 = false;
+	_bool m_isLever2CutScene = false;
 
 private:
 	_bool m_isCollBossTrigger = { false };
