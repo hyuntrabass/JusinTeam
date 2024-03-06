@@ -202,6 +202,25 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 		m_isShaking = true;
 	}
 
+	if (m_isLever1 == true)
+	{
+		m_isBreakLoop = true;
+		m_isPlayCutScene = false;
+		m_isInfinite = false;
+		m_isLever1 = false;
+		m_strFilePath = L"../Bin/Data/MiniDungeon_CutSceneData.dat";
+		CCamera_Manager::Get_Instance()->Set_CameraModeIndex(CM_CUTSCENE);
+	}
+
+	if (m_isLever2 == true)
+	{
+		m_isBreakLoop = true;
+		m_isPlayCutScene = false;
+		m_isInfinite = false;
+		m_isLever2 = false;
+		m_strFilePath = L"../Bin/Data/MiniDungeon_CutScene2Data.dat";
+		CCamera_Manager::Get_Instance()->Set_CameraModeIndex(CM_CUTSCENE);
+	}
 
 	if (bColl && pTrigger != nullptr)
 	{
