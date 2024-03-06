@@ -2,6 +2,7 @@
 #include "UI_Manager.h"
 #include "Effect_Dummy.h"
 
+_int CGuard::m_iLightID = {};
 
 CGuard::CGuard(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -15,13 +16,13 @@ CGuard::CGuard(const CGuard& rhs)
 
 HRESULT CGuard::Init_Prototype()
 {
+	m_isPrototype = true;
+
 	return S_OK;
 }
 
 HRESULT CGuard::Init(void* pArg)
 {
-
-
 	m_Info = *(GuardInfo*)pArg;
 	m_OriginMatrix = m_Info.mMatrix * _mat::CreateTranslation(0.f, 1.f, 0.f);
 	m_EffectMatrix = m_Info.mMatrix;
@@ -57,6 +58,21 @@ HRESULT CGuard::Init(void* pArg)
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 
 	Create_Range();
+
+
+	LIGHT_DESC LightDesc{};
+	LightDesc.eType = LIGHT_DESC::TYPE::Point;
+	LightDesc.vSpecular = _vec4(1.f);
+	LightDesc.vDiffuse = _vec4(0.25f);
+	LightDesc.vAmbient = _vec4(0.05f);
+	LightDesc.vPosition = m_pTransformCom->Get_CenterPos();
+	LightDesc.vAttenuation = LIGHT_RANGE_32;
+
+	m_strLightTag = L"Light_Guard_" + to_wstring(m_iLightID++);
+	if (FAILED(m_pGameInstance->Add_Light(LEVEL_TOWER, m_strLightTag, LightDesc)))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -102,6 +118,10 @@ void CGuard::Tick(_float fTimeDelta)
 
 	m_pTransformCom->Gravity(fTimeDelta);
 	Update_Collider();
+
+	LIGHT_DESC* Desc = m_pGameInstance->Get_LightDesc(LEVEL_TOWER, m_strLightTag);
+	Desc->vPosition = m_pTransformCom->Get_CenterPos();
+
 
 }
 
@@ -1041,7 +1061,10 @@ CGameObject* CGuard::Clone(void* pArg)
 
 void CGuard::Free()
 {
-	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
+	if (false == m_isPrototype) {
+		m_pGameInstance->Delete_Light(LEVEL_TOWER, m_strLightTag);
+		CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
+	}
 	__super::Free();
 
 	Safe_Release(m_pShaderCom);

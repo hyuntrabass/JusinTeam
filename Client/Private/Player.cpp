@@ -1353,34 +1353,29 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 			return;
 		}
 
-		if (m_eState == Stun_Start or m_eState == Stun)
+		if (m_eState == Stun_Start or m_eState == Stun or m_eState == Shock or m_eState == KnockDown)
 		{
-			m_bMove_AfterSkill = true;
-			if (MonAttType == MonAtt_Stun)
-			{
+			m_bMove_AfterSkill = true;	
 				return;
-			}
+			
 		}
 
-
-		if (m_eState == KnockDown or m_bIsMount)
-		{
-			m_bMove_AfterSkill = true;
-			return;
-		}
 
 
 		switch (MonAttType)
 		{
+		case MonAtt_Shock:
+		{
+			m_bMove_AfterSkill = true;
+			m_eState = Shock;
+			m_pCam_Manager->Set_RidingZoom(false);
+			CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_DEFAULT);
+			m_bLockOn = false;
+		}
+		break;
 		case MonAtt_Hit:
 		{
 			m_eState = Hit;
-			m_Animation.iAnimIndex = Anim_Stun_start;
-			m_Animation.fDurationRatio = 0.4f;
-			m_Animation.fAnimSpeedRatio = 2.f;
-			m_Animation.fStartAnimPos = 18.f;
-			m_Animation.isLoop = false;
-			m_hasJumped = false;
 			if (!m_bPoison)
 			{
 				m_bHitted = true;
@@ -4042,6 +4037,26 @@ void CPlayer::Init_State()
 			m_Animation.fAnimSpeedRatio = 2.f - (m_bSlowSpeed * 0.3f);
 		}
 		break;
+		case Client::CPlayer::Shock:
+		{
+			m_Animation.iAnimIndex = Anim_Stun_start;
+			m_hasJumped = false;
+			_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
+			_mat ShockMat = _mat::CreateTranslation(vPos);
+			TeleportSpot TsSpot =  CTrigger_Manager::Get_Instance()->Get_CurrentSpot();
+			EffectInfo EffectDesc{};
+			if (TsSpot == TS_MiniDungeon or TsSpot == TS_BossRoom)
+			{
+				EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Player_Electric_Blue");
+			}
+			else
+			{
+				EffectDesc = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Player_Electric_Yellow");
+			}
+			EffectDesc.pMatrix = &ShockMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
+		}
+		break;
 		case Client::CPlayer::Run_End:
 		{
 			m_Animation.iAnimIndex = Anim_Normal_run_stop;
@@ -4242,7 +4257,7 @@ void CPlayer::Init_State()
 		case Client::CPlayer::Stun:
 		{
 			m_Animation.iAnimIndex = Anim_stun;
-			m_Animation.fAnimSpeedRatio = 3.5f;
+			m_Animation.fAnimSpeedRatio = 3.2f;
 			m_hasJumped = false;
 		}
 		break;
@@ -4619,6 +4634,12 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		}
 		break;
 	case Client::CPlayer::Stun_Start:
+		if (m_pModelCom->IsAnimationFinished(Anim_Stun_start))
+		{
+			m_eState = Stun;
+		}
+		break;
+	case Client::CPlayer::Shock:
 		if (m_pModelCom->IsAnimationFinished(Anim_Stun_start))
 		{
 			m_eState = Stun;

@@ -432,9 +432,8 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 				m_pGameInstance->StopSound(i);
 			}
 		}
-		//m_pGameInstance->PlayBGM(TEXT("1st_Indun_Boss_BGM_Loop"));
+		m_pGameInstance->PlayBGM(TEXT("1st_Indun_Boss_BGM_Loop"));
 		m_pGameInstance->Play_Sound(TEXT("AMB_Fire_SFX_02"), 0.3f, true);
-		m_pGameInstance->Play_Sound(TEXT("BP_Skill_10019_SFX_01"), 0.3f, true, 0.7f);
 		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 		{
 			if (m_pGameInstance->Get_IsLoopingSound(i))

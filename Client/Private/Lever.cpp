@@ -44,6 +44,7 @@ HRESULT CLever::Init(void* pArg)
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER, &ControllerDesc);
 	m_pModelCom->Play_Animation(0);
 
+	m_ShaderPassIndex = AnimPass_OutLine;
 	return S_OK;
 }
 
@@ -53,9 +54,10 @@ void CLever::Tick(_float fTimeDelta)
 
 	if (true == m_isAllDone)
 		return;
+
 	if (m_isInteracting)
 	{
-		m_pBar->Set_Factor(m_fCollectTime / 4.f);
+		m_pBar->Set_Factor(m_fCollectTime / 2.5f);
 		m_pBar->Set_UV(m_fCollectTime, 0.f);
 
 		m_fCollectTime += fTimeDelta;
@@ -70,10 +72,13 @@ void CLever::Tick(_float fTimeDelta)
 		}
 		m_fTime += fTimeDelta * 5.f * m_fDir;
 
-		if (m_fCollectTime >= 3.f)
+		if (m_fCollectTime >= 2.5f)
 		{
 			//여기가 바 로딩 끝나는 부분
 			m_isInteracting = false;
+
+			m_isOn = true;
+			m_ShaderPassIndex = AnimPass_Default;
 		}
 
 		m_pBar->Tick(fTimeDelta);
@@ -81,14 +86,12 @@ void CLever::Tick(_float fTimeDelta)
 
 	if (m_pModelCom->IsAnimationFinished(0) and 0 == m_Info.iIndex) {
 		CTrigger_Manager::Get_Instance()->Set_Lever1();
-		m_ShaderPassIndex = AnimPass_Default;
 		m_isAllDone = true;
 		return;
 	}
 
 	if (m_pModelCom->IsAnimationFinished(0) and 1 == m_Info.iIndex) {
 		CTrigger_Manager::Get_Instance()->Set_Lever2();
-		m_ShaderPassIndex = AnimPass_Default;
 		m_isAllDone = true;
 		return;
 	}
@@ -100,13 +103,9 @@ void CLever::Tick(_float fTimeDelta)
 	if (isColl) {
 		if (m_pGameInstance->Key_Down(DIK_E))
 		{
-			m_isOn = true;
 			m_isInteracting = true;
+			CUI_Manager::Get_Instance()->Set_Collect();
 		}
-		m_ShaderPassIndex = AnimPass_OutLine;
-	}
-	else {
-		m_ShaderPassIndex = AnimPass_OutLine;
 	}
 
 	Update_Collider();
