@@ -81,7 +81,7 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD8, InputChannel::UI))
 	{
-		m_eState = Pizza_Start;
+		m_eState = Throw_Sickle;
 	}
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD9, InputChannel::UI))
 	{

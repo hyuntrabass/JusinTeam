@@ -328,6 +328,7 @@ namespace Client
 		MonAtt_Pull,
 		MonAtt_Hook,
 		MonAtt_Hook_End,
+		MonAtt_Shock,
 		MonAtt_End
 	};
 #pragma endregion
