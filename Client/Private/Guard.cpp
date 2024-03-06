@@ -2,6 +2,7 @@
 #include "UI_Manager.h"
 #include "Effect_Dummy.h"
 
+_int CGuard::m_iLightID = {};
 
 CGuard::CGuard(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -56,6 +57,21 @@ HRESULT CGuard::Init(void* pArg)
 
 	Create_Range();
 
+
+	LIGHT_DESC LightDesc{};
+	LightDesc.eType = LIGHT_DESC::TYPE::Point;
+	LightDesc.vSpecular = _vec4(1.f);
+	LightDesc.vDiffuse = _vec4(0.25f);
+	LightDesc.vAmbient = _vec4(0.05f);
+	LightDesc.vPosition = m_pTransformCom->Get_CenterPos();
+	LightDesc.vAttenuation = LIGHT_RANGE_32;
+
+	m_strLightTag = L"Light_Guard_" + to_wstring(m_iLightID++);
+	if (FAILED(m_pGameInstance->Add_Light(LEVEL_TOWER, m_strLightTag, LightDesc)))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -100,6 +116,10 @@ void CGuard::Tick(_float fTimeDelta)
 
 	m_pTransformCom->Gravity(fTimeDelta);
 	Update_Collider();
+
+	LIGHT_DESC* Desc = m_pGameInstance->Get_LightDesc(LEVEL_TOWER, m_strLightTag);
+	Desc->vPosition = m_pTransformCom->Get_CenterPos();
+
 
 }
 
@@ -1039,6 +1059,7 @@ CGameObject* CGuard::Clone(void* pArg)
 
 void CGuard::Free()
 {
+	m_pGameInstance->Delete_Light(LEVEL_TOWER, m_strLightTag);
 	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 	__super::Free();
 

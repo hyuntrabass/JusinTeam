@@ -550,6 +550,9 @@
     <Filter Include="02.GameObjects\17.InfiltrationGame\04. Lever">
       <UniqueIdentifier>{69c393e1-9736-46d7-9eea-f6bcf0a88e90}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\17.InfiltrationGame\02. CheckPoint">
+      <UniqueIdentifier>{97d17496-ed4e-498c-8b29-439283a0be31}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1111,9 +1114,6 @@
     <ClInclude Include="..\Public\GuardTower.h">
       <Filter>02.GameObjects\17.InfiltrationGame\01. GuardTower</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Guard.h">
-      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Sun.h">
       <Filter>02.GameObjects\18. Sun</Filter>
     </ClInclude>
@@ -1121,12 +1121,9 @@
       <Filter>02.GameObjects\17.InfiltrationGame</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Guard.h" />
-    <ClInclude Include="..\Public\CheckPoint.h" />
     <ClInclude Include="..\Public\Buff_Card.h">
       <Filter>02.GameObjects\16.CescoGame</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Door.h" />
-    <ClInclude Include="..\Public\Lever.h" />
     <ClInclude Include="..\Public\GraphicSetting.h">
       <Filter>02.GameObjects\00.UI\GameUI\Menu\Setting</Filter>
     </ClInclude>
@@ -1153,6 +1150,18 @@
     </ClInclude>
     <ClInclude Include="..\Public\SurvivalEffect.h">
       <Filter>02.GameObjects\15. SurvivalGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Door.h">
+      <Filter>02.GameObjects\17.InfiltrationGame\03. Door</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Lever.h">
+      <Filter>02.GameObjects\17.InfiltrationGame\04. Lever</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Guard.h">
+      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CheckPoint.h">
+      <Filter>02.GameObjects\17.InfiltrationGame\02. CheckPoint</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1713,9 +1722,6 @@
     <ClCompile Include="..\Private\GuardTower.cpp">
       <Filter>02.GameObjects\17.InfiltrationGame\01. GuardTower</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Guard.cpp">
-      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\RedAnt.cpp">
       <Filter>02.GameObjects\16.CescoGame\VTFMonster\RedAnt</Filter>
     </ClCompile>
@@ -1726,12 +1732,9 @@
       <Filter>02.GameObjects\17.InfiltrationGame</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Guard.cpp" />
-    <ClCompile Include="..\Private\CheckPoint.cpp" />
     <ClCompile Include="..\Private\Buff_Card.cpp">
       <Filter>02.GameObjects\16.CescoGame</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Door.cpp" />
-    <ClCompile Include="..\Private\Lever.cpp" />
     <ClCompile Include="..\Private\GraphicSetting.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\Menu\Setting</Filter>
     </ClCompile>
@@ -1758,6 +1761,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\SurvivalEffect.cpp">
       <Filter>02.GameObjects\15. SurvivalGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Door.cpp">
+      <Filter>02.GameObjects\17.InfiltrationGame\03. Door</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Lever.cpp">
+      <Filter>02.GameObjects\17.InfiltrationGame\04. Lever</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Guard.cpp">
+      <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CheckPoint.cpp">
+      <Filter>02.GameObjects\17.InfiltrationGame\02. CheckPoint</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

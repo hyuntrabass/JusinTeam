@@ -117,6 +117,9 @@ private:
 
 	_vec4 m_vTurnAngle{};
 
+	static _int m_iLightID;
+	wstring m_strLightTag{};
+
 private:
 	ANIM_DESC m_Animation{};
 

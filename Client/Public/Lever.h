@@ -37,8 +37,6 @@ private:
 	_float m_fTime{};
 	_float m_fDir{ 1.f };
 
-	class CTextButtonColor* m_pBar{ nullptr };
-
 
 	_bool m_isOn = false;
 	_bool m_isAllDone = false;
