@@ -33,7 +33,7 @@ HRESULT CSickle::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	//m_pGameInstance->Play_Sound(TEXT("SE_5130_Meteor_SFX_01"));
+	m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("BP_Skill_10017_SFX_01"));
 
 	return S_OK;
 }
@@ -47,70 +47,71 @@ void CSickle::Tick(_float fTimeDelta)
 	m_pTransformCom->Set_State(State::Pos, vPos);
 	 
 	m_fLifeTimer += fTimeDelta;
-	if (m_fLifeTimer > 10.f)
+	if (m_fLifeTimer > 8.f)
 	{
+		m_hasAttacked = true;
+		_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
+		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SickleTrap"), TEXT("Prototype_GameObject_SickleTrap"), &vPos);
 		Kill();
+		if (m_iSoundChannel != -1)
+		{
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+		}
 	}
 
-	m_EffectMatrices[0] = _mat::CreateScale(6.f) * _mat::CreateRotationY(XMConvertToRadians(m_fLifeTimer *-2000.f)) * m_pTransformCom->Get_World_Matrix();
-	m_EffectMatrices[1] = _mat::CreateScale(4.f) * m_pTransformCom->Get_World_Matrix();
-	m_EffectMatrices[2] = _mat::CreateScale(4.f) * m_pTransformCom->Get_World_Matrix();
+	m_EffectMatrices = _mat::CreateTranslation(_vec3(vPos)+_vec3(0.f, 1.5f, 0.f));
 	
-	for (size_t i = 0; i < 1; i++)
+	m_iHP = 0;
+	for (size_t i = 0; i < m_iNumEffects; i++)
 	{
 		if (m_pEffects[i])
 		{
 			m_pEffects[i]->Tick(fTimeDelta);
+			if (m_hasAttacked)
+			{
+				m_pEffects[i]->Kill();
+			}
+			if (m_pEffects[i]->isDead())
+			{
+				Safe_Release(m_pEffects[i]);
+			}
+			m_iHP++;
 		}
 	}
 
-	if (m_pGameInstance->Attack_Player(m_pColliderCom, 150 + rand() % 50))
+	if (m_iHP == 0)
 	{
 		Kill();
+		if (m_iSoundChannel != -1)
+		{
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+		}
 	}
 
-
-	if (m_isDead)
+	if (not m_hasAttacked and m_pGameInstance->Attack_Player(m_pColliderCom, 150 + rand() % 50))
 	{
+		m_hasAttacked = true;
 		_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
+		CTransform* BossTransform = GET_TRANSFORM("Layer_HumanBoss",LEVEL_TOWER);
+		vPos.y = BossTransform->Get_State(State::Pos).y;
+	
 		m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SickleTrap"), TEXT("Prototype_GameObject_SickleTrap"), &vPos);
+		m_pGameInstance->Play_Sound(TEXT("BP_Skill_10014_SFX_01"));
 	}
-	//{
-	//	m_pGameInstance->Play_Sound(TEXT("SD_4062_FireBall_SFX_01"));
 
-	//	CEffect_Manager* pEffect_Manager = CEffect_Manager::Get_Instance();
-	//	Safe_AddRef(pEffect_Manager);
-	//	EffectInfo Info{};
-
-	//	_mat EffectMat{ _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos))) };
-
-	//	Info = pEffect_Manager->Get_EffectInformation(L"Green_Explosion");
-	//	Info.pMatrix = &EffectMat;
-	//	pEffect_Manager->Add_Layer_Effect(Info);
-
-	//	Info = pEffect_Manager->Get_EffectInformation(L"Groar_XBeam_Spark");
-	//	Info.pMatrix = &EffectMat;
-	//	pEffect_Manager->Add_Layer_Effect(Info);
-
-	//	Info = pEffect_Manager->Get_EffectInformation(L"Groar_XBeam_Explosion");
-	//	Info.pMatrix = &EffectMat;
-	//	pEffect_Manager->Add_Layer_Effect(Info);
-
-	//	Info = pEffect_Manager->Get_EffectInformation(L"Arrow_Explosion_Smoke");
-	//	Info.pMatrix = &EffectMat;
-	//	pEffect_Manager->Add_Layer_Effect(Info);
-
-	//	Info = pEffect_Manager->Get_EffectInformation(L"Arrow_Explosion_Smoke2");
-	//	Info.pMatrix = &EffectMat;
-	//	pEffect_Manager->Add_Layer_Effect(Info);
-
-	//	Safe_Release(pEffect_Manager);
-	//}
+	if (m_iSoundChannel != -1)
+	{
+		if (m_pGameInstance->Get_ChannelCurPosRatio(m_iSoundChannel) >= 0.6f)
+		{
+			m_pGameInstance->FadeoutSound(m_iSoundChannel, fTimeDelta, 1.f, false);
+			m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("BP_Skill_10017_SFX_01"));
+		}
+	}
 }
 
 void CSickle::Late_Tick(_float fTimeDelta)
 {
-	for (size_t i = 0; i < 1; i++)
+	for (size_t i = 0; i < m_iNumEffects; i++)
 	{
 		if (m_pEffects[i])
 		{
@@ -142,21 +143,25 @@ HRESULT CSickle::Add_Components()
 	Safe_AddRef(pEffect_Manager);
 	EffectInfo Info{};
 
-	Info = pEffect_Manager->Get_EffectInformation(L"HumanBoss_Sickle");
-	Info.pMatrix = &m_EffectMatrices[0];
+	Info = pEffect_Manager->Get_EffectInformation(L"Boss_Att7_Base");
+	Info.pMatrix = &m_EffectMatrices;
 	Info.isFollow = true;
 	m_pEffects[0] = pEffect_Manager->Clone_Effect(Info);
 
-	//Info = pEffect_Manager->Get_EffectInformation(L"HumanBoss_Ring");
-	//Info.pMatrix = &m_EffectMatrices[1];
-	//Info.isFollow = true;
-	//m_pEffects[1] = pEffect_Manager->Clone_Effect(Info);
+	Info = pEffect_Manager->Get_EffectInformation(L"Boss_Att7_outter");
+	Info.pMatrix = &m_EffectMatrices;
+	Info.isFollow = true;
+	m_pEffects[1] = pEffect_Manager->Clone_Effect(Info);
 
-	//Info = pEffect_Manager->Get_EffectInformation(L"HumanBoss_Ring2");
-	//Info.pMatrix = &m_EffectMatrices[2];
-	//Info.isFollow = true;
-	//m_pEffects[2] = pEffect_Manager->Clone_Effect(Info);
+	Info = pEffect_Manager->Get_EffectInformation(L"Boss_Att7_elec");
+	Info.pMatrix = &m_EffectMatrices;
+	Info.isFollow = true;
+	m_pEffects[2] = pEffect_Manager->Clone_Effect(Info);
 
+	Info = pEffect_Manager->Get_EffectInformation(L"Boss_Att7_Liqui");
+	Info.pMatrix = &m_EffectMatrices;
+	Info.isFollow = true;
+	m_pEffects[3] = pEffect_Manager->Clone_Effect(Info);
 
 	Safe_Release(pEffect_Manager);
 
@@ -202,7 +207,7 @@ void CSickle::Free()
 	__super::Free();
 
 	Safe_Release(m_pColliderCom);
-	for (size_t i = 0; i < 1; i++)
+	for (size_t i = 0; i < m_iNumEffects; i++)
 	{
 		Safe_Release(m_pEffects[i]);
 	}

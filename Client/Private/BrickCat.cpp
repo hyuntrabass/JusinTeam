@@ -44,11 +44,6 @@ HRESULT CBrickCat::Init(void* pArg)
 	Info.isFollow = true;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info, true);
 
-	/*
-	Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Pet_Cat_Light");
-	Info.pMatrix = &m_EffectMatrix;
-	Info.isFollow = true;
-	*/
 
 	return S_OK;
 }
@@ -146,6 +141,10 @@ void CBrickCat::Tick_State(_float fTimeDelta)
 {
 
 	CTransform * pBarTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickGame"), TEXT("BrickBarTransform"));
+	if (pBarTransform == nullptr)
+	{
+		return;
+	}
 	_vec4 vBarPos = pBarTransform->Get_State(State::Pos);
 
 	_float fDistance = __super::Compute_PlayerDistance();

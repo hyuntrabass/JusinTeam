@@ -17,18 +17,21 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 
-public:
+private:
 	CCollider* m_pColliderCom{ nullptr };
-	class CEffect_Dummy* m_pEffects[3]{};
+	static const _uint m_iNumEffects{ 4 };
+	class CEffect_Dummy* m_pEffects[m_iNumEffects]{};
 
 #ifdef _DEBUG
 	CRenderer* m_pRendererCom{ nullptr };
 #endif // _DEBUG
 
 private:
-	_mat m_EffectMatrices[3]{};
+	_int m_iSoundChannel = -1;
+	_mat m_EffectMatrices{};
 	_float m_fLifeTimer{};
 	_float m_fLifeTimeLimit{};
+	_bool m_hasAttacked{};
 
 public:
 	HRESULT Add_Components();

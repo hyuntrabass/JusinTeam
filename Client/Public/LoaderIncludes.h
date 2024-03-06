@@ -185,6 +185,7 @@
 #include "Launcher.h"
 #include "Projectile.h"
 #include "Survival_Mon.h"
+#include "SurvivalEffect.h"
 
 // InfiltrationGame
 #include "InfiltrationGame.h"

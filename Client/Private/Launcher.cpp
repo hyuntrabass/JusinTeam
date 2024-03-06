@@ -4,6 +4,7 @@
 #include "Effect_Dummy.h"
 #include "Effect_Manager.h"
 #include "Camera_Manager.h"
+#include "Trigger_Manager.h"
 
 _uint CLauncher::m_iLauncherID = 0;
 _uint CLauncher::m_iDestroyCount = 0;
@@ -230,6 +231,11 @@ void CLauncher::Tick(_float fTimeDelta)
 {
 	m_pTransformCom->Set_OldMatrix();
 
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_SurvivalMap)
+	{
+		Kill();
+	}
+
 	if (m_pGameInstance->Key_Pressing(DIK_DOWN))
 	{
 		Kill();
@@ -387,6 +393,14 @@ void CLauncher::Tick(_float fTimeDelta)
 		{
 			//m_pLauncher->Tick(fTimeDelta);
 			m_pLauncherParticle->Tick(fTimeDelta);
+		}
+
+		if (m_fTime >= 0.8f)
+		{
+			_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
+			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_SurvivalEffect"), TEXT("Prototype_GameObject_SurvivalEffect"), &vPos);
+
+			m_fTime = 0.f;
 		}
 
 		if (m_fDissolveRatio <= 0.f)

@@ -54,6 +54,7 @@ public:
 	enum DRAGON_STATE
 	{
 		STATE_IDLE,
+		STATE_SPAWN,
 		STATE_ROAR,
 		STATE_CHASE,
 		STATE_RIGHT_SLASH, // 01
@@ -148,10 +149,17 @@ private:
 	ANIM_DESC m_Animation{};
 
 private:
+	_float m_fScale = { 0.1f };
+
+private:
 	_float m_fIdleTime = {};
 	_float m_fTime[2] = {};
 	_float m_fMeteorTime = {};
 	_float m_fDragonHeadTime = {};
+
+private:
+	_bool m_bLetsStart = { false };
+	_bool m_bSpawned = { false };
 
 private:
 	_uint m_iAttackPattern = {};
@@ -178,6 +186,9 @@ private:
 	_bool m_bCreateObject = { false };
 
 	_bool m_bCreateEffect[2] = { false };
+
+private:
+	class CHPBoss* m_pHpBoss = { nullptr };
 
 public:
 	HRESULT Add_Components();

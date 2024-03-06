@@ -1133,6 +1133,18 @@
     <ClInclude Include="..\Public\ClearEffect.h">
       <Filter>02.GameObjects\00.UI\GameUI\UIEffect</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\BlackCat.h">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Door.h">
+      <Filter>02.GameObjects\17.InfiltrationGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Lever.h">
+      <Filter>02.GameObjects\17.InfiltrationGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CheckPoint.h">
+      <Filter>02.GameObjects\17.InfiltrationGame\02. CheckPoint</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1722,6 +1734,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\ClearEffect.cpp">
       <Filter>02.GameObjects\00.UI\GameUI\UIEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BlackCat.cpp">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Door.cpp">
+      <Filter>02.GameObjects\17.InfiltrationGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Lever.cpp">
+      <Filter>02.GameObjects\17.InfiltrationGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CheckPoint.cpp">
+      <Filter>02.GameObjects\17.InfiltrationGame\02. CheckPoint</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

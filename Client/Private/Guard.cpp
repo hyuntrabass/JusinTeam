@@ -368,7 +368,7 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 
 		break;
 	case STATE_CHASE:
-		m_pTransformCom->Set_Speed(5.f);
+		m_pTransformCom->Set_Speed(7.f);
 		m_fAttackTime += fTimeDelta;
 
 		if(fDist < 2.f)
@@ -387,6 +387,7 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 		}
 		else
 		{
+			vNormalToPlayer.y = 0.f;
 			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
@@ -559,7 +560,7 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 
 		break;
 	case STATE_CHASE:
-		m_pTransformCom->Set_Speed(5.f);
+		m_pTransformCom->Set_Speed(7.f);
 		m_fAttackTime += fTimeDelta;
 
 		if (fDist < 2.f)
@@ -573,11 +574,13 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 
 				m_fAttackTime = 0.f;
 			}
+			vNormalToPlayer.y = 0.f;
 			m_pTransformCom->LookAt(vTargetPos);
 
 		}
 		else
 		{
+			vNormalToPlayer.y = 0.f;
 			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}

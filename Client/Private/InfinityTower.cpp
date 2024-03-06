@@ -5,6 +5,7 @@
 #include "UI_Manager.h"
 #include "Camera_Manager.h"
 #include "Tower.h"
+#include "Trigger_Manager.h"
 
 CInfinityTower::CInfinityTower(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -457,10 +458,40 @@ void CInfinityTower::Tower_Tick(_float fTimeDelta, POINT& ptMouse)
 		{
 			switch (m_iCurIndex)
 			{
-			case BRICK:
-				CUI_Manager::Get_Instance()->Set_MiniGameStage(BRICK);
+			case Client::SURVIVAL:
+			{
+					CTrigger_Manager::Get_Instance()->Teleport(TS_SurvivalMap);
+					if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_SurvivalGame"), TEXT("Prototype_GameObject_SurvivalGame"))))
+						return;
+			}
 				break;
-			default:
+			case Client::BOSS1:
+			{
+				CTrigger_Manager::Get_Instance()->Teleport(TS_MiniDungeon);
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_InfiltrationGame"), TEXT("Prototype_GameObject_InfiltrationGame"))))
+					return;
+			}
+				break;
+			case Client::BRICK:
+			{
+					CTrigger_Manager::Get_Instance()->Teleport(TS_BrickMap);
+					if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_BrickGame"), TEXT("Prototype_GameObject_BrickGame"))))
+						return;
+			}
+				break;
+			case Client::CESCO:
+			{
+				CTrigger_Manager::Get_Instance()->Teleport(TS_CescoMap);
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_CescoGame"), TEXT("Prototype_GameObject_CescoGame"))))
+					return;
+			}
+				break;
+			case Client::BOSS2:
+			{
+				CTrigger_Manager::Get_Instance()->Teleport(TS_DragonMap);
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"))))
+					return;
+			}
 				break;
 			}
 			Exit_Tower();
