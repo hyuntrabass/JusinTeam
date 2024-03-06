@@ -80,8 +80,7 @@ void CWasp::Tick(_float fTimeDelta)
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 	__super::Tick(fTimeDelta);
-	m_pAttack_Trail->On();
-	m_pAttack_Distortion_Trail->On();
+
 	Update_Trail();
 	m_pBodyColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 	m_pAttackColliderCom->Update(m_pTransformCom->Get_World_Matrix());
@@ -236,7 +235,8 @@ void CWasp::Tick_State(_float fTimeDelta)
 	case Client::CWasp::State_Attack:
 	{
 		m_pTransformCom->Go_Straight(fTimeDelta);
-
+		m_pAttack_Trail->On();
+		m_pAttack_Distortion_Trail->On();
 		PxRaycastBuffer Buffer{};
 		_vec3 vDir = m_pTransformCom->Get_State(State::Look).Get_Normalized();
 		if (m_pGameInstance->Raycast(m_pTransformCom->Get_State(State::Pos), vDir, 1.5f, Buffer))

@@ -234,10 +234,14 @@ void CBlackSmith::Set_Text(BLACKSMITH_STATE eState)
 		wstring strText = m_DialogList.front();
 		if (strText == TEXT("END"))
 		{
+			wstring strPopQuest = TEXT("친해져요 블랙스미스");
+			CEvent_Manager::Get_Instance()->Update_Quest(strPopQuest);
+			CEvent_Manager::Get_Instance()->Update_Quest(strPopQuest);
+
 			CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_bTalking = false;
-			m_eState = ROSKVA_END;
+			m_eState = STATE_END;
 			return;
 		}
 
@@ -247,6 +251,11 @@ void CBlackSmith::Set_Text(BLACKSMITH_STATE eState)
 			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 			m_bTalking = false;
 			wstring strQuest = strText.substr(1, strText.length());
+			if (strQuest == TEXT("채집하기"))
+			{
+				wstring strPopQuest = TEXT("친해져요 블랙스미스");
+				CEvent_Manager::Get_Instance()->Set_Quest(strPopQuest);
+			}
 			CEvent_Manager::Get_Instance()->Set_Quest(strQuest);
 			m_eState = QUEST_ING;
 			m_strQuestOngoing = strQuest;
@@ -283,7 +292,7 @@ void CBlackSmith::Set_Text(BLACKSMITH_STATE eState)
 		}
 	}
 	break;
-	case ROSKVA_END:
+	case STATE_END:
 	{
 		CDialogText::DIALOGTEXT_DESC TextDesc = {};
 		TextDesc.eLevelID = LEVEL_STATIC;

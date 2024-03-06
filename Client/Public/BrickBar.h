@@ -49,7 +49,6 @@ private:
 	_mat					m_EffectMatrix{};
 	class CEffect_Dummy*	m_pEffect_Ball{ nullptr };
 
-	class CBrickCat*		m_pPet{ nullptr };
 
 private:
 	void Set_BarColor();

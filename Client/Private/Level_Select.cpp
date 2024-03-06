@@ -83,10 +83,12 @@ void CLevel_Select::Tick(_float fTimeDelta)
 
 		return;
 	}
+	/*
 	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
 	{
 		DestroyWindow(g_hWnd);
 	}
+	*/
 }
 
 HRESULT CLevel_Select::Render()

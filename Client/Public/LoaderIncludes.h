@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SoundSetting.h"
+#include "GraphicSetting.h"
 #include "Buff_Card.h"
 #include "BlackCat.h"
 #include "BrickCat.h"
