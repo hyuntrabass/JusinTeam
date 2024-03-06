@@ -416,7 +416,7 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 			{
 				if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 					m_bAttacked = true;
 				}
 			}
@@ -435,7 +435,7 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f )
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 				m_bAttacked = true;
 			}
 		}
@@ -614,7 +614,7 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 				m_bAttacked = true;
 			}
 		}
@@ -633,7 +633,7 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 				m_bAttacked = true;
 			}
 		}
@@ -761,7 +761,7 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 				m_bAttacked = true;
 			}
 		}
@@ -780,7 +780,7 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 				m_bAttacked = true;
 			}
 		}

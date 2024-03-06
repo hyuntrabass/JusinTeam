@@ -2565,6 +2565,7 @@ HRESULT CRenderer::Render_UI()
 			if (FAILED(pGameObject->Render()))
 			{
 				MSG_BOX("Failed to Render");
+				return E_FAIL;
 			}
 		}
 
