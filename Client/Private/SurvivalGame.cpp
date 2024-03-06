@@ -5,6 +5,7 @@
 #include "Survival_Mon.h"
 #include "Camera_Manager.h"
 #include "Trigger_Manager.h"
+#include "UI_Manager.h"
 
 CSurvivalGame::CSurvivalGame(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -45,6 +46,11 @@ void CSurvivalGame::Tick(_float fTimeDelta)
 	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_SurvivalMap)
 	{
 		Kill();
+	}
+
+	if (!CUI_Manager::Get_Instance()->InfinityTower_UI(true, SURVIVAL))
+	{
+		return;
 	}
 
 	Init_Pattern(fTimeDelta);

@@ -400,7 +400,7 @@ HRESULT CMenu::Add_Parts()
 
 	TextButton.strText = TEXT("»ç¿îµå");
 	TextButton.vPosition = _vec2(120.f, fY + 100.f);
-	TextButton.vSize = _vec2(150.f, 120.f);
+	TextButton.vSize = _vec2(150.f, 10.f);
 	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Button_Blue");
 	TextButton.strTexture2 = TEXT("Prototype_Component_Texture_UI_Button_Blue2");
 	TextButton.vTextPosition = _vec2(0.f, 0.f);

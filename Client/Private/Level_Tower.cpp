@@ -70,12 +70,7 @@ HRESULT CLevel_Tower::Init()
 void CLevel_Tower::Tick(_float fTimeDelta)
 {
 	//m_pGameInstance->PhysXTick(fTimeDelta);
-	
-	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
-	{
-		DestroyWindow(g_hWnd);
-	}
-	
+
 
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
 	{

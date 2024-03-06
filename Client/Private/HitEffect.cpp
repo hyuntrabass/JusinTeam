@@ -67,7 +67,6 @@ HRESULT CHitEffect::Init(void* pArg)
 		}
 		m_pCritical->Set_Pass(VTPass_Mask_Color);
 	}
-
 	return S_OK;
 }
 
@@ -216,7 +215,7 @@ HRESULT CHitEffect::Render()
 			{
 				return E_FAIL;
 			}
-			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", m_iDamage / 100)))
+			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", (m_iDamage % 1000) / 100)))
 			{
 				return E_FAIL;
 			}

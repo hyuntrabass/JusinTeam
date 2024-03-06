@@ -2336,6 +2336,30 @@ HRESULT CLoader::Load_Tower()
 		}
 	}
 #pragma region Ç³¼±±ú±â
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_DoubleCube"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/BrickGame/Mesh/Double.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_PowerCube"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/BrickGame/Mesh/Power.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+	
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_StopCube"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/BrickGame/Mesh/Stop.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BrickItem"), CBrickItem::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Minigame"), CMap::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -2857,7 +2881,14 @@ HRESULT CLoader::Load_Tower()
 		inFile.close();
 	}
 
-
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_InfinityStart"), CInfinityStart::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_ClearEffect"), CClearEffect::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 	m_isFinished = true;

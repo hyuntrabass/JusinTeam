@@ -228,6 +228,17 @@ void CBrickBall::RayCast()
 
 }
 
+CBrickItem::TYPE CBrickBall::Get_CurItem()
+{ 
+	if (m_eCurItem != CBrickItem::TYPE_END)
+	{
+		CBrickItem::TYPE eType = m_eCurItem;
+		m_eCurItem = CBrickItem::TYPE_END;
+		return eType;
+	}
+	return CBrickItem::TYPE_END;
+}
+
 HRESULT CBrickBall::Init_Effect()
 {
 	TRAIL_DESC Desc{};
@@ -260,7 +271,7 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 	_uint iWall{};
 	for (iWall = 0; iWall < 3; iWall++)
 	{
-		pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_Wall"), TEXT("Com_Collider_BrickWall"), iWall);
+		pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickWall"), TEXT("Com_Collider_BrickWall"), iWall);
 		if (pCollider == nullptr)
 		{
 			break;
@@ -430,6 +441,90 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 
 
 	}
+	/*
+	* 		strLayer = TEXT("Layer_BrickPower");
+		break;
+	case CBrickItem::DOUBLE:
+		strLayer = TEXT("Layer_BrickDouble");
+		break;
+	case CBrickItem::STOP:
+		strLayer = TEXT("Layer_BrickStop");
+	*/
+
+	Check_ItemCollision(fTimeDelta);
+	
+}
+
+void CBrickBall::Check_ItemCollision(_float fTimeDelta)
+{
+	CCollider* pItemCollider{ nullptr };
+	_bool isPowerColl{};
+	_uint iNum = m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_BrickPower"));
+	for (_uint i = 0; i < iNum; i++)
+	{
+		pItemCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickPower"), TEXT("Com_Collider"), i);
+		if (pItemCollider == nullptr)
+		{
+			break;
+		}
+		if (m_pColliderCom->Intersect(pItemCollider))
+		{
+			isPowerColl = true;
+			break;
+		}
+	}
+
+	if (isPowerColl)
+	{
+		m_eCurItem = CBrickItem::POWER;
+		return;
+	}
+
+	_bool isDoubleColl{};
+	iNum = m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_BrickDouble"));
+	for (_uint i = 0; i < iNum; i++)
+	{
+		pItemCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickDouble"), TEXT("Com_Collider"), i);
+		if (pItemCollider == nullptr)
+		{
+			break;
+		}
+		if (m_pColliderCom->Intersect(pItemCollider))
+		{
+			isDoubleColl = true;
+			break;
+		}
+	}
+
+	if (isDoubleColl)
+	{
+		m_eCurItem = CBrickItem::DOUBLE;
+		return;
+	}
+
+	_bool isStopColl{};
+	iNum = m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_BrickStop"));
+	for (_uint i = 0; i < iNum; i++)
+	{
+		pItemCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickStop"), TEXT("Com_Collider"), i);
+		if (pItemCollider == nullptr)
+		{
+			break;
+		}
+		if (m_pColliderCom->Intersect(pItemCollider))
+		{
+			isStopColl = true;
+			break;
+		}
+	}
+
+	if (isStopColl)
+	{
+		m_eCurItem = CBrickItem::STOP;
+		return;
+	}
+
+
 }
 
 void CBrickBall::Set_BallColor()

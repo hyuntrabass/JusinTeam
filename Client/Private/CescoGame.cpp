@@ -71,6 +71,7 @@ HRESULT CCescoGame::Init(void* pArg)
 
 void CCescoGame::Tick(_float fTimeDelta)
 {
+
 	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_CescoMap)
 	{
 		Kill();
@@ -80,6 +81,12 @@ void CCescoGame::Tick(_float fTimeDelta)
 	{
 		return;
 	}
+
+	if (!CUI_Manager::Get_Instance()->InfinityTower_UI(true, CESCO))
+	{
+		return;
+	}
+
 	if (m_pGameInstance->Key_Down(DIK_7, InputChannel::UI))
 	{
 		m_ePreviousPhase = Phase3;

@@ -423,6 +423,8 @@ CGameObject* CRoskva::Clone(void* pArg)
 
 void CRoskva::Free()
 {
+	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::NPC, m_pTransformCom);
+
 	__super::Free();
 
 	Safe_Release(m_pLine);

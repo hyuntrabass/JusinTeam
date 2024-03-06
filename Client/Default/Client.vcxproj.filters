@@ -1145,6 +1145,13 @@
     <ClInclude Include="..\Public\CheckPoint.h">
       <Filter>02.GameObjects\17.InfiltrationGame\02. CheckPoint</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\SurvivalEffect.h" />
+    <ClInclude Include="..\Public\InfinityStart.h">
+      <Filter>02.GameObjects\00.UI\98.InfinityTower</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BrickItem.h">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1746,6 +1753,13 @@
     </ClCompile>
     <ClCompile Include="..\Private\CheckPoint.cpp">
       <Filter>02.GameObjects\17.InfiltrationGame\02. CheckPoint</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SurvivalEffect.cpp" />
+    <ClCompile Include="..\Private\InfinityStart.cpp">
+      <Filter>02.GameObjects\00.UI\98.InfinityTower</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BrickItem.cpp">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -132,11 +132,55 @@ HRESULT CInfinityTower::Render()
 		return E_FAIL;
 	}
 
+
+	_vec2 vStartPos = _vec2(380.f, 130.f);
+	for (size_t i = 0; i < m_vecDesc[(_uint)m_iCurIndex].size(); i++)
+	{
+		vStartPos.y += 10.f * i;
+		if (i == 0)
+		{
+			m_pGameInstance->Render_Text(L"Font_Malang", m_vecDesc[(_uint)m_iCurIndex][0], _vec2(vStartPos.x + 1.f, vStartPos.y - 50.f), 0.8f, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, true);
+			m_pGameInstance->Render_Text(L"Font_Malang", m_vecDesc[(_uint)m_iCurIndex][0], _vec2(vStartPos.x, vStartPos.y - 50.f + 1.f), 0.8f, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, true);
+			m_pGameInstance->Render_Text(L"Font_Malang", m_vecDesc[(_uint)m_iCurIndex][0], _vec2(vStartPos.x, vStartPos.y - 50.f), 0.8f, _vec4(1.f, 0.f, 0.f, 1.f), 0.f, true);
+		}
+		else
+		{
+			m_pGameInstance->Render_Text(L"Font_Malang", m_vecDesc[(_uint)m_iCurIndex][i], _vec2(vStartPos.x + 1.f, vStartPos.y), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, true);
+			m_pGameInstance->Render_Text(L"Font_Malang", m_vecDesc[(_uint)m_iCurIndex][i], _vec2(vStartPos.x, vStartPos.y - 1.f), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, true);
+			m_pGameInstance->Render_Text(L"Font_Malang", m_vecDesc[(_uint)m_iCurIndex][i], _vec2(vStartPos.x - 1.f, vStartPos.y), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, true);
+			m_pGameInstance->Render_Text(L"Font_Malang", m_vecDesc[(_uint)m_iCurIndex][i], _vec2(vStartPos.x, vStartPos.y + 1.f), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, true);
+			m_pGameInstance->Render_Text(L"Font_Malang", m_vecDesc[(_uint)m_iCurIndex][i], _vec2(vStartPos.x, vStartPos.y), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f), 0.f, true);
+
+		}
+	}
+
 	return S_OK;
 }
 
 HRESULT CInfinityTower::Ready_Tower()
 {
+	m_vecDesc[SURVIVAL].push_back(TEXT("서바이벌 게임"));
+	m_vecDesc[SURVIVAL].push_back(TEXT("게임설명 1줄"));
+	m_vecDesc[SURVIVAL].push_back(TEXT("게임설명 2줄"));
+
+	m_vecDesc[BOSS1].push_back(TEXT("보스1 "));
+	m_vecDesc[BOSS1].push_back(TEXT("게임설명 1줄"));
+	m_vecDesc[BOSS1].push_back(TEXT("게임설명 2줄"));
+
+	m_vecDesc[BRICK].push_back(TEXT("묘신과 대결"));
+	m_vecDesc[BRICK].push_back(TEXT("3층의 주인 묘신이 만들어내는 블럭을 모두 없애고 묘신을 처치하세요. "));
+	m_vecDesc[BRICK].push_back(TEXT("야옹신이 살아있는 이상 블럭은 계속해서 생성됩니다."));
+
+	m_vecDesc[CESCO].push_back(TEXT("세스코"));
+	m_vecDesc[CESCO].push_back(TEXT("게임설명 1줄"));
+	m_vecDesc[CESCO].push_back(TEXT("게임설명 2줄"));
+
+	m_vecDesc[BOSS2].push_back(TEXT("최종보스"));
+	m_vecDesc[BOSS2].push_back(TEXT("게임설명 1줄"));
+	m_vecDesc[BOSS2].push_back(TEXT("게임설명 2줄"));
+
+
+
 	m_vDefaultPoint = _vec2(200.f, (_float)g_iWinSizeY - 100.f);
 	m_vInitialPoint = m_vDefaultPoint;
 

@@ -115,8 +115,8 @@ HRESULT CClearEffect::Render()
 		return E_FAIL;
 	}
 
-
-	wstring strText = TEXT("무한의 탑 ") + to_wstring(m_iTower) + TEXT("층 클리어!");
+	
+	wstring strText = TEXT("무한의 탑 ") + to_wstring(m_iTower + 1) + TEXT("층 클리어!");
 	m_pGameInstance->Render_Text(L"Font_Malang", strText, _vec2((_float)g_iWinSizeX / 2.f - 0.2f, 360.f), 0.9f, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Render_Text(L"Font_Malang", strText, _vec2((_float)g_iWinSizeX / 2.f + 0.2f, 360.f), 0.9f, _vec4(0.f, 0.f, 0.f, 1.f));
 	m_pGameInstance->Render_Text(L"Font_Malang", strText, _vec2((_float)g_iWinSizeX / 2.f, 360.f - 0.2f), 0.9f, _vec4(0.f, 0.f, 0.f, 1.f));

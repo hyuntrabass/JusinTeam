@@ -172,6 +172,8 @@ public:
 	void Set_BarDir(BAR_DIR eDir) { m_eCurBarDir = eDir; }
 	BAR_DIR Get_BarDir() { return m_eCurBarDir; }
 
+	_bool InfinityTower_UI(_bool isStart, TOWER eNumTower);
+
 private:
 	BAR_DIR			m_eCurBarDir{BAR_STOP};
 	_uint			m_iCurrentMiniGame{(_uint)TOWER_END};
@@ -182,6 +184,7 @@ private:
 	TeleportSpot	m_eTeleportSpot{ TS_END };
 	_bool			m_bTeleport{};
 
+	_bool			m_isCreated{ false };
 	_bool			m_isCollect{ false };
 	_bool			m_isWorldMap{ false };
 

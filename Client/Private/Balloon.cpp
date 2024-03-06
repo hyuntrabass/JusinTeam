@@ -3,6 +3,7 @@
 #include "Event_Manager.h"
 #include "Effect_Manager.h"
 #include "Camera_Manager.h"
+#include "BrickItem.h"
 
 CBalloon::CBalloon(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -65,7 +66,7 @@ void CBalloon::Tick(_float fTimeDelta)
 	
 	Update_BodyCollider();
 
-	m_pTransformCom->Gravity(fTimeDelta);
+//	m_pTransformCom->Gravity(fTimeDelta);
 
 
 }
@@ -319,6 +320,10 @@ void CBalloon::Tick_State(_float fTimeDelta)
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 		}
+		if (m_pTransformCom->Get_State(State::Pos).y < 2.f)
+		{
+			Create_Item();
+		}
 
 		m_isDead = true;
 	}
@@ -327,6 +332,42 @@ void CBalloon::Tick_State(_float fTimeDelta)
 	}
 
 	Set_Color();
+}
+
+void CBalloon::Create_Item()
+{
+	_uint iRandom = rand() % 100;
+	if (iRandom > 80)
+	{
+
+	}
+
+	CBrickItem::TYPE eItemType[CBrickItem::TYPE_END] = { CBrickItem::POWER,CBrickItem::DOUBLE, CBrickItem::STOP };
+	_uint iRandomType = rand() % 3;
+
+	CBrickItem::BRICKITEM_DESC Desc{};
+	Desc.eType = eItemType[(CBrickItem::TYPE)iRandomType];
+	Desc.vPos = m_pTransformCom->Get_State(State::Pos);
+
+	wstring strLayer{};
+	switch ((CBrickItem::TYPE)iRandomType)
+	{
+	case CBrickItem::POWER:
+		strLayer = TEXT("Layer_BrickPower");
+		break;
+	case CBrickItem::DOUBLE:
+		strLayer = TEXT("Layer_BrickDouble");
+		break;
+	case CBrickItem::STOP:
+		strLayer = TEXT("Layer_BrickStop");
+		break;
+	default:
+		break;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, strLayer, TEXT("Prototype_GameObject_BrickItem"), &Desc)))
+	{
+		return;
+	}
 }
 
 void CBalloon::Set_Color()

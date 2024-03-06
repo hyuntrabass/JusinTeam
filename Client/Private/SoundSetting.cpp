@@ -76,6 +76,11 @@ void CSoundSetting::Tick(_float fTimeDelta)
 	{
 		m_isPickingButton = true;
 	}
+	if (!PtInRect(&rectUI, ptMouse) && m_pGameInstance->Mouse_Pressing(DIM_LBUTTON))
+	{
+		m_isPickingButton = false;
+	}
+
 
 	if (m_isPickingButton)
 	{
@@ -177,10 +182,10 @@ void CSoundSetting::Update_State()
 		m_pGameInstance->Set_SystemVolume(m_fSound);
 		break;
 	case Client::CSoundSetting::BACKGROUND:
-		m_pGameInstance->Set_EnvironmentVolume(m_fSound);
+		m_pGameInstance->Set_BackGroundVolume(m_fSound);
 		break;
 	case Client::CSoundSetting::ENV:
-		m_pGameInstance->Set_BackGroundVolume(m_fSound);
+		m_pGameInstance->Set_EnvironmentVolume(m_fSound);
 		break;
 	case Client::CSoundSetting::EFFECT:
 		m_pGameInstance->Set_EffectVolume(m_fSound);
@@ -209,7 +214,6 @@ HRESULT CSoundSetting::Init_State()
 		m_strText = TEXT("효과음");
 		break;
 	case Client::CSoundSetting::LIST_END:
-		m_strText = TEXT("전체 음향");
 		break;
 	default:
 		break;
