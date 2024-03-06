@@ -10,7 +10,6 @@ CObjects::CObjects(const CObjects& rhs)
 	: CBlendObject(rhs)
 	, m_Info(rhs.m_Info)
 	, m_isInstancing(rhs.m_isInstancing)
-
 {
 }
 

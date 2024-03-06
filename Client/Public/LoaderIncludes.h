@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SoundSetting.h"
+#include "GraphicSetting.h"
 #include "Buff_Card.h"
 #include "BlackCat.h"
 #include "BrickCat.h"
@@ -190,3 +192,6 @@
 #include "Guard.h"
 #include "GuardTower.h"
 #include "CheckPoint.h"
+#include "Door.h"
+#include "Lever.h"
+#include "MiniDungeon_Teleport.h"

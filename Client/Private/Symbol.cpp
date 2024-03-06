@@ -140,6 +140,16 @@ HRESULT CSymbol::Add_Components()
 		m_fSizeX = 256.f;
 		m_fSizeY = 128.f;
 		break;
+	case ANGRBODA:
+		strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_ImageText_Chapter1_02");
+		m_fSizeX = 512.f;
+		m_fSizeY = 128.f;
+		break;
+	case DRAGON:
+		strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_ImageText_Chapter1_03");
+		m_fSizeX = 512.f;
+		m_fSizeY = 128.f;
+		break;
 	}
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, strTexture, TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))

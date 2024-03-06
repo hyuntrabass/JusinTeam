@@ -78,6 +78,9 @@ public:
 	void Create_Lazer();
 	void Create_Attack_Lazer();
 
+	const void Tower_TurnOff() {
+		m_isTurnOff = true;
+	}
 
 private:
 	GUARDTOWER_STATE m_ePreState = STATE_END;
@@ -102,14 +105,12 @@ private:
 	PATTERN_TYPE m_Pattern_Type{ PATTERN_END };
 	EffectInfo Info{};
 	EFFECT_DIR m_Dir{DOWN};
-	_uint m_iPassIndex{};
 	_float m_fDeadTime{ 0.f };
 	_float m_fDissolveRatio{ 0.f };
 	_float m_fIdleTime{ 0.f };
 	_float m_fDetectTime{ 0.f };
 	_float m_fAttackTime{ 0.f };
 	_float m_fAttackDelay{ 0.f };
-	_float m_fAnimTime{ 0.f };
 
 	_bool m_bChangePass{false};
 	_bool m_bDamaged{ false };
@@ -125,6 +126,8 @@ private:
 	_mat m_LazerMatrix{};
 	_vec4 m_vLook{};
 	_vec4 m_vCurPlayerPos{};
+
+	_bool m_isTurnOff = false;
 
 private:
 	ANIM_DESC m_Animation{};
