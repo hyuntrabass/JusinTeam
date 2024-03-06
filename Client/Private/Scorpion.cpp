@@ -252,7 +252,7 @@ HRESULT CScorpion::Add_Components()
 {
 	Collider_Desc ColliderDesc{};
 	ColliderDesc.eType = ColliderType::AABB;
-	ColliderDesc.vExtents = _vec3(0.5f, 1.2f, 0.5f);
+	ColliderDesc.vExtents = _vec3(0.5f, 0.3f, 0.5f);
 	ColliderDesc.vCenter = _vec3(0.f, ColliderDesc.vExtents.y, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pBodyColliderCom), &ColliderDesc)))

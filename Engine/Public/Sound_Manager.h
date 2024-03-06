@@ -27,7 +27,7 @@ public:
 	HRESULT Init();
 
 public:
-	_int Play_Sound(const wstring& strSoundTag, _float fVolume, _bool isLoop, _float fStartPosRatio);
+	_int Play_Sound(const wstring& strSoundTag, _float fVolume, _bool isLoop, _float fStartPosRatio, _float fDurationRatio);
 	void PlayBGM(const wstring& strSoundTag, _float fVolume);
 	void StopSound(_int iChannel);
 	void StopAll();
