@@ -121,6 +121,7 @@ void CLevel_Tower::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_RSHIFT))
 	{
 		m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"));
+		//m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Eagle"), TEXT("Prototype_GameObject_Eagle"));
 	}
 
 	if (m_pGameInstance->Key_Down(DIK_EQUALS))

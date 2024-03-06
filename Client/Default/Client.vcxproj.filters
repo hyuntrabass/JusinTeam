@@ -1118,18 +1118,12 @@
     <ClInclude Include="..\Public\Guard.h">
       <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\BlackCat.h">
-      <Filter>02.GameObjects\14.BrickGame</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Door.h">
-      <Filter>02.GameObjects\17.InfiltrationGame</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Lever.h">
-      <Filter>02.GameObjects\17.InfiltrationGame</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\CheckPoint.h">
-      <Filter>02.GameObjects\17.InfiltrationGame\02. CheckPoint</Filter>
-    </ClInclude>
+    <ClInclude Include="..\Public\BlackCat.h" />
+    <ClInclude Include="..\Public\CheckPoint.h" />
+    <ClInclude Include="..\Public\Door.h" />
+    <ClInclude Include="..\Public\Lever.h" />
+    <ClInclude Include="..\Public\SurvivalEffect.h" />
+    <ClInclude Include="..\Public\Eagle.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1705,18 +1699,12 @@
     <ClCompile Include="..\Private\Guard.cpp">
       <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\BlackCat.cpp">
-      <Filter>02.GameObjects\14.BrickGame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Door.cpp">
-      <Filter>02.GameObjects\17.InfiltrationGame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Lever.cpp">
-      <Filter>02.GameObjects\17.InfiltrationGame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\CheckPoint.cpp">
-      <Filter>02.GameObjects\17.InfiltrationGame\02. CheckPoint</Filter>
-    </ClCompile>
+    <ClCompile Include="..\Private\BlackCat.cpp" />
+    <ClCompile Include="..\Private\CheckPoint.cpp" />
+    <ClCompile Include="..\Private\Door.cpp" />
+    <ClCompile Include="..\Private\Lever.cpp" />
+    <ClCompile Include="..\Private\SurvivalEffect.cpp" />
+    <ClCompile Include="..\Private\Eagle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
