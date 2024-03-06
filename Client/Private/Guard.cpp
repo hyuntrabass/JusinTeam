@@ -315,10 +315,8 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 
 	_float Degree{};
 
-	if(m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look), 2.f, pBuffer))
-	{
-		m_eCurState = STATE_BACK;
-	}
+	_vec3 vGotoOriginPos = (m_OriginMatrix.Position() - vMyPosition).Get_Normalized();
+
 	switch (m_eCurState)
 	{
 
@@ -418,7 +416,7 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 			{
 				if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 					m_bAttacked = true;
 				}
 			}
@@ -437,7 +435,7 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f )
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 				m_bAttacked = true;
 			}
 		}
@@ -455,7 +453,8 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 	case STATE_BACK:
 		m_pTransformCom->Set_Speed(5.f);
 
-		m_pTransformCom->LookAt(m_OriginMatrix.Position());
+		vGotoOriginPos.y = 0.f;
+		m_pTransformCom->LookAt_Dir(vGotoOriginPos);
 
 		isBack = m_pTransformCom->Go_To(m_OriginMatrix.Position(), fTimeDelta * 2.f);
 		
@@ -512,6 +511,9 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 	_int iRandomAttack = iAttackInt(m_iRandomAttack);
 
 	_float Degree{};
+
+	_vec3 vGotoOriginPos = (m_OriginMatrix.Position() - vMyPosition).Get_Normalized();
+
 	switch (m_eCurState)
 	{
 
@@ -612,7 +614,7 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 				m_bAttacked = true;
 			}
 		}
@@ -631,7 +633,7 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 				m_bAttacked = true;
 			}
 		}
@@ -649,7 +651,8 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 	case STATE_BACK:
 		m_pTransformCom->Set_Speed(5.f);
 
-		m_pTransformCom->LookAt(m_OriginMatrix.Position());
+		vGotoOriginPos.y = 0.f;
+		m_pTransformCom->LookAt_Dir(vGotoOriginPos);
 
 		isBack = m_pTransformCom->Go_To(m_OriginMatrix.Position(), fTimeDelta * 2.f);
 
@@ -704,6 +707,9 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 	_randInt iAttackInt(0, 1);
 	_int iRandomAttack = iAttackInt(m_iRandomAttack);
 
+	_vec3 vGotoOriginPos = (m_OriginMatrix.Position() - vMyPosition).Get_Normalized();
+
+
 	if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look), 2.f, pBuffer))
 	{
 		m_eCurState = STATE_BACK;
@@ -755,7 +761,7 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 				m_bAttacked = true;
 			}
 		}
@@ -774,7 +780,7 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 				m_bAttacked = true;
 			}
 		}
@@ -792,7 +798,8 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 	case STATE_BACK:
 		m_pTransformCom->Set_Speed(5.f);
 
-		m_pTransformCom->LookAt(m_OriginMatrix.Position());
+		vGotoOriginPos.y = 0.f;
+		m_pTransformCom->LookAt_Dir(vGotoOriginPos);
 
 		isBack = m_pTransformCom->Go_To(m_OriginMatrix.Position(), fTimeDelta * 2.f);
 

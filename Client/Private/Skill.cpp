@@ -186,7 +186,7 @@ _bool CSkill::Use_Skill()
 	if (!m_isUsingSkill)
 	{
 		m_isUsingSkill = true;
-		m_fCoolTime = (_float)m_tSkillInfo.iCoolTime;
+		m_fCoolTime = (_float)m_tSkillInfo.iCoolTime * CUI_Manager::Get_Instance()->Get_ExtraStatus().CoolDownTime;;
 		return true;
 	}
 	return false;

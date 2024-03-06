@@ -42,6 +42,12 @@ void CMiniDungeon_Teleport::Tick(_float fTimeDelta)
 	CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Player_Hit_OBB"));
 	if (m_pCollider->Intersect(pCollider))
 	{
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_HumanBoss"), TEXT("Prototype_GameObject_Human_Boss"))))
+		{
+			return;
+		}
+		LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+		*Light = g_Light_HumanBoss;
 		CTrigger_Manager::Get_Instance()->Teleport(TS_BossRoom);
 		CTrigger_Manager::Get_Instance()->Set_BossRoom();
 	}

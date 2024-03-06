@@ -462,6 +462,8 @@ void CInfinityTower::Tower_Tick(_float fTimeDelta, POINT& ptMouse)
 			{
 				if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_SurvivalMap)
 				{
+					LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+					*Light = g_Light_Survival;
 					CTrigger_Manager::Get_Instance()->Teleport(TS_SurvivalMap);
 					if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_SurvivalGame"), TEXT("Prototype_GameObject_SurvivalGame"))))
 						return;
@@ -472,6 +474,8 @@ void CInfinityTower::Tower_Tick(_float fTimeDelta, POINT& ptMouse)
 			{
 				if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_MiniDungeon)
 				{
+					LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+					*Light = g_Light_Infiltration;
 					CTrigger_Manager::Get_Instance()->Teleport(TS_MiniDungeon);
 					if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_InfiltrationGame"), TEXT("Prototype_GameObject_InfiltrationGame"))))
 						return;
@@ -483,6 +487,8 @@ void CInfinityTower::Tower_Tick(_float fTimeDelta, POINT& ptMouse)
 			{
 				if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_BrickMap)
 				{
+					LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+					*Light = g_Light_Brick;
 					CTrigger_Manager::Get_Instance()->Teleport(TS_BrickMap);
 					if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_BrickGame"), TEXT("Prototype_GameObject_BrickGame"))))
 						return;
@@ -498,6 +504,8 @@ void CInfinityTower::Tower_Tick(_float fTimeDelta, POINT& ptMouse)
 			{
 				if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_CescoMap)
 				{
+					LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+					*Light = g_Light_Cesco;
 					CTrigger_Manager::Get_Instance()->Teleport(TS_CescoMap);
 					if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_CescoGame"), TEXT("Prototype_GameObject_CescoGame"))))
 						return;
@@ -508,6 +516,8 @@ void CInfinityTower::Tower_Tick(_float fTimeDelta, POINT& ptMouse)
 			{
 				if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_DragonMap)
 				{
+					LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+					*Light = g_Light_Dragon;
 					CTrigger_Manager::Get_Instance()->Teleport(TS_DragonMap);
 					if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"))))
 						return;

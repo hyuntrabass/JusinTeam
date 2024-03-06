@@ -104,7 +104,6 @@ void CLever::Tick(_float fTimeDelta)
 		if (m_pGameInstance->Key_Down(DIK_E))
 		{
 			m_isInteracting = true;
-			CUI_Manager::Get_Instance()->Set_Collect();
 		}
 	}
 
