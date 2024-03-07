@@ -70,7 +70,6 @@ void CVTFMonster::Late_Tick(_float fTimeDelta)
     }
 
     m_IsPlaySound = false;
-    m_fSoundStartPosRatio = 0.f;
 }
 
 void CVTFMonster::Set_Damage(_int iDamage, _uint AttackType)
@@ -91,7 +90,7 @@ void CVTFMonster::Play_Sound(_bool IsPlaySound)
 {
     if (IsPlaySound)
     {
-        m_iSoundChannel = m_pGameInstance->Play_Sound(m_strSoundTag, 0.5f, false, m_fSoundStartPosRatio);
+        m_iSoundChannel = m_pGameInstance->Play_Sound(m_strSoundTag, m_fSoundVolume, false, m_fSoundStartPosRatio);
     }
 }
 

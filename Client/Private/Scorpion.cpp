@@ -153,6 +153,7 @@ void CScorpion::Init_State(_float fTimeDelta)
 			//사운드
 			m_IsPlaySound = true;
 			m_strSoundTag = TEXT("Scorpion_Hit_Voice_04");
+			m_fSoundVolume = 0.5f;
 			break;
 		}
 
@@ -215,6 +216,7 @@ void CScorpion::Tick_State(_float fTimeDelta)
 			//사운드
 			m_IsPlaySound = true;
 			m_strSoundTag = TEXT("Bug_Stab02_SFX_03");
+			m_fSoundVolume = 0.3f;
 		}
 
 		if (m_pModelCom->IsAnimationFinished(Anim_attack03))

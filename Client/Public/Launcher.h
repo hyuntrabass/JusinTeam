@@ -75,6 +75,11 @@ private:
 	_bool m_bDestroy = { false };
 
 private:
+	_int m_iSoundChannel = -1;
+	//_int m_iIdleSoundChannel = -1;
+	//_int m_iShootSoundChannel = -1;
+
+private:
 	static _uint m_iLauncherID;
 	static _uint m_iDestroyCount;
 

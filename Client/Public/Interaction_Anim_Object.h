@@ -52,6 +52,8 @@ private:
 	_bool m_isCollect{};
 	_float m_fCollectTime{};
 
+	_bool m_HasPlayedSound{};
+
 	_float m_fTime{};
 	_float m_fDir{1.f};
 
