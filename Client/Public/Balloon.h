@@ -79,6 +79,7 @@ public:
 	const _bool& Is_Coll() const { return m_isColl; }
 
 private:
+	void Create_Item();
 	void Set_Color();
 	void Set_RandomColor();
 

@@ -226,12 +226,12 @@ HRESULT CBuff_Card::Add_Parts()
 	case Client::Buff_BloodDrain:
 		m_strText = TEXT("생명력 흡수 20%");
 		m_fStatus = 0.2f;
-		iTexIndex = 7;
+		iTexIndex = 131;
 		break;
 	case Client::Buff_PoisonImmune:
 		m_strText = TEXT("독,슬로우 상태 면역");
 		m_fStatus = 1.f;
-		iTexIndex = 131;
+		iTexIndex = 237;
 		break;
 	case Client::Buff_MonRegenDown:
 		m_strText = TEXT("몬스터 생성 속도 감소");

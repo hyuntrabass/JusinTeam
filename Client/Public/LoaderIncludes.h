@@ -1,5 +1,8 @@
 #pragma once
 
+#include "BrickItem.h"
+#include "ClearEffect.h"
+#include "InfinityStart.h"
 #include "SoundSetting.h"
 #include "GraphicSetting.h"
 #include "Buff_Card.h"

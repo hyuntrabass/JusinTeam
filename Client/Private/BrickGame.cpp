@@ -42,17 +42,6 @@ HRESULT CBrickGame::Init(void* pArg)
 
 	Init_Game();
 
-	CCamera_Manager::Get_Instance()->Set_ZoomFactor(0.f);
-
-	/*
-
-	m_EffectMatrix = _mat::CreateTranslation(_vec3(-1989.f, 0.f, -2005.11536f));
-	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_MapParti");
-	Info.pMatrix = &m_EffectMatrix;
-	Info.isFollow = true;
-	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info, true);
-	*/
-
 
 	return S_OK;
 }
@@ -63,16 +52,39 @@ void CBrickGame::Tick(_float fTimeDelta)
 	//왼쪽벽DirectX::XMFLOAT4 = {x=-1991.24585 y=11.4677677 z=-2000.09204 ...}
 	//위쪽 벽 DirectX::XMFLOAT4 = {x=-2000.19641 y=11.4677696 z=-2007.11536 ...}
 	//DirectX::XMFLOAT4 = {x=-2000.28052 y=11.3177662 z=-1991.18335 ...}
-	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-	_vec4 vPos = pPlayerTransform->Get_State(State::Pos);
+
+
+	if (!CUI_Manager::Get_Instance()->InfinityTower_UI(true, BRICK))
+	{
+		return;
+	}
+
+
+	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 
 	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_BrickMap)
 	{
 		Kill();
 	}
 
+	if (m_pGameInstance->Key_Down(DIK_ESCAPE))
+	{
+		DestroyWindow(g_hWnd);
+	}
 
 	m_fTime += fTimeDelta;
+	if (!m_ITemList.empty() && m_ITemList.front() == CBrickItem::STOP && m_fStopTime <= 3.f)
+	{
+		m_fStopTime += fTimeDelta;
+		m_fTime = 0.f;
+		m_pTimeBarLock->Tick(fTimeDelta);
+	}
+	if (m_fStopTime >= 3.f)
+	{
+		m_fStopTime = 0.f;
+		m_ITemList.pop_front();
+	}
+
 	if (m_fTime >= 1.f)
 	{
 		if (m_iSec <= 0)
@@ -101,7 +113,7 @@ void CBrickGame::Tick(_float fTimeDelta)
 	{
 		m_pBackGround->Tick(fTimeDelta);
 	}
-	
+
 	if (m_pCatBoss && !m_pCatBoss->Is_GameStart())
 	{
 		return;
@@ -111,55 +123,39 @@ void CBrickGame::Tick(_float fTimeDelta)
 		Create_Bricks();
 
 	}
-	//여기는 테스트용
-	if ((m_pBall && m_pBall->Is_Dead()) || (m_pBall && m_pGameInstance->Key_Down(DIK_RETURN)))
-	{
-		Safe_Release(m_pBall);
-		return;
-	}
-
-	if (not m_pBall && m_pGameInstance->Key_Down(DIK_B, InputChannel::GamePlay)) //나중에는 space 해제
-	{
-		m_iCombo = 0;
-		CBrickBall::BALL_DESC Desc{};
-		CTransform* pTransform = m_pBar->Get_Transform();
-		_vec3 vPos = pTransform->Get_State(State::Pos);
-		Desc.vPos = _vec3(vPos.x, vPos.y, vPos.z - 2.f);
-		Desc.eBrickColor = m_pBar->Get_CurrentColor();
-		m_pBall = (CBrickBall*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BrickBall"), &Desc);
-		if (not m_pBall)
-		{
-			return;
-		}
-	}
-
-
-	if(m_fComboTime > 2.f || not m_pBall)
-	{
-		m_iCombo = 0;
-		m_fComboTime = 0.f;
-	}
-
-	if (m_pBall)
-	{
-		if (m_pBall->Is_Combo() && m_fComboTime <= 2.f)
-		{
-			m_fComboTime = 0.f;
-			m_iCombo++;
-		}
-	}
-
-	if (m_pBall != nullptr)
-	{
-		
-		if (m_pBall->Is_BarColl())
-		{
-			m_pBall->Set_CurrentBallColor(m_pBar->Get_CurrentColor());
-		}
-		
-	}
 	
+
+	Tick_Ball(fTimeDelta);
+
+	if (!m_ITemList.empty())
+	{
+		m_isReadyItem = true;
+	}
+	else
+	{
+		m_isReadyItem = false;
+	}
+
+	
+
+	if (m_isReadyItem)
+	{
+		if (m_pItemSlotEffect->Get_Alpha() > 1.f)
+		{
+			m_fDir = -1.f;
+		}
+		if (m_pItemSlotEffect->Get_Alpha() < 0.5f)
+		{
+			m_fDir = 1.f;
+		}
+		m_pItemSlotEffect->Set_Alpha(m_pItemSlotEffect->Get_Alpha() + fTimeDelta * m_fDir * 2.f);
+		m_pItemSlotEffect->Tick(fTimeDelta);
+	}
+
+
 	m_pBackGround->Tick(fTimeDelta);
+
+
 	if (m_pBall)
 	{
 		m_pBall->Tick(fTimeDelta);
@@ -196,8 +192,20 @@ void CBrickGame::Late_Tick(_float fTimeDelta)
 		return;
 	}
 
-	
+	m_pItemSlot->Late_Tick(fTimeDelta);
+	if (m_isReadyItem)
+	{
+		if (!m_ITemList.empty())
+		{
+			m_pItem[m_ITemList.front()]->Late_Tick(fTimeDelta);
+		}
+		m_pItemSlotEffect->Late_Tick(fTimeDelta);
+	}
 
+	if (m_fTimeLimit > 0.f)
+	{
+		m_pTimeBarLock->Late_Tick(fTimeDelta);
+	}
 	if (m_pBackGround)
 	{
 		m_pBackGround->Late_Tick(fTimeDelta);
@@ -263,22 +271,22 @@ HRESULT CBrickGame::Render()
 
 HRESULT CBrickGame::Add_Parts()
 {
-	if (m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_Wall")) == 0)
+	if (m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_BrickWall")) == 0)
 	{
 		CBrickWall::WALL_DESC WallDesc{};
 
 		WallDesc.rcRect = { (_long)1.f, (_long)0.f, (_long)0.f, (_long)0.f };
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_BrickWall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
 		{
 			return E_FAIL;
 		}
 		WallDesc.rcRect = { (_long)0.f, (_long)1.f, (_long)0.f, (_long)0.f };
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_BrickWall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
 		{
 			return E_FAIL;
 		}
 		WallDesc.rcRect = { (_long)0.f, (_long)0.f, (_long)1.f, (_long)0.f };
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Wall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_BrickWall"), TEXT("Prototype_GameObject_BrickWall"), &WallDesc)))
 		{
 			return E_FAIL;
 		}
@@ -338,13 +346,13 @@ HRESULT CBrickGame::Add_Parts()
 
 	CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
 	ColButtonDesc.eLevelID = LEVEL_STATIC;
-	ColButtonDesc.fDepth = (_float)D_ALERT / (_float)D_END;
+	ColButtonDesc.fDepth = (_float)D_SCREEN / (_float)D_END;
 	ColButtonDesc.fFontSize = 0.f;
 	ColButtonDesc.strText = TEXT("");
 	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_TimeLimit");
 	ColButtonDesc.vSize = _vec2(200.f, 200.f);
 	ColButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, 40.);
-	ColButtonDesc.fAlpha = 0.5f;
+	ColButtonDesc.fAlpha = 0.7f;
 
 
 	m_pTimeBar = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
@@ -353,9 +361,72 @@ HRESULT CBrickGame::Add_Parts()
 		return E_FAIL;
 	}	
 	m_pTimeBar->Set_Pass(VTPass_UI_Alpha);
+	
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_TimeLimitLock");
 
+	ColButtonDesc.fDepth = (_float)D_SCREEN / (_float)D_END - 0.01f;
+	m_pTimeBarLock = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+	if (not m_pTimeBarLock)
+	{
+		return E_FAIL;
+	}	
+	m_pTimeBarLock->Set_Pass(VTPass_UI_Alpha);
 	
 
+	ColButtonDesc.fDepth = (_float)D_SCREEN / (_float)D_END + 0.01f;
+	ColButtonDesc.fFontSize = 0.f;
+	ColButtonDesc.strText = TEXT("");
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_BG_SkillSlot_Item");
+	ColButtonDesc.vSize = _vec2(200.f, 200.f);
+	ColButtonDesc.vPosition = _vec2(130.f, 600.f);
+	ColButtonDesc.fAlpha = 0.5f;
+	m_pItemSlot = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+	if (not m_pItemSlot)
+	{
+		return E_FAIL;
+	}
+	m_pItemSlot->Set_Pass(VTPass_UI);
+
+	ColButtonDesc.fDepth = (_float)D_SCREEN / (_float)D_END - 0.01f;
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_BG_SkillSlot_Sellect");
+	m_pItemSlotEffect = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+	if (not m_pItemSlotEffect)
+	{
+		return E_FAIL;
+	}
+	m_pItemSlotEffect->Set_Pass(VTPass_UI_Alpha);
+
+	ColButtonDesc.fDepth = (_float)D_SCREEN / (_float)D_END;
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_Double");
+	ColButtonDesc.vSize = _vec2(120.f, 120.f);
+	ColButtonDesc.vPosition = _vec2(130.f, 572.f);
+	ColButtonDesc.fAlpha = 0.5f;
+	m_pItem[CBrickItem::DOUBLE] = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+	if (not m_pItem[CBrickItem::DOUBLE])
+	{
+		return E_FAIL;
+	}
+	m_pItem[CBrickItem::DOUBLE]->Set_Pass(VTPass_UI);
+
+	
+	
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_Power");
+	m_pItem[CBrickItem::POWER] = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+	if (not m_pItem[CBrickItem::POWER])
+	{
+		return E_FAIL;
+	}
+	m_pItem[CBrickItem::POWER]->Set_Pass(VTPass_UI);
+	
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_Stop");
+	m_pItem[CBrickItem::STOP] = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+	if (not m_pItem[CBrickItem::STOP])
+	{
+		return E_FAIL;
+	}
+	m_pItem[CBrickItem::STOP]->Set_Pass(VTPass_UI);
+
+	
 	return S_OK;
 }
 
@@ -427,8 +498,7 @@ void CBrickGame::Init_Game()
 	{
 		return;
 	}
-
-
+	
 }
 
 void CBrickGame::Create_Bricks()
@@ -538,9 +608,92 @@ CComponent* CBrickGame::Find_Component(const wstring& strComTag)
 	}
 }
 
+void CBrickGame::Tick_Ball(_float fTimeDelta)
+{
+
+	if ((m_pBall && m_pBall->Is_Dead()) || (m_pBall && m_pGameInstance->Key_Down(DIK_RETURN)))
+	{
+		Safe_Release(m_pBall);
+		if (!m_ITemList.empty())
+		{
+			while (!m_ITemList.empty())
+			{
+				m_ITemList.pop_back();
+			}
+			m_isReadyItem = false;
+		}
+
+
+		return;
+	}
+
+	if (not m_pBall && m_pGameInstance->Key_Down(DIK_B, InputChannel::GamePlay)) //나중에는 space 해제
+	{
+		m_iCombo = 0;
+		CBrickBall::BALL_DESC Desc{};
+		CTransform* pTransform = m_pBar->Get_Transform();
+		_vec3 vPos = pTransform->Get_State(State::Pos);
+		Desc.vPos = _vec3(vPos.x, vPos.y, vPos.z - 2.f);
+		Desc.eBrickColor = m_pBar->Get_CurrentColor();
+		m_pBall = (CBrickBall*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BrickBall"), &Desc);
+		if (not m_pBall)
+		{
+			return;
+		}
+	}
+
+
+	if (m_fComboTime > 2.f || not m_pBall)
+	{
+		m_iCombo = 0;
+		m_fComboTime = 0.f;
+	}
+
+	if (m_pBall)
+	{
+		if (m_pBall->Is_Combo() && m_fComboTime <= 2.f)
+		{
+			m_fComboTime = 0.f;
+			m_iCombo++;
+		}
+	}
+
+	if (m_pBall != nullptr)
+	{
+
+		if (m_pBall->Is_BarColl())
+		{
+			m_pBall->Set_CurrentBallColor(m_pBar->Get_CurrentColor());
+		}
+
+	}
+
+
+	if (m_pBall)
+	{
+		CBrickItem::TYPE eType = m_pBall->Get_CurItem();
+		if (eType != CBrickItem::TYPE_END)
+		{
+			m_ITemList.push_back(eType);
+		}
+	}
+}
+
 void CBrickGame::Free()
 {
 	__super::Free();
+
+	if (!m_isPrototype)
+	{
+		for (size_t i = 0; i < CBrickItem::TYPE_END; i++)
+		{
+			Safe_Release(m_pItem[i]);
+		}
+	}
+
+	Safe_Release(m_pTimeBarLock);
+	Safe_Release(m_pItemSlot);
+	Safe_Release(m_pItemSlotEffect);
 
 	Safe_Release(m_pCatBoss);
 	Safe_Release(m_pBall);

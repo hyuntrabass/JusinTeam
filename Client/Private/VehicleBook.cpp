@@ -42,7 +42,7 @@ HRESULT CVehicleBook::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-	//나중에 주석 
+/*
 	for (size_t i = 0; i < Type_End; i++)
 	{
 		if (FAILED(Set_Vehicle((Riding_Type)i)))
@@ -50,6 +50,7 @@ HRESULT CVehicleBook::Init(void* pArg)
 			return E_FAIL;
 		}
 	}
+*/
 
 	return S_OK;
 }

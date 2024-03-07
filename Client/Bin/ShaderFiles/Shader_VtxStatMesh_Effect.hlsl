@@ -851,6 +851,26 @@ PS_OUT_EFFECT PS_Main_MaskDiffEffect(PS_IN_EFFECT Input)
     return Output;
 }
 
+
+PS_OUT_EFFECT PS_Main_DiffClampEffect(PS_IN Input)
+{
+    PS_OUT_EFFECT Output = (PS_OUT_EFFECT) 0;
+
+    vector vColor = g_DiffuseTexture.Sample(LinearClampSampler, Input.vTex + g_vUVTransform);
+    
+    float3 Color = vColor.rgb;
+    float fAlpha = vColor.a;
+    
+    float fWeight = clamp(0.03f / (1e-5 + pow(Input.LinearZ, 4.f)), 1e-2, 3e3);
+    fWeight = max(min(1.f, max(max(Color.r, Color.g), Color.b) * fAlpha), fAlpha) * fWeight;
+    
+    Output.vColor = vector(Color * fAlpha, fAlpha) * fWeight;
+    Output.vAlpha = vector(fAlpha, fAlpha, fAlpha, fAlpha);
+    Output.vBlur = vector(Color, fAlpha) * g_isBlur;
+    
+    return Output;
+}
+
 technique11 DefaultTechnique_Shader_StatMesh
 {
     pass Default // 0
@@ -1164,4 +1184,16 @@ technique11 DefaultTechnique_Shader_StatMesh
         PixelShader = compile ps_5_0 PS_Main_MaskDiffEffect();
     }
 
+    pass DiffClampEffect // 24
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Effect, 0);
+        SetBlendState(BS_Effect, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_DiffClampEffect();
+    }
 };

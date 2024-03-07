@@ -3,6 +3,7 @@
 #include "Client_Define.h"
 #include "GameObject.h"
 #include "Balloon.h"
+#include "BrickItem.h"
 BEGIN(Client)
 
 class CBrickBall final : public CGameObject
@@ -42,6 +43,7 @@ private:
 	CTexture* m_pMaskTextureCom = { nullptr };
 
 private:
+	CBrickItem::TYPE		m_eCurItem{ CBrickItem:: TYPE_END};
 	BrickColor				m_eCurBrickColor{};
 	_bool					m_isCombo{};
 	_bool					m_isBarColl{};
@@ -57,7 +59,7 @@ private:
 
 	_mat					m_EffectMatrix{};
 	class CEffect_Dummy*	m_pEffect_Ball{ nullptr };
-	CEffect_Dummy*	m_pEffect_Ball_Parti{ nullptr };
+	CEffect_Dummy*			m_pEffect_Ball_Parti{ nullptr };
 	CCollider*				m_pCurCollider{ nullptr };
 	class CCommonTrail*		m_pTrail{ nullptr };
 	//CCommonSurfaceTrail* m_pDistortionTrail { nullptr };
@@ -65,10 +67,12 @@ private:
 public:
 	const _bool& Is_Combo() const { return m_isCombo; }
 	const _bool& Is_Dead() const { return m_isDead; }
+	CBrickItem::TYPE Get_CurItem();
 
 private:
 	HRESULT Init_Effect();
 	void Check_Collision(_float fTimeDelta);
+	void Check_ItemCollision(_float fTimeDelta);
 	void Set_BallColor();
 
 public:

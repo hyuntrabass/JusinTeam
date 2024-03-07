@@ -47,83 +47,14 @@ HRESULT CInven::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-	/*
-	
-	wstring strItem = TEXT("Ã¼·Â Æ÷¼Ç");
-	CUI_Manager::Get_Instance()->Set_Item(strItem, 80);
-	
-	strItem = TEXT("¸¶³ª Æ÷¼Ç");
-	CUI_Manager::Get_Instance()->Set_Item(strItem, 60);
-	
-	strItem = TEXT("±×³É¸ðÀÚ");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
-	
-	strItem = TEXT("¾ÈÈçÇÑ¸ðÀÚ");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
-	
-	strItem = TEXT("À¯´ÏÅ©Çï¸ä");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
-	
-	strItem = TEXT("À¯´ÏÅ©ÇÑ¿Ê");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
-	
-	strItem = TEXT("½ÅÈ­¿Ê");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
-	*/
 
-	wstring strItem = TEXT("°¡Á× ¿Ê");
-	ITEM eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
-	m_pWearableSlots[W_CHEST]->Set_WearableItem(eItem);
+	wstring strName = TEXT("¹«½º »Ô ´Ü°Ë");
+	ITEM eItem = CUI_Manager::Get_Instance()->Find_Item(strName);
+	CUI_Manager::Get_Instance()->Set_WearableItem(W_SWORD, eItem);
 
-	//strItem = TEXT("¹«½º »Ô ´Ü°Ë");
-	//eItem = CUI_Manager::Get_Instance()->Find_Item(strItem);
-	//m_pWearableSlots[W_SWORD]->Set_WearableItem(eItem);
-
-	strItem = TEXT("¹«½º »Ô È°");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);	
-	
-	strItem = TEXT("¿ÀµòÀÇ ±Ã´Ï¸£ È°");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);	
-	
-	strItem = TEXT("¹«½º »Ô ´Ü°Ë");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);	
-	
-	strItem = TEXT("¿ÀµòÀÇ ±Ã´Ï¸£ ´Ü°Ë");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);	
-
-
-
-	strItem = TEXT("·¹±ä·¹ÀÌÇÁÀÇ ºÒ¸ê °©¿Ê");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);	
-
-	strItem = TEXT("¿¤µå·éÀÇ ¼öÈ£ °©¿Ê");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);	
-	
-	strItem = TEXT("Ã¼·Â Æ÷¼Ç");
-	CUI_Manager::Get_Instance()->Set_Item(strItem, 50);
-	
-	strItem = TEXT("[½ÅÈ­]Å» °Í ¼ÒÈ¯ Ä«µå");
-	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
-	
-	strItem = TEXT("[Èñ±Í]Å» °Í ¼ÒÈ¯ Ä«µå");
-	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
-	
-	strItem = TEXT("[ÀÏ¹Ý]Å» °Í ¼ÒÈ¯ Ä«µå");
-	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
-	
-	strItem = TEXT("[À¯´ÏÅ©]½ÅºñÇÑ ¾Ë");
-	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
-	
-	strItem = TEXT("[½ÅÈ­]½ÅºñÇÑ ¾Ë");
-	CUI_Manager::Get_Instance()->Set_Item(strItem, 10);
-	
-	strItem = TEXT("°í¾çÀÌ");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
-
-	strItem = TEXT("µå·¡°ï");
-	CUI_Manager::Get_Instance()->Set_Item(strItem);
-
-	//m_pWearableSlots[W_EQUIP]->Set_WearableItem(eItem);
+	strName = TEXT("¹«½º »Ô È°");
+	eItem = CUI_Manager::Get_Instance()->Find_Item(strName);
+	CUI_Manager::Get_Instance()->Set_WearableItem(W_SWORD, eItem);
 	return S_OK;
 }
 
@@ -425,7 +356,7 @@ HRESULT CInven::Add_Parts()
 	
 	Button.strText = TEXT("");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Out");
-	Button.vPosition = _vec2(1230.f, 40.f);
+	Button.vPosition = _vec2(1230.f, 30.f);
 	Button.vSize = _vec2(70.f, 70.f);
 
 	m_pExitButton = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);

@@ -67,7 +67,6 @@ HRESULT CHitEffect::Init(void* pArg)
 		}
 		m_pCritical->Set_Pass(VTPass_Mask_Color);
 	}
-
 	return S_OK;
 }
 

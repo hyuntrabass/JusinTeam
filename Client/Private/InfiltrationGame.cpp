@@ -48,6 +48,11 @@ HRESULT CInfiltrationGame::Init(void* pArg)
 
 void CInfiltrationGame::Tick(_float fTimeDelta)
 {
+	if (!CUI_Manager::Get_Instance()->InfinityTower_UI(true, BOSS1))
+	{
+		return;
+	}
+
 	Reset_Play(fTimeDelta);
 	if (m_pTeleport)
 		m_pTeleport->Tick(fTimeDelta);
