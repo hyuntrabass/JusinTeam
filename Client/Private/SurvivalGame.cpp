@@ -184,7 +184,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 		{
 			m_fTime[1] += fTimeDelta;
 
-			if (m_fTime[1] >= 10.f)
+			if (m_fTime[1] >= 15.f)
 			{
 				m_eCurStage = STAGE_INIT;
 				m_eNextStage = STAGE02;
@@ -350,6 +350,8 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 			m_eCurStage = STAGE_INIT;
 			m_eNextStage = STAGE01;
 			m_bGameStart = false;
+
+			CCamera_Manager::Get_Instance()->Set_RidingZoom(false);
 
 			//if (!CUI_Manager::Get_Instance()->InfinityTower_UI(false, SURVIVAL))
 			//{
