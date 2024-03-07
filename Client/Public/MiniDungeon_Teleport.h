@@ -22,6 +22,7 @@ public:
 	_bool Get_Collision() { return m_isCollision; }
 	_bool Get_Limited() { return m_isLimited; }
 	_mat Get_Matrix() { return m_Matrix; }
+	_bool Get_Finished() { return m_isFinished; }
 private:
 	HRESULT Add_Components();
 
@@ -36,7 +37,7 @@ private:
 	_int 	m_iTriggerNumber{};
 	_bool	m_isCollision{ false };
 	_bool	m_isLimited{ false };
-
+	_bool	m_isFinished{ false };
 
 public:
 	static CMiniDungeon_Teleport* Create(_dev pDevice, _context pContext);

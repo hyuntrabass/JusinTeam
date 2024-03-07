@@ -46,12 +46,18 @@ HRESULT CGuardTower::Init(void* pArg)
 
 	m_pShaderCom->Set_PassIndex(VTF_InstPass_Default);
 
-	if (m_Pattern_Type == PATTERN_1)
+	switch (m_Pattern_Type)
+	{
+	case Client::CGuardTower::PATTERN_1:
 		Create_Range_Pattern_1();
-	else if (m_Pattern_Type == PATTERN_2)
+		break;
+	case Client::CGuardTower::PATTERN_2:
 		Create_Range_Pattern_2();
-	else
+		break;
+	case Client::CGuardTower::PATTERN_3:
 		Create_Range_Pattern_3();
+		break;
+	}
 
 	Create_Lazer();
 	Create_Attack_Lazer();
@@ -213,17 +219,18 @@ void CGuardTower::Tick(_float fTimeDelta)
 	m_pModelCom->Get_CurrentAnimPos();
 
 	Init_State(fTimeDelta);
-	if (m_Pattern_Type == PATTERN_1)
+
+	switch (m_Pattern_Type)
 	{
+	case Client::CGuardTower::PATTERN_1:
 		Tick_State_Pattern_1(fTimeDelta);
-	}
-	else if (m_Pattern_Type == PATTERN_2)
-	{
+		break;
+	case Client::CGuardTower::PATTERN_2:
 		Tick_State_Pattern_2(fTimeDelta);
-	}
-	else if (m_Pattern_Type == PATTERN_3)
-	{
+		break;
+	case Client::CGuardTower::PATTERN_3:
 		Tick_State_Pattern_3(fTimeDelta);
+		break;
 	}
 
 	if (m_pEye_Red_FX)
@@ -521,7 +528,7 @@ void CGuardTower::Tick_State_Pattern_1(_float fTimeDelta)
 
 		if (m_bAttacked == false)
 		{
-			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
+			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
 			m_bAttacked = true;
 		}
 
@@ -672,7 +679,7 @@ void CGuardTower::Tick_State_Pattern_2(_float fTimeDelta)
 
 		if (m_bAttacked == false)
 		{
-			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
+			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
 			m_bAttacked = true;
 		}
 
@@ -834,7 +841,7 @@ void CGuardTower::Tick_State_Pattern_3(_float fTimeDelta)
 
 		if (m_bAttacked == false)
 		{
-			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
+			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
 			m_bAttacked = true;
 		}
 
