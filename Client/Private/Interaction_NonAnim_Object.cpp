@@ -148,6 +148,11 @@ void CInteraction_NonAnim::Tick(_float fTimeDelta)
 		m_pEffect->Tick(fTimeDelta);
 	}
 
+	if (m_isDead)
+	{
+		m_pGameInstance->Play_Sound(TEXT("Interation_Success01"));
+	}
+
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
 #endif

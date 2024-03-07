@@ -250,7 +250,7 @@ void CWasp::Tick_State(_float fTimeDelta)
 
 		if (m_HasAttacked)
 		{
-			m_pGameInstance->Play_Sound(TEXT("Whoosh_Quick_B_SFX_03"), 1.f);
+			m_pGameInstance->Play_Sound(TEXT("Whoosh_Quick_B_SFX_03"));
 		}
 	}
 		break;

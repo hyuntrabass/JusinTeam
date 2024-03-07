@@ -53,7 +53,7 @@ void CLarva_Ball::Tick(_float fTimeDelta)
 
 		_uint iSoundIndex = rand() % 4 + 1;
 		wstring strSoundTag = TEXT("Hit_Large_Acid_SFX_0") + to_wstring(iSoundIndex);
-		m_pGameInstance->Play_Sound(strSoundTag);
+		m_pGameInstance->Play_Sound(strSoundTag, 0.3f);
 	}
 
 	if (m_fLifeTime >= 7.f)
