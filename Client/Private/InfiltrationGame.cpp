@@ -74,6 +74,7 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 						pGuardTower->Tower_TurnOff();
 					}
 					m_isTurnOff = true;
+					m_pGameInstance->Play_Sound(L"War_Skill_Absorption_SFX_06");
 				}
 			}
 		}

@@ -116,18 +116,18 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 			//_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 			//pPlayerTransform->Set_Position(vPlayerPos + _vec3(100.f));
 
-			for (size_t i = 0; i < 2; i++)
-			{
-				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void09"), TEXT("Prototype_GameObject_Void09"))))
-				{
+			//for (size_t i = 0; i < 2; i++)
+			//{
+			//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void09"), TEXT("Prototype_GameObject_Void09"))))
+			//	{
 
-				}
-			}
+			//	}
+			//}
 
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
-			{
+			//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
+			//{
 
-			}
+			//}
 			//pPlayerTransform->Set_Position(vPlayerPos);
 
 			m_bChangePos[0] = true;
