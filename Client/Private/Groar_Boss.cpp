@@ -101,7 +101,7 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 	}
 
 	//if (m_pGameInstance->Key_Down(DIK_Q, InputChannel::UI)) // 괴물들 잡아달라 하고 보스방으로 순간이동 하는 타이밍(한번만 들어와야 함)
-	if (m_strQuestOngoing == TEXT("그로아를 지켜라") || m_pGameInstance->Key_Down(DIK_Q, InputChannel::UI))
+	if (m_strQuestOngoing == TEXT("그로아를 지켜라"))// || m_pGameInstance->Key_Down(DIK_Q, InputChannel::UI))
 	{
 		if (!m_bChangePos[0])
 		{
@@ -1292,14 +1292,14 @@ void CGroar_Boss::NPC_LateTick(_float fTimeDelta)
 		}
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_G)) // 치트키 변신 빨리하게
-	{
-		if (not m_TalkSounds.empty())
-		{
-			m_TalkSounds.clear();
-			m_iSoundChannel = -1;
-		}
-	}
+	//if (m_pGameInstance->Key_Down(DIK_G)) // 치트키 변신 빨리하게
+	//{
+	//	if (not m_TalkSounds.empty())
+	//	{
+	//		m_TalkSounds.clear();
+	//		m_iSoundChannel = -1;
+	//	}
+	//}
 	if (CTrigger_Manager::Get_Instance()->Is_Coll_BossTrigger() == true)
 	{
 		if (m_TalkSounds.size() != 0 && m_iSoundChannel == -1)

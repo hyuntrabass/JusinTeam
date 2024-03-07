@@ -182,10 +182,10 @@ void CSoundSetting::Update_State()
 		m_pGameInstance->Set_SystemVolume(m_fSound);
 		break;
 	case Client::CSoundSetting::BACKGROUND:
-		m_pGameInstance->Set_BackGroundVolume(m_fSound);
+		m_pGameInstance->Set_EnvironmentVolume(m_fSound);
 		break;
 	case Client::CSoundSetting::ENV:
-		m_pGameInstance->Set_EnvironmentVolume(m_fSound);
+		m_pGameInstance->Set_BackGroundVolume(m_fSound);
 		break;
 	case Client::CSoundSetting::EFFECT:
 		m_pGameInstance->Set_EffectVolume(m_fSound);

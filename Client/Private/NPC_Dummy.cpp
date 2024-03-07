@@ -141,7 +141,7 @@ HRESULT CNPC_Dummy::Init(void* pArg)
 
 	if (m_strModelTag == TEXT("Prototype_Model_Male_020"))
 	{
-		DialogDesc.strText = TEXT("IDLE 상태로 바꿔주세요 ㅠㅠ");
+		DialogDesc.strText = TEXT("할아버지 할머니 어렸을 적에~");
 		m_Animation.iAnimIndex = 0;
 	}
 
