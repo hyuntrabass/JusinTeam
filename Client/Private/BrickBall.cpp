@@ -513,7 +513,14 @@ void CBrickBall::Check_ItemCollision(_float fTimeDelta)
 	if (isPowerColl)
 	{
 		m_eCurItem = CBrickItem::POWER;
-		m_pGameInstance->Play_Sound(TEXT("Pet_Comm_Teleport_End_01"), 1.f);
+		if (rand() % 2 == 0)
+		{
+			m_pGameInstance->Play_Sound(TEXT("Pet_Comm_Teleport_Start_01"), 1.f);
+		}
+		else
+		{
+			m_pGameInstance->Play_Sound(TEXT("Pet_Comm_Teleport_End_01"), 1.f);
+		}
 		return;
 	}
 
@@ -536,7 +543,14 @@ void CBrickBall::Check_ItemCollision(_float fTimeDelta)
 	if (isDoubleColl)
 	{
 		m_eCurItem = CBrickItem::DOUBLE;
-		m_pGameInstance->Play_Sound(TEXT("Pet_Comm_Teleport_End_01"), 1.f);
+		if (rand() % 2 == 0)
+		{
+			m_pGameInstance->Play_Sound(TEXT("Pet_Comm_Teleport_Start_01"), 1.f);
+		}
+		else
+		{
+			m_pGameInstance->Play_Sound(TEXT("Pet_Comm_Teleport_End_01"), 1.f);
+		}
 		return;
 	}
 
@@ -559,7 +573,14 @@ void CBrickBall::Check_ItemCollision(_float fTimeDelta)
 	if (isStopColl)
 	{
 		m_eCurItem = CBrickItem::STOP;
-		m_pGameInstance->Play_Sound(TEXT("Pet_Comm_Teleport_End_01"), 1.f);
+		if (rand() % 2 == 0)
+		{
+			m_pGameInstance->Play_Sound(TEXT("Pet_Comm_Teleport_Start_01"), 1.f);
+		}
+		else
+		{
+			m_pGameInstance->Play_Sound(TEXT("Pet_Comm_Teleport_End_01"), 1.f);
+		}
 		return;
 	}
 

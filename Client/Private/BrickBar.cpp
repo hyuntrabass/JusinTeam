@@ -85,6 +85,7 @@ void CBrickBar::Tick(_float fTimeDelta)
 			m_iBallColor = 0;
 		}
 		m_isChanged = true;
+		m_pGameInstance->Play_Sound(TEXT("Pet_Boing_Short_08"), 2.f);
 	}
 	if (m_isChanged)
 	{
