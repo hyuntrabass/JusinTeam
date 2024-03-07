@@ -38,6 +38,8 @@ private:
 	_float m_fResurrectionTime{ 0.f };
 	_bool m_isTurnOff = false;
 
+	_bool m_isDetected = false;
+
 private:
 	CTransform* m_pPlayerTransform = { nullptr };
 	class CDoor* m_pDoor{ nullptr };

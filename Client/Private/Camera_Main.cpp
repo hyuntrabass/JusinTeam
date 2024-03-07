@@ -50,10 +50,6 @@ HRESULT CCamera_Main::Init(void* pArg)
 
 void CCamera_Main::Tick(_float fTimeDelta)
 {
-	//matProj = m_pGameInstance->Get_Transform(TransformType::Proj);
-	//matView = m_pGameInstance->Get_Transform(TransformType::View);
-
-	//fTimeDelta /= (m_pGameInstance->Get_TimeRatio());
 
 	if (m_pCam_Manager->Get_CameraModeIndex() != CM_MAIN)
 	{
@@ -62,35 +58,15 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_P))
 	{
+		CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_DEFAULT);
 		m_pCam_Manager->Set_CameraModeIndex(CM_DEBUG);
+		return;
 	}
 
 	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
 	m_eCurrState = m_pCam_Manager->Get_CameraState();
-	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() == TS_MiniDungeon)
-	{
-		CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_HIDE);
-		_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
-		vPlayerPos.y += 2.f;
-		_vec4 vPlayerLook = m_pPlayerTransform->Get_State(State::Look).Get_Normalized();
-		//vPlayerPos += vPlayerLook;
-		m_pTransformCom->Set_State(State::Pos, vPlayerPos);
-		//if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON))
-		{
-			_long dwMouseMove{};
-			if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
-			{
-				m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
-			}
 
-			if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
-			{
-				_float fTurnValue = fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor;
-				m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
-			}
-		}
-	}
-	else if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_SELECT)
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_SELECT)
 	{
 		Select_Mode(fTimeDelta);
 	}
@@ -654,6 +630,29 @@ void CCamera_Main::Custom_Mode(_float fTimeDelta)
 
 }
 
+void CCamera_Main::FisrtPerson_Mode(_float fTimeDelta)
+{
+
+	CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_HIDE);
+
+
+	_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
+	vPlayerPos.y += 2.f;
+	m_pTransformCom->Set_State(State::Pos, vPlayerPos);
+		_long dwMouseMove{};
+		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
+		{
+			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
+		}
+
+		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
+		{
+			_float fTurnValue = fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor;
+			m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
+		}
+	
+}
+
 void CCamera_Main::Zoom_Mode(_float fTimeDelta)
 {
 	_vec4 vCurLook = m_pTransformCom->Get_State(State::Look);;
@@ -922,6 +921,7 @@ void CCamera_Main::Init_State(_float fTimeDelta)
 		switch (m_eCurrState)
 		{
 		case Client::CS_DEFAULT:
+			CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_DEFAULT);
 			m_pTransformCom->Set_State(State::Pos, _vec4(m_pPlayerTransform->Get_CenterPos() + _vec4(0.f, 3.f, 0.f, 0.f)));
 			m_vOriCamPos = _vec4(m_pPlayerTransform->Get_CenterPos()) + _vec4(0.f, 3.f, 0.f, 0.f);
 			m_pTransformCom->LookAt_Dir(m_vOriginalLook);
@@ -938,6 +938,8 @@ void CCamera_Main::Init_State(_float fTimeDelta)
 			m_pPlayerTransform->LookAt(vTargetPos + vPlayerRight * -0.1f);
 		}
 		break;
+		case Client::CS_FIRSTPERSON:
+			CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_HIDE);
 		case Client::CS_INVEN:
 			m_vOriginalLook = m_pTransformCom->Get_State(State::Look);
 			break;
@@ -985,6 +987,9 @@ void CCamera_Main::Tick_State(_float fTimeDelta)
 	case Client::CS_INVEN:
 		Inven_Mode(fTimeDelta);
 		break;
+	case Client::CS_FIRSTPERSON:
+		FisrtPerson_Mode(fTimeDelta);
+		break;
 	case Client::CS_SHOP:
 		Shop_Mode(fTimeDelta);
 		break;
@@ -993,8 +998,14 @@ void CCamera_Main::Tick_State(_float fTimeDelta)
 		break;
 	case Client::CS_ENDFULLSCREEN:
 	{
-		m_pCam_Manager->Set_CameraState(CS_DEFAULT);
-
+		if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() == TS_MiniDungeon)
+		{
+			m_pCam_Manager->Set_CameraState(CS_FIRSTPERSON);
+		}
+		else
+		{
+			m_pCam_Manager->Set_CameraState(CS_DEFAULT);
+		}
 		CFadeBox::FADE_DESC Desc = {};
 		Desc.fOut_Duration = 1.f;
 		CUI_Manager::Get_Instance()->Add_FadeBox(Desc);

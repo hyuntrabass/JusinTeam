@@ -523,7 +523,7 @@ HRESULT CUI_Manager::Init_Skills()
 
 	Info.strName = TEXT("연속 각인");
 	Info.iMp = 8;
-	Info.iCoolTime = 6;
+	Info.iCoolTime = 14;
 	Info.iSkillIdx = 3;
 	Info.iModelSkillIndex = 3;
 	Info.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_skillicon8");

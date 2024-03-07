@@ -58,6 +58,8 @@ public:
 
 	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) override;
 
+	const _bool Get_Detected() { return m_isDetected; }
+
 public:
 	void Init_State(_float fTimeDelta);
 	void Tick_State_Pattern_1(_float fTimeDelta);
@@ -99,6 +101,9 @@ private:
 	class CEffect_Dummy* m_pFrameEffect{ nullptr };
 	class CEffect_Dummy* m_pThreatEffect{ nullptr };
 	class CEffect_Dummy* m_pAttackEffect{ nullptr };
+	class CEffect_Dummy* m_pEye_White_FX{ nullptr };
+	class CEffect_Dummy* m_pEye_Red_FX{ nullptr };
+	class CEffect_Dummy* m_pEye_Charge_FX{ nullptr };
 
 private:
 	GuardTowerInfo m_Info{};
@@ -124,6 +129,7 @@ private:
 	_mat m_GuardTowerMatrix{};
 	_mat m_EffectMatrix{};
 	_mat m_LazerMatrix{};
+	_mat m_EyeMatrix{};
 	_vec4 m_vLook{};
 	_vec4 m_vCurPlayerPos{};
 

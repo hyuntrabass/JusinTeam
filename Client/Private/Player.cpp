@@ -597,10 +597,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
-	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() == TS_MiniDungeon)
-	{
-		return;
-	}
+
 	if (m_pFrameEffect)
 	{
 		m_pFrameEffect->Late_Tick(fTimeDelta);
@@ -682,21 +679,16 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	}
 
 #ifdef _DEBUG
-	//m_pRendererCom->Add_DebugComponent(m_pHitCollider);
 	m_pRendererCom->Add_DebugComponent(m_pParryingCollider);
 
-	//for (int i = 0; i < AT_End; i++)
-	{
-		/*m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Sword_Skill1]);
-		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Sword_Skill2]);
-		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Sword_Skill3]);
-		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Sword_Skill4]);*/
-	}
 
 #endif // DEBUG
 
 	m_pModelCom->Play_Animation(fTimeDelta, m_bAttacked);
-	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_MiniDungeon or m_eState == Die or m_eState == Revival_Start)
+	{
+		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	}
 
 	if (true == m_pGameInstance->Get_TurnOnShadow())
 		m_pRendererCom->Add_RenderGroup(RG_Shadow, this);
@@ -1359,9 +1351,9 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 
 		if (m_eState == Stun_Start or m_eState == Stun or m_eState == Shock or m_eState == KnockDown)
 		{
-			m_bMove_AfterSkill = true;	
-				return;
-			
+			m_bMove_AfterSkill = true;
+			return;
+
 		}
 
 
@@ -1474,20 +1466,7 @@ void CPlayer::Change_Parts(PART_TYPE PartsType, _int ChangeIndex)
 }
 
 void CPlayer::Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex)
-{/*
-
-	if (ChangeIndex == SWORD_UNEQUIP)
-	{
-		m_bWeapon_Unequip = true;
-	}
-	else
-	{
-
-	}
-<<<<<<< HEAD
-
-=======
-	*/
+{
 	m_Weapon_CurrentIndex = ChangeIndex;
 	m_Current_Weapon = PartsType;
 	m_bWeapon_Unequip = false;
@@ -1672,26 +1651,42 @@ void CPlayer::Move(_float fTimeDelta)
 
 		CSkillBlock::SKILLSLOT eSlotIdx{};
 		_bool isPress = false;
+
+
 		if (m_pGameInstance->Key_Down(DIK_1))
 		{
-			eSlotIdx = CSkillBlock::SKILL1;
-			isPress = true;
+			if (m_eState != Skill1 and m_eState != Skill2 and m_eState != Skill3 and m_eState != Skill4)
+			{
+				eSlotIdx = CSkillBlock::SKILL1;
+				isPress = true;
+			}
 		}
-		if (m_pGameInstance->Key_Down(DIK_2))
+		else if (m_pGameInstance->Key_Down(DIK_2))
 		{
-			eSlotIdx = CSkillBlock::SKILL2;
-			isPress = true;
+
+			if (m_eState != Skill1 and m_eState != Skill2 and m_eState != Skill3 and m_eState != Skill4)
+			{
+				eSlotIdx = CSkillBlock::SKILL2;
+				isPress = true;
+			}
 		}
-		if (m_pGameInstance->Key_Down(DIK_3))
+		else if (m_pGameInstance->Key_Down(DIK_3))
 		{
-			eSlotIdx = CSkillBlock::SKILL3;
-			isPress = true;
+			if (m_eState != Skill1 and m_eState != Skill2 and m_eState != Skill3 and m_eState != Skill4)
+			{
+				eSlotIdx = CSkillBlock::SKILL3;
+				isPress = true;
+			}
 		}
-		if (m_pGameInstance->Key_Down(DIK_4))
+		else if (m_pGameInstance->Key_Down(DIK_4))
 		{
-			eSlotIdx = CSkillBlock::SKILL4;
-			isPress = true;
+			if (m_eState != Skill1 and m_eState != Skill2 and m_eState != Skill3 and m_eState != Skill4)
+			{
+				eSlotIdx = CSkillBlock::SKILL4;
+				isPress = true;
+			}
 		}
+
 		if (isPress)
 		{
 			_int iSkillNum = 0;
@@ -2743,7 +2738,7 @@ void CPlayer::Set_ExtraStatus()
 	m_Status.HpRegenAmount = m_OriStatus.HpRegenAmount + ExtraStat.HpRegenAmount;
 	m_Status.MpRegenAmount = m_OriStatus.MpRegenAmount + ExtraStat.MpRegenAmount;
 
-	
+
 }
 void CPlayer::After_SwordAtt(_float fTimeDelta)
 {
@@ -4053,7 +4048,7 @@ void CPlayer::Init_State()
 			m_hasJumped = false;
 			_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
 			_mat ShockMat = _mat::CreateTranslation(vPos);
-			TeleportSpot TsSpot =  CTrigger_Manager::Get_Instance()->Get_CurrentSpot();
+			TeleportSpot TsSpot = CTrigger_Manager::Get_Instance()->Get_CurrentSpot();
 			EffectInfo EffectDesc{};
 			if (TsSpot == TS_MiniDungeon or TsSpot == TS_BossRoom)
 			{
@@ -4302,6 +4297,10 @@ void CPlayer::Init_State()
 		break;
 		case Client::CPlayer::Revival_End:
 		{
+			if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() == TS_MiniDungeon)
+			{
+				m_pCam_Manager->Set_CameraState(CS_FIRSTPERSON);
+			}
 			m_Animation.iAnimIndex = Anim_revival_end;
 			m_hasJumped = false;
 			m_Status.Current_Hp = m_Status.Max_Hp;
@@ -4311,6 +4310,7 @@ void CPlayer::Init_State()
 		break;
 		case Client::CPlayer::Die:
 		{
+			m_pCam_Manager->Set_CameraState(CS_DEFAULT);
 			m_Animation.iAnimIndex = Anim_die;
 			m_hasJumped = false;
 		}
