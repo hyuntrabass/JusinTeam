@@ -251,6 +251,16 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 	}
 }
 
+void CTrigger_Manager::Dragon_CutScene()
+{
+	m_isBreakLoop = true;
+	m_isPlayCutScene = false;
+	m_isInfinite = false;
+	m_strFilePath = L"../Bin/Data/Dragon_CutSceneData.dat";
+	CCamera_Manager::Get_Instance()->Set_CameraModeIndex(CM_CUTSCENE);
+	return;
+}
+
 void CTrigger_Manager::Limited_CutScene(_bool isLimited)
 {
 	m_isLimited = isLimited;

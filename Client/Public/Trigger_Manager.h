@@ -30,6 +30,8 @@ public:
 	HRESULT Init();
 	void Tick(_float fTimeDelta);
 
+	void Dragon_CutScene();
+
 	void Limited_CutScene(_bool isLimited);
 
 	void Set_PlayCutScene(_bool isPlayCutScene) { m_isPlayCutScene = isPlayCutScene; }
