@@ -111,6 +111,7 @@ void CMenu::Tick(_float fTimeDelta)
 	}
 	if (m_isActive && m_pGameInstance->Key_Down(DIK_ESCAPE, InputChannel::GamePlay))
 	{
+		CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_DEFAULT);
 		CFadeBox::FADE_DESC Desc = {};
 		Desc.fIn_Duration = 0.5f;
 		Desc.fOut_Duration = 1.f;
