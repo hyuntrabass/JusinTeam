@@ -46,10 +46,12 @@ void CMiniDungeon_Teleport::Tick(_float fTimeDelta)
 		{
 			return;
 		}
+		m_isFinished = true;
 		LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
 		*Light = g_Light_HumanBoss;
 		CCamera_Manager::Get_Instance()->Set_CameraState(CS_ENDFULLSCREEN);
 		CTrigger_Manager::Get_Instance()->Teleport(TS_BossRoom);
+		CTrigger_Manager::Get_Instance()->Set_BossRoom();
 	}
 
 #ifdef _DEBUG

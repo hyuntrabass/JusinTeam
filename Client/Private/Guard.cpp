@@ -107,12 +107,18 @@ void CGuard::Tick(_float fTimeDelta)
 	}
 
 	Init_State(fTimeDelta);
-	if(m_ePattern == PATTERN_1)
+	switch (m_ePattern)
+	{
+	case Client::CGuard::PATTERN_1:
 		Tick_State_Pattern1(fTimeDelta);
-	else if(m_ePattern == PATTERN_2)
+		break;
+	case Client::CGuard::PATTERN_2:
 		Tick_State_Pattern2(fTimeDelta);
-	else
+		break;
+	case Client::CGuard::PATTERN_3:
 		Tick_State_Pattern3(fTimeDelta);
+		break;
+	}
 
 	m_pModelCom->Set_Animation(m_Animation);
 
@@ -315,7 +321,9 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 
 	_float Degree{};
 
-	_vec3 vGotoOriginPos = (m_OriginMatrix.Position() - vMyPosition).Get_Normalized();
+	_vec3 vGotoOriginPos = (m_vDetectedPos - vMyPosition).Get_Normalized();
+
+	_float fMaxChaseDist{};
 
 	switch (m_eCurState)
 	{
@@ -350,6 +358,7 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 		vPatrolPos = m_pTransformCom->Get_State(State::Pos);
 		if (m_isDetected == true)
 			m_eCurState = STATE_CHASE;
+
 		if((vIdlePos - vPatrolPos).Length() > 10.f)
 		{
 			m_eCurState = STATE_IDLE;
@@ -407,7 +416,9 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
-		if (fDist > 10.f)
+
+		fMaxChaseDist = (m_pTransformCom->Get_State(State::Pos) - m_vDetectedPos).Length();
+		if(20.f < fMaxChaseDist)
 			m_eCurState = STATE_BACK;
 
 		break;
@@ -416,7 +427,7 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 			{
 				if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
 					m_bAttacked = true;
 				}
 			}
@@ -435,7 +446,7 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f )
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
 				m_bAttacked = true;
 			}
 		}
@@ -456,15 +467,27 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 		vGotoOriginPos.y = 0.f;
 		m_pTransformCom->LookAt_Dir(vGotoOriginPos);
 
-		isBack = m_pTransformCom->Go_To(m_OriginMatrix.Position(), fTimeDelta * 2.f);
+		isBack = m_pTransformCom->Go_To(m_vDetectedPos, fTimeDelta * 2.f);
 		
+		m_fBackTime += fTimeDelta;
+
+		m_isDetected = false;
 		if (isBack)
 		{
-			m_pTransformCom->Set_Matrix(m_OriginMatrix);
+			m_pTransformCom->Set_State(State::Pos, m_vDetectedPos);
+			m_pTransformCom->LookAt_Dir(m_vDetectedLook);
+
 			//m_pTransformCom->Set_State(State::Look, m_OriginMatrix.Look());
 			m_eCurState = STATE_IDLE;
+			
+			m_fBackTime = 0.f;
 		}
 		
+		if (3.f <= m_fBackTime) {
+			m_fBackTime = 0.f;
+			m_eCurState = STATE_IDLE;
+			m_pTransformCom->Set_Matrix(m_OriginMatrix);
+		}
 
 		break;
 
@@ -512,8 +535,9 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 
 	_float Degree{};
 
-	_vec3 vGotoOriginPos = (m_OriginMatrix.Position() - vMyPosition).Get_Normalized();
+	_vec3 vGotoOriginPos = (m_vDetectedPos - vMyPosition).Get_Normalized();
 
+	_float fMaxChaseDist{};
 	switch (m_eCurState)
 	{
 
@@ -605,7 +629,8 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
-		if (fDist > 10.f)
+		fMaxChaseDist = (m_pTransformCom->Get_State(State::Pos) - m_vDetectedPos).Length();
+		if (20.f < fMaxChaseDist)
 			m_eCurState = STATE_BACK;
 
 		break;
@@ -614,7 +639,7 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
 				m_bAttacked = true;
 			}
 		}
@@ -633,7 +658,7 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
 				m_bAttacked = true;
 			}
 		}
@@ -654,15 +679,25 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 		vGotoOriginPos.y = 0.f;
 		m_pTransformCom->LookAt_Dir(vGotoOriginPos);
 
-		isBack = m_pTransformCom->Go_To(m_OriginMatrix.Position(), fTimeDelta * 2.f);
+		isBack = m_pTransformCom->Go_To(m_vDetectedPos, fTimeDelta * 2.f);
 
+		m_fBackTime += fTimeDelta;
+
+		m_isDetected = false;
 		if (isBack)
 		{
-			m_pTransformCom->Set_Matrix(m_OriginMatrix);
+			m_pTransformCom->Set_State(State::Pos, m_vDetectedPos);
+			m_pTransformCom->LookAt_Dir(m_vDetectedLook);
+
 			//m_pTransformCom->Set_State(State::Look, m_OriginMatrix.Look());
 			m_eCurState = STATE_IDLE;
+			m_fBackTime = 0.f;
 		}
-
+		if (3.f <= m_fBackTime) {
+			m_fBackTime = 0.f;
+			m_eCurState = STATE_IDLE;
+			m_pTransformCom->Set_Matrix(m_OriginMatrix);
+		}
 
 		break;
 
@@ -707,13 +742,12 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 	_randInt iAttackInt(0, 1);
 	_int iRandomAttack = iAttackInt(m_iRandomAttack);
 
-	_vec3 vGotoOriginPos = (m_OriginMatrix.Position() - vMyPosition).Get_Normalized();
+	_vec3 vGotoOriginPos = (m_vDetectedPos - vMyPosition).Get_Normalized();
 
 
-	if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look), 2.f, pBuffer))
-	{
-		m_eCurState = STATE_BACK;
-	}
+	_float fMaxChaseDist{};
+
+
 	switch (m_eCurState)
 	{
 
@@ -751,7 +785,8 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 			m_pTransformCom->LookAt_Dir(vNormalToPlayer);
 			m_pTransformCom->Go_Straight(fTimeDelta);
 		}
-		if (fDist > 10.f)
+		fMaxChaseDist = (m_pTransformCom->Get_State(State::Pos) - m_vDetectedPos).Length();
+		if (20.f < fMaxChaseDist)
 			m_eCurState = STATE_BACK;
 
 		break;
@@ -761,7 +796,7 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
 				m_bAttacked = true;
 			}
 		}
@@ -780,7 +815,7 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
 				m_bAttacked = true;
 			}
 		}
@@ -801,15 +836,25 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 		vGotoOriginPos.y = 0.f;
 		m_pTransformCom->LookAt_Dir(vGotoOriginPos);
 
-		isBack = m_pTransformCom->Go_To(m_OriginMatrix.Position(), fTimeDelta * 2.f);
+		isBack = m_pTransformCom->Go_To(m_vDetectedPos, fTimeDelta * 2.f);
 
+		m_fBackTime += fTimeDelta;
+
+		m_isDetected = false;
 		if (isBack)
 		{
-			m_pTransformCom->Set_Matrix(m_OriginMatrix);
+			m_pTransformCom->Set_State(State::Pos, m_vDetectedPos);
+			m_pTransformCom->LookAt_Dir(m_vDetectedLook);
 			//m_pTransformCom->Set_State(State::Look, m_OriginMatrix.Look());
 			m_eCurState = STATE_IDLE;
+			m_fBackTime = 0.f;
 		}
 
+		if (3.f <= m_fBackTime) {
+			m_fBackTime = 0.f;
+			m_eCurState = STATE_IDLE;
+			m_pTransformCom->Set_Matrix(m_OriginMatrix);
+		}
 
 		break;
 
@@ -884,8 +929,11 @@ void CGuard::Detect_Range(_float fAngle, _float fDist, _vec4 vNormalToPlayer)
 		{
 			if (fDist < Buffer.block.distance)
 			{
-				if (CUI_Manager::Get_Instance()->Get_Hp().x > 0)
+				if (CUI_Manager::Get_Instance()->Get_Hp().x > 0 && false == m_isDetected) {
+					m_vDetectedPos = m_pTransformCom->Get_State(State::Pos);
+					m_vDetectedLook = m_pTransformCom->Get_State(State::Look);
 					m_isDetected = true;
+				}
 				else
 				{
 					if (m_pModelCom->IsAnimationFinished(ANIM_SWING) || m_pModelCom->IsAnimationFinished(ANIM_STEP))
@@ -895,19 +943,7 @@ void CGuard::Detect_Range(_float fAngle, _float fDist, _vec4 vNormalToPlayer)
 					}
 				}
 			}
-			else
-			{
-				m_isDetected = false;
-			}
 		}
-		else
-		{
-			m_isDetected = false;
-		}
-	}
-	else
-	{
-		m_isDetected = false;
 	}
 }
 

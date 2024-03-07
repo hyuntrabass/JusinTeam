@@ -120,6 +120,10 @@ private:
 	static _int m_iLightID;
 	wstring m_strLightTag{};
 
+	_vec4 m_vDetectedPos{};
+	_vec3 m_vDetectedLook{};
+
+	_float m_fBackTime{};
 
 	_bool m_isPrototype = false;
 private:

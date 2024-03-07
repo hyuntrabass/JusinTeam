@@ -102,7 +102,7 @@ void CDummy::Tick(_float fTimeDelta)
 void CDummy::Late_Tick(_float fTimeDelta)
 {
 	if (m_eType == ItemType::Monster || m_eType == ItemType::NPC)
-		m_pModelCom->Play_Animation(0.1f);
+		m_pModelCom->Play_Animation(0);
 
 	#ifdef _DEBUG
 	if(m_eType == ItemType::Trigger)
