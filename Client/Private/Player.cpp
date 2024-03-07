@@ -679,21 +679,13 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	}
 
 #ifdef _DEBUG
-	//m_pRendererCom->Add_DebugComponent(m_pHitCollider);
 	m_pRendererCom->Add_DebugComponent(m_pParryingCollider);
 
-	//for (int i = 0; i < AT_End; i++)
-	{
-		/*m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Sword_Skill1]);
-		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Sword_Skill2]);
-		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Sword_Skill3]);
-		m_pRendererCom->Add_DebugComponent(m_pAttCollider[AT_Sword_Skill4]);*/
-	}
 
 #endif // DEBUG
 
 	m_pModelCom->Play_Animation(fTimeDelta, m_bAttacked);
-	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_MiniDungeon)
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_MiniDungeon or m_eState == Die or m_eState == Revival_Start)
 	{
 		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 	}
@@ -1474,20 +1466,7 @@ void CPlayer::Change_Parts(PART_TYPE PartsType, _int ChangeIndex)
 }
 
 void CPlayer::Change_Weapon(WEAPON_TYPE PartsType, WEAPON_INDEX ChangeIndex)
-{/*
-
-	if (ChangeIndex == SWORD_UNEQUIP)
-	{
-		m_bWeapon_Unequip = true;
-	}
-	else
-	{
-
-	}
-<<<<<<< HEAD
-
-=======
-	*/
+{
 	m_Weapon_CurrentIndex = ChangeIndex;
 	m_Current_Weapon = PartsType;
 	m_bWeapon_Unequip = false;
@@ -1595,14 +1574,7 @@ void CPlayer::Move(_float fTimeDelta)
 	_vec4 vRightDir = XMVector3Cross(m_pTransformCom->Get_State(State::Up), vForwardDir);
 	vRightDir.Normalize();
 	_vec4 vDirection{};
-	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() == TS_MiniDungeon)
-	{
-		if (m_eState == Run_Start or m_eState == Run)
-		{
-			m_pRendererCom->Set_RadialBlur_Power(0.7f);
-			m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.5f));
-		}
-	}
+
 	if (m_eState == Revival_Start or m_eState == Revival_End
 		or m_eState == KnockDown or m_eState == Stun_Start
 		or m_eState == Stun or m_eState == Die or m_eState == Jump_Long_End
@@ -4325,6 +4297,10 @@ void CPlayer::Init_State()
 		break;
 		case Client::CPlayer::Revival_End:
 		{
+			if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() == TS_MiniDungeon)
+			{
+				m_pCam_Manager->Set_CameraState(CS_FIRSTPERSON);
+			}
 			m_Animation.iAnimIndex = Anim_revival_end;
 			m_hasJumped = false;
 			m_Status.Current_Hp = m_Status.Max_Hp;
@@ -4334,6 +4310,7 @@ void CPlayer::Init_State()
 		break;
 		case Client::CPlayer::Die:
 		{
+			m_pCam_Manager->Set_CameraState(CS_DEFAULT);
 			m_Animation.iAnimIndex = Anim_die;
 			m_hasJumped = false;
 		}
