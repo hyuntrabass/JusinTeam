@@ -65,11 +65,8 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
 	m_eCurrState = m_pCam_Manager->Get_CameraState();
-	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() == TS_MiniDungeon)
-	{
-		FisrtPerson_Mode(fTimeDelta);
-	}
-	else if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_SELECT)
+
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_SELECT)
 	{
 		Select_Mode(fTimeDelta);
 	}
@@ -987,6 +984,9 @@ void CCamera_Main::Tick_State(_float fTimeDelta)
 	case Client::CS_INVEN:
 		Inven_Mode(fTimeDelta);
 		break;
+	case Client::CS_FIRSTPERSON:
+		FisrtPerson_Mode(fTimeDelta);
+		break;
 	case Client::CS_SHOP:
 		Shop_Mode(fTimeDelta);
 		break;
@@ -995,8 +995,14 @@ void CCamera_Main::Tick_State(_float fTimeDelta)
 		break;
 	case Client::CS_ENDFULLSCREEN:
 	{
-		m_pCam_Manager->Set_CameraState(CS_DEFAULT);
-
+		if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() == TS_MiniDungeon)
+		{
+			m_pCam_Manager->Set_CameraState(CS_FIRSTPERSON);
+		}
+		else
+		{
+			m_pCam_Manager->Set_CameraState(CS_DEFAULT);
+		}
 		CFadeBox::FADE_DESC Desc = {};
 		Desc.fOut_Duration = 1.f;
 		CUI_Manager::Get_Instance()->Add_FadeBox(Desc);

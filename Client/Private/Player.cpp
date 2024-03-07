@@ -1679,26 +1679,42 @@ void CPlayer::Move(_float fTimeDelta)
 
 		CSkillBlock::SKILLSLOT eSlotIdx{};
 		_bool isPress = false;
+
+
 		if (m_pGameInstance->Key_Down(DIK_1))
 		{
-			eSlotIdx = CSkillBlock::SKILL1;
-			isPress = true;
+			if (m_eState != Skill1 and m_eState != Skill2 and m_eState != Skill3 and m_eState != Skill4)
+			{
+				eSlotIdx = CSkillBlock::SKILL1;
+				isPress = true;
+			}
 		}
-		if (m_pGameInstance->Key_Down(DIK_2))
+		else if (m_pGameInstance->Key_Down(DIK_2))
 		{
-			eSlotIdx = CSkillBlock::SKILL2;
-			isPress = true;
+
+			if (m_eState != Skill1 and m_eState != Skill2 and m_eState != Skill3 and m_eState != Skill4)
+			{
+				eSlotIdx = CSkillBlock::SKILL2;
+				isPress = true;
+			}
 		}
-		if (m_pGameInstance->Key_Down(DIK_3))
+		else if (m_pGameInstance->Key_Down(DIK_3))
 		{
-			eSlotIdx = CSkillBlock::SKILL3;
-			isPress = true;
+			if (m_eState != Skill1 and m_eState != Skill2 and m_eState != Skill3 and m_eState != Skill4)
+			{
+				eSlotIdx = CSkillBlock::SKILL3;
+				isPress = true;
+			}
 		}
-		if (m_pGameInstance->Key_Down(DIK_4))
+		else if (m_pGameInstance->Key_Down(DIK_4))
 		{
-			eSlotIdx = CSkillBlock::SKILL4;
-			isPress = true;
+			if (m_eState != Skill1 and m_eState != Skill2 and m_eState != Skill3 and m_eState != Skill4)
+			{
+				eSlotIdx = CSkillBlock::SKILL4;
+				isPress = true;
+			}
 		}
+
 		if (isPress)
 		{
 			_int iSkillNum = 0;

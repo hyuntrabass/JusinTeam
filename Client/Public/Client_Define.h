@@ -169,6 +169,7 @@ namespace Client
 		CS_WORLDMAP,
 		CS_BRICKGAME,
 		CS_COLLECT,
+		CS_FIRSTPERSON,
 		CS_STATEEND
 	};
 
