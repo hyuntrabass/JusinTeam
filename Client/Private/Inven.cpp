@@ -64,9 +64,6 @@ HRESULT CInven::Init(void* pArg)
 	}
 	m_pWearableSlots[W_BOW]->Set_WearableItem(eItem);
 
-	strName = TEXT("¹«½º »Ô È°");
-	eItem = CUI_Manager::Get_Instance()->Find_Item(strName);
-	CUI_Manager::Get_Instance()->Set_WearableItem(W_SWORD, eItem);
 	return S_OK;
 }
 

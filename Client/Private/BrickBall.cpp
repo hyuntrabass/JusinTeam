@@ -457,6 +457,9 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_IceSpart");
 			Info.pMatrix = &Mat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+			wstring strSoundTag = TEXT("Hit_Small_Ice_SFX_0") + to_wstring(rand() % 4 + 1);
+			m_pGameInstance->Play_Sound(strSoundTag);
 		}
 		else
 		{
@@ -467,6 +470,9 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 			Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Brick_FireSpart");
 			Info.pMatrix = &Mat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+			
+			wstring strSoundTag = TEXT("Hit_Small_Fire_SFX_0") + to_wstring(rand() % 4 + 1);
+			m_pGameInstance->Play_Sound(strSoundTag);
 		}
 
 
@@ -507,6 +513,7 @@ void CBrickBall::Check_ItemCollision(_float fTimeDelta)
 	if (isPowerColl)
 	{
 		m_eCurItem = CBrickItem::POWER;
+		m_pGameInstance->Play_Sound(TEXT("Pet_Comm_Teleport_End_01"), 1.f);
 		return;
 	}
 
@@ -529,6 +536,7 @@ void CBrickBall::Check_ItemCollision(_float fTimeDelta)
 	if (isDoubleColl)
 	{
 		m_eCurItem = CBrickItem::DOUBLE;
+		m_pGameInstance->Play_Sound(TEXT("Pet_Comm_Teleport_End_01"), 1.f);
 		return;
 	}
 
@@ -551,6 +559,7 @@ void CBrickBall::Check_ItemCollision(_float fTimeDelta)
 	if (isStopColl)
 	{
 		m_eCurItem = CBrickItem::STOP;
+		m_pGameInstance->Play_Sound(TEXT("Pet_Comm_Teleport_End_01"), 1.f);
 		return;
 	}
 
