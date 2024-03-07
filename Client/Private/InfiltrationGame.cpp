@@ -93,6 +93,9 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 	if (m_pDoor)
 		m_pDoor->Tick(fTimeDelta);
 
+	if (m_pTeleport->Get_Finished())
+		Kill();
+
 	Release_DeadObjects();
 }
 
