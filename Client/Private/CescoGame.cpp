@@ -4,7 +4,7 @@
 #include "Hook.h"
 #include "Hive.h"
 #include "Buff_Card.h"
-
+#include "TextButtonColor.h"
 #include "UI_Manager.h"
 #include "Camera_Manager.h"
 
@@ -61,7 +61,24 @@ HRESULT CCescoGame::Init(void* pArg)
 	random_device rand;
 	m_RandomNumber = _randNum(rand());
 
+	CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
+	ColButtonDesc.eLevelID = LEVEL_STATIC;
+	ColButtonDesc.fDepth = (_float)D_ALERT / (_float)D_END;
+	ColButtonDesc.fFontSize = 0.8f;
+	ColButtonDesc.strText = TEXT("");
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_TimeLimit");
+	ColButtonDesc.vSize = _vec2(200.f, 200.f);
+	ColButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, 60.f);
+	ColButtonDesc.fAlpha = 0.5f;
 
+
+	m_pTimeBar = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+	if (not m_pTimeBar)
+	{
+		return E_FAIL;
+	}
+	m_pTimeBar->Set_Pass(VTPass_UI_Alpha);
+	CUI_Manager::Get_Instance()->Set_isBoss(true);
 	CCamera_Manager::Get_Instance()->Set_RidingZoom(true);
 
 	return S_OK;
@@ -182,6 +199,10 @@ void CCescoGame::Tick(_float fTimeDelta)
 
 void CCescoGame::Late_Tick(_float fTimeDelta)
 {
+	if (m_pTimeBar)
+	{
+		m_pTimeBar->Late_Tick(fTimeDelta);
+	}
 	for (auto& pBuffCard : m_vecBuffCard)
 	{
 		pBuffCard->Late_Tick(fTimeDelta);
@@ -325,7 +346,7 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 
 void CCescoGame::Tick_Phase1(_float fTimeDelta)
 {
-	m_fTimeLimit -= fTimeDelta;
+	View_Time(fTimeDelta);
 	m_fMonsterSpawnTime += fTimeDelta * m_iMonsterSpawnSpeed;
 
 #pragma region SpawnMonster
@@ -627,6 +648,31 @@ void CCescoGame::Tick_Phase_Buff(_float fTimeDelta)
 		m_vecBuffCard.clear();
 		m_eCurrentPhase = m_eNextPhase;
 	}
+}
+
+void CCescoGame::View_Time(_float fTimeDelta)
+{
+	m_fTimeLimit -= fTimeDelta;
+	m_iMinute = static_cast<_int>(m_fTimeLimit) / 60;
+	m_iSec = static_cast<_int>(m_fTimeLimit) % 60;
+
+	wstring strMin = to_wstring(m_iMinute);
+	wstring strSec = to_wstring(m_iSec);
+	wstring strText = strMin + TEXT(" : ") + strSec;
+	_vec4 vColor{};
+
+	if (m_iMinute < 1 && m_iSec <= 30)
+	{
+		vColor = _vec4(1.f, 0.f, 0.f, 1.f);
+	}
+	else
+	{
+		vColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	}
+	m_pGameInstance->Render_Text(L"Font_Malang", strText, _vec2(static_cast<_float>(g_ptCenter.x), 38.f), 0.8f, vColor);
+
+	m_pTimeBar->Set_Text(strText);
+
 }
 
 HRESULT CCescoGame::Create_CommonMonster(const wstring& strModelTag, _vec3 SpawnPosition, const wstring& strPrototypeTag)
@@ -1005,5 +1051,6 @@ void CCescoGame::Free()
 
 	m_LarvaPositions.clear();
 
+	Safe_Release(m_pTimeBar);
 	Safe_Release(m_pPlayerTransform);
 }
