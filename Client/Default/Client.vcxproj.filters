@@ -556,6 +556,9 @@
     <Filter Include="02.GameObjects\17.InfiltrationGame\02. CheckPoint">
       <UniqueIdentifier>{d24a31a8-1551-497d-ab16-e2f24f9ca33e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\17.InfiltrationGame\06. Warning_Mark">
+      <UniqueIdentifier>{5f47cbd8-6591-4db7-8efe-e9b77fcce417}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1165,6 +1168,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\InfinityStart.h">
       <Filter>02.GameObjects\00.UI\98.InfinityTower</Filter>
+	</ClInclude>
+    <ClInclude Include="..\Public\Warning_Mark.h">
+      <Filter>02.GameObjects\17.InfiltrationGame\06. Warning_Mark</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1776,6 +1782,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\InfinityStart.cpp">
       <Filter>02.GameObjects\00.UI\98.InfinityTower</Filter>
+	</ClCompile>
+    <ClCompile Include="..\Private\Warning_Mark.cpp">
+      <Filter>02.GameObjects\17.InfiltrationGame\06. Warning_Mark</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -2275,6 +2275,7 @@ HRESULT CLoader::Load_Tower()
 	
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_TOWER);
 
+#pragma region ÀáÀÔ°×
 
 	_mat GuardPivot = _mat::CreateRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOWER, TEXT("Prototype_Model_Guard"),
@@ -2305,6 +2306,17 @@ HRESULT CLoader::Load_Tower()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOWER, L"Prototype_Component_Texture_Detected_Warning",
+		CTexture::Create(m_pDevice, m_pContext, L"../Bin/Resources/Textures/Effect/FX_A_Exclamation002_Tex.dds"))))
+	{
+		return E_FAIL;
+	}
+
+	if(FAILED(m_pGameInstance->Add_Prototype_GameObejct(L"Prototype_GameObject_WarningMark", CWarning_Mark::Create(m_pDevice,m_pContext))))
+		return E_FAIL;
+
+#pragma endregion
 
 	_mat DungeonPivot = _mat::CreateScale(0.001f);
 	strInputFilePath = "../Bin/Resources/StaticMesh/Map/Dungeon/Mesh/";

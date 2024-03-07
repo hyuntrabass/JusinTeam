@@ -128,7 +128,13 @@ void CGuard::Tick(_float fTimeDelta)
 	LIGHT_DESC* Desc = m_pGameInstance->Get_LightDesc(LEVEL_TOWER, m_strLightTag);
 	Desc->vPosition = m_pTransformCom->Get_CenterPos();
 
-
+	if (m_iSoundChannel != -1)
+	{
+		if (!m_pGameInstance->Get_IsPlayingSound(m_iSoundChannel))
+		{
+			m_iSoundChannel = -1;
+		}
+	}
 }
 
 void CGuard::Late_Tick(_float fTimeDelta)
@@ -257,12 +263,23 @@ void CGuard::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 1.f;
 			m_pTransformCom->Set_Speed(1.f);
+			if (m_iSoundChannel != -1)
+			{
+				m_pGameInstance->StopSound(m_iSoundChannel);
+				m_iSoundChannel = m_pGameInstance->Play_Sound(L"Man_Foot_Default_SFX_01",0.5f, true, 0.f, 1.f);
+			}
 			break;
 		case Client::CGuard::STATE_TURN:
 			m_Animation.iAnimIndex = ANIM_WALK;
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 1.f;
 			m_pTransformCom->Set_Speed(1.f);
+			if (m_iSoundChannel != -1)
+			{
+				m_pGameInstance->StopSound(m_iSoundChannel);
+				m_iSoundChannel = m_pGameInstance->Play_Sound(L"Man_Foot_Default_SFX_01", 0.5f, true, 0.f, 1.f);
+			}
+
 			break;
 		case Client::CGuard::STATE_CHASE:
 			m_Animation.iAnimIndex = ANIM_RUN;
@@ -923,6 +940,12 @@ void CGuard::Detect_Range(_float fAngle, _float fDist, _vec4 vNormalToPlayer)
 	PxRaycastBuffer Buffer{};
 	m_EffectMatrix = _mat::CreateScale(20.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(0.f, 0.1f, 0.f);
 
+	if (CUI_Manager::Get_Instance()->Get_Hp().x <= 0 && true == m_isDetected) {
+		m_isDetected = false;
+		m_eCurState = STATE_BACK;
+		return;
+	}
+
 	if (XMConvertToRadians(45.f) >= fAngle && 8.f >= fDist)
 	{
 		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), vNormalToPlayer, 100.f, Buffer))
@@ -934,17 +957,18 @@ void CGuard::Detect_Range(_float fAngle, _float fDist, _vec4 vNormalToPlayer)
 					m_vDetectedLook = m_pTransformCom->Get_State(State::Look);
 					m_isDetected = true;
 				}
-				else
-				{
-					if (m_pModelCom->IsAnimationFinished(ANIM_SWING) || m_pModelCom->IsAnimationFinished(ANIM_STEP))
-					{
-						m_eCurState = STATE_BACK;
-						m_isDetected = false;
-					}
-				}
+				//else
+				//{
+				//	if (m_pModelCom->IsAnimationFinished(ANIM_SWING) || m_pModelCom->IsAnimationFinished(ANIM_STEP))
+				//	{
+				//		m_eCurState = STATE_BACK;
+				//		m_isDetected = false;
+				//	}
+				//}
 			}
 		}
 	}
+
 }
 
 HRESULT CGuard::Add_Components()

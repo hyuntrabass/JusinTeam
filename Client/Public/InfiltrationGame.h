@@ -23,6 +23,8 @@ private:
 	vector<list<class CGuard*>> m_GuardList;
 	vector<list<class CGuardTower*>> m_GuardTowerList;
 
+	class CWarning_Mark* m_pWarning = nullptr;
+
 private:
 	HRESULT Create_Guard(const TCHAR* pPath);
 	HRESULT Create_CheckPoint();
