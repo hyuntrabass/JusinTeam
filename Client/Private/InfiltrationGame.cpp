@@ -11,6 +11,8 @@
 
 #include "Trigger_Manager.h"
 
+#include "TextButtonColor.h"
+
 CInfiltrationGame::CInfiltrationGame(_dev pDevice, _context pContext)
 	:CGameObject(pDevice, pContext)
 {
@@ -84,6 +86,34 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 
 	}
 
+	if (true == isDetected) {
+		if (false == m_isDetected) {
+			if (nullptr != m_WarningTexture) {
+				Safe_Release(m_WarningTexture);
+			}
+			CTextButtonColor::TEXTBUTTON_DESC ButtonDesc = {};
+			ButtonDesc.eLevelID = LEVEL_TOWER;
+			ButtonDesc.fDepth = (_float)D_ALERT / (_float)D_END;
+			ButtonDesc.strText = TEXT("");
+			ButtonDesc.strTexture = L"Prototype_Component_Texture_Detected_Warning";
+			ButtonDesc.vPosition = _vec2(g_ptCenter.x, g_ptCenter.y) - _vec2(0.f, 200.f);
+			ButtonDesc.vSize = _vec2(100.f, 100.f);
+			ButtonDesc.vColor = _vec4(1.f, 0.f, 0.f, 1.f);
+			ButtonDesc.fAlpha = 1.f;
+
+			m_WarningTexture = dynamic_cast<CTextButtonColor*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_TextButtonColor", &ButtonDesc));
+			m_WarningTexture->Set_Pass(VTPass_Mask_Color);
+			m_isDetected = true;
+
+			//Somthing Sound
+			//m_pGameInstance->Play_Sound();
+		}
+	}
+	else {
+		m_isDetected = false;
+		Safe_Release(m_WarningTexture);
+	}
+
 	for (auto& pCheckPoint : m_CheckPoint)
 	{
 		pCheckPoint->Tick(fTimeDelta);
@@ -95,6 +125,9 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 		pLever->Tick(fTimeDelta);
 
 	}
+
+	if (m_WarningTexture)
+		m_WarningTexture->Tick(fTimeDelta);
 
 	if (m_pDoor)
 		m_pDoor->Tick(fTimeDelta);
@@ -129,6 +162,9 @@ void CInfiltrationGame::Late_Tick(_float fTimeDelta)
 
 	if (m_pDoor)
 		m_pDoor->Late_Tick(fTimeDelta);
+
+	if (m_WarningTexture)
+		m_WarningTexture->Late_Tick(fTimeDelta);
 
 	for (auto& pCheckPoint : m_CheckPoint)
 	{

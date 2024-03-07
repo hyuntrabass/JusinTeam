@@ -23,6 +23,8 @@ private:
 	vector<list<class CGuard*>> m_GuardList;
 	vector<list<class CGuardTower*>> m_GuardTowerList;
 
+	class CTextButtonColor* m_WarningTexture = nullptr;
+
 private:
 	HRESULT Create_Guard(const TCHAR* pPath);
 	HRESULT Create_CheckPoint();

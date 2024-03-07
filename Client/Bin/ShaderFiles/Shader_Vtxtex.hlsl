@@ -794,7 +794,7 @@ PS_OUT PS_Main_SpriteAlpha(PS_IN Input)
 }
 technique11 DefaultTechnique
 {
-    pass UI
+    pass UI // 0
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -807,7 +807,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main();
     }
 
-    pass UI_Alpha
+    pass UI_Alpha // 1
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -820,7 +820,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main_Alpha();
     }
 
-    pass UI_Color_Alpha
+    pass UI_Color_Alpha // 2
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -833,7 +833,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main_Color_Alpha();
     }
 
-    pass Button
+    pass Button // 3
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -846,7 +846,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main_Button();
     }
 
-    pass Background
+    pass Background // 4
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -859,7 +859,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main();
     }
 
-    pass BackgroundMask
+    pass BackgroundMask // 5
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -872,7 +872,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main();
     }
 
-    pass Mask_Texture
+    pass Mask_Texture // 6
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -885,7 +885,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MaskTexture();
     }
 
-    pass Inv_Mask_Texture
+    pass Inv_Mask_Texture // 7
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -898,7 +898,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_InvMaskTexture();
     }
 
-    pass Mask_Color
+    pass Mask_Color // 8
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -911,7 +911,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MaskColor();
     }
 
-    pass Mask_ColorAlpha
+    pass Mask_ColorAlpha // 9
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -924,7 +924,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MaskColorAlpha();
     }
 
-    pass HP
+    pass HP // 10
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -936,7 +936,7 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_HP();
     }
-    pass Hit
+    pass Hit // 11
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -949,7 +949,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main_Hit();
     }
 
-    pass Sprite
+    pass Sprite // 12
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -962,7 +962,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_Main_Sprite();
     }
 
-    pass SpriteMaskTexture
+    pass SpriteMaskTexture // 13
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -974,7 +974,7 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Sprite_MaskTexture();
     }
-    pass SpriteMaskColor
+    pass SpriteMaskColor // 14
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);

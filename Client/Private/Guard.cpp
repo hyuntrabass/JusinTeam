@@ -923,6 +923,12 @@ void CGuard::Detect_Range(_float fAngle, _float fDist, _vec4 vNormalToPlayer)
 	PxRaycastBuffer Buffer{};
 	m_EffectMatrix = _mat::CreateScale(20.f) * _mat::CreateRotationX(XMConvertToRadians(90.f)) * m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(0.f, 0.1f, 0.f);
 
+	if (CUI_Manager::Get_Instance()->Get_Hp().x <= 0 && true == m_isDetected) {
+		m_isDetected = false;
+		m_eCurState = STATE_BACK;
+		return;
+	}
+
 	if (XMConvertToRadians(45.f) >= fAngle && 8.f >= fDist)
 	{
 		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), vNormalToPlayer, 100.f, Buffer))
@@ -934,17 +940,18 @@ void CGuard::Detect_Range(_float fAngle, _float fDist, _vec4 vNormalToPlayer)
 					m_vDetectedLook = m_pTransformCom->Get_State(State::Look);
 					m_isDetected = true;
 				}
-				else
-				{
-					if (m_pModelCom->IsAnimationFinished(ANIM_SWING) || m_pModelCom->IsAnimationFinished(ANIM_STEP))
-					{
-						m_eCurState = STATE_BACK;
-						m_isDetected = false;
-					}
-				}
+				//else
+				//{
+				//	if (m_pModelCom->IsAnimationFinished(ANIM_SWING) || m_pModelCom->IsAnimationFinished(ANIM_STEP))
+				//	{
+				//		m_eCurState = STATE_BACK;
+				//		m_isDetected = false;
+				//	}
+				//}
 			}
 		}
 	}
+
 }
 
 HRESULT CGuard::Add_Components()
