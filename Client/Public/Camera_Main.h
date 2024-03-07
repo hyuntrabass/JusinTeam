@@ -25,6 +25,7 @@ private: // CAM_MODE
 	void Shop_Mode(_float fTimeDelta);
 	void Zoom_Mode(_float fTimeDelta);
 	void Custom_Mode(_float fTimeDelta);
+	void FisrtPerson_Mode(_float fTimeDelta);
 	_bool Inven_Mode(_float fTimeDelta);
 	void Select_Mode(_float fTimeDelta);
 	void WorldMap_Mode(_float fTimeDelta);
