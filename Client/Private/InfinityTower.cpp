@@ -145,11 +145,16 @@ HRESULT CInfinityTower::Render()
 		}
 		else
 		{
+			_vec4 vColor = _vec4(1.f, 1.f, 1.f, 1.f);
+			if (i > 2)
+			{
+				vColor = _vec4(1.f, 0.f, 0.f, 1.f);
+			}
 			m_pGameInstance->Render_Text(L"Font_Malang", m_vecDesc[(_uint)m_iCurIndex][i], _vec2(vStartPos.x + 1.f, vStartPos.y), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, true);
 			m_pGameInstance->Render_Text(L"Font_Malang", m_vecDesc[(_uint)m_iCurIndex][i], _vec2(vStartPos.x, vStartPos.y - 1.f), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, true);
 			m_pGameInstance->Render_Text(L"Font_Malang", m_vecDesc[(_uint)m_iCurIndex][i], _vec2(vStartPos.x - 1.f, vStartPos.y), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, true);
 			m_pGameInstance->Render_Text(L"Font_Malang", m_vecDesc[(_uint)m_iCurIndex][i], _vec2(vStartPos.x, vStartPos.y + 1.f), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f), 0.f, true);
-			m_pGameInstance->Render_Text(L"Font_Malang", m_vecDesc[(_uint)m_iCurIndex][i], _vec2(vStartPos.x, vStartPos.y), 0.4f, _vec4(1.f, 1.f, 1.f, 1.f), 0.f, true);
+			m_pGameInstance->Render_Text(L"Font_Malang", m_vecDesc[(_uint)m_iCurIndex][i], _vec2(vStartPos.x, vStartPos.y), 0.4f, vColor, 0.f, true);
 
 		}
 	}
@@ -163,17 +168,18 @@ HRESULT CInfinityTower::Ready_Tower()
 	m_vecDesc[SURVIVAL].push_back(TEXT("게임설명 1줄"));
 	m_vecDesc[SURVIVAL].push_back(TEXT("게임설명 2줄"));
 
-	m_vecDesc[BOSS1].push_back(TEXT("보스1 "));
-	m_vecDesc[BOSS1].push_back(TEXT("게임설명 1줄"));
-	m_vecDesc[BOSS1].push_back(TEXT("게임설명 2줄"));
+	m_vecDesc[BOSS1].push_back(TEXT("저승의 문턱"));
+	m_vecDesc[BOSS1].push_back(TEXT("저승의 폭군 앙그르보다를 죽여라!"));
+	m_vecDesc[BOSS1].push_back(TEXT("그녀의 종들이 배치되어 있다 그들의 감시를 피해 그녀의 방에 인도하라"));
 
 	m_vecDesc[BRICK].push_back(TEXT("묘신과 대결"));
 	m_vecDesc[BRICK].push_back(TEXT("3층의 주인 묘신이 만들어내는 블럭을 모두 없애고 묘신을 처치하세요. "));
 	m_vecDesc[BRICK].push_back(TEXT("야옹신이 살아있는 이상 블럭은 계속해서 생성됩니다."));
 
-	m_vecDesc[CESCO].push_back(TEXT("세스코"));
-	m_vecDesc[CESCO].push_back(TEXT("게임설명 1줄"));
-	m_vecDesc[CESCO].push_back(TEXT("게임설명 2줄"));
+	m_vecDesc[CESCO].push_back(TEXT("몬스터 디펜스"));
+	m_vecDesc[CESCO].push_back(TEXT("4분동안 끝없이 몰려오는 벌레들을 퇴치해야한다."));
+	m_vecDesc[CESCO].push_back(TEXT("맵에 있는 각종 오브젝트를 이용하거나 회피, 또는 파괴 해야한다"));
+	m_vecDesc[CESCO].push_back(TEXT("실패 조건 : 몬스터 총 수 150마리 초과 "));
 
 	m_vecDesc[BOSS2].push_back(TEXT("최종보스"));
 	m_vecDesc[BOSS2].push_back(TEXT("게임설명 1줄"));

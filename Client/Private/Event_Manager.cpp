@@ -296,6 +296,7 @@ HRESULT CEvent_Manager::Init_Quest()
 
 	return S_OK;
 }
+
 HRESULT CEvent_Manager::Update_Quest(const wstring& strQuest)
 {
 	auto iter = m_QuestMap.find(strQuest);

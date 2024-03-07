@@ -34,9 +34,8 @@ HRESULT CBrickBar::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_fSpeed = 5.f;
-	m_pTransformCom->Set_Scale(_vec3(1.f, 0.5f, 0.5f));
-	m_pTransformCom->Set_Speed(m_fSpeed);
+	m_fSpeed = 10.f;
+	m_pTransformCom->Set_Scale(_vec3(2.f, 0.5f, 0.3f));
 
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
@@ -52,27 +51,28 @@ HRESULT CBrickBar::Init(void* pArg)
 	m_shouldRenderBlur = true;
 
 
-
+	m_pCat = (CBrickCat*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BrickCat"));
+	
 	return S_OK;
 }
 
 void CBrickBar::Tick(_float fTimeDelta)
 {
+
 	m_eCurDir = BAR_STOP;
 
-	m_pTransformCom->Set_Scale(_vec3(2.f, 0.5f, 0.3f));
 	if (m_pGameInstance->Key_Pressing(DIK_LEFT))
 	{
 		m_eCurDir = BAR_LEFT;
 		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
-		vPos.x += fTimeDelta * 10.f; 
+		vPos.x += fTimeDelta * m_fSpeed;
 		m_pTransformCom->Set_State(State::Pos, vPos);
 	}
 	if (m_pGameInstance->Key_Pressing(DIK_RIGHT))
 	{
 		m_eCurDir = BAR_RIGHT;
 		_vec4 vPos = m_pTransformCom->Get_State(State::Pos);
-		vPos.x -= fTimeDelta * 10.f; 
+		vPos.x -= fTimeDelta * m_fSpeed;
 		m_pTransformCom->Set_State(State::Pos, vPos);
 	}
 
@@ -106,17 +106,31 @@ void CBrickBar::Tick(_float fTimeDelta)
 	Update_Collider();
 
 	CUI_Manager::Get_Instance()->Set_BarDir(m_eCurDir);
-	return;
+
+
+
+	if (m_isSpeedUp)
+	{
+		m_pCat->Set_Trail(true);
+	}
+	else
+	{
+		m_pCat->Set_Trail(false);
+	}
+	m_pCat->Tick(fTimeDelta);
 
 
 }
 
 void CBrickBar::Late_Tick(_float fTimeDelta)
 {
+	m_pCat->Late_Tick(fTimeDelta);
+
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
 #endif
+
 }
 
 HRESULT CBrickBar::Render()
@@ -287,6 +301,7 @@ void CBrickBar::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pCat);
 	Safe_Release(m_pEffect_Ball);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);

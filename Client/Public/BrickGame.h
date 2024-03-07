@@ -30,11 +30,15 @@ private:
 	_bool										m_isPrototype{ false };
 	_bool										m_isActive{ false };
 	_bool										m_isReadyItem{ false };
+	_bool										m_isTimeStop{ false };
+	_bool										m_isSpeedUp{ false };
+	_bool										m_isPhaseStarted{ false };
 
 	_uint										m_iCombo{};
 	_uint										m_iCurIndex{};
 	_int										m_iSoundChannel = -1;
 
+	_float										m_fSpeedUpTime{};
 	_float										m_fStopTime{};
 
 	_float										m_fTime{};
@@ -59,7 +63,8 @@ private:
 	CTextButtonColor*							m_pItemSlot{ nullptr };
 	CTextButtonColor*							m_pItemSlotEffect{ nullptr };
 	CTextButtonColor*							m_pItem[CBrickItem::TYPE_END]{ nullptr };
-
+	
+	CBrickItem::TYPE							m_eCurFrontItem{};
 	list<CBrickItem::TYPE>						m_ITemList;
 
 public:

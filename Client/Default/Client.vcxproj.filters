@@ -1157,6 +1157,15 @@
     <ClInclude Include="..\Public\Guard.h">
       <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\BrickItem.h">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Eagle.h">
+      <Filter>02.GameObjects\08. Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\InfinityStart.h">
+      <Filter>02.GameObjects\00.UI\98.InfinityTower</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1758,6 +1767,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Guard.cpp">
       <Filter>02.GameObjects\17.InfiltrationGame\00. Guard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BrickItem.cpp">
+      <Filter>02.GameObjects\14.BrickGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Eagle.cpp">
+      <Filter>02.GameObjects\08. Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\InfinityStart.cpp">
+      <Filter>02.GameObjects\00.UI\98.InfinityTower</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -52,8 +52,11 @@ private:
 	_float m_fIdleTime = {};
 
 private:
-	_bool m_bInvenOn = { false };
+	_bool m_isTrailOn = { false };
+	class CCommonSurfaceTrail* m_pTrail{ nullptr };
 
+public:
+	void Set_Trail(_bool isOn) { m_isTrailOn = isOn; }
 public:
 	static CBrickCat* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;

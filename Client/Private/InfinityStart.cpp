@@ -163,14 +163,14 @@ HRESULT CInfinityStart::Add_Components()
 		m_strGameName = TEXT("서바이벌");
 		break;
 	case Client::BOSS1:
-		m_strGameName = TEXT("잠입보스");
+		m_strGameName = TEXT("저승의 문턱");
 		strTex = TEXT("Prototype_Component_Texture_UI_Gameplay_Gacha4");
 		break;
 	case Client::BRICK:
 		m_strGameName = TEXT("묘신의 시험");
 		break;
 	case Client::CESCO:
-		m_strGameName = TEXT("벌레잡기");
+		m_strGameName = TEXT("몬스터 디펜스");
 		break;
 	case Client::BOSS2:
 		m_strGameName = TEXT("최종보스");
