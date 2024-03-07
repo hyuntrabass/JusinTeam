@@ -184,8 +184,6 @@ HRESULT CBuff_Card::Render()
 
 HRESULT CBuff_Card::Add_Parts()
 {
-	//16 16 
-
 	_uint iTexIndex{};
 	_bool isFade{};
 	switch (m_eBuff)

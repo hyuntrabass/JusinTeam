@@ -46,13 +46,15 @@ private:
 	map<_uint, class CLog*> m_Logs;
 	map<_uint, class CHive*> m_Hives;
 	class CTextButtonColor* m_pTimeBar{ nullptr };
+	class CTextButtonColor* m_pLimitMonster{ nullptr };
+
 private:
 	vector<_vec3> m_SpawnPositions;
 	Phase m_eNextPhase{ Phase_End };
 	Phase m_eCurrentPhase{ Phase_Start };
 	Phase m_ePreviousPhase{ Phase_End };
 	_randNum m_RandomNumber;
-	_uint m_iMonsterLimit{ 200 };
+	_uint m_iMonsterLimit{ 150 };
 	_float m_fTimeLimit{ 240.f };
 	_float m_fMonsterSpawnTime{};
 	_uint m_iMonsterSpawnCount{};

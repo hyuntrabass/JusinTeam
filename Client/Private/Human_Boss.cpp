@@ -702,7 +702,7 @@ void CHuman_Boss::Update_Trail()
 void CHuman_Boss::Set_Damage(_int iDamage, _uint MonAttType)
 {
 
-	if (m_eState == Hide or iDamage <= 0)
+	if (m_eState == Hide_Start or m_eState == Hide or iDamage <= 0)
 	{
 		return;
 	}

@@ -68,7 +68,7 @@ HRESULT CCescoGame::Init(void* pArg)
 	ColButtonDesc.strText = TEXT("");
 	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_TimeLimit");
 	ColButtonDesc.vSize = _vec2(200.f, 200.f);
-	ColButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, 60.f);
+	ColButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, 40.f);
 	ColButtonDesc.fAlpha = 0.5f;
 
 
@@ -77,7 +77,25 @@ HRESULT CCescoGame::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+	
 	m_pTimeBar->Set_Pass(VTPass_UI_Alpha);
+
+	ColButtonDesc.eLevelID = LEVEL_STATIC;
+	ColButtonDesc.fDepth = (_float)D_ALERT / (_float)D_END;
+	ColButtonDesc.fFontSize = 0.6f;
+	ColButtonDesc.strText = TEXT("");
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_TimeLimit");
+	ColButtonDesc.vSize = _vec2(170.f, 170.f);
+	ColButtonDesc.vPosition = _vec2(90, 40.f);
+	ColButtonDesc.fAlpha = 0.5f;
+
+
+	m_pLimitMonster = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+	if (not m_pLimitMonster)
+	{
+		return E_FAIL;
+	}
+	m_pLimitMonster->Set_Pass(VTPass_UI_Alpha);
 	CUI_Manager::Get_Instance()->Set_isBoss(true);
 	CCamera_Manager::Get_Instance()->Set_RidingZoom(true);
 
@@ -203,6 +221,12 @@ void CCescoGame::Late_Tick(_float fTimeDelta)
 	{
 		m_pTimeBar->Late_Tick(fTimeDelta);
 	}
+
+	if (m_pLimitMonster)
+	{
+		m_pLimitMonster->Late_Tick(fTimeDelta);
+	}
+
 	for (auto& pBuffCard : m_vecBuffCard)
 	{
 		pBuffCard->Late_Tick(fTimeDelta);
@@ -532,7 +556,6 @@ void CCescoGame::Tick_Phase3(_float fTimeDelta)
 	{
 		for (auto& pHooks : m_vecHooks)
 		{
-
 			if (pHooks->Get_HadCollision())
 			{
 				m_pCurrent_DraggingHook = pHooks;
@@ -659,20 +682,28 @@ void CCescoGame::View_Time(_float fTimeDelta)
 	wstring strMin = to_wstring(m_iMinute);
 	wstring strSec = to_wstring(m_iSec);
 	wstring strText = strMin + TEXT(" : ") + strSec;
+	_int MonsterCount = m_Monsters.size();
+	wstring strMonNum = to_wstring(MonsterCount);
+	wstring strLimit = to_wstring(m_iMonsterLimit);
+	wstring strViewText = strMonNum + TEXT(" / ") + strLimit;
 	_vec4 vColor{};
 
 	if (m_iMinute < 1 && m_iSec <= 30)
 	{
-		vColor = _vec4(1.f, 0.f, 0.f, 1.f);
+		m_pTimeBar->Set_TextColor(_vec4(1.f, 0.f, 0.f, 1.f));
+	}
+	
+	if (MonsterCount >= 100)
+	{
+		m_pLimitMonster->Set_TextColor(_vec4(1.f, 0.f, 0.f, 1.f));
 	}
 	else
 	{
-		vColor = _vec4(1.f, 1.f, 1.f, 1.f);
+		m_pLimitMonster->Set_TextColor(_vec4(1.f));
 	}
-	m_pGameInstance->Render_Text(L"Font_Malang", strText, _vec2(static_cast<_float>(g_ptCenter.x), 38.f), 0.8f, vColor);
 
 	m_pTimeBar->Set_Text(strText);
-
+	m_pLimitMonster->Set_Text(strViewText);
 }
 
 HRESULT CCescoGame::Create_CommonMonster(const wstring& strModelTag, _vec3 SpawnPosition, const wstring& strPrototypeTag)
@@ -1052,5 +1083,6 @@ void CCescoGame::Free()
 	m_LarvaPositions.clear();
 
 	Safe_Release(m_pTimeBar);
+	Safe_Release(m_pLimitMonster);
 	Safe_Release(m_pPlayerTransform);
 }

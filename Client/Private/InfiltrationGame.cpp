@@ -48,6 +48,12 @@ HRESULT CInfiltrationGame::Init(void* pArg)
 
 void CInfiltrationGame::Tick(_float fTimeDelta)
 {
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_MiniDungeon)
+	{
+		Kill();
+		return;
+	}
+
 	Reset_Play(fTimeDelta);
 	if (m_pTeleport)
 		m_pTeleport->Tick(fTimeDelta);
