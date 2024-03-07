@@ -116,6 +116,7 @@ void CLarva::Init_State(_float fTimeDelta)
 		{
 		case Client::CLarva::State_Idle:
 			m_Animation.iAnimIndex = Anim_roar;
+			m_Animation.fAnimSpeedRatio = 1.5f;
 			break;
 		case Client::CLarva::State_Attack:
 		{
@@ -136,6 +137,8 @@ void CLarva::Init_State(_float fTimeDelta)
 			//사운드
 			m_IsPlaySound = true;
 			m_strSoundTag = TEXT("Void_19_Die_Voice_02");
+			m_fSoundVolume = 0.5f;
+			m_fSoundStartPosRatio = 0.f;
 			break;
 		}
 
@@ -175,6 +178,7 @@ void CLarva::Tick_State(_float fTimeDelta)
 			//사운드
 			m_IsPlaySound = true;
 			m_strSoundTag = TEXT("Void_19_Attack01_Voice_02");
+			m_fSoundVolume = 0.1f;
 			m_fSoundStartPosRatio = 0.3f;
 		}
 

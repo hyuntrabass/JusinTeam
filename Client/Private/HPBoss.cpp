@@ -58,7 +58,7 @@ HRESULT CHPBoss::Init(void* pArg)
 	}
 	else if (m_strName == TEXT("Dragon"))
 	{
-		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Boss_Dragon");
+		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Boss_BossNameDragon");
 	}
 	else
 	{
