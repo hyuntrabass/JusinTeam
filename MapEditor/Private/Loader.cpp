@@ -630,7 +630,17 @@ HRESULT CLoader::Load_Editor()
 #pragma endregion NPC
 
 #pragma  region Boss
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_boss"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/Human_Boss/Mesh/boss.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+	_mat DragonPivot = _mat::CreateScale(0.5f);
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Dragon"),
+		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/Dragon_Boss/Mesh/Dragon.hyuntraanimmesh", false, DragonPivot))))
+	{
+		return E_FAIL;
+	}
 	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Groar"),
 	//	CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Groar/Mesh/Groar.hyuntraanimmesh"))))
 	//{

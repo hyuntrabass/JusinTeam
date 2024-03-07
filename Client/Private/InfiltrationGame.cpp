@@ -36,7 +36,7 @@ HRESULT CInfiltrationGame::Init(void* pArg)
 	Safe_AddRef(m_pPlayerTransform);
 
 	m_CheckPointMatrix = m_pPlayerTransform->Get_World_Matrix();
-
+	CCamera_Manager::Get_Instance()->Set_CameraState(CS_FIRSTPERSON);
 	_tchar* pPath = TEXT("../Bin/Data/MiniDungeon_Guard_1_Data.dat");
 	Create_Guard(pPath);
 	Create_CheckPoint();
@@ -51,12 +51,16 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 	Reset_Play(fTimeDelta);
 	if (m_pTeleport)
 		m_pTeleport->Tick(fTimeDelta);
+
+	_bool isDetected = false;
+
 	for (auto& pGuardList : m_GuardList)
 	{
 		for (auto& pGuard : pGuardList)
 		{
 			pGuard->Tick(fTimeDelta);
-	
+			if (true == pGuard->Get_Detected())
+				isDetected = true;
 		}
 	}
 	for (auto& pGuardTowerList : m_GuardTowerList)
@@ -74,6 +78,8 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 		for (auto& pGuardTower : pGuardTowerList)
 		{
 			pGuardTower->Tick(fTimeDelta);
+			if (true == pGuardTower->Get_Detected())
+				isDetected = true;
 		}
 
 	}
@@ -92,6 +98,9 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 
 	if (m_pDoor)
 		m_pDoor->Tick(fTimeDelta);
+
+	if (m_pTeleport->Get_Finished())
+		Kill();
 
 	Release_DeadObjects();
 }
@@ -521,6 +530,7 @@ CGameObject* CInfiltrationGame::Clone(void* pArg)
 
 void CInfiltrationGame::Free()
 {
+	CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
 	__super::Free();
 
 	for (auto& List : m_GuardList)

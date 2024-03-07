@@ -1397,7 +1397,7 @@ HRESULT CImGui_Manager::ImGuizmoMenu()
 	{
 		if (m_pSelectCamera)
 		{
-			CTransform* pCameraTransform = (CTransform*)m_pSelectMap->Find_Component(TEXT("Com_Transform"));
+			CTransform* pCameraTransform = (CTransform*)m_pSelectCamera->Find_Component(TEXT("Com_Transform"));
 			m_CameraMatrix = pCameraTransform->Get_World_Matrix();
 			ImGuizmo::Manipulate(&m_ViewMatrix.m[0][0], &m_ProjMatrix.m[0][0], ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::MODE::WORLD, &m_MapMatrix.m[0][0]);
 			if (ImGuizmo::IsUsing() == true)

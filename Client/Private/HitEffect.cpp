@@ -216,7 +216,7 @@ HRESULT CHitEffect::Render()
 			{
 				return E_FAIL;
 			}
-			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", m_iDamage / 100)))
+			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", (m_iDamage % 1000) / 100)))
 			{
 				return E_FAIL;
 			}
