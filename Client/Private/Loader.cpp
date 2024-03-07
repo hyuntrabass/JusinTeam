@@ -2309,6 +2309,9 @@ HRESULT CLoader::Load_Tower()
 		return E_FAIL;
 	}
 
+	if(FAILED(m_pGameInstance->Add_Prototype_GameObejct(L"Prototype_GameObject_WarningMark", CWarning_Mark::Create(m_pDevice,m_pContext))))
+		return E_FAIL;
+
 #pragma endregion
 
 	_mat DungeonPivot = _mat::CreateScale(0.001f);

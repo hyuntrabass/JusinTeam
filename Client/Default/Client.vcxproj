@@ -348,6 +348,7 @@
     <ClInclude Include="..\Public\Void23.h" />
     <ClInclude Include="..\Public\VTFMonster.h" />
     <ClInclude Include="..\Public\VTFTest.h" />
+    <ClInclude Include="..\Public\Warning_Mark.h" />
     <ClInclude Include="..\Public\Wasp.h" />
     <ClInclude Include="..\Public\Wearable_Slot.h" />
     <ClInclude Include="..\Public\WorldMap.h" />
@@ -547,6 +548,7 @@
     <ClCompile Include="..\Private\Void23.cpp" />
     <ClCompile Include="..\Private\VTFMonster.cpp" />
     <ClCompile Include="..\Private\VTFTest.cpp" />
+    <ClCompile Include="..\Private\Warning_Mark.cpp" />
     <ClCompile Include="..\Private\Wasp.cpp" />
     <ClCompile Include="..\Private\Wearable_Slot.cpp" />
     <ClCompile Include="..\Private\WorldMap.cpp" />
