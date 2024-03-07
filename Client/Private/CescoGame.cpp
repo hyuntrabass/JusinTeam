@@ -91,7 +91,6 @@ void CCescoGame::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_9))
 	{
 		Kill();
-		return;
 	}
 
 	Init_Phase(fTimeDelta);
@@ -126,7 +125,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 		return;
 	}
 	//½ÇÆÐ Á¶°Ç
-	if (m_Monsters.size() > m_iMonsterLimit)
+	if (m_Monsters.size() > m_iMonsterLimit || m_isDead)
 	{
 		for (auto& pMonster : m_Monsters)
 		{
@@ -161,7 +160,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 	for (auto& pMonster : m_Monsters)
 	{
 		IsPlaySound = pMonster->Get_IsPlaySound();
-		if (IsPlaySound && ++iNumHasPlayedSound <= 5)
+		if (IsPlaySound && ++iNumHasPlayedSound <= 8)
 		{
 			pMonster->Play_Sound(IsPlaySound);
 		}
@@ -216,13 +215,13 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 		{
 		case Client::CCescoGame::Phase1:
 		{
-			m_iNumSpawnLarva = 2;
+			m_iNumSpawnLarva = 1;
 
 		}
 		break;
 		case Client::CCescoGame::Phase2:
 		{
-			m_iNumSpawnLarva = 5;
+			m_iNumSpawnLarva = 2;
 
 			for (_uint i = 0; i < m_SpawnPositions.size(); i++)
 			{
@@ -235,12 +234,7 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 		break;
 		case Client::CCescoGame::Phase3:
 		{
-			m_iNumSpawnLarva = 5;
-
-			for (_uint i = 0; i < m_SpawnPositions.size(); i++)
-			{
-				Create_Log(i);
-			}
+			m_iNumSpawnLarva = 3;
 
 			//¹úÁý °¹¼ö +1
 			m_IsSpawnHives.push_back(false);
@@ -414,7 +408,7 @@ void CCescoGame::Tick_Phase2(_float fTimeDelta)
 		if (m_IsSpawnHives[i])
 		{
 			m_fHiveSpawnTimes[i] += fTimeDelta;
-			if (m_fHiveSpawnTimes[i] >= 8.f)
+			if (m_fHiveSpawnTimes[i] >= 10.f)
 			{
 				Create_Hive();
 				m_IsSpawnHives[i] = false;
@@ -433,7 +427,7 @@ void CCescoGame::Tick_Phase2(_float fTimeDelta)
 		if (iter != m_Hives.end())
 		{
 			m_fWaspSpawnTimes[i] += fTimeDelta;
-			if (m_fWaspSpawnTimes[i] >= 8.f)
+			if (m_fWaspSpawnTimes[i] >= 10.f)
 			{
 				_vec3 vSpawnPos = m_HiveSpawnPositions[i];
 				vSpawnPos.y -= 3.f;
@@ -482,6 +476,7 @@ void CCescoGame::Tick_Phase3(_float fTimeDelta)
 	{
 		Create_Hook();
 		m_fHookSpawnTime = 0.f;
+		m_pGameInstance->Play_Sound(TEXT("War_SM_Cannon_001_Die"));
 	}
 	m_fHookSpawnTime += fTimeDelta;
 
@@ -516,6 +511,7 @@ void CCescoGame::Tick_Phase3(_float fTimeDelta)
 			{
 				m_pCurrent_DraggingHook = pHooks;
 				pHooks->Set_Dragging(true);
+				m_pGameInstance->Play_Sound(TEXT("Sfx_Boss_Heid_Atk_09_02"), 1.f);
 				break;
 			}
 		}

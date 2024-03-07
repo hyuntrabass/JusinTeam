@@ -153,6 +153,7 @@ void CRedAnt::Init_State(_float fTimeDelta)
 			//사운드
 			m_IsPlaySound = true;
 			m_strSoundTag = TEXT("Redant_Die_Voice_03");
+			m_fSoundVolume = 0.5f;
 			break;
 		}
 
@@ -215,6 +216,7 @@ void CRedAnt::Tick_State(_float fTimeDelta)
 			//사운드
 			m_IsPlaySound = true;
 			m_strSoundTag = TEXT("Bug_Stab01_SFX_01");
+			m_fSoundVolume = 0.3f;
 		}
 
 		if (m_pModelCom->IsAnimationFinished(Anim_attack02))
