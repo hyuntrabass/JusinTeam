@@ -69,6 +69,9 @@ private:
 	_float m_fTime = {};
 
 private:
+	_bool m_bPlaySound = { false };
+
+private:
 	static _uint m_iProjectileID;
 
 

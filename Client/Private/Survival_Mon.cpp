@@ -62,6 +62,8 @@ HRESULT CSurvival_Mon::Init(void* pArg)
 
 	m_pTransformCom->LookAt(vPlayerPos);
 
+	m_pGameInstance->Play_Sound(TEXT("Bat_Roar_SFX_03"));
+
 	return S_OK;
 }
 
@@ -158,6 +160,8 @@ void CSurvival_Mon::Tick(_float fTimeDelta)
 
 			if (m_pFrameEffect && m_pBaseEffect)
 			{
+				m_pGameInstance->Play_Sound(TEXT("Bat_Hit_Voice_02"));
+
 				Safe_Release(m_pFrameEffect);
 				Safe_Release(m_pBaseEffect);
 			}

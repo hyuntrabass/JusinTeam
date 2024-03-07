@@ -135,8 +135,8 @@ void CVoid23::Set_Damage(_int iDamage, _uint iDamageType)
 
 		CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 1.5f), (ATTACK_TYPE)iDamageType);
 
-		_vec4 vPlayerPos = __super::Compute_PlayerPos();
-		m_pTransformCom->LookAt(vPlayerPos);
+		//_vec4 vPlayerPos = __super::Compute_PlayerPos();
+		//m_pTransformCom->LookAt(vPlayerPos);
 
 		if (iDamage >= 500 && m_eCurState != STATE_KNOCKDOWN)
 		{
@@ -144,10 +144,10 @@ void CVoid23::Set_Damage(_int iDamage, _uint iDamageType)
 		}
 		else
 		{
-			if (m_eCurState != STATE_KNOCKDOWN)
-			{
-				m_eCurState = STATE_CHASE;
-			}
+			//if (m_eCurState != STATE_KNOCKDOWN)
+			//{
+			//	m_eCurState = STATE_CHASE;
+			//}
 		}
 	}	
 
@@ -245,6 +245,8 @@ void CVoid23::Init_State(_float fTimeDelta)
 			{
 				m_pTransformCom->Set_Speed(4.f);
 			}
+
+			m_bSelectAttackPattern = false;
 
 			break;
 
