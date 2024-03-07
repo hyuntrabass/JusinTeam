@@ -347,7 +347,7 @@ HRESULT CLevel_Village::Ready_TreasureBox()
 		ObjectInfo.strPrototypeTag = ObjectPrototype;
 		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
 		ObjectInfo.eObjectType = Object_Environment;
-		ObjectInfo.m_iIndex = (_uint)FIELD;
+		ObjectInfo.m_iIndex = (_uint)i;
 
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Interaction_Object"), TEXT("Prototype_GameObject_Intraction_Anim_Object"), &ObjectInfo)))
 		{

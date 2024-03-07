@@ -91,6 +91,7 @@ private:
 	class CEffect_Dummy* m_pFrameEffect{ nullptr };
 
 private:
+	_int m_iSoundChannel{ -1 };
 	_float m_fDeadTime{ 0.f };
 	_float m_fDissolveRatio{ 0.f };
 	_float m_fIdleTime{ 0.f };

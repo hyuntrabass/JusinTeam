@@ -426,7 +426,7 @@ void CGuardTower::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = false;
 			m_Animation.fStartAnimPos = 50.f;
 			m_Animation.fAnimSpeedRatio = 10.f;
-
+			m_pGameInstance->Play_Sound(L"War_Skill_Absorption_SFX_01");
 			{
 				m_pEye_White_FX->Kill();
 				EffectInfo FxInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Tower_Eye_Red");
@@ -445,6 +445,7 @@ void CGuardTower::Init_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = ANIM_IDLE;
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 10.f;
+			m_pGameInstance->Play_Sound(L"War_Grab_SFX_Shot_01");
 
 			Safe_Release(m_pEye_Charge_FX);
 			break;
