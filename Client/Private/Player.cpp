@@ -597,10 +597,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
-	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() == TS_MiniDungeon)
-	{
-		return;
-	}
+
 	if (m_pFrameEffect)
 	{
 		m_pFrameEffect->Late_Tick(fTimeDelta);
@@ -696,7 +693,10 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 #endif // DEBUG
 
 	m_pModelCom->Play_Animation(fTimeDelta, m_bAttacked);
-	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_MiniDungeon)
+	{
+		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
+	}
 
 	if (true == m_pGameInstance->Get_TurnOnShadow())
 		m_pRendererCom->Add_RenderGroup(RG_Shadow, this);
@@ -1359,9 +1359,9 @@ void CPlayer::Set_Damage(_int iDamage, _uint MonAttType)
 
 		if (m_eState == Stun_Start or m_eState == Stun or m_eState == Shock or m_eState == KnockDown)
 		{
-			m_bMove_AfterSkill = true;	
-				return;
-			
+			m_bMove_AfterSkill = true;
+			return;
+
 		}
 
 
@@ -1595,7 +1595,14 @@ void CPlayer::Move(_float fTimeDelta)
 	_vec4 vRightDir = XMVector3Cross(m_pTransformCom->Get_State(State::Up), vForwardDir);
 	vRightDir.Normalize();
 	_vec4 vDirection{};
-
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() == TS_MiniDungeon)
+	{
+		if (m_eState == Run_Start or m_eState == Run)
+		{
+			m_pRendererCom->Set_RadialBlur_Power(0.7f);
+			m_pRendererCom->Set_RadialBlur_Texcoord(_vec2(0.5f));
+		}
+	}
 	if (m_eState == Revival_Start or m_eState == Revival_End
 		or m_eState == KnockDown or m_eState == Stun_Start
 		or m_eState == Stun or m_eState == Die or m_eState == Jump_Long_End
@@ -2743,7 +2750,7 @@ void CPlayer::Set_ExtraStatus()
 	m_Status.HpRegenAmount = m_OriStatus.HpRegenAmount + ExtraStat.HpRegenAmount;
 	m_Status.MpRegenAmount = m_OriStatus.MpRegenAmount + ExtraStat.MpRegenAmount;
 
-	
+
 }
 void CPlayer::After_SwordAtt(_float fTimeDelta)
 {
@@ -4053,7 +4060,7 @@ void CPlayer::Init_State()
 			m_hasJumped = false;
 			_vec3 vPos = m_pTransformCom->Get_State(State::Pos);
 			_mat ShockMat = _mat::CreateTranslation(vPos);
-			TeleportSpot TsSpot =  CTrigger_Manager::Get_Instance()->Get_CurrentSpot();
+			TeleportSpot TsSpot = CTrigger_Manager::Get_Instance()->Get_CurrentSpot();
 			EffectInfo EffectDesc{};
 			if (TsSpot == TS_MiniDungeon or TsSpot == TS_BossRoom)
 			{
