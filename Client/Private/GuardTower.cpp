@@ -86,6 +86,12 @@ HRESULT CGuardTower::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	m_EyeMatrix = m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(0.f, 3.4f, 0.f);
+
+	EffectInfo FxInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Tower_Eye");
+	FxInfo.pMatrix = &m_EyeMatrix;
+	m_pEye_White_FX = CEffect_Manager::Get_Instance()->Clone_Effect(FxInfo);
+
 	return S_OK;
 }
 
@@ -151,6 +157,30 @@ void CGuardTower::Tick(_float fTimeDelta)
 		Tick_State_Pattern_3(fTimeDelta);
 	}
 
+	if (m_pEye_Red_FX)
+	{
+		m_pEye_Red_FX->Tick(fTimeDelta);
+		if (m_pEye_Red_FX->isDead())
+		{
+			Safe_Release(m_pEye_Red_FX);
+		}
+	}
+	if (m_pEye_White_FX)
+	{
+		m_pEye_White_FX->Tick(fTimeDelta);
+		if (m_pEye_White_FX->isDead())
+		{
+			Safe_Release(m_pEye_White_FX);
+		}
+	}
+	if (m_pEye_Charge_FX)
+	{
+		m_pEye_Charge_FX->Tick(fTimeDelta);
+		if (m_pEye_Charge_FX->isDead())
+		{
+			Safe_Release(m_pEye_Charge_FX);
+		}
+	}
 
 	m_pModelCom->Set_Animation(m_Animation);
 	Update_Collider();
@@ -184,6 +214,19 @@ void CGuardTower::Late_Tick(_float fTimeDelta)
 	{
 		m_pRendererCom->Add_RenderGroup(RG_AnimNonBlend_Instance, this);
 		m_pModelCom->Set_DissolveRatio(m_fDissolveRatio);
+	}
+
+	if (m_pEye_Red_FX)
+	{
+		m_pEye_Red_FX->Late_Tick(fTimeDelta);
+	}
+	if (m_pEye_White_FX)
+	{
+		m_pEye_White_FX->Late_Tick(fTimeDelta);
+	}
+	if (m_pEye_Charge_FX)
+	{
+		m_pEye_Charge_FX->Late_Tick(fTimeDelta);
 	}
 
 #ifdef _DEBUG
@@ -282,6 +325,14 @@ void CGuardTower::Init_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = ANIM_IDLE;
 			m_Animation.isLoop = true;
 			m_Animation.fStartAnimPos = 0.f;
+			
+			if (m_pEye_Red_FX)
+			{
+				m_pEye_Red_FX->Kill();
+				EffectInfo FxInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Tower_Eye");
+				FxInfo.pMatrix = &m_EyeMatrix;
+				m_pEye_White_FX = CEffect_Manager::Get_Instance()->Clone_Effect(FxInfo);
+			}
 			break;
 		case Client::CGuardTower::STATE_DETECT:
 			m_Animation.iAnimIndex = ANIM_IDLE;
@@ -294,11 +345,24 @@ void CGuardTower::Init_State(_float fTimeDelta)
 			m_Animation.fStartAnimPos = 50.f;
 			m_Animation.fAnimSpeedRatio = 10.f;
 
+			{
+				m_pEye_White_FX->Kill();
+				EffectInfo FxInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Tower_Eye_Red");
+				FxInfo.pMatrix = &m_EyeMatrix;
+				m_pEye_Red_FX = CEffect_Manager::Get_Instance()->Clone_Effect(FxInfo);
+
+				FxInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Tower_Charge");
+				FxInfo.pMatrix = &m_EyeMatrix;
+				m_pEye_Charge_FX = CEffect_Manager::Get_Instance()->Clone_Effect(FxInfo);
+			}
+
 			break;
 		case Client::CGuardTower::STATE_ATTACK:
 			m_Animation.iAnimIndex = ANIM_IDLE;
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 10.f;
+			
+			Safe_Release(m_pEye_Charge_FX);
 			break;
 		case Client::CGuardTower::STATE_DIE:
 			m_Animation.iAnimIndex = ANIM_DIE;
@@ -1054,6 +1118,9 @@ void CGuardTower::Free()
 	}
 	__super::Free();
 
+	Safe_Release(m_pEye_Charge_FX);
+	Safe_Release(m_pEye_Red_FX);
+	Safe_Release(m_pEye_White_FX);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pModelCom);
