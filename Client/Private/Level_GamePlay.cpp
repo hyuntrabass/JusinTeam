@@ -362,6 +362,7 @@ HRESULT CLevel_GamePlay::Ready_Player()
 
 	CTransform* pCameraTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
 	pCameraTransform->Set_Position(_vec3(Player_Pos) + _vec3(0.f, 2.f, 0.f));
+	pCameraTransform->LookAt_Dir(_vec4(0.f, -0.3f, 1.f, 0.f));
 
 	return S_OK;
 }

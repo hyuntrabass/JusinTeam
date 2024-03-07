@@ -995,12 +995,11 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 		{
 			if (!m_isReward)
 			{
+				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("그로아를 찾아서"));
 				CTreasureBox::TREASURE_DESC Desc{};
 				_vec4 vPos = m_pTransformCom->Get_State(State::Pos); 
 				Desc.vPos = vPos;
 				Desc.vecItem.push_back(make_pair(TEXT("[신화]탈 것 소환 카드"), 10));
-				Desc.vecItem.push_back(make_pair(TEXT("레긴레이프의 불멸 투구"), 1));
-				Desc.vecItem.push_back(make_pair(TEXT("레긴레이프의 불멸 갑옷"), 1));
 				Desc.vecItem.push_back(make_pair(TEXT("오딘의 궁니르 단검"), 1));
 				Desc.vecItem.push_back(make_pair(TEXT("오딘의 궁니르 활"), 1));
 				Desc.eDir = CTreasureBox::LEFT;

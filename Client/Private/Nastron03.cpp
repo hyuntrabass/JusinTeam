@@ -255,6 +255,9 @@ void CNastron03::Init_State(_float fTimeDelta)
 		case Client::CNastron03::STATE_DIE:
 			m_Animation.iAnimIndex = DIE;
 			m_Animation.isLoop = false;
+
+			_uint iRandomExp = rand() % 6;
+			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(25.f + static_cast<_float>(iRandomExp));
 			break;
 		}
 

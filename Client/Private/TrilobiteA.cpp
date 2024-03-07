@@ -263,6 +263,9 @@ void CTrilobiteA::Init_State(_float fTimeDelta)
 		case Client::CTrilobiteA::STATE_DIE:
 			m_Animation.iAnimIndex = DIE01;
 			m_Animation.isLoop = false;
+
+			_uint iRandomExp = rand() % 6;
+			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(5.f + static_cast<_float>(iRandomExp));
 			break;
 		}
 
