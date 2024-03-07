@@ -205,10 +205,10 @@ HRESULT CSoundSetting::Init_State()
 		m_strText = TEXT("전체 음향");
 		break;
 	case Client::CSoundSetting::BACKGROUND:
-		m_strText = TEXT("배경음");
+		m_strText = TEXT("환경음");
 		break;
 	case Client::CSoundSetting::ENV:
-		m_strText = TEXT("환경음");
+		m_strText = TEXT("배경음");
 		break;
 	case Client::CSoundSetting::EFFECT:
 		m_strText = TEXT("효과음");

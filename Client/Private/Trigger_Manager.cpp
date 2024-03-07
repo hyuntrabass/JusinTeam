@@ -202,6 +202,29 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 		m_isShaking = true;
 	}
 
+	if (false == m_isLever1CutScene) {
+		if (m_isLever1 == true)
+		{
+			m_isBreakLoop = true;
+			m_isPlayCutScene = false;
+			m_isInfinite = false;
+			m_isLever1CutScene = true;
+			m_strFilePath = L"../Bin/Data/MiniDungeon_CutSceneData.dat";
+			CCamera_Manager::Get_Instance()->Set_CameraModeIndex(CM_CUTSCENE);
+		}
+	}
+
+	if (false == m_isLever2CutScene) {
+		if (m_isLever2 == true)
+		{
+			m_isBreakLoop = true;
+			m_isPlayCutScene = false;
+			m_isInfinite = false;
+			m_isLever2CutScene = true;
+			m_strFilePath = L"../Bin/Data/MiniDungeon_CutScene2Data.dat";
+			CCamera_Manager::Get_Instance()->Set_CameraModeIndex(CM_CUTSCENE);
+		}
+	}
 
 	if (bColl && pTrigger != nullptr)
 	{
@@ -413,9 +436,8 @@ void CTrigger_Manager::Teleport(const TeleportSpot eSpot, _float fTimeDelta)
 				m_pGameInstance->StopSound(i);
 			}
 		}
-		//m_pGameInstance->PlayBGM(TEXT("1st_Indun_Boss_BGM_Loop"));
+		m_pGameInstance->PlayBGM(TEXT("1st_Indun_Boss_BGM_Loop"));
 		m_pGameInstance->Play_Sound(TEXT("AMB_Fire_SFX_02"), 0.3f, true);
-		m_pGameInstance->Play_Sound(TEXT("BP_Skill_10019_SFX_01"), 0.3f, true, 0.7f);
 		for (_uint i = 0; i < FMOD_MAX_CHANNEL_WIDTH; i++)
 		{
 			if (m_pGameInstance->Get_IsLoopingSound(i))

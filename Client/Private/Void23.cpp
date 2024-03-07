@@ -471,6 +471,12 @@ void CVoid23::Tick_State(_float fTimeDelta)
 
 				if (fAnimpos >= 117.f && fAnimpos <= 119.f)
 				{
+					if (m_pGameInstance->CheckCollision_Parrying(m_pAttackColliderCom))
+					{
+						m_eCurState = STATE_KNOCKDOWN;
+						break;
+					}
+
 					if (!m_bAttacked2)
 					{
 						_uint iDamage = m_iDefaultDamage1 + rand() % 50;
@@ -548,17 +554,17 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 108.f && fAnimpos <= 110.f)
 				{
-					if (m_pGameInstance->CheckCollision_Parrying(m_pAttackColliderCom))
-					{
-						m_eCurState = STATE_KNOCKDOWN;
-						break;
-					}
+					//if (m_pGameInstance->CheckCollision_Parrying(m_pAttackColliderCom))
+					//{
+					//	m_eCurState = STATE_KNOCKDOWN;
+					//	break;
+					//}
 
 					if (!m_bAttacked)
 					{
 						_uint iDamage = 500 + rand() % 50;
 						//m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage, MonAtt_KnockDown);
-						m_pGameInstance->Attack_Player(m_pFloorCollider, iDamage, MonAtt_Stun);
+						m_pGameInstance->Attack_Player(m_pFloorCollider, iDamage, MonAtt_Shock);
 						m_bAttacked = true;
 					}
 				}
@@ -617,6 +623,12 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				_float fAnimpos = m_pModelCom->Get_CurrentAnimPos();
 				if (fAnimpos >= 65.f && fAnimpos <= 67.f)
 				{
+					if (m_pGameInstance->CheckCollision_Parrying(m_pAttackColliderCom))
+					{
+						m_eCurState = STATE_KNOCKDOWN;
+						break;
+					}
+
 					if (!m_bAttacked)
 					{
 						_uint iDamage = m_iDefaultDamage1 + rand() % 50;
@@ -626,6 +638,12 @@ void CVoid23::Tick_State(_float fTimeDelta)
 				}
 				if (fAnimpos >= 118.f && fAnimpos <= 120.f)
 				{
+					if (m_pGameInstance->CheckCollision_Parrying(m_pAttackColliderCom))
+					{
+						m_eCurState = STATE_KNOCKDOWN;
+						break;
+					}
+
 					if (!m_bAttacked2)
 					{
 						_uint iDamage = m_iDefaultDamage1 + rand() % 50;

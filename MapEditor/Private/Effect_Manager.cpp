@@ -13,14 +13,14 @@ void CEffect_Manager::Tick(_float fTimeDelta)
 {
 	_uint iCurrLevel = m_pGameInstance->Get_CurrentLevelIndex();
 
-	for (auto iter = m_Effects.begin(); iter != m_Effects.end();)
+	for (auto iter = m_Effects[iCurrLevel].begin(); iter != m_Effects[iCurrLevel].end();)
 	{
 		iter->second->Tick(fTimeDelta);
 
 		if (iter->second->isDead())
 		{
 			Safe_Release(iter->second);
-			iter = m_Effects.erase(iter);
+			iter = m_Effects[iCurrLevel].erase(iter);
 		}
 		else
 		{
@@ -33,7 +33,7 @@ void CEffect_Manager::Late_Tick(_float fTimeDelta)
 {
 	_uint iCurrLevel = m_pGameInstance->Get_CurrentLevelIndex();
 
-	for (auto& pEffect : m_Effects)
+	for (auto& pEffect : m_Effects[iCurrLevel])
 	{
 		pEffect.second->Late_Tick(fTimeDelta);
 	}
@@ -43,8 +43,8 @@ _bool CEffect_Manager::Has_Created(const void* pMatrixKey)
 {
 	_uint iCurrLevel = m_pGameInstance->Get_CurrentLevelIndex();
 
-	auto iter = m_Effects.find(pMatrixKey);
-	if (iter == m_Effects.end())
+	auto iter = m_Effects[iCurrLevel].find(pMatrixKey);
+	if (iter == m_Effects[iCurrLevel].end())
 	{
 		return false;
 	}
@@ -63,14 +63,14 @@ EffectInfo CEffect_Manager::Get_EffectInformation(const wstring& strEffectTag)
 	return iter->second;
 }
 
-HRESULT CEffect_Manager::Add_Layer_Effect(EffectInfo& pInfo, const _bool isStaticLevel)
+HRESULT CEffect_Manager::Add_Layer_Effect(EffectInfo& Info, const _bool isStaticLevel)
 {
 	_uint iLevel = LEVEL_STATIC;
 	if (not isStaticLevel)
 	{
 		iLevel = m_pGameInstance->Get_CurrentLevelIndex();
 	}
-	return m_pGameInstance->Add_Layer(iLevel, L"Layer_Effect", L"Prototype_GameObject_EffectDummy", &pInfo);
+	return m_pGameInstance->Add_Layer(iLevel, L"Layer_Effect", L"Prototype_GameObject_EffectDummy", &Info);
 }
 
 CEffect_Dummy* CEffect_Manager::Clone_Effect(EffectInfo& pInfo)
@@ -92,12 +92,12 @@ void CEffect_Manager::Create_Effect(const wstring& strEffectTag, _mat* pMatrix, 
 	}
 	else
 	{
-		auto iter = m_Effects.find(pMatrix);
-		if (iter == m_Effects.end())
+		auto iter = m_Effects[iCurrLevel].find(pMatrix);
+		if (iter == m_Effects[iCurrLevel].end())
 		{
 			CEffect_Dummy* pEffect = Clone_Effect(Info);
 
-			m_Effects.emplace(pMatrix, pEffect);
+			m_Effects[iCurrLevel].emplace(pMatrix, pEffect);
 		}
 	}
 }
@@ -106,23 +106,37 @@ void CEffect_Manager::Delete_Effect(const void* pMatrix)
 {
 	_uint iCurrLevel = m_pGameInstance->Get_CurrentLevelIndex();
 
-	auto iter = m_Effects.find(pMatrix);
-	if (iter == m_Effects.end())
+	auto iter = m_Effects[iCurrLevel].find(pMatrix);
+	if (iter == m_Effects[iCurrLevel].end())
 	{
 		return;
 	}
 
-	Safe_Release(iter->second);
-	m_Effects.erase(iter);
+	iter->second->Kill();
+	//m_Effects[iCurrLevel].erase(iter);
+}
+
+void CEffect_Manager::Delete_All()
+{
+	for (size_t i = 0; i < LEVEL_END; i++)
+	{
+		for (auto& pEffect : m_Effects[i])
+		{
+			Safe_Release(pEffect.second);
+		}
+		m_Effects[i].clear();
+	}
+
+	m_isReadytoFree = true;
 }
 
 void CEffect_Manager::Clear(_uint iLevelIndex)
 {
-	for (auto& Pair : m_Effects)
+	for (auto& Pair : m_Effects[iLevelIndex])
 	{
 		Safe_Release(Pair.second);
 	}
-	m_Effects.clear();
+	m_Effects[iLevelIndex].clear();
 }
 
 void CEffect_Manager::Register_Callback()
@@ -143,7 +157,6 @@ void CEffect_Manager::Register_Callback()
 	CGameInstance::Func_ClearFX func_Clear = [this](auto... args) { return Clear(args...); };
 	m_pGameInstance->Register_Clear_Callback(func_Clear);
 }
-
 
 HRESULT CEffect_Manager::Read_EffectFile()
 {
@@ -196,6 +209,7 @@ HRESULT CEffect_Manager::Read_EffectFile()
 				File.read(reinterpret_cast<_char*>(&Info.fPartiDissolveRatio), sizeof Info.fPartiDissolveRatio);
 				File.read(reinterpret_cast<_char*>(&Info.fPartiAppearRatio), sizeof Info.fPartiAppearRatio);
 				File.read(reinterpret_cast<_char*>(&Info.bChangeDir), sizeof Info.bChangeDir);
+				File.read(reinterpret_cast<_char*>(&Info.bTargetPos), sizeof Info.bTargetPos);
 
 				size_t iNameSize{};
 
@@ -241,7 +255,9 @@ HRESULT CEffect_Manager::Read_EffectFile()
 					iNameSize = {};
 				}
 
-				m_EffectInfos.emplace(entry.path().stem().wstring(), Info);
+				Info.strEffectTag = entry.path().stem().wstring();
+
+				m_EffectInfos.emplace(Info.strEffectTag, Info);
 
 				File.close();
 			}
@@ -257,13 +273,10 @@ HRESULT CEffect_Manager::Read_EffectFile()
 
 void CEffect_Manager::Free()
 {
-
-	for (auto& pEffect : m_Effects)
+	if (not m_isReadytoFree)
 	{
-		Safe_Release(pEffect.second);
+		Delete_All();
 	}
-	m_Effects.clear();
-	
 
 	Safe_Release(m_pGameInstance);
 }

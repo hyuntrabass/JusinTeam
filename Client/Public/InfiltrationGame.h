@@ -18,26 +18,30 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 
 private:
-	//list<class CGuard*> m_Guard;
-	//list<class CGuardTower*> m_GuardTower;
 	list<class CCheckPoint*> m_CheckPoint;
-
+	vector<class CLever*> m_Lever;
 	vector<list<class CGuard*>> m_GuardList;
 	vector<list<class CGuardTower*>> m_GuardTowerList;
 
 private:
 	HRESULT Create_Guard(const TCHAR* pPath);
 	HRESULT Create_CheckPoint();
+	HRESULT Create_Lever();
+	HRESULT Create_Door();
 	void Reset_Play(_float fTimeDelta);
 	void Release_DeadObjects();
+	HRESULT Create_Teleport();
 
 private:
 	_bool m_isReset{ false };
 	_mat m_CheckPointMatrix{};
 	_float m_fResurrectionTime{ 0.f };
+	_bool m_isTurnOff = false;
+
 private:
 	CTransform* m_pPlayerTransform = { nullptr };
-
+	class CDoor* m_pDoor{ nullptr };
+	class CMiniDungeon_Teleport* m_pTeleport{ nullptr };
 
 public:
 	static CInfiltrationGame* Create(_dev pDevice, _context pContext);

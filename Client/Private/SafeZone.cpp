@@ -54,8 +54,8 @@ void CSafeZone::Tick(_float fTimeDelta)
 		Kill();
 	}
 
-	m_EffectMatrices[0] = _mat::CreateScale(10.f)/*_mat::CreateRotationX(XMConvertToRadians(35.f)) * _mat::CreateRotationY(XMConvertToRadians(90.f)) **/ * m_pTransformCom->Get_World_Matrix();
-	m_EffectMatrices[1] = _mat::CreateScale(10.f)/*_mat::CreateRotationX(XMConvertToRadians(35.f)) * _mat::CreateRotationY(XMConvertToRadians(90.f)) **/ * m_pTransformCom->Get_World_Matrix();
+	m_EffectMatrices[0] = _mat::CreateScale(10.f)* m_pTransformCom->Get_World_Matrix();
+	m_EffectMatrices[1] = _mat::CreateScale(10.f)* m_pTransformCom->Get_World_Matrix();
 	
 	for (size_t i = 0; i < 2; i++)
 	{

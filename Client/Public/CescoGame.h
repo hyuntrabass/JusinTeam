@@ -53,7 +53,7 @@ private:
 	Phase m_ePreviousPhase{ Phase_End };
 	_randNum m_RandomNumber;
 	_uint m_iMonsterLimit{ 200 };
-	_float m_fTimeLimit{ 300.f };
+	_float m_fTimeLimit{ 240.f };
 	_float m_fMonsterSpawnTime{};
 	_uint m_iMonsterSpawnCount{};
 	_float m_iMonsterSpawnSpeed{1.f};

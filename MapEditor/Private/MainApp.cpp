@@ -83,6 +83,8 @@ HRESULT CMainApp::Init()
 
 	CEffect_Manager::Get_Instance()->Register_Callback();
 
+	m_pRenderer->Set_TurnOnDOF(false);
+
 	return S_OK;
 }
 

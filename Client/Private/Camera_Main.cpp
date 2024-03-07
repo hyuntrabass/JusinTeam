@@ -1,7 +1,7 @@
 #include "Camera_Main.h"
 #include "UI_Manager.h"
 #include "Camera_Manager.h"
-
+#include "Trigger_Manager.h"
 CCamera_Main::CCamera_Main(_dev pDevice, _context pContext)
 	: CCamera(pDevice, pContext)
 {
@@ -50,10 +50,6 @@ HRESULT CCamera_Main::Init(void* pArg)
 
 void CCamera_Main::Tick(_float fTimeDelta)
 {
-	//matProj = m_pGameInstance->Get_Transform(TransformType::Proj);
-	//matView = m_pGameInstance->Get_Transform(TransformType::View);
-
-	//fTimeDelta /= (m_pGameInstance->Get_TimeRatio());
 
 	if (m_pCam_Manager->Get_CameraModeIndex() != CM_MAIN)
 	{
@@ -62,13 +58,18 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_P))
 	{
+		CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_DEFAULT);
 		m_pCam_Manager->Set_CameraModeIndex(CM_DEBUG);
+		return;
 	}
 
 	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
 	m_eCurrState = m_pCam_Manager->Get_CameraState();
-
-	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_SELECT)
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() == TS_MiniDungeon)
+	{
+		FisrtPerson_Mode(fTimeDelta);
+	}
+	else if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_SELECT)
 	{
 		Select_Mode(fTimeDelta);
 	}
@@ -147,7 +148,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			if (m_Original_Light_Desc.eType != LIGHT_DESC::TYPE::End)
 			{
 				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
-				if (LightDesc->vDiffuse == _vec4(0.8f, 0.8f, 0.8f, 1.f))
+				//if (LightDesc->vDiffuse == _vec4(0.8f, 0.8f, 0.8f, 1.f))
 				{
 					*LightDesc = m_Original_Light_Desc;
 				}
@@ -630,6 +631,29 @@ void CCamera_Main::Custom_Mode(_float fTimeDelta)
 	}
 
 
+}
+
+void CCamera_Main::FisrtPerson_Mode(_float fTimeDelta)
+{
+
+	CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_HIDE);
+
+
+	_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
+	vPlayerPos.y += 2.f;
+	m_pTransformCom->Set_State(State::Pos, vPlayerPos);
+		_long dwMouseMove{};
+		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
+		{
+			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
+		}
+
+		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
+		{
+			_float fTurnValue = fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor;
+			m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTurnValue);
+		}
+	
 }
 
 void CCamera_Main::Zoom_Mode(_float fTimeDelta)

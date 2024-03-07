@@ -89,31 +89,31 @@ HRESULT CLevel_GamePlay::Init()
 	//	return E_FAIL;
 	//}
 
-	if (FAILED(Ready_Monster_Test()))
-	{
-		MSG_BOX("Failed to Ready Monster_Test");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_Monster_Test()))
+	//{
+	//	MSG_BOX("Failed to Ready Monster_Test");
+	//	return E_FAIL;
+	//}
 
-	// NPC_Test
-	if (FAILED(Ready_NPC_Test()))
-	{
-		MSG_BOX("Failed to Ready NPC");
-		return E_FAIL;
-	}
+	//// NPC_Test
+	//if (FAILED(Ready_NPC_Test()))
+	//{
+	//	MSG_BOX("Failed to Ready NPC");
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(Ready_NPC_Dummy_Test()))
-	{
-		MSG_BOX("Failed to Ready NPC_Dummy");
-		return E_FAIL;
-	}
+	//if (FAILED(Ready_NPC_Dummy_Test()))
+	//{
+	//	MSG_BOX("Failed to Ready NPC_Dummy");
+	//	return E_FAIL;
+	//}
 
-	// Pet_Test
-	if (FAILED(Ready_Pet()))
-	{
-		MSG_BOX("Failed to Ready Pet");
-		return E_FAIL;
-	}
+	//// Pet_Test
+	//if (FAILED(Ready_Pet()))
+	//{
+	//	MSG_BOX("Failed to Ready Pet");
+	//	return E_FAIL;
+	//}
 
 	// UI
 	if (FAILED(Ready_UI()))
@@ -368,14 +368,14 @@ HRESULT CLevel_GamePlay::Ready_Player()
 
 HRESULT CLevel_GamePlay::Ready_Map()
 {
-	TERRAIN_INFO Terrain;
-	Terrain.vTerrainSize = _uint2(300, 300);
-	Terrain.isMesh = false;
+	//TERRAIN_INFO Terrain;
+	//Terrain.vTerrainSize = _uint2(300, 300);
+	//Terrain.isMesh = false;
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &Terrain)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &Terrain)))
+	//{
+	//	return E_FAIL;
+	//}
 
 	const TCHAR* pGetPath = TEXT("../Bin/Data/Prologue_MapData.dat");
 
@@ -417,11 +417,11 @@ HRESULT CLevel_GamePlay::Ready_Map()
 	inFile.close();
 
 	CLake::WATER_DESC Desc;
-	Desc.fReflectionScale = 0.1f;
-	Desc.fRefractionScale = 0.1f;
+	Desc.fReflectionScale = 0.01f;
+	Desc.fRefractionScale = 0.01f;
 	Desc.vPos = _vec3(100.f, 1.f, 100.f);
-	Desc.vSize = _vec2(500.f, 500.f);
-	Desc.fWaterSpeed = 0.01f;
+	Desc.vSize = _vec2(800.f, 800.f);
+	Desc.fWaterSpeed = 0.05f;
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_GAMEPLAY, L"Layer_Map", L"Prototype_GameObject_Water", &Desc)))
 		return E_FAIL;
 
@@ -850,6 +850,7 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	{
 		return E_FAIL;
 	}
+
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI"), TEXT("Prototype_GameObject_VehicleBook"))))
 	{
 		return E_FAIL;
@@ -859,8 +860,6 @@ HRESULT CLevel_GamePlay::Ready_UI()
 	{
 		return E_FAIL;
 	}
-
-
 
 
 	return S_OK;

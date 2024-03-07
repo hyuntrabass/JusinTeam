@@ -88,7 +88,7 @@ void CSickle::Tick(_float fTimeDelta)
 		}
 	}
 
-	if (not m_hasAttacked and m_pGameInstance->Attack_Player(m_pColliderCom, 150 + rand() % 50))
+	if (not m_hasAttacked and m_pGameInstance->Attack_Player(m_pColliderCom, 150 + rand() % 50, MonAtt_Shock))
 	{
 		m_hasAttacked = true;
 		_vec3 vPos = m_pTransformCom->Get_State(State::Pos);

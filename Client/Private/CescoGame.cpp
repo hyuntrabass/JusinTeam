@@ -30,8 +30,6 @@ HRESULT CCescoGame::Init_Prototype()
 
 HRESULT CCescoGame::Init(void* pArg)
 {
-	LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
-	*Light = g_Light_Cesco;
 	//FRONT
 	m_SpawnPositions.push_back(_vec3(-3000.f, 1.f, 30.f));
 	//BACK
@@ -76,8 +74,9 @@ void CCescoGame::Tick(_float fTimeDelta)
 	{
 		Kill();
 	}
+	CAMERA_STATE CamState = CCamera_Manager::Get_Instance()->Get_CameraState();
 
-	if (CCamera_Manager::Get_Instance()->Get_CameraState() == CS_INVEN)
+	if (CamState == CS_INVEN or CamState==CS_SKILLBOOK)
 	{
 		return;
 	}
@@ -102,15 +101,12 @@ void CCescoGame::Tick(_float fTimeDelta)
 		return;
 	}
 
-
-
-
 	Init_Phase(fTimeDelta);
 
 	switch (m_eCurrentPhase)
 	{
 	case Client::CCescoGame::Phase1:
-		if (m_fTimeLimit < 240.f)
+		if (m_fTimeLimit < 180.f)
 		{
 			m_eCurrentPhase = Phase_Buff;
 			return;
@@ -118,7 +114,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 		Tick_Phase1(fTimeDelta);
 		break;
 	case Client::CCescoGame::Phase2:
-		if (m_fTimeLimit < 120.f)
+		if (m_fTimeLimit < 90.f)
 		{
 			m_eCurrentPhase = Phase_Buff;
 			return;
@@ -144,6 +140,11 @@ void CCescoGame::Tick(_float fTimeDelta)
 			pMonster->Set_Damage(pMonster->Get_HP());
 		}
 
+		for (auto& Pair : m_Logs)
+		{
+			Pair.second->Set_Damage(Pair.second->Get_HP());
+		}
+
 		for (auto& Pair : m_Hives)
 		{
 			Pair.second->Set_Damage(Pair.second->Get_HP());
@@ -153,6 +154,24 @@ void CCescoGame::Tick(_float fTimeDelta)
 	for (auto& pMonster : m_Monsters)
 	{
 		pMonster->Tick(fTimeDelta);
+	}
+
+	_uint iNumHasPlayedSound{};
+	for (auto& pMonster : m_Monsters)
+	{
+		if (pMonster->Get_SoundChannel() != -1)
+		{
+			iNumHasPlayedSound++;
+		}
+	}
+	_bool IsPlaySound{};
+	for (auto& pMonster : m_Monsters)
+	{
+		IsPlaySound = pMonster->Get_IsPlaySound();
+		if (IsPlaySound && ++iNumHasPlayedSound <= 5)
+		{
+			pMonster->Play_Sound(IsPlaySound);
+		}
 	}
 
 	for (auto& Pair : m_Logs)
@@ -402,7 +421,7 @@ void CCescoGame::Tick_Phase2(_float fTimeDelta)
 		if (m_IsSpawnHives[i])
 		{
 			m_fHiveSpawnTimes[i] += fTimeDelta;
-			if (m_fHiveSpawnTimes[i] >= 15.f)
+			if (m_fHiveSpawnTimes[i] >= 8.f)
 			{
 				Create_Hive();
 				m_IsSpawnHives[i] = false;
@@ -421,7 +440,7 @@ void CCescoGame::Tick_Phase2(_float fTimeDelta)
 		if (iter != m_Hives.end())
 		{
 			m_fWaspSpawnTimes[i] += fTimeDelta;
-			if (m_fWaspSpawnTimes[i] >= 5.f)
+			if (m_fWaspSpawnTimes[i] >= 8.f)
 			{
 				_vec3 vSpawnPos = m_HiveSpawnPositions[i];
 				vSpawnPos.y -= 3.f;
@@ -558,10 +577,10 @@ void CCescoGame::Tick_Phase_Buff(_float fTimeDelta)
 					eState->Max_Hp += _int(Buffcard->Get_Status());
 					break;
 				case Client::Buff_HpRegen:
-					eState->HpRegenAmount += Buffcard->Get_Status();
+					eState->HpRegenAmount = Buffcard->Get_Status();
 					break;
 				case Client::Buff_MpRegen:
-					eState->MpRegenAmount += Buffcard->Get_Status();
+					eState->MpRegenAmount = Buffcard->Get_Status();
 					break;
 				case Client::Buff_Attack:
 					eState->Attack += _int(Buffcard->Get_Status());
@@ -570,10 +589,10 @@ void CCescoGame::Tick_Phase_Buff(_float fTimeDelta)
 					eState->Speed += Buffcard->Get_Status();
 					break;
 				case Client::Buff_CoolDown:
-					eState->CoolDownTime += Buffcard->Get_Status();
+					eState->CoolDownTime = Buffcard->Get_Status();
 					break;
 				case Client::Buff_BloodDrain:
-					eState->BloodDrain += Buffcard->Get_Status();
+					eState->BloodDrain = Buffcard->Get_Status();
 					break;
 				case Client::Buff_PoisonImmune:
 					eState->PoisonImmune = (_bool)Buffcard->Get_Status();

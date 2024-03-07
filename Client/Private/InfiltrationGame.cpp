@@ -5,6 +5,11 @@
 #include "Guard.h"
 #include "GuardTower.h"
 #include "CheckPoint.h"
+#include "Lever.h"
+#include "Door.h"
+#include "MiniDungeon_Teleport.h"
+
+#include "Trigger_Manager.h"
 
 CInfiltrationGame::CInfiltrationGame(_dev pDevice, _context pContext)
 	:CGameObject(pDevice, pContext)
@@ -24,6 +29,9 @@ HRESULT CInfiltrationGame::Init_Prototype()
 
 HRESULT CInfiltrationGame::Init(void* pArg)
 {
+	LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, L"Light_Main");
+	*Light = g_Light_Infiltration;
+
 	m_pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	Safe_AddRef(m_pPlayerTransform);
 
@@ -32,6 +40,9 @@ HRESULT CInfiltrationGame::Init(void* pArg)
 	_tchar* pPath = TEXT("../Bin/Data/MiniDungeon_Guard_1_Data.dat");
 	Create_Guard(pPath);
 	Create_CheckPoint();
+	Create_Lever();
+	Create_Door();
+	Create_Teleport();
 	return S_OK;
 }
 
@@ -43,6 +54,8 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 	}
 
 	Reset_Play(fTimeDelta);
+	if (m_pTeleport)
+		m_pTeleport->Tick(fTimeDelta);
 	for (auto& pGuardList : m_GuardList)
 	{
 		for (auto& pGuard : pGuardList)
@@ -53,10 +66,21 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 	}
 	for (auto& pGuardTowerList : m_GuardTowerList)
 	{
+		if (false == m_isTurnOff) {
+			if (true == CTrigger_Manager::Get_Instance()->Get_Lever1On()) {
+				if (pGuardTowerList == m_GuardTowerList[4]) {
+					for (auto& pGuardTower : pGuardTowerList) {
+						pGuardTower->Tower_TurnOff();
+					}
+					m_isTurnOff = true;
+				}
+			}
+		}
 		for (auto& pGuardTower : pGuardTowerList)
 		{
 			pGuardTower->Tick(fTimeDelta);
 		}
+
 	}
 
 	for (auto& pCheckPoint : m_CheckPoint)
@@ -64,6 +88,15 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 		pCheckPoint->Tick(fTimeDelta);
 
 	}
+
+	for (auto& pLever : m_Lever)
+	{
+		pLever->Tick(fTimeDelta);
+
+	}
+
+	if (m_pDoor)
+		m_pDoor->Tick(fTimeDelta);
 
 	Release_DeadObjects();
 }
@@ -85,6 +118,13 @@ void CInfiltrationGame::Late_Tick(_float fTimeDelta)
 			pGuardTower->Late_Tick(fTimeDelta);
 		}
 	}
+	for (auto& pLever : m_Lever)
+	{
+		pLever->Late_Tick(fTimeDelta);
+	}
+
+	if (m_pDoor)
+		m_pDoor->Late_Tick(fTimeDelta);
 
 	for (auto& pCheckPoint : m_CheckPoint)
 	{
@@ -255,6 +295,142 @@ HRESULT CInfiltrationGame::Create_CheckPoint()
 	return S_OK;
 }
 
+HRESULT CInfiltrationGame::Create_Lever()
+{
+	const TCHAR* pGetPath = TEXT("../Bin/Data/MiniDungeon_LeverData.dat");;
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+	if (!inFile.is_open())
+	{
+		MessageBox(g_hWnd, L"파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+		return E_FAIL;
+	}
+
+	_uint LeverListSize;
+	inFile.read(reinterpret_cast<char*>(&LeverListSize), sizeof(_uint));
+
+
+	for (_uint i = 0; i < LeverListSize; ++i)
+	{
+		_ulong LeverPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&LeverPrototypeSize), sizeof(_ulong));
+
+		wstring LeverPrototype;
+		LeverPrototype.resize(LeverPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&LeverPrototype[0]), LeverPrototypeSize * sizeof(wchar_t));
+
+		_mat LeverWorldMat;
+		inFile.read(reinterpret_cast<char*>(&LeverWorldMat), sizeof(_mat));
+
+		_uint iPattern = 0;
+		inFile.read(reinterpret_cast<char*>(&iPattern), sizeof(_int));
+
+		LeverInfo LeverInfo{};
+		LeverInfo.mMatrix = LeverWorldMat;
+		LeverInfo.iIndex = iPattern;
+
+		CLever* pLever = dynamic_cast<CLever*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Lever", &LeverInfo));
+		m_Lever.push_back(pLever);
+
+	}
+	inFile.close();
+	return S_OK;
+}
+
+HRESULT CInfiltrationGame::Create_Door()
+{
+	const TCHAR* pGetPath = TEXT("../Bin/Data/MiniDungeon_DoorData.dat");;
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+	if (!inFile.is_open())
+	{
+		MessageBox(g_hWnd, L"파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+		return E_FAIL;
+	}
+
+	_uint DoorListSize;
+	inFile.read(reinterpret_cast<char*>(&DoorListSize), sizeof(_uint));
+
+
+	for (_uint i = 0; i < DoorListSize; ++i)
+	{
+		_ulong DoorPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&DoorPrototypeSize), sizeof(_ulong));
+
+		wstring DoorPrototype;
+		DoorPrototype.resize(DoorPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&DoorPrototype[0]), DoorPrototypeSize * sizeof(wchar_t));
+
+		_mat DoorWorldMat;
+		inFile.read(reinterpret_cast<char*>(&DoorWorldMat), sizeof(_mat));
+
+		_uint iPattern = 0;
+		inFile.read(reinterpret_cast<char*>(&iPattern), sizeof(_int));
+
+		DoorInfo DoorInfo{};
+		DoorInfo.mMatrix = DoorWorldMat;
+		DoorInfo.iIndex = iPattern;
+
+		m_pDoor = dynamic_cast<CDoor*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_Door", &DoorInfo));
+
+	}
+	inFile.close();
+	return S_OK;
+}
+
+HRESULT CInfiltrationGame::Create_Teleport()
+{
+	const TCHAR* pGetPath = TEXT("../Bin/Data/MiniDungeon_Teleport.dat");;
+
+	std::ifstream inFile(pGetPath, std::ios::binary);
+	if (!inFile.is_open())
+	{
+		MessageBox(g_hWnd, L"파일을 찾지 못했습니다.", L"파일 로드 실패", MB_OK);
+		return E_FAIL;
+	}
+
+	_uint TriggerListSize;
+	inFile.read(reinterpret_cast<char*>(&TriggerListSize), sizeof(_uint));
+
+
+	for (_uint i = 0; i < TriggerListSize; ++i)
+	{
+		TriggerInfo TriggerInfo{};
+
+		_uint iIndex{};
+		inFile.read(reinterpret_cast<char*>(&iIndex), sizeof(_uint));
+		TriggerInfo.iIndex = iIndex;
+
+		_bool bCheck{};
+		inFile.read(reinterpret_cast<char*>(&bCheck), sizeof(_bool));
+		TriggerInfo.bLimited = bCheck;
+
+		_ulong TriggerPrototypeSize;
+		inFile.read(reinterpret_cast<char*>(&TriggerPrototypeSize), sizeof(_ulong));
+
+		wstring TriggerPrototype;
+		TriggerPrototype.resize(TriggerPrototypeSize);
+		inFile.read(reinterpret_cast<char*>(&TriggerPrototype[0]), TriggerPrototypeSize * sizeof(wchar_t));
+
+		_float TriggerSize{};
+		inFile.read(reinterpret_cast<char*>(&TriggerSize), sizeof(_float));
+		TriggerInfo.fSize = TriggerSize;
+
+		_mat TriggerWorldMat;
+		inFile.read(reinterpret_cast<char*>(&TriggerWorldMat), sizeof(_mat));
+
+		TriggerInfo.WorldMat = TriggerWorldMat;
+
+		m_pTeleport = dynamic_cast<CMiniDungeon_Teleport*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Teleport"), &TriggerInfo));
+		if (not m_pTeleport)
+		{
+			MSG_BOX("트리거 생성 실패.");
+			return E_FAIL;
+		}
+	}
+	inFile.close();
+	return S_OK;
+}
 void CInfiltrationGame::Reset_Play(_float fTimeDelta)
 {
 	if (m_isReset == false)
@@ -316,7 +492,11 @@ void CInfiltrationGame::Release_DeadObjects()
 			++it;
 		}
 	}
+
+	if (m_pTeleport->isDead())
+		Safe_Release(m_pTeleport);
 }
+
 
 CInfiltrationGame* CInfiltrationGame::Create(_dev pDevice, _context pContext)
 {
@@ -373,6 +553,15 @@ void CInfiltrationGame::Free()
 		Safe_Release(pCheckPoint);
 	}
 	m_CheckPoint.clear();
+
+	for (auto& pLever : m_Lever)
+	{
+		Safe_Release(pLever);
+	}
+	m_Lever.clear();
+	
+	Safe_Release(m_pDoor);
+	Safe_Release(m_pTeleport);
 
 	Safe_Release(m_pPlayerTransform);
 }

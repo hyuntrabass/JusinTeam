@@ -4,7 +4,7 @@
 #include "Effect_Manager.h"
 #include "Camera_Manager.h"
 #include "BrickItem.h"
-
+#include "Trigger_Manager.h"
 CBalloon::CBalloon(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -49,15 +49,15 @@ HRESULT CBalloon::Init(void* pArg)
 void CBalloon::Tick(_float fTimeDelta)
 {
 
-	if (CCamera_Manager::Get_Instance()->Get_CameraState() != CS_BRICKGAME)
+	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_BrickMap)
 	{
-		m_isDead = true;
+		Kill();
 		return;
 	}
 
 	if (m_eCurColor == COLOR_END)
 	{
-		m_isDead = true;
+		Kill();
 		return;
 	}
 

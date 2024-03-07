@@ -195,6 +195,7 @@
     <ClInclude Include="..\Public\Dog.h" />
     <ClInclude Include="..\Public\Door.h" />
     <ClInclude Include="..\Public\Dragon_Boss.h" />
+    <ClInclude Include="..\Public\Eagle.h" />
     <ClInclude Include="..\public\Effect_Manager.h" />
     <ClInclude Include="..\Public\Event_Manager.h" />
     <ClInclude Include="..\Public\ExpBar.h" />
@@ -240,6 +241,7 @@
     <ClInclude Include="..\Public\Logo_Text.h" />
     <ClInclude Include="..\Public\Menu.h" />
     <ClInclude Include="..\Public\Meteor.h" />
+    <ClInclude Include="..\Public\MiniDungeon_Teleport.h" />
     <ClInclude Include="..\Public\Missile.h" />
     <ClInclude Include="..\Public\MPBar.h" />
     <ClInclude Include="..\Public\Map.h" />
@@ -395,6 +397,7 @@
     <ClCompile Include="..\Private\Dog.cpp" />
     <ClCompile Include="..\Private\Door.cpp" />
     <ClCompile Include="..\Private\Dragon_Boss.cpp" />
+    <ClCompile Include="..\Private\Eagle.cpp" />
     <ClCompile Include="..\private\Effect_Manager.cpp" />
     <ClCompile Include="..\Private\Event_Manager.cpp" />
     <ClCompile Include="..\Private\ExpBar.cpp" />
@@ -417,6 +420,7 @@
     <ClCompile Include="..\Private\Lever.cpp" />
     <ClCompile Include="..\Private\Log.cpp" />
     <ClCompile Include="..\Private\Meteor.cpp" />
+    <ClCompile Include="..\Private\MiniDungeon_Teleport.cpp" />
     <ClCompile Include="..\Private\NineSlice.cpp" />
     <ClCompile Include="..\Private\NumEffect.cpp" />
     <ClCompile Include="..\Private\Ocean.cpp" />

@@ -60,6 +60,17 @@ void CVTFMonster::Late_Tick(_float fTimeDelta)
         m_pRendererCom->Add_RenderGroup(RG_AnimNonBlend_Instance, this);
         m_pModelCom->Set_DissolveRatio(m_fDissolveRatio);
     }
+
+    if (m_iSoundChannel != -1)
+    {
+        if (not m_pGameInstance->Get_IsPlayingSound(m_iSoundChannel))
+        {
+            m_iSoundChannel = -1;
+        }
+    }
+
+    m_IsPlaySound = false;
+    m_fSoundStartPosRatio = 0.f;
 }
 
 void CVTFMonster::Set_Damage(_int iDamage, _uint AttackType)
@@ -74,6 +85,14 @@ void CVTFMonster::Set_Damage(_int iDamage, _uint AttackType)
     m_iHP -= iDamage;
 
     m_HasHitted = true;
+}
+
+void CVTFMonster::Play_Sound(_bool IsPlaySound)
+{
+    if (IsPlaySound)
+    {
+        m_iSoundChannel = m_pGameInstance->Play_Sound(m_strSoundTag, 0.5f, false, m_fSoundStartPosRatio);
+    }
 }
 
 HRESULT CVTFMonster::Render()

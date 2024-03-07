@@ -1088,6 +1088,12 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Eagle"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Eagle/Mesh/Eagle.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Statue"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Statue/Mesh/Statue.hyuntraanimmesh"))))
 	{
@@ -1659,6 +1665,11 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Spider"), CSpider::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Eagle"), CEagle::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -2279,6 +2290,21 @@ HRESULT CLoader::Load_Tower()
 		return E_FAIL;
 	}
 
+	_mat LeverPivot = _mat::CreateScale(0.01f);
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOWER, TEXT("Prototype_Model_Lever"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Lever/Mesh/Lever.hyuntraanimmesh", false, LeverPivot))))
+	{
+		return E_FAIL;
+	}
+
+	_mat DoorPivot = _mat::CreateScale(0.005f);
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOWER, TEXT("Prototype_Model_Door"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Door/Mesh/Door.hyuntraanimmesh", false, DoorPivot))))
+	{
+		return E_FAIL;
+	}
 
 	_mat DungeonPivot = _mat::CreateScale(0.001f);
 	strInputFilePath = "../Bin/Resources/StaticMesh/Map/Dungeon/Mesh/";
@@ -2843,7 +2869,18 @@ HRESULT CLoader::Load_Tower()
 	{
 		return E_FAIL;
 	}
-
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Door"), CDoor::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Lever"), CLever::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Teleport"), CMiniDungeon_Teleport::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 	//Ready_MiniDungeon
 	{
 		const TCHAR* pGetPath = TEXT("../Bin/Data/MiniDungeon_MapData.dat");

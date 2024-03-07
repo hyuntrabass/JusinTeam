@@ -72,8 +72,8 @@ HRESULT CVoid20::Init(void* pArg)
 		}
 	}
 
-	//m_pTransformCom->Set_Position(_vec3(2102.f, -16.f, 2085.f));
-	m_pTransformCom->Set_Position(_vec3(__super::Compute_PlayerPos())); // Test
+	m_pTransformCom->Set_Position(_vec3(2102.f, -16.f, 2085.f));
+	//m_pTransformCom->Set_Position(_vec3(__super::Compute_PlayerPos())); // Test
 	m_pTransformCom->Set_Speed(20.f);
 
 	return S_OK;

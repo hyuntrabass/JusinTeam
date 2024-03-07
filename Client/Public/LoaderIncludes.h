@@ -120,6 +120,7 @@
 #include "Void23.h"
 #include "Nastron07.h"
 #include "Spider.h"
+#include "Eagle.h"
 
 #include "Statue.h"
 #include "Dead.h"
@@ -195,3 +196,6 @@
 #include "Guard.h"
 #include "GuardTower.h"
 #include "CheckPoint.h"
+#include "Door.h"
+#include "Lever.h"
+#include "MiniDungeon_Teleport.h"

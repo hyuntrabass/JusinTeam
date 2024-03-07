@@ -26,7 +26,7 @@ HRESULT CSound_Manager::Init()
 	return S_OK;
 }
 
-_int CSound_Manager::Play_Sound(const wstring& strSoundTag, _float fVolume, _bool isLoop, _float fStartPosRatio)
+_int CSound_Manager::Play_Sound(const wstring& strSoundTag, _float fVolume, _bool isLoop, _float fStartPosRatio, _float fDurationRatio)
 {
 	FMOD::Sound* pSound = Find_Sound(strSoundTag);
 
@@ -49,11 +49,15 @@ _int CSound_Manager::Play_Sound(const wstring& strSoundTag, _float fVolume, _boo
 			_uint iStartPos = static_cast<_uint>(fStartPosRatio);
 			m_pChannelArr[i]->setPosition(iStartPos, FMOD_TIMEUNIT_MS);
 
+			m_SoundDescs[i].fDurationRatio = fDurationRatio;
+			fDurationRatio *= static_cast<_float>(iSoundLength);
+			_uint iEndPos = static_cast<_uint>(fDurationRatio);
+
 			if (isLoop)
 			{
 				m_pChannelArr[i]->setMode(FMOD_LOOP_NORMAL);
 				m_pChannelArr[i]->setVolume(fVolume * m_fSystemVolume * m_fEnvironmentVolume);
-				m_pChannelArr[i]->setLoopPoints(iStartPos, FMOD_TIMEUNIT_MS, iSoundLength, FMOD_TIMEUNIT_MS);
+				m_pChannelArr[i]->setLoopPoints(iStartPos, FMOD_TIMEUNIT_MS, iEndPos, FMOD_TIMEUNIT_MS);
 			}
 			else
 			{
@@ -231,6 +235,15 @@ void CSound_Manager::Update()
 		_bool bPlay = false;
 		m_pChannelArr[i]->isPlaying(&bPlay);
 		m_SoundDescs[i].IsPlayingSound = bPlay;
+
+		if (bPlay)
+		{
+			if (Get_CurPosRatio(i) >= m_SoundDescs[i].fDurationRatio && not Get_IsLoopingSound(i))
+			{
+				StopSound(i);
+				m_SoundDescs[i] = {};
+			}
+		}
 
 		if (m_SoundDescs[i].IsFadingout)
 		{

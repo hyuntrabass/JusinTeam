@@ -133,6 +133,9 @@ void CLarva::Init_State(_float fTimeDelta)
 
 			m_pTransformCom->Delete_Controller();
 			m_pGameInstance->Delete_CollisionObject(this);
+			//사운드
+			m_IsPlaySound = true;
+			m_strSoundTag = TEXT("Void_19_Die_Voice_02");
 			break;
 		}
 
@@ -169,6 +172,10 @@ void CLarva::Tick_State(_float fTimeDelta)
 				return;
 
 			m_HasAttacked = true;
+			//사운드
+			m_IsPlaySound = true;
+			m_strSoundTag = TEXT("Void_19_Attack01_Voice_02");
+			m_fSoundStartPosRatio = 0.3f;
 		}
 
 		if (m_pModelCom->IsAnimationFinished(Anim_attack01))
