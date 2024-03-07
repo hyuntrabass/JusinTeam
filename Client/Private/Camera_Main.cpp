@@ -921,6 +921,7 @@ void CCamera_Main::Init_State(_float fTimeDelta)
 		switch (m_eCurrState)
 		{
 		case Client::CS_DEFAULT:
+			CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_DEFAULT);
 			m_pTransformCom->Set_State(State::Pos, _vec4(m_pPlayerTransform->Get_CenterPos() + _vec4(0.f, 3.f, 0.f, 0.f)));
 			m_vOriCamPos = _vec4(m_pPlayerTransform->Get_CenterPos()) + _vec4(0.f, 3.f, 0.f, 0.f);
 			m_pTransformCom->LookAt_Dir(m_vOriginalLook);
@@ -937,6 +938,8 @@ void CCamera_Main::Init_State(_float fTimeDelta)
 			m_pPlayerTransform->LookAt(vTargetPos + vPlayerRight * -0.1f);
 		}
 		break;
+		case Client::CS_FIRSTPERSON:
+			CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::M_HIDE);
 		case Client::CS_INVEN:
 			m_vOriginalLook = m_pTransformCom->Get_State(State::Look);
 			break;
