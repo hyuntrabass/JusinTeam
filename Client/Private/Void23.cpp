@@ -131,7 +131,7 @@ void CVoid23::Set_Damage(_int iDamage, _uint iDamageType)
 		m_bDamaged = true;
 		m_bChangePass = true;
 		m_fHittedTime = 6.f;
-		m_fIdleTime = 0.f;
+		//m_fIdleTime = 0.f;
 
 		CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 1.5f), (ATTACK_TYPE)iDamageType);
 

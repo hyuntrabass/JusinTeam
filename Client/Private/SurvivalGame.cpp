@@ -5,6 +5,7 @@
 #include "Survival_Mon.h"
 #include "Camera_Manager.h"
 #include "Trigger_Manager.h"
+#include "UI_Manager.h"
 
 CSurvivalGame::CSurvivalGame(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -137,14 +138,19 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 		m_strStage = L"ÁØºñÁß";
 
-		if (m_pGameInstance->Key_Down(DIK_UP))
-		{
-			m_eCurStage = STAGE05;
-		}
+		//if (m_pGameInstance->Key_Down(DIK_UP))
+		//{
+		//	m_eCurStage = STAGE05;
+		//}
 
 		if (m_pGameInstance->Key_Pressing(DIK_COMMA) && m_pGameInstance->Key_Pressing(DIK_PERIOD) && !m_bGameStart)
 		{
 			m_bGameStart = true;
+
+			//if (!CUI_Manager::Get_Instance()->InfinityTower_UI(true, SURVIVAL))
+			//{
+			//	return;
+			//}
 		}
 
 		if (m_bGameStart == true)
@@ -174,7 +180,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 			++m_iCount;
 		}
 
-		if (m_iCount >= 7)
+		if (m_iCount >= 10)
 		{
 			m_fTime[1] += fTimeDelta;
 
@@ -213,7 +219,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 			++m_iCount;
 		}
 
-		if (m_iCount >= 10)
+		if (m_iCount >= 12)
 		{
 			m_eCurStage = STAGE_INIT;
 			m_eNextStage = STAGE03;
@@ -339,11 +345,16 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 			m_fTime[1] = 0.f;
 		}
 
-		if (m_iCount >= 30)
+		if (m_iCount >= 40)
 		{
 			m_eCurStage = STAGE_INIT;
 			m_eNextStage = STAGE01;
 			m_bGameStart = false;
+
+			//if (!CUI_Manager::Get_Instance()->InfinityTower_UI(false, SURVIVAL))
+			//{
+			//	return;
+			//}
 		}
 
 		break;

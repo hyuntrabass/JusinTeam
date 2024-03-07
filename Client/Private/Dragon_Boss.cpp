@@ -223,7 +223,7 @@ void CDragon_Boss::Set_Damage(_int iDamage, _uint iDamageType)
 	{
 		m_iHP -= iDamage;
 		m_bChangePass = true;
-		m_fIdleTime = 0.f;
+		//m_fIdleTime = 0.f;
 
 		if (iDamage >= 500)
 		{
@@ -731,7 +731,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = eTempDragonState;
 
-			m_eCurState = STATE_WING_ATTACK; // 테스트용
+			//m_eCurState = STATE_WING_ATTACK; // 테스트용
 		}
 	}
 
