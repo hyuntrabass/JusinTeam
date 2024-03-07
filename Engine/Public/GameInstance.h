@@ -167,7 +167,7 @@ public:
 public: // Sound Manager
 	HRESULT Init_SoundManager();
 	_bool Is_SoundManager_Ready();
-	_int Play_Sound(const wstring& strSoundTag, _float fVolume = 0.5f, _bool isLoop = false, _float fStartPosRatio = 0.f);
+	_int Play_Sound(const wstring& strSoundTag, _float fVolume = 0.5f, _bool isLoop = false, _float fStartPosRatio = 0.f, _float fDurationRatio = 1.f);
 	void PlayBGM(const wstring& strSoundTag, float fVolume = 0.3f);
 	void StopSound(_int iChannel);
 	void StopAll();

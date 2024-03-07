@@ -150,6 +150,9 @@ void CRedAnt::Init_State(_float fTimeDelta)
 
 			m_pTransformCom->Delete_Controller();
 			m_pGameInstance->Delete_CollisionObject(this);
+			//사운드
+			m_IsPlaySound = true;
+			m_strSoundTag = TEXT("Redant_Die_Voice_03");
 			break;
 		}
 
@@ -209,6 +212,9 @@ void CRedAnt::Tick_State(_float fTimeDelta)
 			_uint iDamage = rand() % 6 + 10;
 			m_pGameInstance->Attack_Player(m_pAttackColliderCom, iDamage);
 			m_HasAttacked = true;
+			//사운드
+			m_IsPlaySound = true;
+			m_strSoundTag = TEXT("Bug_Stab01_SFX_01");
 		}
 
 		if (m_pModelCom->IsAnimationFinished(Anim_attack02))
@@ -246,7 +252,7 @@ HRESULT CRedAnt::Add_Components()
 {
 	Collider_Desc ColliderDesc{};
 	ColliderDesc.eType = ColliderType::AABB;
-	ColliderDesc.vExtents = _vec3(0.5f, 1.2f, 0.5f);
+	ColliderDesc.vExtents = _vec3(0.5f, 0.3f, 0.5f);
 	ColliderDesc.vCenter = _vec3(0.f, ColliderDesc.vExtents.y, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pBodyColliderCom), &ColliderDesc)))
