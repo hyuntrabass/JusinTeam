@@ -117,6 +117,7 @@
 #include "Void23.h"
 #include "Nastron07.h"
 #include "Spider.h"
+#include "Eagle.h"
 
 #include "Statue.h"
 #include "Dead.h"

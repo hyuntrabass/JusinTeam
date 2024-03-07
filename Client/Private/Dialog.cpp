@@ -76,7 +76,8 @@ void CDialog::Tick(_float fTimeDelta)
 
 void CDialog::Late_Tick(_float fTimeDelta)
 {
-	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI() && CCamera_Manager::Get_Instance()->Get_CameraState() != CS_BRICKGAME)
+	if (CCamera_Manager::Get_Instance()->Get_CameraModeIndex() == CM_CUTSCENE or 
+		CUI_Manager::Get_Instance()->Showing_FullScreenUI() && CCamera_Manager::Get_Instance()->Get_CameraState() != CS_BRICKGAME)
 	{
 		return;
 	}

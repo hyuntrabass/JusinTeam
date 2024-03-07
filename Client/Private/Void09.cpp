@@ -92,7 +92,7 @@ HRESULT CVoid09::Init(void* pArg)
 		}
 	}
 
-	m_pTransformCom->Set_Position(_vec3(__super::Compute_PlayerPos())); // Test
+	//m_pTransformCom->Set_Position(_vec3(__super::Compute_PlayerPos())); // Test
 
 	return S_OK;
 }

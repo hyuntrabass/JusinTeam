@@ -118,8 +118,8 @@ void CWasp::Update_Trail()
 	if (m_pAttack_Trail != nullptr)
 	{
 		vBotPos = m_pTransformCom->Get_World_Matrix().Position_vec3();
-		vBotPos = vBotPos + _vec3(0.f, 0.2f, 0.f);
-		vTopPos = vBotPos + _vec3(0.f, 1.3f, 0.f);
+		vBotPos = vBotPos + _vec3(0.f, 0.5f, 0.f);
+		vTopPos = vBotPos + _vec3(0.f, 1.6f, 0.f);
 		m_pAttack_Trail->Tick(vTopPos, vBotPos);
 		m_pAttack_Distortion_Trail->Tick(vTopPos, vBotPos);
 	}
@@ -193,6 +193,9 @@ void CWasp::Init_State(_float fTimeDelta)
 
 			m_pTransformCom->Delete_Controller();
 			m_pGameInstance->Delete_CollisionObject(this);
+			//»ç¿îµå
+			m_IsPlaySound = true;
+			m_strSoundTag = TEXT("Crab_Die_SFX_02");
 			break;
 		}
 
@@ -244,9 +247,13 @@ void CWasp::Tick_State(_float fTimeDelta)
 				m_eState = State_Attack_End;
 			}
 		}
-		
-		break;
+
+		if (m_HasAttacked)
+		{
+			m_pGameInstance->Play_Sound(TEXT("Whoosh_Quick_B_SFX_03"), 1.f);
+		}
 	}
+		break;
 	case Client::CWasp::State_Attack_End:
 	{
 		m_fMoveDirRatio += fTimeDelta;

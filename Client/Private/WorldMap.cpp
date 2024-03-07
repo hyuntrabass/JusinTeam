@@ -93,18 +93,28 @@ void CWorldMap::Tick(_float fTimeDelta)
 		}
 	}
 
+	
 	if (m_pGameInstance->Key_Down(DIK_M) || CUI_Manager::Get_Instance()->Is_WorldMap())
 	{
 		m_pGameInstance->Play_Sound(TEXT("WorldMap_Click"), 1.f);
 		if (!m_isActive && !m_isReady)
 		{
+			CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::MOUSESTATE::M_DEFAULT);
 			CCamera_Manager::Get_Instance()->Set_CameraState(CS_WORLDMAP);
 			m_isReady = true;
 			return;
 		}
 		if (m_isActive && !m_isReady)
 		{
-			CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
+			if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() == TS_MiniDungeon)
+			{
+				CUI_Manager::Get_Instance()->Set_MouseState(CUI_Manager::MOUSESTATE::M_HIDE);
+				CCamera_Manager::Get_Instance()->Set_CameraState(CS_FIRSTPERSON);
+			}
+			else
+			{
+				CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
+			}
 			m_isReady = true;
 			return;
 		}

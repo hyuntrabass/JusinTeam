@@ -188,6 +188,9 @@ private:
 	_bool m_bCreateEffect[2] = { false };
 
 private:
+	_uint m_iEagleCount = {};
+
+private:
 	class CHPBoss* m_pHpBoss = { nullptr };
 
 public:

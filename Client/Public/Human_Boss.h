@@ -140,6 +140,7 @@ private:
 	STATE m_eState = BOSS_STATE_END;
 	STATE m_ePreState = BOSS_STATE_END;
 	vector<int> m_vecPattern{};
+	_bool m_HasPlayedSound{};
 
 private:
 	const _mat* m_WeaponBone_Mat{};

@@ -105,10 +105,14 @@ void CEyeBomb::Tick(_float fTimeDelta)
 			m_BloodTextrue->Set_Pass(VTPass_UI_Alpha);
 			m_bIsCollision = true;
 			m_fBaseEffectScale = 4.f;
+
+			m_pGameInstance->Play_Sound(TEXT("Sfx_Mon_Niflheim_egg_Explosion_Die_01-01"), 0.5f, false, 0.2f);
 		}
 		else
 		{
 			Kill();
+
+			m_pGameInstance->Play_Sound(TEXT("Sfx_Mon_Niflheim_egg_Explosion_Die_01-01"), 0.5f, false, 0.2f);
 		}
 		
 	}

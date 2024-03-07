@@ -1180,14 +1180,14 @@ _bool CGameInstance::Is_SoundManager_Ready()
 	return static_cast<_bool>(m_pSound_Manager);
 }
 
-_int CGameInstance::Play_Sound(const wstring& strSoundTag, _float fVolume, _bool isLoop, _float fStartPosRatio)
+_int CGameInstance::Play_Sound(const wstring& strSoundTag, _float fVolume, _bool isLoop, _float fStartPosRatio, _float fDurationRatio)
 {
 	if (!m_pSound_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
 	}
 
-	return m_pSound_Manager->Play_Sound(strSoundTag, fVolume, isLoop, fStartPosRatio);
+	return m_pSound_Manager->Play_Sound(strSoundTag, fVolume, isLoop, fStartPosRatio, fDurationRatio);
 }
 void CGameInstance::PlayBGM(const wstring& strSoundTag, float fVolume)
 {

@@ -37,19 +37,27 @@ HRESULT CLarva_Ball::Init(void* pArg)
 void CLarva_Ball::Tick(_float fTimeDelta)
 {
 	m_fLifeTime += fTimeDelta;
-	m_fGasSpawnTime += fTimeDelta;
 
 	m_pTransformCom->Go_Straight(fTimeDelta);
 	m_EffectMatrix = m_pTransformCom->Get_World_Matrix();
 	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 	m_pBallEffect->Tick(fTimeDelta);
 
-	if (m_pGameInstance->Attack_Player(m_pColliderCom, 10, MonAtt_Poison) || m_fLifeTime >= 7.f)
+	if (m_pGameInstance->Attack_Player(m_pColliderCom, 10, MonAtt_Poison))
 	{
 		EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(TEXT("Groar_Ball_Smoke"));
 		Info.pMatrix = &m_EffectMatrix;
 		Info.fLifeTime = 0.3f;
 		CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+		Kill();
+
+		_uint iSoundIndex = rand() % 4 + 1;
+		wstring strSoundTag = TEXT("Hit_Large_Acid_SFX_0") + to_wstring(iSoundIndex);
+		m_pGameInstance->Play_Sound(strSoundTag);
+	}
+
+	if (m_fLifeTime >= 7.f)
+	{
 		Kill();
 	}
 }
@@ -78,7 +86,7 @@ HRESULT CLarva_Ball::Add_Components()
 
 	Collider_Desc ColliderDesc{};
 	ColliderDesc.eType = ColliderType::Sphere;
-	ColliderDesc.fRadius = 0.2f;
+	ColliderDesc.fRadius = 0.1f;
 	ColliderDesc.vCenter = _vec3(0.f, 0.f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &ColliderDesc)))
