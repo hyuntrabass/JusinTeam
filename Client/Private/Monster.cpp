@@ -86,12 +86,13 @@ void CMonster::Tick(_float fTimeDelta)
 	if (m_fDeadTime >= 2.f)
 	{
 		m_iPassIndex = AnimPass_Dissolve;
+
+		if (m_fDissolveRatio >= 1.f)
+		{
+			Kill();
+		}
 	}
 
-	if (m_fDissolveRatio >= 1.f)
-	{
-		Kill();
-	}
 
 	if (m_HpBar)
 	{
@@ -390,7 +391,11 @@ HRESULT CMonster::Bind_ShaderResources()
 			return E_FAIL;
 		}
 
-		m_fDissolveRatio += 0.02f;
+		if (m_fDeadTime >= 2.f)
+		{
+			m_fDissolveRatio += 0.02f;
+		}		
+
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
 		{
 			return E_FAIL;
@@ -442,11 +447,11 @@ HRESULT CMonster::Bind_ShaderResources()
 
 void CMonster::Free()
 {
-	__super::Free();
 	if (!m_isPrototype)
 	{
 		CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 	}
+	__super::Free();
 
 
 

@@ -193,6 +193,9 @@ void CWasp::Init_State(_float fTimeDelta)
 
 			m_pTransformCom->Delete_Controller();
 			m_pGameInstance->Delete_CollisionObject(this);
+			//»ç¿îµå
+			m_IsPlaySound = true;
+			m_strSoundTag = TEXT("Crab_Die_SFX_02");
 			break;
 		}
 
@@ -244,9 +247,13 @@ void CWasp::Tick_State(_float fTimeDelta)
 				m_eState = State_Attack_End;
 			}
 		}
-		
-		break;
+
+		if (m_HasAttacked)
+		{
+			m_pGameInstance->Play_Sound(TEXT("Whoosh_Quick_B_SFX_03"), 1.f);
+		}
 	}
+		break;
 	case Client::CWasp::State_Attack_End:
 	{
 		m_fMoveDirRatio += fTimeDelta;

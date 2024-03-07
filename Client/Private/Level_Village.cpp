@@ -107,6 +107,11 @@ HRESULT CLevel_Village::Init()
 		MSG_BOX("Failed to Ready Water");
 		return E_FAIL;
 	}
+	if (FAILED(Ready_Pond()))
+	{
+		MSG_BOX("Failed to Ready Pond");
+		return E_FAIL;
+	}
 
 	// 분수 큰물
 	_mat FountainMat = _mat::CreateScale(2.6f) * _mat::CreateRotationZ(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(-25.292f, 12.821f, 116.395f));
@@ -692,13 +697,54 @@ HRESULT CLevel_Village::Ready_Trigger()
 HRESULT CLevel_Village::Ready_Water()
 {
 	CLake::WATER_DESC Desc;
-	Desc.fReflectionScale = 0.1f;
-	Desc.fRefractionScale = 0.1f;
+	Desc.fReflectionScale = 0.01f;
+	Desc.fRefractionScale = 0.01f;
 	Desc.vPos = _vec3(0.f, -40.f, 0.f);
 	Desc.vSize = _vec2(3000.f, 3000.f);
-	Desc.fWaterSpeed = 0.01f;
+	Desc.fWaterSpeed = 0.5f;
+
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, L"Layer_Map", L"Prototype_GameObject_Water", &Desc)))
 		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CLevel_Village::Ready_Pond()
+{
+	
+	std::ifstream InFile(L"../Bin/Data/Village_FieldWater.dat", std::ios::binary);
+
+	if (InFile.is_open())
+	{
+		_uint EffectListSize;
+		InFile.read(reinterpret_cast<char*>(&EffectListSize), sizeof(_uint));
+
+		for (_uint i = 0; i < EffectListSize; ++i)
+		{
+			_ulong EffectNameSize;
+			InFile.read(reinterpret_cast<char*>(&EffectNameSize), sizeof(_ulong));
+
+			wstring EffectName;
+			EffectName.resize(EffectNameSize);
+			InFile.read(reinterpret_cast<char*>(&EffectName[0]), EffectNameSize * sizeof(wchar_t));
+
+			_bool isFollow{ false };
+			InFile.read(reinterpret_cast<char*>(&isFollow), sizeof(_bool));
+
+			_float EffectSize{};
+			InFile.read(reinterpret_cast<char*>(&EffectSize), sizeof(_float));
+
+			_mat EffectWorldMat;
+			InFile.read(reinterpret_cast<char*>(&EffectWorldMat), sizeof(_mat));
+
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(EffectName);
+			Info.pMatrix = &EffectWorldMat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+		}
+
+		InFile.close();
+	}
+
 
 	return S_OK;
 }

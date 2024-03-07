@@ -36,12 +36,6 @@ HRESULT CSurvivalGame::Init(void* pArg)
 
 void CSurvivalGame::Tick(_float fTimeDelta)
 {
-	//if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
-	//{
-	//	m_eCurStage = STAGE_INIT;
-	//	m_bGameStart = false;
-	//}
-
 	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_SurvivalMap)
 	{
 		Kill();

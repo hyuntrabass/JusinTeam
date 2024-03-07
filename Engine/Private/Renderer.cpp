@@ -1520,6 +1520,7 @@ HRESULT CRenderer::Render_Reflection()
 					if (FAILED(pGameObject->Render_Reflection(vClipPlane)))
 					{
 						MSG_BOX("Failed to Render");
+						return E_FAIL;
 					}
 				}
 			}
@@ -2564,6 +2565,7 @@ HRESULT CRenderer::Render_UI()
 			if (FAILED(pGameObject->Render()))
 			{
 				MSG_BOX("Failed to Render");
+				return E_FAIL;
 			}
 		}
 

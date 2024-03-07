@@ -107,7 +107,7 @@ PS_OUT_WATER PS_MAIN_Water(PS_IN_WATER Input)
     
     float3 vNormal;
     // ¹Ý»ç¿Í ±¼Àý
-    vNormalDesc = g_NormalTexture.Sample(LinearSampler, vWaterTex * 2.f);
+    vNormalDesc = g_NormalTexture.Sample(LinearSampler, vWaterTex * 2.5f);
     vNormal = normalize(vNormalDesc.xyz * 2.f - 1.f);
     
     float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);

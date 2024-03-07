@@ -37,6 +37,7 @@ private:
 	_float m_fTime{};
 	_float m_fDir{ 1.f };
 
+
 	_bool m_isOn = false;
 	_bool m_isAllDone = false;
 	_bool m_isInteracting = false;

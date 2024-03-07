@@ -49,6 +49,8 @@ private:
 	//vector<EVENT_DESC>					m_vecPopEvents;
 	map <const wstring, EVENT_DESC>		m_QuestMap;
 
+	_bool								m_bGetBracelet = { false };
+
 public:
 	HRESULT Init();
 	void	Tick(_float fTimeDelta);
@@ -58,6 +60,10 @@ public:
 private:
 	HRESULT Set_Event(EVENT_DESC pDesc);
 	HRESULT Init_Quest();
+
+public:
+	void Get_Bracelet() { m_bGetBracelet = true; }
+	_bool Have_Bracelet() { return m_bGetBracelet; }
 
 public:
 	void Set_QuestTrigger(QUEST_TRIGGER eTrigger) { m_QuestTrigger[eTrigger] = true; }

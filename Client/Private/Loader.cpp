@@ -1084,6 +1084,12 @@ HRESULT CLoader::Load_GamePlay()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Eagle"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Eagle/Mesh/Eagle.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Statue"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Monster/Statue/Mesh/Statue.hyuntraanimmesh"))))
 	{
@@ -1655,6 +1661,11 @@ HRESULT CLoader::Load_GamePlay()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Spider"), CSpider::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Eagle"), CEagle::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

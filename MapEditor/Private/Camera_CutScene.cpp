@@ -372,42 +372,6 @@ HRESULT	CCamera_CutScene::Add_Components()
 
 	return S_OK;
 }
-HRESULT	CCamera_CutScene::Bind_ShaderResources()
-{
-	//_mat m_WorldMatrix = XMMatrixIdentity();
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
-	{
-		return E_FAIL;
-	}	
-	/*if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", m_WorldMatrix)))
-	{
-		return E_FAIL;
-	}*/
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform(TransformType::Proj))))
-	{
-		return E_FAIL;
-	}
-
-	return S_OK;
-}
-
-
 
 CCamera_CutScene* CCamera_CutScene::Create(_dev pDevice, _context pContext)
 {

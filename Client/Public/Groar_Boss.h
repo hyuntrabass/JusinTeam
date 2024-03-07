@@ -205,7 +205,7 @@ private:
 	_float m_fHitTime = {};
 
 private:
-	_bool m_bChangePos = { false };
+	_bool m_bChangePos[2] = {false};
 
 private:
 	_bool						m_bDeleteHpbar{};
