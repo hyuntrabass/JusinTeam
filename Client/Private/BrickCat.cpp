@@ -3,6 +3,7 @@
 #include "Effect_Manager.h"
 #include "UI_Manager.h"
 #include "Camera_Manager.h"
+#include "CommonSurfaceTrail.h"
 
 CBrickCat::CBrickCat(_dev pDevice, _context pContext)
 	: CPet(pDevice, pContext)
@@ -39,11 +40,20 @@ HRESULT CBrickCat::Init(void* pArg)
 	m_fPosLerpRatio = 0.02f;
 	m_fLookLerpRatio = 0.04f;
 
+	m_EffectMatrix = *m_pModelCom->Get_BoneMatrix("Bip001-Spine") * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
+
 	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Pet_Cat_Parti");
 	Info.pMatrix = &m_EffectMatrix;
 	Info.isFollow = true;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info, true);
 
+
+	SURFACETRAIL_DESC Desc{};
+	Desc.vColor = _color(1.f, 0.8f, 0.4f, 1.f);
+	Desc.iNumVertices = 10;
+	m_pTrail = (CCommonSurfaceTrail*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonSurfaceTrail"), &Desc);
+
+	
 
 	return S_OK;
 }
@@ -66,11 +76,27 @@ void CBrickCat::Tick(_float fTimeDelta)
 
 	m_pModelCom->Set_Animation(m_Animation);
 
+	//m_isTrailOn = true;
+	if (m_isTrailOn)
+	{
+		if (m_pTrail != nullptr)
+		{
+			m_pTrail->On();
+			_mat UpMatrix = _mat::CreateTranslation(0.f, 0.5f, 0.f) * m_pTransformCom->Get_World_Matrix();
+			_mat BottomMatrix = _mat::CreateTranslation(0.f, -0.2f, 0.f) * m_pTransformCom->Get_World_Matrix();
+			m_pTrail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
+		}
+	}
 	m_EffectMatrix = *m_pModelCom->Get_BoneMatrix("Bip001-Spine") * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 }
 
 void CBrickCat::Late_Tick(_float fTimeDelta)
 {
+	//m_isTrailOn = true;
+	if (m_isTrailOn)
+	{
+		m_pTrail->Late_Tick(fTimeDelta);
+	}
 	__super::Late_Tick(fTimeDelta);
 }
 
@@ -99,7 +125,6 @@ void CBrickCat::Init_State(_float fTimeDelta)
 			break;
 		case Client::CBrickCat::STATE_CHASE:
 			m_fIdleTime = 0.f;
-			m_bInvenOn = false;
 
 			break;
 		case Client::CBrickCat::STATE_EMOTION:
@@ -129,10 +154,6 @@ void CBrickCat::Init_State(_float fTimeDelta)
 		case Client::CBrickCat::STATE_INVEN:
 			m_Animation.iAnimIndex = IDLE;
 			m_Animation.isLoop = true;
-
-			m_fIdleTime = 0.f;
-			m_bInvenOn = true;
-
 			break;
 		}
 
@@ -274,4 +295,5 @@ CGameObject* CBrickCat::Clone(void* pArg)
 void CBrickCat::Free()
 {
 	__super::Free();
+	Safe_Release(m_pTrail);
 }

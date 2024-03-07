@@ -57,33 +57,37 @@ void CItemBlock::Tick(_float fTimeDelta)
 		}
 		else
 		{
-			m_isCoolTime = true;
-			m_fTime = 0.f;
-			m_pMask->Set_Position(m_pSlots[(ITEMSLOT)iIndex]->Get_Position());
-			if (m_pSlots[(ITEMSLOT)iIndex]->Get_ItemUsage() == IT_HPPOTION)
+			if (!m_isCoolTime)
 			{
-				ITEM eItem = m_pSlots[(ITEMSLOT)iIndex]->Get_ItemObject()->Get_ItemDesc();
-				CUI_Manager::Get_Instance()->Use_Item_In_Slot((ITEMSLOT)iIndex);
-				CUI_Manager::Get_Instance()->Set_Heal(true, eItem.iStatus);
-				m_pGameInstance->Play_Sound(L"Potion");
-			}
-			else if (m_pSlots[(ITEMSLOT)iIndex]->Get_ItemUsage() == IT_MPPOTION)
-			{
-				ITEM eItem = m_pSlots[(ITEMSLOT)iIndex]->Get_ItemObject()->Get_ItemDesc();
-				CUI_Manager::Get_Instance()->Use_Item_In_Slot((ITEMSLOT)iIndex);
-				CUI_Manager::Get_Instance()->Set_MpState(true, eItem.iStatus);
-				m_pGameInstance->Play_Sound(L"Potion");
+				m_isCoolTime = true;
+				m_fTime = 0.f;
+				m_pMask->Set_Position(m_pSlots[(ITEMSLOT)iIndex]->Get_Position());
+				if (m_pSlots[(ITEMSLOT)iIndex]->Get_ItemUsage() == IT_HPPOTION)
+				{
+					ITEM eItem = m_pSlots[(ITEMSLOT)iIndex]->Get_ItemObject()->Get_ItemDesc();
+					CUI_Manager::Get_Instance()->Use_Item_In_Slot((ITEMSLOT)iIndex);
+					CUI_Manager::Get_Instance()->Set_Heal(true, eItem.iStatus);
+					m_pGameInstance->Play_Sound(L"Potion");
+				}
+				else if (m_pSlots[(ITEMSLOT)iIndex]->Get_ItemUsage() == IT_MPPOTION)
+				{
+					ITEM eItem = m_pSlots[(ITEMSLOT)iIndex]->Get_ItemObject()->Get_ItemDesc();
+					CUI_Manager::Get_Instance()->Use_Item_In_Slot((ITEMSLOT)iIndex);
+					CUI_Manager::Get_Instance()->Set_MpState(true, eItem.iStatus);
+					m_pGameInstance->Play_Sound(L"Potion");
+				}
 			}
 		}
 	}
 	if (m_isCoolTime)
 	{
+		m_fTime += fTimeDelta;
 		if (m_fTime >= 1.f)
 		{
+			m_fTime = 1.f;
 			m_isCoolTime = false;
 			return;
 		}
-		m_fTime += fTimeDelta;
 		m_pMask->Set_Factor(m_fTime);
 		m_pMask->Tick(fTimeDelta);
 	}
@@ -99,6 +103,13 @@ void CItemBlock::Late_Tick(_float fTimeDelta)
 
 	if (m_isCoolTime)
 	{
+		wstring fTime = to_wstring(1.f - m_fTime);
+		size_t dotPos = fTime.find(L'.');
+		if (dotPos != wstring::npos && fTime.length() > dotPos + 2) {
+			fTime.erase(dotPos + 2);
+		}
+		//m_pGameInstance->Render_Text(L"Font_Dialogue", fTime, _vec2(m_pMask->Get_Position().x, m_pMask->Get_Position().y), 0.4f, _vec4(0.f, 0.f, 0.f, 1.f));
+		m_pMask->Set_Text(fTime);
 		m_pMask->Late_Tick(fTimeDelta);
 	}
 	for (size_t i = 0; i < ITEMSLOT_END; i++)
@@ -178,8 +189,9 @@ HRESULT CItemBlock::Add_Slots()
 	ColButtonDesc.eLevelID = LEVEL_STATIC;
 	ColButtonDesc.fDepth = (_float)D_SCREEN / (_float)D_END - 0.05f;
 	ColButtonDesc.fAlpha = 0.8f;
-	ColButtonDesc.fFontSize = 0.f;
-	ColButtonDesc.strText = TEXT("");
+	ColButtonDesc.fFontSize = 0.5f;
+	ColButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	ColButtonDesc.strText = TEXT(" ");
 	//ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_Effect_FX_B_Gradient030_Tex");
 	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_FadeBox");
 	ColButtonDesc.strTexture2 = TEXT("Prototype_Component_Texture_Effect_FX_A_Gradation006_Tex");

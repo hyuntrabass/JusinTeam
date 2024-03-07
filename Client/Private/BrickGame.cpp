@@ -72,17 +72,56 @@ void CBrickGame::Tick(_float fTimeDelta)
 		DestroyWindow(g_hWnd);
 	}
 
-	m_fTime += fTimeDelta;
-	if (!m_ITemList.empty() && m_ITemList.front() == CBrickItem::STOP && m_fStopTime <= 3.f)
+	if (!m_isTimeStop)
 	{
-		m_fStopTime += fTimeDelta;
-		m_fTime = 0.f;
+		m_fTime += fTimeDelta;
+	}
+
+	if (m_eCurFrontItem == CBrickItem::STOP && !m_isTimeStop)
+	{
+		m_isTimeStop = true;
 		m_pTimeBarLock->Tick(fTimeDelta);
 	}
-	if (m_fStopTime >= 3.f)
+	if (m_isTimeStop)
 	{
-		m_fStopTime = 0.f;
-		m_ITemList.pop_front();
+		m_fStopTime += fTimeDelta;
+		if (m_fStopTime >= 3.f)
+		{
+			m_isReadyItem = false;
+			m_eCurFrontItem	= CBrickItem::TYPE_END;
+			m_isTimeStop = false;
+			m_fStopTime = 0.f;
+			if (!m_ITemList.empty())
+			{
+				m_ITemList.pop_front();
+			}
+		}
+	}
+	if (m_eCurFrontItem == CBrickItem::DOUBLE && !m_isSpeedUp)
+	{
+		m_isSpeedUp = true;
+	}
+	if(m_isSpeedUp)
+	{
+		m_pBar->Set_SpeedUp();
+		m_fSpeedUpTime += fTimeDelta;
+		if (m_fSpeedUpTime >= 3.f)
+		{
+			m_isReadyItem = false;
+			m_eCurFrontItem = CBrickItem::TYPE_END;
+			m_isSpeedUp = false;
+			m_pBar->Set_SpeedDefault();
+			m_fSpeedUpTime = 0.f;
+			if (!m_ITemList.empty())
+			{
+				m_ITemList.pop_front();
+			}
+		}
+
+	}
+	{
+		m_isTimeStop = true;
+		m_pTimeBarLock->Tick(fTimeDelta);
 	}
 
 	if (m_fTime >= 1.f)
@@ -121,19 +160,26 @@ void CBrickGame::Tick(_float fTimeDelta)
 	if (m_pCatBoss && m_pCatBoss->Create_Bricks())
 	{
 		Create_Bricks();
-
+		if (!m_isPhaseStarted)
+		{
+			m_isPhaseStarted = true;
+		}
 	}
 	
 
 	Tick_Ball(fTimeDelta);
 
-	if (!m_ITemList.empty())
+	if (!m_ITemList.empty() && m_eCurFrontItem != m_ITemList.front())
 	{
 		m_isReadyItem = true;
-	}
-	else
-	{
-		m_isReadyItem = false;
+		m_eCurFrontItem = m_ITemList.front();
+		if (m_eCurFrontItem == CBrickItem::POWER)
+		{
+			if (m_pBall)
+			{
+				m_pBall->Set_BallType(m_ITemList.front());
+			}
+		}
 	}
 
 	
@@ -202,10 +248,7 @@ void CBrickGame::Late_Tick(_float fTimeDelta)
 		m_pItemSlotEffect->Late_Tick(fTimeDelta);
 	}
 
-	if (m_fTimeLimit > 0.f)
-	{
-		m_pTimeBarLock->Late_Tick(fTimeDelta);
-	}
+
 	if (m_pBackGround)
 	{
 		m_pBackGround->Late_Tick(fTimeDelta);
@@ -222,6 +265,10 @@ void CBrickGame::Late_Tick(_float fTimeDelta)
 
 	m_pTimeBar->Late_Tick(fTimeDelta);
 
+	if (m_isTimeStop)
+	{
+		m_pTimeBarLock->Late_Tick(fTimeDelta);
+	}
 	if (m_pBall)
 	{
 		m_pBall->Late_Tick(fTimeDelta);
@@ -261,7 +308,10 @@ HRESULT CBrickGame::Render()
 	{
 		vColor = _vec4(1.f, 1.f, 1.f, 1.f);
 	}
-
+	if (m_isTimeStop)
+	{
+		vColor = _vec4(0.5f, 0.5f, 0.5f, 1.f);
+	}
 	m_pGameInstance->Render_Text(L"Font_Malang", strText, _vec2((_float)g_ptCenter.x, 38.f), 0.8f, vColor);
 
 	return S_OK;
@@ -351,7 +401,7 @@ HRESULT CBrickGame::Add_Parts()
 	ColButtonDesc.strText = TEXT("");
 	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_TimeLimit");
 	ColButtonDesc.vSize = _vec2(200.f, 200.f);
-	ColButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, 40.);
+	ColButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, 40.f);
 	ColButtonDesc.fAlpha = 0.7f;
 
 
@@ -409,7 +459,7 @@ HRESULT CBrickGame::Add_Parts()
 	m_pItem[CBrickItem::DOUBLE]->Set_Pass(VTPass_UI);
 
 	
-	
+	ColButtonDesc.vPosition = _vec2(130.f, 570.f);
 	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_Power");
 	m_pItem[CBrickItem::POWER] = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
 	if (not m_pItem[CBrickItem::POWER])
@@ -418,6 +468,7 @@ HRESULT CBrickGame::Add_Parts()
 	}
 	m_pItem[CBrickItem::POWER]->Set_Pass(VTPass_UI);
 	
+	ColButtonDesc.vPosition = _vec2(130.f, 572.f);
 	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_Stop");
 	m_pItem[CBrickItem::STOP] = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
 	if (not m_pItem[CBrickItem::STOP])
@@ -484,14 +535,7 @@ void CBrickGame::Init_Game()
 			return;
 		}
 	}
-	if (m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_BrickPet")) == 0)
-	{
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_BrickPet"), TEXT("Prototype_GameObject_BrickCat"))))
-		{
-			MSG_BOX("BrickPet");
-			return;
-		}
-	}
+
 
 	m_pCatBoss = (CBlackCat*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BlackCat"));
 	if (not m_pCatBoss)
@@ -526,6 +570,20 @@ void CBrickGame::Create_Bricks()
 			if (PtInRect(&rcRect, ptPos))
 			{
 				continue;
+			}
+			if (m_isPhaseStarted)
+			{
+				_vec2 vSize2 = _vec2(14.f, 30.f);
+				RECT rcRect2 = {
+					  (LONG)(vCenterPos.x - vSize2.x * 0.5f),
+					  (LONG)(vCenterPos.y - vSize2.y * 0.5f),
+					  (LONG)(vCenterPos.x + vSize2.x * 0.5f),
+					  (LONG)(vCenterPos.y + vSize2.y * 0.5f)
+				};
+				if (!PtInRect(&rcRect2, ptPos))
+				{
+					continue;
+				}
 			}
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Balloons"), TEXT("Prototype_GameObject_Balloon"), &Desc)))
 			{
@@ -610,7 +668,19 @@ CComponent* CBrickGame::Find_Component(const wstring& strComTag)
 
 void CBrickGame::Tick_Ball(_float fTimeDelta)
 {
+	if (m_eCurFrontItem == CBrickItem::POWER)
+	{
+		if (!m_ITemList.empty())
+		{
+			CBrickItem::TYPE eType = m_pBall->Get_CurrentItemState();
+			if (eType == CBrickItem::TYPE_END && m_eCurFrontItem == m_ITemList.front())
+			{
+				m_eCurFrontItem = CBrickItem::TYPE_END;
+				m_ITemList.pop_front();
+			}
+		}
 
+	}
 	if ((m_pBall && m_pBall->Is_Dead()) || (m_pBall && m_pGameInstance->Key_Down(DIK_RETURN)))
 	{
 		Safe_Release(m_pBall);
@@ -677,6 +747,8 @@ void CBrickGame::Tick_Ball(_float fTimeDelta)
 			m_ITemList.push_back(eType);
 		}
 	}
+
+
 }
 
 void CBrickGame::Free()

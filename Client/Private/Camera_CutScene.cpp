@@ -1,5 +1,6 @@
 #include "Camera_CutScene.h"
 #include "Camera_Manager.h"
+#include "UI_Manager.h"
 //#include "Trigger_Manager.h"
 
 CCamera_CutScene::CCamera_CutScene(_dev pDevice, _context pContext)
@@ -68,6 +69,8 @@ void CCamera_CutScene::Tick(_float fTimeDelta)
 		}
 		return;
 	}
+
+
 	if (m_pGameInstance->Key_Down(DIK_RETURN))
 	{
 		m_iFrame = 0;
@@ -158,6 +161,8 @@ HRESULT CCamera_CutScene::Add_At_Curve(_mat matPoints)
 
 void CCamera_CutScene::Play_Camera(_float fTimeDelta)
 {
+	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
+
 	if (m_CameraEyeList.size() > 0)
 	{
 		m_iSectionCount = (_uint)m_CameraEyeList.size();
@@ -220,7 +225,7 @@ void CCamera_CutScene::Play_Camera(_float fTimeDelta)
 			}
 			m_CameraEyeList.clear();
 			m_pCam_Manager->Set_CameraModeIndex(CM_MAIN);
-			
+			CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 		}
 	}
 	if (m_iCurrentSectionIndex < m_CameraEyeList.size())

@@ -67,7 +67,7 @@ HRESULT CNumEffect::Init(void* pArg)
 	ColButtonDesc.fAlpha = 1.f;
 	ColButtonDesc.fFontSize = 0.f;
 	ColButtonDesc.strText = TEXT("");
-	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_Combo");
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_Combo2");
 	//ColButtonDesc.strTexture2 = TEXT("Prototype_Component_Texture_Effect_FX_A_Shine003_Tex");
 	ColButtonDesc.vSize = _vec2(200.f, 200.f);
 	ColButtonDesc.vPosition = _vec2(m_fX + 80.f, m_fY);
@@ -78,7 +78,7 @@ HRESULT CNumEffect::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-	m_pCombo->Set_Pass(VTPass_Mask_ColorAlpha);
+	m_pCombo->Set_Pass(VTPass_UI);
 
 	//m_vColor = _vec4(1.f, 0.8f, 0.f, 1.f);
 	m_vColor = _vec4(1.f, 0.f, 0.f, 1.f);

@@ -4,6 +4,11 @@
 #include "GameObject.h"
 #include "Balloon.h"
 #include "BrickItem.h"
+
+#define DEFCOL 0.4f
+#define POWERCOL 0.41f
+#define DOUBLECOL 0.42f
+
 BEGIN(Client)
 
 class CBrickBall final : public CGameObject
@@ -49,6 +54,7 @@ private:
 	_bool					m_isBarColl{};
 	_bool					m_isColl{};
 	_bool					m_isBalloonColl{};
+	_bool					m_bUseItem{};
 	_uint					m_iCollNum{};
 	_uint					m_iBallColor{};
 
@@ -76,8 +82,10 @@ private:
 	void Set_BallColor();
 
 public:
+	CBrickItem::TYPE Get_CurrentItemState();
 	_bool Is_BarColl() { return m_isBarColl; }
 	void Set_CurrentBallColor(BrickColor eColor);
+	void Set_BallType(CBrickItem::TYPE eType);
 
 public:
 	CCollider* Get_BrickBallCollider() { return m_pColliderCom; }

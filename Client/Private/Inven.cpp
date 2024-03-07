@@ -53,8 +53,11 @@ HRESULT CInven::Init(void* pArg)
 	CUI_Manager::Get_Instance()->Set_WearableItem(W_SWORD, eItem);
 
 	strName = TEXT("무스 뿔 활");
-	eItem = CUI_Manager::Get_Instance()->Find_Item(strName);
-	CUI_Manager::Get_Instance()->Set_WearableItem(W_SWORD, eItem);
+	CUI_Manager::Get_Instance()->Set_Item(strName);
+	return S_OK;
+
+	strName = TEXT("체력 포션");
+	CUI_Manager::Get_Instance()->Set_Item(strName);
 	return S_OK;
 }
 

@@ -48,6 +48,7 @@ private:
 	CRenderer* m_pRendererCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
 	CCollider* m_pColliderCom = { nullptr };
+	CCollider* m_pWideColliderCom = { nullptr };
 
 public:
 	void Init_State(_float fTimeDelta);
@@ -61,13 +62,15 @@ private:
 private:
 	_bool m_bGameStart{};
 	_bool m_bChangePhase{};
-	_bool m_bPhaseStart{};
+	_bool m_bPhaseStart{};;
 	_bool m_bChangePass{};
+	_bool m_bCreateBlock{};
 	_bool m_bHit{};
 
 	_uint m_iPassIndex{};
 	_uint m_iHitCount{};
 
+	_float m_fCreateBlockTime = {};
 	_float m_fIdleTime = {};
 	_float m_fHitTime = {};
 

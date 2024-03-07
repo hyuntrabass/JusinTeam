@@ -50,18 +50,27 @@ HRESULT CBrickBall::Init(void* pArg)
 	m_EffectMatrix = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 
 	m_shouldRenderBlur = true;
-	m_eCurBrickColor = BLUE;
 
 	Set_BallColor();
 	if (FAILED(Init_Effect()))
 	{
 		return E_FAIL;
 	}
+
+	m_pColliderCom->Set_Radius(DEFCOL);
 	return S_OK;
 }
 
 void CBrickBall::Tick(_float fTimeDelta)
 {
+	if (m_bUseItem)
+	{
+		m_bUseItem = false;
+		if (m_pColliderCom->Get_Radius() == POWERCOL)
+		{
+			m_pColliderCom->Set_Radius(DEFCOL);
+		}
+	}
 	_vec3 vLook = m_pTransformCom->Get_State(State::Look);
 	m_pTransformCom->Set_Scale(_vec3(1.8f, 1.8f, 1.8f));
 	//Set_BallColor();
@@ -290,23 +299,40 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 		m_pCurCollider = nullptr;
 		m_pCurCollider = pCollider;
 		_vec3 vNormal{};
-
+		_mat Mat{};
 		if (iWall == 0)
 		{
 			vNormal = _vec4(-1.f, 0.f, 0.f, 0.f);
+			Mat = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BrickWallBroken");
+			Info.pMatrix = &Mat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 		}
 		else if (iWall == 1)
 		{
+			Mat = _mat::CreateRotationZ(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BrickWallBroken");
+			Info.pMatrix = &Mat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 			vNormal = _vec4(0.f, 0.f, -1.f, 0.f);
 		}
 		else if (iWall == 2)
 		{
 			vNormal = _vec4(1.f, 0.f, 0.f, 0.f);
+			Mat = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BrickWallBroken");
+			Info.pMatrix = &Mat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 		}
 		else if (iWall == 3)
 		{
+			Mat = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BrickWallBroken");
+			Info.pMatrix = &Mat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 			vNormal = _vec4(1.f, 0.f, 0.f, 0.f);
 		}
+
 		_vec3 vLook = m_pTransformCom->Get_State(State::Look);
 		vNormal.Normalize();
 		m_vDir = _vec3::Reflect(vLook, vNormal);
@@ -361,7 +387,6 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 
 	}
 
-
 	CCollider* pBalloonCollider{ nullptr };
 	_bool isBalloonColl{};
 	_uint iNum = m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_Balloons"));
@@ -378,9 +403,14 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 			break;
 		}
 	}
-
+	
 	if (isBalloonColl && m_pCurCollider != pBalloonCollider)
 	{
+
+		if (m_pColliderCom->Get_Radius() == POWERCOL)
+		{
+			m_bUseItem = true;
+		}
 		bShowEffect = true;
 		m_isCombo = true;
 		m_pCurCollider = nullptr;
@@ -564,6 +594,39 @@ void CBrickBall::Set_BallColor()
 	}
 }
 
+CBrickItem::TYPE CBrickBall::Get_CurrentItemState()
+{
+	if (m_pColliderCom->Get_Radius() == DOUBLECOL)
+	{
+		return CBrickItem::DOUBLE;
+	}
+	else if (m_pColliderCom->Get_Radius() == POWERCOL)
+	{
+		return CBrickItem::POWER;
+	}
+	else
+	{
+		return CBrickItem::TYPE_END;
+	}
+	/*
+	if (m_bUseItem)
+	{
+		m_bUseItem = false;
+		if (m_pColliderCom->Get_Radius() == DOUBLECOL)
+		{
+			//m_pColliderCom->Set_Radius(DEFCOL);
+			return CBrickItem::DOUBLE;
+		}
+		else if (m_pColliderCom->Get_Radius() == POWERCOL)
+		{
+			//m_pColliderCom->Set_Radius(DEFCOL);
+			return CBrickItem::POWER;
+		}
+	}
+	return CBrickItem::TYPE_END;
+	*/
+}
+
 void CBrickBall::Set_CurrentBallColor(BrickColor eColor)
 {
 	if (m_eCurBrickColor != eColor)
@@ -571,6 +634,23 @@ void CBrickBall::Set_CurrentBallColor(BrickColor eColor)
 		m_eCurBrickColor = eColor;
 		Set_BallColor();
 	}
+}
+
+void CBrickBall::Set_BallType(CBrickItem::TYPE eType)
+{
+	switch (eType)
+	{
+	case CBrickItem::DOUBLE:
+		m_pColliderCom->Set_Radius(DOUBLECOL);
+		break;
+	case CBrickItem::POWER:
+		m_pColliderCom->Set_Radius(POWERCOL);
+		break;
+	default:
+		m_pColliderCom->Set_Radius(DEFCOL);
+		break;
+	}
+	_float fr = m_pColliderCom->Get_Radius();
 }
 
 HRESULT CBrickBall::Add_Components()

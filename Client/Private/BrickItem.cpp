@@ -35,7 +35,7 @@ HRESULT CBrickItem::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-	m_pTransformCom->Set_Scale(_vec3(0.05f, 0.05f, 0.05f));
+	m_pTransformCom->Set_Scale(_vec3(0.035f, 0.035f, 0.035f));
 	m_pTransformCom->Rotation(_vec3(1.f, 0.f, 0.f), 180.f);
 	m_pBodyColliderCom->Set_Normal();
 
@@ -46,15 +46,35 @@ HRESULT CBrickItem::Init(void* pArg)
 	Info.isFollow = true;
 	m_pEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
-	//BrickItemEffect
+	ItemCheck();
 	return S_OK;
 }
 
 void CBrickItem::Tick(_float fTimeDelta)
 {
-	m_pTransformCom->Set_Scale(_vec3(0.03f, 0.03f, 0.03f));
+	if (m_isExist)
+	{
+		Kill();
+		return;
+	}
 
-	//m_pColliderCom->Change_Extents(_vec3(15.f, 0.2f, 0.02f));
+	CCollider* pBalloonCollider{ nullptr };
+	_bool isBalloonColl{};
+	_uint iNum = m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_Balloons"));
+	for (_uint i = 0; i < iNum; i++)
+	{
+		pBalloonCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_Balloons"), TEXT("Com_Collider_Sphere"), i);
+		if (pBalloonCollider == nullptr)
+		{
+			break;
+		}
+		if (m_pBodyColliderCom->Intersect(pBalloonCollider))
+		{
+			Kill();
+			return;
+		}
+	}
+
 
 	if (CCamera_Manager::Get_Instance()->Get_CameraState() != CS_BRICKGAME)
 	{
@@ -129,6 +149,42 @@ HRESULT CBrickItem::Render()
 	}
 
 	return S_OK;
+}
+
+void CBrickItem::ItemCheck()
+{
+	wstring strLayer{};
+	switch (m_eType)
+	{
+	case CBrickItem::POWER:
+		strLayer = TEXT("Layer_BrickPower");
+		break;
+	case CBrickItem::DOUBLE:
+		strLayer = TEXT("Layer_BrickDouble");
+		break;
+	case CBrickItem::STOP:
+		strLayer = TEXT("Layer_BrickStop");
+		break;
+	default:
+		break;
+	}
+
+	CCollider* pItemCol{ nullptr };
+	_bool isColl{};
+	_uint iNum = m_pGameInstance->Get_LayerSize(LEVEL_TOWER, strLayer);
+	for (_uint i = 0; i < iNum; i++)
+	{
+		pItemCol = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, strLayer, TEXT("Com_Collider"), i);
+		if (pItemCol == nullptr)
+		{
+			break;
+		}
+		if (m_pBodyColliderCom->Intersect(pItemCol))
+		{
+			m_isExist = true;
+			break;
+		}
+	}
 }
 
 HRESULT CBrickItem::Add_Collider()

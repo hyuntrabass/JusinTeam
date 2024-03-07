@@ -35,12 +35,15 @@ private:
 
 private:
 	TYPE m_eType{};
+
+	_bool m_isExist{};
 	_float m_fDir{ 1.f };
 	_vec4 fStartPos{};
 	_mat m_EffectMat{};
 	class CEffect_Dummy* m_pEffect{ nullptr };
 
 private:
+	void ItemCheck();
 	HRESULT Add_Collider();
 	void Update_BodyCollider();
 	HRESULT Add_Components();

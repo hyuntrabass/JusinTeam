@@ -37,6 +37,7 @@ private:
 	BAR_DIR					m_eCurDir{};
 	_bool					m_isColl{};
 	_bool					m_isChanged{};
+	_bool					m_isSpeedUp{};
 
 	_uint					m_iCollNum{};
 	_uint					m_iBallColor{};
@@ -48,13 +49,16 @@ private:
 	_vec4					m_vColor{};
 	_mat					m_EffectMatrix{};
 	class CEffect_Dummy*	m_pEffect_Ball{ nullptr };
-
+	class CBrickCat*		m_pCat{ nullptr };
 
 private:
 	void Set_BarColor();
 
 public:
 	BrickColor Get_CurrentColor() { return m_eCurBrickColor; }
+	void Set_SpeedUp() { m_fSpeed = 20; m_isSpeedUp = true; }
+	void Set_SpeedDefault() { m_fSpeed = 10; m_isSpeedUp = false; }
+
 public:
 	CTransform* Get_Transform() { return m_pTransformCom; }
 	CCollider* Get_BrickBarCollider() { return m_pColliderCom; }
