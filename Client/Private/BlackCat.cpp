@@ -468,11 +468,11 @@ HRESULT CBlackCat::Add_Parts()
 	CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
 	ColButtonDesc.eLevelID = LEVEL_STATIC;
 	ColButtonDesc.fDepth = fDepth;
-	ColButtonDesc.fAlpha = 0.8f;
+	ColButtonDesc.fAlpha = 0.9f;
 	ColButtonDesc.fFontSize = 0.f;
 	ColButtonDesc.strText = TEXT("");
 	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_FadeBox");
-	ColButtonDesc.vSize = _vec2(g_iWinSizeX, 250.f);
+	ColButtonDesc.vSize = _vec2(g_iWinSizeX, 400.f);
 	ColButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, (_float)g_iWinSizeY);
 
 

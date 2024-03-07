@@ -144,12 +144,12 @@ void CMenu::Tick(_float fTimeDelta)
 	//메뉴
 	for (size_t i = 0; i < ENV_END; i++)
 	{
-		if (TRUE == PtInRect(&m_pSlots[i]->Get_InitialRect(), ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
+		RECT rect = m_pSlots[i]->Get_Rect();
+		rect.bottom -= 30;
+		if (TRUE == PtInRect(&rect, ptMouse) && m_pGameInstance->Mouse_Down(DIM_LBUTTON, InputChannel::UI))
 		{
-			RECT rect = m_pSlots[i]->Get_InitialRect();
-			_vec2 vPos = m_pSlots[i]->Get_Position();
 			m_eCurSlot = (ENV_SLOT)i;
-			m_pSlots[i]->Set_ChangeTex(true);
+			m_pSlots[m_eCurSlot]->Set_ChangeTex(true);
 			if (m_eCurSlot != m_ePrevSlot)
 			{
 				m_pSlots[m_ePrevSlot]->Set_ChangeTex(false);
@@ -400,7 +400,7 @@ HRESULT CMenu::Add_Parts()
 
 	TextButton.strText = TEXT("사운드");
 	TextButton.vPosition = _vec2(120.f, fY + 100.f);
-	TextButton.vSize = _vec2(150.f, 10.f);
+	TextButton.vSize = _vec2(150.f, 120.f);
 	TextButton.strTexture = TEXT("Prototype_Component_Texture_UI_Button_Blue");
 	TextButton.strTexture2 = TEXT("Prototype_Component_Texture_UI_Button_Blue2");
 	TextButton.vTextPosition = _vec2(0.f, 0.f);
@@ -425,7 +425,7 @@ HRESULT CMenu::Add_Parts()
 
 	}
 	UiInfo info{};
-	info.strTexture = TEXT("Prototype_Component_Texture_Skill_Background");
+	info.strTexture = TEXT("Prototype_Component_Texture_Skill_Background2");
 	info.vPos = _vec2((_float)g_iWinSizeX / 2.f, (_float)g_iWinSizeY / 2.f);
 	info.vSize = _vec2((_float)g_iWinSizeX, (_float)g_iWinSizeY);
 	info.iLevel = (_uint)LEVEL_STATIC;

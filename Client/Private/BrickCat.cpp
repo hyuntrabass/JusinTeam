@@ -55,7 +55,10 @@ void CBrickCat::Tick(_float fTimeDelta)
 		m_isDead = true;
 		return;
 	}
-
+	if (!CUI_Manager::Get_Instance()->InfinityTower_UI(true, BRICK))
+	{
+		return;
+	}
 
 	__super::Tick(fTimeDelta);
 	Init_State(fTimeDelta);

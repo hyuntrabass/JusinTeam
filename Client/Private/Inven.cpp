@@ -48,6 +48,13 @@ HRESULT CInven::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	wstring strName = TEXT("¹«½º »Ô ´Ü°Ë");
+	ITEM eItem = CUI_Manager::Get_Instance()->Find_Item(strName);
+	CUI_Manager::Get_Instance()->Set_WearableItem(W_SWORD, eItem);
+
+	strName = TEXT("¹«½º »Ô È°");
+	eItem = CUI_Manager::Get_Instance()->Find_Item(strName);
+	CUI_Manager::Get_Instance()->Set_WearableItem(W_SWORD, eItem);
 	return S_OK;
 }
 
@@ -349,7 +356,7 @@ HRESULT CInven::Add_Parts()
 	
 	Button.strText = TEXT("");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Out");
-	Button.vPosition = _vec2(1230.f, 40.f);
+	Button.vPosition = _vec2(1230.f, 30.f);
 	Button.vSize = _vec2(70.f, 70.f);
 
 	m_pExitButton = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);

@@ -184,7 +184,8 @@ private:
 	TeleportSpot	m_eTeleportSpot{ TS_END };
 	_bool			m_bTeleport{};
 
-	_bool			m_isCreated{ false };
+	_bool			m_isCreated[TOWER::TOWER_END]{};
+	_bool			m_isEndGame[TOWER::TOWER_END]{};
 	_bool			m_isCollect{ false };
 	_bool			m_isWorldMap{ false };
 
