@@ -39,7 +39,7 @@ HRESULT CLauncher::Init(void* pArg)
 		m_Animation.isLoop = true;
 		m_Animation.fAnimSpeedRatio = 2.f;
 
-		m_pTransformCom->Set_Scale(_vec3(0.7f));
+		m_pTransformCom->Set_Scale(_vec3(0.8f));
 
 		random_device dev;
 		_randNum RandomNumber(dev());
@@ -50,6 +50,13 @@ HRESULT CLauncher::Init(void* pArg)
 		m_pTransformCom->Set_Position(CENTER_POS + static_cast<_float>(rand() % 8 + 1) * vRandomDir); // Radius : 8
 
 		m_iPassIndex = AnimPass_Dissolve;
+
+		//if (m_iSoundChannel == -1)
+		//{
+		//	m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("UI_Link_Board_Slot_Anim_Summon_Grade_03_01"));
+		//}
+
+		m_pGameInstance->Play_Sound(TEXT("UI_Link_Board_Slot_Anim_Summon_Grade_03_01"));
 	}
 
 	break;
@@ -94,6 +101,8 @@ HRESULT CLauncher::Init(void* pArg)
 		m_pLauncher = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
 		m_iDestroyCount = 0;
+
+		m_pGameInstance->Play_Sound(TEXT("ElementalMaster_Battle_Idle_End_SFX_01"));
 	}
 
 	break;
@@ -270,6 +279,8 @@ void CLauncher::Tick(_float fTimeDelta)
 					}
 
 					++m_iProjectileCount;
+
+					m_pGameInstance->Play_Sound(TEXT("UI_Link_Board_Slot_Anim_Summon_Grade_02_02"));
 				}
 
 				else
@@ -288,6 +299,14 @@ void CLauncher::Tick(_float fTimeDelta)
 	case Client::CLauncher::TYPE_CANNON:
 
 	{
+		if (m_iSoundChannel != -1)
+		{
+			if (not m_pGameInstance->Get_IsPlayingSound(m_iSoundChannel))
+			{
+				m_iSoundChannel = -1;
+			}
+		}
+
 		if (m_pLauncher)
 		{
 			m_pLauncher->Tick(fTimeDelta);
@@ -311,8 +330,14 @@ void CLauncher::Tick(_float fTimeDelta)
 
 		if (m_iDestroyCount >= 4)
 		{
-			Safe_Release(m_pLauncher);
-			Safe_Release(m_pLauncherParticle);
+			if (m_pLauncher)
+			{
+				Safe_Release(m_pLauncher);
+				Safe_Release(m_pLauncherParticle);
+
+				m_pGameInstance->StopSound(m_iSoundChannel);
+				m_pGameInstance->Play_Sound(TEXT("War_SM_Cannon_001_Die"));
+			}
 
 			m_Animation.iAnimIndex = 2;
 			m_Animation.fAnimSpeedRatio = 2.f;
@@ -332,6 +357,12 @@ void CLauncher::Tick(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(1))
 		{
 			m_Animation.iAnimIndex = 3;
+
+			if (m_iSoundChannel == -1)
+			{
+				m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("Interaction_Realmwar_Crown_Idle_SFX_01"));
+			}
+
 		}
 
 
@@ -363,9 +394,18 @@ void CLauncher::Tick(_float fTimeDelta)
 			if (m_pModelCom->IsAnimationFinished(3))
 			{
 				m_Animation.iAnimIndex = 0;
+
+				m_pGameInstance->StopSound(m_iSoundChannel);
+
+				m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("Sfx_Obj_07_EyeStatue_Ani_Atk_01_02"));
+
 			}
 			else if (m_pModelCom->IsAnimationFinished(0))
 			{
+				m_pGameInstance->StopSound(m_iSoundChannel);
+
+				m_iSoundChannel = m_pGameInstance->Play_Sound(TEXT("Interaction_Realmwar_Crown_Idle_SFX_01"));
+
 				m_Animation.iAnimIndex = 3;
 				++m_iProjectileCount;
 			}
@@ -469,6 +509,12 @@ void CLauncher::Tick(_float fTimeDelta)
 			//{
 			//	Kill();
 			//}
+			if (!m_bCreateProjectile)
+			{
+				m_pGameInstance->Play_Sound(TEXT("WT_16070_MagneticHammer_SFX_01"));
+
+				m_bCreateProjectile = true;
+			}
 		}
 
 		m_pModelCom->Set_Animation(m_Animation);
@@ -645,6 +691,9 @@ void CLauncher::Set_Damage(_int iDamage, _uint iDamageType)
 			++m_iDestroyCount;
 
 			m_iHP = 0;
+
+			m_pGameInstance->Play_Sound(TEXT("Hit_Large_Ice_SFX_04"));
+
 		}
 	}
 }

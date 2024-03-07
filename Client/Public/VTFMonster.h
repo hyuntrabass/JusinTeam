@@ -60,7 +60,8 @@ protected:
 	_bool m_IsPlaySound{};
 	wstring m_strSoundTag{};
 	_int m_iSoundChannel = -1;
-	_float m_fSoundStartPosRatio{};
+	_float m_fSoundStartPosRatio = 0.f;;
+	_float m_fSoundVolume = 0.5f;
 
 protected:
 	wstring m_strModelTag{};

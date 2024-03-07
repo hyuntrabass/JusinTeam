@@ -148,6 +148,8 @@ HRESULT CProjectile::Init(void* pArg)
 		Info.isFollow = true;
 		m_pBaseEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
 
+		m_pGameInstance->Play_Sound(TEXT("UI_Equip_Reinforce_Fail_SFX_00"));
+
 	}
 
 	break;
@@ -208,6 +210,9 @@ HRESULT CProjectile::Init(void* pArg)
 		Info.pMatrix = &Matrix;
 		//Info.isFollow = false;
 		m_pFrameEffect = CEffect_Manager::Get_Instance()->Clone_Effect(Info);
+
+		//m_pGameInstance->Play_Sound(TEXT("BP_Buff_161900_CurseOfThunder_SFX_01"));
+
 	}
 
 	break;
@@ -387,6 +392,13 @@ void CProjectile::Tick(_float fTimeDelta)
 
 		if (m_fTime >= 1.f)
 		{
+			if (!m_bPlaySound)
+			{
+				//m_pGameInstance->Play_Sound(TEXT("BP_Buff_161901_CurseOfThunder_SFX_01"));
+
+				m_bPlaySound = true;
+			}
+
 			if (m_pBall)
 			{
 				m_pBall->Tick(fTimeDelta);
@@ -409,14 +421,14 @@ void CProjectile::Tick(_float fTimeDelta)
 
 	case Client::CProjectile::TYPE_SPEAR:
 	{
-		if (m_pTransformCom->Get_State(State::Pos).y <= 3.5f)
+		if (m_pTransformCom->Get_State(State::Pos).y <= 3.6f)
 		{
 			m_pTransformCom->Set_Speed(30.f);
 		}		
 		
 		m_pTransformCom->Go_Down(fTimeDelta);
 
-		m_pGameInstance->Attack_Player(m_pColliderCom, rand() % 10, MonAtt_Hit);
+		m_pGameInstance->Attack_Player(m_pColliderCom, 10 + rand() % 10, MonAtt_Hit);
 
 		if (m_pTransformCom->Get_State(State::Pos).y <= -5.f)
 		{

@@ -66,8 +66,16 @@ HRESULT CEagle::Init(void* pArg)
 		break;
 	}
 
+	m_pTransformCom->Set_Position(_vec3(vDragonPos +  10 * vDir) + _vec3(0.f, 4.f, 0.f));
+
+	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Dragon_Bat_Birth");
+	_mat EffectMat = _mat::CreateScale(3.f) * m_pTransformCom->Get_World_Matrix();
+	Info.pMatrix = &EffectMat;
+	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+
+
 	m_pTransformCom->Set_Scale(_vec3(0.5f));
-	m_pTransformCom->Set_Position(_vec3(vDragonPos +  10 * vDir));
+	m_pTransformCom->Set_Position(_vec3(vDragonPos +  10 * vDir) + _vec3(0.f, 3.f, 0.f));
 	m_pTransformCom->LookAt_Dir(vDragonLook);
 
 	++m_iEagleID;
