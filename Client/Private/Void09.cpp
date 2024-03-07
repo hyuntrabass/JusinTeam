@@ -365,6 +365,11 @@ void CVoid09::Tick_State(_float fTimeDelta)
 
 	case Client::CVoid09::STATE_WALK:
 	{
+		if (fDistance <= m_fChaseRange)
+		{
+			m_eCurState = STATE_CHASE;
+		}
+
 		_float fDist = 1.2f; PxRaycastBuffer Buffer1{};
 		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer1))
 		{
