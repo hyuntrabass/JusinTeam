@@ -39,6 +39,8 @@ private:
 	_mat m_CheckPointMatrix{};
 	_float m_fResurrectionTime{ 0.f };
 	_bool m_isTurnOff = false;
+	_float m_fTime = 0.f;
+	_bool m_Sound = false;
 
 	_bool m_isDetected = false;
 

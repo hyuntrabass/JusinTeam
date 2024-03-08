@@ -161,70 +161,7 @@ void CGuard::Late_Tick(_float fTimeDelta)
 
 HRESULT CGuard::Render()
 {
-	//if (FAILED(Bind_ShaderResources()))
-	//	return E_FAIL;
-
-	//for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); ++i) {
-	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-	//		return E_FAIL;
-
-	//	_bool HasNorTex{};
-	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-	//	{
-	//		HasNorTex = false;
-	//	}
-	//	else
-	//	{
-	//		HasNorTex = true;
-	//	}
-
-	//	_bool HasMaskTex{};
-	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
-	//	{
-	//		HasMaskTex = false;
-	//	}
-	//	else
-	//	{
-	//		HasMaskTex = true;
-	//	}
-
-	//	_bool HasGlowTex{};
-	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_GlowTexture", i, TextureType::Specular)))
-	//	{
-	//		HasGlowTex = false;
-	//	}
-	//	else
-	//	{
-	//		HasGlowTex = true;
-	//	}
-
-	//	if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
-	//	{
-	//		return E_FAIL;
-	//	}
-
-	//	if (FAILED(m_pShaderCom->Bind_RawValue("g_HasMaskTex", &HasMaskTex, sizeof _bool)))
-	//	{
-	//		return E_FAIL;
-	//	}
-
-	//	if (FAILED(m_pShaderCom->Bind_RawValue("g_HasGlowTex", &HasGlowTex, sizeof _bool)))
-	//	{
-	//		return E_FAIL;
-	//	}
-
-	//	//if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-	//	//	return E_FAIL;
-
-
-
-	//	if (FAILED(m_pModelCom->Render(i)))
-	//		return E_FAIL;
-	//}
-	//if (!m_bChangePass && m_iHP > 0)
-	//{
-	//	m_iPassIndex = AnimPass_Default;
-	//}
+	
 	return S_OK;
 }
 
