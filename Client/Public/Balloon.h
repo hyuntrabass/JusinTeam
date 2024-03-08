@@ -18,7 +18,6 @@ public:
 	{
 		_bool isChangePhase{};
 		_bool isEmpty{};
-		_bool isEmpty{};
 		_vec3 vPosition{};
 		_vec4 vColor;
 	}BALLOON_DESC;

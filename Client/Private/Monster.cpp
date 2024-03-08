@@ -81,6 +81,7 @@ void CMonster::Tick(_float fTimeDelta)
 	{
 		m_pGameInstance->Delete_CollisionObject(this);
 		m_pTransformCom->Delete_Controller();
+		CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 	}
 
 	if (m_fDeadTime >= 2.f)
@@ -447,13 +448,7 @@ HRESULT CMonster::Bind_ShaderResources()
 
 void CMonster::Free()
 {
-	if (!m_isPrototype)
-	{
-		CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
-	}
 	__super::Free();
-
-
 
 	Safe_Release(m_HpBar);
 	Safe_Release(m_pModelCom);

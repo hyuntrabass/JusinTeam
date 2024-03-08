@@ -178,13 +178,12 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.isMain = true;
 	tDesc.strQuestTitle = TEXT("몬스터 처치");
 	tDesc.strText = TEXT("갑판 위 몬스터 처치하기");
-	vecRewards.push_back(make_pair(TEXT("[일반]탈 것 소환 카드"), 10));
-	vecRewards.push_back(make_pair(TEXT("[유니크]신비한 알"), 1));
-	vecRewards.push_back(make_pair(TEXT("마나하임의 갑옷"), 1));
-	vecRewards.push_back(make_pair(TEXT("바이킹의 투구"), 1));
-	vecRewards.push_back(make_pair(TEXT("거인의 강철 단검"), 1));
-	vecRewards.push_back(make_pair(TEXT("거인의 강철 활"), 1));
-	tDesc.vecRewards = vecRewards;
+	tDesc.vecRewards.push_back(make_pair(TEXT("[일반]탈 것 소환 카드"), 10));
+	tDesc.vecRewards.push_back(make_pair(TEXT("[유니크]신비한 알"), 1));
+	tDesc.vecRewards.push_back(make_pair(TEXT("마나하임의 갑옷"), 1));
+	tDesc.vecRewards.push_back(make_pair(TEXT("바이킹의 투구"), 1));
+	tDesc.vecRewards.push_back(make_pair(TEXT("거인의 강철 단검"), 1));
+	tDesc.vecRewards.push_back(make_pair(TEXT("거인의 강철 활"), 1));
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	vecRewards.clear();
@@ -207,7 +206,7 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.isMain = false;
 	tDesc.strQuestTitle = TEXT("체력포션 구매");
 	tDesc.strText = TEXT("마을 상인에게 체력포션 구매하기");
-	vecRewards.push_back(make_pair(TEXT("[희귀]탈 것 소환 카드"), 10));
+	tDesc.vecRewards.push_back(make_pair(TEXT("[희귀]탈 것 소환 카드"), 10));
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	vecRewards.clear();
