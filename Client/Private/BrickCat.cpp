@@ -74,11 +74,14 @@ void CBrickCat::Tick(_float fTimeDelta)
 	Init_State(fTimeDelta);
 	Tick_State(fTimeDelta);
 
+
 	m_pModelCom->Set_Animation(m_Animation);
 
 	//m_isTrailOn = true;
 	if (m_isTrailOn)
 	{
+		m_fTrailTime += fTimeDelta;
+
 		if (m_pTrail != nullptr)
 		{
 			m_pTrail->On();
@@ -87,13 +90,17 @@ void CBrickCat::Tick(_float fTimeDelta)
 			m_pTrail->Tick(UpMatrix.Position_vec3(), BottomMatrix.Position_vec3());
 		}
 	}
+	else
+	{
+		m_fTrailTime = 0.f;
+	}
 	m_EffectMatrix = *m_pModelCom->Get_BoneMatrix("Bip001-Spine") * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
 }
 
 void CBrickCat::Late_Tick(_float fTimeDelta)
 {
 	//m_isTrailOn = true;
-	if (m_isTrailOn)
+	if (m_isTrailOn && m_fTrailTime >= 0.5f)
 	{
 		m_pTrail->Late_Tick(fTimeDelta);
 	}

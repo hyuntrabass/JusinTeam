@@ -48,8 +48,11 @@ HRESULT CInven::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	/*
+	* ÃÊ±â¼¼ÆÃ
 	wstring strName = TEXT("¹«½º »Ô ´Ü°Ë");
 	CUI_Manager::Get_Instance()->Set_Item(strName);
+
 
 	strName = TEXT("¹«½º »Ô È°");
 	ITEM eItem = CUI_Manager::Get_Instance()->Find_Item(strName);
@@ -64,7 +67,24 @@ HRESULT CInven::Init(void* pArg)
 	}
 	m_pWearableSlots[W_BOW]->Set_WearableItem(eItem);
 
+	CUI_Manager::Get_Instance()->Set_Item(strName);
+	*/
+	wstring strName = TEXT("¿ÀµòÀÇ ±Ã´Ï¸£ ´Ü°Ë");
+	CUI_Manager::Get_Instance()->Set_Item(strName);
+
+	strName = TEXT("¿ÀµòÀÇ ±Ã´Ï¸£ È°");
+	CUI_Manager::Get_Instance()->Set_Item(strName);
+
+	strName = TEXT("·¹±ä·¹ÀÌÇÁÀÇ ºÒ¸ê Åõ±¸");
+	ITEM eItem = CUI_Manager::Get_Instance()->Find_Item(strName);
+	CUI_Manager::Get_Instance()->Set_WearableItem(W_TOP, eItem);
+	
+	strName = TEXT("·¹±ä·¹ÀÌÇÁÀÇ ºÒ¸ê °©¿Ê");
+	eItem = CUI_Manager::Get_Instance()->Find_Item(strName);
+	CUI_Manager::Get_Instance()->Set_WearableItem(W_CHEST, eItem);
+
 	return S_OK;
+
 }
 
 void CInven::Tick(_float fTimeDelta)

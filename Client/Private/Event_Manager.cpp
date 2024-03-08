@@ -208,6 +208,7 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.strQuestTitle = TEXT("체력포션 구매");
 	tDesc.strText = TEXT("마을 상인에게 체력포션 구매하기");
 	vecRewards.push_back(make_pair(TEXT("[희귀]탈 것 소환 카드"), 10));
+	tDesc.vecRewards = vecRewards;
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	vecRewards.clear();
@@ -347,6 +348,7 @@ void CEvent_Manager::Set_Alert(const wstring strAlert)
 
 void CEvent_Manager::Set_TutorialComplete(TUTO_SEQ eTuto)
 {
+	return;
 	if (eTuto >= TUTO_END || m_eCurTuto >= TUTO_END)
 	{
 		return;
@@ -361,6 +363,7 @@ void CEvent_Manager::Set_TutorialComplete(TUTO_SEQ eTuto)
 
 void CEvent_Manager::Set_TutorialSeq(TUTO_SEQ eTuto)
 {
+	return;
 	if (m_eCurTuto == eTuto)
 	{
 		return;
@@ -400,6 +403,7 @@ void CEvent_Manager::Set_TutorialSeq(TUTO_SEQ eTuto)
 
 _bool CEvent_Manager::Get_TutorialComplete(TUTO_SEQ eTuto)
 {
+	return false;
 	if (eTuto >= TUTO_END || eTuto < 0)
 	{
 		return false;
@@ -421,6 +425,7 @@ HRESULT CEvent_Manager::Render()
 
 HRESULT CEvent_Manager::Set_Quest(const wstring& strQuest)
 {
+	return S_OK;
 	auto iter = m_QuestMap.find(strQuest);
 	if (iter == m_QuestMap.end())
 	{

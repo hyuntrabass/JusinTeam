@@ -50,9 +50,6 @@ HRESULT CGraphicSetting::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
-
-	m_pGameInstance->Set_TurnOnShadow(true);
-	m_pRendererCom->Set_TurnOnMotionBlur(true);
 	return S_OK;
 }
 
@@ -233,12 +230,12 @@ HRESULT CGraphicSetting::Add_Parts()
 		return E_FAIL;
 	}
 	m_pOff->Set_Pass(VTPass_UI_Alpha);
-	/*if (m_eGraphic == MOTIONBLUR || m_eGraphic == SHADOW)
+	if (m_eGraphic == MOTIONBLUR || m_eGraphic == SHADOW)
 	{
 		m_pOff->Set_TextColor(_vec4(1.f, 1.f, 1.f, 1.f));
 		m_pOff->Set_Alpha(MAX_ALPHA);
 	}
-	else*/
+	else
 	{
 		m_pOff->Set_TextColor(_vec4(0.6f, 0.6f, 0.6f, 1.f));
 		m_pOff->Set_Alpha(0.f);
@@ -254,12 +251,12 @@ HRESULT CGraphicSetting::Add_Parts()
 		return E_FAIL;
 	}
 	m_pOn->Set_Pass(VTPass_UI_Alpha);
-	/*if (m_eGraphic == MOTIONBLUR || m_eGraphic == SHADOW)
+	if (m_eGraphic == MOTIONBLUR || m_eGraphic == SHADOW)
 	{
 		m_pOn->Set_Alpha(0.f);
 		m_pOn->Set_TextColor(_vec4(0.6f, 0.6f, 0.6f, 1.f));
 	}
-	else*/
+	else
 	{
 		m_pOn->Set_TextColor(_vec4(1.f, 1.f, 1.f, 1.f));
 		m_pOn->Set_Alpha(MAX_ALPHA);

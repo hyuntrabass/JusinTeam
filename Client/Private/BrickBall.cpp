@@ -295,7 +295,6 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 	if (isColl && m_pCurCollider != pCollider)
 	{
 		bShowEffect = true;
-		m_isCombo = true;
 		m_pCurCollider = nullptr;
 		m_pCurCollider = pCollider;
 		_vec3 vNormal{};
@@ -310,7 +309,7 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 		}
 		else if (iWall == 1)
 		{
-			Mat = _mat::CreateRotationZ(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
+			Mat = _mat::CreateRotationY(XMConvertToRadians(90.f)) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BrickWallBroken");
 			Info.pMatrix = &Mat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
@@ -350,7 +349,6 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 		{
 			bShowEffect = true;
 			m_isBarColl = true;
-			m_isCombo = true;
 			m_pCurCollider = nullptr;
 			m_pCurCollider = pBarCollider;
 			_vec3 vLook = m_pTransformCom->Get_State(State::Look);
