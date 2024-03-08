@@ -383,6 +383,9 @@ void CProjectile::Tick(_float fTimeDelta)
 			Safe_Release(m_pEffect[1]);
 			Safe_Release(m_pEffect[2]);
 			Safe_Release(m_pFrameEffect);
+
+			m_pGameInstance->Play_Sound(TEXT("BP_Buff_161901_CurseOfThunder_SFX_01"));
+
 		}
 
 		if (m_pFrameEffect)
