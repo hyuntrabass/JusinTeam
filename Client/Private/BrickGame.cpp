@@ -42,7 +42,7 @@ HRESULT CBrickGame::Init(void* pArg)
 
 	Init_Game();
 
-
+	m_pRendererCom->Set_TurnOnMotionBlur(false);
 	return S_OK;
 }
 
@@ -52,11 +52,31 @@ void CBrickGame::Tick(_float fTimeDelta)
 	//왼쪽벽DirectX::XMFLOAT4 = {x=-1991.24585 y=11.4677677 z=-2000.09204 ...}
 	//위쪽 벽 DirectX::XMFLOAT4 = {x=-2000.19641 y=11.4677696 z=-2007.11536 ...}
 	//DirectX::XMFLOAT4 = {x=-2000.28052 y=11.3177662 z=-1991.18335 ...}
-
+	//fTimeDelta /= m_pGameInstance->Get_TimeRatio();
 
 	if (!CUI_Manager::Get_Instance()->InfinityTower_UI(true, BRICK))
 	{
+	 //false
 		return;
+	}
+
+	if (m_isGameOver)
+	{
+		if (CUI_Manager::Get_Instance()->InfinityTower_UI(false, BRICK))
+		{
+			if (m_Light_Desc.eType != LIGHT_DESC::TYPE::End)
+			{
+				LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
+				*LightDesc = m_Light_Desc;
+			}
+
+			CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
+			CUI_Manager::Get_Instance()->Open_InfinityTower(true);
+			m_isDead = true;
+
+		}
+		return;
+
 	}
 
 
@@ -119,10 +139,9 @@ void CBrickGame::Tick(_float fTimeDelta)
 		}
 
 	}
-	{
-		m_isTimeStop = true;
-		m_pTimeBarLock->Tick(fTimeDelta);
-	}
+	
+	
+	
 
 	if (m_fTime >= 1.f)
 	{
@@ -146,25 +165,69 @@ void CBrickGame::Tick(_float fTimeDelta)
 
 	if (m_pCatBoss)
 	{
-		m_pCatBoss->Tick(fTimeDelta);
-	}
-	if (m_pBackGround)
-	{
-		m_pBackGround->Tick(fTimeDelta);
-	}
 
-	if (m_pCatBoss && !m_pCatBoss->Is_GameStart())
-	{
-		return;
-	}
-	if (m_pCatBoss && m_pCatBoss->Create_Bricks())
-	{
-		Create_Bricks();
-		if (!m_isPhaseStarted)
+		if (m_pCatBoss->Is_PhaseChange())
 		{
-			m_isPhaseStarted = true;
+			if (!m_isPhaseChanged)
+			{
+				Safe_Release(m_pBall);
+				if (!m_ITemList.empty())
+				{
+					while (!m_ITemList.empty())
+					{
+						m_ITemList.pop_back();
+					}
+					m_eCurFrontItem = CBrickItem::TYPE_END;
+					m_isReadyItem = false;
+				}
+			}
+		}
+		if (m_pCatBoss->Is_GameStart())
+		{
+			if (m_pBall == nullptr)
+			{
+				m_iCombo = 0;
+				CBalloon::BALLOON_DESC Desc{};
+				CTransform* pTransform = m_pBar->Get_Transform();
+				_vec3 vPos = pTransform->Get_State(State::Pos);
+				Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
+				Desc.vPosition = _vec3(vPos.x, vPos.y, vPos.z - 2.f);
+				m_pBall = (CBrickBall*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BrickBall"), &Desc);
+				if (not m_pBall)
+				{
+					MSG_BOX("BrickBall");
+					return;
+				}
+			}
+			//return;
+		}
+		if (m_pCatBoss->Create_Bricks())
+		{
+			if (!m_isPhaseStarted)
+			{
+				Create_Bricks();
+				m_isPhaseChanged = true;
+				m_isPhaseStarted = true;
+			}
+		}
+		if (m_pCatBoss->Is_GameOver())
+		{
+			Safe_Release(m_pBall);
+			if (!m_ITemList.empty())
+			{
+				while (!m_ITemList.empty())
+				{
+					m_ITemList.pop_back();
+				}
+				m_eCurFrontItem = CBrickItem::TYPE_END;
+				m_isReadyItem = false;
+			}
+			Safe_Release(m_pCatBoss);
+			m_isGameOver = true;
 		}
 	}
+	
+
 	
 
 	Tick_Ball(fTimeDelta);
@@ -199,7 +262,6 @@ void CBrickGame::Tick(_float fTimeDelta)
 	}
 
 
-	m_pBackGround->Tick(fTimeDelta);
 
 
 	if (m_pBall)
@@ -216,22 +278,21 @@ void CBrickGame::Tick(_float fTimeDelta)
 		m_pCombo->Tick(fTimeDelta);
 	}
 
-	if (m_isDead)
+	if (m_pCatBoss)
 	{
-		if (m_Light_Desc.eType != LIGHT_DESC::TYPE::End)
-		{
-			LIGHT_DESC* LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
-			*LightDesc = m_Light_Desc;
-		}
-
-		CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
+		m_pCatBoss->Tick(fTimeDelta);
 	}
-
+	if (m_pBackGround)
+	{
+		m_pBackGround->Tick(fTimeDelta);
+	}
+	m_pTimeBarLock->Tick(fTimeDelta);
 	m_EffectMatrix = _mat::CreateTranslation(_vec3(-1989.f, 0.f, -2005.11536f));
 }
 
 void CBrickGame::Late_Tick(_float fTimeDelta)
 {
+
 
 	if (!m_isActive)
 	{
@@ -277,7 +338,7 @@ void CBrickGame::Late_Tick(_float fTimeDelta)
 	{
 		m_pBar->Late_Tick(fTimeDelta);
 	}
-	if (m_pCombo)
+	if (m_pCombo && !m_isGameOver)
 	{
 		m_pCombo->Late_Tick(fTimeDelta);
 	}
@@ -312,7 +373,10 @@ HRESULT CBrickGame::Render()
 	{
 		vColor = _vec4(0.5f, 0.5f, 0.5f, 1.f);
 	}
-	m_pGameInstance->Render_Text(L"Font_Malang", strText, _vec2((_float)g_ptCenter.x, 38.f), 0.8f, vColor);
+	if (!m_isGameOver)
+	{
+		m_pGameInstance->Render_Text(L"Font_Malang", strText, _vec2((_float)g_ptCenter.x, 38.f), 0.8f, vColor);
+	}
 
 	return S_OK;
 }
@@ -357,6 +421,7 @@ HRESULT CBrickGame::Add_Parts()
 			};
 
 			CBalloon::BALLOON_DESC Desc{};
+			Desc.isEmpty = true;
 			Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
 			Desc.vPosition = _vec3(vStartPos.x - 2.25f * j, vStartPos.y, vStartPos.z + 2.25f * i);
 			POINT ptPos = { (_long)Desc.vPosition.x, (_long)Desc.vPosition.z };
@@ -520,21 +585,7 @@ void CBrickGame::Init_Game()
 	{
 		m_pBar = (CBrickBar*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BrickBar"));
 	}
-	if (m_pBall == nullptr)
-	{
 
-		CBalloon::BALLOON_DESC Desc{};
-		CTransform* pTransform = m_pBar->Get_Transform();
-		_vec3 vPos = pTransform->Get_State(State::Pos);
-		Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
-		Desc.vPosition = _vec3(vPos.x, vPos.y, vPos.z - 2.f);
-		m_pBall = (CBrickBall*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BrickBall"), &Desc);
-		if (not m_pBall)
-		{
-			MSG_BOX("BrickBall");
-			return;
-		}
-	}
 
 
 	m_pCatBoss = (CBlackCat*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BlackCat"));
@@ -563,6 +614,7 @@ void CBrickGame::Create_Bricks()
 			};
 
 			CBalloon::BALLOON_DESC Desc{};
+			Desc.isChangePhase = true;
 			Desc.isEmpty = true;
 			Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
 			Desc.vPosition = _vec3(vStartPos.x - 2.25f * j, vStartPos.y, vStartPos.z + 2.25f * i);
@@ -690,6 +742,7 @@ void CBrickGame::Tick_Ball(_float fTimeDelta)
 			{
 				m_ITemList.pop_back();
 			}
+			m_eCurFrontItem = CBrickItem::TYPE_END;
 			m_isReadyItem = false;
 		}
 

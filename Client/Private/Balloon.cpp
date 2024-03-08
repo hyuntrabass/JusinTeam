@@ -22,6 +22,7 @@ HRESULT CBalloon::Init_Prototype()
 
 HRESULT CBalloon::Init(void* pArg)
 {
+	m_isChangePhase = ((BALLOON_DESC*)pArg)->isChangePhase;
 	m_isEmpty = ((BALLOON_DESC*)pArg)->isEmpty;
 	m_vColor = ((BALLOON_DESC*)pArg)->vColor;
 	_vec3 vPos = ((BALLOON_DESC*)pArg)->vPosition;
@@ -387,20 +388,30 @@ void CBalloon::Tick_State(_float fTimeDelta)
 void CBalloon::Create_Item()
 {
 	_uint iRandom = rand() % 100;
-	if (iRandom > 40)
+	if (!m_isChangePhase)
 	{
-		return;
+		if (iRandom > 20)
+		{
+			return;
+		}
+	}
+	else
+	{
+		if (iRandom > 40)
+		{
+			return;
+		}
 	}
 
 	CBrickItem::TYPE eItemType[CBrickItem::TYPE_END] = { CBrickItem::POWER,CBrickItem::DOUBLE, CBrickItem::STOP };
 	CBrickItem::TYPE eType{};
 	_uint iRandomType = rand() % 100;
 
-	if (iRandomType < 50)
+	if (iRandomType < 40)
 	{
 		eType = CBrickItem::DOUBLE;
 	}
-	else if (iRandomType < 70)
+	else if (iRandomType < 80)
 	{
 		eType = CBrickItem::POWER;
 	}

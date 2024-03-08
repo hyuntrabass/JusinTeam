@@ -33,6 +33,7 @@ private:
 	_bool										m_isTimeStop{ false };
 	_bool										m_isSpeedUp{ false };
 	_bool										m_isPhaseStarted{ false };
+	_bool										m_isPhaseChanged{ false };
 
 	_uint										m_iCombo{};
 	_uint										m_iCurIndex{};
