@@ -48,7 +48,7 @@ HRESULT CHuman_Boss::Init(void* pArg)
 	m_pTransformCom->Set_Speed(3.f);
 	m_iPassIndex = AnimPass_DissolveNoCull;
 	m_iWeaponPassIndex = AnimPass_Dissolve;
-	m_iHP = 5000;
+	m_iHP = 20000;
 	m_eState = Spwan;
 
 	m_WeaponBone_Mat = m_pModelCom->Get_BoneMatrix("Bip001-Prop1");
@@ -702,7 +702,7 @@ void CHuman_Boss::Update_Trail()
 void CHuman_Boss::Set_Damage(_int iDamage, _uint MonAttType)
 {
 
-	if (m_eState == Hide or iDamage <= 0)
+	if (m_eState == Hide_Start or m_eState == Hide or iDamage <= 0)
 	{
 		return;
 	}
@@ -1638,7 +1638,10 @@ CGameObject* CHuman_Boss::Clone(void* pArg)
 void CHuman_Boss::Free()
 {
 	__super::Free();
-
+	if (!CUI_Manager::Get_Instance()->InfinityTower_UI(false, BOSS1))
+	{
+		return;
+	}
 	Safe_Release(m_pHpBoss);
 	Safe_Release(m_pWeapon_Distortion_Trail);
 	Safe_Release(m_pWeapon_Trail);
