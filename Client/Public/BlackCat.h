@@ -94,8 +94,8 @@ private:
 	C3DUITex* m_pHpBorder{ nullptr };
 	
 	_float m_fBarFloating{ 0.f };
-	_float m_fTargetHp{ 10.f };
-	_vec2 m_Hp{ _vec2(10.f, 10.f)};
+	_float m_fTargetHp{ 15.f };
+	_vec2 m_Hp{ _vec2(15.f, 15.f)};
 
 	class CTextButton* m_pLine{ nullptr };
 	class CDialogText* m_pDialogText{ nullptr };

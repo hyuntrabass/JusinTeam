@@ -48,7 +48,7 @@ HRESULT CHuman_Boss::Init(void* pArg)
 	m_pTransformCom->Set_Speed(3.f);
 	m_iPassIndex = AnimPass_DissolveNoCull;
 	m_iWeaponPassIndex = AnimPass_Dissolve;
-	m_iHP = 5000;
+	m_iHP = 20000;
 	m_eState = Spwan;
 
 	m_WeaponBone_Mat = m_pModelCom->Get_BoneMatrix("Bip001-Prop1");
@@ -1637,6 +1637,11 @@ CGameObject* CHuman_Boss::Clone(void* pArg)
 
 void CHuman_Boss::Free()
 {
+	if (!CUI_Manager::Get_Instance()->InfinityTower_UI(false,BOSS1))
+	{
+		return;
+	}
+
 	__super::Free();
 
 	Safe_Release(m_pHpBoss);

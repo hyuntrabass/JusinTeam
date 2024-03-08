@@ -82,6 +82,8 @@ HRESULT CCescoGame::Init(void* pArg)
 	CCamera_Manager::Get_Instance()->Set_RidingZoom(true);
 
 	return S_OK;
+
+	
 }
 
 void CCescoGame::Tick(_float fTimeDelta)
@@ -585,6 +587,7 @@ void CCescoGame::Tick_Phase_Buff(_float fTimeDelta)
 			Buffcard->Tick(fTimeDelta);
 			if (Buffcard->Get_IsSelect())
 			{
+
 				m_bBuffSelected = true;
 				Buff eBuff = Buffcard->Get_Buff();
 				CPlayer::PLAYER_STATUS* eState = CUI_Manager::Get_Instance()->Set_ExtraStatus();

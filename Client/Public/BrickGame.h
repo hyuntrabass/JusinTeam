@@ -44,8 +44,8 @@ private:
 
 	_float										m_fTime{};
 	_float										m_fDir{1.f};
-	_uint										m_iMinute{3};
-	_uint										m_iSec{60};
+	_uint										m_iMinute{2};
+	_uint										m_iSec{30};
 	_float										m_fComboTime{};
 	_float										m_fTimeLimit{};
 	_mat										m_EffectMatrix{};

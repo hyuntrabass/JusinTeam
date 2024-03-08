@@ -85,7 +85,7 @@ void CPop_Reward::Tick(_float fTimeDelta)
 		{
 			if (iter->Get_ItemDesc().strName == TEXT("그로아 남편의 팔찌"))
 			{
-				CEvent_Manager::Get_Instance()->Get_Bracelet();
+				CEvent_Manager::Get_Instance()->Set_QuestTrigger(CEvent_Manager::BRACELET);
 				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("그로아의 부탁"));
 				break;
 			}

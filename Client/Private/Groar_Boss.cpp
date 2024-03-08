@@ -82,7 +82,7 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 	m_pTransformCom->Set_OldMatrix();
 
 	// 중보 잡고 팔찌 얻었을때 순간이동 하는 타이밍
-	if (CEvent_Manager::Get_Instance()->Have_Bracelet() == true)
+	if (CEvent_Manager::Get_Instance()->Get_QuestTrigger(CEvent_Manager::BRACELET) == true)
 	{
 		if (!m_bChangePos[1])
 		{

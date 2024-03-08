@@ -13,7 +13,7 @@ class CEvent_Manager final : public CBase
 
 public:
 	enum EVENT_TYPE { QUESTIN, QUESTEND, LEVELUP, TUTORIAL, UNLOCKSKILL, TYPE_END};
-	enum QUEST_TRIGGER { TUTO_TRIGGER, POTION, GROAR_MONSTER, TRIGGER_END};
+	enum QUEST_TRIGGER { TUTO_TRIGGER, POTION, GROAR_MONSTER, BRACELET, TRIGGER_END};
 
 	typedef struct tagEventDesc
 	{
@@ -46,7 +46,6 @@ private:
 	class CQuest*						m_pQuest{ nullptr };
 	class CPop_Alert*					m_pAlert{ nullptr };
 
-	//vector<EVENT_DESC>					m_vecPopEvents;
 	map <const wstring, EVENT_DESC>		m_QuestMap;
 
 	_bool								m_bGetBracelet = { false };
@@ -60,10 +59,6 @@ public:
 private:
 	HRESULT Set_Event(EVENT_DESC pDesc);
 	HRESULT Init_Quest();
-
-public:
-	void Get_Bracelet() { m_bGetBracelet = true; }
-	_bool Have_Bracelet() { return m_bGetBracelet; }
 
 public:
 	void Set_QuestTrigger(QUEST_TRIGGER eTrigger) { m_QuestTrigger[eTrigger] = true; }

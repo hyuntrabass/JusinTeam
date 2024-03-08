@@ -126,7 +126,7 @@ void CBrickBall::Tick(_float fTimeDelta)
 
 void CBrickBall::Late_Tick(_float fTimeDelta)
 {
-	m_pTrail->Late_Tick(fTimeDelta);
+	//m_pTrail->Late_Tick(fTimeDelta);
 
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 	if (m_pEffect_Ball)

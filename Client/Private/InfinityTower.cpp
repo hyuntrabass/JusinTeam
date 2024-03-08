@@ -54,6 +54,9 @@ HRESULT CInfinityTower::Init(void* pArg)
 
 void CInfinityTower::Tick(_float fTimeDelta)
 {
+	m_pTowers[SURVIVAL]->Set_Clear();
+	m_pTowers[BOSS1]->Set_Clear();
+
 	if (CUI_Manager::Get_Instance()->IsInfinityTower())
 	{
 		CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);

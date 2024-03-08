@@ -56,10 +56,6 @@ HRESULT CUI_Manager::Init()
 	m_tExtraStatus.Max_Mp = 0;
 	m_tExtraStatus.Speed = 0.f;
 
-	/* 마지막 영상용 */
-	m_isFirstKill = true;
-	m_iLevel = 10;
-	Set_Exp_ByPercent(25.2);
 	return S_OK;
 }
 
@@ -838,6 +834,11 @@ void CUI_Manager::Set_HitEffect(CTransform* pTransform, _uint iDamage, _vec2 vTe
 
 _bool CUI_Manager::InfinityTower_UI(_bool isStart, TOWER eNumTower)
 {
+	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_TOWER)
+	{
+		return false;
+	}
+
 	if (isStart)
 	{
 		if (m_isCreated[eNumTower] && m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_InfinityTowerUI")) == 0)

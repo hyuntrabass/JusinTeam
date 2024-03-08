@@ -187,11 +187,11 @@ void CBrickGame::Tick(_float fTimeDelta)
 			if (m_pBall == nullptr)
 			{
 				m_iCombo = 0;
-				CBalloon::BALLOON_DESC Desc{};
+				CBrickBall::BALL_DESC Desc{};
 				CTransform* pTransform = m_pBar->Get_Transform();
 				_vec3 vPos = pTransform->Get_State(State::Pos);
-				Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
-				Desc.vPosition = _vec3(vPos.x, vPos.y, vPos.z - 2.f);
+				Desc.eBrickColor = m_pBar->Get_CurrentColor();
+				Desc.vPos = _vec3(vPos.x, vPos.y, vPos.z - 2.f);
 				m_pBall = (CBrickBall*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BrickBall"), &Desc);
 				if (not m_pBall)
 				{
@@ -421,7 +421,7 @@ HRESULT CBrickGame::Add_Parts()
 			};
 
 			CBalloon::BALLOON_DESC Desc{};
-			Desc.isEmpty = true;
+			Desc.isEmpty = false;
 			Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
 			Desc.vPosition = _vec3(vStartPos.x - 2.25f * j, vStartPos.y, vStartPos.z + 2.25f * i);
 			POINT ptPos = { (_long)Desc.vPosition.x, (_long)Desc.vPosition.z };

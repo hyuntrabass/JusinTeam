@@ -53,12 +53,7 @@ HRESULT CSkillBook::Init(void* pArg)
 	}
 
 	CUI_Manager::Get_Instance()->Set_SkillBook(this);
-	
-	Unlock_Skill(0);
-	Unlock_Skill(1);
-	Unlock_Skill(2);
-	Unlock_Skill(3);
-	
+
 	return S_OK;
 }
 
