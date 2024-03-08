@@ -164,17 +164,18 @@ HRESULT CInfinityTower::Render()
 
 HRESULT CInfinityTower::Ready_Tower()
 {
-	m_vecDesc[SURVIVAL].push_back(TEXT("서바이벌 게임"));
-	m_vecDesc[SURVIVAL].push_back(TEXT("게임설명 1줄"));
-	m_vecDesc[SURVIVAL].push_back(TEXT("게임설명 2줄"));
+	m_vecDesc[SURVIVAL].push_back(TEXT("서바이벌"));
+	m_vecDesc[SURVIVAL].push_back(TEXT("끊임없이 나오는 장애물, 폭발물들을 피해서 생존해야 한다"));
+	m_vecDesc[SURVIVAL].push_back(TEXT("쉬지말고 뛰어라!"));
+	m_vecDesc[SURVIVAL].push_back(TEXT("실패 조건 : 사망"));
 
 	m_vecDesc[BOSS1].push_back(TEXT("저승의 문턱"));
 	m_vecDesc[BOSS1].push_back(TEXT("저승의 폭군 앙그르보다를 죽여라!"));
 	m_vecDesc[BOSS1].push_back(TEXT("그녀의 종들이 배치되어 있다 그들의 감시를 피해 그녀의 방에 인도하라"));
 
 	m_vecDesc[BRICK].push_back(TEXT("묘신과 대결"));
-	m_vecDesc[BRICK].push_back(TEXT("3층의 주인 묘신이 만들어내는 블럭을 모두 없애고 묘신을 처치하세요. "));
-	m_vecDesc[BRICK].push_back(TEXT("야옹신이 살아있는 이상 블럭은 계속해서 생성됩니다."));
+	m_vecDesc[BRICK].push_back(TEXT("3층의 주인 묘신이 만들어내는 블럭을 모두 없애고 묘신을 처치하라"));
+	m_vecDesc[BRICK].push_back(TEXT("묘신이 살아있는 이상 블럭은 계속해서 생성된다"));
 
 	m_vecDesc[CESCO].push_back(TEXT("몬스터 디펜스"));
 	m_vecDesc[CESCO].push_back(TEXT("4분동안 끝없이 몰려오는 벌레들을 퇴치해야한다."));
@@ -182,8 +183,7 @@ HRESULT CInfinityTower::Ready_Tower()
 	m_vecDesc[CESCO].push_back(TEXT("실패 조건 : 몬스터 총 수 150마리 초과 "));
 
 	m_vecDesc[BOSS2].push_back(TEXT("최종보스"));
-	m_vecDesc[BOSS2].push_back(TEXT("게임설명 1줄"));
-	m_vecDesc[BOSS2].push_back(TEXT("게임설명 2줄"));
+	m_vecDesc[BOSS2].push_back(TEXT("꼬리를 삼키는 용 우로보로스"));
 
 
 
@@ -483,7 +483,7 @@ void CInfinityTower::Effect_Tick(_float fTimeDelta)
 void CInfinityTower::Tower_Tick(_float fTimeDelta, POINT& ptMouse)
 {
 	_float fTermX = 137.f;
-	if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
+	if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
 	{
 		if (m_pTowers[BRICK]->Get_Position().y > m_vInitialPoint.y)
 		{
@@ -495,7 +495,7 @@ void CInfinityTower::Tower_Tick(_float fTimeDelta, POINT& ptMouse)
 		}
 
 	}
-	if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
+	if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
 	{
 			m_vDefaultPoint.y += fTimeDelta * 500.f;
 	}
