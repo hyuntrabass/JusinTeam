@@ -62,6 +62,8 @@ private:
 
 	//Buff
 	_bool m_bBuffSelected{};
+	vector<_bool> m_HasBuffSeleted;
+	_bool m_IsFever{};
 
 	//Hook
 	_float m_fHookSpawnTime{};

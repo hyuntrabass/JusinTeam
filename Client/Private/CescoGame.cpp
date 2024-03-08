@@ -81,6 +81,14 @@ HRESULT CCescoGame::Init(void* pArg)
 	CUI_Manager::Get_Instance()->Set_isBoss(true);
 	CCamera_Manager::Get_Instance()->Set_RidingZoom(true);
 
+	m_ePreviousPhase = Phase_End;
+	m_eCurrentPhase = Phase_Buff;
+
+	for (_uint i = 0; i < Buff::Buff_End; i++)
+	{
+		m_HasBuffSeleted.push_back(false);
+	}
+
 	return S_OK;
 }
 
@@ -103,7 +111,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 		return;
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_7, InputChannel::UI))
+	/*if (m_pGameInstance->Key_Down(DIK_7, InputChannel::UI))
 	{
 		m_ePreviousPhase = Phase3;
 	}
@@ -115,7 +123,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_9))
 	{
 		Kill();
-	}
+	}*/
 
 	Init_Phase(fTimeDelta);
 
@@ -130,7 +138,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 		Tick_Phase1(fTimeDelta);
 		break;
 	case Client::CCescoGame::Phase2:
-		if (m_fTimeLimit < 90.f)
+		if (m_fTimeLimit < 120.f)
 		{
 			m_eCurrentPhase = Phase_Buff;
 			return;
@@ -138,8 +146,70 @@ void CCescoGame::Tick(_float fTimeDelta)
 		Tick_Phase2(fTimeDelta);
 		break;
 	case Client::CCescoGame::Phase3:
-		if (m_fTimeLimit <= 0.f)
+		if (m_fTimeLimit <= 60.f)
 		{
+			if (not m_IsFever)
+			{
+				for (_uint i = 0; i < Buff::Buff_End; i++)
+				{
+					if (not m_HasBuffSeleted[i])
+					{
+						BUFFCARD_DESC Buff_Desc{};
+						Buff_Desc.eBuff = Buff(i);
+						CBuff_Card* pBuffcard = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
+						CPlayer::PLAYER_STATUS* eState = CUI_Manager::Get_Instance()->Set_ExtraStatus();
+						switch (Buff_Desc.eBuff)
+						{
+						case Client::Buff_MaxHp:
+							eState->Max_Hp += _int(pBuffcard->Get_Status());
+							m_HasBuffSeleted[Buff_MaxHp] = true;
+							break;
+						case Client::Buff_HpRegen:
+							eState->HpRegenAmount = pBuffcard->Get_Status();
+							m_HasBuffSeleted[Buff_HpRegen] = true;
+							break;
+						case Client::Buff_MpRegen:
+							eState->MpRegenAmount = pBuffcard->Get_Status();
+							m_HasBuffSeleted[Buff_MpRegen] = true;
+							break;
+						case Client::Buff_Attack:
+							eState->Attack += _int(pBuffcard->Get_Status());
+							m_HasBuffSeleted[Buff_Attack] = true;
+							break;
+						case Client::Buff_Speed:
+							eState->Speed += pBuffcard->Get_Status();
+							m_HasBuffSeleted[Buff_Speed] = true;
+							break;
+						case Client::Buff_CoolDown:
+							eState->CoolDownTime = pBuffcard->Get_Status();
+							m_HasBuffSeleted[Buff_CoolDown] = true;
+							break;
+						case Client::Buff_BloodDrain:
+							eState->BloodDrain = pBuffcard->Get_Status();
+							m_HasBuffSeleted[Buff_BloodDrain] = true;
+							break;
+						case Client::Buff_PoisonImmune:
+							eState->PoisonImmune = (_bool)pBuffcard->Get_Status();
+							m_HasBuffSeleted[Buff_PoisonImmune] = true;
+							break;
+						case Client::Buff_MonRegenDown:
+							m_iMonsterSpawnSpeed = 0.7f;
+							m_HasBuffSeleted[Buff_MonRegenDown] = true;
+							break;
+						}
+						Safe_Release(pBuffcard);
+					}
+				}
+
+				m_IsFever = true;
+			}
+		}
+		else if (m_fTimeLimit <= 0.f)
+		{
+			if (!CUI_Manager::Get_Instance()->InfinityTower_UI(false, CESCO))
+			{
+				return;
+			}
 			Kill();
 		}
 		Tick_Phase3(fTimeDelta);
@@ -282,7 +352,7 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 				CBuff_Card* pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
 
-				Buff_Desc.eBuff = Buff::Buff_CoolDown;
+				Buff_Desc.eBuff = Buff::Buff_BloodDrain;
 				Buff_Desc.vPos = _vec2(640.f, 360.f);
 				pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
@@ -298,12 +368,12 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 			case Phase1:
 			{
 				BUFFCARD_DESC Buff_Desc{};
-				Buff_Desc.eBuff = Buff::Buff_MpRegen;
+				Buff_Desc.eBuff = Buff::Buff_CoolDown;
 				Buff_Desc.vPos = _vec2(320.f, 360.f);
 				CBuff_Card* pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
 
-				Buff_Desc.eBuff = Buff::Buff_MonRegenDown;
+				Buff_Desc.eBuff = Buff::Buff_MonRegenDown; 
 				Buff_Desc.vPos = _vec2(640.f, 360.f);
 				pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
@@ -328,7 +398,7 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 				pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
 
-				Buff_Desc.eBuff = Buff::Buff_BloodDrain;
+				Buff_Desc.eBuff = Buff::Buff_MpRegen;
 				Buff_Desc.vPos = _vec2(960.f, 360.f);
 				pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
@@ -592,30 +662,39 @@ void CCescoGame::Tick_Phase_Buff(_float fTimeDelta)
 				{
 				case Client::Buff_MaxHp:
 					eState->Max_Hp += _int(Buffcard->Get_Status());
+					m_HasBuffSeleted[Buff_MaxHp] = true;
 					break;
 				case Client::Buff_HpRegen:
 					eState->HpRegenAmount = Buffcard->Get_Status();
+					m_HasBuffSeleted[Buff_HpRegen] = true;
 					break;
 				case Client::Buff_MpRegen:
 					eState->MpRegenAmount = Buffcard->Get_Status();
+					m_HasBuffSeleted[Buff_MpRegen] = true;
 					break;
 				case Client::Buff_Attack:
 					eState->Attack += _int(Buffcard->Get_Status());
+					m_HasBuffSeleted[Buff_Attack] = true;
 					break;
 				case Client::Buff_Speed:
 					eState->Speed += Buffcard->Get_Status();
+					m_HasBuffSeleted[Buff_Speed] = true;
 					break;
 				case Client::Buff_CoolDown:
 					eState->CoolDownTime = Buffcard->Get_Status();
+					m_HasBuffSeleted[Buff_CoolDown] = true;
 					break;
 				case Client::Buff_BloodDrain:
 					eState->BloodDrain = Buffcard->Get_Status();
+					m_HasBuffSeleted[Buff_BloodDrain] = true;
 					break;
 				case Client::Buff_PoisonImmune:
 					eState->PoisonImmune = (_bool)Buffcard->Get_Status();
+					m_HasBuffSeleted[Buff_PoisonImmune] = true;
 					break;
 				case Client::Buff_MonRegenDown:
 					m_iMonsterSpawnSpeed = 0.7f;
+					m_HasBuffSeleted[Buff_MonRegenDown] = true;
 					break;
 				}
 			}
