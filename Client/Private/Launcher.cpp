@@ -473,9 +473,9 @@ void CLauncher::Tick(_float fTimeDelta)
 
 		if (m_pTransformCom->Get_State(State::Pos).y <= -5.f)
 		{
-			Kill();
-			m_pGameInstance->Delete_CollisionObject(this);
-			Safe_Release(m_pColliderCom);
+			//Kill();
+			//m_pGameInstance->Delete_CollisionObject(this);
+			//Safe_Release(m_pColliderCom);
 		}
 
 		if (!m_bDestroy)

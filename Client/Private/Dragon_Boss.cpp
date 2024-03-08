@@ -26,6 +26,8 @@ HRESULT CDragon_Boss::Init_Prototype()
 
 HRESULT CDragon_Boss::Init(void* pArg)
 {
+	m_iHP = 20000;
+
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
@@ -53,8 +55,6 @@ HRESULT CDragon_Boss::Init(void* pArg)
 	m_eCurState = STATE_SPAWN;
 
 	m_Animation.fInterpolationTime = 0.5f;
-
-	m_iHP = 20000;
 
 	CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 	_vec4 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
@@ -234,6 +234,8 @@ void CDragon_Boss::Set_Damage(_int iDamage, _uint iDamageType)
 		{
 			m_pHpBoss->Set_HP(m_iHP);
 		}
+
+		CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 1.5f), (ATTACK_TYPE)iDamageType);
 	}
 
 
