@@ -1753,6 +1753,11 @@ void CPlayer::Move(_float fTimeDelta)
 
 	if (m_pGameInstance->Mouse_Pressing(DIM_RBUTTON))
 	{
+		CAMERA_STATE CamState = m_pCam_Manager->Get_CameraState();
+		if (CamState == CS_SHOP or CamState == CS_INVEN or CamState == CS_ZOOM)
+		{
+			return;
+		}
 		if (m_Current_Weapon == WP_BOW && m_eState != AimMode_End && m_eState != Hit &&
 			m_eState != KnockDown && m_eState != Stun && m_eState != Stun_Start && m_eState != AimMode && m_Weapon_CurrentIndex != BOW_UNEQUIP)
 		{
@@ -2428,7 +2433,7 @@ void CPlayer::Skill3_Attack()
 			{
 				m_vArrowRainPos = _vec4(pMonCollider->Get_ColliderPos(), 1.f);
 				_vec4 vMonPos = m_vArrowRainPos;
-				m_vArrowRainPos.y -= 0.5f;
+				m_vArrowRainPos.y -= m_pTransformCom->Get_State(State::Pos).y;
 				vMonPos.y = m_pTransformCom->Get_State(State::Pos).y;
 				m_pTransformCom->LookAt(vMonPos);
 				CUI_Manager::Get_Instance()->Set_TargetPos(vMonPos);

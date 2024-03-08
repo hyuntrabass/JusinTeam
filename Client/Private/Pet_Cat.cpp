@@ -321,5 +321,6 @@ CGameObject* CPet_Cat::Clone(void* pArg)
 
 void CPet_Cat::Free()
 {
+	m_EffectMatrix = _mat::CreateTranslation(_vec3(-3000.f));
 	__super::Free();
 }
