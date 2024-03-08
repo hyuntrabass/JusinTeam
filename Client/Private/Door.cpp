@@ -48,6 +48,17 @@ void CDoor::Tick(_float fTimeDelta)
 			m_Animation.bRewindAnimation = true;
 			m_pModelCom->Set_Animation(m_Animation);
 			m_pTransformCom->Delete_Controller();
+			m_Open = true;
+		}
+	}
+
+	if (m_Open) {
+		if (false == m_Sound) {
+			m_fTime += fTimeDelta;
+		}
+		if (1.85f <= m_fTime && false == m_Sound) {
+			m_pGameInstance->Play_Sound(L"War_Castledoor_Close_SFX_01");
+			m_Sound = true;
 		}
 	}
 }

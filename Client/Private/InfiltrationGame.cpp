@@ -74,10 +74,18 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 						pGuardTower->Tower_TurnOff();
 					}
 					m_isTurnOff = true;
-					m_pGameInstance->Play_Sound(L"War_Skill_Absorption_SFX_06");
 				}
 			}
 		}
+		if (true == m_isTurnOff) {
+			if (false == m_Sound)
+				m_fTime += fTimeDelta;
+			if (1.5f <= m_fTime && false == m_Sound) {
+					m_pGameInstance->Play_Sound(L"sucked-into-classroom-103774");
+					m_Sound = true;
+			}
+		}
+
 		for (auto& pGuardTower : pGuardTowerList)
 		{
 			pGuardTower->Tick(fTimeDelta);
@@ -94,6 +102,7 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 			}
 			m_pWarning = dynamic_cast<CWarning_Mark*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_WarningMark"));
 			m_isDetected = true;
+			m_pGameInstance->Play_Sound(L"Music_Clust_High_01");
 		}
 	}
 	else {

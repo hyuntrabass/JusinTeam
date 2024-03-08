@@ -31,6 +31,9 @@ private:
     CModel* m_pModelCom = nullptr;
     _bool m_Open = false;
 
+    _float m_fTime = 0.f;
+    _bool m_Sound = false;
+
 private:
     DoorInfo m_Info{};
     ANIM_DESC m_Animation{};
