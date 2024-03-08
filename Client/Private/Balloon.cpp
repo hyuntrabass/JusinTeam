@@ -4,6 +4,7 @@
 #include "Effect_Manager.h"
 #include "Camera_Manager.h"
 #include "Trigger_Manager.h"
+#include "BrickBall.h"
 CBalloon::CBalloon(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -21,6 +22,7 @@ HRESULT CBalloon::Init_Prototype()
 
 HRESULT CBalloon::Init(void* pArg)
 {
+	m_isChangePhase = ((BALLOON_DESC*)pArg)->isChangePhase;
 	m_isEmpty = ((BALLOON_DESC*)pArg)->isEmpty;
 	m_vColor = ((BALLOON_DESC*)pArg)->vColor;
 	_vec3 vPos = ((BALLOON_DESC*)pArg)->vPosition;
@@ -65,7 +67,9 @@ void CBalloon::Tick(_float fTimeDelta)
 	
 	Update_BodyCollider();
 
-	m_pTransformCom->Gravity(fTimeDelta);
+//	m_pTransformCom->Gravity(fTimeDelta);
+
+
 }
 
 void CBalloon::Late_Tick(_float fTimeDelta)
@@ -152,7 +156,6 @@ void CBalloon::Init_State(_float fTimeDelta)
 		switch (m_eCurState)
 		{
 		case Client::CBalloon::STATE_IDLE:
-			m_bDamaged = false;
 			break;
 
 		case Client::CBalloon::STATE_HIT:
@@ -180,6 +183,30 @@ void CBalloon::Tick_State(_float fTimeDelta)
 				m_bStart = true;
 			}
 			m_fDelayTime += fTimeDelta;
+		}
+
+		CCollider* pBalloonCol{ nullptr };
+		_bool isBrickColl{};
+		_uint iNum = m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_Balloons"));
+		for (_uint i = 0; i < iNum; i++)
+		{
+			pBalloonCol = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_Balloons"), TEXT("Com_Collider_Sphere"), i);
+			if (pBalloonCol == nullptr)
+			{
+				break;
+			}
+			if (m_pBodyColliderCom->Intersect(pBalloonCol))
+			{
+				if (pBalloonCol->Get_Extents().y == POWEREXT)
+				{
+					if (pBalloonCol == m_pBodyColliderCom)
+					{
+						m_isPowerBrick = true;
+					}
+					m_eCurState = STATE_DIE;
+					return;
+				}
+			}
 		}
 
 		if (m_isFall && !m_isReadyToFall )
@@ -218,6 +245,10 @@ void CBalloon::Tick_State(_float fTimeDelta)
 				{
 					Pos.y = 3.f;
 				}
+				else if (m_pTransformCom->Get_State(State::Pos).y <= 4.5f)
+				{
+					Pos.y = 4.5f;
+				}
 				m_isFall = false;
 				m_isReadyToFall = true;
 			}
@@ -235,6 +266,13 @@ void CBalloon::Tick_State(_float fTimeDelta)
 					Pos.y = 1.5f;
 					m_isFall = false;
 					m_isReadyToFall = false;
+				}
+				else if (Pos.y <= 3.f)
+				{
+					Pos.y = 3.f;
+					m_isFall = false;
+					m_isReadyToFall = false;
+
 				}
 				m_pTransformCom->Set_State(State::Pos, Pos);
 
@@ -272,18 +310,28 @@ void CBalloon::Tick_State(_float fTimeDelta)
 		}
 
 		m_isColl = m_pBodyColliderCom->Intersect(pCollider);
-		if (m_bStart && m_isColl)
+		if (m_isColl)
 		{
-			if (CUI_Manager::Get_Instance()->Get_BrickBallColor() != m_eCurColor)
+			_float fR = pCollider->Get_Radius();
+			if (pCollider->Get_Radius() == POWERCOL)
 			{
-				return;
+				Set_ItemExtents(CBrickItem::POWER);
 			}
-			_mat Mat = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
-			
-			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 2.0f);
+			else if (m_bStart)
+			{
+				if (CUI_Manager::Get_Instance()->Get_BrickBallColor() != m_eCurColor)
+				{
+					return;
+				}
+				_mat Mat = _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)));
 
-			m_eCurState = STATE_DIE;
+				CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 2.0f);
+
+				m_eCurState = STATE_DIE;
+			}
+	
 		}
+		
 	}
 	break;
 
@@ -317,6 +365,16 @@ void CBalloon::Tick_State(_float fTimeDelta)
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
 		}
+		if (m_isPowerBrick)
+		{
+			EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BrickPowerBall");
+			Info.pMatrix = &Mat;
+			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
+		}
+		if (m_pTransformCom->Get_State(State::Pos).y < 2.f)
+		{
+			Create_Item();
+		}
 
 		m_isDead = true;
 	}
@@ -325,6 +383,66 @@ void CBalloon::Tick_State(_float fTimeDelta)
 	}
 
 	Set_Color();
+}
+
+void CBalloon::Create_Item()
+{
+	_uint iRandom = rand() % 100;
+	if (!m_isChangePhase)
+	{
+		if (iRandom > 20)
+		{
+			return;
+		}
+	}
+	else
+	{
+		if (iRandom > 40)
+		{
+			return;
+		}
+	}
+
+	CBrickItem::TYPE eItemType[CBrickItem::TYPE_END] = { CBrickItem::POWER,CBrickItem::DOUBLE, CBrickItem::STOP };
+	CBrickItem::TYPE eType{};
+	_uint iRandomType = rand() % 100;
+
+	if (iRandomType < 40)
+	{
+		eType = CBrickItem::DOUBLE;
+	}
+	else if (iRandomType < 80)
+	{
+		eType = CBrickItem::POWER;
+	}
+	else
+	{
+		eType = CBrickItem::STOP;
+	}
+
+	CBrickItem::BRICKITEM_DESC Desc{};
+	Desc.eType = eItemType[eType];
+	Desc.vPos = m_pTransformCom->Get_State(State::Pos);
+
+	wstring strLayer{};
+	switch (eType)
+	{
+	case CBrickItem::POWER:
+		strLayer = TEXT("Layer_BrickPower");
+		break;
+	case CBrickItem::DOUBLE:
+		strLayer = TEXT("Layer_BrickDouble");
+		break;
+	case CBrickItem::STOP:
+		strLayer = TEXT("Layer_BrickStop");
+		break;
+	default:
+		break;
+	}
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, strLayer, TEXT("Prototype_GameObject_BrickItem"), &Desc)))
+	{
+		return;
+	}
 }
 
 void CBalloon::Set_Color()
@@ -383,8 +501,23 @@ void CBalloon::Set_RandomColor()
 	Set_Color();
 }
 
+void CBalloon::Set_ItemExtents(CBrickItem::TYPE eType)
+{
+	switch (eType)
+	{
+	case CBrickItem::POWER:
+		m_pBodyColliderCom->Change_Extents(_vec3(POWEREXT, POWEREXT, POWEREXT));
+		break;
+	default:
+		m_pBodyColliderCom->Change_Extents(_vec3(74.f, DEFEXT, 74.f));
+		break;
+	}
+
+}
+
 HRESULT CBalloon::Add_Collider()
 {
+
 	Collider_Desc CollDesc = {};
 	CollDesc.eType = ColliderType::AABB;
 	CollDesc.vRadians = _vec3(0.f, 0.f, 0.f);

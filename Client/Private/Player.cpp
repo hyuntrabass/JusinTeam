@@ -544,7 +544,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		pLight->vPosition = m_pTransformCom->Get_CenterPos();
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_J))
+	/*if (m_pGameInstance->Key_Down(DIK_J))
 	{
 		m_pGameInstance->Delete_Light(LEVEL_STATIC, L"Light_Player", 0.5f);
 	}
@@ -562,7 +562,7 @@ void CPlayer::Tick(_float fTimeDelta)
 		if (FAILED(m_pGameInstance->Add_Light(LEVEL_STATIC, TEXT("Light_Player"), LightDesc)))
 		{
 		}
-	}
+	}*/
 
 	Set_ExtraStatus();
 
@@ -616,6 +616,10 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	if (m_pCam_Manager->Get_CameraState() == CS_WORLDMAP)
 	{
 		//return;
+	}
+	if (m_pCam_Manager->Get_CameraState() == CS_BRICKGAME)
+	{
+		return;
 	}
 
 	if (m_bIsMount)

@@ -84,12 +84,6 @@ void CSummonWindowPet::Tick(_float fTimeDelta)
 		m_pButton->Set_Size(150.f, 100.f, 0.35f);
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_RETURN))
-	{
-		m_isDead = true;
-		return;
-	}
-
 	if (m_fSizeX <= 500.f)
 	{
 		m_fSizeX = 500.f;

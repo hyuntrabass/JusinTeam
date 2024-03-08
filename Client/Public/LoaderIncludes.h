@@ -1,5 +1,8 @@
 #pragma once
 
+#include "BrickItem.h"
+#include "ClearEffect.h"
+#include "InfinityStart.h"
 #include "SoundSetting.h"
 #include "GraphicSetting.h"
 #include "Buff_Card.h"
@@ -196,3 +199,4 @@
 #include "Door.h"
 #include "Lever.h"
 #include "MiniDungeon_Teleport.h"
+#include "Warning_Mark.h"

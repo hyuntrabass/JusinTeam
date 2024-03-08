@@ -67,21 +67,26 @@ HRESULT CSkill::Init(void* pArg)
 		}
 		m_pBorder->Set_Pass(VTPass_UI_Alpha);
 
-		CTextButton::TEXTBUTTON_DESC Button{};
-		Button.eLevelID = LEVEL_STATIC;
-		Button.fDepth = m_fDepth - 0.01f;
-		Button.strText = TEXT(" ");
-		Button.vPosition = _vec2(m_fX, m_fY);
-		Button.vSize = _vec2(40.f, 40.f);
-		Button.vTextPosition = _vec2(0.f, 0.f);
-		Button.fFontSize = 0.5f;
-		Button.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
-		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_QuestAlpha");
-		m_pBackGround = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+		CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
+		ColButtonDesc.eLevelID = LEVEL_STATIC;
+		ColButtonDesc.fDepth = m_fDepth - 0.01f;
+		ColButtonDesc.fAlpha = 0.8f;
+		ColButtonDesc.fFontSize = 0.5f;
+		ColButtonDesc.strText = TEXT(" ");
+		ColButtonDesc.vTextColor = _vec4(1.f, 1.f, 1.f, 1.f);
+		ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_FadeBox");
+		ColButtonDesc.strTexture2 = TEXT("Prototype_Component_Texture_Effect_FX_A_Gradation006_Tex");
+		ColButtonDesc.vSize = _vec2(40.f, 40.f);
+		ColButtonDesc.vPosition = _vec2(m_fX, m_fY);
+		ColButtonDesc.vColor = _vec4(0.f, 0.f, 0.f, 0.5f);
+
+		m_pBackGround = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
 		if (not m_pBackGround)
 		{
 			return E_FAIL;
 		}
+		m_pBackGround->Set_Pass(VTPass_Dissolve);
+		m_pBackGround->Set_Factor(0.f);
 	}
 	return S_OK;
 }
@@ -93,6 +98,7 @@ void CSkill::Tick(_float fTimeDelta)
 	GetCursorPos(&ptMouse);
 	ScreenToClient(g_hWnd, &ptMouse);
 
+	
 	if (m_isUsingSkill && m_isScreen)
 	{
 		if (m_fDir < 0.f && m_fAlpha < 0.4f)
@@ -114,6 +120,7 @@ void CSkill::Tick(_float fTimeDelta)
 			m_isUsingSkill = false;
 		}
 
+		m_pBackGround->Set_Factor((m_fStartTime - m_fCoolTime) / m_fStartTime);
 
 		m_pBorder->Tick(fTimeDelta);
 		m_pBackGround->Tick(fTimeDelta);
@@ -186,7 +193,8 @@ _bool CSkill::Use_Skill()
 	if (!m_isUsingSkill)
 	{
 		m_isUsingSkill = true;
-		m_fCoolTime = (_float)m_tSkillInfo.iCoolTime * CUI_Manager::Get_Instance()->Get_ExtraStatus().CoolDownTime;;
+		m_fCoolTime = (_float)m_tSkillInfo.iCoolTime * CUI_Manager::Get_Instance()->Get_ExtraStatus().CoolDownTime;
+		m_fStartTime = m_fCoolTime;
 		return true;
 	}
 	return false;

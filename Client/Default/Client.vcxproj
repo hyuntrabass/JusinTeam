@@ -170,6 +170,7 @@
     <ClInclude Include="..\Public\BrickBar.h" />
     <ClInclude Include="..\Public\BrickCat.h" />
     <ClInclude Include="..\Public\BrickGame.h" />
+    <ClInclude Include="..\Public\BrickItem.h" />
     <ClInclude Include="..\Public\BrickWall.h" />
     <ClInclude Include="..\Public\Buff_Card.h" />
     <ClInclude Include="..\Public\Camera_CutScene.h" />
@@ -215,6 +216,7 @@
     <ClInclude Include="..\Public\HpMonster.h" />
     <ClInclude Include="..\Public\Human_Boss.h" />
     <ClInclude Include="..\Public\InfiltrationGame.h" />
+    <ClInclude Include="..\Public\InfinityStart.h" />
     <ClInclude Include="..\Public\InfinityTower.h" />
     <ClInclude Include="..\Public\Interaction_Anim_Object.h" />
     <ClInclude Include="..\Public\Interaction_NonAnim_Object.h" />
@@ -348,6 +350,7 @@
     <ClInclude Include="..\Public\Void23.h" />
     <ClInclude Include="..\Public\VTFMonster.h" />
     <ClInclude Include="..\Public\VTFTest.h" />
+    <ClInclude Include="..\Public\Warning_Mark.h" />
     <ClInclude Include="..\Public\Wasp.h" />
     <ClInclude Include="..\Public\Wearable_Slot.h" />
     <ClInclude Include="..\Public\WorldMap.h" />
@@ -371,6 +374,7 @@
     <ClCompile Include="..\Private\BrickBar.cpp" />
     <ClCompile Include="..\Private\BrickCat.cpp" />
     <ClCompile Include="..\Private\BrickGame.cpp" />
+    <ClCompile Include="..\Private\BrickItem.cpp" />
     <ClCompile Include="..\Private\BrickWall.cpp" />
     <ClCompile Include="..\Private\Buff_Card.cpp" />
     <ClCompile Include="..\Private\Camera_CutScene.cpp" />
@@ -407,6 +411,7 @@
     <ClCompile Include="..\Private\Hook.cpp" />
     <ClCompile Include="..\Private\Human_Boss.cpp" />
     <ClCompile Include="..\Private\InfiltrationGame.cpp" />
+    <ClCompile Include="..\Private\InfinityStart.cpp" />
     <ClCompile Include="..\Private\InfinityTower.cpp" />
     <ClCompile Include="..\Private\Interaction_Anim_Object.cpp" />
     <ClCompile Include="..\Private\Interaction_NonAnim_Object.cpp" />
@@ -547,6 +552,7 @@
     <ClCompile Include="..\Private\Void23.cpp" />
     <ClCompile Include="..\Private\VTFMonster.cpp" />
     <ClCompile Include="..\Private\VTFTest.cpp" />
+    <ClCompile Include="..\Private\Warning_Mark.cpp" />
     <ClCompile Include="..\Private\Wasp.cpp" />
     <ClCompile Include="..\Private\Wearable_Slot.cpp" />
     <ClCompile Include="..\Private\WorldMap.cpp" />

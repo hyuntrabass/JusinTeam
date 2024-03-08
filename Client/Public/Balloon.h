@@ -2,8 +2,13 @@
 
 #include "Client_Define.h"
 #include "GameObject.h"
+#include "BrickItem.h"
 
 BEGIN(Client)
+#define DEFEXT 50.1f
+#define DOUBLEEXT 50.f
+#define POWEREXT 90.f
+
 
 enum BrickColor { RED, BLUE, COLOR_END };
 class CBalloon final : public CGameObject
@@ -11,6 +16,7 @@ class CBalloon final : public CGameObject
 public:
 	typedef struct tagBalloonDesc
 	{
+		_bool isChangePhase{};
 		_bool isEmpty{};
 		_vec3 vPosition{};
 		_vec4 vColor;
@@ -57,6 +63,8 @@ private:
 	BALLOON_STATE m_eCurState = STATE_IDLE;
 
 private:
+	_bool m_isChangePhase{ };
+	_bool m_isPowerBrick{ };
 	_bool m_isReadyToFall{ };
 	_bool m_isFall{ true };
 	_bool m_isEmpty{};
@@ -79,8 +87,10 @@ public:
 	const _bool& Is_Coll() const { return m_isColl; }
 
 private:
+	void Create_Item();
 	void Set_Color();
 	void Set_RandomColor();
+	void Set_ItemExtents(CBrickItem::TYPE eType);
 
 private:
 	HRESULT Add_Collider();

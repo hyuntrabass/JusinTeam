@@ -50,7 +50,6 @@ void CDoor::Tick(_float fTimeDelta)
 			m_pTransformCom->Delete_Controller();
 		}
 	}
-
 }
 
 void CDoor::Late_Tick(_float fTimeDelta)

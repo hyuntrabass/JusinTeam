@@ -11,6 +11,8 @@
 
 #include "Trigger_Manager.h"
 
+#include "Warning_Mark.h"
+
 CInfiltrationGame::CInfiltrationGame(_dev pDevice, _context pContext)
 	:CGameObject(pDevice, pContext)
 {
@@ -48,9 +50,8 @@ HRESULT CInfiltrationGame::Init(void* pArg)
 
 void CInfiltrationGame::Tick(_float fTimeDelta)
 {
-	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_MiniDungeon)
+	if (!CUI_Manager::Get_Instance()->InfinityTower_UI(true, BOSS1))
 	{
-		Kill();
 		return;
 	}
 
@@ -78,6 +79,7 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 						pGuardTower->Tower_TurnOff();
 					}
 					m_isTurnOff = true;
+					m_pGameInstance->Play_Sound(L"War_Skill_Absorption_SFX_06");
 				}
 			}
 		}
@@ -88,6 +90,22 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 				isDetected = true;
 		}
 
+	}
+
+	if (true == isDetected) {
+		if (false == m_isDetected) {
+			if (nullptr != m_pWarning) {
+				Safe_Release(m_pWarning);
+			}
+			m_pWarning = dynamic_cast<CWarning_Mark*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_WarningMark"));
+			m_isDetected = true;
+		}
+	}
+	else {
+		m_isDetected = false;
+		if (m_pWarning) {
+			m_pWarning->Set_WarningEnd();
+		}
 	}
 
 	for (auto& pCheckPoint : m_CheckPoint)
@@ -101,6 +119,9 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 		pLever->Tick(fTimeDelta);
 
 	}
+
+	if (m_pWarning)
+		m_pWarning->Tick(fTimeDelta);
 
 	if (m_pDoor)
 		m_pDoor->Tick(fTimeDelta);
@@ -135,6 +156,9 @@ void CInfiltrationGame::Late_Tick(_float fTimeDelta)
 
 	if (m_pDoor)
 		m_pDoor->Late_Tick(fTimeDelta);
+
+	if (m_pWarning)
+		m_pWarning->Late_Tick(fTimeDelta);
 
 	for (auto& pCheckPoint : m_CheckPoint)
 	{
@@ -573,6 +597,8 @@ void CInfiltrationGame::Free()
 	
 	Safe_Release(m_pDoor);
 	Safe_Release(m_pTeleport);
+
+	Safe_Release(m_pWarning);
 
 	Safe_Release(m_pPlayerTransform);
 }

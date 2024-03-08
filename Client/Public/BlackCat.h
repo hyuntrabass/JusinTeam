@@ -47,7 +47,9 @@ private:
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
+	CTexture* m_pDissolveTextureCom = { nullptr };
 	CCollider* m_pColliderCom = { nullptr };
+	CCollider* m_pWideColliderCom = { nullptr };
 
 public:
 	void Init_State(_float fTimeDelta);
@@ -60,16 +62,22 @@ private:
 
 private:
 	_bool m_bGameStart{};
+	_bool m_bGameOver{};
 	_bool m_bChangePhase{};
-	_bool m_bPhaseStart{};
+	_bool m_bPhaseStart{};;
 	_bool m_bChangePass{};
+	_bool m_bCreateBlock{};
 	_bool m_bHit{};
+	_bool m_isDeadMotion{};
 
 	_uint m_iPassIndex{};
 	_uint m_iHitCount{};
 
+	_float m_fCreateBlockTime = {};
 	_float m_fIdleTime = {};
 	_float m_fHitTime = {};
+	_float m_fDissolveRatio = {};
+	_float m_fDeadTime = {};
 
 	ANIM_DESC m_Animation{};
 	_mat m_EffectMatrix{};
@@ -86,15 +94,17 @@ private:
 	C3DUITex* m_pHpBorder{ nullptr };
 	
 	_float m_fBarFloating{ 0.f };
-	_float m_fTargetHp{ 15.f };
-	_vec2 m_Hp{ _vec2(15.f, 15.f)};
+	_float m_fTargetHp{ 10.f };
+	_vec2 m_Hp{ _vec2(10.f, 10.f)};
 
 	class CTextButton* m_pLine{ nullptr };
 	class CDialogText* m_pDialogText{ nullptr };
 	class CTextButtonColor* m_pBackGround{ nullptr };
 
 public:
+	const _bool& Is_PhaseChange() const { return m_bChangePhase; }
 	const _bool& Is_GameStart() const { return m_bGameStart; }
+	const _bool& Is_GameOver() const { return m_bGameOver; }
 	_bool Create_Bricks();
 	CCollider* Get_Collider() { return m_pColliderCom; }
 

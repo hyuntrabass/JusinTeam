@@ -53,6 +53,7 @@ public:
 	void Set_Radius(const _float fRadius) const;
 	_vec3 Get_Extents();	
 	_vec3 Get_ColliderPos();
+	_float Get_Radius();
 	void Set_Normal();
 	_vec3 Get_Normal(CollideFace eColliderFace);
 	const ColliderType& Get_ColliderType() const;

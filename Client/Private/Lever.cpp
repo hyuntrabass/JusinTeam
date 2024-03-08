@@ -76,8 +76,9 @@ void CLever::Tick(_float fTimeDelta)
 		{
 			//여기가 바 로딩 끝나는 부분
 			m_isInteracting = false;
-
 			m_isOn = true;
+			m_pGameInstance->Play_Sound(L"Siege_Obj_Ladder_Up_SFX_04");
+
 			m_ShaderPassIndex = AnimPass_Default;
 		}
 
@@ -125,9 +126,11 @@ void CLever::Tick(_float fTimeDelta)
 
 void CLever::Late_Tick(_float fTimeDelta)
 {
-	if(m_isOn)
+	if (m_isOn)
+	{
 		m_pModelCom->Play_Animation(fTimeDelta);
-	
+	}
+
 	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_CenterPos(), 20.f))
 	{
 		m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);

@@ -238,6 +238,18 @@ _vec3 CCollider::Get_ColliderPos()
 	return _vec3();
 }
 
+_float CCollider::Get_Radius()
+{
+	switch (m_eType)
+	{
+	case Engine::ColliderType::Sphere:
+		return reinterpret_cast<BoundingSphere*>(m_pBounder_Origin)->Radius;
+		break;
+	}
+
+	return 0.f;
+}
+
 void CCollider::Set_Normal()
 {
 	switch (m_eType)

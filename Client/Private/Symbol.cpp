@@ -141,12 +141,12 @@ HRESULT CSymbol::Add_Components()
 		m_fSizeY = 128.f;
 		break;
 	case ANGRBODA:
-		strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_ImageText_Chapter1_02");
+		strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_ImageText_Chapter1_03");
 		m_fSizeX = 512.f;
 		m_fSizeY = 128.f;
 		break;
 	case DRAGON:
-		strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_ImageText_Chapter1_03");
+		strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_ImageText_Chapter1_02");
 		m_fSizeX = 512.f;
 		m_fSizeY = 128.f;
 		break;
