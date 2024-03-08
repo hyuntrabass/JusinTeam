@@ -208,6 +208,7 @@ void CInfiltrationGame::Late_Tick(_float fTimeDelta)
 
 			if(pPath != nullptr)
 				Create_Guard(pPath);
+			m_pGameInstance->Play_Sound(L"Hit_Large_Harp_SFX_01");
 			pCheckPoint->Kill();
 		}
 	}

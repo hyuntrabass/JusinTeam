@@ -56,7 +56,7 @@ void CDoor::Tick(_float fTimeDelta)
 		if (false == m_Sound) {
 			m_fTime += fTimeDelta;
 		}
-		if (1.85f <= m_fTime && false == m_Sound) {
+		if (1.9f <= m_fTime && false == m_Sound) {
 			m_pGameInstance->Play_Sound(L"War_Castledoor_Close_SFX_01");
 			m_Sound = true;
 		}
