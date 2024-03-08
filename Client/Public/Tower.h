@@ -50,6 +50,7 @@ public:
 	const RECT& Get_Rect() const { return m_rcRect; }
 	const _vec2 Get_Position();
 	void Select_Object(_bool isSelect);
+	void Set_Clear() { m_isCleared = true; }
 
 private:
 	HRESULT Add_Parts();

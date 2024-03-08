@@ -90,9 +90,17 @@ void CBlackCat::Tick(_float fTimeDelta)
 	Update_Collider();
 	m_pModelCom->Set_Animation(m_Animation);
 
-	m_EffectMatrixLight = _mat::CreateTranslation(2.f, 3.5f, 0.9f) * m_pTransformCom->Get_World_Matrix();
-	m_EffectMatrix = *m_pModelCom->Get_BoneMatrix("Bip001-Spine") * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
-	//m_EffectMatrix = _mat::CreateTranslation(0.f, 2.f, 0.9f) * m_pTransformCom->Get_World_Matrix();
+	if (!m_isDeadMotion)
+	{
+		m_EffectMatrixLight = _mat::CreateTranslation(2.f, 3.5f, 0.9f) * m_pTransformCom->Get_World_Matrix();
+		//m_EffectMatrix = *m_pModelCom->Get_BoneMatrix("Bip001-Spine") * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
+		m_EffectMatrix = _mat::CreateTranslation(0.f, 2.f, 0.9f) * m_pTransformCom->Get_World_Matrix();
+	}
+	else
+	{
+		m_EffectMatrix = _mat::CreateTranslation(_vec3(-1989.f, -100.f, -2005.11536f));
+	}
+	
 	if (m_bHit)
 	{
 		m_pDialog->Tick(fTimeDelta);
@@ -177,7 +185,7 @@ HRESULT CBlackCat::Render()
 		{
 			HasMaskTex = true;
 		}
-
+		/*
 		_bool HasGlowTex{};
 		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_GlowTexture", i, TextureType::Specular)))
 		{
@@ -187,6 +195,7 @@ HRESULT CBlackCat::Render()
 		{
 			HasGlowTex = true;
 		}
+		*/
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
 		{
 			return E_FAIL;
@@ -196,10 +205,12 @@ HRESULT CBlackCat::Render()
 		{
 			return E_FAIL;
 		}
+		/*
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasGlowTex", &HasGlowTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}
+		*/
 
 		if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
 		{
@@ -252,9 +263,13 @@ void CBlackCat::Init_State(_float fTimeDelta)
 			m_Animation.fAnimSpeedRatio = 2.f;
 			break;
 		case Client::CBlackCat::STATE_HIT:
+		{
 			m_Animation.iAnimIndex = EMOTION;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 3.f;
+			wstring strSoundTag = TEXT("Vo_Pet_10_ManekiNeko_Collect_01-0") + to_wstring(rand() % 2 + 1);
+			m_pGameInstance->Play_Sound(strSoundTag);
+		}
 			break;
 		case Client::CBlackCat::STATE_CHANGE:
 			CCamera_Manager::Get_Instance()->Set_ZoomFactor(2.f);
@@ -365,25 +380,7 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 	case CBlackCat::STATE_ANGRY:
 	{
 		m_fCreateBlockTime += fTimeDelta;
-		/*
 		
-		CCollider* pBalloonCollider{ nullptr };
-		_bool isBalloonColl{};
-		_uint iNum = m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_Balloons"));
-		_uint iCount{};
-		for (_uint i = 0; i < iNum; i++)
-		{
-			pBalloonCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_Balloons"), TEXT("Com_Collider_Sphere"), i);
-			if (pBalloonCollider == nullptr)
-			{
-				break;
-			}
-			if (m_pWideColliderCom->Intersect(pBalloonCollider))
-			{
-				iCount++;
-			}
-		
-		*/
 		CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickGame"), TEXT("BrickBall"));
 		if (pCollider != nullptr && m_pColliderCom->Intersect(pCollider))
 		{
@@ -426,10 +423,12 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 	{
 		if (m_pModelCom->IsAnimationFinished(TELEPORT_END))
 		{
+			m_pGameInstance->Play_Sound(TEXT("Vo_Pet_10_ManekiNeko_Teleport_Phase"));
 			m_fCreateBlockTime = 0.f;
 			CCamera_Manager::Get_Instance()->Set_ZoomFactor(-1.f);
 			m_eCurState = STATE_ANGRY;
 			m_bPhaseStart = true;
+			m_pGameInstance->Play_Sound(TEXT("Vo_Pet_10_ManekiNeko_Teleport_End_01"));
 
 		}
 		else if (m_pModelCom->IsAnimationFinished(TELEPORT_START))
@@ -440,8 +439,8 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 			Info.pMatrix = &Matrix;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
 
-
 			m_Animation.iAnimIndex = TELEPORT_END;
+			m_pGameInstance->Play_Sound(TEXT("Vo_Pet_10_ManekiNeko_Teleport_Phase"));
 		}
 	}
 	break;
@@ -450,6 +449,7 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 
 		if (!m_isDeadMotion)
 		{
+			m_pGameInstance->Play_Sound(TEXT("Vo_Pet_10_ManekiNeko_Die"));
 			CCamera_Manager::Get_Instance()->Set_ZoomFactor(2.f);
 			Safe_Release(m_pHpBG);
 			Safe_Release(m_pHpBar);

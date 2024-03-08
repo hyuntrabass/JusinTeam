@@ -208,6 +208,7 @@ HRESULT CEvent_Manager::Init_Quest()
 	tDesc.strQuestTitle = TEXT("체력포션 구매");
 	tDesc.strText = TEXT("마을 상인에게 체력포션 구매하기");
 	vecRewards.push_back(make_pair(TEXT("[희귀]탈 것 소환 카드"), 10));
+	tDesc.vecRewards = vecRewards;
 	m_QuestMap.emplace(tDesc.strQuestTitle, tDesc);
 
 	vecRewards.clear();
