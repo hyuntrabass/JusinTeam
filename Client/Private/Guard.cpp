@@ -243,6 +243,15 @@ void CGuard::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = false;
 			m_pTransformCom->Delete_Controller();
 			m_pGameInstance->Delete_CollisionObject(this);
+			switch (rand() % 2)
+			{
+			case 0:
+				m_pGameInstance->Play_Sound(L"Thief_02_Die01_Voice_01");
+				break;
+			case 1:
+				m_pGameInstance->Play_Sound(L"Thief_02_Die01_Voice_03");
+				break;
+			}
 			break;
 		}
 
@@ -381,7 +390,17 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 			{
 				if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 				{
-					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+					m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
+					switch (rand() % 2)
+					{
+					case 0:
+						m_pGameInstance->Play_Sound(L"Thief_01_Attack03_Voice_01");
+						break;
+					case 1:
+						m_pGameInstance->Play_Sound(L"Thief_01_Attack03_Voice_04");
+						break;
+					}
+					m_pGameInstance->Play_Sound(L"Spear_Heavy_Whoosh_SFX_70");
 					m_bAttacked = true;
 				}
 			}
@@ -400,7 +419,17 @@ void CGuard::Tick_State_Pattern1(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f )
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
+				switch (rand() % 2)
+				{
+				case 0:
+					m_pGameInstance->Play_Sound(L"Thief_01_Attack03_Voice_01");
+					break;
+				case 1:
+					m_pGameInstance->Play_Sound(L"Thief_01_Attack03_Voice_04");
+					break;
+				}
+				m_pGameInstance->Play_Sound(L"Sword_WhooshRing_B_SFX_01");
 				m_bAttacked = true;
 			}
 		}
@@ -593,7 +622,17 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
+				switch (rand() % 2)
+				{
+				case 0:
+					m_pGameInstance->Play_Sound(L"Thief_01_Attack03_Voice_01");
+					break;
+				case 1:
+					m_pGameInstance->Play_Sound(L"Thief_01_Attack03_Voice_04");
+					break;
+				}
+				m_pGameInstance->Play_Sound(L"Spear_Heavy_Whoosh_SFX_70");
 				m_bAttacked = true;
 			}
 		}
@@ -612,7 +651,17 @@ void CGuard::Tick_State_Pattern2(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
+				switch (rand() % 2)
+				{
+				case 0:
+					m_pGameInstance->Play_Sound(L"Thief_01_Attack03_Voice_01");
+					break;
+				case 1:
+					m_pGameInstance->Play_Sound(L"Thief_01_Attack03_Voice_04");
+					break;
+				}
+				m_pGameInstance->Play_Sound(L"Sword_WhooshRing_B_SFX_01");
 				m_bAttacked = true;
 			}
 		}
@@ -750,7 +799,18 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
+				switch (rand() % 2)
+				{
+				case 0:
+					m_pGameInstance->Play_Sound(L"Thief_01_Attack03_Voice_01");
+					break;
+				case 1:
+					m_pGameInstance->Play_Sound(L"Thief_01_Attack03_Voice_04");
+					break;
+				}
+
+				m_pGameInstance->Play_Sound(L"Spear_Heavy_Whoosh_SFX_70");
 				m_bAttacked = true;
 			}
 		}
@@ -769,7 +829,17 @@ void CGuard::Tick_State_Pattern3(_float fTimeDelta)
 		{
 			if (m_pModelCom->Get_CurrentAnimPos() > 39.f && m_pModelCom->Get_CurrentAnimPos() < 42.f)
 			{
-				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+				m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
+				switch (rand() % 2)
+				{
+				case 0:
+					m_pGameInstance->Play_Sound(L"Thief_01_Attack03_Voice_01");
+					break;
+				case 1:
+					m_pGameInstance->Play_Sound(L"Thief_01_Attack03_Voice_04");
+					break;
+				}
+				m_pGameInstance->Play_Sound(L"Sword_WhooshRing_B_SFX_01");
 				m_bAttacked = true;
 			}
 		}

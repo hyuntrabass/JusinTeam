@@ -637,7 +637,7 @@ void CCamera_Main::FisrtPerson_Mode(_float fTimeDelta)
 
 
 	_vec4 vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
-	vPlayerPos.y += 2.f;
+	vPlayerPos.y += 1.7f;
 	m_pTransformCom->Set_State(State::Pos, vPlayerPos);
 		_long dwMouseMove{};
 		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
