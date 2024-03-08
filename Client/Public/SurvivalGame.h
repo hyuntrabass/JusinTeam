@@ -49,6 +49,7 @@ private:
 
 private:
 	_bool m_bGameStart = { false };
+	_bool m_bGameClear = { false };
 
 private:
 	_uint m_iCount = {};

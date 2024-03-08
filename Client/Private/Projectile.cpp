@@ -288,7 +288,7 @@ void CProjectile::Tick(_float fTimeDelta)
 			m_pBallParticle->Tick(fTimeDelta);
 		}
 
-		m_pGameInstance->Attack_Player(m_pColliderCom, rand() % 6, MonAtt_Hit);
+		m_pGameInstance->Attack_Player(m_pColliderCom, 2 + rand() % 6, MonAtt_Hit);
 
 		break;
 
@@ -325,7 +325,7 @@ void CProjectile::Tick(_float fTimeDelta)
 
 				if (fDistance <= 2.f)
 				{
-					m_pGameInstance->Attack_Player(nullptr, rand() % 10, MonAtt_Hit);
+					m_pGameInstance->Attack_Player(nullptr, 5 + rand() % 10, MonAtt_Hit);
 				}
 
 				//Matrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) + _vec3(0.f, 1.f, 0.f));
@@ -370,7 +370,7 @@ void CProjectile::Tick(_float fTimeDelta)
 			//m_pBallParticle->Tick(fTimeDelta);
 		}
 
-		m_pGameInstance->Attack_Player(m_pColliderCom, rand() % 6, MonAtt_Hit);
+		m_pGameInstance->Attack_Player(m_pColliderCom, 5 + rand() % 6, MonAtt_Hit);
 
 		break;
 	case Client::CProjectile::TYPE_TANGHURU:
@@ -418,7 +418,7 @@ void CProjectile::Tick(_float fTimeDelta)
 
 		m_UpdateMatrix = _mat::CreateScale(1.f) * _mat::CreateTranslation(_vec3(m_pTransformCom->Get_State(State::Pos)) /*+ _vec3(0.f, 1.f, 0.f)*/);
 
-		m_pGameInstance->Attack_Player(m_pColliderCom, rand() % 6, MonAtt_Hit);
+		m_pGameInstance->Attack_Player(m_pColliderCom, 3 + rand() % 6, MonAtt_Hit);
 
 		break;
 

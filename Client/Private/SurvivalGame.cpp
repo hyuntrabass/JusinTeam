@@ -148,6 +148,19 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 		//	m_eCurStage = STAGE05;
 		//}
 
+		if (m_bGameClear == true)
+		{
+			if (m_pGameInstance->Get_LayerSize(LEVEL_VILLAGE, TEXT("Layer_Survival_Mon")) <= 0)
+			{
+				CCamera_Manager::Get_Instance()->Set_RidingZoom(false);
+
+				if (!CUI_Manager::Get_Instance()->InfinityTower_UI(false, SURVIVAL))
+				{
+					return;
+				}
+			}
+		}
+
 		if (m_pGameInstance->Key_Pressing(DIK_COMMA) && m_pGameInstance->Key_Pressing(DIK_PERIOD) && !m_bGameStart)
 		{
 			m_bGameStart = true;
@@ -216,7 +229,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 			for (size_t i = 0; i < 10; i++)
 			{
 				_vec3 vRandomDir = _vec3(Random(RandomNumber), 0.f, Random(RandomNumber)).Get_Normalized();
-				Desc.vStartPos = CENTER_POS + (rand() % 8 + 1) * vRandomDir;
+				Desc.vStartPos = CENTER_POS + (rand() % 9 + 1) * vRandomDir;
 				m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
 			}
 
@@ -224,7 +237,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 			++m_iCount;
 		}
 
-		if (m_iCount >= 12)
+		if (m_iCount >= 20)
 		{
 			m_eCurStage = STAGE_INIT;
 			m_eNextStage = STAGE03;
@@ -330,7 +343,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 			for (size_t i = 0; i < 6; i++)
 			{
-				Desc.vStartPos = CENTER_POS + vRandomDir * (i + 5 + i * 0.3f);
+				Desc.vStartPos = CENTER_POS + vRandomDir * (i + 4 + i * 0.3f);
 				m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
 			}
 
@@ -342,7 +355,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 		}
 
-		if (m_fTime[1] >= 2.f)
+		if (m_fTime[1] >= 1.f)
 		{
 			CSurvival_Mon::SURVIVAL_MON_TYPE Type = CSurvival_Mon::TYPE_IMP;
 			m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Survival_Mon"), TEXT("Prototype_GameObject_Survival_Mon"), &Type);
@@ -350,18 +363,14 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 			m_fTime[1] = 0.f;
 		}
 
-		if (m_iCount >= 40)
+		if (m_iCount >= 50)
 		{
 			m_eCurStage = STAGE_INIT;
 			m_eNextStage = STAGE01;
 			m_bGameStart = false;
+			m_bGameClear = true;
 
-			CCamera_Manager::Get_Instance()->Set_RidingZoom(false);
 
-			if (!CUI_Manager::Get_Instance()->InfinityTower_UI(false, SURVIVAL))
-			{
-				return;
-			}
 		}
 
 		break;

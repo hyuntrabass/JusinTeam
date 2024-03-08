@@ -117,7 +117,7 @@ void CSurvival_Mon::Tick(_float fTimeDelta)
 				m_Animation.iAnimIndex = ATTACK01_H;
 				m_Animation.isLoop = false;
 				m_Animation.fDurationRatio = 0.371f;
-				m_Animation.fAnimSpeedRatio = 1.5f;
+				m_Animation.fAnimSpeedRatio = 2.2f;
 
 				m_bExplode = true;
 
