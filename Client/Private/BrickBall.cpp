@@ -295,7 +295,6 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 	if (isColl && m_pCurCollider != pCollider)
 	{
 		bShowEffect = true;
-		m_isCombo = true;
 		m_pCurCollider = nullptr;
 		m_pCurCollider = pCollider;
 		_vec3 vNormal{};
@@ -350,7 +349,6 @@ void CBrickBall::Check_Collision(_float fTimeDelta)
 		{
 			bShowEffect = true;
 			m_isBarColl = true;
-			m_isCombo = true;
 			m_pCurCollider = nullptr;
 			m_pCurCollider = pBarCollider;
 			_vec3 vLook = m_pTransformCom->Get_State(State::Look);
