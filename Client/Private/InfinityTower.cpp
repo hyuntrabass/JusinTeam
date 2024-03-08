@@ -576,6 +576,7 @@ void CInfinityTower::Tower_Tick(_float fTimeDelta, POINT& ptMouse)
 			}
 				break;
 			}
+			m_pTowers[m_iCurIndex]->Set_Clear();
 			Exit_Tower();
 		}
 	}
@@ -621,6 +622,7 @@ void CInfinityTower::Exit_Tower()
 	}
 	CUI_Manager::Get_Instance()->Set_FullScreenUI(false);
 	m_vDefaultPoint = m_vInitialPoint;
+	
 	m_isActive = false;
 }
 

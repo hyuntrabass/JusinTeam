@@ -53,17 +53,18 @@ HRESULT CSkillBook::Init(void* pArg)
 	}
 
 	CUI_Manager::Get_Instance()->Set_SkillBook(this);
-	/*
+	
 	Unlock_Skill(0);
 	Unlock_Skill(1);
 	Unlock_Skill(2);
 	Unlock_Skill(3);
-	*/
+	
 	return S_OK;
 }
 
 void CSkillBook::Tick(_float fTimeDelta)
 {
+
 	if (CUI_Manager::Get_Instance()->Get_TimeStop())
 	{
 		fTimeDelta /= m_pGameInstance->Get_TimeRatio();

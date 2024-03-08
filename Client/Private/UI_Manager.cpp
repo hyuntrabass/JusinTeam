@@ -55,6 +55,11 @@ HRESULT CUI_Manager::Init()
 	m_tExtraStatus.Max_Hp = 0;
 	m_tExtraStatus.Max_Mp = 0;
 	m_tExtraStatus.Speed = 0.f;
+
+	/* 마지막 영상용 */
+	m_isFirstKill = true;
+	m_iLevel = 10;
+	Set_Exp_ByPercent(25.2);
 	return S_OK;
 }
 

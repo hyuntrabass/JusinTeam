@@ -42,7 +42,7 @@ HRESULT CBrickGame::Init(void* pArg)
 
 	Init_Game();
 
-
+	m_pRendererCom->Set_TurnOnMotionBlur(false);
 	return S_OK;
 }
 
@@ -56,6 +56,7 @@ void CBrickGame::Tick(_float fTimeDelta)
 
 	if (!CUI_Manager::Get_Instance()->InfinityTower_UI(true, BRICK))
 	{
+	 //false
 		return;
 	}
 
@@ -181,8 +182,23 @@ void CBrickGame::Tick(_float fTimeDelta)
 				}
 			}
 		}
-		if (!m_pCatBoss->Is_GameStart())
+		if (m_pCatBoss->Is_GameStart())
 		{
+			if (m_pBall == nullptr)
+			{
+				m_iCombo = 0;
+				CBalloon::BALLOON_DESC Desc{};
+				CTransform* pTransform = m_pBar->Get_Transform();
+				_vec3 vPos = pTransform->Get_State(State::Pos);
+				Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
+				Desc.vPosition = _vec3(vPos.x, vPos.y, vPos.z - 2.f);
+				m_pBall = (CBrickBall*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BrickBall"), &Desc);
+				if (not m_pBall)
+				{
+					MSG_BOX("BrickBall");
+					return;
+				}
+			}
 			//return;
 		}
 		if (m_pCatBoss->Create_Bricks())
@@ -569,21 +585,7 @@ void CBrickGame::Init_Game()
 	{
 		m_pBar = (CBrickBar*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BrickBar"));
 	}
-	if (m_pBall == nullptr)
-	{
 
-		CBalloon::BALLOON_DESC Desc{};
-		CTransform* pTransform = m_pBar->Get_Transform();
-		_vec3 vPos = pTransform->Get_State(State::Pos);
-		Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
-		Desc.vPosition = _vec3(vPos.x, vPos.y, vPos.z - 2.f);
-		m_pBall = (CBrickBall*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BrickBall"), &Desc);
-		if (not m_pBall)
-		{
-			MSG_BOX("BrickBall");
-			return;
-		}
-	}
 
 
 	m_pCatBoss = (CBlackCat*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BlackCat"));
