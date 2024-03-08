@@ -481,12 +481,14 @@ void CInfiltrationGame::Reset_Play(_float fTimeDelta)
 		if (CUI_Manager::Get_Instance()->Get_Hp().x <= 0)
 		{
 			m_fResurrectionTime += fTimeDelta;
-			if (m_fResurrectionTime > 2.f)
+			if (m_fResurrectionTime > 3.f)
 			{
 				m_isReset = true;
 				m_fResurrectionTime = 0.f;
 			}
 		}
+		else
+			m_fResurrectionTime = 0.f;
 	}
 	else
 	{

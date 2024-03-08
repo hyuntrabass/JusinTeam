@@ -529,7 +529,7 @@ void CGuardTower::Tick_State_Pattern_1(_float fTimeDelta)
 
 		if (m_bAttacked == false)
 		{
-			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 			m_bAttacked = true;
 		}
 
@@ -680,7 +680,7 @@ void CGuardTower::Tick_State_Pattern_2(_float fTimeDelta)
 
 		if (m_bAttacked == false)
 		{
-			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 			m_bAttacked = true;
 		}
 
@@ -842,7 +842,7 @@ void CGuardTower::Tick_State_Pattern_3(_float fTimeDelta)
 
 		if (m_bAttacked == false)
 		{
-			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
+			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
 			m_bAttacked = true;
 		}
 
