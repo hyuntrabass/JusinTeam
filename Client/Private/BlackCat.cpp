@@ -281,7 +281,7 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 	}
 	
 	
-	if (m_iHitCount >= 2)
+	if (m_iHitCount >= 1)
 	{
 		m_iHitCount = 0;
 		m_fTargetHp -= 2.f;
@@ -354,7 +354,31 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 
 	case CBlackCat::STATE_ANGRY:
 	{
-
+		m_fCreateBlockTime += fTimeDelta;
+		/*
+		
+		CCollider* pBalloonCollider{ nullptr };
+		_bool isBalloonColl{};
+		_uint iNum = m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_Balloons"));
+		_uint iCount{};
+		for (_uint i = 0; i < iNum; i++)
+		{
+			pBalloonCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_Balloons"), TEXT("Com_Collider_Sphere"), i);
+			if (pBalloonCollider == nullptr)
+			{
+				break;
+			}
+			if (m_pWideColliderCom->Intersect(pBalloonCollider))
+			{
+				iCount++;
+			}
+		
+		*/
+		if ( m_fCreateBlockTime >= 20.f)
+		{
+			m_fCreateBlockTime = 0.f;
+			m_bPhaseStart = true;
+		}
 	}
 		break;
 	case CBlackCat::STATE_HIT:
@@ -378,9 +402,9 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 		break;
 	case CBlackCat::STATE_CHANGE:
 	{
-
 		if (m_pModelCom->IsAnimationFinished(TELEPORT_END))
 		{
+			m_fCreateBlockTime = 0.f;
 			CCamera_Manager::Get_Instance()->Set_ZoomFactor(-1.f);
 			m_eCurState = STATE_ANGRY;
 			m_bPhaseStart = true;
@@ -468,11 +492,11 @@ HRESULT CBlackCat::Add_Parts()
 	CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
 	ColButtonDesc.eLevelID = LEVEL_STATIC;
 	ColButtonDesc.fDepth = fDepth;
-	ColButtonDesc.fAlpha = 0.8f;
+	ColButtonDesc.fAlpha = 0.9f;
 	ColButtonDesc.fFontSize = 0.f;
 	ColButtonDesc.strText = TEXT("");
 	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_FadeBox");
-	ColButtonDesc.vSize = _vec2(g_iWinSizeX, 250.f);
+	ColButtonDesc.vSize = _vec2(g_iWinSizeX, 400.f);
 	ColButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, (_float)g_iWinSizeY);
 
 
@@ -597,6 +621,16 @@ HRESULT CBlackCat::Add_Collider()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 		TEXT("Com_Collider_Bar"), (CComponent**)&m_pColliderCom, &CollDesc)))
 		return E_FAIL;
+	
+	Collider_Desc CollDesc2 = {};
+	CollDesc2.eType = ColliderType::AABB;
+	CollDesc2.vRadians = _vec3(0.f, 0.f, 0.f);
+	CollDesc2.vExtents = _vec3(4.f, 4.f, 4.f);
+	CollDesc2.vCenter = _vec3(0.f, 1.f, 0.f);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+		TEXT("Com_WideCollider"), (CComponent**)&m_pWideColliderCom, &CollDesc)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -695,5 +729,6 @@ void CBlackCat::Free()
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pColliderCom);
+	Safe_Release(m_pWideColliderCom);
 	Safe_Release(m_pShaderCom);
 }

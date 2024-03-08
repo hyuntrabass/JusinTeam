@@ -42,6 +42,11 @@ void CSurvivalGame::Tick(_float fTimeDelta)
 		Kill();
 	}
 
+	if (!CUI_Manager::Get_Instance()->InfinityTower_UI(true, SURVIVAL))
+	{
+		return;
+	}
+
 	Init_Pattern(fTimeDelta);
 	Tick_Pattern(fTimeDelta);
 

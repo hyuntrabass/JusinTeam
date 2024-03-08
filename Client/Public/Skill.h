@@ -42,11 +42,12 @@ private:
 	_float					m_fCoolTime{};
 	_float					m_fAlpha{};
 	_float					m_fDir{1.f};
+	_float					m_fStartTime{};
 
 	SKILLINFO				m_tSkillInfo{};
 	RECT					m_rcRect{};
 
-	CTextButton*			m_pBackGround{ nullptr };
+	CTextButtonColor*			m_pBackGround{ nullptr };
 	CTextButtonColor*		m_pBorder{ nullptr };
 
 public:

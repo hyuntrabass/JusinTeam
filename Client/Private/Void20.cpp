@@ -283,9 +283,8 @@ void CVoid20::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 3.f;
 
-			_uint iRandomExp = rand() % 100;
-			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(15.f + (_float)iRandomExp / 2.f * 0.1f);
-
+			_uint iRandomExp = rand() % 6;
+			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(30.f + static_cast<_float>(iRandomExp));
 			break;
 		}
 

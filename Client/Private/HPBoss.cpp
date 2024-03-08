@@ -48,6 +48,7 @@ HRESULT CHPBoss::Init(void* pArg)
 	Button.eLevelID = LEVEL_STATIC;
 	Button.fDepth = m_fDepth;
 	Button.strText = TEXT("");
+	
 	if (m_strName == TEXT("Groar"))
 	{
 		Button.strTexture = TEXT("Prototype_Component_Texture_UI_Boss_BossName");

@@ -7,7 +7,6 @@ enum TOWER { SURVIVAL, BOSS1, BRICK, CESCO , BOSS2, TOWER_END };
 
 class CInfinityTower final : public COrthographicObject
 {
-
 private:
 	CInfinityTower(_dev pDevice, _context pContext);
 	CInfinityTower(const CInfinityTower& rhs);
@@ -53,6 +52,8 @@ private:
 
 	class CTower*				m_pTowers[TOWER_END]{};
 
+	vector<wstring>				m_vecDesc[TOWER_END];
+	
 private:
 	HRESULT Ready_Tower();
 	HRESULT Add_Parts();

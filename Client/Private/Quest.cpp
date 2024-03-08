@@ -48,12 +48,12 @@ HRESULT CQuest::Init(void* pArg)
 
 void CQuest::Tick(_float fTimeDelta)
 {
-
+	
 	if (CUI_Manager::Get_Instance()->Showing_FullScreenUI())
 	{
 		return;
 	}
-	if (m_vecQuest.empty())
+	if (m_vecQuest.empty() || m_isActive)
 	{
 		m_bNewQuestIn = false;
 	}

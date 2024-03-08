@@ -53,11 +53,12 @@ HRESULT CSkillBook::Init(void* pArg)
 	}
 
 	CUI_Manager::Get_Instance()->Set_SkillBook(this);
-
+	/*
 	Unlock_Skill(0);
 	Unlock_Skill(1);
 	Unlock_Skill(2);
 	Unlock_Skill(3);
+	*/
 	return S_OK;
 }
 
@@ -538,7 +539,7 @@ HRESULT CSkillBook::Add_Parts()
 	
 	Button.strText = TEXT("");
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_Out");
-	Button.vPosition = _vec2(1230.f, 40.f);
+	Button.vPosition = _vec2(1230.f, 30.f);
 	Button.vSize = _vec2(70.f, 70.f);
 
 	m_pExitButton = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);

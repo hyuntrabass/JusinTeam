@@ -281,8 +281,10 @@ void CRabbit::Init_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = DIE;
 			m_Animation.isLoop = false;
 
-			_uint iRandomExp = rand() % 100;
-			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(15.f + (_float)iRandomExp / 2.f * 0.1f);
+			_uint iRandomExp = rand() % 6;
+			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(15.f + static_cast<_float>(iRandomExp));
+			CEvent_Manager::Get_Instance()->Update_Quest(TEXT("로스크바의 부탁"));
+
 			break;
 		}
 
@@ -464,10 +466,6 @@ void CRabbit::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->IsAnimationFinished(DIE))
 		{
-			if (m_fDeadTime == 0.f)
-			{
-				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("로스크바의 부탁"));
-			}
 			m_fDeadTime += fTimeDelta;
 		}
 

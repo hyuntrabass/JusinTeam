@@ -1,5 +1,6 @@
 #include "NameTag.h"
 #include "GameInstance.h"
+#include "Camera_Manager.h"
 
 CNameTag::CNameTag(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -53,6 +54,10 @@ void CNameTag::Tick(_float fTimeDelta)
 
 void CNameTag::Late_Tick(_float fTimeDelta)
 {
+	if (CCamera_Manager::Get_Instance()->Get_CameraModeIndex() == CM_CUTSCENE)
+	{
+		return;
+	}
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 

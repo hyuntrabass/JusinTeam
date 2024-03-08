@@ -66,11 +66,16 @@ void CSkillBlock::Tick(_float fTimeDelta)
 	}
 
 	
-
-	for (size_t i = 0; i < SKILL_END; i++)
+	
+	for (size_t j = 0; j < WP_END; j++)
 	{
-		m_pSlots[m_eCurType][i]->Tick(fTimeDelta);
+		for (size_t i = 0; i < SKILL_END; i++)
+		{
+			m_pSlots[j][i]->Tick(fTimeDelta);
+		}
 	}
+
+
 }
 
 void CSkillBlock::Late_Tick(_float fTimeDelta)

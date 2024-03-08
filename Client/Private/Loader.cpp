@@ -755,6 +755,10 @@ HRESULT CLoader::Load_Select()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Skill_Background2"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/BackGround/Skill_Background2.png")))))
+	{
+		return E_FAIL;
+	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BackGround_Mask"), CBackGround_Mask::Create(m_pDevice, m_pContext))))
 	{
@@ -2132,44 +2136,44 @@ HRESULT CLoader::Load_Village()
 				}
 			}
 		}
-		{
-			const TCHAR* pGetPath = TEXT("../Bin/Data/Tower_MapData.dat");
+		//{
+		//	const TCHAR* pGetPath = TEXT("../Bin/Data/Tower_MapData.dat");
 
-			std::ifstream inFile(pGetPath, std::ios::binary);
+		//	std::ifstream inFile(pGetPath, std::ios::binary);
 
-			if (!inFile.is_open())
-			{
-				MSG_BOX("오브젝트 파일을 찾지 못했습니다.");
-				return E_FAIL;
-			}
+		//	if (!inFile.is_open())
+		//	{
+		//		MSG_BOX("오브젝트 파일을 찾지 못했습니다.");
+		//		return E_FAIL;
+		//	}
 
-			_uint ObjectListSize;
-			inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
+		//	_uint ObjectListSize;
+		//	inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
 
 
-			for (_uint i = 0; i < ObjectListSize; ++i)
-			{
-				_ulong ObjectPrototypeSize;
-				inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
+		//	for (_uint i = 0; i < ObjectListSize; ++i)
+		//	{
+		//		_ulong ObjectPrototypeSize;
+		//		inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
 
-				wstring ObjectPrototype;
-				ObjectPrototype.resize(ObjectPrototypeSize);
-				inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
+		//		wstring ObjectPrototype;
+		//		ObjectPrototype.resize(ObjectPrototypeSize);
+		//		inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
 
-				_mat ObjectWorldMat;
-				inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
+		//		_mat ObjectWorldMat;
+		//		inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
 
-				ObjectInfo ObjectInfo{};
-				ObjectInfo.strPrototypeTag = ObjectPrototype;
-				ObjectInfo.m_WorldMatrix = ObjectWorldMat;
-				ObjectInfo.eObjectType = Object_Building;
-				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Tower_Object"), &ObjectInfo)))
-				{
-					MSG_BOX("오브젝트 불러오기 실패");
-					return E_FAIL;
-				}
-			}
-		}
+		//		ObjectInfo ObjectInfo{};
+		//		ObjectInfo.strPrototypeTag = ObjectPrototype;
+		//		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
+		//		ObjectInfo.eObjectType = Object_Building;
+		//		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Tower_Object"), &ObjectInfo)))
+		//		{
+		//			MSG_BOX("오브젝트 불러오기 실패");
+		//			return E_FAIL;
+		//		}
+		//	}
+		//}
 
 		//Ready_Field_Environment
 		{
@@ -2374,6 +2378,30 @@ HRESULT CLoader::Load_Tower()
 		}
 	}
 #pragma region 풍선깨기
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_DoubleCube"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/BrickGame/Mesh/Double.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_PowerCube"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/BrickGame/Mesh/Power.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+	
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_StopCube"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/BrickGame/Mesh/Stop.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BrickItem"), CBrickItem::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Minigame"), CMap::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -2906,7 +2934,14 @@ HRESULT CLoader::Load_Tower()
 		inFile.close();
 	}
 
-
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_InfinityStart"), CInfinityStart::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_ClearEffect"), CClearEffect::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 	m_isFinished = true;

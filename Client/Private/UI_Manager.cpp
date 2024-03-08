@@ -4,6 +4,8 @@
 #include "SkillBook.h"
 #include "Event_Manager.h"
 #include "HitEffect.h"
+#include "InfinityStart.h"
+#include "ClearEffect.h"
 
 
 IMPLEMENT_SINGLETON(CUI_Manager)
@@ -827,6 +829,47 @@ void CUI_Manager::Set_HitEffect(CTransform* pTransform, _uint iDamage, _vec2 vTe
 	{
 		return;
 	}
+}
+
+_bool CUI_Manager::InfinityTower_UI(_bool isStart, TOWER eNumTower)
+{
+	if (isStart)
+	{
+		if (m_isCreated[eNumTower] && m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_InfinityTowerUI")) == 0)
+		{
+			return true;
+		}
+
+		if (!m_isCreated[eNumTower] && m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_InfinityTowerUI")) == 0)
+		{
+			CInfinityStart::STARTGAME_DESC Desc{};
+			Desc.eTower = eNumTower;
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_InfinityTowerUI"), TEXT("Prototype_GameObject_InfinityStart"), &Desc)))
+			{
+				return false;
+			}
+			m_isCreated[eNumTower] = true;
+		}
+	}
+	else
+	{
+		if(m_isEndGame[eNumTower] && m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_InfinityTowerUIEnd")) == 0)
+		{
+			return true;
+		}
+
+		if (!m_isEndGame[eNumTower] && m_pGameInstance->Get_LayerSize(LEVEL_TOWER, TEXT("Layer_InfinityTowerUIEnd")) == 0)
+		{
+			CClearEffect::CLEAR_DESC Desc{};
+			Desc.iTower = (_uint)eNumTower;
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_InfinityTowerUIEnd"), TEXT("Prototype_GameObject_ClearEffect"), &Desc)))
+			{
+				return false;
+			}
+			m_isEndGame[eNumTower] = true;
+		}
+	}
+	return false;
 }
 
 void CUI_Manager::Free()
