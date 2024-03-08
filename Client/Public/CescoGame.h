@@ -47,6 +47,7 @@ private:
 	map<_uint, class CHive*> m_Hives;
 	class CTextButtonColor* m_pTimeBar{ nullptr };
 	class CTextButtonColor* m_pLimitMonster{ nullptr };
+	class CTextButtonColor* m_pFever{ nullptr };
 
 private:
 	vector<_vec3> m_SpawnPositions;
@@ -66,6 +67,7 @@ private:
 	_bool m_bBuffSelected{};
 	vector<_bool> m_HasBuffSeleted;
 	_bool m_IsFever{};
+	_float m_fFeverTime{};
 
 	//Hook
 	_float m_fHookSpawnTime{};

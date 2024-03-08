@@ -112,6 +112,29 @@ HRESULT CCescoGame::Init(void* pArg)
 
 void CCescoGame::Tick(_float fTimeDelta)
 {
+	if (m_IsFever)
+	{
+		if (m_pFever->Get_Size().x < 300.f)
+		{
+			m_pFever->Set_Size(m_pFever->Get_Size().x + fTimeDelta * 500.f, m_pFever->Get_Size().y + fTimeDelta * 500.f);
+		}
+		else
+		{
+			m_fFeverTime += fTimeDelta;
+		}
+		if (m_fFeverTime >= 3.f)
+		{
+			if (m_pFever->Get_Alpha() <= 0.1f)
+			{
+				m_pFever->Set_Alpha(0.f);
+				m_pFever->Set_Position(_vec2(-100.f, -100.f));
+			}
+			if (m_pFever->Get_Alpha() != 0.f)
+			{
+				m_pFever->Set_Alpha(m_pFever->Get_Alpha() - fTimeDelta * 10.f);
+			}
+		}
+	}
 
 	if (CTrigger_Manager::Get_Instance()->Get_CurrentSpot() != TS_CescoMap)
 	{
@@ -219,10 +242,28 @@ void CCescoGame::Tick(_float fTimeDelta)
 					}
 				}
 
+				CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
+				ColButtonDesc.eLevelID = LEVEL_STATIC;
+				ColButtonDesc.fDepth = (_float)D_ALERT / (_float)D_END;
+				ColButtonDesc.fFontSize = 1.f;
+				ColButtonDesc.strText = TEXT("");
+				ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_Fever");
+				ColButtonDesc.vSize = _vec2(10.f, 10.f);
+				ColButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, (_float)g_ptCenter.y - 100.f);
+				ColButtonDesc.fAlpha = 1.f;
+
+				m_pFever = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+				if (not m_pFever)
+				{
+					return ;
+				}
+				m_pFever->Set_Pass(VTPass_UI_Alpha);
+
 				m_IsFever = true;
 			}
 		}
-		else if (m_fTimeLimit <= 0.f)
+
+		if (m_fTimeLimit <= 0.f)
 		{
 			if (!CUI_Manager::Get_Instance()->InfinityTower_UI(false, CESCO))
 			{
@@ -288,6 +329,11 @@ void CCescoGame::Tick(_float fTimeDelta)
 		Pair.second->Tick(fTimeDelta);
 	}
 
+	if (m_pFever)
+	{
+		m_pFever->Tick(fTimeDelta);
+	}
+
 	Release_DeadObjects();
 }
 
@@ -301,6 +347,11 @@ void CCescoGame::Late_Tick(_float fTimeDelta)
 	if (m_pLimitMonster)
 	{
 		m_pLimitMonster->Late_Tick(fTimeDelta);
+	}
+
+	if (m_pFever)
+	{
+		m_pFever->Late_Tick(fTimeDelta);
 	}
 
 	for (auto& pBuffCard : m_vecBuffCard)
@@ -381,7 +432,7 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 				pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
 
-				Buff_Desc.eBuff = Buff::Buff_PoisonImmune;
+				Buff_Desc.eBuff = Buff::Buff_MonRegenDown;
 				Buff_Desc.vPos = _vec2(960.f, 360.f);
 				pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
@@ -392,12 +443,12 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 			case Phase1:
 			{
 				BUFFCARD_DESC Buff_Desc{};
-				Buff_Desc.eBuff = Buff::Buff_CoolDown;
+				Buff_Desc.eBuff = Buff::Buff_MpRegen;
 				Buff_Desc.vPos = _vec2(320.f, 360.f);
 				CBuff_Card* pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
 
-				Buff_Desc.eBuff = Buff::Buff_MonRegenDown; 
+				Buff_Desc.eBuff = Buff::Buff_CoolDown;
 				Buff_Desc.vPos = _vec2(640.f, 360.f);
 				pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
@@ -422,7 +473,7 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 				pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
 
-				Buff_Desc.eBuff = Buff::Buff_MpRegen;
+				Buff_Desc.eBuff = Buff::Buff_PoisonImmune;
 				Buff_Desc.vPos = _vec2(960.f, 360.f);
 				pBuff = reinterpret_cast<CBuff_Card*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Buff_Card"), &Buff_Desc));
 				m_vecBuffCard.push_back(pBuff);
@@ -1164,6 +1215,7 @@ void CCescoGame::Free()
 
 	m_LarvaPositions.clear();
 
+	Safe_Release(m_pFever);
 	Safe_Release(m_pTimeBar);
 	Safe_Release(m_pLimitMonster);
 	Safe_Release(m_pPlayerTransform);

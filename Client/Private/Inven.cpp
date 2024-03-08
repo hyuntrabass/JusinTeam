@@ -76,12 +76,20 @@ HRESULT CInven::Init(void* pArg)
 	CUI_Manager::Get_Instance()->Set_Item(strName);
 
 	strName = TEXT("레긴레이프의 불멸 투구");
-	ITEM eItem = CUI_Manager::Get_Instance()->Find_Item(strName);
-	CUI_Manager::Get_Instance()->Set_WearableItem(W_TOP, eItem);
+	CUI_Manager::Get_Instance()->Set_Item(strName);
 	
 	strName = TEXT("레긴레이프의 불멸 갑옷");
-	eItem = CUI_Manager::Get_Instance()->Find_Item(strName);
+	ITEM eItem = CUI_Manager::Get_Instance()->Find_Item(strName);
 	CUI_Manager::Get_Instance()->Set_WearableItem(W_CHEST, eItem);
+
+	strName = TEXT("[신화]탈 것 소환 카드");
+	CUI_Manager::Get_Instance()->Set_Item(strName, 10);
+
+	strName = TEXT("체력 포션");
+	CUI_Manager::Get_Instance()->Set_Item(strName, 36);
+
+	strName = TEXT("마나 포션");
+	CUI_Manager::Get_Instance()->Set_Item(strName, 49);
 
 	return S_OK;
 
