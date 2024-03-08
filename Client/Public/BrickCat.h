@@ -50,6 +50,7 @@ private:
 
 private:
 	_float m_fIdleTime = {};
+	_float m_fTrailTime = {};
 
 private:
 	_bool m_isTrailOn = { false };

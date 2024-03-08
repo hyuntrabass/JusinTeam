@@ -396,11 +396,11 @@ void CBalloon::Create_Item()
 	CBrickItem::TYPE eType{};
 	_uint iRandomType = rand() % 100;
 
-	if (iRandomType < 50)
+	if (iRandomType < 40)
 	{
 		eType = CBrickItem::DOUBLE;
 	}
-	else if (iRandomType < 70)
+	else if (iRandomType < 80)
 	{
 		eType = CBrickItem::POWER;
 	}

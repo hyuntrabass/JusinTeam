@@ -62,7 +62,7 @@ HRESULT CBlackCat::Init(void* pArg)
 
 void CBlackCat::Tick(_float fTimeDelta)
 {
-	if (m_bChangePass == true)
+	if (m_bChangePass == true && m_iPassIndex != AnimPass_Dissolve)
 	{
 		m_fHitTime += fTimeDelta;
 
@@ -91,7 +91,8 @@ void CBlackCat::Tick(_float fTimeDelta)
 	m_pModelCom->Set_Animation(m_Animation);
 
 	m_EffectMatrixLight = _mat::CreateTranslation(2.f, 3.5f, 0.9f) * m_pTransformCom->Get_World_Matrix();
-	m_EffectMatrix = _mat::CreateTranslation(0.f, 2.f, 0.9f) * m_pTransformCom->Get_World_Matrix();
+	m_EffectMatrix = *m_pModelCom->Get_BoneMatrix("Bip001-Spine") * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix();
+	//m_EffectMatrix = _mat::CreateTranslation(0.f, 2.f, 0.9f) * m_pTransformCom->Get_World_Matrix();
 	if (m_bHit)
 	{
 		m_pDialog->Tick(fTimeDelta);
@@ -118,9 +119,18 @@ void CBlackCat::Late_Tick(_float fTimeDelta)
 
 	if (m_eCurState != STATE_CHANGE && m_eCurState != STATE_START)
 	{
-		m_pHpBG->Late_Tick(fTimeDelta);
-		m_pHpBar->Late_Tick(fTimeDelta);
-		m_pHpBorder->Late_Tick(fTimeDelta);
+		if (m_pHpBG)
+		{
+			m_pHpBG->Late_Tick(fTimeDelta);
+		}
+		if (m_pHpBar)
+		{
+			m_pHpBar->Late_Tick(fTimeDelta);
+		}
+		if (m_pHpBorder)
+		{
+			m_pHpBorder->Late_Tick(fTimeDelta);
+		}
 	}
 
 	m_pModelCom->Play_Animation(fTimeDelta);
@@ -253,6 +263,7 @@ void CBlackCat::Init_State(_float fTimeDelta)
 			m_Animation.fAnimSpeedRatio = 1.4f;
 			break;
 		case Client::CBlackCat::STATE_DIE:
+			m_iPassIndex = AnimPass_Dissolve;
 			m_Animation.iAnimIndex = TELEPORT_END;
 			m_Animation.isLoop = false;
 			break;
@@ -264,49 +275,48 @@ void CBlackCat::Init_State(_float fTimeDelta)
 
 void CBlackCat::Tick_State(_float fTimeDelta)
 {
-	m_fBarFloating += fTimeDelta * 2.f;
-	m_pHpBar->Set_Time(m_fBarFloating);
+	if (m_pHpBar)
+	{
+		m_fBarFloating += fTimeDelta * 2.f;
+		m_pHpBar->Set_Time(m_fBarFloating);
 
-	if (m_fTargetHp < m_Hp.x)
-	{
-		m_pHpBar->Set_Bright(true);
-		m_Hp.x -= fTimeDelta * 5.f;
-	
-
-	}
-	else
-	{
-		m_Hp.x = (_float)m_fTargetHp;
-		m_pHpBar->Set_Bright(false);
-	}
-	
-	
-	if (m_iHitCount >= 1)
-	{
-		m_iHitCount = 0;
-		m_fTargetHp -= 2.f;
-		if (m_fTargetHp <= 0.f)
+		if (m_fTargetHp < m_Hp.x)
 		{
-			m_eCurState = STATE_DIE;
+			m_pHpBar->Set_Bright(true);
+			m_Hp.x -= fTimeDelta * 5.f;
+
+
 		}
+		else
+		{
+			m_Hp.x = (_float)m_fTargetHp;
+			m_pHpBar->Set_Bright(false);
+		}
+
+
+		if (m_iHitCount >= 1)
+		{
+			m_iHitCount = 0;
+			m_fTargetHp -= 2.f;
+			if (m_fTargetHp <= 0.f)
+			{
+				m_eCurState = STATE_DIE;
+			}
+		}
+
+		if (m_Hp.x <= m_Hp.y * 2.f / 3.f && !m_bChangePhase)
+		{
+			m_bChangePhase = true;
+			m_eCurState = STATE_CHANGE;
+		}
+
+		m_pHpBar->Set_Factor(m_Hp.x / (_float)m_Hp.y);
+
+
+		m_pHpBG->Tick(fTimeDelta);
+		m_pHpBar->Tick(fTimeDelta);
+		m_pHpBorder->Tick(fTimeDelta);
 	}
-
-	if (m_Hp.x <= m_Hp.y * 2.f / 3.f && !m_bChangePhase)
-	{
-		m_bChangePhase = true;
-		m_eCurState = STATE_CHANGE;
-	}
-
-	m_pHpBar->Set_Factor(m_Hp.x / (_float)m_Hp.y);
-
-
-	m_pHpBG->Tick(fTimeDelta);
-	m_pHpBar->Tick(fTimeDelta);
-	m_pHpBorder->Tick(fTimeDelta);
-
-
-
-
 
 	m_pTransformCom->Set_State(State::Pos, _vec4(-2000.f, -1.f, -2007.f, 1.f));
 	_vec3 vNormal = _vec3(0.f, 0.f, -1.f);
@@ -374,6 +384,18 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 			}
 		
 		*/
+		CCollider* pCollider = (CCollider*)m_pGameInstance->Get_Component(LEVEL_TOWER, TEXT("Layer_BrickGame"), TEXT("BrickBall"));
+		if (pCollider != nullptr && m_pColliderCom->Intersect(pCollider))
+		{
+			m_bChangePass = true;
+			_uint iRandomText = m_vecText.size() - 1;
+			iRandomText = rand() % iRandomText;
+			dynamic_cast<CDialog*>(m_pDialog)->Set_Text(m_vecText[iRandomText]);
+			m_bHit = true;
+			CCamera_Manager::Get_Instance()->Set_ShakeCam(true, 1.6f);
+			m_eCurState = STATE_HIT;
+			m_iHitCount++;
+		}
 		if ( m_fCreateBlockTime >= 20.f)
 		{
 			m_fCreateBlockTime = 0.f;
@@ -425,14 +447,32 @@ void CBlackCat::Tick_State(_float fTimeDelta)
 	break;
 	case CBlackCat::STATE_DIE:
 	{
-		///Safe_Release(m_pHpBG);
-		///Safe_Release(m_pHpBar);
-		///Safe_Release(m_pHpBorder);
-		if (m_pModelCom->IsAnimationFinished(TELEPORT_END))
-		{
 
-			m_isDead = true;
+		if (!m_isDeadMotion)
+		{
+			CCamera_Manager::Get_Instance()->Set_ZoomFactor(2.f);
+			Safe_Release(m_pHpBG);
+			Safe_Release(m_pHpBar);
+			Safe_Release(m_pHpBorder);
+			m_isDeadMotion = true;
 		}
+
+		if (m_isDeadMotion)
+		{
+			m_fDeadTime += fTimeDelta;
+		}
+
+		if ( m_fDeadTime >= 2.f)
+		{
+			m_iPassIndex = AnimPass_Dissolve;
+
+			if (m_fDissolveRatio >= 1.f)
+			{
+				m_bGameOver = true;
+			}
+		}
+
+
 	}
 	break;
 	}
@@ -562,6 +602,11 @@ HRESULT CBlackCat::Add_Components()
 		return E_FAIL;
 	}
 
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_T_EFF_Noise_04_BC"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom))))
+	{
+		return E_FAIL;
+	}
+
 
 	return S_OK;
 }
@@ -577,6 +622,30 @@ HRESULT CBlackCat::Bind_ShaderResources()
 		}
 	}
 
+	if (m_iPassIndex == AnimPass_Dissolve)
+	{
+		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
+		{
+			return E_FAIL;
+		}
+
+		if (m_fDeadTime >= 2.f)
+		{
+			m_fDissolveRatio += 0.01f;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof _float)))
+		{
+			return E_FAIL;
+		}
+
+		_bool bHasNorTex = true;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &bHasNorTex, sizeof _bool)))
+		{
+			return E_FAIL;
+		}
+
+	}
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
 		return E_FAIL;
@@ -730,5 +799,6 @@ void CBlackCat::Free()
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pColliderCom);
 	Safe_Release(m_pWideColliderCom);
+	Safe_Release(m_pDissolveTextureCom);
 	Safe_Release(m_pShaderCom);
 }
