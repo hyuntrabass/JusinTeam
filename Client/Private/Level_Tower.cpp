@@ -12,6 +12,7 @@
 #include "VTFMonster.h"
 #include "Effect_Manager.h"
 
+
 CLevel_Tower::CLevel_Tower(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
 {
@@ -59,6 +60,7 @@ HRESULT CLevel_Tower::Init()
 	
 	CUI_Manager::Get_Instance()->Set_FullScreenUI(true);
 	CUI_Manager::Get_Instance()->Open_InfinityTower(true);
+	CUI_Manager::Get_Instance()->Set_isBoss(true);
 	m_pGameInstance->Set_FogNF(_vec2(50.f, 2000.f));
 	m_pGameInstance->Set_FogColor(_color(1.f));
 
@@ -103,6 +105,7 @@ void CLevel_Tower::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_NUMPAD7))
 	{
 		CTrigger_Manager::Get_Instance()->Teleport(TS_SurvivalMap);
+
 		return;
 	}
 	if (m_pGameInstance->Key_Down(DIK_0))

@@ -200,6 +200,7 @@ void CTreasureBox::Late_Tick(_float fTimeDelta)
 			EffectDesc.pMatrix = &EffectMat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 
+			m_pGameInstance->Play_Sound(TEXT("UI_Treasure_Box_SFX_01"));
 			m_iHP = 0;
 		}
 
@@ -214,6 +215,7 @@ void CTreasureBox::Late_Tick(_float fTimeDelta)
 				return;
 			}
 
+			m_pGameInstance->Play_Sound(TEXT("Interation_Success02"));
 			m_isDead = true;
 		}
 		m_pModelCom->Play_Animation(fTimeDelta);

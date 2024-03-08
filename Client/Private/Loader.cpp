@@ -2136,44 +2136,44 @@ HRESULT CLoader::Load_Village()
 				}
 			}
 		}
-		{
-			const TCHAR* pGetPath = TEXT("../Bin/Data/Tower_MapData.dat");
+		//{
+		//	const TCHAR* pGetPath = TEXT("../Bin/Data/Tower_MapData.dat");
 
-			std::ifstream inFile(pGetPath, std::ios::binary);
+		//	std::ifstream inFile(pGetPath, std::ios::binary);
 
-			if (!inFile.is_open())
-			{
-				MSG_BOX("오브젝트 파일을 찾지 못했습니다.");
-				return E_FAIL;
-			}
+		//	if (!inFile.is_open())
+		//	{
+		//		MSG_BOX("오브젝트 파일을 찾지 못했습니다.");
+		//		return E_FAIL;
+		//	}
 
-			_uint ObjectListSize;
-			inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
+		//	_uint ObjectListSize;
+		//	inFile.read(reinterpret_cast<char*>(&ObjectListSize), sizeof(_uint));
 
 
-			for (_uint i = 0; i < ObjectListSize; ++i)
-			{
-				_ulong ObjectPrototypeSize;
-				inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
+		//	for (_uint i = 0; i < ObjectListSize; ++i)
+		//	{
+		//		_ulong ObjectPrototypeSize;
+		//		inFile.read(reinterpret_cast<char*>(&ObjectPrototypeSize), sizeof(_ulong));
 
-				wstring ObjectPrototype;
-				ObjectPrototype.resize(ObjectPrototypeSize);
-				inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
+		//		wstring ObjectPrototype;
+		//		ObjectPrototype.resize(ObjectPrototypeSize);
+		//		inFile.read(reinterpret_cast<char*>(&ObjectPrototype[0]), ObjectPrototypeSize * sizeof(wchar_t));
 
-				_mat ObjectWorldMat;
-				inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
+		//		_mat ObjectWorldMat;
+		//		inFile.read(reinterpret_cast<char*>(&ObjectWorldMat), sizeof(_mat));
 
-				ObjectInfo ObjectInfo{};
-				ObjectInfo.strPrototypeTag = ObjectPrototype;
-				ObjectInfo.m_WorldMatrix = ObjectWorldMat;
-				ObjectInfo.eObjectType = Object_Building;
-				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Tower_Object"), &ObjectInfo)))
-				{
-					MSG_BOX("오브젝트 불러오기 실패");
-					return E_FAIL;
-				}
-			}
-		}
+		//		ObjectInfo ObjectInfo{};
+		//		ObjectInfo.strPrototypeTag = ObjectPrototype;
+		//		ObjectInfo.m_WorldMatrix = ObjectWorldMat;
+		//		ObjectInfo.eObjectType = Object_Building;
+		//		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Village_Object"), TEXT("Prototype_GameObject_Tower_Object"), &ObjectInfo)))
+		//		{
+		//			MSG_BOX("오브젝트 불러오기 실패");
+		//			return E_FAIL;
+		//		}
+		//	}
+		//}
 
 		//Ready_Field_Environment
 		{
@@ -2275,6 +2275,7 @@ HRESULT CLoader::Load_Tower()
 	
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_TOWER);
 
+#pragma region 잠입겜
 
 	_mat GuardPivot = _mat::CreateRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOWER, TEXT("Prototype_Model_Guard"),
@@ -2305,6 +2306,17 @@ HRESULT CLoader::Load_Tower()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TOWER, L"Prototype_Component_Texture_Detected_Warning",
+		CTexture::Create(m_pDevice, m_pContext, L"../Bin/Resources/Textures/Effect/FX_A_Exclamation002_Tex.dds"))))
+	{
+		return E_FAIL;
+	}
+
+	if(FAILED(m_pGameInstance->Add_Prototype_GameObejct(L"Prototype_GameObject_WarningMark", CWarning_Mark::Create(m_pDevice,m_pContext))))
+		return E_FAIL;
+
+#pragma endregion
 
 	_mat DungeonPivot = _mat::CreateScale(0.001f);
 	strInputFilePath = "../Bin/Resources/StaticMesh/Map/Dungeon/Mesh/";

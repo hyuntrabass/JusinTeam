@@ -11,6 +11,8 @@
 
 #include "Trigger_Manager.h"
 
+#include "Warning_Mark.h"
+
 CInfiltrationGame::CInfiltrationGame(_dev pDevice, _context pContext)
 	:CGameObject(pDevice, pContext)
 {
@@ -36,7 +38,7 @@ HRESULT CInfiltrationGame::Init(void* pArg)
 	Safe_AddRef(m_pPlayerTransform);
 
 	m_CheckPointMatrix = m_pPlayerTransform->Get_World_Matrix();
-
+	CCamera_Manager::Get_Instance()->Set_CameraState(CS_FIRSTPERSON);
 	_tchar* pPath = TEXT("../Bin/Data/MiniDungeon_Guard_1_Data.dat");
 	Create_Guard(pPath);
 	Create_CheckPoint();
@@ -56,12 +58,16 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 	Reset_Play(fTimeDelta);
 	if (m_pTeleport)
 		m_pTeleport->Tick(fTimeDelta);
+
+	_bool isDetected = false;
+
 	for (auto& pGuardList : m_GuardList)
 	{
 		for (auto& pGuard : pGuardList)
 		{
 			pGuard->Tick(fTimeDelta);
-	
+			if (true == pGuard->Get_Detected())
+				isDetected = true;
 		}
 	}
 	for (auto& pGuardTowerList : m_GuardTowerList)
@@ -73,14 +79,33 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 						pGuardTower->Tower_TurnOff();
 					}
 					m_isTurnOff = true;
+					m_pGameInstance->Play_Sound(L"War_Skill_Absorption_SFX_06");
 				}
 			}
 		}
 		for (auto& pGuardTower : pGuardTowerList)
 		{
 			pGuardTower->Tick(fTimeDelta);
+			if (true == pGuardTower->Get_Detected())
+				isDetected = true;
 		}
 
+	}
+
+	if (true == isDetected) {
+		if (false == m_isDetected) {
+			if (nullptr != m_pWarning) {
+				Safe_Release(m_pWarning);
+			}
+			m_pWarning = dynamic_cast<CWarning_Mark*>(m_pGameInstance->Clone_Object(L"Prototype_GameObject_WarningMark"));
+			m_isDetected = true;
+		}
+	}
+	else {
+		m_isDetected = false;
+		if (m_pWarning) {
+			m_pWarning->Set_WarningEnd();
+		}
 	}
 
 	for (auto& pCheckPoint : m_CheckPoint)
@@ -95,8 +120,14 @@ void CInfiltrationGame::Tick(_float fTimeDelta)
 
 	}
 
+	if (m_pWarning)
+		m_pWarning->Tick(fTimeDelta);
+
 	if (m_pDoor)
 		m_pDoor->Tick(fTimeDelta);
+
+	if (m_pTeleport->Get_Finished())
+		Kill();
 
 	Release_DeadObjects();
 }
@@ -125,6 +156,9 @@ void CInfiltrationGame::Late_Tick(_float fTimeDelta)
 
 	if (m_pDoor)
 		m_pDoor->Late_Tick(fTimeDelta);
+
+	if (m_pWarning)
+		m_pWarning->Late_Tick(fTimeDelta);
 
 	for (auto& pCheckPoint : m_CheckPoint)
 	{
@@ -526,6 +560,7 @@ CGameObject* CInfiltrationGame::Clone(void* pArg)
 
 void CInfiltrationGame::Free()
 {
+	CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
 	__super::Free();
 
 	for (auto& List : m_GuardList)
@@ -562,6 +597,8 @@ void CInfiltrationGame::Free()
 	
 	Safe_Release(m_pDoor);
 	Safe_Release(m_pTeleport);
+
+	Safe_Release(m_pWarning);
 
 	Safe_Release(m_pPlayerTransform);
 }

@@ -475,8 +475,8 @@ HRESULT CArrow::Add_Components()
 		}
 
 		CollDesc.eType = ColliderType::OBB;
-		CollDesc.vExtents = _vec3(1.f, 1.f, 10.f);
-		CollDesc.vCenter = _vec3(0.f, 0.f, CollDesc.vExtents.z/1.15f);
+		CollDesc.vExtents = _vec3(1.f, 1.4f, 10.f);
+		CollDesc.vCenter = _vec3(0.f, -0.2f, CollDesc.vExtents.z/1.15f);
 		CollDesc.vRadians = {};
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
 			TEXT("Com_Arrow_Hit"), (CComponent**)&m_pCollider, &CollDesc)))

@@ -4,7 +4,7 @@
 #include "Hook.h"
 #include "Hive.h"
 #include "Buff_Card.h"
-
+#include "TextButtonColor.h"
 #include "UI_Manager.h"
 #include "Camera_Manager.h"
 
@@ -61,7 +61,24 @@ HRESULT CCescoGame::Init(void* pArg)
 	random_device rand;
 	m_RandomNumber = _randNum(rand());
 
+	CTextButtonColor::TEXTBUTTON_DESC ColButtonDesc = {};
+	ColButtonDesc.eLevelID = LEVEL_STATIC;
+	ColButtonDesc.fDepth = (_float)D_ALERT / (_float)D_END;
+	ColButtonDesc.fFontSize = 0.8f;
+	ColButtonDesc.strText = TEXT("");
+	ColButtonDesc.strTexture = TEXT("Prototype_Component_Texture_UI_Tower_TimeLimit");
+	ColButtonDesc.vSize = _vec2(200.f, 200.f);
+	ColButtonDesc.vPosition = _vec2((_float)g_ptCenter.x, 60.f);
+	ColButtonDesc.fAlpha = 0.5f;
 
+
+	m_pTimeBar = (CTextButtonColor*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButtonColor"), &ColButtonDesc);
+	if (not m_pTimeBar)
+	{
+		return E_FAIL;
+	}
+	m_pTimeBar->Set_Pass(VTPass_UI_Alpha);
+	CUI_Manager::Get_Instance()->Set_isBoss(true);
 	CCamera_Manager::Get_Instance()->Set_RidingZoom(true);
 
 	return S_OK;
@@ -98,7 +115,6 @@ void CCescoGame::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_9))
 	{
 		Kill();
-		return;
 	}
 
 	Init_Phase(fTimeDelta);
@@ -133,7 +149,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 		return;
 	}
 	//½ÇÆÐ Á¶°Ç
-	if (m_Monsters.size() > m_iMonsterLimit)
+	if (m_Monsters.size() > m_iMonsterLimit || m_isDead)
 	{
 		for (auto& pMonster : m_Monsters)
 		{
@@ -168,7 +184,7 @@ void CCescoGame::Tick(_float fTimeDelta)
 	for (auto& pMonster : m_Monsters)
 	{
 		IsPlaySound = pMonster->Get_IsPlaySound();
-		if (IsPlaySound && ++iNumHasPlayedSound <= 5)
+		if (IsPlaySound && ++iNumHasPlayedSound <= 8)
 		{
 			pMonster->Play_Sound(IsPlaySound);
 		}
@@ -189,6 +205,10 @@ void CCescoGame::Tick(_float fTimeDelta)
 
 void CCescoGame::Late_Tick(_float fTimeDelta)
 {
+	if (m_pTimeBar)
+	{
+		m_pTimeBar->Late_Tick(fTimeDelta);
+	}
 	for (auto& pBuffCard : m_vecBuffCard)
 	{
 		pBuffCard->Late_Tick(fTimeDelta);
@@ -223,13 +243,13 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 		{
 		case Client::CCescoGame::Phase1:
 		{
-			m_iNumSpawnLarva = 2;
+			m_iNumSpawnLarva = 1;
 
 		}
 		break;
 		case Client::CCescoGame::Phase2:
 		{
-			m_iNumSpawnLarva = 5;
+			m_iNumSpawnLarva = 2;
 
 			for (_uint i = 0; i < m_SpawnPositions.size(); i++)
 			{
@@ -242,12 +262,7 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 		break;
 		case Client::CCescoGame::Phase3:
 		{
-			m_iNumSpawnLarva = 5;
-
-			for (_uint i = 0; i < m_SpawnPositions.size(); i++)
-			{
-				Create_Log(i);
-			}
+			m_iNumSpawnLarva = 3;
 
 			//¹úÁý °¹¼ö +1
 			m_IsSpawnHives.push_back(false);
@@ -332,7 +347,7 @@ void CCescoGame::Init_Phase(_float fTimeDelta)
 
 void CCescoGame::Tick_Phase1(_float fTimeDelta)
 {
-	m_fTimeLimit -= fTimeDelta;
+	View_Time(fTimeDelta);
 	m_fMonsterSpawnTime += fTimeDelta * m_iMonsterSpawnSpeed;
 
 #pragma region SpawnMonster
@@ -421,7 +436,7 @@ void CCescoGame::Tick_Phase2(_float fTimeDelta)
 		if (m_IsSpawnHives[i])
 		{
 			m_fHiveSpawnTimes[i] += fTimeDelta;
-			if (m_fHiveSpawnTimes[i] >= 8.f)
+			if (m_fHiveSpawnTimes[i] >= 10.f)
 			{
 				Create_Hive();
 				m_IsSpawnHives[i] = false;
@@ -440,7 +455,7 @@ void CCescoGame::Tick_Phase2(_float fTimeDelta)
 		if (iter != m_Hives.end())
 		{
 			m_fWaspSpawnTimes[i] += fTimeDelta;
-			if (m_fWaspSpawnTimes[i] >= 8.f)
+			if (m_fWaspSpawnTimes[i] >= 10.f)
 			{
 				_vec3 vSpawnPos = m_HiveSpawnPositions[i];
 				vSpawnPos.y -= 3.f;
@@ -489,6 +504,7 @@ void CCescoGame::Tick_Phase3(_float fTimeDelta)
 	{
 		Create_Hook();
 		m_fHookSpawnTime = 0.f;
+		m_pGameInstance->Play_Sound(TEXT("War_SM_Cannon_001_Die"));
 	}
 	m_fHookSpawnTime += fTimeDelta;
 
@@ -523,6 +539,7 @@ void CCescoGame::Tick_Phase3(_float fTimeDelta)
 			{
 				m_pCurrent_DraggingHook = pHooks;
 				pHooks->Set_Dragging(true);
+				m_pGameInstance->Play_Sound(TEXT("Sfx_Boss_Heid_Atk_09_02"), 1.f);
 				break;
 			}
 		}
@@ -634,6 +651,31 @@ void CCescoGame::Tick_Phase_Buff(_float fTimeDelta)
 		m_vecBuffCard.clear();
 		m_eCurrentPhase = m_eNextPhase;
 	}
+}
+
+void CCescoGame::View_Time(_float fTimeDelta)
+{
+	m_fTimeLimit -= fTimeDelta;
+	m_iMinute = static_cast<_int>(m_fTimeLimit) / 60;
+	m_iSec = static_cast<_int>(m_fTimeLimit) % 60;
+
+	wstring strMin = to_wstring(m_iMinute);
+	wstring strSec = to_wstring(m_iSec);
+	wstring strText = strMin + TEXT(" : ") + strSec;
+	_vec4 vColor{};
+
+	if (m_iMinute < 1 && m_iSec <= 30)
+	{
+		vColor = _vec4(1.f, 0.f, 0.f, 1.f);
+	}
+	else
+	{
+		vColor = _vec4(1.f, 1.f, 1.f, 1.f);
+	}
+	m_pGameInstance->Render_Text(L"Font_Malang", strText, _vec2(static_cast<_float>(g_ptCenter.x), 38.f), 0.8f, vColor);
+
+	m_pTimeBar->Set_Text(strText);
+
 }
 
 HRESULT CCescoGame::Create_CommonMonster(const wstring& strModelTag, _vec3 SpawnPosition, const wstring& strPrototypeTag)
@@ -1012,5 +1054,6 @@ void CCescoGame::Free()
 
 	m_LarvaPositions.clear();
 
+	Safe_Release(m_pTimeBar);
 	Safe_Release(m_pPlayerTransform);
 }

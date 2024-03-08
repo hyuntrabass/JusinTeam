@@ -91,6 +91,7 @@ private:
 	class CEffect_Dummy* m_pFrameEffect{ nullptr };
 
 private:
+	_int m_iSoundChannel{ -1 };
 	_float m_fDeadTime{ 0.f };
 	_float m_fDissolveRatio{ 0.f };
 	_float m_fIdleTime{ 0.f };
@@ -120,6 +121,10 @@ private:
 	static _int m_iLightID;
 	wstring m_strLightTag{};
 
+	_vec4 m_vDetectedPos{};
+	_vec3 m_vDetectedLook{};
+
+	_float m_fBackTime{};
 
 	_bool m_isPrototype = false;
 private:

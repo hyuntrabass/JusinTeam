@@ -49,10 +49,21 @@ HRESULT CInven::Init(void* pArg)
 	}
 
 	wstring strName = TEXT("¹«½º »Ô ´Ü°Ë");
-	ITEM eItem = CUI_Manager::Get_Instance()->Find_Item(strName);
-	CUI_Manager::Get_Instance()->Set_WearableItem(W_SWORD, eItem);
+	CUI_Manager::Get_Instance()->Set_Item(strName);
 
 	strName = TEXT("¹«½º »Ô È°");
+	ITEM eItem = CUI_Manager::Get_Instance()->Find_Item(strName);
+	if (m_pWearableSlots[W_BOW]->Is_Full())
+	{
+		ITEM Item = m_pWearableSlots[W_BOW]->Get_ItemDesc();
+		if (eItem.strName == Item.strName)
+		{
+			return E_FAIL;
+		}
+		dynamic_cast<CInvenFrame*>(m_pInvenFrame)->Set_Item(Item);
+	}
+	m_pWearableSlots[W_BOW]->Set_WearableItem(eItem);
+
 	CUI_Manager::Get_Instance()->Set_Item(strName);
 	return S_OK;
 

@@ -101,7 +101,7 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 	}
 
 	//if (m_pGameInstance->Key_Down(DIK_Q, InputChannel::UI)) // 괴물들 잡아달라 하고 보스방으로 순간이동 하는 타이밍(한번만 들어와야 함)
-	if (m_strQuestOngoing == TEXT("그로아를 지켜라") || m_pGameInstance->Key_Down(DIK_Q, InputChannel::UI))
+	if (m_strQuestOngoing == TEXT("그로아를 지켜라"))// || m_pGameInstance->Key_Down(DIK_Q, InputChannel::UI))
 	{
 		if (!m_bChangePos[0])
 		{
@@ -116,18 +116,18 @@ void CGroar_Boss::Tick(_float fTimeDelta)
 			//_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 			//pPlayerTransform->Set_Position(vPlayerPos + _vec3(100.f));
 
-			for (size_t i = 0; i < 2; i++)
-			{
-				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void09"), TEXT("Prototype_GameObject_Void09"))))
-				{
+			//for (size_t i = 0; i < 2; i++)
+			//{
+			//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void09"), TEXT("Prototype_GameObject_Void09"))))
+			//	{
 
-				}
-			}
+			//	}
+			//}
 
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
-			{
+			//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Void20"), TEXT("Prototype_GameObject_Void20"))))
+			//{
 
-			}
+			//}
 			//pPlayerTransform->Set_Position(vPlayerPos);
 
 			m_bChangePos[0] = true;
@@ -995,6 +995,7 @@ void CGroar_Boss::Tick_State(_float fTimeDelta)
 		{
 			if (!m_isReward)
 			{
+				CEvent_Manager::Get_Instance()->Update_Quest(TEXT("그로아를 찾아서"));
 				CTreasureBox::TREASURE_DESC Desc{};
 				_vec4 vPos = m_pTransformCom->Get_State(State::Pos); 
 				Desc.vPos = vPos;
@@ -1290,14 +1291,14 @@ void CGroar_Boss::NPC_LateTick(_float fTimeDelta)
 		}
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_G)) // 치트키 변신 빨리하게
-	{
-		if (not m_TalkSounds.empty())
-		{
-			m_TalkSounds.clear();
-			m_iSoundChannel = -1;
-		}
-	}
+	//if (m_pGameInstance->Key_Down(DIK_G)) // 치트키 변신 빨리하게
+	//{
+	//	if (not m_TalkSounds.empty())
+	//	{
+	//		m_TalkSounds.clear();
+	//		m_iSoundChannel = -1;
+	//	}
+	//}
 	if (CTrigger_Manager::Get_Instance()->Is_Coll_BossTrigger() == true)
 	{
 		if (m_TalkSounds.size() != 0 && m_iSoundChannel == -1)

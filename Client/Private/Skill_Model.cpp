@@ -27,7 +27,7 @@ HRESULT CSkill_Model::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_State(State::Pos, _vec4(0.f,200.f,0.f,1.f));
+	m_pTransformCom->Set_State(State::Pos, _vec4(0.f, 200.f, 0.f, 1.f));
 
 	m_Animation.iAnimIndex = 0;
 	m_Animation.isLoop = true;
@@ -43,17 +43,17 @@ void CSkill_Model::Tick(_float fTimeDelta)
 		m_bView = false;
 		return;
 	}
+	m_pTransformCom->Set_OldMatrix();
 
 
-	
-	
+
 
 	if (m_eCurAnimState == SWORD1 or m_eCurAnimState == SWORD2 or m_eCurAnimState == SWORD3 or m_eCurAnimState == SWORD4)
 	{
 		m_pTransformCom->Set_State(State::Pos, _vec4(0.f, 300.f, 2.f, 1.f));
 		m_pWeapon_ModelCom->Set_Animation(m_Animation);
 		m_pModelCom->Set_Animation(m_Animation);
-	
+
 	}
 	else
 	{
@@ -62,7 +62,7 @@ void CSkill_Model::Tick(_float fTimeDelta)
 	}
 	m_Animation.bRestartAnimation = false;
 	After_BowAtt();
-	
+
 	if (m_bArrowRain_Start)
 	{
 		Arrow_Rain();
@@ -85,7 +85,7 @@ void CSkill_Model::Late_Tick(_float fTimeDelta)
 
 	if (m_eCurAnimState == SWORD1 or m_eCurAnimState == SWORD2 or m_eCurAnimState == SWORD3 or m_eCurAnimState == SWORD4)
 	{
-	
+
 		m_pWeapon_ModelCom->Play_Animation(fTimeDelta);
 		m_pModelCom->Play_Animation(fTimeDelta);
 	}
@@ -93,7 +93,7 @@ void CSkill_Model::Late_Tick(_float fTimeDelta)
 	{
 		m_pModelCom->Play_Animation(fTimeDelta);
 	}
-	
+
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
 }
 
@@ -106,7 +106,7 @@ HRESULT CSkill_Model::Render()
 
 	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
 	{
-		
+
 		if (i == 0)
 		{
 			if (m_eCurAnimState == SWORD1 or m_eCurAnimState == SWORD2 or m_eCurAnimState == SWORD3 or m_eCurAnimState == SWORD4)
@@ -128,7 +128,7 @@ HRESULT CSkill_Model::Render()
 		{
 			HasNorTex = true;
 		}
-		
+
 		_bool HasMaskTex{};
 		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_MaskTexture", i, TextureType::Shininess)))
 		{
@@ -434,12 +434,22 @@ HRESULT CSkill_Model::Add_Components()
 
 HRESULT CSkill_Model::Bind_ShaderResources()
 {
+	if (FAILED(m_pTransformCom->Bind_OldWorldMatrix(m_pShaderCom, "g_OldWorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
 		return E_FAIL;
 	}
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform(TransformType::View))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_OldViewMatrix", m_pGameInstance->Get_OldViewMatrix_vec4x4())))
 	{
 		return E_FAIL;
 	}

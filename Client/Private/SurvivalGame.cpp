@@ -100,6 +100,9 @@ void CSurvivalGame::Init_Pattern(_float fTimeDelta)
 
 				CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 				pPlayerTransform->Set_FootPosition(CENTER_POS);
+
+				m_pGameInstance->Play_Sound(TEXT("WD_3130_WideBring_01_SFX_02"));
+
 			}
 
 			break;
@@ -140,14 +143,19 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 		m_strStage = L"ÁØºñÁß";
 
-		if (m_pGameInstance->Key_Down(DIK_UP))
-		{
-			m_eCurStage = STAGE04;
-		}
+		//if (m_pGameInstance->Key_Down(DIK_UP))
+		//{
+		//	m_eCurStage = STAGE05;
+		//}
 
 		if (m_pGameInstance->Key_Pressing(DIK_COMMA) && m_pGameInstance->Key_Pressing(DIK_PERIOD) && !m_bGameStart)
 		{
 			m_bGameStart = true;
+
+			//if (!CUI_Manager::Get_Instance()->InfinityTower_UI(true, SURVIVAL))
+			//{
+			//	return;
+			//}
 		}
 
 		if (m_bGameStart == true)
@@ -177,11 +185,11 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 			++m_iCount;
 		}
 
-		if (m_iCount >= 7)
+		if (m_iCount >= 10)
 		{
 			m_fTime[1] += fTimeDelta;
 
-			if (m_fTime[1] >= 10.f)
+			if (m_fTime[1] >= 15.f)
 			{
 				m_eCurStage = STAGE_INIT;
 				m_eNextStage = STAGE02;
@@ -216,7 +224,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 			++m_iCount;
 		}
 
-		if (m_iCount >= 7)
+		if (m_iCount >= 12)
 		{
 			m_eCurStage = STAGE_INIT;
 			m_eNextStage = STAGE03;
@@ -280,6 +288,8 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 					m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
 				}
 
+				m_pGameInstance->Play_Sound(TEXT("WT_16125_ElectricProtection_SFX_01"));
+
 				m_fTime[0] = 0.f;
 				++m_iCount;
 			}
@@ -324,8 +334,12 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 				m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Projectile"), TEXT("Prototype_GameObject_Projectile"), &Desc);
 			}
 
+			m_pGameInstance->Play_Sound(TEXT("BP_Buff_161900_CurseOfThunder_SFX_01"));
+
 			++m_iCount;
 			m_fTime[0] = 0.f;
+
+
 		}
 
 		if (m_fTime[1] >= 2.f)
@@ -336,11 +350,18 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 			m_fTime[1] = 0.f;
 		}
 
-		if (m_iCount >= 30)
+		if (m_iCount >= 40)
 		{
 			m_eCurStage = STAGE_INIT;
 			m_eNextStage = STAGE01;
 			m_bGameStart = false;
+
+			CCamera_Manager::Get_Instance()->Set_RidingZoom(false);
+
+			//if (!CUI_Manager::Get_Instance()->InfinityTower_UI(false, SURVIVAL))
+			//{
+			//	return;
+			//}
 		}
 
 		break;

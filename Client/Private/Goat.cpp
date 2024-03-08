@@ -258,8 +258,10 @@ void CGoat::Init_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = DIE;
 			m_Animation.isLoop = false;
 
-			_uint iRandomExp = rand() % 100;
-			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(15.f + (_float)iRandomExp / 2.f * 0.1f);
+			_uint iRandomExp = rand() % 6;
+			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(15.f + static_cast<_float>(iRandomExp));
+
+			CEvent_Manager::Get_Instance()->Update_Quest(TEXT("ø∞º“¿‚±‚")); 
 			break;
 		}
 
@@ -448,13 +450,10 @@ void CGoat::Tick_State(_float fTimeDelta)
 		break;
 
 	case Client::CGoat::STATE_DIE:
-
 		if (m_pModelCom->IsAnimationFinished(DIE))
 		{
-			CEvent_Manager::Get_Instance()->Update_Quest(TEXT("ø∞º“¿‚±‚"));
 			m_fDeadTime += fTimeDelta;
 		}
-
 		break;
 	}
 }

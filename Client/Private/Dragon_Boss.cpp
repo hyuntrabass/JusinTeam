@@ -223,7 +223,7 @@ void CDragon_Boss::Set_Damage(_int iDamage, _uint iDamageType)
 	{
 		m_iHP -= iDamage;
 		m_bChangePass = true;
-		m_fIdleTime = 0.f;
+		//m_fIdleTime = 0.f;
 
 		if (iDamage >= 500)
 		{
@@ -731,7 +731,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 		{
 			m_eCurState = eTempDragonState;
 
-			//m_eCurState = STATE_RAGE; // 테스트용
+			//m_eCurState = STATE_WING_ATTACK; // 테스트용
 		}
 	}
 
@@ -1092,7 +1092,7 @@ void CDragon_Boss::Tick_State(_float fTimeDelta)
 				m_bCreateEffect[1] = true;
 			}
 
-			if (fDistance <= 10.f)
+			if (fDistance <= 20.f)
 			{
 				m_bCanPull = true;
 
@@ -1509,14 +1509,14 @@ HRESULT CDragon_Boss::Add_Components()
 		return E_FAIL;
 	}
 
-	//CHPBoss::HPBOSS_DESC Desc{};
-	//Desc.strName = L"Dragon";
-	//Desc.eLevelID = LEVEL_STATIC;
-	//Desc.iMaxHp = m_iHP;
+	CHPBoss::HPBOSS_DESC Desc{};
+	Desc.strName = L"Dragon";
+	Desc.eLevelID = LEVEL_STATIC;
+	Desc.iMaxHp = m_iHP;
 
-	//m_pHpBoss = (CHPBoss*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPBoss"), &Desc);
+	m_pHpBoss = (CHPBoss*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_HPBoss"), &Desc);
 
-	//CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::GROAR);
+	CUI_Manager::Get_Instance()->Set_Symbol(CSymbol::DRAGON);
 
 	return S_OK;
 }

@@ -2,7 +2,7 @@
 #include "UI_Manager.h"
 #include "Dead.h"
 
-const _float CVoid09::m_fChaseRange = 7.f;
+const _float CVoid09::m_fChaseRange = 10.f;
 const _float CVoid09::m_fAttackRange = 2.f;
 
 _uint CVoid09::m_iIndex = 0;
@@ -331,13 +331,14 @@ void CVoid09::Tick_State(_float fTimeDelta)
 		{
 			if (m_fIdleTime >= 1.f)
 			{
-				if (fDistance >= m_fAttackRange)
+				if (fDistance >= m_fChaseRange)
 				{
-					m_eCurState = STATE_CHASE;
+					//m_eCurState = STATE_CHASE;
+					m_eCurState = STATE_WALK;
 				}
 				else
 				{
-					m_eCurState = STATE_ATTACK;
+					m_eCurState = STATE_CHASE;
 				}
 
 				m_fIdleTime = 0.f;
@@ -364,6 +365,11 @@ void CVoid09::Tick_State(_float fTimeDelta)
 
 	case Client::CVoid09::STATE_WALK:
 	{
+		if (fDistance <= m_fChaseRange)
+		{
+			m_eCurState = STATE_CHASE;
+		}
+
 		_float fDist = 1.2f; PxRaycastBuffer Buffer1{};
 		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer1))
 		{

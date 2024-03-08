@@ -39,11 +39,13 @@ HRESULT CTowerObject::Init(void* pArg)
 
 void CTowerObject::Tick(_float fTimeDelta)
 {
+	return;
 	__super::Tick(fTimeDelta);
 }
 
 void CTowerObject::Late_Tick(_float fTimeDelta)
 {
+	return;
 
 	CCollider* pCameraCollider = dynamic_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_STATIC, L"Layer_Camera", L"Com_Collider"));
 

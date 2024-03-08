@@ -27,14 +27,29 @@ HRESULT CDead::Init(void* pArg)
 		switch (m_eDead)
 		{
 		case Client::CDead::VOID01:
+		{
 			m_strModelTag = TEXT("Prototype_Model_Void01_Die");
+
+			_uint iRandomExp = rand() % 6;
+			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(20.f + static_cast<_float>(iRandomExp));
 			break;
+		}
 		case Client::CDead::VOID05:
+		{
 			m_strModelTag = TEXT("Prototype_Model_Void05_Die");
+
+			_uint iRandomExp = rand() % 6;
+			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(15.f + static_cast<_float>(iRandomExp));
 			break;
+		}
 		case Client::CDead::VOID09:
+		{
 			m_strModelTag = TEXT("Prototype_Model_Void09_Die");
+
+			_uint iRandomExp = rand() % 6;
+			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(25.f + static_cast<_float>(iRandomExp));
 			break;
+		}
 		}
 
 		if (FAILED(__super::Add_Components()))
@@ -59,9 +74,6 @@ HRESULT CDead::Init(void* pArg)
 	EffectInfo Info = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"BloodPop04");
 	Info.pMatrix = &m_EffectMatrix;
 	CEffect_Manager::Get_Instance()->Add_Layer_Effect(Info);
-
-	_uint iRandomExp = rand() % 100;
-	CUI_Manager::Get_Instance()->Set_Exp_ByPercent(15.f + (_float)iRandomExp / 2.f * 0.1f);
 
     return S_OK;
 }

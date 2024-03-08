@@ -23,6 +23,8 @@ private:
 	vector<list<class CGuard*>> m_GuardList;
 	vector<list<class CGuardTower*>> m_GuardTowerList;
 
+	class CWarning_Mark* m_pWarning = nullptr;
+
 private:
 	HRESULT Create_Guard(const TCHAR* pPath);
 	HRESULT Create_CheckPoint();
@@ -37,6 +39,8 @@ private:
 	_mat m_CheckPointMatrix{};
 	_float m_fResurrectionTime{ 0.f };
 	_bool m_isTurnOff = false;
+
+	_bool m_isDetected = false;
 
 private:
 	CTransform* m_pPlayerTransform = { nullptr };

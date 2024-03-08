@@ -35,7 +35,7 @@ private:
 	void Tick_Phase2(_float fTimeDelta);
 	void Tick_Phase3(_float fTimeDelta);
 	void Tick_Phase_Buff(_float fTimeDelta);
-
+	void View_Time(_float fTimeDelta);
 
 private:
 	CTransform* m_pPlayerTransform = { nullptr };
@@ -45,7 +45,7 @@ private:
 	class CHook* m_pCurrent_DraggingHook{};
 	map<_uint, class CLog*> m_Logs;
 	map<_uint, class CHive*> m_Hives;
-
+	class CTextButtonColor* m_pTimeBar{ nullptr };
 private:
 	vector<_vec3> m_SpawnPositions;
 	Phase m_eNextPhase{ Phase_End };
@@ -57,7 +57,9 @@ private:
 	_float m_fMonsterSpawnTime{};
 	_uint m_iMonsterSpawnCount{};
 	_float m_iMonsterSpawnSpeed{1.f};
-	
+	_int m_iMinute{};
+	_int m_iSec{};
+
 	//Buff
 	_bool m_bBuffSelected{};
 

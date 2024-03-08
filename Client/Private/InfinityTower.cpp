@@ -571,6 +571,7 @@ void CInfinityTower::Tower_Tick(_float fTimeDelta, POINT& ptMouse)
 					CTrigger_Manager::Get_Instance()->Teleport(TS_DragonMap);
 					if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TOWER, TEXT("Layer_Dragon_Boss"), TEXT("Prototype_GameObject_Dragon_Boss"))))
 						return;
+					CTrigger_Manager::Get_Instance()->Dragon_CutScene();
 				}
 			}
 				break;

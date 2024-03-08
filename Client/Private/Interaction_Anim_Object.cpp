@@ -162,6 +162,7 @@ void CInteraction_Anim::Tick(_float fTimeDelta)
 			EffectDesc.pMatrix = &EffectMat;
 			CEffect_Manager::Get_Instance()->Add_Layer_Effect(EffectDesc);
 
+			m_pGameInstance->Play_Sound(TEXT("UI_Treasure_Box_SFX_01"));
 			m_iHP = 0;
 		}
 	}
@@ -192,6 +193,11 @@ void CInteraction_Anim::Late_Tick(_float fTimeDelta)
 
 	if (m_isAnimStart)
 	{
+		if (m_eType != Box and not m_HasPlayedSound)
+		{
+			m_pGameInstance->Play_Sound(TEXT("Interation_Success02"));
+			m_HasPlayedSound = true;
+		}
 		if (m_pModelCom->IsAnimationFinished(0))
 		{
 			//CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
@@ -216,6 +222,11 @@ void CInteraction_Anim::Late_Tick(_float fTimeDelta)
 				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_UI"), TEXT("Prototype_GameObject_Pop_Reward"), &Desc)))
 				{
 					return;
+				}
+				if (not m_HasPlayedSound)
+				{
+					m_pGameInstance->Play_Sound(TEXT("Interation_Success02"));
+					m_HasPlayedSound = true;
 				}
 				m_isDead = true;
 			}

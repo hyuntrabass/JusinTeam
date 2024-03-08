@@ -131,12 +131,12 @@ void CVoid23::Set_Damage(_int iDamage, _uint iDamageType)
 		m_bDamaged = true;
 		m_bChangePass = true;
 		m_fHittedTime = 6.f;
-		m_fIdleTime = 0.f;
+		//m_fIdleTime = 0.f;
 
 		CUI_Manager::Get_Instance()->Set_HitEffect(m_pTransformCom, iDamage, _vec2(0.f, 1.5f), (ATTACK_TYPE)iDamageType);
 
-		_vec4 vPlayerPos = __super::Compute_PlayerPos();
-		m_pTransformCom->LookAt(vPlayerPos);
+		//_vec4 vPlayerPos = __super::Compute_PlayerPos();
+		//m_pTransformCom->LookAt(vPlayerPos);
 
 		if (iDamage >= 500 && m_eCurState != STATE_KNOCKDOWN)
 		{
@@ -144,10 +144,10 @@ void CVoid23::Set_Damage(_int iDamage, _uint iDamageType)
 		}
 		else
 		{
-			if (m_eCurState != STATE_KNOCKDOWN)
-			{
-				m_eCurState = STATE_CHASE;
-			}
+			//if (m_eCurState != STATE_KNOCKDOWN)
+			//{
+			//	m_eCurState = STATE_CHASE;
+			//}
 		}
 	}	
 
@@ -246,6 +246,8 @@ void CVoid23::Init_State(_float fTimeDelta)
 				m_pTransformCom->Set_Speed(4.f);
 			}
 
+			m_bSelectAttackPattern = false;
+
 			break;
 
 		case Client::CVoid23::STATE_ATTACK:
@@ -292,6 +294,9 @@ void CVoid23::Init_State(_float fTimeDelta)
 		case Client::CVoid23::STATE_DIE:
 			m_Animation.iAnimIndex = DIE;
 			m_Animation.isLoop = false;
+
+			_uint iRandomExp = rand() % 6;
+			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(50.f + static_cast<_float>(iRandomExp));
 			break;
 		}
 

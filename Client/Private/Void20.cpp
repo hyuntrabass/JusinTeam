@@ -1,7 +1,7 @@
 #include "Void20.h"
 #include "UI_Manager.h"
 
-const _float CVoid20::m_fChaseRange = 7.f;
+const _float CVoid20::m_fChaseRange = 10.f;
 const _float CVoid20::m_fAttackRange = 2.f;
 
 CVoid20::CVoid20(_dev pDevice, _context pContext)
@@ -283,9 +283,8 @@ void CVoid20::Init_State(_float fTimeDelta)
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 3.f;
 
-			_uint iRandomExp = rand() % 100;
-			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(15.f + (_float)iRandomExp / 2.f * 0.1f);
-
+			_uint iRandomExp = rand() % 6;
+			CUI_Manager::Get_Instance()->Set_Exp_ByPercent(30.f + static_cast<_float>(iRandomExp));
 			break;
 		}
 
@@ -308,13 +307,14 @@ void CVoid20::Tick_State(_float fTimeDelta)
 		{
 			if (m_fIdleTime >= 1.f)
 			{
-				if (fDistance >= m_fAttackRange)
+				if (fDistance >= m_fChaseRange)
 				{
-					m_eCurState = STATE_CHASE;
+					//m_eCurState = STATE_CHASE;
+					m_eCurState = STATE_WALK;
 				}
 				else
 				{
-					m_eCurState = STATE_ATTACK;
+					m_eCurState = STATE_CHASE;
 				}
 
 				m_fIdleTime = 0.f;
@@ -341,6 +341,11 @@ void CVoid20::Tick_State(_float fTimeDelta)
 
 	case Client::CVoid20::STATE_WALK:
 	{
+		if (fDistance <= m_fChaseRange)
+		{
+			m_eCurState = STATE_CHASE;
+		}
+
 		_float fDist = 1.2f; PxRaycastBuffer Buffer1{};
 		if (m_pGameInstance->Raycast(m_pTransformCom->Get_CenterPos(), m_pTransformCom->Get_State(State::Look).Get_Normalized(), fDist, Buffer1))
 		{

@@ -46,12 +46,18 @@ HRESULT CGuardTower::Init(void* pArg)
 
 	m_pShaderCom->Set_PassIndex(VTF_InstPass_Default);
 
-	if (m_Pattern_Type == PATTERN_1)
+	switch (m_Pattern_Type)
+	{
+	case Client::CGuardTower::PATTERN_1:
 		Create_Range_Pattern_1();
-	else if (m_Pattern_Type == PATTERN_2)
+		break;
+	case Client::CGuardTower::PATTERN_2:
 		Create_Range_Pattern_2();
-	else
+		break;
+	case Client::CGuardTower::PATTERN_3:
 		Create_Range_Pattern_3();
+		break;
+	}
 
 	Create_Lazer();
 	Create_Attack_Lazer();
@@ -86,17 +92,91 @@ HRESULT CGuardTower::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	m_EyeMatrix = m_pTransformCom->Get_World_Matrix() * _mat::CreateTranslation(0.f, 3.5f, 0.f);
+
+	EffectInfo FxInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Tower_Eye");
+	FxInfo.pMatrix = &m_EyeMatrix;
+	m_pEye_White_FX = CEffect_Manager::Get_Instance()->Clone_Effect(FxInfo);
+
 	return S_OK;
 }
 
 void CGuardTower::Tick(_float fTimeDelta)
 {
-	if (true == m_isTurnOff) {
+	if (true == m_isTurnOff)
+	{
 		if (true == m_LightTurnOff)
+		{
+			if (m_pEye_Red_FX)
+			{
+				m_pEye_Red_FX->Tick(fTimeDelta);
+				if (m_pEye_Red_FX->isDead())
+				{
+					Safe_Release(m_pEye_Red_FX);
+				}
+			}
+			if (m_pEye_White_FX)
+			{
+				m_pEye_White_FX->Tick(fTimeDelta);
+				if (m_pEye_White_FX->isDead())
+				{
+					Safe_Release(m_pEye_White_FX);
+				}
+			}
+			if (m_pEye_Charge_FX)
+			{
+				m_pEye_Charge_FX->Tick(fTimeDelta);
+				if (m_pEye_Charge_FX->isDead())
+				{
+					Safe_Release(m_pEye_Charge_FX);
+				}
+			}
+
 			return;
-		if (0.f >= m_fEffectScale) {
+		}
+
+		if (0.f >= m_fEffectScale)
+		{
 			m_pGameInstance->Delete_Light(LEVEL_TOWER, m_strLightTag);
 			m_LightTurnOff = true;
+			
+			if (m_pEye_White_FX)
+			{
+				m_pEye_White_FX->Kill();
+			}
+			if (m_pEye_Red_FX)
+			{
+				m_pEye_Red_FX->Kill();
+			}
+			if (m_pEye_Charge_FX)
+			{
+				m_pEye_Charge_FX->Kill();
+			}
+
+			if (m_pEye_Red_FX)
+			{
+				m_pEye_Red_FX->Tick(fTimeDelta);
+				if (m_pEye_Red_FX->isDead())
+				{
+					Safe_Release(m_pEye_Red_FX);
+				}
+			}
+			if (m_pEye_White_FX)
+			{
+				m_pEye_White_FX->Tick(fTimeDelta);
+				if (m_pEye_White_FX->isDead())
+				{
+					Safe_Release(m_pEye_White_FX);
+				}
+			}
+			if (m_pEye_Charge_FX)
+			{
+				m_pEye_Charge_FX->Tick(fTimeDelta);
+				if (m_pEye_Charge_FX->isDead())
+				{
+					Safe_Release(m_pEye_Charge_FX);
+				}
+			}
 			return;
 		}
 		m_fEffectScale -= fTimeDelta * 5.f;
@@ -105,6 +185,7 @@ void CGuardTower::Tick(_float fTimeDelta)
 		Desc->vSpecular -= _vec3(fTimeDelta * 0.1f);
 		Desc->vAmbient -= _vec3(fTimeDelta * 0.1f);
 		Desc->vAttenuation -= _vec4(fTimeDelta * 0.1f, 0.f, 0.f, 0.f);
+
 	}
 
 
@@ -138,19 +219,44 @@ void CGuardTower::Tick(_float fTimeDelta)
 	m_pModelCom->Get_CurrentAnimPos();
 
 	Init_State(fTimeDelta);
-	if (m_Pattern_Type == PATTERN_1)
+
+	switch (m_Pattern_Type)
 	{
+	case Client::CGuardTower::PATTERN_1:
 		Tick_State_Pattern_1(fTimeDelta);
-	}
-	else if (m_Pattern_Type == PATTERN_2)
-	{
+		break;
+	case Client::CGuardTower::PATTERN_2:
 		Tick_State_Pattern_2(fTimeDelta);
-	}
-	else if (m_Pattern_Type == PATTERN_3)
-	{
+		break;
+	case Client::CGuardTower::PATTERN_3:
 		Tick_State_Pattern_3(fTimeDelta);
+		break;
 	}
 
+	if (m_pEye_Red_FX)
+	{
+		m_pEye_Red_FX->Tick(fTimeDelta);
+		if (m_pEye_Red_FX->isDead())
+		{
+			Safe_Release(m_pEye_Red_FX);
+		}
+	}
+	if (m_pEye_White_FX)
+	{
+		m_pEye_White_FX->Tick(fTimeDelta);
+		if (m_pEye_White_FX->isDead())
+		{
+			Safe_Release(m_pEye_White_FX);
+		}
+	}
+	if (m_pEye_Charge_FX)
+	{
+		m_pEye_Charge_FX->Tick(fTimeDelta);
+		if (m_pEye_Charge_FX->isDead())
+		{
+			Safe_Release(m_pEye_Charge_FX);
+		}
+	}
 
 	m_pModelCom->Set_Animation(m_Animation);
 	Update_Collider();
@@ -184,6 +290,19 @@ void CGuardTower::Late_Tick(_float fTimeDelta)
 	{
 		m_pRendererCom->Add_RenderGroup(RG_AnimNonBlend_Instance, this);
 		m_pModelCom->Set_DissolveRatio(m_fDissolveRatio);
+	}
+
+	if (m_pEye_Red_FX)
+	{
+		m_pEye_Red_FX->Late_Tick(fTimeDelta);
+	}
+	if (m_pEye_White_FX)
+	{
+		m_pEye_White_FX->Late_Tick(fTimeDelta);
+	}
+	if (m_pEye_Charge_FX)
+	{
+		m_pEye_Charge_FX->Late_Tick(fTimeDelta);
 	}
 
 #ifdef _DEBUG
@@ -275,30 +394,60 @@ void CGuardTower::Init_State(_float fTimeDelta)
 	_float fDistance = Compute_PlayerDistance();
 	_vec4 vDir = (vPlayerPos - m_pTransformCom->Get_CenterPos()).Get_Normalized();
 
-	if (m_ePreState != m_eCurState) {
+	if (m_ePreState != m_eCurState)
+	{
 		switch (m_eCurState)
 		{
 		case Client::CGuardTower::STATE_IDLE:
 			m_Animation.iAnimIndex = ANIM_IDLE;
 			m_Animation.isLoop = true;
 			m_Animation.fStartAnimPos = 0.f;
+
 			break;
 		case Client::CGuardTower::STATE_DETECT:
 			m_Animation.iAnimIndex = ANIM_IDLE;
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 1.f;
+			if (m_pEye_Red_FX)
+			{
+				m_pEye_Red_FX->Kill();
+				EffectInfo FxInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Tower_Eye");
+				FxInfo.pMatrix = &m_EyeMatrix;
+				Safe_Release(m_pEye_White_FX);
+				m_pEye_White_FX = CEffect_Manager::Get_Instance()->Clone_Effect(FxInfo);
+			}
+			if (m_pEye_Charge_FX)
+			{
+				m_pEye_Charge_FX->Kill();
+			}
 			break;
 		case Client::CGuardTower::STATE_ATTACK_READY:
 			m_Animation.iAnimIndex = ANIM_IDLE;
 			m_Animation.isLoop = false;
 			m_Animation.fStartAnimPos = 50.f;
 			m_Animation.fAnimSpeedRatio = 10.f;
+			m_pGameInstance->Play_Sound(L"War_Skill_Absorption_SFX_01");
+			{
+				m_pEye_White_FX->Kill();
+				EffectInfo FxInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Tower_Eye_Red");
+				FxInfo.pMatrix = &m_EyeMatrix;
+				Safe_Release(m_pEye_Red_FX);
+				m_pEye_Red_FX = CEffect_Manager::Get_Instance()->Clone_Effect(FxInfo);
+
+				FxInfo = CEffect_Manager::Get_Instance()->Get_EffectInformation(L"Tower_Charge");
+				FxInfo.pMatrix = &m_EyeMatrix;
+				Safe_Release(m_pEye_Charge_FX);
+				m_pEye_Charge_FX = CEffect_Manager::Get_Instance()->Clone_Effect(FxInfo);
+			}
 
 			break;
 		case Client::CGuardTower::STATE_ATTACK:
 			m_Animation.iAnimIndex = ANIM_IDLE;
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 10.f;
+			m_pGameInstance->Play_Sound(L"War_Grab_SFX_Shot_01");
+
+			Safe_Release(m_pEye_Charge_FX);
 			break;
 		case Client::CGuardTower::STATE_DIE:
 			m_Animation.iAnimIndex = ANIM_DIE;
@@ -380,7 +529,7 @@ void CGuardTower::Tick_State_Pattern_1(_float fTimeDelta)
 
 		if (m_bAttacked == false)
 		{
-			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
+			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
 			m_bAttacked = true;
 		}
 
@@ -531,7 +680,7 @@ void CGuardTower::Tick_State_Pattern_2(_float fTimeDelta)
 
 		if (m_bAttacked == false)
 		{
-			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
+			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
 			m_bAttacked = true;
 		}
 
@@ -693,7 +842,7 @@ void CGuardTower::Tick_State_Pattern_3(_float fTimeDelta)
 
 		if (m_bAttacked == false)
 		{
-			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 9999);
+			m_pGameInstance->Attack_Player(m_pAttackColliderCom, 999);
 			m_bAttacked = true;
 		}
 
@@ -923,7 +1072,8 @@ HRESULT CGuardTower::Add_Components()
 
 HRESULT CGuardTower::Bind_ShaderResources()
 {
-	if (true == m_pGameInstance->Get_TurnOnShadow()) {
+	if (true == m_pGameInstance->Get_TurnOnShadow())
+	{
 
 		CASCADE_DESC Desc = m_pGameInstance->Get_CascadeDesc();
 
@@ -1048,12 +1198,16 @@ CGameObject* CGuardTower::Clone(void* pArg)
 
 void CGuardTower::Free()
 {
-	if (false == m_isPrototype) {
+	if (false == m_isPrototype)
+	{
 		CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::MONSTER, m_pTransformCom);
 		m_pGameInstance->Delete_Light(LEVEL_TOWER, m_strLightTag);
 	}
 	__super::Free();
 
+	Safe_Release(m_pEye_Charge_FX);
+	Safe_Release(m_pEye_Red_FX);
+	Safe_Release(m_pEye_White_FX);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pModelCom);
