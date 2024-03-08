@@ -56,9 +56,6 @@ HRESULT CInven::Init(void* pArg)
 	CUI_Manager::Get_Instance()->Set_Item(strName);
 	return S_OK;
 
-	strName = TEXT("체력 포션");
-	CUI_Manager::Get_Instance()->Set_Item(strName);
-	return S_OK;
 }
 
 void CInven::Tick(_float fTimeDelta)

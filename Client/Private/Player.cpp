@@ -617,6 +617,10 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	{
 		//return;
 	}
+	if (m_pCam_Manager->Get_CameraState() == CS_BRICKGAME)
+	{
+		return;
+	}
 
 	if (m_bIsMount)
 	{

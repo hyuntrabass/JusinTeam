@@ -612,6 +612,7 @@ void CBrickGame::Create_Bricks()
 			};
 
 			CBalloon::BALLOON_DESC Desc{};
+			Desc.isChangePhase = true;
 			Desc.isEmpty = true;
 			Desc.vColor = { 0.f, 0.6f, 1.f, 1.f };
 			Desc.vPosition = _vec3(vStartPos.x - 2.25f * j, vStartPos.y, vStartPos.z + 2.25f * i);
