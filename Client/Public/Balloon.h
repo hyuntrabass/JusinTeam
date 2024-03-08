@@ -16,6 +16,8 @@ class CBalloon final : public CGameObject
 public:
 	typedef struct tagBalloonDesc
 	{
+		_bool isChangePhase{};
+		_bool isEmpty{};
 		_bool isEmpty{};
 		_vec3 vPosition{};
 		_vec4 vColor;
@@ -62,6 +64,7 @@ private:
 	BALLOON_STATE m_eCurState = STATE_IDLE;
 
 private:
+	_bool m_isChangePhase{ };
 	_bool m_isPowerBrick{ };
 	_bool m_isReadyToFall{ };
 	_bool m_isFall{ true };
