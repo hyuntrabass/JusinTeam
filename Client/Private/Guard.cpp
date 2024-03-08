@@ -182,7 +182,13 @@ void CGuard::Set_Damage(_int iDamage, _uint iDamageType)
 
 void CGuard::Init_State(_float fTimeDelta)
 {
-	if (m_iHP <= 0 || true == m_isDead)
+	if (true == m_isDead) {
+		m_pTransformCom->Delete_Controller();
+		m_pGameInstance->Delete_CollisionObject(this);
+		return;
+	}
+
+	if (m_iHP <= 0)
 	{
 		m_eCurState = STATE_DIE;
 	}
@@ -880,6 +886,11 @@ void CGuard::Detect_Range(_float fAngle, _float fDist, _vec4 vNormalToPlayer)
 	if (CUI_Manager::Get_Instance()->Get_Hp().x <= 0 && true == m_isDetected) {
 		m_isDetected = false;
 		m_eCurState = STATE_BACK;
+		return;
+	}
+
+	if (STATE_DIE == m_eCurState) {
+		m_isDetected = false;
 		return;
 	}
 
