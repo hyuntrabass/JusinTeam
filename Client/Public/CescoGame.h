@@ -89,6 +89,8 @@ private:
 	map<_int, _vec3> m_LarvaPositions;
 	_uint m_iNumSpawnLarva{};
 
+	//End
+	_bool m_isGameOver{};
 
 private:
 	HRESULT Create_CommonMonster(const wstring& strModelTag, _vec3 SpawnPosition, const wstring& strPrototypeTag);

@@ -55,6 +55,7 @@ HRESULT CInteraction_NonAnim::Init(void* pArg)
 
 	m_iHP = 1;
 
+	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::COLLECT, m_pTransformCom);
 	return S_OK;
 }
 
@@ -546,6 +547,8 @@ CGameObject* CInteraction_NonAnim::Clone(void* pArg)
 
 void CInteraction_NonAnim::Free()
 {
+	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::COLLECT, m_pTransformCom);
+
 	__super::Free();
 	Safe_Release(m_pDissolveTexture);
 	Safe_Release(m_pNameTag);

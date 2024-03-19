@@ -46,7 +46,17 @@ void CSurvivalGame::Tick(_float fTimeDelta)
 	{
 		return;
 	}
-
+	if (m_isGameOver)
+	{
+		if (!CUI_Manager::Get_Instance()->InfinityTower_UI(false, SURVIVAL))
+		{
+			return;
+		}
+		//노래 끊어주기
+		CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
+		CUI_Manager::Get_Instance()->Open_InfinityTower(true);
+		Kill();
+	}
 	Init_Pattern(fTimeDelta);
 	Tick_Pattern(fTimeDelta);
 
@@ -358,6 +368,7 @@ void CSurvivalGame::Tick_Pattern(_float fTimeDelta)
 
 			CCamera_Manager::Get_Instance()->Set_RidingZoom(false);
 
+			m_isGameOver = true;
 			//if (!CUI_Manager::Get_Instance()->InfinityTower_UI(false, SURVIVAL))
 			//{
 			//	return;

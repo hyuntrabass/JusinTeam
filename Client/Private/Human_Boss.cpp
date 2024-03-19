@@ -48,7 +48,8 @@ HRESULT CHuman_Boss::Init(void* pArg)
 	m_pTransformCom->Set_Speed(3.f);
 	m_iPassIndex = AnimPass_DissolveNoCull;
 	m_iWeaponPassIndex = AnimPass_Dissolve;
-	m_iHP = 20000;
+	//m_iHP = 20000;
+	m_iHP = 100;
 	m_eState = Spwan;
 
 	m_WeaponBone_Mat = m_pModelCom->Get_BoneMatrix("Bip001-Prop1");
@@ -79,7 +80,7 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 		return;
 	}
 
-	
+
 
 	if (m_pGameInstance->Key_Down(DIK_9, InputChannel::UI))
 	{
@@ -136,7 +137,8 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 	{
 		m_pGameInstance->Delete_CollisionObject(this);
 		m_pTransformCom->Delete_Controller();
-		Kill();
+		m_isGameOver = true;
+		//Kill();
 	}
 	else if (m_bViewModel && m_fModelDissolveRatio > 0.f)
 	{
@@ -172,6 +174,17 @@ void CHuman_Boss::Tick(_float fTimeDelta)
 	Update_Trail();
 	After_Attack(fTimeDelta);
 	m_pTransformCom->Gravity(fTimeDelta);
+
+	if (m_isGameOver)
+	{
+		if (!CUI_Manager::Get_Instance()->InfinityTower_UI(false, BOSS1))
+		{
+			return;
+		}
+		CCamera_Manager::Get_Instance()->Set_CameraState(CS_DEFAULT);
+		CUI_Manager::Get_Instance()->Open_InfinityTower(true);
+		Kill();
+	}
 }
 
 void CHuman_Boss::Late_Tick(_float fTimeDelta)
@@ -1637,10 +1650,6 @@ CGameObject* CHuman_Boss::Clone(void* pArg)
 
 void CHuman_Boss::Free()
 {
-	if (!CUI_Manager::Get_Instance()->InfinityTower_UI(false,BOSS1))
-	{
-		return;
-	}
 
 	__super::Free();
 

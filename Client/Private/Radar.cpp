@@ -88,8 +88,7 @@ void CRadar::Tick(_float fTimeDelta)
 		{
 			return;
 		}
-		_vec4 vPlayerLook = pPlayerTransform->Get_State(State::Look);
-		vPlayerLook.Normalize();
+		_vec4 vPlayerLook = pPlayerTransform->Get_State(State::Look).Get_Normalized();
 		fAngle = atan2(vPlayerLook.z, vPlayerLook.x) - atan2(vPos.y, vPos.x);
 		m_fAnglePlayer = fAngle * 180.0f / XM_PI;
 
@@ -117,6 +116,7 @@ void CRadar::Late_Tick(_float fTimeDelta)
 		m_pPlayerIcon->Late_Tick(fTimeDelta);
 		m_pMonsterIcon->Late_Tick(fTimeDelta);
 		m_pNpcIcon->Late_Tick(fTimeDelta);
+		m_pCollectIcon->Late_Tick(fTimeDelta);
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 	}
 	else
@@ -166,15 +166,15 @@ void CRadar::Render_Icons(_uint iIdx)
 	for (auto& iter : vecTransform)
 	{
 		_vec3 vObjectPos = iter->Get_State(State::Pos);
-		CTransform* pPlayerTransform = (CTransform*)m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform"));
+		CTransform* pPlayerTransform = GET_TRANSFORM("Layer_Player", LEVEL_STATIC);
 		_vec3 vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 		_vec3 vLength = XMVector3Length(vPlayerPos - vObjectPos);
 
-		if (vLength.x < 45.f)
+		if (vLength.x < m_fRadarLength)
 		{
 			_vec2 MapCenter = m_pRadar->Get_Position();
-			_float fMapPosX = (vObjectPos.x - vPlayerPos.x) / 100.f * 140.f;
-			_float fMapPosY = (vObjectPos.z - vPlayerPos.z) / 100.f * 140.f;
+			_float fMapPosX = (vObjectPos.x - vPlayerPos.x) / m_fDistRatio * m_vMapSize.x;
+			_float fMapPosY = (vObjectPos.z - vPlayerPos.z) / m_fDistRatio * m_vMapSize.y;
 
 			_vec2 vObjectRadarPos = _vec2(MapCenter.x + fMapPosX, MapCenter.y + fMapPosY * -1.f);
 			_vec3 fDir = vObjectPos - vPlayerPos;
@@ -199,11 +199,15 @@ void CRadar::Render_Icons(_uint iIdx)
 				m_pNpcIcon->Set_Position(vNewPos);
 				m_pNpcIcon->Render();
 				break;
+			case CUI_Manager::COLLECT:
+				m_pCollectIcon->Set_Position(vNewPos);
+				m_pCollectIcon->Render();
+				break;
 
 			}
 
 		}
-		else if (vLength.x >= 45.f)
+		else if (vLength.x >= m_fRadarLength)
 		{
 			switch ((CUI_Manager::TYPE)iIdx)
 			{
@@ -212,6 +216,9 @@ void CRadar::Render_Icons(_uint iIdx)
 				break;
 			case CUI_Manager::NPC:
 				m_pNpcIcon->Set_Position(_vec2(-10.f, -10.f));
+				break;
+			case CUI_Manager::COLLECT:
+				m_pCollectIcon->Set_Position(_vec2(-10.f, -10.f));
 				break;
 
 			}
@@ -241,6 +248,7 @@ HRESULT CRadar::Add_Parts()
 	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_radar");
 	Button.vPosition = _vec2(m_fX + 90.f, m_fY + 50.f);
 	Button.vSize = _vec2(140.f, 140.f);
+	m_vMapSize = Button.vSize;
 	m_pRadar = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
 	if (not m_pRadar)
@@ -276,6 +284,16 @@ HRESULT CRadar::Add_Parts()
 	m_pNpcIcon = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
 
 	if (not m_pNpcIcon)
+	{
+		return E_FAIL;
+	}
+
+	Button.strTexture = TEXT("Prototype_Component_Texture_UI_Gameplay_CollectIcon");
+	Button.vPosition = _vec2(-10.f, 10.f);
+	Button.vSize = _vec2(20.f, 20.f);
+	m_pCollectIcon = (CTextButton*)m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_TextButton"), &Button);
+
+	if (not m_pCollectIcon)
 	{
 		return E_FAIL;
 	}
@@ -365,6 +383,7 @@ void CRadar::Free()
 	Safe_Release(m_pNpcIcon);
 	Safe_Release(m_pPlayerIcon);
 	Safe_Release(m_pMonsterIcon);
+	Safe_Release(m_pCollectIcon);
 
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);

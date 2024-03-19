@@ -64,6 +64,8 @@ HRESULT CInteraction_Anim::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	CUI_Manager::Get_Instance()->Set_RadarPos(CUI_Manager::COLLECT, m_pTransformCom);
+
 	return S_OK;
 }
 
@@ -568,6 +570,8 @@ CGameObject* CInteraction_Anim::Clone(void* pArg)
 
 void CInteraction_Anim::Free()
 {
+	CUI_Manager::Get_Instance()->Delete_RadarPos(CUI_Manager::COLLECT, m_pTransformCom);
+
 	__super::Free();
 	Safe_Release(m_pNameTag);
 	Safe_Release(m_pEffect);

@@ -36,11 +36,17 @@ private:
 	_float						m_fAnglePlayer{};
 	_float						m_fAngleMonster{};
 
+	_float						m_fRadarLength{ 45.f };
+	_float						m_fDistRatio{ 100.f };
+
+	_vec2						m_vMapSize{};
+
 	class CTextButton*			m_pRadar{ nullptr };
 	CTextButton*				m_pButton{ nullptr };
 	CTextButton*				m_pPlayerIcon{ nullptr };
 	CTextButton*				m_pMonsterIcon{ nullptr };
 	CTextButton*				m_pNpcIcon{ nullptr };
+	CTextButton*				m_pCollectIcon{ nullptr };
 
 private:
 	void Render_Icons(_uint iIdx);

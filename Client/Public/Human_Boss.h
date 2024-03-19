@@ -143,6 +143,7 @@ private:
 	_bool m_HasPlayedSound{};
 
 private:
+	_bool m_isGameOver{};
 	const _mat* m_WeaponBone_Mat{};
 	_uint m_iPizzaAttCount{};
 	_uint m_iAttackPattern{};
